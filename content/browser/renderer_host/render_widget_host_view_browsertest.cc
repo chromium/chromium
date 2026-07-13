@@ -1706,7 +1706,7 @@ class RenderWidgetHostViewPresentationFeedbackBrowserTest
 
    private:
     raw_ptr<BrowserCompositorMac> browser_compositor_;
-    ui::Layer layer_{ui::LAYER_SOLID_COLOR};
+    ui::LayerSolidColor layer_;
     std::unique_ptr<ui::RecyclableCompositorMac> recyclable_compositor_;
   };
 

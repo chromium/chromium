@@ -568,9 +568,9 @@ bool WindowOcclusionTracker::VisibleWindowCanOccludeOtherWindows(
                                : window->layer()->GetCombinedOpacity();
   // Just check the alpha on this layer as an alpha on parent solid color layers
   // will not affect children's opacity.
-  if (window->layer()->type() == ui::LAYER_SOLID_COLOR) {
-    auto color = ShouldUseTargetValues() ? window->layer()->GetTargetColor()
-                                         : window->layer()->background_color();
+  if (auto* layer = window->layer()->AsSolidColor()) {
+    auto color = ShouldUseTargetValues() ? layer->GetTargetColor()
+                                         : layer->background_color();
     combined_opacity *= SkColorGetA(color) / 255.f;
   }
   return (!window->GetTransparent() && WindowHasContent(window) &&

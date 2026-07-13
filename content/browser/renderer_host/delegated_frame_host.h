@@ -46,6 +46,7 @@ class CONTENT_EXPORT DelegatedFrameHostClient {
  public:
   virtual ~DelegatedFrameHostClient() {}
 
+  // TODO(b:522627357): Update layer type returned by this method.
   virtual ui::Layer* DelegatedFrameHostGetLayer() const = 0;
   virtual bool DelegatedFrameHostIsVisible() const = 0;
   // Returns the color that the resize gutters should be drawn with.
@@ -307,7 +308,7 @@ class CONTENT_EXPORT DelegatedFrameHost
   // Layer responsible for displaying the stale content for the DFHC when the
   // actual web content frame has been evicted. This will be reset when a new
   // compositor frame is submitted.
-  std::unique_ptr<ui::Layer> stale_content_layer_;
+  std::unique_ptr<ui::LayerSolidColor> stale_content_layer_;
 
   blink::ContentToVisibleTimeReporter tab_switch_time_recorder_;
 

@@ -446,7 +446,7 @@ TEST_F(ZAuraSurfaceTest, OcclusionFractionDoesNotDoubleCountOutsideOfScreen) {
   auto window =
       std::make_unique<aura::Window>(nullptr, aura::client::WINDOW_TYPE_POPUP);
   window->Init(ui::LAYER_SOLID_COLOR);
-  window->layer()->SetColor(SK_ColorBLACK);
+  window->layer()->AsSolidColor()->SetColor(SK_ColorBLACK);
   window->SetTransparent(false);
   window->SetBounds(gfx::Rect(-60, 75, 60, 150));
   window->Show();

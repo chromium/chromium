@@ -4,6 +4,8 @@
 
 #include "ui/compositor/presentation_time_recorder.h"
 
+#include <memory>
+
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -27,7 +29,8 @@ class PresentationTimeRecorderTest : public testing::Test {
     host_.reset(TestCompositorHost::Create(
         bounds, context_factories_->GetContextFactory()));
     host_->Show();
-    host_->GetCompositor()->SetRootLayer(&root_);
+    root_ = std::make_unique<LayerTextured>();
+    host_->GetCompositor()->SetRootLayer(root_.get());
   }
 
   void TearDown() override {
@@ -38,7 +41,7 @@ class PresentationTimeRecorderTest : public testing::Test {
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::MainThreadType::UI};
 
-  Layer root_;
+  std::unique_ptr<Layer> root_;
   std::unique_ptr<TestContextFactories> context_factories_;
   std::unique_ptr<TestCompositorHost> host_;
 };

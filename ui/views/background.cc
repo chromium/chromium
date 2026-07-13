@@ -126,7 +126,7 @@ class LayerBasedSolidBackground : public Background {
       view->SetPaintToLayer(ui::LAYER_SOLID_COLOR);
     }
 
-    auto* layer = view->layer();
+    auto* layer = view->layer()->AsSolidColor();
     const auto radii = GetRoundedCornerRadii();
     if (radii && radii != layer->rounded_corner_radii()) {
       layer->SetRoundedCornerRadius(*radii);

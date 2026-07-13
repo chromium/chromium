@@ -34,7 +34,7 @@ class AshBackgroundFilterBlurPerfTest : public AshTestBase {
   void SetUp() override;
 
  protected:
-  std::unique_ptr<ui::Layer> CreateSolidColorLayer(SkColor color);
+  std::unique_ptr<ui::LayerSolidColor> CreateSolidColorLayer(SkColor color);
 
   void WithBoundsChange(ui::Layer* layer,
                         int num_iteration,
@@ -44,9 +44,9 @@ class AshBackgroundFilterBlurPerfTest : public AshTestBase {
                          int num_iteration,
                          const std::string& test_name);
 
-  std::unique_ptr<ui::Layer> background_layer_;
+  std::unique_ptr<ui::LayerSolidColor> background_layer_;
 
-  std::unique_ptr<ui::Layer> blur_layer_;
+  std::unique_ptr<ui::LayerSolidColor> blur_layer_;
 
  private:
   raw_ptr<ui::Layer> root_layer_ = nullptr;
@@ -67,10 +67,9 @@ void AshBackgroundFilterBlurPerfTest::SetUp() {
   blur_layer_ = CreateSolidColorLayer(SK_ColorBLACK);
 }
 
-std::unique_ptr<ui::Layer>
+std::unique_ptr<ui::LayerSolidColor>
 AshBackgroundFilterBlurPerfTest::CreateSolidColorLayer(SkColor color) {
-  std::unique_ptr<ui::Layer> layer =
-      std::make_unique<ui::Layer>(ui::LAYER_SOLID_COLOR);
+  auto layer = std::make_unique<ui::LayerSolidColor>();
   layer->SetBounds(root_layer_->bounds());
   layer->SetColor(color);
   root_layer_->Add(layer.get());

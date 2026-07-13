@@ -169,8 +169,7 @@ SquareInkDropRipple::SquareInkDropRipple(InkDropHost* ink_drop_host,
           color,
           std::min(large_size_.width(), large_size_.height()) / 2)),
       rect_layer_delegate_(
-          new RectangleLayerDelegate(color, gfx::SizeF(large_size_))),
-      root_layer_(ui::LAYER_NOT_DRAWN) {
+          new RectangleLayerDelegate(color, gfx::SizeF(large_size_))) {
   root_layer_.SetName("SquareInkDropRipple:ROOT_LAYER");
 
   for (size_t i = 0; i < PAINTED_SHAPE_COUNT; ++i) {
@@ -573,8 +572,8 @@ void SquareInkDropRipple::AddPaintLayer(PaintedShape painted_shape) {
       NOTREACHED() << "PAINTED_SHAPE_COUNT is not an actual shape type.";
   }
 
-  ui::Layer* layer = new ui::Layer();
-  root_layer_.Add(layer);
+  auto layer = std::make_unique<ui::LayerTextured>();
+  root_layer_.Add(layer.get());
 
   layer->SetBounds(gfx::Rect(large_size_));
   layer->SetFillsBoundsOpaquely(false);
@@ -588,7 +587,7 @@ void SquareInkDropRipple::AddPaintLayer(PaintedShape painted_shape) {
           &SquareInkDropRipple::OnLayerAnimationSequenceScheduled,
           base::Unretained(this)));
 
-  painted_layers_[painted_shape].reset(layer);
+  painted_layers_[painted_shape] = std::move(layer);
 }
 
 void SquareInkDropRipple::OnLayerAnimationSequenceScheduled(

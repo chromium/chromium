@@ -19,6 +19,9 @@ class Point;
 
 namespace ui {
 class Layer;
+class LayerNotDrawn;
+class LayerSolidColor;
+class LayerTextured;
 
 // A magnifier which shows the text caret or selection endpoint during a touch
 // selection session.
@@ -64,17 +67,17 @@ class UI_TOUCH_SELECTION_EXPORT TouchSelectionMagnifierAura
 
   // The magnifier layer is the parent of the zoom layer and border layer. The
   // layer bounds should be updated when selection updates occur.
-  std::unique_ptr<Layer> magnifier_layer_;
+  std::unique_ptr<LayerNotDrawn> magnifier_layer_;
 
   // Draws the zoomed contents, i.e. the background with a zoom and offset
   // filter applied.
-  std::unique_ptr<Layer> zoom_layer_;
+  std::unique_ptr<LayerSolidColor> zoom_layer_;
 
   // Draws the magnifier border and shadows. `border_layer_` must be ordered
   // after `border_renderer_` so that it is destroyed before `border_renderer_`.
   // Otherwise `border_layer_` will have a pointer to a deleted delegate.
   std::unique_ptr<BorderRenderer> border_renderer_;
-  std::unique_ptr<Layer> border_layer_;
+  std::unique_ptr<LayerTextured> border_layer_;
 
   base::ScopedObservation<NativeTheme, NativeThemeObserver> theme_observation_{
       this};

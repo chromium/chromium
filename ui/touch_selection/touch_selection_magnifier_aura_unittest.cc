@@ -35,13 +35,13 @@ class TouchSelectionMagnifierAuraTest : public testing::Test {
 // Tests that the magnifier is horizontally centered above a vertical caret.
 TEST_F(TouchSelectionMagnifierAuraTest, BoundsForVerticalCaret) {
   TouchSelectionMagnifierAura magnifier;
-  Layer magnifier_parent;
-  magnifier_parent.SetBounds(gfx::Rect(500, 400));
+  auto magnifier_parent = std::make_unique<LayerTextured>();
+  magnifier_parent->SetBounds(gfx::Rect(500, 400));
 
   // Show the magnifier at a vertical caret.
   constexpr gfx::Point kCaretTop(300, 200);
   constexpr gfx::Point kCaretBottom(300, 210);
-  magnifier.ShowFocusBound(&magnifier_parent, kCaretTop, kCaretBottom);
+  magnifier.ShowFocusBound(magnifier_parent.get(), kCaretTop, kCaretBottom);
 
   // Magnifier should be horizontally centered above the caret.
   const gfx::Rect magnifier_bounds = magnifier.GetMagnifierBoundsForTesting();
@@ -59,17 +59,17 @@ TEST_F(TouchSelectionMagnifierAuraTest, BoundsForVerticalCaret) {
 // Tests that the magnifier bounds are updated as a caret moves.
 TEST_F(TouchSelectionMagnifierAuraTest, BoundsUpdate) {
   TouchSelectionMagnifierAura magnifier;
-  Layer magnifier_parent;
-  magnifier_parent.SetBounds(gfx::Rect(500, 400));
+  auto magnifier_parent = std::make_unique<LayerTextured>();
+  magnifier_parent->SetBounds(gfx::Rect(500, 400));
 
   // Show the magnifier at a caret.
   constexpr gfx::Point kCaretTop(300, 200);
   constexpr gfx::Point kCaretBottom(300, 210);
-  magnifier.ShowFocusBound(&magnifier_parent, kCaretTop, kCaretBottom);
+  magnifier.ShowFocusBound(magnifier_parent.get(), kCaretTop, kCaretBottom);
   // Move and resize the caret.
   constexpr gfx::Point kUpdatedCaretTop(310, 190);
   constexpr gfx::Point kUpdatedCaretBottom(310, 220);
-  magnifier.ShowFocusBound(&magnifier_parent, kUpdatedCaretTop,
+  magnifier.ShowFocusBound(magnifier_parent.get(), kUpdatedCaretTop,
                            kUpdatedCaretBottom);
 
   // Magnifier should be horizontally centered above the caret.
@@ -89,12 +89,12 @@ TEST_F(TouchSelectionMagnifierAuraTest, BoundsUpdate) {
 // showing a caret close to the left edge of the parent.
 TEST_F(TouchSelectionMagnifierAuraTest, StaysInsideParentLeftEdge) {
   TouchSelectionMagnifierAura magnifier;
-  Layer magnifier_parent;
+  auto magnifier_parent = std::make_unique<LayerTextured>();
   constexpr gfx::Rect kParentBounds(500, 400);
-  magnifier_parent.SetBounds(kParentBounds);
+  magnifier_parent->SetBounds(kParentBounds);
 
   // Show the magnifier at a caret near the left edge of the parent.
-  magnifier.ShowFocusBound(&magnifier_parent, gfx::Point(10, 200),
+  magnifier.ShowFocusBound(magnifier_parent.get(), gfx::Point(10, 200),
                            gfx::Point(10, 210));
 
   // Magnifier (and what's zoomed) should be contained in the parent bounds.
@@ -107,12 +107,12 @@ TEST_F(TouchSelectionMagnifierAuraTest, StaysInsideParentLeftEdge) {
 // showing a caret close to the right edge of the parent.
 TEST_F(TouchSelectionMagnifierAuraTest, StaysInsideParentRightEdge) {
   TouchSelectionMagnifierAura magnifier;
-  Layer magnifier_parent;
+  auto magnifier_parent = std::make_unique<LayerTextured>();
   constexpr gfx::Rect kParentBounds(500, 400);
-  magnifier_parent.SetBounds(kParentBounds);
+  magnifier_parent->SetBounds(kParentBounds);
 
   // Show the magnifier at a caret near the right edge of the parent.
-  magnifier.ShowFocusBound(&magnifier_parent, gfx::Point(495, 200),
+  magnifier.ShowFocusBound(magnifier_parent.get(), gfx::Point(495, 200),
                            gfx::Point(495, 210));
 
   // Magnifier (and what's zoomed) should be contained in the parent bounds.
@@ -125,12 +125,12 @@ TEST_F(TouchSelectionMagnifierAuraTest, StaysInsideParentRightEdge) {
 // showing a caret close to the top edge of the parent.
 TEST_F(TouchSelectionMagnifierAuraTest, StaysInsideParentTopEdge) {
   TouchSelectionMagnifierAura magnifier;
-  Layer magnifier_parent;
+  auto magnifier_parent = std::make_unique<LayerTextured>();
   constexpr gfx::Rect kParentBounds(500, 400);
-  magnifier_parent.SetBounds(kParentBounds);
+  magnifier_parent->SetBounds(kParentBounds);
 
   // Show the magnifier at a caret near the top edge of the parent.
-  magnifier.ShowFocusBound(&magnifier_parent, gfx::Point(200, 2),
+  magnifier.ShowFocusBound(magnifier_parent.get(), gfx::Point(200, 2),
                            gfx::Point(200, 12));
 
   // Magnifier (and what's zoomed) should be contained in the parent bounds.
@@ -143,18 +143,18 @@ TEST_F(TouchSelectionMagnifierAuraTest, StaysInsideParentTopEdge) {
 // parent layer.
 TEST_F(TouchSelectionMagnifierAuraTest, Size) {
   TouchSelectionMagnifierAura magnifier;
-  Layer magnifier_parent;
-  magnifier_parent.SetBounds(gfx::Rect(500, 400));
+  auto magnifier_parent = std::make_unique<LayerTextured>();
+  magnifier_parent->SetBounds(gfx::Rect(500, 400));
 
   // Show magnifier.
-  magnifier.ShowFocusBound(&magnifier_parent, gfx::Point(300, 200),
+  magnifier.ShowFocusBound(magnifier_parent.get(), gfx::Point(300, 200),
                            gfx::Point(300, 210));
   const gfx::Size magnifier_size =
       magnifier.GetMagnifierBoundsForTesting().size();
   const gfx::Size zoom_content_size =
       magnifier.GetZoomedContentsBoundsForTesting().size();
   // Move the caret near the edge of the parent container.
-  magnifier.ShowFocusBound(&magnifier_parent, gfx::Point(10, 3),
+  magnifier.ShowFocusBound(magnifier_parent.get(), gfx::Point(10, 3),
                            gfx::Point(10, 13));
 
   // Magnifier should remain the same size.
@@ -167,18 +167,18 @@ TEST_F(TouchSelectionMagnifierAuraTest, Size) {
 TEST_F(TouchSelectionMagnifierAuraTest, SwitchesParentLayer) {
   TouchSelectionMagnifierAura magnifier;
 
-  Layer magnifier_parent;
-  magnifier_parent.SetBounds(gfx::Rect(500, 400));
-  magnifier.ShowFocusBound(&magnifier_parent, gfx::Point(10, 20),
+  auto magnifier_parent = std::make_unique<LayerTextured>();
+  magnifier_parent->SetBounds(gfx::Rect(500, 400));
+  magnifier.ShowFocusBound(magnifier_parent.get(), gfx::Point(10, 20),
                            gfx::Point(10, 30));
   // Reparent the magnifier.
-  Layer new_parent;
-  new_parent.SetBounds(gfx::Rect(600, 400));
-  magnifier.ShowFocusBound(&new_parent, gfx::Point(200, 20),
+  auto new_parent = std::make_unique<LayerTextured>();
+  new_parent->SetBounds(gfx::Rect(600, 400));
+  magnifier.ShowFocusBound(new_parent.get(), gfx::Point(200, 20),
                            gfx::Point(200, 30));
 
   // Magnifier should have the updated parent.
-  EXPECT_EQ(magnifier.GetMagnifierParentForTesting(), &new_parent);
+  EXPECT_EQ(magnifier.GetMagnifierParentForTesting(), new_parent.get());
 }
 
 }  // namespace

@@ -19,7 +19,6 @@
 #include "ui/color/color_provider.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_tree_owner.h"
-#include "ui/compositor/layer_type.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
 
@@ -200,7 +199,7 @@ void ContentsWebView::UpdateBackgroundColor() {
     }
   }
 
-  ui::Layer* background_layer = layer();
+  auto* background_layer = layer()->AsSolidColor();
   background_layer->SetColor(background_visible_ ? color : SK_ColorTRANSPARENT);
 
   if (web_contents()) {

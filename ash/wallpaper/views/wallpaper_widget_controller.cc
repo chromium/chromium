@@ -32,6 +32,10 @@ WallpaperWidgetController::~WallpaperWidgetController() {
   widget_->CloseNow();
 }
 
+ui::Layer* WallpaperWidgetController::wallpaper_underlay_layer() {
+  return wallpaper_underlay_layer_.get();
+}
+
 void WallpaperWidgetController::Init(bool locked) {
   widget_ = CreateWallpaperWidget(root_window_, wallpaper_constants::kClear,
                                   locked, &wallpaper_view_);
@@ -139,8 +143,7 @@ void WallpaperWidgetController::OnColorProviderChanged() {
 }
 
 void WallpaperWidgetController::CreateWallpaperUnderlayLayer() {
-  wallpaper_underlay_layer_ =
-      std::make_unique<ui::Layer>(ui::LAYER_SOLID_COLOR);
+  wallpaper_underlay_layer_ = std::make_unique<ui::LayerSolidColor>();
   wallpaper_underlay_layer_->SetName("WallpaperUnderlayLayer");
   auto* wallpaper_view_layer = wallpaper_view_->layer();
   auto* wallpaper_view_layer_parent = wallpaper_view_layer->parent();

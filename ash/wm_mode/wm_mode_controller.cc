@@ -291,7 +291,7 @@ void WmModeController::CreateLayer() {
   DCHECK(is_active_);
   DCHECK(!layer());
 
-  Reset(std::make_unique<ui::Layer>(ui::LAYER_TEXTURED));
+  Reset(std::make_unique<ui::LayerTextured>());
   layer()->SetFillsBoundsOpaquely(false);
   layer()->set_delegate(this);
   layer()->SetName("WmModeLayer");

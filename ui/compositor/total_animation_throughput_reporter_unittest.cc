@@ -117,7 +117,7 @@ TotalAnimationThroughputReporter::ReportOnceCallback IgnoreTimestamps(
 using TotalAnimationThroughputReporterTest = CompositorMetricsReporterTestBase;
 
 TEST_F(TotalAnimationThroughputReporterTest, SingleAnimation) {
-  Layer layer;
+  LayerTextured layer;
   layer.SetOpacity(0.5f);
   root_layer()->Add(&layer);
 
@@ -148,7 +148,7 @@ TEST_F(TotalAnimationThroughputReporterTest, SingleAnimation) {
 
 // Tests the stopping last animation will trigger the animation.
 TEST_F(TotalAnimationThroughputReporterTest, StopAnimation) {
-  Layer layer;
+  LayerTextured layer;
   layer.SetOpacity(0.5f);
   root_layer()->Add(&layer);
 
@@ -165,7 +165,7 @@ TEST_F(TotalAnimationThroughputReporterTest, StopAnimation) {
 // Tests the longest animation will trigger the report.
 // TODO(crbug.com/40771278): Test is flaky.
 TEST_F(TotalAnimationThroughputReporterTest, DISABLED_MultipleAnimations) {
-  Layer layer1;
+  LayerTextured layer1;
   layer1.SetOpacity(0.5f);
   root_layer()->Add(&layer1);
 
@@ -173,7 +173,7 @@ TEST_F(TotalAnimationThroughputReporterTest, DISABLED_MultipleAnimations) {
   TotalAnimationThroughputReporter reporter(compositor(),
                                             checker.repeating_callback());
   SetLayerOpacity(layer1, 1.0f, base::Milliseconds(48));
-  Layer layer2;
+  LayerTextured layer2;
   layer2.SetOpacity(0.5f);
   root_layer()->Add(&layer2);
 
@@ -197,7 +197,7 @@ TEST_F(TotalAnimationThroughputReporterTest, DISABLED_MultipleAnimations) {
 
 // Tests the longest animation on a single layer will triger the report.
 TEST_F(TotalAnimationThroughputReporterTest, MultipleAnimationsOnSingleLayer) {
-  Layer layer;
+  LayerTextured layer;
   layer.SetOpacity(0.5f);
   layer.SetLayerBrightness(0.5f);
   root_layer()->Add(&layer);
@@ -223,7 +223,7 @@ TEST_F(TotalAnimationThroughputReporterTest, MultipleAnimationsOnSingleLayer) {
 // TODO(crbug.com/40770648): Test is flaky.
 TEST_F(TotalAnimationThroughputReporterTest,
        DISABLED_AddAnimationWhileAnimating) {
-  Layer layer1;
+  LayerTextured layer1;
   layer1.SetOpacity(0.5f);
   root_layer()->Add(&layer1);
 
@@ -238,7 +238,7 @@ TEST_F(TotalAnimationThroughputReporterTest,
   EXPECT_FALSE(checker.reported());
 
   // Add new animation while animating.
-  Layer layer2;
+  LayerTextured layer2;
   layer2.SetOpacity(0.5f);
   root_layer()->Add(&layer2);
 
@@ -259,7 +259,7 @@ TEST_F(TotalAnimationThroughputReporterTest,
 
 // Tests removing last animation will call report callback.
 TEST_F(TotalAnimationThroughputReporterTest, RemoveWhileAnimating) {
-  auto layer1 = std::make_unique<Layer>();
+  auto layer1 = std::make_unique<LayerTextured>();
   layer1->SetOpacity(0.5f);
   root_layer()->Add(layer1.get());
 
@@ -268,7 +268,7 @@ TEST_F(TotalAnimationThroughputReporterTest, RemoveWhileAnimating) {
                                             checker.repeating_callback());
   SetLayerOpacity(*layer1, 1.0f, base::Milliseconds(100));
 
-  Layer layer2;
+  LayerTextured layer2;
   layer2.SetOpacity(0.5f);
   root_layer()->Add(&layer2);
 
@@ -283,7 +283,7 @@ TEST_F(TotalAnimationThroughputReporterTest, RemoveWhileAnimating) {
 // Make sure the reporter can start measuring even if the animation
 // has started.
 TEST_F(TotalAnimationThroughputReporterTest, StartWhileAnimating) {
-  Layer layer;
+  LayerTextured layer;
   layer.SetOpacity(0.5f);
   root_layer()->Add(&layer);
 
@@ -298,7 +298,7 @@ TEST_F(TotalAnimationThroughputReporterTest, StartWhileAnimating) {
 
 // Tests the reporter is called multiple times for persistent animation.
 TEST_F(TotalAnimationThroughputReporterTest, PersistedAnimation) {
-  Layer layer;
+  LayerTextured layer;
   layer.SetOpacity(0.5f);
   root_layer()->Add(&layer);
 
@@ -368,7 +368,7 @@ class ObserverChecker : public ui::CompositorObserver {
 // Make sure the once reporter is called only once.
 TEST_F(TotalAnimationThroughputReporterTest, OnceReporter) {
   TestCompositorMonitor compositor_monitor(compositor());
-  Layer layer;
+  LayerTextured layer;
   layer.SetOpacity(0.5f);
   root_layer()->Add(&layer);
 
@@ -432,7 +432,7 @@ TEST_F(TotalAnimationThroughputReporterTest, OnceReporterShouldDelete) {
   };
 
   TestCompositorMonitor compositor_monitor(compositor());
-  Layer layer;
+  LayerTextured layer;
   layer.SetOpacity(0.5f);
   root_layer()->Add(&layer);
 
@@ -477,7 +477,7 @@ TEST_F(TotalAnimationThroughputReporterTest, OnceReporterShouldDelete) {
 
 TEST_F(TotalAnimationThroughputReporterTest, ThreadCheck) {
   TestCompositorMonitor compositor_monitor(compositor());
-  Layer layer;
+  LayerTextured layer;
   layer.SetOpacity(0.5f);
   root_layer()->Add(&layer);
 

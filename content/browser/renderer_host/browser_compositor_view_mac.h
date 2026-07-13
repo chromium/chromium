@@ -24,8 +24,9 @@
 
 namespace ui {
 class AcceleratedWidgetMacNSView;
+class LayerSolidColor;
 class RecyclableCompositorMac;
-}
+}  // namespace ui
 
 namespace content {
 
@@ -186,7 +187,7 @@ class CONTENT_EXPORT BrowserCompositorMac : public DelegatedFrameHostClient,
   std::unique_ptr<ui::RecyclableCompositorMac> recyclable_compositor_;
 
   std::unique_ptr<DelegatedFrameHost> delegated_frame_host_;
-  std::unique_ptr<ui::Layer> root_layer_;
+  std::unique_ptr<ui::LayerSolidColor> root_layer_;
 
   SkColor background_color_ = SK_ColorWHITE;
 

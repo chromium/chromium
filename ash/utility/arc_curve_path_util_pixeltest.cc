@@ -111,7 +111,7 @@ TEST_P(ArcCurvePathUtilPixelTest, basic) {
   auto contents_view = std::make_unique<ArcCurveClippedView>(
       GetCornerLocation(), GetCornerRadius());
   contents_view->SetPaintToLayer(ui::LAYER_SOLID_COLOR);
-  contents_view->layer()->SetColor(SK_ColorBLUE);
+  contents_view->layer()->AsSolidColor()->SetColor(SK_ColorBLUE);
   widget->SetContentsView(std::move(contents_view));
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(

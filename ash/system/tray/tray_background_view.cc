@@ -673,7 +673,8 @@ void TrayBackgroundView::UpdateBackground() {
 
   const views::Widget* widget = GetWidget();
   if (widget) {
-    layer()->SetColor(ShelfConfig::Get()->GetShelfControlButtonColor(widget));
+    layer()->AsSolidColor()->SetColor(
+        ShelfConfig::Get()->GetShelfControlButtonColor(widget));
   }
   UpdateBackgroundColor(is_active_);
 }
@@ -1065,13 +1066,13 @@ void TrayBackgroundView::UpdateBackgroundColor(bool active) {
       (is_shelf_opaque || !chromeos::features::IsSystemBlurEnabled())
           ? cros_tokens::kCrosSysSystemOnBase
           : cros_tokens::kCrosSysSystemBaseElevated;
-  layer()->SetColor(widget->GetColorProvider()->GetColor(
+  layer()->AsSolidColor()->SetColor(widget->GetColorProvider()->GetColor(
       active ? cros_tokens::kCrosSysSystemPrimaryContainer
              : non_active_color_id));
 }
 
 void TrayBackgroundView::AddRippleLayer() {
-  ripple_layer_ = std::make_unique<ui::Layer>(ui::LAYER_SOLID_COLOR);
+  ripple_layer_ = std::make_unique<ui::LayerSolidColor>();
   ripple_layer_->SetColor(
       GetColorProvider()->GetColor(cros_tokens::kCrosSysOnPrimaryContainer));
   layer()->parent()->Add(ripple_layer_.get());

@@ -346,7 +346,7 @@ IN_PROC_BROWSER_TEST_F(GlicWidgetThemeBrowserTest,
     const ui::ColorProvider* light_provider =
         ui::ColorProviderManager::Get().GetColorProviderFor(key);
     EXPECT_EQ(light_provider->GetColor(kColorGlicBackground),
-              view->layer()->background_color());
+              view->layer()->AsSolidColor()->background_color());
   }
 
   // 3. Set the profile color scheme to Dark.
@@ -373,7 +373,7 @@ IN_PROC_BROWSER_TEST_F(GlicWidgetThemeBrowserTest,
     const ui::ColorProvider* dark_provider =
         ui::ColorProviderManager::Get().GetColorProviderFor(key);
     EXPECT_EQ(dark_provider->GetColor(kColorGlicBackground),
-              view->layer()->background_color());
+              view->layer()->AsSolidColor()->background_color());
   }
 
   // Restore initial color scheme.

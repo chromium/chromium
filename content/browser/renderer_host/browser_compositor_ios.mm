@@ -37,7 +37,7 @@ BrowserCompositorIOS::BrowserCompositorIOS(
     : client_(client),
       accelerated_widget_(accelerated_widget),
       weak_factory_(this) {
-  root_layer_ = std::make_unique<ui::Layer>(ui::LAYER_SOLID_COLOR);
+  root_layer_ = std::make_unique<ui::LayerSolidColor>();
   // Ensure that this layer draws nothing when it does not not have delegated
   // content (otherwise this solid color will be flashed during navigation).
   root_layer_->SetColor(SK_ColorRED);

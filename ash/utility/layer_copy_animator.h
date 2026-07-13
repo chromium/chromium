@@ -78,7 +78,7 @@ class ASH_EXPORT LayerCopyAnimator : public aura::WindowObserver,
   std::unique_ptr<ui::Layer> copied_layer_;
   // A dummy sequence to keep AnimationSequence alive during copy.
   std::unique_ptr<ui::LayerAnimationSequence> fake_sequence_;
-  ui::Layer full_layer_{ui::LAYER_SOLID_COLOR};
+  ui::LayerSolidColor full_layer_;
   bool fail_ = false;
   bool animation_requested_ = false;
   raw_ptr<ui::LayerAnimationSequence> last_sequence_ = nullptr;

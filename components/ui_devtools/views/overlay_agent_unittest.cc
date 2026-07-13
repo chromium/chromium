@@ -9,6 +9,7 @@
 #include "components/ui_devtools/views/overlay_agent_views.h"
 #include "components/ui_devtools/views/view_element.h"
 #include "components/ui_devtools/views/widget_element.h"
+#include "ui/compositor/layer.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/test/event_generator.h"
@@ -344,10 +345,7 @@ TEST_F(OverlayAgentTest, MouseEventsGenerateFEEventsInInspectMode) {
   // Upon exiting inspect mode, the element is inspected and highlighted.
   EXPECT_EQ(inspect_node_notification_count + 1,
             GetOverlayInspectNodeRequestedCount(node_id));
-  ui::Layer* highlighting_layer = overlay_agent()->layer_for_highlighting();
-  const SkColor kBackgroundColor = 0;
-  EXPECT_EQ(kBackgroundColor, highlighting_layer->GetTargetColor());
-  EXPECT_TRUE(highlighting_layer->visible());
+  EXPECT_TRUE(overlay_agent()->layer_for_highlighting()->visible());
 #else
   overlay_agent()->setInspectMode("none", nullptr);
 #endif

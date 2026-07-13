@@ -62,6 +62,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/devicetype_utils.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
+#include "ui/compositor/layer.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/events/event_constants.h"
@@ -717,16 +718,16 @@ TEST_P(UnifiedSystemTrayTest, TrayBackgroundColorAfterSwitchToTabletMode) {
       Shell::Get()->tablet_mode_controller();
 
   tablet_mode_controller->SetEnabledForTest(false);
-  EXPECT_EQ(tray->layer()->background_color(),
+  EXPECT_EQ(tray->layer()->AsSolidColor()->background_color(),
             ShelfConfig::Get()->GetShelfControlButtonColor(widget));
 
   tablet_mode_controller->SetEnabledForTest(true);
-  EXPECT_EQ(tray->layer()->background_color(),
+  EXPECT_EQ(tray->layer()->AsSolidColor()->background_color(),
             widget->GetColorProvider()->GetColor(
                 cros_tokens::kCrosSysSystemBaseElevated));
 
   tablet_mode_controller->SetEnabledForTest(false);
-  EXPECT_EQ(tray->layer()->background_color(),
+  EXPECT_EQ(tray->layer()->AsSolidColor()->background_color(),
             ShelfConfig::Get()->GetShelfControlButtonColor(widget));
 }
 

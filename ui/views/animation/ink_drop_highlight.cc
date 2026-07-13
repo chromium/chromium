@@ -42,7 +42,7 @@ InkDropHighlight::InkDropHighlight(
     std::unique_ptr<BasePaintedLayerDelegate> layer_delegate)
     : center_point_(center_point),
       layer_delegate_(std::move(layer_delegate)),
-      layer_(std::make_unique<ui::Layer>()) {
+      layer_(std::make_unique<ui::LayerTextured>()) {
   const gfx::RectF painted_bounds = layer_delegate_->GetPaintedBounds();
   size_ = painted_bounds.size();
 
@@ -73,8 +73,8 @@ InkDropHighlight::InkDropHighlight(const gfx::Size& size,
     : InkDropHighlight(gfx::SizeF(size), corner_radius, center_point, color) {}
 
 InkDropHighlight::InkDropHighlight(const gfx::SizeF& size, SkColor base_color)
-    : size_(size), layer_(std::make_unique<ui::Layer>(ui::LAYER_SOLID_COLOR)) {
-  layer_->SetColor(base_color);
+    : size_(size), layer_(std::make_unique<ui::LayerSolidColor>()) {
+  layer_->AsSolidColor()->SetColor(base_color);
   layer_->SetBounds(gfx::Rect(gfx::ToRoundedSize(size)));
   layer_->SetVisible(false);
   layer_->SetMasksToBounds(false);

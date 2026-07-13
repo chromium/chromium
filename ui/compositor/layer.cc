@@ -77,6 +77,9 @@ void CheckSnapped(float snapped_position) {
 
 }  // namespace
 
+////////////////////////////////////////////////////////////////////////////////
+// Layer::LayerMirror:
+
 class Layer::LayerMirror : public LayerDelegate, LayerObserver {
  public:
   LayerMirror(Layer* source, Layer* dest)
@@ -113,6 +116,9 @@ class Layer::LayerMirror : public LayerDelegate, LayerObserver {
   const raw_ptr<Layer> source_;
   const raw_ptr<Layer> dest_;
 };
+
+////////////////////////////////////////////////////////////////////////////////
+// Layer::SubpixelPositionOffsetCache:
 
 // Manages the subpixel offset data for a given set of parameters (device
 // scale factor and DIP offset from parent layer).
@@ -189,6 +195,46 @@ class Layer::SubpixelPositionOffsetCache {
   bool has_explicit_subpixel_offset_ = false;
 };
 
+////////////////////////////////////////////////////////////////////////////////
+// Layer, public:
+
+std::unique_ptr<Layer> Layer::Create(LayerType type) {
+  switch (type) {
+    case LAYER_NOT_DRAWN:
+      return std::make_unique<LayerNotDrawn>();
+    case LAYER_TEXTURED:
+      return std::make_unique<LayerTextured>();
+    case LAYER_SOLID_COLOR:
+      return std::make_unique<LayerSolidColor>();
+    case LAYER_NINE_PATCH:
+      return std::make_unique<LayerNinePatch>();
+  }
+}
+
+LayerTextured* Layer::AsTextured() {
+  return As<LayerTextured>();
+}
+
+const LayerTextured* Layer::AsTextured() const {
+  return As<LayerTextured>();
+}
+
+LayerSolidColor* Layer::AsSolidColor() {
+  return As<LayerSolidColor>();
+}
+
+const LayerSolidColor* Layer::AsSolidColor() const {
+  return As<LayerSolidColor>();
+}
+
+LayerNinePatch* Layer::AsNinePatch() {
+  return As<LayerNinePatch>();
+}
+
+const LayerNinePatch* Layer::AsNinePatch() const {
+  return As<LayerNinePatch>();
+}
+
 Layer::Layer(LayerType type)
     : type_(type),
       compositor_(nullptr),
@@ -253,7 +299,7 @@ Layer::~Layer() {
 }
 
 std::unique_ptr<Layer> Layer::Clone() const {
-  auto clone = std::make_unique<Layer>(type_);
+  std::unique_ptr<Layer> clone = Layer::Create(type_);
 
   // Background filters.
   clone->SetBackgroundBlur(background_blur_sigma_);
@@ -296,7 +342,8 @@ std::unique_ptr<Layer> Layer::Clone() const {
       clone->SetOldestAcceptableFallback(
           *surface_layer_->oldest_acceptable_fallback());
   } else if (type_ == LAYER_SOLID_COLOR) {
-    clone->SetColor(GetTargetColor());
+    // TODO(crbug.com/522627357): Move to LayerSolidColor.
+    clone->AsSolidColor()->SetColor(this->AsSolidColor()->GetTargetColor());
   }
 
   clone->SetTransform(GetTargetTransform());
@@ -313,6 +360,8 @@ std::unique_ptr<Layer> Layer::Clone() const {
   clone->SetGradientMask(gradient_mask());
   clone->SetIsFastRoundedCorner(is_fast_rounded_corner());
   clone->SetName(name_);
+
+  // TODO(crbug.com/522627357): Move to LayerSolidColor.
   if (type() != LAYER_SOLID_COLOR) {
     clone->SetFillsBoundsOpaquely(fills_bounds_opaquely_);
   }
@@ -1063,6 +1112,9 @@ void Layer::SetBackdropFilterQuality(const float quality) {
   cc_layer_->SetBackdropFilterQuality(backdrop_filter_quality_);
 }
 
+////////////////////////////////////////////////////////////////////////////////
+// Layer, private:
+
 // Note: The code that sets this flag would be responsible to unset it on that
 // Layer. We do not want to clone this flag to a cloned layer by accident,
 // which could be a supprise. But we want to preserve it after switching to a
@@ -1516,6 +1568,8 @@ void Layer::OnDeviceScaleFactorChanged(float device_scale_factor) {
   device_scale_factor_ = device_scale_factor;
   RecomputeDrawsContentAndUVRect();
   RecomputePosition();
+
+  // TODO(crbug.com/522627357): Move to LayerNinePatch.
   if (nine_patch_layer_) {
     if (!nine_patch_layer_image_.isNull())
       UpdateNinePatchLayerImage(nine_patch_layer_image_);
@@ -2071,6 +2125,68 @@ bool Layer::GetTransformRelativeToImpl(const Layer* ancestor,
     transform->PostConcat(translation);
   }
   return p == ancestor;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// LayerNotDrawn, public:
+
+LayerNotDrawn::LayerNotDrawn() : Layer(LAYER_NOT_DRAWN) {}
+LayerNotDrawn::~LayerNotDrawn() = default;
+
+////////////////////////////////////////////////////////////////////////////////
+// LayerTextured, public:
+
+LayerTextured::LayerTextured() : Layer(LAYER_TEXTURED) {}
+LayerTextured::~LayerTextured() = default;
+
+////////////////////////////////////////////////////////////////////////////////
+// LayerSolidColor, public:
+
+LayerSolidColor::LayerSolidColor() : Layer(LAYER_SOLID_COLOR) {}
+LayerSolidColor::~LayerSolidColor() = default;
+
+void LayerSolidColor::SetShowReflectedLayerSubtree(
+    Layer* subtree_reflected_layer) {
+  Layer::SetShowReflectedLayerSubtree(subtree_reflected_layer);
+}
+
+void LayerSolidColor::SetShowSolidColorContent() {
+  Layer::SetShowSolidColorContent();
+}
+
+void LayerSolidColor::SetColor(SkColor color) {
+  Layer::SetColor(color);
+}
+
+SkColor LayerSolidColor::GetTargetColor() const {
+  return Layer::GetTargetColor();
+}
+
+SkColor LayerSolidColor::background_color() const {
+  return Layer::background_color();
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// LayerNinePatch, public:
+
+LayerNinePatch::LayerNinePatch() : Layer(LAYER_NINE_PATCH) {}
+LayerNinePatch::~LayerNinePatch() = default;
+
+void LayerNinePatch::UpdateNinePatchLayerImage(const gfx::ImageSkia& image) {
+  Layer::UpdateNinePatchLayerImage(image);
+}
+
+void LayerNinePatch::UpdateNinePatchLayerAperture(
+    const gfx::Rect& aperture_in_dip) {
+  Layer::UpdateNinePatchLayerAperture(aperture_in_dip);
+}
+
+void LayerNinePatch::UpdateNinePatchLayerBorder(const gfx::Rect& border) {
+  Layer::UpdateNinePatchLayerBorder(border);
+}
+
+void LayerNinePatch::UpdateNinePatchOcclusion(const gfx::Rect& occlusion) {
+  Layer::UpdateNinePatchOcclusion(occlusion);
 }
 
 }  // namespace ui

@@ -4,6 +4,8 @@
 
 #include "ash/utility/layer_util.h"
 
+#include <memory>
+
 #include "base/cancelable_callback.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
@@ -59,7 +61,7 @@ class LayerUtilTest : public testing::Test {
 
   std::unique_ptr<ui::TestContextFactories> context_factories_;
   std::unique_ptr<ui::TestCompositorHost> host_;
-  ui::Layer root_;
+  ui::LayerTextured root_;
 };
 
 }  // namespace
@@ -68,11 +70,11 @@ TEST_F(LayerUtilTest, CopyContentToExistingLayer) {
   gfx::ScopedAnimationDurationScaleMode non_zero(
       gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
 
-  ui::Layer layer1;
+  ui::LayerTextured layer1;
   layer1.SetBounds(gfx::Rect(100, 100));
   root_layer()->Add(&layer1);
 
-  ui::Layer layer2;
+  ui::LayerTextured layer2;
   layer2.SetBounds(gfx::Rect(100, 100));
   root_layer()->Add(&layer2);
 

@@ -16,13 +16,15 @@
 
 namespace aura {
 class Window;
-}
+}  // namespace aura
+
 namespace ui {
-class Layer;
-}
+class LayerNinePatch;
+}  // namespace ui
+
 namespace gfx {
 class Rect;
-}
+}  // namespace gfx
 
 namespace ash {
 
@@ -72,7 +74,7 @@ class ResizeShadow : public ui::ColorProviderSourceObserver {
   }
 
   int GetLastHitTestForTest() const { return last_hit_test_; }
-  const ui::Layer* GetLayerForTest() const { return layer_.get(); }
+  const ui::LayerNinePatch* GetLayerForTest() const { return layer_.get(); }
   ResizeShadowType GetResizeShadowTypeForTest() const { return type_; }
 
  private:
@@ -109,7 +111,7 @@ class ResizeShadow : public ui::ColorProviderSourceObserver {
 
   // The layer to which the shadow is drawn. The layer is stacked beneath the
   // layer of |window_|.
-  std::unique_ptr<ui::Layer> layer_;
+  std::unique_ptr<ui::LayerNinePatch> layer_;
 
   // Hit test value from last call to ShowForHitTest().  Used to prevent
   // repeatedly triggering the same animations for the same hit.

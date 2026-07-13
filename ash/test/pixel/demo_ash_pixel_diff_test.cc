@@ -51,7 +51,7 @@ class DemoAshPixelDiffTest : public AshTestBase {
     // Set a solid color contents view.
     auto contents_view = std::make_unique<views::View>();
     contents_view->SetPaintToLayer(ui::LAYER_SOLID_COLOR);
-    contents_view->layer()->SetColor(color);
+    contents_view->layer()->AsSolidColor()->SetColor(color);
     widget->SetContentsView(std::move(contents_view));
 
     return widget;

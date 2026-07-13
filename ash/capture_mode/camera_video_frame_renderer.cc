@@ -22,7 +22,6 @@
 #include "ui/aura/window_tree_host.h"
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/layer.h"
-#include "ui/compositor/layer_type.h"
 #include "ui/gfx/geometry/dip_util.h"
 #include "ui/gfx/geometry/size_conversions.h"
 
@@ -49,7 +48,7 @@ CameraVideoFrameRenderer::CameraVideoFrameRenderer(
       should_flip_frames_horizontally_(should_flip_frames_horizontally) {
   host_window_.set_owned_by_parent(false);
   host_window_.Init(ui::LAYER_SOLID_COLOR);
-  host_window_.layer()->SetColor(SK_ColorDKGRAY);
+  host_window_.layer()->AsSolidColor()->SetColor(SK_ColorDKGRAY);
   host_window_.SetName("CameraVideoFramesHost");
 }
 

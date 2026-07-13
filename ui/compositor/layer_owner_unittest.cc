@@ -104,7 +104,7 @@ void LayerOwnerTestWithCompositor::TearDown() {
 }  // namespace
 
 TEST_F(LayerOwnerTestWithCompositor, RecreateRootLayerWithCompositor) {
-  LayerOwnerForTesting owner(std::make_unique<Layer>());
+  LayerOwnerForTesting owner(std::make_unique<LayerTextured>());
   Layer* layer = owner.layer();
   compositor()->SetRootLayer(layer);
 
@@ -119,11 +119,11 @@ TEST_F(LayerOwnerTestWithCompositor, RecreateRootLayerWithCompositor) {
 // properly updates the compositor. So that compositor is not null for observers
 // of animations being cancelled.
 TEST_F(LayerOwnerTestWithCompositor, RecreateRootLayerDuringAnimation) {
-  LayerOwnerForTesting owner(std::make_unique<Layer>());
+  LayerOwnerForTesting owner(std::make_unique<LayerTextured>());
   Layer* layer = owner.layer();
   compositor()->SetRootLayer(layer);
 
-  std::unique_ptr<Layer> child(new Layer);
+  std::unique_ptr<Layer> child(std::make_unique<LayerTextured>());
   child->SetBounds(gfx::Rect(0, 0, 100, 100));
   layer->Add(child.get());
 
@@ -150,14 +150,14 @@ TEST_F(LayerOwnerTestWithCompositor, RecreateRootLayerDuringAnimation) {
 // animating, properly updates the compositor. So that compositor is not null
 // for observers of animations being cancelled.
 TEST_F(LayerOwnerTestWithCompositor, RecreateNonRootLayerDuringAnimation) {
-  std::unique_ptr<Layer> root_layer(new Layer);
+  std::unique_ptr<Layer> root_layer(std::make_unique<LayerTextured>());
   compositor()->SetRootLayer(root_layer.get());
 
-  LayerOwnerForTesting owner(std::make_unique<Layer>());
+  LayerOwnerForTesting owner(std::make_unique<LayerTextured>());
   Layer* layer = owner.layer();
   root_layer->Add(layer);
 
-  std::unique_ptr<Layer> child(new Layer);
+  std::unique_ptr<Layer> child(std::make_unique<LayerTextured>());
   child->SetBounds(gfx::Rect(0, 0, 100, 100));
   layer->Add(child.get());
 
@@ -183,10 +183,10 @@ TEST_F(LayerOwnerTestWithCompositor, RecreateNonRootLayerDuringAnimation) {
 // Tests that if LayerOwner-derived class destroys layer, then
 // LayerAnimator's animation becomes detached from compositor timeline.
 TEST_F(LayerOwnerTestWithCompositor, DetachTimelineOnAnimatorDeletion) {
-  std::unique_ptr<Layer> root_layer(new Layer);
+  std::unique_ptr<Layer> root_layer(std::make_unique<LayerTextured>());
   compositor()->SetRootLayer(root_layer.get());
 
-  LayerOwnerForTesting owner(std::make_unique<Layer>());
+  LayerOwnerForTesting owner(std::make_unique<LayerTextured>());
   Layer* layer = owner.layer();
   layer->SetOpacity(0.5f);
   root_layer->Add(layer);
@@ -205,10 +205,10 @@ TEST_F(LayerOwnerTestWithCompositor, DetachTimelineOnAnimatorDeletion) {
 // then LayerAnimator's animation becomes attached to timeline.
 TEST_F(LayerOwnerTestWithCompositor,
        AttachTimelineIfAnimatorCreatedAfterSetCompositor) {
-  std::unique_ptr<Layer> root_layer(new Layer);
+  std::unique_ptr<Layer> root_layer(std::make_unique<LayerTextured>());
   compositor()->SetRootLayer(root_layer.get());
 
-  LayerOwnerForTesting owner(std::make_unique<Layer>());
+  LayerOwnerForTesting owner(std::make_unique<LayerTextured>());
   Layer* layer = owner.layer();
   root_layer->Add(layer);
 
@@ -247,7 +247,7 @@ class TestLayerDelegate : public LayerDelegate {
 // Test if recreating a layer in OnLayerBoundsChanged will not
 // cause a use-after-free.
 TEST_F(LayerOwnerTestWithCompositor, DeleteOnLayerBoundsChanged) {
-  LayerOwnerForTesting owner(std::make_unique<Layer>());
+  LayerOwnerForTesting owner(std::make_unique<LayerTextured>());
   TestLayerDelegate delegate(&owner);
   owner.layer()->set_delegate(&delegate);
   owner.layer()->SetBounds(gfx::Rect(100, 100));

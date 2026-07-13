@@ -113,9 +113,10 @@ void PrintLayerHierarchyImp(const Layer* layer,
          << layer->rounded_corner_radii().ToString();
   }
 
-  if (layer->type() == LAYER_SOLID_COLOR) {
+  if (auto* solid_layer = layer->AsSolidColor()) {
     *out << "\n" << property_indent_str;
-    *out << "background-color=" << ui::SkColorName(layer->background_color());
+    *out << "background-color="
+         << ui::SkColorName(solid_layer->background_color());
   }
 
   const ui::Layer* mask = const_cast<ui::Layer*>(layer)->layer_mask_layer();

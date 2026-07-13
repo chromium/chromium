@@ -122,7 +122,7 @@ void WallpaperView::SetLockShieldEnabled(bool enabled) {
     shield_view_ = new views::View();
     parent()->AddChildViewAt(shield_view_.get(), 0);
     shield_view_->SetPaintToLayer(ui::LAYER_SOLID_COLOR);
-    shield_view_->layer()->SetColor(SK_ColorBLACK);
+    shield_view_->layer()->AsSolidColor()->SetColor(SK_ColorBLACK);
     shield_view_->layer()->SetName("WallpaperViewShield");
     shield_view_->SetBoundsRect(parent()->GetLocalBounds());
     // Mark the layer transparent to make sure that the compositor will draw the

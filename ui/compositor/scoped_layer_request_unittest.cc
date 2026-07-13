@@ -15,7 +15,7 @@ namespace ui {
 using ScopedLayerRequestTest = testing::Test;
 
 TEST_F(ScopedLayerRequestTest, ScopedPaintLock) {
-  Layer layer;
+  LayerTextured layer;
   EXPECT_FALSE(layer.IsPaintDeferredForTesting());
   {
     ScopedPaintLock lock(&layer);
@@ -26,7 +26,7 @@ TEST_F(ScopedLayerRequestTest, ScopedPaintLock) {
 }
 
 TEST_F(ScopedLayerRequestTest, ScopedCacheRenderSurfaceLock) {
-  Layer layer;
+  LayerTextured layer;
   EXPECT_FALSE(layer.cc_layer_for_testing()->cache_render_surface());
   {
     ScopedCacheRenderSurfaceLock lock(&layer);
@@ -37,7 +37,7 @@ TEST_F(ScopedLayerRequestTest, ScopedCacheRenderSurfaceLock) {
 }
 
 TEST_F(ScopedLayerRequestTest, ScopedTrilinearFilteringLock) {
-  Layer layer;
+  LayerTextured layer;
   EXPECT_FALSE(layer.cc_layer_for_testing()->trilinear_filtering());
   {
     ScopedTrilinearFilteringLock lock(&layer);
@@ -48,7 +48,7 @@ TEST_F(ScopedLayerRequestTest, ScopedTrilinearFilteringLock) {
 }
 
 TEST_F(ScopedLayerRequestTest, LayerDestroyedWhileLocked) {
-  auto layer = std::make_unique<Layer>();
+  auto layer = std::make_unique<LayerTextured>();
   auto lock = std::make_unique<ScopedPaintLock>(layer.get());
   EXPECT_TRUE(layer->IsPaintDeferredForTesting());
   EXPECT_EQ(layer.get(), lock->GetLayer());

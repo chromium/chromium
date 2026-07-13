@@ -17,7 +17,7 @@ namespace ui {
 using CompositorMetricsReporterTest = CompositorMetricsReporterTestBase;
 
 TEST_F(CompositorMetricsReporterTest, ThreadCheck) {
-  Layer layer;
+  LayerTextured layer;
   root_layer()->Add(&layer);
 
   LayerAnimator* animator = new LayerAnimator(base::Milliseconds(32));

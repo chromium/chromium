@@ -18,6 +18,7 @@
 
 namespace ui {
 class Layer;
+class LayerSolidColor;
 class LayerTreeOwner;
 }  // namespace ui
 
@@ -49,9 +50,7 @@ class ASH_EXPORT WallpaperWidgetController
 
   WallpaperView* wallpaper_view() { return wallpaper_view_; }
 
-  ui::Layer* wallpaper_underlay_layer() {
-    return wallpaper_underlay_layer_.get();
-  }
+  ui::Layer* wallpaper_underlay_layer();
 
   // Initializes the widget. `locked` determines if the wallpaper should be
   // created for the locked state.
@@ -124,7 +123,7 @@ class ASH_EXPORT WallpaperWidgetController
   // A solid-color layer stacked below the clipped `wallpaper_view_`
   // layer. Note that it can't be stacked at bottom since the `shield_view_` may
   // exist.
-  std::unique_ptr<ui::Layer> wallpaper_underlay_layer_;
+  std::unique_ptr<ui::LayerSolidColor> wallpaper_underlay_layer_;
 
   // Callbacks to be run when the |animating_widget_| stops animating and gets
   // set as the active widget.

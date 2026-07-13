@@ -88,6 +88,7 @@
 #include "ui/base/ui_base_features.h"
 #include "ui/base/ui_base_switches.h"
 #include "ui/base/ui_base_types.h"
+#include "ui/compositor/layer.h"
 #include "ui/display/screen.h"
 #include "ui/events/blink/blink_event_util.h"
 #include "ui/events/blink/did_overscroll_params.h"
@@ -855,7 +856,7 @@ void RenderWidgetHostViewAura::UpdateBackgroundColor() {
   CHECK(GetBackgroundColor());
 
   SkColor color = *GetBackgroundColor();
-  window_->layer()->SetColor(color);
+  window_->layer()->AsSolidColor()->SetColor(color);
 }
 
 #if BUILDFLAG(IS_WIN)
@@ -2919,8 +2920,8 @@ void RenderWidgetHostViewAura::CreateAuraWindow(aura::client::WindowType type) {
 
   window_->SetType(type);
   window_->Init(ui::LAYER_SOLID_COLOR);
-  window_->layer()->SetColor(GetBackgroundColor() ? *GetBackgroundColor()
-                                                  : SK_ColorWHITE);
+  window_->layer()->AsSolidColor()->SetColor(
+      GetBackgroundColor() ? *GetBackgroundColor() : SK_ColorWHITE);
   UpdateFrameSinkIdRegistration();
 }
 

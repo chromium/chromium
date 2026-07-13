@@ -159,7 +159,7 @@ void AccessibilityFocusHighlight::CreateOrUpdateLayer(gfx::Rect node_bounds) {
 
   // Create the layer if needed.
   if (!layer_) {
-    layer_ = std::make_unique<ui::Layer>(ui::LAYER_TEXTURED);
+    layer_ = std::make_unique<ui::LayerTextured>();
     layer_->SetName("AccessibilityFocusHighlight");
     layer_->SetFillsBoundsOpaquely(false);
     root_layer->Add(layer_.get());

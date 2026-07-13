@@ -28,7 +28,7 @@ constexpr gfx::RoundedCornersF kRootLayerRadii(10);
 constexpr gfx::RoundedCornersF kZeroRadii(0);
 
 std::unique_ptr<ui::Layer> CreateLayer() {
-  return std::make_unique<ui::Layer>();
+  return std::make_unique<ui::LayerTextured>();
 }
 
 using BoundsWithRoundedCorners = std::pair<gfx::Rect, gfx::RoundedCornersF>;

@@ -21,7 +21,8 @@
 #include "ui/views/views_export.h"
 
 namespace ui {
-class Layer;
+class LayerNotDrawn;
+class LayerTextured;
 }  // namespace ui
 
 namespace views {
@@ -188,7 +189,7 @@ class VIEWS_EXPORT FloodFillInkDropRipple : public InkDropRipple {
   // The root layer that parents the animating layer. The root layer is used to
   // manipulate opacity and clipping bounds, and it child is used to manipulate
   // the different shape of the ink drop.
-  ui::Layer root_layer_;
+  ui::LayerNotDrawn root_layer_;
 
   // Sequence scheduled callback subscription for the root layer.
   base::CallbackListSubscription root_callback_subscription_;
@@ -198,7 +199,7 @@ class VIEWS_EXPORT FloodFillInkDropRipple : public InkDropRipple {
 
   // Child ui::Layer of |root_layer_|. Used to  manipulate the different size
   // and shape of the ink drop.
-  ui::Layer painted_layer_;
+  ui::LayerTextured painted_layer_;
 
   // Sequence scheduled callback subscriptions for the painted layer.
   base::CallbackListSubscription painted_layer_callback_subscription_;

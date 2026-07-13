@@ -88,7 +88,7 @@ class OverviewUiTaskPoolTest : public ::testing::Test {
       base::test::TaskEnvironment::MainThreadType::UI};
 
   std::unique_ptr<OverviewUiTaskPool> task_pool_;
-  ui::Layer root_;
+  ui::LayerTextured root_;
   std::unique_ptr<ui::TestContextFactories> context_factories_;
   std::unique_ptr<ui::TestCompositorHost> host_;
   base::TimeDelta frame_interval_;

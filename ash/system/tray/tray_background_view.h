@@ -25,6 +25,8 @@ class ScopedClosureRunner;
 
 namespace ui {
 class Event;
+class Layer;
+class LayerSolidColor;
 }  // namespace ui
 
 namespace views {
@@ -365,7 +367,7 @@ class ASH_EXPORT TrayBackgroundView : public views::Button,
   raw_ptr<TrayContainer> tray_container_;
 
   // A separate layer for ripple aimation.
-  std::unique_ptr<ui::Layer> ripple_layer_;
+  std::unique_ptr<ui::LayerSolidColor> ripple_layer_;
   // The handle to abort ripple and pulse animation.
   std::unique_ptr<views::AnimationAbortHandle>
       ripple_and_pulse_animation_abort_handle_;

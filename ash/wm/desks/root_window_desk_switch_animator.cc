@@ -73,7 +73,7 @@ constexpr float kFastSwipeVisibilityRatio = 0.1f;
 // sized as children get added to it. This is the layer that will be animated.
 std::unique_ptr<ui::LayerTreeOwner> CreateAnimationLayerOwner(
     aura::Window* root) {
-  auto animation_layer = std::make_unique<ui::Layer>(ui::LAYER_SOLID_COLOR);
+  auto animation_layer = std::make_unique<ui::LayerSolidColor>();
   animation_layer->SetName("Desk switch animation layer");
   animation_layer->SetColor(SK_ColorBLACK);
   return std::make_unique<ui::LayerTreeOwner>(std::move(animation_layer));
@@ -170,7 +170,7 @@ void RootWindowDeskSwitchAnimator::TakeStartingDeskScreenshot() {
 
     // We don't take a screenshot of the soon-to-be-removed desk, we use an
     // empty black solid color layer.
-    auto black_layer = std::make_unique<ui::Layer>(ui::LAYER_SOLID_COLOR);
+    auto black_layer = std::make_unique<ui::LayerSolidColor>();
     black_layer->SetColor(SK_ColorBLACK);
     CompleteAnimationPhase1WithLayer(std::move(black_layer));
     return;

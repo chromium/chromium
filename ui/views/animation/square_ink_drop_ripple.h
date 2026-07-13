@@ -23,7 +23,7 @@
 #include "ui/views/views_export.h"
 
 namespace ui {
-class Layer;
+class LayerNotDrawn;
 }  // namespace ui
 
 namespace views {
@@ -185,7 +185,7 @@ class VIEWS_EXPORT SquareInkDropRipple : public InkDropRipple {
   // The root layer that parents the animating layers. The root layer is used to
   // manipulate opacity and location, and its children are used to manipulate
   // the different painted shapes that compose the ink drop.
-  ui::Layer root_layer_;
+  ui::LayerNotDrawn root_layer_;
 
   // Sequence scheduled callback subscription for the root layer.
   base::CallbackListSubscription root_callback_subscription_;

@@ -28,7 +28,8 @@ void CompositorMetricsReporterTestBase::SetUp() {
       bounds, context_factories_->GetContextFactory()));
   host_->Show();
 
-  compositor()->SetRootLayer(&root_);
+  root_ = std::make_unique<LayerTextured>();
+  compositor()->SetRootLayer(root_.get());
 
   frame_generation_timer_.Start(
       FROM_HERE, base::Milliseconds(16), this,

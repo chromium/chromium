@@ -132,6 +132,7 @@ class VIEWS_EXPORT InkDropHighlight {
   std::unique_ptr<BasePaintedLayerDelegate> layer_delegate_;
 
   // The visual highlight layer.
+  // TODO(b:522627357): Use std::variant here.
   std::unique_ptr<ui::Layer> layer_;
 
   std::unique_ptr<AnimationAbortHandle> animation_abort_handle_;

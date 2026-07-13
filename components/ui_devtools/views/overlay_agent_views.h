@@ -9,7 +9,6 @@
 #include "components/ui_devtools/overlay.h"
 #include "components/ui_devtools/overlay_agent.h"
 #include "components/ui_devtools/views/dom_agent_views.h"
-#include "ui/compositor/layer.h"
 #include "ui/compositor/layer_delegate.h"
 #include "ui/events/event.h"
 #include "ui/events/event_handler.h"
@@ -17,7 +16,11 @@
 
 namespace gfx {
 class RenderText;
-}
+}  // namespace gfx
+
+namespace ui {
+class LayerTextured;
+}  // namespace ui
 
 namespace ui_devtools {
 
@@ -70,7 +73,7 @@ class OverlayAgentViews : public OverlayAgent,
   virtual int FindElementIdTargetedByPoint(ui::LocatedEvent* event) const = 0;
 
  protected:
-  OverlayAgentViews(DOMAgent* dom_agent);
+  explicit OverlayAgentViews(DOMAgent* dom_agent);
 
  private:
   FRIEND_TEST_ALL_PREFIXES(OverlayAgentTest,
@@ -106,7 +109,9 @@ class OverlayAgentViews : public OverlayAgent,
   void OnDeviceScaleFactorChanged(float old_device_scale_factor,
                                   float new_device_scale_factor) override {}
 
-  ui::Layer* layer_for_highlighting() { return layer_for_highlighting_.get(); }
+  ui::LayerTextured* layer_for_highlighting() {
+    return layer_for_highlighting_.get();
+  }
 
   std::unique_ptr<gfx::RenderText> render_text_;
   bool show_size_on_canvas_ = false;
@@ -114,7 +119,7 @@ class OverlayAgentViews : public OverlayAgent,
   bool is_swap_ = false;
 
   // The layer used to paint highlights, and its offset from the screen origin.
-  std::unique_ptr<ui::Layer> layer_for_highlighting_;
+  std::unique_ptr<ui::LayerTextured> layer_for_highlighting_;
   gfx::Vector2d layer_for_highlighting_screen_offset_;
 
   // Hovered and pinned element bounds in screen coordinates; empty if none.

@@ -26,7 +26,7 @@ Shadow::~Shadow() = default;
 void Shadow::Init(int elevation) {
   DCHECK_GE(elevation, 0);
   desired_elevation_ = elevation;
-  SetLayer(std::make_unique<ui::Layer>(ui::LAYER_NOT_DRAWN));
+  SetLayer(std::make_unique<ui::LayerNotDrawn>());
   layer()->SetName("Shadow Parent Container");
   RecreateShadowLayer();
 }
@@ -130,7 +130,7 @@ std::unique_ptr<Layer> Shadow::ShadowLayerOwner::RecreateLayer() {
 // Shadow:
 
 void Shadow::RecreateShadowLayer() {
-  shadow_layer_owner_.Reset(std::make_unique<ui::Layer>(ui::LAYER_NINE_PATCH));
+  shadow_layer_owner_.Reset(std::make_unique<ui::LayerNinePatch>());
   shadow_layer()->SetName("Shadow");
   shadow_layer()->SetVisible(true);
   shadow_layer()->SetFillsBoundsOpaquely(false);

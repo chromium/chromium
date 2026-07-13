@@ -52,6 +52,10 @@ struct TransferableResource;
 
 namespace ui {
 
+class LayerTextured;
+class LayerSolidColor;
+class LayerNinePatch;
+
 enum class LayerRequestType {
   kPaint,
   kCacheRenderSurface,
@@ -86,12 +90,37 @@ class COMPOSITOR_EXPORT Layer : public LayerAnimationDelegate,
 
  public:
   using ShapeRects = std::vector<gfx::Rect>;
-  explicit Layer(LayerType type = LAYER_TEXTURED);
+
+  // Creates a Layer of the given type.
+  static std::unique_ptr<Layer> Create(LayerType type);
+
+  // Casts the layer to the specified layer type `T`. Returns a pointer to the
+  // typed layer if this layer is of the requested type, otherwise returns null.
+  template <typename T>
+  const T* As() const {
+    return this->type() == T::kType ? static_cast<const T*>(this) : nullptr;
+  }
+
+  template <typename T>
+  T* As() {
+    return this->type() == T::kType ? static_cast<T*>(this) : nullptr;
+  }
+
+  // Helper wrappers for As<T>().
+  LayerTextured* AsTextured();
+  const LayerTextured* AsTextured() const;
+  LayerSolidColor* AsSolidColor();
+  const LayerSolidColor* AsSolidColor() const;
+  LayerNinePatch* AsNinePatch();
+  const LayerNinePatch* AsNinePatch() const;
+
   Layer(const Layer&) = delete;
   Layer& operator=(const Layer&) = delete;
+
   ~Layer() override;
 
   // Note that only solid color and surface content is copied.
+  // TODO(crbug.com/522627357): Make it a virtual method.
   std::unique_ptr<Layer> Clone() const;
 
   // Returns a new layer that mirrors this layer and is optionally synchronized
@@ -99,6 +128,7 @@ class COMPOSITOR_EXPORT Layer : public LayerAnimationDelegate,
   // content is only mirrored if painted by a delegate or backed by a surface.
   // As the mirror layer rasterizes its contents separately, this might have
   // some negative impact on performance.
+  // TODO(crbug.com/522627357): Make it a virtual method.
   std::unique_ptr<Layer> Mirror();
 
   // This method is relevant only if this layer is a mirror destination layer.
@@ -122,6 +152,8 @@ class COMPOSITOR_EXPORT Layer : public LayerAnimationDelegate,
     sync_rounded_corners_with_source_ = sync_rounded_corners;
   }
 
+ protected:
+  // TODO(crbug.com/522627357): Move to LayerSolidColor.
   // Sets up this layer to mirror output of |subtree_reflected_layer|, including
   // its entire hierarchy. |this| should be of type LAYER_SOLID_COLOR and should
   // not be a descendant of |subtree_reflected_layer|. This is achieved by using
@@ -130,6 +162,7 @@ class COMPOSITOR_EXPORT Layer : public LayerAnimationDelegate,
   // read/writes which can impact performance negatively.
   void SetShowReflectedLayerSubtree(Layer* subtree_reflected_layer);
 
+ public:
   // Retrieves the Layer's compositor. The Layer will walk up its parent chain
   // to locate it. Returns NULL if the Layer is not attached to a compositor.
   Compositor* GetCompositor() {
@@ -187,6 +220,7 @@ class COMPOSITOR_EXPORT Layer : public LayerAnimationDelegate,
   const Layer* parent() const { return parent_; }
   Layer* parent() { return parent_; }
 
+  // TODO(crbug.com/522627357): Make it a virtual method.
   LayerType type() const { return type_; }
 
   // Returns true if this Layer contains |other| somewhere in its children.
@@ -493,20 +527,23 @@ class COMPOSITOR_EXPORT Layer : public LayerAnimationDelegate,
     return surface_layer_->surface_id();
   }
 
-  // Show a solid color instead of delegated or surface contents.
-  void SetShowSolidColorContent();
-
   // Reorder the children to have all children inside |new_leading_children| to
   // be at the front of the children vector, and the remaining children will
   // stay in their relative order. |this| must be a parent of all the Layer*
   // inside |new_leading_children|.
   void StackChildrenAtBottom(const std::vector<Layer*>& new_leading_children);
 
+  // TODO(crbug.com/522627357): Move to LayerSolidColor.
+ protected:
+  // Show a solid color instead of delegated or surface contents.
+  void SetShowSolidColorContent();
+
   // Sets the layer's fill color.  May only be called for LAYER_SOLID_COLOR.
   void SetColor(SkColor color);
   SkColor GetTargetColor() const;
   SkColor background_color() const;
 
+  // TODO(crbug.com/522627357): Move to LayerNinePatch.
   // Updates the nine patch layer's image, aperture and border. May only be
   // called for LAYER_NINE_PATCH.
   void UpdateNinePatchLayerImage(const gfx::ImageSkia& image);
@@ -516,6 +553,7 @@ class COMPOSITOR_EXPORT Layer : public LayerAnimationDelegate,
   // empty rectangle if nothing is occluded.
   void UpdateNinePatchOcclusion(const gfx::Rect& occlusion);
 
+ public:
   // Adds |invalid_rect| to the Layer's pending invalid rect and calls
   // ScheduleDraw(). Returns false if the paint request is ignored.
   bool SchedulePaint(const gfx::Rect& invalid_rect);
@@ -587,6 +625,7 @@ class COMPOSITOR_EXPORT Layer : public LayerAnimationDelegate,
 
   // Triggers a call to `FinishAnimationsBeforeSwitchToLayer` and
   // `SwitchToLayer`. If this returns false, then `this` Layer was destroyed.
+  // TODO(crbug.com/522627357): Move all the test-only methods to TestApi class.
   bool SwitchCCLayerForTest();
 
   const cc::Region& damaged_region_for_testing() const {
@@ -628,6 +667,9 @@ class COMPOSITOR_EXPORT Layer : public LayerAnimationDelegate,
   void SetCompositorForTesting(Compositor* compositor) {
     compositor_ = compositor;
   }
+
+ protected:
+  explicit Layer(LayerType type);
 
  private:
   friend class LayerOwner;
@@ -871,6 +913,7 @@ class COMPOSITOR_EXPORT Layer : public LayerAnimationDelegate,
 
   // Ownership of the layer is held through one of the strongly typed layer
   // pointers, depending on which sort of layer this is.
+  // TODO(crbug.com/522627357): Move to subclasses.
   scoped_refptr<cc::PictureLayer> content_layer_;
   scoped_refptr<cc::MirrorLayer> mirror_layer_;
   scoped_refptr<cc::NinePatchLayer> nine_patch_layer_;
@@ -925,6 +968,78 @@ class COMPOSITOR_EXPORT Layer : public LayerAnimationDelegate,
   bool main_side_scrolling_enabled_ = false;
 
   base::WeakPtrFactory<Layer> weak_ptr_factory_{this};
+};
+
+class COMPOSITOR_EXPORT LayerNotDrawn : public Layer {
+ public:
+  static constexpr LayerType kType = LAYER_NOT_DRAWN;
+
+  LayerNotDrawn();
+
+  LayerNotDrawn(const LayerNotDrawn&) = delete;
+  LayerNotDrawn& operator=(const LayerNotDrawn&) = delete;
+
+  ~LayerNotDrawn() override;
+};
+
+class COMPOSITOR_EXPORT LayerTextured : public Layer {
+ public:
+  static constexpr LayerType kType = LAYER_TEXTURED;
+
+  LayerTextured();
+
+  LayerTextured(const LayerTextured&) = delete;
+  LayerTextured& operator=(const LayerTextured&) = delete;
+
+  ~LayerTextured() override;
+};
+
+class COMPOSITOR_EXPORT LayerSolidColor : public Layer {
+ public:
+  static constexpr LayerType kType = LAYER_SOLID_COLOR;
+
+  LayerSolidColor();
+
+  LayerSolidColor(const LayerSolidColor&) = delete;
+  LayerSolidColor& operator=(const LayerSolidColor&) = delete;
+
+  ~LayerSolidColor() override;
+
+  // Sets up this layer to mirror output of |subtree_reflected_layer|, including
+  // its entire hierarchy. |this| should not be a descendant of
+  // |subtree_reflected_layer|. This is achieved by using
+  // cc::MirrorLayer which forces a render surface for |subtree_reflected_layer|
+  // to be able to embed it. This might cause extra GPU memory bandwidth and/or
+  // read/writes which can impact performance negatively.
+  void SetShowReflectedLayerSubtree(Layer* subtree_reflected_layer);
+
+  // Show a solid color instead of delegated or surface contents.
+  void SetShowSolidColorContent();
+
+  // Sets the layer's fill color.
+  void SetColor(SkColor color);
+  SkColor GetTargetColor() const;
+  SkColor background_color() const;
+};
+
+class COMPOSITOR_EXPORT LayerNinePatch : public Layer {
+ public:
+  static constexpr LayerType kType = LAYER_NINE_PATCH;
+
+  LayerNinePatch();
+
+  LayerNinePatch(const LayerNinePatch&) = delete;
+  LayerNinePatch& operator=(const LayerNinePatch&) = delete;
+
+  ~LayerNinePatch() override;
+
+  // Updates the nine patch layer's image, aperture and border.
+  void UpdateNinePatchLayerImage(const gfx::ImageSkia& image);
+  void UpdateNinePatchLayerAperture(const gfx::Rect& aperture_in_dip);
+  void UpdateNinePatchLayerBorder(const gfx::Rect& border);
+  // Updates the area completely occluded by another layer, this can be an
+  // empty rectangle if nothing is occluded.
+  void UpdateNinePatchOcclusion(const gfx::Rect& occlusion);
 };
 
 }  // namespace ui

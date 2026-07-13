@@ -364,7 +364,7 @@ ui::Layer* ProgressIndicator::CreateLayer(ColorResolver color_resolver) {
   CHECK(!layer());
   CHECK(color_resolver);
 
-  auto layer = std::make_unique<ui::Layer>(ui::LAYER_TEXTURED);
+  auto layer = std::make_unique<ui::LayerTextured>();
   layer->set_delegate(this);
   layer->SetFillsBoundsOpaquely(false);
   layer->SetName(kClassName);

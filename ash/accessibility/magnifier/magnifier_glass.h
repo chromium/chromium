@@ -16,11 +16,12 @@
 
 namespace gfx {
 class Point;
-}
+}  // namespace gfx
 
 namespace ui {
-class Layer;
-}
+class LayerSolidColor;
+class LayerTextured;
+}  // namespace ui
 
 namespace ash {
 
@@ -92,9 +93,9 @@ class ASH_EXPORT MagnifierGlass : public aura::WindowObserver,
   std::unique_ptr<BorderRenderer> border_renderer_;
 
   // Draws the background with a zoom filter applied.
-  std::unique_ptr<ui::Layer> zoom_layer_;
+  std::unique_ptr<ui::LayerSolidColor> zoom_layer_;
   // Draws an outline that is overlaid on top of |zoom_layer_|.
-  std::unique_ptr<ui::Layer> border_layer_;
+  std::unique_ptr<ui::LayerTextured> border_layer_;
 };
 
 }  // namespace ash

@@ -58,7 +58,7 @@ class ASH_EXPORT BlurredBackgroundShield : public views::ViewObserver {
   void StackLayerBelowHost();
   void UpdateBackgroundColor();
 
-  ui::Layer background_layer_ = ui::Layer(ui::LAYER_SOLID_COLOR);
+  ui::LayerSolidColor background_layer_;
   const raw_ptr<views::View> host_;
   ui::ColorVariant color_;
   const float blur_sigma_;

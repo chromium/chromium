@@ -31,7 +31,8 @@ namespace {
 
 class TestAnimatibleLayerOwner : public ui::LayerOwner {
  public:
-  TestAnimatibleLayerOwner() : ui::LayerOwner(std::make_unique<ui::Layer>()) {
+  TestAnimatibleLayerOwner()
+      : ui::LayerOwner(std::make_unique<ui::LayerTextured>()) {
     layer()->GetAnimator()->set_disable_timer_for_test(true);
     layer()->GetAnimator()->SetDelegate(&delegate_);
   }

@@ -22,6 +22,10 @@
 #include "ui/compositor/layer_observer.h"
 #include "ui/display/screen_info.h"
 
+namespace ui {
+class LayerSolidColor;
+}  // namespace ui
+
 namespace content {
 
 class BeginFrameSourceIOS;
@@ -183,7 +187,7 @@ class CONTENT_EXPORT BrowserCompositorIOS : public DelegatedFrameHostClient,
   std::unique_ptr<ui::Compositor> compositor_;
 
   std::unique_ptr<DelegatedFrameHost> delegated_frame_host_;
-  std::unique_ptr<ui::Layer> root_layer_;
+  std::unique_ptr<ui::LayerSolidColor> root_layer_;
 
   SkColor background_color_ = SK_ColorRED;
 

@@ -212,7 +212,7 @@ void UnboundedSurfaceWindowMac::InitWindow(const gfx::Rect& bounds_in_dips) {
   recyclable_compositor_ = std::make_unique<ui::RecyclableCompositorMac>(
       content::GetContextFactory());
 
-  root_layer_ = std::make_unique<ui::Layer>(ui::LayerType::LAYER_SOLID_COLOR);
+  root_layer_ = std::make_unique<ui::LayerSolidColor>();
   root_layer_->SetColor(SK_ColorTRANSPARENT);
   root_layer_->SetBounds(gfx::Rect(bounds_in_screen.size()));
 

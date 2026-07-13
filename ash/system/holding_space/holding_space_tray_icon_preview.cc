@@ -219,7 +219,7 @@ class HoldingSpaceTrayIconPreview::ImageLayerOwner
   ui::Layer* CreateLayer() {
     DCHECK(!layer());
 
-    auto layer = std::make_unique<ui::Layer>(ui::LAYER_TEXTURED);
+    auto layer = std::make_unique<ui::LayerTextured>();
     layer->set_delegate(this);
     layer->SetFillsBoundsOpaquely(false);
     layer->SetName(HoldingSpaceTrayIconPreview::kImageLayerName);
@@ -719,7 +719,7 @@ void HoldingSpaceTrayIconPreview::CreateLayer(
   DCHECK(!layer());
   DCHECK(!layer_owner_.OwnsLayer());
 
-  auto new_layer = std::make_unique<ui::Layer>(ui::LAYER_TEXTURED);
+  auto new_layer = std::make_unique<ui::LayerTextured>();
   new_layer->set_delegate(this);
   new_layer->SetFillsBoundsOpaquely(false);
   new_layer->SetName(kClassName);

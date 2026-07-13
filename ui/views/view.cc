@@ -184,7 +184,7 @@ class VIEWS_EXPORT ViewMaskLayer : public ui::LayerDelegate,
   base::ScopedObservation<View, ViewObserver> observed_view_{this};
 
   SkPath path_;
-  ui::Layer layer_;
+  ui::LayerTextured layer_;
 };
 
 ViewMaskLayer::ViewMaskLayer(const SkPath& path, View* observed_view)
@@ -3714,7 +3714,7 @@ void View::CreateLayer(ui::LayerType layer_type) {
     }
   }
 
-  SetLayer(std::make_unique<ui::Layer>(layer_type));
+  SetLayer(ui::Layer::Create(layer_type));
   layer()->set_delegate(this);
   layer()->SetName(std::string(GetClassName()));
 

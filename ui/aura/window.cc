@@ -303,7 +303,7 @@ void Window::Init(ui::LayerType layer_type) {
 
   WindowOcclusionTracker::ScopedPause pause_occlusion_tracking;
 
-  SetLayer(std::make_unique<ui::Layer>(layer_type));
+  SetLayer(ui::Layer::Create(layer_type));
   layer()->SetVisible(false);
   layer()->set_delegate(this);
   UpdateLayerName();

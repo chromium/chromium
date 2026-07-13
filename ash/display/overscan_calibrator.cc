@@ -194,7 +194,7 @@ void OverscanCalibrator::UpdateUILayer() {
   aura::Window* root = Shell::GetRootWindowForDisplayId(display_.id());
   ui::Layer* parent_layer =
       Shell::GetContainer(root, kShellWindowId_OverlayContainer)->layer();
-  calibration_layer_ = std::make_unique<ui::Layer>();
+  calibration_layer_ = std::make_unique<ui::LayerTextured>();
   calibration_layer_->SetOpacity(0.5f);
   calibration_layer_->SetBounds(parent_layer->bounds());
   calibration_layer_->set_delegate(this);

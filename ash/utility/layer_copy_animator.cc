@@ -10,7 +10,6 @@
 #include "ui/base/class_property.h"
 #include "ui/compositor/layer_animation_sequence.h"
 #include "ui/compositor/layer_animator.h"
-#include "ui/compositor/layer_type.h"
 
 DEFINE_UI_CLASS_PROPERTY_TYPE(ash::LayerCopyAnimator*)
 

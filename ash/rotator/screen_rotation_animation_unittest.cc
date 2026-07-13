@@ -79,7 +79,7 @@ TEST_F(ScreenRotationAnimationTest, LayerTransformGetsSetToTargetWhenAborted) {
 TEST_F(ScreenRotationAnimationTest, DestroyLayerDuringAnimation) {
   // Create a ui::Layer directly rather than an aura::Window, as the latter
   // finishes all of its animation before destroying its layer.
-  std::unique_ptr<ui::Layer> layer = std::make_unique<ui::Layer>();
+  auto layer = std::make_unique<ui::LayerTextured>();
 
   ui::Layer* root_layer = GetContext()->layer();
   layer->SetBounds(gfx::Rect(root_layer->bounds().size()));

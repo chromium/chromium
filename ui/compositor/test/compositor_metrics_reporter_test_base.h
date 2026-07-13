@@ -37,7 +37,7 @@ class CompositorMetricsReporterTestBase : public testing::Test {
   void GenerateOneFrame() { compositor()->ScheduleFullRedraw(); }
 
   Compositor* compositor() { return host_->GetCompositor(); }
-  Layer* root_layer() { return &root_; }
+  Layer* root_layer() { return root_.get(); }
 
   // Advances the time by |delta|.
   void Advance(const base::TimeDelta& delta);
@@ -50,7 +50,7 @@ class CompositorMetricsReporterTestBase : public testing::Test {
 
   std::unique_ptr<TestContextFactories> context_factories_;
   std::unique_ptr<TestCompositorHost> host_;
-  Layer root_;
+  std::unique_ptr<Layer> root_;
 
   // A timer to generate continuous compositor frames to trigger throughput
   // data being transferred back.

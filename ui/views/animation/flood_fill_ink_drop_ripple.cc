@@ -54,7 +54,6 @@ FloodFillInkDropRipple::FloodFillInkDropRipple(InkDropHost* ink_drop_host,
       visible_opacity_(visible_opacity),
       use_hide_transform_duration_for_hide_fade_out_(false),
       duration_factor_(1.f),
-      root_layer_(ui::LAYER_NOT_DRAWN),
       circle_layer_delegate_(color,
                              CalculateCircleLayerRadius(
                                  CalculateClipBounds(host_size, clip_insets))) {

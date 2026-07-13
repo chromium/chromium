@@ -157,8 +157,9 @@ void WindowMiniViewHeaderView::ResetRoundedCorners() {
 void WindowMiniViewHeaderView::OnThemeChanged() {
   View::OnThemeChanged();
   CHECK(GetColorProvider());
-  layer()->SetColor(GetColorProvider()->GetColor(cros_tokens::kCrosSysHeader));
-  separator_->layer()->SetColor(
+  layer()->AsSolidColor()->SetColor(
+      GetColorProvider()->GetColor(cros_tokens::kCrosSysHeader));
+  separator_->layer()->AsSolidColor()->SetColor(
       GetColorProvider()->GetColor(kColorAshWindowHeaderStrokeColor));
 }
 

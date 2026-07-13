@@ -243,7 +243,7 @@ TEST_F(WindowReordererTest, ViewWithLayerBeneath) {
 
   View* view_with_layer_beneath =
       contents_view->AddChildView(std::make_unique<View>());
-  ui::Layer layer_beneath;
+  ui::LayerTextured layer_beneath;
   view_with_layer_beneath->AddLayerToRegion(&layer_beneath,
                                             LayerRegion::kBelow);
 

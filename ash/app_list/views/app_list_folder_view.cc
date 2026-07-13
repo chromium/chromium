@@ -145,7 +145,7 @@ class BackgroundAnimation : public AppListFolderView::Animation,
     const SkColor from_color = show_ ? bubble_color : background_color;
     const SkColor to_color = show_ ? background_color : bubble_color;
 
-    animating_view_->layer()->SetColor(from_color);
+    animating_view_->layer()->AsSolidColor()->SetColor(from_color);
     animating_view_->layer()->SetClipRect(from_rect);
     animating_view_->layer()->SetRoundedCornerRadius(
         gfx::RoundedCornersF(from_radius));
@@ -157,7 +157,7 @@ class BackgroundAnimation : public AppListFolderView::Animation,
     settings.SetTransitionDuration(kFolderTransitionDuration);
     settings.SetTweenType(gfx::Tween::FAST_OUT_SLOW_IN);
     settings.AddObserver(this);
-    animating_view_->layer()->SetColor(to_color);
+    animating_view_->layer()->AsSolidColor()->SetColor(to_color);
     animating_view_->layer()->SetClipRect(to_rect);
     animating_view_->layer()->SetRoundedCornerRadius(
         gfx::RoundedCornersF(to_radius));

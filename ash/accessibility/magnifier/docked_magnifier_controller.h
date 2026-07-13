@@ -27,6 +27,7 @@ class WindowTreeHost;
 
 namespace ui {
 class Layer;
+class LayerSolidColor;
 }  // namespace ui
 
 namespace views {
@@ -206,16 +207,16 @@ class ASH_EXPORT DockedMagnifierController
 
   // A solid color layer that shows a dark gray background behind the magnifier
   // layer.
-  std::unique_ptr<ui::Layer> viewport_background_layer_;
+  std::unique_ptr<ui::LayerSolidColor> viewport_background_layer_;
 
   // The layer into which the current display's compositor is reflected and
   // magnified. It is transformed such that only the area around the point of
   // interest shows up in the viewport.
-  std::unique_ptr<ui::Layer> viewport_magnifier_layer_;
+  std::unique_ptr<ui::LayerSolidColor> viewport_magnifier_layer_;
 
   // A solid color layer that shows a black line separating the magnifier
   // viewport from the rest of the display contents.
-  std::unique_ptr<ui::Layer> separator_layer_;
+  std::unique_ptr<ui::LayerSolidColor> separator_layer_;
 
   // The pref service of the currently active user. Can be null in
   // ash_unittests.

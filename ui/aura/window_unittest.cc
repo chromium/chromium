@@ -545,7 +545,7 @@ TEST_F(WindowTest, LayerReleasingAndSettingOfCapturableWindow) {
   EXPECT_TRUE(w1->subtree_capture_id().is_valid());
 
   // Setting a new layer on the window will set the layer's capture ID.
-  auto new_layer = std::make_unique<ui::Layer>();
+  auto new_layer = std::make_unique<ui::LayerTextured>();
   taken_layer->parent()->Add(new_layer.get());
   w1->Reset(std::move(new_layer));
   EXPECT_TRUE(w1->layer()->GetSubtreeCaptureId().is_valid());
@@ -1205,7 +1205,7 @@ TEST_F(WindowLayerManagedByParentTest, SetBounds) {
 
     // Create an intermediate layer and parent it to parent's layer.
     // L_X is at (10, 10) relative to L_P.
-    ui::Layer layer_x(ui::LAYER_NOT_DRAWN);
+    ui::LayerNotDrawn layer_x;
     layer_x.SetBounds(gfx::Rect(10, 10, 100, 100));
     parent.layer()->Add(&layer_x);
 
@@ -1233,11 +1233,11 @@ TEST_F(WindowLayerManagedByParentTest, SetBounds) {
     parent.AddChild(&child);
 
     // L_P -> L_X1 (10, 10) -> L_X2 (20, 20) -> L_C
-    ui::Layer layer_x1(ui::LAYER_NOT_DRAWN);
+    ui::LayerNotDrawn layer_x1;
     layer_x1.SetBounds(gfx::Rect(10, 10, 100, 100));
     parent.layer()->Add(&layer_x1);
 
-    ui::Layer layer_x2(ui::LAYER_NOT_DRAWN);
+    ui::LayerNotDrawn layer_x2;
     layer_x2.SetBounds(gfx::Rect(20, 20, 100, 100));
     layer_x1.Add(&layer_x2);
 
@@ -1267,7 +1267,7 @@ TEST_F(WindowLayerManagedByParentTest, SetBounds) {
     parent.AddChild(&child);
 
     // L_P -> L_X (10, 10) -> L_C
-    ui::Layer layer_x(ui::LAYER_NOT_DRAWN);
+    ui::LayerNotDrawn layer_x;
     layer_x.SetBounds(gfx::Rect(10, 10, 100, 100));
     parent.layer()->Add(&layer_x);
     layer_x.Add(child.layer());
@@ -1314,7 +1314,7 @@ TEST_F(WindowLayerManagedByParentTest, SetBounds) {
     parent.AddChild(&child);
 
     // L_P -> L_X (10, 10) -> L_C
-    ui::Layer layer_x(ui::LAYER_NOT_DRAWN);
+    ui::LayerNotDrawn layer_x;
     layer_x.SetBounds(gfx::Rect(10, 10, 100, 100));
 
     // Apply transform to L_X (translate by 100, 100).
@@ -1346,7 +1346,7 @@ TEST_F(WindowLayerManagedByParentTest, SetBounds) {
     parent.AddChild(&child);
 
     // L_P -> L_X (10, 10) -> L_C
-    ui::Layer layer_x(ui::LAYER_NOT_DRAWN);
+    ui::LayerNotDrawn layer_x;
     layer_x.SetBounds(gfx::Rect(10, 10, 100, 100));
 
     parent.layer()->Add(&layer_x);
@@ -3073,7 +3073,7 @@ TEST_F(WindowTest, RecreateLayer) {
   layer->SetVisible(false);
   layer->SetMasksToBounds(true);
 
-  ui::Layer child_layer;
+  ui::LayerTextured child_layer;
   layer->Add(&child_layer);
 
   std::unique_ptr<ui::Layer> old_layer(w.RecreateLayer());
@@ -4135,7 +4135,7 @@ TEST_F(WindowTest, WindowDestroyCompletesAnimations) {
 
   animator = ui::LayerAnimator::CreateImplicitAnimator();
   animator->AddObserver(&observer);
-  ui::Layer layer;
+  ui::LayerTextured layer;
   layer.SetAnimator(animator.get());
   {
     std::unique_ptr<Window> window(CreateTestWindow(

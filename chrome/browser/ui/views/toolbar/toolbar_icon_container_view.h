@@ -87,7 +87,7 @@ class ToolbarIconContainerView : public views::View,
 
    private:
     raw_ptr<views::View> parent_;
-    ui::Layer layer_;
+    ui::LayerTextured layer_;
   };
 
   class WidgetRestoreObserver;

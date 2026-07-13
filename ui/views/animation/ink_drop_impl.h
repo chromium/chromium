@@ -17,6 +17,10 @@
 #include "ui/views/animation/ink_drop_ripple_observer.h"
 #include "ui/views/views_export.h"
 
+namespace ui {
+class LayerNotDrawn;
+}  // namespace ui
+
 namespace views {
 namespace test {
 class InkDropImplTestApi;
@@ -278,7 +282,7 @@ class VIEWS_EXPORT InkDropImpl : public InkDrop,
   // The root Layer that parents the InkDropRipple layers and the
   // InkDropHighlight layers. The |root_layer_| is the one that is added and
   // removed from the |ink_drop_host_|.
-  std::unique_ptr<ui::Layer> root_layer_;
+  std::unique_ptr<ui::LayerNotDrawn> root_layer_;
 
   // True when the |root_layer_| has been added to the |ink_drop_host_|.
   bool root_layer_added_to_host_ = false;

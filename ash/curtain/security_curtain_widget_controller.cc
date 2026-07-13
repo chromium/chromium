@@ -11,7 +11,6 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/aura/window_observer.h"
 #include "ui/compositor/layer.h"
-#include "ui/compositor/layer_type.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
@@ -25,11 +24,11 @@ std::vector<std::unique_ptr<ui::Layer>> InitWidgetLayers(
   // In rare cases the compositor might fail to allocate the textures.
   // To prevent the widget from being transparent in this case, we add a
   // solid color layer.
-  auto solid_color_layer = std::make_unique<ui::Layer>(ui::LAYER_SOLID_COLOR);
+  auto solid_color_layer = std::make_unique<ui::LayerSolidColor>();
   solid_color_layer->SetColor(SK_ColorLTGRAY);
   root_layer.Add(solid_color_layer.get());
 
-  auto textured_layer = std::make_unique<ui::Layer>(ui::LAYER_TEXTURED);
+  auto textured_layer = std::make_unique<ui::LayerTextured>();
   root_layer.Add(textured_layer.get());
   root_layer.StackAtTop(textured_layer.get());
 

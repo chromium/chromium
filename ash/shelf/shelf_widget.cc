@@ -106,7 +106,7 @@ class ShelfBackgroundLayerDelegate : public ui::LayerOwner,
   ~ShelfBackgroundLayerDelegate() override {}
 
   void Initialize() {
-    auto layer = std::make_unique<ui::Layer>(ui::LAYER_TEXTURED);
+    auto layer = std::make_unique<ui::LayerTextured>();
     layer->SetName("shelf/Background");
     layer->set_delegate(this);
     layer->SetFillsBoundsOpaquely(false);
@@ -348,10 +348,10 @@ class ShelfWidgetDelegateView
   ShelfBackgroundLayerDelegate opaque_background_;
 
   // A background layer used to animate hotseat transitions.
-  ui::Layer animating_background_;
+  ui::LayerSolidColor animating_background_;
 
   // A layer to animate the drag handle during hotseat transitions.
-  ui::Layer animating_drag_handle_;
+  ui::LayerSolidColor animating_drag_handle_;
 
   // A drag handle shown in tablet mode when we are not on the home screen.
   // Owned by the view hierarchy.
@@ -364,10 +364,7 @@ class ShelfWidgetDelegateView
 
 ShelfWidgetDelegateView::ShelfWidgetDelegateView(ShelfWidget* shelf_widget,
                                                  Shelf* shelf)
-    : shelf_widget_(shelf_widget),
-      opaque_background_(shelf, this),
-      animating_background_(ui::LAYER_SOLID_COLOR),
-      animating_drag_handle_(ui::LAYER_SOLID_COLOR) {
+    : shelf_widget_(shelf_widget), opaque_background_(shelf, this) {
   animating_background_.SetName("shelf/AnimatingBackground");
   animating_drag_handle_.SetName("shelf/AnimatingDragHandle");
 

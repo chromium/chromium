@@ -331,18 +331,18 @@ class CursorWindowDelegate : public aura::WindowDelegate {
     cursor_window_ = window;
 
     if (cursor_window_ && use_inverted_cursor_) {
-      invert_layer_ = std::make_unique<ui::Layer>(ui::LAYER_SOLID_COLOR);
+      invert_layer_ = std::make_unique<ui::LayerSolidColor>();
       invert_layer_->SetColor(SK_ColorTRANSPARENT);
       invert_layer_->SetBackgroundInverted(true);
       invert_layer_->SetBounds(gfx::Rect(size_));
 
-      mask_layer_ = std::make_unique<ui::Layer>(ui::LAYER_TEXTURED);
+      mask_layer_ = std::make_unique<ui::LayerTextured>();
       mask_layer_->set_delegate(&mask_delegate_);
       mask_layer_->SetFillsBoundsOpaquely(false);
       mask_layer_->SetBounds(gfx::Rect(size_));
       invert_layer_->SetMaskLayer(mask_layer_.get());
 
-      overlay_layer_ = std::make_unique<ui::Layer>(ui::LAYER_TEXTURED);
+      overlay_layer_ = std::make_unique<ui::LayerTextured>();
       overlay_layer_->set_delegate(&overlay_delegate_);
       overlay_layer_->SetFillsBoundsOpaquely(false);
       overlay_layer_->SetBounds(gfx::Rect(size_));
@@ -383,13 +383,13 @@ class CursorWindowDelegate : public aura::WindowDelegate {
   bool use_inverted_cursor_ = false;
 
   // A layer that inverts what is underneath itself.
-  std::unique_ptr<ui::Layer> invert_layer_;
+  std::unique_ptr<ui::LayerSolidColor> invert_layer_;
 
   // A layer that masks the inversion to a certain shape.
-  std::unique_ptr<ui::Layer> mask_layer_;
+  std::unique_ptr<ui::LayerTextured> mask_layer_;
 
   // An overlay to draw an outline or edges over the masked inversion layer.
-  std::unique_ptr<ui::Layer> overlay_layer_;
+  std::unique_ptr<ui::LayerTextured> overlay_layer_;
 
   CursorLayerDelegate mask_delegate_;
   CursorLayerDelegate overlay_delegate_;

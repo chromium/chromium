@@ -66,7 +66,7 @@ constexpr int kHideDurationMs = 200;
 }  // namespace
 
 HomeButtonTapOverlay::HomeButtonTapOverlay(HomeButton* host_view)
-    : ripple_layer_(std::make_unique<ui::Layer>()),
+    : ripple_layer_(std::make_unique<ui::LayerTextured>()),
       host_view_(host_view),
       circle_layer_delegate_(gfx::kPlaceholderColor,
                              kRippleCircleInitRadiusDip) {

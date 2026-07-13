@@ -72,7 +72,7 @@ void TabletModeMultitaskCueController::MaybeShowCue(
 
   window_ = active_window;
 
-  cue_layer_ = std::make_unique<ui::Layer>(ui::LAYER_SOLID_COLOR);
+  cue_layer_ = std::make_unique<ui::LayerSolidColor>();
   cue_layer_->SetColor(kCueColor);
   cue_layer_->SetRoundedCornerRadius(gfx::RoundedCornersF(kCornerRadius));
   cue_layer_->SetOpacity(0.0f);

@@ -35,7 +35,7 @@ class VIEWS_EXPORT InkDropMask : public ui::LayerDelegate {
   void OnDeviceScaleFactorChanged(float old_device_scale_factor,
                                   float new_device_scale_factor) override;
 
-  ui::Layer layer_;
+  ui::LayerTextured layer_;
 };
 
 // An ink-drop mask that paints a specified path.

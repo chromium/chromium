@@ -78,7 +78,7 @@ std::vector<gfx::RectF> GetHelpBubbleAnchorBoundsInRootWindow(
 class MaskLayerOwner : public ui::LayerOwner, public ui::LayerDelegate {
  public:
   explicit MaskLayerOwner(const aura::Window* root_window)
-      : ui::LayerOwner(std::make_unique<ui::Layer>(ui::LAYER_TEXTURED)),
+      : ui::LayerOwner(std::make_unique<ui::LayerTextured>()),
         root_window_(root_window) {
     Init();
   }
@@ -171,7 +171,7 @@ class WelcomeTourScrim::Scrim : public aura::WindowObserver,
  public:
   explicit Scrim(aura::Window* root_window)
       : root_window_(root_window),
-        layer_owner_(std::make_unique<ui::Layer>(ui::LAYER_SOLID_COLOR)),
+        layer_owner_(std::make_unique<ui::LayerSolidColor>()),
         mask_layer_owner_(root_window) {
     Init();
   }
@@ -258,10 +258,11 @@ class WelcomeTourScrim::Scrim : public aura::WindowObserver,
 
   // Invoked to update color of the scrim layer.
   void UpdateColor() {
-    layer_owner_.layer()->SetColor(GetRootWindowController()
-                                       ->color_provider_source()
-                                       ->GetColorProvider()
-                                       ->GetColor(cros_tokens::kCrosSysScrim));
+    layer_owner_.layer()->AsSolidColor()->SetColor(
+        GetRootWindowController()
+            ->color_provider_source()
+            ->GetColorProvider()
+            ->GetColor(cros_tokens::kCrosSysScrim));
   }
 
   // Pointer to the root window associated with `this` scrim.

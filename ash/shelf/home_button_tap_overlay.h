@@ -15,6 +15,10 @@
 #include "ui/views/animation/ink_drop_painted_layer_delegates.h"
 #include "ui/views/view.h"
 
+namespace ui {
+class LayerTextured;
+}  // namespace ui
+
 namespace ash {
 
 // Overlay to display animations when the home button is tapped (with a touch
@@ -58,7 +62,7 @@ class ASH_EXPORT HomeButtonTapOverlay : public views::View,
     BURSTING
   };
 
-  std::unique_ptr<ui::Layer> ripple_layer_;
+  std::unique_ptr<ui::LayerTextured> ripple_layer_;
 
   raw_ptr<HomeButton> host_view_;
 

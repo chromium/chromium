@@ -2479,10 +2479,8 @@ TEST_F(RenderWidgetHostViewMacTest, TransformToRootWithParentLayer) {
   std::unique_ptr<ui::RecyclableCompositorMac> compositor =
       std::make_unique<ui::RecyclableCompositorMac>(
           ImageTransportFactory::GetInstance()->GetContextFactory());
-  std::unique_ptr<ui::Layer> root_surface_layer =
-      std::make_unique<ui::Layer>(ui::LAYER_SOLID_COLOR);
-  std::unique_ptr<ui::Layer> parent_layer =
-      std::make_unique<ui::Layer>(ui::LAYER_SOLID_COLOR);
+  auto root_surface_layer = std::make_unique<ui::LayerSolidColor>();
+  auto parent_layer = std::make_unique<ui::LayerSolidColor>();
 
   compositor->compositor()->SetRootLayer(root_surface_layer.get());
   root_surface_layer->SetBounds(gfx::Rect(-5, -10, 1000, 2000));

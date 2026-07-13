@@ -43,7 +43,7 @@ MATCHER_P(BackgroundBlur, matcher, "") {
 }
 
 MATCHER_P(BackgroundColor, matcher, "") {
-  return Matches(matcher)(arg->background_color());
+  return Matches(matcher)(arg->AsSolidColor()->background_color());
 }
 
 MATCHER_P(Bounds, matcher, "") {

@@ -55,7 +55,7 @@ ui::LayerType MultiContentsBackgroundView::CalculateLayerType() const {
 void MultiContentsBackgroundView::UpdateSolidLayerColor() {
   CHECK_EQ(layer()->type(), ui::LAYER_SOLID_COLOR);
   if (auto color = ThemedBackground::GetBackgroundColor(this, browser_view_)) {
-    layer()->SetColor(*color);
+    layer()->AsSolidColor()->SetColor(*color);
   }
 }
 

@@ -13,6 +13,10 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/label_button.h"
 
+namespace ui {
+class LayerSolidColor;
+}  // namespace ui
+
 namespace arc::input_overlay {
 
 class Action;
@@ -66,7 +70,7 @@ class EditLabel : public views::LabelButton {
   const Direction direction_index_;
 
   // Layer for edit label pulse animation.
-  std::unique_ptr<ui::Layer> pulse_layer_;
+  std::unique_ptr<ui::LayerSolidColor> pulse_layer_;
 };
 
 }  // namespace arc::input_overlay

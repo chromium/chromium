@@ -42,7 +42,7 @@ class Point;
 }  // namespace gfx
 
 namespace ui {
-class Layer;
+class LayerSolidColor;
 class PresentationTimeRecorder;
 }  // namespace ui
 
@@ -585,11 +585,11 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
   // A black scrim layer that fades in over a window when its width drops under
   // 1/3 of the width of the screen, increasing in opacity as the divider gets
   // closer to the edge of the screen.
-  std::unique_ptr<ui::Layer> black_scrim_layer_;
+  std::unique_ptr<ui::LayerSolidColor> black_scrim_layer_;
 
   // Backdrop layers that may be visible below windows when resizing.
-  std::unique_ptr<ui::Layer> left_resize_backdrop_layer_;
-  std::unique_ptr<ui::Layer> right_resize_backdrop_layer_;
+  std::unique_ptr<ui::LayerSolidColor> left_resize_backdrop_layer_;
+  std::unique_ptr<ui::LayerSolidColor> right_resize_backdrop_layer_;
 
   // The closest position ratio of divider among kFixedPositionRatios,
   // kOneThirdSnapRatio and kTwoThirdSnapRatio based on current

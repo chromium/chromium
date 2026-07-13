@@ -119,7 +119,9 @@ void HotseatTransitionAnimator::DoAnimation(HotseatState old_state,
 
   StopObservingImplicitAnimations();
 
-  shelf_widget_->GetAnimatingBackground()->SetColor(
+  // TODO(b:522627357): Update `GetAnimatingBackground` to return
+  // `ui::LayerSolidColor`.
+  shelf_widget_->GetAnimatingBackground()->AsSolidColor()->SetColor(
       ShelfConfig::Get()->GetMaximizedShelfColor(shelf_widget_));
 
   gfx::Rect drag_handle_bounds(shelf_widget_->GetAnimatingBackground()->size());

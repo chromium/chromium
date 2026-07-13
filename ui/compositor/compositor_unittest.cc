@@ -240,7 +240,7 @@ TEST_F(CompositorTestWithMockedTime, AnimationObserverResetAfterResume) {
 }
 
 TEST_F(CompositorTestWithMessageLoop, ShouldUpdateDisplayProperties) {
-  auto root_layer = std::make_unique<Layer>(ui::LAYER_SOLID_COLOR);
+  auto root_layer = std::make_unique<LayerSolidColor>();
   viz::ParentLocalSurfaceIdAllocator allocator;
   allocator.GenerateId();
   root_layer->SetBounds(gfx::Rect(10, 10));
@@ -387,7 +387,7 @@ TEST_F(CompositorTestWithMessageLoop, MoveThroughputTracker) {
 #if BUILDFLAG(IS_CHROMEOS)
 // ui::CompositorMetricsTracker is only supported on ChromeOS
 TEST_F(CompositorTestWithMessageLoop, CompositorMetricsTracker) {
-  auto root_layer = std::make_unique<Layer>(ui::LAYER_SOLID_COLOR);
+  auto root_layer = std::make_unique<LayerSolidColor>();
   viz::ParentLocalSurfaceIdAllocator allocator;
   allocator.GenerateId();
   root_layer->SetBounds(gfx::Rect(10, 10));
@@ -440,7 +440,7 @@ TEST_F(CompositorTestWithMessageLoop, ThroughputTrackerOutliveCompositor) {
 }
 
 TEST_F(CompositorTestWithMessageLoop, ThroughputTrackerCallbackStateChange) {
-  auto root_layer = std::make_unique<Layer>(ui::LAYER_SOLID_COLOR);
+  auto root_layer = std::make_unique<LayerSolidColor>();
   viz::ParentLocalSurfaceIdAllocator allocator;
   allocator.GenerateId();
   root_layer->SetBounds(gfx::Rect(10, 10));
@@ -486,7 +486,7 @@ TEST_F(CompositorTestWithMessageLoop, ThroughputTrackerCallbackStateChange) {
 }
 
 TEST_F(CompositorTestWithMessageLoop, ThroughputTrackerInvoluntaryReport) {
-  auto root_layer = std::make_unique<Layer>(ui::LAYER_SOLID_COLOR);
+  auto root_layer = std::make_unique<LayerSolidColor>();
   viz::ParentLocalSurfaceIdAllocator allocator;
   allocator.GenerateId();
   root_layer->SetBounds(gfx::Rect(10, 10));
@@ -520,7 +520,7 @@ TEST_F(CompositorTestWithMessageLoop, ThroughputTrackerInvoluntaryReport) {
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 TEST_F(CompositorTestWithMessageLoop, CreateAndReleaseOutputSurface) {
-  std::unique_ptr<Layer> root_layer(new Layer(ui::LAYER_SOLID_COLOR));
+  std::unique_ptr<Layer> root_layer = std::make_unique<LayerSolidColor>();
   viz::ParentLocalSurfaceIdAllocator allocator;
   allocator.GenerateId();
   root_layer->SetBounds(gfx::Rect(10, 10));
@@ -551,7 +551,7 @@ class LayerDelegateThatAddsDuringUpdateVisualState : public LayerDelegate {
 
   // LayerDelegate:
   void UpdateVisualState() override {
-    added_layers_.push_back(std::make_unique<Layer>(ui::LAYER_SOLID_COLOR));
+    added_layers_.push_back(std::make_unique<LayerSolidColor>());
     parent_->Add(added_layers_.back().get());
     update_visual_state_called_ = true;
   }
@@ -566,12 +566,9 @@ class LayerDelegateThatAddsDuringUpdateVisualState : public LayerDelegate {
 };
 
 TEST_F(CompositorTestWithMessageLoop, AddLayerDuringUpdateVisualState) {
-  std::unique_ptr<Layer> root_layer =
-      std::make_unique<Layer>(ui::LAYER_SOLID_COLOR);
-  std::unique_ptr<Layer> child_layer =
-      std::make_unique<Layer>(ui::LAYER_TEXTURED);
-  std::unique_ptr<Layer> child_layer2 =
-      std::make_unique<Layer>(ui::LAYER_SOLID_COLOR);
+  auto root_layer = std::make_unique<LayerSolidColor>();
+  auto child_layer = std::make_unique<LayerTextured>();
+  auto child_layer2 = std::make_unique<LayerSolidColor>();
   LayerDelegateThatAddsDuringUpdateVisualState child_layer_delegate(
       root_layer.get());
   child_layer->set_delegate(&child_layer_delegate);
@@ -648,7 +645,7 @@ TEST_F(CompositorPropertyTreeDelegateTest, Draw) {
   raw_ptr<CompositorPropertyTreeDelegate> delegate =
       compositor()->property_tree_delegate();
 
-  auto root_layer = std::make_unique<Layer>(ui::LAYER_SOLID_COLOR);
+  auto root_layer = std::make_unique<LayerSolidColor>();
   viz::ParentLocalSurfaceIdAllocator allocator;
   allocator.GenerateId();
   root_layer->SetBounds(gfx::Rect(10, 10));

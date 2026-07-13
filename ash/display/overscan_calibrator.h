@@ -15,8 +15,8 @@
 #include "ui/gfx/geometry/rect.h"
 
 namespace ui {
-class Layer;
-}
+class LayerTextured;
+}  // namespace ui
 
 namespace ash {
 
@@ -71,7 +71,7 @@ class ASH_EXPORT OverscanCalibrator : public ui::LayerDelegate,
   bool committed_;
 
   // The visualization layer for the current calibration region.
-  std::unique_ptr<ui::Layer> calibration_layer_;
+  std::unique_ptr<ui::LayerTextured> calibration_layer_;
 
   // Register for DisplayObserver callbacks.
   display::ScopedDisplayObserver display_observer_{this};

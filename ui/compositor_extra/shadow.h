@@ -37,9 +37,15 @@ class Shadow : public ui::ImplicitAnimationObserver, public ui::LayerOwner {
 
   // Exposed to allow setting animation parameters for bounds and opacity
   // animations.
-  ui::Layer* shadow_layer() { return shadow_layer_owner_.layer(); }
+  ui::LayerNinePatch* shadow_layer() {
+    ui::Layer* layer = shadow_layer_owner_.layer();
+    return layer ? layer->AsNinePatch() : nullptr;
+  }
 
-  ui::Layer* fading_layer() { return fading_layer_owner_.layer(); }
+  ui::LayerNinePatch* fading_layer() {
+    ui::Layer* layer = fading_layer_owner_.layer();
+    return layer ? layer->AsNinePatch() : nullptr;
+  }
 
   const gfx::Rect& content_bounds() const { return content_bounds_; }
   int desired_elevation() const { return desired_elevation_; }

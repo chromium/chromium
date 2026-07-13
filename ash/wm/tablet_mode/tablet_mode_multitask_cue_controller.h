@@ -105,7 +105,7 @@ class ASH_EXPORT TabletModeMultitaskCueController
   chromeos::MultitaskMenuNudgeController nudge_controller_;
 
   // The solid color layer that represents the cue.
-  std::unique_ptr<ui::Layer> cue_layer_;
+  std::unique_ptr<ui::LayerSolidColor> cue_layer_;
 
   // Observes for window destruction or bounds changes.
   base::ScopedObservation<aura::Window, aura::WindowObserver>

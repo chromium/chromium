@@ -65,7 +65,7 @@ class SystemShadowOnTextureLayer : public SystemShadow,
 
   SystemShadow::Type type_;
   // The texture layer on which the shadow is painted.
-  ui::Layer layer_;
+  ui::LayerTextured layer_;
   // Shadow values generated according to the shadow type.
   gfx::ShadowValues shadow_values_;
   // The bounds of the content area.

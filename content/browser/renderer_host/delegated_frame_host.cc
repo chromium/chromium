@@ -67,8 +67,7 @@ DelegatedFrameHost::DelegatedFrameHost(const viz::FrameSinkId& frame_sink_id,
   CHECK(host_frame_sink_manager_);
   frame_evictor_->SetVisible(client_->DelegatedFrameHostIsVisible());
 
-  stale_content_layer_ =
-      std::make_unique<ui::Layer>(ui::LayerType::LAYER_SOLID_COLOR);
+  stale_content_layer_ = std::make_unique<ui::LayerSolidColor>();
   stale_content_layer_->SetVisible(false);
   stale_content_layer_->SetColor(SK_ColorTRANSPARENT);
 }
@@ -706,7 +705,9 @@ void DelegatedFrameHost::TakeFallbackContentFrom(DelegatedFrameHost* other) {
   if (!HasPrimarySurface()) {
     client_->DelegatedFrameHostGetLayer()->SetShowSurface(
         desired_fallback, other->client_->DelegatedFrameHostGetLayer()->size(),
-        other->client_->DelegatedFrameHostGetLayer()->background_color(),
+        other->client_->DelegatedFrameHostGetLayer()
+            ->AsSolidColor()
+            ->GetTargetColor(),
         cc::DeadlinePolicy::UseDefaultDeadline(),
         false /* stretch_content_to_fill_bounds */);
   }

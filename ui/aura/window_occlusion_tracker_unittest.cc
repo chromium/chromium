@@ -146,7 +146,7 @@ class WindowOcclusionTrackerTest : public test::AuraTestBase {
     window->SetType(client::WINDOW_TYPE_NORMAL);
     window->Init(layer_type);
     if (layer_type == ui::LAYER_SOLID_COLOR)
-      window->layer()->SetColor(SK_ColorBLACK);
+      window->layer()->AsSolidColor()->SetColor(SK_ColorBLACK);
     window->SetTransparent(transparent);
     window->SetBounds(bounds);
     window->Show();
@@ -174,7 +174,7 @@ class WindowOcclusionTrackerTest : public test::AuraTestBase {
     Window* window = new Window(nullptr);
     window->SetType(client::WINDOW_TYPE_NORMAL);
     window->Init(ui::LAYER_SOLID_COLOR);
-    window->layer()->SetColor(SK_ColorBLACK);
+    window->layer()->AsSolidColor()->SetColor(SK_ColorBLACK);
     window->SetBounds(bounds);
     root_window()->AddChild(window);
     window->Show();
@@ -490,7 +490,8 @@ class WindowOcclusionTrackerOpacityTest
 
   void SetOpacity(aura::Window* window, float opacity) {
     if (use_solid_color_layer_)
-      window->layer()->SetColor(SkColorSetARGB(255 * opacity, 255, 255, 255));
+      window->layer()->AsSolidColor()->SetColor(
+          SkColorSetARGB(255 * opacity, 255, 255, 255));
     else
       window->layer()->SetOpacity(opacity);
   }
@@ -3095,7 +3096,8 @@ TEST_F(WindowOcclusionTrackerTest,
 
   // Semi-opaque color on the window_b should make window a visible.
   delegate_a->set_expectation(Window::OcclusionState::VISIBLE, SkRegion());
-  window_b->layer()->SetColor(SkColorSetARGB(127, 255, 255, 255));
+  window_b->layer()->AsSolidColor()->SetColor(
+      SkColorSetARGB(127, 255, 255, 255));
   EXPECT_FALSE(delegate_a->is_expecting_call());
 
   // Creating opaque layer on top of a half-opaque solid_color layer
@@ -3284,7 +3286,7 @@ TEST_F(WindowOcclusionTrackerTest,
   child->SetBounds({10, 10, 50, 50});
 
   // Create intermediate layer.
-  auto intermediate_layer = std::make_unique<ui::Layer>(ui::LAYER_NOT_DRAWN);
+  auto intermediate_layer = std::make_unique<ui::LayerNotDrawn>();
   parent->layer()->Add(intermediate_layer.get());
 
   // Add child's layer to intermediate layer.

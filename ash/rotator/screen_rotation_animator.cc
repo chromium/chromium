@@ -29,7 +29,6 @@
 #include "ui/compositor/layer_animator.h"
 #include "ui/compositor/layer_owner.h"
 #include "ui/compositor/layer_tree_owner.h"
-#include "ui/compositor/layer_type.h"
 #include "ui/display/display.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/manager/managed_display_info.h"
@@ -146,8 +145,7 @@ bool RootWindowChangedForDisplayId(aura::Window* root_window,
 // Creates a mask layer and returns the |mask_layer_tree_owner|.
 std::unique_ptr<ui::LayerTreeOwner> CreateMaskLayerTreeOwner(
     const gfx::Rect& rect) {
-  std::unique_ptr<ui::Layer> mask_layer =
-      std::make_unique<ui::Layer>(ui::LAYER_SOLID_COLOR);
+  auto mask_layer = std::make_unique<ui::LayerSolidColor>();
   mask_layer->SetBounds(rect);
   mask_layer->SetColor(SK_ColorBLACK);
   return std::make_unique<ui::LayerTreeOwner>(std::move(mask_layer));

@@ -271,7 +271,7 @@ bool UnboundedSurfaceWindowAura::InitWindow(const gfx::Rect& bounds_in_dips) {
   // transparent background later, if security issues arise. For example, this
   // allows content to put up a fully transparent (invisible) overlay over site
   // content and steal clicks/events.
-  window_->layer()->SetColor(SK_ColorTRANSPARENT);
+  window_->layer()->AsSolidColor()->SetColor(SK_ColorTRANSPARENT);
   window_->SetEmbedFrameSinkId(frame_sink_id_);
 
   GetHostFrameSinkManager()->RegisterFrameSinkId(
@@ -311,8 +311,7 @@ bool UnboundedSurfaceWindowAura::InitWindow(const gfx::Rect& bounds_in_dips) {
 
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kUnboundedWindowDebug)) {
-    debug_border_layer_ =
-        std::make_unique<ui::Layer>(ui::LayerType::LAYER_TEXTURED);
+    debug_border_layer_ = std::make_unique<ui::LayerTextured>();
     debug_border_delegate_ =
         std::make_unique<DebugBorderDelegate>(debug_border_layer_.get());
     debug_border_layer_->set_delegate(debug_border_delegate_.get());

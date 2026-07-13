@@ -1782,7 +1782,7 @@ TEST(LayerAnimatorTest, ImplicitAnimationObservers) {
 // Tests that caching render surface added to a scoped settings object is still
 // reset when the object goes out of scope.
 TEST(LayerAnimatorTest, CacheRenderSurface) {
-  ui::Layer layer;
+  ui::LayerTextured layer;
   scoped_refptr<LayerAnimator> animator(layer.GetAnimator());
   animator->set_disable_timer_for_test(true);
   TestImplicitAnimationObserver observer(false);
@@ -1812,7 +1812,7 @@ TEST(LayerAnimatorTest, CacheRenderSurface) {
 // crash when the layer was destroyed.
 TEST(LayerAnimatorTest, CacheRenderSurfaceOnWillBeDestroyedLayer) {
   // Case 1: layer is a pointer.
-  auto layer1 = std::make_unique<Layer>();
+  auto layer1 = std::make_unique<LayerTextured>();
   scoped_refptr<LayerAnimator> animator(layer1->GetAnimator());
   animator->set_disable_timer_for_test(true);
   TestImplicitAnimationObserver observer1(false);
@@ -1835,7 +1835,7 @@ TEST(LayerAnimatorTest, CacheRenderSurfaceOnWillBeDestroyedLayer) {
   // Case 2: layer is a local variable.
   TestImplicitAnimationObserver observer2(false);
   {
-    ui::Layer layer2;
+    ui::LayerTextured layer2;
     animator = layer2.GetAnimator();
 
     EXPECT_FALSE(observer2.animations_completed());
@@ -1852,7 +1852,7 @@ TEST(LayerAnimatorTest, CacheRenderSurfaceOnWillBeDestroyedLayer) {
   EXPECT_TRUE(observer2.animations_completed());
 
   // Case 3: Animation finishes before layer is destroyed.
-  ui::Layer layer3;
+  ui::LayerTextured layer3;
   animator = layer3.GetAnimator();
   TestImplicitAnimationObserver observer3(false);
 
@@ -1874,7 +1874,7 @@ TEST(LayerAnimatorTest, CacheRenderSurfaceOnWillBeDestroyedLayer) {
 // Tests that caching render surface added to two scoped settings objects is
 // still reset when animation finishes.
 TEST(LayerAnimatorTest, CacheRenderSurfaceInTwoAnimations) {
-  ui::Layer layer;
+  ui::LayerTextured layer;
   scoped_refptr<LayerAnimator> animator(layer.GetAnimator());
   animator->set_disable_timer_for_test(true);
 
@@ -1953,7 +1953,7 @@ TEST(LayerAnimatorTest, CacheRenderSurfaceInTwoAnimations) {
 // Tests that deferred painting request added to a scoped settings object is
 // still reset when the object goes out of scope.
 TEST(LayerAnimatorTest, DeferredPaint) {
-  ui::Layer layer;
+  ui::LayerTextured layer;
   scoped_refptr<LayerAnimator> animator(layer.GetAnimator());
   animator->set_disable_timer_for_test(true);
   TestImplicitAnimationObserver observer(false);
@@ -1982,9 +1982,9 @@ TEST(LayerAnimatorTest, DeferredPaint) {
 // Tests that deferred painting request is added to child layers and will be
 // removed even the child layer was reparented.
 TEST(LayerAnimatorTest, DeferredPaintOnChildLayer) {
-  ui::Layer layer;
-  ui::Layer child_layer1;
-  ui::Layer child_layer2;
+  ui::LayerTextured layer;
+  ui::LayerTextured child_layer1;
+  ui::LayerTextured child_layer2;
   layer.Add(&child_layer1);
   layer.Add(&child_layer2);
 
@@ -2011,7 +2011,7 @@ TEST(LayerAnimatorTest, DeferredPaintOnChildLayer) {
   EXPECT_TRUE(child_layer2.IsPaintDeferredForTesting());
 
   // Reparent child_layer2.
-  ui::Layer new_parent_layer;
+  ui::LayerTextured new_parent_layer;
   new_parent_layer.Add(&child_layer2);
   EXPECT_TRUE(child_layer2.IsPaintDeferredForTesting());
 
@@ -2028,7 +2028,7 @@ TEST(LayerAnimatorTest, DeferredPaintOnChildLayer) {
 // Tests that deffered paint request added to two scoped settings objects is
 // still reset when animation finishes.
 TEST(LayerAnimatorTest, DeferredPaintInTwoAnimations) {
-  ui::Layer layer;
+  ui::LayerTextured layer;
   scoped_refptr<LayerAnimator> animator(layer.GetAnimator());
   animator->set_disable_timer_for_test(true);
 
@@ -2108,7 +2108,7 @@ TEST(LayerAnimatorTest, DeferredPaintInTwoAnimations) {
 // not crash when the layer was destroyed.
 TEST(LayerAnimatorTest, DeferredPaintOnWillBeDestroyedLayer) {
   // Case 1: layer is a pointer.
-  auto layer1 = std::make_unique<Layer>();
+  auto layer1 = std::make_unique<LayerTextured>();
   scoped_refptr<LayerAnimator> animator(layer1->GetAnimator());
   animator->set_disable_timer_for_test(true);
   TestImplicitAnimationObserver observer1(false);
@@ -2131,7 +2131,7 @@ TEST(LayerAnimatorTest, DeferredPaintOnWillBeDestroyedLayer) {
   // Case 2: layer is a local variable.
   TestImplicitAnimationObserver observer2(false);
   {
-    ui::Layer layer2;
+    ui::LayerTextured layer2;
     animator = layer2.GetAnimator();
 
     EXPECT_FALSE(observer2.animations_completed());
@@ -2148,7 +2148,7 @@ TEST(LayerAnimatorTest, DeferredPaintOnWillBeDestroyedLayer) {
   EXPECT_TRUE(observer2.animations_completed());
 
   // Case 3: Animation finishes before layer is destroyed.
-  ui::Layer layer3;
+  ui::LayerTextured layer3;
   animator = layer3.GetAnimator();
   TestImplicitAnimationObserver observer3(false);
 
@@ -2170,7 +2170,7 @@ TEST(LayerAnimatorTest, DeferredPaintOnWillBeDestroyedLayer) {
 // Tests that trilinear filtering request added to a scoped settings object is
 // still reset when the object goes out of scope.
 TEST(LayerAnimatorTest, TrilinearFiltering) {
-  ui::Layer layer;
+  ui::LayerTextured layer;
   scoped_refptr<LayerAnimator> animator(layer.GetAnimator());
   animator->set_disable_timer_for_test(true);
   TestImplicitAnimationObserver observer(false);
@@ -2200,7 +2200,7 @@ TEST(LayerAnimatorTest, TrilinearFiltering) {
 // not crash when the layer was destroyed.
 TEST(LayerAnimatorTest, TrilinearFilteringOnWillBeDestroyedLayer) {
   // Case 1: layer is a pointer.
-  auto layer1 = std::make_unique<Layer>();
+  auto layer1 = std::make_unique<LayerTextured>();
   scoped_refptr<LayerAnimator> animator(layer1->GetAnimator());
   animator->set_disable_timer_for_test(true);
   TestImplicitAnimationObserver observer1(false);
@@ -2223,7 +2223,7 @@ TEST(LayerAnimatorTest, TrilinearFilteringOnWillBeDestroyedLayer) {
   // Case 2: layer is a local variable.
   TestImplicitAnimationObserver observer2(false);
   {
-    ui::Layer layer2;
+    ui::LayerTextured layer2;
     animator = layer2.GetAnimator();
 
     EXPECT_FALSE(observer2.animations_completed());
@@ -2240,7 +2240,7 @@ TEST(LayerAnimatorTest, TrilinearFilteringOnWillBeDestroyedLayer) {
   EXPECT_TRUE(observer2.animations_completed());
 
   // Case 3: Animation finishes before layer is destroyed.
-  ui::Layer layer3;
+  ui::LayerTextured layer3;
   animator = layer3.GetAnimator();
   TestImplicitAnimationObserver observer3(false);
 
@@ -2262,7 +2262,7 @@ TEST(LayerAnimatorTest, TrilinearFilteringOnWillBeDestroyedLayer) {
 // Tests that trilinear filtering request added to two scoped settings objects
 // is still reset when animation finishes.
 TEST(LayerAnimatorTest, TrilinearFilteringInTwoAnimations) {
-  ui::Layer layer;
+  ui::LayerTextured layer;
   scoped_refptr<LayerAnimator> animator(layer.GetAnimator());
   animator->set_disable_timer_for_test(true);
 
@@ -3204,7 +3204,7 @@ class CollectionLayerAnimationDelegate : public TestLayerAnimationDelegate {
 };
 
 TEST(LayerAnimatorTest, LayerAnimatorCollectionTickTime) {
-  Layer layer;
+  LayerTextured layer;
   LayerAnimator* animator = layer.GetAnimator();
   CollectionLayerAnimationDelegate delegate;
   animator->SetDelegate(&delegate);
@@ -3257,7 +3257,7 @@ TEST(LayerAnimatorTest,
 }
 
 TEST(LayerAnimatorTest, AnimatorStartedCorrectly) {
-  Layer layer;
+  LayerTextured layer;
   LayerAnimatorTestController test_controller(layer.GetAnimator());
   LayerAnimator* animator = test_controller.animator();
   ASSERT_FALSE(animator->is_started_);
@@ -3278,7 +3278,7 @@ TEST(LayerAnimatorTest, AnimatorStartedCorrectly) {
 }
 
 TEST(LayerAnimatorTest, AnimatorRemovedFromCollectionWhenLayerIsDestroyed) {
-  std::unique_ptr<Layer> layer(new Layer(LAYER_TEXTURED));
+  std::unique_ptr<Layer> layer(std::make_unique<LayerTextured>());
   LayerAnimatorTestController test_controller(layer->GetAnimator());
   scoped_refptr<LayerAnimator> animator = test_controller.animator();
   CollectionLayerAnimationDelegate collection_delegate;
@@ -3312,13 +3312,13 @@ TEST(LayerAnimatorTest, LayerMovedBetweenCompositorsDuringAnimation) {
   host_2->Show();
 
   Compositor* compositor_1 = host_1->GetCompositor();
-  Layer root_1;
+  LayerTextured root_1;
   compositor_1->SetRootLayer(&root_1);
   cc::MutatorHost* mutator_host_1 =
       root_1.cc_layer_for_testing()->layer_tree_host()->mutator_host();
 
   Compositor* compositor_2 = host_2->GetCompositor();
-  Layer root_2;
+  LayerTextured root_2;
   compositor_2->SetRootLayer(&root_2);
   cc::MutatorHost* mutator_host_2 =
       root_2.cc_layer_for_testing()->layer_tree_host()->mutator_host();
@@ -3327,7 +3327,7 @@ TEST(LayerAnimatorTest, LayerMovedBetweenCompositorsDuringAnimation) {
   EXPECT_FALSE(compositor_1->layer_animator_collection()->HasActiveAnimators());
   EXPECT_FALSE(compositor_2->layer_animator_collection()->HasActiveAnimators());
 
-  Layer layer;
+  LayerTextured layer;
   layer.SetOpacity(0.5f);
   root_1.Add(&layer);
   EXPECT_FALSE(
@@ -3372,10 +3372,10 @@ TEST(LayerAnimatorTest, ThreadedAnimationSurvivesIfLayerRemovedAdded) {
 
   Compositor* compositor = host->GetCompositor();
 
-  Layer root;
+  LayerTextured root;
   compositor->SetRootLayer(&root);
 
-  Layer layer;
+  LayerTextured layer;
   layer.SetOpacity(0.5f);
   root.Add(&layer);
 
@@ -3403,7 +3403,7 @@ TEST(LayerAnimatorTest, ThreadedAnimationSurvivesIfLayerRemovedAdded) {
 class LayerOwnerAnimationObserver : public LayerAnimationObserver {
  public:
   explicit LayerOwnerAnimationObserver(LayerAnimator* animator)
-      : animator_layer_(new Layer(LAYER_TEXTURED)) {
+      : animator_layer_(std::make_unique<LayerTextured>()) {
     animator_layer_->SetAnimator(animator);
   }
 
@@ -3489,7 +3489,7 @@ TEST(LayerAnimatorTest,
 
 TEST(LayerAnimatorTest,
      SetPropertyWithObserverThatDeletesLayerOnImplicitAnimationCompletion) {
-  LayerOwner layer_owner(std::make_unique<Layer>(LAYER_SOLID_COLOR));
+  LayerOwner layer_owner(std::make_unique<LayerSolidColor>());
 
   // Create observer which deletes layer on implicit animation completion.
   TestImplicitAnimationObserver layer_animation_observer(true);

@@ -70,7 +70,7 @@ class HighlightBorderOverlay : public aura::WindowObserver,
   // Update the nine patch layer with current highlight border settings.
   void UpdateNinePatchLayer();
 
-  ui::Layer layer_;
+  ui::LayerNinePatch layer_;
   raw_ptr<views::Widget> widget_;
   raw_ptr<aura::Window> window_;
   int rounded_corner_radius_ = 0;

@@ -620,7 +620,7 @@ size_t Textfield::GetCursorPosition() const {
 
 void Textfield::SetColor(SkColor value) {
   GetRenderText()->SetColor(value);
-  cursor_view_->layer()->SetColor(value);
+  cursor_view_->layer()->AsSolidColor()->SetColor(value);
   OnPropertyChanged(
       ui::metadata::MakeUniquePropertyKey(&model_, kTextfieldTextColor),
       PropertyEffects::kPaint);
@@ -1266,7 +1266,7 @@ void Textfield::OnThemeChanged() {
   render_text->set_selection_color(GetSelectionTextColor());
   render_text->set_selection_background_focused_color(
       GetSelectionBackgroundColor());
-  cursor_view_->layer()->SetColor(GetTextColor());
+  cursor_view_->layer()->AsSolidColor()->SetColor(GetTextColor());
 }
 
 ////////////////////////////////////////////////////////////////////////////////

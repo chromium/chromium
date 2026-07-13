@@ -117,8 +117,7 @@ int GetCornerRadius(const aura::Window* window,
 HighlightBorderOverlay::HighlightBorderOverlay(
     views::Widget* widget,
     std::unique_ptr<HighlightBorderOverlayDelegate> delegate)
-    : layer_(ui::LAYER_NINE_PATCH),
-      widget_(widget),
+    : widget_(widget),
       window_(widget->GetNativeWindow()),
       delegate_(std::move(delegate)) {
   rounded_corner_radius_ = GetCornerRadius(window_, delegate_.get());

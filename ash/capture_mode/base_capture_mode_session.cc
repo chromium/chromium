@@ -30,7 +30,7 @@ BaseCaptureModeSession::BaseCaptureModeSession(
 BaseCaptureModeSession::~BaseCaptureModeSession() = default;
 
 void BaseCaptureModeSession::Initialize() {
-  SetLayer(std::make_unique<ui::Layer>(ui::LAYER_TEXTURED));
+  SetLayer(std::make_unique<ui::LayerTextured>());
   layer()->SetFillsBoundsOpaquely(false);
 
   InitInternal();

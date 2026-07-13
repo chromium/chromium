@@ -971,7 +971,7 @@ TEST_F(IconLabelBubbleViewTest, LayerRecreationOnInkDropRegionsChange) {
 
   // Simulate hover events which trigger AddLayerToRegion /
   // RemoveLayerFromRegions.
-  ui::Layer dummy_layer;
+  ui::LayerTextured dummy_layer;
   view()->AddLayerToRegion(&dummy_layer, views::LayerRegion::kAbove);
   view()->RemoveLayerFromRegions(&dummy_layer);
 

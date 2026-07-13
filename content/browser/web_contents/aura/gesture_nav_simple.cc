@@ -195,10 +195,10 @@ class Affordance : public ui::LayerDelegate, public gfx::AnimationDelegate {
 
   // Root layer of the affordance. This is used to clip the affordance to the
   // content bounds.
-  ui::Layer root_layer_;
+  ui::LayerNotDrawn root_layer_;
 
   // Layer that actually paints the affordance.
-  ui::Layer painted_layer_;
+  ui::LayerTextured painted_layer_;
 
   // Image icon of the arrow inside the affordance.
   raw_ptr<const gfx::VectorIcon> arrow_icon_ = nullptr;
@@ -216,11 +216,7 @@ Affordance::Affordance(GestureNavSimple* owner,
                        OverscrollMode mode,
                        const gfx::Rect& content_bounds,
                        float max_drag_progress)
-    : owner_(owner),
-      mode_(mode),
-      max_drag_progress_(max_drag_progress),
-      root_layer_(ui::LAYER_NOT_DRAWN),
-      painted_layer_(ui::LAYER_TEXTURED) {
+    : owner_(owner), mode_(mode), max_drag_progress_(max_drag_progress) {
   DCHECK(mode_ == OVERSCROLL_EAST || mode_ == OVERSCROLL_WEST ||
          mode_ == OVERSCROLL_SOUTH);
   if (mode_ == OVERSCROLL_EAST) {

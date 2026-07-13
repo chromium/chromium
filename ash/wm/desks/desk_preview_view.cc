@@ -41,7 +41,6 @@
 #include "ui/color/color_provider.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_tree_owner.h"
-#include "ui/compositor/layer_type.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/geometry/skia_conversions.h"
@@ -491,8 +490,7 @@ void DeskPreviewView::RecreateDeskContentsMirrorLayers() {
   }
 
   // Mirror the layer tree of the desk container.
-  auto mirrored_content_root_layer =
-      std::make_unique<ui::Layer>(ui::LAYER_NOT_DRAWN);
+  auto mirrored_content_root_layer = std::make_unique<ui::LayerNotDrawn>();
   mirrored_content_root_layer->SetName("mirrored contents root layer");
   base::flat_map<ui::Layer*, LayerData> layers_data;
   for (const auto& window : parent_windows_to_mirror) {
@@ -671,7 +669,7 @@ void DeskPreviewView::OnGestureEvent(ui::GestureEvent* event) {
 void DeskPreviewView::OnThemeChanged() {
   views::Button::OnThemeChanged();
 
-  highlight_overlay_->layer()->SetColor(SkColorSetA(
+  highlight_overlay_->layer()->AsSolidColor()->SetColor(SkColorSetA(
       GetColorProvider()->GetColor(ui::kColorHighlightBorderHighlight1),
       kHighlightTransparency));
 }

@@ -10,8 +10,7 @@
 
 namespace views {
 
-InkDropMask::InkDropMask(const gfx::Size& layer_size)
-    : layer_(ui::LAYER_TEXTURED) {
+InkDropMask::InkDropMask(const gfx::Size& layer_size) {
   layer_.set_delegate(this);
   layer_.SetBounds(gfx::Rect(layer_size));
   layer_.SetFillsBoundsOpaquely(false);

@@ -294,12 +294,12 @@ const Layer* TouchSelectionMagnifierAura::GetMagnifierParentForTesting() const {
 void TouchSelectionMagnifierAura::CreateMagnifierLayer() {
   // Create the magnifier layer, which will parent the zoom layer and border
   // layer.
-  magnifier_layer_ = std::make_unique<Layer>(LAYER_NOT_DRAWN);
+  magnifier_layer_ = std::make_unique<LayerNotDrawn>();
   magnifier_layer_->SetName("TouchSelectionMagnifierAura/MagnifierLayer");
   magnifier_layer_->SetFillsBoundsOpaquely(false);
 
   // Create the zoom layer, which will show the zoomed contents.
-  zoom_layer_ = std::make_unique<Layer>(LAYER_SOLID_COLOR);
+  zoom_layer_ = std::make_unique<LayerSolidColor>();
   zoom_layer_->SetName("TouchSelectionMagnifierAura/ZoomLayer");
   zoom_layer_->SetBackgroundZoom(kMagnifierScale, 0);
 
@@ -315,7 +315,7 @@ void TouchSelectionMagnifierAura::CreateMagnifierLayer() {
   // Create the border layer. This is stacked above the zoom layer so that the
   // magnifier border and shadows aren't shown in the zoomed contents drawn by
   // the zoom layer.
-  border_layer_ = std::make_unique<Layer>();
+  border_layer_ = std::make_unique<LayerTextured>();
   border_layer_->SetName("TouchSelectionMagnifierAura/BorderLayer");
 
   border_layer_->SetBounds(gfx::Rect(GetBorderLayerSize()));

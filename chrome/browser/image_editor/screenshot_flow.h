@@ -38,7 +38,7 @@ class Canvas;
 
 namespace ui {
 class EventTarget;
-class Layer;
+class LayerTextured;
 }  // namespace ui
 
 namespace image_editor {
@@ -249,7 +249,7 @@ class ScreenshotFlow : public content::WebContentsObserver,
 
   // Our top-level layer that is superimposed over the browser window's root
   // layer while screen capture mode is active.
-  std::unique_ptr<ui::Layer> screen_capture_layer_;
+  std::unique_ptr<ui::LayerTextured> screen_capture_layer_;
 
   base::WeakPtrFactory<ScreenshotFlow> weak_factory_{this};
 };

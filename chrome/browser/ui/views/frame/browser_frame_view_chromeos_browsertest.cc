@@ -2034,7 +2034,7 @@ IN_PROC_BROWSER_TEST_P(BrowserFrameViewAshThemeChangeTest, ThemeChange) {
   // Verify background color is immediately resolved from the app controller
   // despite the fact that the web contents background color hasn't loaded
   // yet.
-  EXPECT_EQ(contents_web_view->layer()->background_color(),
+  EXPECT_EQ(contents_web_view->layer()->AsSolidColor()->background_color(),
             web_app::AppBrowserController::From(browser)
                 ->GetBackgroundColor()
                 .value());
@@ -2045,11 +2045,11 @@ IN_PROC_BROWSER_TEST_P(BrowserFrameViewAshThemeChangeTest, ThemeChange) {
   {
     content::BackgroundColorChangeWaiter waiter(web_contents);
     waiter.Wait();
-    EXPECT_EQ(contents_web_view->layer()->background_color(),
+    EXPECT_EQ(contents_web_view->layer()->AsSolidColor()->background_color(),
               web_app::AppBrowserController::From(browser)
                   ->GetBackgroundColor()
                   .value());
-    EXPECT_EQ(contents_web_view->layer()->background_color(),
+    EXPECT_EQ(contents_web_view->layer()->AsSolidColor()->background_color(),
               web_contents->GetBackgroundColor().value());
   }
 
@@ -2061,11 +2061,11 @@ IN_PROC_BROWSER_TEST_P(BrowserFrameViewAshThemeChangeTest, ThemeChange) {
   // background color and the web contents background color due to the fact
   // that the web contents background color update is async.
   ToggleColorMode();
-  EXPECT_EQ(contents_web_view->layer()->background_color(),
+  EXPECT_EQ(contents_web_view->layer()->AsSolidColor()->background_color(),
             web_app::AppBrowserController::From(browser)
                 ->GetBackgroundColor()
                 .value());
-  EXPECT_EQ(contents_web_view->layer()->background_color(),
+  EXPECT_EQ(contents_web_view->layer()->AsSolidColor()->background_color(),
             web_contents->GetBackgroundColor().value());
 
   // Verify that the layer associated with the `contents_web_view` native view
@@ -2078,11 +2078,11 @@ IN_PROC_BROWSER_TEST_P(BrowserFrameViewAshThemeChangeTest, ThemeChange) {
   {
     content::BackgroundColorChangeWaiter waiter(web_contents);
     waiter.Wait();
-    EXPECT_EQ(contents_web_view->layer()->background_color(),
+    EXPECT_EQ(contents_web_view->layer()->AsSolidColor()->background_color(),
               web_app::AppBrowserController::From(browser)
                   ->GetBackgroundColor()
                   .value());
-    EXPECT_EQ(contents_web_view->layer()->background_color(),
+    EXPECT_EQ(contents_web_view->layer()->AsSolidColor()->background_color(),
               web_contents->GetBackgroundColor().value());
   }
 }

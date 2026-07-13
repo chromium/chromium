@@ -19,7 +19,7 @@ class Window;
 }  // namespace aura
 
 namespace ui {
-class Layer;
+class LayerSolidColor;
 }  // namespace ui
 
 namespace ash {
@@ -54,7 +54,10 @@ class ASH_EXPORT DisplayAnimator
   // and *not* call the registered callback.
   void ClearHidingLayers();
 
-  std::map<aura::Window*, std::unique_ptr<ui::Layer>> hiding_layers_;
+  std::unique_ptr<ui::LayerSolidColor> AddHidingLayer(
+      aura::Window* root_window);
+
+  std::map<aura::Window*, std::unique_ptr<ui::LayerSolidColor>> hiding_layers_;
   std::unique_ptr<base::OneShotTimer> timer_;
   base::WeakPtrFactory<DisplayAnimator> weak_ptr_factory_{this};
 };
