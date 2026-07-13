@@ -2790,9 +2790,9 @@ IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
-                       AccessibilityEventsImmediateRefresh) {
+                       AccessibilityEventsConstantRefresh) {
   LoadInitialAccessibilityTreeFromHtmlFilePath(
-      "/accessibility/event/immediate-refresh.html");
+      "/accessibility/event/constant-refresh.html");
   AccessibilityNotificationWaiter waiter(shell()->web_contents(),
                                          ax::mojom::Event::kLoadComplete);
   ASSERT_TRUE(waiter.WaitForNotification());

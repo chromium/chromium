@@ -122,7 +122,11 @@ public class AccessibilityContentShellActivityTestRule extends ContentShellActiv
     /* @Before */
     protected void setupTestFromFile(String file) {
         // Default behavior: ignore trivial TYPE_WINDOW_CONTENT_CHANGED events.
-        setupTestFromFile(file, /* shouldFilterTrivialEvents= */ true, /* testServer= */ false);
+        setupTestFromFile(
+                file,
+                /* shouldFilterTrivialEvents= */ true,
+                /* testServer= */ false,
+                /* sendReadyForTestSignal= */ true);
     }
 
     /**
@@ -134,10 +138,15 @@ public class AccessibilityContentShellActivityTestRule extends ContentShellActiv
      * @param file Test file URL, including path and name
      * @param shouldFilterTrivialEvents Flag to filter out TYPE_WINDOW_CONTENT_CHANGED event
      * @param testServer Whether to use a test server to load the file
+     * @param sendReadyForTestSignal Flag to indicate that once the environment is loaded, a ready
+     *     for test signal should be fired.
      */
     /* @Before */
     protected void setupTestFromFile(
-            String file, boolean shouldFilterTrivialEvents, boolean testServer) {
+            String file,
+            boolean shouldFilterTrivialEvents,
+            boolean testServer,
+            boolean sendReadyForTestSignal) {
         // Verify file exists before beginning the test.
         verifyInputFile(file);
 
@@ -169,7 +178,9 @@ public class AccessibilityContentShellActivityTestRule extends ContentShellActiv
         // Wait for the new page's native BrowserAccessibilityManager to be connected!
         mNodeProvider = getAccessibilityNodeProvider();
 
-        sendReadyForTestSignal();
+        if (sendReadyForTestSignal) {
+            sendReadyForTestSignal();
+        }
     }
 
     /**

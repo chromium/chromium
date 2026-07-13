@@ -2777,6 +2777,9 @@ data/accessibility/event/children-changed-only-on-ancestor-expected-auralinux.tx
 data/accessibility/event/children-changed-only-on-ancestor-expected-uia-win.txt
 data/accessibility/event/children-changed-only-on-ancestor-expected-win.txt
 data/accessibility/event/children-changed-only-on-ancestor.html
+data/accessibility/event/constant-refresh-expected-android.txt
+data/accessibility/event/constant-refresh-expected-auralinux.txt
+data/accessibility/event/constant-refresh.html
 data/accessibility/event/contenteditable-selection-retargeting-expected-android.txt
 data/accessibility/event/contenteditable-selection-retargeting.html
 data/accessibility/event/css-display-descendants-expected-android.txt
@@ -2866,9 +2869,6 @@ data/accessibility/event/form-required-changed.html
 data/accessibility/event/iframe-src-changed-expected-android.txt
 data/accessibility/event/iframe-src-changed-expected-auralinux.txt
 data/accessibility/event/iframe-src-changed.html
-data/accessibility/event/immediate-refresh-expected-android.txt
-data/accessibility/event/immediate-refresh-expected-auralinux.txt
-data/accessibility/event/immediate-refresh.html
 data/accessibility/event/individual-nodes-become-ignored-but-included-expected-auralinux.txt
 data/accessibility/event/individual-nodes-become-ignored-but-included-expected-mac.txt
 data/accessibility/event/individual-nodes-become-ignored-but-included.html
