@@ -893,14 +893,15 @@ public class PaymentUiService
     public @Nullable WebContents showPaymentHandlerUi(GURL url) {
         if (mPaymentHandlerUi != null) return null;
         PaymentHandlerCoordinator paymentHandlerUi = new PaymentHandlerCoordinator();
+        mPaymentHandlerUi = paymentHandlerUi;
         WebContents paymentHandlerWebContents =
                 paymentHandlerUi.show(
                         /* paymentRequestWebContents= */ mWebContents, url, /* uiObserver= */ this);
         if (paymentHandlerWebContents == null) {
             paymentHandlerUi.hide();
+            mPaymentHandlerUi = null;
             return null;
         }
-        mPaymentHandlerUi = paymentHandlerUi;
 
         return paymentHandlerWebContents;
     }
