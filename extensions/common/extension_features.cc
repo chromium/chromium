@@ -14,8 +14,6 @@ namespace extensions_features {
 // API Features
 ///////////////////////////////////////////////////////////////////////////////
 
-BASE_FEATURE(kApiActionOpenPopup, base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kApiAlarmsCreateLengthLimit, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kApiContentSettingsClipboard, base::FEATURE_ENABLED_BY_DEFAULT);

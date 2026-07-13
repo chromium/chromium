@@ -68,15 +68,6 @@
     "dependencies": ["manifest:action"],
     "contexts": ["privileged_extension"]
   },
-  "action.openPopup": [{
-    "channel": "stable",
-    // TODO(https://crbug.com/40057101): Remove this guard after the feature
-    // has been in stable for a milestone or two.
-    "feature_flag": "ApiActionOpenPopup"
-  }, {
-    "channel": "stable",
-    "location": "policy"
-  }],
   "action.isEnabled": {
     "channel": "stable"
   },

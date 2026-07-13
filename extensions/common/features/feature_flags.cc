@@ -21,7 +21,6 @@ namespace {
 // kill switches for extension features. Note any such feature flags must
 // generally be removed once the API has been stable for a few releases.
 const base::Feature* kFeatureFlags[] = {
-    &extensions_features::kApiActionOpenPopup,
     &extensions_features::kApiContentSettingsClipboard,
     &extensions_features::kApiEnterpriseKioskInput,
     &extensions_features::kApiGlicAccessFromGoogleWebpage,

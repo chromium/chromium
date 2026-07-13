@@ -12,7 +12,6 @@
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/api/extension_action/extension_action_api.h"
 #include "chrome/browser/extensions/api/extension_action/test_icon_image_observer.h"
@@ -42,7 +41,6 @@
 #include "extensions/common/api/extension_action/action_info.h"
 #include "extensions/common/api/extension_action/action_info_test_util.h"
 #include "extensions/common/extension.h"
-#include "extensions/common/extension_features.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/manifest_constants.h"
 #include "extensions/test/extension_test_message_listener.h"
@@ -2042,77 +2040,6 @@ IN_PROC_BROWSER_TEST_P(ActionAndBrowserActionAPITest,
   EXPECT_TRUE(run_script_and_wait_for_callback(kUnsetGlobalText).GetBool());
   EXPECT_EQ("", action->GetExplicitlySetBadgeText(tab_id1));
   EXPECT_EQ("", action->GetExplicitlySetBadgeText(tab_id2));
-}
-
-class ExtensionActionWithOpenPopupFeatureDisabledTest
-    : public ExtensionActionAPITest {
- public:
-  ExtensionActionWithOpenPopupFeatureDisabledTest() {
-    feature_list_.InitAndDisableFeature(
-        extensions_features::kApiActionOpenPopup);
-  }
-  ~ExtensionActionWithOpenPopupFeatureDisabledTest() override = default;
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-// Tests that the action.openPopup() API is available to policy-installed
-// extensions on even if the feature flag is disabled. Since this is controlled
-// through our features files (which are tested separately), this is more of a
-// smoke test than an end-to-end test.
-// TODO(crbug.com/40057101): Remove this test when the API is available
-// for all extensions on stable without a feature flag.
-IN_PROC_BROWSER_TEST_F(ExtensionActionWithOpenPopupFeatureDisabledTest,
-                       OpenPopupAvailabilityOnStableChannel) {
-  TestExtensionDir test_dir;
-  static constexpr char kManifest[] =
-      R"({
-           "name": "Test",
-           "manifest_version": 3,
-           "version": "0.1",
-           "background": {"service_worker": "background.js"},
-           "action": {}
-         })";
-  test_dir.WriteManifest(kManifest);
-  test_dir.WriteFile(FILE_PATH_LITERAL("background.js"),
-                     "chrome.test.sendMessage('ready');");
-
-  auto is_open_popup_defined = [this](const Extension& extension) {
-    static constexpr char kScript[] =
-        R"(chrome.test.sendScriptResult(!!chrome.action.openPopup);)";
-    return BackgroundScriptExecutor::ExecuteScript(
-        profile(), extension.id(), kScript,
-        BackgroundScriptExecutor::ResultCapture::kSendScriptResult);
-  };
-
-  // Technically, we don't need the "ready" listener here, but this ensures we
-  // don't cross streams with the policy extension loaded below (where we do
-  // need the listener).
-  ExtensionTestMessageListener non_policy_listener("ready");
-  const Extension* non_policy_extension =
-      LoadExtension(test_dir.UnpackedPath());
-  ASSERT_TRUE(non_policy_extension);
-  ASSERT_TRUE(non_policy_listener.WaitUntilSatisfied());
-
-  // Somewhat annoying: due to how our test helpers are written,
-  // `EXPECT_EQ(false, base::Value)` works, but EXPECT_FALSE(base::Value) does
-  // not.
-  EXPECT_EQ(false, is_open_popup_defined(*non_policy_extension));
-
-  // Unlike `LoadExtension()`, `InstallExtension()` doesn't wait for the service
-  // worker to be ready, so we need a few manual waiters.
-  base::FilePath packed_path = test_dir.Pack();
-  service_worker_test_utils::TestServiceWorkerContextObserver
-      registration_observer(profile());
-  ExtensionTestMessageListener policy_listener("ready");
-  const Extension* policy_extension = InstallExtension(
-      packed_path, 1, mojom::ManifestLocation::kExternalPolicyDownload);
-  ASSERT_TRUE(policy_extension);
-  ASSERT_TRUE(policy_listener.WaitUntilSatisfied());
-  registration_observer.WaitForRegistrationStored();
-
-  EXPECT_EQ(true, is_open_popup_defined(*policy_extension));
 }
 
 #if BUILDFLAG(IS_ANDROID)

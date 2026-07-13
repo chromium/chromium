@@ -37,9 +37,6 @@ namespace extensions_features {
 // NOTE(devlin): If there are consistently enough of these in flux, it might
 // make sense to have their own file.
 
-// Controls the availability of action.openPopup().
-BASE_DECLARE_FEATURE(kApiActionOpenPopup);
-
 // Controls the limit for alarms.create() API input.
 BASE_DECLARE_FEATURE(kApiAlarmsCreateLengthLimit);
 
