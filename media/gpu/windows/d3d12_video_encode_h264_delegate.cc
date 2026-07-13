@@ -268,11 +268,12 @@ size_t D3D12VideoEncodeH264Delegate::GetMaxNumOfRefFrames() const {
 }
 
 size_t D3D12VideoEncodeH264Delegate::GetMaxNumOfManualRefBuffers() const {
-  // We should have initialized.
-  CHECK_GT(max_num_ref_frames_, 1u);
-
-  // Same as L1Tx modes, we must reserve 1 DPB slot internally for handling
-  // frame_num gap.
+  if (max_num_ref_frames_ <= 1) {
+    return 0;
+  }
+  // We always reserve 1 DPB slot internally for handling frame_num gap (same
+  // as L1Tx modes). When the non-reference-frame workaround is active, reserve
+  // 1 more slot for the forced non-reference frame.
   if (gpu_workarounds_.disable_d3d12_h264_encoder_non_reference_frames) {
     return max_num_ref_frames_ - 2;
   }
