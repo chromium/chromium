@@ -10,6 +10,7 @@ import android.content.res.Resources;
 import android.util.AttributeSet;
 import android.view.accessibility.AccessibilityNodeInfo;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -29,6 +30,7 @@ import org.chromium.ui.widget.ChromeImageButton;
 /** A {@link RelativeLayout} for the tab bottom sheet peek view. */
 @NullMarked
 class TabBottomSheetPeekView extends RelativeLayout {
+    private ImageView mPeekIcon;
     private TextView mTitleView;
     private TextView mDescriptionView;
     private MaterialButton mActionButton;
@@ -42,10 +44,24 @@ class TabBottomSheetPeekView extends RelativeLayout {
     protected void onFinishInflate() {
         super.onFinishInflate();
         // Inflate standard child views
+        mPeekIcon = findViewById(R.id.peek_icon);
         mTitleView = findViewById(R.id.peek_title);
         mDescriptionView = findViewById(R.id.peek_description);
         mActionButton = findViewById(R.id.peek_action_button);
         mCloseIcon = findViewById(R.id.peek_close_button);
+    }
+
+    /**
+     * Sets the peek view icon drawable.
+     *
+     * @param resId The icon drawable resource ID.
+     */
+    public void setPeekIcon(@DrawableRes int resId) {
+        if (resId == Resources.ID_NULL) {
+            mPeekIcon.setImageDrawable(null);
+        } else {
+            mPeekIcon.setImageResource(resId);
+        }
     }
 
     /**

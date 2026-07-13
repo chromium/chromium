@@ -21,7 +21,9 @@ class TabBottomSheetPeekViewBinder {
      */
     public static void bind(
             PropertyModel model, TabBottomSheetPeekView view, PropertyKey propertyKey) {
-        if (TabBottomSheetPeekProperties.TITLE_TEXT == propertyKey) {
+        if (TabBottomSheetPeekProperties.PEEK_ICON_ID == propertyKey) {
+            view.setPeekIcon(model.get(TabBottomSheetPeekProperties.PEEK_ICON_ID));
+        } else if (TabBottomSheetPeekProperties.TITLE_TEXT == propertyKey) {
             view.setTitle(model.get(TabBottomSheetPeekProperties.TITLE_TEXT));
         } else if (TabBottomSheetPeekProperties.TITLE_TEXT_APPEARANCE_ID == propertyKey) {
             view.setTitleTextAppearance(

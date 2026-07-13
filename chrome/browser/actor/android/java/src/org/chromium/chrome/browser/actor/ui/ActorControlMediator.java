@@ -33,6 +33,7 @@ public class ActorControlMediator {
      * @param state The PeekViewUiState containing the desired UI properties.
      */
     void setContent(String title, PeekViewUiState state) {
+        mModel.set(TabBottomSheetPeekProperties.PEEK_ICON_ID, state.peekIconResId);
         mModel.set(TabBottomSheetPeekProperties.TITLE_TEXT, title);
         mModel.set(
                 TabBottomSheetPeekProperties.TITLE_TEXT_APPEARANCE_ID,

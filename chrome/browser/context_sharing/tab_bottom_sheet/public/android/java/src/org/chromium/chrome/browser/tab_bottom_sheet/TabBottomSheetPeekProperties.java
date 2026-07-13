@@ -65,7 +65,10 @@ public class TabBottomSheetPeekProperties {
     public static final WritableObjectPropertyKey<ContentDescriptionCallback>
             CONTENT_DESCRIPTION_A11Y = new WritableObjectPropertyKey<>();
 
+    public static final WritableIntPropertyKey PEEK_ICON_ID = new WritableIntPropertyKey();
+
     public static final PropertyKey[] ALL_KEYS = {
+        PEEK_ICON_ID,
         TITLE_TEXT,
         TITLE_TEXT_APPEARANCE_ID,
         DESCRIPTION_TEXT_ID,

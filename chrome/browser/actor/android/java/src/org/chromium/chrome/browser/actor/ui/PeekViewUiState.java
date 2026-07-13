@@ -37,12 +37,14 @@ public class PeekViewUiState {
     @Retention(RetentionPolicy.SOURCE)
     public @interface Visibility {}
 
-    private static final @DrawableRes int ICON_ACTING = R.drawable.ic_pause_white_24dp;
-    private static final @DrawableRes int ICON_PAUSED = R.drawable.ic_play_arrow_white_24dp;
-    private static final @DrawableRes int ICON_WAITING = Resources.ID_NULL;
-    private static final @DrawableRes int ICON_DEFAULT = Resources.ID_NULL;
+    private static final @DrawableRes int PEEK_ICON = R.drawable.ic_spark_blue_16dp;
+    private static final @DrawableRes int BUTTON_ICON_ACTING = R.drawable.ic_pause_white_24dp;
+    private static final @DrawableRes int BUTTON_ICON_PAUSED = R.drawable.ic_play_arrow_white_24dp;
+    private static final @DrawableRes int BUTTON_ICON_WAITING = Resources.ID_NULL;
+    private static final @DrawableRes int BUTTON_ICON_DEFAULT = Resources.ID_NULL;
 
     public final @StateType int type;
+    public final @DrawableRes int peekIconResId;
 
     // The status of the actor task based on its current state (acting, paused, or waiting)
     public final @StringRes int descriptionResId;
@@ -60,6 +62,7 @@ public class PeekViewUiState {
 
     private PeekViewUiState(
             @StateType int type,
+            @DrawableRes int peekIconResId,
             @StringRes int descriptionResId,
             @DrawableRes int buttonIconResId,
             @ColorRes int buttonBackgroundResId,
@@ -71,6 +74,7 @@ public class PeekViewUiState {
             @StyleRes int titleTextAppearanceResId,
             @StringRes int buttonContentDescriptionResId) {
         this.type = type;
+        this.peekIconResId = peekIconResId;
         this.descriptionResId = descriptionResId;
         this.buttonIconResId = buttonIconResId;
         this.buttonBackgroundResId = buttonBackgroundResId;
@@ -121,6 +125,7 @@ public class PeekViewUiState {
         }
         PeekViewUiState that = (PeekViewUiState) o;
         return type == that.type
+                && peekIconResId == that.peekIconResId
                 && descriptionResId == that.descriptionResId
                 && buttonIconResId == that.buttonIconResId
                 && buttonBackgroundResId == that.buttonBackgroundResId
@@ -137,6 +142,7 @@ public class PeekViewUiState {
     public int hashCode() {
         return Objects.hash(
                 type,
+                peekIconResId,
                 descriptionResId,
                 buttonIconResId,
                 buttonBackgroundResId,
@@ -153,8 +159,9 @@ public class PeekViewUiState {
     public static final PeekViewUiState ACTING =
             new PeekViewUiState(
                     /* type= */ StateType.ACTING,
+                    /* peekIconResId= */ PEEK_ICON,
                     /* descriptionResId= */ R.string.peek_state_acting,
-                    /* buttonIconResId= */ ICON_ACTING,
+                    /* buttonIconResId= */ BUTTON_ICON_ACTING,
                     /* buttonBackgroundResId= */ R.color.actor_control_icon_button_background_color,
                     /* buttonHorizontalPaddingResId= */ Resources.ID_NULL,
                     /* iconTintResId= */ R.color.default_icon_color_tint_list,
@@ -168,8 +175,9 @@ public class PeekViewUiState {
     public static final PeekViewUiState PAUSED =
             new PeekViewUiState(
                     /* type= */ StateType.PAUSED,
+                    /* peekIconResId= */ PEEK_ICON,
                     /* descriptionResId= */ R.string.peek_state_paused,
-                    /* buttonIconResId= */ ICON_PAUSED,
+                    /* buttonIconResId= */ BUTTON_ICON_PAUSED,
                     /* buttonBackgroundResId= */ R.color.actor_control_icon_button_background_color,
                     /* buttonHorizontalPaddingResId= */ Resources.ID_NULL,
                     /* iconTintResId= */ R.color.default_icon_color_tint_list,
@@ -183,8 +191,9 @@ public class PeekViewUiState {
     public static final PeekViewUiState WAITING =
             new PeekViewUiState(
                     /* type= */ StateType.WAITING,
+                    /* peekIconResId= */ PEEK_ICON,
                     /* descriptionResId= */ R.string.peek_state_waiting,
-                    /* buttonIconResId= */ ICON_WAITING,
+                    /* buttonIconResId= */ BUTTON_ICON_WAITING,
                     /* buttonBackgroundResId= */ R.color.actor_view_button_background_color,
                     /* buttonHorizontalPaddingResId= */ R.dimen
                             .actor_control_view_button_horizontal_padding,
@@ -198,8 +207,9 @@ public class PeekViewUiState {
     public static final PeekViewUiState DEFAULT =
             new PeekViewUiState(
                     /* type= */ StateType.DEFAULT,
+                    /* peekIconResId= */ PEEK_ICON,
                     /* descriptionResId= */ Resources.ID_NULL,
-                    /* buttonIconResId= */ ICON_DEFAULT,
+                    /* buttonIconResId= */ BUTTON_ICON_DEFAULT,
                     /* buttonBackgroundResId= */ Resources.ID_NULL,
                     /* buttonHorizontalPaddingResId= */ Resources.ID_NULL,
                     /* iconTintResId= */ Resources.ID_NULL,

@@ -24,7 +24,6 @@ found in the LICENSE file.
         android:layout_marginEnd="@dimen/tab_bottom_sheet_peek_icon_margin_end"
         android:layout_alignParentStart="true"
         android:layout_centerVertical="true"
-        android:src="@drawable/ic_spark_blue_16dp"
         android:scaleType="fitCenter"
         android:importantForAccessibility="no"/>
 

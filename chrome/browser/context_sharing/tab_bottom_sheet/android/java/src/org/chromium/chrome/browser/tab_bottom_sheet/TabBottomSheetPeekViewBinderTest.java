@@ -81,6 +81,13 @@ public class TabBottomSheetPeekViewBinderTest {
     }
 
     @Test
+    public void testPeekIcon() {
+        int iconRes = 123;
+        mModel.set(TabBottomSheetPeekProperties.PEEK_ICON_ID, iconRes);
+        verify(mView).setPeekIcon(iconRes);
+    }
+
+    @Test
     public void testTitleText() {
         mModel.set(TabBottomSheetPeekProperties.TITLE_TEXT, TEST_STRING);
         verify(mView).setTitle(TEST_STRING);
