@@ -1456,20 +1456,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Media.Audio.Capture.Win.InitDeviceInUseRetryOutcome"
-    enum="WASAPIInputDeviceInUseRetryOutcome" expires_after="2027-05-15">
-  <owner>henrika@chromium.org</owner>
-  <owner>webrtc-audio-uma@google.com</owner>
-  <summary>
-    The outcome of attempts to initialize the WASAPI audio input stream on
-    Windows when the first attempt failed with AUDCLNT_E_DEVICE_IN_USE. Records
-    whether retries succeeded or failed, or if no retries occurred because the
-    feature was disabled. This is logged once per stream open attempt if and
-    only if the first call to IAudioClient::Initialize returns
-    AUDCLNT_E_DEVICE_IN_USE.
-  </summary>
-</histogram>
-
 <histogram name="Media.Audio.Capture.Win.InitError.FormatRelated"
     enum="AudioStreamFormatRelatedInitError" expires_after="2026-11-15">
   <owner>fhernqvist@google.com</owner>
@@ -1509,18 +1495,6 @@ chromium-metrics-reviews@google.com.
     WASAPIAudioInputStream::InitializeAudioEngine on Windows. E_ACCESSDENIED is
     intentionally excluded and is tracked by
     Media.Audio.Capture.Win.SystemPermissionDenied instead.
-  </summary>
-</histogram>
-
-<histogram name="Media.Audio.Capture.Win.InitializeSucceeded" enum="Boolean"
-    expires_after="2027-05-15">
-  <owner>henrika@chromium.org</owner>
-  <owner>fhernqvist@google.com</owner>
-  <owner>webrtc-audio-uma@google.com</owner>
-  <summary>
-    Logs whether IAudioClient::Initialize() succeeded (after all retries) in
-    WASAPIAudioInputStream::InitializeAudioEngine on Windows. Logged once per
-    stream initialization.
   </summary>
 </histogram>
 

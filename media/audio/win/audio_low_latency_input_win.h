@@ -125,18 +125,6 @@ class MEDIA_EXPORT WASAPIAudioInputStream
     OPEN_RESULT_MAX = OPEN_RESULT_OK_WITH_RESAMPLING
   };
 
-  // LINT.IfChange(WASAPIInputDeviceInUseRetryOutcome)
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused.
-  enum class WASAPIInputDeviceInUseRetryOutcome {
-    kFailedNoRetry = 0,
-    kSucceededOnFirstRetry = 1,
-    kSucceededOnSecondRetry = 2,
-    kFailedAfterRetries = 3,
-    kMaxValue = kFailedAfterRetries
-  };
-  // LINT.ThenChange(//tools/metrics/histograms/metadata/media/enums.xml:WASAPIInputDeviceInUseRetryOutcome)
-
   using ActivateAudioInterfaceAsyncCallback =
       base::RepeatingCallback<HRESULT(LPCWSTR,
                                       REFIID,

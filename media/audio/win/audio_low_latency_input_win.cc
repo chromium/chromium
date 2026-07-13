@@ -2052,8 +2052,7 @@ HRESULT WASAPIAudioInputStream::InitializeAudioEngine() {
                                                                            : 0;
   constexpr base::TimeDelta kRetryDelay = base::Milliseconds(50);
 
-  int attempt = 0;
-  for (; attempt <= max_initialize_retries; ++attempt) {
+  for (int attempt = 0; attempt <= max_initialize_retries; ++attempt) {
     hr = audio_client_->Initialize(
         AUDCLNT_SHAREMODE_SHARED, flags,
         100 * 1000 * 10,  // Buffer duration, 100 ms expressed in 100-ns units.
@@ -2073,28 +2072,6 @@ HRESULT WASAPIAudioInputStream::InitializeAudioEngine() {
     // Break on success or any other error.
     break;
   }
-
-  if (attempt > 0 || hr == AUDCLNT_E_DEVICE_IN_USE) {
-    WASAPIInputDeviceInUseRetryOutcome outcome;
-    if (SUCCEEDED(hr)) {
-      if (attempt == 1) {
-        outcome = WASAPIInputDeviceInUseRetryOutcome::kSucceededOnFirstRetry;
-      } else if (attempt == 2) {
-        outcome = WASAPIInputDeviceInUseRetryOutcome::kSucceededOnSecondRetry;
-      } else {
-        NOTREACHED();
-      }
-    } else {
-      outcome = max_initialize_retries == 0
-                    ? WASAPIInputDeviceInUseRetryOutcome::kFailedNoRetry
-                    : WASAPIInputDeviceInUseRetryOutcome::kFailedAfterRetries;
-    }
-    base::UmaHistogramEnumeration(
-        "Media.Audio.Capture.Win.InitDeviceInUseRetryOutcome", outcome);
-  }
-
-  base::UmaHistogramBoolean("Media.Audio.Capture.Win.InitializeSucceeded",
-                            SUCCEEDED(hr));
 
   base::UmaHistogramBoolean(
       "Media.Audio.Capture.Win.InitError.SystemPermissionDenied",

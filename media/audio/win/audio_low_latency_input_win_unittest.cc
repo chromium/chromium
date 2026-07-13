@@ -1037,8 +1037,6 @@ TEST_P(WinAudioProcessLoopbackTest, OpenStreamSuccess) {
       "Media.Audio.Capture.Win.TimeToGetAudioClient", 1);
   histogram_tester_.ExpectBucketCount(
       "Media.Audio.Capture.Win.GetAudioClientTimedOut", false, 1);
-  histogram_tester_.ExpectUniqueSample(
-      "Media.Audio.Capture.Win.InitializeSucceeded", true, 1);
 }
 
 TEST_P(WinAudioProcessLoopbackTest,
@@ -1099,14 +1097,6 @@ TEST_P(WinAudioProcessLoopbackTest,
   fake_wasapi_environment_.SimulateError(
       WASAPITestErrorCode::kAudioClientInitializeDeviceInUseOnce);
   EXPECT_EQ(stream_->Open(), AudioInputStream::OpenOutcome::kSuccess);
-
-  histogram_tester_.ExpectUniqueSample(
-      "Media.Audio.Capture.Win.InitDeviceInUseRetryOutcome",
-      WASAPIAudioInputStream::WASAPIInputDeviceInUseRetryOutcome::
-          kSucceededOnFirstRetry,
-      1);
-  histogram_tester_.ExpectUniqueSample(
-      "Media.Audio.Capture.Win.InitializeSucceeded", true, 1);
 }
 
 // Test that two transient failures are successfully mitigated by retries (max
@@ -1119,14 +1109,6 @@ TEST_P(WinAudioProcessLoopbackTest,
   fake_wasapi_environment_.SimulateError(
       WASAPITestErrorCode::kAudioClientInitializeDeviceInUseTwice);
   EXPECT_EQ(stream_->Open(), AudioInputStream::OpenOutcome::kSuccess);
-
-  histogram_tester_.ExpectUniqueSample(
-      "Media.Audio.Capture.Win.InitDeviceInUseRetryOutcome",
-      WASAPIAudioInputStream::WASAPIInputDeviceInUseRetryOutcome::
-          kSucceededOnSecondRetry,
-      1);
-  histogram_tester_.ExpectUniqueSample(
-      "Media.Audio.Capture.Win.InitializeSucceeded", true, 1);
 }
 
 // Test that persistent failures eventually fail the Open operation after
@@ -1138,14 +1120,6 @@ TEST_P(WinAudioProcessLoopbackTest, OpenStreamInitializeDeviceInUsePersistent) {
   fake_wasapi_environment_.SimulateError(
       WASAPITestErrorCode::kAudioClientInitializeDeviceInUse);
   EXPECT_EQ(stream_->Open(), AudioInputStream::OpenOutcome::kFailedInUse);
-
-  histogram_tester_.ExpectUniqueSample(
-      "Media.Audio.Capture.Win.InitDeviceInUseRetryOutcome",
-      WASAPIAudioInputStream::WASAPIInputDeviceInUseRetryOutcome::
-          kFailedAfterRetries,
-      1);
-  histogram_tester_.ExpectUniqueSample(
-      "Media.Audio.Capture.Win.InitializeSucceeded", false, 1);
 }
 
 // Test that no retries occur when features::kWasapiInputDeviceInUseRetry is
@@ -1159,14 +1133,6 @@ TEST_P(WinAudioProcessLoopbackTest,
   fake_wasapi_environment_.SimulateError(
       WASAPITestErrorCode::kAudioClientInitializeDeviceInUseOnce);
   EXPECT_EQ(stream_->Open(), AudioInputStream::OpenOutcome::kFailedInUse);
-
-  histogram_tester_.ExpectUniqueSample(
-      "Media.Audio.Capture.Win.InitDeviceInUseRetryOutcome",
-      WASAPIAudioInputStream::WASAPIInputDeviceInUseRetryOutcome::
-          kFailedNoRetry,
-      1);
-  histogram_tester_.ExpectUniqueSample(
-      "Media.Audio.Capture.Win.InitializeSucceeded", false, 1);
 }
 
 TEST_P(WinAudioProcessLoopbackTest, SuccessfulCapture) {

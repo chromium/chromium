@@ -2851,17 +2851,6 @@ chromium-metrics-reviews@google.com.
   <int value="42" label="2592x1944"/>
 </enum>
 
-<!-- LINT.IfChange(WASAPIInputDeviceInUseRetryOutcome) -->
-
-<enum name="WASAPIInputDeviceInUseRetryOutcome">
-  <int value="0" label="Failed without retry (feature disabled)"/>
-  <int value="1" label="Succeeded on first retry"/>
-  <int value="2" label="Succeeded on second retry"/>
-  <int value="3" label="Failed after all retries"/>
-</enum>
-
-<!-- LINT.ThenChange(//media/audio/win/audio_low_latency_input_win.h:WASAPIInputDeviceInUseRetryOutcome) -->
-
 </enums>
 
 </histogram-configuration>
