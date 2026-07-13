@@ -612,6 +612,17 @@ class OptionalButtonView extends FrameLayout implements TransitionListener {
         mAnimationImage = findViewById(R.id.swappable_icon_animation_image);
         mActionChipLabel = findViewById(R.id.action_chip_label);
 
+        if (ToolbarVariationUtils.isToolbarUiRefactorEnabled(getContext())) {
+            // Override the intrinsic horizontal padding from the background drawable to ensure
+            // the exact programmatic width calculations in LocationBarPhone work correctly.
+            // This prevents unwanted spacing and aligns the action chip precisely.
+            mBackground.setPaddingRelative(
+                    /* start= */ 0,
+                    mBackground.getPaddingTop(),
+                    /* end= */ 0,
+                    mBackground.getPaddingBottom());
+        }
+
         // The background is overridden in #updateButtonWithAnimation.
         mBackground.setImageDrawable(
                 AppCompatResources.getDrawable(
