@@ -74,10 +74,10 @@ Refer to README.md for content description and update process.
  <item id="extension_manifest_fetcher" added_in_milestone="62" content_hash_code="05983aa9" os_list="linux,windows,chromeos" file_path="extensions/browser/updater/extension_downloader.cc" />
  <item id="external_policy_fetcher" added_in_milestone="62" content_hash_code="03d48984" os_list="linux,windows,chromeos" file_path="components/policy/core/common/cloud/external_policy_data_fetcher.cc" />
  <item id="favicon_loader" added_in_milestone="63" content_hash_code="0437e97c" os_list="linux,windows,chromeos,android" file_path="third_party/blink/renderer/platform/loader/fetch/fetch_utils.cc" />
- <item id="ftl_messaging_client_ack_messages" added_in_milestone="86" content_hash_code="0567243e" os_list="linux,windows,chromeos" file_path="remoting/signaling/ftl_messaging_client.cc" />
- <item id="ftl_messaging_client_receive_messages" added_in_milestone="86" content_hash_code="079dbc7d" os_list="linux,windows,chromeos" file_path="remoting/signaling/ftl_messaging_client.cc" />
- <item id="ftl_messaging_client_send_messages" added_in_milestone="86" content_hash_code="05bff395" os_list="linux,windows,chromeos" file_path="remoting/signaling/ftl_messaging_client.cc" />
- <item id="ftl_registration_manager" added_in_milestone="86" content_hash_code="00bff9a1" os_list="linux,windows,chromeos" file_path="remoting/signaling/ftl_registration_manager.cc" />
+ <item id="ftl_messaging_client_ack_messages" added_in_milestone="86" content_hash_code="0567243e" os_list="linux,windows,chromeos,android" file_path="remoting/signaling/ftl_messaging_client.cc" />
+ <item id="ftl_messaging_client_receive_messages" added_in_milestone="86" content_hash_code="079dbc7d" os_list="linux,windows,chromeos,android" file_path="remoting/signaling/ftl_messaging_client.cc" />
+ <item id="ftl_messaging_client_send_messages" added_in_milestone="86" content_hash_code="05bff395" os_list="linux,windows,chromeos,android" file_path="remoting/signaling/ftl_messaging_client.cc" />
+ <item id="ftl_registration_manager" added_in_milestone="86" content_hash_code="00bff9a1" os_list="linux,windows,chromeos,android" file_path="remoting/signaling/ftl_registration_manager.cc" />
  <item id="gaia_auth_check_connection_info" added_in_milestone="62" content_hash_code="0522caf3" os_list="linux,windows,chromeos,android" file_path="google_apis/gaia/gaia_auth_fetcher.cc" />
  <item id="gaia_auth_exchange_device_id" added_in_milestone="62" content_hash_code="07eac86c" os_list="linux,windows,chromeos,android" file_path="google_apis/gaia/gaia_auth_fetcher.cc" />
  <item id="gaia_auth_list_accounts" added_in_milestone="62" content_hash_code="0670c7be" os_list="linux,windows,chromeos,android" file_path="google_apis/gaia/gaia_auth_fetcher.cc" />
@@ -163,10 +163,10 @@ Refer to README.md for content description and update process.
  <item id="quic_chromium_packet_writer" added_in_milestone="66" content_hash_code="01c48aa5" os_list="linux,windows,chromeos,android" file_path="net/quic/quic_chromium_packet_writer.cc" />
  <item id="ranker_url_fetcher" added_in_milestone="62" content_hash_code="02bd45e2" os_list="linux,windows,chromeos,android" file_path="components/assist_ranker/ranker_url_fetcher.cc" />
  <item id="remote_copy_message_handler" added_in_milestone="80" content_hash_code="07038d73" os_list="linux,windows,chromeos" file_path="chrome/browser/sharing/shared_clipboard/remote_copy_message_handler.cc" />
- <item id="remoting_directory_delete_host" added_in_milestone="86" content_hash_code="03ed762b" os_list="linux,windows,chromeos" file_path="remoting/base/directory_service_client.cc" />
- <item id="remoting_directory_get_host_list" added_in_milestone="86" content_hash_code="03933aa0" os_list="linux,windows,chromeos" file_path="remoting/base/directory_service_client.cc" />
- <item id="remoting_directory_register_host" added_in_milestone="86" content_hash_code="046c936d" os_list="linux,windows,chromeos" file_path="remoting/base/directory_service_client.cc" />
- <item id="remoting_ice_config_request" added_in_milestone="86" content_hash_code="001d0a98" os_list="linux,windows,chromeos" file_path="remoting/protocol/ice_config_fetcher_default.cc" />
+ <item id="remoting_directory_delete_host" added_in_milestone="86" content_hash_code="03ed762b" os_list="linux,windows,chromeos,android" file_path="remoting/base/directory_service_client.cc" />
+ <item id="remoting_directory_get_host_list" added_in_milestone="86" content_hash_code="03933aa0" os_list="linux,windows,chromeos,android" file_path="remoting/base/directory_service_client.cc" />
+ <item id="remoting_directory_register_host" added_in_milestone="86" content_hash_code="046c936d" os_list="linux,windows,chromeos,android" file_path="remoting/base/directory_service_client.cc" />
+ <item id="remoting_ice_config_request" added_in_milestone="86" content_hash_code="001d0a98" os_list="linux,windows,chromeos,android" file_path="remoting/protocol/ice_config_fetcher_default.cc" />
  <item id="remoting_register_support_host_request" added_in_milestone="86" content_hash_code="04fd7da8" os_list="linux,windows,chromeos" file_path="remoting/host/remoting_register_support_host_request.cc" />
  <item id="render_view_context_menu" added_in_milestone="62" content_hash_code="04240bc2" os_list="linux,windows,chromeos" file_path="chrome/browser/renderer_context_menu/render_view_context_menu.cc" />
  <item id="renderer_initiated_download" added_in_milestone="62" content_hash_code="02417da4" os_list="linux,windows,chromeos,android" file_path="content/browser/renderer_host/render_frame_host_impl.cc" />
@@ -202,7 +202,7 @@ Refer to README.md for content description and update process.
  <item id="spellcheck_hunspell_dictionary" added_in_milestone="62" content_hash_code="02b8bb18" os_list="linux,windows,chromeos,android" file_path="chrome/browser/spellchecker/spellcheck_hunspell_dictionary.cc" />
  <item id="spellcheck_lookup" added_in_milestone="62" content_hash_code="072d1525" os_list="linux,windows,chromeos" file_path="components/spellcheck/browser/spelling_service_client.cc" />
  <item id="ssl_name_mismatch_lookup" added_in_milestone="62" content_hash_code="05d18c86" os_list="linux,windows,chromeos,android" file_path="components/security_interstitials/content/common_name_mismatch_handler.cc" />
- <item id="stream_packet_socket" added_in_milestone="84" content_hash_code="034904c2" os_list="linux,windows,chromeos" file_path="remoting/protocol/stream_packet_socket.cc" />
+ <item id="stream_packet_socket" added_in_milestone="84" content_hash_code="034904c2" os_list="linux,windows,chromeos,android" file_path="remoting/protocol/stream_packet_socket.cc" />
  <item id="sync_file_system" added_in_milestone="62" content_hash_code="031bce6a" os_list="linux,windows,chromeos" file_path="chrome/browser/sync_file_system/drive_backend/sync_engine.cc" />
  <item id="sync_http_bridge" added_in_milestone="62" content_hash_code="01f587fa" os_list="linux,windows,chromeos,android" file_path="components/sync/engine/net/http_bridge.cc" />
  <item id="sync_stop_reporter" added_in_milestone="62" content_hash_code="036444c2" os_list="linux,windows,chromeos,android" file_path="components/sync/service/sync_stopped_reporter.cc" />
@@ -377,13 +377,13 @@ Refer to README.md for content description and update process.
  <item id="wallpaper_search_handler_inspirations_fetcher" added_in_milestone="121" content_hash_code="06ce0495" os_list="linux,windows,chromeos" file_path="chrome/browser/ui/webui/side_panel/customize_chrome/wallpaper_search/wallpaper_search_handler.cc" />
  <item id="wallpaper_search_handler_inspiration_image_downloader" added_in_milestone="121" content_hash_code="06c830c9" os_list="linux,windows,chromeos" file_path="chrome/browser/ui/webui/side_panel/customize_chrome/wallpaper_search/wallpaper_search_handler.cc" />
  <item id="almanac_icon_cache" added_in_milestone="120" content_hash_code="04ca8028" os_list="chromeos" file_path="chrome/browser/apps/almanac_api_client/almanac_icon_cache.cc" />
- <item id="remoting_provision_corp_machine" added_in_milestone="120" content_hash_code="0347f2e2" os_list="linux,windows,chromeos" file_path="remoting/base/corp_service_client.cc" />
+ <item id="remoting_provision_corp_machine" added_in_milestone="120" content_hash_code="0347f2e2" os_list="linux,windows,chromeos,android" file_path="remoting/base/corp_service_client.cc" />
  <item id="blink_fetch_later_manager" added_in_milestone="120" content_hash_code="00cb800a" os_list="linux,windows,android,chromeos" file_path="third_party/blink/renderer/core/fetch/fetch_manager.cc" />
  <item id="carrier_lock_manager_fetch_configuration" added_in_milestone="120" content_hash_code="05c49ee5" os_list="chromeos" file_path="chromeos/ash/components/carrier_lock/provisioning_config_fetcher_impl.cc" />
  <item id="carrier_lock_manager_check_membership" added_in_milestone="120" content_hash_code="0471f29c" os_list="chromeos" file_path="chromeos/ash/components/carrier_lock/psm_claim_verifier_impl.cc" />
  <item id="carrier_lock_manager_fcm_topic" added_in_milestone="120" content_hash_code="0389ee17" os_list="chromeos" file_path="chromeos/ash/components/carrier_lock/topic_subscription_request.cc" />
  <item id="almanac_app_install" added_in_milestone="120" content_hash_code="04f21824" os_list="chromeos" file_path="chrome/browser/apps/app_service/app_install/app_install_almanac_endpoint.cc" />
- <item id="remoting_report_provisioning_error" added_in_milestone="120" content_hash_code="01928ee5" os_list="linux,windows,chromeos" file_path="remoting/base/corp_service_client.cc" />
+ <item id="remoting_report_provisioning_error" added_in_milestone="120" content_hash_code="01928ee5" os_list="linux,windows,chromeos,android" file_path="remoting/base/corp_service_client.cc" />
  <item id="webauthn_rp_id_check" added_in_milestone="121" content_hash_code="048c3faa" os_list="linux,windows,android,chromeos" file_path="components/webauthn/core/browser/remote_validation.cc" />
  <item id="devtools_cdp_console_insights" added_in_milestone="121" content_hash_code="051d2911" os_list="linux,windows,chromeos,android" file_path="chrome/browser/devtools/aida_service_handler.cc" />
  <item id="tasks_integration" added_in_milestone="121" content_hash_code="06b37a3d" os_list="chromeos" file_path="chrome/browser/ash/api/tasks/chrome_tasks_delegate.cc" />
@@ -398,20 +398,20 @@ Refer to README.md for content description and update process.
  <item id="controlled_frame_content_scripts_download" added_in_milestone="122" content_hash_code="06d098d1" os_list="linux,windows,chromeos" file_path="extensions/browser/guest_view/web_view/controlled_frame_embedder_url_fetcher.cc" />
  <item id="essential_search_manager" added_in_milestone="122" content_hash_code="0410c589" os_list="chromeos" file_path="chrome/browser/ash/app_list/search/essential_search/socs_cookie_fetcher.cc" />
  <item id="app_install_service_web_app_installer" added_in_milestone="123" content_hash_code="0790ca69" os_list="chromeos" file_path="chrome/browser/apps/app_service/app_install/web_app_installer.cc" />
- <item id="remoting_corp_session_authz_generate_host_token" added_in_milestone="123" content_hash_code="045bc7d9" os_list="linux,windows,chromeos" file_path="remoting/base/corp_session_authz_service_client.cc" />
- <item id="remoting_corp_session_authz_verify_session_token" added_in_milestone="123" content_hash_code="04127f42" os_list="linux,windows,chromeos" file_path="remoting/base/corp_session_authz_service_client.cc" />
- <item id="remoting_corp_session_reauthorize_host" added_in_milestone="123" content_hash_code="0731c945" os_list="linux,windows,chromeos" file_path="remoting/base/corp_session_authz_service_client.cc" />
+ <item id="remoting_corp_session_authz_generate_host_token" added_in_milestone="123" content_hash_code="045bc7d9" os_list="linux,windows,chromeos,android" file_path="remoting/base/corp_session_authz_service_client.cc" />
+ <item id="remoting_corp_session_authz_verify_session_token" added_in_milestone="123" content_hash_code="04127f42" os_list="linux,windows,chromeos,android" file_path="remoting/base/corp_session_authz_service_client.cc" />
+ <item id="remoting_corp_session_reauthorize_host" added_in_milestone="123" content_hash_code="0731c945" os_list="linux,windows,chromeos,android" file_path="remoting/base/corp_session_authz_service_client.cc" />
  <item id="birch_calendar_provider" added_in_milestone="124" content_hash_code="00ad7833" os_list="chromeos" file_path="chrome/browser/ui/ash/birch/birch_calendar_fetcher.cc" />
  <item id="recovery_key_store_fetch" added_in_milestone="124" content_hash_code="05d9dc45" os_list="linux,windows,chromeos" file_path="chrome/browser/webauthn/enclave_manager.cc" />
  <item id="enterprise_logo_fetcher" added_in_milestone="124" content_hash_code="03b77fed" os_list="linux,windows,chromeos,android" file_path="chrome/browser/enterprise/util/managed_browser_utils.cc" />
  <item id="private_metrics_encryption_key" added_in_milestone="141" content_hash_code="007eb169" os_list="linux,windows,android,chromeos" file_path="components/metrics/private_metrics/data_upload_config_downloader.cc" />
- <item id="remoting_corp_logging_report_session_disconnected" added_in_milestone="124" content_hash_code="04807b73" os_list="windows,linux,chromeos" file_path="remoting/base/corp_logging_service_client.cc" />
+ <item id="remoting_corp_logging_report_session_disconnected" added_in_milestone="124" content_hash_code="04807b73" os_list="windows,linux,chromeos,android" file_path="remoting/base/corp_logging_service_client.cc" />
  <item id="focus_mode_sounds_image_downloader" added_in_milestone="124" content_hash_code="04911676" os_list="chromeos" file_path="ash/system/focus_mode/sounds/focus_mode_sounds_controller.cc" />
  <item id="help_me_write_request" added_in_milestone="124" content_hash_code="0612864d" os_list="chromeos" file_path="components/manta/orca_provider.cc" />
  <item id="camera_background_request" added_in_milestone="125" content_hash_code="0415bdde" os_list="chromeos" file_path="chrome/browser/ash/wallpaper_handlers/sea_pen_fetcher.cc" />
  <item id="wallpaper_request" added_in_milestone="125" content_hash_code="0192ac19" os_list="chromeos" file_path="chrome/browser/ash/wallpaper_handlers/sea_pen_fetcher.cc" />
  <item id="cws_fetch_item_snippet" added_in_milestone="124" content_hash_code="06b8ded9" os_list="windows,chromeos,linux" file_path="extensions/browser/webstore_data_fetcher.cc" />
- <item id="remoting_cloud_provision_gce_instance" added_in_milestone="125" content_hash_code="020ad462" os_list="linux,windows,chromeos" file_path="remoting/base/cloud_service_client.cc" />
+ <item id="remoting_cloud_provision_gce_instance" added_in_milestone="125" content_hash_code="020ad462" os_list="linux,windows,chromeos,android" file_path="remoting/base/cloud_service_client.cc" />
  <item id="lens_overlay" added_in_milestone="125" content_hash_code="03ef5586" os_list="linux,windows,chromeos" file_path="chrome/browser/ui/lens/lens_overlay_query_controller.cc" />
  <item id="register_push_notification_service" added_in_milestone="124" type="partial" second_id="oauth2_api_call_flow" content_hash_code="03f2cc8a" os_list="chromeos" semantics_fields="1,2,3,4,5,7,8,9" policy_fields="3,4" file_path="chrome/browser/push_notification/server_client/push_notification_server_client_desktop_impl.cc" />
  <item id="youtube_music_integration" added_in_milestone="126" content_hash_code="0168e5a0" os_list="chromeos" file_path="ash/system/focus_mode/sounds/youtube_music/youtube_music_client.cc" />
@@ -435,22 +435,22 @@ Refer to README.md for content description and update process.
  <item id="lens_overlay_save" added_in_milestone="130" content_hash_code="07f4c171" os_list="linux,windows,chromeos" file_path="chrome/browser/ui/lens/lens_overlay_controller.cc" />
  <item id="iwa_web_app_internals_update_manifest" added_in_milestone="130" type="partial" second_id="iwa_update_manifest_fetcher" content_hash_code="04b02418" os_list="linux,windows,chromeos" semantics_fields="1,2,3" policy_fields="3,5" file_path="chrome/browser/ui/webui/web_app_internals/iwa_internals_handler.cc" />
  <item id="iwa_web_app_internals_web_bundle" added_in_milestone="130" type="partial" second_id="iwa_bundle_downloader" content_hash_code="01076400" os_list="linux,windows,chromeos" semantics_fields="1,2,3" policy_fields="3,5" file_path="chrome/browser/web_applications/isolated_web_apps/install/isolated_web_app_dev_install_manager.cc" />
- <item id="remoting_cloud_send_heartbeat" added_in_milestone="131" content_hash_code="07e72ee4" os_list="linux,windows,chromeos" file_path="remoting/base/cloud_service_client.cc" />
- <item id="remoting_cloud_update_remote_access_host" added_in_milestone="131" content_hash_code="0628eb6e" os_list="linux,windows,chromeos" file_path="remoting/base/cloud_service_client.cc" />
- <item id="remoting_directory_legacy_heartbeat" added_in_milestone="131" content_hash_code="00a4acfc" os_list="linux,windows,chromeos" file_path="remoting/base/directory_service_client.cc" />
- <item id="remoting_directory_send_heartbeat" added_in_milestone="131" content_hash_code="02120f68" os_list="linux,windows,chromeos" file_path="remoting/base/directory_service_client.cc" />
- <item id="remoting_corp_send_heartbeat" added_in_milestone="131" content_hash_code="05ecd5dc" os_list="linux,windows,chromeos" file_path="remoting/base/corp_service_client.cc" />
- <item id="remoting_corp_update_remote_access_host" added_in_milestone="131" content_hash_code="04ec92e8" os_list="linux,windows,chromeos" file_path="remoting/base/corp_service_client.cc" />
- <item id="remoting_cloud_generate_host_token" added_in_milestone="131" content_hash_code="0147c5dd" os_list="linux,windows,chromeos" file_path="remoting/base/cloud_service_client.cc" />
- <item id="remoting_cloud_reauthorize_host" added_in_milestone="131" content_hash_code="046e5c5b" os_list="linux,windows,chromeos" file_path="remoting/base/cloud_service_client.cc" />
- <item id="remoting_cloud_verify_session_token" added_in_milestone="131" content_hash_code="07850d01" os_list="linux,windows,chromeos" file_path="remoting/base/cloud_service_client.cc" />
+ <item id="remoting_cloud_send_heartbeat" added_in_milestone="131" content_hash_code="07e72ee4" os_list="linux,windows,chromeos,android" file_path="remoting/base/cloud_service_client.cc" />
+ <item id="remoting_cloud_update_remote_access_host" added_in_milestone="131" content_hash_code="0628eb6e" os_list="linux,windows,chromeos,android" file_path="remoting/base/cloud_service_client.cc" />
+ <item id="remoting_directory_legacy_heartbeat" added_in_milestone="131" content_hash_code="00a4acfc" os_list="linux,windows,chromeos,android" file_path="remoting/base/directory_service_client.cc" />
+ <item id="remoting_directory_send_heartbeat" added_in_milestone="131" content_hash_code="02120f68" os_list="linux,windows,chromeos,android" file_path="remoting/base/directory_service_client.cc" />
+ <item id="remoting_corp_send_heartbeat" added_in_milestone="131" content_hash_code="05ecd5dc" os_list="linux,windows,chromeos,android" file_path="remoting/base/corp_service_client.cc" />
+ <item id="remoting_corp_update_remote_access_host" added_in_milestone="131" content_hash_code="04ec92e8" os_list="linux,windows,chromeos,android" file_path="remoting/base/corp_service_client.cc" />
+ <item id="remoting_cloud_generate_host_token" added_in_milestone="131" content_hash_code="0147c5dd" os_list="linux,windows,chromeos,android" file_path="remoting/base/cloud_service_client.cc" />
+ <item id="remoting_cloud_reauthorize_host" added_in_milestone="131" content_hash_code="046e5c5b" os_list="linux,windows,chromeos,android" file_path="remoting/base/cloud_service_client.cc" />
+ <item id="remoting_cloud_verify_session_token" added_in_milestone="131" content_hash_code="07850d01" os_list="linux,windows,chromeos,android" file_path="remoting/base/cloud_service_client.cc" />
  <item id="lens_overlay_gen204" added_in_milestone="131" content_hash_code="0522c289" os_list="linux,windows,chromeos" file_path="chrome/browser/ui/lens/lens_overlay_gen204_controller.cc" />
  <item id="policy_proxy_config" added_in_milestone="131" content_hash_code="015c4f8d" os_list="linux,windows" file_path="chrome/enterprise_companion/proxy_config_service.cc" />
  <item id="chromeos_emoji_picker_search_fetcher" added_in_milestone="131" content_hash_code="072cef01" os_list="chromeos" file_path="chromeos/ash/components/emoji/gif_tenor_api_fetcher.cc" />
  <item id="chromeos_emoji_picker_categories_fetcher" added_in_milestone="131" content_hash_code="02ee9118" os_list="chromeos" file_path="chromeos/ash/components/emoji/gif_tenor_api_fetcher.cc" />
  <item id="chromeos_emoji_picker_featured_fetcher" added_in_milestone="131" content_hash_code="00482dd6" os_list="chromeos" file_path="chromeos/ash/components/emoji/gif_tenor_api_fetcher.cc" />
  <item id="chromeos_emoji_picker_posts_fetcher" added_in_milestone="131" content_hash_code="069ed9b2" os_list="chromeos" file_path="chromeos/ash/components/emoji/gif_tenor_api_fetcher.cc" />
- <item id="remoting_cloud_generate_ice_config" added_in_milestone="131" content_hash_code="067b6408" os_list="linux,windows,chromeos" file_path="remoting/base/cloud_service_client.cc" />
+ <item id="remoting_cloud_generate_ice_config" added_in_milestone="131" content_hash_code="067b6408" os_list="linux,windows,chromeos,android" file_path="remoting/base/cloud_service_client.cc" />
  <item id="demo_login_controller" added_in_milestone="131" content_hash_code="06f0d8af" os_list="chromeos" file_path="chrome/browser/ash/login/demo_mode/demo_login_controller.cc" />
  <item id="ash_babelorca_tachyon_registrar" added_in_milestone="132" content_hash_code="03b91268" os_list="chromeos" file_path="chromeos/ash/components/boca/babelorca/tachyon_registrar.cc" />
  <item id="ash_babelorca_transcript_receiver" added_in_milestone="132" content_hash_code="05e0545b" os_list="chromeos" file_path="chromeos/ash/components/boca/babelorca/transcript_receiver.cc" />
@@ -466,9 +466,9 @@ Refer to README.md for content description and update process.
  <item id="omnibox_search_aggregator_suggest" added_in_milestone="133" content_hash_code="07a2e0b4" os_list="linux,windows,android,chromeos" file_path="components/omnibox/browser/enterprise_search_aggregator_suggestions_service.cc" />
  <item id="microsoft_files_page_handler" added_in_milestone="134" content_hash_code="0550fd5d" os_list="linux,windows,chromeos" file_path="chrome/browser/new_tab_page/modules/file_suggestion/microsoft_files_page_handler.cc" />
  <item id="outlook_calendar_event_attachment" added_in_milestone="134" content_hash_code="07ede3aa" os_list="linux,windows,chromeos" file_path="chrome/browser/new_tab_page/modules/v2/calendar/outlook_calendar_page_handler.cc" />
- <item id="remoting_compute_engine_instance_identity_token" added_in_milestone="135" content_hash_code="01ae9bd2" os_list="linux,windows,chromeos" file_path="remoting/base/compute_engine_service_client.cc" />
- <item id="remoting_compute_engine_instance_access_token" added_in_milestone="135" content_hash_code="0117134b" os_list="linux,windows,chromeos" file_path="remoting/base/compute_engine_service_client.cc" />
- <item id="remoting_compute_engine_instance_access_token_scopes" added_in_milestone="135" content_hash_code="023331d4" os_list="linux,windows,chromeos" file_path="remoting/base/compute_engine_service_client.cc" />
+ <item id="remoting_compute_engine_instance_identity_token" added_in_milestone="135" content_hash_code="01ae9bd2" os_list="linux,windows,chromeos,android" file_path="remoting/base/compute_engine_service_client.cc" />
+ <item id="remoting_compute_engine_instance_access_token" added_in_milestone="135" content_hash_code="0117134b" os_list="linux,windows,chromeos,android" file_path="remoting/base/compute_engine_service_client.cc" />
+ <item id="remoting_compute_engine_instance_access_token_scopes" added_in_milestone="135" content_hash_code="023331d4" os_list="linux,windows,chromeos,android" file_path="remoting/base/compute_engine_service_client.cc" />
  <item id="metrics_report_dwa" added_in_milestone="135" content_hash_code="04a744db" os_list="linux,windows,android,chromeos" file_path="components/metrics/net/net_metrics_log_uploader.cc" />
  <item id="version_history" added_in_milestone="135" content_hash_code="05797d05" os_list="linux,windows,chromeos" file_path="chrome/browser/upgrade_detector/version_history_client.cc" />
  <item id="payments_autofill" added_in_milestone="135" content_hash_code="04acbe74" os_list="linux,windows,android,chromeos" file_path="components/autofill/core/browser/payments/multiple_request_payments_network_interface_base.cc" />
@@ -497,8 +497,8 @@ Refer to README.md for content description and update process.
  <item id="enterprise_logo_fetcher_for_browser" added_in_milestone="141" content_hash_code="03eb36e5" os_list="linux,windows,chromeos,android" file_path="chrome/browser/enterprise/util/managed_browser_utils.cc" />
  <item id="devtools_gdp_service" added_in_milestone="141" content_hash_code="0240d8d3" os_list="linux,windows,android,chromeos" file_path="chrome/browser/devtools/gdp_service_handler.cc" />
  <item id="save_to_drive" added_in_milestone="141" content_hash_code="0012bc0c" os_list="linux,windows,chromeos" file_path="chrome/browser/save_to_drive/drive_uploader.cc" />
- <item id="corp_messaging_client_receive_client_messages" added_in_milestone="142" content_hash_code="059366dc" os_list="linux,windows,chromeos" file_path="remoting/signaling/corp_messaging_client.cc" />
- <item id="corp_messaging_client_send_host_message" added_in_milestone="142" content_hash_code="003280dd" os_list="linux,windows,chromeos" file_path="remoting/signaling/corp_messaging_client.cc" />
+ <item id="corp_messaging_client_receive_client_messages" added_in_milestone="142" content_hash_code="059366dc" os_list="linux,windows,chromeos,android" file_path="remoting/signaling/corp_messaging_client.cc" />
+ <item id="corp_messaging_client_send_host_message" added_in_milestone="142" content_hash_code="003280dd" os_list="linux,windows,chromeos,android" file_path="remoting/signaling/corp_messaging_client.cc" />
  <item id="private_ai_client" added_in_milestone="142" content_hash_code="04662b54" os_list="linux,windows,chromeos,android" file_path="components/private_ai/websocket_client.cc" />
  <item id="webrtc_rtc_transport" added_in_milestone="142" content_hash_code="0456b8fc" os_list="linux,windows,android,chromeos" file_path="third_party/blink/renderer/modules/peerconnection/rtc_transport/rtc_transport_dependencies.cc" />
  <item id="email_verification" added_in_milestone="143" content_hash_code="028efd71" os_list="linux,windows,android,chromeos" file_path="content/browser/webid/delegation/email_verifier_network_request_manager.cc" />
