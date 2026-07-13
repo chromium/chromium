@@ -653,6 +653,9 @@ MEDIA_EXPORT uint32_t GetPassthroughAudioFormats();
 #if BUILDFLAG(IS_ANDROID)
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kUseMediaFormatCodedSize);
 #endif
+
+MEDIA_EXPORT BASE_DECLARE_FEATURE(kRustMpegAudioDataParser);
+
 }  // namespace media
 
 #endif  // MEDIA_BASE_MEDIA_SWITCHES_H_

@@ -64,4 +64,34 @@ TEST_F(ADTSStreamParserTest, UnalignedAppend512) {
   EXPECT_EQ(expected, ParseFile("sfx.adts", 512));
 }
 
+// Test that the ADTS channel layout mapping table in Rust matches C++
+// ChannelLayout enum values.
+TEST_F(ADTSStreamParserTest, ChannelLayoutMapping) {
+  struct TestCase {
+    int channel_config;
+    std::vector<uint8_t> header;
+    ChannelLayout expected_layout;
+  };
+
+  // Pre-calculated ADTS headers for sample_rate = 44100, frame_size = 7, VBR.
+  std::vector<TestCase> test_cases = {
+      {1, {0xFF, 0xF1, 0x50, 0x40, 0x00, 0xFF, 0xFC}, CHANNEL_LAYOUT_MONO},
+      {2, {0xFF, 0xF1, 0x50, 0x80, 0x00, 0xFF, 0xFC}, CHANNEL_LAYOUT_STEREO},
+      {3, {0xFF, 0xF1, 0x50, 0xC0, 0x00, 0xFF, 0xFC}, CHANNEL_LAYOUT_SURROUND},
+      {4, {0xFF, 0xF1, 0x51, 0x00, 0x00, 0xFF, 0xFC}, CHANNEL_LAYOUT_4_0},
+      {5, {0xFF, 0xF1, 0x51, 0x40, 0x00, 0xFF, 0xFC}, CHANNEL_LAYOUT_5_0_BACK},
+      {6, {0xFF, 0xF1, 0x51, 0x80, 0x00, 0xFF, 0xFC}, CHANNEL_LAYOUT_5_1_BACK},
+      {7, {0xFF, 0xF1, 0x51, 0xC0, 0x00, 0xFF, 0xFC}, CHANNEL_LAYOUT_7_1},
+  };
+
+  for (const auto& test_case : test_cases) {
+    auto header = ADTSStreamParser::ParseHeader(test_case.header);
+    ASSERT_TRUE(header.has_value())
+        << "Failed to parse header for channel_config "
+        << test_case.channel_config;
+    EXPECT_EQ(header->channel_layout, test_case.expected_layout)
+        << "Mismatch for channel_config " << test_case.channel_config;
+  }
+}
+
 }  // namespace media

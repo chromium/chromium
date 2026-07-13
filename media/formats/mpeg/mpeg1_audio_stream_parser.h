@@ -42,6 +42,8 @@ class MEDIA_EXPORT MPEG1AudioStreamParser : public MPEGAudioStreamParserBase {
   size_t GetMinHeaderSize() const override;
   std::optional<Header> ParseFrameHeader(
       base::span<const uint8_t> data) override;
+  Header FfiHeaderToHeader(
+      const formats::mpeg::MpegAudioHeaderInfo& ffi_header) const override;
 
   size_t mp3_parse_error_limit_ = 0;
 };

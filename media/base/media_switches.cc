@@ -404,6 +404,9 @@ BASE_FEATURE(kEncryptedMediaOcclusionTracking,
 BASE_FEATURE(kExtendedVideoBitstreamValidation,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables Rust version of MPEG parser (MP3/ADTS). Remove after M152 stable.
+BASE_FEATURE(kRustMpegAudioDataParser, base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Enables support for >8 audio channel layouts (i.e., 5.1.4 and 7.1.4).
 BASE_FEATURE(kEnableHighChannelLayouts, base::FEATURE_DISABLED_BY_DEFAULT);
 

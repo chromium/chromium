@@ -10,6 +10,7 @@ rust_static_library("safe_mpeg_audio_parsers") {
   sources = [
     "mpeg/bit_reader.rs",
     "mpeg/lib.rs",
+    "mpeg/mpeg_audio_parser.rs",
     "mpeg/parse_adts.rs",
     "mpeg/parse_mp3.rs",
   ]

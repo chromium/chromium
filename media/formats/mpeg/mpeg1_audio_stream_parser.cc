@@ -17,6 +17,21 @@ namespace {
 constexpr uint32_t kMPEG1StartCodeMask = 0xffe00000;
 constexpr int kCodecDelay = 529;
 
+ChannelLayout Mp3ChannelCountToLayout(int channels) {
+  return channels == 1 ? CHANNEL_LAYOUT_MONO : CHANNEL_LAYOUT_STEREO;
+}
+
+MPEGAudioStreamParserBase::Header ConvertFfiHeader(
+    const formats::mpeg::MpegAudioHeaderInfo& ffi_header) {
+  MPEGAudioStreamParserBase::Header header;
+  header.frame_size = ffi_header.frame_size;
+  header.sample_rate = ffi_header.sample_rate;
+  header.channel_layout = Mp3ChannelCountToLayout(ffi_header.channels);
+  header.sample_count = ffi_header.sample_count;
+  header.metadata_frame = ffi_header.metadata_frame;
+  return header;
+}
+
 }  // namespace
 
 // static
@@ -27,14 +42,7 @@ MPEG1AudioStreamParser::ParseHeader(base::span<const uint8_t> data) {
   if (ffi_res.frame_size == 0) {
     return std::nullopt;
   }
-  Header header;
-  header.frame_size = ffi_res.frame_size;
-  header.sample_rate = ffi_res.sample_rate;
-  header.channel_layout =
-      ffi_res.channels == 1 ? CHANNEL_LAYOUT_MONO : CHANNEL_LAYOUT_STEREO;
-  header.sample_count = ffi_res.sample_count;
-  header.metadata_frame = ffi_res.metadata_frame;
-  return header;
+  return ConvertFfiHeader(ffi_res);
 }
 
 MPEG1AudioStreamParser::MPEG1AudioStreamParser()
@@ -56,6 +64,11 @@ MPEG1AudioStreamParser::ParseFrameHeader(base::span<const uint8_t> data) {
         << "Invalid MP3 header.";
   }
   return header;
+}
+
+MPEGAudioStreamParserBase::Header MPEG1AudioStreamParser::FfiHeaderToHeader(
+    const formats::mpeg::MpegAudioHeaderInfo& ffi_header) const {
+  return ConvertFfiHeader(ffi_header);
 }
 
 }  // namespace media

@@ -12,13 +12,16 @@
 #include "base/numerics/checked_math.h"
 #include "base/time/time.h"
 #include "media/base/byte_queue.h"
+#include "media/base/channel_layout.h"
 #include "media/base/media_log.h"
+#include "media/base/media_switches.h"
 #include "media/base/media_tracks.h"
 #include "media/base/media_util.h"
 #include "media/base/stream_parser.h"
 #include "media/base/stream_parser_buffer.h"
 #include "media/base/timestamp_constants.h"
 #include "media/base/video_decoder_config.h"
+#include "media/formats/mpeg/lib.rs.h"
 
 namespace media {
 
@@ -149,6 +152,14 @@ StreamParser::ParseStatus MPEGAudioStreamParserBase::Parse(
 
   DCHECK_EQ(state_, INITIALIZED);
 
+  if (base::FeatureList::IsEnabled(kRustMpegAudioDataParser)) {
+    return ParseRust(max_pending_bytes_to_inspect);
+  }
+  return ParseLegacy(max_pending_bytes_to_inspect);
+}
+
+StreamParser::ParseStatus MPEGAudioStreamParserBase::ParseLegacy(
+    int max_pending_bytes_to_inspect) {
   bool end_of_segment = true;
   BufferQueue buffers;
 
@@ -261,37 +272,53 @@ int MPEGAudioStreamParserBase::ParseFrame(base::span<const uint8_t> data,
     return 0;
   }
 
-  DVLOG(2) << " sample_rate " << header->sample_rate << " channel_layout "
-           << header->channel_layout << " frame_size " << header->frame_size
-           << " sample_count " << header->sample_count;
+  if (!ProcessAudioFrame(*header, data.first(header->frame_size), buffers)) {
+    return -1;
+  }
+
+  return header->frame_size;
+}
+
+bool MPEGAudioStreamParserBase::ProcessAudioFrame(
+    const Header& header,
+    base::span<const uint8_t> data,
+    BufferQueue* buffers) {
+  DVLOG(2) << __func__ << "(" << data.size() << ")";
+
+  DVLOG(2) << " sample_rate " << header.sample_rate << " channel_layout "
+           << header.channel_layout << " frame_size " << data.size()
+           << " sample_count " << header.sample_count;
 
   if (config_.IsValidConfig() &&
       (config_.samples_per_second() !=
-           base::checked_cast<int>(header->sample_rate) ||
-       config_.channel_layout() != header->channel_layout)) {
+           base::checked_cast<int>(header.sample_rate) ||
+       config_.channel_layout() != header.channel_layout)) {
     // Clear config data so that a config change is initiated.
     config_ = AudioDecoderConfig();
 
     // Send all buffers associated with the previous config.
-    if (!buffers->empty() && !SendBuffers(buffers, true))
-      return -1;
+    if (!buffers->empty() && !SendBuffers(buffers, true)) {
+      return false;
+    }
   }
 
   if (!config_.IsValidConfig()) {
     config_.Initialize(audio_codec_, kSampleFormatF32,
-                       ChannelLayoutConfig::FromLayout(header->channel_layout),
-                       header->sample_rate, header->extra_data,
+                       ChannelLayoutConfig::FromLayout(header.channel_layout),
+                       header.sample_rate, header.extra_data,
                        EncryptionScheme::kUnencrypted, base::TimeDelta(),
                        codec_delay_);
-    if (audio_codec_ == AudioCodec::kAAC)
+    if (audio_codec_ == AudioCodec::kAAC) {
       config_.disable_discard_decoder_delay();
+    }
 
     base::TimeDelta base_timestamp;
-    if (timestamp_helper_)
+    if (timestamp_helper_) {
       base_timestamp = timestamp_helper_->GetTimestamp();
+    }
 
     timestamp_helper_ =
-        std::make_unique<AudioTimestampHelper>(header->sample_rate);
+        std::make_unique<AudioTimestampHelper>(header.sample_rate);
     timestamp_helper_->SetBaseTimestamp(base_timestamp);
 
     auto media_tracks = std::make_unique<MediaTracks>();
@@ -301,7 +328,7 @@ int MPEGAudioStreamParserBase::ParseFrame(base::span<const uint8_t> data,
                                   MediaTrack::Language());
     }
     if (!config_cb_.Run(std::move(media_tracks))) {
-      return -1;
+      return false;
     }
 
     if (init_cb_) {
@@ -311,24 +338,23 @@ int MPEGAudioStreamParserBase::ParseFrame(base::span<const uint8_t> data,
     }
   }
 
-  if (header->metadata_frame) {
-    return header->frame_size;
+  if (header.metadata_frame) {
+    return true;
   }
 
   // TODO(wolenetz/acolwell): Validate and use a common cross-parser TrackId
   // type and allow multiple audio tracks, if applicable. See
   // https://crbug.com/341581.
-  scoped_refptr<StreamParserBuffer> buffer =
-      StreamParserBuffer::CopyFrom(data.first(header->frame_size), true,
-                                   DemuxerStream::AUDIO, kMpegAudioTrackId);
+  scoped_refptr<StreamParserBuffer> buffer = StreamParserBuffer::CopyFrom(
+      data, true, DemuxerStream::AUDIO, kMpegAudioTrackId);
   buffer->set_timestamp(timestamp_helper_->GetTimestamp());
   buffer->set_duration(
-      timestamp_helper_->GetFrameDuration(header->sample_count));
+      timestamp_helper_->GetFrameDuration(header.sample_count));
   buffers->push_back(buffer);
 
-  timestamp_helper_->AddFrames(header->sample_count);
+  timestamp_helper_->AddFrames(header.sample_count);
 
-  return header->frame_size;
+  return true;
 }
 
 int MPEGAudioStreamParserBase::ParseIcecastHeader(const uint8_t* data,
@@ -496,4 +522,109 @@ bool MPEGAudioStreamParserBase::SendBuffers(BufferQueue* buffers,
   return true;
 }
 
+StreamParser::ParseStatus MPEGAudioStreamParserBase::ParseRust(
+    int max_pending_bytes_to_inspect) {
+  CHECK_GE(max_pending_bytes_to_inspect, 0);
+  CHECK_GE(uninspected_pending_bytes_, 0);
+
+  base::span<const uint8_t> queue_span = queue_.Data();
+  CHECK_LE(uninspected_pending_bytes_, static_cast<int>(queue_span.size()));
+
+  // First, determine the amount of bytes not yet popped, though already
+  // inspected by previous call(s) to Parse().
+  const size_t previously_inspected_bytes =
+      queue_span.size() - static_cast<size_t>(uninspected_pending_bytes_);
+
+  // Next, allow up to `max_pending_bytes_to_inspect` more of `queue_` contents
+  // beyond those previously inspected to be involved in this Parse() call.
+  const int new_bytes_to_inspect =
+      std::min(max_pending_bytes_to_inspect, uninspected_pending_bytes_);
+
+  const size_t total_bytes_to_inspect =
+      previously_inspected_bytes + static_cast<size_t>(new_bytes_to_inspect);
+
+  // Eagerly assume we will successfully inspect these new bytes. Since parse
+  // failures are fatal, this is safe because the parser state will be
+  // discarded if an error occurs.
+  uninspected_pending_bytes_ -= new_bytes_to_inspect;
+
+  base::span<const uint8_t> active_data =
+      queue_span.first(total_bytes_to_inspect);
+
+  BufferQueue buffers;
+  size_t bytes_to_pop = 0;
+  bool end_of_segment = true;
+  while (true) {
+    auto rust_data = ::rust::Slice<const uint8_t>(active_data);
+    auto action = audio_codec_ == AudioCodec::kAAC
+                      ? media::formats::mpeg::parse_adts_action(rust_data)
+                      : media::formats::mpeg::parse_mp3_action(rust_data);
+
+    bool need_more_data = false;
+    size_t bytes_read = 0;
+    bool parsed_metadata = true;
+
+    using ActionType = media::formats::mpeg::ActionType;
+    switch (action.action_type) {
+      case ActionType::NeedMoreData:
+        if (action.partial_frame) {
+          end_of_segment = false;
+        }
+        need_more_data = true;
+        break;
+
+      case ActionType::Error:
+        ChangeState(PARSE_ERROR);
+        return ParseStatus::kFailed;
+
+      case ActionType::Skip:
+        bytes_read = action.bytes_to_skip;
+        parsed_metadata = false;
+        break;
+
+      case ActionType::Metadata:
+        bytes_read = action.bytes_to_skip;
+        parsed_metadata = true;
+        break;
+
+      case ActionType::AudioFrame: {
+        const Header header = FfiHeaderToHeader(action.header_info);
+        if (!ProcessAudioFrame(header, active_data.first(header.frame_size),
+                               &buffers)) {
+          ChangeState(PARSE_ERROR);
+          return ParseStatus::kFailed;
+        }
+        bytes_read = header.frame_size;
+        end_of_segment = true;
+        parsed_metadata = false;
+        break;
+      }
+    }
+
+    if (need_more_data) {
+      break;
+    }
+
+    CHECK_LE(bytes_read, active_data.size());
+
+    if (parsed_metadata && !buffers.empty() && !SendBuffers(&buffers, true)) {
+      return ParseStatus::kFailed;
+    }
+
+    active_data = active_data.subspan(bytes_read);
+    bytes_to_pop += bytes_read;
+    end_of_segment = true;
+  }
+
+  queue_.Pop(base::checked_cast<int>(bytes_to_pop));
+
+  if (buffers.empty() || SendBuffers(&buffers, end_of_segment)) {
+    if (uninspected_pending_bytes_ > 0) {
+      return ParseStatus::kSuccessHasMoreData;
+    }
+    return ParseStatus::kSuccess;
+  }
+
+  return ParseStatus::kFailed;
+}
 }  // namespace media

@@ -23,6 +23,10 @@
 
 namespace media {
 
+namespace formats::mpeg {
+struct MpegAudioHeaderInfo;
+}  // namespace formats::mpeg
+
 class MEDIA_EXPORT MPEGAudioStreamParserBase : public StreamParser {
  public:
   struct Header {
@@ -82,6 +86,10 @@ class MEDIA_EXPORT MPEGAudioStreamParserBase : public StreamParser {
   virtual std::optional<Header> ParseFrameHeader(
       base::span<const uint8_t> data) = 0;
 
+  // Converts a Rust FFI header info struct into the C++ parser Header struct.
+  virtual Header FfiHeaderToHeader(
+      const formats::mpeg::MpegAudioHeaderInfo& ffi_header) const = 0;
+
   MediaLog* media_log() const { return media_log_.get(); }
 
  private:
@@ -90,6 +98,13 @@ class MEDIA_EXPORT MPEGAudioStreamParserBase : public StreamParser {
     INITIALIZED,
     PARSE_ERROR
   };
+
+  ParseStatus ParseRust(int max_pending_bytes_to_inspect);
+  ParseStatus ParseLegacy(int max_pending_bytes_to_inspect);
+
+  bool ProcessAudioFrame(const Header& header,
+                         base::span<const uint8_t> data,
+                         BufferQueue* buffers);
 
   void ChangeState(State state);
 
