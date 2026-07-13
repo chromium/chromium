@@ -1507,10 +1507,8 @@ void ChromeContentRendererClient::WillEvaluateServiceWorkerOnWorkerThread(
           context_proxy, v8_context, service_worker_version_id,
           service_worker_scope, script_url, service_worker_token);
 #endif
-  if (AllowScriptExtensionForServiceWorker(url::Origin::Create(script_url))) {
-    BenchmarkingBindings::InstallConditionally(v8_context);
-    LoadTimesBindings::Install(v8_context);
-  }
+  BenchmarkingBindings::InstallConditionally(v8_context);
+  LoadTimesBindings::Install(v8_context);
 }
 
 void ChromeContentRendererClient::DidStartServiceWorkerContextOnWorkerThread(
