@@ -290,6 +290,14 @@ IndigoService::RegisterLocalEligibilityChangedCallback(
   return local_eligibility_callback_list_.Add(std::move(callback));
 }
 
+bool IndigoService::IsModelImprovementAllowed() const {
+  if (!pref_service_) {
+    return true;
+  }
+  return pref_service_->GetInteger(prefs::kIndigoPolicy) ==
+         prefs::Policy::kAllowed;
+}
+
 bool IndigoService::CanShowContextualCue() const {
   if (!base::FeatureList::IsEnabled(contextual_cueing::kContextualCueingV2)) {
     return false;
@@ -352,9 +360,8 @@ LocalEligibility IndigoService::ComputeLocalEligibility() const {
       return LocalEligibility::kEnterpriseDisallowed;
     } else if (pref_service_) {
       int policy_val = pref_service_->GetInteger(prefs::kIndigoPolicy);
-      // TODO(b:512247450): Also allow kAllowedWithoutModelImprovement when the
-      // alternative disclaimer string is ready.
-      if (policy_val != prefs::Policy::kAllowed) {
+      if (policy_val != prefs::Policy::kAllowed &&
+          policy_val != prefs::Policy::kAllowedWithoutModelImprovement) {
         return LocalEligibility::kDisabledByPolicy;
       }
     }

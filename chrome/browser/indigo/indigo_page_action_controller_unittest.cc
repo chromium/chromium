@@ -866,7 +866,8 @@ TEST_F(IndigoPageActionControllerTest,
 
   controller_->OnReplaceOriginalPhoto(nullptr);
 
-  EXPECT_EQ(captured_url, GURL("https://example.com/onboard?toyri=1"));
+  EXPECT_EQ(captured_url,
+            GURL("https://example.com/onboard?toyut=chrome-mi&toyri=1"));
   EXPECT_EQ(user_action_tester.GetActionCount("Indigo.ReplaceImage.Trigger"),
             1);
   EXPECT_EQ(user_action_tester.GetActionCount("Indigo.Onboarding.Trigger"), 0);
@@ -879,6 +880,48 @@ TEST_F(IndigoPageActionControllerTest,
   EXPECT_EQ(user_action_tester.GetActionCount("Indigo.ReplaceImage.Complete"),
             1);
   EXPECT_EQ(user_action_tester.GetActionCount("Indigo.Onboarding.Complete"), 0);
+}
+
+TEST_F(IndigoPageActionControllerTest,
+       OnboardingAppendsToyutChromeMiWhenModelImprovementAllowed) {
+  CreateController();
+  profile_->GetPrefs()->SetInteger(prefs::kIndigoPolicy,
+                                   prefs::Policy::kAllowed);
+
+  GURL captured_url;
+  IndigoPageActionController::TestApi(controller_.get())
+      .SetOnboardingDialogFactory(base::BindLambdaForTesting(
+          [&](tabs::TabInterface& tab, const GURL& url,
+              base::OnceCallback<void(const OnboardingResult&)> callback)
+              -> std::unique_ptr<IndigoOnboardingDialog> {
+            captured_url = url;
+            return nullptr;
+          }));
+
+  controller_->OnReplaceOriginalPhoto(nullptr);
+  EXPECT_EQ(captured_url,
+            GURL("https://example.com/onboard?toyut=chrome-mi&toyri=1"));
+}
+
+TEST_F(IndigoPageActionControllerTest,
+       OnboardingAppendsToyutChromeNomiWhenModelImprovementDisallowed) {
+  CreateController();
+  profile_->GetPrefs()->SetInteger(
+      prefs::kIndigoPolicy, prefs::Policy::kAllowedWithoutModelImprovement);
+
+  GURL captured_url;
+  IndigoPageActionController::TestApi(controller_.get())
+      .SetOnboardingDialogFactory(base::BindLambdaForTesting(
+          [&](tabs::TabInterface& tab, const GURL& url,
+              base::OnceCallback<void(const OnboardingResult&)> callback)
+              -> std::unique_ptr<IndigoOnboardingDialog> {
+            captured_url = url;
+            return nullptr;
+          }));
+
+  controller_->OnReplaceOriginalPhoto(nullptr);
+  EXPECT_EQ(captured_url,
+            GURL("https://example.com/onboard?toyut=chrome-nomi&toyri=1"));
 }
 
 TEST_F(IndigoPageActionControllerTest, OnCloseResetsReplacements) {
