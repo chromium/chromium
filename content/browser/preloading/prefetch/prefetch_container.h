@@ -599,6 +599,11 @@ class CONTENT_EXPORT PrefetchContainer
 
   bool HasPreloadPipelineInfoForMetrics(const PreloadPipelineInfo& other) const;
 
+  // TODO(crbug.com/532560786): Remove it if `CHECK` is removed.
+  bool during_observer_notification() const {
+    return during_observer_notification_;
+  }
+
  private:
   // Update |prefetch_status_| and report prefetch status to
   // DevTools without updating TriggeringOutcome.

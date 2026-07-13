@@ -2094,6 +2094,16 @@ void PrefetchService::CancelUnrelatedPrefetchForNavigation(
     }
   }
 
+  // See https://crbug.com/532560786.
+  //
+  // Crash if it's called in observer notification. This is to prevent
+  // scattering crash reports with the same root cause.
+  //
+  // TODO(crbug.com/532560786): Remove it.
+  for (const auto& prefetch_container : prefetches_to_reset) {
+    CHECK(!prefetch_container->during_observer_notification());
+  }
+
   ResetPrefetchContainersAndProgressAsync(
       std::move(prefetches_to_reset),
       PrefetchStatus::kPrefetchCancelledOnUserNavigation);
