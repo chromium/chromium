@@ -1984,8 +1984,10 @@ export const ComposeboxEmbedderMixin =
               this.getInputElement().inputElement.selectionStart || 0 :
               this.input.length;
           this.getSearchboxHandler().queryAutocompleteWithSuggestInventory(
-              this.activeQueryId, this.input, false, cursorPosition,
-              this.suggestInventory ?? SuggestInventory.kDefault);
+              this.activeQueryId, this.input,
+              /*preventInlineAutocomplete=*/ false, cursorPosition,
+              this.suggestInventory ?? SuggestInventory.kDefault,
+              /*isOnFocus=*/ !this.input);
         }
 
         clearAutocompleteMatches() {

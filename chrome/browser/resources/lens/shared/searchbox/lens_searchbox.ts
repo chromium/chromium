@@ -194,8 +194,11 @@ export class LensSearchboxElement extends LensSearchboxElementBase implements
 
   override onSearchboxInputTextUpdated(
       e: CustomEvent<{value: string, isComposing: boolean}>) {
-    // Query autocomplete for Lens searchbox even on empty input
-    this.queryAutocomplete(e.detail.value, e.detail.isComposing);
+    // Query autocomplete for Lens searchbox even on empty input.
+    const input = e.detail.value;
+    this.queryAutocomplete(
+        input, /*preventInlineAutocomplete=*/ e.detail.isComposing,
+        /*isOnFocus=*/ !input);
   }
 
   override handleKeyNavigation(e: KeyboardEvent) {
@@ -214,7 +217,9 @@ export class LensSearchboxElement extends LensSearchboxElementBase implements
           // navigation directly after removing the thumbnail. Must manually
           // query autocomplete after removing the thumbnail since the
           // thumbnail isn't part of the text input.
-          this.queryAutocomplete(inputValue);
+          this.queryAutocomplete(
+              inputValue, /*preventInlineAutocomplete=*/ false,
+              /*isOnFocus=*/ !inputValue);
           e.preventDefault();
         } else if (e.key === 'Tab' && !e.shiftKey) {
           this.focusInput();
@@ -243,7 +248,10 @@ export class LensSearchboxElement extends LensSearchboxElementBase implements
   }
 
   queryInputAutocomplete() {
-    this.queryAutocomplete(this.$.input.inputElement.value, false);
+    const input = this.$.input.inputElement.value;
+    this.queryAutocomplete(
+        input, /*preventInlineAutocomplete=*/ false,
+        /*isOnFocus=*/ !input);
   }
 
   isInputEmpty(): boolean {
@@ -286,7 +294,9 @@ export class LensSearchboxElement extends LensSearchboxElementBase implements
     // query autocomplete after removing the thumbnail since the
     // thumbnail isn't part of the text input.
     const inputValue = this.$.input.getInputValue();
-    this.queryAutocomplete(inputValue);
+    this.queryAutocomplete(
+        inputValue, /*preventInlineAutocomplete=*/ false,
+        /*isOnFocus=*/ !inputValue);
   }
 
   protected onLensSearchClick_() {

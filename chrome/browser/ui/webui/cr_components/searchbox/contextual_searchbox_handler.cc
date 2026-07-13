@@ -1637,10 +1637,11 @@ void ContextualSearchboxHandler::QueryAutocomplete(
     int32_t query_id,
     const std::u16string& input,
     bool prevent_inline_autocomplete,
-    uint32_t cursor_position) {
+    uint32_t cursor_position,
+    bool is_on_focus) {
   QueryAutocompleteWithSuggestInventory(
       query_id, input, prevent_inline_autocomplete, cursor_position,
-      omnibox::SuggestInventory::SUGGEST_INVENTORY_DEFAULT);
+      omnibox::SuggestInventory::SUGGEST_INVENTORY_DEFAULT, is_on_focus);
 }
 
 void ContextualSearchboxHandler::QueryAutocompleteWithSuggestInventory(
@@ -1648,14 +1649,15 @@ void ContextualSearchboxHandler::QueryAutocompleteWithSuggestInventory(
     const std::u16string& input,
     bool prevent_inline_autocomplete,
     uint32_t cursor_position,
-    omnibox::SuggestInventory suggest_inventory) {
+    omnibox::SuggestInventory suggest_inventory,
+    bool is_on_focus) {
   if (contextual_tasks_context_service_) {
     contextual_tasks_context_service_->OnTypedQuery();
   }
 
   SearchboxHandler::QueryAutocompleteWithSuggestInventory(
       query_id, input, prevent_inline_autocomplete, cursor_position,
-      suggest_inventory);
+      suggest_inventory, is_on_focus);
 }
 
 void ContextualSearchboxHandler::OnContextUploadStatusChanged(

@@ -159,7 +159,7 @@ class RealboxSearchPreloadBrowserTest : public SearchPrefetchBaseBrowserTest {
     // Fake a WebUI input.
     remote_page_handler->QueryAutocomplete(
         0, base::ASCIIToUTF16(input_query),
-        /*prevent_inline_autocomplete=*/false, 0);
+        /*prevent_inline_autocomplete=*/false, 0, /*is_on_focus=*/false);
     remote_page_handler.FlushForTesting();
 
     // Prefetch should be triggered.
@@ -339,7 +339,8 @@ IN_PROC_BROWSER_TEST_F(RealboxHandlerTest, RealboxUpdatesEditModelInput) {
       .Times(2)
       .WillRepeatedly(SaveArg<0>(&input));
 
-  handler_->QueryAutocomplete(0, u"", /*prevent_inline_autocomplete=*/false, 0);
+  handler_->QueryAutocomplete(0, u"", /*prevent_inline_autocomplete=*/false, 0,
+                              /*is_on_focus=*/true);
 
   EXPECT_EQ(input.focus_type(), metrics::OmniboxFocusType::INTERACTION_FOCUS);
 
@@ -351,7 +352,8 @@ IN_PROC_BROWSER_TEST_F(RealboxHandlerTest, RealboxUpdatesEditModelInput) {
   EXPECT_EQ(u"", omnibox_edit_model_->GetInputForTesting().text());
 
   handler_->QueryAutocomplete(0, u"match",
-                              /*prevent_inline_autocomplete=*/false, 0);
+                              /*prevent_inline_autocomplete=*/false, 0,
+                              /*is_on_focus=*/false);
 
   // Assert that the input text gets correctly updated for the realbox.
   EXPECT_EQ(u"match", omnibox_edit_model_->GetInputForTesting().text());

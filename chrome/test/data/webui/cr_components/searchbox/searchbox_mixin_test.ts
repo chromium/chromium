@@ -243,7 +243,8 @@ suite('SearchboxMixinTest', () => {
     inputElement.inputElement.selectionStart = 3;
     inputElement.inputElement.selectionEnd = 3;
 
-    element.queryAutocomplete('hello', /*preventInlineAutocomplete=*/ false);
+    element.queryAutocomplete(
+        'hello', /*preventInlineAutocomplete=*/ false, /*isOnFocus=*/ false);
 
     const args = await testProxy.handler.whenCalled('queryAutocomplete');
     assertEquals(args.input, 'hello');
@@ -259,7 +260,8 @@ suite('SearchboxMixinTest', () => {
         inputElement.inputElement.selectionEnd = 3;
 
         element.queryAutocomplete(
-            'hello world', /*preventInlineAutocomplete=*/ false);
+            'hello world', /*preventInlineAutocomplete=*/ false,
+            /*isOnFocus=*/ false);
 
         const args = await testProxy.handler.whenCalled('queryAutocomplete');
         assertEquals(args.input, 'hello world');
@@ -282,7 +284,8 @@ suite('SearchboxMixinTest', () => {
   });
 
   test('stale autocomplete response is ignored', async () => {
-    element.queryAutocomplete('he', /*preventInlineAutocomplete=*/ false);
+    element.queryAutocomplete(
+        'he', /*preventInlineAutocomplete=*/ false, /*isOnFocus=*/ false);
     assertEquals(1, testProxy.handler.getCallCount('queryAutocomplete'));
 
     const matches = [createSearchMatchForTesting(), createUrlMatch()];
@@ -378,7 +381,7 @@ suite('SearchboxMixinTest', () => {
   test('pressing Enter in empty input prevents new line', async () => {
     const mockInput = element.getInputElement();
     mockInput.inputElement.value = '';
-    element.queryAutocomplete('', false);
+    element.queryAutocomplete('', false, /*isOnFocus=*/ false);
     element.onAutocompleteResultChanged(createAutocompleteResultForTesting({
       queryId: element.activeQueryId,
       input: '',

@@ -170,7 +170,7 @@ export const SearchboxMixin = <T extends Constructor<CrLitElement>>(
     }
 
     queryAutocomplete(
-        input: string, preventInlineAutocomplete: boolean = false) {
+        input: string, preventInlineAutocomplete: boolean, isOnFocus: boolean) {
       this.activeQueryId = this.nextQueryId_++;
       this.lastQueriedInput = input;
 
@@ -186,7 +186,8 @@ export const SearchboxMixin = <T extends Constructor<CrLitElement>>(
           this.getInputElement().inputElement.selectionStart || 0 :
           input.length;
       this.pageHandler().queryAutocomplete(
-          this.activeQueryId, input, preventInlineAutocomplete, cursorPosition);
+          this.activeQueryId, input, preventInlineAutocomplete, cursorPosition,
+          isOnFocus);
 
       this.dispatchEvent(new CustomEvent('query-autocomplete', {
         bubbles: true,
@@ -270,15 +271,26 @@ export const SearchboxMixin = <T extends Constructor<CrLitElement>>(
       if (this.dropdownIsVisible) {
         return;
       }
-      this.queryAutocomplete(e.detail.value);
+      const input = e.detail.value;
+      // Empty input is only a partially accurate heuristic for determining if
+      // this is a focus input. E.g.: In the non-NTP omnibox, focus inputs will
+      // be non-empty. That's ok for now, because webUI omnibox focus is still
+      // handled by `OmniboxViewViews` and not searchbox_mixin.
+      const isOnFocus = !input;
+      this.queryAutocomplete(
+          input, /*preventInlineAutocomplete=*/ false, isOnFocus);
     }
 
     onSearchboxInputTextUpdated(
         e: CustomEvent<{value: string, isComposing: boolean}>,
         forceAutocomplete: boolean = false) {
-      const inputValue = e.detail.value;
-      if (inputValue.trim() || forceAutocomplete) {
-        this.queryAutocomplete(inputValue, e.detail.isComposing);
+      const input = e.detail.value;
+      // For now, skip autocompletion and clear matches when the trimmed input
+      // is empty. But empty inputs in keyword mode will need to show results.
+      if (input.trim() || forceAutocomplete) {
+        this.queryAutocomplete(
+            input, /*preventInlineAutocomplete=*/ e.detail.isComposing,
+            /*isOnFocus=*/ false);
       } else {
         this.clearAutocompleteMatches();
       }
@@ -370,7 +382,9 @@ export const SearchboxMixin = <T extends Constructor<CrLitElement>>(
         if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
           const inputValue = this.getInputElement().inputElement.value;
           if (inputValue.trim() || !inputValue) {
-            this.queryAutocomplete(inputValue);
+            this.queryAutocomplete(
+                inputValue, /*preventInlineAutocomplete=*/ false,
+                /*isOnFocus=*/ !inputValue);
           }
           e.preventDefault();
           return;
@@ -563,5 +577,7 @@ export interface SearchboxMixinInterface {
       forceAutocomplete?: boolean): void;
   onSelectedMatchIndexChanged(e: CustomEvent<{value: number}>): void;
   pageHandler(): PageHandlerInterface;
-  queryAutocomplete(input: string, preventInlineAutocomplete?: boolean): void;
+  queryAutocomplete(
+      input: string, preventInlineAutocomplete: boolean,
+      isOnFocus: boolean): void;
 }

@@ -323,14 +323,16 @@ interface PageHandler {
   QueryAutocomplete(int32 query_id,
                     mojo_base.mojom.String16 input,
                     bool prevent_inline_autocomplete,
-                    uint32 cursor_position);
+                    uint32 cursor_position,
+                    bool is_on_focus);
 
   // Queries autocomplete matches from the browser with preferred SuggestInventory.
   QueryAutocompleteWithSuggestInventory(int32 query_id,
                                         mojo_base.mojom.String16 input,
                                         bool prevent_inline_autocomplete,
                                         uint32 cursor_position,
-                                        SuggestInventory suggest_inventory);
+                                        SuggestInventory suggest_inventory,
+                                        bool is_on_focus);
 
   // Cancels the current autocomplete query. Clears the result set if
   // |clear_result| is true.
