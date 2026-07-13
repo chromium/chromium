@@ -1300,6 +1300,47 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Storage.DeclarativePerformanceObserver.DatabaseSize"
+    units="KB" expires_after="2026-12-19">
+  <owner>sisidovski@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Records the size of the Declarative Performance Observer SQLite database
+    file on disk. Recorded during database initialization.
+  </summary>
+</histogram>
+
+<histogram name="Storage.DeclarativePerformanceObserver.EvictionCount"
+    units="reports" expires_after="2026-12-19">
+  <owner>sisidovski@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Records the number of early failure reports evicted in a single operation to
+    satisfy storage quota constraints. Recorded whenever eviction completes.
+  </summary>
+</histogram>
+
+<histogram name="Storage.DeclarativePerformanceObserver.StoredOriginCount"
+    units="origins" expires_after="2026-12-19">
+  <owner>sisidovski@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Records the total number of unique origins with active early-failure
+    policies tracked in the SQLite database. Recorded during database
+    initialization.
+  </summary>
+</histogram>
+
+<histogram name="Storage.DeclarativePerformanceObserver.StoredReportCount"
+    units="reports" expires_after="2026-12-19">
+  <owner>sisidovski@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Records the total number of early failure reports stored in the SQLite
+    database. Recorded during database initialization.
+  </summary>
+</histogram>
+
 <histogram name="Storage.DeclarativePerformanceObserver.StoreReportResult"
     enum="DeclarativePerformanceObserverStoreReportResult"
     expires_after="2026-12-19">
