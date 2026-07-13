@@ -6962,8 +6962,16 @@ IN_PROC_BROWSER_TEST_F(SurfaceEmbedConnectorWebContentsBrowserTest,
   }
 }
 
+#if BUILDFLAG(IS_LINUX)
+// TODO(crbug.com/534306599): Disabled on Linux.
+#define MAYBE_SurfaceEmbedConnectorWithOOPIFInBFCache \
+  DISABLED_SurfaceEmbedConnectorWithOOPIFInBFCache
+#else
+#define MAYBE_SurfaceEmbedConnectorWithOOPIFInBFCache \
+  SurfaceEmbedConnectorWithOOPIFInBFCache
+#endif
 IN_PROC_BROWSER_TEST_F(SurfaceEmbedConnectorWebContentsBrowserTest,
-                       SurfaceEmbedConnectorWithOOPIFInBFCache) {
+                       MAYBE_SurfaceEmbedConnectorWithOOPIFInBFCache) {
   ASSERT_TRUE(embedded_test_server()->Start());
   const GURL outer_url(
       embedded_test_server()->GetURL("a.com", "/simple_page.html"));
