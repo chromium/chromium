@@ -99,7 +99,7 @@ class FetchDataLoaderAsBlobHandle final : public FetchDataLoader,
 
   void DidFetchDataLoadFailed() override { client_->DidFetchDataLoadFailed(); }
 
-  void Abort(ScriptValue reason) override { client_->Abort(reason); }
+  void Abort() override { client_->Abort(); }
 
   void Trace(Visitor* visitor) const override {
     visitor->Trace(consumer_);

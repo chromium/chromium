@@ -29,7 +29,6 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/loader/fetch/text_resource_decoder_options.h"
 #include "third_party/blink/renderer/platform/network/parsed_content_type.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_encoding.h"
 
@@ -58,15 +57,9 @@ class BodyConsumerBase : public GarbageCollected<BodyConsumerBase>,
     }
   }
 
-  void Abort(ScriptValue reason) override {
-    if (RuntimeEnabledFeatures::ForwardReasonToFetchBodyAbortEnabled()) {
-      // This is the standardized behavior, but is currently behind an
-      // experiment as it's a potentially breaking change.
-      resolver_->Reject(reason);
-    } else {
-      resolver_->Reject(
-          MakeGarbageCollected<DOMException>(DOMExceptionCode::kAbortError));
-    }
+  void Abort() override {
+    resolver_->Reject(
+        MakeGarbageCollected<DOMException>(DOMExceptionCode::kAbortError));
   }
 
   // Resource Timing event is not yet added, so delay the resolution timing

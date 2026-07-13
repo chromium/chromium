@@ -53,7 +53,7 @@ class BytesConsumerTestUtil {
     MOCK_METHOD1(DidFetchDataLoadedString, void(const String&));
     MOCK_METHOD0(DidFetchDataLoadStream, void());
     MOCK_METHOD0(DidFetchDataLoadFailed, void());
-    MOCK_METHOD1(Abort, void(ScriptValue));
+    MOCK_METHOD0(Abort, void());
 
     void DidFetchDataLoadedArrayBuffer(DOMArrayBuffer* array_buffer) override {
       DidFetchDataLoadedArrayBufferMock(array_buffer);

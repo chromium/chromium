@@ -353,9 +353,7 @@ class Cache::ResponseBodyLoader final
     barrier_callback_->FailedResponse();
   }
 
-  void Abort(ScriptValue reason) override {
-    barrier_callback_->AbortedResponse();
-  }
+  void Abort() override { barrier_callback_->AbortedResponse(); }
 
   Member<ScriptState> script_state_;
   Member<BarrierCallbackForPutResponse> barrier_callback_;
@@ -617,7 +615,7 @@ class Cache::CodeCacheHandleCallbackForPut final
     barrier_callback_->OnError("network error");
   }
 
-  void Abort(ScriptValue reason) override { barrier_callback_->Abort(); }
+  void Abort() override { barrier_callback_->Abort(); }
 
   void Trace(Visitor* visitor) const override {
     visitor->Trace(script_state_);

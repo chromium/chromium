@@ -29,7 +29,6 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/cached_metadata_handler.h"
 #include "third_party/blink/renderer/platform/network/encoded_form_data.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/scheduler/public/frame_or_worker_scheduler.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "v8/include/v8.h"
@@ -91,7 +90,7 @@ class BodyStreamBuffer::LoaderClient final
     client_->DidFetchDataLoadFailed();
   }
 
-  void Abort(ScriptValue reason) override { NOTREACHED(); }
+  void Abort() override { NOTREACHED(); }
 
   void Trace(Visitor* visitor) const override {
     visitor->Trace(buffer_);
@@ -260,12 +259,11 @@ void BodyStreamBuffer::StartLoading(FetchDataLoader* loader,
 
   if (signal_) {
     if (signal_->aborted()) {
-      AbortLoader(client);
+      client->Abort();
       return;
     }
     loader_client_abort_handle_ = signal_->AddAlgorithm(
-        BindOnce(&BodyStreamBuffer::AbortLoader, WrapWeakPersistent(this),
-                 WrapWeakPersistent(client)));
+        BindOnce(&FetchDataLoader::Client::Abort, WrapWeakPersistent(client)));
   }
   loader_ = loader;
   auto* handle = ReleaseHandle(exception_state);
@@ -469,31 +467,13 @@ void BodyStreamBuffer::Abort() {
   }
   auto* byte_controller =
       To<ReadableByteStreamController>(stream_->GetController());
-
-  v8::Local<v8::Value> reason;
-  if (signal_ &&
-      RuntimeEnabledFeatures::ForwardReasonToFetchBodyAbortEnabled()) {
-    reason = signal_->reason(script_state_).V8Value();
-  } else {
-    reason = V8ThrowDOMException::CreateOrEmpty(script_state_->GetIsolate(),
-                                                DOMExceptionCode::kAbortError,
-                                                "BodyStreamBuffer was aborted");
-  }
-
-  CHECK(!reason.IsEmpty());
-  ReadableByteStreamController::Error(script_state_, byte_controller, reason);
+  v8::Local<v8::Value> dom_exception = V8ThrowDOMException::CreateOrEmpty(
+      script_state_->GetIsolate(), DOMExceptionCode::kAbortError,
+      "BodyStreamBuffer was aborted");
+  CHECK(!dom_exception.IsEmpty());
+  ReadableByteStreamController::Error(script_state_, byte_controller,
+                                      dom_exception);
   CancelConsumer();
-}
-
-void BodyStreamBuffer::AbortLoader(FetchDataLoader::Client* client) {
-  if (RuntimeEnabledFeatures::ForwardReasonToFetchBodyAbortEnabled()) {
-    client->Abort(signal_->reason(script_state_));
-  } else {
-    v8::Local<v8::Value> error = V8ThrowDOMException::CreateOrEmpty(
-        script_state_->GetIsolate(), DOMExceptionCode::kAbortError,
-        "BodyStreamBuffer was aborted");
-    client->Abort(ScriptValue(script_state_->GetIsolate(), error));
-  }
 }
 
 void BodyStreamBuffer::Close(ExceptionState& exception_state) {

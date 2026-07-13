@@ -91,7 +91,7 @@ class FetchDataLoaderTest : public testing::Test {
     void DidFetchDataLoadFailed() override {
       completion_notifier_->SignalError(BytesConsumer::Error());
     }
-    void Abort(ScriptValue reason) override {
+    void Abort() override {
       completion_notifier_->SignalError(BytesConsumer::Error());
     }
 
