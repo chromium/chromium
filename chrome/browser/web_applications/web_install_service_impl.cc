@@ -335,6 +335,13 @@ void WebInstallServiceImpl::InstallFromManifest(
                               /*triggered_from_element=*/false);
 }
 
+void WebInstallServiceImpl::ElementInstallFromManifest(
+    blink::mojom::ManifestInstallOptionsPtr options,
+    InstallFromManifestCallback callback) {
+  InstallFromManifestInternal(std::move(options), std::move(callback),
+                              /*triggered_from_element=*/true);
+}
+
 void WebInstallServiceImpl::InstallFromManifestInternal(
     blink::mojom::ManifestInstallOptionsPtr options,
     InstallFromManifestCallback callback,

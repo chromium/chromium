@@ -9,7 +9,7 @@
   ImplementedAs=NavigatorWebInstall
 ] partial interface Navigator {
   [CallWith=ScriptState, RaisesException, MeasureAs="WebDXFeature::kNavigatorInstall"] Promise<WebInstallResult> install();
-  // TODO(crbug.com/520025525): Cleanup install_url code, remove USVString overloads.
+  // TODO(crbug.com/520025525): Remove install_url code, remove USVString overloads.
   [CallWith=ScriptState, RaisesException, MeasureAs="WebDXFeature::kNavigatorInstall"] Promise<WebInstallResult> install(USVString install_url);
   [CallWith=ScriptState, RaisesException, MeasureAs="WebDXFeature::kNavigatorInstall"] Promise<WebInstallResult> install(USVString install_url, USVString manifest_id);
   [CallWith=ScriptState, RaisesException, MeasureAs="WebDXFeature::kNavigatorInstall"] Promise<WebInstallResult> install(InstallParams params);

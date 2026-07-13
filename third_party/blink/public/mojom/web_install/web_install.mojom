@@ -15,7 +15,7 @@ enum WebInstallServiceResult {
   kDataError,
 };
 
-// TODO(crbug.com/520025525): Cleanup install_url code.
+// TODO(crbug.com/520025525): Remove install_url code.
 // Parameters passed into calls to Install.
 // `manifest_id` is optional to support the 1-parameter JS install API.
 struct InstallOptions {
@@ -60,5 +60,10 @@ interface WebInstallService {
   // fetching and parsing the JSON from `manifest_url` and presents the install
   // for user review.
   InstallFromManifest(ManifestInstallOptions options)
+      => (WebInstallServiceResult result);
+
+  // Installs a web app from its manifest URL directly when triggered from an
+  // <install> element.
+  ElementInstallFromManifest(ManifestInstallOptions options)
       => (WebInstallServiceResult result);
 };

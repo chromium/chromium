@@ -100,6 +100,15 @@ class MockWebInstallService : public mojom::blink::WebInstallService {
     NOTIMPLEMENTED();
   }
 
+  void ElementInstallFromManifest(
+      mojom::blink::ManifestInstallOptionsPtr options,
+      InstallFromManifestCallback callback) override {
+    CHECK(!manifest_callback_) << "Keep the tests simple: one call at a time.";
+    manifest_options_ = std::move(options);
+    manifest_callback_ = std::move(callback);
+    called_.SetValue();
+  }
+
   // Test helpers:
   void WaitForCall() { EXPECT_TRUE(called_.Wait()); }
 
@@ -126,12 +135,38 @@ class MockWebInstallService : public mojom::blink::WebInstallService {
     called_.Clear();
   }
 
+  void RespondManifestWithSuccess() {
+    CHECK(manifest_callback_);
+    std::move(manifest_callback_)
+        .Run(mojom::blink::WebInstallServiceResult::kSuccess);
+    called_.Clear();
+  }
+
+  void RespondManifestWithAbortError() {
+    CHECK(manifest_callback_);
+    std::move(manifest_callback_)
+        .Run(mojom::blink::WebInstallServiceResult::kAbortError);
+    called_.Clear();
+  }
+
+  void RespondManifestWithDataError() {
+    CHECK(manifest_callback_);
+    std::move(manifest_callback_)
+        .Run(mojom::blink::WebInstallServiceResult::kDataError);
+    called_.Clear();
+  }
+
   const mojom::blink::InstallOptionsPtr& options() const { return options_; }
+  const mojom::blink::ManifestInstallOptionsPtr& manifest_options() const {
+    return manifest_options_;
+  }
 
  private:
   mojo::ReceiverSet<mojom::blink::WebInstallService> receivers_;
   mojom::blink::InstallOptionsPtr options_;
+  mojom::blink::ManifestInstallOptionsPtr manifest_options_;
   InstallCallback callback_;
+  InstallFromManifestCallback manifest_callback_;
   bool is_installed_ = false;
   base::test::TestFuture<void> called_;
 };
@@ -459,6 +494,188 @@ TEST_F(HTMLInstallElementTestBase, InvalidManifestIdMakesElementInvalid) {
 
   // web_install_service_ should NOT have been called since the manifestid is
   // invalid.
+}
+
+TEST_F(HTMLInstallElementTestBase, ManifestAttribute) {
+  HTMLInstallElement* element =
+      MakeGarbageCollected<HTMLInstallElement>(GetDocument());
+  EXPECT_TRUE(element->Manifest().empty());
+
+  element->setAttribute(html_names::kManifestAttr, AtomicString(kExampleSite));
+  EXPECT_EQ(kExampleSite, element->Manifest());
+}
+
+TEST_F(HTMLInstallElementTestBase, ActivationWithManifestAttribute) {
+  HTMLInstallElement* element =
+      MakeGarbageCollected<HTMLInstallElement>(GetDocument());
+  element->setAttribute(html_names::kManifestAttr, AtomicString(kExampleSite));
+  WaitForElementRegistration(element);
+
+  element->DispatchEvent(*Event::Create(event_type_names::kDOMActivate));
+
+  web_install_service_.WaitForCall();
+
+  // manifest attribute was specified, so ManifestInstallOptions were sent.
+  EXPECT_FALSE(web_install_service_.manifest_options().is_null());
+  EXPECT_EQ(web_install_service_.manifest_options()->manifest_url,
+            KURL(kExampleSite));
+  EXPECT_FALSE(
+      web_install_service_.manifest_options()->manifest_id.has_value());
+
+  // Success should trigger a `promptaction` event.
+  web_install_service_.RespondManifestWithSuccess();
+  MakeGarbageCollected<WaitForEvent>(element, event_type_names::kPromptaction);
+}
+
+TEST_F(HTMLInstallElementTestBase, ActivationWithManifestAndManifestId) {
+  HTMLInstallElement* element =
+      MakeGarbageCollected<HTMLInstallElement>(GetDocument());
+  element->setAttribute(html_names::kManifestAttr, AtomicString(kExampleSite));
+  constexpr char kManifestId[] = "https://site.example/my-app-id";
+  element->setAttribute(html_names::kManifestidAttr, AtomicString(kManifestId));
+  WaitForElementRegistration(element);
+
+  element->DispatchEvent(*Event::Create(event_type_names::kDOMActivate));
+
+  web_install_service_.WaitForCall();
+
+  EXPECT_FALSE(web_install_service_.manifest_options().is_null());
+  EXPECT_EQ(web_install_service_.manifest_options()->manifest_url,
+            KURL(kExampleSite));
+  EXPECT_EQ(web_install_service_.manifest_options()->manifest_id,
+            KURL(kManifestId));
+
+  web_install_service_.RespondManifestWithSuccess();
+  MakeGarbageCollected<WaitForEvent>(element, event_type_names::kPromptaction);
+}
+
+TEST_F(HTMLInstallElementTestBase, ActivationWithManifestAbortError) {
+  HTMLInstallElement* element =
+      MakeGarbageCollected<HTMLInstallElement>(GetDocument());
+  element->setAttribute(html_names::kManifestAttr, AtomicString(kExampleSite));
+  WaitForElementRegistration(element);
+
+  element->DispatchEvent(*Event::Create(event_type_names::kDOMActivate));
+
+  web_install_service_.WaitForCall();
+
+  web_install_service_.RespondManifestWithAbortError();
+  MakeGarbageCollected<WaitForEvent>(element, event_type_names::kPromptdismiss);
+}
+
+TEST_F(HTMLInstallElementTestBase, ActivationWithManifestDataError) {
+  HTMLInstallElement* element =
+      MakeGarbageCollected<HTMLInstallElement>(GetDocument());
+  element->setAttribute(html_names::kManifestAttr, AtomicString(kExampleSite));
+  WaitForElementRegistration(element);
+
+  element->DispatchEvent(*Event::Create(event_type_names::kDOMActivate));
+
+  web_install_service_.WaitForCall();
+
+  web_install_service_.RespondManifestWithDataError();
+
+  {
+    ScopedBypassPepcSecurityForTestingForTest scoped_feature(false);
+    MakeGarbageCollected<WaitForEvent>(element,
+                                       event_type_names::kPromptdismiss);
+
+    EXPECT_FALSE(element->IsClickingEnabled());
+    EXPECT_FALSE(element->isValid());
+    EXPECT_EQ(element->invalidReason(), String(kInstallDataInvalidReason));
+  }
+}
+
+// TODO(crbug.com/520025525): Remove install url code.
+TEST_F(HTMLInstallElementTestBase, InstallUrlTakesPriorityOverManifest) {
+  // When both installurl and manifest are set, installurl wins.
+  HTMLInstallElement* element =
+      MakeGarbageCollected<HTMLInstallElement>(GetDocument());
+  element->setAttribute(html_names::kInstallurlAttr,
+                        AtomicString(kExampleSite));
+  element->setAttribute(html_names::kManifestAttr,
+                        AtomicString("https://other.example/manifest.json"));
+  WaitForElementRegistration(element);
+
+  element->DispatchEvent(*Event::Create(event_type_names::kDOMActivate));
+
+  web_install_service_.WaitForCall();
+
+  // Should have used InstallFromElement with install_url, not
+  // InstallFromManifest.
+  EXPECT_FALSE(web_install_service_.options().is_null());
+  EXPECT_EQ(web_install_service_.options()->install_url, KURL(kExampleSite));
+  EXPECT_TRUE(web_install_service_.manifest_options().is_null());
+
+  web_install_service_.RespondWithSuccess();
+  MakeGarbageCollected<WaitForEvent>(element, event_type_names::kPromptaction);
+}
+
+// TODO(crbug.com/520025525): Remove install url code.
+TEST_F(HTMLInstallElementTestBase, AllThreeAttributesUsesInstallUrl) {
+  // When installurl, manifest, and manifestid are all set, installurl wins
+  // and manifestid is passed through to the installurl path.
+  HTMLInstallElement* element =
+      MakeGarbageCollected<HTMLInstallElement>(GetDocument());
+  element->setAttribute(html_names::kInstallurlAttr,
+                        AtomicString(kExampleSite));
+  element->setAttribute(html_names::kManifestAttr,
+                        AtomicString("https://other.example/manifest.json"));
+  constexpr char kManifestId[] = "https://site.example/my-app-id";
+  element->setAttribute(html_names::kManifestidAttr, AtomicString(kManifestId));
+  WaitForElementRegistration(element);
+
+  element->DispatchEvent(*Event::Create(event_type_names::kDOMActivate));
+
+  web_install_service_.WaitForCall();
+
+  // Should use InstallFromElement (installurl path), not InstallFromManifest.
+  EXPECT_FALSE(web_install_service_.options().is_null());
+  EXPECT_EQ(web_install_service_.options()->install_url, KURL(kExampleSite));
+  EXPECT_EQ(web_install_service_.options()->manifest_id, KURL(kManifestId));
+  EXPECT_TRUE(web_install_service_.manifest_options().is_null());
+
+  web_install_service_.RespondWithSuccess();
+  MakeGarbageCollected<WaitForEvent>(element, event_type_names::kPromptaction);
+}
+
+TEST_F(HTMLInstallElementTestBase, ManifestIdOnlyMakesElementInvalid) {
+  // manifestid alone is not supported. The element should be disabled on
+  // activation and a promptdismiss event fired.
+  HTMLInstallElement* element =
+      MakeGarbageCollected<HTMLInstallElement>(GetDocument());
+  element->setAttribute(html_names::kManifestidAttr,
+                        AtomicString("https://site.example/manifest.json"));
+  WaitForElementRegistration(element);
+
+  task_environment().FastForwardBy(base::Milliseconds(500));
+
+  ScopedBypassPepcSecurityForTestingForTest scoped_feature(false);
+  element->DispatchEvent(*Event::Create(event_type_names::kDOMActivate));
+
+  EXPECT_FALSE(element->IsClickingEnabled());
+  EXPECT_FALSE(element->isValid());
+  EXPECT_EQ(element->invalidReason(), String(kInstallDataInvalidReason));
+
+  // web_install_service_ should NOT have been called since manifestid alone is
+  // not supported.
+}
+
+TEST_F(HTMLInstallElementTestBase, InvalidManifestUrlMakesElementInvalid) {
+  HTMLInstallElement* element =
+      MakeGarbageCollected<HTMLInstallElement>(GetDocument());
+  element->setAttribute(html_names::kManifestAttr,
+                        AtomicString("not a valid url"));
+  WaitForElementRegistration(element);
+
+  task_environment().FastForwardBy(base::Milliseconds(500));
+
+  ScopedBypassPepcSecurityForTestingForTest scoped_feature(false);
+  element->DispatchEvent(*Event::Create(event_type_names::kDOMActivate));
+
+  EXPECT_FALSE(element->IsClickingEnabled());
+  EXPECT_FALSE(element->isValid());
+  EXPECT_EQ(element->invalidReason(), String(kInstallDataInvalidReason));
 }
 
 }  // namespace blink

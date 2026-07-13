@@ -4746,6 +4746,7 @@ interface HTMLInstallElement : HTMLElement
     getter installURL
     getter invalidReason
     getter isValid
+    getter manifest
     getter manifestId
     getter onpromptaction
     getter onpromptdismiss
@@ -4753,6 +4754,7 @@ interface HTMLInstallElement : HTMLElement
     getter permissionStatus
     method constructor
     setter installURL
+    setter manifest
     setter manifestId
     setter onpromptaction
     setter onpromptdismiss

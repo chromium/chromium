@@ -109,13 +109,16 @@ class WebInstallServiceImpl
   // blink::mojom::WebInstallService implementation:
   void IsInstalled(blink::mojom::InstallOptionsPtr options,
                    IsInstalledCallback callback) override;
-  // TODO(crbug.com/520025525): Clean up install_url code.
+  // TODO(crbug.com/520025525): Remove install_url code.
   void Install(blink::mojom::InstallOptionsPtr options,
                InstallCallback callback) override;
   void InstallFromElement(blink::mojom::InstallOptionsPtr options,
                           InstallCallback callback) override;
   void InstallFromManifest(blink::mojom::ManifestInstallOptionsPtr options,
                            InstallFromManifestCallback callback) override;
+  void ElementInstallFromManifest(
+      blink::mojom::ManifestInstallOptionsPtr options,
+      InstallFromManifestCallback callback) override;
 
  private:
   // Shared implementation for Install() and InstallFromElement().

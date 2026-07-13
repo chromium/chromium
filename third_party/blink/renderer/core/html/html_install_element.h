@@ -40,6 +40,7 @@ class CORE_EXPORT HTMLInstallElement : public HTMLCapabilityElementBase {
 
   const String& InstallUrl() const;
   const String& ManifestId() const;
+  const String& Manifest() const;
   void Trace(Visitor*) const override;
 
   bool show_as_launch() const { return show_as_launch_; }
@@ -64,8 +65,10 @@ class CORE_EXPORT HTMLInstallElement : public HTMLCapabilityElementBase {
 
   void OnActivated();
   mojom::blink::InstallOptionsPtr GetCheckedInstallOptions();
+  mojom::blink::ManifestInstallOptionsPtr GetCheckedManifestInstallOptions();
   void OnInstallResult(mojom::blink::WebInstallServiceResult,
                        const KURL& manifest_id);
+  void OnManifestInstallResult(mojom::blink::WebInstallServiceResult);
 
   HeapMojoRemote<mojom::blink::WebInstallService> service_;
   // Controls whether the element should render as a launch button.

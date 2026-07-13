@@ -43,6 +43,10 @@ const String& HTMLInstallElement::ManifestId() const {
   return FastGetAttribute(html_names::kManifestidAttr).GetString();
 }
 
+const String& HTMLInstallElement::Manifest() const {
+  return FastGetAttribute(html_names::kManifestAttr).GetString();
+}
+
 void HTMLInstallElement::Trace(Visitor* visitor) const {
   visitor->Trace(service_);
   HTMLCapabilityElementBase::Trace(visitor);
@@ -50,21 +54,10 @@ void HTMLInstallElement::Trace(Visitor* visitor) const {
 
 void HTMLInstallElement::UpdateAppearance() {
   // If no attributes provided, check if current document is already installed.
-  if (InstallUrl().empty() && ManifestId().empty()) {
+  if (InstallUrl().empty() && ManifestId().empty() && Manifest().empty()) {
     // TODO(crbug.com/485281836): For now, always return false while we discuss
     // the appropriate long-term mitigation for width-based side channel
     // attacks. ("Launch" is slightly wider than "Install").
-    OnIsInstalledResult(false);
-    return;
-  }
-
-  // TODO(crbug.com/477643920): Evaluate element behavior with illegal/invalid
-  // attributes. (Should we hide or grey out button, etc.).
-  mojom::blink::InstallOptionsPtr options = GetCheckedInstallOptions();
-
-  if (!options) {
-    // Illegal arguments will never be installed. Skip straight to the
-    // IsInstalled result so we can post the UpdateAppearanceTask.
     OnIsInstalledResult(false);
     return;
   }
@@ -128,6 +121,7 @@ void HTMLInstallElement::UpdateIcon(mojom::blink::PermissionName permission) {
 bool HTMLInstallElement::IsURLAttribute(const Attribute& attr) const {
   return attr.GetName() == html_names::kManifestidAttr ||
          attr.GetName() == html_names::kInstallurlAttr ||
+         attr.GetName() == html_names::kManifestAttr ||
          HTMLElement::IsURLAttribute(attr);
 }
 
@@ -173,30 +167,62 @@ void HTMLInstallElement::OnActivated() {
   }
 
   // If no attributes provided, install current document.
-  if (InstallUrl().empty() && ManifestId().empty()) {
+  if (InstallUrl().empty() && ManifestId().empty() && Manifest().empty()) {
     WebInstallService()->InstallFromElement(
         /*options=*/nullptr, BindOnce(&HTMLInstallElement::OnInstallResult,
                                       WrapWeakPersistent(this)));
     return;
   }
 
-  mojom::blink::InstallOptionsPtr options = GetCheckedInstallOptions();
-  if (!options) {
-    // TODO(crbug.com/481519343): Add long-term solution for error handling (a
-    // separate error attribute linked to the install result, etc.).
-    // Disable the element to prevent future activations and inform the
-    // developer.
-    HandleInstallDataError();
-    DispatchEvent(
-        *Event::CreateCancelableBubble(event_type_names::kPromptdismiss));
+  // Install URL takes priority over manifest attribute if both are set.
+  // TODO(crbug.com/520025525): Remove install url code.
+  if (!InstallUrl().empty()) {
+    mojom::blink::InstallOptionsPtr options = GetCheckedInstallOptions();
+    if (!options) {
+      // TODO(crbug.com/481519343): Revisit how to best surface this for
+      // <install> as a long-term solution
+      HandleInstallDataError();
+      DispatchEvent(
+          *Event::CreateCancelableBubble(event_type_names::kPromptdismiss));
+      return;
+    }
+
+    WebInstallService()->InstallFromElement(
+        std::move(options), BindOnce(&HTMLInstallElement::OnInstallResult,
+                                     WrapWeakPersistent(this)));
     return;
   }
 
-  WebInstallService()->InstallFromElement(
-      std::move(options),
-      BindOnce(&HTMLInstallElement::OnInstallResult, WrapWeakPersistent(this)));
+  // No Install URL was provided, but a manifest attribute was set. Initiate the
+  // browser's manifest install flow, which directly fetches the manifest file
+  // instead of loading the install URL and retrieving the manifest from there.
+  if (!Manifest().empty()) {
+    mojom::blink::ManifestInstallOptionsPtr options =
+        GetCheckedManifestInstallOptions();
+    if (!options) {
+      // TODO(crbug.com/481519343): Revisit how to best surface this for
+      // <install> as a long-term solution
+      HandleInstallDataError();
+      DispatchEvent(
+          *Event::CreateCancelableBubble(event_type_names::kPromptdismiss));
+      return;
+    }
+
+    WebInstallService()->ElementInstallFromManifest(
+        std::move(options),
+        BindOnce(&HTMLInstallElement::OnManifestInstallResult,
+                 WrapWeakPersistent(this)));
+    return;
+  }
+
+  // If we get here, only the manifest ID was set, which is considered an error
+  // case.
+  HandleInstallDataError();
+  DispatchEvent(
+      *Event::CreateCancelableBubble(event_type_names::kPromptdismiss));
 }
 
+// TODO(crbug.com/520025525): Remove install url code.
 mojom::blink::InstallOptionsPtr HTMLInstallElement::GetCheckedInstallOptions() {
   mojom::blink::InstallOptionsPtr options;
 
@@ -222,9 +248,55 @@ mojom::blink::InstallOptionsPtr HTMLInstallElement::GetCheckedInstallOptions() {
   return options;
 }
 
+// TODO(crbug.com/520025525): Remove install url code.
 void HTMLInstallElement::OnInstallResult(
     mojom::blink::WebInstallServiceResult result,
     const KURL& manifest_id) {
+  switch (result) {
+    case mojom::blink::WebInstallServiceResult::kAbortError:
+      DispatchEvent(
+          *Event::CreateCancelableBubble(event_type_names::kPromptdismiss));
+      break;
+    case mojom::blink::WebInstallServiceResult::kDataError:
+      // TODO(crbug.com/481519343): Revisit how to best surface this for
+      // <install> as a long-term solution (a separate error attribute linked to
+      // the install result, etc.).
+      // Disable the element to prevent future activations and inform the
+      // developer.
+      HandleInstallDataError();
+      DispatchEvent(
+          *Event::CreateCancelableBubble(event_type_names::kPromptdismiss));
+      break;
+    case mojom::blink::WebInstallServiceResult::kSuccess:
+      DispatchEvent(
+          *Event::CreateCancelableBubble(event_type_names::kPromptaction));
+      break;
+  }
+}
+
+mojom::blink::ManifestInstallOptionsPtr
+HTMLInstallElement::GetCheckedManifestInstallOptions() {
+  KURL manifest_url = KURL(Manifest());
+  if (!manifest_url.IsValid()) {
+    return nullptr;
+  }
+
+  auto options = mojom::blink::ManifestInstallOptions::New();
+  options->manifest_url = manifest_url;
+
+  if (!ManifestId().empty()) {
+    KURL manifest_id_url = KURL(ManifestId());
+    if (!manifest_id_url.IsValid()) {
+      return nullptr;
+    }
+    options->manifest_id = manifest_id_url;
+  }
+
+  return options;
+}
+
+void HTMLInstallElement::OnManifestInstallResult(
+    mojom::blink::WebInstallServiceResult result) {
   switch (result) {
     case mojom::blink::WebInstallServiceResult::kAbortError:
       DispatchEvent(

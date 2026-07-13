@@ -8,8 +8,11 @@
 interface HTMLInstallElement : HTMLElement {
   [HTMLConstructor] constructor();
 
+  // TODO(crbug.com/520025525): Remove install_url code. Also rename
+  // `manifestId` to `id` to match navigator_web_install.idl.
   [CEReactions, Reflect, URL] attribute USVString? installURL;
   [CEReactions, Reflect, URL] attribute USVString? manifestId;
+  [CEReactions, Reflect, URL] attribute USVString? manifest;
 };
 
 HTMLInstallElement includes InPagePermissionMixin;

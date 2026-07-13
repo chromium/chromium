@@ -31,7 +31,7 @@ const char kInvalidManifestUrlErrorDetails[] = "Invalid manifest url";
 namespace blink {
 const char NavigatorWebInstall::kSupplementName[] = "NavigatorWebInstall";
 
-// TODO(crbug.com/520025525): Cleanup install_url code.
+// TODO(crbug.com/520025525): Remove install_url code.
 void OnInstallResponse(ScriptPromiseResolver<WebInstallResult>* resolver,
                        mojom::blink::WebInstallServiceResult result,
                        const KURL& manifest_id) {
