@@ -94,10 +94,10 @@ ClipboardRequestHandler::ClipboardRequestHandler(
 void ClipboardRequestHandler::ReportWarningBypass(
     std::optional<std::u16string> user_justification) {
   ReportAnalysisConnectorWarningBypass(
-      reporting_event_router_, content_analysis_info_.get(),
+      reporting_event_router_, content_analysis_info(),
       /*source*/
       ReportingEventRouter::GetClipboardSourceString(clipboard_source_),
-      /*destination*/ url_.spec(),
+      /*destination*/ url().spec(),
       type_ == Type::kText ? "Text data" : "Image data",
       /*download_digest_sha256*/ "", type_ == Type::kText ? "text/plain" : "",
       access_point_string(), content_transfer_method_, content_size_, response_,
@@ -121,13 +121,13 @@ void ClipboardRequestHandler::UploadForDeepScanning(
 
 bool ClipboardRequestHandler::UploadDataImpl() {
   auto request = std::make_unique<ClipboardAnalysisRequest>(
-      content_analysis_info_->settings().cloud_or_local_settings,
+      content_analysis_info()->settings().cloud_or_local_settings,
       std::move(data_),
       base::BindOnce(&ClipboardRequestHandler::OnContentAnalysisResponse,
                      weak_ptr_factory_.GetWeakPtr()),
       std::move(browser_policy_getter_));
 
-  content_analysis_info_->InitializeRequest(
+  content_analysis_info()->InitializeRequest(
       request.get(), /*include_enterprise_only_fields=*/true);
   if (access_point() == DeepScanAccessPoint::COPY) {
     request->set_analysis_connector(DATA_COPIED);
@@ -138,7 +138,7 @@ bool ClipboardRequestHandler::UploadDataImpl() {
     request->set_image_paste(true);
   }
   if (type_ == Type::kText) {
-    request->set_destination(url_.spec());
+    request->set_destination(url().spec());
     std::string source_string =
         ReportingEventRouter::GetClipboardSourceString(clipboard_source_);
     if (!source_string.empty()) {
@@ -163,17 +163,18 @@ void ClipboardRequestHandler::OnContentAnalysisResponse(
     ScanRequestUploadResult result,
     ContentAnalysisResponse response) {
   response_ = std::move(response);
-  request_tokens_to_ack_final_actions_[response_.request_token()] =
-      GetAckFinalAction(response_);
+  AddRequestTokenToAckFinalAction(response_.request_token(),
+                                  GetAckFinalAction(response_));
 
-  RecordDeepScanMetrics(content_analysis_info_->settings()
+  RecordDeepScanMetrics(content_analysis_info()
+                            ->settings()
                             .cloud_or_local_settings.is_cloud_analysis(),
-                        access_point_,
-                        base::TimeTicks::Now() - upload_start_time_,
+                        access_point(),
+                        base::TimeTicks::Now() - upload_start_time(),
                         content_size_, result, response_);
 
   auto request_handler_result = CalculateRequestHandlerResult(
-      content_analysis_info_->settings(), result, response_);
+      content_analysis_info()->settings(), result, response_);
   DVLOG(1) << __func__
            << (type_ == Type::kText ? ": text result=" : ": image result=")
            << request_handler_result.complies;
@@ -182,15 +183,15 @@ void ClipboardRequestHandler::OnContentAnalysisResponse(
                      FinalContentAnalysisResult::WARNING;
 
   MaybeReportDeepScanningVerdict(
-      reporting_event_router_, content_analysis_info_.get(),
+      reporting_event_router_, content_analysis_info(),
       /*source*/
       ReportingEventRouter::GetClipboardSourceString(clipboard_source_),
-      /*destination*/ url_.spec(),
+      /*destination*/ url().spec(),
       type_ == Type::kText ? "Text data" : "Image data",
       /*download_digest_sha256*/ "", type_ == Type::kText ? "text/plain" : "",
       access_point_string(), content_transfer_method_,
       source_content_area_email_, content_size_, result, response_,
-      CalculateEventResult(content_analysis_info_->settings(),
+      CalculateEventResult(content_analysis_info()->settings(),
                            request_handler_result.complies, should_warn,
                            result));
 

@@ -99,18 +99,18 @@ void FilesRequestHandlerBase::ReportCanceledFile(size_t index) {
 
   const FileInfo& file_info = delegate_->GetFileInfo(index);
   MaybeReportDeepScanningVerdict(
-      delegate_->GetReportingEventRouter(), content_analysis_info_.get(),
+      delegate_->GetReportingEventRouter(), content_analysis_info(),
       delegate_->GetSource(), delegate_->GetDestination(),
       delegate_->GetPath(index).AsUTF8Unsafe(), file_info.sha256_or_cb,
       file_info.mime_type, access_point_string(), content_transfer_method_,
-      content_analysis_info_->GetContentAreaAccountEmail(), file_info.size,
+      content_analysis_info()->GetContentAreaAccountEmail(), file_info.size,
       ScanRequestUploadResult::kUserCancelled,
       enterprise_connectors::ContentAnalysisResponse(), EventResult::CANCELLED);
 }
 
 void FilesRequestHandlerBase::ReportWarningBypass(
     std::optional<std::u16string> user_justification) {
-  delegate_->ReportWarningBypass(user_justification, *content_analysis_info_,
+  delegate_->ReportWarningBypass(user_justification, *content_analysis_info(),
                                  access_point_string(),
                                  content_transfer_method_);
 }
@@ -126,7 +126,7 @@ bool FilesRequestHandlerBase::UploadDataImpl() {
     IncrementCrashKey(ScanningCrashKey::TOTAL_FILE_UPLOADS, file_count);
   }
 
-  if (auto prefix = AccessPointToUmaHistogramPrefix(access_point_);
+  if (auto prefix = AccessPointToUmaHistogramPrefix(access_point());
       !prefix.empty()) {
     base::UmaHistogramCustomCounts(prefix + ".FileCount", file_count, 1, 1000,
                                    100);
@@ -138,17 +138,17 @@ bool FilesRequestHandlerBase::UploadDataImpl() {
 FileAnalysisRequestBase* FilesRequestHandlerBase::PrepareFileRequest(
     size_t index) {
   auto request = delegate_->CreateFileRequest(
-      index, content_analysis_info_->settings(),
+      index, content_analysis_info()->settings(),
       base::BindOnce(&FilesRequestHandlerBase::FileRequestCallback,
                      GetWeakPtr(), index),
       base::BindOnce(&FilesRequestHandlerBase::FileRequestStartCallback,
                      GetWeakPtr(), index));
 
   FileAnalysisRequestBase* request_raw = request.get();
-  content_analysis_info_->InitializeRequest(
+  content_analysis_info()->InitializeRequest(
       request_raw, /*include_enterprise_only_fields=*/true);
   request_raw->set_analysis_connector(
-      AccessPointToEnterpriseConnector(access_point_));
+      AccessPointToEnterpriseConnector(access_point()));
   request_raw->set_source(delegate_->GetSource());
   request_raw->set_destination(delegate_->GetDestination());
   request_raw->GetRequestData(
@@ -176,7 +176,7 @@ void FilesRequestHandlerBase::OnGotFileInfo(
   file_info.size = data.size;
   file_info.mime_type = data.mime_type;
 
-  const auto& analysis_settings = content_analysis_info_->settings();
+  const auto& analysis_settings = content_analysis_info()->settings();
 
   // If block large files is enabled, then the file is too large if it exceeds
   // the max upload size limit which is currently 50MB.
@@ -227,10 +227,10 @@ void FilesRequestHandlerBase::MaybeTrackCancellation() {
     return;
   }
 
-  if (auto prefix = AccessPointToUmaHistogramPrefix(access_point_);
+  if (auto prefix = AccessPointToUmaHistogramPrefix(access_point());
       !prefix.empty()) {
     base::UmaHistogramMediumTimes(base::StrCat({prefix, ".Cancelled.Duration"}),
-                                  base::TimeTicks::Now() - upload_start_time_);
+                                  base::TimeTicks::Now() - upload_start_time());
     base::UmaHistogramCustomCounts(
         base::StrCat({prefix, ".Cancelled.BatchSize"}),
         delegate_->GetFileCount(), 1, 1000, 100);
@@ -289,13 +289,13 @@ void FilesRequestHandlerBase::FileRequestCallback(
   // example, zero length files.
   if (upload_result == ScanRequestUploadResult::kSuccess &&
       response.has_request_token()) {
-    request_tokens_to_ack_final_actions_[response.request_token()] =
-        GetAckFinalAction(response);
+    AddRequestTokenToAckFinalAction(response.request_token(),
+                                    GetAckFinalAction(response));
   }
 
   if (upload_result == ScanRequestUploadResult::kTooManyRequests) {
     if (!throttled_) {
-      if (auto prefix = AccessPointToUmaHistogramPrefix(access_point_);
+      if (auto prefix = AccessPointToUmaHistogramPrefix(access_point());
           !prefix.empty()) {
         base::UmaHistogramBoolean(prefix + ".Throttled", true);
       }
@@ -303,7 +303,7 @@ void FilesRequestHandlerBase::FileRequestCallback(
     throttled_ = true;
   }
 
-  const auto& analysis_settings = content_analysis_info_->settings();
+  const auto& analysis_settings = content_analysis_info()->settings();
   RequestHandlerResult request_handler_result =
       CalculateRequestHandlerResult(analysis_settings, upload_result, response);
   delegate_->UpdateRequestHandlerResult(index, request_handler_result,
@@ -316,20 +316,20 @@ void FilesRequestHandlerBase::FileRequestCallback(
   base::TimeTicks start_timestamp = delegate_->GetFileScanStartTime(index);
 
   if (start_timestamp == base::TimeTicks::Min()) {
-    start_timestamp = upload_start_time_;
+    start_timestamp = upload_start_time();
   }
 
   RecordDeepScanMetrics(
       analysis_settings.cloud_or_local_settings.is_cloud_analysis(),
-      access_point_, base::TimeTicks::Now() - start_timestamp, file_info.size,
+      access_point(), base::TimeTicks::Now() - start_timestamp, file_info.size,
       upload_result, response);
 
   MaybeReportDeepScanningVerdict(
-      delegate_->GetReportingEventRouter(), content_analysis_info_.get(),
+      delegate_->GetReportingEventRouter(), content_analysis_info(),
       delegate_->GetSource(), delegate_->GetDestination(),
       delegate_->GetPath(index).AsUTF8Unsafe(), file_info.sha256_or_cb,
       file_info.mime_type, access_point_string(), content_transfer_method_,
-      content_analysis_info_->GetContentAreaAccountEmail(), file_info.size,
+      content_analysis_info()->GetContentAreaAccountEmail(), file_info.size,
       upload_result, response,
       CalculateEventResult(analysis_settings, request_handler_result.complies,
                            result_is_warning, upload_result));

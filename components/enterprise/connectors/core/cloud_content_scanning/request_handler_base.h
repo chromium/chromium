@@ -66,16 +66,19 @@ class RequestHandlerBase {
   DeepScanAccessPoint access_point() const;
   virtual std::string access_point_string() const;
   ContentAnalysisInfoBase* content_analysis_info() const;
+  const GURL& url() const;
+  void AddRequestTokenToAckFinalAction(
+      const std::string& token,
+      ContentAnalysisAcknowledgement::FinalAction final_action);
+
+  // Returns the BinaryUploadService used to upload content for deep scanning.
+  BinaryUploadService* GetBinaryUploadService();
 
  private:
   // Uploads the actual requests. To be implemented by child classes.
   // Returns true if uploading is occurring in the background and false if there
   // is nothing to do. This function is called by UploadData().
   virtual bool UploadDataImpl() = 0;
-
- protected:
-  // Returns the BinaryUploadService used to upload content for deep scanning.
-  BinaryUploadService* GetBinaryUploadService();
 
   raw_ptr<ContentAnalysisInfoBase> content_analysis_info_ = nullptr;
   base::WeakPtr<BinaryUploadService> upload_service_ = nullptr;

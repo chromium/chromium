@@ -104,8 +104,8 @@ void PagePrintRequestHandler::ReportWarningBypass(
     std::optional<std::u16string> user_justification) {
   ReportAnalysisConnectorWarningBypass(
       ReportingEventRouterFactory::GetForBrowserContext(profile_),
-      content_analysis_info_.get(), /*source*/ "",
-      /*destination*/ printer_name_, content_analysis_info_->tab_title(),
+      content_analysis_info(), /*source*/ "",
+      /*destination*/ printer_name_, content_analysis_info()->tab_title(),
       /*sha256*/ std::string(),
       /*mime_type*/ std::string(), kPagePrintDataTransferEventTrigger,
       /*content_tranfer_method*/ "",
@@ -123,13 +123,13 @@ void PagePrintRequestHandler::UploadForDeepScanning(
 bool PagePrintRequestHandler::UploadDataImpl() {
   page_size_bytes_ = page_region_.GetSize();
   auto request = std::make_unique<PagePrintAnalysisRequest>(
-      content_analysis_info_->settings(), std::move(page_region_),
+      content_analysis_info()->settings(), std::move(page_region_),
       base::BindOnce(&PagePrintRequestHandler::OnContentAnalysisResponse,
                      weak_ptr_factory_.GetWeakPtr()));
 
-  content_analysis_info_->InitializeRequest(request.get(), true);
+  content_analysis_info()->InitializeRequest(request.get(), true);
   request->set_analysis_connector(PRINT);
-  request->set_filename(content_analysis_info_->tab_title());
+  request->set_filename(content_analysis_info()->tab_title());
   if (!printer_name_.empty()) {
     request->set_printer_name(printer_name_);
   }
@@ -143,7 +143,7 @@ bool PagePrintRequestHandler::UploadDataImpl() {
       "Enterprise.FileAnalysisRequest.PrintedPageSize", page_size_bytes_ / 1024,
       1, kMaxPagePrintUploadSizeMetricsKB, 50);
 
-  if (ShouldNotUploadLargePage(content_analysis_info_->settings(),
+  if (ShouldNotUploadLargePage(content_analysis_info()->settings(),
                                page_size_bytes_)) {
     // The request shouldn't be finished early synchronously so that
     // `UploadData()` can return "false" to `CreateForWebContents()` and let
@@ -163,17 +163,18 @@ void PagePrintRequestHandler::OnContentAnalysisResponse(
     ScanRequestUploadResult result,
     ContentAnalysisResponse response) {
   response_ = std::move(response);
-  request_tokens_to_ack_final_actions_[response_.request_token()] =
-      GetAckFinalAction(response_);
+  AddRequestTokenToAckFinalAction(response_.request_token(),
+                                  GetAckFinalAction(response_));
 
-  RecordDeepScanMetrics(content_analysis_info_->settings()
+  RecordDeepScanMetrics(content_analysis_info()
+                            ->settings()
                             .cloud_or_local_settings.is_cloud_analysis(),
                         DeepScanAccessPoint::PRINT,
-                        base::TimeTicks::Now() - upload_start_time_,
+                        base::TimeTicks::Now() - upload_start_time(),
                         page_size_bytes_, result, response_);
 
   auto request_handler_result = CalculateRequestHandlerResult(
-      content_analysis_info_->settings(), result, response_);
+      content_analysis_info()->settings(), result, response_);
   DVLOG(1) << __func__ << ": print result=" << request_handler_result.complies;
 
   bool should_warn = request_handler_result.final_result ==
@@ -181,15 +182,15 @@ void PagePrintRequestHandler::OnContentAnalysisResponse(
 
   MaybeReportDeepScanningVerdict(
       ReportingEventRouterFactory::GetForBrowserContext(profile_),
-      content_analysis_info_.get(),
+      content_analysis_info(),
       /*source*/ "",
-      /*destination*/ printer_name_, content_analysis_info_->tab_title(),
+      /*destination*/ printer_name_, content_analysis_info()->tab_title(),
       /*sha256*/ std::string(),
       /*mime_type*/ std::string(), kPagePrintDataTransferEventTrigger,
       /*content_tranfer_method*/ "",
-      content_analysis_info_->GetContentAreaAccountEmail(),
+      content_analysis_info()->GetContentAreaAccountEmail(),
       /*content_size*/ -1, result, response_,
-      CalculateEventResult(content_analysis_info_->settings(),
+      CalculateEventResult(content_analysis_info()->settings(),
                            request_handler_result.complies, should_warn,
                            result));
 
