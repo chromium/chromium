@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_OMNIBOX_OMNIBOX_POPUP_FULL_PRESENTER_H_
 #define CHROME_BROWSER_UI_VIEWS_OMNIBOX_OMNIBOX_POPUP_FULL_PRESENTER_H_
 
+#include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter_base.h"
@@ -17,7 +18,8 @@ class OmniboxController;
 
 // Implements subclass of OmniboxPopupPresenterBase to present a single full
 // WebUI (input row + suggestions dropdown) into the Omnibox popup.
-class OmniboxPopupFullPresenter : public OmniboxPopupPresenterBase {
+class OmniboxPopupFullPresenter : public OmniboxPopupPresenterBase,
+                                  public views::WidgetObserver {
  public:
   OmniboxPopupFullPresenter(LocationBar* location_bar,
                             OmniboxPopupPresenterDelegate& presenter_delegate,
@@ -54,13 +56,24 @@ class OmniboxPopupFullPresenter : public OmniboxPopupPresenterBase {
   void WidgetDestroyed() override;
 
  private:
+  // views::WidgetObserver:
+  // Used to close the popup and show the omnibox_view_views if the correct
+  // conditions are met.
+  void OnWidgetActivationChanged(views::Widget* widget, bool active) override;
   void StopForwardingEvents();
+
+  void DeactivatePopupAndKillFocus();
+
+  base::ScopedObservation<views::Widget, views::WidgetObserver>
+      widget_observation_{this};
 
   // Timer to stop forwarding events after a short delay.
   base::OneShotTimer forward_events_timer_;
 
   // Whether the "first shown" metrics have been logged at least once.
   bool logged_first_shown_metric_ = false;
+
+  base::WeakPtrFactory<OmniboxPopupFullPresenter> weak_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_OMNIBOX_OMNIBOX_POPUP_FULL_PRESENTER_H_

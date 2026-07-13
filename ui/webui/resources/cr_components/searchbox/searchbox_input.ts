@@ -297,7 +297,6 @@ export class SearchboxInputElement extends SearchboxInputElementBase {
     if (e && e.button !== 0) {
       return;
     }
-    this.fire('input-mousedown');
     this.fire('input-focus-changed', {value: this.$.input.value});
   }
 

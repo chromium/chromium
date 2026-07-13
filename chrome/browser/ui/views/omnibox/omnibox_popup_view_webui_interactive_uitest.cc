@@ -25,6 +25,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_full_popup_webui_content.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_popup_full_presenter.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_view_webui.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_webui_base_content.h"
@@ -50,7 +51,9 @@
 #include "ui/base/ui_base_features.h"
 #include "ui/native_theme/mock_os_settings_provider.h"
 #include "ui/views/controls/webview/webview.h"
+#include "ui/views/test/widget_activation_waiter.h"
 #include "ui/views/widget/widget.h"
+#include "ui/views/widget/widget_observer.h"
 
 #if BUILDFLAG(IS_LINUX)
 #include "ui/linux/linux_ui.h"
@@ -258,6 +261,39 @@ class OmniboxPopupViewWebUIFullV2Test : public OmniboxPopupViewWebUITest {
     InProcessBrowserTest::SetUp();
   }
 
+  std::unique_ptr<views::Widget> DeactivatePopupWidget() {
+    // Wait for the popup transition to complete (clearing
+    // in_popup_state_transition).
+    EXPECT_TRUE(base::test::RunUntil(
+        [&]() { return !location_bar()->in_popup_state_transition(); }));
+
+    // Since in background test runners the browser window is not natively
+    // active, focusing on the web contents will not activate the browser
+    // widget. Create a temporary dummy widget and activate it to force the main
+    // browser window (and the child popup widget) inactive.
+    auto dummy_widget = std::make_unique<views::Widget>();
+    views::Widget::InitParams params(
+        views::Widget::InitParams::CLIENT_OWNS_WIDGET,
+        views::Widget::InitParams::TYPE_WINDOW);
+    params.context = location_bar()->GetWidget()->GetNativeWindow();
+    params.bounds = gfx::Rect(0, 0, 100, 100);
+    dummy_widget->Init(std::move(params));
+    dummy_widget->Show();
+    dummy_widget->Activate();
+
+    // In background test runners, the OS blocks background applications from
+    // changing native window activation.
+    // Directly notify the presenter observer of focus loss.
+    auto* popup_view = static_cast<OmniboxPopupViewWebUI*>(
+        location_bar()->GetOmniboxPopupView());
+    auto* presenter =
+        static_cast<OmniboxPopupFullPresenter*>(popup_view->presenter());
+    static_cast<views::WidgetObserver*>(presenter)->OnWidgetActivationChanged(
+        presenter->get_widget_for_testing(), /*active=*/false);
+
+    return dummy_widget;
+  }
+
  private:
   base::test::ScopedFeatureList feature_list_full_v2_;
 };
@@ -363,15 +399,77 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupViewWebUIFullV2Test, TabSwitchNoSavedState) {
     auto* popup_ui_check = static_cast<OmniboxPopupUI*>(webui_controller_check);
     auto* popup_handler_check =
         popup_ui_check ? popup_ui_check->popup_handler() : nullptr;
-    const bool has_focus = controller()->edit_model()->has_focus();
-    const gfx::Range expected_selection =
-        has_focus ? gfx::Range(0, controller()
-                                      ->edit_model()
-                                      ->GetPermanentDisplayText()
-                                      .length())
-                  : gfx::Range(0, 0);
+    const gfx::Range expected_selection = gfx::Range(0, 0);
     return popup_handler_check &&
            popup_handler_check->latest_selection() == expected_selection;
+  }));
+}
+
+IN_PROC_BROWSER_TEST_F(OmniboxPopupViewWebUIFullV2Test,
+                       DeactivationClearsPopupState) {
+  // Focus the location bar to ensure the Omnibox has active focus and the popup
+  // is open.
+  location_bar()->FocusLocation(/*is_user_initiated=*/true,
+                                /*clear_focus_if_failed=*/false);
+
+  // Verify that the popup state is initially kFull.
+  ASSERT_EQ(OmniboxPopupState::kFull,
+            controller()->popup_state_manager()->popup_state());
+
+  auto dummy_widget = DeactivatePopupWidget();
+
+  // Wait for the deferred deactivation task to run and verify that the popup
+  // state transitions to kNone.
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return controller()->popup_state_manager()->popup_state() ==
+           OmniboxPopupState::kNone;
+  }));
+}
+
+IN_PROC_BROWSER_TEST_F(OmniboxPopupViewWebUIFullV2Test,
+                       DISABLED_DeactivationWithTextDoesNotClearPopupState) {
+  // Focus the location bar to ensure the Omnibox has active focus and the popup
+  // is open.
+  location_bar()->FocusLocation(/*is_user_initiated=*/true,
+                                /*clear_focus_if_failed=*/false);
+
+  // Verify that the popup state is initially kFull.
+  ASSERT_EQ(OmniboxPopupState::kFull,
+            controller()->popup_state_manager()->popup_state());
+
+  omnibox_view()->SetUserText(u"test query");
+
+  auto dummy_widget = DeactivatePopupWidget();
+
+  // Wait for the deferred deactivation task to run and verify that the popup
+  // state transitions to kNone.
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return controller()->popup_state_manager()->popup_state() !=
+           OmniboxPopupState::kNone;
+  }));
+}
+
+IN_PROC_BROWSER_TEST_F(OmniboxPopupViewWebUIFullV2Test,
+                       DeactivationWithClearedTextClearsPopupState) {
+  // Focus the location bar to ensure the Omnibox has active focus and the popup
+  // is open.
+  location_bar()->FocusLocation(/*is_user_initiated=*/true,
+                                /*clear_focus_if_failed=*/false);
+
+  // Verify that the popup state is initially kFull.
+  ASSERT_EQ(OmniboxPopupState::kFull,
+            controller()->popup_state_manager()->popup_state());
+
+  omnibox_view()->SetUserText(u"test query");
+  omnibox_view()->SetUserText(u"");
+
+  auto dummy_widget = DeactivatePopupWidget();
+
+  // Wait for the deferred deactivation task to run and verify that the popup
+  // state transitions to kNone.
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return controller()->popup_state_manager()->popup_state() ==
+           OmniboxPopupState::kNone;
   }));
 }
 

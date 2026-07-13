@@ -21,9 +21,9 @@ export function getHtml(this: OmniboxPopupSearchboxElement) {
           .selectedMatch="${this.selectedMatch}"
           ?input-has-matches="${this.hasMatches()}"
           @focusin="${this.onInputFocusin_}"
+          @mousedown="${this.onInputMousedown_}"
           @searchbox-input-text-updated="${this.onSearchboxInputTextUpdated_}"
           @input-focus-changed="${this.onInputFocusChanged}"
-          @input-mousedown="${this.onInputMousedown_}"
           @input-keydown="${this.onInputKeydown_}"
           @paste="${this.onInputPaste_}">
         ${

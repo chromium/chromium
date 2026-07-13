@@ -10,6 +10,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/scoped_observation.h"
 #include "base/strings/strcat.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
@@ -17,6 +18,7 @@
 #include "chrome/browser/ui/omnibox/omnibox_popup_state_manager.h"
 #include "chrome/browser/ui/omnibox/omnibox_popup_view.h"
 #include "chrome/browser/ui/omnibox/omnibox_view.h"
+#include "chrome/browser/ui/views/frame/contents_web_view.h"
 #include "chrome/browser/ui/views/omnibox/full_webui_omnibox_frame.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_full_popup_webui_content.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter_base.h"
@@ -30,7 +32,9 @@
 #include "components/omnibox/browser/autocomplete_controller.h"
 #include "components/omnibox/browser/autocomplete_result.h"
 #include "components/omnibox/common/omnibox_features.h"
+#include "components/permissions/permission_request_manager.h"
 #include "ui/views/focus/focus_manager.h"
+#include "ui/views/view_class_properties.h"
 #include "ui/views/view_utils.h"
 
 OmniboxPopupFullPresenter::OmniboxPopupFullPresenter(
@@ -88,10 +92,15 @@ void OmniboxPopupFullPresenter::Show() {
   if (handler && omnibox_view) {
     handler->SetAimButtonVisible(omnibox_view->AimButtonVisible());
   }
+
+  if (GetWidget() && !widget_observation_.IsObserving()) {
+    widget_observation_.Observe(GetWidget());
+  }
 }
 
 void OmniboxPopupFullPresenter::Hide() {
   forward_events_timer_.Stop();
+  widget_observation_.Reset();
   OmniboxPopupPresenterBase::Hide();
 }
 
@@ -191,8 +200,81 @@ void OmniboxPopupFullPresenter::SynchronizePopupBounds() {
   GetWidget()->SetBounds(widget_bounds);
 }
 
+void OmniboxPopupFullPresenter::OnWidgetActivationChanged(views::Widget* widget,
+                                                          bool active) {
+  if (!active &&
+      controller()->popup_state_manager()->popup_state() ==
+          OmniboxPopupState::kFull &&
+      !location_bar()->in_popup_state_transition()) {
+    // Don't close popup if there's an active permission prompt.
+    if (auto* content = GetWebUIContent()) {
+      auto* permission_manager =
+          permissions::PermissionRequestManager::FromWebContents(
+              content->GetWebContents());
+      if (permission_manager && permission_manager->IsRequestInProgress()) {
+        return;
+      }
+    }
+
+    // TODO(b/519724566): Look into using popup_closer here.
+    // Clear results here since `DeactivatePopupAndKillFocus` can happen
+    // after the new tab is opened and can pass on the stale results.
+    controller()->StopAutocomplete(/*clear_result=*/true);
+
+    // Delay killing focus and deactivating popup so that the tab state can
+    // be saved before this operation.
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(
+                       [](base::WeakPtr<OmniboxPopupFullPresenter> presenter) {
+                         if (presenter) {
+                           presenter->DeactivatePopupAndKillFocus();
+                         }
+                       },
+                       weak_factory_.GetWeakPtr()));
+  }
+}
+
+void OmniboxPopupFullPresenter::DeactivatePopupAndKillFocus() {
+  // Abort deactivation if the widget has regained active status,
+  // which may occur when switching tabs.
+  if (GetWidget() && GetWidget()->IsActive()) {
+    return;
+  }
+
+  const bool user_input_in_progress =
+      controller()->edit_model()->user_input_in_progress();
+  const std::u16string& user_text = controller()->edit_model()->user_text();
+  const std::u16string permanent_text =
+      controller()->edit_model()->GetPermanentDisplayText();
+
+  // If the view is showing text that's not user-text, revert the text to the
+  // permanent display text. This usually occurs if Steady State Elisions is on
+  // and the user has unelided, but not edited the URL.
+  // Also revert if the text has been edited but currently exactly matches
+  // the permanent text. An example of this scenario is someone typing on the
+  // new tab page and then deleting everything using backspace/delete.
+  const bool should_revert_non_user_text =
+      !user_input_in_progress && (user_text != permanent_text);
+  const bool should_revert_matching_text =
+      user_input_in_progress && (user_text == permanent_text);
+
+  if (should_revert_non_user_text || should_revert_matching_text) {
+    controller()->edit_model()->Revert();
+  }
+
+  controller()->client()->FocusWebContents();
+  controller()->edit_model()->OnKillFocus();
+
+  // If the user is currently typing do not close the popup.
+  if (!user_input_in_progress || user_text.empty()) {
+    controller()->popup_state_manager()->SetPopupState(
+        OmniboxPopupState::kNone);
+  }
+}
+
 void OmniboxPopupFullPresenter::WidgetDestroyed() {
   forward_events_timer_.Stop();
+  widget_observation_.Reset();
   // Update the popup state manager if widget was destroyed externally, e.g., by
   // the OS. This ensures the popup state manager stays in sync.
   if (controller()->popup_state_manager()->popup_state() ==

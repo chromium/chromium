@@ -152,9 +152,6 @@ void OmniboxPopupViewFullWebUI::SaveStateToTab(content::WebContents* tab) {
   // back to this tab restores the page's permanent URL (or empty for NTP).
   const bool was_cleared_by_user =
       edit_model->user_input_in_progress() && edit_model->user_text().empty();
-  if (was_cleared_by_user) {
-    edit_model->Revert();
-  }
 
   const OmniboxEditModel::State default_state =
       edit_model->GetStateForTabSwitch();
@@ -179,11 +176,6 @@ void OmniboxPopupViewFullWebUI::SaveStateToTab(content::WebContents* tab) {
         default_state.keyword_placeholder, default_state.keyword_state,
         default_state.keyword_mode_entry_method, target_focus_state,
         default_state.autocomplete_input);
-    if (!in_progress && edit_model->user_input_in_progress()) {
-      // Override the selection to be the full length of the permanent URL.
-      std::u16string permanent_text = edit_model->GetPermanentDisplayText();
-      selection = gfx::Range(0, permanent_text.length());
-    }
   } else if (edit_model->user_input_in_progress() &&
              !edit_model->user_text().empty()) {
     // For an active uncommitted draft where the webpage has focus, preserve
@@ -240,7 +232,9 @@ void OmniboxPopupViewFullWebUI::OnTabChanged(content::WebContents* contents) {
     // The popup must be visible (`OmniboxPopupState::kFull`) if there is an
     // active draft or if the omnibox should have focus.
     target_popup_state =
-        (state->model_state.user_input_in_progress || should_focus_popup)
+        ((state->model_state.user_input_in_progress &&
+          !state->model_state.user_text.empty() && should_focus_popup) ||
+         (!state->model_state.user_input_in_progress && should_focus_popup))
             ? OmniboxPopupState::kFull
             : OmniboxPopupState::kNone;
   } else {
@@ -279,20 +273,16 @@ void OmniboxPopupViewFullWebUI::OnTabChanged(content::WebContents* contents) {
   if (auto* popup_handler = GetPopupHandler()) {
     bool user_input_in_progress =
         state ? state->model_state.user_input_in_progress : false;
+    std::u16string user_text = state ? state->model_state.user_text : u"";
     std::u16string permanent_display_text =
         controller()->edit_model()->GetPermanentDisplayText();
-    std::u16string text = user_input_in_progress ? state->model_state.user_text
-                                                 : permanent_display_text;
+    std::u16string text = user_input_in_progress && !user_text.empty()
+                              ? user_text
+                              : permanent_display_text;
     bool show_full_url = state ? state->show_full_url : false;
     const std::u16string full_url =
         controller()->client()->GetFormattedFullURL();
     gfx::Range selection = state ? state->selection : gfx::Range(0, 0);
-    // If restoring focus to an Omnibox with no active draft (e.g., displaying
-    // the permanent URL), select all text by default so immediate typing
-    // replaces the URL.
-    if (should_focus_popup && !user_input_in_progress) {
-      selection = gfx::Range(0, text.length());
-    }
     popup_handler->SetInputState(
         base::UTF16ToUTF8(text), selection, user_input_in_progress,
         base::UTF16ToUTF8(full_url), should_focus_popup,

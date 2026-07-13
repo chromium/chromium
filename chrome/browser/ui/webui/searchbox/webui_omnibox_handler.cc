@@ -329,9 +329,13 @@ void WebuiOmniboxHandler::OnFocusChanged(bool focused) {
     edit_model()->OnSetFocus(false);
   } else {
     edit_model()->OnWillKillFocus();
-    // Kill focus on focus loss to properly terminate the edit session and reset
-    // popup and keyword state.
-    edit_model()->OnKillFocus();
+    // Delay killing focus for full popup until state is properly synced in
+    // omnibox_popup_view_full_webui's `OnTabChanged`
+    if (!base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxFullPopup)) {
+      // Kill focus on focus loss to properly terminate the edit session and
+      // reset popup and keyword state.
+      edit_model()->OnKillFocus();
+    }
   }
 }
 

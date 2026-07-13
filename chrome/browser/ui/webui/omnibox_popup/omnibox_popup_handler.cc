@@ -60,6 +60,7 @@ void OmniboxPopupHandler::OnInputCleared(uint32_t sequence_number) {
     return;
   }
   latest_selection_ = gfx::Range(0, 0);
+  show_full_url_ = false;
   if (controller_) {
     controller_->edit_model()->SetUserText(std::u16string());
     // TODO(b/504668292): Vet if this setting of `SetWindowTextAndCaretPos` can
