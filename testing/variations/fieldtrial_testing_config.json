@@ -8140,6 +8140,21 @@
             ]
         }
     ],
+    "DebugToolbarPositioning": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20260713",
+                    "enable_features": [
+                        "DebugToolbarPositioning"
+                    ]
+                }
+            ]
+        }
+    ],
     "DedicatedMediaServiceThread": [
         {
             "platforms": [
