@@ -4162,6 +4162,9 @@ def CheckSpamLogging(input_api, output_api):
             r'^components/viz/service/display/'
             r'overlay_strategy_underlay_cast\.cc$',
             r'^components/zucchini/.*',
+            # Apéritif runs prior to system and //base static initializers, so it
+            # cannot depend on base logging.
+            r'^content/app/aperitif_mac\.cc$',
             # TODO(peter): Remove exception. https://crbug.com/534537
             r'^content/browser/notifications/notification_event_dispatcher_impl\.cc$',
             r'^content/common/gpu/client/gl_helper_benchmark\.cc$',

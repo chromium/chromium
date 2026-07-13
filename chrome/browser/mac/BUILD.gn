@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/sanitizers/sanitizers.gni")
 import("//build/util/process_version.gni")
 import("//chrome/updater/branding.gni")
 import("//testing/test.gni")
@@ -100,9 +101,12 @@ source_set("impl") {
   ]
 }
 
+verify_dynamic_libraries = !is_component_build && !is_asan && !is_ubsan_any
+
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "aperitif_unittest.mm",
     "auth_session_request_unittest.mm",
     "code_sign_clone_manager_unittest.mm",
     "dock_unittest.mm",
@@ -119,6 +123,10 @@ source_set("unit_tests") {
     "//content/test:test_support",
     "//testing/gtest",
   ]
+  data_deps = [ "//chrome/test:aperitif_test_helper" ]
+  if (verify_dynamic_libraries) {
+    data_deps += [ "//chrome/test:verify_libraries_aperitif_test_helper" ]
+  }
   configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
