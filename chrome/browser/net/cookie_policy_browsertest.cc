@@ -112,7 +112,7 @@ class CookiePolicyBrowserTest : public InProcessBrowserTest {
   }
 
   content_settings::CookieSettings* cookie_settings() {
-    return CookieSettingsFactory::GetForProfile(browser()->profile()).get();
+    return CookieSettingsFactory::GetForProfile(browser()->GetProfile()).get();
   }
 
   void NavigateFrameTo(const std::string& host, const std::string& path) {
@@ -180,11 +180,11 @@ IN_PROC_BROWSER_TEST_F(CookiePolicyBrowserTest, AllowFirstPartyCookies) {
   cookie_settings()->SetCookieSetting(url,
                                       ContentSetting::CONTENT_SETTING_ALLOW);
 
-  ASSERT_EQ("", content::GetCookies(browser()->profile(), url));
+  ASSERT_EQ("", content::GetCookies(browser()->GetProfile(), url));
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
-  EXPECT_EQ("cookie1", content::GetCookies(browser()->profile(), url));
+  EXPECT_EQ("cookie1", content::GetCookies(browser()->GetProfile(), url));
 }
 
 // Visits a page that is a redirect across domain boundary to a page that sets
@@ -199,7 +199,7 @@ IN_PROC_BROWSER_TEST_F(CookiePolicyBrowserTest,
   // if the first party for cookies URL is not changed when we follow a
   // redirect.
 
-  ASSERT_EQ("", content::GetCookies(browser()->profile(), redirected_url));
+  ASSERT_EQ("", content::GetCookies(browser()->GetProfile(), redirected_url));
 
   // This cookie can be set even if it is Lax-by-default because the redirect
   // counts as a top-level navigation and therefore the context is lax.
@@ -208,7 +208,7 @@ IN_PROC_BROWSER_TEST_F(CookiePolicyBrowserTest,
                       redirected_url.spec())));
 
   EXPECT_EQ("cookie2",
-            content::GetCookies(browser()->profile(), redirected_url));
+            content::GetCookies(browser()->GetProfile(), redirected_url));
 }
 
 // Third-Party Frame Tests
@@ -218,12 +218,12 @@ IN_PROC_BROWSER_TEST_F(CookiePolicyBrowserTest,
   cookie_settings()->SetCookieSetting(GetURL(kHostB),
                                       ContentSetting::CONTENT_SETTING_ALLOW);
 
-  EXPECT_EQ(content::GetCookies(browser()->profile(), GetURL(kHostB)), "");
+  EXPECT_EQ(content::GetCookies(browser()->GetProfile(), GetURL(kHostB)), "");
 
   // Navigate iframe to a cross-site, cookie-setting endpoint, and verify that
   // the cookie is set:
   NavigateFrameTo(kHostB, "/set-cookie?thirdparty=1;SameSite=None;Secure");
-  EXPECT_EQ(content::GetCookies(browser()->profile(), GetURL(kHostB)),
+  EXPECT_EQ(content::GetCookies(browser()->GetProfile(), GetURL(kHostB)),
             "thirdparty=1");
 
   // Navigate iframe to a cross-site frame with a frame, and navigate _that_
@@ -234,7 +234,7 @@ IN_PROC_BROWSER_TEST_F(CookiePolicyBrowserTest,
   // is still cross-site.
   NavigateNestedFrameTo(kHostB,
                         "/set-cookie?thirdparty=2;SameSite=None;Secure");
-  EXPECT_EQ(content::GetCookies(browser()->profile(), GetURL(kHostB)),
+  EXPECT_EQ(content::GetCookies(browser()->GetProfile(), GetURL(kHostB)),
             "thirdparty=2");
 
   // Navigate iframe to a cross-site frame with a frame, and navigate _that_
@@ -243,7 +243,7 @@ IN_PROC_BROWSER_TEST_F(CookiePolicyBrowserTest,
   NavigateFrameTo(kHostC, "/iframe.html");
   NavigateNestedFrameTo(kHostB,
                         "/set-cookie?thirdparty=3;SameSite=None;Secure");
-  EXPECT_EQ(content::GetCookies(browser()->profile(), GetURL(kHostB)),
+  EXPECT_EQ(content::GetCookies(browser()->GetProfile(), GetURL(kHostB)),
             "thirdparty=3");
 }
 
@@ -260,7 +260,7 @@ IN_PROC_BROWSER_TEST_F(CookiePolicyBrowserTest,
   // Navigate iframe to a cross-site, cookie-setting endpoint, and verify that
   // the cookie is not set:
   NavigateFrameTo(kHostB, "/set-cookie?thirdparty=1;SameSite=None;Secure");
-  EXPECT_EQ(content::GetCookies(browser()->profile(), GetURL(kHostB)), "");
+  EXPECT_EQ(content::GetCookies(browser()->GetProfile(), GetURL(kHostB)), "");
 
   // Navigate iframe to a cross-site frame with a frame, and navigate _that_
   // frame to a cross-site, cookie-setting endpoint, and verify that the cookie
@@ -268,7 +268,7 @@ IN_PROC_BROWSER_TEST_F(CookiePolicyBrowserTest,
   NavigateFrameTo(kHostB, "/iframe.html");
   NavigateNestedFrameTo(kHostB,
                         "/set-cookie?thirdparty=2;SameSite=None;Secure");
-  EXPECT_EQ(content::GetCookies(browser()->profile(), GetURL(kHostB)), "");
+  EXPECT_EQ(content::GetCookies(browser()->GetProfile(), GetURL(kHostB)), "");
 
   // Navigate iframe to a cross-site frame with a frame, and navigate _that_
   // frame to a cross-site, cookie-setting endpoint, and verify that the cookie
@@ -276,7 +276,7 @@ IN_PROC_BROWSER_TEST_F(CookiePolicyBrowserTest,
   NavigateFrameTo(kHostC, "/iframe.html");
   NavigateNestedFrameTo(kHostB,
                         "/set-cookie?thirdparty=3;SameSite=None;Secure");
-  EXPECT_EQ(content::GetCookies(browser()->profile(), GetURL(kHostB)), "");
+  EXPECT_EQ(content::GetCookies(browser()->GetProfile(), GetURL(kHostB)), "");
 }
 
 IN_PROC_BROWSER_TEST_F(CookiePolicyBrowserTest,
@@ -284,10 +284,10 @@ IN_PROC_BROWSER_TEST_F(CookiePolicyBrowserTest,
   cookie_settings()->SetCookieSetting(GetURL(kHostB),
                                       ContentSetting::CONTENT_SETTING_ALLOW);
   // Set a cookie on `b.test`.
-  ASSERT_TRUE(content::SetCookie(browser()->profile(),
+  ASSERT_TRUE(content::SetCookie(browser()->GetProfile(),
                                  https_server_.GetURL(kHostB, "/"),
                                  "thirdparty=1;SameSite=None;Secure"));
-  EXPECT_EQ(content::GetCookies(browser()->profile(), GetURL(kHostB)),
+  EXPECT_EQ(content::GetCookies(browser()->GetProfile(), GetURL(kHostB)),
             "thirdparty=1");
 
   NavigateToPageWithFrame(kHostA);
@@ -321,10 +321,10 @@ IN_PROC_BROWSER_TEST_F(CookiePolicyBrowserTest,
   SetBlockThirdPartyCookies();
 
   // Set a cookie on `b.test`.
-  ASSERT_TRUE(content::SetCookie(browser()->profile(),
+  ASSERT_TRUE(content::SetCookie(browser()->GetProfile(),
                                  https_server_.GetURL(kHostB, "/"),
                                  "thirdparty=1;SameSite=None;Secure"));
-  EXPECT_EQ(content::GetCookies(browser()->profile(), GetURL(kHostB)),
+  EXPECT_EQ(content::GetCookies(browser()->GetProfile(), GetURL(kHostB)),
             "thirdparty=1");
 
   NavigateToPageWithFrame(kHostA);
@@ -354,17 +354,17 @@ IN_PROC_BROWSER_TEST_F(CookiePolicyBrowserTest,
   SetBlockThirdPartyCookies();
 
   // Set a cookie on `b.test`.
-  ASSERT_TRUE(content::SetCookie(browser()->profile(),
+  ASSERT_TRUE(content::SetCookie(browser()->GetProfile(),
                                  https_server_.GetURL(kHostB, "/"),
                                  "thirdparty=1;SameSite=None;Secure"));
-  EXPECT_EQ(content::GetCookies(browser()->profile(), GetURL(kHostB)),
+  EXPECT_EQ(content::GetCookies(browser()->GetProfile(), GetURL(kHostB)),
             "thirdparty=1");
 
   // Set a cookie on d.test.
-  ASSERT_TRUE(content::SetCookie(browser()->profile(),
+  ASSERT_TRUE(content::SetCookie(browser()->GetProfile(),
                                  https_server_.GetURL(kHostD, "/"),
                                  "thirdparty=other;SameSite=None;Secure"));
-  EXPECT_EQ(content::GetCookies(browser()->profile(), GetURL(kHostD)),
+  EXPECT_EQ(content::GetCookies(browser()->GetProfile(), GetURL(kHostD)),
             "thirdparty=other");
 
   // Allow all requests to b.test to have cookies.
@@ -411,10 +411,10 @@ IN_PROC_BROWSER_TEST_F(CookiePolicyBrowserTest,
   SetBlockThirdPartyCookies();
 
   // Set a cookie on `b.test`.
-  ASSERT_TRUE(content::SetCookie(browser()->profile(),
+  ASSERT_TRUE(content::SetCookie(browser()->GetProfile(),
                                  https_server_.GetURL(kHostB, "/"),
                                  "thirdparty=1;SameSite=None;Secure"));
-  EXPECT_EQ(content::GetCookies(browser()->profile(), GetURL(kHostB)),
+  EXPECT_EQ(content::GetCookies(browser()->GetProfile(), GetURL(kHostB)),
             "thirdparty=1");
 
   // Allow all requests on the top frame domain a.test to have cookies.
@@ -1055,7 +1055,7 @@ IN_PROC_BROWSER_TEST_F(ThirdPartyCookiePhaseoutPolicyStorageBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(ThirdPartyCookiePhaseoutPolicyStorageBrowserTest,
                        SandboxedTopLevelFrame) {
-  ASSERT_TRUE(content::SetCookie(browser()->profile(),
+  ASSERT_TRUE(content::SetCookie(browser()->GetProfile(),
                                  https_server_.GetURL(kHostB, "/"),
                                  "thirdparty=1;SameSite=None;Secure"));
 
@@ -1080,7 +1080,7 @@ IN_PROC_BROWSER_TEST_F(ThirdPartyCookiePhaseoutPolicyStorageBrowserTest,
   // Adding an explicit content setting should re-enable SameSite=None cookies
   // on sandboxed pages.
   auto* map =
-      HostContentSettingsMapFactory::GetForProfile(browser()->profile());
+      HostContentSettingsMapFactory::GetForProfile(browser()->GetProfile());
   map->SetContentSettingDefaultScope(
       https_server()->GetURL(kHostB, "/"), https_server()->GetURL(kHostA, "/"),
       ContentSettingsType::COOKIES, CONTENT_SETTING_ALLOW);

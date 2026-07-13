@@ -288,7 +288,7 @@ IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
                       base::test::ParseJson(kWebAccessibleResources));
 
   scoped_refptr<const extensions::Extension> extension = builder.Build();
-  extensions::ExtensionRegistrar::Get(browser()->profile())
+  extensions::ExtensionRegistrar::Get(browser()->GetProfile())
       ->OnExtensionInstalled(extension.get(), syncer::StringOrdinal(), 0);
 
   const GURL url = extension->GetResourceURL(kPageFile);

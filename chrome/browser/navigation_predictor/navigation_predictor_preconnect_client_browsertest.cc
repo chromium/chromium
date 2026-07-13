@@ -60,12 +60,12 @@ class NavigationPredictorPreconnectClientBrowserTest
   SearchEnginePreconnector* GetSearchEnginePreconnector() {
     if (SearchEnginePreconnector::ShouldBeEnabledAsKeyedService()) {
       return SearchEnginePreconnectorKeyedServiceFactory::GetForProfile(
-          browser()->profile());
+          browser()->GetProfile());
     }
 
     NavigationPredictorKeyedService* navigation_predictor_keyed_service =
         NavigationPredictorKeyedServiceFactory::GetForProfile(
-            browser()->profile());
+            browser()->GetProfile());
     EXPECT_TRUE(navigation_predictor_keyed_service);
 
     return navigation_predictor_keyed_service->search_engine_preconnector();
@@ -88,7 +88,7 @@ class NavigationPredictorPreconnectClientBrowserTest
     // Get notified for Loading predictor's preconnect observer.
     auto* loading_predictor =
         predictors::LoadingPredictorFactory::GetForProfile(
-            browser()->profile());
+            browser()->GetProfile());
     ASSERT_TRUE(loading_predictor);
     loading_predictor->preconnect_manager()->SetObserverForTesting(this);
 
@@ -151,7 +151,7 @@ IN_PROC_BROWSER_TEST_F(NavigationPredictorPreconnectClientBrowserTest,
   static const char kSearchURL[] =
       "/anchors_different_area.html?q={searchTerms}";
   TemplateURLService* model =
-      TemplateURLServiceFactory::GetForProfile(browser()->profile());
+      TemplateURLServiceFactory::GetForProfile(browser()->GetProfile());
   ASSERT_TRUE(model);
   search_test_utils::WaitForTemplateURLServiceToLoad(model);
   ASSERT_TRUE(model->loaded());
@@ -321,7 +321,7 @@ IN_PROC_BROWSER_TEST_F(NavigationPredictorPreconnectClientBrowserTestWithSearch,
   static const char kSearchURL[] =
       "/anchors_different_area.html?q={searchTerms}";
   TemplateURLService* model =
-      TemplateURLServiceFactory::GetForProfile(browser()->profile());
+      TemplateURLServiceFactory::GetForProfile(browser()->GetProfile());
   ASSERT_TRUE(model);
   search_test_utils::WaitForTemplateURLServiceToLoad(model);
   ASSERT_TRUE(model->loaded());

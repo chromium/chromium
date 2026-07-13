@@ -338,8 +338,8 @@ class ChromeSharedDictionaryBrowserTest : public InProcessBrowserTest {
 
   int GetSiteDataCount(base::Time begin_time, base::Time end_time) {
     base::test::TestFuture<int> result;
-    auto* helper = new SiteDataCountingHelper(browser()->profile(), begin_time,
-                                              end_time, result.GetCallback());
+    auto* helper = new SiteDataCountingHelper(
+        browser()->GetProfile(), begin_time, end_time, result.GetCallback());
     helper->CountAndDestroySelfWhenFinished();
     return result.Get();
     ;
@@ -396,7 +396,7 @@ class ChromeSharedDictionaryBrowserTest : public InProcessBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(ChromeSharedDictionaryBrowserTest, BlockWriting) {
   content_settings::CookieSettings* settings =
-      CookieSettingsFactory::GetForProfile(browser()->profile()).get();
+      CookieSettingsFactory::GetForProfile(browser()->GetProfile()).get();
   settings->SetCookieSetting(embedded_test_server()->GetURL("/"),
                              CONTENT_SETTING_BLOCK);
 
@@ -408,7 +408,7 @@ IN_PROC_BROWSER_TEST_F(ChromeSharedDictionaryBrowserTest, BlockWriting) {
 IN_PROC_BROWSER_TEST_F(ChromeSharedDictionaryBrowserTest,
                        BlockWritingCrossOrigin) {
   content_settings::CookieSettings* settings =
-      CookieSettingsFactory::GetForProfile(browser()->profile()).get();
+      CookieSettingsFactory::GetForProfile(browser()->GetProfile()).get();
   settings->SetCookieSetting(cross_origin_server()->GetURL("/"),
                              CONTENT_SETTING_BLOCK);
 
@@ -424,7 +424,7 @@ IN_PROC_BROWSER_TEST_F(ChromeSharedDictionaryBrowserTest, BlockReading) {
   WaitForDictionaryReady(*embedded_test_server());
 
   content_settings::CookieSettings* settings =
-      CookieSettingsFactory::GetForProfile(browser()->profile()).get();
+      CookieSettingsFactory::GetForProfile(browser()->GetProfile()).get();
   settings->SetCookieSetting(embedded_test_server()->GetURL("/"),
                              CONTENT_SETTING_BLOCK);
 
@@ -442,7 +442,7 @@ IN_PROC_BROWSER_TEST_F(ChromeSharedDictionaryBrowserTest,
   WaitForDictionaryReady(*cross_origin_server());
 
   content_settings::CookieSettings* settings =
-      CookieSettingsFactory::GetForProfile(browser()->profile()).get();
+      CookieSettingsFactory::GetForProfile(browser()->GetProfile()).get();
   settings->SetCookieSetting(cross_origin_server()->GetURL("/"),
                              CONTENT_SETTING_BLOCK);
 
@@ -464,7 +464,7 @@ IN_PROC_BROWSER_TEST_F(ChromeSharedDictionaryBrowserTest,
       /*expect_blocked=*/false));
 
   content_settings::CookieSettings* settings =
-      CookieSettingsFactory::GetForProfile(browser()->profile()).get();
+      CookieSettingsFactory::GetForProfile(browser()->GetProfile()).get();
   settings->SetCookieSetting(embedded_test_server()->GetURL("/"),
                              CONTENT_SETTING_BLOCK);
 
@@ -485,7 +485,7 @@ IN_PROC_BROWSER_TEST_F(ChromeSharedDictionaryBrowserTest,
       /*expect_blocked=*/false));
 
   content_settings::CookieSettings* settings =
-      CookieSettingsFactory::GetForProfile(browser()->profile()).get();
+      CookieSettingsFactory::GetForProfile(browser()->GetProfile()).get();
   settings->SetCookieSetting(embedded_test_server()->GetURL("/"),
                              CONTENT_SETTING_BLOCK);
 
@@ -893,7 +893,7 @@ IN_PROC_BROWSER_TEST_F(SharedDictionaryDevToolsBrowserTest,
   {
     base::ScopedAllowBlockingForTesting allow_blocking;
     EXPECT_TRUE(base::DeletePathRecursively(
-        browser()->profile()->GetDefaultStoragePartition()->GetPath().Append(
+        browser()->GetProfile()->GetDefaultStoragePartition()->GetPath().Append(
             FILE_PATH_LITERAL("Shared Dictionary/cache/"))));
   }
   EXPECT_TRUE(ExecJs(rfh, FetchUrlScript(embedded_test_server()->GetURL(
@@ -981,7 +981,7 @@ IN_PROC_BROWSER_TEST_F(SharedDictionaryDevToolsBrowserTest,
   ASSERT_TRUE(embedded_https_test_server().Start());
 
   content_settings::CookieSettings* settings =
-      CookieSettingsFactory::GetForProfile(browser()->profile()).get();
+      CookieSettingsFactory::GetForProfile(browser()->GetProfile()).get();
   settings->SetCookieSetting(
       embedded_https_test_server().GetURL(kCrossOriginHostName, "/"),
       CONTENT_SETTING_BLOCK);

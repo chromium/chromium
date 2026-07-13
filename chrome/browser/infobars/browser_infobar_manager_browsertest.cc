@@ -153,7 +153,7 @@ IN_PROC_BROWSER_TEST_F(BrowserInfoBarManagerBrowserTest,
   EXPECT_EQ(1u, infobar_manager1->infobars().size());
 
   // 2. Open a new browser window.
-  Browser* browser2 = CreateBrowser(browser()->profile());
+  Browser* browser2 = CreateBrowser(browser()->GetProfile());
   content::WebContents* web_contents2 =
       browser2->tab_strip_model()->GetActiveWebContents();
   auto* infobar_manager2 =
@@ -216,7 +216,7 @@ IN_PROC_BROWSER_TEST_F(BrowserInfoBarManagerBrowserTest,
   manager()->ShowGlobally(identifier);
 
   // Open a second browser.
-  Browser* browser2 = CreateBrowser(browser()->profile());
+  Browser* browser2 = CreateBrowser(browser()->GetProfile());
 
   content::WebContents* web_contents1 =
       browser()->tab_strip_model()->GetActiveWebContents();

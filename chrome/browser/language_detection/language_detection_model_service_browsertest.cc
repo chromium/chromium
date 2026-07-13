@@ -211,7 +211,7 @@ class LanguageDetectionModelServiceBrowserTest : public InProcessBrowserTest {
 
   LanguageDetectionModelService* language_detection_model_service() {
     return LanguageDetectionModelServiceFactory::GetForProfile(
-        browser()->profile());
+        browser()->GetProfile());
   }
 
   const GURL& english_url() const { return english_url_; }
@@ -262,7 +262,7 @@ IN_PROC_BROWSER_TEST_F(
     LanguageDetectionModelServiceWithoutOptimizationGuideBrowserTest,
     LanguageDetectionModelServiceEnabled) {
   EXPECT_FALSE(LanguageDetectionModelServiceFactory::GetForProfile(
-      browser()->profile()));
+      browser()->GetProfile()));
 }
 
 IN_PROC_BROWSER_TEST_F(LanguageDetectionModelServiceBrowserTest,
@@ -292,7 +292,7 @@ IN_PROC_BROWSER_TEST_F(LanguageDetectionModelServiceBrowserTest,
 IN_PROC_BROWSER_TEST_F(LanguageDetectionModelServiceBrowserTest,
                        LanguageDetectionModelServiceEnabled_OffTheRecord) {
   EXPECT_TRUE(LanguageDetectionModelServiceFactory::GetForProfile(
-      browser()->profile()->GetPrimaryOTRProfile(
+      browser()->GetProfile()->GetPrimaryOTRProfile(
           /*create_if_needed=*/true)));
 }
 
@@ -302,7 +302,7 @@ IN_PROC_BROWSER_TEST_F(LanguageDetectionModelServiceBrowserTest,
   base::HistogramTester histogram_tester;
   ASSERT_TRUE(language_detection_model_service());
 
-  OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->profile())
+  OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->GetProfile())
       ->OverrideTargetModelForTesting(
           optimization_guide::proto::OPTIMIZATION_TARGET_LANGUAGE_DETECTION,
           optimization_guide::TestModelInfoBuilder()
@@ -328,7 +328,7 @@ IN_PROC_BROWSER_TEST_F(LanguageDetectionModelServiceBrowserTest,
   getter.RequestModelFile();
   ASSERT_FALSE(getter.HasFileBeenReceived());
 
-  OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->profile())
+  OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->GetProfile())
       ->OverrideTargetModelForTesting(
           optimization_guide::proto::OPTIMIZATION_TARGET_LANGUAGE_DETECTION,
           optimization_guide::TestModelInfoBuilder()
@@ -351,7 +351,7 @@ IN_PROC_BROWSER_TEST_F(LanguageDetectionModelServiceBrowserTest,
   base::ScopedAllowBlockingForTesting allow_io_for_test_setup;
   base::HistogramTester histogram_tester;
   ASSERT_TRUE(language_detection_model_service());
-  OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->profile())
+  OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->GetProfile())
       ->OverrideTargetModelForTesting(
           optimization_guide::proto::OPTIMIZATION_TARGET_LANGUAGE_DETECTION,
           optimization_guide::TestModelInfoBuilder()
@@ -372,7 +372,7 @@ IN_PROC_BROWSER_TEST_F(LanguageDetectionModelServiceBrowserTest,
 IN_PROC_BROWSER_TEST_F(LanguageDetectionModelServiceBrowserTest,
                        DISABLED_LanguageDetectionModelAvailableForDetection) {
   base::HistogramTester histogram_tester;
-  OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->profile())
+  OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->GetProfile())
       ->OverrideTargetModelForTesting(
           optimization_guide::proto::OPTIMIZATION_TARGET_LANGUAGE_DETECTION,
           optimization_guide::TestModelInfoBuilder()
@@ -401,7 +401,7 @@ IN_PROC_BROWSER_TEST_F(LanguageDetectionModelServiceBrowserTest,
 IN_PROC_BROWSER_TEST_F(LanguageDetectionModelServiceBrowserTest,
                        DISABLED_LanguageDetectionWithBackgroundTab) {
   base::HistogramTester histogram_tester;
-  OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->profile())
+  OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->GetProfile())
       ->OverrideTargetModelForTesting(
           optimization_guide::proto::OPTIMIZATION_TARGET_LANGUAGE_DETECTION,
           optimization_guide::TestModelInfoBuilder()
@@ -442,7 +442,7 @@ IN_PROC_BROWSER_TEST_F(LanguageDetectionModelServiceBrowserTest,
   base::HistogramTester histogram_tester;
   ASSERT_TRUE(language_detection_model_service());
 
-  OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->profile())
+  OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->GetProfile())
       ->OverrideTargetModelForTesting(
           optimization_guide::proto::OPTIMIZATION_TARGET_LANGUAGE_DETECTION,
           optimization_guide::TestModelInfoBuilder()
@@ -455,7 +455,7 @@ IN_PROC_BROWSER_TEST_F(LanguageDetectionModelServiceBrowserTest,
   histogram_tester.ExpectUniqueSample(
       "TranslateModelService.LanguageDetectionModel.WasLoaded", true, 1);
 
-  OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->profile())
+  OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->GetProfile())
       ->OverrideTargetModelForTesting(
           optimization_guide::proto::OPTIMIZATION_TARGET_LANGUAGE_DETECTION,
           optimization_guide::TestModelInfoBuilder()
@@ -480,7 +480,7 @@ IN_PROC_BROWSER_TEST_F(LanguageDetectionModelServiceBrowserTest,
   base::HistogramTester histogram_tester;
   ASSERT_TRUE(language_detection_model_service());
 
-  OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->profile())
+  OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->GetProfile())
       ->OverrideTargetModelForTesting(
           optimization_guide::proto::OPTIMIZATION_TARGET_LANGUAGE_DETECTION,
           optimization_guide::TestModelInfoBuilder()
@@ -496,7 +496,7 @@ IN_PROC_BROWSER_TEST_F(LanguageDetectionModelServiceBrowserTest,
   ASSERT_TRUE(RequestAndWaitForModelFile()->IsValid());
 
   // Tell the service that there is no longer a model available.
-  OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->profile())
+  OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->GetProfile())
       ->OverrideTargetModelForTesting(
           optimization_guide::proto::OPTIMIZATION_TARGET_LANGUAGE_DETECTION,
           nullptr);
@@ -506,7 +506,7 @@ IN_PROC_BROWSER_TEST_F(LanguageDetectionModelServiceBrowserTest,
   ASSERT_FALSE(RequestAndWaitForModelFile()->IsValid());
 
   // Tell the service that a model is available again.
-  OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->profile())
+  OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->GetProfile())
       ->OverrideTargetModelForTesting(
           optimization_guide::proto::OPTIMIZATION_TARGET_LANGUAGE_DETECTION,
           optimization_guide::TestModelInfoBuilder()
@@ -559,7 +559,7 @@ IN_PROC_BROWSER_TEST_F(LanguageDetectionModelServiceBrowserTest,
     ASSERT_FALSE(getter_good->HasFileBeenReceived());
   }
 
-  OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->profile())
+  OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->GetProfile())
       ->OverrideTargetModelForTesting(
           optimization_guide::proto::OPTIMIZATION_TARGET_LANGUAGE_DETECTION,
           optimization_guide::TestModelInfoBuilder()
@@ -617,7 +617,7 @@ IN_PROC_BROWSER_TEST_F(LanguageDetectionModelServiceBrowserTest, Availability) {
   TestLanguageDetectionAvailable(browser(), "downloadable");
 
   ModelFileGetter getter(*language_detection_model_service());
-  OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->profile())
+  OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->GetProfile())
       ->OverrideTargetModelForTesting(
           optimization_guide::proto::OPTIMIZATION_TARGET_LANGUAGE_DETECTION,
           optimization_guide::TestModelInfoBuilder()
@@ -638,7 +638,7 @@ IN_PROC_BROWSER_TEST_F(LanguageDetectionModelServiceBrowserTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), english_url()));
 
   ModelFileGetter getter(*language_detection_model_service());
-  OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->profile())
+  OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->GetProfile())
       ->OverrideTargetModelForTesting(
           optimization_guide::proto::OPTIMIZATION_TARGET_LANGUAGE_DETECTION,
           optimization_guide::TestModelInfoBuilder()

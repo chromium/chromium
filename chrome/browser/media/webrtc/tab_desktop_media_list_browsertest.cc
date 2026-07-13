@@ -197,15 +197,16 @@ class TabDesktopMediaListTest : public InProcessBrowserTest,
 
   void AddAppWindow() {
     auto web_contents = content::WebContents::Create(
-        content::WebContents::CreateParams(browser()->profile()));
+        content::WebContents::CreateParams(browser()->GetProfile()));
 
     // Navigate to a valid test page to ensure the WebContents is fully
     // initialized and has a valid RenderFrameHost and Process ID.
     EXPECT_TRUE(content::NavigateToURL(
         web_contents.get(), embedded_test_server()->GetURL("/title1.html")));
 
-    auto app_window = std::make_unique<TestAppWindow>(
-        browser()->profile(), BuildOrGetExtension(), std::move(web_contents));
+    auto app_window = std::make_unique<TestAppWindow>(browser()->GetProfile(),
+                                                      BuildOrGetExtension(),
+                                                      std::move(web_contents));
     manually_added_app_windows_.push_back(std::move(app_window));
   }
 

@@ -332,10 +332,11 @@ class NetworkContextConfigurationBrowserTest
   content::StoragePartition* GetStoragePartitionForContextType(
       NetworkContextType network_context_type) {
     const auto kOnDiskConfig = content::StoragePartitionConfig::Create(
-        browser()->profile(), "foo", /*partition_name=*/"",
+        browser()->GetProfile(), "foo", /*partition_name=*/"",
         /*in_memory=*/false);
     const auto kInMemoryConfig = content::StoragePartitionConfig::Create(
-        browser()->profile(), "foo", /*partition_name=*/"", /*in_memory=*/true);
+        browser()->GetProfile(), "foo", /*partition_name=*/"",
+        /*in_memory=*/true);
 
     switch (network_context_type) {
       case NetworkContextType::kSystem:
@@ -345,7 +346,7 @@ class NetworkContextConfigurationBrowserTest
         return browser()->profile()->GetDefaultStoragePartition();
       case NetworkContextType::kIncognitoProfile:
         DCHECK(incognito_);
-        return incognito_->profile()->GetDefaultStoragePartition();
+        return incognito_->GetProfile()->GetDefaultStoragePartition();
       case NetworkContextType::kOnDiskApp:
         return browser()->profile()->GetStoragePartition(kOnDiskConfig);
       case NetworkContextType::kInMemoryApp:
@@ -356,11 +357,11 @@ class NetworkContextConfigurationBrowserTest
         // will return an in-memory config because incognito profiles are not
         // supposed to to use on-disk storage.
         const auto kIncognitoConfig = content::StoragePartitionConfig::Create(
-            incognito_->profile(), "foo", /*partition_name=*/"",
+            incognito_->GetProfile(), "foo", /*partition_name=*/"",
             /*in_memory=*/false);
         DCHECK(kIncognitoConfig.in_memory());
 
-        return incognito_->profile()->GetStoragePartition(kIncognitoConfig);
+        return incognito_->GetProfile()->GetStoragePartition(kIncognitoConfig);
       }
     }
     NOTREACHED();
@@ -378,7 +379,7 @@ class NetworkContextConfigurationBrowserTest
             ->GetURLLoaderFactory();
       case NetworkContextType::kSafeBrowsing:
         return g_browser_process->safe_browsing_service()
-            ->GetURLLoaderFactory(browser()->profile())
+            ->GetURLLoaderFactory(browser()->GetProfile())
             .get();
       case NetworkContextType::kProfile:
       case NetworkContextType::kIncognitoProfile:
@@ -404,7 +405,7 @@ class NetworkContextConfigurationBrowserTest
             ->GetContext();
       case NetworkContextType::kSafeBrowsing:
         return g_browser_process->safe_browsing_service()->GetNetworkContext(
-            browser()->profile());
+            browser()->GetProfile());
       case NetworkContextType::kProfile:
       case NetworkContextType::kIncognitoProfile:
       case NetworkContextType::kOnDiskApp:
@@ -488,13 +489,14 @@ class NetworkContextConfigurationBrowserTest
       case NetworkContextType::kProfile:
       case NetworkContextType::kInMemoryApp:
       case NetworkContextType::kOnDiskApp:
-        ProfileNetworkContextServiceFactory::GetForContext(browser()->profile())
+        ProfileNetworkContextServiceFactory::GetForContext(
+            browser()->GetProfile())
             ->FlushProxyConfigMonitorForTesting();
         break;
       case NetworkContextType::kIncognitoProfile:
       case NetworkContextType::kOnDiskAppWithIncognitoProfile:
         ProfileNetworkContextServiceFactory::GetForContext(
-            browser()->profile()->GetPrimaryOTRProfile(
+            browser()->GetProfile()->GetPrimaryOTRProfile(
                 /*create_if_needed=*/true))
             ->FlushProxyConfigMonitorForTesting();
         break;
@@ -647,7 +649,7 @@ class NetworkContextConfigurationBrowserTest
       case NetworkContextType::kIncognitoProfile:
       case NetworkContextType::kOnDiskAppWithIncognitoProfile:
         DCHECK(incognito_);
-        return incognito_->profile();
+        return incognito_->GetProfile();
     }
   }
 
@@ -1585,7 +1587,7 @@ IN_PROC_BROWSER_TEST_P(NetworkContextConfigurationBrowserTest,
   EXPECT_TRUE(GetCookies(https_server()->base_url()).empty());
 
   // Add exception, third party cookies should be allowed now.
-  CookieSettingsFactory::GetForProfile(browser()->profile())
+  CookieSettingsFactory::GetForProfile(browser()->GetProfile())
       ->SetCookieSetting(https_server()->base_url(), CONTENT_SETTING_ALLOW);
   // Set a third-party cookie. It should actually get set this time.
   SetCookie(CookieType::kThirdParty, CookiePersistenceType::kSession,
@@ -1606,7 +1608,7 @@ IN_PROC_BROWSER_TEST_P(NetworkContextConfigurationBrowserTest,
   if (system)
     return;
 
-  CookieSettingsFactory::GetForProfile(browser()->profile())
+  CookieSettingsFactory::GetForProfile(browser()->GetProfile())
       ->SetDefaultCookieSetting(CONTENT_SETTING_BLOCK);
   FlushNetworkInterface();
   SetCookie(CookieType::kFirstParty, CookiePersistenceType::kSession,
@@ -1633,7 +1635,7 @@ IN_PROC_BROWSER_TEST_P(NetworkContextConfigurationBrowserTest, CookieSettings) {
   EXPECT_TRUE(GetCookies(embedded_test_server()->base_url()).empty());
 
   // Set default setting to allow, cookies should be set now.
-  CookieSettingsFactory::GetForProfile(browser()->profile())
+  CookieSettingsFactory::GetForProfile(browser()->GetProfile())
       ->SetDefaultCookieSetting(CONTENT_SETTING_ALLOW);
   FlushNetworkInterface();
   SetCookie(CookieType::kFirstParty, CookiePersistenceType::kSession,

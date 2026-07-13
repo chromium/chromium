@@ -43,7 +43,8 @@ class UkmBackgroundRecorderBrowserTest : public InProcessBrowserTest {
 
   void SetUpOnMainThread() override {
     background_recorder_service_ =
-        ukm::UkmBackgroundRecorderFactory::GetForProfile(browser()->profile());
+        ukm::UkmBackgroundRecorderFactory::GetForProfile(
+            browser()->GetProfile());
     DCHECK(background_recorder_service_);
 
     // Adds the URL to the history so that UKM events for this origin are

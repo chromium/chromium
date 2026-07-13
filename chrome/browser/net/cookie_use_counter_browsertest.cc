@@ -66,7 +66,7 @@ class CookieUseCounterBrowserTest : public InProcessBrowserTest {
                  std::optional<net::CookiePartitionKey> cookie_partition_key =
                      std::nullopt) {
     ASSERT_TRUE(content::SetCookie(
-        browser()->profile(), url, cookie_line,
+        browser()->GetProfile(), url, cookie_line,
         net::CookieOptions::SameSiteCookieContext::MakeInclusive(),
         cookie_partition_key));
   }

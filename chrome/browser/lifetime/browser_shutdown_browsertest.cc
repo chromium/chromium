@@ -78,7 +78,7 @@ IN_PROC_BROWSER_TEST_F(BrowserShutdownBrowserTest,
                        MAYBE_TwoBrowsersClosingShutdownHistograms) {
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(browser(), GURL("browser://version")));
-  Browser* browser2 = CreateBrowser(browser()->profile());
+  Browser* browser2 = CreateBrowser(browser()->GetProfile());
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser2, GURL("browser://help")));
 
   base::MockCallback<BrowserWindowInterface::BrowserDidCloseCallback>

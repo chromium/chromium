@@ -286,7 +286,7 @@ class MediaEngagementBrowserTest : public InProcessBrowserTest {
   void CloseBrowser() { CloseAllBrowsers(); }
 
   MediaEngagementService* GetService() {
-    return MediaEngagementService::Get(browser()->profile());
+    return MediaEngagementService::Get(browser()->GetProfile());
   }
 
   // To be used only for a service that wasn't the one created by the test
@@ -801,7 +801,7 @@ IN_PROC_BROWSER_TEST_F(MediaEngagementPreThirdPartyCookieDeprecationBrowserTest,
 
   prerender::NoStatePrefetchManager* no_state_prefetch_manager =
       prerender::NoStatePrefetchManagerFactory::GetForBrowserContext(
-          browser()->profile());
+          browser()->GetProfile());
   ASSERT_TRUE(no_state_prefetch_manager);
 
   prerender::test_utils::TestNoStatePrefetchContentsFactory*

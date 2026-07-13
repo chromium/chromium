@@ -284,7 +284,7 @@ class CaptureHandleWindowBrowserTest : public WebRtcTestBase {
       session_.reset();
     }
     SetTitleToClosedAndWait(app_browser);
-    web_app::test::UninstallWebApp(browser()->profile(), app_id);
+    web_app::test::UninstallWebApp(browser()->GetProfile(), app_id);
   }
 
  protected:
@@ -311,7 +311,7 @@ class CaptureHandleWindowBrowserTest : public WebRtcTestBase {
 
 IN_PROC_BROWSER_TEST_F(CaptureHandleWindowBrowserTest,
                        IgnoresHandleFromRegularBrowserWindow) {
-  Browser* target_browser = CreateBrowser(browser()->profile());
+  Browser* target_browser = CreateBrowser(browser()->GetProfile());
   base::ScopedClosureRunner auto_close_target(
       base::BindOnce(&CaptureHandleWindowBrowserTest::SafeCloseBrowser,
                      base::Unretained(this), target_browser));
@@ -335,10 +335,10 @@ IN_PROC_BROWSER_TEST_F(CaptureHandleWindowBrowserTest,
       web_app::mojom::UserDisplayMode::kStandalone;
   web_app_info->is_diy_app = true;
   webapps::AppId diy_app_id = web_app::test::InstallWebApp(
-      browser()->profile(), std::move(web_app_info));
+      browser()->GetProfile(), std::move(web_app_info));
 
   Browser* target_browser =
-      web_app::LaunchWebAppBrowserAndWait(browser()->profile(), diy_app_id);
+      web_app::LaunchWebAppBrowserAndWait(browser()->GetProfile(), diy_app_id);
   ASSERT_TRUE(target_browser);
   base::ScopedClosureRunner auto_close_target(base::BindOnce(
       &CaptureHandleWindowBrowserTest::SetTitleClosedAndUninstallApp,
@@ -378,7 +378,7 @@ IN_PROC_BROWSER_TEST_P(CaptureHandlePlaceholderBrowserTest,
   install_options.fallback_app_name = GetCapturedWindowTitle();
 
   web_app::WebAppProvider* provider =
-      web_app::WebAppProvider::GetForTest(browser()->profile());
+      web_app::WebAppProvider::GetForTest(browser()->GetProfile());
   ASSERT_TRUE(provider);
 
   base::test::TestFuture<web_app::ExternallyManagedAppManager::InstallResult>
@@ -399,7 +399,7 @@ IN_PROC_BROWSER_TEST_P(CaptureHandlePlaceholderBrowserTest,
       provider->registrar_unsafe().IsPlaceholderApp(app_id, management_type));
 
   Browser* app_browser =
-      web_app::LaunchWebAppBrowserAndWait(browser()->profile(), app_id);
+      web_app::LaunchWebAppBrowserAndWait(browser()->GetProfile(), app_id);
   ASSERT_TRUE(app_browser);
   base::ScopedClosureRunner auto_close_target(
       base::BindOnce(&CaptureHandlePlaceholderBrowserTest::SafeCloseBrowser,
@@ -1019,7 +1019,7 @@ IN_PROC_BROWSER_TEST_F(CaptureHandleSystemWebAppBrowserTest,
   EXPECT_TRUE(content::WaitForLoadStop(swa_contents));
 
   ash::BrowserDelegate* swa_browser_delegate = ash::FindSystemWebAppBrowser(
-      browser()->profile(), ash::SystemWebAppType::SETTINGS,
+      browser()->GetProfile(), ash::SystemWebAppType::SETTINGS,
       ash::BrowserType::kApp);
   Browser* swa_browser =
       swa_browser_delegate

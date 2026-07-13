@@ -322,7 +322,7 @@ IN_PROC_BROWSER_TEST_F(WebRtcMediaDevicesInteractiveUITest,
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url(embedded_test_server()->GetURL(kMainWebrtcTestHtmlPage));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-  CookieSettingsFactory::GetForProfile(browser()->profile())
+  CookieSettingsFactory::GetForProfile(browser()->GetProfile())
       ->SetDefaultCookieSetting(CONTENT_SETTING_BLOCK);
   content::WebContents* tab1 =
       browser()->tab_strip_model()->GetActiveWebContents();
@@ -351,7 +351,7 @@ IN_PROC_BROWSER_TEST_F(WebRtcMediaDevicesInteractiveUITest,
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url(embedded_test_server()->GetURL(kMainWebrtcTestHtmlPage));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-  CookieSettingsFactory::GetForProfile(browser()->profile())
+  CookieSettingsFactory::GetForProfile(browser()->GetProfile())
       ->SetDefaultCookieSetting(CONTENT_SETTING_BLOCK);
   content::WebContents* tab =
       browser()->tab_strip_model()->GetActiveWebContents();
@@ -418,7 +418,7 @@ IN_PROC_BROWSER_TEST_F(WebRtcMediaDevicesInteractiveUITest,
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url(embedded_test_server()->GetURL(kMainWebrtcTestHtmlPage));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-  CookieSettingsFactory::GetForProfile(browser()->profile())
+  CookieSettingsFactory::GetForProfile(browser()->GetProfile())
       ->SetDefaultCookieSetting(CONTENT_SETTING_SESSION_ONLY);
   content::WebContents* tab =
       browser()->tab_strip_model()->GetActiveWebContents();
@@ -426,7 +426,8 @@ IN_PROC_BROWSER_TEST_F(WebRtcMediaDevicesInteractiveUITest,
   EnumerateDevices(tab, &devices);
 
   media_device_salt::MediaDeviceSaltService* salt_service =
-      MediaDeviceSaltServiceFactory::GetForBrowserContext(browser()->profile());
+      MediaDeviceSaltServiceFactory::GetForBrowserContext(
+          browser()->GetProfile());
   base::test::TestFuture<std::vector<blink::StorageKey>> keys_future;
   salt_service->GetAllStorageKeys(keys_future.GetCallback());
   EXPECT_FALSE(keys_future.Get().empty());
@@ -435,7 +436,8 @@ IN_PROC_BROWSER_TEST_F(WebRtcMediaDevicesInteractiveUITest,
 IN_PROC_BROWSER_TEST_F(WebRtcMediaDevicesInteractiveUITest,
                        SaltsDeletedForSessionOnlyCookies) {
   media_device_salt::MediaDeviceSaltService* salt_service =
-      MediaDeviceSaltServiceFactory::GetForBrowserContext(browser()->profile());
+      MediaDeviceSaltServiceFactory::GetForBrowserContext(
+          browser()->GetProfile());
   base::test::TestFuture<std::vector<blink::StorageKey>> keys_future;
   salt_service->GetAllStorageKeys(keys_future.GetCallback());
   EXPECT_TRUE(keys_future.Get().empty());
@@ -446,7 +448,7 @@ IN_PROC_BROWSER_TEST_F(WebRtcMediaDevicesInteractiveUITest,
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url(embedded_test_server()->GetURL(kMainWebrtcTestHtmlPage));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-  CookieSettingsFactory::GetForProfile(browser()->profile())
+  CookieSettingsFactory::GetForProfile(browser()->GetProfile())
       ->SetDefaultCookieSetting(CONTENT_SETTING_BLOCK);
   content::WebContents* tab =
       browser()->tab_strip_model()->GetActiveWebContents();
@@ -454,7 +456,8 @@ IN_PROC_BROWSER_TEST_F(WebRtcMediaDevicesInteractiveUITest,
   EnumerateDevices(tab, &devices);
 
   media_device_salt::MediaDeviceSaltService* salt_service =
-      MediaDeviceSaltServiceFactory::GetForBrowserContext(browser()->profile());
+      MediaDeviceSaltServiceFactory::GetForBrowserContext(
+          browser()->GetProfile());
   base::test::TestFuture<std::vector<blink::StorageKey>> keys_future;
   salt_service->GetAllStorageKeys(keys_future.GetCallback());
   EXPECT_TRUE(keys_future.Get().empty());
@@ -502,7 +505,7 @@ IN_PROC_BROWSER_TEST_F(WebRtcMediaDevicesPrerenderingBrowserTest,
   content::RenderFrameHost* prerender_rfh =
       prerender_helper()->GetPrerenderedMainFrameHost(host_id);
 
-  CookieSettingsFactory::GetForProfile(browser()->profile())
+  CookieSettingsFactory::GetForProfile(browser()->GetProfile())
       ->SetDefaultCookieSetting(CONTENT_SETTING_BLOCK);
 
   base::RunLoop run_loop;

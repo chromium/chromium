@@ -94,12 +94,12 @@ class InfoBarsTest : public InProcessBrowserTest {
         base::FilePath().AppendASCII("extensions"),
         base::FilePath().AppendASCII(filename));
     extensions::TestExtensionRegistryObserver observer(
-        extensions::ExtensionRegistry::Get(browser()->profile()));
+        extensions::ExtensionRegistry::Get(browser()->GetProfile()));
 
     std::unique_ptr<ExtensionInstallPrompt> client(new ExtensionInstallPrompt(
         browser()->tab_strip_model()->GetActiveWebContents()));
     scoped_refptr<extensions::CrxInstaller> installer(
-        extensions::CrxInstaller::Create(browser()->profile(),
+        extensions::CrxInstaller::Create(browser()->GetProfile(),
                                          std::move(client)));
     installer->InstallCrx(path);
 
@@ -154,7 +154,8 @@ IN_PROC_BROWSER_TEST_F(InfoBarsTest, TestInfoBarsCloseOnNewTheme) {
   {
     InfoBarObserver observer(infobar_manager2,
                              InfoBarObserver::Type::kInfoBarRemoved);
-    ThemeServiceFactory::GetForProfile(browser()->profile())->UseDefaultTheme();
+    ThemeServiceFactory::GetForProfile(browser()->GetProfile())
+        ->UseDefaultTheme();
     observer.Wait();
     EXPECT_EQ(0u, infobar_manager2->infobars().size());
   }
@@ -250,10 +251,10 @@ void InfoBarUiTest::ShowUi(const std::string& name) {
     case IBD::THEME_INSTALLED_INFOBAR_DELEGATE:
       ThemeInstalledInfoBarDelegate::Create(
           GetInfoBarManager(),
-          ThemeServiceFactory::GetForProfile(browser()->profile()), "New Theme",
-          "id",
+          ThemeServiceFactory::GetForProfile(browser()->GetProfile()),
+          "New Theme", "id",
           std::make_unique<ThemeService::ThemeReinstaller>(
-              browser()->profile(), base::OnceClosure()));
+              browser()->GetProfile(), base::OnceClosure()));
       break;
 
 #if BUILDFLAG(ENABLE_PLUGINS)

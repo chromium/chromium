@@ -442,7 +442,7 @@ IN_PROC_BROWSER_TEST_F(LocalNetworkAccessCountersBrowserTest,
       proxy_config::prefs::kProxy,
       ProxyConfigDictionary::CreateFixedServers(
           https_server().host_port_pair().ToString(), ""));
-  ProfileNetworkContextServiceFactory::GetForContext(browser()->profile())
+  ProfileNetworkContextServiceFactory::GetForContext(browser()->GetProfile())
       ->FlushProxyConfigMonitorForTesting();
 
   // FlushProxyConfigMonitorForTesting() ensures the proxy config message is

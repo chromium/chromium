@@ -579,7 +579,7 @@ IN_PROC_BROWSER_TEST_F(DeviceBoundSessionBrowserTest,
     "permissions": ["<all_urls>"]
    })");
   extension_dir.WriteFile(FILE_PATH_LITERAL("background.js"), "");
-  extensions::ChromeTestExtensionLoader loader(browser()->profile());
+  extensions::ChromeTestExtensionLoader loader(browser()->GetProfile());
   scoped_refptr<const extensions::Extension> extension =
       loader.LoadExtension(extension_dir.UnpackedPath());
   ASSERT_TRUE(extension);
@@ -597,7 +597,7 @@ IN_PROC_BROWSER_TEST_F(DeviceBoundSessionBrowserTest,
     }))";
   base::Value result =
       extensions::browsertest_util::ExecuteScriptInBackgroundPage(
-          browser()->profile(), extension->id(),
+          browser()->GetProfile(), extension->id(),
           script + "('" + url.spec() + "')");
 
   // DBSC cookie was set successfully because force_ignore_site_for_cookies
@@ -636,7 +636,7 @@ IN_PROC_BROWSER_TEST_F(DeviceBoundSessionBrowserTest,
     "incognito": "split"
    })");
   extension_dir.WriteFile(FILE_PATH_LITERAL("background.js"), "");
-  extensions::ChromeTestExtensionLoader loader(browser()->profile());
+  extensions::ChromeTestExtensionLoader loader(browser()->GetProfile());
   scoped_refptr<const extensions::Extension> extension =
       loader.LoadExtension(extension_dir.UnpackedPath());
   ASSERT_TRUE(extension);
@@ -654,7 +654,7 @@ IN_PROC_BROWSER_TEST_F(DeviceBoundSessionBrowserTest,
     }))";
   base::Value result =
       extensions::browsertest_util::ExecuteScriptInBackgroundPage(
-          browser()->profile(), extension->id(),
+          browser()->GetProfile(), extension->id(),
           script + "('" + url.spec() + "')");
 
   // Fetch should fail due to missing permissions.

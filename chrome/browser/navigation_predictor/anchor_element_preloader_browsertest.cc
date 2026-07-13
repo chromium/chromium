@@ -87,7 +87,7 @@ class AnchorElementPreloaderBrowserTest
     host_resolver()->AddRule("*", "127.0.0.1");
     auto* loading_predictor =
         predictors::LoadingPredictorFactory::GetForProfile(
-            browser()->profile());
+            browser()->GetProfile());
     histogram_tester_ = std::make_unique<base::HistogramTester>();
     test_ukm_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
     ukm_entry_builder_ =
@@ -335,7 +335,7 @@ IN_PROC_BROWSER_TEST_F(AnchorElementPreloaderBrowserTest, DISABLED_IframeTest) {
 
 IN_PROC_BROWSER_TEST_F(AnchorElementPreloaderBrowserTest,
                        UserSettingDisabledTest) {
-  prefetch::SetPreloadPagesState(browser()->profile()->GetPrefs(),
+  prefetch::SetPreloadPagesState(browser()->GetProfile()->GetPrefs(),
                                  prefetch::PreloadPagesState::kNoPreloading);
   const GURL& url = GetTestURL("/one_anchor.html");
   EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));

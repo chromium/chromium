@@ -162,7 +162,7 @@ IN_PROC_BROWSER_TEST_F(CriticalUserJourneyServiceInteractiveTest,
       base::StrCat({GetMetricJourneyPrefix(kAppMenuJourney), ".Result"});
 
   auto* mock_hats_service = static_cast<MockHatsService*>(
-      HatsServiceFactory::GetForProfile(browser()->profile(), true));
+      HatsServiceFactory::GetForProfile(browser()->GetProfile(), true));
   EXPECT_CALL(*mock_hats_service,
               LaunchSurvey("TestHatsTrigger", testing::_, testing::_,
                            testing::_, testing::_, testing::_, testing::_))

@@ -153,7 +153,7 @@ class MultistepFilterBrowserTest : public InProcessBrowserTest,
     embedded_test_server()->StartAcceptingConnections();
 
     auto* identity_manager =
-        IdentityManagerFactory::GetForProfile(browser()->profile());
+        IdentityManagerFactory::GetForProfile(browser()->GetProfile());
     // TODO(crbug.com/519167729): Remove once kSync becomes unreachable or is
     // deleted from the codebase.
     signin::MakePrimaryAccountAvailable(identity_manager, kTestEmail,
@@ -163,14 +163,14 @@ class MultistepFilterBrowserTest : public InProcessBrowserTest,
         unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled, true);
 
     auto* sync_service =
-        SyncServiceFactory::GetForProfile(browser()->profile());
+        SyncServiceFactory::GetForProfile(browser()->GetProfile());
     std::unique_ptr<syncer::SyncSetupInProgressHandle> sync_blocker =
         sync_service->GetSetupInProgressHandle();
     sync_service->GetUserSettings()->SetSelectedTypes(
         /*sync_everything=*/false, {syncer::UserSelectableType::kHistory});
 
     service_ =
-        MultistepFilterServiceFactory::GetForProfile(browser()->profile());
+        MultistepFilterServiceFactory::GetForProfile(browser()->GetProfile());
     FilterTabController* controller = GetTabController(browser());
     if (controller) {
       test_api(*controller).SetObserverForTest(this);
@@ -189,7 +189,7 @@ class MultistepFilterBrowserTest : public InProcessBrowserTest,
 #if !BUILDFLAG(IS_CHROMEOS)
   void ClearPrimaryAccount() {
     auto* identity_manager =
-        IdentityManagerFactory::GetForProfile(browser()->profile());
+        IdentityManagerFactory::GetForProfile(browser()->GetProfile());
     signin::ClearPrimaryAccount(identity_manager);
   }
 #endif
@@ -336,7 +336,7 @@ IN_PROC_BROWSER_TEST_F(MultistepFilterBrowserTest,
   base::test::TestFuture<void> history_future;
   base::CancelableTaskTracker task_tracker;
   auto* history_service = HistoryServiceFactory::GetForProfile(
-      browser()->profile(), ServiceAccessType::EXPLICIT_ACCESS);
+      browser()->GetProfile(), ServiceAccessType::EXPLICIT_ACCESS);
   history_service->ExpireHistoryBetween(
       {}, std::nullopt, base::Time(), base::Time::Now(),
       /*user_initiated=*/true, history_future.GetCallback(), &task_tracker);
@@ -496,7 +496,7 @@ class MultistepFilterOptimizationGuideBrowserTest
     embedded_test_server()->StartAcceptingConnections();
 
     auto* identity_manager =
-        IdentityManagerFactory::GetForProfile(browser()->profile());
+        IdentityManagerFactory::GetForProfile(browser()->GetProfile());
     // TODO(crbug.com/519167729): Remove once kSync becomes unreachable or is
     // deleted from the codebase.
     signin::MakePrimaryAccountAvailable(identity_manager, kTestEmail,
@@ -506,21 +506,21 @@ class MultistepFilterOptimizationGuideBrowserTest
         unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled, true);
 
     auto* sync_service =
-        SyncServiceFactory::GetForProfile(browser()->profile());
+        SyncServiceFactory::GetForProfile(browser()->GetProfile());
     std::unique_ptr<syncer::SyncSetupInProgressHandle> sync_blocker =
         sync_service->GetSetupInProgressHandle();
     sync_service->GetUserSettings()->SetSelectedTypes(
         /*sync_everything=*/false, {syncer::UserSelectableType::kHistory});
 
     service_ =
-        MultistepFilterServiceFactory::GetForProfile(browser()->profile());
+        MultistepFilterServiceFactory::GetForProfile(browser()->GetProfile());
     FilterTabController* controller = GetTabController(browser());
     if (controller) {
       test_api(*controller).SetObserverForTest(this);
     }
     optimization_guide_decider_ =
         OptimizationGuideKeyedServiceFactory::GetForProfile(
-            browser()->profile());
+            browser()->GetProfile());
   }
 
   void TearDownOnMainThread() override {
@@ -536,7 +536,7 @@ class MultistepFilterOptimizationGuideBrowserTest
 #if !BUILDFLAG(IS_CHROMEOS)
   void ClearPrimaryAccount() {
     auto* identity_manager =
-        IdentityManagerFactory::GetForProfile(browser()->profile());
+        IdentityManagerFactory::GetForProfile(browser()->GetProfile());
     signin::ClearPrimaryAccount(identity_manager);
   }
 #endif
@@ -689,7 +689,7 @@ IN_PROC_BROWSER_TEST_F(MultistepFilterOptimizationGuideBrowserTest,
   base::test::TestFuture<void> history_future;
   base::CancelableTaskTracker task_tracker;
   auto* history_service = HistoryServiceFactory::GetForProfile(
-      browser()->profile(), ServiceAccessType::EXPLICIT_ACCESS);
+      browser()->GetProfile(), ServiceAccessType::EXPLICIT_ACCESS);
   history_service->ExpireHistoryBetween(
       {}, std::nullopt, base::Time(), base::Time::Now(),
       /*user_initiated=*/true, history_future.GetCallback(), &task_tracker);
@@ -859,12 +859,12 @@ class MultistepFilterDisabledBrowserTest : public InProcessBrowserTest {
 IN_PROC_BROWSER_TEST_F(MultistepFilterDisabledBrowserTest,
                        ServiceNotCreatedWhenFeatureDisabled) {
   auto* identity_manager =
-      IdentityManagerFactory::GetForProfile(browser()->profile());
+      IdentityManagerFactory::GetForProfile(browser()->GetProfile());
   signin::MakePrimaryAccountAvailable(identity_manager, kTestEmail,
                                       signin::ConsentLevel::kSignin);
 
   MultistepFilterService* service =
-      MultistepFilterServiceFactory::GetForProfile(browser()->profile());
+      MultistepFilterServiceFactory::GetForProfile(browser()->GetProfile());
 
   EXPECT_EQ(service, nullptr);
 }

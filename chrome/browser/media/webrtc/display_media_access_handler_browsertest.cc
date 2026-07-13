@@ -263,7 +263,7 @@ IN_PROC_BROWSER_TEST_F(DisplayMediaAccessHandlerTest, NonTabWebContents) {
 
   // Creates a non-tab WebContents.
   auto* webview = new NonTabWebView(
-      browser()->profile(), embedded_test_server()->GetURL("/title1.html"));
+      browser()->GetProfile(), embedded_test_server()->GetURL("/title1.html"));
   content::WebContents* web_contents = webview->GetWebContents();
 
   // Media picker dialog should show as a standalone window and no crash.

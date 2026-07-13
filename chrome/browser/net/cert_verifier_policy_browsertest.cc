@@ -996,7 +996,7 @@ IN_PROC_BROWSER_TEST_P(CertVerifierServicePolicyAndUserRootsTest,
   if (add_certs()) {
     net::ServerCertificateDatabaseService* server_certificate_database_service =
         net::ServerCertificateDatabaseServiceFactory::GetForBrowserContext(
-            browser()->profile());
+            browser()->GetProfile());
     {
       scoped_refptr<net::X509Certificate> root_cert =
           test_server_for_user_added.GetRoot();

@@ -459,7 +459,7 @@ class ChromeAppLocalNetworkAccessWorkersBrowserTest
     content::RunAllPendingInMessageLoop();
 
     extensions::AppWindowRegistry* app_registry =
-        extensions::AppWindowRegistry::Get(browser()->profile());
+        extensions::AppWindowRegistry::Get(browser()->GetProfile());
 
     extensions::AppWindow* window =
         app_registry->GetCurrentAppWindowForApp(extension->id());

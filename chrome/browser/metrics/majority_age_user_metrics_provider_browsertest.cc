@@ -89,7 +89,7 @@ IN_PROC_BROWSER_TEST_P(MajorityAgeUserMetricsProviderTest,
   // functions from SyncTest.
   std::unique_ptr<SyncServiceImplHarness> harness =
       SyncServiceImplHarness::Create(
-          browser()->profile(),
+          browser()->GetProfile(),
           SyncServiceImplHarness::SigninType::FAKE_SIGNIN);
   ASSERT_TRUE(harness->SetupSync());
 

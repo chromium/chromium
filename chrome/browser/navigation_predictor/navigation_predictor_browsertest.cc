@@ -611,7 +611,7 @@ IN_PROC_BROWSER_TEST_F(NavigationPredictorBrowserTest, SingleObserver) {
 
   NavigationPredictorKeyedService* service =
       NavigationPredictorKeyedServiceFactory::GetForProfile(
-          browser()->profile());
+          browser()->GetProfile());
   EXPECT_NE(nullptr, service);
   service->AddObserver(&observer);
 
@@ -645,7 +645,7 @@ IN_PROC_BROWSER_TEST_F(NavigationPredictorBrowserTest,
 
   NavigationPredictorKeyedService* service =
       NavigationPredictorKeyedServiceFactory::GetForProfile(
-          browser()->profile());
+          browser()->GetProfile());
   EXPECT_NE(nullptr, service);
   service->AddObserver(&observer);
 
@@ -677,7 +677,7 @@ IN_PROC_BROWSER_TEST_F(NavigationPredictorBrowserTest, TwoObservers) {
 
   NavigationPredictorKeyedService* service =
       NavigationPredictorKeyedServiceFactory::GetForProfile(
-          browser()->profile());
+          browser()->GetProfile());
   service->AddObserver(&observer_1);
   service->AddObserver(&observer_2);
 
@@ -716,7 +716,7 @@ IN_PROC_BROWSER_TEST_F(NavigationPredictorBrowserTest, Incognito) {
   Browser* incognito = CreateIncognitoBrowser();
   NavigationPredictorKeyedService* incognito_service =
       NavigationPredictorKeyedServiceFactory::GetForProfile(
-          incognito->profile());
+          incognito->GetProfile());
   EXPECT_EQ(nullptr, incognito_service);
 }
 

@@ -243,7 +243,7 @@ bool DnsProbeBrowserTest::InterceptURLLoaderRequest(
 void DnsProbeBrowserTest::SetActiveBrowser(Browser* browser) {
   delaying_dns_probe_service_ = static_cast<DelayingDnsProbeService*>(
       DnsProbeServiceFactory::GetInstance()->SetTestingFactoryAndUse(
-          browser->profile(),
+          browser->GetProfile(),
           base::BindRepeating(
               &DelayingDnsProbeService::Create,
               base::BindRepeating(&DnsProbeBrowserTest::GetNetworkContext,

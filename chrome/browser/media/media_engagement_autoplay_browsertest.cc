@@ -91,7 +91,8 @@ class MediaEngagementAutoplayBrowserTest
   }
 
   void LoadTestPage(const std::string& page) {
-    NavigateParams params(browser()->profile(), http_server_.GetURL("/" + page),
+    NavigateParams params(browser()->GetProfile(),
+                          http_server_.GetURL("/" + page),
                           ui::PageTransition::PAGE_TRANSITION_LINK);
     params.user_gesture = false;
     params.is_renderer_initiated = false;
@@ -99,7 +100,7 @@ class MediaEngagementAutoplayBrowserTest
   }
 
   void LoadTestPageSecondaryOrigin(const std::string& page) {
-    NavigateParams params(browser()->profile(),
+    NavigateParams params(browser()->GetProfile(),
                           http_server_origin2_.GetURL("/" + page),
                           ui::PageTransition::PAGE_TRANSITION_LINK);
     params.user_gesture = false;
@@ -201,7 +202,7 @@ class MediaEngagementAutoplayBrowserTest
   }
 
   MediaEngagementService* GetService() {
-    return MediaEngagementService::Get(browser()->profile());
+    return MediaEngagementService::Get(browser()->GetProfile());
   }
 
   content::WebContents* GetWebContents() {

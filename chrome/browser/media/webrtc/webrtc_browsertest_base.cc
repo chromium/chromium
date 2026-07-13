@@ -561,7 +561,7 @@ std::string WebRtcTestBase::GetDesktopMediaStream(content::WebContents* tab) {
 std::optional<std::string> WebRtcTestBase::LoadDesktopCaptureExtension() {
   std::optional<std::string> extension_id;
   if (!desktop_capture_extension_.get()) {
-    extensions::ChromeTestExtensionLoader loader(browser()->profile());
+    extensions::ChromeTestExtensionLoader loader(browser()->GetProfile());
     base::FilePath extension_path;
     EXPECT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, &extension_path));
     extension_path = extension_path.AppendASCII("extensions/desktop_capture");
@@ -570,7 +570,7 @@ std::optional<std::string> WebRtcTestBase::LoadDesktopCaptureExtension() {
               << desktop_capture_extension_->id();
 
     extensions::ExtensionRegistry* registry =
-        extensions::ExtensionRegistry::Get(browser()->profile());
+        extensions::ExtensionRegistry::Get(browser()->GetProfile());
 
     EXPECT_TRUE(registry->enabled_extensions().GetByID(
         desktop_capture_extension_->id()));

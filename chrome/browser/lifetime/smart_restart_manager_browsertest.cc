@@ -283,7 +283,7 @@ IN_PROC_BROWSER_TEST_F(SmartRestartManagerBrowserTest,
   ScopedKeepAlive keep_alive(KeepAliveOrigin::BROWSER,
                              KeepAliveRestartOption::DISABLED);
   ScopedProfileKeepAlive profile_keep_alive(
-      browser()->profile(), ProfileKeepAliveOrigin::kBrowserWindow);
+      browser()->GetProfile(), ProfileKeepAliveOrigin::kBrowserWindow);
 
   // 2. Setup: 1 window open and a pending update.
   fake_upgrade_detector_.SetUpgradeAvailable();
@@ -500,7 +500,7 @@ IN_PROC_BROWSER_TEST_F(SmartRestartManagerBrowserTest,
   base::HistogramTester histogram_tester;
   // 1. Setup: Pending update and a "High Disruption" blocker (e.g. Incognito).
   fake_upgrade_detector_.SetUpgradeAvailable();
-  CreateIncognitoBrowser(browser()->profile());
+  CreateIncognitoBrowser(browser()->GetProfile());
 
   // 2. Action: Simulate Lock.
   PrefService* local_state = g_browser_process->local_state();

@@ -243,7 +243,7 @@ class CertVerifierUserSettingsTest : public PlatformBrowserTest {
   testing::AssertionResult AddCertificateToDatabaseAndWaitForVerifierUpdate(
       net::ServerCertificateDatabase::CertInformation cert_info) {
     return AddCertificateToProfileDatabaseAndWaitForVerifierUpdate(
-        browser()->profile(), std::move(cert_info));
+        browser()->GetProfile(), std::move(cert_info));
   }
 
   static testing::AssertionResult
@@ -769,7 +769,7 @@ IN_PROC_BROWSER_TEST_F(CertVerifierNSSMigrationTest,
       net::ImportCertFromFile(net::EmbeddedTestServer::GetRootCertPemPath());
   ASSERT_TRUE(test_root);
   base::test::TestFuture<net::NSSCertDatabase*> nss_waiter;
-  NssServiceFactory::GetForContext(browser()->profile())
+  NssServiceFactory::GetForContext(browser()->GetProfile())
       ->UnsafelyGetNSSCertDatabaseForTesting(nss_waiter.GetCallback());
   net::NSSCertDatabase* nss_db = nss_waiter.Get();
   net::NSSCertDatabase::ImportCertFailureList not_imported;
@@ -780,7 +780,7 @@ IN_PROC_BROWSER_TEST_F(CertVerifierNSSMigrationTest,
   EXPECT_TRUE(not_imported.empty());
 
   // Migration pref should be false.
-  EXPECT_EQ(browser()->profile()->GetPrefs()->GetInteger(
+  EXPECT_EQ(browser()->GetProfile()->GetPrefs()->GetInteger(
                 net::prefs::kNSSCertsMigratedToServerCertDb),
             static_cast<int>(net::ServerCertificateDatabaseService::
                                  NSSMigrationResultPref::kNotMigrated));
@@ -811,7 +811,7 @@ IN_PROC_BROWSER_TEST_F(CertVerifierNSSMigrationTest, PRE_TestNSSCertMigration) {
 
   // Migration pref should be true now.
   EXPECT_EQ(
-      browser()->profile()->GetPrefs()->GetInteger(
+      browser()->GetProfile()->GetPrefs()->GetInteger(
           net::prefs::kNSSCertsMigratedToServerCertDb),
       static_cast<int>(net::ServerCertificateDatabaseService::
                            NSSMigrationResultPref::kMigratedSuccessfully));
@@ -833,7 +833,7 @@ IN_PROC_BROWSER_TEST_F(CertVerifierNSSMigrationTest, PRE_TestNSSCertMigration) {
       net::ImportCertFromFile(net::EmbeddedTestServer::GetRootCertPemPath());
   ASSERT_TRUE(test_root);
   base::test::TestFuture<net::NSSCertDatabase*> nss_waiter;
-  NssServiceFactory::GetForContext(browser()->profile())
+  NssServiceFactory::GetForContext(browser()->GetProfile())
       ->UnsafelyGetNSSCertDatabaseForTesting(nss_waiter.GetCallback());
   net::NSSCertDatabase* nss_db = nss_waiter.Get();
   nss_db->SetCertTrust(
@@ -846,7 +846,7 @@ IN_PROC_BROWSER_TEST_F(CertVerifierNSSMigrationTest, PRE_TestNSSCertMigration) {
 IN_PROC_BROWSER_TEST_F(CertVerifierNSSMigrationTest, TestNSSCertMigration) {
   // Migration pref should already be true.
   EXPECT_EQ(
-      browser()->profile()->GetPrefs()->GetInteger(
+      browser()->GetProfile()->GetPrefs()->GetInteger(
           net::prefs::kNSSCertsMigratedToServerCertDb),
       static_cast<int>(net::ServerCertificateDatabaseService::
                            NSSMigrationResultPref::kMigratedSuccessfully));
