@@ -1002,85 +1002,6 @@ static void PrepareDataTransferForImageDrag(LocalFrame* source,
   data_transfer->DeclareAndWriteDragImage(node, link_url, image_url, label);
 }
 
-bool DragController::PopulateDragDataTransfer(LocalFrame* src,
-                                              const DragState& state,
-                                              const gfx::Point& drag_origin) {
-#if DCHECK_IS_ON()
-  DCHECK(DragTypeIsValid(state.drag_type_));
-#endif
-  DCHECK(src);
-  if (!src->View() || !src->ContentLayoutObject())
-    return false;
-
-  HitTestLocation location(drag_origin);
-  HitTestResult hit_test_result =
-      src->GetEventHandler().HitTestResultAtLocation(location);
-  // FIXME: Can this even happen? I guess it's possible, but should verify
-  // with a web test.
-  Node* hit_inner_node = hit_test_result.InnerNode();
-  if (!hit_inner_node ||
-      !state.drag_src_->IsShadowIncludingInclusiveAncestorOf(*hit_inner_node)) {
-    // The original node being dragged isn't under the drag origin anymore...
-    // maybe it was hidden or moved out from under the cursor. Regardless, we
-    // don't want to start a drag on something that's not actually under the
-    // drag origin.
-    return false;
-  }
-  const KURL& link_url = hit_test_result.AbsoluteLinkURL();
-  const KURL& image_url = hit_test_result.AbsoluteImageURL();
-
-  DataTransfer* data_transfer = state.drag_data_transfer_.Get();
-  Node* node = state.drag_src_.Get();
-
-  // TODO(crbug.com/369219144): Should this be DynamicTo<HTMLAnchorElementBase>?
-  auto* html_anchor_element = DynamicTo<HTMLAnchorElement>(node);
-  if (html_anchor_element && html_anchor_element->IsLiveLink() &&
-      !link_url.IsEmpty()) {
-    // Simplify whitespace so the title put on the clipboard resembles what
-    // the user sees on the web page. This includes replacing newlines with
-    // spaces.
-    data_transfer->WriteURL(node, link_url,
-                            hit_test_result.TextContent().SimplifyWhiteSpace());
-  }
-
-  if (state.drag_type_ == kDragSourceActionSelection) {
-    data_transfer->WriteSelection(src->Selection());
-  } else if (state.drag_type_ == kDragSourceActionImage) {
-    auto* element = DynamicTo<Element>(node);
-    if (image_url.IsEmpty() || !element)
-      return false;
-    PrepareDataTransferForImageDrag(src, data_transfer, element, link_url,
-                                    image_url,
-                                    hit_test_result.AltDisplayString());
-  } else if (state.drag_type_ == kDragSourceActionLink) {
-    if (link_url.IsEmpty())
-      return false;
-  } else if (state.drag_type_ == kDragSourceActionDHTML) {
-    LayoutObject* layout_object = node->GetLayoutObject();
-    if (!layout_object) {
-      // The layoutObject has disappeared, this can happen if the onStartDrag
-      // handler has hidden the element in some way. In this case we just kill
-      // the drag.
-      return false;
-    }
-
-    gfx::Rect bounding_including_descendants =
-        layout_object->AbsoluteBoundingBoxRectIncludingDescendants();
-    gfx::Point drag_element_location =
-        drag_origin - bounding_including_descendants.OffsetFromOrigin();
-    data_transfer->SetDragImageElement(node, drag_element_location);
-
-    // FIXME: For DHTML/draggable element drags, write element markup to
-    // clipboard.
-  }
-
-  // Observe context related to source to allow dropping drag_state_ when the
-  // Document goes away.
-  SetExecutionContext(src->DomWindow());
-
-  return true;
-}
-
 namespace {
 
 gfx::Point DragLocationForDHTMLDrag(const gfx::Point& mouse_dragged_point,
@@ -1365,6 +1286,88 @@ DragOverlay DetermineDragOverlay(
 }
 
 }  // namespace
+
+bool DragController::PopulateDragDataTransfer(LocalFrame* src,
+                                              const DragState& state,
+                                              const gfx::Point& drag_origin) {
+#if DCHECK_IS_ON()
+  DCHECK(DragTypeIsValid(state.drag_type_));
+#endif
+  DCHECK(src);
+  if (!src->View() || !src->ContentLayoutObject()) {
+    return false;
+  }
+
+  HitTestLocation location(drag_origin);
+  HitTestResult hit_test_result =
+      src->GetEventHandler().HitTestResultAtLocation(location);
+  // FIXME: Can this even happen? I guess it's possible, but should verify
+  // with a web test.
+  Node* hit_inner_node = hit_test_result.InnerNode();
+  if (!hit_inner_node ||
+      !state.drag_src_->IsShadowIncludingInclusiveAncestorOf(*hit_inner_node)) {
+    // The original node being dragged isn't under the drag origin anymore...
+    // maybe it was hidden or moved out from under the cursor. Regardless, we
+    // don't want to start a drag on something that's not actually under the
+    // drag origin.
+    return false;
+  }
+  const KURL& link_url = hit_test_result.AbsoluteLinkURL();
+  const KURL& image_url = hit_test_result.AbsoluteImageURL();
+
+  DataTransfer* data_transfer = state.drag_data_transfer_.Get();
+  Node* node = state.drag_src_.Get();
+
+  // TODO(crbug.com/369219144): Should this be DynamicTo<HTMLAnchorElementBase>?
+  auto* html_anchor_element = DynamicTo<HTMLAnchorElement>(node);
+  if (html_anchor_element && html_anchor_element->IsLiveLink() &&
+      !link_url.IsEmpty()) {
+    // Simplify whitespace so the title put on the clipboard resembles what
+    // the user sees on the web page. This includes replacing newlines with
+    // spaces.
+    data_transfer->WriteURL(node, link_url,
+                            hit_test_result.TextContent().SimplifyWhiteSpace());
+  }
+
+  if (state.drag_type_ == kDragSourceActionSelection) {
+    data_transfer->WriteSelection(src->Selection());
+  } else if (state.drag_type_ == kDragSourceActionImage) {
+    auto* element = DynamicTo<Element>(node);
+    if (image_url.IsEmpty() || !element) {
+      return false;
+    }
+    PrepareDataTransferForImageDrag(src, data_transfer, element, link_url,
+                                    image_url,
+                                    hit_test_result.AltDisplayString());
+  } else if (state.drag_type_ == kDragSourceActionLink) {
+    if (link_url.IsEmpty()) {
+      return false;
+    }
+  } else if (state.drag_type_ == kDragSourceActionDHTML) {
+    LayoutObject* layout_object = node->GetLayoutObject();
+    if (!layout_object) {
+      // The layoutObject has disappeared, this can happen if the onStartDrag
+      // handler has hidden the element in some way. In this case we just kill
+      // the drag.
+      return false;
+    }
+
+    gfx::Rect bounding_including_descendants =
+        layout_object->AbsoluteBoundingBoxRectIncludingDescendants();
+    gfx::Point drag_element_location =
+        drag_origin - bounding_including_descendants.OffsetFromOrigin();
+    data_transfer->SetDragImageElement(node, drag_element_location);
+
+    // FIXME: For DHTML/draggable element drags, write element markup to
+    // clipboard.
+  }
+
+  // Observe context related to source to allow dropping drag_state_ when the
+  // Document goes away.
+  SetExecutionContext(src->DomWindow());
+
+  return true;
+}
 
 bool DragController::StartDrag(LocalFrame* frame,
                                const DragState& state,
