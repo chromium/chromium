@@ -701,7 +701,7 @@ void LoginOnUff() {
   testPasswordGenerationWhileSignedInWithPasswordsDisabled
 #else
 #define MAYBE_testPasswordGenerationWhileSignedInWithPasswordsDisabled \
-  DISABLED_testPasswordGenerationWhileSignedInWithPasswordsDisabled
+  FLAKY_testPasswordGenerationWhileSignedInWithPasswordsDisabled
 #endif
 - (void)MAYBE_testPasswordGenerationWhileSignedInWithPasswordsDisabled {
   [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
@@ -743,7 +743,7 @@ void LoginOnUff() {
   testPasswordGenerationWhileSignedInWithError
 #else
 #define MAYBE_testPasswordGenerationWhileSignedInWithError \
-  DISABLED_testPasswordGenerationWhileSignedInWithError
+  FLAKY_testPasswordGenerationWhileSignedInWithError
 #endif
 - (void)MAYBE_testPasswordGenerationWhileSignedInWithError {
   // Encrypt synced data with a passphrase to enable passphrase encryption for
