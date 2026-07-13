@@ -47,6 +47,9 @@ try_.builder(
             "ui/accessibility/.+",
         ],
     ),
+    experiments = {
+        "luci.buildbucket.run_in_turboci": 25,
+    },
 )
 
 try_.builder(
@@ -68,4 +71,7 @@ try_.builder(
             "ui/views/accessibility/.+",
         ],
     ),
+    experiments = {
+        "luci.buildbucket.run_in_turboci": 25,
+    },
 )
