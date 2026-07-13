@@ -60,7 +60,7 @@ class ClassifyUrlNavigationThrottleTest
 IN_PROC_BROWSER_TEST_F(ClassifyUrlNavigationThrottleTest,
                        RecordsAllowedOnManualList) {
   GURL allowed_url = embedded_test_server()->GetURL(kExampleHost, "/");
-  supervised_user_test_util::SetManualFilterForHost(browser()->profile(),
+  supervised_user_test_util::SetManualFilterForHost(browser()->GetProfile(),
                                                     kExampleHost,
                                                     /*allowlist=*/true);
 
@@ -74,7 +74,7 @@ IN_PROC_BROWSER_TEST_F(ClassifyUrlNavigationThrottleTest,
 IN_PROC_BROWSER_TEST_F(ClassifyUrlNavigationThrottleTest,
                        RecordsThrottledFromManualBlocklist) {
   GURL throttled_url = embedded_test_server()->GetURL(kExampleHost, "/");
-  supervised_user_test_util::SetManualFilterForHost(browser()->profile(),
+  supervised_user_test_util::SetManualFilterForHost(browser()->GetProfile(),
                                                     kExampleHost,
                                                     /*allowlist=*/false);
 

@@ -457,7 +457,7 @@ IN_PROC_BROWSER_TEST_F(LiveSignInTestFullSync,
   Browser* new_browser = ui_test_utils::WaitForBrowserToOpen();
   EXPECT_EQ(profile_manager->GetNumberOfProfiles(), 2U);
   EXPECT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(), 2U);
-  EXPECT_NE(browser()->profile(), new_browser->profile());
+  EXPECT_NE(browser()->GetProfile(), new_browser->GetProfile());
 
   // Confirm sync in the new browser window.
   SignInTestObserver new_browser_observer(
@@ -699,7 +699,7 @@ IN_PROC_BROWSER_TEST_F(LiveSignInTestFullSync, MANUAL_CreateSignedInProfile) {
   Profile* new_profile =
       Profile::FromBrowserContext(picker_contents->GetBrowserContext());
   EXPECT_EQ(profile_manager->GetNumberOfProfiles(), 2U);
-  EXPECT_NE(browser()->profile(), new_profile);
+  EXPECT_NE(browser()->GetProfile(), new_profile);
   sign_in_functions.SignInFromCurrentPage(picker_contents, *test_account,
                                           /*previously_signed_in_accounts=*/0);
 
@@ -723,7 +723,7 @@ IN_PROC_BROWSER_TEST_F(LiveSignInTestFullSync, MANUAL_CreateSignedInProfile) {
   // Wait for browser to open.
   profiles::testing::WaitForPickerClosed();
   Browser* new_browser = browser_created_observer.Wait();
-  EXPECT_EQ(new_browser->profile(), new_profile);
+  EXPECT_EQ(new_browser->GetProfile(), new_profile);
   EXPECT_EQ(GetPrimaryAccountConsentLevel(identity_manager),
             signin::ConsentLevel::kSync);
 
@@ -893,7 +893,7 @@ class DeviceBoundSessionsLiveSignInTest : public LiveSignInTestBase {
   void SetUpOnMainThread() override {
     LiveSignInTestBase::SetUpOnMainThread();
     session_manager_ =
-        ChromeSigninClientFactory::GetForProfile(browser()->profile())
+        ChromeSigninClientFactory::GetForProfile(browser()->GetProfile())
             ->GetDeviceBoundSessionManager();
     ASSERT_TRUE(session_manager_);
     observer_.emplace(session_manager_, "sidts_session");

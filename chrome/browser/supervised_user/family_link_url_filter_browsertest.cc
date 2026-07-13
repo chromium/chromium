@@ -146,7 +146,7 @@ class FamilyLinkUrlFilterTestBase : public base::test::WithFeatureOverride,
 
   SupervisedUserUrlFilteringService* GetUrlFilteringService() const {
     return SupervisedUserUrlFilteringServiceFactory::GetForProfile(
-        browser()->profile());
+        browser()->GetProfile());
   }
 
  private:
@@ -242,7 +242,7 @@ IN_PROC_BROWSER_TEST_P(FamilyLinkUrlFilterTest, BlockNewTabAfterLoading) {
 
   {
     // Block the current URL.
-    supervised_user_test_util::SetWebFilterType(browser()->profile(),
+    supervised_user_test_util::SetWebFilterType(browser()->GetProfile(),
                                                 WebFilterType::kCertainSites);
 
     ASSERT_TRUE(
@@ -290,7 +290,7 @@ IN_PROC_BROWSER_TEST_P(FamilyLinkUrlFilterTest, DontShowInterstitialTwice) {
   ASSERT_FALSE(ShownPageIsInterstitial(browser()));
 
   // Block the current URL.
-  supervised_user_test_util::SetWebFilterType(browser()->profile(),
+  supervised_user_test_util::SetWebFilterType(browser()->GetProfile(),
                                               WebFilterType::kCertainSites);
   ASSERT_TRUE(
       GetUrlFilteringService()->GetFilteringBehavior(test_url).IsBlocked());
@@ -304,7 +304,7 @@ IN_PROC_BROWSER_TEST_P(FamilyLinkUrlFilterTest, DontShowInterstitialTwice) {
   // Set the host as blocked through manual blocklisting, should not change the
   // interstitial state.
   supervised_user_test_util::SetManualFilterForHost(
-      browser()->profile(), test_url.GetHost(), /*allowlist=*/false);
+      browser()->GetProfile(), test_url.GetHost(), /*allowlist=*/false);
   EXPECT_EQ(tab, tab_strip->GetActiveWebContents());
 }
 
@@ -324,7 +324,7 @@ IN_PROC_BROWSER_TEST_P(FamilyLinkUrlFilterTest, GoBackOnDontProceed) {
 
   // Set the host as blocked and wait for the interstitial to appear.
   supervised_user_test_util::SetManualFilterForHost(
-      browser()->profile(), test_url.GetHost(), /*allowlist=*/false);
+      browser()->GetProfile(), test_url.GetHost(), /*allowlist=*/false);
   ASSERT_TRUE(
       GetUrlFilteringService()->GetFilteringBehavior(test_url).IsBlocked());
 
@@ -353,7 +353,7 @@ IN_PROC_BROWSER_TEST_P(FamilyLinkUrlFilterTest, ClosingBlockedTabDoesNotCrash) {
 
   // Set the host as blocked and wait for the interstitial to appear.
   supervised_user_test_util::SetManualFilterForHost(
-      browser()->profile(), test_url.GetHost(), /*allowlist=*/false);
+      browser()->GetProfile(), test_url.GetHost(), /*allowlist=*/false);
   ASSERT_TRUE(
       GetUrlFilteringService()->GetFilteringBehavior(test_url).IsBlocked());
 
@@ -375,7 +375,7 @@ IN_PROC_BROWSER_TEST_P(FamilyLinkUrlFilterTest, BlockThenUnblock) {
 
   // Set the host as blocked and wait for the interstitial to appear.
   supervised_user_test_util::SetManualFilterForHost(
-      browser()->profile(), test_url.GetHost(), /*allowlist=*/false);
+      browser()->GetProfile(), test_url.GetHost(), /*allowlist=*/false);
   ASSERT_TRUE(
       GetUrlFilteringService()->GetFilteringBehavior(test_url).IsBlocked());
 
@@ -385,7 +385,7 @@ IN_PROC_BROWSER_TEST_P(FamilyLinkUrlFilterTest, BlockThenUnblock) {
   ASSERT_TRUE(ShownPageIsInterstitial(browser()));
 
   supervised_user_test_util::SetManualFilterForHost(
-      browser()->profile(), test_url.GetHost(), /*allowlist=*/true);
+      browser()->GetProfile(), test_url.GetHost(), /*allowlist=*/true);
   ASSERT_TRUE(
       GetUrlFilteringService()->GetFilteringBehavior(test_url).IsAllowed());
 
@@ -430,7 +430,7 @@ class FamilyLinkBlockModeTest : public FamilyLinkUrlFilterTestBase {
 
   void SetUpOnMainThread() override {
     FamilyLinkUrlFilterTestBase::SetUpOnMainThread();
-    supervised_user_test_util::SetWebFilterType(browser()->profile(),
+    supervised_user_test_util::SetWebFilterType(browser()->GetProfile(),
                                                 WebFilterType::kCertainSites);
   }
 };
@@ -440,7 +440,7 @@ class FamilyLinkBlockModeTest : public FamilyLinkUrlFilterTestBase {
 IN_PROC_BROWSER_TEST_P(FamilyLinkBlockModeTest,
                        NavigateFromBlockedPageToBlockedPage) {
   ScopedAllowHttpForHostnamesForTesting allow_http(
-      {"www.example.com", "www.a.com"}, browser()->profile()->GetPrefs());
+      {"www.example.com", "www.a.com"}, browser()->GetProfile()->GetPrefs());
   GURL test_url("http://www.example.com/simple.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url));
 
@@ -459,17 +459,17 @@ IN_PROC_BROWSER_TEST_P(FamilyLinkBlockModeTest,
 IN_PROC_BROWSER_TEST_P(FamilyLinkBlockModeTest, HistoryVisitRecorded) {
   ScopedAllowHttpForHostnamesForTesting allow_http(
       {"www.example.com", "www.new-example.com"},
-      browser()->profile()->GetPrefs());
+      browser()->GetProfile()->GetPrefs());
 
   history::HistoryService* history_service =
-      HistoryServiceFactory::GetForProfile(browser()->profile(),
+      HistoryServiceFactory::GetForProfile(browser()->GetProfile(),
                                            ServiceAccessType::EXPLICIT_ACCESS);
 
   GURL allowed_url("http://www.example.com/simple.html");
 
   // Set the host as allowed.
   supervised_user_test_util::SetManualFilterForHost(
-      browser()->profile(), allowed_url.GetHost(), /*allowlist=*/true);
+      browser()->GetProfile(), allowed_url.GetHost(), /*allowlist=*/true);
   EXPECT_TRUE(
       GetUrlFilteringService()->GetFilteringBehavior(allowed_url).IsAllowed());
   EXPECT_TRUE(GetUrlFilteringService()
@@ -565,7 +565,7 @@ IN_PROC_BROWSER_TEST_P(FamilyLinkBlockModeTest, OpenBlockedURLInNewTab) {
 
 IN_PROC_BROWSER_TEST_P(FamilyLinkBlockModeTest, Unblock) {
   ScopedAllowHttpForHostnamesForTesting allow_http(
-      {"www.example.com"}, browser()->profile()->GetPrefs());
+      {"www.example.com"}, browser()->GetProfile()->GetPrefs());
 
   GURL test_url("http://www.example.com/simple.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url));
@@ -579,7 +579,7 @@ IN_PROC_BROWSER_TEST_P(FamilyLinkBlockModeTest, Unblock) {
 
   // Set the host as allowed.
   supervised_user_test_util::SetManualFilterForHost(
-      browser()->profile(), test_url.GetHost(), /*allowlist=*/true);
+      browser()->GetProfile(), test_url.GetHost(), /*allowlist=*/true);
   EXPECT_TRUE(GetUrlFilteringService()
                   ->GetFilteringBehavior(test_url.GetWithEmptyPath())
                   .IsAllowed());
@@ -634,7 +634,7 @@ class FamilyLinkUrlFilterPrerenderingTest : public FamilyLinkUrlFilterTest {
 // Tests that prerendering doesn't check FamilyLinkUrlFilter.
 IN_PROC_BROWSER_TEST_P(FamilyLinkUrlFilterPrerenderingTest, OnURLChecked) {
   ScopedAllowHttpForHostnamesForTesting allow_http(
-      {"www.example.com"}, browser()->profile()->GetPrefs());
+      {"www.example.com"}, browser()->GetProfile()->GetPrefs());
 
   UrlFilteringServiceObserver observer(GetUrlFilteringService());
 

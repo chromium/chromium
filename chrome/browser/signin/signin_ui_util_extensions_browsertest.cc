@@ -85,7 +85,7 @@ class SigninUiUtilExtensionsTestBase : public ::SigninBrowserTestBase {
  protected:
   // Returns the identity manager.
   signin::IdentityManager* GetIdentityManager() {
-    return IdentityManagerFactory::GetForProfile(browser()->profile());
+    return IdentityManagerFactory::GetForProfile(browser()->GetProfile());
   }
 
   testing::StrictMock<MockSigninUiDelegate> mock_delegate_;

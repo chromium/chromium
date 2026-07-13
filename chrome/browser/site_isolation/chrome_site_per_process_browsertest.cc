@@ -291,8 +291,8 @@ class ChromeSitePerProcessGuestViewPDFTest : public ChromeSitePerProcessTest {
   void SetUpOnMainThread() override {
     ChromeSitePerProcessTest::SetUpOnMainThread();
     test_guest_view_manager_ = factory_.GetOrCreateTestGuestViewManager(
-        browser()->profile(), extensions::ExtensionsAPIClient::Get()
-                                  ->CreateGuestViewManagerDelegate());
+        browser()->GetProfile(), extensions::ExtensionsAPIClient::Get()
+                                     ->CreateGuestViewManagerDelegate());
   }
 
   void TearDownOnMainThread() override {
@@ -1513,7 +1513,8 @@ IN_PROC_BROWSER_TEST_F(ChromeSitePerProcessTest,
   display::Screen* screen = display::Screen::Get();
   int64_t display2 = display_manager_test_api.GetSecondaryDisplay().id();
   screen->SetDisplayForNewWindows(display2);
-  Browser* browser_on_secondary_display = CreateBrowser(browser()->profile());
+  Browser* browser_on_secondary_display =
+      CreateBrowser(browser()->GetProfile());
 
   // Open a page with an OOPIF on the secondary display.
   GURL main_url(embedded_test_server()->GetURL(

@@ -199,13 +199,13 @@ class SupervisedUserNavigationThrottleTestBase
   void SetUpOnMainThread() override;
 
   void BlockHost(const std::string& host) {
-    supervised_user_test_util::SetManualFilterForHost(browser()->profile(),
+    supervised_user_test_util::SetManualFilterForHost(browser()->GetProfile(),
                                                       host,
                                                       /*allowlist=*/false);
   }
 
   void AllowlistHost(const std::string& host) {
-    supervised_user_test_util::SetManualFilterForHost(browser()->profile(),
+    supervised_user_test_util::SetManualFilterForHost(browser()->GetProfile(),
                                                       host, /*allowlist=*/true);
   }
 
@@ -461,10 +461,11 @@ void SupervisedUserIframeFilterTest::SetUpOnMainThread() {
   SupervisedUserNavigationThrottleTestBase::SetUpOnMainThread();
 
   supervised_user::SupervisedUserService* service =
-      supervised_user::SupervisedUserServiceFactory::GetForProfile(browser()->profile());
+      supervised_user::SupervisedUserServiceFactory::GetForProfile(
+          browser()->GetProfile());
   supervised_user::FamilyLinkSettingsService* family_link_settings_service =
       supervised_user::FamilyLinkSettingsServiceFactory::GetForKey(
-          browser()->profile()->GetProfileKey());
+          browser()->GetProfile()->GetProfileKey());
   CHECK(family_link_settings_service);
   std::unique_ptr<supervised_user::PermissionRequestCreator> creator =
       std::make_unique<supervised_user::PermissionRequestCreatorMock>(
@@ -957,7 +958,7 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserIframeFilterTest,
 IN_PROC_BROWSER_TEST_F(SupervisedUserIframeFilterTest,
                        IFramesWithSameDomainAsMainFrameAllowed) {
   supervised_user_test_util::SetWebFilterType(
-      browser()->profile(), supervised_user::WebFilterType::kCertainSites);
+      browser()->GetProfile(), supervised_user::WebFilterType::kCertainSites);
 
   base::RunLoop().RunUntilIdle();
 

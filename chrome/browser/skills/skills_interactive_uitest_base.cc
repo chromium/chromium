@@ -114,11 +114,11 @@ void SkillsInteractiveUiTestBase::SetUpOnMainThread() {
   skills::SkillsFunctionalBrowserTestBase::SetUpOnMainThread();
 
   skills::SkillsServiceFactory::GetInstance()->SetTestingFactory(
-      browser()->profile(),
+      browser()->GetProfile(),
       base::BindRepeating(&SkillsInteractiveUiTestBase::CreateSkillsService,
                           base::Unretained(this)));
 
-  skills::SkillsServiceFactory::GetForProfile(browser()->profile())
+  skills::SkillsServiceFactory::GetForProfile(browser()->GetProfile())
       ->SetServiceStatusForTesting(
           skills::SkillsService::ServiceStatus::kReady);
 
@@ -345,7 +345,7 @@ SkillsInteractiveUiTestBase::WaitFor1PSkills() {
   return PollUntil(
       [this]() {
         return !skills::SkillsServiceFactory::GetForProfile(
-                    browser()->profile())
+                    browser()->GetProfile())
                     ->Get1PSkills()
                     .empty();
       },

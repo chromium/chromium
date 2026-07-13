@@ -56,7 +56,7 @@ class SessionServiceLogTest : public InProcessBrowserTest {
 
   void SetUpOnMainThread() override {
     SessionStartupPref pref(SessionStartupPref::LAST);
-    SessionStartupPref::SetStartupPref(browser()->profile(), pref);
+    SessionStartupPref::SetStartupPref(browser()->GetProfile(), pref);
   }
 
   std::optional<SessionServiceEvent> FindMostRecentEventOfType(

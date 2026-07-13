@@ -384,7 +384,7 @@ class TypedNavigationUpgradeThrottleBrowserTest
   void WaitForHistoryToLoad() {
     history::HistoryService* const history_service =
         HistoryServiceFactory::GetForProfile(
-            browser()->profile(), ServiceAccessType::EXPLICIT_ACCESS);
+            browser()->GetProfile(), ServiceAccessType::EXPLICIT_ACCESS);
     ui_test_utils::WaitForHistoryToLoad(history_service);
   }
 
@@ -424,7 +424,7 @@ class TypedNavigationUpgradeThrottleBrowserTest
     CheckPopupText(url_without_scheme);
     PressEnterAndWaitForNavigations(num_expected_navigations, ctrl_enter);
 
-    ui_test_utils::HistoryEnumerator enumerator(browser()->profile());
+    ui_test_utils::HistoryEnumerator enumerator(browser()->GetProfile());
     content::WebContents* contents =
         browser()->tab_strip_model()->GetActiveWebContents();
     const GURL http_url = MakeHttpURL(url_without_scheme);
@@ -496,7 +496,7 @@ IN_PROC_BROWSER_TEST_P(TypedNavigationUpgradeThrottleBrowserTest,
 
   histograms.ExpectTotalCount(kEventHistogram, 0);
 
-  ui_test_utils::HistoryEnumerator enumerator(browser()->profile());
+  ui_test_utils::HistoryEnumerator enumerator(browser()->GetProfile());
   EXPECT_TRUE(std::ranges::contains(enumerator.urls(), url));
 }
 
@@ -518,7 +518,7 @@ IN_PROC_BROWSER_TEST_P(TypedNavigationUpgradeThrottleBrowserTest,
 
   histograms.ExpectTotalCount(kEventHistogram, 0);
 
-  ui_test_utils::HistoryEnumerator enumerator(browser()->profile());
+  ui_test_utils::HistoryEnumerator enumerator(browser()->GetProfile());
   EXPECT_TRUE(std::ranges::contains(enumerator.urls(), url));
 }
 
@@ -546,7 +546,7 @@ IN_PROC_BROWSER_TEST_P(TypedNavigationUpgradeThrottleBrowserTest,
 
   // Broken SSL results in an interstitial and interstitial pages aren't added
   // to history.
-  ui_test_utils::HistoryEnumerator enumerator(browser()->profile());
+  ui_test_utils::HistoryEnumerator enumerator(browser()->GetProfile());
   EXPECT_FALSE(std::ranges::contains(enumerator.urls(), url));
 }
 
@@ -628,7 +628,7 @@ IN_PROC_BROWSER_TEST_P(TypedNavigationUpgradeThrottleBrowserTest,
   CheckPopupText(text);
   PressEnterAndWaitForNavigations(1, /*ctrl_key=*/true);
 
-  ui_test_utils::HistoryEnumerator enumerator(browser()->profile());
+  ui_test_utils::HistoryEnumerator enumerator(browser()->GetProfile());
   content::WebContents* contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   const GURL http_url("http://www.site-with-http.com");
@@ -660,7 +660,7 @@ IN_PROC_BROWSER_TEST_P(TypedNavigationUpgradeThrottleBrowserTest,
   CheckPopupText(text);
   PressEnterAndWaitForNavigations(1, /*ctrl_key=*/true);
 
-  ui_test_utils::HistoryEnumerator enumerator(browser()->profile());
+  ui_test_utils::HistoryEnumerator enumerator(browser()->GetProfile());
   content::WebContents* contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   const GURL http_url("http://www.site-with-good-https.com");
@@ -710,7 +710,7 @@ IN_PROC_BROWSER_TEST_P(TypedNavigationUpgradeThrottleBrowserTest,
   // with a single navigation attempt.
   PasteHostnameAndWaitForNavigations(contents, kSiteWithGoodHttps, 1);
 
-  ui_test_utils::HistoryEnumerator enumerator(browser()->profile());
+  ui_test_utils::HistoryEnumerator enumerator(browser()->GetProfile());
   const GURL http_url = MakeHttpURL(kSiteWithGoodHttps);
   const GURL https_url = MakeHttpsURL(kSiteWithGoodHttps);
 
@@ -752,7 +752,7 @@ IN_PROC_BROWSER_TEST_P(
   // attempt and one for the fallback.
   PasteHostnameAndWaitForNavigations(contents, kSiteWithBadHttps, 2);
 
-  ui_test_utils::HistoryEnumerator enumerator(browser()->profile());
+  ui_test_utils::HistoryEnumerator enumerator(browser()->GetProfile());
   const GURL http_url = MakeHttpURL(kSiteWithBadHttps);
   const GURL https_url = MakeHttpsURL(kSiteWithBadHttps);
 
@@ -796,7 +796,7 @@ IN_PROC_BROWSER_TEST_P(TypedNavigationUpgradeThrottleBrowserTest,
   model->PasteAndGo(base::UTF8ToUTF16(kSiteWithGoodHttps));
   navigation_observer.Wait();
 
-  ui_test_utils::HistoryEnumerator enumerator(browser()->profile());
+  ui_test_utils::HistoryEnumerator enumerator(browser()->GetProfile());
   const GURL http_url = MakeHttpURL(kSiteWithGoodHttps);
   const GURL https_url = MakeHttpsURL(kSiteWithGoodHttps);
 
@@ -1018,7 +1018,7 @@ class TypedNavigationUpgradeThrottleRedirectBrowserTest
     SetOmniboxText(url_without_scheme);
     PressEnterAndWaitForNavigations(1);
 
-    ui_test_utils::HistoryEnumerator enumerator(browser()->profile());
+    ui_test_utils::HistoryEnumerator enumerator(browser()->GetProfile());
     content::WebContents* contents =
         browser()->tab_strip_model()->GetActiveWebContents();
     const GURL http_url =
@@ -1052,7 +1052,7 @@ class TypedNavigationUpgradeThrottleRedirectBrowserTest
     SetOmniboxText(url_without_scheme);
     PressEnterAndWaitForNavigations(2);
 
-    ui_test_utils::HistoryEnumerator enumerator(browser()->profile());
+    ui_test_utils::HistoryEnumerator enumerator(browser()->GetProfile());
     content::WebContents* contents =
         browser()->tab_strip_model()->GetActiveWebContents();
     const GURL http_url =
@@ -1260,7 +1260,7 @@ IN_PROC_BROWSER_TEST_P(
   ASSERT_FALSE(chrome_browser_interstitials::IsShowingInterstitial(contents));
   metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
 
-  ui_test_utils::HistoryEnumerator enumerator(browser()->profile());
+  ui_test_utils::HistoryEnumerator enumerator(browser()->GetProfile());
   const GURL http_url =
       embedded_test_server()->GetURL(kSiteWithBadHttps, "/title1.html");
   const GURL https_url = MakeHttpsURL(url_without_scheme);

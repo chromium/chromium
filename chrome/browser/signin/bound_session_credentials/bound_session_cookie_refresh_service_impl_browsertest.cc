@@ -620,7 +620,7 @@ class BoundSessionCookieRefreshServiceImplBrowserTest
 
   BoundSessionCookieRefreshService* service() {
     return BoundSessionCookieRefreshServiceFactory::GetForProfile(
-        browser()->profile());
+        browser()->GetProfile());
   }
 
   void ExpectSessionParamsUpdate(base::RepeatingClosure callback) {
@@ -795,7 +795,7 @@ IN_PROC_BROWSER_TEST_F(BoundSessionCookieRefreshServiceImplBrowserTest,
 IN_PROC_BROWSER_TEST_F(BoundSessionCookieRefreshServiceImplBrowserTest,
                        BtmDeletionDoesNotDeleteSession) {
   // Enable third-party cookie blocking to activate the BTM deletion.
-  SetBlockThirdPartyCookies(browser()->profile(), true);
+  SetBlockThirdPartyCookies(browser()->GetProfile(), true);
 
   // Initialize a new session.
   RegisterNewSession();
@@ -809,7 +809,7 @@ IN_PROC_BROWSER_TEST_F(BoundSessionCookieRefreshServiceImplBrowserTest,
 
   // Trigger BTM deletion.
   base::test::TestFuture<const std::vector<std::string>&> deleted_sites;
-  content::BtmService::Get(browser()->profile())
+  content::BtmService::Get(browser()->GetProfile())
       ->DeleteEligibleSitesImmediately(deleted_sites.GetCallback());
   EXPECT_THAT(deleted_sites.Get(), SizeIs(Gt(0)));
 

@@ -246,7 +246,7 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterPopupBrowserTest,
 
   // Allow popups on |a_url|.
   HostContentSettingsMap* settings_map =
-      HostContentSettingsMapFactory::GetForProfile(browser()->profile());
+      HostContentSettingsMapFactory::GetForProfile(browser()->GetProfile());
   settings_map->SetContentSettingDefaultScope(
       a_url, a_url, ContentSettingsType::POPUPS, CONTENT_SETTING_ALLOW);
 
@@ -276,7 +276,7 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterPopupBrowserTest,
 
   // Allow popups on |a_url|.
   HostContentSettingsMap* settings_map =
-      HostContentSettingsMapFactory::GetForProfile(browser()->profile());
+      HostContentSettingsMapFactory::GetForProfile(browser()->GetProfile());
   settings_map->SetContentSettingDefaultScope(
       a_url, a_url, ContentSettingsType::POPUPS, CONTENT_SETTING_ALLOW);
 

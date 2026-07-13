@@ -1566,8 +1566,8 @@ class SitePerProcessInteractivePDFTest
       auto factory =
           std::make_unique<guest_view::TestGuestViewManagerFactory>();
       test_guest_view_manager_ = factory->GetOrCreateTestGuestViewManager(
-          browser()->profile(), extensions::ExtensionsAPIClient::Get()
-                                    ->CreateGuestViewManagerDelegate());
+          browser()->GetProfile(), extensions::ExtensionsAPIClient::Get()
+                                       ->CreateGuestViewManagerDelegate());
       factory_ = std::move(factory);
     }
   }

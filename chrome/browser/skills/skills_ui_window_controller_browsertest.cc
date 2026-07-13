@@ -46,7 +46,7 @@ class SkillsUiWindowControllerBrowserTest : public InProcessBrowserTest {
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
     skills::SkillsService* skills_service =
-        skills::SkillsServiceFactory::GetForProfile(browser()->profile());
+        skills::SkillsServiceFactory::GetForProfile(browser()->GetProfile());
     ASSERT_TRUE(skills_service);
     skills_service->SetServiceStatusForTesting(
         skills::SkillsService::ServiceStatus::kReady);
@@ -55,7 +55,7 @@ class SkillsUiWindowControllerBrowserTest : public InProcessBrowserTest {
 
   void TearDownOnMainThread() override {
     skills::SkillsService* skills_service =
-        skills::SkillsServiceFactory::GetForProfile(browser()->profile());
+        skills::SkillsServiceFactory::GetForProfile(browser()->GetProfile());
     skills_service->RemoveObserver(&skills_service_observer_);
     InProcessBrowserTest::TearDownOnMainThread();
   }
@@ -141,7 +141,7 @@ IN_PROC_BROWSER_TEST_F(SkillsUiWindowControllerBrowserTest,
 IN_PROC_BROWSER_TEST_F(SkillsUiWindowControllerBrowserTest,
                        OnSkillDeletedShowsToastAndTemporarilyDeletesSkill) {
   skills::SkillsService* skills_service =
-      skills::SkillsServiceFactory::GetForProfile(browser()->profile());
+      skills::SkillsServiceFactory::GetForProfile(browser()->GetProfile());
   const skills::Skill* skill = skills_service->AddSkill(
       /*source_skill_id=*/"", "Test Skill", "test-icon", "Test Prompt");
 
@@ -166,7 +166,7 @@ IN_PROC_BROWSER_TEST_F(SkillsUiWindowControllerBrowserTest,
 IN_PROC_BROWSER_TEST_F(SkillsUiWindowControllerBrowserTest,
                        UndoLastSkillRemovalReshowsSkill) {
   skills::SkillsService* skills_service =
-      skills::SkillsServiceFactory::GetForProfile(browser()->profile());
+      skills::SkillsServiceFactory::GetForProfile(browser()->GetProfile());
   const skills::Skill* skill = skills_service->AddSkill(
       /*source_skill_id=*/"", "Test Skill", "test-icon", "Test Prompt");
 
@@ -188,7 +188,7 @@ IN_PROC_BROWSER_TEST_F(SkillsUiWindowControllerBrowserTest,
 IN_PROC_BROWSER_TEST_F(SkillsUiWindowControllerBrowserTest,
                        ToastCloseDeletesSkill) {
   skills::SkillsService* skills_service =
-      skills::SkillsServiceFactory::GetForProfile(browser()->profile());
+      skills::SkillsServiceFactory::GetForProfile(browser()->GetProfile());
   const skills::Skill* skill = skills_service->AddSkill(
       /*source_skill_id=*/"", "Test Skill", "test-icon", "Test Prompt");
 

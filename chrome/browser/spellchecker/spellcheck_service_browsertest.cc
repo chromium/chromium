@@ -113,7 +113,7 @@ class SpellcheckServiceBrowserTest : public InProcessBrowserTest,
   RenderProcessHost* GetRenderer() const { return renderer_.get(); }
 
   BrowserContext* GetContext() const {
-    return static_cast<BrowserContext*>(browser()->profile());
+    return static_cast<BrowserContext*>(browser()->GetProfile());
   }
 
   PrefService* GetPrefs() const { return prefs_; }

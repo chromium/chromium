@@ -52,7 +52,7 @@ class PersistentStorageBrowserTest : public InProcessBrowserTest {
 
   void Bookmark(Browser* browser) {
     bookmarks::BookmarkModel* bookmark_model =
-        BookmarkModelFactory::GetForBrowserContext(browser->profile());
+        BookmarkModelFactory::GetForBrowserContext(browser->GetProfile());
     bookmarks::test::WaitForBookmarkModelToLoad(bookmark_model);
     bookmarks::AddIfNotBookmarked(bookmark_model, url_, u"");
   }
@@ -139,7 +139,7 @@ IN_PROC_BROWSER_TEST_F(PersistentStorageBrowserTest, BookmarkThenUnbookmark) {
   EXPECT_EQ("granted", CheckPermissionUsingPermissionApi());
 
   bookmarks::BookmarkModel* bookmark_model =
-      BookmarkModelFactory::GetForBrowserContext(browser()->profile());
+      BookmarkModelFactory::GetForBrowserContext(browser()->GetProfile());
   bookmarks::RemoveAllBookmarks(bookmark_model, url_, FROM_HERE);
 
   // Unbookmarking doesn't change the permission.
@@ -181,7 +181,7 @@ IN_PROC_BROWSER_TEST_F(PersistentStorageBrowserTest, Incognito) {
 }
 
 IN_PROC_BROWSER_TEST_F(PersistentStorageBrowserTest, SessionOnly) {
-  HostContentSettingsMapFactory::GetForProfile(browser()->profile())
+  HostContentSettingsMapFactory::GetForProfile(browser()->GetProfile())
       ->SetDefaultContentSetting(ContentSettingsType::COOKIES,
                                  CONTENT_SETTING_SESSION_ONLY);
   Bookmark();

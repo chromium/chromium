@@ -51,7 +51,7 @@ void SkillsFunctionalBrowserTestBase::SetUpOnMainThread() {
 }
 
 skills::SkillsService* SkillsFunctionalBrowserTestBase::GetSkillsService() {
-  return skills::SkillsServiceFactory::GetForProfile(browser()->profile());
+  return skills::SkillsServiceFactory::GetForProfile(browser()->GetProfile());
 }
 
 void SkillsFunctionalBrowserTestBase::CreateSkill(

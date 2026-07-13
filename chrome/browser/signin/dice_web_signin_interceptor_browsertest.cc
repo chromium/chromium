@@ -447,7 +447,7 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorBrowserTest, SwitchAlreadyOpen) {
   Profile* other_profile = nullptr;
   base::OnceCallback<void(Browser*)> callback =
       base::BindLambdaForTesting([&other_profile, &loop](Browser* browser) {
-        other_profile = browser->profile();
+        other_profile = browser->GetProfile();
         loop.Quit();
       });
   profiles::SwitchToProfile(profile_path, /*always_create=*/true,
@@ -575,7 +575,7 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorGaiaBrowserTest,
   Profile* other_profile = nullptr;
   base::OnceCallback<void(Browser*)> callback =
       base::BindLambdaForTesting([&other_profile, &loop](Browser* browser) {
-        other_profile = browser->profile();
+        other_profile = browser->GetProfile();
         loop.Quit();
       });
   profiles::SwitchToProfile(profile_path, /*always_create=*/true,
@@ -788,7 +788,8 @@ class DiceWebSigninInterceptorWithHatsSurveyBrowserTest
     DiceWebSigninInterceptorBrowserTest::SetUpOnMainThread();
     mock_hats_service_ = static_cast<MockHatsService*>(
         HatsServiceFactory::GetInstance()->SetTestingFactoryAndUse(
-            browser()->profile(), base::BindRepeating(&BuildMockHatsService)));
+            browser()->GetProfile(),
+            base::BindRepeating(&BuildMockHatsService)));
   }
 
   void TearDownOnMainThread() override {
@@ -883,7 +884,7 @@ class DiceWebSigninInterceptorSigninBubbleBrowserTest
   // Do not signin.
   void SimulateSettingExplicitChromeSigninUserChoiceToDoNotSignin(
       const std::string& email) {
-    settings::PeopleHandler handler(browser()->profile());
+    settings::PeopleHandler handler(browser()->GetProfile());
     // The only for the value to take effect is to choose another one first.
     // Choose always ask first in case the value is already set to
     // `ChromeSigninUserChoice::kDoNotSignin`.
@@ -1894,7 +1895,7 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorBrowserTest,
   Browser* added_browser = ui_test_utils::WaitForBrowserToOpen();
   ASSERT_TRUE(added_browser);
   ASSERT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(), 2u);
-  EXPECT_EQ(added_browser->profile(), new_profile);
+  EXPECT_EQ(added_browser->GetProfile(), new_profile);
   EXPECT_EQ(browser()->tab_strip_model()->count(), original_tab_count - 1);
   EXPECT_EQ(
       added_browser->tab_strip_model()->GetActiveWebContents()->GetVisibleURL(),
@@ -2180,7 +2181,7 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorBrowserTest,
   Browser* added_browser = ui_test_utils::WaitForBrowserToOpen();
   ASSERT_TRUE(added_browser);
   ASSERT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(), 2u);
-  EXPECT_EQ(added_browser->profile(), new_profile);
+  EXPECT_EQ(added_browser->GetProfile(), new_profile);
   EXPECT_EQ(browser()->tab_strip_model()->count(), original_tab_count - 1);
   EXPECT_EQ(
       added_browser->tab_strip_model()->GetActiveWebContents()->GetVisibleURL(),
@@ -2425,7 +2426,7 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorBrowserTest,
   Browser* added_browser = ui_test_utils::WaitForBrowserToOpen();
   ASSERT_TRUE(added_browser);
   ASSERT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(), 2u);
-  EXPECT_EQ(added_browser->profile(), new_profile);
+  EXPECT_EQ(added_browser->GetProfile(), new_profile);
   EXPECT_EQ(browser()->tab_strip_model()->count(), original_tab_count - 1);
   EXPECT_EQ(
       added_browser->tab_strip_model()->GetActiveWebContents()->GetVisibleURL(),
@@ -2651,7 +2652,7 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorBrowserTest,
   Profile* other_profile = nullptr;
   base::OnceCallback<void(Browser*)> callback =
       base::BindLambdaForTesting([&other_profile, &loop](Browser* browser) {
-        other_profile = browser->profile();
+        other_profile = browser->GetProfile();
         loop.Quit();
       });
   profiles::SwitchToProfile(profile_path, /*always_create=*/true,
@@ -2739,7 +2740,7 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorBrowserTest, InterceptionTest) {
       kChoiceVersion);
 
   TemplateURLService* template_url_service =
-      TemplateURLServiceFactory::GetForProfile(browser()->profile());
+      TemplateURLServiceFactory::GetForProfile(browser()->GetProfile());
   SetUserSelectedDefaultSearchProvider(template_url_service);
 
   // Add a tab.
@@ -2792,7 +2793,7 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorBrowserTest, InterceptionTest) {
   Browser* added_browser = ui_test_utils::WaitForBrowserToOpen();
   ASSERT_TRUE(added_browser);
   ASSERT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(), 2u);
-  EXPECT_EQ(added_browser->profile(), new_profile);
+  EXPECT_EQ(added_browser->GetProfile(), new_profile);
   EXPECT_EQ(browser()->tab_strip_model()->count(), original_tab_count - 1);
   EXPECT_EQ(
       added_browser->tab_strip_model()->GetActiveWebContents()->GetVisibleURL(),

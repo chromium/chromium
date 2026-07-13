@@ -719,7 +719,7 @@ void SessionServiceBase::BuildCommandsForBrowser(
     TabGroupModel* group_model = tab_strip->group_model();
     tab_groups::TabGroupSyncService* tab_group_service =
         tab_groups::TabGroupSyncServiceFactory::GetForProfile(
-            browser->profile());
+            browser->GetProfile());
 
     for (const tab_groups::TabGroupId& group_id :
          group_model->ListTabGroups()) {

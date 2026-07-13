@@ -96,7 +96,7 @@ void ShowHistorySyncPromo(const CoreAccountId& account_id,
     base::debug::DumpWithoutCrashing();
     return;
   }
-  CHECK_EQ(browser->profile(), profile);
+  CHECK_EQ(browser->GetProfile(), profile);
 
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);
@@ -124,7 +124,7 @@ void FinishImportCredentialsFromProvider(const CoreAccountId& account_id,
     base::debug::DumpWithoutCrashing();
     return;
   }
-  CHECK_EQ(browser->profile(), profile);
+  CHECK_EQ(browser->GetProfile(), profile);
 
   // TurnSyncOnHelper deletes itself once done.
   if (GetTurnSyncOnHelperDelegateForTestingStorage()->get()) {

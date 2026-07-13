@@ -58,7 +58,7 @@ IN_PROC_BROWSER_TEST_F(TabRestoreServiceImplBrowserTest,
 
   test_system_web_app_installation_->WaitForAppInstall();
   Browser* app_browser = web_app::LaunchWebAppBrowser(
-      browser()->profile(), test_system_web_app_installation_->GetAppId());
+      browser()->GetProfile(), test_system_web_app_installation_->GetAppId());
   GURL app_url = test_system_web_app_installation_->GetAppUrl();
   ASSERT_TRUE(ui_test_utils::NavigateToURL(app_browser, app_url));
 

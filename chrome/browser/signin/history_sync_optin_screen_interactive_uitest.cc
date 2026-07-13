@@ -122,7 +122,7 @@ IN_PROC_BROWSER_TEST_P(HistorySyncOptinScreenFromPromoEntryPointInteractiveTest,
       // Opens a sign-in tab as the method is called with an empty account.
       Do([&]() {
         signin_ui_util::EnableSyncFromSingleAccountPromo(
-            browser()->profile(), AccountInfo(),
+            browser()->GetProfile(), AccountInfo(),
             signin_metrics::AccessPoint::kAccountMenuSwitchAccount);
       }),
       Do([&]() {
@@ -151,7 +151,7 @@ IN_PROC_BROWSER_TEST_P(HistorySyncOptinScreenFromPromoEntryPointInteractiveTest,
                    GetHistoryOptinAcceptButtonQuery()),
       WaitForHide(SigninViewController::kHistorySyncOptinViewId));
 
-  EXPECT_TRUE(SyncServiceFactory::GetForProfile(browser()->profile())
+  EXPECT_TRUE(SyncServiceFactory::GetForProfile(browser()->GetProfile())
                   ->GetUserSettings()
                   ->GetSelectedTypes()
                   .Has(syncer::UserSelectableType::kHistory));
@@ -194,7 +194,7 @@ IN_PROC_BROWSER_TEST_P(HistorySyncOptinScreenFromPromoEntryPointInteractiveTest,
       }),
       InstrumentTab(kTabId, 0, browser()), Do([&]() {
         signin_ui_util::EnableSyncFromSingleAccountPromo(
-            browser()->profile(),
+            browser()->GetProfile(),
             /*account=*/account_info,
             signin_metrics::AccessPoint::kAccountMenuSwitchAccount);
       }),
@@ -212,7 +212,7 @@ IN_PROC_BROWSER_TEST_P(HistorySyncOptinScreenFromPromoEntryPointInteractiveTest,
                    GetHistoryOptinAcceptButtonQuery()),
       WaitForHide(SigninViewController::kHistorySyncOptinViewId));
 
-  EXPECT_TRUE(SyncServiceFactory::GetForProfile(browser()->profile())
+  EXPECT_TRUE(SyncServiceFactory::GetForProfile(browser()->GetProfile())
                   ->GetUserSettings()
                   ->GetSelectedTypes()
                   .Has(syncer::UserSelectableType::kHistory));
@@ -270,7 +270,7 @@ IN_PROC_BROWSER_TEST_P(
       }),
       InstrumentTab(kTabId, 0, browser()), Do([&]() {
         signin_ui_util::EnableSyncFromSingleAccountPromo(
-            browser()->profile(),
+            browser()->GetProfile(),
             /*account=*/account_info,
             signin_metrics::AccessPoint::kAccountMenuSwitchAccount);
       }),
@@ -295,7 +295,7 @@ IN_PROC_BROWSER_TEST_P(
                    GetHistoryOptinAcceptButtonQuery()),
       WaitForHide(SigninViewController::kHistorySyncOptinViewId));
 
-  EXPECT_TRUE(SyncServiceFactory::GetForProfile(browser()->profile())
+  EXPECT_TRUE(SyncServiceFactory::GetForProfile(browser()->GetProfile())
                   ->GetUserSettings()
                   ->GetSelectedTypes()
                   .Has(syncer::UserSelectableType::kHistory));
@@ -352,7 +352,7 @@ IN_PROC_BROWSER_TEST_P(HistorySyncOptinScreenFromPromoEntryPointInteractiveTest,
       }),
       InstrumentTab(kTabId, 0, browser()), Do([&]() {
         signin_ui_util::EnableSyncFromSingleAccountPromo(
-            browser()->profile(),
+            browser()->GetProfile(),
             /*account=*/account_info,
             signin_metrics::AccessPoint::kAccountMenuSwitchAccount);
       }),
@@ -370,7 +370,7 @@ IN_PROC_BROWSER_TEST_P(HistorySyncOptinScreenFromPromoEntryPointInteractiveTest,
 
       WaitForHide(SigninViewController::kHistorySyncOptinViewId));
 
-  EXPECT_FALSE(SyncServiceFactory::GetForProfile(browser()->profile())
+  EXPECT_FALSE(SyncServiceFactory::GetForProfile(browser()->GetProfile())
                    ->GetUserSettings()
                    ->GetSelectedTypes()
                    .Has(syncer::UserSelectableType::kHistory));
@@ -413,7 +413,7 @@ IN_PROC_BROWSER_TEST_P(HistorySyncOptinScreenFromPromoEntryPointInteractiveTest,
       }),
       InstrumentTab(kTabId, 0, browser()), Do([&]() {
         signin_ui_util::EnableSyncFromSingleAccountPromo(
-            browser()->profile(),
+            browser()->GetProfile(),
             /*account=*/account_info,
             signin_metrics::AccessPoint::kAccountMenuSwitchAccount);
       }),
@@ -427,7 +427,7 @@ IN_PROC_BROWSER_TEST_P(HistorySyncOptinScreenFromPromoEntryPointInteractiveTest,
                       ui::Accelerator(ui::VKEY_ESCAPE, ui::MODIFIER_NONE)),
       WaitForHide(SigninViewController::kHistorySyncOptinViewId));
 
-  EXPECT_FALSE(SyncServiceFactory::GetForProfile(browser()->profile())
+  EXPECT_FALSE(SyncServiceFactory::GetForProfile(browser()->GetProfile())
                    ->GetUserSettings()
                    ->GetSelectedTypes()
                    .Has(syncer::UserSelectableType::kHistory));
@@ -471,7 +471,7 @@ IN_PROC_BROWSER_TEST_P(HistorySyncOptinScreenFromPromoEntryPointInteractiveTest,
             *identity_test_env(), account_info, IsUnrestricted());
         // Optin to syncing history, tabs & tab groups.
         auto* user_settings =
-            SyncServiceFactory::GetForProfile(browser()->profile())
+            SyncServiceFactory::GetForProfile(browser()->GetProfile())
                 ->GetUserSettings();
         user_settings->SetSelectedType(syncer::UserSelectableType::kHistory,
                                        true);
@@ -488,7 +488,7 @@ IN_PROC_BROWSER_TEST_P(HistorySyncOptinScreenFromPromoEntryPointInteractiveTest,
                 }),
       Do([&]() {
         signin_ui_util::EnableSyncFromSingleAccountPromo(
-            browser()->profile(),
+            browser()->GetProfile(),
             /*account=*/account_info,
             signin_metrics::AccessPoint::kAccountMenuSwitchAccount);
       }),
@@ -550,10 +550,11 @@ IN_PROC_BROWSER_TEST_F(
   // Mark the management as accepted, so that the disclaimer service progresses
   // the flow immediately on the present profile when
   // `EnsureManagedProfileForAccount` is invoked.
-  enterprise_util::SetUserAcceptedAccountManagement(browser()->profile(), true);
+  enterprise_util::SetUserAcceptedAccountManagement(browser()->GetProfile(),
+                                                    true);
 
   syncer::TestSyncService* sync_service = static_cast<syncer::TestSyncService*>(
-      SyncServiceFactory::GetForProfile(browser()->profile()));
+      SyncServiceFactory::GetForProfile(browser()->GetProfile()));
   sync_service->GetUserSettings()->SetSelectedTypes(
       /*sync_everything=*/false,
       /*types=*/{});

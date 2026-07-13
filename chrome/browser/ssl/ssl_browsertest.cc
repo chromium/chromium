@@ -498,7 +498,8 @@ class SSLUITestHSTS : public SSLUITest {
  public:
   void SetUpOnMainThread() override {
     SSLUITest::SetUpOnMainThread();
-    ssl_test_util::SetHSTSForHostName(browser()->profile(), kHstsTestHostName);
+    ssl_test_util::SetHSTSForHostName(browser()->GetProfile(),
+                                      kHstsTestHostName);
   }
 };
 
@@ -1222,7 +1223,7 @@ class SSLUITestWithClientCert : public SSLUITestBase {
     SSLUITestBase::SetUpOnMainThread();
 
     base::RunLoop loop;
-    NssServiceFactory::GetForContext(browser()->profile())
+    NssServiceFactory::GetForContext(browser()->GetProfile())
         ->UnsafelyGetNSSCertDatabaseForTesting(
             base::BindOnce(&SSLUITestWithClientCert::DidGetCertDatabase,
                            base::Unretained(this), &loop));
@@ -1370,7 +1371,7 @@ std::unique_ptr<net::ClientCertStore> CreateEmptyCertStore() {
 
 IN_PROC_BROWSER_TEST_F(SSLUITest, TestBrowserUseClientCertStore) {
   // Make the browser use the ClientCertStoreStub instead of the regular one.
-  ProfileNetworkContextServiceFactory::GetForContext(browser()->profile())
+  ProfileNetworkContextServiceFactory::GetForContext(browser()->GetProfile())
       ->set_client_cert_store_factory_for_testing(
           base::BindRepeating(&CreateCertStore));
 
@@ -1413,7 +1414,7 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, TestBrowserUseClientCertStore) {
 // client cert selection without requiring a browser restart.
 IN_PROC_BROWSER_TEST_F(SSLUITest, TestBrowserUseClientCertStoreDynamicUpdate) {
   // 1. Setup: Full Cert Store.
-  ProfileNetworkContextServiceFactory::GetForContext(browser()->profile())
+  ProfileNetworkContextServiceFactory::GetForContext(browser()->GetProfile())
       ->set_client_cert_store_factory_for_testing(
           base::BindRepeating(&CreateCertStore));
 
@@ -1473,7 +1474,7 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, TestBrowserUseClientCertStoreDynamicUpdate) {
 // https://crbug.com/40894162.
 IN_PROC_BROWSER_TEST_F(SSLUITest, TestServiceWorkerRequestsUseClientCertStore) {
   // Make the browser use the ClientCertStoreStub instead of the regular one.
-  ProfileNetworkContextServiceFactory::GetForContext(browser()->profile())
+  ProfileNetworkContextServiceFactory::GetForContext(browser()->GetProfile())
       ->set_client_cert_store_factory_for_testing(
           base::BindRepeating(&CreateCertStore));
 
@@ -1547,7 +1548,7 @@ IN_PROC_BROWSER_TEST_F(
   extensions::ScopedTestMV2Enabler mv2_enabler;
 
   // Make the browser use the ClientCertStoreStub instead of the regular one.
-  ProfileNetworkContextServiceFactory::GetForContext(browser()->profile())
+  ProfileNetworkContextServiceFactory::GetForContext(browser()->GetProfile())
       ->set_client_cert_store_factory_for_testing(
           base::BindRepeating(&CreateEmptyCertStore));
 
@@ -1617,7 +1618,7 @@ IN_PROC_BROWSER_TEST_F(
 
 IN_PROC_BROWSER_TEST_F(SSLUITest, TestClientAuthSigningFails) {
   // Make the browser use the ClientCertStoreStub instead of the regular one.
-  ProfileNetworkContextServiceFactory::GetForContext(browser()->profile())
+  ProfileNetworkContextServiceFactory::GetForContext(browser()->GetProfile())
       ->set_client_cert_store_factory_for_testing(
           base::BindRepeating(&CreateFailSigningCertStore));
 
@@ -1654,7 +1655,7 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, TestClientAuthSigningFails) {
 
 IN_PROC_BROWSER_TEST_F(SSLUITest, TestClientAuthContinueWithoutCert) {
   // Make the browser use a ClientCertStoreStub that returns no certs.
-  ProfileNetworkContextServiceFactory::GetForContext(browser()->profile())
+  ProfileNetworkContextServiceFactory::GetForContext(browser()->GetProfile())
       ->set_client_cert_store_factory_for_testing(
           base::BindRepeating(&CreateEmptyCertStore));
 
@@ -1680,7 +1681,7 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, TestClientAuthContinueWithoutCert) {
 
 IN_PROC_BROWSER_TEST_F(SSLUITest, TestCertDBChangedFlushesClientAuthCache) {
   // Make the browser use the ClientCertStoreStub instead of the regular one.
-  ProfileNetworkContextServiceFactory::GetForContext(browser()->profile())
+  ProfileNetworkContextServiceFactory::GetForContext(browser()->GetProfile())
       ->set_client_cert_store_factory_for_testing(
           base::BindRepeating(&CreateCertStore));
 
@@ -1718,7 +1719,7 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, TestCertDBChangedFlushesClientAuthCache) {
   EXPECT_EQ("", tab->GetLastCommittedURL().GetRef());
 
   // Now use a ClientCertStoreStub that always returns an empty list.
-  ProfileNetworkContextServiceFactory::GetForContext(browser()->profile())
+  ProfileNetworkContextServiceFactory::GetForContext(browser()->GetProfile())
       ->set_client_cert_store_factory_for_testing(
           base::BindRepeating(&CreateEmptyCertStore));
 
@@ -1794,7 +1795,7 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, TestBadHTTPSDownload) {
     // test successfully shut down and cleanup. Exiting the browser with a
     // download still in-progress can lead to test failues.
     content::DownloadTestObserverTerminal dangerous_download_observer(
-        browser()->profile()->GetDownloadManager(), 1,
+        browser()->GetProfile()->GetDownloadManager(), 1,
         content::DownloadTestObserver::ON_DANGEROUS_DOWNLOAD_ACCEPT);
     SendInterstitialCommand(tab, security_interstitials::CMD_PROCEED);
     dangerous_download_observer.WaitForFinished();
@@ -1879,7 +1880,7 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, TestExtensionEvents) {
   };
 
   ExtensionEventObserver observer;
-  extensions::EventRouter::Get(browser()->profile())
+  extensions::EventRouter::Get(browser()->GetProfile())
       ->AddObserverForTesting(&observer);
 
   ASSERT_TRUE(https_server_expired_.Start());
@@ -1904,7 +1905,7 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, TestExtensionEvents) {
       observer.event_names(), extensions::api::safe_browsing_private::
                                   OnSecurityInterstitialProceeded::kEventName));
 
-  extensions::EventRouter::Get(browser()->profile())
+  extensions::EventRouter::Get(browser()->GetProfile())
       ->RemoveObserverForTesting(&observer);
 }
 
@@ -1932,7 +1933,7 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, TestUnsafeContents) {
   ASSERT_TRUE(https_server_.Start());
   ASSERT_TRUE(https_server_expired_.Start());
   // Enable popups without user gesture.
-  HostContentSettingsMapFactory::GetForProfile(browser()->profile())
+  HostContentSettingsMapFactory::GetForProfile(browser()->GetProfile())
       ->SetDefaultContentSetting(ContentSettingsType::POPUPS,
                                  CONTENT_SETTING_ALLOW);
   {
@@ -1947,8 +1948,9 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, TestUnsafeContents) {
     // The state is expected to be authenticated.
     ssl_test_util::CheckAuthenticatedState(tab, AuthState::NONE);
     // The iframe should be able to open a popup.
-    EXPECT_EQ(2u, ProfileBrowserCollection::GetForProfile(browser()->profile())
-                      ->GetSize());
+    EXPECT_EQ(2u,
+              ProfileBrowserCollection::GetForProfile(browser()->GetProfile())
+                  ->GetSize());
     // In order to check that the image was loaded, check its width.
     // The actual image (Google logo) is 276 pixels wide.
     EXPECT_EQ(276, content::EvalJs(tab, "ImageWidth();"));
@@ -1969,8 +1971,9 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, TestUnsafeContents) {
     ssl_test_util::CheckAuthenticatedState(tab, AuthState::NONE);
     // The iframe attempts to open a popup window, but it shouldn't be able to.
     // Previous popup is still open.
-    EXPECT_EQ(2u, ProfileBrowserCollection::GetForProfile(browser()->profile())
-                      ->GetSize());
+    EXPECT_EQ(2u,
+              ProfileBrowserCollection::GetForProfile(browser()->GetProfile())
+                  ->GetSize());
     // The broken image width is zero.
     EXPECT_EQ(16, content::EvalJs(tab, "ImageWidth();"));
     // Check that variable |foo| is not set.
@@ -2222,7 +2225,7 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, MAYBE_TestCloseTabWithUnsafePopup) {
   ASSERT_TRUE(https_server_expired_.Start());
 
   // Enable popups without user gesture.
-  HostContentSettingsMapFactory::GetForProfile(browser()->profile())
+  HostContentSettingsMapFactory::GetForProfile(browser()->GetProfile())
       ->SetDefaultContentSetting(ContentSettingsType::POPUPS,
                                  CONTENT_SETTING_ALLOW);
 
@@ -2233,18 +2236,16 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, MAYBE_TestCloseTabWithUnsafePopup) {
   content::TestNavigationObserver nav_observer(
       https_server_expired_.GetURL("/ssl/bad_iframe.html"));
   nav_observer.StartWatchingNewWebContents();
-  ASSERT_EQ(
-      1u,
-      ProfileBrowserCollection::GetForProfile(browser()->profile())->GetSize());
+  ASSERT_EQ(1u, ProfileBrowserCollection::GetForProfile(browser()->GetProfile())
+                    ->GetSize());
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL(replacement_path)));
-  ASSERT_EQ(
-      2u,
-      ProfileBrowserCollection::GetForProfile(browser()->profile())->GetSize());
+  ASSERT_EQ(2u, ProfileBrowserCollection::GetForProfile(browser()->GetProfile())
+                    ->GetSize());
 
   // Last activated browser should be the popup.
   BrowserWindowInterface* popup_browser =
-      ProfileBrowserCollection::GetForProfile(browser()->profile())
+      ProfileBrowserCollection::GetForProfile(browser()->GetProfile())
           ->GetLastActiveBrowser();
   WebContents* popup =
       popup_browser->GetTabStripModel()->GetActiveWebContents();
@@ -3390,7 +3391,7 @@ IN_PROC_BROWSER_TEST_F(SSLUITestIgnoreCertErrorsBySPKIHTTPS,
 
 // Verifies that the interstitial can proceed, even if JavaScript is disabled.
 IN_PROC_BROWSER_TEST_F(SSLUITest, TestInterstitialJavaScriptProceeds) {
-  HostContentSettingsMapFactory::GetForProfile(browser()->profile())
+  HostContentSettingsMapFactory::GetForProfile(browser()->GetProfile())
       ->SetDefaultContentSetting(ContentSettingsType::JAVASCRIPT,
                                  CONTENT_SETTING_BLOCK);
 
@@ -3415,7 +3416,7 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, TestInterstitialJavaScriptProceeds) {
 // Verifies that the interstitial can go back, even if JavaScript is disabled.
 // http://crbug.com/41076570
 IN_PROC_BROWSER_TEST_F(SSLUITest, TestInterstitialJavaScriptGoesBack) {
-  HostContentSettingsMapFactory::GetForProfile(browser()->profile())
+  HostContentSettingsMapFactory::GetForProfile(browser()->GetProfile())
       ->SetDefaultContentSetting(ContentSettingsType::JAVASCRIPT,
                                  CONTENT_SETTING_BLOCK);
 
@@ -5694,7 +5695,7 @@ IN_PROC_BROWSER_TEST_F(SSLUITest,
   // hostname for the test to work.
   // TODO(crbug.com/40248833): Remove the allowlist entry.
   ScopedAllowHttpForHostnamesForTesting scoped_allow_http(
-      {"does-not-exist.test"}, browser()->profile()->GetPrefs());
+      {"does-not-exist.test"}, browser()->GetProfile()->GetPrefs());
 
   std::string replacement_path = GetFilePathWithHostAndPortReplacement(
       "/ssl/page_displays_form_redirects_301_insecure.html",
@@ -5726,7 +5727,7 @@ IN_PROC_BROWSER_TEST_F(SSLUITest,
   // hostname for the test to work.
   // TODO(crbug.com/40248833): Remove the allowlist entry.
   ScopedAllowHttpForHostnamesForTesting scoped_allow_http(
-      {"does-not-exist.test"}, browser()->profile()->GetPrefs());
+      {"does-not-exist.test"}, browser()->GetProfile()->GetPrefs());
 
   std::string replacement_path = GetFilePathWithHostAndPortReplacement(
       "/ssl/page_displays_form_redirects_302_insecure.html",
@@ -5785,7 +5786,7 @@ IN_PROC_BROWSER_TEST_F(SSLUITest,
   // hostname for the test to work.
   // TODO(crbug.com/40248833): Remove the allowlist entry.
   ScopedAllowHttpForHostnamesForTesting scoped_allow_http(
-      {"example.org"}, browser()->profile()->GetPrefs());
+      {"example.org"}, browser()->GetProfile()->GetPrefs());
 
   std::string replacement_path = GetFilePathWithHostAndPortReplacement(
       "/ssl/page_displays_form_redirects_insecure_get.html",
@@ -5814,7 +5815,7 @@ IN_PROC_BROWSER_TEST_F(MixedFormsPolicyTest, NoWarningOptOutPolicy) {
   ASSERT_TRUE(https_server.Start());
 
   // Check pref is set to true by default.
-  EXPECT_TRUE(browser()->profile()->GetPrefs()->GetBoolean(
+  EXPECT_TRUE(browser()->GetProfile()->GetPrefs()->GetBoolean(
       prefs::kMixedFormsWarningsEnabled));
   // Set policy to disable mixed form warnings.
   policy::PolicyMap policies;
@@ -5823,7 +5824,7 @@ IN_PROC_BROWSER_TEST_F(MixedFormsPolicyTest, NoWarningOptOutPolicy) {
                policy::POLICY_SOURCE_CLOUD, base::Value(false), nullptr);
   UpdateProviderPolicy(policies);
   // Pref should now be set to false.
-  EXPECT_FALSE(browser()->profile()->GetPrefs()->GetBoolean(
+  EXPECT_FALSE(browser()->GetProfile()->GetPrefs()->GetBoolean(
       prefs::kMixedFormsWarningsEnabled));
 
   std::string replacement_path =
@@ -5867,7 +5868,8 @@ class SSLUIMITMSoftwareTest : public CertVerifierBrowserTest {
   void SetUpOnMainThread() override {
     CertVerifierBrowserTest::SetUpOnMainThread();
     host_resolver()->AddRule("*", "127.0.0.1");
-    ssl_test_util::SetHSTSForHostName(browser()->profile(), kHstsTestHostName);
+    ssl_test_util::SetHSTSForHostName(browser()->GetProfile(),
+                                      kHstsTestHostName);
   }
 
   // Set up the cert verifier to return the error passed in as the cert_error
@@ -7147,9 +7149,9 @@ IN_PROC_BROWSER_TEST_F(SSLUITestWithEnhancedProtectionMessage,
       "interstitial.ssl_overridable.interaction";
 
   safe_browsing::SetExtendedReportingPrefForTests(
-      browser()->profile()->GetPrefs(), true);
+      browser()->GetProfile()->GetPrefs(), true);
   safe_browsing::SetSafeBrowsingState(
-      browser()->profile()->GetPrefs(),
+      browser()->GetProfile()->GetPrefs(),
       safe_browsing::SafeBrowsingState::STANDARD_PROTECTION);
   ASSERT_TRUE(https_server_expired_.Start());
   WebContents* contents = browser()->tab_strip_model()->GetActiveWebContents();
@@ -7172,9 +7174,9 @@ IN_PROC_BROWSER_TEST_F(SSLUITestWithEnhancedProtectionMessage,
 IN_PROC_BROWSER_TEST_F(SSLUITestWithEnhancedProtectionMessage,
                        VerifyEnhancedProtectionMessageNotShownAlreadyInEp) {
   safe_browsing::SetExtendedReportingPrefForTests(
-      browser()->profile()->GetPrefs(), true);
+      browser()->GetProfile()->GetPrefs(), true);
   safe_browsing::SetSafeBrowsingState(
-      browser()->profile()->GetPrefs(),
+      browser()->GetProfile()->GetPrefs(),
       safe_browsing::SafeBrowsingState::ENHANCED_PROTECTION);
   ASSERT_TRUE(https_server_expired_.Start());
   WebContents* contents = browser()->tab_strip_model()->GetActiveWebContents();

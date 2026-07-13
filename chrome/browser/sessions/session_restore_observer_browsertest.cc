@@ -79,10 +79,10 @@ class SessionRestoreObserverTest : public InProcessBrowserTest {
 
   void SetUpOnMainThread() override {
     SessionStartupPref pref(SessionStartupPref::LAST);
-    SessionStartupPref::SetStartupPref(browser()->profile(), pref);
+    SessionStartupPref::SetStartupPref(browser()->GetProfile(), pref);
 #if BUILDFLAG(IS_CHROMEOS)
     SessionServiceTestHelper helper(
-        SessionServiceFactory::GetForProfile(browser()->profile()));
+        SessionServiceFactory::GetForProfile(browser()->GetProfile()));
     helper.SetForceBrowserNotAliveWithNoWindows(true);
 #endif
     ASSERT_TRUE(embedded_test_server()->Start());

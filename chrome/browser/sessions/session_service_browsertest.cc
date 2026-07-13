@@ -28,12 +28,12 @@
 class SessionServiceBrowserTest : public InProcessBrowserTest {
  protected:
   SessionService* service() {
-    return SessionServiceFactory::GetForProfile(browser()->profile());
+    return SessionServiceFactory::GetForProfile(browser()->GetProfile());
   }
 
   std::optional<SessionServiceEvent> FindMostRecentEventOfType(
       SessionServiceEventLogType type) {
-    auto events = GetSessionServiceEvents(browser()->profile());
+    auto events = GetSessionServiceEvents(browser()->GetProfile());
     for (const SessionServiceEvent& event : base::Reversed(events)) {
       if (event.type == type) {
         return event;

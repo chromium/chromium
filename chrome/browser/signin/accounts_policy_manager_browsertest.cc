@@ -111,7 +111,7 @@ IN_PROC_BROWSER_TEST_F(AccountsPolicyManagerBrowserTest,
   EXPECT_FALSE(entry);
 
   // The current profile should be different.
-  EXPECT_NE(browser()->profile()->GetPath(), default_profile_path);
+  EXPECT_NE(browser()->GetProfile()->GetPath(), default_profile_path);
 }
 
 IN_PROC_BROWSER_TEST_F(AccountsPolicyManagerBrowserTest,
@@ -164,7 +164,7 @@ IN_PROC_BROWSER_TEST_F(AccountsPolicyManagerBrowserTest,
   EXPECT_EQ(error.type(), SigninUIError::Type::kSigninCookiesDisallowed);
 
   // The current profile should be the default one.
-  EXPECT_EQ(browser()->profile()->GetPath(), default_profile_path);
+  EXPECT_EQ(browser()->GetProfile()->GetPath(), default_profile_path);
 
   // The user should still be signed in.
   EXPECT_TRUE(

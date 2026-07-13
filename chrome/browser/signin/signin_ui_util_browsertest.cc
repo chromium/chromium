@@ -131,17 +131,17 @@ class SigninUiUtilTestBase : public SigninBrowserTestBase {
  protected:
   // Returns the identity manager.
   signin::IdentityManager* GetIdentityManager() {
-    return IdentityManagerFactory::GetForProfile(browser()->profile());
+    return IdentityManagerFactory::GetForProfile(browser()->GetProfile());
   }
 
   void EnableSync(const CoreAccountInfo& account_info,
                   bool is_default_promo_account) {
-    EnableSyncFromMultiAccountPromo(browser()->profile(), account_info,
+    EnableSyncFromMultiAccountPromo(browser()->GetProfile(), account_info,
                                     access_point_, is_default_promo_account);
   }
 
   void SignIn(const CoreAccountInfo& account_info) {
-    SignInFromSingleAccountPromo(browser()->profile(), account_info,
+    SignInFromSingleAccountPromo(browser()->GetProfile(), account_info,
                                  access_point_);
   }
 
@@ -250,7 +250,7 @@ class SigninUiUtilTest : public SigninUiUtilTestBase {
                         bool is_sync_promo,
                         bool user_already_signed_in) override {
     EXPECT_CALL(mock_delegate_,
-                ShowTurnSyncOnUI(browser()->profile(), access_point,
+                ShowTurnSyncOnUI(browser()->GetProfile(), access_point,
                                  promo_action, account_id, signin_aborted_mode,
                                  is_sync_promo, user_already_signed_in));
   }
@@ -279,13 +279,13 @@ class SigninUiUtilTest_ReplaceSyncPromosWithSignInPromos
                         bool is_sync_promo,
                         bool user_already_signed_in) override {
     EXPECT_CALL(mock_delegate_,
-                ShowTurnSyncOnUI(browser()->profile(), access_point,
+                ShowTurnSyncOnUI(browser()->GetProfile(), access_point,
                                  promo_action, account_id, signin_aborted_mode,
                                  is_sync_promo, user_already_signed_in))
         .Times(IsReplaceSyncPromosWithSignInPromosEnabled() ? 0 : 1);
-    EXPECT_CALL(
-        mock_delegate_,
-        ShowHistorySyncOptinUI(browser()->profile(), account_id, access_point))
+    EXPECT_CALL(mock_delegate_,
+                ShowHistorySyncOptinUI(browser()->GetProfile(), account_id,
+                                       access_point))
         .Times(IsReplaceSyncPromosWithSignInPromosEnabled() ? 1 : 0);
   }
 
@@ -387,9 +387,10 @@ IN_PROC_BROWSER_TEST_P(SigninUiUtilTest_ReplaceSyncPromosWithSignInPromos,
     ExpectNoSigninStartedHistograms(histogram_tester);
     EXPECT_EQ(0, user_action_tester.GetActionCount(
                      "Signin_Signin_FromBookmarkBubble"));
-    EXPECT_CALL(mock_delegate_, ShowReauthUI(browser()->profile(), kMainEmail,
-                                             /*enable_sync=*/true,
-                                             access_point_, promo_action));
+    EXPECT_CALL(
+        mock_delegate_,
+        ShowReauthUI(browser()->GetProfile(), kMainEmail,
+                     /*enable_sync=*/true, access_point_, promo_action));
 
     EnableSync(
         GetIdentityManager()->FindExtendedAccountInfoByAccountId(account_id),
@@ -541,7 +542,7 @@ IN_PROC_BROWSER_TEST_F(SigninUiUtilTest, SignInWithAccountThatNeedsReauth) {
 
   EXPECT_CALL(
       mock_delegate_,
-      ShowReauthUI(browser()->profile(), kMainEmail, /*enable_sync=*/false,
+      ShowReauthUI(browser()->GetProfile(), kMainEmail, /*enable_sync=*/false,
                    access_point_,
                    signin_metrics::PromoAction::PROMO_ACTION_WITH_DEFAULT));
   SignIn(GetIdentityManager()->FindExtendedAccountInfoByAccountId(account_id));
@@ -592,9 +593,9 @@ IN_PROC_BROWSER_TEST_F(SigninUiUtilTest, SignInForNewAccountWithOneTab) {
 IN_PROC_BROWSER_TEST_F(SigninUiUtilTest, GetOrderedAccountsForDisplay) {
   auto enable_disclaimer_on_primary_account_change_resetter =
       enterprise_util::DisableAutomaticManagementDisclaimerUntilReset(
-          browser()->profile());
+          browser()->GetProfile());
   signin::IdentityManager* identity_manager_empty =
-      IdentityManagerFactory::GetForProfile(browser()->profile());
+      IdentityManagerFactory::GetForProfile(browser()->GetProfile());
   std::vector<AccountInfo> accounts_empty = GetOrderedAccountsForDisplay(
       identity_manager_empty, /*restrict_to_accounts_eligible_for_sync=*/true);
   EXPECT_TRUE(accounts_empty.empty());
@@ -718,12 +719,13 @@ IN_PROC_BROWSER_TEST_F(SigninUiUtilTest, ShowReauthTab) {
 
   EXPECT_CALL(
       mock_delegate_,
-      ShowReauthUI(browser()->profile(), "foo@example.com",
+      ShowReauthUI(browser()->GetProfile(), "foo@example.com",
                    /*enable_sync=*/false,
                    signin_metrics::AccessPoint::kAvatarBubbleSignIn,
                    signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO));
   signin_ui_util::ShowReauthForPrimaryAccountWithAuthError(
-      browser()->profile(), signin_metrics::AccessPoint::kAvatarBubbleSignIn);
+      browser()->GetProfile(),
+      signin_metrics::AccessPoint::kAvatarBubbleSignIn);
 
   // Verify that the active tab has the correct DICE sign-in URL.
   TabStripModel* tab_strip = browser()->tab_strip_model();
@@ -851,12 +853,14 @@ IN_PROC_BROWSER_TEST_F(SigninUiUtilTest, SignInWithExistingWebOnlyAccount) {
 IN_PROC_BROWSER_TEST_F(
     SigninUiUtilTest,
     ShouldShowAnimatedIdentityOnOpeningWindowIfMultipleWindowsAtStartup) {
-  EXPECT_TRUE(ShouldShowAnimatedIdentityOnOpeningWindow(*browser()->profile()));
+  EXPECT_TRUE(
+      ShouldShowAnimatedIdentityOnOpeningWindow(*browser()->GetProfile()));
   // Record that the identity was shown.
-  RecordAnimatedIdentityTriggered(browser()->profile());
+  RecordAnimatedIdentityTriggered(browser()->GetProfile());
   // The identity can be shown again immediately (which is what happens if there
   // is multiple windows at startup).
-  EXPECT_TRUE(ShouldShowAnimatedIdentityOnOpeningWindow(*browser()->profile()));
+  EXPECT_TRUE(
+      ShouldShowAnimatedIdentityOnOpeningWindow(*browser()->GetProfile()));
 }
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
@@ -887,7 +891,7 @@ class SigninUiUtilTest_HistorySyncOptinTest : public SigninUiUtilTestBase {
  protected:
   syncer::TestSyncService* sync_service() {
     return static_cast<syncer::TestSyncService*>(
-        SyncServiceFactory::GetForProfile(browser()->profile()));
+        SyncServiceFactory::GetForProfile(browser()->GetProfile()));
   }
 
  private:
@@ -970,12 +974,12 @@ IN_PROC_BROWSER_TEST_F(SigninUiUtilTest_HistorySyncOptinTest,
   // A regular reauth tab is expected to be shown.
   EXPECT_CALL(
       mock_delegate_,
-      ShowReauthUI(browser()->profile(), "test@email.com",
+      ShowReauthUI(browser()->GetProfile(), "test@email.com",
                    /*enable_sync=*/false,
                    signin_metrics::AccessPoint::kRecentTabs,
                    signin_metrics::PromoAction::PROMO_ACTION_WITH_DEFAULT));
 
-  SignInAndEnableHistorySync(browser(), browser()->profile(),
+  SignInAndEnableHistorySync(browser(), browser()->GetProfile(),
                              signin_metrics::AccessPoint::kRecentTabs);
 
   // History sync should be enabled immediately, before the reauth is completed.

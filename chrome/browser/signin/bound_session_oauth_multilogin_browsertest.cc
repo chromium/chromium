@@ -217,7 +217,7 @@ class BoundSessionOAuthMultiloginBaseTest
  protected:
   unexportable_keys::UnexportableKeyService& unexportable_key_service() {
     return CHECK_DEREF(UnexportableKeyServiceFactory::GetForProfileAndPurpose(
-        browser()->profile(),
+        browser()->GetProfile(),
         unexportable_keys::KeyPurpose::kRefreshTokenBinding));
   }
 
@@ -227,7 +227,7 @@ class BoundSessionOAuthMultiloginBaseTest
 
   signin::IdentityManager& identity_manager() {
     return CHECK_DEREF(
-        IdentityManagerFactory::GetForProfile(browser()->profile()));
+        IdentityManagerFactory::GetForProfile(browser()->GetProfile()));
   }
 
   network::mojom::DeviceBoundSessionManager& device_bound_session_manager() {
@@ -237,7 +237,7 @@ class BoundSessionOAuthMultiloginBaseTest
 
   BoundSessionCookieRefreshService& bound_session_cookie_refresh_service() {
     return CHECK_DEREF(BoundSessionCookieRefreshServiceFactory::GetForProfile(
-        browser()->profile()));
+        browser()->GetProfile()));
   }
 
   void SetBoundSessionParamsUpdatedCallback(base::RepeatingClosure callback) {
@@ -375,7 +375,7 @@ IN_PROC_BROWSER_TEST_F(BoundSessionOAuthMultiloginPrototypeTest,
   UpdateFakeGaiaConfigOnSetOnAccountsInCookieUpdated(config);
 
   TestAccountReconcilorObserver account_reconcilor_observer(
-      AccountReconcilorFactory::GetForProfile(browser()->profile()),
+      AccountReconcilorFactory::GetForProfile(browser()->GetProfile()),
       /*wait_state=*/signin_metrics::AccountReconcilorState::kOk);
 
   // Enforce initial `/ListAccounts`.
@@ -630,7 +630,7 @@ IN_PROC_BROWSER_TEST_P(BoundSessionOAuthMultiloginPrototypeNewSessionTest,
   UpdateFakeGaiaConfigOnSetOnAccountsInCookieUpdated(config);
 
   TestAccountReconcilorObserver account_reconcilor_observer(
-      AccountReconcilorFactory::GetForProfile(browser()->profile()),
+      AccountReconcilorFactory::GetForProfile(browser()->GetProfile()),
       /*wait_state=*/signin_metrics::AccountReconcilorState::kOk);
 
   // Enforce initial `/ListAccounts`.
@@ -710,7 +710,7 @@ IN_PROC_BROWSER_TEST_F(BoundSessionOAuthMultiloginSecondaryPartitionTest,
 
   // Create observer to wait for reconcilor to settle.
   TestAccountReconcilorObserver reconcilor_observer(
-      AccountReconcilorFactory::GetForProfile(browser()->profile()),
+      AccountReconcilorFactory::GetForProfile(browser()->GetProfile()),
       signin_metrics::AccountReconcilorState::kOk);
 
   signin::MakeAccountAvailable(
@@ -731,10 +731,10 @@ IN_PROC_BROWSER_TEST_F(BoundSessionOAuthMultiloginSecondaryPartitionTest,
 
   content::StoragePartitionConfig glic_config =
       content::StoragePartitionConfig::Create(
-          browser()->profile(), /*partition_domain=*/"glic",
+          browser()->GetProfile(), /*partition_domain=*/"glic",
           /*partition_name=*/"glicpart", /*in_memory=*/false);
   content::StoragePartition* glic_partition =
-      browser()->profile()->GetStoragePartition(glic_config);
+      browser()->GetProfile()->GetStoragePartition(glic_config);
   ASSERT_TRUE(glic_partition);
 
   {
@@ -753,7 +753,7 @@ IN_PROC_BROWSER_TEST_F(BoundSessionOAuthMultiloginSecondaryPartitionTest,
       base::IgnoreArgs<const net::device_bound_sessions::SessionAccess&>(
           run_loop.QuitClosure()));
 
-  glic::GlicCookieSynchronizer synchronizer(browser()->profile(),
+  glic::GlicCookieSynchronizer synchronizer(browser()->GetProfile(),
                                             &identity_manager());
   base::test::TestFuture<bool> copy_future;
   synchronizer.CopyCookiesToWebviewStoragePartition(copy_future.GetCallback());
@@ -889,7 +889,7 @@ IN_PROC_BROWSER_TEST_P(BoundSessionOAuthMultiloginPersistentErrorTest,
       &identity_manager());
 
   TestAccountReconcilorObserver account_reconcilor_observer(
-      AccountReconcilorFactory::GetForProfile(browser()->profile()),
+      AccountReconcilorFactory::GetForProfile(browser()->GetProfile()),
       /*wait_state=*/signin_metrics::AccountReconcilorState::kOk);
 
   // Enforce initial `/ListAccounts`.
@@ -971,7 +971,7 @@ IN_PROC_BROWSER_TEST_P(BoundSessionOAuthMultiloginPersistentErrorTest,
   fake_gaia().SetConfiguration(config);
 
   TestAccountReconcilorObserver observer(
-      AccountReconcilorFactory::GetForProfile(browser()->profile()),
+      AccountReconcilorFactory::GetForProfile(browser()->GetProfile()),
       /*wait_state=*/signin_metrics::AccountReconcilorState::kError);
 
   // Enforce initial `/ListAccounts`.
@@ -1328,7 +1328,7 @@ IN_PROC_BROWSER_TEST_F(BoundSessionOAuthMultiloginStandardTest,
       }));
 
   TestAccountReconcilorObserver account_reconcilor_observer(
-      AccountReconcilorFactory::GetForProfile(browser()->profile()),
+      AccountReconcilorFactory::GetForProfile(browser()->GetProfile()),
       /*wait_state=*/signin_metrics::AccountReconcilorState::kOk);
 
   // Enforce initial `/ListAccounts`.

@@ -40,7 +40,7 @@ IN_PROC_BROWSER_TEST_F(ShortcutLaunchTestNotFoundProfile, DefaultProfileUsed) {
   EXPECT_TRUE(content::WaitForLoadStop(web_contents));
   EXPECT_EQ(web_contents->GetLastCommittedURL(),
             embedded_test_server()->GetURL("/title1.html"));
-  EXPECT_EQ(browser()->profile()->GetBaseName().value(),
+  EXPECT_EQ(browser()->GetProfile()->GetBaseName().value(),
             FILE_PATH_LITERAL("Default"));
 }
 

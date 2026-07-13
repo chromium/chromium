@@ -300,7 +300,7 @@ class ChromeSitePerProcessSpellCheckTest : public ChromeSitePerProcessTest {
     SpellCheckBrowserTestHelper spell_check_helper;
 
     content::BrowserContext* browser_context =
-        static_cast<content::BrowserContext*>(browser()->profile());
+        static_cast<content::BrowserContext*>(browser()->GetProfile());
 
     // Initiate a SpellcheckService
     SpellcheckServiceFactory::GetForContext(browser_context);

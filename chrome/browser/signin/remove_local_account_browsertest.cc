@@ -50,7 +50,7 @@ class RemoveLocalAccountTest : public MixinBasedInProcessBrowserTest {
   ~RemoveLocalAccountTest() override = default;
 
   signin::IdentityManager* identity_manager() {
-    return IdentityManagerFactory::GetForProfile(browser()->profile());
+    return IdentityManagerFactory::GetForProfile(browser()->GetProfile());
   }
 
   signin::AccountsInCookieJarInfo WaitUntilAccountsInCookieUpdated() {

@@ -125,7 +125,7 @@ IN_PROC_BROWSER_TEST_F(MirrorResponseBrowserTest,
 
   base::HistogramTester histogram_tester;
   ash::test::ScopedFakeAccountManagerDialog fake_account_manager_dialog(
-      browser()->profile());
+      browser()->GetProfile());
 
   ReceiveManageAccountsHeader({{"action", "ADDSESSION"}});
 
@@ -164,8 +164,8 @@ IN_PROC_BROWSER_TEST_F(MirrorResponseBrowserTest,
 
   base::HistogramTester histogram_tester;
   ash::test::ScopedFakeAccountManagerDialog fake_account_manager_dialog(
-      browser()->profile());
-  ash::SystemWebAppManager::GetForTest(browser()->profile())
+      browser()->GetProfile());
+  ash::SystemWebAppManager::GetForTest(browser()->GetProfile())
       ->InstallSystemAppsForTesting();
 
   const GURL os_settings_people = chromeos::settings::GetOSSettingsUrl(
@@ -178,7 +178,7 @@ IN_PROC_BROWSER_TEST_F(MirrorResponseBrowserTest,
   navigation_observer.Wait();
 
   ash::BrowserDelegate* settings_browser = ash::FindSystemWebAppBrowser(
-      browser()->profile(), ash::SystemWebAppType::SETTINGS,
+      browser()->GetProfile(), ash::SystemWebAppType::SETTINGS,
       ash::BrowserType::kApp);
   ASSERT_TRUE(settings_browser);
   content::WebContents* settings_contents =
@@ -211,7 +211,7 @@ IN_PROC_BROWSER_TEST_F(MirrorResponseBrowserTest, Incognito) {
   // No waiting happens here - BrowserCreatedObserver is used to obtain a
   // pointer to the newly added browser.
   Browser* incognito_browser = browser_created_observer.Wait();
-  EXPECT_TRUE(incognito_browser->profile()->IsIncognitoProfile());
+  EXPECT_TRUE(incognito_browser->GetProfile()->IsIncognitoProfile());
 
   histogram_tester.ExpectUniqueSample(
       "Signin.ProcessMirrorHeaders.AllowedFromInitiator.GoIncognito", true, 1);

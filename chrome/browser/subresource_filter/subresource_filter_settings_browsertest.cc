@@ -72,7 +72,7 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterSettingsBrowserTest,
 
   // Simulate an explicitly allowlisting via content settings.
   HostContentSettingsMap* settings_map =
-      HostContentSettingsMapFactory::GetForProfile(browser()->profile());
+      HostContentSettingsMapFactory::GetForProfile(browser()->GetProfile());
   settings_map->SetContentSettingDefaultScope(
       url, url, ContentSettingsType::ADS, CONTENT_SETTING_ALLOW);
 
@@ -100,7 +100,7 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterSettingsBrowserTest,
 
   // Simulate globally allowing ads via content settings.
   HostContentSettingsMap* settings_map =
-      HostContentSettingsMapFactory::GetForProfile(browser()->profile());
+      HostContentSettingsMapFactory::GetForProfile(browser()->GetProfile());
   settings_map->SetDefaultContentSetting(ContentSettingsType::ADS,
                                          CONTENT_SETTING_ALLOW);
 
@@ -168,7 +168,7 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterSettingsBrowserTest,
 
   // Simulate allowing the subresource filter via content settings.
   HostContentSettingsMap* settings_map =
-      HostContentSettingsMapFactory::GetForProfile(browser()->profile());
+      HostContentSettingsMapFactory::GetForProfile(browser()->GetProfile());
   settings_map->SetContentSettingDefaultScope(
       url, url, ContentSettingsType::ADS, CONTENT_SETTING_BLOCK);
 

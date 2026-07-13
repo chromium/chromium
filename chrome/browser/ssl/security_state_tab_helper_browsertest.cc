@@ -896,7 +896,7 @@ IN_PROC_BROWSER_TEST_F(
   // SB_THREAT_TYPE_GAIA_PASSWORD_REUSE.
   safe_browsing::ChromePasswordProtectionService* service =
       safe_browsing::ChromePasswordProtectionService::
-          GetPasswordProtectionService(browser()->profile());
+          GetPasswordProtectionService(browser()->GetProfile());
   safe_browsing::ReusedPasswordAccountType account_type;
   account_type.set_account_type(
       safe_browsing::ReusedPasswordAccountType::GSUITE);
@@ -949,7 +949,7 @@ IN_PROC_BROWSER_TEST_F(
   // SB_THREAT_TYPE_ENTERPRISE_PASSWORD_REUSE.
   safe_browsing::ChromePasswordProtectionService* service =
       safe_browsing::ChromePasswordProtectionService::
-          GetPasswordProtectionService(browser()->profile());
+          GetPasswordProtectionService(browser()->GetProfile());
   scoped_refptr<safe_browsing::PasswordProtectionRequest> request =
       safe_browsing::CreateDummyRequest(contents);
   service->ShowModalWarning(
@@ -1324,7 +1324,7 @@ IN_PROC_BROWSER_TEST_F(SecurityStateTabHelperIncognitoTest, HttpErrorPage) {
 
   // Disable HTTPS upgrades on nonexistent.test for this test to work.
   ScopedAllowHttpForHostnamesForTesting scoped_allow_http(
-      {"nonexistent.test"}, browser()->profile()->GetPrefs());
+      {"nonexistent.test"}, browser()->GetProfile()->GetPrefs());
 
   // Navigate to a URL that results in an error page. Even though the displayed
   // URL is http://, there shouldn't be a Not Secure warning because the browser

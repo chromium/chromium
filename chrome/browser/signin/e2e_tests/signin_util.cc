@@ -33,15 +33,15 @@
 namespace signin::test {
 
 signin::IdentityManager* identity_manager(Browser* browser) {
-  return IdentityManagerFactory::GetForProfile(browser->profile());
+  return IdentityManagerFactory::GetForProfile(browser->GetProfile());
 }
 
 syncer::SyncService* sync_service(Browser* browser) {
-  return SyncServiceFactory::GetForProfile(browser->profile());
+  return SyncServiceFactory::GetForProfile(browser->GetProfile());
 }
 
 AccountReconcilor* account_reconcilor(Browser* browser) {
-  return AccountReconcilorFactory::GetForProfile(browser->profile());
+  return AccountReconcilorFactory::GetForProfile(browser->GetProfile());
 }
 
 SignInFunctions::SignInFunctions(
