@@ -7,11 +7,15 @@
 #include <memory>
 #include <variant>
 
+#include "base/check.h"
+#include "base/feature_list.h"
 #include "base/functional/concurrent_callbacks.h"
 #include "base/functional/concurrent_closures.h"
 #include "base/memory/ref_counted.h"
 #include "chrome/browser/browsing_topics/browsing_topics_service_factory.h"
 #include "chrome/browser/media/webrtc/media_device_salt_service_factory.h"
+#include "chrome/browser/private_verification_tokens/private_verification_tokens_service.h"
+#include "chrome/browser/private_verification_tokens/private_verification_tokens_service_factory.h"
 #include "chrome/browser/webid/federated_identity_permission_context.h"
 #include "chrome/browser/webid/federated_identity_permission_context_factory.h"
 #include "components/browsing_topics/browsing_topics_service.h"
@@ -21,6 +25,7 @@
 #include "components/supervised_user/core/common/features.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/storage_partition_config.h"
+#include "net/base/features.h"
 #include "url/origin.h"
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -47,6 +52,20 @@ IsolatedWebAppBrowsingDataToDelegateEntries(
   return entries;
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+std::vector<ChromeBrowsingDataModelDelegate::DelegateEntry>
+PrivateVerificationTokenBrowsingDataToDelegateEntries(
+    std::vector<url::Origin> issuers) {
+  std::vector<ChromeBrowsingDataModelDelegate::DelegateEntry> entries;
+  for (const auto& issuer : issuers) {
+    entries.emplace_back(issuer,
+                         static_cast<BrowsingDataModel::StorageType>(
+                             ChromeBrowsingDataModelDelegate::StorageType::
+                                 kPrivateVerificationTokens),
+                         /*storage_size=*/0);
+  }
+  return entries;
+}
 
 std::vector<ChromeBrowsingDataModelDelegate::DelegateEntry>
 FlattenDelegateEntries(
@@ -112,6 +131,16 @@ void ChromeBrowsingDataModelDelegate::GetAllDataKeys(
 
   GetAllMediaDeviceSaltDataKeys(concurrent.CreateCallback(), {});
 
+  if (base::FeatureList::IsEnabled(
+          net::features::kEnablePrivateVerificationTokens)) {
+    if (auto* pvt_service =
+            PrivateVerificationTokensServiceFactory::GetForProfile(profile_)) {
+      pvt_service->GetTokenIssuers(
+          base::BindOnce(&PrivateVerificationTokenBrowsingDataToDelegateEntries)
+              .Then(concurrent.CreateCallback()));
+    }
+  }
+
   // TODO(crbug.com/40205603): Implement data retrieval for remaining data
   // types.
 
@@ -165,6 +194,21 @@ void ChromeBrowsingDataModelDelegate::RemoveDataKey(
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+  if (base::FeatureList::IsEnabled(
+          net::features::kEnablePrivateVerificationTokens) &&
+      storage_types.Has(static_cast<BrowsingDataModel::StorageType>(
+          StorageType::kPrivateVerificationTokens))) {
+    if (const url::Origin* origin = std::get_if<url::Origin>(&data_key)) {
+      if (auto* pvt_service =
+              PrivateVerificationTokensServiceFactory::GetForProfile(
+                  profile_)) {
+        pvt_service->DeleteTokens(base::Time(), base::Time::Max(),
+                                  std::vector<url::Origin>{*origin},
+                                  concurrent.CreateClosure());
+      }
+    }
+  }
+
   std::move(concurrent).Done(std::move(callback));
 }
 
@@ -196,6 +240,11 @@ ChromeBrowsingDataModelDelegate::GetDataOwner(
           .relying_party_embedder()
           .host();
 
+    case StorageType::kPrivateVerificationTokens:
+      CHECK(std::holds_alternative<url::Origin>(data_key))
+          << "Unsupported PVT DataKey type: " << data_key.index();
+      return std::get<url::Origin>(data_key).host();
+
     default:
       return std::nullopt;
   }
@@ -213,10 +262,11 @@ std::optional<bool> ChromeBrowsingDataModelDelegate::IsStorageTypeCookieLike(
     case StorageType::kTopics:
     case StorageType::kIsolatedWebApp:
     case StorageType::kMediaDeviceSalt:
+    case StorageType::kFederatedIdentity:
+    case StorageType::kPrivateVerificationTokens:
       return false;
-    default:
-      NOTREACHED();
   }
+  NOTREACHED();
 }
 
 std::optional<bool>

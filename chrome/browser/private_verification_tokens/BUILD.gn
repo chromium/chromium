@@ -6,6 +6,7 @@ static_library("private_verification_tokens") {
   visibility = [
     ":*",
     "//chrome/browser:*",
+    "//chrome/browser/browsing_data:*",
     "//chrome/browser/profiles:profiles_extra_parts_impl",
   ]
 

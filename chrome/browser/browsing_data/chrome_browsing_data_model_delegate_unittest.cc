@@ -9,11 +9,15 @@
 
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback_helpers.h"
+#include "base/scoped_observation.h"
 #include "base/test/bind.h"
 #include "base/test/test_future.h"
+#include "base/threading/thread_restrictions.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_constants.h"
 #include "chrome/browser/browsing_topics/browsing_topics_service_factory.h"
 #include "chrome/browser/media/webrtc/media_device_salt_service_factory.h"
+#include "chrome/browser/private_verification_tokens/private_verification_tokens_service.h"
+#include "chrome/browser/private_verification_tokens/private_verification_tokens_service_factory.h"
 #include "chrome/browser/webid/federated_identity_permission_context.h"
 #include "chrome/browser/webid/federated_identity_permission_context_factory.h"
 #include "chrome/common/pref_names.h"
@@ -23,9 +27,12 @@
 #include "components/browsing_topics/test_util.h"
 #include "components/media_device_salt/media_device_salt_service.h"
 #include "components/prefs/pref_service.h"
+#include "components/private_verification_tokens/common/private_verification_tokens_database.h"
+#include "components/private_verification_tokens/common/private_verification_tokens_token.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/browser/browsing_data_remover.h"
 #include "content/public/test/browser_task_environment.h"
+#include "net/base/features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
@@ -57,9 +64,8 @@ class ChromeBrowsingDataModelDelegateTest : public testing::Test {
   ChromeBrowsingDataModelDelegateTest() {
     feature_list_.InitWithFeatures(
         /*enabled_features=*/
-        {
-              media_device_salt::kMediaDeviceIdPartitioning
-        },
+        {media_device_salt::kMediaDeviceIdPartitioning,
+         net::features::kEnablePrivateVerificationTokens},
         /*disabled_features=*/{});
   }
 
@@ -149,6 +155,21 @@ class ChromeBrowsingDataModelDelegateTest : public testing::Test {
   raw_ptr<media_device_salt::MediaDeviceSaltService> media_device_salt_service_;
   raw_ptr<FederatedIdentityPermissionContext>
       federated_identity_permission_context_;
+
+  void PrepopulatePVTDatabase(
+      const std::vector<
+          private_verification_tokens::PrivateVerificationTokensToken>&
+          tokens) {
+    base::FilePath db_path = profile()->GetPath().Append(
+        FILE_PATH_LITERAL("PrivateVerificationTokens"));
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    std::unique_ptr<
+        private_verification_tokens::PrivateVerificationTokensDatabase>
+        database = private_verification_tokens::
+            PrivateVerificationTokensDatabase::Create(db_path);
+    ASSERT_TRUE(database);
+    database->StoreTokens(tokens);
+  }
 };
 
 TEST_F(ChromeBrowsingDataModelDelegateTest, RemoveDataKeyForTopics) {
@@ -339,4 +360,178 @@ TEST_F(ChromeBrowsingDataModelDelegateTest, RemoveFederatedIdentityData) {
   EXPECT_FALSE(context->GetLastUsedTimestamp(kRequester, kEmbedder,
                                              kIdentityProvider, kAccountId));
   EXPECT_FALSE(context->HasSharingPermission(kRequester));
+}
+
+TEST_F(ChromeBrowsingDataModelDelegateTest,
+       RemoveDataKeyForPrivateVerificationTokens) {
+  const auto expiration = base::Time::Now() + base::Hours(2);
+  PrepopulatePVTDatabase({
+      private_verification_tokens::PrivateVerificationTokensToken(
+          url::Origin::Create(GURL("https://example.com")), {1, 2, 3}, 1,
+          expiration, 1),
+  });
+
+  // Verify that the service gets initialized and has the token.
+  auto* service =
+      PrivateVerificationTokensServiceFactory::GetForProfile(profile());
+  ASSERT_TRUE(service);
+
+  // Wait for service initialization.
+  if (!service->is_initialized()) {
+    base::test::TestFuture<void> init_future;
+    class InitWaiter : public PrivateVerificationTokensService::Observer {
+     public:
+      explicit InitWaiter(base::OnceClosure callback)
+          : callback_(std::move(callback)) {}
+      void OnInitializationComplete() override { std::move(callback_).Run(); }
+
+     private:
+      base::OnceClosure callback_;
+    };
+    InitWaiter waiter(init_future.GetCallback());
+    base::ScopedObservation<PrivateVerificationTokensService,
+                            PrivateVerificationTokensService::Observer>
+        observation(&waiter);
+    observation.Observe(service);
+    ASSERT_TRUE(init_future.Wait());
+  }
+
+  // Now remove the token using the delegate
+  base::test::TestFuture<void> done_future;
+  delegate()->RemoveDataKey(url::Origin::Create(GURL("https://example.com")),
+                            {static_cast<BrowsingDataModel::StorageType>(
+                                ChromeBrowsingDataModelDelegate::StorageType::
+                                    kPrivateVerificationTokens)},
+                            done_future.GetCallback());
+  ASSERT_TRUE(done_future.Wait());
+
+  // Verify that the token is gone from the service.
+  base::test::TestFuture<std::vector<url::Origin>> keys_future;
+  service->GetTokenIssuers(keys_future.GetCallback());
+  EXPECT_TRUE(keys_future.Get().empty());
+}
+
+TEST_F(ChromeBrowsingDataModelDelegateTest,
+       GetAllDataKeysForPrivateVerificationTokens) {
+  const auto expiration = base::Time::Now() + base::Hours(2);
+  PrepopulatePVTDatabase({
+      private_verification_tokens::PrivateVerificationTokensToken(
+          url::Origin::Create(GURL("https://example.com")), {1, 2, 3}, 1,
+          expiration, 1),
+  });
+
+  base::test::TestFuture<
+      std::vector<ChromeBrowsingDataModelDelegate::DelegateEntry>>
+      future;
+  delegate()->GetAllDataKeys(future.GetCallback());
+  auto delegate_entries = future.Get();
+
+  bool found_pvt = false;
+  for (const auto& entry : delegate_entries) {
+    if (static_cast<ChromeBrowsingDataModelDelegate::StorageType>(
+            entry.storage_type) ==
+        ChromeBrowsingDataModelDelegate::StorageType::
+            kPrivateVerificationTokens) {
+      found_pvt = true;
+      const url::Origin* origin = std::get_if<url::Origin>(&entry.data_key);
+      ASSERT_TRUE(origin);
+      EXPECT_EQ(origin->host(), "example.com");
+      EXPECT_EQ(entry.storage_size, 0u);
+
+      std::optional<BrowsingDataModel::DataOwner> owner =
+          delegate()->GetDataOwner(
+              entry.data_key, static_cast<BrowsingDataModel::StorageType>(
+                                  ChromeBrowsingDataModelDelegate::StorageType::
+                                      kPrivateVerificationTokens));
+      ASSERT_TRUE(owner.has_value());
+      const std::string* str_owner = std::get_if<std::string>(&*owner);
+      ASSERT_TRUE(str_owner);
+      EXPECT_EQ(*str_owner, "example.com");
+    }
+  }
+  EXPECT_TRUE(found_pvt);
+}
+
+TEST_F(ChromeBrowsingDataModelDelegateTest,
+       GetAllDataKeysForPrivateVerificationTokensDisabled) {
+  base::test::ScopedFeatureList local_feature_list;
+  local_feature_list.InitAndDisableFeature(
+      net::features::kEnablePrivateVerificationTokens);
+
+  const auto expiration = base::Time::Now() + base::Hours(2);
+  PrepopulatePVTDatabase({
+      private_verification_tokens::PrivateVerificationTokensToken(
+          url::Origin::Create(GURL("https://example.com")), {1, 2, 3}, 1,
+          expiration, 1),
+  });
+
+  base::test::TestFuture<
+      std::vector<ChromeBrowsingDataModelDelegate::DelegateEntry>>
+      future;
+  delegate()->GetAllDataKeys(future.GetCallback());
+  auto delegate_entries = future.Get();
+
+  for (const auto& entry : delegate_entries) {
+    EXPECT_NE(static_cast<ChromeBrowsingDataModelDelegate::StorageType>(
+                  entry.storage_type),
+              ChromeBrowsingDataModelDelegate::StorageType::
+                  kPrivateVerificationTokens);
+  }
+}
+
+TEST_F(ChromeBrowsingDataModelDelegateTest,
+       RemoveDataKeyForPrivateVerificationTokensDisabled) {
+  const auto expiration = base::Time::Now() + base::Hours(2);
+  PrepopulatePVTDatabase({
+      private_verification_tokens::PrivateVerificationTokensToken(
+          url::Origin::Create(GURL("https://example.com")), {1, 2, 3}, 1,
+          expiration, 1),
+  });
+
+  // Now disable the feature.
+  base::test::ScopedFeatureList local_feature_list;
+  local_feature_list.InitAndDisableFeature(
+      net::features::kEnablePrivateVerificationTokens);
+
+  // Now try to remove the token using the delegate.
+  base::test::TestFuture<void> done_future;
+  delegate()->RemoveDataKey(url::Origin::Create(GURL("https://example.com")),
+                            {static_cast<BrowsingDataModel::StorageType>(
+                                ChromeBrowsingDataModelDelegate::StorageType::
+                                    kPrivateVerificationTokens)},
+                            done_future.GetCallback());
+  ASSERT_TRUE(done_future.Wait());
+
+  // Re-enable the feature to check if the token was deleted or not.
+  local_feature_list.Reset();
+
+  // Get the service now that the feature is enabled.
+  auto* service =
+      PrivateVerificationTokensServiceFactory::GetForProfile(profile());
+  ASSERT_TRUE(service);
+
+  // Wait for service initialization.
+  if (!service->is_initialized()) {
+    base::test::TestFuture<void> init_future;
+    class InitWaiter : public PrivateVerificationTokensService::Observer {
+     public:
+      explicit InitWaiter(base::OnceClosure callback)
+          : callback_(std::move(callback)) {}
+      void OnInitializationComplete() override { std::move(callback_).Run(); }
+
+     private:
+      base::OnceClosure callback_;
+    };
+    InitWaiter waiter(init_future.GetCallback());
+    base::ScopedObservation<PrivateVerificationTokensService,
+                            PrivateVerificationTokensService::Observer>
+        observation(&waiter);
+    observation.Observe(service);
+    ASSERT_TRUE(init_future.Wait());
+  }
+
+  // Verify that the token is STILL in the service (not deleted).
+  base::test::TestFuture<std::vector<url::Origin>> keys_future;
+  service->GetTokenIssuers(keys_future.GetCallback());
+  EXPECT_FALSE(keys_future.Get().empty());
 }

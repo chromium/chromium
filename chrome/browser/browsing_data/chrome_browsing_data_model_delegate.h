@@ -31,9 +31,10 @@ class ChromeBrowsingDataModelDelegate final
     kIsolatedWebApp,  // Not yet deletable.
     kMediaDeviceSalt,
     kFederatedIdentity,
+    kPrivateVerificationTokens,
 
     kFirstType = kTopics,
-    kLastType = kFederatedIdentity,
+    kLastType = kPrivateVerificationTokens,
   };
 
   static void BrowsingDataAccessed(content::RenderFrameHost* rfh,

@@ -98,6 +98,8 @@ include_rules = [
   "+chrome/browser/preloading/prefetch/search_prefetch/search_prefetch_service_factory.h",
   "+chrome/browser/privacy_sandbox/privacy_sandbox_attestations/privacy_sandbox_attestations_mixin.h",
   "+chrome/browser/privacy_sandbox/privacy_sandbox_settings_factory.h",
+  "+chrome/browser/private_verification_tokens/private_verification_tokens_service.h",
+  "+chrome/browser/private_verification_tokens/private_verification_tokens_service_factory.h",
   "+chrome/browser/profiles/android",
   "+chrome/browser/profiles/keep_alive/profile_keep_alive_types.h",
   "+chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h",
@@ -178,3 +180,10 @@ include_rules = [
   "+device/fido/cros/credential_store.h",
   "+device/fido/platform_credential_store.h",
 ]
+
+specific_include_rules = {
+  ".*_(unit|browser|api)test\\.cc": [
+    "+components/private_verification_tokens/common/private_verification_tokens_database.h",
+    "+components/private_verification_tokens/common/private_verification_tokens_token.h"
+  ],
+}
