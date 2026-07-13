@@ -711,6 +711,36 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Glic.Fre.PanelWebUiState" enum="WebUiState"
+    expires_after="2027-06-25">
+  <owner>sanaakbani@google.com</owner>
+  <owner>glic-dev@google.com</owner>
+  <summary>
+    Record the panel webui state any time it changes, but only when in the
+    unconsented state.
+  </summary>
+</histogram>
+
+<histogram name="Glic.Fre.PanelWebUiState.Error"
+    enum="PanelWebUiStateErrorReason" expires_after="2027-06-25">
+  <owner>sanaakbani@google.com</owner>
+  <owner>glic-dev@google.com</owner>
+  <summary>
+    Records the reason the WebUi entered the error state, but only when in the
+    unconsented state. Recorded just before the WebUI enters the error state.
+  </summary>
+</histogram>
+
+<histogram name="Glic.Fre.PanelWebUiState.FinishState" enum="WebUiState"
+    expires_after="2027-06-25">
+  <owner>sanaakbani@google.com</owner>
+  <owner>glic-dev@google.com</owner>
+  <summary>
+    Record the current state when the panel is closed, but only when in the
+    unconsented state.
+  </summary>
+</histogram>
+
 <histogram name="Glic.Fre.Shown.FlowSource" enum="GlicOptInFlowSource"
     expires_after="2027-05-18">
   <owner>sauski@google.com</owner>
@@ -2092,7 +2122,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2026-07-26">
   <owner>dewittj@google.com</owner>
   <owner>iwells@google.com</owner>
-  <summary>Record the current state when the the panel is closed.</summary>
+  <summary>Record the current state when the panel is closed.</summary>
 </histogram>
 
 <histogram name="Glic.PanelWebUiState.FinishState3" enum="WebUiState"
@@ -2100,7 +2130,7 @@ chromium-metrics-reviews@google.com.
   <owner>birnie@google.com</owner>
   <owner>perrier@google.com</owner>
   <summary>
-    Record the current state when the the panel is closed for multi instance
+    Record the current state when the panel is closed for multi instance
     supported clients.
   </summary>
 </histogram>

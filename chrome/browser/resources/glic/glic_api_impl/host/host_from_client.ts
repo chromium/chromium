@@ -768,6 +768,9 @@ export class HostMessageHandler implements
 
   glicBrowserSetOnboardingCompleted(): void {
     this.handler.setOnboardingCompleted();
+    if (this.embedder.onboardingCompleted) {
+      this.embedder.onboardingCompleted();
+    }
   }
 
   glicBrowserSubscribeToTabData(

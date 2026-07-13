@@ -648,6 +648,10 @@ void GlicInstanceMetrics::OnClose() {
   LogEvent(GlicInstanceEvent::kClose);
   base::UmaHistogramEnumeration("Glic.PanelWebUiState.FinishState3",
                                 last_web_ui_state_);
+  if (!GlicEnabling::HasConsentedForProfile(profile_)) {
+    base::UmaHistogramEnumeration("Glic.Fre.PanelWebUiState.FinishState",
+                                  last_web_ui_state_);
+  }
 }
 
 bool GlicInstanceMetrics::MarkShownAndCheckIfFirstTime(EmbedderKey key) {

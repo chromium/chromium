@@ -122,6 +122,7 @@ export enum WebUiErrorReason {
 
 export class GlicAppController implements WebviewDelegate, ApiHostEmbedder {
   loadingTimer: number|undefined;
+  private isFreCompleted: boolean = loadTimeData.getBoolean('completedFre');
 
   // This is used to simulate no connection for tests.
   private simulateNoConnection: boolean =
@@ -330,7 +331,17 @@ export class GlicAppController implements WebviewDelegate, ApiHostEmbedder {
       return;
     }
     chrome.histograms.recordEnumerationValue(
-        'Glic.PanelWebUiState.Error', reason, WebUiErrorReason.MAX_VALUE + 1);
+        'Glic.PanelWebUiState.Error',
+        reason,
+        WebUiErrorReason.MAX_VALUE + 1,
+    );
+    if (!this.isFreCompleted) {
+      chrome.histograms.recordEnumerationValue(
+          'Glic.Fre.PanelWebUiState.Error',
+          reason,
+          WebUiErrorReason.MAX_VALUE + 1,
+      );
+    }
     this.setState(WebUiState.kError);
   }
 
@@ -747,6 +758,10 @@ export class GlicAppController implements WebviewDelegate, ApiHostEmbedder {
         resolve(currentZoom);
       });
     });
+  }
+
+  onboardingCompleted(): void {
+    this.isFreCompleted = true;
   }
 
   webClientWarmed(): void {
