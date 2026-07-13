@@ -1727,8 +1727,9 @@ public class NtpCustomizationUtils {
         ntpCustomizationButton.setLayoutParams(layoutParams);
 
         ntpCustomizationButton.setOnClickListener(onClickListener);
-        ntpCustomizationButton.setContentDescription(
-                context.getString(R.string.ntp_customization_title));
+        String contentDescription = context.getString(R.string.ntp_customization_title);
+        ntpCustomizationButton.setContentDescription(contentDescription);
+        ntpCustomizationButton.setTooltipText(contentDescription);
 
         return ntpCustomizationButton;
     }
