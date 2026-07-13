@@ -11,6 +11,7 @@
 #include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/process/process.h"
+#include "base/win/scoped_handle.h"
 #include "base/win/windows_types.h"
 #include "chrome/windows_services/service_program/test_support/scoped_install_service.h"
 #include "chrome/windows_services/service_program/test_support/scoped_log_grabber.h"
@@ -48,6 +49,7 @@ class ServiceEnvironment {
   void SetLogMessageCallback(ScopedLogGrabber::LogMessageCallback callback);
 
  private:
+  base::win::ScopedHandle mutex_;
   ScopedLogGrabber log_grabber_;
   std::optional<ScopedInstallService> service_;
 };

@@ -38,11 +38,11 @@
 #include "base/win/scoped_com_initializer.h"
 #include "chrome/browser/os_crypt/app_bound_encryption_provider_win.h"
 #include "chrome/browser/os_crypt/app_bound_encryption_win.h"
+#include "chrome/browser/win/isolated_browser_test_support.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/elevation_service/elevation_service_idl.h"
 #include "chrome/elevation_service/elevator.h"
 #include "chrome/install_static/test/scoped_install_details.h"
-#include "chrome/windows_services/service_program/test_support/service_environment.h"
 #include "components/prefs/mock_pref_change_callback.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/testing_pref_service.h"
@@ -390,99 +390,19 @@ INSTANTIATE_TEST_SUITE_P(,
                          IsolatedBrowserSupportSystemTestWithFailures,
                          ::testing::Bool());
 
-namespace {
 
-// Scoped mutex to prevent concurrent execution of test suites that manipulate
-// global system state (e.g. Windows services and COM CLSIDs) across different
-// test runner processes.
-class ScopedTestSuiteMutex {
- public:
-  ScopedTestSuiteMutex() {
-    const std::wstring mutex_name = base::StrCat(
-        {L"Global\\", base::ASCIIToWide(::testing::UnitTest::GetInstance()
-                                            ->current_test_suite()
-                                            ->name())});
-
-    mutex_.Set(::CreateMutexW(nullptr, FALSE, mutex_name.c_str()));
-    if (mutex_.is_valid()) {
-      ::WaitForSingleObject(mutex_.get(), INFINITE);
-    }
-  }
-
-  ScopedTestSuiteMutex(const ScopedTestSuiteMutex&) = delete;
-  ScopedTestSuiteMutex& operator=(const ScopedTestSuiteMutex&) = delete;
-
-  ~ScopedTestSuiteMutex() {
-    if (mutex_.is_valid()) {
-      ::ReleaseMutex(mutex_.get());
-      mutex_.Close();
-    }
-  }
-
- private:
-  base::win::ScopedHandle mutex_;
-};
-
-}  // namespace
 
 class IsolatedBrowserSupportLaunchTest : public ::testing::Test {
  protected:
-  static void SetUpTestSuite() {
-    if (!::IsUserAnAdmin()) {
+  void SetUp() override {
+    env_ = std::make_unique<chrome::IsolatedBrowserTestEnvironment>();
+    if (!env_->is_valid()) {
       GTEST_SKIP() << "Test requires admin rights";
     }
-
-    test_suite_mutex_.emplace();
-
-    service_environment_ = new ServiceEnvironment(
-        L"Test Elevation Service", FILE_PATH_LITERAL("elevation_service.exe"),
-        std::array<std::string_view, 3>{
-            elevation_service::switches::kAllowUntrustedPathForTesting,
-            elevation_service::switches::kElevatorClsIdForTestingSwitch,
-            elevation_service::switches::kAllowUntrustedSwitchesForTesting},
-        elevation_service::kTestElevatorClsid, __uuidof(IElevator2));
-    ASSERT_TRUE(service_environment_->is_valid());
   }
 
-  static void TearDownTestSuite() {
-    delete std::exchange(service_environment_, nullptr);
-    test_suite_mutex_.reset();
-  }
-
-  // Returns a handle to the service process if it is running, or an invalid
-  // process otherwise.
-  base::Process GetRunningService() {
-    return service_environment_->GetRunningService();
-  }
-
- private:
-  static inline ServiceEnvironment* service_environment_ = nullptr;
-  static inline std::optional<ScopedTestSuiteMutex> test_suite_mutex_;
+  std::unique_ptr<chrome::IsolatedBrowserTestEnvironment> env_;
 };
-
-base::expected<Microsoft::WRL::ComPtr<IElevator2>, HRESULT> GetElevator() {
-  base::win::AssertComInitialized();
-  Microsoft::WRL::ComPtr<IElevator2> elevator;
-  HRESULT hr =
-      ::CoCreateInstance(elevation_service::kTestElevatorClsid, nullptr,
-                         CLSCTX_LOCAL_SERVER, IID_PPV_ARGS(&elevator));
-
-  if (FAILED(hr)) {
-    LOG(ERROR) << "Failed to create IElevator2 instance: " << hr;
-    return base::unexpected(hr);
-  }
-
-  hr = ::CoSetProxyBlanket(
-      elevator.Get(), RPC_C_AUTHN_DEFAULT, RPC_C_AUTHZ_DEFAULT,
-      COLE_DEFAULT_PRINCIPAL, RPC_C_AUTHN_LEVEL_PKT_PRIVACY,
-      RPC_C_IMP_LEVEL_IMPERSONATE, nullptr, EOAC_DYNAMIC_CLOAKING);
-  if (FAILED(hr)) {
-    LOG(ERROR) << "Failed to create security blanket.";
-    return base::unexpected(hr);
-  }
-
-  return elevator;
-}
 
 base::expected<base::Process, DWORD> RunInChildDeElevated(
     std::string_view function_name) {
@@ -505,36 +425,40 @@ TEST_F(IsolatedBrowserSupportLaunchTest, RunIsolatedChromeLaunchUnisolated) {
   ASSERT_EQ(exit_code, 0);
 }
 
-MULTIPROCESS_TEST_MAIN(RunIsolatedChromeLaunchUnisolatedInChild) {
-  base::win::ScopedCOMInitializer com_initializer(
-      base::win::ScopedCOMInitializer::kMTA);
-  EXPECT_TRUE(com_initializer.Succeeded());
+TEST_F(IsolatedBrowserSupportLaunchTest, CheckIsolatedCommandline) {
+  base::Process process = chrome::SpawnIsolatedMultiProcessTestChild(
+      "CheckIsolatedCommandlineInChild");
+  ASSERT_TRUE(process.IsValid());
+  int exit_code = -1;
+  ASSERT_TRUE(process.WaitForExit(&exit_code));
+  EXPECT_EQ(exit_code, 0);
+}
 
+MULTIPROCESS_TEST_MAIN(CheckIsolatedCommandlineInChild) {
+  const auto* cmd_line = base::CommandLine::ForCurrentProcess();
+  // Only verify the command line here has passed via elevation service, as the
+  // security attribute is not present for Chromium builds.
+  if (cmd_line->HasSwitch(::switches::kIsolated)) {
+    return 0;
+  }
+  return 1;
+}
+
+MULTIPROCESS_TEST_MAIN(RunIsolatedChromeLaunchUnisolatedInChild) {
   const std::string event_name =
       base::Uuid::GenerateRandomV4().AsLowercaseString();
-  auto elevator = GetElevator();
-  EXPECT_TRUE(elevator.has_value());
-
   base::CommandLine cmd = base::GetMultiProcessTestChildBaseCommandLine();
-  cmd.AppendSwitchASCII(switches::kTestChildProcess,
-                        "RunIsolatedChromeLaunchUnisolatedInGrandchild");
   cmd.AppendArg(event_name);
-
-  const auto command_line = cmd.GetCommandLineString();
 
   base::WaitableEvent event(base::win::ScopedHandle(::CreateEventA(
       /*lpEventAttributes=*/nullptr, /*bManualReset=*/FALSE,
       /*bInitialState=*/FALSE, /*lpName=*/event_name.c_str())));
 
-  DWORD last_error = 0;
-  ULONG_PTR proc_handle;
-  base::win::ScopedBstr log;
-  auto res = elevator.value()->RunIsolatedChrome(
-      /*flags=*/0, command_line.c_str(), log.Receive(), &proc_handle,
-      &last_error);
-  EXPECT_HRESULT_SUCCEEDED(res);
-  EXPECT_EQ(DWORD{ERROR_SUCCESS}, last_error);
-  base::Process process(reinterpret_cast<base::ProcessHandle>(proc_handle));
+  base::Process process = chrome::SpawnIsolatedMultiProcessTestChild(
+      "RunIsolatedChromeLaunchUnisolatedInGrandchild", cmd);
+  if (!process.IsValid()) {
+    return 1;
+  }
 
   HANDLE handles[] = {event.handle(), process.Handle()};
   DWORD wait_res = ::WaitForMultipleObjects(2, handles, FALSE, INFINITE);

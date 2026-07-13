@@ -204,6 +204,25 @@ source_set("isolated_browser_support") {
   ]
 }
 
+source_set("isolated_browser_test_support") {
+  testonly = true
+
+  sources = [
+    "isolated_browser_test_support.cc",
+    "isolated_browser_test_support.h",
+  ]
+
+  deps = [
+    ":isolated_browser_support",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/common:constants",
+    "//chrome/elevation_service:public_headers",
+    "//chrome/windows_services/service_program/test_support",
+    "//testing/gtest",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
 
@@ -228,6 +247,7 @@ source_set("unit_tests") {
   deps = [
     ":impl",
     ":isolated_browser_support",
+    ":isolated_browser_test_support",
     ":jumplist",
     ":registry_watcher",
     "//base",
@@ -240,7 +260,6 @@ source_set("unit_tests") {
     "//chrome/install_static/test:test_support",
     "//chrome/installer/util:with_no_strings",
     "//chrome/test:test_support",
-    "//chrome/windows_services/service_program/test_support",
     "//components/prefs",
     "//components/prefs:test_support",
     "//components/variations",

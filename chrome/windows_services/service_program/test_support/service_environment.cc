@@ -4,6 +4,8 @@
 
 #include "chrome/windows_services/service_program/test_support/service_environment.h"
 
+#include <windows.h>
+
 #include <string>
 #include <string_view>
 #include <utility>
@@ -40,6 +42,13 @@ ServiceEnvironment::ServiceEnvironment(
   std::wstring service_name(display_name);
   std::erase(service_name, L' ');
 
+  const std::wstring mutex_name =
+      base::StrCat({L"Global\\", service_name, L"Mutex"});
+  mutex_.Set(::CreateMutexW(nullptr, FALSE, mutex_name.c_str()));
+  if (mutex_.is_valid()) {
+    ::WaitForSingleObject(mutex_.get(), INFINITE);
+  }
+
   base::CommandLine service_command(
       base::PathService::CheckedGet(base::DIR_EXE).Append(service_exe_name));
 
@@ -57,7 +66,13 @@ ServiceEnvironment::ServiceEnvironment(
   }
 }
 
-ServiceEnvironment::~ServiceEnvironment() = default;
+ServiceEnvironment::~ServiceEnvironment() {
+  service_.reset();
+  if (mutex_.is_valid()) {
+    ::ReleaseMutex(mutex_.get());
+    mutex_.Close();
+  }
+}
 
 base::Process ServiceEnvironment::GetRunningService() {
   return is_valid() && service_->is_valid() ? service_->GetRunningService()
