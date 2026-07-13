@@ -81,14 +81,17 @@ static const char kMenuWasRunCallbackKey = 0;
     title = base::SysUTF8ToNSString(base::Base64Encode(label));
   }
 
-  // TODO(https://crbug.com/389084419): Figure out how to handle
-  // blink::mojom::MenuItem::Type::kGroup items. This should use the macOS 14+
-  // support for section headers, but popup menus have to resize themselves to
-  // match the scale of the page, and there's no good way (currently) to get the
-  // font used for section header items in order to scale it and set it.
-  NSMenuItem* menuItem = [_menu addItemWithTitle:title
+  NSMenuItem* menuItem;
+  if (@available(macOS 14, *)) {
+    if (item->type == blink::mojom::MenuItem::Type::kGroup) {
+      menuItem = [NSMenuItem sectionHeaderWithTitle:title];
+    }
+  }
+  if (!menuItem) {
+    menuItem = [[NSMenuItem alloc] initWithTitle:title
                                           action:@selector(menuItemSelected:)
                                    keyEquivalent:@""];
+  }
 
   if (item->tool_tip.has_value()) {
     menuItem.toolTip = base::SysUTF8ToNSString(item->tool_tip.value());
@@ -116,8 +119,6 @@ static const char kMenuWasRunCallbackKey = 0;
         @[ @(long{writingDirection} | NSWritingDirectionOverride) ];
   }
 
-  attrs[NSFontAttributeName] = [NSFont menuFontOfSize:_fontSize];
-
   NSAttributedString* attrTitle =
       [[NSAttributedString alloc] initWithString:title attributes:attrs];
   menuItem.attributedTitle = attrTitle;
@@ -131,7 +132,9 @@ static const char kMenuWasRunCallbackKey = 0;
   NSCharacterSet* whitespaceSet = NSCharacterSet.whitespaceCharacterSet;
   menuItem.title = [title stringByTrimmingCharactersInSet:whitespaceSet];
 
-  menuItem.tag = _menu.numberOfItems - 1;
+  menuItem.tag = _menu.numberOfItems;
+
+  [_menu addItem:menuItem];
 }
 
 - (std::optional<int>)selectedMenuItemIndex {
@@ -186,9 +189,11 @@ static const char kMenuWasRunCallbackKey = 0;
     // checked, but selectItemAtIndex lets us open the picker with no options
     // checked. Not calling anything here would also leave the first item
     // checked, we have to explicitly uncheck them by calling selectItemAtIndex
-    // with -1. https://issues.chromium.org/issues/391648151
+    // with -1. https://crbug.com/391648151
     [cell selectItemAtIndex:-1];
   }
+
+  cell.font = [NSFont menuFontOfSize:_fontSize];
 
   if (_rightAligned) {
     cell.userInterfaceLayoutDirection =
