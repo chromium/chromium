@@ -942,6 +942,7 @@ source_set("unit_tests") {
     "feature_registry/settings_ui_registry_unittest.cc",
     "noisy_metrics_recorder_unittest.cc",
     "optimization_guide_features_unittest.cc",
+    "optimization_guide_logger_unittest.cc",
     "optimization_guide_permissions_util_unittest.cc",
     "optimization_guide_proto_util_unittest.cc",
     "optimization_guide_switches_unittest.cc",
