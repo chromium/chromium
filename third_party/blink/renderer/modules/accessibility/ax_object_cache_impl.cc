@@ -2713,6 +2713,9 @@ void AXObjectCacheImpl::DiscardBadAriaHiddenBecauseOfFocus(AXObject& obj) {
   CHECK(bad_aria_hidden_ancestor->IsDetached());
 
   ancestor_to_rebuild->UpdateChildrenIfNecessary();
+  // Recreating objects during child updates can enqueue new relations (e.g.
+  // aria-owns) that must be processed before tree finalization.
+  relation_cache_->ProcessUpdatesWithCleanLayout();
   bad_aria_hidden_ancestor = Get(bad_aria_hidden_ancestor_node);
   if (bad_aria_hidden_ancestor) {
     CHECK(!bad_aria_hidden_ancestor->IsAriaHiddenRoot());

@@ -6792,6 +6792,7 @@ data/accessibility/scrolling/implicit-root-scroller.html
 data/accessibility/scrolling/link.html
 data/accessibility/scrolling/table.html
 data/accessibility/scrolling/text.html
+data/accessibility/snapshot/aria_owns_in_aria_hidden_crash.html
 data/accessibility/snapshot/hierarchy/a1.html
 data/accessibility/snapshot/hierarchy/a2.html
 data/accessibility/snapshot/hierarchy/a3.html

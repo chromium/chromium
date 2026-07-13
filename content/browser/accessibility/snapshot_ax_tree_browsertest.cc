@@ -770,4 +770,39 @@ IN_PROC_BROWSER_TEST_F(SnapshotAXTreeBrowserTest, Metadata) {
           "<link ref=\"canonical\" href=\"https://abc.com\"></link>",
           "<script type=\"application/ld+json\">{}</script>"));
 }
+
+IN_PROC_BROWSER_TEST_F(SnapshotAXTreeBrowserTest, AriaOwnsInAriaHiddenCrash) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  EXPECT_TRUE(NavigateToURL(
+      shell(),
+      embedded_test_server()->GetURL(
+          "/accessibility/snapshot/aria_owns_in_aria_hidden_crash.html")));
+
+  WebContentsImpl* web_contents =
+      static_cast<WebContentsImpl*>(shell()->web_contents());
+
+  // Wait for the setTimeout in the HTML to run, which shows the modal
+  // dialog and sets aria-hidden="true" on #page.
+  EXPECT_TRUE(ExecJs(
+      web_contents,
+      "new Promise(resolve => {"
+      "  if (document.getElementById('page').getAttribute('aria-hidden') === "
+      "'true') {"
+      "    resolve(true);"
+      "  } else {"
+      "    setTimeout(() => resolve(true), 200);"
+      "  }"
+      "})"));
+
+  AXTreeSnapshotWaiter waiter;
+  web_contents->RequestAXTreeSnapshot(
+      base::BindOnce(&AXTreeSnapshotWaiter::ReceiveSnapshot,
+                     base::Unretained(&waiter)),
+      ui::kAXModeComplete,
+      /* max_nodes= */ 0,
+      /* timeout= */ {}, WebContents::AXTreeSnapshotPolicy::kAll);
+  waiter.Wait();
+}
+
 }  // namespace content

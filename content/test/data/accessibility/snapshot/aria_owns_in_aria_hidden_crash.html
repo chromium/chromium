@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head><title>Repro: tagged PDF print kills renderer</title></head>
+<body>
+  <!-- Page content container (like div.L3eUgb on google.com) -->
+  <div id="page">
+    <form role="search">
+      <!-- Mirrors the google.com search box: focused combobox with aria-owns -->
+      <textarea id="q" role="combobox" aria-owns="suggestions"
+                aria-expanded="false" autofocus rows="1"></textarea>
+      <div id="suggestions" role="listbox">
+        <div role="option">suggestion 1</div>
+      </div>
+    </form>
+    <p>Some page content.</p>
+  </div>
+
+  <!-- Cookie-consent style modal dialog -->
+  <div id="consent" role="dialog" aria-modal="true" aria-label="Before you continue"
+       style="display:none; position:fixed; inset:10% 20%; border:1px solid #ccc;
+              padding:24px; background:#fff;">
+    <h1>Before you continue</h1>
+    <p>We use cookies and data.</p>
+    <button>Reject all</button>
+    <button>Accept all</button>
+  </div>
+
+  <script>
+    // Simulate google.com with the cookie consent dialog (fresh profile / EU):
+    // the search box is focused first, then the dialog opens and the page
+    // container becomes aria-hidden, leaving the focused element (which has
+    // aria-owns) inside an aria-hidden subtree.
+    window.addEventListener('load', function () {
+      document.getElementById('q').focus();
+      setTimeout(function () {
+        document.getElementById('consent').style.display = 'block';
+        document.getElementById('page').setAttribute('aria-hidden', 'true');
+      }, 100);
+    });
+  </script>
+</body>
+</html>
