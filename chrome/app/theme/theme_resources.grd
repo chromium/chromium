@@ -281,8 +281,16 @@
       <if expr="not is_android">
         <structure type="chrome_scaled_image" name="IDR_AUTOFILL_AI_FFR_BANNER" file="common/autofill_ai_ffr_banner.png" />
         <structure type="chrome_scaled_image" name="IDR_AUTOFILL_AI_FFR_BANNER_DARK" file="common/autofill_ai_ffr_banner_dark.png" />
-        <structure type="chrome_scaled_image" name="IDR_DICTATION_ONBOARDING_BANNER" file="common/dictation_onboarding_banner.png" />
-        <structure type="chrome_scaled_image" name="IDR_DICTATION_ONBOARDING_BANNER_DARK" file="common/dictation_onboarding_banner_dark.png" />
+        <if expr="_google_chrome">
+          <then>
+            <structure type="chrome_scaled_image" name="IDR_DICTATION_ONBOARDING_BANNER" file="google_chrome/dictation_onboarding_banner.png" />
+            <structure type="chrome_scaled_image" name="IDR_DICTATION_ONBOARDING_BANNER_DARK" file="google_chrome/dictation_onboarding_banner_dark.png" />
+          </then>
+          <else>
+            <structure type="chrome_scaled_image" name="IDR_DICTATION_ONBOARDING_BANNER" file="common/dictation_onboarding_banner.png" />
+            <structure type="chrome_scaled_image" name="IDR_DICTATION_ONBOARDING_BANNER_DARK" file="common/dictation_onboarding_banner_dark.png" />
+          </else>
+        </if>
         <structure type="chrome_scaled_image" name="IDR_SAFETY_TIP_ILLUSTRATION_DARK" file="common/safety_tip_illustration_dark.png" />
         <structure type="chrome_scaled_image" name="IDR_SAFETY_TIP_ILLUSTRATION_LIGHT" file="common/safety_tip_illustration_light.png" />
         <structure type="chrome_scaled_image" name="IDR_SAVED_PASSWORDS_NEUTRAL_STATE" file="common/passwords_neutral_state.png" />
