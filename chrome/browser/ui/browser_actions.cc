@@ -575,6 +575,25 @@ void BrowserActions::InitializeSidePanelActions() {
             .Build());
   }
 
+  root_action_item_->AddChild(
+      actions::ActionItem::Builder(
+          base::BindRepeating(
+              [](BrowserWindowInterface* bwi, actions::ActionItem* item,
+                 actions::ActionInvocationContext context) {
+                read_anything::ReadAnythingEntryPointController::ToggleUI(
+                    bwi, ReadAnythingOpenTrigger::kKeyboardShortcut);
+              },
+              bwi))
+          .SetActionId(kActionShowReadingModeKeyboard)
+          .SetText(l10n_util::GetStringUTF16(IDS_READING_MODE_TITLE))
+          .SetTooltipText(l10n_util::GetStringFUTF16(IDS_READING_MODE_TOOLTIP,
+                                                     reading_mode_shortcut))
+          .SetImage(ui::ImageModel::FromVectorIcon(
+              features::IsRoundedIconsEnabled() ? kMenuBookIcon
+                                                : kMenuBookChromeRefreshOldIcon,
+              ui::kColorIcon))
+          .Build());
+
   if (lens::features::IsLensOverlayEnabled()) {
     const gfx::VectorIcon& icon =
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
