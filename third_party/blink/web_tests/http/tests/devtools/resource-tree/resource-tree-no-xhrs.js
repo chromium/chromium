@@ -6,6 +6,7 @@ import {TestRunner} from 'test_runner';
 import {NetworkTestRunner} from 'network_test_runner';
 
 import * as SDK from 'devtools/core/sdk/sdk.js';
+import * as Main from 'devtools/entrypoints/main/main.js';
 
 (async function() {
   TestRunner.addResult(
@@ -16,6 +17,7 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
 
   function step2() {
     var resource = SDK.ResourceTreeModel.ResourceTreeModel.resourceForURL(
+        Main.MainImpl.MainImpl.universeForTest.targetManager,
         'http://127.0.0.1:8000/devtools/resource-tree/resources/resource.php');
     TestRunner.assertTrue(!resource, 'XHR resource should not be added to resourceTreeModel.');
     TestRunner.completeTest();

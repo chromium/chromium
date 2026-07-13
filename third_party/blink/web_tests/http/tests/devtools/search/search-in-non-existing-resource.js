@@ -7,6 +7,7 @@ import {ApplicationTestRunner} from 'application_test_runner';
 
 
 import * as SDK from 'devtools/core/sdk/sdk.js';
+import * as Main from 'devtools/entrypoints/main/main.js';
 
 
 (async function() {
@@ -22,7 +23,7 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
   ApplicationTestRunner.runAfterResourcesAreFinished(['search.js'], step2);
 
   async function step2() {
-    var resource = SDK.ResourceTreeModel.ResourceTreeModel.resourceForURL('http://127.0.0.1:8000/devtools/search/resources/search.js');
+    var resource = SDK.ResourceTreeModel.ResourceTreeModel.resourceForURL(Main.MainImpl.MainImpl.universeForTest.targetManager, 'http://127.0.0.1:8000/devtools/search/resources/search.js');
     var url = 'http://127.0.0.1:8000/devtools/search/resources/non-existing.js';
     var response = await TestRunner.PageAgent.invoke_searchInResource({frameId: resource.frameId, url, query: text});
     TestRunner.addResult(response.getError());

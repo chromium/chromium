@@ -4,6 +4,7 @@
 
 import {TestRunner} from 'test_runner';
 import * as SDK from 'devtools/core/sdk/sdk.js';
+import * as Main from 'devtools/entrypoints/main/main.js';
 
 
 (async function() {
@@ -20,7 +21,7 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
     })();
   `);
 
-  var resource = SDK.ResourceTreeModel.ResourceTreeModel.resourceForURL(url);
+  var resource = SDK.ResourceTreeModel.ResourceTreeModel.resourceForURL(Main.MainImpl.MainImpl.universeForTest.targetManager, url);
   if (!resource) {
     TestRunner.addResult('ERROR: Failed to find resource.');
     TestRunner.completeTest();
