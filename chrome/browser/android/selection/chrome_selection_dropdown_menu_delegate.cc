@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome_selection_dropdown_menu_delegate.h"
+#include "chrome/browser/android/selection/chrome_selection_dropdown_menu_delegate.h"
 
-#include "base/memory/raw_ptr.h"
+
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/devtools/devtools_availability_checker.h"
 #include "chrome/browser/devtools/devtools_window.h"
@@ -44,7 +44,7 @@ class ChromeSelectionDropdownMenuModel : public BaseSelectionDropdownMenuModel
 #else
       : BaseSelectionDropdownMenuModel(this),
 #endif
-        rfh_ptr_(&render_frame_host),
+        rfh_id_(render_frame_host.GetGlobalId()),
         params_(params) {
   }
 
@@ -53,8 +53,9 @@ class ChromeSelectionDropdownMenuModel : public BaseSelectionDropdownMenuModel
   // ui::SimpleMenuModel::Delegate overrides:
   void ExecuteCommand(int command_id, int event_flags) override {
     if (command_id == IDC_CONTENT_CONTEXT_INSPECTELEMENT) {
-      if (rfh_ptr_ && rfh_ptr_->IsRenderFrameLive()) {
-        DevToolsWindow::InspectElement(rfh_ptr_, params_.x, params_.y);
+      auto* rfh = content::RenderFrameHost::FromID(rfh_id_);
+      if (rfh && rfh->IsRenderFrameLive()) {
+        DevToolsWindow::InspectElement(rfh, params_.x, params_.y);
       }
       return;
     }
@@ -97,7 +98,7 @@ class ChromeSelectionDropdownMenuModel : public BaseSelectionDropdownMenuModel
   }
 
  private:
-  raw_ptr<content::RenderFrameHost> rfh_ptr_;
+  content::GlobalRenderFrameHostId rfh_id_;
   content::ContextMenuParams params_;
 };
 
