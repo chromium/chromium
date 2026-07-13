@@ -68,7 +68,7 @@ class OmniboxRowGroupedViewBrowserTest : public OmniboxPopupViewViewsTest {
     edit_model()->SetUserText(u"foo");
     AutocompleteInput input(
         u"foo", metrics::OmniboxEventProto::BLANK,
-        ChromeAutocompleteSchemeClassifier(browser()->profile()));
+        ChromeAutocompleteSchemeClassifier(browser()->GetProfile()));
     input.set_omit_asynchronous_matches(true);
     controller()->autocomplete_controller()->Start(input);
     ASSERT_TRUE(controller()->IsPopupOpen());

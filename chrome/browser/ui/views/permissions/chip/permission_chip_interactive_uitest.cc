@@ -1640,7 +1640,7 @@ class GeolocationUsageObserverBrowsertest : public InProcessBrowserTest {
                      ContentSetting setting,
                      const GURL url) {
     HostContentSettingsMap* map =
-        HostContentSettingsMapFactory::GetForProfile(browser()->profile());
+        HostContentSettingsMapFactory::GetForProfile(browser()->GetProfile());
 
     map->SetContentSettingDefaultScope(url, url, type, setting);
   }

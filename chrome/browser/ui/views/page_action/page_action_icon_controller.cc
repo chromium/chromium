@@ -158,9 +158,9 @@ void PageActionIconController::Init(const PageActionIconParams& params,
 
   if (params.browser) {
     zoom_observation_.Observe(zoom::ZoomEventManager::GetForBrowserContext(
-        params.browser->profile()));
+        params.browser->GetProfile()));
 
-    pref_change_registrar_.Init(params.browser->profile()->GetPrefs());
+    pref_change_registrar_.Init(params.browser->GetProfile()->GetPrefs());
     pref_change_registrar_.Add(
         omnibox::kShowGoogleLensShortcut,
         base::BindRepeating(&PageActionIconController::UpdateAll,

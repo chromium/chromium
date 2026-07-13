@@ -305,7 +305,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupViewViewsTest,
 // Integration test for omnibox popup theming in regular.
 IN_PROC_BROWSER_TEST_F(OmniboxPopupViewViewsTest, ThemeIntegration) {
   ThemeService* theme_service =
-      ThemeServiceFactory::GetForProfile(browser()->profile());
+      ThemeServiceFactory::GetForProfile(browser()->GetProfile());
   UseDefaultTheme();
   SetUseDeviceTheme(false);
 
@@ -328,7 +328,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupViewViewsTest, ThemeIntegration) {
   EXPECT_EQ(selection_color_light, GetSelectedColor(browser()));
 
   // Install a theme (in both browsers, since it's the same profile).
-  extensions::ChromeTestExtensionLoader loader(browser()->profile());
+  extensions::ChromeTestExtensionLoader loader(browser()->GetProfile());
   {
     ThemeChangeWaiter wait(theme_service);
     base::FilePath path = chrome_test_utils::GetTestFilePath(
@@ -356,7 +356,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupViewViewsTest, ThemeIntegration) {
 
 IN_PROC_BROWSER_TEST_F(OmniboxPopupViewViewsTest, ThemeIntegrationInIncognito) {
   ThemeService* theme_service =
-      ThemeServiceFactory::GetForProfile(browser()->profile());
+      ThemeServiceFactory::GetForProfile(browser()->GetProfile());
   UseDefaultTheme();
   SetUseDeviceTheme(false);
 
@@ -371,7 +371,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupViewViewsTest, ThemeIntegrationInIncognito) {
   SetIsGrayscale(false);
 
   // Install a theme (in both browsers, since it's the same profile).
-  extensions::ChromeTestExtensionLoader loader(browser()->profile());
+  extensions::ChromeTestExtensionLoader loader(browser()->GetProfile());
   {
     ThemeChangeWaiter wait(theme_service);
     base::FilePath path = chrome_test_utils::GetTestFilePath(
@@ -712,7 +712,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupViewViewsTest,
   edit_model()->SetUserText(u"foo");
   AutocompleteInput input(
       u"foo", metrics::OmniboxEventProto::BLANK,
-      ChromeAutocompleteSchemeClassifier(browser()->profile()));
+      ChromeAutocompleteSchemeClassifier(browser()->GetProfile()));
   input.set_omit_asynchronous_matches(true);
   controller()->autocomplete_controller()->Start(input);
 
@@ -886,7 +886,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupViewViewsTest, DeleteSuggestion) {
   edit_model()->SetUserText(u"foo");
   AutocompleteInput input(
       u"foo", metrics::OmniboxEventProto::BLANK,
-      ChromeAutocompleteSchemeClassifier(browser()->profile()));
+      ChromeAutocompleteSchemeClassifier(browser()->GetProfile()));
   input.set_omit_asynchronous_matches(true);
   controller()->autocomplete_controller()->Start(input);
   ASSERT_TRUE(controller()->IsPopupOpen());
@@ -1129,7 +1129,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupSuggestionGroupHeadersTest,
     AutocompleteInput input(
         u"foo",
         metrics::OmniboxEventProto::INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS,
-        ChromeAutocompleteSchemeClassifier(browser()->profile()));
+        ChromeAutocompleteSchemeClassifier(browser()->GetProfile()));
     input.set_omit_asynchronous_matches(true);
     controller()->autocomplete_controller()->Start(input);
     ASSERT_TRUE(controller()->IsPopupOpen());
@@ -1162,7 +1162,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupSuggestionGroupHeadersTest,
         u"foo",
         metrics::OmniboxEventProto::
             SEARCH_RESULT_PAGE_NO_SEARCH_TERM_REPLACEMENT,
-        ChromeAutocompleteSchemeClassifier(browser()->profile()));
+        ChromeAutocompleteSchemeClassifier(browser()->GetProfile()));
     input.set_omit_asynchronous_matches(true);
     controller()->autocomplete_controller()->Start(input);
     ASSERT_TRUE(controller()->IsPopupOpen());
@@ -1190,7 +1190,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupSuggestionGroupHeadersTest,
     edit_model()->SetUserText(u"foo");
     AutocompleteInput input(
         u"foo", metrics::OmniboxEventProto::OTHER,
-        ChromeAutocompleteSchemeClassifier(browser()->profile()));
+        ChromeAutocompleteSchemeClassifier(browser()->GetProfile()));
     input.set_omit_asynchronous_matches(true);
     controller()->autocomplete_controller()->Start(input);
     ASSERT_TRUE(controller()->IsPopupOpen());

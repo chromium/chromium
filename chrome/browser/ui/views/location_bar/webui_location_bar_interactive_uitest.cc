@@ -531,7 +531,7 @@ IN_PROC_BROWSER_TEST_F(WebUILocationBarInteractiveUiTest, NavigateSuggestions) {
 IN_PROC_BROWSER_TEST_F(WebUILocationBarInteractiveUiTest,
                        DISABLED_InlineSuggestion) {
   history::HistoryService* history_service =
-      HistoryServiceFactory::GetForProfile(this->browser()->profile(),
+      HistoryServiceFactory::GetForProfile(this->browser()->GetProfile(),
                                            ServiceAccessType::EXPLICIT_ACCESS);
   GURL url("https://local.test/");
   history_service->AddPage(url, base::Time::Now(), history::SOURCE_BROWSED);
@@ -571,7 +571,7 @@ IN_PROC_BROWSER_TEST_F(WebUILocationBarInteractiveUiTest,
 
 IN_PROC_BROWSER_TEST_F(WebUILocationBarInteractiveUiTest, AdditionalText) {
   auto shortcuts_backend =
-      ShortcutsBackendFactory::GetForProfile(browser()->profile());
+      ShortcutsBackendFactory::GetForProfile(browser()->GetProfile());
   if (!shortcuts_backend->initialized()) {
     base::RunLoop run_loop;
     NotifyWhenShortcutsLoadedObserver notify_init(run_loop.QuitClosure());

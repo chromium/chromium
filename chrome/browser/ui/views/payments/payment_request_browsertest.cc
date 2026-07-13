@@ -258,7 +258,7 @@ using PaymentRequestSettingsLinkTest = PaymentRequestBrowserTestBase;
 IN_PROC_BROWSER_TEST_F(PaymentRequestSettingsLinkTest, ClickSettingsLink) {
 #if BUILDFLAG(IS_CHROMEOS)
   // Install the Settings App.
-  ash::SystemWebAppManager::GetForTest(browser()->profile())
+  ash::SystemWebAppManager::GetForTest(browser()->GetProfile())
       ->InstallSystemAppsForTesting();
 #endif
 

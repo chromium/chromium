@@ -97,7 +97,7 @@ void WebUILocationBar::Init(WebUIToolbarControlDelegate* delegate) {
 
   omnibox_controller_ =
       std::make_unique<OmniboxController>(std::make_unique<ChromeOmniboxClient>(
-          /*location_bar=*/this, browser_, browser_->profile()));
+          /*location_bar=*/this, browser_, browser_->GetProfile()));
   omnibox_view_ = std::make_unique<WebUIReadOnlyOmnibox>(
       /*location_bar=*/this, omnibox_controller_.get(),
       /*update_propagator=*/*this);
@@ -305,7 +305,7 @@ Browser* WebUILocationBar::GetBrowser() {
 }
 
 Profile* WebUILocationBar::GetProfile() {
-  return browser_->profile();
+  return browser_->GetProfile();
 }
 
 void WebUILocationBar::OnChanged() {
@@ -790,7 +790,7 @@ void WebUILocationBar::UpdateSelectedKeywordState() {
   last_search_keyword_ = current_keyword;
   last_is_keyword_selected_ = is_keyword_selected;
 
-  Profile* profile = browser_->profile();
+  Profile* profile = browser_->GetProfile();
 
   // Purposefully start with null here.
   toolbar_ui_api::mojom::SelectedKeywordStatePtr keyword_state;

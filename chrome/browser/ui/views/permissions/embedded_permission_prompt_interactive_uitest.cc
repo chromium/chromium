@@ -264,7 +264,7 @@ class EmbeddedPermissionPromptInteractiveTest
       const std::vector<ContentSettingsType>& content_settings_types,
       ContentSetting expected_value) {
     HostContentSettingsMap* hcsm =
-        HostContentSettingsMapFactory::GetForProfile(browser()->profile());
+        HostContentSettingsMapFactory::GetForProfile(browser()->GetProfile());
     for (const auto& type : content_settings_types) {
       if (expected_value !=
           hcsm->GetContentSetting(GetOrigin(), GetOrigin(), type)) {
@@ -277,7 +277,7 @@ class EmbeddedPermissionPromptInteractiveTest
 
   void SetContentSetting(ContentSettingsType type, ContentSetting setting) {
     HostContentSettingsMap* hcsm =
-        HostContentSettingsMapFactory::GetForProfile(browser()->profile());
+        HostContentSettingsMapFactory::GetForProfile(browser()->GetProfile());
     hcsm->SetContentSettingDefaultScope(GetOrigin(), GetOrigin(), type,
                                         setting);
   }
@@ -991,7 +991,7 @@ IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptInteractiveTest,
 
         // Simulate another window becoming active, and then the current window
         // again.
-        Browser* focused_window = CreateBrowser(browser()->profile());
+        Browser* focused_window = CreateBrowser(browser()->GetProfile());
         ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(focused_window));
         ASSERT_FALSE(browser()->GetWindow()->IsActive());
 
@@ -1084,7 +1084,7 @@ IN_PROC_BROWSER_TEST_P(
             ContentSettingsType::MEDIASTREAM_CAMERA, /*blocked=*/false);
 
         // Simulate deactivation and reactivation.
-        Browser* focused_window = CreateBrowser(browser()->profile());
+        Browser* focused_window = CreateBrowser(browser()->GetProfile());
         ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(focused_window));
         ASSERT_FALSE(browser()->GetWindow()->IsActive());
 
@@ -1678,7 +1678,7 @@ IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptInteractiveTest,
   // Create a new WebContents instead of using the browser's active WebContents.
   std::unique_ptr<content::WebContents> test_web_contents =
       content::WebContents::Create(
-          content::WebContents::CreateParams(browser()->profile()));
+          content::WebContents::CreateParams(browser()->GetProfile()));
 
   // Navigate the web contents to ensure its render widget host view is created
   // and GetContentNativeView() is non-null.

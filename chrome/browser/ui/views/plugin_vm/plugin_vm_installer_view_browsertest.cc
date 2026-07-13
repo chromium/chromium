@@ -87,7 +87,7 @@ class PluginVmInstallerViewBrowserTest : public DialogBrowserTest {
 
   // DialogBrowserTest:
   void ShowUi(const std::string& name) override {
-    plugin_vm::ShowPluginVmInstallerView(browser()->profile());
+    plugin_vm::ShowPluginVmInstallerView(browser()->GetProfile());
     view_ = PluginVmInstallerView::GetActiveViewForTesting();
   }
 
@@ -157,7 +157,7 @@ class PluginVmInstallerViewBrowserTestWithFeatureEnabled
 
  protected:
   void SetPluginVmImagePref(std::string url, std::string hash) {
-    ScopedDictPrefUpdate update(browser()->profile()->GetPrefs(),
+    ScopedDictPrefUpdate update(browser()->GetProfile()->GetPrefs(),
                                 plugin_vm::prefs::kPluginVmImage);
     base::DictValue& plugin_vm_image = update.Get();
     plugin_vm_image.Set("url", url);
@@ -171,7 +171,7 @@ class PluginVmInstallerViewBrowserTestWithFeatureEnabled
     SetPluginVmImagePref(embedded_test_server()->GetURL(kZipFile).spec(),
                          kZipFileHash);
     auto* installer = plugin_vm::PluginVmInstallerFactory::GetForProfile(
-        browser()->profile());
+        browser()->GetProfile());
     installer->SetFreeDiskSpaceForTesting(installer->RequiredFreeDiskSpace());
     installer->SkipLicenseCheckForTesting();
   }

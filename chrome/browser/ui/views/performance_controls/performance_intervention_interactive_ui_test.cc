@@ -540,7 +540,7 @@ IN_PROC_BROWSER_TEST_F(PerformanceInterventionInteractiveTest,
                                      ui::PageTransition::PAGE_TRANSITION_LINK));
   ASSERT_TRUE(AddTabAtIndexToBrowser(first_browser, 1, GetURL("b.com"),
                                      ui::PageTransition::PAGE_TRANSITION_LINK));
-  Browser* const second_browser = CreateBrowser(first_browser->profile());
+  Browser* const second_browser = CreateBrowser(first_browser->GetProfile());
   ASSERT_TRUE(AddTabAtIndexToBrowser(second_browser, 0, GetURL("c.com"),
                                      ui::PageTransition::PAGE_TRANSITION_LINK));
   BrowserWindow* const first_browser_window =
@@ -597,7 +597,7 @@ IN_PROC_BROWSER_TEST_F(PerformanceInterventionInteractiveTest,
                                      ui::PageTransition::PAGE_TRANSITION_LINK));
   ASSERT_TRUE(AddTabAtIndexToBrowser(first_browser, 1, GetURL("b.com"),
                                      ui::PageTransition::PAGE_TRANSITION_LINK));
-  Browser* const second_browser = CreateBrowser(first_browser->profile());
+  Browser* const second_browser = CreateBrowser(first_browser->GetProfile());
   ASSERT_TRUE(AddTabAtIndexToBrowser(second_browser, 0, GetURL("c.com"),
                                      ui::PageTransition::PAGE_TRANSITION_LINK));
   BrowserWindow* const first_browser_window =

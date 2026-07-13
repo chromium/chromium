@@ -36,7 +36,7 @@ class OptimizationGuideIconViewTestBase : public InProcessBrowserTest {
     optimization_guide::OptimizationMetadata metadata;
     metadata.set_any_metadata(
         optimization_guide::AnyWrapProto(icon_view_metadata));
-    OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->profile())
+    OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->GetProfile())
         ->AddHintForTesting(
             url, optimization_guide::proto::OPTIMIZATION_GUIDE_ICON_VIEW,
             metadata);

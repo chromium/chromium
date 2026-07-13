@@ -653,7 +653,7 @@ IN_PROC_BROWSER_TEST_P(OneTimePermissionExpiryEnforcementUmaInteractiveUiTest,
   ASSERT_NO_FATAL_FAILURE(Initialize(INITIALIZATION_DEFAULT, GetWebrtcGurl()));
 
   auto* hcsm =
-      HostContentSettingsMapFactory::GetForProfile(browser()->profile());
+      HostContentSettingsMapFactory::GetForProfile(browser()->GetProfile());
 
   // Setup to request content setting in the past (maximum one time
   // permission grant lifetime)

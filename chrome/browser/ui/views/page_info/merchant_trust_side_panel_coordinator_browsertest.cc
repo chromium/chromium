@@ -76,7 +76,7 @@ class MerchantTrustSidePanelCoordinatorBrowserTest
     host_resolver()->AddRule("*", "127.0.0.1");
     service_ = static_cast<MockMerchantTrustService*>(
         MerchantTrustServiceFactory::GetInstance()->SetTestingFactoryAndUse(
-            browser()->profile(),
+            browser()->GetProfile(),
             base::BindRepeating(&MerchantTrustSidePanelCoordinatorBrowserTest::
                                     BuildMockMerchantTrustService,
                                 base::Unretained(this))));

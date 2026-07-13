@@ -76,7 +76,7 @@ class FooterInteractiveTestBase
     extension_dir.WriteManifest(extension_manifest);
 
     extensions::ChromeTestExtensionLoader extension_loader(
-        browser()->profile());
+        browser()->GetProfile());
     extension_loader.set_ignore_manifest_warnings(true);
     const extensions::Extension* extension =
         extension_loader.LoadExtension(extension_dir.Pack()).get();
@@ -308,7 +308,7 @@ class FooterEnterpriseInteractiveTest : public FooterInteractiveTestBase {
     scoped_browser_management_ =
         std::make_unique<policy::ScopedManagementServiceOverrideForTesting>(
             policy::ManagementServiceFactory::GetForProfile(
-                browser()->profile()),
+                browser()->GetProfile()),
             policy::EnterpriseManagementAuthority::DOMAIN_LOCAL);
     FooterInteractiveTestBase::SetUpOnMainThread();
   }
@@ -331,7 +331,8 @@ class FooterEnterpriseInteractiveTest : public FooterInteractiveTestBase {
 
   void SetCustomBackground() {
     auto* ntp_custom_background_service =
-        NtpCustomBackgroundServiceFactory::GetForProfile(browser()->profile());
+        NtpCustomBackgroundServiceFactory::GetForProfile(
+            browser()->GetProfile());
     ntp_custom_background_service->AddValidBackdropUrlForTesting(
         GURL("https://background.com"));
     ntp_custom_background_service->SetCustomBackgroundInfo(
@@ -364,13 +365,14 @@ class FooterEnterpriseInteractiveTest : public FooterInteractiveTestBase {
   }
 
   Browser* CreateManagedIncognitoBrowser() {
-    Browser* incognito_browser = Browser::Create(Browser::CreateParams(
-        browser()->profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true),
-        true));
+    Browser* incognito_browser = Browser::Create(
+        Browser::CreateParams(browser()->GetProfile()->GetPrimaryOTRProfile(
+                                  /*create_if_needed=*/true),
+                              true));
     incognito_scoped_browser_management_ =
         std::make_unique<policy::ScopedManagementServiceOverrideForTesting>(
             policy::ManagementServiceFactory::GetForProfile(
-                incognito_browser->profile()),
+                incognito_browser->GetProfile()),
             policy::EnterpriseManagementAuthority::DOMAIN_LOCAL);
     AddBlankTabAndShow(incognito_browser);
     ui_test_utils::BrowserActivationWaiter(incognito_browser)

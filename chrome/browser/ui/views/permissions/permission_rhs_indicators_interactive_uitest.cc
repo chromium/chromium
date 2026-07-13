@@ -98,7 +98,7 @@ class PermissionRHSIndicatorsInteractiveUITest : public InteractiveBrowserTest {
 
   void SetPermission(ContentSettingsType type, ContentSetting setting) {
     HostContentSettingsMap* map =
-        HostContentSettingsMapFactory::GetForProfile(browser()->profile());
+        HostContentSettingsMapFactory::GetForProfile(browser()->GetProfile());
 
     map->SetContentSettingDefaultScope(GetURL(), GetURL(), type, setting);
   }

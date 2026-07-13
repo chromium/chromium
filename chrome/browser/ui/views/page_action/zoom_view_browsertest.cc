@@ -34,7 +34,7 @@ views::View* GetZoomView(Browser* browser) {
 
 IN_PROC_BROWSER_TEST_F(ZoomViewBrowserTest, SharedPageVisibility) {
   auto* zoom_icon = GetZoomView(browser());
-  auto* second_zoom_icon = GetZoomView(CreateBrowser(browser()->profile()));
+  auto* second_zoom_icon = GetZoomView(CreateBrowser(browser()->GetProfile()));
 
   ZoomBubbleCoordinator* zoom_bubble_coordinator =
       ZoomBubbleCoordinator::From(browser());

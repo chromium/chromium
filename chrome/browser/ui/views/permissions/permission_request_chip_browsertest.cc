@@ -467,7 +467,7 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestChipSensorBrowserTest,
 
   // Grant permission first.
   HostContentSettingsMap* settings_map =
-      HostContentSettingsMapFactory::GetForProfile(browser()->profile());
+      HostContentSettingsMapFactory::GetForProfile(browser()->GetProfile());
   settings_map->SetContentSettingDefaultScope(
       url, url, ContentSettingsType::SENSORS, CONTENT_SETTING_ALLOW);
 
@@ -531,7 +531,7 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestChipSensorBrowserTest,
 
   // Grant sensor permission.
   HostContentSettingsMap* settings_map =
-      HostContentSettingsMapFactory::GetForProfile(browser()->profile());
+      HostContentSettingsMapFactory::GetForProfile(browser()->GetProfile());
   settings_map->SetContentSettingDefaultScope(
       url, url, ContentSettingsType::SENSORS, CONTENT_SETTING_ALLOW);
 
@@ -594,7 +594,7 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestChipSensorBrowserTest,
 
   // Block permission.
   HostContentSettingsMap* settings_map =
-      HostContentSettingsMapFactory::GetForProfile(browser()->profile());
+      HostContentSettingsMapFactory::GetForProfile(browser()->GetProfile());
   settings_map->SetContentSettingDefaultScope(
       url, url, ContentSettingsType::SENSORS, CONTENT_SETTING_BLOCK);
 

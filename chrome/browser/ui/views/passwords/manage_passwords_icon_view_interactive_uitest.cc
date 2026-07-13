@@ -111,7 +111,7 @@ IN_PROC_BROWSER_TEST_F(ManagePasswordsIconViewTest, CloseOnClick) {
 IN_PROC_BROWSER_TEST_F(ManagePasswordsIconViewTestToolbarPinningOnly,
                        ShowPasswordsBubbleOrPage) {
   const GURL passwords_url = GURL("chrome://password-manager/");
-  PinnedToolbarActionsModel::Get(browser()->profile())
+  PinnedToolbarActionsModel::Get(browser()->GetProfile())
       ->UpdatePinnedState(kActionShowPasswordsBubbleOrPage, true);
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
   CHECK(!features::IsWebUIPinnedToolbarActionsEnabled())

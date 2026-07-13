@@ -68,7 +68,7 @@ class StarViewTest : public InProcessBrowserTest {
 #endif
 IN_PROC_BROWSER_TEST_F(StarViewTest, MAYBE_BookmarksUrlOnPress) {
   bookmarks::BookmarkModel* bookmark_model =
-      BookmarkModelFactory::GetForBrowserContext(browser()->profile());
+      BookmarkModelFactory::GetForBrowserContext(browser()->GetProfile());
   bookmarks::test::WaitForBookmarkModelToLoad(bookmark_model);
 
   auto* star_icon = GetStarIcon();
@@ -135,7 +135,7 @@ IN_PROC_BROWSER_TEST_F(StarViewTest, InkDropHighlighted) {
   if (ink_drop_test_api.HasInkDrop()) {
     GURL url("http://test.com");
     bookmarks::BookmarkModel* model =
-        BookmarkModelFactory::GetForBrowserContext(browser()->profile());
+        BookmarkModelFactory::GetForBrowserContext(browser()->GetProfile());
     bookmarks::AddIfNotBookmarked(model, url, /*title=*/std::u16string());
     BrowserWindow::FromBrowser(browser())->ShowBookmarkBubble(url, false);
     EXPECT_EQ(ink_drop_test_api.GetInkDrop()->GetTargetInkDropState(),

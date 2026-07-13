@@ -111,7 +111,7 @@ IN_PROC_BROWSER_TEST_F(CollaborationMessagingPageActionIconViewInteractiveTest,
 
   auto* collaboration_message_observer =
       tab_groups::CollaborationMessagingObserverFactory::GetForProfile(
-          browser()->profile());
+          browser()->GetProfile());
 
   auto* tab = browser()->tab_strip_model()->GetActiveTab();
   auto message = CreateChipMessage("User", CollaborationEvent::TAB_ADDED, tab);
@@ -152,7 +152,7 @@ IN_PROC_BROWSER_TEST_F(CollaborationMessagingPageActionIconViewInteractiveTest,
 
   auto* collaboration_message_observer =
       tab_groups::CollaborationMessagingObserverFactory::GetForProfile(
-          browser()->profile());
+          browser()->GetProfile());
 
   auto* tab = browser()->tab_strip_model()->GetActiveTab();
   auto message = CreateChipMessage("User", CollaborationEvent::TAB_ADDED, tab);

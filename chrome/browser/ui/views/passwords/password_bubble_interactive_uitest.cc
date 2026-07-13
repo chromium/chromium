@@ -177,7 +177,7 @@ class PasswordBubbleInteractiveUiTestBase : public ManagePasswordsTest {
   void AddActorTask() {
     auto* actor_keyed_service = static_cast<actor::ActorKeyedServiceFake*>(
         actor::ActorKeyedServiceFactory::GetActorKeyedService(
-            browser()->profile()));
+            browser()->GetProfile()));
     actor::TaskId task_id = actor_keyed_service->CreateTaskForTesting();
     actor::ActorTask* task = actor_keyed_service->GetTask(task_id);
     base::RunLoop loop;
@@ -326,7 +326,7 @@ IN_PROC_BROWSER_TEST_P(
 
   AddActorTask();
   GetController()->OnBiometricAuthenticationForFilling(
-      browser()->profile()->GetPrefs());
+      browser()->GetProfile()->GetPrefs());
 
   EXPECT_FALSE(IsBubbleShowing());
 }
@@ -358,7 +358,7 @@ IN_PROC_BROWSER_TEST_P(
 
   AddActorTask();
   GetController()->OnBiometricAuthenticationForFilling(
-      browser()->profile()->GetPrefs());
+      browser()->GetProfile()->GetPrefs());
 
   EXPECT_FALSE(IsBubbleShowing());
 }
@@ -722,9 +722,9 @@ IN_PROC_BROWSER_TEST_P(PasswordBubbleInteractiveUiTest,
   ASSERT_TRUE(IsBubbleShowing());
   PasswordBubbleViewBase::manage_password_bubble()->Cancel();
 
-  EXPECT_EQ(0, browser()->profile()->GetPrefs()->GetInteger(
+  EXPECT_EQ(0, browser()->GetProfile()->GetPrefs()->GetInteger(
                    prefs::kAutofillSignInPromoDismissCountPerProfile));
-  EXPECT_EQ(0, SigninPrefs(*browser()->profile()->GetPrefs())
+  EXPECT_EQ(0, SigninPrefs(*browser()->GetProfile()->GetPrefs())
                    .GetAutofillSigninPromoDismissCount(info.gaia));
 }
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
@@ -1670,7 +1670,7 @@ IN_PROC_BROWSER_TEST_P(PasswordBubbleWithUnifiedUiDisabledInteractiveUiTest,
       std::make_unique<password_manager::PasswordForm>(*test_form()));
 
   // Open another window with focus.
-  Browser* focused_window = CreateBrowser(browser()->profile());
+  Browser* focused_window = CreateBrowser(browser()->GetProfile());
   ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(focused_window));
 
   PasswordAutoSignInView::set_auto_signin_toast_timeout(1);

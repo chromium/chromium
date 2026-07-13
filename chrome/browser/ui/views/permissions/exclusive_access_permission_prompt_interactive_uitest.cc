@@ -110,7 +110,7 @@ class ExclusiveAccessPermissionPromptInteractiveTest
         [=, this]() {
           HostContentSettingsMap* hcsm =
               HostContentSettingsMapFactory::GetForProfile(
-                  browser()->profile());
+                  browser()->GetProfile());
           for (const auto& type : GetContentSettings(test_content_settings)) {
             if (hcsm->GetContentSetting(GetOrigin(), GetOrigin(), type) !=
                 expected_value) {

@@ -328,7 +328,7 @@ class PageInfoBubbleViewInteractiveUiTest : public InteractiveBrowserTest {
     return CheckResult(
         base::BindLambdaForTesting([this, reader_name]() {
           return SmartCardPermissionContextFactory::GetForProfile(
-                     *browser()->profile())
+                     *browser()->GetProfile())
               .HasReaderPermission(url::Origin::Create(GetURL()), reader_name);
         }),
         is_granted,
@@ -366,7 +366,8 @@ class PageInfoBubbleViewInteractiveUiTest : public InteractiveBrowserTest {
   }
 
   HostContentSettingsMap* host_content_settings_map() {
-    return HostContentSettingsMapFactory::GetForProfile(browser()->profile());
+    return HostContentSettingsMapFactory::GetForProfile(
+        browser()->GetProfile());
   }
 
   void SetPermission(ContentSettingsType type, ContentSetting setting) {
@@ -382,13 +383,13 @@ class PageInfoBubbleViewInteractiveUiTest : public InteractiveBrowserTest {
 
 #if BUILDFLAG(IS_CHROMEOS)
   void GrantSmartCardReaderPermission(const std::string& reader_name) {
-    SmartCardPermissionContextFactory::GetForProfile(*browser()->profile())
+    SmartCardPermissionContextFactory::GetForProfile(*browser()->GetProfile())
         .GrantPersistentReaderPermission(url::Origin::Create(GetURL()),
                                          reader_name);
   }
 
   void ResetSmartCardReaderGrants() {
-    SmartCardPermissionContextFactory::GetForProfile(*browser()->profile())
+    SmartCardPermissionContextFactory::GetForProfile(*browser()->GetProfile())
         .RevokeAllPermissions();
   }
 #endif

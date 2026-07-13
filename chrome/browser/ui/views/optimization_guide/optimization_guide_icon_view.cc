@@ -34,7 +34,7 @@ OptimizationGuideIconView::OptimizationGuideIconView(
                          "OptimizationGuide"),
       optimization_guide_service_(
           OptimizationGuideKeyedServiceFactory::GetForProfile(
-              browser->profile())) {
+              browser->GetProfile())) {
   SetProperty(views::kElementIdentifierKey, kOptimizationGuideChipElementId);
   GetViewAccessibility().SetName(u"OptimizationGuide");
   if (optimization_guide::features::ShouldEnableOptimizationGuideIconView() &&

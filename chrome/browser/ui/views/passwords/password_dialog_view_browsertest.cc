@@ -340,7 +340,7 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_CALL(*this, OnChooseCredential(testing::Pointee(form)));
   EXPECT_TRUE(
       password_bubble_experiment::ShouldShowAutoSignInPromptFirstRunExperience(
-          browser()->profile()->GetPrefs()));
+          browser()->GetProfile()->GetPrefs()));
   controller()->ChooseCredential(
       form, password_manager::CredentialType::CREDENTIAL_TYPE_PASSWORD);
   EXPECT_FALSE(controller()->current_autosignin_prompt());
@@ -431,7 +431,7 @@ IN_PROC_BROWSER_TEST_P(PasswordDialogViewTest,
   EXPECT_CALL(*this, OnChooseCredential(testing::Pointee(form)));
   EXPECT_TRUE(
       password_bubble_experiment::ShouldShowAutoSignInPromptFirstRunExperience(
-          browser()->profile()->GetPrefs()));
+          browser()->GetProfile()->GetPrefs()));
   controller()->ChooseCredential(
       form, password_manager::CredentialType::CREDENTIAL_TYPE_PASSWORD);
 
@@ -442,7 +442,7 @@ IN_PROC_BROWSER_TEST_P(PasswordDialogViewTest,
                        PopupAccountChooserWithDisabledAutoSignin) {
   EXPECT_TRUE(
       password_bubble_experiment::ShouldShowAutoSignInPromptFirstRunExperience(
-          browser()->profile()->GetPrefs()));
+          browser()->GetProfile()->GetPrefs()));
   GURL origin("https://example.com");
   std::vector<std::unique_ptr<password_manager::PasswordForm>>
       local_credentials;
@@ -474,8 +474,8 @@ IN_PROC_BROWSER_TEST_P(PasswordDialogViewTest,
 IN_PROC_BROWSER_TEST_P(PasswordDialogViewTest, PopupAccountChooserInIncognito) {
   EXPECT_TRUE(
       password_bubble_experiment::ShouldShowAutoSignInPromptFirstRunExperience(
-          browser()->profile()->GetPrefs()));
-  EXPECT_TRUE(browser()->profile()->GetPrefs()->GetBoolean(
+          browser()->GetProfile()->GetPrefs()));
+  EXPECT_TRUE(browser()->GetProfile()->GetPrefs()->GetBoolean(
       password_manager::prefs::kCredentialsEnableAutosignin));
   GURL origin("https://example.com");
   std::vector<std::unique_ptr<password_manager::PasswordForm>>
@@ -511,7 +511,7 @@ IN_PROC_BROWSER_TEST_P(PasswordDialogViewTest, PopupAccountChooserInIncognito) {
 IN_PROC_BROWSER_TEST_P(PasswordDialogViewTest, EscCancelsAutoSigninPrompt) {
   EXPECT_TRUE(
       password_bubble_experiment::ShouldShowAutoSignInPromptFirstRunExperience(
-          browser()->profile()->GetPrefs()));
+          browser()->GetProfile()->GetPrefs()));
   controller()->OnPromptEnableAutoSignin();
   ASSERT_TRUE(controller()->current_autosignin_prompt());
   EXPECT_EQ(password_manager::ui::INACTIVE_STATE, controller()->GetState());
@@ -527,7 +527,7 @@ IN_PROC_BROWSER_TEST_P(PasswordDialogViewTest, EscCancelsAutoSigninPrompt) {
   testing::Mock::VerifyAndClearExpectations(controller());
   EXPECT_FALSE(
       password_bubble_experiment::ShouldShowAutoSignInPromptFirstRunExperience(
-          browser()->profile()->GetPrefs()));
+          browser()->GetProfile()->GetPrefs()));
 }
 
 IN_PROC_BROWSER_TEST_P(PasswordDialogViewTest, PopupCredentialsLeakedPrompt) {
@@ -550,7 +550,7 @@ IN_PROC_BROWSER_TEST_P(PasswordDialogViewTest,
                        PopupAutoSigninPromptAfterBlockedZeroclick) {
   EXPECT_TRUE(
       password_bubble_experiment::ShouldShowAutoSignInPromptFirstRunExperience(
-          browser()->profile()->GetPrefs()));
+          browser()->GetProfile()->GetPrefs()));
 
   GURL origin("https://example.com");
   password_manager::PasswordForm form;

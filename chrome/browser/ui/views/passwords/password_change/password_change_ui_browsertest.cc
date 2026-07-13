@@ -58,13 +58,13 @@ class PasswordChangeUiBrowserTest : public DialogBrowserTest {
 
   MockAffiliationService* affiliation_service() {
     return static_cast<MockAffiliationService*>(
-        AffiliationServiceFactory::GetForProfile(browser()->profile()));
+        AffiliationServiceFactory::GetForProfile(browser()->GetProfile()));
   }
 
   MockOptimizationGuideKeyedService* mock_optimization_guide_keyed_service() {
     return static_cast<MockOptimizationGuideKeyedService*>(
         OptimizationGuideKeyedServiceFactory::GetForProfile(
-            browser()->profile()));
+            browser()->GetProfile()));
   }
 
  private:
@@ -99,7 +99,7 @@ class PasswordChangeUiBrowserTest : public DialogBrowserTest {
   }
 
   ChromePasswordChangeService* password_change_service() {
-    return PasswordChangeServiceFactory::GetForProfile(browser()->profile());
+    return PasswordChangeServiceFactory::GetForProfile(browser()->GetProfile());
   }
 
   base::CallbackListSubscription create_services_subscription_;

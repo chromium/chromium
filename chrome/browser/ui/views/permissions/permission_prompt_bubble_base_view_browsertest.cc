@@ -137,7 +137,7 @@ class PermissionPromptBubbleBaseViewBrowserTest : public DialogBrowserTest {
                                                                 GetTestUrl());
     custom_handlers::ProtocolHandlerRegistry* registry =
         ProtocolHandlerRegistryFactory::GetForBrowserContext(
-            browser()->profile());
+            browser()->GetProfile());
     // Deleted in RegisterProtocolHandlerPermissionRequest::RequestFinished().
     return std::make_unique<
         custom_handlers::RegisterProtocolHandlerPermissionRequest>(

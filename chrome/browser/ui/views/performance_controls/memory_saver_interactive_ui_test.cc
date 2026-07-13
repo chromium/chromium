@@ -255,7 +255,7 @@ IN_PROC_BROWSER_TEST_P(MemorySaverDiscardPolicyInteractiveTest,
   ASSERT_TRUE(https_server.Start());
 
   // Grant notification permission by default (only works for secure origins).
-  HostContentSettingsMapFactory::GetForProfile(browser()->profile())
+  HostContentSettingsMapFactory::GetForProfile(browser()->GetProfile())
       ->SetDefaultContentSetting(ContentSettingsType::NOTIFICATIONS,
                                  ContentSetting::CONTENT_SETTING_ALLOW);
   RunTestSequence(InstrumentTab(kFirstTabContents, 0),

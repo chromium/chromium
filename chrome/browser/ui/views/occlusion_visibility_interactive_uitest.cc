@@ -68,7 +68,7 @@ IN_PROC_BROWSER_TEST_F(OcclusionVisibilityInteractiveUITest,
   browser()->GetWindow()->Show();
   ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
 
-  Browser* browser2 = CreateBrowser(browser()->profile());
+  Browser* browser2 = CreateBrowser(browser()->GetProfile());
 
   {
     VisibilityWaiter waiter(web_contents, content::Visibility::OCCLUDED);

@@ -181,7 +181,7 @@ void CloseWarningIgnore(views::Widget::ClosedReason reason) {
 
 // Sets the absolute Site Engagement |score| for the testing origin.
 void SetEngagementScore(Browser* browser, const GURL& url, double score) {
-  site_engagement::SiteEngagementService::Get(browser->profile())
+  site_engagement::SiteEngagementService::Get(browser->GetProfile())
       ->ResetBaseScoreForURL(url, score);
 }
 
@@ -272,7 +272,7 @@ class SafetyTipPageInfoBubbleViewBrowserTest : public InProcessBrowserTest {
   void TearDownOnMainThread() override {
     InProcessBrowserTest::TearDownOnMainThread();
     LookalikeTestHelper::TearDownLookalikeTestParams();
-    LookalikeUrlServiceFactory::GetForProfile(browser()->profile())
+    LookalikeUrlServiceFactory::GetForProfile(browser()->GetProfile())
         ->ResetWarningDismissedETLDPlusOnesForTesting();
   }
 
@@ -426,7 +426,7 @@ IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
 IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
                        NoShowOnLowEngagementIncognito) {
   Browser* incognito_browser = Browser::Create(Browser::CreateParams(
-      browser()->profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true),
+      browser()->GetProfile()->GetPrimaryOTRProfile(/*create_if_needed=*/true),
       true));
   auto kNavigatedUrl = GetURL("site1.com");
   SetEngagementScore(incognito_browser, kNavigatedUrl, kLowEngagement);
@@ -456,7 +456,7 @@ IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
 IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
                        NoShowOnHighEngagementIncognito) {
   Browser* incognito_browser = Browser::Create(Browser::CreateParams(
-      browser()->profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true),
+      browser()->GetProfile()->GetPrimaryOTRProfile(/*create_if_needed=*/true),
       true));
   const GURL kNavigatedUrl = GetURL("accounts-google.com");
   SetEngagementScore(incognito_browser, kNavigatedUrl, kHighEngagement);
@@ -507,7 +507,7 @@ IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
   auto kNavigatedUrl = GetURL("accounts-google.com");
   SetEngagementScore(browser(), kNavigatedUrl, kLowEngagement);
   Browser* incognito_browser = Browser::Create(Browser::CreateParams(
-      browser()->profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true),
+      browser()->GetProfile()->GetPrimaryOTRProfile(/*create_if_needed=*/true),
       true));
   NavigateToURL(incognito_browser, kNavigatedUrl,
                 WindowOpenDisposition::CURRENT_TAB);
@@ -559,7 +559,7 @@ IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
       "g0ogle.com"};
 
   lookalikes::SetEnterpriseAllowlistForTesting(
-      browser()->profile()->GetPrefs(),
+      browser()->GetProfile()->GetPrefs(),
       {"accounts1-google.com", "bla.accounts2-google.com", "g0ogle.com"});
 
   for (auto* const url : kUrls) {

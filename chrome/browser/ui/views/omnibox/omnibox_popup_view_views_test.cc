@@ -51,7 +51,7 @@ views::Widget* OmniboxPopupViewViewsTest::CreatePopupForTestQuery() {
         edit_model()->SetUserText(u"foo");
         AutocompleteInput input(
             u"foo", metrics::OmniboxEventProto::BLANK,
-            ChromeAutocompleteSchemeClassifier(browser()->profile()));
+            ChromeAutocompleteSchemeClassifier(browser()->GetProfile()));
         input.set_omit_asynchronous_matches(true);
         controller()->StartAutocomplete(input);
 
@@ -77,7 +77,7 @@ void OmniboxPopupViewViewsTest::UseDefaultTheme() {
   ui::NativeTheme::GetInstanceForNativeUi()->NotifyOnNativeThemeUpdated();
 
   ThemeService* theme_service =
-      ThemeServiceFactory::GetForProfile(browser()->profile());
+      ThemeServiceFactory::GetForProfile(browser()->GetProfile());
   if (!theme_service->UsingDefaultTheme()) {
     ThemeChangeWaiter wait(theme_service);
     theme_service->UseDefaultTheme();

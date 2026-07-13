@@ -312,7 +312,7 @@ class PageInfoBubbleViewDialogBrowserTest : public DialogBrowserTest {
     if (name == kNotificationsEmbargoed) {
       permissions::PermissionDecisionAutoBlocker* autoblocker =
           permissions::PermissionsClient::Get()
-              ->GetPermissionDecisionAutoBlocker(browser()->profile());
+              ->GetPermissionDecisionAutoBlocker(browser()->GetProfile());
       // Place under embargo for multiple dismissals.
       autoblocker->RecordDismissAndEmbargo(
           url, ContentSettingsType::NOTIFICATIONS,
@@ -373,7 +373,7 @@ class PageInfoBubbleViewDialogBrowserTest : public DialogBrowserTest {
         name == kEnterprisePasswordReuse || name == kSavedPasswordReuse) {
       safe_browsing::ChromePasswordProtectionService* service =
           safe_browsing::ChromePasswordProtectionService::
-              GetPasswordProtectionService(browser()->profile());
+              GetPasswordProtectionService(browser()->GetProfile());
       service->set_reused_password_account_type_for_last_shown_warning(
           reused_password_account_type);
       identity.safe_browsing_details = service->GetWarningDetailText(
@@ -584,7 +584,7 @@ class PageInfoBubbleViewAboutThisSiteDialogBrowserTest
 
     auto* optimization_guide_decider =
         OptimizationGuideKeyedServiceFactory::GetForProfile(
-            browser()->profile());
+            browser()->GetProfile());
     optimization_guide_decider->AddHintForTesting(
         GetUrl(kAboutThisSiteUrl), optimization_guide::proto::ABOUT_THIS_SITE,
         GetAboutThisSiteMetadata());
@@ -859,7 +859,7 @@ class PageInfoBubbleViewIsolatedWebAppBrowserTest : public DialogBrowserTest {
             web_app::ManifestBuilder().SetName("Test App"))
             .BuildBundle();
     web_app::IsolatedWebAppUrlInfo url_info =
-        app->InstallChecked(browser()->profile());
+        app->InstallChecked(browser()->GetProfile());
 
     start_url_ = url_info.origin().GetURL();
     app_id_ = url_info.app_id();
@@ -872,7 +872,7 @@ class PageInfoBubbleViewIsolatedWebAppBrowserTest : public DialogBrowserTest {
     set_should_verify_dialog_bounds(false);
 
     Browser* iwa_browser =
-        web_app::LaunchWebAppBrowserAndWait(browser()->profile(), app_id_);
+        web_app::LaunchWebAppBrowserAndWait(browser()->GetProfile(), app_id_);
 
     ASSERT_TRUE(iwa_browser);
     OpenPageInfoBubble(iwa_browser);
@@ -960,7 +960,7 @@ class PageInfoBubbleViewWebAppBrowserTest
   }
 
   void TearDownOnMainThread() override {
-    web_app::test::UninstallAllWebApps(browser()->profile());
+    web_app::test::UninstallAllWebApps(browser()->GetProfile());
     override_registration_.reset();
 
     PageInfoBubbleViewDialogBrowserTest::TearDownOnMainThread();
@@ -980,7 +980,7 @@ class PageInfoBubbleViewWebAppBrowserTest
       AppShimRegistry::Get()->SaveNotificationPermissionStatusForApp(
           app_id_, mac_notifications::mojom::PermissionStatus::kDenied);
 
-      HostContentSettingsMapFactory::GetForProfile(browser()->profile())
+      HostContentSettingsMapFactory::GetForProfile(browser()->GetProfile())
           ->SetContentSettingDefaultScope(
               start_url_, start_url_, ContentSettingsType::NOTIFICATIONS,
               ContentSetting::CONTENT_SETTING_ALLOW);
@@ -993,8 +993,8 @@ class PageInfoBubbleViewWebAppBrowserTest
         ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), start_url_));
         break;
       case WebAppWindowMode::kAppWindow:
-        app_browser =
-            web_app::LaunchWebAppBrowserAndWait(browser()->profile(), app_id_);
+        app_browser = web_app::LaunchWebAppBrowserAndWait(
+            browser()->GetProfile(), app_id_);
         ASSERT_TRUE(app_browser);
         break;
     }
@@ -1044,7 +1044,7 @@ class PageInfoBubbleViewMerchantTrustDialogBrowserTest
 
     auto* optimization_guide_decider =
         OptimizationGuideKeyedServiceFactory::GetForProfile(
-            browser()->profile());
+            browser()->GetProfile());
     optimization_guide_decider->AddHintForTesting(
         GetUrl(kAboutThisSiteUrl), optimization_guide::proto::ABOUT_THIS_SITE,
         GetAboutThisSiteMetadata());
