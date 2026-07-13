@@ -20,6 +20,24 @@ static_library("sync_tab_context") {
 
   deps = [
     "//components/sync/model",
+    "//components/sync/model/crypto",
     "//components/sync/protocol",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "tab_context_container_sync_bridge_unittest.cc" ]
+
+  deps = [
+    ":sync_tab_context",
+    "//base",
+    "//base/test:test_support",
+    "//components/sync:test_support",
+    "//components/sync/model",
+    "//components/sync/protocol",
+    "//testing/gmock",
+    "//testing/gtest",
   ]
 }

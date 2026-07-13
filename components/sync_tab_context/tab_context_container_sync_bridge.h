@@ -11,12 +11,15 @@
 
 #include "base/sequence_checker.h"
 #include "base/uuid.h"
+#include "components/sync/model/crypto/agile_symmetric_key_set.h"
 #include "components/sync/model/data_type_local_change_processor.h"
 #include "components/sync/model/data_type_sync_bridge.h"
 #include "components/sync/protocol/encrypted_tab_context_container_specifics.pb.h"
+#include "components/sync_tab_context/container_id.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 namespace syncer {
+class AgileSymmetricKeySet;
 class DataBatch;
 class MetadataChangeList;
 }  // namespace syncer
@@ -31,6 +34,19 @@ class TabContextContainerSyncBridge : public syncer::DataTypeSyncBridge {
   TabContextContainerSyncBridge& operator=(
       const TabContextContainerSyncBridge&) = delete;
   ~TabContextContainerSyncBridge() override;
+
+  // Creates a new container using a newly-generated random encryption key. The
+  // container's ID is returned upon success or nullopt in case of failure.
+  // Failure may occur if the user is signed out from the browser, the user
+  // didn't enable tab sync or in other edge cases such as Sync not having
+  // downloaded the initial data from the server (which happens shortly after
+  // sign-in).
+  std::optional<ContainerId> CreateContainer();
+
+  // Returns the encryption key for a container or null if no container exists
+  // with ID `container_id`.
+  const syncer::AgileSymmetricKeySet* GetEncryptionKeyForContainer(
+      const ContainerId& container_id) const;
 
   // syncer::DataTypeSyncBridge implementation.
   std::unique_ptr<syncer::MetadataChangeList> CreateMetadataChangeList()
@@ -55,9 +71,9 @@ class TabContextContainerSyncBridge : public syncer::DataTypeSyncBridge {
  private:
   SEQUENCE_CHECKER(sequence_checker_);
 
-  absl::flat_hash_map<base::Uuid,
-                      sync_pb::EncryptedTabContextContainerSpecifics,
-                      base::UuidHash>
+  absl::flat_hash_map<ContainerId,
+                      std::unique_ptr<syncer::AgileSymmetricKeySet>,
+                      ContainerIdHash>
       entries_;
 };
 

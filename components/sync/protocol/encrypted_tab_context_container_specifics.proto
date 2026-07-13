@@ -11,8 +11,10 @@ option optimize_for = LITE_RUNTIME;
 
 package sync_pb;
 
+import "components/sync/protocol/agile_encryption_keys.proto";
+
 // Specifics for ENCRYPTED_TAB_CONTEXT_CONTAINER.
 message EncryptedTabContextContainerSpecifics {
-  // Currently empty.
-  // TODO(crbug.com/527991726): Add fields.
+  optional string uuid = 1;
+  optional AgileSymmetricKeySet encryption_key = 2;
 }

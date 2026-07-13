@@ -741,7 +741,8 @@ VISIT_PROTO_FIELDS(const sync_pb::EncryptedData& proto) {
 
 VISIT_PROTO_FIELDS(
     const sync_pb::EncryptedTabContextContainerSpecifics& proto) {
-  // Empty.
+  VISIT(uuid);
+  VISIT(encryption_key);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::EntityMetadata& proto) {

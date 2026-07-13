@@ -20,6 +20,7 @@ class TabContextSyncService;
 
 class TabContextSyncServiceFactory : public ProfileKeyedServiceFactory {
  public:
+  static TestingFactory GetDefaultFactory();
   static sync_tab_context::TabContextSyncService* GetForProfile(
       Profile* profile);
   static TabContextSyncServiceFactory* GetInstance();
@@ -37,6 +38,7 @@ class TabContextSyncServiceFactory : public ProfileKeyedServiceFactory {
   // BrowserContextKeyedServiceFactory:
   std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       content::BrowserContext* context) const override;
+  bool ServiceIsNULLWhileTesting() const override;
 };
 
 #endif  // CHROME_BROWSER_SYNC_TAB_CONTEXT_SYNC_SERVICE_FACTORY_H_

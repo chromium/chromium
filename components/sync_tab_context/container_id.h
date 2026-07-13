@@ -12,6 +12,12 @@ namespace sync_tab_context {
 
 using ContainerId = base::StrongAlias<class ContainerIdTag, base::Uuid>;
 
+struct ContainerIdHash {
+  size_t operator()(const ContainerId& container_id) const {
+    return base::UuidHash()(container_id.value());
+  }
+};
+
 }  // namespace sync_tab_context
 
 #endif  // COMPONENTS_SYNC_TAB_CONTEXT_CONTAINER_ID_H_

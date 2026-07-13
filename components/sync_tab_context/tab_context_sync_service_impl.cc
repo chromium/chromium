@@ -21,8 +21,7 @@ TabContextSyncServiceImpl::TabContextSyncServiceImpl(
 TabContextSyncServiceImpl::~TabContextSyncServiceImpl() = default;
 
 std::optional<ContainerId> TabContextSyncServiceImpl::CreateContainer() {
-  NOTIMPLEMENTED();
-  return std::nullopt;
+  return container_bridge_->CreateContainer();
 }
 
 bool TabContextSyncServiceImpl::UploadPageContext(
