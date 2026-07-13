@@ -451,10 +451,24 @@ ChromeSyncControllerBuilder::Build(syncer::SyncService* sync_service) {
     }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-#if !BUILDFLAG(IS_ANDROID)
     if (auto tracker = cross_device_theme_tracker_.value()) {
       if (base::FeatureList::IsEnabled(
               syncer::kNewTabPageCustomizationThemeSync)) {
+#if BUILDFLAG(IS_ANDROID)
+        // On Android, track THEMES (Desktop).
+        syncer::DataTypeControllerDelegate* desktop_delegate =
+            tracker->GetSyncDelegateForType(syncer::THEMES).get();
+        if (desktop_delegate) {
+          controllers.push_back(std::make_unique<syncer::DataTypeController>(
+              syncer::THEMES,
+              /*delegate_for_full_sync_mode=*/
+              std::make_unique<syncer::ForwardingDataTypeControllerDelegate>(
+                  desktop_delegate),
+              /*delegate_for_transport_mode=*/
+              std::make_unique<syncer::ForwardingDataTypeControllerDelegate>(
+                  desktop_delegate)));
+        }
+#else
         // On Desktop, track THEMES_ANDROID.
         syncer::DataTypeControllerDelegate* android_delegate =
             tracker->GetSyncDelegateForType(syncer::THEMES_ANDROID).get();
@@ -468,6 +482,7 @@ ChromeSyncControllerBuilder::Build(syncer::SyncService* sync_service) {
               std::make_unique<syncer::ForwardingDataTypeControllerDelegate>(
                   android_delegate)));
         }
+#endif  // BUILDFLAG(IS_ANDROID)
       }
 
       if (base::FeatureList::IsEnabled(syncer::kSyncThemesIos)) {
@@ -485,7 +500,6 @@ ChromeSyncControllerBuilder::Build(syncer::SyncService* sync_service) {
         }
       }
     }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
     return controllers;
 }

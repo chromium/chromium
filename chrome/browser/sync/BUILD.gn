@@ -17,6 +17,8 @@ source_set("sync") {
     "chrome_sync_client.h",
     "chrome_sync_controller_builder.cc",
     "chrome_sync_controller_builder.h",
+    "cross_device_theme_tracker_factory.cc",
+    "cross_device_theme_tracker_factory.h",
     "data_type_store_service_factory.cc",
     "data_type_store_service_factory.h",
     "device_info_sync_client_impl.cc",
@@ -216,8 +218,6 @@ source_set("sync") {
     ]
   } else {
     sources += [
-      "cross_device_theme_tracker_factory.cc",
-      "cross_device_theme_tracker_factory.h",
       "sessions/browser_list_router_helper.cc",
       "sessions/browser_list_router_helper.h",
     ]

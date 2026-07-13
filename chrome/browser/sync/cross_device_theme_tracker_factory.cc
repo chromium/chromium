@@ -101,10 +101,17 @@ CrossDeviceThemeTrackerFactory::BuildServiceInstanceForBrowserContext(
       std::make_unique<themes::CrossDeviceThemeTracker<LocalThemeSpecifics>>(
           device_info_tracker);
 
+#if BUILDFLAG(IS_ANDROID)
+  // Construct Desktop bridge.
+  RegisterBridgeHelper<sync_pb::ThemeSpecifics, LocalThemeSpecifics>(
+      syncer::THEMES, base::BindRepeating(&themes::TranslateDesktop),
+      tracker.get(), store_service, channel);
+#else
   // Construct Android bridge.
   RegisterBridgeHelper<sync_pb::ThemeAndroidSpecifics, LocalThemeSpecifics>(
       syncer::THEMES_ANDROID, base::BindRepeating(&themes::TranslateAndroid),
       tracker.get(), store_service, channel);
+#endif
 
   // Construct iOS bridge.
   RegisterBridgeHelper<sync_pb::ThemeIosSpecifics, LocalThemeSpecifics>(

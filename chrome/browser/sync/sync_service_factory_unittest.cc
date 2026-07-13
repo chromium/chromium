@@ -141,9 +141,14 @@ class SyncServiceFactoryTest : public testing::Test {
     datatypes.Put(syncer::WEB_APPS);
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
+    if (base::FeatureList::IsEnabled(
+            syncer::kNewTabPageCustomizationThemeSync)) {
+      datatypes.Put(syncer::THEMES);
+    }
+#else
     datatypes.Put(syncer::THEMES);
-#endif  // !BUILDFLAG(IS_ANDROID)
+#endif
 
 #if BUILDFLAG(IS_ANDROID)
     if (base::FeatureList::IsEnabled(syncer::kSyncSearchEnginesAndroidLFF)) {
@@ -261,11 +266,12 @@ class SyncServiceFactoryTest : public testing::Test {
       datatypes.Put(syncer::THEMES_IOS);
     }
 
-
+#if !BUILDFLAG(IS_ANDROID)
     if (base::FeatureList::IsEnabled(
             syncer::kNewTabPageCustomizationThemeSync)) {
       datatypes.Put(syncer::THEMES_ANDROID);
     }
+#endif
     return datatypes;
   }
 
@@ -335,11 +341,12 @@ TEST_F(SyncServiceFactoryTestWithCrossDeviceThemeFeatures,
       SyncServiceFactory::GetAsSyncServiceImplForProfileForTesting(profile());
   syncer::DataTypeSet types = sync_service->GetRegisteredDataTypesForTest();
 
-#if !BUILDFLAG(IS_ANDROID)
   EXPECT_TRUE(types.Has(syncer::THEMES_IOS));
+#if !BUILDFLAG(IS_ANDROID)
   EXPECT_TRUE(types.Has(syncer::THEMES_ANDROID));
+  EXPECT_TRUE(types.Has(syncer::THEMES));
 #else
-  EXPECT_FALSE(types.Has(syncer::THEMES_IOS));
   EXPECT_FALSE(types.Has(syncer::THEMES_ANDROID));
+  EXPECT_TRUE(types.Has(syncer::THEMES));
 #endif
 }

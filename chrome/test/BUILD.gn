@@ -6505,6 +6505,7 @@ test("unit_tests") {
       "//chrome/browser/share:test_support",
       "//chrome/browser/sharing/optimization_guide:unit_tests",
       "//chrome/browser/tab:unit_tests",
+      "//chrome/browser/themes/cross_device:unit_tests",
       "//chrome/browser/thumbnail:unit_tests",
       "//chrome/browser/touch_to_fill/autofill/android:public",
       "//chrome/browser/touch_to_fill/autofill/android:unit_tests",

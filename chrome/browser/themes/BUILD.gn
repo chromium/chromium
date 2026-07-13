@@ -125,7 +125,6 @@ if (!is_android) {
 
     sources = [
       "browser_theme_pack_unittest.cc",
-      "cross_device/cross_device_theme_tracker_unittest.cc",
       "theme_local_data_batch_uploader_unittest.cc",
       "theme_properties_unittest.cc",
       "theme_service_unittest.cc",
@@ -139,6 +138,7 @@ if (!is_android) {
       "//base/test:test_support",
       "//chrome/browser/extensions",
       "//chrome/browser/prefs",
+      "//chrome/browser/themes/cross_device:unit_tests",
       "//chrome/browser/ui/color:color_headers",
       "//chrome/browser/ui/color:mixers",
       "//chrome/browser/ui/frame",

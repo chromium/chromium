@@ -1,0 +1,27 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "cross_device_theme_tracker_test_util.h" ]
+  deps = [
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/sync",
+    "//components/keyed_service/core",
+    "//components/sync:test_support",
+    "//components/sync_device_info:test_support",
+    "//components/themes/cross_device",
+    "//skia",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+
+  if (is_android) {
+    sources += [ "cross_device_theme_tracker_android_unittest.cc" ]
+    deps += [ "//chrome/browser/profiles:profile" ]
+  } else {
+    sources += [ "cross_device_theme_tracker_unittest.cc" ]
+  }
+}
