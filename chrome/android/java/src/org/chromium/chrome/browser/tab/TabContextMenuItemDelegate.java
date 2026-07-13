@@ -563,6 +563,7 @@ public class TabContextMenuItemDelegate implements ContextMenuItemDelegate {
         }
 
         Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url.getSpec()));
+        intent.addCategory(Intent.CATEGORY_BROWSABLE);
         CustomTabsIntent.setAlwaysUseBrowserUI(intent);
         IntentUtils.safeStartActivity(mTab.getContext(), intent);
     }

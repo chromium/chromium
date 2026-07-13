@@ -4,12 +4,26 @@
 
 package org.chromium.chrome.browser.tab;
 
+import static androidx.test.espresso.intent.Intents.intended;
+import static androidx.test.espresso.intent.Intents.intending;
+import static androidx.test.espresso.intent.matcher.IntentMatchers.anyIntent;
+import static androidx.test.espresso.intent.matcher.IntentMatchers.hasAction;
+import static androidx.test.espresso.intent.matcher.IntentMatchers.hasCategories;
+import static androidx.test.espresso.intent.matcher.IntentMatchers.hasData;
+import static androidx.test.espresso.intent.matcher.UriMatchers.hasHost;
+
+import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.hasItem;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import android.app.Activity;
+import android.app.Instrumentation.ActivityResult;
+import android.content.Intent;
 import android.os.Build;
 
+import androidx.test.espresso.intent.Intents;
 import androidx.test.filters.SmallTest;
 import androidx.test.runner.lifecycle.Stage;
 
@@ -194,6 +208,31 @@ public class TabContextMenuItemDelegateTest {
                                         /* isIncognito= */ false,
                                         /* preferNew= */ true));
         mExtraTabbedActivities.add(activity);
+    }
+
+    @Test
+    @SmallTest
+    public void testOpenInDefaultBrowser_AddsCategoryBrowsable() {
+        createContextMenuForCurrentTab();
+
+        Intents.init();
+        try {
+            intending(anyIntent()).respondWith(new ActivityResult(Activity.RESULT_OK, null));
+
+            ThreadUtils.runOnUiThreadBlocking(
+                    () -> {
+                        mContextMenuDelegate.onOpenInDefaultBrowser(
+                                new GURL("https://example.com"));
+                    });
+
+            intended(
+                    allOf(
+                            hasAction(Intent.ACTION_VIEW),
+                            hasCategories(hasItem(Intent.CATEGORY_BROWSABLE)),
+                            hasData(hasHost("example.com"))));
+        } finally {
+            Intents.release();
+        }
     }
 
     private void createContextMenuForCurrentTab() {
