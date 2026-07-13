@@ -5331,6 +5331,12 @@ inline constexpr char kAndroidContextMenuNewActionsName[] =
 inline constexpr char kAndroidContextMenuNewActionsDescription[] =
     "Adds new context menu actions.";
 
+inline constexpr char kAndroidDesktopBookmarkPopupName[] =
+    "Android Desktop Bookmark Popup";
+inline constexpr char kAndroidDesktopBookmarkPopupDescription[] =
+    "Enables the desktop-styled anchor popup when adding or editing a bookmark "
+    "on Android Desktop devices.";
+
 inline constexpr char kAndroidDesktopUAPlatformName[] =
     "Android platform client hint for Desktop Android";
 inline constexpr char kAndroidDesktopUAPlatformDescription[] =

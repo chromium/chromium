@@ -13435,6 +13435,7 @@ from previous Chrome versions.
   <int value="-374423260" label="OmniboxTabSwitchSuggestions:disabled"/>
   <int value="-374005145" label="UsePrimaryAndTonalButtonsForPromos:disabled"/>
   <int value="-373365335" label="JourneysOmniboxAction:disabled"/>
+  <int value="-373319805" label="AndroidDesktopBookmarkPopup:disabled"/>
   <int value="-373233195" label="SyncUSSAutofillWalletData:enabled"/>
   <int value="-372171039" label="BlinkGenPropertyTrees:disabled"/>
   <int value="-371771269" label="ShortcutsNotApps:enabled"/>
@@ -16586,6 +16587,7 @@ from previous Chrome versions.
   <int value="638865852" label="UsePreferredIntervalForVideo:disabled"/>
   <int value="638977069" label="ModalMemorySaver:enabled"/>
   <int value="639765450" label="AccessCodeCastTabSwitchingUI:enabled"/>
+  <int value="640005692" label="AndroidDesktopBookmarkPopup:enabled"/>
   <int value="640174751" label="AndroidMultipleDisplay:enabled"/>
   <int value="640256251" label="RemotePageMetadata:enabled"/>
   <int value="642037198" label="SoleIntegration:disabled"/>
