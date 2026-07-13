@@ -335,6 +335,16 @@ std::vector<WaylandWindow*> WaylandWindowManager::GetAllWindows() const {
   return result;
 }
 
+std::vector<base::WeakPtr<WaylandWindow>>
+WaylandWindowManager::GetAllWindowsAsWeakPtr() const {
+  std::vector<base::WeakPtr<WaylandWindow>> result;
+  result.reserve(window_map_.size());
+  for (auto& entry : window_map_) {
+    result.push_back(entry.second->AsWeakPtr());
+  }
+  return result;
+}
+
 bool WaylandWindowManager::IsWindowValid(const WaylandWindow* window) const {
   for (auto& pair : window_map_) {
     if (pair.second == window)
@@ -348,8 +358,10 @@ void WaylandWindowManager::SetFontScale(float new_font_scale) {
     return;
   }
   font_scale_ = new_font_scale;
-  for (WaylandWindow* window : GetAllWindows()) {
-    window->OnFontScaleFactorChanged();
+  for (auto window : GetAllWindowsAsWeakPtr()) {
+    if (window) {
+      window->OnFontScaleFactorChanged();
+    }
   }
 }
 

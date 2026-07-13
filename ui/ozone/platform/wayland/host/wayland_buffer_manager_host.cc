@@ -81,8 +81,14 @@ void WaylandBufferManagerHost::OnChannelDestroyed() {
 
   buffer_backings_.clear();
   dma_buffers_.clear();
-  for (auto* window : connection_->window_manager()->GetAllWindows())
-    window->OnChannelDestroyed();
+  for (auto window : connection_->window_manager()->GetAllWindowsAsWeakPtr()) {
+    // OnChannelDestroyed() may RequestState() from window delegate and close
+    // its child windows. This can happen if `should_ack_swap_without_commit_`
+    // in the frame manager.
+    if (window) {
+      window->OnChannelDestroyed();
+    }
+  }
 
   buffer_manager_gpu_associated_.reset();
   receiver_.reset();

@@ -10,6 +10,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "ui/gfx/geometry/size_f.h"
 #include "ui/gfx/native_ui_types.h"
@@ -114,6 +115,10 @@ class WaylandWindowManager {
 
   // Returns all stored windows.
   std::vector<WaylandWindow*> GetAllWindows() const;
+
+  // Same as above, but for callers that may destroy windows while iterating on
+  // them.
+  std::vector<base::WeakPtr<WaylandWindow>> GetAllWindowsAsWeakPtr() const;
 
   // Returns true if the |window| still exists.
   bool IsWindowValid(const WaylandWindow* window) const;
