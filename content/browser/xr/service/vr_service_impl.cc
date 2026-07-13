@@ -274,6 +274,10 @@ void VRServiceImpl::ResolvePendingRequests() {
 
 void VRServiceImpl::RuntimesChanged() {
   DVLOG(2) << __func__;
+  if (!IsRenderFrameHostVisible()) {
+    pending_device_changed_ = true;
+    return;
+  }
   if (service_client_) {
     service_client_->OnDeviceChanged();
   }
@@ -301,6 +305,18 @@ void VRServiceImpl::RenderFrameDeleted(content::RenderFrameHost* host) {
   // is deleted.
   DCHECK(receiver_.get());
   receiver_->Close();
+}
+
+void VRServiceImpl::OnVisibilityChanged(content::Visibility visibility) {
+  // Re-check frame visibility, as our associated RenderFrameHost may remain
+  // hidden even when the top-level page becomes visible.
+  if (!pending_device_changed_ || !IsRenderFrameHostVisible()) {
+    return;
+  }
+  pending_device_changed_ = false;
+  if (service_client_) {
+    service_client_->OnDeviceChanged();
+  }
 }
 
 void VRServiceImpl::OnWebContentsFocusChanged(content::RenderWidgetHost* host,
@@ -550,8 +566,7 @@ void VRServiceImpl::RequestSession(
     return;
   }
 
-  if (render_frame_host_->GetVisibilityState() !=
-      content::PageVisibilityState::kVisible) {
+  if (!IsRenderFrameHostVisible()) {
     // Page visibility is verified blink-side, so this should never fail unless
     // the requesting client is misbehaving or compromised. Treat non-visible
     // page as unknown failure:
@@ -995,6 +1010,11 @@ void VRServiceImpl::OnVisibilityStateChanged(
 
 content::WebContents* VRServiceImpl::GetWebContents() {
   return content::WebContents::FromRenderFrameHost(render_frame_host_);
+}
+
+bool VRServiceImpl::IsRenderFrameHostVisible() const {
+  return render_frame_host_ && render_frame_host_->GetVisibilityState() ==
+                                   content::PageVisibilityState::kVisible;
 }
 
 void VRServiceImpl::Teardown() {

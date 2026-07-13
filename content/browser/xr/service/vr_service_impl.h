@@ -14,6 +14,7 @@
 #include "content/browser/xr/metrics/session_metrics_helper.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/permission_result.h"
+#include "content/public/browser/visibility.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/xr_install_helper.h"
 #include "device/vr/public/mojom/isolated_xr_service.mojom-forward.h"
@@ -126,6 +127,7 @@ class CONTENT_EXPORT VRServiceImpl : public device::mojom::VRService,
   void OnWebContentsFocused(content::RenderWidgetHost* host) override;
   void OnWebContentsLostFocus(content::RenderWidgetHost* host) override;
   void RenderFrameDeleted(content::RenderFrameHost* host) override;
+  void OnVisibilityChanged(content::Visibility visibility) override;
 
   void OnWebContentsFocusChanged(content::RenderWidgetHost* host, bool focused);
 
@@ -136,6 +138,8 @@ class CONTENT_EXPORT VRServiceImpl : public device::mojom::VRService,
   // If the instance is not present on WebContents, it will be created with the
   // assumption that we are not already in VR.
   SessionMetricsHelper* GetSessionMetricsHelper();
+
+  bool IsRenderFrameHostVisible() const;
 
   bool InternalSupportsSession(device::mojom::XRSessionOptions* options);
 
@@ -206,6 +210,7 @@ class CONTENT_EXPORT VRServiceImpl : public device::mojom::VRService,
   bool in_focused_frame_ = false;
   bool frames_throttled_ = false;
   bool has_immersive_session_ = false;
+  bool pending_device_changed_ = false;
 
   std::vector<XrCompatibleCallback> xr_compatible_callbacks_;
 
