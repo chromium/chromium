@@ -25,7 +25,6 @@ namespace init {
 
 std::vector<GLImplementationParts> GetAllowedGLImplementations() {
   std::vector<GLImplementationParts> impls;
-  impls.emplace_back(gl::ANGLEImplementation::kOpenGL);
   impls.emplace_back(gl::ANGLEImplementation::kMetal);
   impls.emplace_back(gl::ANGLEImplementation::kSwiftShader);
   return impls;
