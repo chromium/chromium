@@ -9519,3 +9519,6 @@ crbug.com/532703006 virtual/composite-clip-path-animation/external/wpt/css/css-m
 
 # WPT Roll 2026-07-08
 crbug.com/532874152 external/wpt/html/semantics/document-metadata/the-link-element/link-error-handler-triggers-abort-crash.html [ Crash ]
+
+# Gardener 2026-07-13
+crbug.com/534101060 [ Linux ] wpt_internal/webmcp/custom-element-invalid-schema.https.html [ Failure Pass ]
