@@ -740,9 +740,13 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
             boolean isSubmenuParent =
                     item.containsKey(ListMenuSubmenuItemProperties.SUBMENU_PROVIDER);
             View.OnClickListener clickListener = delegate.getClickListener(item);
-            if (!mCallback.onDropdownItemClicked(menuItem, !isSubmenuParent)
-                    && clickListener != null) {
+            if (clickListener != null) {
                 clickListener.onClick(null);
+                if (!isSubmenuParent) {
+                    destroyDropdownMenu();
+                }
+            } else {
+                mCallback.onDropdownItemClicked(menuItem, !isSubmenuParent);
             }
         };
     }
@@ -1129,7 +1133,7 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
     @Override
     public boolean onDropdownItemClicked(SelectionMenuItem item, boolean closeMenu) {
         boolean handled = handleMenuItemClick(item);
-        if (item.id != R.id.select_action_menu_select_all) {
+        if (handled && item.id != R.id.select_action_menu_select_all) {
             // We will clear the selection for all actions other
             // than select all.
             clearSelection();
@@ -1854,6 +1858,7 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
         }
     }
 
+    @Override
     @CalledByNative
     public void hidePopupsAndPreserveSelection() {
         destroyActionModeAndKeepSelection();

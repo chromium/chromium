@@ -93,11 +93,14 @@ public interface SelectionPopupController {
     /** Hide action mode and put into destroyed state. */
     void destroySelectActionMode();
 
+    /** Hides action mode and dropdown menus while preserving the current selection. */
+    void hidePopupsAndPreserveSelection();
+
     boolean isSelectActionBarShowing();
 
     /**
-     * @return An {@link MonotonicObservableSupplier <Boolean>} which holds true when a selection action bar
-     *     is showing; otherwise, it holds false.
+     * @return An {@link MonotonicObservableSupplier <Boolean>} which holds true when a selection
+     *     action bar is showing; otherwise, it holds false.
      */
     default NonNullObservableSupplier<Boolean> isSelectActionBarShowingSupplier() {
         return ObservableSuppliers.alwaysFalse();

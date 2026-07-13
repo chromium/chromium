@@ -6,7 +6,6 @@ package org.chromium.content_public.browser.test.util;
 
 import android.view.textclassifier.TextClassifier;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.chromium.content_public.browser.ActionModeCallback;
@@ -90,11 +89,13 @@ public class TestSelectionPopupController implements SelectionPopupController {
     public void setPreserveSelectionOnNextLossOfFocus(boolean preserve) {}
 
     @Override
+    public void hidePopupsAndPreserveSelection() {}
+
+    @Override
     public void updateTextSelectionUI(boolean focused) {}
 
     @Override
-    public void setDropdownMenuDelegate(
-            @NonNull SelectionDropdownMenuDelegate dropdownMenuDelegate) {}
+    public void setDropdownMenuDelegate(SelectionDropdownMenuDelegate dropdownMenuDelegate) {}
 
     @Override
     public void setSelectionActionMenuDelegate(@Nullable SelectionActionMenuDelegate delegate) {}
