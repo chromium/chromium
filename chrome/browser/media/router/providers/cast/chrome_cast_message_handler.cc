@@ -20,8 +20,7 @@ cast_channel::CastMessageHandler* GetCastMessageHandler() {
   static cast_channel::CastMessageHandler* instance =
       new cast_channel::CastMessageHandler(
           cast_channel::CastSocketService::GetInstance(),
-          embedder_support::GetUserAgent(),
-          std::string(version_info::GetVersionNumber()),
+          embedder_support::GetUserAgent(), version_info::GetVersionNumber(),
           g_browser_process->GetApplicationLocale());
   return instance;
 }

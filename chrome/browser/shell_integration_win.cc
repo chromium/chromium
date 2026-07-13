@@ -185,7 +185,7 @@ std::u16string GetForSchemeUsingAssocQuery(const GURL& url,
   if (FAILED(hr)) {
     return std::u16string();
   }
-  return base::AsString16(std::wstring(out_buffer));
+  return base::AsString16(out_buffer);
 }
 
 std::u16string GetAppForSchemeUsingRegistry(const GURL& url) {

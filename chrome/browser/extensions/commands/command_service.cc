@@ -360,7 +360,7 @@ Command CommandService::FindCommandByName(const ExtensionId& extension_id,
         shortcut, ":", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
     CHECK(tokens.size() >= 2);
 
-    return Command(*command_name, std::u16string(), std::string(tokens[1]),
+    return Command(*command_name, std::u16string(), tokens[1],
                    global.value_or(false));
   }
 

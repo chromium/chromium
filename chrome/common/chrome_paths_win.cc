@@ -84,7 +84,7 @@ bool GetUserDownloadsDirectory(base::FilePath* result) {
   base::win::ScopedCoMem<wchar_t> path_buf;
   if (SUCCEEDED(
           ::SHGetKnownFolderPath(FOLDERID_Downloads, 0, nullptr, &path_buf))) {
-    *result = base::FilePath(std::wstring(path_buf));
+    *result = base::FilePath(std::wstring_view(path_buf));
     return true;
   }
   return GetUserDownloadsDirectorySafe(result);

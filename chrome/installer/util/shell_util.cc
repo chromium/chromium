@@ -206,9 +206,8 @@ bool UserSpecificRegistrySuffix::GetSuffix(std::wstring* suffix) {
 // for details.
 std::wstring GetBrowserClientKey(const std::wstring& suffix) {
   DCHECK(suffix.empty() || suffix[0] == L'.');
-  return base::StrCat({std::wstring(ShellUtil::kRegStartMenuInternet),
-                       kFilePathSeparator, install_static::GetBaseAppName(),
-                       suffix});
+  return base::StrCat({ShellUtil::kRegStartMenuInternet, kFilePathSeparator,
+                       install_static::GetBaseAppName(), suffix});
 }
 
 // Returns the Windows Default Programs capabilities key for Chrome.  For
@@ -1439,7 +1438,7 @@ bool RegisterApplicationForProtocols(const std::vector<std::wstring>& protocols,
 
   // Create URLAssociations
   const std::wstring url_associations =
-      base::StrCat({std::wstring(capabilities_path), L"\\URLAssociations"});
+      base::StrCat({capabilities_path, L"\\URLAssociations"});
 
   for (const auto& protocol : protocols) {
     entries.push_back(
@@ -1466,8 +1465,8 @@ bool DeleteFileExtensionsForProgId(const std::wstring& prog_id) {
   if (file_extensions_key.ReadValue(
           kFileExtensions, &handled_file_extensions) == ERROR_SUCCESS) {
     const std::vector<std::wstring> file_extensions =
-        base::SplitString(handled_file_extensions, std::wstring(L";"),
-                          base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+        base::SplitString(handled_file_extensions, L";", base::TRIM_WHITESPACE,
+                          base::SPLIT_WANT_NONEMPTY);
 
     // Delete file-extension-handling registry entries for each file extension.
     for (const auto& file_extension : file_extensions) {
@@ -1747,9 +1746,8 @@ std::wstring ShellUtil::FormatIconLocation(const base::FilePath& icon_path,
 
 std::optional<std::pair<base::FilePath, int>> ShellUtil::ParseIconLocation(
     const std::wstring& argument) {
-  std::vector<std::wstring> icon_parts =
-      base::SplitString(argument, std::wstring(L","), base::TRIM_WHITESPACE,
-                        base::SPLIT_WANT_NONEMPTY);
+  std::vector<std::wstring> icon_parts = base::SplitString(
+      argument, L",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
 
   if (icon_parts.size() < 2)
     return std::nullopt;
@@ -2253,7 +2251,7 @@ std::vector<std::wstring> ShellUtil::GetFileHandlerProgIdsForAppId(
   if (file_handlers_key.ReadValue(
           kFileHandlerProgIds, &file_handler_prog_ids_value) == ERROR_SUCCESS) {
     file_handler_prog_ids =
-        base::SplitString(file_handler_prog_ids_value, std::wstring(L";"),
+        base::SplitString(file_handler_prog_ids_value, L";",
                           base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
   }
   return file_handler_prog_ids;

@@ -46,7 +46,7 @@ namespace {
 
 bool AutocompleteAllowed(std::string_view autocomplete_attribute) {
   // Check autocomplete is not turned off.
-  return autocomplete_attribute != std::string("off");
+  return autocomplete_attribute != "off";
 }
 
 std::unique_ptr<std::string>& GetCountryCodeOverride() {

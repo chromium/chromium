@@ -72,8 +72,8 @@ void OnDeviceTranslationInternalsPageHandlerImpl::SendLanguagePackInfo() {
   for (const auto& it : kLanguagePackComponentConfigMap) {
     auto key = it.first;
     info_list.push_back(LanguagePackInfo::New(
-        base::StrCat({std::string(ToLanguageCode(it.second->language1)), " - ",
-                      std::string(ToLanguageCode(it.second->language2))}),
+        base::StrCat({ToLanguageCode(it.second->language1), " - ",
+                      ToLanguageCode(it.second->language2)}),
         registered_packs.contains(key)
             ? (installed_packs.contains(key) ? LanguagePackStatus::kInstalled
                                              : LanguagePackStatus::kInstalling)
