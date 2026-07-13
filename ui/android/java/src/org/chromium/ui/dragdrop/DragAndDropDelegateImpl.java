@@ -59,6 +59,7 @@ public class DragAndDropDelegateImpl implements DragAndDropDelegate, DragStateTr
      * be treated as append-only. TODO (crbug.com/1484695) Revisit hists to capture drag and drop
      * source.
      */
+    // LINT.IfChange(DragTargetType)
     @IntDef({
         DragTargetType.INVALID,
         DragTargetType.TEXT,
@@ -77,6 +78,7 @@ public class DragAndDropDelegateImpl implements DragAndDropDelegate, DragStateTr
 
         int NUM_ENTRIES = 5;
     }
+    // LINT.ThenChange(//tools/metrics/histograms/metadata/android/enums.xml:AndroidDragTargetType)
 
     private int mShadowWidth;
     private int mShadowHeight;

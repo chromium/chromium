@@ -210,12 +210,17 @@ chromium-metrics-reviews@google.com.
   <int value="16" label="NEW_DOWNLOAD_TAB_OPEN_BUTTON"/>
 </enum>
 
+<!-- LINT.IfChange(AndroidDragTargetType) -->
+
 <enum name="AndroidDragTargetType">
   <int value="0" label="Invalid"/>
   <int value="1" label="Text"/>
   <int value="2" label="Image"/>
   <int value="3" label="Link"/>
+  <int value="4" label="Browser content"/>
 </enum>
+
+<!-- LINT.ThenChange(//ui/android/java/src/org/chromium/ui/dragdrop/DragAndDropDelegateImpl.java:DragTargetType) -->
 
 <!-- LINT.IfChange(AndroidExternalBeginFrameSourceAChoreographerImplVsyncIntervalSource) -->
 
