@@ -73,7 +73,7 @@ class AccessibilityStateDelegateImpl {
     private static final String UPDATE_ACCESSIBILITY_SERVICES_RUNTIME =
             "Accessibility.Android.UpdateAccessibilityServices.Runtime";
     private static final int MAX_RUNTIME_BUCKET = 16 * 1000; // 16,000 microseconds = 16ms.
-    private static int sPollCount;
+    private int mPollCount;
 
     // The service ID and whether the `isAccessibilityTool=true` manifest flag is explicitly
     // set for a given service. Before Android S, `isAccessibilityTool` is always false.
@@ -120,60 +120,60 @@ class AccessibilityStateDelegateImpl {
 
     // A bitmask containing the union of all event types, feedback types, flags,
     // and capabilities of running accessibility services.
-    private static int sEventTypeMask;
-    private static int sFeedbackTypeMask;
-    private static int sFlagsMask;
-    private static int sCapabilitiesMask;
+    private int mEventTypeMask;
+    private int mFeedbackTypeMask;
+    private int mFlagsMask;
+    private int mCapabilitiesMask;
 
     // A bitmask containing the union of all event types, feedback types, flags, and
     // capabilities of running accessibility services, with heuristics applied. These masks are
     // kept separate from the ones above, as those should be the source of truth.
-    private static int sEventTypeMaskHeuristic;
-    private static int sFeedbackTypeMaskHeuristic;
-    private static int sFlagsMaskHeuristic;
-    private static int sCapabilitiesMaskHeuristic;
+    private int mEventTypeMaskHeuristic;
+    private int mFeedbackTypeMaskHeuristic;
+    private int mFlagsMaskHeuristic;
+    private int mCapabilitiesMaskHeuristic;
 
-    private static @Nullable State sState;
+    private @Nullable State mState;
 
-    private static boolean sInitialized;
-    private static boolean sHasRegisteredObservers;
-    private static boolean sIsInTestingMode;
-    private static @Nullable Boolean sPreInitCachedValuePerformGesturesEnabled;
+    private boolean mInitialized;
+    private boolean mHasRegisteredObservers;
+    private boolean mIsInTestingMode;
+    private @Nullable Boolean mPreInitCachedValuePerformGesturesEnabled;
 
-    // A flag indicating whether the "extra state" values `sDisplayInversionEnabled`,
-    // `sHighContrastEnabled`, `sTextCursorBlinkInterval`, and `sAnimatorDurationScale` have been
+    // A flag indicating whether the "extra state" values `mDisplayInversionEnabled`,
+    // `mHighContrastEnabled`, `mTextCursorBlinkInterval`, and `mAnimatorDurationScale` have been
     // read yet from the system settings into these variables.
-    private static boolean sExtraStateInitialized;
-    private static boolean sDisplayInversionEnabled;
-    private static boolean sHighContrastEnabled;
-    private static int sFontWeightAdjustment;
-    private static int sTextCursorBlinkInterval =
+    private boolean mExtraStateInitialized;
+    private boolean mDisplayInversionEnabled;
+    private boolean mHighContrastEnabled;
+    private int mFontWeightAdjustment;
+    private int mTextCursorBlinkInterval =
             AconfigFlaggedApiDelegate.DEFAULT_TEXT_CURSOR_BLINK_INTERVAL_MS;
-    private static float sAnimatorDurationScale;
+    private float mAnimatorDurationScale;
 
     // Observers for various System, Activity, and Settings states relevant to accessibility.
-    private static final ApplicationStatus.ActivityStateListener sActivityStateListener =
-            AccessibilityStateDelegateImpl::onActivityStateChange;
-    private static final ApplicationStatus.ApplicationStateListener sApplicationStateListener =
-            AccessibilityStateDelegateImpl::onApplicationStateChange;
-    private static @Nullable ServicesObserver sAccessibilityServicesObserver;
-    private static @Nullable ServicesObserver sAnimationDurationScaleObserver;
-    private static @Nullable ServicesObserver sDisplayInversionEnabledObserver;
-    private static @Nullable ServicesObserver sCursorBlinkRateObserver;
-    private static @Nullable ServicesObserver sTextContrastObserver;
+    private final ApplicationStatus.ActivityStateListener mActivityStateListener =
+            this::onActivityStateChange;
+    private final ApplicationStatus.ApplicationStateListener mApplicationStateListener =
+            this::onApplicationStateChange;
+    private @Nullable ServicesObserver mAccessibilityServicesObserver;
+    private @Nullable ServicesObserver mAnimationDurationScaleObserver;
+    private @Nullable ServicesObserver mDisplayInversionEnabledObserver;
+    private @Nullable ServicesObserver mCursorBlinkRateObserver;
+    private @Nullable ServicesObserver mTextContrastObserver;
 
     @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
-    private static @Nullable ContrastChangeListener sContrastChangeListener;
+    private @Nullable ContrastChangeListener mContrastChangeListener;
 
-    private static @Nullable AccessibilityManager sAccessibilityManager;
+    private @Nullable AccessibilityManager mAccessibilityManager;
 
     // The IDs and `isAccessibilityTool` manifest state of all running accessibility services.
-    private static @Nullable List<ServiceProperties> sServiceProperties;
+    private @Nullable List<ServiceProperties> mServiceProperties;
 
     // The set of listeners of AccessibilityState, implemented using
     // a WeakHashSet behind the scenes so that listeners can be garbage-collected
     // and will be automatically removed from this set.
-    private static final Set<Listener> sListeners =
+    private final Set<Listener> mListeners =
             Collections.newSetFromMap(new WeakHashMap<Listener, Boolean>());
 
     // The number of milliseconds to wait before checking the set of running accessibility services
@@ -182,15 +182,15 @@ class AccessibilityStateDelegateImpl {
     // to listener is ~7.5 seconds.
     private static final int MIN_DELAY_MILLIS = 250;
     private static final int MAX_DELAY_MILLIS = 5000;
-    private static int sNextDelayMillis = MIN_DELAY_MILLIS;
+    private int mNextDelayMillis = MIN_DELAY_MILLIS;
 
-    public static void addListener(Listener listener) {
-        sListeners.add(listener);
+    public void addListener(Listener listener) {
+        mListeners.add(listener);
     }
 
-    public static boolean isComplexUserInteractionServiceEnabled() {
-        if (!sInitialized) updateAccessibilityServices();
-        return assumeNonNull(sState).isComplexUserInteractionServiceEnabled;
+    public boolean isComplexUserInteractionServiceEnabled() {
+        if (!mInitialized) updateAccessibilityServices();
+        return assumeNonNull(mState).isComplexUserInteractionServiceEnabled;
     }
 
     /**
@@ -202,11 +202,11 @@ class AccessibilityStateDelegateImpl {
      *
      * @return true if touch exploration is enabled.
      */
-    public static boolean isTouchExplorationEnabled() {
-        if (!sInitialized) {
+    public boolean isTouchExplorationEnabled() {
+        if (!mInitialized) {
             return fetchAccessibilityManager().isTouchExplorationEnabled();
         }
-        return assumeNonNull(sState).isTouchExplorationEnabled;
+        return assumeNonNull(mState).isTouchExplorationEnabled;
     }
 
     /**
@@ -218,10 +218,10 @@ class AccessibilityStateDelegateImpl {
      *
      * @return true if perform gestures is enabled.
      */
-    public static boolean isPerformGesturesEnabled() {
-        if (!sInitialized) {
-            if (sPreInitCachedValuePerformGesturesEnabled != null) {
-                return sPreInitCachedValuePerformGesturesEnabled;
+    public boolean isPerformGesturesEnabled() {
+        if (!mInitialized) {
+            if (mPreInitCachedValuePerformGesturesEnabled != null) {
+                return mPreInitCachedValuePerformGesturesEnabled;
             }
 
             fetchAccessibilityManager();
@@ -233,16 +233,16 @@ class AccessibilityStateDelegateImpl {
                     if ((service.getCapabilities()
                                     & AccessibilityServiceInfo.CAPABILITY_CAN_PERFORM_GESTURES)
                             != 0) {
-                        sPreInitCachedValuePerformGesturesEnabled = true;
+                        mPreInitCachedValuePerformGesturesEnabled = true;
                         return true;
                     }
                 }
             }
-            sPreInitCachedValuePerformGesturesEnabled = false;
+            mPreInitCachedValuePerformGesturesEnabled = false;
             return false;
         }
 
-        return assumeNonNull(sState).isPerformGesturesEnabled;
+        return assumeNonNull(mState).isPerformGesturesEnabled;
     }
 
     /**
@@ -254,11 +254,11 @@ class AccessibilityStateDelegateImpl {
      *
      * @return true if any service is enabled (includes pseudo-accessibility services).
      */
-    public static boolean isAnyAccessibilityServiceEnabled() {
-        if (!sInitialized) {
+    public boolean isAnyAccessibilityServiceEnabled() {
+        if (!mInitialized) {
             return fetchAccessibilityManager().isEnabled();
         }
-        return assumeNonNull(sState).isAnyAccessibilityServiceEnabled;
+        return assumeNonNull(mState).isAnyAccessibilityServiceEnabled;
     }
 
     /**
@@ -267,48 +267,48 @@ class AccessibilityStateDelegateImpl {
      *
      * @return true if the accessibility manager is enabled.
      */
-    public static boolean isAccessibilityManagerEnabled() {
+    public boolean isAccessibilityManagerEnabled() {
         return fetchAccessibilityManager().isEnabled();
     }
 
-    public static boolean isAccessibilityToolPresent() {
-        if (!sInitialized) updateAccessibilityServices();
-        return assumeNonNull(sState).isAccessibilityToolPresent;
+    public boolean isAccessibilityToolPresent() {
+        if (!mInitialized) updateAccessibilityServices();
+        return assumeNonNull(mState).isAccessibilityToolPresent;
     }
 
-    public static boolean isTextShowPasswordEnabled() {
-        if (!sInitialized) updateAccessibilityServices();
-        return assumeNonNull(sState).isTextShowPasswordEnabled;
+    public boolean isTextShowPasswordEnabled() {
+        if (!mInitialized) updateAccessibilityServices();
+        return assumeNonNull(mState).isTextShowPasswordEnabled;
     }
 
-    public static boolean isOnlyAutofillRunning() {
-        if (!sInitialized) updateAccessibilityServices();
-        return assumeNonNull(sState).isOnlyAutofillRunning;
+    public boolean isOnlyAutofillRunning() {
+        if (!mInitialized) updateAccessibilityServices();
+        return assumeNonNull(mState).isOnlyAutofillRunning;
     }
 
-    public static boolean isOnlyPasswordManagersEnabled() {
-        if (!sInitialized) updateAccessibilityServices();
-        return assumeNonNull(sState).isOnlyPasswordManagersEnabled;
+    public boolean isOnlyPasswordManagersEnabled() {
+        if (!mInitialized) updateAccessibilityServices();
+        return assumeNonNull(mState).isOnlyPasswordManagersEnabled;
     }
 
-    public static boolean isKnownScreenReaderEnabled() {
-        if (!sInitialized) updateAccessibilityServices();
-        return assumeNonNull(sState).isKnownScreenReaderEnabled;
+    public boolean isKnownScreenReaderEnabled() {
+        if (!mInitialized) updateAccessibilityServices();
+        return assumeNonNull(mState).isKnownScreenReaderEnabled;
     }
 
-    public static boolean isDisplayInversionEnabled() {
-        if (!sExtraStateInitialized) updateExtraState();
-        return sDisplayInversionEnabled;
+    public boolean isDisplayInversionEnabled() {
+        if (!mExtraStateInitialized) updateExtraState();
+        return mDisplayInversionEnabled;
     }
 
-    public static boolean isHighContrastEnabled() {
-        if (!sExtraStateInitialized) updateExtraState();
-        return sHighContrastEnabled;
+    public boolean isHighContrastEnabled() {
+        if (!mExtraStateInitialized) updateExtraState();
+        return mHighContrastEnabled;
     }
 
-    public static int getNumberOfRunningServices() {
-        if (!sInitialized) updateAccessibilityServices();
-        return assumeNonNull(sServiceProperties).size();
+    public int getNumberOfRunningServices() {
+        if (!mInitialized) updateAccessibilityServices();
+        return assumeNonNull(mServiceProperties).size();
     }
 
     /**
@@ -318,8 +318,8 @@ class AccessibilityStateDelegateImpl {
      * rendering (native widgets have font weight adjusted by the framework). This is only available
      * on Android S+, on previous versions of Android this is always 0.
      */
-    public static int getFontWeightAdjustment() {
-        return sFontWeightAdjustment;
+    public int getFontWeightAdjustment() {
+        return mFontWeightAdjustment;
     }
 
     /**
@@ -336,8 +336,8 @@ class AccessibilityStateDelegateImpl {
      * @param nonA11yTimeout - the timeout if no a11y services are running for the feature.
      * @return Suggested timeout given the currently running services (in milliseconds).
      */
-    public static int getRecommendedTimeoutMillis(int minimumTimeout, int nonA11yTimeout) {
-        if (!sInitialized) updateAccessibilityServices();
+    public int getRecommendedTimeoutMillis(int minimumTimeout, int nonA11yTimeout) {
+        if (!mInitialized) updateAccessibilityServices();
 
         int recommendedTimeout =
                 fetchAccessibilityManager()
@@ -362,8 +362,8 @@ class AccessibilityStateDelegateImpl {
      * @param event AccessibilityEvent to send to the AccessibilityManager
      */
     @Deprecated
-    public static void sendAccessibilityEvent(AccessibilityEvent event) {
-        if (!sInitialized) updateAccessibilityServices();
+    public void sendAccessibilityEvent(AccessibilityEvent event) {
+        if (!mInitialized) updateAccessibilityServices();
 
         AccessibilityManager accessibilityManager = fetchAccessibilityManager();
         if (accessibilityManager.isEnabled()) {
@@ -372,41 +372,41 @@ class AccessibilityStateDelegateImpl {
     }
 
     /** Returns the current ANIMATOR_DURATION_SCALE from the users OS accessibility settings. */
-    public static float getAnimatorDurationScale() {
-        if (!sExtraStateInitialized) updateExtraState();
-        return sAnimatorDurationScale;
+    public float getAnimatorDurationScale() {
+        if (!mExtraStateInitialized) updateExtraState();
+        return mAnimatorDurationScale;
     }
 
     /** Returns the current TEXT_CURSOR_BLINK_INTERVAL from the users OS accessibility settings. */
-    public static int getTextCursorBlinkInterval() {
-        if (!sExtraStateInitialized) updateExtraState();
-        return sTextCursorBlinkInterval;
+    public int getTextCursorBlinkInterval() {
+        if (!mExtraStateInitialized) updateExtraState();
+        return mTextCursorBlinkInterval;
     }
 
-    private static AccessibilityManager fetchAccessibilityManager() {
-        AccessibilityManager ret = sAccessibilityManager;
+    private AccessibilityManager fetchAccessibilityManager() {
+        AccessibilityManager ret = mAccessibilityManager;
         if (ret == null) {
             // This instance is valid for the entire lifecycle of the app.
             ret =
                     (AccessibilityManager)
                             ContextUtils.getApplicationContext()
                                     .getSystemService(Context.ACCESSIBILITY_SERVICE);
-            sAccessibilityManager = ret;
+            mAccessibilityManager = ret;
         }
         return ret;
     }
 
-    static void updateExtraState() {
-        sExtraStateInitialized = true;
+    void updateExtraState() {
+        mExtraStateInitialized = true;
         Context context = ContextUtils.getApplicationContext();
         int displayInversionEnabledSetting =
                 Settings.Secure.getInt(
                         context.getContentResolver(),
                         Settings.Secure.ACCESSIBILITY_DISPLAY_INVERSION_ENABLED,
                         0);
-        sDisplayInversionEnabled = displayInversionEnabledSetting == 1;
+        mDisplayInversionEnabled = displayInversionEnabledSetting == 1;
 
-        sAnimatorDurationScale =
+        mAnimatorDurationScale =
                 Settings.Global.getFloat(
                         ContextUtils.getApplicationContext().getContentResolver(),
                         Settings.Global.ANIMATOR_DURATION_SCALE,
@@ -415,9 +415,9 @@ class AccessibilityStateDelegateImpl {
         AconfigFlaggedApiDelegate aconfigFlaggedApiDelegate =
                 AconfigFlaggedApiDelegate.getInstance();
         if (aconfigFlaggedApiDelegate != null) {
-            sTextCursorBlinkInterval = aconfigFlaggedApiDelegate.getTextCursorBlinkInterval();
+            mTextCursorBlinkInterval = aconfigFlaggedApiDelegate.getTextCursorBlinkInterval();
         } else {
-            sTextCursorBlinkInterval =
+            mTextCursorBlinkInterval =
                     AconfigFlaggedApiDelegate.DEFAULT_TEXT_CURSOR_BLINK_INTERVAL_MS;
         }
 
@@ -438,15 +438,15 @@ class AccessibilityStateDelegateImpl {
         }
         // If high text contrast is enabled or the colour contrast level is high,
         // then high contrast is enabled.
-        sHighContrastEnabled = highTextContrastEnabled == 1 || contrastLevel == 1f;
+        mHighContrastEnabled = highTextContrastEnabled == 1 || contrastLevel == 1f;
     }
 
-    protected static List<AccessibilityServiceInfo> getRunningServiceInfoList() {
+    protected List<AccessibilityServiceInfo> getRunningServiceInfoList() {
         return fetchAccessibilityManager()
                 .getEnabledAccessibilityServiceList(AccessibilityServiceInfo.FEEDBACK_ALL_MASK);
     }
 
-    protected static String getEnabledServiceString(Context context) {
+    protected String getEnabledServiceString(Context context) {
         return Settings.Secure.getString(
                 context.getContentResolver(), Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES);
     }
@@ -477,7 +477,7 @@ class AccessibilityStateDelegateImpl {
         }
     }
 
-    protected static void calculateHeuristicState(AccessibilityServiceInfo service) {
+    protected void calculateHeuristicState(AccessibilityServiceInfo service) {
         // Only check the event, feedback, flag, and capability types for the password manager
         // heuristic if the running service is not the AutofillCompatAccessibilityService. The
         // AutofillCompatAccessibilityService requests all events like a screenreader but
@@ -486,60 +486,60 @@ class AccessibilityStateDelegateImpl {
         // heuristic from identifying the presence of other assistive technologies, so skip
         // the mask for this service.
         if (!service.getId().equals(AUTOFILL_COMPAT_ACCESSIBILITY_SERVICE_ID)) {
-            sEventTypeMaskHeuristic |= service.eventTypes;
-            sFeedbackTypeMaskHeuristic |= service.feedbackType;
-            sFlagsMaskHeuristic |= service.flags;
-            sCapabilitiesMaskHeuristic |= service.getCapabilities();
+            mEventTypeMaskHeuristic |= service.eventTypes;
+            mFeedbackTypeMaskHeuristic |= service.feedbackType;
+            mFlagsMaskHeuristic |= service.flags;
+            mCapabilitiesMaskHeuristic |= service.getCapabilities();
         }
     }
 
-    protected static boolean areOnlyPasswordManagerMasksRequested() {
+    protected boolean areOnlyPasswordManagerMasksRequested() {
         // If there are some events, flags, and capabilities enabled and if there are, at most, the
         // expected set of password manager event, flags, and capabilities enabled, then the system
         // is probably running only password managers
-        return (sEventTypeMaskHeuristic != 0
-                        && sFlagsMaskHeuristic != 0
-                        && sCapabilitiesMaskHeuristic != 0)
-                && ((sEventTypeMaskHeuristic | PASSWORD_MANAGER_EVENT_TYPE_MASK)
+        return (mEventTypeMaskHeuristic != 0
+                        && mFlagsMaskHeuristic != 0
+                        && mCapabilitiesMaskHeuristic != 0)
+                && ((mEventTypeMaskHeuristic | PASSWORD_MANAGER_EVENT_TYPE_MASK)
                         == PASSWORD_MANAGER_EVENT_TYPE_MASK)
-                && ((sFlagsMaskHeuristic | PASSWORD_MANAGER_FLAG_TYPE_MASK)
+                && ((mFlagsMaskHeuristic | PASSWORD_MANAGER_FLAG_TYPE_MASK)
                         == PASSWORD_MANAGER_FLAG_TYPE_MASK)
-                && ((sCapabilitiesMaskHeuristic | PASSWORD_MANAGER_CAPABILITY_TYPE_MASK)
+                && ((mCapabilitiesMaskHeuristic | PASSWORD_MANAGER_CAPABILITY_TYPE_MASK)
                         == PASSWORD_MANAGER_CAPABILITY_TYPE_MASK)
-                && ((sFeedbackTypeMaskHeuristic | AccessibilityServiceInfo.FEEDBACK_GENERIC)
+                && ((mFeedbackTypeMaskHeuristic | AccessibilityServiceInfo.FEEDBACK_GENERIC)
                         == AccessibilityServiceInfo.FEEDBACK_GENERIC);
     }
 
-    protected static void updateAccessibilityServices() {
+    protected void updateAccessibilityServices() {
         updateAccessibilityServices(/* recordHistograms= */ false);
     }
 
-    private static void updateAccessibilityServices(boolean recordHistograms) {
+    private void updateAccessibilityServices(boolean recordHistograms) {
         long now = SystemClock.elapsedRealtimeNanos() / 1000;
-        if (!sInitialized) {
-            sState = new State(false, false, false, false, false, false, false, false, false);
+        if (!mInitialized) {
+            mState = new State(false, false, false, false, false, false, false, false, false);
             fetchAccessibilityManager();
         }
-        sInitialized = true;
+        mInitialized = true;
 
         // Reset previous state calculations.
-        sEventTypeMask = 0;
-        sFeedbackTypeMask = 0;
-        sFlagsMask = 0;
-        sCapabilitiesMask = 0;
+        mEventTypeMask = 0;
+        mFeedbackTypeMask = 0;
+        mFlagsMask = 0;
+        mCapabilitiesMask = 0;
 
         // Reset previous heuristic state calculations.
-        sEventTypeMaskHeuristic = 0;
-        sFeedbackTypeMaskHeuristic = 0;
-        sFlagsMaskHeuristic = 0;
-        sCapabilitiesMaskHeuristic = 0;
+        mEventTypeMaskHeuristic = 0;
+        mFeedbackTypeMaskHeuristic = 0;
+        mFlagsMaskHeuristic = 0;
+        mCapabilitiesMaskHeuristic = 0;
 
         boolean isAnyAccessibilityServiceEnabled = false;
         boolean isAccessibilityToolPresent = false;
 
         // Get the list of currently running accessibility services.
         List<AccessibilityServiceInfo> serviceInfoList = getRunningServiceInfoList();
-        sServiceProperties = new ArrayList<>();
+        mServiceProperties = new ArrayList<>();
         List<String> runningServiceNames = new ArrayList<>();
         for (AccessibilityServiceInfo service : serviceInfoList) {
             if (service == null) continue;
@@ -552,21 +552,21 @@ class AccessibilityStateDelegateImpl {
                 // Check if the service is an accessibility tool based on the manifest flag.
                 if (service.isAccessibilityTool()) {
                     isAccessibilityToolPresent = true;
-                    sServiceProperties.add(new ServiceProperties(serviceId, true));
+                    mServiceProperties.add(new ServiceProperties(serviceId, true));
                 } else {
-                    sServiceProperties.add(new ServiceProperties(serviceId, false));
+                    mServiceProperties.add(new ServiceProperties(serviceId, false));
                 }
             } else {
                 // Before Android S, assume all accessibility services are accessibility tools,
                 // but none explicitly flag themselves as such without the manifest flag.
                 isAccessibilityToolPresent = true;
-                sServiceProperties.add(new ServiceProperties(serviceId, false));
+                mServiceProperties.add(new ServiceProperties(serviceId, false));
             }
 
-            sEventTypeMask |= service.eventTypes;
-            sFeedbackTypeMask |= service.feedbackType;
-            sFlagsMask |= service.flags;
-            sCapabilitiesMask |= service.getCapabilities();
+            mEventTypeMask |= service.eventTypes;
+            mFeedbackTypeMask |= service.feedbackType;
+            mFlagsMask |= service.flags;
+            mCapabilitiesMask |= service.getCapabilities();
 
             calculateHeuristicState(service);
         }
@@ -575,9 +575,9 @@ class AccessibilityStateDelegateImpl {
 
         // Update the font weight adjustment (e.g. bold text setting).
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            sFontWeightAdjustment = context.getResources().getConfiguration().fontWeightAdjustment;
+            mFontWeightAdjustment = context.getResources().getConfiguration().fontWeightAdjustment;
         } else {
-            sFontWeightAdjustment = 0;
+            mFontWeightAdjustment = 0;
         }
 
         // Update the user show password preferences.
@@ -617,27 +617,26 @@ class AccessibilityStateDelegateImpl {
                     TAG,
                     "Enabled accessibility services list updated. "
                             + enabledServiceNames.toString());
-            sNextDelayMillis = MIN_DELAY_MILLIS;
+            mNextDelayMillis = MIN_DELAY_MILLIS;
         } else {
             Log.i(TAG, "Enabled accessibility services: " + enabledServiceNames.toString());
             Log.i(TAG, "Running accessibility services: " + runningServiceNames.toString());
 
             // Do not inform listeners until the services agree, unless the limit set by
             // {MAX_DELAY_MILLIS} has been reached, in which case send whatever we have.
-            if (sNextDelayMillis < MAX_DELAY_MILLIS) {
-                Log.i(TAG, "Will check again after " + sNextDelayMillis + " milliseconds.");
+            if (mNextDelayMillis < MAX_DELAY_MILLIS) {
+                Log.i(TAG, "Will check again after " + mNextDelayMillis + " milliseconds.");
                 RecordHistogram.recordBooleanHistogram(
                         UPDATE_ACCESSIBILITY_SERVICES_DID_POLL, true);
                 ThreadUtils.getUiThreadHandler()
                         .postDelayed(
                                 recordHistograms
-                                        ? AccessibilityStateDelegateImpl::processServicesChange
-                                        : AccessibilityStateDelegateImpl
-                                                ::updateAccessibilityServices,
-                                sNextDelayMillis);
+                                        ? this::processServicesChange
+                                        : this::updateAccessibilityServices,
+                                mNextDelayMillis);
                 recordHistograms = false; // Leave histograms to delayed call.
-                sPollCount++;
-                sNextDelayMillis *= 2;
+                mPollCount++;
+                mNextDelayMillis *= 2;
                 return;
             } else {
                 Log.i(TAG, "Max delay reached. Send information as is.");
@@ -646,15 +645,15 @@ class AccessibilityStateDelegateImpl {
 
                 // Reset if we have reached {MAX_DELAY_MILLIS} so we do not miss later discrepancies
                 // between the services.
-                sNextDelayMillis = MIN_DELAY_MILLIS;
+                mNextDelayMillis = MIN_DELAY_MILLIS;
             }
         }
 
         // Calculate heuristic state value derivations.
         boolean isComplexUserInteractionServiceEnabled =
-                (0 != (sEventTypeMaskHeuristic & COMPLEX_USER_INTERACTION_SERVICE_EVENT_TYPE_MASK));
+                (0 != (mEventTypeMaskHeuristic & COMPLEX_USER_INTERACTION_SERVICE_EVENT_TYPE_MASK));
         boolean isKnownScreenReaderEnabled = false;
-        for (ServiceProperties service : sServiceProperties) {
+        for (ServiceProperties service : mServiceProperties) {
             if (KNOWN_SCREEN_READER_SERVICE_IDS.equals(service.id)) {
                 isKnownScreenReaderEnabled = true;
                 break;
@@ -702,11 +701,11 @@ class AccessibilityStateDelegateImpl {
 
         // Calculate traditional state values.
         boolean isTouchExplorationEnabled =
-                (0 != (sCapabilitiesMask & CAPABILITY_CAN_REQUEST_TOUCH_EXPLORATION))
-                        && (0 != (sFlagsMask & FLAG_REQUEST_TOUCH_EXPLORATION_MODE));
+                (0 != (mCapabilitiesMask & CAPABILITY_CAN_REQUEST_TOUCH_EXPLORATION))
+                        && (0 != (mFlagsMask & FLAG_REQUEST_TOUCH_EXPLORATION_MODE));
 
         boolean isPerformGesturesEnabled =
-                (0 != (sCapabilitiesMask & CAPABILITY_CAN_PERFORM_GESTURES));
+                (0 != (mCapabilitiesMask & CAPABILITY_CAN_PERFORM_GESTURES));
 
         // Record time of this method call, and number of times polling was required.
         RecordHistogram.recordLinearCountHistogram(
@@ -716,8 +715,8 @@ class AccessibilityStateDelegateImpl {
                 MAX_RUNTIME_BUCKET,
                 100);
         RecordHistogram.recordLinearCountHistogram(
-                UPDATE_ACCESSIBILITY_SERVICES_POLL_COUNT, sPollCount, 1, 10, 11);
-        sPollCount = 0;
+                UPDATE_ACCESSIBILITY_SERVICES_POLL_COUNT, mPollCount, 1, 10, 11);
+        mPollCount = 0;
 
         // Update all listeners that there was a state change and pass whether or not the
         // new state includes a screen reader.
@@ -738,13 +737,13 @@ class AccessibilityStateDelegateImpl {
         }
     }
 
-    private static void updateAndNotifyStateChange(State newState) {
-        assert sState != null;
-        State oldState = sState;
-        sState = newState;
+    private void updateAndNotifyStateChange(State newState) {
+        assert mState != null;
+        State oldState = mState;
+        mState = newState;
 
-        Log.i(TAG, "New AccessibilityState: " + sState.toString());
-        for (Listener listener : sListeners) {
+        Log.i(TAG, "New AccessibilityState: " + mState.toString());
+        for (Listener listener : mListeners) {
             listener.onAccessibilityStateChanged(oldState, newState);
         }
     }
@@ -753,43 +752,43 @@ class AccessibilityStateDelegateImpl {
      * Return a bitmask containing the union of all event types that running accessibility services
      * listen to.
      */
-    static int getAccessibilityServiceEventTypeMask() {
-        if (!sInitialized) updateAccessibilityServices();
-        return sEventTypeMask;
+    int getAccessibilityServiceEventTypeMask() {
+        if (!mInitialized) updateAccessibilityServices();
+        return mEventTypeMask;
     }
 
     /**
      * Return a bitmask containing the union of all feedback types that running accessibility
      * services provide.
      */
-    static int getAccessibilityServiceFeedbackTypeMask() {
-        if (!sInitialized) updateAccessibilityServices();
-        return sFeedbackTypeMask;
+    int getAccessibilityServiceFeedbackTypeMask() {
+        if (!mInitialized) updateAccessibilityServices();
+        return mFeedbackTypeMask;
     }
 
     /** Return a bitmask containing the union of all flags from running accessibility services. */
-    static int getAccessibilityServiceFlagsMask() {
-        if (!sInitialized) updateAccessibilityServices();
-        return sFlagsMask;
+    int getAccessibilityServiceFlagsMask() {
+        if (!mInitialized) updateAccessibilityServices();
+        return mFlagsMask;
     }
 
     /**
      * Return a bitmask containing the union of all service capabilities from running accessibility
      * services.
      */
-    static int getAccessibilityServiceCapabilitiesMask() {
-        if (!sInitialized) updateAccessibilityServices();
-        return sCapabilitiesMask;
+    int getAccessibilityServiceCapabilitiesMask() {
+        if (!mInitialized) updateAccessibilityServices();
+        return mCapabilitiesMask;
     }
 
     /** Return a list of ids of all running accessibility services. */
-    static String[] getAccessibilityServiceIds() {
-        if (!sInitialized) updateAccessibilityServices();
-        assert sServiceProperties != null;
+    String[] getAccessibilityServiceIds() {
+        if (!mInitialized) updateAccessibilityServices();
+        assert mServiceProperties != null;
 
-        String[] ids = new String[sServiceProperties.size()];
+        String[] ids = new String[mServiceProperties.size()];
         for (int i = 0; i < ids.length; i++) {
-            ids[i] = sServiceProperties.get(i).id;
+            ids[i] = mServiceProperties.get(i).id;
         }
         return ids;
     }
@@ -800,13 +799,13 @@ class AccessibilityStateDelegateImpl {
      * S; on earlier Android versions this will return all {@code false}. The returned array will
      * have the same length as the array returned by {@link #getAccessibilityServiceIds()}.
      */
-    static boolean[] getAccessibilityToolFlags() {
-        if (!sInitialized) updateAccessibilityServices();
-        assert sServiceProperties != null;
+    boolean[] getAccessibilityToolFlags() {
+        if (!mInitialized) updateAccessibilityServices();
+        assert mServiceProperties != null;
 
-        boolean[] flags = new boolean[sServiceProperties.size()];
+        boolean[] flags = new boolean[mServiceProperties.size()];
         for (int i = 0; i < flags.length; i++) {
-            flags[i] = sServiceProperties.get(i).isAccessibilityTool;
+            flags[i] = mServiceProperties.get(i).isAccessibilityTool;
         }
         return flags;
     }
@@ -817,71 +816,64 @@ class AccessibilityStateDelegateImpl {
      * <p>Note: This should only be called once, and before any client queries of accessibility
      * state. The first time any client queries the state, |this| will be initialized.
      */
-    public static void registerObservers() {
-        assert !sInitialized || !sHasRegisteredObservers || sIsInTestingMode
+    public void registerObservers() {
+        assert !mInitialized || !mHasRegisteredObservers || mIsInTestingMode
                 : "AccessibilityState has been called to register observers, but observers have"
                         + " already been registered, or, a client has already queried the state."
                         + " Observers should only be registered once during browser init and before"
                         + " any client queries.";
 
         ContentResolver contentResolver = ContextUtils.getApplicationContext().getContentResolver();
-        sAnimationDurationScaleObserver =
+        mAnimationDurationScaleObserver =
                 new ServicesObserver(
-                        ThreadUtils.getUiThreadHandler(),
-                        AccessibilityStateDelegateImpl::processExtraStateChange);
-        sAccessibilityServicesObserver =
+                        ThreadUtils.getUiThreadHandler(), this::processExtraStateChange);
+        mAccessibilityServicesObserver =
+                new ServicesObserver(ThreadUtils.getUiThreadHandler(), this::processServicesChange);
+        mDisplayInversionEnabledObserver =
                 new ServicesObserver(
-                        ThreadUtils.getUiThreadHandler(),
-                        AccessibilityStateDelegateImpl::processServicesChange);
-        sDisplayInversionEnabledObserver =
+                        ThreadUtils.getUiThreadHandler(), this::processExtraStateChange);
+        mCursorBlinkRateObserver =
                 new ServicesObserver(
-                        ThreadUtils.getUiThreadHandler(),
-                        AccessibilityStateDelegateImpl::processExtraStateChange);
-        sCursorBlinkRateObserver =
+                        ThreadUtils.getUiThreadHandler(), this::processExtraStateChange);
+        mTextContrastObserver =
                 new ServicesObserver(
-                        ThreadUtils.getUiThreadHandler(),
-                        AccessibilityStateDelegateImpl::processExtraStateChange);
-        sTextContrastObserver =
-                new ServicesObserver(
-                        ThreadUtils.getUiThreadHandler(),
-                        AccessibilityStateDelegateImpl::processExtraStateChange);
+                        ThreadUtils.getUiThreadHandler(), this::processExtraStateChange);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-            sContrastChangeListener =
-                    (contrast) -> AccessibilityStateDelegateImpl.processExtraStateChange();
+            mContrastChangeListener = (contrast) -> processExtraStateChange();
         }
 
         // We want to be notified whenever the user has updated the animator duration scale.
         contentResolver.registerContentObserver(
                 Settings.Global.getUriFor(Settings.Global.ANIMATOR_DURATION_SCALE),
                 false,
-                sAnimationDurationScaleObserver);
+                mAnimationDurationScaleObserver);
 
         // We want to be notified whenever the currently enabled services changes.
         contentResolver.registerContentObserver(
                 Settings.Secure.getUriFor(Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES),
                 false,
-                sAccessibilityServicesObserver);
+                mAccessibilityServicesObserver);
         contentResolver.registerContentObserver(
                 Settings.System.getUriFor(Settings.Secure.TOUCH_EXPLORATION_ENABLED),
                 false,
-                sAccessibilityServicesObserver);
+                mAccessibilityServicesObserver);
 
         // We want to be notified if the user changes their preferred password show/speak settings.
         contentResolver.registerContentObserver(
                 Settings.Secure.getUriFor(Settings.Secure.ACCESSIBILITY_SPEAK_PASSWORD),
                 false,
-                sAccessibilityServicesObserver);
+                mAccessibilityServicesObserver);
         contentResolver.registerContentObserver(
                 Settings.System.getUriFor(Settings.System.TEXT_SHOW_PASSWORD),
                 false,
-                sAccessibilityServicesObserver);
+                mAccessibilityServicesObserver);
 
         // We want to be notified if the user changes their display inversion settings.
         contentResolver.registerContentObserver(
                 Settings.Secure.getUriFor(Settings.Secure.ACCESSIBILITY_DISPLAY_INVERSION_ENABLED),
                 false,
-                sDisplayInversionEnabledObserver);
+                mDisplayInversionEnabledObserver);
 
         // We want to be notified if the user changes their cursor blink settings.
         contentResolver.registerContentObserver(
@@ -889,7 +881,7 @@ class AccessibilityStateDelegateImpl {
                         /* Settings.Secure.ACCESSIBILITY_TEXT_CURSOR_BLINK_INTERVAL_MS */
                         "accessibility_text_cursor_blink_interval_ms"),
                 false,
-                sCursorBlinkRateObserver);
+                mCursorBlinkRateObserver);
 
         // We want to be notified if the user changes their text contrast settings.
         contentResolver.registerContentObserver(
@@ -897,45 +889,45 @@ class AccessibilityStateDelegateImpl {
                         /*Settings.Secure.ACCESSIBILITY_HIGH_TEXT_CONTRAST_ENABLED*/
                         "high_text_contrast_enabled"),
                 false,
-                sTextContrastObserver);
+                mTextContrastObserver);
 
         // We want to be notified if the user changes their colour contrast settings.
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
             Context context = ContextUtils.getApplicationContext();
             UiModeManager uiModeManager =
                     (UiModeManager) context.getSystemService(Context.UI_MODE_SERVICE);
-            if (uiModeManager != null && sContrastChangeListener != null) {
+            if (uiModeManager != null && mContrastChangeListener != null) {
                 uiModeManager.addContrastChangeListener(
-                        context.getMainExecutor(), sContrastChangeListener);
+                        context.getMainExecutor(), mContrastChangeListener);
             }
         }
 
-        sHasRegisteredObservers = true;
+        mHasRegisteredObservers = true;
     }
 
-    public static void initializeOnStartup() {
+    public void initializeOnStartup() {
         // This method is called as a deferred task during browser init. If no services are enabled,
         // this will ensure the state is populated for any client queries later. If a service is
         // enabled during startup, the current state may be queried before this method is called,
         // in which case another state update is not needed. In either case, the state should be
         // propagated to all listeners once during browser init.
-        if (!sInitialized) {
+        if (!mInitialized) {
             updateAccessibilityServices();
         }
-        if (!sExtraStateInitialized) {
+        if (!mExtraStateInitialized) {
             updateExtraState();
         }
         notifyExtraStateListeners();
 
         // We want to be notified whenever an Activity or Application state changes.
-        ApplicationStatus.registerStateListenerForAllActivities(sActivityStateListener);
-        ApplicationStatus.registerApplicationStateListener(sApplicationStateListener);
+        ApplicationStatus.registerStateListenerForAllActivities(mActivityStateListener);
+        ApplicationStatus.registerApplicationStateListener(mApplicationStateListener);
 
         // Histograms are recorded once during startup, and any time services change afterwards.
         AccessibilityStateJni.get().recordAccessibilityServiceInfoHistograms();
     }
 
-    private static void onActivityStateChange(Activity activity, int newState) {
+    private void onActivityStateChange(Activity activity, int newState) {
         // If Chrome is sent to the background, we will unregister observers, and re-register the
         // observers and query state when Chrome is brought back to the foreground.
         if (newState == ActivityState.RESUMED) {
@@ -944,62 +936,62 @@ class AccessibilityStateDelegateImpl {
         }
     }
 
-    private static void onApplicationStateChange(int newState) {
+    private void onApplicationStateChange(int newState) {
         // If Chrome is sent to the background, we will unregister observers, and re-register the
         // observers when Chrome is brought back to the foreground.
         if (newState != ApplicationState.HAS_RUNNING_ACTIVITIES
                 && newState != ApplicationState.HAS_PAUSED_ACTIVITIES) {
             unregisterObservers();
         } else if (newState == ApplicationState.HAS_RUNNING_ACTIVITIES
-                && (!sInitialized || !sHasRegisteredObservers)) {
+                && (!mInitialized || !mHasRegisteredObservers)) {
             registerObservers();
         }
     }
 
-    private static void unregisterObservers() {
-        assert sAccessibilityServicesObserver != null;
-        assert sAnimationDurationScaleObserver != null;
-        assert sDisplayInversionEnabledObserver != null;
-        assert sCursorBlinkRateObserver != null;
-        assert sTextContrastObserver != null;
+    private void unregisterObservers() {
+        assert mAccessibilityServicesObserver != null;
+        assert mAnimationDurationScaleObserver != null;
+        assert mDisplayInversionEnabledObserver != null;
+        assert mCursorBlinkRateObserver != null;
+        assert mTextContrastObserver != null;
         Context context = ContextUtils.getApplicationContext();
         ContentResolver contentResolver = context.getContentResolver();
-        contentResolver.unregisterContentObserver(sAccessibilityServicesObserver);
-        contentResolver.unregisterContentObserver(sAnimationDurationScaleObserver);
-        contentResolver.unregisterContentObserver(sDisplayInversionEnabledObserver);
-        contentResolver.unregisterContentObserver(sCursorBlinkRateObserver);
-        contentResolver.unregisterContentObserver(sTextContrastObserver);
+        contentResolver.unregisterContentObserver(mAccessibilityServicesObserver);
+        contentResolver.unregisterContentObserver(mAnimationDurationScaleObserver);
+        contentResolver.unregisterContentObserver(mDisplayInversionEnabledObserver);
+        contentResolver.unregisterContentObserver(mCursorBlinkRateObserver);
+        contentResolver.unregisterContentObserver(mTextContrastObserver);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
             UiModeManager uiModeManager =
                     (UiModeManager) context.getSystemService(Context.UI_MODE_SERVICE);
-            if (uiModeManager != null && sContrastChangeListener != null) {
-                uiModeManager.removeContrastChangeListener(sContrastChangeListener);
+            if (uiModeManager != null && mContrastChangeListener != null) {
+                uiModeManager.removeContrastChangeListener(mContrastChangeListener);
             }
-            sContrastChangeListener = null;
+            mContrastChangeListener = null;
         }
-        sState = null;
-        sPreInitCachedValuePerformGesturesEnabled = null;
-        sInitialized = false;
-        sHasRegisteredObservers = false;
-        sExtraStateInitialized = false;
-        sDisplayInversionEnabled = false;
-        sHighContrastEnabled = false;
-        sAnimatorDurationScale = 1f;
-        sAccessibilityManager = null;
-        sTextCursorBlinkInterval = AconfigFlaggedApiDelegate.DEFAULT_TEXT_CURSOR_BLINK_INTERVAL_MS;
+        mState = null;
+        mPreInitCachedValuePerformGesturesEnabled = null;
+        mInitialized = false;
+        mHasRegisteredObservers = false;
+        mExtraStateInitialized = false;
+        mDisplayInversionEnabled = false;
+        mHighContrastEnabled = false;
+        mAnimatorDurationScale = 1f;
+        mAccessibilityManager = null;
+        mTextCursorBlinkInterval = AconfigFlaggedApiDelegate.DEFAULT_TEXT_CURSOR_BLINK_INTERVAL_MS;
     }
 
-    private static void processServicesChange() {
+    private void processServicesChange() {
         updateAccessibilityServices(/* recordHistograms= */ true);
     }
 
-    private static void processExtraStateChange() {
+    private void processExtraStateChange() {
         updateExtraState();
         notifyExtraStateListeners();
     }
 
     /** Inform native listeners of changes to the extra state. */
-    private static void notifyExtraStateListeners() {
+    private void notifyExtraStateListeners() {
         AccessibilityStateJni.get().onAnimatorDurationScaleChanged();
         AccessibilityStateJni.get().onDisplayInversionEnabledChanged(isDisplayInversionEnabled());
         AccessibilityStateJni.get().onContrastLevelChanged(isHighContrastEnabled());
@@ -1027,9 +1019,9 @@ class AccessibilityStateDelegateImpl {
 
     // ForTesting methods.
 
-    public static void setIsComplexUserInteractionServiceEnabledForTesting(boolean enabled) {
-        if (!sInitialized) initializeForTesting();
-        State oldState = assumeNonNull(sState);
+    public void setIsComplexUserInteractionServiceEnabledForTesting(boolean enabled) {
+        if (!mInitialized) initializeForTesting();
+        State oldState = assumeNonNull(mState);
         State newState =
                 new StateBuilderForTests(oldState)
                         .setIsComplexUserInteractionServiceEnabled(enabled)
@@ -1037,25 +1029,25 @@ class AccessibilityStateDelegateImpl {
         updateAndNotifyStateChange(newState);
     }
 
-    public static void setIsTouchExplorationEnabledForTesting(boolean enabled) {
-        if (!sInitialized) initializeForTesting();
-        State oldState = assumeNonNull(sState);
+    public void setIsTouchExplorationEnabledForTesting(boolean enabled) {
+        if (!mInitialized) initializeForTesting();
+        State oldState = assumeNonNull(mState);
         State newState =
                 new StateBuilderForTests(oldState).setIsTouchExplorationEnabled(enabled).build();
         updateAndNotifyStateChange(newState);
     }
 
-    public static void setIsPerformGesturesEnabledForTesting(boolean enabled) {
-        if (!sInitialized) initializeForTesting();
-        State oldState = assumeNonNull(sState);
+    public void setIsPerformGesturesEnabledForTesting(boolean enabled) {
+        if (!mInitialized) initializeForTesting();
+        State oldState = assumeNonNull(mState);
         State newState =
                 new StateBuilderForTests(oldState).setIsPerformGesturesEnabled(enabled).build();
         updateAndNotifyStateChange(newState);
     }
 
-    public static void setIsAnyAccessibilityServiceEnabledForTesting(boolean enabled) {
-        if (!sInitialized) initializeForTesting();
-        State oldState = assumeNonNull(sState);
+    public void setIsAnyAccessibilityServiceEnabledForTesting(boolean enabled) {
+        if (!mInitialized) initializeForTesting();
+        State oldState = assumeNonNull(mState);
         State newState =
                 new StateBuilderForTests(oldState)
                         .setIsAnyAccessibilityServiceEnabled(enabled)
@@ -1063,33 +1055,33 @@ class AccessibilityStateDelegateImpl {
         updateAndNotifyStateChange(newState);
     }
 
-    public static void setIsAccessibilityToolPresentForTesting(boolean enabled) {
-        if (!sInitialized) initializeForTesting();
-        State oldState = assumeNonNull(sState);
+    public void setIsAccessibilityToolPresentForTesting(boolean enabled) {
+        if (!mInitialized) initializeForTesting();
+        State oldState = assumeNonNull(mState);
         State newState =
                 new StateBuilderForTests(oldState).setIsAccessibilityToolPresent(enabled).build();
         updateAndNotifyStateChange(newState);
     }
 
-    public static void setIsTextShowPasswordEnabledForTesting(boolean enabled) {
-        if (!sInitialized) initializeForTesting();
-        State oldState = assumeNonNull(sState);
+    public void setIsTextShowPasswordEnabledForTesting(boolean enabled) {
+        if (!mInitialized) initializeForTesting();
+        State oldState = assumeNonNull(mState);
         State newState =
                 new StateBuilderForTests(oldState).setIsTextShowPasswordEnabled(enabled).build();
         updateAndNotifyStateChange(newState);
     }
 
-    public static void setIsOnlyAutofillRunningForTesting(boolean enabled) {
-        if (!sInitialized) initializeForTesting();
-        State oldState = assumeNonNull(sState);
+    public void setIsOnlyAutofillRunningForTesting(boolean enabled) {
+        if (!mInitialized) initializeForTesting();
+        State oldState = assumeNonNull(mState);
         State newState =
                 new StateBuilderForTests(oldState).setIsOnlyAutofillRunning(enabled).build();
         updateAndNotifyStateChange(newState);
     }
 
-    public static void setIsOnlyPasswordManagersEnabledForTesting(boolean enabled) {
-        if (!sInitialized) initializeForTesting();
-        State oldState = assumeNonNull(sState);
+    public void setIsOnlyPasswordManagersEnabledForTesting(boolean enabled) {
+        if (!mInitialized) initializeForTesting();
+        State oldState = assumeNonNull(mState);
         State newState =
                 new StateBuilderForTests(oldState)
                         .setIsOnlyPasswordManagersEnabled(enabled)
@@ -1097,41 +1089,41 @@ class AccessibilityStateDelegateImpl {
         updateAndNotifyStateChange(newState);
     }
 
-    public static void setIsKnownScreenReaderEnabledForTesting(boolean enabled) {
-        if (!sInitialized) initializeForTesting();
-        State oldState = assumeNonNull(sState);
+    public void setIsKnownScreenReaderEnabledForTesting(boolean enabled) {
+        if (!mInitialized) initializeForTesting();
+        State oldState = assumeNonNull(mState);
         State newState =
                 new StateBuilderForTests(oldState).setIsKnownScreenReaderEnabled(enabled).build();
         updateAndNotifyStateChange(newState);
     }
 
-    public static void setEventMaskForTesting(int eventMask) {
-        if (!sInitialized) initializeForTesting();
+    public void setEventMaskForTesting(int eventMask) {
+        if (!mInitialized) initializeForTesting();
 
-        sEventTypeMask = eventMask;
+        mEventTypeMask = eventMask;
     }
 
-    public static void setServiceIdsForTesting(String newServiceId, boolean isAccessibilityTool) {
-        if (!sInitialized) initializeForTesting();
+    public void setServiceIdsForTesting(String newServiceId, boolean isAccessibilityTool) {
+        if (!mInitialized) initializeForTesting();
 
-        sServiceProperties = new ArrayList<>();
-        sServiceProperties.add(new ServiceProperties(newServiceId, isAccessibilityTool));
+        mServiceProperties = new ArrayList<>();
+        mServiceProperties.add(new ServiceProperties(newServiceId, isAccessibilityTool));
     }
 
-    private static void initializeForTesting() {
-        sState = new State(false, false, false, false, false, false, false, false, false);
-        sServiceProperties = new ArrayList<>();
+    private void initializeForTesting() {
+        mState = new State(false, false, false, false, false, false, false, false, false);
+        mServiceProperties = new ArrayList<>();
         fetchAccessibilityManager();
-        sInitialized = true;
-        sIsInTestingMode = true;
+        mInitialized = true;
+        mIsInTestingMode = true;
     }
 
-    protected static void uninitializeForTesting() {
-        sState = null;
-        sServiceProperties = null;
-        sAccessibilityManager = null;
-        sInitialized = false;
-        sIsInTestingMode = false;
-        sPreInitCachedValuePerformGesturesEnabled = null;
+    protected void uninitializeForTesting() {
+        mState = null;
+        mServiceProperties = null;
+        mAccessibilityManager = null;
+        mInitialized = false;
+        mIsInTestingMode = false;
+        mPreInitCachedValuePerformGesturesEnabled = null;
     }
 }

@@ -242,20 +242,27 @@ public class AccessibilityState {
         }
     }
 
+    private static final AccessibilityStateDelegateImpl sDelegate =
+            new AccessibilityStateDelegateImpl();
+
+    static AccessibilityStateDelegateImpl getDelegate() {
+        return sDelegate;
+    }
+
     public static void addListener(Listener listener) {
-        AccessibilityStateDelegateImpl.addListener(listener);
+        getDelegate().addListener(listener);
     }
 
     public static boolean isComplexUserInteractionServiceEnabled() {
-        return AccessibilityStateDelegateImpl.isComplexUserInteractionServiceEnabled();
+        return getDelegate().isComplexUserInteractionServiceEnabled();
     }
 
     public static boolean isTouchExplorationEnabled() {
-        return AccessibilityStateDelegateImpl.isTouchExplorationEnabled();
+        return getDelegate().isTouchExplorationEnabled();
     }
 
     public static boolean isPerformGesturesEnabled() {
-        return AccessibilityStateDelegateImpl.isPerformGesturesEnabled();
+        return getDelegate().isPerformGesturesEnabled();
     }
 
     /**
@@ -268,7 +275,7 @@ public class AccessibilityState {
      * @return true if any service is enabled (includes pseudo-accessibility services).
      */
     public static boolean isAnyAccessibilityServiceEnabled() {
-        return AccessibilityStateDelegateImpl.isAnyAccessibilityServiceEnabled();
+        return getDelegate().isAnyAccessibilityServiceEnabled();
     }
 
     /**
@@ -278,39 +285,39 @@ public class AccessibilityState {
      * @return true if the accessibility manager is enabled.
      */
     public static boolean isAccessibilityManagerEnabled() {
-        return AccessibilityStateDelegateImpl.isAccessibilityManagerEnabled();
+        return getDelegate().isAccessibilityManagerEnabled();
     }
 
     public static boolean isAccessibilityToolPresent() {
-        return AccessibilityStateDelegateImpl.isAccessibilityToolPresent();
+        return getDelegate().isAccessibilityToolPresent();
     }
 
     public static boolean isTextShowPasswordEnabled() {
-        return AccessibilityStateDelegateImpl.isTextShowPasswordEnabled();
+        return getDelegate().isTextShowPasswordEnabled();
     }
 
     public static boolean isOnlyAutofillRunning() {
-        return AccessibilityStateDelegateImpl.isOnlyAutofillRunning();
+        return getDelegate().isOnlyAutofillRunning();
     }
 
     public static boolean isOnlyPasswordManagersEnabled() {
-        return AccessibilityStateDelegateImpl.isOnlyPasswordManagersEnabled();
+        return getDelegate().isOnlyPasswordManagersEnabled();
     }
 
     public static boolean isKnownScreenReaderEnabled() {
-        return AccessibilityStateDelegateImpl.isKnownScreenReaderEnabled();
+        return getDelegate().isKnownScreenReaderEnabled();
     }
 
     public static boolean isDisplayInversionEnabled() {
-        return AccessibilityStateDelegateImpl.isDisplayInversionEnabled();
+        return getDelegate().isDisplayInversionEnabled();
     }
 
     public static boolean isHighContrastEnabled() {
-        return AccessibilityStateDelegateImpl.isHighContrastEnabled();
+        return getDelegate().isHighContrastEnabled();
     }
 
     public static int getNumberOfRunningServices() {
-        return AccessibilityStateDelegateImpl.getNumberOfRunningServices();
+        return getDelegate().getNumberOfRunningServices();
     }
 
     /**
@@ -321,7 +328,7 @@ public class AccessibilityState {
      * on Android S+, on previous versions of Android this is always 0.
      */
     public static int getFontWeightAdjustment() {
-        return AccessibilityStateDelegateImpl.getFontWeightAdjustment();
+        return getDelegate().getFontWeightAdjustment();
     }
 
     /**
@@ -358,8 +365,7 @@ public class AccessibilityState {
      * @return Suggested timeout given the currently running services (in milliseconds).
      */
     public static int getRecommendedTimeoutMillis(int minimumTimeout, int nonA11yTimeout) {
-        return AccessibilityStateDelegateImpl.getRecommendedTimeoutMillis(
-                minimumTimeout, nonA11yTimeout);
+        return getDelegate().getRecommendedTimeoutMillis(minimumTimeout, nonA11yTimeout);
     }
 
     /**
@@ -377,18 +383,18 @@ public class AccessibilityState {
      */
     @Deprecated
     public static void sendAccessibilityEvent(AccessibilityEvent event) {
-        AccessibilityStateDelegateImpl.sendAccessibilityEvent(event);
+        getDelegate().sendAccessibilityEvent(event);
     }
 
     /** Returns the current ANIMATOR_DURATION_SCALE from the users OS accessibility settings. */
     public static float getAnimatorDurationScale() {
-        return AccessibilityStateDelegateImpl.getAnimatorDurationScale();
+        return getDelegate().getAnimatorDurationScale();
     }
 
     /** Returns the current TEXT_CURSOR_BLINK_INTERVAL from the users OS accessibility settings. */
     @CalledByNative
     public static int getTextCursorBlinkInterval() {
-        return AccessibilityStateDelegateImpl.getTextCursorBlinkInterval();
+        return getDelegate().getTextCursorBlinkInterval();
     }
 
     /** Returns whether the user settings specify preferred reduced motion. */
@@ -416,7 +422,7 @@ public class AccessibilityState {
      */
     @CalledByNative
     private static int getAccessibilityServiceEventTypeMask() {
-        return AccessibilityStateDelegateImpl.getAccessibilityServiceEventTypeMask();
+        return getDelegate().getAccessibilityServiceEventTypeMask();
     }
 
     /**
@@ -425,13 +431,13 @@ public class AccessibilityState {
      */
     @CalledByNative
     private static int getAccessibilityServiceFeedbackTypeMask() {
-        return AccessibilityStateDelegateImpl.getAccessibilityServiceFeedbackTypeMask();
+        return getDelegate().getAccessibilityServiceFeedbackTypeMask();
     }
 
     /** Return a bitmask containing the union of all flags from running accessibility services. */
     @CalledByNative
     private static int getAccessibilityServiceFlagsMask() {
-        return AccessibilityStateDelegateImpl.getAccessibilityServiceFlagsMask();
+        return getDelegate().getAccessibilityServiceFlagsMask();
     }
 
     /**
@@ -440,13 +446,13 @@ public class AccessibilityState {
      */
     @CalledByNative
     private static int getAccessibilityServiceCapabilitiesMask() {
-        return AccessibilityStateDelegateImpl.getAccessibilityServiceCapabilitiesMask();
+        return getDelegate().getAccessibilityServiceCapabilitiesMask();
     }
 
     /** Return a list of ids of all running accessibility services. */
     @CalledByNative
     private static String[] getAccessibilityServiceIds() {
-        return AccessibilityStateDelegateImpl.getAccessibilityServiceIds();
+        return getDelegate().getAccessibilityServiceIds();
     }
 
     /**
@@ -457,7 +463,7 @@ public class AccessibilityState {
      */
     @CalledByNative
     private static boolean[] getAccessibilityToolFlags() {
-        return AccessibilityStateDelegateImpl.getAccessibilityToolFlags();
+        return getDelegate().getAccessibilityToolFlags();
     }
 
     /**
@@ -467,11 +473,11 @@ public class AccessibilityState {
      * state. The first time any client queries the state, |this| will be initialized.
      */
     public static void registerObservers() {
-        AccessibilityStateDelegateImpl.registerObservers();
+        getDelegate().registerObservers();
     }
 
     public static void initializeOnStartup() {
-        AccessibilityStateDelegateImpl.initializeOnStartup();
+        getDelegate().initializeOnStartup();
     }
 
     @NativeMethods
@@ -490,50 +496,50 @@ public class AccessibilityState {
     // ForTesting methods.
 
     public static void setIsComplexUserInteractionServiceEnabledForTesting(boolean enabled) {
-        AccessibilityStateDelegateImpl.setIsComplexUserInteractionServiceEnabledForTesting(enabled);
+        getDelegate().setIsComplexUserInteractionServiceEnabledForTesting(enabled);
     }
 
     public static void setIsTouchExplorationEnabledForTesting(boolean enabled) {
-        AccessibilityStateDelegateImpl.setIsTouchExplorationEnabledForTesting(enabled);
+        getDelegate().setIsTouchExplorationEnabledForTesting(enabled);
     }
 
     public static void setIsPerformGesturesEnabledForTesting(boolean enabled) {
-        AccessibilityStateDelegateImpl.setIsPerformGesturesEnabledForTesting(enabled);
+        getDelegate().setIsPerformGesturesEnabledForTesting(enabled);
     }
 
     public static void setIsAnyAccessibilityServiceEnabledForTesting(boolean enabled) {
-        AccessibilityStateDelegateImpl.setIsAnyAccessibilityServiceEnabledForTesting(enabled);
+        getDelegate().setIsAnyAccessibilityServiceEnabledForTesting(enabled);
     }
 
     public static void setIsAccessibilityToolPresentForTesting(boolean enabled) {
-        AccessibilityStateDelegateImpl.setIsAccessibilityToolPresentForTesting(enabled);
+        getDelegate().setIsAccessibilityToolPresentForTesting(enabled);
     }
 
     public static void setIsTextShowPasswordEnabledForTesting(boolean enabled) {
-        AccessibilityStateDelegateImpl.setIsTextShowPasswordEnabledForTesting(enabled);
+        getDelegate().setIsTextShowPasswordEnabledForTesting(enabled);
     }
 
     public static void setIsOnlyAutofillRunningForTesting(boolean enabled) {
-        AccessibilityStateDelegateImpl.setIsOnlyAutofillRunningForTesting(enabled);
+        getDelegate().setIsOnlyAutofillRunningForTesting(enabled);
     }
 
     public static void setIsOnlyPasswordManagersEnabledForTesting(boolean enabled) {
-        AccessibilityStateDelegateImpl.setIsOnlyPasswordManagersEnabledForTesting(enabled);
+        getDelegate().setIsOnlyPasswordManagersEnabledForTesting(enabled);
     }
 
     public static void setIsKnownScreenReaderEnabledForTesting(boolean enabled) {
-        AccessibilityStateDelegateImpl.setIsKnownScreenReaderEnabledForTesting(enabled);
+        getDelegate().setIsKnownScreenReaderEnabledForTesting(enabled);
     }
 
     public static void setEventMaskForTesting(int eventMask) {
-        AccessibilityStateDelegateImpl.setEventMaskForTesting(eventMask);
+        getDelegate().setEventMaskForTesting(eventMask);
     }
 
     public static void setServiceIdsForTesting(String newServiceId, boolean isAccessibilityTool) {
-        AccessibilityStateDelegateImpl.setServiceIdsForTesting(newServiceId, isAccessibilityTool);
+        getDelegate().setServiceIdsForTesting(newServiceId, isAccessibilityTool);
     }
 
     protected static void uninitializeForTesting() {
-        AccessibilityStateDelegateImpl.uninitializeForTesting();
+        getDelegate().uninitializeForTesting();
     }
 }
