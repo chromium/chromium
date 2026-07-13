@@ -179,8 +179,9 @@ IN_PROC_BROWSER_TEST_F(ActorUiHandoffButtonControllerInteractiveUiTest,
 
 // This test is only for Mac where we have immersive fullscreen.
 #if BUILDFLAG(IS_MAC)
+// TODO(crbug.com/534409730): Flaky on Mac.
 IN_PROC_BROWSER_TEST_F(ActorUiHandoffButtonControllerInteractiveUiTest,
-                       ButtonReappearsAfterFullscreenToggle) {
+                       DISABLED_ButtonReappearsAfterFullscreenToggle) {
   StartActingOnTab();
   RunTestSequence(
       ClearOmniboxFocus(),
