@@ -5940,12 +5940,6 @@ crbug.com/40197500 virtual/gpu-rasterization/images/12-55.html [ Crash Failure P
 crbug.com/40197500 virtual/gpu-rasterization/images/color-profile-image-filter-all.html [ Crash Failure Pass Timeout ]
 crbug.com/361440948 [ Mac14-arm64 ] virtual/scalefactor200/external/wpt/largest-contentful-paint/multiple-redirects-TAO.html [ Failure Pass ]
 
-# FileSystemHandle::move() is temporarily disabled for directory handles
-crbug.com/1250534 external/wpt/file-system-access/sandboxed_FileSystemDirectoryHandle-move.https.any.html [ Failure ]
-crbug.com/1250534 external/wpt/file-system-access/sandboxed_FileSystemDirectoryHandle-move.https.any.worker.html [ Failure ]
-crbug.com/1250534 virtual/fsa-incognito/external/wpt/file-system-access/sandboxed_FileSystemDirectoryHandle-move.https.any.html [ Failure ]
-crbug.com/1250534 virtual/fsa-incognito/external/wpt/file-system-access/sandboxed_FileSystemDirectoryHandle-move.https.any.worker.html [ Failure ]
-
 # crbug.com/1293591: Many virtual/gpu-rasterization/images/* tests are flaky
 crbug.com/1293591 images/color-profile-animate-rotate.html [ Failure Pass ]
 crbug.com/1293591 images/color-profile-animate.html [ Failure Pass ]

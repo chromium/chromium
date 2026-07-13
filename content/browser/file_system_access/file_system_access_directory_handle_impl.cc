@@ -398,9 +398,20 @@ void FileSystemAccessDirectoryHandleImpl::Move(
     MoveCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // TODO(crbug.com/40198034): Implement move for directory handles.
-  std::move(callback).Run(file_system_access_error::FromStatus(
-      blink::mojom::FileSystemAccessStatus::kOperationAborted));
+  RenderFrameHost* rfh = RenderFrameHost::FromID(context().frame_id);
+  bool has_transient_user_activation = rfh && rfh->HasTransientUserActivation();
+
+  RunWithPermission(
+      FileSystemAccessManagerImpl::GetEffectiveWritePermissionMode(),
+      base::BindOnce(&FileSystemAccessHandleBase::DoMove,
+                     weak_factory_.GetWeakPtr(),
+                     std::move(destination_directory), new_entry_name,
+                     has_transient_user_activation),
+      base::BindOnce([](blink::mojom::FileSystemAccessErrorPtr result,
+                        MoveCallback callback) {
+        std::move(callback).Run(std::move(result));
+      }),
+      std::move(callback));
 }
 
 void FileSystemAccessDirectoryHandleImpl::Rename(
@@ -408,9 +419,19 @@ void FileSystemAccessDirectoryHandleImpl::Rename(
     RenameCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // TODO(crbug.com/40198034): Implement rename for directory handles.
-  std::move(callback).Run(file_system_access_error::FromStatus(
-      blink::mojom::FileSystemAccessStatus::kOperationAborted));
+  RenderFrameHost* rfh = RenderFrameHost::FromID(context().frame_id);
+  bool has_transient_user_activation = rfh && rfh->HasTransientUserActivation();
+
+  RunWithPermission(
+      FileSystemAccessManagerImpl::GetEffectiveWritePermissionMode(),
+      base::BindOnce(&FileSystemAccessHandleBase::DoRename,
+                     weak_factory_.GetWeakPtr(), new_entry_name,
+                     has_transient_user_activation),
+      base::BindOnce([](blink::mojom::FileSystemAccessErrorPtr result,
+                        MoveCallback callback) {
+        std::move(callback).Run(std::move(result));
+      }),
+      std::move(callback));
 }
 
 void FileSystemAccessDirectoryHandleImpl::Remove(bool recurse,
