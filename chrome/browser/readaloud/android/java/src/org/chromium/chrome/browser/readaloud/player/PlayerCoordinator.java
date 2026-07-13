@@ -73,7 +73,8 @@ public class PlayerCoordinator implements Player {
                         delegate.getBottomControlsStacker(),
                         delegate.getLayoutManager(),
                         this,
-                        delegate.getUserEducationHelper());
+                        delegate.getUserEducationHelper(),
+                        delegate.getSideUiStateProviderSupplier());
         mMediator =
                 new PlayerMediator(
                         /* coordinator= */ this,

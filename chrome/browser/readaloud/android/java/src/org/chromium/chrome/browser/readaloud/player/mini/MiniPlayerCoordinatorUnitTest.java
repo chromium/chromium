@@ -17,6 +17,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup.MarginLayoutParams;
 import android.view.ViewStub;
 
 import org.junit.Before;
@@ -24,11 +25,14 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutManager;
@@ -38,6 +42,9 @@ import org.chromium.chrome.browser.readaloud.player.PlayerCoordinator;
 import org.chromium.chrome.browser.readaloud.player.PlayerProperties;
 import org.chromium.chrome.browser.readaloud.player.R;
 import org.chromium.chrome.browser.readaloud.player.VisibilityState;
+import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.SideUiSpecs;
+import org.chromium.chrome.browser.ui.side_ui.SideUiStateProvider;
+import org.chromium.chrome.browser.ui.side_ui.ViewMarginAdjusterForSideUi;
 import org.chromium.chrome.browser.user_education.IphCommand;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.chrome.modules.readaloud.PlaybackArgs.PlaybackMode;
@@ -92,7 +99,8 @@ public class MiniPlayerCoordinatorUnitTest {
                         mSceneLayer,
                         mLayoutManager,
                         mPlayerCoordinator,
-                        mUserEducationHelper);
+                        mUserEducationHelper,
+                        /* sideUiStateProviderSupplier= */ null);
     }
 
     @Test
@@ -108,7 +116,8 @@ public class MiniPlayerCoordinatorUnitTest {
                         mBottomControlsStacker,
                         mLayoutManager,
                         mPlayerCoordinator,
-                        mUserEducationHelper);
+                        mUserEducationHelper,
+                        /* sideUiStateProviderSupplier= */ null);
         verify(mViewStub).inflate();
         verify(mLayoutManager).addSceneOverlay(eq(mSceneLayer));
     }
@@ -180,5 +189,46 @@ public class MiniPlayerCoordinatorUnitTest {
         mCoordinator.show(/* animate= */ true);
         mModel.set(Properties.Y_OFFSET, -100);
         verify(mLayout).setYOffset(eq(-100));
+    }
+
+    @Test
+    public void testSideUiStateProviderRegistration() {
+        OneshotSupplierImpl<SideUiStateProvider> supplier = new OneshotSupplierImpl<>();
+        SideUiStateProvider provider = Mockito.mock(SideUiStateProvider.class);
+        MarginLayoutParams layoutParams = new MarginLayoutParams(0, 0);
+        doReturn(layoutParams).when(mLayout).getLayoutParams();
+
+        mCoordinator =
+                new MiniPlayerCoordinator(
+                        mContextForInflation,
+                        mSharedModel,
+                        mMediator,
+                        mLayout,
+                        mSceneLayer,
+                        mLayoutManager,
+                        mPlayerCoordinator,
+                        mUserEducationHelper,
+                        supplier);
+
+        SideUiSpecs specs = new SideUiSpecs(10, 20);
+        doReturn(specs).when(provider).getCurrentSideUiSpecs();
+
+        // Before supplier is available, no observer is registered.
+        verify(provider, never()).addObserver(any());
+
+        // Set supplier
+        supplier.set(provider);
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
+
+        // Now, it should have registered an observer.
+        verify(provider).addObserver(any(ViewMarginAdjusterForSideUi.class));
+
+        // It should have applied the current specs immediately.
+        assertEquals(10, layoutParams.leftMargin);
+        assertEquals(20, layoutParams.rightMargin);
+
+        // When coordinator is destroyed, it should remove the observer.
+        mCoordinator.destroy();
+        verify(provider).removeObserver(any(ViewMarginAdjusterForSideUi.class));
     }
 }

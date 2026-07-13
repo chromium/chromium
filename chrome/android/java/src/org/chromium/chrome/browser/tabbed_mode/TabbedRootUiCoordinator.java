@@ -2897,7 +2897,11 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         }
     }
 
-    /** Returns the {@link OneshotSupplier} for the {@link SideUiStateProvider}. */
+    /**
+     * Returns the {@link OneshotSupplier} for the {@link SideUiStateProvider}. This is non-null in
+     * tabbed mode.
+     */
+    @Override
     public OneshotSupplier<SideUiStateProvider> getSideUiStateProviderSupplier() {
         return mSideUiStateProviderSupplier;
     }

@@ -207,6 +207,7 @@ import org.chromium.chrome.browser.ui.lens.LensOverlayCoordinator;
 import org.chromium.chrome.browser.ui.lens.LensOverlayInvocationSource;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
+import org.chromium.chrome.browser.ui.side_ui.SideUiStateProvider;
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncCoordinator;
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncCoordinatorSupplier;
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncCoordinatorSupplier.SupplierFlow;
@@ -1357,7 +1358,8 @@ public class RootUiCoordinator
                         mWindowAndroid,
                         mActivityLifecycleDispatcher,
                         mLayoutStateProviderOneShotSupplier,
-                        mFullscreenManager);
+                        mFullscreenManager,
+                        getSideUiStateProviderSupplier());
         mReadAloudControllerSupplier.set(controller);
         mReadAloudContextualSearchObserver =
                 new ContextualSearchObserver() {
@@ -2882,5 +2884,13 @@ public class RootUiCoordinator
 
     public @Nullable HandoffController getHandoffController() {
         return mHandoffController;
+    }
+
+    /**
+     * Returns the {@link OneshotSupplier} for the {@link SideUiStateProvider}. Can return null if
+     * the current activity does not support Side Panel.
+     */
+    protected @Nullable OneshotSupplier<SideUiStateProvider> getSideUiStateProviderSupplier() {
+        return null;
     }
 }

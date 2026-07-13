@@ -9,6 +9,7 @@ import android.app.Activity;
 import org.chromium.base.Promise;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NonNullObservableSupplier;
+import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -16,6 +17,7 @@ import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
 import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.ui.side_ui.SideUiStateProvider;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.chrome.modules.readaloud.Feedback.FeedbackType;
 import org.chromium.chrome.modules.readaloud.Feedback.NegativeFeedbackReason;
@@ -120,6 +122,14 @@ public interface Player {
         void moveToPrevious();
 
         void moveToNext();
+
+        /**
+         * Returns the supplier for {@link SideUiStateProvider}, used to align layouts with the side
+         * panel. Can return null if the current activity does not support Side Panel.
+         */
+        default @Nullable OneshotSupplier<SideUiStateProvider> getSideUiStateProviderSupplier() {
+            return null;
+        }
     }
 
     /** Observer interface to provide updates about player UI. */

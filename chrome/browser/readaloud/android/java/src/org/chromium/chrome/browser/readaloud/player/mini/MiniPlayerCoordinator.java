@@ -12,6 +12,7 @@ import android.view.ViewStub;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
@@ -20,6 +21,8 @@ import org.chromium.chrome.browser.readaloud.ReadAloudMiniPlayerSceneLayer;
 import org.chromium.chrome.browser.readaloud.player.PlayerCoordinator;
 import org.chromium.chrome.browser.readaloud.player.R;
 import org.chromium.chrome.browser.readaloud.player.VisibilityState;
+import org.chromium.chrome.browser.ui.side_ui.SideUiStateProvider;
+import org.chromium.chrome.browser.ui.side_ui.ViewMarginAdjusterForSideUi;
 import org.chromium.chrome.browser.user_education.IphCommandBuilder;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.feature_engagement.FeatureConstants;
@@ -36,6 +39,8 @@ public class MiniPlayerCoordinator {
     private final UserEducationHelper mUserEducationHelper;
     /*  View-inflation-capable Context for read_aloud_playback isolated split */
     private final Context mContext;
+    private final @Nullable OneshotSupplier<SideUiStateProvider> mSideUiStateProviderSupplier;
+    private @Nullable ViewMarginAdjusterForSideUi mMarginAdjuster;
 
     /**
      * @param activity App activity containing a placeholder FrameLayout with ID
@@ -45,6 +50,9 @@ public class MiniPlayerCoordinator {
      * @param bottomControlsStacker Allows observing and changing browser controls heights.
      * @param layoutManager Involved in showing the compositor view.
      * @param playerCoordinator PlayerCoordinator to be notified of mini player updates.
+     * @param userEducationHelper Used to show in-product help.
+     * @param sideUiStateProviderSupplier Supplier for SideUiStateProvider, used to adjust layout
+     *     margins when the side panel is showing. Can be null if Side Panel is unsupported.
      */
     public MiniPlayerCoordinator(
             Activity activity,
@@ -53,7 +61,8 @@ public class MiniPlayerCoordinator {
             BottomControlsStacker bottomControlsStacker,
             @Nullable LayoutManager layoutManager,
             PlayerCoordinator playerCoordinator,
-            UserEducationHelper userEducationHelper) {
+            UserEducationHelper userEducationHelper,
+            @Nullable OneshotSupplier<SideUiStateProvider> sideUiStateProviderSupplier) {
         this(
                 context,
                 sharedModel,
@@ -62,7 +71,8 @@ public class MiniPlayerCoordinator {
                 new ReadAloudMiniPlayerSceneLayer(bottomControlsStacker.getBrowserControls()),
                 layoutManager,
                 playerCoordinator,
-                userEducationHelper);
+                userEducationHelper,
+                sideUiStateProviderSupplier);
     }
 
     private static MiniPlayerLayout inflateLayout(Activity activity, Context context) {
@@ -85,11 +95,13 @@ public class MiniPlayerCoordinator {
             ReadAloudMiniPlayerSceneLayer sceneLayer,
             @Nullable LayoutManager layoutManager,
             PlayerCoordinator playerCoordinator,
-            UserEducationHelper userEducationHelper) {
+            UserEducationHelper userEducationHelper,
+            @Nullable OneshotSupplier<SideUiStateProvider> sideUiStateProviderSupplier) {
         mContext = context;
         mMediator = mediator;
         mMediator.setCoordinator(this);
         mLayout = layout;
+        mSideUiStateProviderSupplier = sideUiStateProviderSupplier;
         assert layout != null;
         sceneLayer.setIsVisible(true);
         if (layoutManager != null) {
@@ -97,6 +109,15 @@ public class MiniPlayerCoordinator {
         }
         mPlayerCoordinator = playerCoordinator;
         mUserEducationHelper = userEducationHelper;
+
+        if (mSideUiStateProviderSupplier != null) {
+            mSideUiStateProviderSupplier.onAvailable(
+                    provider -> {
+                        mMarginAdjuster = new ViewMarginAdjusterForSideUi(mLayout);
+                        provider.addObserver(mMarginAdjuster);
+                        mMarginAdjuster.onSideUiSpecsChanged(provider.getCurrentSideUiSpecs());
+                    });
+        }
 
         // TODO(crbug.com/383544537) These should be CompositorModelChangeProcessors. The miniplayer
         // currently relies on other objects to request a new frame. If no new frame is requested,
@@ -111,6 +132,11 @@ public class MiniPlayerCoordinator {
 
     public void destroy() {
         mLayout.destroy();
+        if (mMarginAdjuster != null
+                && mSideUiStateProviderSupplier != null
+                && mSideUiStateProviderSupplier.get() != null) {
+            mSideUiStateProviderSupplier.get().removeObserver(mMarginAdjuster);
+        }
     }
 
     /**

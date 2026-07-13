@@ -368,7 +368,8 @@ public class ReadAloudControllerUnitTest {
                         mActivityWindowAndroid,
                         mActivityLifecycleDispatcher,
                         mLayoutStateProviderSupplier,
-                        mFullscreenManager);
+                        mFullscreenManager,
+                        /* sideUiStateProviderSupplier= */ null);
         RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
         return controller;
     }

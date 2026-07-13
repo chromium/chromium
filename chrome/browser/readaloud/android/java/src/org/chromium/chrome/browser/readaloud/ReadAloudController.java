@@ -76,6 +76,7 @@ import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.translate.TranslateBridge;
 import org.chromium.chrome.browser.translate.TranslationObserver;
+import org.chromium.chrome.browser.ui.side_ui.SideUiStateProvider;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.chrome.modules.readaloud.Feedback.FeedbackType;
 import org.chromium.chrome.modules.readaloud.Feedback.NegativeFeedbackReason;
@@ -152,6 +153,7 @@ public class ReadAloudController
     @Nullable private Player mPlayerCoordinator;
     private final MonotonicObservableSupplier<LayoutManager> mLayoutManagerSupplier;
     private final UserEducationHelper mUserEducationHelper;
+    private final @Nullable OneshotSupplier<SideUiStateProvider> mSideUiStateProviderSupplier;
 
     @Nullable private TabModelTabObserver mTabObserver;
     @Nullable private TabModelTabObserver mIncognitoTabObserver;
@@ -612,11 +614,13 @@ public class ReadAloudController
             ActivityWindowAndroid activityWindowAndroid,
             ActivityLifecycleDispatcher activityLifecycleDispatcher,
             OneshotSupplier<LayoutStateProvider> layoutStateProviderSupplier,
-            FullscreenManager fullscreenManager) {
+            FullscreenManager fullscreenManager,
+            @Nullable OneshotSupplier<SideUiStateProvider> sideUiStateProviderSupplier) {
         sInstances.add(this);
         mCallbackController = new CallbackController();
         mActivity = activity;
         mProfileSupplier = profileSupplier;
+        mSideUiStateProviderSupplier = sideUiStateProviderSupplier;
         new OneShotCallback<>(mProfileSupplier, this::onProfileAvailable);
         mTabModel = tabModel;
         mIncognitoTabModel = incognitoTabModel;
@@ -1719,6 +1723,11 @@ public class ReadAloudController
         if (mUrls == null || mCurrentUrlIndex == mUrls.size() - 1) return;
         mCurrentUrlIndex++;
         playOverviewForCurrentUrl();
+    }
+
+    @Override
+    public @Nullable OneshotSupplier<SideUiStateProvider> getSideUiStateProviderSupplier() {
+        return mSideUiStateProviderSupplier;
     }
 
     @Override
