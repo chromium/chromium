@@ -109,18 +109,6 @@ declare_args() {
   # but nothing depends on tham and therefore Clippy will only be invoked
   # in a full build (i.e. when building all targets).
   enable_rust_clippy_eager = true
-
-  # Whether expansion of GN templates like `rust_static_library` will expand
-  # (if `cpp_api_from_rust` is set as an attribute of `rust_static_library`) to
-  # create a target for invoking Crubit tools to generate C++ bindings for the
-  # Rust library.
-  #
-  # TODO(crbug.com/470466915): Change `false` to `build_with_chromium` (after
-  # officially supporting building and distributing the `cpp_api_from_rust`
-  # (soon to be renamed to `cpp_api_from_rust`) tool - i.e. no more
-  # `fail_hard=False` when invoking `build_crubit.py` from
-  # `tools/rust/build_rust.py`).
-  enable_cpp_api_from_rust = false
 }
 
 declare_args() {
@@ -425,6 +413,16 @@ if (toolchain_for_rust_host_build_tools) {
 # compiled, which is typically as unwind.
 rust_prebuilt_stdlib =
     !use_chromium_rust_toolchain || toolchain_for_rust_host_build_tools
+
+# `cpp_api_from_rust` (aka `cc_bindings_from_rs`) is available when building
+# Chromium, but may be missing or can't be used in some other cases.
+# `enable_cpp_api_from_rust` is checked under `//build/rust/*.gni` (and may be
+# used in other `.gn` files) to prevent using the tool in unsupported scenarios.
+#
+# See the `assert` comments in `cpp_api_from_rust.gni` for explanation of
+# the conditions used here.
+enable_cpp_api_from_rust =
+    enable_rust && use_chromium_rust_toolchain && !rust_prebuilt_stdlib
 
 rustc_wrapper_inputs = [
   "//build/action_helpers.py",

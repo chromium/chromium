@@ -41,6 +41,20 @@ import("//build/toolchain/kythe.gni")
 #
 #
 template("cpp_api_from_rust") {
+  # `enable_rust` and `use_chromium_rust_toolchain` enforce that `rustc` and
+  # `cpp_api_from_rust` use the same version of Rust compiler sources - this is
+  # required (e.g. to see the same memory layout of repr-Rusts structs) as
+  # explained in
+  # https://github.com/google/crubit/blob/89417b58802e20a6a11db7fea7c31692fef25276/docs/design/design.md?plain=1#L599-L602
+  assert(enable_rust && use_chromium_rust_toolchain)
+
+  # `cpp_api_from_rust`-generated bindings may depend on C++ bindings of Rust
+  # standard library. Currently Chromium is only able to invoke Crubit in
+  # `.rs`-consuming mode (rather than `.rlib`-consuming mode). Together, these
+  # two constraints mean that `cpp_api_from_rust` only works for the target
+  # platform and doesn't yet work for the host platform.
+  assert(!rust_prebuilt_stdlib)
+
   _rspgen_target_name = "${target_name}_crubit_rspgen"
   _action_target_name = "${target_name}_crubit_action"
   _rust_impl_target_name = "${target_name}_crubit_impl"

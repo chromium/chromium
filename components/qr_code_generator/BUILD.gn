@@ -33,6 +33,11 @@ source_set("bitmap_generator") {
   ]
 }
 
+# TODO(https://crbug.com/533546009): After Crubit bakes and sticks on the
+# Stable release channel, then it should be okay to assume that
+# `enable_cpp_api_from_rust` will be forever true (and remove
+# `cxx::bridge`-related bits of QR code generator in this `BUILD.gn` file, bits
+# in `.cc` files, and the whole `qr_code_generator_ffi_glue.rs` file).
 buildflag_header("cpp_api_from_rust_buildflags") {
   header = "cpp_api_from_rust_buildflags.h"
   flags = [ "ENABLE_CPP_API_FROM_RUST=$enable_cpp_api_from_rust" ]
