@@ -162,6 +162,9 @@ const char* const kWebViewCrashKeyAllowList[] = {
     "num-experiments",
     "variations-seed-version",
 
+    // crash keys about check failures
+    "Logging-FATAL_MILESTONE",
+
     // CRX components
     "crx-components",
     "crx-components-cohort-hashes",
