@@ -21,7 +21,7 @@ class AlmanacAppIconLoaderBrowserTest : public InProcessBrowserTest {
     InProcessBrowserTest::SetUpOnMainThread();
 
     ASSERT_TRUE(embedded_test_server()->Start());
-    loader_ = std::make_unique<AlmanacAppIconLoader>(*browser()->profile());
+    loader_ = std::make_unique<AlmanacAppIconLoader>(*browser()->GetProfile());
   }
 
   void TearDownOnMainThread() override {

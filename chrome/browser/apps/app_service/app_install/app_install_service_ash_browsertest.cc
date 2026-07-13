@@ -54,7 +54,7 @@ IN_PROC_BROWSER_TEST_F(AppInstallServiceAshBrowserTest,
   content::TestNavigationObserver navigation_observer(play_install_url);
   navigation_observer.StartWatchingNewWebContents();
 
-  AppServiceProxyFactory::GetForProfile(browser()->profile())
+  AppServiceProxyFactory::GetForProfile(browser()->GetProfile())
       ->AppInstallService()
       .InstallApp(AppInstallSurface::kAppInstallUriUnknown,
                   PackageId(PackageType::kArc, "com.android.chrome"),
@@ -80,7 +80,7 @@ IN_PROC_BROWSER_TEST_F(AppInstallServiceAshBrowserTest, InstallGfnAppOpensGfn) {
   content::TestNavigationObserver navigation_observer(gfn_install_url);
   navigation_observer.StartWatchingNewWebContents();
 
-  AppServiceProxyFactory::GetForProfile(browser()->profile())
+  AppServiceProxyFactory::GetForProfile(browser()->GetProfile())
       ->AppInstallService()
       .InstallApp(AppInstallSurface::kAppInstallUriUnknown,
                   PackageId(PackageType::kGeForceNow, "test"),
@@ -116,7 +116,7 @@ IN_PROC_BROWSER_TEST_F(AppInstallServiceAshBrowserTest,
       (GURL(ash::kChromeUIAppInstallDialogURL)));
   navigation_observer_dialog.StartWatchingNewWebContents();
 
-  AppServiceProxyFactory::GetForProfile(browser()->profile())
+  AppServiceProxyFactory::GetForProfile(browser()->GetProfile())
       ->AppInstallService()
       .InstallApp(AppInstallSurface::kAppInstallUriUnknown,
                   PackageId::FromString(test_package_id).value(),
@@ -142,7 +142,7 @@ IN_PROC_BROWSER_TEST_F(AppInstallServiceAshBrowserTest,
       (GURL(ash::kChromeUIAppInstallDialogURL)));
   navigation_observer.StartWatchingNewWebContents();
 
-  AppServiceProxyFactory::GetForProfile(browser()->profile())
+  AppServiceProxyFactory::GetForProfile(browser()->GetProfile())
       ->AppInstallService()
       .InstallApp(AppInstallSurface::kAppInstallUriMall, package_id,
                   /*anchor_window=*/std::nullopt, base::DoNothing());
@@ -158,14 +158,14 @@ IN_PROC_BROWSER_TEST_F(AppInstallServiceAshBrowserTest,
                        InstallWebsiteFindsInstalledWebApp) {
   auto [app_id, package_id] = app_install_server()->SetUpWebsiteResponse();
 
-  web_app::test::InstallDummyWebApp(browser()->profile(), "Test app",
+  web_app::test::InstallDummyWebApp(browser()->GetProfile(), "Test app",
                                     GURL(package_id.identifier()));
 
   content::TestNavigationObserver navigation_observer(
       (GURL(ash::kChromeUIAppInstallDialogURL)));
   navigation_observer.StartWatchingNewWebContents();
 
-  AppServiceProxyFactory::GetForProfile(browser()->profile())
+  AppServiceProxyFactory::GetForProfile(browser()->GetProfile())
       ->AppInstallService()
       .InstallApp(AppInstallSurface::kAppInstallUriMall, package_id,
                   /*anchor_window=*/std::nullopt, base::DoNothing());
@@ -215,7 +215,7 @@ INSTANTIATE_TEST_SUITE_P(All,
 IN_PROC_BROWSER_TEST_P(AppInstallServiceAshGuestBrowserTest, InstallApp) {
   base::HistogramTester histogram_tester;
   base::RunLoop run_loop;
-  AppServiceProxyFactory::GetForProfile(browser()->profile())
+  AppServiceProxyFactory::GetForProfile(browser()->GetProfile())
       ->AppInstallService()
       .InstallApp(AppInstallSurface::kAppInstallUriUnknown,
                   PackageId(PackageType::kWeb, "test"),

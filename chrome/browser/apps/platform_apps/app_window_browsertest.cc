@@ -234,7 +234,7 @@ IN_PROC_BROWSER_TEST_F(AppWindowAPITest,
       test_data_dir_.AppendASCII("platform_apps").AppendASCII("window_api"));
   EXPECT_TRUE(extension);
 
-  apps::AppServiceProxyFactory::GetForProfile(browser()->profile())
+  apps::AppServiceProxyFactory::GetForProfile(browser()->GetProfile())
       ->LaunchAppWithParams(apps::AppLaunchParams(
           extension->id(), apps::LaunchContainer::kLaunchContainerNone,
           WindowOpenDisposition::NEW_WINDOW, apps::LaunchSource::kFromTest));
@@ -248,12 +248,12 @@ IN_PROC_BROWSER_TEST_F(AppWindowAPITest,
   ASSERT_TRUE(geometry_listener.WaitUntilSatisfied());
 
   GeometryCacheChangeHelper geo_change_helper_1(
-      AppWindowGeometryCache::Get(browser()->profile()), extension->id(),
+      AppWindowGeometryCache::Get(browser()->GetProfile()), extension->id(),
       // The next line has information that has to stay in sync with the app.
       "test-ra", gfx::Rect(200, 200, 200, 200));
 
   GeometryCacheChangeHelper geo_change_helper_2(
-      AppWindowGeometryCache::Get(browser()->profile()), extension->id(),
+      AppWindowGeometryCache::Get(browser()->GetProfile()), extension->id(),
       // The next line has information that has to stay in sync with the app.
       "test-rb", gfx::Rect(200, 200, 200, 200));
 
@@ -324,8 +324,9 @@ IN_PROC_BROWSER_TEST_F(AppWindowAPITest, UafInSetNativeWindowFullscreen) {
   extensions::AppWindowClient::Set(nullptr);
   extensions::AppWindowClient::Set(&test_client);
 
-  extensions::AppWindow* window = CreateAppWindowFromParams(
-      browser()->profile(), extension, extensions::AppWindow::CreateParams());
+  extensions::AppWindow* window =
+      CreateAppWindowFromParams(browser()->GetProfile(), extension,
+                                extensions::AppWindow::CreateParams());
   ASSERT_TRUE(window);
 
   // Trigger fullscreen transition. In our placeholder `SetFullscreen()`,

@@ -99,8 +99,8 @@ class DependencyParserModelLoaderDisabledBrowserTest
 
 IN_PROC_BROWSER_TEST_F(DependencyParserModelLoaderDisabledBrowserTest,
                        DependencyParserModelLoaderDisabled) {
-  EXPECT_FALSE(
-      DependencyParserModelLoaderFactory::GetForProfile(browser()->profile()));
+  EXPECT_FALSE(DependencyParserModelLoaderFactory::GetForProfile(
+      browser()->GetProfile()));
 }
 
 class DependencyParserModelLoaderBrowserTest
@@ -128,7 +128,7 @@ class DependencyParserModelLoaderBrowserTest
 
   DependencyParserModelLoader* dependency_parser_model_service() {
     return DependencyParserModelLoaderFactory::GetForProfile(
-        browser()->profile());
+        browser()->GetProfile());
   }
 
   const GURL& english_url() const { return english_url_; }
@@ -175,7 +175,8 @@ IN_PROC_BROWSER_TEST_F(DependencyParserModelLoaderBrowserTest,
 IN_PROC_BROWSER_TEST_F(DependencyParserModelLoaderBrowserTest,
                        DependencyParserModelLoaderEnabled_OffTheRecord) {
   EXPECT_TRUE(DependencyParserModelLoaderFactory::GetForProfile(
-      browser()->profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true)));
+      browser()->GetProfile()->GetPrimaryOTRProfile(
+          /*create_if_needed=*/true)));
 }
 
 IN_PROC_BROWSER_TEST_F(DependencyParserModelLoaderBrowserTest,
@@ -184,7 +185,7 @@ IN_PROC_BROWSER_TEST_F(DependencyParserModelLoaderBrowserTest,
   base::HistogramTester histogram_tester;
   ASSERT_TRUE(dependency_parser_model_service());
 
-  OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->profile())
+  OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->GetProfile())
       ->OverrideTargetModelForTesting(
           optimization_guide::proto::OPTIMIZATION_TARGET_PHRASE_SEGMENTATION,
           optimization_guide::TestModelInfoBuilder()
@@ -224,7 +225,7 @@ IN_PROC_BROWSER_TEST_F(DependencyParserModelLoaderBrowserTest,
       },
       run_loop.get(), dependency_parser_model_service()));
 
-  OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->profile())
+  OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->GetProfile())
       ->OverrideTargetModelForTesting(
           optimization_guide::proto::OPTIMIZATION_TARGET_PHRASE_SEGMENTATION,
           optimization_guide::TestModelInfoBuilder()
@@ -252,7 +253,7 @@ IN_PROC_BROWSER_TEST_F(DependencyParserModelLoaderBrowserTest,
   base::ScopedAllowBlockingForTesting allow_io_for_test_setup;
   base::HistogramTester histogram_tester;
   ASSERT_TRUE(dependency_parser_model_service());
-  OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->profile())
+  OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->GetProfile())
       ->OverrideTargetModelForTesting(
           optimization_guide::proto::OPTIMIZATION_TARGET_PHRASE_SEGMENTATION,
           optimization_guide::TestModelInfoBuilder()
@@ -279,7 +280,7 @@ IN_PROC_BROWSER_TEST_F(DependencyParserModelLoaderBrowserTest,
   base::HistogramTester histogram_tester;
   ASSERT_TRUE(dependency_parser_model_service());
 
-  OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->profile())
+  OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->GetProfile())
       ->OverrideTargetModelForTesting(
           optimization_guide::proto::OPTIMIZATION_TARGET_PHRASE_SEGMENTATION,
           optimization_guide::TestModelInfoBuilder()
@@ -296,7 +297,7 @@ IN_PROC_BROWSER_TEST_F(DependencyParserModelLoaderBrowserTest,
       "WasLoaded",
       true, 1);
 
-  OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->profile())
+  OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->GetProfile())
       ->OverrideTargetModelForTesting(
           optimization_guide::proto::OPTIMIZATION_TARGET_PHRASE_SEGMENTATION,
           optimization_guide::TestModelInfoBuilder()

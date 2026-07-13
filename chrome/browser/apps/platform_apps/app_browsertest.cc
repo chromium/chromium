@@ -216,7 +216,7 @@ class PlatformAppWithFileBrowserTest : public PlatformAppBrowserTest {
 
     std::vector<base::FilePath> launch_files;
     launch_files.push_back(file_path);
-    apps::AppServiceProxyFactory::GetForProfile(browser()->profile())
+    apps::AppServiceProxyFactory::GetForProfile(browser()->GetProfile())
         ->LaunchAppWithFiles(
             extension->id(),
             apps::GetEventFlags(WindowOpenDisposition::NEW_FOREGROUND_TAB,
@@ -243,7 +243,7 @@ class PlatformAppWithFileBrowserTest : public PlatformAppBrowserTest {
         WindowOpenDisposition::NEW_WINDOW, apps::LaunchSource::kFromTest);
     params.command_line = command_line;
     params.current_directory = test_data_dir_;
-    apps::AppServiceProxyFactory::GetForProfile(browser()->profile())
+    apps::AppServiceProxyFactory::GetForProfile(browser()->GetProfile())
         ->LaunchAppWithParams(std::move(params));
 
     if (!catcher.GetNextResult()) {
@@ -277,7 +277,7 @@ const char kTestFilePath[] = "platform_apps/launch_files/test.txt";
 // ash, so we test that it works here.
 IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest, CreateAndCloseAppWindow) {
   const Extension* extension = LoadAndLaunchPlatformApp("minimal", "Launched");
-  AppWindow* window = CreateAppWindow(browser()->profile(), extension);
+  AppWindow* window = CreateAppWindow(browser()->GetProfile(), extension);
   CloseAppWindow(window);
 }
 
@@ -842,7 +842,7 @@ IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest,
                        AppWindowAdjustBoundsToBeVisibleOnScreen) {
   const Extension* extension = LoadAndLaunchPlatformApp("minimal", "Launched");
 
-  AppWindow* window = CreateAppWindow(browser()->profile(), extension);
+  AppWindow* window = CreateAppWindow(browser()->GetProfile(), extension);
 
   // The screen bounds didn't change, the cached bounds didn't need to adjust.
   gfx::Rect cached_bounds(80, 100, 400, 400);
@@ -938,7 +938,7 @@ void MAYBE_PlatformAppDevToolsBrowserTest::RunTestWithDevTools(const char* name,
     // Relaunch the app and get a new AppWindow.
     content::CreateAndLoadWebContentsObserver app_loaded_observer(
         /*num_expected_contents=*/2);
-    apps::AppServiceProxyFactory::GetForProfile(browser()->profile())
+    apps::AppServiceProxyFactory::GetForProfile(browser()->GetProfile())
         ->LaunchAppWithParams(apps::AppLaunchParams(
             extension->id(), apps::LaunchContainer::kLaunchContainerNone,
             WindowOpenDisposition::NEW_WINDOW, apps::LaunchSource::kFromTest));
@@ -1111,7 +1111,7 @@ class CheckExtensionInstalledObserver
 // the script resource in the opened app window.
 IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest,
                        PRE_PRE_ComponentAppBackgroundPage) {
-  CheckExtensionInstalledObserver should_install(browser()->profile());
+  CheckExtensionInstalledObserver should_install(browser()->GetProfile());
 
   // Ensure that we wait until the background page is run (to register the
   // OnLaunched listener) before trying to open the application. This is similar
@@ -1126,7 +1126,7 @@ IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest,
   ASSERT_TRUE(should_install.seen());
 
   ExtensionTestMessageListener launched_listener("Launched");
-  apps::AppServiceProxyFactory::GetForProfile(browser()->profile())
+  apps::AppServiceProxyFactory::GetForProfile(browser()->GetProfile())
       ->LaunchAppWithParams(apps::AppLaunchParams(
           extension->id(), apps::LaunchContainer::kLaunchContainerNone,
           WindowOpenDisposition::NEW_WINDOW, apps::LaunchSource::kFromTest));
@@ -1143,13 +1143,13 @@ IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest, PRE_ComponentAppBackgroundPage) {
   // in a different observer (which would timeout if not the app was not
   // previously installed properly) and then check this observer to make sure it
   // never saw the NOTIFICATION_EXTENSION_WILL_BE_INSTALLED_DEPRECATED event.
-  CheckExtensionInstalledObserver should_not_install(browser()->profile());
+  CheckExtensionInstalledObserver should_not_install(browser()->GetProfile());
   const Extension* extension = LoadExtensionAsComponent(
       test_data_dir_.AppendASCII("platform_apps").AppendASCII("component"));
   ASSERT_TRUE(extension);
 
   ExtensionTestMessageListener launched_listener("Launched");
-  apps::AppServiceProxyFactory::GetForProfile(browser()->profile())
+  apps::AppServiceProxyFactory::GetForProfile(browser()->GetProfile())
       ->LaunchAppWithParams(apps::AppLaunchParams(
           extension->id(), apps::LaunchContainer::kLaunchContainerNone,
           WindowOpenDisposition::NEW_WINDOW, apps::LaunchSource::kFromTest));
@@ -1158,10 +1158,11 @@ IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest, PRE_ComponentAppBackgroundPage) {
   ASSERT_FALSE(should_not_install.seen());
 
   // Simulate a "downgrade" from version 2 in the test manifest.json to 1.
-  ExtensionPrefs* extension_prefs = ExtensionPrefs::Get(browser()->profile());
+  ExtensionPrefs* extension_prefs =
+      ExtensionPrefs::Get(browser()->GetProfile());
 
   // Clear the registered events to ensure they are updated.
-  extensions::EventRouter::Get(browser()->profile())
+  extensions::EventRouter::Get(browser()->GetProfile())
       ->ClearRegisteredEventsForTest(extension->id());
 
   ScopedDictPrefUpdate update(extension_prefs->pref_service(),
@@ -1174,7 +1175,7 @@ IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest, PRE_ComponentAppBackgroundPage) {
 // Component App Test 3 of 3: simulate a component extension upgrade that
 // re-adds the OnLaunched event, and allows the app to be launched.
 IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest, ComponentAppBackgroundPage) {
-  CheckExtensionInstalledObserver should_install(browser()->profile());
+  CheckExtensionInstalledObserver should_install(browser()->GetProfile());
   // Since we are forcing an upgrade, we need to wait for the load again.
   content::CreateAndLoadWebContentsObserver app_loaded_observer;
 
@@ -1185,7 +1186,7 @@ IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest, ComponentAppBackgroundPage) {
   ASSERT_TRUE(should_install.seen());
 
   ExtensionTestMessageListener launched_listener("Launched");
-  apps::AppServiceProxyFactory::GetForProfile(browser()->profile())
+  apps::AppServiceProxyFactory::GetForProfile(browser()->GetProfile())
       ->LaunchAppWithParams(apps::AppLaunchParams(
           extension->id(), apps::LaunchContainer::kLaunchContainerNone,
           WindowOpenDisposition::NEW_WINDOW, apps::LaunchSource::kFromTest));
@@ -1209,7 +1210,7 @@ IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest,
 
   {
     ExtensionTestMessageListener launched_listener("Launched");
-    apps::AppServiceProxyFactory::GetForProfile(browser()->profile())
+    apps::AppServiceProxyFactory::GetForProfile(browser()->GetProfile())
         ->LaunchAppWithParams(apps::AppLaunchParams(
             extension->id(), apps::LaunchContainer::kLaunchContainerNone,
             WindowOpenDisposition::NEW_WINDOW, apps::LaunchSource::kFromTest));

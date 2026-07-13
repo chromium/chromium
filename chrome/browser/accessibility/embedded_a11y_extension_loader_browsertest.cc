@@ -186,12 +186,14 @@ IN_PROC_BROWSER_TEST_F(EmbeddedA11yExtensionLoaderTest,
   content::RunAllTasksUntilIdle();
 
   InstallAndWaitForExtensionLoaded(
-      incognito->profile(), extension_misc::kReadingModeGDocsHelperExtensionId,
+      incognito->GetProfile(),
+      extension_misc::kReadingModeGDocsHelperExtensionId,
       extension_misc::kReadingModeGDocsHelperExtensionPath,
       extension_misc::kReadingModeGDocsHelperManifestFilename,
       /*should_localize=*/false);
   RemoveAndWaitForExtensionUnloaded(
-      incognito->profile(), extension_misc::kReadingModeGDocsHelperExtensionId);
+      incognito->GetProfile(),
+      extension_misc::kReadingModeGDocsHelperExtensionId);
 }
 
 #if !BUILDFLAG(IS_CHROMEOS)
@@ -202,13 +204,13 @@ IN_PROC_BROWSER_TEST_F(EmbeddedA11yExtensionLoaderTest,
   content::RunAllTasksUntilIdle();
 
   InstallAndWaitForExtensionLoaded(
-      guest_browser->profile(),
+      guest_browser->GetProfile(),
       extension_misc::kReadingModeGDocsHelperExtensionId,
       extension_misc::kReadingModeGDocsHelperExtensionPath,
       extension_misc::kReadingModeGDocsHelperManifestFilename,
       /*should_localize=*/false);
   RemoveAndWaitForExtensionUnloaded(
-      guest_browser->profile(),
+      guest_browser->GetProfile(),
       extension_misc::kReadingModeGDocsHelperExtensionId);
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)

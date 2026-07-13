@@ -74,7 +74,7 @@ class AXMainNodeAnnotatorControllerBrowserTest : public InProcessBrowserTest {
 #if BUILDFLAG(ENABLE_SCREEN_AI_BROWSERTESTS)
     base::test::TestFuture<bool> future;
     screen_ai::ScreenAIServiceRouterFactory::GetForBrowserContext(
-        browser()->profile())
+        browser()->GetProfile())
         ->GetServiceStateAsync(
             screen_ai::ScreenAIServiceRouter::Service::kMainContentExtraction,
             future.GetCallback());
@@ -82,14 +82,14 @@ class AXMainNodeAnnotatorControllerBrowserTest : public InProcessBrowserTest {
     ASSERT_TRUE(future.Get<bool>()) << "Service initialization failed.";
 #else
     screen_ai::AXMainNodeAnnotatorControllerFactory::GetForProfile(
-        browser()->profile())
+        browser()->GetProfile())
         ->set_service_ready_for_testing();
 #endif
   }
 
   void CompleteServiceInitialization() {
     screen_ai::AXMainNodeAnnotatorControllerFactory::GetForProfile(
-        browser()->profile())
+        browser()->GetProfile())
         ->complete_service_intialization_for_testing();
   }
 
@@ -248,7 +248,7 @@ IN_PROC_BROWSER_TEST_F(AXMainNodeAnnotatorControllerBrowserTest,
   }
 
   // The preference was set for the profile by PRE_EnabledByPreference.
-  ASSERT_TRUE(browser()->profile()->GetPrefs()->GetBoolean(
+  ASSERT_TRUE(browser()->GetProfile()->GetPrefs()->GetBoolean(
       prefs::kAccessibilityMainNodeAnnotationsEnabled));
 
   auto* const web_contents =

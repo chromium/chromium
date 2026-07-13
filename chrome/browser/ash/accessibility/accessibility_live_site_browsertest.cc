@@ -32,7 +32,7 @@ class AccessibilityLiveSiteTest : public InProcessBrowserTest {
   void SetUpOnMainThread() override {
     ASSERT_FALSE(AccessibilityManager::Get()->IsSelectToSpeakEnabled());
 
-    extensions::ExtensionHostTestHelper host_helper(browser()->profile());
+    extensions::ExtensionHostTestHelper host_helper(browser()->GetProfile());
     AccessibilityManager::Get()->SetSelectToSpeakEnabled(true);
     host_helper.WaitForHostCompletedFirstLoad();
 

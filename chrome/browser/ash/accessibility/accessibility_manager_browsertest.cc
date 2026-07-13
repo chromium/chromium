@@ -925,7 +925,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityManagerTest, AccessibilityMenuVisibility) {
 IN_PROC_BROWSER_TEST_F(AccessibilityManagerTest,
                        EnhancedNetworkVoicesExtensionLoadedWhenNeeded) {
   auto* component_loader =
-      extensions::ComponentLoader::Get(browser()->profile());
+      extensions::ComponentLoader::Get(browser()->GetProfile());
 
   // Not loaded yet.
   EXPECT_FALSE(

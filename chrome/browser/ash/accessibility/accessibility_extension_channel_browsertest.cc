@@ -59,14 +59,14 @@ class AccessibilityExtensionChannelTest
       const char* extension_id,
       base::OnceCallback<void()> enable_extension,
       base::OnceCallback<bool()> is_extension_enabled) {
-    ExtensionConsoleErrorObserver console_observer(browser()->profile(),
+    ExtensionConsoleErrorObserver console_observer(browser()->GetProfile(),
                                                    extension_id);
     // Watch events from an MV2 extension which runs in a background page.
-    extensions::ExtensionHostTestHelper host_helper(browser()->profile(),
+    extensions::ExtensionHostTestHelper host_helper(browser()->GetProfile(),
                                                     extension_id);
     // Watch events from an MV3 extension which runs in a service worker.
     extensions::ExtensionRegistryTestHelper extension_observer(
-        extension_id, browser()->profile());
+        extension_id, browser()->GetProfile());
 
     std::move(enable_extension).Run();
 

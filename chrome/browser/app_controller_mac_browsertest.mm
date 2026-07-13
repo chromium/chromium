@@ -821,7 +821,7 @@ IN_PROC_BROWSER_TEST_F(AppControllerReplaceNTPBrowserTest,
   // chrome://newtab/ or chrome://new-tab-page-third-party. See
   // ntp_test_utils::GetFinalNtpUrl for more details.
   std::string expected_url =
-      ntp_test_utils::GetFinalNtpUrl(browser()->profile()).spec();
+      ntp_test_utils::GetFinalNtpUrl(browser()->GetProfile()).spec();
 
   // Ensure that there is exactly 1 tab showing, and the tab is the NTP.
   GURL ntp(expected_url);
@@ -865,10 +865,10 @@ IN_PROC_BROWSER_TEST_F(AppControllerBrowserTest, OpenInRegularBrowser) {
   std::ignore = AppController.sharedController;
 
   // Create an incognito browser and make it the last active browser.
-  Browser* incognito_browser = CreateIncognitoBrowser(browser()->profile());
+  Browser* incognito_browser = CreateIncognitoBrowser(browser()->GetProfile());
   EXPECT_EQ(1, browser()->tab_strip_model()->count());
   EXPECT_EQ(1, incognito_browser->tab_strip_model()->count());
-  EXPECT_TRUE(incognito_browser->profile()->IsIncognitoProfile());
+  EXPECT_TRUE(incognito_browser->GetProfile()->IsIncognitoProfile());
   EXPECT_EQ(incognito_browser,
             GlobalBrowserCollection::GetInstance()->GetLastActiveBrowser());
   // Assure that `windowDidBecomeMain` is called even if this browser process
@@ -906,9 +906,9 @@ IN_PROC_BROWSER_TEST_F(AppControllerBrowserTest,
 
   EXPECT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(), 1u);
   // Create an incognito browser.
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
   Browser* incognito_browser = CreateIncognitoBrowser(profile);
-  EXPECT_TRUE(incognito_browser->profile()->IsIncognitoProfile());
+  EXPECT_TRUE(incognito_browser->GetProfile()->IsIncognitoProfile());
   EXPECT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(), 2u);
 
   // Close the original browser.
@@ -958,7 +958,7 @@ IN_PROC_BROWSER_TEST_F(AppControllerBrowserTest, OpenUrlInGuestBrowser) {
   Browser* guest_browser = CreateGuestBrowser();
   EXPECT_EQ(1, browser()->tab_strip_model()->count());
   EXPECT_EQ(1, guest_browser->tab_strip_model()->count());
-  EXPECT_TRUE(guest_browser->profile()->IsGuestSession());
+  EXPECT_TRUE(guest_browser->GetProfile()->IsGuestSession());
   guest_browser->GetWindow()->Show();
   EXPECT_EQ(guest_browser,
             GlobalBrowserCollection::GetInstance()->GetLastActiveBrowser());
@@ -1029,12 +1029,12 @@ IN_PROC_BROWSER_TEST_F(AppControllerBrowserTest,
   ASSERT_TRUE(embedded_test_server()->Start());
   EXPECT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(), 1u);
   // Force incognito mode.
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
   IncognitoModePrefs::SetAvailability(
       profile->GetPrefs(), policy::IncognitoModeAvailability::kForced);
   // Create an incognito browser.
   Browser* incognito_browser = CreateIncognitoBrowser(profile);
-  EXPECT_TRUE(incognito_browser->profile()->IsIncognitoProfile());
+  EXPECT_TRUE(incognito_browser->GetProfile()->IsIncognitoProfile());
   // Close the current non-incognito browser.
   CloseBrowserSynchronously(browser());
   EXPECT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(), 1u);
@@ -1082,7 +1082,7 @@ IN_PROC_BROWSER_TEST_F(AppControllerShortcutsNotAppsBrowserTest,
     crwebloc_file = temp_dir.GetPath().AppendASCII("test shortcut.crwebloc");
     ASSERT_TRUE(shortcuts::ChromeWeblocFile(
                     simple, *base::SafeBaseName::Create(
-                                browser()->profile()->GetPath()))
+                                browser()->GetProfile()->GetPath()))
                     .SaveToFile(crwebloc_file));
   }
 
@@ -1118,7 +1118,7 @@ IN_PROC_BROWSER_TEST_F(AppControllerShortcutsNotAppsBrowserTest,
     crwebloc_file = temp_dir.GetPath().AppendASCII("test_shortcut.crwebloc");
     ASSERT_TRUE(shortcuts::ChromeWeblocFile(
                     chrome_url, *base::SafeBaseName::Create(
-                                    browser()->profile()->GetPath()))
+                                    browser()->GetProfile()->GetPath()))
                     .SaveToFile(crwebloc_file));
   }
 
@@ -1530,8 +1530,8 @@ IN_PROC_BROWSER_TEST_F(AppControllerMainMenuBrowserTest,
   // Check that a new incognito browser is opened.
   Browser* new_browser = browser_created_observer.Wait();
   EXPECT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(), 1u);
-  EXPECT_TRUE(new_browser->profile()->IsPrimaryOTRProfile());
-  EXPECT_EQ(profile, new_browser->profile()->GetOriginalProfile());
+  EXPECT_TRUE(new_browser->GetProfile()->IsPrimaryOTRProfile());
+  EXPECT_EQ(profile, new_browser->GetProfile()->GetOriginalProfile());
 }
 
 // Regression test for https://crbug.com/487338374.

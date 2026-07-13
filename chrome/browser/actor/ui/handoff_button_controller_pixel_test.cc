@@ -36,7 +36,7 @@ class ActorUiHandoffButtonControllerPixelTest : public DialogBrowserTest {
   ~ActorUiHandoffButtonControllerPixelTest() override = default;
 
   ActorKeyedService* GetActorKeyedService() {
-    return ActorKeyedService::Get(browser()->profile());
+    return ActorKeyedService::Get(browser()->GetProfile());
   }
 
   std::string GetNonDialogName() override { return "HandoffButtonWidget"; }

@@ -203,7 +203,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityLabelsBrowserTest,
 // when a screenreader is discovered.
 IN_PROC_BROWSER_TEST_F(AccessibilityLabelsBrowserTest, EnabledByPreference) {
   // The preference was set for the profile by PRE_EnabledByPreference.
-  ASSERT_TRUE(browser()->profile()->GetPrefs()->GetBoolean(
+  ASSERT_TRUE(browser()->GetProfile()->GetPrefs()->GetBoolean(
       prefs::kAccessibilityImageLabelsEnabled));
 
   auto* const web_contents =

@@ -111,12 +111,13 @@ class AppPreloadServiceBrowserTest : public InProcessBrowserTest {
     apps_proto_ = response;
   }
 
-  Profile* profile() { return browser()->profile(); }
+  Profile* profile() { return browser()->GetProfile(); }
 
   net::EmbeddedTestServer* https_server() { return &https_server_; }
 
   AppRegistryCache& app_registry_cache() {
-    auto* proxy = AppServiceProxyFactory::GetForProfile(browser()->profile());
+    auto* proxy =
+        AppServiceProxyFactory::GetForProfile(browser()->GetProfile());
     return proxy->AppRegistryCache();
   }
 

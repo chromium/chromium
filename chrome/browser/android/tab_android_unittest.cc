@@ -136,7 +136,7 @@ class TabAndroidTest : public testing::Test {
 
 TEST_F(TabAndroidTest, TabIsInitialized) {
   EXPECT_EQ(kTabId, tab_android_->GetAndroidId());
-  EXPECT_NE(nullptr, tab_android_->profile());
+  EXPECT_NE(nullptr, tab_android_->GetProfile());
 }
 
 TEST_F(TabAndroidTest, PinnedCollectionParent) {

@@ -204,7 +204,7 @@ class MediaGalleriesPlatformAppBrowserTest : public PlatformAppBrowserTest {
   MediaGalleriesPreferences* GetAndInitializePreferences() {
     MediaGalleriesPreferences* preferences =
         g_browser_process->media_file_system_registry()->GetPreferences(
-            browser()->profile());
+            browser()->GetProfile());
     base::RunLoop runloop;
     preferences->EnsureInitialized(runloop.QuitClosure());
     runloop.Run();
@@ -286,7 +286,7 @@ IN_PROC_BROWSER_TEST_F(MediaGalleriesPlatformAppBrowserTest, ToURL) {
 
   base::ListValue custom_args;
   custom_args.Append(base::checked_cast<int>(pref_id));
-  custom_args.Append(browser()->profile()->GetBaseName().MaybeAsASCII());
+  custom_args.Append(browser()->GetProfile()->GetBaseName().MaybeAsASCII());
 
   ASSERT_TRUE(RunMediaGalleriesTestWithArg("tourl", custom_args)) << message_;
 }

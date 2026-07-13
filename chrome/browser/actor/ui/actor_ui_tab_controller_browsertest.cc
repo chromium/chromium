@@ -82,7 +82,7 @@ class BaseActorUiTabControllerTest : public InProcessBrowserTest {
   }
 
   ActorKeyedService* actor_keyed_service() {
-    return ActorKeyedService::Get(browser()->profile());
+    return ActorKeyedService::Get(browser()->GetProfile());
   }
 
   base::test::ScopedFeatureList feature_list_;

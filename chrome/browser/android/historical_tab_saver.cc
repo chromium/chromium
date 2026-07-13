@@ -254,7 +254,7 @@ std::unique_ptr<ScopedWebContents> ScopedWebContents::CreateForTab(
   }
   if (web_contents_state->state_version() != -1) {
     auto native_contents = WebContentsState::RestoreContentsFromByteBuffer(
-        tab->profile(), web_contents_state, /*initially_hidden=*/true,
+        tab->GetProfile(), web_contents_state, /*initially_hidden=*/true,
         /*no_renderer=*/true);
     if (native_contents) {
       return std::make_unique<ScopedWebContents>(std::move(native_contents));
@@ -265,7 +265,7 @@ std::unique_ptr<ScopedWebContents> ScopedWebContents::CreateForTab(
   // This is only called on non-incognito pathways.
   CHECK(!tab->IsIncognito());
 
-  content::WebContents::CreateParams params(tab->profile());
+  content::WebContents::CreateParams params(tab->GetProfile());
   params.initially_hidden = true;
   params.desired_renderer_state =
       content::WebContents::CreateParams::kNoRendererProcess;

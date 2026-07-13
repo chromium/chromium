@@ -37,7 +37,7 @@ class ChromeAppDeprecationUserInstalledAppsBrowserTest
         WindowOpenDisposition::NEW_WINDOW, LaunchSource::kFromTest);
     params.command_line = *base::CommandLine::ForCurrentProcess();
 
-    AppServiceProxyFactory::GetForProfile(browser()->profile())
+    AppServiceProxyFactory::GetForProfile(browser()->GetProfile())
         ->LaunchAppWithParams(std::move(params));
   }
 };

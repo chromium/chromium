@@ -90,7 +90,7 @@ IN_PROC_BROWSER_TEST_F(ActorOverlayTest, PageLoadsWhenFeatureOn) {
 
 IN_PROC_BROWSER_TEST_F(ActorOverlayTest, PageDoesNotLoadInOTRBrowser) {
   GURL kUrl(chrome::kChromeUIActorOverlayURL);
-  Browser* otr_browser = OpenURLOffTheRecord(browser()->profile(), kUrl);
+  Browser* otr_browser = OpenURLOffTheRecord(browser()->GetProfile(), kUrl);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(otr_browser, kUrl));
   content::WebContents* web_contents =
       otr_browser->tab_strip_model()->GetActiveWebContents();
@@ -500,7 +500,7 @@ IN_PROC_BROWSER_TEST_F(ActorOverlayTest,
   // Verify that the default state is enabled for first browser.
   ASSERT_TRUE(chrome::IsCommandEnabled(browser1, IDC_FIND));
   // Create a second browser window.
-  Profile* const profile = browser1->profile();
+  Profile* const profile = browser1->GetProfile();
   Browser* browser2 = CreateBrowser(profile);
   ASSERT_NE(browser2, browser1);
   // Verify that the default state is enabled for the second browser.

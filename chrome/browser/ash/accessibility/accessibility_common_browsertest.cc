@@ -33,7 +33,8 @@ class AccessibilityCommonTest
 
   void SetUpOnMainThread() override {
     console_observer_ = std::make_unique<ExtensionConsoleErrorObserver>(
-        browser()->profile(), extension_misc::kAccessibilityCommonExtensionId);
+        browser()->GetProfile(),
+        extension_misc::kAccessibilityCommonExtensionId);
   }
 
   void TearDownOnMainThread() override {

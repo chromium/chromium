@@ -28,7 +28,7 @@ class PageColorsControllerBrowserTest : public InProcessBrowserTest {
 // Changing the requested page colors should affect the web theme's forced
 // colors.
 IN_PROC_BROWSER_TEST_F(PageColorsControllerBrowserTest, PageColorsChange) {
-  PageColorsControllerFactory::GetForProfile(browser()->profile())
+  PageColorsControllerFactory::GetForProfile(browser()->GetProfile())
       ->SetRequestedPageColors(PageColors::kDusk);
   EXPECT_EQ(ui::NativeTheme::GetInstanceForWeb()->forced_colors(),
             ui::ColorProviderKey::ForcedColors::kDusk);
@@ -40,9 +40,9 @@ IN_PROC_BROWSER_TEST_F(PageColorsControllerBrowserTest,
 
   // When `kApplyPageColorsOnlyOnIncreasedContrast` is true but the OS is not in
   // increased contrast mode, there should be no forced colors.
-  browser()->profile()->GetPrefs()->SetBoolean(
+  browser()->GetProfile()->GetPrefs()->SetBoolean(
       prefs::kApplyPageColorsOnlyOnIncreasedContrast, true);
-  PageColorsControllerFactory::GetForProfile(browser()->profile())
+  PageColorsControllerFactory::GetForProfile(browser()->GetProfile())
       ->SetRequestedPageColors(PageColors::kDusk);
   EXPECT_EQ(native_theme->forced_colors(),
             ui::ColorProviderKey::ForcedColors::kNone);
@@ -75,7 +75,7 @@ IN_PROC_BROWSER_TEST_F(PageColorsControllerBrowserTest,
                        OtherNativeThemePropertiesSet) {
   auto* const native_theme = ui::NativeTheme::GetInstanceForWeb();
   auto* const page_colors =
-      PageColorsControllerFactory::GetForProfile(browser()->profile());
+      PageColorsControllerFactory::GetForProfile(browser()->GetProfile());
 
   // The web theme should be in a default state.
   EXPECT_EQ(native_theme->forced_colors(),

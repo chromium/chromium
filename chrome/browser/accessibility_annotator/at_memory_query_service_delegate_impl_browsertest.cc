@@ -43,7 +43,7 @@ class AtMemoryQueryServiceDelegateImplBrowserTest
 // RetrieveLiveTabContext returns an empty response when dependencies missing.
 IN_PROC_BROWSER_TEST_F(AtMemoryQueryServiceDelegateImplBrowserTest,
                        RetrieveLiveTabContext_MissingDependencies) {
-  AtMemoryQueryServiceDelegateImpl delegate(browser()->profile());
+  AtMemoryQueryServiceDelegateImpl delegate(browser()->GetProfile());
 
   LiveTabContextQuery query;
   query.query = u"test query";

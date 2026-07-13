@@ -26,7 +26,7 @@ class ActorUiInteractiveBrowserTest : public InteractiveBrowserTest {
   void CompleteTask();
 
   actor::ActorKeyedService* actor_keyed_service() {
-    return actor::ActorKeyedService::Get(browser()->profile());
+    return actor::ActorKeyedService::Get(browser()->GetProfile());
   }
 
   actor::TaskId task_id() const { return task_id_; }

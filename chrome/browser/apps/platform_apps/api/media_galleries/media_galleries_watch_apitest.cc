@@ -138,7 +138,7 @@ class MediaGalleriesGalleryWatchApiTest : public extensions::ExtensionApiTest {
   void GetBackgroundHostForTestExtension() {
     ASSERT_TRUE(extension_);
     background_main_frame_ =
-        extensions::ProcessManager::Get(browser()->profile())
+        extensions::ProcessManager::Get(browser()->GetProfile())
             ->GetBackgroundHostForExtension(extension_->id())
             ->main_frame_host();
     ASSERT_TRUE(background_main_frame_);
@@ -147,7 +147,7 @@ class MediaGalleriesGalleryWatchApiTest : public extensions::ExtensionApiTest {
   void CreateTestGallery() {
     MediaGalleriesPreferences* preferences =
         g_browser_process->media_file_system_registry()->GetPreferences(
-            browser()->profile());
+            browser()->GetProfile());
     base::RunLoop runloop;
     preferences->EnsureInitialized(runloop.QuitClosure());
     runloop.Run();
