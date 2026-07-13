@@ -62,7 +62,6 @@
 #include "chrome/browser/web_applications/user_uninstalled_preinstalled_web_app_prefs.h"
 #include "chrome/common/chrome_paths.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
-#include "chromeos/crosapi/cpp/crosapi_constants.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom-shared.h"
 #include "components/account_id/account_id.h"
 #include "components/component_updater/ash/component_manager_ash.h"
@@ -92,6 +91,9 @@ namespace crosapi {
 
 namespace {
 
+// The default user-data-directory for Lacros.
+constexpr char kLacrosUserDataPath[] = "/home/chronos/user/lacros";
+
 // Pointer to the global instance of BrowserManager.
 BrowserManager* g_instance = nullptr;
 
@@ -99,7 +101,7 @@ base::FilePath GetUserDataDir() {
   if (base::SysInfo::IsRunningOnChromeOS()) {
     // NOTE: On device this function is privacy/security sensitive. The
     // directory must be inside the encrypted user partition.
-    return base::FilePath(crosapi::kLacrosUserDataPath);
+    return base::FilePath(kLacrosUserDataPath);
   }
   // For developers on Linux desktop, put the directory under the developer's
   // specified --user-data-dir.
