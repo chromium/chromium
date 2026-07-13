@@ -50,7 +50,7 @@ std::optional<int> GetTabStripIndex(LocalTabID local_tab_id,
     return std::nullopt;
   }
 
-  TabStripModel* tab_strip_model =
+  const TabStripModel* tab_strip_model =
       browser_with_local_group_id->tab_strip_model();
   if (!tab_strip_model || !tab_strip_model->SupportsTabGroups()) {
     return std::nullopt;

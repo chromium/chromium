@@ -1230,7 +1230,7 @@ tab_groups::TabGroupColorId TabGroupEditorBubbleView::InitColorSet() {
 }
 
 // static
-void TabGroupEditorBubbleView::Ungroup(const Browser* browser,
+void TabGroupEditorBubbleView::Ungroup(Browser* browser,
                                        tab_groups::TabGroupId group) {
   TabStripModel* const model = browser->tab_strip_model();
   const gfx::Range tab_range =

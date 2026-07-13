@@ -99,9 +99,10 @@ void LocalTabGroupListener::UpdateVisualDataFromLocal(
   service_->UpdateVisualData(local_id_, visual_change->new_visuals);
 }
 
-void LocalTabGroupListener::AddTabFromLocal(tabs::TabInterface* local_tab,
-                                            TabStripModel* tab_strip_model,
-                                            int index) {
+void LocalTabGroupListener::AddTabFromLocal(
+    tabs::TabInterface* local_tab,
+    const TabStripModel* tab_strip_model,
+    int index) {
   if (paused_) {
     return;
   }

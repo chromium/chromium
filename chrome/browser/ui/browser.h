@@ -371,7 +371,10 @@ class Browser : public TabStripModelObserver,
   //  (1) tab_strip_model_ should become an optional member.
   //  (2) Variations of Browser::Type that never show a tab strip should not use
   //      this class.
-  TabStripModel* tab_strip_model() const { return tab_strip_model_.get(); }
+  TabStripModel* tab_strip_model() { return tab_strip_model_.get(); }
+  const TabStripModel* tab_strip_model() const {
+    return tab_strip_model_.get();
+  }
 
   BrowserActions* browser_actions() { return GetActions(); }
 

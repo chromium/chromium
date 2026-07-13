@@ -54,7 +54,7 @@ class LocalTabGroupListener {
 
   // Updates the saved group with the new tab and tracks it for further changes.
   void AddTabFromLocal(tabs::TabInterface* local_tab,
-                       TabStripModel* tab_strip_model,
+                       const TabStripModel* tab_strip_model,
                        int index);
 
   // Moves the SavedTab associated with `web_contents` in the TabStripModel to

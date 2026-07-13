@@ -119,9 +119,9 @@ bool SavedTabGroupUtils::IsEnabledForProfile(Profile* profile) {
 
 // static
 void SavedTabGroupUtils::RemoveGroupFromTabstrip(
-    const Browser* browser,
+    Browser* browser,
     const tab_groups::TabGroupId& local_group) {
-  const Browser* const browser_with_local_group_id =
+  Browser* const browser_with_local_group_id =
       browser ? browser
               : SavedTabGroupUtils::GetBrowserWithTabGroupId(local_group);
   DCHECK(browser_with_local_group_id);
@@ -161,7 +161,7 @@ void SavedTabGroupUtils::UngroupSavedGroup(Browser* browser,
   }
 
   base::OnceCallback<void()> ungroup_callback = base::BindOnce(
-      [](const Browser* browser, const tab_groups::TabGroupId& local_group) {
+      [](Browser* browser, const tab_groups::TabGroupId& local_group) {
         TabStripModel* const model = browser->tab_strip_model();
         const gfx::Range tab_range =
             model->group_model()->GetTabGroup(local_group)->ListTabs();
@@ -829,7 +829,7 @@ SavedTabGroupUtils::GetRecentActivity(Profile* profile,
 // static
 tabs::TabInterface* SavedTabGroupUtils::GetGroupedTab(LocalTabGroupID group_id,
                                                       LocalTabID tab_id) {
-  const Browser* const browser =
+  Browser* const browser =
       SavedTabGroupUtils::GetBrowserWithTabGroupId(group_id);
   if (!browser) {
     return nullptr;

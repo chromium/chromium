@@ -1144,7 +1144,7 @@ class SessionRestoreImpl : public BrowserCollectionObserver {
   }
 
   void RestoreSplitTabVisualData(
-      const Browser* browser,
+      Browser* browser,
       const std::vector<std::unique_ptr<sessions::SessionSplitTab>>&
           split_tabs) {
     for (const std::unique_ptr<sessions::SessionSplitTab>& session_split_tab :

@@ -201,7 +201,7 @@ void OpenPageInfoBubble(Browser* browser) {
 
 // Switches the tab at |tab_index| to the foreground, and waits for the
 // OnVisibilityChanged safety tip check to complete.
-void SwitchToTabAndWait(const Browser* browser, int tab_index) {
+void SwitchToTabAndWait(Browser* browser, int tab_index) {
   base::RunLoop loop;
   auto* tab_strip = browser->tab_strip_model();
   auto* bg_tab = tab_strip->GetWebContentsAt(tab_index);

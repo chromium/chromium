@@ -55,7 +55,7 @@ class SavedTabGroupUtils {
   static bool IsEnabledForProfile(Profile* profile);
 
   static void RemoveGroupFromTabstrip(
-      const Browser* browser,
+      Browser* browser,
       const tab_groups::TabGroupId& local_group);
   static void UngroupSavedGroup(Browser* browser,
                                 const base::Uuid& saved_group_guid);

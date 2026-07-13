@@ -177,7 +177,7 @@ class TabGroupEditorBubbleView : public views::BubbleDialogDelegateView,
 
   // the implementation of the ungroup command. This method is static so that
   // it can be called from dialogs as a callback.
-  static void Ungroup(const Browser* browser, tab_groups::TabGroupId group);
+  static void Ungroup(Browser* browser, tab_groups::TabGroupId group);
 
   class TitleFieldController : public views::TextfieldController {
    public:
