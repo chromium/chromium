@@ -427,7 +427,7 @@ IN_PROC_BROWSER_TEST_P(ManagementUIManagedStatusTest,
 
 IN_PROC_BROWSER_TEST_P(ManagementUIManagedStatusTest, PageLoadedInGuestMode) {
   Browser* policy_browser = OpenURLOffTheRecord(
-      browser()->profile(), GURL(chrome::kChromeUIManagementURL));
+      browser()->GetProfile(), GURL(chrome::kChromeUIManagementURL));
   ASSERT_TRUE(policy_browser);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       policy_browser, GURL(chrome::kChromeUIManagementURL)));

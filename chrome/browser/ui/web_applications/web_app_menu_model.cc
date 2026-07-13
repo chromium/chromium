@@ -253,7 +253,7 @@ void WebAppMenuModel::Build() {
       features::IsRoundedIconsEnabled() ? kPrintIcon : kPrintMenuOldIcon);
   CreateFindAndEditSubMenu();
 
-  if (media_router::MediaRouterEnabled(browser()->profile())) {
+  if (media_router::MediaRouterEnabled(browser()->GetProfile())) {
     AddItemWithStringIdAndVectorIcon(
         this, IDC_ROUTE_MEDIA, IDS_MEDIA_ROUTER_MENU_ITEM_TITLE,
         features::IsRoundedIconsEnabled() ? kCastIcon

@@ -251,7 +251,7 @@ IN_PROC_BROWSER_TEST_F(HistoryClustersHandlerBrowserTest,
   clusters.push_back(cluster);
 
   mojom::QueryResultPtr mojom_result = QueryClustersResultToMojom(
-      browser()->profile(), "query", clusters, true, false);
+      browser()->GetProfile(), "query", clusters, true, false);
 
   EXPECT_EQ(mojom_result->query, "query");
   EXPECT_EQ(mojom_result->can_load_more, true);
@@ -285,7 +285,7 @@ IN_PROC_BROWSER_TEST_F(HistoryClustersHandlerBrowserTest,
   history::QueryResults history_query_results;
   base::RunLoop run_loop;
   base::CancelableTaskTracker tracker;
-  HistoryServiceFactory::GetForProfile(browser()->profile(),
+  HistoryServiceFactory::GetForProfile(browser()->GetProfile(),
                                        ServiceAccessType::EXPLICIT_ACCESS)
       ->QueryHistory(
           std::u16string(), history::QueryOptions(),
@@ -306,7 +306,7 @@ IN_PROC_BROWSER_TEST_F(HistoryClustersHandlerBrowserTest,
   ASSERT_TRUE(success);
 
   // Verify the history entry is no longer there.
-  ui_test_utils::HistoryEnumerator enumerator(browser()->profile());
+  ui_test_utils::HistoryEnumerator enumerator(browser()->GetProfile());
   EXPECT_EQ(0u, enumerator.urls().size());
 }
 
@@ -315,7 +315,7 @@ IN_PROC_BROWSER_TEST_F(HistoryClustersHandlerBrowserTest,
   // Disable incognito mode, the menu option should not appear.
   const GURL test_url("https://www.foo.com/");
   IncognitoModePrefs::SetAvailability(
-      browser()->profile()->GetPrefs(),
+      browser()->GetProfile()->GetPrefs(),
       policy::IncognitoModeAvailability::kDisabled);
   auto menu_model =
       handler_->CreateHistoryClustersSidePanelContextMenuForTesting(browser(),
@@ -324,7 +324,7 @@ IN_PROC_BROWSER_TEST_F(HistoryClustersHandlerBrowserTest,
 
   // Enable incognito mode, the menu option should appear as expected.
   IncognitoModePrefs::SetAvailability(
-      browser()->profile()->GetPrefs(),
+      browser()->GetProfile()->GetPrefs(),
       policy::IncognitoModeAvailability::kEnabled);
   menu_model = handler_->CreateHistoryClustersSidePanelContextMenuForTesting(
       browser(), test_url);

@@ -506,7 +506,7 @@ IN_PROC_BROWSER_TEST_P(WebAppFileHandlingIconBrowserTest, Basic) {
       embedded_test_server()->GetURL("/web_app_file_handling/icons_app.html"));
   const webapps::AppId app_id = InstallWebAppFromManifest(browser(), app_url);
   ASSERT_FALSE(app_id.empty());
-  auto* provider = WebAppProvider::GetForTest(browser()->profile());
+  auto* provider = WebAppProvider::GetForTest(browser()->GetProfile());
   const WebApp* web_app = provider->registrar_unsafe().GetAppById(app_id);
   ASSERT_TRUE(web_app);
 

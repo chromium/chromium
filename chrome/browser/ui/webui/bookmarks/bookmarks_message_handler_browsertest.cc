@@ -36,8 +36,8 @@ class BookmarkMessageHandlerTest : public InProcessBrowserTest {
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
 
-    ResetWithProfile(browser()->profile());
-    SignInAndEnableAccountBookmarkNodes(browser()->profile());
+    ResetWithProfile(browser()->GetProfile());
+    SignInAndEnableAccountBookmarkNodes(browser()->GetProfile());
   }
 
   void TearDownOnMainThread() override {
@@ -77,7 +77,7 @@ class BookmarkMessageHandlerTest : public InProcessBrowserTest {
 IN_PROC_BROWSER_TEST_F(BookmarkMessageHandlerTest,
                        CanUploadLocalBookmarkWithAccountNodesPresent) {
   bookmarks::BookmarkModel* model =
-      BookmarkModelFactory::GetForBrowserContext(browser()->profile());
+      BookmarkModelFactory::GetForBrowserContext(browser()->GetProfile());
   bookmarks::test::WaitForBookmarkModelToLoad(model);
 
   ASSERT_TRUE(model->account_other_node());
@@ -92,7 +92,7 @@ IN_PROC_BROWSER_TEST_F(BookmarkMessageHandlerTest,
 IN_PROC_BROWSER_TEST_F(BookmarkMessageHandlerTest,
                        CanNotUploadWithEditDisabled) {
   bookmarks::BookmarkModel* model =
-      BookmarkModelFactory::GetForBrowserContext(browser()->profile());
+      BookmarkModelFactory::GetForBrowserContext(browser()->GetProfile());
   bookmarks::test::WaitForBookmarkModelToLoad(model);
 
   browser()->profile()->GetPrefs()->SetBoolean(
@@ -108,7 +108,7 @@ IN_PROC_BROWSER_TEST_F(BookmarkMessageHandlerTest,
 IN_PROC_BROWSER_TEST_F(BookmarkMessageHandlerTest,
                        CanNotUploadWithInvalidBookmarkId) {
   bookmarks::BookmarkModel* model =
-      BookmarkModelFactory::GetForBrowserContext(browser()->profile());
+      BookmarkModelFactory::GetForBrowserContext(browser()->GetProfile());
   bookmarks::test::WaitForBookmarkModelToLoad(model);
 
   EXPECT_FALSE(SendCanUploadBookmarkToAccountStorage("test"));
@@ -117,7 +117,7 @@ IN_PROC_BROWSER_TEST_F(BookmarkMessageHandlerTest,
 IN_PROC_BROWSER_TEST_F(BookmarkMessageHandlerTest,
                        CanNotUploadWithMissingBookmarkId) {
   bookmarks::BookmarkModel* model =
-      BookmarkModelFactory::GetForBrowserContext(browser()->profile());
+      BookmarkModelFactory::GetForBrowserContext(browser()->GetProfile());
   bookmarks::test::WaitForBookmarkModelToLoad(model);
 
   const bookmarks::BookmarkNode* node = model->AddURL(
@@ -134,7 +134,7 @@ IN_PROC_BROWSER_TEST_F(BookmarkMessageHandlerTest,
 
 IN_PROC_BROWSER_TEST_F(BookmarkMessageHandlerTest, CanNotUploadPermanentNode) {
   bookmarks::BookmarkModel* model =
-      BookmarkModelFactory::GetForBrowserContext(browser()->profile());
+      BookmarkModelFactory::GetForBrowserContext(browser()->GetProfile());
   bookmarks::test::WaitForBookmarkModelToLoad(model);
 
   const std::string id_string = base::NumberToString(model->other_node()->id());
@@ -145,7 +145,7 @@ IN_PROC_BROWSER_TEST_F(BookmarkMessageHandlerTest, CanNotUploadPermanentNode) {
 IN_PROC_BROWSER_TEST_F(BookmarkMessageHandlerTest,
                        CanNotUploadWithoutAccountNodesPresent) {
   bookmarks::BookmarkModel* model =
-      BookmarkModelFactory::GetForBrowserContext(browser()->profile());
+      BookmarkModelFactory::GetForBrowserContext(browser()->GetProfile());
   bookmarks::test::WaitForBookmarkModelToLoad(model);
 
   model->RemoveAccountPermanentFolders();
@@ -160,11 +160,11 @@ IN_PROC_BROWSER_TEST_F(BookmarkMessageHandlerTest,
 
 IN_PROC_BROWSER_TEST_F(BookmarkMessageHandlerTest, CanNotUploadManagedNode) {
   bookmarks::BookmarkModel* model =
-      BookmarkModelFactory::GetForBrowserContext(browser()->profile());
+      BookmarkModelFactory::GetForBrowserContext(browser()->GetProfile());
   bookmarks::test::WaitForBookmarkModelToLoad(model);
 
   bookmarks::ManagedBookmarkService* managed_bookmark_service =
-      ManagedBookmarkServiceFactory::GetForProfile(browser()->profile());
+      ManagedBookmarkServiceFactory::GetForProfile(browser()->GetProfile());
   ASSERT_TRUE(managed_bookmark_service->managed_node());
 
   // Add a managed bookmark.
@@ -180,11 +180,12 @@ IN_PROC_BROWSER_TEST_F(BookmarkMessageHandlerTest, CanNotUploadManagedNode) {
 IN_PROC_BROWSER_TEST_F(BookmarkMessageHandlerTest,
                        CanNotUploadWithSyncEnabled) {
   bookmarks::BookmarkModel* model =
-      BookmarkModelFactory::GetForBrowserContext(browser()->profile());
+      BookmarkModelFactory::GetForBrowserContext(browser()->GetProfile());
   bookmarks::test::WaitForBookmarkModelToLoad(model);
 
   // Pretend sync is on for bookmarks.
-  LocalOrSyncableBookmarkSyncServiceFactory::GetForProfile(browser()->profile())
+  LocalOrSyncableBookmarkSyncServiceFactory::GetForProfile(
+      browser()->GetProfile())
       ->SetIsTrackingMetadataForTesting();
 
   const bookmarks::BookmarkNode* node = model->AddURL(
@@ -197,7 +198,7 @@ IN_PROC_BROWSER_TEST_F(BookmarkMessageHandlerTest,
 IN_PROC_BROWSER_TEST_F(BookmarkMessageHandlerTest,
                        CanNotUploadAccountBookmark) {
   bookmarks::BookmarkModel* model =
-      BookmarkModelFactory::GetForBrowserContext(browser()->profile());
+      BookmarkModelFactory::GetForBrowserContext(browser()->GetProfile());
   bookmarks::test::WaitForBookmarkModelToLoad(model);
 
   const bookmarks::BookmarkNode* node =
@@ -231,7 +232,7 @@ IN_PROC_BROWSER_TEST_F(BookmarkMessageHandlerTest,
                        CanNotUploadInSigninPending) {
   // Add a bookmark that can be uploaded.
   bookmarks::BookmarkModel* model =
-      BookmarkModelFactory::GetForBrowserContext(browser()->profile());
+      BookmarkModelFactory::GetForBrowserContext(browser()->GetProfile());
   bookmarks::test::WaitForBookmarkModelToLoad(model);
   const bookmarks::BookmarkNode* node = model->AddURL(
       model->other_node(), 0, std::u16string(), GURL("http://test.com"));
@@ -240,7 +241,7 @@ IN_PROC_BROWSER_TEST_F(BookmarkMessageHandlerTest,
 
   // Set Signin Pending state.
   signin::SetInvalidRefreshTokenForPrimaryAccount(
-      IdentityManagerFactory::GetForProfile(browser()->profile()));
+      IdentityManagerFactory::GetForProfile(browser()->GetProfile()));
 
   EXPECT_FALSE(SendCanUploadBookmarkToAccountStorage(id_string));
 }
@@ -249,7 +250,7 @@ IN_PROC_BROWSER_TEST_F(BookmarkMessageHandlerTest,
                        SingleUploadClickedOpensDialog) {
   // Add a bookmark that can be uploaded.
   bookmarks::BookmarkModel* model =
-      BookmarkModelFactory::GetForBrowserContext(browser()->profile());
+      BookmarkModelFactory::GetForBrowserContext(browser()->GetProfile());
   bookmarks::test::WaitForBookmarkModelToLoad(model);
   const bookmarks::BookmarkNode* node = model->AddURL(
       model->other_node(), 0, std::u16string(), GURL("http://test.com"));
@@ -271,7 +272,7 @@ IN_PROC_BROWSER_TEST_F(BookmarkMessageHandlerTest,
   // Add a bookmark that can be uploaded, but remove the account nodes (which
   // could happen e.g. if the user signs out).
   bookmarks::BookmarkModel* model =
-      BookmarkModelFactory::GetForBrowserContext(browser()->profile());
+      BookmarkModelFactory::GetForBrowserContext(browser()->GetProfile());
   bookmarks::test::WaitForBookmarkModelToLoad(model);
   model->RemoveAccountPermanentFolders();
   ASSERT_FALSE(model->account_other_node());

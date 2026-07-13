@@ -88,8 +88,8 @@ class ChromeURLDataManagerTest : public InProcessBrowserTest {
  protected:
   void SetUpOnMainThread() override {
     content::URLDataSource::Add(
-        browser()->profile(),
-        std::make_unique<ThemeSource>(browser()->profile()));
+        browser()->GetProfile(),
+        std::make_unique<ThemeSource>(browser()->GetProfile()));
   }
 };
 

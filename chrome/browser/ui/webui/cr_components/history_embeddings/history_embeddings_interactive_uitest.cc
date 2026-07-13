@@ -101,13 +101,14 @@ class HistoryEmbeddingsInteractiveTest
 
  protected:
   history_embeddings::HistoryEmbeddingsService* service() {
-    return HistoryEmbeddingsServiceFactory::GetForProfile(browser()->profile());
+    return HistoryEmbeddingsServiceFactory::GetForProfile(
+        browser()->GetProfile());
   }
 
   page_content_annotations::PageContentAnnotationsService*
   page_content_annotations_service() {
     return PageContentAnnotationsServiceFactory::GetForProfile(
-        browser()->profile());
+        browser()->GetProfile());
   }
 
   void OverrideVisibilityScoresForTesting(
@@ -145,8 +146,8 @@ class HistoryEmbeddingsInteractiveTest
 #endif
 IN_PROC_BROWSER_TEST_F(HistoryEmbeddingsInteractiveTest, MAYBE_FeedbackDialog) {
   optimization_guide::EnableSigninAndModelExecutionCapability(
-      browser()->profile());
-  browser()->profile()->GetPrefs()->SetInteger(
+      browser()->GetProfile());
+  browser()->GetProfile()->GetPrefs()->SetInteger(
       optimization_guide::prefs::GetSettingEnabledPrefName(
           optimization_guide::UserVisibleFeatureKey::kHistorySearch),
       static_cast<int>(optimization_guide::prefs::FeatureOptInState::kEnabled));

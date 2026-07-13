@@ -400,7 +400,7 @@ IN_PROC_BROWSER_TEST_P(PolicyUIManagedStatusTest,
 
 IN_PROC_BROWSER_TEST_P(PolicyUIManagedStatusTest, PageLoadedInGuestMode) {
   Browser* policy_browser = OpenURLOffTheRecord(
-      browser()->profile(), GURL(chrome::kChromeUIPolicyURL));
+      browser()->GetProfile(), GURL(chrome::kChromeUIPolicyURL));
   ASSERT_TRUE(policy_browser);
   // In guest mode, the banner should always be hidden, and typically, the
   // promotion eligibility fetch wouldn't even be initiated. So, waiting is not

@@ -100,11 +100,11 @@ class OfficeFallbackDialogBrowserTest : public InProcessBrowserTest {
         ash::file_system_provider::FakeExtensionProvider::Create(
             extension_misc::kODFSExtensionId);
     auto* service =
-        ash::file_system_provider::Service::Get(browser()->profile());
+        ash::file_system_provider::Service::Get(browser()->GetProfile());
     service->RegisterProvider(std::move(fake_provider));
 
-    files_ = file_manager::test::CopyTestFilesIntoMyFiles(browser()->profile(),
-                                                          {"text.docx"});
+    files_ = file_manager::test::CopyTestFilesIntoMyFiles(
+        browser()->GetProfile(), {"text.docx"});
   }
 
  protected:

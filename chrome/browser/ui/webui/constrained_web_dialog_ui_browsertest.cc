@@ -113,7 +113,7 @@ IN_PROC_BROWSER_TEST_F(ConstrainedWebDialogBrowserTest, MAYBE_BasicTest) {
   ASSERT_TRUE(web_contents);
 
   ConstrainedWebDialogDelegate* dialog_delegate = ShowConstrainedWebDialog(
-      browser()->profile(), std::move(delegate), web_contents);
+      browser()->GetProfile(), std::move(delegate), web_contents);
 
   ASSERT_TRUE(dialog_delegate);
   EXPECT_TRUE(dialog_delegate->GetNativeDialog());
@@ -136,7 +136,7 @@ IN_PROC_BROWSER_TEST_F(ConstrainedWebDialogBrowserTest,
   ASSERT_TRUE(web_contents);
 
   ConstrainedWebDialogDelegate* dialog_delegate = ShowConstrainedWebDialog(
-      browser()->profile(), std::move(delegate), web_contents);
+      browser()->GetProfile(), std::move(delegate), web_contents);
   ASSERT_TRUE(dialog_delegate);
   WebContents* dialog_contents = dialog_delegate->GetWebContents();
   ASSERT_TRUE(dialog_contents);
@@ -219,7 +219,7 @@ IN_PROC_BROWSER_TEST_P(ConstrainedWebDialogBrowserAutosizeTest,
   delegate->GetDialogSize(&initial_dialog_size);
 
   ConstrainedWebDialogDelegate* dialog_delegate =
-      ShowConstrainedWebDialogWithAutoResize(browser()->profile(),
+      ShowConstrainedWebDialogWithAutoResize(browser()->GetProfile(),
                                              std::move(delegate), web_contents,
                                              min_size, max_size);
   ASSERT_TRUE(dialog_delegate);
@@ -273,7 +273,7 @@ IN_PROC_BROWSER_TEST_F(ConstrainedWebDialogBrowserTest,
   ASSERT_TRUE(web_contents);
 
   ConstrainedWebDialogDelegate* dialog_delegate = ShowConstrainedWebDialog(
-      browser()->profile(), std::move(delegate), web_contents);
+      browser()->GetProfile(), std::move(delegate), web_contents);
   ASSERT_TRUE(dialog_delegate);
   EXPECT_TRUE(dialog_delegate->GetNativeDialog());
   EXPECT_TRUE(IsShowingWebContentsModalDialog(web_contents));
@@ -311,7 +311,7 @@ IN_PROC_BROWSER_TEST_F(ConstrainedWebDialogBrowserTest, RootViewAcessibleName) {
 
   views::WidgetDelegate* widget_delegate =
       GetConstrainedWebDialogForAccessibilityTesting(
-          browser()->profile(), std::move(delegate), web_contents);
+          browser()->GetProfile(), std::move(delegate), web_contents);
 
   ui::AXNodeData root_view_data;
   widget_delegate->GetWidget()

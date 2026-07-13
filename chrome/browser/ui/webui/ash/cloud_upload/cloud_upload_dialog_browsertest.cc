@@ -281,7 +281,7 @@ class FileHandlerDialogBrowserTest : public InProcessBrowserTest {
     InProcessBrowserTest::SetUpOnMainThread();
 
     // Needed to check that Files app was launched as the dialog's modal parent.
-    ash::SystemWebAppManager::GetForTest(browser()->profile())
+    ash::SystemWebAppManager::GetForTest(browser()->GetProfile())
         ->InstallSystemAppsForTesting();
 
     SetUpTasksAndFiles();
@@ -1119,7 +1119,8 @@ IN_PROC_BROWSER_TEST_F(
   navigation_observer_dialog.StartWatchingNewWebContents();
 
   // Launch the Connect OneDrive dialog on top of a files app.
-  gfx::NativeWindow modal_parent = LaunchFilesAppAndWait(browser()->profile());
+  gfx::NativeWindow modal_parent =
+      LaunchFilesAppAndWait(browser()->GetProfile());
   ASSERT_TRUE(ShowConnectOneDriveDialog(modal_parent));
 
   // Wait for chrome://cloud-upload to open.
@@ -1241,11 +1242,11 @@ class FixUpFlowBrowserTest : public InProcessBrowserTest {
   FixUpFlowBrowserTest(const FixUpFlowBrowserTest&) = delete;
   FixUpFlowBrowserTest& operator=(const FixUpFlowBrowserTest&) = delete;
 
-  Profile* profile() { return browser()->profile(); }
+  Profile* profile() { return browser()->GetProfile(); }
 
   void SetUpOnMainThread() override {
     // Needed to check that Files app was launched as the dialog's modal parent.
-    ash::SystemWebAppManager::GetForTest(browser()->profile())
+    ash::SystemWebAppManager::GetForTest(browser()->GetProfile())
         ->InstallSystemAppsForTesting();
   }
 
@@ -1298,7 +1299,7 @@ IN_PROC_BROWSER_TEST_F(FixUpFlowBrowserTest, FixUpFlowWhenODFSNotMounted) {
   // ODFS is not mounted, expect that the Fixup flow will need to run.
   ASSERT_TRUE(ShouldFixUpOffice(profile(), CloudProvider::kOneDrive));
 
-  LaunchFilesAppAndWait(browser()->profile());
+  LaunchFilesAppAndWait(browser()->GetProfile());
 
   // Launch setup and get the web contents of the dialog to be able to
   // query `CloudUploadElement`.
@@ -1343,7 +1344,7 @@ IN_PROC_BROWSER_TEST_F(FixUpFlowBrowserTest,
   // Office PWA is not installed, expect that the Fixup flow will need to run.
   ASSERT_TRUE(ShouldFixUpOffice(profile(), CloudProvider::kOneDrive));
 
-  LaunchFilesAppAndWait(browser()->profile());
+  LaunchFilesAppAndWait(browser()->GetProfile());
 
   // Launch setup and get the web contents of the dialog to be able to
   // query `CloudUploadElement`.
@@ -1388,7 +1389,8 @@ IN_PROC_BROWSER_TEST_F(
   // ODFS is not mounted, expect that the Fixup flow will need to run.
   ASSERT_TRUE(ShouldFixUpOffice(profile(), CloudProvider::kOneDrive));
 
-  gfx::NativeWindow modal_parent1 = LaunchFilesAppAndWait(browser()->profile());
+  gfx::NativeWindow modal_parent1 =
+      LaunchFilesAppAndWait(browser()->GetProfile());
 
   // Launch the setup dialog at chrome://cloud-upload.
   LaunchCloudUploadDialogAndGetWebContentsForDialog(
@@ -1397,7 +1399,8 @@ IN_PROC_BROWSER_TEST_F(
                                          /*file_count=*/1),
       "cloud-upload");
 
-  gfx::NativeWindow modal_parent2 = LaunchFilesAppAndWait(browser()->profile());
+  gfx::NativeWindow modal_parent2 =
+      LaunchFilesAppAndWait(browser()->GetProfile());
 
   auto* modal_parent_widget1 =
       views::Widget::GetWidgetForNativeWindow(modal_parent1);
@@ -1444,7 +1447,8 @@ IN_PROC_BROWSER_TEST_F(
   // ODFS is not mounted, expect that the Fixup flow will need to run.
   ASSERT_TRUE(ShouldFixUpOffice(profile(), CloudProvider::kOneDrive));
 
-  gfx::NativeWindow modal_parent1 = LaunchFilesAppAndWait(browser()->profile());
+  gfx::NativeWindow modal_parent1 =
+      LaunchFilesAppAndWait(browser()->GetProfile());
 
   // Launch the setup dialog at chrome://cloud-upload.
   LaunchCloudUploadDialogAndGetWebContentsForDialog(
@@ -1453,7 +1457,8 @@ IN_PROC_BROWSER_TEST_F(
                                          /*file_count=*/1),
       "cloud-upload");
 
-  gfx::NativeWindow modal_parent2 = LaunchFilesAppAndWait(browser()->profile());
+  gfx::NativeWindow modal_parent2 =
+      LaunchFilesAppAndWait(browser()->GetProfile());
 
   auto* modal_parent_widget1 =
       views::Widget::GetWidgetForNativeWindow(modal_parent1);
@@ -1493,7 +1498,8 @@ IN_PROC_BROWSER_TEST_F(
   // ODFS is not mounted, expect that the Fixup flow will need to run.
   ASSERT_TRUE(ShouldFixUpOffice(profile(), CloudProvider::kOneDrive));
 
-  gfx::NativeWindow modal_parent = LaunchFilesAppAndWait(browser()->profile());
+  gfx::NativeWindow modal_parent =
+      LaunchFilesAppAndWait(browser()->GetProfile());
 
   // Launch the setup dialog at chrome://cloud-upload.
   LaunchCloudUploadDialogAndGetWebContentsForDialog(

@@ -93,7 +93,7 @@ IN_PROC_BROWSER_TEST_F(AppInstallDialogBrowserTest, InstallApp) {
   base::test::TestFuture<bool> dialog_accepted_future;
 
   dialog_handle->ShowApp(
-      browser()->profile(),
+      browser()->GetProfile(),
       /*parent=*/browser()->GetWindow()->GetNativeWindow(),
       apps::PackageId(apps::PackageType::kWeb, app_url.spec()),
       /*app_name=*/"Test app",
@@ -158,16 +158,16 @@ IN_PROC_BROWSER_TEST_F(AppInstallDialogBrowserTest, AlreadyInstalled) {
 
   SetUpAlmanacPayload(kAppUrl);
 
-  web_app::test::InstallDummyWebApp(browser()->profile(), "Test app",
+  web_app::test::InstallDummyWebApp(browser()->GetProfile(), "Test app",
                                     GURL(kAppUrl));
-  apps::AppReadinessWaiter(browser()->profile(), app_id).Await();
+  apps::AppReadinessWaiter(browser()->GetProfile(), app_id).Await();
 
   content::TestNavigationObserver navigation_observer_dialog(
       (GURL(ash::kChromeUIAppInstallDialogURL)));
   navigation_observer_dialog.StartWatchingNewWebContents();
 
   auto* proxy =
-      apps::AppServiceProxyFactory::GetForProfile(browser()->profile());
+      apps::AppServiceProxyFactory::GetForProfile(browser()->GetProfile());
   proxy->AppInstallService().InstallApp(
       apps::AppInstallSurface::kAppInstallUriUnknown,
       apps::PackageId(apps::PackageType::kWeb, kAppUrl),
@@ -204,7 +204,7 @@ IN_PROC_BROWSER_TEST_F(AppInstallDialogBrowserTest, FailedInstall) {
   // TODO(b/331310950): Add a test that sends a retry callback.
   constexpr char kAppUrl[] = "https://example.org/";
   dialog_handle->ShowApp(
-      browser()->profile(),
+      browser()->GetProfile(),
       /*parent=*/browser()->GetWindow()->GetNativeWindow(),
       apps::PackageId(apps::PackageType::kWeb, kAppUrl),
       /*app_name=*/"Test app",
@@ -250,7 +250,7 @@ IN_PROC_BROWSER_TEST_F(AppInstallDialogBrowserTest, NoAppError) {
   app_install_server()->SetUpResponseCode(package_id, net::HTTP_NOT_FOUND);
 
   auto* proxy =
-      apps::AppServiceProxyFactory::GetForProfile(browser()->profile());
+      apps::AppServiceProxyFactory::GetForProfile(browser()->GetProfile());
   proxy->AppInstallService().InstallApp(
       apps::AppInstallSurface::kAppInstallUriUnknown, package_id,
       /*anchor_window=*/std::nullopt,
@@ -275,7 +275,7 @@ IN_PROC_BROWSER_TEST_F(AppInstallDialogBrowserTest, ConnectionError) {
                                           net::HTTP_INTERNAL_SERVER_ERROR);
 
   auto* proxy =
-      apps::AppServiceProxyFactory::GetForProfile(browser()->profile());
+      apps::AppServiceProxyFactory::GetForProfile(browser()->GetProfile());
   proxy->AppInstallService().InstallApp(
       apps::AppInstallSurface::kAppInstallUriUnknown, package_id,
       /*anchor_window=*/std::nullopt,

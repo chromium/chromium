@@ -51,7 +51,7 @@ class KerberosInBrowserDialogButtonTest : public InProcessBrowserTest {
 
  protected:
   void SetUpOnMainThread() override {
-    ash::SystemWebAppManager::GetForTest(browser()->profile())
+    ash::SystemWebAppManager::GetForTest(browser()->GetProfile())
         ->InstallSystemAppsForTesting();
   }
 

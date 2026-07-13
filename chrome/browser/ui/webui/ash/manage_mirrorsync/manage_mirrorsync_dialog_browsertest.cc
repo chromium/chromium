@@ -153,7 +153,7 @@ class ManageMirrorSyncDialogTest : public InProcessBrowserTest {
   // Show the MirrorSync dialog and wait for it to complete loading.
   void ShowDialog() {
     content::WebContentsAddedObserver observer;
-    ManageMirrorSyncDialog::Show(browser()->profile());
+    ManageMirrorSyncDialog::Show(browser()->GetProfile());
     dialog_contents_ = observer.GetWebContents();
     EXPECT_TRUE(content::WaitForLoadStop(dialog_contents_));
     EXPECT_EQ(dialog_contents_->GetLastCommittedURL().GetHost(),
@@ -166,7 +166,7 @@ class ManageMirrorSyncDialogTest : public InProcessBrowserTest {
     my_files_dir_ = temp_dir_.GetPath().Append("MyFiles");
     storage::ExternalMountPoints::GetSystemInstance()->RevokeAllFileSystems();
     storage::ExternalMountPoints::GetSystemInstance()->RegisterFileSystem(
-        file_manager::util::GetDownloadsMountPointName(browser()->profile()),
+        file_manager::util::GetDownloadsMountPointName(browser()->GetProfile()),
         storage::kFileSystemTypeLocal, storage::FileSystemMountOption(),
         my_files_dir_);
 
@@ -192,7 +192,7 @@ class ManageMirrorSyncDialogTest : public InProcessBrowserTest {
     my_files_dir_ = temp_dir_.GetPath().Append("MyFiles");
     storage::ExternalMountPoints::GetSystemInstance()->RevokeAllFileSystems();
     storage::ExternalMountPoints::GetSystemInstance()->RegisterFileSystem(
-        file_manager::util::GetDownloadsMountPointName(browser()->profile()),
+        file_manager::util::GetDownloadsMountPointName(browser()->GetProfile()),
         storage::kFileSystemTypeLocal, storage::FileSystemMountOption(),
         my_files_dir_);
 
@@ -209,7 +209,7 @@ class ManageMirrorSyncDialogTest : public InProcessBrowserTest {
     {
       drive::DriveIntegrationService* const service =
           drive::DriveIntegrationServiceFactory::FindForProfile(
-              browser()->profile());
+              browser()->GetProfile());
       DriveMirrorSyncStatusObserver observer(service, enabled);
       // Turning on the sync will add ~/MyFiles as the sync path, which will
       // call GetSyncingPaths internally.

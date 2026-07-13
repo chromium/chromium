@@ -37,7 +37,7 @@ IN_PROC_BROWSER_TEST_F(AccessCodeCastHandlerBrowserTest,
 
   // This tests that if the network is not present (we are not connected to the
   // internet), we will see a server error in the access code dialog box.
-  SetUpPrimaryAccountWithHostedDomain(browser()->profile());
+  SetUpPrimaryAccountWithHostedDomain(browser()->GetProfile());
 
   network::TestNetworkConnectionTracker::GetInstance()->SetConnectionType(
       net::NetworkChangeNotifier::ConnectionType::CONNECTION_NONE);
@@ -89,7 +89,7 @@ IN_PROC_BROWSER_TEST_F(AccessCodeCastHandlerBrowserTest,
 
   EnableAccessCodeCasting();
 
-  SetUpPrimaryAccountWithHostedDomain(browser()->profile());
+  SetUpPrimaryAccountWithHostedDomain(browser()->GetProfile());
 
   auto* dialog_contents = ShowDialog();
   SetAccessCode("abcdef", dialog_contents);
@@ -108,9 +108,9 @@ IN_PROC_BROWSER_TEST_F(AccessCodeCastHandlerBrowserTest,
   EnableAccessCodeCasting();
 
   // This tests that an account with auth error will throw a generic error.
-  SetUpPrimaryAccountWithHostedDomain(browser()->profile());
+  SetUpPrimaryAccountWithHostedDomain(browser()->GetProfile());
   signin::IdentityManager* identity_manager =
-      AccessCodeCastSinkServiceFactory::GetForProfile(browser()->profile())
+      AccessCodeCastSinkServiceFactory::GetForProfile(browser()->GetProfile())
           ->GetIdentityManager();
   signin::UpdatePersistentErrorOfRefreshTokenForAccount(
       identity_manager,
@@ -163,7 +163,7 @@ IN_PROC_BROWSER_TEST_F(AccessCodeCastHandlerBrowserTest,
 
   EnableAccessCodeCasting();
 
-  SetUpPrimaryAccountWithHostedDomain(browser()->profile());
+  SetUpPrimaryAccountWithHostedDomain(browser()->GetProfile());
 
   auto* dialog_contents = ShowDialog();
   SetAccessCode("abcdef", dialog_contents);
@@ -211,7 +211,7 @@ IN_PROC_BROWSER_TEST_F(AccessCodeCastHandlerBrowserTest,
 
   EnableAccessCodeCasting();
 
-  SetUpPrimaryAccountWithHostedDomain(browser()->profile());
+  SetUpPrimaryAccountWithHostedDomain(browser()->GetProfile());
 
   auto* dialog_contents = ShowDialog();
   SetAccessCodeUsingKeyPress("ABCDEF");

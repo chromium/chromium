@@ -467,7 +467,7 @@ bool PolicyUIStatusTest::ReloadPolicies(content::WebContents* contents) {
 IN_PROC_BROWSER_TEST_F(PolicyUIStatusTest, CheckPolicyUiInGuestProfile) {
   // Verifies that the page opens in guest session.
   const Browser* policy_browser = OpenURLOffTheRecord(
-      browser()->profile(), GURL(chrome::kChromeUIPolicyURL));
+      browser()->GetProfile(), GURL(chrome::kChromeUIPolicyURL));
   ASSERT_TRUE(policy_browser);
   content::WebContents* contents =
       policy_browser->tab_strip_model()->GetActiveWebContents();
@@ -783,7 +783,7 @@ IN_PROC_BROWSER_TEST_P(PolicyUITest, ReportButtonWithProfileReporting) {
 
 #if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_P(PolicyUITest, ReportButtonOTRProfile) {
-  Browser* otr_browser = OpenURLOffTheRecord(browser()->profile(),
+  Browser* otr_browser = OpenURLOffTheRecord(browser()->GetProfile(),
                                              GURL(chrome::kChromeUIPolicyURL));
   ASSERT_TRUE(otr_browser);
   content::WebContents* otr_contents =
@@ -794,7 +794,7 @@ IN_PROC_BROWSER_TEST_P(PolicyUITest, ReportButtonOTRProfile) {
   EXPECT_EQ(
       nullptr,
       enterprise_reporting::CloudProfileReportingServiceFactory::GetForProfile(
-          otr_browser->profile()));
+          otr_browser->GetProfile()));
 
   // Turn on the reporting policy.
   policy::PolicyMap policy_map;

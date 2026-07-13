@@ -39,7 +39,7 @@ class PreventCloseControllerBrowserTest : public WebAppBrowserTestBase {
   }
 
   void ForceInstallWebApp(const webapps::AppId& app_id, const GURL& url) {
-    web_app::WebAppTestInstallObserver observer(browser()->profile());
+    web_app::WebAppTestInstallObserver observer(browser()->GetProfile());
     observer.BeginListening({app_id});
 
     profile()->GetPrefs()->SetList(

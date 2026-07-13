@@ -27,7 +27,7 @@ class WebAppServiceWorkerOpenWindowBrowserTest : public WebAppBrowserTestBase {
   static GURL GetGoogleURL() { return GURL("http://www.google.com/"); }
 
   NavigateParams MakeNavigateParamsForServiceWorker() const {
-    NavigateParams params(browser()->profile(), GetGoogleURL(),
+    NavigateParams params(browser()->GetProfile(), GetGoogleURL(),
                           ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
     params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
     params.is_renderer_initiated = true;

@@ -282,7 +282,7 @@ IN_PROC_BROWSER_TEST_F(WebAppModelMenuPreventCloseTest,
     EXPECT_EQ(!kShouldPreventClose, found);
   }
 
-  test::UninstallAllWebApps(browser->profile());
+  test::UninstallAllWebApps(browser->GetProfile());
 }
 
 }  // namespace web_app

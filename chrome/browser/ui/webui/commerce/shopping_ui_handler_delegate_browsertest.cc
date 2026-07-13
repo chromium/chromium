@@ -55,7 +55,7 @@ class ShoppingUiHandlerDelegateBrowserTest : public InProcessBrowserTest {
       bookmark_model_->CreateAccountPermanentFolders();
     } else {
       LocalOrSyncableBookmarkSyncServiceFactory::GetForProfile(
-          browser()->profile())
+          browser()->GetProfile())
           ->SetIsTrackingMetadataForTesting();
     }
   }

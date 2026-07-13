@@ -41,7 +41,7 @@ class DefaultBrowserModalPixelTest : public InteractiveBrowserTest {
 
   void ShowUi(bool use_settings_illustration, bool can_pin_to_taskbar = false) {
     dialog_widget_ =
-        ::default_browser::Show(browser()->profile(),
+        ::default_browser::Show(browser()->GetProfile(),
                                 browser()
                                     ->tab_strip_model()
                                     ->GetActiveWebContents()

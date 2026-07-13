@@ -85,7 +85,8 @@ class AccessibilityHandlerTest : public InProcessBrowserTest {
   }
 
   void SetUpOnMainThread() override {
-    handler_ = std::make_unique<TestAccessibilityHandler>(browser()->profile());
+    handler_ =
+        std::make_unique<TestAccessibilityHandler>(browser()->GetProfile());
     handler_->set_web_ui(&web_ui_);
     handler_->RegisterMessages();
     handler_->AllowJavascriptForTesting();

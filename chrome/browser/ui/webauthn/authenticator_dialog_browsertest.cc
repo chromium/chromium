@@ -165,7 +165,7 @@ class AuthenticatorDialogTest : public DialogBrowserTest {
   void SetUpOnMainThread() override {
     DialogBrowserTest::SetUpOnMainThread();
     signin::MakePrimaryAccountAvailable(
-        IdentityManagerFactory::GetForProfile(browser()->profile()),
+        IdentityManagerFactory::GetForProfile(browser()->GetProfile()),
         "user@example.com", signin::ConsentLevel::kSignin);
   }
 
@@ -651,7 +651,7 @@ class GPMPasskeysAuthenticatorDialogTest : public DialogBrowserTest {
  public:
   void SetUpOnMainThread() override {
     signin::MakePrimaryAccountAvailable(
-        IdentityManagerFactory::GetForProfile(browser()->profile()),
+        IdentityManagerFactory::GetForProfile(browser()->GetProfile()),
         "user@example.com", signin::ConsentLevel::kSignin);
   }
 
@@ -1096,14 +1096,14 @@ class QuitBrowserWhenKeysStored : public EnclaveManager::Observer {
   explicit QuitBrowserWhenKeysStored(Browser* browser) : browser_(browser) {
     EnclaveManager* const enclave_manager =
         EnclaveManagerFactory::GetAsEnclaveManagerForProfile(
-            browser_->profile());
+            browser_->GetProfile());
     enclave_manager->AddObserver(this);
     store_keys_lock_ = enclave_manager->GetStoreKeysLock();
   }
 
   // EnclaveManager::Observer
   void OnKeysStored(const GaiaId& gaia_id) override {
-    EnclaveManagerFactory::GetAsEnclaveManagerForProfile(browser_->profile())
+    EnclaveManagerFactory::GetAsEnclaveManagerForProfile(browser_->GetProfile())
         ->RemoveObserver(this);
     browser_ = nullptr;
 
@@ -1374,7 +1374,7 @@ class PasskeyUpgradeConfirmationBubbleTest : public DialogBrowserTest {
     DialogBrowserTest::SetUpOnMainThread();
     host_resolver()->AddRule("*", "127.0.0.1");
     signin::MakePrimaryAccountAvailable(
-        IdentityManagerFactory::GetForProfile(browser()->profile()),
+        IdentityManagerFactory::GetForProfile(browser()->GetProfile()),
         "user@gmail.com", signin::ConsentLevel::kSync);
   }
 

@@ -180,7 +180,7 @@ class IdentityDialogControllerBrowserTest : public InProcessBrowserTest {
 
   TaskId SimulateNewActiveActorTask() {
     actor::ActorKeyedService* actor_service =
-        actor::ActorKeyedService::Get(browser()->profile());
+        actor::ActorKeyedService::Get(browser()->GetProfile());
     CHECK(actor_service);
 
     actor::TaskId task_id = actor_service->CreateTask(
@@ -207,7 +207,7 @@ class IdentityDialogControllerBrowserTest : public InProcessBrowserTest {
   void SimulateActorTaskFinished(IdentityDialogController* controller,
                                  TaskId task_id) {
     actor::ActorKeyedService* actor_service =
-        actor::ActorKeyedService::Get(browser()->profile());
+        actor::ActorKeyedService::Get(browser()->GetProfile());
     EXPECT_NE(actor_service, nullptr);
     actor_service->StopTask(task_id,
                             actor::ActorTask::StoppedReason::kTaskComplete);

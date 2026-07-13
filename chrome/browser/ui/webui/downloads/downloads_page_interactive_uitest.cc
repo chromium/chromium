@@ -258,8 +258,8 @@ class DownloadsPageInteractiveUitestWithDangerType
   void SetUpOnMainThread() override {
     DownloadsPageInteractiveUitest::SetUpOnMainThread();
     auto test_delegate =
-        std::make_unique<TestDownloadManagerDelegate>(browser()->profile());
-    DownloadCoreServiceFactory::GetForBrowserContext(browser()->profile())
+        std::make_unique<TestDownloadManagerDelegate>(browser()->GetProfile());
+    DownloadCoreServiceFactory::GetForBrowserContext(browser()->GetProfile())
         ->SetDownloadManagerDelegateForTesting(std::move(test_delegate));
   }
 

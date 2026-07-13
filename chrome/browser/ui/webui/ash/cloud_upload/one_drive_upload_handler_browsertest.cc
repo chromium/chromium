@@ -163,7 +163,7 @@ class OneDriveUploadHandlerTest : public InProcessBrowserTest,
   }
 
   void RemoveObservers() {
-    NotificationDisplayServiceFactory::GetForProfile(browser()->profile())
+    NotificationDisplayServiceFactory::GetForProfile(browser()->GetProfile())
         ->RemoveObserver(this);
   }
 

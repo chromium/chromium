@@ -185,7 +185,7 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(WebAppUiManagerImplBrowserTest, MigrateAppAttribute) {
   app_list::AppListSyncableService* app_list_service =
       app_list::AppListSyncableServiceFactory::GetForProfile(
-          browser()->profile());
+          browser()->GetProfile());
 
   // Install an old app to be replaced.
   webapps::AppId old_app_id = test::InstallDummyWebApp(

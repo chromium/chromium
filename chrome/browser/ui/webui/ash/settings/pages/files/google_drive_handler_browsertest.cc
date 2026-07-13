@@ -149,7 +149,7 @@ class GoogleDriveHandlerBaseTest
                       Field("query_source", &QueryParameters::query_source,
                             QueryParameters::QuerySource::kLocalAndCloud)));
 
-    auto* fake_drivefs = GetFakeDriveFsForProfile(browser()->profile());
+    auto* fake_drivefs = GetFakeDriveFsForProfile(browser()->GetProfile());
 
     // Fall back to the default ON_CALL behaviour set in the FakeDriveFs
     // constructor for most queries. Without this, once one EXPECT_CALL is
@@ -168,7 +168,7 @@ class GoogleDriveHandlerBaseTest
 
   base::FilePath CreateFileInContentCache(int file_size_in_bytes) {
     auto* const service =
-        drive::util::GetIntegrationServiceByProfile(browser()->profile());
+        drive::util::GetIntegrationServiceByProfile(browser()->GetProfile());
     {
       // Ensure the content cache directory exists.
       base::ScopedAllowBlockingForTesting allow_blocking;
@@ -280,7 +280,7 @@ IN_PROC_BROWSER_TEST_P(GoogleDriveHandlerTest,
 
   const base::FilePath file_path = CreateFileInContentCache(32);
 
-  auto* fake_drivefs = GetFakeDriveFsForProfile(browser()->profile());
+  auto* fake_drivefs = GetFakeDriveFsForProfile(browser()->GetProfile());
   EXPECT_CALL(*fake_drivefs, ClearOfflineFiles(_))
       .WillOnce(
           [&file_path](

@@ -42,7 +42,7 @@ class SwitchAccessHandlerTest : public InProcessBrowserTest {
 
   void SetUpOnMainThread() override {
     handler_ = std::make_unique<TestSwitchAccessHandler>(
-        &web_ui_, browser()->profile()->GetPrefs());
+        &web_ui_, browser()->GetProfile()->GetPrefs());
   }
 
   void TearDownOnMainThread() override { handler_.reset(); }

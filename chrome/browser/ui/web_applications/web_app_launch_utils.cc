@@ -155,9 +155,9 @@ const ash::SystemWebAppDelegate* GetSystemWebAppDelegate(
     Browser* browser,
     const webapps::AppId& app_id) {
   auto system_app_type =
-      ash::GetSystemWebAppTypeForAppId(browser->profile(), app_id);
+      ash::GetSystemWebAppTypeForAppId(browser->GetProfile(), app_id);
   if (system_app_type) {
-    return ash::SystemWebAppManager::Get(browser->profile())
+    return ash::SystemWebAppManager::Get(browser->GetProfile())
         ->GetSystemApp(*system_app_type);
   }
   return nullptr;
@@ -201,7 +201,7 @@ std::unique_ptr<AppBrowserController> MaybeCreateHostedAppBrowserController(
     const webapps::AppId& app_id) {
 #if BUILDFLAG(ENABLE_HOSTED_APPS)
   const extensions::Extension* extension =
-      extensions::ExtensionRegistry::Get(browser->profile())
+      extensions::ExtensionRegistry::Get(browser->GetProfile())
           ->GetExtensionById(app_id, extensions::ExtensionRegistry::EVERYTHING);
   if (extension && extension->is_hosted_app()) {
     return std::make_unique<extensions::HostedAppBrowserController>(browser,
@@ -656,7 +656,7 @@ std::unique_ptr<AppBrowserController> MaybeCreateAppBrowserController(
   const webapps::AppId app_id =
       GetAppIdFromApplicationName(browser->app_name());
   auto* const provider =
-      WebAppProvider::GetForLocalAppsUnchecked(browser->profile());
+      WebAppProvider::GetForLocalAppsUnchecked(browser->GetProfile());
   if (provider && provider->registrar_unsafe().AppMatches(
                       app_id, WebAppFilter::IsAppSurfaceableToUser())) {
 #if BUILDFLAG(IS_CHROMEOS)

@@ -22,7 +22,7 @@ using ChromeWebUIControllerFactoryBrowserTest = InProcessBrowserTest;
 // wrong WebUI object.
 IN_PROC_BROWSER_TEST_F(ChromeWebUIControllerFactoryBrowserTest,
                        ChromeUntrustedSameHost) {
-  content::AddUntrustedDataSource(browser()->profile(),
+  content::AddUntrustedDataSource(browser()->GetProfile(),
                                   chrome::kChromeUIVersionHost);
   EXPECT_TRUE(ui_test_utils::NavigateToURL(
       browser(),

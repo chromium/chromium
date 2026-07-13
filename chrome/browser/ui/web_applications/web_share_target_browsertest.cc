@@ -299,7 +299,7 @@ IN_PROC_BROWSER_TEST_F(WebShareTargetBrowserTest, PostLink) {
   const webapps::AppId app_id =
       web_app::InstallWebAppFromManifest(browser(), app_url);
   const apps::ShareTarget* share_target =
-      WebAppProvider::GetForTest(browser()->profile())
+      WebAppProvider::GetForTest(browser()->GetProfile())
           ->registrar_unsafe()
           .GetAppShareTarget(app_id);
   EXPECT_EQ(share_target->method, apps::ShareTarget::Method::kPost);
@@ -331,7 +331,7 @@ IN_PROC_BROWSER_TEST_F(WebShareTargetBrowserTest, GetLink) {
   const webapps::AppId app_id =
       web_app::InstallWebAppFromManifest(browser(), app_url);
   const apps::ShareTarget* share_target =
-      WebAppProvider::GetForTest(browser()->profile())
+      WebAppProvider::GetForTest(browser()->GetProfile())
           ->registrar_unsafe()
           .GetAppShareTarget(app_id);
   EXPECT_EQ(share_target->method, apps::ShareTarget::Method::kGet);

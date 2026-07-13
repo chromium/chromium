@@ -309,7 +309,7 @@ void AppHomePageHandler::CreateWebAppShortcut(const std::string& app_id,
                                               base::OnceClosure done) {
   Browser* browser = GetCurrentBrowser();
   chrome::ShowCreateChromeAppShortcutsDialog(
-      browser->GetWindow()->GetNativeWindow(), browser->profile(), app_id,
+      browser->GetWindow()->GetNativeWindow(), browser->GetProfile(), app_id,
       base::BindOnce(
           [](base::OnceClosure done, bool success) {
             base::UmaHistogramBoolean(
@@ -324,7 +324,7 @@ void AppHomePageHandler::CreateExtensionAppShortcut(
     base::OnceClosure done) {
   Browser* browser = GetCurrentBrowser();
   chrome::ShowCreateChromeAppShortcutsDialog(
-      browser->GetWindow()->GetNativeWindow(), browser->profile(), extension,
+      browser->GetWindow()->GetNativeWindow(), browser->GetProfile(), extension,
       base::IgnoreArgs<bool>(std::move(done)));
 }
 
