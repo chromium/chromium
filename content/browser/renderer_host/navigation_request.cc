@@ -3051,6 +3051,11 @@ void NavigationRequest::BeginNavigationImpl() {
 
   if (base::FeatureList::IsEnabled(features::kNavigationFastFetchDryRun)) {
     fast_fetch_manager_ = NavigationFastFetchManager::Create(*this);
+    navigation_handle_timing_.fast_fetch_eligibility_check_time =
+        fast_fetch_manager_->eligibility_check_time();
+    navigation_handle_timing_.is_fast_fetch_eligible =
+        (fast_fetch_manager_->eligibility_reason() ==
+         NavigationFastFetchManager::EligibilityReason::kEligible);
   }
 
   // Check Content Security Policy before the NavigationThrottles run. This
