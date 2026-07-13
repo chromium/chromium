@@ -1365,6 +1365,8 @@ static_library("test_support") {
     "payments/payments_requests/update_bnpl_payment_instrument_request_test_api.h",
     "payments/test/autofill_payments_test_utils.cc",
     "payments/test/autofill_payments_test_utils.h",
+    "payments/test/mock_ai_card_recommendation_manager.cc",
+    "payments/test/mock_ai_card_recommendation_manager.h",
     "payments/test/mock_bnpl_manager.cc",
     "payments/test/mock_bnpl_manager.h",
     "payments/test/mock_iban_manager.cc",

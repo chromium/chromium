@@ -66,6 +66,7 @@
 #include "components/autofill/core/browser/payments/credit_card_access_manager.h"
 #include "components/autofill/core/browser/payments/mock_iban_access_manager.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
+#include "components/autofill/core/browser/payments/test/mock_ai_card_recommendation_manager.h"
 #include "components/autofill/core/browser/payments/test/mock_bnpl_manager.h"
 #include "components/autofill/core/browser/payments/test/mock_save_and_fill_manager.h"
 #include "components/autofill/core/browser/payments/test_payments_autofill_client.h"
@@ -321,6 +322,8 @@ class MockBrowserAutofillManager : public TestBrowserAutofillManager {
         std::make_unique<TestCreditCardAccessManager>(this));
     test_api(*this).set_bnpl_manager(
         std::make_unique<NiceMock<MockBnplManager>>(this));
+    test_api(*this).set_ai_card_recommendation_manager(
+        std::make_unique<NiceMock<MockAiCardRecommendationManager>>(this));
   }
   MockBrowserAutofillManager(const MockBrowserAutofillManager&) = delete;
   MockBrowserAutofillManager& operator=(const MockBrowserAutofillManager&) =
@@ -367,6 +370,11 @@ class MockBrowserAutofillManager : public TestBrowserAutofillManager {
               (override));
 
   MOCK_METHOD(void, OnSuggestionsHidden, (SuggestionHidingReason), (override));
+
+  MockAiCardRecommendationManager* GetMockAiCardRecommendationManager() {
+    return static_cast<MockAiCardRecommendationManager*>(
+        &GetAiCardRecommendationManager());
+  }
 };
 
 class StubAtMemoryQueryServiceDelegate : public AtMemoryQueryServiceDelegate {
@@ -4243,6 +4251,10 @@ TEST_F(AutofillExternalDelegateTest,
   base::test::ScopedFeatureList feature_list{
       features::kAutofillEnableAiCardRecommendation};
   IssueOnQuery();
+
+  // Ensure that MaximizeCreditCardBenefits is triggered
+  EXPECT_CALL(autofill_manager().GetAiCardRecommendationManager(),
+              MaximizeCreditCardBenefits);
 
   // Ensure that the suggestions popup is not hidden.
   EXPECT_CALL(autofill_client(), HideSuggestions).Times(0);

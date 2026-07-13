@@ -38,6 +38,11 @@ TestBrowserAutofillManager::GetPaymentsBnplManager() {
   return &mock_bnpl_manager_;
 }
 
+testing::NiceMock<MockAiCardRecommendationManager>&
+TestBrowserAutofillManager::GetAiCardRecommendationManager() {
+  return mock_ai_card_recommendation_manager_;
+}
+
 void TestBrowserAutofillManager::OnLanguageDetermined(
     const translate::LanguageDetectionDetails& details) {
   AutofillManager::OnLanguageDetermined(details);

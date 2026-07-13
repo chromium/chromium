@@ -64,6 +64,7 @@
 #include "components/autofill/core/browser/metrics/autofill_metrics_utils.h"
 #include "components/autofill/core/browser/metrics/loyalty_cards_metrics.h"
 #include "components/autofill/core/browser/metrics/suggestions_list_metrics.h"
+#include "components/autofill/core/browser/payments/ai_card_recommendation_manager.h"
 #include "components/autofill/core/browser/payments/bnpl_manager.h"
 #include "components/autofill/core/browser/payments/bnpl_util.h"
 #include "components/autofill/core/browser/payments/credit_card_access_manager.h"
@@ -1573,7 +1574,7 @@ void AutofillExternalDelegate::DidAcceptPaymentsSuggestion(
       break;
     }
     case SuggestionType::kMaximizeCreditCardBenefitsEntry: {
-      // TODO(haochenf) Handle MaximizeCreditCardBenefitsEntry selection.
+      manager_->GetAiCardRecommendationManager().MaximizeCreditCardBenefits();
       break;
     }
     default:

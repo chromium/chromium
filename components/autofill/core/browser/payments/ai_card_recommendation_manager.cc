@@ -11,8 +11,19 @@ namespace autofill::payments {
 
 AiCardRecommendationManager::AiCardRecommendationManager(
     BrowserAutofillManager* browser_autofill_manager)
-    : browser_autofill_manager_(CHECK_DEREF(browser_autofill_manager)) {}
+    : browser_autofill_manager_(CHECK_DEREF(browser_autofill_manager)) {
+  autofill_manager_observation_.Observe(&*browser_autofill_manager_);
+}
 
 AiCardRecommendationManager::~AiCardRecommendationManager() = default;
+
+void AiCardRecommendationManager::MaximizeCreditCardBenefits() {
+  // TODO(crbug.com/522976689): Trigger AI amount extraction.
+}
+
+void AiCardRecommendationManager::OnSuggestionsHidden(AutofillManager&,
+                                                      SuggestionHidingReason) {
+  weak_ptr_factory_.InvalidateWeakPtrs();
+}
 
 }  // namespace autofill::payments
