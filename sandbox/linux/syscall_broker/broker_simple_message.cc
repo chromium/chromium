@@ -383,7 +383,7 @@ bool BrokerSimpleMessage::ValidateType(EntryType expected_type) {
 }
 
 void BrokerSimpleMessage::WriteBytes(base::span<const uint8_t> bytes) {
-  DCHECK_LT(write_next_offset_ + bytes.size(), message_.size());
+  DCHECK_LE(write_next_offset_ + bytes.size(), message_.size());
   base::span(message_)
       .subspan(write_next_offset_, bytes.size())
       .copy_from_nonoverlapping(bytes);

@@ -9,6 +9,7 @@
 
 #include <algorithm>
 #include <array>
+#include <vector>
 
 #include "base/check.h"
 #include "base/compiler_specific.h"
@@ -388,6 +389,26 @@ TEST(BrokerSimpleMessage, AddData) {
 
     EXPECT_FALSE(message.AddDataToMessage(base::as_byte_span(foo)));
   }
+}
+
+// Regression test for crbug.com/508092637: a data entry whose type, length
+// field and payload exactly fill the message buffer is in bounds and must be
+// accepted, consistent with the bounds check in AddDataToMessage() and with
+// the DCHECK in ReadBytes().
+TEST(BrokerSimpleMessage, AddDataExactlyFillsMessage) {
+  const size_t payload_size = BrokerSimpleMessage::kMaxMessageLength -
+                              BrokerSimpleMessageTestHelper::entry_type_size() -
+                              sizeof(size_t);
+
+  BrokerSimpleMessage filled_message;
+  const std::vector<char> payload(payload_size, 'x');
+  EXPECT_TRUE(filled_message.AddDataToMessage(base::as_byte_span(payload)));
+
+  // One more byte no longer fits.
+  BrokerSimpleMessage overfull_message;
+  const std::vector<char> too_large(payload_size + 1, 'x');
+  EXPECT_FALSE(
+      overfull_message.AddDataToMessage(base::as_byte_span(too_large)));
 }
 
 TEST(BrokerSimpleMessage, SendAndRecvMsg) {
