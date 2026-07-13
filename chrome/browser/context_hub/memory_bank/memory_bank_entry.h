@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_CONTEXT_HUB_MEMORY_BANK_MEMORY_BANK_ENTRY_H_
 #define CHROME_BROWSER_CONTEXT_HUB_MEMORY_BANK_MEMORY_BANK_ENTRY_H_
 
+#include <cstdint>
 #include <optional>
 #include <string>
 #include <vector>
@@ -17,8 +18,8 @@ namespace context_hub {
 enum class MemoryBankType { kTab, kTextSelection };
 
 struct MemoryBankEntry {
-  int64_t id;
-  MemoryBankType type;
+  int64_t id = 0;
+  MemoryBankType type = MemoryBankType::kTab;
   base::Time timestamp;
   GURL url;
   std::string tab_title;

@@ -16,6 +16,7 @@ source_set("context_hub") {
     "//base",
     "//chrome/browser/context_hub/memory_bank",
     "//chrome/browser/context_hub/memory_bank:impl",
+    "//chrome/browser/context_hub/storage",
     "//chrome/browser/optimization_guide",
     "//chrome/browser/personal_context",
     "//chrome/browser/profiles:profile",

@@ -1,0 +1,33 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("storage") {
+  sources = [
+    "memory_bank_table.cc",
+    "memory_bank_table.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//chrome/browser/context_hub/memory_bank",
+    "//components/database_utils",
+    "//sql",
+    "//url",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "memory_bank_table_unittest.cc" ]
+
+  deps = [
+    ":storage",
+    "//base",
+    "//base/test:test_support",
+    "//sql",
+    "//sql:test_support",
+    "//testing/gtest",
+    "//url",
+  ]
+}

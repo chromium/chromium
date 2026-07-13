@@ -5455,6 +5455,7 @@ test("unit_tests") {
     "//chrome/browser/content_settings:content_settings_factory",
     "//chrome/browser/context_hub:unit_tests",
     "//chrome/browser/context_hub/memory_bank:unit_tests",
+    "//chrome/browser/context_hub/storage:unit_tests",
     "//chrome/browser/contextual_tasks:unit_tests",
     "//chrome/browser/crash_upload_list:unit_tests",
     "//chrome/browser/critical_actions:unit_tests",
