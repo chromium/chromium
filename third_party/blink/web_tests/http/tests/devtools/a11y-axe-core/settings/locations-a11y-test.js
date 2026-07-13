@@ -11,6 +11,7 @@ import * as UI from 'devtools/ui/legacy/legacy.js';
 
   await UI.ViewManager.ViewManager.instance().showView('emulation-locations');
   const locationsWidget = await UI.ViewManager.ViewManager.instance().view('emulation-locations').widget();
+  await UI.Widget.Widget.allUpdatesComplete;
 
   async function testAddLocation() {
     const addLocationButton = locationsWidget.contentElement.querySelector('.add-locations-button');
