@@ -33,8 +33,8 @@ message ReadAloudGenerateTextRequest {
   // Title of the webpage being processed.
   string page_title = 1 [features = { field_presence: EXPLICIT }];
 
-  // Text segments extracted from the webpage's distilled content.
-  repeated string page_content = 2;
+  // Distilled webpage content text.
+  string page_content = 2 [features = { field_presence: EXPLICIT }];
 
   // Sanitized origin or URL of the webpage (query params scrubbed by client).
   string page_url = 3 [features = { field_presence: EXPLICIT }];
