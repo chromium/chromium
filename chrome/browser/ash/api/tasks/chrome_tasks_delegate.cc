@@ -16,10 +16,10 @@
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/api/tasks/tasks_client_impl.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/policy/policy_blocklist_service/ash_policy_blocklist_service_factory.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -124,8 +124,9 @@ void ChromeTasksDelegate::UpdateClientForProfileSwitch(
       !user_manager::UserManager::Get()->IsLoggedInAsGuest()) {
     auto& client = clients_[account_id];
     if (!client) {
-      Profile* profile =
-          ProfileHelper::Get()->GetProfileByAccountId(account_id);
+      Profile* profile = Profile::FromBrowserContext(
+          BrowserContextHelper::Get()->GetBrowserContextByAccountId(
+              account_id));
       apps::AppServiceProxy* app_service_proxy =
           apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile)
               ? apps::AppServiceProxyFactory::GetForProfile(profile)
