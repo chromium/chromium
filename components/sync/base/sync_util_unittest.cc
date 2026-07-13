@@ -54,8 +54,13 @@ TEST(SyncUtilTest, FormatUserAgentForSync) {
 }
 
 #if BUILDFLAG(IS_ANDROID)
-// TODO(crbug.com/533093300): Re-enable this test.
-TEST(SyncUtilTest, DISABLED_MakeUserAgentForSyncAndroidDesktop) {
+TEST(SyncUtilTest, MakeUserAgentForSyncAndroidDesktop) {
+  // TODO(crbug.com/533093300): Figure out if this test should run on
+  // automotive.
+  if (base::android::device_info::is_automotive()) {
+    GTEST_SKIP() << "This test is not applicable to automotive.";
+  }
+
   base::android::device_info::set_is_desktop_for_testing(true);
   std::string user_agent = MakeUserAgentForSync(version_info::Channel::UNKNOWN);
   EXPECT_TRUE(base::StartsWith(user_agent, "Chrome ANDROID-DESKTOP",
