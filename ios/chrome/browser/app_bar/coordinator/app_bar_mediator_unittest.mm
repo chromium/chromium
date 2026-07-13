@@ -906,7 +906,8 @@ TEST_F(AppBarMediatorTest,
   EXPECT_OCMOCK_VERIFY(consumer_);
 }
 
-TEST_F(AppBarMediatorTest, TestAssistantButtonStateAIM) {
+// TODO(crbug.com/532071605): Re-enable when AIM button on App Bar is enabled.
+TEST_F(AppBarMediatorTest, DISABLED_TestAssistantButtonStateAIM) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures({kGeminiKillSwitch}, {kPageActionMenu});
 
@@ -924,7 +925,8 @@ TEST_F(AppBarMediatorTest, TestAssistantButtonStateAIM) {
 
 // Tests that tapping the assistant button in the kAIM state dispatches
 // the show assistant command.
-TEST_F(AppBarMediatorTest, TestAssistantButtonTappedAIM) {
+// TODO(crbug.com/532071605): Re-enable when AIM button on App Bar is enabled.
+TEST_F(AppBarMediatorTest, DISABLED_TestAssistantButtonTappedAIM) {
   OCMExpect([mock_scene_handler_ showAssistant]);
   [mediator_ assistantButtonTappedWithState:AppBarAssistantButtonState::kAIM
                                    fromView:nil];
@@ -1418,8 +1420,9 @@ TEST_F(AppBarMediatorTest,
 
 // Tests that the assistant button state is kAIM when Gemini is disabled
 // by GeminiSettings policy, but AIM features are allowed.
+// TODO(crbug.com/532071605): Re-enable when AIM button on App Bar is enabled.
 TEST_F(AppBarMediatorTest,
-       TestAssistantButtonStateAIM_WhenGeminiDisabledByPolicy) {
+       DISABLED_TestAssistantButtonStateAIM_WhenGeminiDisabledByPolicy) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures({kPageActionMenu}, {kGeminiKillSwitch});
 
@@ -1445,8 +1448,9 @@ TEST_F(AppBarMediatorTest,
 
 // Tests that the assistant button state is kAIM when Gemini is disabled
 // by GenAiDefaultSettings policy, but AIM features are allowed.
+// TODO(crbug.com/532071605): Re-enable when AIM button on App Bar is enabled.
 TEST_F(AppBarMediatorTest,
-       TestAssistantButtonStateAIM_WhenGenAiDisabledByPolicy) {
+       DISABLED_TestAssistantButtonStateAIM_WhenGenAiDisabledByPolicy) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures({kPageActionMenu}, {kGeminiKillSwitch});
 
@@ -1609,7 +1613,8 @@ TEST_F(AppBarMediatorTest, TestAssistantButtonStateOnLoadMetric_Account) {
 }
 
 // Tests the AIM state on-load metric.
-TEST_F(AppBarMediatorTest, TestAssistantButtonStateOnLoadMetric_AIM) {
+// TODO(crbug.com/532071605): Re-enable when AIM button on App Bar is enabled.
+TEST_F(AppBarMediatorTest, DISABLED_TestAssistantButtonStateOnLoadMetric_AIM) {
   // Disable Gemini via policy.
   regular_profile_->GetTestingPrefService()->SetInteger(
       prefs::kGeminiEnabledByPolicy,
@@ -1704,7 +1709,9 @@ TEST_F(AppBarMediatorTest, TestAssistantButtonStatePriority_GeminiOverAll) {
 
 // Tests the priority chain: AIM (kAIM) has priority over Lens (kLens) when
 // Gemini is ineligible.
-TEST_F(AppBarMediatorTest, TestAssistantButtonStatePriority_AIMOverLens) {
+// TODO(crbug.com/532071605): Re-enable when AIM button on App Bar is enabled.
+TEST_F(AppBarMediatorTest,
+       DISABLED_TestAssistantButtonStatePriority_AIMOverLens) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures({}, {});
 
