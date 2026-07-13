@@ -4,8 +4,12 @@
 
 package org.chromium.chrome.browser.contextual_tasks.ui;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -17,6 +21,7 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab_bottom_sheet.TabBottomSheetManager;
 import org.chromium.chrome.browser.tab_bottom_sheet.TabBottomSheetPeekProperties;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -28,13 +33,20 @@ public class ContextualTasksControlCoordinatorUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private TabBottomSheetManager mTabBottomSheetManager;
+    @Mock private Profile mProfile;
+    @Mock private ContextualTasksControlCoordinator.Natives mJniMock;
 
     private ContextualTasksControlCoordinator mCoordinator;
     private PropertyModel mModel;
 
+    private static final long NATIVE_PTR = 12345L;
+
     @Before
     public void setUp() {
-        mCoordinator = new ContextualTasksControlCoordinator(mTabBottomSheetManager);
+        ContextualTasksControlCoordinatorJni.setInstanceForTesting(mJniMock);
+        when(mJniMock.init(any(), eq(mProfile))).thenReturn(NATIVE_PTR);
+
+        mCoordinator = new ContextualTasksControlCoordinator(mTabBottomSheetManager, mProfile);
         mModel = mCoordinator.getModel();
     }
 
@@ -44,6 +56,7 @@ public class ContextualTasksControlCoordinatorUnitTest {
         assertNotNull(mModel.get(TabBottomSheetPeekProperties.ON_ACTION_BUTTON_CLICKED));
         assertNotNull(mModel.get(TabBottomSheetPeekProperties.ON_CLOSE_CLICKED));
         assertNotNull(mModel.get(TabBottomSheetPeekProperties.ON_PEEK_VIEW_CLICKED));
+        verify(mJniMock).init(mCoordinator, mProfile);
     }
 
     @Test
@@ -62,5 +75,18 @@ public class ContextualTasksControlCoordinatorUnitTest {
     public void testPeekViewClicked_expandsBottomSheet() {
         mModel.get(TabBottomSheetPeekProperties.ON_PEEK_VIEW_CLICKED).run();
         verify(mTabBottomSheetManager).setSheetExpanded(true);
+    }
+
+    @Test
+    public void testTaskTitleChanged_updatesModel() {
+        mCoordinator.onTaskChanged("", "task-1");
+        mCoordinator.onTaskTitleChanged("task-1", "Task Title 1");
+        assertEquals("Task Title 1", mModel.get(TabBottomSheetPeekProperties.TITLE_TEXT));
+    }
+
+    @Test
+    public void testDestroy_destroysNativeObject() {
+        mCoordinator.destroy();
+        verify(mJniMock).destroy(NATIVE_PTR);
     }
 }

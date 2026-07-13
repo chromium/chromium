@@ -322,6 +322,8 @@ source_set("ui_impl") {
 
   if (is_android) {
     sources += [
+      "android/contextual_tasks_control_coordinator_android.cc",
+      "android/contextual_tasks_control_coordinator_android.h",
       "android/contextual_tasks_panel_host_android.cc",
       "android/contextual_tasks_panel_host_desktop_android.cc",
     ]
@@ -787,6 +789,7 @@ if (is_android) {
     sources = [
       "android/java/src/org/chromium/chrome/browser/contextual_tasks/ContextualTaskBottomSheetComponentProvider.java",
       "android/java/src/org/chromium/chrome/browser/contextual_tasks/ContextualTasksBridge.java",
+      "android/java/src/org/chromium/chrome/browser/contextual_tasks/ui/ContextualTasksControlCoordinator.java",
     ]
   }
 
