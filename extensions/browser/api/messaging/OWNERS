@@ -1,3 +1,7 @@
+rdevlin.cronin@chromium.org
+andreaorru@chromium.org
+jlulejian@chromium.org
+
 # For security review.
 per-file message_service_bindings.*=set noparent
 per-file message_service_bindings.*=file://ipc/SECURITY_OWNERS
