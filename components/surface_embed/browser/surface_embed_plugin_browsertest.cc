@@ -1052,4 +1052,46 @@ IN_PROC_BROWSER_TEST_F(SurfaceEmbedAccessibilityBrowserTest,
       [&]() { return host->HasReceivedParentAccessibilityInfoForTesting(); }));
 }
 
+IN_PROC_BROWSER_TEST_F(SurfaceEmbedBrowserTest, FocusPreservedAfterNavigation) {
+  NavigateToTestUrl(kFocusHarnessUrl);
+
+  auto child_contents = CreateChildWebContents();
+  NavigateChildToUrl(child_contents.get(), kInnerPageUrl);
+  content::ReadyForInputObserver(web_contents()).Wait();
+
+  AttachChildToEmbedWithId(child_contents.get(), "my_embed");
+
+  // Click/focus the outer page first to ensure the window is focused.
+  content::SimulateMouseClickOrTapElementWithId(web_contents(), "outer1");
+  EXPECT_TRUE(
+      content::EvalJs(web_contents(), "document.hasFocus()").ExtractBool());
+
+  // Focus the child input element.
+  EXPECT_TRUE(content::ExecJs(child_contents.get(),
+                              "document.getElementById('inner').focus()"));
+
+  // Wait for the focus change to propagate.
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return content::EvalJs(child_contents.get(), "document.hasFocus()")
+        .ExtractBool();
+  }));
+
+  EXPECT_TRUE(
+      content::EvalJs(web_contents(), "document.hasFocus()").ExtractBool());
+  EXPECT_TRUE(content::EvalJs(child_contents.get(), "document.hasFocus()")
+                  .ExtractBool());
+
+  // Navigate the child to a different site to force a
+  // cross-process/cross-domain navigation.
+  GURL cross_site_url = embedded_test_server()->GetURL("a.test", kInnerPageUrl);
+  ASSERT_TRUE(content::NavigateToURL(child_contents.get(), cross_site_url));
+  ASSERT_TRUE(content::WaitForLoadStop(child_contents.get()));
+
+  // Verify that the focus is preserved on the navigated child page.
+  EXPECT_TRUE(
+      content::EvalJs(web_contents(), "document.hasFocus()").ExtractBool());
+  EXPECT_TRUE(content::EvalJs(child_contents.get(), "document.hasFocus()")
+                  .ExtractBool());
+}
+
 }  // namespace surface_embed

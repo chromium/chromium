@@ -5460,7 +5460,7 @@ void RenderFrameHostManager::CommitPending(
     }
   }
 
-  RenderWidgetHostView* new_view = render_frame_host_->GetView();
+  RenderWidgetHostViewBase* new_view = render_frame_host_->GetView();
   // Since the committing renderer frame is live, the RenderWidgetHostView must
   // also exist. For a local root frame, they share lifetimes exactly. For
   // another child frame, the RenderWidgetHostView comes from a parent, but if
@@ -5469,18 +5469,20 @@ void RenderFrameHostManager::CommitPending(
 
   if (focus_render_view) {
     if (is_main_frame) {
-      // If the old page was focused, ensure the new one preserves
-      // focus. This needs to be done differently depending on whether the main
-      // frame is an outermost main frame or embedded in a nested FrameTree,
-      // such as for a <webview> guest.  In the outermost case, focus the root
-      // RenderWidgetHostView, which will also end up focusing the
-      // RenderWidgetHost.  For the nested main frame case this won't work,
-      // since the view will be a RenderWidgetHostViewChildFrame, and focusing
-      // it would end up trying to focus the root view. Instead, we need to
-      // focus the new main frame's RenderWidgetHost, which would set the new
-      // widget as focused and also propagate page-level focus to the
-      // corresponding renderer process.
-      if (frame_tree_node_->GetParentOrOuterDocumentOrEmbedder()) {
+      // If the old page was focused, ensure the new one preserves focus. This
+      // needs to be done differently depending on whether the view is a
+      // top-level view or child frame view., e.g., for a <webview> guest or an
+      // <embed> embedded surface.
+      //
+      // In the top-level case, focus the view directly, which will focus the
+      // platform window (aura::Window and such), which will also end up
+      // focusing the RenderWidgetHost via RenderWidgetHostImpl::GotFocus.
+      //
+      // For a child frame view this won't work, since focusing it would end up
+      // trying to focus the root view, which has a different RenderWidgetHost.
+      // Therefore, focus the child frame's RenderWidgetHost directly, which
+      // will propagate page-level focus to the corresponding renderer process.
+      if (new_view->IsRenderWidgetHostViewChildFrame()) {
         render_frame_host_->GetRenderWidgetHost()->Focus();
       } else {
         new_view->Focus();

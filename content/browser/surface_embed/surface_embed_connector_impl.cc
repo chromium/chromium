@@ -474,7 +474,12 @@ void SurfaceEmbedConnectorImpl::UpdateCursor(const ui::Cursor& cursor) {
 }
 
 FrameConnector::RootViewFocusState SurfaceEmbedConnectorImpl::HasFocus() {
-  return RootViewFocusState::kNullView;
+  RenderWidgetHostViewBase* root_view = GetRootRenderWidgetHostView();
+  if (!root_view) {
+    return RootViewFocusState::kNotFocused;
+  }
+  return root_view->HasFocus() ? RootViewFocusState::kFocused
+                               : RootViewFocusState::kNotFocused;
 }
 
 void SurfaceEmbedConnectorImpl::FocusRootView() {}
