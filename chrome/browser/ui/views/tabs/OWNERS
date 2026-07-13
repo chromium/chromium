@@ -1,4 +1,5 @@
 agale@chromium.org
+alsan@chromium.org
 dljames@chromium.org
 dpenning@chromium.org
 kylixrd@chromium.org
@@ -8,9 +9,6 @@ per-file tab_search_button*=tluk@chromium.org
 
 # For changes related to fallback (system-DnD-based) tab dragging.
 per-file tab_drag_controller*=max@igalia.com
-
-# For changes related to vertical tabs.
-per-file vertical/*=alsan@chromium.org
 
 # For changes related to the glic/actor tab alert indicator/button.
 per-file tab_strip_action_container*=mfoltz@chromium.org
