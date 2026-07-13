@@ -90,7 +90,7 @@ struct WatermarkParams {
 };
 
 constexpr SkColor kTestFillColor = SkColorSetARGB(0x2A, 0, 0, 0);
-constexpr SkColor kTestOutlineColor = SkColorSetARGB(0x3D, 0, 0, 0);
+constexpr SkColor kTestOutlineColor = SkColorSetARGB(0x3D, 255, 255, 255);
 constexpr int kTestFontSize =
     enterprise_connectors::kWatermarkStyleFontSizeDefault;
 
