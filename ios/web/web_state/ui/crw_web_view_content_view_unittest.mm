@@ -64,8 +64,8 @@ TEST_F(CRWWebViewContentViewTest, ViewportInsetsDeferredWhenFrameTooSmall) {
   [window addSubview:contentView];
   [contentView layoutIfNeeded];
 
-  UIEdgeInsets minInset = UIEdgeInsetsZero;
-  UIEdgeInsets maxInset = UIEdgeInsetsMake(100, 0, 300, 0);
+  UIEdgeInsets minInset = UIEdgeInsetsMake(0, 1, 0, 0);
+  UIEdgeInsets maxInset = UIEdgeInsetsMake(100, 1, 300, 0);
 
   // Frame is CGRectZero (width 0, height 0).
   // The inset requested is much larger. Verify it is safely caught and NOT
@@ -81,6 +81,92 @@ TEST_F(CRWWebViewContentViewTest, ViewportInsetsDeferredWhenFrameTooSmall) {
   // Expand the frame to be large enough (e.g. 800x1000).
   // Expect the pending inset to finally be passed through during
   // layoutSubviews.
+  contentView.bounds = CGRectMake(0, 0, 800, 1000);
+  [contentView layoutSubviews];
+  EXPECT_EQ(1, insetCallCount);
+}
+
+// Tests that viewport insets are safely deferred even when the 64-bit
+// frame is microscopically larger than the inset.
+TEST_F(CRWWebViewContentViewTest,
+       ViewportInsetsDeferredWhenFloatSizeIsTruncated) {
+  CRWWebView* webView =
+      [[CRWWebView alloc] initWithFrame:CGRectMake(0, 0, 800, 100.0000001)];
+  webView.autoresizingMask =
+      UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+  UIScrollView* scrollView = [[UIScrollView alloc] init];
+  [webView addSubview:scrollView];
+  id mockWebView = OCMPartialMock(webView);
+
+  CRWWebViewContentView* contentView = [[CRWWebViewContentView alloc]
+      initWithWebView:webView
+           scrollView:scrollView
+      fullscreenState:CrFullscreenState::kNotInFullScreen];
+
+  contentView.webViewResizingType = WebViewResizingType::kContentInset;
+
+  UIWindow* window = [[UIWindow alloc] init];
+  [window addSubview:contentView];
+  [contentView layoutIfNeeded];
+
+  UIEdgeInsets minInset = UIEdgeInsetsMake(0, 1, 0, 0);
+  UIEdgeInsets maxInset = UIEdgeInsetsMake(100, 1, 0, 0);
+
+  __block int insetCallCount = 0;
+  [[[mockWebView stub] andDo:^(NSInvocation* invocation) {
+    insetCallCount++;
+  }] setMinimumViewportInset:minInset maximumViewportInset:maxInset];
+
+  [contentView setMinimumViewportInset:minInset maximumViewportInset:maxInset];
+
+  // The call should be safely deferred.
+  EXPECT_EQ(0, insetCallCount);
+
+  // Expand the frame to be safely large enough.
+  contentView.bounds = CGRectMake(0, 0, 800, 1000);
+  [contentView layoutSubviews];
+  EXPECT_EQ(1, insetCallCount);
+}
+
+// Tests that viewport insets are safely deferred when maxInset exceeds the
+// frame but minInset is valid.
+TEST_F(CRWWebViewContentViewTest,
+       ViewportInsetsDeferredWhenMaxInsetExceedsFrame) {
+  CRWWebView* webView =
+      [[CRWWebView alloc] initWithFrame:CGRectMake(0, 0, 800, 500)];
+  webView.autoresizingMask =
+      UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+  UIScrollView* scrollView = [[UIScrollView alloc] init];
+  [webView addSubview:scrollView];
+  id mockWebView = OCMPartialMock(webView);
+
+  CRWWebViewContentView* contentView = [[CRWWebViewContentView alloc]
+      initWithWebView:webView
+           scrollView:scrollView
+      fullscreenState:CrFullscreenState::kNotInFullScreen];
+
+  contentView.webViewResizingType = WebViewResizingType::kContentInset;
+
+  UIWindow* window = [[UIWindow alloc] init];
+  [window addSubview:contentView];
+  [contentView layoutIfNeeded];
+
+  // minInset is safely smaller than the 500pt frame.
+  UIEdgeInsets minInset = UIEdgeInsetsMake(100, 1, 0, 0);
+  // maxInset (mimicking a massive keyboard) exceeds the 500pt frame.
+  UIEdgeInsets maxInset = UIEdgeInsetsMake(600, 1, 0, 0);
+
+  __block int insetCallCount = 0;
+  [[[mockWebView stub] andDo:^(NSInvocation* invocation) {
+    insetCallCount++;
+  }] setMinimumViewportInset:minInset maximumViewportInset:maxInset];
+
+  [contentView setMinimumViewportInset:minInset maximumViewportInset:maxInset];
+
+  // The call should be safely deferred.
+  EXPECT_EQ(0, insetCallCount);
+
+  // Expand the frame to be safely large enough to fit the keyboard.
   contentView.bounds = CGRectMake(0, 0, 800, 1000);
   [contentView layoutSubviews];
   EXPECT_EQ(1, insetCallCount);
