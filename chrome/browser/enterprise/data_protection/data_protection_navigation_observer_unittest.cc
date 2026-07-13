@@ -920,21 +920,20 @@ INSTANTIATE_TEST_SUITE_P(
     DataProtectionWatermarkStringTest,
     DataProtectionWatermarkStringTest,
     testing::Values(
-        WatermarkStringParams("example@email.com",
-                              "custom_message",
-                              1709181364,
-                              "custom_message\nexample@email.com\n2024-02-29 "
-                              "04:36:04 (UTC+00:00)"),
+        WatermarkStringParams(
+            "example@email.com",
+            "custom_message",
+            1709181364,
+            "custom_message\nexample@email.com\n2024-02-29T04:36:04+00:00"),
         WatermarkStringParams(
             "<device-id>",
             "custom_message",
             1709181364,
-            "custom_message\n<device-id>\n2024-02-29 04:36:04 (UTC+00:00)"),
-        WatermarkStringParams(
-            "example@email.com",
-            "",
-            1709181364,
-            "example@email.com\n2024-02-29 04:36:04 (UTC+00:00)"),
+            "custom_message\n<device-id>\n2024-02-29T04:36:04+00:00"),
+        WatermarkStringParams("example@email.com",
+                              "",
+                              1709181364,
+                              "example@email.com\n2024-02-29T04:36:04+00:00"),
         WatermarkStringParams("example@email.com",
                               std::nullopt,
                               1709181364,
@@ -1086,7 +1085,7 @@ TEST_P(OrderedDataProtectionNavigationObserverTest, TestWatermarkTextUpdated) {
   EXPECT_EQ(watermark_text,
             "custom_message\n" +
                 connectors_service->GetRealTimeUrlCheckIdentifier() +
-                "\n2024-02-29 04:36:04 (UTC+00:00)");
+                "\n2024-02-29T04:36:04+00:00");
 
   // Value should be cached.
   auto* user_data = DataProtectionPageUserData::GetForPage(

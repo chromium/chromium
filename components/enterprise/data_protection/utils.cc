@@ -64,8 +64,8 @@ UrlSettings GetUrlSettings(
 }
 
 std::string FormatWatermarkTimestamp(const base::Time& time) {
-  return base::UnlocalizedTimeFormatWithPattern(
-      time, "yyyy-MM-dd HH:mm:ss '(UTC'xxx')'");
+  return base::UnlocalizedTimeFormatWithPattern(time,
+                                                "yyyy-MM-dd'T'HH:mm:ssxxx");
 }
 
 std::string GetWatermarkString(

@@ -38,7 +38,7 @@ UrlSettings GetUrlSettings(
     const safe_browsing::RTLookupResponse* rt_lookup_response);
 
 // Formats a `base::Time` into the watermark timestamp string:
-// YYYY-MM-DD HH:MM:SS (UTC±HH:MM).
+// YYYY-MM-DDTHH:MM:SS±HH:MM.
 std::string FormatWatermarkTimestamp(const base::Time& time);
 
 // Return the watermark string to display if present in `threat_info`.
