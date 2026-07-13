@@ -50,7 +50,9 @@ using LocationUpdateCallback = base::RepeatingCallback<void(const NSPoint&)>;
     _trackingArea.reset(trackingArea);
     [nsView addTrackingArea:trackingArea];
     NSEvent* (^mouseDragged)(NSEvent*) = ^NSEvent*(NSEvent* event) {
-      self->_callback.Run([event locationInWindow]);
+      if (self->_callback) {
+        self->_callback.Run([event locationInWindow]);
+      }
       return event;
     };
 
@@ -77,15 +79,21 @@ using LocationUpdateCallback = base::RepeatingCallback<void(const NSPoint&)>;
 }
 
 - (void)mouseMoved:(NSEvent*)theEvent {
-  _callback.Run([theEvent locationInWindow]);
+  if (_callback) {
+    _callback.Run([theEvent locationInWindow]);
+  }
 }
 
 - (void)mouseEntered:(NSEvent*)theEvent {
-  _callback.Run([theEvent locationInWindow]);
+  if (_callback) {
+    _callback.Run([theEvent locationInWindow]);
+  }
 }
 
 - (void)mouseExited:(NSEvent*)theEvent {
-  _callback.Run([theEvent locationInWindow]);
+  if (_callback) {
+    _callback.Run([theEvent locationInWindow]);
+  }
 }
 
 @end
