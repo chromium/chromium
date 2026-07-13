@@ -4,12 +4,8 @@
 
 #include "ui/webui/examples/browser/content_browser_client.h"
 
-#include "base/feature_list.h"
 #include "components/embedder_support/user_agent_utils.h"
 #include "components/guest_contents/common/guest_contents.mojom.h"
-#include "components/surface_embed/browser/surface_embed_host.h"
-#include "components/surface_embed/common/features.h"
-#include "components/surface_embed/common/surface_embed.mojom.h"
 #include "content/public/browser/devtools_manager_delegate.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents_view_delegate.h"
@@ -50,21 +46,6 @@ void ContentBrowserClient::RegisterBrowserInterfaceBindersForFrame(
       webui_examples::mojom::PageHandlerFactory, Browser>(map);
   RegisterWebUIControllerInterfaceBinder<
       guest_contents::mojom::GuestContentsHost, Browser>(map);
-
-  if (base::FeatureList::IsEnabled(surface_embed::features::kSurfaceEmbed)) {
-    map->Add<surface_embed::mojom::SurfaceEmbedHost>(base::BindRepeating(
-        [](content::RenderFrameHost* render_frame_host,
-           mojo::PendingReceiver<surface_embed::mojom::SurfaceEmbedHost>
-               receiver) {
-          auto* web_ui = render_frame_host->GetWebUI();
-          if (!web_ui ||
-              !web_ui->GetController()->GetAs<webui_examples::Browser>()) {
-            return;
-          }
-          surface_embed::SurfaceEmbedHost::Create(render_frame_host,
-                                                  std::move(receiver));
-        }));
-  }
 }
 
 std::string ContentBrowserClient::GetUserAgent() {

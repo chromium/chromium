@@ -80,11 +80,6 @@ RenderFrameHostDelegate::GetGeolocationContext() {
   return nullptr;
 }
 
-SurfaceEmbedConnector* RenderFrameHostDelegate::GetSurfaceEmbedConnector()
-    const {
-  return nullptr;
-}
-
 #if BUILDFLAG(IS_ANDROID) || (BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_IOS_TVOS))
 void RenderFrameHostDelegate::GetNFC(
     RenderFrameHostImpl* render_frame_host,

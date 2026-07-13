@@ -22,7 +22,6 @@ mojom("mojom") {
   sources = [ "surface_embed.mojom" ]
 
   deps = [
-    "//mojo/public/mojom/base",
     "//services/viz/public/mojom",
     "//third_party/blink/public/mojom:mojom_core",
   ]

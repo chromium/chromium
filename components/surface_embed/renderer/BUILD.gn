@@ -23,7 +23,6 @@ component("renderer") {
     "//content/public/renderer",
     "//skia",
     "//third_party/blink/public:blink",
-    "//ui/accessibility",
     "//ui/gfx/geometry",
   ]
 }

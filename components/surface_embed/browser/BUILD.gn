@@ -27,9 +27,7 @@ static_library("browser") {
     "//components/guest_contents/browser",
     "//components/viz/common",
     "//content/public/browser",
-    "//mojo/public/cpp/bindings",
     "//skia",
-    "//ui/accessibility",
     "//ui/compositor",
     "//ui/gfx/geometry",
   ]
