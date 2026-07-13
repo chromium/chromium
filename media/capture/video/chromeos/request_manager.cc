@@ -1133,9 +1133,11 @@ void RequestManager::SubmitCapturedPreviewRecordingBuffer(
           metadata.transformation->rotation);
     }
 
+    auto shared_image =
+        stream_buffer_manager_->GetSharedImageById(stream_type, buffer_ipc_id);
     device_context_->SubmitCapturedVideoCaptureBuffer(
-        client_type, std::move(*buffer), format, pending_result.reference_time,
-        pending_result.timestamp, metadata);
+        client_type, std::move(*buffer), format, shared_image->size(),
+        pending_result.reference_time, pending_result.timestamp, metadata);
     // |buffer| ownership is transferred to client, so we need to reserve a
     // new video buffer.
     stream_buffer_manager_->ReserveBuffer(stream_type);

@@ -86,7 +86,8 @@ void CameraDeviceContext::LogToClient(std::string message) {
 void CameraDeviceContext::SubmitCapturedVideoCaptureBuffer(
     ClientType client_type,
     VideoCaptureDevice::Client::Buffer buffer,
-    const VideoCaptureFormat& frame_format,
+    VideoCaptureFormat frame_format,
+    const gfx::Size& coded_size,
     base::TimeTicks reference_time,
     base::TimeDelta timestamp,
     const VideoFrameMetadata& metadata) {
@@ -96,13 +97,16 @@ void CameraDeviceContext::SubmitCapturedVideoCaptureBuffer(
     return;
   }
 
+  // The coded_size should be passed in as frame_size since that is later used
+  // by the VideoFrame if it is backed by SharedImage.
+  const gfx::Rect visible_rect(frame_format.frame_size);
+  frame_format.frame_size = coded_size;
   client->second->OnIncomingCapturedBufferExt(
       std::move(buffer), frame_format,
       // TODO(b/322448224): It is a workaround and should be removed once we
       // have a general solution for b/40626119.
       color_space_override_.value_or(gfx::ColorSpace()), reference_time,
-      timestamp, std::nullopt, gfx::Rect(frame_format.frame_size),
-      std::move(metadata));
+      timestamp, std::nullopt, visible_rect, std::move(metadata));
 }
 
 void CameraDeviceContext::SubmitCapturedImage(
