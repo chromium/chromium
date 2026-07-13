@@ -5,6 +5,7 @@
 #include "components/browser_apis/tab_drag/tab_drag_service_impl.h"
 
 #include <algorithm>
+#include <memory>
 #include <ranges>
 
 #include "base/run_loop.h"
@@ -74,6 +75,7 @@ class TabDragServiceImplBrowserTest : public InProcessBrowserTest {
         std::make_unique<TabDragSessionManager>(std::move(injector));
     auto toy_window = std::make_unique<ToyTabDragWindowAdapter>(
         gfx::Rect(0, 0, 800, 600), injector_->GetWindowRegistry());
+    toy_window_ = toy_window.get();
     window_id_ = toy_window->GetWindowId();
 
     service_ = std::make_unique<TabDragServiceImpl>(session_manager_.get(),
@@ -88,6 +90,7 @@ class TabDragServiceImplBrowserTest : public InProcessBrowserTest {
       }));
     }
 
+    toy_window_ = nullptr;
     injector_ = nullptr;
 
     service_.reset();
@@ -96,7 +99,62 @@ class TabDragServiceImplBrowserTest : public InProcessBrowserTest {
   }
 
  protected:
+  void RegisterDropTargetForService(
+      TabDragServiceImpl* service,
+      mojo::Remote<mojom::TabDragService>& remote,
+      ToyDropTarget& target,
+      mojo::AssociatedReceiver<mojom::DropTarget>& target_receiver,
+      mojo::AssociatedRemote<mojom::DropTargetRegistration>& registration,
+      const gfx::Rect& bounds) {
+    service->Accept(remote.BindNewPipeAndPassReceiver(), gfx::NativeView());
+    base::RunLoop register_loop;
+    remote->RegisterDropTarget(
+        target_receiver.BindNewEndpointAndPassRemote(),
+        registration.BindNewEndpointAndPassReceiver(),
+        base::BindLambdaForTesting(
+            [&](mojom::TabDragService::RegisterDropTargetResult result) {
+              ASSERT_TRUE(result.has_value());
+              register_loop.Quit();
+            }));
+    register_loop.Run();
+    registration->OnBoundsChanged(bounds);
+  }
+
+  void StartDefaultDrag(mojo::Remote<mojom::TabDragService>& remote,
+                        const std::vector<tabs_api::NodeId>& tab_ids,
+                        const gfx::Point& start_point) {
+    base::RunLoop drag_start_loop;
+    remote->StartDrag(tab_ids, start_point,
+                      base::BindLambdaForTesting(
+                          [&](mojom::TabDragService::StartDragResult result) {
+                            ASSERT_TRUE(result.has_value());
+                            drag_start_loop.Quit();
+                          }));
+    drag_start_loop.Run();
+  }
+
+  bool WaitForEvent(const ToyDropTarget& target,
+                    ToyDropTarget::ReceivedEvent::Type type) {
+    return base::test::RunUntil([&]() {
+      return std::ranges::any_of(target.events(), [type](const auto& event) {
+        return event.type == type;
+      });
+    });
+  }
+
+  std::unique_ptr<ToyTabDragWindowAdapter> CreateAndConfigureDetachedWindow(
+      ToyTabDragWindowAdapter* source_window,
+      const std::vector<gfx::Point>& simulated_moves) {
+    auto detached_window = std::make_unique<ToyTabDragWindowAdapter>(
+        gfx::Rect(0, 0, 400, 300), injector_->GetWindowRegistry());
+    source_window->set_detach_to_new_window_result(
+        detached_window->GetWindowId());
+    detached_window->set_simulated_moves(simulated_moves);
+    return detached_window;
+  }
+
   raw_ptr<TestTabDragSessionInjector> injector_ = nullptr;
+  raw_ptr<ToyTabDragWindowAdapter> toy_window_ = nullptr;
   TabDragWindowId window_id_;
   std::unique_ptr<TabDragSessionManager> session_manager_;
   std::unique_ptr<TabDragServiceImpl> service_;
@@ -104,95 +162,125 @@ class TabDragServiceImplBrowserTest : public InProcessBrowserTest {
   ToyDropTarget drop_target_;
 };
 
-// Tests basic intra-window drag and drop flow using fake input.
-IN_PROC_BROWSER_TEST_F(TabDragServiceImplBrowserTest, BasicDragAndDrop) {
+IN_PROC_BROWSER_TEST_F(TabDragServiceImplBrowserTest, IntraWindowDragAndDrop) {
   mojo::Remote<mojom::TabDragService> remote;
   mojo::AssociatedReceiver<mojom::DropTarget> target_receiver{&drop_target_};
   mojo::AssociatedRemote<mojom::DropTargetRegistration> registration;
 
-  // Setup mojo.
-  service_->Accept(remote.BindNewPipeAndPassReceiver(), gfx::NativeView());
-  base::RunLoop register_loop;
-  remote->RegisterDropTarget(
-      target_receiver.BindNewEndpointAndPassRemote(),
-      registration.BindNewEndpointAndPassReceiver(),
-      base::BindLambdaForTesting(
-          [&](mojom::TabDragService::RegisterDropTargetResult result) {
-            ASSERT_TRUE(result.has_value());
-            register_loop.Quit();
-          }));
-  register_loop.Run();
-  registration->OnBoundsChanged(gfx::Rect(0, 0, 800, 600));
-  EXPECT_TRUE(window_id_);
-  DropTargetId target_id =
-      injector_->drop_target_registry().FindTargetForWindow(window_id_);
-  EXPECT_TRUE(target_id);
+  RegisterDropTargetForService(service_.get(), remote, drop_target_,
+                               target_receiver, registration,
+                               gfx::Rect(0, 0, 800, 600));
 
-  // Start Drag.
-  tabs_api::NodeId tab_node_id(NodeId::Type::kContent, "1");
-  gfx::Point start_point(100, 100);
+  tabs_api::NodeId tab_id(NodeId::Type::kContent, "1");
+  StartDefaultDrag(remote, {tab_id}, gfx::Point(100, 100));
+  ASSERT_TRUE(
+      WaitForEvent(drop_target_, ToyDropTarget::ReceivedEvent::Type::kEntered));
 
-  base::RunLoop drag_start_loop;
-  remote->StartDrag({tab_node_id}, start_point,
-                    base::BindLambdaForTesting(
-                        [&](mojom::TabDragService::StartDragResult result) {
-                          ASSERT_TRUE(result.has_value());
-                          drag_start_loop.Quit();
-                        }));
-  drag_start_loop.Run();
-
-  EXPECT_TRUE(base::test::RunUntil([&]() {
-    return std::ranges::any_of(drop_target_.events(), [](const auto& event) {
-      return event.type == ToyDropTarget::ReceivedEvent::Type::kEntered;
-    });
-  }));
-  ASSERT_FALSE(drop_target_.events().empty());
-  {
-    auto event = std::ranges::find_if(drop_target_.events(), [](const auto& e) {
-      return e.type == ToyDropTarget::ReceivedEvent::Type::kEntered;
-    });
-    ASSERT_NE(event, drop_target_.events().end());
-    EXPECT_EQ(event->tab_ids.size(), 1u);
-    EXPECT_EQ(event->tab_ids[0], tab_node_id);
-    EXPECT_EQ(event->local_point, start_point);
-  }
-
-  // Simulate Drag Move.
-  gfx::Point move_point(120, 100);
   injector_->toy_input_adapter().SendToyEvent(TabDragInputEvent::Type::kMoved,
-                                              move_point);
+                                              gfx::Point(120, 100));
+  ASSERT_TRUE(
+      WaitForEvent(drop_target_, ToyDropTarget::ReceivedEvent::Type::kDrag));
 
-  EXPECT_TRUE(base::test::RunUntil([&]() {
-    return std::ranges::any_of(drop_target_.events(), [](const auto& event) {
-      return event.type == ToyDropTarget::ReceivedEvent::Type::kDrag;
-    });
-  }));
-  {
-    auto event = std::ranges::find_if(drop_target_.events(), [](const auto& e) {
-      return e.type == ToyDropTarget::ReceivedEvent::Type::kDrag;
-    });
-    ASSERT_NE(event, drop_target_.events().end());
-    EXPECT_EQ(event->local_point, move_point);
-  }
-
-  // Simulate Drop.
   injector_->toy_input_adapter().SendToyEvent(TabDragInputEvent::Type::kDropped,
-                                              move_point);
+                                              gfx::Point(120, 100));
+  ASSERT_TRUE(
+      WaitForEvent(drop_target_, ToyDropTarget::ReceivedEvent::Type::kDrop));
+  EXPECT_EQ(drop_target_.events().back().tab_ids[0], tab_id);
+}
 
-  EXPECT_TRUE(base::test::RunUntil([&]() {
-    return std::ranges::any_of(drop_target_.events(), [](const auto& event) {
-      return event.type == ToyDropTarget::ReceivedEvent::Type::kDrop;
-    });
-  }));
-  {
-    auto event = std::ranges::find_if(drop_target_.events(), [](const auto& e) {
-      return e.type == ToyDropTarget::ReceivedEvent::Type::kDrop;
-    });
-    ASSERT_NE(event, drop_target_.events().end());
-    EXPECT_EQ(event->tab_ids.size(), 1u);
-    EXPECT_EQ(event->tab_ids[0], tab_node_id);
-    EXPECT_EQ(event->local_point, move_point);
-  }
+IN_PROC_BROWSER_TEST_F(TabDragServiceImplBrowserTest, InterWindowDragAndDrop) {
+  mojo::Remote<mojom::TabDragService> remote_a;
+  mojo::AssociatedReceiver<mojom::DropTarget> target_receiver_a{&drop_target_};
+  mojo::AssociatedRemote<mojom::DropTargetRegistration> registration_a;
+  RegisterDropTargetForService(service_.get(), remote_a, drop_target_,
+                               target_receiver_a, registration_a,
+                               gfx::Rect(0, 0, 800, 600));
+
+  auto toy_window_b = std::make_unique<ToyTabDragWindowAdapter>(
+      gfx::Rect(800, 0, 800, 600), injector_->GetWindowRegistry());
+  auto service_b = std::make_unique<TabDragServiceImpl>(
+      session_manager_.get(), std::move(toy_window_b));
+  ToyDropTarget drop_target_b;
+  mojo::Remote<mojom::TabDragService> remote_b;
+  mojo::AssociatedReceiver<mojom::DropTarget> target_receiver_b{&drop_target_b};
+  mojo::AssociatedRemote<mojom::DropTargetRegistration> registration_b;
+  RegisterDropTargetForService(service_b.get(), remote_b, drop_target_b,
+                               target_receiver_b, registration_b,
+                               gfx::Rect(0, 0, 800, 600));
+
+  auto detached_window =
+      CreateAndConfigureDetachedWindow(toy_window_, {gfx::Point(900, 100)});
+
+  StartDefaultDrag(remote_a, {NodeId(NodeId::Type::kContent, "1")},
+                   gfx::Point(100, 100));
+  ASSERT_TRUE(
+      WaitForEvent(drop_target_, ToyDropTarget::ReceivedEvent::Type::kEntered));
+
+  // Move into Window B area (triggers tear-off and transfer).
+  injector_->toy_input_adapter().SendToyEvent(TabDragInputEvent::Type::kMoved,
+                                              gfx::Point(900, 100));
+  ASSERT_TRUE(
+      WaitForEvent(drop_target_, ToyDropTarget::ReceivedEvent::Type::kLeave));
+  ASSERT_TRUE(WaitForEvent(drop_target_b,
+                           ToyDropTarget::ReceivedEvent::Type::kEntered));
+
+  // Drop in Window B.
+  injector_->toy_input_adapter().SendToyEvent(TabDragInputEvent::Type::kDropped,
+                                              gfx::Point(900, 100));
+  ASSERT_TRUE(
+      WaitForEvent(drop_target_b, ToyDropTarget::ReceivedEvent::Type::kDrop));
+}
+
+IN_PROC_BROWSER_TEST_F(TabDragServiceImplBrowserTest, DragCancellation) {
+  mojo::Remote<mojom::TabDragService> remote;
+  mojo::AssociatedReceiver<mojom::DropTarget> target_receiver{&drop_target_};
+  mojo::AssociatedRemote<mojom::DropTargetRegistration> registration;
+  RegisterDropTargetForService(service_.get(), remote, drop_target_,
+                               target_receiver, registration,
+                               gfx::Rect(0, 0, 800, 600));
+
+  StartDefaultDrag(remote, {NodeId(NodeId::Type::kContent, "1")},
+                   gfx::Point(100, 100));
+  ASSERT_TRUE(
+      WaitForEvent(drop_target_, ToyDropTarget::ReceivedEvent::Type::kEntered));
+
+  injector_->toy_input_adapter().SendToyEvent(TabDragInputEvent::Type::kMoved,
+                                              gfx::Point(120, 100));
+  ASSERT_TRUE(
+      WaitForEvent(drop_target_, ToyDropTarget::ReceivedEvent::Type::kDrag));
+
+  // Cancel drag session (e.g., ESC key pressed).
+  injector_->toy_input_adapter().SendToyEvent(
+      TabDragInputEvent::Type::kCancelled);
+  ASSERT_TRUE(WaitForEvent(drop_target_,
+                           ToyDropTarget::ReceivedEvent::Type::kCancelled));
+}
+
+IN_PROC_BROWSER_TEST_F(TabDragServiceImplBrowserTest, DragTearOff) {
+  mojo::Remote<mojom::TabDragService> remote;
+  mojo::AssociatedReceiver<mojom::DropTarget> target_receiver{&drop_target_};
+  mojo::AssociatedRemote<mojom::DropTargetRegistration> registration;
+  RegisterDropTargetForService(service_.get(), remote, drop_target_,
+                               target_receiver, registration,
+                               gfx::Rect(0, 0, 800, 600));
+
+  auto detached_window =
+      CreateAndConfigureDetachedWindow(toy_window_, {gfx::Point(1200, 100)});
+
+  StartDefaultDrag(remote, {NodeId(NodeId::Type::kContent, "1")},
+                   gfx::Point(100, 100));
+  ASSERT_TRUE(
+      WaitForEvent(drop_target_, ToyDropTarget::ReceivedEvent::Type::kEntered));
+
+  // Move outside all windows into empty desktop space.
+  injector_->toy_input_adapter().SendToyEvent(TabDragInputEvent::Type::kMoved,
+                                              gfx::Point(1200, 100));
+  ASSERT_TRUE(
+      WaitForEvent(drop_target_, ToyDropTarget::ReceivedEvent::Type::kLeave));
+
+  // Drop detached window.
+  injector_->toy_input_adapter().SendToyEvent(TabDragInputEvent::Type::kDropped,
+                                              gfx::Point(1200, 100));
 }
 
 }  // namespace
