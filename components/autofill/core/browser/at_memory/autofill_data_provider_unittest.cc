@@ -360,6 +360,31 @@ TEST_F(AutofillDataProviderTest, RetrieveAll_CreditCardData) {
           /*is_obfuscated=*/false, credit_card.guid())));
 }
 
+// Tests that `RetrieveAll` omits `kCreditCardSecurityCode` and
+// `kCreditCardNumber` metadata when they are empty.
+TEST_F(AutofillDataProviderTest, RetrieveAll_CreditCardData_EmptyFields) {
+  CreditCard credit_card;
+  credit_card.SetRawInfo(CREDIT_CARD_NAME_FULL, u"Test User");
+  credit_card.SetExpirationYear(2030);
+  credit_card.SetExpirationMonth(10);
+  client().GetPersonalDataManager().test_payments_data_manager().AddCreditCard(
+      credit_card);
+
+  std::vector<MemorySearchResult> name_results = RetrieveAllHelper(
+      retriever(),
+      accessibility_annotator::MemoryDataType::kCreditCardNameOnCard);
+  // There should be no CVC entry, nor credit card number since they were empty.
+  EXPECT_THAT(
+      name_results,
+      UnorderedElementsAre(IsMemorySearchResult(
+          credit_card.GetRawInfo(CREDIT_CARD_NAME_FULL),
+          GetMemoryDataTypeNameForI18n(MemoryDataType::kCreditCardNameOnCard),
+          UnorderedElementsAre(IsMetadata(
+              MemoryDataType::kCreditCardExpirationDate,
+              credit_card.GetRawInfo(CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR))),
+          /*is_obfuscated=*/false, credit_card.guid())));
+}
+
 // Tests that RetrieveAll correctly fetches and formats data from
 // EntityDataManager (Autofill AI).
 TEST_F(AutofillDataProviderTest, RetrieveAll_AutofillAiEntityData) {

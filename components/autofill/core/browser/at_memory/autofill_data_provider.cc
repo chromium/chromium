@@ -430,15 +430,20 @@ std::vector<MemorySearchResult> AutofillDataProvider::FetchCreditCardData(
     std::string app_locale =
         personal_data_manager_->address_data_manager().app_locale();
 
-    // All of the types different than the one being requested are added as
-    // metadata.
+    // All of the non-empty types different than the one being requested are
+    // added as metadata.
     if (memory_data_type != MemoryDataType::kCreditCardNumber) {
-      entry.metadata_list.emplace_back(
-          MemoryDataType::kCreditCardNumber,
-          GetMemoryDataTypeNameForI18n(MemoryDataType::kCreditCardNumber),
-          credit_card->ObfuscatedNumberWithVisibleLastFourDigits());
+      std::u16string card_number =
+          credit_card->ObfuscatedNumberWithVisibleLastFourDigits();
+      if (!card_number.empty()) {
+        entry.metadata_list.emplace_back(
+            MemoryDataType::kCreditCardNumber,
+            GetMemoryDataTypeNameForI18n(MemoryDataType::kCreditCardNumber),
+            std::move(card_number));
+      }
     }
-    if (memory_data_type != MemoryDataType::kCreditCardSecurityCode) {
+    if (memory_data_type != MemoryDataType::kCreditCardSecurityCode &&
+        !credit_card->cvc().empty()) {
       entry.metadata_list.emplace_back(
           MemoryDataType::kCreditCardSecurityCode,
           GetMemoryDataTypeNameForI18n(MemoryDataType::kCreditCardSecurityCode),
