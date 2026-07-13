@@ -994,11 +994,6 @@ DEFINE_WALLET_FEATURE(kSuggestionManageButtonSplitForEnhancedAutofill);
 BASE_FEATURE(kUseSettingsAddressEditorInPaymentsRequest,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// When enabled, updates the "Autofill and passwords" (or "Passwords and
-// autofill") labels and icons to "Your saved info".
-BASE_FEATURE(kYourSavedInfoBrandingInSettings,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Defines if the "Your Saved Info" page is eligible to be shown in Chrome
 // settings.
 BASE_FEATURE(kYourSavedInfoSettingsPage, base::FEATURE_ENABLED_BY_DEFAULT);

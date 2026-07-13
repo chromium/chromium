@@ -430,11 +430,6 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
                               autofill::features::kYourSavedInfoSettingsPage));
 
   html_source->AddBoolean(
-      "enableYourSavedInfoBranding",
-      base::FeatureList::IsEnabled(
-          autofill::features::kYourSavedInfoBrandingInSettings));
-
-  html_source->AddBoolean(
       "enableYourSavedInfoShoppingPage",
       base::FeatureList::IsEnabled(
           autofill::features::kYourSavedInfoSettingsPageShoppingIntegration));
