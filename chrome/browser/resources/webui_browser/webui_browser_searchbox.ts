@@ -199,7 +199,7 @@ export class WebuiBrowserSearchboxElement extends
 
   protected onSearchboxInputTextUpdated_(
       e: CustomEvent<{value: string, isComposing: boolean}>) {
-    this.onSearchboxInputTextUpdated(e, /*forceAutocomplete=*/ false);
+    this.onSearchboxInputTextUpdated(e);
   }
 
   protected onVoiceSearchClick_() {

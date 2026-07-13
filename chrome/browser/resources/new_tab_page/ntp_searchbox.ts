@@ -815,7 +815,7 @@ export class NtpSearchboxElement extends NtpSearchboxElementBase implements
   protected onSearchboxInputTextUpdated_(
       e: CustomEvent<{value: string, isComposing: boolean}>) {
     this.hasUserInput_ = !!e.detail.value.trim();
-    this.onSearchboxInputTextUpdated(e, /*is_composing=*/ false);
+    this.onSearchboxInputTextUpdated(e);
   }
 
   protected onLensSearchClick_() {

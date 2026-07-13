@@ -562,7 +562,7 @@ export class OmniboxPopupSearchboxElement extends
       this.clearAutocompleteMatches();
       this.popupPageHandler_.onInputCleared(this.currentSequenceNum_);
     } else {
-      this.onSearchboxInputTextUpdated(e, /*forceAutocomplete=*/ false);
+      this.onSearchboxInputTextUpdated(e);
     }
   }
 

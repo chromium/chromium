@@ -244,7 +244,7 @@ export class OmniboxEverywhereOmniboxElement extends
 
   protected onSearchboxInputTextUpdated_(
       e: CustomEvent<{value: string, isComposing: boolean}>) {
-    this.onSearchboxInputTextUpdated(e, /*forceAutocomplete=*/ false);
+    this.onSearchboxInputTextUpdated(e);
   }
 
   protected onVoiceSearchClick_() {

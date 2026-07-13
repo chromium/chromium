@@ -282,12 +282,11 @@ export const SearchboxMixin = <T extends Constructor<CrLitElement>>(
     }
 
     onSearchboxInputTextUpdated(
-        e: CustomEvent<{value: string, isComposing: boolean}>,
-        forceAutocomplete: boolean = false) {
+        e: CustomEvent<{value: string, isComposing: boolean}>) {
       const input = e.detail.value;
       // For now, skip autocompletion and clear matches when the trimmed input
       // is empty. But empty inputs in keyword mode will need to show results.
-      if (input.trim() || forceAutocomplete) {
+      if (input.trim()) {
         this.queryAutocomplete(
             input, /*preventInlineAutocomplete=*/ e.detail.isComposing,
             /*isOnFocus=*/ false);
@@ -573,8 +572,7 @@ export interface SearchboxMixinInterface {
   onMatchClick(): void;
   onMatchFocusin(e: CustomEvent<number>): void;
   onSearchboxInputTextUpdated(
-      e: CustomEvent<{value: string, isComposing: boolean}>,
-      forceAutocomplete?: boolean): void;
+      e: CustomEvent<{value: string, isComposing: boolean}>): void;
   onSelectedMatchIndexChanged(e: CustomEvent<{value: number}>): void;
   pageHandler(): PageHandlerInterface;
   queryAutocomplete(
