@@ -11,7 +11,6 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
-#include "base/test/run_until.h"
 #include "base/test/test_future.h"
 #include "base/test/with_feature_override.h"
 #include "chrome/browser/extensions/extension_apitest.h"
@@ -27,6 +26,7 @@
 #include "extensions/browser/extension_pref_names.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registrar.h"
+#include "extensions/browser/lazy_context_id.h"
 #include "extensions/browser/process_manager.h"
 #include "extensions/browser/service_worker/sequenced_context_id.h"
 #include "extensions/browser/service_worker/service_worker_host.h"
@@ -1088,6 +1088,102 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerTrackingBrowserTest,
             ServiceWorkerState::RendererState::kNotActive);
   EXPECT_EQ(worker_state->browser_state(),
             ServiceWorkerState::BrowserState::kNotActive);
+}
+
+// Tests that stopping a worker clears `worker_starting_` in `Reset()` when the
+// worker reached `kActive` on the browser side but never became `IsReady()`
+// because `RendererDidStartServiceWorkerContext` was never called.
+// Without this, the worker is left permanently non-startable by
+// `MaybeStartWorker` because `IsStarting()` remains true.
+// Regression test for crbug.com/530077398.
+IN_PROC_BROWSER_TEST_F(ServiceWorkerTrackingBrowserTest,
+                       WorkerStoppedAfterBrowserStateActiveClearsStartingFlag) {
+  // Prevent the renderer start notification from being fired automatically.
+  auto sw_host_factory_callback = base::BindRepeating(
+      [](content::RenderProcessHost* render_process_host,
+         mojo::PendingAssociatedReceiver<mojom::ServiceWorkerHost> receiver)
+          -> std::unique_ptr<ServiceWorkerHost> {
+        return std::make_unique<ServiceWorkerHostNoStartNotification>(
+            render_process_host, std::move(receiver));
+      });
+  base::AutoReset<ServiceWorkerHost::FactoryCallback*> sw_host_factory =
+      ServiceWorkerHost::SetFactoryForTesting(&sw_host_factory_callback);
+
+  TestServiceWorkerTaskQueueObserver task_queue_observer;
+  service_worker_test_utils::TestServiceWorkerContextObserver sw_observer(
+      profile());
+
+  // Load the extension.
+  auto test_dir = std::make_unique<TestExtensionDir>();
+  test_dir->WriteManifest(R"({
+      "name": "Test Extension",
+      "manifest_version": 3,
+      "version": "0.1",
+      "background": {
+        "service_worker": "background.js"
+      }
+  })");
+  test_dir->WriteFile(FILE_PATH_LITERAL("background.js"), "");
+  const Extension* extension = LoadExtension(
+      test_dir->UnpackedPath(),
+      {.wait_for_renderers = false, .wait_for_registration_stored = true});
+  ASSERT_TRUE(extension);
+  extension_ = extension;
+
+  // Wait for the renderer to initialize (`renderer_state_` -> kInitialized)
+  // and for the worker to start on the browser side
+  // (`browser_state_` -> kActive).
+  task_queue_observer.WaitForWorkerContextInitialized(extension->id());
+  sw_observer.WaitForWorkerStarted();
+
+  ServiceWorkerState* worker_state = GetWorkerState();
+  ASSERT_TRUE(worker_state);
+
+  // Precondition: browser-ready but not renderer-ready, so the worker is
+  // "starting" yet never reaches `IsReady()`, the state that leaves it
+  // permanently non-startable by `MaybeStartWorker` if `Reset()`
+  // fails to clear `worker_starting_`.
+  ASSERT_EQ(worker_state->browser_state(),
+            ServiceWorkerState::BrowserState::kActive);
+  ASSERT_EQ(worker_state->renderer_state(),
+            ServiceWorkerState::RendererState::kInitialized);
+  ASSERT_TRUE(worker_state->IsStarting());
+  ASSERT_FALSE(worker_state->IsReady());
+
+  // Stop the worker, driving `HandleStop -> Reset()`.
+  int64_t version_id = worker_state->worker_id()->version_id;
+  browsertest_util::StopServiceWorkerForExtensionGlobalScope(profile(),
+                                                             extension->id());
+  ASSERT_TRUE(content::CheckServiceWorkerIsStopped(GetServiceWorkerContext(),
+                                                   version_id));
+
+  // Confirm state is reset to not active.
+  EXPECT_EQ(worker_state->browser_state(),
+            ServiceWorkerState::BrowserState::kNotActive);
+  EXPECT_EQ(worker_state->renderer_state(),
+            ServiceWorkerState::RendererState::kNotActive);
+
+  // The crucial regression assert: `Reset()` must clear `worker_starting_`.
+  EXPECT_FALSE(worker_state->IsStarting());
+
+  // Confirm the worker actually restarts. In the regressed state the
+  // stale `IsStarting()` short-circuits `MaybeStartWorker`, so no start is
+  // ever requested and the worker never comes back.
+  service_worker_test_utils::TestServiceWorkerContextObserver restart_observer(
+      profile());
+  ServiceWorkerTaskQueue* task_queue = ServiceWorkerTaskQueue::Get(profile());
+  task_queue->AddPendingTask(LazyContextId::ForExtension(profile(), extension),
+                             base::DoNothing());
+  int64_t restarted_version_id = restart_observer.WaitForWorkerStarted();
+  EXPECT_EQ(worker_state->browser_state(),
+            ServiceWorkerState::BrowserState::kActive);
+
+  // Stop the restarted worker so the test leaves the worker in a clean,
+  // fully-stopped state rather than tearing it down mid-flight at shutdown.
+  browsertest_util::StopServiceWorkerForExtensionGlobalScope(profile(),
+                                                             extension->id());
+  ASSERT_TRUE(content::CheckServiceWorkerIsStopped(GetServiceWorkerContext(),
+                                                   restarted_version_id));
 }
 
 IN_PROC_BROWSER_TEST_F(ServiceWorkerTrackingBrowserTest,
