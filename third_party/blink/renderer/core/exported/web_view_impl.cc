@@ -771,10 +771,8 @@ float WebViewImpl::MaximumLegiblePageScale() const {
 
   // For compat, the following code determines the circumstances under which the
   // user's OS-level font size preferences affects how far they can zoom in.
-  // Chrome currently only sets a non-default AccessibilityFontScaleFactor on
-  // mobile.
 
-  // Allow the user to always zoom more on Chrome Android.. Allow on WebView if
+  // Allow the user to always zoom more on Chrome. Allow on WebView if
   // the Java developer has enabled autosizing.
   const bool is_webview = settings.GetWideViewportQuirkEnabled();
   if (!is_webview) {
@@ -1483,6 +1481,10 @@ void WebViewImpl::ResizeWithBrowserControls(
   // frame rect is resized (as noted by the ancient FIXME inside this method).
   // https://crbug.com/1353728.
   SendResizeEventForMainFrame();
+}
+
+void WebViewImpl::OnTextScaleMetaTagPresentChanged() {
+  UpdateWidgetZoomFactors();
 }
 
 void WebViewImpl::Resize(const gfx::Size& new_size) {
@@ -2485,11 +2487,20 @@ void WebViewImpl::SetPageScaleFactor(float scale_factor) {
 }
 
 void WebViewImpl::SetZoomFactorForDeviceScaleFactor(
-    float zoom_factor_for_device_scale_factor) {
+    float device_scale_factor,
+    float text_scale_multiplier) {
   DCHECK(does_composite_);
-  if (zoom_factor_for_device_scale_factor_ !=
-      zoom_factor_for_device_scale_factor) {
-    zoom_factor_for_device_scale_factor_ = zoom_factor_for_device_scale_factor;
+  const bool text_scale_multiplier_changed =
+      zoom_factor_for_text_scale_multiplier_ != text_scale_multiplier;
+  if (text_scale_multiplier_changed) {
+    zoom_factor_for_text_scale_multiplier_ = text_scale_multiplier;
+    GetSettings()->SetAccessibilityFontScaleFactor(text_scale_multiplier);
+  }
+
+  // Resulting zoom updates may be impacted by either scale factor changing
+  if (text_scale_multiplier_changed ||
+      (zoom_factor_for_device_scale_factor_ != device_scale_factor)) {
+    zoom_factor_for_device_scale_factor_ = device_scale_factor;
     UpdateWidgetZoomFactors();
     UpdateInspectorDeviceScaleFactorOverride();
   }

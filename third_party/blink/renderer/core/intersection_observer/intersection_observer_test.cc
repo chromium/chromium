@@ -1113,7 +1113,7 @@ TEST_F(IntersectionObserverTest, InaccessibleTargetBeforeDelivery) {
 }
 
 TEST_F(IntersectionObserverTest, RootMarginDevicePixelRatio) {
-  WebView().SetZoomFactorForDeviceScaleFactor(3.5f);
+  WebView().SetZoomFactorForDeviceScaleFactor(3.5f, 1.0f);
   WebView().MainFrameViewWidget()->Resize(gfx::Size(2800, 2100));
   SimRequest main_resource("https://example.com/", "text/html");
   LoadURL("https://example.com/");

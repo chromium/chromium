@@ -143,16 +143,23 @@ TEST_F(WebViewImplTest, MaximumLegiblePageScaleWithoutMetaTag) {
   EXPECT_FLOAT_EQ(1.2f, web_view->FakePageScaleAnimationPageScaleForTesting());
 }
 
-// Test for Android WebView where the page adds and removes <meta text-scale>.
+// Test where the page adds and removes <meta text-scale>.
 TEST_F(WebViewImplTest, DynamicMetaTagTextZoom) {
   WebViewImpl* web_view = WebView();
   web_view->GetPage()->GetSettings().SetDefaultFontSize(16);
 
-  // Simulate Android WebView where the user has a 2x OS-level font scale.
+#if BUILDFLAG(IS_ANDROID)
+  // Simulate a 2x OS-level font scale
   web_view->GetSettings()->SetScaleAllFontsIfNoMetaTextScaleTag(true);
   web_view->GetSettings()->SetTextSizeAdjustEnabled(true);
   web_view->GetSettings()->SetAccessibilityFontScaleFactor(2.0f);
   web_view->MainFrameImpl()->GetFrame()->SetTextZoomFactor(2.0f);
+#else
+  // Simulate a 1.5x OS-level font scale, and a 2.0x OS-level device
+  // scale factor (3.0x effective)
+  web_view->SetZoomFactorForDeviceScaleFactor(/*device_scale_factor=*/3.0f,
+                                              /*text_scale_multiplier=*/1.5f);
+#endif  // BUILDFLAG(IS_ANDROID)
 
   frame_test_helpers::LoadHTMLString(
       web_view->MainFrameImpl(),
@@ -160,7 +167,8 @@ TEST_F(WebViewImplTest, DynamicMetaTagTextZoom) {
       "<div id='test-medium-font'></div>"
       "<div id='test-fixed-font' style='font-size: 16px'></div>"
       "<div id='test-env' style='width: calc(env(preferred-text-scale) * "
-      "100px)'></div>",
+      "100px)'></div>"
+      "<div id='test-width' style='width: 100px'></div>",
       url_test_helpers::ToKURL("http://example.com/"));
   web_view->MainFrameWidget()->UpdateAllLifecyclePhases(
       DocumentUpdateReason::kTest);
@@ -172,23 +180,40 @@ TEST_F(WebViewImplTest, DynamicMetaTagTextZoom) {
   Element* test_fixed_font =
       document->getElementById(AtomicString("test-fixed-font"));
   Element* test_env = document->getElementById(AtomicString("test-env"));
+  Element* test_width = document->getElementById(AtomicString("test-width"));
   ASSERT_TRUE(test_medium_font);
   ASSERT_TRUE(test_fixed_font);
   ASSERT_TRUE(test_env);
+  ASSERT_TRUE(test_width);
   ASSERT_TRUE(test_medium_font->GetComputedStyle());
   ASSERT_TRUE(test_fixed_font->GetComputedStyle());
   ASSERT_TRUE(test_env->GetComputedStyle());
+  ASSERT_TRUE(test_width->GetComputedStyle());
 
   // Initial state, no meta tag:
+#if BUILDFLAG(IS_ANDROID)
   // TextZoomFactor is 2.0.
   // Default font size 16px -> 32px.
   // Fixed font size 16px -> 32px.
   // env(preferred-text-scale) is 1.0 (hidden), so width should be 100.
+  // Width is 100.
   EXPECT_FLOAT_EQ(2.0f,
                   web_view->MainFrameImpl()->GetFrame()->TextZoomFactor());
   EXPECT_FLOAT_EQ(32.0f, test_medium_font->GetComputedStyle()->FontSize());
   EXPECT_FLOAT_EQ(32.0f, test_fixed_font->GetComputedStyle()->FontSize());
   EXPECT_FLOAT_EQ(100.0f, test_env->GetComputedStyle()->Width().Pixels());
+  EXPECT_FLOAT_EQ(100.0f, test_width->GetComputedStyle()->Width().Pixels());
+#else
+  // Device scale factor is 3.0.
+  // Default font size 16px, scaled to 48px.
+  // Fix font size 16px, scaled to 48px.
+  // env(preferred-text-scale) is 1.0 (hidden), so width is 100, scaled to 300.
+  // Width is 100, scaled to 300.
+  EXPECT_FLOAT_EQ(48.0f, test_medium_font->GetComputedStyle()->FontSize());
+  EXPECT_FLOAT_EQ(48.0f, test_fixed_font->GetComputedStyle()->FontSize());
+  EXPECT_FLOAT_EQ(300.0f, test_env->GetComputedStyle()->Width().Pixels());
+  EXPECT_FLOAT_EQ(300.0f, test_width->GetComputedStyle()->Width().Pixels());
+#endif  // BUILDFLAG(IS_ANDROID)
 
   // 1. Append meta tag.
   Element* meta = document->CreateRawElement(html_names::kMetaTag);
@@ -199,15 +224,30 @@ TEST_F(WebViewImplTest, DynamicMetaTagTextZoom) {
       DocumentUpdateReason::kTest);
 
   // Meta tag present:
+#if BUILDFLAG(IS_ANDROID)
   // TextZoomFactor is 1.0.
   // Default font size 16px -> 32px (Still scaled by
   // AccessibilityFontScaleFactor). Fixed font size 16px -> 16px (Unscaled).
   // env(preferred-text-scale) is 2.0 (exposed), so width should be 200.
+  // Width is 100, should remain unscaled to 100.
   EXPECT_FLOAT_EQ(1.0f,
                   web_view->MainFrameImpl()->GetFrame()->TextZoomFactor());
   EXPECT_FLOAT_EQ(32.0f, test_medium_font->GetComputedStyle()->FontSize());
   EXPECT_FLOAT_EQ(16.0f, test_fixed_font->GetComputedStyle()->FontSize());
   EXPECT_FLOAT_EQ(200.0f, test_env->GetComputedStyle()->Width().Pixels());
+  EXPECT_FLOAT_EQ(100.0f, test_width->GetComputedStyle()->Width().Pixels());
+#else
+  // Device scale factor is 2.0 (was 2.0 * 1.5 text multiplier = 3.0)
+  // Default font size 16px -> 24px (still scaled by
+  // AccessibilityFontScaleFactor), scaled to 48px.
+  // Fix font size 16px, scaled to 32px.
+  // env(preferred-text-scale) is 1.5 (exposed), so width is 150, scaled to 300.
+  // Width is 100, scaled to 200.
+  EXPECT_FLOAT_EQ(48.0f, test_medium_font->GetComputedStyle()->FontSize());
+  EXPECT_FLOAT_EQ(32.0f, test_fixed_font->GetComputedStyle()->FontSize());
+  EXPECT_FLOAT_EQ(300.0f, test_env->GetComputedStyle()->Width().Pixels());
+  EXPECT_FLOAT_EQ(200.0f, test_width->GetComputedStyle()->Width().Pixels());
+#endif  // BUILDFLAG(IS_ANDROID)
 
   // 2. Remove meta tag.
   meta->remove();
@@ -215,11 +255,19 @@ TEST_F(WebViewImplTest, DynamicMetaTagTextZoom) {
       DocumentUpdateReason::kTest);
 
   // Back to initial state.
+#if BUILDFLAG(IS_ANDROID)
   EXPECT_FLOAT_EQ(2.0f,
                   web_view->MainFrameImpl()->GetFrame()->TextZoomFactor());
   EXPECT_FLOAT_EQ(32.0f, test_medium_font->GetComputedStyle()->FontSize());
   EXPECT_FLOAT_EQ(32.0f, test_fixed_font->GetComputedStyle()->FontSize());
   EXPECT_FLOAT_EQ(100.0f, test_env->GetComputedStyle()->Width().Pixels());
+  EXPECT_FLOAT_EQ(100.0f, test_width->GetComputedStyle()->Width().Pixels());
+#else
+  EXPECT_FLOAT_EQ(48.0f, test_medium_font->GetComputedStyle()->FontSize());
+  EXPECT_FLOAT_EQ(48.0f, test_fixed_font->GetComputedStyle()->FontSize());
+  EXPECT_FLOAT_EQ(300.0f, test_env->GetComputedStyle()->Width().Pixels());
+  EXPECT_FLOAT_EQ(300.0f, test_width->GetComputedStyle()->Width().Pixels());
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 }  // namespace blink

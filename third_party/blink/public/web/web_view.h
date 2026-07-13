@@ -282,14 +282,26 @@ class BLINK_EXPORT WebView {
   // Indicates that view's preferred size changes will be sent to the browser.
   virtual void EnablePreferredSizeChangedMode() = 0;
 
-  // Sets the additional zoom factor used for device scale factor. This is used
-  // to scale the content by the device scale factor, without affecting zoom
-  // level.
-  virtual void SetZoomFactorForDeviceScaleFactor(float) = 0;
+  // Sets the additional zoom factor used for device scale factor, as well as
+  // what portion (if any) of the device scale factor is due to text scaling.
+  // If no text scaling contributed to the device scale factor,
+  // text_scale_multiplier should be 1.0.
+  //
+  // The device_scale_factor is used to scale the content without affecting
+  // zoom level. The text_scale_multiplier is used for sites that are handling
+  // their own text scaling, to remove this portion from the overall
+  // device_scale_factor.
+  virtual void SetZoomFactorForDeviceScaleFactor(
+      float device_scale_factor,
+      float text_scale_multiplier) = 0;
 
   // Gets the device scale zoom that will be factored into the viewport layout
   // width.
   virtual float ZoomFactorForViewportLayout() = 0;
+
+  // Gets the device scale zoom that will be factored into the viewport layout
+  // width, but with any text scale multiplier removed.
+  virtual float ZoomFactorForViewportLayoutWithoutTextScale() = 0;
 
   // Override the screen orientation override.
   virtual void SetScreenOrientationOverrideForTesting(

@@ -2000,7 +2000,7 @@ void WebFrameWidgetImpl::UpdateVisualProperties(
     // be leftover from when a widget was nested and was promoted to top level.
     widget_base_->LayerTreeHost()->SetExternalPageScaleFactor(
         1.f,
-        /*is_pinch_gesture_active=*/false);
+        /*is_external_pinch_gesture_active=*/false);
   }
 
   EventHandler& event_handler = local_root_->GetFrame()->GetEventHandler();
@@ -2470,10 +2470,14 @@ void WebFrameWidgetImpl::SetZoomInternal(double zoom_level,
 
   if (auto* local_frame = LocalRootImpl()->GetFrame()) {
     if (Document* document = local_frame->GetDocument()) {
+      const float device_scale_factor =
+          document->TextScaleMetaTagPresent()
+              ? View()->ZoomFactorForViewportLayoutWithoutTextScale()
+              : View()->ZoomFactorForViewportLayout();
       // Since `SetLayoutZoomFactor` receives a float, cast everything to floats
       // to avoid precision loss from calculations using doubles.
       float layout_zoom_factor =
-          View()->ZoomFactorForViewportLayout() *
+          device_scale_factor *
           static_cast<float>(View()->ZoomLevelToZoomFactor(zoom_level)) *
           static_cast<float>(css_zoom_factor);
       if (zoom_changed) {
@@ -5272,7 +5276,8 @@ void WebFrameWidgetImpl::OrientationChanged() {
 void WebFrameWidgetImpl::DidUpdateSurfaceAndScreen(
     const display::ScreenInfos& previous_original_screen_infos) {
   display::ScreenInfo screen_info = widget_base_->GetScreenInfo();
-  View()->SetZoomFactorForDeviceScaleFactor(screen_info.device_scale_factor);
+  View()->SetZoomFactorForDeviceScaleFactor(screen_info.device_scale_factor,
+                                            screen_info.text_scale_multiplier);
 
   if (ShouldAutoDetermineCompositingToLCDTextSetting()) {
     // This causes compositing state to be modified which dirties the

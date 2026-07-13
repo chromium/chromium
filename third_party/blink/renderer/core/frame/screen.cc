@@ -30,6 +30,7 @@
 
 #include "base/numerics/safe_conversions.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
+#include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/event_target_names.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -57,6 +58,14 @@ bool Screen::AreWebExposedScreenPropertiesEqual(
   // this with the PhysicalPixelsQuirk (see width() / height() below).  However,
   // this value likely changes rarely and should not throw many false positives.
   if (prev.device_scale_factor != current.device_scale_factor) {
+    return false;
+  }
+
+  // avail[Left|Top|Width|Height](), height() and width() use
+  // text_scale_multiplier Note: similar to device_scale_factor,
+  // text_scale_multiplier is only used in select scenarios, but is unlikely to
+  // change and should not result in many false positives.
+  if (prev.text_scale_multiplier != current.text_scale_multiplier) {
     return false;
   }
 
@@ -168,6 +177,9 @@ gfx::Rect Screen::GetRect(bool available) const {
   gfx::Rect rect = available ? screen_info.available_rect : screen_info.rect;
   if (frame->GetSettings()->GetReportScreenSizeInPhysicalPixelsQuirk())
     return gfx::ScaleToRoundedRect(rect, screen_info.device_scale_factor);
+  if (frame->GetDocument() && frame->GetDocument()->TextScaleMetaTagPresent()) {
+    return gfx::ScaleToRoundedRect(rect, screen_info.text_scale_multiplier);
+  }
   return rect;
 }
 

@@ -113,8 +113,7 @@ Vector<char> CreateJpegImageData(int width, int height) {
 
 class WindowToViewportScalingChromeClient : public EmptyChromeClient {
  public:
-  WindowToViewportScalingChromeClient()
-      : EmptyChromeClient(), scale_factor_(1.f) {}
+  WindowToViewportScalingChromeClient() = default;
 
   void SetScalingFactor(float s) { scale_factor_ = s; }
   float WindowToViewportScalar(LocalFrame*, const float s) const override {
@@ -122,7 +121,7 @@ class WindowToViewportScalingChromeClient : public EmptyChromeClient {
   }
 
  private:
-  float scale_factor_;
+  float scale_factor_ = 1.f;
 };
 
 class ImageDocumentTest : public testing::Test {
@@ -430,7 +429,7 @@ TEST_F(ImageDocumentViewportTest, ScaleImage) {
 
   // no zoom
   WebView().MainFrameWidget()->Resize(gfx::Size(100, 100));
-  WebView().SetZoomFactorForDeviceScaleFactor(1.f);
+  WebView().SetZoomFactorForDeviceScaleFactor(1.f, 1.0f);
   Compositor().BeginFrame();
   EXPECT_EQ(50u, img->width());
   EXPECT_EQ(50u, img->height());
@@ -444,7 +443,7 @@ TEST_F(ImageDocumentViewportTest, ScaleImage) {
   // This simulates running on two phones with different screen densities but
   // same (physical) screen size, image document should displayed the same.
   WebView().MainFrameWidget()->Resize(gfx::Size(400, 400));
-  WebView().SetZoomFactorForDeviceScaleFactor(4.f);
+  WebView().SetZoomFactorForDeviceScaleFactor(4.f, 1.0f);
   Compositor().BeginFrame();
   EXPECT_EQ(50u, img->width());
   EXPECT_EQ(50u, img->height());
@@ -468,7 +467,7 @@ TEST_F(ImageDocumentViewportTest, DivWidth) {
 
   HTMLImageElement* img = GetDocument().ImageElement();
 
-  WebView().SetZoomFactorForDeviceScaleFactor(2.f);
+  WebView().SetZoomFactorForDeviceScaleFactor(2.f, 1.0f);
 
   // Image smaller then webview size, visual viewport is not zoomed, and image
   // will be centered in the viewport.
@@ -524,7 +523,7 @@ TEST_F(ImageDocumentViewportTest, DivWidthOnMobileWithDisabledViewportMeta) {
   data.append_range(JpegImage());
   request.Complete(data);
   HTMLImageElement* img = GetDocument().ImageElement();
-  WebView().SetZoomFactorForDeviceScaleFactor(1.f);
+  WebView().SetZoomFactorForDeviceScaleFactor(1.f, 1.0f);
   WebView().MainFrameWidget()->Resize(gfx::Size(200, 200));
   Compositor().BeginFrame();
   EXPECT_EQ(50u, img->width());
@@ -552,7 +551,7 @@ TEST_F(ImageDocumentViewportTest,
   LoadURL("https://example.com/test.jpg");
   request.Complete(CreateJpegImageData(10000, 100));
   HTMLImageElement* img = GetDocument().ImageElement();
-  WebView().SetZoomFactorForDeviceScaleFactor(1.f);
+  WebView().SetZoomFactorForDeviceScaleFactor(1.f, 1.0f);
   WebView().MainFrameWidget()->Resize(gfx::Size(200, 200));
   Compositor().BeginFrame();
   EXPECT_EQ(9800u, img->width());
@@ -580,7 +579,7 @@ TEST_F(ImageDocumentViewportTest,
   LoadURL("https://example.com/test.jpg");
   request.Complete(CreateJpegImageData(100, 10000));
   HTMLImageElement* img = GetDocument().ImageElement();
-  WebView().SetZoomFactorForDeviceScaleFactor(1.f);
+  WebView().SetZoomFactorForDeviceScaleFactor(1.f, 1.0f);
   WebView().MainFrameWidget()->Resize(gfx::Size(200, 200));
   Compositor().BeginFrame();
   EXPECT_EQ(100u, img->width());

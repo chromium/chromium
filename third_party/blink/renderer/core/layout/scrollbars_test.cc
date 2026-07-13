@@ -4920,7 +4920,7 @@ TEST_P(ScrollbarTrackMarginsTest,
 
 TEST_P(ScrollbarTrackMarginsTest,
        CustomScrollbarScaledMarginsWillNotCauseDCHECKFailure) {
-  WebView().SetZoomFactorForDeviceScaleFactor(1.25f);
+  WebView().SetZoomFactorForDeviceScaleFactor(1.25f, 1.0f);
 
   PrepareTest(R"CSS(
     ::-webkit-scrollbar-track {

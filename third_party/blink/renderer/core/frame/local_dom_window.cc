@@ -1690,7 +1690,12 @@ int LocalDOMWindow::outerHeight() const {
         lroundf(chrome_client.RootWindowRect(*frame).height() *
                 chrome_client.GetScreenInfo(*frame).device_scale_factor));
   }
-  return chrome_client.RootWindowRect(*frame).height();
+  int height = chrome_client.RootWindowRect(*frame).height();
+  if (document() && document()->TextScaleMetaTagPresent()) {
+    height = static_cast<int>(lroundf(
+        height * chrome_client.GetScreenInfo(*frame).text_scale_multiplier));
+  }
+  return height;
 }
 
 int LocalDOMWindow::outerWidth() const {
@@ -1717,7 +1722,12 @@ int LocalDOMWindow::outerWidth() const {
         lroundf(chrome_client.RootWindowRect(*frame).width() *
                 chrome_client.GetScreenInfo(*frame).device_scale_factor));
   }
-  return chrome_client.RootWindowRect(*frame).width();
+  int width = chrome_client.RootWindowRect(*frame).width();
+  if (document() && document()->TextScaleMetaTagPresent()) {
+    width = static_cast<int>(lroundf(
+        width * chrome_client.GetScreenInfo(*frame).text_scale_multiplier));
+  }
+  return width;
 }
 
 gfx::Size LocalDOMWindow::GetViewportSize() const {
@@ -1788,7 +1798,12 @@ int LocalDOMWindow::screenX() const {
         lroundf(chrome_client.RootWindowRect(*frame).x() *
                 chrome_client.GetScreenInfo(*frame).device_scale_factor));
   }
-  return chrome_client.RootWindowRect(*frame).x();
+  int screenX = chrome_client.RootWindowRect(*frame).x();
+  if (document() && document()->TextScaleMetaTagPresent()) {
+    screenX = static_cast<int>(lroundf(
+        screenX * chrome_client.GetScreenInfo(*frame).text_scale_multiplier));
+  }
+  return screenX;
 }
 
 int LocalDOMWindow::screenY() const {
@@ -1808,7 +1823,12 @@ int LocalDOMWindow::screenY() const {
         lroundf(chrome_client.RootWindowRect(*frame).y() *
                 chrome_client.GetScreenInfo(*frame).device_scale_factor));
   }
-  return chrome_client.RootWindowRect(*frame).y();
+  int screenY = chrome_client.RootWindowRect(*frame).y();
+  if (document() && document()->TextScaleMetaTagPresent()) {
+    screenY = static_cast<int>(lroundf(
+        screenY * chrome_client.GetScreenInfo(*frame).text_scale_multiplier));
+  }
+  return screenY;
 }
 
 double LocalDOMWindow::scrollX() const {

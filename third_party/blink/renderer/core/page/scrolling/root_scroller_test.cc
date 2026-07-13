@@ -2726,7 +2726,7 @@ TEST_F(ImplicitRootScrollerSimTest, ClippingAncestorPreventsPromotion) {
 
 TEST_F(ImplicitRootScrollerSimTest, AppliedAtFractionalZoom) {
   // Matches Pixel 2XL screen size of 412x671 at 3.5 DevicePixelRatio.
-  WebView().SetZoomFactorForDeviceScaleFactor(3.5f);
+  WebView().SetZoomFactorForDeviceScaleFactor(3.5f, 1.0f);
   WebView().ResizeWithBrowserControls(gfx::Size(1442, 2349), 196, 0, true);
 
   SimRequest main_request("https://example.com/test.html", "text/html");

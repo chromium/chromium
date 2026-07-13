@@ -177,7 +177,8 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   gfx::Size ContentsPreferredMinimumSize() override;
   void UpdatePreferredSize() override;
   void EnablePreferredSizeChangedMode() override;
-  void SetZoomFactorForDeviceScaleFactor(float) override;
+  void SetZoomFactorForDeviceScaleFactor(float device_scale_factor,
+                                         float text_scale_multiplier) override;
   float ZoomFactorForViewportLayout() override {
     // This returns the zoom factor to use when determining the layout width
     // while processing the viewport meta tag. We use only the device scale
@@ -193,6 +194,10 @@ class CORE_EXPORT WebViewImpl final : public WebView,
     return compositor_device_scale_factor_override_
                ? compositor_device_scale_factor_override_
                : zoom_factor_for_device_scale_factor_;
+  }
+  float ZoomFactorForViewportLayoutWithoutTextScale() override {
+    return ZoomFactorForViewportLayout() /
+           zoom_factor_for_text_scale_multiplier_;
   }
   bool AutoResizeMode() override;
   void EnableAutoResizeForTesting(const gfx::Size& min_window_size,
@@ -257,6 +262,9 @@ class CORE_EXPORT WebViewImpl final : public WebView,
       std::optional<SkColor>);
   void SetBaseBackgroundColorOverrideTransparent(bool override_to_transparent);
   void SetBaseBackgroundColorOverrideForInspector(std::optional<SkColor>);
+
+  // Called when the text-scale meta tag is added or removed
+  void OnTextScaleMetaTagPresentChanged();
 
   // Resize the WebView. You likely should be using
   // MainFrameWidget()->Resize instead.
@@ -857,6 +865,10 @@ class CORE_EXPORT WebViewImpl final : public WebView,
 
   // Additional zoom factor used to scale the content by device scale factor.
   double zoom_factor_for_device_scale_factor_ = 1.;
+
+  // The portion of |zoom_factor_for_device_scale_factor_| that is due to the
+  // system text scale factor.
+  double zoom_factor_for_text_scale_multiplier_ = 1.f;
 
   // This value, when multiplied by the font scale factor, gives the maximum
   // page scale that can result from automatic zooms.

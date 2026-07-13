@@ -208,6 +208,7 @@
 #include "third_party/blink/renderer/core/events/visual_viewport_scroll_event.h"
 #include "third_party/blink/renderer/core/events/visual_viewport_scrollend_event.h"
 #include "third_party/blink/renderer/core/execution_context/window_agent.h"
+#include "third_party/blink/renderer/core/exported/web_view_impl.h"
 #include "third_party/blink/renderer/core/fetch/fetch_later_util.h"
 #include "third_party/blink/renderer/core/fragment_directive/fragment_directive.h"
 #include "third_party/blink/renderer/core/fragment_directive/text_fragment_handler.h"
@@ -8326,15 +8327,18 @@ void Document::SetTextScaleMetaTagPresent(bool present) {
       .UpdatePreferredTextScaleFromDocument();
 
   if (LocalFrame* frame = GetFrame()) {
-    if (Settings* settings = GetSettings()) {
-      // If we are in a WebView and the meta tag is being flipped, we need to
-      // change the system font scale.
-      // No matter if the page just added or just removed meta,
-      // SetTextZoomFactor will do the right thing if we give it the original
-      // font scale factor here.
-      if (settings->GetScaleAllFontsIfNoMetaTextScaleTag()) {
-        frame->SetTextZoomFactor(settings->GetAccessibilityFontScaleFactor());
-      }
+    // If we are in a WebView and the meta tag is being flipped, we need to
+    // change the system font scale.
+    // No matter if the page just added or just removed meta,
+    // SetTextZoomFactor will do the right thing if we give it the original
+    // font scale factor here.
+    if (GetSettings()->GetScaleAllFontsIfNoMetaTextScaleTag()) {
+      frame->SetTextZoomFactor(
+          GetSettings()->GetAccessibilityFontScaleFactor());
+    }
+
+    if (auto* view = GetPage()->GetChromeClient().GetWebView()) {
+      view->OnTextScaleMetaTagPresentChanged();
     }
   }
 }
