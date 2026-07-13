@@ -265,6 +265,12 @@ CC_BASE_EXPORT BASE_DECLARE_FEATURE_PARAM(
     double,
     kScrollJankV4MetricFlingContinuityThreshold);
 
+// When enabled, the fast scroll continuity rule of the V4 scroll jank metric
+// only applies if the previous and current frames' total raw scroll deltas have
+// the same sign.
+CC_BASE_EXPORT BASE_DECLARE_FEATURE(
+    kScrollJankV4MetricFastScrollContinuityRequiresSameDirection);
+
 // When disabled, `cc::ScrollJankV4FrameStageCalculator` relies on the
 // timestamps of arrival of individual `cc::ScrollEventMetrics` in the renderer
 // compositor (`scroll_event_metrics->GetDispatchStageTimestamp(
