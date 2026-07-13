@@ -445,9 +445,8 @@ ReadAnythingAppController::ReadAnythingAppController(
                           /* recompute_display_nodes= */ true));
   pdf_draw_debouncer_ = std::make_unique<base::RetainingOneShotTimer>(
       FROM_HERE, base::Milliseconds(kPdfDrawDebounceMs),
-      base::BindRepeating(&ReadAnythingAppController::Draw,
-                          weak_ptr_factory_.GetWeakPtr(),
-                          /* recompute_display_nodes= */ false));
+      base::BindRepeating(&ReadAnythingAppController::OnPdfDebounceFinished,
+                          weak_ptr_factory_.GetWeakPtr()));
   renderer_load_triggered_time_ms_ = base::TimeTicks::Now();
   distiller_ = std::make_unique<AXTreeDistiller>(
       render_frame,
@@ -809,7 +808,7 @@ void ReadAnythingAppController::OnActiveAXTreeIDChanged(
   model_.SetRootTreeId(tree_id);
   model_.SetUkmSourceIdForTree(tree_id, ukm_source_id);
   model_.set_is_pdf(is_pdf);
-  if (is_pdf) {
+  if (is_pdf && !IsHidden()) {
     pdf_draw_debouncer_->Reset();
   }
 
@@ -1116,7 +1115,7 @@ void ReadAnythingAppController::OnAXTreeDistilled(
       }
       DrawEmptyState();
     }
-  } else {
+  } else if (!model_.is_pdf() || !pdf_draw_debouncer_->IsRunning()) {
     if (features::IsImmersiveReadAnythingEnabled()) {
       SetDistillationState(read_anything::mojom::ReadAnythingDistillationState::
                                kDistillationWithContent);
@@ -1138,6 +1137,27 @@ void ReadAnythingAppController::OnAXTreeDistilled(
   // Once drawing is complete, process pending updates on the active tree if
   // there are no other factors blocking the processing of updates
   ProcessPendingUpdatesIfAllowed();
+}
+
+void ReadAnythingAppController::OnPdfDebounceFinished() {
+  if (IsHidden()) {
+    return;
+  }
+
+  if (model_.is_empty()) {
+    DrawEmptyState();
+  } else {
+    Draw(/*recompute_display_nodes=*/false);
+  }
+
+  if (features::IsImmersiveReadAnythingEnabled()) {
+    SetDistillationState(
+        model_.is_empty()
+            ? read_anything::mojom::ReadAnythingDistillationState::
+                  kDistillationEmpty
+            : read_anything::mojom::ReadAnythingDistillationState::
+                  kDistillationWithContent);
+  }
 }
 
 bool ReadAnythingAppController::PostProcessSelection() {
