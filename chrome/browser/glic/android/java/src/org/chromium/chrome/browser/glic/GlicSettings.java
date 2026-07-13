@@ -90,7 +90,7 @@ public class GlicSettings extends ChromeBaseSettingsFragment {
     private static final String PREF_LAUNCHER_ENABLED = "glic_launcher_enabled";
     // TODO(b/531824318): Make the shortcut customizable.
     private static final String PREF_LAUNCHER_HOTKEY = "glic_launcher_hotkey";
-    // TODO(b/531825599): Implement navigation shortcut and settings UI.
+    @VisibleForTesting static final String PREF_NAVIGATION_SHORTCUT = "glic_navigation_shortcut";
 
     private final SharedPreferencesManager mSharedPreferencesManager =
             ChromeSharedPreferences.getInstance();
@@ -100,6 +100,7 @@ public class GlicSettings extends ChromeBaseSettingsFragment {
     private @Nullable PrefChangeRegistrar mPrefChangeRegistrar;
     private @Nullable ChromeSwitchPreference mLauncherEnabledPref;
     private @Nullable Preference mLauncherHotkeyPref;
+    private @Nullable Preference mNavigationShortcutPref;
     private @Nullable PrefService mLocalPrefs;
     private GlicKeyedService.@Nullable UserEnabledActuationOnWebObserver
             mUserEnabledActuationOnWebObserver;
@@ -223,6 +224,7 @@ public class GlicSettings extends ChromeBaseSettingsFragment {
 
         mLauncherEnabledPref = findPreference(PREF_LAUNCHER_ENABLED);
         mLauncherHotkeyPref = findPreference(PREF_LAUNCHER_HOTKEY);
+        mNavigationShortcutPref = findPreference(PREF_NAVIGATION_SHORTCUT);
         mLocalPrefs = LocalStatePrefs.get();
 
         if (mLocalPrefs != null) {
@@ -242,7 +244,7 @@ public class GlicSettings extends ChromeBaseSettingsFragment {
             updateHotkeyVisibility(enabled);
         } else {
             if (mLauncherEnabledPref != null) mLauncherEnabledPref.setVisible(false);
-            if (mLauncherHotkeyPref != null) mLauncherHotkeyPref.setVisible(false);
+            updateHotkeyVisibility(false);
         }
 
         ChromeSwitchPreference locationPref =
@@ -362,7 +364,8 @@ public class GlicSettings extends ChromeBaseSettingsFragment {
                 PREF_KEY_GLIC_PERMISSIONS_ACTIVITY,
                 PREF_KEY_GLIC_EXTENSIONS,
                 PREF_LAUNCHER_ENABLED,
-                PREF_LAUNCHER_HOTKEY
+                PREF_LAUNCHER_HOTKEY,
+                PREF_NAVIGATION_SHORTCUT
             };
             for (String key : prefsToDisable) {
                 Preference pref = findPreference(key);
@@ -609,6 +612,10 @@ public class GlicSettings extends ChromeBaseSettingsFragment {
         if (mLauncherHotkeyPref != null) {
             mLauncherHotkeyPref.setVisible(enabled);
         }
+        if (mNavigationShortcutPref != null) {
+            mNavigationShortcutPref.setVisible(enabled && AndroidSidePanelEnabledFn.isEnabled());
+        }
+        notifyPreferencesUpdated();
     }
 
     @Override
@@ -633,6 +640,7 @@ public class GlicSettings extends ChromeBaseSettingsFragment {
                         indexData.removeEntryForKey(prefFrag, PREFERENCE_BUTTON);
                     } else {
                         indexData.removeEntryForKey(prefFrag, PREFERENCE_BUTTON_TOGGLE);
+                        indexData.removeEntryForKey(prefFrag, PREF_NAVIGATION_SHORTCUT);
                     }
                     if (!ChromeFeatureList.isEnabled(
                             ChromeFeatureList.ACTOR_LOGIN_PERMISSIONS_UI)) {

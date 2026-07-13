@@ -10,4 +10,15 @@ found in the LICENSE file.
         parent="TextAppearance.TextSmall.Secondary">
         <item name="android:textStyle">bold</item>
     </style>
+
+    <style name="GlicKeycap">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:paddingStart">6dp</item>
+        <item name="android:paddingEnd">6dp</item>
+        <item name="android:paddingTop">2dp</item>
+        <item name="android:paddingBottom">2dp</item>
+        <item name="android:background">@drawable/glic_keycap_background</item>
+        <item name="android:textAppearance">@style/TextAppearance.GlicKeycap</item>
+    </style>
 </resources>

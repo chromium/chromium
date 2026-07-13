@@ -402,6 +402,7 @@ public class GlicSettingsUnitTest {
     }
 
     @Test
+    @EnableFeatures(ChromeFeatureList.ENABLE_ANDROID_SIDE_PANEL)
     public void testLauncherToggle_InitialState_Enabled() {
         when(mLocalPrefServiceMock.getBoolean(GlicPrefNames.GLIC_LAUNCHER_ENABLED))
                 .thenReturn(true);
@@ -413,9 +414,14 @@ public class GlicSettingsUnitTest {
         assertTrue(
                 "Hotkey preference should be visible when launcher is enabled",
                 hotkeyPref.isVisible());
+        Preference navShortcutPref = fragment.findPreference(GlicSettings.PREF_NAVIGATION_SHORTCUT);
+        assertTrue(
+                "Navigation shortcut should be visible when launcher is enabled",
+                navShortcutPref.isVisible());
     }
 
     @Test
+    @EnableFeatures(ChromeFeatureList.ENABLE_ANDROID_SIDE_PANEL)
     public void testLauncherToggle_InitialState_Disabled() {
         when(mLocalPrefServiceMock.getBoolean(GlicPrefNames.GLIC_LAUNCHER_ENABLED))
                 .thenReturn(false);
@@ -427,26 +433,52 @@ public class GlicSettingsUnitTest {
         assertFalse(
                 "Hotkey preference should not be visible when launcher is disabled",
                 hotkeyPref.isVisible());
+        Preference navShortcutPref = fragment.findPreference(GlicSettings.PREF_NAVIGATION_SHORTCUT);
+        assertFalse(
+                "Navigation shortcut should not be visible when launcher is disabled",
+                navShortcutPref.isVisible());
     }
 
     @Test
+    @EnableFeatures(ChromeFeatureList.ENABLE_ANDROID_SIDE_PANEL)
     public void testLauncherToggle_Click() {
         when(mLocalPrefServiceMock.getBoolean(GlicPrefNames.GLIC_LAUNCHER_ENABLED))
                 .thenReturn(false);
         GlicSettings fragment = launchFragment();
         ChromeSwitchPreference togglePref = fragment.findPreference("glic_launcher_enabled");
         Preference hotkeyPref = fragment.findPreference("glic_launcher_hotkey");
+        Preference navShortcutPref = fragment.findPreference(GlicSettings.PREF_NAVIGATION_SHORTCUT);
 
         assertFalse("Hotkey preference should not be visible initially", hotkeyPref.isVisible());
+        assertFalse(
+                "Navigation shortcut should not be visible initially", navShortcutPref.isVisible());
 
         // Simulate toggling On
         togglePref.getOnPreferenceChangeListener().onPreferenceChange(togglePref, true);
         verify(mLocalPrefServiceMock).setBoolean(GlicPrefNames.GLIC_LAUNCHER_ENABLED, true);
         assertTrue("Hotkey preference should become visible", hotkeyPref.isVisible());
+        assertTrue("Navigation shortcut should become visible", navShortcutPref.isVisible());
 
         // Simulate toggling Off
         togglePref.getOnPreferenceChangeListener().onPreferenceChange(togglePref, false);
         verify(mLocalPrefServiceMock).setBoolean(GlicPrefNames.GLIC_LAUNCHER_ENABLED, false);
         assertFalse("Hotkey preference should become invisible", hotkeyPref.isVisible());
+        assertFalse("Navigation shortcut should become invisible", navShortcutPref.isVisible());
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.ENABLE_ANDROID_SIDE_PANEL)
+    public void testNavigationShortcutPreference_SidePanelDisabled() {
+        // Even if launcher is enabled, the navigation shortcut should be invisible if side panel is
+        // disabled.
+        when(mLocalPrefServiceMock.getBoolean(GlicPrefNames.GLIC_LAUNCHER_ENABLED))
+                .thenReturn(true);
+        GlicSettings fragment = launchFragment();
+        Preference navShortcutPreference =
+                fragment.findPreference(GlicSettings.PREF_NAVIGATION_SHORTCUT);
+        assertFalse(
+                "Preference glic_navigation_shortcut should be invisible with side panel FF"
+                        + " disabled",
+                navShortcutPreference.isVisible());
     }
 }

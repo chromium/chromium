@@ -44,7 +44,13 @@ found in the LICENSE file.
             android:summary="@string/settings_glic_keyboard_shortcut_sublabel"
             app:widgetLayout="@layout/preference_widget_hotkey" />
 
-    <!-- TODO(b/531825599): Implement navigation shortcut and settings UI. -->
+    <!-- TODO(b/531824318): Make the shortcut customizable. -->
+    <Preference
+            android:key="glic_navigation_shortcut"
+            android:selectable="false"
+            android:title="@string/settings_glic_navigation_shortcut"
+            android:summary="@string/settings_glic_navigation_shortcut_sublabel"
+            app:widgetLayout="@layout/preference_widget_hotkey_navigation" />
 
     <PreferenceCategory
         android:key="glic_permissions_section"
