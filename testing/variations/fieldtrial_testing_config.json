@@ -17347,24 +17347,6 @@
             ]
         }
     ],
-    "NtpNextCanvasChip": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "NtpNextCanvasChip"
-                    ]
-                }
-            ]
-        }
-    ],
     "NtpNextConversationStarters": [
         {
             "platforms": [
@@ -17376,7 +17358,10 @@
             "experiments": [
                 {
                     "name": "Enabled",
-                    "enable_features": []
+                    "enable_features": [
+                        "NtpNextCanvasChip",
+                        "NtpStarterChip"
+                    ]
                 }
             ]
         }
