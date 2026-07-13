@@ -6,13 +6,16 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/base64.h"
+#import "base/rand_util.h"
 #import "base/run_loop.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/autofill/core/common/password_form_fill_data.h"
 #import "components/autofill/core/common/unique_ids.h"
+#import "components/autofill/ios/browser/autofill_util.h"
 #import "components/autofill/ios/browser/form_suggestion.h"
 #import "components/autofill/ios/browser/form_suggestion_provider.h"
+#import "components/autofill/ios/form_util/child_frame_registrar.h"
 #import "components/autofill/ios/form_util/form_activity_params.h"
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/password_manager/core/browser/features/password_features.h"
@@ -25,15 +28,25 @@
 #import "components/prefs/pref_registry_simple.h"
 #import "components/prefs/testing_pref_service.h"
 #import "components/strings/grit/components_strings.h"
+#import "components/sync/protocol/webauthn_credential_specifics.pb.h"
 #import "components/sync_preferences/testing_pref_service_syncable.h"
+#import "components/webauthn/core/browser/test_passkey_model.h"
+#import "components/webauthn/ios/fake_ios_passkey_client.h"
 #import "components/webauthn/ios/features.h"
 #import "components/webauthn/ios/ios_webauthn_credentials_delegate.h"
 #import "components/webauthn/ios/ios_webauthn_credentials_delegate_factory.h"
+#import "components/webauthn/ios/passkey_java_script_feature.h"
+#import "components/webauthn/ios/passkey_request_params.h"
+#import "components/webauthn/ios/passkey_suggestion_utils.h"
+#import "components/webauthn/ios/passkey_tab_helper.h"
+#import "components/webauthn/ios/passkey_test_util.h"
+#import "device/fido/public/public_key_credential_rp_entity.h"
 #import "ios/chrome/browser/autofill/model/form_suggestion_tab_helper.h"
 #import "ios/chrome/browser/favicon/model/favicon_service_factory.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_large_icon_service_factory.h"
 #import "ios/chrome/browser/history/model/history_service_factory.h"
+#import "ios/chrome/browser/passwords/bottom_sheet/coordinator/credential_suggestion_bottom_sheet_mediator_base+Subclassing.h"
 #import "ios/chrome/browser/passwords/bottom_sheet/ui/credential_suggestion_bottom_sheet_consumer.h"
 #import "ios/chrome/browser/passwords/bottom_sheet/ui/credential_suggestion_bottom_sheet_presenter.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_account_password_store_factory.h"
@@ -47,6 +60,7 @@
 #import "ios/chrome/browser/shared/model/web_state_list/test/fake_web_state_list_delegate.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
+#import "ios/chrome/common/ui/reauthentication/reauthentication_protocol.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_frame.h"
@@ -63,10 +77,11 @@
 
 namespace {
 
-constexpr char kTestUrl[] = "http://foo.com";
+constexpr char kTestUrl[] = "https://foo.com";
 constexpr char kFillDataUsername[] = "donut.guy@gmail.com";
 constexpr char kFillDataPassword[] = "super!secret";
-constexpr char kMainFrameId[] = "frameID";
+constexpr char kMainFrameId[] = "11111111111111111111111111111111";
+constexpr char kRemoteFrameId[] = "22222222222222222222222222222222";
 constexpr autofill::FormRendererId kFormRendererId(1);
 constexpr autofill::FieldRendererId kUsernameFieldRendererId(2);
 constexpr autofill::FieldRendererId kPasswordFieldRendererId(3);
@@ -294,13 +309,17 @@ class CredentialSuggestionBottomSheetMediatorTest : public PlatformTest {
     // can be made on the fake frame.
     web::test::OverrideJavaScriptFeatures(
         profile_.get(),
-        {password_manager::PasswordManagerJavaScriptFeature::GetInstance()});
+        {password_manager::PasswordManagerJavaScriptFeature::GetInstance(),
+         webauthn::PasskeyJavaScriptFeature::GetInstance()});
 
     // Set up the frames manager so frames can be used.
     auto frames_manager = std::make_unique<web::FakeWebFramesManager>();
     frames_manager_ptr_ = frames_manager.get();
     web_state_->SetWebFramesManager(web::ContentWorld::kIsolatedWorld,
                                     std::move(frames_manager));
+    web_state_->SetWebFramesManager(
+        web::ContentWorld::kPageContentWorld,
+        std::make_unique<web::FakeWebFramesManager>());
 
     // Create the PasswordTabHelper so the credential suggestion provider is
     // available.
@@ -330,6 +349,15 @@ class CredentialSuggestionBottomSheetMediatorTest : public PlatformTest {
     [mediator_ disconnect];
     EXPECT_OCMOCK_VERIFY(consumer_);
     EXPECT_OCMOCK_VERIFY(presenter_);
+
+    // Reset to avoid dangling pointer issues during teardown.
+    task_environment_.RunUntilIdle();
+    mediator_ = nil;
+    web_state_ptr_ = nullptr;
+    main_frame_ptr_ = nullptr;
+    frames_manager_ptr_ = nullptr;
+    web_state_list_.reset();
+    passkey_model_.reset();
   }
 
   void CreateMediator() {
@@ -493,6 +521,7 @@ class CredentialSuggestionBottomSheetMediatorTest : public PlatformTest {
   std::unique_ptr<TestProfileIOS> profile_;
   raw_ptr<sync_preferences::TestingPrefServiceSyncable> prefs_ptr_;
   FakeWebStateListDelegate web_state_list_delegate_;
+  std::unique_ptr<webauthn::TestPasskeyModel> passkey_model_;
   std::unique_ptr<WebStateList> web_state_list_;
   std::unique_ptr<web::FakeWebState> web_state_;
   raw_ptr<web::WebState, DanglingUntriaged> web_state_ptr_;
@@ -662,6 +691,7 @@ TEST_F(CredentialSuggestionBottomSheetMediatorTest,
   ASSERT_TRUE(mediator_);
   [mediator_ setConsumer:consumer_];
 
+  task_environment_.RunUntilIdle();
   web_state_list_.reset();
   EXPECT_OCMOCK_VERIFY(consumer_);
 }
@@ -772,4 +802,143 @@ TEST_F(CredentialSuggestionBottomSheetMediatorTest,
 
   EXPECT_TRUE(completionCalled);
   EXPECT_EQ(localMediator, nil);
+}
+
+TEST_F(CredentialSuggestionBottomSheetMediatorTest,
+       ReauthMarksPasskeyAsUserVerified) {
+  // 1. Create a FakeIOSPasskeyClient and PasskeyTabHelper for the web state.
+  auto client = std::make_unique<webauthn::FakeIOSPasskeyClient>();
+  webauthn::FakeIOSPasskeyClient* fake_client = client.get();
+
+  passkey_model_ = std::make_unique<webauthn::TestPasskeyModel>();
+
+  webauthn::PasskeyTabHelper::CreateForWebState(
+      web_state_ptr_, passkey_model_.get(), /*password_store=*/nullptr,
+      std::move(client));
+
+  // 2. Set up the passkey credential in the delegate and insert the WebState.
+  std::vector<uint8_t> credential_id = {1, 2, 3, 4};
+  std::vector<uint8_t> user_id = {5, 6, 7, 8};
+  std::string username = "user1";
+  std::string display_name = "User 1";
+  SetUpMockPasskeyDelegate(credential_id, user_id, username, display_name);
+
+  // Create a frame so credential suggestions can be provided for that frame.
+  auto main_frame = web::FakeWebFrame::Create(
+      kMainFrameId, /*is_main_frame=*/true, GURL(kTestUrl));
+  main_frame_ptr_ = main_frame.get();
+  main_frame_ptr_->set_browser_state(profile_.get());
+  frames_manager_ptr_->AddWebFrame(std::move(main_frame));
+
+  // Add the frame to the PageContentWorld frames manager as well for passkey
+  // flows.
+  auto page_world_main_frame = web::FakeWebFrame::Create(
+      kMainFrameId, /*is_main_frame=*/true, GURL(kTestUrl));
+  page_world_main_frame->set_browser_state(profile_.get());
+  web::FakeWebFramesManager* page_world_frames_manager =
+      static_cast<web::FakeWebFramesManager*>(
+          web_state_ptr_->GetWebFramesManager(
+              web::ContentWorld::kPageContentWorld));
+  page_world_frames_manager->AddWebFrame(std::move(page_world_main_frame));
+
+  sync_pb::WebauthnCredentialSpecifics passkey;
+  passkey.set_rp_id("foo.com");
+  passkey.set_credential_id(
+      std::string(credential_id.begin(), credential_id.end()));
+  passkey.set_sync_id(base::RandBytesAsString(16));
+  passkey.set_user_id(std::string(user_id.begin(), user_id.end()));
+  passkey.set_user_name(username);
+  passkey.set_user_display_name(display_name);
+  passkey_model_->AddNewPasskeyForTesting(std::move(passkey));
+
+  // Retrieve the delegate from the factory.
+  webauthn::IOSWebAuthnCredentialsDelegateFactory* delegateFactory =
+      webauthn::IOSWebAuthnCredentialsDelegateFactory::GetFactory(
+          web_state_ptr_);
+  webauthn::IOSWebAuthnCredentialsDelegate* delegate =
+      delegateFactory->GetDelegateForFrameId(kMainFrameId);
+  ASSERT_TRUE(delegate);
+
+  // 3. Set up the mock reauth module to succeed.
+  id mock_reauth_module = OCMProtocolMock(@protocol(ReauthenticationProtocol));
+  OCMStub([mock_reauth_module canAttemptReauth]).andReturn(YES);
+
+  __block void (^completionHandler)(ReauthenticationResult);
+  OCMExpect([mock_reauth_module
+      attemptReauthWithLocalizedReason:[OCMArg any]
+                  canReusePreviousAuth:NO
+                               handler:[OCMArg checkWithBlock:^BOOL(id obj) {
+                                 completionHandler = [obj copy];
+                                 return YES;
+                               }]]);
+
+  // 4. Create an assertion request in PasskeyTabHelper so SelectPasskey can
+  // find it.
+  autofill::ChildFrameRegistrar* registrar =
+      autofill::ChildFrameRegistrar::GetOrCreateForWebState(web_state_ptr_);
+  autofill::LocalFrameToken local_token(
+      *autofill::DeserializeJavaScriptFrameId(kMainFrameId));
+  autofill::RemoteFrameToken remote_token(
+      *autofill::DeserializeJavaScriptFrameId(kRemoteFrameId));
+  registrar->RegisterMapping(remote_token, local_token);
+
+  webauthn::IOSPasskeyClient::RequestInfo request_info(
+      kMainFrameId, "request_id", remote_token);
+  device::PublicKeyCredentialRpEntity rp_entity("foo.com");
+  std::vector<uint8_t> challenge;
+  webauthn::PasskeyRequestParams request_params(
+      std::move(request_info), std::move(rp_entity), std::move(challenge),
+      device::UserVerificationRequirement::kPreferred,
+      webauthn::PasskeyRequestParams::RequestType::kModal,
+      webauthn::PasskeyExtensionData());
+  webauthn::AssertionRequestParams params(std::move(request_params), {});
+  webauthn::PasskeyTabHelper::FromWebState(web_state_ptr_)
+      ->HandleGetRequestedEvent(std::move(params));
+
+  // 5. Initialize the mediator (active WebState is now valid in the list!).
+  mediator_ = [[CredentialSuggestionBottomSheetMediator alloc]
+        initWithWebStateList:web_state_list_.get()
+               faviconLoader:IOSChromeFaviconLoaderFactory::GetForProfile(
+                                 profile_.get())
+                 prefService:prefs_ptr_
+                      params:params_
+                reauthModule:mock_reauth_module
+        profilePasswordStore:store_
+        accountPasswordStore:nullptr
+      sharedURLLoaderFactory:nullptr
+           engagementTracker:nil];
+
+  EXPECT_EQ(mediator_.webAuthnCredentialsDelegate.get(), delegate);
+  auto passkeys_result = delegate->GetPasskeys();
+  ASSERT_TRUE(passkeys_result.has_value() && *passkeys_result);
+  EXPECT_EQ((*passkeys_result)->size(), 1u);
+
+  // 6. Select the suggestion requiring reauth.
+  FormSuggestion* passkeySuggestion = [FormSuggestion
+      suggestionWithValue:base::SysUTF8ToNSString(display_name)
+       displayDescription:nil
+                     icon:nil
+                     type:autofill::SuggestionType::kWebauthnCredential
+                  payload:autofill::Suggestion::Guid(
+                              base::Base64Encode(credential_id))
+           requiresReauth:YES];
+
+  // We need to set the suggestions on the mediator to allow
+  // didSelectSuggestion.
+  mediator_.suggestions = @[ passkeySuggestion ];
+
+  [mediator_ didSelectSuggestion:passkeySuggestion
+                         atIndex:0
+                      completion:^{
+                      }];
+
+  // 7. Verify reauth was attempted.
+  [mock_reauth_module verify];
+
+  // 8. Complete the reauth with success.
+  completionHandler(ReauthenticationResult::kSuccess);
+
+  // Verify that FetchKeys was called with kCompleted!
+  EXPECT_EQ(fake_client->last_user_verification_status(),
+            webauthn::PasskeyUserVerificationStatus::kCompleted);
 }

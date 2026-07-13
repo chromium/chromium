@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/passwords/bottom_sheet/coordinator/passkey_suggestion_bottom_sheet_mediator.h"
 
 #import "base/functional/bind.h"
-#import "base/memory/raw_ptr.h"
+#import "base/memory/weak_ptr.h"
 #import "components/autofill/core/common/unique_ids.h"
 #import "components/autofill/ios/browser/form_suggestion.h"
 #import "components/webauthn/ios/ios_webauthn_credentials_delegate.h"
@@ -30,7 +30,7 @@
 }
 
 - (void)setWebAuthnCredentialsDelegate:
-    (raw_ptr<webauthn::IOSWebAuthnCredentialsDelegate>)delegate {
+    (base::WeakPtr<webauthn::IOSWebAuthnCredentialsDelegate>)delegate {
   [super setWebAuthnCredentialsDelegate:delegate];
   if (delegate) {
     base::expected<const std::vector<password_manager::PasskeyCredential>*,

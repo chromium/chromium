@@ -44,8 +44,9 @@
 @property(nonatomic, readonly) WebStateList* webStateList;
 
 // Delegate used to fetch and select passkey suggestions.
-@property(nonatomic, assign) raw_ptr<webauthn::IOSWebAuthnCredentialsDelegate>
-    webAuthnCredentialsDelegate;
+@property(nonatomic, assign)
+    base::WeakPtr<webauthn::IOSWebAuthnCredentialsDelegate>
+        webAuthnCredentialsDelegate;
 
 @end
 
@@ -95,7 +96,8 @@
       auto callback = base::BindOnce(
           [](CredentialSuggestionBottomSheetMediatorBase* mediator,
              webauthn::IOSWebAuthnCredentialsDelegate* delegate) {
-            mediator.webAuthnCredentialsDelegate = delegate;
+            mediator.webAuthnCredentialsDelegate =
+                delegate ? delegate->GetWeakPtr() : nullptr;
           },
           weakSelf);
 

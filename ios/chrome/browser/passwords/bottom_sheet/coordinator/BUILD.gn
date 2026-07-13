@@ -104,6 +104,7 @@ source_set("unit_tests") {
     "//components/webauthn/ios:features",
     "//components/webauthn/ios:passkey_types",
     "//components/webauthn/ios:test_support",
+    "//components/webauthn/ios:utils",
     "//device/fido/public",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/autofill/model",

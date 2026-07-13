@@ -104,6 +104,11 @@ IOSWebAuthnCredentialsDelegate::AsWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
+base::WeakPtr<IOSWebAuthnCredentialsDelegate>
+IOSWebAuthnCredentialsDelegate::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 void IOSWebAuthnCredentialsDelegate::OnCredentialsReceived(
     std::vector<password_manager::PasskeyCredential> credentials,
     const std::string& passkey_request_id) {

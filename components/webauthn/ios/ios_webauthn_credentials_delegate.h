@@ -51,6 +51,9 @@ class IOSWebAuthnCredentialsDelegate
   // Returns whether the previous authentication can be reused.
   bool CanReusePreviousSigninAuth() const;
 
+  // Returns a weak pointer to this instance.
+  base::WeakPtr<IOSWebAuthnCredentialsDelegate> GetWeakPtr();
+
  private:
   // Notify all clients that waiting for passkeys has ended, either from
   // passkeys having been received or from the request having been cancelled.
