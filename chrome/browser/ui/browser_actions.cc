@@ -1093,6 +1093,28 @@ void BrowserActions::InitializeChromeMenuActions() {
             .SetAccelerator(ui::Accelerator(
                 ui::VKEY_L, ui::EF_SHIFT_DOWN | ui::EF_PLATFORM_ACCELERATOR))
             .Build());
+
+    root_action_item_->AddChild(
+        actions::ActionItem::Builder(
+            base::BindRepeating(
+                [](BrowserWindowInterface* bwi, actions::ActionItem* item,
+                   actions::ActionInvocationContext context) {
+                  chrome::ShowFeedbackPage(
+                      bwi, feedback::kFeedbackSourceVerticalTabs,
+                      /*description_template=*/"",
+                      /*description_placeholder_text=*/"",
+                      /*category_tag=*/"vertical_tabs",
+                      /*extra_diagnostics=*/"");
+                },
+                bwi))
+            .SetActionId(kActionVerticalTabsSendFeedback)
+            .SetText(l10n_util::GetStringUTF16(IDS_VERTICAL_TABS_SEND_FEEDBACK))
+            .SetImage(ui::ImageModel::FromVectorIcon(
+                features::IsRoundedIconsEnabled()
+                    ? vector_icons::kFeedbackIcon
+                    : vector_icons::kFeedbackOldIcon,
+                ui::kColorIcon))
+            .Build());
   }
 
   if (tab_groups::IsProjectsPanelFeatureEnabled()) {
