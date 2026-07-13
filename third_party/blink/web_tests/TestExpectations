@@ -8735,6 +8735,7 @@ crbug.com/465879478 http/tests/devtools/sources/debugger-ui/async-call-stack-wor
 
 # Gardener 2024-11-18
 crbug.com/379516106 [ Debug Mac14 ] external/wpt/css/css-overflow/scrollbar-large-scale-in-iframe.html [ Pass Timeout ]
+crbug.com/379516106 [ Win ] external/wpt/css/css-overflow/scrollbar-large-scale-in-iframe.html [ Crash Pass ]
 crbug.com/377815400 [ Mac13 ] external/wpt/webcodecs/video-encoder-h264.https.any.html?high-6.2 [ Pass Timeout ]
 crbug.com/379335371 [ Mac13 ] external/wpt/webcodecs/video-encoder-h264.https.any.worker.html?baseline [ Pass Timeout ]
 
