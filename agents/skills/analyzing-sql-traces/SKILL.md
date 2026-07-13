@@ -1,13 +1,14 @@
 ---
 name: analyzing-sql-traces
 description: >-
-  Extracts raw trace data from Perfetto traces and applies expert cognitive
-  principles (Tiered Flow Analysis, Semantic Mismatch, Redundancy) to identify
-  performance bottlenecks, structural redundancies, and tracer gaps. Use when
-  you need to analyze a trace under a specific focus/entrypoint slice, identify
-  uninstrumented 'black boxes', and generate a precise instrumentation breakdown
-  plan or refactoring instructions for the Codebase Agent. Don't use for capture
-  or compilation tasks.
+  Extracts raw trace data from Perfetto traces, runs arbitrary SQL queries for
+  custom follow-up analysis, and applies expert cognitive principles (Tiered Flow
+  Analysis, Semantic Mismatch, Redundancy) to identify performance bottlenecks,
+  structural redundancies, and tracer gaps. Use when you need to analyze a trace
+  under a specific focus/entrypoint slice, identify uninstrumented 'black boxes',
+  or execute arbitrary SQL queries on trace databases directly using SQLite/Perfetto
+  SQL syntax, and generate a precise instrumentation breakdown plan or refactoring
+  instructions for the Codebase Agent. Don't use for capture or compilation tasks.
 ---
 
 # Analyzing SQL Traces
@@ -155,6 +156,110 @@ ______________________________________________________________________
 Open and **read the mandatory reasoning guide** to evaluate the results,
 focusing on browser logic and filtering out infrastructure noise:
 `file:///.agents/skills/analyzing-sql-traces/references/cognitive_principles.md`
+
+______________________________________________________________________
+
+### Step 3: Run Arbitrary SQL Queries (Follow-up Analysis)
+
+If you need custom details or want to perform follow-up analysis not covered by
+the default trace analyzer/comparator (e.g. searching for specific args, getting
+stats on specific threads, custom joins), **ALWAYS** run the arbitrary query
+script `query_trace.py` rather than creating a custom script yourself.
+
+#### Usage Guideline
+
+Run the `query_trace.py` helper script using `vpython3`:
+
+```bash
+vpython3 agents/skills/analyzing-sql-traces/scripts/query_trace.py \
+  --trace {path/to/trace.pb} \
+  --query "{sql_query}"
+```
+
+Example:
+
+```bash
+vpython3 agents/skills/analyzing-sql-traces/scripts/query_trace.py \
+  --trace out/Default/trace.pb \
+  --query "SELECT name, sum(dur)/1e6 AS total_dur_ms FROM slice GROUP BY name ORDER BY total_dur_ms DESC LIMIT 10;"
+```
+
+#### Common Perfetto Tables & Schemas
+
+Here are common SQLite tables available in Perfetto trace databases:
+
+##### `slice` Table
+
+Contains individual track event slices (slices represent synchronous work on a
+thread).
+
+- `id` (INT): Unique ID for the slice
+- `name` (STRING): Name of the slice / event
+- `ts` (INT): Start timestamp in nanoseconds
+- `dur` (INT): Duration in nanoseconds
+- `track_id` (INT): Track ID on which the slice executed
+- `parent_id` (INT): Parent slice ID (if nested)
+- `arg_set_id` (INT): ID referencing key-value arguments associated with this
+  slice
+
+##### `process` Table
+
+- `upid` (INT): Unique process ID
+- `name` (STRING): Name of the process (e.g. Browser, Renderer, GPU Process)
+- `pid` (INT): OS process ID
+
+##### `thread` Table
+
+- `utid` (INT): Unique thread ID
+- `name` (STRING): Name of the thread (e.g. CrBrowserMain, Compositor)
+- `upid` (INT): Parent process ID
+- `tid` (INT): OS thread ID
+
+##### `thread_track` Table
+
+- `id` (INT): Track ID
+- `utid` (INT): Thread ID associated with this track
+
+##### `args` Table
+
+Contains key-value arguments associated with slices.
+
+- `arg_set_id` (INT): Reference ID matching slice's `arg_set_id`
+- `key` (STRING): Hierarchical argument key (e.g. `task.posted_from.file_name`)
+- `string_value` / `int_value` / `real_value` (STRING / INT / REAL): Argument
+  value
+
+#### Reference Queries
+
+##### Get Top 10 Longest Slices
+
+```sql
+SELECT s.name, s.dur / 1e6 AS dur_ms, t.name AS thread_name, p.name AS process_name
+FROM slice s
+JOIN thread_track tt ON s.track_id = tt.id
+JOIN thread t USING(utid)
+JOIN process p USING(upid)
+ORDER BY s.dur DESC
+LIMIT 10;
+```
+
+##### List All Processes and Threads in a Trace
+
+```sql
+SELECT p.name AS process_name, p.upid, t.name AS thread_name, t.utid
+FROM process p
+JOIN thread t USING(upid)
+ORDER BY process_name, thread_name;
+```
+
+##### Find Slices by Name containing a substring
+
+```sql
+SELECT name, dur/1e6 AS dur_ms, ts
+FROM slice
+WHERE name LIKE '%FirstContentfulPaint%'
+ORDER BY ts ASC;
+```
 
 ______________________________________________________________________
 
