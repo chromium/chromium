@@ -163,6 +163,14 @@ bool ParseAttributes(
         return false;
       }
       parsed->fetch_priority = fetch_priority.value();
+    } else if (name == "integrity") {
+      // Accept and ignore the `integrity` attribute. Subresource integrity is
+      // enforced in the renderer against the response body when the resource is
+      // consumed, so the metadata is not needed for the speculative preload
+      // issued from a 103 Early Hints response. We must still recognize the
+      // attribute here, otherwise the whole Link header would be discarded by
+      // the `else` branch below and the resource would never be preloaded.
+      continue;
     } else {
       // The current Link header contains an attribute which isn't pre-defined.
       return false;

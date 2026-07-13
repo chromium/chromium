@@ -18,6 +18,8 @@ const CROSS_ORIGIN_RESOURCES_URL = CROSS_ORIGIN + RESOURCES_PATH;
  *     preload.
  * @property {string} [fetchpriority_attr] - `fetchpriority` attribute of this
  *     preload.
+ * @property {string} [integrity_attr] - `integrity` attribute (subresource
+ *     integrity metadata) of this preload.
  *
  * @param {string} test_url - URL of a test after the Early Hints response.
  * @param {Array<Preload>} preloads  - Preloads included in the Early Hints response.

@@ -49,6 +49,22 @@ TEST(LinkHeaderParserTest, UndefinedAttribute) {
   ASSERT_EQ(parsed_headers.size(), 0UL);
 }
 
+TEST(LinkHeaderParserTest, Integrity) {
+  auto headers =
+      base::MakeRefCounted<net::HttpResponseHeaders>("HTTP/1.1 200 OK\n");
+  // The `integrity` attribute must be recognized so the Link header is not
+  // discarded. Its value is ignored here and enforced later in the renderer.
+  headers->AddHeader("link",
+                     "</script.js>; rel=preload; as=script; "
+                     "integrity=\"sha384-abc123\"");
+
+  std::vector<mojom::LinkHeaderPtr> parsed_headers =
+      ParseLinkHeaders(*headers, kBaseUrl);
+  ASSERT_EQ(parsed_headers.size(), 1UL);
+  EXPECT_EQ(parsed_headers[0]->rel, mojom::LinkRelAttribute::kPreload);
+  EXPECT_EQ(parsed_headers[0]->as, mojom::LinkAsAttribute::kScript);
+}
+
 TEST(LinkHeaderParserTest, UndefinedAttributeValue) {
   auto headers =
       base::MakeRefCounted<net::HttpResponseHeaders>("HTTP/1.1 200 OK\n");
