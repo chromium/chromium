@@ -17,6 +17,8 @@ import org.chromium.android_webview.AwBrowserContext;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Feature;
 
+import java.util.Set;
+
 /** AwBrowserContext tests. */
 @RunWith(Parameterized.class)
 @UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
@@ -48,6 +50,32 @@ public class AwBrowserContextTest extends AwParameterizedTest {
                     // Currently the maximum prerendering count is 2
                     context.clearMaxPrerenders();
                     Assert.assertEquals(2, context.getAllowedPrerenderingCount());
+                });
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    public void testSetAndGetCrossOriginAllowListSuccess() throws Throwable {
+        AwBrowserContext context = AwBrowserContext.getDefault();
+        Set<String> sample = Set.of("https://*.example.com:433", "https://example.com:433");
+        context.setCrossOriginIsolatedAllowList(sample);
+
+        Set<String> patterns = context.getCrossOriginIsolatedAllowList();
+        Assert.assertEquals(patterns, sample);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    public void testSetAndGetCrossOriginAllowListFailure() throws Throwable {
+        AwBrowserContext context = AwBrowserContext.getDefault();
+        Set<String> sample = Set.of("https://*example.com");
+
+        Assert.assertThrows(
+                IllegalArgumentException.class,
+                () -> {
+                    context.setCrossOriginIsolatedAllowList(sample);
                 });
     }
 }

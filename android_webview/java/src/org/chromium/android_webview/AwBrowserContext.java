@@ -532,6 +532,22 @@ public class AwBrowserContext implements BrowserContextHandle {
         AwBrowserContextJni.get().addQuicHints(mNativeAwBrowserContext, gurls);
     }
 
+    public void setCrossOriginIsolatedAllowList(@NonNull Set<String> originPatterns) {
+        List<String> mismatched =
+                org.chromium.android_webview.AwBrowserContextJni.get()
+                        .setCrossOriginIsolatedAllowList(mNativeAwBrowserContext, originPatterns);
+        if (!mismatched.isEmpty()) {
+            throw new IllegalArgumentException(
+                    "Invalid origin(s): " + String.join(" ", mismatched));
+        }
+    }
+
+    public @NonNull Set<String> getCrossOriginIsolatedAllowList() {
+        return Set.copyOf(
+                org.chromium.android_webview.AwBrowserContextJni.get()
+                        .getCrossOriginIsolatedAllowList(mNativeAwBrowserContext));
+    }
+
     @NativeMethods
     interface Natives {
         AwBrowserContext getDefaultJava();
@@ -593,5 +609,13 @@ public class AwBrowserContext implements BrowserContextHandle {
 
         void addQuicHints(
                 long nativeAwBrowserContext, @JniType("std::vector<GURL>") GURL[] origins);
+
+        @JniType("std::vector<std::string>")
+        List<String> setCrossOriginIsolatedAllowList(
+                long nativeAwBrowserContext,
+                @JniType("std::vector<std::string>") @NonNull Set<String> originPatterns);
+
+        @JniType("std::vector<std::string>")
+        List<String> getCrossOriginIsolatedAllowList(long nativeAwBrowserContext);
     }
 }

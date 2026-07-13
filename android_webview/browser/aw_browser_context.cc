@@ -191,6 +191,8 @@ AwBrowserContext::AwBrowserContext(std::string name,
       std::make_unique<AwContentRestrictionManagerClient>();
   content_restriction_blocked_navigation_tracker_ =
       std::make_unique<AwContentRestrictionBlockedNavigationTracker>();
+  cross_origin_allow_list_matcher_ =
+      std::make_unique<origin_matcher::OriginMatcher>();
 
   if (auto* pm_registry =
           performance_manager::PerformanceManagerRegistry::GetInstance()) {
@@ -809,7 +811,7 @@ void AwBrowserContext::AddQuicHints(JNIEnv* env,
 }
 
 void AwBrowserContext::SetServiceWorkerIoThreadClient(
-    JNIEnv* const env,
+    JNIEnv* env,
     const base::android::JavaRef<jobject>& io_thread_client) {
   sw_io_thread_client_ =
       base::android::ScopedJavaGlobalRef<jobject>(io_thread_client);
@@ -820,7 +822,7 @@ int AwBrowserContext::AllowedPrerenderingCount() const {
   return allowed_prerendering_count_;
 }
 
-void AwBrowserContext::SetAllowedPrerenderingCount(JNIEnv* const env,
+void AwBrowserContext::SetAllowedPrerenderingCount(JNIEnv* env,
                                                    int allowed_count) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   CHECK_GT(allowed_count, 0);
@@ -828,12 +830,12 @@ void AwBrowserContext::SetAllowedPrerenderingCount(JNIEnv* const env,
       std::min(allowed_count, kMaxAllowedPrerenderingCount);
 }
 
-void AwBrowserContext::ClearAllowedPrerenderingCount(JNIEnv* const env) {
+void AwBrowserContext::ClearAllowedPrerenderingCount(JNIEnv* env) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   allowed_prerendering_count_ = kDefaultAllowedPrerenderingCount;
 }
 
-void AwBrowserContext::WarmUpSpareRenderer(JNIEnv* const env) {
+void AwBrowserContext::WarmUpSpareRenderer(JNIEnv* env) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   base::TimeTicks start_time = base::TimeTicks::Now();
   content::RenderProcessHost* rph =
@@ -928,6 +930,34 @@ AwBrowserContext::CreateURLLoaderFactory() {
       std::move(url_loader_factory_params));
 
   return factory;
+}
+
+std::vector<std::string> AwBrowserContext::SetCrossOriginIsolatedAllowList(
+    JNIEnv* env,
+    const std::vector<std::string>& origin_patterns) {
+  std::unique_ptr<origin_matcher::OriginMatcher> allow_list =
+      std::make_unique<origin_matcher::OriginMatcher>();
+  std::vector<std::string> bad_patterns;
+
+  for (const std::string& pattern : origin_patterns) {
+    bool success = allow_list->AddRuleFromString(pattern);
+
+    if (!success) {
+      bad_patterns.push_back(pattern);
+    }
+  }
+
+  if (!bad_patterns.empty()) {
+    return bad_patterns;
+  }
+
+  cross_origin_allow_list_matcher_ = std::move(allow_list);
+  return {};
+}
+
+std::vector<std::string> AwBrowserContext::GetCrossOriginIsolatedAllowList(
+    JNIEnv* env) {
+  return cross_origin_allow_list_matcher_->Serialize();
 }
 
 }  // namespace android_webview
