@@ -28,11 +28,13 @@ FlexGapAccumulator::FlexGapAccumulator(
       border_scrollbar_padding_block_start_(
           border_scrollbar_padding_block_start),
       border_scrollbar_padding_inline_start_(
-          border_scrollbar_padding_inline_start) {
+          border_scrollbar_padding_inline_start),
+      fragment_relative_line_indices_(num_lines, kNotFound) {
   gap_geometry_->ReserveCrossGaps(num_flex_items);
   if (num_lines > 0) {
     gap_geometry_->ReserveMainGaps(num_lines - 1);
   }
+  gap_geometry_->ResizeFlexCrossGapSizes(num_lines);
 }
 
 const GapGeometry* FlexGapAccumulator::BuildGapGeometry(
@@ -86,12 +88,13 @@ void FlexGapAccumulator::BuildGapsForCurrentItem(const FlexLine& flex_line,
                                                  LayoutUnit line_cross_end,
                                                  LayoutUnit container_main_end,
                                                  bool in_fragmentation) {
-  if (first_flex_line_processed_index_ == kNotFound) {
-    first_flex_line_processed_index_ = flex_line_index;
+  // Assign this line its fragment-relative index the first time we visit it.
+  if (fragment_relative_line_indices_[flex_line_index] == kNotFound) {
+    fragment_relative_line_indices_[flex_line_index] =
+        next_fragment_relative_line_index_++;
   }
-
-  wtf_size_t fragment_relative_line_index =
-      flex_line_index - first_flex_line_processed_index_;
+  const wtf_size_t fragment_relative_line_index =
+      fragment_relative_line_indices_[flex_line_index];
 
   const bool need_to_add_main_gap =
       (gap_geometry_->MainGapCount() == 0 ||
@@ -120,37 +123,15 @@ void FlexGapAccumulator::BuildGapsForCurrentItem(const FlexLine& flex_line,
     }
   }
 
-  // TODO(490343456): There is a bug in the flex layout
-  // algorithm that can cause the size of a line to be 0. In such cases we make
-  // sure to not create a main gap, while the underlying bug and behavior is
-  // being investigated. However, there are also legitimate cases where we can
-  // have a line of size 0.
-  //
-  // We need to make sure we populate the `cross_gap_sizes_` for all lines.
-  // In fragmentation scenarios, we may have some lines where we are not
-  // processing the first item or the last item in the flex line (e.g. the nth
-  // item in a line gets fragmented and finished in a separate fragment, but its
-  // the only item in that line that got fragmented). In such cases we simply
-  // need to populate the `cross_gap_sizes_` whenever we don't yet have an entry
-  // for that line. This suffices for all other cases as well, since in
-  // fragmentation scenarios, the flex line already has
-  // `effective_gap_between_items` computed.
-  if (in_fragmentation) {
-    if (gap_geometry_->GetFlexCrossGapSizeCount() ==
-        fragment_relative_line_index) {
-      gap_geometry_->AddFlexCrossGapSize(flex_line.effective_gap_between_items);
-    }
-  } else {
-    // For non-fragmentation scenarios, we need to wait to populate the
-    // `cross_gap_sizes_` until we see the second item in a line, by which the
-    // flex line would have the `effective_gap_between_items` computed. We need
-    // the `is_last_item` check to handle the case where we have a single item
-    // in a line.
-    if ((!is_first_item || is_last_item) &&
-        gap_geometry_->GetFlexCrossGapSizeCount() ==
-            fragment_relative_line_index) {
-      gap_geometry_->AddFlexCrossGapSize(flex_line.effective_gap_between_items);
-    }
+  // When we're not fragmenting, wait for the second item (or the last item of a
+  // single-item line) so `effective_gap_between_items` is final before writing.
+  // When fragmenting, the effective gap was computed during the initial layout
+  // pass, so it can be written for every item.
+  const bool can_write_cross_gap_size =
+      in_fragmentation || !is_first_item || is_last_item;
+  if (can_write_cross_gap_size) {
+    gap_geometry_->SetFlexCrossGapSize(fragment_relative_line_index,
+                                       flex_line.effective_gap_between_items);
   }
 
   // The first item in any line doesn't have any `CrossGap` associated with
@@ -183,29 +164,29 @@ void FlexGapAccumulator::PopulateMainGapForFirstItem(LayoutUnit cross_end) {
 }
 
 void FlexGapAccumulator::HandleCrossGapRangesForCurrentItem(
-    wtf_size_t flex_line_index,
+    wtf_size_t fragment_relative_line_index,
     wtf_size_t cross_gap_index) {
   if (gap_geometry_->MainGapCount() == 0) {
     return;
   }
 
-  if (flex_line_index < gap_geometry_->MainGapCount()) {
-    gap_geometry_->MainGapAt(flex_line_index)
+  if (fragment_relative_line_index < gap_geometry_->MainGapCount()) {
+    gap_geometry_->MainGapAt(fragment_relative_line_index)
         .IncrementRangeOfCrossGapsBefore(cross_gap_index);
   }
 
-  if (flex_line_index > 0 &&
-      flex_line_index - 1 < gap_geometry_->MainGapCount()) {
+  if (fragment_relative_line_index > 0 &&
+      fragment_relative_line_index - 1 < gap_geometry_->MainGapCount()) {
     // We increment the `RangeOfCrossGapsAfter` for the previous line, since
     // the CrossGaps that start at this line fall "after" the previous line.
-    gap_geometry_->MainGapAt(flex_line_index - 1)
+    gap_geometry_->MainGapAt(fragment_relative_line_index - 1)
         .IncrementRangeOfCrossGapsAfter(cross_gap_index);
   }
 }
 
 void FlexGapAccumulator::PopulateCrossGapForCurrentItem(
     const FlexLine& flex_line,
-    wtf_size_t flex_line_index,
+    wtf_size_t fragment_relative_line_index,
     bool is_first_line,
     bool is_last_line,
     bool single_line,
@@ -249,7 +230,7 @@ void FlexGapAccumulator::PopulateCrossGapForCurrentItem(
       is_column_ ? main_intersection_offset : cross_intersection_offset);
   gap_geometry_->AddCrossGap(logical_offset, edge_state);
 
-  HandleCrossGapRangesForCurrentItem(flex_line_index,
+  HandleCrossGapRangesForCurrentItem(fragment_relative_line_index,
                                      gap_geometry_->CrossGapCount() - 1);
 }
 

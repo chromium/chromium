@@ -213,16 +213,17 @@ class CORE_EXPORT GapGeometry : public GarbageCollected<GapGeometry> {
   // Per-line main axis gap sizes for flex containers. This is needed because
   // different lines in a flex container can have different effective gap sizes
   // due to content distribution space.
-  void AddFlexCrossGapSize(LayoutUnit size) {
+  void ResizeFlexCrossGapSizes(wtf_size_t count) {
     if (!flex_cross_gap_sizes_.has_value()) {
       flex_cross_gap_sizes_.emplace();
     }
-    flex_cross_gap_sizes_->push_back(size);
+    flex_cross_gap_sizes_->resize(count);
   }
 
-  wtf_size_t GetFlexCrossGapSizeCount() const {
-    return flex_cross_gap_sizes_.has_value() ? flex_cross_gap_sizes_->size()
-                                             : 0;
+  void SetFlexCrossGapSize(wtf_size_t index, LayoutUnit size) {
+    CHECK(flex_cross_gap_sizes_.has_value());
+    CHECK_LT(index, flex_cross_gap_sizes_->size());
+    (*flex_cross_gap_sizes_)[index] = size;
   }
 
   void Finalize() { InitMainGapRunningIndex(); }

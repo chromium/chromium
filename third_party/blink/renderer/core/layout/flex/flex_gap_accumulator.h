@@ -201,11 +201,12 @@ class CORE_EXPORT FlexGapAccumulator {
 
   void PopulateMainGapForFirstItem(LayoutUnit cross_end);
 
-  void HandleCrossGapRangesForCurrentItem(wtf_size_t flex_line_index,
-                                          wtf_size_t cross_gap_index);
+  void HandleCrossGapRangesForCurrentItem(
+      wtf_size_t fragment_relative_line_index,
+      wtf_size_t cross_gap_index);
 
   void PopulateCrossGapForCurrentItem(const FlexLine& flex_line,
-                                      wtf_size_t flex_line_index,
+                                      wtf_size_t fragment_relative_line_index,
                                       bool is_first_line,
                                       bool is_last_line,
                                       bool single_line,
@@ -214,10 +215,6 @@ class CORE_EXPORT FlexGapAccumulator {
 
   void SetContentMainEnd(LayoutUnit content_main_end) {
     content_main_end_ = content_main_end;
-  }
-
-  void SetFirstFlexLineProcessedIndex(wtf_size_t index) {
-    first_flex_line_processed_index_ = index;
   }
 
   void SetEffectiveGapBetweenLines(LayoutUnit effective_gap) {
@@ -262,9 +259,13 @@ class CORE_EXPORT FlexGapAccumulator {
 
   LayoutUnit content_main_end_;
 
-  // Tracks the index of the first flex line processed within the current
-  // fragment.
-  wtf_size_t first_flex_line_processed_index_ = kNotFound;
+  // Maps an absolute flex-line index to its per-fragment relative line index
+  // (assigned in first-visit order), or `kNotFound` if the line has not been
+  // visited yet.
+  Vector<wtf_size_t, 4> fragment_relative_line_indices_;
+
+  // The index to assign to the next line visited in this fragment.
+  wtf_size_t next_fragment_relative_line_index_ = 0;
 };
 
 }  // namespace blink
