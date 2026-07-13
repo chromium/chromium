@@ -426,7 +426,7 @@ CSSPseudoElement* Event::pseudoTarget() const {
   if (!RuntimeEnabledFeatures::CSSPseudoElementInterfaceEnabled()) {
     return nullptr;
   }
-  if (!pseudo_element_target_) {
+  if (!pseudo_element_target_ || !current_target_) {
     return nullptr;
   }
 
@@ -446,7 +446,11 @@ CSSPseudoElement* Event::pseudoTarget() const {
     }
   }
 
-  return pseudo_element_target_.Get();
+  Element* originating_element = pseudo_element_target_->element();
+  if (Retarget(originating_element) == originating_element) {
+    return pseudo_element_target_.Get();
+  }
+  return nullptr;
 }
 
 }  // namespace blink
