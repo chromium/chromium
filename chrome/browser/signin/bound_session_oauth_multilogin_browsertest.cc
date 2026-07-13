@@ -10,6 +10,7 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
+#include "build/build_config.h"
 #include "chrome/browser/glic/host/glic_cookie_synchronizer.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/profiles/profile.h"
@@ -825,8 +826,16 @@ class BoundSessionOAuthMultiloginPersistentErrorTest
                                             GetParam().disabled_features) {}
 };
 
+// TODO(crbug.com/533927599): Flaky on Linux
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_RefreshTokensBoundToDifferentKeys \
+  DISABLED_RefreshTokensBoundToDifferentKeys
+#else
+#define MAYBE_RefreshTokensBoundToDifferentKeys \
+  RefreshTokensBoundToDifferentKeys
+#endif  // BUILDFLAG(IS_LINUX)
 IN_PROC_BROWSER_TEST_P(BoundSessionOAuthMultiloginPersistentErrorTest,
-                       RefreshTokensBoundToDifferentKeys) {
+                       MAYBE_RefreshTokensBoundToDifferentKeys) {
   const std::string email_1 = "user1@gmail.com";
   const GaiaId::Literal fake_gaia_id_1("fake-gaia-id-1");
   const std::string refresh_token_1 = "refresh-token-1";
