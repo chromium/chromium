@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<title>
+  Same-origin prerendering should defer AudioContext blocked by autoplay warning
+</title>
+<meta name="timeout" content="long">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/utils.js"></script>
+<script src="/speculation-rules/prerender/resources/utils.js"></script>
+<body>
+  <script>
+    // This test verifies that console warnings about AudioContext blockages
+    // due to autoplay policy are deferred until prerender activation.
+    promise_test(async t => {
+      const uid = token();
+      const channel = new PrerenderChannel('prerender-channel', uid);
+      const messageQueue = new BroadcastMessageQueue(
+          new PrerenderChannel('result-channel', uid));
+      t.add_cleanup(_ => channel.close());
+
+      const url = `resources/web-audio-warning.html?uid=${uid}`;
+      window.open(url, '_blank', 'noopener');
+
+      const state_on_prerendering = await messageQueue.nextMessage();
+      assert_equals(state_on_prerendering.event, "start");
+      assert_true(state_on_prerendering.prerendering);
+      assert_equals(state_on_prerendering.audiocontext, "suspended");
+
+      channel.postMessage('readyToActivate');
+
+      const state_on_activation = await messageQueue.nextMessage();
+      assert_equals(state_on_activation.event, "resume");
+      assert_false(state_on_activation.prerendering);
+      assert_equals(state_on_activation.audiocontext, "suspended");
+    }, 'prerendering pages should not emit autoplay warnings for ' +
+       'AudioContext until activated');
+  </script>
+</body>

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/utils.js"></script>
+<script src="/speculation-rules/prerender/resources/utils.js"></script>
+<script>
+  // This helper script is loaded in the prerendering page context to construct
+  // an AudioContext and verify that its state remains suspended during
+  // prerendering, and to communicate the final state back to the test runner
+  // upon activation.
+  const params = new URLSearchParams(location.search);
+  const isPrerendering = params.has('prerendering');
+
+  if (!isPrerendering) {
+    loadInitiatorPage();
+  } else {
+    const channel = new PrerenderChannel('result-channel');
+
+    // Force autoplay policy to require user gesture.
+    internals.settings.setAutoplayPolicy('document-user-activation-required');
+
+    // Construct AudioContext. It should be suspended.
+    const audioContext = new AudioContext();
+    assert_equals(audioContext.state, 'suspended');
+
+    document.addEventListener('prerenderingchange', () => {
+      channel.postMessage({
+        event: 'resume',
+        prerendering: document.prerendering,
+        audiocontext: audioContext.state
+      });
+      channel.close();
+    });
+
+    // Report initial state.
+    channel.postMessage({
+      event: 'start',
+      prerendering: document.prerendering,
+      audiocontext: audioContext.state
+    });
+  }
+
+</script>

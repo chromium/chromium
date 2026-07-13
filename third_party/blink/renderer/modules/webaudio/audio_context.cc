@@ -643,24 +643,8 @@ AudioContext::AudioContext(LocalDOMWindow& window,
     blocked_by_prerendering_ = true;
     window.document()->AddPostPrerenderingActivationStep(blink::BindOnce(
         &AudioContext::ResumeOnPrerenderActivation, WrapWeakPersistent(this)));
-  }
-
-  switch (GetAutoplayPolicy()) {
-    case AutoplayPolicy::Type::kNoUserGestureRequired:
-      break;
-    case AutoplayPolicy::Type::kUserGestureRequired:
-      // kUserGestureRequire policy only applies to cross-origin iframes for
-      // Web Audio.
-      if (window.GetFrame() &&
-          window.GetFrame()->IsCrossOriginToOutermostMainFrame()) {
-        autoplay_status_ = AutoplayStatus::kFailed;
-        user_gesture_required_ = true;
-      }
-      break;
-    case AutoplayPolicy::Type::kDocumentUserActivationRequired:
-      autoplay_status_ = AutoplayStatus::kFailed;
-      user_gesture_required_ = true;
-      break;
+  } else {
+    UpdateAutoplayRequirement();
   }
 
   Initialize();
@@ -1441,6 +1425,29 @@ void AudioContext::MaybeAllowAutoplayWithUnlockType(AutoplayUnlockType type) {
   autoplay_unlock_type_ = type;
 }
 
+void AudioContext::UpdateAutoplayRequirement() {
+  LocalDOMWindow* window = GetWindow();
+  if (!window) {
+    return;
+  }
+
+  switch (GetAutoplayPolicy()) {
+    case AutoplayPolicy::Type::kNoUserGestureRequired:
+      break;
+    case AutoplayPolicy::Type::kUserGestureRequired:
+      if (window->GetFrame() &&
+          window->GetFrame()->IsCrossOriginToOutermostMainFrame()) {
+        autoplay_status_ = AutoplayStatus::kFailed;
+        user_gesture_required_ = true;
+      }
+      break;
+    case AutoplayPolicy::Type::kDocumentUserActivationRequired:
+      autoplay_status_ = AutoplayStatus::kFailed;
+      user_gesture_required_ = true;
+      break;
+  }
+}
+
 bool AudioContext::IsAllowedToStart(bool should_suppress_warning) const {
   if (blocked_by_prerendering_) {
     // In prerendering, the AudioContext will not start rendering. See:
@@ -2039,11 +2046,15 @@ void AudioContext::ResumeOnPrerenderActivation() {
   TRACE_EVENT2("webaudio", __func__, "UUID", Uuid(),
                "state", static_cast<int>(ContextState()));
   blocked_by_prerendering_ = false;
+
+  // Re-evaluate autoplay policy on activation.
+  UpdateAutoplayRequirement();
+
   switch (ContextState()) {
     case V8AudioContextState::Enum::kSuspended:
       MaybeAllowAutoplayWithUnlockType(AutoplayUnlockType::kContextConstructor);
       if (!suspended_by_user_ &&
-          IsAllowedToStart(/*should_suppress_warning=*/true)) {
+          IsAllowedToStart(/*should_suppress_warning=*/false)) {
         StartRendering();
         ScheduleInitialTransitionToRunning();
       }

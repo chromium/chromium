@@ -343,6 +343,10 @@ class MODULES_EXPORT AudioContext final
   // Returns whether the autoplay requirements are fulfilled.
   bool AreAutoplayRequirementsFulfilled() const;
 
+  // Re-evaluates autoplay policy and updates autoplay_status_ and
+  // user_gesture_required_ accordingly.
+  void UpdateAutoplayRequirement();
+
   // If possible, allows autoplay for the AudioContext and mark it as allowed by
   // the given type.
   void MaybeAllowAutoplayWithUnlockType(AutoplayUnlockType);
