@@ -38,7 +38,8 @@
 
 # TODO(crbug.com/503810632): These tests have been failing since
 # https://crrev.com/c/7539316, https://crrev.com/c/7763951,
-# https://crrev.com/c/7671607, and https://crrev.com/c/7863615 on the bot.
+# https://crrev.com/c/7671607, https://crrev.com/c/7863615, and
+# https://crrev.com/c/7893748 on the bot.
 -SurfaceEmbedBrowserTest.Crash
 -SurfaceEmbedBrowserTest.CrashEarly
 -SurfaceEmbedBrowserTest.CrashThenReattach
@@ -58,3 +59,4 @@
 -SurfaceEmbedBrowserTestNoHost.NoCrash
 -SurfaceEmbedBrowserTest.MultilevelDisplayNonePropagates
 -SurfaceEmbedBrowserTest.MultilevelVisibilityHiddenPropagates
+-SurfaceEmbedAccessibilityBrowserTest.PluginSendsParentAccessibilityInfoToHost
