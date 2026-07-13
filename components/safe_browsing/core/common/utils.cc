@@ -27,7 +27,7 @@
 #include "services/network/public/mojom/cookie_access_observer.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 
-#if BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 #include "base/enterprise_util.h"
 #endif
 
@@ -59,20 +59,20 @@ std::string ShortURLForReporting(const GURL& url) {
 
 ChromeUserPopulation::ProfileManagementStatus GetProfileManagementStatus(
     const policy::BrowserPolicyConnector* bpc) {
-#if BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   if (base::IsManagedDevice()) {
     return ChromeUserPopulation::ENTERPRISE_MANAGED;
   } else {
     return ChromeUserPopulation::NOT_MANAGED;
   }
 #elif BUILDFLAG(IS_CHROMEOS)
-  if (!bpc || !bpc->IsDeviceEnterpriseManaged()) {
-    return ChromeUserPopulation::NOT_MANAGED;
+  if (bpc && bpc->IsDeviceEnterpriseManaged()) {
+    return ChromeUserPopulation::ENTERPRISE_MANAGED;
   }
-  return ChromeUserPopulation::ENTERPRISE_MANAGED;
+  return ChromeUserPopulation::NOT_MANAGED;
 #else
   return ChromeUserPopulation::UNAVAILABLE;
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
 }
 
 void SetDelayInPref(PrefService* prefs,
