@@ -20,6 +20,7 @@ found in the LICENSE file.
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:padding="@dimen/glic_extra_info_padding"
+        android:screenReaderFocusable="true"
         app:backgroundStyle="card"
         app:backgroundColor="@macro/default_card_bg_color">
 
@@ -109,7 +110,6 @@ found in the LICENSE file.
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/glic_extra_info_text_margin_start"
-                android:focusable="true"
                 android:text="@string/settings_ai_page_main_managed_sublabel_3" />
         </LinearLayout>
     </org.chromium.components.browser_ui.widget.containment.ContainedLinearLayout>

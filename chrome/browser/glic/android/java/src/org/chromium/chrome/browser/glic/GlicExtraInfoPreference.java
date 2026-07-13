@@ -29,6 +29,7 @@ public class GlicExtraInfoPreference extends ChromeBasePreference {
 
     public GlicExtraInfoPreference(Context context, AttributeSet attrs) {
         super(context, attrs);
+        setSelectable(false);
     }
 
     /** Sets the text resource ID and whether to apply the link span. */
