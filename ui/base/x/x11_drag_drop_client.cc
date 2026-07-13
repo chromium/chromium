@@ -480,7 +480,11 @@ void XDragDropClient::OnSelectionNotify(
     const x11::SelectionNotifyEvent& xselection) {
   DVLOG(1) << "OnSelectionNotify";
   if (target_current_context_) {
+    base::WeakPtr<XDragDropClient> alive = weak_factory_.GetWeakPtr();
     target_current_context_->OnSelectionNotify(xselection);
+    if (!alive) {
+      return;
+    }
   }
 
   // ICCCM requires us to delete the property passed into SelectionNotify.

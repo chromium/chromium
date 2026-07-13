@@ -188,8 +188,11 @@ void XDragContext::RequestNextTargetOrComplete() {
     RequestNextTarget();
   } else {
     waiting_to_handle_position_ = false;
-    drag_drop_client_->CompleteXdndPosition(source_window_, screen_point_);
+    XDragDropClient* client = drag_drop_client_;
     drag_drop_client_ = nullptr;
+    if (client) {
+      client->CompleteXdndPosition(source_window_, screen_point_);
+    }
   }
 }
 

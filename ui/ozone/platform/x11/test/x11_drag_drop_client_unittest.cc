@@ -929,4 +929,107 @@ TEST_F(X11DragDropClientTest, ClientDestroyedDuringUpdateDrag) {
   EXPECT_EQ(delegate.client(), nullptr);
 }
 
+namespace {
+
+void DriveSelectionNotifyPath(XDragDropClient* client,
+                              x11::Window source_window) {
+  // 1. Send XdndEnter
+  x11::ClientMessageEvent enter_event;
+  enter_event.type = x11::GetAtom("XdndEnter");
+  enter_event.format = 32;
+  enter_event.data.data32[0] = static_cast<uint32_t>(source_window);
+  enter_event.data.data32[1] = 5 << 24;  // version 5
+  enter_event.data.data32[2] =
+      static_cast<uint32_t>(x11::GetAtom("text/plain"));
+  enter_event.data.data32[3] = 0;
+  enter_event.data.data32[4] = 0;
+  client->HandleXdndEvent(enter_event);
+
+  // 2. Send XdndPosition
+  x11::ClientMessageEvent pos_event;
+  pos_event.type = x11::GetAtom("XdndPosition");
+  pos_event.format = 32;
+  pos_event.data.data32[0] = static_cast<uint32_t>(source_window);
+  pos_event.data.data32[1] = 0;
+  pos_event.data.data32[2] = (100 << 16) | 200;  // x=100, y=200
+  pos_event.data.data32[3] = 0;                  // time_stamp
+  pos_event.data.data32[4] =
+      static_cast<uint32_t>(x11::GetAtom("XdndActionCopy"));
+  client->HandleXdndEvent(pos_event);
+
+  // 3. Send SelectionNotify
+  x11::SelectionNotifyEvent selection_event;
+  selection_event.requestor = static_cast<x11::Window>(1);
+  selection_event.selection = x11::GetAtom("XdndSelection");
+  selection_event.target = x11::GetAtom("text/plain");
+  selection_event.property = x11::GetAtom("_CHROMIUM_DRAG_RECEIVER");
+  selection_event.time = x11::Time::CurrentTime;
+  client->OnSelectionNotify(selection_event);
+}
+
+class ReentrantLeaveDelegate : public XDragDropClient::Delegate {
+ public:
+  ReentrantLeaveDelegate() = default;
+  ~ReentrantLeaveDelegate() override = default;
+
+  void SetClient(std::unique_ptr<XDragDropClient> client) {
+    client_ = std::move(client);
+  }
+
+  XDragDropClient* client() { return client_.get(); }
+
+  // XDragDropClient::Delegate:
+  std::optional<gfx::AcceleratedWidget> GetDragWidget() override {
+    return std::nullopt;
+  }
+
+  int UpdateDrag(const gfx::Point& screen_point) override {
+    if (client_) {
+      x11::ClientMessageEvent event;
+      event.type = x11::GetAtom("XdndLeave");
+      event.format = 32;
+      client_->HandleXdndEvent(event);
+    }
+    return 0;
+  }
+
+  void UpdateCursor(mojom::DragOperation negotiated_operation) override {}
+  void OnBeginForeignDrag(x11::Window window) override {}
+  void OnEndForeignDrag() override {}
+  void OnBeforeDragLeave() override {}
+  mojom::DragOperation PerformDrop() override {
+    return mojom::DragOperation::kNone;
+  }
+  void EndDragLoop() override {}
+
+ private:
+  std::unique_ptr<XDragDropClient> client_;
+};
+
+}  // namespace
+
+TEST_F(X11DragDropClientTest,
+       ClientDestroyedDuringUpdateDragViaSelectionNotify) {
+  OwningDelegate delegate;
+  auto client = std::make_unique<XDragDropClient>(
+      &delegate, static_cast<x11::Window>(GetWidget()));
+  delegate.SetClient(std::move(client));
+  delegate.destroy_during_update_drag_ = true;
+
+  DriveSelectionNotifyPath(delegate.client(), static_cast<x11::Window>(1));
+  EXPECT_FALSE(delegate.client());
+}
+
+TEST_F(X11DragDropClientTest,
+       DragContextResetDuringUpdateDragViaSelectionNotify) {
+  ReentrantLeaveDelegate delegate;
+  auto client = std::make_unique<XDragDropClient>(
+      &delegate, static_cast<x11::Window>(GetWidget()));
+  delegate.SetClient(std::move(client));
+
+  DriveSelectionNotifyPath(delegate.client(), static_cast<x11::Window>(1));
+  ASSERT_TRUE(delegate.client());
+  EXPECT_FALSE(delegate.client()->target_current_context());
+}
+
 }  // namespace ui
