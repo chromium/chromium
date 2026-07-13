@@ -718,6 +718,14 @@ class ApiTests extends ApiTestFixtureBase {
     await this.advanceToNextStep();
   }
 
+  async testProcessCounterAbuseVerdictWhenSafeBrowsingDisabled() {
+    await this.testProcessCounterAbuseVerdict();
+  }
+
+  async testProcessCounterAbuseVerdictWhenUrlAllowlistedByPolicy() {
+    await this.testProcessCounterAbuseVerdict();
+  }
+
   async testProcessCounterAbuseVerdictIsUndefinedWhenFeatureDisabled() {
     assertTrue(this.host.processCounterAbuseVerdict === undefined);
   }

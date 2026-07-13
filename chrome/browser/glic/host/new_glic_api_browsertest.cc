@@ -74,6 +74,7 @@
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_types.h"
 #include "components/policy/policy_constants.h"
+#include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/signin/public/identity_manager/account_info.h"
@@ -1837,6 +1838,55 @@ IN_PROC_BROWSER_TEST_P(NewGlicApiTest, testProcessCounterAbuseVerdict) {
   histogram_tester.ExpectUniqueSample(
       "Glic.Api.ProcessCounterAbuseVerdict.ThreatType",
       static_cast<int>(glic::mojom::SbThreatType::kSocialEngineering), 1);
+}
+
+IN_PROC_BROWSER_TEST_P(
+    NewGlicApiTest,
+    testProcessCounterAbuseVerdictWhenSafeBrowsingDisabled) {
+  glic::GlicHistogramTester histogram_tester;
+  GetBrowser()->GetProfile()->GetPrefs()->SetBoolean(
+      ::prefs::kSafeBrowsingEnabled, false);
+  ASSERT_OK(OpenGlicForActiveTab());
+  ExecuteJsTest();
+
+  content::WebContents* active_contents =
+      GetTabListInterface()->GetActiveTab()->GetContents();
+  EXPECT_FALSE(
+      chrome_browser_interstitials::IsShowingInterstitial(active_contents));
+  histogram_tester.ExpectTotalCount(
+      "Glic.Api.ProcessCounterAbuseVerdict.Result", 0);
+}
+
+IN_PROC_BROWSER_TEST_P(
+    NewGlicApiTest,
+    testProcessCounterAbuseVerdictWhenUrlAllowlistedByPolicy) {
+  glic::GlicHistogramTester histogram_tester;
+  ASSERT_OK(OpenGlicForActiveTab());
+  content::WebContents* active_contents =
+      GetTabListInterface()->GetActiveTab()->GetContents();
+  base::ListValue allowlist;
+  allowlist.Append(active_contents->GetVisibleURL().host());
+  GetBrowser()->GetProfile()->GetPrefs()->SetList(
+      ::prefs::kSafeBrowsingAllowlistDomains, std::move(allowlist));
+
+  ExecuteJsTest();
+
+  // Wait for GlicPageHandler::ProcessCounterAbuseVerdict to run and record the
+  // verdict.
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return histogram_tester.GetBucketCount(
+               "Glic.Api.ProcessCounterAbuseVerdict.Result",
+               static_cast<int>(glic::GlicProcessCounterAbuseVerdictResult::
+                                    kInterstitialSkippedAllowlist)) == 1;
+  }));
+
+  EXPECT_FALSE(
+      chrome_browser_interstitials::IsShowingInterstitial(active_contents));
+  histogram_tester.ExpectUniqueSample(
+      "Glic.Api.ProcessCounterAbuseVerdict.Result",
+      static_cast<int>(glic::GlicProcessCounterAbuseVerdictResult::
+                           kInterstitialSkippedAllowlist),
+      1);
 }
 
 // TODO(harringtond): Flaky on windows.
