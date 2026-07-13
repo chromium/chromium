@@ -5577,8 +5577,9 @@
       // dispatched mousedown event on WebView, as opposed to a real user
       // click.
       // https://issues.chromium.org/issues/41273490
+      // Enabled in M152, safe to remove in M154
       name: "SelectWebViewUntrustedEventRemoval",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "SendBeaconThrowForBlobWithNonSimpleType",
