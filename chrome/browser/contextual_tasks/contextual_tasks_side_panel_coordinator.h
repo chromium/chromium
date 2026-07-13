@@ -106,7 +106,8 @@ class ContextualTasksSidePanelCoordinator
   void RemoveObserver(
       ContextualTasksPanelController::Observer* observer) override;
   void Show(bool transition_from_tab,
-            omnibox::ChromeAimEntryPoint entry_point) override;
+            omnibox::ChromeAimEntryPoint entry_point,
+            bool use_no_animation = false) override;
   void Close() override;
   void OpenInZeroState() override;
   bool IsPanelOpenForContextualTask() const override;

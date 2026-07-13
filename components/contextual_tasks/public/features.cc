@@ -33,10 +33,11 @@ namespace contextual_tasks {
 
 // Enables the contextual tasks side panel while browsing.
 BASE_FEATURE(kContextualTasks, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kContextualTasksPrivateApiNoAnimation,
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables the branded entry point for contextual tasks.
 BASE_FEATURE(kContextualTasksEphemeralBrandedEntryPoint,
-             "ContextualTasksEphemeralBrandedEntryPoint",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables extra OAuth scopes for contextual tasks.
@@ -172,6 +173,10 @@ BASE_FEATURE(kContextualTasksEnableStickyConversation,
 
 bool GetIsContextualTasksPdfCitationsEnabled() {
   return base::FeatureList::IsEnabled(kContextualTasksPdfCitations);
+}
+
+bool ShouldContextualTasksPrivateApiUseNoAnimation() {
+  return base::FeatureList::IsEnabled(kContextualTasksPrivateApiNoAnimation);
 }
 
 bool GetIsContextualTasksLazyFetchClusterInfoEnabled() {
@@ -776,6 +781,12 @@ bool GetIsWebpageApcComparisonEnabled() {
 }
 
 namespace flag_descriptions {
+
+const char kContextualTasksPrivateApiNoAnimationName[] =
+    "Contextual Tasks Private API No Animation";
+const char kContextualTasksPrivateApiNoAnimationDescription[] =
+    "Disable animation when opening Contextual Tasks side panel from the "
+    "private API.";
 
 const char kContextualTasksName[] = "Contextual Tasks";
 const char kContextualTasksDescription[] =

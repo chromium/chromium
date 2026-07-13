@@ -2536,7 +2536,8 @@ void ContextualTasksUiService::StartTaskUiInSidePanel(
         session_handle,
     bool associate_web_contents,
     omnibox::ChromeAimEntryPoint entry_point,
-    bool use_mstk_for_task_association) {
+    bool use_mstk_for_task_association,
+    bool use_no_animation) {
   CHECK(!url.is_empty());
   CHECK(contextual_tasks_service_);
 
@@ -2588,7 +2589,8 @@ void ContextualTasksUiService::StartTaskUiInSidePanel(
     if (session_handle) {
       pending_session_handles_.emplace(task_id, std::move(session_handle));
     }
-    controller->Show(/*transition_from_tab=*/false, entry_point);
+    controller->Show(/*transition_from_tab=*/false, entry_point,
+                     use_no_animation);
 
     InitializeTaskInSidePanel(controller->GetActiveWebContents(), task_id,
                               nullptr);

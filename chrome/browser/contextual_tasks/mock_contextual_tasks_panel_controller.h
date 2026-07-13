@@ -28,7 +28,10 @@ class MockContextualTasksPanelController
   MockContextualTasksPanelController();
   ~MockContextualTasksPanelController() override;
 
-  MOCK_METHOD(void, Show, (bool, omnibox::ChromeAimEntryPoint), (override));
+  MOCK_METHOD(void,
+              Show,
+              (bool, omnibox::ChromeAimEntryPoint, bool),
+              (override));
   MOCK_METHOD(void, Close, (), (override));
   MOCK_METHOD(void, OpenInZeroState, (), (override));
   MOCK_METHOD(bool, IsPanelOpenForContextualTask, (), (const, override));

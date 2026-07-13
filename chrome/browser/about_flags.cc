@@ -11958,6 +11958,15 @@ const FeatureEntry kFeatureEntries[] = {
          kEphemeralBrandedEntryPointVariations,
          "ContextualTasksEphemeralBrandedEntryPoint")},
 
+    {"contextual-tasks-private-api-no-animation",
+     contextual_tasks::flag_descriptions::
+         kContextualTasksPrivateApiNoAnimationName,
+     contextual_tasks::flag_descriptions::
+         kContextualTasksPrivateApiNoAnimationDescription,
+     kOsDesktop,
+     FEATURE_VALUE_TYPE(
+         contextual_tasks::kContextualTasksPrivateApiNoAnimation)},
+
     {"contextual-tasks-java-fusebox",
      contextual_tasks::flag_descriptions::kContextualTasksJavaFuseboxName,
      contextual_tasks::flag_descriptions::

@@ -224,12 +224,15 @@ ContextualTasksPrivateLaunchPanelInNewTabFunction::Run() {
   load_params.has_user_gesture = user_gesture();
   target_tab->GetContents()->GetController().LoadURLWithParams(load_params);
 
+  bool use_no_animation =
+      contextual_tasks::ShouldContextualTasksPrivateApiUseNoAnimation();
+
   ui_service->StartTaskUiInSidePanel(
       browser, target_tab, aim_url,
       /*session_handle=*/nullptr,
       /*associate_web_contents=*/false,
       omnibox::ChromeAimEntryPoint::UNKNOWN_AIM_ENTRY_POINT,
-      /*use_mstk_for_task_association=*/true);
+      /*use_mstk_for_task_association=*/true, use_no_animation);
 
   return RespondNow(NoArguments());
 }

@@ -9104,6 +9104,8 @@ from previous Chrome versions.
       label="PasswordSaveUpdateDropdownMenuExperiment:enabled"/>
   <int value="-1754262889" label="RemoteCopyPersistentNotification:enabled"/>
   <int value="-1753979488" label="SupportForcedSigninPolicy:enabled"/>
+  <int value="-1753418347"
+      label="ContextualTasksPrivateApiNoAnimation:enabled"/>
   <int value="-1753314199"
       label="ZeroSuggestPrefetchingForComposebox:disabled"/>
   <int value="-1752853388"
@@ -9283,6 +9285,8 @@ from previous Chrome versions.
   <int value="-1695774453" label="skip-extra-ash-window-positioning"/>
   <int value="-1695608731"
       label="PageInfoAboutThisSiteDescriptionPlaceholder:disabled"/>
+  <int value="-1695485728"
+      label="ContextualTasksPrivateApiNoAnimation:disabled"/>
   <int value="-1695235937" label="CampbellGlyph:enabled"/>
   <int value="-1694900665" label="HandwritingGestureEditing:enabled"/>
   <int value="-1694420704"

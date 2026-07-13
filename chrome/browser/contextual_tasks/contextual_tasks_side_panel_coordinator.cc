@@ -252,7 +252,8 @@ ContextualTasksPanelController* ContextualTasksPanelController::From(
 
 void ContextualTasksSidePanelCoordinator::Show(
     bool transition_from_tab,
-    omnibox::ChromeAimEntryPoint entry_point) {
+    omnibox::ChromeAimEntryPoint entry_point,
+    bool use_no_animation) {
   ContextualTasksPanelController::EntrySource entry_source;
   if (entry_point == omnibox::ChromeAimEntryPoint::
                          DESKTOP_CHROME_LENS_CONTEXTUAL_SEARCHBOX_ENTRY_POINT) {
@@ -318,10 +319,16 @@ void ContextualTasksSidePanelCoordinator::Show(
   }
   UpdateWebContentsForActiveTab();
 
-  contextual_tasks_panel_host_->Show(
-      transition_from_tab
-          ? ContextualTasksPanelHost::AnimationStyle::kTransitionFromTab
-          : ContextualTasksPanelHost::AnimationStyle::kStandard);
+  ContextualTasksPanelHost::AnimationStyle animation_style =
+      ContextualTasksPanelHost::AnimationStyle::kStandard;
+  if (use_no_animation) {
+    animation_style = ContextualTasksPanelHost::AnimationStyle::kNoAnimation;
+  } else if (transition_from_tab) {
+    animation_style =
+        ContextualTasksPanelHost::AnimationStyle::kTransitionFromTab;
+  }
+
+  contextual_tasks_panel_host_->Show(animation_style);
 
   UpdateOpenState(/*is_open=*/true);
   UpdateContextualTaskUI();

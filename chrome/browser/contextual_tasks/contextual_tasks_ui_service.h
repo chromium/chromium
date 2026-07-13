@@ -282,7 +282,8 @@ class ContextualTasksUiService : public KeyedService {
       bool associate_web_contents,
       omnibox::ChromeAimEntryPoint entry_point =
           omnibox::ChromeAimEntryPoint::UNKNOWN_AIM_ENTRY_POINT,
-      bool use_mstk_for_task_association = false);
+      bool use_mstk_for_task_association = false,
+      bool use_no_animation = false);
 
   // Opens the contextual tasks side panel showing a ghost loader while waiting
   // for the initial thread URL to be provided for that task. This creates an
