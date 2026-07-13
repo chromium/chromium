@@ -7,9 +7,10 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -64,9 +65,10 @@ void ChromeOSFamilyLinkUserMetricsProvider::OnUserSessionStarted(
   }
 
   DCHECK(primary_user->is_profile_created());
-  Profile* profile = ash::ProfileHelper::Get()->GetProfileByUser(primary_user);
+  Profile* profile = Profile::FromBrowserContext(
+      ash::BrowserContextHelper::Get()->GetBrowserContextByUser(primary_user));
   DCHECK(profile);
-  DCHECK(ash::ProfileHelper::IsUserProfile(profile));
+  DCHECK(ash::IsUserBrowserContext(profile));
 
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);
