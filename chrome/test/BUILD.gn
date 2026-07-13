@@ -132,37 +132,6 @@ if (is_android) {
   }
 }
 
-static_library("chrome_test_launcher") {
-  testonly = true
-  sources = [
-    "base/chrome_test_launcher.cc",
-    "base/chrome_test_launcher.h",
-  ]
-
-  deps = [
-    ":test_support",
-    "//chrome/browser:chrome_browser_main",
-    "//chrome/browser:chrome_content_browser_client",
-    "//chrome/browser:main_extra_parts",
-    "//testing/libfuzzer:fuzztest_init_support",
-  ]
-
-  if (is_mac) {
-    deps += [
-      "//chrome/app_shim",
-      "//chrome/browser:chrome_browser_application_mac",
-    ]
-  }
-
-  if (is_chromeos) {
-    deps += [ "//chrome/browser/ash/crosapi" ]
-  }
-
-  if (is_posix && !is_mac) {
-    deps += [ "//chrome/app:chrome_crash_reporter_client" ]
-  }
-}
-
 # TODO(crbug.com/353332589): Move to //chrome/test/base when that module is
 # componentized.
 source_set("test_switches") {
@@ -1591,7 +1560,6 @@ if (is_android) {
       ":android_browsertests_assets",
       ":android_browsertests_java",
       ":browser_tests_runner",
-      ":chrome_test_launcher",
       ":persisted_tab_data_test_proto",
       ":platform_browser_tests",
       ":sync_integration_test_support_java",
@@ -1687,6 +1655,7 @@ if (is_android) {
       "//chrome/browser/webauthn",
       "//chrome/browser/webid",
       "//chrome/browser/webid:android_browsertests",
+      "//chrome/test/base:chrome_test_launcher",
       "//chrome/test/data/webui:browser_tests",
       "//chrome/test/data/webui:interactive_ui_tests",
       "//chrome/test/data/webui:resources",
@@ -2106,8 +2075,8 @@ static_library("browser_tests_runner") {
   sources = []
 
   deps = [
-    ":chrome_test_launcher",
     ":test_support",
+    "//chrome/test/base:chrome_test_launcher",
   ]
 
   if (is_chromeos) {
@@ -8876,7 +8845,6 @@ if (!is_android) {
       ldflags = []
 
       deps = [
-        ":chrome_test_launcher",
         ":test_support",
         ":test_support_ui",
         "//chrome:packed_resources",
@@ -8887,6 +8855,7 @@ if (!is_android) {
         "//chrome/browser/ash/accessibility:test_support",
         "//chrome/browser/devtools",
         "//chrome/renderer",
+        "//chrome/test/base:chrome_test_launcher",
         "//components/resources",
         "//components/sync",
         "//components/sync:test_support",
@@ -9019,7 +8988,6 @@ if (!is_android && !is_chromeos_device) {
     ldflags = []
 
     deps = [
-      ":chrome_test_launcher",
       ":test_support",
       ":test_support_ui",
       ":webrtc_browser_tests_base",
@@ -9205,6 +9173,7 @@ if (!is_android && !is_chromeos_device) {
       "//chrome/common:version_header",
       "//chrome/common/notifications",
       "//chrome/renderer",
+      "//chrome/test/base:chrome_test_launcher",
       "//chrome/test/media:performance_tests",
       "//chrome/test/media_router:browser_tests",
       "//chrome/test/media_router/access_code_cast:access_code_cast_integration_base",
@@ -10092,7 +10061,6 @@ if (!is_android) {
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
     deps = [
-      ":chrome_test_launcher",
       ":test_support",
       ":test_support_ui",
       "//chrome/app:chrome_dll_resources",
@@ -10100,6 +10068,7 @@ if (!is_android) {
       "//chrome/browser/sync/test/integration:sync_integration_test_support",
       "//chrome/browser/ui",
       "//chrome/browser/ui/select_file_policy",
+      "//chrome/test/base:chrome_test_launcher",
       "//components/bookmarks/browser",
       "//components/password_manager/core/browser",
       "//components/spellcheck/common",
@@ -10198,7 +10167,6 @@ if (!is_android) {
     ldflags = []
 
     deps = [
-      ":chrome_test_launcher",
       ":test_support",
       ":test_support_ui",
       "//chrome:packed_resources",
@@ -10220,6 +10188,7 @@ if (!is_android) {
       "//chrome/browser/ui/translate:test_support",
       "//chrome/browser/ui/views/translate:test_support",
       "//chrome/renderer",
+      "//chrome/test/base:chrome_test_launcher",
       "//components/javascript_dialogs",
       "//components/resources",
       "//components/send_tab_to_self",

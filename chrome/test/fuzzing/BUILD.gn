@@ -39,8 +39,8 @@ if (fuzzing_engine_supports_custom_main && !is_android) {
       deps += [ "//chrome:packed_resources" ]
     }
     public_deps = [
-      "//chrome/test:chrome_test_launcher",
       "//chrome/test:test_support",
+      "//chrome/test/base:chrome_test_launcher",
     ]
   }
 

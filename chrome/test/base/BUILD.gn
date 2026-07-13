@@ -13,6 +13,33 @@ source_set("in_process_browser_test_mixin") {
   public_deps = [ "//base" ]
 }
 
+static_library("chrome_test_launcher") {
+  testonly = true
+  sources = [
+    "chrome_test_launcher.cc",
+    "chrome_test_launcher.h",
+  ]
+  deps = [
+    "//chrome/browser:chrome_browser_main",
+    "//chrome/browser:chrome_content_browser_client",
+    "//chrome/browser:main_extra_parts",
+    "//chrome/test:test_support",
+    "//testing/libfuzzer:fuzztest_init_support",
+  ]
+  if (is_mac) {
+    deps += [
+      "//chrome/app_shim",
+      "//chrome/browser:chrome_browser_application_mac",
+    ]
+  }
+  if (is_chromeos) {
+    deps += [ "//chrome/browser/ash/crosapi" ]
+  }
+  if (is_posix && !is_mac) {
+    deps += [ "//chrome/app:chrome_crash_reporter_client" ]
+  }
+}
+
 # Thin header-only target that exposes test_launcher_utils.h for gn check.
 # The implementation (test_launcher_utils.cc) still lives in
 # //chrome/test:test_support until chrome/test/base/ is fully componentized.
