@@ -7,6 +7,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "build/build_config.h"
 #include "chrome/browser/performance_manager/public/user_tuning/user_performance_tuning_manager.h"
 #include "chrome/browser/performance_manager/test_support/fake_frame_throttling_delegate.h"
 #include "chrome/browser/performance_manager/test_support/test_user_performance_tuning_manager_environment.h"
@@ -39,7 +40,13 @@ TEST_F(PerformanceManagerMetricsProviderCommonTest, A11yModeOff) {
       "PerformanceManager.Experimental.HasAccessibilityModeFlag", false, 1);
 }
 
-TEST_F(PerformanceManagerMetricsProviderCommonTest, A11yModeOn) {
+#if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_ARM64)
+// TODO(crbug.com/534240517): Fix this test on Win ARM64.
+#define MAYBE_A11yModeOn DISABLED_A11yModeOn
+#else
+#define MAYBE_A11yModeOn A11yModeOn
+#endif
+TEST_F(PerformanceManagerMetricsProviderCommonTest, MAYBE_A11yModeOn) {
   content::ScopedAccessibilityModeOverride scoped_setter(
       ui::AXMode::kWebContents);
 

@@ -32,7 +32,13 @@ class AccessibilityStateProviderWinTest : public testing::Test {
   base::HistogramTester histogram_tester_;
 };
 
-TEST_F(AccessibilityStateProviderWinTest, RecordsMsaaOnly) {
+#if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_ARM64)
+// TODO(crbug.com/534240517): Fix this test on Win ARM64.
+#define MAYBE_RecordsMsaaOnly DISABLED_RecordsMsaaOnly
+#else
+#define MAYBE_RecordsMsaaOnly RecordsMsaaOnly
+#endif
+TEST_F(AccessibilityStateProviderWinTest, MAYBE_RecordsMsaaOnly) {
   content::ScopedAccessibilityModeOverride mode_override(
       ui::AXMode{ui::AXMode::kNativeAPIs});
   ui::AXPlatform::GetInstance().SetMsaaActive();
