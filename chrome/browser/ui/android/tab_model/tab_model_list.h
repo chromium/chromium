@@ -5,12 +5,9 @@
 #ifndef CHROME_BROWSER_UI_ANDROID_TAB_MODEL_TAB_MODEL_LIST_H_
 #define CHROME_BROWSER_UI_ANDROID_TAB_MODEL_TAB_MODEL_LIST_H_
 
-#include <stddef.h>
-
 #include <vector>
 
 #include "base/android/scoped_java_ref.h"
-#include "base/lazy_instance.h"
 #include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "base/observer_list.h"
@@ -29,14 +26,12 @@ class WebContents;
 // Stores a list of all TabModel objects.
 class TabModelList {
  public:
-  typedef std::vector<raw_ptr<TabModel, VectorExperimental>> TabModelVector;
-  typedef TabModelVector::iterator iterator;
-  typedef TabModelVector::const_iterator const_iterator;
+  using TabModelVector = std::vector<raw_ptr<TabModel, VectorExperimental>>;
+  using iterator = TabModelVector::iterator;
+  using const_iterator = TabModelVector::const_iterator;
 
   TabModelList(const TabModelList& other) = delete;
-  TabModelList(TabModelList&& other) = delete;
   TabModelList& operator=(const TabModelList& other) = delete;
-  TabModelList&& operator=(TabModelList&& other) = delete;
   ~TabModelList();
 
   static void HandlePopupNavigation(NavigateParams* params);
@@ -66,6 +61,7 @@ class TabModelList {
   // removal across all TabModelLists.
   base::ObserverList<TabModelListObserver>::Unchecked observers_;
   TabModelVector models_;
+  raw_ptr<TabModel> archived_tab_model_ = nullptr;
 
   friend base::NoDestructor<TabModelList>;
 };

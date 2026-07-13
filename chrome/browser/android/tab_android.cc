@@ -173,6 +173,10 @@ std::unique_ptr<TabAndroid> TabAndroid::CreateForTesting(
   night_mode::WebContentsThemeClient::CreateForWebContents(web_contents.get());
   auto tab = base::WrapUnique(new TabAndroid(profile, tab_id));
   tab->web_contents_ = std::move(web_contents);
+  if (tab->web_contents_) {
+    tabs::TabLookupFromWebContents::CreateForWebContents(
+        tab->web_contents_.get(), tab.get());
+  }
   return tab;
 }
 

@@ -22,8 +22,6 @@ TabModelList& GetInstance() {
 }
 }  // namespace
 
-static TabModel* archived_tab_model_ = nullptr;
-
 TabModelList::TabModelList() = default;
 TabModelList::~TabModelList() = default;
 
@@ -38,14 +36,11 @@ void TabModelList::AddTabModel(TabModel* tab_model) {
 
 void TabModelList::RemoveTabModel(TabModel* tab_model) {
   DCHECK(tab_model);
-  auto& tab_models = GetInstance().models_;
-
-  TabModelList::iterator remove_tab_model =
-      std::ranges::find(tab_models, tab_model);
-
-  if (remove_tab_model != tab_models.end()) {
-    tab_models.erase(remove_tab_model);
+  if (GetInstance().archived_tab_model_ == tab_model) {
+    GetInstance().archived_tab_model_ = nullptr;
   }
+  auto& tab_models = GetInstance().models_;
+  std::erase(tab_models, tab_model);
 
   for (TabModelListObserver& observer : GetInstance().observers_) {
     observer.OnTabModelRemoved(tab_model);
@@ -77,10 +72,19 @@ TabModel* TabModelList::GetTabModelForWebContents(
     return nullptr;
   }
 
+  TabAndroid* tab_android = TabAndroid::FromWebContents(web_contents);
+  if (tab_android) {
+    TabModel* model = GetTabModelForTabAndroid(tab_android);
+    if (model) {
+      return model;
+    }
+  }
+
+  // Fallback for tests or custom TabModel implementations (e.g. TestTabModel)
+  // where TabAndroid is not attached to WebContents.
   for (TabModel* model : models()) {
-    const size_t tab_count = model->GetTabCount();
-    for (size_t index = 0; index < tab_count; index++) {
-      if (web_contents == model->GetWebContentsAt(index)) {
+    for (int i = 0; i < model->GetTabCount(); ++i) {
+      if (model->GetWebContentsAt(i) == web_contents) {
         return model;
       }
     }
@@ -104,17 +108,19 @@ TabModel* TabModelList::GetTabModelForTabAndroid(TabAndroid* tab_android) {
 }
 
 TabModel* TabModelList::FindTabModelWithWindowSessionId(SessionID desired_id) {
-  for (TabModel* model : models()) {
-    if (model->GetSessionId() == desired_id) {
-      return model;
-    }
-  }
+  auto it = std::ranges::find_if(models(), [desired_id](const TabModel* model) {
+    return model->GetSessionId() == desired_id;
+  });
 
-  return nullptr;
+  return it != models().end() ? *it : nullptr;
 }
 
 TabModel* TabModelList::FindNativeTabModelForJavaObject(
     const base::android::JavaRef<jobject>& jtab_model) {
+  if (!jtab_model) {
+    return nullptr;
+  }
+
   JNIEnv* env = base::android::AttachCurrentThread();
   for (TabModel* model : models()) {
     if (env->IsSameObject(jtab_model.obj(), model->GetJavaObject().obj())) {
@@ -123,7 +129,7 @@ TabModel* TabModelList::FindNativeTabModelForJavaObject(
   }
 
   TabModel* archived_tab_model = GetArchivedTabModel();
-  if (archived_tab_model != nullptr &&
+  if (archived_tab_model &&
       env->IsSameObject(jtab_model.obj(),
                         archived_tab_model->GetJavaObject().obj())) {
     return archived_tab_model;
@@ -135,13 +141,9 @@ TabModel* TabModelList::FindNativeTabModelForJavaObject(
 bool TabModelList::IsOffTheRecordSessionActive() {
   // TODO(crbug.com/40107157): This function should return true for
   // incognito CCTs.
-  for (TabModel* model : models()) {
-    if (model->IsOffTheRecord() && model->GetTabCount() > 0) {
-      return true;
-    }
-  }
-
-  return false;
+  return std::ranges::any_of(models(), [](const TabModel* model) {
+    return model->IsOffTheRecord() && model->GetTabCount() > 0;
+  });
 }
 
 // static
@@ -151,10 +153,10 @@ const TabModelList::TabModelVector& TabModelList::models() {
 
 // static
 void TabModelList::SetArchivedTabModel(TabModel* archived_tab_model) {
-  archived_tab_model_ = archived_tab_model;
+  GetInstance().archived_tab_model_ = archived_tab_model;
 }
 
 // static
 TabModel* TabModelList::GetArchivedTabModel() {
-  return archived_tab_model_;
+  return GetInstance().archived_tab_model_;
 }
