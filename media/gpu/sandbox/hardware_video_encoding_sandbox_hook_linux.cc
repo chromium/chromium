@@ -27,6 +27,13 @@ bool HardwareVideoEncodingPreSandboxHook(
   sandbox::syscall_broker::BrokerCommandSet command_set;
   std::vector<BrokerFilePermission> permissions;
 
+  // NOTE: When both USE_V4L2_CODEC and USE_VAAPI are enabled, both backends'
+  // broker commands and file permissions are granted unconditionally. The
+  // sandbox is configured before the runtime backend choice (the
+  // kPreferV4L2VideoAcceleration feature) is consulted (and broker
+  // permissions cannot be revoked later anyway), so the resulting permission
+  // set is the union of what both backends require. This widens the attack
+  // surface in mixed builds compared to a single-backend build.
 #if BUILDFLAG(USE_V4L2_CODEC)
   command_set.set(sandbox::syscall_broker::COMMAND_OPEN);
 
@@ -50,7 +57,9 @@ bool HardwareVideoEncodingPreSandboxHook(
   // permission to only platforms that need it.
   static const char kDevImageProc0Path[] = "/dev/image-proc0";
   permissions.push_back(BrokerFilePermission::ReadWrite(kDevImageProc0Path));
-#elif BUILDFLAG(USE_VAAPI)
+#endif  // BUILDFLAG(USE_V4L2_CODEC)
+
+#if BUILDFLAG(USE_VAAPI)
   command_set.set(sandbox::syscall_broker::COMMAND_OPEN);
   command_set.set(sandbox::syscall_broker::COMMAND_STAT);
   command_set.set(sandbox::syscall_broker::COMMAND_ACCESS);
@@ -74,7 +83,7 @@ bool HardwareVideoEncodingPreSandboxHook(
     permissions.push_back(BrokerFilePermission::ReadOnly(
         "/usr/share/vulkan/icd.d/radeon_icd.x86_64.json"));
   }
-#endif
+#endif  // BUILDFLAG(USE_VAAPI)
 
   // TODO(b/248528896): figure out if the render node needs to be opened after
   // entering the sandbox or if this can be restricted based on API (VA-API vs.

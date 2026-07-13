@@ -22,6 +22,7 @@
 #include "build/build_config.h"
 #include "gpu/config/gpu_driver_bug_workarounds.h"
 #include "gpu/config/gpu_preferences.h"
+#include "media/base/decoder.h"
 #include "media/base/encoder_status.h"
 #include "media/base/media_log.h"
 #include "media/base/media_switches.h"
@@ -44,7 +45,8 @@
 #endif
 #if BUILDFLAG(USE_V4L2_CODEC)
 #include "media/gpu/v4l2/v4l2_video_encode_accelerator.h"
-#elif BUILDFLAG(USE_VAAPI)
+#endif
+#if BUILDFLAG(USE_VAAPI)
 #include "media/gpu/vaapi/vaapi_video_encode_accelerator.h"
 #endif
 #if BUILDFLAG(IS_FUCHSIA)
@@ -65,7 +67,9 @@ std::unique_ptr<VideoEncodeAccelerator> CreateV4L2VEA() {
   return nullptr;
 #endif
 }
-#elif BUILDFLAG(USE_VAAPI)
+#endif
+
+#if BUILDFLAG(USE_VAAPI)
 std::unique_ptr<VideoEncodeAccelerator> CreateVaapiVEA() {
 #if BUILDFLAG(IS_LINUX)
   if (!base::FeatureList::IsEnabled(kAcceleratedVideoEncodeLinux)) {
@@ -167,10 +171,23 @@ std::vector<VEAFactoryFunction> CreateVEAFactoryFunctions(
     const gpu::GpuDriverBugWorkarounds& gpu_workarounds,
     const gpu::GPUInfo::GPUDevice& gpu_device) {
   std::vector<VEAFactoryFunction> funcs;
+#if BUILDFLAG(USE_VAAPI) || BUILDFLAG(USE_V4L2_CODEC)
+  // Mirror the decoder's runtime selection so encode and decode share a
+  // consistent hardware backend.
+  switch (ActiveLinuxVideoDecoderType()) {
 #if BUILDFLAG(USE_VAAPI)
-  funcs.push_back(base::BindRepeating(&CreateVaapiVEA));
-#elif BUILDFLAG(USE_V4L2_CODEC)
-  funcs.push_back(base::BindRepeating(&CreateV4L2VEA));
+    case VideoDecoderType::kVaapi:
+      funcs.push_back(base::BindRepeating(&CreateVaapiVEA));
+      break;
+#endif  // BUILDFLAG(USE_VAAPI)
+#if BUILDFLAG(USE_V4L2_CODEC)
+    case VideoDecoderType::kV4L2:
+      funcs.push_back(base::BindRepeating(&CreateV4L2VEA));
+      break;
+#endif  // BUILDFLAG(USE_V4L2_CODEC)
+    default:
+      break;
+  }
 #endif
 
 #if BUILDFLAG(IS_ANDROID)

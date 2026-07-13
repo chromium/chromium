@@ -11,6 +11,7 @@
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/config/gpu_driver_bug_workarounds.h"
 #include "gpu/config/gpu_preferences.h"
+#include "media/base/decoder.h"
 #include "media/base/media_log.h"
 #include "media/base/media_switches.h"
 #include "media/base/media_util.h"
@@ -27,6 +28,11 @@
 #include "media/mojo/services/oop_video_decoder_service.h"
 #include "media/video/video_decode_accelerator.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
+
+#if !(BUILDFLAG(USE_VAAPI) || BUILDFLAG(USE_V4L2_CODEC))
+#error OOPVideoDecoderFactoryService should only be built on platforms that
+#error support video decode acceleration through either VA-API or V4L2.
+#endif
 
 namespace media {
 
@@ -65,14 +71,7 @@ class MojoMediaClientImpl : public MojoMediaClient {
   VideoDecoderType GetDecoderImplementationType() final {
     // TODO(b/195769334): how can we keep this in sync with
     // VideoDecoderPipeline::GetDecoderType()?
-#if BUILDFLAG(USE_VAAPI)
-    return VideoDecoderType::kVaapi;
-#elif BUILDFLAG(USE_V4L2_CODEC)
-    return VideoDecoderType::kV4L2;
-#else
-#error OOPVideoDecoderFactoryService should only be built on platforms that
-#error support video decode acceleration through either VA-API or V4L2.
-#endif
+    return ActiveLinuxVideoDecoderType();
   }
   std::unique_ptr<VideoDecoder> CreateVideoDecoder(
       scoped_refptr<base::SequencedTaskRunner> task_runner,

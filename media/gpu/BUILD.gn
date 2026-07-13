@@ -106,9 +106,6 @@ component("gpu") {
   libs = []
   ldflags = []
 
-  # V4L2 and VAAPI for video acceleration should not be enabled simultaneously.
-  assert(!(use_v4l2_codec && use_vaapi))
-
   if (use_linux_video_acceleration) {
     public_deps += [
       ":video_frame_mapper",

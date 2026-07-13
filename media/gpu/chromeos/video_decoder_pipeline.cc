@@ -40,10 +40,14 @@
 #if BUILDFLAG(USE_VAAPI)
 #include <drm_fourcc.h>
 #include "media/gpu/vaapi/vaapi_video_decoder.h"
-#elif BUILDFLAG(USE_V4L2_CODEC)
+#endif  // BUILDFLAG(USE_VAAPI)
+
+#if BUILDFLAG(USE_V4L2_CODEC)
 #include "media/gpu/v4l2/v4l2_stateful_video_decoder.h"
 #include "media/gpu/v4l2/v4l2_video_decoder.h"
-#else
+#endif  // BUILDFLAG(USE_V4L2_CODEC)
+
+#if !(BUILDFLAG(USE_VAAPI) || BUILDFLAG(USE_V4L2_CODEC))
 #error Either VA-API or V4L2 must be used for decode acceleration on Chrome OS.
 #endif
 
@@ -99,7 +103,8 @@ size_t EstimateRequiredRendererPipelineBuffers(bool low_delay,
   if (low_delay) {
     return limits::kMaxVideoFrames + 1;
 #if BUILDFLAG(USE_V4L2_CODEC)
-  } else if (use_protected) {
+  } else if (use_protected &&
+             ActiveLinuxVideoDecoderType() == VideoDecoderType::kV4L2) {
     return kExpectedNonLatencyPipelineDepthSecure;
 #endif
   } else if (base::FeatureList::IsEnabled(kReduceHardwareVideoDecoderBuffers)) {
@@ -232,18 +237,26 @@ std::unique_ptr<VideoDecoder> VideoDecoderPipeline::Create(
     uses_oop_video_decoder = true;
   } else {
     DCHECK(frame_pool);
+    switch (ActiveLinuxVideoDecoderType()) {
 #if BUILDFLAG(USE_VAAPI)
-    create_decoder_function_cb = base::BindOnce(&VaapiVideoDecoder::Create);
-#elif BUILDFLAG(USE_V4L2_CODEC)
-    if (IsV4L2DecoderStateful()) {
-      create_decoder_function_cb =
-          base::BindOnce(&V4L2StatefulVideoDecoder::Create);
-    } else {
-      create_decoder_function_cb = base::BindOnce(&V4L2VideoDecoder::Create);
+      case VideoDecoderType::kVaapi:
+        create_decoder_function_cb = base::BindOnce(&VaapiVideoDecoder::Create);
+        break;
+#endif  // BUILDFLAG(USE_VAAPI)
+#if BUILDFLAG(USE_V4L2_CODEC)
+      case VideoDecoderType::kV4L2:
+        if (IsV4L2DecoderStateful()) {
+          create_decoder_function_cb =
+              base::BindOnce(&V4L2StatefulVideoDecoder::Create);
+        } else {
+          create_decoder_function_cb =
+              base::BindOnce(&V4L2VideoDecoder::Create);
+        }
+        break;
+#endif  // BUILDFLAG(USE_V4L2_CODEC)
+      default:
+        return nullptr;
     }
-#else
-    return nullptr;
-#endif
   }
 
   std::unique_ptr<DecoderReservation> decoder_reservation =
@@ -274,13 +287,20 @@ std::unique_ptr<VideoDecoder> VideoDecoderPipeline::CreateForARC(
   DCHECK(!renderable_fourccs.empty());
 
   CreateDecoderFunctionCB create_decoder_function_cb;
+  switch (ActiveLinuxVideoDecoderType()) {
 #if BUILDFLAG(USE_VAAPI)
-  create_decoder_function_cb = base::BindOnce(&VaapiVideoDecoder::Create);
-#elif BUILDFLAG(USE_V4L2_CODEC)
-  create_decoder_function_cb = base::BindOnce(&V4L2VideoDecoder::Create);
-#else
-  return nullptr;
-#endif
+    case VideoDecoderType::kVaapi:
+      create_decoder_function_cb = base::BindOnce(&VaapiVideoDecoder::Create);
+      break;
+#endif  // BUILDFLAG(USE_VAAPI)
+#if BUILDFLAG(USE_V4L2_CODEC)
+    case VideoDecoderType::kV4L2:
+      create_decoder_function_cb = base::BindOnce(&V4L2VideoDecoder::Create);
+      break;
+#endif  // BUILDFLAG(USE_V4L2_CODEC)
+    default:
+      return nullptr;
+  }
 
   std::unique_ptr<DecoderReservation> decoder_reservation =
       DecoderReservation::Take(GetMaxNumDecoderInstances(workarounds));
@@ -308,16 +328,25 @@ std::unique_ptr<VideoDecoder> VideoDecoderPipeline::CreateForTesting(
     std::unique_ptr<MediaLog> media_log,
     bool ignore_resolution_changes_to_smaller_for_testing) {
   CreateDecoderFunctionCB create_decoder_function_cb;
+  switch (ActiveLinuxVideoDecoderType()) {
 #if BUILDFLAG(USE_VAAPI)
-  create_decoder_function_cb = base::BindOnce(&VaapiVideoDecoder::Create);
-#elif BUILDFLAG(USE_V4L2_CODEC)
-  if (IsV4L2DecoderStateful()) {
-    create_decoder_function_cb =
-        base::BindOnce(&V4L2StatefulVideoDecoder::Create);
-  } else {
-    create_decoder_function_cb = base::BindOnce(&V4L2VideoDecoder::Create);
+    case VideoDecoderType::kVaapi:
+      create_decoder_function_cb = base::BindOnce(&VaapiVideoDecoder::Create);
+      break;
+#endif  // BUILDFLAG(USE_VAAPI)
+#if BUILDFLAG(USE_V4L2_CODEC)
+    case VideoDecoderType::kV4L2:
+      if (IsV4L2DecoderStateful()) {
+        create_decoder_function_cb =
+            base::BindOnce(&V4L2StatefulVideoDecoder::Create);
+      } else {
+        create_decoder_function_cb = base::BindOnce(&V4L2VideoDecoder::Create);
+      }
+      break;
+#endif  // BUILDFLAG(USE_V4L2_CODEC)
+    default:
+      return nullptr;
   }
-#endif
 
   std::unique_ptr<DecoderReservation> decoder_reservation =
       DecoderReservation::Take(std::numeric_limits<int>::max());
@@ -377,11 +406,12 @@ VideoDecoderPipeline::GetSupportedConfigs(
     case VideoDecoderType::kVaapi:
       configs = VaapiVideoDecoder::GetSupportedConfigs();
       break;
-#elif BUILDFLAG(USE_V4L2_CODEC)
+#endif  // BUILDFLAG(USE_VAAPI)
+#if BUILDFLAG(USE_V4L2_CODEC)
     case VideoDecoderType::kV4L2:
       configs = GetSupportedV4L2DecoderConfigs();
       break;
-#endif
+#endif  // BUILDFLAG(USE_V4L2_CODEC)
     default:
       configs = std::nullopt;
   }
@@ -524,13 +554,7 @@ VideoDecoderType VideoDecoderPipeline::GetDecoderType() const {
     return VideoDecoderType::kOutOfProcess;
   }
 
-#if BUILDFLAG(USE_VAAPI)
-  return VideoDecoderType::kVaapi;
-#elif BUILDFLAG(USE_V4L2_CODEC)
-  return VideoDecoderType::kV4L2;
-#else
-  return VideoDecoderType::kUnknown;
-#endif
+  return ActiveLinuxVideoDecoderType();
 }
 
 bool VideoDecoderPipeline::IsPlatformDecoder() const {
@@ -1141,28 +1165,39 @@ VideoDecoderPipeline::PickDecoderOutputFormat(
   }
 #endif
 
-#if BUILDFLAG(IS_LINUX) && BUILDFLAG(USE_VAAPI)
-  // Linux should always use a custom allocator (to allocate buffers using
-  // libva) and a PlatformVideoFramePool.
-  CHECK(allocator.has_value());
-  CHECK(main_frame_pool_->AsPlatformVideoFramePool());
-  // The custom allocator creates frames backed by NativePixmap, which uses a
-  // VideoFrame::StorageType of VideoFrame::STORAGE_DMABUFS.
-  main_frame_pool_->AsPlatformVideoFramePool()->SetCustomFrameAllocator(
-      *allocator, VideoFrame::STORAGE_DMABUFS);
-#elif BUILDFLAG(IS_LINUX) && BUILDFLAG(USE_V4L2_CODEC)
-  // Linux w/ V4L2 should not use a custom allocator
-  // Only tested with video_decode_accelerator_tests
-  // TODO(wenst@) Test with full Chromium Browser
-  CHECK(!allocator.has_value());
-  if (viable_candidate) {
-    // Instead, let V4L2 allocate the buffers if it can decode directly
-    // to the preferred formats. There's no need to allocate frames.
-    // This is not compatible with VdVideoDecodeAccelerator, which
-    // expects GPU buffers in VdVideoDecodeAccelerator::GetPicture()
-    frame_converter_->set_get_original_frame_cb(base::NullCallback());
-    main_frame_pool_.reset();
-    return *viable_candidate;
+#if BUILDFLAG(IS_LINUX)
+  // Linux: behavior depends on which backend the decoder represents, signaled
+  // by whether it supplied a custom allocator.
+  if (allocator.has_value()) {
+#if BUILDFLAG(USE_VAAPI)
+    // VA-API path: a custom allocator (libva-backed) is mandatory and must be
+    // attached to a PlatformVideoFramePool. Frames will be backed by
+    // NativePixmap with VideoFrame::STORAGE_DMABUFS.
+    CHECK(main_frame_pool_->AsPlatformVideoFramePool());
+    main_frame_pool_->AsPlatformVideoFramePool()->SetCustomFrameAllocator(
+        *allocator, VideoFrame::STORAGE_DMABUFS);
+#else
+    // Reaching this branch with an allocator but no VA-API compiled in would
+    // indicate a programming error.
+    NOTREACHED();
+#endif  // BUILDFLAG(USE_VAAPI)
+  } else {
+#if BUILDFLAG(USE_V4L2_CODEC)
+    // V4L2 path: no custom allocator; let V4L2 itself allocate buffers if it
+    // can decode directly to a preferred format.
+    // TODO(wenst@) Test with full Chromium Browser
+    if (viable_candidate) {
+      // This is not compatible with VdVideoDecodeAccelerator, which expects
+      // GPU buffers in VdVideoDecodeAccelerator::GetPicture().
+      frame_converter_->set_get_original_frame_cb(base::NullCallback());
+      main_frame_pool_.reset();
+      return *viable_candidate;
+    }
+#else
+    // Reaching this branch without an allocator but with no V4L2 compiled in
+    // would indicate a programming error.
+    NOTREACHED();
+#endif  // BUILDFLAG(USE_V4L2_CODEC)
   }
 #elif BUILDFLAG(IS_CHROMEOS)
   // Ash Chrome can use any type of frame pool (because it may get requests from

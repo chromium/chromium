@@ -14,6 +14,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
+#include "media/base/decoder.h"
 #include "media/base/media_switches.h"
 #include "media/base/video_types.h"
 #include "media/gpu/buildflags.h"
@@ -25,11 +26,13 @@
 #if BUILDFLAG(USE_VAAPI)
 #include "media/gpu/vaapi/vaapi_image_processor_backend.h"
 #include "media/gpu/vaapi/vaapi_wrapper.h"
-#elif BUILDFLAG(USE_V4L2_CODEC)
+#endif  // BUILDFLAG(USE_VAAPI)
+
+#if BUILDFLAG(USE_V4L2_CODEC)
 #include "media/gpu/v4l2/v4l2_device.h"
 #include "media/gpu/v4l2/v4l2_image_processor_backend.h"
 #include "media/gpu/v4l2/v4l2_vda_helpers.h"
-#endif
+#endif  // BUILDFLAG(USE_V4L2_CODEC)
 
 namespace media {
 
@@ -98,7 +101,9 @@ std::unique_ptr<ImageProcessor> CreateVaapiImageProcessorWithInputCandidates(
       std::move(client_task_runner));
 }
 
-#elif BUILDFLAG(USE_V4L2_CODEC)
+#endif  // BUILDFLAG(USE_VAAPI)
+
+#if BUILDFLAG(USE_V4L2_CODEC)
 
 std::unique_ptr<ImageProcessor> CreateV4L2ImageProcessorWithInputCandidates(
     const std::vector<PixelLayoutCandidate>& input_candidates,
@@ -273,14 +278,30 @@ std::unique_ptr<ImageProcessor> ImageProcessorFactory::Create(
   CHECK(input_config.fourcc != Fourcc());
   CHECK(output_config.fourcc != Fourcc());
 
-  std::vector<ImageProcessor::CreateBackendCB> create_funcs = {
+  std::vector<ImageProcessor::CreateBackendCB> create_funcs;
+#if BUILDFLAG(USE_VAAPI) || BUILDFLAG(USE_V4L2_CODEC)
+  // Mirror the decoder/encoder runtime selection so the image processor uses
+  // the same hardware backend.
+  switch (ActiveLinuxVideoDecoderType()) {
 #if BUILDFLAG(USE_VAAPI)
-      base::BindRepeating(&VaapiImageProcessorBackend::Create),
-#elif BUILDFLAG(USE_V4L2_CODEC)
-      base::BindRepeating(&V4L2ImageProcessorBackend::Create,
-                          base::MakeRefCounted<V4L2Device>(), num_buffers),
+    case VideoDecoderType::kVaapi:
+      create_funcs.push_back(
+          base::BindRepeating(&VaapiImageProcessorBackend::Create));
+      break;
+#endif  // BUILDFLAG(USE_VAAPI)
+#if BUILDFLAG(USE_V4L2_CODEC)
+    case VideoDecoderType::kV4L2:
+      create_funcs.push_back(
+          base::BindRepeating(&V4L2ImageProcessorBackend::Create,
+                              base::MakeRefCounted<V4L2Device>(), num_buffers));
+      break;
+#endif  // BUILDFLAG(USE_V4L2_CODEC)
+    default:
+      NOTREACHED();
+  }
 #endif
-      base::BindRepeating(&LibYUVImageProcessorBackend::Create)};
+  create_funcs.push_back(
+      base::BindRepeating(&LibYUVImageProcessorBackend::Create));
 
 #if defined(ARCH_CPU_ARM_FAMILY)
   const bool use_gl_scaling =
@@ -315,47 +336,61 @@ ImageProcessorFactory::CreateWithInputCandidates(
     scoped_refptr<base::SequencedTaskRunner> client_task_runner,
     PickFormatCB out_format_picker,
     ImageProcessor::ErrorCB error_cb) {
+  switch (ActiveLinuxVideoDecoderType()) {
 #if BUILDFLAG(USE_VAAPI)
-  auto processor = CreateVaapiImageProcessorWithInputCandidates(
-      input_candidates, input_visible_rect, output_size, output_storage_type,
-      client_task_runner, out_format_picker, error_cb);
-  if (processor)
-    return processor;
-#elif BUILDFLAG(USE_V4L2_CODEC)
+    case VideoDecoderType::kVaapi: {
+      auto processor = CreateVaapiImageProcessorWithInputCandidates(
+          input_candidates, input_visible_rect, output_size,
+          output_storage_type, client_task_runner, out_format_picker, error_cb);
+      if (processor) {
+        return processor;
+      }
+      break;
+    }
+#endif  // BUILDFLAG(USE_VAAPI)
+#if BUILDFLAG(USE_V4L2_CODEC)
+    case VideoDecoderType::kV4L2: {
 #if defined(ARCH_CPU_ARM_FAMILY)
-  const bool use_gl_scaling =
-      (base::FeatureList::IsEnabled(media::kUseGLForScaling) &&
-       (input_candidates[0].fourcc == Fourcc(Fourcc::NV12) ||
-        input_candidates[0].fourcc == Fourcc(Fourcc::NM12)));
-  const bool use_gl_detiling =
-      (base::FeatureList::IsEnabled(media::kPreferGLImageProcessor) &&
-       input_candidates[0].fourcc == Fourcc(Fourcc::MM21));
-  if (use_gl_scaling || use_gl_detiling) {
-    auto processor = CreateGLImageProcessorWithInputCandidates(
-        input_candidates, input_visible_rect, output_size, output_storage_type,
-        client_task_runner, out_format_picker, error_cb);
-    if (processor)
-      return processor;
-  }
+      const bool use_gl_scaling =
+          (base::FeatureList::IsEnabled(media::kUseGLForScaling) &&
+           (input_candidates[0].fourcc == Fourcc(Fourcc::NV12) ||
+            input_candidates[0].fourcc == Fourcc(Fourcc::NM12)));
+      const bool use_gl_detiling =
+          (base::FeatureList::IsEnabled(media::kPreferGLImageProcessor) &&
+           input_candidates[0].fourcc == Fourcc(Fourcc::MM21));
+      if (use_gl_scaling || use_gl_detiling) {
+        auto processor = CreateGLImageProcessorWithInputCandidates(
+            input_candidates, input_visible_rect, output_size,
+            output_storage_type, client_task_runner, out_format_picker,
+            error_cb);
+        if (processor) {
+          return processor;
+        }
+      }
 #endif  // defined(ARCH_CPU_ARM_FAMILY)
 
-  if (base::FeatureList::IsEnabled(kLibyuvImageProcessor)) {
-    auto processor = CreateLibYUVImageProcessorWithInputCandidates(
-        input_candidates, input_visible_rect, output_size, output_storage_type,
-        client_task_runner, out_format_picker, error_cb);
-    if (processor) {
-      return processor;
+      if (base::FeatureList::IsEnabled(kLibyuvImageProcessor)) {
+        auto processor = CreateLibYUVImageProcessorWithInputCandidates(
+            input_candidates, input_visible_rect, output_size,
+            output_storage_type, client_task_runner, out_format_picker,
+            error_cb);
+        if (processor) {
+          return processor;
+        }
+      }
+
+      auto processor = CreateV4L2ImageProcessorWithInputCandidates(
+          input_candidates, input_visible_rect, output_storage_type,
+          num_buffers, client_task_runner, out_format_picker, error_cb);
+      if (processor) {
+        return processor;
+      }
+      break;
     }
+#endif  // BUILDFLAG(USE_V4L2_CODEC)
+    default:
+      NOTREACHED();
   }
-
-  auto processor = CreateV4L2ImageProcessorWithInputCandidates(
-      input_candidates, input_visible_rect, output_storage_type, num_buffers,
-      client_task_runner, out_format_picker, error_cb);
-  if (processor) {
-    return processor;
-  }
-
-#endif
 
   return nullptr;
 }

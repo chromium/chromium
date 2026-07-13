@@ -26,6 +26,15 @@ class SANDBOX_POLICY_EXPORT HardwareVideoDecodingProcessPolicy
     kVaapiOnIntel,
     kVaapiOnAMD,
     kV4L2,
+    // Used when both VA-API and V4L2 are compiled in. The actual backend is
+    // selected at runtime via the kPreferV4L2VideoAcceleration feature, so the
+    // sandbox grants the union of permissions/seccomp filters required by
+    // either. The VA-API half mirrors the single-backend split: kVaapiAndV4L2
+    // pairs V4L2 with the Intel VA-API policy, kVaapiOnAMDAndV4L2 pairs it with
+    // the AMD VA-API policy. Which one applies is decided from the GPU at
+    // sandbox setup time (see ComputePolicyType()).
+    kVaapiAndV4L2,
+    kVaapiOnAMDAndV4L2,
   };
   static PolicyType ComputePolicyType(bool use_amd_specific_policies);
 
@@ -45,6 +54,8 @@ class SANDBOX_POLICY_EXPORT HardwareVideoDecodingProcessPolicy
   bpf_dsl::ResultExpr EvaluateSyscallForVaapiOnAMD(
       int system_call_number) const;
   bpf_dsl::ResultExpr EvaluateSyscallForV4L2(int system_call_number) const;
+  bpf_dsl::ResultExpr EvaluateSyscallForVaapiAndV4L2(
+      int system_call_number) const;
 
   const PolicyType policy_type_;
 };

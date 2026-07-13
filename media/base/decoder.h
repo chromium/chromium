@@ -10,6 +10,7 @@
 
 #include "media/base/media_export.h"
 #include "media/base/status.h"
+#include "media/gpu/buildflags.h"
 
 namespace media {
 
@@ -66,6 +67,16 @@ MEDIA_EXPORT const char* GetDecoderName(AudioDecoderType type);
 MEDIA_EXPORT const char* GetDecoderName(VideoDecoderType type);
 MEDIA_EXPORT std::ostream& operator<<(std::ostream& out, AudioDecoderType type);
 MEDIA_EXPORT std::ostream& operator<<(std::ostream& out, VideoDecoderType type);
+
+#if BUILDFLAG(USE_VAAPI) || BUILDFLAG(USE_V4L2_CODEC)
+// Returns the active hardware video acceleration backend for Linux. Used by the
+// decoder, encoder, image processor and mojo media clients so they share a
+// consistent backend. When both USE_VAAPI and USE_V4L2_CODEC are compiled in,
+// this consults the kPreferV4L2VideoAcceleration feature (default: VA-API).
+// Otherwise, it returns whichever backend is compiled in. Never returns
+// kOutOfProcess; OOP selection is layered on top by the caller.
+MEDIA_EXPORT VideoDecoderType ActiveLinuxVideoDecoderType();
+#endif  // BUILDFLAG(USE_VAAPI) || BUILDFLAG(USE_V4L2_CODEC)
 
 class MEDIA_EXPORT Decoder {
  public:

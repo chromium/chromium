@@ -259,6 +259,26 @@ bool HardwareVideoDecodingPreSandboxHook(
       result_for_platform_policy =
           HardwareVideoDecodingPreSandboxHookForV4L2(command_set, permissions);
       break;
+    case PolicyType::kVaapiAndV4L2:
+      // The active backend is selected at runtime; grant the union of broker
+      // permissions so either path can open its devices. See the matching
+      // note in EvaluateSyscallForVaapiAndV4L2().
+      result_for_platform_policy =
+          HardwareVideoDecodingPreSandboxHookForVaapiOnIntel(command_set,
+                                                             permissions) &&
+          HardwareVideoDecodingPreSandboxHookForV4L2(command_set, permissions);
+      break;
+    case PolicyType::kVaapiOnAMDAndV4L2:
+      // AMD variant of the mixed build: pair the AMD VA-API broker setup
+      // (radeonsi/vulkan preload, read-write render nodes) with the V4L2
+      // device permissions. HardwareVideoDecodingPreSandboxHookForVaapiOnAMD()
+      // dlopen()s radeonsi_dri.so and fails if it is missing, so it must only
+      // be invoked on AMD hardware.
+      result_for_platform_policy =
+          HardwareVideoDecodingPreSandboxHookForVaapiOnAMD(command_set,
+                                                           permissions) &&
+          HardwareVideoDecodingPreSandboxHookForV4L2(command_set, permissions);
+      break;
   }
   if (!result_for_platform_policy)
     return false;

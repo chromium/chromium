@@ -10,7 +10,8 @@
 
 #if BUILDFLAG(USE_V4L2_CODEC)
 #include <linux/videodev2.h>
-#elif BUILDFLAG(USE_VAAPI)
+#endif
+#if BUILDFLAG(USE_VAAPI)
 #include <va/va.h>
 #endif  // BUILDFLAG(USE_VAAPI)
 
@@ -223,7 +224,9 @@ uint32_t Fourcc::ToV4L2PixFmt() const {
   // Fourcc as V4L2.
   return static_cast<uint32_t>(value_);
 }
-#elif BUILDFLAG(USE_VAAPI)
+#endif  // BUILDFLAG(USE_V4L2_CODEC)
+
+#if BUILDFLAG(USE_VAAPI)
 // static
 std::optional<Fourcc> Fourcc::FromVAFourCC(uint32_t va_fourcc) {
   switch (va_fourcc) {

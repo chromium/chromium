@@ -5,6 +5,7 @@
 #include "media/gpu/video_frame_mapper_factory.h"
 
 #include "build/build_config.h"
+#include "media/base/decoder.h"
 #include "media/gpu/buildflags.h"
 #include "media/media_buildflags.h"
 
@@ -25,11 +26,11 @@ namespace media {
 std::unique_ptr<VideoFrameMapper> VideoFrameMapperFactory::CreateMapper(
     VideoPixelFormat format,
     VideoFrame::StorageType storage_type) {
-#if BUILDFLAG(USE_VAAPI)
-  return CreateMapper(format, storage_type, false);
-#else
-  return CreateMapper(format, storage_type, true);
-#endif  // BUILDFLAG(USE_VAAPI)
+#if BUILDFLAG(USE_VAAPI) || BUILDFLAG(USE_V4L2_CODEC)
+  // VA-API uses the zero-copy non-linear path, while V4L2 uses linear.
+  const bool linear = ActiveLinuxVideoDecoderType() == VideoDecoderType::kV4L2;
+  return CreateMapper(format, storage_type, linear);
+#endif
 }
 
 // static
@@ -46,8 +47,14 @@ std::unique_ptr<VideoFrameMapper> VideoFrameMapperFactory::CreateMapper(
   }
 
 #if BUILDFLAG(USE_VAAPI)
+  // VaapiVideoDecoder zero-copy-imports VideoFrames into the GPU. The
+  // |force_linear_buffer_mapper| early-return above already handled the
+  // libyuv conversion path; here we always take the zero-copy path.
   return VaapiDmaBufVideoFrameMapper::Create(format);
 #else
+  // No zero-copy backend is compiled in. The caller asked for zero-copy
+  // (otherwise the early-return for |force_linear_buffer_mapper| would have
+  // fired); return nullptr so they can fall back explicitly.
   return nullptr;
 #endif  // BUILDFLAG(USE_VAAPI)
 }

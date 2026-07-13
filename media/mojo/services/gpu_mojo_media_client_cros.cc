@@ -2,20 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/mojo/services/gpu_mojo_media_client.h"
-
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chromeos/components/cdm_factory_daemon/chromeos_cdm_factory.h"
 #include "media/base/audio_decoder.h"
 #include "media/base/audio_encoder.h"
+#include "media/base/decoder.h"
 #include "media/base/media_log.h"
 #include "media/base/media_switches.h"
 #include "media/gpu/chromeos/mailbox_video_frame_converter.h"
 #include "media/gpu/chromeos/platform_video_frame_pool.h"
 #include "media/gpu/chromeos/simple_video_frame_converter.h"
 #include "media/gpu/chromeos/video_decoder_pipeline.h"
+#include "media/mojo/services/gpu_mojo_media_client.h"
 
 namespace media {
 
@@ -40,12 +40,14 @@ VideoDecoderType GetActualPlatformDecoderImplementation(
     return VideoDecoderType::kOutOfProcess;
   }
 
-#if BUILDFLAG(USE_VAAPI)
-  return VideoDecoderType::kVaapi;
-#elif BUILDFLAG(USE_V4L2_CODEC)
-  return VideoDecoderType::kV4L2;
-#endif
+#if !(BUILDFLAG(USE_VAAPI) || BUILDFLAG(USE_V4L2_CODEC))
+  // See the TODO above: this branch will be reached once LaCrOS turns off both
+  // BUILDFLAGs. Until then, ChromeOS builds always have one of them set.
   NOTREACHED();
+  return VideoDecoderType::kUnknown;
+#else
+  return ActiveLinuxVideoDecoderType();
+#endif
 }
 
 }  // namespace
