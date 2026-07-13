@@ -74,6 +74,7 @@ build_webui("build") {
       "composebox.ts",
       "contextual_tasks_inner_composebox.html.ts",
       "contextual_tasks_inner_composebox.ts",
+      "contextual_tasks_inner_composebox_context_menu.html.ts",
       "window_manager.ts",
     ]
   }

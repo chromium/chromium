@@ -6,6 +6,7 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import {ToolMode} from '//resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 
 import type {ContextualTasksInnerComposeboxElement} from './contextual_tasks_inner_composebox.js';
+import {getHtml as getContextMenuHtml} from './contextual_tasks_inner_composebox_context_menu.html.js';
 
 export function getHtml(this: ContextualTasksInnerComposeboxElement) {
   // clang-format off
@@ -51,6 +52,7 @@ export function getHtml(this: ContextualTasksInnerComposeboxElement) {
               @match-focusin="${this.onMatchFocusin}"
               @match-click="${this.onMatchClick}">
           </cr-composebox-dropdown>
+          ${this.contextMenuEnabled ? getContextMenuHtml.bind(this)() : ''}
         </cr-composebox-file-inputs>
       </div>
       <cr-composebox-submit
