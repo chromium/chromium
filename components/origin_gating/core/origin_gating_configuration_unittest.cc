@@ -17,16 +17,16 @@ namespace {
 
 TEST(OriginGatingConfigurationTest, StoresPredicatesInOrder) {
   CustomPredicate custom1(
-      base::BindRepeating([](const GatingDecisionContext*, const GURL&,
-                             const GURL&,
+      base::BindRepeating([](const GatingDecisionContext*, GateableEvent,
+                             const GURL&, const GURL&,
                              base::OnceCallback<void(Decision)> callback) {
         std::move(callback).Run(Decision::kNoDecision);
       }),
       "custom_1");
 
   CustomPredicate custom2(
-      base::BindRepeating([](const GatingDecisionContext*, const GURL&,
-                             const GURL&,
+      base::BindRepeating([](const GatingDecisionContext*, GateableEvent,
+                             const GURL&, const GURL&,
                              base::OnceCallback<void(Decision)> callback) {
         std::move(callback).Run(Decision::kAllowed);
       }),
@@ -34,29 +34,63 @@ TEST(OriginGatingConfigurationTest, StoresPredicatesInOrder) {
 
   OriginGatingConfiguration config(
       {
-          DecisionSource::kAllowSameOrigin,
-          custom1,
-          custom2,
+          {DecisionSource::kAllowSameOrigin, GateableEventSet::All()},
+          {custom1, GateableEventSet::All()},
+          {custom2, GateableEventSet::All()},
       },
       /*use_site_keyed_cache=*/false);
 
   EXPECT_THAT(config.predicates(),
               testing::ElementsAre(
-                  testing::VariantWith<DecisionSource>(
-                      DecisionSource::kAllowSameOrigin),
-                  testing::VariantWith<CustomPredicate>(
-                      testing::Property(&CustomPredicate::name, "custom_1")),
-                  testing::VariantWith<CustomPredicate>(
-                      testing::Property(&CustomPredicate::name, "custom_2"))));
+                  testing::Property(&PredicateConfiguration::predicate,
+                                    testing::VariantWith<DecisionSource>(
+                                        DecisionSource::kAllowSameOrigin)),
+                  testing::Property(
+                      &PredicateConfiguration::predicate,
+                      testing::VariantWith<CustomPredicate>(testing::Property(
+                          &CustomPredicate::name, "custom_1"))),
+                  testing::Property(
+                      &PredicateConfiguration::predicate,
+                      testing::VariantWith<CustomPredicate>(testing::Property(
+                          &CustomPredicate::name, "custom_2")))));
 }
 
 TEST(OriginGatingConfigurationTest, CheckFails_NoVerdict) {
   EXPECT_DEATH_IF_SUPPORTED(
       {
-        OriginGatingConfiguration config({DecisionSource::kNoVerdict},
-                                         /*use_site_keyed_cache=*/false);
+        OriginGatingConfiguration config(
+            {{DecisionSource::kNoVerdict, GateableEventSet::All()}},
+            /*use_site_keyed_cache=*/false);
       },
       "");
+}
+
+TEST(PredicateConfigurationTest, AppliesToOnlyConfiguredEvents) {
+  PredicateConfiguration config(
+      DecisionSource::kAllowSameOrigin,
+      {GateableEvent::kNavigationRequest, GateableEvent::kPageAction});
+
+  EXPECT_TRUE(config.AppliesTo(GateableEvent::kNavigationRequest));
+  EXPECT_FALSE(config.AppliesTo(GateableEvent::kNavigationResponse));
+  EXPECT_TRUE(config.AppliesTo(GateableEvent::kPageAction));
+}
+
+TEST(PredicateConfigurationTest, AppliesToAllEvents) {
+  PredicateConfiguration config(DecisionSource::kAllowSameOrigin,
+                                GateableEventSet::All());
+
+  EXPECT_TRUE(config.AppliesTo(GateableEvent::kNavigationRequest));
+  EXPECT_TRUE(config.AppliesTo(GateableEvent::kNavigationResponse));
+  EXPECT_TRUE(config.AppliesTo(GateableEvent::kPageAction));
+}
+
+TEST(PredicateConfigurationTest, AppliesToNoEvents) {
+  PredicateConfiguration config(DecisionSource::kAllowSameOrigin,
+                                GateableEventSet());
+
+  EXPECT_FALSE(config.AppliesTo(GateableEvent::kNavigationRequest));
+  EXPECT_FALSE(config.AppliesTo(GateableEvent::kNavigationResponse));
+  EXPECT_FALSE(config.AppliesTo(GateableEvent::kPageAction));
 }
 
 }  // namespace

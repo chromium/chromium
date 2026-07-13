@@ -22,12 +22,14 @@ class CustomPredicate {
  public:
   using AsyncPredicate = base::RepeatingCallback<void(
       const GatingDecisionContext* context,
+      GateableEvent event,
       const GURL& source,
       const GURL& destination,
       base::OnceCallback<void(Decision)> callback)>;
 
   using SyncPredicate =
       base::RepeatingCallback<Decision(const GatingDecisionContext* context,
+                                       GateableEvent event,
                                        const GURL& source,
                                        const GURL& destination)>;
 
@@ -39,6 +41,7 @@ class CustomPredicate {
   CustomPredicate& operator=(const CustomPredicate&);
 
   void Run(const GatingDecisionContext* context,
+           GateableEvent event,
            const GURL& source,
            const GURL& destination,
            base::OnceCallback<void(Decision)> callback) const;
@@ -50,27 +53,54 @@ class CustomPredicate {
   std::string name_;
 };
 
-class OriginGatingConfiguration {
+// Pairs a predicate with the set of gateable events it applies to. When
+// ComputeGatingDecision is invoked for a given event, only predicates whose
+// `applicable_events` contains that event are executed, the rest are skipped.
+class PredicateConfiguration {
  public:
   using Predicate = std::variant<DecisionSource, CustomPredicate>;
 
+  // Pairs a predicate with the set of gateable events it applies to.
+  PredicateConfiguration(Predicate predicate,
+                         GateableEventSet applicable_events);
+  ~PredicateConfiguration();
+
+  PredicateConfiguration(const PredicateConfiguration&);
+  PredicateConfiguration& operator=(const PredicateConfiguration&);
+
+  const Predicate& predicate() const { return predicate_; }
+
+  // Returns whether this predicate should be evaluated for `event`.
+  bool AppliesTo(GateableEvent event) const;
+
+ private:
+  Predicate predicate_;
+  GateableEventSet applicable_events_;
+};
+
+class OriginGatingConfiguration {
+ public:
   // `predicates` specifies the ordered sequence of decision predicates to
-  // execute.
+  // execute. Each entry is a PredicateConfiguration that restricts the
+  // predicate to specific events.
   //
   // The following internal/fallback states are strictly forbidden:
   // - `DecisionSource::kNoVerdict`
-  OriginGatingConfiguration(std::initializer_list<Predicate> predicates,
-                            bool use_site_keyed_cache);
+  OriginGatingConfiguration(
+      std::initializer_list<PredicateConfiguration> predicates,
+      bool use_site_keyed_cache);
   ~OriginGatingConfiguration();
 
   OriginGatingConfiguration(const OriginGatingConfiguration&);
   OriginGatingConfiguration& operator=(const OriginGatingConfiguration&);
 
-  const std::vector<Predicate>& predicates() const { return predicates_; }
+  const std::vector<PredicateConfiguration>& predicates() const {
+    return predicates_;
+  }
   bool use_site_keyed_cache() const { return use_site_keyed_cache_; }
 
  private:
-  std::vector<Predicate> predicates_;
+  std::vector<PredicateConfiguration> predicates_;
   bool use_site_keyed_cache_ = false;
 };
 

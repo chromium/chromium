@@ -29,11 +29,12 @@ CustomPredicate::CustomPredicate(SyncPredicate predicate, std::string_view name)
     : CustomPredicate(base::BindRepeating(
                           [](SyncPredicate sync_pred,
                              const GatingDecisionContext* context,
+                             GateableEvent event,
                              const GURL& source,
                              const GURL& destination,
                              base::OnceCallback<void(Decision)> callback) {
-                            std::move(callback).Run(
-                                sync_pred.Run(context, source, destination));
+                            std::move(callback).Run(sync_pred.Run(
+                                context, event, source, destination));
                           },
                           std::move(predicate)),
                       name) {}
@@ -45,18 +46,36 @@ CustomPredicate::CustomPredicate(const CustomPredicate&) = default;
 CustomPredicate& CustomPredicate::operator=(const CustomPredicate&) = default;
 
 void CustomPredicate::Run(const GatingDecisionContext* context,
+                          GateableEvent event,
                           const GURL& source,
                           const GURL& destination,
                           base::OnceCallback<void(Decision)> callback) const {
-  predicate_.Run(context, source, destination, std::move(callback));
+  predicate_.Run(context, event, source, destination, std::move(callback));
 }
 
+PredicateConfiguration::PredicateConfiguration(
+    Predicate predicate,
+    GateableEventSet applicable_events)
+    : predicate_(std::move(predicate)), applicable_events_(applicable_events) {}
+
+PredicateConfiguration::~PredicateConfiguration() = default;
+
+bool PredicateConfiguration::AppliesTo(GateableEvent event) const {
+  return applicable_events_.Has(event);
+}
+
+PredicateConfiguration::PredicateConfiguration(const PredicateConfiguration&) =
+    default;
+
+PredicateConfiguration& PredicateConfiguration::operator=(
+    const PredicateConfiguration&) = default;
+
 OriginGatingConfiguration::OriginGatingConfiguration(
-    std::initializer_list<Predicate> predicates,
+    std::initializer_list<PredicateConfiguration> predicates,
     bool use_site_keyed_cache)
     : predicates_(predicates), use_site_keyed_cache_(use_site_keyed_cache) {
-  CHECK(std::ranges::none_of(predicates, [](const Predicate& p) {
-    const DecisionSource* source = std::get_if<DecisionSource>(&p);
+  CHECK(std::ranges::none_of(predicates, [](const PredicateConfiguration& pc) {
+    const DecisionSource* source = std::get_if<DecisionSource>(&pc.predicate());
     return source && std::ranges::contains(kForbiddenPredicates, *source);
   }));
 }

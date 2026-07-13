@@ -53,12 +53,14 @@ OriginGatingChecker::~OriginGatingChecker() {
 
 void OriginGatingChecker::ComputeGatingDecision(
     std::unique_ptr<GatingDecisionContext> context,
+    GateableEvent event,
     const GURL& source,
     const GURL& destination,
     GatingDecisionCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   RunNextPredicate(std::move(context), config_.predicates(),
                    DelegateInputs{
+                       .event = event,
                        .source = source,
                        .source_origin = url::Origin::Create(source),
                        .destination = destination,
@@ -70,23 +72,29 @@ void OriginGatingChecker::ComputeGatingDecision(
 
 void OriginGatingChecker::RunNextPredicate(
     std::unique_ptr<GatingDecisionContext> context,
-    base::span<const OriginGatingConfiguration::Predicate> pending_predicates,
+    base::span<const PredicateConfiguration> pending_predicates,
     DelegateInputs input,
     GatingDecisionCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // Skip predicates that don't apply to the current event.
+  while (!pending_predicates.empty() &&
+         !pending_predicates.front().AppliesTo(input.event)) {
+    pending_predicates = pending_predicates.subspan(1u);
+  }
 
   GatingDecisionContext* raw_context = context.get();
   if (pending_predicates.empty()) {
     if (input.requires_user_confirmation.has_value()) {
       delegate_->OnNoVerdict(
-          raw_context, input.source, input.destination,
+          raw_context, input.event, input.source, input.destination,
           input.requires_user_confirmation.value(),
           base::BindOnce(&OriginGatingChecker::OnNoVerdictAnswer,
                          weak_ptr_factory_.GetWeakPtr(), std::move(context),
                          input.destination, std::move(callback)));
     } else {
       delegate_->DoesOriginRequireUserConfirmation(
-          raw_context, input.source, input.destination,
+          raw_context, input.event, input.source, input.destination,
           base::BindOnce(&OriginGatingChecker::OnUserConfirmationRequiredAnswer,
                          weak_ptr_factory_.GetWeakPtr(), std::move(context),
                          pending_predicates, input, std::move(callback)));
@@ -94,9 +102,9 @@ void OriginGatingChecker::RunNextPredicate(
     return;
   }
 
-  const OriginGatingConfiguration::Predicate& predicate =
-      pending_predicates.front();
-  base::span<const OriginGatingConfiguration::Predicate> remaining_predicates =
+  const PredicateConfiguration::Predicate& predicate =
+      pending_predicates.front().predicate();
+  base::span<const PredicateConfiguration> remaining_predicates =
       pending_predicates.subspan(1u);
 
   std::visit(
@@ -134,10 +142,11 @@ void OriginGatingChecker::RunNextPredicate(
                                      std::move(input), std::move(callback),
                                      decision);
                 } else {
+                  GateableEvent event = input.event;
                   GURL source = input.source;
                   GURL destination = input.destination;
                   delegate_->DoesOriginRequireUserConfirmation(
-                      raw_context, source, destination,
+                      raw_context, event, source, destination,
                       base::BindOnce(&OriginGatingChecker::
                                          OnUserConfirmationRequiredAnswer,
                                      weak_ptr_factory_.GetWeakPtr(),
@@ -157,7 +166,7 @@ void OriginGatingChecker::RunNextPredicate(
           [&](const CustomPredicate& custom_predicate) {
             GatingDecisionContext* raw_context = context.get();
             custom_predicate.Run(
-                raw_context, input.source, input.destination,
+                raw_context, input.event, input.source, input.destination,
                 base::BindOnce(&OriginGatingChecker::OnPredicateVerdict,
                                weak_ptr_factory_.GetWeakPtr(),
                                std::move(context), remaining_predicates,
@@ -169,7 +178,7 @@ void OriginGatingChecker::RunNextPredicate(
 
 void OriginGatingChecker::OnPredicateVerdict(
     std::unique_ptr<GatingDecisionContext> context,
-    base::span<const OriginGatingConfiguration::Predicate> remaining_predicates,
+    base::span<const PredicateConfiguration> remaining_predicates,
     DecisionAttribution attribution,
     DelegateInputs input,
     GatingDecisionCallback callback,
@@ -201,7 +210,7 @@ void OriginGatingChecker::OnPredicateVerdict(
 
 void OriginGatingChecker::OnUserConfirmationRequiredAnswer(
     std::unique_ptr<GatingDecisionContext> context,
-    base::span<const OriginGatingConfiguration::Predicate> pending_predicates,
+    base::span<const PredicateConfiguration> pending_predicates,
     DelegateInputs input,
     GatingDecisionCallback callback,
     bool requires_user_confirmation) {

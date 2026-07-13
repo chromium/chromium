@@ -313,10 +313,12 @@ class ExecutionEngine : public ToolDelegate,
   // origin_gating::OriginGatingChecker::Delegate
   void DoesOriginRequireUserConfirmation(
       origin_gating::GatingDecisionContext* context,
+      origin_gating::GateableEvent event,
       const GURL& source,
       const GURL& destination,
       DoesOriginRequireUserConfirmationCallback callback) const override;
   void OnNoVerdict(origin_gating::GatingDecisionContext* context,
+                   origin_gating::GateableEvent event,
                    const GURL& source,
                    const GURL& destination,
                    bool requires_user_confirmation,

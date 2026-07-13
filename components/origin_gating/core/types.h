@@ -5,10 +5,12 @@
 #ifndef COMPONENTS_ORIGIN_GATING_CORE_TYPES_H_
 #define COMPONENTS_ORIGIN_GATING_CORE_TYPES_H_
 
+#include <memory>
 #include <string>
 #include <string_view>
 #include <variant>
 
+#include "base/containers/enum_set.h"
 #include "base/functional/callback.h"
 
 namespace origin_gating {
@@ -22,6 +24,24 @@ enum class Decision {
   // The predicate explicitly blocked the event.
   kBlocked,
 };
+
+// Enumerates the category of event being evaluated. A single predicate may
+// apply to some events but not others (e.g. dangerous MIME type check is
+// applicable only to navigation response), so callers pass the relevant event
+// to ComputeGatingDecision and each predicate declares the set of events it
+// applies to.
+enum class GateableEvent {
+  // A navigation request is starting, or is being redirected.
+  kNavigationRequest,
+  // A navigation response is being processed (the final, committed URL).
+  kNavigationResponse,
+  // An action is being performed on an existing tab/page.
+  kPageAction,
+};
+
+using GateableEventSet = base::EnumSet<GateableEvent,
+                                       GateableEvent::kNavigationRequest,
+                                       GateableEvent::kPageAction>;
 
 // Enumerates the source of any positive/negative decision.
 enum class DecisionSource {

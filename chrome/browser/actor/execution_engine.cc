@@ -114,6 +114,7 @@ struct ActorGatingContext : public origin_gating::GatingDecisionContext {
 origin_gating::CustomPredicate CreateSafetyListPredicate() {
   return origin_gating::CustomPredicate(
       base::BindRepeating([](const origin_gating::GatingDecisionContext*,
+                             origin_gating::GateableEvent,
                              const GURL& source_url,
                              const GURL& destination_url) {
         switch (SafetyListManager::GetInstance()->Find(source_url,
@@ -272,10 +273,14 @@ ExecutionEngine::ExecutionEngine(
           *this,
           origin_gating::OriginGatingConfiguration(
               {
-                  CreateSafetyListPredicate(),
-                  origin_gating::DecisionSource::kCacheWithUserConfirmation,
-                  origin_gating::DecisionSource::kAllowSameOrigin,
-                  origin_gating::DecisionSource::kCacheWithoutUserConfirmation,
+                  {CreateSafetyListPredicate(),
+                   {origin_gating::GateableEvent::kNavigationResponse}},
+                  {origin_gating::DecisionSource::kCacheWithUserConfirmation,
+                   {origin_gating::GateableEvent::kNavigationResponse}},
+                  {origin_gating::DecisionSource::kAllowSameOrigin,
+                   {origin_gating::GateableEvent::kNavigationResponse}},
+                  {origin_gating::DecisionSource::kCacheWithoutUserConfirmation,
+                   {origin_gating::GateableEvent::kNavigationResponse}},
               },
               kGlicNavigationGatingUseSiteNotOrigin.Get())),
       dark_launch_origin_gating_cache_(
@@ -406,8 +411,8 @@ ExecutionEngine::ShouldDeferNavigation(
           GetPrimaryMainFrame(navigation_handle)->GetPageUkmSourceId(),
           navigation_handle.IsInPrerenderedMainFrame(), std::move(timer));
       origin_gating_checker_.ComputeGatingDecision(
-          std::move(context), source_origin.GetURL(),
-          navigation_handle.GetURL(),
+          std::move(context), origin_gating::GateableEvent::kNavigationResponse,
+          source_origin.GetURL(), navigation_handle.GetURL(),
           base::BindOnce(&ExecutionEngine::OnComputedGatingDecision,
                          GetWeakPtr(), std::move(callback), source_origin,
                          url::Origin::Create(navigation_handle.GetURL()),
@@ -496,6 +501,7 @@ ExecutionEngine::GatingDecision ExecutionEngine::DetermineGatingDecision(
 
 void ExecutionEngine::DoesOriginRequireUserConfirmation(
     origin_gating::GatingDecisionContext* context,
+    origin_gating::GateableEvent event,
     const GURL& source,
     const GURL& destination,
     DoesOriginRequireUserConfirmationCallback callback) const {
@@ -512,6 +518,7 @@ void ExecutionEngine::DoesOriginRequireUserConfirmation(
 
 void ExecutionEngine::OnNoVerdict(
     origin_gating::GatingDecisionContext* context,
+    origin_gating::GateableEvent event,
     const GURL& source,
     const GURL& destination,
     bool requires_user_confirmation,
