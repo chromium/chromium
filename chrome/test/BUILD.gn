@@ -69,17 +69,6 @@ if (is_chromeos && include_js2gtest_tests) {
   import("//chrome/test/base/ash/js2gtest.gni")
 }
 
-source_set("in_process_browser_test_mixin") {
-  testonly = true
-
-  sources = [
-    "base/in_process_browser_test_mixin.cc",
-    "base/in_process_browser_test_mixin.h",
-  ]
-
-  public_deps = [ "//base" ]
-}
-
 # This target exists to reference other test executables to bring these files
 # into the build.
 group("test") {
@@ -2025,7 +2014,7 @@ if (is_android) {
       "base/web_view_focus_helper.h",
     ]
     public_deps = [
-      ":in_process_browser_test_mixin",
+      "//chrome/test/base:in_process_browser_test_mixin",
       "//components/feed:feature_list",
       "//content/test:test_support",
     ]
@@ -8597,7 +8586,6 @@ if (!is_android) {
     ]
 
     public_deps = [
-      ":in_process_browser_test_mixin",
       "//chrome/browser:test_support_ui",
       "//chrome/browser/notifications:test_support",
       "//chrome/browser/privacy_sandbox:attestations_mixin",
@@ -8609,6 +8597,7 @@ if (!is_android) {
       "//chrome/browser/ui/views/page_action:page_action_test_support",
       "//chrome/browser/ui/views/side_panel",
       "//chrome/browser/ui/views/toolbar:test_support",
+      "//chrome/test/base:in_process_browser_test_mixin",
       "//chrome/test/interaction",
       "//chrome/test/permissions",
       "//components/autofill/content/browser:test_support",

@@ -4,61 +4,13 @@
 
 import("//ui/views/features.gni")
 
-assert(!is_android)
-
-# Thin header-only target that exposes in_process_browser_test.h for gn check.
-# The implementation (in_process_browser_test.cc) still lives in
-# //chrome/test:test_support_ui until chrome/test/base/ is fully componentized.
-#
-# TODO(crbug.com/353332589): Add in_process_browser_test.{cc,h} as sources and
-# remove from //chrome/test:test_support_ui once the dep-graph cycle through
-# //chrome/browser/ui:test_support -> //chrome/test:test_support_ui is resolved.
-source_set("in_process_browser_test") {
+source_set("in_process_browser_test_mixin") {
   testonly = true
-  sources = [ "in_process_browser_test.h" ]
-  public_deps = [
-    "//base",
-    "//base/test:test_support",
-    "//components/feature_engagement/test:test_support",
-    "//content/test:test_support",
-    "//testing/gtest",
-    "//ui/base",
+  sources = [
+    "in_process_browser_test_mixin.cc",
+    "in_process_browser_test_mixin.h",
   ]
-  if (toolkit_views) {
-    public_deps += [ "//chrome/browser/ui" ]
-  }
-  if (is_mac) {
-    public_deps += [ "//ui/base:test_support" ]
-  }
-}
-
-# Thin header-only target that exposes ui_test_utils.h for gn check.
-# The implementation (ui_test_utils.cc) still lives in
-# //chrome/test:test_support_ui until chrome/test/base/ is fully componentized.
-#
-# TODO(crbug.com/353332589): Add ui_test_utils.{cc,h} as sources and remove
-# from //chrome/test:test_support_ui once the dep-graph cycle through
-# //chrome/browser/ui:test_support -> //chrome/test:test_support_ui is resolved.
-source_set("ui_test_utils") {
-  testonly = true
-  sources = [ "ui_test_utils.h" ]
-  public_deps = [
-    "//base",
-    "//chrome/browser/ui",
-    "//chrome/browser/ui/browser_window",
-    "//chrome/browser/ui/tabs:tab_strip",
-    "//components/history/core/browser",
-    "//content/public/browser",
-    "//content/test:test_support",
-    "//ui/base",
-    "//ui/events",
-    "//ui/gfx",
-    "//ui/views",
-    "//url",
-  ]
-  if (toolkit_views) {
-    public_deps += [ "//ui/views:test_support" ]
-  }
+  public_deps = [ "//base" ]
 }
 
 # Thin header-only target that exposes test_launcher_utils.h for gn check.
@@ -67,10 +19,70 @@ source_set("ui_test_utils") {
 #
 # TODO(crbug.com/353332589): Add test_launcher_utils.{cc,h} as sources and
 # remove from //chrome/test:test_support once chrome/test/base/ is fully
-# componentized. Note: test_launcher_utils is cross-platform; move to a
-# separate BUILD.gn target when Android consumers need it.
+# componentized.
 source_set("test_launcher_utils") {
   testonly = true
   sources = [ "test_launcher_utils.h" ]
   public_deps = [ "//base" ]
+}
+
+if (!is_android) {
+  # Thin header-only target that exposes in_process_browser_test.h for gn check.
+  # The implementation (in_process_browser_test.cc) still lives in
+  # //chrome/test:test_support_ui until chrome/test/base/ is fully
+  # componentized.
+  #
+  # TODO(crbug.com/353332589): Add in_process_browser_test.{cc,h} as sources and
+  # remove from //chrome/test:test_support_ui once the dep-graph cycle through
+  # //chrome/browser/ui:test_support -> //chrome/test:test_support_ui is
+  # resolved.
+  source_set("in_process_browser_test") {
+    testonly = true
+    sources = [ "in_process_browser_test.h" ]
+    public_deps = [
+      "//base",
+      "//base/test:test_support",
+      "//components/feature_engagement/test:test_support",
+      "//content/test:test_support",
+      "//testing/gtest",
+      "//ui/base",
+    ]
+    if (toolkit_views) {
+      public_deps += [ "//chrome/browser/ui" ]
+    }
+    if (is_mac) {
+      public_deps += [ "//ui/base:test_support" ]
+    }
+  }
+
+  # Thin header-only target that exposes ui_test_utils.h for gn check. The
+  # implementation (ui_test_utils.cc) still lives in
+  # //chrome/test:test_support_ui until chrome/test/base/ is fully
+  # componentized.
+  #
+  # TODO(crbug.com/353332589): Add ui_test_utils.{cc,h} as sources and remove
+  # from //chrome/test:test_support_ui once the dep-graph cycle through
+  # //chrome/browser/ui:test_support -> //chrome/test:test_support_ui is
+  # resolved.
+  source_set("ui_test_utils") {
+    testonly = true
+    sources = [ "ui_test_utils.h" ]
+    public_deps = [
+      "//base",
+      "//chrome/browser/ui",
+      "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/tabs:tab_strip",
+      "//components/history/core/browser",
+      "//content/public/browser",
+      "//content/test:test_support",
+      "//ui/base",
+      "//ui/events",
+      "//ui/gfx",
+      "//ui/views",
+      "//url",
+    ]
+    if (toolkit_views) {
+      public_deps += [ "//ui/views:test_support" ]
+    }
+  }
 }
