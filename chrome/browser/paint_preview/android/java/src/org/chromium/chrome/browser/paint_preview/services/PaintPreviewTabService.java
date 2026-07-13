@@ -29,6 +29,7 @@ import org.chromium.content_public.browser.RenderCoordinates;
 import org.chromium.content_public.browser.WebContents;
 
 import java.io.File;
+import java.lang.ref.WeakReference;
 
 /**
  * The Java-side implementations of paint_preview_tab_service.cc. The C++ side owns and controls the
@@ -81,13 +82,17 @@ public class PaintPreviewTabService implements NativePaintPreviewServiceProvider
             // ChromeActivity#onStop.
             if (mCurrentApplicationState == ApplicationState.HAS_STOPPED_ACTIVITIES
                     && qualifiesForCapture(tab)) {
+                final int tabId = tab.getId();
+                WeakReference<PaintPreviewTabService> serviceRef =
+                        new WeakReference<>(PaintPreviewTabService.this);
                 captureTab(
                         tab,
                         success -> {
-                            if (!success) {
+                            PaintPreviewTabService service = serviceRef.get();
+                            if (service != null && !success) {
                                 // Treat the tab as if it was closed to cleanup any partial capture
                                 // data.
-                                tabClosed(tab);
+                                service.tabClosed(tabId);
                             }
                         });
             }
@@ -95,7 +100,7 @@ public class PaintPreviewTabService implements NativePaintPreviewServiceProvider
 
         @Override
         public void onTabUnregistered(Tab tab) {
-            tabClosed(tab);
+            tabClosed(tab.getId());
         }
 
         @Override
@@ -231,11 +236,10 @@ public class PaintPreviewTabService implements NativePaintPreviewServiceProvider
                         successCallback);
     }
 
-    private void tabClosed(Tab tab) {
+    private void tabClosed(int tabId) {
         if (mNativePaintPreviewTabService == 0) return;
 
-        PaintPreviewTabServiceJni.get()
-                .tabClosedAndroid(mNativePaintPreviewTabService, tab.getId());
+        PaintPreviewTabServiceJni.get().tabClosedAndroid(mNativePaintPreviewTabService, tabId);
     }
 
     @VisibleForTesting

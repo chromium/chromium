@@ -150,5 +150,6 @@ public final class TabModelSelectorTabRegistrationObserver {
         Tab[] tabs = mRegisteredTabs.toArray(new Tab[0]);
         for (Tab tab : tabs) onTabUnregistered(tab);
         assert mRegisteredTabs.isEmpty();
+        mObservers.clear();
     }
 }

@@ -57,36 +57,35 @@ public class GracefulShutdownServiceImpl extends SplitCompatService.Impl {
     @Override
     public int onStartCommand(@Nullable Intent intent, int flags, int startId) {
         Log.i(TAG, "GracefulShutdownServiceImpl onStartCommand");
-        // Ensure the notification channel is created synchronously before calling startForeground,
-        // as AsyncNotificationManagerProxyImpl can create channels asynchronously, causing
-        // Bad notification for startForeground / invalid channel RemoteServiceExceptions.
-        new ChannelsInitializer(
-                        NotificationManagerProxyImpl.getInstance(),
-                        ChromeChannelDefinitions.getInstance(),
-                        getService().getResources())
-                .safeInitialize(ChromeChannelDefinitions.ChannelId.BROWSER);
-        NotificationWrapper notification =
-                NotificationWrapperBuilderFactory.createNotificationWrapperBuilder(
-                                ChromeChannelDefinitions.ChannelId.BROWSER,
-                                new NotificationMetadata(
-                                        NotificationUmaTracker.SystemNotificationType.UNKNOWN,
-                                        NOTIFICATION_NAMESPACE,
-                                        NotificationConstants.NOTIFICATION_ID_GRACEFUL_SHUTDOWN))
-                        .setSmallIcon(R.drawable.ic_chrome)
-                        .setLocalOnly(/* localOnly= */ true)
-                        .setOngoing(/* ongoing= */ true)
-                        .setSilent(/* silent= */ true)
-                        .setContentTitle(getService().getString(R.string.graceful_shutdown_title))
-                        .buildNotificationWrapper();
-
-        int fgsType = 0;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-            fgsType = ServiceInfo.FOREGROUND_SERVICE_TYPE_SHORT_SERVICE;
-        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            fgsType = ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC;
-        }
-
         try {
+            new ChannelsInitializer(
+                            new NotificationManagerProxyImpl(),
+                            ChromeChannelDefinitions.getInstance(),
+                            getService().getResources())
+                    .safeInitialize(ChromeChannelDefinitions.ChannelId.BROWSER);
+            NotificationWrapper notification =
+                    NotificationWrapperBuilderFactory.createNotificationWrapperBuilder(
+                                    ChromeChannelDefinitions.ChannelId.BROWSER,
+                                    new NotificationMetadata(
+                                            NotificationUmaTracker.SystemNotificationType.UNKNOWN,
+                                            NOTIFICATION_NAMESPACE,
+                                            NotificationConstants
+                                                    .NOTIFICATION_ID_GRACEFUL_SHUTDOWN))
+                            .setSmallIcon(R.drawable.ic_chrome)
+                            .setLocalOnly(/* localOnly= */ true)
+                            .setOngoing(/* ongoing= */ true)
+                            .setSilent(/* silent= */ true)
+                            .setContentTitle(
+                                    getService().getString(R.string.graceful_shutdown_title))
+                            .buildNotificationWrapper();
+
+            int fgsType = 0;
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                fgsType = ServiceInfo.FOREGROUND_SERVICE_TYPE_SHORT_SERVICE;
+            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                fgsType = ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC;
+            }
+
             ForegroundServiceUtils.getInstance()
                     .startForeground(
                             getService(),

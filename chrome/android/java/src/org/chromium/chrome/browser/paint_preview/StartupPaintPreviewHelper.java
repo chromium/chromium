@@ -48,7 +48,9 @@ public class StartupPaintPreviewHelper implements Destroyable {
     private final Supplier<LoadProgressCoordinator> mProgressBarCoordinatorSupplier;
     private final ObserverList<PaintPreviewMetricsObserver> mMetricsObservers =
             new ObserverList<>();
+    private final TabModelSelector mTabModelSelector;
 
+    private @Nullable TabModelSelectorObserver mTabModelSelectorObserver;
     private @Nullable Destroyable mServiceObserver;
 
     /**
@@ -58,9 +60,9 @@ public class StartupPaintPreviewHelper implements Destroyable {
      * @param windowAndroid The WindowAndroid that corresponds to the tabModelSelector.
      * @param activityCreationTime The time the ChromeActivity was created.
      * @param browserControlsManager The BrowserControlsManager which is used to fetch the browser
-     *     visibility delegate
-     * @param tabModelSelector The TabModelSelector to observe.
-     * @param progressBarCoordinatorSupplier Supplier for the progress bar.
+     *     controls layout height.
+     * @param tabModelSelector The TabModelSelector for the activity.
+     * @param progressBarCoordinatorSupplier Supplier for the LoadProgressCoordinator.
      */
     public StartupPaintPreviewHelper(
             WindowAndroid windowAndroid,
@@ -71,6 +73,7 @@ public class StartupPaintPreviewHelper implements Destroyable {
         mActivityCreationTime = activityCreationTime;
         mBrowserControlsManager = browserControlsManager;
         mProgressBarCoordinatorSupplier = progressBarCoordinatorSupplier;
+        mTabModelSelector = tabModelSelector;
 
         assumeNonNull(windowAndroid.getContext().get());
         if (MultiWindowUtils.getInstance()
@@ -78,16 +81,13 @@ public class StartupPaintPreviewHelper implements Destroyable {
             sShouldShowOnRestore = false;
         }
 
-        // TODO(crbug.com/40686845): verify this doesn't cause a memory leak if the user exits
-        // Chrome
-        // prior to onTabStateInitialized being called.
-        tabModelSelector.addObserver(
+        mTabModelSelectorObserver =
                 new TabModelSelectorObserver() {
                     @Override
                     public void onTabStateInitialized() {
                         // If the first tab shown is not a normal tab, then prevent showing previews
                         // in the future.
-                        if (preventShowOnRestore(tabModelSelector.getCurrentTab())) {
+                        if (preventShowOnRestore(mTabModelSelector.getCurrentTab())) {
                             sShouldShowOnRestore = false;
                         }
 
@@ -101,8 +101,11 @@ public class StartupPaintPreviewHelper implements Destroyable {
                         assert mServiceObserver == null;
                         mServiceObserver =
                                 PaintPreviewTabServiceFactory.getServiceInstance()
-                                        .onRestoreCompleted(tabModelSelector, runAudit);
-                        tabModelSelector.removeObserver(this);
+                                        .onRestoreCompleted(mTabModelSelector, runAudit);
+                        if (mTabModelSelectorObserver != null) {
+                            mTabModelSelector.removeObserver(mTabModelSelectorObserver);
+                            mTabModelSelectorObserver = null;
+                        }
                     }
 
                     private boolean preventShowOnRestore(@Nullable Tab tab) {
@@ -114,7 +117,8 @@ public class StartupPaintPreviewHelper implements Destroyable {
                         boolean httpOrHttps = scheme.equals("http") || scheme.equals("https");
                         return !httpOrHttps;
                     }
-                });
+                };
+        mTabModelSelector.addObserver(mTabModelSelectorObserver);
     }
 
     /** Enables Paint Preview show attempt on restoration of a tab. */
@@ -190,8 +194,13 @@ public class StartupPaintPreviewHelper implements Destroyable {
 
     @Override
     public void destroy() {
+        if (mTabModelSelectorObserver != null) {
+            mTabModelSelector.removeObserver(mTabModelSelectorObserver);
+            mTabModelSelectorObserver = null;
+        }
         if (mServiceObserver != null) {
             mServiceObserver.destroy();
+            mServiceObserver = null;
         }
     }
 }

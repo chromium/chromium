@@ -92,8 +92,6 @@ public class TabModelSelectorTabObserver extends EmptyTabObserver {
             }
 
             private void performUnregister(Tab tab) {
-                // If the tab as been destroyed we cannot access PersistedTabData.
-                if (tab.isDestroyed()) return;
                 tab.removeObserver(TabModelSelectorTabObserver.this);
             }
         };
