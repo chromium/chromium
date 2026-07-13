@@ -905,12 +905,9 @@ TEST_F(GlicSelectionObserverTest, SelectionShowOnShiftClick) {
   EXPECT_EQ(u"Initial Text Extended", *observer->last_processed_text());
 }
 
-
-TEST_F(GlicSelectionObserverTest, UpdateSelectionStatePanelShowingWithWidget) {
+TEST_F(GlicSelectionObserverTest, UpdateSelectionStatePanelShowing) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      features::kGlicSelectionPrompt,
-      {{features::kGlicSelectionPromptUseWidget.name, "true"}});
+  feature_list.InitAndEnableFeature(features::kGlicSelectionPrompt);
 
   auto* observer = GetObserver();
   ASSERT_TRUE(observer);
@@ -930,33 +927,6 @@ TEST_F(GlicSelectionObserverTest, UpdateSelectionStatePanelShowingWithWidget) {
 
   EXPECT_TRUE(observer->show_selection_affordance_called());
   EXPECT_EQ(u"Selected Text", *observer->last_affordance_text());
-  EXPECT_TRUE(observer->send_context_called());
-  EXPECT_EQ(u"Selected Text", *observer->last_sent_context());
-}
-
-TEST_F(GlicSelectionObserverTest, UpdateSelectionStatePanelShowingNoWidget) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      features::kGlicSelectionPrompt,
-      {{features::kGlicSelectionPromptUseWidget.name, "false"}});
-
-  auto* observer = GetObserver();
-  ASSERT_TRUE(observer);
-
-  tabs::MockTabInterface mock_tab;
-  MockBrowserWindowInterface mock_bwi;
-  tabs::TabLookupFromWebContents::CreateForWebContents(web_contents(),
-                                                       &mock_tab);
-  EXPECT_CALL(mock_tab, GetBrowserWindowInterface())
-      .WillRepeatedly(testing::Return(&mock_bwi));
-
-  observer->set_call_base_update_selection_state(true);
-  observer->set_mock_panel_showing(true);
-
-  observer->OnTextSelectionChanged(nullptr, u"Selected Text");
-  task_environment()->FastForwardBy(base::Milliseconds(300));
-
-  EXPECT_FALSE(observer->show_selection_affordance_called());
   EXPECT_TRUE(observer->send_context_called());
   EXPECT_EQ(u"Selected Text", *observer->last_sent_context());
 }
@@ -987,8 +957,7 @@ TEST_F(GlicSelectionObserverTest,
 
 TEST_F(GlicSelectionObserverTest, EligibleSelection) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      features::kGlicSelectionPrompt, {{"use_widget", "false"}});
+  feature_list.InitAndEnableFeature(features::kGlicSelectionPrompt);
 
   auto* observer = GetObserver();
   ASSERT_TRUE(observer);
@@ -1013,8 +982,7 @@ TEST_F(GlicSelectionObserverTest, EligibleSelection) {
 
 TEST_F(GlicSelectionObserverTest, IneligibleSelection) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      features::kGlicSelectionPrompt, {{"use_widget", "false"}});
+  feature_list.InitAndEnableFeature(features::kGlicSelectionPrompt);
 
   auto* observer = GetObserver();
   ASSERT_TRUE(observer);
@@ -1038,8 +1006,7 @@ TEST_F(GlicSelectionObserverTest, IneligibleSelection) {
 
 TEST_F(GlicSelectionObserverTest, DynamicEligibilityChangeClearsContext) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      features::kGlicSelectionPrompt, {{"use_widget", "false"}});
+  feature_list.InitAndEnableFeature(features::kGlicSelectionPrompt);
 
   auto* observer = GetObserver();
   ASSERT_TRUE(observer);
