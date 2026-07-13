@@ -40,10 +40,13 @@ namespace test {
 // should have UI elements.
 // 3) Mac does not support Widget::Deactivate, but deactivation can still
 // happen by hiding a Widget. This class emulates this scenario as well.
+// 4) This class is not allowed in interactive_ui_tests by default to ensure
+// they use real activation. If you must use it in an interactive_ui_test,
+// pass `allow_in_interactive_ui_tests = true` to the constructor.
 class MockActivationController : public views::WidgetObserver,
                                  public WidgetActivationDelegate {
  public:
-  MockActivationController();
+  explicit MockActivationController(bool allow_in_interactive_ui_tests = false);
   MockActivationController(const MockActivationController&) = delete;
   MockActivationController operator=(const MockActivationController&) = delete;
   ~MockActivationController() override;

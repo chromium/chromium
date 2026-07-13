@@ -29,7 +29,8 @@ class WhatsNewFetcherActiveStateTest : public InProcessBrowserTest {
   // On linux, the activation is asynchronous, which makes it impossible to
   // reliably wait for the posted task after activation change. Use mocked
   // activation logic which is synchronous.
-  views::test::MockActivationController activation_controller_;
+  views::test::MockActivationController activation_controller_{
+      /*allow_in_interactive_ui_tests=*/true};
 #endif
 };
 

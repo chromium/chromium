@@ -6,6 +6,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
+#include "ui/base/test/ui_controls.h"
 #include "ui/views/buildflags.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_activation_delegate.h"
@@ -47,7 +48,10 @@ void SetActivationState(Widget* widget, bool active) {
 
 }  // namespace
 
-MockActivationController::MockActivationController() = default;
+MockActivationController::MockActivationController(
+    bool allow_in_interactive_ui_tests) {
+  CHECK(allow_in_interactive_ui_tests || !ui_controls::IsUIControlsEnabled());
+}
 
 MockActivationController::~MockActivationController() {
   for (auto widget : widgets_) {
