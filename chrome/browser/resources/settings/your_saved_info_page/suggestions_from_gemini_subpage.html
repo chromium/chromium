@@ -39,60 +39,57 @@
       </cr-shortcut-input>
     </div>
   </div>
-  <template is="dom-if"
-      if="[[showQualityLogging_(prefs.autofill.personal_context.settings_toggle_status.value, isAtMemoryEnabled_)]]"
-      restamp>
-    <div id="qualityLoggingCard" class="card">
-      <div class="cr-row first">
-        <h2 class="flex">$i18n{suggestionsFromGeminiQualityLoggingTitle}</h2>
+  <div id="qualityLoggingCard" class="card"
+      hidden$="[[!showQualityLogging_(prefs.autofill.personal_context.settings_toggle_status.value, isAtMemoryEnabled_)]]">
+    <div class="cr-row first">
+      <h2 class="flex">$i18n{suggestionsFromGeminiQualityLoggingTitle}</h2>
+    </div>
+    <div class="settings-columned-section">
+      <div class="column">
+        <h3 class="description-header">
+          $i18n{columnHeadingWhenUsed}
+        </h3>
+        <ul class="icon-bulleted-list">
+          <li>
+            <cr-icon icon="settings20:finance" aria-hidden="true"></cr-icon>
+            <div class="cr-secondary-text">
+              $i18n{suggestionsFromGeminiWhenUsed1}
+            </div>
+          </li>
+          <li>
+            <cr-icon icon="settings20:personal-recommendations"
+                aria-hidden="true"></cr-icon>
+            <div class="cr-secondary-text">
+              $i18n{suggestionsFromGeminiWhenUsed2}
+            </div>
+          </li>
+        </ul>
       </div>
-      <div class="settings-columned-section">
-        <div class="column">
-          <h3 class="description-header">
-            $i18n{columnHeadingWhenUsed}
-          </h3>
-          <ul class="icon-bulleted-list">
-            <li>
-              <cr-icon icon="settings20:finance" aria-hidden="true"></cr-icon>
-              <div class="cr-secondary-text">
-                $i18n{suggestionsFromGeminiWhenUsed1}
-              </div>
-            </li>
-            <li>
-              <cr-icon icon="settings20:personal-recommendations"
-                  aria-hidden="true"></cr-icon>
-              <div class="cr-secondary-text">
-                $i18n{suggestionsFromGeminiWhenUsed2}
-              </div>
-            </li>
-          </ul>
-        </div>
-        <div class="column">
-          <h3 class="description-header">$i18n{columnHeadingConsider}</h3>
-          <ul class="icon-bulleted-list">
-            <li>
-              <cr-icon icon="settings20:insight-spark" aria-hidden="true">
-              </cr-icon>
-              <div class="cr-secondary-text">
-                $i18n{suggestionsFromGeminiConsider1}
-              </div>
-            </li>
-            <li>
-              <cr-icon icon="settings20:account-box" aria-hidden="true">
-              </cr-icon>
-              <div class="cr-secondary-text">
-                $i18n{suggestionsFromGeminiConsider2}
-              </div>
-            </li>
-            <li>
-              <cr-icon icon="cr20:domain" aria-hidden="true"></cr-icon>
-              <div class="cr-secondary-text">
-                $i18n{suggestionsFromGeminiConsider3}
-              </div>
-            </li>
-          </ul>
-        </div>
+      <div class="column">
+        <h3 class="description-header">$i18n{columnHeadingConsider}</h3>
+        <ul class="icon-bulleted-list">
+          <li>
+            <cr-icon icon="settings20:insight-spark" aria-hidden="true">
+            </cr-icon>
+            <div class="cr-secondary-text">
+              $i18n{suggestionsFromGeminiConsider1}
+            </div>
+          </li>
+          <li>
+            <cr-icon icon="settings20:account-box" aria-hidden="true">
+            </cr-icon>
+            <div class="cr-secondary-text">
+              $i18n{suggestionsFromGeminiConsider2}
+            </div>
+          </li>
+          <li>
+            <cr-icon icon="cr20:domain" aria-hidden="true"></cr-icon>
+            <div class="cr-secondary-text">
+              $i18n{suggestionsFromGeminiConsider3}
+            </div>
+          </li>
+        </ul>
       </div>
     </div>
-  </template>
+  </div>
 </settings-subpage>

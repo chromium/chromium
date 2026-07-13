@@ -115,23 +115,27 @@ suite('SuggestionsFromGeminiSubpage', function() {
 
   test('QualityLoggingIsHiddenWhenToggleIsOff', async function() {
     const subpage = await setupPage();
-    assertTrue(!!subpage.shadowRoot!.querySelector('#qualityLoggingCard'));
+    assertTrue(
+        isVisible(subpage.shadowRoot!.querySelector('#qualityLoggingCard')));
 
     subpage.set(
         'prefs.autofill.personal_context.settings_toggle_status.value', false);
     await flushTasks();
 
-    assertFalse(!!subpage.shadowRoot!.querySelector('#qualityLoggingCard'));
+    assertFalse(
+        isVisible(subpage.shadowRoot!.querySelector('#qualityLoggingCard')));
   });
 
   test('QualityLoggingIsHiddenWhenAtMemoryDisabled', async function() {
     const subpage = await setupPage();
-    assertTrue(!!subpage.shadowRoot!.querySelector('#qualityLoggingCard'));
+    assertTrue(
+        isVisible(subpage.shadowRoot!.querySelector('#qualityLoggingCard')));
 
     subpage.set('isAtMemoryEnabled_', false);
     await flushTasks();
 
-    assertFalse(!!subpage.shadowRoot!.querySelector('#qualityLoggingCard'));
+    assertFalse(
+        isVisible(subpage.shadowRoot!.querySelector('#qualityLoggingCard')));
   });
 
   test('AtMemoryTriggerSettingHidden', async function() {
