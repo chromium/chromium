@@ -346,6 +346,10 @@ ci.builder(
             "headless_shell_wpt_tests": targets.remove(
                 reason = "Wptrunner does not work on Fuchsia",
             ),
+            "content_shell_crash_test": targets.remove(
+                # TODO(crbug.com/534324436): Failing symbolization on this builder.
+                reason = "Failing to verify symbolization in output",
+            ),
             "content_browsertests": [
                 # Temporarily only run this on CI due to resource requirements.
                 # TODO(crbug.com/40872145): Remove this once resources are available.
