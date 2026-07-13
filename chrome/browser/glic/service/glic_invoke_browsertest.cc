@@ -1130,6 +1130,27 @@ IN_PROC_BROWSER_TEST_F(GlicInvokeBrowserTest,
   EXPECT_TRUE(success_future.Wait());
 }
 
+IN_PROC_BROWSER_TEST_F(GlicInvokeBrowserTest,
+                       InvokeDoesNotWaitForFreCompletion_ModeNever) {
+  tabs::TabInterface* tab = GetTabListInterface()->GetActiveTab();
+  SetFRECompletion(GetProfile(), prefs::FreStatus::kNotStarted);
+
+  base::test::TestFuture<void> success_future;
+  GlicInvokeOptions options(mojom::InvocationSource::kOsButton);
+  // Setting kTrustFirstClick which normally forces it to block...
+  options.fre_override = mojom::FreOverride::kTrustFirstClick;
+  // ... but kNever should override this and ensure it proceeds immediately.
+  options.fre_completion_wait_mode = FreCompletionWaitMode::kNever;
+  options.on_success = success_future.GetCallback();
+  options.target = Target(*tab);
+
+  coordinator().Invoke(std::move(options));
+
+  // The invocation should complete successfully right away without waiting for
+  // FRE.
+  EXPECT_TRUE(success_future.Wait());
+}
+
 class GlicInvokeActuationBrowserTest : public GlicInvokeBrowserTest {
  public:
   GlicInvokeActuationBrowserTest() {
