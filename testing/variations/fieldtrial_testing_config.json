@@ -1163,21 +1163,6 @@
             ]
         }
     ],
-    "AndroidPageInfoAsAppMenuItem": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AndroidPageInfoAsAppMenuItem"
-                    ]
-                }
-            ]
-        }
-    ],
     "AndroidPermissionOptIns": [
         {
             "platforms": [
@@ -11902,16 +11887,22 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "Enabled_Arm2_BottomBar_1A_with_GLIC_filled",
                     "params": {
+                        "adaptive-toolbar-auto-pin": "false",
+                        "always_use_filled_glic_icon": "true",
+                        "disable_on_ntp": "false",
                         "dont_show_fusebox": "true",
                         "glic-min-required-ram-mb": "3600"
                     },
                     "enable_features": [
+                        "AndroidBottomBar",
+                        "AndroidPageInfoAsAppMenuItem",
                         "ContextualCueing",
                         "Glic",
                         "GlicActor",
                         "GlicRollout",
+                        "IPH_SiteControls",
                         "TabBottomSheet"
                     ]
                 }

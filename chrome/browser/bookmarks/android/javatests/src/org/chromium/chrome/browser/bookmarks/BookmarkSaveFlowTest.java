@@ -76,7 +76,7 @@ public class BookmarkSaveFlowTest {
     public final ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
                     .setBugComponent(ChromeRenderTestRule.Component.UI_BROWSER_BOOKMARKS)
-                    .setRevision(2)
+                    .setRevision(3)
                     .build();
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();

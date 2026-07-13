@@ -458,7 +458,8 @@ public class EmbeddedPermissionPromptTest {
 
         assertLocationChooserVisible(dialogModel, true);
 
-        PermissionTestRule.replyToDialog(PermissionTestRule.PromptDecision.DENY, activity);
+        // TODO(crbug.com/531793849): See if we want to keep using ForgivingClickAction.
+        PermissionTestRule.replyToDialogForgiving(PermissionTestRule.PromptDecision.DENY, activity);
 
         waitForTitleUpdate("promptdismiss", activity);
         assertEquals("\"prompt\"", getGeolocationPermissionStateFromJS());
@@ -512,7 +513,8 @@ public class EmbeddedPermissionPromptTest {
 
         assertLocationChooserVisible(dialogModel, true);
 
-        PermissionTestRule.replyToDialog(PermissionTestRule.PromptDecision.DENY, activity);
+        // TODO(crbug.com/531793849): See if we want to keep using ForgivingClickAction.
+        PermissionTestRule.replyToDialogForgiving(PermissionTestRule.PromptDecision.DENY, activity);
 
         waitForTitleUpdate("promptaction", activity);
         assertEquals("\"granted\"", getGeolocationPermissionStateFromJS());
@@ -566,7 +568,8 @@ public class EmbeddedPermissionPromptTest {
 
         assertLocationChooserVisible(dialogModel, true);
 
-        PermissionTestRule.replyToDialog(PermissionTestRule.PromptDecision.DENY, activity);
+        // TODO(crbug.com/531793849): See if we want to keep using ForgivingClickAction.
+        PermissionTestRule.replyToDialogForgiving(PermissionTestRule.PromptDecision.DENY, activity);
 
         waitForTitleUpdate("promptaction", activity);
         assertEquals("\"denied\"", getGeolocationPermissionStateFromJS());
