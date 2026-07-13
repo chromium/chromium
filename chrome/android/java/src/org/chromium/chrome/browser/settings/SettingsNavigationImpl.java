@@ -11,6 +11,7 @@ import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 
+import org.chromium.base.ApplicationStatus;
 import org.chromium.base.IntentUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -224,6 +225,10 @@ public class SettingsNavigationImpl implements SettingsNavigation {
             @Nullable String tag) {
         if (ChromeFeatureList.sSettingsInTab.isEnabled()) {
             Activity activity = ActivityUtil.getActivityFromContext(context);
+            // Some components pass a non-Activity context (e.g. AccessibilitySettings).
+            if (activity == null) {
+                activity = ApplicationStatus.getLastTrackedFocusedActivity();
+            }
             assert activity != null;
             SettingsHostFragment settingsHostFragment = SettingsHostFragment.get(activity);
             assert settingsHostFragment != null;

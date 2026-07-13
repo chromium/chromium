@@ -17,6 +17,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
 
+import org.chromium.base.ActivityState;
+import org.chromium.base.ApplicationStatus;
+import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.autofill.settings.FinancialAccountsManagementFragment;
@@ -95,6 +98,32 @@ public class SettingsNavigationImplTest {
         mSettingsNavigationImpl.startSettings(activity, SecondFakeSettingsFragment.class, null);
         hostFragment.getChildFragmentManager().executePendingTransactions();
 
+        assertTrue(hostFragment.getActiveFragment() instanceof SecondFakeSettingsFragment);
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.SETTINGS_IN_TAB})
+    public void testStartSettings_SettingsInTab_NonActivityContext_ShowsInHostFragment() {
+        var scenario = Robolectric.buildActivity(TestActivity.class).setup();
+        TestActivity activity = scenario.get();
+        ApplicationStatus.onStateChangeForTesting(activity, ActivityState.RESUMED);
+        TestSettingsHostFragment hostFragment = new TestSettingsHostFragment();
+
+        // The SettingsHostFragment will default to showing FirstFakeSettingsFragment.
+        activity.getSupportFragmentManager()
+                .beginTransaction()
+                .add(
+                        android.R.id.content,
+                        hostFragment,
+                        SettingsHostFragment.SETTINGS_NATIVE_PAGE_TAG)
+                .commitNow();
+
+        // Start settings with a non-activity context, requesting the second fragment.
+        mSettingsNavigationImpl.startSettings(
+                ContextUtils.getApplicationContext(), SecondFakeSettingsFragment.class, null);
+        hostFragment.getChildFragmentManager().executePendingTransactions();
+
+        // The second fragment is shown even though the context is not an activity context.
         assertTrue(hostFragment.getActiveFragment() instanceof SecondFakeSettingsFragment);
     }
 
