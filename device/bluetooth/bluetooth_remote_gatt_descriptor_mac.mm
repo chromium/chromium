@@ -7,9 +7,11 @@
 #import "base/apple/foundation_util.h"
 #include "base/functional/bind.h"
 #include "base/notimplemented.h"
+#include "base/strings/strcat.h"
 #include "base/strings/sys_string_conversions.h"
 #import "base/task/single_thread_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/unguessable_token.h"
 #include "device/bluetooth/bluetooth_low_energy_adapter_apple.h"
 #import "device/bluetooth/bluetooth_remote_gatt_characteristic_mac.h"
 
@@ -50,9 +52,8 @@ BluetoothRemoteGattDescriptorMac::BluetoothRemoteGattDescriptorMac(
     : gatt_characteristic_(characteristic), cb_descriptor_(descriptor) {
   uuid_ = BluetoothLowEnergyAdapterApple::BluetoothUUIDWithCBUUID(
       [cb_descriptor_ UUID]);
-  identifier_ = base::SysNSStringToUTF8(
-      [NSString stringWithFormat:@"%s-%p", uuid_.canonical_value().c_str(),
-                                 cb_descriptor_]);
+  identifier_ = base::StrCat({uuid_.canonical_value(), "-",
+                              base::UnguessableToken::Create().ToString()});
 }
 
 std::string BluetoothRemoteGattDescriptorMac::GetIdentifier() const {
@@ -188,10 +189,9 @@ DEVICE_BLUETOOTH_EXPORT std::ostream& operator<<(
       static_cast<const BluetoothRemoteGattCharacteristicMac*>(
           descriptor.GetCharacteristic());
   return out << "<BluetoothRemoteGattDescriptorMac "
-             << descriptor.GetUUID().canonical_value() << "/" << &descriptor
-             << ", characteristic: "
-             << characteristic_mac->GetUUID().canonical_value() << "/"
-             << characteristic_mac << ">";
+             << descriptor.GetIdentifier()
+             << ", characteristic: " << characteristic_mac->GetIdentifier()
+             << ">";
 }
 
 }  // namespace device.

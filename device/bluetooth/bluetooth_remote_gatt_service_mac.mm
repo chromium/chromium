@@ -12,7 +12,9 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/notimplemented.h"
+#include "base/strings/strcat.h"
 #include "base/strings/sys_string_conversions.h"
+#include "base/unguessable_token.h"
 #include "device/bluetooth/bluetooth_low_energy_adapter_apple.h"
 #include "device/bluetooth/bluetooth_low_energy_device_mac.h"
 #include "device/bluetooth/bluetooth_remote_gatt_characteristic_mac.h"
@@ -30,8 +32,8 @@ BluetoothRemoteGattServiceMac::BluetoothRemoteGattServiceMac(
       discovery_pending_count_(0) {
   uuid_ =
       BluetoothLowEnergyAdapterApple::BluetoothUUIDWithCBUUID([service_ UUID]);
-  identifier_ = base::SysNSStringToUTF8([NSString
-      stringWithFormat:@"%s-%p", uuid_.canonical_value().c_str(), service_]);
+  identifier_ = base::StrCat({uuid_.canonical_value(), "-",
+                              base::UnguessableToken::Create().ToString()});
 }
 
 BluetoothRemoteGattServiceMac::~BluetoothRemoteGattServiceMac() {}
@@ -195,10 +197,8 @@ DEVICE_BLUETOOTH_EXPORT std::ostream& operator<<(
     const BluetoothRemoteGattServiceMac& service) {
   const BluetoothLowEnergyDeviceMac* bluetooth_device_mac_ =
       static_cast<const BluetoothLowEnergyDeviceMac*>(service.GetDevice());
-  return out << "<BluetoothRemoteGattServiceMac "
-             << service.GetUUID().canonical_value() << "/" << &service
-             << ", device: " << bluetooth_device_mac_->GetAddress() << "/"
-             << bluetooth_device_mac_ << ">";
+  return out << "<BluetoothRemoteGattServiceMac " << service.GetIdentifier()
+             << ", device: " << bluetooth_device_mac_->GetAddress() << ">";
 }
 
 }  // namespace device
