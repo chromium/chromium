@@ -590,6 +590,42 @@ public class AndroidShareSheetControllerUnitTest {
     }
 
     @Test
+    public void shareLinkToHighlightText_EmptyUrlFallbackToTabUrl() throws CanceledException {
+        doReturn(JUnitTestGURLs.EXAMPLE_URL).when(mTab).getUrl();
+        ShareParams params =
+                new ShareParams.Builder(mWindow, "", "")
+                        .setFileContentType("text/plain")
+                        .setText("highlight")
+                        .setBypassFixingDomDistillerUrl(true)
+                        .build();
+        ChromeShareExtras chromeShareExtras =
+                new ChromeShareExtras.Builder()
+                        .setDetailedContentType(DetailedContentType.HIGHLIGHTED_TEXT)
+                        .build();
+        AndroidShareSheetController.showShareSheet(
+                params,
+                chromeShareExtras,
+                mBottomSheetController,
+                () -> mTab,
+                () -> mTabModelSelector,
+                mProfile,
+                mPrintCallback::notifyCalled,
+                mTabGroupSharingController,
+                mDeviceLockActivityLauncher,
+                mSigninAndHistorySyncActivityLauncher,
+                mActivityResultTracker,
+                mModalDialogManagerSupplier,
+                mSnackbarManager);
+
+        Intent chooserIntent = Shadows.shadowOf((Activity) mActivity).peekNextStartedActivity();
+        Intent shareIntent = chooserIntent.getParcelableExtra(Intent.EXTRA_INTENT);
+        Assert.assertEquals(
+                "Text being shared is different.",
+                "\"highlight\"\n " + JUnitTestGURLs.TEXT_FRAGMENT_URL.getSpec(),
+                shareIntent.getStringExtra(Intent.EXTRA_TEXT));
+    }
+
+    @Test
     @RequiresApi(34)
     public void shareLinkToHighlightTextFailed() {
         LinkToTextCoordinator.setForceSelectorForTesting("");
