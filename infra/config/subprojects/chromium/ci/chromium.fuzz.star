@@ -268,6 +268,7 @@ def fuzz_target_builder(
         clusterfuzz_ios_targets_only = None,
         clusterfuzz_v8_targets_only = None,
         use_ssd_for_test_builder = False,
+        free_space_for_test_builder = None,
         contact_team_email = "chrome-fuzzing-core@google.com",
         **kwargs):
     if not name and not test_builder_name:
@@ -350,6 +351,9 @@ def fuzz_target_builder(
 
     if "ssd" in kwargs:
         kwargs["ssd"] = use_ssd_for_test_builder
+
+    if free_space_for_test_builder != None:
+        kwargs["free_space"] = free_space_for_test_builder
 
     ci_builder(
         name = test_builder_name,
@@ -603,9 +607,11 @@ def centipede_linux_asan_builder(
 centipede_linux_asan_builder(
     name = "Centipede Upload Linux ASan",
     branch_selector = branches.selector.LINUX_BRANCHES,
+    free_space = builders.free_space.high,
     clusterfuzz_archive_name_prefix = "centipede",
     console_short_name = "cent",
     execution_timeout = 6 * time.hour,
+    free_space_for_test_builder = builders.free_space.standard,
     gn_extra_configs = [
         "chromeos_codecs",
         "pdf_xfa",
