@@ -1863,3 +1863,6 @@ crbug.com/452389538 virtual/prefetch-force-off-the-main-thread/external/wpt/spec
 [ Mac ] editing/selection/move-by-word-win-punctuation-newline.html [ Skip ]
 [ Android ] editing/selection/move-by-word-win-punctuation-newline.html [ Skip ]
 [ Fuchsia ] editing/selection/move-by-word-win-punctuation-newline.html [ Skip ]
+
+# OOM crash on Windows, marked as WontFix
+crbug.com/379516106 [ Win ] external/wpt/css/css-overflow/scrollbar-large-scale-in-iframe.html [ Skip ]
