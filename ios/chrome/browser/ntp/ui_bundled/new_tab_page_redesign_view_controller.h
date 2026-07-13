@@ -7,6 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/content_suggestions/ui/user_account_image_update_delegate.h"
 #import "ios/chrome/browser/ntp/search_engine_logo/ui/search_engine_logo_consumer.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_consumer.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_header_view_delegate.h"
@@ -14,12 +15,17 @@
 @class NewTabPageHeaderView;
 @protocol NewTabPageMutator;
 @protocol NewTabPageContentDelegate;
+@protocol NewTabPageHeaderCommands;
 
 // View controller shell for the New Tab Page Redesign.
 @interface NewTabPageRedesignViewController
     : UIViewController <NewTabPageConsumer,
                         NewTabPageHeaderViewDelegate,
-                        SearchEngineLogoConsumer>
+                        SearchEngineLogoConsumer,
+                        UserAccountImageUpdateDelegate>
+
+// Handler for header commands.
+@property(nonatomic, weak) id<NewTabPageHeaderCommands> headerCommandsHandler;
 
 // Delegate for actions relating to the NTP content.
 @property(nonatomic, weak) id<NewTabPageContentDelegate> NTPContentDelegate;

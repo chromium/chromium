@@ -14,8 +14,10 @@
 #import "ios/chrome/browser/ntp/ui_bundled/fake_location_bar_view.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_bottom_sheet_view_controller.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_content_delegate.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_header_commands.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_header_view.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_mutator.h"
+#import "ios/chrome/browser/ntp/ui_bundled/ntp_identity_disc_button.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -79,6 +81,12 @@ constexpr CGFloat kGoogleLogoWidth = 170.0;
   FakeLocationBarView* _fakeLocationBar;
   UIView* _mostVisitedContainerView;
   NSLayoutConstraint* _fakeLocationBarTopConstraint;
+  NTPIdentityDiscButton* _identityDiscButton;
+
+  UIImage* _avatarImage;
+  NSString* _avatarName;
+  NSString* _avatarEmail;
+  BOOL _avatarImageLoaded;
 }
 
 - (void)viewDidLoad {
@@ -197,6 +205,33 @@ constexpr CGFloat kGoogleLogoWidth = 170.0;
                                 UITraitCollection* previousCollection) {
                     [weakSelf updateLogoConstraints];
                   }];
+
+  // Add identity disc button.
+  _identityDiscButton = [[NTPIdentityDiscButton alloc] init];
+  _identityDiscButton.translatesAutoresizingMaskIntoConstraints = NO;
+  [_identityDiscButton addTarget:self
+                          action:@selector(identityDiscButtonTapped:)
+                forControlEvents:UIControlEventTouchUpInside];
+  [self.view addSubview:_identityDiscButton];
+
+  [NSLayoutConstraint activateConstraints:@[
+    [_identityDiscButton.topAnchor
+        constraintEqualToAnchor:self.view.safeAreaLayoutGuide.topAnchor
+                       constant:12.0],
+  ]];
+  [_identityDiscButton
+      setupConstraintsWithTrailingAnchor:self.view.safeAreaLayoutGuide
+                                             .trailingAnchor];
+
+  if (_avatarImageLoaded) {
+    if (_avatarImage) {
+      [_identityDiscButton updateAccountImage:_avatarImage
+                                         name:_avatarName
+                                        email:_avatarEmail];
+    } else {
+      [_identityDiscButton setSignedOutAccountImage];
+    }
+  }
 }
 
 - (void)viewDidLayoutSubviews {
@@ -217,6 +252,10 @@ constexpr CGFloat kGoogleLogoWidth = 170.0;
   [self setFeedViewController:nil];
   [_bottomSheetViewController invalidate];
   _bottomSheetViewController = nil;
+  _identityDiscButton = nil;
+  _avatarImage = nil;
+  _avatarName = nil;
+  _avatarEmail = nil;
 }
 
 #pragma mark - Public
@@ -262,9 +301,10 @@ constexpr CGFloat kGoogleLogoWidth = 170.0;
                             (1.0 - progress) * kExpandedSheetOmniboxTopMargin;
   _fakeLocationBarTopConstraint.constant = topOffset + offsetFromSheet;
 
-  // Interpolate opacity for logo and MVTs row
+  // Interpolate opacity for logo, MVTs row, and identity disc
   _searchEngineLogoView.alpha = progress;
   _mostVisitedContainerView.alpha = progress;
+  _identityDiscButton.alpha = progress;
 
   [self.view layoutIfNeeded];
 }
@@ -458,6 +498,36 @@ constexpr CGFloat kGoogleLogoWidth = 170.0;
                   willDecelerate:(BOOL)decelerate {
   [_bottomSheetViewController feedScrollViewDidEndDragging:scrollView
                                             willDecelerate:decelerate];
+}
+
+#pragma mark - UserAccountImageUpdateDelegate
+
+- (void)setSignedOutAccountImage {
+  _avatarImage = nil;
+  _avatarName = nil;
+  _avatarEmail = nil;
+  _avatarImageLoaded = YES;
+  if (_identityDiscButton) {
+    [_identityDiscButton setSignedOutAccountImage];
+  }
+}
+
+- (void)updateAccountImage:(UIImage*)image
+                      name:(NSString*)name
+                     email:(NSString*)email {
+  _avatarImage = image;
+  _avatarName = name;
+  _avatarEmail = email;
+  _avatarImageLoaded = YES;
+  if (_identityDiscButton) {
+    [_identityDiscButton updateAccountImage:image name:name email:email];
+  }
+}
+
+#pragma mark - Actions
+
+- (void)identityDiscButtonTapped:(UIButton*)sender {
+  [self.headerCommandsHandler identityDiscWasTapped:sender];
 }
 
 @end

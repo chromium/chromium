@@ -830,7 +830,11 @@
   PlaceholderService* placeholderService =
       ios::PlaceholderServiceFactory::GetForProfile(self.profile);
   NTPMediator.placeholderService = placeholderService;
-  NTPMediator.imageUpdater = self.headerView;
+  if (IsNTPRedesignEnabled()) {
+    NTPMediator.imageUpdater = self.NTPRedesignViewController;
+  } else {
+    NTPMediator.imageUpdater = self.headerView;
+  }
   NTPMediator.logoMediator = _searchEngineLogoMediator;
 
   [NTPMediator setUp];
@@ -866,6 +870,7 @@
 - (void)configureNTPViewController {
   if (IsNTPRedesignEnabled()) {
     self.NTPRedesignViewController.NTPContentDelegate = self;
+    self.NTPRedesignViewController.headerCommandsHandler = self;
     self.NTPRedesignViewController.feedViewController = self.feedViewController;
     self.NTPRedesignViewController.mostVisitedViewController =
         self.contentSuggestionsCoordinator.viewController;
