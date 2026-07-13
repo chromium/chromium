@@ -13,10 +13,12 @@
 
 #include "base/command_line.h"
 #include "base/files/file_util.h"
+#include "base/json/json_writer.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/power_monitor_test.h"
 #include "base/test/test_file_util.h"
 #include "base/test/values_test_util.h"
@@ -34,6 +36,7 @@
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/test_utils.h"
 #include "content/public/test/web_contents_tester.h"
+#include "extensions/browser/component_extension_resource_manager.h"
 #include "extensions/browser/content_verifier/content_verifier.h"
 #include "extensions/browser/content_verifier/test_utils.h"
 #include "extensions/browser/extension_prefs.h"
@@ -41,12 +44,14 @@
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/unloaded_extension_reason.h"
 #include "extensions/buildflags/buildflags.h"
+#include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/extension_paths.h"
 #include "extensions/common/file_util.h"
 #include "extensions/test/test_extension_dir.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/system/data_pipe_utils.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
@@ -173,9 +178,16 @@ network::ResourceRequest CreateResourceRequest(
 // depending on the on test type.
 class GetResult {
  public:
-  GetResult(network::mojom::URLResponseHeadPtr response, int result)
-      : response_(std::move(response)), result_(result) {}
-  GetResult(GetResult&& other) : result_(other.result_) {}
+  GetResult(network::mojom::URLResponseHeadPtr response,
+            int result,
+            std::string body = std::string())
+      : response_(std::move(response)),
+        result_(result),
+        body_(std::move(body)) {}
+  GetResult(GetResult&& other)
+      : response_(std::move(other.response_)),
+        result_(other.result_),
+        body_(std::move(other.body_)) {}
 
   GetResult(const GetResult&) = delete;
   GetResult& operator=(const GetResult&) = delete;
@@ -204,10 +216,12 @@ class GetResult {
   }
 
   int result() const { return result_; }
+  const std::string& body() const { return body_; }
 
  private:
   network::mojom::URLResponseHeadPtr response_;
   int result_;
+  std::string body_;
 };
 
 }  // namespace
@@ -326,8 +340,12 @@ class ExtensionProtocolsTestBase : public testing::Test {
     }
 
     client.RunUntilComplete();
+    std::string body;
+    if (client.response_body().is_valid()) {
+      mojo::BlockingCopyToString(client.response_body_release(), &body);
+    }
     return GetResult(client.response_head().Clone(),
-                     client.completion_status().error_code);
+                     client.completion_status().error_code, std::move(body));
   }
 
   std::unique_ptr<content::WebContents> CreateTestWebContents() {
@@ -435,6 +453,39 @@ TEST_F(ExtensionProtocolsTest, ComponentResourceRequest) {
     EXPECT_EQ("image/png", get_result.GetResponseHeaderByName(
                                net::HttpRequestHeaders::kContentType));
   }
+}
+
+// Tests getting a dynamic resource (i.e., /strings.m.js) for a component
+// extension.
+TEST_F(ExtensionProtocolsTest, ComponentDynamicResourceRequest) {
+  scoped_refptr<const Extension> extension = CreateWebStoreExtension();
+  AddExtension(extension, false, false);
+
+  auto* resource_manager =
+      ExtensionsBrowserClient::Get()->GetComponentExtensionResourceManager();
+  ASSERT_TRUE(resource_manager);
+
+  auto subscription = resource_manager->RegisterTemplateDataProvider(
+      extension->id(), browser_context(), base::BindRepeating([]() {
+        base::DictValue dict;
+        dict.Set("dynamicTestKey", "dynamicTestValue");
+        return dict;
+      }));
+
+  auto get_result = RequestOrLoad(extension->GetResourceURL("strings.m.js"),
+                                  network::mojom::RequestDestination::kScript);
+  EXPECT_EQ(net::OK, get_result.result());
+  EXPECT_TRUE(get_result.HeaderIsPresent("Content-Type"));
+  EXPECT_EQ("text/javascript; charset=utf-8",
+            get_result.GetResponseHeaderByName(
+                net::HttpRequestHeaders::kContentType));
+
+  base::DictValue expected_dict;
+  expected_dict.Set("dynamicTestKey", "dynamicTestValue");
+  std::string expected_js =
+      base::StringPrintf(extensions::kDynamicStringsModuleTemplate,
+                         base::WriteJson(expected_dict).value_or("{}").c_str());
+  EXPECT_EQ(expected_js, get_result.body());
 }
 
 // Tests that a URL request for resource from an extension returns a few

@@ -28,6 +28,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "extensions/browser/extension_registry.h"
+#include "extensions/test/test_extension_dir.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -201,6 +202,89 @@ IN_PROC_BROWSER_TEST_F(AimEligibilityExtensionBrowserTest, UiParity) {
                             "✗ Not Eligible|✓ Allowed|✓ Allowed|✓ Google");
   })) << "Actual: "
       << get_ui_checklist();
+}
+
+IN_PROC_BROWSER_TEST_F(AimEligibilityExtensionBrowserTest,
+                       LoadTimeDataInterception) {
+  auto* mock_service = static_cast<MockAimEligibilityService*>(
+      AimEligibilityServiceFactory::GetForProfile(profile()));
+  EXPECT_CALL(*mock_service, IsServerEligibilityEnabled())
+      .WillRepeatedly(testing::Return(false));
+  EXPECT_CALL(*mock_service, IsAimEligible())
+      .WillRepeatedly(testing::Return(true));
+
+  // Verify the component extension is loaded.
+  auto* registry = ExtensionRegistry::Get(profile());
+  const Extension* extension = registry->enabled_extensions().GetByID(
+      extension_misc::kAimEligibilityExtensionId);
+  ASSERT_TRUE(extension);
+
+  // Navigate the active tab to the extension's popup HTML page.
+  GURL popup_url = extension->GetResourceURL("aim_eligibility.html");
+  ASSERT_TRUE(NavigateToURL(web_contents(), popup_url));
+
+  // Wait for the UI to load and showFooter_ to be populated.
+  bool show_footer = false;
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    auto result = content::EvalJs(
+        web_contents(),
+        "(() => {"
+        "  const app = document.querySelector('aim-eligibility-app');"
+        "  if (!app) return null;"
+        "  if (typeof app.showFooter_ === 'undefined') return null;"
+        "  return app.showFooter_;"
+        "})()");
+    if (!result.is_bool()) {
+      return false;
+    }
+    show_footer = result.ExtractBool();
+    return true;
+  }));
+
+  // Assert showAimEligibilityFooter is true.
+  EXPECT_TRUE(show_footer);
+
+  // Assert the title placeholder is correctly replaced.
+  EXPECT_EQ("AIM Eligibility Diagnostic",
+            content::EvalJs(web_contents(), "document.title").ExtractString());
+}
+
+IN_PROC_BROWSER_TEST_F(AimEligibilityExtensionBrowserTest,
+                       CrossOriginLoadTimeDataIsBlocked) {
+  // Load a separate, custom extension (Extension A).
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(R"({
+    "name": "Extension A",
+    "version": "1.0",
+    "manifest_version": 3
+  })");
+  test_dir.WriteFile(FILE_PATH_LITERAL("page.html"),
+                     "<html><body></body></html>");
+  const Extension* extension_a = LoadExtension(test_dir.UnpackedPath());
+  ASSERT_TRUE(extension_a);
+
+  // Navigate to Extension A's page.
+  GURL page_url = extension_a->GetResourceURL("page.html");
+  ASSERT_TRUE(NavigateToURL(web_contents(), page_url));
+
+  // Try to fetch the strings.m.js of the AIM eligibility component extension
+  // (Extension B).
+  static constexpr char kScript[] = R"(
+    (async () => {
+      try {
+        let response = await fetch('chrome-extension://kgjeljgkbckpoekmgjfplammhcggiiaf/strings.m.js');
+        return response.status.toString();
+      } catch (e) {
+        return 'failed: ' + e.toString();
+      }
+    })()
+  )";
+
+  std::string result = content::EvalJs(web_contents(), kScript).ExtractString();
+  // Fetch should either fail completely due to CORS/network errors, or return
+  // 404.
+  EXPECT_TRUE(base::StartsWith(result, "failed:") || result == "404")
+      << "Actual: " << result;
 }
 
 }  // namespace extensions

@@ -8,7 +8,9 @@
 #include <memory>
 #include <vector>
 
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ref.h"
+#include "base/values.h"
 #include "chrome/browser/ui/webui/omnibox/aim_eligibility/aim_eligibility.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -54,7 +56,10 @@ class AimEligibilityExtensionBridge
   }
 
  private:
+  base::DictValue GetLoadTimeData();
+
   const raw_ref<Profile> profile_;
+  base::ScopedClosureRunner load_time_data_subscription_;
   mojo::ReceiverSet<aim_eligibility::mojom::PageHandlerFactory> receivers_;
   std::vector<std::unique_ptr<AimEligibilityPageHandler>> page_handlers_;
 };

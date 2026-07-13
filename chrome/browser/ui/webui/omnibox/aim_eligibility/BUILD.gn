@@ -17,10 +17,6 @@ static_library("aim_eligibility") {
   sources = [
     "aim_eligibility_page_handler.cc",
     "aim_eligibility_page_handler.h",
-    "extension/aim_eligibility_extension_bridge.cc",
-    "extension/aim_eligibility_extension_bridge.h",
-    "extension/aim_eligibility_extension_bridge_factory.cc",
-    "extension/aim_eligibility_extension_bridge_factory.h",
   ]
 
   deps = [
@@ -39,6 +35,16 @@ static_library("aim_eligibility") {
     "//mojo/public/cpp/bindings",
     "//ui/webui",
   ]
+
+  if (enable_extensions_core) {
+    sources += [
+      "extension/aim_eligibility_extension_bridge.cc",
+      "extension/aim_eligibility_extension_bridge.h",
+      "extension/aim_eligibility_extension_bridge_factory.cc",
+      "extension/aim_eligibility_extension_bridge_factory.h",
+    ]
+    deps += [ "//extensions/browser" ]
+  }
 
   if (!is_android) {
     deps += [ "//chrome/browser/ui/webui/drive_picker_host" ]
@@ -63,6 +69,7 @@ if (enable_extensions_core) {
       "//components/omnibox/browser:test_support",
       "//components/omnibox/common",
       "//content/test:browsertest_support",
+      "//extensions:test_support",
       "//mojo/public/cpp/bindings",
       "//testing/gmock",
     ]

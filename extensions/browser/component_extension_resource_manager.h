@@ -5,11 +5,20 @@
 #ifndef EXTENSIONS_BROWSER_COMPONENT_EXTENSION_RESOURCE_MANAGER_H_
 #define EXTENSIONS_BROWSER_COMPONENT_EXTENSION_RESOURCE_MANAGER_H_
 
+#include <string>
+
+#include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
+#include "base/values.h"
 #include "extensions/common/extension_id.h"
 #include "ui/base/template_expressions.h"
 
 namespace base {
 class FilePath;
+}
+
+namespace content {
+class BrowserContext;
 }
 
 namespace extensions {
@@ -33,7 +42,31 @@ class ComponentExtensionResourceManager {
   // exist, or nullptr otherwise. If non-null, the returned value must remain
   // valid for the life of this ComponentExtensionResourceManager.
   virtual const ui::TemplateReplacements* GetTemplateReplacementsForExtension(
-      const ExtensionId& extension_id) const = 0;
+      const ExtensionId& extension_id,
+      const content::BrowserContext* context) const = 0;
+
+  // Checks whether `path` (e.g. "/strings.m.js") is served dynamically for
+  // `extension_id` and `context`.
+  virtual bool IsDynamicComponentExtensionResource(
+      const ExtensionId& extension_id,
+      const std::string& path,
+      const content::BrowserContext* context) const = 0;
+
+  // Returns the generated content (e.g., "/strings.m.js") for the dynamic
+  // resource specified by `path` for `extension_id` and `context`.
+  virtual std::string GetDynamicResourceContent(
+      const ExtensionId& extension_id,
+      const std::string& path,
+      const content::BrowserContext* context) const = 0;
+
+  // Registers a callback that supplies dictionary data for `extension_id` and
+  // `context`. This data is used for both `$i18n{key}` template replacements
+  // and `loadTimeData` in dynamic ES modules (e.g. `strings.m.js`).
+  using TemplateDataProvider = base::RepeatingCallback<base::DictValue()>;
+  [[nodiscard]] virtual base::ScopedClosureRunner RegisterTemplateDataProvider(
+      const ExtensionId& extension_id,
+      const content::BrowserContext* context,
+      TemplateDataProvider provider) const = 0;
 };
 
 }  // namespace extensions

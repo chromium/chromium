@@ -24,6 +24,16 @@ inline constexpr char kExtensionScheme[] = "chrome-extension";
 inline constexpr char kExtensionInvalidRequestURL[] =
     "chrome-extension://invalid/";
 
+// The path of the ES module containing dynamic strings in component extensions.
+inline constexpr char kDynamicStringsJsPath[] = "/strings.m.js";
+
+// The template used to generate the ES module containing dynamic strings.
+inline constexpr char kDynamicStringsModuleTemplate[] =
+    "import {loadTimeData} from "
+    "'chrome://resources/js/load_time_data.js';\n"
+    "loadTimeData.data = %s;\n"
+    "export {loadTimeData};\n";
+
 // The name of the manifest inside an extension.
 inline constexpr base::FilePath::CharType kManifestFilename[] =
     FILE_PATH_LITERAL("manifest.json");

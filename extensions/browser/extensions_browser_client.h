@@ -283,7 +283,8 @@ class ExtensionsBrowserClient {
       const base::FilePath& resource_relative_path,
       int resource_id,
       scoped_refptr<net::HttpResponseHeaders> headers,
-      mojo::PendingRemote<network::mojom::URLLoaderClient> client) = 0;
+      mojo::PendingRemote<network::mojom::URLLoaderClient> client,
+      content::BrowserContext* browser_context) = 0;
 
   // Returns true if the embedder wants to allow a chrome-extension:// resource
   // request coming from renderer A to access a resource in an extension running

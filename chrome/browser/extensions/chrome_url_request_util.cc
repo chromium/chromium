@@ -18,6 +18,7 @@
 #include "base/strings/string_view_util.h"
 #include "base/task/thread_pool.h"
 #include "chrome/common/chrome_paths.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/common/child_process_id.h"
 #include "content/public/common/url_constants.h"
 #include "extensions/browser/component_extension_resource_manager.h"
@@ -43,6 +44,10 @@
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/template_expressions.h"
 #include "url/gurl.h"
+
+namespace content {
+class BrowserContext;
+}
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
@@ -75,7 +80,8 @@ bool IsJavaScriptMimeType(std::string_view mime_type) {
 scoped_refptr<base::RefCountedMemory> GetResource(
     int resource_id,
     const extensions::ExtensionId& extension_id,
-    const std::string_view mime_type) {
+    const std::string_view mime_type,
+    content::BrowserContext* browser_context) {
   const ui::ResourceBundle& rb = ui::ResourceBundle::GetSharedInstance();
   scoped_refptr<base::RefCountedMemory> bytes =
       rb.LoadDataResourceBytes(resource_id);
@@ -89,7 +95,8 @@ scoped_refptr<base::RefCountedMemory> GetResource(
       ExtensionsBrowserClient::Get()->GetComponentExtensionResourceManager()
           ? ExtensionsBrowserClient::Get()
                 ->GetComponentExtensionResourceManager()
-                ->GetTemplateReplacementsForExtension(extension_id)
+                ->GetTemplateReplacementsForExtension(extension_id,
+                                                      browser_context)
           : nullptr;
 
   std::string temp_str;
@@ -120,13 +127,14 @@ class ResourceBundleFileLoader : public network::mojom::URLLoader {
       mojo::PendingRemote<network::mojom::URLLoaderClient> client_info,
       const base::FilePath& filename,
       int resource_id,
-      scoped_refptr<net::HttpResponseHeaders> headers) {
+      scoped_refptr<net::HttpResponseHeaders> headers,
+      content::BrowserContext* browser_context) {
     // Owns itself. Will live as long as its URLLoader and URLLoaderClient
     // bindings are alive - essentially until either the client gives up or all
     // file data has been sent to it.
     auto* bundle_loader = new ResourceBundleFileLoader(std::move(headers));
     bundle_loader->Start(request, std::move(loader), std::move(client_info),
-                         filename, resource_id);
+                         filename, resource_id, browser_context);
   }
 
   // mojom::URLLoader implementation:
@@ -151,7 +159,8 @@ class ResourceBundleFileLoader : public network::mojom::URLLoader {
       mojo::PendingReceiver<network::mojom::URLLoader> loader,
       mojo::PendingRemote<network::mojom::URLLoaderClient> client_info_remote,
       const base::FilePath& filename,
-      int resource_id) {
+      int resource_id,
+      content::BrowserContext* browser_context) {
     client_.Bind(std::move(client_info_remote));
     receiver_.Bind(std::move(loader));
     receiver_.set_disconnect_handler(base::BindOnce(
@@ -164,24 +173,29 @@ class ResourceBundleFileLoader : public network::mojom::URLLoader {
         FROM_HERE, {base::MayBlock()},
         base::BindOnce(&net::GetMimeTypeFromFile, filename,
                        base::Unretained(read_mime_type)),
-        base::BindOnce(&ResourceBundleFileLoader::OnMimeTypeRead,
-                       weak_factory_.GetWeakPtr(), resource_id,
-                       request.url.GetHost(), base::Owned(read_mime_type)));
+        base::BindOnce(
+            &ResourceBundleFileLoader::OnMimeTypeRead,
+            weak_factory_.GetWeakPtr(), resource_id, request.url.GetHost(),
+            base::Owned(read_mime_type),
+            browser_context ? browser_context->GetWeakPtr() : nullptr));
   }
 
   void OnMimeTypeRead(int resource_id,
                       const extensions::ExtensionId& extension_id,
                       std::string* read_mime_type,
+                      base::WeakPtr<content::BrowserContext> browser_context,
                       bool read_result) {
-    if (!client_) {
+    if (!client_ || !browser_context) {
       // At this point, it is possible for |client_| to have disconnected, but
       // the |receiver_| disconnect either hasn't been received, or is pending
-      // in the task queue. If |client_| is disconnected, there's nothing to do
-      // so wait for the |receiver_| disconnect to destroy us.
+      // in the task queue. It is also possible for |browser_context| to have
+      // been destroyed during shutdown. If either is true, there's nothing to
+      // do so wait for the |receiver_| disconnect to destroy us.
       return;
     }
 
-    auto data = GetResource(resource_id, extension_id, *read_mime_type);
+    auto data = GetResource(resource_id, extension_id, *read_mime_type,
+                            browser_context.get());
 
     auto head = network::mojom::URLResponseHead::New();
     head->request_start = base::TimeTicks::Now();
@@ -329,11 +343,12 @@ void LoadResourceFromResourceBundle(
     const base::FilePath& resource_relative_path,
     int resource_id,
     scoped_refptr<net::HttpResponseHeaders> headers,
-    mojo::PendingRemote<network::mojom::URLLoaderClient> client) {
+    mojo::PendingRemote<network::mojom::URLLoaderClient> client,
+    content::BrowserContext* browser_context) {
   DCHECK(!resource_relative_path.empty());
   ResourceBundleFileLoader::CreateAndStart(
       request, std::move(loader), std::move(client), resource_relative_path,
-      resource_id, std::move(headers));
+      resource_id, std::move(headers), browser_context);
 }
 
 }  // namespace chrome_url_request_util

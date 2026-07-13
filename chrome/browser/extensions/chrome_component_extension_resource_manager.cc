@@ -11,7 +11,9 @@
 #include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
+#include "base/json/json_writer.h"
 #include "base/path_service.h"
+#include "base/strings/stringprintf.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -203,8 +205,9 @@ bool ChromeComponentExtensionResourceManager::IsComponentExtensionResource(
 
   LazyInitData();
   auto entry = data_->path_to_resource_id().find(relative_path);
-  if (entry == data_->path_to_resource_id().end())
+  if (entry == data_->path_to_resource_id().end()) {
     return false;
+  }
 
   *resource_id = entry->second;
   return true;
@@ -212,7 +215,8 @@ bool ChromeComponentExtensionResourceManager::IsComponentExtensionResource(
 
 const ui::TemplateReplacements*
 ChromeComponentExtensionResourceManager::GetTemplateReplacementsForExtension(
-    const ExtensionId& extension_id) const {
+    const ExtensionId& extension_id,
+    const content::BrowserContext* context) const {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   LazyInitData();
@@ -223,13 +227,76 @@ ChromeComponentExtensionResourceManager::GetTemplateReplacementsForExtension(
     // Disable $i18n{} template JS string replacement during JS code coverage.
     base::FilePath devtools_code_coverage_dir_ =
         command_line->GetSwitchValuePath("devtools-code-coverage");
-    if (!devtools_code_coverage_dir_.empty())
+    if (!devtools_code_coverage_dir_.empty()) {
       return nullptr;
+    }
   }
 #endif
 
+  auto provider_it = template_data_providers_.find(
+      ExtensionIdAndContext(extension_id, context));
+  if (provider_it != template_data_providers_.end() &&
+      !provider_it->second.is_null()) {
+    base::DictValue dict = provider_it->second.Run();
+    ui::TemplateReplacements replacements;
+    ui::TemplateReplacementsFromDictionaryValue(dict, &replacements);
+    auto key = ExtensionIdAndContext(extension_id, context);
+    template_replacements_[key] = std::move(replacements);
+    return &template_replacements_[key];
+  }
+
   auto it = data_->template_replacements().find(extension_id);
   return it != data_->template_replacements().end() ? &it->second : nullptr;
+}
+
+bool ChromeComponentExtensionResourceManager::
+    IsDynamicComponentExtensionResource(
+        const ExtensionId& extension_id,
+        const std::string& path,
+        const content::BrowserContext* context) const {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  if (path != kDynamicStringsJsPath) {
+    return false;
+  }
+  auto it = template_data_providers_.find(
+      ExtensionIdAndContext(extension_id, context));
+  return it != template_data_providers_.end() && !it->second.is_null();
+}
+
+std::string ChromeComponentExtensionResourceManager::GetDynamicResourceContent(
+    const ExtensionId& extension_id,
+    const std::string& path,
+    const content::BrowserContext* context) const {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_EQ(path, kDynamicStringsJsPath);
+
+  auto it = template_data_providers_.find(
+      ExtensionIdAndContext(extension_id, context));
+  CHECK(it != template_data_providers_.end() && !it->second.is_null());
+
+  base::DictValue dict = it->second.Run();
+  return base::StringPrintf(kDynamicStringsModuleTemplate,
+                            base::WriteJson(dict).value_or("{}").c_str());
+}
+
+base::ScopedClosureRunner
+ChromeComponentExtensionResourceManager::RegisterTemplateDataProvider(
+    const ExtensionId& extension_id,
+    const content::BrowserContext* context,
+    TemplateDataProvider provider) const {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  auto key = ExtensionIdAndContext(extension_id, context);
+  template_data_providers_[key] = std::move(provider);
+  return base::ScopedClosureRunner(base::BindOnce(
+      &ChromeComponentExtensionResourceManager::OnTemplateDataProviderRemoved,
+      weak_factory_.GetWeakPtr(), key));
+}
+
+void ChromeComponentExtensionResourceManager::OnTemplateDataProviderRemoved(
+    const ExtensionIdAndContext& key) const {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  template_data_providers_.erase(key);
+  template_replacements_.erase(key);
 }
 
 void ChromeComponentExtensionResourceManager::LazyInitData() const {

@@ -3,10 +3,12 @@
 // found in the LICENSE file.
 
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import '/strings.m.js';
 
 // <if expr="not is_android">
 import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
 // </if>
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
@@ -45,6 +47,7 @@ export class AimEligibilityAppElement extends CrLitElement {
     return {
       eligibilityState_: {type: Object},
       inputState_: {type: String},
+      showFooter_: {type: Boolean},
     };
   }
 
@@ -63,6 +66,8 @@ export class AimEligibilityAppElement extends CrLitElement {
     driveStatus: null,
   };
   protected accessor inputState_: InputState = InputState.NONE;
+  protected accessor showFooter_: boolean =
+      loadTimeData.getBoolean('showAimEligibilityFooter');
 
   private callbackRouter_ = BrowserProxy.getInstance().getCallbackRouter();
   private listenerIds_: number[] = [];

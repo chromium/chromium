@@ -25,6 +25,10 @@ namespace net {
 class HttpResponseHeaders;
 }
 
+namespace content {
+class BrowserContext;
+}
+
 namespace network {
 struct ResourceRequest;
 }
@@ -73,7 +77,8 @@ void LoadResourceFromResourceBundle(
     const base::FilePath& resource_relative_path,
     int resource_id,
     scoped_refptr<net::HttpResponseHeaders> headers,
-    mojo::PendingRemote<network::mojom::URLLoaderClient> client);
+    mojo::PendingRemote<network::mojom::URLLoaderClient> client,
+    content::BrowserContext* browser_context);
 
 }  // namespace chrome_url_request_util
 }  // namespace extensions

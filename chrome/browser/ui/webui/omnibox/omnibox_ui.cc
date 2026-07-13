@@ -60,6 +60,11 @@ OmniboxUI::OmniboxUI(content::WebUI* web_ui)
 
   source->AddBoolean("isMlUrlScoringEnabled",
                      OmniboxFieldTrial::IsMlUrlScoringEnabled());
+
+  // The following keys (`aimEligibilityTitle`, `showAimEligibilityFooter`) are
+  // for illustration and parity purposes with the component extension version.
+  source->AddBoolean("showAimEligibilityFooter", true);
+  source->AddString("aimEligibilityTitle", "AIM Eligibility Diagnostic");
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(OmniboxUI)

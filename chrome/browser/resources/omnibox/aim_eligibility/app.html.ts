@@ -160,9 +160,11 @@ export function getHtml(this: AimEligibilityAppElement) {
         </div>
       `}
     </div>
-    <div class="footer">
-      Last updated: ${this.getLastUpdatedTimestamp_()}
-    </div>
+    ${this.showFooter_ ? html`
+      <div class="footer">
+        Last updated: ${this.getLastUpdatedTimestamp_()}
+      </div>
+    ` : ''}
   `;
   // clang-format on
 }
