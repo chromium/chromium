@@ -25,6 +25,7 @@
 #include "components/autofill/core/browser/at_memory/at_memory_enablement_utils.h"
 #include "components/autofill/core/browser/data_quality/validation.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/filling/filling_product.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
@@ -407,6 +408,25 @@ bool AutocompleteHistoryManager::IsFieldValueSaveable(
   // credit card numbers, CVCs, IBANs, promo codes, or autofilled loyalty cards.
   if (!IsFieldTypeSaveable(form, field.global_id())) {
     return false;
+  }
+
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillPreventAutofillFromSavingToAutocomplete)) {
+    const AutofillField* autofill_field =
+        form ? form->GetFieldById(field.global_id()) : nullptr;
+    if (autofill_field &&
+        autofill_field->all_modifiers().contains(FieldModifier::kAutofill) &&
+        (autofill_field->last_modifier() != FieldModifier::kUser ||
+         autofill_field->filling_product() != FillingProduct::kAutocomplete)) {
+      // If a field has been autofilled by a structured product (e.g. Address,
+      // Payments, Autofill AI), we avoid saving the submitted value to
+      // Autocomplete, even if the user edited it.
+      //
+      // However, if the field was filled by Autocomplete and then edited by
+      // the user, we should save the edited value as it represents a new
+      // user-edited autocomplete value.
+      return false;
+    }
   }
 
   // Do not save sensitive values like credit card numbers, IBANs, or Social

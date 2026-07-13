@@ -1123,6 +1123,93 @@ TEST_F(AutocompleteHistoryManagerTest, LoyaltyCardManualEntryIsSaved) {
       /*is_autocomplete_enabled=*/true);
 }
 
+// Tests that fields autofilled by standard Autofill or Autocomplete are not
+// saved to the Autocomplete database during form submission when the
+// kAutofillPreventAutofillFromSavingToAutocomplete feature is enabled.
+TEST_F(AutocompleteHistoryManagerTest, PreventSavingAutofilledFields) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      features::kAutofillPreventAutofillFromSavingToAutocomplete);
+
+  FormData form = test::GetFormData(
+      {.fields = {
+           {.role = NAME_FIRST, .value = u"John"},
+           {.role = NAME_LAST, .value = u"Doe"},
+           {.role = EMAIL_ADDRESS, .value = u"john.doe@example.com"},
+       }});
+
+  FormStructure form_structure{form};
+  ASSERT_EQ(3u, form_structure.field_count());
+
+  test_api(form_structure)
+      .SetFieldTypes({NAME_FIRST, NAME_LAST, EMAIL_ADDRESS});
+
+  // field(0) (NAME_FIRST) is autofilled by address Autofill.
+  form_structure.field(0)->AddFieldModifier(FieldModifier::kAutofill);
+  form_structure.field(0)->set_filling_product(FillingProduct::kAddress);
+
+  // field(1) (NAME_LAST) is autocompleted (filled by single field
+  // autocomplete).
+  form_structure.field(1)->AddFieldModifier(FieldModifier::kAutofill);
+  form_structure.field(1)->set_filling_product(FillingProduct::kAutocomplete);
+
+  // field(2) (EMAIL_ADDRESS) is not autofilled.
+
+  // Only field(2) (EMAIL_ADDRESS) is saveable in Autocomplete.
+  // Field(0) is skipped because it was autofilled by address Autofill.
+  // Field(1) is skipped because it was autocompleted (and not edited).
+  EXPECT_CALL(*(web_data_service_.get()),
+              AddFormFields(testing::ElementsAre(testing::Property(
+                  &FormFieldData::value, u"john.doe@example.com"))));
+
+  autocomplete_manager_->OnWillSubmitFormWithFields(
+      form.fields(), &form_structure,
+      /*is_autocomplete_enabled=*/true);
+}
+
+// Tests that if a field was autocompleted (filled by Autocomplete) and then
+// edited by the user, the user-edited value is allowed to be saved to the
+// Autocomplete database. However, if a field was filled by a structured
+// Autofill product and then edited, it is still prevented from being saved.
+TEST_F(AutocompleteHistoryManagerTest,
+       PreventSavingAutofilledFields_AllowEditedAutocomplete) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      features::kAutofillPreventAutofillFromSavingToAutocomplete);
+
+  FormData form =
+      test::GetFormData({.fields = {
+                             {.role = NAME_FIRST, .value = u"JohnEdited"},
+                             {.role = NAME_LAST, .value = u"DoeEdited"},
+                         }});
+
+  FormStructure form_structure{form};
+  ASSERT_EQ(2u, form_structure.field_count());
+
+  test_api(form_structure).SetFieldTypes({NAME_FIRST, NAME_LAST});
+
+  // field(0) (NAME_FIRST) is autofilled by address Autofill and then edited.
+  form_structure.field(0)->AddFieldModifier(FieldModifier::kAutofill);
+  form_structure.field(0)->set_filling_product(FillingProduct::kAddress);
+  form_structure.field(0)->AddFieldModifier(FieldModifier::kUser);
+
+  // field(1) (NAME_LAST) is autocompleted and then edited.
+  form_structure.field(1)->AddFieldModifier(FieldModifier::kAutofill);
+  form_structure.field(1)->set_filling_product(FillingProduct::kAutocomplete);
+  form_structure.field(1)->AddFieldModifier(FieldModifier::kUser);
+
+  // Only field(1) is saveable because it was autocompleted and then edited.
+  // Field(0) is skipped because it was autofilled by address Autofill and
+  // edited.
+  EXPECT_CALL(*(web_data_service_.get()),
+              AddFormFields(testing::ElementsAre(
+                  testing::Property(&FormFieldData::value, u"DoeEdited"))));
+
+  autocomplete_manager_->OnWillSubmitFormWithFields(
+      form.fields(), &form_structure,
+      /*is_autocomplete_enabled=*/true);
+}
+
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 class AutocompleteHistoryManagerAtMemoryTest
     : public AutocompleteHistoryManagerTest {
