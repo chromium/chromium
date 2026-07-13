@@ -527,6 +527,13 @@ struct MinMaxData {
     {"&#9;&#9;<span>X</span>",
      {10, 170},
      "white-space: pre-wrap; word-break: break-word;"},
+    // Tabulation inside a ruby base.
+    {"X<ruby>&#9;Y<rt>z</rt></ruby>", {90, 90}, "white-space: pre;"},
+    {"<ruby>X&#9;Y<rt>z</rt></ruby>", {90, 90}, "white-space: pre;"},
+    // Tabulation inside a nested ruby base.
+    {"A<ruby>B<ruby>&#9;X<rt>y</rt></ruby><rt>z</rt></ruby>",
+     {90, 90},
+     "white-space: pre;"},
     // Soft Hyphens.
     {"abcd&shy;ef xx", {50, 90}},
     {"abcd&shy;ef xx", {60, 90}, "hyphens: none;"},

@@ -2966,9 +2966,10 @@ void LineBreaker::HandleControlItem(const InlineItem& item,
       const ShapeResult* shape_result =
           ShapeResult::CreateForTabulationCharacters(
               font, item.Direction(), style.GetTabSize(),
-              RuntimeEnabledFeatures::TabAlignmentWithFloatsEnabled()
-                  ? position_ + ComputeFloatOffset()
-                  : position_,
+              (RuntimeEnabledFeatures::TabAlignmentWithFloatsEnabled()
+                   ? position_ + ComputeFloatOffset()
+                   : position_) +
+                  tab_stop_offset_,
               item.StartOffset(), item.Length());
       HandleText(item, *shape_result, line_info);
       return;
@@ -3552,6 +3553,13 @@ LineInfo LineBreaker::CreateSubLineInfo(
   sub_line_breaker.disallow_auto_wrap_ = disallow_auto_wrap;
   sub_line_breaker.SetInputRange(start, end_item_index,
                                  initial_whitespace_state, this);
+  if (RuntimeEnabledFeatures::TabSizeInRubyBaseEnabled()) {
+    // Tab stops occur at points that are multiples of the tab size from the
+    // starting content edge of the preserved tab’s nearest block container
+    // ancestor.
+    // https://www.w3.org/TR/css-text-3/#white-space-phase-2
+    sub_line_breaker.tab_stop_offset_ = position_ + tab_stop_offset_;
+  }
   sub_line_breaker.disable_trailing_whitespace_collapsing_ =
       disable_trailing_whitespace_collapsing;
   // OverrideAvailableWidth() prevents HandleFloat() from updating

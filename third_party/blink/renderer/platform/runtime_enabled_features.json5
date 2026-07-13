@@ -6161,6 +6161,10 @@
       status: "stable",
     },
     {
+      name: "TabSizeInRubyBase",
+      status: "stable",
+    },
+    {
       name: "TabSizeWithSpacing",
       status: "stable",
     },
