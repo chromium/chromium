@@ -7127,6 +7127,10 @@ const FeatureEntry kFeatureEntries[] = {
                                     "NtpNextFeatures")},
 
 #if !BUILDFLAG(IS_ANDROID)
+    {"chrome-dark-neutrals-26", flag_descriptions::kChromeDarkNeutrals26Name,
+     flag_descriptions::kChromeDarkNeutrals26Description, kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kChromeDarkNeutrals26)},
+
     {"ntp-alpha-background-collections",
      flag_descriptions::kNtpAlphaBackgroundCollectionsName,
      flag_descriptions::kNtpAlphaBackgroundCollectionsDescription, kOsDesktop,

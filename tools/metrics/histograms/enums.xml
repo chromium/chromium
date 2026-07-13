@@ -10478,6 +10478,7 @@ from previous Chrome versions.
   <int value="-1311133348" label="VrBrowsingNativeAndroidUi:enabled"/>
   <int value="-1310805652" label="WaylandSessionManagement:disabled"/>
   <int value="-1310737697" label="MaterialDesignSettings:enabled"/>
+  <int value="-1310576801" label="ChromeDarkNeutrals26:enabled"/>
   <int value="-1310405659" label="GlicHotkeyLocalScope:disabled"/>
   <int value="-1310387347"
       label="AccountReauthenticationRecentTimeWindow:disabled"/>
@@ -15722,6 +15723,7 @@ from previous Chrome versions.
   <int value="375934458" label="PortalsCrossOrigin:enabled"/>
   <int value="376825548" label="CloudGamingDevice:enabled"/>
   <int value="377093001" label="WebRtcHWH264Encoding:disabled"/>
+  <int value="378034668" label="ChromeDarkNeutrals26:disabled"/>
   <int value="378093891" label="PrecompileInlineScripts:disabled"/>
   <int value="378380475" label="ClipboardHistoryRefresh:disabled"/>
   <int value="378412701" label="LensOverlayBackToPage:enabled"/>

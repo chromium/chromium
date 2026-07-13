@@ -2688,6 +2688,10 @@ inline constexpr char kChromeWebStoreNavigationThrottleName[] =
 inline constexpr char kChromeWebStoreNavigationThrottleDescription[] =
     "When enabled, passes DM Token to the Chrome Web Store.";
 
+inline constexpr char kChromeDarkNeutrals26Name[] = "Chrome Dark Neutrals 26";
+inline constexpr char kChromeDarkNeutrals26Description[] =
+    "When enabled, updates the neutral palette for dark mode default theme";
+
 inline constexpr char kChromeFindsInternalsName[] = "Chrome Finds Internals";
 inline constexpr char kChromeFindsInternalsDescription[] =
     "Enables the chrome://chrome-finds-internals page.";
