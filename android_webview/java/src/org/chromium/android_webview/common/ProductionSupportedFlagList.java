@@ -999,6 +999,8 @@ public final class ProductionSupportedFlagList {
                 "Disallow script execution during blink lifecycle update."),
         Flag.baseFeature("ServiceWorkerAutoPreload"),
         Flag.baseFeature(GpuFeatures.WEB_GPU_USE_SPIRV14, "Use WebGPU's SPIR-V 1.4"),
+        Flag.baseFeature(GpuFeatures.WEB_GPU_USE_SPIRV_RECONVERGENCE_MODE,
+                "Use WebGPU's SPIR-V reconvergence mode"),
         Flag.commandLine(
                 AwSwitches.STARTUP_NON_BLOCKING_WEBVIEW_CONSTRUCTOR,
                 "When enabled, WebView constructor will not block on WebView process global"

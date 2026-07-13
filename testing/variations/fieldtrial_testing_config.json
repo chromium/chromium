@@ -26332,6 +26332,23 @@
             ]
         }
     ],
+    "WebGPUUseSpirvReconvergenceMode": [
+        {
+            "platforms": [
+                "android",
+                "android_webview",
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "WebGPUUseSpirvReconvergenceMode"
+                    ]
+                }
+            ]
+        }
+    ],
     "WebHistoryUseNewApi": [
         {
             "platforms": [
