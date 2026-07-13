@@ -4793,6 +4793,113 @@ TEST_F(ChromeShelfControllerArcDefaultAppsTest, PlayStoreDeferredLaunch) {
   arc_app_test_.PostProfileTearDown();
 }
 
+// Regression test for a heap-use-after-free in ArcAppLauncher::MaybeLaunchApp.
+// When the ArcPlaystoreShortcutShelfItemController owns the ArcAppLauncher via
+// its |playstore_launcher_| member (because the constructor's MaybeLaunchApp
+// returned false), a later observer-driven MaybeLaunchApp call can synchronously
+// replace the shelf item delegate (via AddSpinnerToShelf ->
+// ReplaceShelfItemDelegate), destroying the controller and the launcher while
+// MaybeLaunchApp is still on the stack. The subsequent |app_launched_ = true|
+// write at the end of MaybeLaunchApp is then a UAF write to the freed |this|.
+TEST_F(ChromeShelfControllerArcDefaultAppsTest, PlayStoreDeferredLaunchUAF) {
+  // Add ARC host app to enable Play Store default app.
+  extension_registrar_->AddExtension(arc_support_host_.get());
+  arc_app_test_.PreProfileSetUp();
+  arc_app_test_.PostProfileSetUp(profile());
+  ArcAppListPrefs* const prefs = arc_app_test_.arc_app_list_prefs();
+  EXPECT_TRUE(prefs->IsRegistered(arc::kPlayStoreAppId));
+
+  InitShelfController();
+
+  EnablePlayStore(true);
+
+  // Play Store is registered as a default app with |ready == false| (ARC has
+  // not yet sent an app-list refresh). This is the precondition for entering
+  // the deferred-launch / spinner branch in arc::LaunchAppWithIntent.
+  std::unique_ptr<ArcAppListPrefs::AppInfo> app_info =
+      prefs->GetApp(arc::kPlayStoreAppId);
+  ASSERT_TRUE(app_info);
+  ASSERT_FALSE(app_info->ready);
+
+  // Pin Play Store. Its shelf delegate is an
+  // ArcPlaystoreShortcutShelfItemController (see ChromeShelfItemFactory).
+  PinAppWithIDToShelf(arc::kPlayStoreAppId);
+  EXPECT_TRUE(shelf_controller_->IsAppPinned(arc::kPlayStoreAppId));
+  EXPECT_FALSE(shelf_controller_->GetShelfSpinnerController()->HasApp(
+      arc::kPlayStoreAppId));
+
+  auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile());
+
+  // Step 1: simulate a state in which the Play Store entry in the
+  // AppRegistryCache has readiness != kReady. A compromised ARCVM controlling
+  // arc::mojom::AppHost can cause this by publishing the Play Store with
+  // |suspended = true|, which makes ArcApps::GetReadiness() return
+  // kDisabledByPolicy. We model that here by publishing the readiness delta
+  // directly to the cache.
+  {
+    std::vector<apps::AppPtr> deltas;
+    auto app = std::make_unique<apps::App>(apps::AppType::kArc,
+                                           arc::kPlayStoreAppId);
+    app->readiness = apps::Readiness::kDisabledByPolicy;
+    deltas.push_back(std::move(app));
+    proxy->OnApps(std::move(deltas), apps::AppType::kArc,
+                  /*should_notify_initialized=*/false);
+  }
+
+  // Step 2: simulate the user clicking the pinned Play Store shelf icon.
+  // ArcPlaystoreShortcutShelfItemController::ItemSelected constructs an
+  // ArcAppLauncher with deferred_launch_allowed=true. The constructor's
+  // MaybeLaunchApp returns false because AppRegistryCache readiness is
+  // kDisabledByPolicy (blocked at the kReady/kDisabledByLocalSettings gate),
+  // so the launcher is moved into the controller's |playstore_launcher_|
+  // member -- its lifetime is now tied to the shelf delegate.
+  ash::ShelfItemDelegate* item_delegate =
+      model_->GetShelfItemDelegate(ash::ShelfID(arc::kPlayStoreAppId));
+  ASSERT_TRUE(item_delegate);
+  SelectItem(item_delegate);
+  // The constructor path must NOT have launched (no spinner yet); otherwise
+  // |playstore_launcher_| was never populated and the UAF cannot occur.
+  ASSERT_FALSE(shelf_controller_->GetShelfSpinnerController()->HasApp(
+      arc::kPlayStoreAppId));
+  // Delegate must still be the original ArcPlaystoreShortcutShelfItemController.
+  ASSERT_EQ(item_delegate,
+            model_->GetShelfItemDelegate(ash::ShelfID(arc::kPlayStoreAppId)));
+
+  // Step 3: simulate the ARCVM flipping the Play Store back to unsuspended,
+  // which causes ArcApps to republish it as kReady to the AppRegistryCache.
+  // AppRegistryCache fires OnAppUpdate on the owned ArcAppLauncher, which
+  // re-reads prefs (still ready==false) and calls MaybeLaunchApp(..., kReady).
+  // MaybeLaunchApp then calls proxy->Launch(kPlayStoreAppId) which routes to
+  // ArcApps::Launch -> arc::LaunchAppWithIntent. Because |app_info->ready| is
+  // false, the deferred branch calls AddSpinnerToShelf, which (since the Play
+  // Store item exists with STATUS_CLOSED) calls
+  // ShelfModel::ReplaceShelfItemDelegate. That destroys the
+  // ArcPlaystoreShortcutShelfItemController -- and with it, the ArcAppLauncher
+  // currently executing MaybeLaunchApp. Control then returns to
+  // arc_app_launcher.cc and writes |app_launched_ = true| to the freed object.
+  //
+  // Under ASan this is detected as heap-use-after-free (WRITE of size 1).
+  {
+    std::vector<apps::AppPtr> deltas;
+    auto app = std::make_unique<apps::App>(apps::AppType::kArc,
+                                           arc::kPlayStoreAppId);
+    app->readiness = apps::Readiness::kReady;
+    deltas.push_back(std::move(app));
+    proxy->OnApps(std::move(deltas), apps::AppType::kArc,
+                  /*should_notify_initialized=*/false);
+  }
+
+  // If we get here without ASan firing, at least verify the synchronous chain
+  // ran end-to-end (the spinner replaced the Play Store delegate).
+  EXPECT_TRUE(shelf_controller_->GetShelfSpinnerController()->HasApp(
+      arc::kPlayStoreAppId));
+  EXPECT_NE(item_delegate,
+            model_->GetShelfItemDelegate(ash::ShelfID(arc::kPlayStoreAppId)));
+
+  arc_app_test_.PreProfileTearDown();
+  arc_app_test_.PostProfileTearDown();
+}
+
 TEST_F(ChromeShelfControllerArcDefaultAppsTest, PlayStoreLaunchMetric) {
   extension_registrar_->AddExtension(arc_support_host_.get());
   // TODO(crbug.com/454468678): This should be called before profile is created.
