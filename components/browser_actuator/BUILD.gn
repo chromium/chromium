@@ -5,5 +5,11 @@
 group("unit_tests") {
   testonly = true
 
-  deps = [ "//components/browser_actuator/internal:unit_tests" ]
+  deps = [
+    "//components/browser_actuator/internal:unit_tests",
+
+    # Rust gtest tests, linked into the C++ test binary and run wherever
+    # components_unittests runs.
+    "//components/browser_actuator/internal/transport/proto_stream_client:stream_body_parser_unittests",
+  ]
 }

@@ -1,0 +1,27 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/rust/rust_static_library.gni")
+
+# Pure-Rust StreamBody framing parser: the part that interprets untrusted
+# network input. Keep this crate free of unsafe code and of dependencies.
+rust_static_library("stream_body_parser") {
+  crate_root = "rust/stream_body_parser.rs"
+  sources = [ crate_root ]
+  visibility = [ ":*" ]
+}
+
+# Rust gtest tests for the parser; linked into components_unittests via
+# the //components/browser_actuator:unit_tests group.
+rust_static_library("stream_body_parser_unittests") {
+  testonly = true
+  is_gtest_unittests = true
+  crate_root = "rust/stream_body_parser_unittests.rs"
+  sources = [ crate_root ]
+  deps = [
+    ":stream_body_parser",
+    "//testing/rust_gtest_interop",
+  ]
+  visibility = [ "//components/browser_actuator:unit_tests" ]
+}
