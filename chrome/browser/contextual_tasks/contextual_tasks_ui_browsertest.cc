@@ -326,6 +326,29 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksUIBrowserTest,
   run_loop.Run();
 }
 
+IN_PROC_BROWSER_TEST_F(ContextualTasksUIBrowserTest,
+                       TransferNavigationToEmbeddedPage_ExitsBasicMode) {
+  testing::NiceMock<MockContextualTasksPage> mock_page;
+
+  mojo::PendingReceiver<contextual_tasks::mojom::PageHandler> handler_receiver;
+  controller_->CreatePageHandler(mock_page.BindAndGetRemote(),
+                                 std::move(handler_receiver));
+  TriggerOnInnerWebContentsCreated(
+      browser()->tab_strip_model()->GetActiveWebContents());
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(mock_page, ExitBasicMode()).WillOnce([&run_loop]() {
+    run_loop.Quit();
+  });
+
+  GURL url("https://www.google.com/search?q=test");
+  content::OpenURLParams params(
+      url, content::Referrer(), WindowOpenDisposition::CURRENT_TAB,
+      ui::PAGE_TRANSITION_LINK, /*is_renderer_initiated=*/false);
+  controller_->TransferNavigationToEmbeddedPage(params);
+  run_loop.Run();
+}
+
 IN_PROC_BROWSER_TEST_F(ContextualTasksUIBrowserTest, HandleLensButtonClick) {
   // Setup LensController
   auto override =
