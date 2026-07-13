@@ -328,6 +328,14 @@ def __step_config(ctx, step_config):
             "remote": remote,
             "timeout": "2m",
         },
+        {
+            "name": "rust/cpp_api_from_rust",
+            "command_prefix": "python3 ../../build/rust/gni_impl/cpp_api_from_rust_wrapper.py",
+            "inputs": rust_toolchain + clang_inputs,
+            "indirect_inputs": rust_compile_indirect_inputs,
+            "remote": remote,
+            "timeout": "2m",
+        },
     ])
     return step_config
 

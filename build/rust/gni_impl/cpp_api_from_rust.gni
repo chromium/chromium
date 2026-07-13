@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/rust.gni")
 import("//build/toolchain/kythe.gni")
 
 # Defines a C++ `source_set` (and supporting targets) that contains C++
@@ -121,11 +122,8 @@ template("cpp_api_from_rust") {
     ]
 
     script = "//build/rust/gni_impl/cpp_api_from_rust_wrapper.py"
-    inputs = [
-      # `import`ed for `LoadRustEnvAndFlags`, etc.
-      "//build/rust/gni_impl/rustc_wrapper.py",
-
-      # Tools / executables:
+    inputs = rustc_wrapper_inputs
+    inputs += [
       _cpp_api_from_rust_exe_path,
       _rustfmt_exe_path,
       _rustfmt_config_path,
