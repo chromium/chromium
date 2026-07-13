@@ -44,6 +44,7 @@ import org.chromium.chrome.browser.bookmarks.BookmarkUtils;
 import org.chromium.chrome.browser.bookmarks.BookmarkViewUtils;
 import org.chromium.chrome.browser.bookmarks.R;
 import org.chromium.chrome.browser.bookmarks.bar.BookmarkBarUtils.BookmarkBarClickType;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
@@ -307,6 +308,9 @@ class BookmarkBarMediator implements BookmarkBarItemsProvider.Observer {
     }
 
     private void onBookmarksBarEmptySpaceRightClicked(float x, float y) {
+        if (!ChromeFeatureList.sBookmarksBarContextMenu.isEnabled()) {
+            return;
+        }
         mPopupCoordinator.showBookmarkBarEmptySpaceContextMenu(
                 mBookmarkBarView, new Point((int) x, (int) y));
     }
@@ -316,6 +320,9 @@ class BookmarkBarMediator implements BookmarkBarItemsProvider.Observer {
 
         final boolean isRightClick = (buttonState & MotionEvent.BUTTON_SECONDARY) != 0;
         if (isRightClick) {
+            if (!ChromeFeatureList.sBookmarksBarContextMenu.isEnabled()) {
+                return;
+            }
             View anchorView = getAnchorViewForBookmark(item);
             if (anchorView == null) return;
             mPopupCoordinator.showBookmarkItemContextMenu(anchorView, item);

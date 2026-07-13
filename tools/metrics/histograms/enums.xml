@@ -8909,6 +8909,7 @@ from previous Chrome versions.
   <int value="-1821491797"
       label="AutofillEnableRankingFormulaCreditCards:enabled"/>
   <int value="-1821336389" label="DiscardedTabTreatment:enabled"/>
+  <int value="-1821271329" label="BookmarksBarContextMenu:enabled"/>
   <int value="-1821058653" label="enable-delay-agnostic-aec"/>
   <int value="-1820740914"
       label="AndroidAutofillUpdateContextForWebContents:disabled"/>
@@ -13857,6 +13858,7 @@ from previous Chrome versions.
   <int value="-245342115" label="PermissionChip:enabled"/>
   <int value="-243786659" label="DevToolsPlusButton:disabled"/>
   <int value="-242836432" label="EnableFakeKeyboardHeuristic:disabled"/>
+  <int value="-242673912" label="BookmarksBarContextMenu:disabled"/>
   <int value="-242603713" label="EnableImprovedGuestProfileMenu:disabled"/>
   <int value="-242441279" label="SafetyCheckUnusedSitePermissions:enabled"/>
   <int value="-242431978" label="StartSurfaceRefactor:enabled"/>
