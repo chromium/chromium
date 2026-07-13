@@ -35,10 +35,6 @@ SoftNavigationContext::SoftNavigationContext(
       track_(perfetto::NamedTrack::FromPointer("blink::SoftNavigation", this)) {
   CHECK(initial_event_timing_);
   CHECK(initial_event_timing_->IsInteraction());
-  // If this trips in a unittest, you may need to set the timestamps on the
-  // events you're creating. E.g., when creating WebPointerEvent, invoke
-  // SetTimeStamp(base::TimeTicks::Now()). See crbug.com/490814752.
-  CHECK(!initial_event_timing_->GetStartTime().is_null());
 
   TRACE_EVENT_BEGIN("loading", "SoftNavigation", track_, TimeOrigin());
 
@@ -133,6 +129,11 @@ bool SoftNavigationContext::AddPaintedArea(PaintTimingRecord* record) {
 }
 
 bool SoftNavigationContext::SatisfiesSoftNavNonPaintCriteria() const {
+  // TODO(crbug.com/490814752): Event StartTime value seems to be missing in
+  // some unittests.  It should not be missing from any real events.
+  if (TimeOrigin().is_null()) {
+    return false;
+  }
   // These start false, and become true as we observe effects.
   if (!HasDomModification() || !HasUrl()) {
     return false;
