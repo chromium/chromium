@@ -10,8 +10,9 @@ source_set("browser_tests") {
   sources = [ "webgl_infobar_browsertest.cc" ]
   deps = [
     "//chrome/browser/infobars:test_support",
-    "//chrome/test:test_support",
-    "//chrome/test:test_support_ui",
+    "//chrome/test/base:in_process_browser_test",
+    "//chrome/test/base:test_launcher_utils",
+    "//chrome/test/base:ui_test_utils",
     "//components/infobars/content",
     "//gpu/config",
   ]

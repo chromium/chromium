@@ -14,17 +14,12 @@ source_set("user_education") {
   ]
   public_deps = [
     "//chrome/browser/ui/user_education",
-
-    # TODO(crbug.com/353332589): Replace with
-    # //chrome/test/base:in_process_browser_test once
-    # chrome/test/base/in_process_browser_test.{h,cc} are componentized.
-    # interactive_feature_promo_test.h includes in_process_browser_test.h which
-    # is still compiled inside test_support_ui.
-    "//chrome/test:test_support_ui",
+    "//chrome/test/base:in_process_browser_test",
     "//chrome/test/interaction",
     "//components/feature_engagement/test:test_support",
     "//components/user_education/common",
     "//components/user_education/test",
+    "//components/webui/chrome_urls",
   ]
 }
 
