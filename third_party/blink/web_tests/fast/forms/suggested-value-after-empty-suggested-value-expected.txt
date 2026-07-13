@@ -94,7 +94,7 @@ Input before setting suggested values:
 |       pseudo="picker(select)"
 |       shadow:pseudoId="picker(select)"
 |       <slot>
-|         id="-internal-select-options-slot"
+|         id="select-options"
 |     <div>
 |       popover="manual"
 |       pseudo="-internal-select-autofill-preview"
@@ -219,7 +219,7 @@ Input after setting suggestedValue:
 |       pseudo="picker(select)"
 |       shadow:pseudoId="picker(select)"
 |       <slot>
-|         id="-internal-select-options-slot"
+|         id="select-options"
 |     <div>
 |       popover="manual"
 |       pseudo="-internal-select-autofill-preview"
@@ -342,7 +342,7 @@ After resetting suggestedValue value:
 |       pseudo="picker(select)"
 |       shadow:pseudoId="picker(select)"
 |       <slot>
-|         id="-internal-select-options-slot"
+|         id="select-options"
 |     <div>
 |       popover="manual"
 |       pseudo="-internal-select-autofill-preview"

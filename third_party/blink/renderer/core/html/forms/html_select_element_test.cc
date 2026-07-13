@@ -1154,7 +1154,7 @@ TEST_F(HTMLSelectElementTest, DescendantCounters) {
   };
   auto options_slot = [select]() {
     return select->GetShadowRoot()->getElementById(
-        shadow_element_names::kPseudoSelectOptionsSlot);
+        shadow_element_names::kSelectOptions);
   };
 
   EXPECT_FALSE(select->ChildrenDescendantCounts().Contains(c1));

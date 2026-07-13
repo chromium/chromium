@@ -119,7 +119,7 @@ instead of "initial value".
 |       pseudo="picker(select)"
 |       shadow:pseudoId="picker(select)"
 |       <slot>
-|         id="-internal-select-options-slot"
+|         id="select-options"
 |     <div>
 |       popover="manual"
 |       pseudo="-internal-select-autofill-preview"

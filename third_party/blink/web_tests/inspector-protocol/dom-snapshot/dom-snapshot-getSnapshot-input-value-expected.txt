@@ -177,7 +177,7 @@ Tests DOMSnapshot.getSnapshot method returning input values.
             attributes : [
                 [0] : {
                     name : id
-                    value : -internal-select-options-slot
+                    value : select-options
                 }
             ]
             backendNodeId : <number>

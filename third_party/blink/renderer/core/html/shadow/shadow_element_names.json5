@@ -135,10 +135,6 @@
       Symbol: "kSelectAutofillPreviewText",
     },
     {
-      name: "-internal-select-options-slot",
-      Symbol: "kPseudoSelectOptionsSlot",
-    },
-    {
       name: "-webkit-calendar-picker-indicator",
       Symbol: "kPseudoCalendarPickerIndicator",
     },

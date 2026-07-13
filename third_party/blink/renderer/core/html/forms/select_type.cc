@@ -618,8 +618,7 @@ void MenuListSelectType::CreateShadowSubtree(ShadowRoot& root) {
   popover_->setAttribute(html_names::kPopoverAttr, AtomicString("auto"));
 
   popover_options_slot_ = MakeGarbageCollected<HTMLSlotElement>(doc);
-  popover_options_slot_->SetIdAttribute(
-      shadow_element_names::kPseudoSelectOptionsSlot);
+  popover_options_slot_->SetIdAttribute(shadow_element_names::kSelectOptions);
 
   autofill_popover_ =
       MakeGarbageCollected<HTMLSelectElement::SelectAutofillPreviewElement>(
@@ -1977,7 +1976,7 @@ void ListBoxSelectType::SetListBoxActiveSelection(HTMLOptionElement* option) {
 void ListBoxSelectType::CreateShadowSubtree(ShadowRoot& root) {
   Document& doc = select_->GetDocument();
   option_slot_ = MakeGarbageCollected<HTMLSlotElement>(doc);
-  option_slot_->SetIdAttribute(shadow_element_names::kPseudoSelectOptionsSlot);
+  option_slot_->SetIdAttribute(shadow_element_names::kSelectOptions);
 
   if (RuntimeEnabledFeatures::FilterableSelectEnabled() &&
       select_->NumDescendantInputs()) {
