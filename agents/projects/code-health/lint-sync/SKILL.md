@@ -78,6 +78,8 @@ syntax rules and examples before making replacements.
      (matching the enum constant name) and any <summary> tags MUST be brief
      descriptions of what the enum tracks.**
    - **Source:**
+     - **Append-Only Logging Comment:** Check if the enum's preceding comment already contains a warning about append-only histogram logging. If it does not, add the standard Chromium metric comment:
+       `// These values are persisted to logs. Entries should not be renumbered and numeric values should never be reused.`
      - **Clean up legacy sync comments (CRITICAL):** Search the enum's preceding
        comments for manual synchronization reminders (e.g.,
        `// Please keep in sync with...` or
