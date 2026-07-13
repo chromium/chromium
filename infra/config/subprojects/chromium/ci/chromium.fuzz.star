@@ -460,6 +460,28 @@ browser_asan_builder(
     siso_remote_jobs = 250,
 )
 
+# TODO(crbug.com/531402315): After verifying BRPV2 is as good as BRPV1, make
+# it the default and clean up this builder.
+browser_asan_builder(
+    name = "ASAN Release BrpV2",
+    description_html = "This builder produces an ASAN Chromium build with AsanBackupRefPtrV2.",
+    # TODO(crbug.com/531402315): Add to gardener rotation after verifying
+    gardener_rotations = args.ignore_default(None),
+    build_config = builder_config.build_config.RELEASE,
+    target_bits = 64,
+    target_platform = builder_config.target_platform.LINUX,
+    clusterfuzz_archive_name_prefix = "asan-brp-v2",
+    contact_team_email = "chrome-sanitizer-builder-owners@google.com",
+    gn_extra_configs = [
+        "lsan",
+        "fuzzer",
+        "v8_heap",
+        "enable_asan_backup_ref_ptr_v2",
+    ],
+    max_concurrent_invocations = 1,
+    siso_remote_jobs = 250,
+)
+
 ci.builder(
     name = "ASAN Release V8 Sandbox Testing",
     description_html = "This builder produces an ASan Chromium build in the V8 Sandbox Testing configuration.",

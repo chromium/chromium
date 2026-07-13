@@ -263,6 +263,7 @@
   "chromium.fuzz": {
     "ASAN Debug": "ci/ASAN Debug/gn-args.json",
     "ASAN Release": "ci/ASAN Release/gn-args.json",
+    "ASAN Release BrpV2": "ci/ASAN Release BrpV2/gn-args.json",
     "ASAN Release Media": "ci/ASAN Release Media/gn-args.json",
     "ASAN Release V8 Sandbox Testing": "ci/ASAN Release V8 Sandbox Testing/gn-args.json",
     "ASan Release (32-bit x86 with V8-ARM)": "ci/ASan Release (32-bit x86 with V8-ARM)/gn-args.json",

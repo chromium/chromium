@@ -1,5 +1,6 @@
 ci/ASAN Debug
 ci/ASAN Release
+ci/ASAN Release BrpV2
 ci/ChromiumOS ASAN Release
 ci/Linux ASan LSan Builder
 ci/Linux ASan LSan Tests (1)
