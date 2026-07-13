@@ -42,7 +42,6 @@ void ScriptTimingInfo::Trace(Visitor* visitor) const {
 
 void AnimationFrameTimingInfo::Trace(Visitor* visitor) const {
   visitor->Trace(scripts_);
-  visitor->Trace(conditional_marks_);
 }
 
 uint64_t AnimationFrameTimingInfo::GetTraceId() const {

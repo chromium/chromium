@@ -100,11 +100,11 @@ PerformanceLongAnimationFrameTiming::PerformanceLongAnimationFrameTiming(
     DCHECK(info->ConditionalMarks().empty());
   }
 
-  for (ConditionalMarkInfo* conditional_mark : info->ConditionalMarks()) {
+  for (const ConditionalMarkInfo& conditional_mark : info->ConditionalMarks()) {
     user_timing_entries_.push_back(
         MakeGarbageCollected<PerformanceMarkConditional>(
-            conditional_mark->GetName(), conditional_mark->GetStartTime(),
-            source, navigation_id));
+            conditional_mark.name, conditional_mark.start_time, source,
+            navigation_id));
   }
 }
 

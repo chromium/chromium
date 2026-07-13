@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
+#include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
 
@@ -93,20 +94,14 @@ class ScriptTimingInfo : public GarbageCollected<ScriptTimingInfo> {
   scoped_refptr<const SecurityOrigin> security_origin_;
 };
 
-class ConditionalMarkInfo : public GarbageCollected<ConditionalMarkInfo> {
- public:
+struct ConditionalMarkInfo {
   ConditionalMarkInfo(const AtomicString& name, base::TimeTicks start_time)
-      : name_(name), start_time_(start_time) {}
-  void Trace(Visitor* visitor) const {}
-  const AtomicString& GetName() const { return name_; }
-  base::TimeTicks GetStartTime() const { return start_time_; }
-
- private:
-  AtomicString name_;
-  base::TimeTicks start_time_;
+      : name(name), start_time(start_time) {}
+  AtomicString name;
+  base::TimeTicks start_time;
 };
 
-class AnimationFrameTimingInfo
+class AnimationFrameTimingInfo final
     : public GarbageCollected<AnimationFrameTimingInfo> {
  public:
   explicit AnimationFrameTimingInfo(base::TimeTicks start_time)
@@ -139,12 +134,12 @@ class AnimationFrameTimingInfo
     scripts_ = scripts;
   }
 
-  const HeapVector<Member<ConditionalMarkInfo>>& ConditionalMarks() const {
+  const Vector<ConditionalMarkInfo>& ConditionalMarks() const {
     return conditional_marks_;
   }
 
   void SetConditionalMarks(
-      const HeapVector<Member<ConditionalMarkInfo>>& conditional_marks) {
+      const Vector<ConditionalMarkInfo>& conditional_marks) {
     conditional_marks_ = conditional_marks;
   }
 
@@ -178,7 +173,7 @@ class AnimationFrameTimingInfo
 
   uint64_t GetTraceId() const;
 
-  virtual void Trace(Visitor*) const;
+  void Trace(Visitor*) const;
 
  private:
   // Measured at the beginning of the first task that caused a frame update,
@@ -208,7 +203,7 @@ class AnimationFrameTimingInfo
   base::TimeDelta layout_duration_;
 
   HeapVector<Member<ScriptTimingInfo>> scripts_;
-  HeapVector<Member<ConditionalMarkInfo>> conditional_marks_;
+  Vector<ConditionalMarkInfo> conditional_marks_;
 
   // Id for the BeginFrame, which triggered this animation frame.
   viz::BeginFrameId begin_frame_id_;

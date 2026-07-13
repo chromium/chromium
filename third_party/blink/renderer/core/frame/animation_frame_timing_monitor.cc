@@ -73,8 +73,7 @@ void AnimationFrameTimingMonitor::WillHandleInput(LocalFrame* frame) {
 void AnimationFrameTimingMonitor::MarkConditional(const AtomicString& name,
                                                   base::TimeTicks start_time) {
   if (conditional_marks_.size() < kConditionalUserTimingBufferSize) {
-    conditional_marks_.push_back(
-        MakeGarbageCollected<ConditionalMarkInfo>(name, start_time));
+    conditional_marks_.push_back(ConditionalMarkInfo(name, start_time));
   }
 }
 
@@ -299,7 +298,7 @@ void AnimationFrameTimingMonitor::OnTaskCompleted(
   std::swap(scripts, current_scripts_);
   current_scripts_.clear();
 
-  HeapVector<Member<ConditionalMarkInfo>> conditional_marks;
+  Vector<ConditionalMarkInfo> conditional_marks;
   if (!conditional_marks_.empty()) {
     CHECK(RuntimeEnabledFeatures::ConditionalTracingLoAFEnabled());
     std::swap(conditional_marks, conditional_marks_);
@@ -572,7 +571,6 @@ void AnimationFrameTimingMonitor::RecordLongAnimationFrameUKMAndTrace(
 void AnimationFrameTimingMonitor::Trace(Visitor* visitor) const {
   visitor->Trace(current_frame_timing_info_);
   visitor->Trace(current_scripts_);
-  visitor->Trace(conditional_marks_);
   visitor->Trace(frame_handling_input_);
   visitor->Trace(task_attributed_window_);
 }

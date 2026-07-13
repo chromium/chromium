@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/core/timing/performance_entry.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
+#include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace base {
 class TimeTicks;
@@ -118,7 +119,7 @@ class CORE_EXPORT AnimationFrameTimingMonitor final
  private:
   Member<AnimationFrameTimingInfo> current_frame_timing_info_;
   HeapVector<Member<ScriptTimingInfo>> current_scripts_;
-  HeapVector<Member<ConditionalMarkInfo>> conditional_marks_;
+  Vector<ConditionalMarkInfo> conditional_marks_;
   viz::BeginFrameId current_begin_frame_id_;
   struct PendingScriptInfo {
     ScriptTimingInfo::InvokerType invoker_type;
