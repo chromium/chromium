@@ -229,7 +229,7 @@ void SidePanelCoordinator::Close(SidePanelEntryHideReason reason,
       side_panel->Contains(side_panel->GetFocusManager()->GetFocusedView())) {
     if (auto* elements = BrowserElementsViews::From(&*browser_)) {
       if (views::View* contents_web_view =
-              elements->GetView(ContentsWebView::kContentsWebViewElementId)) {
+              elements->RetrieveView(kActiveContentsWebViewRetrievalId)) {
         contents_web_view->RequestFocus();
       }
     }
