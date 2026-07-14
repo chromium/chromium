@@ -15,6 +15,7 @@ import './shared_style.css.js';
 import type {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -242,6 +243,12 @@ export class CheckupListItemElement extends CheckupListItemElementBase {
       default:
         return this.i18n('automatedPasswordChangeError');
     }
+  }
+
+  protected getArrowSelectorSparkIcon_(): string {
+    return loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+        'passwords-icon:arrow-selector-spark' :
+        'passwords-icon:arrow-selector-spark-old';
   }
 }
 

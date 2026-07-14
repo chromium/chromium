@@ -14,6 +14,7 @@ import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_
 import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import type {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -182,6 +183,24 @@ export class FullDataResetElement extends FullDataResetElementBase {
       this.i18n('fullResetTitle'),
       this.i18n('fullResetRowDescription'),
     ].join('. ');
+  }
+
+  protected getWarningIcon_(): string {
+    return loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+        'passwords-icon:warning' :
+        'passwords-icon:outlined-warning-old';
+  }
+
+  protected getPasskeyIcon_(): string {
+    return loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+        'passwords-icon:passkey' :
+        'passwords-icon:passkey-filled-old';
+  }
+
+  protected getPasswordIcon_(): string {
+    return loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+        'passwords-icon:password' :
+        'passwords-icon:password-old';
   }
 }
 

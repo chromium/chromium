@@ -12,6 +12,7 @@ import './shared_style.css.js';
 import './dialogs/move_passwords_dialog.js';
 
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
 import {htmlEscape} from 'chrome://resources/js/util.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -204,6 +205,12 @@ export class PasswordListItemElement extends PasswordListItemElementBase {
       return this.deviceOnlyCredentialsAccessibilityLabelText_;
     }
     return this.i18n('viewPasswordAriaDescription', htmlEscape(this.item.name));
+  }
+
+  protected getCloudUploadIcon_(): string {
+    return loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+        'passwords-icon:cloud-upload' :
+        'passwords-icon:password-cloud-upload-old';
   }
 }
 

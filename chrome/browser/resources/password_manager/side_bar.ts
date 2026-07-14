@@ -12,6 +12,7 @@ import './icons.html.js';
 import {HelpBubbleMixin} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin.js';
 import type {CrMenuSelectorElement} from 'chrome://resources/cr_elements/cr_menu_selector/cr_menu_selector.js';
 import {assert} from 'chrome://resources/js/assert.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import type {CredentialsChangedListener} from './password_manager_proxy.js';
@@ -154,6 +155,18 @@ export class PasswordManagerSideBarElement extends
       return '99+';
     }
     return String(this.compromisedPasswords_);
+  }
+
+  protected getInventoryIcon_(): string {
+    return loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+        'passwords-icon:inventory' :
+        'passwords-icon:checkup-old';
+  }
+
+  protected getSettingsIcon_(): string {
+    return loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+        'passwords-icon:settings' :
+        'passwords-icon:settings-old';
   }
 }
 

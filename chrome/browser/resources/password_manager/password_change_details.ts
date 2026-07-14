@@ -9,6 +9,7 @@ import './shared_style.css.js';
 import './checkup_list_item.js';
 
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './password_change_details.html.js';
@@ -47,6 +48,30 @@ export class PasswordChangeDetailsElement extends
 
   private navigateBack_() {
     Router.getInstance().navigateTo(Page.SETTINGS);
+  }
+
+  protected getAccountBoxIcon_(): string {
+    return loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+        'passwords-icon:account-box' :
+        'passwords-icon:account-box-old';
+  }
+
+  protected getChatInfoIcon_(): string {
+    return loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+        'passwords-icon:chat-info' :
+        'passwords-icon:chat-info-old';
+  }
+
+  protected getLockIcon_(): string {
+    return loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+        'passwords-icon:lock' :
+        'passwords-icon:lock-old';
+  }
+
+  protected getPsychiatryIcon_(): string {
+    return loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+        'passwords-icon:psychiatry' :
+        'passwords-icon:psychiatry-old';
   }
 }
 

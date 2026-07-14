@@ -26,7 +26,7 @@
     </a>
     <a id="checkup" role="menuitem" class="cr-nav-menu-item"
         path="checkup" href="/checkup" on-click="onItemClick_">
-      <cr-icon icon="passwords-icon:checkup"></cr-icon>
+      <cr-icon icon="[[getInventoryIcon_()]]"></cr-icon>
       <span>$i18n{checkup}</span>
       <div id="compromisedPasswords" hidden$="[[!compromisedPasswords_]]">
         [[getCompromisedPasswordsBadge_(compromisedPasswords_)]]</div>
@@ -34,7 +34,7 @@
     </a>
     <a id="settings" role="menuitem" class="cr-nav-menu-item"
         path="settings" href="/settings" on-click="onItemClick_">
-      <cr-icon icon="passwords-icon:settings"></cr-icon>
+      <cr-icon icon="[[getSettingsIcon_()]]"></cr-icon>
       $i18n{settings}
       <cr-ripple></cr-ripple>
     </a>

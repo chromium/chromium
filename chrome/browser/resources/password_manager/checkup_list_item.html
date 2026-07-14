@@ -109,15 +109,16 @@
         <template is="dom-if"
         if="[[isAutoChangePasswordIdle_(passwordChangeState)]]">
           <cr-button
-          class="tonal-button"
+            class="tonal-button"
             id="autoChangePasswordButton"
             on-click="onAutoChangePasswordClick_"
             aria-label$="[[getAutoChangeButtonAriaLabel_(group, item)]]">
-            <cr-icon icon="passwords-icon:arrow-selector-spark"
-            id="auto-change-password-link-icon">
+            <cr-icon
+              icon="[[getArrowSelectorSparkIcon_()]]"
+              id="auto-change-password-link-icon">
             </cr-icon>
             [[getAutoChangePasswordButtonText_(passwordChangeState)]]
-            </cr-button>
+          </cr-button>
         </template>
         <template is="dom-if"
           if="[[!isAutoChangePasswordIdle_(passwordChangeState)]]">

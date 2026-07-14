@@ -64,7 +64,7 @@
   <div slot="body">
     <div id="detailsContainer">
       <div class="counter-row">
-        <cr-icon icon="passwords-icon:password">
+        <cr-icon icon="[[getPasswordIcon_()]]">
         </cr-icon>
         <div>
           <h3 class="counter-summary">[[passwordsCount_]]</h3>
@@ -72,7 +72,7 @@
         </div>
       </div>
       <div class="counter-row">
-        <cr-icon icon="passwords-icon:passkey-filled">
+        <cr-icon icon="[[getPasskeyIcon_()]]">
         </cr-icon>
         <div>
           <h3 class="counter-summary">[[passkeysCount_]]</h3>
@@ -81,7 +81,7 @@
       </div>
     </div>
     <div id="warningContainer">
-      <cr-icon id="warningIcon" icon="passwords-icon:outlined-warning">
+      <cr-icon id="warningIcon" icon="[[getWarningIcon_()]]">
       </cr-icon>
       <div>$i18n{fullResetConfirmationDescription}</div>
     </div>
