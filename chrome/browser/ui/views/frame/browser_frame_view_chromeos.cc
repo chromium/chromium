@@ -1074,8 +1074,17 @@ void BrowserFrameViewChromeOS::MaybeAddAppIconToLayoutParams(
 void BrowserFrameViewChromeOS::LayoutProfileIndicator() {
   DCHECK(profile_indicator_icon_);
   const int frame_height =
-      GetTopInset(false) +
-      GetClientFrameElementInfo().tabstrip_preferred_height;
+      GetBrowserView()->ShouldDrawVerticalTabStrip() &&
+              GetBrowserView()->toolbar()
+          ? GetBrowserView()->toolbar()->height()
+          : GetTopInset(false) +
+                GetClientFrameElementInfo().tabstrip_preferred_height;
+
+  if (frame_height == 0) {
+    // In fullscreen, the height can be zero so hide the profile indicator.
+    profile_indicator_icon_->SetVisible(false);
+    return;
+  }
   profile_indicator_icon_->SetPosition(
       gfx::Point(kProfileIndicatorPadding,
                  (frame_height - profile_indicator_icon_->height()) / 2));

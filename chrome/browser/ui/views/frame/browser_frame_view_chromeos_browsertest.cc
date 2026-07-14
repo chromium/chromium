@@ -59,7 +59,9 @@
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "chrome/browser/ui/passwords/passwords_client_ui_delegate.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
+#include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_bar_view.h"
@@ -1720,6 +1722,10 @@ IN_PROC_BROWSER_TEST_P(LockedFullscreenBrowserFrameViewChromeOSTest,
 
 class BrowserFrameViewAshAvatarTest : public BrowserFrameViewChromeOSTest {
  public:
+  BrowserFrameViewAshAvatarTest() {
+    scoped_feature_list_.InitAndEnableFeature(tabs::kVerticalTabs);
+  }
+
   static constexpr inline auto kPrimaryAccountId =
       AccountId::Literal::FromUserEmailGaiaId("primary@test",
                                               GaiaId::Literal("12345"));
@@ -1759,6 +1765,8 @@ class BrowserFrameViewAshAvatarTest : public BrowserFrameViewChromeOSTest {
   }
 
  private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+
   ash::DeviceStateMixin device_state_{
       &mixin_host_,
       ash::DeviceStateMixin::State::OOBE_COMPLETED_PERMANENTLY_UNOWNED};
@@ -1826,6 +1834,70 @@ IN_PROC_BROWSER_TEST_P(BrowserFrameViewAshAvatarTest,
   window_manager->ShowWindowForUser(window, kPrimaryAccountId);
   EXPECT_FALSE(BrowserFrameViewChromeOS::ShouldShowAvatarForTesting(window));
   EXPECT_FALSE(test_api.GetProfileIndicatorIcon());
+}
+
+// Tests that the profile indicator icon is positioned within the browser
+// bounds on both horizontal and vertical tab strip.
+IN_PROC_BROWSER_TEST_P(BrowserFrameViewAshAvatarTest,
+                       ProfileIndicatorPositionWithinBounds) {
+  LogIn(kPrimaryAccountId);
+  Profile* primary_user_profile = Profile::FromBrowserContext(
+      ash::BrowserContextHelper::Get()->GetBrowserContextByAccountId(
+          kPrimaryAccountId));
+
+  ash::NewWindowDelegate::GetInstance()->NewWindow(
+      /*incognito=*/false, /*should_trigger_session_restore=*/false);
+  BrowserWindowInterface* browser =
+      ProfileBrowserCollection::GetForProfile(primary_user_profile)
+          ->GetLastActiveBrowser();
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
+  BrowserFrameViewChromeOS* frame_view = GetFrameViewChromeOS(browser_view);
+  BrowserFrameViewChromeOSTestApi test_api(frame_view);
+  aura::Window* window = browser->GetWindow()->GetNativeWindow();
+
+  // Log in with the secondary user.
+  LogIn(kSecondaryAccountId);
+
+  // Move back to the primary user's desktop.
+  SessionControllerClientImpl::Get()->SwitchActiveUser(kPrimaryAccountId);
+  ASSERT_EQ(
+      session_manager::SessionManager::Get()->GetActiveSession()->account_id(),
+      kPrimaryAccountId);
+
+  auto* window_manager = ash::Shell::Get()->multi_user_window_manager();
+
+  // Teleport the window to secondary user's desktop.
+  browser_view->Activate();
+  window_manager->ShowWindowForUser(window, kSecondaryAccountId);
+  ASSERT_EQ(
+      session_manager::SessionManager::Get()->GetActiveSession()->account_id(),
+      kSecondaryAccountId);
+
+  EXPECT_TRUE(BrowserFrameViewChromeOS::ShouldShowAvatarForTesting(window));
+  auto* icon = test_api.GetProfileIndicatorIcon();
+  ASSERT_TRUE(icon);
+  EXPECT_TRUE(icon->GetVisible());
+
+  // Horizontal tab strip mode (default). Verify that the profile indicator icon
+  // is positioned within the browser frame bounds.
+  EXPECT_FALSE(browser_view->ShouldDrawVerticalTabStrip());
+  EXPECT_GE(icon->bounds().y(), 0);
+  EXPECT_LE(icon->bounds().bottom(), frame_view->height());
+  EXPECT_TRUE(frame_view->GetLocalBounds().Contains(icon->bounds()));
+
+  // Switch to vertical tab strip mode.
+  auto* controller = tabs::VerticalTabStripStateController::From(browser);
+  ASSERT_TRUE(controller);
+  controller->SetVerticalTabsEnabled(true);
+  browser_view->GetWidget()->LayoutRootViewIfNecessary();
+
+  // Verify that in vertical tab strip mode, the profile indicator icon is also
+  // positioned within the browser frame bounds.
+  EXPECT_TRUE(browser_view->ShouldDrawVerticalTabStrip());
+  EXPECT_TRUE(icon->GetVisible());
+  EXPECT_GE(icon->bounds().y(), 0);
+  EXPECT_LE(icon->bounds().bottom(), frame_view->height());
+  EXPECT_TRUE(frame_view->GetLocalBounds().Contains(icon->bounds()));
 }
 
 // Regression test for b/527095091.
