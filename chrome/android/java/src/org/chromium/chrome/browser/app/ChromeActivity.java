@@ -2908,7 +2908,7 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
             return true;
         }
 
-        if (id == R.id.feedback_form || id == R.id.report_issue_menu_id) {
+        if (id == R.id.feedback_form) {
             if (!FeedbackPolicyManager.getInstance().isUserFeedbackAllowed()) {
                 return true;
             }

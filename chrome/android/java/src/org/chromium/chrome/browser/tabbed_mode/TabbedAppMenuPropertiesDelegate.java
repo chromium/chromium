@@ -37,7 +37,6 @@ import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.device.DeviceConditions;
 import org.chromium.chrome.browser.enterprise.util.ManagedBrowserUtils;
 import org.chromium.chrome.browser.feed.FeedFeatures;
-import org.chromium.chrome.browser.feedback.FeedbackPolicyManager;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.glic.GlicEnabling;
@@ -1470,9 +1469,6 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
         List<ListItem> submenuItems = new ArrayList<>();
         submenuItems.add(buildAboutChromeItem());
         submenuItems.add(buildHelpCenterItem());
-        if (FeedbackPolicyManager.getInstance().isUserFeedbackAllowed()) {
-            submenuItems.add(buildReportIssueItem());
-        }
 
         int helpString = HelpAndFeedbackLauncher.getHelpMenuStringRes();
         return new ListItem(
@@ -1494,18 +1490,6 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
                         getAppMenuItemTheme(),
                         R.id.help_id,
                         R.string.menu_help_center,
-                        Resources.ID_NULL,
-                        isMenuIconAtStart()),
-                /* showIcon= */ false);
-    }
-
-    private ListItem buildReportIssueItem() {
-        return AppMenuItemUtils.createStandardListItem(
-                AppMenuItemUtils.buildModelForStandardMenuItem(
-                        mContext,
-                        getAppMenuItemTheme(),
-                        R.id.report_issue_menu_id,
-                        R.string.menu_report_issue,
                         Resources.ID_NULL,
                         isMenuIconAtStart()),
                 /* showIcon= */ false);
