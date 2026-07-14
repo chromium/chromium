@@ -17,7 +17,7 @@ Local
 Closure (makeClosure)
     makeClosureLocalVar: "local.TextParam"
     n: "TextParam"
-WindowGlobal
+GlobalWindow
     <section collapsed>
 Script execution resumed.
 

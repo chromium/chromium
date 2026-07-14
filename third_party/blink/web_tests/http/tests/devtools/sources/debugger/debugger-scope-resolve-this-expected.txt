@@ -8,7 +8,7 @@ Local
     this: Foo {}
 Closure (Foo.bar)
     _this: Foo {}
-WindowGlobal
+GlobalWindow
     <section collapsed>
 Script execution resumed.
 

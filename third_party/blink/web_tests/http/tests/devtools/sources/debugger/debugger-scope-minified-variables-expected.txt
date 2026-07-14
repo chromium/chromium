@@ -12,7 +12,7 @@ Local
     longObject: {}
     parameter1: 100
     parameter2: "hello"
-WindowGlobal
+GlobalWindow
     <section collapsed>
 Script execution resumed.
 

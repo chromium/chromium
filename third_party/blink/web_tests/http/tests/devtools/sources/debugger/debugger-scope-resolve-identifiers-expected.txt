@@ -8,7 +8,7 @@ Local
     this: Window
     pos: 10
     pos: 0
-WindowGlobal
+GlobalWindow
     <section collapsed>
 Script execution resumed.
 

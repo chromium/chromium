@@ -31,7 +31,7 @@ Closure (window.makeClosure)
 Script
     globalScriptConst: 42
     globalScriptLet: 41
-WindowGlobal
+GlobalWindow
     <section collapsed>
 Script execution resumed.
 
