@@ -306,7 +306,7 @@ void TextFragmentPainter::PaintSymbol(const LayoutObject* layout_object,
   }
 #endif
   GraphicsContext& context = paint_info.context;
-  Color color(layout_object->ResolveColor(GetCSSPropertyColor()));
+  Color color(layout_object->ResolveColor(GetCSSPropertyWebkitTextFillColor()));
   if (BoxModelObjectPainter::ShouldForceWhiteBackgroundForPrintEconomy(
           layout_object->GetDocument(), style)) {
     color = TextPainter::TextColorForWhiteBackground(color);
