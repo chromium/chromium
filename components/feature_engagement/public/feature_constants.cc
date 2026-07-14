@@ -1102,7 +1102,8 @@ constinit const base::FeatureParam<std::string> kSearchPromotionExtensionId{
     &kIPHSearchPromotionFeature, "extension_id",
     "dakcooigljlhlgibgdfadgphfnoooacj"};
 constinit const base::FeatureParam<std::string> kSearchPromotionInstructionsUrl{
-    &kIPHSearchPromotionFeature, "instructions_url", ""};
+    &kIPHSearchPromotionFeature, "instructions_url",
+    "https://www.google.com/chrome/landing/google-search-extension-edge/"};
 #endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace feature_engagement
