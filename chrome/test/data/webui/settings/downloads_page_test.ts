@@ -3,21 +3,19 @@
 // found in the LICENSE file.
 
 // clang-format off
-import 'chrome://settings/settings.js';
-
-import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
-import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import type {DownloadsBrowserProxy, SettingsDownloadsPageElement} from 'chrome://settings/lazy_load.js';
 import {DownloadsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
+import {loadTimeData, PrefService, PrefsBrowserProxy} from 'chrome://settings/settings.js';
 import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import type {SettingsPrefsElement} from 'chrome://settings/settings.js';
-import {CrSettingsPrefs, loadTimeData} from 'chrome://settings/settings.js';
+import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
+import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
+import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 // <if expr="is_chromeos">
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
+
 // </if>
 
-import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
+import {TestPrefsBrowserProxy} from './test_prefs_browser_proxy.js';
 // clang-format on
 
 class TestDownloadsBrowserProxy extends TestBrowserProxy implements
@@ -56,24 +54,48 @@ class TestDownloadsBrowserProxy extends TestBrowserProxy implements
   // </if>
 }
 
+function getInitialPrefs(): chrome.settingsPrivate.PrefObject[] {
+  return [
+    {
+      key: 'download.default_directory',
+      type: chrome.settingsPrivate.PrefType.STRING,
+      value: '/path/to/downloads',
+    },
+    {
+      key: 'download.prompt_for_download',
+      type: chrome.settingsPrivate.PrefType.BOOLEAN,
+      value: false,
+    },
+    {
+      key: 'download_bubble.partial_view_enabled',
+      type: chrome.settingsPrivate.PrefType.BOOLEAN,
+      value: true,
+    },
+  ];
+}
+
 suite('DownloadsHandler', function() {
   let downloadsBrowserProxy: TestDownloadsBrowserProxy;
   let downloadsPage: SettingsDownloadsPageElement;
-  let settingsPrefs: SettingsPrefsElement;
+  let prefService: PrefService;
 
-  suiteSetup(function() {
-    settingsPrefs = document.createElement('settings-prefs');
-    return CrSettingsPrefs.initialized;
-  });
+  setup(async function() {
+    loadTimeData.overrideValues({
+      downloadBubblePartialViewControlledByPref: false,
+    });
 
-  setup(function() {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+
     downloadsBrowserProxy = new TestDownloadsBrowserProxy();
     DownloadsBrowserProxyImpl.setInstance(downloadsBrowserProxy);
 
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    document.body.appendChild(settingsPrefs);
+    const prefsBrowserProxy = new TestPrefsBrowserProxy(getInitialPrefs());
+    PrefsBrowserProxy.setInstance(prefsBrowserProxy);
+    PrefService.resetInstanceForTesting();
+    prefService = PrefService.getInstance();
+    await prefService.whenInitialized();
+
     downloadsPage = document.createElement('settings-downloads-page');
-    downloadsPage.prefs = settingsPrefs.prefs!;
     document.body.appendChild(downloadsPage);
 
     // Page element must call 'initializeDownloads' upon attachment to the DOM.
@@ -81,7 +103,7 @@ suite('DownloadsHandler', function() {
   });
 
   test('select downloads location', function() {
-    const button = downloadsPage.shadowRoot!.querySelector<HTMLElement>(
+    const button = downloadsPage.shadowRoot.querySelector<HTMLElement>(
         '#changeDownloadsPath');
     assertTrue(!!button);
     button.click();
@@ -89,13 +111,13 @@ suite('DownloadsHandler', function() {
   });
 
   test('openAdvancedDownloadsettings', async function() {
-    let button = downloadsPage.shadowRoot!.querySelector<HTMLElement>(
+    let button = downloadsPage.shadowRoot.querySelector<HTMLElement>(
         '#resetAutoOpenFileTypes');
     assertFalse(!!button);
 
     webUIListenerCallback('auto-open-downloads-changed', true);
-    flush();
-    button = downloadsPage.shadowRoot!.querySelector<HTMLElement>(
+    await microtasksFinished();
+    button = downloadsPage.shadowRoot.querySelector<HTMLElement>(
         '#resetAutoOpenFileTypes');
     assertTrue(!!button);
 
@@ -103,20 +125,20 @@ suite('DownloadsHandler', function() {
     await downloadsBrowserProxy.whenCalled('resetAutoOpenFileTypes');
 
     webUIListenerCallback('auto-open-downloads-changed', false);
-    flush();
-    button = downloadsPage.shadowRoot!.querySelector<HTMLElement>(
+    await microtasksFinished();
+    button = downloadsPage.shadowRoot.querySelector<HTMLElement>(
         '#resetAutoOpenFileTypes');
     assertFalse(!!button);
   });
 
   // <if expr="is_chromeos">
   function setDefaultDownloadPathPref(downloadPath: string) {
-    downloadsPage.setPrefValue('download.default_directory', downloadPath);
+    prefService.setPrefValue('download.default_directory', downloadPath);
   }
 
   function getDefaultDownloadPathString() {
     const pathElement =
-        downloadsPage.shadowRoot!.querySelector('#defaultDownloadPath');
+        downloadsPage.shadowRoot.querySelector('#defaultDownloadPath');
     assertTrue(!!pathElement);
     return pathElement.textContent.trim();
   }
@@ -127,14 +149,15 @@ suite('DownloadsHandler', function() {
     const path =
         await downloadsBrowserProxy.whenCalled('getDownloadLocationText');
     assertEquals('downloads-path', path);
-    flush();
+    await microtasksFinished();
     assertEquals('downloads-text', getDefaultDownloadPathString());
   });
   // </if>
 
-  test('showDownloadsToggleHidden', function() {
-    const button =
-        downloadsPage.querySelector<HTMLElement>('#showDownloadsToggle');
+  test('showDownloadsToggleHidden', async function() {
+    await microtasksFinished();
+    const button = downloadsPage.shadowRoot.querySelector<HTMLElement>(
+        '#showDownloadsToggle');
     assertFalse(!!button);
   });
 });
@@ -142,24 +165,25 @@ suite('DownloadsHandler', function() {
 suite('DownloadsHandlerWithBubblePartialView', function() {
   let downloadsBrowserProxy: TestDownloadsBrowserProxy;
   let downloadsPage: SettingsDownloadsPageElement;
-  let settingsPrefs: SettingsPrefsElement;
+  let prefService: PrefService;
 
-  suiteSetup(function() {
+  setup(async function() {
     loadTimeData.overrideValues({
       downloadBubblePartialViewControlledByPref: true,
     });
-    settingsPrefs = document.createElement('settings-prefs');
-    return CrSettingsPrefs.initialized;
-  });
 
-  setup(function() {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+
     downloadsBrowserProxy = new TestDownloadsBrowserProxy();
     DownloadsBrowserProxyImpl.setInstance(downloadsBrowserProxy);
 
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    document.body.appendChild(settingsPrefs);
+    const prefsBrowserProxy = new TestPrefsBrowserProxy(getInitialPrefs());
+    PrefsBrowserProxy.setInstance(prefsBrowserProxy);
+    PrefService.resetInstanceForTesting();
+    prefService = PrefService.getInstance();
+    await prefService.whenInitialized();
+
     downloadsPage = document.createElement('settings-downloads-page');
-    downloadsPage.prefs = settingsPrefs.prefs!;
     document.body.appendChild(downloadsPage);
 
     // Page element must call 'initializeDownloads' upon attachment to the DOM.
@@ -167,26 +191,26 @@ suite('DownloadsHandlerWithBubblePartialView', function() {
   });
 
   test('showDownloadsToggleShown', function() {
-    const button = downloadsPage.shadowRoot!.querySelector<HTMLElement>(
+    const button = downloadsPage.shadowRoot.querySelector<HTMLElement>(
         '#showDownloadsToggle');
     assertTrue(!!button);
   });
 
   test('showDownloadsToggleChangesPref', async function() {
-    downloadsPage.setPrefValue('download_bubble.partial_view_enabled', false);
-    await flushTasks();
+    prefService.setPrefValue('download_bubble.partial_view_enabled', false);
+    await microtasksFinished();
     assertFalse(
-        downloadsPage.getPref<boolean>('download_bubble.partial_view_enabled')
+        prefService.getPref<boolean>('download_bubble.partial_view_enabled')
             .value);
 
-    const button = downloadsPage.shadowRoot!.querySelector<HTMLElement>(
+    const button = downloadsPage.shadowRoot.querySelector<HTMLElement>(
         '#showDownloadsToggle');
     assertTrue(!!button);
 
     button.click();
-    await flushTasks();
+    await microtasksFinished();
     assertTrue(
-        downloadsPage.getPref<boolean>('download_bubble.partial_view_enabled')
+        prefService.getPref<boolean>('download_bubble.partial_view_enabled')
             .value);
   });
 });
