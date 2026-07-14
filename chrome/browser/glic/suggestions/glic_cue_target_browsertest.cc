@@ -63,7 +63,8 @@ class GlicCueTargetBrowserTestAutoSubmitDisabled
 };
 
 IN_PROC_BROWSER_TEST_F(GlicCueTargetBrowserTest, testIsEligible) {
-  GlicCueTarget target(*service(), nullptr, *GetBrowser());
+  GlicCueTarget target(*service(), nullptr,
+                       *GetTabListInterface()->GetActiveTab());
 
   // Eligible by default (enablement bypass is set in SetUpOnMainThread).
   EXPECT_TRUE(target.IsEligible());
@@ -94,7 +95,8 @@ IN_PROC_BROWSER_TEST_F(GlicCueTargetBrowserTest, testIsEligible) {
 
 IN_PROC_BROWSER_TEST_F(GlicCueTargetBrowserTestAutoSubmitEnabled,
                        testOnClickAutoSubmitEnabled) {
-  GlicCueTarget target(*service(), nullptr, *GetBrowser());
+  GlicCueTarget target(*service(), nullptr,
+                       *GetTabListInterface()->GetActiveTab());
 
   tabs::TabInterface* tab1 = GetTabListInterface()->GetActiveTab();
   tabs::TabInterface* tab2 = CreateAndActivateTab(GURL("about:blank"));
@@ -123,7 +125,8 @@ IN_PROC_BROWSER_TEST_F(GlicCueTargetBrowserTestAutoSubmitEnabled,
 
 IN_PROC_BROWSER_TEST_F(GlicCueTargetBrowserTestAutoSubmitDisabled,
                        testOnClickAutoSubmitDisabled) {
-  GlicCueTarget target(*service(), nullptr, *GetBrowser());
+  GlicCueTarget target(*service(), nullptr,
+                       *GetTabListInterface()->GetActiveTab());
 
   tabs::TabInterface* tab1 = GetTabListInterface()->GetActiveTab();
   tabs::TabInterface* tab2 = CreateAndActivateTab(GURL("about:blank"));
@@ -151,7 +154,8 @@ IN_PROC_BROWSER_TEST_F(GlicCueTargetBrowserTestAutoSubmitDisabled,
 }
 
 IN_PROC_BROWSER_TEST_F(GlicCueTargetBrowserTest, testOnEditPrompt) {
-  GlicCueTarget target(*service(), nullptr, *GetBrowser());
+  GlicCueTarget target(*service(), nullptr,
+                       *GetTabListInterface()->GetActiveTab());
 
   tabs::TabInterface* tab1 = GetTabListInterface()->GetActiveTab();
   tabs::TabInterface* tab2 = CreateAndActivateTab(GURL("about:blank"));
@@ -179,14 +183,16 @@ IN_PROC_BROWSER_TEST_F(GlicCueTargetBrowserTest, testOnEditPrompt) {
 }
 
 IN_PROC_BROWSER_TEST_F(GlicCueTargetBrowserTest, testGetIcon) {
-  GlicCueTarget target(*service(), nullptr, *GetBrowser());
+  GlicCueTarget target(*service(), nullptr,
+                       *GetTabListInterface()->GetActiveTab());
   EXPECT_FALSE(target.GetAnchoredMessageIcon().IsEmpty());
   EXPECT_FALSE(target.GetOmniboxChipIcon().IsEmpty());
 }
 
 IN_PROC_BROWSER_TEST_F(GlicCueTargetBrowserTest,
                        testCueActionDataFromResponse) {
-  GlicCueTarget target(*service(), nullptr, *GetBrowser());
+  GlicCueTarget target(*service(), nullptr,
+                       *GetTabListInterface()->GetActiveTab());
 
   optimization_guide::proto::ContextualCue cue;
   auto* surface = cue.mutable_gemini_in_chrome_surface();

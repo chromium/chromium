@@ -90,6 +90,7 @@ class WebContents;
 }  // namespace content
 
 namespace contextual_cueing {
+class ContextualCueingController;
 class ContextualCueingWebContentsObserver;
 }  // namespace contextual_cueing
 
@@ -353,6 +354,11 @@ class TabFeatures {
     return new_tab_page_preload_pipeline_manager_.get();
   }
 
+  contextual_cueing::ContextualCueingController*
+  contextual_cueing_controller() {
+    return contextual_cueing_controller_.get();
+  }
+
   // Called exactly once to initialize features.
   void Init(TabInterface& tab, Profile* profile);
 
@@ -519,6 +525,9 @@ class TabFeatures {
   std::unique_ptr<TabAlertController> tab_alert_controller_;
 
   std::unique_ptr<ContextHighlightTabFeature> context_highlight_tab_feature_;
+
+  std::unique_ptr<contextual_cueing::ContextualCueingController>
+      contextual_cueing_controller_;
 
   std::unique_ptr<contextual_cueing::ContextualCueingWebContentsObserver>
       contextual_cueing_web_contents_observer_;

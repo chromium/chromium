@@ -40,6 +40,7 @@
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/views/infobars/confirm_infobar.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -117,7 +118,8 @@ class TestInfoBarDelegate : public ConfirmInfoBarDelegate {
   std::u16string GetMessageText() const override { return u"Test InfoBar"; }
 };
 
-class ContextualCueingControllerBrowserTestBase : public SigninBrowserTestBase {
+class ContextualCueingControllerBrowserTestBase : public SigninBrowserTestBase,
+                                                  public TabStripModelObserver {
  public:
   void SetUp() override {
     InitializeFeatureList();
@@ -127,10 +129,9 @@ class ContextualCueingControllerBrowserTestBase : public SigninBrowserTestBase {
   void SetUpOnMainThread() override {
     SigninBrowserTestBase::SetUpOnMainThread();
 
-    auto test_cue_target = std::make_unique<TestCueTarget>();
-    cue_target_ = test_cue_target.get();
-    contextual_cueing_controller()->RegisterCueTarget(
-        CueTargetType::kGlic, std::move(test_cue_target));
+    browser()->tab_strip_model()->AddObserver(this);
+
+    RegisterTestCueTargetForTab(browser()->GetActiveTabInterface());
 
     // Enable history sync by default.
     EnableHistorySync(true);
@@ -152,7 +153,7 @@ class ContextualCueingControllerBrowserTestBase : public SigninBrowserTestBase {
   }
 
   void TearDownOnMainThread() override {
-    cue_target_ = nullptr;
+    browser()->tab_strip_model()->RemoveObserver(this);
     SigninBrowserTestBase::TearDownOnMainThread();
   }
 
@@ -163,7 +164,33 @@ class ContextualCueingControllerBrowserTestBase : public SigninBrowserTestBase {
   }
 
   ContextualCueingController* contextual_cueing_controller() {
-    return browser()->GetFeatures().contextual_cueing_controller();
+    return browser()
+        ->GetActiveTabInterface()
+        ->GetTabFeatures()
+        ->contextual_cueing_controller();
+  }
+
+  TestCueTarget* cue_target() {
+    return static_cast<TestCueTarget*>(
+        contextual_cueing_controller()->GetTarget(CueTargetType::kGlic));
+  }
+
+  // TabStripModelObserver:
+  void OnTabStripModelChanged(
+      TabStripModel* tab_strip_model,
+      const TabStripModelChange& change,
+      const TabStripSelectionChange& selection) override {
+    if (change.type() == TabStripModelChange::kInserted) {
+      for (const auto& contents : change.GetInsert()->contents) {
+        RegisterTestCueTargetForTab(contents.tab);
+      }
+    }
+  }
+
+  void RegisterTestCueTargetForTab(tabs::TabInterface* tab) {
+    auto test_cue_target = std::make_unique<TestCueTarget>();
+    tab->GetTabFeatures()->contextual_cueing_controller()->RegisterCueTarget(
+        CueTargetType::kGlic, std::move(test_cue_target));
   }
 
   MockBrowserUserEducationInterface* mock_user_education_interface() {
@@ -233,7 +260,6 @@ class ContextualCueingControllerBrowserTestBase : public SigninBrowserTestBase {
   virtual void InitializeFeatureList() = 0;
 
  protected:
-  raw_ptr<TestCueTarget> cue_target_ = nullptr;
   base::test::ScopedFeatureList scoped_feature_list_;
 
   MockPrivateInsightsService* GetMockPrivateInsightsService() {
@@ -659,7 +685,7 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest,
   content::WebContents* active_web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   ASSERT_TRUE(active_web_contents);
-  cue_target_->page_eligible = false;
+  cue_target()->page_eligible = false;
   contextual_cueing_controller()->OnPageContentAnnotated(
       page_content_annotations::HistoryVisit(
           active_web_contents->GetController()
@@ -917,7 +943,7 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest, Ineligible) {
       WindowOpenDisposition::NEW_FOREGROUND_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
 
-  cue_target_->eligible = false;
+  cue_target()->eligible = false;
   SimulateFilterPassed();
   optimization_guide::RetryForHistogramUntilCountReached(
       &histogram_tester, "ContextualCueing.V2.Decision", 1);
@@ -935,7 +961,7 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest, ShowCueAndClick) {
       << "Contextual cueing anchored message not implemented for Android";
 #endif
 
-  ASSERT_FALSE(cue_target_->HasClickData());
+  ASSERT_FALSE(cue_target()->HasClickData());
 
   page_actions::PageActionController* page_action_controller =
       GetPageActionController();
@@ -980,9 +1006,9 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest, ShowCueAndClick) {
 
   action->InvokeAction();
 
-  ASSERT_TRUE(cue_target_->HasClickData());
+  ASSERT_TRUE(cue_target()->HasClickData());
   EXPECT_EQ("Prompt",
-            std::get<GlicCueActionData>(cue_target_->click_data).prompt);
+            std::get<GlicCueActionData>(cue_target()->click_data).prompt);
   EXPECT_FALSE(observer.GetCurrentPageActionState().showing);
 
   histogram_tester.ExpectUniqueSample("ContextualCueing.V2.CueInteraction",
@@ -1013,7 +1039,7 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest,
       << "Contextual cueing anchored message not implemented for Android";
 #endif
 
-  ASSERT_FALSE(cue_target_->HasClickData());
+  ASSERT_FALSE(cue_target()->HasClickData());
 
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
       browser(), GURL("https://www.activetab.com/abc"),
@@ -1059,7 +1085,7 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest,
   action->InvokeAction();
 
   // Target click handler was not invoked.
-  EXPECT_FALSE(cue_target_->HasClickData());
+  EXPECT_FALSE(cue_target()->HasClickData());
 
   // Anchored message is showing again.
   ASSERT_TRUE(base::test::RunUntil([&]() {

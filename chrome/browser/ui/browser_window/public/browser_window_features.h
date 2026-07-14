@@ -136,9 +136,6 @@ namespace content_settings {
 class CookieControlsController;
 }  // namespace content_settings
 
-namespace contextual_cueing {
-class ContextualCueingController;
-}  // namespace contextual_cueing
 
 namespace contextual_tasks {
 class ContextualTasksBrowserController;
@@ -314,11 +311,6 @@ class BrowserWindowFeatures {
   BrowserContentSettingBubbleModelDelegate*
   content_setting_bubble_model_delegate() {
     return content_setting_bubble_model_delegate_.get();
-  }
-
-  contextual_cueing::ContextualCueingController*
-  contextual_cueing_controller() {
-    return contextual_cueing_controller_.get();
   }
 
   content_settings::CookieControlsController* cookie_controls_controller() {
@@ -563,13 +555,10 @@ class BrowserWindowFeatures {
       context_highlight_window_feature_;
 
   // Member order dependencies:
-  //   contextual_cueing_controller_ depends on tab_list_bridge_.
   //   glic_nudge_controller_ depends on tab_list_bridge_.
   //   extension_window_controller_ depends on tab_list_bridge_.
   std::unique_ptr<TabListBridge> tab_list_bridge_;
 
-  std::unique_ptr<contextual_cueing::ContextualCueingController>
-      contextual_cueing_controller_;
   std::unique_ptr<contextual_tasks::ContextualTasksBrowserController>
       contextual_tasks_browser_controller_;
   std::unique_ptr<CookieControlsBubbleCoordinator>

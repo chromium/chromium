@@ -14,8 +14,11 @@
 #include "chrome/browser/contextual_cueing/cue_target.h"
 #include "components/page_content_annotations/core/page_content_annotations_common.h"
 
-class BrowserWindowInterface;
 class OptimizationGuideKeyedService;
+
+namespace tabs {
+class TabInterface;
+}  // namespace tabs
 
 namespace glic {
 
@@ -23,12 +26,12 @@ class GlicKeyedService;
 
 class GlicCueTarget : public contextual_cueing::CueTarget {
  public:
-  static void Register(BrowserWindowInterface& browser_window_interface);
+  static void Register(tabs::TabInterface& tab);
 
   explicit GlicCueTarget(
       GlicKeyedService& glic_keyed_service,
       OptimizationGuideKeyedService* optimization_guide_keyed_service,
-      BrowserWindowInterface& browser_window_interface);
+      tabs::TabInterface& tab);
   ~GlicCueTarget() override;
 
   // contextual_cueing::CueTarget:
@@ -63,7 +66,7 @@ class GlicCueTarget : public contextual_cueing::CueTarget {
   // Unowned and guaranteed to outlive this.
   raw_ref<GlicKeyedService> glic_keyed_service_;
   raw_ptr<OptimizationGuideKeyedService> optimization_guide_keyed_service_;
-  raw_ref<BrowserWindowInterface> browser_window_interface_;
+  raw_ref<tabs::TabInterface> tab_;
 
   base::WeakPtrFactory<GlicCueTarget> weak_ptr_factory_{this};
 };

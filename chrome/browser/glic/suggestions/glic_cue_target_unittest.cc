@@ -17,7 +17,7 @@
 #include "chrome/browser/page_content_annotations/page_content_annotations_service_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
-#include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
+#include "components/tabs/public/mock_tab_interface.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -78,21 +78,20 @@ class GlicCueTargetTest : public testing::Test {
         TestingBrowserProcess::GetGlobal()->profile_manager(),
         &glic_profile_manager_, nullptr, nullptr);
 
-    mock_browser_window_interface_ =
-        std::make_unique<MockBrowserWindowInterface>();
-    EXPECT_CALL(*mock_browser_window_interface_, GetProfile())
+    mock_tab_ = std::make_unique<tabs::MockTabInterface>();
+    EXPECT_CALL(*mock_tab_, GetProfile())
         .WillRepeatedly(testing::Return(profile_));
 
     target_ = std::make_unique<GlicCueTarget>(
         *mock_glic_keyed_service_,
         /*optimization_guide_keyed_service=*/nullptr,
-        *mock_browser_window_interface_);
+        *mock_tab_);
   }
 
   void TearDown() override {
     GlicEnabling::SetBypassEnablementChecksForTesting(false);
     target_.reset();
-    mock_browser_window_interface_.reset();
+    mock_tab_.reset();
     mock_glic_keyed_service_.reset();
     web_contents_.reset();
     identity_test_env_adaptor_.reset();
@@ -126,7 +125,7 @@ class GlicCueTargetTest : public testing::Test {
       identity_test_env_adaptor_;
   GlicProfileManager glic_profile_manager_;
 
-  std::unique_ptr<MockBrowserWindowInterface> mock_browser_window_interface_;
+  std::unique_ptr<tabs::MockTabInterface> mock_tab_;
   std::unique_ptr<MockGlicKeyedService> mock_glic_keyed_service_;
 
   std::unique_ptr<GlicCueTarget> target_;
@@ -270,15 +269,14 @@ class GlicCueTargetAsyncTest : public testing::Test {
         profile_, IdentityManagerFactory::GetForProfile(profile_),
         TestingBrowserProcess::GetGlobal()->profile_manager(),
         &glic_profile_manager_, nullptr, nullptr);
-    mock_browser_window_interface_ =
-        std::make_unique<MockBrowserWindowInterface>();
-    EXPECT_CALL(*mock_browser_window_interface_, GetProfile())
+    mock_tab_ = std::make_unique<tabs::MockTabInterface>();
+    EXPECT_CALL(*mock_tab_, GetProfile())
         .WillRepeatedly(testing::Return(profile_));
 
     target_ = std::make_unique<GlicCueTarget>(
         *mock_glic_keyed_service_,
         /*optimization_guide_keyed_service=*/nullptr,
-        *mock_browser_window_interface_);
+        *mock_tab_);
 
     GlicCueTabState::CreateForWebContents(web_contents_.get());
   }
@@ -286,7 +284,7 @@ class GlicCueTargetAsyncTest : public testing::Test {
   void TearDown() override {
     GlicEnabling::SetBypassEnablementChecksForTesting(false);
     target_.reset();
-    mock_browser_window_interface_.reset();
+    mock_tab_.reset();
     mock_glic_keyed_service_.reset();
     web_contents_.reset();
     identity_test_env_adaptor_.reset();
@@ -340,7 +338,7 @@ class GlicCueTargetAsyncTest : public testing::Test {
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
       identity_test_env_adaptor_;
   GlicProfileManager glic_profile_manager_;
-  std::unique_ptr<MockBrowserWindowInterface> mock_browser_window_interface_;
+  std::unique_ptr<tabs::MockTabInterface> mock_tab_;
   std::unique_ptr<MockGlicKeyedService> mock_glic_keyed_service_;
   std::unique_ptr<GlicCueTarget> target_;
 };

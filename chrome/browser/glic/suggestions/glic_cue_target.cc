@@ -28,10 +28,12 @@
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "components/optimization_guide/proto/features/contextual_cueing.pb.h"
 #include "components/pdf/common/constants.h"
 #include "components/prefs/pref_service.h"
 #include "components/tabs/public/tab_handle_factory.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -40,36 +42,34 @@
 namespace glic {
 
 // static
-void GlicCueTarget::Register(BrowserWindowInterface& browser_window_interface) {
+void GlicCueTarget::Register(tabs::TabInterface& tab) {
 #if BUILDFLAG(IS_ANDROID)
   NOTIMPLEMENTED() << "Glic contextual cue not yet implemented for Android.";
 #else
-  auto* glic_keyed_service =
-      GlicKeyedService::Get(browser_window_interface.GetProfile());
+  auto* glic_keyed_service = GlicKeyedService::Get(tab.GetProfile());
   if (!glic_keyed_service) {
     return;
   }
 
   auto* contextual_cueing_controller =
-      browser_window_interface.GetFeatures().contextual_cueing_controller();
+      tab.GetTabFeatures()->contextual_cueing_controller();
   CHECK(contextual_cueing_controller);
   contextual_cueing_controller->RegisterCueTarget(
       contextual_cueing::CueTargetType::kGlic,
       std::make_unique<GlicCueTarget>(
           *glic_keyed_service,
-          OptimizationGuideKeyedServiceFactory::GetForProfile(
-              browser_window_interface.GetProfile()),
-          browser_window_interface));
+          OptimizationGuideKeyedServiceFactory::GetForProfile(tab.GetProfile()),
+          tab));
 #endif
 }
 
 GlicCueTarget::GlicCueTarget(
     GlicKeyedService& glic_keyed_service,
     OptimizationGuideKeyedService* optimization_guide_keyed_service,
-    BrowserWindowInterface& browser_window_interface)
+    tabs::TabInterface& tab)
     : glic_keyed_service_(glic_keyed_service),
       optimization_guide_keyed_service_(optimization_guide_keyed_service),
-      browser_window_interface_(browser_window_interface) {}
+      tab_(tab) {}
 
 GlicCueTarget::~GlicCueTarget() = default;
 
@@ -130,15 +130,17 @@ bool GlicCueTarget::IsPageEligible(
 }
 
 bool GlicCueTarget::IsEligible() const {
-  return GlicEnabling::IsEnabledForProfile(
-             browser_window_interface_->GetProfile()) &&
-         browser_window_interface_->GetProfile()->GetPrefs()->GetBoolean(
+  auto* window = tab_->GetBrowserWindowInterface();
+  if (!window) {
+    return false;
+  }
+  return GlicEnabling::IsEnabledForProfile(tab_->GetProfile()) &&
+         tab_->GetProfile()->GetPrefs()->GetBoolean(
              prefs::kGlicPinnedToTabstrip) &&
-         !glic_keyed_service_->IsPanelShowingForBrowser(
-             *browser_window_interface_) &&
+         !glic_keyed_service_->IsPanelShowingForBrowser(*window) &&
          // TODO(crbug.com/507551989): Default tab context sharing check won't
          // be needed once tab sharing UI is implemented.
-         browser_window_interface_->GetProfile()->GetPrefs()->GetBoolean(
+         tab_->GetProfile()->GetPrefs()->GetBoolean(
              glic::prefs::kGlicDefaultTabContextEnabled);
 }
 
@@ -160,14 +162,7 @@ void GlicCueTarget::InvokeGlic(contextual_cueing::CueActionData data,
     return;
   }
   auto& glic_data = std::get<contextual_cueing::GlicCueActionData>(data);
-  TabListInterface* tab_list =
-      TabListInterface::From(&*browser_window_interface_);
-  tabs::TabInterface* active_tab =
-      tab_list ? tab_list->GetActiveTab() : nullptr;
-  if (!active_tab) {
-    return;
-  }
-  Target target(*active_tab, NewConversation());
+  Target target(*tab_, NewConversation());
   GlicInvokeOptions options(
       std::move(target),
       glic::mojom::InvocationSource::kAutoOpenedByContextualCue);

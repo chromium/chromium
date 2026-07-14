@@ -165,27 +165,23 @@ class ContextualCueingPageActionObserver
 
 }  // namespace
 
-ContextualCueingController::ContextualCueingController(
-    BrowserWindowInterface* browser_window_interface,
-    TabListInterface* tab_list_interface)
-    : browser_window_interface_(browser_window_interface),
-      tab_list_interface_(tab_list_interface),
-      contextual_cueing_service_(ContextualCueingServiceFactory::GetForProfile(
-          browser_window_interface_->GetProfile())),
+ContextualCueingController::ContextualCueingController(tabs::TabInterface* tab)
+    : tab_(tab),
+      contextual_cueing_service_(
+          ContextualCueingServiceFactory::GetForProfile(tab_->GetProfile())),
       page_content_annotations_service_(
           PageContentAnnotationsServiceFactory::GetForProfile(
-              browser_window_interface_->GetProfile())),
+              tab_->GetProfile())),
       optimization_guide_keyed_service_(
           OptimizationGuideKeyedServiceFactory::GetForProfile(
-              browser_window_interface_->GetProfile())),
-      sync_service_(SyncServiceFactory::GetForProfile(
-          browser_window_interface_->GetProfile())),
-      template_url_service_(TemplateURLServiceFactory::GetForProfile(
-          browser_window_interface_->GetProfile())),
-      identity_manager_(IdentityManagerFactory::GetForProfile(
-          browser_window_interface_->GetProfile())),
+              tab_->GetProfile())),
+      sync_service_(SyncServiceFactory::GetForProfile(tab_->GetProfile())),
+      template_url_service_(
+          TemplateURLServiceFactory::GetForProfile(tab_->GetProfile())),
+      identity_manager_(
+          IdentityManagerFactory::GetForProfile(tab_->GetProfile())),
       favicon_service_(FaviconServiceFactory::GetForProfile(
-          browser_window_interface_->GetProfile(),
+          tab_->GetProfile(),
           ServiceAccessType::EXPLICIT_ACCESS)) {
 #if !BUILDFLAG(IS_ANDROID)
   page_action_observer_ = std::make_unique<ContextualCueingPageActionObserver>(
@@ -198,18 +194,22 @@ ContextualCueingController::ContextualCueingController(
     page_content_annotations_service_->AddObserver(
         page_content_annotations::AnnotationType::kCategoryClassifier, this);
   }
-  if (tab_list_interface_) {
-    tab_list_interface_->AddTabListInterfaceObserver(this);
-  }
+  tab_subscriptions_.push_back(tab_->RegisterDidActivate(
+      base::BindRepeating(&ContextualCueingController::OnTabActivated,
+                          weak_ptr_factory_.GetWeakPtr())));
+  tab_subscriptions_.push_back(tab_->RegisterWillDetach(
+      base::BindRepeating(&ContextualCueingController::OnTabDetached,
+                          weak_ptr_factory_.GetWeakPtr())));
+  tab_subscriptions_.push_back(tab_->RegisterDidInsert(
+      base::BindRepeating(&ContextualCueingController::OnTabInserted,
+                          weak_ptr_factory_.GetWeakPtr())));
+  ObserveTabList();
 }
 
 ContextualCueingController::~ContextualCueingController() {
   if (page_content_annotations_service_) {
     page_content_annotations_service_->RemoveObserver(
         page_content_annotations::AnnotationType::kCategoryClassifier, this);
-  }
-  if (tab_list_interface_) {
-    tab_list_interface_->RemoveTabListInterfaceObserver(this);
   }
 }
 
@@ -220,10 +220,7 @@ ContextualCueingController* ContextualCueingController::GetForWebContents(
   NOTIMPLEMENTED();
 #else
   if (auto* tab = tabs::TabInterface::GetFromContents(&contents)) {
-    if (auto* browser_window_interface = tab->GetBrowserWindowInterface()) {
-      return browser_window_interface->GetFeatures()
-          .contextual_cueing_controller();
-    }
+    return tab->GetTabFeatures()->contextual_cueing_controller();
   }
 #endif
   return nullptr;
@@ -250,10 +247,7 @@ void ContextualCueingController::OnPageContentAnnotated(
 void ContextualCueingController::RunGlicSingleSourcePath(
     const page_content_annotations::HistoryVisit& visit,
     const page_content_annotations::PageContentAnnotationsResult& result) {
-  content::WebContents* active_web_contents =
-      tab_list_interface_->GetActiveTab()
-          ? tab_list_interface_->GetActiveTab()->GetContents()
-          : nullptr;
+  content::WebContents* active_web_contents = tab_->GetContents();
   if (!active_web_contents ||
       visit.url != active_web_contents->GetLastCommittedURL()) {
     CUEING_LOG(base::StringPrintf(
@@ -265,7 +259,7 @@ void ContextualCueingController::RunGlicSingleSourcePath(
     return;
   }
 
-  ukm::SourceId source_id = GetActiveTabSourceId();
+  ukm::SourceId source_id = GetTabSourceId();
   if (!IsUrlEligibleForCue(active_web_contents->GetLastCommittedURL())) {
     CUEING_LOG(
         base::StringPrintf("%s ineligible for cue: URL is ineligible.",
@@ -333,26 +327,63 @@ void ContextualCueingController::RunGlicSingleSourcePath(
   InitiateModelExecutionRequest(CueTargetType::kGlic);
 }
 
-void ContextualCueingController::OnActiveTabChanged(TabListInterface& tab_list,
-                                                    tabs::TabInterface* tab) {
-  if (tab) {
-    ActiveTabUrlChanged(tab->GetURL());
-  }
-}
-
 void ContextualCueingController::OnTabRemoved(TabListInterface& tab_list,
                                               tabs::TabInterface* tab,
                                               TabRemovedReason reason) {
-  HideAllCuesDependingOnTab(tab);
+  if (!tab->GetContents()) {
+    return;
+  }
+  SessionID session_id =
+      sessions::SessionTabHelper::IdForTab(tab->GetContents());
+  if (dependencies_.contains(session_id)) {
+    HideCue();
+  }
 }
 
-void ContextualCueingController::ActiveTabUrlChanged(const GURL& url) {
+void ContextualCueingController::OnTabNavigated(tabs::TabInterface* tab) {
+  if (!tab->GetContents()) {
+    return;
+  }
+  SessionID session_id =
+      sessions::SessionTabHelper::IdForTab(tab->GetContents());
+  if (dependencies_.contains(session_id)) {
+    HideCue();
+  }
+}
+
+void ContextualCueingController::OnTabActivated(tabs::TabInterface* tab) {
+  UrlChanged(tab_->GetURL());
+}
+
+void ContextualCueingController::OnTabDetached(
+    tabs::TabInterface* tab,
+    tabs::TabInterface::DetachReason reason) {
+  tab_list_observation_.Reset();
+  if (!dependencies_.empty()) {
+    HideCue();
+  }
+}
+
+void ContextualCueingController::OnTabInserted(tabs::TabInterface* tab) {
+  ObserveTabList();
+}
+
+void ContextualCueingController::ObserveTabList() {
+  if (auto* window = tab_->GetBrowserWindowInterface()) {
+    if (auto* tab_list = TabListInterface::From(window)) {
+      if (!tab_list_observation_.IsObserving()) {
+        tab_list_observation_.Observe(tab_list);
+      }
+    }
+  }
+}
+
+void ContextualCueingController::UrlChanged(const GURL& url) {
   if (url == last_logged_active_url_) {
     return;
   }
   last_logged_active_url_ = url;
-  CUEING_LOG(
-      base::StringPrintf("Active tab URL changed to %s", url.spec().c_str()));
+  CUEING_LOG(base::StringPrintf("Tab URL changed to %s", url.spec().c_str()));
 
   // V2: kick off parallel eligibility fan-out for all registered targets.
   if (base::FeatureList::IsEnabled(kContextualCueingV2MultiSource)) {
@@ -361,16 +392,15 @@ void ContextualCueingController::ActiveTabUrlChanged(const GURL& url) {
 }
 
 void ContextualCueingController::EvaluateCues() {
-  tabs::TabInterface* active_tab = tab_list_interface_->GetActiveTab();
-  if (!active_tab) {
+  if (!tab_->IsActivated()) {
     return;
   }
-  content::WebContents* web_contents = active_tab->GetContents();
+  content::WebContents* web_contents = tab_->GetContents();
   if (!web_contents) {
     return;
   }
   const GURL url = web_contents->GetLastCommittedURL();
-  ukm::SourceId source_id = GetActiveTabSourceId();
+  ukm::SourceId source_id = GetTabSourceId();
 
   // --- shared pre-checks (same gates as V1) ---
   if (!IsUrlEligibleForCue(url)) {
@@ -447,18 +477,16 @@ void ContextualCueingController::OnAllEligibilityChecksComplete(
   if (!web_contents) {
     CUEING_LOG("OnAllEligibilityChecksComplete: WebContents destroyed.");
     RecordContextualCueingDecision(
-        GetActiveTabSourceId(),
-        ContextualCueingDecision::kWebContentsDestroyed);
+        GetTabSourceId(), ContextualCueingDecision::kWebContentsDestroyed);
     return;
   }
-  tabs::TabInterface* active_tab = tab_list_interface_->GetActiveTab();
-  if (!active_tab || active_tab->GetContents() != web_contents.get() ||
+  if (tab_->GetContents() != web_contents.get() || !tab_->IsActivated() ||
       web_contents->GetLastCommittedURL() != url) {
     CUEING_LOG(
         "OnAllEligibilityChecksComplete: tab navigated away or is no longer "
         "active.");
     RecordContextualCueingDecision(
-        GetActiveTabSourceId(),
+        GetTabSourceId(),
         ContextualCueingDecision::kNoLongerActiveTabAfterEligibilityCheck);
     return;
   }
@@ -487,8 +515,7 @@ void ContextualCueingController::OnAllEligibilityChecksComplete(
   if (!any_eligible) {
     CUEING_LOG("OnAllEligibilityChecksComplete: no targets eligible.");
     RecordContextualCueingDecision(
-        GetActiveTabSourceId(),
-        ContextualCueingDecision::kTargetFeatureNotEligible);
+        GetTabSourceId(), ContextualCueingDecision::kTargetFeatureNotEligible);
     return;
   }
 
@@ -525,15 +552,13 @@ void ContextualCueingController::OnContentGenerated(
 
 void ContextualCueingController::InitiateModelExecutionRequest(
     CueTargetType winning_target_type) {
-  tabs::TabInterface* active_tab = tab_list_interface_->GetActiveTab();
-  CHECK(active_tab);
-  content::WebContents* active_web_contents = active_tab->GetContents();
+  content::WebContents* active_web_contents = tab_->GetContents();
   CHECK(active_web_contents);
 
   tab_favicons_.clear();
-  FetchFavicon(active_tab, active_web_contents);
+  FetchFavicon(tab_, active_web_contents);
 
-  ukm::SourceId source_id = GetActiveTabSourceId();
+  ukm::SourceId source_id = GetTabSourceId();
 
   if (!optimization_guide_keyed_service_) {
     RecordContextualCueingDecision(
@@ -553,23 +578,26 @@ void ContextualCueingController::InitiateModelExecutionRequest(
     raw_ptr<content::WebContents> contents;
   };
   std::vector<BackgroundTabInfo> background_tabs;
-  for (int i = 0; i < tab_list_interface_->GetTabCount(); ++i) {
-    tabs::TabInterface* tab = tab_list_interface_->GetTab(i);
-    if (tab == active_tab) {
-      // Active tab already added to the request.
-      continue;
+  if (TabListInterface* tab_list_interface =
+          TabListInterface::From(tab_->GetBrowserWindowInterface())) {
+    for (int i = 0; i < tab_list_interface->GetTabCount(); ++i) {
+      tabs::TabInterface* tab = tab_list_interface->GetTab(i);
+      if (tab == tab_) {
+        // Active tab already added to the request.
+        continue;
+      }
+      content::WebContents* tab_contents = tab ? tab->GetContents() : nullptr;
+      if (!tab_contents) {
+        continue;
+      }
+      if (!IsUrlEligibleForCue(tab_contents->GetLastCommittedURL())) {
+        continue;
+      }
+      background_tabs.push_back(
+          {.last_active_time = tab_contents->GetLastActiveTime(),
+           .tab = tab,
+           .contents = tab_contents});
     }
-    content::WebContents* tab_contents = tab ? tab->GetContents() : nullptr;
-    if (!tab_contents) {
-      continue;
-    }
-    if (!IsUrlEligibleForCue(tab_contents->GetLastCommittedURL())) {
-      continue;
-    }
-    background_tabs.push_back(
-        {.last_active_time = tab_contents->GetLastActiveTime(),
-         .tab = tab,
-         .contents = tab_contents});
   }
 
   std::sort(background_tabs.begin(), background_tabs.end(),
@@ -637,10 +665,10 @@ void ContextualCueingController::OnModelExecutionResponseReceived(
     std::vector<optimization_guide::proto::Tab> background_tabs,
     optimization_guide::OptimizationGuideModelExecutionResult result,
     std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry) {
-  tabs::TabInterface* current_active_tab = tab_list_interface_->GetActiveTab();
-  if (!current_active_tab || !current_active_tab->GetContents() ||
+  if (!tab_->IsActivated() ||
+      !tab_->GetContents() ||
       !AreTabsEqual(active_tab, GetTabProtoFromWebContents(
-                                    current_active_tab->GetContents()))) {
+                                    tab_->GetContents()))) {
     CUEING_LOG(
         "Model execution returned but tab for generated cue is no longer "
         "active.");
@@ -741,12 +769,10 @@ bool ContextualCueingController::IsUserSubjectToAgeRestrictions() {
          signin::Tribool::kTrue;
 }
 
-ukm::SourceId ContextualCueingController::GetActiveTabSourceId() const {
-  tabs::TabInterface* active_tab = tab_list_interface_->GetActiveTab();
-  return active_tab ? active_tab->GetContents()
-                          ->GetPrimaryMainFrame()
-                          ->GetPageUkmSourceId()
-                    : ukm::kInvalidSourceId;
+ukm::SourceId ContextualCueingController::GetTabSourceId() const {
+  return tab_->GetContents()
+             ? tab_->GetContents()->GetPrimaryMainFrame()->GetPageUkmSourceId()
+             : ukm::kInvalidSourceId;
 }
 
 bool ContextualCueingController::IsUrlEligibleForCue(const GURL& url) {
@@ -767,7 +793,11 @@ bool ContextualCueingController::IsUrlEligibleForCue(const GURL& url) {
 }
 
 ContextualCueingDecision ContextualCueingController::IsAllowedToShowCue() {
-  ukm::SourceId source_id = GetActiveTabSourceId();
+  auto* window = tab_->GetBrowserWindowInterface();
+  if (!window) {
+    return ContextualCueingDecision::kNoActiveTab;
+  }
+  ukm::SourceId source_id = GetTabSourceId();
 
   if (!sync_service_ ||
       !sync_service_->GetUserSettings()->GetSelectedTypes().Has(
@@ -780,8 +810,7 @@ ContextualCueingDecision ContextualCueingController::IsAllowedToShowCue() {
   }
 
   // Check if the user has opted out of contextual cues.
-  PrefService* pref_service =
-      browser_window_interface_->GetProfile()->GetPrefs();
+  PrefService* pref_service = tab_->GetProfile()->GetPrefs();
   optimization_guide::prefs::FeatureOptInState opt_in_state = static_cast<
       optimization_guide::prefs::FeatureOptInState>(pref_service->GetInteger(
       optimization_guide::prefs::GetSettingEnabledPrefName(
@@ -810,7 +839,7 @@ ContextualCueingDecision ContextualCueingController::IsAllowedToShowCue() {
 
 #if !BUILDFLAG(IS_ANDROID)
   auto* browser_user_education_interface =
-      BrowserUserEducationInterface::From(browser_window_interface_);
+      BrowserUserEducationInterface::From(window);
   if (browser_user_education_interface &&
       browser_user_education_interface->IsAnyFeaturePromoActive()) {
     CUEING_LOG(
@@ -822,11 +851,8 @@ ContextualCueingDecision ContextualCueingController::IsAllowedToShowCue() {
   }
 #endif
 
-  auto* active_tab = tab_list_interface_->GetActiveTab();
-  CHECK(active_tab);
-
-  auto* infobar_manager = infobars::ContentInfoBarManager::FromWebContents(
-      active_tab->GetContents());
+  auto* infobar_manager =
+      infobars::ContentInfoBarManager::FromWebContents(tab_->GetContents());
   if (infobar_manager && !infobar_manager->infobars().empty()) {
     CUEING_LOG(
         "Not attempting to show/generate cue because infobar is visible.");
@@ -835,8 +861,7 @@ ContextualCueingDecision ContextualCueingController::IsAllowedToShowCue() {
     return ContextualCueingDecision::kInfobarVisible;
   }
 
-  if (auto* side_panel_ui =
-          SidePanelUIProvider::From(browser_window_interface_);
+  if (auto* side_panel_ui = SidePanelUIProvider::From(window);
       side_panel_ui && side_panel_ui->IsSidePanelShowing()) {
     CUEING_LOG(
         "Not attempting to show/generate cue because side panel is visible.");
@@ -845,7 +870,7 @@ ContextualCueingDecision ContextualCueingController::IsAllowedToShowCue() {
     return ContextualCueingDecision::kSidePanelShowing;
   }
 
-  if (active_tab->IsSplit() && !kShouldShowCueInSplitView.Get()) {
+  if (tab_->IsSplit() && !kShouldShowCueInSplitView.Get()) {
     CUEING_LOG(
         "Not attempting to show/generate cue because active tab is in "
         "split view.");
@@ -856,7 +881,7 @@ ContextualCueingDecision ContextualCueingController::IsAllowedToShowCue() {
 
 #if !BUILDFLAG(IS_ANDROID)
   if (page_actions::PageActionController* page_action_controller =
-          active_tab->GetTabFeatures()->page_action_controller()) {
+          tab_->GetTabFeatures()->page_action_controller()) {
     if (page_action_controller->GetActiveAnchoredMessage().has_value()) {
       CUEING_LOG(
           "Not attempting to show/generate cue because another anchored "
@@ -877,6 +902,7 @@ ContextualCueingController::GetTabsToShow(
   std::vector<tabs::TabHandle> tabs_to_show;
   CueTabMetrics tab_metrics;
   auto& tab_handle_factory = tabs::SessionMappedTabHandleFactory::GetInstance();
+  auto* window = tab_->GetBrowserWindowInterface();
   for (auto& tab : cue.anchored_message_cue().tabs_to_show()) {
     SessionID session_id = SessionID::FromSerializedValue(
         static_cast<SessionID::id_type>(tab.tab_id()));
@@ -889,8 +915,7 @@ ContextualCueingController::GetTabsToShow(
         tab_handle_factory.GetHandleForSessionId(session_id.id()));
     // Ensure tab is valid and belongs to the current browser window.
     if (handle.Get() && handle.Get()->GetContents() &&
-        handle.Get()->GetBrowserWindowInterface() ==
-            browser_window_interface_) {
+        handle.Get()->GetBrowserWindowInterface() == window) {
       // Check whether the tab's current URL still matches the URL from the
       // response. If the tab has navigated away, skip it.
       GURL response_url(tab.url());
@@ -907,9 +932,8 @@ ContextualCueingController::GetTabsToShow(
     }
   }
 
-  // Also show the active tab if it isn't already shown.
-  tabs::TabHandle active_handle =
-      tab_list_interface_->GetActiveTab()->GetHandle();
+  // Also show this tab if it isn't already shown.
+  tabs::TabHandle active_handle = tab_->GetHandle();
   if (std::find(tabs_to_show.begin(), tabs_to_show.end(), active_handle) ==
       tabs_to_show.end()) {
     tabs_to_show.push_back(active_handle);
@@ -929,11 +953,11 @@ void ContextualCueingController::ShowCue(
   CueActionData action_data =
       target.CueActionDataFromResponse(cue, tabs_to_show);
 
-  tabs::TabInterface* active_tab = tab_list_interface_->GetActiveTab();
-  CHECK(active_tab);
+  auto* window = tab_->GetBrowserWindowInterface();
+  CHECK(window);
 
   base::TimeDelta show_latency;
-  base::Time page_load_time = active_tab->GetContents()
+  base::Time page_load_time = tab_->GetContents()
                                   ->GetController()
                                   .GetLastCommittedEntry()
                                   ->GetTimestamp();
@@ -941,12 +965,19 @@ void ContextualCueingController::ShowCue(
     show_latency = base::Time::Now() - page_load_time;
   }
 
-  RecordCueShownMetrics(GetActiveTabSourceId(), cue.suggested_cuj(),
-                        tab_metrics, show_latency);
+  RecordCueShownMetrics(GetTabSourceId(), cue.suggested_cuj(), tab_metrics,
+                        show_latency);
 
-  RecordCueShownToPrivateInsights(browser_window_interface_->GetProfile(),
-                                  cue_id, cue_type, cue, active_tab,
-                                  tabs_to_show, background_tabs);
+  RecordCueShownToPrivateInsights(tab_->GetProfile(), cue_id, cue_type, cue,
+                                  tab_, tabs_to_show, background_tabs);
+
+  dependencies_.clear();
+  for (const auto& handle : tabs_to_show) {
+    if (handle.Get() && handle.Get()->GetContents()) {
+      dependencies_.insert(
+          sessions::SessionTabHelper::IdForTab(handle.Get()->GetContents()));
+    }
+  }
 
   cue_hidden_time_ = base::TimeTicks();
 #if BUILDFLAG(IS_ANDROID)
@@ -954,9 +985,8 @@ void ContextualCueingController::ShowCue(
       << "Contextual cueing anchored message UI is not implemented for Android";
 #else
   auto* action = actions::ActionManager::Get().FindAction(
-      kActionAnchoredContextualCue, browser_window_interface_->GetFeatures()
-                                        .browser_actions()
-                                        ->root_action_item());
+      kActionAnchoredContextualCue,
+      window->GetFeatures().browser_actions()->root_action_item());
   CHECK(action);
 
   const auto& strings = cue.anchored_message_cue();
@@ -967,9 +997,9 @@ void ContextualCueingController::ShowCue(
       cue_type, cue.suggested_cuj(), action_data, cue_id));
 
   page_actions::PageActionController* page_action_controller =
-      active_tab->GetTabFeatures()->page_action_controller();
+      tab_->GetTabFeatures()->page_action_controller();
   if (!page_action_controller) {
-    RecordContextualCueingDecision(GetActiveTabSourceId(),
+    RecordContextualCueingDecision(GetTabSourceId(),
                                    ContextualCueingDecision::kNoActiveTab);
     return;
   }
@@ -989,8 +1019,8 @@ void ContextualCueingController::ShowCue(
                                         target.GetOmniboxChipIcon());
 
   auto menu_model = std::make_unique<ContextualCueingMenuModel>(
-      browser_window_interface_->GetProfile(), weak_ptr_factory_.GetWeakPtr(),
-      cue_type, cue.suggested_cuj(), std::move(action_data), cue_id);
+      tab_->GetProfile(), weak_ptr_factory_.GetWeakPtr(), cue_type,
+      cue.suggested_cuj(), std::move(action_data), cue_id);
   page_action_controller->SetAnchoredMessageAction(
       kActionAnchoredContextualCue,
       page_actions::AnchoredMessageActionIconType::kMenu,
@@ -1007,13 +1037,13 @@ void ContextualCueingController::ShowCue(
       strings.anchored_message_text(), strings.action_text()));
 
   contextual_cueing_service_->OnCueShown(
-      active_tab->GetContents()->GetLastCommittedURL(), cue_type);
+      tab_->GetContents()->GetLastCommittedURL(), cue_type);
 #endif
 
   base::UmaHistogramSparse("ContextualCueing.ShownCueCUJ",
                            base::HashMetricName(cue.suggested_cuj()));
 
-  RecordContextualCueingDecision(GetActiveTabSourceId(),
+  RecordContextualCueingDecision(GetTabSourceId(),
                                  ContextualCueingDecision::kSuccess);
 }
 
@@ -1061,11 +1091,6 @@ void ContextualCueingController::MaybeShowTabList(
 
     tab_items.emplace_back(std::move(favicon), std::move(title));
     domains.insert(tab->GetURL().GetHost());
-
-    SessionID session_id =
-        sessions::SessionTabHelper::IdForTab(tab->GetContents());
-    multi_tab_cues_map_[session_id].insert(sessions::SessionTabHelper::IdForTab(
-        tab_list_interface_->GetActiveTab()->GetContents()));
   }
 
   if (tab_items.size() < min_tab_count) {
@@ -1136,12 +1161,12 @@ void ContextualCueingController::OnFaviconAvailable(
 
 void ContextualCueingController::OnShowCueFailed(
     ContextualCueingDecision decision) {
-  RecordContextualCueingDecision(GetActiveTabSourceId(), decision);
+  RecordContextualCueingDecision(GetTabSourceId(), decision);
   cancelable_task_tracker_.TryCancelAll();
 }
 
 void ContextualCueingController::OnSidePanelShown() {
-  HideCueForTab(tab_list_interface_->GetActiveTab());
+  HideCue();
 }
 
 void ContextualCueingController::OnCueClicked(
@@ -1158,22 +1183,19 @@ void ContextualCueingController::OnCueClicked(
   const page_actions::PageActionState& state =
       page_action_observer_->GetCurrentPageActionState();
   if (!state.anchored_message_showing) {
-    tabs::TabInterface* active_tab = tab_list_interface_->GetActiveTab();
-    if (active_tab) {
-      // Re-show the anchored message to allow for the user to see the tab
-      // sharing UI before invoking the cue target's click action
-      if (page_actions::PageActionController* page_action_controller =
-              active_tab->GetTabFeatures()->page_action_controller()) {
-        page_action_controller->ShowAnchoredMessage(
-            kActionAnchoredContextualCue,
-            {.priority =
-                 page_actions::PageActionPriorityCategory::kUserInteraction});
-        if (!cue_hidden_time_.is_null()) {
-          base::TimeDelta collapsed_duration =
-              base::TimeTicks::Now() - cue_hidden_time_;
-          RecordChipClickedCollapsedDuration(collapsed_duration);
-          cue_hidden_time_ = base::TimeTicks();
-        }
+    // Re-show the anchored message to allow for the user to see the tab
+    // sharing UI before invoking the cue target's click action
+    if (page_actions::PageActionController* page_action_controller =
+            tab_->GetTabFeatures()->page_action_controller()) {
+      page_action_controller->ShowAnchoredMessage(
+          kActionAnchoredContextualCue,
+          {.priority =
+               page_actions::PageActionPriorityCategory::kUserInteraction});
+      if (!cue_hidden_time_.is_null()) {
+        base::TimeDelta collapsed_duration =
+            base::TimeTicks::Now() - cue_hidden_time_;
+        RecordChipClickedCollapsedDuration(collapsed_duration);
+        cue_hidden_time_ = base::TimeTicks();
       }
     }
     return;
@@ -1191,15 +1213,15 @@ void ContextualCueingController::OnCueInteraction(
     CueActionData action,
     std::string cue_id) {
   base::TimeDelta shown_duration = ExtractCueShownDuration();
-  ukm::SourceId source_id = GetActiveTabSourceId();
+  ukm::SourceId source_id = GetTabSourceId();
 
   RecordContextualCueingInteraction(interaction_type, cuj, source_id,
                                     shown_duration);
 
-  RecordCueingInteractionToPrivateInsights(
-      browser_window_interface_->GetProfile(), cue_id, interaction_type, cuj);
+  RecordCueingInteractionToPrivateInsights(tab_->GetProfile(), cue_id,
+                                           interaction_type, cuj);
 
-  HideCueForTab(tab_list_interface_->GetActiveTab());
+  HideCue();
 
   switch (interaction_type) {
     case ContextualCueingInteraction::kCueDismissed:
@@ -1211,8 +1233,8 @@ void ContextualCueingController::OnCueInteraction(
       }
       break;
     case ContextualCueingInteraction::kCueSuggestionsSettings:
-      chrome::ShowSettingsSubPageForProfile(
-          browser_window_interface_->GetProfile(), chrome::kSuggestionsSubPage);
+      chrome::ShowSettingsSubPageForProfile(tab_->GetProfile(),
+                                            chrome::kSuggestionsSubPage);
       break;
     case ContextualCueingInteraction::kCueClicked:
       if (CueTarget* target = GetTarget(cue_type)) {
@@ -1232,17 +1254,11 @@ base::TimeDelta ContextualCueingController::ExtractCueShownDuration() {
   return duration;
 }
 
-void ContextualCueingController::HideCueForTab(tabs::TabInterface* tab) {
+void ContextualCueingController::HideCue() {
 #if !BUILDFLAG(IS_ANDROID)
-  if (!tab) {
-    return;
-  }
-  tabs::TabFeatures* tab_features = tab->GetTabFeatures();
-  if (!tab_features) {
-    return;
-  }
+  dependencies_.clear();
   page_actions::PageActionController* page_action_controller =
-      tab_features->page_action_controller();
+      tab_->GetTabFeatures()->page_action_controller();
   if (!page_action_controller) {
     return;
   }
@@ -1251,46 +1267,16 @@ void ContextualCueingController::HideCueForTab(tabs::TabInterface* tab) {
 #endif
 }
 
-void ContextualCueingController::HideAllCuesDependingOnTab(
-    tabs::TabInterface* tab) {
-  if (!tab) {
-    return;
-  }
-
-  // Hide the cue for all other tabs for which the removed tab was part of a
-  // multi-tab cue.
-  SessionID session_id =
-      sessions::SessionTabHelper::IdForTab(tab->GetContents());
-  if (!session_id.is_valid()) {
-    return;
-  }
-  auto it = multi_tab_cues_map_.find(session_id);
-  if (it != multi_tab_cues_map_.end()) {
-    auto& tab_handle_factory =
-        tabs::SessionMappedTabHandleFactory::GetInstance();
-    for (const auto& other_tab_session_id : it->second) {
-      if (other_tab_session_id == session_id) {
-        continue;
-      }
-      tabs::TabHandle other_tab_handle(
-          tab_handle_factory.GetHandleForSessionId(other_tab_session_id.id()));
-      if (tabs::TabInterface* other_tab = other_tab_handle.Get()) {
-        HideCueForTab(other_tab);
-      }
-    }
-  }
-  multi_tab_cues_map_.erase(session_id);
-}
-
 void ContextualCueingController::ObserveSidePanel() {
   if (side_panel_shown_subscription_) {
     return;
   }
-  if (auto* side_panel_ui =
-          SidePanelUIProvider::From(browser_window_interface_)) {
-    side_panel_shown_subscription_ = side_panel_ui->RegisterSidePanelShown(
-        base::BindRepeating(&ContextualCueingController::OnSidePanelShown,
-                            weak_ptr_factory_.GetWeakPtr()));
+  if (auto* window = tab_->GetBrowserWindowInterface()) {
+    if (auto* side_panel_ui = SidePanelUIProvider::From(window)) {
+      side_panel_shown_subscription_ = side_panel_ui->RegisterSidePanelShown(
+          base::BindRepeating(&ContextualCueingController::OnSidePanelShown,
+                              weak_ptr_factory_.GetWeakPtr()));
+    }
   }
 }
 

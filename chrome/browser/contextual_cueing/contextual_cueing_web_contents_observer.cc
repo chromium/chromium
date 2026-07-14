@@ -6,6 +6,9 @@
 
 #include "chrome/browser/contextual_cueing/contextual_cueing_controller.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_service.h"
+#include "chrome/browser/tab_list/tab_list_interface.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
@@ -61,16 +64,31 @@ void ContextualCueingWebContentsObserver::DidFinishNavigation(
     }
   }
 
+  auto* tab = tabs::TabInterface::MaybeGetFromContents(&GetWebContents());
+  if (!tab) {
+    return;
+  }
+
   if (auto* controller =
           ContextualCueingController::GetForWebContents(GetWebContents())) {
-    auto* tab = tabs::TabInterface::MaybeGetFromContents(&GetWebContents());
-    if (!tab) {
-      return;
-    }
-    controller->HideCueForTab(tab);
-    controller->HideAllCuesDependingOnTab(tab);
+    controller->HideCue();
     if (tab->IsActivated()) {
-      controller->ActiveTabUrlChanged(navigation_handle->GetURL());
+      controller->UrlChanged(navigation_handle->GetURL());
+    }
+  }
+
+  if (auto* window = tab->GetBrowserWindowInterface()) {
+    if (auto* tab_list = TabListInterface::From(window)) {
+      for (int i = 0; i < tab_list->GetTabCount(); ++i) {
+        tabs::TabInterface* other_tab = tab_list->GetTab(i);
+        if (other_tab == tab) {
+          continue;
+        }
+        if (auto* other_controller =
+                other_tab->GetTabFeatures()->contextual_cueing_controller()) {
+          other_controller->OnTabNavigated(tab);
+        }
+      }
     }
   }
 }

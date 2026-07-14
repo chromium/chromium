@@ -4,13 +4,11 @@
 
 #include "chrome/browser/glic/browser_ui/glic_nudge_controller_impl.h"
 
-#include "chrome/browser/contextual_cueing/features.h"
 #include "chrome/browser/glic/browser_ui/glic_split_button_delegate.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/suggestions/contextual_cueing_features.h"
-#include "chrome/browser/glic/suggestions/glic_cue_target.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/ui/call_to_action/call_to_action_lock.h"
@@ -40,12 +38,6 @@ GlicNudgeControllerImpl::GlicNudgeControllerImpl(
   android_delegate_ = std::make_unique<GlicNudgeDelegateAndroid>(
       this, browser_window_interface);
   SetHorizontalTabsDelegate(android_delegate_.get());
-#else
-  const bool cue_v2_enabled =
-      base::FeatureList::IsEnabled(contextual_cueing::kContextualCueingV2);
-  if (cue_v2_enabled) {
-    glic::GlicCueTarget::Register(*browser_window_interface);
-  }
 #endif
 }
 
