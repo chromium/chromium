@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {BrowserProxy} from './browser_proxy.js';
+import {browserProxyFactory} from './borealis_motd.mojom-webui.js';
 
 function dismiss() {
-  BrowserProxy.getInstance().handler.onDismiss();
+  browserProxyFactory.getInstance().handler.onDismiss();
 }
 
 function uninstall() {
-  BrowserProxy.getInstance().handler.onUninstall();
+  browserProxyFactory.getInstance().handler.onUninstall();
 }
 
 function initialize() {
@@ -30,10 +30,10 @@ function initialize() {
   const uninstallBtn = document.getElementById('uninstall-btn')!;
   uninstallBtn.addEventListener('click', uninstall);
 
-  BrowserProxy.getInstance().handler.isBorealisInstalled().then(
-    (result: {isInstalled: boolean}) => {
-    uninstallBtn.hidden = !result.isInstalled;
-  });
+  browserProxyFactory.getInstance().handler.isBorealisInstalled().then(
+      (result: {isInstalled: boolean}) => {
+        uninstallBtn.hidden = !result.isInstalled;
+      });
 }
 
 document.addEventListener('DOMContentLoaded', initialize);

@@ -37,7 +37,6 @@ class ChromeUrlsUI : public web::WebUIIOSController,
  private:
   // chrome_urls::mojom::PageHandlerFactory:
   void CreatePageHandler(
-      mojo::PendingRemote<chrome_urls::mojom::Page> page,
       mojo::PendingReceiver<chrome_urls::mojom::PageHandler> receiver) override;
 
   raw_ptr<ProfileIOS> profile_;

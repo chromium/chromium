@@ -14,10 +14,7 @@ build_webui("resources") {
     "index.html",
   ]
 
-  ts_files = [
-    "index.ts",
-    "browser_proxy.ts",
-  ]
+  ts_files = [ "index.ts" ]
 
   mojo_files = [ "$root_gen_dir/chromeos/ash/experiences/guest_os/borealis/motd/borealis_motd.mojom-webui.ts" ]
 

@@ -30,7 +30,6 @@ class BorealisMotdUiImpl : public BorealisMOTDUI {
 
   // ash::borealis_motd::mojom::PageHandlerFactory implementation.
   void CreatePageHandler(
-      mojo::PendingRemote<ash::borealis_motd::mojom::Page> pending_page,
       mojo::PendingReceiver<ash::borealis_motd::mojom::PageHandler>
           pending_page_handler) override;
 

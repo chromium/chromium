@@ -80,20 +80,7 @@ class TestInternalWebUIConfig : public content::InternalWebUIConfig {
   bool enabled_;
 };
 
-class MockPage : public chrome_urls::mojom::Page {
- public:
-  MockPage() = default;
-  ~MockPage() override = default;
 
-  mojo::PendingRemote<chrome_urls::mojom::Page> BindAndGetRemote() {
-    DCHECK(!receiver_.is_bound());
-    return receiver_.BindNewPipeAndPassRemote();
-  }
-
-  void FlushForTesting() { receiver_.FlushForTesting(); }
-
-  mojo::Receiver<chrome_urls::mojom::Page> receiver_{this};
-};
 
 }  // namespace
 
@@ -104,15 +91,12 @@ class ChromeUrlsHandlerTest : public testing::Test {
   void SetUp() override {
     handler_ = std::make_unique<chrome_urls::ChromeUrlsHandler>(
         mojo::PendingReceiver<chrome_urls::mojom::PageHandler>(),
-        mock_page_.BindAndGetRemote(), profile_.get());
-    mock_page_.FlushForTesting();
-    testing::Mock::VerifyAndClearExpectations(&mock_page_);
+        profile_.get());
   }
 
  protected:
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_;
-  testing::NiceMock<MockPage> mock_page_;
   std::unique_ptr<chrome_urls::ChromeUrlsHandler> handler_;
 };
 

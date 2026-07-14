@@ -53,10 +53,9 @@ void ChromeUrlsUI::BindInterface(
 }
 
 void ChromeUrlsUI::CreatePageHandler(
-    mojo::PendingRemote<chrome_urls::mojom::Page> page,
     mojo::PendingReceiver<chrome_urls::mojom::PageHandler> receiver) {
-  page_handler_ = std::make_unique<ChromeUrlsHandler>(
-      std::move(receiver), std::move(page), profile_);
+  page_handler_ =
+      std::make_unique<ChromeUrlsHandler>(std::move(receiver), profile_);
 }
 
 }  // namespace chrome_urls

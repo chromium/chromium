@@ -36,11 +36,8 @@ bool IsWebUIInternal(std::string_view host) {
 
 ChromeUrlsHandler::ChromeUrlsHandler(
     mojo::PendingReceiver<chrome_urls::mojom::PageHandler> receiver,
-    mojo::PendingRemote<chrome_urls::mojom::Page> page,
     raw_ptr<ProfileIOS> profile)
-    : profile_(profile),
-      receiver_(this, std::move(receiver)),
-      page_(std::move(page)) {}
+    : profile_(profile), receiver_(this, std::move(receiver)) {}
 
 ChromeUrlsHandler::~ChromeUrlsHandler() = default;
 

@@ -58,10 +58,8 @@ bool CompareWebuiUrlInfos(const chrome_urls::mojom::WebuiUrlInfoPtr& info1,
 
 ChromeUrlsHandler::ChromeUrlsHandler(
     mojo::PendingReceiver<chrome_urls::mojom::PageHandler> receiver,
-    mojo::PendingRemote<chrome_urls::mojom::Page> page,
     content::BrowserContext* browser_context)
     : receiver_(this, std::move(receiver)),
-      page_(std::move(page)),
       browser_context_(browser_context) {
 }
 

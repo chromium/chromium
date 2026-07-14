@@ -14,11 +14,9 @@ BorealisMOTDPageHandler::BorealisMOTDPageHandler(
     std::unique_ptr<Delegate> delegate,
     mojo::PendingReceiver<ash::borealis_motd::mojom::PageHandler>
         pending_page_handler,
-    mojo::PendingRemote<ash::borealis_motd::mojom::Page> pending_page,
     OnPageClosedCallback on_page_closed_cb)
     : delegate_{std::move(delegate)},
       receiver_{this, std::move(pending_page_handler)},
-      page_{std::move(pending_page)},
       on_page_closed_cb_{std::move(on_page_closed_cb)} {
   CHECK(delegate_);
 }

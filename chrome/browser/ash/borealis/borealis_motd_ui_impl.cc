@@ -16,7 +16,6 @@ BorealisMotdUiImpl::BorealisMotdUiImpl(content::WebUI* web_ui)
     : BorealisMOTDUI(web_ui) {}
 
 void BorealisMotdUiImpl::CreatePageHandler(
-    mojo::PendingRemote<ash::borealis_motd::mojom::Page> pending_page,
     mojo::PendingReceiver<ash::borealis_motd::mojom::PageHandler>
         pending_page_handler) {
   Profile* profile = Profile::FromWebUI(web_ui());
@@ -27,7 +26,7 @@ void BorealisMotdUiImpl::CreatePageHandler(
   page_handler_ = std::make_unique<BorealisMOTDPageHandler>(
       std::make_unique<BorealisMOTDPageHandlerDelegate>(&service->Features(),
                                                         &service->Installer()),
-      std::move(pending_page_handler), std::move(pending_page),
+      std::move(pending_page_handler),
       base::BindOnce(&BorealisMotdUiImpl::OnPageClosed,
                      base::Unretained(this)));
 }

@@ -51,7 +51,6 @@ class ChromeUrlsUI : public ui::MojoWebUIController,
  private:
   // chrome_urls::mojom::PageHandlerFactory:
   void CreatePageHandler(
-      mojo::PendingRemote<chrome_urls::mojom::Page> page,
       mojo::PendingReceiver<chrome_urls::mojom::PageHandler> receiver) override;
 
   std::unique_ptr<ChromeUrlsHandler> page_handler_;

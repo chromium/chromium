@@ -21,7 +21,6 @@ class ChromeUrlsHandler : public chrome_urls::mojom::PageHandler {
  public:
   ChromeUrlsHandler(
       mojo::PendingReceiver<chrome_urls::mojom::PageHandler> receiver,
-      mojo::PendingRemote<chrome_urls::mojom::Page> page,
       raw_ptr<ProfileIOS> profile);
   ~ChromeUrlsHandler() override;
   ChromeUrlsHandler(const ChromeUrlsHandler&) = delete;
@@ -38,7 +37,6 @@ class ChromeUrlsHandler : public chrome_urls::mojom::PageHandler {
   // These are located at the end of the list of member variables to ensure the
   // WebUI page is disconnected before other members are destroyed.
   mojo::Receiver<chrome_urls::mojom::PageHandler> receiver_;
-  mojo::Remote<chrome_urls::mojom::Page> page_;
 };
 
 }  // namespace chrome_urls

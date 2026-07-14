@@ -6,7 +6,7 @@ import 'chrome://chrome-urls/app.js';
 
 import type {ChromeUrlsAppElement} from 'chrome://chrome-urls/app.js';
 import {INTERNAL_DEBUG_PAGES_HASH} from 'chrome://chrome-urls/app.js';
-import {BrowserProxyImpl} from 'chrome://chrome-urls/browser_proxy.js';
+import {browserProxyFactory} from 'chrome://chrome-urls/chrome_urls.mojom-webui.js';
 import type {WebuiUrlInfo} from 'chrome://chrome-urls/chrome_urls.mojom-webui.js';
 import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
 import type {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
@@ -14,13 +14,13 @@ import {assertEquals, assertFalse, assertGT, assertTrue} from 'chrome://webui-te
 import {TestOpenWindowProxy} from 'chrome://webui-test/test_open_window_proxy.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
-import {TestChromeUrlsBrowserProxy} from './test_chrome_urls_browser_proxy.js';
+import {TestPageHandler} from './test_chrome_urls_page_handler.js';
 
 suite('ChromeUrlsAppTest', function() {
   const commandUrls: Url[] = ['chrome://kill/', 'chrome://crash/'];
 
   let app: ChromeUrlsAppElement;
-  let browserProxy: TestChromeUrlsBrowserProxy;
+  let testHandler: TestPageHandler;
   let openWindowProxy: TestOpenWindowProxy;
 
   async function finishSetup(
@@ -30,13 +30,13 @@ suite('ChromeUrlsAppTest', function() {
     openWindowProxy = new TestOpenWindowProxy();
     OpenWindowProxyImpl.setInstance(openWindowProxy);
 
-    browserProxy = new TestChromeUrlsBrowserProxy();
-    browserProxy.handler.setTestData(
+    testHandler = new TestPageHandler();
+    testHandler.setTestData(
         {webuiUrls, commandUrls, internalDebuggingUisEnabled});
-    BrowserProxyImpl.setInstance(browserProxy);
+    browserProxyFactory.setInstance({handler: testHandler});
     app = document.createElement('chrome-urls-app');
     document.body.appendChild(app);
-    await browserProxy.handler.whenCalled('getUrls');
+    await testHandler.whenCalled('getUrls');
     await microtasksFinished();
   }
 
@@ -186,7 +186,7 @@ suite('ChromeUrlsAppTest', function() {
 
     // Test case of enabling debug pages.
     button.click();
-    let enabled = await browserProxy.handler.whenCalled('setDebugPagesEnabled');
+    let enabled = await testHandler.whenCalled('setDebugPagesEnabled');
     assertTrue(enabled);
     await microtasksFinished();
     // Status is enabled, button is to disable, and page is linked.
@@ -197,9 +197,9 @@ suite('ChromeUrlsAppTest', function() {
     assertTrue(!!internalItems[0]!.querySelector('a'));
 
     // Test case of disabling debug pages.
-    browserProxy.handler.resetResolver('setDebugPagesEnabled');
+    testHandler.resetResolver('setDebugPagesEnabled');
     button.click();
-    enabled = await browserProxy.handler.whenCalled('setDebugPagesEnabled');
+    enabled = await testHandler.whenCalled('setDebugPagesEnabled');
     assertFalse(enabled);
     await microtasksFinished();
     assertEquals('disabled', status.textContent);
@@ -223,8 +223,7 @@ suite('ChromeUrlsAppTest', function() {
 
     // Test that enabling debug UIs redirects to host.
     button.click();
-    const enabled =
-        await browserProxy.handler.whenCalled('setDebugPagesEnabled');
+    const enabled = await testHandler.whenCalled('setDebugPagesEnabled');
     assertTrue(enabled);
 
     assertEquals(host, await openWindowProxy.whenCalled('openUrl'));
@@ -243,8 +242,7 @@ suite('ChromeUrlsAppTest', function() {
 
     // Test that enabling debug UIs doesn't redirect to bad host.
     button.click();
-    const enabled =
-        await browserProxy.handler.whenCalled('setDebugPagesEnabled');
+    const enabled = await testHandler.whenCalled('setDebugPagesEnabled');
     assertTrue(enabled);
 
     await microtasksFinished();

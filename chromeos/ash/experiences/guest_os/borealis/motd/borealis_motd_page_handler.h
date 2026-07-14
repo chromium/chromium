@@ -43,7 +43,6 @@ class BorealisMOTDPageHandler : public ash::borealis_motd::mojom::PageHandler {
       std::unique_ptr<Delegate> delegate,
       mojo::PendingReceiver<ash::borealis_motd::mojom::PageHandler>
           pending_page_handler,
-      mojo::PendingRemote<ash::borealis_motd::mojom::Page> pending_page,
       OnPageClosedCallback on_page_closed_cb);
   ~BorealisMOTDPageHandler() override;
 
@@ -55,7 +54,6 @@ class BorealisMOTDPageHandler : public ash::borealis_motd::mojom::PageHandler {
  private:
   std::unique_ptr<Delegate> delegate_;
   mojo::Receiver<ash::borealis_motd::mojom::PageHandler> receiver_;
-  mojo::Remote<ash::borealis_motd::mojom::Page> page_;
   OnPageClosedCallback on_page_closed_cb_;
 };
 
