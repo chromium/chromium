@@ -152,15 +152,6 @@ void GuestViewManager::AttachGuest(content::ChildProcessId embedder_process_id,
   guest_view->SetAttachParams(attach_params);
 }
 
-void GuestViewManager::AttachGuest(int embedder_process_id,
-                                   int element_instance_id,
-                                   int guest_instance_id,
-                                   const base::DictValue& attach_params) {
-  GuestViewManager::AttachGuest(content::ChildProcessId(embedder_process_id),
-                                element_instance_id, guest_instance_id,
-                                attach_params);
-}
-
 bool GuestViewManager::IsOwnedByExtension(const GuestViewBase* guest) {
   return delegate_->IsOwnedByExtension(guest);
 }

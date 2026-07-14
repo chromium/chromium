@@ -13,6 +13,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/child_process_id.h"
 #include "extensions/browser/api/extensions_api_client.h"
 #include "extensions/browser/guest_view/mime_handler_view/mime_handler_view_attach_helper.h"
 #include "extensions/browser/guest_view/mime_handler_view/mime_handler_view_constants.h"
@@ -216,8 +217,8 @@ void MimeHandlerViewEmbedder::DidCreateMimeHandlerViewGuest(
   DCHECK_EQ(placeholder_render_frame_host_for_inner_contents_->GetParent(),
             render_frame_host_);
 
-  const int embedder_frame_process_id =
-      render_frame_host_->GetProcess()->GetDeprecatedID();
+  const content::ChildProcessId embedder_frame_process_id =
+      render_frame_host_->GetProcess()->GetID();
   const int element_instance_id =
       placeholder_render_frame_host_for_inner_contents_->GetRoutingID();
   const int guest_instance_id = guest_view->guest_instance_id();
@@ -237,9 +238,12 @@ void MimeHandlerViewEmbedder::DidCreateMimeHandlerViewGuest(
   bool is_full_page =
       !guest_view->maybe_has_frame_container() &&
       !guest_view->GetEmbedderFrame()->GetParentOrOuterDocument();
-  MimeHandlerViewAttachHelper::Get(embedder_frame_process_id)
+  // TODO(crbug.com/379869738): Pass content::ChildProcessId directly once
+  // MimeHandlerViewAttachHelper::Get() and AttachToOuterWebContents() are
+  // migrated off the raw process id.
+  MimeHandlerViewAttachHelper::Get(embedder_frame_process_id.GetUnsafeValue())
       ->AttachToOuterWebContents(
-          std::move(guest_view), embedder_frame_process_id,
+          std::move(guest_view), embedder_frame_process_id.GetUnsafeValue(),
           placeholder_render_frame_host_for_inner_contents_,
           element_instance_id, is_full_page /* is_full_page_plugin */);
   // MHVE is no longer required.

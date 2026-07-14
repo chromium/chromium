@@ -102,10 +102,6 @@ class TestGuestViewManager : public GuestViewManager {
                    int element_instance_id,
                    int guest_instance_id,
                    const base::DictValue& attach_params) override;
-  void AttachGuest(int embedder_process_id,
-                   int element_instance_id,
-                   int guest_instance_id,
-                   const base::DictValue& attach_params) override;
 
   void WaitForViewGarbageCollected();
 

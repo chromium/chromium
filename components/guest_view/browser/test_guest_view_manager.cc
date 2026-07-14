@@ -200,14 +200,6 @@ void TestGuestViewManager::AttachGuest(
   }
 }
 
-void TestGuestViewManager::AttachGuest(int embedder_process_id,
-                                       int element_instance_id,
-                                       int guest_instance_id,
-                                       const base::DictValue& attach_params) {
-  AttachGuest(content::ChildProcessId(embedder_process_id), element_instance_id,
-              guest_instance_id, attach_params);
-}
-
 void TestGuestViewManager::GetGuestRenderFrameHostList(
     std::vector<content::RenderFrameHost*>* guest_render_frame_host_list) {
   for (auto& watcher : guest_view_watchers_) {

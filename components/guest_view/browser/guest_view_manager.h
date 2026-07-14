@@ -78,12 +78,6 @@ class GuestViewManager : public content::BrowserPluginGuestManager,
                            int element_instance_id,
                            int guest_instance_id,
                            const base::DictValue& attach_params);
-  // TODO(crbug.com/379869738): Deprecated, please use the ChildProcessId
-  // version above.
-  virtual void AttachGuest(int embedder_process_id,
-                           int element_instance_id,
-                           int guest_instance_id,
-                           const base::DictValue& attach_params);
 
   // Indicates whether the |guest| is owned by an extension or Chrome App.
   bool IsOwnedByExtension(const GuestViewBase* guest);
@@ -113,11 +107,6 @@ class GuestViewManager : public content::BrowserPluginGuestManager,
       content::ChildProcessId embedder_process_id,
       int view_instance_id,
       base::OnceClosure callback);
-  // TODO(crbug.com/379869738): Deprecated, please use the ChildProcessId
-  // version above.
-  void RegisterViewDestructionCallback(int embedder_process_id,
-                                       int view_instance_id,
-                                       base::OnceClosure callback);
 
   using UnownedGuestCreatedCallback = base::OnceCallback<void(GuestViewBase*)>;
   using OwnedGuestCreatedCallback =
