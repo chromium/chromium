@@ -696,6 +696,177 @@ constexpr bool IsPersonalContextNoticeSuggestionSupported() {
 #endif
 }
 
+// Returns a list of `Suggestion` generated for the given
+// `entities_to_suggest`.
+std::vector<Suggestion> CreateSuggestionsForEntities(
+    const FormStructure& form,
+    const AutofillField& trigger_field,
+    base::span<const EntityInstance> entities_to_suggest,
+    base::span<const EntityInstance> all_entities,
+    const AttributeTypeAssignment& assignment,
+    AutofillClient& client) {
+  if (entities_to_suggest.empty()) {
+    return {};
+  }
+
+  auto entities_to_suggest_ids = base::MakeFlatSet<EntityInstance::EntityId>(
+      entities_to_suggest, {}, &EntityInstance::guid);
+
+  // Labels need to be consistent across the whole fill group. That is, as the
+  // user clicks around fields they need to see the same set of attributes as
+  // a combination of main text and labels. Therefore, entities that do not
+  // generate suggestions on a certain triggering field still affect label
+  // generation and should be taken into account.
+  std::vector<const EntityInstance*> other_entities_that_can_fill_section;
+  for (const EntityInstance& entity : all_entities) {
+    if (!entities_to_suggest_ids.contains(entity.guid()) &&
+        CanFillSomeField(entity, assignment.Find(entity.type()),
+                         std::string(client.GetAppLocale()))) {
+      other_entities_that_can_fill_section.push_back(&entity);
+    }
+  }
+
+  std::vector<std::u16string> labels = GetLabelsForSuggestions(
+      entities_to_suggest, other_entities_that_can_fill_section,
+      FindAttributesForField(assignment, trigger_field.global_id()),
+      client.GetAppLocale());
+
+  std::vector<Suggestion> suggestions;
+  suggestions.reserve(entities_to_suggest.size());
+  CHECK_EQ(entities_to_suggest.size(), labels.size());
+  for (auto [entity, label] : base::zip(entities_to_suggest, labels)) {
+    base::span<const AutofillFieldWithAttributeType> fields_with_types =
+        assignment.Find(entity.type());
+    base::optional_ref<const AutofillFieldWithAttributeType>
+        trigger_field_with_type =
+            FindField(fields_with_types, trigger_field.global_id());
+    suggestions.push_back(GetSuggestionForEntity(
+        form, entity, fields_with_types, *trigger_field_with_type,
+        std::move(label), client.GetAppLocale()));
+  }
+  return suggestions;
+}
+
+// Returns true if the trigger field can be filled by an order entity.
+// This is determined by checking if the `AttributeTypeAssignment` maps
+// the field to any attribute belonging to the order entity type.
+bool CanFieldBeFilledByOrder(const AttributeTypeAssignment& assignment,
+                             const FieldGlobalId& field_id) {
+  base::span<const AutofillFieldWithAttributeType> order_fields =
+      assignment.Find(EntityType(EntityTypeName::kOrder));
+  return FindField(order_fields, field_id).has_value();
+}
+
+// Returns true if any suggestion in `suggestions` (or recursively in their
+// children) was generated from an entity stored in Personal Context.
+bool HasPersonalContextSuggestion(
+    base::span<const Suggestion> suggestions,
+    base::span<const EntityInstance> all_entities) {
+  for (const Suggestion& suggestion : suggestions) {
+    if (const auto* payload =
+            std::get_if<Suggestion::AutofillAiPayload>(&suggestion.payload)) {
+      auto it =
+          std::ranges::find(all_entities, payload->guid, &EntityInstance::guid);
+      if (it != all_entities.end() &&
+          it->record_type() == EntityInstance::RecordType::kPersonalContext) {
+        return true;
+      }
+    }
+    if (HasPersonalContextSuggestion(suggestion.children, all_entities)) {
+      return true;
+    }
+  }
+  return false;
+}
+
+// Generates the fallback suggestion menu for orders from other domains.
+// This suggestion is marked as unacceptable (non-clickable) but contains
+// children suggestions for all the fallback orders, which are regular
+// acceptable suggestions.
+// Updates `ui_sections` for any fallback orders that produce valid child
+// suggestions.
+// Returns `std::nullopt` if no valid fallback suggestions could be generated.
+std::optional<Suggestion> CreateOtherOrdersFallbackSuggestion(
+    const FormStructure& form,
+    const AutofillField& trigger_field,
+    base::span<const EntityInstance> all_entities,
+    const AttributeTypeAssignment& assignment,
+    const GURL& page_url,
+    AutofillClient& client,
+    DenseSet<AutofillAiUiSection>* ui_sections) {
+  std::vector<EntityInstance> fallback_orders;
+  for (const EntityInstance& entity : all_entities) {
+    if (entity.type().name() != EntityTypeName::kOrder ||
+        IsAllowedForPageUrl(entity, page_url)) {
+      continue;
+    }
+
+    base::span<const AutofillFieldWithAttributeType> fields_with_types =
+        assignment.Find(entity.type());
+    base::optional_ref<const AutofillFieldWithAttributeType>
+        trigger_field_with_type =
+            FindField(fields_with_types, trigger_field.global_id());
+    if (!trigger_field_with_type) {
+      continue;
+    }
+
+    base::optional_ref<const AttributeInstance> trigger_attribute =
+        entity.attribute(trigger_field_with_type->type);
+    if (!trigger_attribute) {
+      continue;
+    }
+
+    std::u16string trigger_value = trigger_attribute->GetInfo(
+        trigger_field_with_type->field->Type().GetAutofillAiType(entity.type()),
+        std::string(client.GetAppLocale()),
+        trigger_field_with_type->field->format_string());
+    if (!trigger_value.empty()) {
+      fallback_orders.push_back(entity);
+    }
+  }
+
+  if (fallback_orders.empty()) {
+    return std::nullopt;
+  }
+
+  std::vector<Suggestion> children = CreateSuggestionsForEntities(
+      form, trigger_field, fallback_orders, all_entities, assignment, client);
+  if (children.empty()) {
+    return std::nullopt;
+  }
+
+  for (const EntityInstance& entity : fallback_orders) {
+    ui_sections->insert(GetAutofillAiUiSection(entity.type()));
+  }
+
+  Suggestion fallback_suggestion(
+      l10n_util::GetStringUTF16(IDS_AUTOFILL_AI_OTHER_ORDERS),
+      SuggestionType::kAutofillAiOtherOrders);
+  fallback_suggestion.acceptability = Suggestion::Acceptability::kUnacceptable;
+  fallback_suggestion.children = std::move(children);
+
+  return fallback_suggestion;
+}
+
+void AppendDomainFallbackSuggestions(
+    std::vector<Suggestion>& suggestions,
+    const FormStructure& form,
+    const AutofillField& trigger_field,
+    base::span<const EntityInstance> all_entities,
+    const AttributeTypeAssignment& assignment,
+    AutofillClient& client,
+    DenseSet<AutofillAiUiSection>& ui_sections) {
+  if (CanFieldBeFilledByOrder(assignment, trigger_field.global_id())) {
+    if (std::optional<Suggestion> fallback_suggestion =
+            CreateOtherOrdersFallbackSuggestion(
+                form, trigger_field, all_entities, assignment,
+                client.GetLastCommittedPrimaryMainFrameURL(), client,
+                &ui_sections)) {
+      suggestions.push_back(std::move(*fallback_suggestion));
+    }
+  }
+}
+
 std::vector<Suggestion> CreateAutofillAiFillingSuggestions(
     const FormStructure& form,
     const AutofillField& trigger_field,
@@ -706,60 +877,33 @@ std::vector<Suggestion> CreateAutofillAiFillingSuggestions(
   bool should_show_fetching_suggestions =
       IsFetchingFillableEntity(trigger_field, client);
 
-  if (entities_to_suggest.empty() && !should_show_fetching_suggestions) {
+  std::vector<Suggestion> suggestions;
+  DenseSet<AutofillAiUiSection> ui_sections;
+
+  if (!entities_to_suggest.empty()) {
+    suggestions =
+        CreateSuggestionsForEntities(form, trigger_field, entities_to_suggest,
+                                     all_entities, assignment, client);
+
+    for (const EntityInstance& entity : entities_to_suggest) {
+      ui_sections.insert(GetAutofillAiUiSection(entity.type()));
+    }
+  }
+
+  AppendDomainFallbackSuggestions(suggestions, form, trigger_field,
+                                  all_entities, assignment, client,
+                                  ui_sections);
+
+  if (suggestions.empty() && !should_show_fetching_suggestions) {
     return {};
   }
 
-  std::vector<Suggestion> suggestions;
-  DenseSet<AutofillAiUiSection> ui_sections;
-  bool contains_personal_context_entity = false;
-
-  if (!entities_to_suggest.empty()) {
-    auto entities_to_suggest_ids = base::MakeFlatSet<EntityInstance::EntityId>(
-        entities_to_suggest, {}, &EntityInstance::guid);
-
-    // Labels need to be consistent across the whole fill group. That is, as the
-    // user clicks around fields they need to see the same set of attributes as
-    // a combination of main text and labels. Therefore, entities that do not
-    // generate suggestions on a certain triggering field still affect label
-    // generation and should be taken into account.
-    std::vector<const EntityInstance*> other_entities_that_can_fill_section;
-    for (const EntityInstance& entity : all_entities) {
-      if (!entities_to_suggest_ids.contains(entity.guid()) &&
-          CanFillSomeField(entity, assignment.Find(entity.type()),
-                           std::string(client.GetAppLocale()))) {
-        other_entities_that_can_fill_section.push_back(&entity);
-      }
-    }
-
-    std::vector<std::u16string> labels = GetLabelsForSuggestions(
-        entities_to_suggest, other_entities_that_can_fill_section,
-        FindAttributesForField(assignment, trigger_field.global_id()),
-        client.GetAppLocale());
-
-    suggestions.reserve(entities_to_suggest.size());
-    CHECK_EQ(entities_to_suggest.size(), labels.size());
-    for (auto [entity, label] : base::zip(entities_to_suggest, labels)) {
-      base::span<const AutofillFieldWithAttributeType> fields_with_types =
-          assignment.Find(entity.type());
-      base::optional_ref<const AutofillFieldWithAttributeType>
-          trigger_field_with_type =
-              FindField(fields_with_types, trigger_field.global_id());
-      suggestions.push_back(GetSuggestionForEntity(
-          form, entity, fields_with_types, *trigger_field_with_type,
-          std::move(label), client.GetAppLocale()));
-      ui_sections.insert(GetAutofillAiUiSection(entity.type()));
-      contains_personal_context_entity |=
-          entity.record_type() == EntityInstance::RecordType::kPersonalContext;
-    }
-
-    if (IsPersonalContextNoticeSuggestionSupported() &&
-        contains_personal_context_entity &&
-        client.ShouldShowPersonalContextAmbientAutofillNotice()) {
-      Suggestion& suggestion =
-          suggestions.emplace_back(SuggestionType::kPersonalContextNotice);
-      suggestion.filtration_policy = Suggestion::FiltrationPolicy::kStatic;
-    }
+  if (IsPersonalContextNoticeSuggestionSupported() &&
+      HasPersonalContextSuggestion(suggestions, all_entities) &&
+      client.ShouldShowPersonalContextAmbientAutofillNotice()) {
+    Suggestion& suggestion =
+        suggestions.emplace_back(SuggestionType::kPersonalContextNotice);
+    suggestion.filtration_policy = Suggestion::FiltrationPolicy::kStatic;
   }
 
   if (should_show_fetching_suggestions) {

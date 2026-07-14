@@ -32,8 +32,10 @@
 #include "components/autofill/core/browser/webdata/autofill_ai/entity_table.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/feature_engagement/public/feature_constants.h"
+#include "components/strings/grit/components_strings.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/l10n/l10n_util.h"
 
 namespace autofill {
 namespace {
@@ -42,9 +44,11 @@ using enum SuggestionType;
 using FieldPrediction =
     AutofillQueryResponse::FormSuggestion::FieldSuggestion::FieldPrediction;
 using test::GetFlightReservationEntityInstanceWithRandomGuid;
+using test::GetOrderEntityInstance;
 using test::GetPassportEntityInstance;
 using test::GetPassportEntityInstanceWithRandomGuid;
 using test::MaskEntityInstance;
+using ::testing::AllOf;
 using ::testing::Contains;
 using ::testing::ElementsAre;
 using ::testing::Field;
@@ -68,9 +72,6 @@ Matcher<const Suggestion&> HasLabel(const std::u16string& label) {
       ElementsAre(ElementsAre(Field(&Suggestion::Text::value, label))));
 }
 
-Matcher<const Suggestion&> HasType(SuggestionType type) {
-  return Field("Suggestion::type", &Suggestion::type, type);
-}
 
 Matcher<const Suggestion&> HasRequiresServerFetch(bool requires_server_fetch) {
   return ResultOf(
@@ -82,10 +83,28 @@ Matcher<const Suggestion&> HasRequiresServerFetch(bool requires_server_fetch) {
       requires_server_fetch);
 }
 
+Matcher<Suggestion> HasAcceptability(Suggestion::Acceptability acceptability) {
+  return Field("Suggestion::acceptability", &Suggestion::acceptability,
+               acceptability);
+}
+
+Matcher<Suggestion> SuggestionTypeHasTextAndAcceptability(
+    SuggestionType type,
+    const std::u16string& main_text,
+    Suggestion::Acceptability acceptability) {
+  return AllOf(EqualsSuggestion(type, main_text),
+               HasAcceptability(acceptability));
+}
+
+auto ChildrenAre(auto&&... matchers) {
+  return Field("Suggestion::children", &Suggestion::children,
+               ElementsAre(std::forward<decltype(matchers)>(matchers)...));
+}
+
 auto SuggestionsAre(auto&&... matchers) {
   return ElementsAre(std::forward<decltype(matchers)>(matchers)...,
-                     HasType(SuggestionType::kSeparator),
-                     HasType(SuggestionType::kManageAutofillAi));
+                     EqualsSuggestion(SuggestionType::kSeparator),
+                     EqualsSuggestion(SuggestionType::kManageAutofillAi));
 }
 
 std::u16string GetFlightReservationName(const EntityInstance& entity) {
@@ -220,7 +239,8 @@ class AutofillAiSuggestionGeneratorTest : public testing::Test {
     return {features::kAutofillAiWithDataSchema,
             features::kAutofillAiServerModel,
             features::kAutofillAiWalletPrivatePasses,
-            features::kAutofillAiWalletFlightReservation};
+            features::kAutofillAiWalletFlightReservation,
+            features::kAutofillAiOrder};
   }
 
  private:
@@ -262,11 +282,12 @@ TEST_F(AutofillAiSuggestionGeneratorTest, GeneratesAutofillAiSuggestions) {
   SuggestionGenerator::ReturnedSuggestions
       saved_on_suggestions_generated_argument;
 
-  EXPECT_CALL(suggestions_generated_callback,
-              Run(testing::Pair(
-                  SuggestionGenerator::SuggestionDataSource::kAutofillAi,
-                  ElementsAre(HasType(kFillAutofillAi), HasType(kSeparator),
-                              HasType(kManageAutofillAi)))))
+  EXPECT_CALL(
+      suggestions_generated_callback,
+      Run(testing::Pair(SuggestionGenerator::SuggestionDataSource::kAutofillAi,
+                        ElementsAre(EqualsSuggestion(kFillAutofillAi),
+                                    EqualsSuggestion(kSeparator),
+                                    EqualsSuggestion(kManageAutofillAi)))))
       .WillOnce(testing::SaveArg<0>(&saved_on_suggestions_generated_argument));
   generator().GenerateSuggestions(form(), field_data(), &form_structure(),
                                   &field(), client(),
@@ -817,11 +838,13 @@ TEST_F(AutofillAiSuggestionGeneratorTest,
 
   client().set_should_show_personal_context_ambient_autofill_notice(true);
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-  EXPECT_THAT(CreateAutofillAiFillingSuggestions(field(0)),
-              Not(Contains(HasType(SuggestionType::kPersonalContextNotice))));
+  EXPECT_THAT(
+      CreateAutofillAiFillingSuggestions(field(0)),
+      Not(Contains(EqualsSuggestion(SuggestionType::kPersonalContextNotice))));
 #else
-  EXPECT_THAT(CreateAutofillAiFillingSuggestions(field(0)),
-              Contains(HasType(SuggestionType::kPersonalContextNotice)));
+  EXPECT_THAT(
+      CreateAutofillAiFillingSuggestions(field(0)),
+      Contains(EqualsSuggestion(SuggestionType::kPersonalContextNotice)));
 #endif
 }
 
@@ -836,8 +859,9 @@ TEST_F(AutofillAiSuggestionGeneratorTest,
 
   client().set_should_show_personal_context_ambient_autofill_notice(true);
 
-  EXPECT_THAT(CreateAutofillAiFillingSuggestions(field(0)),
-              Not(Contains(HasType(SuggestionType::kPersonalContextNotice))));
+  EXPECT_THAT(
+      CreateAutofillAiFillingSuggestions(field(0)),
+      Not(Contains(EqualsSuggestion(SuggestionType::kPersonalContextNotice))));
 }
 
 // Tests that a kPersonalContextNotice suggestion is not appended if the
@@ -851,8 +875,9 @@ TEST_F(AutofillAiSuggestionGeneratorTest,
 
   client().set_should_show_personal_context_ambient_autofill_notice(false);
 
-  EXPECT_THAT(CreateAutofillAiFillingSuggestions(field(0)),
-              Not(Contains(HasType(SuggestionType::kPersonalContextNotice))));
+  EXPECT_THAT(
+      CreateAutofillAiFillingSuggestions(field(0)),
+      Not(Contains(EqualsSuggestion(SuggestionType::kPersonalContextNotice))));
 }
 
 // Tests that an "Undo Autofill" suggestion is appended if the trigger field
@@ -862,10 +887,10 @@ TEST_F(AutofillAiSuggestionGeneratorTest, GetFillingSuggestions_Undo) {
   SetForm({PASSPORT_NUMBER});
 
   EXPECT_THAT(CreateAutofillAiFillingSuggestions(field(0)),
-              Not(Contains(HasType(SuggestionType::kUndoOrClear))));
+              Not(Contains(EqualsSuggestion(SuggestionType::kUndoOrClear))));
   field_data().set_is_autofilled_according_to_renderer(true);
   EXPECT_THAT(CreateAutofillAiFillingSuggestions(field(0)),
-              Contains(HasType(SuggestionType::kUndoOrClear)));
+              Contains(EqualsSuggestion(SuggestionType::kUndoOrClear)));
 }
 
 // Tests that even when labels aren't needed to disambiguate, we still add one
@@ -1147,8 +1172,9 @@ TEST_F(AutofillAiSuggestionGeneratorTest, ShowFetchingSuggestionWhenPending) {
                                   EntityType(EntityTypeName::kPassport)))
       .WillRepeatedly(Return(RequestStatus::kPending));
 
-  EXPECT_THAT(CreateAutofillAiFillingSuggestions(field(0)),
-              SuggestionsAre(HasType(SuggestionType::kFetchingAmbientData)));
+  EXPECT_THAT(
+      CreateAutofillAiFillingSuggestions(field(0)),
+      SuggestionsAre(EqualsSuggestion(SuggestionType::kFetchingAmbientData)));
 }
 
 TEST_F(AutofillAiSuggestionGeneratorTest,
@@ -1222,8 +1248,9 @@ TEST_F(AutofillAiSuggestionGeneratorTest,
 
   // Should contain Passport suggestions, but NOT fetching suggestion.
   EXPECT_THAT(suggestions, Not(IsEmpty()));
-  EXPECT_THAT(suggestions,
-              Not(Contains(HasType(SuggestionType::kFetchingAmbientData))));
+  EXPECT_THAT(
+      suggestions,
+      Not(Contains(EqualsSuggestion(SuggestionType::kFetchingAmbientData))));
 }
 
 class AutofillAiSuggestionGeneratorOrderShipmentTest
@@ -1265,8 +1292,12 @@ TEST_F(AutofillAiSuggestionGeneratorOrderShipmentTest,
   std::vector<Suggestion> suggestions1 =
       CreateAutofillAiFillingSuggestions(field(0));
 
-  // Only the order for "example.com" should be suggested.
-  EXPECT_THAT(suggestions1, SuggestionsAre(HasMainText(u"123")));
+  // The order for "example.com" should be in the main menu, and "other.com"
+  // in the fallback menu.
+  EXPECT_THAT(
+      suggestions1,
+      SuggestionsAre(HasMainText(u"123"),
+                     EqualsSuggestion(SuggestionType::kAutofillAiOtherOrders)));
 
   // 2. Set page URL to "https://sub.other.com/checkout".
   client().set_last_committed_primary_main_frame_url(
@@ -1275,8 +1306,12 @@ TEST_F(AutofillAiSuggestionGeneratorOrderShipmentTest,
   std::vector<Suggestion> suggestions2 =
       CreateAutofillAiFillingSuggestions(field(0));
 
-  // Only the order for "other.com" (eTLD+1 match) should be suggested.
-  EXPECT_THAT(suggestions2, SuggestionsAre(HasMainText(u"456")));
+  // The order for "other.com" (eTLD+1 match) should be in the main menu, and
+  // "example.com" in the fallback menu.
+  EXPECT_THAT(
+      suggestions2,
+      SuggestionsAre(HasMainText(u"456"),
+                     EqualsSuggestion(SuggestionType::kAutofillAiOtherOrders)));
 
   // 3. Set page URL to a site that doesn't match either (e.g.
   // "https://random.com").
@@ -1286,8 +1321,11 @@ TEST_F(AutofillAiSuggestionGeneratorOrderShipmentTest,
   std::vector<Suggestion> suggestions3 =
       CreateAutofillAiFillingSuggestions(field(0));
 
-  // No order suggestions should be generated.
-  EXPECT_THAT(suggestions3, IsEmpty());
+  // Both orders should be in the fallback menu since neither matches
+  // random.com.
+  EXPECT_THAT(
+      suggestions3,
+      SuggestionsAre(EqualsSuggestion(SuggestionType::kAutofillAiOtherOrders)));
 }
 
 TEST_F(AutofillAiSuggestionGeneratorOrderShipmentTest,
@@ -1364,11 +1402,11 @@ TEST_F(AutofillAiSuggestionGeneratorSplitManageSuggestionTest,
   SetForm({PASSPORT_NUMBER});
   std::vector<Suggestion> suggestions =
       CreateAutofillAiFillingSuggestions(field(0));
-  EXPECT_THAT(
-      suggestions,
-      ElementsAre(HasType(SuggestionType::kFillAutofillAi),
-                  HasType(SuggestionType::kSeparator),
-                  HasType(SuggestionType::kManageAutofillAiIdentityDocs)));
+  EXPECT_THAT(suggestions,
+              ElementsAre(EqualsSuggestion(SuggestionType::kFillAutofillAi),
+                          EqualsSuggestion(SuggestionType::kSeparator),
+                          EqualsSuggestion(
+                              SuggestionType::kManageAutofillAiIdentityDocs)));
 }
 
 TEST_F(AutofillAiSuggestionGeneratorSplitManageSuggestionTest,
@@ -1377,10 +1415,11 @@ TEST_F(AutofillAiSuggestionGeneratorSplitManageSuggestionTest,
   SetForm({VEHICLE_LICENSE_PLATE});
   std::vector<Suggestion> suggestions =
       CreateAutofillAiFillingSuggestions(field(0));
-  EXPECT_THAT(suggestions,
-              ElementsAre(HasType(SuggestionType::kFillAutofillAi),
-                          HasType(SuggestionType::kSeparator),
-                          HasType(SuggestionType::kManageAutofillAiTravel)));
+  EXPECT_THAT(
+      suggestions,
+      ElementsAre(EqualsSuggestion(SuggestionType::kFillAutofillAi),
+                  EqualsSuggestion(SuggestionType::kSeparator),
+                  EqualsSuggestion(SuggestionType::kManageAutofillAiTravel)));
 }
 
 TEST_F(AutofillAiSuggestionGeneratorSplitManageSuggestionTest,
@@ -1391,10 +1430,11 @@ TEST_F(AutofillAiSuggestionGeneratorSplitManageSuggestionTest,
   SetForm({ORDER_ID});
   std::vector<Suggestion> suggestions =
       CreateAutofillAiFillingSuggestions(field(0));
-  EXPECT_THAT(suggestions,
-              ElementsAre(HasType(SuggestionType::kFillAutofillAi),
-                          HasType(SuggestionType::kSeparator),
-                          HasType(SuggestionType::kManageAutofillAiShopping)));
+  EXPECT_THAT(
+      suggestions,
+      ElementsAre(EqualsSuggestion(SuggestionType::kFillAutofillAi),
+                  EqualsSuggestion(SuggestionType::kSeparator),
+                  EqualsSuggestion(SuggestionType::kManageAutofillAiShopping)));
 }
 
 TEST_F(
@@ -1406,10 +1446,10 @@ TEST_F(
   std::vector<Suggestion> suggestions =
       CreateAutofillAiFillingSuggestions(field(1));
   EXPECT_THAT(suggestions,
-              ElementsAre(HasType(SuggestionType::kFillAutofillAi),
-                          HasType(SuggestionType::kFillAutofillAi),
-                          HasType(SuggestionType::kSeparator),
-                          HasType(SuggestionType::kManageAutofillAi)));
+              ElementsAre(EqualsSuggestion(SuggestionType::kFillAutofillAi),
+                          EqualsSuggestion(SuggestionType::kFillAutofillAi),
+                          EqualsSuggestion(SuggestionType::kSeparator),
+                          EqualsSuggestion(SuggestionType::kManageAutofillAi)));
 }
 
 class AutofillAiSuggestionGeneratorPolicyTest
@@ -1454,6 +1494,110 @@ TEST_F(AutofillAiSuggestionGeneratorPolicyTest, BlockTravel) {
   std::vector<Suggestion> suggestions =
       CreateAutofillAiFillingSuggestions(field(0));
   EXPECT_TRUE(suggestions.empty());
+}
+
+// Tests that the "Other orders" suggestion is correctly generated when there
+// are fallback order entities. It verifies the hierarchy, acceptability, and
+// that prefix filtering is NOT applied to fallback orders.
+TEST_F(AutofillAiSuggestionGeneratorTest, GeneratesOtherOrdersSuggestion) {
+  // Setup: 3 order entities with different domains.
+  // `order_a` matches the page domain (`amazon.com`), so it will be in the main
+  // suggested list. `order_b` and `order_c` belong to different domains, so
+  // they should be fallback options.
+  EntityInstance order_a = GetOrderEntityInstance({
+      .merchant_name = u"Amazon",
+      .merchant_domain = u"amazon.com",
+      .guid = "00000000-0000-4000-8000-600000000001",
+      .use_count = 10,
+  });
+  EntityInstance order_b = GetOrderEntityInstance({
+      .merchant_name = u"BestBuy",
+      .merchant_domain = u"bestbuy.com",
+      .guid = "00000000-0000-4000-8000-600000000002",
+      .use_count = 5,
+  });
+  EntityInstance order_c = GetOrderEntityInstance({
+      .merchant_name = u"Costco",
+      .merchant_domain = u"costco.com",
+      .guid = "00000000-0000-4000-8000-600000000003",
+      .use_count = 1,
+  });
+
+  SetEntities({order_a, order_b, order_c});
+  SetForm({ORDER_ID, ORDER_MERCHANT_NAME});
+  client().set_last_committed_primary_main_frame_url(
+      GURL("https://amazon.com/checkout"));
+
+  // Generate suggestions.
+  std::vector<Suggestion> suggestions =
+      CreateAutofillAiFillingSuggestions(field(1));
+
+  // Expected layout:
+  // 1. The top-level suggestion for Order A (Amazon).
+  // 2. The "Other orders" parent suggestion (`kAutofillAiOtherOrders`),
+  //    containing BestBuy and Costco as children.
+  // 3. The footer separator and manage suggestions.
+  EXPECT_THAT(
+      suggestions,
+      SuggestionsAre(
+          SuggestionTypeHasTextAndAcceptability(
+              SuggestionType::kFillAutofillAi, u"Amazon",
+              Suggestion::Acceptability::kAcceptable),
+          AllOf(SuggestionTypeHasTextAndAcceptability(
+                    SuggestionType::kAutofillAiOtherOrders,
+                    l10n_util::GetStringUTF16(IDS_AUTOFILL_AI_OTHER_ORDERS),
+                    Suggestion::Acceptability::kUnacceptable),
+                ChildrenAre(SuggestionTypeHasTextAndAcceptability(
+                                SuggestionType::kFillAutofillAi, u"BestBuy",
+                                Suggestion::Acceptability::kAcceptable),
+                            SuggestionTypeHasTextAndAcceptability(
+                                SuggestionType::kFillAutofillAi, u"Costco",
+                                Suggestion::Acceptability::kAcceptable)))));
+}
+
+// Tests that when there are no primary order suggestions (e.g. no orders
+// match the current site's domain), fallback order suggestions are still
+// generated and the menu is labeled "Other orders"
+// (IDS_AUTOFILL_AI_OTHER_ORDERS).
+TEST_F(AutofillAiSuggestionGeneratorTest,
+       GeneratesOtherOrdersSuggestion_NoPrimaryOrders) {
+  EntityInstance order_bestbuy = GetOrderEntityInstance({
+      .merchant_name = u"BestBuy",
+      .merchant_domain = u"bestbuy.com",
+      .guid = "00000000-0000-4000-8000-600000000002",
+      .use_count = 5,
+  });
+  EntityInstance order_costco = GetOrderEntityInstance({
+      .merchant_name = u"Costco",
+      .merchant_domain = u"costco.com",
+      .guid = "00000000-0000-4000-8000-600000000003",
+      .use_count = 1,
+  });
+
+  SetEntities({order_bestbuy, order_costco});
+  SetForm({ORDER_ID, ORDER_MERCHANT_NAME});
+  client().set_last_committed_primary_main_frame_url(
+      GURL("https://amazon.com/checkout"));
+
+  std::vector<Suggestion> suggestions =
+      CreateAutofillAiFillingSuggestions(field(1));
+
+  // Expected layout:
+  // 1. The fallback parent suggestion (`kAutofillAiOtherOrders`), labeled
+  //    "Other orders", containing BestBuy and Costco as children.
+  // 2. The footer separator and manage suggestions.
+  EXPECT_THAT(suggestions,
+              SuggestionsAre(AllOf(
+                  SuggestionTypeHasTextAndAcceptability(
+                      SuggestionType::kAutofillAiOtherOrders,
+                      l10n_util::GetStringUTF16(IDS_AUTOFILL_AI_OTHER_ORDERS),
+                      Suggestion::Acceptability::kUnacceptable),
+                  ChildrenAre(SuggestionTypeHasTextAndAcceptability(
+                                  SuggestionType::kFillAutofillAi, u"BestBuy",
+                                  Suggestion::Acceptability::kAcceptable),
+                              SuggestionTypeHasTextAndAcceptability(
+                                  SuggestionType::kFillAutofillAi, u"Costco",
+                                  Suggestion::Acceptability::kAcceptable)))));
 }
 
 }  // namespace
