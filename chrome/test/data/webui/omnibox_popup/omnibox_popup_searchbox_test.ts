@@ -5,6 +5,7 @@
 import {omniboxPopupBrowserProxyFactory, OmniboxPopupPageHandlerRemote, sanitizeTextForPaste, SearchboxBrowserProxy, stripJavascriptSchemas} from 'chrome://omnibox-popup.top-chrome/omnibox_popup.js';
 import type {OmniboxPopupPageRemote, OmniboxPopupSearchboxElement} from 'chrome://omnibox-popup.top-chrome/omnibox_popup.js';
 import {createAutocompleteResultForTesting, createSearchMatchForTesting} from 'chrome://resources/cr_components/searchbox/searchbox_browser_proxy.js';
+import {SelectionLineState} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
@@ -628,5 +629,36 @@ suite('OmniboxPopupSearchboxTest', function() {
     for (const testCase of testCases) {
       assertEquals(testCase.expected, sanitizeTextForPaste(testCase.input));
     }
+  });
+
+  test('SetsPopupSelectionOnMatchIndexChange', async () => {
+    // Initial state: nothing selected.
+    assertEquals(-1, searchbox.selectedMatchIndex);
+
+    testProxy.handler.reset();
+
+    // Change selection to a valid match index.
+    searchbox.selectedMatchIndex = 2;
+    await microtasksFinished();
+
+    // Verify handler was notified with correct selection.
+    assertEquals(1, testProxy.handler.getCallCount('setPopupSelection'));
+    let args = testProxy.handler.getArgs('setPopupSelection');
+    let selection = args[args.length - 1];
+    assertEquals(2, selection.line);
+    assertEquals(SelectionLineState.kNormal, selection.state);
+    assertEquals(0, selection.actionIndex);
+
+    // Reset selection to -1.
+    searchbox.selectedMatchIndex = -1;
+    await microtasksFinished();
+
+    // Verify handler was notified with kDefaultSelection (line -1).
+    assertEquals(2, testProxy.handler.getCallCount('setPopupSelection'));
+    args = testProxy.handler.getArgs('setPopupSelection');
+    selection = args[args.length - 1];
+    assertEquals(-1, selection.line);
+    assertEquals(SelectionLineState.kNormal, selection.state);
+    assertEquals(0, selection.actionIndex);
   });
 });

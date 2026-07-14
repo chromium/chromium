@@ -160,38 +160,18 @@ void OmniboxPopupViewFullWebUI::SaveStateToTab(content::WebContents* tab) {
   const OmniboxFocusState target_focus_state =
       logically_focused ? OMNIBOX_FOCUS_VISIBLE : OMNIBOX_FOCUS_NONE;
 
-  // If the WebUI input field was physically empty before switching tabs,
-  // we must select-all on restoration (since the permanent URL will be
-  // restored, and the previous empty-selection [0, 0] is invalid).
+  state = std::make_unique<OmniboxEditModel::State>(default_state);
+  state->focus_state = target_focus_state;
+
   if (was_cleared_by_user) {
     std::u16string permanent_text = edit_model->GetPermanentDisplayText();
+    // If the WebUI input field was physically empty before switching tabs,
+    // we must select-all on restoration (since the permanent URL will be
+    // restored).
     selection = gfx::Range(0, permanent_text.length());
-  }
-
-  if (is_popup_open && logically_focused) {
-    std::u16string user_text = edit_model->user_text();
-    const bool in_progress = !user_text.empty();
-    state = std::make_unique<OmniboxEditModel::State>(
-        in_progress, user_text, default_state.keyword,
-        default_state.keyword_placeholder, default_state.keyword_state,
-        default_state.keyword_mode_entry_method, target_focus_state,
-        default_state.autocomplete_input);
-  } else if (edit_model->user_input_in_progress() &&
-             !edit_model->user_text().empty()) {
-    // For an active uncommitted draft where the webpage has focus, preserve
-    // the draft without restoring keyboard focus when switching back to the
-    // tab.
-    std::u16string override_text = edit_model->user_text();
-    state = std::make_unique<OmniboxEditModel::State>(
-        /*user_input_in_progress=*/true, override_text, default_state.keyword,
-        default_state.keyword_placeholder, default_state.keyword_state,
-        default_state.keyword_mode_entry_method, target_focus_state,
-        default_state.autocomplete_input);
-  } else {
-    // For a closed and unfocused popup with no draft, save the default native
-    // state, overriding any stale focus state with our logical focus check.
-    state = std::make_unique<OmniboxEditModel::State>(default_state);
-    state->focus_state = target_focus_state;
+    // Force `user_input_in_progress` to false to trigger a revert
+    // to the permanent URL on restoration.
+    state->user_input_in_progress = false;
   }
 
   // WebUI retains selection across focus changes, so we only need to sync

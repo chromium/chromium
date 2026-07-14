@@ -34,6 +34,9 @@ DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTab2);
 using DeepQuery = WebContentsInteractionTestUtil::DeepQuery;
 const DeepQuery kWebUIInput = {"omnibox-full-app", "omnibox-popup-searchbox",
                                "cr-searchbox-input", "#input"};
+const DeepQuery kFirstSuggestionMatchContents = {
+    "omnibox-full-app", "omnibox-popup-searchbox", "cr-searchbox-dropdown",
+    "cr-searchbox-match[match-index='1']", "#contents"};
 }  // namespace
 
 class FullWebUIOmniboxInteractiveTest
@@ -209,6 +212,31 @@ IN_PROC_BROWSER_TEST_F(FullWebUIOmniboxInteractiveTest,
       SwitchTabAndRestorePopup(kTabStripElementId, 1, kTab1),
       // Verify the WebUI input text is "ffffff".
       WaitForWebUIInputValue("ffffff"),
+      // Verify the WebUI input has keyboard focus.
+      CheckWebUIInputFocus(true));
+}
+
+// Verifies that highlighting a match, switching tabs, and switching back
+// preserves the highlighted match text.
+IN_PROC_BROWSER_TEST_F(FullWebUIOmniboxInteractiveTest, HighlightAndSwitchTab) {
+  RunTestSequence(
+      // Open Tab 1 and focus Omnibox to open WebUI popup.
+      OpenInitialTabAndFocusOmnibox(kTab1, GURL("chrome://version/")),
+      InputWebUIText("a"),
+      // Wait for the first suggestion to appear.
+      WaitForMatch(kPopupWebView, kFirstSuggestionMatchContents,
+                   "suggestion-1"),
+      // Send ArrowDown key to highlight a match.
+      InAnyContext(SendKeyPress(kPopupWebView, ui::VKEY_DOWN, ui::EF_NONE)),
+      // Verify the WebUI input text is "suggestion-1".
+      WaitForWebUIInputValue("suggestion-1"),
+      // Switch to Tab 2.
+      AddInstrumentedTab(kTab2, GURL("about:blank")),
+      WaitForWebContentsReady(kTab2), UninstrumentWebContents(kPopupWebView),
+      // Switch back to Tab 1.
+      SwitchTabAndRestorePopup(kTabStripElementId, 1, kTab1),
+      // Verify the WebUI input text is still "suggestion-1".
+      WaitForWebUIInputValue("suggestion-1"),
       // Verify the WebUI input has keyboard focus.
       CheckWebUIInputFocus(true));
 }
