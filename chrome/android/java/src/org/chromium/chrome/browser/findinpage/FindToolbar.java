@@ -65,6 +65,8 @@ import org.chromium.components.find_in_page.FindInPageBridge;
 import org.chromium.components.find_in_page.FindMatchRectsDetails;
 import org.chromium.components.find_in_page.FindNotificationDetails;
 import org.chromium.components.find_in_page.FindResultBar;
+import org.chromium.ui.base.DeviceFormFactor;
+import org.chromium.ui.base.DeviceInput;
 import org.chromium.ui.base.UiAndroidFeatureList;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.text.EmptyTextWatcher;
@@ -507,8 +509,9 @@ public class FindToolbar extends LinearLayout implements BackPressHandler, SideU
         if (result.finalUpdate) {
             if (result.numberOfMatches > 0) {
                 // TODO(johnme): Don't wait till end of find, stream rects live!
-                mFindInPageBridge.requestFindMatchRects(
-                        mResultBar != null ? mResultBar.getRectsVersion() : -1);
+                if (mResultBar != null) {
+                    mFindInPageBridge.requestFindMatchRects(mResultBar.getRectsVersion());
+                }
             } else {
                 clearResults();
             }
@@ -778,6 +781,11 @@ public class FindToolbar extends LinearLayout implements BackPressHandler, SideU
     }
 
     private void setResultsBarVisibility(boolean visibility) {
+        if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(getContext())
+                && (DeviceInput.supportsKeyboard(getContext())
+                        || DeviceInput.supportsPrecisionPointer())) {
+            return;
+        }
         if (visibility
                 && mResultBar == null
                 && mCurrentTab != null
