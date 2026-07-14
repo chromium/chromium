@@ -35,8 +35,8 @@ public class SettingsNavigationImplTest {
     private final SettingsNavigationImpl mSettingsNavigationImpl;
 
     /** Fake settings fragment for testing. */
-    public static class FakeSettingsFragment extends Fragment {
-        public FakeSettingsFragment() {}
+    public static class FirstFakeSettingsFragment extends Fragment {
+        public FirstFakeSettingsFragment() {}
     }
 
     /** Another fake settings fragment for testing transitions. */
@@ -48,7 +48,7 @@ public class SettingsNavigationImplTest {
     public static class TestSettingsHostFragment extends SettingsHostFragment {
         @Override
         protected Fragment createInitialFragment() {
-            return new FakeSettingsFragment();
+            return new FirstFakeSettingsFragment();
         }
     }
 
@@ -151,6 +151,34 @@ public class SettingsNavigationImplTest {
         hostFragment.getChildFragmentManager().executePendingTransactions();
 
         // The initial fragment shown when Settings is started for the first time is shown.
-        assertTrue(hostFragment.getActiveFragment() instanceof FakeSettingsFragment);
+        assertTrue(hostFragment.getActiveFragment() instanceof FirstFakeSettingsFragment);
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.SETTINGS_IN_TAB})
+    public void testFinishCurrentSettings_SettingsInTab_DelegatesToHostFragment() {
+        var scenario = Robolectric.buildActivity(TestActivity.class).setup();
+        TestActivity activity = scenario.get();
+        TestSettingsHostFragment hostFragment = new TestSettingsHostFragment();
+        activity.getSupportFragmentManager()
+                .beginTransaction()
+                .add(
+                        android.R.id.content,
+                        hostFragment,
+                        SettingsHostFragment.SETTINGS_NATIVE_PAGE_TAG)
+                .commitNow();
+
+        // First show some other fragment.
+        mSettingsNavigationImpl.startSettings(activity, SecondFakeSettingsFragment.class, null);
+        hostFragment.getChildFragmentManager().executePendingTransactions();
+        Fragment active = hostFragment.getActiveFragment();
+        assertTrue(active instanceof SecondFakeSettingsFragment);
+
+        // Now call finishCurrentSettings on active fragment.
+        mSettingsNavigationImpl.finishCurrentSettings(active);
+        hostFragment.getChildFragmentManager().executePendingTransactions();
+
+        // Should return to initial fragment without casting activity to SettingsActivity.
+        assertTrue(hostFragment.getActiveFragment() instanceof FirstFakeSettingsFragment);
     }
 }

@@ -1095,15 +1095,15 @@ public class MainSettingsFragmentTest {
 
         if (settingsFragmentClass == null) return pref;
 
+        String fragment = ThreadUtils.runOnUiThreadBlocking(pref::getFragment);
         try {
-            Assert.assertNotNull(
-                    "Fragment attached to the preference is null.", pref.getFragment());
+            Assert.assertNotNull("Fragment attached to the preference is null.", fragment);
             Assert.assertEquals(
                     "Preference class is different.",
                     settingsFragmentClass,
-                    Class.forName(pref.getFragment()));
+                    Class.forName(fragment));
         } catch (ClassNotFoundException e) {
-            throw new AssertionError("Pref fragment <" + pref.getFragment() + "> is not found.");
+            throw new AssertionError("Pref fragment <" + fragment + "> is not found.");
         }
         return pref;
     }

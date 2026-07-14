@@ -324,7 +324,9 @@ public class SettingsPageFragmentDelegateImpl
 
     @Override
     public void finishCurrentSettings(Fragment fragment) {
-        // TODO(crbug.com/521895796): Define settings-in-tab finish/back behavior.
+        assert mSettingsHostFragment != null;
+        assert mSettingsHostFragment.isAttachedToActivity();
+        mSettingsHostFragment.finishCurrentSettings(fragment);
     }
 
     @Override

@@ -447,13 +447,31 @@ public class SettingsNavigationImpl implements SettingsNavigation {
     @Override
     public void finishCurrentSettings(Fragment fragment) {
         Activity activity = fragment.getActivity();
-        if (activity != null) {
-            ((SettingsActivity) activity).finishCurrentSettings(fragment);
+        if (activity == null) return;
+
+        // SettingsInTab does not use SettingsActivity.
+        if (ChromeFeatureList.sSettingsInTab.isEnabled()) {
+            SettingsHostFragment settingsHostFragment = SettingsHostFragment.get(activity);
+            if (settingsHostFragment != null) {
+                settingsHostFragment.finishCurrentSettings(fragment);
+            }
+            return;
         }
+
+        ((SettingsActivity) activity).finishCurrentSettings(fragment);
     }
 
     @Override
     public void executePendingNavigations(Activity activity) {
+        // SettingsInTab does not use SettingsActivity.
+        if (ChromeFeatureList.sSettingsInTab.isEnabled()) {
+            SettingsHostFragment settingsHostFragment = SettingsHostFragment.get(activity);
+            if (settingsHostFragment != null) {
+                settingsHostFragment.executePendingNavigations();
+            }
+            return;
+        }
+
         ((SettingsActivity) activity).executePendingNavigations();
     }
 }

@@ -346,6 +346,21 @@ public class SettingsPageFragmentDelegateImplTest {
     }
 
     @Test
+    public void testFinishCurrentSettings() {
+        // Setup mSettingsHostFragment.
+        when(mFragmentManager.findFragmentByTag("settings_native_page"))
+                .thenReturn(mMockSettingsHostFragment);
+        mDelegate.initSettings(mContainerView);
+
+        Fragment fragment = mock(Fragment.class);
+
+        // Ensure mSettingsHostFragment is attached to activity.
+        when(mMockSettingsHostFragment.isAttachedToActivity()).thenReturn(true);
+        mDelegate.finishCurrentSettings(fragment);
+        verify(mMockSettingsHostFragment).finishCurrentSettings(fragment);
+    }
+
+    @Test
     public void testInitSettings_createsSearchCoordinator() {
         when(mFragmentManager.findFragmentByTag("settings_native_page")).thenReturn(null);
         mDelegate.initSettings(mContainerView);

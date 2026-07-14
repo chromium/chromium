@@ -271,6 +271,17 @@ public class SignInPreference extends Preference
         mWasGenericSigninPromoDisplayed = false;
     }
 
+    @Override
+    public @Nullable String getFragment() {
+        // Never show this UI for signed out users, or users in the process of an
+        // asynchronous sign-out operation. Returning null makes the settings UI skip to the
+        // next section. Also return null if this object isn't initialized (null profile).
+        if (mProfile == null || !isSignedIn(mProfile)) {
+            return null;
+        }
+        return super.getFragment();
+    }
+
     // This just changes visual representation. Actual enabled flag in preference stays
     // always true to receive clicks (necessary to show "Managed by administrator" toast). This also
     // sets the visibility of the alert icon.

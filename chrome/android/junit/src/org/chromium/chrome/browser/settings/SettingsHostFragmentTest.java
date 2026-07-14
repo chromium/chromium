@@ -45,7 +45,7 @@ public class SettingsHostFragmentTest {
     public static class TestSettingsHostFragment extends SettingsHostFragment {
         @Override
         protected Fragment createInitialFragment() {
-            return new FakeSettingsFragment();
+            return new FirstFakeSettingsFragment();
         }
     }
 
@@ -84,8 +84,8 @@ public class SettingsHostFragmentTest {
                         .findFragmentById(mSettingsHostFragment.getView().getId());
         assertNotNull("Initial fragment should be attached", current);
         assertTrue(
-                "Initial fragment should be FakeSettingsFragment",
-                current instanceof FakeSettingsFragment);
+                "Initial fragment should be FirstFakeSettingsFragment",
+                current instanceof FirstFakeSettingsFragment);
     }
 
     @Test
@@ -172,13 +172,28 @@ public class SettingsHostFragmentTest {
         Fragment current = mSettingsHostFragment.getActiveFragment();
         assertNotNull("Active fragment should be present", current);
         assertTrue(
-                "Active fragment should be FakeSettingsFragment after passing null",
-                current instanceof FakeSettingsFragment);
+                "Active fragment should be FirstFakeSettingsFragment after passing null",
+                current instanceof FirstFakeSettingsFragment);
+    }
+
+    @Test
+    public void testFinishCurrentSettings() {
+        attachHostFragment();
+        mSettingsHostFragment.showFragment(
+                new SecondFakeSettingsFragment(), /* addToBackStack= */ false, /* tag= */ null);
+        mSettingsHostFragment.getChildFragmentManager().executePendingTransactions();
+        Fragment active = mSettingsHostFragment.getActiveFragment();
+        assertTrue(active instanceof SecondFakeSettingsFragment);
+
+        // Finishing settings returns to the main settings UI.
+        mSettingsHostFragment.finishCurrentSettings(active);
+        mSettingsHostFragment.getChildFragmentManager().executePendingTransactions();
+        assertTrue(mSettingsHostFragment.getActiveFragment() instanceof FirstFakeSettingsFragment);
     }
 
     /** Fake settings fragment for testing. */
-    public static class FakeSettingsFragment extends Fragment {
-        public FakeSettingsFragment() {}
+    public static class FirstFakeSettingsFragment extends Fragment {
+        public FirstFakeSettingsFragment() {}
     }
 
     /** Another fake settings fragment for testing transitions. */

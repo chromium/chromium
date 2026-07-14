@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.settings;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
@@ -17,6 +18,7 @@ import android.widget.FrameLayout;
 
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
+import androidx.fragment.app.FragmentManager;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 
@@ -24,6 +26,8 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+
+import java.lang.ref.WeakReference;
 
 /** Hosts settings preference fragments inside a native page. See {@link SettingsPage}. */
 @NullMarked
@@ -35,10 +39,38 @@ public class SettingsHostFragment extends Fragment
     private static final int CONTAINER_ID = View.generateViewId();
 
     private @Nullable Context mThemedContext;
+    private @Nullable WeakReference<Fragment> mFinishedMainFragment;
+    private int mPendingPopBackCount;
 
     SettingsHostFragment() {
         assert ChromeFeatureList.sSettingsInTab.isEnabled()
                 : "SettingsInTab feature must be enabled to use SettingsHostFragment.";
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        if (mPendingPopBackCount == 0) return;
+
+        // If we have pending back entries, show the correct fragment. This can happen when a
+        // fragment called finishCurrentSettings() and needs to pop the back stack to show the
+        // correct fragment.
+        Fragment activeFragment = getActiveFragment();
+        FragmentManager fragmentManager =
+                activeFragment instanceof MultiColumnSettings multiColumnSettings
+                        ? multiColumnSettings.getChildFragmentManager()
+                        : getChildFragmentManager();
+        if (fragmentManager.getBackStackEntryCount() <= mPendingPopBackCount) {
+            // Show the main settings UI (which is represented by null).
+            showFragment(null, /* addToBackStack= */ false, /* tag= */ null);
+        } else {
+            var backStackEntry =
+                    fragmentManager.getBackStackEntryAt(
+                            fragmentManager.getBackStackEntryCount() - mPendingPopBackCount);
+            fragmentManager.popBackStack(
+                    backStackEntry.getId(), FragmentManager.POP_BACK_STACK_INCLUSIVE);
+        }
+        mPendingPopBackCount = 0;
     }
 
     @Override
@@ -141,6 +173,12 @@ public class SettingsHostFragment extends Fragment
             if (fragment == null || fragment instanceof MainSettings) {
                 if (multiColumnSettings.getSlidingPaneLayout().isSlideable()) {
                     multiColumnSettings.getSlidingPaneLayout().closePane();
+                } else {
+                    Fragment initialFragment = multiColumnSettings.onCreateInitialDetailFragment();
+                    if (initialFragment != null) {
+                        multiColumnSettings.showDetailFragment(
+                                initialFragment, /* addToBackStack= */ false, /* tag= */ null);
+                    }
                 }
                 return true;
             }
@@ -159,5 +197,62 @@ public class SettingsHostFragment extends Fragment
         }
         transaction.commitAllowingStateLoss();
         return true;
+    }
+
+    /**
+     * Returns the fragment showing as the settings main content, typically a {@link
+     * PreferenceFragmentCompat}.
+     */
+    public @Nullable Fragment getMainFragment() {
+        Fragment activeFragment = getActiveFragment();
+        if (activeFragment instanceof MultiColumnSettings multiColumnSettings) {
+            return multiColumnSettings
+                    .getChildFragmentManager()
+                    .findFragmentById(R.id.preferences_detail);
+        }
+        return activeFragment;
+    }
+
+    /**
+     * Finishes the current settings fragment. If the given fragment is not the current one, or the
+     * fragment is already finished, this method does nothing. If the back stack is empty, shows the
+     * main settings page.
+     *
+     * @param fragment The expected current fragment.
+     */
+    @SuppressLint("ReferenceEquality")
+    public void finishCurrentSettings(Fragment fragment) {
+        if (getMainFragment() != fragment) {
+            return;
+        }
+        if (mFinishedMainFragment != null && mFinishedMainFragment.get() == fragment) {
+            return;
+        }
+        mFinishedMainFragment = new WeakReference<>(fragment);
+
+        Fragment activeFragment = getActiveFragment();
+        FragmentManager fragmentManager =
+                activeFragment instanceof MultiColumnSettings multiColumnSettings
+                        ? multiColumnSettings.getChildFragmentManager()
+                        : getChildFragmentManager();
+        if (fragmentManager.getBackStackEntryCount() == 0) {
+            // Show the main settings UI (which is represented by null).
+            showFragment(null, /* addToBackStack= */ false, /* tag= */ null);
+        } else {
+            if (fragmentManager.isStateSaved()) {
+                ++mPendingPopBackCount;
+            } else {
+                fragmentManager.popBackStack();
+            }
+        }
+    }
+
+    /** Executes pending navigations immediately. */
+    void executePendingNavigations() {
+        getChildFragmentManager().executePendingTransactions();
+        Fragment activeFragment = getActiveFragment();
+        if (activeFragment instanceof MultiColumnSettings multiColumnSettings) {
+            multiColumnSettings.getChildFragmentManager().executePendingTransactions();
+        }
     }
 }
