@@ -327,7 +327,6 @@ int CertVerifyProcIOS::VerifyInternal(X509Certificate* cert,
     return ERR_FAILED;
   }
 
-  // TODO(rsleevi): Support CRLSet revocation.
   if (!is_trusted) {
     verify_result->cert_status |=
         GetCertFailureStatusFromError(trust_error.get());
