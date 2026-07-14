@@ -374,10 +374,23 @@ if (!is_android) {
   source_set("browser_tests") {
     testonly = true
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
-    sources = [ "webrtc_browsertest_perf_unittest.cc" ]
+    sources = [
+      "media_stream_focus_delegate_browsertest.cc",
+      "same_origin_observer_browsertest.cc",
+      "sub_capture_browsertest.cc",
+      "webrtc_browsertest_perf_unittest.cc",
+      "webrtc_disable_encryption_flag_browsertest.cc",
+      "webrtc_webcam_browsertest.cc",
+    ]
     deps = [
+      ":webrtc",
       ":webrtc_browser_tests_base",
       "//base",
+      "//chrome/browser/ui",
+      "//chrome/browser/ui/tabs:tab_strip",
+      "//chrome/test:test_support_ui",
+      "//content/test:test_support",
+      "//net:test_support",
       "//testing/gtest",
     ]
   }
