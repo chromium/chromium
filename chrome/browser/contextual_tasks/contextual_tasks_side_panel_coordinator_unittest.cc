@@ -33,6 +33,8 @@
 #include "components/prefs/pref_service.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/tabs/public/mock_tab_interface.h"
+#include "content/public/browser/navigation_controller.h"
+#include "content/public/browser/navigation_entry.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
@@ -876,5 +878,95 @@ TEST_F(ContextualTasksSidePanelCoordinatorTest, OnTabRemoved_PanelClosed) {
                    "ContextualTasks.Tab.UserAction."
                    "ClosedBackgroundTabWithSidePanelOpen"));
 }
+
+TEST_F(ContextualTasksSidePanelCoordinatorTest,
+       OnActiveTabChanged_OpenFullTab) {
+  // Test case 1: Switches to full tab (side panel closed) -> OpenFullTab is
+  // recorded
+  {
+    base::UserActionTester user_action_tester;
+    tabs::TabInterface* tab = CreateMockTab();
+    content::WebContentsTester::For(tab->GetContents())
+        ->NavigateAndCommit(GURL("chrome://contextual-tasks"));
+    coordinator_->OnActiveTabChanged(*tab_list_, tab);
+    EXPECT_EQ(1, user_action_tester.GetActionCount(
+                     "ContextualTasks.TabChange.UserAction.OpenFullTab"));
+  }
+
+  // Test case 2: Switches to full tab but side panel is open -> OpenFullTab is
+  // not recorded
+  {
+    base::UserActionTester user_action_tester;
+    ON_CALL(*mock_panel_host_, IsPanelOpenForContextualTask())
+        .WillByDefault(Return(true));
+    tabs::TabInterface* tab = CreateMockTab();
+    content::WebContentsTester::For(tab->GetContents())
+        ->NavigateAndCommit(GURL("chrome://contextual-tasks"));
+    coordinator_->OnActiveTabChanged(*tab_list_, tab);
+    EXPECT_EQ(0, user_action_tester.GetActionCount(
+                     "ContextualTasks.TabChange.UserAction.OpenFullTab"));
+  }
+
+  // Test case 3: Switches to non AIM tab -> OpenFullTab is not recorded
+  {
+    base::UserActionTester user_action_tester;
+    ON_CALL(*mock_panel_host_, IsPanelOpenForContextualTask())
+        .WillByDefault(Return(false));
+    tabs::TabInterface* tab = CreateMockTab();
+    content::WebContentsTester::For(tab->GetContents())
+        ->NavigateAndCommit(GURL("https://google.com"));
+    coordinator_->OnActiveTabChanged(*tab_list_, tab);
+    EXPECT_EQ(0, user_action_tester.GetActionCount(
+                     "ContextualTasks.TabChange.UserAction.OpenFullTab"));
+  }
+}
+
+TEST_F(ContextualTasksSidePanelCoordinatorTest,
+       OnActiveTabChanged_LinkClickInTab) {
+  base::UserActionTester user_action_tester;
+
+  // 1. Setup: Start with contextual tasks tab active.
+  tabs::TabInterface* ct_tab = CreateMockTab();
+  content::WebContentsTester::For(ct_tab->GetContents())
+      ->NavigateAndCommit(GURL("chrome://contextual-tasks"));
+
+  // Make ct_tab active.
+  ON_CALL(*tab_list_, GetActiveTab()).WillByDefault(Return(ct_tab));
+  coordinator_->OnActiveTabChanged(*tab_list_, ct_tab);
+
+  int initial_count = user_action_tester.GetActionCount(
+      "ContextualTasks.TabChange.UserAction.OpenFullTab");
+  EXPECT_EQ(initial_count, 1);
+
+  // 2. Click link flow:
+  // Create a new tab (simulating the link destination).
+  tabs::TabInterface* new_tab = CreateMockTab();
+  // Simulate CopyStateFrom (new_tab committed URL is
+  // chrome://contextual-tasks).
+  content::WebContentsTester::For(new_tab->GetContents())
+      ->NavigateAndCommit(GURL("chrome://contextual-tasks"));
+
+  // Mock new_tab's opener to be ct_tab.
+  ON_CALL(*tab_list_, GetOpenerForTab(new_tab->GetHandle()))
+      .WillByDefault(Return(ct_tab));
+
+  // Activate new_tab.
+  ON_CALL(*tab_list_, GetActiveTab()).WillByDefault(Return(new_tab));
+  coordinator_->OnActiveTabChanged(*tab_list_, new_tab);
+
+  // Detach ct_tab.
+  coordinator_->OnTabRemoved(*tab_list_, ct_tab,
+                             TabRemovedReason::kInsertedIntoSidePanel);
+
+  // Show side panel.
+  coordinator_->Show(true,
+                     omnibox::ChromeAimEntryPoint::UNKNOWN_AIM_ENTRY_POINT);
+
+  // Verify: No new OpenFullTab was logged.
+  int final_count = user_action_tester.GetActionCount(
+      "ContextualTasks.TabChange.UserAction.OpenFullTab");
+  EXPECT_EQ(final_count, 1);
+}
+
 }  // namespace contextual_tasks
 

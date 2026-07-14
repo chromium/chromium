@@ -11440,6 +11440,14 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="ContextualTasks.AimFullTab.Shown">
+  <owner>niharm@google.com</owner>
+  <owner>chrome-contextual-tasks-eng@google.com</owner>
+  <description>
+    Recorded when a navigation leads to a full tab AIM page.
+  </description>
+</action>
+
 <action name="ContextualTasks.AiResponse.UserAction.LinkClicked{SurfaceType}">
   <owner>sophiechang@chromium.org</owner>
   <owner>chrome-contextual-tasks-eng@google.com</owner>
@@ -11554,6 +11562,7 @@ should be able to be added at any place in this file.
     <variant name=".ChangedThreads"
         summary="The user changed the active thread."/>
     <variant name=".CloseSidePanel" summary="The user closed the side panel."/>
+    <variant name=".OpenFullTab" summary="The user opened the full tab."/>
     <variant name=".OpenSidePanel" summary="The user opened the side panel."/>
     <variant name=".StayedOnThread"
         summary="The user stayed on the same thread."/>

@@ -382,22 +382,27 @@ void ContextualTasksUiService::OnNavigationToAiPageIntercepted(
       controller->Show();
       contextual_task_web_contents = controller->GetActiveWebContents();
     }
-  } else if (!is_to_new_tab && source_tab) {
-    OMNIBOX_LOG("nav_trace")
-        << "ContextualTasks navigation trace: "
-           "OnNavigationToAiPageIntercepted loading in source tab";
-    source_tab->GetContents()->GetController().LoadURLWithParams(
-        content::NavigationController::LoadURLParams(ui_url));
-    contextual_task_web_contents = source_tab->GetContents();
   } else {
-    OMNIBOX_LOG("nav_trace")
-        << "ContextualTasks navigation trace: "
-           "OnNavigationToAiPageIntercepted opening in new tab";
-    NavigateParams params(profile_, ui_url, ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
-    params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+    base::RecordAction(
+        base::UserMetricsAction("ContextualTasks.AimFullTab.Shown"));
+    if (!is_to_new_tab && source_tab) {
+      OMNIBOX_LOG("nav_trace")
+          << "ContextualTasks navigation trace: "
+             "OnNavigationToAiPageIntercepted loading in source tab";
+      source_tab->GetContents()->GetController().LoadURLWithParams(
+          content::NavigationController::LoadURLParams(ui_url));
+      contextual_task_web_contents = source_tab->GetContents();
+    } else {
+      OMNIBOX_LOG("nav_trace")
+          << "ContextualTasks navigation trace: "
+             "OnNavigationToAiPageIntercepted opening in new tab";
+      NavigateParams params(profile_, ui_url,
+                            ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
+      params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
 
-    Navigate(&params);
-    contextual_task_web_contents = params.navigated_or_inserted_contents;
+      Navigate(&params);
+      contextual_task_web_contents = params.navigated_or_inserted_contents;
+    }
   }
   // Associate the web contents with the task and set the session handle if
   // provided.
