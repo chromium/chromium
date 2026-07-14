@@ -56,17 +56,6 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxAdPrivacyDeprecationTest,
 }
 
 IN_PROC_BROWSER_TEST_F(PrivacySandboxAdPrivacyDeprecationTest,
-                       AttributionInternalsWebUINull) {
-  GURL kUrl("chrome://attribution-internals");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), kUrl));
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  ASSERT_TRUE(web_contents);
-  EXPECT_TRUE(web_contents->GetPrimaryMainFrame()->IsErrorDocument());
-  EXPECT_EQ(web_contents->GetWebUI(), nullptr);
-}
-
-IN_PROC_BROWSER_TEST_F(PrivacySandboxAdPrivacyDeprecationTest,
                        SettingsRoutesRedirect) {
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
@@ -117,17 +106,6 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxAdPrivacyDeprecationDisabledTest,
       prefs::kPrivacySandboxM1FledgeEnabled));
   EXPECT_TRUE(browser()->profile()->GetPrefs()->GetBoolean(
       prefs::kPrivacySandboxM1AdMeasurementEnabled));
-}
-
-IN_PROC_BROWSER_TEST_F(PrivacySandboxAdPrivacyDeprecationDisabledTest,
-                       AttributionInternalsWebUINotNull) {
-  GURL kUrl("chrome://attribution-internals");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), kUrl));
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  ASSERT_TRUE(web_contents);
-  EXPECT_FALSE(web_contents->GetPrimaryMainFrame()->IsErrorDocument());
-  EXPECT_NE(web_contents->GetWebUI(), nullptr);
 }
 
 #if BUILDFLAG(IS_LINUX) && !defined(NDEBUG)

@@ -275,7 +275,6 @@
     'attribution_reporting': {
       'filepath': 'components/attribution_reporting/'\
                   '|content/browser/attribution_reporting/'\
-                  '|content/browser/resources/attribution_reporting/'\
                   '|content/public/android/java/src/org/chromium/content/browser/AttributionOsLevelManager.java'\
                   '|content/test/data/attribution_reporting/'\
                   '|services/network/attribution/'\

@@ -1510,7 +1510,6 @@ test("content_browsertests") {
     "../browser/accessibility/scoped_accessibility_mode_browsertest.cc",
     "../browser/accessibility/site_per_process_accessibility_browsertest.cc",
     "../browser/accessibility/snapshot_ax_tree_browsertest.cc",
-    "../browser/attribution_reporting/attribution_internals_browsertest.cc",
     "../browser/attribution_reporting/privacy_sandbox_ads_apis_browsertest.cc",
     "../browser/audio/audio_service_browsertest.cc",
     "../browser/back_forward_cache/back_forward_cache_metrics_browsertest.cc",

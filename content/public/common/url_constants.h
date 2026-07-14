@@ -33,8 +33,6 @@ inline constexpr char kAndroidAppScheme[] = "android-app";
 // both interesting and dangerous.
 inline constexpr char kGoogleChromeScheme[] = "googlechrome";
 
-inline constexpr char kChromeUIAttributionInternalsHost[] =
-    "attribution-internals";
 inline constexpr char kChromeUIBlobInternalsHost[] = "blob-internals";
 inline constexpr char kChromeUIBrowserCrashHost[] =
     "inducebrowsercrashforrealz";

@@ -199,7 +199,6 @@ base::span<const base::cstring_view> ChromeURLHosts() {
       kChromeUIWebAppInternalsHost,
 #endif
       content::kChromeUIPrivateAggregationInternalsHost,
-      content::kChromeUIAttributionInternalsHost,
       content::kChromeUIBlobInternalsHost,
       content::kChromeUIDinoHost,
       content::kChromeUIGpuHost,

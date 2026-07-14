@@ -1558,10 +1558,6 @@
     "META": {"sizes": {"includes": [20,],}},
     "includes": [8260],
   },
-  "<(SHARED_INTERMEDIATE_DIR)/content/browser/resources/attribution_reporting/resources.grd": {
-    "META": {"sizes": {"includes": [20]}},
-    "includes": [8280],
-  },
   "<(SHARED_INTERMEDIATE_DIR)/content/browser/tracing/tracing_resources.grd": {
     "META": {"sizes": {"includes": [20],}},
     "includes": [8300],

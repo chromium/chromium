@@ -9708,11 +9708,6 @@ void ChromeContentBrowserClient::UpdateCorsExemptHeaderForPrefetch(
 #endif
 }
 
-bool ChromeContentBrowserClient::IsAttributionInternalsWebUIEnabled() {
-  return !base::FeatureList::IsEnabled(
-      privacy_sandbox::kPrivacySandboxAdPrivacyUxDeprecation);
-}
-
 bool ChromeContentBrowserClient::IsFullscreenAllowedForUnfocusedWebContents(
     content::WebContents* unfocused_web_contents) {
   guest_view::GuestViewBase* guest =

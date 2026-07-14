@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "content/browser/attribution_reporting/attribution_internals_ui.h"
 #include "content/browser/gpu/gpu_internals_ui.h"
 #include "content/browser/indexed_db/indexed_db_internals_ui.h"
 #include "content/browser/media/media_internals_ui.h"
@@ -33,7 +32,6 @@ namespace content {
 
 void RegisterContentWebUIConfigs() {
   auto& map = WebUIConfigMap::GetInstance();
-  map.AddWebUIConfig(std::make_unique<AttributionInternalsUIConfig>());
   map.AddWebUIConfig(std::make_unique<GpuInternalsUIConfig>());
   map.AddWebUIConfig(
       std::make_unique<indexed_db::IndexedDBInternalsUIConfig>());

@@ -15,7 +15,6 @@ mojom("mojom") {
     "trigger_data_matching.mojom",
     "trigger_registration_error.mojom",
   ]
-  webui_module_path = "/"
 
   # Used by Blink, so requires legacy JS bindings.
   generate_legacy_js_bindings = true
@@ -216,7 +215,6 @@ mojom("registration_mojom") {
   sources = [ "registration.mojom" ]
 
   generate_java = true
-  webui_module_path = "/"
   disallow_interfaces = true
 
   # Used by Blink, so requires legacy JS bindings.
@@ -475,7 +473,6 @@ component("registration_header_error_mojom_traits") {
 
 mojom("source_type_mojom") {
   sources = [ "source_type.mojom" ]
-  webui_module_path = "/"
   disallow_interfaces = true
   generate_java = false
 }

@@ -34,7 +34,6 @@ base::span<const std::string_view> GetChromeUrlsForTest() {
 #endif
       "chrome://actor-internals",
       "chrome://actor-overlay",
-      "chrome://attribution-internals",
       "chrome://autofill-ml-internals",
       "chrome://autofill-internals",
 
