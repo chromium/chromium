@@ -158,7 +158,7 @@ void MultiIconButton::UpdateBackground() {
   const auto* color_provider = GetColorProvider();
   if (color_provider) {
     SkColor background_color =
-        color_provider->GetColor(ui::kColorSysNeutralContainer);
+        color_provider->GetColor(ui::kColorSysBaseContainer);
     if (GetState() == ButtonState::STATE_HOVERED ||
         GetState() == ButtonState::STATE_PRESSED) {
       background_color = color_utils::GetResultingPaintColor(
@@ -216,7 +216,7 @@ void MultiIconButton::Update(
     plus_more_label->SetTextStyle(views::style::STYLE_BODY_5);
     plus_more_label->SetProperty(views::kMarginsKey,
                                  gfx::Insets::TLBR(0, 8, 0, 0));
-    plus_more_label->SetEnabledColor(ui::kColorSysOnSurface);
+    plus_more_label->SetEnabledColor(ui::kColorSysOnSurfaceSubtle);
     plus_more_label->SetLineHeight(kAnchoredMessageIconSize);
   }
 

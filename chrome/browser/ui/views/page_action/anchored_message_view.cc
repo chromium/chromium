@@ -291,7 +291,7 @@ void AnchoredMessageBubbleView::OnThemeChanged() {
             features::IsRoundedIconsEnabled()
                 ? vector_icons::kCloseIcon
                 : vector_icons::kCloseChromeRefreshOldIcon,
-            color_provider->GetColor(ui::kColorSysOnSurfaceVariant),
+            color_provider->GetColor(ui::kColorSysOnSurfaceSubtle),
             kAnchoredMessageIconSize));
   }
   if (menu_button_) {
@@ -301,7 +301,7 @@ void AnchoredMessageBubbleView::OnThemeChanged() {
             ::features::IsRoundedIconsEnabled()
                 ? kMoreVertIcon
                 : kBrowserToolsChromeRefreshOldIcon,
-            color_provider->GetColor(ui::kColorSysOnSurfaceVariant),
+            color_provider->GetColor(ui::kColorSysOnSurfaceSubtle),
             kAnchoredMessageIconSize));
   }
 }
@@ -385,7 +385,7 @@ void AnchoredMessageBubbleView::UpdateExpandButtonIcon() {
                                     ? vector_icons::kKeyboardArrowUpIcon
                                     : vector_icons::kKeyboardArrowDownIcon;
   ui::ImageModel image_model =
-      ui::ImageModel::FromVectorIcon(icon, ui::kColorSysOnSurfaceVariant, 16);
+      ui::ImageModel::FromVectorIcon(icon, ui::kColorSysOnSurfaceSubtle, 16);
 
   std::vector<std::reference_wrapper<const ui::ImageModel>> icons;
   icons.emplace_back(image_model);
@@ -519,7 +519,7 @@ void AnchoredMessageBubbleView::UpdateExpandableContent(
           std::make_unique<views::Label>(*expandable_content_->heading));
       title_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
       title_label->SetTextStyle(views::style::STYLE_BODY_4_MEDIUM);
-      title_label->SetEnabledColor(ui::kColorSysOnSurface);
+      title_label->SetEnabledColor(ui::kColorSysOnSurfaceSubtle);
       title_label->SetElideBehavior(gfx::ELIDE_TAIL);
       // Set width to 0 so the text will fill available space, but not stretch
       // the bubble.
