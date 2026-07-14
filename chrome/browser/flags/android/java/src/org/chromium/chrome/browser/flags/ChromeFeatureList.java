@@ -809,7 +809,7 @@ public abstract class ChromeFeatureList {
                     /* defaultValueInTests= */ true);
     public static final CachedFlag sAndroidSetupList =
             newCachedFlag(
-                    ANDROID_SETUP_LIST, /* defaultValue= */ false, /* defaultValueInTests= */ true);
+                    ANDROID_SETUP_LIST, /* defaultValue= */ true, /* defaultValueInTests= */ true);
     public static final CachedFlag sAndroidSurfaceColorUpdate =
             newCachedFlag(
                     ANDROID_SURFACE_COLOR_UPDATE,
