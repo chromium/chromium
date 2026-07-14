@@ -333,6 +333,8 @@ void ToplevelWindowEventHandler::OnGestureEvent(ui::GestureEvent* event) {
       DCHECK_EQ(ui::EventType::kGestureScrollBegin, event->type());
       aura::Window::ConvertPointToTarget(target, new_target, &event_location);
 
+      // `new_target` should not be deleted while transferring gesture.
+      aura::Window::ScopedDeleteBlocker blocker(new_target);
       aura::Env::GetInstance()->gesture_recognizer()->TransferEventsTo(
           original_target, new_target, ui::TransferTouchesBehavior::kCancel);
       UpdateGestureTarget(new_target, event_location);
@@ -710,7 +712,9 @@ bool ToplevelWindowEventHandler::AttemptToStartDrag(
 
   if (gesture_target_ != nullptr && update_gesture_target) {
     DCHECK_EQ(source, ::wm::WINDOW_MOVE_SOURCE_TOUCH);
-    // Transfer events for gesture if switching to new target.
+    // Transfer events for gesture if switching to new target. `window` should
+    // not be deleted during transfer.
+    aura::Window::ScopedDeleteBlocker blocker(window);
     aura::Env::GetInstance()->gesture_recognizer()->TransferEventsTo(
         gesture_target_, window, ui::TransferTouchesBehavior::kDontCancel);
   }
@@ -756,7 +760,9 @@ bool ToplevelWindowEventHandler::AttemptToStartPinch(
     int window_component,
     bool update_gesture_target) {
   if (gesture_target_ != nullptr && update_gesture_target) {
-    // Transfer events for gesture if switching to new target.
+    // Transfer events for gesture if switching to new target. `window` should
+    // not be deleted during transfer.
+    aura::Window::ScopedDeleteBlocker blocker(window);
     aura::Env::GetInstance()->gesture_recognizer()->TransferEventsTo(
         gesture_target_, window, ui::TransferTouchesBehavior::kDontCancel);
   }
