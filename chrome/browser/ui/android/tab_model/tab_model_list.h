@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "base/android/scoped_java_ref.h"
 #include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "base/observer_list.h"
@@ -45,8 +44,6 @@ class TabModelList {
       content::WebContents* web_contents);
   static TabModel* GetTabModelForTabAndroid(TabAndroid* tab_android);
   static TabModel* FindTabModelWithWindowSessionId(SessionID desired_id);
-  static TabModel* FindNativeTabModelForJavaObject(
-      const base::android::JavaRef<jobject>& jtab_model);
   static bool IsOffTheRecordSessionActive();
 
   static const TabModelVector& models();

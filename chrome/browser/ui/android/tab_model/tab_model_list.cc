@@ -4,11 +4,8 @@
 
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 
-#include <jni.h>
-
 #include <algorithm>
 
-#include "base/android/jni_android.h"
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list_observer.h"
@@ -113,29 +110,6 @@ TabModel* TabModelList::FindTabModelWithWindowSessionId(SessionID desired_id) {
   });
 
   return it != models().end() ? *it : nullptr;
-}
-
-TabModel* TabModelList::FindNativeTabModelForJavaObject(
-    const base::android::JavaRef<jobject>& jtab_model) {
-  if (!jtab_model) {
-    return nullptr;
-  }
-
-  JNIEnv* env = base::android::AttachCurrentThread();
-  for (TabModel* model : models()) {
-    if (env->IsSameObject(jtab_model.obj(), model->GetJavaObject().obj())) {
-      return model;
-    }
-  }
-
-  TabModel* archived_tab_model = GetArchivedTabModel();
-  if (archived_tab_model &&
-      env->IsSameObject(jtab_model.obj(),
-                        archived_tab_model->GetJavaObject().obj())) {
-    return archived_tab_model;
-  }
-
-  return nullptr;
 }
 
 bool TabModelList::IsOffTheRecordSessionActive() {

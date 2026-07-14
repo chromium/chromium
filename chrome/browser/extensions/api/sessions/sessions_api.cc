@@ -60,7 +60,7 @@
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/ui/android/tab_model/android_live_tab_context.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
-#include "chrome/browser/ui/android/tab_model/tab_model_list.h"
+#include "chrome/browser/ui/android/tab_model/tab_model_jni_bridge.h"
 #include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/navigation_controller.h"
@@ -437,7 +437,8 @@ void SessionsGetRecentlyClosedFunction::OnGetRecentlyClosedWindow(
   }
 
   // Look up the C++ side TabModel.
-  TabModel* model = TabModelList::FindNativeTabModelForJavaObject(j_tab_model);
+  TabModel* model = jni_zero::FromJniType<TabModel*>(
+      base::android::AttachCurrentThread(), j_tab_model);
   if (!model) {
     Respond(ArgumentList(GetRecentlyClosed::Results::Create(result_)));
     return;
@@ -798,8 +799,8 @@ void SessionsRestoreFunction::OnGetRecentlyClosedWindow(
   }
 
   // Look up the C++ side TabModel.
-  TabModel* saved_tab_model =
-      TabModelList::FindNativeTabModelForJavaObject(j_tab_model);
+  TabModel* saved_tab_model = jni_zero::FromJniType<TabModel*>(
+      base::android::AttachCurrentThread(), j_tab_model);
   if (!saved_tab_model) {
     // No tab model, so no window to restore.
     Respond(Error(kNoRecentlyClosedSessionsError));
@@ -834,8 +835,8 @@ void SessionsRestoreFunction::OnBrowserWindowCreated(
   CHECK(new_tab_list);
 
   // Look up the C++ side TabModel again.
-  TabModel* saved_tab_model =
-      TabModelList::FindNativeTabModelForJavaObject(global_ref_tab_model_);
+  TabModel* saved_tab_model = jni_zero::FromJniType<TabModel*>(
+      base::android::AttachCurrentThread(), global_ref_tab_model_);
   if (!saved_tab_model) {
     Respond(Error(kNoRecentlyClosedSessionsError));
     return;

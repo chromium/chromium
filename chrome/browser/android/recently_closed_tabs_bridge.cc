@@ -17,7 +17,7 @@
 #include "chrome/browser/sessions/tab_restore_service_factory.h"
 #include "chrome/browser/ui/android/tab_model/android_live_tab_context.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
-#include "chrome/browser/ui/android/tab_model/tab_model_list.h"
+#include "chrome/browser/ui/android/tab_model/tab_model_jni_bridge.h"
 #include "components/sessions/core/live_tab.h"
 #include "components/sessions/core/tab_restore_service.h"
 #include "content/public/browser/web_contents.h"
@@ -288,11 +288,10 @@ bool RecentlyClosedTabsBridge::GetRecentlyClosedEntries(
   return true;
 }
 
-bool RecentlyClosedTabsBridge::OpenRecentlyClosedTab(
-    JNIEnv* env,
-    const JavaRef<jobject>& jtab_model,
-    int32_t tab_session_id,
-    int32_t j_disposition) {
+bool RecentlyClosedTabsBridge::OpenRecentlyClosedTab(JNIEnv* env,
+                                                     TabModel* model,
+                                                     int32_t tab_session_id,
+                                                     int32_t j_disposition) {
   if (!tab_restore_service_) {
     return false;
   }
@@ -303,7 +302,6 @@ bool RecentlyClosedTabsBridge::OpenRecentlyClosedTab(
     return false;
   }
 
-  auto* model = TabModelList::FindNativeTabModelForJavaObject(jtab_model);
   if (model == nullptr) {
     return false;
   }
@@ -318,7 +316,7 @@ bool RecentlyClosedTabsBridge::OpenRecentlyClosedTab(
 
 bool RecentlyClosedTabsBridge::OpenRecentlyClosedEntry(
     JNIEnv* env,
-    const JavaRef<jobject>& jtab_model,
+    TabModel* model,
     int32_t entry_session_id) {
   // This should only be called when in bulk restore mode otherwise per-tab
   // restore should always be used.
@@ -326,7 +324,6 @@ bool RecentlyClosedTabsBridge::OpenRecentlyClosedEntry(
     return false;
   }
 
-  auto* model = TabModelList::FindNativeTabModelForJavaObject(jtab_model);
   if (model == nullptr) {
     return false;
   }
@@ -336,19 +333,17 @@ bool RecentlyClosedTabsBridge::OpenRecentlyClosedEntry(
       tab_restore_service_->RestoreEntryById(
           &restore_context, SessionID::FromSerializedValue(entry_session_id),
           WindowOpenDisposition::NEW_BACKGROUND_TAB);
-  RestoreAndroidTabGroups(env, jtab_model, restore_context.GetTabGroups());
+  RestoreAndroidTabGroups(env, model, restore_context.GetTabGroups());
   return !restored_tabs.empty();
 }
 
-bool RecentlyClosedTabsBridge::OpenMostRecentlyClosedEntry(
-    JNIEnv* env,
-    const JavaRef<jobject>& jtab_model) {
+bool RecentlyClosedTabsBridge::OpenMostRecentlyClosedEntry(JNIEnv* env,
+                                                           TabModel* model) {
   EnsureTabRestoreService();
   if (!tab_restore_service_ || tab_restore_service_->entries().empty()) {
     return false;
   }
 
-  auto* model = TabModelList::FindNativeTabModelForJavaObject(jtab_model);
   if (model == nullptr) {
     return false;
   }
@@ -364,7 +359,7 @@ bool RecentlyClosedTabsBridge::OpenMostRecentlyClosedEntry(
   restored_tabs = tab_restore_service_->RestoreEntryById(
       &restore_context, tab_restore_service_->entries().front()->id,
       WindowOpenDisposition::NEW_BACKGROUND_TAB);
-  RestoreAndroidTabGroups(env, jtab_model, restore_context.GetTabGroups());
+  RestoreAndroidTabGroups(env, model, restore_context.GetTabGroups());
   return !restored_tabs.empty();
 }
 
@@ -416,12 +411,12 @@ void RecentlyClosedTabsBridge::EnsureTabRestoreService() {
 
 void RecentlyClosedTabsBridge::RestoreAndroidTabGroups(
     JNIEnv* env,
-    const base::android::JavaRef<jobject>& jtab_model,
+    TabModel* model,
     const std::map<tab_groups::TabGroupId,
                    AndroidLiveTabContextRestoreWrapper::TabGroup>& groups) {
   for (const auto& group : groups) {
     Java_RecentlyClosedBridge_restoreTabGroup(
-        env, bridge_, jtab_model, group.second.visual_data.title(),
+        env, bridge_, model, group.second.visual_data.title(),
         (int)group.second.visual_data.color(), group.second.tab_ids);
   }
 }

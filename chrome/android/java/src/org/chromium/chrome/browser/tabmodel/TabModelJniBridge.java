@@ -92,6 +92,11 @@ public abstract class TabModelJniBridge implements TabModelInternal {
         return mNativeTabModelJniBridge != 0;
     }
 
+    @CalledByNative
+    public long getNativePtr() {
+        return mNativeTabModelJniBridge;
+    }
+
     @Override
     @CallSuper
     public @TabDestroyStatus int destroy() {

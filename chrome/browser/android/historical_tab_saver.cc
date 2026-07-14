@@ -24,7 +24,7 @@
 #include "chrome/browser/tab/web_contents_state.h"
 #include "chrome/browser/ui/android/tab_model/android_live_tab_context_wrapper.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
-#include "chrome/browser/ui/android/tab_model/tab_model_list.h"
+#include "chrome/browser/ui/android/tab_model/tab_model_jni_bridge.h"
 #include "chrome/common/url_constants.h"
 #include "components/sessions/content/content_live_tab.h"
 #include "components/sessions/core/tab_restore_service.h"
@@ -290,7 +290,7 @@ static void JNI_HistoricalTabSaverImpl_CreateHistoricalTab(
 
 static void JNI_HistoricalTabSaverImpl_CreateHistoricalGroup(
     JNIEnv* env,
-    const JavaRef<jobject>& jtab_model,
+    TabModel* model,
     const base::Token& tab_group_id_token,
     const std::u16string& serialized_saved_tab_group_id,
     const std::u16string& title,
@@ -309,15 +309,14 @@ static void JNI_HistoricalTabSaverImpl_CreateHistoricalGroup(
   std::vector<WebContentsStateByteBuffer> web_contents_states =
       AllTabsWebContentsStateByteBuffer(env, jbyte_buffers,
                                         std::move(saved_state_versions));
-  CreateHistoricalGroup(
-      TabModelList::FindNativeTabModelForJavaObject(jtab_model), tab_group_id,
-      saved_tab_group_id, title, static_cast<int>(jcolor),
-      std::move(tabs_android), std::move(web_contents_states));
+  CreateHistoricalGroup(model, tab_group_id, saved_tab_group_id, title,
+                        static_cast<int>(jcolor), std::move(tabs_android),
+                        std::move(web_contents_states));
 }
 
 static void JNI_HistoricalTabSaverImpl_CreateHistoricalBulkClosure(
     JNIEnv* env,
-    const JavaRef<jobject>& jtab_model,
+    TabModel* model,
     const std::vector<std::optional<base::Token>>& tab_group_token_ids,
     const std::vector<std::u16string>& serialized_saved_tab_group_ids,
     const std::vector<std::u16string>& group_titles,
@@ -341,12 +340,11 @@ static void JNI_HistoricalTabSaverImpl_CreateHistoricalBulkClosure(
   std::vector<WebContentsStateByteBuffer> web_contents_states =
       AllTabsWebContentsStateByteBuffer(env, jbyte_buffers,
                                         std::move(saved_state_versions));
-  CreateHistoricalBulkClosure(
-      TabModelList::FindNativeTabModelForJavaObject(jtab_model),
-      std::move(tab_group_ids), std::move(saved_tab_group_ids),
-      std::move(group_titles), std::move(group_colors),
-      std::move(per_tab_optional_tab_group_ids), std::move(tabs),
-      std::move(web_contents_states));
+  CreateHistoricalBulkClosure(model, std::move(tab_group_ids),
+                              std::move(saved_tab_group_ids),
+                              std::move(group_titles), std::move(group_colors),
+                              std::move(per_tab_optional_tab_group_ids),
+                              std::move(tabs), std::move(web_contents_states));
 }
 
 }  // namespace historical_tab_saver

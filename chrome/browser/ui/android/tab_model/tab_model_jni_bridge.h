@@ -179,6 +179,8 @@ class TabModelJniBridge : public TabModel {
                                         bool is_new_tab_incognito,
                                         bool is_current_model_incognito);
 
+  static TabModel* FromJavaObject(const jni_zero::JavaRef<jobject>& obj);
+
  protected:
   jni_zero::ScopedJavaLocalRef<jobject> GetActivityForWindow(
       SessionID window_id);
@@ -196,5 +198,28 @@ class TabModelJniBridge : public TabModel {
   std::unique_ptr<ui::ScopedUnownedUserData<TabListInterface>>
       scoped_unowned_user_data_;
 };
+
+namespace jni_zero {
+template <>
+inline TabModel* FromJniType<TabModel*>(JNIEnv* env,
+                                        const JavaRef<jobject>& j_tab_model) {
+  return TabModelJniBridge::FromJavaObject(j_tab_model);
+}
+
+template <>
+inline TabModelJniBridge* FromJniType<TabModelJniBridge*>(
+    JNIEnv* env,
+    const JavaRef<jobject>& j_tab_model) {
+  return static_cast<TabModelJniBridge*>(
+      TabModelJniBridge::FromJavaObject(j_tab_model));
+}
+
+template <>
+inline ScopedJavaLocalRef<jobject> ToJniType<TabModel>(
+    JNIEnv* env,
+    const TabModel& tab_model) {
+  return tab_model.GetJavaObject();
+}
+}  // namespace jni_zero
 
 #endif  // CHROME_BROWSER_UI_ANDROID_TAB_MODEL_TAB_MODEL_JNI_BRIDGE_H_

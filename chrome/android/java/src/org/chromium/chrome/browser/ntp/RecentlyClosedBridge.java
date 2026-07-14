@@ -72,7 +72,7 @@ public class RecentlyClosedBridge implements RecentlyClosedTabManager {
 
     @CalledByNative
     private void restoreTabGroup(
-            TabModel tabModel,
+            @JniType("TabModel*") TabModel tabModel,
             @JniType("std::u16string") String title,
             int color,
             @JniType("std::vector") int[] tabIds) {
@@ -194,14 +194,17 @@ public class RecentlyClosedBridge implements RecentlyClosedTabManager {
 
         boolean openRecentlyClosedTab(
                 long nativeRecentlyClosedTabsBridge,
-                TabModel tabModel,
+                @JniType("TabModel*") TabModel tabModel,
                 int tabSessionId,
                 int windowOpenDisposition);
 
         boolean openRecentlyClosedEntry(
-                long nativeRecentlyClosedTabsBridge, TabModel tabModel, int sessionId);
+                long nativeRecentlyClosedTabsBridge,
+                @JniType("TabModel*") TabModel tabModel,
+                int sessionId);
 
-        boolean openMostRecentlyClosedEntry(long nativeRecentlyClosedTabsBridge, TabModel tabModel);
+        boolean openMostRecentlyClosedEntry(
+                long nativeRecentlyClosedTabsBridge, @JniType("TabModel*") TabModel tabModel);
 
         void clearRecentlyClosedEntries(long nativeRecentlyClosedTabsBridge);
 

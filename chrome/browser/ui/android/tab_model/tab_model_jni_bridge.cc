@@ -905,6 +905,15 @@ bool TabModelJniBridge::IsTabLaunchedInForeground(
       is_current_model_incognito);
 }
 
+// static
+TabModel* TabModelJniBridge::FromJavaObject(const JavaRef<jobject>& obj) {
+  if (!obj) {
+    return nullptr;
+  }
+  return reinterpret_cast<TabModel*>(
+      Java_TabModelJniBridge_getNativePtr(AttachCurrentThread(), obj));
+}
+
 TabModelJniBridge::~TabModelJniBridge() {
   // We need to explicitly do this here (instead of e.g. in the
   // TabModelObserverJniBridge dtor) because otherwise, callers might call back

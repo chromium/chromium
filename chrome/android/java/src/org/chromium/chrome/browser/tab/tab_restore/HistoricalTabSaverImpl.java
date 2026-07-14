@@ -283,7 +283,7 @@ public class HistoricalTabSaverImpl implements HistoricalTabSaver {
         void createHistoricalTab(Tab tab, int index, ByteBuffer state, int savedStateVersion);
 
         void createHistoricalGroup(
-                TabModel model,
+                @JniType("TabModel*") TabModel model,
                 @JniType("base::Token") Token token,
                 @JniType("std::u16string") String savedTabGroupId,
                 @JniType("std::u16string") String title,
@@ -293,7 +293,7 @@ public class HistoricalTabSaverImpl implements HistoricalTabSaver {
                 @JniType("std::vector<int32_t>") int[] savedStationsVersions);
 
         void createHistoricalBulkClosure(
-                TabModel model,
+                @JniType("TabModel*") TabModel model,
                 @JniType("std::vector<std::optional<base::Token>>") List<Token> tabGroupIds,
                 @JniType("std::vector<std::u16string>") List<String> savedTabGroupIds,
                 @JniType("std::vector<std::u16string>") List<String> titles,
