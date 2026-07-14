@@ -879,8 +879,15 @@ public class MediaNotificationController {
         mNotificationBuilder.setSmallIcon(mMediaNotificationInfo.notificationSmallIcon);
         mNotificationBuilder.setAutoCancel(false);
         mNotificationBuilder.setLocalOnly(true);
-        mNotificationBuilder.setGroup(mDelegate.getNotificationGroupName());
-        mNotificationBuilder.setGroupSummary(true);
+        // Do not group notifications when multiple media notifications are enabled.
+        // Otherwise, Android SystemUI will group them and the media carousel may
+        // only show a single card for the group instead of individual cards for each tab.
+        if (MediaNotificationManager.isMultipleMediaNotificationsEnabled()) {
+            mNotificationBuilder.setGroup(Integer.toString(mMediaNotificationInfo.id));
+        } else {
+            mNotificationBuilder.setGroup(mDelegate.getNotificationGroupName());
+            mNotificationBuilder.setGroupSummary(true);
+        }
 
         if (mMediaNotificationInfo.supportsSwipeAway()) {
             mNotificationBuilder.setOngoing(!mMediaNotificationInfo.isPaused);
