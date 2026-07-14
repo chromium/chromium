@@ -184,6 +184,9 @@ TEST_P(WaylandWindowManagerTest, GetAllWindows) {
 
   windows = manager_->GetAllWindows();
   EXPECT_EQ(2u, windows.size());
+
+  auto weak_windows = manager_->GetAllWindowsAsWeakPtr();
+  EXPECT_EQ(2u, weak_windows.size());
 }
 
 INSTANTIATE_TEST_SUITE_P(XdgVersionStableTest,
