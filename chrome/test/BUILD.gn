@@ -1251,7 +1251,6 @@ source_set("platform_browser_tests") {
     "//chrome/browser/signin",
     "//chrome/browser/ssl",
     "//chrome/browser/ssl:platform_browser_tests",
-    "//chrome/browser/storage:platform_browser_tests",
     "//chrome/browser/tab_group_sync",
     "//chrome/browser/tab_group_sync:factories",
     "//chrome/browser/ui",

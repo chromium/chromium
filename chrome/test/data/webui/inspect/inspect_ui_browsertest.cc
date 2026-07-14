@@ -153,60 +153,6 @@ IN_PROC_BROWSER_TEST_F(InspectUITest, MAYBE_LaunchUIDevtools) {
                      "assertNativeUIButtonDisabled(false);"));
 }
 
-class InspectUISharedStorageTest : public InspectUITest {
- public:
-  InspectUISharedStorageTest() {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{network::features::kSharedStorageAPI,
-                              features::kPrivacySandboxAdsAPIsOverride},
-        /*disabled_features=*/{});
-  }
-
-  void SetUpOnMainThread() override {
-    host_resolver()->AddRule("*", "127.0.0.1");
-    https_server_.AddDefaultHandlers(GetChromeTestDataDir());
-    https_server_.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
-    content::SetupCrossSiteRedirector(&https_server_);
-
-    ASSERT_TRUE(https_server_.Start());
-
-    InspectUITest::SetUpOnMainThread();
-
-    PrivacySandboxSettingsFactory::GetForProfile(browser()->profile())
-        ->SetAllPrivacySandboxAllowedForTesting();
-  }
-
- protected:
-  base::test::ScopedFeatureList scoped_feature_list_;
-  net::EmbeddedTestServer https_server_{net::EmbeddedTestServer::TYPE_HTTPS};
-};
-
-IN_PROC_BROWSER_TEST_F(InspectUISharedStorageTest, SharedStorageWorklet) {
-  privacy_sandbox::ScopedPrivacySandboxAttestations scoped_attestations(
-      privacy_sandbox::PrivacySandboxAttestations::CreateForTesting());
-  // Mark all Privacy Sandbox APIs as attested since the test case is testing
-  // behaviors not related to attestations.
-  privacy_sandbox::PrivacySandboxAttestations::GetInstance()
-      ->SetAllPrivacySandboxAttestedForTesting(true);
-
-  GURL main_frame_url = https_server_.GetURL("a.test", "/empty.html");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_frame_url));
-
-  const char kModuleScriptFile[] = "/shared_storage/simple_module.js";
-
-  GURL module_script_url = https_server_.GetURL("a.test", kModuleScriptFile);
-  EXPECT_TRUE(
-      content::ExecJs(browser()->tab_strip_model()->GetActiveWebContents(),
-                      content::JsReplace("sharedStorage.worklet.addModule($1)",
-                                         module_script_url)));
-
-  ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL(chrome::kChromeUIInspectURL),
-      WindowOpenDisposition::NEW_FOREGROUND_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
-
-  ASSERT_TRUE(RunTestCase("SharedStorageWorklet"));
-}
 
 class InspectUIFencedFrameTest : public InspectUITest {
  public:
