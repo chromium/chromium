@@ -2658,7 +2658,13 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
   // an NSAttributedString. Refactor things so they can be used here.
 
   NSRange range = [(NSValue*)parameter rangeValue];
-  std::u16string textContent = _node->GetTextContentUTF16();
+  std::u16string textContent;
+  if (ui::IsNameExposedInAXValueForRole(_node->GetRole())) {
+    textContent = base::SysNSStringToUTF16([self getAXValueAsString]);
+  } else {
+    textContent = _node->GetTextContentUTF16();
+  }
+
   if (NSMaxRange(range) > textContent.length())
     return nil;
 
@@ -2667,7 +2673,8 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
   NSMutableAttributedString* attributedTextContent =
       [[NSMutableAttributedString alloc]
           initWithString:base::SysUTF16ToNSString(textContent)];
-  if (!_node->IsText()) {
+  if (!_node->IsText() &&
+      !ui::IsNameExposedInAXValueForRole(_node->GetRole())) {
     AXRange axRange(_node->GetDelegate()->CreateTextPositionAt(0),
                     _node->GetDelegate()->CreateTextPositionAt(
                         static_cast<int>(textContent.length())));
@@ -2778,8 +2785,9 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
     return nil;
 
   // macOS wants static text exposed in AXValue.
-  if (ui::IsNameExposedInAXValueForRole([self internalRole]))
+  if (ui::IsNameExposedInAXValueForRole([self internalRole])) {
     return @"";
+  }
 
   // If we're exposing the title in TitleUIElement, don't also redundantly
   // expose it in accessibilityLabel.
@@ -2868,8 +2876,9 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
   if (![self instanceActive])
     return nil;
 
-  if (ui::IsNameExposedInAXValueForRole(_node->GetRole()))
+  if (ui::IsNameExposedInAXValueForRole(_node->GetRole())) {
     return @"";
+  }
 
   if ([self isNameFromLabel])
     return @"";

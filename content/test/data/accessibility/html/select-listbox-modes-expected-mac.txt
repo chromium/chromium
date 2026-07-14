@@ -6,13 +6,13 @@ AXWebArea
 ++AXHeading AXTitle='multiple:' AXValue=3
 ++++AXStaticText AXValue='multiple:'
 ++AXList
-++++AXMenuItem AXValue='one not selected'
-++++AXMenuItem AXValue='two not selected'
+++++AXStaticText AXValue='one'
+++++AXStaticText AXValue='two'
 ++AXHeading AXTitle='size=4:' AXValue=3
 ++++AXStaticText AXValue='size=4:'
 ++AXList
-++++AXMenuItem AXValue='one'
-++++AXMenuItem AXValue='two'
+++++AXStaticText AXValue='one'
+++++AXStaticText AXValue='two'
 ++AXHeading AXTitle='multiple size=1:' AXValue=3
 ++++AXStaticText AXValue='multiple size=1:'
 ++AXPopUpButton AXValue='0 selected'

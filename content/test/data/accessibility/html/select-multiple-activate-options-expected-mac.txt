@@ -1,5 +1,5 @@
 AXWebArea
 ++AXGroup
 ++++AXList
-++++++AXMenuItem AXValue='one selected'
-++++++AXMenuItem AXValue='two selected'
+++++++AXStaticText AXValue='one'
+++++++AXStaticText AXValue='two'

@@ -1,16 +1,16 @@
 AXWebArea
 ++AXList
-++++AXMenuItem AXValue='A B'
+++++AXStaticText AXValue='A B'
 ++++++AXStaticText AXValue='A'
 ++++++AXGroup
 ++++++++AXStaticText AXValue='B'
 ++AXList
-++++AXMenuItem AXValue='Other'
+++++AXStaticText AXValue='Other'
 ++++++AXStaticText AXValue='C'
 ++++++AXGroup
 ++++++++AXStaticText AXValue='D'
 ++AXList
-++++AXMenuItem AXValue='E F'
+++++AXStaticText AXValue='E F'
 ++++++AXGroup
 ++++++++AXStaticText AXValue='E'
 ++++++AXGroup

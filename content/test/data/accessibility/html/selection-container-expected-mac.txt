@@ -2,7 +2,7 @@ AXWebArea
 ++AXGroup
 ++++AXList AXDescription='selection_list'
 ++++++AXGroup AXSubrole=AXApplicationGroup AXDescription='Enabled'
-++++++++AXMenuItem AXValue='One'
-++++++++AXMenuItem AXValue='Two'
-++++++++AXMenuItem AXValue='Three'
-++++++++AXMenuItem AXValue='Four'
+++++++++AXStaticText AXValue='One'
+++++++++AXStaticText AXValue='Two'
+++++++++AXStaticText AXValue='Three'
+++++++++AXStaticText AXValue='Four'

@@ -68,6 +68,10 @@ using ui::BrowserAccessibilityManager;
 using ui::BrowserAccessibilityManagerMac;
 using ui::OneShotAccessibilityTreeSearch;
 
+@interface AXPlatformNodeCocoa (PrivateMethods)
+- (NSString*)getAXValueAsString;
+@end
+
 static_assert(
     std::is_trivially_copyable<BrowserAccessibility::SerializedPosition>::value,
     "BrowserAccessibility::SerializedPosition must be POD because it's used to "
@@ -354,31 +358,6 @@ bool InitializeAccessibilityTreeSearch(OneShotAccessibilityTreeSearch* search,
   return true;
 }
 
-bool IsSelectedStateRelevant(BrowserAccessibility* item) {
-  if (!item->HasBoolAttribute(ax::mojom::BoolAttribute::kSelected))
-    return false;  // Does not have selected state -> not relevant.
-
-  BrowserAccessibility* container = item->PlatformGetSelectionContainer();
-  if (!container)
-    return false;  // No container -> not relevant.
-
-  if (container->HasState(ax::mojom::State::kMultiselectable))
-    return true;  // In a multiselectable -> is relevant.
-
-  // Single selection AND not selected - > is relevant.
-  // Single selection containers can explicitly set the focused item as not
-  // selected, for example via aria-selectable="false". It's useful for the user
-  // to know that it's not selected in this case.
-  // Only do this for the focused item -- that is the only item where explicitly
-  // setting the item to unselected is relevant, as the focused item is the only
-  // item that could have been selected anyway.
-  // Therefore, if the user navigates to other items by detaching accessibility
-  // focus from the input focus via VO+Shift+F3, those items will not be
-  // redundantly reported as not selected.
-  return item->manager()->GetFocus() == item &&
-         !item->GetBoolAttribute(ax::mojom::BoolAttribute::kSelected);
-}
-
 // Tri-state value stored in BrowserAccessibilityCocoa's `emptyGroupCache`
 // bitfield (2 bits). Keeps the predicate's per-node result memoized across
 // repeated -subrole queries from VoiceOver's hit-test and linear-navigation
@@ -405,7 +384,6 @@ struct BrowserAccessibilityCocoaBitfields {
 };
 static_assert(sizeof(BrowserAccessibilityCocoaBitfields) == 1,
               "BrowserAccessibilityCocoaBitfields must pack into one byte.");
-
 }  // namespace
 
 namespace ui {
@@ -1347,13 +1325,7 @@ bool IsAXCustomActionNamesForTestingProjectionEnabled() {
     cocoa_role = NSAccessibilityGroupRole;
   } else if (_owner->IsRootWebAreaForPresentationalIframe()) {
     cocoa_role = NSAccessibilityGroupRole;
-  } else if (role == ax::mojom::Role::kListBoxOption && _owner->IsWebContent()) {
-    // Short term solution that allows children until Mac gets a more
-    // appropriate role for options than AXStaticText, which can result
-    // truncation or incorrect announcements of the option text when there are
-    // children. For now, only do this for web content, and not UI, where
-    // there are not interesting descendants of list box options.
-    cocoa_role = NSAccessibilityMenuItemRole;
+
   } else if (role == ax::mojom::Role::kMenu && ![self hasMenuItemDescendant]) {
     // A menu without menu item descendants should be exposed as a group rather
     // than a menu to avoid confusing assistive technologies. This ensures
@@ -1505,18 +1477,13 @@ bool IsAXCustomActionNamesForTestingProjectionEnabled() {
       return ret;
     }
 
-    // If this container is multi-selectable, the focused child should be
-    // the first item in the list of selected children regardless of whether
-    // it is selected or not, because this is how VoiceOver determines where to
-    // draw the focus ring around the active item.
-    //
-    // Not appending this item when focused but not selected would result in
-    // VoiceOver's focus ring jumping to the first selected item. It's unclear
-    // if this is by design or not, but VoiceOver folks confirmed offline that
-    // Safari always append the focused item, whether selected or not, to the
-    // list of selected items.
-    if (GetState(_owner, ax::mojom::State::kMultiselectable))
+    // If this container is multi-selectable, only append the focused child
+    // if it is actually selected. This avoids falsely announcing unselected
+    // focused items as selected.
+    if (GetState(_owner, ax::mojom::State::kMultiselectable) &&
+        focusedChild->GetBoolAttribute(ax::mojom::BoolAttribute::kSelected)) {
       [ret addObject:focusedChild->GetNativeViewAccessible().Get()];
+    }
   }
 
   // If this container is multi-selectable, we need to return any additional
@@ -1775,19 +1742,7 @@ bool IsAXCustomActionNamesForTestingProjectionEnabled() {
 
   if (ui::IsNameExposedInAXValueForRole([self internalRole])) {
     std::u16string name = _owner->GetNameAsString16();
-    if (!IsSelectedStateRelevant(_owner)) {
-      return base::SysUTF16ToNSString(name);
-    }
-
-    // Append the selection state as a string, because VoiceOver will not
-    // automatically report selection state when an individual item is focused.
-    bool is_selected =
-        _owner->GetBoolAttribute(ax::mojom::BoolAttribute::kSelected);
-    int msg_id =
-        is_selected ? IDS_AX_OBJECT_SELECTED : IDS_AX_OBJECT_NOT_SELECTED;
-    std::u16string name_with_selection = base::ReplaceStringPlaceholders(
-        _owner->GetLocalizedString(msg_id), name, nullptr);
-    return base::SysUTF16ToNSString(name_with_selection);
+    return base::SysUTF16ToNSString(name);
   }
 
   NSString* role = [self role];
@@ -2001,6 +1956,14 @@ bool IsAXCustomActionNamesForTestingProjectionEnabled() {
 - (NSString*)accessibilityStringForRange:(NSRange)range {
   if (![self instanceActive]) {
     return nil;
+  }
+
+  if (ui::IsNameExposedInAXValueForRole([self internalRole])) {
+    NSString* value = [self getAXValueAsString];
+    if (NSMaxRange(range) > [value length]) {
+      return nil;
+    }
+    return [value substringWithRange:range];
   }
 
   std::u16string textContent = _owner->GetTextContentUTF16();
