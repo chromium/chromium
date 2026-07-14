@@ -1,0 +1,38 @@
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+This file describes the enumerations referenced by entries in histograms.xml for
+this directory.
+-->
+
+<histogram-configuration>
+
+<!-- Enum types -->
+
+<enums>
+
+<!-- LINT.IfChange(DictationSessionEntryPoint) -->
+
+<enum name="DictationSessionEntryPoint">
+  <int value="0" label="Context Menu"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/dictation/metrics.h:DictationSessionEntryPoint) -->
+
+<!-- LINT.IfChange(DictationStreamStartTrigger) -->
+
+<enum name="DictationStreamStartTrigger">
+  <int value="0" label="Session Start"/>
+  <int value="1" label="Start Button"/>
+  <int value="2" label="Focus Change"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/dictation/metrics.h:DictationStreamStartTrigger) -->
+
+</enums>
+
+</histogram-configuration>

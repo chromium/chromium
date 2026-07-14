@@ -4,7 +4,10 @@
 
 #include "chrome/browser/dictation/dictation_keyed_service.h"
 
+#include "base/test/metrics/histogram_tester.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/dictation/metrics.h"
 #include "chrome/browser/dictation/target.h"
 #include "chrome/browser/dictation/test_util.h"
 #include "chrome/common/pref_names.h"
@@ -42,15 +45,67 @@ TEST_F(DictationKeyedServiceTest, EndSessionDoesNotCrash) {
 
 TEST_F(DictationKeyedServiceTest, StartSessionWithNullTarget) {
   ASSERT_EQ(service_->session_controller(), nullptr);
-  service_->StartSession(tab_, EmptyTargetId());
+  service_->StartSession(tab_, EmptyTargetId(),
+                         DictationSessionEntryPoint::kContextMenu);
   EXPECT_NE(service_->session_controller(), nullptr);
 }
 
 TEST_F(DictationKeyedServiceTest, EndSessionRemovesController) {
-  service_->StartSession(tab_, EmptyTargetId());
+  service_->StartSession(tab_, EmptyTargetId(),
+                         DictationSessionEntryPoint::kContextMenu);
   ASSERT_NE(service_->session_controller(), nullptr);
   service_->EndSession();
   EXPECT_EQ(service_->session_controller(), nullptr);
+}
+
+TEST_F(DictationKeyedServiceTest,
+       RecordsMetricsOnInitializationAndStartSession) {
+  base::HistogramTester histogram_tester;
+
+  auto service = std::make_unique<MockDictationKeyedService>(&profile_);
+  histogram_tester.ExpectUniqueSample(kIsEnabledOnProfileInitHistogramName,
+                                      true, 1);
+
+  service->StartSession(tab_, EmptyTargetId(),
+                        DictationSessionEntryPoint::kContextMenu);
+  histogram_tester.ExpectUniqueSample(kSessionStartSourceHistogramName,
+                                      DictationSessionEntryPoint::kContextMenu,
+                                      1);
+  histogram_tester.ExpectUniqueSample(
+      kStreamStartTriggerHistogramName,
+      DictationStreamStartTrigger::kSessionStart, 1);
+}
+
+TEST_F(DictationKeyedServiceTest, RecordsMetricsForStartButton) {
+  base::HistogramTester histogram_tester;
+
+  auto service = std::make_unique<MockDictationKeyedService>(&profile_);
+  service->StartSession(tab_, EmptyTargetId(),
+                        DictationSessionEntryPoint::kContextMenu);
+  histogram_tester.ExpectBucketCount(kStreamStartTriggerHistogramName,
+                                     DictationStreamStartTrigger::kSessionStart,
+                                     1);
+
+  auto* controller = service->session_controller();
+  ASSERT_NE(controller, nullptr);
+  auto* stream_provider = controller->attached_stream_provider();
+  ASSERT_NE(stream_provider, nullptr);
+
+  controller->UiRequestEndActiveStream();
+
+  EXPECT_CALL(static_cast<MockStreamProvider&>(*stream_provider), GetState())
+      .WillRepeatedly(testing::Return(StreamProvider::StreamState::kComplete));
+  controller->DidUpdateStreamProviderState(
+      *stream_provider, StreamProvider::StreamState::kInitializing);
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return controller->GetState() == SessionState::kInactive; }));
+
+  controller->UiRequestStartStream();
+
+  histogram_tester.ExpectBucketCount(kStreamStartTriggerHistogramName,
+                                     DictationStreamStartTrigger::kStartButton,
+                                     1);
+  histogram_tester.ExpectTotalCount(kStreamStartTriggerHistogramName, 2);
 }
 
 }  // namespace dictation

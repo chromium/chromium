@@ -11,6 +11,7 @@
 #include "chrome/browser/dictation/dictation_keyed_service_factory.h"
 #include "chrome/browser/dictation/features.h"
 #include "chrome/browser/dictation/listener_stream_provider.h"
+#include "chrome/browser/dictation/metrics.h"
 #include "chrome/browser/dictation/onboarding_manager.h"
 #include "chrome/browser/dictation/session_controller.h"
 #include "chrome/browser/dictation/session_ui_impl.h"
@@ -68,6 +69,12 @@ DictationKeyedService::DictationKeyedService(Profile* profile)
       prefs::kVoiceTypingSettings,
       base::BindRepeating(&DictationKeyedService::OnPrefChanged,
                           base::Unretained(this)));
+  // `kDictation` is implicitly enabled by virtue of DictationKeyedService being
+  // created (`CHECK`ed above).
+  bool disabled_by_policy =
+      profile_->GetPrefs()->GetInteger(prefs::kVoiceTypingSettings) ==
+      kVoiceTypingSettingsDisabled;
+  RecordDictationIsEnabledOnProfileInit(!disabled_by_policy);
 }
 
 DictationKeyedService::~DictationKeyedService() = default;
@@ -93,21 +100,26 @@ std::unique_ptr<SessionUi> DictationKeyedService::CreateUi(
   return std::make_unique<SessionUiImpl>(*tab, controller);
 }
 
-void DictationKeyedService::StartSession(tabs::TabInterface& tab,
-                                         const TargetId& target_id) {
+void DictationKeyedService::StartSession(
+    tabs::TabInterface& tab,
+    const TargetId& target_id,
+    DictationSessionEntryPoint entry_point) {
   CHECK(IsEnabled());
   CHECK(!session_);
 
-  if (onboarding_manager_.ShowOnboardingIfNeeded(tab, target_id)) {
+  if (onboarding_manager_.ShowOnboardingIfNeeded(tab, target_id, entry_point)) {
     // If onboarding is shown, it will call StartSession again if needed.
     return;
   }
+
+  RecordDictationSessionStartSource(entry_point);
 
   session_.emplace(*this, target_id);
 
   session_->controller_.Initialize();
 
-  session_->controller_.StartDictationStream(target_id);
+  session_->controller_.StartDictationStream(
+      target_id, DictationStreamStartTrigger::kSessionStart);
 }
 
 void DictationKeyedService::EndSession() {
@@ -141,7 +153,8 @@ void DictationKeyedService::ContextMenuHandler(content::RenderFrameHost& rfh) {
 
   // TODO(crbug.com/525856380): Handle changes to the focused element. Identify
   // the targeted element for the dictation Target.
-  StartSession(*tab, TargetId{rfh.GetWeakDocumentPtr()});
+  StartSession(*tab, TargetId{rfh.GetWeakDocumentPtr()},
+               DictationSessionEntryPoint::kContextMenu);
 }
 
 bool DictationKeyedService::IsEnabled() const {

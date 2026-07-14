@@ -6,6 +6,7 @@
 
 #include "chrome/browser/dictation/dictation_keyed_service.h"
 #include "chrome/browser/dictation/features.h"
+#include "chrome/browser/dictation/metrics.h"
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/browser_context.h"
 
@@ -41,6 +42,7 @@ std::unique_ptr<KeyedService>
 DictationKeyedServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   if (!base::FeatureList::IsEnabled(kDictation)) {
+    RecordDictationIsEnabledOnProfileInit(/*is_enabled=*/false);
     return nullptr;
   }
   Profile* profile = Profile::FromBrowserContext(context);

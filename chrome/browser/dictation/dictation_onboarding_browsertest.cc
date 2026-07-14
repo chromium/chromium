@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/dictation/dictation_interactive_browser_test_base.h"
 #include "chrome/browser/dictation/dictation_keyed_service.h"
 #include "chrome/browser/dictation/session_state.h"
@@ -117,6 +118,27 @@ IN_PROC_BROWSER_TEST_F(DictationOnboardingInteractiveTest,
       EnsureNotPresent(kDictationOnboardingDialogElementId)
   );
   // clang-format on
+}
+
+IN_PROC_BROWSER_TEST_F(DictationOnboardingInteractiveTest,
+                       RecordsMetricsOnFRECompletion) {
+  base::HistogramTester histogram_tester;
+  // clang-format off
+  RunTestSequence(
+      CheckHasSession(false),
+      StartSession(),
+      WaitForShow(kDictationOnboardingDialogElementId),
+      PressButton(kDictationOnboardingOkButtonElementId),
+      WaitForHide(kDictationOnboardingDialogElementId),
+      CheckHasSession(true)
+  );
+  // clang-format on
+  histogram_tester.ExpectUniqueSample(kSessionStartSourceHistogramName,
+                                      DictationSessionEntryPoint::kContextMenu,
+                                      1);
+  histogram_tester.ExpectUniqueSample(
+      kStreamStartTriggerHistogramName,
+      DictationStreamStartTrigger::kSessionStart, 1);
 }
 
 }  // namespace dictation

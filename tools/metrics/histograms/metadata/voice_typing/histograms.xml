@@ -1,0 +1,42 @@
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<histogram-configuration>
+
+<histograms>
+
+<histogram name="VoiceTyping.IsEnabledOnProfileInit" enum="BooleanEnabled"
+    expires_after="2027-06-01">
+  <owner>amyasinghal@google.com</owner>
+  <owner>src/chrome/browser/dictation/OWNERS</owner>
+  <summary>
+    Records whether Dictation is overall enabled (feature and policies enabled)
+    when DictationKeyedService is initialized for a profile.
+  </summary>
+</histogram>
+
+<histogram name="VoiceTyping.SessionStartSource"
+    enum="DictationSessionEntryPoint" expires_after="2027-06-01">
+  <owner>amyasinghal@google.com</owner>
+  <owner>src/chrome/browser/dictation/OWNERS</owner>
+  <summary>
+    Records the entry point / trigger source whenever a new Dictation session is
+    started.
+  </summary>
+</histogram>
+
+<histogram name="VoiceTyping.StreamStartTrigger"
+    enum="DictationStreamStartTrigger" expires_after="2027-06-01">
+  <owner>amyasinghal@google.com</owner>
+  <owner>src/chrome/browser/dictation/OWNERS</owner>
+  <summary>
+    Records the trigger source whenever a new Dictation stream is started.
+  </summary>
+</histogram>
+
+</histograms>
+
+</histogram-configuration>

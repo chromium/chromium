@@ -13,6 +13,7 @@
 #include "base/notreached.h"
 #include "base/state_transitions.h"
 #include "base/task/single_thread_task_runner.h"
+#include "chrome/browser/dictation/metrics.h"
 #include "chrome/browser/dictation/session_controller_delegate.h"
 #include "chrome/browser/dictation/session_state.h"
 #include "chrome/browser/dictation/session_ui.h"
@@ -36,13 +37,17 @@ void SessionController::Initialize() {
   ui_ = delegate_->CreateUi(*this);
 }
 
-void SessionController::StartDictationStream(const TargetId& target_id) {
+void SessionController::StartDictationStream(
+    const TargetId& target_id,
+    DictationStreamStartTrigger trigger) {
   // TODO(b/525856380): Add support for "swapping in" a new stream. That is,
   // end the current stream and start a new one without entering the
   // finalization state which could flash states the UI.
   CHECK(state_ == SessionState::kInactive ||
         state_ == SessionState::kFinalizing);
   CHECK(!attached_stream_provider_);
+
+  RecordDictationStreamStartTrigger(trigger);
 
   std::unique_ptr<StreamProvider> stream_provider =
       delegate_->CreateStreamProvider(*this);
@@ -94,7 +99,8 @@ void SessionController::UiRequestStartStream() {
   // target. Starting from UI can only happen after that.
   CHECK(last_used_target_id_.has_value());
 
-  StartDictationStream(*last_used_target_id_);
+  StartDictationStream(*last_used_target_id_,
+                       DictationStreamStartTrigger::kStartButton);
 }
 
 SessionState SessionController::GetState() const {

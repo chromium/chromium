@@ -11,6 +11,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/dictation/metrics.h"
 #include "chrome/browser/dictation/target.h"
 
 class PrefService;
@@ -41,7 +42,8 @@ class OnboardingManager {
   // behavior in terms of preventing a session start but should return an error
   // state.
   bool ShowOnboardingIfNeeded(tabs::TabInterface& tab,
-                              const TargetId& target_id);
+                              const TargetId& target_id,
+                              DictationSessionEntryPoint entry_point);
 
  private:
   void OnOnboardingCompleted();
@@ -55,6 +57,7 @@ class OnboardingManager {
 
   base::WeakPtr<tabs::TabInterface> pending_tab_;
   std::optional<TargetId> pending_target_id_;
+  std::optional<DictationSessionEntryPoint> pending_entry_point_;
 
   base::WeakPtrFactory<OnboardingManager> weak_ptr_factory_{this};
 };

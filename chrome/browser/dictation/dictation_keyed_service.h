@@ -12,6 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/dictation/connector_component_extension.h"
 #include "chrome/browser/dictation/dictation_multiplexer.h"
+#include "chrome/browser/dictation/metrics.h"
 #include "chrome/browser/dictation/onboarding_manager.h"
 #include "chrome/browser/dictation/session_controller.h"
 #include "chrome/browser/dictation/session_controller_delegate.h"
@@ -63,7 +64,9 @@ class DictationKeyedService : public KeyedService,
   //
   // The new session will immediately start up a stream using the given
   // target_id.
-  void StartSession(tabs::TabInterface& tab, const TargetId& target_id);
+  void StartSession(tabs::TabInterface& tab,
+                    const TargetId& target_id,
+                    DictationSessionEntryPoint entry_point);
 
   // Returns true if there is no active session.
   bool ShouldShowContextMenuItem() const;

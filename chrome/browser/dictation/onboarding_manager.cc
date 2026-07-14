@@ -22,8 +22,10 @@ OnboardingManager::OnboardingManager(DictationKeyedService& service,
 
 OnboardingManager::~OnboardingManager() = default;
 
-bool OnboardingManager::ShowOnboardingIfNeeded(tabs::TabInterface& tab,
-                                               const TargetId& target_id) {
+bool OnboardingManager::ShowOnboardingIfNeeded(
+    tabs::TabInterface& tab,
+    const TargetId& target_id,
+    DictationSessionEntryPoint entry_point) {
   if (pref_service_->GetBoolean(prefs::kPrefDictationOnboardingCompleted)) {
     return false;
   }
@@ -38,6 +40,7 @@ bool OnboardingManager::ShowOnboardingIfNeeded(tabs::TabInterface& tab,
   // than explicitly holding a weak ptr here.
   pending_tab_ = tab.GetWeakPtr();
   pending_target_id_ = target_id;
+  pending_entry_point_ = entry_point;
 
   dialog_controller_ = std::make_unique<OnboardingDialogController>(tab);
   dialog_controller_->Show(
@@ -50,6 +53,7 @@ bool OnboardingManager::ShowOnboardingIfNeeded(tabs::TabInterface& tab,
     dialog_controller_.reset();
     pending_tab_.reset();
     pending_target_id_.reset();
+    pending_entry_point_.reset();
     // TODO(b/527240600): Fails closed but this should report an error somehow.
   }
 
@@ -60,10 +64,13 @@ void OnboardingManager::OnOnboardingCompleted() {
   pref_service_->SetBoolean(prefs::kPrefDictationOnboardingCompleted, true);
   if (pending_tab_) {
     CHECK(pending_target_id_);
-    service_->StartSession(*pending_tab_, *pending_target_id_);
+    CHECK(pending_entry_point_);
+    service_->StartSession(*pending_tab_, *pending_target_id_,
+                           *pending_entry_point_);
   }
   pending_tab_.reset();
   pending_target_id_.reset();
+  pending_entry_point_.reset();
 }
 
 void OnboardingManager::OnDialogClosed() {
