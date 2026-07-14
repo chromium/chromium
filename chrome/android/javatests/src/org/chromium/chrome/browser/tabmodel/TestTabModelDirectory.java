@@ -502,8 +502,10 @@ public class TestTabModelDirectory {
     public void writeTabModelFiles(TabModelMetaDataInfo info, boolean writeTabStates, int index)
             throws Exception {
         writeFile(mDataDirectory, "tab_state" + Integer.toString(index), info.encodedFile);
-        for (TabStateInfo tabStateInfo : info.contents) {
-            writeTabStateFile(tabStateInfo);
+        if (writeTabStates) {
+            for (TabStateInfo tabStateInfo : info.contents) {
+                writeTabStateFile(tabStateInfo);
+            }
         }
     }
 
