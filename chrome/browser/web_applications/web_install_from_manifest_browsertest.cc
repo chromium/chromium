@@ -84,14 +84,14 @@ class WebInstallFromManifestBrowserTest : public WebAppBrowserTestBase {
     return content::ExecJs(wc, script);
   }
 
-  // Calls navigator.install({manifest: manifest_url, id: manifest_id}) with
-  // a user gesture.
+  // Calls navigator.install({manifest: manifest_url, manifestId: manifest_id})
+  // with a user gesture.
   bool TryInstallFromManifestWithId(const GURL& manifest_url,
                                     const GURL& manifest_id,
                                     content::WebContents* contents = nullptr) {
     content::WebContents* wc = contents ? contents : web_contents();
     const std::string script = content::JsReplace(
-        "navigator.install({manifest: $1, id: $2})"
+        "navigator.install({manifest: $1, manifestId: $2})"
         ".then(result => { webInstallResult = result; })"
         ".catch(error => { webInstallError = error; });",
         manifest_url.spec(), manifest_id.spec());

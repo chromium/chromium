@@ -372,7 +372,7 @@ TEST_F(NavigatorWebInstallTest, InstallFromManifest_WithIdSuccess) {
       &GetFrame(), mojom::UserActivationNotificationType::kTest);
   auto* params = MakeGarbageCollected<InstallParams>();
   params->setManifest("https://example.com/manifest.json");
-  params->setId("https://example.com/app/");
+  params->setManifestId("https://example.com/app/");
 
   NonThrowableExceptionState exception_state;
   auto promise = NavigatorWebInstall::install(GetScriptState(), *GetNavigator(),
@@ -477,7 +477,7 @@ TEST_F(NavigatorWebInstallTest, InstallFromManifest_EmptyId) {
       &GetFrame(), mojom::UserActivationNotificationType::kTest);
   auto* params = MakeGarbageCollected<InstallParams>();
   params->setManifest("https://example.com/manifest.json");
-  params->setId("");
+  params->setManifestId("");
 
   NonThrowableExceptionState exception_state;
   auto promise = NavigatorWebInstall::install(GetScriptState(), *GetNavigator(),
@@ -490,15 +490,15 @@ TEST_F(NavigatorWebInstallTest, InstallFromManifest_EmptyId) {
 }
 
 TEST_F(NavigatorWebInstallTest, InstallFromManifest_NullIdTreatedAsAbsent) {
-  // `id` is declared `USVString?` in install_params.idl. When JS passes `null`,
-  // the binding produces a null `String`; this should be treated the same as
-  // omitting `id` entirely, and no `manifest_id` should be set on the mojo
-  // options struct.
+  // `manifestId` is declared `USVString?` in install_params.idl. When JS passes
+  // `null`, the binding produces a null `String`; this should be treated the
+  // same as omitting `manifestId` entirely, and no `manifest_id` should be set
+  // on the mojo options struct.
   LocalFrame::NotifyUserActivation(
       &GetFrame(), mojom::UserActivationNotificationType::kTest);
   auto* params = MakeGarbageCollected<InstallParams>();
   params->setManifest("https://example.com/manifest.json");
-  params->setId(String());
+  params->setManifestId(String());
 
   NonThrowableExceptionState exception_state;
   auto promise = NavigatorWebInstall::install(GetScriptState(), *GetNavigator(),
@@ -522,7 +522,7 @@ TEST_F(NavigatorWebInstallTest, InstallFromManifest_InvalidId) {
       &GetFrame(), mojom::UserActivationNotificationType::kTest);
   auto* params = MakeGarbageCollected<InstallParams>();
   params->setManifest("https://example.com/manifest.json");
-  params->setId("://invalid");
+  params->setManifestId("://invalid");
 
   DummyExceptionStateForTesting exception_state;
   auto promise = NavigatorWebInstall::install(GetScriptState(), *GetNavigator(),

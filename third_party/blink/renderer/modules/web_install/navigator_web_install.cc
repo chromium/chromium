@@ -218,9 +218,9 @@ ScriptPromise<WebInstallResult> NavigatorWebInstall::InstallFromParamsImpl(
       mojom::blink::ManifestInstallOptions::New();
   options->manifest_url = manifest_url;
 
-  // Treat null `id` as if it wasn't provided.
-  if (params->hasId() && !params->id().IsNull()) {
-    KURL manifest_id = KURL(params->id());
+  // Treat null `manifestId` as if it wasn't provided.
+  if (params->hasManifestId() && !params->manifestId().IsNull()) {
+    KURL manifest_id = KURL(params->manifestId());
     // Reject invalid ids, including empty strings.
     if (!manifest_id.IsValid()) {
       resolver->Reject(V8ThrowException::CreateTypeError(

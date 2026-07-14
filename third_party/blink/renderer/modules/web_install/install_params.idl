@@ -8,5 +8,6 @@ dictionary InstallParams {
   required USVString manifest;
   // If present, must be a valid absolute URL. Pass undefined, null, or omit
   // completely if the JSON at `manifest` contains an `id` field.
-  USVString? id;
+  // TODO(crbug.com/397043069): Accept relative URLs.
+  USVString? manifestId;
 };
