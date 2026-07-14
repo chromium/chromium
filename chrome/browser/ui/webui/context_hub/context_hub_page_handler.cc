@@ -137,6 +137,8 @@ void ContextHubPageHandler::OnAutoTodosGenerated(
       mojo_todo->title = todo.title();
       mojo_todo->description = todo.description();
       mojo_todo->actionable_url = GURL(todo.actionable_url());
+      mojo_todo->score =
+          std::round(todo.importance_score() * 100.0f) / 100.0f;
       for (const personal_context::proto::SourceReference& ref :
            todo.source_references()) {
         if (ref.has_gmail()) {

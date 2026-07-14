@@ -37,6 +37,8 @@ struct AutoTodoItem {
   array<SourceReference> source_references;
   // The URL to navigate to when the user clicks to start the item.
   url.mojom.Url actionable_url;
+  // Importance score between 0 and 1 for the item.
+  float score;
 };
 
 enum EntryType {

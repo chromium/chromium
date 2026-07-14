@@ -42,6 +42,7 @@ export class TodoItemElement extends CrLitElement {
       description: {type: String},
       actionableUrl: {type: String},
       sourceReferences: {type: Array},
+      score: {type: Number},
       expanded_: {type: Boolean},
     };
   }
@@ -50,6 +51,7 @@ export class TodoItemElement extends CrLitElement {
   accessor description: string = '';
   accessor actionableUrl: string = '';
   accessor sourceReferences: SourceReference[] = [];
+  accessor score: number = 0;
   protected accessor expanded_: boolean = false;
 
   protected onExpandedChanged_(e: CustomEvent<{value: boolean}>) {

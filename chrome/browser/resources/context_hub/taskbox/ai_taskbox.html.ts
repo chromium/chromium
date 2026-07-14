@@ -25,7 +25,8 @@ export function getHtml(this: AiTaskboxElement) {
                       .heading="${todo.title}"
                       .description="${todo.description}"
                       .actionableUrl="${todo.actionableUrl}"
-                      .sourceReferences="${todo.sourceReferences}">
+                      .sourceReferences="${todo.sourceReferences}"
+                      .score="${todo.score}">
                   </todo-item>
                 `)}
             </div>

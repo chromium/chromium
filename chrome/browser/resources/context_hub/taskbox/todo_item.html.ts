@@ -30,11 +30,14 @@ export function getHtml(this: TodoItemElement) {
     ${
       this.expanded_ ? html`
       <div class="expanded-content">
-        <span>From:</span>
-        ${this.getReferences().map((ref, index) => html`
-          ${index > 0 ? ', ' : ''}
-          <a href="${ref.url}" target="_blank">${ref.label}</a>
-        `)}
+        <div>Score: ${this.score.toFixed(2)}</div>
+        <div>
+          <span>From:</span>
+          ${this.getReferences().map((ref, index) => html`
+            ${index > 0 ? ', ' : ''}
+            <a href="${ref.url}" target="_blank">${ref.label}</a>
+          `)}
+        </div>
       </div>
     ` :
                        ''}

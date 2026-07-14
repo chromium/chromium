@@ -122,6 +122,7 @@ TEST_F(ContextHubPageHandlerTest, GenerateAutoTodos_Success) {
   todo->set_title("Test Title");
   todo->set_description("Test Description");
   todo->set_actionable_url("https://example.com/action");
+  todo->set_importance_score(0.85f);
 
   personal_context::proto::Any any_response;
   response.SerializeToString(any_response.mutable_value());
@@ -145,6 +146,7 @@ TEST_F(ContextHubPageHandlerTest, GenerateAutoTodos_Success) {
   EXPECT_EQ(result->at(0)->title, "Test Title");
   EXPECT_EQ(result->at(0)->description, "Test Description");
   EXPECT_EQ(result->at(0)->actionable_url, GURL("https://example.com/action"));
+  EXPECT_EQ(result->at(0)->score, 0.85f);
   EXPECT_TRUE(result->at(0)->source_references.empty());
 }
 
