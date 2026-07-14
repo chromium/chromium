@@ -85,6 +85,12 @@ class CONTENT_EXPORT NavigationFastFetchManager {
     should_record_eligibility_reason_ = false;
   }
 
+  base::TimeTicks eligibility_check_time() const {
+    return eligibility_check_time_;
+  }
+
+  EligibilityReason eligibility_reason() const { return eligibility_reason_; }
+
   EligibilityReason eligibility_reason_for_testing() const {
     return eligibility_reason_;
   }

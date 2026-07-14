@@ -2297,6 +2297,29 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="PageLoad.Clients.GoogleSearch.NavigationTiming.FastFetch.OpportunityTime.FetchStart"
+    units="ms" expires_after="2026-10-01">
+  <owner>bashi@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Measures elapsed time from eligibility check in BeginNavigationImpl to the
+    first fetch start time for eligible navigations, for Google Search page
+    loads.
+  </summary>
+</histogram>
+
+<histogram
+    name="PageLoad.Clients.GoogleSearch.NavigationTiming.FastFetch.OpportunityTime.LoaderStart"
+    units="ms" expires_after="2026-10-01">
+  <owner>bashi@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Measures elapsed time from eligibility check in BeginNavigationImpl to
+    loader start time for eligible navigations, for Google Search page loads.
+  </summary>
+</histogram>
+
+<histogram
     name="PageLoad.Clients.GoogleSearch.NavigationTiming.FinalRequestStartToFinalResponseStart"
     units="ms" expires_after="2027-01-21">
   <owner>yyanagisawa@chromium.org</owner>

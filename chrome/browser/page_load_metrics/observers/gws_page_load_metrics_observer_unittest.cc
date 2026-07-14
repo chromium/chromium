@@ -889,3 +889,36 @@ TEST_F(GWSPageLoadMetricsObserverTest, InteractionToAFTEnd) {
   tester()->histogram_tester().ExpectBucketCount(
       internal::kHistogramGWSInteractionToAFTEnd, 590, 1);
 }
+
+TEST_F(GWSPageLoadMetricsObserverTest, FastFetchOpportunityTime) {
+  // Wait until the browser init is complete.
+  AfterStartupTaskUtils::SetBrowserStartupIsCompleteForTesting();
+
+  content::NavigationHandleTiming timing;
+  base::TimeTicks now = base::TimeTicks::Now();
+  timing.fast_fetch_eligibility_check_time = now;
+  timing.is_fast_fetch_eligible = true;
+  timing.loader_start_time = now + base::Milliseconds(10);
+  timing.first_fetch_start_time = now + base::Milliseconds(20);
+
+  content::MockNavigationHandle handle(GURL(kGoogleSearchResultsUrl),
+                                       main_rfh());
+  EXPECT_CALL(handle, GetNavigationHandleTiming())
+      .WillRepeatedly(testing::ReturnRef(timing));
+  handle.set_was_response_cached(false);
+
+  tester()->StartNavigation(GURL(kGoogleSearchResultsUrl));
+  observer_->OnCommit(&handle);
+
+  tester()->histogram_tester().ExpectTotalCount(
+      internal::kHistogramGWSFastFetchOpportunityTimeLoaderStart, 1);
+  tester()->histogram_tester().ExpectBucketCount(
+      internal::kHistogramGWSFastFetchOpportunityTimeLoaderStart, 10, 1);
+
+  tester()->histogram_tester().ExpectTotalCount(
+      internal::kHistogramGWSFastFetchOpportunityTimeFetchStart, 1);
+  tester()->histogram_tester().ExpectBucketCount(
+      internal::kHistogramGWSFastFetchOpportunityTimeFetchStart, 20, 1);
+}
+
+// trivial comment to force rebuild

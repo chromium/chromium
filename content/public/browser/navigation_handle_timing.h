@@ -219,6 +219,12 @@ struct CONTENT_EXPORT NavigationHandleTiming {
 
   // Details about the network session used for the navigation, if available.
   std::optional<SessionDetails> session_details;
+
+  // The time when Fast Fetch eligibility check was run.
+  base::TimeTicks fast_fetch_eligibility_check_time;
+
+  // Whether the navigation was eligible for Fast Fetch.
+  bool is_fast_fetch_eligible = false;
 };
 
 }  // namespace content

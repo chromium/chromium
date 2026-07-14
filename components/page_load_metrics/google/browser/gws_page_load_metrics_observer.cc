@@ -118,6 +118,10 @@ const char kHistogramGWSInitializeStreamDelay[] =
     HISTOGRAM_PREFIX "NavigationTiming.InitializeStreamDelay";
 const char kHistogramGWSMaxStreamLimitPendingDelay[] =
     HISTOGRAM_PREFIX "NavigationTiming.MaxStreamLimitPendingDelay";
+const char kHistogramGWSFastFetchOpportunityTimeLoaderStart[] =
+    HISTOGRAM_PREFIX "NavigationTiming.FastFetch.OpportunityTime.LoaderStart";
+const char kHistogramGWSFastFetchOpportunityTimeFetchStart[] =
+    HISTOGRAM_PREFIX "NavigationTiming.FastFetch.OpportunityTime.FetchStart";
 const char kHistogramGWSAcceptCHFrameReceived[] =
     HISTOGRAM_PREFIX "AcceptCHFrameReceived";
 const char kHistogramGWSOnConnectedCalled[] =
@@ -1479,6 +1483,30 @@ void GWSPageLoadMetricsObserver::RecordPreCommitHistograms() {
   CHECK(!is_prerendered_);
   base::UmaHistogramEnumeration(internal::kHistogramGWSNavigationSourceType,
                                 source_type_);
+
+  if (navigation_handle_timing_.is_fast_fetch_eligible) {
+    CHECK(
+        !navigation_handle_timing_.fast_fetch_eligibility_check_time.is_null());
+    base::TimeTicks loader_start_time =
+        navigation_handle_timing_.loader_start_time;
+    if (!loader_start_time.is_null() &&
+        loader_start_time >=
+            navigation_handle_timing_.fast_fetch_eligibility_check_time) {
+      base::UmaHistogramTimes(
+          internal::kHistogramGWSFastFetchOpportunityTimeLoaderStart,
+          loader_start_time -
+              navigation_handle_timing_.fast_fetch_eligibility_check_time);
+    }
+    if (navigation_handle_timing_.first_fetch_start_time.has_value() &&
+        *navigation_handle_timing_.first_fetch_start_time >=
+            navigation_handle_timing_.fast_fetch_eligibility_check_time) {
+      base::UmaHistogramTimes(
+          internal::kHistogramGWSFastFetchOpportunityTimeFetchStart,
+          *navigation_handle_timing_.first_fetch_start_time -
+              navigation_handle_timing_.fast_fetch_eligibility_check_time);
+    }
+  }
+
   if (was_cached_) {
     return;
   }
