@@ -154,7 +154,14 @@ static_library("safe_browsing") {
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/toasts",
       "//chrome/browser/ui/toasts/api:toasts",
+
+      # Shows the safe_browsing views dialogs (toolkit_views only), which in
+      # turn include this target's chrome_password_protection_service.h.
+      "//chrome/browser/ui/views/safe_browsing",
     ]
+
+    allow_circular_includes_from +=
+        [ "//chrome/browser/ui/views/safe_browsing" ]
   }
 
   if (safe_browsing_mode != 0) {

@@ -1180,7 +1180,6 @@ static_library("ui") {
     # c/b/ui/browser.h, browser_commands.h, browser_window.h
     # c/b/ui/scoped_tabbed_browser_displayer.h
     # c/b/ui/views/frame/browser_view.h
-    # c/b/ui/views/safe_browsing/tailored_security_unconsented_modal.h
     "//chrome/browser/safe_browsing",
 
     # TODO(crbug.com/364667551): Remove this circular dependency when
@@ -4362,12 +4361,6 @@ static_library("ui") {
       "views/profiles/avatar_toolbar_button_types.h",
       "views/sad_tab_view.cc",
       "views/sad_tab_view.h",
-      "views/safe_browsing/password_reuse_modal_warning_dialog.cc",
-      "views/safe_browsing/password_reuse_modal_warning_dialog.h",
-      "views/safe_browsing/tailored_security_desktop_dialog_manager.cc",
-      "views/safe_browsing/tailored_security_desktop_dialog_manager.h",
-      "views/safe_browsing/tailored_security_unconsented_modal.cc",
-      "views/safe_browsing/tailored_security_unconsented_modal.h",
       "views/screen_sharing_util.cc",
       "views/screen_sharing_util.h",
       "views/session_crashed_bubble_view.cc",
