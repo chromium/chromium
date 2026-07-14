@@ -240,7 +240,7 @@ void BatchUploadDialogView::SetHeightAndShowWidget(int height) {
     // Enforce the web view round corners to match the native view. Since we set
     // the view margin to 0 in the constructor, it leads to the webview
     // overlapping on the native view in the corners.
-    web_view_->holder()->SetCornerRadii(
+    web_view_->holder()->SetNativeViewCornerRadii(
         gfx::RoundedCornersF(GetCornerRadius()));
 
     widget->Show();

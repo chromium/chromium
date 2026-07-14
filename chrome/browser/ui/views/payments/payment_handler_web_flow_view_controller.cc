@@ -111,7 +111,7 @@ class PaymentHandlerWebFlowViewController::RoundedCornerViewClipper
     CHECK_EQ(web_view_, observed_view);
     // The PaymentHandler dialog has a header above the WebView, so only the
     // bottom corners should be clipped to be rounded.
-    web_view_->holder()->SetCornerRadii(gfx::RoundedCornersF(
+    web_view_->holder()->SetNativeViewCornerRadii(gfx::RoundedCornersF(
         0.f, 0.f, dialog_->GetCornerRadius(), dialog_->GetCornerRadius()));
   }
 

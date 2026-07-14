@@ -427,7 +427,7 @@ void ArcNotificationContentView::UpdateCornerRadius(float top_radius,
   contents_radii_ = gfx::RoundedCornersF(top_radius, top_radius, bottom_radius,
                                          bottom_radius);
   if (GetWidget()) {
-    SetCornerRadii(contents_radii_);
+    SetNativeViewCornerRadii(contents_radii_);
   }
 }
 
@@ -663,7 +663,7 @@ void ArcNotificationContentView::AddedToWidget() {
     HideCopiedSurface();
   }
 
-  SetCornerRadii(contents_radii_);
+  SetNativeViewCornerRadii(contents_radii_);
 }
 
 void ArcNotificationContentView::RemovedFromWidget() {

@@ -119,7 +119,7 @@ void DrivePickerHostView::AddedToWidget() {
       views::AsViewClass<views::WebView>(view_tracker_.view());
   if (web_view) {
     // Remove rounded corners to align with the Drive Picker's rectangular look.
-    web_view->holder()->SetCornerRadii(gfx::RoundedCornersF(0));
+    web_view->holder()->SetNativeViewCornerRadii(gfx::RoundedCornersF(0));
 
     // Also ensure this view's layer is rectangular.
     layer()->SetRoundedCornerRadius(gfx::RoundedCornersF(0));

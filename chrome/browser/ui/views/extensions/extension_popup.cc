@@ -132,7 +132,7 @@ void ExtensionPopup::AddedToWidget() {
   CHECK_EQ(radii.lower_left(), radii.lower_right());
 
   const bool contents_has_rounded_corners =
-      extension_view_->holder()->SetCornerRadii(radii);
+      extension_view_->holder()->SetNativeViewCornerRadii(radii);
   SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(
       contents_has_rounded_corners ? 0 : radii.upper_left(), 0,
       contents_has_rounded_corners ? 0 : radii.lower_left(), 0)));

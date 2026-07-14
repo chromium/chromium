@@ -203,7 +203,7 @@ IndigoOnboardingDialog::IndigoOnboardingDialog(
   // SearchEngineChoiceDialogView for similar examples.
   views::WebView* web_view_ptr =
       static_cast<views::WebView*>(delegate_->GetContentsView());
-  web_view_ptr->holder()->SetCornerRadii(
+  web_view_ptr->holder()->SetNativeViewCornerRadii(
       gfx::RoundedCornersF(views::LayoutProvider::Get()->GetCornerRadiusMetric(
           views::ShapeContextTokens::kDialogRadius)));
 

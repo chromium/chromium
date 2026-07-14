@@ -58,7 +58,7 @@ void EmbeddedWebView::AddedToWidget() {
           views::ShapeContextTokens::kOmniboxExpandedRadius);
   gfx::RoundedCornersF rounded_corner_radii = gfx::RoundedCornersF(
       corner_radius, corner_radius, corner_radius, corner_radius);
-  holder()->SetCornerRadii(rounded_corner_radii);
+  holder()->SetNativeViewCornerRadii(rounded_corner_radii);
 }
 
 void EmbeddedWebView::ResizeDueToAutoResize(content::WebContents* source,

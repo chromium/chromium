@@ -51,7 +51,8 @@ class NativeViewHostWrapper {
   // Clips the corners of the gfx::NativeView to the `corner_radii` specified.
   // Returns true on success or false if the platform doesn't support the
   // operation.
-  virtual bool SetCornerRadii(const gfx::RoundedCornersF& corner_radii) = 0;
+  virtual bool SetNativeViewCornerRadii(
+      const gfx::RoundedCornersF& corner_radii) = 0;
   virtual gfx::RoundedCornersF GetNativeViewCornerRadii() const = 0;
   virtual gfx::Rect GetNativeViewClipRect() const = 0;
 

@@ -420,7 +420,7 @@ TEST_P(NativeViewHostAuraClipTest, ClipByParent) {
 
   const gfx::RoundedCornersF kRadii(5, 10, 15, 20);
   if (apply_rounded_corners) {
-    host()->SetCornerRadii(kRadii);
+    host()->SetNativeViewCornerRadii(kRadii);
   }
 
   // 1) child view is fully visible (same size as parent), so it shouldn't be
@@ -534,7 +534,7 @@ TEST_P(NativeViewHostAuraClipTest, ClipByParentRTL) {
   const gfx::RoundedCornersF kRadii(5, 10, 15, 20);
   const gfx::RoundedCornersF kMirroredRadii(10, 5, 20, 15);
   if (apply_rounded_corners) {
-    host()->SetCornerRadii(kRadii);
+    host()->SetNativeViewCornerRadii(kRadii);
   }
 
   // 1) child view is fully visible (same size as parent), so it shouldn't be
@@ -962,7 +962,7 @@ TEST_P(NativeViewHostAuraTopInsetsTest,
 
   // Set corner radii.
   const gfx::RoundedCornersF kRadii(5, 10, 15, 20);
-  EXPECT_TRUE(host()->SetCornerRadii(kRadii));
+  EXPECT_TRUE(host()->SetNativeViewCornerRadii(kRadii));
 
   // If no clip, rounded corners should be applied.
   EXPECT_EQ(kRadii, child_layer->rounded_corner_radii());
@@ -1007,7 +1007,7 @@ TEST_P(NativeViewHostAuraTopInsetsTest,
 
   // Set corner radii.
   const gfx::RoundedCornersF kRadii(5, 10, 15, 20);
-  EXPECT_TRUE(host()->SetCornerRadii(kRadii));
+  EXPECT_TRUE(host()->SetNativeViewCornerRadii(kRadii));
 
   // Set top inset.
   host()->SetHitTestTopInset(20);

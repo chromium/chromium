@@ -893,7 +893,7 @@ void OverlayBaseController::SetOverlayRoundedCorner() {
   const gfx::RoundedCornersF radii = gfx::RoundedCornersF{
       right_aligned ? 0 : radius, right_aligned ? radius : 0, 0, 0};
 
-  overlay_web_view->holder()->SetCornerRadii(radii);
+  overlay_web_view->holder()->SetNativeViewCornerRadii(radii);
 
   views::View* overlay_view = nullptr;
   if (IsOverlayViewShared()) {

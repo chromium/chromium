@@ -159,7 +159,8 @@ void WebUIBubbleDialogView::AddedToWidget() {
   views::Widget* widget = GetWidget();
   contents_wrapper_->SetHost(weak_factory_.GetWeakPtr());
   bubble_widget_observation_.Observe(widget);
-  web_view_->holder()->SetCornerRadii(gfx::RoundedCornersF(GetCornerRadius()));
+  web_view_->holder()->SetNativeViewCornerRadii(
+      gfx::RoundedCornersF(GetCornerRadius()));
 
 #if defined(USE_AURA)
   aura::Window* window = widget->GetNativeView();

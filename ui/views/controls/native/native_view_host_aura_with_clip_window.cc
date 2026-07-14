@@ -192,7 +192,7 @@ void NativeViewHostAuraWithClipWindow::RemovedFromWidget() {
   }
 }
 
-bool NativeViewHostAuraWithClipWindow::SetCornerRadii(
+bool NativeViewHostAuraWithClipWindow::SetNativeViewCornerRadii(
     const gfx::RoundedCornersF& corner_radii) {
   corner_radii_ = corner_radii;
   ApplyRoundedCorners();

@@ -62,8 +62,7 @@ class VIEWS_EXPORT NativeViewHost : public View {
   // Sets the corner radii for clipping gfx::NativeView. Returns true on success
   // or false if the platform doesn't support the operation. This method calls
   // SetCustomMask internally.
-  // TODO(oshima): Rename to SetNativeViewCornerRadii.
-  bool SetCornerRadii(const gfx::RoundedCornersF& corner_radii);
+  bool SetNativeViewCornerRadii(const gfx::RoundedCornersF& corner_radii);
   gfx::RoundedCornersF GetNativeViewCornerRadii() const;
 
 

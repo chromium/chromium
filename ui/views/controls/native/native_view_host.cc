@@ -76,11 +76,12 @@ gfx::NativeViewAccessible NativeViewHost::GetParentAccessible() {
   return native_wrapper_->GetParentAccessible();
 }
 
-bool NativeViewHost::SetCornerRadii(const gfx::RoundedCornersF& corner_radii) {
+bool NativeViewHost::SetNativeViewCornerRadii(
+    const gfx::RoundedCornersF& corner_radii) {
   if (!native_wrapper_) {
     return false;
   }
-  return native_wrapper_->SetCornerRadii(corner_radii);
+  return native_wrapper_->SetNativeViewCornerRadii(corner_radii);
 }
 
 gfx::RoundedCornersF NativeViewHost::GetNativeViewCornerRadii() const {

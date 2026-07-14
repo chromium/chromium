@@ -221,7 +221,7 @@ void NativeViewHostMac::RemovedFromWidget() {
   NativeViewDetaching(false);
 }
 
-bool NativeViewHostMac::SetCornerRadii(
+bool NativeViewHostMac::SetNativeViewCornerRadii(
     const gfx::RoundedCornersF& corner_radii) {
   ui::Layer* layer = GetUiLayer();
   DCHECK(layer);

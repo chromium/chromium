@@ -39,7 +39,8 @@ class NativeViewHostAura : public NativeViewHostWrapper,
   void NativeViewDetaching(bool destroyed) override;
   void AddedToWidget() override;
   void RemovedFromWidget() override;
-  bool SetCornerRadii(const gfx::RoundedCornersF& corner_radii) override;
+  bool SetNativeViewCornerRadii(
+      const gfx::RoundedCornersF& corner_radii) override;
   gfx::RoundedCornersF GetNativeViewCornerRadii() const override;
   gfx::Rect GetNativeViewClipRect() const override;
 

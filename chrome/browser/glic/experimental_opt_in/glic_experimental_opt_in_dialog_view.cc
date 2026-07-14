@@ -130,7 +130,8 @@ void GlicExperimentalOptInDialogView::OnViewAddedToWidget(
 
   // Apply rounded corners to the NativeViewHost to prevent WebUI content
   // from bleeding through the dialog's rounded corners.
-  web_view_->holder()->SetCornerRadii(gfx::RoundedCornersF(GetCornerRadius()));
+  web_view_->holder()->SetNativeViewCornerRadii(
+      gfx::RoundedCornersF(GetCornerRadius()));
 }
 
 void GlicExperimentalOptInDialogView::OnViewIsDeleting(

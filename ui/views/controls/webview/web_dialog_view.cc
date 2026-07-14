@@ -523,7 +523,7 @@ void WebDialogView::SetWebViewCornersRadii(const gfx::RoundedCornersF& radii) {
   views::NativeViewHost* host = web_view_->holder();
   DCHECK(host);
 
-  host->SetCornerRadii(radii);
+  host->SetNativeViewCornerRadii(radii);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

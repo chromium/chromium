@@ -183,7 +183,8 @@ void NearbyShareAction::LaunchAction(
   view->SetPreferredSize(size);
   views::WebView* web_view = root_view->AddChildView(std::move(view));
   // TODO(vecore): Query this from the container view
-  web_view->holder()->SetCornerRadii(gfx::RoundedCornersF(kCornerRadius));
+  web_view->holder()->SetNativeViewCornerRadii(
+      gfx::RoundedCornersF(kCornerRadius));
 
   // load chrome://nearby into the webview
   web_view->LoadInitialURL(GURL(chrome::kChromeUINearbyShareURL));

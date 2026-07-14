@@ -188,7 +188,7 @@ void ChromeWebUIDialog::OnViewAddedToWidget(views::View* observed_view) {
   //
   // TODO(https://crbug.com/344626785): Remove this once DialogDelegate
   // natively supports rounded corners.
-  web_view_->holder()->SetCornerRadii(
+  web_view_->holder()->SetNativeViewCornerRadii(
       gfx::RoundedCornersF(spec_.corner_radius.value_or(GetCornerRadius())));
 }
 

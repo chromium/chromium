@@ -165,7 +165,7 @@ class ChromeNativeAppClientView : public views::ClientView {
     static_cast<ChromeNativeAppWindowViewsAuraAsh*>(contents_view())
         ->web_view()
         ->holder()
-        ->SetCornerRadii(radii);
+        ->SetNativeViewCornerRadii(radii);
   }
 
  private:

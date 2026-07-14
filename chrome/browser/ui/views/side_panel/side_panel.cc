@@ -174,8 +174,9 @@ class ContentParentView : public views::View, public views::ViewObserver {
     // View::ViewHierarchyChanged.
     // If the child is a WebView or paints to a layer, round its corners.
     if (views::IsViewClass<views::WebView>(child)) {
-      views::AsViewClass<views::WebView>(child)->holder()->SetCornerRadii(
-          GetRoundedCorners());
+      views::AsViewClass<views::WebView>(child)
+          ->holder()
+          ->SetNativeViewCornerRadii(GetRoundedCorners());
     }
     // Try to detect if the child is a views::View wrapper of a WebView. If so,
     // round its corners.
@@ -183,7 +184,7 @@ class ContentParentView : public views::View, public views::ViewObserver {
         views::IsViewClass<views::WebView>(child->children()[0])) {
       views::AsViewClass<views::WebView>(child->children()[0])
           ->holder()
-          ->SetCornerRadii(GetRoundedCorners());
+          ->SetNativeViewCornerRadii(GetRoundedCorners());
     }
     if (child->layer()) {
       child->layer()->SetIsFastRoundedCorner(true);
@@ -197,7 +198,7 @@ class ContentParentView : public views::View, public views::ViewObserver {
 
     // Native View Host doesn't always get reused, so ensure a nested Native
     // View's corners are always rounded.
-    web_view->holder()->SetCornerRadii(GetRoundedCorners());
+    web_view->holder()->SetNativeViewCornerRadii(GetRoundedCorners());
     // Temporary subscription. We only need to round the corners once.
     web_contents_attached_callback_ = {};
   }

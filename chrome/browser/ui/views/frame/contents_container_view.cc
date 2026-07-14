@@ -242,7 +242,7 @@ void ContentsContainerView::SetBorderRoundedCornersFrom(
     const gfx::RoundedCornersF& corner_radii) {
   // Update devtools rounded corners. Note, devtools exists behind the contents
   // view so all devtools corners are rounded.
-  devtools_web_view_->holder()->SetCornerRadii(corner_radii);
+  devtools_web_view_->holder()->SetNativeViewCornerRadii(corner_radii);
   devtools_scrim_view_->SetRoundedCorners(corner_radii);
 
   const bool devtools_in_upper_left =
@@ -279,24 +279,24 @@ void ContentsContainerView::SetBorderRoundedCornersFrom(
                    : content_rounded_corners;
 
   contents_view_->SetBackgroundRadii(radii);
-  contents_view_->holder()->SetCornerRadii(radii);
+  contents_view_->holder()->SetNativeViewCornerRadii(radii);
   contents_scrim_view_->SetRoundedCorners(corner_radii);
 
   if (new_tab_footer_view_) {
-    new_tab_footer_view_->holder()->SetCornerRadii(
+    new_tab_footer_view_->holder()->SetNativeViewCornerRadii(
         content_lower_rounded_corners);
   }
 
   if (actor_overlay_web_view_) {
     // ActorOverlayWebView should use the same radii as the contents view since
     // it acts as a full transparent layer directly over the main web content.
-    actor_overlay_web_view_->holder()->SetCornerRadii(radii);
+    actor_overlay_web_view_->holder()->SetNativeViewCornerRadii(radii);
   }
 
   if (ai_overlay_dialog_view_) {
     // ai_overlay_dialog_view_ should use the same radii as the contents view
     // since it acts as a layer directly over the main web content.
-    ai_overlay_dialog_view_->holder()->SetCornerRadii(radii);
+    ai_overlay_dialog_view_->holder()->SetNativeViewCornerRadii(radii);
   }
 
   if (glic_selection_overlay_view_) {

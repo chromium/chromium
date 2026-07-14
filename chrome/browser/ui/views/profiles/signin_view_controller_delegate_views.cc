@@ -375,7 +375,7 @@ void SigninViewControllerDelegateViews::OnViewAddedToWidget(
   // Workaround for crbug.com/358379367.
   if (content_view_->GetWebContents() &&
       content_view_->GetWebContents()->GetWebUI()) {
-    content_view_->holder()->SetCornerRadii(
+    content_view_->holder()->SetNativeViewCornerRadii(
         gfx::RoundedCornersF(GetCornerRadius()));
   }
 }

@@ -64,7 +64,7 @@ OmniboxPopupWebUIBaseContent::~OmniboxPopupWebUIBaseContent() {
 
 void OmniboxPopupWebUIBaseContent::AddedToWidget() {
   views::WebView::AddedToWidget();
-  holder()->SetCornerRadii(GetRoundedCornerRadii());
+  holder()->SetNativeViewCornerRadii(GetRoundedCornerRadii());
 }
 
 gfx::RoundedCornersF OmniboxPopupWebUIBaseContent::GetRoundedCornerRadii()

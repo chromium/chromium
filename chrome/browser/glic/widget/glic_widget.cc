@@ -100,7 +100,7 @@ class GlicClientView : public views::ClientView {
       const gfx::RoundedCornersF& window_radii) override {
     // For ChromeOS, we have to manually round the contents of `ClientView`.
     glic_view()->SetBackgroundRoundedCorners(window_radii);
-    glic_view()->holder()->SetCornerRadii(window_radii);
+    glic_view()->holder()->SetNativeViewCornerRadii(window_radii);
   }
 #endif
 

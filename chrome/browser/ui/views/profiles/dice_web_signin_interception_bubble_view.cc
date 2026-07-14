@@ -364,7 +364,8 @@ void DiceWebSigninInterceptionBubbleView::SetHeightAndShowWidget(int height) {
   // This has to be done since we removed the margins of the bubble view,
   // which would create an overlap of the web view on top of the bubble empty
   // corners.
-  web_view_->holder()->SetCornerRadii(gfx::RoundedCornersF(GetCornerRadius()));
+  web_view_->holder()->SetNativeViewCornerRadii(
+      gfx::RoundedCornersF(GetCornerRadius()));
 
   ApplyAvatarButtonEffects();
 

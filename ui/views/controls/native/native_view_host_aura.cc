@@ -167,7 +167,7 @@ void NativeViewHostAura::RemovedFromWidget() {
   }
 }
 
-bool NativeViewHostAura::SetCornerRadii(
+bool NativeViewHostAura::SetNativeViewCornerRadii(
     const gfx::RoundedCornersF& corner_radii) {
   corner_radii_ = corner_radii;
   ApplyRoundedCorners();

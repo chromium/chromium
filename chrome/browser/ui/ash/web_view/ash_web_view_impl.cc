@@ -97,7 +97,7 @@ views::View* AshWebViewImpl::GetInitiallyFocusedView() {
 }
 
 void AshWebViewImpl::SetCornerRadii(const gfx::RoundedCornersF& corner_radii) {
-  web_view_->holder()->SetCornerRadii(corner_radii);
+  web_view_->holder()->SetNativeViewCornerRadii(corner_radii);
 }
 
 const base::UnguessableToken& AshWebViewImpl::GetMediaSessionRequestId() {
@@ -112,7 +112,8 @@ void AshWebViewImpl::AddedToWidget() {
   // Apply rounded corners. This can't be done earlier since it
   // requires `web_view_->holder()->native_view()` to be initialized.
   if (params_.rounded_corners.has_value()) {
-    web_view_->holder()->SetCornerRadii(params_.rounded_corners.value());
+    web_view_->holder()->SetNativeViewCornerRadii(
+        params_.rounded_corners.value());
   }
 }
 

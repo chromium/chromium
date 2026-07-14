@@ -182,7 +182,7 @@ void SearchEngineChoiceDialogView::ShowNativeView() {
   // This solution is inspired by the code in `WebUIBubbleDialogView`, it
   // applies the round corners to the inner web_view to match the view rounded
   // corners.
-  web_view_->holder()->SetCornerRadii(
+  web_view_->holder()->SetNativeViewCornerRadii(
       gfx::RoundedCornersF(GetWebViewCornerRadius()));
 
   widget->Show();

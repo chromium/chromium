@@ -435,7 +435,8 @@ void ParentAccessView::ShowNativeView() {
   }
   CHECK(is_initialized_);
   // Applies the round corners to the inner web_view.
-  web_view_->holder()->SetCornerRadii(gfx::RoundedCornersF(corner_radius_));
+  web_view_->holder()->SetNativeViewCornerRadii(
+      gfx::RoundedCornersF(corner_radius_));
   // Needed to avoid flashing in dark mode while the content is loaded.
   web_view_->SetVisible(false);
   widget->Show();
