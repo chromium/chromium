@@ -119,7 +119,7 @@ class GlicSelectionObserver
   void OnAskGemini();
   void OnCopy();
   void OnCopyLink();
-  void OnHideForThisSite();
+  void OnHide();
   void OnSettings();
   void ShowHiddenToast(ToastId toast_id);
 
@@ -178,17 +178,17 @@ class GlicSelectionObserver
 
   std::unique_ptr<GlicSelectionWidgetDelegate> widget_delegate_;
   std::unique_ptr<WidgetActionDelegate> action_delegate_;
-  // True if the user temporarily blocked the selection widget for the current
-  // page load.
-  // TODO(b/519247911): Remove this.
-  bool is_hidden_on_current_page_ = false;
-
   mojo::Remote<blink::mojom::TextFragmentReceiver> text_fragment_remote_;
   std::optional<GURL> generated_link_;
 
   friend class GlicSelectionObserverTest;
 
  protected:
+  // True if the user temporarily blocked the selection widget for the current
+  // page load.
+  // TODO(b/519247911): Remove this.
+  bool is_hidden_on_current_page_ = false;
+
   bool IsPageContextEligible() const;
 
   ::optimization_guide::PageContextEligibilityObserver* page_context_tracker() {

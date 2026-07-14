@@ -688,7 +688,7 @@ void ToastService::RegisterToasts(
       ToastId::kGlicSelectionHiddenForSite,
       ToastSpecification::Builder(
           vector_icons::kVisibilityOffIcon,
-          IDS_GLIC_SELECTION_HIDDEN_FOR_SITE_TOAST_BODY)
+          IDS_GLIC_SELECTION_HIDDEN_TOAST_BODY)
           .AddActionButton(IDS_MANAGE,
                            base::BindRepeating(
                                [](BrowserWindowInterface* window) {

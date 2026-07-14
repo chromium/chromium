@@ -260,7 +260,7 @@ class GlicSelectionObserverTest : public ChromeRenderViewHostTestHarness {
     return observer_->ShouldShowSelectionWidget();
   }
 
-  void CallOnHideForThisSite() { observer_->OnHideForThisSite(); }
+  void CallOnHide() { observer_->OnHide(); }
 
   void CallOnLinkGenerated(
       const GURL& fallback_url,
@@ -1076,7 +1076,7 @@ TEST_F(GlicSelectionObserverTest, IdentityManagerIntegration) {
   EXPECT_EQ(u"Test text signed in", *observer->last_sent_context());
 }
 
-TEST_F(GlicSelectionObserverTest, HideForThisSiteSetsBlockSetting) {
+TEST_F(GlicSelectionObserverTest, OnHideHidesSelectionWidget) {
   GURL url("https://example.com");
   NavigateAndCommit(url);
   TestGlicSelectionObserver* observer = GetObserver();
@@ -1087,9 +1087,11 @@ TEST_F(GlicSelectionObserverTest, HideForThisSiteSetsBlockSetting) {
   EXPECT_EQ(CONTENT_SETTING_ALLOW,
             settings_map->GetContentSetting(
                 url, GURL(), ContentSettingsType::INLINE_CUE_MENU));
+  EXPECT_TRUE(ShouldShowSelectionWidget());
 
-  CallOnHideForThisSite();
-  EXPECT_EQ(CONTENT_SETTING_BLOCK,
+  CallOnHide();
+  EXPECT_FALSE(ShouldShowSelectionWidget());
+  EXPECT_EQ(CONTENT_SETTING_ALLOW,
             settings_map->GetContentSetting(
                 url, GURL(), ContentSettingsType::INLINE_CUE_MENU));
 }

@@ -164,7 +164,7 @@ class GlicSelectionObserver::WidgetActionDelegate
   void OnAskGemini() override { observer_->OnAskGemini(); }
   void OnCopy() override { observer_->OnCopy(); }
   void OnCopyLink() override { observer_->OnCopyLink(); }
-  void OnHideForThisSite() override { observer_->OnHideForThisSite(); }
+  void OnHide() override { observer_->OnHide(); }
   void OnSettings() override { observer_->OnSettings(); }
   void OnWidgetClose() override { observer_->OnWidgetClose(); }
 
@@ -725,19 +725,8 @@ bool GlicSelectionObserver::ShouldShowSelectionWidget() {
   return true;
 }
 
-void GlicSelectionObserver::OnHideForThisSite() {
+void GlicSelectionObserver::OnHide() {
   is_hidden_on_current_page_ = true;
-
-  if (ContentSettingsPattern::FromURL(web_contents()->GetLastCommittedURL())
-          .IsValid()) {
-    Profile* profile =
-        Profile::FromBrowserContext(web_contents()->GetBrowserContext());
-    HostContentSettingsMap* settings_map =
-        HostContentSettingsMapFactory::GetForProfile(profile);
-    settings_map->SetContentSettingDefaultScope(
-        web_contents()->GetLastCommittedURL(), GURL(),
-        ContentSettingsType::INLINE_CUE_MENU, CONTENT_SETTING_BLOCK);
-  }
 
   DismissUI(/*keep_nudge=*/false);
   ShowHiddenToast(ToastId::kGlicSelectionHiddenForSite);

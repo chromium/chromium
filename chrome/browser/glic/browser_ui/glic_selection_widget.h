@@ -27,17 +27,12 @@ class GlicSelectionWidgetDelegate : public views::BubbleDialogDelegate {
     virtual void OnAskGemini() = 0;
     virtual void OnCopy() = 0;
     virtual void OnCopyLink() = 0;
-    virtual void OnHideForThisSite() = 0;
+    virtual void OnHide() = 0;
     virtual void OnSettings() = 0;
     virtual void OnWidgetClose() = 0;
 
    protected:
     virtual ~ActionDelegate() = default;
-  };
-
-  enum class MenuCommand {
-    kHideForSite = 1,
-    kSettings = 2,
   };
 
   GlicSelectionWidgetDelegate(ActionDelegate& action_delegate,
@@ -63,8 +58,6 @@ class GlicSelectionWidgetDelegate : public views::BubbleDialogDelegate {
 
  private:
   friend class GlicSelectionWidgetTest;
-
-  void TriggerMenuCommandForTesting(int command_id);
 
   const raw_ref<ActionDelegate> action_delegate_;
   gfx::Rect original_anchor_rect_;

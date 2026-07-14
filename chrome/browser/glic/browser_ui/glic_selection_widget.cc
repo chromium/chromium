@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/views/toolbar/toolbar_ink_drop_util.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/omnibox/browser/vector_icons.h"
+#include "components/strings/grit/components_strings.h"
 #include "components/tabs/public/tab_interface.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/web_contents.h"
@@ -68,153 +69,7 @@ constexpr size_t kMaxSelectionLengthForTooltip = 50;
 constexpr int kIconSize = 14;
 
 constexpr int kCornerRadius = 10;
-constexpr int kMenuVerticalMargin = 2;
 constexpr base::TimeDelta kFadeInDuration = base::Milliseconds(250);
-
-// Wraps a BubbleBorder to apply offset insets, allowing internal menu padding
-// to sit compactly inside the bubble without clipping scroll view contents.
-class MenuBorderWrapper : public views::Border {
- public:
-  MenuBorderWrapper(std::unique_ptr<views::BubbleBorder> border,
-                    gfx::Insets offset)
-      : border_(std::move(border)), offset_(offset) {}
-  ~MenuBorderWrapper() override = default;
-
-  void Paint(const views::View& view, gfx::Canvas* canvas) override {
-    border_->Paint(view, canvas);
-  }
-
-  gfx::Insets GetInsets() const override {
-    return border_->GetInsets() + offset_;
-  }
-
-  gfx::Size GetMinimumSize() const override {
-    return border_->GetMinimumSize();
-  }
-
-  views::BubbleBorder* border() { return border_.get(); }
-  const views::BubbleBorder* border() const { return border_.get(); }
-
- private:
-  std::unique_ptr<views::BubbleBorder> border_;
-  gfx::Insets offset_;
-};
-
-// Custom MenuModel for the selection widget's three-dot menu, providing custom
-// typography styling for the menu items.
-class GlicSelectionMenuModel : public ui::SimpleMenuModel {
- public:
-  using ui::SimpleMenuModel::SimpleMenuModel;
-
-  const gfx::FontList* GetLabelFontListAt(size_t index) const override {
-    return &views::TypographyProvider::Get().GetFont(
-        views::style::CONTEXT_BUTTON, views::style::STYLE_BODY_2_MEDIUM);
-  }
-};
-
-// Adapter that binds the `GlicSelectionMenuModel` to menu views. It intercepts
-// the menu showing process to customize the border of the menu container and
-// adjust vertical padding on menu items.
-class GlicSelectionMenuModelAdapter : public views::MenuModelAdapter {
- public:
-  GlicSelectionMenuModelAdapter(ui::MenuModel* menu_model,
-                                views::View* anchor_view,
-                                int visual_bottom_of_chip,
-                                int visual_right_of_chip)
-      : views::MenuModelAdapter(menu_model),
-        anchor_view_(anchor_view),
-        visual_bottom_of_chip_(visual_bottom_of_chip),
-        visual_right_of_chip_(visual_right_of_chip) {}
-
-  void WillShowMenu(views::MenuItemView* menu) override {
-    views::MenuModelAdapter::WillShowMenu(menu);
-    if (menu && menu->GetSubmenu()) {
-      menu->GetSubmenu()->SetBorderColorId(ui::kColorSysSurface);
-    }
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(&GlicSelectionMenuModelAdapter::CustomizeMenuBorder,
-                       weak_ptr_factory_.GetWeakPtr(),
-                       std::make_unique<views::ViewTracker>(menu)));
-  }
-
-  std::optional<SkColor> GetLabelColor(int command_id) const override {
-    if (anchor_view_ && anchor_view_->GetWidget()) {
-      if (auto* cp = anchor_view_->GetColorProvider()) {
-        return cp->GetColor(ui::kColorSysOnSurface);
-      }
-    }
-    return views::MenuModelAdapter::GetLabelColor(command_id);
-  }
-
- protected:
-  views::MenuItemView* AppendMenuItem(views::MenuItemView* menu,
-                                      ui::MenuModel* model,
-                                      size_t index) override {
-    views::MenuItemView* item =
-        views::MenuModelAdapter::AppendMenuItem(menu, model, index);
-    if (item) {
-      item->set_vertical_margin(kMenuVerticalMargin);
-      item->SetMenuItemBackground(
-          views::MenuItemView::MenuItemBackground(ui::kColorSysSurface, 6));
-    }
-    return item;
-  }
-
- private:
-  void CustomizeMenuBorder(std::unique_ptr<views::ViewTracker> tracker) {
-    views::View* tracked_view = tracker->view();
-    if (!tracked_view) {
-      return;
-    }
-    views::MenuItemView* menu = static_cast<views::MenuItemView*>(tracked_view);
-    if (!menu || !menu->GetSubmenu()) {
-      return;
-    }
-    views::MenuScrollViewContainer* container =
-        menu->GetSubmenu()->GetScrollViewContainer();
-    if (!container || !container->GetWidget()) {
-      return;
-    }
-    auto bubble_border = std::make_unique<views::BubbleBorder>(
-        views::BubbleBorder::FLOAT, views::BubbleBorder::STANDARD_SHADOW);
-    bubble_border->SetColor(ui::kColorSysSurface);
-    bubble_border->set_rounded_corners(gfx::RoundedCornersF(kCornerRadius));
-
-    auto* raw_border = bubble_border.get();
-    container->SetBorderColorId(ui::kColorSysSurface);
-    container->SetBackground(
-        std::make_unique<views::BubbleBackground>(raw_border));
-
-    // Wrap the bubble border to offset inner vertical and horizontal margins,
-    // reducing empty white space so menu items sit compactly inside the bubble.
-    auto wrapper_border = std::make_unique<MenuBorderWrapper>(
-        std::move(bubble_border), gfx::Insets::TLBR(-7, -6, -7, -6));
-    container->SetBorder(std::move(wrapper_border));
-
-    views::Widget* menu_widget = container->GetWidget();
-    if (menu_widget) {
-      // Position menu below the primary pill with a 4px vertical gap.
-      int widget_y = visual_bottom_of_chip_ + 4 - raw_border->GetInsets().top();
-      gfx::Size pref_size = container->GetPreferredSize();
-      // Align visual right edge of menu with visual right edge of primary pill.
-      int widget_x = visual_right_of_chip_ - pref_size.width() +
-                     raw_border->GetInsets().right();
-      gfx::Rect menu_rect(widget_x, widget_y, pref_size.width(),
-                          pref_size.height());
-      gfx::Rect monitor_area = display::Screen::Get()
-                                   ->GetDisplayNearestPoint(menu_rect.origin())
-                                   .work_area();
-      menu_rect.AdjustToFit(monitor_area);
-      menu_widget->SetBounds(menu_rect);
-    }
-  }
-
-  const raw_ptr<views::View> anchor_view_;
-  const int visual_bottom_of_chip_;
-  const int visual_right_of_chip_;
-  base::WeakPtrFactory<GlicSelectionMenuModelAdapter> weak_ptr_factory_{this};
-};
 
 std::u16string GetCtaLabel() {
   std::string cta = features::kGlicSelectionPromptCta.Get();
@@ -227,8 +82,7 @@ std::u16string GetCtaLabel() {
   return l10n_util::GetStringUTF16(IDS_GLIC_BUTTON_ENTRYPOINT_ASK_GEMINI_LABEL);
 }
 
-class GlicSelectionContentsView : public views::View,
-                                  public ui::SimpleMenuModel::Delegate {
+class GlicSelectionContentsView : public views::View {
   METADATA_HEADER(GlicSelectionContentsView, views::View)
 
  public:
@@ -418,35 +272,30 @@ class GlicSelectionContentsView : public views::View,
     control_pill_->SetCrossAxisAlignment(
         views::BoxLayout::CrossAxisAlignment::kCenter);
 
-    auto menu_tooltip = l10n_util::GetStringUTF16(IDS_TOAST_MENU_BUTTON_NAME);
-    const gfx::VectorIcon& menu_icon =
+    auto close_tooltip = l10n_util::GetStringUTF16(IDS_CLOSE);
+    const gfx::VectorIcon& close_icon =
         features::IsRoundedIconsEnabled()
-            ? vector_icons::kKeyboardArrowDownIcon
-            : vector_icons::kCaretDownOldIcon;
-    menu_btn_ =
+            ? vector_icons::kCloseIcon
+            : vector_icons::kCloseOldIcon;
+    close_btn_ =
         control_pill_->AddChildView(views::ImageButton::CreateIconButton(
-            base::RepeatingClosure(), menu_icon, menu_tooltip));
-    menu_btn_->SetButtonController(
-        std::make_unique<views::MenuButtonController>(
-            menu_btn_,
             base::BindRepeating(
-                &GlicSelectionContentsView::OnMenuButtonClicked,
-                base::Unretained(this)),
-            std::make_unique<views::Button::DefaultButtonControllerDelegate>(
-                menu_btn_)));
-    menu_btn_->SetTooltipText(menu_tooltip);
-    menu_btn_->SetImageVerticalAlignment(views::ImageButton::ALIGN_MIDDLE);
-    menu_btn_->SetBorder(views::CreateEmptyBorder(
+                &GlicSelectionWidgetDelegate::ActionDelegate::OnHide,
+                base::Unretained(&widget_delegate_->action_delegate())),
+            close_icon, close_tooltip));
+    close_btn_->SetTooltipText(close_tooltip);
+    close_btn_->SetImageVerticalAlignment(views::ImageButton::ALIGN_MIDDLE);
+    close_btn_->SetBorder(views::CreateEmptyBorder(
         views::LayoutProvider::Get()->GetInsetsMetric(
             views::INSETS_VECTOR_IMAGE_BUTTON)));
     views::SetImageFromVectorIconWithColor(
-        menu_btn_, menu_icon, kIconSize,
+        close_btn_, close_icon, kIconSize,
         views::IconColors(ui::kColorSysOnSurfaceVariant,
                           ui::kColorLabelForegroundDisabled,
                           ui::kColorSysOnSurfaceVariant));
-    CreateToolbarInkdropCallbacks(menu_btn_, kColorToolbarInkDropHover,
+    CreateToolbarInkdropCallbacks(close_btn_, kColorToolbarInkDropHover,
                                   kColorToolbarInkDropRipple);
-    menu_btn_subscription_ = menu_btn_->AddStateChangedCallback(
+    close_btn_subscription_ = close_btn_->AddStateChangedCallback(
         base::BindRepeating(&GlicSelectionContentsView::RefreshAskGeminiState,
                             base::Unretained(this)));
 
@@ -458,10 +307,10 @@ class GlicSelectionContentsView : public views::View,
     if (!ask_gemini_btn_) {
       return;
     }
-    bool settings_active =
-        menu_btn_ && (menu_btn_->GetState() == views::Button::STATE_HOVERED ||
-                      menu_btn_->HasFocus());
-    bool is_hovered = IsMouseHovered() && !settings_active;
+    bool close_active =
+        close_btn_ && (close_btn_->GetState() == views::Button::STATE_HOVERED ||
+                       close_btn_->HasFocus());
+    bool is_hovered = IsMouseHovered() && !close_active;
     ask_gemini_btn_->SetHotTracked(is_hovered);
   }
 
@@ -483,21 +332,6 @@ class GlicSelectionContentsView : public views::View,
     }
   }
 
-  // ui::SimpleMenuModel::Delegate:
-  void ExecuteCommand(int command_id, int event_flags) override {
-    if (command_id ==
-        static_cast<int>(
-            GlicSelectionWidgetDelegate::MenuCommand::kHideForSite)) {
-      widget_delegate_->action_delegate().OnHideForThisSite();
-    } else if (command_id ==
-               static_cast<int>(
-                   GlicSelectionWidgetDelegate::MenuCommand::kSettings)) {
-      widget_delegate_->action_delegate().OnSettings();
-    }
-  }
-
-  bool IsCommandIdEnabled(int command_id) const override { return true; }
-
   // Non-virtual helper methods:
   void SetCopyLinkEnabled(bool enabled) {
     if (copy_link_btn_) {
@@ -515,64 +349,16 @@ class GlicSelectionContentsView : public views::View,
     ask_gemini_btn_->SetImageModel(views::Button::STATE_NORMAL, normal_model);
   }
 
-  void OnMenuButtonClicked() {
-    if (menu_runner_ && menu_runner_->IsRunning()) {
-      return;
-    }
-    menu_model_ = std::make_unique<GlicSelectionMenuModel>(this);
-    menu_model_->AddItemWithStringIdAndIcon(
-        static_cast<int>(
-            GlicSelectionWidgetDelegate::MenuCommand::kHideForSite),
-        IDS_GLIC_SELECTION_MENU_HIDE_FOR_SITE,
-        ui::ImageModel::FromVectorIcon(vector_icons::kVisibilityOffIcon,
-                                       ui::kColorSysOnSurface, 16));
-
-    auto settings_label = gfx::LocateAndRemoveAcceleratorChar(
-        l10n_util::GetStringUTF16(IDS_SETTINGS), nullptr, nullptr);
-    menu_model_->AddItemWithIcon(
-        static_cast<int>(GlicSelectionWidgetDelegate::MenuCommand::kSettings),
-        settings_label,
-        ui::ImageModel::FromVectorIcon(vector_icons::kSettingsIcon,
-                                       ui::kColorSysOnSurface, 16));
-
-    gfx::Rect pill_bounds = ask_pill_->GetBoundsInScreen();
-    gfx::Insets pill_insets = ask_pill_->GetInsets();
-    int visual_bottom_of_chip = pill_bounds.bottom() - pill_insets.bottom();
-    int visual_right_of_chip = pill_bounds.right() - pill_insets.right();
-
-    menu_adapter_ = std::make_unique<GlicSelectionMenuModelAdapter>(
-        menu_model_.get(), this, visual_bottom_of_chip, visual_right_of_chip);
-    std::unique_ptr<views::MenuItemView> menu_item =
-        menu_adapter_->CreateMenu();
-
-    menu_runner_ = std::make_unique<views::MenuRunner>(
-        std::move(menu_item), views::MenuRunner::NO_FLAGS);
-
-    gfx::Rect anchor_rect = pill_bounds;
-    anchor_rect.set_y(visual_bottom_of_chip);
-    anchor_rect.set_height(0);
-
-    menu_runner_->RunMenuAt(GetWidget(), nullptr, anchor_rect,
-                            views::MenuAnchorPosition::kBubbleTopRight,
-                            ui::mojom::MenuSourceType::kNone);
-  }
-
  private:
   const raw_ptr<GlicSelectionWidgetDelegate> widget_delegate_;
   raw_ptr<views::MdTextButton> ask_gemini_btn_ = nullptr;
   ui::ImageModel inactive_icon_model_;
   ui::ImageModel active_icon_model_;
   raw_ptr<views::ImageButton> copy_link_btn_ = nullptr;
-  raw_ptr<views::ImageButton> menu_btn_ = nullptr;
   raw_ptr<views::BoxLayoutView> ask_pill_ = nullptr;
+  raw_ptr<views::ImageButton> close_btn_ = nullptr;
   raw_ptr<views::BoxLayoutView> control_pill_ = nullptr;
-  base::CallbackListSubscription menu_btn_subscription_;
-
-  std::unique_ptr<GlicSelectionMenuModel> menu_model_;
-  // Destruction order matters: `menu_runner_` must be destroyed before
-  // `menu_adapter_` to avoid accessing a deleted delegate.
-  std::unique_ptr<GlicSelectionMenuModelAdapter> menu_adapter_;
-  std::unique_ptr<views::MenuRunner> menu_runner_;
+  base::CallbackListSubscription close_btn_subscription_;
 };
 
 BEGIN_METADATA(GlicSelectionContentsView)
@@ -682,13 +468,6 @@ void GlicSelectionWidgetDelegate::UpdateCopyLinkButton(bool enabled) {
   if (auto* contents_view =
           views::AsViewClass<GlicSelectionContentsView>(GetContentsView())) {
     contents_view->SetCopyLinkEnabled(enabled);
-  }
-}
-
-void GlicSelectionWidgetDelegate::TriggerMenuCommandForTesting(int command_id) {
-  if (auto* contents_view =
-          views::AsViewClass<GlicSelectionContentsView>(GetContentsView())) {
-    contents_view->ExecuteCommand(command_id, /*event_flags=*/0);
   }
 }
 
