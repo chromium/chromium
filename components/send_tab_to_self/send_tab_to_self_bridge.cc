@@ -928,8 +928,12 @@ std::string SendTabToSelfBridge::GetLocalFallbackFullName() const {
   if (local_device_name_for_testing_.has_value()) {
     return *local_device_name_for_testing_;
   }
+  // `local_device` may be null during early startup before DeviceInfoTracker is
+  // initialized.
   const syncer::DeviceInfo* local_device = GetLocalDeviceInfo();
-  CHECK(local_device, base::NotFatalUntil::M148);
+  if (!local_device) {
+    return std::string();
+  }
 
   return syncer::GetDisplayNameCandidates(local_device).fallback_full_name;
 }
