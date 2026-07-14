@@ -9021,6 +9021,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kTabAudioMutingDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(media::kEnableTabMuting)},
 
+    {"ntp-customize-webui-android",
+     flag_descriptions::kNtpCustomizeWebUiAndroidName,
+     flag_descriptions::kNtpCustomizeWebUiAndroidDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(ntp_features::kNtpCustomizeWebUiAndroid)},
+
 #if !BUILDFLAG(IS_ANDROID)
     {"customize-chrome-side-panel-extensions-card",
      flag_descriptions::kCustomizeChromeSidePanelExtensionsCardName,

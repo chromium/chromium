@@ -9100,6 +9100,7 @@ from previous Chrome versions.
   <int value="-1756299290" label="WebSerialAPI:enabled"/>
   <int value="-1755714804" label="FeedCloseRefresh:enabled"/>
   <int value="-1755301960" label="ClearOldBrowsingData:enabled"/>
+  <int value="-1755143357" label="NtpCustomizeChromeAndroid:enabled"/>
   <int value="-1754813606"
       label="PasswordSaveUpdateDropdownMenuExperiment:enabled"/>
   <int value="-1754262889" label="RemoteCopyPersistentNotification:enabled"/>
@@ -15250,6 +15251,7 @@ from previous Chrome versions.
   <int value="205375645" label="AudioHFPNbsWarning:enabled"/>
   <int value="205426997" label="BackGestureActivityTabProvider:enabled"/>
   <int value="205874143" label="RustyPng:disabled"/>
+  <int value="206957383" label="NtpCustomizeChromeAndroid:disabled"/>
   <int value="207326879" label="NearbySharingReceiveWifiCredentials:enabled"/>
   <int value="207907053"
       label="OmniboxUIExperimentBlueSearchLoopAndSearchQuery:enabled"/>
@@ -15667,6 +15669,7 @@ from previous Chrome versions.
   <int value="336830575" label="DeviceForceScheduledReboot:enabled"/>
   <int value="337637199" label="HttpsFirstModeIncognito:disabled"/>
   <int value="338061950" label="ChromeWebStoreNavigationThrottle:disabled"/>
+  <int value="338244977" label="NtpCustomizeWebUiAndroid:enabled"/>
   <int value="338353369" label="AndroidSurfaceColorUpdate:disabled"/>
   <int value="338662897" label="AndroidNightModeTabReparenting:disabled"/>
   <int value="339224207" label="ReaderModeUseReadability:enabled"/>
@@ -20856,6 +20859,7 @@ from previous Chrome versions.
   <int value="1985952454"
       label="GetDisplayMediaSetAutoSelectAllScreens:enabled"/>
   <int value="1986031201" label="SwipingFromLeftEdgeToGoBack:disabled"/>
+  <int value="1986524390" label="NtpCustomizeWebUiAndroid:disabled"/>
   <int value="1987354002" label="SafetyHubAndroidSurvey:enabled"/>
   <int value="1987896454" label="EducationalTipModule:enabled"/>
   <int value="1988099368" label="DropInputEventsBeforeFirstPaint:disabled"/>

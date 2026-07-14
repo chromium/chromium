@@ -197,7 +197,7 @@ import {SubmitButtonIconType} from '//resources/cr_components/composebox/compose
           ${this.backgroundImageAttribution2_}
         </div>
       </a>
-      ${!this.isAndroid_ ? html`
+      ${this.showCustomizeButton_ ? html`
         <ntp-customize-buttons id="customizeButtons"
             ?modules-shown-to-user="${this.modulesShownToUser}"
             ?show-background-image="${this.showBackgroundImage_}"

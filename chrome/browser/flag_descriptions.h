@@ -6632,6 +6632,11 @@ inline constexpr char kNtpCustomizeChromeAutoOpenName[] =
 inline constexpr char kNtpCustomizeChromeAutoOpenDescription[] =
     "Shows the Customize Chrome on the New Tab Page automatically.";
 
+inline constexpr char kNtpCustomizeWebUiAndroidName[] =
+    "Customize WebUI Android";
+inline constexpr char kNtpCustomizeWebUiAndroidDescription[] =
+    "Enables Customize WebUI on Android.";
+
 inline constexpr char kNtpRealboxNextName[] = "NTP Realbox Next";
 inline constexpr char kNtpRealboxNextDescription[] =
     "Enables the Realbox 'Next' experience.";

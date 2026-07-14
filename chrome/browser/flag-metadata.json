@@ -7078,6 +7078,11 @@
     "expiry_milestone": 160
   },
   {
+    "name": "ntp-customize-webui-android",
+    "owners": [ "agrieve@chromium.org", "chrome-desktop-ntp@google.com" ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "ntp-doodle-murals",
     "owners": [ "giannich@google.com", "rtatum@google.com" ],
     "expiry_milestone": 160
