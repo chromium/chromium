@@ -130,7 +130,8 @@ DesktopWindowTreeHostWin::DesktopWindowTreeHostWin(
       drag_drop_client_(nullptr),
       should_animate_window_close_(false),
       pending_close_(false),
-      has_non_client_view_(false) {}
+      has_non_client_view_(false),
+      is_modal_(native_widget_delegate_->IsModal()) {}
 
 DesktopWindowTreeHostWin::~DesktopWindowTreeHostWin() {
   ClearBackgroundPaintBrush();
@@ -950,7 +951,7 @@ bool DesktopWindowTreeHostWin::WidgetSizeIsClientSize() const {
 }
 
 bool DesktopWindowTreeHostWin::IsModal() const {
-  return native_widget_delegate_ ? native_widget_delegate_->IsModal() : false;
+  return is_modal_;
 }
 
 int DesktopWindowTreeHostWin::GetInitialShowState() const {

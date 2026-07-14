@@ -372,6 +372,12 @@ class VIEWS_EXPORT DesktopWindowTreeHostWin
   // whenever the cursor visibility state changes.
   static bool is_cursor_visible_;
 
+  // Modality of the window should be immutable, so we can cache it here for
+  // later interrogation. This ensures that any owner window is properly enabled
+  // when a modal window is destroyed/hidden, regardless of whether or not the
+  // native_widget_delegate_ is still present.
+  const bool is_modal_;
+
   // Captures system key events when keyboard lock is requested.
   std::unique_ptr<ui::KeyboardHook> keyboard_hook_;
 
