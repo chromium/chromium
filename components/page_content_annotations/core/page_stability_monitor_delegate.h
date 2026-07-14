@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_PAGE_CONTENT_ANNOTATIONS_CONTENT_RENDERER_PAGE_STABILITY_MONITOR_DELEGATE_H_
-#define COMPONENTS_PAGE_CONTENT_ANNOTATIONS_CONTENT_RENDERER_PAGE_STABILITY_MONITOR_DELEGATE_H_
+#ifndef COMPONENTS_PAGE_CONTENT_ANNOTATIONS_CORE_PAGE_STABILITY_MONITOR_DELEGATE_H_
+#define COMPONENTS_PAGE_CONTENT_ANNOTATIONS_CORE_PAGE_STABILITY_MONITOR_DELEGATE_H_
 
 #include "components/page_content_annotations/core/page_stability_event.h"
 #include "components/page_content_annotations/core/page_stability_state.h"
@@ -38,4 +38,4 @@ class PageStabilityMonitorDelegate {
 
 }  // namespace page_content_annotations
 
-#endif  // COMPONENTS_PAGE_CONTENT_ANNOTATIONS_CONTENT_RENDERER_PAGE_STABILITY_MONITOR_DELEGATE_H_
+#endif  // COMPONENTS_PAGE_CONTENT_ANNOTATIONS_CORE_PAGE_STABILITY_MONITOR_DELEGATE_H_

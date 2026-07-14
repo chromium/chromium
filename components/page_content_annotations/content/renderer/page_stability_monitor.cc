@@ -17,8 +17,8 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "components/page_content_annotations/content/renderer/network_and_main_thread_stability_monitor.h"
-#include "components/page_content_annotations/content/renderer/page_stability_monitor_delegate.h"
 #include "components/page_content_annotations/content/renderer/paint_stability_monitor.h"
+#include "components/page_content_annotations/core/page_stability_monitor_delegate.h"
 #include "content/public/renderer/render_frame.h"
 #include "third_party/blink/public/web/web_local_frame_client.h"
 

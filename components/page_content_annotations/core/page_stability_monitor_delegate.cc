@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/page_content_annotations/content/renderer/page_stability_monitor_delegate.h"
+#include "components/page_content_annotations/core/page_stability_monitor_delegate.h"
 
 #include "base/time/time.h"
 #include "components/page_content_annotations/core/page_content_annotations_features.h"

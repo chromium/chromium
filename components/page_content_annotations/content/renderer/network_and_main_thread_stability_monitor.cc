@@ -11,7 +11,7 @@
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
-#include "components/page_content_annotations/content/renderer/page_stability_monitor_delegate.h"
+#include "components/page_content_annotations/core/page_stability_monitor_delegate.h"
 #include "content/public/renderer/render_frame.h"
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_local_frame.h"

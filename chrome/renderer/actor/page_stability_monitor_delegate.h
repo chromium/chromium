@@ -10,7 +10,7 @@
 #include "base/memory/raw_ref.h"
 #include "chrome/renderer/actor/journal.h"
 #include "components/actor/core/task_id.h"
-#include "components/page_content_annotations/content/renderer/page_stability_monitor_delegate.h"
+#include "components/page_content_annotations/core/page_stability_monitor_delegate.h"
 
 namespace actor {
 

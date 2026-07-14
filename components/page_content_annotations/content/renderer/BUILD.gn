@@ -8,8 +8,6 @@ source_set("renderer") {
     "network_and_main_thread_stability_monitor.h",
     "page_stability_monitor.cc",
     "page_stability_monitor.h",
-    "page_stability_monitor_delegate.cc",
-    "page_stability_monitor_delegate.h",
     "page_stability_monitor_manager.cc",
     "page_stability_monitor_manager.h",
     "paint_stability_monitor.cc",
