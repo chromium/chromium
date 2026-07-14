@@ -116,6 +116,8 @@ class AtMemoryBottomSheetViewBinder {
             view.setFlyoutClickListener(model.get(SuggestionItemProperties.ON_FLYOUT_CLICKED));
         } else if (propertyKey == SuggestionItemProperties.IS_FLYOUT_VISIBLE) {
             view.setFlyoutVisible(model.get(SuggestionItemProperties.IS_FLYOUT_VISIBLE));
+        } else if (propertyKey == SuggestionItemProperties.APPLY_DEACTIVATED_STYLE) {
+            view.applyDeactivatedStyle(model.get(SuggestionItemProperties.APPLY_DEACTIVATED_STYLE));
         } else {
             assert false : "Unhandled property: " + propertyKey;
         }

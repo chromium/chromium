@@ -141,9 +141,18 @@ class AtMemoryBottomSheetProperties {
         // Indicates whether the flyout arrow and divider should be visible.
         static final WritableBooleanPropertyKey IS_FLYOUT_VISIBLE =
                 new WritableBooleanPropertyKey();
+        // Indicates whether the suggestion item should be deactivated.
+        static final WritableBooleanPropertyKey APPLY_DEACTIVATED_STYLE =
+                new WritableBooleanPropertyKey();
 
         static final PropertyKey[] ALL_KEYS = {
-            ICON, TITLE, DETAILS, ON_SUGGESTION_CLICKED, ON_FLYOUT_CLICKED, IS_FLYOUT_VISIBLE
+            ICON,
+            TITLE,
+            DETAILS,
+            ON_SUGGESTION_CLICKED,
+            ON_FLYOUT_CLICKED,
+            IS_FLYOUT_VISIBLE,
+            APPLY_DEACTIVATED_STYLE
         };
 
         private SuggestionItemProperties() {}

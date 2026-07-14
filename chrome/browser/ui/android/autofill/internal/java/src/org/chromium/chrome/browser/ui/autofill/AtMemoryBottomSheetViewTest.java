@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.ui.autofill;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
@@ -21,6 +22,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import androidx.constraintlayout.helper.widget.Flow;
+import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.core.app.ApplicationProvider;
 
 import org.junit.Before;
@@ -38,12 +40,15 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.ui.autofill.AtMemoryBottomSheetProperties.FlyoutProperties;
 import org.chromium.chrome.browser.ui.autofill.AtMemoryBottomSheetProperties.HomeProperties;
 import org.chromium.chrome.browser.ui.autofill.AtMemoryBottomSheetProperties.ScreenId;
+import org.chromium.chrome.browser.ui.autofill.AtMemoryBottomSheetProperties.SuggestionItemProperties;
 import org.chromium.chrome.browser.ui.autofill.internal.R;
 import org.chromium.components.autofill.AutofillSuggestion;
 import org.chromium.components.autofill.SuggestionType;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent.HeightMode;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.widget.chips.ChipView;
+import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
+import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
@@ -301,6 +306,29 @@ public class AtMemoryBottomSheetViewTest {
 
         assertEquals(HeightMode.DISABLED, content.getHalfHeightRatio(), 0.01f);
         assertEquals(HeightMode.WRAP_CONTENT, content.getFullHeightRatio(), 0.01f);
+    }
+
+    @Test
+    public void testSuggestionWithDeactivatedStyle() {
+        ModelList modelList = new ModelList();
+        PropertyModel suggestionModel =
+                new PropertyModel.Builder(SuggestionItemProperties.ALL_KEYS)
+                        .with(SuggestionItemProperties.TITLE, "Couldn't find this info")
+                        .with(SuggestionItemProperties.APPLY_DEACTIVATED_STYLE, true)
+                        .build();
+
+        modelList.add(new ListItem(HomeProperties.ItemType.SUGGESTION, suggestionModel));
+        AtMemoryHomeView homeView = mView.getHomeView();
+        homeView.setUpSheetItems(modelList);
+
+        ShadowLooper.idleMainLooper();
+
+        RecyclerView recyclerView = homeView.findViewById(R.id.suggestions_view);
+        recyclerView.layout(0, 0, 100, 1000);
+        AtMemoryBottomSheetSuggestionView suggestionView =
+                (AtMemoryBottomSheetSuggestionView) recyclerView.getChildAt(0);
+
+        assertFalse(suggestionView.isEnabled());
     }
 
     private List<ChipView> getChipViews(ViewGroup viewGroup) {

@@ -63,6 +63,7 @@ public class AtMemoryBottomSheetBridge implements AtMemoryBottomSheetCoordinator
         mCoordinator.show(suggestions);
     }
 
+    // TODO(crbug.com/534668889): Refactor isAcceptable and hasDeactivatedStyle to enum.
     @CalledByNative
     public static AutofillSuggestion createAutofillSuggestion(
             @JniType("std::u16string") String label,
@@ -70,7 +71,8 @@ public class AtMemoryBottomSheetBridge implements AtMemoryBottomSheetCoordinator
             int iconId,
             int suggestionType,
             @JniType("std::vector") List<AutofillSuggestion> children,
-            boolean isAcceptable) {
+            boolean isAcceptable,
+            boolean hasDeactivatedStyle) {
         return new AutofillSuggestion.Builder()
                 .setLabel(label)
                 .setSubLabel(subLabel)
@@ -78,6 +80,7 @@ public class AtMemoryBottomSheetBridge implements AtMemoryBottomSheetCoordinator
                 .setSuggestionType(suggestionType)
                 .setChildren(children)
                 .setIsAcceptable(isAcceptable)
+                .setApplyDeactivatedStyle(hasDeactivatedStyle)
                 .build();
     }
 

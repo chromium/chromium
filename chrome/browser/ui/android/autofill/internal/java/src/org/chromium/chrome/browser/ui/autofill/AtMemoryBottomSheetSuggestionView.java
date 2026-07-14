@@ -19,6 +19,9 @@ import org.chromium.chrome.browser.ui.autofill.internal.R;
 /** View for an individual suggestion in the AtMemory bottom sheet. */
 @NullMarked
 public class AtMemoryBottomSheetSuggestionView extends LinearLayout {
+    private static final float GRAYED_OUT_OPACITY_ALPHA = 0.38f;
+    private static final float COMPLETE_OPACITY_ALPHA = 1.0f;
+
     private ImageView mIconView;
     private TextView mTitleView;
     private TextView mDetailsView;
@@ -63,5 +66,20 @@ public class AtMemoryBottomSheetSuggestionView extends LinearLayout {
     public void setFlyoutVisible(boolean visible) {
         mArrowView.setVisibility(visible ? View.VISIBLE : View.GONE);
         mDividerView.setVisibility(visible ? View.VISIBLE : View.GONE);
+    }
+
+    // TODO(crbug.com/534668890): Implement the state pattern for the view.
+    public void applyDeactivatedStyle(boolean applyDeactivatedStyle) {
+        if (applyDeactivatedStyle) {
+            this.setEnabled(false);
+            mTitleView.setTextAppearance(R.style.TextAppearance_TextMedium_Disabled);
+            mDetailsView.setTextAppearance(R.style.TextAppearance_TextMedium_Disabled);
+            mIconView.setAlpha(GRAYED_OUT_OPACITY_ALPHA);
+        } else {
+            this.setEnabled(true);
+            mTitleView.setTextAppearance(R.style.TextAppearance_TextMedium_Primary);
+            mDetailsView.setTextAppearance(R.style.TextAppearance_TextMedium_Secondary);
+            mIconView.setAlpha(COMPLETE_OPACITY_ALPHA);
+        }
     }
 }
