@@ -9,23 +9,23 @@
 #include <optional>
 #include <string>
 
+#include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
 #include "components/sync_tab_context/container_id.h"
 #include "components/sync_tab_context/tab_context_sync_service.h"
 
 namespace syncer {
 class DataTypeControllerDelegate;
-class DataTypeLocalChangeProcessor;
 }  // namespace syncer
 
 namespace sync_tab_context {
 
+class TabContextItemSyncBridge;
 class TabContextContainerSyncBridge;
 
 class TabContextSyncServiceImpl : public TabContextSyncService {
  public:
-  explicit TabContextSyncServiceImpl(
-      std::unique_ptr<syncer::DataTypeLocalChangeProcessor> change_processor);
+  explicit TabContextSyncServiceImpl(base::RepeatingClosure dump_stack);
   TabContextSyncServiceImpl(const TabContextSyncServiceImpl&) = delete;
   TabContextSyncServiceImpl& operator=(const TabContextSyncServiceImpl&) =
       delete;
@@ -39,11 +39,14 @@ class TabContextSyncServiceImpl : public TabContextSyncService {
   void GetContainerAccessToken(
       const ContainerId& container_id,
       base::OnceCallback<void(std::optional<std::string>)> cb) override;
-  base::WeakPtr<syncer::DataTypeControllerDelegate> GetSyncControllerDelegate()
-      override;
+  base::WeakPtr<syncer::DataTypeControllerDelegate>
+  GetSyncControllerDelegateForContainer() override;
+  base::WeakPtr<syncer::DataTypeControllerDelegate>
+  GetSyncControllerDelegateForItem() override;
 
  private:
   std::unique_ptr<TabContextContainerSyncBridge> container_bridge_;
+  std::unique_ptr<TabContextItemSyncBridge> item_bridge_;
 };
 
 }  // namespace sync_tab_context

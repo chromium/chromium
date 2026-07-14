@@ -1,0 +1,23 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option java_multiple_files = true;
+option java_package = "org.chromium.components.sync.protocol";
+
+option optimize_for = LITE_RUNTIME;
+
+package sync_pb;
+
+import "components/sync/protocol/encryption.proto";
+
+// Specifics for ENCRYPTED_TAB_CONTEXT_ITEM.
+message EncryptedTabContextItemSpecifics {
+  // Lowercase string representation of a base::Uuid.
+  optional string container_id = 1;
+  // Unique identifier for the item within the container (arbitrary string).
+  optional string item_id = 2;
+  optional EncryptedData encrypted_data = 3;
+}

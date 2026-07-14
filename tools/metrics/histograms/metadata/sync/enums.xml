@@ -1053,6 +1053,7 @@ chromium-metrics-reviews@google.com.
   <int value="79" label="(Obsolete) Accessibility Annotation"/>
   <int value="80" label="Themes (Android)"/>
   <int value="81" label="Encrypted Tab Context Container"/>
+  <int value="82" label="Encrypted Tab Context Item"/>
 </enum>
 
 <!-- LINT.ThenChange(/components/sync/base/data_type.h:SyncDataTypes) -->

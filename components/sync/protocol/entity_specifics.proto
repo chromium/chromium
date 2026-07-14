@@ -71,6 +71,7 @@ import "components/sync/protocol/skill_specifics.proto";
 import "components/sync/protocol/gemini_thread_specifics.proto";
 import "components/sync/protocol/theme_android_specifics.proto";
 import "components/sync/protocol/theme_ios_specifics.proto";
+import "components/sync/protocol/encrypted_tab_context_item_specifics.proto";
 import "components/sync/protocol/encrypted_tab_context_container_specifics.proto";
 
 message EntitySpecifics {
@@ -177,6 +178,7 @@ message EntitySpecifics {
     GeminiThreadSpecifics gemini_thread = 1569348;
     EncryptedTabContextContainerSpecifics encrypted_tab_context_container =
         1656053;
+    EncryptedTabContextItemSpecifics encrypted_tab_context_item = 1661069;
     // When adding a new type, follow the docs below and keep this comment as
     // the last entry.
     // https://www.chromium.org/developers/design-documents/sync/integration-checklist/

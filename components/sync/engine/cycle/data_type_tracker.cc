@@ -80,6 +80,7 @@ base::TimeDelta GetDefaultLocalChangeNudgeDelay(DataType data_type) {
     case THEMES:
     case THEMES_IOS:
     case ENCRYPTED_TAB_CONTEXT_CONTAINER:
+    case ENCRYPTED_TAB_CONTEXT_ITEM:
     case EXTENSIONS:
     case SEARCH_ENGINES:
     case APPS:
@@ -157,6 +158,7 @@ bool CanGetCommitsFromExtensions(DataType data_type) {
     case THEMES:
     case THEMES_IOS:
     case ENCRYPTED_TAB_CONTEXT_CONTAINER:
+    case ENCRYPTED_TAB_CONTEXT_ITEM:
     case EXTENSIONS:
     case SEARCH_ENGINES:
     case APPS:

@@ -294,6 +294,8 @@ class CommonControllerBuilder {
   std::unique_ptr<syncer::DataTypeController>
   CreateEncryptedTabContextContainerDataTypeController();
   std::unique_ptr<syncer::DataTypeController>
+  CreateEncryptedTabContextItemDataTypeController();
+  std::unique_ptr<syncer::DataTypeController>
   CreateSharingMessageDataTypeController();
   std::unique_ptr<syncer::DataTypeController>
   CreateReadingListDataTypeController();

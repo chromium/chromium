@@ -59,6 +59,8 @@ chromium-metrics-reviews@google.com.
   <variant name=".DICTIONARY" summary="DICTIONARY"/>
   <variant name=".ENCRYPTED_TAB_CONTEXT_CONTAINER"
       summary="ENCRYPTED_TAB_CONTEXT_CONTAINER"/>
+  <variant name=".ENCRYPTED_TAB_CONTEXT_ITEM"
+      summary="ENCRYPTED_TAB_CONTEXT_ITEM"/>
   <variant name=".EXTENSION" summary="EXTENSION"/>
   <variant name=".EXTENSION_SETTING" summary="EXTENSION_SETTING"/>
   <variant name=".GEMINI_THREAD" summary="GEMINI_THREAD"/>

@@ -7,6 +7,8 @@ static_library("sync_tab_context") {
     "container_id.h",
     "tab_context_container_sync_bridge.cc",
     "tab_context_container_sync_bridge.h",
+    "tab_context_item_sync_bridge.cc",
+    "tab_context_item_sync_bridge.h",
     "tab_context_sync_service.cc",
     "tab_context_sync_service.h",
     "tab_context_sync_service_impl.cc",
@@ -28,7 +30,10 @@ static_library("sync_tab_context") {
 source_set("unit_tests") {
   testonly = true
 
-  sources = [ "tab_context_container_sync_bridge_unittest.cc" ]
+  sources = [
+    "tab_context_container_sync_bridge_unittest.cc",
+    "tab_context_item_sync_bridge_unittest.cc",
+  ]
 
   deps = [
     ":sync_tab_context",

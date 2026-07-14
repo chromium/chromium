@@ -10,6 +10,8 @@
 #include "base/functional/callback_helpers.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/common/channel_info.h"
+#include "components/sync/base/report_unrecoverable_error.h"
 #include "components/sync/model/client_tag_based_data_type_processor.h"
 #include "components/sync_tab_context/tab_context_sync_service_impl.h"
 
@@ -17,12 +19,9 @@ namespace {
 
 std::unique_ptr<KeyedService> BuildServiceInstance(
     content::BrowserContext* context) {
-  std::unique_ptr<syncer::ClientTagBasedDataTypeProcessor> change_processor =
-      std::make_unique<syncer::ClientTagBasedDataTypeProcessor>(
-          syncer::ENCRYPTED_TAB_CONTEXT_CONTAINER,
-          /*dump_stack=*/base::DoNothing());
   return std::make_unique<sync_tab_context::TabContextSyncServiceImpl>(
-      std::move(change_processor));
+      base::BindRepeating(&syncer::ReportUnrecoverableError,
+                          chrome::GetChannel()));
 }
 
 }  // namespace

@@ -1284,7 +1284,7 @@ std::string SetupSyncModeAsString(SyncTest::SetupSyncMode sync_test_mode) {
 // enabled by default, e.g. HISTORY requires a dedicated opt-in via
 // SyncUserSettings::SetSelectedTypes().
 syncer::DataTypeSet AllowedTypesInStandaloneTransportMode() {
-  static_assert(64 == syncer::GetNumDataTypes(),
+  static_assert(65 == syncer::GetNumDataTypes(),
                 "Add new types below if they can run in transport mode");
 
 #if BUILDFLAG(IS_ANDROID)
@@ -1341,6 +1341,7 @@ syncer::DataTypeSet AllowedTypesInStandaloneTransportMode() {
     if (base::FeatureList::IsEnabled(
             syncer::kSyncEncryptedTabContextContainer)) {
       allowed_types.Put(syncer::ENCRYPTED_TAB_CONTEXT_CONTAINER);
+      allowed_types.Put(syncer::ENCRYPTED_TAB_CONTEXT_ITEM);
     }
     allowed_types.Put(syncer::HISTORY);
     allowed_types.Put(syncer::HISTORY_DELETE_DIRECTIVES);

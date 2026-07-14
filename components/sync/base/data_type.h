@@ -204,7 +204,10 @@ enum DataType {
   // Encrypted tab context container.
   ENCRYPTED_TAB_CONTEXT_CONTAINER,
 
-  LAST_USER_DATA_TYPE = ENCRYPTED_TAB_CONTEXT_CONTAINER,
+  // Encrypted tab context item.
+  ENCRYPTED_TAB_CONTEXT_ITEM,
+
+  LAST_USER_DATA_TYPE = ENCRYPTED_TAB_CONTEXT_ITEM,
 
   // ---- Control Types ----
   // An object representing a set of Nigori keys.
@@ -315,7 +318,8 @@ enum class DataTypeForHistograms {
   // kDeprecatedAccessibilityAnnotation = 79,
   kThemesAndroid = 80,
   kEncryptedTabContextContainer = 81,
-  kMaxValue = kEncryptedTabContextContainer,
+  kEncryptedTabContextItem = 82,
+  kMaxValue = kEncryptedTabContextItem,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/sync/enums.xml:SyncDataTypes)
 
