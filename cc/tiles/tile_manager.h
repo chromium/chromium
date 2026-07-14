@@ -296,6 +296,11 @@ class CC_EXPORT TileManager : CheckerImageTrackerClient,
     // are not necessarily associated with any tile.
     std::vector<DrawImage> extra_prepaint_images;
     CheckerImageTracker::ImageDecodeQueue checker_image_decode_queue;
+    // True if a tile that is required for draw had its state changed (e.g.
+    // resource freed or solid color set) while assigning gpu memory. The
+    // caller should request a redraw once it has finished using the tile and
+    // tiling pointers held by this struct.
+    bool required_for_draw_tile_state_changed = false;
   };
 
   // Frees the resources of all occluded tiles.
@@ -309,7 +314,9 @@ class CC_EXPORT TileManager : CheckerImageTrackerClient,
 
   // True if tile resources are present and freed.
   void FreeResourcesForTile(Tile* tile);
-  void FreeResourcesForTileAndNotifyClientIfTileWasReadyToDraw(Tile* tile);
+  // Returns true if `tile` is required for draw, in which case the caller
+  // should request a redraw once it has finished iterating tiles.
+  bool FreeResourcesForTileAndNotifyClientIfTileWasReadyToDraw(Tile* tile);
   scoped_refptr<TileTask> CreateRasterTask(
       const PrioritizedTile& prioritized_tile,
       const TargetColorParams& target_color_params,
@@ -319,13 +326,15 @@ class CC_EXPORT TileManager : CheckerImageTrackerClient,
   FreeTileResourcesUntilUsageIsWithinLimit(
       std::unique_ptr<EvictionTilePriorityQueue> eviction_priority_queue,
       const MemoryUsage& limit,
-      MemoryUsage* usage);
+      MemoryUsage* usage,
+      bool* freed_required_for_draw_tile);
   std::unique_ptr<EvictionTilePriorityQueue>
   FreeTileResourcesWithLowerPriorityUntilUsageIsWithinLimit(
       std::unique_ptr<EvictionTilePriorityQueue> eviction_priority_queue,
       const MemoryUsage& limit,
-      const TilePriority& oother_priority,
-      MemoryUsage* usage);
+      const TilePriority& other_priority,
+      MemoryUsage* usage,
+      bool* freed_required_for_draw_tile);
   bool TilePriorityViolatesMemoryPolicy(const TilePriority& priority);
   bool AreRequiredTilesReadyToDraw(RasterTilePriorityQueue::Type type) const;
   void CheckIfMoreTilesNeedToBePrepared();

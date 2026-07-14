@@ -508,8 +508,13 @@ void TileManager::ReduceTileMemoryWhenIdle() {
   // Note: we don't need to flush anything here, even though this is a case
   // where frames are not being produced. The resource pool will itself issue a
   // flush after a few seconds when a resource becomes unused.
+  bool freed_required_for_draw_tile = false;
   FreeTileResourcesWithLowerPriorityUntilUsageIsWithinLimit(
-      nullptr, limit, kVisiblePriority, &usage);
+      nullptr, limit, kVisiblePriority, &usage, &freed_required_for_draw_tile);
+  if (freed_required_for_draw_tile) {
+    client_->SetNeedsRedraw(/*animation_only=*/false,
+                            /*skip_if_inside_draw=*/true);
+  }
 }
 
 void TileManager::TrimPrepaintTiles() {
@@ -518,6 +523,7 @@ void TileManager::TrimPrepaintTiles() {
   std::unique_ptr<EvictionTilePriorityQueue> eviction_priority_queue =
       client_->BuildEvictionQueue();
   bool has_eligible_used_tiles = false;
+  bool freed_required_for_draw_tile = false;
   for (; !eviction_priority_queue->IsEmpty(); eviction_priority_queue->Pop()) {
     const auto& prioritized_tile = eviction_priority_queue->Top();
     Tile* tile = prioritized_tile.tile();
@@ -546,7 +552,8 @@ void TileManager::TrimPrepaintTiles() {
       // PictureLayerTiling::ComputePriorityForTile() sets the bin to EVENTUALLY
       // regardless (because the client doesn't have valid priorities).
       // We don't want to keep these tiles, so no DCHECK() or exclusion here.
-      FreeResourcesForTileAndNotifyClientIfTileWasReadyToDraw(tile);
+      freed_required_for_draw_tile |=
+          FreeResourcesForTileAndNotifyClientIfTileWasReadyToDraw(tile);
     } else {
       // Tile has been used recently, reset this so that if it's not used until
       // the next reclaim task, then we know it has been at least
@@ -555,6 +562,11 @@ void TileManager::TrimPrepaintTiles() {
       tile->clear_used();
       has_eligible_used_tiles = true;
     }
+  }
+  eviction_priority_queue.reset();
+  if (freed_required_for_draw_tile) {
+    client_->SetNeedsRedraw(/*animation_only=*/false,
+                            /*skip_if_inside_draw=*/true);
   }
 
   // Reschedule the task, since there are tiles that would be eligible to evict
@@ -717,8 +729,21 @@ bool TileManager::PrepareTiles(
       !prioritized_work.tiles_to_raster.empty() &&
       prioritized_work.tiles_to_raster.front().tile()->required_for_draw());
 
+  const bool required_for_draw_tile_state_changed =
+      prioritized_work.required_for_draw_tile_state_changed;
+
   // Schedule tile tasks.
   ScheduleTasks(std::move(prioritized_work));
+
+  // If we trigger SetNeedsRedraw() while iterating the priority queues, we may
+  // end up triggering Scheduler::ProcessScheduledActions(), which is
+  // inefficient and may in turn trigger ActivateSyncTree() and other actions
+  // that remove tiles still referenced by the queues. Defer the redraw until
+  // the queues and the prioritized tiles they produced have been consumed.
+  if (required_for_draw_tile_state_changed) {
+    client_->SetNeedsRedraw(/*animation_only=*/false,
+                            /*skip_if_inside_draw=*/true);
+  }
 
   TRACE_EVENT_INSTANT("cc", "DidPrepareTiles", "state", BasicStateAsValue());
   return true;
@@ -823,7 +848,8 @@ std::unique_ptr<EvictionTilePriorityQueue>
 TileManager::FreeTileResourcesUntilUsageIsWithinLimit(
     std::unique_ptr<EvictionTilePriorityQueue> eviction_priority_queue,
     const MemoryUsage& limit,
-    MemoryUsage* usage) {
+    MemoryUsage* usage,
+    bool* freed_required_for_draw_tile) {
   while (usage->Exceeds(limit)) {
     if (!eviction_priority_queue) {
       eviction_priority_queue = client_->BuildEvictionQueue();
@@ -833,7 +859,8 @@ TileManager::FreeTileResourcesUntilUsageIsWithinLimit(
 
     Tile* tile = eviction_priority_queue->Top().tile();
     *usage -= MemoryUsage::FromTile(tile);
-    FreeResourcesForTileAndNotifyClientIfTileWasReadyToDraw(tile);
+    *freed_required_for_draw_tile |=
+        FreeResourcesForTileAndNotifyClientIfTileWasReadyToDraw(tile);
     eviction_priority_queue->Pop();
   }
   return eviction_priority_queue;
@@ -844,7 +871,8 @@ TileManager::FreeTileResourcesWithLowerPriorityUntilUsageIsWithinLimit(
     std::unique_ptr<EvictionTilePriorityQueue> eviction_priority_queue,
     const MemoryUsage& limit,
     const TilePriority& other_priority,
-    MemoryUsage* usage) {
+    MemoryUsage* usage,
+    bool* freed_required_for_draw_tile) {
   while (usage->Exceeds(limit)) {
     if (!eviction_priority_queue) {
       eviction_priority_queue = client_->BuildEvictionQueue();
@@ -858,7 +886,8 @@ TileManager::FreeTileResourcesWithLowerPriorityUntilUsageIsWithinLimit(
 
     Tile* tile = prioritized_tile.tile();
     *usage -= MemoryUsage::FromTile(tile);
-    FreeResourcesForTileAndNotifyClientIfTileWasReadyToDraw(tile);
+    *freed_required_for_draw_tile |=
+        FreeResourcesForTileAndNotifyClientIfTileWasReadyToDraw(tile);
     eviction_priority_queue->Pop();
   }
   return eviction_priority_queue;
@@ -940,7 +969,9 @@ TileManager::PrioritizedWorkToSchedule TileManager::AssignGpuMemoryToTiles() {
       if (is_solid_color) {
         tile->draw_info().set_solid_color(color);
         client_->NotifyTileStateChanged(tile, /*update_damage=*/true,
-                                        /*set_needs_redraw=*/true);
+                                        /*set_needs_redraw=*/false);
+        work_to_schedule.required_for_draw_tile_state_changed |=
+            tile->required_for_draw();
         continue;
       }
     }
@@ -1003,7 +1034,8 @@ TileManager::PrioritizedWorkToSchedule TileManager::AssignGpuMemoryToTiles() {
     eviction_priority_queue =
         FreeTileResourcesWithLowerPriorityUntilUsageIsWithinLimit(
             std::move(eviction_priority_queue), scheduled_tile_memory_limit,
-            priority, &memory_usage);
+            priority, &memory_usage,
+            &work_to_schedule.required_for_draw_tile_state_changed);
     bool memory_usage_is_within_limit =
         !memory_usage.Exceeds(scheduled_tile_memory_limit);
 
@@ -1056,7 +1088,8 @@ TileManager::PrioritizedWorkToSchedule TileManager::AssignGpuMemoryToTiles() {
   // didn't reduce memory. This ensures that we always release as many resources
   // as possible to stay within the memory limit.
   eviction_priority_queue = FreeTileResourcesUntilUsageIsWithinLimit(
-      std::move(eviction_priority_queue), hard_memory_limit, &memory_usage);
+      std::move(eviction_priority_queue), hard_memory_limit, &memory_usage,
+      &work_to_schedule.required_for_draw_tile_state_changed);
 
   // At this point, if we ran out of memory when allocating resources and we
   // couldn't go past even the NOW bin, this means we have evicted resources
@@ -1168,13 +1201,17 @@ void TileManager::FreeResourcesForTile(Tile* tile) {
   }
 }
 
-void TileManager::FreeResourcesForTileAndNotifyClientIfTileWasReadyToDraw(
+bool TileManager::FreeResourcesForTileAndNotifyClientIfTileWasReadyToDraw(
     Tile* tile) {
   TRACE_EVENT0("viz", __PRETTY_FUNCTION__);
   bool was_ready_to_draw = tile->draw_info().IsReadyToDraw();
   FreeResourcesForTile(tile);
+  // Do not request a redraw here; this is always called while a priority queue
+  // holding raw tile/tiling pointers is being iterated. The caller is
+  // responsible for requesting a single redraw once iteration is complete.
   client_->NotifyTileStateChanged(tile, /*update_damage=*/was_ready_to_draw,
-                                  /*set_needs_redraw=*/true);
+                                  /*set_needs_redraw=*/false);
+  return tile->required_for_draw();
 }
 
 void TileManager::PartitionImagesForCheckering(
@@ -1916,11 +1953,23 @@ void TileManager::CheckIfMoreTilesNeedToBePrepared() {
       !work_to_schedule.tiles_to_raster.empty() &&
       work_to_schedule.tiles_to_raster.front().tile()->required_for_draw());
 
+  const bool required_for_draw_tile_state_changed =
+      work_to_schedule.required_for_draw_tile_state_changed;
+
   // |tiles_that_need_to_be_rasterized| will be empty when we reach a
   // steady memory state. Keep scheduling tasks until we reach this state.
   if (!work_to_schedule.tiles_to_raster.empty()) {
     ScheduleTasks(std::move(work_to_schedule));
+    if (required_for_draw_tile_state_changed) {
+      client_->SetNeedsRedraw(/*animation_only=*/false,
+                              /*skip_if_inside_draw=*/true);
+    }
     return;
+  }
+
+  if (required_for_draw_tile_state_changed) {
+    client_->SetNeedsRedraw(/*animation_only=*/false,
+                            /*skip_if_inside_draw=*/true);
   }
 
   // If we're not in SMOOTHNESS_TAKES_PRIORITY  mode, we should unlock all
