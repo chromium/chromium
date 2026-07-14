@@ -617,8 +617,11 @@ bool ContextualSearchboxHandler::IsSmartTabSharingActive() const {
   if (!IsContextualSearchTabSharingEligible()) {
     return false;
   }
-  if (smart_tab_sharing_active_for_thread_.has_value()) {
-    return *smart_tab_sharing_active_for_thread_;
+  auto* session_handle =
+      get_session_callback_ ? get_session_callback_.Run() : nullptr;
+  if (session_handle &&
+      session_handle->smart_tab_sharing_active().has_value()) {
+    return *session_handle->smart_tab_sharing_active();
   }
   if (profile_ &&
       base::FeatureList::IsEnabled(
@@ -636,7 +639,10 @@ void ContextualSearchboxHandler::SetSmartTabSharingActive(bool active) {
           GetIsSmartTabSharingEnabled(profile_)) {
     return;
   }
-  smart_tab_sharing_active_for_thread_ = active;
+  auto* session_handle = GetContextualSessionHandle();
+  if (session_handle) {
+    session_handle->set_smart_tab_sharing_active(active);
+  }
   page()->UpdateSmartTabSharingActive(active);
 
   if (active && profile_ && !has_incremented_sts_activation_count_) {
@@ -1957,6 +1963,8 @@ void ContextualSearchboxHandler::OpenUrl(
       contextual_session_handle->submitted_tabs());
   new_contextual_session_handle->set_deselected_tabs_urls(
       contextual_session_handle->deselected_tabs_urls());
+  new_contextual_session_handle->set_smart_tab_sharing_active(
+      contextual_session_handle->smart_tab_sharing_active());
 
   // TODO(crbug.com/470404040): Determine what to do with the return
   // value of this call, or move this call to a different location.

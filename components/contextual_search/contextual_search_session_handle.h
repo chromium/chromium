@@ -94,6 +94,13 @@ class ContextualSearchSessionHandle {
 
   base::UnguessableToken session_id() const { return session_id_; }
 
+  std::optional<bool> smart_tab_sharing_active() const {
+    return smart_tab_sharing_active_;
+  }
+  void set_smart_tab_sharing_active(std::optional<bool> active) {
+    smart_tab_sharing_active_ = active;
+  }
+
   std::optional<lens::LensOverlayInvocationSource> invocation_source() const {
     return invocation_source_;
   }
@@ -360,6 +367,9 @@ class ContextualSearchSessionHandle {
   // The list of previous turns in the contextual session, from oldest to
   // newest.
   std::vector<contextual_tasks::ThreadTurn> previous_turns_;
+
+  // Whether smart tab sharing is active for this session.
+  std::optional<bool> smart_tab_sharing_active_;
 
   // This needs to be the last member to ensure all outstanding WeakPtrs are
   // invalidated before the rest of the members.

@@ -160,8 +160,8 @@ class MockQueryController
 
 class TestWebContentsDelegate : public content::WebContentsDelegate {
  public:
-  TestWebContentsDelegate() = default;
-  ~TestWebContentsDelegate() override = default;
+  TestWebContentsDelegate();
+  ~TestWebContentsDelegate() override;
 
   // WebContentsDelegate:
   content::WebContents* OpenURLFromTab(
@@ -169,6 +169,15 @@ class TestWebContentsDelegate : public content::WebContentsDelegate {
       const content::OpenURLParams& params,
       base::OnceCallback<void(content::NavigationHandle&)>
           navigation_handle_callback) override;
+
+  base::OnceCallback<void(content::NavigationHandle&)> TakeCallback() {
+    return std::move(callback_);
+  }
+
+  void ClearCallback() { callback_.Reset(); }
+
+ private:
+  base::OnceCallback<void(content::NavigationHandle&)> callback_;
 };
 
 class MockContextualSearchMetricsRecorder

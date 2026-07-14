@@ -24,6 +24,7 @@
 #include "base/version_info/channel.h"
 #include "chrome/browser/autocomplete/chrome_autocomplete_scheme_classifier.h"
 #include "chrome/browser/contextual_search/contextual_search_service_factory.h"
+#include "chrome/browser/contextual_search/contextual_search_web_contents_helper.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_context_service.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_context_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_service_factory.h"
@@ -361,6 +362,10 @@ class ContextualSearchboxHandlerTest
     auto navigation = content::NavigationSimulator::CreateFromPending(
         web_contents()->GetController());
     ASSERT_TRUE(navigation);
+    auto callback = delegate_.TakeCallback();
+    if (callback) {
+      std::move(callback).Run(*(navigation->GetNavigationHandle()));
+    }
     navigation->Commit();
     navigation_observer.Wait();
   }
@@ -403,6 +408,7 @@ class ContextualSearchboxHandlerTest
     service_ = nullptr;
     handler_.reset();
     contextual_session_handle_.reset();
+    delegate_.ClearCallback();
     ContextualSearchboxHandlerTestHarness::TearDown();
   }
 
@@ -1329,6 +1335,10 @@ class SmartTabSharingTest : public ContextualSearchboxHandlerTestHarness {
     auto navigation = content::NavigationSimulator::CreateFromPending(
         web_contents()->GetController());
     ASSERT_TRUE(navigation);
+    auto callback = delegate_.TakeCallback();
+    if (callback) {
+      std::move(callback).Run(*(navigation->GetNavigationHandle()));
+    }
     navigation->Commit();
     navigation_observer.Wait();
   }
@@ -1347,6 +1357,7 @@ class SmartTabSharingTest : public ContextualSearchboxHandlerTestHarness {
     query_controller_ = nullptr;
     handler_.reset();
     service_ = nullptr;
+    delegate_.ClearCallback();
     ContextualSearchboxHandlerTestHarness::TearDown();
   }
 
@@ -1529,6 +1540,54 @@ TEST_F(SmartTabSharingTest, FallbackToPrefChanges) {
   profile()->GetPrefs()->SetBoolean(
       contextual_tasks::kContextualTasksShareOpenTabsEveryThread, true);
   EXPECT_FALSE(handler().IsSmartTabSharingActive());
+}
+
+TEST_F(SmartTabSharingTest, SubmitQuery_PersistsSmartTabSharingActive) {
+  handler().SetSmartTabSharingActive(true);
+  EXPECT_TRUE(handler().IsSmartTabSharingActive());
+
+  ASSERT_TRUE(mock_service_);
+  EXPECT_CALL(*mock_service_,
+              GetRelevantTabsForConversationThread(testing::_, testing::_,
+                                                   testing::_, testing::_))
+      .Times(1)
+      .WillOnce([](const auto& options, const auto& conversation_thread,
+                   const auto& explicit_urls,
+                   auto callback) { std::move(callback).Run({}); });
+
+  SubmitQueryAndWaitForNavigation();
+
+  auto* helper =
+      ContextualSearchWebContentsHelper::FromWebContents(web_contents());
+  ASSERT_TRUE(helper);
+  auto* new_session_handle = helper->session_handle();
+  ASSERT_TRUE(new_session_handle);
+  EXPECT_TRUE(new_session_handle->smart_tab_sharing_active().has_value());
+  EXPECT_TRUE(*new_session_handle->smart_tab_sharing_active());
+}
+
+TEST_F(SmartTabSharingTest, SubmitQuery_PersistsSmartTabSharingInactive) {
+  handler().SetSmartTabSharingActive(false);
+  EXPECT_FALSE(handler().IsSmartTabSharingActive());
+
+  ASSERT_TRUE(mock_service_);
+  EXPECT_CALL(*mock_service_,
+              GetRelevantTabsForConversationThread(testing::_, testing::_,
+                                                   testing::_, testing::_))
+      .Times(1)
+      .WillOnce([](const auto& options, const auto& conversation_thread,
+                   const auto& explicit_urls,
+                   auto callback) { std::move(callback).Run({}); });
+
+  SubmitQueryAndWaitForNavigation();
+
+  auto* helper =
+      ContextualSearchWebContentsHelper::FromWebContents(web_contents());
+  ASSERT_TRUE(helper);
+  auto* new_session_handle = helper->session_handle();
+  ASSERT_TRUE(new_session_handle);
+  EXPECT_TRUE(new_session_handle->smart_tab_sharing_active().has_value());
+  EXPECT_FALSE(*new_session_handle->smart_tab_sharing_active());
 }
 
 TEST_F(ContextualSearchboxHandlerTest, OnInputStateChanged) {
