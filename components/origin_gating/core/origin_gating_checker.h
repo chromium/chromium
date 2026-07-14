@@ -31,6 +31,11 @@ class OriginGatingChecker {
     struct NoVerdictResult {
       bool is_allowed;
       bool did_prompt_user;
+      // When true, the checker does not persist this allow decision to the
+      // cache. Delegates set this for events whose result should not be
+      // remembered (e.g. a provisional navigation request/redirect
+      // destination). Ignored when `is_allowed` is false.
+      bool bypass_cache = false;
     };
 
     using DoesOriginRequireUserConfirmationCallback =

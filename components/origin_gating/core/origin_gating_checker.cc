@@ -227,7 +227,7 @@ void OriginGatingChecker::OnNoVerdictAnswer(
     Delegate::NoVerdictResult result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (result.is_allowed) {
+  if (result.is_allowed && !result.bypass_cache) {
     AllowNavigationTo(url::Origin::Create(destination), result.did_prompt_user);
   }
 

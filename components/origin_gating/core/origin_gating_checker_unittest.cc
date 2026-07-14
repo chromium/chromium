@@ -512,5 +512,89 @@ TEST_F(OriginGatingCheckerTest, EventReachesPredicateAndDelegate) {
   EXPECT_EQ(decision.attribution, DecisionSource::kNoVerdict);
 }
 
+TEST_F(OriginGatingCheckerTest, BypassCache_SuppressesCacheWrite) {
+  OriginGatingChecker checker(
+      delegate_, OriginGatingConfiguration({}, /*use_site_keyed_cache=*/false));
+
+  GURL source("https://example.com");
+  GURL destination("https://foo.com");
+  url::Origin source_origin = url::Origin::Create(source);
+  url::Origin destination_origin = url::Origin::Create(destination);
+
+  EXPECT_CALL(delegate_,
+              DoesOriginRequireUserConfirmation(_, _, source, destination, _))
+      .WillOnce(base::test::RunOnceCallback<4>(false));
+  EXPECT_CALL(delegate_, OnNoVerdict(_, _, source, destination, false, _))
+      .WillOnce(base::test::RunOnceCallback<5>(
+          OriginGatingChecker::Delegate::NoVerdictResult{
+              .is_allowed = true,
+              .did_prompt_user = false,
+              .bypass_cache = true}));
+
+  GatingDecision decision = ComputeGatingDecisionAndVerifyAsynchrony(
+      checker, nullptr, source, destination);
+
+  EXPECT_TRUE(decision.is_allowed);
+  // The allow decision must not have been persisted.
+  EXPECT_FALSE(
+      checker.cache().IsNavigationAllowed(source_origin, destination_origin));
+}
+
+TEST_F(OriginGatingCheckerTest, NoBypassCache_PersistsCacheWrite) {
+  OriginGatingChecker checker(
+      delegate_, OriginGatingConfiguration({}, /*use_site_keyed_cache=*/false));
+
+  GURL source("https://example.com");
+  GURL destination("https://foo.com");
+  url::Origin source_origin = url::Origin::Create(source);
+  url::Origin destination_origin = url::Origin::Create(destination);
+
+  EXPECT_CALL(delegate_,
+              DoesOriginRequireUserConfirmation(_, _, source, destination, _))
+      .WillOnce(base::test::RunOnceCallback<4>(false));
+  EXPECT_CALL(delegate_, OnNoVerdict(_, _, source, destination, false, _))
+      .WillOnce(base::test::RunOnceCallback<5>(
+          OriginGatingChecker::Delegate::NoVerdictResult{
+              .is_allowed = true,
+              .did_prompt_user = false,
+              .bypass_cache = false}));
+
+  GatingDecision decision = ComputeGatingDecisionAndVerifyAsynchrony(
+      checker, nullptr, source, destination);
+
+  EXPECT_TRUE(decision.is_allowed);
+  // The allow decision must have been persisted.
+  EXPECT_TRUE(
+      checker.cache().IsNavigationAllowed(source_origin, destination_origin));
+}
+
+TEST_F(OriginGatingCheckerTest, BypassCache_IgnoredWhenBlocked) {
+  OriginGatingChecker checker(
+      delegate_, OriginGatingConfiguration({}, /*use_site_keyed_cache=*/false));
+
+  GURL source("https://example.com");
+  GURL destination("https://foo.com");
+  url::Origin source_origin = url::Origin::Create(source);
+  url::Origin destination_origin = url::Origin::Create(destination);
+
+  EXPECT_CALL(delegate_,
+              DoesOriginRequireUserConfirmation(_, _, source, destination, _))
+      .WillOnce(base::test::RunOnceCallback<4>(false));
+  EXPECT_CALL(delegate_, OnNoVerdict(_, _, source, destination, false, _))
+      .WillOnce(base::test::RunOnceCallback<5>(
+          OriginGatingChecker::Delegate::NoVerdictResult{
+              .is_allowed = false,
+              .did_prompt_user = false,
+              .bypass_cache = false}));
+
+  GatingDecision decision = ComputeGatingDecisionAndVerifyAsynchrony(
+      checker, nullptr, source, destination);
+
+  EXPECT_FALSE(decision.is_allowed);
+  // A blocked decision is never persisted regardless of bypass_cache.
+  EXPECT_FALSE(
+      checker.cache().IsNavigationAllowed(source_origin, destination_origin));
+}
+
 }  // namespace
 }  // namespace origin_gating
