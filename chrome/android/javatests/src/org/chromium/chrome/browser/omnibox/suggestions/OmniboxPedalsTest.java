@@ -163,7 +163,7 @@ public class OmniboxPedalsTest {
                     Fragment fragment =
                             mTargetActivity
                                     .getSupportFragmentManager()
-                                    .findFragmentById(R.id.content);
+                                    .findFragmentById(R.id.settings_content);
                     Criteria.checkThat(fragment, Matchers.instanceOf(fragmentType));
                 });
     }

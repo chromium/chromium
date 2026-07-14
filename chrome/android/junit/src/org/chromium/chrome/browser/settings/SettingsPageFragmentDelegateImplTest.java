@@ -63,7 +63,8 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 @RunWith(BaseRobolectricTestRunner.class)
 @EnableFeatures(ChromeFeatureList.SETTINGS_IN_TAB)
 public class SettingsPageFragmentDelegateImplTest {
-    private static final int CONTAINER_ID = R.id.content;
+    private static final int CONTAINER_ID = R.id.settings_content;
+    private static final String EXPECTED_TAG = "settings_native_page_" + CONTAINER_ID;
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -139,7 +140,7 @@ public class SettingsPageFragmentDelegateImplTest {
 
     @Test
     public void testInitSettings_registersDependencyProviderAndAddsFragment() {
-        when(mFragmentManager.findFragmentByTag("settings_native_page")).thenReturn(null);
+        when(mFragmentManager.findFragmentByTag(EXPECTED_TAG)).thenReturn(null);
 
         mDelegate.initSettings(mContainerView);
 
@@ -166,13 +167,13 @@ public class SettingsPageFragmentDelegateImplTest {
 
         // Verify fragment creation and addition.
         verify(mFragmentTransaction)
-                .add(eq(CONTAINER_ID), any(SettingsHostFragment.class), eq("settings_native_page"));
+                .add(eq(CONTAINER_ID), any(SettingsHostFragment.class), eq(EXPECTED_TAG));
         verify(mFragmentTransaction).commitAllowingStateLoss();
     }
 
     @Test
     public void testInitSettings_removesSheetAndDialogContainers() {
-        when(mFragmentManager.findFragmentByTag("settings_native_page")).thenReturn(null);
+        when(mFragmentManager.findFragmentByTag(EXPECTED_TAG)).thenReturn(null);
 
         mDelegate.initSettings(mContainerView);
 
@@ -186,7 +187,7 @@ public class SettingsPageFragmentDelegateImplTest {
 
     @Test
     public void testInitSettings_reusesExistingFragment() {
-        when(mFragmentManager.findFragmentByTag("settings_native_page"))
+        when(mFragmentManager.findFragmentByTag(EXPECTED_TAG))
                 .thenReturn(mMockSettingsHostFragment);
 
         mDelegate.initSettings(mContainerView);
@@ -198,7 +199,7 @@ public class SettingsPageFragmentDelegateImplTest {
 
     @Test
     public void testDestroySettings_unregistersCallbacksAndRemovesFragment() {
-        when(mFragmentManager.findFragmentByTag("settings_native_page")).thenReturn(null);
+        when(mFragmentManager.findFragmentByTag(EXPECTED_TAG)).thenReturn(null);
 
         // Initialize first so the delegate has callbacks and fragment references.
         mDelegate.initSettings(mContainerView);
@@ -225,7 +226,7 @@ public class SettingsPageFragmentDelegateImplTest {
 
     @Test
     public void testGetMainFragment() {
-        when(mFragmentManager.findFragmentByTag("settings_native_page"))
+        when(mFragmentManager.findFragmentByTag(EXPECTED_TAG))
                 .thenReturn(mMockSettingsHostFragment);
         mDelegate.initSettings(mContainerView);
 
@@ -238,7 +239,7 @@ public class SettingsPageFragmentDelegateImplTest {
 
     @Test
     public void testGetMultiColumnSettings() {
-        when(mFragmentManager.findFragmentByTag("settings_native_page"))
+        when(mFragmentManager.findFragmentByTag(EXPECTED_TAG))
                 .thenReturn(mMockSettingsHostFragment);
         mDelegate.initSettings(mContainerView);
 
@@ -257,7 +258,7 @@ public class SettingsPageFragmentDelegateImplTest {
 
     @Test
     public void testInitSettings_createsTitleUpdater() {
-        when(mFragmentManager.findFragmentByTag("settings_native_page")).thenReturn(null);
+        when(mFragmentManager.findFragmentByTag(EXPECTED_TAG)).thenReturn(null);
         mDelegate.initSettings(mContainerView);
 
         // Capture all registered FragmentLifecycleCallbacks.
@@ -288,7 +289,7 @@ public class SettingsPageFragmentDelegateImplTest {
 
     @Test
     public void testDestroySettings_destroysTitleUpdater() {
-        when(mFragmentManager.findFragmentByTag("settings_native_page"))
+        when(mFragmentManager.findFragmentByTag(EXPECTED_TAG))
                 .thenReturn(mMockSettingsHostFragment);
         mDelegate.initSettings(mContainerView);
 
@@ -326,7 +327,7 @@ public class SettingsPageFragmentDelegateImplTest {
     @Test
     public void testIsTwoColumnSettingsVisible() {
         // Setup mSettingsHostFragment.
-        when(mFragmentManager.findFragmentByTag("settings_native_page"))
+        when(mFragmentManager.findFragmentByTag(EXPECTED_TAG))
                 .thenReturn(mMockSettingsHostFragment);
         mDelegate.initSettings(mContainerView);
         when(mMockSettingsHostFragment.isAttachedToActivity()).thenReturn(true);
@@ -348,7 +349,7 @@ public class SettingsPageFragmentDelegateImplTest {
     @Test
     public void testFinishCurrentSettings() {
         // Setup mSettingsHostFragment.
-        when(mFragmentManager.findFragmentByTag("settings_native_page"))
+        when(mFragmentManager.findFragmentByTag(EXPECTED_TAG))
                 .thenReturn(mMockSettingsHostFragment);
         mDelegate.initSettings(mContainerView);
 
@@ -362,7 +363,7 @@ public class SettingsPageFragmentDelegateImplTest {
 
     @Test
     public void testInitSettings_createsSearchCoordinator() {
-        when(mFragmentManager.findFragmentByTag("settings_native_page")).thenReturn(null);
+        when(mFragmentManager.findFragmentByTag(EXPECTED_TAG)).thenReturn(null);
         mDelegate.initSettings(mContainerView);
 
         // Capture all registered FragmentLifecycleCallbacks.
@@ -389,7 +390,7 @@ public class SettingsPageFragmentDelegateImplTest {
 
     @Test
     public void testDestroySettings_destroysSearchCoordinator() {
-        when(mFragmentManager.findFragmentByTag("settings_native_page"))
+        when(mFragmentManager.findFragmentByTag(EXPECTED_TAG))
                 .thenReturn(mMockSettingsHostFragment);
         mDelegate.initSettings(mContainerView);
 

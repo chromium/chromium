@@ -2156,6 +2156,9 @@ public class AutofillProfilesFragmentTest {
             final boolean keyboardVisible, final SettingsActivity activity) {
         CriteriaHelper.pollUiThread(
                 () -> {
+                    // TODO(crbug.com/521895796): Figure out if this should be android.R.id.content
+                    // (i.e. the whole activity's content area) or R.id.settings_content (i.e. the
+                    // settings activity/page's content).
                     Criteria.checkThat(
                             KeyboardVisibilityDelegate.getInstance()
                                     .isKeyboardShowing(activity.findViewById(android.R.id.content)),

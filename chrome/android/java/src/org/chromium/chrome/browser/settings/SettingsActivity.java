@@ -307,12 +307,13 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
                 var transaction = fragmentManager.beginTransaction();
                 mMultiColumnSettings = new MultiColumnSettings();
                 mMultiColumnSettings.setPendingFragmentIntent(getIntent());
-                transaction.replace(R.id.content, mMultiColumnSettings, MULTI_COLUMN_FRAGMENT_TAG);
+                transaction.replace(
+                        R.id.settings_content, mMultiColumnSettings, MULTI_COLUMN_FRAGMENT_TAG);
                 transaction.commit();
             } else {
                 Fragment fragment = instantiateMainFragment(getIntent());
                 var transaction = fragmentManager.beginTransaction();
-                transaction.replace(R.id.content, fragment, MAIN_FRAGMENT_TAG);
+                transaction.replace(R.id.settings_content, fragment, MAIN_FRAGMENT_TAG);
                 setFragmentAnimation(transaction, fragment);
                 transaction.commit();
             }
@@ -356,7 +357,7 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
                         /* occlusionTrackingAllowed= */ true));
 
         int backgroundColor = SemanticColorUtils.getSettingsBackgroundColor(this);
-        findViewById(R.id.content).setBackgroundColor(backgroundColor);
+        findViewById(R.id.settings_content).setBackgroundColor(backgroundColor);
         findViewById(R.id.app_bar_layout).setBackgroundColor(backgroundColor);
         AppBarLayout appBarLayout = findViewById(R.id.app_bar_layout);
         appBarLayout.setElevation(0);
@@ -708,7 +709,7 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
             transaction.setReorderingAllowed(true);
             setFragmentAnimation(transaction, fragment);
             transaction
-                    .replace(R.id.content, fragment, MAIN_FRAGMENT_TAG)
+                    .replace(R.id.settings_content, fragment, MAIN_FRAGMENT_TAG)
                     .addToBackStack(null)
                     .commit();
         }
@@ -818,7 +819,7 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
     @VisibleForTesting
     public @Nullable Fragment getMainFragment() {
         if (mMultiColumnSettings == null) {
-            return getSupportFragmentManager().findFragmentById(R.id.content);
+            return getSupportFragmentManager().findFragmentById(R.id.settings_content);
         }
         return mMultiColumnSettings
                 .getChildFragmentManager()

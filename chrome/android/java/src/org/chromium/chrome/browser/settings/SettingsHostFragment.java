@@ -141,16 +141,22 @@ public class SettingsHostFragment extends Fragment
         return getChildFragmentManager().findFragmentById(CONTAINER_ID);
     }
 
-    /** Returns the active {@link SettingsHostFragment} if attached to the activity, or null. */
+    /**
+     * Returns the active {@link SettingsHostFragment} if attached to the activity and shown, or
+     * null.
+     */
     public static @Nullable SettingsHostFragment get(@Nullable Activity activity) {
         if (!(activity instanceof FragmentActivity fragmentActivity)) return null;
-        Fragment fragment =
-                fragmentActivity
-                        .getSupportFragmentManager()
-                        .findFragmentByTag(SETTINGS_NATIVE_PAGE_TAG);
-        if (fragment instanceof SettingsHostFragment settingsHostFragment
-                && settingsHostFragment.isAttachedToActivity()) {
-            return settingsHostFragment;
+
+        // Setting host fragments have unique IDs, so search for the first attached visible one.
+        for (Fragment f : fragmentActivity.getSupportFragmentManager().getFragments()) {
+            if (f instanceof SettingsHostFragment settingsHostFragment
+                    && settingsHostFragment.isAttachedToActivity()) {
+                if (settingsHostFragment.getView() != null
+                        && settingsHostFragment.getView().isShown()) {
+                    return settingsHostFragment;
+                }
+            }
         }
         return null;
     }
