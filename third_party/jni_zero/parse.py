@@ -475,30 +475,6 @@ def _parse_proxy_natives(type_resolver, contents):
   return ret
 
 
-_NON_PROXY_NATIVES_REGEX = re.compile(
-    r'(@NativeClassQualifiedName'
-    r'\(\"(?P<native_class_name>\S*?)\"\)\s+)?'
-    r'(?P<qualifiers>\w+\s\w+|\w+|\s+)\s*native\s+'
-    r'(?P<return_type>\S*)\s+'
-    r'native(?P<name>\w+)\((?P<params>.*?)\);', re.DOTALL)
-
-
-def _parse_non_proxy_natives(outer_class, contents):
-  type_resolver = outer_class.type_resolver
-  for match in _find_iter_with_note(_NON_PROXY_NATIVES_REGEX, contents):
-    name = match.group('name')
-    return_type = _parse_type(type_resolver, match.group('return_type'))
-    params = _parse_param_list(type_resolver, match.group('params'))
-    signature = java_types.JavaSignature.from_params(return_type, params)
-    native_class_name = match.group('native_class_name')
-    static = 'static' in match.group('qualifiers')
-    outer_class.non_proxy_methods.append(
-        ParsedNative(static=static,
-                     name=name,
-                     signature=signature,
-                     native_class_name=native_class_name))
-
-
 # javap shows inherited methods from interfaces / super classes, including when
 # they are identical but with broader return types. In order to avoid
 # collisions, remove these dupes by using the first one listed.
@@ -680,7 +656,7 @@ def _sort_jni(parsed_classes):
 
 
 def parse_java_file_data(filename, contents, *, package_prefix,
-                         package_prefix_filter, enable_legacy_natives,
+                         package_prefix_filter,
                          allow_private_called_by_natives):
   contents = _remove_comments(contents)
 
@@ -696,9 +672,6 @@ def parse_java_file_data(filename, contents, *, package_prefix,
 
   parsed_proxy_natives = _parse_proxy_natives(type_resolver, contents)
   jni_namespace = _parse_jni_namespace(contents)
-
-  if enable_legacy_natives:
-    _parse_non_proxy_natives(outer_class, contents)
 
   _parse_called_by_natives_or_javap(
       contents,
@@ -729,7 +702,6 @@ def parse_java_file(filename,
                     *,
                     package_prefix=None,
                     package_prefix_filter=None,
-                    enable_legacy_natives=False,
                     allow_private_called_by_natives=False):
   try:
     assert not filename.endswith('.kt'), (
@@ -741,7 +713,6 @@ def parse_java_file(filename,
         contents,
         package_prefix=package_prefix,
         package_prefix_filter=package_prefix_filter,
-        enable_legacy_natives=enable_legacy_natives,
         allow_private_called_by_natives=allow_private_called_by_natives)
   except Exception as e:
     if _last_match:

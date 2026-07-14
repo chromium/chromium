@@ -31,20 +31,17 @@ import proxy
 _THIS_DIR = os.path.dirname(__file__)
 
 
-def _ParseHelper(package_prefix, package_prefix_filter, enable_legacy_natives,
-                 path):
+def _ParseHelper(package_prefix, package_prefix_filter, path):
   try:
     return parse.parse_java_file(path,
                                  package_prefix=package_prefix,
                                  package_prefix_filter=package_prefix_filter,
-                                 enable_legacy_natives=enable_legacy_natives,
                                  allow_private_called_by_natives=True)
   except Exception as e:
     return e
 
 
-def _LoadJniObjs(paths, namespace, package_prefix, package_prefix_filter, *,
-                 enable_legacy_natives):
+def _LoadJniObjs(paths, namespace, package_prefix, package_prefix_filter):
   ret = {}
   if all(p.endswith('.jni.pickle') for p in paths):
     for pickle_path in paths:
@@ -59,7 +56,7 @@ def _LoadJniObjs(paths, namespace, package_prefix, package_prefix_filter, *,
       ]
   else:
     func = functools.partial(_ParseHelper, package_prefix,
-                             package_prefix_filter, enable_legacy_natives)
+                             package_prefix_filter)
     with multiprocessing.Pool() as pool:
       errors = []
       for res in pool.imap_unordered(func, paths):
@@ -132,12 +129,9 @@ def _Generate(args,
   native_sources_set = set(native_sources_list)
   java_sources_set = set(java_sources_list)
 
-  jni_objs_by_path = _LoadJniObjs(
-      native_sources_set | java_sources_set,
-      args.namespace,
-      args.package_prefix,
-      args.package_prefix_filter,
-      enable_legacy_natives=args.enable_legacy_natives)
+  jni_objs_by_path = _LoadJniObjs(native_sources_set | java_sources_set,
+                                  args.namespace, args.package_prefix,
+                                  args.package_prefix_filter)
 
   present_jni_objs = list(
       _Flatten(jni_objs_by_path, native_sources_set & java_sources_set))

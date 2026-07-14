@@ -15,17 +15,6 @@
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wunique-object-duplication"
 
-// Class Accessors.
-#ifndef org_jni_1zero_SampleProxyEdgeCases_clazz_defined
-#define org_jni_1zero_SampleProxyEdgeCases_clazz_defined
-inline jclass org_jni_1zero_SampleProxyEdgeCases_clazz(JNIEnv* env) {
-  static const char kClassName[] = "org.jni_zero.SampleProxyEdgeCases";
-  static std::atomic<jclass> cached_class;
-  return jni_zero::internal::LazyGetClass(env, kClassName, &cached_class);
-}
-#endif
-
-
 // Forward Declarations.
 JNI_ZERO_BOUNDARY_EXPORT int32_t Java_J_N_MYplquli(
     JNIEnv* env,
@@ -47,13 +36,6 @@ JNI_ZERO_BOUNDARY_EXPORT jobject Java_J_N_MalqUoB_1(JNIEnv* env, jclass jcaller,
 JNI_ZERO_BOUNDARY_EXPORT void Java_J_N_M0E4cldm(JNIEnv* env, jclass jcaller, jobject b, jobject i);
 JNI_ZERO_BOUNDARY_EXPORT bool Java_J_N_MWbFhvyA(JNIEnv* env, jclass jcaller, jobject sb);
 JNI_ZERO_BOUNDARY_EXPORT int32_t Java_J_N_MWbFhvyA(JNIEnv* env, jclass jcaller, int32_t sb);
-JNI_ZERO_BOUNDARY_EXPORT void Java_org_jni_1zero_SampleProxyEdgeCases_nativeInstanceMethod(
-    JNIEnv* env,
-    jobject jcaller,
-    int64_t nativeInstance);
-JNI_ZERO_BOUNDARY_EXPORT void Java_org_jni_1zero_SampleProxyEdgeCases_nativeStaticMethod(
-    JNIEnv* env,
-    jclass jcaller);
 
 #pragma clang diagnostic pop
 #endif  // TEMP_DIR_HEADER_

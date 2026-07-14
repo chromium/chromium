@@ -88,8 +88,6 @@ class CliOptions:
         self.action,
         '--include-path-prefix=overridden/',
     ]
-    if self.action != 'gen-register-natives':
-      ret.append('--enable-legacy-natives')
 
     if self.enable_jni_multiplexing:
       ret.append('--enable-jni-multiplexing')
@@ -417,13 +415,6 @@ class Tests(BaseTest):
   def testGenerics(self):
     self._TestEndToEndGeneration(['SampleGenerics.java'], srcjar=True)
 
-  def testNonProxy(self):
-    self._TestEndToEndGeneration(['SampleNonProxy.java'])
-
-  def testBirectionalNonProxy(self):
-    self._TestEndToEndGeneration(['SampleBidirectionalNonProxy.java'],
-                                 enable_definition_macros=False)
-
   def testBidirectionalClass(self):
     self._TestEndToEndGeneration(['SampleForTests.java'], srcjar=True)
     self._TestEndToEndRegistration(['SampleForTests.java'])
@@ -451,10 +442,6 @@ class Tests(BaseTest):
 
   def testEndToEndManualRegistration(self):
     self._TestEndToEndRegistration(['SampleForAnnotationProcessor.java'],
-                                   manual_jni_registration=True)
-
-  def testEndToEndManualRegistration_NonProxy(self):
-    self._TestEndToEndRegistration(['SampleNonProxy.java'],
                                    manual_jni_registration=True)
 
   def testEndToEndProxyJniWithModules(self):

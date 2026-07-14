@@ -732,7 +732,6 @@ def GenerateFromSource(parser, args, jni_mode):
                 f,
                 package_prefix=args.package_prefix,
                 package_prefix_filter=args.package_prefix_filter,
-                enable_legacy_natives=args.enable_legacy_natives,
                 allow_private_called_by_natives=args.
                 allow_private_called_by_natives))
       except parse.ParseError as e:

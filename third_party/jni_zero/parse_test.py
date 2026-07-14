@@ -63,7 +63,6 @@ def _parse_java_file_data(filename, contents):
                                     contents,
                                     package_prefix=None,
                                     package_prefix_filter=None,
-                                    enable_legacy_natives=False,
                                     allow_private_called_by_natives=False)
 
 
@@ -319,7 +318,6 @@ public class MyClass {
         contents,
         package_prefix='prefix',
         package_prefix_filter=None,
-        enable_legacy_natives=False,
         allow_private_called_by_natives=False)
     cbn = parsed_file.classes_with_jni[0].called_by_natives[0]
     param_type = cbn.signature.param_list[0].java_type

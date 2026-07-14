@@ -18,17 +18,6 @@
 extern const int64_t kJniZeroHashWhole = -7874644414477415949LL;
 extern const int64_t kJniZeroHashPriority = 4128442159926458844LL;
 
-// Class Accessors.
-#ifndef org_jni_1zero_SampleProxyEdgeCases_clazz_defined
-#define org_jni_1zero_SampleProxyEdgeCases_clazz_defined
-inline jclass org_jni_1zero_SampleProxyEdgeCases_clazz(JNIEnv* env) {
-  static const char kClassName[] = "org.jni_zero.SampleProxyEdgeCases";
-  static std::atomic<jclass> cached_class;
-  return jni_zero::internal::LazyGetClass(env, kClassName, &cached_class);
-}
-#endif
-
-
 // Forward Declarations.
 JNI_ZERO_MUXED_ENTRYPOINT void Muxed_org_jni_1zero_TinySample2_test(
     JNIEnv* env,
@@ -65,11 +54,6 @@ JNI_ZERO_MUXED_ENTRYPOINT bool Muxed_org_jni_1zero_SampleProxyEdgeCases_setStrin
 JNI_ZERO_MUXED_ENTRYPOINT int32_t Muxed_org_jni_1zero_SampleProxyEdgeCases_setStringBuilder(
     JNIEnv* env,
     int32_t sb);
-JNI_ZERO_BOUNDARY_EXPORT void Java_org_jni_1zero_SampleProxyEdgeCases_nativeInstanceMethod(
-    JNIEnv* env,
-    int64_t nativeInstance);
-JNI_ZERO_BOUNDARY_EXPORT void Java_org_jni_1zero_SampleProxyEdgeCases_nativeStaticMethod(
-    JNIEnv* env);
 JNI_ZERO_MUXED_ENTRYPOINT bool Muxed_org_jni_1zero_TinySample_bar(
     JNIEnv* env,
     int32_t a,

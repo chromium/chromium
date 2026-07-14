@@ -59,10 +59,6 @@
 //
 // static void JNI_SampleProxyEdgeCases_FooForTests(JNIEnv* env);
 //
-// void Instance::InstanceMethod(JNIEnv* env, const jni_zero::JavaRef<jobject>& jcaller);
-//
-// static void JNI_SampleProxyEdgeCases_StaticMethod(JNIEnv* env);
-//
 
 // Triggers a compiler warning if DEFINE_JNI(SampleProxyEdgeCases) is forgotten (requires -Wunused-function).
 static void YouForgotToCallMacro_DEFINE_JNI_SampleProxyEdgeCases() {}
@@ -337,53 +333,6 @@ static void YouForgotToCallMacro_DEFINE_JNI_SampleProxyEdgeCases() {}
         return func_wrapper();                                                                     \
       } else {                                                                                     \
         static_assert(false, "JNI_SampleProxyEdgeCases_FooForTests() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: ()\nSee SampleProxyEdgeCases_jni.h for an example."); \
-      }                                                                                            \
-    };                                                                                             \
-    dependent_context(0);                                                                          \
-  }                                                                                                \
-                                                                                                   \
-  JNI_ZERO_BOUNDARY_EXPORT void Java_org_jni_1zero_SampleProxyEdgeCases_nativeInstanceMethod(      \
-      JNIEnv* env,                                                                                 \
-      jobject jcaller,                                                                             \
-      int64_t nativeInstance) {                                                                    \
-    Instance* _ptr = reinterpret_cast<Instance*>(nativeInstance);                                  \
-    /* Lambda required to make "if constexpr" work properly. */                                    \
-    auto dependent_context = [&](auto) {                                                           \
-      /* Lambda required to disambiguate overloads. */                                             \
-      auto func_wrapper = [&](auto&&... args) ->                                                   \
-      decltype(_ptr->InstanceMethod(std::forward<decltype(args)>(args)...)) {                      \
-        return _ptr->InstanceMethod(std::forward<decltype(args)>(args)...);                        \
-      };                                                                                           \
-      if constexpr (requires { func_wrapper(                                                       \
-          env,                                                                                     \
-          jni_zero::JavaRef<jobject>::CreateLeaky(env, jcaller)); }) {                             \
-        return func_wrapper(env, jni_zero::JavaRef<jobject>::CreateLeaky(env, jcaller));           \
-      } else if constexpr (requires { func_wrapper(                                                \
-          jni_zero::JavaRef<jobject>::CreateLeaky(env, jcaller)); }) {                             \
-        return func_wrapper(jni_zero::JavaRef<jobject>::CreateLeaky(env, jcaller));                \
-      } else {                                                                                     \
-        static_assert(false, "Instance::InstanceMethod() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: ()\nSee SampleProxyEdgeCases_jni.h for an example."); \
-      }                                                                                            \
-    };                                                                                             \
-    dependent_context(0);                                                                          \
-  }                                                                                                \
-                                                                                                   \
-  JNI_ZERO_BOUNDARY_EXPORT void Java_org_jni_1zero_SampleProxyEdgeCases_nativeStaticMethod(        \
-      JNIEnv* env,                                                                                 \
-      jclass jcaller) {                                                                            \
-    /* Lambda required to make "if constexpr" work properly. */                                    \
-    auto dependent_context = [&](auto) {                                                           \
-      /* Lambda required to disambiguate overloads. */                                             \
-      auto func_wrapper = [&](auto&&... args) ->                                                   \
-      decltype(JNI_SampleProxyEdgeCases_StaticMethod(std::forward<decltype(args)>(args)...)) {     \
-        return JNI_SampleProxyEdgeCases_StaticMethod(std::forward<decltype(args)>(args)...);       \
-      };                                                                                           \
-      if constexpr (requires { func_wrapper(env); }) {                                             \
-        return func_wrapper(env);                                                                  \
-      } else if constexpr (requires { func_wrapper(); }) {                                         \
-        return func_wrapper();                                                                     \
-      } else {                                                                                     \
-        static_assert(false, "JNI_SampleProxyEdgeCases_StaticMethod() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: ()\nSee SampleProxyEdgeCases_jni.h for an example."); \
       }                                                                                            \
     };                                                                                             \
     dependent_context(0);                                                                          \

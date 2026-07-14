@@ -116,10 +116,6 @@ def _add_codegen_args(parser, *, is_final=False, is_javap=False):
                      action='append',
                      dest='extra_includes',
                      help='Header file to #include in the generated header.')
-  group.add_argument(
-      '--enable-legacy-natives',
-      action='store_true',
-      help='Whether to generate code from "native" java methods.')
   if is_final:
     group.add_argument(
         '--add-stubs-for-missing-native',
