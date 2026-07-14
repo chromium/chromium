@@ -58,6 +58,8 @@ public class AutofillOptionsFragment extends ChromeBaseSettingsFragment {
             "autofill_personal_context_manage_connected_apps";
     public static final String PREF_AUTOFILL_PERSONAL_CONTEXT_CATEGORY =
             "autofill_personal_context_category";
+    public static final String PREF_PERSONAL_CONTEXT_NOTICE_PREFERENCE =
+            "personal_context_notice_preference";
 
     private @AutofillOptionsReferrer int mReferrer;
 
@@ -164,6 +166,10 @@ public class AutofillOptionsFragment extends ChromeBaseSettingsFragment {
 
     Preference getAutofillPersonalContextCategory() {
         return assumeNonNull(findPreference(PREF_AUTOFILL_PERSONAL_CONTEXT_CATEGORY));
+    }
+
+    Preference getAutofillPersonalContextNoticePreference() {
+        return assumeNonNull(findPreference(PREF_PERSONAL_CONTEXT_NOTICE_PREFERENCE));
     }
 
     @Nullable Preference getAutofillServiceProviderCategory() {
@@ -280,6 +286,7 @@ public class AutofillOptionsFragment extends ChromeBaseSettingsFragment {
                         indexData.removeEntry(getUniqueId(PREF_AUTOFILL_PERSONAL_CONTEXT_SWITCH));
                         indexData.removeEntry(
                                 getUniqueId(PREF_AUTOFILL_PERSONAL_CONTEXT_MANAGE_CONNECTED_APPS));
+                        indexData.removeEntry(getUniqueId(PREF_PERSONAL_CONTEXT_NOTICE_PREFERENCE));
                     }
                 }
             };

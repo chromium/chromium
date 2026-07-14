@@ -1041,6 +1041,7 @@ public class AutofillOptionsTest {
                 .initializeNow();
 
         assertTrue(mFragment.getAutofillPersonalContextCategory().isVisible());
+        assertNotNull(mFragment.getAutofillPersonalContextNoticePreference());
     }
 
     @Test
@@ -1154,6 +1155,10 @@ public class AutofillOptionsTest {
                         AutofillOptionsFragment.SEARCH_INDEX_DATA_PROVIDER.getUniqueId(
                                 AutofillOptionsFragment
                                         .PREF_AUTOFILL_PERSONAL_CONTEXT_MANAGE_CONNECTED_APPS));
+        verify(mSearchIndexDataMock)
+                .removeEntry(
+                        AutofillOptionsFragment.SEARCH_INDEX_DATA_PROVIDER.getUniqueId(
+                                AutofillOptionsFragment.PREF_PERSONAL_CONTEXT_NOTICE_PREFERENCE));
     }
 
     @Test
@@ -1175,6 +1180,10 @@ public class AutofillOptionsTest {
                         AutofillOptionsFragment.SEARCH_INDEX_DATA_PROVIDER.getUniqueId(
                                 AutofillOptionsFragment
                                         .PREF_AUTOFILL_PERSONAL_CONTEXT_MANAGE_CONNECTED_APPS));
+        verify(mSearchIndexDataMock)
+                .removeEntry(
+                        AutofillOptionsFragment.SEARCH_INDEX_DATA_PROVIDER.getUniqueId(
+                                AutofillOptionsFragment.PREF_PERSONAL_CONTEXT_NOTICE_PREFERENCE));
     }
 
     @Test
@@ -1213,5 +1222,9 @@ public class AutofillOptionsTest {
                         AutofillOptionsFragment.SEARCH_INDEX_DATA_PROVIDER.getUniqueId(
                                 AutofillOptionsFragment
                                         .PREF_AUTOFILL_PERSONAL_CONTEXT_MANAGE_CONNECTED_APPS));
+        verify(mSearchIndexDataMock)
+                .removeEntry(
+                        AutofillOptionsFragment.SEARCH_INDEX_DATA_PROVIDER.getUniqueId(
+                                AutofillOptionsFragment.PREF_PERSONAL_CONTEXT_NOTICE_PREFERENCE));
     }
 }

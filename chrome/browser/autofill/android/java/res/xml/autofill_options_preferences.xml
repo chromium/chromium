@@ -45,6 +45,13 @@ found in the LICENSE file.
             android:title="@string/personal_context_autofill_settings_manage_connected_apps_title_android"
             android:summary="@string/personal_context_autofill_settings_manage_connected_apps_summary_android"
             android:widgetLayout="@layout/preference_widget_open_in_new" />
+
+        <org.chromium.chrome.browser.autofill.settings.personal_context.AutofillPersonalContextNoticePreference
+            android:key="personal_context_notice_preference"
+            android:order="2"
+            android:title="@string/personal_context_autofill_settings_helping_improve_notice_android"
+            app:backgroundStyle="card"
+            app:expandedContentLayout="@layout/autofill_personal_context_expandable_notice" />
     </PreferenceCategory>
 
     <PreferenceCategory
