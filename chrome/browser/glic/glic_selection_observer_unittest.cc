@@ -1077,11 +1077,6 @@ TEST_F(GlicSelectionObserverTest, IdentityManagerIntegration) {
 }
 
 TEST_F(GlicSelectionObserverTest, HideForThisSiteSetsBlockSetting) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      features::kGlicSelectionPrompt,
-      {{features::kGlicSelectionEnableSiteSettings.name, "true"}});
-
   GURL url("https://example.com");
   NavigateAndCommit(url);
   TestGlicSelectionObserver* observer = GetObserver();

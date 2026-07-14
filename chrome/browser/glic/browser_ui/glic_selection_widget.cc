@@ -527,15 +527,13 @@ class GlicSelectionContentsView : public views::View,
         ui::ImageModel::FromVectorIcon(vector_icons::kVisibilityOffIcon,
                                        ui::kColorSysOnSurface, 16));
 
-    if (features::kGlicSelectionEnableSiteSettings.Get()) {
-      auto settings_label = gfx::LocateAndRemoveAcceleratorChar(
-          l10n_util::GetStringUTF16(IDS_SETTINGS), nullptr, nullptr);
-      menu_model_->AddItemWithIcon(
-          static_cast<int>(GlicSelectionWidgetDelegate::MenuCommand::kSettings),
-          settings_label,
-          ui::ImageModel::FromVectorIcon(vector_icons::kSettingsIcon,
-                                         ui::kColorSysOnSurface, 16));
-    }
+    auto settings_label = gfx::LocateAndRemoveAcceleratorChar(
+        l10n_util::GetStringUTF16(IDS_SETTINGS), nullptr, nullptr);
+    menu_model_->AddItemWithIcon(
+        static_cast<int>(GlicSelectionWidgetDelegate::MenuCommand::kSettings),
+        settings_label,
+        ui::ImageModel::FromVectorIcon(vector_icons::kSettingsIcon,
+                                       ui::kColorSysOnSurface, 16));
 
     gfx::Rect pill_bounds = ask_pill_->GetBoundsInScreen();
     gfx::Insets pill_insets = ask_pill_->GetInsets();

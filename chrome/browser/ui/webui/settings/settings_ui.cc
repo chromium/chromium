@@ -581,8 +581,7 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
 
   html_source->AddBoolean(
       "enableInlineCueMenuContentSetting",
-      base::FeatureList::IsEnabled(features::kGlicSelectionPrompt) &&
-          features::kGlicSelectionEnableSiteSettings.Get());
+      base::FeatureList::IsEnabled(features::kGlicSelectionPrompt));
 
   // AI
   bool show_glic_section = false;

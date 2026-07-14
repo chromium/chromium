@@ -3703,19 +3703,14 @@ const FeatureEntry::FeatureVariation kGlicOSIconVariantVariations[] = {
 
 const FeatureEntry::Choice kGlicSelectionPromptChoices[] = {
     {flags_ui::kGenericExperimentChoiceDefault, "", ""},
-    {"Enabled", switches::kEnableFeatures, "GlicSelectionPrompt"},
+    {"Enabled (Defaults: Explain CTA + Settings)", switches::kEnableFeatures,
+     "GlicSelectionPrompt"},
     {"Enabled with Updates Only", switches::kEnableFeatures,
      "GlicSelectionPrompt:updates_only/true"},
-    {"Enabled with Settings", switches::kEnableFeatures,
-     "GlicSelectionPrompt:enable_site_settings/true"},
     {"Enabled with Copy Buttons", switches::kEnableFeatures,
      "GlicSelectionPrompt:show_copy_buttons/true"},
     {"Enabled (CTA: Tell me about this)", switches::kEnableFeatures,
-     "GlicSelectionPrompt:enable_site_settings/true/cta/"
-     "tell_me_about_this/auto_send_prompt/true"},
-    {"Enabled (CTA: Explain)", switches::kEnableFeatures,
-     "GlicSelectionPrompt:enable_site_settings/true/cta/"
-     "explain/auto_send_prompt/true"}};
+     "GlicSelectionPrompt:cta/tell_me_about_this"}};
 
 const FeatureEntry::FeatureParam kAutofillShowTypePredictionsAsTitle[] = {
     {"as-title", "true"}};

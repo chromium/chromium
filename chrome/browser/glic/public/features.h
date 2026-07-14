@@ -37,7 +37,6 @@ BASE_DECLARE_FEATURE(kGlicOnboardingMetricsMigration);
 BASE_DECLARE_FEATURE(kGlicSelectionPrompt);
 extern const base::FeatureParam<bool> kGlicSelectionPromptUpdatesOnly;
 extern const base::FeatureParam<std::string> kGlicSelectionTopCueOnlyList;
-extern const base::FeatureParam<bool> kGlicSelectionEnableSiteSettings;
 extern const base::FeatureParam<bool> kGlicSelectionShowCopyButtons;
 extern const base::FeatureParam<bool> kGlicSelectionAutoSendPrompt;
 extern const base::FeatureParam<std::string> kGlicSelectionPromptCta;

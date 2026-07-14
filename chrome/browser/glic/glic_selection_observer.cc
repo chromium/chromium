@@ -693,8 +693,7 @@ bool GlicSelectionObserver::ShouldShowSelectionWidget() {
   Profile* profile =
       Profile::FromBrowserContext(web_contents()->GetBrowserContext());
 
-  if (features::kGlicSelectionEnableSiteSettings.Get() &&
-      ContentSettingsPattern::FromURL(web_contents()->GetLastCommittedURL())
+  if (ContentSettingsPattern::FromURL(web_contents()->GetLastCommittedURL())
           .IsValid()) {
     HostContentSettingsMap* settings_map =
         HostContentSettingsMapFactory::GetForProfile(profile);
@@ -729,8 +728,7 @@ bool GlicSelectionObserver::ShouldShowSelectionWidget() {
 void GlicSelectionObserver::OnHideForThisSite() {
   is_hidden_on_current_page_ = true;
 
-  if (features::kGlicSelectionEnableSiteSettings.Get() &&
-      ContentSettingsPattern::FromURL(web_contents()->GetLastCommittedURL())
+  if (ContentSettingsPattern::FromURL(web_contents()->GetLastCommittedURL())
           .IsValid()) {
     Profile* profile =
         Profile::FromBrowserContext(web_contents()->GetBrowserContext());
@@ -753,9 +751,6 @@ void GlicSelectionObserver::ShowHiddenToast(ToastId toast_id) {
 }
 
 void GlicSelectionObserver::OnSettings() {
-  if (!features::kGlicSelectionEnableSiteSettings.Get()) {
-    return;
-  }
   auto* tab_interface =
       tabs::TabInterface::MaybeGetFromContents(web_contents());
   if (tab_interface) {
