@@ -11,15 +11,19 @@
 #include "base/memory/weak_ptr.h"
 #include "base/process/process.h"
 #include "base/time/time.h"
+#include "base/types/expected.h"
 #include "base/win/object_watcher.h"
 #include "chrome/browser/platform_experience/delegated_tasks/delegated_task.h"
 
 namespace platform_experience {
 
+class DelegatedTaskRunner;
 class PehLauncher;
 
+using DelegatedTaskExitCodeOrStatus = base::expected<int, DelegatedTaskStatus>;
+
 struct DelegatedTaskResult {
-  DelegatedTaskStatus status;
+  DelegatedTaskExitCodeOrStatus exit_code_or_status;
   base::TimeDelta execution_time;
 };
 
@@ -28,7 +32,7 @@ using DelegatedTaskCompletionCallback =
 
 // `DelegatedTaskRunner` handles executing tasks, waiting for task
 // completion/timeout and UMA telemetry.
-// The runner is implemented to run one task in it's lifecycle.
+// The runner is implemented to run one task in its lifecycle.
 class DelegatedTaskRunner : public base::win::ObjectWatcher::Delegate {
  public:
   // Creates the `DelegatedTaskRunner` with the default `PehLauncher` instance.
@@ -49,7 +53,8 @@ class DelegatedTaskRunner : public base::win::ObjectWatcher::Delegate {
            DelegatedTaskCompletionCallback callback);
 
  private:
-  void CleanupAndReturnResult(DelegatedTaskStatus status);
+  void CleanupAndReturnResult(
+      DelegatedTaskExitCodeOrStatus exit_code_or_status);
 
   // base::win::ObjectWatcher::Delegate:
   void OnObjectSignaled(HANDLE object) override;

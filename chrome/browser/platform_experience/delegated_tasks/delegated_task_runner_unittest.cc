@@ -4,15 +4,11 @@
 
 #include "chrome/browser/platform_experience/delegated_tasks/delegated_task_runner.h"
 
-#include <windows.h>
-
 #include <memory>
 #include <utility>
-#include <vector>
 
 #include "base/command_line.h"
 #include "base/files/file_path.h"
-#include "base/functional/callback_helpers.h"
 #include "base/process/launch.h"
 #include "base/process/process.h"
 #include "base/test/multiprocess_test.h"
@@ -34,6 +30,13 @@ namespace platform_experience {
 
 namespace {
 
+constexpr int kTaskSuccessExitCode = 0;
+constexpr int kTaskTimeoutSeconds = 5;
+
+constexpr char kTaskName[] = "TestTask";
+constexpr char kTaskCustomSwitchKey[] = "post-install-url";
+constexpr char kTaskCustomSwitchValue[] = "https://example.com";
+
 const base::FilePath::CharType kFakeBinaryPath[] =
     FILE_PATH_LITERAL("C:\\path\\to\\fake_binary.exe");
 
@@ -45,20 +48,15 @@ class TestDelegatedTask : public DelegatedTask {
   DelegatedTaskType GetTaskType() const override {
     return DelegatedTaskType::kRegisterSearchPromotion;
   }
-  base::TimeDelta GetTimeout() const override { return base::Seconds(5); }
-
-  DelegatedTaskStatus ParseExitCode(int exit_code) const override {
-    if (exit_code == -1) {
-      return DelegatedTaskStatus::kSuccess;
-    }
-    return DelegatedTaskStatus::kInvalidExitCode;
+  base::TimeDelta GetTimeout() const override {
+    return base::Seconds(kTaskTimeoutSeconds);
   }
 
   void AppendCommandLineSwitches(base::CommandLine& cmd_line) const override {
-    cmd_line.AppendSwitchASCII("post-install-url", "https://example.com");
+    cmd_line.AppendSwitchASCII(kTaskCustomSwitchKey, kTaskCustomSwitchValue);
   }
 
-  std::string_view GetTaskName() const override { return "TestTask"; }
+  std::string_view GetTaskName() const override { return kTaskName; }
 };
 
 class DelegatedTaskRunnerTest : public base::MultiProcessTest {
@@ -73,21 +71,17 @@ class DelegatedTaskRunnerMockTimeTest : public base::MultiProcessTest {
 };
 
 MULTIPROCESS_TEST_MAIN(SuccessProcess) {
-  return 0;
+  return kTaskSuccessExitCode;
 }
 
 MULTIPROCESS_TEST_MAIN(InvalidTaskProcess) {
-  return 1;
-}
-
-MULTIPROCESS_TEST_MAIN(TaskCustomExitCodeProcess) {
-  return -1;
+  return static_cast<int>(PehExitCode::kInvalidTaskType);
 }
 
 MULTIPROCESS_TEST_MAIN(TimeoutProcess) {
-  // Sleep for longer than the task timeout (5 seconds).
-  base::PlatformThread::Sleep(base::Seconds(10));
-  return 0;
+  // Sleep for longer than the task timeout.
+  base::PlatformThread::Sleep(base::Seconds(kTaskTimeoutSeconds * 2));
+  return kTaskSuccessExitCode;
 }
 
 }  // namespace
@@ -98,13 +92,16 @@ TEST_F(DelegatedTaskRunnerTest, BinaryNotFound) {
       .WillOnce(Return(base::FilePath()));
   EXPECT_CALL(*mock_launcher, LaunchProcess(_, _)).Times(0);
 
-  DelegatedTaskRunner runner(std::move(mock_launcher));
-  std::unique_ptr<DelegatedTask> task = std::make_unique<TestDelegatedTask>();
+  auto runner = std::make_unique<DelegatedTaskRunner>(std::move(mock_launcher));
+  auto task = std::make_unique<TestDelegatedTask>();
   base::test::TestFuture<DelegatedTaskResult> future;
 
-  runner.Run(std::move(task), future.GetCallback());
+  runner->Run(std::move(task), future.GetCallback());
 
-  EXPECT_EQ(future.Get().status, DelegatedTaskStatus::kPehNotFound);
+  auto result = future.Get();
+  EXPECT_FALSE(result.exit_code_or_status.has_value());
+  EXPECT_EQ(result.exit_code_or_status.error(),
+            DelegatedTaskStatus::kPehNotFound);
 }
 
 TEST_F(DelegatedTaskRunnerTest, ProcessLaunchFailure) {
@@ -114,13 +111,16 @@ TEST_F(DelegatedTaskRunnerTest, ProcessLaunchFailure) {
   EXPECT_CALL(*mock_launcher, LaunchProcess(_, _))
       .WillOnce(Return(base::Process()));
 
-  DelegatedTaskRunner runner(std::move(mock_launcher));
-  std::unique_ptr<DelegatedTask> task = std::make_unique<TestDelegatedTask>();
+  auto runner = std::make_unique<DelegatedTaskRunner>(std::move(mock_launcher));
+  auto task = std::make_unique<TestDelegatedTask>();
   base::test::TestFuture<DelegatedTaskResult> future;
 
-  runner.Run(std::move(task), future.GetCallback());
+  runner->Run(std::move(task), future.GetCallback());
 
-  EXPECT_EQ(future.Get().status, DelegatedTaskStatus::kProcessLaunchFailure);
+  auto result = future.Get();
+  EXPECT_FALSE(result.exit_code_or_status.has_value());
+  EXPECT_EQ(result.exit_code_or_status.error(),
+            DelegatedTaskStatus::kProcessLaunchFailure);
 }
 
 TEST_F(DelegatedTaskRunnerTest, SuccessAndCommandLineVerification) {
@@ -138,22 +138,22 @@ TEST_F(DelegatedTaskRunnerTest, SuccessAndCommandLineVerification) {
             options);
       });
 
-  DelegatedTaskRunner runner(std::move(mock_launcher));
-  std::unique_ptr<DelegatedTask> task = std::make_unique<TestDelegatedTask>();
-
-  std::string expected_task_name(task->GetTaskName());
-
+  auto runner = std::make_unique<DelegatedTaskRunner>(std::move(mock_launcher));
+  auto task = std::make_unique<TestDelegatedTask>();
   base::test::TestFuture<DelegatedTaskResult> future;
-  runner.Run(std::move(task), future.GetCallback());
 
-  EXPECT_EQ(future.Get().status, DelegatedTaskStatus::kSuccess);
+  runner->Run(std::move(task), future.GetCallback());
+
+  auto result = future.Get();
+  EXPECT_TRUE(result.exit_code_or_status.has_value());
+  EXPECT_EQ(result.exit_code_or_status.value(), kTaskSuccessExitCode);
 
   EXPECT_EQ(launched_cmd_line.GetProgram(), base::FilePath(kFakeBinaryPath));
   EXPECT_EQ(launched_cmd_line.GetSwitchValueASCII(kDelegatedTasksSwitch),
-            expected_task_name);
+            kTaskName);
 
-  EXPECT_EQ(launched_cmd_line.GetSwitchValueASCII("post-install-url"),
-            "https://example.com");
+  EXPECT_EQ(launched_cmd_line.GetSwitchValueASCII(kTaskCustomSwitchKey),
+            kTaskCustomSwitchValue);
 }
 
 TEST_F(DelegatedTaskRunnerTest, InvalidTask) {
@@ -169,35 +169,16 @@ TEST_F(DelegatedTaskRunnerTest, InvalidTask) {
             base::GetMultiProcessTestChildBaseCommandLine(), options);
       });
 
-  DelegatedTaskRunner runner(std::move(mock_launcher));
-  std::unique_ptr<DelegatedTask> task = std::make_unique<TestDelegatedTask>();
+  auto runner = std::make_unique<DelegatedTaskRunner>(std::move(mock_launcher));
+  auto task = std::make_unique<TestDelegatedTask>();
   base::test::TestFuture<DelegatedTaskResult> future;
 
-  runner.Run(std::move(task), future.GetCallback());
+  runner->Run(std::move(task), future.GetCallback());
 
-  EXPECT_EQ(future.Get().status, DelegatedTaskStatus::kInvalidTaskType);
-}
-
-TEST_F(DelegatedTaskRunnerTest, CustomExitCode) {
-  auto mock_launcher = std::make_unique<MockPehLauncher>();
-  EXPECT_CALL(*mock_launcher, GetBinaryPath())
-      .WillOnce(Return(base::FilePath(kFakeBinaryPath)));
-
-  EXPECT_CALL(*mock_launcher, LaunchProcess(_, _))
-      .WillOnce([&](const base::CommandLine& cmd_line,
-                    const base::LaunchOptions& options) {
-        return base::SpawnMultiProcessTestChild(
-            "TaskCustomExitCodeProcess",
-            base::GetMultiProcessTestChildBaseCommandLine(), options);
-      });
-
-  DelegatedTaskRunner runner(std::move(mock_launcher));
-  std::unique_ptr<DelegatedTask> task = std::make_unique<TestDelegatedTask>();
-  base::test::TestFuture<DelegatedTaskResult> future;
-
-  runner.Run(std::move(task), future.GetCallback());
-
-  EXPECT_EQ(future.Get().status, DelegatedTaskStatus::kSuccess);
+  auto result = future.Get();
+  EXPECT_FALSE(result.exit_code_or_status.has_value());
+  EXPECT_EQ(result.exit_code_or_status.error(),
+            DelegatedTaskStatus::kInvalidTaskType);
 }
 
 TEST_F(DelegatedTaskRunnerMockTimeTest, Timeout) {
@@ -213,42 +194,19 @@ TEST_F(DelegatedTaskRunnerMockTimeTest, Timeout) {
             options);
       });
 
-  DelegatedTaskRunner runner(std::move(mock_launcher));
-  std::unique_ptr<DelegatedTask> task = std::make_unique<TestDelegatedTask>();
+  auto runner = std::make_unique<DelegatedTaskRunner>(std::move(mock_launcher));
+  auto task = std::make_unique<TestDelegatedTask>();
   base::test::TestFuture<DelegatedTaskResult> future;
 
-  runner.Run(std::move(task), future.GetCallback());
+  runner->Run(std::move(task), future.GetCallback());
 
   // Fast-forward mock time to trigger the timeout.
-  task_environment_.FastForwardBy(base::Seconds(10));
+  task_environment_.FastForwardBy(base::Seconds(kTaskTimeoutSeconds + 1));
 
-  EXPECT_EQ(future.Get().status, DelegatedTaskStatus::kTaskTimeout);
-}
-
-TEST_F(DelegatedTaskRunnerTest, RunnerDestroyedBeforeTaskCompletion) {
-  auto mock_launcher = std::make_unique<MockPehLauncher>();
-  EXPECT_CALL(*mock_launcher, GetBinaryPath())
-      .WillOnce(Return(base::FilePath(kFakeBinaryPath)));
-
-  EXPECT_CALL(*mock_launcher, LaunchProcess(_, _))
-      .WillOnce([&](const base::CommandLine& cmd_line,
-                    const base::LaunchOptions& options) {
-        return base::SpawnMultiProcessTestChild(
-            "TimeoutProcess", base::GetMultiProcessTestChildBaseCommandLine(),
-            options);
-      });
-
-  base::test::TestFuture<DelegatedTaskResult> future;
-
-  {
-    DelegatedTaskRunner runner(std::move(mock_launcher));
-    std::unique_ptr<DelegatedTask> task = std::make_unique<TestDelegatedTask>();
-
-    runner.Run(std::move(task), future.GetCallback());
-  }
-
-  EXPECT_EQ(future.Get().status,
-            DelegatedTaskStatus::kRunnerDestroyedBeforeTaskCompletion);
+  auto result = future.Get();
+  EXPECT_FALSE(result.exit_code_or_status.has_value());
+  EXPECT_EQ(result.exit_code_or_status.error(),
+            DelegatedTaskStatus::kTaskTimeout);
 }
 
 }  // namespace platform_experience

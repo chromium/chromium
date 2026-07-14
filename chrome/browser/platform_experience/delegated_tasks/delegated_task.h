@@ -31,6 +31,11 @@ enum class DelegatedTaskType {
   kMaxValue = kRegisterSearchPromotion,
 };
 
+// Standard exit codes returned by PEH.
+enum class PehExitCode {
+  kInvalidTaskType = 1,
+};
+
 std::optional<DelegatedTaskType> ParseDelegatedTaskType(
     std::string_view task_name);
 
@@ -48,10 +53,6 @@ class DelegatedTask {
 
   // Optionally appends task-specific command line switches. Defaults to no-op.
   virtual void AppendCommandLineSwitches(base::CommandLine& cmd_line) const;
-
-  // Maps task-specific exit codes that are not handled by the
-  // `PehDelegatedTaskRunner` to a ResultStatus.
-  virtual DelegatedTaskStatus ParseExitCode(int exit_code) const = 0;
 
   // The execution timeout for this task. Defaults to 10 seconds.
   virtual base::TimeDelta GetTimeout() const;

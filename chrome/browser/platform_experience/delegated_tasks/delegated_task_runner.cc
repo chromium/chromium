@@ -13,7 +13,6 @@
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback.h"
 #include "base/location.h"
 #include "base/memory/weak_ptr.h"
 #include "base/process/launch.h"
@@ -30,12 +29,15 @@ namespace {
 
 // Callbacks must never be dependant on the `DelegatedTaskRunner` instance as
 // they can run after the runner instance is destroyed.
-void ReturnTaskCompletionStatusAsync(DelegatedTaskStatus status,
-                                     base::TimeDelta execution_time,
-                                     DelegatedTaskCompletionCallback callback) {
+void ReturnTaskCompletionStatusAsync(
+    DelegatedTaskExitCodeOrStatus exit_code_or_status,
+    base::TimeDelta execution_time,
+    DelegatedTaskCompletionCallback callback) {
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback),
-                                DelegatedTaskResult{status, execution_time}));
+      FROM_HERE,
+      base::BindOnce(
+          std::move(callback),
+          DelegatedTaskResult{std::move(exit_code_or_status), execution_time}));
 }
 
 }  // namespace
@@ -51,14 +53,13 @@ DelegatedTaskRunner::DelegatedTaskRunner(
 
 DelegatedTaskRunner::~DelegatedTaskRunner() {
   if (task_) {
-    CleanupAndReturnResult(
-        DelegatedTaskStatus::kRunnerDestroyedBeforeTaskCompletion);
+    CleanupAndReturnResult(base::unexpected(
+        DelegatedTaskStatus::kRunnerDestroyedBeforeTaskCompletion));
   }
 }
 
-void DelegatedTaskRunner::Run(
-    std::unique_ptr<DelegatedTask> task,
-    base::OnceCallback<void(DelegatedTaskResult)> callback) {
+void DelegatedTaskRunner::Run(std::unique_ptr<DelegatedTask> task,
+                              DelegatedTaskCompletionCallback callback) {
   CHECK(task_start_time_.is_null());
 
   task_ = std::move(task);
@@ -68,7 +69,7 @@ void DelegatedTaskRunner::Run(
   // TODO(b/525018453): Verify the binary after fetching the path.
   base::FilePath peh_binary_path = peh_launcher_->GetBinaryPath();
   if (peh_binary_path.empty()) {
-    CleanupAndReturnResult(DelegatedTaskStatus::kPehNotFound);
+    CleanupAndReturnResult(base::unexpected(DelegatedTaskStatus::kPehNotFound));
     return;
   }
 
@@ -78,12 +79,14 @@ void DelegatedTaskRunner::Run(
 
   process_ = peh_launcher_->LaunchProcess(cmd_line, base::LaunchOptions());
   if (!process_.IsValid()) {
-    CleanupAndReturnResult(DelegatedTaskStatus::kProcessLaunchFailure);
+    CleanupAndReturnResult(
+        base::unexpected(DelegatedTaskStatus::kProcessLaunchFailure));
     return;
   }
 
   if (!watcher_.StartWatchingOnce(process_.Handle(), this)) {
-    CleanupAndReturnResult(DelegatedTaskStatus::kWatchProcessHandleFailure);
+    CleanupAndReturnResult(
+        base::unexpected(DelegatedTaskStatus::kWatchProcessHandleFailure));
     return;
   }
 
@@ -91,33 +94,34 @@ void DelegatedTaskRunner::Run(
       FROM_HERE,
       base::BindOnce(&DelegatedTaskRunner::CleanupAndReturnResult,
                      weak_factory_.GetWeakPtr(),
-                     DelegatedTaskStatus::kTaskTimeout),
+                     base::unexpected(DelegatedTaskStatus::kTaskTimeout)),
       task_->GetTimeout());
 }
 
 void DelegatedTaskRunner::OnObjectSignaled(HANDLE object) {
   DWORD exit_code = 0;
-  DelegatedTaskStatus status = DelegatedTaskStatus::kInvalidExitCode;
+  DelegatedTaskExitCodeOrStatus exit_code_or_status;
 
   if (::GetExitCodeProcess(process_.Handle(), &exit_code)) {
     switch (exit_code) {
-      case 0:
-        status = DelegatedTaskStatus::kSuccess;
-        break;
-      case 1:
-        status = DelegatedTaskStatus::kInvalidTaskType;
+      case static_cast<int>(PehExitCode::kInvalidTaskType):
+        exit_code_or_status =
+            base::unexpected(DelegatedTaskStatus::kInvalidTaskType);
         break;
       default:
-        status = task_->ParseExitCode(static_cast<int>(exit_code));
+        exit_code_or_status = static_cast<int>(exit_code);
+        break;
     }
   } else {
-    status = DelegatedTaskStatus::kInvalidExitCode;
+    exit_code_or_status =
+        base::unexpected(DelegatedTaskStatus::kInvalidExitCode);
   }
 
-  CleanupAndReturnResult(status);
+  CleanupAndReturnResult(std::move(exit_code_or_status));
 }
 
-void DelegatedTaskRunner::CleanupAndReturnResult(DelegatedTaskStatus status) {
+void DelegatedTaskRunner::CleanupAndReturnResult(
+    DelegatedTaskExitCodeOrStatus exit_code_or_status) {
   watcher_.StopWatching();
 
   if (process_.IsValid() && process_.IsRunning()) {
@@ -129,7 +133,8 @@ void DelegatedTaskRunner::CleanupAndReturnResult(DelegatedTaskStatus status) {
 
   CHECK(completion_callback_);
   base::TimeDelta execution_time = base::TimeTicks::Now() - task_start_time_;
-  ReturnTaskCompletionStatusAsync(status, execution_time,
+  ReturnTaskCompletionStatusAsync(std::move(exit_code_or_status),
+                                  execution_time,
                                   std::move(completion_callback_));
 
   // TODO(b/525017787): Add UMA telemetry to log task result.
