@@ -397,7 +397,7 @@ class GlicBrowserTestMixin : public T {
       return base::ok();
     }
     base::WeakPtr<GlicInstanceImpl> weak_instance = instance->GetWeakPtr();
-    instance->Close(EmbedderKey(tab), CloseOptions());
+    instance->Close(SidePanelEmbedderKey(tab), CloseOptions());
     RETURN_IF_ERROR(
         WaitForSidePanelState(tab, GlicSidePanelCoordinator::State::kClosed));
 

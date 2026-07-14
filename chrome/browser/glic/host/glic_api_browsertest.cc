@@ -1842,9 +1842,14 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest,
 
   // Activate tabs in a specific order to set recency: 1, 3, 2.
   // Instance 2 will be most recent, then 3, then 1.
-  browser()->tab_strip_model()->ActivateTabAt(0);
-  browser()->tab_strip_model()->ActivateTabAt(2);
-  browser()->tab_strip_model()->ActivateTabAt(1);
+  for (int tab_index : {0, 2, 1}) {
+    browser()->tab_strip_model()->ActivateTabAt(tab_index);
+    tabs::TabInterface* tab =
+        browser()->tab_strip_model()->GetTabAtIndex(tab_index);
+    GlicInstance* instance = GetService()->GetInstanceForTab(tab);
+    ASSERT_TRUE(instance);
+    ASSERT_TRUE(base::test::RunUntil([&]() { return instance->IsActive(); }));
+  }
 
   // Open a 4th tab to verify.
   ASSERT_TRUE(AddTabAtIndex(3, page_url(), ui::PAGE_TRANSITION_TYPED));

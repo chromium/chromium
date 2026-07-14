@@ -741,7 +741,7 @@ IN_PROC_BROWSER_TEST_F(GlicMessagingFullyEnabledBrowserTest,
   tabs::TabInterface* tab = GetTabListInterface()->GetActiveTab();
   ASSERT_NE(nullptr, tab);
   ASSERT_OK_AND_ASSIGN(auto* instance, OpenGlicForActiveTabAndDetach());
-  instance->UnbindEmbedder(tab);
+  instance->UnbindTab(tab);
   RegisterConversation(instance, "test-conv-no-bound");
 
   content::EvalJsResult result = ExecuteActivateTabWithConversation(

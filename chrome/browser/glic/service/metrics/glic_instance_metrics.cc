@@ -51,13 +51,14 @@ namespace glic {
 namespace {
 
 SafeEmbedderKey ToSafeKey(const EmbedderKey& key) {
-  return std::visit(absl::Overload{[](tabs::TabInterface* tab) {
-                                     return SafeEmbedderKey(tab->GetHandle());
-                                   },
-                                   [](const FloatingEmbedderKey& fkey) {
-                                     return SafeEmbedderKey(fkey);
-                                   }},
-                    key);
+  return std::visit(
+      absl::Overload{[](const SidePanelEmbedderKey& key) -> SafeEmbedderKey {
+                       return SafeEmbedderKey(key.tab->GetHandle());
+                     },
+                     [](const FloatingEmbedderKey& key) -> SafeEmbedderKey {
+                       return SafeEmbedderKey(key);
+                     }},
+      key);
 }
 
 std::string_view GetInputModeString(mojom::WebClientMode input_mode) {
@@ -363,7 +364,7 @@ void GlicInstanceMetrics::OnInstanceCreatedWithoutWarming() {
 
 void GlicInstanceMetrics::OnSwitchFromConversation(
     const ShowOptions& show_options,
-    const std::optional<EmbedderKey>& key) {
+    std::optional<EmbedderKey> active_key) {
   if (std::holds_alternative<FloatingShowOptions>(
           show_options.embedder_options)) {
     base::RecordAction(
@@ -376,9 +377,10 @@ void GlicInstanceMetrics::OnSwitchFromConversation(
   }
 
   // If there's an active side panel, record the switch action on its helper.
-  if (key.has_value()) {
-    if (const auto* tab_ptr = std::get_if<tabs::TabInterface*>(&key.value())) {
-      if (auto* helper = GlicInstanceHelper::From(*tab_ptr)) {
+  if (active_key) {
+    if (auto* sp_key = std::get_if<SidePanelEmbedderKey>(&*active_key)) {
+      tabs::TabInterface& tab = sp_key->tab.get();
+      if (auto* helper = GlicInstanceHelper::From(&tab)) {
         helper->OnDaisyChainAction(
             DaisyChainFirstAction::kSwitchedConversation);
       }
@@ -528,17 +530,13 @@ void GlicInstanceMetrics::OnDetach() {
 void GlicInstanceMetrics::OnUnbindEmbedder(EmbedderKey key) {
   base::RecordAction(base::UserMetricsAction("Glic.Instance.UnBind"));
   LogEvent(GlicInstanceEvent::kUnbindEmbedder);
-  if (std::holds_alternative<tabs::TabInterface*>(key)) {
-    if (auto* helper =
-            GlicInstanceHelper::From(*std::get_if<tabs::TabInterface*>(&key))) {
+  if (auto* sp_key = std::get_if<SidePanelEmbedderKey>(&key)) {
+    tabs::TabInterface& tab = sp_key->tab.get();
+    if (auto* helper = GlicInstanceHelper::From(&tab)) {
       // Log NoAction if instance is unbound before any other actions occur.
       helper->OnDaisyChainAction(DaisyChainFirstAction::kNoAction);
     }
-  }
-  tabs::TabInterface** tab_ptr = std::get_if<tabs::TabInterface*>(&key);
-  if (tab_ptr) {
-    tabs::TabInterface* tab = *tab_ptr;
-    tabs::TabHandle tab_handle = tab->GetHandle();
+    tabs::TabHandle tab_handle = tab.GetHandle();
     auto it = side_panel_open_times_.find(tab_handle);
     if (it != side_panel_open_times_.end()) {
       base::TimeDelta duration = base::TimeTicks::Now() - it->second;
@@ -556,7 +554,6 @@ void GlicInstanceMetrics::OnUnbindEmbedder(EmbedderKey key) {
             duration, base::Milliseconds(1), base::Hours(1), 50);
       }
       side_panel_open_times_.erase(it);
-
     } else {
       base::UmaHistogramEnumeration(
           "Glic.Instance.Metrics.Error",

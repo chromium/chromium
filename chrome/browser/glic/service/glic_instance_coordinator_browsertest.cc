@@ -26,6 +26,7 @@
 #include "chrome/browser/glic/host/webui_contents_container.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
+#include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/public/glic_side_panel_coordinator.h"
 #include "chrome/browser/glic/service/glic_instance_coordinator_impl.h"
 #include "chrome/browser/glic/service/glic_instance_impl.h"
@@ -462,7 +463,7 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorUnbindOnCloseTest,
   // DidCloseFor() -> UnbindEmbedder() in a re-entrant frame, deleting
   // the instance. The outer frame will safely return early via the
   // base::WeakPtr guard.
-  instance->UnbindEmbedder(EmbedderKey(tab1));
+  instance->UnbindEmbedder(SidePanelEmbedderKey(tab1));
 
   ASSERT_OK(RunUntilEqual<GlicInstanceImpl*>(
       [&]() { return weak_instance.get(); }, nullptr));
@@ -1080,7 +1081,7 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
 
   // Close the side panel for this tab.
   auto original_instance_id = instance->id();
-  instance->Close(EmbedderKey(tab), CloseOptions());
+  instance->Close(SidePanelEmbedderKey(tab), CloseOptions());
   ASSERT_OK(
       WaitForSidePanelState(tab, GlicSidePanelCoordinator::State::kClosed));
 
@@ -1183,7 +1184,7 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorActorTaskTest,
   tabs::TabInterface* tab = GetTabListInterface()->GetActiveTab();
 
   PreventDeletionOnClose(instance);
-  instance->Close(EmbedderKey(tab), CloseOptions());
+  instance->Close(SidePanelEmbedderKey(tab), CloseOptions());
   ASSERT_OK(
       WaitForSidePanelState(tab, GlicSidePanelCoordinator::State::kClosed));
 
@@ -1790,7 +1791,7 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
   PreventDeletionOnClose(instance);
 
   // Close the embedder.
-  instance->Close(EmbedderKey(tab), CloseOptions());
+  instance->Close(SidePanelEmbedderKey(tab), CloseOptions());
   ASSERT_OK(WaitForGlicClose(instance));
 
   // 2. Verify fallback case (no active embedder).
@@ -1813,7 +1814,7 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
 
   base::WeakPtr<GlicInstanceImpl> weak_instance = instance->GetWeakPtr();
   // Close the side panel (unbind the embedder).
-  instance->UnbindEmbedder(EmbedderKey(tab));
+  instance->UnbindEmbedder(SidePanelEmbedderKey(tab));
 
   ASSERT_OK(
       WaitForSidePanelState(tab, GlicSidePanelCoordinator::State::kClosed));

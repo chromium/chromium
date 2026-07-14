@@ -91,7 +91,8 @@ void GlicInactiveSidePanelUi::OnSidePanelStateChanged(
   if (state == GlicSidePanelCoordinator::State::kShown && tab_) {
     delegate_->Show(ShowOptions::ForSidePanel(*tab_));
   } else if (state == GlicSidePanelCoordinator::State::kClosed && tab_) {
-    delegate_->DidCloseFor(tab_.get(), EmbedderCloseReason::kExplicitlyClosed);
+    delegate_->DidCloseFor(SidePanelEmbedderKey{*tab_},
+                           EmbedderCloseReason::kExplicitlyClosed);
   }
 }
 

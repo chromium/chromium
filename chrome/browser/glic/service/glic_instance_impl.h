@@ -145,6 +145,7 @@ class GlicInstanceImpl : public GlicInstance,
   void Hibernate();
   void Shutdown();
   void CloseInstanceAndShutdown();
+
   void BindTabWithoutShowing(tabs::TabInterface* tab,
                              GlicPinTrigger pin_trigger,
                              bool pin_on_bind);
@@ -191,6 +192,7 @@ class GlicInstanceImpl : public GlicInstance,
 
   // NOTE: This method may result in the deletion of `this`.
   void UnbindEmbedder(EmbedderKey key);
+  void UnbindTab(tabs::TabInterface* tab);
   GlicUiEmbedder* GetEmbedderForTab(tabs::TabInterface* tab);
   bool ContextAccessIndicatorEnabled();
   void CloseAllEmbedders();
@@ -206,6 +208,12 @@ class GlicInstanceImpl : public GlicInstance,
   std::string conversation_title() const override;
   std::optional<int> task_id() const override;
   std::vector<tabs::TabInterface*> GetBoundTabs() const;
+
+  // If the key corresponds to a tab-associated embedder (such as a side panel),
+  // returns the corresponding TabInterface pointer. Otherwise (e.g., a floating
+  // UI), returns nullptr.
+  tabs::TabInterface* GetTabFromEmbedderKey(const EmbedderKey& key) const;
+
   std::optional<Target::Surface> GetLastActiveSurface() const;
   base::CallbackListSubscription AddConversationInfoChangedCallback(
       base::RepeatingCallback<void(const mojom::ConversationInfo&)> callback);
@@ -307,6 +315,7 @@ class GlicInstanceImpl : public GlicInstance,
     EmbedderEntry& operator=(EmbedderEntry&&);
 
     std::unique_ptr<GlicUiEmbedder> embedder;
+    raw_ptr<tabs::TabInterface> tab;
     base::CallbackListSubscription destruction_subscription;
     base::CallbackListSubscription tab_activation_subscription;
     bool user_input_submitted_while_bound = false;
@@ -341,6 +350,7 @@ class GlicInstanceImpl : public GlicInstance,
       mojom::FreOverride fre_override = mojom::FreOverride::kUnspecified);
   void OnBoundTabDestroyed(tabs::TabInterface* tab);
   void OnBoundTabActivated(tabs::TabInterface* tab);
+  void OnBoundTabActivatedAsync(base::WeakPtr<tabs::TabInterface> tab);
   bool ShouldDoAutomaticActivation() const;
   void OnZeroStateSuggestionsFetched(
       mojom::ZeroStateSuggestionsPtr suggestions,

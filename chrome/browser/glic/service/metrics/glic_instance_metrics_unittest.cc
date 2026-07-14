@@ -241,7 +241,7 @@ TEST_F(GlicInstanceMetricsTest, OnShowInSidePanel_WhileAlreadyOpen_LogsError) {
 
 TEST_F(GlicInstanceMetricsTest, OnUnbindEmbedder_WithoutOpening_LogsError) {
   tabs::TabInterface* tab_ptr = &mock_tab_;
-  metrics_.OnUnbindEmbedder(tab_ptr);
+  metrics_.OnUnbindEmbedder(SidePanelEmbedderKey{tab_ptr});
   histogram_tester_.ExpectUniqueSample(
       "Glic.Instance.Metrics.Error",
       GlicInstanceMetricsError::kTabUnbindWithoutOpen, 1);

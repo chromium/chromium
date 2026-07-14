@@ -1145,7 +1145,7 @@ GlicInstanceCoordinatorImpl::GetSortedRecentInstances(
 void GlicInstanceCoordinatorImpl::UnbindTabFromAnyInstance(
     tabs::TabInterface* tab) {
   if (auto* instance = GetInstanceImplForTab(tab)) {
-    instance->UnbindEmbedder(EmbedderKey(tab));
+    instance->UnbindEmbedder(SidePanelEmbedderKey(tab));
   }
 }
 

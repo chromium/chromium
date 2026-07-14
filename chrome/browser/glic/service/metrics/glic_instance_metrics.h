@@ -124,7 +124,7 @@ class GlicInstanceMetrics : public GlicInstanceMetricsBackwardsCompatibility {
   // Called when GlicInstanceImpl::SwitchConversation is called from this
   // instance (usually via 'start new chat' or re etn chats selection).
   void OnSwitchFromConversation(const ShowOptions& show_options,
-                                const std::optional<EmbedderKey>& key);
+                                std::optional<EmbedderKey> active_key);
 
   // Called when GlicInstanceImpl::SwitchConversation is called to activate this
   // instance (usually via 'start new chat' or recent chats selection).
@@ -165,8 +165,6 @@ class GlicInstanceMetrics : public GlicInstanceMetricsBackwardsCompatibility {
   // instance.
   void OnOpen(glic::mojom::InvocationSource source, const ShowOptions& options);
 
-  // Returns true if this is the first time this specific embedder is becoming
-  // visible after being opened/closed.
   bool MarkShownAndCheckIfFirstTime(EmbedderKey key);
 
   void ResetShownState(EmbedderKey key);
