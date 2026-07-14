@@ -19,6 +19,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/child_process_id.h"
 #include "extensions/browser/guest_view/mime_handler_view/mime_handler_view_embedder.h"
 #include "extensions/browser/guest_view/mime_handler_view/mime_handler_view_guest.h"
 #include "extensions/browser/mime_handler/mime_handler_page.h"
@@ -33,7 +34,8 @@ namespace extensions {
 namespace {
 
 using ProcessIdToHelperMap =
-    base::flat_map<int32_t, std::unique_ptr<MimeHandlerViewAttachHelper>>;
+    base::flat_map<content::ChildProcessId,
+                   std::unique_ptr<MimeHandlerViewAttachHelper>>;
 ProcessIdToHelperMap* GetProcessIdToHelperMap() {
   static base::NoDestructor<ProcessIdToHelperMap> instance;
   return instance.get();
@@ -43,7 +45,7 @@ ProcessIdToHelperMap* GetProcessIdToHelperMap() {
 
 // static
 MimeHandlerViewAttachHelper* MimeHandlerViewAttachHelper::Get(
-    int32_t render_process_id) {
+    content::ChildProcessId render_process_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   auto& map = *GetProcessIdToHelperMap();
   if (!map.contains(render_process_id)) {
@@ -82,12 +84,11 @@ void MimeHandlerViewAttachHelper::RenderProcessHostDestroyed(
     return;
   }
   render_process_host->RemoveObserver(this);
-  GetProcessIdToHelperMap()->erase(render_process_host_->GetDeprecatedID());
+  GetProcessIdToHelperMap()->erase(render_process_host_->GetID());
 }
 
 void MimeHandlerViewAttachHelper::AttachToOuterWebContents(
     std::unique_ptr<MimeHandlerViewGuest> guest_view,
-    int32_t embedder_render_process_id,
     content::RenderFrameHost* outer_contents_frame,
     int32_t element_instance_id,
     bool is_full_page_plugin) {

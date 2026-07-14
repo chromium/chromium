@@ -14,6 +14,7 @@
 #include "base/memory/weak_ptr.h"
 #include "content/public/browser/frame_tree_node_id.h"
 #include "content/public/browser/render_process_host_observer.h"
+#include "content/public/common/child_process_id.h"
 
 namespace content {
 class RenderFrameHost;
@@ -34,7 +35,8 @@ class MimeHandlerViewGuest;
 class MimeHandlerViewAttachHelper : content::RenderProcessHostObserver {
  public:
   // Returns the unique helper for process identified with `render_process_id`.
-  static MimeHandlerViewAttachHelper* Get(int render_process_id);
+  static MimeHandlerViewAttachHelper* Get(
+      content::ChildProcessId render_process_id);
 
   // Called on IO thread to override the response body for frame-based
   // MimeHandlerView. The resulting payload will be populated with a template
@@ -69,7 +71,6 @@ class MimeHandlerViewAttachHelper : content::RenderProcessHostObserver {
   // outer WebContents (embedder WebContents) on the UI thread.
   void AttachToOuterWebContents(
       std::unique_ptr<MimeHandlerViewGuest> guest_view,
-      int32_t embedder_render_process_id,
       content::RenderFrameHost* outer_contents_frame,
       int32_t element_instance_id,
       bool is_full_page_plugin);
