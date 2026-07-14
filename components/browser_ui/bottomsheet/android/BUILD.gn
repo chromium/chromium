@@ -37,8 +37,10 @@ android_library("java") {
 
 android_resources("java_resources") {
   sources = [
+    "java/res/drawable/bottom_sheet_desktop_background.xml",
     "java/res/layout/bottom_sheet.xml",
     "java/res/layout/bottom_sheet_handlebar.xml",
+    "java/res/values/colors.xml",
     "java/res/values/dimens.xml",
   ]
 

@@ -117,7 +117,8 @@ public class BottomSheetUnitTest {
                 /* edgeToEdgeBottomInsetSupplier= */ () -> 0,
                 /* appHeaderHeight= */ 0,
                 /* bottomMargin= */ 0,
-                mInsetObserver);
+                mInsetObserver,
+                /* isLargeFormFactor= */ false);
 
         mBottomSheet.setSheetBackgroundForTesting(mSheetBackground);
         mBottomSheet.setShadowLayerForTesting(mShadowLayerView);
@@ -709,5 +710,93 @@ public class BottomSheetUnitTest {
         // Height should be updated to 250 (since viewport is 1000).
         assertEquals(250, contentContainer.getLayoutParams().height);
         assertEquals(0f, mBottomSheet.getTranslationY(), 0.0f);
+    }
+
+    @Test
+    public void testDesktopUi_LargeFormFactorSupported() {
+        BottomSheet sheet =
+                (BottomSheet) LayoutInflater.from(mActivity).inflate(R.layout.bottom_sheet, null);
+        mSheetContainer.removeAllViews();
+        mSheetContainer.addView(sheet);
+        sheet.setSheetContainerForTesting(mSheetContainer);
+        sheet.setToolbarHolderForTesting(mToolbarHolder);
+        sheet.setBottomSheetContentContainerForTesting(
+                sheet.findViewById(R.id.bottom_sheet_content));
+        sheet.setSheetBackgroundForTesting(mSheetBackground);
+        sheet.setShadowLayerForTesting(mShadowLayerView);
+
+        sheet.init(
+                mActivity.getWindow(),
+                /* keyboardDelegate= */ mKeyboardDelegate,
+                /* alwaysFullWidth= */ false,
+                /* edgeToEdgeBottomInsetSupplier= */ () -> 0,
+                /* appHeaderHeight= */ 0,
+                /* bottomMargin= */ 0,
+                mInsetObserver,
+                /* isLargeFormFactor= */ true);
+
+        doReturn(true).when(mSheetContent).supportsLargeFormFactor();
+        doReturn(new View(mActivity)).when(mSheetContent).getContentView();
+        setupBottomSheetStrings(android.R.string.ok, android.R.string.ok);
+        doReturn((float) HeightMode.DEFAULT).when(mSheetContent).getFullHeightRatio();
+        doReturn((float) HeightMode.DISABLED).when(mSheetContent).getHalfHeightRatio();
+        doReturn(HeightMode.DEFAULT).when(mSheetContent).getPeekHeight();
+
+        sheet.showContent(mSheetContent);
+
+        assertEquals(
+                "Max width should be desktop width.",
+                mActivity
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.bottom_sheet_large_form_factor_width),
+                sheet.getMaxSheetWidth());
+
+        assertEquals(
+                "Bottom margin should be updated.",
+                mActivity
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.bottom_sheet_desktop_bottom_margin),
+                sheet.getContainerBottomMargin());
+    }
+
+    @Test
+    public void testDesktopUi_LargeFormFactorNotSupported() {
+        BottomSheet sheet =
+                (BottomSheet) LayoutInflater.from(mActivity).inflate(R.layout.bottom_sheet, null);
+        mSheetContainer.removeAllViews();
+        mSheetContainer.addView(sheet);
+        sheet.setSheetContainerForTesting(mSheetContainer);
+        sheet.setToolbarHolderForTesting(mToolbarHolder);
+        sheet.setBottomSheetContentContainerForTesting(
+                sheet.findViewById(R.id.bottom_sheet_content));
+        sheet.setSheetBackgroundForTesting(mSheetBackground);
+        sheet.setShadowLayerForTesting(mShadowLayerView);
+
+        sheet.init(
+                mActivity.getWindow(),
+                /* keyboardDelegate= */ mKeyboardDelegate,
+                /* alwaysFullWidth= */ false,
+                /* edgeToEdgeBottomInsetSupplier= */ () -> 0,
+                /* appHeaderHeight= */ 0,
+                /* bottomMargin= */ 0,
+                mInsetObserver,
+                /* isLargeFormFactor= */ true);
+
+        doReturn(false).when(mSheetContent).supportsLargeFormFactor();
+        doReturn(new View(mActivity)).when(mSheetContent).getContentView();
+        setupBottomSheetStrings(android.R.string.ok, android.R.string.ok);
+        doReturn((float) HeightMode.DEFAULT).when(mSheetContent).getFullHeightRatio();
+        doReturn((float) HeightMode.DISABLED).when(mSheetContent).getHalfHeightRatio();
+        doReturn(HeightMode.DEFAULT).when(mSheetContent).getPeekHeight();
+
+        sheet.showContent(mSheetContent);
+
+        // Max width should not be large form factor width
+        assertFalse(
+                "Max width should not be desktop width.",
+                mActivity
+                                .getResources()
+                                .getDimensionPixelSize(R.dimen.bottom_sheet_large_form_factor_width)
+                        == sheet.getMaxSheetWidth());
     }
 }

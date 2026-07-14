@@ -205,7 +205,7 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController {
     }
 
     @VisibleForTesting
-    boolean isDesktopUi() {
+    boolean isLargeFormFactor() {
         return mEnableLargeFormFactorUi && DeviceInfo.isDesktop();
     }
 
@@ -245,7 +245,8 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController {
                 mEdgeToEdgeBottomInsetSupplier,
                 mAppHeaderHeight,
                 mBottomControlsOffset,
-                insetObserver);
+                insetObserver,
+                isLargeFormFactor());
 
         // Initialize the queue with a comparator that checks content priority.
         mContentQueue =
@@ -280,6 +281,18 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController {
                             return;
                         }
 
+                        if (isLargeFormFactor()
+                                && mBottomSheet.getCurrentSheetContent() != null
+                                && mBottomSheet
+                                        .getCurrentSheetContent()
+                                        .supportsLargeFormFactor()) {
+                            scrimProperties.set(
+                                    ScrimProperties.BACKGROUND_COLOR,
+                                    mBottomSheet
+                                            .getContext()
+                                            .getColor(R.color.bottom_sheet_desktop_scrim));
+                        }
+
                         scrimManager.showScrim(scrimProperties);
                         mScrimShown = true;
                         onScrimVisibilityChanged(true);
@@ -296,6 +309,9 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController {
                             scrimManager.hideScrim(scrimProperties, /* animate= */ true);
                             mScrimShown = false;
                         }
+
+                        // Reset property to default correctly for any future sheets.
+                        scrimProperties.set(ScrimProperties.BACKGROUND_COLOR, null);
 
                         // Try to swap contents unless the sheet's content has a custom lifecycle.
                         if (mBottomSheet.getCurrentSheetContent() != null

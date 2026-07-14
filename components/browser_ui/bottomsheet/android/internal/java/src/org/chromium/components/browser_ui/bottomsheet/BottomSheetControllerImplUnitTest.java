@@ -8,6 +8,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -108,20 +110,21 @@ public class BottomSheetControllerImplUnitTest {
         mController.runSheetInitializerForTesting();
         verify(mBottomSheet)
                 .init(
-                        mWindow,
-                        mKeyboardVisibilityDelegate,
-                        false,
-                        mEdgeToEdgeBottomInsetSupplier,
-                        APP_HEADER_HEIGHT,
-                        0,
-                        mInsetObserver);
+                        eq(mWindow),
+                        eq(mKeyboardVisibilityDelegate),
+                        eq(false),
+                        eq(mEdgeToEdgeBottomInsetSupplier),
+                        eq(APP_HEADER_HEIGHT),
+                        eq(0),
+                        eq(mInsetObserver),
+                        anyBoolean());
     }
 
     @Test
     public void testIsDesktopUi_FeatureDisabled() {
         DeviceInfo.setIsDesktopForTesting(true);
         // mController is initialized with enableLargeFormFactorUi = false in setUp()
-        assertFalse(mController.isDesktopUi());
+        assertFalse(mController.isLargeFormFactor());
     }
 
     @Test
@@ -138,7 +141,7 @@ public class BottomSheetControllerImplUnitTest {
                         mInsetObserver,
                         /* enableLargeFormFactorUi= */ true);
         DeviceInfo.setIsDesktopForTesting(false);
-        assertFalse(controller.isDesktopUi());
+        assertFalse(controller.isLargeFormFactor());
     }
 
     @Test
@@ -155,7 +158,7 @@ public class BottomSheetControllerImplUnitTest {
                         mInsetObserver,
                         /* enableLargeFormFactorUi= */ true);
         DeviceInfo.setIsDesktopForTesting(true);
-        assertTrue(controller.isDesktopUi());
+        assertTrue(controller.isLargeFormFactor());
     }
 
     @Test

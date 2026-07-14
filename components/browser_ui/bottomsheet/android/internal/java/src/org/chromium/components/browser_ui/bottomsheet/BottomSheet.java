@@ -213,6 +213,9 @@ class BottomSheet extends FrameLayout
     /** Whether or not always use the full width of the container. */
     private boolean mAlwaysFullWidth;
 
+    /** Whether the device is on a platform that supports a large form factor. */
+    private boolean mIsLargeFormFactor;
+
     /** The window for the bottom sheet. */
     private @MonotonicNonNull Window mWindow;
 
@@ -383,7 +386,8 @@ class BottomSheet extends FrameLayout
             Supplier<Integer> edgeToEdgeBottomInsetSupplier,
             int appHeaderHeight,
             int bottomMargin,
-            InsetObserver insetObserver) {
+            InsetObserver insetObserver,
+            boolean isLargeFormFactor) {
         mWindow = window;
         mEdgeToEdgeBottomInsetSupplier = edgeToEdgeBottomInsetSupplier;
         mInsetObserver = insetObserver;
@@ -406,6 +410,7 @@ class BottomSheet extends FrameLayout
         mContainerWidth = mSheetContainer.getWidth();
         mContainerHeight = mSheetContainer.getHeight();
         mAlwaysFullWidth = alwaysFullWidth;
+        mIsLargeFormFactor = isLargeFormFactor;
 
         sizeAndPositionSheetInParent();
 
@@ -1339,11 +1344,22 @@ class BottomSheet extends FrameLayout
         return mContainerHeight;
     }
 
+    @VisibleForTesting
+    boolean isLargeFormFactorUiEnabled() {
+        return mIsLargeFormFactor
+                && mSheetContent != null
+                && mSheetContent.supportsLargeFormFactor();
+    }
+
     /**
      * @return The maximum width of the bottom sheet based on its current state and container.
      */
     public int getMaxSheetWidth() {
         if (!mAlwaysFullWidth) {
+            if (isLargeFormFactorUiEnabled()) {
+                return getResources()
+                        .getDimensionPixelSize(R.dimen.bottom_sheet_large_form_factor_width);
+            }
             int narrowWidthThreshold =
                     getResources()
                             .getDimensionPixelSize(R.dimen.bottom_sheet_narrow_width_threshold);
@@ -1577,6 +1593,12 @@ class BottomSheet extends FrameLayout
             }
         }
         // Update the color before notify the observers, as some might read the sheet bg color.
+        if (isLargeFormFactorUiEnabled()) {
+            mSheetContainer.setClipChildren(true);
+            mSheetBackground.setBackgroundResource(R.drawable.bottom_sheet_desktop_background);
+            mShadowLayer.setVisibility(View.GONE);
+            setBottomMargin(0);
+        }
         updateBackgroundColor();
         updateBackgroundGlow();
         for (BottomSheetObserver o : mObservers) {
@@ -1600,9 +1622,39 @@ class BottomSheet extends FrameLayout
                 mBottomSheetContentContainer.setLayoutParams(params);
             }
         } else {
-            if (params.height != ViewGroup.LayoutParams.MATCH_PARENT) {
-                params.height = ViewGroup.LayoutParams.MATCH_PARENT;
+            int targetHeight =
+                    isLargeFormFactorUiEnabled()
+                            ? (int) getSheetHeightForState(SheetState.FULL)
+                            : ViewGroup.LayoutParams.MATCH_PARENT;
+            if (params.height != targetHeight) {
+                params.height = targetHeight;
                 mBottomSheetContentContainer.setLayoutParams(params);
+            }
+
+            // On large form factors, the sheet floats rather than docking to the bottom edge.
+            // As such, the background and shadow must tightly wrap the exact height of the content
+            // rather than stretching to fill the parent container vertically.
+            if (isLargeFormFactorUiEnabled()) {
+                ViewGroup.LayoutParams bgParams = mSheetBackground.getLayoutParams();
+                if (bgParams != null && bgParams.height != targetHeight) {
+                    bgParams.height = targetHeight;
+                    mSheetBackground.setLayoutParams(bgParams);
+                }
+            } else {
+                // For standard form factors, the sheet docks to the bottom edge and extends below
+                // the viewport (e.g. into the navigation bar area). Therefore, the background and
+                // shadow must be allowed to stretch to fill the parent container fully.
+                ViewGroup.LayoutParams bgParams = mSheetBackground.getLayoutParams();
+                if (bgParams != null && bgParams.height != ViewGroup.LayoutParams.MATCH_PARENT) {
+                    bgParams.height = ViewGroup.LayoutParams.MATCH_PARENT;
+                    mSheetBackground.setLayoutParams(bgParams);
+                }
+                ViewGroup.LayoutParams shadowParams = mShadowLayer.getLayoutParams();
+                if (shadowParams != null
+                        && shadowParams.height != ViewGroup.LayoutParams.MATCH_PARENT) {
+                    shadowParams.height = ViewGroup.LayoutParams.MATCH_PARENT;
+                    mShadowLayer.setLayoutParams(shadowParams);
+                }
             }
 
             @Px int viewportBottomInset = getViewportBottomInset();
@@ -1724,6 +1776,14 @@ class BottomSheet extends FrameLayout
     }
 
     void setBottomMargin(@Px int bottomMargin) {
+        // Enforce the baseline visual requirements for large form factor devices: ensure the sheet
+        // physically floats above the logical bottom by attaching a rigid bottom margin offset.
+        if (isLargeFormFactorUiEnabled()) {
+            bottomMargin +=
+                    getResources()
+                            .getDimensionPixelSize(R.dimen.bottom_sheet_desktop_bottom_margin);
+        }
+
         // TODO(crbug.com/521433079): Should early return if this doesn't change. Leaving for now to
         // ensure we don't introduce subtle client regressions.
         boolean bottomMarginChanged = mBottomMargin != bottomMargin;

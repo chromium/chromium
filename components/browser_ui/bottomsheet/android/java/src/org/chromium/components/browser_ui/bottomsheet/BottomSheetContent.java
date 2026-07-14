@@ -392,4 +392,12 @@ public interface BottomSheetContent {
     default boolean shouldRestoreStateOnUnsuppress() {
         return true;
     }
+
+    /**
+     * @return Whether this content supports rendering specifically configured for large form factor
+     *     devices (e.g., width constraints, specific background styling).
+     */
+    default boolean supportsLargeFormFactor() {
+        return true;
+    }
 }
