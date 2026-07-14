@@ -2642,51 +2642,6 @@
     "expires": "never"
   },
   {
-    "prefix": "private-aggregation",
-    "platforms": [
-      "Linux"
-    ],
-    "bases": [
-      "external/wpt/private-aggregation"
-    ],
-    "exclusive_tests": [
-      "external/wpt/private-aggregation"
-    ],
-    "args": [
-      "--enable-privacy-sandbox-ads-apis",
-      "--enable-features=FencedFramesDefaultMode,AggregationServiceMultipleCloudProviders:allowlist/https%3A%2F%2Fweb-platform.test%3A8444,FencedFramesEnforceFocus,PrivateAggregationApiContributionMerging,PrivateAggregationApiMaxContributions,PrivateAggregationApiErrorReporting"
-    ],
-    "owners": [
-      "alexmt@chromium.org",
-      "linnan@chromium.org"
-    ],
-    "expires": "Jul 1, 2026"
-  },
-  {
-    "prefix": "private-aggregation-developer-mode",
-    "platforms": [
-      "Linux"
-    ],
-    "bases": [
-      "wpt_internal/private-aggregation",
-      "http/tests/inspector-protocol/private-aggregation"
-    ],
-    "exclusive_tests": [
-      "wpt_internal/private-aggregation",
-      "http/tests/inspector-protocol/private-aggregation"
-    ],
-    "args": [
-      "--enable-privacy-sandbox-ads-apis",
-      "--private-aggregation-developer-mode",
-      "--enable-features=FencedFramesDefaultMode,AggregationServiceMultipleCloudProviders:allowlist/https%3A%2F%2Fweb-platform%2Etest%3A8444%2Chttps%3A%2F%2Fwww1%2Eweb-platform%2Etest%3A8444%2Chttps%3A%2F%2F127.0.0.1%3A8443,PrivateAggregationApiBundledEnhancements,PrivateAggregationApiMultipleCloudProviders,PrivateAggregationApiContributionMerging,PrivateAggregationApiMaxContributions,PrivateAggregationApiErrorReporting,FencedFramesLocalUnpartitionedDataAccess"
-    ],
-    "owners": [
-      "alexmt@chromium.org",
-      "linnan@chromium.org"
-    ],
-    "expires": "Jul 1, 2026"
-  },
-  {
     "prefix": "produce-compile-hints",
     "owners": [
       "marja@chromium.org"
@@ -2977,52 +2932,7 @@
       "daniec@microsoft.com"
     ]
   },
-  {
-    "prefix": "shared-storage-fenced-frame-mparch",
-    "owners": [
-      "cammie@chromium.org",
-      "yaoxia@chromium.org"
-    ],
-    "platforms": [
-      "Linux",
-      "Mac",
-      "Win"
-    ],
-    "bases": [
-      "external/wpt/shared-storage",
-      "http/tests/inspector-protocol/shared-storage"
-    ],
-    "exclusive_tests": [
-      "external/wpt/shared-storage",
-      "http/tests/inspector-protocol/shared-storage"
-    ],
-    "args": [
-      "--enable-features=SharedStorageAPI,SharedStorageWebLocks,FencedFrames:implementation_type/mparch,PrivacySandboxAdsAPIsOverride,FencedFramesAPIChanges,FencedFramesDefaultMode,SharedStorageAPIEnableWALForDatabase,FencedFramesEnforceFocus,FencedFramesReportEventHeaderChanges,SharedStorageSelectURLSavedQueries,SharedStorageCreateWorkletCustomDataOrigin,SharedStorageTransactionalBatchUpdate"
-    ],
-    "expires": "May 31, 2026"
-  },
-  {
-    "prefix": "shared-storage-selecturl-limit",
-    "owners": [
-      "cammie@chromium.org",
-      "yaoxia@chromium.org"
-    ],
-    "platforms": [
-      "Linux",
-      "Mac",
-      "Win"
-    ],
-    "bases": [
-      "external/wpt/shared-storage-selecturl-limit/"
-    ],
-    "exclusive_tests": [
-      "external/wpt/shared-storage-selecturl-limit/"
-    ],
-    "args": [
-      "--enable-features=SharedStorageAPI,FencedFrames:implementation_type/mparch,FencedFramesAPIChanges,FencedFramesDefaultMode,FencedFramesEnforceFocus,PrivacySandboxAdsAPIsOverride,SharedStorageSelectURLLimit:SharedStorageSelectURLBitBudgetPerPageLoad/6/SharedStorageSelectURLBitBudgetPerSitePerPageLoad/3,SharedStorageAPIEnableWALForDatabase,SharedStorageSelectURLSavedQueries,SharedStorageCreateWorkletCustomDataOrigin"
-    ],
-    "expires": "May 31, 2026"
-  },
+
   {
     "prefix": "shared_array_buffer_on_desktop",
     "owners": [

@@ -30,51 +30,7 @@ function getRemoteContextDispatcherURL(origin) {
   return new URL(dispatcher_path, origin);
 }
 
-async function runSelectRawURL(href, resolve_to_config = false) {
-  try {
-    await sharedStorage.worklet.addModule(
-        '/wpt_internal/fenced_frame/resources/simple-shared-storage-module.js');
-  } catch (e) {
-    // Shared Storage needs to have a module added before we can operate on it.
-    // It is generated on the fly with this call, and since there's no way to
-    // tell through the API if a module already exists, wrap the addModule call
-    // in a try/catch so that if it runs a second time in a test, it will
-    // gracefully fail rather than bring the whole test down.
-  }
-  return await sharedStorage.selectURL(
-      'test-url-selection-operation', [{url: href}], {
-        data: {'mockResult': 0},
-        resolveToConfig: resolve_to_config,
-        keepAlive: true,
-      });
-}
 
-// Similar to generateURL, but creates
-// 1. An urn:uuid if `resolve_to_config` is false.
-// 2. A fenced frame config object if `resolve_to_config` is true.
-// This relies on a mock Shared Storage auction, since it is the simplest
-// WP-exposed way to turn a url into an urn:uuid or a fenced frame config.
-// Note: this function, unlike generateURL, is asynchronous and needs to be
-// called with an await operator.
-// @param {string} href - The base url of the page being navigated to
-// @param {string list} keylist - The list of key UUIDs to be used. Note that
-//                                order matters when extracting the keys
-// @param {boolean} [resolve_to_config = false] - Determines whether the result
-//                                                of `sharedStorage.selectURL()`
-//                                                is an urn:uuid or a fenced
-//                                                frame config.
-// Note:
-// 1. There is a limit of 3 calls per origin per pageload for
-// `sharedStorage.selectURL()`, so `runSelectURL()` must also respect this
-// limit.
-// 2. If `resolve_to_config` is true, blink feature `FencedFramesAPIChanges`
-// needs to be enabled for `selectURL()` to return a fenced frame config.
-// Otherwise `selectURL()` will fall back to the old behavior that returns an
-// urn:uuid.
-async function runSelectURL(href, keylist = [], resolve_to_config = false) {
-  const full_url = generateURL(href, keylist);
-  return await runSelectRawURL(full_url, resolve_to_config);
-}
 
 async function generateURNFromFledgeRawURL(
     href, nested_urls, resolve_to_config = false, ad_with_size = false,
@@ -166,7 +122,7 @@ async function generateURNFromFledgeRawURL(
 //                                               register reporting beacons
 //                                               after completion.
 async function generateURNFromFledge(
-    href, keylist, nested_urls = [], resolve_to_config = false,
+    href, keylist = [], nested_urls = [], resolve_to_config = false,
     ad_with_size = false, requested_size = null, register_beacon = false) {
   const full_url = generateURL(href, keylist);
   return generateURNFromFledgeRawURL(
@@ -286,12 +242,11 @@ async function attachOpaqueContext(
     generator_api, resolve_to_config, ad_with_size, requested_size,
     register_beacon, object_constructor, html, headers, origin) {
   const [uuid, url] = await generateRemoteContextURL(headers, origin);
-  const id = await (
-      generator_api == 'fledge' ?
-          generateURNFromFledge(
-              url, [], [], resolve_to_config, ad_with_size, requested_size,
-              register_beacon) :
-          runSelectURL(url, [], resolve_to_config));
+  assert_equals(generator_api, 'fledge',
+                'Only FLEDGE is supported for opaque context');
+  const id =
+      await generateURNFromFledge(url, [], [], resolve_to_config, ad_with_size,
+                                  requested_size, register_beacon);
   const object = object_constructor(id);
   return buildRemoteContextForObject(object, uuid, html);
 }
@@ -300,7 +255,7 @@ function attachPotentiallyOpaqueContext(
     generator_api, resolve_to_config, ad_with_size, requested_size,
     register_beacon, frame_constructor, html, headers, origin) {
   generator_api = generator_api.toLowerCase();
-  if (generator_api == 'fledge' || generator_api == 'sharedstorage') {
+  if (generator_api == 'fledge') {
     return attachOpaqueContext(
         generator_api, resolve_to_config, ad_with_size, requested_size,
         register_beacon, frame_constructor, html, headers, origin);

@@ -8,23 +8,6 @@
 
 <body>
 <script>
-for (const resolve_to_config of [true, false]) {
-  promise_test(async (t) => {
-    const key = token();
-    const select_url_result = await runSelectURL(
-        generateURL("resources/get-nested-configs-inner.html", [key]),
-        [], resolve_to_config);
-    attachFencedFrame(select_url_result);
-
-    const response = await nextValueFromServer(key);
-    const [length, first_url] = response.split(",");
-
-    assert_equals(length, '0', 'There should be 0 nested configurations.');
-  }, 'getNestedConfigs() from a fenced frame with the ' +
-     (resolve_to_config ? 'config' : 'urn:uuid') +
-     ' from sharedStroage.selectURL() should be empty');
-}
-
 promise_test(async (t) => {
   const key = token();
   const url = generateURL("resources/get-nested-configs-inner.html", [key]);
@@ -35,8 +18,6 @@ promise_test(async (t) => {
 
   assert_equals(length, '0', 'There should be 0 nested configurations.');
 }, 'getNestedConfigs() from a default mode frame should be empty');
-
-
 </script>
 </body>
 </html>

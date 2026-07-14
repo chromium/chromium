@@ -16,7 +16,6 @@ virtual/isolated-context/wpt_internal/*
 virtual/isolated-context-stable/wpt_internal/*
 virtual/forced-high-contrast-colors/wpt_internal/*
 virtual/trust-tokens/wpt_internal/*
-virtual/private-aggregation-developer-mode/wpt_internal/*
 virtual/task-tracking/wpt_internal/*
 virtual/fenced-frame-mparch-internal/wpt_internal/*
 virtual/js-shared-memory/wpt_internal/*
@@ -811,8 +810,7 @@ virtual/scalefactor200/external/wpt/largest-contentful-paint/animated/observe-cr
 virtual/scalefactor200/external/wpt/largest-contentful-paint/image-not-fully-visible.html
 virtual/scalefactor200/external/wpt/largest-contentful-paint/multiple-image-same-src.html
 virtual/scalefactor200/external/wpt/largest-contentful-paint/video-data-uri.html
-virtual/shared-storage-fenced-frame-mparch/external/wpt/shared-storage/select-url-saved-query-cross-origin-multi-query.tentative.https.sub.html
-virtual/shared-storage-fenced-frame-mparch/external/wpt/shared-storage/select-url-saved-query-same-origin-multi-query.tentative.https.sub.html
+
 external/wpt/speculation-rules/prerender/restriction-background-sync.https.html?target_hint=_blank
 external/wpt/speculation-rules/prerender/restriction-background-sync.https.html?target_hint=_self
 virtual/prefetch-cancel-unrelated-prefetch/external/wpt/speculation-rules/prerender/restriction-background-sync.https.html?target_hint=_blank
