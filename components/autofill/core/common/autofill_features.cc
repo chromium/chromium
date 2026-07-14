@@ -786,8 +786,9 @@ BASE_FEATURE(kAutofillPopupCheckHtmlFormPopupOverlap,
 BASE_FEATURE(kAutofillPopupDontAcceptNonVisibleEnoughSuggestion,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// When enabled, fields populated by standard Autofill or Autofill AI products
-// are not saved to the Autocomplete database at form submission.
+// Kill switch. When enabled, fields populated by standard Autofill or Autofill
+// AI products are not saved to the Autocomplete database at form submission.
+// TODO(crbug.com/533411686): Remove in M154.
 BASE_FEATURE(kAutofillPreventAutofillFromSavingToAutocomplete,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
