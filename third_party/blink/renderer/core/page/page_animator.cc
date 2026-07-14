@@ -53,6 +53,17 @@ DocumentsVector GetAllDocuments(Frame* main_frame) {
   return documents;
 }
 
+void UpdateAnimationsForDocument(
+    Document* document,
+    bool can_throttle,
+    base::TimeTicks monotonic_animation_start_time) {
+  if (!document->View()) {
+    document->GetDocumentAnimations().UpdateAnimationTimingForAnimationFrame();
+  } else if (!can_throttle) {
+    document->View()->ServiceScrollAnimations(monotonic_animation_start_time);
+  }
+}
+
 }  // namespace
 
 PageAnimator::PageAnimator(Page& page)
@@ -89,17 +100,13 @@ void PageAnimator::ServiceScriptedAnimations(
   }
 
   TRACE_EVENT0("blink,rail", "PageAnimator::serviceScriptedAnimations");
-  for (const auto& [document, can_throttle] : documents) {
-    if (!document->View()) {
-      document->GetDocumentAnimations()
-          .UpdateAnimationTimingForAnimationFrame();
-    } else {
-      if (!can_throttle) {
-        document->View()->ServiceScrollAnimations(
-            monotonic_animation_start_time);
-      }
+  if (!RuntimeEnabledFeatures::EventTimingMatchingHTMLEnabled()) {
+    for (const auto& [document, can_throttle] : documents) {
+      UpdateAnimationsForDocument(document, can_throttle,
+                                  monotonic_animation_start_time);
     }
   }
+
   ControllersVector controllers{};
   for (const auto& document : documents) {
     controllers.emplace_back(document.first->GetScriptedAnimationController(),
@@ -166,6 +173,32 @@ void PageAnimator::ServiceScriptedAnimations(
         }
       };
 
+  // Unlike run_for_all_active_controllers_with_timing, this iterates over all
+  // controllers (not just active ones). We explicitly track timing: accumulate
+  // elapsed time for active controllers, and report to the frame scheduler for
+  // others.
+  const auto run_for_all_controllers_with_timing = [&](const auto& function) {
+    wtf_size_t active_controller_id = 0;
+    auto start_time = base::TimeTicks::Now();
+    for (wtf_size_t i = 0; i < controllers.size(); ++i) {
+      function(i);
+      auto end_time = base::TimeTicks::Now();
+      if (active_controller_id < active_controllers_ids.size() &&
+          i == active_controllers_ids[active_controller_id]) {
+        time_intervals[active_controller_id++] += end_time - start_time;
+      } else {
+        // For non active controllers (e.g. which can throttle)
+        // that's the only timing we need to measure.
+        if (const auto* window = controllers[i].first->GetWindow()) {
+          if (auto* frame = window->document()->GetFrame()) {
+            frame->GetFrameScheduler()->AddTaskTime(end_time - start_time);
+          }
+        }
+      }
+      start_time = end_time;
+    }
+  };
+
   // https://html.spec.whatwg.org/multipage/webappapis.html#event-loop-processing-model
 
   // 6. For each doc of docs, reveal doc.
@@ -221,28 +254,11 @@ void PageAnimator::ServiceScriptedAnimations(
   });
 
   // 8. For each doc of docs, run the resize steps for doc.
-  wtf_size_t active_controller_id = 0;
-  auto start_time = base::TimeTicks::Now();
-  for (wtf_size_t i = 0; i < controllers.size(); ++i) {
-    auto& [controller, can_throttle] = controllers[i];
-    controller->DispatchEvents(BindRepeating([](Event* event) {
+  run_for_all_controllers_with_timing([&](wtf_size_t i) {
+    controllers[i].first->DispatchEvents(BindRepeating([](Event* event) {
       return event->type() == event_type_names::kResize;
     }));
-    auto end_time = base::TimeTicks::Now();
-    if (active_controller_id < active_controllers_ids.size() &&
-        i == active_controllers_ids[active_controller_id]) {
-      time_intervals[active_controller_id++] += end_time - start_time;
-    } else {
-      // For non active controllers (e.g. which can throttle)
-      // that's the only timing we need to measure.
-      if (const auto* window = controller->GetWindow()) {
-        if (auto* frame = window->document()->GetFrame()) {
-          frame->GetFrameScheduler()->AddTaskTime(end_time - start_time);
-        }
-      }
-    }
-    start_time = end_time;
-  }
+  });
 
   // 9. For each doc of docs, run the scroll steps for doc.
   run_for_all_active_controllers_with_timing([&](wtf_size_t i) {
@@ -273,22 +289,35 @@ void PageAnimator::ServiceScriptedAnimations(
   // 11. For each doc of docs, update animations and send events for doc,
   // passing in relative high resolution time given frameTimestamp and doc's
   // relevant global object as the timestamp.
-  run_for_all_active_controllers_with_timing([&](wtf_size_t i) {
-    if (RuntimeEnabledFeatures::EventTimingMatchingHTMLEnabled()) {
-      active_controllers[i]->DispatchEvents(BindRepeating([](Event* event) {
-        return event->type() != event_type_names::kScroll &&
-               event->type() != event_type_names::kScrollsnapchange &&
-               event->type() != event_type_names::kScrollsnapchanging &&
-               event->type() != event_type_names::kScrollend &&
-               event->type() != event_type_names::kResize &&
-               event->type() != event_type_names::kPagereveal &&
-               event->InterfaceName() !=
-                   event_interface_names::kMediaQueryListEvent;
-      }));
-    } else {
-      active_controllers[i]->DispatchEvents();
-    }
-  });
+  if (!RuntimeEnabledFeatures::EventTimingMatchingHTMLEnabled()) {
+    run_for_all_active_controllers_with_timing(
+        [&](wtf_size_t i) { active_controllers[i]->DispatchEvents(); });
+  } else {
+    run_for_all_controllers_with_timing([&](wtf_size_t i) {
+      auto& [controller, can_throttle] = controllers[i];
+      LocalDOMWindow* window = controller->GetWindow();
+      Document* document = window ? window->document() : nullptr;
+      if (document) {
+        UpdateAnimationsForDocument(document, can_throttle, monotonic_time_now);
+      }
+      if (!can_throttle) {
+        // While the HTML spec mentions only animation events for this step,
+        // we are sending animation events as well as any event types not
+        // covered by the HTML steps (e.g., <dialog> 'close' events or text
+        // control 'select' and 'change' events).
+        controller->DispatchEvents(BindRepeating([](Event* event) {
+          return event->type() != event_type_names::kScroll &&
+                 event->type() != event_type_names::kScrollsnapchange &&
+                 event->type() != event_type_names::kScrollsnapchanging &&
+                 event->type() != event_type_names::kScrollend &&
+                 event->type() != event_type_names::kResize &&
+                 event->type() != event_type_names::kPagereveal &&
+                 event->InterfaceName() !=
+                     event_interface_names::kMediaQueryListEvent;
+        }));
+      }
+    });
+  }
 
   // 12. For each doc of docs, run the fullscreen steps for doc.
   run_for_all_active_controllers_with_timing(

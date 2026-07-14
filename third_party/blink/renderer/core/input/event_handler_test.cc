@@ -3433,6 +3433,7 @@ TEST_F(EventHandlerSimTest, TestScrollendFiresOnKeyUpAfterScroll) {
 }
 
 TEST_F(EventHandlerSimTest, TestScrollendFiresAfterScrollWithEarlyKeyUp) {
+  ScopedEventTimingMatchingHTMLForTest feature_enabler(true);
   WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
@@ -3497,8 +3498,10 @@ TEST_F(EventHandlerSimTest, TestScrollendFiresAfterScrollWithEarlyKeyUp) {
   e.SetType(WebInputEvent::Type::kKeyUp);
   GetDocument().GetFrame()->GetEventHandler().KeyEvent(e);
 
-  // Tick second scroll to completion which should fire scrollend.
+  // Tick second scroll to completion which should enqueue scrollend.
   Compositor().BeginFrame(0.30);
+  // Wait another frame to have the enqueued scrollend to fire.
+  Compositor().BeginFrame();
 
   EXPECT_EQ(GetDocument()
                 .getElementById(AtomicString("log"))
