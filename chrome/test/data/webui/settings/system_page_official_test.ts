@@ -2,14 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://settings/lazy_load.js';
+
 import type {OnDeviceAiBrowserProxy, OnDeviceAiEnabled, SettingsSystemPageElement} from 'chrome://settings/lazy_load.js';
 import {OnDeviceAiBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
 import {loadTimeData} from 'chrome://settings/settings.js';
 import type {SettingsToggleButtonElement} from 'chrome://settings/settings.js';
 import {assertFalse, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
-import {isVisible} from 'chrome://webui-test/test_util.js';
+import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 class TestOnDeviceAiBrowserProxy extends TestBrowserProxy implements
     OnDeviceAiBrowserProxy {
@@ -64,9 +65,9 @@ suite('settings system page official', function() {
   });
 
   function queryOnDeviceAiToggle(): SettingsToggleButtonElement|null {
-    // Toggle is behind a `dom-if`, so retrieve it via `querySelector`
-    // (`systemPage.$` only contains static Polymer nodes).
-    return systemPage.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+    // Toggle is conditionally rendered, so retrieve it via `querySelector`
+    // (`systemPage.$` only contains static DOM children).
+    return systemPage.shadowRoot.querySelector<SettingsToggleButtonElement>(
         '#onDeviceAiToggle');
   }
 
@@ -75,7 +76,7 @@ suite('settings system page official', function() {
       showOnDeviceAiSettings: true,
     });
     createPage();
-    await flushTasks();
+    await microtasksFinished();
 
     const toggle = queryOnDeviceAiToggle();
     assertTrue(!!toggle);
@@ -88,7 +89,7 @@ suite('settings system page official', function() {
       allowedByPolicy: true,
     });
     toggle.click();
-    await flushTasks();
+    await microtasksFinished();
     assertFalse(toggle.checked);
     assertFalse(await testBrowserProxy.whenCalled('setOnDeviceAiEnabled'));
     assertFalse((await testBrowserProxy.getOnDeviceAiEnabled()).enabled);
@@ -100,7 +101,7 @@ suite('settings system page official', function() {
       allowedByPolicy: true,
     });
     toggle.click();
-    await flushTasks();
+    await microtasksFinished();
     assertTrue(toggle.checked);
     assertTrue(await testBrowserProxy.whenCalled('setOnDeviceAiEnabled'));
     assertTrue((await testBrowserProxy.getOnDeviceAiEnabled()).enabled);
@@ -116,7 +117,7 @@ suite('settings system page official', function() {
     });
     createPage();
     await testBrowserProxy.whenCalled('getOnDeviceAiEnabled');
-    await flushTasks();
+    await microtasksFinished();
 
     const toggle = queryOnDeviceAiToggle();
     assertTrue(!!toggle);
@@ -134,7 +135,7 @@ suite('settings system page official', function() {
       showOnDeviceAiSettings: true,
     });
     createPage();
-    await flushTasks();
+    await microtasksFinished();
 
     const toggle = queryOnDeviceAiToggle();
     assertTrue(!!toggle);

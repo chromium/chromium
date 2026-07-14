@@ -1,13 +1,6 @@
-  <style include="cr-shared-style settings-shared">
-    .proxy-multisource-padding {
-      margin-inline-start: 36px;
-    }
-
-    #proxy-single-source-container {
-      display: flex;
-      flex: 1;
-    }
-  </style>
+<!-- #html_wrapper_imports_start
+import {RestartType} from '../relaunch_mixin_lit.js';
+#html_wrapper_imports_end -->
   <settings-section page-title="$i18n{systemPageTitle}"
       class="cr-centered-card-container">
 <if expr="not is_macosx">
@@ -20,138 +13,136 @@
     <settings-toggle-button id="hardwareAcceleration"
         pref-key="hardware_acceleration_mode.enabled"
         label="$i18n{hardwareAccelerationLabel}">
-      <template is="dom-if" if="[[shouldShowRestart_(
-          hardwareAccelerationModeEnabledPref_.value)]]">
-        <cr-button on-click="onRestartClick_" slot="more-actions">
+      ${this.shouldShowRestart_() ? html`
+        <cr-button @click="${this.onRestartClick_}" slot="more-actions">
           $i18n{restart}
         </cr-button>
-      </template>
+      ` : ''}
     </settings-toggle-button>
-    <!-- <if expr="is_win"> -->
-    <template is="dom-if" if="[[showProcessIsolationSetting_]]" restamp>
+<if expr="is_win">
+    ${this.showProcessIsolationSetting_ ? html`
       <div class="hr"></div>
       <settings-toggle-button id="isolationState"
           pref-key="isolation_state.enabled"
           label="$i18n{isolationStateLabel}"
           sub-label="$i18n{isolationStateSubLabel}"
           learn-more-url="$i18n{isolationStateLearnMoreUrl}">
-        <template is="dom-if" if="[[shouldShowIsolationRestart_(
-            isolationStateEnabledPref_.value)]]">
-          <cr-button on-click="onRestartClick_" slot="more-actions">
+        ${this.shouldShowIsolationRestart_() ? html`
+          <cr-button @click="${this.onRestartClick_}" slot="more-actions">
             $i18n{restart}
           </cr-button>
-        </template>
+        ` : ''}
       </settings-toggle-button>
-    </template>
-    <!-- </if> -->
+    ` : ''}
+</if>
 
-    <!-- <if expr="_google_chrome and is_win"> -->
-      <template is="dom-if" if="[[showFeatureNotificationsSetting_]]">
-        <div class="hr"></div>
-        <settings-toggle-button id="featureNotificationsEnabled"
-            on-settings-boolean-control-change="onFeatureNotificationsChange_"
-            pref-key="feature_notifications_enabled"
-            label="$i18n{featureNotificationsLabel}">
-        </settings-toggle-button>
-      </template>
-    <!-- </if> -->
+<if expr="_google_chrome and is_win">
+    ${this.showFeatureNotificationsSetting_ ? html`
+      <div class="hr"></div>
+      <settings-toggle-button id="featureNotificationsEnabled"
+          @settings-boolean-control-change="${
+              this.onFeatureNotificationsSettingsBooleanControlChange_}"
+          pref-key="feature_notifications_enabled"
+          label="$i18n{featureNotificationsLabel}">
+      </settings-toggle-button>
+    ` : ''}
+</if>
 
-    <div id="proxy" class="cr-row" on-click="onProxyClick_"
-        actionable$="[[isProxyDefault_]]">
+    <div id="proxy" class="cr-row" @click="${this.onProxyClick_}"
+        ?actionable="${this.isProxyDefault_}">
       <div id="proxy-single-source-container"
-          hidden$="[[isProxyEnforcedByMultipleSources_]]">
-        <div class="flex cr-row-text" hidden$="[[!isProxyDefault_]]">
+          ?hidden="${this.isProxyEnforcedByMultipleSources_}">
+        <div class="flex cr-row-text" ?hidden="${!this.isProxyDefault_}">
           $i18n{proxySettingsLabel}
         </div>
         <div class="flex cr-row-text"
-            hidden$="[[!proxyPref_.extensionId]]">
+            ?hidden="${!this.proxyPref_?.extensionId}">
           $i18n{proxySettingsExtensionLabel}
         </div>
         <div class="flex cr-row-text"
-            hidden$="[[!isProxyEnforcedByPolicy_]]">
+            ?hidden="${!this.isProxyEnforcedByPolicy_}">
           $i18n{proxySettingsPolicyLabel}
         </div>
         <cr-icon-button class="icon-external"
-            hidden$="[[!isProxyDefault_]]"
+            ?hidden="${!this.isProxyDefault_}"
             aria-label="$i18n{proxySettingsLabel}"></cr-icon-button>
-        <template is="dom-if" if="[[isProxyEnforcedByPolicy_]]">
-          <cr-policy-pref-indicator pref="[[proxyPref_]]"
+        ${this.isProxyEnforcedByPolicy_ ? html`
+          <cr-policy-pref-indicator .pref="${this.proxyPref_}"
               icon-aria-label="$i18n{proxySettingsLabel}">
           </cr-policy-pref-indicator>
-        </template>
+        ` : ''}
       </div>
       <div id="proxyMultipleSourcesLabel"
-          hidden$="[[!isProxyEnforcedByMultipleSources_]]">
+          ?hidden="${!this.isProxyEnforcedByMultipleSources_}">
         $i18n{proxySettingsMultipleSourcesLabel}
       </div>
     </div>
     <div id="proxyMultipleSources"
-        hidden$="[[!isProxyEnforcedByMultipleSources_]]">
+        ?hidden="${!this.isProxyEnforcedByMultipleSources_}">
       <div id="proxyDeviceSettings" class="cr-row continuation"
-          hidden$="[[!isProxyDefault_]]" on-click="onProxyClick_"
-          actionable$="[[isProxyDefault_]]">
+          ?hidden="${!this.isProxyDefault_}" @click="${this.onProxyClick_}"
+          ?actionable="${this.isProxyDefault_}">
         <div class="flex cr-row-text proxy-multisource-padding">
           $i18n{proxySettingsYourDevice}
         </div>
         <cr-icon-button class="icon-external"
-            hidden$="[[!isProxyDefault_]]"
+            ?hidden="${!this.isProxyDefault_}"
             aria-label="$i18n{proxySettingsLabel}"></cr-icon-button>
       </div>
-      <template is="dom-if" if="[[!proxyOverrideRulesPref_.extensionId]]">
+      ${!this.proxyOverrideRulesPref_?.extensionId ? html`
         <div class="cr-row continuation">
           <div class="flex cr-row-text proxy-multisource-padding">
             $i18n{proxySettingsYourOrganization}
           </div>
-          <cr-policy-pref-indicator pref="[[proxyOverrideRulesPref_]]"
+          <cr-policy-pref-indicator .pref="${this.proxyOverrideRulesPref_}"
               icon-aria-label="$i18n{proxySettingsLabel}">
           </cr-policy-pref-indicator>
         </div>
-      </template>
-      <template is="dom-if" if="[[proxyOverrideRulesPref_.extensionId]]">
+      ` : ''}
+      ${this.proxyOverrideRulesPref_?.extensionId ? html`
         <div class="cr-row continuation">
           <extension-controlled-indicator class="flex proxy-multisource-padding"
-              extension-id="[[proxyOverrideRulesPref_.extensionId]]"
-              extension-name="[[proxyOverrideRulesPref_.controlledByName]]"
-              extension-name-only-in-label=
-                  "[[isProxyEnforcedByMultipleSources_]]"
-              extension-can-be-disabled=
-                  "[[proxyOverrideRulesPref_.extensionCanBeDisabled]]">
+              extension-id="${this.proxyOverrideRulesPref_.extensionId}"
+              extension-name="${this.proxyOverrideRulesPref_.controlledByName}"
+              ?extension-name-only-in-label="${this.isProxyEnforcedByMultipleSources_}"
+              ?extension-can-be-disabled="${!!this.proxyOverrideRulesPref_.extensionCanBeDisabled}">
           </extension-controlled-indicator>
         </div>
-      </template>
+      ` : ''}
     </div>
-    <template is="dom-if" if="[[proxyPref_.extensionId]]">
+    ${this.proxyPref_?.extensionId ? html`
       <div class="cr-row continuation">
         <extension-controlled-indicator class="flex"
-            extension-id="[[proxyPref_.extensionId]]"
-            extension-name="[[proxyPref_.controlledByName]]"
-            extension-name-only-in-label="[[isProxyEnforcedByMultipleSources_]]"
-            extension-can-be-disabled="[[proxyPref_.extensionCanBeDisabled]]"
-            on-disable-extension-click="onDisableExtensionClick_">
+            extension-id="${this.proxyPref_.extensionId}"
+            extension-name="${this.proxyPref_.controlledByName}"
+            ?extension-name-only-in-label="${this.isProxyEnforcedByMultipleSources_}"
+            ?extension-can-be-disabled="${!!this.proxyPref_.extensionCanBeDisabled}"
+            @disable-extension-click="${this.onDisableExtensionClick_}">
         </extension-controlled-indicator>
       </div>
-    </template>
+    ` : ''}
 
-    <template is="dom-if" if="[[shouldShowRelaunchDialog]]" restamp>
-      <relaunch-confirmation-dialog restart-type="[[restartTypeEnum.RESTART]]"
-          on-close="onRelaunchDialogClose"></relaunch-confirmation-dialog>
-    </template>
+    ${this.shouldShowRelaunchDialog ? html`
+      <relaunch-confirmation-dialog .restartType="${RestartType.RESTART}"
+          @close="${this.onRelaunchDialogClose}">
+      </relaunch-confirmation-dialog>
+    ` : ''}
   </settings-section>
 
 <if expr="_google_chrome">
-  <!-- On device AI settings -->
-  <template is="dom-if" if="[[showOnDeviceAiSettings_]]" restamp>
-    <settings-section page-title="$i18n{onDeviceAiEnabledLabel}"
-        show-send-feedback-button
-        on-send-feedback="onOnDeviceAiSendFeedback_"
-        class="cr-centered-card-container">
-      <settings-toggle-button id="onDeviceAiToggle"
-          pref="{{onDeviceAiPref_}}"
-          label="$i18n{onDeviceAiEnabledLabel}"
-          sub-label-with-link="$i18n{onDeviceAiEnabledSubLabel}"
-          on-sub-label-link-clicked="onOnDeviceAiLearnMoreClicked_"
-          on-settings-boolean-control-change="onOnDeviceAiToggleChange_">
-      </settings-toggle-button>
-    </settings-section>
-  </template>
+    <!-- On device AI settings -->
+    ${this.showOnDeviceAiSettings_ ? html`
+      <settings-section page-title="$i18n{onDeviceAiEnabledLabel}"
+          show-send-feedback-button
+          @send-feedback="${this.onOnDeviceAiSendFeedback_}"
+          class="cr-centered-card-container">
+        <settings-toggle-button id="onDeviceAiToggle"
+            .pref="${this.onDeviceAiPref_}"
+            label="$i18n{onDeviceAiEnabledLabel}"
+            sub-label-with-link="$i18n{onDeviceAiEnabledSubLabel}"
+            @sub-label-link-clicked="${this.onOnDeviceAiSubLabelLinkClicked_}"
+            @settings-boolean-control-change="${this.onOnDeviceAiSettingsBooleanControlChange_}">
+        </settings-toggle-button>
+      </settings-section>
+    ` : ''}
 </if>

@@ -2,10 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-
 // clang-format off
-import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
+import 'chrome://settings/lazy_load.js';
+
 import type {SettingsSystemPageElement, SystemPageBrowserProxy} from 'chrome://settings/lazy_load.js';
 import {SystemPageBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
 import {LifetimeBrowserProxyImpl, PrefService, PrefsBrowserProxy} from 'chrome://settings/settings.js';
@@ -15,7 +14,7 @@ import type {FakeSettingsPrivate} from 'chrome://webui-test/fake_settings_privat
 import {TestPrefsBrowserProxy} from './test_prefs_browser_proxy.js';
 
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
-import {isVisible} from 'chrome://webui-test/test_util.js';
+import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestLifetimeBrowserProxy} from './test_lifetime_browser_proxy.js';
 
@@ -127,16 +126,16 @@ suite('settings system page', function() {
     systemPage = document.createElement('settings-system-page');
     document.body.appendChild(systemPage);
 
-    // Ensure that dynamic Polymer nodes (i.e., featureNotificationsEnabled,
-    // which is behind a `dom-if` block) are loaded.
-    await flushTasks();
+    // Ensure that conditionally rendered nodes (i.e.,
+    // featureNotificationsEnabled) are loaded.
+    await microtasksFinished();
   });
 
   teardown(function() {
     systemPage.remove();
   });
 
-  test('restart button', function() {
+  test('restart button', async function() {
     const control = systemPage.$.hardwareAcceleration;
     assertEquals(HARDWARE_ACCELERATION_AT_STARTUP, control.checked);
 
@@ -146,7 +145,7 @@ suite('settings system page', function() {
     PrefService.getInstance().setPrefValue(
         'hardware_acceleration_mode.enabled',
         !HARDWARE_ACCELERATION_AT_STARTUP);
-    flush();
+    await microtasksFinished();
     assertNotEquals(HARDWARE_ACCELERATION_AT_STARTUP, control.checked);
 
     const restart = control.querySelector('cr-button');
@@ -157,10 +156,10 @@ suite('settings system page', function() {
   });
 
   // <if expr="is_win">
-  test('process isolation restart button', function() {
-    // Toggle is behind a `dom-if`, so retrieve it via `querySelector`.
+  test('process isolation restart button', async function() {
+    // Toggle is conditionally rendered, so retrieve it via `querySelector`.
     const control =
-        systemPage.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+        systemPage.shadowRoot.querySelector<SettingsToggleButtonElement>(
             '#isolationState');
     assertTrue(!!control);
     assertFalse(control.checked);
@@ -169,7 +168,7 @@ suite('settings system page', function() {
     assertFalse(!!control.querySelector('cr-button'));
 
     PrefService.getInstance().setPrefValue('isolation_state.enabled', true);
-    flush();
+    await microtasksFinished();
     assertTrue(control.checked);
 
     const restart = control.querySelector('cr-button');
@@ -192,10 +191,10 @@ suite('settings system page', function() {
 
     systemPage = document.createElement('settings-system-page');
     document.body.appendChild(systemPage);
-    await flushTasks();
+    await microtasksFinished();
 
     const control =
-        systemPage.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+        systemPage.shadowRoot.querySelector<SettingsToggleButtonElement>(
             '#isolationState');
     assertTrue(!!control);
 
@@ -207,7 +206,7 @@ suite('settings system page', function() {
 
     // Toggle the setting off.
     PrefService.getInstance().setPrefValue('isolation_state.enabled', false);
-    flush();
+    await microtasksFinished();
     assertFalse(control.checked);
 
     // Now the restart button should be showing.
@@ -224,7 +223,7 @@ suite('settings system page', function() {
     return systemBrowserProxy.whenCalled('showProxySettings');
   });
 
-  test('proxy row enforcement', function() {
+  test('proxy row enforcement', async function() {
     const control = systemPage.$.proxy;
     const showProxyButton = control.querySelector('cr-icon-button')!;
     assertTrue(control.hasAttribute('actionable'));
@@ -239,7 +238,7 @@ suite('settings system page', function() {
       extensionId: 'blah',
       enforcement: chrome.settingsPrivate.Enforcement.ENFORCED,
     }]);
-    flush();
+    await microtasksFinished();
 
     // When managed by extensions, we disable the ability to show proxy
     // settings.
@@ -254,7 +253,7 @@ suite('settings system page', function() {
       controlledBy: chrome.settingsPrivate.ControlledBy.USER_POLICY,
       enforcement: chrome.settingsPrivate.Enforcement.ENFORCED,
     }]);
-    flush();
+    await microtasksFinished();
 
     // When managed by policy directly, we disable the ability to show proxy
     // settings.
@@ -263,7 +262,7 @@ suite('settings system page', function() {
     assertFalse(isVisible(showProxyButton));
   });
 
-  test('proxy row multiple sources', function() {
+  test('proxy row multiple sources', async function() {
     const control = systemPage.$.proxyMultipleSources;
     const deviceSettings =
         control.querySelector<HTMLElement>('#proxyDeviceSettings')!;
@@ -286,7 +285,7 @@ suite('settings system page', function() {
       controlledBy: chrome.settingsPrivate.ControlledBy.USER_POLICY,
       enforcement: chrome.settingsPrivate.Enforcement.ENFORCED,
     }]);
-    flush();
+    await microtasksFinished();
 
     assertTrue(deviceSettings.hasAttribute('actionable'));
     assertTrue(isVisible(control));
@@ -301,7 +300,7 @@ suite('settings system page', function() {
       controlledBy: chrome.settingsPrivate.ControlledBy.USER_POLICY,
       enforcement: chrome.settingsPrivate.Enforcement.ENFORCED,
     }]);
-    flush();
+    await microtasksFinished();
 
     assertFalse(deviceSettings.hasAttribute('actionable'));
     assertFalse(isVisible(control));
@@ -317,7 +316,7 @@ suite('settings system page', function() {
       extensionId: 'extension-id-1',
       enforcement: chrome.settingsPrivate.Enforcement.ENFORCED,
     }]);
-    flush();
+    await microtasksFinished();
 
     assertFalse(deviceSettings.hasAttribute('actionable'));
     assertTrue(isVisible(control));
@@ -336,7 +335,7 @@ suite('settings system page', function() {
       extensionId: 'extension-id-1',
       enforcement: chrome.settingsPrivate.Enforcement.ENFORCED,
     }]);
-    flush();
+    await microtasksFinished();
 
     assertFalse(deviceSettings.hasAttribute('actionable'));
     assertFalse(isVisible(control));
@@ -352,7 +351,7 @@ suite('settings system page', function() {
       extensionId: 'extension-id-2',
       enforcement: chrome.settingsPrivate.Enforcement.ENFORCED,
     }]);
-    flush();
+    await microtasksFinished();
 
     assertFalse(deviceSettings.hasAttribute('actionable'));
     assertTrue(isVisible(control));
@@ -367,9 +366,8 @@ suite('settings system page', function() {
           .value;
     }
 
-    // Toggle is behind a `dom-if`, so retrieve it via `querySelector`
-    // (`systemPage.$` only contains static Polymer nodes).
-    const toggle = systemPage.shadowRoot!.querySelector<HTMLElement>(
+    // Toggle is conditionally rendered, so retrieve it via `querySelector`.
+    const toggle = systemPage.shadowRoot.querySelector<HTMLElement>(
         '#featureNotificationsEnabled');
     assertTrue(!!toggle);
     assertNotEquals(

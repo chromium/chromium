@@ -462,6 +462,7 @@ build_webui("build") {
     "settings_page/settings_subpage.css",
     "site_settings/clear_storage_dialog_shared.css",
     "site_settings/site_settings_shared.css",
+    "system_page/system_page.css",
   ]
 
   mojo_files_deps = [ "//components/autofill/core/browser/data_model/autofill_ai:mojo_bindings_ts__generator" ]
