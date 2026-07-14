@@ -19349,7 +19349,7 @@ Please help our engineers fix this problem. Tell us what happened right before y
     Add freehand drawings, signatures, and highlights with the new Draw tool
     </message>
     <message name="IDS_PDF_TEXT_ANNOTATIONS_IPH_BODY" desc="Content of in-product help to introduce the PDF Text Annotations feature.">
-    Add text with the new "Add text" tool
+    Add text annotations with the new "Add text annotations" tool
     </message>
 
     <!-- PDF Searchify elements. -->

@@ -339,7 +339,7 @@
         Tan 3
       </message>
       <message name="IDS_PDF_INK2_TEXT_ANNOTATION" desc="The button label for entering 'text annotation mode' in the PDF viewer, which allows for adding and editing text annotations.">
-        Add text
+        Add text annotations
       </message>
       <message name="IDS_PDF_INK2_TEXT_ANNOTATIONS_AX_LABEL" desc="Accessibility label for the list of existing text annotations in the PDF that the user can select for editing.">
         Annotation
