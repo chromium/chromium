@@ -44,7 +44,7 @@ BASE_FEATURE(kGlicBulkDataEntrySupport, base::FEATURE_DISABLED_BY_DEFAULT);
 #if BUILDFLAG(IS_ANDROID)
 // Controls whether WebProtect download on Clank is enabled.
 BASE_FEATURE(kEnableDownloadEnterpriseScanOnClank,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
 // Controls whether cancellation of uploads is enabled for content analysis.
