@@ -60,6 +60,9 @@
 #import "ios/web/public/test/element_selector.h"
 #import "ui/base/l10n/l10n_util.h"
 
+using base::test::ios::kWaitForPageLoadTimeout;
+using base::test::ios::kWaitForUIElementTimeout;
+using base::test::ios::WaitUntilConditionOrTimeout;
 using chrome_test_util::ButtonWithAccessibilityLabel;
 using chrome_test_util::ButtonWithAccessibilityLabelId;
 using chrome_test_util::NavigationBarCancelButton;
@@ -2415,15 +2418,7 @@ void OpenPasswordManagerWidgetPromoInstructions() {
 }
 
 // Checks interaction with an info button for a hidden passkey.
-// TODO(crbug.com/442428665): Test is flaky.
-#if !TARGET_OS_SIMULATOR
-#define MAYBE_testTappingInfoButtonForHiddenPasskey \
-  FLAKY_testTappingInfoButtonForHiddenPasskey
-#else
-#define MAYBE_testTappingInfoButtonForHiddenPasskey \
-  testTappingInfoButtonForHiddenPasskey
-#endif
-- (void)MAYBE_testTappingInfoButtonForHiddenPasskey {
+- (void)testTappingInfoButtonForHiddenPasskey {
   SaveHiddenPasskeyToStore();
 
   OpenPasswordManager();
@@ -2452,12 +2447,17 @@ void OpenPasswordManagerWidgetPromoInstructions() {
   [[EarlGrey
       selectElementWithMatcher:grey_accessibilityLabel(@"About passkeys")]
       performAction:grey_tap()];
-  [ChromeEarlGrey waitForPageToFinishLoading];
 
   // Check that the help center article was opened.
-  GREYAssertEqual(std::string("support.google.com"),
-                  [ChromeEarlGrey webStateVisibleURL].GetHost(),
-                  @"Did not navigate to the help center article.");
+  GREYAssert(WaitUntilConditionOrTimeout(
+                 kWaitForPageLoadTimeout,
+                 ^bool {
+                   return [ChromeEarlGrey webStateVisibleURL].GetHost() ==
+                          "support.google.com";
+                 }),
+             @"Did not navigate to the help center article.");
+
+  [ChromeEarlGrey waitForPageToFinishLoading];
 }
 
 // Checks that attempts to edit a username provide appropriate feedback.
@@ -2529,12 +2529,9 @@ void OpenPasswordManagerWidgetPromoInstructions() {
                       SavedPasswordsPasskeysHeaderMatcher()];
 
   // Verify that the deletion was propagated to the ProfilePasswordStore.
-  bool success =
-      base::test::ios::WaitUntilConditionOrTimeout(base::Seconds(5), ^bool {
-        return
-            [PasswordSettingsAppInterface passwordProfileStoreResultsCount] ==
-            0;
-      });
+  bool success = WaitUntilConditionOrTimeout(base::Seconds(5), ^bool {
+    return [PasswordSettingsAppInterface passwordProfileStoreResultsCount] == 0;
+  });
   GREYAssertTrue(success,
                  @"Stored password was not removed from ProfilePasswordStore.");
 
@@ -2733,8 +2730,7 @@ void OpenPasswordManagerWidgetPromoInstructions() {
                     error:&error];
     return error == nil;
   };
-  GREYAssert(base::test::ios::WaitUntilConditionOrTimeout(
-                 base::test::ios::kWaitForUIElementTimeout, condition),
+  GREYAssert(WaitUntilConditionOrTimeout(kWaitForUIElementTimeout, condition),
              @"Didn't scroll to the added credential item");
 }
 
@@ -2771,8 +2767,7 @@ void OpenPasswordManagerWidgetPromoInstructions() {
     return error == nil;
   };
 
-  GREYAssert(base::test::ios::WaitUntilConditionOrTimeout(
-                 base::test::ios::kWaitForUIElementTimeout, condition),
+  GREYAssert(WaitUntilConditionOrTimeout(kWaitForUIElementTimeout, condition),
              @"Waiting Save Button to be disabled.");
 
   [ReauthenticationAppInterface mockReauthenticationModuleExpectedResult:
@@ -3010,8 +3005,7 @@ void OpenPasswordManagerWidgetPromoInstructions() {
                     error:&error];
     return error == nil;
   };
-  GREYAssert(base::test::ios::WaitUntilConditionOrTimeout(
-                 base::test::ios::kWaitForUIElementTimeout, condition),
+  GREYAssert(WaitUntilConditionOrTimeout(kWaitForUIElementTimeout, condition),
              @"Waiting for the details view to load");
 
   // Metric: Percentage of favicons with image.
@@ -3163,7 +3157,7 @@ void OpenPasswordManagerWidgetPromoInstructions() {
                     error:&error];
     return error == nil;
   };
-  GREYAssert(base::test::ios::WaitUntilConditionOrTimeout(
+  GREYAssert(WaitUntilConditionOrTimeout(
                  kReEnableTurnOnPasswordsInOtherAppsButtonTimeout, condition),
              @"Waiting for the 'Turn on AutoFill' button to become enabled.");
 }
@@ -3208,8 +3202,7 @@ void OpenPasswordManagerWidgetPromoInstructions() {
     return error == nil;
   };
 
-  GREYAssert(base::test::ios::WaitUntilConditionOrTimeout(
-                 base::test::ios::kWaitForUIElementTimeout, condition),
+  GREYAssert(WaitUntilConditionOrTimeout(kWaitForUIElementTimeout, condition),
              @"Waiting for the view to load");
 
   // Delete last password.
@@ -3226,8 +3219,7 @@ void OpenPasswordManagerWidgetPromoInstructions() {
     return error == nil;
   };
 
-  GREYAssert(base::test::ios::WaitUntilConditionOrTimeout(
-                 base::test::ios::kWaitForUIElementTimeout, condition),
+  GREYAssert(WaitUntilConditionOrTimeout(kWaitForUIElementTimeout, condition),
              @"Waiting for the view to load");
 
   [[EarlGrey selectElementWithMatcher:NavigationBarBackButton()]
