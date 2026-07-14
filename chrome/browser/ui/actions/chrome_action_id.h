@@ -19,6 +19,9 @@
 // clang-format off
 #define CHROME_COMMON_ACTION_IDS \
   /* Navigation commands */ \
+  E(kActionCut, IDC_CUT, actions) \
+  E(kActionCopy, IDC_COPY, actions) \
+  E(kActionPaste, IDC_PASTE, actions) \
   E(kActionBack, IDC_BACK, kChromeActionsStart, ChromeActionIds) \
   E(kActionReload, IDC_RELOAD) \
   E(kActionOpenCurrentUrl, IDC_OPEN_CURRENT_URL) \
