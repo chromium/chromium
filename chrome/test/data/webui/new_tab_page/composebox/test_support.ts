@@ -75,6 +75,18 @@ setupComposeboxTest<T extends ComposeboxUnionElement = ComposeboxElement>():
   const testProxy = {} as ComposeboxTestElement<T>;
 
   setup(() => {
+    class MockSpeechRecognition {
+      onend: (() => void)|null = null;
+      start() {}
+      stop() {}
+      abort() {
+        if (this.onend) {
+          this.onend();
+        }
+      }
+    }
+    Object.assign(window, {webkitSpeechRecognition: MockSpeechRecognition});
+
     loadTimeData.overrideValues({
       'useNtpComposeboxFork': false,
       'composeboxImageFileTypes':

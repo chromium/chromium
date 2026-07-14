@@ -31,6 +31,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_switches.h"
 #include "third_party/blink/public/common/features_generated.h"
+#include "url/origin.h"
 
 #if BUILDFLAG(IS_MAC)
 #include "chrome/browser/ui/views/permissions/permission_prompt_notifications_mac.h"
@@ -98,11 +99,15 @@ bool ShouldIgnorePermissionRequest(
   // - NTP has an empty omnibox.
   // - Contextual Tasks Tab has an empty omnibox.
   // - Omnibox Popup is an embedded WebUI that itself may request permissions.
-  const GURL visible_url = web_contents->GetVisibleURL();
-  const GURL committed_url = web_contents->GetLastCommittedURL();
-  if (visible_url == chrome::ChromeUINewTabURLAsGURL() ||
-      committed_url.host() == chrome::kChromeUIOmniboxPopupHost ||
-      committed_url.host() == chrome::kChromeUIContextualTasksHost) {
+  const url::Origin committed_origin =
+      web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin();
+  if (committed_origin.IsSameOriginWith(chrome::ChromeUINewTabURLAsGURL()) ||
+      committed_origin.IsSameOriginWith(
+          chrome::ChromeUINewTabPageURLAsGURL()) ||
+      committed_origin.IsSameOriginWith(
+          GURL(chrome::kChromeUIOmniboxPopupURL)) ||
+      committed_origin.IsSameOriginWith(
+          GURL(chrome::kChromeUIContextualTasksURL))) {
     return false;
   }
 
