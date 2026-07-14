@@ -233,8 +233,7 @@ class GlicSelectionContentsView : public views::View,
 
  public:
   GlicSelectionContentsView(GlicSelectionWidgetDelegate* widget_delegate,
-                            const std::u16string& selected_text,
-                            bool initial_pinned_state)
+                            const std::u16string& selected_text)
       : widget_delegate_(widget_delegate) {
     SetNotifyEnterExitOnChild(true);
     SetPaintToLayer();
@@ -419,59 +418,37 @@ class GlicSelectionContentsView : public views::View,
     control_pill_->SetCrossAxisAlignment(
         views::BoxLayout::CrossAxisAlignment::kCenter);
 
-    // Pin/Unpin Toggle Button or Dismiss Button
-    if (features::kGlicSelectionPromptEnablePinning.Get()) {
-      pin_btn_ =
-          control_pill_->AddChildView(views::ImageButton::CreateIconButton(
-              base::BindRepeating(&GlicSelectionWidgetDelegate::TogglePinState,
-                                  base::Unretained(widget_delegate_)),
-              features::IsRoundedIconsEnabled()
-                  ? vector_icons::kKeyboardArrowUpIcon
-                  : vector_icons::kCaretUpOldIcon,
-              std::u16string()));
-      pin_btn_->SetImageVerticalAlignment(views::ImageButton::ALIGN_MIDDLE);
-      pin_btn_->SetBorder(views::CreateEmptyBorder(
-          views::LayoutProvider::Get()->GetInsetsMetric(
-              views::INSETS_VECTOR_IMAGE_BUTTON)));
-      CreateToolbarInkdropCallbacks(pin_btn_, kColorToolbarInkDropHover,
-                                    kColorToolbarInkDropRipple);
-      pin_btn_subscription_ = pin_btn_->AddStateChangedCallback(
-          base::BindRepeating(&GlicSelectionContentsView::RefreshAskGeminiState,
-                              base::Unretained(this)));
-      SetPinned(initial_pinned_state);
-    } else {
-      auto menu_tooltip = l10n_util::GetStringUTF16(IDS_TOAST_MENU_BUTTON_NAME);
-      const gfx::VectorIcon& menu_icon =
-          features::IsRoundedIconsEnabled()
-              ? vector_icons::kKeyboardArrowDownIcon
-              : vector_icons::kCaretDownOldIcon;
-      menu_btn_ =
-          control_pill_->AddChildView(views::ImageButton::CreateIconButton(
-              base::RepeatingClosure(), menu_icon, menu_tooltip));
-      menu_btn_->SetButtonController(
-          std::make_unique<views::MenuButtonController>(
-              menu_btn_,
-              base::BindRepeating(
-                  &GlicSelectionContentsView::OnMenuButtonClicked,
-                  base::Unretained(this)),
-              std::make_unique<views::Button::DefaultButtonControllerDelegate>(
-                  menu_btn_)));
-      menu_btn_->SetTooltipText(menu_tooltip);
-      menu_btn_->SetImageVerticalAlignment(views::ImageButton::ALIGN_MIDDLE);
-      menu_btn_->SetBorder(views::CreateEmptyBorder(
-          views::LayoutProvider::Get()->GetInsetsMetric(
-              views::INSETS_VECTOR_IMAGE_BUTTON)));
-      views::SetImageFromVectorIconWithColor(
-          menu_btn_, menu_icon, kIconSize,
-          views::IconColors(ui::kColorSysOnSurfaceVariant,
-                            ui::kColorLabelForegroundDisabled,
-                            ui::kColorSysOnSurfaceVariant));
-      CreateToolbarInkdropCallbacks(menu_btn_, kColorToolbarInkDropHover,
-                                    kColorToolbarInkDropRipple);
-      menu_btn_subscription_ = menu_btn_->AddStateChangedCallback(
-          base::BindRepeating(&GlicSelectionContentsView::RefreshAskGeminiState,
-                              base::Unretained(this)));
-    }
+    auto menu_tooltip = l10n_util::GetStringUTF16(IDS_TOAST_MENU_BUTTON_NAME);
+    const gfx::VectorIcon& menu_icon =
+        features::IsRoundedIconsEnabled()
+            ? vector_icons::kKeyboardArrowDownIcon
+            : vector_icons::kCaretDownOldIcon;
+    menu_btn_ =
+        control_pill_->AddChildView(views::ImageButton::CreateIconButton(
+            base::RepeatingClosure(), menu_icon, menu_tooltip));
+    menu_btn_->SetButtonController(
+        std::make_unique<views::MenuButtonController>(
+            menu_btn_,
+            base::BindRepeating(
+                &GlicSelectionContentsView::OnMenuButtonClicked,
+                base::Unretained(this)),
+            std::make_unique<views::Button::DefaultButtonControllerDelegate>(
+                menu_btn_)));
+    menu_btn_->SetTooltipText(menu_tooltip);
+    menu_btn_->SetImageVerticalAlignment(views::ImageButton::ALIGN_MIDDLE);
+    menu_btn_->SetBorder(views::CreateEmptyBorder(
+        views::LayoutProvider::Get()->GetInsetsMetric(
+            views::INSETS_VECTOR_IMAGE_BUTTON)));
+    views::SetImageFromVectorIconWithColor(
+        menu_btn_, menu_icon, kIconSize,
+        views::IconColors(ui::kColorSysOnSurfaceVariant,
+                          ui::kColorLabelForegroundDisabled,
+                          ui::kColorSysOnSurfaceVariant));
+    CreateToolbarInkdropCallbacks(menu_btn_, kColorToolbarInkDropHover,
+                                  kColorToolbarInkDropRipple);
+    menu_btn_subscription_ = menu_btn_->AddStateChangedCallback(
+        base::BindRepeating(&GlicSelectionContentsView::RefreshAskGeminiState,
+                            base::Unretained(this)));
 
     control_pill_->SetPaintToLayer();
     control_pill_->layer()->SetFillsBoundsOpaquely(false);
@@ -482,10 +459,8 @@ class GlicSelectionContentsView : public views::View,
       return;
     }
     bool settings_active =
-        (menu_btn_ && (menu_btn_->GetState() == views::Button::STATE_HOVERED ||
-                       menu_btn_->HasFocus())) ||
-        (pin_btn_ && (pin_btn_->GetState() == views::Button::STATE_HOVERED ||
-                      pin_btn_->HasFocus()));
+        menu_btn_ && (menu_btn_->GetState() == views::Button::STATE_HOVERED ||
+                      menu_btn_->HasFocus());
     bool is_hovered = IsMouseHovered() && !settings_active;
     ask_gemini_btn_->SetHotTracked(is_hovered);
   }
@@ -530,25 +505,6 @@ class GlicSelectionContentsView : public views::View,
     }
   }
 
-  void SetPinned(bool is_pinned) {
-    if (pin_btn_) {
-      const gfx::VectorIcon& icon =
-          is_pinned ? features::IsRoundedIconsEnabled()
-                          ? vector_icons::kKeyboardArrowDownIcon
-                          : vector_icons::kCaretDownOldIcon
-          : features::IsRoundedIconsEnabled()
-              ? vector_icons::kKeyboardArrowUpIcon
-              : vector_icons::kCaretUpOldIcon;
-      views::SetImageFromVectorIconWithColor(
-          pin_btn_, icon, kIconSize,
-          views::IconColors(ui::kColorSysOnSurfaceVariant,
-                            ui::kColorLabelForegroundDisabled,
-                            ui::kColorSysOnSurfaceVariant));
-      pin_btn_->SetTooltipText(l10n_util::GetStringUTF16(
-          is_pinned ? IDS_TAB_SEARCH_BUTTON_CXMENU_UNPIN
-                    : IDS_TAB_SEARCH_BUTTON_CXMENU_PIN));
-    }
-  }
 
   void UpdateAskGeminiIcon(bool is_hovered) {
     if (!ask_gemini_btn_) {
@@ -609,12 +565,9 @@ class GlicSelectionContentsView : public views::View,
   ui::ImageModel inactive_icon_model_;
   ui::ImageModel active_icon_model_;
   raw_ptr<views::ImageButton> copy_link_btn_ = nullptr;
-  raw_ptr<views::ImageButton> pin_btn_ = nullptr;
   raw_ptr<views::ImageButton> menu_btn_ = nullptr;
   raw_ptr<views::BoxLayoutView> ask_pill_ = nullptr;
   raw_ptr<views::BoxLayoutView> control_pill_ = nullptr;
-
-  base::CallbackListSubscription pin_btn_subscription_;
   base::CallbackListSubscription menu_btn_subscription_;
 
   std::unique_ptr<GlicSelectionMenuModel> menu_model_;
@@ -633,18 +586,16 @@ GlicSelectionWidgetDelegate::GlicSelectionWidgetDelegate(
     ActionDelegate& action_delegate,
     const gfx::Rect& anchor_rect,
     const gfx::Rect& window_bounds,
-    const std::u16string& selected_text,
-    bool is_pinned)
+    const std::u16string& selected_text)
     : BubbleDialogDelegate(nullptr,
                            views::BubbleBorder::BOTTOM_RIGHT,
                            views::BubbleBorder::STANDARD_SHADOW,
                            /*autosize=*/true),
       action_delegate_(action_delegate),
       original_anchor_rect_(anchor_rect),
-      window_bounds_(window_bounds),
-      is_pinned_(is_pinned) {
-  SetContentsView(std::make_unique<GlicSelectionContentsView>(
-      this, selected_text, is_pinned_));
+      window_bounds_(window_bounds) {
+  SetContentsView(
+      std::make_unique<GlicSelectionContentsView>(this, selected_text));
 
   SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   SetShowCloseButton(false);
@@ -695,65 +646,22 @@ void GlicSelectionWidgetDelegate::OnWidgetClose(
   action_delegate_->OnWidgetClose();
 }
 
-void GlicSelectionWidgetDelegate::TogglePinState() {
-  is_pinned_ = !is_pinned_;
-  action_delegate_->OnPinToggled(is_pinned_);
-  if (auto* contents_view =
-          views::AsViewClass<GlicSelectionContentsView>(GetContentsView())) {
-    contents_view->SetPinned(is_pinned_);
-  }
-
-  if (GetWidget() && GetWidget()->GetLayer()) {
-    ui::ScopedLayerAnimationSettings settings(
-        GetWidget()->GetLayer()->GetAnimator());
-    settings.SetTransitionDuration(base::Milliseconds(250));
-    settings.SetTweenType(gfx::Tween::EASE_OUT_2);
-    UpdatePosition();
-    SizeToContents();
-  } else {
-    UpdatePosition();
-    SizeToContents();
-  }
-}
-
 void GlicSelectionWidgetDelegate::UpdatePosition() {
-  int total_width = GetContentsView()->GetPreferredSize().width();
-  if (is_pinned_) {
-    // The pill has a BubbleBorder with a STANDARD_SHADOW. This shadow adds
-    // a large invisible inset (typically ~24px). We must subtract this inset
-    // so the visual top of the pill aligns with our target. We also subtract
-    // the default 4px arrow gap added by BubbleDialogDelegate for BOTTOM_RIGHT.
-    int top_inset = 0;
-    if (auto* contents_view = GetContentsView()) {
-      if (!contents_view->children().empty()) {
-        top_inset = contents_view->children()[0]->GetInsets().top();
-      }
+  // Anchored inline near selection. Account for the invisible shadow inset
+  // and half the visible width so the center of the popup pill aligns
+  // exactly with the right edge of the selection.
+  int right_inset = 0;
+  int visible_width = GetContentsView()->GetPreferredSize().width();
+  if (auto* contents_view = GetContentsView()) {
+    if (!contents_view->children().empty()) {
+      views::View* pill_view = contents_view->children()[0];
+      right_inset = pill_view->GetInsets().right();
+      visible_width = pill_view->GetPreferredSize().width();
     }
-
-    // Pinned to the top right area, overlapping toolbar.
-    // window_bounds_ is in global screen coords.
-    constexpr int kWindowEdgePadding = 16;
-    int pinned_x = window_bounds_.right() - total_width - kWindowEdgePadding;
-
-    int pinned_y = window_bounds_.y() - 8 - top_inset - 4;
-    SetAnchorRect(gfx::Rect(pinned_x, pinned_y, 0, 0));
-  } else {
-    // Unpinned: anchored inline near selection. Account for the invisible
-    // shadow inset and half the visible width so the center of the popup pill
-    // aligns exactly with the right edge of the selection.
-    int right_inset = 0;
-    int visible_width = total_width;
-    if (auto* contents_view = GetContentsView()) {
-      if (!contents_view->children().empty()) {
-        views::View* pill_view = contents_view->children()[0];
-        right_inset = pill_view->GetInsets().right();
-        visible_width = pill_view->GetPreferredSize().width();
-      }
-    }
-    gfx::Rect adjusted_anchor = original_anchor_rect_;
-    adjusted_anchor.Offset(right_inset + (visible_width / 2), 0);
-    SetAnchorRect(adjusted_anchor);
   }
+  gfx::Rect adjusted_anchor = original_anchor_rect_;
+  adjusted_anchor.Offset(right_inset + (visible_width / 2), 0);
+  SetAnchorRect(adjusted_anchor);
 }
 
 views::ClientView* GlicSelectionWidgetDelegate::CreateClientView(

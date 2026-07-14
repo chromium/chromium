@@ -164,9 +164,6 @@ class GlicSelectionObserver::WidgetActionDelegate
   void OnAskGemini() override { observer_->OnAskGemini(); }
   void OnCopy() override { observer_->OnCopy(); }
   void OnCopyLink() override { observer_->OnCopyLink(); }
-  void OnPinToggled(bool is_pinned) override {
-    observer_->OnWidgetPinToggled(is_pinned);
-  }
   void OnHideForThisSite() override { observer_->OnHideForThisSite(); }
   void OnSettings() override { observer_->OnSettings(); }
   void OnWidgetClose() override { observer_->OnWidgetClose(); }
@@ -666,7 +663,7 @@ void GlicSelectionObserver::ShowSelectionAffordance(
 
       widget_delegate_ = std::make_unique<GlicSelectionWidgetDelegate>(
           *action_delegate_, *bounds, web_contents()->GetContainerBounds(),
-          std::u16string(selected_text), is_widget_pinned_);
+          std::u16string(selected_text));
       widget_delegate_->set_parent_window(platform_util::GetViewForWindow(
           web_contents()->GetTopLevelNativeWindow()));
       widget_delegate_->ShowWidget();
@@ -771,9 +768,6 @@ void GlicSelectionObserver::OnSettings() {
   }
 }
 
-void GlicSelectionObserver::OnWidgetPinToggled(bool is_pinned) {
-  is_widget_pinned_ = is_pinned;
-}
 
 void GlicSelectionObserver::RequestLinkGeneration(
     content::RenderFrameHost* rfh) {

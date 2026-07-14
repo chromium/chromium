@@ -34,8 +34,6 @@ BASE_FEATURE(kGlicSelectionPrompt, base::FEATURE_DISABLED_BY_DEFAULT);
 
 const base::FeatureParam<bool> kGlicSelectionPromptUpdatesOnly{
     &kGlicSelectionPrompt, "updates_only", false};
-const base::FeatureParam<bool> kGlicSelectionPromptEnablePinning{
-    &kGlicSelectionPrompt, "enable_pinning", false};
 const base::FeatureParam<std::string> kGlicSelectionTopCueOnlyList{
     &kGlicSelectionPrompt, "top_cue_only_list", ""};
 const base::FeatureParam<bool> kGlicSelectionEnableSiteSettings{

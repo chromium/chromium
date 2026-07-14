@@ -77,10 +77,6 @@ class TestWidgetActionDelegate
   void OnAskGemini() override { ask_gemini_called = true; }
   void OnCopy() override { copy_called = true; }
   void OnCopyLink() override { copy_link_called = true; }
-  void OnPinToggled(bool is_pinned) override {
-    pin_toggled_called = true;
-    pin_toggled_val = is_pinned;
-  }
   void OnHideForThisSite() override { hide_for_this_site_called = true; }
   void OnSettings() override { settings_called = true; }
   void OnWidgetClose() override { widget_close_called = true; }
@@ -90,8 +86,6 @@ class TestWidgetActionDelegate
   bool ask_gemini_called = false;
   bool copy_called = false;
   bool copy_link_called = false;
-  bool pin_toggled_called = false;
-  bool pin_toggled_val = false;
   bool hide_for_this_site_called = false;
   bool settings_called = false;
 };
@@ -102,8 +96,7 @@ TEST_F(GlicSelectionWidgetTest, CopyButtonsHiddenByDefault) {
 
   auto test_delegate = std::make_unique<TestWidgetActionDelegate>();
   auto widget_delegate = std::make_unique<GlicSelectionWidgetDelegate>(
-      *test_delegate, anchor_rect, gfx::Rect(), selected_text,
-      /*is_pinned=*/false);
+      *test_delegate, anchor_rect, gfx::Rect(), selected_text);
 
   views::View* contents_view = widget_delegate->GetContentsView();
   ASSERT_TRUE(contents_view);
@@ -131,8 +124,7 @@ TEST_F(GlicSelectionWidgetTest, ButtonsTriggerCallbacks) {
 
   auto test_delegate = std::make_unique<TestWidgetActionDelegate>();
   auto widget_delegate = std::make_unique<GlicSelectionWidgetDelegate>(
-      *test_delegate, anchor_rect, gfx::Rect(), selected_text,
-      /*is_pinned=*/false);
+      *test_delegate, anchor_rect, gfx::Rect(), selected_text);
 
   views::View* contents_view = widget_delegate->GetContentsView();
   ASSERT_TRUE(contents_view);
@@ -213,8 +205,7 @@ TEST_F(GlicSelectionWidgetTest, ShowAndCloseWidget) {
 
   auto test_delegate = std::make_unique<TestWidgetActionDelegate>();
   auto widget_delegate = std::make_unique<GlicSelectionWidgetDelegate>(
-      *test_delegate, anchor_rect, gfx::Rect(), selected_text,
-      /*is_pinned=*/false);
+      *test_delegate, anchor_rect, gfx::Rect(), selected_text);
 
   EXPECT_FALSE(widget_delegate->GetWidget());
 

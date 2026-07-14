@@ -27,7 +27,6 @@ class GlicSelectionWidgetDelegate : public views::BubbleDialogDelegate {
     virtual void OnAskGemini() = 0;
     virtual void OnCopy() = 0;
     virtual void OnCopyLink() = 0;
-    virtual void OnPinToggled(bool is_pinned) = 0;
     virtual void OnHideForThisSite() = 0;
     virtual void OnSettings() = 0;
     virtual void OnWidgetClose() = 0;
@@ -44,8 +43,7 @@ class GlicSelectionWidgetDelegate : public views::BubbleDialogDelegate {
   GlicSelectionWidgetDelegate(ActionDelegate& action_delegate,
                               const gfx::Rect& anchor_rect,
                               const gfx::Rect& window_bounds,
-                              const std::u16string& selected_text,
-                              bool is_pinned);
+                              const std::u16string& selected_text);
   ~GlicSelectionWidgetDelegate() override;
 
   void ShowWidget();
@@ -54,7 +52,6 @@ class GlicSelectionWidgetDelegate : public views::BubbleDialogDelegate {
 
   ActionDelegate& action_delegate() const { return *action_delegate_; }
 
-  void TogglePinState();
   void UpdatePosition();
 
   views::ClientView* CreateClientView(views::Widget* widget) override;
@@ -72,7 +69,6 @@ class GlicSelectionWidgetDelegate : public views::BubbleDialogDelegate {
   const raw_ref<ActionDelegate> action_delegate_;
   gfx::Rect original_anchor_rect_;
   gfx::Rect window_bounds_;
-  bool is_pinned_;
   std::unique_ptr<views::Widget> widget_;
   base::WeakPtrFactory<GlicSelectionWidgetDelegate> weak_ptr_factory_{this};
 };

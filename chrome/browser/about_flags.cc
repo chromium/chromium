@@ -3706,8 +3706,6 @@ const FeatureEntry::Choice kGlicSelectionPromptChoices[] = {
     {"Enabled", switches::kEnableFeatures, "GlicSelectionPrompt"},
     {"Enabled with Updates Only", switches::kEnableFeatures,
      "GlicSelectionPrompt:updates_only/true"},
-    {"Enabled with Pinning", switches::kEnableFeatures,
-     "GlicSelectionPrompt:enable_pinning/true"},
     {"Enabled with Settings", switches::kEnableFeatures,
      "GlicSelectionPrompt:enable_site_settings/true"},
     {"Enabled with Copy Buttons", switches::kEnableFeatures,
