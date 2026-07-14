@@ -303,11 +303,17 @@ void EncryptionMigrationScreen::PowerChanged(
 }
 
 void EncryptionMigrationScreen::OnStartMigration() {
+  if (is_hidden()) {
+    return;
+  }
   RecordUserChoice(UserChoice::USER_CHOICE_UPDATE);
   WaitBatteryAndMigrate();
 }
 
 void EncryptionMigrationScreen::OnSkipMigration() {
+  if (is_hidden()) {
+    return;
+  }
   RecordUserChoice(UserChoice::USER_CHOICE_SKIP);
   // If the user skips migration, we mount the cryptohome without performing the
   // migration by reusing UserContext and LoginPerformer which were used in the
@@ -321,6 +327,9 @@ void EncryptionMigrationScreen::OnSkipMigration() {
 }
 
 void EncryptionMigrationScreen::OnRequestRestartOnLowStorage() {
+  if (is_hidden()) {
+    return;
+  }
   RecordUserChoice(UserChoice::USER_CHOICE_RESTART_ON_LOW_STORAGE);
   chromeos::PowerManagerClient::Get()->RequestRestart(
       power_manager::REQUEST_RESTART_OTHER,
@@ -328,6 +337,9 @@ void EncryptionMigrationScreen::OnRequestRestartOnLowStorage() {
 }
 
 void EncryptionMigrationScreen::OnRequestRestartOnFailure() {
+  if (is_hidden()) {
+    return;
+  }
   RecordUserChoice(UserChoice::USER_CHOICE_RESTART_ON_FAILURE);
   chromeos::PowerManagerClient::Get()->RequestRestart(
       power_manager::REQUEST_RESTART_OTHER,
@@ -335,6 +347,9 @@ void EncryptionMigrationScreen::OnRequestRestartOnFailure() {
 }
 
 void EncryptionMigrationScreen::OnOpenFeedbackDialog() {
+  if (is_hidden()) {
+    return;
+  }
   RecordUserChoice(UserChoice::USER_CHOICE_REPORT_AN_ISSUE);
   const std::string description = base::StringPrintf(
       "Auto generated feedback for http://crbug.com/40519275.\n"
