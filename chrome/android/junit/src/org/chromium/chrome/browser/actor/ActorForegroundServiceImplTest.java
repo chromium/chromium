@@ -16,6 +16,7 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 
@@ -144,6 +145,21 @@ public class ActorForegroundServiceImplTest {
         mServiceImpl.onTaskRemoved(new Intent());
         mServiceImpl.onLowMemory();
         mServiceImpl.onDestroy();
+
+        watcher.assertExpected();
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.GLIC_BACKGROUND_TRIGGERING)
+    public void testOnStartCommandPromotesToForegroundWhenGlicTriggeringEnabled() {
+        var watcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Actor.ForegroundService.Lifecycle",
+                                ActorForegroundServiceUmaHelper.ForegroundLifecycle.STARTED)
+                        .build();
+
+        mServiceImpl.onStartCommand(new Intent(), /*flags=*/0, /*startId=*/1);
 
         watcher.assertExpected();
     }
