@@ -31,8 +31,8 @@ class AecdumpRecordingManager;
 class AudioBus;
 class AudioInputStream;
 class AudioManager;
-class VoiceIsolation;
 struct AudioGlitchInfo;
+class VoiceIsolation;
 }  // namespace media
 
 namespace audio {
@@ -248,27 +248,21 @@ class InputController final {
   static void LogCaptureStartupResult(StreamType type,
                                       CaptureStartupResult result);
 
-  InputController(
-      EventHandler* event_handler,
-      SyncWriter* sync_writer,
-      std::unique_ptr<ReferenceSignalProvider> reference_signal_provider,
-      media::AecdumpRecordingManager* aecdump_recording_manager,
-      raw_ptr<MlModelManager> ml_model_manager,
-      media::mojom::AudioProcessingConfigPtr processing_config,
-      const media::AudioParameters& output_params,
-      const media::AudioParameters& device_params,
-      StreamType type
-#if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
-      , std::unique_ptr<media::VoiceIsolation> voice_isolation
-#endif
-  );
+  InputController(EventHandler* event_handler,
+                  SyncWriter* sync_writer,
+                  StreamType type);
 
   void DoCreate(
       media::AudioManager* audio_manager,
       const media::AudioParameters& params,
       const std::string& device_id,
       bool enable_agc,
-      LoopbackMixin::MaybeCreateCallback maybe_create_loopback_mixin_cb);
+      LoopbackMixin::MaybeCreateCallback maybe_create_loopback_mixin_cb,
+      media::mojom::AudioProcessingConfigPtr processing_config,
+      const media::AudioParameters& device_params,
+      std::unique_ptr<ReferenceSignalProvider> reference_signal_provider,
+      media::AecdumpRecordingManager* aecdump_recording_manager,
+      raw_ptr<MlModelManager> ml_model_manager);
   void DoReportError(ErrorCode error_code);
   void DoLogAudioLevels(float level_dbfs, int microphone_volume_percent);
 
@@ -313,8 +307,8 @@ class InputController final {
               const media::AudioGlitchInfo& glitch_info);
 
 #if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
-  // Called from the constructor. Helper to isolate logic setting up audio
-  // processing components.
+  // Called from DoCreate. Helper to isolate logic setting up audio processing
+  // components.
   void MaybeSetUpAudioProcessing(
       media::mojom::AudioProcessingConfigPtr processing_config,
       const media::AudioParameters& processing_output_params,
@@ -323,6 +317,10 @@ class InputController final {
       media::AecdumpRecordingManager* aecdump_recording_manager,
       raw_ptr<MlModelManager> ml_model_manager,
       std::unique_ptr<media::VoiceIsolation> voice_isolation);
+
+  std::unique_ptr<media::VoiceIsolation> MaybeCreateVoiceIsolation(
+      raw_ptr<MlModelManager> ml_model_manager,
+      const media::AudioParameters& processing_output_params);
 
   // Used as a callback for |audio_processor_handler_|.
   void DeliverProcessedAudio(const media::AudioBus& audio_bus,
