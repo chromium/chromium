@@ -186,6 +186,25 @@ TEST_P(WebUIBubbleDialogViewTest, DestroyingContentsWrapperDoesNotSegfault) {
   contents_wrapper.reset();
 }
 
+TEST_P(WebUIBubbleDialogViewTest, ShowUIAndCloseUIWithoutWidget) {
+  UniqueWidgetPtr anchor_widget = std::make_unique<Widget>();
+  Widget::InitParams params =
+      CreateParams(Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+                   Widget::InitParams::TYPE_WINDOW);
+  anchor_widget->Init(std::move(params));
+  auto profile = std::make_unique<TestingProfile>();
+  auto contents_wrapper =
+      std::make_unique<TestWebUIContentsWrapper>(profile.get());
+
+  gfx::Rect anchor(666, 666, 0, 0);
+  auto bubble_dialog = std::make_unique<WebUIBubbleDialogView>(
+      anchor_widget->GetContentsView(), contents_wrapper->GetWeakPtr(), anchor);
+
+  EXPECT_EQ(nullptr, bubble_dialog->GetWidget());
+  bubble_dialog->ShowUI();
+  bubble_dialog->CloseUI();
+}
+
 TEST_P(WebUIBubbleDialogViewTest, DraggableRegionIsReflectedInHitTest) {
   if (!GetParam()) {
     GTEST_SKIP() << "Only applicable to draggable bubbles, skipping.";

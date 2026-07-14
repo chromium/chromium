@@ -119,7 +119,9 @@ void WebUIBubbleDialogView::ClearContentsWrapper() {
   if (!contents_wrapper_) {
     return;
   }
-  DCHECK_EQ(this, contents_wrapper_->GetHost().get());
+  if (contents_wrapper_->GetHost()) {
+    DCHECK_EQ(this, contents_wrapper_->GetHost().get());
+  }
   DCHECK_EQ(web_view_->web_contents(), contents_wrapper_->web_contents());
   web_view_->SetWebContents(nullptr);
   contents_wrapper_->web_contents()->WasHidden();
@@ -141,7 +143,9 @@ gfx::Size WebUIBubbleDialogView::CalculatePreferredSize(
   gfx::Size preferred_size =
       BubbleDialogDelegateView::CalculatePreferredSize(available_size);
   preferred_size.SetToMax(kMinSize);
-  preferred_size.SetToMin(GetWidget()->GetWorkAreaBoundsInScreen().size());
+  if (GetWidget()) {
+    preferred_size.SetToMin(GetWidget()->GetWorkAreaBoundsInScreen().size());
+  }
   return preferred_size;
 }
 
@@ -196,18 +200,18 @@ std::unique_ptr<views::FrameView> WebUIBubbleDialogView::CreateFrameView(
 }
 
 void WebUIBubbleDialogView::ShowUI() {
-  if (!contents_wrapper_ || !web_view_->GetWebContents()) {
-    // This widget is closing and/or being destroyed.
-    CHECK(!GetWidget() || GetWidget()->IsClosed());
+  if (!contents_wrapper_ || !web_view_->GetWebContents() || !GetWidget() ||
+      GetWidget()->IsClosed()) {
     return;
   }
-  DCHECK(GetWidget());
   GetWidget()->Show();
   web_view_->GetWebContents()->Focus();
 }
 
 void WebUIBubbleDialogView::CloseUI() {
-  DCHECK(GetWidget());
+  if (!GetWidget() || GetWidget()->IsClosed()) {
+    return;
+  }
   GetWidget()->CloseWithReason(
       views::Widget::ClosedReason::kCloseButtonClicked);
 }
@@ -237,7 +241,7 @@ WebUIBubbleDialogView::GetWebContentsModalDialogHost(
 }
 
 gfx::NativeView WebUIBubbleDialogView::GetHostView() const {
-  return GetWidget()->GetNativeView();
+  return GetWidget() ? GetWidget()->GetNativeView() : gfx::NativeView();
 }
 
 gfx::Point WebUIBubbleDialogView::GetDialogPosition(const gfx::Size& size) {
@@ -245,7 +249,8 @@ gfx::Point WebUIBubbleDialogView::GetDialogPosition(const gfx::Size& size) {
 }
 
 gfx::Size WebUIBubbleDialogView::GetMaximumDialogSize() {
-  return GetWidget()->GetWindowBoundsInScreen().size();
+  return GetWidget() ? GetWidget()->GetWindowBoundsInScreen().size()
+                     : gfx::Size();
 }
 
 void WebUIBubbleDialogView::AddObserver(
