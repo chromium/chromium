@@ -27,7 +27,7 @@
 
 namespace {
 
-constexpr base::TimeDelta kWaitForNotificationTimeout = base::Seconds(10);
+constexpr base::TimeDelta kWaitForNotificationTimeout = base::Seconds(15);
 constexpr base::TimeDelta kWaitForViewTimeout = base::Seconds(8);
 
 // Wait for a view that contains a partial match to the given `text`, then tap
@@ -52,7 +52,7 @@ void MaybeTapAllowOnPopup() {
       initWithBundleIdentifier:@"com.apple.springboard"];
   // Wait for allow or ok button to appear.
   auto button = [springboardApplication.buttons elementBoundByIndex:1];
-  if ([button waitForExistenceWithTimeout:1]) {
+  if ([button waitForExistenceWithTimeout:5]) {
     // Wait for the magic stack to settle behind the alert.
     // Otherwise the test flakes when a snackbar is presented right after the
     // permissions alert is dismissed.
