@@ -16,6 +16,7 @@
 #include "base/check_deref.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_string_value_serializer.h"
 #include "base/logging.h"
@@ -565,51 +566,40 @@ IFrameWaiter::~IFrameWaiter() = default;
 
 content::RenderFrameHost* IFrameWaiter::WaitForFrameMatchingName(
     const std::string& name,
-    const base::TimeDelta timeout) {
-  if (content::RenderFrameHost* frame = FrameMatchingPredicateOrNullptr(
-          web_contents()->GetPrimaryPage(),
-          base::BindRepeating(&content::FrameMatchesName, name))) {
-    return frame;
-  }
-
-  query_type_ = QueryType::kName;
-  frame_name_ = name;
-  base::test::ScopedRunLoopTimeout scoped_timeout(
-      FROM_HERE, timeout, base::BindRepeating([]() -> std::string {
-        return "IFrameWaiter timed out waiting for iframe.";
-      }));
-  return content::RenderFrameHost::FromID(future_.Get());
+    base::TimeDelta timeout) {
+  return WaitForFrame(base::BindRepeating(&content::FrameMatchesName, name),
+                      timeout);
 }
 
 content::RenderFrameHost* IFrameWaiter::WaitForFrameMatchingOrigin(
-    const GURL origin,
-    const base::TimeDelta timeout) {
-  if (content::RenderFrameHost* frame = FrameMatchingPredicateOrNullptr(
-          web_contents()->GetPrimaryPage(),
-          base::BindRepeating(&FrameHasOrigin, origin))) {
-    return frame;
-  }
-
-  query_type_ = QueryType::kOrigin;
-  origin_ = origin;
-  base::test::ScopedRunLoopTimeout scoped_timeout(
-      FROM_HERE, timeout, base::BindRepeating([]() -> std::string {
-        return "IFrameWaiter timed out waiting for iframe.";
-      }));
-  return content::RenderFrameHost::FromID(future_.Get());
+    const GURL& origin,
+    base::TimeDelta timeout) {
+  return WaitForFrame(
+      base::BindRepeating(
+          [](const GURL& origin, content::RenderFrameHost* frame) {
+            GURL url = frame->GetLastCommittedURL();
+            return url.DeprecatedGetOriginAsURL() ==
+                   origin.DeprecatedGetOriginAsURL();
+          },
+          origin),
+      timeout);
 }
 
 content::RenderFrameHost* IFrameWaiter::WaitForFrameMatchingUrl(
-    const GURL url,
-    const base::TimeDelta timeout) {
+    const GURL& url,
+    base::TimeDelta timeout) {
+  return WaitForFrame(base::BindRepeating(&content::FrameHasSourceUrl, url),
+                      timeout);
+}
+
+content::RenderFrameHost* IFrameWaiter::WaitForFrame(
+    base::RepeatingCallback<bool(content::RenderFrameHost*)> predicate,
+    base::TimeDelta timeout) {
   if (content::RenderFrameHost* frame = FrameMatchingPredicateOrNullptr(
-          web_contents()->GetPrimaryPage(),
-          base::BindRepeating(&content::FrameHasSourceUrl, url))) {
+          web_contents()->GetPrimaryPage(), predicate)) {
     return frame;
   }
-
-  query_type_ = QueryType::kUrl;
-  url_ = url;
+  predicate_ = std::move(predicate);
   base::test::ScopedRunLoopTimeout scoped_timeout(
       FROM_HERE, timeout, base::BindRepeating([]() -> std::string {
         return "IFrameWaiter timed out waiting for iframe.";
@@ -619,71 +609,23 @@ content::RenderFrameHost* IFrameWaiter::WaitForFrameMatchingUrl(
 
 void IFrameWaiter::RenderFrameCreated(
     content::RenderFrameHost* render_frame_host) {
-  if (future_.IsReady()) {
-    return;
-  }
-  const bool matches = [&] {
-    switch (query_type_) {
-      case QueryType::kName:
-        return FrameMatchesName(frame_name_, render_frame_host);
-      case QueryType::kOrigin:
-        return render_frame_host->GetLastCommittedURL()
-                   .DeprecatedGetOriginAsURL() == origin_;
-      case QueryType::kUrl:
-        return FrameHasSourceUrl(url_, render_frame_host);
-    }
-    NOTREACHED();
-  }();
-  if (matches) {
+  if (!future_.IsReady() && predicate_.Run(render_frame_host)) {
     future_.SetValue(render_frame_host->GetGlobalId());
   }
 }
 
 void IFrameWaiter::DidFinishLoad(content::RenderFrameHost* render_frame_host,
                                  const GURL& validated_url) {
-  if (future_.IsReady()) {
-    return;
-  }
-  const bool matches = [&] {
-    switch (query_type_) {
-      case QueryType::kOrigin:
-        return validated_url.DeprecatedGetOriginAsURL() == origin_;
-      case QueryType::kUrl:
-        return FrameHasSourceUrl(validated_url, render_frame_host);
-      case QueryType::kName:
-        return false;
-    }
-    NOTREACHED();
-  }();
-  if (matches) {
+  if (!future_.IsReady() && predicate_.Run(render_frame_host)) {
     future_.SetValue(render_frame_host->GetGlobalId());
   }
 }
 
 void IFrameWaiter::FrameNameChanged(content::RenderFrameHost* render_frame_host,
                                     const std::string& name) {
-  if (future_.IsReady()) {
-    return;
-  }
-  const bool matches = [&] {
-    switch (query_type_) {
-      case QueryType::kName:
-        return FrameMatchesName(name, render_frame_host);
-      case QueryType::kOrigin:
-      case QueryType::kUrl:
-        return false;
-    }
-    NOTREACHED();
-  }();
-  if (matches) {
+  if (!future_.IsReady() && predicate_.Run(render_frame_host)) {
     future_.SetValue(render_frame_host->GetGlobalId());
   }
-}
-
-bool IFrameWaiter::FrameHasOrigin(const GURL& origin,
-                                  content::RenderFrameHost* frame) {
-  GURL url = frame->GetLastCommittedURL();
-  return url.DeprecatedGetOriginAsURL() == origin.DeprecatedGetOriginAsURL();
 }
 
 // WebPageReplayServerWrapper -------------------------------------------------

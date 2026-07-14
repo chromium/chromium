@@ -13,6 +13,7 @@
 
 #include "base/command_line.h"
 #include "base/files/file_path.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/test/test_future.h"
@@ -111,26 +112,24 @@ void PrintInstructions(const char* test_file_name);
 class IFrameWaiter : public content::WebContentsObserver {
  public:
   explicit IFrameWaiter(content::WebContents* webcontents);
-
   IFrameWaiter(const IFrameWaiter&) = delete;
   IFrameWaiter& operator=(const IFrameWaiter&) = delete;
-
   ~IFrameWaiter() override;
-  content::RenderFrameHost* WaitForFrameMatchingName(
+
+  [[nodiscard]] content::RenderFrameHost* WaitForFrameMatchingName(
       const std::string& name,
       const base::TimeDelta timeout = default_action_timeout);
-  content::RenderFrameHost* WaitForFrameMatchingOrigin(
-      const GURL origin,
+  [[nodiscard]] content::RenderFrameHost* WaitForFrameMatchingOrigin(
+      const GURL& origin,
       const base::TimeDelta timeout = default_action_timeout);
-  content::RenderFrameHost* WaitForFrameMatchingUrl(
-      const GURL url,
+  [[nodiscard]] content::RenderFrameHost* WaitForFrameMatchingUrl(
+      const GURL& url,
       const base::TimeDelta timeout = default_action_timeout);
 
  private:
-  enum class QueryType { kName, kOrigin, kUrl };
-
-  static bool FrameHasOrigin(const GURL& origin,
-                             content::RenderFrameHost* frame);
+  [[nodiscard]] content::RenderFrameHost* WaitForFrame(
+      base::RepeatingCallback<bool(content::RenderFrameHost*)> predicate,
+      base::TimeDelta timeout);
 
   // content::WebContentsObserver
   void RenderFrameCreated(content::RenderFrameHost* render_frame_host) override;
@@ -139,10 +138,7 @@ class IFrameWaiter : public content::WebContentsObserver {
   void FrameNameChanged(content::RenderFrameHost* render_frame_host,
                         const std::string& name) override;
 
-  QueryType query_type_ = QueryType::kUrl;
-  std::string frame_name_;
-  GURL origin_;
-  GURL url_;
+  base::RepeatingCallback<bool(content::RenderFrameHost*)> predicate_;
   base::test::TestFuture<content::GlobalRenderFrameHostId> future_;
 };
 
