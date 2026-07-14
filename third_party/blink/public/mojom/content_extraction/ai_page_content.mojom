@@ -243,6 +243,8 @@ enum AIPageContentInteractionDisabledReason {
   kDisabled,
   kAriaDisabled,
   kCursorNotAllowed,
+  kAriaHidden,
+  kAriaRolePresentational,
 };
 
 struct AIPageContentNodeInteractionInfo {
@@ -291,11 +293,22 @@ struct AIPageContentNodeInteractionInfo {
   // may be triggered by clicking or hovering on the element.
   array<AIPageContentClickabilityReason> clickability_reasons;
 
-  // Whether the content node is explicitly disabled from being actionable. For
-  // example, a `select` element with the `disabled` or `aria-disabled`
-  // attribute. Disabled nodes are still valid action targets and can consume
-  // events. This is false for nodes which are not hit-testable and will ignore
-  // events, for example with `pointer-events: none`.
+  // Whether the node is in a strong disabled state. When this is true, attempts
+  // to generate a click action for the node will be rejected.
+  //
+  // `is_disabled` is true for:
+  // - A native control with `disabled`, such as `<button disabled>`.
+  // - A node with `aria-disabled="true"`, or a node inside such an ancestor.
+  //
+  // Other interaction-disabled reasons are advisory. APC records them, but
+  // click actions are still technically allowed. `is_disabled` is false for:
+  // - A node styled with `cursor: not-allowed`.
+  // - A node hidden from the accessibility tree with `aria-hidden="true"`.
+  // - A node with `role="presentation"` or `role="none"`.
+  //
+  // Disabled nodes can still be hit-testable and consume events. Nodes that
+  // cannot be hit-tested, such as those with `pointer-events: none`, do not
+  // receive interaction info.
   //
   // TODO(b/465736813): Deprecate when consumers move to
   // `interaction_disabled_reasons`.

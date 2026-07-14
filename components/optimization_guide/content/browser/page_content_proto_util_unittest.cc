@@ -1480,6 +1480,43 @@ TEST_F(PageContentProtoUtilTest, ConvertFormControlData) {
       optimization_guide::proto::REDACTION_DECISION_NO_REDACTION_NECESSARY);
 }
 
+TEST_F(PageContentProtoUtilTest, ConvertInteractionDisabledReasons) {
+  auto root_content = CreatePageContent();
+  auto container_node =
+      CreateContentNode(blink::mojom::AIPageContentAttributeType::kContainer);
+  container_node->content_attributes->node_interaction_info =
+      blink::mojom::AIPageContentNodeInteractionInfo::New();
+  // These reasons are not legacy is_disabled signals, but consumers still need
+  // the exact APC reason in the proto.
+  auto& disabled_reasons =
+      container_node->content_attributes->node_interaction_info
+          ->interaction_disabled_reasons;
+  disabled_reasons.push_back(
+      blink::mojom::AIPageContentInteractionDisabledReason::kAriaHidden);
+  disabled_reasons.push_back(
+      blink::mojom::AIPageContentInteractionDisabledReason::
+          kAriaRolePresentational);
+  root_content->root_node->children_nodes.emplace_back(
+      std::move(container_node));
+
+  AIPageContentResult page_content;
+  EXPECT_TRUE(
+      ConvertAIPageContentToProto(root_content, page_content).has_value());
+
+  ASSERT_EQ(page_content.proto.root_node().children_nodes_size(), 1);
+  const auto& interaction_info = page_content.proto.root_node()
+                                     .children_nodes(0)
+                                     .content_attributes()
+                                     .interaction_info();
+  EXPECT_FALSE(interaction_info.is_disabled());
+  EXPECT_THAT(
+      interaction_info.interaction_disabled_reasons(),
+      testing::UnorderedElementsAre(
+          optimization_guide::proto::INTERACTION_DISABLED_REASON_ARIA_HIDDEN,
+          optimization_guide::proto::
+              INTERACTION_DISABLED_REASON_ARIA_ROLE_PRESENTATIONAL));
+}
+
 TEST_F(PageContentProtoUtilTest, ConvertFormControlDataRedactionDecision) {
   auto root_content = CreatePageContent();
 

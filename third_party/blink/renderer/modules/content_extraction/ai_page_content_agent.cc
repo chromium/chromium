@@ -910,6 +910,7 @@ void AddClickabilityReasons(
 bool AddInteractionDisabledReasons(
     const Element& element,
     bool is_aria_disabled,
+    bool is_aria_hidden,
     mojom::blink::AIPageContentNodeInteractionInfo& interaction_info) {
   using Reason = mojom::blink::AIPageContentInteractionDisabledReason;
 
@@ -919,6 +920,24 @@ bool AddInteractionDisabledReasons(
     interaction_info.interaction_disabled_reasons.push_back(
         Reason::kAriaDisabled);
     is_disabled = true;
+  }
+
+  if (is_aria_hidden) {
+    // aria-hidden hides the node from assistive technology, but it does not
+    // require click rejection. Record the reason without setting `is_disabled`.
+    interaction_info.interaction_disabled_reasons.push_back(
+        Reason::kAriaHidden);
+  }
+
+  // ARIA treats role=presentation and role=none as the same role. Blink's raw
+  // ARIA role resolver reports both as kNone.
+  if (AXObject::DetermineRawAriaRole(element) ==
+      ax::mojom::blink::Role::kNone) {
+    // A presentational role hides the node's role from assistive technology,
+    // but it does not require click rejection. Record the reason without
+    // setting `is_disabled`.
+    interaction_info.interaction_disabled_reasons.push_back(
+        Reason::kAriaRolePresentational);
   }
 
   if (auto* form_control_element = DynamicTo<HTMLFormControlElement>(&element);
@@ -2383,6 +2402,11 @@ bool AIPageContentAgent::ContentBuilder::WalkChildren(
                                       html_names::kAriaDisabledAttr)) {
       child_recursion_data.is_aria_disabled = true;
     }
+    if (!child_recursion_data.is_aria_hidden && child_element &&
+        AXObject::IsAriaAttributeTrue(*child_element,
+                                      html_names::kAriaHiddenAttr)) {
+      child_recursion_data.is_aria_hidden = true;
+    }
     const auto* child_box = DynamicTo<LayoutBox>(child);
     const bool child_is_fixed_to_view = child_box && child_box->IsFixedToView();
     child_recursion_data.is_in_fixed_pos_subtree =
@@ -2566,7 +2590,8 @@ AIPageContentAgent::ContentBuilder::MaybeGenerateContentNodeImpl(
   if (actionable_mode() && element) {
     attributes.aria_role = AXObject::DetermineRawAriaRole(*element);
   }
-  AddNodeInteractionInfo(object, attributes, recursion_data.is_aria_disabled);
+  AddNodeInteractionInfo(object, attributes, recursion_data.is_aria_disabled,
+                         recursion_data.is_aria_hidden);
 
   // Set the attribute type and add any special attributes if the attribute type
   // requires it.
@@ -3212,7 +3237,8 @@ void AIPageContentAgent::ContentBuilder::AddInteractionInfoForHitTesting(
 void AIPageContentAgent::ContentBuilder::AddNodeInteractionInfo(
     const LayoutObject& object,
     mojom::blink::AIPageContentAttributes& attributes,
-    bool is_aria_disabled) {
+    bool is_aria_disabled,
+    bool is_aria_hidden) {
   const ComputedStyle& style = object.StyleRef();
   if (style.UsedPointerEvents() == EPointerEvents::kNone) {
     // Treat nodes exposed through pointer-events:none as non-actionable. This
@@ -3237,8 +3263,8 @@ void AIPageContentAgent::ContentBuilder::AddNodeInteractionInfo(
   auto* element = DynamicTo<Element>(object.GetNode());
   bool is_disabled = false;
   if (element) {
-    is_disabled = AddInteractionDisabledReasons(*element, is_aria_disabled,
-                                                *node_interaction_info);
+    is_disabled = AddInteractionDisabledReasons(
+        *element, is_aria_disabled, is_aria_hidden, *node_interaction_info);
   }
 
   // TODO(linnan): Remove `is_disabled` when consumers move to use
@@ -3300,6 +3326,7 @@ void AIPageContentAgent::ContentBuilder::AddNodeInteractionInfo(
       node_interaction_info->scroller_info ||
       node_interaction_info->is_focusable ||
       !node_interaction_info->aria_action_target_node_ids.empty() ||
+      !node_interaction_info->interaction_disabled_reasons.empty() ||
       node_interaction_info->document_scoped_z_order ||
       !node_interaction_info->clickability_reasons.empty();
 

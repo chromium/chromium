@@ -5893,6 +5893,68 @@ TEST_F(AIPageContentAgentTest, AriaDisabled) {
       testing::UnorderedElementsAre(InteractionDisabledReason::kAriaDisabled));
 }
 
+TEST_F(AIPageContentAgentTest, AriaHiddenInteractionReason) {
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      R"HTML(
+      <body>
+        <section aria-hidden=true>
+          <button>Text</button>
+        </section>
+      </body>
+      )HTML",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  GetAIPageContentWithActionableElements();
+  const auto& root = ContentRootNode();
+  ASSERT_EQ(root.children_nodes.size(), 1u);
+
+  const auto& section = *root.children_nodes.at(0);
+  CheckContainerNode(section);
+  ASSERT_EQ(section.children_nodes.size(), 1u);
+
+  // aria-hidden is inherited, so the button carries the reason even though the
+  // attribute is on its section ancestor.
+  const auto& button = *section.children_nodes.at(0);
+  CheckHitTestableAndInteractive(button,
+                                 {ClickabilityReason::kClickableControl,
+                                  ClickabilityReason::kHoverPseudoClass});
+  EXPECT_FALSE(button.content_attributes->node_interaction_info->is_disabled);
+  EXPECT_THAT(
+      button.content_attributes->node_interaction_info
+          ->interaction_disabled_reasons,
+      testing::UnorderedElementsAre(InteractionDisabledReason::kAriaHidden));
+}
+
+TEST_F(AIPageContentAgentTest, AriaPresentationalRoleInteractionReason) {
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      R"HTML(
+      <body>
+        <button role=presentation>Presentation</button>
+        <button role=none>None</button>
+      </body>
+      )HTML",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  GetAIPageContentWithActionableElements();
+  const auto& root = ContentRootNode();
+  ASSERT_EQ(root.children_nodes.size(), 2u);
+
+  for (const auto& button : root.children_nodes) {
+    // role=presentation and role=none are synonymous ARIA roles.
+    CheckHitTestableAndInteractive(*button,
+                                   {ClickabilityReason::kClickableControl,
+                                    ClickabilityReason::kHoverPseudoClass});
+    EXPECT_FALSE(
+        button->content_attributes->node_interaction_info->is_disabled);
+    EXPECT_THAT(button->content_attributes->node_interaction_info
+                    ->interaction_disabled_reasons,
+                testing::UnorderedElementsAre(
+                    InteractionDisabledReason::kAriaRolePresentational));
+  }
+}
+
 TEST_F(AIPageContentAgentTest, DisabledInheritance) {
   frame_test_helpers::LoadHTMLString(
       helper_.LocalMainFrame(),

@@ -273,6 +273,12 @@ ConvertInteractionDisabledReason(
         kCursorNotAllowed:
       return optimization_guide::proto::
           INTERACTION_DISABLED_REASON_CURSOR_NOT_ALLOWED;
+    case blink::mojom::AIPageContentInteractionDisabledReason::kAriaHidden:
+      return optimization_guide::proto::INTERACTION_DISABLED_REASON_ARIA_HIDDEN;
+    case blink::mojom::AIPageContentInteractionDisabledReason::
+        kAriaRolePresentational:
+      return optimization_guide::proto::
+          INTERACTION_DISABLED_REASON_ARIA_ROLE_PRESENTATIONAL;
   }
   NOTREACHED();
 }
