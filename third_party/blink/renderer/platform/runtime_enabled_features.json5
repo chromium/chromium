@@ -1295,7 +1295,7 @@
     },
     {
       name: "CompositeClipPathAnimation",
-      status: "experimental",
+      status: "stable",
       public: true,
     },
     {
