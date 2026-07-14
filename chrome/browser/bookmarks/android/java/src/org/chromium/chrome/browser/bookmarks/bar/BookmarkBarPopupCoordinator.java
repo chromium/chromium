@@ -39,6 +39,7 @@ import org.chromium.ui.listmenu.ListMenuItemProperties;
 import org.chromium.ui.listmenu.ListMenuUtils;
 import org.chromium.ui.modelutil.ListObservable;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
+import org.chromium.ui.util.AttrUtils;
 import org.chromium.ui.widget.AnchoredPopupWindow;
 import org.chromium.ui.widget.RectProvider;
 import org.chromium.ui.widget.ViewRectProvider;
@@ -286,8 +287,17 @@ public class BookmarkBarPopupCoordinator {
         }
 
         int[] measuredDimensions = popupListMenu.getMenuDimensions();
-        int desiredWidth = Math.min(measuredDimensions[0], finalWidth);
-        int desiredHeight = measuredDimensions[1];
+        int minInteractSizePx =
+                AttrUtils.getDimensionPixelSize(mActivity, R.attr.minInteractTargetSize);
+        if (minInteractSizePx == -1) {
+            minInteractSizePx = resources.getDimensionPixelSize(R.dimen.min_touch_target_size);
+        }
+        int marginPx = (int) Math.ceil(displayMetrics.density);
+        int minTouchableSizePx = minInteractSizePx + 2 * marginPx;
+
+        int desiredWidth =
+                Math.max(Math.min(measuredDimensions[0], finalWidth), minTouchableSizePx);
+        int desiredHeight = Math.max(measuredDimensions[1], minTouchableSizePx);
 
         if (mBrowserControlsRectProvider.getRect() != null) {
             int availableHeight = mBrowserControlsRectProvider.getRect().height();

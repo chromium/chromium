@@ -144,6 +144,28 @@ public class BookmarkBarPopupCoordinatorTest {
         verify(mAnchoredPopupWindow).setDesiredContentSize(expectedFinalWidth, measuredHeight);
     }
 
+    @Test
+    @SmallTest
+    public void testConfigurePopupWindowSize_measuredLessThanMin() {
+        mCoordinator.setAnchoredPopupWindowForTesting(mAnchoredPopupWindow);
+        setupMockListMenuWithContent();
+
+        android.content.res.Resources resources = mActivity.getResources();
+        int minInteractTargetSizePx =
+                resources.getDimensionPixelSize(R.dimen.min_touch_target_size);
+        int marginPx = (int) Math.ceil(resources.getDisplayMetrics().density);
+        int expectedMinSizePx = minInteractTargetSizePx + 2 * marginPx;
+
+        int measuredWidth = expectedMinSizePx - 10;
+        int measuredHeight = expectedMinSizePx - 10;
+        when(mMockListMenu.getMenuDimensions())
+                .thenReturn(new int[] {measuredWidth, measuredHeight});
+
+        mCoordinator.configurePopupWindowSize(mMockListMenu);
+
+        verify(mAnchoredPopupWindow).setDesiredContentSize(expectedMinSizePx, expectedMinSizePx);
+    }
+
     private void setupMockListMenuWithContent() {
         ModelListAdapter mockAdapter = Mockito.mock(ModelListAdapter.class);
         when(mockAdapter.getCount()).thenReturn(1);
