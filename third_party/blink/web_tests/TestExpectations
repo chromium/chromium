@@ -9541,3 +9541,7 @@ crbug.com/534282817 [ Linux ] external/wpt/css/css-ui/compute-kind-widget-genera
 crbug.com/534282817 [ Linux ] external/wpt/css/css-ui/compute-kind-widget-generated/grouped-kind-of-widget-fallback-border-block-start-width-001.html [ Failure Pass ]
 crbug.com/534282817 [ Linux ] external/wpt/css/css-ui/compute-kind-widget-generated/grouped-kind-of-widget-fallback-border-top-style-001.html [ Failure Pass ]
 crbug.com/534282817 [ Linux ] external/wpt/css/css-ui/compute-kind-widget-generated/grouped-kind-of-widget-fallback-border-top-width-001.html [ Failure Pass ]
+
+# Gardener 2026-07-14
+crbug.com/534279892 [ Linux ] external/wpt/css/css-ui/compute-kind-widget-generated/grouped-kind-of-widget-fallback-border-top-color-001.html [ Failure Pass ]
+crbug.com/534166365 [ Linux ] external/wpt/css/css-ui/compute-kind-widget-generated/grouped-kind-of-widget-fallback-border-top-left-radius-001.html [ Failure Pass ]
