@@ -402,6 +402,44 @@ TEST_P(EGLImageBackingFactoryThreadSafeTest, OneWriterOneReader) {
   EXPECT_EQ(dst_pixels[3], 255);
 }
 
+TEST_P(EGLImageBackingFactoryThreadSafeTest, UploadReadback) {
+  const auto mailbox = Mailbox::Generate();
+  const auto format = get_format();
+  const gfx::Size size(4, 4);
+  const auto color_space = gfx::ColorSpace::CreateSRGB();
+  const gpu::SurfaceHandle surface_handle = gpu::kNullSurfaceHandle;
+  const gpu::SharedImageUsageSet usage =
+      SHARED_IMAGE_USAGE_GLES2_READ | SHARED_IMAGE_USAGE_GLES2_WRITE;
+
+  auto backing = backing_factory_->CreateSharedImage(
+      mailbox,
+      {format, size, color_space, kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
+       usage, "TestLabel"},
+      surface_handle, /*is_thread_safe=*/true);
+  ASSERT_NE(backing, nullptr);
+
+  std::vector<uint8_t> src_pixels(size.width() * size.height() * 4, 0xFF);
+  // Fill with some pattern.
+  for (size_t i = 0; i < src_pixels.size(); ++i) {
+    src_pixels[i] = static_cast<uint8_t>(i % 256);
+  }
+
+  SkImageInfo info = SkImageInfo::Make(
+      size.width(), size.height(), kRGBA_8888_SkColorType, kPremul_SkAlphaType);
+  SkPixmap pixmap(info, src_pixels.data(), info.minRowBytes());
+
+  // Upload
+  EXPECT_TRUE(backing->UploadFromMemory({pixmap}));
+
+  // Readback
+  std::vector<uint8_t> dst_pixels(src_pixels.size(), 0);
+  SkPixmap dst_pixmap(info, dst_pixels.data(), info.minRowBytes());
+  EXPECT_TRUE(backing->ReadbackToMemory({dst_pixmap}));
+
+  // Compare
+  EXPECT_EQ(src_pixels, dst_pixels);
+}
+
 #if BUILDFLAG(USE_DAWN) && BUILDFLAG(DAWN_ENABLE_BACKEND_OPENGLES)
 
 // TODO(crbug.com/332947916): fix these tests to run on Android/GLES

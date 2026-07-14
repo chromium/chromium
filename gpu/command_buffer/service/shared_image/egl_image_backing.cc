@@ -11,6 +11,7 @@
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/gl_utils.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
+#include "gpu/command_buffer/service/shared_image/gl_texture_holder.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_gl_utils.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
 #include "gpu/command_buffer/service/shared_image/skia_gl_image_representation.h"
@@ -160,6 +161,40 @@ class EGLImageBacking::GLTexturePassthroughEGLImageRepresentation
  private:
   GLRepresentationShared shared_;
 };
+
+// static
+bool EGLImageBacking::SupportsPixelReadbackWithFormat(
+    viz::SharedImageFormat format) {
+  // NOTE: Using MultiPlaneFormats is okay here are this is only used with
+  // SharedMemory GMBs which correspond to specific multiplanar formats.
+  return (format.is_multi_plane() ||
+          format == viz::SinglePlaneFormat::kRGBA_8888 ||
+          format == viz::SinglePlaneFormat::kBGRA_8888 ||
+          format == viz::SinglePlaneFormat::kR_8 ||
+          format == viz::SinglePlaneFormat::kRG_88 ||
+          format == viz::SinglePlaneFormat::kRGBX_8888 ||
+          format == viz::SinglePlaneFormat::kBGRX_8888);
+}
+
+// static
+bool EGLImageBacking::SupportsPixelUploadWithFormat(
+    viz::SharedImageFormat format) {
+  // NOTE: Using MultiPlaneFormats is okay here are this is only used with
+  // SharedMemory GMBs which correspond to specific multiplanar formats.
+  return (format.is_multi_plane() ||
+          format == viz::SinglePlaneFormat::kRGBA_8888 ||
+          format == viz::SinglePlaneFormat::kRGBA_4444 ||
+          format == viz::SinglePlaneFormat::kBGRA_8888 ||
+          format == viz::SinglePlaneFormat::kR_8 ||
+          format == viz::SinglePlaneFormat::kRG_88 ||
+          format == viz::SinglePlaneFormat::kRGBA_F16 ||
+          format == viz::SinglePlaneFormat::kR_16 ||
+          format == viz::SinglePlaneFormat::kRG_1616 ||
+          format == viz::SinglePlaneFormat::kRGBX_8888 ||
+          format == viz::SinglePlaneFormat::kBGRX_8888 ||
+          format == viz::SinglePlaneFormat::kRGBA_1010102 ||
+          format == viz::SinglePlaneFormat::kBGRA_1010102);
+}
 
 EGLImageBacking::EGLImageBacking(
     const Mailbox& mailbox,
@@ -573,6 +608,93 @@ void EGLImageBacking::MarkForDestruction() {
     }
   }
   source_texture_holders_.clear();
+}
+
+bool EGLImageBacking::UploadFromMemory(const std::vector<SkPixmap>& pixmaps) {
+  if (!BeginWrite()) {
+    return false;
+  }
+
+  // Use existing source texture holders if they were created on the current
+  // context. Otherwise, create new EGLImage siblings.
+  std::vector<scoped_refptr<GLTextureHolder>> texture_holders;
+  if (created_on_context_ == gl::g_current_gl_context &&
+      !source_texture_holders_.empty()) {
+    texture_holders = source_texture_holders_;
+  } else {
+    texture_holders = GenEGLImageSiblings(/*pixel_data=*/{});
+  }
+
+  if (texture_holders.empty()) {
+    EndWrite();
+    return false;
+  }
+
+  bool success = true;
+  int num_planes = format().NumberOfPlanes();
+  for (int i = 0; i < num_planes; ++i) {
+    if (!texture_holders[i]->UploadFromMemory(pixmaps[i])) {
+      success = false;
+    }
+
+    if (!success) {
+      break;
+    }
+  }
+
+  EndWrite();
+  if (success) {
+    SetCleared();
+  }
+  return success;
+}
+
+bool EGLImageBacking::ReadbackToMemory(const std::vector<SkPixmap>& pixmaps) {
+  {
+    AutoLock auto_lock(this);
+    if (is_writing_) {
+      return false;
+    }
+    // Wait for any pending writes to complete before starting readback.
+    if (write_fence_) {
+      write_fence_->ServerWait();
+    }
+  }
+
+  // Use existing source texture holders if they were created on the current
+  // context. Otherwise, create new EGLImage siblings.
+  std::vector<scoped_refptr<GLTextureHolder>> texture_holders;
+  if (created_on_context_ == gl::g_current_gl_context &&
+      !source_texture_holders_.empty()) {
+    texture_holders = source_texture_holders_;
+  } else {
+    texture_holders = GenEGLImageSiblings(/*pixel_data=*/{});
+  }
+
+  if (texture_holders.empty()) {
+    return false;
+  }
+
+  bool success = true;
+  int num_planes = format().NumberOfPlanes();
+  for (int i = 0; i < num_planes; ++i) {
+    if (!texture_holders[i]->ReadbackToMemory(pixmaps[i])) {
+      success = false;
+    }
+
+    if (!success) {
+      break;
+    }
+  }
+
+  {
+    AutoLock auto_lock(this);
+    // Create a read fence to synchronize with future writes.
+    read_fences_[gl::g_current_gl_context] =
+        base::MakeRefCounted<gl::SharedGLFenceEGL>();
+  }
+
+  return success;
 }
 
 }  // namespace gpu

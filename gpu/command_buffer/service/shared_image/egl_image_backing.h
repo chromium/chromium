@@ -31,6 +31,14 @@ struct Mailbox;
 // group. This is achieved by using locks and fences for proper synchronization.
 class EGLImageBacking : public ClearTrackingSharedImageBacking {
  public:
+  // Returns true if EGLImageBacking supports UploadFromMemory for the given
+  // format.
+  static bool SupportsPixelUploadWithFormat(viz::SharedImageFormat format);
+
+  // Returns true if EGLImageBacking supports ReadbackToMemory for the given
+  // format.
+  static bool SupportsPixelReadbackWithFormat(viz::SharedImageFormat format);
+
   EGLImageBacking(
       const Mailbox& mailbox,
       const SharedImageInfo& si_info,
@@ -49,6 +57,8 @@ class EGLImageBacking : public ClearTrackingSharedImageBacking {
   SharedImageBackingType GetType() const override;
   void Update(std::unique_ptr<gfx::GpuFence> in_fence) override;
   void MarkForDestruction() override;
+  bool UploadFromMemory(const std::vector<SkPixmap>& pixmaps) override;
+  bool ReadbackToMemory(const std::vector<SkPixmap>& pixmaps) override;
 
  protected:
   std::unique_ptr<GLTextureImageRepresentation> ProduceGLTexture(

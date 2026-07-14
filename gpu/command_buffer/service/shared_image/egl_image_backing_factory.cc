@@ -29,7 +29,7 @@ constexpr SharedImageUsageSet kSupportedUsage =
     SHARED_IMAGE_USAGE_WEBGPU_SWAP_CHAIN_TEXTURE |
     SHARED_IMAGE_USAGE_MACOS_VIDEO_TOOLBOX |
     SHARED_IMAGE_USAGE_HIGH_PERFORMANCE_GPU |
-    SHARED_IMAGE_USAGE_WEBGPU_STORAGE_TEXTURE;
+    SHARED_IMAGE_USAGE_WEBGPU_STORAGE_TEXTURE | SHARED_IMAGE_USAGE_CPU_UPLOAD;
 
 }  // namespace
 
@@ -88,10 +88,15 @@ bool EGLImageBackingFactory::IsSupported(SharedImageUsageSet usage,
     return false;
   }
   constexpr SharedImageUsageSet kInvalidUsage =
-      SHARED_IMAGE_USAGE_VIDEO_DECODE | SHARED_IMAGE_USAGE_SCANOUT |
-      SHARED_IMAGE_USAGE_CPU_UPLOAD;
+      SHARED_IMAGE_USAGE_VIDEO_DECODE | SHARED_IMAGE_USAGE_SCANOUT;
   if (usage.HasAny(kInvalidUsage)) {
     return false;
+  }
+
+  if (usage.Has(SHARED_IMAGE_USAGE_CPU_UPLOAD)) {
+    if (!EGLImageBacking::SupportsPixelUploadWithFormat(format)) {
+      return false;
+    }
   }
 
   if ((usage.HasAny(SHARED_IMAGE_USAGE_WEBGPU_READ |
