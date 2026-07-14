@@ -981,6 +981,18 @@ void PageHandler::Navigate(const std::string& url,
     return;
   }
 
+  if (!session()->GetClient()->MayAttachToURL(gurl,
+                                              host_->web_ui() != nullptr)) {
+    url::Origin origin = url::Origin::Create(gurl);
+    if (!origin.scheme().empty() &&
+        origin.scheme() != content::kChromeUIScheme &&
+        origin.scheme() != content::kChromeUIUntrustedScheme &&
+        origin.scheme() != content::kChromeDevToolsScheme) {
+      callback->sendFailure(Response::ServerError("Not allowed"));
+      return;
+    }
+  }
+
   ui::PageTransition type;
   std::string transition_type =
       maybe_transition_type.value_or(Page::TransitionTypeEnum::Typed);

@@ -3,8 +3,10 @@
 // found in the LICENSE file.
 
 (async () => {
-  const blob = new Blob([], {type: 'application/javascript'});
+  const blob = new Blob(
+      ['console.log("Worker running"); setInterval(() => {}, 1000);'],
+      {type: 'application/javascript'});
   const url = URL.createObjectURL(blob);
-  new Worker(url);
+  new Worker(url, {name: 'MyBlobWorker'});
   document.title = 'worker-created';
 })();

@@ -59,15 +59,14 @@ chrome.test.getConfig(config => chrome.test.runTests([
 
     const restrictedURL = `chrome-extension://${victimId}/restricted.html`;
 
-    // Wait for the navigation to finish inside the child session.
-    // If it is blocked, errorText will contain 'net::ERR_BLOCKED_BY_CLIENT'.
-    const navigateResult = await chrome.debugger.sendCommand(
-        childDebuggerSession, 'Page.navigate', {url: restrictedURL});
+    // Navigating to a restricted URL via the debugger protocol is actively
+    // blocked by the extension security checks, resulting in a promise
+    // rejection.
+    await chrome.test.assertPromiseRejects(
+        chrome.debugger.sendCommand(
+            childDebuggerSession, 'Page.navigate', {url: restrictedURL}),
+        /Not allowed/);
 
-    // Assert that the request was blocked by the browser.
-    chrome.test.assertTrue(!!navigateResult.errorText);
-    chrome.test.assertTrue(
-        navigateResult.errorText.includes('ERR_BLOCKED_BY_CLIENT'));
 
     chrome.test.succeed();
   },

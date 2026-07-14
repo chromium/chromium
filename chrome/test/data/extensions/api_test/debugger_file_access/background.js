@@ -70,13 +70,27 @@ async function openFileUrlAndLoad(url) {
     },
 
     async function testAttachBlobWorker() {
-      chrome.test.log('testAttachBlobWorker');
-      if (expectFileAccess) {
-        const tab = await chrome.tabs.create({url: workerHtmlUrl});
-        chrome.test.assertTrue(!!tab);
+      const findWorkerTarget = async (retries = 0) => {
+        const targets = await chrome.debugger.getTargets();
+        const t = targets.find(
+            t => (t.type === 'worker' && t.url && t.url.startsWith('blob:')) ||
+                (t.type === 'other' && t.url === '' && t.title === ''));
+        if (t) {
+          return t;
+        }
+        if (retries < 50) {
+          await new Promise(r => setTimeout(r, 100));
+          return findWorkerTarget(retries + 1);
+        }
+        return null;
+      };
 
+      // Open the page that spawns the worker.
+      const tab = await openFileUrlAndLoad(workerHtmlUrl);
+
+      if (expectFileAccess) {
         // Attach to the tab first.
-        await chrome.debugger.attach({tabId: tab.id}, '1.3');
+        await chrome.debugger.attach({tabId: tab.id}, '1.1');
 
         const attachedPromise = new Promise(resolve => {
           const listener = (source, method, params) => {
@@ -107,44 +121,39 @@ async function openFileUrlAndLoad(url) {
           // but NOT sessionId. To detach a child session, we usually use
           // Target.detachFromTarget or just detach the parent.
           await chrome.debugger.sendCommand(
-              {tabId: tab.id}, 'Target.detachFromTarget',
-              {sessionId: attachedParams.sessionId});
-        } else {
-          // Fallback: try to find and attach manually.
-          const findWorkerTarget = async (retries = 0) => {
-            const targets = await chrome.debugger.getTargets();
-            const t = targets.find(
-                t => (t.type === 'worker' || t.type === 'other') &&
-                    (t.url &&
-                     (t.url.startsWith('blob:') ||
-                      t.url.startsWith('file:'))) &&
-                    (!t.extensionId || t.extensionId !== chrome.runtime.id) &&
-                    t.title !== 'Debugger File Access Test' &&
-                    t.title !== 'worker-created');
-            if (t) {
-              return t;
-            }
-            if (retries < 50) {
-              await new Promise(r => setTimeout(r, 100));
-              return findWorkerTarget(retries + 1);
-            }
-            return null;
-          };
+              {tabId: tab.id, sessionId: attachedParams.sessionId},
+              'Runtime.runIfWaitingForDebugger');
 
+          await chrome.debugger.sendCommand(
+              {tabId: tab.id, sessionId: attachedParams.sessionId},
+              'Runtime.evaluate', {expression: 'self.close()'});
+        } else {
           const workerTarget = await findWorkerTarget();
           if (workerTarget) {
-            await chrome.debugger.attach({targetId: workerTarget.id}, '1.3');
+            await chrome.debugger.attach({targetId: workerTarget.id}, '1.1');
             await chrome.debugger.detach({targetId: workerTarget.id});
           } else {
             chrome.test.log('Skipping worker attach verification');
           }
         }
+        await chrome.debugger.sendCommand(
+            {tabId: tab.id}, 'Target.setAutoAttach',
+            {autoAttach: false, waitForDebuggerOnStart: false, flatten: true});
 
         await chrome.debugger.detach({tabId: tab.id});
-        await chrome.tabs.remove(tab.id);
       } else {
+        // We cannot attach to the tab without file access.
         await chrome.test.assertPromiseRejects(
-            chrome.tabs.create({url: workerHtmlUrl}),
+            chrome.debugger.attach({tabId: tab.id}, '1.1'),
+            kFileUrlsRequireFileAccess);
+
+        // Find the worker target.
+        const workerTarget = await findWorkerTarget();
+        chrome.test.assertTrue(!!workerTarget, 'Worker target should be found');
+
+        // Try to attach to the worker target directly.
+        await chrome.test.assertPromiseRejects(
+            chrome.debugger.attach({targetId: workerTarget.id}, '1.1'),
             kFileUrlsRequireFileAccess);
       }
       chrome.test.succeed();

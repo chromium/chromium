@@ -53,6 +53,7 @@
 #include "extensions/common/manifest.h"
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/permissions/permissions_data.h"
+#include "extensions/common/switches.h"
 #include "pdf/buildflags.h"
 #include "url/origin.h"
 #include "url/url_constants.h"
@@ -108,6 +109,8 @@ constexpr char kProtocolVersionNotSupportedError[] =
 constexpr char kRestrictedError[] = "Cannot attach to this target.";
 constexpr char kDetachedWhileHandlingError[] =
     "Detached while handling command.";
+constexpr char kFileUrlsRequireFileAccess[] =
+    "Cannot navigate to a file URL without local file access.";
 
 constexpr char kTabTargetType[] = "tab";
 constexpr char kBackgroundPageTargetType[] = "background page";
@@ -173,7 +176,7 @@ bool ExtensionMayAttachToURL(const Extension& extension,
                              const GURL& url,
                              std::string* error) {
   // Allow the extension to attach to about:blank and empty URLs.
-  if (url.is_empty() || url == "about:") {
+  if (url.is_empty() || url == "about:" || url.IsAboutBlank()) {
     return true;
   }
 
@@ -189,6 +192,22 @@ bool ExtensionMayAttachToURL(const Extension& extension,
   // See https://crbug.com/40285404.
   const GURL& url_for_restriction_check =
       url.SchemeIsBlob() ? url::Origin::Create(url).GetURL() : url;
+
+  bool allow_on_extension_urls =
+      ::extensions::switches::AreExtensionsOnExtensionURLsAllowed();
+  if (url_for_restriction_check.SchemeIs(extensions::kExtensionScheme) &&
+      url_for_restriction_check.host() != extension.id() &&
+      !allow_on_extension_urls) {
+    *error = manifest_errors::kCannotAccessExtensionUrl;
+    return false;
+  }
+
+  if (url_for_restriction_check.SchemeIsFile() &&
+      !util::AllowFileAccess(extension.id(), extension_profile)) {
+    *error = kFileUrlsRequireFileAccess;
+    return false;
+  }
+
   if (extension.permissions_data()->IsRestrictedUrl(url_for_restriction_check,
                                                     error)) {
     return false;
@@ -198,12 +217,6 @@ bool ExtensionMayAttachToURL(const Extension& extension,
   if (extension.permissions_data()->IsPolicyBlockedHost(url) ||
       extension.permissions_data()->IsPolicyBlockedHost(
           url_for_restriction_check)) {
-    *error = kRestrictedError;
-    return false;
-  }
-
-  if (url.SchemeIsFile() &&
-      !util::AllowFileAccess(extension.id(), extension_profile)) {
     *error = kRestrictedError;
     return false;
   }
@@ -250,7 +263,7 @@ bool ExtensionIsTrusted(const Extension& extension) {
   }
   return !Manifest::IsUnpackedLocation(extension.location()) ||
          base::CommandLine::ForCurrentProcess()->HasSwitch(
-             switches::kAllowUnpackedPerfettoExtension);
+             ::switches::kAllowUnpackedPerfettoExtension);
 }
 
 bool ExtensionMayAttachToRenderFrameHost(
@@ -290,7 +303,7 @@ bool ExtensionMayAttachToRenderFrameHost(
 #endif  // BUILDFLAG(ENABLE_PDF)
 
         if (render_frame_host->GetWebUI()) {
-          *error = kRestrictedError;
+          *error = manifest_errors::kCannotAccessChromeUrl;
           result = false;
           return content::RenderFrameHost::FrameIterationAction::kStop;
         }
@@ -362,8 +375,48 @@ bool ExtensionMayAttachToAgentHost(const Extension& extension,
                                            error);
   }
 
-  return ExtensionMayAttachToURL(extension, extension_profile,
-                                 agent_host.GetURL(), error);
+  const GURL& url = agent_host.GetURL();
+  if (!ExtensionMayAttachToURL(extension, extension_profile, url, error)) {
+    return false;
+  }
+
+  // For worker targets, always check the parent's URL to prevent security
+  // bypass if the worker was spawned by a restricted page.
+  std::string type = agent_host.GetType();
+  if (type == DevToolsAgentHost::kTypeDedicatedWorker ||
+      type == DevToolsAgentHost::kTypeSharedWorker ||
+      type == DevToolsAgentHost::kTypeOther) {
+    std::string parent_id = agent_host.GetParentId();
+    if (parent_id.empty()) {
+      parent_id = agent_host.GetParentFrameId();
+    }
+
+    bool verified_parent = false;
+    if (!parent_id.empty()) {
+      scoped_refptr<DevToolsAgentHost> parent_host =
+          DevToolsAgentHost::GetForId(parent_id);
+      if (parent_host) {
+        verified_parent = true;
+        if (!ExtensionMayAttachToAgentHost(extension, allow_incognito_access,
+                                           extension_profile, *parent_host,
+                                           error)) {
+          return false;
+        }
+      }
+    }
+
+    if (!verified_parent && url.is_empty()) {
+      // If we couldn't verify the parent (either no ID or stale ID), and the
+      // URL is empty, we can't determine access. For known worker types, we
+      // block it.
+      if (type != DevToolsAgentHost::kTypeOther) {
+        *error = kRestrictedError;
+        return false;
+      }
+    }
+  }
+
+  return true;
 }
 
 }  // namespace

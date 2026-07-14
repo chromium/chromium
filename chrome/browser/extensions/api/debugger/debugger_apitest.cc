@@ -314,8 +314,8 @@ IN_PROC_BROWSER_TEST_F(DebuggerApiTest,
   GURL other_ext_url = another_extension->GetResourceURL("popup.html");
 
   // This extension should not be able to access another extension.
-  EXPECT_TRUE(RunAttachFunction(
-      other_ext_url, manifest_errors::kCannotAccessExtensionUrl));
+  EXPECT_TRUE(RunAttachFunction(other_ext_url,
+                                manifest_errors::kCannotAccessExtensionUrl));
 
   // This extension *should* be able to debug itself.
   EXPECT_TRUE(RunAttachFunction(extension()->GetResourceURL("test_file.html"),
@@ -334,7 +334,6 @@ IN_PROC_BROWSER_TEST_F(DebuggerFileAccessApiTest,
           .AppendASCII("worker.html");
   GURL worker_url = net::FilePathToFileURL(worker_path);
   std::string custom_arg = worker_url.spec() + "|enabled";
-
   EXPECT_TRUE(RunExtensionTest("debugger_file_access",
                                {.custom_arg = custom_arg.c_str()},
                                {.allow_file_access = true}))
