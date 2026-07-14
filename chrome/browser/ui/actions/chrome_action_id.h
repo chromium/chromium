@@ -475,7 +475,8 @@
   E(kActionSidePanelShowComments, IDC_SHOW_COMMENTS_SIDE_PANEL) \
   E(kActionSidePanelShowCustomizeChrome, IDC_SHOW_CUSTOMIZE_CHROME_SIDE_PANEL) \
   E(kActionSidePanelShowCustomizeChromeFooter) \
-  E(kActionSidePanelShowCustomizeChromeToolbar) \
+  E(kActionSidePanelShowCustomizeChromeToolbar, \
+    IDC_SHOW_CUSTOMIZE_CHROME_TOOLBAR) \
   E(kActionSidePanelShowFeed) \
   E(kActionSidePanelShowGlic) \
   E(kActionSidePanelShowContextualTasks) \
