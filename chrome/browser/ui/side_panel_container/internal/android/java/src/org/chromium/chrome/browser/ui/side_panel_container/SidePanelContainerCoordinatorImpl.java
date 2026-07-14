@@ -244,6 +244,20 @@ final class SidePanelContainerCoordinatorImpl
         log(TAG, "destroy");
         ThreadUtils.assertOnUiThread();
         mSideUiCoordinator.unregisterSideUiContainer(this);
+
+        // Detach the side panel content View.
+        //
+        // A side panel feature may choose to reuse its content View in a different
+        // SidePanelContainerCoordinator instance, such as the instance in a new window.
+        //
+        // So we need to detach the content view when this container is destroyed. Otherwise, the
+        // content view will keep a reference to this container as the parent View, which will
+        // cause:
+        //
+        // (1) memory leaks, and
+        // (2) a crash when the content View is added to another container instance.
+        mContainerView.removeAllViews();
+        mCurrentContent = null;
     }
 
     @Override

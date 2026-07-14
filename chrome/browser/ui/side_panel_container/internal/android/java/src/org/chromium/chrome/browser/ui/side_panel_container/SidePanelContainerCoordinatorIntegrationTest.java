@@ -13,22 +13,27 @@ import android.view.View;
 import android.widget.FrameLayout;
 
 import androidx.test.filters.MediumTest;
+import androidx.test.runner.lifecycle.Stage;
 
+import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.night_mode.ChromeNightModeTestUtils;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabbed_mode.TabbedRootUiCoordinator;
 import org.chromium.chrome.browser.ui.side_panel_container.test.SidePanelContainerCoordinatorIntegrationTestSupport;
@@ -39,10 +44,13 @@ import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.test.util.RenderTestRule;
+import org.chromium.ui.util.ColorUtils;
+
+import java.util.concurrent.atomic.AtomicReference;
 
 /** Tests {@link SidePanelContainerCoordinatorImpl}'s integration with {@code ChromeActivity}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@Batch(Batch.PER_CLASS)
+@DoNotBatch(reason = "Need to reset theme for consistent render test results")
 @CommandLineFlags.Add(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE)
 @EnableFeatures({
     ChromeFeatureList.ENABLE_ANDROID_SIDE_PANEL,
@@ -72,6 +80,12 @@ public class SidePanelContainerCoordinatorIntegrationTest {
                 mFreshCtaTransitTestRule.getTestServer().getURL(RESPONSIVE_WEB_PAGE_URL);
         mResponsivePageStation = mFreshCtaTransitTestRule.startOnUrl(responsivePageUrl);
         ChromeTabUtils.waitForTabPageLoaded(mResponsivePageStation.getTab(), responsivePageUrl);
+    }
+
+    @AfterClass
+    public static void tearDownAfterClass() {
+        ThreadUtils.runOnUiThreadBlocking(
+                ChromeNightModeTestUtils::tearDownNightModeAfterChromeActivityDestroyed);
     }
 
     @Test
@@ -224,6 +238,46 @@ public class SidePanelContainerCoordinatorIntegrationTest {
 
         // Assert.
         mRenderTestRule.render(tabCardView, "tab_card_after_closing_side_panel");
+    }
+
+    @Test
+    @MediumTest
+    public void changeTheme_retainsOpenPanel() {
+        // Arrange:
+        var coordinator = getSidePanelContainerCoordinator();
+        showPanel(mResponsivePageStation.getTab());
+        waitForContainerViewOpen(coordinator);
+
+        // Act: Change the theme.
+        boolean isNightMode = ColorUtils.inNightMode(mResponsivePageStation.getActivity());
+        ChromeTabbedActivity activityInNewTheme =
+                ApplicationTestUtils.waitForActivityWithClass(
+                        ChromeTabbedActivity.class,
+                        Stage.RESUMED,
+                        () ->
+                                ChromeNightModeTestUtils.setUpNightModeForChromeActivity(
+                                        !isNightMode));
+        assertNotEquals(isNightMode, ColorUtils.inNightMode(activityInNewTheme));
+
+        // Assert:
+        // (1) Wait for the SidePanelContainerCoordinator in the new Activity to be initialized,
+        // then
+        // (2) Verify the side panel is still open.
+        var newCoordinatorRef = new AtomicReference<SidePanelContainerCoordinatorImpl>();
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    var newCoordinator =
+                            ((TabbedRootUiCoordinator)
+                                            activityInNewTheme.getRootUiCoordinatorForTesting())
+                                    .getSidePanelContainerCoordinatorForTesting();
+
+                    if (newCoordinator != null) {
+                        newCoordinatorRef.set((SidePanelContainerCoordinatorImpl) newCoordinator);
+                    }
+                    return newCoordinator != null;
+                },
+                "SidePanelContainerCoordinator isn't initialized for the new Activity.");
+        waitForContainerViewOpen(newCoordinatorRef.get());
     }
 
     private SidePanelContainerCoordinatorImpl getSidePanelContainerCoordinator() {
