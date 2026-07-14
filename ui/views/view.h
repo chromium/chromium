@@ -2740,6 +2740,9 @@ class VIEWS_EXPORT BaseActionViewInterface : public ActionViewInterface {
   ~BaseActionViewInterface() override = default;
   void ActionItemChangedImpl(actions::ActionItem* action_item) override;
 
+ protected:
+  View* action_view() const { return action_view_; }
+
  private:
   raw_ptr<View> action_view_;
 };

@@ -780,9 +780,6 @@ class VIEWS_EXPORT MenuItemActionViewInterface
 
   // BaseActionViewInterface:
   void ActionItemChangedImpl(actions::ActionItem* action_item) override;
-
- private:
-  raw_ptr<MenuItemView> action_view_;
 };
 
 // EmptyMenuMenuItem ----------------------------------------------------------
