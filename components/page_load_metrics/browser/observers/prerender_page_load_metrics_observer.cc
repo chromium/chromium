@@ -66,11 +66,6 @@ const char kHistogramPrerenderCumulativeShiftScore[] =
 const char kHistogramPrerenderCumulativeShiftScoreMainFrame[] =
     "PageLoad.Clients.Prerender.LayoutInstability.CumulativeShiftScore."
     "MainFrame";
-const char
-    kHistogramPrerenderMaxCumulativeShiftScoreSessionWindowGap1000msMax5000ms2
-        [] = "PageLoad.Clients.Prerender.LayoutInstability."
-             "MaxCumulativeShiftScore.SessionWindow."
-             "Gap1000ms.Max5000ms2";
 
 // Responsiveness metrics.
 const char kHistogramPrerenderNumInteractions[] =
@@ -475,11 +470,6 @@ void PrerenderPageLoadMetricsObserver::RecordLayoutShiftScoreMetrics(
     return;
   }
 
-  page_load_metrics::UmaMaxCumulativeShiftScoreHistogram10000x(
-      AppendSuffix(
-          internal::
-              kHistogramPrerenderMaxCumulativeShiftScoreSessionWindowGap1000msMax5000ms2),
-      normalized_cls_data);
   const float max_cls =
       normalized_cls_data.session_windows_gap1000ms_max5000ms_max_cls;
   ukm::builders::PrerenderPageLoad(GetDelegate().GetPageUkmSourceId())

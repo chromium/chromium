@@ -3480,20 +3480,6 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="PageLoad.Clients.Prerender.LayoutInstability.MaxCumulativeShiftScore.SessionWindow.Gap1000ms.Max5000ms2{PreloadingTriggerType}"
-    units="ms" expires_after="2024-09-03">
-  <owner>kenoss@chromium.org</owner>
-  <owner>src/content/browser/preloading/prerender/OWNERS</owner>
-  <summary>
-    PageLoad.LayoutInstability.MaxCumulativeShiftScore.SessionWindow.Gap1000ms.Max5000ms2,
-    but for page loads that were prerendered and were later activated. Note that
-    prerendered page loads are excluded from
-    PageLoad.LayoutInstability.MaxCumulativeShiftScore.SessionWindow.Gap1000ms.Max5000ms2.
-  </summary>
-  <token key="PreloadingTriggerType" variants="PagePreloadingTriggerType"/>
-</histogram>
-
-<histogram
     name="PageLoad.Clients.Prerender.NavigationToActivation{PreloadingTriggerType}"
     units="ms" expires_after="2026-11-29">
   <owner>nhiroki@chromium.org</owner>

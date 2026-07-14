@@ -221,12 +221,6 @@ IN_PROC_BROWSER_TEST_F(PrerenderPageLoadMetricsObserverBrowserTest,
           internal::kHistogramPrerenderCumulativeShiftScoreMainFrame,
           content::PreloadingTriggerType::kSpeculationRule, ""),
       1);
-  histogram_tester().ExpectTotalCount(
-      prerender_helper_.GenerateHistogramName(
-          internal::
-              kHistogramPrerenderMaxCumulativeShiftScoreSessionWindowGap1000msMax5000ms2,
-          content::PreloadingTriggerType::kSpeculationRule, ""),
-      1);
 
   auto entries = GetMergedUkmEntries(PrerenderPageLoad::kEntryName);
   EXPECT_EQ(2u, entries.size());
@@ -417,13 +411,6 @@ IN_PROC_BROWSER_TEST_F(PrerenderPageLoadMetricsObserverBrowserTest,
   histogram_tester().ExpectTotalCount(
       prerender_helper_.GenerateHistogramName(
           internal::kHistogramPrerenderCumulativeShiftScoreMainFrame,
-          content::PreloadingTriggerType::kEmbedder,
-          prerender_utils::kDirectUrlInputMetricSuffix),
-      1);
-  histogram_tester().ExpectTotalCount(
-      prerender_helper_.GenerateHistogramName(
-          internal::
-              kHistogramPrerenderMaxCumulativeShiftScoreSessionWindowGap1000msMax5000ms2,
           content::PreloadingTriggerType::kEmbedder,
           prerender_utils::kDirectUrlInputMetricSuffix),
       1);
@@ -883,12 +870,6 @@ IN_PROC_BROWSER_TEST_F(PrerenderPageLoadMetricsObserverBrowserTest,
   histogram_tester().ExpectTotalCount(
       prerender_helper_.GenerateHistogramName(
           internal::kHistogramPrerenderCumulativeShiftScoreMainFrame,
-          content::PreloadingTriggerType::kSpeculationRule, ""),
-      1);
-  histogram_tester().ExpectTotalCount(
-      prerender_helper_.GenerateHistogramName(
-          internal::
-              kHistogramPrerenderMaxCumulativeShiftScoreSessionWindowGap1000msMax5000ms2,
           content::PreloadingTriggerType::kSpeculationRule, ""),
       1);
 

@@ -96,5 +96,3 @@ UMA for CLS are:
   `PageLoad.LayoutInstability.MaxCumulativeShiftScore.SessionWindow.Gap1000ms.Max5000ms`
 * BFCache navigations:
   `PageLoad.LayoutInstability.MaxCumulativeShiftScore.AfterBackForwardCacheRestore.SessionWindow.Gap1000ms.Max5000ms`
-* Prerender2 activations:
-  `PageLoad.Clients.Prerender.LayoutInstability.MaxCumulativeShiftScore.SessionWindow.Gap1000ms.Max5000ms2.{SpeculationRule, Embedder_DirectURLInput, Embedder_DefaultSearchEngine}`
