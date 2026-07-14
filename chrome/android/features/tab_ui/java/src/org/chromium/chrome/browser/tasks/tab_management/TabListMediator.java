@@ -2453,24 +2453,29 @@ public class TabListMediator implements TabListNotificationHandler {
 
     void updateDescriptionString(Tab tab, PropertyModel model) {
         if (mLayoutType == TabListLayoutType.FLAT) return;
-        boolean isTabGroup = TabProperties.isTabGroupHeader(model);
-        int numOfRelatedTabs = getRelatedTabsForId(tab.getId()).size();
         TextResolver contentDescriptionResolver =
                 (context) -> {
+                    boolean isTabGroup = TabProperties.isTabGroupHeader(model);
+                    TabModel tabModel = getCurrentTabModelChecked();
+                    int tabId = model.get(TabProperties.TAB_ID);
+                    Tab currentTab = tabModel.getTabById(tabId);
+                    if (currentTab == null) return "";
+                    int numOfRelatedTabs = getRelatedTabsForId(tabId).size();
                     if (!isTabGroup) {
                         if (mComponentId == TabComponentId.ARCHIVED_TABS_DIALOG) {
                             return context.getString(
-                                    R.string.accessibility_restore_tab, getTabTitleOrUrl(tab));
+                                    R.string.accessibility_restore_tab,
+                                    getTabTitleOrUrl(currentTab));
                         }
                         return "";
                     }
-                    String title = getLatestTitleForTabOrGroup(tab, model, /* useDefault= */ false);
+                    String title =
+                            getLatestTitleForTabOrGroup(currentTab, model, /* useDefault= */ false);
                     Resources res = context.getResources();
-                    TabModel tabModel = getCurrentTabModelChecked();
                     @TabGroupColorId
                     int colorId =
                             tabModel.getTabGroupColorWithFallback(
-                                    assumeNonNull(tab.getTabGroupId()));
+                                    assumeNonNull(currentTab.getTabGroupId()));
                     final @StringRes int colorDescRes =
                             TabGroupColorPickerUtils
                                     .getTabGroupColorPickerItemColorAccessibilityString(colorId);
@@ -2490,7 +2495,7 @@ public class TabListMediator implements TabListNotificationHandler {
                                                 title,
                                                 numOfRelatedTabs);
                     } else if (TabUiUtils.isDataSharingFunctionalityEnabled()
-                            && hasCollaboration(tab)) {
+                            && hasCollaboration(currentTab)) {
                         TabCardLabelData tabCardLabelData =
                                 model.get(TabProperties.TAB_CARD_LABEL_DATA);
                         CharSequence tabCardLabelDesc = "";
@@ -2550,7 +2555,8 @@ public class TabListMediator implements TabListNotificationHandler {
                                                 numOfRelatedTabs,
                                                 colorDesc);
                     }
-                    String mediaStateString = getMediaStateAccessibilityString(tab, model, res);
+                    String mediaStateString =
+                            getMediaStateAccessibilityString(currentTab, model, res);
                     if (!TextUtils.isEmpty(mediaStateString)) {
                         description += " " + mediaStateString;
                     }
