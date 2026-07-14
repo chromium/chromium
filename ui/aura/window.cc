@@ -632,6 +632,7 @@ void Window::StackChildBelow(Window* child, Window* target) {
 }
 
 void Window::AddChild(Window* child) {
+  ScopedDeleteBlocker blocker(child);
   WindowOcclusionTracker::ScopedPause pause_occlusion_tracking;
 
   DCHECK(layer()) << "Parent has not been Init()ed yet.";
@@ -1347,6 +1348,8 @@ void Window::Paint(const ui::PaintContext& context) {
 }
 
 void Window::RemoveChildImpl(Window* child, Window* new_parent) {
+  ScopedDeleteBlocker blocker(child);
+
   if (layout_manager_)
     layout_manager_->OnWillRemoveWindowFromLayout(child);
   for (WindowObserver& observer : observers_)
