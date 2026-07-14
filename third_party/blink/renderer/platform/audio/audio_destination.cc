@@ -218,9 +218,12 @@ int AudioDestination::Render(base::TimeDelta delay,
 
     const uint32_t frames_after_render = fifo_->FramesAvailable();
     if (frames_after_render < number_of_frames) {
-      // This can happen if the device has stopped or is stopping when
-      // `Render()` is called.
-      CHECK(state_change_underrun_in_bypass_mode_);
+      // In bypass mode, we expect to have rendered enough frames. If we didn't,
+      // it might be due to transient CPU overload or complex race conditions
+      // during rapid hardware suspend/resume cycles (see crbug.com/528653884).
+      // We demote this to DCHECK to avoid crashing production users, and
+      // recover by zeroing the output and pulling whatever is left.
+      DCHECK(state_change_underrun_in_bypass_mode_);
       output_bus_->Zero();
       fifo_->Pull(output_bus_.get(), frames_after_render);
       return frames_after_render;
