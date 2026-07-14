@@ -170,7 +170,7 @@
           label="$i18n{siteSettingsNotifications}">
       </site-details-permission>
       <site-details-permission category="[[contentSettingsTypesEnum_.JAVASCRIPT]]"
-          icon="privacy:code" label="$i18n{siteSettingsJavascript}">
+          icon="[[getCodeIcon_()]]" label="$i18n{siteSettingsJavascript}">
       </site-details-permission>
       <site-details-permission category="[[contentSettingsTypesEnum_.IMAGES]]"
           icon="privacy:imagesmode" label="$i18n{siteSettingsImages}">
@@ -246,11 +246,11 @@
       </site-details-permission>
 </if>
       <site-details-permission category="[[contentSettingsTypesEnum_.CLIPBOARD]]"
-          icon="privacy:content-paste" label="$i18n{siteSettingsClipboard}">
+          icon="[[getContentPasteIcon_()]]" label="$i18n{siteSettingsClipboard}">
       </site-details-permission>
       <site-details-permission
           category="[[contentSettingsTypesEnum_.PAYMENT_HANDLER]]"
-          icon="privacy:credit-card"
+          icon="[[getCreditCardIcon_()]]"
           label="$i18n{siteSettingsPaymentHandler}">
       </site-details-permission>
       <template is="dom-if" if="[[enableExperimentalWebPlatformFeatures_]]">
@@ -274,14 +274,14 @@
       </site-details-permission>
       <site-details-permission
           category="[[contentSettingsTypesEnum_.FEDERATED_IDENTITY_API]]"
-          icon="privacy:account-circle"
+          icon="[[getAccountCircleIcon_()]]"
           label="$i18n{siteSettingsFederatedIdentityApi}">
       </site-details-permission>
       <site-details-permission category="[[contentSettingsTypesEnum_.AR]]"
-          icon="privacy:cardboard" label="$i18n{siteSettingsAr}">
+          icon="[[getCardboardIcon_()]]" label="$i18n{siteSettingsAr}">
       </site-details-permission>
       <site-details-permission category="[[contentSettingsTypesEnum_.VR]]"
-          icon="privacy:cardboard" label="$i18n{siteSettingsVr}">
+          icon="[[getCardboardIcon_()]]" label="$i18n{siteSettingsVr}">
       </site-details-permission>
       <template is="dom-if" if="[[enableHandTrackingContentSetting_]]">
         <site-details-permission

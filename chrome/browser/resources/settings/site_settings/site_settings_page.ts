@@ -67,7 +67,9 @@ function getCategoryItemMap(): Map<ContentSettingsTypes, CategoryListItem> {
       route: routes.SITE_SETTINGS_AUTO_VERIFY,
       id: Id.ANTI_ABUSE,
       label: 'siteSettingsAntiAbuse',
-      icon: 'privacy20:person-check',
+      icon: loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+          'privacy20:person-check' :
+          'privacy20:person-check-old',
       enabledLabel: 'siteSettingsAntiAbuseEnabledSubLabel',
       disabledLabel: 'siteSettingsAntiAbuseDisabledSubLabel',
     },
@@ -75,7 +77,9 @@ function getCategoryItemMap(): Map<ContentSettingsTypes, CategoryListItem> {
       route: routes.SITE_SETTINGS_AR,
       id: Id.AR,
       label: 'siteSettingsAr',
-      icon: 'privacy:cardboard',
+      icon: loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+          'privacy:cardboard' :
+          'privacy:cardboard-old',
       enabledLabel: 'siteSettingsArAsk',
       disabledLabel: 'siteSettingsArBlock',
     },
@@ -150,7 +154,9 @@ function getCategoryItemMap(): Map<ContentSettingsTypes, CategoryListItem> {
       route: routes.SITE_SETTINGS_CLIPBOARD,
       id: Id.CLIPBOARD,
       label: 'siteSettingsClipboard',
-      icon: 'privacy:content-paste',
+      icon: loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+          'privacy:content-paste' :
+          'privacy:content-paste-old',
       enabledLabel: 'siteSettingsClipboardAsk',
       disabledLabel: 'siteSettingsClipboardBlocked',
     },
@@ -158,7 +164,9 @@ function getCategoryItemMap(): Map<ContentSettingsTypes, CategoryListItem> {
       route: routes.SITE_SETTINGS_FEDERATED_IDENTITY_API,
       id: Id.FEDERATED_IDENTITY_API,
       label: 'siteSettingsFederatedIdentityApi',
-      icon: 'privacy:account-circle',
+      icon: loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+          'privacy:account-circle' :
+          'privacy:account-circle-old',
       enabledLabel: 'siteSettingsFederatedIdentityApiAllowed',
       disabledLabel: 'siteSettingsFederatedIdentityApiBlocked',
       shouldShow: () =>
@@ -228,7 +236,9 @@ function getCategoryItemMap(): Map<ContentSettingsTypes, CategoryListItem> {
       route: routes.SITE_SETTINGS_JAVASCRIPT,
       id: Id.JAVASCRIPT,
       label: 'siteSettingsJavascript',
-      icon: 'privacy:code',
+      icon: loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+          'privacy:code' :
+          'privacy:code-old',
       enabledLabel: 'siteSettingsJavascriptAllowed',
       disabledLabel: 'siteSettingsJavascriptBlocked',
     },
@@ -319,7 +329,9 @@ function getCategoryItemMap(): Map<ContentSettingsTypes, CategoryListItem> {
       route: routes.SITE_SETTINGS_PAYMENT_HANDLER,
       id: Id.PAYMENT_HANDLER,
       label: 'siteSettingsPaymentHandler',
-      icon: 'privacy:credit-card',
+      icon: loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+          'privacy:credit-card' :
+          'privacy:credit-card-old',
       enabledLabel: 'siteSettingsPaymentHandlersAllowed',
       disabledLabel: 'siteSettingsPaymentHandlersBlocked',
       shouldShow: () =>
@@ -387,7 +399,9 @@ function getCategoryItemMap(): Map<ContentSettingsTypes, CategoryListItem> {
       route: routes.SITE_SETTINGS_SITE_DATA,
       id: Id.SITE_DATA,
       label: 'siteDataPageTitle',
-      icon: 'privacy:database',
+      icon: loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+          'privacy:database' :
+          'privacy:database-old',
     },
     // <if expr="is_chromeos">
     {
@@ -439,7 +453,9 @@ function getCategoryItemMap(): Map<ContentSettingsTypes, CategoryListItem> {
       route: routes.SITE_SETTINGS_VR,
       id: Id.VR,
       label: 'siteSettingsVr',
-      icon: 'privacy:cardboard',
+      icon: loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+          'privacy:cardboard' :
+          'privacy:cardboard-old',
       enabledLabel: 'siteSettingsVrAsk',
       disabledLabel: 'siteSettingsVrBlocked',
     },
@@ -470,7 +486,9 @@ function getCategoryItemMap(): Map<ContentSettingsTypes, CategoryListItem> {
       route: routes.COOKIES,
       id: Id.COOKIES,
       label: 'thirdPartyCookiesLinkRowLabel',
-      icon: 'privacy:cookie',
+      icon: loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+          'privacy:cookie' :
+          'privacy:cookie-old',
     },
   ];
   categoryItemMap = new Map(categoryList.map(item => [item.id, item]));

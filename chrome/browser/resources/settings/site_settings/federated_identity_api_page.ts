@@ -8,6 +8,7 @@ import './site_settings_shared.css.js';
 import '../settings_page/settings_subpage.js';
 import '../settings_shared.css.js';
 
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {SettingsViewMixin} from '../settings_page/settings_view_mixin.js';
@@ -44,6 +45,18 @@ export class FederatedIdentityApiPageElement extends
   // SettingsViewMixin implementation.
   override focusBackButton() {
     this.shadowRoot!.querySelector('settings-subpage')!.focusBackButton();
+  }
+
+  protected getAccountCircleIcon_(): string {
+    return loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+        'privacy:account-circle' :
+        'privacy:account-circle-old';
+  }
+
+  protected getAccountCircleOffIcon_(): string {
+    return loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+        'privacy:account-circle-off' :
+        'privacy:account-circle-off-old';
   }
 }
 

@@ -508,6 +508,36 @@ export class SiteDetailsElement extends SiteDetailsElementBase {
         'all-sites:shoppingmode' :
         'all-sites:tag-old';
   }
+
+  protected getAccountCircleIcon_(): string {
+    return loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+        'privacy:account-circle' :
+        'privacy:account-circle-old';
+  }
+
+  protected getCardboardIcon_(): string {
+    return loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+        'privacy:cardboard' :
+        'privacy:cardboard-old';
+  }
+
+  protected getCodeIcon_(): string {
+    return loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+        'privacy:code' :
+        'privacy:code-old';
+  }
+
+  protected getContentPasteIcon_(): string {
+    return loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+        'privacy:content-paste' :
+        'privacy:content-paste-old';
+  }
+
+  protected getCreditCardIcon_(): string {
+    return loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+        'privacy:credit-card' :
+        'privacy:credit-card-old';
+  }
 }
 
 declare global {

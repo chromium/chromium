@@ -249,7 +249,9 @@ export class SettingsYourSavedInfoPageElement extends
           {
             id: YourSavedInfoDataChip.TRAVEL_INFO,
             label: this.i18n('yourSavedInfoTravelInfoChip'),
-            icon: 'privacy20:person-check',
+            icon: loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+                'privacy20:person-check' :
+                'privacy20:person-check-old',
             isVisibleWhenNoEntitiesOfTypeExists: () =>
                 this.availableAutofillAiTypes_.has(
                     EntityTypeName.kKnownTravelerNumber) ||

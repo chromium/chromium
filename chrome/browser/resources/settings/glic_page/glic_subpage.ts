@@ -806,6 +806,12 @@ export class SettingsGlicSubpageElement extends SettingsGlicSubpageElementBase {
     OpenWindowProxyImpl.getInstance().openUrl(
         'https://support.google.com/gemini/answer/16283624');
   }
+
+  protected getCookieIcon_(): string {
+    return loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+        'privacy:cookie' :
+        'privacy:cookie-old';
+  }
 }
 
 declare global {

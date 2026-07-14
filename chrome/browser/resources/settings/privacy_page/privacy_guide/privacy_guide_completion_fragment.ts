@@ -175,6 +175,12 @@ export class PrivacyGuideCompletionFragmentElement extends
     OpenWindowProxyImpl.getInstance().openUrl(
         loadTimeData.getString('activityControlsUrlInPrivacyGuide'));
   }
+
+  protected getAdsClickIcon_(): string {
+    return loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+        'privacy20:ads-click' :
+        'privacy20:ads-click-old';
+  }
 }
 
 declare global {

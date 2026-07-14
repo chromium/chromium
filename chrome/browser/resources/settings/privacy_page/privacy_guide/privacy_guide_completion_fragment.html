@@ -51,7 +51,7 @@
   <cr-link-row id="privacySandboxRow" using-slotted-label
       sub-label=
           "$i18n{privacyGuideCompletionCardPrivacySandboxSubLabelAdTopics}"
-      start-icon="privacy20:ads-click" external
+      start-icon="[[getAdsClickIcon_()]]" external
       on-click="onPrivacySandboxClick_">
     <div slot="label" class="label">
       $i18n{privacyGuideCompletionCardPrivacySandboxLabel}
