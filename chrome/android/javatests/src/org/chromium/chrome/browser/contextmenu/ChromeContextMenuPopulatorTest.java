@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.contextmenu;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -2951,6 +2952,30 @@ public class ChromeContextMenuPopulatorTest {
                 "Expected the group of extension-injected items to be the last group",
                 modelListFromBridge,
                 result.get(result.size() - 1));
+    }
+
+    @Test
+    @SmallTest
+    @UiThreadTest
+    public void testExcludeMenuModelBridgeItemsForThinWebView() {
+        ModelList modelListFromBridge = new ModelList();
+        modelListFromBridge.add(
+                new ListItem(
+                        MENU_ITEM,
+                        new PropertyModel.Builder(ListMenuItemProperties.ALL_KEYS)
+                                .with(TITLE, "Test title")
+                                .build()));
+        when(mMenuModelBridge.populateModelList()).thenReturn(modelListFromBridge);
+        ContextMenuParams params = getHttpLinkParams();
+        initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.THIN_WEB_VIEW, params);
+        List<ModelList> result = mPopulator.buildContextMenu();
+
+        for (ModelList group : result) {
+            assertNotEquals(
+                    "Expected extension-injected items to be excluded in THIN_WEB_VIEW mode",
+                    modelListFromBridge,
+                    group);
+        }
     }
 
     @Test

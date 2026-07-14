@@ -934,8 +934,10 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
             }
         }
 
-        ModelList modelList = mParams.getMenuModelBridge().populateModelList();
-        if (!modelList.isEmpty()) groupedItems.add(modelList);
+        if (mMode != ContextMenuMode.THIN_WEB_VIEW) {
+            ModelList modelList = mParams.getMenuModelBridge().populateModelList();
+            if (!modelList.isEmpty()) groupedItems.add(modelList);
+        }
 
         return groupedItems;
     }
