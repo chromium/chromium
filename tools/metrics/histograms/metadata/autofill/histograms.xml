@@ -1909,6 +1909,20 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </token>
 </histogram>
 
+<histogram name="Autofill.Ai.PersonalContext.Prefetch.TriggerResult"
+    enum="AutofillAiPersonalContextPrefetchTriggerResult"
+    expires_after="2026-12-12">
+  <owner>vidhanj@google.com</owner>
+  <owner>vizcay@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Records the unique prefetch trigger outcomes present in a batch of requested
+    entity types during Ambient Autofill prefetch. Logged at most once per
+    outcome type per prefetch request. Recorded on page load / form analysis for
+    eligible profiles.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.Ai.PromptSuppression.{PromptType}{EntityType}"
     enum="Boolean" expires_after="2026-12-12">
   <owner>jihadghanna@google.com</owner>

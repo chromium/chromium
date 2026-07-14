@@ -294,6 +294,17 @@ Called by update_autofill_enums.py.-->
 
 <!-- LINT.ThenChange(/components/autofill/core/browser/permissions/autofill_ai/autofill_ai_permission_utils.h:AutofillAiOptInStatus) -->
 
+<!-- LINT.IfChange(AutofillAiPersonalContextPrefetchTriggerResult) -->
+
+<enum name="AutofillAiPersonalContextPrefetchTriggerResult">
+  <int value="0" label="Initiated network requests"/>
+  <int value="1" label="Skipped due to fresh cached data"/>
+  <int value="2" label="Skipped due to active backoff throttling"/>
+  <int value="3" label="Skipped due to active request in-flight"/>
+</enum>
+
+<!-- LINT.ThenChange(/components/autofill/core/browser/network/autofill_ai/autofill_ai_personal_context_access_manager_impl.h:AutofillAiPersonalContextPrefetchTriggerResult) -->
+
 <!-- LINT.IfChange(AutofillAiPrefMigrationStatus) -->
 
 <enum name="AutofillAiPrefMigrationStatus">

@@ -11,6 +11,7 @@
 #include "base/containers/to_vector.h"
 #include "base/scoped_observation.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
@@ -357,6 +358,136 @@ TEST_F(AutofillAiPersonalContextAccessManagerImplTest, PrefetchContextFailure) {
   access_manager().PrefetchContext(requested_types);
   EXPECT_FALSE(
       access_manager().IsTypePrefetched(EntityType(EntityTypeName::kOrder)));
+}
+
+// Tests that trigger results (e.g. initiated, skipped due to fresh cache,
+// skipped due to backoff, skipped due to pending request in-flight) are
+// correctly logged.
+TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
+       PrefetchContextTriggerResultLogging) {
+  base::HistogramTester histogram_tester;
+  const std::vector<EntityType> requested_types = {
+      EntityType(EntityTypeName::kOrder)};
+
+  // Initial Prefetch (Cache Empty)
+  personal_context::proto::ContextMemoryAmbientAutofillResponse
+      expected_response;
+  personal_context::proto::Entity* entity = expected_response.add_entities();
+  entity->mutable_order()->set_order_id("12345");
+
+  PrefetchContextSync(requested_types, {}, expected_response);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Ai.PersonalContext.Prefetch.TriggerResult",
+      AutofillAiPersonalContextAccessManagerImpl::PrefetchTriggerResult::
+          kInitiated,
+      1);
+
+  // Repeat Prefetch (Cache Fresh)
+  access_manager().PrefetchContext(requested_types);
+  histogram_tester.ExpectBucketCount(
+      "Autofill.Ai.PersonalContext.Prefetch.TriggerResult",
+      AutofillAiPersonalContextAccessManagerImpl::PrefetchTriggerResult::
+          kSkippedFreshCache,
+      1);
+
+  // Cache TTL Expired
+  FastForwardBy(base::Minutes(31));
+
+  personal_context::proto::Any any_presence_response;
+  expected_response.SerializeToString(any_presence_response.mutable_value());
+  EXPECT_CALL(
+      mock_personal_context_service(),
+      FetchContext(
+          personal_context::proto::CONTEXT_MEMORY_FEATURE_AMBIENT_AUTOFILL, _,
+          _, _))
+      .WillOnce(RunOnceCallback<3>(personal_context::FetchContextResult(
+          base::ok(std::move(any_presence_response)))));
+
+  access_manager().PrefetchContext(requested_types);
+  histogram_tester.ExpectBucketCount(
+      "Autofill.Ai.PersonalContext.Prefetch.TriggerResult",
+      AutofillAiPersonalContextAccessManagerImpl::PrefetchTriggerResult::
+          kInitiated,
+      2);
+
+  // Skipped in Backoff (After Failure)
+  FastForwardBy(base::Minutes(31));
+
+  personal_context::ContextMemoryError expected_error =
+      personal_context::ContextMemoryError::FromExecutionError(
+          personal_context::ContextMemoryError::ExecutionError::
+              kGenericFailure);
+  EXPECT_CALL(
+      mock_personal_context_service(),
+      FetchContext(
+          personal_context::proto::CONTEXT_MEMORY_FEATURE_AMBIENT_AUTOFILL, _,
+          _, _))
+      .WillOnce(RunOnceCallback<3>(personal_context::FetchContextResult(
+          base::unexpected(expected_error))));
+
+  access_manager().PrefetchContext(requested_types);
+  histogram_tester.ExpectBucketCount(
+      "Autofill.Ai.PersonalContext.Prefetch.TriggerResult",
+      AutofillAiPersonalContextAccessManagerImpl::PrefetchTriggerResult::
+          kInitiated,
+      3);
+
+  access_manager().PrefetchContext(requested_types);
+  histogram_tester.ExpectBucketCount(
+      "Autofill.Ai.PersonalContext.Prefetch.TriggerResult",
+      AutofillAiPersonalContextAccessManagerImpl::PrefetchTriggerResult::
+          kSkippedBackoff,
+      1);
+
+  // Skipped In-Flight (Request Pending)
+  // Fast forward out of backoff first to allow a new request to be initiated.
+  FastForwardBy(base::Minutes(31));
+
+  // Trigger a prefetch but do not complete the mock callback. This puts the
+  // request state in RequestStatus::kPending.
+  EXPECT_CALL(
+      mock_personal_context_service(),
+      FetchContext(
+          personal_context::proto::CONTEXT_MEMORY_FEATURE_AMBIENT_AUTOFILL, _,
+          _, _));
+  access_manager().PrefetchContext(requested_types);
+  histogram_tester.ExpectBucketCount(
+      "Autofill.Ai.PersonalContext.Prefetch.TriggerResult",
+      AutofillAiPersonalContextAccessManagerImpl::PrefetchTriggerResult::
+          kInitiated,
+      4);
+
+  // Call again while the previous request is still pending.
+  access_manager().PrefetchContext(requested_types);
+  histogram_tester.ExpectBucketCount(
+      "Autofill.Ai.PersonalContext.Prefetch.TriggerResult",
+      AutofillAiPersonalContextAccessManagerImpl::PrefetchTriggerResult::
+          kSkippedInFlight,
+      1);
+}
+
+// Tests that trigger results are only logged once per call to PrefetchContext,
+// even if multiple requested types yield the same result.
+TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
+       PrefetchContextTriggerResultLoggingMultipleTypes) {
+  base::HistogramTester histogram_tester;
+  const std::vector<EntityType> requested_types = {
+      EntityType(EntityTypeName::kOrder),
+      EntityType(EntityTypeName::kPassport)};
+
+  personal_context::proto::ContextMemoryAmbientAutofillResponse
+      expected_response;
+  personal_context::proto::Entity* entity = expected_response.add_entities();
+  entity->mutable_order()->set_order_id("12345");
+
+  // Since both types are initiated, we should only log `kInitiated` once.
+  PrefetchContextSync(requested_types, {EntityType(EntityTypeName::kPassport)},
+                      expected_response, expected_response);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Ai.PersonalContext.Prefetch.TriggerResult",
+      AutofillAiPersonalContextAccessManagerImpl::PrefetchTriggerResult::
+          kInitiated,
+      1);
 }
 
 // Tests that PrefetchContext marks requested types as prefetched even when the

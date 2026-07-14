@@ -55,6 +55,23 @@ class AutofillAiPersonalContextAccessManagerImpl
   // The TTL for unmasked sensitive PII (SPII) entities.
   static constexpr base::TimeDelta kUnmaskedSpiiCacheTTL = base::Minutes(1);
 
+  // LINT.IfChange(AutofillAiPersonalContextPrefetchTriggerResult)
+  // Represents the outcome when a prefetch trigger is evaluated for a requested
+  // entity type. Logged to UMA.
+  enum class PrefetchTriggerResult {
+    // A new network request to the backend service is initiated (Cache Miss).
+    kInitiated = 0,
+    // The fetch is skipped because the cached data is still fresh.
+    kSkippedFreshCache = 1,
+    // The fetch is skipped because a recent fetch failed and the retry delay
+    // configured in exponential backoff has not yet expired.
+    kSkippedBackoff = 2,
+    // The fetch is skipped because a request for the type is already in-flight.
+    kSkippedInFlight = 3,
+    kMaxValue = kSkippedInFlight,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/autofill/enums.xml:AutofillAiPersonalContextPrefetchTriggerResult)
+
   AutofillAiPersonalContextAccessManagerImpl(
       personal_context::PersonalContextService* personal_context_service,
       personal_context::PersonalContextEligibilityService*
@@ -145,10 +162,8 @@ class AutofillAiPersonalContextAccessManagerImpl
   void ProcessPrefetchedEntities(std::vector<EntityType> requested_types,
                                  std::vector<ParsedEntity> parsed_entities);
 
-  // Returns true if a network request should be initiated for `type`.
-  // This is true if the type is not cached, its cache TTL has expired, or a
-  // previous fetch failed and is now eligible for a retry.
-  bool ShouldRequestType(EntityType type) const;
+  // Evaluates the prefetch trigger outcome for a requested entity type.
+  PrefetchTriggerResult DeterminePrefetchTriggerResult(EntityType type) const;
 
   // Evaluates whether enough time has elapsed since the last failure to
   // attempt fetching the type again, taking backoff delays into account.
