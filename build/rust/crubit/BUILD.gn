@@ -51,6 +51,7 @@ config("allow_unstable_features_required_by_crubit") {
     "c_variadic",
     "cfg_accessible",
     "cfg_sanitize",
+    "cfi_encoding",
     "custom_inner_attributes",
     "extern_types",
     "impl_trait_in_assoc_type",
