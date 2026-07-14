@@ -6176,6 +6176,9 @@ crbug.com/429365670 external/wpt/css/css-multicol/multicol-nested-column-rule-00
 crbug.com/532828232 external/wpt/css/css-gaps/flex/fragmentation/flex-gap-decorations-fragmentation-027.html [ Failure ]
 crbug.com/445971864 external/wpt/css/css-gaps/multicol/multicol-gap-decorations-007.html [ Failure ]
 
+# Grid-lanes gap decorations are not implemented.
+crbug.com/343257585 external/wpt/css/css-gaps/grid-lanes/* [ Failure ]
+
 ### End of tests failing with CSSGapDecorations Enabled
 
 # I think these are just test issues, but at least the scrollbars are related:
