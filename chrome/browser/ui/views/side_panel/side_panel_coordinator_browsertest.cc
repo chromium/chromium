@@ -335,6 +335,32 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest, VerifyFocusOrder) {
   EXPECT_LT(header_it, content_it);
 }
 
+#if BUILDFLAG(IS_MAC)
+IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest,
+                       CloseRestoresFocusToContentsWebViewOnMac) {
+  Init();
+  coordinator()->DisableAnimationsForTesting();
+  coordinator()->Show(SidePanelEntry::Key(SidePanelEntry::Id::kBookmarks));
+  EXPECT_TRUE(GetSidePanel()->GetVisible());
+
+  views::View* focusable_in_side_panel =
+      GetSidePanel()->GetFocusManager()->GetNextFocusableView(
+          GetSidePanel(), nullptr, false, false);
+  ASSERT_TRUE(focusable_in_side_panel);
+  focusable_in_side_panel->RequestFocus();
+  EXPECT_TRUE(GetSidePanel()->Contains(
+      GetSidePanel()->GetFocusManager()->GetFocusedView()));
+
+  coordinator()->Close();
+  EXPECT_FALSE(GetSidePanel()->GetVisible());
+
+  ContentsWebView* contents_web_view =
+      browser()->GetBrowserView().contents_web_view();
+  EXPECT_EQ(contents_web_view,
+            contents_web_view->GetFocusManager()->GetFocusedView());
+}
+#endif
+
 IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest, OpenWhileClosing) {
   Init();
 

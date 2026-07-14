@@ -12,6 +12,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
@@ -27,6 +28,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
+#include "chrome/browser/ui/views/frame/contents_web_view.h"
 #include "chrome/browser/ui/views/interaction/browser_elements_views.h"
 #include "chrome/browser/ui/views/side_panel/side_panel.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_header.h"
@@ -38,7 +40,9 @@
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "components/feature_engagement/public/event_constants.h"
 #include "components/feature_engagement/public/feature_constants.h"
+#include "content/public/browser/web_contents.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
+#include "ui/views/focus/focus_manager.h"
 #include "ui/views/view.h"
 
 DEFINE_USER_DATA(SidePanelCoordinator);
@@ -219,6 +223,18 @@ void SidePanelCoordinator::Close(SidePanelEntryHideReason reason,
       (!suppress_animations && side_panel->IsClosing())) {
     return;
   }
+
+#if BUILDFLAG(IS_MAC)
+  if (side_panel->GetFocusManager() &&
+      side_panel->Contains(side_panel->GetFocusManager()->GetFocusedView())) {
+    if (auto* elements = BrowserElementsViews::From(&*browser_)) {
+      if (views::View* contents_web_view =
+              elements->GetView(ContentsWebView::kContentsWebViewElementId)) {
+        contents_web_view->RequestFocus();
+      }
+    }
+  }
+#endif
 
   // If we are currently animating the side panel contents so it is parented to
   // the BrowserView, reparent it now so that the entry will be notified it is

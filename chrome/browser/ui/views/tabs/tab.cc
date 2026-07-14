@@ -277,11 +277,7 @@ Tab::Tab(tabs::TabHandle handle, TabSlotController* controller)
   title_animation_.SetDuration(base::Milliseconds(100));
 
   // Enable keyboard focus.
-#if BUILDFLAG(IS_MAC)
-  SetFocusBehavior(FocusBehavior::ALWAYS);
-#else
   SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
-#endif
   views::FocusRing::Install(this);
   views::HighlightPathGenerator::Install(
       this,
