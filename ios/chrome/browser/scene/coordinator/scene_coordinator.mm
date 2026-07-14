@@ -1025,15 +1025,7 @@ inline LayoutStateScenePassKey PassKey() {
   if (@available(iOS 26.0, *)) {
     // For iOS26 windowing, ensure the new window doesn't fully overlap the
     // prior window.
-    BOOL should_skip_prominent_placement = NO;
-#if TARGET_OS_SIMULATOR
-    // Workaround Metal compositor crash on iOS 27.0 beta simulator.
-    should_skip_prominent_placement = base::ios::IsRunningOnOrLater(27, 0, 0) &&
-                                      !base::ios::IsRunningOnOrLater(27, 0, 1);
-#endif
-    if (!should_skip_prominent_placement) {
-      options.placement = [UIWindowSceneProminentPlacement prominentPlacement];
-    }
+    options.placement = [UIWindowSceneProminentPlacement prominentPlacement];
   }
 
   AttachProfileNameToActivity(userActivity, profile->GetProfileName());

@@ -4799,7 +4799,7 @@ targets.bundle(
                 "use-ios-simulator-cache",
             ],
             variants = [
-                "SIM_IPAD_AIR_6TH_GEN_27_0",
+                "SIM_IPAD_A16_27_0",
                 "SIM_IPHONE_16_27_0",
             ],
         ),
@@ -4810,7 +4810,7 @@ targets.bundle(
                 "use-ios-simulator-cache",
             ],
             variants = [
-                "SIM_IPAD_AIR_6TH_GEN_27_0",
+                "SIM_IPAD_A16_27_0",
                 "SIM_IPHONE_16_27_0",
             ],
         ),
@@ -4821,7 +4821,7 @@ targets.bundle(
                 "use-ios-simulator-cache",
             ],
             variants = [
-                "SIM_IPAD_AIR_6TH_GEN_27_0",
+                "SIM_IPAD_A16_27_0",
                 "SIM_IPHONE_16_27_0",
             ],
         ),
@@ -4831,7 +4831,7 @@ targets.bundle(
                 "use-ios-simulator-cache",
             ],
             variants = [
-                "SIM_IPAD_AIR_6TH_GEN_27_0",
+                "SIM_IPAD_A16_27_0",
                 "SIM_IPHONE_16_27_0",
                 "SIM_IPHONE_SE_3RD_GEN_27_0",
             ],

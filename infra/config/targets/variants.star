@@ -316,6 +316,21 @@ targets.variant(
 )
 
 targets.variant(
+    name = "SIM_IPAD_A16_27_0",
+    identifier = "iPad (A16) 27.0",
+    mixins = [
+        "ios_runtime_cache_27_0",
+        "use-ios-simulator-cache",
+    ],
+    args = [
+        "--platform",
+        "iPad (A16)",
+        "--version",
+        "27.0",
+    ],
+)
+
+targets.variant(
     name = "SIM_IPAD_PRO_7TH_GEN_18_5",
     identifier = "iPad Air (6th generation) 18.5",
     mixins = [
