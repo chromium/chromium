@@ -94,6 +94,8 @@ BASE_DECLARE_FEATURE(kBackToOpener);
 
 BASE_DECLARE_FEATURE(kTabStripUnification);
 
+BASE_DECLARE_FEATURE(kMigrateEverythingMenuPinnedToTabstrip);
+
 bool IsVerticalTabsFeatureEnabled();
 
 bool IsVerticalTabsExpandOnHoverFeatureEnabled();

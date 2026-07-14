@@ -1233,6 +1233,13 @@ inline constexpr char kProjectsPanelPinnedToTabstrip[] =
 inline constexpr char kEverythingMenuPinnedToTabstrip[] =
     "everything_menu.pinned_to_tabstrip";
 
+// Boolean indicating whether the one-time migration for
+// kEverythingMenuPinnedToTabstrip has been completed. This sets the pinned
+// state for the button to true for users who have used vertical tab strip
+// before the migration happened.
+inline constexpr char kEverythingMenuPinnedToTabstripMigrationComplete[] =
+    "everything_menu.pinned_to_tabstrip_migration_complete";
+
 // Boolean determining whether vertical tabs are enabled.
 inline constexpr char kVerticalTabsEnabled[] = "vertical_tabs.enabled";
 

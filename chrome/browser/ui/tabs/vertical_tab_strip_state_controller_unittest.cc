@@ -164,6 +164,37 @@ TEST_F(VerticalTabStripStateControllerTest, VerticalTabsEnabledFirstTime) {
             user_action_tester.GetActionCount("VerticalTabs_EnabledFirstTime"));
 }
 
+TEST_F(VerticalTabStripStateControllerTest,
+       MigrateEverythingMenuPinnedToTabstripPref) {
+  base::test::ScopedFeatureList local_feature_list;
+  local_feature_list.InitAndEnableFeature(
+      tabs::kMigrateEverythingMenuPinnedToTabstrip);
+
+  // Case 1: Has enabled vertical tabs before and pref is at its default.
+  pref_service()->SetBoolean(prefs::kVerticalTabsEnabledFirstTime, true);
+  ASSERT_FALSE(
+      pref_service()->HasPrefPath(prefs::kEverythingMenuPinnedToTabstrip));
+
+  tabs::MigrateEverythingMenuPinnedToTabstripPref(pref_service());
+  EXPECT_TRUE(
+      pref_service()->GetBoolean(prefs::kEverythingMenuPinnedToTabstrip));
+  EXPECT_TRUE(pref_service()->GetBoolean(
+      prefs::kEverythingMenuPinnedToTabstripMigrationComplete));
+
+  // Case 2: Respects explicit user customization.
+  pref_service()->SetBoolean(
+      prefs::kEverythingMenuPinnedToTabstripMigrationComplete, false);
+  pref_service()->SetBoolean(prefs::kEverythingMenuPinnedToTabstrip, false);
+  ASSERT_TRUE(
+      pref_service()->HasPrefPath(prefs::kEverythingMenuPinnedToTabstrip));
+
+  tabs::MigrateEverythingMenuPinnedToTabstripPref(pref_service());
+  EXPECT_FALSE(
+      pref_service()->GetBoolean(prefs::kEverythingMenuPinnedToTabstrip));
+  EXPECT_TRUE(pref_service()->GetBoolean(
+      prefs::kEverythingMenuPinnedToTabstripMigrationComplete));
+}
+
 TEST_F(VerticalTabStripStateControllerTest, Collapsed) {
   int changed_call_count = 0;
   auto changed_subscription =

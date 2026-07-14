@@ -99,6 +99,9 @@ BASE_FEATURE(kTabStripUnification, base::FEATURE_DISABLED_BY_DEFAULT);
 // newly opened tab to close that tab and return focus to the opener tab.
 BASE_FEATURE(kBackToOpener, base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kMigrateEverythingMenuPinnedToTabstrip,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 bool IsVerticalTabsFeatureEnabled() {
   return base::FeatureList::IsEnabled(kVerticalTabs) ||
          base::FeatureList::IsEnabled(kVerticalTabsLaunch);
