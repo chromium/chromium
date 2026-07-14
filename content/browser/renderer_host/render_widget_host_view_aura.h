@@ -457,6 +457,8 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
 
   void ScrollFocusedEditableNodeIntoView();
 
+  // Gets the pointer type of last user generated (non-synthesized) pointer
+  // input event.
   ui::EventPointerType GetLastPointerType() const { return last_pointer_type_; }
 
   MouseWheelPhaseHandler* GetMouseWheelPhaseHandler() override;

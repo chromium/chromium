@@ -586,8 +586,10 @@ BASE_FEATURE(kPermissionsPolicyVerificationInContent,
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 // When enabled, OnMouseEvent uses the event's actual pointer type for
-// last_pointer_type_ instead of unconditionally reporting kMouse.
-BASE_FEATURE(kMouseEventPenPointerType, base::FEATURE_ENABLED_BY_DEFAULT);
+// last_pointer_type_ instead of unconditionally reporting kMouse, and skips
+// updating last_pointer_type_ for synthesized mouse events so that a preceding
+// pen/touch pointer type is not clobbered.
+BASE_FEATURE(kMouseEventPreservePointerType, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, responses with an operative Cookie-Indices will not be used
 // if the relevant cookie values have changed.

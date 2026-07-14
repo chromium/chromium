@@ -6809,15 +6809,16 @@ TEST_F(RenderWidgetHostViewAuraTest, FocusReasonMultipleEventsOnSameNode) {
 }
 
 // Pen input on Aura can be delivered as MouseEvents with pointer type kPen.
-// kMouseEventPenPointerType feature ensures that the RenderWidgetHostViewAura's
-// LastPointerType is correctly set to kPen for these scenarios as opposed to
-// unconditionally reporting kMouse.
+// kMouseEventPreservePointerType feature ensures that the
+// RenderWidgetHostViewAura's LastPointerType is correctly set to kPen for these
+// scenarios as opposed to unconditionally reporting kMouse.
 // This is particularly important for virtual keyboard on Windows which
 // references the last pointer type in its Show/Hide logic.
 // http://crbug.com/525093257
 TEST_F(RenderWidgetHostViewAuraTest, PenMouseEventsSetPointerType) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(features::kMouseEventPenPointerType);
+  scoped_feature_list.InitAndEnableFeature(
+      features::kMouseEventPreservePointerType);
 
   for (ui::EventPointerType pointer_type :
        {ui::EventPointerType::kPen, ui::EventPointerType::kMouse}) {
@@ -6836,6 +6837,30 @@ TEST_F(RenderWidgetHostViewAuraTest, PenMouseEventsSetPointerType) {
       EXPECT_EQ(parent_view_->GetLastPointerType(), pointer_type);
     }
   }
+}
+
+// Touch and pen down triggers
+// WindowEventDispatcher::SynthesizeMouseMoveEvent. These mouse moves are
+// synthesized at the ui::Event level and have no OS analog. They exist to
+// update hover state and cursor visibility after mouse events are re-enabled.
+// Therefore they should not overwrite |last_pointer_type_|.
+TEST_F(RenderWidgetHostViewAuraTest,
+       SynthesizedMouseDoesNotClobberPenPointerType) {
+  // Simulate a pen gesture setting last_pointer_type_ to kPen.
+  ui::GestureEventDetails tap_details(ui::EventType::kGestureTapDown);
+  tap_details.set_device_type(ui::GestureDeviceType::DEVICE_TOUCHSCREEN);
+  tap_details.set_primary_pointer_type(ui::EventPointerType::kPen);
+  ui::GestureEvent pen_gesture(0, 0, 0, base::TimeTicks(), tap_details);
+  parent_view_->OnGestureEvent(&pen_gesture);
+  EXPECT_EQ(parent_view_->GetLastPointerType(), ui::EventPointerType::kPen);
+
+  // A synthesized mouse-move arrives (as aura does when re-enabling mouse
+  // events after a touch/pen interaction). It must not clobber kPen.
+  ui::MouseEvent synth_mouse(ui::EventType::kMouseMoved, gfx::Point(),
+                             gfx::Point(), ui::EventTimeForNow(),
+                             ui::EF_IS_SYNTHESIZED, 0);
+  parent_view_->OnMouseEvent(&synth_mouse);
+  EXPECT_EQ(parent_view_->GetLastPointerType(), ui::EventPointerType::kPen);
 }
 
 class RenderWidgetHostViewAuraInputMethodTest
