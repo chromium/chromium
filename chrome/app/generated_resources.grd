@@ -18331,6 +18331,15 @@ Please help our engineers fix this problem. Tell us what happened right before y
     <message name="IDS_DEEP_SCANNING_DIALOG_SAVE_TO_CLOUD_STORAGE_MESSAGE" desc="Button text to allow the user to save a file to cloud storage">
       <ph name="FILE_NAME">$1<ex>foo.txt</ex></ph> has sensitive data. Your organization will let you save it to cloud storage or discard it
     </message>
+    <message name="IDS_ENTERPRISE_COPY_WARNING_TOAST_BODY" desc="Text on a toast notification shown when copying content is warned by DLP.">
+      Your organization advises against copying this content
+    </message>
+    <message name="IDS_ENTERPRISE_COPY_WARNING_TOAST_BUTTON" desc="Button text on a toast notification to copy data anyway.">
+      Copy anyway
+    </message>
+    <message name="IDS_ENTERPRISE_COPY_BLOCKED_TOAST_BODY" desc="Text on a toast notification shown when copying content is blocked by DLP.">
+      Your organization blocked copying this content
+    </message>
 
     <!-- Data sharing UI strings -->
     <message name="IDS_DATA_SHARING_BUBBLE_DIALOG_TITLE" desc="Title of the data sharing bubble">

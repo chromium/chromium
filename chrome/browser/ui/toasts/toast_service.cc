@@ -665,6 +665,20 @@ void ToastService::RegisterToasts(
       ToastSpecification::Builder(vector_icons::kDomainIcon,
                                   IDS_ENTERPRISE_COPY_MONITORED_TOAST_BODY)
           .Build());
+  // TODO(b/325455508): Add callback functions for the buttons.
+  toast_registry_->RegisterToast(
+      ToastId::kEnterpriseCopyWarning,
+      ToastSpecification::Builder(vector_icons::kDomainIcon,
+                                  IDS_ENTERPRISE_COPY_WARNING_TOAST_BODY)
+          .AddCloseButton()
+          .AddActionButton(IDS_ENTERPRISE_COPY_WARNING_TOAST_BUTTON,
+                           base::DoNothing())
+          .Build());
+  toast_registry_->RegisterToast(
+      ToastId::kEnterpriseCopyBlocked,
+      ToastSpecification::Builder(vector_icons::kDomainIcon,
+                                  IDS_ENTERPRISE_COPY_BLOCKED_TOAST_BODY)
+          .Build());
 #endif
   if (base::FeatureList::IsEnabled(dictation::kDictation)) {
     toast_registry_->RegisterToast(

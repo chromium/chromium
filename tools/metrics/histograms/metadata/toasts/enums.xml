@@ -109,6 +109,8 @@ chromium-metrics-reviews@google.com.
   <int value="48" label="Dictation error"/>
   <int value="49" label="Dictation stopped"/>
   <int value="50" label="Glic selection affordance hidden for site"/>
+  <int value="51" label="Enterprise copy warning toast"/>
+  <int value="52" label="Enterprise copy blocked toast"/>
 </enum>
 
 <!-- LINT.ThenChange(/chrome/browser/ui/toasts/api/toast_id.h:ToastId) -->
