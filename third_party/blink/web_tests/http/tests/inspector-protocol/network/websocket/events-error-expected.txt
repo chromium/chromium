@@ -1,0 +1,14 @@
+Tests that WebSocket frame error is emitted.
+WebSocketCreated
+  url: ws://127.0.0.1:8000/does_not_exist
+  has requestId: true
+  has initiator: true
+WebSocketWillSendHandshakeRequest
+  has wallTime: true
+  has request headers: true
+WebSocketFrameError
+  has timestamp: true
+  errorMessage: Error during WebSocket handshake: Unexpected response code: 404
+WebSocketClosed
+  has timestamp: true
+
