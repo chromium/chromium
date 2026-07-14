@@ -5,23 +5,17 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/menu_bg_shadow">
+    android:orientation="vertical"
+    android:clipToOutline="true"
+    android:background="@drawable/default_popup_menu_bg"
+    android:elevation="@dimen/app_menu_elevation">
 
-    <LinearLayout
-        android:id="@+id/app_menu_content_container"
+    <org.chromium.components.browser_ui.widget.list_view.TouchTrackingListView
+        android:id="@+id/app_menu_list"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:clipToOutline="true"
-        android:background="@drawable/menu_bg_shape">
-
-        <org.chromium.components.browser_ui.widget.list_view.TouchTrackingListView
-            android:id="@+id/app_menu_list"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1" />
-    </LinearLayout>
-</FrameLayout>
+        android:layout_height="0dp"
+        android:layout_weight="1" />
+</LinearLayout>
