@@ -11,7 +11,6 @@
 #include "base/check_deref.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
-#include "build/branding_buildflags.h"
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
 #include "components/autofill/core/common/autofill_debug_features.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -120,7 +119,6 @@ class AtMemoryEnablementUtilsTest : public testing::Test {
   const GURL form_url_{"https://example.com/form"};
 };
 
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 // Tests that `MayPerformAtMemoryAction` returns false when AtMemory is
 // disabled.
@@ -523,27 +521,7 @@ TEST_F(AtMemoryEnablementUtilsFeatureCheckedLastTest, NotEligible) {
   EXPECT_EQ(pref_store_->call_count(), 0);
 }
 
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
-
-// Tests for non-branded Chromium builds.
-#if !BUILDFLAG(GOOGLE_CHROME_BRANDING)
-// Tests that `MayPerformAtMemoryAction` returns false for non-branded Chromium
-// build even when all conditions are met.
-TEST_F(AtMemoryEnablementUtilsTest,
-       MayPerformAtMemoryAction_SupportedAndToggleOn) {
-  EXPECT_CALL(personal_context_service_, GetEligibilityState)
-      .WillRepeatedly(
-          Return(personal_context::PersonalContextEligibilityState::kEligible));
-  autofill_client().GetPrefs()->SetUserPref(
-      personal_context::prefs::kPersonalContextInAutofillSettingsToggleStatus,
-      base::Value(true));
-  EXPECT_FALSE(MayPerformAtMemoryAction(
-      AtMemoryAction::kTriggerSearchUI, autofill_client(),
-      autofill_client().GetLastCommittedPrimaryMainFrameURL()));
-}
-#endif  // !BUILDFLAG(GOOGLE_CHROME_BRANDING)
-
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING) && !BUILDFLAG(IS_FUCHSIA)
+#if !BUILDFLAG(IS_FUCHSIA)
 class AtMemoryEnablementUtilsWithGroupsTest
     : public AtMemoryEnablementUtilsTest {
  protected:
@@ -626,7 +604,7 @@ TEST_F(AtMemoryEnablementUtilsWithGroupsTest,
       AtMemoryAction::kTriggerSearchUI, autofill_client(),
       autofill_client().GetLastCommittedPrimaryMainFrameURL()));
 }
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING) && !BUILDFLAG(IS_FUCHSIA)
+#endif  // !BUILDFLAG(IS_FUCHSIA)
 
 }  // namespace
 }  // namespace autofill

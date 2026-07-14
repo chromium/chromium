@@ -17,7 +17,6 @@
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
-#include "build/branding_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/password_manager/chrome_webauthn_credentials_delegate_factory.h"
@@ -1077,7 +1076,6 @@ INSTANTIATE_TEST_SUITE_P(
       return info.param.test_name;
     });
 
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 class AtMemoryContextMenuManagerTest
     : public BaseAutofillContextMenuManagerTest {
  public:
@@ -1087,8 +1085,6 @@ class AtMemoryContextMenuManagerTest
 
   void SetUpOnMainThread() override {
     BaseAutofillContextMenuManagerTest::SetUpOnMainThread();
-    personal_context::prefs::RegisterProfilePrefs(
-        autofill_client()->GetPrefs()->registry());
     autofill_client()->GetPrefs()->registry()->RegisterIntegerPref(
         optimization_guide::prefs::kGeminiSettings,
         std::to_underlying(
@@ -1263,7 +1259,6 @@ IN_PROC_BROWSER_TEST_F(AtMemoryContextMenuManagerTest,
   autofill_context_menu_manager()->ExecuteCommand(
       IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_AT_MEMORY);
 }
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 }  // namespace
 }  // namespace autofill

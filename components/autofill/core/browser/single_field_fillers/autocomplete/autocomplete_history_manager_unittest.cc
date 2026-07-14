@@ -1210,7 +1210,6 @@ TEST_F(AutocompleteHistoryManagerTest,
       /*is_autocomplete_enabled=*/true);
 }
 
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 class AutocompleteHistoryManagerAtMemoryTest
     : public AutocompleteHistoryManagerTest {
  public:
@@ -1354,6 +1353,5 @@ TEST_F(AutocompleteHistoryManagerAtMemoryTest,
       mock_callback.Get());
   run_loop.Run();
 }
-#endif
 
 }  // namespace autofill

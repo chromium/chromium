@@ -12,7 +12,6 @@
 #include "base/feature_list.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
-#include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/integrators/optimization_guide/autofill_optimization_guide_decider.h"
 #include "components/autofill/core/common/autofill_debug_features.h"
@@ -167,10 +166,6 @@ base::flat_set<int32_t> GetAutofillAtMemoryEligibleTiers() {
     const subscription_eligibility::SubscriptionEligibilityService*
         subscription_eligibility_service,
     std::string* debug_message) {
-  if constexpr (!BUILDFLAG(GOOGLE_CHROME_BRANDING)) {
-    MaybeOutputReason(debug_message, "Not a branded Chrome build.");
-    return false;
-  }
 
   if (!IsPersonalContextEligible(personal_context_service, debug_message)) {
     return false;

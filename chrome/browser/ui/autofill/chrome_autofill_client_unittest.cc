@@ -14,7 +14,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/values_test_util.h"
 #include "base/values.h"
-#include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/browser/autofill/at_memory_cross_tab_copy_paste_tracker_factory.h"
 #include "chrome/browser/autofill/mock_autofill_agent.h"
@@ -875,8 +874,7 @@ TEST_F(ChromeAutofillClientTestWithMockWindow,
 #endif  //  !BUILDFLAG(IS_ANDROID)
 
 #if (BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-     BUILDFLAG(IS_CHROMEOS)) &&                                       \
-    BUILDFLAG(GOOGLE_CHROME_BRANDING)
+     BUILDFLAG(IS_CHROMEOS))
 
 // Tests that `ShowAutofillAtMemoryPromo` is propagated to the browser user
 // education service when AtMemory is enabled.
@@ -1088,30 +1086,7 @@ TEST_F(ChromeAutofillClientTestWithMockWindow,
 }
 
 #endif  // (BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
-        // BUILDFLAG(IS_CHROMEOS)) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
-
-#if (BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-     BUILDFLAG(IS_CHROMEOS)) &&                                       \
-    !BUILDFLAG(GOOGLE_CHROME_BRANDING)
-// Tests that `ShowAutofillAtMemoryPromo` is not propagated to the browser user
-// education service on non-branded builds even when all other conditions are
-// met.
-TEST_F(ChromeAutofillClientTestWithMockWindow,
-       ShowAutofillAtMemoryPromo_NonBrandedBuild) {
-  base::test::ScopedFeatureList feature_list(features::kAutofillAtMemory);
-  InitializePersonalContextEligibilityService();
-  EXPECT_CALL(*personal_context_eligibility_service(), GetEligibilityState())
-      .WillRepeatedly(
-          Return(personal_context::PersonalContextEligibilityState::kEligible));
-
-  MockBrowserUserEducationInterface mock_user_education(
-      &mock_browser_window_interface());
-  EXPECT_CALL(mock_user_education, MaybeShowFeaturePromo).Times(0);
-
-  client()->ShowAutofillAtMemoryPromo();
-}
-#endif  // (BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-        // BUILDFLAG(IS_CHROMEOS)) && !BUILDFLAG(GOOGLE_CHROME_BRANDING)
+        // BUILDFLAG(IS_CHROMEOS))
 
 // Tests that if there is no enablement service available to the profile, client
 // defaults to kDisabledNotEligible state.

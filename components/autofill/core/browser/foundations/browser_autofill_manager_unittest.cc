@@ -42,7 +42,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
-#include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/autofill_format_string.h"
@@ -1365,7 +1364,6 @@ class BrowserAutofillManagerTest
   syncer::TestSyncService sync_service_;
 };
 
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 class BrowserAutofillManagerAtMemoryTest : public BrowserAutofillManagerTest {
  public:
@@ -1522,7 +1520,6 @@ TEST_F(BrowserAutofillManagerAtMemoryTest, TriggerDroppedWhenFieldUrlBlocked) {
   // Trigger should be dropped, no suggestions returned.
   EXPECT_FALSE(external_delegate()->on_suggestions_returned_seen());
 }
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 TEST_F(BrowserAutofillManagerTest, IgnoreInactivityQueryIfPopupVisible) {
   FormData form = CreateTestAddressFormData();
