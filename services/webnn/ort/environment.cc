@@ -17,7 +17,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split_win.h"
 #include "base/strings/stringprintf.h"
-#include "base/strings/utf_string_conversions.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/types/zip.h"
@@ -105,28 +104,6 @@ void ORT_API_CALL OrtCustomLoggingFunction(void* /*param*/,
   // level via `--webnn-ort-logging-level`, ORT will print the verbose logs.
   LOG(ERROR) << "[ORT] [" << OrtLoggingLevelToString(severity) << ": "
              << category << ", " << code_location << "] " << message;
-}
-
-// Parses the value of `--webnn-ort-ep-library-path-for-testing` switch. Returns
-// the ORT EP name and library path pair if the value is valid. Otherwise,
-// returns the error message.
-base::expected<std::pair<std::string, base::FilePath>, std::string>
-ParseEpLibraryPathSwitch(std::wstring_view value) {
-  std::vector<std::wstring> parts = base::SplitString(
-      value, L"?", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-  if (parts.size() != 2) {
-    return base::unexpected(
-        "Invalid format of the specified EP library path. It should be in "
-        "the format of <ep_name>?<ep_library_path>.");
-  }
-  std::string ep_name = base::WideToUTF8(parts[0]);
-  base::FilePath ep_library_path(parts[1]);
-
-  if (!kKnownEPs.contains(ep_name)) {
-    return base::unexpected("The specified EP name is not recognized.");
-  }
-
-  return std::make_pair(ep_name, ep_library_path);
 }
 
 bool MatchesEpVendor(const OrtEpDevice* ep_device) {
@@ -693,28 +670,6 @@ base::expected<scoped_refptr<Environment>, std::string> Environment::Create(
     return base::unexpected("Failed to create the ONNX Runtime environment.");
   }
 
-  // If `kWebNNOrtEpLibraryPathForTesting` switch exists and the switch value is
-  // valid, register the EP via loading EP libraries from the specified path.
-  // Failure is ignored.
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kWebNNOrtEpLibraryPathForTesting)) {
-    std::wstring value =
-        base::CommandLine::ForCurrentProcess()->GetSwitchValueNative(
-            switches::kWebNNOrtEpLibraryPathForTesting);
-    auto result = ParseEpLibraryPathSwitch(value);
-    if (!result.has_value()) {
-      LOG(WARNING) << "[WebNN] Invalid value of the switch "
-                   << switches::kWebNNOrtEpLibraryPathForTesting << ": "
-                   << result.error() << " The switch will be ignored.";
-    } else {
-      std::pair<std::string, base::FilePath> ep_path_info =
-          std::move(result.value());
-      CALL_ORT_FUNC(ort_api->RegisterExecutionProviderLibrary(
-          env.get(), ep_path_info.first.c_str(),
-          ep_path_info.second.value().c_str()));
-    }
-  }
-
   // Register EPs from `ep_package_info_map` if they are not registered yet.
   // Failure is ignored.
   for (const auto& [ep_name, package_info] : ep_package_info_map) {
@@ -722,7 +677,10 @@ base::expected<scoped_refptr<Environment>, std::string> Environment::Create(
       continue;
     }
 
-    if (!GetDependentEpPackages().contains(package_info->family_name)) {
+    // Skip the package dependency initialization for entries with an empty
+    // family name (e.g. injected by `kWebNNOrtEpLibraryPathForTesting`).
+    if (!package_info->family_name.empty() &&
+        !GetDependentEpPackages().contains(package_info->family_name)) {
       if (platform_functions
               ->InitializePackageDependency(package_info->family_name,
                                             package_info->version)
@@ -775,25 +733,8 @@ Environment::CreateForCompiler(const std::string& ep_name,
           &env_options, ScopedOrtEnv::Receiver(env).get()))) {
     return base::unexpected("Failed to create the ONNX Runtime environment.");
   }
-
-  std::string ep_name_to_register = ep_name;
-  base::FilePath ep_library_path_to_register = ep_library_path;
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kWebNNOrtEpLibraryPathForTesting)) {
-    std::wstring value =
-        base::CommandLine::ForCurrentProcess()->GetSwitchValueNative(
-            switches::kWebNNOrtEpLibraryPathForTesting);
-    auto result = ParseEpLibraryPathSwitch(value);
-    CHECK(result.has_value())
-        << "[WebNN] Invalid value of the switch "
-        << switches::kWebNNOrtEpLibraryPathForTesting << ": " << result.error();
-    ep_name_to_register = std::move(result.value().first);
-    ep_library_path_to_register = std::move(result.value().second);
-  }
-
   if (ORT_CALL_FAILED(ort_api->RegisterExecutionProviderLibrary(
-          env.get(), ep_name_to_register.c_str(),
-          ep_library_path_to_register.value().c_str()))) {
+          env.get(), ep_name.c_str(), ep_library_path.value().c_str()))) {
     return base::unexpected(
         "Failed to register the execution provider library.");
   }

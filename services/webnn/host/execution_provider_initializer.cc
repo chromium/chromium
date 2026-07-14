@@ -27,7 +27,9 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/sequence_checker.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_split_win.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
@@ -143,6 +145,44 @@ PACKAGE_VERSION GetMinPackageVersion(const std::string& ep_name) {
       .Build = base::checked_cast<USHORT>(components[2]),
       .Revision = base::checked_cast<USHORT>(components[3]),
   };
+}
+
+// Parses the `kWebNNOrtEpLibraryPathForTesting` command-line switch and returns
+// the EP name and a fabricated `EpPackageInfo` with an empty `family_name` (so
+// that `Environment::Create()` skips `InitializePackageDependency` for it).
+// Returns nullopt if the switch is absent or its value is invalid.
+std::optional<std::pair<std::string, mojom::EpPackageInfoPtr>>
+ParseTestingEpLibraryPathSwitch() {
+  std::wstring value =
+      base::CommandLine::ForCurrentProcess()->GetSwitchValueNative(
+          switches::kWebNNOrtEpLibraryPathForTesting);
+  if (value.empty()) {
+    return std::nullopt;
+  }
+
+  std::vector<std::wstring> parts = base::SplitString(
+      value, L"?", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+  if (parts.size() != 2) {
+    LOG(WARNING) << "[WebNN] Invalid value of the switch "
+                 << switches::kWebNNOrtEpLibraryPathForTesting
+                 << ": Invalid format. It should be in the format of "
+                    "<ep_name>?<ep_library_path>. The switch will be ignored.";
+    return std::nullopt;
+  }
+  std::string ep_name = base::WideToUTF8(parts[0]);
+  if (!kKnownEPs.contains(ep_name)) {
+    LOG(WARNING) << "[WebNN] Invalid value of the switch "
+                 << switches::kWebNNOrtEpLibraryPathForTesting
+                 << ": The specified EP name is not recognized. "
+                    "The switch will be ignored.";
+    return std::nullopt;
+  }
+
+  return std::make_pair(std::move(ep_name),
+                        mojom::EpPackageInfo::New(
+                            /*family_name=*/std::wstring(),
+                            /*version=*/PACKAGE_VERSION{},
+                            /*library_path=*/base::FilePath(parts[1])));
 }
 
 auto CloneMap(const EpPackageInfoMap& map) {
@@ -522,6 +562,14 @@ class ExecutionProviderInitializer {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
     state_ = State::kEpsEnsured;
+
+    // If `kWebNNOrtEpLibraryPathForTesting` switch exists, inject the testing
+    // EP into the map (overriding any real EP with the same name).
+    auto testing_ep = ParseTestingEpLibraryPathSwitch();
+    if (testing_ep.has_value()) {
+      ep_package_info_map_.insert_or_assign(std::move(testing_ep->first),
+                                            std::move(testing_ep->second));
+    }
 
     while (!pending_callbacks_.empty()) {
       std::move(pending_callbacks_.front()).Run(CloneMap(ep_package_info_map_));
