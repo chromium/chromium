@@ -301,15 +301,22 @@ def _CheckAshSourcesForBadIncludes(input_api, output_api):
         "chrome/browser/ui/browser.h",
     ]
 
-    renamed_files = _GetSimpleRenamedFiles(input_api)
+    renamed_files = None
 
     def should_check_path(affected_path):
         # TODO(crbug.com/447299513): Use pathlib's full_match once we are at
         # Python >= 3.13
+        if not (affected_path.startswith('chrome/browser/') and
+                ('/ash/' in affected_path or '/chromeos/' in affected_path)):
+            return False
+
+        nonlocal renamed_files
+        if renamed_files is None:
+            renamed_files = _GetSimpleRenamedFiles(input_api)
+
         if affected_path in renamed_files:
             return False
-        return (affected_path.startswith('chrome/browser/') and
-                ('/ash/' in affected_path or '/chromeos/' in affected_path))
+        return True
 
     bad_includes_re = re.compile('|'.join(
         re.escape(f'#include "{file}"') for file in bad_includes))
