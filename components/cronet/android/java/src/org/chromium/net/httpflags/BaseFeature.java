@@ -129,7 +129,7 @@ public final class BaseFeature {
     private static void applyStateOverride(
             ResolvedFlags.Value value,
             BaseFeatureOverrides.FeatureState.Builder featureStateBuilder) {
-        ResolvedFlags.Value.Type valueType = value.getType();
+        @ResolvedFlags.Value.Type int valueType = value.getType();
         if (valueType != ResolvedFlags.Value.Type.BOOL) {
             throw new IllegalArgumentException(
                     "HTTP flag has type "
@@ -143,21 +143,21 @@ public final class BaseFeature {
             String paramName,
             ResolvedFlags.Value value,
             BaseFeatureOverrides.FeatureState.Builder featureStateBuilder) {
-        ResolvedFlags.Value.Type valueType = value.getType();
+        @ResolvedFlags.Value.Type int valueType = value.getType();
         ByteString rawValue;
         switch (valueType) {
-            case BOOL:
+            case ResolvedFlags.Value.Type.BOOL:
                 rawValue =
                         ByteString.copyFrom(
                                 value.getBoolValue() ? "true" : "false", StandardCharsets.UTF_8);
                 break;
-            case INT:
+            case ResolvedFlags.Value.Type.INT:
                 rawValue =
                         ByteString.copyFrom(
                                 Long.toString(value.getIntValue(), /* radix= */ 10),
                                 StandardCharsets.UTF_8);
                 break;
-            case FLOAT:
+            case ResolvedFlags.Value.Type.FLOAT:
                 // TODO: if the value is "weird" (e.g. NaN, infinities) this probably won't produce
                 // something that the Chromium feature param code can parse. As a workaround, the
                 // user can use a string-valued flag to directly feed the value to be parsed.
@@ -165,10 +165,10 @@ public final class BaseFeature {
                         ByteString.copyFrom(
                                 Float.toString(value.getFloatValue()), StandardCharsets.UTF_8);
                 break;
-            case STRING:
+            case ResolvedFlags.Value.Type.STRING:
                 rawValue = ByteString.copyFrom(value.getStringValue(), StandardCharsets.UTF_8);
                 break;
-            case BYTES:
+            case ResolvedFlags.Value.Type.BYTES:
                 rawValue = value.getBytesValue();
                 break;
             default:

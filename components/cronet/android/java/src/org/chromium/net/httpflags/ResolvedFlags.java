@@ -4,6 +4,7 @@
 
 package org.chromium.net.httpflags;
 
+import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
@@ -11,6 +12,8 @@ import com.google.protobuf.ByteString;
 
 import org.chromium.base.metrics.ScopedSysTraceEvent;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -29,12 +32,14 @@ public final class ResolvedFlags {
      * <p>This object can never hold a null flag value.
      */
     public static final class Value {
-        public static enum Type {
-            BOOL,
-            INT,
-            FLOAT,
-            STRING,
-            BYTES
+        @IntDef({Type.BOOL, Type.INT, Type.FLOAT, Type.STRING, Type.BYTES})
+        @Retention(RetentionPolicy.SOURCE)
+        public @interface Type {
+            int BOOL = 0;
+            int INT = 1;
+            int FLOAT = 2;
+            int STRING = 3;
+            int BYTES = 4;
         }
 
         private final Object mValue;
@@ -126,7 +131,7 @@ public final class ResolvedFlags {
             mValue = value;
         }
 
-        public Type getType() {
+        public @Type int getType() {
             if (mValue instanceof Boolean) {
                 return Type.BOOL;
             } else if (mValue instanceof Long) {
@@ -143,8 +148,8 @@ public final class ResolvedFlags {
             }
         }
 
-        private void checkType(Type requestedType) {
-            Type actualType = getType();
+        private void checkType(@Type int requestedType) {
+            @Type int actualType = getType();
             if (requestedType != actualType) {
                 throw new IllegalStateException(
                         "Attempted to access flag value as "
