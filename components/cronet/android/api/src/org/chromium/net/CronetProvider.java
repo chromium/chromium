@@ -35,10 +35,6 @@ import java.util.Set;
  */
 public abstract class CronetProvider {
     @VisibleForTesting
-    static final String USE_SCORE_BASED_PROVIDER_SELECTION_HTTP_FLAG_NAME =
-            "Cronet_UseScoreBasedProviderSelection";
-
-    @VisibleForTesting
     static final String PREFERRED_MINIMUM_HTTPENGINE_VERSION_HTTP_FLAG_NAME =
             "Cronet_PreferredMinimumHttpEngineVersion";
 
@@ -212,15 +208,6 @@ public abstract class CronetProvider {
         return Collections.unmodifiableList(providers);
     }
 
-    static boolean shouldUseScoreBasedProviderSelection(Context context) {
-        var shouldUseScoreBasedProviderSelection =
-                HttpFlagsForApi.getHttpFlags(context)
-                        .flags()
-                        .get(USE_SCORE_BASED_PROVIDER_SELECTION_HTTP_FLAG_NAME);
-        return shouldUseScoreBasedProviderSelection != null
-                && shouldUseScoreBasedProviderSelection.getBoolValue();
-    }
-
     /**
      * Same as {@link #getAllProviders}, but returning the providerInfos directly.
      *
@@ -252,15 +239,13 @@ public abstract class CronetProvider {
                 CronetLogger.CronetSource.CRONET_SOURCE_STATICALLY_LINKED,
                 providers,
                 false);
-        if (shouldUseScoreBasedProviderSelection(context)) {
-            addCronetProviderImplByClassName(
-                    context,
-                    HTTPENGINE_PROVIDER_CLASS,
-                    /* score= */ calculateHttpEngineNativeProviderScore(context),
-                    CronetLogger.CronetSource.CRONET_SOURCE_PLATFORM,
-                    providers,
-                    false);
-        }
+        addCronetProviderImplByClassName(
+                context,
+                HTTPENGINE_PROVIDER_CLASS,
+                /* score= */ calculateHttpEngineNativeProviderScore(context),
+                CronetLogger.CronetSource.CRONET_SOURCE_PLATFORM,
+                providers,
+                false);
         addCronetProviderImplByClassName(
                 context,
                 JAVA_CRONET_PROVIDER_CLASS,

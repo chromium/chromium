@@ -24,7 +24,6 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.net.CronetTestFramework.CronetImplementation;
-import org.chromium.net.CronetTestRule.BoolFlag;
 import org.chromium.net.CronetTestRule.Flags;
 import org.chromium.net.CronetTestRule.IgnoreFor;
 import org.chromium.net.CronetTestRule.RequiresMinAndroidApi;
@@ -62,47 +61,6 @@ public class CronetEngineBuilderTest {
     @SmallTest
     public void testCronetLibraryPreloadMustNotCrash() {
         CronetLibraryLoader.preload();
-    }
-
-    /**
-     * Tests the correct ordering of the providers. The platform provider should be the last in the
-     * list. Other providers should be ordered by placing providers with the higher version first.
-     */
-    @Test
-    @SmallTest
-    public void testProviderOrdering() {
-        var providerInfo1 = new CronetProvider.ProviderInfo();
-        providerInfo1.provider =
-                new FakeProvider(
-                        mTestRule.getTestFramework().getContext(),
-                        PROVIDER_NAME_APP_PACKAGED,
-                        "99.77",
-                        true);
-        var providerInfo2 = new CronetProvider.ProviderInfo();
-        providerInfo2.provider =
-                new FakeProvider(
-                        mTestRule.getTestFramework().getContext(),
-                        PROVIDER_NAME_FALLBACK,
-                        "99.99",
-                        true);
-        var providerInfo3 = new CronetProvider.ProviderInfo();
-        providerInfo3.provider =
-                new FakeProvider(
-                        mTestRule.getTestFramework().getContext(),
-                        "Some other provider",
-                        "99.88",
-                        true);
-
-        CronetProvider.ProviderInfo orderedProviders =
-                CronetEngine.Builder.getPreferredCronetProvider(
-                        mTestRule.getTestFramework().getContext(),
-                        Arrays.asList(
-                                new CronetProvider.ProviderInfo[] {
-                                    providerInfo1, providerInfo2, providerInfo3
-                                }));
-
-        // Check the result
-        assertThat(orderedProviders).isEqualTo(providerInfo3);
     }
 
     @Test
@@ -161,12 +119,6 @@ public class CronetEngineBuilderTest {
 
     @Test
     @SmallTest
-    @Flags(
-            boolFlags = {
-                @BoolFlag(
-                        name = CronetProvider.USE_SCORE_BASED_PROVIDER_SELECTION_HTTP_FLAG_NAME,
-                        value = true)
-            })
     @RequiresMinAndroidApi(Build.VERSION_CODES.N)
     public void testSmartLogicSorting() {
         var providerInfo1 = new CronetProvider.ProviderInfo();
@@ -200,12 +152,6 @@ public class CronetEngineBuilderTest {
 
     @Test
     @SmallTest
-    @Flags(
-            boolFlags = {
-                @BoolFlag(
-                        name = CronetProvider.USE_SCORE_BASED_PROVIDER_SELECTION_HTTP_FLAG_NAME,
-                        value = true)
-            })
     @RequiresMinAndroidApi(Build.VERSION_CODES.N)
     public void testSmartLogicSortingShouldFetchFirstEnabledOnly() {
         var providerInfo1 = new CronetProvider.ProviderInfo();
