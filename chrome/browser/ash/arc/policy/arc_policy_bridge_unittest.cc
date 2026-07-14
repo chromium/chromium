@@ -38,6 +38,7 @@
 #include "chromeos/ash/experiences/arc/arc_prefs.h"
 #include "chromeos/ash/experiences/arc/dlc_installer/arc_dlc_installer.h"
 #include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"
+#include "chromeos/ash/experiences/arc/session/arc_service_manager.h"
 #include "chromeos/ash/experiences/arc/session/arc_session_runner.h"
 #include "chromeos/ash/experiences/arc/test/arc_util_test_support.h"
 #include "chromeos/ash/experiences/arc/test/connection_holder_util.h"
@@ -211,8 +212,9 @@ class ArcPolicyBridgeTestBase {
     // Set up fake StatisticsProvider.
     ash::system::StatisticsProvider::SetTestProvider(&statistics_provider_);
 
-    // Set up ArcBridgeService.
-    bridge_service_ = std::make_unique<ArcBridgeService>();
+    // Set up ArcServiceManager and ArcBridgeService.
+    arc_service_manager_ = std::make_unique<ArcServiceManager>();
+    bridge_service_ = arc_service_manager_->arc_bridge_service();
     EXPECT_CALL(policy_service_,
                 GetPolicies(policy::PolicyNamespace(
                     policy::POLICY_DOMAIN_CHROME, std::string())))
@@ -253,6 +255,7 @@ class ArcPolicyBridgeTestBase {
         std::make_unique<ArcSessionRunner>(
             base::BindRepeating(FakeArcSession::Create)),
         arc_dlc_installer_.get());
+    ArcSessionManager::EnableCheckAndroidManagementForTesting(false);
     arc_session_manager()->SetProfile(profile());
     arc_session_manager()->Initialize();
 
@@ -276,6 +279,9 @@ class ArcPolicyBridgeTestBase {
     arc_session_manager()->Shutdown();
     arc_session_manager_.reset();
     arc_dlc_installer_.reset();
+    // Reset the raw_ptr as the service manager will release the underlying ptr.
+    bridge_service_ = nullptr;
+    arc_service_manager_.reset();
     ash::DlcserviceClient::Shutdown();
     ash::ConciergeClient::Shutdown();
     testing_profile_manager_.reset();
@@ -363,18 +369,19 @@ class ArcPolicyBridgeTestBase {
   std::unique_ptr<TestingProfileManager> testing_profile_manager_;
   base::RunLoop run_loop_;
   raw_ptr<TestingProfile, DanglingUntriaged> profile_;
-  std::unique_ptr<ArcBridgeService> bridge_service_;
+  raw_ptr<ArcBridgeService> bridge_service_;
   raw_ptr<CertStoreService, DanglingUntriaged>
       cert_store_service_;  // Not owned.
 
+  std::unique_ptr<ArcServiceManager> arc_service_manager_;
   std::unique_ptr<ArcDlcInstaller> arc_dlc_installer_;
   std::unique_ptr<ArcSessionManager> arc_session_manager_;
   std::unique_ptr<ArcPolicyBridge> policy_bridge_;
   std::string instance_guid_;
   MockArcPolicyBridgeObserver observer_;
-  // Always keep policy_instance_ below bridge_service_, so that
-  // policy_instance_ is destructed first. It needs to remove itself as
-  // observer.
+  // Always keep policy_instance_ below bridge_service_(which is allocated with
+  // arc_service_manager_), so that policy_instance_ is destructed first. It
+  // needs to remove itself as observer.
   std::unique_ptr<FakePolicyInstance> policy_instance_;
   policy::PolicyMap policy_map_;
   policy::MockPolicyService policy_service_;
@@ -792,6 +799,46 @@ TEST_F(ArcPolicyBridgeTest, ManualChildUserPoliciesSet) {
       base::StrCat({"{\"apkCacheEnabled\":true,\"guid\":\"", instance_guid(),
                     "\",", kMountPhysicalMediaDisabledPolicySetting, ",",
                     kSupervisedUserPlayStoreModePolicySetting, "}"}));
+}
+
+TEST_F(ArcPolicyBridgeTest,
+       ActivateArcIfRequiredByPolicy_NoForceInstalledApps) {
+  profile()->GetPrefs()->SetBoolean(prefs::kArcSignedIn, true);
+  profile()->GetPrefs()->SetBoolean(prefs::kArcTermsAccepted, true);
+  profile()->GetPrefs()->SetBoolean(prefs::kArcPackagesIsUpToDate, true);
+  arc_session_manager()->RequestEnable();
+  base::RunLoop().RunUntilIdle();
+  ASSERT_EQ(ArcSessionManager::State::READY, arc_session_manager()->state());
+
+  policy_map().Set(policy::key::kArcPolicy, policy::POLICY_LEVEL_MANDATORY,
+                   policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
+                   base::Value("{\"applications\":"
+                               "[{\"packageName\":\"com.example.app\","
+                               "\"installType\":\"REQUIRED\""
+                               "}]}"),
+                   nullptr);
+  policy_bridge()->OnArcStartDelayed();
+  EXPECT_EQ(ArcSessionManager::State::READY, arc_session_manager()->state());
+}
+
+TEST_F(ArcPolicyBridgeTest, ActivateArcIfRequiredByPolicy_ForceInstalledApps) {
+  profile()->GetPrefs()->SetBoolean(prefs::kArcSignedIn, true);
+  profile()->GetPrefs()->SetBoolean(prefs::kArcTermsAccepted, true);
+  profile()->GetPrefs()->SetBoolean(prefs::kArcPackagesIsUpToDate, true);
+  arc_session_manager()->RequestEnable();
+  base::RunLoop().RunUntilIdle();
+  ASSERT_EQ(ArcSessionManager::State::READY, arc_session_manager()->state());
+
+  policy_map().Set(
+      policy::key::kArcPolicy, policy::POLICY_LEVEL_MANDATORY,
+      policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
+      base::Value("{\"applications\":"
+                  "[{\"packageName\":\"com.example.force_installed_app\","
+                  "\"installType\":\"FORCE_INSTALLED\""
+                  "}]}"),
+      nullptr);
+  policy_bridge()->OnArcStartDelayed();
+  EXPECT_EQ(ArcSessionManager::State::ACTIVE, arc_session_manager()->state());
 }
 
 TEST_P(ArcPolicyBridgeAffiliatedTest, ApkCacheEnabledTest) {

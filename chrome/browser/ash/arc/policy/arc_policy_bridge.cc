@@ -797,9 +797,11 @@ void ArcPolicyBridge::ActivateArcIfRequiredByPolicy(
     return;
   }
   bool hasForceInstallApps =
-      std::any_of(apps->cbegin(), apps->cbegin(), [](const auto& app) {
-        return *app.GetDict().FindString(kPolicyAppInstallType) ==
-               kPolicyAppInstallTypeForceInstalled;
+      std::any_of(apps->cbegin(), apps->cend(), [](const auto& app) {
+        const std::string* install_type =
+            app.GetDict().FindString(kPolicyAppInstallType);
+        return install_type != nullptr &&
+               *install_type == kPolicyAppInstallTypeForceInstalled;
       });
   if (hasForceInstallApps) {
     VLOG(1) << "Force install apps found, allowing ARC activation.";
