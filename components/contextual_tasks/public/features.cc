@@ -164,6 +164,9 @@ BASE_FEATURE(kContextualTasksEnableSpatialModelToolbarLayout,
 
 BASE_FEATURE(kContextualTasksRearchitecture, base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kContextualTasksSidePanelRearchitecture,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kContextualTasksEnableStickyConversation,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
@@ -838,6 +841,10 @@ const char kContextualTasksEphemeralBrandedEntryPointName[] =
     "Contextual Tasks Ephemeral Branded Entry Point";
 const char kContextualTasksEphemeralBrandedEntryPointDescription[] =
     "Enables the ephemeral branded entry point for contextual tasks.";
+const char kContextualTasksSidePanelRearchitectureName[] =
+    "Contextual Tasks Side Panel Rearchitecture";
+const char kContextualTasksSidePanelRearchitectureDescription[] =
+    "Enables the side panel rearchitecture for contextual tasks.";
 
 }  // namespace flag_descriptions
 
