@@ -362,6 +362,7 @@ void SlideAndCrossfadeIconLabelBubbleAnimationLayoutStrategy::ResetAnimation(
     bool show_label) {
   host->label()->SetVisible(true);
   UpdateAnimationProgress(host, show_label ? 1.0 : 0.0);
+  host->PreferredSizeChanged();
 }
 
 void SlideAndCrossfadeIconLabelBubbleAnimationLayoutStrategy::OnAnimationEnded(
