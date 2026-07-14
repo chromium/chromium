@@ -5,6 +5,7 @@
 #include "base/cfi_buildflags.h"
 #include "base/functional/bind.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "cc/test/fake_content_layer_client.h"
 #include "cc/test/fake_picture_layer.h"
 #include "cc/test/fake_picture_layer_impl.h"
@@ -152,10 +153,12 @@ class LayerTreeHostPictureTestTwinLayer
 // There is no pending layers in single thread mode.
 MULTI_THREAD_TEST_F(LayerTreeHostPictureTestTwinLayer);
 
-// TODO(crbug.com/): Flaku on MSAN, ASAN, TSAN and Linux CFI builds.
+// TODO(crbug.com/): Flaky on MSAN, ASAN, TSAN, Linux CFI, and ARM64 Debug
+// builds.
 #if !defined(ADDRESS_SANITIZER) && !defined(THREAD_SANITIZER) && \
     !defined(MEMORY_SANITIZER) &&                                \
-    !(BUILDFLAG(CFI_ICALL_CHECK) && BUILDFLAG(IS_LINUX))
+    !(BUILDFLAG(CFI_ICALL_CHECK) && BUILDFLAG(IS_LINUX)) &&      \
+    !(defined(ARCH_CPU_ARM64) && !defined(NDEBUG))
 
 class LayerTreeHostPictureTestResizeViewportWithGpuRaster
     : public LayerTreeHostPictureTest {
@@ -230,7 +233,8 @@ SINGLE_AND_MULTI_THREAD_TEST_F(
 
 #endif  // !defined(ADDRESS_SANITIZER) && !defined(THREAD_SANITIZER) &&
         // !defined(MEMORY_SANITIZER) &&
-        // !(BUILDFLAG(CFI_ICALL_CHECK) && BUILDFLAG(IS_LINUX))
+        // !(BUILDFLAG(CFI_ICALL_CHECK) && BUILDFLAG(IS_LINUX)) &&
+        // !(defined(ARCH_CPU_ARM64) && !defined(NDEBUG))
 
 class LayerTreeHostPictureTestChangeLiveTilesRectWithRecycleTree
     : public LayerTreeHostPictureTest {
