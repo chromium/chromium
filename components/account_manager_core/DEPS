@@ -1,8 +1,6 @@
 include_rules = [
-  "+chromeos/crosapi/mojom/account_manager.mojom.h",
   "+components/prefs",
   "+google_apis/gaia",
-  "+mojo/public",
   "+services/network/public/cpp",
   "+third_party/protobuf",
 ]
@@ -11,8 +9,5 @@ specific_include_rules = {
    '.*_unittest\\.cc': [
       '+services/network/test/test_url_loader_factory.h',
       "+services/network/test/test_utils.h"
-   ],
-   'account_manager_mojo_service_unittest\\.cc': [
-      '+chromeos/crosapi/mojom/account_manager.mojom-test-utils.h',
    ],
 }

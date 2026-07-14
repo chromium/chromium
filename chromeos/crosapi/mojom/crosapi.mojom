@@ -7,7 +7,6 @@ module crosapi.mojom;
 import "chromeos/components/in_session_auth/mojom/in_session_auth.mojom";
 import "chromeos/components/payments/mojom/payment_app.mojom";
 import "chromeos/components/sensors/mojom/cros_sensor_service.mojom";
-import "chromeos/crosapi/mojom/account_manager.mojom";
 import "chromeos/services/chromebox_for_meetings/public/mojom/cfm_service_manager.mojom";
 import "chromeos/services/machine_learning/public/mojom/machine_learning_service.mojom";
 import "mojo/public/mojom/base/generic_pending_receiver.mojom";
@@ -27,12 +26,7 @@ import "services/media_session/public/mojom/media_controller.mojom";
 interface Crosapi {
   // BindAudioService@85 was removed.
   // REMOVED_62@62 was removed.
-
-  // Binds Chrome OS Account Manager for Identity management.
-  // Added in M87.
-  [MinVersion=4]
-  BindAccountManager@7(pending_receiver<AccountManager> receiver);
-
+  // BindAccountManager@7 was removed.
   // BindAppServiceProxy@45 was removed.
   // BindArc@63 was removed.
   // BindAutomationDeprecated@23 was removed.

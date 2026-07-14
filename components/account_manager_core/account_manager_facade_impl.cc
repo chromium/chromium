@@ -15,62 +15,26 @@
 #include "base/check_is_test.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
-#include "base/memory/raw_ptr.h"
-#include "base/memory/weak_ptr.h"
-#include "base/metrics/histogram_functions.h"
-#include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
-#include "chromeos/crosapi/mojom/account_manager.mojom.h"
 #include "components/account_manager_core/account.h"
-#include "components/account_manager_core/account_manager_util.h"
 #include "components/account_manager_core/chromeos/account_manager.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "google_apis/gaia/oauth2_access_token_fetcher.h"
 
 namespace account_manager {
 
-namespace {
-
-using RemoteMinVersions = crosapi::mojom::AccountManager::MethodMinVersions;
-
-// UMA histogram names.
-const char kMojoDisconnectionsAccountManagerRemote[] =
-    "AccountManager.MojoDisconnections.AccountManagerRemote";
-
-// Error logs the Mojo connection stats when `event` occurs.
-void LogMojoConnectionStats(const std::string& event,
-                            int num_remote_disconnections) {
-  LOG(ERROR) << base::StringPrintf("%s. Number of remote disconnections: %d",
-                                   event.c_str(), num_remote_disconnections);
-}
-
-}  // namespace
-
 AccountManagerFacadeImpl::AccountManagerFacadeImpl(
-    mojo::Remote<crosapi::mojom::AccountManager> account_manager_remote,
-    uint32_t remote_version,
     AccountManager* account_manager,
     base::OnceClosure init_finished)
-    : remote_version_(remote_version),
-      account_manager_remote_(std::move(account_manager_remote)),
-      account_manager_(CHECK_DEREF(account_manager)) {
+    : account_manager_(CHECK_DEREF(account_manager)) {
   DCHECK(init_finished);
 
   account_manager_observation_.Observe(account_manager);
 
-  if (account_manager_remote_) {
-    account_manager_remote_.set_disconnect_handler(base::BindOnce(
-        &AccountManagerFacadeImpl::OnAccountManagerRemoteDisconnected,
-        weak_factory_.GetWeakPtr()));
-  }
-
   std::move(init_finished).Run();
 }
 
-AccountManagerFacadeImpl::~AccountManagerFacadeImpl() {
-  base::UmaHistogramCounts100(kMojoDisconnectionsAccountManagerRemote,
-                              num_remote_disconnections_);
-}
+AccountManagerFacadeImpl::~AccountManagerFacadeImpl() = default;
 
 void AccountManagerFacadeImpl::AddObserver(
     AccountManagerFacade::Observer* observer) {
@@ -156,34 +120,6 @@ void AccountManagerFacadeImpl::OnTokenUpserted(const Account& account) {
 void AccountManagerFacadeImpl::OnAccountRemoved(const Account& account) {
   observer_list_.Notify(&AccountManagerFacade::Observer::OnAccountRemoved,
                         account);
-}
-
-void AccountManagerFacadeImpl::RunOnAccountManagerRemoteDisconnection(
-    base::OnceClosure closure) {
-  if (!account_manager_remote_) {
-    std::move(closure).Run();
-    return;
-  }
-  account_manager_remote_disconnection_handlers_.emplace_back(
-      std::move(closure));
-}
-
-void AccountManagerFacadeImpl::OnAccountManagerRemoteDisconnected() {
-  num_remote_disconnections_++;
-  LogMojoConnectionStats("Account Manager disconnected",
-                         num_remote_disconnections_);
-  for (auto& cb : account_manager_remote_disconnection_handlers_) {
-    std::move(cb).Run();
-  }
-  account_manager_remote_disconnection_handlers_.clear();
-  account_manager_remote_.reset();
-}
-
-void AccountManagerFacadeImpl::FlushMojoForTesting() {
-  if (!account_manager_remote_) {
-    return;
-  }
-  account_manager_remote_.FlushForTesting();
 }
 
 }  // namespace account_manager

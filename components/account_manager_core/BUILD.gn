@@ -18,24 +18,18 @@ component("account_manager_core") {
     "account_manager_facade_impl.h",
     "account_manager_metrics.cc",
     "account_manager_metrics.h",
-    "account_manager_util.cc",
-    "account_manager_util.h",
     "account_upsertion_result.cc",
     "account_upsertion_result.h",
     "chromeos/account_manager.cc",
     "chromeos/account_manager.h",
-    "chromeos/account_manager_mojo_service.cc",
-    "chromeos/account_manager_mojo_service.h",
     "pref_names.cc",
     "pref_names.h",
   ]
 
   deps = [
     "//base",
-    "//chromeos/crosapi/mojom",
     "//components/prefs",
     "//google_apis",
-    "//mojo/public/cpp/bindings",
     "//services/network/public/cpp",
   ]
 
@@ -71,7 +65,6 @@ source_set("unit_tests") {
 
   sources = [
     "account_manager_facade_impl_unittest.cc",
-    "chromeos/account_manager_mojo_service_unittest.cc",
     "chromeos/account_manager_unittest.cc",
   ]
 
@@ -79,7 +72,6 @@ source_set("unit_tests") {
     ":account_manager_core",
     ":test_support",
     "//base/test:test_support",
-    "//chromeos/crosapi/mojom",
     "//components/prefs:test_support",
     "//google_apis",
     "//services/network:test_support",

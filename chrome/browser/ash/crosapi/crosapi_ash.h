@@ -39,8 +39,6 @@ class CrosapiAsh : public mojom::Crosapi {
                     base::OnceClosure disconnect_handler);
 
   // crosapi::mojom::Crosapi:
-  void BindAccountManager(
-      mojo::PendingReceiver<mojom::AccountManager> receiver) override;
   void BindBrowserCdmFactory(mojo::GenericPendingReceiver receiver) override;
   void BindCfmServiceContext(
       mojo::PendingReceiver<chromeos::cfm::mojom::CfmServiceContext> receiver)

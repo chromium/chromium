@@ -12,26 +12,19 @@
 #include "base/scoped_observation.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
-#include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
-#include "chromeos/crosapi/mojom/account_manager.mojom.h"
 #include "components/account_manager_core/account.h"
 #include "components/account_manager_core/account_manager_facade.h"
 #include "components/account_manager_core/account_manager_test_util.h"
-#include "components/account_manager_core/account_manager_util.h"
 #include "components/account_manager_core/chromeos/account_manager.h"
 #include "components/account_manager_core/mock_account_manager_facade.h"
 #include "components/prefs/testing_pref_service.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "google_apis/gaia/oauth2_access_token_consumer.h"
 #include "google_apis/gaia/oauth2_access_token_fetcher.h"
-#include "mojo/public/cpp/bindings/pending_remote.h"
-#include "mojo/public/cpp/bindings/receiver.h"
-#include "mojo/public/cpp/bindings/receiver_set.h"
-#include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -49,32 +42,6 @@ using ::testing::WithArgs;
 
 constexpr char kTestAccountEmail[] = "test@gmail.com";
 constexpr char kAnotherTestAccountEmail[] = "another_test@gmail.com";
-constexpr char kMojoDisconnectionsAccountManagerRemote[] =
-    "AccountManager.MojoDisconnections.AccountManagerRemote";
-
-class FakeAccountManager : public crosapi::mojom::AccountManager {
- public:
-  FakeAccountManager() = default;
-  FakeAccountManager(const FakeAccountManager&) = delete;
-  FakeAccountManager& operator=(const FakeAccountManager&) = delete;
-  ~FakeAccountManager() override = default;
-
-  mojo::Remote<crosapi::mojom::AccountManager> CreateRemote() {
-    mojo::Remote<crosapi::mojom::AccountManager> remote;
-    receivers_.Add(this, remote.BindNewPipeAndPassReceiver());
-    return remote;
-  }
-
-  void SetAccounts(const std::vector<Account>& accounts) {
-    accounts_ = accounts;
-  }
-
-  void ClearReceivers() { receivers_.Clear(); }
-
- private:
-  std::vector<Account> accounts_;
-  mojo::ReceiverSet<crosapi::mojom::AccountManager> receivers_;
-};
 
 MATCHER_P(AccountEq, expected_account, "") {
   return testing::ExplainMatchResult(
@@ -105,17 +72,11 @@ class AccountManagerFacadeImplTest : public testing::Test {
     real_account_manager_->SetPrefService(&pref_service_);
   }
 
-  FakeAccountManager& account_manager() { return account_manager_; }
-
-  base::HistogramTester& histogram_tester() { return histogram_tester_; }
-
   AccountManager* real_account_manager() { return real_account_manager_.get(); }
 
   std::unique_ptr<AccountManagerFacadeImpl> CreateFacade() {
     base::test::TestFuture<void> future;
     auto result = std::make_unique<AccountManagerFacadeImpl>(
-        account_manager().CreateRemote(),
-        /*remote_version=*/std::numeric_limits<uint32_t>::max(),
         real_account_manager(), future.GetCallback());
     EXPECT_TRUE(future.Wait());
     return result;
@@ -131,9 +92,6 @@ class AccountManagerFacadeImplTest : public testing::Test {
 
  private:
   base::test::SingleThreadTaskEnvironment task_environment_;
-  FakeAccountManager account_manager_;
-  base::HistogramTester histogram_tester_;
-
   TestingPrefServiceSimple pref_service_;
   network::TestURLLoaderFactory test_url_loader_factory_;
   std::unique_ptr<AccountManager> real_account_manager_;
@@ -229,48 +187,6 @@ TEST_F(AccountManagerFacadeImplTest,
           GoogleServiceAuthError::InvalidGaiaCredentialsReason::
               CREDENTIALS_REJECTED_BY_CLIENT);
   EXPECT_THAT(future.Get(), Eq(expected_error));
-}
-
-TEST_F(AccountManagerFacadeImplTest,
-       HistogramsForZeroAccountManagerRemoteDisconnections) {
-  std::unique_ptr<AccountManagerFacadeImpl> account_manager_facade =
-      CreateFacade();
-  // Expect 0 disconnections in the default state.
-  EXPECT_EQ(0, histogram_tester().GetTotalSum(
-                   kMojoDisconnectionsAccountManagerRemote));
-
-  // Reset the facade so that histograms get logged.
-  account_manager_facade->FlushMojoForTesting();
-  account_manager_facade.reset();
-
-  // Expect 1 log - at the end of `account_manager_facade` destruction.
-  histogram_tester().ExpectTotalCount(kMojoDisconnectionsAccountManagerRemote,
-                                      1);
-  // Expect 0 disconnections.
-  EXPECT_EQ(0, histogram_tester().GetTotalSum(
-                   kMojoDisconnectionsAccountManagerRemote));
-}
-
-TEST_F(AccountManagerFacadeImplTest,
-       HistogramsForAccountManagerRemoteDisconnection) {
-  std::unique_ptr<AccountManagerFacadeImpl> account_manager_facade =
-      CreateFacade();
-  // Expect 0 disconnections in the default state.
-  EXPECT_EQ(0, histogram_tester().GetTotalSum(
-                   kMojoDisconnectionsAccountManagerRemote));
-
-  // Simulate a disconnection.
-  account_manager().ClearReceivers();
-  // And reset the facade so that histograms get logged.
-  account_manager_facade->FlushMojoForTesting();
-  account_manager_facade.reset();
-
-  // Expect 1 log - at the end of `account_manager_facade` destruction.
-  histogram_tester().ExpectTotalCount(kMojoDisconnectionsAccountManagerRemote,
-                                      1);
-  // Expect 1 disconnection.
-  EXPECT_EQ(1, histogram_tester().GetTotalSum(
-                   kMojoDisconnectionsAccountManagerRemote));
 }
 
 TEST_F(AccountManagerFacadeImplTest, ReportAuthError) {

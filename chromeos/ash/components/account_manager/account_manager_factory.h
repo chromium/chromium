@@ -19,10 +19,6 @@ class AccountManager;
 class AccountManagerFacade;
 }  // namespace account_manager
 
-namespace crosapi {
-class AccountManagerMojoService;
-}  // namespace crosapi
-
 namespace ash {
 
 // This factory is needed because of multi signin on Chrome OS. Device Accounts,
@@ -49,11 +45,6 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_ACCOUNT_MANAGER)
   account_manager::AccountManager* GetAccountManager(
       const std::string& profile_path);
 
-  // Returns the |AccountManagerMojoService| corresponding to the given
-  // |profile_path|.
-  crosapi::AccountManagerMojoService* GetAccountManagerMojoService(
-      const std::string& profile_path);
-
   // Returns the `AccountManagerFacade` corresponding to the given
   // `profile_path`.
   account_manager::AccountManagerFacade* GetAccountManagerFacade(
@@ -67,8 +58,6 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_ACCOUNT_MANAGER)
   struct AccountManagerHolder {
     AccountManagerHolder(
         std::unique_ptr<account_manager::AccountManager> account_manager,
-        std::unique_ptr<crosapi::AccountManagerMojoService>
-            account_manager_mojo_service,
         std::unique_ptr<account_manager::AccountManagerFacade>
             account_manager_facade);
     AccountManagerHolder(const AccountManagerHolder&) = delete;
@@ -76,8 +65,6 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_ACCOUNT_MANAGER)
     ~AccountManagerHolder();
 
     const std::unique_ptr<account_manager::AccountManager> account_manager;
-    const std::unique_ptr<crosapi::AccountManagerMojoService>
-        account_manager_mojo_service;
     const std::unique_ptr<account_manager::AccountManagerFacade>
         account_manager_facade;
   };
@@ -85,8 +72,8 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_ACCOUNT_MANAGER)
   const AccountManagerHolder& GetAccountManagerHolder(
       const std::string& profile_path);
 
-  // A mapping from Profile path to an |AccountManagerHolder|. Acts a cache of
-  // Account Managers and AccountManagerMojoService objects.
+  // A mapping from Profile path to an |AccountManagerHolder|. Acts as a cache
+  // of account managers and account manager facades.
   std::unordered_map<std::string, AccountManagerHolder> account_managers_;
 
   base::OnceCallbackList<void()> on_destruction_callbacks_;

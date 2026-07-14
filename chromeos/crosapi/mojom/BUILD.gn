@@ -7,7 +7,6 @@ import("//printing/buildflags/buildflags.gni")
 
 mojom("mojom") {
   sources = [
-    "account_manager.mojom",
     "crosapi.mojom",
   ]
   disable_variants = true

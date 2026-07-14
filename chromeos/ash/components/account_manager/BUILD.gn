@@ -12,10 +12,7 @@ component("account_manager") {
 
   public_deps = [ "//components/account_manager_core" ]
 
-  deps = [
-    "//base",
-    "//chromeos/crosapi/mojom",
-  ]
+  deps = [ "//base" ]
 
   defines = [ "IS_CHROMEOS_ASH_COMPONENTS_ACCOUNT_MANAGER_IMPL" ]
 }

@@ -7,19 +7,13 @@
 #include <memory>
 #include <utility>
 
-#include "base/dcheck_is_on.h"
 #include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/notimplemented.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_factory.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
-#include "chromeos/ash/components/account_manager/account_manager_factory.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/components/cdm_factory_daemon/cdm_factory_daemon_proxy_ash.h"
 #include "chromeos/components/in_session_auth/in_process_instances.h"
@@ -30,9 +24,7 @@
 #include "chromeos/services/chromebox_for_meetings/public/mojom/cfm_service_manager.mojom.h"
 #include "chromeos/services/machine_learning/public/cpp/service_connection.h"
 #include "chromeos/services/machine_learning/public/mojom/machine_learning_service.mojom.h"
-#include "components/account_manager_core/chromeos/account_manager_mojo_service.h"
 #include "components/trusted_vault/features.h"
-#include "components/user_manager/user_manager.h"
 #include "content/public/browser/device_service.h"
 #include "content/public/browser/media_session_service.h"
 #include "content/public/browser/video_capture_service.h"
@@ -41,28 +33,6 @@
 #include "services/video_capture/public/mojom/video_capture_service.mojom.h"
 
 namespace crosapi {
-namespace {
-
-// Assumptions:
-// 1. TODO(crbug.com/40704278): Multi-Signin / Fast-User-Switching is disabled.
-// 2. ash-chrome has 1 and only 1 "regular" `Profile`.
-Profile* GetAshProfile() {
-#if DCHECK_IS_ON()
-  int num_regular_profiles = 0;
-  for (const Profile* profile :
-       g_browser_process->profile_manager()->GetLoadedProfiles()) {
-    if (ash::ProfileHelper::IsUserProfile(profile)) {
-      ++num_regular_profiles;
-    }
-  }
-  DCHECK_EQ(1, num_regular_profiles);
-#endif  // DCHECK_IS_ON()
-  return ash::ProfileHelper::Get()->GetProfileByUser(
-      user_manager::UserManager::Get()->GetActiveUser());
-}
-
-}  // namespace
-
 CrosapiAsh::CrosapiAsh() {
   receiver_set_.set_disconnect_handler(base::BindRepeating(
       &CrosapiAsh::OnDisconnected, weak_factory_.GetWeakPtr()));
@@ -74,17 +44,6 @@ CrosapiAsh::~CrosapiAsh() {
   for (auto& entry : handlers) {
     std::move(entry.second).Run();
   }
-}
-
-void CrosapiAsh::BindAccountManager(
-    mojo::PendingReceiver<mojom::AccountManager> receiver) {
-  // Given `GetAshProfile()` assumptions, there is 1 and only 1
-  // `AccountManagerMojoService` that can/should be contacted - the one attached
-  // to the regular `Profile` in ash-chrome for the active `User`.
-  crosapi::AccountManagerMojoService* const account_manager_mojo_service =
-      ash::AccountManagerFactory::Get()->GetAccountManagerMojoService(
-          /*profile_path=*/GetAshProfile()->GetPath().value());
-  account_manager_mojo_service->BindReceiver(std::move(receiver));
 }
 
 void CrosapiAsh::BindBrowserCdmFactory(mojo::GenericPendingReceiver receiver) {
