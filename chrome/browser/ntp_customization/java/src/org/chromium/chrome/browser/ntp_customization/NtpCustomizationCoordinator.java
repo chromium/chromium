@@ -278,7 +278,8 @@ public class NtpCustomizationCoordinator {
 
     private void showMvtSettingCoordinator() {
         if (mMvtSettingCoordinator == null) {
-            mMvtSettingCoordinator = new MvtSettingsCoordinator(mContext, mDelegate);
+            mMvtSettingCoordinator =
+                    new MvtSettingsCoordinator(mContext, mDelegate, mProfileSupplier);
         }
         mMediator.showBottomSheet(MVT);
     }

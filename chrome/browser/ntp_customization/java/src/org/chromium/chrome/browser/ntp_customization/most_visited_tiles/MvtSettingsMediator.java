@@ -12,22 +12,32 @@ import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationView
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ntp_customization.BottomSheetDelegate;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationConfigManager;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationMetricsUtils;
 import org.chromium.chrome.browser.ntp_customization.R;
+import org.chromium.chrome.browser.preferences.Pref;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.modelutil.PropertyModel;
+
+import java.util.function.Supplier;
 
 /** Mediator for the Most Visited Tiles settings bottom sheet. */
 @NullMarked
 public class MvtSettingsMediator {
     private final PropertyModel mBottomSheetPropertyModel;
     private final BottomSheetDelegate mBottomSheetDelegate;
+    private final Supplier<@Nullable Profile> mProfileSupplier;
 
     public MvtSettingsMediator(
-            PropertyModel bottomSheetPropertyModel, BottomSheetDelegate delegate) {
+            PropertyModel bottomSheetPropertyModel,
+            BottomSheetDelegate delegate,
+            Supplier<@Nullable Profile> profileSupplier) {
         mBottomSheetPropertyModel = bottomSheetPropertyModel;
         mBottomSheetDelegate = delegate;
+        mProfileSupplier = profileSupplier;
 
         // Hides the back button when the mvt settings bottom sheet is displayed standalone.
         mBottomSheetPropertyModel.set(
@@ -53,6 +63,10 @@ public class MvtSettingsMediator {
     void onMvtSwitchToggled(boolean isEnabled) {
         NtpCustomizationMetricsUtils.recordMvtToggledInBottomSheet(isEnabled);
         NtpCustomizationConfigManager.getInstance().setPrefIsMvtToggleOn(isEnabled);
+        Profile profile = mProfileSupplier.get();
+        if (profile != null) {
+            UserPrefs.get(profile).setBoolean(Pref.NTP_SHORTCUTS_VISIBLE, isEnabled);
+        }
     }
 
     void destroy() {

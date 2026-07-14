@@ -4,8 +4,7 @@
 
 package org.chromium.chrome.browser.ntp_customization.most_visited_tiles;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.eq;
@@ -20,6 +19,7 @@ import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationView
 import android.view.View;
 import android.widget.CompoundButton;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -30,10 +30,16 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.ntp_customization.BottomSheetDelegate;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationConfigManager;
+import org.chromium.chrome.browser.preferences.Pref;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.components.prefs.PrefService;
+import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Unit tests for {@link MvtSettingsMediator} */
@@ -44,13 +50,24 @@ public class MvtSettingsMediatorUnitTest {
     @Mock private BottomSheetDelegate mDelegate;
     @Mock View mView;
     @Mock private PropertyModel mBottomSheetPropertyModel;
+    @Mock private Profile mProfile;
+    @Mock private PrefService mPrefService;
     @Captor private ArgumentCaptor<View.OnClickListener> mBackPressHandlerCaptor;
 
     private MvtSettingsMediator mMediator;
+    private final SettableMonotonicObservableSupplier<Profile> mProfileSupplier =
+            ObservableSuppliers.createMonotonic();
 
     @Before
     public void setUp() {
-        mMediator = new MvtSettingsMediator(mBottomSheetPropertyModel, mDelegate);
+        UserPrefs.setPrefServiceForTesting(mPrefService);
+        mProfileSupplier.set(mProfile);
+        mMediator = new MvtSettingsMediator(mBottomSheetPropertyModel, mDelegate, mProfileSupplier);
+    }
+
+    @After
+    public void tearDown() {
+        UserPrefs.setPrefServiceForTesting(null);
     }
 
     @Test
@@ -67,7 +84,7 @@ public class MvtSettingsMediatorUnitTest {
         // Verifies that when the mvt settings bottom sheet should show alone, the back press
         // handler should be set to null.
         when(mDelegate.shouldShowAlone()).thenReturn(true);
-        new MvtSettingsMediator(mBottomSheetPropertyModel, mDelegate);
+        new MvtSettingsMediator(mBottomSheetPropertyModel, mDelegate, mProfileSupplier);
         verify(mBottomSheetPropertyModel).set(BACK_PRESS_HANDLER, null);
 
         // Verifies that when the feed settings bottom sheet is part of the navigation flow starting
@@ -75,7 +92,7 @@ public class MvtSettingsMediatorUnitTest {
         // backPressOnCurrentBottomSheet()
         clearInvocations(mBottomSheetPropertyModel);
         when(mDelegate.shouldShowAlone()).thenReturn(false);
-        new MvtSettingsMediator(mBottomSheetPropertyModel, mDelegate);
+        new MvtSettingsMediator(mBottomSheetPropertyModel, mDelegate, mProfileSupplier);
         verify(mBottomSheetPropertyModel)
                 .set(eq(BACK_PRESS_HANDLER), mBackPressHandlerCaptor.capture());
         mBackPressHandlerCaptor.getValue().onClick(mView);
@@ -83,25 +100,13 @@ public class MvtSettingsMediatorUnitTest {
     }
 
     @Test
-    public void testOnMvtSwitchToggledAndState() {
-        String histogramName = "NewTabPage.Customization.MvtEnabled";
+    public void testOnMvtSwitchToggled_Enabled() {
+        testOnMvtSwitchToggledImpl(/* isEnabled= */ true);
+    }
 
-        NtpCustomizationConfigManager configManager = new NtpCustomizationConfigManager();
-        NtpCustomizationConfigManager.setInstanceForTesting(configManager);
-
-        HistogramWatcher histogramWatcher =
-                HistogramWatcher.newSingleRecordWatcher(histogramName, /* value= */ true);
-        mMediator.onMvtSwitchToggled(/* isEnabled= */ true);
-        assertTrue(configManager.getPrefIsMvtToggleOn());
-        assertTrue(mMediator.isMvtTurnedOn());
-        histogramWatcher.assertExpected();
-
-        histogramWatcher =
-                HistogramWatcher.newSingleRecordWatcher(histogramName, /* value= */ false);
-        mMediator.onMvtSwitchToggled(/* isEnabled= */ false);
-        assertFalse(configManager.getPrefIsMvtToggleOn());
-        assertFalse(mMediator.isMvtTurnedOn());
-        histogramWatcher.assertExpected();
+    @Test
+    public void testOnMvtSwitchToggled_Disabled() {
+        testOnMvtSwitchToggledImpl(/* isEnabled= */ false);
     }
 
     @Test
@@ -109,5 +114,21 @@ public class MvtSettingsMediatorUnitTest {
         mMediator.destroy();
         verify(mBottomSheetPropertyModel).set(eq(BACK_PRESS_HANDLER), eq(null));
         verify(mBottomSheetPropertyModel).set(eq(MVT_SWITCH_ON_CHECKED_CHANGE_LISTENER), eq(null));
+    }
+
+    private void testOnMvtSwitchToggledImpl(boolean isEnabled) {
+        String histogramName = "NewTabPage.Customization.MvtEnabled";
+
+        NtpCustomizationConfigManager configManager = new NtpCustomizationConfigManager();
+        NtpCustomizationConfigManager.setInstanceForTesting(configManager);
+
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(histogramName, isEnabled);
+        mMediator.onMvtSwitchToggled(isEnabled);
+
+        assertEquals(isEnabled, configManager.getPrefIsMvtToggleOn());
+        assertEquals(isEnabled, mMediator.isMvtTurnedOn());
+        verify(mPrefService).setBoolean(Pref.NTP_SHORTCUTS_VISIBLE, isEnabled);
+        histogramWatcher.assertExpected();
     }
 }

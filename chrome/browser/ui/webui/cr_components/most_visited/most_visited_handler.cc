@@ -438,12 +438,7 @@ void MostVisitedHandler::OnURLsAvailable(
   result->custom_links_enabled = most_visited_sites_->IsCustomLinksEnabled();
   result->enterprise_shortcuts_enabled =
       most_visited_sites_->IsEnterpriseShortcutsEnabled();
-#if BUILDFLAG(IS_ANDROID)
-  // TODO(b/502297163): Implement for Android.
-  result->visible = true;
-#else
   result->visible = most_visited_sites_->IsShortcutsVisible();
-#endif
   page_->SetMostVisitedInfo(std::move(result));
 }
 

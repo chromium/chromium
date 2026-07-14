@@ -11,19 +11,26 @@ import android.view.LayoutInflater;
 import android.view.View;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ntp_customization.BottomSheetDelegate;
 import org.chromium.chrome.browser.ntp_customization.BottomSheetViewBinder;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationViewProperties;
 import org.chromium.chrome.browser.ntp_customization.R;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
+
+import java.util.function.Supplier;
 
 /** Coordinator for the Most Visited Tiles settings bottom sheet. */
 @NullMarked
 public class MvtSettingsCoordinator {
     private MvtSettingsMediator mMediator;
 
-    public MvtSettingsCoordinator(Context context, BottomSheetDelegate delegate) {
+    public MvtSettingsCoordinator(
+            Context context,
+            BottomSheetDelegate delegate,
+            Supplier<@Nullable Profile> profileSupplier) {
         View view =
                 LayoutInflater.from(context)
                         .inflate(R.layout.ntp_customization_mvt_bottom_sheet, null, false);
@@ -34,7 +41,7 @@ public class MvtSettingsCoordinator {
         PropertyModelChangeProcessor.create(
                 bottomSheetPropertyModel, view, BottomSheetViewBinder::bind);
 
-        mMediator = new MvtSettingsMediator(bottomSheetPropertyModel, delegate);
+        mMediator = new MvtSettingsMediator(bottomSheetPropertyModel, delegate, profileSupplier);
     }
 
     public void destroy() {
