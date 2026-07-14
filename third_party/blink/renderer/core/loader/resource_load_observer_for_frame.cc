@@ -15,7 +15,6 @@
 #include "third_party/blink/renderer/core/core_probes_inl.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
 #include "third_party/blink/renderer/core/execution_context/agent.h"
-#include "third_party/blink/renderer/core/frame/attribution_src_loader.h"
 #include "third_party/blink/renderer/core/frame/deprecation/deprecation.h"
 #include "third_party/blink/renderer/core/frame/frame_console.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -154,9 +153,6 @@ void ResourceLoadObserverForFrame::WillSendRequest(
                                                 request.Priority());
   }
 
-  frame->GetAttributionSrcLoader()->MaybeRegisterAttributionHeaders(
-      request, redirect_response);
-
   probe::WillSendRequest(
       document_->domWindow(), document_loader_,
       fetcher_properties_->GetFetchClientSettingsObject().GlobalObjectUrl(),
@@ -272,9 +268,6 @@ void ResourceLoadObserverForFrame::DidReceiveResponse(
         MixedContentChecker::DecideCheckModeForPlugin(frame->GetSettings()),
         document_loader_->GetContentSecurityNotifier());
   }
-
-  frame->GetAttributionSrcLoader()->MaybeRegisterAttributionHeaders(request,
-                                                                    response);
 
   frame->Loader().Progress().IncrementProgress(identifier, response);
   probe::DidReceiveResourceResponse(GetProbe(), identifier, document_loader_,

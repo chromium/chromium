@@ -8,7 +8,6 @@
 
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
-#include "services/network/public/mojom/attribution.mojom-blink.h"
 #include "services/network/public/mojom/web_client_hints_types.mojom-blink.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
@@ -107,15 +106,6 @@ struct IntegrityTestCase {
 struct LazyLoadImageTestCase {
   const char* input_html;
   bool should_preload;
-};
-
-struct AttributionSrcTestCase {
-  bool use_secure_document_url;
-  const char* base_url;
-  const char* input_html;
-  network::mojom::AttributionReportingEligibility expected_eligibility;
-  network::mojom::AttributionSupport attribution_support =
-      network::mojom::AttributionSupport::kWeb;
 };
 
 struct TokenStreamMatcherTestCase {
@@ -284,22 +274,6 @@ class HTMLMockHTMLResourcePreloader : public ResourcePreloader {
     } else {
       EXPECT_FALSE(preload_request_) << preload_request_->ResourceURL();
     }
-  }
-
-  void AttributionSrcRequestVerification(
-      Document* document,
-      network::mojom::AttributionReportingEligibility expected_eligibility,
-      network::mojom::AttributionSupport expected_support) {
-    ASSERT_TRUE(preload_request_.get());
-    Resource* resource = preload_request_->Start(document);
-    ASSERT_TRUE(resource);
-
-    EXPECT_EQ(
-        expected_eligibility,
-        resource->GetResourceRequest().GetAttributionReportingEligibility());
-
-    EXPECT_EQ(expected_support,
-              resource->GetResourceRequest().GetAttributionReportingSupport());
   }
 
   void IsPotentiallyLCPElementFlagVerification(bool expected) {
@@ -512,21 +486,6 @@ class HTMLPreloadScannerTest : public PageTestBase {
     std::unique_ptr<PendingPreloadData> preload_data = scanner_->Scan(base_url);
     preloader.TakePreloadData(std::move(preload_data));
     preloader.LazyLoadImagePreloadVerification(test_case.should_preload);
-  }
-
-  void Test(AttributionSrcTestCase test_case) {
-    SCOPED_TRACE(test_case.input_html);
-
-    GetPage().SetAttributionSupport(test_case.attribution_support);
-
-    HTMLMockHTMLResourcePreloader preloader(GetDocument().Url());
-    KURL base_url(test_case.base_url);
-    scanner_->AppendToEnd(String(test_case.input_html));
-    std::unique_ptr<PendingPreloadData> preload_data = scanner_->Scan(base_url);
-    preloader.TakePreloadData(std::move(preload_data));
-    preloader.AttributionSrcRequestVerification(&GetDocument(),
-                                                test_case.expected_eligibility,
-                                                test_case.attribution_support);
   }
 
   void Test(TokenStreamMatcherTestCase test_case) {
@@ -1330,64 +1289,6 @@ TEST_F(HTMLPreloadScannerTest, testNonceDanglingMarkup) {
 
   for (const auto& test_case : test_cases) {
     SCOPED_TRACE(test_case.input_html);
-    Test(test_case);
-  }
-}
-
-TEST_F(HTMLPreloadScannerTest, testAttributionSrc) {
-  static constexpr bool kSecureDocumentUrl = true;
-  static constexpr bool kInsecureDocumentUrl = false;
-
-  static constexpr char kSecureBaseURL[] = "https://example.test";
-  static constexpr char kInsecureBaseURL[] = "http://example.test";
-
-  url_test_helpers::RegisterMockedURLLoad(
-      url_test_helpers::ToKURL("https://example.test/script"), "");
-  url_test_helpers::RegisterMockedURLLoad(
-      url_test_helpers::ToKURL("http://example.test/script"), "");
-
-  GetDocument().GetSettings()->SetScriptEnabled(true);
-
-  AttributionSrcTestCase test_cases[] = {
-      // Insecure context
-      {kInsecureDocumentUrl, kSecureBaseURL,
-       "<img src='/image' attributionsrc>",
-       network::mojom::AttributionReportingEligibility::kUnset},
-      {kInsecureDocumentUrl, kSecureBaseURL,
-       "<script src='/script' attributionsrc></script>",
-       network::mojom::AttributionReportingEligibility::kUnset},
-      // No attributionsrc attribute
-      {kSecureDocumentUrl, kSecureBaseURL, "<img src='/image'>",
-       network::mojom::AttributionReportingEligibility::kUnset},
-      {kSecureDocumentUrl, kSecureBaseURL, "<script src='/script'></script>",
-       network::mojom::AttributionReportingEligibility::kUnset},
-      // Irrelevant element type
-      {kSecureDocumentUrl, kSecureBaseURL,
-       "<video poster='/image' attributionsrc>",
-       network::mojom::AttributionReportingEligibility::kUnset},
-      // Not potentially trustworthy reporting origin
-      {kSecureDocumentUrl, kInsecureBaseURL,
-       "<img src='/image' attributionsrc>",
-       network::mojom::AttributionReportingEligibility::kUnset},
-      {kSecureDocumentUrl, kInsecureBaseURL,
-       "<script src='/script' attributionsrc></script>",
-       network::mojom::AttributionReportingEligibility::kUnset},
-      // Secure context, potentially trustworthy reporting origin,
-      // attributionsrc attribute
-      {kSecureDocumentUrl, kSecureBaseURL, "<img src='/image' attributionsrc>",
-       network::mojom::AttributionReportingEligibility::kEventSourceOrTrigger},
-      {kSecureDocumentUrl, kSecureBaseURL,
-       "<script src='/script' attributionsrc></script>",
-       network::mojom::AttributionReportingEligibility::kEventSourceOrTrigger},
-      {kSecureDocumentUrl, kSecureBaseURL, "<img src='/image' attributionsrc>",
-       network::mojom::AttributionReportingEligibility::kEventSourceOrTrigger,
-       network::mojom::AttributionSupport::kWebAndOs},
-  };
-
-  for (const auto& test_case : test_cases) {
-    RunSetUp(kViewportDisabled, kPreloadEnabled,
-             network::mojom::ReferrerPolicy::kDefault,
-             /*use_secure_document_url=*/test_case.use_secure_document_url);
     Test(test_case);
   }
 }

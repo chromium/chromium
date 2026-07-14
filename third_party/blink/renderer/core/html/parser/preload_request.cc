@@ -9,7 +9,6 @@
 #include "services/network/public/mojom/attribution.mojom-blink.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/core/dom/document.h"
-#include "third_party/blink/renderer/core/frame/attribution_src_loader.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
@@ -119,15 +118,6 @@ Resource* PreloadRequest::Start(Document* document) {
       ResourceFetcher::DetermineRequestDestination(resource_type_));
   resource_request.SetExpectedPublicKeys(integrity_metadata_);
   resource_request.SetFetchPriorityHint(fetch_priority_hint_);
-
-  // Disable issue logging to avoid duplicates, since `CanRegister()` will be
-  // called again later.
-  if (is_attribution_reporting_eligible_img_or_script_ &&
-      document->domWindow()->GetFrame()->GetAttributionSrcLoader()->CanRegister(
-          url, /*element=*/nullptr, /*log_issues=*/false)) {
-    resource_request.SetAttributionReportingEligibility(
-        network::mojom::AttributionReportingEligibility::kEventSourceOrTrigger);
-  }
 
   bool shared_storage_writable_opted_in =
       shared_storage_writable_opted_in_ &&

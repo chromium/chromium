@@ -75,7 +75,6 @@ BASE_FEATURE(kFastMemoryCacheWithDevTools, base::FEATURE_ENABLED_BY_DEFAULT);
 #include "third_party/blink/renderer/core/css/media_values.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/fileapi/public_url_manager.h"
-#include "third_party/blink/renderer/core/frame/attribution_src_loader.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
 #include "third_party/blink/renderer/core/frame/deprecation/deprecation.h"
 #include "third_party/blink/renderer/core/frame/frame_console.h"
@@ -998,13 +997,6 @@ void FrameFetchContext::PopulateResourceRequestBeforeCacheAccess(
   }
   if (document_loader_->ForceFetchCacheMode()) {
     request.SetCacheMode(*document_loader_->ForceFetchCacheMode());
-  }
-  // ResourceFetcher::DidLoadResourceFromMemoryCache() may call out in such a
-  // way that the AttributionSupport is needed.
-  if (const AttributionSrcLoader* attribution_src_loader =
-          GetFrame()->GetAttributionSrcLoader()) {
-    request.SetAttributionReportingSupport(
-        attribution_src_loader->GetSupport());
   }
   if (request.GetRequestContext() ==
       mojom::blink::RequestContextType::SERVICE_WORKER) {

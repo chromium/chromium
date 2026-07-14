@@ -48,7 +48,6 @@
 #include "third_party/blink/renderer/core/events/mouse_event.h"
 #include "third_party/blink/renderer/core/events/pointer_event.h"
 #include "third_party/blink/renderer/core/events/web_input_event_conversion.h"
-#include "third_party/blink/renderer/core/frame/attribution_src_loader.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
@@ -425,31 +424,6 @@ void HTMLAnchorElementBase::NavigateToHyperlink(
       is_trusted ? mojom::blink::TriggeringEventInfo::kFromTrustedEvent
                  : mojom::blink::TriggeringEventInfo::kFromUntrustedEvent);
   frame_request.SetInputStartTime(platform_time_stamp);
-
-  if (const AtomicString& attribution_src =
-          FastGetAttribute(html_names::kAttributionsrcAttr);
-      !attribution_src.IsNull()) {
-    // An impression must be attached prior to the
-    // `FindOrCreateFrameForNavigation()` call, as that call may result in
-    // performing a navigation if the call results in creating a new window with
-    // noopener set.
-    // At this time we don't know if the navigation will navigate a main frame
-    // or subframe. For example, a middle click on the anchor element will
-    // set `target_frame` to `frame`, but end up targeting a new window.
-    // Attach the impression regardless, the embedder will be able to drop
-    // impressions for subframe navigations.
-
-    std::optional<Impression> impression =
-        frame->GetAttributionSrcLoader()->RegisterNavigation(
-            /*navigation_url=*/completed_url, attribution_src,
-            /*element=*/this, request.HasUserGesture(),
-            request.GetReferrerPolicy());
-    if (impression.has_value()) {
-      impression->is_empty_attribution_src_tag = attribution_src.empty();
-    }
-
-    frame_request.SetImpression(impression);
-  }
 
   Frame* target_frame =
       frame->Tree().FindOrCreateFrameForNavigation(frame_request, target).frame;

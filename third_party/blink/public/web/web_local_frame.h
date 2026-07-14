@@ -109,7 +109,6 @@ class WebTextCheckClient;
 class WebURL;
 class WebView;
 struct FramePolicy;
-struct Impression;
 struct WebAssociatedURLLoaderOptions;
 struct WebConsoleMessage;
 struct WebIsolatedWorldInfo;
@@ -312,9 +311,6 @@ class BLINK_EXPORT WebLocalFrame : public WebFrame {
   // Navigation Ping --------------------------------------------------------
 
   virtual void SendPings(const WebURL& destination_url) = 0;
-
-  virtual void SendAttributionSrc(const std::optional<Impression>&,
-                                  bool did_navigate) = 0;
 
   // Navigation ----------------------------------------------------------
 

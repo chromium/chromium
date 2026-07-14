@@ -64,7 +64,6 @@
 #include "third_party/blink/renderer/core/execution_context/agent.h"
 #include "third_party/blink/renderer/core/exported/web_plugin_container_impl.h"
 #include "third_party/blink/renderer/core/fragment_directive/text_fragment_handler.h"
-#include "third_party/blink/renderer/core/frame/attribution_src_loader.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/picture_in_picture_controller.h"
@@ -213,12 +212,6 @@ void ContextMenuController::Trace(Visitor* visitor) const {
 }
 
 void ContextMenuController::ClearContextMenu() {
-  if (auto* selected_web_frame =
-          WebLocalFrameImpl::FromFrame(hit_test_result_.InnerNodeFrame())) {
-    selected_web_frame->SendAttributionSrc(/*impression=*/std::nullopt,
-                                           /*did_navigate=*/false);
-  }
-
   if (menu_provider_)
     menu_provider_->ContextMenuCleared();
   menu_provider_ = nullptr;
@@ -386,10 +379,6 @@ void ContextMenuController::ContextMenuClosed(
           WebLocalFrameImpl::FromFrame(hit_test_result_.InnerNodeFrame())) {
     if (link_followed.IsValid()) {
       selected_web_frame->SendPings(link_followed);
-    }
-    if (impression.has_value()) {
-      selected_web_frame->SendAttributionSrc(impression,
-                                             link_followed.IsValid());
     }
   }
   ClearContextMenu();
@@ -835,14 +824,6 @@ bool ContextMenuController::ShowContextMenu(
                  DynamicTo<MathMLAnchorElement>(result.URLElement())) {
     PopulateAnchorContextMenuData(mathml_anchor, html_names::kDownloadAttr,
                                   selected_frame, data);
-  }
-
-  if (auto* anchor = DynamicTo<HTMLAnchorElementBase>(result.URLElement())) {
-    if (AttributionSrcLoader* attribution_src_loader =
-            selected_frame->GetAttributionSrcLoader()) {
-      data.impression = attribution_src_loader->PrepareContextMenuNavigation(
-          result.AbsoluteLinkURL(), anchor);
-    }
   }
 
   data.selection_rect = ComputeSelectionRect(selected_frame);

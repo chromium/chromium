@@ -37,7 +37,6 @@
 #include "third_party/blink/renderer/core/dom/events/event_dispatch_forbidden_scope.h"
 #include "third_party/blink/renderer/core/dom/node_traversal.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
-#include "third_party/blink/renderer/core/frame/attribution_src_loader.h"
 #include "third_party/blink/renderer/core/frame/deprecation/deprecation.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
@@ -397,23 +396,6 @@ void HTMLImageElement::ParseAttribute(
       // Update the current state so we can detect future state changes.
       GetImageLoader().UpdateFromElement(
           ImageLoader::kUpdateIgnorePreviousError);
-    }
-  } else if (name == html_names::kAttributionsrcAttr) {
-    LocalDOMWindow* window = GetDocument().domWindow();
-    if (window && window->GetFrame()) {
-      // Copied from `ImageLoader::DoUpdateFromElement()`.
-      network::mojom::ReferrerPolicy referrer_policy =
-          network::mojom::ReferrerPolicy::kDefault;
-      AtomicString referrer_policy_attribute =
-          FastGetAttribute(html_names::kReferrerpolicyAttr);
-      if (!referrer_policy_attribute.IsNull()) {
-        SecurityPolicy::ReferrerPolicyFromString(
-            referrer_policy_attribute, kSupportReferrerPolicyLegacyKeywords,
-            &referrer_policy);
-      }
-      window->GetFrame()->GetAttributionSrcLoader()->Register(params.new_value,
-                                                              /*element=*/this,
-                                                              referrer_policy);
     }
   } else if (name == html_names::kSharedstoragewritableAttr &&
              RuntimeEnabledFeatures::SharedStorageAPIEnabled(

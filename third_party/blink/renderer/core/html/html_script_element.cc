@@ -35,7 +35,6 @@
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/dom/text.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
-#include "third_party/blink/renderer/core/frame/attribution_src_loader.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
@@ -119,21 +118,6 @@ void HTMLScriptElement::ParseAttribute(
         !IsPotentiallyRenderBlocking()) {
       GetDocument().GetRenderBlockingResourceManager()->RemovePendingScript(
           *this);
-    }
-  } else if (params.name == html_names::kAttributionsrcAttr) {
-    if (GetDocument().GetFrame()) {
-      // Copied from `ScriptLoader::PrepareScript()`.
-      String referrerpolicy_attr = ReferrerPolicyAttributeValue();
-      network::mojom::ReferrerPolicy referrer_policy =
-          network::mojom::ReferrerPolicy::kDefault;
-      if (!referrerpolicy_attr.empty()) {
-        SecurityPolicy::ReferrerPolicyFromString(
-            referrerpolicy_attr, kDoNotSupportReferrerPolicyLegacyKeywords,
-            &referrer_policy);
-      }
-
-      GetDocument().GetFrame()->GetAttributionSrcLoader()->Register(
-          params.new_value, /*element=*/this, referrer_policy);
     }
   } else {
     HTMLElement::ParseAttribute(params);
@@ -384,10 +368,6 @@ bool HTMLScriptElement::DeferAttributeValue() const {
 
 bool HTMLScriptElement::HasSourceAttribute() const {
   return FastHasAttribute(html_names::kSrcAttr);
-}
-
-bool HTMLScriptElement::HasAttributionsrcAttribute() const {
-  return FastHasAttribute(html_names::kAttributionsrcAttr);
 }
 
 bool HTMLScriptElement::IsConnected() const {

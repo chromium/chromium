@@ -37,7 +37,6 @@
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/dom/scriptable_document_parser.h"
 #include "third_party/blink/renderer/core/dom/text.h"
-#include "third_party/blink/renderer/core/frame/attribution_src_loader.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -802,14 +801,6 @@ PendingScript* ScriptLoader::PrepareScript(
                      blink::BindOnce(&ScriptElementBase::DispatchErrorEvent,
                                      WrapPersistent(element_.Get())));
       return nullptr;
-    }
-
-    // TODO(apaseltiner): Propagate the element instead of passing nullptr.
-    if (element_->HasAttributionsrcAttribute() &&
-        context_window->GetFrame()->GetAttributionSrcLoader()->CanRegister(
-            url, /*element=*/nullptr)) {
-      options.SetAttributionReportingEligibility(
-          ScriptFetchOptions::AttributionReportingEligibility::kEligible);
     }
 
     // <spec step="31.7">If el is potentially render-blocking, then block

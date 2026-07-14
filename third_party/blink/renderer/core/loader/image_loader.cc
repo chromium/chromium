@@ -41,7 +41,6 @@
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/dom/increment_load_event_delay_count.h"
 #include "third_party/blink/renderer/core/execution_context/agent.h"
-#include "third_party/blink/renderer/core/frame/attribution_src_loader.h"
 #include "third_party/blink/renderer/core/frame/deprecation/deprecation.h"
 #include "third_party/blink/renderer/core/frame/frame_owner.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -504,15 +503,7 @@ void ImageLoader::DoUpdateFromElement(const DOMWrapperWorld* world,
 
     DCHECK(document.GetFrame());
     auto* frame = document.GetFrame();
-
     if (IsA<HTMLImageElement>(GetElement())) {
-      if (GetElement()->FastHasAttribute(html_names::kAttributionsrcAttr) &&
-          frame->GetAttributionSrcLoader()->CanRegister(
-              url, To<HTMLImageElement>(GetElement()))) {
-        resource_request.SetAttributionReportingEligibility(
-            network::mojom::AttributionReportingEligibility::
-                kEventSourceOrTrigger);
-      }
       bool shared_storage_writable_opted_in =
           GetElement()->FastHasAttribute(
               html_names::kSharedstoragewritableAttr) &&

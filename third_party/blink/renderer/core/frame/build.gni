@@ -7,8 +7,6 @@ import("//third_party/blink/renderer/config.gni")
 blink_core_sources_frame = [
   "animation_frame_timing_monitor.cc",
   "animation_frame_timing_monitor.h",
-  "attribution_src_loader.cc",
-  "attribution_src_loader.h",
   "bar_prop.cc",
   "bar_prop.h",
   "browser_controls.cc",
@@ -250,7 +248,6 @@ blink_core_sources_frame = [
 
 blink_core_tests_frame = [
   "animation_frame_timing_monitor_test.cc",
-  "attribution_src_loader_test.cc",
   "browser_controls_test.cc",
   "cached_permission_status_test.cc",
   "child_frame_compositing_helper_test.cc",

@@ -141,7 +141,6 @@
 #include "third_party/blink/renderer/core/exported/web_plugin_container_impl.h"
 #include "third_party/blink/renderer/core/fileapi/public_url_manager.h"
 #include "third_party/blink/renderer/core/fragment_directive/text_fragment_handler.h"
-#include "third_party/blink/renderer/core/frame/attribution_src_loader.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
 #include "third_party/blink/renderer/core/frame/event_handler_registry.h"
 #include "third_party/blink/renderer/core/frame/frame_console.h"
@@ -510,7 +509,6 @@ LocalFrame::~LocalFrame() {
 void LocalFrame::Trace(Visitor* visitor) const {
   visitor->Trace(ad_tracker_);
   visitor->Trace(script_observer_);
-  visitor->Trace(attribution_src_loader_);
   visitor->Trace(probe_sink_);
   visitor->Trace(performance_monitor_);
   visitor->Trace(idleness_detector_);
@@ -2008,7 +2006,6 @@ LocalFrame::LocalFrame(
     script_observer_ = LocalFrameRoot().script_observer_;
   }
   idleness_detector_ = MakeGarbageCollected<IdlenessDetector>(this, clock);
-  attribution_src_loader_ = MakeGarbageCollected<AttributionSrcLoader>(this);
   inspector_task_runner_->InitIsolate(isolate);
 
   if (IsOutermostMainFrame()) {

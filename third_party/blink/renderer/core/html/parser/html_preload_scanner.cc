@@ -394,11 +394,6 @@ class TokenPreloadScanner::StartTagScanner {
     if (scanner_type_ == ScannerType::kInsertion)
       request->SetFromInsertionScanner(true);
 
-    if (attributionsrc_attr_set_) {
-      DCHECK(is_script || is_img);
-      request->SetAttributionReportingEligibleImgOrScript(true);
-    }
-
     if (shared_storage_writable_opted_in_) {
       DCHECK(is_img);
       request->SetSharedStorageWritableOptedIn(true);
@@ -448,8 +443,6 @@ class TokenPreloadScanner::StartTagScanner {
       SetFetchPriorityHint(attribute_value);
     } else if (Match(attribute_name, html_names::kBlockingAttr)) {
       blocking_attribute_value_ = attribute_value;
-    } else if (Match(attribute_name, html_names::kAttributionsrcAttr)) {
-      attributionsrc_attr_set_ = true;
     }
   }
 
@@ -487,8 +480,6 @@ class TokenPreloadScanner::StartTagScanner {
     } else if (loading_attr_value_ == LoadingAttributeValue::kAuto &&
                Match(attribute_name, html_names::kLoadingAttr)) {
       loading_attr_value_ = GetLoadingAttributeValue(attribute_value);
-    } else if (Match(attribute_name, html_names::kAttributionsrcAttr)) {
-      attributionsrc_attr_set_ = true;
     } else if (Match(attribute_name, html_names::kSharedstoragewritableAttr)) {
       shared_storage_writable_opted_in_ = true;
     } else if (Match(attribute_name, html_names::kBrowsingtopicsAttr)) {
@@ -867,7 +858,6 @@ class TokenPreloadScanner::StartTagScanner {
   TokenPreloadScanner::ScannerType scanner_type_;
   // For explanation, see TokenPreloadScanner's declaration.
   const HashSet<String>* disabled_image_types_;
-  bool attributionsrc_attr_set_ = false;
   bool shared_storage_writable_opted_in_ = false;
   bool browsing_topics_attr_set_ = false;
   std::optional<float> resource_width_;

@@ -40,6 +40,7 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/platform/web_url_request.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_private_token.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_arraybuffer_arraybufferview_blob_document_formdata_urlsearchparams_usvstring.h"
@@ -52,7 +53,6 @@
 #include "third_party/blink/renderer/core/event_target_names.h"
 #include "third_party/blink/renderer/core/events/progress_event.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
-#include "third_party/blink/renderer/core/fetch/attribution_reporting_to_mojom.h"
 #include "third_party/blink/renderer/core/fetch/trust_token_to_mojom.h"
 #include "third_party/blink/renderer/core/fileapi/blob.h"
 #include "third_party/blink/renderer/core/fileapi/file.h"
@@ -1061,9 +1061,6 @@ void XMLHttpRequest::CreateRequest(scoped_refptr<EncodedFormData> http_body,
   if (trust_token_params_)
     request.SetTrustTokenParams(*trust_token_params_);
 
-  request.SetAttributionReportingEligibility(
-      attribution_reporting_eligibility_);
-
   probe::WillLoadXHR(&execution_context, method_, url_, async_,
                      request_headers_, with_credentials_);
 
@@ -1449,20 +1446,7 @@ void XMLHttpRequest::setPrivateToken(const PrivateToken* trust_token,
   trust_token_params_ = std::move(params);
 }
 
-void XMLHttpRequest::setAttributionReporting(
-    const AttributionReportingRequestOptions* options,
-    ExceptionState& exception_state) {
-  // These precondition checks are copied from |setRequestHeader|.
-  if (state_ != kOpened || send_flag_) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      "The object's state must be OPENED.");
-    return;
-  }
-
-  attribution_reporting_eligibility_ =
-      ConvertAttributionReportingRequestOptionsToMojom(
-          *options, *GetExecutionContext(), exception_state);
-}
+void XMLHttpRequest::setAttributionReporting(const ScriptValue& options) {}
 
 bool XMLHttpRequest::HasContentTypeRequestHeader() const {
   return request_headers_.Find(http_names::kContentType) !=
