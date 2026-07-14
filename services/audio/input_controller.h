@@ -32,7 +32,6 @@ class AudioBus;
 class AudioInputStream;
 class AudioManager;
 struct AudioGlitchInfo;
-class VoiceIsolation;
 }  // namespace media
 
 namespace audio {
@@ -41,6 +40,7 @@ class AudioCallback;
 class MlModelManager;
 class OutputTapper;
 class ReferenceSignalProvider;
+class VoiceIsolationHandler;
 
 // Only do power monitoring for non-mobile platforms to save resources.
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
@@ -307,6 +307,12 @@ class InputController final {
               const media::AudioGlitchInfo& glitch_info);
 
 #if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
+  using DeliverProcessedAudioCallback = base::RepeatingCallback<void(
+      const media::AudioBus& audio_bus,
+      base::TimeTicks audio_capture_time,
+      std::optional<double> new_volume,
+      const media::AudioGlitchInfo& audio_glitch_info)>;
+
   // Called from DoCreate. Helper to isolate logic setting up audio processing
   // components.
   void MaybeSetUpAudioProcessing(
@@ -316,11 +322,16 @@ class InputController final {
       std::unique_ptr<ReferenceSignalProvider> reference_signal_provider,
       media::AecdumpRecordingManager* aecdump_recording_manager,
       raw_ptr<MlModelManager> ml_model_manager,
-      std::unique_ptr<media::VoiceIsolation> voice_isolation);
+      std::unique_ptr<VoiceIsolationHandler> voice_isolation,
+      DeliverProcessedAudioCallback deliver_processed_audio_callback);
 
-  std::unique_ptr<media::VoiceIsolation> MaybeCreateVoiceIsolation(
+  // Called from DoCreate. Helper to create a VoiceIsolationHandler. If might
+  // return nullptr if the VoiceIsolation component is not created. If created
+  // `deliver_processed_audio_callback` should be consumed.
+  std::unique_ptr<VoiceIsolationHandler> MaybeCreateVoiceIsolationHandler(
       raw_ptr<MlModelManager> ml_model_manager,
-      const media::AudioParameters& processing_output_params);
+      const media::AudioParameters& processing_output_params,
+      DeliverProcessedAudioCallback deliver_processed_audio_callback);
 
   // Used as a callback for |audio_processor_handler_|.
   void DeliverProcessedAudio(const media::AudioBus& audio_bus,

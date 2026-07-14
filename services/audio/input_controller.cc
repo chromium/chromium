@@ -15,6 +15,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
@@ -39,6 +40,7 @@
 #include "services/audio/output_tapper.h"
 #include "services/audio/reference_output.h"
 #include "services/audio/reference_signal_provider.h"
+#include "services/audio/voice_isolation_handler.h"
 
 #if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
 #include "media/webrtc/voice_isolation/voice_isolation.h"
@@ -377,7 +379,8 @@ void InputController::MaybeSetUpAudioProcessing(
     std::unique_ptr<ReferenceSignalProvider> reference_signal_provider,
     media::AecdumpRecordingManager* aecdump_recording_manager,
     raw_ptr<MlModelManager> ml_model_manager,
-    std::unique_ptr<media::VoiceIsolation> voice_isolation) {
+    std::unique_ptr<VoiceIsolationHandler> voice_isolation_handler,
+    DeliverProcessedAudioCallback deliver_processed_audio_callback) {
   SendLogMessage(base::StringPrintf(
       "%s({processing_config=[%s]}, {processing_output_params=[%s]}, "
       "{device_params=[%s]})",
@@ -424,13 +427,13 @@ void InputController::MaybeSetUpAudioProcessing(
       processing_output_params,
       base::BindRepeating(&EventHandler::OnLog,
                           base::Unretained(event_handler_)),
-      base::BindRepeating(&InputController::DeliverProcessedAudio,
-                          base::Unretained(this)),
+      std::move(deliver_processed_audio_callback),
       // AudioProcessorHandler delivers errors on the main thread.
       base::BindRepeating(&InputController::DoReportError, weak_this_,
                           REFERENCE_STREAM_ERROR),
       std::move(processing_config->controls_receiver),
-      aecdump_recording_manager, ml_model_manager, std::move(voice_isolation));
+      aecdump_recording_manager, ml_model_manager,
+      std::move(voice_isolation_handler));
 
   if (audio_processor_handler_->needs_playout_reference()) {
     // Unretained() is safe, since |event_handler_| outlives |output_tapper_|.
@@ -441,10 +444,11 @@ void InputController::MaybeSetUpAudioProcessing(
   }
 }
 
-std::unique_ptr<media::VoiceIsolation>
-InputController::MaybeCreateVoiceIsolation(
+std::unique_ptr<VoiceIsolationHandler>
+InputController::MaybeCreateVoiceIsolationHandler(
     raw_ptr<MlModelManager> ml_model_manager,
-    const media::AudioParameters& processing_output_params) {
+    const media::AudioParameters& processing_output_params,
+    DeliverProcessedAudioCallback deliver_processed_audio_callback) {
   std::unique_ptr<MlModelHandle> model_handle =
       ml_model_manager ? ml_model_manager->GetModel(
                              mojom::MlModelType::kVoiceIsolationDenoiser)
@@ -453,7 +457,9 @@ InputController::MaybeCreateVoiceIsolation(
     return nullptr;
   }
   // TODO(b/512016773): Pass the model to VoiceIsolation once it is supported.
-  return std::make_unique<media::VoiceIsolation>();
+  return std::make_unique<VoiceIsolationHandler>(
+      std::make_unique<media::VoiceIsolation>(), processing_output_params,
+      std::move(deliver_processed_audio_callback));
 }
 #endif
 
@@ -712,20 +718,28 @@ void InputController::DoCreate(
       base::StringPrintf("%s => (delay reporter uses %s as AEC type)", __func__,
                          stats_reporter_->GetAECTypeAsString()));
 #if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
-  std::unique_ptr<media::VoiceIsolation> voice_isolation;
+  auto deliver_processed_audio_callback = base::BindRepeating(
+      &InputController::DeliverProcessedAudio, base::Unretained(this));
+  std::unique_ptr<VoiceIsolationHandler> voice_isolation_handler;
   if (processing_config && processing_config->settings.voice_isolation) {
-    voice_isolation = MaybeCreateVoiceIsolation(ml_model_manager, params);
-    if (!voice_isolation) {
+    voice_isolation_handler = MaybeCreateVoiceIsolationHandler(
+        ml_model_manager, params, std::move(deliver_processed_audio_callback));
+    if (!voice_isolation_handler) {
       event_handler_->OnError(STREAM_CREATE_ERROR);
       LogCaptureStartupResult(ParamsToStreamType(params),
                               CAPTURE_STARTUP_VOICE_ISOLATION_ERROR);
       return;
     }
+    // This is not needed because we moved `deliver_processed_audio_callback` to
+    // `voice_isolation_handler` but we want to make clear to the reader this
+    // step.
+    deliver_processed_audio_callback = base::NullCallback();
   }
   MaybeSetUpAudioProcessing(std::move(processing_config), params, device_params,
                             std::move(reference_signal_provider),
                             aecdump_recording_manager, ml_model_manager,
-                            std::move(voice_isolation));
+                            std::move(voice_isolation_handler),
+                            std::move(deliver_processed_audio_callback));
 #endif
   std::string device_name =
       audio_manager->GetDeviceNameFromCache(device_id, /*is_input=*/true);

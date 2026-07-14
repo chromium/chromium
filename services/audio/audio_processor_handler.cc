@@ -30,17 +30,8 @@ AudioProcessorHandler::AudioProcessorHandler(
         controls_receiver,
     media::AecdumpRecordingManager* aecdump_recording_manager,
     raw_ptr<MlModelManager> ml_model_manager,
-    std::unique_ptr<media::VoiceIsolation> voice_isolation)
-    : voice_isolation_handler_(
-#if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
-          voice_isolation ? std::make_unique<VoiceIsolationHandler>(
-                                std::move(voice_isolation), output_format,
-                                std::move(deliver_processed_audio_callback))
-                          : nullptr
-#else
-          nullptr
-#endif
-          ),
+    std::unique_ptr<VoiceIsolationHandler> voice_isolation_handler)
+    : voice_isolation_handler_(std::move(voice_isolation_handler)),
       residual_echo_estimation_model_handle_(
           ml_model_manager ? ml_model_manager->GetModel(
                                  mojom::MlModelType::kResidualEchoEstimation)
@@ -58,15 +49,15 @@ AudioProcessorHandler::AudioProcessorHandler(
               ? residual_echo_estimation_model_handle_->Get()
               : nullptr)),
       deliver_processed_audio_callback_(
-          voice_isolation_handler_
-              ? DeliverProcessedAudioCallback()
-              // NOLINTNEXTLINE(bugprone-use-after-move)
-              : std::move(deliver_processed_audio_callback)),
+          std::move(deliver_processed_audio_callback)),
       reference_stream_error_callback_(
           std::move(reference_stream_error_callback)),
       receiver_(this, std::move(controls_receiver)),
       aecdump_recording_manager_(aecdump_recording_manager) {
   DCHECK(settings.NeedWebrtcAudioProcessing());
+  // One and only one is defined.
+  CHECK(deliver_processed_audio_callback_.is_null() !=
+        (voice_isolation_handler_ == nullptr));
   if (aecdump_recording_manager_) {
     aecdump_recording_manager->RegisterAecdumpSource(this);
   }
@@ -204,7 +195,6 @@ void AudioProcessorHandler::OnAudioProcessorOutput(
     voice_isolation_handler_->ProcessCapturedAudio(
         audio_bus, audio_capture_time, new_volume, glitch_info);
   } else {
-    DCHECK(deliver_processed_audio_callback_);
     // Deliver directly to the final destination callback.
     deliver_processed_audio_callback_.Run(audio_bus, audio_capture_time,
                                           new_volume, glitch_info);

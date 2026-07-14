@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
@@ -16,6 +17,7 @@
 #include "media/base/audio_parameters.h"
 #include "media/webrtc/voice_isolation/voice_isolation.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "services/audio/voice_isolation_handler.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -56,6 +58,15 @@ class AudioProcessorHandlerTest : public ::testing::Test {
 };
 
 namespace {
+
+#if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
+std::unique_ptr<VoiceIsolationHandler> GetVoiceIsolationHandler(
+    const media::AudioParameters& output_params,
+    VoiceIsolationHandler::DeliverProcessedAudioCallback callback) {
+  return std::make_unique<VoiceIsolationHandler>(
+      std::make_unique<media::VoiceIsolation>(), output_params, callback);
+}
+#endif
 
 TEST_F(AudioProcessorHandlerTest, SynchronousProcessingWithoutVoiceIsolation) {
   media::AudioProcessingSettings settings;
@@ -101,10 +112,11 @@ TEST_F(AudioProcessorHandlerTest, SynchronousProcessingWithVoiceIsolation) {
   mojo::PendingRemote<media::mojom::AudioProcessorControls> controls_remote;
   auto handler = std::make_unique<AudioProcessorHandler>(
       settings, input_params_, output_params_, log_callback_.Get(),
-      deliver_callback_.Get(), error_callback_.Get(),
+      base::NullCallback(), error_callback_.Get(),
       controls_remote.InitWithNewPipeAndPassReceiver(),
       /*aecdump_recording_manager=*/nullptr,
-      /*ml_model_manager=*/nullptr, std::make_unique<media::VoiceIsolation>());
+      /*ml_model_manager=*/nullptr,
+      GetVoiceIsolationHandler(output_params_, deliver_callback_.Get()));
 
   handler->StartProcessing();
   EXPECT_EQ(HasVoiceIsolationHandler(*handler), settings.voice_isolation);
@@ -175,10 +187,11 @@ TEST_F(AudioProcessorHandlerTest,
   mojo::PendingRemote<media::mojom::AudioProcessorControls> controls_remote;
   auto handler = std::make_unique<AudioProcessorHandler>(
       settings, input_params_, output_params_, log_callback_.Get(),
-      deliver_callback_.Get(), error_callback_.Get(),
+      base::NullCallback(), error_callback_.Get(),
       controls_remote.InitWithNewPipeAndPassReceiver(),
       /*aecdump_recording_manager=*/nullptr,
-      /*ml_model_manager=*/nullptr, std::make_unique<media::VoiceIsolation>());
+      /*ml_model_manager=*/nullptr,
+      GetVoiceIsolationHandler(output_params_, deliver_callback_.Get()));
 
   handler->StartProcessing();
   EXPECT_EQ(HasVoiceIsolationHandler(*handler), settings.voice_isolation);
@@ -331,10 +344,11 @@ TEST_F(AudioProcessorHandlerTest, GlitchInfoAccumulationWithVoiceIsolation) {
   mojo::PendingRemote<media::mojom::AudioProcessorControls> controls_remote;
   auto handler = std::make_unique<AudioProcessorHandler>(
       settings, input_params_, output_params_, log_callback_.Get(),
-      deliver_callback_.Get(), error_callback_.Get(),
+      base::NullCallback(), error_callback_.Get(),
       controls_remote.InitWithNewPipeAndPassReceiver(),
       /*aecdump_recording_manager=*/nullptr,
-      /*ml_model_manager=*/nullptr, std::make_unique<media::VoiceIsolation>());
+      /*ml_model_manager=*/nullptr,
+      GetVoiceIsolationHandler(output_params_, deliver_callback_.Get()));
 
   handler->StartProcessing();
   EXPECT_EQ(HasVoiceIsolationHandler(*handler), settings.voice_isolation);
@@ -366,10 +380,11 @@ TEST_F(AudioProcessorHandlerTest,
   mojo::PendingRemote<media::mojom::AudioProcessorControls> controls_remote;
   auto handler = std::make_unique<AudioProcessorHandler>(
       settings, input_params_, output_params_, log_callback_.Get(),
-      deliver_callback_.Get(), error_callback_.Get(),
+      base::NullCallback(), error_callback_.Get(),
       controls_remote.InitWithNewPipeAndPassReceiver(),
       /*aecdump_recording_manager=*/nullptr,
-      /*ml_model_manager=*/nullptr, std::make_unique<media::VoiceIsolation>());
+      /*ml_model_manager=*/nullptr,
+      GetVoiceIsolationHandler(output_params_, deliver_callback_.Get()));
 
   handler->StartProcessing();
   EXPECT_EQ(HasVoiceIsolationHandler(*handler), settings.voice_isolation);
