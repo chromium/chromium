@@ -911,8 +911,7 @@ void ChromeContentBrowserClientExtensionsPart::
     // visibility, and benefit from being started in foreground mode. We can
     // safely start those processes in foreground mode, knowing that
     // RenderThreadImpl::OnRendererHidden will be called when appropriate.
-    if (std::ranges::contains(MimeTypesHandler::GetMIMETypeAllowlist(),
-                              extension->id())) {
+    if (MimeTypesHandler::Get(*extension)) {
       command_line->AppendSwitch(::switches::kInitIsolateAsForeground);
     }
   }
