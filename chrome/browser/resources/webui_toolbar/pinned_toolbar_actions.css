@@ -11,13 +11,16 @@
 
 :host {
   display: flex;
+  /* Matches native views::AnimatingLayoutManager default FAST_OUT_SLOW_IN_3
+   * configuration for pinned toolbar actions. */
+  --fast-out-slow-in-3-cubic-bezier: cubic-bezier(0.2, 0, 0, 1);
 }
 
 pinned-toolbar-action,
 toolbar-divider {
-  transition: width 300ms ease,
-              margin-inline-end 300ms ease,
-              margin-inline-start 300ms ease,
+  transition: width 300ms var(--fast-out-slow-in-3-cubic-bezier),
+              margin-inline-end 300ms var(--fast-out-slow-in-3-cubic-bezier),
+              margin-inline-start 300ms var(--fast-out-slow-in-3-cubic-bezier),
               opacity 200ms linear;
 
   margin-inline-end: var(--toolbar-icon-default-margin);
@@ -25,7 +28,7 @@ toolbar-divider {
 
 pinned-toolbar-action.animate-in,
 toolbar-divider.animate-in {
-  animation: slide-in 300ms ease-out;
+  animation: slide-in 300ms var(--fast-out-slow-in-3-cubic-bezier);
 }
 
 toolbar-divider {
