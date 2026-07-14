@@ -9547,3 +9547,4 @@ crbug.com/534279892 [ Linux ] external/wpt/css/css-ui/compute-kind-widget-genera
 crbug.com/534166365 [ Linux ] external/wpt/css/css-ui/compute-kind-widget-generated/grouped-kind-of-widget-fallback-border-top-left-radius-001.html [ Failure Pass ]
 crbug.com/485657219 external/wpt/fetch/fetch-later/quota/max-payload.https.window.html [ Failure Pass ]
 crbug.com/507385957 [ Linux ] external/wpt/html/semantics/menu/tentative/menu-safe-triangle.optional.html [ Failure Pass ]
+crbug.com/533188858 [ Mac ] external/wpt/html/semantics/forms/the-input-element/checkable-active-space-key-being-disabled.html [ Failure Pass ]
