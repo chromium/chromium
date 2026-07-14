@@ -247,14 +247,37 @@ EntityInstance PersonalContextShipmentToEntityInstance(
     AddAttribute(kShipmentShippedDate, FormatDate(shipment.ship_date()),
                  attributes);
   }
+  AddStringAttribute(kShipmentDeliveryZipCode, shipment.delivery_zip_code(),
+                     attributes);
+  AddStringAttribute(kShipmentMerchantName, shipment.merchant_name(),
+                     attributes);
+  if (shipment.product_names_size() > 0) {
+    const std::vector<std::string> products(shipment.product_names().begin(),
+                                            shipment.product_names().end());
+    AddStringAttribute(kShipmentProductNames, base::JoinString(products, ", "),
+                       attributes);
+  }
   if (shipment.associated_order_ids_size() > 0) {
-    std::vector<std::string> order_ids(shipment.associated_order_ids().begin(),
-                                       shipment.associated_order_ids().end());
+    const std::vector<std::string> order_ids(
+        shipment.associated_order_ids().begin(),
+        shipment.associated_order_ids().end());
     AddStringAttribute(kShipmentOrderIds, base::JoinString(order_ids, ", "),
                        attributes);
   }
 
   return CreateEntityInstance(EntityTypeName::kShipment, std::move(attributes));
+}
+
+EntityInstance PersonalContextKnownTravelerNumberToEntityInstance(
+    const personal_context::proto::KnownTravelerNumber& ktn,
+    std::optional<AttributeInstance::MarkAsMaskedPasskey> passkey) {
+  std::vector<AttributeInstance> attributes;
+  AddStringAttribute(kKnownTravelerNumberName, ktn.name(), attributes);
+  AddStringAttribute(kKnownTravelerNumberNumber, ktn.number(), attributes,
+                     passkey);
+
+  return CreateEntityInstance(EntityTypeName::kKnownTravelerNumber,
+                              std::move(attributes));
 }
 
 }  // namespace
@@ -286,6 +309,8 @@ std::optional<EntityInstance> PersonalContextEntityToEntityInstance(
     case personal_context::proto::Entity::kShipment:
       return PersonalContextShipmentToEntityInstance(entity.shipment());
     case personal_context::proto::Entity::kKnownTravelerNumber:
+      return PersonalContextKnownTravelerNumberToEntityInstance(
+          entity.known_traveler_number(), passkey);
     case personal_context::proto::Entity::kSensitivePiiPresence:
       return std::nullopt;
     case personal_context::proto::Entity::ENTITY_NOT_SET:
@@ -311,6 +336,7 @@ AutofillEntityTypeToPersonalContextEntityType(EntityType type) {
     case EntityTypeName::kVehicle:
       return personal_context::proto::EntityType::VEHICLE;
     case EntityTypeName::kKnownTravelerNumber:
+      return personal_context::proto::EntityType::KNOWN_TRAVELER_NUMBER;
     case EntityTypeName::kRedressNumber:
       // These entities are not supported by personal context.
       return personal_context::proto::EntityType::UNSPECIFIED;
@@ -335,6 +361,7 @@ std::optional<EntityType> ToEntityType(
     case personal_context::proto::Entity::kShipment:
       return EntityType(EntityTypeName::kShipment);
     case personal_context::proto::Entity::kKnownTravelerNumber:
+      return EntityType(EntityTypeName::kKnownTravelerNumber);
     case personal_context::proto::Entity::kSensitivePiiPresence:
     case personal_context::proto::Entity::ENTITY_NOT_SET:
       return std::nullopt;

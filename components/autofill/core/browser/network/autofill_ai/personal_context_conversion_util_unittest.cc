@@ -332,6 +332,10 @@ TEST(AutofillAiPersonalContextConverters, ConvertShipment) {
   shipment.mutable_ship_date()->set_year(2026);
   shipment.mutable_ship_date()->set_month(5);
   shipment.mutable_ship_date()->set_day(28);
+  shipment.set_delivery_zip_code("94043");
+  shipment.set_merchant_name("SuperStore");
+  shipment.add_product_names("Widget A");
+  shipment.add_product_names("Widget B");
   shipment.add_associated_order_ids("ORD-001");
   shipment.add_associated_order_ids("ORD-002");
 
@@ -350,7 +354,48 @@ TEST(AutofillAiPersonalContextConverters, ConvertShipment) {
   ExpectAttributeValue(result, kShipmentCarrierName, u"ExpressMail");
   ExpectAttributeValue(result, kShipmentCarrierDomain, u"expressmail.com");
   ExpectAttributeValue(result, kShipmentShippedDate, u"2026-05-28");
+  ExpectAttributeValue(result, kShipmentDeliveryZipCode, u"94043");
+  ExpectAttributeValue(result, kShipmentMerchantName, u"SuperStore");
+  ExpectAttributeValue(result, kShipmentProductNames, u"Widget A, Widget B");
   ExpectAttributeValue(result, kShipmentOrderIds, u"ORD-001, ORD-002");
+}
+
+TEST(AutofillAiPersonalContextConverters, ConvertKnownTravelerNumber) {
+  personal_context::proto::KnownTravelerNumber ktn;
+  ktn.set_name("Charlie Brown");
+  ktn.set_number("KTN12345");
+
+  personal_context::proto::Entity entity;
+  *entity.mutable_known_traveler_number() = ktn;
+
+  std::optional<EntityInstance> opt_result =
+      PersonalContextEntityToEntityInstance(entity);
+
+  ASSERT_TRUE(opt_result.has_value());
+  const EntityInstance& result = opt_result.value();
+
+  EXPECT_EQ(result.type().name(), EntityTypeName::kKnownTravelerNumber);
+  ExpectAttributeValue(result, kKnownTravelerNumberName, u"Charlie Brown");
+  ExpectMaskedAttributeValue(result, kKnownTravelerNumberNumber, u"KTN12345");
+}
+
+TEST(AutofillAiPersonalContextConverters, ConvertKnownTravelerNumber_Unmasked) {
+  personal_context::proto::KnownTravelerNumber ktn;
+  ktn.set_name("Charlie Brown");
+  ktn.set_number("KTN12345");
+
+  personal_context::proto::Entity entity;
+  *entity.mutable_known_traveler_number() = ktn;
+
+  std::optional<EntityInstance> opt_result =
+      PersonalContextEntityToEntityInstance(entity, /*is_masked=*/false);
+
+  ASSERT_TRUE(opt_result.has_value());
+  const EntityInstance& result = opt_result.value();
+
+  EXPECT_EQ(result.type().name(), EntityTypeName::kKnownTravelerNumber);
+  ExpectAttributeValue(result, kKnownTravelerNumberName, u"Charlie Brown");
+  ExpectAttributeValue(result, kKnownTravelerNumberNumber, u"KTN12345");
 }
 
 TEST(AutofillAiPersonalContextConverters,
@@ -379,6 +424,9 @@ TEST(AutofillAiPersonalContextConverters,
   EXPECT_EQ(AutofillEntityTypeToPersonalContextEntityType(
                 autofill::EntityType(kVehicle)),
             EntityType::VEHICLE);
+  EXPECT_EQ(AutofillEntityTypeToPersonalContextEntityType(
+                autofill::EntityType(kKnownTravelerNumber)),
+            EntityType::KNOWN_TRAVELER_NUMBER);
 }
 
 }  // namespace
