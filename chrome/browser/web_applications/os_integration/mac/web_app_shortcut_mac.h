@@ -24,6 +24,10 @@ std::string GetBundleIdentifierForShim(
     const std::string& app_id,
     const base::FilePath& profile_path = base::FilePath());
 
+// Finds the installed app shim for the given app_id and reveals it in Finder.
+// Must be called on a thread that allows blocking I/O.
+void RevealAppShimInFinder(const std::string& app_id);
+
 // Returns true when running on version of macOS that can perform code signing
 // at runtime and the UseAdHocSigningForWebAppShims feature is enabled.
 bool UseAdHocSigningForWebAppShims();

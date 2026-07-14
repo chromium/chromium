@@ -306,7 +306,8 @@ IN_PROC_BROWSER_TEST_P(WebAppInstallDialogClosedTest, Success) {
 INSTANTIATE_TEST_SUITE_P(
     /** prefix */,
     WebAppInstallDialogClosedTest,
-    testing::Combine(testing::Values(InstallOsType::kOther),
+    testing::Combine(testing::Values(InstallOsType::kOther,
+                                     InstallOsType::kMac),
                      testing::Values(InstallDialogType::kSimple,
                                      InstallDialogType::kDetailed,
                                      InstallDialogType::kDiy)),

@@ -13,11 +13,13 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "build/build_config.h"
 #include "chrome/browser/ui/page_action/page_action_controller.h"
 #include "chrome/browser/ui/views/web_apps/web_app_install_dialog_delegate.h"
 #include "chrome/browser/ui/views/web_apps/web_app_modal_dialog_delegate.h"
 #include "chrome/browser/ui/web_applications/web_app_dialogs.h"
 #include "chrome/browser/web_applications/web_app_install_params.h"
+#include "components/webapps/common/web_app_id.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/views/controls/button/button.h"
 
@@ -138,6 +140,7 @@ class WebAppInstallFlowDialogDelegate : public WebAppModalDialogDelegate {
   void OnLearnMoreButtonClicked();
   void UpdateDialogTitleAndHeader(InstallDialogStep step);
   void UpdateProgressAndMaybeAdvance();
+
   void OnInstallResult(bool success, base::OnceClosure reparent_closure);
   void AcceptForTesting();  // IN-TEST
   void OnAutoAcceptInstallResultForTesting(
@@ -150,6 +153,7 @@ class WebAppInstallFlowDialogDelegate : public WebAppModalDialogDelegate {
   void MeasureCancelUserActionsForInstallDialog();
 
   std::unique_ptr<WebAppInstallInfo> install_info_;
+  webapps::AppId app_id_;
   std::unique_ptr<webapps::MlInstallOperationTracker> install_tracker_;
   WebAppInstallationAcceptanceCallback callback_;
   PwaInProductHelpState iph_state_;

@@ -20,10 +20,11 @@
 #include "base/apple/bridging.h"
 #include "base/apple/bundle_locations.h"
 #include "base/apple/foundation_util.h"
+#include "base/base_switches.h"
 #include "base/check.h"
 #include "base/check_is_test.h"
-#include "base/base_switches.h"
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/safe_base_name.h"
@@ -33,6 +34,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/mac/mac_util.h"
+#include "base/memory/shared_memory_switch.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/process/launch.h"
 #include "base/strings/string_util.h"
@@ -48,8 +50,8 @@
 #include "chrome/browser/web_applications/os_integration/mac/icon_utils.h"
 #include "chrome/browser/web_applications/os_integration/mac/web_app_auto_login_util.h"
 #include "chrome/browser/web_applications/os_integration/mac/web_app_shortcut_mac.h"
-#include "base/memory/shared_memory_switch.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_test_override.h"
+#include "chrome/common/chrome_features.h"
 #import "chrome/common/mac/app_mode_common.h"
 #include "components/variations/active_field_trials.h"
 #include "components/variations/variations_switches.h"
@@ -554,7 +556,8 @@ bool WebAppShortcutCreator::CreateShortcuts(
     WebAppAutoLoginUtil::GetInstance()->AddToLoginItems(updated_app_paths[0],
                                                         false);
   }
-  if (creation_reason == SHORTCUT_CREATION_BY_USER) {
+  if (creation_reason == SHORTCUT_CREATION_BY_USER &&
+      !base::FeatureList::IsEnabled(features::kWebAppInstallDialog)) {
     RevealAppShimInFinder(updated_app_paths[0]);
   }
   RecordCreateShortcut(CreateShortcutResult::kSuccess);

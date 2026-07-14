@@ -4,6 +4,8 @@
 
 #include "chrome/browser/web_applications/os_integration/mac/web_app_shortcut_mac.h"
 
+#import <AppKit/AppKit.h>
+
 #include <optional>
 #include <string>
 #include <utility>
@@ -67,6 +69,55 @@ std::string GetBundleIdentifierForShim(const std::string& app_id,
                          normalized_profile_path, "-", app_id});
   }
   return base::StrCat({base::apple::BaseBundleID(), ".app.", app_id});
+}
+
+namespace {
+
+base::FilePath FindInstalledAppPath(const std::string& app_id) {
+  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
+                                                base::BlockingType::MAY_BLOCK);
+  std::string bundle_id = GetBundleIdentifierForShim(app_id);
+  auto bundles =
+      BundleInfoPlist::SearchForBundlesById(bundle_id, GetChromeAppsFolder());
+
+  return bundles.empty() ? base::FilePath() : bundles.front().bundle_path();
+}
+
+bool AppShimRevealDisabledForTest() {
+  // Disable app shim reveal in the Finder during tests, to avoid
+  // creating Finder windows that are never closed.
+  return base::CommandLine::ForCurrentProcess()->HasSwitch(
+             switches::kTestType) ||
+         OsIntegrationTestOverride::Get();
+}
+
+}  // namespace
+
+void RevealAppShimInFinder(const std::string& app_id) {
+  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
+                                                base::BlockingType::MAY_BLOCK);
+  base::FilePath app_path = FindInstalledAppPath(app_id);
+  if (app_path.empty()) {
+    return;
+  }
+
+  auto closure = base::BindOnce(
+      [](const base::FilePath& app_path) {
+        // The Finder creates a new window each time the app shim is revealed.
+        // Skip revealing the app shim during testing to avoid an avalanche of
+        // new Finder windows.
+        if (AppShimRevealDisabledForTest()) {
+          return;
+        }
+        NSURL* path_url = base::apple::FilePathToNSURL(app_path);
+        [[NSWorkspace sharedWorkspace]
+            activateFileViewerSelectingURLs:@[ path_url ]];
+      },
+      app_path);
+  // Perform the call to NSWorkspace on the UI thread. Calling it on the IO
+  // thread appears to cause crashes.
+  // https://crbug.com/40124995
+  content::GetUIThreadTaskRunner({})->PostTask(FROM_HERE, std::move(closure));
 }
 
 bool UseAdHocSigningForWebAppShims() {

@@ -95,6 +95,11 @@
 #include "components/metrics/structured/structured_metrics_client.h"  // nogncheck
 #endif
 
+#if BUILDFLAG(IS_MAC)
+#include "chrome/browser/web_applications/os_integration/mac/web_app_shortcut_mac.h"
+#include "chrome/browser/web_applications/os_integration/web_app_shortcut.h"
+#endif
+
 namespace web_app {
 
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(WebAppInstallFlowDialogDelegate,
@@ -248,6 +253,7 @@ WebAppInstallFlowDialogDelegate::WebAppInstallFlowDialogDelegate(
       page_action_highlight_(NewPageActionHighlight(CHECK_DEREF(web_contents))),
       progress_delay_(std::move(progress_delay)) {
   CHECK(install_info_);
+  app_id_ = GenerateAppIdFromManifestId(install_info_->manifest_id());
   CHECK(install_tracker_);
   CHECK(prefs_);
   CHECK(progress_delay_);
@@ -330,8 +336,11 @@ bool WebAppInstallFlowDialogDelegate::AdvanceToNextStepOrClose() {
       ui::DialogModel::Button* cancel_button =
           dialog_model()->GetButtonByUniqueId(kCancelButtonId);
       if (cancel_button) {
-        dialog_model()->SetButtonLabel(cancel_button,
-                                       l10n_util::GetStringUTF16(IDS_CLOSE));
+        dialog_model()->SetButtonLabel(
+            cancel_button,
+            os_type_ == InstallOsType::kMac
+                ? l10n_util::GetStringUTF16(IDS_DOWNLOAD_LINK_SHOW)
+                : l10n_util::GetStringUTF16(IDS_CLOSE));
       }
       dialog_model()->SetVisible(kInstallButton, true);
       dialog_model()->SetVisible(kCancelButtonId, true);
@@ -575,6 +584,10 @@ void WebAppInstallFlowDialogDelegate::
   base::RecordAction(base::UserMetricsAction(cancel_dialog_metric_name));
 }
 
+// On generic steps/OSes, this triggers standard cancellation of Install Dialog.
+// On macOS during the Success step, this button is relabeled to "Show in
+// Finder". Instead of immediately closing, it triggers an async lookup to
+// reveal the app bundle, then closes the dialog.
 void WebAppInstallFlowDialogDelegate::OnCancelOrCloseClicked() {
   if (current_step_ == InstallDialogStep::kSuccessful) {
     IntentPickerTabHelper* helper =
@@ -583,6 +596,24 @@ void WebAppInstallFlowDialogDelegate::OnCancelOrCloseClicked() {
       helper->MaybeShowIntentPickerIcon();
     }
   }
+
+#if BUILDFLAG(IS_MAC)
+  if (current_step_ == InstallDialogStep::kSuccessful &&
+      os_type_ == InstallOsType::kMac) {
+    internals::GetShortcutIOTaskRunner()->PostTask(
+        FROM_HERE, base::BindOnce(&RevealAppShimInFinder, app_id_));
+
+    if (dialog_model() && dialog_model()->host()) {
+      // TODO(b/532701412): Record custom Success metric for Finder reveal
+      // instead of Drop-off.
+      dialog_model()->host()->Close();
+    }
+
+    // Prevent standard cancellation logic/metrics from triggering.
+    return;
+  }
+#endif
+
   OnCancel();
 }
 
