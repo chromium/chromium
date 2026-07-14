@@ -7229,6 +7229,11 @@
     "expiry_milestone": 150
   },
   {
+    "name": "ntp-threads-rail",
+    "owners": [ "giannich@google.com", "chrome-desktop-ntp@google.com" ],
+    "expiry_milestone": 162
+  },
+  {
     "name": "ntp-vision",
     "owners": ["yanlinghu@google.com","hanxi@chromium.org", "clank-start@google.com"],
     "expiry_milestone": 160

@@ -739,15 +739,8 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(
   source->AddBoolean("composeboxSmartComposeEnabled",
                      ntp_composebox::kShowSmartCompose.Get());
 
-  source->AddBoolean("enableThreadsRail",
-                     ntp_composebox::kEnableThreadsRail.Get());
-
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  source->AddBoolean("enableThreadsRailLogo",
-                     ntp_composebox::kEnableThreadsRailLogo.Get());
-#else
-  source->AddBoolean("enableThreadsRailLogo", false);
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  source->AddBoolean("enableThreadsRail", base::FeatureList::IsEnabled(
+                                              ntp_features::kNtpThreadsRail));
 
 #if BUILDFLAG(IS_ANDROID)
   source->AddBoolean(

@@ -17400,6 +17400,24 @@
             ]
         }
     ],
+    "NtpThreadsRail": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "NtpThreadsRail"
+                    ]
+                }
+            ]
+        }
+    ],
     "OAuthMultiloginYoutubeCookiesBinding": [
         {
             "platforms": [

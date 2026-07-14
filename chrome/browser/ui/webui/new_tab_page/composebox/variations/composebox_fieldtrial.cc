@@ -207,13 +207,6 @@ const base::FeatureParam<bool> kContextMenuEnableMultiTabSelection(
     "NtpComposeboxContextMenuEnableMultiTabSelection",
     true);
 
-const base::FeatureParam<bool> kEnableThreadsRail(&kNtpComposebox,
-                                                  "EnableThreadsRail",
-                                                  false);
-const base::FeatureParam<bool> kEnableThreadsRailLogo(&kNtpComposebox,
-                                                      "EnableThreadsRailLogo",
-                                                      false);
-
 const base::FeatureParam<bool> kUseNtpComposeboxFork(&kNtpComposebox,
                                                      "useNtpComposeboxFork",
                                                      true);

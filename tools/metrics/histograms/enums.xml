@@ -19171,6 +19171,7 @@ from previous Chrome versions.
       label="CellularBypassESimInstallationConnectivityCheck:disabled"/>
   <int value="1451160278"
       label="AutofillRequireValidLocalCardsInSettings:disabled"/>
+  <int value="1451331883" label="NtpThreadsRail:disabled"/>
   <int value="1451731352"
       label="AutofillPrioritizeSaveCardOverMandatoryReauth:enabled"/>
   <int value="1451960103" label="LensVideoCitations:enabled"/>
@@ -19883,6 +19884,7 @@ from previous Chrome versions.
   <int value="1678866761" label="SystemLatinPhysicalTyping:disabled"/>
   <int value="1679347136" label="ExperimentalWebAppProfileIsolation:enabled"/>
   <int value="1679558835" label="ArcAvailableForChildAccount:enabled"/>
+  <int value="1680080417" label="NtpThreadsRail:enabled"/>
   <int value="1680110859" label="OmniboxCalcProvider:disabled"/>
   <int value="1680248931" label="use-fake-device-for-media-stream:enabled"/>
   <int value="1680381128" label="SmartZoom:enabled"/>

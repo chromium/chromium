@@ -90,6 +90,7 @@ BASE_DECLARE_FEATURE(kLightningTakeoverEdition);
 BASE_DECLARE_FEATURE(kNtpShortcutsRedesign);
 BASE_DECLARE_FEATURE(kNtpSimplificationBookmarkBar);
 BASE_DECLARE_FEATURE(kBookmarkBarUpdatesForTesting);
+BASE_DECLARE_FEATURE(kNtpThreadsRail);
 
 // Parameter for controlling the luminosity difference for NTP elements on light
 // backgrounds.

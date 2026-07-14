@@ -45,12 +45,6 @@
   width: var(--threads-rail-width, 76px);
 }
 
-#logo {
-  --cr-icon-color: initial;
-  height: 24px;
-  width: 24px;
-}
-
 cr-icon-button {
   --cr-icon-button-icon-size: 24px;
   --cr-icon-button-size: 48px;

@@ -45,10 +45,6 @@ extern const base::FeatureParam<bool> kShowContextMenuHeaders;
 extern const base::FeatureParam<bool> kShowSmartCompose;
 // Whether to exit AI mode when the user clicks outside the composebox.
 extern const base::FeatureParam<bool> kCloseComposeboxByClickOutside;
-// Whether to show the AIM threads rail when composebox is open.
-extern const base::FeatureParam<bool> kEnableThreadsRail;
-// Whether to show the AIM threads rail Google logo.
-extern const base::FeatureParam<bool> kEnableThreadsRailLogo;
 // Whether to use ntp-composebox instead of cr-composebox.
 extern const base::FeatureParam<bool> kUseNtpComposeboxFork;
 
