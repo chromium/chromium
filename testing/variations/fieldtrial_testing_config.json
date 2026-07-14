@@ -4926,6 +4926,7 @@
                     "name": "Enabled",
                     "params": {
                         "kMigratedCollectedCookies": "true",
+                        "kMigratedInstallerDownloader": "true",
                         "kMigratedPageInfo": "true",
                         "kMigratedPdf": "true"
                     },
