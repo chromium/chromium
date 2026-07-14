@@ -1357,6 +1357,40 @@ public class LocationBarMediatorTest {
     }
 
     @Test
+    public void testEscapePress_resetsRequestTypeToSearch() {
+        mMediator.onFinishNativeInitialization();
+        mProfileSupplier.set(mProfile);
+        mMediator.onUrlFocusChange(true);
+
+        AutocompleteInput input = mSessionState.getAutocompleteInput();
+        input.setAutocompleteState(AutocompleteState.ENABLED);
+        input.setRequestType(AutocompleteRequestType.AI_MODE);
+
+        assertTrue(mMediator.handleEscPress());
+
+        assertEquals(AutocompleteRequestType.SEARCH, input.getRequestType());
+        assertEquals(AutocompleteState.STANDBY, input.getAutocompleteState());
+    }
+
+    @Test
+    public void testEscapePress_revertChangesResetsRequestTypeToSearch() {
+        mMediator.onFinishNativeInitialization();
+        mProfileSupplier.set(mProfile);
+        mMediator.onUrlFocusChange(true);
+
+        AutocompleteInput input = mSessionState.getAutocompleteInput();
+        input.setInitialUserText("initial text");
+        input.setUserText("modified text");
+        input.setAutocompleteState(AutocompleteState.STANDBY);
+        input.setRequestType(AutocompleteRequestType.AI_MODE);
+
+        assertTrue(mMediator.handleEscPress());
+
+        assertEquals(AutocompleteRequestType.SEARCH, input.getRequestType());
+        assertEquals(input.getInitialUserText(), input.getUserText());
+    }
+
+    @Test
     public void testEscapePress_restoresFocusToTabAfterScrimDismissed() {
         AutocompleteInput input = new AutocompleteInput();
         doReturn(false).when(mAutocompleteCoordinator).isServingSuggestions();

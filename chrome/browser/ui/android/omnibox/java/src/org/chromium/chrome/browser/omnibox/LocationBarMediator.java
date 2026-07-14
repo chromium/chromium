@@ -811,6 +811,7 @@ class LocationBarMediator
             // Programmatic reselection of user text on UrlBar does not propagate the change to
             // TextChange listeners.
             mCurrentInput
+                    .setRequestType(AutocompleteRequestType.SEARCH)
                     .setAutocompleteState(AutocompleteState.STANDBY)
                     .setUserText(mCurrentInput.getInitialUserText());
             mUrlCoordinator.setUrlBarData(
@@ -2663,7 +2664,9 @@ class LocationBarMediator
             if (mCurrentInput.hasPreviewText()) {
                 mCurrentInput.commitPreviewText();
             }
-            mCurrentInput.setAutocompleteState(AutocompleteState.STANDBY);
+            mCurrentInput
+                    .setRequestType(AutocompleteRequestType.SEARCH)
+                    .setAutocompleteState(AutocompleteState.STANDBY);
             // TODO(https://crbug.com/534359434): Remove bespoke update calls.
             updateButtonVisibility();
         } else if (!TextUtils.equals(
