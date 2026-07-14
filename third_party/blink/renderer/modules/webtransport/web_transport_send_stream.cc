@@ -21,7 +21,8 @@ WebTransportSendStream::WebTransportSendStream(
     WebTransport* web_transport,
     uint32_t stream_id,
     mojo::ScopedDataPipeProducerHandle handle)
-    : transport_(web_transport),
+    : WritableStream(script_state),
+      transport_(web_transport),
       outgoing_stream_(MakeGarbageCollected<OutgoingStream>(
           script_state,
           MakeGarbageCollected<OutgoingStreamClient>(web_transport, stream_id),

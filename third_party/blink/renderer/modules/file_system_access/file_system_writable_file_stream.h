@@ -29,6 +29,7 @@ class FileSystemWritableFileStream final : public WritableStream {
       V8FileSystemWritableFileStreamMode lock_mode);
 
   explicit FileSystemWritableFileStream(
+      ScriptState* script_state,
       V8FileSystemWritableFileStreamMode lock_mode);
 
   void Trace(Visitor* visitor) const override;

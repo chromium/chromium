@@ -80,6 +80,7 @@ ReadableStreamBYOBReader::ReadableStreamBYOBReader(
     ScriptState* script_state,
     ReadableStream* stream,
     ExceptionState& exception_state) {
+  CHECK_EQ(stream->wrapper_world_id_, script_state->World().GetWorldId());
   SetUpBYOBReader(script_state, this, stream, exception_state);
 }
 
@@ -159,6 +160,8 @@ ScriptPromise<ReadableStreamReadResult> ReadableStreamBYOBReader::read(
         "read from its previous owner stream");
     return EmptyPromise();
   }
+  CHECK_EQ(owner_readable_stream_->wrapper_world_id_,
+           script_state->World().GetWorldId());
 
   // 8. Let promise be a new promise.
   auto* resolver =
@@ -198,7 +201,8 @@ void ReadableStreamBYOBReader::Read(ScriptState* script_state,
   ReadableStream* stream = reader->owner_readable_stream_;
 
   // 2. Assert: stream is not undefined.
-  DCHECK(stream);
+  CHECK(stream);
+  CHECK_EQ(stream->wrapper_world_id_, script_state->World().GetWorldId());
 
   // 3. Set stream.[[disturbed]] to true.
   stream->is_disturbed_ = true;

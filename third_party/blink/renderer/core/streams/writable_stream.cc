@@ -19,6 +19,7 @@
 #include "third_party/blink/renderer/core/streams/writable_stream_default_controller.h"
 #include "third_party/blink/renderer/core/streams/writable_stream_default_writer.h"
 #include "third_party/blink/renderer/core/streams/writable_stream_transferring_optimizer.h"
+#include "third_party/blink/renderer/platform/bindings/dom_wrapper_world.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/v8_binding.h"
@@ -89,7 +90,7 @@ WritableStream* WritableStream::Create(ScriptState* script_state,
                                        ScriptValue raw_underlying_sink,
                                        ScriptValue raw_strategy,
                                        ExceptionState& exception_state) {
-  auto* stream = MakeGarbageCollected<WritableStream>();
+  auto* stream = MakeGarbageCollected<WritableStream>(script_state);
   stream->InitInternal(script_state, raw_underlying_sink, raw_strategy,
                        exception_state);
   if (exception_state.HadException()) {
@@ -98,12 +99,14 @@ WritableStream* WritableStream::Create(ScriptState* script_state,
   return stream;
 }
 
-WritableStream::WritableStream() = default;
+WritableStream::WritableStream(ScriptState* script_state)
+    : wrapper_world_id_(script_state->World().GetWorldId()) {}
 WritableStream::~WritableStream() = default;
 
 ScriptPromise<IDLUndefined> WritableStream::abort(
     ScriptState* script_state,
     ExceptionState& exception_state) {
+  CHECK_EQ(wrapper_world_id_, script_state->World().GetWorldId());
   return abort(script_state,
                ScriptValue(script_state->GetIsolate(),
                            v8::Undefined(script_state->GetIsolate())),
@@ -114,6 +117,7 @@ ScriptPromise<IDLUndefined> WritableStream::abort(
     ScriptState* script_state,
     ScriptValue reason,
     ExceptionState& exception_state) {
+  CHECK_EQ(wrapper_world_id_, script_state->World().GetWorldId());
   // https://streams.spec.whatwg.org/#ws-abort
   //  2. If ! IsWritableStreamLocked(this) is true, return a promise rejected
   //     with a TypeError exception.
@@ -129,6 +133,7 @@ ScriptPromise<IDLUndefined> WritableStream::abort(
 ScriptPromise<IDLUndefined> WritableStream::close(
     ScriptState* script_state,
     ExceptionState& exception_state) {
+  CHECK_EQ(wrapper_world_id_, script_state->World().GetWorldId());
   // https://streams.spec.whatwg.org/#ws-close
   // 2. If ! IsWritableStreamLocked(this) is true, return a promise rejected
   // with a TypeError exception.
@@ -155,6 +160,7 @@ ScriptPromise<IDLUndefined> WritableStream::close(
 WritableStreamDefaultWriter* WritableStream::getWriter(
     ScriptState* script_state,
     ExceptionState& exception_state) {
+  CHECK_EQ(wrapper_world_id_, script_state->World().GetWorldId());
   // https://streams.spec.whatwg.org/#ws-get-writer
   //  2. Return ? AcquireWritableStreamDefaultWriter(this).
 
@@ -184,7 +190,7 @@ WritableStream* WritableStream::Create(ScriptState* script_state,
   //  4. Let stream be ObjectCreate(the original value of WritableStream's
   //     prototype property).
   //  5. Perform ! InitializeWritableStream(stream).
-  auto* stream = MakeGarbageCollected<WritableStream>();
+  auto* stream = MakeGarbageCollected<WritableStream>(script_state);
 
   //  6. Let controller be ObjectCreate(the original value of
   //     WritableStreamDefaultController's prototype property).
@@ -219,7 +225,7 @@ WritableStream* WritableStream::CreateWithCountQueueingStrategy(
     std::unique_ptr<WritableStreamTransferringOptimizer> optimizer) {
   v8::Isolate* isolate = script_state->GetIsolate();
   V8DoNotRunMicrotasksScope microtasks_scope(script_state);
-  auto* stream = MakeGarbageCollected<WritableStream>();
+  auto* stream = MakeGarbageCollected<WritableStream>(script_state);
   stream->InitWithCountQueueingStrategy(script_state, underlying_sink,
                                         high_water_mark, std::move(optimizer),
                                         PassThroughException(isolate));
@@ -252,6 +258,7 @@ void WritableStream::InitWithCountQueueingStrategy(
 void WritableStream::Serialize(ScriptState* script_state,
                                MessagePort* port,
                                ExceptionState& exception_state) {
+  CHECK_EQ(wrapper_world_id_, script_state->World().GetWorldId());
   // https://streams.spec.whatwg.org/#ws-transfer
   // 1. If ! IsWritableStreamLocked(value) is true, throw a "DataCloneError"
   //    DOMException.
@@ -320,6 +327,7 @@ WritableStreamDefaultWriter* WritableStream::AcquireDefaultWriter(
     ScriptState* script_state,
     WritableStream* stream,
     ExceptionState& exception_state) {
+  CHECK(stream);
   // https://streams.spec.whatwg.org/#acquire-writable-stream-default-writer
   //  1. Return ? Construct(WritableStreamDefaultWriter, « stream »).
   auto* writer = MakeGarbageCollected<WritableStreamDefaultWriter>(
@@ -333,6 +341,7 @@ WritableStreamDefaultWriter* WritableStream::AcquireDefaultWriter(
 ScriptPromise<IDLUndefined> WritableStream::Abort(ScriptState* script_state,
                                                   WritableStream* stream,
                                                   v8::Local<v8::Value> reason) {
+  CHECK(stream);
   // https://streams.spec.whatwg.org/#writable-stream-abort
   //  1. If stream.[[state]] is "closed" or "errored", return a promise resolved
   //     with undefined.
@@ -411,6 +420,7 @@ void WritableStream::AddWriteRequest(
 
 ScriptPromise<IDLUndefined> WritableStream::Close(ScriptState* script_state,
                                                   WritableStream* stream) {
+  CHECK(stream);
   // https://streams.spec.whatwg.org/#writable-stream-close
   //  1. Let state be stream.[[state]].
   const auto state = stream->GetState();
@@ -466,6 +476,7 @@ bool WritableStream::CloseQueuedOrInFlight(const WritableStream* stream) {
 void WritableStream::DealWithRejection(ScriptState* script_state,
                                        WritableStream* stream,
                                        v8::Local<v8::Value> error) {
+  CHECK(stream);
   // https://streams.spec.whatwg.org/#writable-stream-deal-with-rejection
   //  1. Let state be stream.[[state]].
   const auto state = stream->state_;
@@ -489,6 +500,7 @@ void WritableStream::DealWithRejection(ScriptState* script_state,
 void WritableStream::StartErroring(ScriptState* script_state,
                                    WritableStream* stream,
                                    v8::Local<v8::Value> reason) {
+  CHECK(stream);
   // https://streams.spec.whatwg.org/#writable-stream-start-erroring
   //  1. Assert: stream.[[storedError]] is undefined.
   DCHECK(stream->stored_error_.IsEmpty());
@@ -529,6 +541,7 @@ void WritableStream::StartErroring(ScriptState* script_state,
 
 void WritableStream::FinishErroring(ScriptState* script_state,
                                     WritableStream* stream) {
+  CHECK(stream);
   // https://streams.spec.whatwg.org/#writable-stream-finish-erroring
   //  1. Assert: stream.[[state]] is "erroring".
   CHECK_EQ(stream->state_, kErroring);
@@ -653,6 +666,7 @@ void WritableStream::FinishErroring(ScriptState* script_state,
 
 void WritableStream::FinishInFlightWrite(ScriptState* script_state,
                                          WritableStream* stream) {
+  CHECK(stream);
   // https://streams.spec.whatwg.org/#writable-stream-finish-in-flight-write
   //  1. Assert: stream.[[inFlightWriteRequest]] is not undefined.
   DCHECK(stream->in_flight_write_request_);
@@ -667,6 +681,7 @@ void WritableStream::FinishInFlightWrite(ScriptState* script_state,
 void WritableStream::FinishInFlightWriteWithError(ScriptState* script_state,
                                                   WritableStream* stream,
                                                   v8::Local<v8::Value> error) {
+  CHECK(stream);
   // https://streams.spec.whatwg.org/#writable-stream-finish-in-flight-write-with-error
   //  1. Assert: stream.[[inFlightWriteRequest]] is not undefined.
   DCHECK(stream->in_flight_write_request_);
@@ -687,6 +702,7 @@ void WritableStream::FinishInFlightWriteWithError(ScriptState* script_state,
 
 void WritableStream::FinishInFlightClose(ScriptState* script_state,
                                          WritableStream* stream) {
+  CHECK(stream);
   // https://streams.spec.whatwg.org/#writable-stream-finish-in-flight-close
   //  1. Assert: stream.[[inFlightCloseRequest]] is not undefined.
   DCHECK(stream->in_flight_close_request_);
@@ -741,6 +757,7 @@ void WritableStream::FinishInFlightClose(ScriptState* script_state,
 void WritableStream::FinishInFlightCloseWithError(ScriptState* script_state,
                                                   WritableStream* stream,
                                                   v8::Local<v8::Value> error) {
+  CHECK(stream);
   // https://streams.spec.whatwg.org/#writable-stream-finish-in-flight-close-with-error
   //  1. Assert: stream.[[inFlightCloseRequest]] is not undefined.
   DCHECK(stream->in_flight_close_request_);
@@ -806,6 +823,7 @@ void WritableStream::MarkFirstWriteRequestInFlight(WritableStream* stream) {
 void WritableStream::UpdateBackpressure(ScriptState* script_state,
                                         WritableStream* stream,
                                         bool backpressure) {
+  CHECK(stream);
   // https://streams.spec.whatwg.org/#writable-stream-update-backpressure
   //  1. Assert: stream.[[state]] is "writable".
   CHECK_EQ(stream->state_, kWritable);
@@ -983,6 +1001,7 @@ bool WritableStream::HasOperationMarkedInFlight(const WritableStream* stream) {
 void WritableStream::RejectCloseAndClosedPromiseIfNeeded(
     ScriptState* script_state,
     WritableStream* stream) {
+  CHECK(stream);
   // https://streams.spec.whatwg.org/#writable-stream-reject-close-and-closed-promise-if-needed
   // //  1. Assert: stream.[[state]] is "errored".
   CHECK_EQ(stream->state_, kErrored);

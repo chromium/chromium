@@ -71,6 +71,7 @@ ReadableStreamDefaultReader::ReadableStreamDefaultReader(
     ExceptionState& exception_state)
     : ActiveScriptWrappable<ReadableStreamDefaultReader>({}),
       ExecutionContextClient(ExecutionContext::From(script_state)) {
+  CHECK_EQ(stream->wrapper_world_id_, script_state->World().GetWorldId());
   // https://streams.spec.whatwg.org/#default-reader-constructor
   // 1. Perform ? SetUpReadableStreamDefaultReader(this, stream).
   SetUpDefaultReader(script_state, this, stream, exception_state);
@@ -90,6 +91,8 @@ ScriptPromise<ReadableStreamReadResult> ReadableStreamDefaultReader::read(
         "read from its previous owner stream");
     return EmptyPromise();
   }
+  CHECK_EQ(owner_readable_stream_->wrapper_world_id_,
+           script_state->World().GetWorldId());
 
   if (!script_state->ContextIsValid()) {
     exception_state.ThrowTypeError("Context is detached");
@@ -127,7 +130,8 @@ void ReadableStreamDefaultReader::Read(ScriptState* script_state,
   ReadableStream* stream = reader->owner_readable_stream_;
 
   // 2. Assert: stream is not undefined.
-  DCHECK(stream);
+  CHECK(stream);
+  CHECK_EQ(stream->wrapper_world_id_, script_state->World().GetWorldId());
 
   // 3. Set stream.[[disturbed]] to true.
   stream->is_disturbed_ = true;

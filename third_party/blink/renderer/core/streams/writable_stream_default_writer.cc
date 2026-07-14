@@ -71,6 +71,7 @@ WritableStreamDefaultWriter::WritableStreamDefaultWriter(
         "Cannot create writer when WritableStream is locked");
     return;
   }
+  CHECK_EQ(stream->wrapper_world_id_, script_state->World().GetWorldId());
   //  4. Set stream.[[writer]] to this.
   stream->SetWriter(this);
 
@@ -207,6 +208,8 @@ ScriptPromise<IDLUndefined> WritableStreamDefaultWriter::abort(
     exception_state.ThrowTypeError(CreateWriterLockReleasedMessage("aborted"));
     return EmptyPromise();
   }
+  CHECK_EQ(owner_writable_stream_->wrapper_world_id_,
+           script_state->World().GetWorldId());
 
   //  3. Return ! WritableStreamDefaultWriterAbort(this, reason).
   return Abort(script_state, this, reason.V8Value());
@@ -225,6 +228,7 @@ ScriptPromise<IDLUndefined> WritableStreamDefaultWriter::close(
     exception_state.ThrowTypeError(CreateWriterLockReleasedMessage("closed"));
     return EmptyPromise();
   }
+  CHECK_EQ(stream->wrapper_world_id_, script_state->World().GetWorldId());
 
   //  4. If ! WritableStreamCloseQueuedOrInFlight(stream) is true, return a
   //      promise rejected with a TypeError exception.
@@ -277,6 +281,8 @@ ScriptPromise<IDLUndefined> WritableStreamDefaultWriter::write(
         CreateWriterLockReleasedMessage("written to"));
     return EmptyPromise();
   }
+  CHECK_EQ(owner_writable_stream_->wrapper_world_id_,
+           script_state->World().GetWorldId());
 
   if (!script_state->ContextIsValid()) {
     exception_state.ThrowTypeError("invalid realm");
@@ -391,7 +397,8 @@ ScriptPromise<IDLUndefined> WritableStreamDefaultWriter::Write(
   WritableStream* stream = writer->owner_writable_stream_;
 
   //  2. Assert: stream is not undefined.
-  DCHECK(stream);
+  CHECK(stream);
+  CHECK_EQ(stream->wrapper_world_id_, script_state->World().GetWorldId());
 
   //  3. Let controller be stream.[[writableStreamController]].
   WritableStreamDefaultController* controller = stream->Controller();
@@ -515,7 +522,8 @@ ScriptPromise<IDLUndefined> WritableStreamDefaultWriter::Abort(
   WritableStream* stream = writer->owner_writable_stream_;
 
   //  2. Assert: stream is not undefined.
-  DCHECK(stream);
+  CHECK(stream);
+  CHECK_EQ(stream->wrapper_world_id_, script_state->World().GetWorldId());
 
   //  3. Return ! WritableStreamAbort(stream, reason).
   return WritableStream::Abort(script_state, stream, reason);
@@ -529,7 +537,8 @@ ScriptPromise<IDLUndefined> WritableStreamDefaultWriter::Close(
   WritableStream* stream = writer->owner_writable_stream_;
 
   //  2. Assert: stream is not undefined.
-  DCHECK(stream);
+  CHECK(stream);
+  CHECK_EQ(stream->wrapper_world_id_, script_state->World().GetWorldId());
 
   //  3. Return ! WritableStreamClose(stream).
   return WritableStream::Close(script_state, stream);

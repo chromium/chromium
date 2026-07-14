@@ -45,7 +45,8 @@ WebTransportReceiveStream::WebTransportReceiveStream(
     WebTransport* web_transport,
     uint32_t stream_id,
     mojo::ScopedDataPipeConsumerHandle handle)
-    : incoming_stream_(MakeGarbageCollected<IncomingStream>(
+    : ReadableStream(script_state),
+      incoming_stream_(MakeGarbageCollected<IncomingStream>(
           script_state,
           BindOnce(ForgetStream, WrapWeakPersistent(web_transport), stream_id),
           std::move(handle))) {}

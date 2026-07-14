@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_STREAMS_READABLE_STREAM_H_
 
 #include <stdint.h>
+
 #include <memory>
 
 #include "third_party/blink/renderer/bindings/core/v8/async_iterable.h"
@@ -16,6 +17,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/streams/readable_stream_default_reader.h"
 #include "third_party/blink/renderer/core/streams/transferable_streams.h"
+#include "third_party/blink/renderer/platform/bindings/dom_wrapper_world.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/bindings/trace_wrapper_v8_reference.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -121,7 +123,7 @@ class CORE_EXPORT ReadableStream
                              StreamAlgorithm* cancel_algorithm,
                              ExceptionState&);
 
-  ReadableStream();
+  explicit ReadableStream(ScriptState* script_state);
 
   ~ReadableStream() override;
 
@@ -273,6 +275,8 @@ class CORE_EXPORT ReadableStream
     return readable_stream_controller_.Get();
   }
 
+  int32_t GetWrapperWorldId() const { return wrapper_world_id_; }
+
   v8::Local<v8::Value> GetStoredError(v8::Isolate*) const;
 
   std::unique_ptr<ReadableStreamTransferringOptimizer>
@@ -366,6 +370,10 @@ class CORE_EXPORT ReadableStream
   Member<ReadableStreamGenericReader> reader_;
   TraceWrapperV8Reference<v8::Value> stored_error_;
   std::unique_ptr<ReadableStreamTransferringOptimizer> transferring_optimizer_;
+
+  // Stores the isolated world the stream was created in.
+  // It is used to CHECK that it is not used from a different world.
+  int32_t wrapper_world_id_;
 
   // ValueAsyncIterable<ReadableStream> overrides:
   using IterationSourceBase =

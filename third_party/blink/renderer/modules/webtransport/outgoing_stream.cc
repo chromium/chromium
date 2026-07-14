@@ -198,7 +198,7 @@ OutgoingStream::~OutgoingStream() = default;
 
 void OutgoingStream::Init(ExceptionState& exception_state) {
   DVLOG(1) << "OutgoingStream::Init() this=" << this;
-  auto* stream = MakeGarbageCollected<WritableStream>();
+  auto* stream = MakeGarbageCollected<WritableStream>(script_state_);
   InitWithExistingWritableStream(stream, exception_state);
 }
 

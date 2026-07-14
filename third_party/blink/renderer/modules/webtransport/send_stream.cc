@@ -15,7 +15,8 @@ SendStream::SendStream(ScriptState* script_state,
                        WebTransport* web_transport,
                        uint32_t stream_id,
                        mojo::ScopedDataPipeProducerHandle handle)
-    : outgoing_stream_(MakeGarbageCollected<OutgoingStream>(
+    : WritableStream(script_state),
+      outgoing_stream_(MakeGarbageCollected<OutgoingStream>(
           script_state,
           MakeGarbageCollected<OutgoingStreamClient>(web_transport, stream_id),
           std::move(handle))) {}

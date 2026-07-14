@@ -30,7 +30,8 @@ FileSystemWritableFileStream* FileSystemWritableFileStream::Create(
 
   ExecutionContext* context = ExecutionContext::From(script_state);
 
-  auto* stream = MakeGarbageCollected<FileSystemWritableFileStream>(lock_mode);
+  auto* stream = MakeGarbageCollected<FileSystemWritableFileStream>(
+      script_state, lock_mode);
 
   auto* underlying_sink = MakeGarbageCollected<FileSystemUnderlyingSink>(
       context, std::move(writer_pending_remote));
@@ -50,8 +51,9 @@ FileSystemWritableFileStream* FileSystemWritableFileStream::Create(
 }
 
 FileSystemWritableFileStream::FileSystemWritableFileStream(
+    ScriptState* script_state,
     V8FileSystemWritableFileStreamMode lock_mode)
-    : lock_mode_(lock_mode) {}
+    : WritableStream(script_state), lock_mode_(lock_mode) {}
 
 ScriptPromise<IDLUndefined> FileSystemWritableFileStream::write(
     ScriptState* script_state,

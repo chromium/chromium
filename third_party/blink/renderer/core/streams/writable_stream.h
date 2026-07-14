@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/platform/bindings/dom_wrapper_world.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/bindings/trace_wrapper_v8_reference.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_deque.h"
@@ -74,7 +75,7 @@ class CORE_EXPORT WritableStream : public ScriptWrappable {
       std::unique_ptr<WritableStreamTransferringOptimizer> optimizer);
 
   // Called by Create().
-  WritableStream();
+  explicit WritableStream(ScriptState* script_state);
   ~WritableStream() override;
 
   // This should only be used with freshly-constructed streams. It expects to be
@@ -206,6 +207,8 @@ class CORE_EXPORT WritableStream : public ScriptWrappable {
     return CloseQueuedOrInFlight(this) || state_ == kClosed;
   }
 
+  int32_t GetWrapperWorldId() const { return wrapper_world_id_; }
+
   v8::Local<v8::Value> GetStoredError(v8::Isolate*) const;
 
   WritableStreamDefaultController* Controller() {
@@ -247,6 +250,8 @@ class CORE_EXPORT WritableStream : public ScriptWrappable {
                     ExceptionState&);
 
  private:
+  friend class WritableStreamDefaultWriter;
+
   using PromiseQueue = HeapDeque<Member<ScriptPromiseResolver<IDLUndefined>>>;
 
   class PendingAbortRequest;
@@ -284,6 +289,10 @@ class CORE_EXPORT WritableStream : public ScriptWrappable {
   Member<WritableStreamDefaultWriter> writer_;
   PromiseQueue write_requests_;
   std::unique_ptr<WritableStreamTransferringOptimizer> transferring_optimizer_;
+
+  // Stores the isolated world the stream was created in.
+  // It is used to CHECK that it is not used from a different world.
+  int32_t wrapper_world_id_;
 };
 
 }  // namespace blink

@@ -119,6 +119,7 @@ void ReadableStreamGenericReader::GenericInitialize(
     ScriptState* script_state,
     ReadableStreamGenericReader* reader,
     ReadableStream* stream) {
+  CHECK_EQ(stream->wrapper_world_id_, script_state->World().GetWorldId());
   auto* isolate = script_state->GetIsolate();
 
   // https://streams.spec.whatwg.org/#readable-stream-reader-generic-initialize

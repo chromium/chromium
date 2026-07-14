@@ -92,7 +92,7 @@ IncomingStream::~IncomingStream() = default;
 
 void IncomingStream::Init(ExceptionState& exception_state) {
   DVLOG(1) << "IncomingStream::Init() this=" << this;
-  auto* stream = MakeGarbageCollected<ReadableStream>();
+  auto* stream = MakeGarbageCollected<ReadableStream>(script_state_);
   InitWithExistingReadableStream(stream, exception_state);
 }
 
