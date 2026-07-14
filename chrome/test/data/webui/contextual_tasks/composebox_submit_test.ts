@@ -1411,5 +1411,49 @@ suite('ContextualTasksComposeboxSubmitTest', () => {
               innerComposebox.canSubmitFilesAndInput,
               'Non-Deep-Search follow-up does not allow an empty query');
         });
+
+        test('inner composebox reflects the expanding_ attribute', async () => {
+          const {innerComposebox} = parts;
+          await innerComposebox.updateComplete;
+          assertTrue(
+              innerComposebox.hasAttribute('expanding_'),
+              'The inner composebox host should reflect [expanding_]');
+        });
+
+        test('expanded host is not styled as collapsed', async () => {
+          const {app, innerComposebox} = parts;
+          // Skip the icon-fade transitions (600ms plus a 200ms delay), so the
+          // computed styles below read their end values.
+          disableAnimationsRecursively(app);
+          const inputComponent = innerComposebox.getInputElement();
+          simulateUserInput(inputComponent.$.input, 'test query');
+          await microtasksFinished();
+          await innerComposebox.updateComplete;
+          await inputComponent.updateComplete;
+
+          const submitContainer = getSubmitContainer(innerComposebox);
+          assertTrue(submitContainer !== null, 'Submit container should exist');
+          const cancelContainer =
+              inputComponent.shadowRoot.querySelector('#cancelContainer');
+          assertTrue(cancelContainer !== null, 'Cancel container should exist');
+
+          // The icon-fade containers are opaque only when a composed ancestor
+          // reflects [expanding_].
+          assertStyle(
+              submitContainer, 'opacity', '1',
+              'Submit container should be visible on the expanded host');
+          assertStyle(
+              cancelContainer, 'opacity', '1',
+              'Cancel container should be visible on the expanded host');
+
+          // The expanded host must not match the wrapper's collapsed-state
+          // `:not([expanding_])` rules that disable the parts' pointer events.
+          assertStyle(
+              submitContainer, 'pointer-events', 'auto',
+              'Expanded host must not match the collapsed-state selector');
+          assertStyle(
+              cancelContainer, 'pointer-events', 'auto',
+              'Expanded host must not match the collapsed-state selector');
+        });
       });
 });

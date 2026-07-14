@@ -134,6 +134,10 @@ export class
       },
       lensButtonTriggersOverlay: {type: Boolean},
       showLensButton: {type: Boolean},
+      expanding_: {
+        reflect: true,
+        type: Boolean,
+      },
     };
   }
 
@@ -152,6 +156,9 @@ export class
   accessor showLensButton: boolean = true;
 
   protected accessor carouselOnTop_: boolean = false;
+  // Reflected: the wrapper CSS and imported shared composebox.css key
+  // [expanding_] rules on it. Contextual Tasks is never collapsible.
+  protected accessor expanding_: boolean = true;
 
   private searchboxCallbackRouter_: SearchboxPageCallbackRouter;
   private pageHandler_: PageHandlerRemote;
