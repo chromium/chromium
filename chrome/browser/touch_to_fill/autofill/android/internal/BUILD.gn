@@ -43,6 +43,11 @@ android_library("java") {
   ]
 
   sources = [
+    "java/src/org/chromium/chrome/browser/touch_to_fill/autofill/TouchToFillAutofillCoordinator.java",
+    "java/src/org/chromium/chrome/browser/touch_to_fill/autofill/TouchToFillAutofillMediator.java",
+    "java/src/org/chromium/chrome/browser/touch_to_fill/autofill/TouchToFillAutofillProperties.java",
+    "java/src/org/chromium/chrome/browser/touch_to_fill/autofill/TouchToFillAutofillView.java",
+    "java/src/org/chromium/chrome/browser/touch_to_fill/autofill/TouchToFillAutofillViewBinder.java",
     "java/src/org/chromium/chrome/browser/touch_to_fill/payments/TouchToFillPaymentMethodCoordinator.java",
     "java/src/org/chromium/chrome/browser/touch_to_fill/payments/TouchToFillPaymentMethodMediator.java",
     "java/src/org/chromium/chrome/browser/touch_to_fill/payments/TouchToFillPaymentMethodProperties.java",
@@ -58,6 +63,7 @@ android_resources("java_resources") {
     "java/res/drawable/touch_to_fill_tab_item_bg.xml",
     "java/res/drawable/touch_to_fill_tab_layout_bg.xml",
     "java/res/layout/touch_to_fill_all_loyalty_cards_item.xml",
+    "java/res/layout/touch_to_fill_autofill_personal_context_notice_screen.xml",
     "java/res/layout/touch_to_fill_bnpl_issuer_selection_screen.xml",
     "java/res/layout/touch_to_fill_bnpl_issuer_selection_sheet_item.xml",
     "java/res/layout/touch_to_fill_bnpl_issuer_tos_screen.xml",
@@ -91,7 +97,10 @@ robolectric_library("junit") {
   testonly = true
   resources_package = "org.chromium.chrome.browser.touch_to_fill.payments"
 
-  sources = [ "java/src/org/chromium/chrome/browser/touch_to_fill/payments/TouchToFillPaymentMethodControllerRobolectricTest.java" ]
+  sources = [
+    "java/src/org/chromium/chrome/browser/touch_to_fill/autofill/TouchToFillAutofillControllerRobolectricTest.java",
+    "java/src/org/chromium/chrome/browser/touch_to_fill/payments/TouchToFillPaymentMethodControllerRobolectricTest.java",
+  ]
 
   deps = [
     ":java",
@@ -134,6 +143,7 @@ android_library("javatests") {
   resources_package = "org.chromium.chrome.browser.touch_to_fill.payments"
 
   sources = [
+    "java/src/org/chromium/chrome/browser/touch_to_fill/autofill/TouchToFillAutofillRenderTest.java",
     "java/src/org/chromium/chrome/browser/touch_to_fill/payments/TouchToFillPaymentMethodRenderTest.java",
     "java/src/org/chromium/chrome/browser/touch_to_fill/payments/TouchToFillPaymentMethodViewTest.java",
   ]

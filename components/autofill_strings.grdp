@@ -1645,4 +1645,25 @@
   <message name="IDS_AUTOFILL_POPUP_PERSONAL_CONTEXT_NOTICE_OK_BUTTON" translateable="false" desc="Got it button text in Autofill popup personal context notice.">
     OK
   </message>
+  <message name="IDS_AUTOFILL_PERSONAL_CONTEXT_NOTICE_SHEET_CONTENT_DESCRIPTION" desc="Accessibility string read when the autofill personal context notice sheet is opened." formatter_data="android_java" translateable="false">
+    Autofill from your Google apps notice opened
+  </message>
+  <message name="IDS_AUTOFILL_PERSONAL_CONTEXT_NOTICE_SHEET_FULL_HEIGHT" desc="Accessibility string read upon opening the autofill personal context notice sheet." formatter_data="android_java" translateable="false">
+    Autofill from your Google apps notice opened at full height
+  </message>
+  <message name="IDS_AUTOFILL_PERSONAL_CONTEXT_NOTICE_SHEET_CLOSED" desc="Accessibility string read upon closing the autofill personal context notice sheet." formatter_data="android_java" translateable="false">
+    Autofill from your Google apps notice closed
+  </message>
+  <message name="IDS_AUTOFILL_PERSONAL_CONTEXT_NOTICE_TITLE" desc="Title of the bottom sheet notice informing users they can autofill from Google apps." formatter_data="android_java" translateable="false">
+    Now you can autofill info from your Google apps
+  </message>
+  <message name="IDS_AUTOFILL_PERSONAL_CONTEXT_NOTICE_DESCRIPTION" desc="Description text of the bottom sheet notice informing users about Gemini and settings." formatter_data="android_java" translateable="false">
+    Powered by Gemini with Personal Intelligence. Manage your choices anytime in settings.
+  </message>
+  <message name="IDS_AUTOFILL_PERSONAL_CONTEXT_NOTICE_OK_BUTTON" desc="Label for the OK button on the autofill notice sheet." formatter_data="android_java" translateable="false">
+    OK
+  </message>
+  <message name="IDS_AUTOFILL_PERSONAL_CONTEXT_NOTICE_SETTINGS_LINK" desc="Label for the Manage settings link on the autofill notice sheet." formatter_data="android_java" translateable="false">
+    Manage settings
+  </message>
 </grit-part>
