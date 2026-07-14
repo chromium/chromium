@@ -11,7 +11,9 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
+#include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/actor_test_util.h"
+#include "chrome/browser/actor/execution_engine.h"
 #include "chrome/browser/lookalikes/lookalike_test_helper.h"
 #include "chrome/browser/optimization_guide/browser_test_util.h"
 #include "chrome/browser/ui/browser.h"
@@ -21,7 +23,6 @@
 #include "components/actor/core/actor_features.h"
 #include "components/actor/core/actor_switches.h"
 #include "components/optimization_guide/core/filters/optimization_hints_component_update_listener.h"
-#include "components/origin_gating/core/origin_gating_cache.h"
 #include "components/safe_browsing/buildflags.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/test/browser_test.h"
@@ -100,12 +101,13 @@ class ActorSitePolicyBrowserTest : public InProcessBrowserTest {
 
     base::test::TestFuture<MayActOnUrlBlockReason> allowed;
     auto* actor_service = ActorKeyedService::Get(browser()->GetProfile());
-    MayActOnTab(
+    TaskId task_id =
+        actor_service->CreateTask(TestTaskSourceInfo(), &policy_checker_);
+    ActorTask* task = actor_service->GetTask(task_id);
+    ASSERT_TRUE(task);
+    task->GetExecutionEngine().MayActOnTab(
         *browser()->tab_strip_model()->GetActiveTab(),
-        actor_service->GetJournal(), TaskId(),
-        origin_gating::OriginGatingCache(
-            kGlicNavigationGatingUseSiteNotOrigin.Get()),
-        MockPolicyChecker(EnterprisePolicyChecker::UrlBlockReason::kNotBlocked),
+        actor_service->GetJournal(), task_id, policy_checker_,
         allowed.GetCallback());
     // The result should not be provided synchronously.
     EXPECT_FALSE(allowed.IsReady());
@@ -117,6 +119,9 @@ class ActorSitePolicyBrowserTest : public InProcessBrowserTest {
   base::HistogramTester histogram_tester_for_init_;
   base::test::ScopedFeatureList scoped_feature_list_;
   base::ScopedTempDir temp_dir_;
+  // Must outlive any ActorTask created with it as the policy checker.
+  MockPolicyChecker policy_checker_{
+      EnterprisePolicyChecker::UrlBlockReason::kNotBlocked};
 };
 
 IN_PROC_BROWSER_TEST_F(ActorSitePolicyBrowserTest, Basic) {
@@ -169,6 +174,11 @@ class ActorSitePolicyMissingBlocklistBrowserTest : public InProcessBrowserTest {
     // load a blocklist.
     InitActionBlocklist(browser()->GetProfile());
   }
+
+ protected:
+  // Must outlive any ActorTask created with it as the policy checker.
+  MockPolicyChecker policy_checker_{
+      EnterprisePolicyChecker::UrlBlockReason::kNotBlocked};
 };
 
 // If the blocklist doesn't exist, we allow the URL.
@@ -179,12 +189,13 @@ IN_PROC_BROWSER_TEST_F(ActorSitePolicyMissingBlocklistBrowserTest, FailOpen) {
 
   base::test::TestFuture<MayActOnUrlBlockReason> allowed;
   auto* actor_service = ActorKeyedService::Get(browser()->GetProfile());
-  MayActOnTab(
+  TaskId task_id =
+      actor_service->CreateTask(TestTaskSourceInfo(), &policy_checker_);
+  ActorTask* task = actor_service->GetTask(task_id);
+  ASSERT_TRUE(task);
+  task->GetExecutionEngine().MayActOnTab(
       *browser()->tab_strip_model()->GetActiveTab(),
-      actor_service->GetJournal(), TaskId(),
-      origin_gating::OriginGatingCache(
-          kGlicNavigationGatingUseSiteNotOrigin.Get()),
-      MockPolicyChecker(EnterprisePolicyChecker::UrlBlockReason::kNotBlocked),
+      actor_service->GetJournal(), task_id, policy_checker_,
       allowed.GetCallback());
   EXPECT_TRUE(allowed.Get() == MayActOnUrlBlockReason::kAllowed);
 }

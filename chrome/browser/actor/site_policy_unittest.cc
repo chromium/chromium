@@ -6,11 +6,16 @@
 
 #include "base/files/scoped_temp_dir.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/test/bind.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
+#include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/actor_test_util.h"
+#include "chrome/browser/actor/execution_engine.h"
+#include "chrome/browser/actor/ui/event_dispatcher.h"
+#include "chrome/browser/actor/ui/test_support/mock_event_dispatcher.h"
 #include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/common/chrome_features.h"
@@ -20,6 +25,7 @@
 #include "components/optimization_guide/core/filters/optimization_hints_component_update_listener.h"
 #include "components/optimization_guide/proto/hints.pb.h"
 #include "components/origin_gating/core/origin_gating_cache.h"
+#include "components/origin_gating/core/origin_gating_checker.h"
 #include "components/tabs/public/mock_tab_interface.h"
 #include "content/public/test/navigation_simulator.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -70,6 +76,12 @@ class ActorSitePolicyTest : public ChromeRenderViewHostTestHarness {
   }
 
   void TearDown() override {
+    if (task_) {
+      if (!task_->IsCompleted()) {
+        task_->Stop(ActorTask::StoppedReason::kTabDetached);
+      }
+      task_.reset();
+    }
     mock_optimization_guide_keyed_service_ = nullptr;
     ChromeRenderViewHostTestHarness::TearDown();
   }
@@ -97,8 +109,7 @@ class ActorSitePolicyTest : public ChromeRenderViewHostTestHarness {
 
   void CheckUrl(const GURL& url,
                 bool expected_allowed,
-                const EnterprisePolicyChecker& policy_checker,
-                const origin_gating::OriginGatingCache& origin_gating_cache) {
+                const EnterprisePolicyChecker& policy_checker) {
     content::NavigationSimulator::NavigateAndCommitFromBrowser(web_contents(),
                                                                url);
 
@@ -107,8 +118,8 @@ class ActorSitePolicyTest : public ChromeRenderViewHostTestHarness {
 
     auto* actor_service = ActorKeyedService::Get(profile());
     base::test::TestFuture<MayActOnUrlBlockReason> allowed;
-    MayActOnTab(tab, actor_service->GetJournal(), TaskId(), origin_gating_cache,
-                policy_checker, allowed.GetCallback());
+    GetExecutionEngine().MayActOnTab(tab, actor_service->GetJournal(), TaskId(),
+                                     policy_checker, allowed.GetCallback());
     // The result should not be provided synchronously.
     EXPECT_FALSE(allowed.IsReady());
     EXPECT_EQ(expected_allowed,
@@ -116,21 +127,46 @@ class ActorSitePolicyTest : public ChromeRenderViewHostTestHarness {
   }
 
   void CheckUrl(const GURL& url, bool expected_allowed) {
-    return CheckUrl(
-        url, expected_allowed,
-        MockPolicyChecker(EnterprisePolicyChecker::UrlBlockReason::kNotBlocked),
-        origin_gating::OriginGatingCache(
-            kGlicNavigationGatingUseSiteNotOrigin.Get()));
+    return CheckUrl(url, expected_allowed,
+                    MockPolicyChecker(
+                        EnterprisePolicyChecker::UrlBlockReason::kNotBlocked));
   }
 
   raw_ptr<MockOptimizationGuideKeyedService>
       mock_optimization_guide_keyed_service_;
+
+  // Lazily creates a real ActorTask/ExecutionEngine and returns its engine, so
+  // that MayActOnUrl tests can exercise the OriginGatingChecker-backed path.
+  ExecutionEngine& GetExecutionEngine() {
+    if (!task_) {
+      std::unique_ptr<ui::UiEventDispatcher> engine_dispatcher =
+          ui::NewMockUiEventDispatcher();
+      std::unique_ptr<ui::UiEventDispatcher> task_dispatcher =
+          ui::NewMockUiEventDispatcher();
+      ScopedExecutionEngineFactory scoped_factory(base::BindLambdaForTesting(
+          [&](ActorTask& task) -> std::unique_ptr<ExecutionEngine> {
+            return ExecutionEngine::CreateForTesting(
+                task, std::move(engine_dispatcher));
+          }));
+      task_ = ActorTask::CreateForTesting(
+          *ActorKeyedService::Get(profile()), TaskId(1),
+          std::move(task_dispatcher),
+          /*options=*/nullptr, TestTaskSourceInfo(), &task_policy_checker_,
+          mock_actor_task_delegate_.GetWeakPtr());
+    }
+    return task_->GetExecutionEngine();
+  }
 
  private:
   static std::unique_ptr<KeyedService> CreateOptimizationService(
       content::BrowserContext* context) {
     return std::make_unique<MockOptimizationGuideKeyedService>();
   }
+
+  std::unique_ptr<ActorTask> task_;
+  MockPolicyChecker task_policy_checker_{
+      EnterprisePolicyChecker::UrlBlockReason::kNotBlocked};
+  testing::NiceMock<MockActorTaskDelegate> mock_actor_task_delegate_;
 
   base::test::ScopedFeatureList scoped_feature_list_;
   base::ScopedTempDir temp_dir_;
@@ -188,13 +224,8 @@ TEST_F(ActorSitePolicyTest, BlockInsecureHTTP) {
 
 TEST_F(ActorSitePolicyTest, InsecureHTTPAllowedWhenSpecified) {
   base::test::TestFuture<MayActOnUrlBlockReason> allowed;
-  MayActOnUrl(
-      GURL("http://a.test/"), /*allow_insecure_http=*/true, profile(),
-      ActorKeyedService::Get(profile())->GetJournal(), TaskId(),
-      origin_gating::OriginGatingCache(
-          kGlicNavigationGatingUseSiteNotOrigin.Get()),
-      MockPolicyChecker(EnterprisePolicyChecker::UrlBlockReason::kNotBlocked),
-      allowed.GetCallback());
+  GetExecutionEngine().IsAcceptableNavigationDestination(GURL("http://a.test/"),
+                                                         allowed.GetCallback());
   EXPECT_EQ(allowed.Get(), MayActOnUrlBlockReason::kAllowed);
 }
 
@@ -282,9 +313,7 @@ TEST_F(ActorSitePolicyTest, EnterprisePolicyBlock) {
       .Times(0);
   CheckUrl(url, false,
            MockPolicyChecker(
-               EnterprisePolicyChecker::UrlBlockReason::kExplicitlyBlocked),
-           origin_gating::OriginGatingCache(
-               kGlicNavigationGatingUseSiteNotOrigin.Get()));
+               EnterprisePolicyChecker::UrlBlockReason::kExplicitlyBlocked));
 }
 
 TEST_F(ActorSitePolicyTest, EnterprisePolicyOrder) {
@@ -298,14 +327,10 @@ TEST_F(ActorSitePolicyTest, EnterprisePolicyOrder) {
   MockPolicyChecker allowed_checker(
       EnterprisePolicyChecker::UrlBlockReason::kExplicitlyAllowed);
   // Enterprise policy overrules the opt guide blocklist for a particular site.
-  CheckUrl(https_blocked_url, true, allowed_checker,
-           origin_gating::OriginGatingCache(
-               kGlicNavigationGatingUseSiteNotOrigin.Get()));
+  CheckUrl(https_blocked_url, true, allowed_checker);
   // Enterprise policy can't be used to bypass invariants like supported
   // schemes.
-  CheckUrl(GURL("file:///my_file"), false, allowed_checker,
-           origin_gating::OriginGatingCache(
-               kGlicNavigationGatingUseSiteNotOrigin.Get()));
+  CheckUrl(GURL("file:///my_file"), false, allowed_checker);
 }
 
 TEST_F(ActorSitePolicyAllowlistOnlyTest, BlockIfNotInAllowlist) {
@@ -333,14 +358,11 @@ TEST_F(ActorSitePolicyTest, MayActOnUrl_AllowedByCache) {
           testing::An<optimization_guide::OptimizationGuideDecisionCallback>()))
       .Times(0);
 
-  origin_gating::OriginGatingCache cache(/*use_site_not_origin=*/false);
-  cache.AllowNavigationTo(url::Origin::Create(url), /*is_user_confirmed=*/true);
+  ExecutionEngine& engine = GetExecutionEngine();
+  engine.origin_gating_checker().AllowNavigationTo(url::Origin::Create(url),
+                                                   /*is_user_confirmed=*/true);
   base::test::TestFuture<MayActOnUrlBlockReason> allowed;
-  MayActOnUrl(
-      url, /*allow_insecure_http=*/false, profile(),
-      ActorKeyedService::Get(profile())->GetJournal(), TaskId(), cache,
-      MockPolicyChecker(EnterprisePolicyChecker::UrlBlockReason::kNotBlocked),
-      allowed.GetCallback());
+  engine.IsAcceptableNavigationDestination(url, allowed.GetCallback());
   // Allowed by cache.
   EXPECT_EQ(allowed.Get(), MayActOnUrlBlockReason::kAllowed);
 }
@@ -362,12 +384,8 @@ TEST_F(ActorSitePolicyTest, MayActOnUrl_FailsOpen) {
       .Times(0);
 
   base::test::TestFuture<MayActOnUrlBlockReason> allowed;
-  MayActOnUrl(
-      url, /*allow_insecure_http=*/false, profile(),
-      ActorKeyedService::Get(profile())->GetJournal(), TaskId(),
-      origin_gating::OriginGatingCache(/*use_site_not_origin=*/false),
-      MockPolicyChecker(EnterprisePolicyChecker::UrlBlockReason::kNotBlocked),
-      allowed.GetCallback());
+  GetExecutionEngine().IsAcceptableNavigationDestination(url,
+                                                         allowed.GetCallback());
   // Not allowed by the cache, but the policy fails open (without consulting
   // the sensitive sites list).
   EXPECT_EQ(allowed.Get(), MayActOnUrlBlockReason::kAllowed);
@@ -389,12 +407,9 @@ TEST_F(ActorSitePolicyTest, MayActOnTab_AllowedByCache) {
           testing::An<optimization_guide::OptimizationGuideDecisionCallback>()))
       .Times(0);
 
-  origin_gating::OriginGatingCache cache(/*use_site_not_origin=*/false);
-  cache.AllowNavigationTo(url::Origin::Create(url), /*is_user_confirmed=*/true);
-  CheckUrl(
-      url, /*expected_allowed=*/true,
-      MockPolicyChecker(EnterprisePolicyChecker::UrlBlockReason::kNotBlocked),
-      cache);
+  GetExecutionEngine().origin_gating_checker().AllowNavigationTo(
+      url::Origin::Create(url), /*is_user_confirmed=*/true);
+  CheckUrl(url, /*expected_allowed=*/true);
 }
 
 }  // namespace

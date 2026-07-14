@@ -55,6 +55,12 @@ specific_include_rules = {
     "+chrome/browser/actor/ui/event_dispatcher.h",
     "+chrome/browser/actor/ui/test_support/mock_event_dispatcher.h",
   ],
+  'site_policy_unittest\\.cc': [
+    # Required to build a real ExecutionEngine/ActorTask so that MayActOnUrl
+    # and MayActOnTab tests can exercise the OriginGatingChecker-backed path.
+    "+chrome/browser/actor/ui/event_dispatcher.h",
+    "+chrome/browser/actor/ui/test_support/mock_event_dispatcher.h",
+  ],
   'actor_test_util*': [
     # This is required for unit tests.
     "+chrome/browser/actor/ui/event_dispatcher.h",
