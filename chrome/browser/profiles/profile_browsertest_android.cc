@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/profiles/profile.h"
-
 #include <stddef.h>
 
 #include <memory>
@@ -14,9 +12,11 @@
 #include "base/files/file_path_watcher.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
+#include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #include "chrome/common/chrome_constants.h"
@@ -33,10 +33,10 @@ class ProfileDeleteMediaBrowserTest : public AndroidBrowserTest {
  protected:
   void SetUp() override {
     // This needs to happen before AndroidBrowserTest::SetUp(), since that
-    // invokes deletion. Luckily on Android chrome::GetUserCacheDirectory()
-    // doesn't actually look at its input. (This would be cleaner as a PRE_
-    // test, but that doesn't appear to be supported here).
-    chrome::GetUserCacheDirectory(base::FilePath(), &cache_base_);
+    // invokes deletion.
+    // On Android, the default profile's cache directory is always the base
+    // cache directory (DIR_CACHE).
+    ASSERT_TRUE(base::PathService::Get(base::DIR_CACHE, &cache_base_));
     base::FilePath media_cache_path =
         cache_base_.Append(chrome::kMediaCacheDirname);
 

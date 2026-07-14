@@ -85,6 +85,11 @@ BASE_FEATURE(kAutofillPasswordSurvey, base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
+// When enabled, GetUserCacheDirectory on Android will append the relative path
+// of non-default partitions to the cache directory.
+BASE_FEATURE(kAndroidKeepProfilePartitionDirsInCacheDir,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Enable boarding pass detector on Chrome Android.
 BASE_FEATURE(kBoardingPassDetector, base::FEATURE_DISABLED_BY_DEFAULT);
 const char kBoardingPassDetectorUrlParamName[] = "boarding_pass_detector_urls";
