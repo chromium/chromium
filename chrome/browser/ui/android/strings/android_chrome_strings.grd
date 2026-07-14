@@ -2857,7 +2857,7 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
         Send to your device
       </message>
       <message name="IDS_MENU_QR_CODE" desc="Menu item for generating a QR Code for the current page. [CHAR_LIMIT=27]">
-        QR code
+        Create QR code
       </message>
       <message name="IDS_MENU_BACK_BUTTON_IPH_TEXT" desc="Message on the generic text buble to educate users on the menu back button">
         Open the menu to go back
@@ -4306,8 +4306,14 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_MENU_BOOKMARKS" desc="Menu item for opening the bookmarks page that contains all the user's bookmarks. [CHAR_LIMIT=27]">
         Bookmarks
       </message>
-      <message name="IDS_MENU_BOOKMARK_THIS_PAGE" desc="Menu item for adding the page to the bookmarks. [CHAR_LIMIT=27]">
-        Bookmark this page
+      <message name="IDS_MENU_BOOKMARKS_AND_LISTS" desc="Parent item for showing bookmark related items. [CHAR_LIMIT=27]">
+        Bookmarks and lists
+      </message>
+      <message name="IDS_MENU_BOOKMARK_THIS_TAB" desc="Menu item for adding the page to the bookmarks. [CHAR_LIMIT=27]">
+        Bookmark this tab
+      </message>
+      <message name="IDS_MENU_SHOW_ALL_BOOKMARKS" desc="Menu item for opening the bookmarks page that contains all the user's bookmarks. [CHAR_LIMIT=27]">
+        Show all bookmarks
       </message>
       <message name="IDS_MENU_SHOW_BOOKMARKS_BAR" desc="Menu item for showing the bookmarks bar. [CHAR_LIMIT=27]">
         Show bookmarks bar
@@ -4390,6 +4396,9 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_MENU_HISTORY" desc="Menu item for opening the history page. [CHAR_LIMIT=27]">
         History
       </message>
+      <message name="IDS_MENU_OPEN_HISTORY" desc="Menu item for opening the history page. [CHAR_LIMIT=27]">
+        Open history
+      </message>
       <message name="IDS_MENU_QUICK_DELETE" desc="Menu item for quick delete functionality that allows users to delete their browsing data. [CHAR_LIMIT=27]">
         Delete browsing data
       </message>
@@ -4434,6 +4443,9 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       </message>
       <message name="IDS_MENU_NTP_CUSTOMIZATION" desc="Option in item menu. User can click the 'Customize new tab page' option to open the 'Customize your new tab page' bottom sheet. [CHAR_LIMIT=27]">
         Customize new tab page
+      </message>
+      <message name="IDS_MENU_CUSTOMIZE_CHROME" desc="Option in item menu. User can click the 'Customize new tab page' option to open the 'Customize your new tab page' bottom sheet. [CHAR_LIMIT=27]">
+        Customize Chrome
       </message>
       <message name="IDS_MENU_LISTEN_TO_FEED" desc="Menu item for listening to the feed. [CHAR_LIMIT=27]">
         Listen to the feed

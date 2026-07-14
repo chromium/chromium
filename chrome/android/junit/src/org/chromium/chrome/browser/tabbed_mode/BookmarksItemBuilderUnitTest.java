@@ -207,16 +207,15 @@ public class BookmarksItemBuilderUnitTest {
                         item(R.id.divider_line_id),
                         item(R.id.all_bookmarks_menu_id),
                         item(
+                                R.id.bookmark_folder_menu_id,
+                                item(R.id.bookmark_folder_menu_id, item(R.id.empty_item_menu_id))),
+                        item(R.id.bookmark_folder_menu_id, item(R.id.empty_item_menu_id)),
+                        item(
                                 R.id.reading_list_parent_menu_id,
                                 item(R.id.show_reading_list_menu_id),
                                 item(R.id.add_to_reading_list_menu_id)),
                         item(R.id.divider_line_id),
-                        item(R.id.toggle_bookmarks_bar_menu_id),
-                        item(R.id.divider_line_id),
-                        item(
-                                R.id.bookmark_folder_menu_id,
-                                item(R.id.bookmark_folder_menu_id, item(R.id.empty_item_menu_id))),
-                        item(R.id.bookmark_folder_menu_id, item(R.id.empty_item_menu_id)));
+                        item(R.id.toggle_bookmarks_bar_menu_id));
 
         assertMenuItemsAreEqual(subItems, expectedSubItems);
     }
@@ -244,6 +243,10 @@ public class BookmarksItemBuilderUnitTest {
                         item(R.id.divider_line_id),
                         item(R.id.all_bookmarks_menu_id),
                         item(
+                                R.id.bookmark_folder_menu_id,
+                                item(R.id.bookmark_folder_menu_id, item(R.id.empty_item_menu_id))),
+                        item(R.id.bookmark_folder_menu_id, item(R.id.empty_item_menu_id)),
+                        item(
                                 R.id.reading_list_parent_menu_id,
                                 item(R.id.show_reading_list_menu_id),
                                 item(R.id.add_to_reading_list_menu_id)),
@@ -251,29 +254,26 @@ public class BookmarksItemBuilderUnitTest {
                         item(R.id.toggle_bookmarks_bar_menu_id),
                         item(R.id.divider_line_id),
                         item(R.id.bookmarks_header_menu_id),
-                        item(R.id.bookmark_menu_id),
-                        item(R.id.bookmark_menu_id),
-                        item(
-                                R.id.bookmark_folder_menu_id,
-                                item(R.id.bookmark_menu_id),
-                                item(R.id.bookmark_menu_id)),
                         item(
                                 R.id.bookmark_folder_menu_id,
                                 item(R.id.bookmark_menu_id),
                                 item(R.id.bookmark_folder_menu_id, item(R.id.bookmark_menu_id))),
-                        item(R.id.divider_line_id),
+                        item(R.id.bookmark_menu_id),
+                        item(R.id.bookmark_menu_id),
                         item(
                                 R.id.bookmark_folder_menu_id,
-                                item(R.id.bookmark_folder_menu_id, item(R.id.empty_item_menu_id))),
-                        item(R.id.bookmark_folder_menu_id, item(R.id.empty_item_menu_id)));
+                                item(R.id.bookmark_menu_id),
+                                item(R.id.bookmark_menu_id)));
 
         assertMenuItemsAreEqual(subItems, expectedSubItems);
 
         List<MenuItem> expectedTitles =
                 Arrays.asList(
-                        item(R.string.menu_bookmark_this_page),
+                        item(R.string.menu_bookmark_this_tab),
                         item(0),
-                        item(R.string.menu_bookmarks),
+                        item(R.string.menu_show_all_bookmarks),
+                        item(R.string.menu_mobile_bookmarks, item("Partner bookmarks", item(0))),
+                        item(R.string.menu_other_bookmarks, item(0)),
                         item(
                                 R.string.menu_reading_list,
                                 item(R.string.menu_show_reading_list),
@@ -282,23 +282,20 @@ public class BookmarksItemBuilderUnitTest {
                         item(R.string.menu_show_bookmarks_bar),
                         item(0),
                         item(R.string.bookmarks),
+                        item(
+                                "Folder 2",
+                                item("Bookmark 1"),
+                                item("Nested Folder", item("Nested Bookmark"))),
                         item("Bookmark 1"),
                         item("Bookmark 2"),
                         item(
                                 "Folder 1",
                                 item("Bookmark in folder 1"),
-                                item("Bookmark in folder 2")),
-                        item(
-                                "Folder 2",
-                                item("Bookmark 1"),
-                                item("Nested Folder", item("Nested Bookmark"))),
-                        item(0),
-                        item(R.string.menu_mobile_bookmarks, item("Partner bookmarks", item(0))),
-                        item(R.string.menu_other_bookmarks, item(0)));
+                                item("Bookmark in folder 2")));
         assertMenuTitlesAreEqual(subItems, expectedTitles);
 
         // Confirm we are using the correct item type.
-        ListItem bookmarkItem = subItems.get(8);
+        ListItem bookmarkItem = subItems.get(11);
         assertEquals(AppMenuHandler.AppMenuItemType.BOOKMARK, bookmarkItem.type);
     }
 
@@ -321,6 +318,10 @@ public class BookmarksItemBuilderUnitTest {
                         item(R.id.divider_line_id),
                         item(R.id.all_bookmarks_menu_id),
                         item(
+                                R.id.bookmark_folder_menu_id,
+                                item(R.id.bookmark_folder_menu_id, item(R.id.empty_item_menu_id))),
+                        item(R.id.bookmark_folder_menu_id, item(R.id.empty_item_menu_id)),
+                        item(
                                 R.id.reading_list_parent_menu_id,
                                 item(R.id.show_reading_list_menu_id),
                                 item(R.id.add_to_reading_list_menu_id)),
@@ -328,18 +329,13 @@ public class BookmarksItemBuilderUnitTest {
                         item(R.id.toggle_bookmarks_bar_menu_id),
                         item(R.id.divider_line_id),
                         item(R.id.bookmarks_header_menu_id),
+                        item(R.id.bookmark_folder_menu_id, item(R.id.empty_item_menu_id)),
                         item(R.id.bookmark_menu_id),
                         item(R.id.bookmark_menu_id),
                         item(
                                 R.id.bookmark_folder_menu_id,
                                 item(R.id.bookmark_menu_id),
-                                item(R.id.bookmark_menu_id)),
-                        item(R.id.bookmark_folder_menu_id, item(R.id.empty_item_menu_id)),
-                        item(R.id.divider_line_id),
-                        item(
-                                R.id.bookmark_folder_menu_id,
-                                item(R.id.bookmark_folder_menu_id, item(R.id.empty_item_menu_id))),
-                        item(R.id.bookmark_folder_menu_id, item(R.id.empty_item_menu_id)));
+                                item(R.id.bookmark_menu_id)));
 
         assertMenuItemsAreEqual(subItems, expectedSubItems);
     }

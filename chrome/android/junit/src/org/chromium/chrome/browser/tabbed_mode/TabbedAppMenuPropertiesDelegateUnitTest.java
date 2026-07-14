@@ -616,34 +616,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                                 item(R.id.quick_delete_menu_id),
                                 item(R.id.divider_line_id),
                                 item(R.id.downloads_menu_id),
-                                item(
-                                        R.id.bookmarks_parent_menu_id,
-                                        item(R.id.bookmark_this_page_menu_id),
-                                        item(R.id.divider_line_id),
-                                        item(R.id.all_bookmarks_menu_id),
-                                        item(
-                                                R.id.reading_list_parent_menu_id,
-                                                item(R.id.show_reading_list_menu_id),
-                                                item(R.id.add_to_reading_list_menu_id)),
-                                        item(R.id.divider_line_id),
-                                        item(R.id.toggle_bookmarks_bar_menu_id),
-                                        item(R.id.divider_line_id),
-                                        item(R.id.bookmarks_header_menu_id),
-                                        item(R.id.bookmark_menu_id),
-                                        item(R.id.bookmark_menu_id),
-                                        item(
-                                                R.id.bookmark_folder_menu_id,
-                                                item(R.id.bookmark_menu_id),
-                                                item(R.id.bookmark_menu_id)),
-                                        item(R.id.divider_line_id),
-                                        item(
-                                                R.id.bookmark_folder_menu_id,
-                                                item(
-                                                        R.id.bookmark_folder_menu_id,
-                                                        item(R.id.empty_item_menu_id))),
-                                        item(
-                                                R.id.bookmark_folder_menu_id,
-                                                item(R.id.empty_item_menu_id)))));
+                                getExpectedBookmarksParentMenuItem()));
 
         if (ExtensionsBuildflags.ENABLE_EXTENSIONS_CORE) {
             expectedItems.add(
@@ -756,34 +729,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                                 item(R.id.quick_delete_menu_id),
                                 item(R.id.divider_line_id),
                                 item(R.id.downloads_menu_id),
-                                item(
-                                        R.id.bookmarks_parent_menu_id,
-                                        item(R.id.bookmark_this_page_menu_id),
-                                        item(R.id.divider_line_id),
-                                        item(R.id.all_bookmarks_menu_id),
-                                        item(
-                                                R.id.reading_list_parent_menu_id,
-                                                item(R.id.show_reading_list_menu_id),
-                                                item(R.id.add_to_reading_list_menu_id)),
-                                        item(R.id.divider_line_id),
-                                        item(R.id.toggle_bookmarks_bar_menu_id),
-                                        item(R.id.divider_line_id),
-                                        item(R.id.bookmarks_header_menu_id),
-                                        item(R.id.bookmark_menu_id),
-                                        item(R.id.bookmark_menu_id),
-                                        item(
-                                                R.id.bookmark_folder_menu_id,
-                                                item(R.id.bookmark_menu_id),
-                                                item(R.id.bookmark_menu_id)),
-                                        item(R.id.divider_line_id),
-                                        item(
-                                                R.id.bookmark_folder_menu_id,
-                                                item(
-                                                        R.id.bookmark_folder_menu_id,
-                                                        item(R.id.empty_item_menu_id))),
-                                        item(
-                                                R.id.bookmark_folder_menu_id,
-                                                item(R.id.empty_item_menu_id)))));
+                                getExpectedBookmarksParentMenuItem()));
 
         if (ExtensionsBuildflags.ENABLE_EXTENSIONS_CORE) {
             expectedItems.add(
@@ -924,7 +870,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         expectedTitles.add(
                 item(
                         R.string.menu_history,
-                        item(R.string.menu_history),
+                        item(R.string.menu_open_history),
                         item(R.string.menu_recent_tabs)));
 
         expectedItems.add(item(R.id.quick_delete_menu_id));
@@ -936,54 +882,8 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         expectedItems.add(item(R.id.downloads_menu_id));
         expectedTitles.add(item(R.string.menu_downloads));
 
-        expectedItems.add(
-                item(
-                        R.id.bookmarks_parent_menu_id,
-                        item(R.id.bookmark_this_page_menu_id),
-                        item(R.id.divider_line_id),
-                        item(R.id.all_bookmarks_menu_id),
-                        item(
-                                R.id.reading_list_parent_menu_id,
-                                item(R.id.show_reading_list_menu_id),
-                                item(R.id.add_to_reading_list_menu_id)),
-                        item(R.id.divider_line_id),
-                        item(R.id.toggle_bookmarks_bar_menu_id),
-                        item(R.id.divider_line_id),
-                        item(R.id.bookmarks_header_menu_id),
-                        item(R.id.bookmark_menu_id),
-                        item(R.id.bookmark_menu_id),
-                        item(
-                                R.id.bookmark_folder_menu_id,
-                                item(R.id.bookmark_menu_id),
-                                item(R.id.bookmark_menu_id)),
-                        item(R.id.divider_line_id),
-                        item(
-                                R.id.bookmark_folder_menu_id,
-                                item(R.id.bookmark_folder_menu_id, item(R.id.empty_item_menu_id))),
-                        item(R.id.bookmark_folder_menu_id, item(R.id.empty_item_menu_id))));
-        expectedTitles.add(
-                item(
-                        R.string.menu_bookmarks,
-                        item(R.string.menu_bookmark_this_page),
-                        item(0),
-                        item(R.string.menu_bookmarks),
-                        item(
-                                R.string.menu_reading_list,
-                                item(R.string.menu_show_reading_list),
-                                item(R.string.menu_add_to_reading_list)),
-                        item(0),
-                        item(R.string.menu_show_bookmarks_bar),
-                        item(0),
-                        item(R.string.bookmarks),
-                        item("Bookmark 1"),
-                        item("Bookmark 2"),
-                        item(
-                                "Folder 1",
-                                item("Bookmark in folder 1"),
-                                item("Bookmark in folder 2")),
-                        item(0),
-                        item(R.string.menu_mobile_bookmarks, item("Partner bookmarks", item(0))),
-                        item(R.string.menu_other_bookmarks, item(0))));
+        expectedItems.add(getExpectedBookmarksParentMenuItem());
+        expectedTitles.add(getExpectedBookmarksParentMenuTitle());
 
         if (ExtensionsBuildflags.ENABLE_EXTENSIONS_CORE) {
             expectedItems.add(
@@ -1315,54 +1215,8 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         expectedItems.add(item(R.id.downloads_menu_id));
         expectedTitles.add(item(R.string.menu_downloads));
 
-        expectedItems.add(
-                item(
-                        R.id.bookmarks_parent_menu_id,
-                        item(R.id.bookmark_this_page_menu_id),
-                        item(R.id.divider_line_id),
-                        item(R.id.all_bookmarks_menu_id),
-                        item(
-                                R.id.reading_list_parent_menu_id,
-                                item(R.id.show_reading_list_menu_id),
-                                item(R.id.add_to_reading_list_menu_id)),
-                        item(R.id.divider_line_id),
-                        item(R.id.toggle_bookmarks_bar_menu_id),
-                        item(R.id.divider_line_id),
-                        item(R.id.bookmarks_header_menu_id),
-                        item(R.id.bookmark_menu_id),
-                        item(R.id.bookmark_menu_id),
-                        item(
-                                R.id.bookmark_folder_menu_id,
-                                item(R.id.bookmark_menu_id),
-                                item(R.id.bookmark_menu_id)),
-                        item(R.id.divider_line_id),
-                        item(
-                                R.id.bookmark_folder_menu_id,
-                                item(R.id.bookmark_folder_menu_id, item(R.id.empty_item_menu_id))),
-                        item(R.id.bookmark_folder_menu_id, item(R.id.empty_item_menu_id))));
-        expectedTitles.add(
-                item(
-                        R.string.menu_bookmarks,
-                        item(R.string.menu_bookmark_this_page),
-                        item(0),
-                        item(R.string.menu_bookmarks),
-                        item(
-                                R.string.menu_reading_list,
-                                item(R.string.menu_show_reading_list),
-                                item(R.string.menu_add_to_reading_list)),
-                        item(0),
-                        item(R.string.menu_show_bookmarks_bar),
-                        item(0),
-                        item(R.string.bookmarks),
-                        item("Bookmark 1"),
-                        item("Bookmark 2"),
-                        item(
-                                "Folder 1",
-                                item("Bookmark in folder 1"),
-                                item("Bookmark in folder 2")),
-                        item(0),
-                        item(R.string.menu_mobile_bookmarks, item("Partner bookmarks", item(0))),
-                        item(R.string.menu_other_bookmarks, item(0))));
+        expectedItems.add(getExpectedBookmarksParentMenuItem());
+        expectedTitles.add(getExpectedBookmarksParentMenuTitle());
 
         if (ExtensionsBuildflags.ENABLE_EXTENSIONS_CORE) {
             expectedItems.add(
@@ -1675,7 +1529,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         expectedTitles.add(
                 item(
                         R.string.menu_history,
-                        item(R.string.menu_history),
+                        item(R.string.menu_open_history),
                         item(R.string.menu_recent_tabs)));
 
         expectedItems.add(item(R.id.quick_delete_menu_id));
@@ -1687,54 +1541,8 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         expectedItems.add(item(R.id.downloads_menu_id));
         expectedTitles.add(item(R.string.menu_downloads));
 
-        expectedItems.add(
-                item(
-                        R.id.bookmarks_parent_menu_id,
-                        item(R.id.bookmark_this_page_menu_id),
-                        item(R.id.divider_line_id),
-                        item(R.id.all_bookmarks_menu_id),
-                        item(
-                                R.id.reading_list_parent_menu_id,
-                                item(R.id.show_reading_list_menu_id),
-                                item(R.id.add_to_reading_list_menu_id)),
-                        item(R.id.divider_line_id),
-                        item(R.id.toggle_bookmarks_bar_menu_id),
-                        item(R.id.divider_line_id),
-                        item(R.id.bookmarks_header_menu_id),
-                        item(R.id.bookmark_menu_id),
-                        item(R.id.bookmark_menu_id),
-                        item(
-                                R.id.bookmark_folder_menu_id,
-                                item(R.id.bookmark_menu_id),
-                                item(R.id.bookmark_menu_id)),
-                        item(R.id.divider_line_id),
-                        item(
-                                R.id.bookmark_folder_menu_id,
-                                item(R.id.bookmark_folder_menu_id, item(R.id.empty_item_menu_id))),
-                        item(R.id.bookmark_folder_menu_id, item(R.id.empty_item_menu_id))));
-        expectedTitles.add(
-                item(
-                        R.string.menu_bookmarks,
-                        item(R.string.menu_bookmark_this_page),
-                        item(0),
-                        item(R.string.menu_bookmarks),
-                        item(
-                                R.string.menu_reading_list,
-                                item(R.string.menu_show_reading_list),
-                                item(R.string.menu_add_to_reading_list)),
-                        item(0),
-                        item(R.string.menu_show_bookmarks_bar),
-                        item(0),
-                        item(R.string.bookmarks),
-                        item("Bookmark 1"),
-                        item("Bookmark 2"),
-                        item(
-                                "Folder 1",
-                                item("Bookmark in folder 1"),
-                                item("Bookmark in folder 2")),
-                        item(0),
-                        item(R.string.menu_mobile_bookmarks, item("Partner bookmarks", item(0))),
-                        item(R.string.menu_other_bookmarks, item(0))));
+        expectedItems.add(getExpectedBookmarksParentMenuItem());
+        expectedTitles.add(getExpectedBookmarksParentMenuTitle());
 
         if (ExtensionsBuildflags.ENABLE_EXTENSIONS_CORE) {
             expectedItems.add(
@@ -1887,34 +1695,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                                 item(R.id.quick_delete_menu_id),
                                 item(R.id.divider_line_id),
                                 item(R.id.downloads_menu_id),
-                                item(
-                                        R.id.bookmarks_parent_menu_id,
-                                        item(R.id.bookmark_this_page_menu_id),
-                                        item(R.id.divider_line_id),
-                                        item(R.id.all_bookmarks_menu_id),
-                                        item(
-                                                R.id.reading_list_parent_menu_id,
-                                                item(R.id.show_reading_list_menu_id),
-                                                item(R.id.add_to_reading_list_menu_id)),
-                                        item(R.id.divider_line_id),
-                                        item(R.id.toggle_bookmarks_bar_menu_id),
-                                        item(R.id.divider_line_id),
-                                        item(R.id.bookmarks_header_menu_id),
-                                        item(R.id.bookmark_menu_id),
-                                        item(R.id.bookmark_menu_id),
-                                        item(
-                                                R.id.bookmark_folder_menu_id,
-                                                item(R.id.bookmark_menu_id),
-                                                item(R.id.bookmark_menu_id)),
-                                        item(R.id.divider_line_id),
-                                        item(
-                                                R.id.bookmark_folder_menu_id,
-                                                item(
-                                                        R.id.bookmark_folder_menu_id,
-                                                        item(R.id.empty_item_menu_id))),
-                                        item(
-                                                R.id.bookmark_folder_menu_id,
-                                                item(R.id.empty_item_menu_id)))));
+                                getExpectedBookmarksParentMenuItem()));
 
         if (ExtensionsBuildflags.ENABLE_EXTENSIONS_CORE) {
             expectedItems.add(
@@ -1999,34 +1780,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                                 item(R.id.quick_delete_menu_id),
                                 item(R.id.divider_line_id),
                                 item(R.id.downloads_menu_id),
-                                item(
-                                        R.id.bookmarks_parent_menu_id,
-                                        item(R.id.bookmark_this_page_menu_id),
-                                        item(R.id.divider_line_id),
-                                        item(R.id.all_bookmarks_menu_id),
-                                        item(
-                                                R.id.reading_list_parent_menu_id,
-                                                item(R.id.show_reading_list_menu_id),
-                                                item(R.id.add_to_reading_list_menu_id)),
-                                        item(R.id.divider_line_id),
-                                        item(R.id.toggle_bookmarks_bar_menu_id),
-                                        item(R.id.divider_line_id),
-                                        item(R.id.bookmarks_header_menu_id),
-                                        item(R.id.bookmark_menu_id),
-                                        item(R.id.bookmark_menu_id),
-                                        item(
-                                                R.id.bookmark_folder_menu_id,
-                                                item(R.id.bookmark_menu_id),
-                                                item(R.id.bookmark_menu_id)),
-                                        item(R.id.divider_line_id),
-                                        item(
-                                                R.id.bookmark_folder_menu_id,
-                                                item(
-                                                        R.id.bookmark_folder_menu_id,
-                                                        item(R.id.empty_item_menu_id))),
-                                        item(
-                                                R.id.bookmark_folder_menu_id,
-                                                item(R.id.empty_item_menu_id)))));
+                                getExpectedBookmarksParentMenuItem()));
 
         if (ExtensionsBuildflags.ENABLE_EXTENSIONS_CORE) {
             expectedItems.add(
@@ -2455,34 +2209,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                                 item(R.id.quick_delete_menu_id),
                                 item(R.id.divider_line_id),
                                 item(R.id.downloads_menu_id),
-                                item(
-                                        R.id.bookmarks_parent_menu_id,
-                                        item(R.id.bookmark_this_page_menu_id),
-                                        item(R.id.divider_line_id),
-                                        item(R.id.all_bookmarks_menu_id),
-                                        item(
-                                                R.id.reading_list_parent_menu_id,
-                                                item(R.id.show_reading_list_menu_id),
-                                                item(R.id.add_to_reading_list_menu_id)),
-                                        item(R.id.divider_line_id),
-                                        item(R.id.toggle_bookmarks_bar_menu_id),
-                                        item(R.id.divider_line_id),
-                                        item(R.id.bookmarks_header_menu_id),
-                                        item(R.id.bookmark_menu_id),
-                                        item(R.id.bookmark_menu_id),
-                                        item(
-                                                R.id.bookmark_folder_menu_id,
-                                                item(R.id.bookmark_menu_id),
-                                                item(R.id.bookmark_menu_id)),
-                                        item(R.id.divider_line_id),
-                                        item(
-                                                R.id.bookmark_folder_menu_id,
-                                                item(
-                                                        R.id.bookmark_folder_menu_id,
-                                                        item(R.id.empty_item_menu_id))),
-                                        item(
-                                                R.id.bookmark_folder_menu_id,
-                                                item(R.id.empty_item_menu_id)))));
+                                getExpectedBookmarksParentMenuItem()));
 
         if (ExtensionsBuildflags.ENABLE_EXTENSIONS_CORE) {
             expectedItems.add(
@@ -2599,34 +2326,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                                 item(R.id.quick_delete_menu_id),
                                 item(R.id.divider_line_id),
                                 item(R.id.downloads_menu_id),
-                                item(
-                                        R.id.bookmarks_parent_menu_id,
-                                        item(R.id.bookmark_this_page_menu_id),
-                                        item(R.id.divider_line_id),
-                                        item(R.id.all_bookmarks_menu_id),
-                                        item(
-                                                R.id.reading_list_parent_menu_id,
-                                                item(R.id.show_reading_list_menu_id),
-                                                item(R.id.add_to_reading_list_menu_id)),
-                                        item(R.id.divider_line_id),
-                                        item(R.id.toggle_bookmarks_bar_menu_id),
-                                        item(R.id.divider_line_id),
-                                        item(R.id.bookmarks_header_menu_id),
-                                        item(R.id.bookmark_menu_id),
-                                        item(R.id.bookmark_menu_id),
-                                        item(
-                                                R.id.bookmark_folder_menu_id,
-                                                item(R.id.bookmark_menu_id),
-                                                item(R.id.bookmark_menu_id)),
-                                        item(R.id.divider_line_id),
-                                        item(
-                                                R.id.bookmark_folder_menu_id,
-                                                item(
-                                                        R.id.bookmark_folder_menu_id,
-                                                        item(R.id.empty_item_menu_id))),
-                                        item(
-                                                R.id.bookmark_folder_menu_id,
-                                                item(R.id.empty_item_menu_id)))));
+                                getExpectedBookmarksParentMenuItem()));
 
         if (ExtensionsBuildflags.ENABLE_EXTENSIONS_CORE) {
             expectedItems.add(
@@ -4410,5 +4110,52 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         assertEquals(
                 R.string.menu_add_tab_to_new_group,
                 mTabbedAppMenuPropertiesDelegate.getAddToGroupMenuItemString(null));
+    }
+
+    private MenuItem getExpectedBookmarksParentMenuItem() {
+        return item(
+                R.id.bookmarks_parent_menu_id,
+                item(R.id.bookmark_this_page_menu_id),
+                item(R.id.divider_line_id),
+                item(R.id.all_bookmarks_menu_id),
+                item(
+                        R.id.bookmark_folder_menu_id,
+                        item(R.id.bookmark_folder_menu_id, item(R.id.empty_item_menu_id))),
+                item(R.id.bookmark_folder_menu_id, item(R.id.empty_item_menu_id)),
+                item(
+                        R.id.reading_list_parent_menu_id,
+                        item(R.id.show_reading_list_menu_id),
+                        item(R.id.add_to_reading_list_menu_id)),
+                item(R.id.divider_line_id),
+                item(R.id.toggle_bookmarks_bar_menu_id),
+                item(R.id.divider_line_id),
+                item(R.id.bookmarks_header_menu_id),
+                item(R.id.bookmark_menu_id),
+                item(R.id.bookmark_menu_id),
+                item(
+                        R.id.bookmark_folder_menu_id,
+                        item(R.id.bookmark_menu_id),
+                        item(R.id.bookmark_menu_id)));
+    }
+
+    private MenuItem getExpectedBookmarksParentMenuTitle() {
+        return item(
+                R.string.menu_bookmarks_and_lists,
+                item(R.string.menu_bookmark_this_tab),
+                item(0),
+                item(R.string.menu_show_all_bookmarks),
+                item(R.string.menu_mobile_bookmarks, item("Partner bookmarks", item(0))),
+                item(R.string.menu_other_bookmarks, item(0)),
+                item(
+                        R.string.menu_reading_list,
+                        item(R.string.menu_show_reading_list),
+                        item(R.string.menu_add_to_reading_list)),
+                item(0),
+                item(R.string.menu_show_bookmarks_bar),
+                item(0),
+                item(R.string.bookmarks),
+                item("Bookmark 1"),
+                item("Bookmark 2"),
+                item("Folder 1", item("Bookmark in folder 1"), item("Bookmark in folder 2")));
     }
 }

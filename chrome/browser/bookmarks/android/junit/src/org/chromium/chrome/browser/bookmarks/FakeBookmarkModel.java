@@ -280,7 +280,16 @@ public class FakeBookmarkModel extends BookmarkModel {
             boolean isAccountBookmark) {
         BookmarkId id = new BookmarkId(mNextNodeId++, type);
         return addBookmarkItem(
-                id, parent, title, url, isFolder, isEditable, isManaged, read, isAccountBookmark);
+                id,
+                parent,
+                index,
+                title,
+                url,
+                isFolder,
+                isEditable,
+                isManaged,
+                read,
+                isAccountBookmark);
     }
 
     private BookmarkId addBookmarkItem(

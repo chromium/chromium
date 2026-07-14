@@ -133,6 +133,24 @@ public class BookmarksItemBuilder implements Destroyable {
 
                     submenuItems.add(buildBookmarksItem(/* showIcon= */ false));
 
+                    BookmarkModel bookmarkModel = mBookmarkModelSupplier.get();
+
+                    if (bookmarkModel != null && bookmarkModel.isBookmarkModelLoaded()) {
+                        submenuItems.add(
+                                buildBookmarkFolderParentItem(
+                                        R.string.menu_mobile_bookmarks,
+                                        Arrays.asList(
+                                                bookmarkModel.getAccountMobileFolderId(),
+                                                bookmarkModel.getMobileFolderId())));
+
+                        submenuItems.add(
+                                buildBookmarkFolderParentItem(
+                                        R.string.menu_other_bookmarks,
+                                        Arrays.asList(
+                                                bookmarkModel.getAccountOtherFolderId(),
+                                                bookmarkModel.getOtherFolderId())));
+                    }
+
                     submenuItems.add(buildReadingListItem(currentTab));
 
                     submenuItems.add(
@@ -141,8 +159,6 @@ public class BookmarksItemBuilder implements Destroyable {
                                     AppMenuItemUtils.buildModelForDivider(R.id.divider_line_id)));
 
                     submenuItems.add(buildToggleBookmarksBarItem());
-
-                    BookmarkModel bookmarkModel = mBookmarkModelSupplier.get();
 
                     // TODO(crbug.com/521223427): Implement dynamic updates so that we don't
                     // have to rely on timing to load the {@link BookmarkModel}.
@@ -166,26 +182,6 @@ public class BookmarksItemBuilder implements Destroyable {
                                             mIsMenuIconAtStart));
                             submenuItems.addAll(bookmarksBarItems);
                         }
-
-                        submenuItems.add(
-                                new ListItem(
-                                        AppMenuHandler.AppMenuItemType.DIVIDER,
-                                        AppMenuItemUtils.buildModelForDivider(
-                                                R.id.divider_line_id)));
-
-                        submenuItems.add(
-                                buildBookmarkFolderParentItem(
-                                        R.string.menu_mobile_bookmarks,
-                                        Arrays.asList(
-                                                bookmarkModel.getAccountMobileFolderId(),
-                                                bookmarkModel.getMobileFolderId())));
-
-                        submenuItems.add(
-                                buildBookmarkFolderParentItem(
-                                        R.string.menu_other_bookmarks,
-                                        Arrays.asList(
-                                                bookmarkModel.getAccountOtherFolderId(),
-                                                bookmarkModel.getOtherFolderId())));
                     }
 
                     return submenuItems;
@@ -197,7 +193,7 @@ public class BookmarksItemBuilder implements Destroyable {
                         mContext,
                         mAppMenuItemTheme,
                         R.id.bookmarks_parent_menu_id,
-                        R.string.menu_bookmarks,
+                        R.string.menu_bookmarks_and_lists,
                         mShouldShowIconBeforeItem
                                 ? R.drawable.ic_star_filled_24dp
                                 : Resources.ID_NULL,
@@ -400,7 +396,9 @@ public class BookmarksItemBuilder implements Destroyable {
                         mContext,
                         mAppMenuItemTheme,
                         R.id.all_bookmarks_menu_id,
-                        R.string.menu_bookmarks,
+                        TabbedAppMenuPropertiesDelegate.isSubmenusEnabled(mContext)
+                                ? R.string.menu_show_all_bookmarks
+                                : R.string.menu_bookmarks,
                         showIcon ? R.drawable.ic_star_filled_24dp : Resources.ID_NULL,
                         mIsMenuIconAtStart),
                 showIcon);
@@ -412,7 +410,7 @@ public class BookmarksItemBuilder implements Destroyable {
                         mContext,
                         mAppMenuItemTheme,
                         R.id.bookmark_this_page_menu_id,
-                        R.string.menu_bookmark_this_page,
+                        R.string.menu_bookmark_this_tab,
                         Resources.ID_NULL,
                         mIsMenuIconAtStart),
                 /* showIcon= */ false);

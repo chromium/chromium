@@ -198,7 +198,9 @@ public class MoreToolsItemBuilder {
                         mContext,
                         mAppMenuItemTheme,
                         R.id.ntp_customization_id,
-                        R.string.menu_ntp_customization,
+                        TabbedAppMenuPropertiesDelegate.isSubmenusEnabled(mContext)
+                                ? R.string.menu_customize_chrome
+                                : R.string.menu_ntp_customization,
                         showIcon ? R.drawable.ic_edit_24dp : Resources.ID_NULL,
                         mIsMenuIconAtStart),
                 showIcon);

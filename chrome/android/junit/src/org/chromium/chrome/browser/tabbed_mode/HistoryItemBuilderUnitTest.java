@@ -207,7 +207,7 @@ public class HistoryItemBuilderUnitTest {
         List<MenuItem> expectedTitles =
                 new ArrayList<>(
                         Arrays.asList(
-                                item(R.string.menu_history),
+                                item(R.string.menu_open_history),
                                 item(R.string.menu_recent_tabs),
                                 item(0),
                                 item(R.string.recent_tabs),
@@ -279,7 +279,7 @@ public class HistoryItemBuilderUnitTest {
         List<MenuItem> expectedTitles =
                 new ArrayList<>(
                         Arrays.asList(
-                                item(R.string.menu_history),
+                                item(R.string.menu_open_history),
                                 item(R.string.menu_recent_tabs),
                                 item(0),
                                 item(R.string.recent_tabs),
@@ -338,7 +338,7 @@ public class HistoryItemBuilderUnitTest {
         List<MenuItem> expectedTitles =
                 new ArrayList<>(
                         Arrays.asList(
-                                item(R.string.menu_history),
+                                item(R.string.menu_open_history),
                                 item(R.string.menu_recent_tabs),
                                 item(0),
                                 item(R.string.recent_tabs),
@@ -429,7 +429,7 @@ public class HistoryItemBuilderUnitTest {
         List<MenuItem> expectedTitles =
                 new ArrayList<>(
                         Arrays.asList(
-                                item(R.string.menu_history),
+                                item(R.string.menu_open_history),
                                 item(R.string.menu_recent_tabs),
                                 item(0),
                                 item(R.string.recent_tabs),
@@ -457,7 +457,7 @@ public class HistoryItemBuilderUnitTest {
         List<MenuItem> expectedTitles =
                 new ArrayList<>(
                         Arrays.asList(
-                                item(R.string.menu_history),
+                                item(R.string.menu_open_history),
                                 item(R.string.menu_recent_tabs),
                                 item(0),
                                 item(R.string.recent_tabs),
@@ -499,7 +499,7 @@ public class HistoryItemBuilderUnitTest {
         List<MenuItem> expectedTitles =
                 new ArrayList<>(
                         Arrays.asList(
-                                item(R.string.menu_history),
+                                item(R.string.menu_open_history),
                                 item(R.string.menu_recent_tabs),
                                 item(0),
                                 item("Laptop", item("Tab 1 Title"), item("Tab 2 Title"))));

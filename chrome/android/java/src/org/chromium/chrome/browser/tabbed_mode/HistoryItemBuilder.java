@@ -202,7 +202,9 @@ public class HistoryItemBuilder implements Destroyable {
                         mContext,
                         mAppMenuItemTheme,
                         R.id.open_history_menu_id,
-                        R.string.menu_history,
+                        TabbedAppMenuPropertiesDelegate.isSubmenusEnabled(mContext)
+                                ? R.string.menu_open_history
+                                : R.string.menu_history,
                         showIcon ? R.drawable.ic_history_24dp : Resources.ID_NULL,
                         mIsMenuIconAtStart),
                 showIcon);

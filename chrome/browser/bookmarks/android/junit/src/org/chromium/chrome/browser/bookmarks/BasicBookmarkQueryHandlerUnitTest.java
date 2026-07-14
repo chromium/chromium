@@ -63,25 +63,25 @@ public class BasicBookmarkQueryHandlerUnitTest {
         BookmarkId id1 =
                 mBookmarkModel.addBookmark(
                         mBookmarkModel.getMobileFolderId(),
-                        0,
+                        1,
                         "test1",
                         new GURL("https://test1.com"));
         BookmarkId id2 =
                 mBookmarkModel.addBookmark(
                         mBookmarkModel.getMobileFolderId(),
-                        0,
+                        2,
                         "test2",
                         new GURL("https://test2.com"));
         BookmarkId id3 =
                 mBookmarkModel.addBookmark(
                         mBookmarkModel.getMobileFolderId(),
-                        0,
+                        3,
                         "test3",
                         new GURL("https://test3.com"));
         BookmarkId id4 =
                 mBookmarkModel.addBookmark(
                         mBookmarkModel.getMobileFolderId(),
-                        0,
+                        4,
                         "test4",
                         new GURL("https://test4.com"));
         List<BookmarkListEntry> result = mHandler.buildBookmarkListForParent(MOBILE_BOOKMARK_ID);
@@ -123,25 +123,25 @@ public class BasicBookmarkQueryHandlerUnitTest {
         BookmarkId foo1 =
                 mBookmarkModel.addBookmark(
                         mBookmarkModel.getMobileFolderId(),
-                        0,
+                        1,
                         "foo1",
                         new GURL("https://foo1.com"));
         BookmarkId foo2 =
                 mBookmarkModel.addBookmark(
                         mBookmarkModel.getMobileFolderId(),
-                        0,
+                        2,
                         "foo2",
                         new GURL("https://foo2.com"));
         BookmarkId baz1 =
                 mBookmarkModel.addBookmark(
                         mBookmarkModel.getMobileFolderId(),
-                        0,
+                        3,
                         "baz1",
                         new GURL("https://bar1.com"));
         BookmarkId baz2 =
                 mBookmarkModel.addBookmark(
                         mBookmarkModel.getMobileFolderId(),
-                        0,
+                        4,
                         "baz2",
                         new GURL("https://bar2.com"));
         List<BookmarkListEntry> result =
@@ -162,13 +162,13 @@ public class BasicBookmarkQueryHandlerUnitTest {
     @Test
     public void testBuildBookmarkListForFolderSelect() {
         mBookmarkModel.addBookmark(
-                mBookmarkModel.getMobileFolderId(), 0, "test1", new GURL("https://test1.com"));
+                mBookmarkModel.getMobileFolderId(), 1, "test1", new GURL("https://test1.com"));
         BookmarkId folder1 =
-                mBookmarkModel.addFolder(mBookmarkModel.getMobileFolderId(), 0, "folder 1");
+                mBookmarkModel.addFolder(mBookmarkModel.getMobileFolderId(), 2, "folder 1");
         BookmarkId folder2 =
-                mBookmarkModel.addFolder(mBookmarkModel.getMobileFolderId(), 0, "folder 2");
+                mBookmarkModel.addFolder(mBookmarkModel.getMobileFolderId(), 3, "folder 2");
         BookmarkId folder3 =
-                mBookmarkModel.addFolder(mBookmarkModel.getMobileFolderId(), 0, "folder 3");
+                mBookmarkModel.addFolder(mBookmarkModel.getMobileFolderId(), 4, "folder 3");
 
         List<BookmarkListEntry> result =
                 mHandler.buildBookmarkListForFolderSelect(mBookmarkModel.getMobileFolderId());
