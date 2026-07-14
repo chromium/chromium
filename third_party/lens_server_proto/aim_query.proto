@@ -9,10 +9,10 @@ option optimize_for = LITE_RUNTIME;
 package lens;
 
 import "added_inputs.proto";
+import "lens_overlay_contextual_inputs.proto";
 import "lens_overlay_request_id.proto";
 import "lens_overlay_visual_input_type.proto";
 import "lens_overlay_visual_search_interaction_data.proto";
-import "lens_overlay_contextual_inputs.proto";
 
 message ContextMetadata {
   string pdf_title = 1;
@@ -137,6 +137,11 @@ message QueryPayload {
 
   // The tool mode to use for this query.
   ToolMode tool_mode = 15;
+
+  // The list of expired/deleted Lens context IDs sent by the client. These are
+  // Base64Url-encoded serialized `lens.request_context.RequestId` proto
+  // messages.
+  repeated string expired_lens_ids = 17;
 
   // Deprecated fields to match the Silk QueryPayload.
   reserved 5, 7;
