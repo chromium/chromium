@@ -796,33 +796,23 @@ bool FrameTreeNode::NotifyUserActivation(
   // User Activation V2 requires activating all ancestor frames in addition to
   // the current frame. See
   // https://html.spec.whatwg.org/multipage/interaction.html#tracking-user-activation.
+  // This propagation is spec-mandated to cross origin boundaries (e.g., from
+  // a cross-origin subframe to its parent), so no same-origin check is
+  // performed here.
   for (RenderFrameHostImpl* rfh = current_frame_host(); rfh;
        rfh = rfh->GetParent()) {
     rfh->DidReceiveUserActivation();
     rfh->ActivateUserActivation(notification_type, sticky_only);
   }
 
-  // If we're in a picture-in-picture frame tree, then also activate the opener
-  // frame of the picture-in-picture root.
-  FrameTree* pip_opener =
-      frame_tree().delegate()->GetDocumentPictureInPictureOpenerFrameTree();
-  if (base::FeatureList::IsEnabled(
-          blink::features::kDocumentPictureInPictureUserActivation) &&
-      pip_opener) {
-    RenderFrameHostImpl* opener_frame_host =
-        pip_opener->root()->current_frame_host();
-
-    opener_frame_host->DidReceiveUserActivation();
-    opener_frame_host->ActivateUserActivation(notification_type, sticky_only);
-  }
-
-  current_frame_host()->browsing_context_state()->set_has_active_user_gesture(
-      true);
-
   // See the "Same-origin Visibility" section in |UserActivationState| class
   // doc.
   const url::Origin& current_origin =
       this->current_frame_host()->GetLastCommittedOrigin();
+
+  current_frame_host()->browsing_context_state()->set_has_active_user_gesture(
+      true);
+
   for (FrameTreeNode* node : frame_tree().Nodes()) {
     if (node->current_frame_host()->GetLastCommittedOrigin().IsSameOriginWith(
             current_origin)) {
@@ -833,6 +823,22 @@ bool FrameTreeNode::NotifyUserActivation(
 
   if (base::FeatureList::IsEnabled(
           blink::features::kDocumentPictureInPictureUserActivation)) {
+    // If we're in a picture-in-picture frame tree, then also activate the
+    // opener frame of the picture-in-picture root if it is same-origin with the
+    // activated frame.
+    FrameTree* pip_opener =
+        frame_tree().delegate()->GetDocumentPictureInPictureOpenerFrameTree();
+    if (pip_opener) {
+      RenderFrameHostImpl* opener_frame_host =
+          pip_opener->root()->current_frame_host();
+      if (opener_frame_host->GetLastCommittedOrigin().IsSameOriginWith(
+              current_origin)) {
+        opener_frame_host->DidReceiveUserActivation();
+        opener_frame_host->ActivateUserActivation(notification_type,
+                                                  sticky_only);
+      }
+    }
+
     // If we own a picture-in-picture window, then also activate same-origin
     // frames within the picture-in-picture window.
     FrameTree* picture_in_picture_frame_tree =

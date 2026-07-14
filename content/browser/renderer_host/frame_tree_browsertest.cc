@@ -13,12 +13,14 @@
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
+#include "content/browser/renderer_host/ipc_utils.h"
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
 #include "content/browser/renderer_host/render_view_host_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/common/content_navigation_policy.h"
+#include "content/common/frame.mojom.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/dedicated_worker_service.h"
 #include "content/public/browser/navigation_handle.h"
@@ -39,6 +41,7 @@
 #include "content/shell/common/shell_switches.h"
 #include "content/test/content_browser_test_utils_internal.h"
 #include "content/test/render_document_feature.h"
+#include "media/base/media_switches.h"
 #include "net/base/features.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/controllable_http_response.h"
@@ -1963,6 +1966,118 @@ IN_PROC_BROWSER_TEST_F(CrossProcessFrameTreeBrowserTest,
 
   EXPECT_FALSE(root->HasStickyUserActivation());
   EXPECT_FALSE(root->HasTransientUserActivation());
+}
+
+class PictureInPictureFrameTreeBrowserTest
+    : public CrossProcessFrameTreeBrowserTest {
+ public:
+  PictureInPictureFrameTreeBrowserTest() {
+    scoped_feature_list_.InitWithFeatures(
+        {blink::features::kDocumentPictureInPictureUserActivation,
+         media::kDocumentPictureInPictureNavigation},
+        {});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Tests that user activation in a document picture-in-picture window only
+// propagates to the opener window when the activated frame is same-origin with
+// the opener's main frame.
+IN_PROC_BROWSER_TEST_F(PictureInPictureFrameTreeBrowserTest,
+                       UserActivationOpenerPropagationSameOriginOnly) {
+  // Load an a.com page that embeds a cross-origin b.com subframe.
+  GURL main_url(embedded_test_server()->GetURL(
+      "a.com", "/cross_site_iframe_factory.html?a(b)"));
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  WebContentsImpl* opener_contents =
+      static_cast<WebContentsImpl*>(shell()->web_contents());
+  FrameTreeNode* opener_root = opener_contents->GetPrimaryFrameTree().root();
+  ASSERT_EQ(1U, opener_root->child_count());
+  FrameTreeNode* opener_child = opener_root->child_at(0);
+  ASSERT_FALSE(
+      opener_root->current_frame_host()
+          ->GetLastCommittedOrigin()
+          .IsSameOriginWith(
+              opener_child->current_frame_host()->GetLastCommittedOrigin()));
+
+  // Create a picture-in-picture window whose opener is the b.com subframe so
+  // that the picture-in-picture opener resolves to the embedding a.com page.
+  WebContents::CreateParams create_params(
+      opener_contents->GetBrowserContext(),
+      opener_child->current_frame_host()->GetSiteInstance());
+  create_params.picture_in_picture_options =
+      blink::mojom::PictureInPictureWindowOptions();
+  std::unique_ptr<WebContentsImpl> pip_contents =
+      WebContentsImpl::CreateWithOpener(create_params,
+                                        opener_child->current_frame_host());
+  ASSERT_EQ(&opener_contents->GetPrimaryFrameTree(),
+            pip_contents->GetDocumentPictureInPictureOpenerFrameTree());
+
+  // Navigate the picture-in-picture window to a b.com document so that its
+  // main frame is cross-origin with the opener's main frame.
+  GURL cross_origin_url(
+      embedded_test_server()->GetURL("b.com", "/title1.html"));
+  EXPECT_TRUE(NavigateToURL(pip_contents.get(), cross_origin_url));
+  FrameTreeNode* pip_root = pip_contents->GetPrimaryFrameTree().root();
+  ASSERT_FALSE(
+      pip_root->current_frame_host()->GetLastCommittedOrigin().IsSameOriginWith(
+          opener_root->current_frame_host()->GetLastCommittedOrigin()));
+
+  EXPECT_FALSE(opener_root->HasStickyUserActivation());
+  EXPECT_FALSE(opener_root->HasTransientUserActivation());
+
+  // Activating the cross-origin picture-in-picture main frame must not
+  // propagate to the opener.
+  EXPECT_TRUE(pip_root->UpdateUserActivationState(
+      blink::mojom::UserActivationUpdateType::kNotifyActivation,
+      blink::mojom::UserActivationNotificationType::kTest));
+  EXPECT_TRUE(pip_root->HasStickyUserActivation());
+  EXPECT_TRUE(pip_root->HasTransientUserActivation());
+  EXPECT_FALSE(opener_root->HasStickyUserActivation());
+  EXPECT_FALSE(opener_root->HasTransientUserActivation());
+
+  // Navigate the picture-in-picture window to a same-origin a.com document and
+  // verify that activation does propagate to the opener.
+  GURL same_origin_url(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  EXPECT_TRUE(NavigateToURL(pip_contents.get(), same_origin_url));
+  pip_root = pip_contents->GetPrimaryFrameTree().root();
+  ASSERT_TRUE(
+      pip_root->current_frame_host()->GetLastCommittedOrigin().IsSameOriginWith(
+          opener_root->current_frame_host()->GetLastCommittedOrigin()));
+
+  EXPECT_TRUE(pip_root->UpdateUserActivationState(
+      blink::mojom::UserActivationUpdateType::kNotifyActivation,
+      blink::mojom::UserActivationNotificationType::kTest));
+  EXPECT_TRUE(opener_root->HasStickyUserActivation());
+  EXPECT_TRUE(opener_root->HasTransientUserActivation());
+}
+
+IN_PROC_BROWSER_TEST_F(PictureInPictureFrameTreeBrowserTest,
+                       VerifyCreateNewWindowParamsInvalidPipOptions) {
+  EXPECT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL("a.com", "/title1.html")));
+
+  RenderFrameHostImpl* rfh = static_cast<RenderFrameHostImpl*>(
+      shell()->web_contents()->GetPrimaryMainFrame());
+
+  // Create invalid params: NEW_POPUP with pip_options.
+  mojom::CreateNewWindowParamsPtr params = mojom::CreateNewWindowParams::New();
+  params->disposition = WindowOpenDisposition::NEW_POPUP;
+  params->pip_options = blink::mojom::PictureInPictureWindowOptions::New();
+
+  RenderProcessHostWatcher crash_observer(
+      rfh->GetProcess(), RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
+
+  // Call the validation function. It should return false and trigger bad
+  // message.
+  EXPECT_FALSE(VerifyCreateNewWindowParams(*rfh, *params));
+
+  // The process should be terminated.
+  crash_observer.Wait();
+  EXPECT_FALSE(crash_observer.did_exit_normally());
 }
 
 class BrowserContextGroupSwapFrameTreeBrowserTest : public ContentBrowserTest {

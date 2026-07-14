@@ -531,6 +531,7 @@ Called by update_bad_message_reasons.py.-->
       label="BIBI_BIND_GAMEPAD_MONITOR_BLOCKED_BY_PERMISSIONS_POLICY"/>
   <int value="357"
       label="BIBI_BIND_GAMEPAD_HAPTICS_MANAGER_BLOCKED_BY_PERMISSIONS_POLICY"/>
+  <int value="358" label="RFH_CREATE_NEW_WINDOW_INVALID_PIP_OPTIONS"/>
 </enum>
 
 <enum name="BadMessageReasonExtensions">

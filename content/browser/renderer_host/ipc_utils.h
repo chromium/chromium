@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_RENDERER_HOST_IPC_UTILS_H_
 
 #include "base/memory/scoped_refptr.h"
+#include "content/common/content_export.h"
 #include "content/common/frame.mojom.h"
 #include "content/public/browser/render_process_host.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -68,8 +69,9 @@ bool VerifyBeginNavigationCommonParams(
 // CreateNewWindowParams are invalid.
 //
 // This function has to be called on the UI thread.
-bool VerifyCreateNewWindowParams(const RenderFrameHostImpl& current_rfh,
-                                 const mojom::CreateNewWindowParams& params);
+CONTENT_EXPORT bool VerifyCreateNewWindowParams(
+    const RenderFrameHostImpl& current_rfh,
+    const mojom::CreateNewWindowParams& params);
 
 // Verify that the initiator frame identified by `initiator_frame_token` and
 // `initiator_process_id` can navigate `current_rfh`.

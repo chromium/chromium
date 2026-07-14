@@ -394,6 +394,13 @@ bool VerifyCreateNewWindowParams(const RenderFrameHostImpl& current_rfh,
     return false;
   }
 
+  if (params.pip_options &&
+      params.disposition != WindowOpenDisposition::NEW_PICTURE_IN_PICTURE) {
+    bad_message::ReceivedBadMessage(
+        process, bad_message::RFH_CREATE_NEW_WINDOW_INVALID_PIP_OPTIONS);
+    return false;
+  }
+
   // Verify `form_submission_post_data`.
   auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
   if (!policy->CanReadRequestBody(process, params.form_submission_post_data)) {
