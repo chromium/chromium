@@ -440,6 +440,15 @@ BASE_FEATURE_PARAM(std::string,
                    "at_memory_eligible_tiers",
                    "");
 
+// The Android devices for which AtMemory is enabled. Comma-separated list
+// of HardwareModelNames. If empty/not defined, no device restrictions are
+// applied (i.e. only tier-based restrictions apply).
+BASE_FEATURE_PARAM(std::string,
+                   kAutofillAtMemoryEnabledDevices,
+                   &kAutofillAtMemory,
+                   "at_memory_enabled_devices",
+                   "");
+
 // The timeout for `PersonalContextService` requests in `AtMemoryQueryService`.
 BASE_FEATURE_PARAM(base::TimeDelta,
                    kAutofillAtMemoryRequestTimeout,

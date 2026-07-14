@@ -24,6 +24,10 @@
 #include "components/subscription_eligibility/subscription_eligibility_service.h"
 #include "url/gurl.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "base/system/sys_info.h"
+#endif
+
 #if !BUILDFLAG(IS_FUCHSIA)
 #include "components/variations/service/google_groups_manager.h"  // nogncheck
 #endif
@@ -97,15 +101,30 @@ base::flat_set<int32_t> GetAutofillAtMemoryEligibleTiers() {
   return base::flat_set<int32_t>(std::move(eligible_tiers));
 }
 
-// Returns whether the subscription tier eligibility criteria are met.
+[[nodiscard]] bool IsAndroidDeviceEligibleForAtMemory() {
+#if BUILDFLAG(IS_ANDROID)
+  const std::string model_name = base::SysInfo::HardwareModelName();
+  const base::flat_set<std::string> enabled_devices =
+      base::SplitString(features::kAutofillAtMemoryEnabledDevices.Get(), ",",
+                        base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+  return enabled_devices.contains(model_name);
+#else
+  return false;
+#endif
+}
+
+// Returns whether the subscription tier eligibility or device eligibility
+// criteria are met.
 //
 // Eligibility is determined by checking whether the user's tier is configured
-// as eligible by the `kAutofillAtMemoryEligibleTiers` feature parameter.
+// as eligible by the `kAutofillAtMemoryEligibleTiers` feature parameter, or if
+// the device is a premium device configured as eligible by the
+// `kAutofillAtMemoryEnabledDevices` feature parameter.
 //
-// If the feature parameter is empty (not set or set to an empty list), this is
-// interpreted as having no restrictions, in which case any subscription tier is
-// eligible (and `subscription_eligibility_service` being null is also allowed).
-[[nodiscard]] bool IsSubscriptionTierEligible(
+// If the eligible tiers feature parameter is empty (not set or set to an empty
+// list), this is interpreted as having no restrictions, in which case any
+// subscription tier or any device is eligible.
+[[nodiscard]] bool IsSubscriptionOrDeviceEligible(
     const subscription_eligibility::SubscriptionEligibilityService*
         subscription_eligibility_service,
     std::string* debug_message) {
@@ -121,8 +140,10 @@ base::flat_set<int32_t> GetAutofillAtMemoryEligibleTiers() {
   }
   const int32_t tier =
       subscription_eligibility_service->GetAiSubscriptionTier();
-  if (!eligible_tiers.contains(tier)) {
-    MaybeOutputReason(debug_message, "User subscription tier is not eligible.");
+  if (!eligible_tiers.contains(tier) && !IsAndroidDeviceEligibleForAtMemory()) {
+    MaybeOutputReason(debug_message,
+                      "User subscription tier is not eligible and device is "
+                      "not eligible.");
     return false;
   }
   return true;
@@ -171,8 +192,8 @@ base::flat_set<int32_t> GetAutofillAtMemoryEligibleTiers() {
     return false;
   }
 
-  if (!IsSubscriptionTierEligible(subscription_eligibility_service,
-                                  debug_message)) {
+  if (!IsSubscriptionOrDeviceEligible(subscription_eligibility_service,
+                                      debug_message)) {
     return false;
   }
 

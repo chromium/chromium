@@ -158,6 +158,9 @@ BASE_DECLARE_FEATURE(kAutofillAtMemory);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE_PARAM(std::string, kAutofillAtMemoryEligibleTiers);
 COMPONENT_EXPORT(AUTOFILL)
+BASE_DECLARE_FEATURE_PARAM(std::string, kAutofillAtMemoryEnabledDevices);
+
+COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE_PARAM(base::TimeDelta, kAutofillAtMemoryRequestTimeout);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillAtMemoryInactivityNudge);
