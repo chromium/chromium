@@ -68,7 +68,6 @@ source_set("browser_tests") {
     "//ash/constants",
     "//base",
     "//base/test:test_support",
-    "//chrome/browser/ash/crosapi",
     "//chrome/browser/ash/video_conference",
     "//chrome/browser/media/webrtc",
     "//chrome/browser/ui",

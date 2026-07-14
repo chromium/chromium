@@ -45,7 +45,6 @@ class ExternalLoader;
 
 namespace crosapi {
 class BrowserManager;
-class CrosapiManager;
 }  // namespace crosapi
 
 namespace crostini {
@@ -236,7 +235,6 @@ class ChromeBrowserMainPartsAsh : public ChromeBrowserMainPartsLinux {
   std::unique_ptr<ChromeKeyboardControllerClient>
       chrome_keyboard_controller_client_;
 
-  std::unique_ptr<crosapi::CrosapiManager> crosapi_manager_;
   std::unique_ptr<crosapi::BrowserManager> browser_manager_;
 
   std::unique_ptr<VideoConferenceAppServiceClient> vc_app_service_client_;

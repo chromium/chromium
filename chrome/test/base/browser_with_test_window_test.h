@@ -58,10 +58,6 @@ class NavigationController;
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
-namespace crosapi {
-class CrosapiManager;
-}  // namespace crosapi
-
 namespace session_manager {
 class SessionManager;
 }  // namespace session_manager
@@ -303,7 +299,6 @@ class BrowserWithTestWindowTest : public testing::Test, public ProfileObserver {
   std::vector<
       std::unique_ptr<base::ScopedObservation<Profile, ProfileObserver>>>
       profile_observations_;
-  std::unique_ptr<crosapi::CrosapiManager> manager_;
   std::unique_ptr<ash::KioskCryptohomeRemover> kiosk_cryptohome_remover_;
   std::unique_ptr<ash::KioskChromeAppManager> kiosk_chrome_app_manager_;
 #endif

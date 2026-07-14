@@ -68,7 +68,6 @@
 #include "chrome/browser/ash/certs/system_token_cert_db_initializer.h"
 #include "chrome/browser/ash/child_accounts/parent_access_code/parent_access_service.h"
 #include "chrome/browser/ash/crosapi/browser_manager.h"
-#include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/crostini/crostini_unsupported_action_notifier.h"
 #include "chrome/browser/ash/dbus/arc_crosh_service_provider.h"
 #include "chrome/browser/ash/dbus/arc_tracing_service_provider.h"
@@ -1123,7 +1122,6 @@ void ChromeBrowserMainPartsAsh::PreProfileInit() {
   // Always construct BrowserManager, even if the lacros flag is disabled, so
   // it can do cleanup work if needed. Initialized in PreProfileInit because the
   // profile-keyed service AppService can call into it.
-  crosapi_manager_ = std::make_unique<crosapi::CrosapiManager>();
   browser_manager_ = std::make_unique<crosapi::BrowserManager>();
 
   magic_boost_controller_ = std::make_unique<ash::MagicBoostControllerImpl>();
@@ -1137,7 +1135,6 @@ void ChromeBrowserMainPartsAsh::PreProfileInit() {
         l10n_util::GetLanguage(g_browser_process->GetApplicationLocale())));
   }
 
-  // Needs to be initialized after crosapi_manager_.
   metrics::structured::ChromeStructuredMetricsDelegate::Get()->Initialize();
 
   // Initialize Cellular Carrier Lock provisioning manager before login
@@ -1832,13 +1829,10 @@ void ChromeBrowserMainPartsAsh::PostMainMessageLoopRun() {
 
   magic_boost_controller_.reset();
 
-  // BrowserManager and CrosapiManager need to outlive the Profile, which
+  // BrowserManager needs to outlive the Profile, which
   // is destroyed inside ChromeBrowserMainPartsLinux::PostMainMessageLoopRun().
   browser_manager_.reset();
-  crosapi_manager_.reset();
 
-  // The `AshProxyMonitor` instance needs to outlive the `crosapi_manager_`
-  // because crosapi depends on it.
   g_browser_process->platform_part()->ShutdownAshProxyMonitor();
 
   chrome_keyboard_controller_client_.reset();

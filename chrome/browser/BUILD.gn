@@ -3583,7 +3583,6 @@ source_set("browser") {
       "//chrome/browser/ash/child_accounts/on_device_controls",
       "//chrome/browser/ash/child_accounts/parent_access_code",
       "//chrome/browser/ash/child_accounts/time_limits",
-      "//chrome/browser/ash/crosapi",
       "//chrome/browser/ash/crostini",
       "//chrome/browser/ash/cryptauth",
       "//chrome/browser/ash/customization",

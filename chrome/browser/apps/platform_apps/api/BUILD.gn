@@ -56,9 +56,6 @@ source_set("api") {
   visibility = []
 
   if (is_chromeos) {
-    # For transition period of crosapi removal.
-    visibility += [ "//chrome/browser/ash/crosapi" ]
-
     sources += [
       "arc_apps_private/arc_apps_private_api.cc",
       "arc_apps_private/arc_apps_private_api.h",

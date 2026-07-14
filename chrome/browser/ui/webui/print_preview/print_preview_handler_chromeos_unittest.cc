@@ -17,7 +17,6 @@
 #include "base/test/bind.h"
 #include "base/test/values_test_util.h"
 #include "base/values.h"
-#include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/login/users/scoped_account_id_annotator.h"
 #include "chrome/browser/ash/printing/cups_printers_manager_factory.h"
 #include "chrome/browser/ash/printing/fake_cups_printers_manager.h"
@@ -248,7 +247,6 @@ class PrintPreviewHandlerChromeOSTest : public testing::Test {
     user_manager::UserManager::Get()->OnUserProfileCreated(
         kAccountId, profile_->GetPrefs());
 
-    manager_ = std::make_unique<crosapi::CrosapiManager>();
     preview_web_contents_ = content::WebContents::Create(
         content::WebContents::CreateParams(profile_));
     web_ui_ = std::make_unique<content::TestWebUI>();
@@ -298,7 +296,6 @@ class PrintPreviewHandlerChromeOSTest : public testing::Test {
     handler_->SetInitiatorForTesting(nullptr);
     handler_ = nullptr;
     web_ui_.reset();
-    manager_.reset();
     preview_web_contents_.reset();
     ash::LoginState::Shutdown();
     user_manager::UserManager::Get()->OnUserProfileWillBeDestroyed(kAccountId);
@@ -345,7 +342,6 @@ class PrintPreviewHandlerChromeOSTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<ash::test::TestUserSessionManager> test_user_session_manager_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
-  std::unique_ptr<crosapi::CrosapiManager> manager_;
   std::unique_ptr<TestPrintServersManager> test_print_servers_manager_;
   std::unique_ptr<ash::FakeLocalPrinter> local_printer_;
   std::unique_ptr<content::WebContents> preview_web_contents_;

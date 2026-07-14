@@ -1,12 +1,4 @@
 include_rules = [
-  # ChromeOS should not depend on //chrome. See //docs/chromeos/code.md for
-  # details.
-  "-chrome",
-
-  # This directory is in //chrome, which violates the rule above. Allow this
-  # directory to #include its own files.
-  "+chrome/browser/ash/crosapi",
-
   # Existing dependencies within //chrome. There is an active effort to
   # refactor //chrome/browser/ash to break these dependencies; see b/332804822.
   # Whenever possible, avoid adding new //chrome dependencies to this list.
@@ -14,27 +6,6 @@ include_rules = [
   # Files residing in certain directories (e.g., //chrome/browser) are listed
   # individually. Other dependencies within //chrome are listed on a per-
   # directory basis. See //tools/chromeos/gen_deps.sh for details.
-  "+chrome/browser/apps/app_service",
-  "+chrome/browser/ash/login",
-  "+chrome/browser/ash/profiles",
-  "+chrome/browser/browser_process.h",
-  "+chrome/browser/extensions/extension_apitest.h",
-  "+chrome/browser/notifications",
-  "+chrome/browser/profiles",
-  "+chrome/browser/ui/ash",
-  "+chrome/browser/web_applications/web_app_utils.h",
   "+chrome/browser/web_applications/user_uninstalled_preinstalled_web_app_prefs.h",
   "+chrome/common/chrome_paths.h",
 ]
-
-specific_include_rules = {
-  "crosapi_ash\\.h": [
-    "+media/gpu/buildflags.h",
-  ],
-  "message_center_ash(\\.cc|_unittest\\.cc)": [
-    # Provides a mojo interface around the message center, but lives in this
-    # directory for consistency with other crosapi classes.
-    "-chrome",
-    "+chrome/browser/ash/crosapi",
-  ],
-}

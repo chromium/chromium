@@ -32,9 +32,6 @@ static_library("chrome_test_launcher") {
       "//chrome/browser:chrome_browser_application_mac",
     ]
   }
-  if (is_chromeos) {
-    deps += [ "//chrome/browser/ash/crosapi" ]
-  }
   if (is_posix && !is_mac) {
     deps += [ "//chrome/app:chrome_crash_reporter_client" ]
   }

@@ -237,7 +237,6 @@ source_set("unit_tests") {
     ]
     deps += [
       "//ash/constants",
-      "//chrome/browser/ash/crosapi",
       "//chrome/browser/ash/login/users:test_support",
       "//chrome/browser/ash/printing",
       "//chrome/browser/ash/printing:test_support",

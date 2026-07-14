@@ -4,88 +4,27 @@
 
 #include "chrome/browser/ash/crosapi/browser_manager.h"
 
-#include <fcntl.h>
-#include <unistd.h>
-
-#include <cstdint>
-#include <memory>
-#include <optional>
-#include <string>
-#include <string_view>
-#include <utility>
-#include <vector>
-
-#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
-#include "ash/public/cpp/notification_utils.h"
-#include "ash/strings/grit/ash_strings.h"
-#include "ash/wm/desks/desks_util.h"
-#include "base/base_switches.h"
 #include "base/check.h"
 #include "base/check_is_test.h"
 #include "base/command_line.h"
-#include "base/debug/dump_without_crashing.h"
-#include "base/environment.h"
-#include "base/feature_list.h"
-#include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
-#include "base/files/platform_file.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
-#include "base/json/json_file_value_serializer.h"
-#include "base/logging.h"
-#include "base/memory/ptr_util.h"
-#include "base/memory/weak_ptr.h"
-#include "base/notreached.h"
 #include "base/path_service.h"
-#include "base/posix/eintr_wrapper.h"
-#include "base/process/launch.h"
-#include "base/process/process_handle.h"
-#include "base/strings/string_number_conversions.h"
-#include "base/strings/string_split.h"
-#include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
-#include "base/task/sequenced_task_runner.h"
-#include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/trace_event/trace_event.h"
-#include "build/build_config.h"
-#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
-#include "chrome/browser/ash/crosapi/crosapi_manager.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/notifications/system_notification_helper.h"
-#include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
 #include "chrome/browser/web_applications/user_uninstalled_preinstalled_web_app_prefs.h"
 #include "chrome/common/chrome_paths.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
-#include "chromeos/crosapi/mojom/crosapi.mojom-shared.h"
-#include "components/account_id/account_id.h"
-#include "components/component_updater/ash/component_manager_ash.h"
-#include "components/crash/core/common/crash_key.h"
-#include "components/feature_engagement/public/tracker.h"
 #include "components/prefs/pref_service.h"
 #include "components/session_manager/core/session_manager.h"
-#include "components/user_manager/device_ownership_waiter.h"
-#include "components/user_manager/known_user.h"
-#include "components/user_manager/user.h"
-#include "components/user_manager/user_manager.h"
-#include "components/user_manager/user_type.h"
 #include "components/user_prefs/user_prefs.h"
-#include "components/version_info/version_info.h"
-#include "mojo/public/cpp/bindings/pending_remote.h"
-#include "ui/base/l10n/l10n_util.h"
-#include "ui/base/mojom/window_show_state.mojom.h"
-#include "ui/display/screen.h"
-#include "ui/message_center/public/cpp/notification_delegate.h"
-
-// TODO(crbug.com/40703689): Currently, this source has log spamming
-// by LOG(WARNING) for non critical errors to make it easy
-// to debug and develop. Get rid of the log spamming
-// when it gets stable enough.
+#include "content/public/browser/browser_context.h"
 
 namespace crosapi {
 
@@ -132,10 +71,6 @@ BrowserManager::BrowserManager() {
   // the flag-off cleanup logic until we know we have the final flag state.
   if (session_manager::SessionManager::Get()) {
     session_manager::SessionManager::Get()->AddObserver(this);
-  }
-
-  if (!CrosapiManager::IsInitialized()) {
-    CHECK_IS_TEST();
   }
 }
 
