@@ -1629,7 +1629,7 @@ TEST_F(DateTimeFormatterTest, MD_AllChromiumPlatformLocales) {
       {"sw", {u"07/01", u"7 Jan", u"7 Januari"}},
       {"ta", {u"7/1", u"ஜன. 7", u"7 ஜனவரி"}},
       {"te", {u"07-01", u"7 జన", u"7 జనవరి"}},
-#if BUILDFLAG(IS_IOS)
+#if !BUILDFLAG(USE_BLINK)
       {"th", {u"1 ├วัน: 7┤", u"7 ├เดือน: ม.ค.┤", u"7 ├เดือน: มกราคม┤"}},
 #else
       {"th", {u"7/1", u"7 ม.ค.", u"7 มกราคม"}},
