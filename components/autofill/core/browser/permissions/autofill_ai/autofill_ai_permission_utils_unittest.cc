@@ -752,6 +752,40 @@ TEST_F(AutofillAiPermissionUtilsTest,
       client(), AutofillAiAction::kShowAmbientAutofillInSettings));
 }
 
+TEST_F(AutofillAiPermissionUtilsTest,
+       AmbientAutofillRequiresGeminiSettingsAllowed) {
+  client().set_personal_context_eligibility_state(
+      personal_context::PersonalContextEligibilityState::kEligible);
+  // Gemini settings are enabled by default.
+  ASSERT_EQ(
+      client().GetPrefs()->GetInteger(
+          optimization_guide::prefs::kGeminiSettings),
+      std::to_underlying(
+          optimization_guide::prefs::GeminiSettingsPolicyState::kEnabled));
+
+  EXPECT_TRUE(
+      MayPerformAutofillAiAction(client(), AutofillAiAction::kAmbientAutofill));
+  EXPECT_TRUE(MayPerformAutofillAiAction(
+      client(), AutofillAiAction::kTypeSupportsAmbientAutofillData,
+      EntityType(kPassport)));
+  EXPECT_TRUE(MayPerformAutofillAiAction(
+      client(), AutofillAiAction::kShowAmbientAutofillInSettings));
+
+  // Disallow Gemini settings via enterprise policy.
+  client().GetPrefs()->SetInteger(
+      optimization_guide::prefs::kGeminiSettings,
+      std::to_underlying(
+          optimization_guide::prefs::GeminiSettingsPolicyState::kDisabled));
+
+  EXPECT_FALSE(
+      MayPerformAutofillAiAction(client(), AutofillAiAction::kAmbientAutofill));
+  EXPECT_FALSE(MayPerformAutofillAiAction(
+      client(), AutofillAiAction::kTypeSupportsAmbientAutofillData,
+      EntityType(kPassport)));
+  EXPECT_TRUE(MayPerformAutofillAiAction(
+      client(), AutofillAiAction::kShowAmbientAutofillInSettings));
+}
+
 INSTANTIATE_TEST_SUITE_P(
     All,
     AutofillAiMayPerformActionTest,

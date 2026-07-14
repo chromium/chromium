@@ -343,6 +343,26 @@ base::flat_set<int32_t> GetAutofillAmbientAutofillEligibleTiers() {
   NOTREACHED();
 }
 
+// Checks whether `kGeminiSettings` enterprise policy is enabled.
+[[nodiscard]] bool IsGeminiSettingsAllowedByEnterprisePolicy(
+    const PrefService& prefs,
+    std::string* debug_message) {
+  constexpr int kGeminiSettingsEnabled = std::to_underlying(
+      optimization_guide::prefs::GeminiSettingsPolicyState::kEnabled);
+  static_assert(kGeminiSettingsEnabled == 0);
+
+  const bool gemini_settings_allowed =
+      prefs.GetInteger(optimization_guide::prefs::kGeminiSettings) ==
+      kGeminiSettingsEnabled;
+
+  if (!gemini_settings_allowed) {
+    MaybeOutputReason(debug_message,
+                      "Disallowed by GeminiSettings enterprise policy.");
+  }
+
+  return gemini_settings_allowed;
+}
+
 // Checks whether preference-related requirements are satisfied.
 [[nodiscard]] bool SatisfiesPreferenceRequirements(
 #if !BUILDFLAG(IS_FUCHSIA)
@@ -400,7 +420,9 @@ base::flat_set<int32_t> GetAutofillAmbientAutofillEligibleTiers() {
     case AutofillAiAction::kImport:
     case AutofillAiAction::kTypeSupportsAmbientAutofillData:
       if (action == AutofillAiAction::kTypeSupportsAmbientAutofillData) {
-        // TODO(crbug.com/523168644): Check `kGeminiSettings` pref enablement.
+        if (!IsGeminiSettingsAllowedByEnterprisePolicy(*prefs, debug_message)) {
+          return false;
+        }
         if (!entity_type) {
           return false;
         }
@@ -434,7 +456,9 @@ base::flat_set<int32_t> GetAutofillAmbientAutofillEligibleTiers() {
       if (!personal_context_pref_enabled) {
         return false;
       }
-      // TODO(crbug.com/523168644): Check `kGeminiSettings` pref enablement.
+      if (!IsGeminiSettingsAllowedByEnterprisePolicy(*prefs, debug_message)) {
+        return false;
+      }
       if (base::FeatureList::IsEnabled(
               features::kAutofillAiAvailableByDefault)) {
         return true;
