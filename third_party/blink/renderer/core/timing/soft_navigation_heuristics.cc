@@ -13,6 +13,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/not_fatal_until.h"
 #include "base/numerics/safe_conversions.h"
+#include "build/build_config.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_navigation_type.h"
@@ -566,6 +567,19 @@ void SoftNavigationHeuristics::ReportSoftNavigationToMetrics(
   CHECK_EQ(context->GetSoftNavigationHeuristics(), this);
 
   if (LocalFrameClient* frame_client = frame->Client()) {
+#if BUILDFLAG(IS_FUCHSIA)
+    if (context->TimeOrigin() <= loader->GetTiming().ReferenceMonotonicTime()) {
+      LOG(ERROR) << "SoftNavigationHeuristics: TimeOrigin ("
+                 << context->TimeOrigin().since_origin().InMicroseconds()
+                 << " us) is less than or equal to ReferenceMonotonicTime ("
+                 << loader->GetTiming()
+                        .ReferenceMonotonicTime()
+                        .since_origin()
+                        .InMicroseconds()
+                 << " us). Early returning to avoid crash.";
+      return;
+    }
+#else
     // If this CHECK_GT fails in a test, it's likely because the test simulates
     // events with an impossibly small start_time, which is less than the
     // initial reference time, which makes the duration appear negative.  In
@@ -577,6 +591,7 @@ void SoftNavigationHeuristics::ReportSoftNavigationToMetrics(
     // chrome/test/interaction/README.md for the Kombucha API.
     CHECK_GT(context->TimeOrigin(),
              loader->GetTiming().ReferenceMonotonicTime());
+#endif
 
     blink::SoftNavigationMetricsForReporting metrics = {
         .soft_navigation_offset = context->SoftNavigationOffset(),
