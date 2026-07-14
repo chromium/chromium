@@ -51,8 +51,7 @@ void SearchPromotionNavigationObserver::DidFinishNavigation(
     // `browser` can be null if the tab is currently detached (e.g. during drag
     // and drop or tab reparenting) or in unit tests.
     if (browser) {
-      BrowserUserEducationInterface* user_education =
-          BrowserUserEducationInterface::From(browser);
+      auto* user_education = BrowserUserEducationInterface::From(browser);
       // `user_education` can be null for browser windows that
       // do not support user education (e.g. Pip or app windows) or in unit
       // tests.

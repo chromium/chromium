@@ -34,9 +34,9 @@ class SearchPromotionManager : public KeyedService {
   SearchPromotionManager& operator=(const SearchPromotionManager&) = delete;
   ~SearchPromotionManager() override;
 
-  // Called by the navigation observer when the target URL is visited.
-  // We pass the `BrowserUserEducationInterface` reference to trigger the User
-  // Education promo bubble.
+  // Called by the navigation observer when a Google Search URL is loaded.
+  // Triggers the User Education promo bubble using the provided
+  // `BrowserUserEducationInterface`.
   virtual void OnTargetURLVisited(
       BrowserUserEducationInterface& user_education);
 
