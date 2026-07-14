@@ -81,6 +81,7 @@
 #include "chrome/browser/ash/policy/status_collector/status_collector.h"
 #include "chrome/browser/ash/policy/uploading/status_uploader.h"
 #include "chrome/browser/ash/policy/uploading/system_log_uploader.h"
+#include "chrome/browser/ash/policy/uploading/system_log_uploader_delegate.h"
 #include "chrome/browser/ash/settings/device_settings_test_helper.h"
 #include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
@@ -628,7 +629,9 @@ class ManagementUIHandlerTests :
 
     const policy::SystemLogUploader system_log_uploader(
         TestingBrowserProcess::GetGlobal()->local_state(),
-        /*syslog_delegate=*/nullptr,
+        std::make_unique<policy::SystemLogUploaderDelegate>(
+            TestingBrowserProcess::GetGlobal()->shared_url_loader_factory(),
+            task_runner_),
         /*task_runner=*/task_runner_);
     ON_CALL(testing::Const(handler_), GetDeviceCloudPolicyManager())
         .WillByDefault(Return(manager_.get()));

@@ -93,9 +93,8 @@ class SystemLogUploader : public UploadJob::Delegate {
                                ZippedLogUploadCallback upload_callback) = 0;
   };
 
-  // Constructor. Callers can inject their own Delegate. A nullptr can be passed
-  // for |syslog_delegate| to use the default implementation.
   // `local_state` must be non-null and must outlive `this`.
+  // `syslog_delegate` must be non-null.
   SystemLogUploader(
       PrefService* local_state,
       std::unique_ptr<Delegate> syslog_delegate,
