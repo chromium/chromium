@@ -1405,6 +1405,9 @@ public final class ProductionSupportedFlagList {
                 AwFeatures.WEBVIEW_MIGRATE_VISITED_LINKS,
                 "Migrate WebView's visited links database to the new partitioned database structure"
                         + " without performing actual partitioning."),
+        Flag.baseFeature(
+                BlinkFeatures.INPUT_CURSOR_ANCHOR_INFO_MIGRATION,
+                "Enable Android IME CursorAnchorInfo updates via compositor frame metadata."),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };
