@@ -4,9 +4,12 @@
 
 #include "chrome/renderer/accessibility/read_anything/read_anything_node_utils.h"
 
+#include <algorithm>
 #include <cinttypes>
 
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_enum_util.h"
 #include "ui/accessibility/ax_role_properties.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -209,26 +212,37 @@ std::u16string GetTextContent(const ui::AXNode* ax_node,
     }
   }
 
-  // TODO(crbug.com//40927698): Investigate how we can remove this. Possibly by
-  // improving distillation for pdfs.
+  // TODO(crbug.com/467180032): Investigate whether to move this to the pdf
+  // side. Requires better understanding of other assistive technologies needs
+  // and expectations. See discussion at go/rm-pdf-heuristic.
   if (is_pdf) {
     std::u16string filtered_string(ax_node->GetTextContentUTF16());
-    // When we receive text from a pdf node, there are return characters at each
-    // visual line break in the page. If these aren't filtered, one of two
-    // things could happen:
-    // 1) part of the same sentence will be read as separate segments, causing
-    //    choppy speech (e.g. without filtering, 'This is a long sentence with
-    //    \n\r a line break.' will read and highlight "This is a long sentence
-    //    with" and "a line break" separately.
-    // 2) parts of the sentence are not highlighted at all because GetNextWord
-    //    using accessible text boundaries continues returning the line break
-    //    infinitely (and we thus break out of the infinite loop and instead
-    //    highlight nothing).
-    if (is_pdf && filtered_string.size() > 0) {
-      size_t pos = filtered_string.find_first_of(u"\n\r");
-      while (pos != std::string::npos && pos < filtered_string.size() - 2) {
-        filtered_string.replace(pos, 1, u" ");
-        pos = filtered_string.find_first_of(u"\n\r");
+    if (filtered_string.size() > 0) {
+      // Ignore non-whitespace control characters (e.g. hyphens for words split
+      // across a visual line in the PDF) as those are artifacts of the page-
+      // based format of PDFs and breaks the reading flow in reading mode.
+      if (features::IsPdfAccessibilityHeuristicEnhancementsEnabled()) {
+        std::erase_if(filtered_string, [](char16_t c) {
+          return base::IsUnicodeControl(c) && !base::IsAsciiWhitespace(c);
+        });
+      }
+
+      // When we receive text from a pdf node, there are return characters at
+      // each visual line break in the page. If these aren't filtered, one of
+      // two things could happen: 1) part of the same sentence will be read as
+      // separate segments, causing
+      //    choppy speech (e.g. without filtering, 'This is a long sentence with
+      //    \n\r a line break.' will read and highlight "This is a long sentence
+      //    with" and "a line break" separately.
+      // 2) parts of the sentence are not highlighted at all because GetNextWord
+      //    using accessible text boundaries continues returning the line break
+      //    infinitely (and we thus break out of the infinite loop and instead
+      //    highlight nothing).
+      if (filtered_string.size() > 2) {
+        std::replace_if(
+            filtered_string.begin(), filtered_string.end() - 2,
+            [](char16_t c) { return base::IsAsciiWhitespace(c) && c != ' '; },
+            ' ');
       }
     }
     return filtered_string;
