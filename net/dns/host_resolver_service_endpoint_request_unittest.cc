@@ -29,6 +29,7 @@
 #include "net/dns/host_resolver_manager_service_endpoint_request_impl.h"
 #include "net/dns/host_resolver_manager_unittest.h"
 #include "net/dns/host_resolver_results_test_util.h"
+#include "net/dns/mock_host_resolver.h"
 #include "net/dns/public/host_resolver_results.h"
 #include "net/dns/public/host_resolver_source.h"
 #include "net/dns/public/secure_dns_mode.h"
@@ -1899,6 +1900,72 @@ TEST_F(HostResolverServiceEndpointRequestTest, ReentrantCancelDuringAbortAll) {
   ASSERT_FALSE(requester_b.request());
 
   proc_->SignalMultiple(2u);
+}
+
+TEST(HangingHostResolverTest, ServiceEndpointRequest) {
+  base::test::TaskEnvironment task_environment;
+  HangingHostResolver resolver;
+  auto request = resolver.CreateServiceEndpointRequest(
+      HostResolver::Host(HostPortPair("example.com", 80)),
+      NetworkAnonymizationKey(), handles::kInvalidNetworkHandle,
+      NetLogWithSource(), HostResolver::ResolveHostParameters());
+
+  class TestDelegate : public HostResolver::ServiceEndpointRequest::Delegate {
+   public:
+    void OnServiceEndpointsUpdated() override { FAIL(); }
+    void OnServiceEndpointRequestFinished(int rv) override { FAIL(); }
+  };
+
+  TestDelegate delegate;
+  int rv = request->Start(&delegate);
+  EXPECT_EQ(rv, ERR_IO_PENDING);
+  EXPECT_TRUE(request->GetEndpointResults().empty());
+  EXPECT_TRUE(request->GetDnsAliasResults().empty());
+  EXPECT_FALSE(request->EndpointsCryptoReady());
+}
+
+TEST(HangingHostResolverTest, ServiceEndpointRequestCancellation) {
+  base::test::TaskEnvironment task_environment;
+  HangingHostResolver resolver;
+  auto request = resolver.CreateServiceEndpointRequest(
+      HostResolver::Host(HostPortPair("example.com", 80)),
+      NetworkAnonymizationKey(), handles::kInvalidNetworkHandle,
+      NetLogWithSource(), HostResolver::ResolveHostParameters());
+
+  class TestDelegate : public HostResolver::ServiceEndpointRequest::Delegate {
+   public:
+    void OnServiceEndpointsUpdated() override {}
+    void OnServiceEndpointRequestFinished(int rv) override {}
+  };
+
+  TestDelegate delegate;
+  int rv = request->Start(&delegate);
+  EXPECT_EQ(rv, ERR_IO_PENDING);
+
+  EXPECT_EQ(resolver.num_cancellations(), 0);
+  request.reset();
+  EXPECT_EQ(resolver.num_cancellations(), 1);
+}
+
+TEST(HangingHostResolverTest, ServiceEndpointRequestLocalOnly) {
+  base::test::TaskEnvironment task_environment;
+  HangingHostResolver resolver;
+  HostResolver::ResolveHostParameters parameters;
+  parameters.source = HostResolverSource::LOCAL_ONLY;
+  auto request = resolver.CreateServiceEndpointRequest(
+      HostResolver::Host(HostPortPair("example.com", 80)),
+      NetworkAnonymizationKey(), handles::kInvalidNetworkHandle,
+      NetLogWithSource(), parameters);
+
+  class TestDelegate : public HostResolver::ServiceEndpointRequest::Delegate {
+   public:
+    void OnServiceEndpointsUpdated() override { FAIL(); }
+    void OnServiceEndpointRequestFinished(int rv) override { FAIL(); }
+  };
+
+  TestDelegate delegate;
+  int rv = request->Start(&delegate);
+  EXPECT_EQ(rv, ERR_DNS_CACHE_MISS);
 }
 
 }  // namespace net

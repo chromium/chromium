@@ -781,6 +781,7 @@ class HangingHostResolver : public HostResolver {
 
  private:
   class RequestImpl;
+  class ServiceEndpointRequestImpl;
   class ProbeRequestImpl;
 
   HostPortPair last_host_;

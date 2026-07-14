@@ -1577,6 +1577,62 @@ scoped_refptr<RuleBasedHostResolverProc> CreateCatchAllHostResolverProc() {
 
 //-----------------------------------------------------------------------------
 
+// Implementation of ServiceEndpointRequest that tracks cancellations when the
+// request is destroyed after being started.
+class HangingHostResolver::ServiceEndpointRequestImpl
+    : public HostResolver::ServiceEndpointRequest {
+ public:
+  explicit ServiceEndpointRequestImpl(
+      base::WeakPtr<HangingHostResolver> resolver)
+      : resolver_(std::move(resolver)) {}
+
+  ServiceEndpointRequestImpl(const ServiceEndpointRequestImpl&) = delete;
+  ServiceEndpointRequestImpl& operator=(const ServiceEndpointRequestImpl&) =
+      delete;
+
+  ~ServiceEndpointRequestImpl() override {
+    if (is_running_ && resolver_) {
+      resolver_->state_->IncrementNumCancellations();
+    }
+  }
+
+  int Start(Delegate* delegate) override {
+    CHECK(delegate);
+    CHECK(resolver_);
+    is_running_ = true;
+    return ERR_IO_PENDING;
+  }
+
+  base::span<const ServiceEndpoint> GetEndpointResults() override { return {}; }
+
+  const std::set<std::string>& GetDnsAliasResults() override {
+    static const base::NoDestructor<std::set<std::string>> kEmpty;
+    return *kEmpty;
+  }
+
+  bool EndpointsCryptoReady() override { return false; }
+
+  ResolveErrorInfo GetResolveErrorInfo() override { return ResolveErrorInfo(); }
+
+  const HostCache::EntryStaleness* GetStaleInfo() const override {
+    return nullptr;
+  }
+
+  bool IsStaleWhileRefreshing() const override { return false; }
+
+  void ChangeRequestPriority(RequestPriority priority) override {}
+
+  std::optional<ResolutionDetails> GetResolutionDetails() const override {
+    return std::nullopt;
+  }
+
+ private:
+  // The resolver may be destroyed while there are still outstanding request
+  // objects, so use a WeakPtr.
+  base::WeakPtr<HangingHostResolver> resolver_;
+  bool is_running_ = false;
+};
+
 // Implementation of ResolveHostRequest that tracks cancellations when the
 // request is destroyed after being started.
 class HangingHostResolver::RequestImpl
@@ -1694,8 +1750,21 @@ HangingHostResolver::CreateServiceEndpointRequest(
     handles::NetworkHandle target_network,
     NetLogWithSource net_log,
     ResolveHostParameters parameters) {
-  NOTIMPLEMENTED();
-  return nullptr;
+  last_host_ = host.HasScheme()
+                   ? HostPortPair::FromSchemeHostPort(host.AsSchemeHostPort())
+                   : host.AsHostPortPair();
+  last_network_anonymization_key_ = network_anonymization_key;
+
+  if (shutting_down_) {
+    return CreateFailingServiceEndpointRequest(ERR_CONTEXT_SHUT_DOWN);
+  }
+
+  if (parameters.source == HostResolverSource::LOCAL_ONLY) {
+    return CreateFailingServiceEndpointRequest(ERR_DNS_CACHE_MISS);
+  }
+
+  return std::make_unique<ServiceEndpointRequestImpl>(
+      weak_ptr_factory_.GetWeakPtr());
 }
 
 std::unique_ptr<HostResolver::ProbeRequest>
