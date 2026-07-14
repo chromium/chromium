@@ -11,6 +11,7 @@
 #import "base/metrics/user_metrics_action.h"
 #import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/public/tracker.h"
+#import "components/image_fetcher/core/image_fetcher_service.h"
 #import "components/send_tab_to_self/features.h"
 #import "ios/chrome/browser/assistant/coordinator/assistant_container_commands.h"
 #import "ios/chrome/browser/assistant/ui/assistant_container_detent.h"
@@ -20,10 +21,11 @@
 #import "ios/chrome/browser/bubble/ui_bundled/bubble_view_controller_presenter.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/home_customization/model/home_background_customization_service_factory.h"
+#import "ios/chrome/browser/home_customization/model/user_uploaded_image_manager_factory.h"
+#import "ios/chrome/browser/image_fetcher/model/image_fetcher_service_factory.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/lens_overlay/public/lens_overlay_availability.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_util.h"
-#import "ios/chrome/browser/ntp/model/ntp_background_image_cache_service_factory.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_presenter.h"
 #import "ios/chrome/browser/policy/model/browser_management_service_factory.h"
 #import "ios/chrome/browser/popup_menu/coordinator/popup_menu_help_coordinator.h"
@@ -338,8 +340,12 @@ NSString* const kPreferredContentSizeKey = @"preferredContentSize";
   if (IsOverflowMenuHomeCustomizationEntrypointEnabled()) {
     mediator.backgroundCustomizationService =
         HomeBackgroundCustomizationServiceFactory::GetForProfile(profile);
-    mediator.backgroundImageCacheService =
-        NTPBackgroundImageCacheServiceFactory::GetForProfile(profile);
+    mediator.userUploadedImageManager =
+        UserUploadedImageManagerFactory::GetForProfile(profile);
+    image_fetcher::ImageFetcherService* imageFetcherService =
+        ImageFetcherServiceFactory::GetForProfile(profile);
+    mediator.imageFetcher = imageFetcherService->GetImageFetcher(
+        image_fetcher::ImageFetcherConfig::kReducedMode);
   }
   mediator.templateURLService =
       ios::TemplateURLServiceFactory::GetForProfile(profile);

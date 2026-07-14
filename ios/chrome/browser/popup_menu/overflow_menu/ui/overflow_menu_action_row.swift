@@ -41,6 +41,12 @@ struct OverflowMenuActionRow: View {
   /// The size of the "N" IPH icon.
   private static let newLabelIconWidth: CGFloat = 15
 
+  /// The size of the preview image.
+  private static let previewImageSize: CGFloat = 24
+
+  /// The size of the fallback preview image.
+  private static let fallbackImageSize: CGFloat = 18
+
   // The duration that the view's highlight should persist.
   private static let highlightDuration: DispatchTimeInterval = .seconds(2)
 
@@ -124,11 +130,19 @@ struct OverflowMenuActionRow: View {
         }
         Spacer()
         if let previewImage = action.previewImage {
-          CircularPreviewContainer(size: previewImage.size.height) {
+          CircularPreviewContainer(size: Self.previewImageSize) {
             Image(uiImage: previewImage)
               .resizable()
               .aspectRatio(contentMode: .fill)
           }
+        } else if let fallbackPreviewImage = action.fallbackPreviewImage {
+          Image(uiImage: fallbackPreviewImage)
+            .resizable()
+            .aspectRatio(contentMode: .fit)
+            .frame(
+              width: Self.fallbackImageSize,
+              height: Self.fallbackImageSize
+            )
         }
         rowIcon?.foregroundColor(action.symbolTintColor.map { Color(uiColor: $0) })
       }

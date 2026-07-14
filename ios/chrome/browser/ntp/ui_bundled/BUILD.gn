@@ -37,8 +37,10 @@ source_set("theme") {
   deps = [
     "//base",
     "//components/sync/protocol",
+    "//ios/chrome/browser/popup_menu/overflow_menu/public:features",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/shared/ui/util/color_palette",
+    "//ios/chrome/common/ui/colors",
     "//skia",
     "//skia:skia_core_public_headers",
     "//third_party/material_color_utilities",

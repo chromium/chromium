@@ -18,6 +18,7 @@
 #import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/public/feature_constants.h"
 #import "components/feature_engagement/public/tracker.h"
+#import "components/image_fetcher/core/image_fetcher.h"
 #import "components/language/ios/browser/ios_language_detection_tab_helper.h"
 #import "components/language/ios/browser/ios_language_detection_tab_helper_observer_bridge.h"
 #import "components/password_manager/core/browser/manage_passwords_referrer.h"
@@ -45,6 +46,7 @@
 #import "ios/chrome/browser/default_browser/model/default_browser_interest_signals.h"
 #import "ios/chrome/browser/find_in_page/model/find_tab_helper.h"
 #import "ios/chrome/browser/home_customization/model/home_background_customization_service.h"
+#import "ios/chrome/browser/home_customization/model/user_uploaded_image_manager.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_service.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_service_factory.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_tab_helper.h"
@@ -53,7 +55,6 @@
 #import "ios/chrome/browser/intents/model/intents_donation_helper.h"
 #import "ios/chrome/browser/lens_overlay/model/lens_overlay_tab_helper.h"
 #import "ios/chrome/browser/lens_overlay/public/lens_overlay_availability.h"
-#import "ios/chrome/browser/ntp/model/ntp_background_image_cache_service.h"
 #import "ios/chrome/browser/ntp/shared/metrics/feed_metrics_recorder.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_color_palette.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_color_palette_util.h"
@@ -153,8 +154,6 @@ const unsigned int kDefaultVisiblePageActionCount = 3u;
 
 // The size of the color palette preview image.
 constexpr CGFloat kPreviewImageSize = 24.0;
-// The size of a quadrant within the color palette preview image.
-constexpr CGFloat kColorPaletteImageQuadrantSize = kPreviewImageSize / 2.0;
 
 // Struct used to count and store the number of active WhatsNew badges,
 // as the FET does not support showing multiple badges for the same FET feature
@@ -184,94 +183,59 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
                                           handler:handler];
 }
 
-// Returns the color palette for an un-themed NTP in light or dark mode.
-NewTabPageColorPalette* DefaultNTPColorPalette() {
+// Retrieves a user-uploaded NTP background image using the
+// `user_uploaded_image_manager`.
+void GetUserUploadedNTPBackgroundPreview(
+    const HomeUserUploadedBackground* user_uploaded_background,
+    UserUploadedImageManager* user_uploaded_image_manager,
+    base::OnceCallback<void(UIImage*)> custom_background_fetcher_callback) {
   CHECK(IsOverflowMenuHomeCustomizationEntrypointEnabled());
-  NewTabPageColorPalette* color_palette = [[NewTabPageColorPalette alloc] init];
-  color_palette.lightColor = [UIColor
-      colorWithDynamicProvider:^UIColor*(UITraitCollection* trait_collection) {
-        BOOL isDark =
-            (trait_collection.userInterfaceStyle == UIUserInterfaceStyleDark);
-        return [UIColor
-            colorNamed:isDark ? kGrey100Color : @"ntp_background_color"];
-      }];
-  color_palette.mediumColor =
-      [UIColor colorNamed:@"fake_omnibox_solid_background_color"];
-  color_palette.darkColor = [UIColor colorNamed:kBlueColor];
-  return color_palette;
-}
+  CHECK(user_uploaded_background);
+  CHECK(user_uploaded_image_manager);
 
-// Returns a square image representing the three colors of the `color_palette`.
-UIImage* CreateColorPalettePreviewImage(
-    const NewTabPageColorPalette* color_palette,
-    UITraitCollection* trait_collection) {
-  CHECK(IsOverflowMenuHomeCustomizationEntrypointEnabled());
-  if (!color_palette) {
-    return nil;
-  }
-
-  CGSize size = CGSizeMake(kPreviewImageSize, kPreviewImageSize);
-  UIGraphicsImageRendererFormat* format =
-      [UIGraphicsImageRendererFormat preferredFormat];
-  UIGraphicsImageRenderer* renderer =
-      [[UIGraphicsImageRenderer alloc] initWithSize:size format:format];
-
-  return [renderer imageWithActions:^(UIGraphicsImageRendererContext* context) {
-    CGContextRef ctx = context.CGContext;
-
-    // Resolve dynamic colors using the provided trait collection.
-    UITraitCollection* resolved_trait_collection =
-        trait_collection ?: [UITraitCollection currentTraitCollection];
-    UIColor* light_color = [color_palette.lightColor
-        resolvedColorWithTraitCollection:resolved_trait_collection];
-    UIColor* medium_color = [color_palette.mediumColor
-        resolvedColorWithTraitCollection:resolved_trait_collection];
-    UIColor* dark_color = [color_palette.darkColor
-        resolvedColorWithTraitCollection:resolved_trait_collection];
-
-    // Top half rectangle.
-    [light_color setFill];
-    CGContextFillRect(ctx, CGRectMake(0, 0, kPreviewImageSize,
-                                      kColorPaletteImageQuadrantSize));
-
-    // Bottom-left quadrant square.
-    [medium_color setFill];
-    CGContextFillRect(ctx, CGRectMake(0, kColorPaletteImageQuadrantSize,
-                                      kColorPaletteImageQuadrantSize,
-                                      kColorPaletteImageQuadrantSize));
-
-    // Bottom-right quadrant square.
-    [dark_color setFill];
-    CGContextFillRect(ctx, CGRectMake(kColorPaletteImageQuadrantSize,
-                                      kColorPaletteImageQuadrantSize,
-                                      kColorPaletteImageQuadrantSize,
-                                      kColorPaletteImageQuadrantSize));
-  }];
-}
-
-// Returns a preview image for the custom background retrieved from the image
-// cache service.
-UIImage* CreateCustomBackgroundPreviewImage(
-    NTPBackgroundImageCacheService* image_cache_service) {
-  CHECK(IsOverflowMenuHomeCustomizationEntrypointEnabled());
-  if (!image_cache_service) {
-    return nil;
-  }
-  UIImage* cached_image = image_cache_service->GetCachedBackgroundImage();
-  if (!cached_image) {
-    return nil;
-  }
-
+  base::FilePath image_path(user_uploaded_background->image_path);
   CGSize target_size = CGSizeMake(kPreviewImageSize, kPreviewImageSize);
-  UIGraphicsImageRendererFormat* format =
-      [UIGraphicsImageRendererFormat preferredFormat];
-  UIGraphicsImageRenderer* renderer =
-      [[UIGraphicsImageRenderer alloc] initWithSize:target_size format:format];
 
-  return [renderer imageWithActions:^(UIGraphicsImageRendererContext* context) {
-    [cached_image
-        drawInRect:CGRectMake(0, 0, target_size.width, target_size.height)];
-  }];
+  user_uploaded_image_manager->LoadUserUploadedImage(
+      image_path, target_size,
+      base::BindOnce(
+          [](base::OnceCallback<void(UIImage*)> callback,
+             UIImage* fetched_image, CGSize, UserUploadedImageError) {
+            std::move(callback).Run(fetched_image);
+          },
+          std::move(custom_background_fetcher_callback)));
+}
+
+// Retrieves a preset NTP background image using the `image_fetcher`.
+void GetPresetNTPBackgroundPreview(
+    const sync_pb::NtpCustomBackground* preset_image_background,
+    image_fetcher::ImageFetcher* image_fetcher,
+    base::OnceCallback<void(UIImage*)> custom_background_fetcher_callback) {
+  CHECK(IsOverflowMenuHomeCustomizationEntrypointEnabled());
+  CHECK(preset_image_background);
+  CHECK(custom_background_fetcher_callback);
+
+  const GURL image_url = GURL(preset_image_background->url());
+  GURL thumbnail_url =
+      AddOptionsToImageURL(RemoveOptionsFromImageURL(image_url.spec()).spec(),
+                           GetThumbnailImageOptions());
+  const char kImageFetcherUmaClient[] = "OverflowMenuNtpCustomization";
+
+  image_fetcher::ImageFetcherParams params(NO_TRAFFIC_ANNOTATION_YET,
+                                           kImageFetcherUmaClient);
+
+  image_fetcher->FetchImageData(
+      thumbnail_url,
+      base::BindOnce(
+          [](base::OnceCallback<void(UIImage*)> callback,
+             const std::string& image_data,
+             const image_fetcher::RequestMetadata&) {
+            NSData* data = [NSData dataWithBytes:image_data.data()
+                                          length:image_data.length()];
+            std::move(callback).Run([UIImage imageWithData:data]);
+          },
+          std::move(custom_background_fetcher_callback)),
+      params);
 }
 
 }  // namespace
@@ -516,6 +480,8 @@ UIImage* CreateCustomBackgroundPreviewImage(
                                          }];
     _customizeHomepageAction.symbolTintColor =
         [UIColor colorNamed:kTextQuaternaryColor];
+    _customizeHomepageAction.fallbackPreviewImage =
+        DefaultSymbolWithConfiguration(kPencilSymbol, nil);
   }
   [self configureThemePreviewForCustomizeHomepageAction];
   return _customizeHomepageAction;
@@ -2023,46 +1989,66 @@ UIImage* CreateCustomBackgroundPreviewImage(
 // background to be shown in the action to show the home customization menu.
 - (void)configureThemePreviewForCustomizeHomepageAction {
   CHECK(IsOverflowMenuHomeCustomizationEntrypointEnabled());
-
-  std::optional<sync_pb::UserColorTheme> colorTheme = std::nullopt;
-  std::optional<HomeCustomBackground> customBackground = std::nullopt;
-
-  if (self.backgroundCustomizationService) {
-    colorTheme = self.backgroundCustomizationService->GetCurrentColorTheme();
-    customBackground =
-        self.backgroundCustomizationService->GetCurrentCustomBackground();
+  if (!self.backgroundCustomizationService) {
+    // Do not show a preview for the current background.
+    _customizeHomepageAction.previewImage = nil;
+    return;
   }
 
-  UIImage* previewImage = nil;
+  std::optional<HomeCustomBackground> customBackground =
+      self.backgroundCustomizationService->GetCurrentCustomBackground();
+
+  if (customBackground.has_value()) {
+    // Custom background image.
+    const HomeUserUploadedBackground* userUploadedBackground =
+        std::get_if<HomeUserUploadedBackground>(&customBackground.value());
+    const sync_pb::NtpCustomBackground* presetImageBackground =
+        std::get_if<sync_pb::NtpCustomBackground>(&customBackground.value());
+
+    __weak OverflowMenuAction* customizeHomepageAction =
+        _customizeHomepageAction;
+
+    if (userUploadedBackground && self.userUploadedImageManager) {
+      // User-uploaded background active.
+      GetUserUploadedNTPBackgroundPreview(
+          userUploadedBackground, self.userUploadedImageManager,
+          base::BindOnce(^(UIImage* image) {
+            customizeHomepageAction.previewImage = image;
+          }));
+    } else if (presetImageBackground && self.imageFetcher) {
+      // Preset background active.
+      GetPresetNTPBackgroundPreview(presetImageBackground, self.imageFetcher,
+                                    base::BindOnce(^(UIImage* image) {
+                                      customizeHomepageAction.previewImage =
+                                          image;
+                                    }));
+    } else {
+      _customizeHomepageAction.previewImage = nil;
+    }
+    return;
+  }
+
+  // Preview image for a color palette.
+  std::optional<sync_pb::UserColorTheme> colorTheme =
+      self.backgroundCustomizationService->GetCurrentColorTheme();
   UITraitCollection* traitCollection = self.baseViewController.traitCollection;
 
-  // Set the image thumbnail or colors for the background preview.
-  if (customBackground.has_value() && self.backgroundImageCacheService) {
-    // Custom background image.
-    previewImage =
-        CreateCustomBackgroundPreviewImage(self.backgroundImageCacheService);
+  /// TODO(crbug.com/534705391): Investigate getting color palette previews from
+  /// home customization instead of drawing them in this mediator.
+  if (colorTheme.has_value()) {
+    // Custom color theme.
+    UIColor* seedColor = skia::UIColorFromSkColor(colorTheme->color());
+    ui::ColorProviderKey::SchemeVariant schemeVariant =
+        ProtoEnumToSchemeVariant(colorTheme->browser_color_variant());
+    NewTabPageColorPalette* customColorPalette =
+        CreateColorPaletteFromSeedColor(seedColor, schemeVariant);
+    _customizeHomepageAction.previewImage = CreatePreviewImageForColorPalette(
+        customColorPalette, kPreviewImageSize, traitCollection);
+  } else {
+    // Default (un-themed).
+    _customizeHomepageAction.previewImage = CreatePreviewImageForColorPalette(
+        DefaultNTPColorPalette(), kPreviewImageSize, traitCollection);
   }
-
-  // Fallback to color theme or default preview if the custom background preview
-  // could not be loaded or is not cached.
-  if (!previewImage) {
-    if (colorTheme.has_value()) {
-      // Custom color theme.
-      UIColor* seedColor = skia::UIColorFromSkColor(colorTheme->color());
-      ui::ColorProviderKey::SchemeVariant schemeVariant =
-          ProtoEnumToSchemeVariant(colorTheme->browser_color_variant());
-      NewTabPageColorPalette* customColorPalette =
-          CreateColorPaletteFromSeedColor(seedColor, schemeVariant);
-      previewImage =
-          CreateColorPalettePreviewImage(customColorPalette, traitCollection);
-    } else {
-      // Default (un-themed).
-      previewImage = CreateColorPalettePreviewImage(DefaultNTPColorPalette(),
-                                                    traitCollection);
-    }
-  }
-
-  _customizeHomepageAction.previewImage = previewImage;
 }
 
 #pragma mark - AuthenticationServiceObserving

@@ -18,6 +18,9 @@ class BookmarkModel;
 namespace feature_engagement {
 class Tracker;
 }  // namespace feature_engagement
+namespace image_fetcher {
+class ImageFetcher;
+}  // namespace image_fetcher
 namespace signin {
 class AvatarProvider;
 class IdentityManager;
@@ -42,7 +45,6 @@ class HomeBackgroundCustomizationService;
 @class LayoutGuideCenter;
 @protocol LensOverlayCommands;
 @protocol LevelUpCommands;
-class NTPBackgroundImageCacheService;
 @protocol OverflowMenuCustomizationCommands;
 @class OverflowMenuOrderer;
 class OverlayPresenter;
@@ -62,6 +64,7 @@ class ReadingListModel;
 class TabBasedIPHBrowserAgent;
 class TemplateURLService;
 @protocol TextZoomCommands;
+class UserUploadedImageManager;
 class WebNavigationBrowserAgent;
 class WebStateList;
 @protocol WhatsNewCommands;
@@ -130,9 +133,11 @@ class WebStateList;
 @property(nonatomic, assign)
     HomeBackgroundCustomizationService* backgroundCustomizationService;
 
-// Service for NTP background image cache.
-@property(nonatomic, assign)
-    NTPBackgroundImageCacheService* backgroundImageCacheService;
+// Manager for user-uploaded NTP background images.
+@property(nonatomic, assign) UserUploadedImageManager* userUploadedImageManager;
+
+// Fetcher for preset NTP background images.
+@property(nonatomic, assign) image_fetcher::ImageFetcher* imageFetcher;
 
 // Pref service to retrieve profile preference values.
 @property(nonatomic, assign) PrefService* profilePrefs;

@@ -18,6 +18,9 @@
 #import "components/bookmarks/common/bookmark_pref_names.h"
 #import "components/bookmarks/test/bookmark_test_helpers.h"
 #import "components/feature_engagement/test/mock_tracker.h"
+#import "components/image_fetcher/core/image_fetcher_service.h"
+#import "components/image_fetcher/core/mock_image_fetcher.h"
+#import "components/image_fetcher/core/request_metadata.h"
 #import "components/language/ios/browser/ios_language_detection_tab_helper.h"
 #import "components/language/ios/browser/language_detection_java_script_feature.h"
 #import "components/language_detection/core/language_detection_model.h"
@@ -51,8 +54,8 @@
 #import "ios/chrome/browser/dom_distiller/model/distiller_service_factory.h"
 #import "ios/chrome/browser/home_customization/model/home_background_customization_service.h"
 #import "ios/chrome/browser/home_customization/model/home_background_customization_service_factory.h"
+#import "ios/chrome/browser/home_customization/model/user_uploaded_image_manager_factory.h"
 #import "ios/chrome/browser/lens_overlay/public/lens_overlay_availability.h"
-#import "ios/chrome/browser/ntp/model/ntp_background_image_cache_service_factory.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_presenter.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_request.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_request_queue.h"
@@ -115,6 +118,7 @@
 #import "ios/web/public/test/js_test_util.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "ios/web/public/web_state_observer_bridge.h"
+#import "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 #import "ui/base/device_form_factor.h"
@@ -122,6 +126,7 @@
 
 using sync_preferences::PrefServiceMockFactory;
 using sync_preferences::PrefServiceSyncable;
+using testing::_;
 using testing::Return;
 using user_prefs::PrefRegistrySyncable;
 
@@ -1517,6 +1522,8 @@ TEST_F(OverflowMenuMediatorTest, TestCustomizeHomePageHasPreviewImage) {
   CreateMediator(/*incognito=*/NO);
   SetUpActiveWebState();
   mediator_.webStateList = browser_->GetWebStateList();
+  mediator_.backgroundCustomizationService =
+      HomeBackgroundCustomizationServiceFactory::GetForProfile(profile_.get());
 
   // Force model update.
   mediator_.model = model_;
@@ -1534,6 +1541,7 @@ TEST_F(OverflowMenuMediatorTest, TestCustomizeHomePageHasPreviewImage) {
 
   ASSERT_NE(nil, customizeAction);
   EXPECT_NE(nil, customizeAction.previewImage);
+  EXPECT_NE(nil, customizeAction.fallbackPreviewImage);
 }
 
 // Tests that the Customize Home Page item has a fallback preview image when the
@@ -1561,8 +1569,20 @@ TEST_F(OverflowMenuMediatorTest,
       "collection");
 
   mediator_.backgroundCustomizationService = backgroundCustomizationService;
-  mediator_.backgroundImageCacheService =
-      NTPBackgroundImageCacheServiceFactory::GetForProfile(profile_.get());
+  mediator_.userUploadedImageManager =
+      UserUploadedImageManagerFactory::GetForProfile(profile_.get());
+  image_fetcher::MockImageFetcher mockImageFetcher;
+  EXPECT_CALL(mockImageFetcher, FetchImageAndData_(_, _, _, _))
+      .Times(testing::AtLeast(1))
+      .WillRepeatedly(
+          [](const GURL& image_url,
+             image_fetcher::ImageDataFetcherCallback* image_data_callback,
+             image_fetcher::ImageFetcherCallback* image_callback,
+             image_fetcher::ImageFetcherParams params) {
+            std::move(*image_data_callback)
+                .Run(std::string(), image_fetcher::RequestMetadata());
+          });
+  mediator_.imageFetcher = &mockImageFetcher;
 
   // Force model update.
   mediator_.model = model_;
@@ -1579,7 +1599,7 @@ TEST_F(OverflowMenuMediatorTest,
   }
 
   ASSERT_NE(nil, customizeAction);
-  EXPECT_NE(nil, customizeAction.previewImage);
+  EXPECT_EQ(nil, customizeAction.previewImage);
 }
 
 // Tests that the Customize Home Page item is NOT shown on a regular web page

@@ -30,6 +30,9 @@ import Combine
   /// Note: A preview circle will not appear in the action row unless this property is non-nil.
   @Published public var previewImage: UIImage? = nil
 
+  /// The fallback preview image to use if `previewImage` is nil.
+  @Published public var fallbackPreviewImage: UIImage? = nil
+
   /// The optional user avatar image for signed-in state, the image needs to be 40x40.
   @Published public var image: UIImage? = nil
 
