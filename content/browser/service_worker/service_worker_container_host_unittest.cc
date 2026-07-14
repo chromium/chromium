@@ -16,6 +16,8 @@
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
+#include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/service_worker/embedded_worker_test_helper.h"
@@ -24,12 +26,14 @@
 #include "content/browser/service_worker/service_worker_context_core_observer.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/browser/service_worker/service_worker_host.h"
+#include "content/browser/service_worker/service_worker_metrics.h"
 #include "content/browser/service_worker/service_worker_register_job.h"
 #include "content/browser/service_worker/service_worker_registration.h"
 #include "content/browser/service_worker/service_worker_security_utils.h"
 #include "content/browser/service_worker/service_worker_test_utils.h"
 #include "content/browser/service_worker/service_worker_version.h"
 #include "content/common/content_navigation_policy.h"
+#include "content/common/features.h"
 #include "content/common/url_schemes.h"
 #include "content/public/browser/child_process_host.h"
 #include "content/public/common/content_switches.h"
@@ -64,7 +68,8 @@ class ServiceWorkerTestContentClient : public TestContentClient {
   }
 };
 
-class ServiceWorkerTestContentBrowserClient : public TestContentBrowserClient {
+class DisallowServiceWorkerWithLogsContentBrowserClient
+    : public TestContentBrowserClient {
  public:
   struct AllowServiceWorkerCallLog {
     AllowServiceWorkerCallLog(
@@ -82,7 +87,7 @@ class ServiceWorkerTestContentBrowserClient : public TestContentBrowserClient {
     const GURL script_url;
   };
 
-  ServiceWorkerTestContentBrowserClient() {}
+  DisallowServiceWorkerWithLogsContentBrowserClient() = default;
 
   AllowServiceWorkerResult AllowServiceWorker(
       const GURL& scope,
@@ -634,7 +639,7 @@ TEST_F(ServiceWorkerContainerHostTest, UncontrolledWithMatchingRegistration) {
 
 TEST_F(ServiceWorkerContainerHostTest,
        Register_ContentSettingsDisallowsServiceWorker) {
-  ServiceWorkerTestContentBrowserClient test_browser_client;
+  DisallowServiceWorkerWithLogsContentBrowserClient test_browser_client;
   ContentBrowserClient* old_browser_client =
       SetBrowserClientForTesting(&test_browser_client);
 
@@ -698,7 +703,7 @@ TEST_F(ServiceWorkerContainerHostTest, AllowServiceWorker) {
       *version, helper_->context()->AsWeakPtr());
   ServiceWorkerContainerHost* container_host = worker_host->container_host();
 
-  ServiceWorkerTestContentBrowserClient test_browser_client;
+  DisallowServiceWorkerWithLogsContentBrowserClient test_browser_client;
   ContentBrowserClient* old_browser_client =
       SetBrowserClientForTesting(&test_browser_client);
 
@@ -712,6 +717,137 @@ TEST_F(ServiceWorkerContainerHostTest, AllowServiceWorker) {
       net::SiteForCookies::FromUrl(GURL("https://www.example.com/sw.js"))));
   EXPECT_EQ(url::Origin::Create(GURL("https://example.com")),
             test_browser_client.logs()[0].top_frame_origin);
+  SetBrowserClientForTesting(old_browser_client);
+}
+
+class ServiceWorkerContainerHostContextValidationTest
+    : public ServiceWorkerContainerHostTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  ServiceWorkerContainerHostContextValidationTest() {
+    if (GetParam()) {
+      feature_list_.InitAndEnableFeature(
+          features::kServiceWorkerStrictContextValidation);
+    } else {
+      feature_list_.InitAndDisableFeature(
+          features::kServiceWorkerStrictContextValidation);
+    }
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         ServiceWorkerContainerHostContextValidationTest,
+                         testing::Bool(),
+                         [](const testing::TestParamInfo<bool>& info) {
+                           return info.param ? "StrictValidationEnabled"
+                                             : "StrictValidationDisabled";
+                         });
+
+TEST_P(ServiceWorkerContainerHostContextValidationTest,
+       DispatchExtendableMessageEvent_ContentSettingsDisallowsServiceWorker) {
+  scoped_refptr<ServiceWorkerVersion> version =
+      base::MakeRefCounted<ServiceWorkerVersion>(
+          registration1_.get(), GURL("https://www.example.com/sw.js"),
+          blink::mojom::ScriptType::kClassic, 1 /* version_id */,
+          mojo::PendingRemote<storage::mojom::ServiceWorkerLiveVersionRef>(),
+          helper_->context()->AsWeakPtr(), std::nullopt, std::nullopt,
+          PolicyContainerPolicies());
+  registration1_->SetActiveVersion(version);
+
+  std::unique_ptr<ServiceWorkerHost> worker_host = CreateServiceWorkerHost(
+      helper_->mock_render_process_id(), true /* is_parent_frame_secure */,
+      *version, helper_->context()->AsWeakPtr());
+  ServiceWorkerContainerHost* container_host = worker_host->container_host();
+
+  DisallowServiceWorkerWithLogsContentBrowserClient test_browser_client;
+  ContentBrowserClient* old_browser_client =
+      SetBrowserClientForTesting(&test_browser_client);
+
+  base::HistogramTester histogram_tester;
+  blink::ServiceWorkerStatusCode result_status =
+      blink::ServiceWorkerStatusCode::kOk;
+  base::RunLoop loop;
+  container_host->DispatchExtendableMessageEvent(
+      version, blink::TransferableMessage(),
+      base::BindLambdaForTesting([&](blink::ServiceWorkerStatusCode status) {
+        result_status = status;
+        loop.Quit();
+      }));
+  loop.Run();
+
+  if (GetParam()) {
+    EXPECT_EQ(blink::ServiceWorkerStatusCode::kErrorDisallowed, result_status);
+  } else {
+    EXPECT_NE(blink::ServiceWorkerStatusCode::kErrorDisallowed, result_status);
+  }
+
+  ASSERT_EQ(1ul, test_browser_client.logs().size());
+  EXPECT_EQ(GURL("https://www.example.com/"),
+            test_browser_client.logs()[0].scope);
+  EXPECT_EQ(GURL("https://www.example.com/sw.js"),
+            test_browser_client.logs()[0].script_url);
+
+  histogram_tester.ExpectUniqueSample(
+      "ServiceWorker.MessageDispatch.ContextValidation",
+      ServiceWorkerMessageDispatchContextValidationResult::kDisallowed, 1);
+
+  SetBrowserClientForTesting(old_browser_client);
+}
+
+TEST_P(
+    ServiceWorkerContainerHostContextValidationTest,
+    DispatchExtendableMessageEvent_Client_ContentSettingsDisallowsServiceWorker) {
+  scoped_refptr<ServiceWorkerVersion> version =
+      base::MakeRefCounted<ServiceWorkerVersion>(
+          registration1_.get(), GURL("https://www.example.com/sw.js"),
+          blink::mojom::ScriptType::kClassic, 1 /* version_id */,
+          mojo::PendingRemote<storage::mojom::ServiceWorkerLiveVersionRef>(),
+          helper_->context()->AsWeakPtr(), std::nullopt, std::nullopt,
+          PolicyContainerPolicies());
+  registration1_->SetActiveVersion(version);
+
+  CommittedServiceWorkerClient service_worker_client =
+      PrepareServiceWorkerContainerHost(GURL("https://www.example.com/foo"));
+  ServiceWorkerContainerHost& container_host =
+      service_worker_client.container_host();
+
+  DisallowServiceWorkerWithLogsContentBrowserClient test_browser_client;
+  ContentBrowserClient* old_browser_client =
+      SetBrowserClientForTesting(&test_browser_client);
+
+  base::HistogramTester histogram_tester;
+  blink::ServiceWorkerStatusCode result_status =
+      blink::ServiceWorkerStatusCode::kOk;
+  base::RunLoop loop;
+  container_host.DispatchExtendableMessageEvent(
+      version, blink::TransferableMessage(),
+      base::BindLambdaForTesting([&](blink::ServiceWorkerStatusCode status) {
+        result_status = status;
+        loop.Quit();
+      }));
+  loop.Run();
+
+  if (GetParam()) {
+    EXPECT_EQ(blink::ServiceWorkerStatusCode::kErrorDisallowed, result_status);
+  } else {
+    EXPECT_NE(blink::ServiceWorkerStatusCode::kErrorDisallowed, result_status);
+  }
+
+  ASSERT_EQ(1ul, test_browser_client.logs().size());
+  EXPECT_EQ(GURL("https://www.example.com/"),
+            test_browser_client.logs()[0].scope);
+  EXPECT_EQ(GURL("https://www.example.com/sw.js"),
+            test_browser_client.logs()[0].script_url);
+  EXPECT_EQ(url::Origin::Create(GURL("https://www.example.com")),
+            test_browser_client.logs()[0].top_frame_origin);
+
+  histogram_tester.ExpectUniqueSample(
+      "ServiceWorker.MessageDispatch.ContextValidation",
+      ServiceWorkerMessageDispatchContextValidationResult::kDisallowed, 1);
+
   SetBrowserClientForTesting(old_browser_client);
 }
 

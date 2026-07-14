@@ -514,4 +514,16 @@ void ServiceWorkerMetrics::RecordMainScriptRequestValidationResult(
                                 result);
 }
 
+void ServiceWorkerMetrics::RecordMessageDispatchContextValidationResult(
+    ServiceWorkerMessageDispatchContextValidationResult result) {
+  base::UmaHistogramEnumeration(
+      "ServiceWorker.MessageDispatch.ContextValidation", result);
+}
+
+void ServiceWorkerMetrics::RecordStartWorkerContextValidationDifference(
+    ServiceWorkerStartWorkerContextValidationDifference result) {
+  base::UmaHistogramEnumeration(
+      "ServiceWorker.StartWorker.ContextValidationDifference", result);
+}
+
 }  // namespace content

@@ -810,6 +810,11 @@ BASE_FEATURE(kServiceWorkerVerifyMainScriptUrl,
 BASE_FEATURE(kServiceWorkerSoftUpdateOnFunctionalEvent,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, stricter and aligned context validation is performed for
+// ServiceWorker start checks and message event dispatching.
+BASE_FEATURE(kServiceWorkerStrictContextValidation,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled, the browser process will derive the secure context state of a
 // SharedWorker connection from its own authoritative ground truth
 // (PolicyContainerHost) instead of trusting the renderer-supplied parameter.

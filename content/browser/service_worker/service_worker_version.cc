@@ -49,6 +49,7 @@
 #include "content/browser/service_worker/service_worker_hid_delegate_observer.h"
 #include "content/browser/service_worker/service_worker_host.h"
 #include "content/browser/service_worker/service_worker_installed_scripts_sender.h"
+#include "content/browser/service_worker/service_worker_metrics.h"
 #include "content/browser/service_worker/service_worker_security_utils.h"
 #include "content/browser/service_worker/service_worker_usb_delegate_observer.h"
 #include "content/common/content_navigation_policy.h"
@@ -3268,13 +3269,37 @@ bool ServiceWorkerVersion::IsStartWorkerAllowed() const {
   // was previously allowed and installed, but later content settings changed to
   // disallow this scope. Since this worker might not be used for a specific
   // tab, pass a null callback as WebContents getter.
-  if (!GetContentClient()->browser()->AllowServiceWorker(
-          scope_, net::SiteForCookies::FromUrl(scope_),
-          url::Origin::Create(scope_), key_, script_url_, browser_context)) {
-    return false;
-  }
+  bool old_allowed = GetContentClient()->browser()->AllowServiceWorker(
+      scope_, net::SiteForCookies::FromUrl(scope_), url::Origin::Create(scope_),
+      key_, script_url_, browser_context);
+  bool new_allowed = GetContentClient()->browser()->AllowServiceWorker(
+      scope_, service_worker_security_utils::site_for_cookies(key_),
+      url::Origin::Create(key_.top_level_site().GetURL()), key_, script_url_,
+      browser_context);
 
-  return true;
+  ServiceWorkerStartWorkerContextValidationDifference diff_result;
+  if (old_allowed && new_allowed) {
+    diff_result =
+        ServiceWorkerStartWorkerContextValidationDifference::kBothAllowed;
+  } else if (old_allowed && !new_allowed) {
+    diff_result = ServiceWorkerStartWorkerContextValidationDifference::
+        kOldAllowedNewDisallowed;
+  } else if (!old_allowed && new_allowed) {
+    diff_result = ServiceWorkerStartWorkerContextValidationDifference::
+        kOldDisallowedNewAllowed;
+  } else {
+    diff_result =
+        ServiceWorkerStartWorkerContextValidationDifference::kBothDisallowed;
+  }
+  ServiceWorkerMetrics::RecordStartWorkerContextValidationDifference(
+      diff_result);
+
+  if (base::FeatureList::IsEnabled(
+          features::kServiceWorkerStrictContextValidation)) {
+    return new_allowed;
+  } else {
+    return old_allowed;
+  }
 }
 
 void ServiceWorkerVersion::NotifyControlleeAdded(

@@ -231,6 +231,15 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Forged Mode"/>
 </enum>
 
+<!-- LINT.IfChange(ServiceWorkerMessageDispatchContextValidationResult) -->
+
+<enum name="ServiceWorkerMessageDispatchContextValidationResult">
+  <int value="0" label="Allowed"/>
+  <int value="1" label="Disallowed"/>
+</enum>
+
+<!-- LINT.ThenChange(//content/browser/service_worker/service_worker_metrics.h:ServiceWorkerMessageDispatchContextValidationResult) -->
+
 <enum name="ServiceWorkerMetrics.EventType">
   <int value="0" label="ACTIVATE"/>
   <int value="1" label="INSTALL"/>
@@ -310,6 +319,17 @@ chromium-metrics-reviews@google.com.
   <int value="9" label="kExceedMaxRouterSize"/>
   <int value="10" label="kFetchSourceWithoutFetchHandler"/>
 </enum>
+
+<!-- LINT.IfChange(ServiceWorkerStartWorkerContextValidationDifference) -->
+
+<enum name="ServiceWorkerStartWorkerContextValidationDifference">
+  <int value="0" label="Both Allowed"/>
+  <int value="1" label="Old Allowed, New Disallowed"/>
+  <int value="2" label="Old Disallowed, New Allowed"/>
+  <int value="3" label="Both Disallowed"/>
+</enum>
+
+<!-- LINT.ThenChange(//content/browser/service_worker/service_worker_metrics.h:ServiceWorkerStartWorkerContextValidationDifference) -->
 
 <enum name="ServiceWorkerWriteResponseResult">
   <int value="0" label="OK"/>
