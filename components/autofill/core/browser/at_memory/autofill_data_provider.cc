@@ -416,15 +416,16 @@ std::vector<MemorySearchResult> AutofillDataProvider::FetchCreditCardData(
     if (field_type == CREDIT_CARD_NUMBER) {
       value = credit_card->ObfuscatedNumberWithVisibleLastFourDigits();
     } else if (field_type == CREDIT_CARD_VERIFICATION_CODE) {
-      value = std::u16string(3, kMidlineEllipsisPlainDot);
+      value =
+          CreditCard::GetMidlineEllipsisPlainDots(credit_card->cvc().length());
     }
 
-    // TODO(crbug.com/497795513): Set `is_obfuscated` and `reveal_callback` for
-    // credit card number and CVV and use it to reveal the number after re-auth.
     MemorySearchResult entry(
         memory_data_type, GetMemoryDataTypeNameForI18n(memory_data_type),
         std::move(value),
         credit_card->usage_history().GetRankingScore(base::Time::Now()));
+    entry.is_obfuscated = (field_type == CREDIT_CARD_NUMBER ||
+                           field_type == CREDIT_CARD_VERIFICATION_CODE);
     entry.identifier = credit_card->guid();
 
     std::string app_locale =
@@ -447,7 +448,7 @@ std::vector<MemorySearchResult> AutofillDataProvider::FetchCreditCardData(
       entry.metadata_list.emplace_back(
           MemoryDataType::kCreditCardSecurityCode,
           GetMemoryDataTypeNameForI18n(MemoryDataType::kCreditCardSecurityCode),
-          std::u16string(3, kMidlineEllipsisPlainDot));
+          CreditCard::GetMidlineEllipsisPlainDots(credit_card->cvc().length()));
     }
 
     AddMetadataToResult(entry, *credit_card,
