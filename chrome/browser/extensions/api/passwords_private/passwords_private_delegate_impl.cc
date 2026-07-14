@@ -14,7 +14,8 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/i18n/time_formatting.h"
+#include "base/i18n/icubridge/date_time_formatter.h"
+#include "base/i18n/icubridge/icu_bridge.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
@@ -1394,10 +1395,10 @@ PasswordsPrivateDelegateImpl::CreatePasswordUiEntryFromCredentialUiEntry(
     api::passwords_private::BackupPasswordInfo backup_password_info;
     backup_password_info.value =
         base::UTF16ToUTF8(credential.backup_password->value);
-    backup_password_info.creation_date =
-        base::UTF16ToUTF8(base::LocalizedTimeFormatWithPattern(
+    backup_password_info.creation_date = base::UTF16ToUTF8(
+        base::i18n::IcuBridge::GetInstance().date_time_formatter().Format(
             credential.backup_password->creation_timestamp,
-            /*pattern=*/"MMM dd"));
+            base::i18n::datetime_options::MD::Medium()));
     entry.backup_password = std::move(backup_password_info);
   }
   entry.hidden = credential.hidden;

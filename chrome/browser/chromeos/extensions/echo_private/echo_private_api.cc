@@ -10,8 +10,8 @@
 
 #include "ash/constants/webui_url_constants.h"
 #include "base/functional/bind.h"
-#include "base/i18n/time_formatting.h"
 #include "base/location.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -141,8 +141,10 @@ ExtensionFunction::ResponseAction EchoPrivateGetOobeTimestampFunction::Run() {
     // Returns an empty string on error.
     return RespondNow(WithArguments(std::string()));
   }
-  std::string result = base::UnlocalizedTimeFormatWithPattern(
-      timestamp.value(), "y-M-d", icu::TimeZone::getGMT());
+  base::Time::Exploded exploded;
+  timestamp.value().UTCExplode(&exploded);
+  std::string result = base::StringPrintf(
+      "%d-%d-%d", exploded.year, exploded.month, exploded.day_of_month);
   return RespondNow(WithArguments(std::move(result)));
 }
 

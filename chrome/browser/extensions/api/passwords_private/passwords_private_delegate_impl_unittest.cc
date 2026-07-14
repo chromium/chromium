@@ -15,7 +15,8 @@
 #include "ash/constants/web_app_id_constants.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/i18n/time_formatting.h"
+#include "base/i18n/icubridge/date_time_formatter.h"
+#include "base/i18n/icubridge/icu_bridge.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/notimplemented.h"
@@ -1183,9 +1184,10 @@ TEST_F(PasswordsPrivateDelegateImplTest, GetCredentialGroups) {
   password2.SetPasswordBackupNote(backup_password);
   api::passwords_private::BackupPasswordInfo backup_password_info;
   backup_password_info.value = base::UTF16ToUTF8(backup_password);
-  backup_password_info.creation_date =
-      base::UTF16ToUTF8(base::LocalizedTimeFormatWithPattern(
-          password2.GetPasswordBackupDateCreated().value(), "MMM dd"));
+  backup_password_info.creation_date = base::UTF16ToUTF8(
+      base::i18n::IcuBridge::GetInstance().date_time_formatter().Format(
+          password2.GetPasswordBackupDateCreated().value(),
+          base::i18n::datetime_options::MD::Medium()));
 
   SetUpPasswordStores({password1, password2});
   {
