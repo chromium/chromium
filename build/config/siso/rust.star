@@ -159,8 +159,7 @@ def __step_config(ctx, step_config):
 
     remote = config.get(ctx, "googlechrome")
 
-    # TODO(crbug.com/434857701): fix link for target_arch="x86"
-    remote_link = False
+    remote_link = remote
     clang_inputs = [
         "third_party/llvm-build/Release+Asserts:rustlink",
     ]
@@ -180,6 +179,10 @@ def __step_config(ctx, step_config):
             else:
                 remote = False
         else:
+            if gn_args.get("target_cpu", "x64").strip('"') != "x64":
+                # TODO(crbug.com/434857701): fix link for non-x64 targets.
+                remote_link = False
+
             # TODO(crbug.com/434857701): fix sysroot for target_arch="x86"
             clang_inputs.append(
                 "build/linux/debian_bullseye_amd64-sysroot:rustlink",
