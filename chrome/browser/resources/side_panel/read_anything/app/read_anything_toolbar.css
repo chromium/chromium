@@ -25,15 +25,7 @@
     var(--on-audio-player-focus-outline-color);
 }
 
-@media (forced-colors: active) {
-    #play-pause {
-    --cr-icon-button-fill-color: CanvasText;
-  }
 
-  cr-icon-button#color {
-    display: none;
-  }
-}
 
 .audio-background-inactive {
   --audio-controls-background: transparent;
@@ -228,4 +220,16 @@
 
 .immersive-font-size-menu::part(dialog) {
   border-radius: var(--cornerRadii-medium-small, 12px);
+}
+
+@media (forced-colors: active) {
+  cr-icon-button,
+  #audio-controls cr-icon-button,
+  #audio-controls #play-pause {
+    --cr-icon-button-fill-color: CanvasText;
+  }
+
+  cr-icon-button#color {
+    display: none;
+  }
 }

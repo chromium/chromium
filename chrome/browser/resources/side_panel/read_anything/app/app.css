@@ -262,6 +262,15 @@
   #lineFocus.window-mode {
     forced-color-adjust: none;
   }
+
+  :host {
+    --color-read-anything-line-focus-scrim: color-mix(in srgb, Canvas 90%, transparent);
+  }
+
+  #toolbar-container {
+    /* Ensures the toolbar stays completely unobscured above the line focus scrim (z-index: 9997). */
+    z-index: 9999;
+  }
 }
 
 #appFlexParent .previous-read-highlight {
