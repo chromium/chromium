@@ -69,7 +69,9 @@ bool IsFieldTypeSaveable(const FormStructure* form, FieldGlobalId field_id) {
       case CREDIT_CARD_NUMBER:
         return false;
       case LOYALTY_MEMBERSHIP_ID:
-        if (field->last_modifier() == FieldModifier::kAutofill) {
+        if (field->last_modifier() == FieldModifier::kAutofill &&
+            !base::FeatureList::IsEnabled(
+                features::kAutofillPreventAutofillFromSavingToAutocomplete)) {
           return false;
         }
         break;
