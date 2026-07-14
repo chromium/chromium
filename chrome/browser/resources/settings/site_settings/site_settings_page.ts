@@ -176,7 +176,9 @@ function getCategoryItemMap(): Map<ContentSettingsTypes, CategoryListItem> {
       route: routes.SITE_SETTINGS_FILE_SYSTEM_WRITE,
       id: Id.FILE_SYSTEM_WRITE,
       label: 'siteSettingsFileSystemWrite',
-      icon: 'privacy:file-save',
+      icon: loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+          'privacy:file-save' :
+          'privacy:file-save-old',
       enabledLabel: 'siteSettingsFileSystemWriteAsk',
       disabledLabel: 'siteSettingsFileSystemWriteBlocked',
     },
@@ -192,7 +194,9 @@ function getCategoryItemMap(): Map<ContentSettingsTypes, CategoryListItem> {
       route: routes.SITE_SETTINGS_HAND_TRACKING,
       id: Id.HAND_TRACKING,
       label: 'siteSettingsHandTracking',
-      icon: 'privacy:hand-gesture',
+      icon: loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+          'privacy:hand-gesture' :
+          'privacy:hand-gesture-old',
       enabledLabel: 'siteSettingsHandTrackingAsk',
       disabledLabel: 'siteSettingsHandTrackingBlock',
       shouldShow: () =>
@@ -218,7 +222,9 @@ function getCategoryItemMap(): Map<ContentSettingsTypes, CategoryListItem> {
       route: routes.SITE_SETTINGS_IMAGES,
       id: Id.IMAGES,
       label: 'siteSettingsImages',
-      icon: 'privacy:imagesmode',
+      icon: loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+          'privacy:imagesmode' :
+          'privacy:imagesmode-old',
       enabledLabel: 'siteSettingsImagesAllowed',
       disabledLabel: 'siteSettingsImagesBlocked',
     },
@@ -263,7 +269,9 @@ function getCategoryItemMap(): Map<ContentSettingsTypes, CategoryListItem> {
       route: routes.SITE_SETTINGS_LOCAL_FONTS,
       id: Id.LOCAL_FONTS,
       label: 'fonts',
-      icon: 'privacy:font-download',
+      icon: loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+          'privacy:font-download' :
+          'privacy:font-download-old',
       enabledLabel: 'siteSettingsFontsAsk',
       disabledLabel: 'siteSettingsFontsBlocked',
     },
@@ -341,7 +349,9 @@ function getCategoryItemMap(): Map<ContentSettingsTypes, CategoryListItem> {
       route: routes.SITE_SETTINGS_PDF_DOCUMENTS,
       id: Id.PDF_DOCUMENTS,
       label: 'siteSettingsPdfDocuments',
-      icon: 'privacy:drive-pdf',
+      icon: loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+          'privacy:drive-pdf' :
+          'privacy:drive-pdf-old',
       enabledLabel: 'siteSettingsPdfsAllowed',
       disabledLabel: 'siteSettingsPdfsBlocked',
     },
@@ -391,7 +401,9 @@ function getCategoryItemMap(): Map<ContentSettingsTypes, CategoryListItem> {
       route: routes.SITE_SETTINGS_SERIAL_PORTS,
       id: Id.SERIAL_PORTS,
       label: 'siteSettingsSerialPorts',
-      icon: 'privacy:developer-board',
+      icon: loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+          'privacy:developer-board' :
+          'privacy:developer-board-old',
       enabledLabel: 'siteSettingsSerialPortsAsk',
       disabledLabel: 'siteSettingsSerialPortsBlocked',
     },

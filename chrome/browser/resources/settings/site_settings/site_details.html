@@ -173,7 +173,7 @@
           icon="[[getCodeIcon_()]]" label="$i18n{siteSettingsJavascript}">
       </site-details-permission>
       <site-details-permission category="[[contentSettingsTypesEnum_.IMAGES]]"
-          icon="privacy:imagesmode" label="$i18n{siteSettingsImages}">
+          icon="[[getImagesmodeIcon_()]]" label="$i18n{siteSettingsImages}">
       </site-details-permission>
       <site-details-permission category="[[contentSettingsTypesEnum_.POPUPS]]"
           icon="cr:open-in-new" label="$i18n{siteSettingsPopups}">
@@ -218,7 +218,7 @@
 </if>
       <site-details-permission
           category="[[contentSettingsTypesEnum_.SERIAL_PORTS]]"
-          icon="privacy:developer-board" label="$i18n{siteSettingsSerialPorts}"
+          icon="[[getDeveloperBoardIcon_()]]" label="$i18n{siteSettingsSerialPorts}"
           chooser-type="[[chooserTypeEnum_.SERIAL_PORTS]]">
       </site-details-permission>
       <template is="dom-if" if="[[enableWebBluetoothNewPermissionsBackend_]]">
@@ -231,7 +231,7 @@
       </template>
       <site-details-permission
           category="[[contentSettingsTypesEnum_.FILE_SYSTEM_WRITE]]"
-          icon="privacy:file-save"
+          icon="[[getFileSaveIcon_()]]"
           label="$i18n{siteSettingsFileSystemWrite}">
       </site-details-permission>
       <site-details-permission category="[[contentSettingsTypesEnum_.HID_DEVICES]]"
@@ -286,7 +286,7 @@
       <template is="dom-if" if="[[enableHandTrackingContentSetting_]]">
         <site-details-permission
             category="[[contentSettingsTypesEnum_.HAND_TRACKING]]"
-            icon="privacy:hand-gesture" label="$i18n{siteSettingsHandTracking}">
+            icon="[[getHandGestureIcon_()]]" label="$i18n{siteSettingsHandTracking}">
         </site-details-permission>
       </template>
       <site-details-permission
@@ -301,7 +301,7 @@
       </site-details-permission>
       <site-details-permission
           category="[[contentSettingsTypesEnum_.LOCAL_FONTS]]"
-          icon="privacy:font-download" label="$i18n{fonts}">
+          icon="[[getFontDownloadIcon_()]]" label="$i18n{fonts}">
       </site-details-permission>
       <site-details-permission
           category="[[contentSettingsTypesEnum_.AUTO_PICTURE_IN_PICTURE]]"

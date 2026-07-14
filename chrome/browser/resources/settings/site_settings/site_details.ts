@@ -538,6 +538,36 @@ export class SiteDetailsElement extends SiteDetailsElementBase {
         'privacy:credit-card' :
         'privacy:credit-card-old';
   }
+
+  protected getDeveloperBoardIcon_(): string {
+    return loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+        'privacy:developer-board' :
+        'privacy:developer-board-old';
+  }
+
+  protected getFileSaveIcon_(): string {
+    return loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+        'privacy:file-save' :
+        'privacy:file-save-old';
+  }
+
+  protected getFontDownloadIcon_(): string {
+    return loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+        'privacy:font-download' :
+        'privacy:font-download-old';
+  }
+
+  protected getHandGestureIcon_(): string {
+    return loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+        'privacy:hand-gesture' :
+        'privacy:hand-gesture-old';
+  }
+
+  protected getImagesmodeIcon_(): string {
+    return loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+        'privacy:imagesmode' :
+        'privacy:imagesmode-old';
+  }
 }
 
 declare global {

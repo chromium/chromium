@@ -136,6 +136,12 @@ export class SettingsSiteDataElement extends SettingsSiteDataElementBase {
         'privacy:database' :
         'privacy:database-old';
   }
+
+  protected getDatabaseOffIcon_(): string {
+    return loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+        'privacy:database-off' :
+        'privacy:database-off-old';
+  }
 }
 
 declare global {
