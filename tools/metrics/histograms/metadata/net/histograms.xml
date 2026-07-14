@@ -7080,6 +7080,21 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Net.QuicSession.ReadMultipleNumPackets" units="packets"
+    expires_after="2027-07-14">
+  <owner>aymanm@google.com</owner>
+  <owner>ricea@chromium.org</owner>
+  <summary>
+    The number of UDP packets successfully read in a single batch read
+    (`ReadMultiple` / `recvmmsg`) operation on a QUIC UDP socket. Recorded each
+    time `QuicChromiumPacketReader` processes a successful multi-packet read
+    result when the `QuicUseReadMultiple` feature is enabled.
+
+    Note: Because packet reading occurs at high frequency, this metric is
+    subsampled and recorded for 10% of successful read operations.
+  </summary>
+</histogram>
+
 <histogram name="Net.QuicSession.ReceivedSettings.BlockedStreams" units="units"
     expires_after="2023-09-24">
   <owner>dschinazi@chromium.org</owner>
