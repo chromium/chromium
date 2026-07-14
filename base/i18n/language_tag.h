@@ -65,9 +65,9 @@ class BASE_I18N_EXPORT LanguageTag {
                                    const LanguageTag& rhs) {
     return lhs.tag_string() == rhs.tag_string();
   }
-  constexpr friend bool operator<(const LanguageTag& lhs,
-                                  const LanguageTag& rhs) {
-    return lhs.tag_string() < rhs.tag_string();
+  constexpr friend std::strong_ordering operator<=>(const LanguageTag& lhs,
+                                                    const LanguageTag& rhs) {
+    return lhs.tag_string() <=> rhs.tag_string();
   }
   constexpr friend std::ostream& operator<<(std::ostream& os,
                                             const LanguageTag& lt) {
@@ -188,8 +188,9 @@ class BASE_I18N_EXPORT Bcp47Subtag {
   friend bool operator==(const SubtagType& lhs, const SubtagType& rhs) {
     return lhs.subtag_string() == rhs.subtag_string();
   }
-  friend bool operator<(const SubtagType& lhs, const SubtagType& rhs) {
-    return lhs.subtag_string() < rhs.subtag_string();
+  friend std::strong_ordering operator<=>(const SubtagType& lhs,
+                                          const SubtagType& rhs) {
+    return lhs.subtag_string() <=> rhs.subtag_string();
   }
   friend std::ostream& operator<<(std::ostream& os, const SubtagType& tag) {
     return os << tag.subtag_string();

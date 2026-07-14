@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-
 #include "ui/base/l10n/l10n_util.h"
 
 #include <stddef.h>
@@ -17,6 +16,7 @@
 #include "base/environment.h"
 #include "base/files/file_util.h"
 #include "base/i18n/case_conversion.h"
+#include "base/i18n/language_tag.h"
 #include "base/i18n/rtl.h"
 #include "base/i18n/time_formatting.h"
 #include "base/path_service.h"
@@ -38,10 +38,12 @@
 #include <cstdlib>
 #endif
 
+namespace l10n_util {
 namespace {
 
 using ::base::ASCIIToUTF16;
 using ::base::UTF8ToUTF16;
+using ::base::i18n::LanguageTag;
 using ::testing::ElementsAre;
 
 class StringWrapper {
@@ -57,10 +59,7 @@ class StringWrapper {
   std::u16string string_;
 };
 
-}  // namespace
-
-class L10nUtilTest : public PlatformTest {
-};
+using L10nUtilTest = PlatformTest;
 
 TEST_F(L10nUtilTest, GetString) {
   std::string s = l10n_util::GetStringUTF8(IDS_SIMPLE);
@@ -133,9 +132,8 @@ TEST_F(L10nUtilTest, GetAppLocale) {
       "zh-TW",
   });
 
-  for (size_t i = 0; i < std::size(filenames); ++i) {
-    base::FilePath filename = new_locale_dir.AppendASCII(
-        filenames[i] + ".pak");
+  for (const std::string& filename_str : filenames) {
+    base::FilePath filename = new_locale_dir.AppendASCII(filename_str + ".pak");
     base::WriteFile(filename, "");
   }
 
@@ -676,7 +674,7 @@ TEST_F(L10nUtilTest, GetUserFacingUILocaleList) {
 }
 
 TEST_F(L10nUtilTest, PlatformLocalesIsSorted) {
-  const base::span<const std::string_view> locales =
+  base::span<const LanguageTag> locales =
       l10n_util::GetPlatformLocalesForTesting();
 
   // Check adjacent pairs and ensure they are in sorted order ...
@@ -815,3 +813,6 @@ TEST_F(L10nUtilTest, AllLegacyAcceptLanguagesWork) {
     EXPECT_TRUE(l10n_util::IsPossibleAcceptLanguage(locale)) << locale;
   }
 }
+
+}  // namespace
+}  // namespace l10n_util

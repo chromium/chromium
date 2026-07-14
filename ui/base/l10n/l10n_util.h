@@ -16,7 +16,9 @@
 #include <vector>
 
 #include "base/component_export.h"
+#include "base/containers/flat_set.h"
 #include "base/containers/span.h"
+#include "base/i18n/language_tag.h"
 #include "build/build_config.h"
 
 #if BUILDFLAG(IS_APPLE)
@@ -303,7 +305,7 @@ COMPONENT_EXPORT(UI_BASE)
 std::vector<std::string_view> GetAcceptLanguageListForTesting();
 
 COMPONENT_EXPORT(UI_BASE)
-base::span<const std::string_view> GetPlatformLocalesForTesting();
+base::span<const base::i18n::LanguageTag> GetPlatformLocalesForTesting();
 
 }  // namespace l10n_util
 
