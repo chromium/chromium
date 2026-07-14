@@ -1,0 +1,78 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CHROME_BROWSER_UI_BOOKMARKS_BOOKMARK_MERGED_SURFACE_VIEW_H_
+#define CHROME_BROWSER_UI_BOOKMARKS_BOOKMARK_MERGED_SURFACE_VIEW_H_
+
+#include <memory>
+#include <optional>
+#include <string>
+#include <vector>
+
+#include "base/location.h"
+#include "base/memory/raw_ptr.h"
+#include "base/uuid.h"
+#include "components/bookmarks/browser/bookmark_node.h"
+#include "components/bookmarks/common/bookmark_metrics.h"
+#include "components/browser_apis/bookmarks/bookmarks_api.mojom.h"
+#include "components/browser_apis/bookmarks/bookmarks_view.h"
+#include "url/gurl.h"
+
+class BookmarkMergedSurfaceService;
+
+// Implements BookmarksView by delegating queries and mutations to
+// BookmarkMergedSurfaceService, enabling merged local and account bookmark
+// hierarchies in WebUI services (like Bookmarks Manager).
+class BookmarkMergedSurfaceView : public bookmarks_api::BookmarksView {
+ public:
+  explicit BookmarkMergedSurfaceView(BookmarkMergedSurfaceService* service);
+  ~BookmarkMergedSurfaceView() override;
+
+  BookmarkMergedSurfaceView(const BookmarkMergedSurfaceView&) = delete;
+  BookmarkMergedSurfaceView& operator=(const BookmarkMergedSurfaceView&) =
+      delete;
+
+  // bookmarks_api::BookmarksView:
+  void AddObserver(bookmarks::BookmarkModelObserver* observer) override;
+  void RemoveObserver(bookmarks::BookmarkModelObserver* observer) override;
+  bool IsDoingExtensiveChanges() const override;
+  const bookmarks::BookmarkNode* GetRootNode() const override;
+  std::vector<const bookmarks::BookmarkNode*> GetChildren(
+      const bookmarks::BookmarkNode* parent) const override;
+  std::optional<const bookmarks::BookmarkNode*> FindNodeByUuid(
+      const base::Uuid& uuid) const override;
+  bool IsPermanentNode(const bookmarks::BookmarkNode* node) const override;
+  bookmarks_api::mojom::PermanentFolderType GetPermanentFolderType(
+      const bookmarks::BookmarkNode* node) const override;
+  bool IsSynced(const bookmarks::BookmarkNode* node) const override;
+  const bookmarks::BookmarkNode* AddURL(const bookmarks::BookmarkNode* parent,
+                                        size_t index,
+                                        const std::u16string& title,
+                                        const GURL& url) override;
+  const bookmarks::BookmarkNode* AddFolder(
+      const bookmarks::BookmarkNode* parent,
+      size_t index,
+      const std::u16string& title) override;
+  void Move(const bookmarks::BookmarkNode* node,
+            const bookmarks::BookmarkNode* new_parent,
+            size_t index) override;
+  void SetTitle(const bookmarks::BookmarkNode* node,
+                const std::u16string& title,
+                bookmarks::metrics::BookmarkEditSource source) override;
+  void SetURL(const bookmarks::BookmarkNode* node,
+              const GURL& url,
+              bookmarks::metrics::BookmarkEditSource source) override;
+  void Remove(const bookmarks::BookmarkNode* node,
+              bookmarks::metrics::BookmarkEditSource source,
+              const base::Location& location) override;
+  void RemoveNodes(const std::vector<const bookmarks::BookmarkNode*>& nodes,
+                   bookmarks::metrics::BookmarkEditSource source,
+                   const base::Location& location) override;
+
+ private:
+  raw_ptr<BookmarkMergedSurfaceService> service_;
+  std::unique_ptr<bookmarks::BookmarkNode> synthetic_root_node_;
+};
+
+#endif  // CHROME_BROWSER_UI_BOOKMARKS_BOOKMARK_MERGED_SURFACE_VIEW_H_

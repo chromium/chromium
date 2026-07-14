@@ -16,7 +16,10 @@ mojom("mojom") {
 }
 
 source_set("bookmarks") {
-  sources = [ "bookmarks_service.h" ]
+  sources = [
+    "bookmarks_service.h",
+    "bookmarks_view.h",
+  ]
 
   public_deps = [ ":mojom" ]
 
@@ -31,8 +34,6 @@ source_set("impl") {
   sources = [
     "bookmark_event_translator.cc",
     "bookmark_event_translator.h",
-    "bookmark_node_finder.cc",
-    "bookmark_node_finder.h",
     "bookmarks_service_impl.cc",
     "bookmarks_service_impl.h",
   ]
@@ -46,18 +47,34 @@ source_set("impl") {
   ]
 }
 
+source_set("test_support") {
+  testonly = true
+
+  sources = [
+    "testing/default_bookmarks_view.cc",
+    "testing/default_bookmarks_view.h",
+  ]
+
+  deps = [
+    ":bookmarks",
+    "//base",
+    "//components/bookmarks/browser",
+    "//components/bookmarks/managed",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
 
   sources = [
     "bookmark_event_translator_unittest.cc",
-    "bookmark_node_finder_unittest.cc",
     "bookmarks_service_impl_unittest.cc",
   ]
 
   deps = [
     ":bookmarks",
     ":impl",
+    ":test_support",
     "//base/test:test_support",
     "//components/bookmarks/browser",
     "//components/bookmarks/test",

@@ -10,12 +10,9 @@
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/types/expected_macros.h"
-#include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/browser/bookmark_utils.h"
-#include "components/bookmarks/browser/scoped_group_bookmark_actions.h"
 #include "components/bookmarks/common/bookmark_metrics.h"
-#include "components/bookmarks/managed/managed_bookmark_service.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 
@@ -42,16 +39,10 @@ mojo_base::mojom::ErrorPtr MakeError(mojo_base::mojom::Code code,
 
 }  // namespace
 
-BookmarksServiceImpl::BookmarksServiceImpl(
-    bookmarks::BookmarkModel* bookmark_model,
-    bookmarks::ManagedBookmarkService* managed_bookmark_service)
-    : bookmark_model_(bookmark_model),
-      managed_bookmark_service_(managed_bookmark_service),
-      finder_(bookmark_model) {
-  CHECK(bookmark_model_);
-  CHECK(bookmark_model_->loaded());
-  translator_ = std::make_unique<BookmarkEventTranslator>(
-      bookmark_model_, managed_bookmark_service_, this);
+BookmarksServiceImpl::BookmarksServiceImpl(std::unique_ptr<BookmarksView> view)
+    : view_(std::move(view)) {
+  CHECK(view_);
+  translator_ = std::make_unique<BookmarkEventTranslator>(view_.get(), this);
 }
 
 BookmarksServiceImpl::~BookmarksServiceImpl() = default;
@@ -64,7 +55,7 @@ void BookmarksServiceImpl::Accept(
 mojom::BookmarksService::GetBookmarksResult
 BookmarksServiceImpl::GetBookmarks() {
   auto snapshot = mojom::BookmarksSnapshot::New();
-  snapshot->root = ConvertRootNode(bookmark_model_->root_node());
+  snapshot->root = ConvertRootNode(view_->GetRootNode());
 
   mojo::AssociatedRemote<mojom::BookmarksObserver> stream;
   auto pending_receiver = stream.BindNewEndpointAndPassReceiver();
@@ -77,31 +68,32 @@ BookmarksServiceImpl::GetBookmarks() {
 mojom::BookmarksService::GetBookmarkResult BookmarksServiceImpl::GetBookmark(
     const base::Uuid& id) {
   ASSIGN_OR_RETURN(const bookmarks::BookmarkNode* node,
-                   finder_.FindNodeByUuid(id), &MakeError,
+                   view_->FindNodeByUuid(id), &MakeError,
                    mojo_base::mojom::Code::kNotFound, "Bookmark not found");
   return ConvertNode(node);
 }
 
 mojom::BookmarkNodePtr BookmarksServiceImpl::ConvertNode(
     const bookmarks::BookmarkNode* node) {
-  return BookmarkEventTranslator::ConvertNode(bookmark_model_,
-                                              managed_bookmark_service_, node);
+  return BookmarkEventTranslator::ConvertNode(node, view_.get());
 }
 
 mojom::RootNodePtr BookmarksServiceImpl::ConvertRootNode(
     const bookmarks::BookmarkNode* node) {
-  return BookmarkEventTranslator::ConvertRootNode(
-      bookmark_model_, managed_bookmark_service_, node);
+  return BookmarkEventTranslator::ConvertRootNode(node, view_.get());
 }
 
 mojom::BookmarksService::CreateBookmarkNodeResult
 BookmarksServiceImpl::CreateBookmarkNode(const base::Uuid& parent_id,
                                          std::optional<int32_t> index,
                                          mojom::BookmarkNodePtr node) {
-  RETURN_IF_ERROR(CheckNotNull(node, "Node"));
+  if (!node) {
+    return base::unexpected(mojo_base::mojom::Error::New(
+        mojo_base::mojom::Code::kInvalidArgument, "Node cannot be null"));
+  }
 
   ASSIGN_OR_RETURN(
-      const bookmarks::BookmarkNode* parent, finder_.FindNodeByUuid(parent_id),
+      const bookmarks::BookmarkNode* parent, view_->FindNodeByUuid(parent_id),
       &MakeError, mojo_base::mojom::Code::kNotFound, "Parent folder not found");
 
   if (!parent->is_folder()) {
@@ -110,7 +102,7 @@ BookmarksServiceImpl::CreateBookmarkNode(const base::Uuid& parent_id,
                                      "Parent node is not a folder"));
   }
 
-  size_t target_index;
+  size_t visual_index;
   if (index.has_value()) {
     int32_t val = index.value();
     if (val < 0) {
@@ -118,13 +110,13 @@ BookmarksServiceImpl::CreateBookmarkNode(const base::Uuid& parent_id,
           mojo_base::mojom::Error::New(mojo_base::mojom::Code::kInvalidArgument,
                                        "Index cannot be negative"));
     }
-    target_index = static_cast<size_t>(val);
-    if (target_index > parent->children().size()) {
+    visual_index = static_cast<size_t>(val);
+    if (visual_index > view_->GetChildren(parent).size()) {
       return base::unexpected(mojo_base::mojom::Error::New(
           mojo_base::mojom::Code::kInvalidArgument, "Index out of range"));
     }
   } else {
-    target_index = parent->children().size();
+    visual_index = view_->GetChildren(parent).size();
   }
 
   switch (node->which()) {
@@ -135,8 +127,8 @@ BookmarksServiceImpl::CreateBookmarkNode(const base::Uuid& parent_id,
         return base::unexpected(mojo_base::mojom::Error::New(
             mojo_base::mojom::Code::kInvalidArgument, "Invalid URL"));
       }
-      auto* new_node = bookmark_model_->AddNewURL(
-          parent, target_index, base::UTF8ToUTF16(url_data->title), gurl);
+      auto* new_node = view_->AddURL(parent, visual_index,
+                                     base::UTF8ToUTF16(url_data->title), gurl);
       if (!new_node) {
         return base::unexpected(
             mojo_base::mojom::Error::New(mojo_base::mojom::Code::kInternal,
@@ -146,8 +138,8 @@ BookmarksServiceImpl::CreateBookmarkNode(const base::Uuid& parent_id,
     }
     case mojom::BookmarkNode::Tag::kFolder: {
       const auto& folder_data = node->get_folder();
-      auto* new_node = bookmark_model_->AddFolder(
-          parent, target_index, base::UTF8ToUTF16(folder_data->title));
+      auto* new_node = view_->AddFolder(parent, visual_index,
+                                        base::UTF8ToUTF16(folder_data->title));
       if (!new_node) {
         return base::unexpected(
             mojo_base::mojom::Error::New(mojo_base::mojom::Code::kInternal,
@@ -160,7 +152,10 @@ BookmarksServiceImpl::CreateBookmarkNode(const base::Uuid& parent_id,
 
 mojom::BookmarksService::UpdateBookmarkNodeResult
 BookmarksServiceImpl::UpdateBookmarkNode(mojom::BookmarkNodePtr node) {
-  RETURN_IF_ERROR(CheckNotNull(node, "Node"));
+  if (!node) {
+    return base::unexpected(mojo_base::mojom::Error::New(
+        mojo_base::mojom::Code::kInvalidArgument, "Node cannot be null"));
+  }
 
   base::Uuid id;
   switch (node->which()) {
@@ -186,10 +181,10 @@ BookmarksServiceImpl::UpdateBookmarkNode(mojom::BookmarkNodePtr node) {
   }
 
   ASSIGN_OR_RETURN(
-      const bookmarks::BookmarkNode* model_node, finder_.FindNodeByUuid(id),
+      const bookmarks::BookmarkNode* model_node, view_->FindNodeByUuid(id),
       &MakeError, mojo_base::mojom::Code::kNotFound, "Bookmark node not found");
 
-  if (bookmark_model_->is_permanent_node(model_node)) {
+  if (view_->IsPermanentNode(model_node)) {
     return base::unexpected(
         mojo_base::mojom::Error::New(mojo_base::mojom::Code::kInvalidArgument,
                                      "Cannot update permanent node"));
@@ -197,23 +192,23 @@ BookmarksServiceImpl::UpdateBookmarkNode(mojom::BookmarkNodePtr node) {
 
   switch (node->which()) {
     case mojom::BookmarkNode::Tag::kUrl: {
-      if (model_node->is_folder()) {
-        return base::unexpected(mojo_base::mojom::Error::New(
-            mojo_base::mojom::Code::kInvalidArgument,
-            "Cannot update folder with URL data"));
-      }
       const auto& url_data = node->get_url();
       GURL gurl = url_data->url;
       if (!gurl.is_valid()) {
         return base::unexpected(mojo_base::mojom::Error::New(
             mojo_base::mojom::Code::kInvalidArgument, "Invalid URL"));
       }
-      bookmark_model_->SetTitle(model_node, base::UTF8ToUTF16(url_data->title),
-                                bookmarks::metrics::BookmarkEditSource::kUser);
-      bookmark_model_->SetURL(model_node, gurl,
-                              bookmarks::metrics::BookmarkEditSource::kUser);
+      if (model_node->is_folder()) {
+        return base::unexpected(mojo_base::mojom::Error::New(
+            mojo_base::mojom::Code::kInvalidArgument,
+            "Cannot update folder with URL node"));
+      }
+      view_->SetTitle(model_node, base::UTF8ToUTF16(url_data->title),
+                      bookmarks::metrics::BookmarkEditSource::kUser);
+      view_->SetURL(model_node, gurl,
+                    bookmarks::metrics::BookmarkEditSource::kUser);
       ASSIGN_OR_RETURN(const bookmarks::BookmarkNode* updated_node,
-                       finder_.FindNodeByUuid(id), &MakeError,
+                       view_->FindNodeByUuid(id), &MakeError,
                        mojo_base::mojom::Code::kInternal,
                        "Failed to refetch updated node");
       return ConvertNode(updated_node);
@@ -222,14 +217,13 @@ BookmarksServiceImpl::UpdateBookmarkNode(mojom::BookmarkNodePtr node) {
       if (model_node->is_url()) {
         return base::unexpected(mojo_base::mojom::Error::New(
             mojo_base::mojom::Code::kInvalidArgument,
-            "Cannot update URL node with folder data"));
+            "Cannot update URL node with folder node"));
       }
       const auto& folder_data = node->get_folder();
-      bookmark_model_->SetTitle(model_node,
-                                base::UTF8ToUTF16(folder_data->title),
-                                bookmarks::metrics::BookmarkEditSource::kUser);
+      view_->SetTitle(model_node, base::UTF8ToUTF16(folder_data->title),
+                      bookmarks::metrics::BookmarkEditSource::kUser);
       ASSIGN_OR_RETURN(const bookmarks::BookmarkNode* updated_node,
-                       finder_.FindNodeByUuid(id), &MakeError,
+                       view_->FindNodeByUuid(id), &MakeError,
                        mojo_base::mojom::Code::kInternal,
                        "Failed to refetch updated node");
       return ConvertNode(updated_node);
@@ -242,17 +236,17 @@ BookmarksServiceImpl::MoveBookmarkNode(const base::Uuid& id,
                                        const base::Uuid& new_parent_id,
                                        std::optional<int32_t> index) {
   ASSIGN_OR_RETURN(
-      const bookmarks::BookmarkNode* node, finder_.FindNodeByUuid(id),
+      const bookmarks::BookmarkNode* node, view_->FindNodeByUuid(id),
       &MakeError, mojo_base::mojom::Code::kNotFound, "Bookmark node not found");
 
-  if (bookmark_model_->is_permanent_node(node)) {
+  if (view_->IsPermanentNode(node)) {
     return base::unexpected(
         mojo_base::mojom::Error::New(mojo_base::mojom::Code::kInvalidArgument,
                                      "Cannot move permanent node"));
   }
 
   ASSIGN_OR_RETURN(const bookmarks::BookmarkNode* new_parent,
-                   finder_.FindNodeByUuid(new_parent_id), &MakeError,
+                   view_->FindNodeByUuid(new_parent_id), &MakeError,
                    mojo_base::mojom::Code::kNotFound,
                    "New parent folder not found");
 
@@ -262,19 +256,19 @@ BookmarksServiceImpl::MoveBookmarkNode(const base::Uuid& id,
                                      "New parent node is not a folder"));
   }
 
-  size_t target_index;
+  size_t visual_index;
   if (index.has_value()) {
-    if (index.value() < 0 ||
-        static_cast<size_t>(index.value()) > new_parent->children().size()) {
+    if (index.value() < 0 || static_cast<size_t>(index.value()) >
+                                 view_->GetChildren(new_parent).size()) {
       return base::unexpected(mojo_base::mojom::Error::New(
           mojo_base::mojom::Code::kInvalidArgument, "Index out of range"));
     }
-    target_index = static_cast<size_t>(index.value());
+    visual_index = static_cast<size_t>(index.value());
   } else {
-    target_index = new_parent->children().size();
+    visual_index = view_->GetChildren(new_parent).size();
   }
 
-  bookmark_model_->Move(node, new_parent, target_index);
+  view_->Move(node, new_parent, visual_index);
 
   return std::monostate();
 }
@@ -284,11 +278,11 @@ BookmarksServiceImpl::DeleteBookmarkNodes(const std::vector<base::Uuid>& ids) {
   std::vector<const bookmarks::BookmarkNode*> nodes_to_remove;
   for (const auto& id : ids) {
     ASSIGN_OR_RETURN(const bookmarks::BookmarkNode* node,
-                     finder_.FindNodeByUuid(id), &MakeError,
+                     view_->FindNodeByUuid(id), &MakeError,
                      mojo_base::mojom::Code::kNotFound,
                      "Bookmark node not found");
 
-    if (bookmark_model_->is_permanent_node(node)) {
+    if (view_->IsPermanentNode(node)) {
       return base::unexpected(
           mojo_base::mojom::Error::New(mojo_base::mojom::Code::kInvalidArgument,
                                        "Cannot delete permanent node"));
@@ -296,11 +290,8 @@ BookmarksServiceImpl::DeleteBookmarkNodes(const std::vector<base::Uuid>& ids) {
     nodes_to_remove.push_back(node);
   }
 
-  bookmarks::ScopedGroupBookmarkActions group_deletes(bookmark_model_);
-  for (const auto* node : nodes_to_remove) {
-    bookmark_model_->Remove(node, bookmarks::metrics::BookmarkEditSource::kUser,
-                            FROM_HERE);
-  }
+  view_->RemoveNodes(nodes_to_remove,
+                     bookmarks::metrics::BookmarkEditSource::kUser, FROM_HERE);
 
   return std::monostate();
 }

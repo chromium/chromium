@@ -11,6 +11,7 @@ source_set("bookmarks") {
     "bookmark_context_menu_controller.h",
     "bookmark_drag_drop.h",
     "bookmark_editor.h",
+    "bookmark_merged_surface_view.h",
     "bookmark_stats.h",
     "bookmark_stats_tab_helper.h",
     "bookmark_tab_helper.h",
@@ -53,6 +54,7 @@ source_set("impl") {
     "bookmark_context_menu_controller.cc",
     "bookmark_drag_drop.cc",
     "bookmark_editor.cc",
+    "bookmark_merged_surface_view.cc",
     "bookmark_stats.cc",
     "bookmark_stats_tab_helper.cc",
     "bookmark_tab_helper.cc",
@@ -153,6 +155,7 @@ source_set("unit_tests") {
   sources = [
     "bookmark_context_menu_controller_unittest.cc",
     "bookmark_editor_unittest.cc",
+    "bookmark_merged_surface_view_unittest.cc",
     "bookmark_stats_tab_helper_unittest.cc",
     "bookmark_ui_operations_helper_unittest.cc",
     "bookmark_ui_utils_desktop_unittest.cc",

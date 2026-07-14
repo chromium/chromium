@@ -12,11 +12,10 @@
 #include "base/uuid.h"
 #include "components/bookmarks/browser/bookmark_model_observer.h"
 #include "components/browser_apis/bookmarks/bookmarks_api.mojom.h"
+#include "components/browser_apis/bookmarks/bookmarks_view.h"
 
 namespace bookmarks {
-class BookmarkModel;
 class BookmarkNode;
-class ManagedBookmarkService;
 }  // namespace bookmarks
 
 namespace bookmarks_api {
@@ -33,27 +32,19 @@ class BookmarkEventTranslator : public bookmarks::BookmarkModelObserver {
     virtual ~Subscriber() = default;
   };
 
-  BookmarkEventTranslator(bookmarks::BookmarkModel* model,
-                          bookmarks::ManagedBookmarkService* managed,
-                          Subscriber* subscriber);
+  BookmarkEventTranslator(BookmarksView* view, Subscriber* subscriber);
   BookmarkEventTranslator(const BookmarkEventTranslator&) = delete;
   BookmarkEventTranslator& operator=(const BookmarkEventTranslator&) = delete;
   ~BookmarkEventTranslator() override;
 
-  static mojom::BookmarkNodePtr ConvertNode(
-      bookmarks::BookmarkModel* model,
-      bookmarks::ManagedBookmarkService* managed,
-      const bookmarks::BookmarkNode* node);
+  static mojom::BookmarkNodePtr ConvertNode(const bookmarks::BookmarkNode* node,
+                                            const BookmarksView* view);
 
-  static mojom::RootNodePtr ConvertRootNode(
-      bookmarks::BookmarkModel* model,
-      bookmarks::ManagedBookmarkService* managed,
-      const bookmarks::BookmarkNode* node);
+  static mojom::RootNodePtr ConvertRootNode(const bookmarks::BookmarkNode* node,
+                                            const BookmarksView* view);
 
-  static mojom::FolderPtr ConvertFolderNode(
-      bookmarks::BookmarkModel* model,
-      bookmarks::ManagedBookmarkService* managed,
-      const bookmarks::BookmarkNode* node);
+  static mojom::FolderPtr ConvertFolderNode(const bookmarks::BookmarkNode* node,
+                                            const BookmarksView* view);
 
   // bookmarks::BookmarkModelObserver:
   void BookmarkModelLoaded(bool ids_reassigned) override {}
@@ -91,8 +82,7 @@ class BookmarkEventTranslator : public bookmarks::BookmarkModelObserver {
   void RemoveFolderSubtree(const bookmarks::BookmarkNode* node);
   void Notify(std::vector<mojom::BookmarksEventPtr> events);
 
-  raw_ptr<bookmarks::BookmarkModel> model_;
-  raw_ptr<bookmarks::ManagedBookmarkService> managed_;
+  raw_ptr<BookmarksView> view_;
   raw_ptr<Subscriber> subscriber_;
   // A snapshot of the folder structure (mapping each folder node to its
   // children's UUIDs) used to detect changes (adds, removes, moves) in the

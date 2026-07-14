@@ -12,6 +12,7 @@
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/test/bookmark_test_helpers.h"
 #include "components/bookmarks/test/test_bookmark_client.h"
+#include "components/browser_apis/bookmarks/testing/default_bookmarks_view.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -22,6 +23,8 @@
 
 namespace bookmarks_api {
 
+namespace {
+
 class BookmarksServiceImplTest : public testing::Test {
  protected:
   BookmarksServiceImplTest() {
@@ -29,7 +32,8 @@ class BookmarksServiceImplTest : public testing::Test {
     client_ = client.get();
     model_ = std::make_unique<bookmarks::BookmarkModel>(std::move(client));
     model_->LoadEmptyForTest();
-    service_ = std::make_unique<BookmarksServiceImpl>(model_.get(), nullptr);
+    service_ = std::make_unique<BookmarksServiceImpl>(
+        std::make_unique<DefaultBookmarksView>(model_.get()));
 
     mojo::PendingRemote<mojom::BookmarksService> pending_remote;
     service_->Accept(pending_remote.InitWithNewPipeAndPassReceiver());
@@ -729,4 +733,5 @@ TEST_F(BookmarksServiceImplTest, Observation_ExtensiveChanges) {
   EXPECT_EQ(observer.events()[2]->get_removed()->id, node1_uuid);
 }
 
+}  // namespace
 }  // namespace bookmarks_api

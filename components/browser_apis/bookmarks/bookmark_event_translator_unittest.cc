@@ -13,6 +13,7 @@
 #include "base/uuid.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/test/test_bookmark_client.h"
+#include "components/browser_apis/bookmarks/testing/default_bookmarks_view.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace bookmarks_api {
@@ -32,8 +33,8 @@ class BookmarkEventTranslatorTest : public testing::Test,
  public:
   BookmarkEventTranslatorTest() {
     model_ = bookmarks::TestBookmarkClient::CreateModel();
-    translator_ = std::make_unique<BookmarkEventTranslator>(
-        model_.get(), /*managed=*/nullptr, this);
+    view_ = std::make_unique<DefaultBookmarksView>(model_.get());
+    translator_ = std::make_unique<BookmarkEventTranslator>(view_.get(), this);
   }
 
   // BookmarkEventTranslator::Subscriber:
@@ -49,6 +50,7 @@ class BookmarkEventTranslatorTest : public testing::Test,
  protected:
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<bookmarks::BookmarkModel> model_;
+  std::unique_ptr<DefaultBookmarksView> view_;
   std::unique_ptr<BookmarkEventTranslator> translator_;
   std::vector<mojom::BookmarksEventPtr> events_;
 };
@@ -279,8 +281,8 @@ class BookmarkEventTranslatorAccountTest
   BookmarkEventTranslatorAccountTest() {
     model_ = bookmarks::TestBookmarkClient::CreateModel();
     model_->CreateAccountPermanentFolders();
-    translator_ = std::make_unique<BookmarkEventTranslator>(
-        model_.get(), /*managed=*/nullptr, this);
+    view_ = std::make_unique<DefaultBookmarksView>(model_.get());
+    translator_ = std::make_unique<BookmarkEventTranslator>(view_.get(), this);
   }
 
   // BookmarkEventTranslator::Subscriber:
@@ -297,6 +299,7 @@ class BookmarkEventTranslatorAccountTest
   base::test::ScopedFeatureList features_ = EnableAccountBookmarkStorage();
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<bookmarks::BookmarkModel> model_;
+  std::unique_ptr<DefaultBookmarksView> view_;
   std::unique_ptr<BookmarkEventTranslator> translator_;
   std::vector<mojom::BookmarksEventPtr> events_;
 };

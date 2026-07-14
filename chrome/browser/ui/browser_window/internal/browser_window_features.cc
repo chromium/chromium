@@ -15,6 +15,7 @@
 #include "chrome/browser/actor/ui/actor_ui_window_controller.h"
 #include "chrome/browser/actor/ui/task_list_bubble/actor_task_list_bubble_controller.h"
 #include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
+#include "chrome/browser/bookmarks/bookmark_merged_surface_service_factory.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/bookmarks/managed_bookmark_service_factory.h"
 #include "chrome/browser/browser_process.h"
@@ -268,10 +269,13 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
       GetUserDataFactory().CreateInstanceWithFactoryMethod(
           *browser, &web_app::MaybeCreateAppBrowserController, browser);
 
-  if (auto* model = BookmarkModelFactory::GetForBrowserContext(profile)) {
-    auto* managed = ManagedBookmarkServiceFactory::GetForProfile(profile);
-    bookmarks_service_feature_ =
-        std::make_unique<BookmarksServiceFeature>(model, managed);
+  {
+    auto* merged_bookmarks_service =
+        BookmarkMergedSurfaceServiceFactory::GetForProfile(profile);
+    if (merged_bookmarks_service != nullptr) {
+      bookmarks_service_feature_ =
+          std::make_unique<BookmarksServiceFeature>(merged_bookmarks_service);
+    }
   }
 
   bookmarks_side_panel_coordinator_ =
