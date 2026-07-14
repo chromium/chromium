@@ -16,6 +16,12 @@
 - (void)setShoppingWithOrders:(NSArray<TableViewItem*>*)orders
                     shipments:(NSArray<TableViewItem*>*)shipments;
 
+// Sets the toggle state for "fill shopping info", its enabled and managed
+// states.
+- (void)setShoppingToggleState:(BOOL)on
+                       enabled:(BOOL)enabled
+                       managed:(BOOL)managed;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_SETTINGS_AUTOFILL_AUTOFILL_AND_PASSWORDS_UI_SHOPPING_CONSUMER_H_

@@ -37,6 +37,13 @@ static constexpr autofill::DenseSet<autofill::EntityTypeName> kShopping = {
   _consumer = nil;
 }
 
+#pragma mark - ShoppingMutator
+
+- (void)didToggleShopping:(BOOL)enabled {
+  // TODO(crbug.com/532938111): Prevent form filling with order/shipment data
+  // when disabled.
+}
+
 #pragma mark - AutofillAIBaseMediator
 
 - (autofill::DenseSet<autofill::EntityTypeName>)supportedEntityTypes {

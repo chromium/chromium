@@ -19,6 +19,7 @@ source_set("autofill_and_passwords") {
     "identity_docs_table_view_controller.h",
     "identity_docs_table_view_controller.mm",
     "shopping_consumer.h",
+    "shopping_mutator.h",
     "shopping_table_view_controller.h",
     "shopping_table_view_controller.mm",
     "travel_info_consumer.h",

@@ -9,7 +9,7 @@
 #import "ios/chrome/browser/settings/ui_bundled/settings_controller_protocol.h"
 #import "ios/chrome/browser/settings/ui_bundled/settings_root_table_view_controller.h"
 
-@protocol AutofillAIBaseMutator;
+@protocol ShoppingMutator;
 @class ShoppingTableViewController;
 
 // Delegate for ShoppingTableViewController.
@@ -23,12 +23,13 @@
 
 // The TableView for Shopping settings page.
 @interface ShoppingTableViewController
-    : SettingsRootTableViewController <ShoppingConsumer>
+    : SettingsRootTableViewController <ShoppingConsumer,
+                                       SettingsControllerProtocol>
 
 // Mutator for actions in the view.
-@property(nonatomic, weak) id<AutofillAIBaseMutator> mutator;
+@property(nonatomic, weak) id<ShoppingMutator> mutator;
 
-// Delegate.
+// Presentation Delegate.
 @property(nonatomic, weak) id<ShoppingTableViewControllerDelegate> delegate;
 
 - (instancetype)init NS_DESIGNATED_INITIALIZER;

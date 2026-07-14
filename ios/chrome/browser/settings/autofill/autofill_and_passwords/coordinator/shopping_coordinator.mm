@@ -11,6 +11,8 @@
 #import "ios/chrome/browser/settings/autofill/autofill_and_passwords/ui/shopping_table_view_controller.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 
 @interface ShoppingCoordinator () <ShoppingTableViewControllerDelegate>
 @end
@@ -40,6 +42,9 @@
 - (void)start {
   _viewController = [[ShoppingTableViewController alloc] init];
   _viewController.delegate = self;
+
+  CommandDispatcher* dispatcher = self.browser->GetCommandDispatcher();
+  _viewController.sceneHandler = HandlerForProtocol(dispatcher, SceneCommands);
 
   autofill::EntityDataManager* entityDataManager =
       IOSAutofillEntityDataManagerFactory::GetForProfile(
