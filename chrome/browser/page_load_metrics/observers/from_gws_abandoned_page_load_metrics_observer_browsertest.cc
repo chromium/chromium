@@ -46,47 +46,6 @@ std::unique_ptr<net::test_server::HttpResponse> SRPHandler(
     const net::test_server::HttpRequest& request) {
   auto http_response = std::make_unique<net::test_server::BasicHttpResponse>();
   http_response->set_code(net::HttpStatusCode::HTTP_OK);
-  http_response->set_content_type("text/html");
-  http_response->set_content(R"(
-    <html>
-      <body>
-        SRP Content
-        <script>
-          function createAttributionSrcAnchor({
-            id,
-            url,
-            attributionsrc,
-          } = {}) {
-            const anchor = document.createElement('a');
-            anchor.href = url;
-            anchor.target = '_top';
-            anchor.setAttribute('attributionsrc', attributionsrc);
-            anchor.width = 100;
-            anchor.height = 100;
-            anchor.id = id;
-
-            anchor.innerText = 'This is link';
-
-            document.body.appendChild(anchor);
-            return anchor;
-          }
-
-          function simulateClickWithButton(target, button) {
-            if (typeof target === 'string')
-              target = document.getElementById(target);
-
-            let evt = new MouseEvent('click', {'button': button});
-            return target.dispatchEvent(evt);
-          }
-          function createAndClickAttributionSrcAnchor(params) {
-            const anchor = createAttributionSrcAnchor(params);
-            simulateClickWithButton(anchor, 0 /* left click */);
-            return anchor;
-          }
-        </script>
-      </body>
-    </html>
-  )");
   return http_response;
 }
 }  // namespace
@@ -190,13 +149,6 @@ class FromGwsAbandonedPageLoadMetricsObserverBrowserTest
         (abandon_milestone >= NavigationMilestone::kDidCommit &&
          abandon_milestone <= NavigationMilestone::kLastEssentialLoadingEvent);
     ukm_recorder.ExpectEntryMetric(ukm_entry, "IsCommitted", post_commit);
-
-    ukm_recorder.ExpectEntryMetric(ukm_entry, "HasImpression",
-                                   impression_name.has_value());
-    if (impression_name.has_value()) {
-      ukm_recorder.ExpectEntryMetric(ukm_entry, "IsEmptyAttributionSrc",
-                                     impression_name->empty());
-    }
 
     if (category_id.has_value()) {
       ukm_recorder.ExpectEntryMetric(ukm_entry, "Category",
@@ -896,96 +848,6 @@ IN_PROC_BROWSER_TEST_F(FromGwsAbandonedPageLoadMetricsObserverBrowserTest,
   CheckTimingInformationMetrics(
       ukm_recorder, NavigationMilestone::kNonRedirectResponseLoaderCallback,
       url_non_srp_error(), url_non_srp_error());
-}
-
-class FromGwsAbandonedPageLoadMetricsObserverWithImpressionBrowserTest
-    : public FromGwsAbandonedPageLoadMetricsObserverBrowserTest {
- public:
-  FromGwsAbandonedPageLoadMetricsObserverWithImpressionBrowserTest() = default;
-  ~FromGwsAbandonedPageLoadMetricsObserverWithImpressionBrowserTest() override =
-      default;
-
- protected:
-  net::EmbeddedTestServer* current_test_server() override {
-    return &embedded_https_test_server();
-  }
-
-  void SetUpOnMainThread() override {
-    host_resolver()->AddRule("*", "127.0.0.1");
-
-    embedded_https_test_server().SetCertHostnames(
-        {"example.com", "*.example.com", "foo.com", "*.foo.com", "bar.com",
-         "*.bar.com", "a.com", "*.a.com", "b.com", "*.b.com", "c.com",
-         "*.c.com", "a.test", "b.test", "www.google.com"});
-
-    embedded_https_test_server().RegisterDefaultHandler(
-        base::BindRepeating(&net::test_server::HandlePrefixedRequest, "/search",
-                            base::BindRepeating(SRPHandler)));
-    embedded_https_test_server().ServeFilesFromSourceDirectory(
-        "chrome/browser/page_load_metrics/integration_tests/data");
-    embedded_https_test_server().ServeFilesFromSourceDirectory(
-        "third_party/blink/web_tests/external/wpt");
-    ASSERT_TRUE(embedded_https_test_server().Start());
-  }
-
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    // Sets up the blink runtime feature for ConversionMeasurement.
-    command_line->AppendSwitch(
-        switches::kEnableExperimentalWebPlatformFeatures);
-  }
-
-  void createAndClickAttributionSrcAnchor(GURL url,
-                                          std::string_view attribution_src) {
-    ASSERT_TRUE(ExecJs(web_contents(),
-                       content::JsReplace(R"(
-    createAndClickAttributionSrcAnchor({url: $1, attributionsrc: $2});)",
-                                          url.spec(), attribution_src)));
-  }
-};
-
-// Test that we record successful navigation with the impression associated.
-IN_PROC_BROWSER_TEST_F(
-    FromGwsAbandonedPageLoadMetricsObserverWithImpressionBrowserTest,
-    FromSearchWithImpression) {
-  std::string_view kAttributionSrc = "something";
-
-  EXPECT_TRUE(content::NavigateToURL(web_contents(), url_srp()));
-
-  ukm::TestAutoSetUkmRecorder ukm_recorder;
-  createAndClickAttributionSrcAnchor(url_non_srp_2(), kAttributionSrc);
-
-  EXPECT_TRUE(content::NavigateToURL(web_contents(), url_non_srp()));
-
-  // There should be no new entry for the navigation abandonment metrics.
-  ExpectEmptyAbandonedHistogramUntilCommit(ukm_recorder);
-
-  CheckTimingInformationMetrics(ukm_recorder,
-                                NavigationMilestone::kLastEssentialLoadingEvent,
-                                url_non_srp_2(), std::nullopt,
-                                std::optional<std::string>(kAttributionSrc));
-}
-
-// Test that we record successful navigation with the impression with
-// empty string associated.
-IN_PROC_BROWSER_TEST_F(
-    FromGwsAbandonedPageLoadMetricsObserverWithImpressionBrowserTest,
-    FromSearchWithEmptyImpression) {
-  std::string_view kAttributionSrc = "";
-
-  EXPECT_TRUE(content::NavigateToURL(web_contents(), url_srp()));
-
-  ukm::TestAutoSetUkmRecorder ukm_recorder;
-  createAndClickAttributionSrcAnchor(url_non_srp_2(), kAttributionSrc);
-
-  EXPECT_TRUE(content::NavigateToURL(web_contents(), url_non_srp()));
-
-  // There should be no new entry for the navigation abandonment metrics.
-  ExpectEmptyAbandonedHistogramUntilCommit(ukm_recorder);
-
-  CheckTimingInformationMetrics(ukm_recorder,
-                                NavigationMilestone::kLastEssentialLoadingEvent,
-                                url_non_srp_2(), std::nullopt,
-                                std::optional<std::string>(kAttributionSrc));
 }
 
 class FromGwsAbandonedPageLoadMetricsObserverWithCategoryBrowserTest

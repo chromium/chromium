@@ -45,7 +45,6 @@
 #include "content/browser/btm/btm_test_utils.h"
 #include "content/browser/btm/btm_utils.h"
 #include "content/common/features.h"
-#include "content/public/browser/attribution_data_model.h"
 #include "content/public/browser/back_forward_cache.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/btm_redirect.h"
@@ -116,7 +115,6 @@ namespace content {
 
 namespace {
 
-using AttributionData = std::set<AttributionDataModel::DataKey>;
 using blink::mojom::StorageTypeAccessed;
 
 // Returns a simplified URL representation for ease of comparison in tests.
@@ -151,13 +149,6 @@ void AppendSitesInReport(std::vector<std::string>* reports,
                          const std::set<std::string>& sites) {
   reports->push_back(base::JoinString(
       std::vector<std::string_view>(sites.begin(), sites.end()), ", "));
-}
-
-std::vector<url::Origin> GetOrigins(const AttributionData& data) {
-  std::vector<url::Origin> origins;
-  std::ranges::transform(data, std::back_inserter(origins),
-                         &AttributionDataModel::DataKey::reporting_origin);
-  return origins;
 }
 
 bool ContainsWrite(BtmDataAccessType access) {
@@ -2337,175 +2328,6 @@ IN_PROC_BROWSER_TEST_F(BtmThrottlingBrowserTest,
                                               start_time + base::Seconds(1))));
 }
 
-class BtmPrivacySandboxDataPreservationTest : public ContentBrowserTest {
- public:
-  BtmPrivacySandboxDataPreservationTest()
-      : embedded_https_test_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
-    std::vector<base::test::FeatureRef> enabled_features;
-    std::vector<base::test::FeatureRef> disabled_features;
-
-    enabled_features.emplace_back(features::kPrivacySandboxAdsAPIsOverride);
-    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
-  }
-
-  void SetUpOnMainThread() override {
-    host_resolver()->AddRule("*", "127.0.0.1");
-    embedded_https_test_server_.AddDefaultHandlers(
-        base::FilePath(FILE_PATH_LITERAL("content/test/data")));
-    RegisterTrustTokenTestHandler(&trust_token_request_handler_);
-    embedded_https_test_server_.SetSSLConfig(
-        net::EmbeddedTestServer::CERT_TEST_NAMES);
-    ASSERT_TRUE(embedded_https_test_server_.Start());
-    browser_client_.emplace();
-    browser_client().SetBlockThirdPartyCookiesByDefault(true);
-    WebContents* web_contents = GetActiveWebContents();
-    ASSERT_FALSE(btm::Are3PcsGenerallyEnabled(web_contents->GetBrowserContext(),
-                                              web_contents));
-  }
-
-  WebContents* GetActiveWebContents() { return shell()->web_contents(); }
-
-  base::expected<AttributionData, std::string> WaitForAttributionData() {
-    WebContents* web_contents = GetActiveWebContents();
-    AttributionDataModel* model = web_contents->GetBrowserContext()
-                                      ->GetDefaultStoragePartition()
-                                      ->GetAttributionDataModel();
-    if (!model) {
-      return base::unexpected("null attribution data model");
-    }
-    // Poll until data appears, failing if action_timeout() passes
-    base::Time deadline = base::Time::Now() + TestTimeouts::action_timeout();
-    while (base::Time::Now() < deadline) {
-      base::test::TestFuture<AttributionData> future;
-      model->GetAllDataKeys(future.GetCallback());
-      AttributionData data = future.Get();
-      if (!data.empty()) {
-        return data;
-      }
-      Sleep(TestTimeouts::tiny_timeout());
-    }
-    return base::unexpected("timed out waiting for attribution data");
-  }
-
-  // TODO: crbug.com/1509946 - When embedded_https_test_server() is added to
-  // AndroidBrowserTest, switch to using
-  // PlatformBrowserTest::embedded_https_test_server() and delete this.
-  net::EmbeddedTestServer embedded_https_test_server_;
-
-  TpcBlockingBrowserClient& browser_client() { return browser_client_->impl(); }
-
- protected:
-  base::test::ScopedFeatureList scoped_feature_list_;
-
- private:
-  static void Sleep(base::TimeDelta delay) {
-    base::RunLoop run_loop;
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-        FROM_HERE, run_loop.QuitClosure(), delay);
-    run_loop.Run();
-  }
-
-  void RegisterTrustTokenTestHandler(
-      network::test::TrustTokenRequestHandler* handler) {
-    embedded_https_test_server_.RegisterRequestHandler(
-        base::BindLambdaForTesting(
-            [handler, this](const net::test_server::HttpRequest& request)
-                -> std::unique_ptr<net::test_server::HttpResponse> {
-              if (request.relative_url != "/issue") {
-                return nullptr;
-              }
-              if (!request.headers.contains("Sec-Private-State-Token") ||
-                  !request.headers.contains(
-                      "Sec-Private-State-Token-Crypto-Version")) {
-                return MakeTrustTokenFailureResponse();
-              }
-
-              std::optional<std::string> operation_result =
-                  handler->Issue(request.headers.at("Sec-Private-State-Token"));
-
-              if (!operation_result) {
-                return MakeTrustTokenFailureResponse();
-              }
-
-              return MakeTrustTokenResponse(*operation_result);
-            }));
-  }
-
-  std::unique_ptr<net::test_server::HttpResponse>
-  MakeTrustTokenFailureResponse() {
-    // No need to report a failure HTTP code here: returning a vanilla OK should
-    // fail the Trust Tokens operation client-side.
-    auto response = std::make_unique<net::test_server::BasicHttpResponse>();
-    response->AddCustomHeader("Access-Control-Allow-Origin", "*");
-    return response;
-  }
-
-  // Constructs and returns an HTTP response bearing the given base64-encoded
-  // Trust Tokens issuance or redemption protocol response message.
-  std::unique_ptr<net::test_server::HttpResponse> MakeTrustTokenResponse(
-      std::string_view contents) {
-    std::string temp;
-    CHECK(base::Base64Decode(contents, &temp));
-
-    auto response = std::make_unique<net::test_server::BasicHttpResponse>();
-    response->AddCustomHeader("Sec-Private-State-Token", std::string(contents));
-    response->AddCustomHeader("Access-Control-Allow-Origin", "*");
-    return response;
-  }
-
-  network::test::TrustTokenRequestHandler trust_token_request_handler_;
-  std::optional<ContentBrowserTestTpcBlockingBrowserClient> browser_client_;
-};
-
-IN_PROC_BROWSER_TEST_F(BtmPrivacySandboxDataPreservationTest,
-                       DontClearAttributionReportingApiData) {
-  WebContents* web_contents = GetActiveWebContents();
-
-  GURL toplevel_url =
-      embedded_https_test_server_.GetURL("a.test", "/title1.html");
-  ASSERT_TRUE(NavigateToURL(web_contents, toplevel_url));
-
-  // Create image that registers an attribution source.
-  GURL attribution_url = embedded_https_test_server_.GetURL(
-      "b.test", "/attribution_reporting/register_source_headers.html");
-  ASSERT_TRUE(ExecJs(web_contents, JsReplace(
-                                       R"(
-    let img = document.createElement('img');
-    img.attributionSrc = $1;
-    document.body.appendChild(img);)",
-                                       attribution_url)));
-
-  // Wait for the AttributionDataModel to show that source.
-  ASSERT_OK_AND_ASSIGN(AttributionData data, WaitForAttributionData());
-  ASSERT_THAT(GetOrigins(data),
-              ElementsAre(url::Origin::Create(attribution_url)));
-
-  // Make the attribution site eligible for BTM deletion.
-  BtmServiceImpl* btm_service =
-      BtmServiceImpl::Get(web_contents->GetBrowserContext());
-  ASSERT_TRUE(btm_service != nullptr);
-  base::test::TestFuture<void> record_bounce;
-  btm_service->storage()
-      ->AsyncCall(&BtmStorage::RecordBounce)
-      .WithArgs(attribution_url, base::Time::Now())
-      .Then(record_bounce.GetCallback());
-  ASSERT_TRUE(record_bounce.Wait());
-
-  // Trigger BTM deletion.
-  base::test::TestFuture<const std::vector<std::string>&> deleted_sites;
-  btm_service->DeleteEligibleSitesImmediately(deleted_sites.GetCallback());
-  EXPECT_THAT(deleted_sites.Get(), ElementsAre(GetSiteForBtm(attribution_url)));
-
-  base::test::TestFuture<AttributionData> post_deletion_data;
-  web_contents->GetBrowserContext()
-      ->GetDefaultStoragePartition()
-      ->GetAttributionDataModel()
-      ->GetAllDataKeys(post_deletion_data.GetCallback());
-
-  // Confirm the attribution data was not deleted.
-  EXPECT_THAT(GetOrigins(post_deletion_data.Get()),
-              ElementsAre(url::Origin::Create(attribution_url)));
-}
 
 namespace {
 

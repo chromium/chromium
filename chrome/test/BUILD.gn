@@ -2170,7 +2170,6 @@ if (!is_android) {
       "//chrome/browser/apps/app_service/publishers",
       "//chrome/browser/apps/link_capturing",
       "//chrome/browser/apps/link_capturing:test_support",
-      "//chrome/browser/attribution_reporting:browser_tests",
       "//chrome/browser/autocomplete:browser_tests",
       "//chrome/browser/autofill",
       "//chrome/browser/autofill:browser_tests",
