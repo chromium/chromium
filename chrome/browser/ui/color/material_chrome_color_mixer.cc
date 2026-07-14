@@ -271,7 +271,7 @@ void AddMaterialChromeColorMixer(ui::ColorProvider* provider,
 
   // Feature Showcase colors.
   mixer[kColorFeatureShowcaseStepperCheck] = {ui::kColorSysPrimary};
-  mixer[kColorFeatureShowcaseStepperDot] = {ui::kColorSysPrimaryContainer};
+  mixer[kColorFeatureShowcaseStepperDot] = {ui::kColorSysPrimary};
   mixer[kColorFeatureShowcaseThemePickerWrapperBackground] = {
       ui::kColorSysSurface5};
   mixer[kColorFeatureShowcaseThemePickerBackground] = {ui::kColorSysSurface};

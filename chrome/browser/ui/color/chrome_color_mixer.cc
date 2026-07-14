@@ -418,7 +418,7 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorFeatureLensPromoBubbleForeground] = {
       kColorFeaturePromoBubbleForeground};
   mixer[kColorFeatureShowcaseStepperCheck] = {ui::kColorAccent};
-  mixer[kColorFeatureShowcaseStepperDot] = {ui::kColorSubtleAccent};
+  mixer[kColorFeatureShowcaseStepperDot] = {ui::kColorAccent};
   mixer[kColorFeatureShowcaseThemePickerWrapperBackground] = {
       ui::kColorSysSurface5};
   mixer[kColorFeatureShowcaseThemePickerBackground] = {ui::kColorSysSurface};

@@ -148,6 +148,9 @@ FeatureShowcaseUI::FeatureShowcaseUI(content::WebUI* web_ui)
 
   source->AddResourcePath("images/product-logo.svg", IDR_PRODUCT_LOGO_SVG);
 
+  source->AddLocalizedString("stepperA11yLabel",
+                             IDS_FEATURE_SHOWCASE_STEPPER_A11Y_LABEL);
+
   AddDefaultBrowserStepResources(source);
   AddGoogleLensStepResources(source);
   AddPasswordManagerStepResources(source);

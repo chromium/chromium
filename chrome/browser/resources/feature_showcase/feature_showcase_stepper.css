@@ -37,3 +37,10 @@ cr-icon {
   height: 8px;
   width: 8px;
 }
+
+@media (forced-colors: active) {
+  .dot {
+    /* Force color used for the text when in high contrast mode. */
+    background-color: CanvasText;
+  }
+}
