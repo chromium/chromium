@@ -9,25 +9,24 @@
 
 #include "components/feedback/redaction_tool/url_canon_stdstring.h"
 
+#include "base/containers/span.h"
+
 namespace redaction_internal {
 
 StdStringCanonOutput::StdStringCanonOutput(std::string* str) : str_(str) {
   cur_len_ = str_->size();  // Append to existing data.
-  buffer_ = str_->empty() ? nullptr : &(*str_)[0];
-  buffer_len_ = str_->size();
+  buffer_ = base::span(*str_);
 }
 
 StdStringCanonOutput::~StdStringCanonOutput() = default;
 
 void StdStringCanonOutput::Complete() {
   str_->resize(cur_len_);
-  buffer_len_ = cur_len_;
 }
 
 void StdStringCanonOutput::Resize(size_t sz) {
   str_->resize(sz);
-  buffer_ = str_->empty() ? nullptr : &(*str_)[0];
-  buffer_len_ = sz;
+  buffer_ = base::span(*str_);
 }
 
 }  // namespace redaction_internal

@@ -1040,8 +1040,8 @@ std::string RedactionTool::RedactIbans(
 
       chunk.append(numbers_only.substr(pos, next_chunk_size));
 
-      const unsigned long chunk_number =
-          UNSAFE_TODO(std::strtoul(chunk.c_str(), nullptr, 10));
+      uint32_t chunk_number = 0;
+      base::StringToUint(chunk, &chunk_number);
 
       remainder = chunk_number % 97;
       chunk = base::NumberToString(remainder);
@@ -1188,7 +1188,7 @@ std::string RedactionTool::RedactCustomPatternWithContext(
       prematch.append(pre_matched_id);
       scrubbed_match = MaybeScrubIPAddress(matched_id_as_string);
       if (scrubbed_match == matched_id_as_string ||
-          ((UNSAFE_TODO(strcmp("IPv4", pattern.alias)) == 0) &&
+          (std::string_view("IPv4") == pattern.alias &&
            ShouldSkipIPv4Address(prematch))) {
         result.append(skipped);
         result.append(pre_matched_id);

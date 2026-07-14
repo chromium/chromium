@@ -18,7 +18,10 @@
 #include <stddef.h>
 #include <stdlib.h>
 
+#include <array>
+
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "components/feedback/redaction_tool/url_canon.h"
 
 namespace redaction_internal {
@@ -59,11 +62,11 @@ enum SharedCharTypes {
 //
 // Using an unsigned char type has a small but measurable performance benefit
 // over using a 32-bit number.
-extern const unsigned char kSharedCharTypeTable[0x100];
+extern const std::array<unsigned char, 0x100> kSharedCharTypeTable;
 
 // More readable wrappers around the character type lookup table.
 inline bool IsCharOfType(unsigned char c, SharedCharTypes type) {
-  return !!(UNSAFE_TODO(kSharedCharTypeTable[c]) & type);
+  return !!(kSharedCharTypeTable[c] & type);
 }
 inline bool IsQueryChar(unsigned char c) {
   return IsCharOfType(c, CHAR_QUERY);
@@ -81,17 +84,19 @@ inline bool IsComponentChar(unsigned char c) {
 #ifndef WIN32
 
 // Implementations of Windows' int-to-string conversions
-int _itoa_s(int value, char* buffer, size_t size_in_chars, int radix);
+int _itoa_s(int value, base::span<char> buffer, int radix);
 
 // Secure template overloads for these functions
 template <size_t N>
 inline int _itoa_s(int value, char (&buffer)[N], int radix) {
-  return _itoa_s(value, buffer, N, radix);
+  return _itoa_s(value, base::span(buffer), radix);
 }
 
 // _strtoui64 and strtoull behave the same
 inline uint64_t _strtoui64(const char* nptr, char** endptr, int base) {
-  return UNSAFE_TODO(strtoull(nptr, endptr, base));
+  // SAFETY: This is a wrapper around the standard library function strtoull.
+  // The caller must ensure nptr is null-terminated.
+  return UNSAFE_BUFFERS(strtoull(nptr, endptr, base));
 }
 
 #endif  // WIN32

@@ -14,7 +14,9 @@
 #include <string.h>
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_span.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/numerics/clamped_math.h"
 #include "components/feedback/redaction_tool/url_parse.h"
@@ -41,7 +43,7 @@ class CanonOutputT {
   // pointer to point to the new buffer, and any old data up to |cur_len_| in
   // the buffer must be copied over.
   //
-  // The new size |sz| must be larger than buffer_len_.
+  // The new size |sz| must be larger than capacity().
   virtual void Resize(size_t sz) = 0;
 
   // Accessor for returning a character at a given position. The input offset
@@ -60,13 +62,13 @@ class CanonOutputT {
   // the number that can be written without reallocation. If the caller must
   // write many characters at once, it can make sure there is enough capacity,
   // write the data, then use set_size() to declare the new length().
-  size_t capacity() const { return buffer_len_; }
+  size_t capacity() const { return buffer_.size(); }
 
   // Called by the user of this class to get the output. The output will NOT
   // be NULL-terminated. Call length() to get the
   // length.
-  const T* data() const { return buffer_; }
-  T* data() { return buffer_; }
+  const T* data() const { return buffer_.data(); }
+  T* data() { return buffer_.data(); }
 
   // Shortens the URL to the new length. Used for "backing up" when processing
   // relative paths. This can also be used if an external function writes a lot
@@ -81,8 +83,8 @@ class CanonOutputT {
   void push_back(T ch) {
     // In VC2005, putting this common case first speeds up execution
     // dramatically because this branch is predicted as taken.
-    if (cur_len_ < buffer_len_) {
-      UNSAFE_TODO(buffer_[cur_len_]) = ch;
+    if (cur_len_ < buffer_.size()) {
+      buffer_[cur_len_] = ch;
       cur_len_++;
       return;
     }
@@ -94,18 +96,22 @@ class CanonOutputT {
     }
 
     // Actually do the insertion.
-    UNSAFE_TODO(buffer_[cur_len_]) = ch;
+    buffer_[cur_len_] = ch;
     cur_len_++;
   }
 
   // Appends the given string to the output.
   void Append(const T* str, size_t str_len) {
-    if (str_len > buffer_len_ - cur_len_) {
-      if (!Grow(str_len - (buffer_len_ - cur_len_))) {
+    if (str_len > buffer_.size() - cur_len_) {
+      if (!Grow(str_len - (buffer_.size() - cur_len_))) {
         return;
       }
     }
-    memcpy(buffer_ + cur_len_, str, str_len * sizeof(T));
+    // SAFETY: buffer_ has been grown to ensure it can fit str_len more
+    // characters. The caller must ensure that str points to at least str_len
+    // elements.
+    buffer_.subspan(cur_len_, str_len)
+        .copy_from(UNSAFE_BUFFERS(base::span(str, str_len)));
     cur_len_ += str_len;
   }
 
@@ -114,21 +120,18 @@ class CanonOutputT {
   // characters. Returns true if the buffer could be resized, false on OOM.
   bool Grow(size_t min_additional) {
     static const size_t kMinBufferLen = 16;
-    size_t new_len = (buffer_len_ == 0) ? kMinBufferLen : buffer_len_;
+    size_t new_len = (buffer_.size() == 0) ? kMinBufferLen : buffer_.size();
     do {
       if (new_len >= (1 << 30)) {  // Prevent overflow below.
         return false;
       }
       new_len *= 2;
-    } while (new_len < buffer_len_ + min_additional);
+    } while (new_len < buffer_.size() + min_additional);
     Resize(new_len);
     return true;
   }
 
-  // RAW_PTR_EXCLUSION: Performance reasons: based on analysis of sampling
-  // profiler data.
-  RAW_PTR_EXCLUSION T* buffer_ = nullptr;
-  size_t buffer_len_ = 0;
+  base::raw_span<T> buffer_;
 
   // Used characters in the buffer.
   size_t cur_len_ = 0;
@@ -142,23 +145,26 @@ class RawCanonOutputT : public CanonOutputT<T> {
  public:
   RawCanonOutputT() : CanonOutputT<T>() {
     this->buffer_ = fixed_buffer_;
-    this->buffer_len_ = fixed_capacity;
   }
   ~RawCanonOutputT() override {
-    if (this->buffer_ != fixed_buffer_) {
-      delete[] this->buffer_;
+    if (this->buffer_.data() != fixed_buffer_) {
+      delete[] this->buffer_.data();
     }
   }
 
   void Resize(size_t sz) override {
     T* new_buf = new T[sz];
-    memcpy(new_buf, this->buffer_,
-           sizeof(T) * (this->cur_len_ < sz ? this->cur_len_ : sz));
-    if (this->buffer_ != fixed_buffer_) {
-      delete[] this->buffer_;
+    // SAFETY: this->buffer_ is a span and we are copying its content to new_buf.
+    // The number of elements to copy is the minimum of current length and new
+    // size.
+    size_t copy_len = std::min(this->cur_len_, sz);
+    UNSAFE_BUFFERS(base::span(new_buf, sz))
+        .first(copy_len)
+        .copy_from(this->buffer_.first(copy_len));
+    if (this->buffer_.data() != fixed_buffer_) {
+      delete[] this->buffer_.data();
     }
-    this->buffer_ = new_buf;
-    this->buffer_len_ = sz;
+    this->buffer_ = UNSAFE_BUFFERS(base::span(new_buf, sz));
   }
 
  protected:
