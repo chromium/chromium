@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/views/tabs/tab_strip_controller.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
+#include "components/tabs/public/tab_group.h"
 #include "ui/base/models/list_selection_model.h"
 #include "ui/base/mojom/menu_source_type.mojom-forward.h"
 
@@ -111,6 +112,9 @@ class FakeBaseTabStripController : public TabStripController {
 
   std::optional<tab_groups::TabGroupId> focused_group_;
   ui::ListSelectionModel selection_model_;
+
+  std::unique_ptr<TabGroup::Factory> factory_;
+  std::unique_ptr<tabs::TabGroupTabCollection> dummy_group_collection_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_FAKE_BASE_TAB_STRIP_CONTROLLER_H_

@@ -132,5 +132,6 @@ BrowserWindowInterface* FakeTabSlotController::GetBrowserWindowInterface() {
 
 TabGroup* FakeTabSlotController::GetTabGroup(
     const tab_groups::TabGroupId& group_id) const {
-  return nullptr;
+  return tab_strip_controller_ ? tab_strip_controller_->GetTabGroup(group_id)
+                               : nullptr;
 }
