@@ -707,8 +707,10 @@ chromium-metrics-reviews@google.com.
   <int value="92" label="Profile.getServiceWorkerController"/>
   <int value="93" label="WebViewCompat.setProfile"/>
   <int value="94" label="WebViewCompat.getProfile"/>
-  <int value="95" label="WebSettingsCompat.setAttributionBehavior"/>
-  <int value="96" label="WebSettingsCompat.getAttributionBehavior"/>
+  <int value="95"
+      label="WebSettingsCompat.setAttributionBehavior (deprecated)"/>
+  <int value="96"
+      label="WebSettingsCompat.getAttributionBehavior (deprecated)"/>
   <int value="97"
       label="WebSettingsCompat.getWebViewMediaIntegrityApiStatus (default
              status)"/>

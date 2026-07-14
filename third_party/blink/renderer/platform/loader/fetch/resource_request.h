@@ -39,7 +39,6 @@
 #include "net/storage_access_api/status.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/cpp/fetch_retry_options.h"
-#include "services/network/public/mojom/attribution.mojom-blink.h"
 #include "services/network/public/mojom/chunked_data_pipe_getter.mojom-blink-forward.h"
 #include "services/network/public/mojom/cors.mojom-blink-forward.h"
 #include "services/network/public/mojom/fetch_api.mojom-blink.h"
@@ -623,34 +622,6 @@ class PLATFORM_EXPORT ResourceRequestHead {
     return storage_access_api_status_;
   }
 
-  network::mojom::AttributionSupport GetAttributionReportingSupport() const {
-    return attribution_reporting_support_;
-  }
-
-  void SetAttributionReportingSupport(
-      network::mojom::AttributionSupport attribution_support) {
-    attribution_reporting_support_ = attribution_support;
-  }
-
-  network::mojom::AttributionReportingEligibility
-  GetAttributionReportingEligibility() const {
-    return attribution_reporting_eligibility_;
-  }
-
-  void SetAttributionReportingEligibility(
-      network::mojom::AttributionReportingEligibility eligibility) {
-    attribution_reporting_eligibility_ = eligibility;
-  }
-
-  const std::optional<base::UnguessableToken>& GetAttributionSrcToken() const {
-    return attribution_reporting_src_token_;
-  }
-
-  void SetAttributionReportingSrcToken(
-      std::optional<base::UnguessableToken> src_token) {
-    attribution_reporting_src_token_ = src_token;
-  }
-
   bool SharedDictionaryWriterEnabled() const {
     return shared_dictionary_writer_enabled_;
   }
@@ -838,15 +809,6 @@ class PLATFORM_EXPORT ResourceRequestHead {
 
   net::StorageAccessApiStatus storage_access_api_status_ =
       net::StorageAccessApiStatus::kNone;
-
-  network::mojom::AttributionSupport attribution_reporting_support_ =
-      network::mojom::AttributionSupport::kUnset;
-
-  network::mojom::AttributionReportingEligibility
-      attribution_reporting_eligibility_ =
-          network::mojom::AttributionReportingEligibility::kUnset;
-
-  std::optional<base::UnguessableToken> attribution_reporting_src_token_;
 
   // The request is for a known transparent placeholder image, which enables us
   // to bypass as much processing as possible.

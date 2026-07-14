@@ -29,7 +29,6 @@
 #include "services/network/public/cpp/permissions_policy/permissions_policy.h"
 #include "services/network/public/cpp/resource_request_body.h"
 #include "services/network/public/mojom/accept_ch_frame_observer.mojom.h"
-#include "services/network/public/mojom/attribution.mojom.h"
 #include "services/network/public/mojom/client_security_state.mojom.h"
 #include "services/network/public/mojom/cookie_access_observer.mojom-forward.h"
 #include "services/network/public/mojom/cors.mojom-shared.h"
@@ -286,12 +285,7 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE) ResourceRequest {
 
   net::StorageAccessApiStatus storage_access_api_status =
       net::StorageAccessApiStatus::kNone;
-  network::mojom::AttributionSupport attribution_reporting_support =
-      network::mojom::AttributionSupport::kUnset;
-  mojom::AttributionReportingEligibility attribution_reporting_eligibility =
-      mojom::AttributionReportingEligibility::kUnset;
   bool shared_dictionary_writer_enabled = false;
-  std::optional<base::UnguessableToken> attribution_reporting_src_token;
   std::optional<base::UnguessableToken> keepalive_token;
   bool is_ad_tagged = false;
   bool client_side_content_decoding_enabled = false;

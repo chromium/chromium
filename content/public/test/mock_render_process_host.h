@@ -34,7 +34,6 @@
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/child_process_binding_types.h"
 #include "content/public/browser/android/child_process_importance.h"
-#include "services/network/public/mojom/attribution.mojom-forward.h"
 #endif
 
 namespace blink {

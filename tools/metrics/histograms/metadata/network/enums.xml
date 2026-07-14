@@ -1469,10 +1469,10 @@ chromium-metrics-reviews@google.com.
   <int value="55" label="net_log_reference_info"/>
   <int value="56" label="target_ip_address_space (deprecated)"/>
   <int value="57" label="storage_access_api_status"/>
-  <int value="58" label="attribution_reporting_support"/>
-  <int value="59" label="attribution_reporting_eligibility"/>
+  <int value="58" label="attribution_reporting_support (deprecated)"/>
+  <int value="59" label="attribution_reporting_eligibility (deprecated)"/>
   <int value="60" label="shared_dictionary_writer_enabled"/>
-  <int value="61" label="attribution_reporting_src_token"/>
+  <int value="61" label="attribution_reporting_src_token (deprecated)"/>
   <int value="62" label="is_ad_tagged"/>
   <int value="63" label="keepalive_token"/>
   <int value="64" label="expected_public_keys"/>

@@ -405,9 +405,6 @@ URLLoader::URLLoader(
           std::make_unique<SharedStorageRequestHelper>(
               shared_storage_writable_eligible,
               url_loader_network_observer_.get())),
-      ad_auction_event_record_request_helper_(
-          request.attribution_reporting_eligibility,
-          url_loader_network_observer_.get()),
       has_fetch_streaming_upload_body_(
           url_loader_util::HasFetchStreamingUploadBody(request)),
       accept_ch_frame_interceptor_(AcceptCHFrameInterceptor::MaybeCreate(
@@ -1060,9 +1057,6 @@ void URLLoader::OnReceivedRedirect(net::URLRequest* url_request,
     return;
   }
 
-  ad_auction_event_record_request_helper_.HandleResponse(
-      *url_request_, GetPermissionsPolicy());
-
   ProcessInboundSharedStorageInterceptorOnReceivedRedirect(redirect_info,
                                                            std::move(response));
 }
@@ -1222,9 +1216,6 @@ void URLLoader::OnResponseStarted(net::URLRequest* url_request, int net_error) {
     PerformSyntheticResponseFallback();
     return;
   }
-
-  ad_auction_event_record_request_helper_.HandleResponse(
-      *url_request_, GetPermissionsPolicy());
 
   // Parse and remove the Trust Tokens response headers, if any are expected,
   // potentially failing the request if an error occurs.

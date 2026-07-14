@@ -136,14 +136,15 @@ class SupportLibWebSettingsNoOpAdapter implements WebSettingsBoundaryInterface {
     }
 
     @Override
+    @Deprecated
     public void setAttributionBehavior(@AttributionBehavior int behavior) {
-        recordApiCall(ApiCall.SET_ATTRIBUTION_BEHAVIOR);
+        // No-op.
     }
 
     @Override
+    @Deprecated
     public int getAttributionBehavior() {
-        recordApiCall(ApiCall.GET_ATTRIBUTION_BEHAVIOR);
-        return AttributionBehavior.APP_SOURCE_AND_WEB_TRIGGER;
+        return AttributionBehavior.DISABLED;
     }
 
     @Override

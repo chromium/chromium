@@ -30,7 +30,6 @@ import org.chromium.android_webview.common.Lifetime;
 import org.chromium.android_webview.common.MediaIntegrityApiStatus;
 import org.chromium.android_webview.metrics.BackForwardCacheNotRestoredReason;
 import org.chromium.android_webview.safe_browsing.AwSafeBrowsingConfigHelper;
-import org.chromium.android_webview.settings.AttributionBehavior;
 import org.chromium.android_webview.settings.ForceDarkBehavior;
 import org.chromium.android_webview.settings.ForceDarkMode;
 import org.chromium.android_webview.settings.SpeculativeLoadingAllowedFlags;
@@ -104,21 +103,6 @@ public class AwSettings {
 
     @ForceDarkBehavior
     private int mForceDarkBehavior = ForceDarkBehavior.PREFER_MEDIA_QUERY_OVER_FORCE_DARK;
-
-    @AttributionBehavior
-    public static final int ATTRIBUTION_DISABLED = AttributionBehavior.DISABLED;
-
-    @AttributionBehavior
-    public static final int ATTRIBUTION_APP_SOURCE_AND_WEB_TRIGGER =
-            AttributionBehavior.APP_SOURCE_AND_WEB_TRIGGER;
-
-    @AttributionBehavior
-    public static final int ATTRIBUTION_WEB_SOURCE_AND_WEB_TRIGGER =
-            AttributionBehavior.WEB_SOURCE_AND_WEB_TRIGGER;
-
-    @AttributionBehavior
-    public static final int ATTRIBUTION_APP_SOURCE_AND_APP_TRIGGER =
-            AttributionBehavior.APP_SOURCE_AND_APP_TRIGGER;
 
     /**
      * Do not change these constants. Apps rely on them for compatibility across WebView versions.
@@ -198,7 +182,6 @@ public class AwSettings {
     private boolean mDownloadFaviconsEnabled = true;
     private boolean mEnableSupportedHardwareAcceleratedFeatures;
     private int mMixedContentMode = WebSettings.MIXED_CONTENT_NEVER_ALLOW;
-    private int mAttributionBehavior = AttributionBehavior.APP_SOURCE_AND_WEB_TRIGGER;
 
     @SpeculativeLoadingAllowedFlags
     private int mSpeculativeLoadingAllowedFlags =
@@ -1849,23 +1832,6 @@ public class AwSettings {
     public int getMixedContentMode() {
         synchronized (mAwSettingsLock) {
             return mMixedContentMode;
-        }
-    }
-
-    public void setAttributionBehavior(@AttributionBehavior int behavior) {
-        synchronized (mAwSettingsLock) {
-            if (mAttributionBehavior != behavior) {
-                mAttributionBehavior = behavior;
-                mEventHandler.updateWebkitPreferencesLocked();
-            }
-        }
-    }
-
-    @CalledByNative
-    @AttributionBehavior
-    public int getAttributionBehavior() {
-        synchronized (mAwSettingsLock) {
-            return mAttributionBehavior;
         }
     }
 

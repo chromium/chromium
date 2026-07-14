@@ -273,7 +273,7 @@ public class Features {
 
     // WebSettingsCompat.setAttributionBehavior
     // WebSettingsCompat.getAttributionBehavior
-    public static final String ATTRIBUTION_BEHAVIOR = "ATTRIBUTION_BEHAVIOR";
+    @Deprecated public static final String ATTRIBUTION_BEHAVIOR = "ATTRIBUTION_BEHAVIOR";
 
     // WebSettingsCompat.setWebViewMediaIntegrityApiStatus
     // WebSettingsCompat.getWebViewMediaIntegrityApiDefaultStatus

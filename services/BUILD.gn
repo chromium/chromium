@@ -40,8 +40,6 @@ test("services_unittests") {
 
   fuzztests = [
     "UsbIdsTest.NameLookupsReturnValidStrings",
-    "GetAttributionSupportHeader.IsSupportValid",
-    "SerializeAttributionReportingEligibleHeader.IsEligibleValid",
     "TrustTokenKeyCommitmentFuzzer.ParsesOneIssuerCorrectly",
     "TrustTokenKeyCommitmentFuzzer.ParsesMultipleIssuersCorrectly",
     "StructTraitsTest.AggregatedHitTestRegionFuzz",

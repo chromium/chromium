@@ -29,7 +29,6 @@
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/resource_request_body.h"
 #include "services/network/public/cpp/source_type_mojom_traits.h"
-#include "services/network/public/mojom/attribution.mojom-forward.h"
 #include "services/network/public/mojom/chunked_data_pipe_getter.mojom.h"
 #include "services/network/public/mojom/client_security_state.mojom-forward.h"
 #include "services/network/public/mojom/cookie_access_observer.mojom-forward.h"
@@ -442,18 +441,6 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
   static net::StorageAccessApiStatus storage_access_api_status(
       const network::ResourceRequest& request) {
     return request.storage_access_api_status;
-  }
-  static network::mojom::AttributionSupport attribution_reporting_support(
-      const network::ResourceRequest& request) {
-    return request.attribution_reporting_support;
-  }
-  static network::mojom::AttributionReportingEligibility
-  attribution_reporting_eligibility(const network::ResourceRequest& request) {
-    return request.attribution_reporting_eligibility;
-  }
-  static const std::optional<base::UnguessableToken>&
-  attribution_reporting_src_token(const network::ResourceRequest& request) {
-    return request.attribution_reporting_src_token;
   }
   static const std::optional<base::UnguessableToken>& keepalive_token(
       const network::ResourceRequest& request) {

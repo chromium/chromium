@@ -31,7 +31,6 @@
 #include "net/url_request/url_request_job.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "services/network/public/cpp/resource_request.h"
-#include "services/network/public/mojom/attribution.mojom.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "third_party/blink/public/common/features.h"
@@ -154,8 +153,6 @@ void PrefetchResource(
   request.enable_load_timing = true;
   request.do_not_prompt_for_login = false;
   request.is_outermost_main_frame = true;
-  request.attribution_reporting_support =
-      network::mojom::AttributionSupport::kWeb;
   request.shared_dictionary_writer_enabled = true;
 
   // Suppress credentials for cross-origin image loads. See the comment in

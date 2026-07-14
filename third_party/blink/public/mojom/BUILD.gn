@@ -360,7 +360,6 @@ mojom("mojom_platform") {
       "//cc/mojom:mojom_browser_controls",
       "//services/media_session/public/mojom",
       "//services/network/public/mojom:cookies_mojom",
-      "//services/network/public/mojom:mojom_attribution",
       "//services/network/public/mojom:mojom_connection_allowlist",
       "//services/network/public/mojom:mojom_content_security_policy",
       "//services/network/public/mojom:mojom_cors_origin_pattern",
@@ -1426,7 +1425,6 @@ mojom("mojom_core") {
     public_deps += [
       "//cc/mojom:mojom_browser_controls",
       "//services/network/public/mojom:cookies_mojom",
-      "//services/network/public/mojom:mojom_attribution",
       "//services/network/public/mojom:mojom_connection_allowlist",
       "//services/network/public/mojom:mojom_content_security_policy",
       "//services/network/public/mojom:mojom_cors_origin_pattern",

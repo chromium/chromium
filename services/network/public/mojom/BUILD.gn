@@ -503,18 +503,6 @@ mojom("mojom_proxy_config") {
   blink_cpp_typemaps = shared_cpp_typemaps
 }
 
-mojom("mojom_attribution") {
-  generate_java = true
-
-  webui_module_path = "/"
-
-  # This is a dependency of url_loader_base below, which is used from Blink.
-  # Blink requires legacy JS bindings.
-  generate_legacy_js_bindings = true
-
-  sources = [ "attribution.mojom" ]
-}
-
 mojom("mojom_connection_allowlist") {
   generate_java = true
   sources = [ "connection_allowlist.mojom" ]
@@ -722,7 +710,6 @@ mojom("url_loader_base") {
   public_deps = [
     ":cookies_mojom",
     ":mojom_ad_auction",
-    ":mojom_attribution",
     ":mojom_connection_allowlist",
     ":mojom_content_security_policy",
     ":mojom_integrity_algorithm",

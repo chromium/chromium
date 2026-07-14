@@ -1801,10 +1801,6 @@ class WebContents : public PageNavigator, public base::SupportsUserData {
   virtual void SetOwnerLocationForDebug(
       std::optional<base::Location> owner_location) = 0;
 
-  // Sends the attribution support state to all renderer processes for the
-  // current page.
-  virtual void UpdateAttributionSupportRenderer() = 0;
-
   // Return all currently streaming devices of `type` via `callback`.
   virtual void GetMediaCaptureRawDeviceIdsOpened(
       blink::mojom::MediaStreamType type,

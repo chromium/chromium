@@ -21,7 +21,6 @@ import "services/network/public/mojom/network_types.mojom";
 import "services/network/public/mojom/source_location.mojom";
 import "services/network/public/mojom/storage_access_api.mojom";
 import "services/network/public/mojom/url_loader_completion_status.mojom";
-import "services/network/public/mojom/attribution.mojom";
 import "services/viz/public/mojom/compositing/offset_tag.mojom";
 import "services/viz/public/mojom/compositing/frame_sink_id.mojom";
 import "services/viz/public/mojom/compositing/local_surface_id.mojom";

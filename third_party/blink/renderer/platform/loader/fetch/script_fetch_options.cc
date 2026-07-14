@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "services/network/public/mojom/attribution.mojom-blink.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_initiator_type_names.h"
 #include "third_party/blink/renderer/platform/network/http_names.h"
@@ -100,13 +99,6 @@ FetchParameters ScriptFetchOptions::CreateFetchParameters(
   params.SetDefer(defer);
 
   // Steps 4- are Implemented at ClassicPendingScript::Fetch().
-
-  // TODO(crbug.com/1338976): Add correct spec comments here.
-  if (attribution_reporting_eligibility_ ==
-      AttributionReportingEligibility::kEligible) {
-    params.MutableResourceRequest().SetAttributionReportingEligibility(
-        network::mojom::AttributionReportingEligibility::kEventSourceOrTrigger);
-  }
 
   return params;
 }

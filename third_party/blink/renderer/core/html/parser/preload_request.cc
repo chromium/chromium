@@ -6,7 +6,6 @@
 
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
-#include "services/network/public/mojom/attribution.mojom-blink.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"

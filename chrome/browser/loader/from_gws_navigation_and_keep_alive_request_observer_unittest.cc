@@ -177,8 +177,6 @@ class FromGWSNavigationAndKeepAliveRequestObserverTest
     network::ResourceRequest request;
 
     request.url = url;
-    request.attribution_reporting_eligibility =
-        network::mojom::AttributionReportingEligibility::kEmpty;
     request.keepalive = true;
     request.keepalive_token = base::UnguessableToken::Create();
 

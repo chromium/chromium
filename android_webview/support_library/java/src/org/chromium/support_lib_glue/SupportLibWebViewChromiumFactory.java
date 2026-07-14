@@ -105,7 +105,6 @@ public class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryB
                 Features.IMAGE_DRAG_DROP,
                 Features.USER_AGENT_METADATA,
                 Features.MULTI_PROFILE,
-                Features.ATTRIBUTION_BEHAVIOR,
                 Features.WEBVIEW_MEDIA_INTEGRITY_API_STATUS,
                 Features.MUTE_AUDIO,
                 Features.WEB_AUTHENTICATION,
@@ -276,8 +275,6 @@ public class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryB
         ApiCall.GET_PROFILE_SERVICE_WORKER_CONTROLLER,
         ApiCall.SET_WEBVIEW_PROFILE,
         ApiCall.GET_WEBVIEW_PROFILE,
-        ApiCall.SET_ATTRIBUTION_BEHAVIOR,
-        ApiCall.GET_ATTRIBUTION_BEHAVIOR,
         ApiCall.GET_WEBVIEW_MEDIA_INTEGRITY_API_DEFAULT_STATUS,
         ApiCall.GET_WEBVIEW_MEDIA_INTEGRITY_API_OVERRIDE_RULES,
         ApiCall.SET_WEBVIEW_MEDIA_INTEGRITY_API_STATUS,
@@ -477,8 +474,8 @@ public class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryB
         int GET_PROFILE_SERVICE_WORKER_CONTROLLER = 92;
         int SET_WEBVIEW_PROFILE = 93;
         int GET_WEBVIEW_PROFILE = 94;
-        int SET_ATTRIBUTION_BEHAVIOR = 95;
-        int GET_ATTRIBUTION_BEHAVIOR = 96;
+        @Deprecated int SET_ATTRIBUTION_BEHAVIOR = 95;
+        @Deprecated int GET_ATTRIBUTION_BEHAVIOR = 96;
         int GET_WEBVIEW_MEDIA_INTEGRITY_API_DEFAULT_STATUS = 97;
         int GET_WEBVIEW_MEDIA_INTEGRITY_API_OVERRIDE_RULES = 98;
         int SET_WEBVIEW_MEDIA_INTEGRITY_API_STATUS = 99;

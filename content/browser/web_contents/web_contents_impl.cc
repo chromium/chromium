@@ -12841,22 +12841,6 @@ void WebContentsImpl::SetOverscrollNavigationEnabled(bool enabled) {
   GetView()->SetOverscrollControllerEnabled(enabled);
 }
 
-network::mojom::AttributionSupport WebContentsImpl::GetAttributionSupport() {
-  return network::mojom::AttributionSupport::kUnset;
-}
-
-void WebContentsImpl::UpdateAttributionSupportRenderer() {
-  OPTIONAL_TRACE_EVENT0("content",
-                        "WebContentsImpl::UpdateAttributionSupportRenderer");
-
-  network::mojom::AttributionSupport support = GetAttributionSupport();
-  ExecutePageBroadcastMethodForAllPages([support](RenderViewHostImpl* rvh) {
-    if (auto& broadcast = rvh->GetAssociatedPageBroadcast()) {
-      broadcast->SetPageAttributionSupport(support);
-    }
-  });
-}
-
 BackForwardTransitionAnimationManager*
 WebContentsImpl::GetBackForwardTransitionAnimationManager() {
   return GetView()->GetBackForwardTransitionAnimationManager();
@@ -12887,13 +12871,6 @@ bool WebContentsImpl::GetCanAcceptLoadDropsForTesting() {
 
 net::handles::NetworkHandle WebContentsImpl::GetTargetNetwork() {
   return target_network_;
-}
-
-// static
-void WebContentsImpl::UpdateAttributionSupportAllRenderers() {
-  for (WebContentsImpl* web_contents : GetAllWebContents()) {
-    web_contents->UpdateAttributionSupportRenderer();
-  }
 }
 
 void WebContentsImpl::GetMediaCaptureRawDeviceIdsOpened(

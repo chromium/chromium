@@ -254,7 +254,6 @@ blink::WebView* AgentSchedulingGroup::CreateWebView(
 
   web_view->SetRendererPreferences(params->renderer_preferences);
   web_view->SetWebPreferences(params->web_preferences);
-  web_view->SetPageAttributionSupport(params->attribution_support);
 
   const bool is_for_nested_main_frame =
       params->type != mojom::ViewWidgetType::kTopLevel;

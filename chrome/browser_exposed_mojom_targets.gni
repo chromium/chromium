@@ -258,7 +258,6 @@ browser_exposed_mojom_targets = [
   "//services/media_session/public/mojom:mojom",
   "//services/metrics/public/mojom:mojom",
   "//services/network/public/mojom:cookies_mojom",
-  "//services/network/public/mojom:mojom_attribution",
   "//services/network/public/mojom:mojom_first_party_sets",
   "//services/network/public/mojom:mojom_host_resolver",
   "//services/network/public/mojom:mojom_ip_address",

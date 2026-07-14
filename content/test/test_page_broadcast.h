@@ -48,8 +48,6 @@ class TestPageBroadcast : public blink::mojom::PageBroadcast {
       override;
   void UpdatePageBrowsingContextGroup(
       const base::UnguessableToken& browsing_context_group_token) override;
-  void SetPageAttributionSupport(
-      network::mojom::AttributionSupport support) override;
   void UpdateColorProviders(
       const blink::ColorProviderColorMaps& color_provider_colors) override;
   void SetSupportsDraggableRegions(bool supports_draggable_regions) override;

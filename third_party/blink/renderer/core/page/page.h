@@ -30,7 +30,6 @@
 #include "base/dcheck_is_on.h"
 #include "base/types/pass_key.h"
 #include "net/cookies/site_for_cookies.h"
-#include "services/network/public/mojom/attribution.mojom-shared.h"
 #include "third_party/blink/public/common/fenced_frame/redacted_fenced_frame_config.h"
 #include "third_party/blink/public/common/fingerprinting_protection/noise_token.h"
 #include "third_party/blink/public/common/metrics/document_update_reason.h"
@@ -519,17 +518,6 @@ class CORE_EXPORT Page final : public GarbageCollected<Page>,
   // place.
   void UpdateBrowsingContextGroup(const base::UnguessableToken&);
 
-  // Attribution Reporting API ------------------------------------
-  // Sets whether web or OS-level Attribution Reporting is supported
-  void SetAttributionSupport(
-      network::mojom::AttributionSupport attribution_support);
-
-  // Returns whether web or OS-level Attribution Reporting is supported. See
-  // https://github.com/WICG/attribution-reporting-api/blob/main/app_to_web.md.
-  network::mojom::AttributionSupport GetAttributionSupport() {
-    return attribution_support_;
-  }
-
   // Called on a new Page, passing an old Page as the parameter, when doing a
   // LocalFrame <-> LocalFrame swap when committing a navigation, to ensure that
   // e.g. the close task will still be processed after the swap, the list of
@@ -751,9 +739,6 @@ class CORE_EXPORT Page final : public GarbageCollected<Page>,
 
   // The information determining the browsing context group this page lives in.
   base::UnguessableToken browsing_context_group_token_;
-
-  network::mojom::AttributionSupport attribution_support_ =
-      network::mojom::AttributionSupport::kUnset;
 
   Member<CloseTaskHandler> close_task_handler_;
 };

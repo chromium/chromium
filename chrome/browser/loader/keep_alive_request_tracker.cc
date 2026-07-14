@@ -19,7 +19,6 @@
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/network/public/cpp/resource_request.h"
-#include "services/network/public/mojom/attribution.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 
 namespace {
@@ -33,17 +32,6 @@ constexpr size_t kMaxNonBucketedNumRetries = 10;
 
 ChromeKeepAliveRequestTracker::RequestType ComputeRequestType(
     const network::ResourceRequest& request) {
-  switch (request.attribution_reporting_eligibility) {
-    case network::mojom::AttributionReportingEligibility::kUnset:
-    case network::mojom::AttributionReportingEligibility::kEmpty:
-      break;
-    case network::mojom::AttributionReportingEligibility::kEventSource:
-    case network::mojom::AttributionReportingEligibility::kNavigationSource:
-    case network::mojom::AttributionReportingEligibility::kTrigger:
-    case network::mojom::AttributionReportingEligibility::kEventSourceOrTrigger:
-      return ChromeKeepAliveRequestTracker::RequestType::kAttribution;
-  }
-
   if (request.is_fetch_later_api) {
     return ChromeKeepAliveRequestTracker::RequestType::kFetchLater;
   }

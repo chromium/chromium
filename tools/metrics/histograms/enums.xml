@@ -4110,8 +4110,8 @@ shown properly on the user-facing crash UI.
   <int value="0" label="kFetch"/>
   <int value="1" label="kBeacon"/>
   <int value="2"
-      label="kPing: Includes both kBeacon and kAttribution when used in
-             browser process"/>
+      label="kPing: Includes both kBeacon and kAttribution (obsolete) when
+             used in browser process"/>
   <int value="3" label="kReporting"/>
   <int value="4" label="kAttribution (obsolete)"/>
   <int value="5" label="kBackgroundFetchIcon"/>
@@ -4151,7 +4151,7 @@ shown properly on the user-facing crash UI.
 
 <enum name="FetchKeepAliveRequestType">
   <int value="0" label="kFetch"/>
-  <int value="1" label="kAttribution"/>
+  <int value="1" label="kAttribution (obsolete)"/>
   <int value="2" label="kFetchLater"/>
 </enum>
 

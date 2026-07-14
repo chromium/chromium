@@ -467,8 +467,6 @@ bool RenderViewHostImpl::CreateRenderView(
     params->prerender_param = std::move(prerender_param);
   }
 
-  params->attribution_support = delegate_->GetAttributionSupport();
-
   if (main_rfh) {
     auto local_frame_params = mojom::CreateLocalMainFrameParams::New();
     local_frame_params->frame_token = main_rfh->GetFrameToken();

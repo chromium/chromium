@@ -109,10 +109,7 @@ namespace {
   DO_FIELD(net_log_create_info) __VA_ARGS__                        \
   DO_FIELD(net_log_reference_info) __VA_ARGS__                     \
   DO_FIELD(storage_access_api_status) __VA_ARGS__                  \
-  DO_FIELD(attribution_reporting_support) __VA_ARGS__              \
-  DO_FIELD(attribution_reporting_eligibility) __VA_ARGS__          \
   DO_FIELD(shared_dictionary_writer_enabled) __VA_ARGS__           \
-  DO_FIELD(attribution_reporting_src_token) __VA_ARGS__            \
   DO_FIELD(is_ad_tagged) __VA_ARGS__                               \
   DO_FIELD(client_side_content_decoding_enabled) __VA_ARGS__       \
   DO_FIELD(prefetch_token) __VA_ARGS__                             \
@@ -211,10 +208,10 @@ enum class FieldsForUma {
   kNetLogReferenceInfo = 55,
   // DEPRECATED: kTargetIpAddressSpace = 56,
   kStorageAccessApiStatus = 57,
-  kAttributionReportingSupport = 58,
-  kAttributionReportingEligibility = 59,
+  // DEPRECATED: kAttributionReportingSupport = 58,
+  // DEPRECATED: kAttributionReportingEligibility = 59,
   kSharedDictionaryWriterEnabled = 60,
-  kAttributionReportingSrcToken = 61,
+  // DEPRECATED: kAttributionReportingSrcToken = 61,
   kIsAdTagged = 62,
   kKeepaliveToken = 63,
   kExpectedPublicKeys = 64,
@@ -286,14 +283,8 @@ constexpr auto kUmaEnumMap = base::MakeFixedFlatMap<Fields, FieldsForUma>({
     {Fields::knet_log_create_info, FieldsForUma::kNetLogCreateInfo},
     {Fields::knet_log_reference_info, FieldsForUma::kNetLogReferenceInfo},
     {Fields::kstorage_access_api_status, FieldsForUma::kStorageAccessApiStatus},
-    {Fields::kattribution_reporting_support,
-     FieldsForUma::kAttributionReportingSupport},
-    {Fields::kattribution_reporting_eligibility,
-     FieldsForUma::kAttributionReportingEligibility},
     {Fields::kshared_dictionary_writer_enabled,
      FieldsForUma::kSharedDictionaryWriterEnabled},
-    {Fields::kattribution_reporting_src_token,
-     FieldsForUma::kAttributionReportingSrcToken},
     {Fields::kis_ad_tagged, FieldsForUma::kIsAdTagged},
     {Fields::kclient_side_content_decoding_enabled,
      FieldsForUma::kClientSideContentDecodingEnabled},

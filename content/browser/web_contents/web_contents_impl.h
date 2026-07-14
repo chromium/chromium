@@ -1053,9 +1053,6 @@ class CONTENT_EXPORT WebContentsImpl
       std::optional<base::Location> owner_location) override;
   blink::ColorProviderColorMaps GetColorProviderColorMaps() const override;
 
-  network::mojom::AttributionSupport GetAttributionSupport() override;
-  void UpdateAttributionSupportRenderer() override;
-  static void UpdateAttributionSupportAllRenderers();
   BackForwardTransitionAnimationManager*
   GetBackForwardTransitionAnimationManager() override;
   net::handles::NetworkHandle GetTargetNetwork() override;

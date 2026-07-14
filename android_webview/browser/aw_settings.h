@@ -55,17 +55,6 @@ class AwSettings : public content::WebContentsObserver {
     COUNT,
   };
 
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused.
-  // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.android_webview.settings
-  enum AttributionBehavior {
-    DISABLED = 0,
-    APP_SOURCE_AND_WEB_TRIGGER = 1,
-    WEB_SOURCE_AND_WEB_TRIGGER = 2,
-    APP_SOURCE_AND_APP_TRIGGER = 3,
-    kMaxValue = APP_SOURCE_AND_APP_TRIGGER,
-  };
-
   static AwSettings* FromWebContents(content::WebContents* web_contents);
   static bool GetAllowSniffingFileUrls();
 
@@ -80,7 +69,6 @@ class AwSettings : public content::WebContentsObserver {
   bool GetJavaScriptCanOpenWindowsAutomatically();
   bool GetAllowThirdPartyCookies();
   MixedContentMode GetMixedContentMode();
-  AttributionBehavior GetAttributionBehavior();
   bool IsPrerender2Allowed();
   bool IsBackForwardCacheEnabled();
   bool initial_page_scale_is_non_default() {
@@ -124,9 +112,6 @@ class AwSettings : public content::WebContentsObserver {
       const base::android::JavaRef<jobject>& obj);
   void UpdateMixedContentModeLocked(JNIEnv* env,
                                     const base::android::JavaRef<jobject>& obj);
-  void UpdateAttributionBehaviorLocked(
-      JNIEnv* env,
-      const base::android::JavaRef<jobject>& obj);
   void UpdateSpeculativeLoadingAllowedLocked(
       JNIEnv* env,
       const base::android::JavaRef<jobject>& obj);
@@ -197,7 +182,6 @@ class AwSettings : public content::WebContentsObserver {
   bool allow_file_access_from_file_urls_{false};
   bool enterprise_authentication_app_link_policy_enabled_{true};
   MixedContentMode mixed_content_mode_;
-  AttributionBehavior attribution_behavior_;
   SpeculativeLoadingAllowedFlags speculative_loading_allowed_flags_{
       SpeculativeLoadingAllowedFlags::SPECULATIVE_LOADING_DISABLED};
   bool bfcache_enabled_in_java_settings_{false};

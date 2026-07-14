@@ -203,11 +203,6 @@ FetchRequestData* FetchRequestData::Create(
     request->SetTrustTokenParams(trust_token_params);
   }
 
-  request->SetAttributionReportingEligibility(
-      fetch_api_request->attribution_reporting_eligibility);
-  request->SetAttributionReportingSupport(
-      fetch_api_request->attribution_reporting_support);
-
   if (fetch_api_request->service_worker_race_network_request_token) {
     request->SetServiceWorkerRaceNetworkRequestToken(
         fetch_api_request->service_worker_race_network_request_token.value());
@@ -245,9 +240,6 @@ FetchRequestData* FetchRequestData::CloneExceptBody() {
   request->is_reload_navigation_ = is_reload_navigation_;
   request->window_id_ = window_id_;
   request->trust_token_params_ = trust_token_params_;
-  request->attribution_reporting_eligibility_ =
-      attribution_reporting_eligibility_;
-  request->attribution_reporting_support_ = attribution_reporting_support_;
   request->service_worker_race_network_request_token_ =
       service_worker_race_network_request_token_;
   request->retry_options_ = retry_options_;

@@ -11,7 +11,6 @@
 #include "base/unguessable_token.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/network/public/cpp/fetch_retry_options.h"
-#include "services/network/public/mojom/attribution.mojom-blink.h"
 #include "services/network/public/mojom/fetch_api.mojom-blink-forward.h"
 #include "services/network/public/mojom/referrer_policy.mojom-blink-forward.h"
 #include "services/network/public/mojom/trust_tokens.mojom-blink.h"
@@ -184,23 +183,6 @@ class CORE_EXPORT FetchRequestData final
     trust_token_params_ = std::move(trust_token_params);
   }
 
-  network::mojom::AttributionReportingEligibility
-  AttributionReportingEligibility() const {
-    return attribution_reporting_eligibility_;
-  }
-  void SetAttributionReportingEligibility(
-      network::mojom::AttributionReportingEligibility eligibility) {
-    attribution_reporting_eligibility_ = eligibility;
-  }
-
-  network::mojom::AttributionSupport AttributionSupport() const {
-    return attribution_reporting_support_;
-  }
-  void SetAttributionReportingSupport(
-      network::mojom::AttributionSupport support) {
-    attribution_reporting_support_ = support;
-  }
-
   base::UnguessableToken ServiceWorkerRaceNetworkRequestToken() const {
     return service_worker_race_network_request_token_;
   }
@@ -270,11 +252,6 @@ class CORE_EXPORT FetchRequestData final
   bool shared_storage_writable_ = false;
   bool is_history_navigation_ = false;
   bool is_reload_navigation_ = false;
-  network::mojom::AttributionReportingEligibility
-      attribution_reporting_eligibility_ =
-          network::mojom::AttributionReportingEligibility::kUnset;
-  network::mojom::AttributionSupport attribution_reporting_support_ =
-      network::mojom::AttributionSupport::kUnset;
   std::optional<network::FetchRetryOptions> retry_options_;
   // A specific factory that should be used for this request instead of whatever
   // the system would otherwise decide to use to load this request.

@@ -6,7 +6,6 @@ module blink.mojom;
 
 import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
-import "services/network/public/mojom/attribution.mojom";
 import "skia/public/mojom/skcolor.mojom";
 import "third_party/blink/public/mojom/frame/frame_replication_state.mojom";
 import "third_party/blink/public/mojom/frame/remote_frame.mojom";
@@ -169,12 +168,6 @@ interface PageBroadcast {
   // in `browsing_context_group_token`.
   UpdatePageBrowsingContextGroup(
     mojo_base.mojom.UnguessableToken browsing_context_group_token);
-
-  // Allows the browser to inform the renderer about a change in attribution
-  // support, e.g. when the OS indicates that the OS Attribution API is
-  // supported/unsupported or when attribution is enabled/disabled for
-  // Android WebView.
-  SetPageAttributionSupport(network.mojom.AttributionSupport support);
 
   // Sends an update for the ColorProviders to be used for the given page.
   // The update is sent when either occurs:

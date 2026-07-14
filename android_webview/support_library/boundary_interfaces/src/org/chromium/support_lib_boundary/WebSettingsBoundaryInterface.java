@@ -80,6 +80,7 @@ public interface WebSettingsBoundaryInterface {
 
     Map<String, Object> getUserAgentMetadataMap();
 
+    @Deprecated
     @Retention(RetentionPolicy.SOURCE)
     @interface AttributionBehavior {
         int DISABLED = 0;
@@ -88,8 +89,10 @@ public interface WebSettingsBoundaryInterface {
         int APP_SOURCE_AND_APP_TRIGGER = 3;
     }
 
+    @Deprecated
     void setAttributionBehavior(@AttributionBehavior int behavior);
 
+    @Deprecated
     @AttributionBehavior
     int getAttributionBehavior();
 

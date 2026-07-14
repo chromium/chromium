@@ -31,11 +31,6 @@ class PLATFORM_EXPORT ScriptFetchOptions final {
   DISALLOW_NEW();
 
  public:
-  enum class AttributionReportingEligibility {
-    kIneligible,
-    kEligible,
-  };
-
   // https://html.spec.whatwg.org/C/#default-classic-script-fetch-options
   // "The default classic script fetch options are a script fetch options whose
   // cryptographic nonce is the empty string, integrity metadata is the empty
@@ -85,11 +80,6 @@ class PLATFORM_EXPORT ScriptFetchOptions final {
     referrer_policy_ = response_referrer_policy;
   }
 
-  void SetAttributionReportingEligibility(
-      AttributionReportingEligibility eligibility) {
-    attribution_reporting_eligibility_ = eligibility;
-  }
-
   // https://html.spec.whatwg.org/C/#fetch-a-classic-script
   // Steps 1 and 3.
   FetchParameters CreateFetchParameters(const KURL&,
@@ -125,12 +115,6 @@ class PLATFORM_EXPORT ScriptFetchOptions final {
 
   const RenderBlockingBehavior render_blocking_behavior_ =
       RenderBlockingBehavior::kUnset;
-
-  // https://wicg.github.io/attribution-reporting-api
-  // TODO(crbug.com/1338976): make this member const once the attributionsrc
-  // spec is drafted.
-  AttributionReportingEligibility attribution_reporting_eligibility_ =
-      AttributionReportingEligibility::kIneligible;
 };
 
 }  // namespace blink

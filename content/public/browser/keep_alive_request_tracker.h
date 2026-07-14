@@ -27,7 +27,7 @@ class CONTENT_EXPORT KeepAliveRequestTracker {
   // LINT.IfChange(RequestType)
   enum class RequestType {
     kFetch = 0,
-    kAttribution = 1,
+    // kAttribution = 1, obsolete
     kFetchLater = 2,
 
     kMaxValue = kFetchLater,

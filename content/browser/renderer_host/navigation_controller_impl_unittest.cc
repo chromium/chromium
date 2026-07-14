@@ -161,11 +161,6 @@ class MockPageBroadcast : public blink::mojom::PageBroadcast {
               (override));
 
   MOCK_METHOD(void,
-              SetPageAttributionSupport,
-              (network::mojom::AttributionSupport support),
-              (override));
-
-  MOCK_METHOD(void,
               SetSupportsDraggableRegions,
               (bool supports_draggable_regions),
               (override));

@@ -21,7 +21,6 @@
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/url_loader_completion_status.h"
-#include "services/network/public/mojom/attribution.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -71,15 +70,9 @@ class ChromeKeepAliveRequestTrackerTestBase : public testing::Test {
     network::ResourceRequest request;
 
     request.url = GURL(url);
-    request.attribution_reporting_eligibility =
-        network::mojom::AttributionReportingEligibility::kEmpty;
     request.keepalive = true;
     request.keepalive_token = base::UnguessableToken::Create();
     request.is_fetch_later_api = IsFetchLaterRequest();
-    request.attribution_reporting_eligibility =
-        IsAttributionReportingEligibleRequest()
-            ? network::mojom::AttributionReportingEligibility::kTrigger
-            : network::mojom::AttributionReportingEligibility::kUnset;
 
     return request;
   }
@@ -97,7 +90,6 @@ class ChromeKeepAliveRequestTrackerTestBase : public testing::Test {
     return ukm::AssignNewSourceId();
   }
   virtual bool IsFetchLaterRequest() const { return false; }
-  virtual bool IsAttributionReportingEligibleRequest() const { return false; }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -118,7 +110,6 @@ struct RequestTypeTestCase {
 
 const RequestTypeTestCase kRequestTypeTestCases[] = {
     {"Fetch", RequestType::kFetch},
-    {"Attribution", RequestType::kAttribution},
     {"FetchLater", RequestType::kFetchLater},
 };
 
@@ -130,9 +121,6 @@ class MaybeCreateKeepAliveRequestTrackerForCategoryTest
   // ChromeKeepAliveRequestTrackerTestBase overrides:
   bool IsFetchLaterRequest() const override {
     return std::get<1>(GetParam()).request_type == RequestType::kFetchLater;
-  }
-  bool IsAttributionReportingEligibleRequest() const override {
-    return std::get<1>(GetParam()).request_type == RequestType::kAttribution;
   }
 };
 
@@ -193,9 +181,6 @@ class ChromeKeepAliveRequestTrackerTest
   }
   bool IsFetchLaterRequest() const override {
     return GetParam().request_type == RequestType::kFetchLater;
-  }
-  bool IsAttributionReportingEligibleRequest() const override {
-    return GetParam().request_type == RequestType::kAttribution;
   }
 
  private:

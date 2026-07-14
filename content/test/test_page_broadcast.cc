@@ -65,9 +65,6 @@ void TestPageBroadcast::CreateRemoteMainFrame(
 void TestPageBroadcast::UpdatePageBrowsingContextGroup(
     const base::UnguessableToken& browsing_context_group_token) {}
 
-void TestPageBroadcast::SetPageAttributionSupport(
-    network::mojom::AttributionSupport support) {}
-
 void TestPageBroadcast::UpdateColorProviders(
     const blink::ColorProviderColorMaps& color_provider_colors) {}
 

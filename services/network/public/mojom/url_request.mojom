@@ -9,7 +9,6 @@ import "mojo/public/mojom/base/file_path.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
 import "services/network/public/mojom/accept_ch_frame_observer.mojom";
-import "services/network/public/mojom/attribution.mojom";
 import "services/network/public/mojom/chunked_data_pipe_getter.mojom";
 import "services/network/public/mojom/client_security_state.mojom";
 import "services/network/public/mojom/cookie_access_observer.mojom";
@@ -595,19 +594,6 @@ struct URLRequest {
   // assumption, the browser process has already determined that this access is
   // ok.
   StorageAccessApiStatus storage_access_api_status;
-
-  // Indicates whether web or OS-level Attribution Reporting is supported.
-  AttributionSupport attribution_reporting_support;
-
-  // Indicates the value of the request's `Attribution-Reporting-Eligible`
-  // header; how this header is interpreted depends on the context in which
-  // the request is made.
-  AttributionReportingEligibility attribution_reporting_eligibility =
-      AttributionReportingEligibility.kUnset;
-
-  // When applicable, indicates the token of an Attribution Reporting API
-  // eligible navigation request to which the current request is associated.
-  mojo_base.mojom.UnguessableToken? attribution_reporting_src_token;
 
   // When applicable, i.e. `keepalive` is true, indicates a fetch keepalive
   // request.

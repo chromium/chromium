@@ -556,7 +556,6 @@ public class AwBackForwardCacheTest extends AwParameterizedTest {
         settings.setCssHexAlphaColorEnabled(false);
         settings.setScrollTopLeftInteropEnabled(false);
         settings.setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
-        settings.setAttributionBehavior(AwSettings.ATTRIBUTION_DISABLED);
         settings.setForceDarkMode(AwSettings.FORCE_DARK_OFF);
         settings.setForceDarkBehavior(AwSettings.FORCE_DARK_ONLY);
         settings.setShouldFocusFirstNode(true);
@@ -675,11 +674,6 @@ public class AwBackForwardCacheTest extends AwParameterizedTest {
                 () -> settings.setDisplayZoomControls(!settings.getDisplayZoomControls()));
         verifyPageEvictedWithSettingsChange(
                 () -> settings.setMixedContentMode(WebSettings.MIXED_CONTENT_COMPATIBILITY_MODE));
-        verifyPageEvictedWithSettingsChange(
-                () -> {
-                    settings.setAttributionBehavior(
-                            AwSettings.ATTRIBUTION_WEB_SOURCE_AND_WEB_TRIGGER);
-                });
         verifyPageEvictedWithSettingsChange(
                 () -> settings.setForceDarkMode(AwSettings.FORCE_DARK_AUTO));
         verifyPageEvictedWithSettingsChange(
