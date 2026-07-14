@@ -136,6 +136,22 @@
           </div>
         ` : ''}
 
+        <if expr="is_macosx">
+          ${this.showGlassEffectEnabled_ ? html`
+            <div class="cr-row hr">
+              <div class="flex cr-padded-text" aria-hidden="true">
+                $i18n{glassEffect}
+              </div>
+              <settings-dropdown-menu id="glassEffect"
+                  label="$i18n{glassEffect}"
+                  pref-key="glass_frame.enabled"
+                  .menuOptions="${this.glassEffectOptions_}">
+              </settings-dropdown-menu>
+            </div>
+          ` : ''}
+        </if>
+
+
         ${this.showVerticalTabsEnabled_ ? html`
           <div class="cr-row">
             <div class="flex cr-padded-text" aria-hidden="true">

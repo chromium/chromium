@@ -135,6 +135,7 @@
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/l10n/time_format.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/webui/webui_util.h"
@@ -553,6 +554,9 @@ void AddAppearanceStrings(content::WebUIDataSource* html_source,
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
       {"appearancePageTitle", IDS_SETTINGS_APPEARANCE},
       {"ctrlTabMru", IDS_SETTINGS_CTRL_TAB_MRU},
+      {"glassEffect", IDS_SETTINGS_TAB_STYLING},
+      {"glassEffectClassic", IDS_SETTINGS_TAB_STYLING_CLASSIC},
+      {"glassEffectModern", IDS_SETTINGS_TAB_STYLING_MODERN_TRANSPARENT},
       {"customWebAddress", IDS_SETTINGS_CUSTOM_WEB_ADDRESS},
       {"enterCustomWebAddress", IDS_SETTINGS_ENTER_CUSTOM_WEB_ADDRESS},
       {"homeButtonDisabled", IDS_SETTINGS_HOME_BUTTON_DISABLED},
@@ -645,6 +649,8 @@ void AddAppearanceStrings(content::WebUIDataSource* html_source,
       base::FeatureList::IsEnabled(features::kTabHoverCardImages));
   html_source->AddBoolean("showVerticalTabsEnabled",
                           tabs::IsVerticalTabsFeatureEnabled());
+  html_source->AddBoolean("showGlassEffectEnabled",
+                          features::IsGlassFrameEnabled());
   html_source->AddBoolean("showVerticalTabsExpandOnHoverEnabled",
                           tabs::IsVerticalTabsExpandOnHoverFeatureEnabled());
   html_source->AddBoolean("showProjectsPanelEnabled",

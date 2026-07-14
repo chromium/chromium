@@ -165,8 +165,10 @@ export class SettingsAppearancePageElement extends
 
       showHoverCardImagesOption_: {type: Boolean},
       showManagedThemeDialog_: {type: Boolean},
+      glassEffectOptions_: {type: Array},
       tabStripOptions_: {type: Array},
       showVerticalTabsEnabled_: {type: Boolean},
+      showGlassEffectEnabled_: {type: Boolean},
       ntpSimplificationBookmarksBarEnabled_: {type: Boolean},
       bookmarksBarOptions_: {type: Array},
       showVerticalTabsExpandOnHoverEnabled_: {type: Boolean},
@@ -247,6 +249,11 @@ export class SettingsAppearancePageElement extends
     {value: 24, name: loadTimeData.getString('veryLarge')},
   ];
 
+  protected accessor glassEffectOptions_: DropdownMenuOptionList = [
+    {value: 'false', name: loadTimeData.getString('glassEffectClassic')},
+    {value: 'true', name: loadTimeData.getString('glassEffectModern')},
+ ];
+
   protected accessor tabStripOptions_: DropdownMenuOptionList = [
     {value: 'true', name: loadTimeData.getString('uiFeatureAlignSide')},
     {value: 'false', name: loadTimeData.getString('uiFeatureAlignTop')},
@@ -289,6 +296,8 @@ export class SettingsAppearancePageElement extends
   protected accessor showManagedThemeDialog_: boolean = false;
   protected accessor showVerticalTabsEnabled_: boolean =
       loadTimeData.getBoolean('showVerticalTabsEnabled');
+  protected accessor showGlassEffectEnabled_: boolean =
+      loadTimeData.getBoolean('showGlassEffectEnabled');
   protected accessor ntpSimplificationBookmarksBarEnabled_: boolean =
       loadTimeData.getBoolean('ntpSimplificationBookmarksBarEnabled');
   protected accessor showVerticalTabsExpandOnHoverEnabled_: boolean =

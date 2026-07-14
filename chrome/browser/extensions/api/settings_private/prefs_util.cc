@@ -329,6 +329,8 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
       settings_api::PrefType::kBoolean;
   (*s_allowlist)[::prefs::kConfirmToQuitEnabled] =
       settings_api::PrefType::kBoolean;
+  (*s_allowlist)[::prefs::kGlassFrameEnabled] =
+      settings_api::PrefType::kBoolean;
 #endif
   (*s_allowlist)[prefs::kHoverCardImagesEnabled] =
       settings_api::PrefType::kBoolean;

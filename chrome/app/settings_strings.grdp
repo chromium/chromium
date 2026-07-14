@@ -259,6 +259,15 @@
     <message name="IDS_SETTINGS_CTRL_TAB_MRU" desc="Label for the checkbox which enables or disables switching between the two most recently used tabs with Ctrl+Tab.">
       Switch between two most recently used tabs with Ctrl+Tab
     </message>
+    <message name="IDS_SETTINGS_TAB_STYLING" desc="Label for the dropdown menu for choosing browser frame styling.">
+      Tab Styling
+    </message>
+    <message name="IDS_SETTINGS_TAB_STYLING_CLASSIC" desc="Option for classic appearance without glass effect.">
+      Classic
+    </message>
+    <message name="IDS_SETTINGS_TAB_STYLING_MODERN_TRANSPARENT" desc="Option for modern transparent appearance with glass effect.">
+      Modern (transparent)
+    </message>
     <message name="IDS_SETTINGS_SHOW_BOOKMARKS_BAR" desc="Label for the checkbox which enables or disables showing the bookmarks bar in the toolbar.">
       Show bookmarks bar
     </message>
