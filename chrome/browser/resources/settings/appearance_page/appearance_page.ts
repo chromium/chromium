@@ -379,17 +379,21 @@ export class SettingsAppearancePageElement extends
       this.defaultFontSizeChanged_();
     }
 
-    if (changedPrivateProperties.has('themeIdPref_') ||
-        changedPrivateProperties.has('systemTheme_') ||
-        changedPrivateProperties.has('themePolicyColorPref_')) {
-      this.themeChanged_();
-    }
-
     // <if expr="is_linux">
     if (changedPrivateProperties.has('themeSystemThemePref_')) {
-      this.systemThemePrefChanged_();
+      this.systemTheme_ = this.themeSystemThemePref_!.value;
     }
     // </if>
+
+    if (changedPrivateProperties.has('themeIdPref_') ||
+        changedPrivateProperties.has('systemTheme_') ||
+        changedPrivateProperties.has('themePolicyColorPref_')
+        // <if expr="is_linux">
+        || changedPrivateProperties.has('themeSystemThemePref_')
+        // </if>
+    ) {
+      this.themeChanged_();
+    }
 
     if (changedPrivateProperties.has('pinnedActionsPref_') ||
         changedPrivateProperties.has('showHomeButtonPref_') ||
@@ -470,10 +474,6 @@ export class SettingsAppearancePageElement extends
   }
 
   // <if expr="is_linux">
-  private systemThemePrefChanged_() {
-    this.systemTheme_ = this.themeSystemThemePref_!.value;
-  }
-
   /** @return Whether to show the "USE CLASSIC" button. */
   protected showUseClassic_(): boolean {
     const themeId = this.themeIdPref_?.value;
