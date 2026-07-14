@@ -212,6 +212,7 @@ void PageContextEligibilityObserver::UpdateObserver() {
           base::BindRepeating(
               &PageContextEligibilityObserver::OnMetaTagsChanged,
               base::Unretained(this)));
+      OnMetaTagsChanged(meta_tags_observer_->GetCurrentMetadata());
     }
   }
 
