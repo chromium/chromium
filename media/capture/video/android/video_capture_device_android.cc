@@ -175,6 +175,9 @@ std::optional<gpu::VulkanYCbCrInfo> GetVulkanYCbCrInfo(
   return result;
 }
 
+BASE_FEATURE(kUseNV12FormatForAndroidZeroCopyVideoCapture,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 }  // anonymous namespace
 
 VideoCaptureDeviceAndroid::VideoCaptureDeviceAndroid(
@@ -431,12 +434,17 @@ void VideoCaptureDeviceAndroid::OnHardwareBufferAvailableOnMainThread(
   viz::SharedImageFormat shared_image_format;
   switch (desc.format) {
     case AndroidImageFormat::ANDROID_IMAGE_FORMAT_YUV_420_888:
-      // Even though the AHB has an NV12 internal format, its pixel layout
-      // is never directly exposed anywhere, we only access it via
-      // the external texture sampler.
-      // Shared image readback will produce RGB output, that's why it makes
-      // sense to use PIXEL_FORMAT_XBGR VideoFrame format.
-      video_pixel_format = PIXEL_FORMAT_XBGR;
+      if (base::FeatureList::IsEnabled(
+              kUseNV12FormatForAndroidZeroCopyVideoCapture)) {
+        video_pixel_format = PIXEL_FORMAT_NV12;
+      } else {
+        // Even though the AHB has an NV12 internal format, its pixel layout
+        // is never directly exposed anywhere, we only access it via
+        // the external texture sampler.
+        // Shared image readback will produce RGB output, that's why it makes
+        // sense to use PIXEL_FORMAT_XBGR VideoFrame format.
+        video_pixel_format = PIXEL_FORMAT_XBGR;
+      }
       shared_image_format = viz::MultiPlaneFormat::kNV12;
       shared_image_format.SetPrefersExternalSampler();
       break;

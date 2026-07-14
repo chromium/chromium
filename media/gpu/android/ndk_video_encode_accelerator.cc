@@ -701,7 +701,7 @@ NdkVideoEncodeAccelerator::~NdkVideoEncodeAccelerator() {
 std::vector<VideoPixelFormat>
 NdkVideoEncodeAccelerator::GetSupportedSharedImagePixelFormats() {
   if (media::IsAndroidZeroCopyVideoCaptureEnabled(gpu_workarounds_)) {
-    return {PIXEL_FORMAT_ABGR, PIXEL_FORMAT_XBGR};
+    return {PIXEL_FORMAT_ABGR, PIXEL_FORMAT_XBGR, PIXEL_FORMAT_NV12};
   }
   return {};
 }
