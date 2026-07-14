@@ -2793,6 +2793,50 @@ TEST_F(WebFrameWidgetSimTest, TestLineBoundsAreClippedInSubframe) {
     EXPECT_EQ(expected.at(i), actual.at(i));
   }
 }
+
+TEST_F(WebFrameWidgetSimTest, TestCursorAnchorInfoWithEditContext) {
+  WebView().ResizeVisualViewport(gfx::Size(1000, 1000));
+  auto* widget = WebView().MainFrameViewWidget();
+  SimRequest request("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  request.Complete(
+      R"HTML(
+      <!doctype html>
+      <div id="target" style='width:200px;height:200px'></div>
+      <script>
+        const editContext = new EditContext();
+        const target = document.getElementById('target');
+        target.editContext = editContext;
+        target.focus();
+        let controlBounds = new DOMRect(10, 20, 100, 50);
+        editContext.updateControlBounds(controlBounds);
+        let selectionBounds = new DOMRect(15, 25, 2, 10);
+        editContext.updateSelectionBounds(selectionBounds);
+      </script>
+      )HTML");
+  Compositor().BeginFrame();
+  widget->UpdateAllLifecyclePhases(DocumentUpdateReason::kTest);
+
+  // Directly verify CalculateCursorAnchorInfo using ForTesting helper
+  mojom::blink::InputCursorAnchorInfoPtr info =
+      widget->CalculateCursorAnchorInfoForTesting(/*update_requested=*/true);
+  ASSERT_TRUE(info);
+  EXPECT_EQ(gfx::RectF(10, 20, 100, 50),
+            info->editor_bounds_info->editor_bounds);
+  EXPECT_TRUE(info->insertion_marker.has_value());
+  EXPECT_EQ(gfx::Rect(15, 25, 2, 10), info->insertion_marker.value());
+
+  // Also verify UpdateCursorAnchorInfo properly populates
+  // last_cursor_anchor_info_
+  widget->UpdateCursorAnchorInfo(/*update_requested=*/true);
+  mojom::blink::InputCursorAnchorInfoPtr& actual =
+      widget->GetLastCursorAnchorInfoForTesting();
+  ASSERT_TRUE(actual);
+  EXPECT_EQ(gfx::RectF(10, 20, 100, 50),
+            actual->editor_bounds_info->editor_bounds);
+  EXPECT_TRUE(actual->insertion_marker.has_value());
+  EXPECT_EQ(gfx::Rect(15, 25, 2, 10), actual->insertion_marker.value());
+}
 #endif  // BUILDFLAG(IS_ANDROID)
 
 class EventHandlingWebFrameWidgetSimTest : public SimTest {

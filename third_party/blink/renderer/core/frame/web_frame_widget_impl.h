@@ -275,6 +275,10 @@ class CORE_EXPORT WebFrameWidgetImpl
       Vector<gfx::Rect>* bounds_in_dips) override;
   // Return the last calculated cursor anchor info.
   mojom::blink::InputCursorAnchorInfoPtr& GetLastCursorAnchorInfoForTesting();
+  mojom::blink::InputCursorAnchorInfoPtr CalculateCursorAnchorInfoForTesting(
+      bool update_requested) {
+    return CalculateCursorAnchorInfo(update_requested);
+  }
   bool HasImeRenderWidgetHost() const override {
     return !!ime_render_widget_host_;
   }
@@ -782,7 +786,6 @@ class CORE_EXPORT WebFrameWidgetImpl
   // coordinate space.
   Vector<gfx::Rect> CalculateVisibleLineBoundsOnScreen();
 #endif  // BUILDFLAG(IS_ANDROID)
-
   // Returns true if this widget corresponds to a frame which is being replaced.
   // The compositor for the widget has been detached and passed to the new
   // widget.
@@ -847,6 +850,7 @@ class CORE_EXPORT WebFrameWidgetImpl
   bool doing_drag_and_drop_ = false;
 
  private:
+  friend class WebFrameWidgetSimTest;
   friend class WebViewImpl;
   friend class ReportTimeSwapPromise;
   friend class WebFrameWidgetScrollContainerHitTest;
@@ -1163,6 +1167,9 @@ class CORE_EXPORT WebFrameWidgetImpl
   ComputeProximateCharacterBounds(
       const PositionWithAffinity& pivot_position) const;
 #endif  // BUILDFLAG(IS_WIN)
+
+  mojom::blink::InputCursorAnchorInfoPtr CalculateCursorAnchorInfo(
+      bool update_requested);
 
   // Stores the last cursor anchor info calculated for the currently focused
   // editable element.

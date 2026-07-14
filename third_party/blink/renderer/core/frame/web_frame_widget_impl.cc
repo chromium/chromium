@@ -4475,31 +4475,62 @@ WebFrameWidgetImpl::GetLastCursorAnchorInfoForTesting() {
   return last_cursor_anchor_info_;
 }
 
-void WebFrameWidgetImpl::UpdateCursorAnchorInfo(bool update_requested) {
+mojom::blink::InputCursorAnchorInfoPtr
+WebFrameWidgetImpl::CalculateCursorAnchorInfo(bool update_requested) {
 #if BUILDFLAG(IS_ANDROID)
   Element* focused_element = FocusedElement();
   if (!focused_element) {
-    return;
+    return nullptr;
   }
 
   // Only update cursor for active text controls or contenteditable elements.
   if (TextControlElement* text_control = ToTextControlOrNull(focused_element);
       (!text_control || text_control->IsDisabledOrReadOnly()) &&
       !IsEditable(*focused_element)) {
-    return;
+    return nullptr;
   }
   LayoutObject* layout_object = focused_element->GetLayoutObject();
   if (!layout_object) {
-    return;
+    return nullptr;
+  }
+
+  WebInputMethodController* controller = GetActiveWebInputMethodController();
+  gfx::RectF editor_bounds;
+  std::optional<gfx::Rect> insertion_marker_info = std::nullopt;
+
+  if (focused_element->GetDocument()
+          .GetFrame()
+          ->GetInputMethodController()
+          .GetActiveEditContext() &&
+      controller) {
+    gfx::Rect edit_context_control_bounds;
+    gfx::Rect edit_context_selection_bounds;
+
+    controller->GetLayoutBounds(&edit_context_control_bounds,
+                                &edit_context_selection_bounds);
+
+    editor_bounds = gfx::RectF(LocalRootImpl()->GetFrameView()->FrameToScreen(
+        edit_context_control_bounds));
+    insertion_marker_info =
+        widget_base_->BlinkSpaceToEnclosedDIPs(edit_context_selection_bounds);
+  } else {
+    gfx::Rect focus_caret;
+    gfx::Rect anchor_caret;
+
+    editor_bounds = gfx::RectF(LocalRootImpl()->GetFrameView()->FrameToScreen(
+        focused_element->VisibleBoundsInLocalRoot()));
+    CalculateSelectionBounds(anchor_caret, focus_caret);
+
+    if (focus_caret != gfx::Rect{}) {
+      insertion_marker_info =
+          widget_base_->BlinkSpaceToEnclosedDIPs(focus_caret);
+    }
   }
 
   Vector<gfx::Rect> character_bounds;
   GetCompositionCharacterBoundsInWindow(&character_bounds);
   Vector<gfx::Rect> line_bounds = CalculateVisibleLineBoundsOnScreen();
 
-  gfx::RectF editor_bounds =
-      gfx::RectF(LocalRootImpl()->GetFrameView()->FrameToScreen(
-          focused_element->VisibleBoundsInLocalRoot()));
   float device_scale_factor = widget_base_->GetScreenInfo().device_scale_factor;
   gfx::RectF handwriting_bounds(editor_bounds);
   // See kStylusWritableAdjustmentSizeDip in
@@ -4514,20 +4545,22 @@ void WebFrameWidgetImpl::UpdateCursorAnchorInfo(bool update_requested) {
               .VisitedDependentColor(GetCSSPropertyColor())
               .Rgb());
 
-  // Calculate the caret location.
-  std::optional<gfx::Rect> insertion_marker_info = std::nullopt;
-  gfx::Rect focus_caret = {};
-  gfx::Rect anchor_caret = {};
-  CalculateSelectionBounds(anchor_caret, focus_caret);
-  if (focus_caret != gfx::Rect{}) {
-    insertion_marker_info = widget_base_->BlinkSpaceToEnclosedDIPs(focus_caret);
-  }
+  return mojom::blink::InputCursorAnchorInfo::New(
+      character_bounds, std::move(editor_bounds_info),
+      std::move(text_appearance_info), line_bounds,
+      std::move(insertion_marker_info), update_requested);
+#else
+  return nullptr;
+#endif  // BUILDFLAG(IS_ANDROID)
+}
 
+void WebFrameWidgetImpl::UpdateCursorAnchorInfo(bool update_requested) {
+#if BUILDFLAG(IS_ANDROID)
   mojom::blink::InputCursorAnchorInfoPtr cursor_anchor_info =
-      mojom::blink::InputCursorAnchorInfo::New(
-          character_bounds, std::move(editor_bounds_info),
-          std::move(text_appearance_info), line_bounds,
-          std::move(insertion_marker_info), update_requested);
+      CalculateCursorAnchorInfo(update_requested);
+  if (!cursor_anchor_info) {
+    return;
+  }
 
   if (!update_requested && last_cursor_anchor_info_ == cursor_anchor_info) {
     return;
