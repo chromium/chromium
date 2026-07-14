@@ -18,7 +18,7 @@ enum CallerApp {
   kYoutube = 6,
   kGoogleMaps = 7,
   kChrome = 8,
-  kChronosCatalog = 9,
+  kExperienceKitCatalog = 9,
   kOtherApp = 10,
   kMaxValue = kOtherApp,
 };
@@ -49,7 +49,7 @@ CallerApp CallerAppFromAppID(NSString* caller_app_id) {
   }
   if ([caller_app_id isEqualToString:@"com.google.ChronosCatalog"] ||
       [caller_app_id hasPrefix:@"com.google.ChronosCatalog."]) {
-    return kChronosCatalog;
+    return kExperienceKitCatalog;
   }
   if ([caller_app_id
           isEqualToString:[base::apple::FrameworkBundle() bundleIdentifier]]) {
@@ -76,7 +76,7 @@ bool IsCallerAppFirstParty(NSString* caller_app_id) {
     case CallerApp::kYoutube:
     case CallerApp::kGoogleMaps:
     case CallerApp::kChrome:
-    case CallerApp::kChronosCatalog:
+    case CallerApp::kExperienceKitCatalog:
       return true;
     case CallerApp::kOtherApp:
       return false;
@@ -86,7 +86,7 @@ bool IsCallerAppFirstParty(NSString* caller_app_id) {
 bool IsCallerAppAllowListed(NSString* caller_app_id) {
   CallerApp caller_app = CallerAppFromAppID(caller_app_id);
   if (caller_app == CallerApp::kYoutube ||
-      caller_app == CallerApp::kChronosCatalog) {
+      caller_app == CallerApp::kExperienceKitCatalog) {
     return true;
   }
   return false;
