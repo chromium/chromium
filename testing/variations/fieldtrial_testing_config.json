@@ -8153,6 +8153,25 @@
             ]
         }
     ],
+    "DecodeScriptsInBlink": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20260714",
+                    "enable_features": [
+                        "DecodeScriptsInBlink"
+                    ]
+                }
+            ]
+        }
+    ],
     "DedicatedMediaServiceThread": [
         {
             "platforms": [
