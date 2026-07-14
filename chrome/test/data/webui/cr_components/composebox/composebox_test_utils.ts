@@ -4,7 +4,7 @@
 
 import type {ComposeboxFile} from 'chrome://resources/cr_components/composebox/common.js';
 import type {ComposeboxElement} from 'chrome://resources/cr_components/composebox/composebox.js';
-import type {ComposeboxVoiceSearchElement, VoiceSearchError} from 'chrome://resources/cr_components/composebox/composebox_voice_search.js';
+import type {ComposeboxVoiceSearchElement, VoiceSearchError, VoiceSearchMetricType} from 'chrome://resources/cr_components/composebox/composebox_voice_search.js';
 import type {InputState} from 'chrome://resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 import {ContextUploadStatus, InputType, ModelMode, ToolMode} from 'chrome://resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 import type {UnguessableToken} from 'chrome://resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
@@ -202,7 +202,7 @@ export type MockComposeboxVoiceSearch = Omit<
     ComposeboxVoiceSearchElement,
     'state_'|'voiceRecognition_'|'onFinalResult_'|'onCloseClick_'|'onEnd_'|
     'onTryAgainClick_'|'onLinkClick_'|'errorMessage_'|'voiceModeEndCleanup_'|
-    'detailedError_'>&{
+    'detailedError_'|'onStopClick_'|'recordMetric_'>&{
   state_: number,
   metricSource_: string,
   voiceRecognition_: MockSpeechRecognition,
@@ -214,6 +214,8 @@ export type MockComposeboxVoiceSearch = Omit<
   onEnd_: () => void,
   onTryAgainClick_: (e: Event) => void,
   onLinkClick_: (e: Event) => void,
+  onStopClick_: () => void,
+  recordMetric_: (type: VoiceSearchMetricType, metricEnumValue: number, max: number) => void,
 };
 
 export function disableTransitionsRecursively(
