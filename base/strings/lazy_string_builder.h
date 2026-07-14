@@ -90,7 +90,7 @@ class BASE_EXPORT LazyStringBuilder {
   // Appends a single std::string_view to the output string. The contents of
   // `view` are referenced, not copied. Can be used with std::strings as long as
   // they outlive this object.
-  void AppendByReference(std::string_view view LIFETIME_CAPTURE_BY(this));
+  void AppendByReference(std::string_view view LIFETIME_CAPTURE_BY_THIS);
 
   // Prevent AppendByReference() from being called for rvalue strings, as it
   // would result in a dangling reference. Use AppendByValue() instead.
@@ -98,7 +98,7 @@ class BASE_EXPORT LazyStringBuilder {
 
   // This overload is needed to disambiguate calls to AppendByReference() with
   // string constants.
-  void AppendByReference(const char* str LIFETIME_CAPTURE_BY(this)) {
+  void AppendByReference(const char* str LIFETIME_CAPTURE_BY_THIS) {
     AppendByReference(std::string_view(str));
   }
 
@@ -115,7 +115,7 @@ class BASE_EXPORT LazyStringBuilder {
     requires(sizeof...(T) > 1 &&
              (std::convertible_to<T, std::string_view> && ...) &&
              (!std::same_as<T, std::string> && ...))
-  void AppendByReference(T&&... views LIFETIME_CAPTURE_BY(this)) {
+  void AppendByReference(T&&... views LIFETIME_CAPTURE_BY_THIS) {
     AppendInternal({std::string_view(views)...});
   }
 

@@ -90,8 +90,8 @@ class ParsingContext {
 
  public:
   ParsingContext(PolicyParserMessageBuffer& logger,
-                 const SecurityOrigin& self_origin LIFETIME_CAPTURE_BY(this),
-                 const SecurityOrigin* src_origin LIFETIME_CAPTURE_BY(this),
+                 const SecurityOrigin& self_origin LIFETIME_CAPTURE_BY_THIS,
+                 const SecurityOrigin* src_origin LIFETIME_CAPTURE_BY_THIS,
                  const FeatureNameMap& feature_names,
                  ExecutionContext* execution_context)
       : logger_(logger),
