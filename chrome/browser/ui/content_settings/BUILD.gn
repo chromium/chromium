@@ -43,6 +43,7 @@ source_set("impl") {
     ]
     deps += [
       "//chrome/browser/custom_handlers",
+      "//chrome/browser/ui/views/site_data",
       "//chrome/browser/ui/web_applications",
     ]
   }

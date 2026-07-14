@@ -115,7 +115,10 @@ if (!is_android) {
     }
 
     if (toolkit_views) {
-      deps += [ "//chrome/browser/ui/views/infobars" ]
+      deps += [
+        "//chrome/browser/ui/views/infobars",
+        "//chrome/browser/ui/views/site_data",
+      ]
     }
 
     if (enable_extensions_core) {
