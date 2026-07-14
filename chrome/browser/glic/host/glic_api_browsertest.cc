@@ -954,11 +954,6 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithDaisyChain,
   ContinueJsTest();
 }
 
-IN_PROC_BROWSER_TEST_P(GlicApiTest, testDetachPanel) {
-  NavigateTabAndOpenGlic();
-  ExecuteJsTest();
-}
-
 IN_PROC_BROWSER_TEST_P(GlicApiTestNoFloatyOrLiveMode,
                        testDetachPanelNoFloatyOrLiveMode) {
   NavigateTabAndOpenGlic();
