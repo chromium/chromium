@@ -3166,4 +3166,30 @@ TEST_F(SymphoniaPipelineIntegrationTest, BasicPlayback_Vorbis_AudioOnly) {
 
 #endif  // BUILDFLAG(ENABLE_SYMPHONIA)
 
+#if BUILDFLAG(ENABLE_IAMF_TOOLS)
+TEST_F(PipelineIntegrationTest, MSE_BasicPlayback_Iamf_714) {
+  base::test::ScopedFeatureList scoped_feature_list(kIamfAudioDecoding);
+  TestMediaSource source("iamf_alternating_sine_waves_714.mp4",
+                         kAppendWholeFile);
+  EXPECT_EQ(PIPELINE_OK, StartPipelineWithMediaSource(&source));
+  source.EndOfStream();
+  Play();
+  ASSERT_TRUE(WaitUntilOnEnded());
+  source.Shutdown();
+  Stop();
+}
+
+TEST_F(PipelineIntegrationTest, MSE_BasicPlayback_Iamf_Stereo) {
+  base::test::ScopedFeatureList scoped_feature_list(kIamfAudioDecoding);
+  TestMediaSource source("iamf_alternating_sine_waves_stereo.mp4",
+                         kAppendWholeFile);
+  EXPECT_EQ(PIPELINE_OK, StartPipelineWithMediaSource(&source));
+  source.EndOfStream();
+  Play();
+  ASSERT_TRUE(WaitUntilOnEnded());
+  source.Shutdown();
+  Stop();
+}
+#endif  // BUILDFLAG(ENABLE_IAMF_TOOLS)
+
 }  // namespace media

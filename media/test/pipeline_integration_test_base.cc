@@ -63,6 +63,10 @@
 #include "media/filters/symphonia_audio_decoder.h"
 #endif
 
+#if BUILDFLAG(ENABLE_IAMF_TOOLS)
+#include "media/filters/iamf_audio_decoder.h"
+#endif
+
 using ::testing::_;
 using ::testing::AnyNumber;
 using ::testing::AtLeast;
@@ -228,6 +232,13 @@ std::vector<std::unique_ptr<AudioDecoder>> CreateAudioDecodersForTest(
     audio_decoders.push_back(
         std::make_unique<OpusAudioDecoder>(media_task_runner));
   }
+
+#if BUILDFLAG(ENABLE_IAMF_TOOLS)
+  if (base::FeatureList::IsEnabled(kIamfAudioDecoding)) {
+    audio_decoders.push_back(
+        std::make_unique<IamfAudioDecoder>(media_task_runner, media_log));
+  }
+#endif
 
 #if BUILDFLAG(ENABLE_SYMPHONIA)
   audio_decoders.push_back(
