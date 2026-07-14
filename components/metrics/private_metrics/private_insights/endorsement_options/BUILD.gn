@@ -22,8 +22,6 @@ protoc_convert("contextual_cues_endorsement_options_binpb") {
     rebase_path("//third_party/federated_compute/chromium", root_build_dir),
     "-I",
     rebase_path("//third_party/federated_compute/src", root_build_dir),
-    "-I",
-    rebase_path("//third_party/protobuf/src", root_build_dir),
     "fcp/protos/confidentialcompute/access_policy_endorsement_options.proto",
   ]
   deps = [
