@@ -402,6 +402,9 @@ base::flat_set<int32_t> GetAutofillAmbientAutofillEligibleTiers() {
       GetAutofillAiOptInStatus(prefs, identity_manager) ||
       base::FeatureList::IsEnabled(features::kAutofillAiAvailableByDefault);
   // Note that the policy can become disabled even after a user has opted in.
+  const bool is_allowed_by_opt_in_or_default =
+      base::FeatureList::IsEnabled(features::kAutofillAiAvailableByDefault) ||
+      (policy_pref_enabled && autofill_ai_available);
   switch (action) {
     case AutofillAiAction::kLogToMqls:
     case AutofillAiAction::kServerClassificationModel:
@@ -411,47 +414,38 @@ base::flat_set<int32_t> GetAutofillAmbientAutofillEligibleTiers() {
     case AutofillAiAction::kCrowdsourcingVote:
     case AutofillAiAction::kEditAndDeleteEntityInstanceInSettings:
     case AutofillAiAction::kUseCachedServerClassificationModelResults:
-      if (base::FeatureList::IsEnabled(
-              features::kAutofillAiAvailableByDefault)) {
-        return true;
-      }
-      return policy_pref_enabled && autofill_ai_available;
+    case AutofillAiAction::kShowAmbientAutofillInSettings:
+      return is_allowed_by_opt_in_or_default;
     case AutofillAiAction::kFilling:
     case AutofillAiAction::kImport:
-    case AutofillAiAction::kTypeSupportsAmbientAutofillData:
-      if (action == AutofillAiAction::kTypeSupportsAmbientAutofillData) {
-        if (!IsGeminiSettingsAllowedByEnterprisePolicy(*prefs, debug_message)) {
-          return false;
-        }
-        if (!entity_type) {
-          return false;
-        }
-        switch (entity_type->name()) {
-          case EntityTypeName::kPassport:
-          case EntityTypeName::kDriversLicense:
-          case EntityTypeName::kNationalIdCard:
-          case EntityTypeName::kFlightReservation:
-          case EntityTypeName::kShipment:
-          case EntityTypeName::kOrder:
-          case EntityTypeName::kVehicle:
-            break;
-          case EntityTypeName::kRedressNumber:
-          case EntityTypeName::kKnownTravelerNumber:
-            return false;
-        }
-        if (!personal_context_pref_enabled) {
-          return false;
-        }
-      }
-
-      if (!EntityTypeIsEnabledInSettings(*prefs, *entity_type)) {
+      return EntityTypeIsEnabledInSettings(*prefs, *entity_type) &&
+             is_allowed_by_opt_in_or_default;
+    case AutofillAiAction::kTypeSupportsAmbientAutofillData: {
+      if (!IsGeminiSettingsAllowedByEnterprisePolicy(*prefs, debug_message)) {
         return false;
       }
-      if (base::FeatureList::IsEnabled(
-              features::kAutofillAiAvailableByDefault)) {
-        return true;
+      if (!entity_type) {
+        return false;
       }
-      return policy_pref_enabled && autofill_ai_available;
+      switch (entity_type->name()) {
+        case EntityTypeName::kPassport:
+        case EntityTypeName::kDriversLicense:
+        case EntityTypeName::kNationalIdCard:
+        case EntityTypeName::kFlightReservation:
+        case EntityTypeName::kShipment:
+        case EntityTypeName::kOrder:
+        case EntityTypeName::kVehicle:
+          break;
+        case EntityTypeName::kRedressNumber:
+        case EntityTypeName::kKnownTravelerNumber:
+          return false;
+      }
+      if (!personal_context_pref_enabled) {
+        return false;
+      }
+      return EntityTypeIsEnabledInSettings(*prefs, *entity_type) &&
+             is_allowed_by_opt_in_or_default;
+    }
     case AutofillAiAction::kAmbientAutofill:
       if (!personal_context_pref_enabled) {
         return false;
@@ -459,17 +453,7 @@ base::flat_set<int32_t> GetAutofillAmbientAutofillEligibleTiers() {
       if (!IsGeminiSettingsAllowedByEnterprisePolicy(*prefs, debug_message)) {
         return false;
       }
-      if (base::FeatureList::IsEnabled(
-              features::kAutofillAiAvailableByDefault)) {
-        return true;
-      }
-      return policy_pref_enabled && autofill_ai_available;
-    case AutofillAiAction::kShowAmbientAutofillInSettings:
-      if (base::FeatureList::IsEnabled(
-              features::kAutofillAiAvailableByDefault)) {
-        return true;
-      }
-      return policy_pref_enabled && autofill_ai_available;
+      return is_allowed_by_opt_in_or_default;
     case AutofillAiAction::kImportToWallet:
       if (!EntityTypeIsEnabledInSettings(*prefs, *entity_type)) {
         return false;
@@ -482,11 +466,7 @@ base::flat_set<int32_t> GetAutofillAmbientAutofillEligibleTiers() {
               EntityInstance::WalletPassType::kPublic) {
         return false;
       }
-      if (base::FeatureList::IsEnabled(
-              features::kAutofillAiAvailableByDefault)) {
-        return true;
-      }
-      return policy_pref_enabled && autofill_ai_available;
+      return is_allowed_by_opt_in_or_default;
     case AutofillAiAction::kIphForOptIn:
       // The IPH should only show if the user has not opted in yet.
       return policy_pref_enabled && !autofill_ai_available &&
