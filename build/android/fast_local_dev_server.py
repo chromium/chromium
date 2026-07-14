@@ -394,9 +394,21 @@ class BuildManager:
       with cls._lock:
         if build.cwd is None:
           build.cwd = cwd
-        else:
-          assert pathlib.Path(cwd).samefile(
-              build.cwd), f'{repr(cwd)} != {repr(build.cwd)}'
+        elif cwd != build.cwd:
+          # When Siso path virtualization is enabled (e.g., via
+          # SISO_USE_VIRTUAL_BUILD_PATH=1), build actions run in an ephemeral
+          # mount namespace where CWD is virtualized (e.g.,
+          # /tmp/siso_virtual_build_path/out/AL).
+          # The persistent dev server daemon running in a different namespace
+          # cannot resolve these virtual paths, causing samefile() to throw
+          # FileNotFoundError. If the paths are string-identical, we can skip
+          # samefile verification.
+          try:
+            if not pathlib.Path(cwd).samefile(build.cwd):
+              raise AssertionError(f'{repr(cwd)} != {repr(build.cwd)}')
+          except FileNotFoundError as e:
+            raise AssertionError(
+                f'{repr(cwd)} != {repr(build.cwd)} (paths do not exist)') from e
         build.ensure_logfile()
 
   @classmethod
