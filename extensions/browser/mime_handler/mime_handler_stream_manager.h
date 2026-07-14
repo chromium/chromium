@@ -11,8 +11,10 @@
 
 #include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
+#include "extensions/browser/extension_registry_observer.h"
 #include "extensions/browser/mime_handler/stream_info.h"
 #include "extensions/common/extension_id.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -50,6 +52,8 @@ namespace mime_handler {
 //    extension URL.
 // 4. Observing for content navigations and dispatching the content-frame
 //    handling to the stream delegate.
+// 5. Observing extension unload, so that streams never outlive their handler
+//    extension.
 // `MimeHandlerStreamManager` is scoped to the `content::WebContents` it tracks,
 // but it may also delete itself if all streams are no longer used.
 // `extensions::StreamContainer` objects are stored from
@@ -60,7 +64,8 @@ namespace mime_handler {
 // Use `MimeHandlerStreamManager::FromWebContents()` to get an instance.
 class MimeHandlerStreamManager
     : public content::WebContentsObserver,
-      public content::WebContentsUserData<MimeHandlerStreamManager> {
+      public content::WebContentsUserData<MimeHandlerStreamManager>,
+      public ExtensionRegistryObserver {
  public:
   // A factory interface used to generate test stream managers.
   class Factory {
@@ -265,6 +270,11 @@ class MimeHandlerStreamManager
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
 
+  // ExtensionRegistryObserver:
+  void OnExtensionUnloaded(content::BrowserContext* browser_context,
+                           const Extension* extension,
+                           UnloadedExtensionReason reason) override;
+
   // For testing only. Mark an unclaimed stream info with the same frame tree
   // node ID as `embedder_host` as claimed by `embedder_host`. Callers must
   // ensure such a stream info exists before calling this.
@@ -338,6 +348,15 @@ class MimeHandlerStreamManager
   // deletes `this` if there are no remaining stream infos.
   void DeleteClaimedStreamInfo(content::RenderFrameHost* embedder_host);
 
+  // Destroys `iter`'s frame container (if any) and erases the entry.
+  // Returns the iterator to the next entry. Never deletes `this`; callers
+  // that may empty the map must follow up with `DeleteSelfIfNoStreams()`.
+  StreamInfoMap::iterator EraseStreamInfo(StreamInfoMap::iterator iter);
+
+  // Deletes `this` if there are no remaining stream infos. Callers must not
+  // touch `this` afterwards.
+  void DeleteSelfIfNoStreams();
+
   // Called when a RenderFrameHost in the observed WebContents is replaced or
   // deleted. If `old_host` is an extension host, deletes the associated stream.
   // The extension host is a generic concept — all MIME handlers have one.
@@ -386,6 +405,11 @@ class MimeHandlerStreamManager
   // RFHs within it are replaced).
   base::flat_map<content::FrameTreeNodeId, CachedFallbackBody>
       pending_native_fallback_frames_;
+
+  // Observes extension unload so that streams never outlive their handler
+  // extension.
+  base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
+      registry_observation_{this};
 
   // Needed to avoid use-after-free when setting up beforeunload API support.
   base::WeakPtrFactory<MimeHandlerStreamManager> weak_factory_{this};
