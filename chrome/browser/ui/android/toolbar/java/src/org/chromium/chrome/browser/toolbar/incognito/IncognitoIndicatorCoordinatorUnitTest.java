@@ -22,6 +22,7 @@ import static org.mockito.Mockito.when;
 import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
+import android.graphics.Rect;
 import android.util.DisplayMetrics;
 import android.view.View;
 import android.view.ViewGroup;
@@ -108,6 +109,35 @@ public class IncognitoIndicatorCoordinatorUnitTest {
                 .setVisibility(anyInt());
         when(mIncognitoIndicatorView.getVisibility()).thenAnswer(invocation -> visibility[0]);
         when(mIncognitoIndicatorView.getRootView()).thenReturn(mIncognitoIndicatorView);
+        when(mIncognitoIndicatorView.isAttachedToWindow()).thenReturn(true);
+        when(mIncognitoIndicatorView.getWidth()).thenReturn(100);
+        when(mIncognitoIndicatorView.getHeight()).thenReturn(100);
+        doAnswer(
+                        invocation -> {
+                            int[] location = invocation.getArgument(0);
+                            location[0] = 100;
+                            location[1] = 100;
+                            return null;
+                        })
+                .when(mIncognitoIndicatorView)
+                .getLocationInWindow(any(int[].class));
+        doAnswer(
+                        invocation -> {
+                            int[] location = invocation.getArgument(0);
+                            location[0] = 100;
+                            location[1] = 100;
+                            return null;
+                        })
+                .when(mIncognitoIndicatorView)
+                .getLocationOnScreen(any(int[].class));
+        doAnswer(
+                        invocation -> {
+                            Rect rect = invocation.getArgument(0);
+                            rect.set(0, 0, 1080, 1920);
+                            return null;
+                        })
+                .when(mIncognitoIndicatorView)
+                .getWindowVisibleDisplayFrame(any(Rect.class));
         when(mIncognitoIndicatorView.getViewTreeObserver()).thenReturn(mViewTreeObserver);
         when(mIncognitoIndicatorView.getResources()).thenReturn(mResources);
         when(mIncognitoIndicatorView.getContext()).thenAnswer(invocation -> mActivity);
@@ -238,7 +268,14 @@ public class IncognitoIndicatorCoordinatorUnitTest {
     public void testCreateAndShowMenu() {
         mCoordinator.onIncognitoStateChanged(/* isIncognito= */ true);
         assertNotNull("Indicator should be inflated.", mCoordinator.getIncognitoIndicatorView());
-        ModelList modelList = new ModelList();
+
+        final int windowCount = 1;
+        when(mResources.getQuantityString(
+                        eq(R.plurals.menu_close_all_incognito_windows), eq(windowCount), anyInt()))
+                .thenReturn("Close Incognito windows");
+        MultiWindowUtils.setInstanceCountForTesting(windowCount);
+
+        ModelList modelList = mCoordinator.buildMenuItems(mActivity);
         mCoordinator.createAndShowMenu(mActivity, modelList);
         assertNotNull(mCoordinator.getMenuWindowForTesting());
         assertTrue(mCoordinator.getMenuWindowForTesting().isShowing());

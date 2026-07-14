@@ -31,6 +31,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.R;
 import org.chromium.ui.base.LocalizationUtils;
+import org.chromium.ui.util.AttrUtils;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -42,9 +43,6 @@ import java.util.function.Supplier;
  */
 @NullMarked
 public class AnchoredPopupWindow implements OnTouchListener, RectProvider.Observer {
-    private static final int MIN_TOUCHABLE_HEIGHT_DIP = 50; // 48dp touch target plus 1dp margin.
-    private static final int MIN_TOUCHABLE_WIDTH_DIP = 50; // 48dp touch target plus 1dp margin.
-
     private static @Nullable Runnable sShowHookForTesting;
 
     /** An observer that is notified of AnchoredPopupWindow layout changes. */
@@ -962,8 +960,7 @@ public class AnchoredPopupWindow implements OnTouchListener, RectProvider.Observ
      */
     @Deprecated
     public void setMaxWidth(int maxWidth) {
-        final float density = mRootView.getResources().getDisplayMetrics().density;
-        mMaxWidthPx = Math.max(maxWidth, (int) Math.ceil(density * MIN_TOUCHABLE_WIDTH_DIP));
+        mMaxWidthPx = Math.max(maxWidth, getMinInteractSizePx());
     }
 
     /**
@@ -1221,12 +1218,25 @@ public class AnchoredPopupWindow implements OnTouchListener, RectProvider.Observ
         return mContentView;
     }
 
+    private int getMinInteractSizePx() {
+        final float density = mRootView.getResources().getDisplayMetrics().density;
+        int minInteractSizePx =
+                AttrUtils.getDimensionPixelSize(mContext, R.attr.minInteractTargetSize);
+        if (minInteractSizePx == -1) {
+            minInteractSizePx =
+                    mRootView.getResources().getDimensionPixelSize(R.dimen.min_touch_target_size);
+        }
+        // Add 1dp margin on each side
+        int marginPx = (int) Math.ceil(density);
+        return minInteractSizePx + 2 * marginPx;
+    }
+
     /**
      * Checks if the popup spec meets the minimal size requirements.
      *
      * <p>By default, this method ensures that the size is sufficient for users to see what they are
      * tapping. Popups can be very narrow (e.g. in landscape) and still be interactive. Use {@link
-     * #setRequireTouchableSize(boolean)} to disable this check.
+     * #setAllowNonTouchableSize(boolean)} to disable this check.
      *
      * @return True if the popup is large enough to be safely shown to users.
      */
@@ -1235,9 +1245,9 @@ public class AnchoredPopupWindow implements OnTouchListener, RectProvider.Observ
             return true;
         }
 
-        final float density = mRootView.getResources().getDisplayMetrics().density;
-        return mPopupSpec.popupRect.height() >= density * MIN_TOUCHABLE_HEIGHT_DIP
-                && mPopupSpec.popupRect.width() >= density * MIN_TOUCHABLE_WIDTH_DIP;
+        int minInteractSizePx = getMinInteractSizePx();
+        return mPopupSpec.popupRect.height() >= minInteractSizePx
+                && mPopupSpec.popupRect.width() >= minInteractSizePx;
     }
 
     private Point compensateForRootViewOrigin(int x, int y) {
