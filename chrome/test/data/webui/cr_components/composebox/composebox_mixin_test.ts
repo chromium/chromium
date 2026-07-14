@@ -684,17 +684,34 @@ suite('ComposeboxMixinTest', () => {
   });
 
   test(
-      'onOpenDriveUpload suppresses upload if disclaimer not accepted',
+      'onOpenDriveUpload suppresses upload if disclaimer restricted',
       async () => {
         searchboxHandler.setResultFor(
             'getDriveDisclaimerStatus',
-            Promise.resolve({status: DriveDisclaimerStatus.kNotAccepted}));
+            Promise.resolve({status: DriveDisclaimerStatus.kRestricted}));
 
         await element.onOpenDriveUpload();
 
         assertEquals(
             1, searchboxHandler.getCallCount('getDriveDisclaimerStatus'));
         assertEquals(0, searchboxHandler.getCallCount('onDriveUploadClicked'));
+      });
+
+  test(
+      'onOpenDriveUpload triggers upload if disclaimer not accepted',
+      async () => {
+        searchboxHandler.setResultFor(
+            'getDriveDisclaimerStatus',
+            Promise.resolve({status: DriveDisclaimerStatus.kNotAccepted}));
+        searchboxHandler.setResultFor(
+            'onDriveUploadClicked',
+            Promise.resolve({response: {files: [], error: null}}));
+
+        await element.onOpenDriveUpload();
+
+        assertEquals(
+            1, searchboxHandler.getCallCount('getDriveDisclaimerStatus'));
+        assertEquals(1, searchboxHandler.getCallCount('onDriveUploadClicked'));
       });
 
   test('onOpenDriveUpload triggers upload if disclaimer accepted', async () => {
