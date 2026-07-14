@@ -2650,7 +2650,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.VoiceErrors" enum="NewTabPageVoiceError"
-    expires_after="2025-01-31">
+    expires_after="2026-12-31">
   <owner>romanarora@chromium.org</owner>
   <owner>tiborg@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
@@ -2658,7 +2658,8 @@ chromium-metrics-reviews@google.com.
     Errors that occur during Voice Search use on the local New Tab Page on
     Desktop. These may be user-induced (e.g. the user's utterance could not be
     recognized - no match), or resulting from external circumstances (e.g.
-    offline, lack of microphone permission).
+    offline, lack of microphone permission). Warning: this histogram was expired
+    from 2025-01-31 to 2026-07-13; data may be missing.
   </summary>
 </histogram>
 
