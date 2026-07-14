@@ -11,9 +11,8 @@ import org.chromium.build.annotations.NullMarked;
  * LocationBar.
  */
 @NullMarked
+@FunctionalInterface
 public interface BackKeyBehaviorDelegate {
     /** Returns true if the delegate will handle the back key event. */
-    default boolean handleBackKeyPressed() {
-        return false;
-    }
+    boolean handleBackKeyPressed();
 }

@@ -195,12 +195,9 @@ public class TabSearchOverlayCoordinator {
                 };
 
         BackKeyBehaviorDelegate backKeyBehaviorDelegate =
-                new BackKeyBehaviorDelegate() {
-                    @Override
-                    public boolean handleBackKeyPressed() {
-                        hide();
-                        return true;
-                    }
+                () -> {
+                    hide();
+                    return true;
                 };
 
         // Omnibox action suggestions (such as action chips or action buttons) are not supported

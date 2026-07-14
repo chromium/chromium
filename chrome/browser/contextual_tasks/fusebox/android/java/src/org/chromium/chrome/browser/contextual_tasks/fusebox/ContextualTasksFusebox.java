@@ -58,8 +58,7 @@ public class ContextualTasksFusebox {
         }
     }
 
-    private final BackKeyBehaviorDelegate mBackKeyBehaviorDelegate =
-            new BackKeyBehaviorDelegate() {};
+    private final BackKeyBehaviorDelegate mBackKeyBehaviorDelegate = () -> false;
     private final LocationBarCoordinator mLocationBarCoordinator;
     private final View mContentView;
     private final ContextualTasksFuseboxDataProvider mDataProvider;
