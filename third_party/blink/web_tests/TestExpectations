@@ -285,11 +285,6 @@ crbug.com/508672616 wpt_internal/html/rendering/unbounded-element/* [ Failure ]
 # Enabled virtual suite tests should pass:
 crbug.com/508672616 virtual/unbounded-element/wpt_internal/html/rendering/unbounded-element/* [ Pass ]
 
-# These don't pass yet due to transform problems:
-crbug.com/508672616 virtual/unbounded-element/wpt_internal/html/rendering/unbounded-element/unbounded-element-rotate-self.html [ Failure ]
-crbug.com/524030523 virtual/unbounded-element/wpt_internal/html/rendering/unbounded-element/unbounded-element-filter-self.html [ Failure ]
-
-
 # ====== END Unbounded Element tests ======
 
 # Expected to crash: Test removes the browsing context during JS execution.

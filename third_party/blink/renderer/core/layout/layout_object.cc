@@ -127,6 +127,7 @@
 #include "third_party/blink/renderer/core/overscroll/overscroll_area_tracker.h"
 #include "third_party/blink/renderer/core/page/autoscroll_controller.h"
 #include "third_party/blink/renderer/core/page/page.h"
+#include "third_party/blink/renderer/core/paint/clip_path_clipper.h"
 #include "third_party/blink/renderer/core/paint/fragment_data_iterator.h"
 #include "third_party/blink/renderer/core/paint/object_paint_invalidator.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
@@ -1989,6 +1990,14 @@ gfx::Rect LayoutObject::AbsoluteBoundingBoxRectForUnboundedElement() const {
   DCHECK(RuntimeEnabledFeatures::UnboundedElementEnabled());
   if (const auto* box_model = DynamicTo<LayoutBoxModelObject>(this)) {
     PhysicalRect overflow = box_model->VisualOverflowRectIncludingFilters();
+    // Intersect with the clip-path bounding box so that the browser-side window
+    // bounds match the clipped/visible area of the element rather than its
+    // unclipped layout size. This prevents size/origin mismatches in the
+    // compositor.
+    if (auto clip_path_bounds =
+            ClipPathClipper::LocalClipPathBoundingBox(*this)) {
+      overflow.Intersect(PhysicalRect::EnclosingRect(*clip_path_bounds));
+    }
     return ToEnclosingRect(LocalToAbsoluteRect(overflow));
   }
   return AbsoluteBoundingBoxRect();

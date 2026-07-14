@@ -132,42 +132,45 @@ class CORE_EXPORT ObjectPaintProperties
     kPerspective = 9,
     kReplacedContentTransform = 10,
     kScrollTranslation = 11,
-    kLastTransform = kScrollTranslation,
-    kTransformAlias = 12,
+    kUnboundedWrapperTransform = 12,
+    kUnboundedInnerTransform = 13,
+    kLastTransform = kUnboundedInnerTransform,
+    kTransformAlias = 14,
 
-    kScroll = 13,
+    kScroll = 15,
     kFirstScroll = kScroll,
     kLastScroll = kScroll,
 
     // Effects
-    kFirstEffect = 14,
+    kFirstEffect = 16,
     kElementCaptureEffect = kFirstEffect,
-    kViewTransitionScopeRootEffect = 15,
-    kViewTransitionEffect = 16,
-    kEffect = 17,
-    kFilter = 18,
-    kMask = 19,
-    kClipPathMask = 20,
-    kVerticalScrollbarEffect = 21,
-    kHorizontalScrollbarEffect = 22,
-    kScrollCornerEffect = 23,
+    kViewTransitionScopeRootEffect = 17,
+    kViewTransitionEffect = 18,
+    kUnboundedWrapperEffect = 19,
+    kEffect = 20,
+    kFilter = 21,
+    kMask = 22,
+    kClipPathMask = 23,
+    kVerticalScrollbarEffect = 24,
+    kHorizontalScrollbarEffect = 25,
+    kScrollCornerEffect = 26,
     kLastEffect = kScrollCornerEffect,
-    kEffectAlias = 24,
+    kEffectAlias = 27,
 
     // Clips
-    kFirstClip = 25,
+    kFirstClip = 28,
     kClipPathClip = kFirstClip,
-    kMaskClip = 26,
-    kCssClip = 27,
-    kOverflowControlsClip = 28,
-    kBackgroundClip = 29,
-    kPixelMovingFilterClipExpander = 30,
-    kInnerBorderRadiusClip = 31,
-    kOverflowClip = 32,
-    kCssClipFixedPosition = 33,
-    kInnerBorderShapeClip = 34,
+    kMaskClip = 29,
+    kCssClip = 30,
+    kOverflowControlsClip = 31,
+    kBackgroundClip = 32,
+    kPixelMovingFilterClipExpander = 33,
+    kInnerBorderRadiusClip = 34,
+    kOverflowClip = 35,
+    kCssClipFixedPosition = 36,
+    kInnerBorderShapeClip = 37,
     kLastClip = kInnerBorderShapeClip,
-    kClipAlias = 35,
+    kClipAlias = 38,
 
     // Should be updated whenever a higher value NodeType is added.
     kNumFields = kClipAlias + 1,
@@ -304,6 +307,8 @@ class CORE_EXPORT ObjectPaintProperties
   ADD_TRANSFORM(Perspective, NodeId::kPerspective)
   ADD_TRANSFORM(ReplacedContentTransform, NodeId::kReplacedContentTransform)
   ADD_TRANSFORM(ScrollTranslation, NodeId::kScrollTranslation)
+  ADD_TRANSFORM(UnboundedWrapperTransform, NodeId::kUnboundedWrapperTransform)
+  ADD_TRANSFORM(UnboundedInnerTransform, NodeId::kUnboundedInnerTransform)
   using ScrollPaintPropertyNodeOrAlias = ScrollPaintPropertyNode;
   ADD_ALIAS_NODE(Transform, TransformIsolationNode, NodeId::kTransformAlias)
 
@@ -357,6 +362,7 @@ class CORE_EXPORT ObjectPaintProperties
   ADD_EFFECT(ViewTransitionScopeRootEffect,
              NodeId::kViewTransitionScopeRootEffect)
   ADD_EFFECT(ViewTransitionEffect, NodeId::kViewTransitionEffect)
+  ADD_EFFECT(UnboundedWrapperEffect, NodeId::kUnboundedWrapperEffect)
   ADD_EFFECT(Effect, NodeId::kEffect)
   ADD_EFFECT(Filter, NodeId::kFilter)
   ADD_EFFECT(Mask, NodeId::kMask)

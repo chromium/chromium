@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Verify the :unbounded pseudo-class matches active unbounded elements.
-  promise_test: Unhandled rejection with value: object "SyntaxError: Failed to execute 'matches' on 'Element': ':unbounded' is not a valid selector."
-[FAIL] Verify the :unbounded pseudo-class stops matching when the element is removed from the document.
-  promise_test: Unhandled rejection with value: object "TypeError: element.showUnboundedElement is not a function"
-Harness: the test ran to completion.
-
