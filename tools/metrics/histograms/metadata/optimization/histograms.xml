@@ -2577,7 +2577,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="OptimizationGuide.PageContentExtraction.NavigationToReadyLatency.{NavigationType}"
-    units="ms" expires_after="2026-11-07">
+    units="ms" expires_after="2027-01-10">
   <owner>linnan@chromium.org</owner>
   <owner>chrome-intelligence-core@google.com</owner>
   <summary>

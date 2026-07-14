@@ -1712,7 +1712,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="SafeBrowsing.GmsSafeBrowsingApi.ResponseStatus{Protocol}"
-    enum="SafeBrowsingApiResponseStatus" expires_after="2026-11-08">
+    enum="SafeBrowsingApiResponseStatus" expires_after="2027-01-10">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -3293,7 +3293,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 
 <histogram
     name="SafeBrowsing.SiteFamiliarity.DeferNavigationToComputeSiteFamiliarity.DeferDuration"
-    units="ms" expires_after="2026-11-06">
+    units="ms" expires_after="2027-01-10">
   <owner>jacastro@chromium.org</owner>
   <owner>tiffanysong@google.com</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
