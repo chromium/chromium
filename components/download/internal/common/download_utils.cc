@@ -10,6 +10,7 @@
 #include <string_view>
 #include <vector>
 
+#include "base/bits.h"
 #include "base/files/file_util.h"
 #include "base/format_macros.h"
 #include "base/i18n/file_util_icu.h"
@@ -180,15 +181,35 @@ void OnInterMediateUriCreated(LocalPathCallback callback,
 
 const uint32_t DownloadItem::kInvalidId = 0;
 
+void TruncateDataUrlAtTheEndIfNeeded(GURL& url) {
+  constexpr std::string_view kBase64Substr = "base64,";
+  if (!url.SchemeIs(url::kDataScheme)) {
+    return;
+  }
+  const std::string& data_url = url.spec();
+  if (data_url.size() <= kMaxDataURLSize) {
+    return;
+  }
+  size_t data_url_end = kMaxDataURLSize;
+  // If there is a base64 substr, trim the following data only if it is within
+  // the max limit.
+  if (size_t pos = data_url.find(kBase64Substr);
+      pos != std::string::npos &&
+      pos + kBase64Substr.size() < kMaxDataURLSize) {
+    size_t max_base64_length = base::bits::AlignDown(
+        kMaxDataURLSize - pos - kBase64Substr.size(), static_cast<size_t>(4));
+    // If the prefix before the base64 data is not divisible by 4, adjust the
+    // truncation end pos so the base64 data can be strictly decoded.
+    data_url_end = pos + kBase64Substr.size() + max_base64_length;
+  }
+
+  GURL truncated_url(data_url.substr(0, data_url_end));
+  url.Swap(&truncated_url);
+}
+
 void TruncateDataUrlAtTheEndIfNeeded(std::vector<GURL>* url_chain) {
   for (GURL& url : *url_chain) {
-    if (url.SchemeIs(url::kDataScheme)) {
-      const std::string& data_url = url.spec();
-      if (data_url.size() > kMaxDataURLSize) {
-        GURL truncated_url(data_url.substr(0, kMaxDataURLSize));
-        url.Swap(&truncated_url);
-      }
-    }
+    TruncateDataUrlAtTheEndIfNeeded(url);
   }
 }
 

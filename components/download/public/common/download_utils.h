@@ -178,7 +178,12 @@ COMPONENTS_DOWNLOAD_EXPORT
 bool IsContentDispositionAttachmentInHead(
     const network::mojom::URLResponseHead& response_head);
 
-// Truncates large `data:` URLs in the URL chain to save memory.
+// Truncates large `data:` URLs in the URL chain to save memory. If the `data:`
+// url is base64 encoded, ensures the truncated URL is a valid
+// (strictly-decodable) URL.
+COMPONENTS_DOWNLOAD_EXPORT void TruncateDataUrlAtTheEndIfNeeded(
+    GURL& url);
+
 COMPONENTS_DOWNLOAD_EXPORT void TruncateDataUrlAtTheEndIfNeeded(
     std::vector<GURL>* url_chain);
 

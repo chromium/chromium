@@ -2617,6 +2617,31 @@ TEST_F(DownloadItemTest, TruncateDataUrlAfterCancel) {
   EXPECT_EQ(large_data_url.substr(0, 1024), item->GetURL().spec());
 }
 
+TEST_F(DownloadItemTest, TruncateBase64DataUrlToValidUrl) {
+  std::string large_data_url = "data:text/plain;base64,";
+  large_data_url.append(2000, 'a');
+  create_info()->url_chain.clear();
+  create_info()->url_chain.emplace_back(large_data_url);
+
+  DownloadItemImpl* item = CreateDownloadItem();
+  MockDownloadFile* download_file =
+      DoIntermediateRename(item, DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS);
+
+  ASSERT_EQ(DownloadItem::IN_PROGRESS, item->GetState());
+  EXPECT_EQ(large_data_url, item->GetURL().spec());
+
+  DoDestinationComplete(item, download_file);
+
+  std::string valid_base64_truncated_url = "data:text/plain;base64,";
+  // The base64 string can be at most 1001(1024-23) characters, but needs to be
+  // a multiple of 4.
+  valid_base64_truncated_url.append(1000, 'a');
+  EXPECT_EQ(DownloadItem::COMPLETE, item->GetState());
+  EXPECT_EQ(valid_base64_truncated_url.length(), item->GetURL().spec().length());
+  EXPECT_EQ(valid_base64_truncated_url, item->GetURL().spec());
+}
+
+
 TEST_F(DownloadItemTest, SmallDataUrlNotTruncatedAfterComplete) {
   std::string small_data_url = "data:text/plain,small";
   create_info()->url_chain.clear();
