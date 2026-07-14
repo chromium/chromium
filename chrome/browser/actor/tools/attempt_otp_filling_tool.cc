@@ -10,7 +10,7 @@
 #include <string_view>
 #include <utility>
 #include <vector>
-
+#include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
@@ -27,6 +27,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/actor.mojom-forward.h"
 #include "chrome/common/actor/action_result.h"
+#include "components/actor/core/actor_switches.h"
 #include "components/actor/core/journal_details_builder.h"
 #include "components/actor/core/shared_types.h"
 #include "components/affiliations/core/browser/domain_matching/domain_relation_checker.h"
@@ -400,11 +401,17 @@ void AttemptOtpFillingTool::Invoke(ToolCallback callback) {
 
 void AttemptOtpFillingTool::OnActorLoginFlowChecked(ToolCallback callback,
                                                     bool is_actor_login) {
+  bool bypass_login_check =
+      base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kAttemptOtpFillingBypassLoginCheck);
   LogJournalEvent(
       "AttemptOtpFillingTool::OnActorLoginFlowChecked",
-      JournalDetailsBuilder().Add("is_actor_login", is_actor_login).Build());
+      JournalDetailsBuilder()
+          .Add("is_actor_login", is_actor_login)
+          .Add("bypass_login_check", bypass_login_check)
+          .Build());
 
-  if (is_actor_login) {
+  if (is_actor_login || bypass_login_check) {
     // Verified sign-in journey: proceed with silent OTP filling.
     tool_delegate().GetActorOneTimeTokenFillingService().RetrieveOtp(
         GetTargetTab(), trigger_field_ids_,

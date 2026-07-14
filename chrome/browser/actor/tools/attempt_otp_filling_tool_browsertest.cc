@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
@@ -28,6 +29,7 @@
 #include "chrome/browser/autofill/actor/one_time_tokens/actor_one_time_token_filling_service.h"
 #include "chrome/browser/autofill/one_time_token_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/actor/core/actor_switches.h"
 #include "components/actor/core/aggregated_journal.h"
 #include "components/actor/core/shared_types.h"
 #include "components/affiliations/core/browser/fake_affiliation_service.h"
@@ -450,6 +452,38 @@ IN_PROC_BROWSER_TEST_F(AttemptOtpFillingToolBrowserTest,
               testing::Contains(testing::ContainsRegex(
                   "AttemptOtpFillingTool::Invoke;.*for_signin=false")));
 }
+
+// The tool succeeds when the bypass switch is set, even without login context.
+IN_PROC_BROWSER_TEST_F(
+    AttemptOtpFillingToolBrowserTest,
+    ToolSucceedsWithBypassSwitchEvenWithoutLoginContext) {
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      switches::kAttemptOtpFillingBypassLoginCheck);
+
+  const GURL url = embedded_https_test_server().GetURL("example.com",
+                                                       "/actor/otp_page.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+  ASSERT_NO_FATAL_FAILURE(WaitForTabObservation());
+  ASSERT_OK_AND_ASSIGN(DomNode otp_field,
+                       GetDomNodeOnPage(*main_frame(), "#otp"));
+  std::unique_ptr<ToolRequest> request =
+      std::make_unique<AttemptOtpFillingToolRequest>(
+          active_tab()->GetHandle(), std::vector<PageTarget>{otp_field},
+          /*for_signin=*/true);
+
+  // Do NOT call OnPasswordFillingStarted to simulate no login context.
+  SetExpectedOtp("1234");
+
+  ActResultFuture result;
+  actor_task().Act(ToRequestList(std::move(request)), result.GetCallback());
+
+  ExpectOkResult(result);
+  EXPECT_THAT(
+      JournalEntries(),
+      testing::Contains(testing::ContainsRegex(
+          "AttemptOtpFillingTool::OnActorLoginFlowChecked;.*bypass_login_check=true")));
+}
+
 
 // The tool fails when the target tab is closed before invocation.
 IN_PROC_BROWSER_TEST_F(AttemptOtpFillingToolBrowserTest,

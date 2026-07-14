@@ -17,6 +17,11 @@ const char kDisableActorSafetyChecks[] = "disable-actor-safety-checks";
 const char kAttemptFormFillingToolSkipsUI[] =
     "attempt-form-filling-tool-skips-ui";
 
+// Bypasses the requirement that OTP filling must be part of an actor login
+// flow. This is only intended for testing/automation.
+const char kAttemptOtpFillingBypassLoginCheck[] =
+    "attempt-otp-filling-bypass-login-check";
+
 // Forces logging of the actor aggregated journal events in VLOG(1). Useful on
 // Android as VLOGs are removed on official builds.
 const char kEnableActorJournalVLog[] = "enable-actor-journal-vlog";
