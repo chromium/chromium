@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {assert, assertNotReached} from '//resources/js/assert.js';
+import {EventTracker} from '//resources/js/event_tracker.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {isMac} from '//resources/js/platform.js';
 import {hasKeyModifiers} from '//resources/js/util.js';
@@ -88,6 +89,27 @@ export const SearchboxMixin = <T extends Constructor<CrLitElement>>(
     initialInputScrollHeight: number = 0;
 
     private lastIgnoredEnterEvent_: KeyboardEvent|null = null;
+    private searchboxEventTracker_: EventTracker = new EventTracker();
+
+    override connectedCallback() {
+      super.connectedCallback();
+
+      // On user interaction, freeze the current results to avoid result updates
+      // potentially erasing user changes like cursor position.
+      this.searchboxEventTracker_.add(this, 'input-mousedown', () => {
+        this.activeQueryId = -1;
+      });
+      // When deleting a match, unfreeze `activeQueryId` so post-deletion
+      // results are accepted.
+      this.searchboxEventTracker_.add(this, 'match-remove', () => {
+        this.activeQueryId = this.nextQueryId_ - 1;
+      });
+    }
+
+    override disconnectedCallback() {
+      super.disconnectedCallback();
+      this.searchboxEventTracker_.removeAll();
+    }
 
     override willUpdate(changedProperties: PropertyValues<this>) {
       super.willUpdate(changedProperties);
@@ -283,13 +305,26 @@ export const SearchboxMixin = <T extends Constructor<CrLitElement>>(
         // listening for key presses. These stale results should never be shown.
         // They correspond to the potentially stale suggestion left in the
         // searchbox when blurred. That stale result may be navigated to by
-        // focusing and pressing 'Enter'.
+        // focusing and pressing 'Enter'. Reset `activeQueryId` to prevent an
+        // in-flight result from re-opening the popup.
+        this.activeQueryId = -1;
         this.pageHandler().stopAutocomplete(/*clearResult=*/ false);
       }
       this.pageHandler().onFocusChanged(false);
     }
 
     async onInputWrapperKeydown(e: KeyboardEvent) {
+      // On user interaction, freeze the current results to avoid result updates
+      // potentially erasing user changes like cursor position. Freezing on
+      // 'enter' would break the fast-enter navigations via
+      // `lastIgnoredEnterEvent_`. It'd cause the searchbox to discard the
+      // pending results the navigation is waiting for, causing the navigation
+      // to never occur. But this is a hack; comparing `e.key !=== 'Enter'` is
+      // only a semi-accurate heuristic for whether a navigation is about to
+      // occur.
+      if (e.key !== 'Enter') {
+        this.activeQueryId = -1;
+      }
       const modifier =
           isMac ? e.metaKey && !e.ctrlKey : e.ctrlKey && !e.metaKey;
       if (modifier && e.key === 'z') {
@@ -357,6 +392,8 @@ export const SearchboxMixin = <T extends Constructor<CrLitElement>>(
       if (e.key === 'Delete') {
         if (e.shiftKey && !e.altKey && !e.ctrlKey && !e.metaKey) {
           if (this.selectedMatch && this.selectedMatch.supportsDeletion) {
+            // Unfreeze `activeQueryId` so post-deletion results are accepted.
+            this.activeQueryId = this.nextQueryId_ - 1;
             this.pageHandler().deleteAutocompleteMatch(
                 this.selectedMatchIndex, this.selectedMatch.destinationUrl);
             e.preventDefault();
@@ -395,6 +432,8 @@ export const SearchboxMixin = <T extends Constructor<CrLitElement>>(
           // because the matches are stale. Navigate to the default match (if
           // one exists) once the up-to-date matches arrive.
           this.lastIgnoredEnterEvent_ = e;
+          // Unfreeze `activeQueryId` so pending query results are accepted.
+          this.activeQueryId = this.nextQueryId_ - 1;
         }
         return;
       }
