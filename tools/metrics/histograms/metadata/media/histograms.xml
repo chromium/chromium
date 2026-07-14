@@ -806,7 +806,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Media.Audio.Android.AAudio.CallbackSizeDistribution.{Direction}"
-    units="frames" expires_after="2026-10-31">
+    units="frames" expires_after="2027-01-10">
   <owner>tguilbert@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
@@ -819,7 +819,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Media.Audio.Android.AAudio.CallbackTransitionsPer1000.{Direction}"
-    units="transitions" expires_after="2026-10-31">
+    units="transitions" expires_after="2027-01-10">
   <owner>tguilbert@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
@@ -830,7 +830,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Audio.Android.AAudio.InputTimestampDiscontinuitySize"
-    units="ms" expires_after="2026-10-31">
+    units="ms" expires_after="2027-01-10">
   <owner>tguilbert@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
@@ -2911,7 +2911,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Media.AutoPictureInPicture.EnterPictureInPicture.AutomaticReason.{AutomaticReason}.PromptResultV2"
-    enum="MediaAutoPictureInPicturePromptResult" expires_after="2026-10-25">
+    enum="MediaAutoPictureInPicturePromptResult" expires_after="2027-01-10">
   <owner>bkeen@google.com</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
@@ -7713,7 +7713,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Media.Ui.GetDisplayMedia.AudioCapturePermissionChecker.Interactions"
-    enum="AudioCapturePermissionCheckerInteractions" expires_after="2026-11-11">
+    enum="AudioCapturePermissionCheckerInteractions" expires_after="2027-01-10">
   <owner>kron@chromium.org</owner>
   <owner>video-cmi-apis@google.com</owner>
   <summary>

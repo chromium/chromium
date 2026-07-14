@@ -1436,7 +1436,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.ChildProcessBinding.BatchScopeDurationOnMainThread"
-    units="ms" expires_after="2026-11-10">
+    units="ms" expires_after="2027-01-10">
   <owner>kawasin@google.com</owner>
   <owner>yfriedman@chromium.org</owner>
   <summary>
@@ -3519,7 +3519,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.MultiInstance.NumActivities" units="activities"
-    expires_after="2026-11-08">
+    expires_after="2027-01-10">
   <owner>jinsukkim@chromium.org</owner>
   <owner>twellington@chromium.org</owner>
   <owner>clank-app-team@google.com</owner>
@@ -3550,7 +3550,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.MultiInstance.NumActivities.DesktopWindow.Incognito"
-    units="activities" expires_after="2026-11-06">
+    units="activities" expires_after="2027-01-10">
   <owner>shuyng@google.com</owner>
   <owner>skavuluru@google.com</owner>
   <owner>mklw@google.com</owner>
@@ -3567,7 +3567,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.MultiInstance.NumActivities.Incognito"
-    units="activities" expires_after="2026-11-06">
+    units="activities" expires_after="2027-01-10">
   <owner>shuyng@google.com</owner>
   <owner>skavuluru@google.com</owner>
   <owner>mklw@google.com</owner>
@@ -3583,7 +3583,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.MultiInstance.NumInstances" units="instances"
-    expires_after="2026-11-08">
+    expires_after="2027-01-10">
   <owner>jinsukkim@chromium.org</owner>
   <owner>twellington@chromium.org</owner>
   <owner>clank-app-team@google.com</owner>
@@ -3617,7 +3617,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.MultiInstance.NumInstances.DesktopWindow.Incognito"
-    units="instances" expires_after="2026-11-06">
+    units="instances" expires_after="2027-01-10">
   <owner>shuyng@google.com</owner>
   <owner>skavuluru@google.com</owner>
   <owner>mklw@google.com</owner>
@@ -3635,7 +3635,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.MultiInstance.NumInstances.Incognito"
-    units="instances" expires_after="2026-11-06">
+    units="instances" expires_after="2027-01-10">
   <owner>shuyng@google.com</owner>
   <owner>skavuluru@google.com</owner>
   <owner>mklw@google.com</owner>

@@ -5517,7 +5517,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.PaymentsBottomSheet.ExitReason"
-    enum="PaymentsSuggestionBottomSheetExitReason" expires_after="2026-11-08">
+    enum="PaymentsSuggestionBottomSheetExitReason" expires_after="2027-01-10">
   <owner>sugoi@chromium.org</owner>
   <owner>tmartino@chromium.org</owner>
   <summary>
@@ -5678,7 +5678,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.PersistTabContext.StorageDifference" units="difference"
-    expires_after="2026-11-08">
+    expires_after="2027-01-10">
   <owner>cloutierc@google.com</owner>
   <owner>nicolasmacbeth@google.com</owner>
   <owner>bling-alchemy-eng@google.com</owner>
@@ -6015,7 +6015,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.PushNotification.EnabledPermisisons"
-    enum="PushNotificationPermissionPromptStatus" expires_after="2026-11-01">
+    enum="PushNotificationPermissionPromptStatus" expires_after="2027-01-10">
   <owner>danieltwhite@google.com</owner>
   <owner>scottyoder@google.com</owner>
   <summary>
@@ -7673,7 +7673,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.SyncedSetUp.Interstitial.Shown" enum="Boolean"
-    expires_after="2026-11-05">
+    expires_after="2027-01-10">
   <owner>ericekey@google.com</owner>
   <owner>bwwilliams@google.com</owner>
   <owner>scottyoder@google.com</owner>
@@ -7684,7 +7684,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.SyncedSetUp.PrefApplied" enum="SyncedSetUpAppliedPref"
-    expires_after="2026-11-05">
+    expires_after="2027-01-10">
   <owner>bwwilliams@google.com</owner>
   <owner>scottyoder@google.com</owner>
   <owner>ericekey@google.com</owner>
@@ -7720,7 +7720,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.SyncedSetUp.TriggerSource" enum="SyncedSetUpTriggerSource"
-    expires_after="2026-11-05">
+    expires_after="2027-01-10">
   <owner>ericekey@google.com</owner>
   <owner>bwwilliams@google.com</owner>
   <owner>scottyoder@google.com</owner>

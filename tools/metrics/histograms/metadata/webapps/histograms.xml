@@ -2120,7 +2120,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApp.Migrations.PendingUpdateInfoIconDataCorrupted"
-    units="count" expires_after="2026-11-11">
+    units="count" expires_after="2027-01-10">
   <owner>dibyapal@chromium.org</owner>
   <owner>pwa-team@google.com</owner>
   <summary>

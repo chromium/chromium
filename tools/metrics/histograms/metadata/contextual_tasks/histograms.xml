@@ -584,7 +584,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContextualTasks.VoiceSearch.StateV2" enum="VoiceSearchState"
-    expires_after="2026-09-20">
+    expires_after="2027-01-10">
   <owner>jamesleung@google.com</owner>
   <owner>chrome-contextual-tasks-eng@google.com</owner>
   <summary>

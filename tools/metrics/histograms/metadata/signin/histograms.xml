@@ -2080,7 +2080,7 @@ prefs when the profile is loaded.  -->
 </histogram>
 
 <histogram name="Signin.GetAccounts.Android.Result"
-    enum="GetAccountsAndroidResult" expires_after="2026-11-07">
+    enum="GetAccountsAndroidResult" expires_after="2027-01-10">
   <owner>mlbipin@google.com</owner>
   <owner>chrome-signin-mobile-team@google.com</owner>
   <summary>
@@ -2091,7 +2091,7 @@ prefs when the profile is loaded.  -->
 </histogram>
 
 <histogram name="Signin.GetAccounts.AndroidApiAvailability" enum="Boolean"
-    expires_after="2026-11-07">
+    expires_after="2027-01-10">
   <owner>mlbipin@google.com</owner>
   <owner>chrome-signin-mobile-team@google.com</owner>
   <summary>
@@ -2962,7 +2962,7 @@ the browser and content area. -->
 </histogram>
 
 <histogram name="Signin.OAuth2MintToken.ApiCallResult"
-    enum="OAuth2MintTokenApiCallResult" expires_after="2026-11-08">
+    enum="OAuth2MintTokenApiCallResult" expires_after="2027-01-10">
   <owner>alexilin@chromium.org</owner>
   <owner>droger@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>

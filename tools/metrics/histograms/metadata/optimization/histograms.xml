@@ -2542,7 +2542,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="OptimizationGuide.PageContentExtraction.EnablementSourcePerNavigation"
-    enum="PageContentExtractionEnablementSource" expires_after="2026-11-05">
+    enum="PageContentExtractionEnablementSource" expires_after="2027-01-10">
   <owner>alexmt@chromium.org</owner>
   <owner>chrome-intelligence-core@google.com</owner>
   <summary>
@@ -2594,7 +2594,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="OptimizationGuide.PageContentExtraction.ObserverCountPerNavigation"
-    units="count" expires_after="2026-11-05">
+    units="count" expires_after="2027-01-10">
   <owner>alexmt@chromium.org</owner>
   <owner>chrome-intelligence-core@google.com</owner>
   <summary>

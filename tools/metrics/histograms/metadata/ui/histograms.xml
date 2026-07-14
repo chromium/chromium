@@ -564,7 +564,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="InitialWebUI.NewWindow{CreationSource}.{ExistingWindow}.BrowserWindow.FirstPaint.{StartPoint}{Version}"
-    units="ms" expires_after="2026-11-08">
+    units="ms" expires_after="2027-01-10">
   <owner>mych@chromium.org</owner>
   <owner>chrome-webium-product-eng@google.com</owner>
   <summary>

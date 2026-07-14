@@ -364,7 +364,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Preloading.{PreloadingType}.Attempt.{PreloadingPredictor}.Precision"
-    enum="PredictorConfusionMatrix" expires_after="2026-11-08">
+    enum="PredictorConfusionMatrix" expires_after="2027-01-10">
   <owner>isaboori@google.com</owner>
   <owner>spelchat@chromium.org</owner>
   <owner>sreejakshetty@chromium.org</owner>

@@ -1842,7 +1842,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Clients.GoogleSearch.ConnectTiming.FirstRequestDomainLookupDelay.InsecureDns"
-    units="ms" expires_after="2026-09-06">
+    units="ms" expires_after="2027-01-10">
   <owner>bashi@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <improvement direction="LOWER_IS_BETTER"/>
@@ -1857,7 +1857,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Clients.GoogleSearch.ConnectTiming.FirstRequestDomainLookupDelay.SecureDns"
-    units="ms" expires_after="2026-09-06">
+    units="ms" expires_after="2027-01-10">
   <owner>bashi@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <improvement direction="LOWER_IS_BETTER"/>

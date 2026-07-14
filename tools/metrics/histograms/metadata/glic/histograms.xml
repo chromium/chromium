@@ -2141,7 +2141,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Glic.PageContextFetcher.ScreenshotRedacted" enum="Boolean"
-    expires_after="2026-11-05">
+    expires_after="2027-01-10">
   <owner>linnan@google.com</owner>
   <owner>shivanisha@google.com</owner>
   <owner>chrome-synapse-team@google.com</owner>

@@ -736,7 +736,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebAuthentication.MechanismSorter.SelectedMechanismType"
-    enum="WebAuthenticationDeduplicatedType" expires_after="2026-09-30">
+    enum="WebAuthenticationDeduplicatedType" expires_after="2027-01-10">
   <owner>derinel@google.com</owner>
   <owner>chrome-webauthn@google.com</owner>
   <summary>

@@ -737,7 +737,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="ChromeOS.Settings.NumUniqueSettingsChanged.DeviceLifetime2.{Time}"
-    units="Unique Setting(s) Changed" expires_after="2026-11-11">
+    units="Unique Setting(s) Changed" expires_after="2027-01-10">
   <owner>wesokuhara@google.com</owner>
   <owner>cros-settings@google.com</owner>
   <summary>
@@ -781,7 +781,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.PathVisited"
-    enum="WebUIOSSettingsPathHashes" expires_after="2026-11-11">
+    enum="WebUIOSSettingsPathHashes" expires_after="2027-01-10">
   <owner>wesokuhara@google.com</owner>
   <owner>xiaohuic@chromium.org</owner>
   <owner>cros-settings@google.com</owner>
@@ -870,7 +870,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.SearchRequests"
-    enum="OsSettingSearchRequestTypes" expires_after="2026-11-11">
+    enum="OsSettingSearchRequestTypes" expires_after="2027-01-10">
   <owner>wesokuhara@google.com</owner>
   <owner>xiaohuic@chromium.org</owner>
   <owner>cros-settings@google.com</owner>
@@ -884,7 +884,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.SearchRequestsPerSession"
-    units="mojo search requests" expires_after="2026-11-11">
+    units="mojo search requests" expires_after="2027-01-10">
   <owner>wesokuhara@google.com</owner>
   <owner>xiaohuic@chromium.org</owner>
   <owner>cros-settings@google.com</owner>
@@ -905,7 +905,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.SearchResultSectionSelected"
-    enum="OsSettingsSection" expires_after="2026-11-11">
+    enum="OsSettingsSection" expires_after="2027-01-10">
   <owner>wesokuhara@google.com</owner>
   <owner>xiaohuic@chromium.org</owner>
   <owner>cros-settings@google.com</owner>
@@ -915,7 +915,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.SearchResultSettingSelected"
-    enum="OsSetting" expires_after="2026-11-11">
+    enum="OsSetting" expires_after="2027-01-10">
   <owner>wesokuhara@google.com</owner>
   <owner>xiaohuic@chromium.org</owner>
   <owner>cros-settings@google.com</owner>
@@ -935,7 +935,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.SearchResultTypeSelected"
-    enum="OsSettingsSearchResultType" expires_after="2026-11-11">
+    enum="OsSettingsSearchResultType" expires_after="2027-01-10">
   <owner>wesokuhara@google.com</owner>
   <owner>xiaohuic@chromium.org</owner>
   <owner>cros-settings@google.com</owner>
@@ -989,7 +989,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.TimeUntilInteractive" units="ms"
-    expires_after="2026-11-11">
+    expires_after="2027-01-10">
   <owner>wesokuhara@google.com</owner>
   <owner>xiaohuic@chromium.org</owner>
   <owner>cros-settings@google.com</owner>

@@ -305,7 +305,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SafeBrowsing.AndroidTelemetry.ApkDownload.IncompleteReason"
-    enum="ApkDownloadTelemetryIncompleteReason" expires_after="2026-11-11">
+    enum="ApkDownloadTelemetryIncompleteReason" expires_after="2027-01-10">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>

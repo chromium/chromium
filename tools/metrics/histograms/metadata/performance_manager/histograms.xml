@@ -335,7 +335,7 @@ each histogram.
 </histogram>
 
 <histogram name="PerformanceManager.TransientKeepAlive.Result"
-    enum="TransientKeepAliveResult" expires_after="2026-10-16">
+    enum="TransientKeepAliveResult" expires_after="2027-01-10">
   <owner>aattar@google.com</owner>
   <owner>chrome-catan@google.com</owner>
   <summary>
@@ -347,7 +347,7 @@ each histogram.
 </histogram>
 
 <histogram name="PerformanceManager.TransientKeepAlive.TimeToReuse" units="ms"
-    expires_after="2026-10-16">
+    expires_after="2027-01-10">
   <owner>aattar@google.com</owner>
   <owner>chrome-catan@google.com</owner>
   <summary>

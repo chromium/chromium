@@ -23,7 +23,7 @@ chromium-metrics-reviews@google.com.
 <histograms>
 
 <histogram name="LanguageDetection.TFLiteModel.ClassifyText.Detected"
-    enum="BooleanDetected" expires_after="2026-09-27">
+    enum="BooleanDetected" expires_after="2027-01-10">
   <owner>fergal@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -289,7 +289,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LanguageSettings.PageImpression"
-    enum="LanguageSettingsPageType" expires_after="2026-09-06">
+    enum="LanguageSettingsPageType" expires_after="2027-01-10">
   <owner>googleo@chromium.org</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
