@@ -148,7 +148,4 @@ tast.hwsec.CrossVersionChromeLogin.ti50_r114
 tast.hwsec.CrossVersionChromeLogin.ti50_r120
 tast.hwsec.CrossVersionChromeLogin.ti50_r125
 
-# b/529493526
-tast.secagentd.FileEvents.cookies
-
 # READ COMMENT AT TOP BEFORE ADDING NEW TESTS HERE.
