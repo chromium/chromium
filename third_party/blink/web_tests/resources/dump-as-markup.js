@@ -164,7 +164,7 @@ Markup._get = function(node, depth)
          break;
 
     case Node.PROCESSING_INSTRUCTION_NODE:
-        str += '<?' + node.nodeName + node.nodeValue + '>';
+        str += '<?' + node.nodeName + ' ' + node.nodeValue + '?>';
         break;
 
     case Node.CDATA_SECTION_NODE:
