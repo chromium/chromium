@@ -8,16 +8,19 @@
 #include "base/metrics/histogram_functions.h"
 #include "content/browser/declarative_performance_observer/declarative_performance_observer_store.h"
 #include "content/browser/storage_partition_impl.h"
+#include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/navigation_handle_timing.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/content_client.h"
 #include "mojo/public/cpp/bindings/message.h"
 #include "net/base/load_timing_info.h"
 #include "net/base/net_errors.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.h"
 
 namespace content {
 
@@ -30,6 +33,9 @@ DeclarativePerformanceObserver::DeclarativePerformanceObserver(
     RenderFrameHost* rfh,
     NavigationHandle* navigation_handle)
     : DocumentUserData<DeclarativePerformanceObserver>(rfh) {
+  GetContentClient()->browser()->LogWebFeatureForCurrentPage(
+      rfh, blink::mojom::WebFeature::kDeclarativePerformanceObserver);
+
   const network::mojom::DeclarativePerformanceObserverPolicy* policy =
       navigation_handle->GetDeclarativePerformanceObserverPolicy();
   CHECK(policy);
