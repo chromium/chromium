@@ -72,6 +72,8 @@ BASE_DECLARE_FEATURE(kOmniboxAnimatedCaret);
 BASE_DECLARE_FEATURE(kEnergyEffectInOmnibox);
 BASE_DECLARE_FEATURE(kWebUIOmniboxAskGAboutThisPage);
 BASE_DECLARE_FEATURE(kWebUIOmniboxDynamicAiModeButton);
+// Prevents closing popup while file chooser is open.
+BASE_DECLARE_FEATURE(kOmniboxKeepOpenOnFileSelection);
 
 extern const base::FeatureParam<bool> kWebUIOmniboxPopupDebugSxSParam;
 

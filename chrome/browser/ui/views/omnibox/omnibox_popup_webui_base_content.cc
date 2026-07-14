@@ -10,6 +10,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/task/single_thread_task_runner.h"
+#include "chrome/browser/file_select_helper.h"
 #include "chrome/browser/lifetime/browser_shutdown.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/profiles/profile.h"
@@ -31,6 +32,7 @@
 #include "components/input/native_web_keyboard_event.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/permissions/permission_request_manager.h"
+#include "content/public/browser/file_select_listener.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/render_widget_host_view.h"
@@ -306,6 +308,10 @@ void OmniboxPopupWebUIBaseContent::Detach() {
   if (!popup_presenter_->ShouldDetachWebContentsOnHide()) {
     return;
   }
+  if (popup_presenter_->IsShown()) {
+    return;
+  }
+
   // This removes the content from being considered for rendering by the
   // compositor while the popup is closed. The content is re-inserted right
   // before the view is displayed. This has the effect of tossing out old,
@@ -348,6 +354,75 @@ void OmniboxPopupWebUIBaseContent::PrimaryMainFrameRenderProcessGone(
   base::UmaHistogramEnumeration(
       base::StrCat({GetMetricPrefix(), ".RendererProcessGoneStatus"}), status,
       base::TERMINATION_STATUS_MAX_ENUM);
+}
+
+namespace {
+
+// Proxies FileSelectListener to release the deactivation blocker when the file
+// dialog closes.
+class PopupFileSelectListenerProxy : public content::FileSelectListener {
+ public:
+  PopupFileSelectListenerProxy(
+      scoped_refptr<content::FileSelectListener> listener,
+      base::OnceClosure on_done)
+      : listener_(std::move(listener)), on_done_(std::move(on_done)) {}
+
+  void FileSelected(std::vector<blink::mojom::FileChooserFileInfoPtr> files,
+                    const base::FilePath& base_dir,
+                    blink::mojom::FileChooserParams::Mode mode) override {
+    if (listener_) {
+      listener_->FileSelected(std::move(files), base_dir, mode);
+    }
+    if (on_done_) {
+      std::move(on_done_).Run();
+    }
+  }
+
+  void FileSelectionCanceled() override {
+    if (listener_) {
+      listener_->FileSelectionCanceled();
+    }
+    if (on_done_) {
+      std::move(on_done_).Run();
+    }
+  }
+
+ private:
+  ~PopupFileSelectListenerProxy() override = default;
+  scoped_refptr<content::FileSelectListener> listener_;
+  base::OnceClosure on_done_;
+};
+
+}  // namespace
+
+void OmniboxPopupWebUIBaseContent::RunFileChooser(
+    content::RenderFrameHost* render_frame_host,
+    scoped_refptr<content::FileSelectListener> listener,
+    const blink::mojom::FileChooserParams& params) {
+  // Prevent focus-loss events from closing the popup when the file dialog
+  // opens.
+  if (popup_presenter_) {
+    file_chooser_deactivation_blocker_ =
+        popup_presenter_->CreateDeactivationBlocker();
+  }
+
+  // Wrap the listener to release the deactivation blocker when the dialog
+  // closes.
+  auto proxy_listener = base::MakeRefCounted<PopupFileSelectListenerProxy>(
+      std::move(listener),
+      base::BindOnce(&OmniboxPopupWebUIBaseContent::OnFileChooserClosed,
+                     weak_factory_.GetWeakPtr()));
+
+  FileSelectHelper::RunFileChooser(render_frame_host, std::move(proxy_listener),
+                                   params);
+}
+
+void OmniboxPopupWebUIBaseContent::OnFileChooserClosed() {
+  if (popup_presenter_) {
+    popup_presenter_->OnFileSelectionClosed();
+  }
+  // Release the deactivation blocker since the file chooser has been closed.
+  file_chooser_deactivation_blocker_.reset();
 }
 
 BEGIN_METADATA(OmniboxPopupWebUIBaseContent)

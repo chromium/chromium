@@ -24,6 +24,7 @@
 class OmniboxContextMenu;
 class OmniboxController;
 class OmniboxPopupPresenterBase;
+class OmniboxPopupDeactivationBlocker;
 class OmniboxPopupTabSelectionListener;
 class OmniboxPopupUI;
 
@@ -76,6 +77,9 @@ class OmniboxPopupWebUIBaseContent : public views::WebView,
       content::WebContents* web_contents,
       const content::MediaStreamRequest& request,
       content::MediaResponseCallback callback) override;
+  void RunFileChooser(content::RenderFrameHost* render_frame_host,
+                      scoped_refptr<content::FileSelectListener> listener,
+                      const blink::mojom::FileChooserParams& params) override;
 
   // Notifies the page the widget was hidden and performs cleanup.
   virtual void Clear() = 0;
@@ -110,6 +114,9 @@ class OmniboxPopupWebUIBaseContent : public views::WebView,
   OmniboxController* controller() { return controller_.get(); }
 
   LocationBar* location_bar() { return location_bar_.get(); }
+
+  // Returns the presenter associated with this popup content.
+  OmniboxPopupPresenterBase* popup_presenter() { return popup_presenter_; }
 
   // Detaches the WebContents and cleans up.
   void Detach();
@@ -166,6 +173,11 @@ class OmniboxPopupWebUIBaseContent : public views::WebView,
   bool is_window_resizing_ = false;
 
   friend class OmniboxAimPopupBrowserTest;
+
+  void OnFileChooserClosed();
+
+  std::unique_ptr<OmniboxPopupDeactivationBlocker>
+      file_chooser_deactivation_blocker_;
 
   base::WeakPtrFactory<OmniboxPopupWebUIBaseContent> weak_factory_{this};
 };

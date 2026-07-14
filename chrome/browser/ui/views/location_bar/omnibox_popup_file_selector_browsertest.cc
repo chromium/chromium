@@ -17,6 +17,15 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/contextual_search/searchbox_context_data.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
+#include "chrome/browser/ui/omnibox/omnibox_controller.h"
+#include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
+#include "chrome/browser/ui/omnibox/omnibox_popup_state_manager.h"
+#include "chrome/browser/ui/omnibox/omnibox_popup_view.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/location_bar/location_bar_view.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_popup_aim_presenter.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter_base.h"
+#include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/ui/webui/searchbox/searchbox_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/lens/lens_features.h"
@@ -305,4 +314,121 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupFileSelectorBrowserTest,
   EXPECT_EQ(file_attachment->error_type.value(),
             contextual_search::ContextUploadErrorType::
                 kBrowserProcessingMaxFilesExceededError);
+}
+
+class OmniboxPopupFileSelectorAimBrowserTest : public InProcessBrowserTest {
+ public:
+  OmniboxPopupFileSelectorAimBrowserTest() {
+    scoped_feature_list_.InitWithFeatures(
+        {omnibox::internal::kWebUIOmniboxAimPopup,
+         omnibox::internal::kWebUIOmniboxPopup,
+         omnibox::kOmniboxKeepOpenOnFileSelection},
+        {lens::features::kLensSendRawFileMediaTypes});
+  }
+
+  void SetUpOnMainThread() override {
+    InProcessBrowserTest::SetUpOnMainThread();
+    auto* factory = ui::FakeSelectFileDialog::RegisterFactory();
+    factory->SetOpenCallback(base::DoNothing());
+  }
+
+  void TearDownOnMainThread() override {
+    ui::SelectFileDialog::SetFactory(nullptr);
+    InProcessBrowserTest::TearDownOnMainThread();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(OmniboxPopupFileSelectorAimBrowserTest,
+                       CreatesAndReleasesDeactivationBlockerWhenAimPopupOpen) {
+  auto* location_bar_view = BrowserView::GetBrowserViewForBrowser(browser())
+                                ->toolbar()
+                                ->location_bar_view();
+  location_bar_view->GetOmniboxController()
+      ->popup_state_manager()
+      ->SetPopupState(OmniboxPopupState::kAim);
+
+  auto* presenter = location_bar_view->GetOmniboxPopupAimPresenter();
+  ASSERT_TRUE(presenter);
+  presenter->Show();
+
+  auto* omnibox_controller = location_bar_view->GetOmniboxController();
+  MockOmniboxEditModel mock_edit_model(omnibox_controller);
+
+  OmniboxPopupFileSelector file_selector(
+      browser()->GetWindow()->GetNativeWindow());
+
+  EXPECT_FALSE(presenter->has_active_blockers());
+
+  file_selector.OpenFileUploadDialog(
+      browser()->tab_strip_model()->GetActiveWebContents(),
+      /*is_image=*/true, &mock_edit_model, std::nullopt,
+      /*was_ai_mode_open=*/true);
+
+  EXPECT_TRUE(presenter->has_active_blockers());
+
+  EXPECT_CALL(mock_edit_model,
+              OpenAiMode(OmniboxEditModel::AimActivation::kContextMenu));
+  file_selector.FileSelectionCanceled();
+
+  EXPECT_FALSE(presenter->has_active_blockers());
+}
+
+class OmniboxPopupFileSelectorClassicWebuiBrowserTest
+    : public InProcessBrowserTest {
+ public:
+  OmniboxPopupFileSelectorClassicWebuiBrowserTest() {
+    scoped_feature_list_.InitWithFeatures(
+        {omnibox::internal::kWebUIOmniboxPopup,
+         omnibox::kOmniboxKeepOpenOnFileSelection},
+        {omnibox::internal::kWebUIOmniboxAimPopup,
+         lens::features::kLensSendRawFileMediaTypes});
+  }
+
+  void SetUpOnMainThread() override {
+    InProcessBrowserTest::SetUpOnMainThread();
+    auto* factory = ui::FakeSelectFileDialog::RegisterFactory();
+    factory->SetOpenCallback(base::DoNothing());
+  }
+
+  void TearDownOnMainThread() override {
+    ui::SelectFileDialog::SetFactory(nullptr);
+    InProcessBrowserTest::TearDownOnMainThread();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(
+    OmniboxPopupFileSelectorClassicWebuiBrowserTest,
+    CreatesAndReleasesDeactivationBlockerWhenClassicPopupOpen) {
+  auto* location_bar_view = BrowserView::GetBrowserViewForBrowser(browser())
+                                ->toolbar()
+                                ->location_bar_view();
+  auto* popup_view = location_bar_view->GetOmniboxPopupView();
+  ASSERT_TRUE(popup_view);
+  auto* presenter = popup_view->presenter();
+  ASSERT_TRUE(presenter);
+
+  auto* omnibox_controller = location_bar_view->GetOmniboxController();
+  MockOmniboxEditModel mock_edit_model(omnibox_controller);
+
+  OmniboxPopupFileSelector file_selector(
+      browser()->GetWindow()->GetNativeWindow());
+
+  EXPECT_FALSE(presenter->has_active_blockers());
+
+  file_selector.OpenFileUploadDialog(
+      browser()->tab_strip_model()->GetActiveWebContents(),
+      /*is_image=*/true, &mock_edit_model, std::nullopt,
+      /*was_ai_mode_open=*/false);
+
+  EXPECT_TRUE(presenter->has_active_blockers());
+
+  file_selector.FileSelectionCanceled();
+
+  EXPECT_FALSE(presenter->has_active_blockers());
 }
