@@ -300,6 +300,70 @@ public class HierarchicalMenuControllerUnitTest {
     }
 
     @Test
+    public void handleBackPress_drillDownNavigation_popsSubmenuStack() {
+        mController.setupCallbacks(/* headerModelList= */ null, mModelList, mDismissDialog);
+        assertFalse(
+                "handleBackPress should return false at root level", mController.handleBackPress());
+        assertFalse(
+                "Back press supplier should yield false at root level",
+                mController.getHandleBackPressChangedSupplier().get());
+
+        // Click into submenu 0.
+        activateClickListener(mSubmenuLevel0);
+        assertEquals("Expected 3 items inside submenu 0", 3, mModelList.size());
+        assertTrue(
+                "Back press supplier should yield true when inside drill-down submenu",
+                mController.getHandleBackPressChangedSupplier().get());
+
+        // Call {@link handleBackPress()} instead of clicking header.
+        assertTrue(
+                "handleBackPress should return true and navigate back",
+                mController.handleBackPress());
+        assertEquals("Expected 2 items after navigating back to root", 2, mModelList.size());
+        assertFalse(
+                "handleBackPress should return false once back at root level",
+                mController.handleBackPress());
+        assertFalse(
+                "Back press supplier should yield false after navigating back to root level",
+                mController.getHandleBackPressChangedSupplier().get());
+    }
+
+    @Test
+    public void handleBackPress_multiLevelDrillDown_popsSubmenuStackInOrder() {
+        mController.setupCallbacks(/* headerModelList= */ null, mModelList, mDismissDialog);
+        assertFalse(mController.getHandleBackPressChangedSupplier().get());
+
+        // Navigate to level 0.
+        activateClickListener(mSubmenuLevel0);
+        assertEquals(3, mModelList.size());
+        assertTrue(mController.getHandleBackPressChangedSupplier().get());
+
+        // Navigate to level 1.
+        activateClickListener(mSubmenuLevel1);
+        assertEquals(2, mModelList.size());
+        assertTrue(mController.getHandleBackPressChangedSupplier().get());
+
+        // First back press: pops level 1, returns to level 0.
+        assertTrue("First handleBackPress should pop to level 0", mController.handleBackPress());
+        assertEquals("Expected 3 items in level 0", 3, mModelList.size());
+        assertTrue(
+                "Back press supplier should remain true at submenu level 0",
+                mController.getHandleBackPressChangedSupplier().get());
+
+        // Second back press: pops level 0, returns to root level.
+        assertTrue(
+                "Second handleBackPress should pop to root level", mController.handleBackPress());
+        assertEquals("Expected 2 items in root level", 2, mModelList.size());
+        assertFalse(
+                "Back press supplier should be false at root level",
+                mController.getHandleBackPressChangedSupplier().get());
+
+        // Third back press: stack empty.
+        assertFalse(
+                "handleBackPress should return false at root level", mController.handleBackPress());
+    }
+
+    @Test
     public void testSubmenuObserver_notifiedOnLoad() {
         mController.setupCallbacks(mHeaderModelList, mModelList, mDismissDialog);
 

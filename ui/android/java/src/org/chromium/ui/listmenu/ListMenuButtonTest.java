@@ -51,18 +51,21 @@ public class ListMenuButtonTest {
     @Test
     @SmallTest
     public void testA11yLabel() {
-        ListMenuButton button = new ListMenuButton(mContext, null);
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    ListMenuButton button = new ListMenuButton(mContext, null);
 
-        button.setContentDescriptionContext("");
-        Assert.assertEquals(
-                mContext.getString(R.string.accessibility_toolbar_btn_menu),
-                button.getContentDescription());
+                    button.setContentDescriptionContext("");
+                    Assert.assertEquals(
+                            mContext.getString(R.string.accessibility_toolbar_btn_menu),
+                            button.getContentDescription());
 
-        String title = "Test title";
-        button.setContentDescriptionContext(title);
-        Assert.assertEquals(
-                mContext.getString(R.string.accessibility_list_menu_button, title),
-                button.getContentDescription());
+                    String title = "Test title";
+                    button.setContentDescriptionContext(title);
+                    Assert.assertEquals(
+                            mContext.getString(R.string.accessibility_list_menu_button, title),
+                            button.getContentDescription());
+                });
     }
 
     @Test
@@ -82,15 +85,20 @@ public class ListMenuButtonTest {
     @SmallTest
     @MinAndroidSdkLevel(Build.VERSION_CODES.R)
     public void testSecondaryClick() {
-        ListMenuButton button = new ListMenuButton(mContext, null);
         CallbackHelper longClickHelper = new CallbackHelper();
-        button.setOnLongClickListener(
-                (v) -> {
-                    longClickHelper.notifyCalled();
-                    return true;
-                });
+        ListMenuButton button =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> {
+                            ListMenuButton btn = new ListMenuButton(mContext, null);
+                            btn.setOnLongClickListener(
+                                    (v) -> {
+                                        longClickHelper.notifyCalled();
+                                        return true;
+                                    });
+                            return btn;
+                        });
         MotionEvent secondaryClickEvent = MotionEventTestUtils.getTrackRightClickEvent();
-        button.onGenericMotionEvent(secondaryClickEvent);
+        ThreadUtils.runOnUiThreadBlocking(() -> button.onGenericMotionEvent(secondaryClickEvent));
         try {
             longClickHelper.waitForNext();
         } catch (TimeoutException e) {

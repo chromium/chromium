@@ -26,14 +26,17 @@ import android.view.animation.Animation;
 import android.view.animation.ScaleAnimation;
 import android.widget.FrameLayout;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.core.view.WindowInsetsControllerCompat;
 
+import org.chromium.base.Callback;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.build.annotations.EnsuresNonNullIf;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.accessibility.AccessibilityState;
 import org.chromium.ui.animation.EmptyAnimationListener;
@@ -100,6 +103,10 @@ public class ContextMenuDialog extends AlwaysDismissedDialog {
      * view will be used to dispatch touch events other than ACTION_DOWN.
      */
     private final @Nullable View mTouchEventDelegateView;
+
+    private @Nullable BackPressHandler mBackPressHandler;
+    private @Nullable OnBackPressedCallback mBackPressCallback;
+    private @Nullable Callback<Boolean> mBackPressCallbackObserver;
 
     /**
      * Creates an instance of the ContextMenuDialog.
@@ -367,6 +374,11 @@ public class ContextMenuDialog extends AlwaysDismissedDialog {
         return ListMenuUtils.getViewRectRelativeToItsRootView(mContentView);
     }
 
+    /** Returns the content view of this dialog. */
+    public View getContentView() {
+        return mContentView;
+    }
+
     /**
      * Start the entering animation for context menu dialog. Only used when dialog is presenting as
      * a full screen dialog.
@@ -394,6 +406,41 @@ public class ContextMenuDialog extends AlwaysDismissedDialog {
         mContentView.startAnimation(animation);
     }
 
+    private void cleanupBackPressHandler() {
+        if (mBackPressHandler != null && mBackPressCallbackObserver != null) {
+            mBackPressHandler
+                    .getHandleBackPressChangedSupplier()
+                    .removeObserver(mBackPressCallbackObserver);
+        }
+        if (mBackPressCallback != null) {
+            mBackPressCallback.remove();
+        }
+        mBackPressCallbackObserver = null;
+        mBackPressCallback = null;
+    }
+
+    /** Sets a {@link BackPressHandler} to intercept back presses when the dialog/menu is open. */
+    public void setBackPressHandler(@Nullable BackPressHandler backPressHandler) {
+        cleanupBackPressHandler();
+        mBackPressHandler = backPressHandler;
+        if (backPressHandler != null) {
+            mBackPressCallback =
+                    new OnBackPressedCallback(false) {
+                        @Override
+                        public void handleOnBackPressed() {
+                            if (mBackPressHandler != null) {
+                                mBackPressHandler.handleBackPress();
+                            }
+                        }
+                    };
+            mBackPressCallbackObserver = mBackPressCallback::setEnabled;
+            backPressHandler
+                    .getHandleBackPressChangedSupplier()
+                    .addSyncObserverAndPostIfNonNull(mBackPressCallbackObserver);
+            getOnBackPressedDispatcher().addCallback(mBackPressCallback);
+        }
+    }
+
     @Override
     public void show() {
         if (sForceEmptyForTesting) return;
@@ -401,7 +448,14 @@ public class ContextMenuDialog extends AlwaysDismissedDialog {
     }
 
     @Override
+    protected void onStop() {
+        super.onStop();
+        cleanupBackPressHandler();
+    }
+
+    @Override
     public void dismiss() {
+        cleanupBackPressHandler();
         if (sForceEmptyForTesting) {
             mDismissedForTesting = true;
             return;

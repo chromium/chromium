@@ -67,6 +67,7 @@ import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.test.util.MockitoHelper;
+import org.chromium.ui.widget.AnchoredPopupWindow;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -692,8 +693,10 @@ public class ExtensionsMenuMediatorTest {
     /** Helper to create a mock {@link ListMenuButton} with a mock {@link ListMenuHost}. */
     private ListMenuButton createMockMenuButton() {
         ListMenuHost mockListMenuHost = mock(ListMenuHost.class);
-        when(mockListMenuHost.getHierarchicalMenuController())
-                .thenReturn(mock(HierarchicalMenuController.class));
+        @SuppressWarnings("unchecked")
+        HierarchicalMenuController<AnchoredPopupWindow> mockController =
+                mock(HierarchicalMenuController.class);
+        when(mockListMenuHost.getHierarchicalMenuController()).thenReturn(mockController);
 
         ListMenuButton mockButton = mock(ListMenuButton.class);
         when(mockButton.getHost()).thenReturn(mockListMenuHost);

@@ -100,6 +100,8 @@ public class ChromeSelectionDropdownMenuDelegate
 
         mHierarchicalMenuController.setupFlyoutController(
                 /* flyoutHandler= */ this, popupWindow, /* drillDownOverrideValue= */ null);
+        mHierarchicalMenuController.setupBackPressBehaviorForPopupWindow(
+                popupWindow.getContentView(), this::dismiss);
     }
 
     @Override

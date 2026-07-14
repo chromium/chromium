@@ -112,6 +112,8 @@ public class AwSelectionDropdownMenuDelegate extends DefaultSelectionDropdownMen
                 context.getResources().getDimensionPixelSize(R.dimen.list_menu_elevation));
         mPopupWindow.setOnDismissListener(this::cleanup);
         mPopupWindow.setFocusable(true);
+        hierarchicalMenuController.setupBackPressBehaviorForPopupWindow(
+                menu.getContentView(), () -> mPopupWindow.dismiss());
         try {
             mPopupWindow.showAtLocation(rootView, Gravity.NO_GRAVITY, x, y);
         } catch (WindowManager.BadTokenException e) {

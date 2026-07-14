@@ -185,6 +185,7 @@ public class TabOverflowMenuHolder<T> {
 
     void show() {
         mMenuWindow.show();
+        mContentView.findViewById(R.id.tab_group_action_menu_list).requestFocus();
     }
 
     void resize() {

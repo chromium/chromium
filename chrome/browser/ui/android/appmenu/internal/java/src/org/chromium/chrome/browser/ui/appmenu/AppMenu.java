@@ -503,6 +503,9 @@ class AppMenu implements OnKeyListener {
                 new AppMenuPopup(popup),
                 /* drillDownOverrideValue= */ null);
 
+        mHierarchicalMenuController.setupBackPressBehaviorForPopupWindow(
+                contentView, this::dismiss);
+
         showPopup(anchorView, popupPosition);
 
         mSelectedItemBeforeDismiss = false;
@@ -695,20 +698,34 @@ class AppMenu implements OnKeyListener {
     @Override
     public boolean onKey(View v, int keyCode, KeyEvent event) {
         if (mListView == null) return false;
-        if (event.getKeyCode() == KeyEvent.KEYCODE_MENU) {
-            if (event.getAction() == KeyEvent.ACTION_DOWN && event.getRepeatCount() == 0) {
-                event.startTracking();
-                v.getKeyDispatcherState().startTracking(event, this);
-                return true;
-            } else if (event.getAction() == KeyEvent.ACTION_UP) {
-                v.getKeyDispatcherState().handleUpEvent(event);
-                if (event.isTracking() && !event.isCanceled()) {
-                    dismiss();
-                    return true;
-                }
-            }
+        if (event.getKeyCode() != KeyEvent.KEYCODE_MENU
+                && event.getKeyCode() != KeyEvent.KEYCODE_BACK) {
+            return false;
         }
-        return false;
+
+        if (event.getAction() == KeyEvent.ACTION_DOWN && event.getRepeatCount() == 0) {
+            event.startTracking();
+            v.getKeyDispatcherState().startTracking(event, this);
+            return true;
+        }
+
+        if (event.getAction() != KeyEvent.ACTION_UP) {
+            return false;
+        }
+
+        v.getKeyDispatcherState().handleUpEvent(event);
+
+        // TODO(crbug.com/530498012): Investigate if {@code isCanceled()} is really necessary.
+        if (!event.isTracking() || event.isCanceled()) {
+            return false;
+        }
+
+        if (event.getKeyCode() == KeyEvent.KEYCODE_MENU
+                || !mHierarchicalMenuController.handleBackPress()) {
+            dismiss();
+        }
+
+        return true;
     }
 
     /**

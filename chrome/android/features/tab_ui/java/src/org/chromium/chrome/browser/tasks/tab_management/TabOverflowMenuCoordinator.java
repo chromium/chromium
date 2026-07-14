@@ -314,6 +314,8 @@ public abstract class TabOverflowMenuCoordinator<T>
 
         mHierarchicalMenuController.setupFlyoutController(
                 /* flyoutHandler= */ this, menuHolder, /* drillDownOverrideValue= */ null);
+        mHierarchicalMenuController.setupBackPressBehaviorForPopupWindow(
+                menuHolder.getContentView(), this::dismiss);
     }
 
     /**

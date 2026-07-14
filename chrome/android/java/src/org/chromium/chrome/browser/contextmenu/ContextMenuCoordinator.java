@@ -21,6 +21,7 @@ import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AlertDialog;
 
 import org.chromium.base.Callback;
+import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -29,6 +30,8 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
 import org.chromium.chrome.browser.ui.vertical_tabs.VerticalTabUtils;
 import org.chromium.components.browser_ui.widget.ContextMenuDialog;
+import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
+import org.chromium.components.browser_ui.widget.gesture.BackPressHandler.BackPressResult;
 import org.chromium.components.embedder_support.contextmenu.ChipDelegate;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuNativeDelegate;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuParams;
@@ -355,6 +358,24 @@ public class ContextMenuCoordinator implements ContextMenuUi, FlyoutHandler<Cont
                 /* flyoutHandler= */ this,
                 dialog,
                 /* drillDownOverrideValue= */ mUsePopupWindow ? null : true);
+        dialog.setBackPressHandler(
+                new BackPressHandler() {
+                    @Override
+                    public @BackPressResult int handleBackPress() {
+                        return mHierarchicalMenuController.handleBackPress()
+                                ? BackPressResult.SUCCESS
+                                : BackPressResult.FAILURE;
+                    }
+
+                    @Override
+                    public NonNullObservableSupplier<Boolean> getHandleBackPressChangedSupplier() {
+                        return mHierarchicalMenuController.getHandleBackPressChangedSupplier();
+                    }
+                });
+        if (mUsePopupWindow) {
+            mHierarchicalMenuController.setupBackPressBehaviorForPopupWindow(
+                    dialog.getContentView(), this::dismissDialogs);
+        }
     }
 
     @Override
