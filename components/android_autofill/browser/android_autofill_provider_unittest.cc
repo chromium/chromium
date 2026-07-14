@@ -1140,12 +1140,12 @@ TEST_F(AndroidAutofillProviderWithCredManMultiFrameTest,
   FocusSubFrameFormField(sub_frame_webauthn_email_field());
 }
 
-// Tests that when CredMan is triggered, the current field's origin is updated
-// proactively to the frame origin of the passkey field, ensuring we don't use
-// a stale origin if CredMan is dismissed and autofill completes.
-// (see crbug.com/518084475).
+// Tests that when CredMan is triggered for a field in an unrelated form
+// (different from the active session's form), the session origin is preserved
+// rather than overwritten with the unrelated form's origin. (see
+// crbug.com/523714535, crbug.com/518084475).
 TEST_F(AndroidAutofillProviderWithCredManMultiFrameTest,
-       CredManEarlyReturnLeavesStaleCurrentFieldOrigin_Fixed) {
+       CredManTriggerForUnrelatedFormPreservesSessionOrigin) {
   // 1. Start session on main frame (origin https://foo.com).
   android_autofill_manager().OnFormsSeen({test_form()}, {});
   // Focus main frame field to start session and set origin to foo.com.
@@ -1156,23 +1156,111 @@ TEST_F(AndroidAutofillProviderWithCredManMultiFrameTest,
   ASSERT_EQ(test_api(autofill_provider()).last_focused_field_origin(),
             url::Origin::Create(GURL("https://foo.com")));
 
-  // 2. Focus subframe field (origin https://bar.com) which triggers CredMan.
-  // Expect CredMan to be triggered on subframe.
+  // 2. Focus subframe field (origin https://bar.com) on an unrelated form,
+  // which triggers CredMan. Expect CredMan to be triggered on subframe.
   EXPECT_CALL(*sub_frame_mock_delegate_, TriggerCredManUi);
 
-  // Simulate Focus FIRST (which should update origin to bar.com).
+  // Simulate Focus FIRST (which should NOT update origin to bar.com because the
+  // field does not belong to the active session form).
   android_autofill_manager().SimulateOnFocusOnFormField(
       sub_frame_test_form(), sub_frame_webauthn_email_field());
   EXPECT_EQ(test_api(autofill_provider()).last_focused_field_origin(),
-            url::Origin::Create(GURL("https://bar.com")));
+            url::Origin::Create(GURL("https://foo.com")));
 
   // Simulate AskForValuesToFill() SECOND (which returns early because CredMan
-  // is showing) and verify origin is STILL bar.com (not reverted or stale
-  // foo.com).
+  // is showing) and verify origin is STILL foo.com (not overwritten by
+  // bar.com).
   android_autofill_manager().SimulateOnAskForValuesToFill(
       sub_frame_test_form(), sub_frame_webauthn_email_field());
   EXPECT_EQ(test_api(autofill_provider()).last_focused_field_origin(),
-            url::Origin::Create(GURL("https://bar.com")));
+            url::Origin::Create(GURL("https://foo.com")));
+}
+
+// Tests that when CredMan is triggered for a field that belongs to the active
+// session's form (even in a different frame of a multi-frame form), the current
+// field's origin is proactively updated to that field's origin.
+// (see crbug.com/518084475).
+TEST_F(AndroidAutofillProviderWithCredManMultiFrameTest,
+       CredManTriggerForSessionFormFieldUpdatesOrigin) {
+  const url::Origin foo_origin = url::Origin::Create(GURL("https://foo.com"));
+  const url::Origin bar_origin = url::Origin::Create(GURL("https://bar.com"));
+
+  FormData multi_frame_form = test::GetFormData({
+      .fields = {{
+                     .host_frame =
+                         LocalFrameToken(main_frame()->GetFrameToken().value()),
+                     .origin = foo_origin,
+                 },
+                 {
+                     .host_frame =
+                         LocalFrameToken(sub_frame_->GetFrameToken().value()),
+                     .autocomplete_attribute = "webauthn",
+                     .origin = bar_origin,
+                 }},
+      .url = "https://foo.com/form.html",
+      .main_frame_origin = foo_origin,
+  });
+
+  const FormFieldData& foo_field = multi_frame_form.fields()[0];
+  const FormFieldData& bar_field = multi_frame_form.fields()[1];
+
+  android_autofill_manager().OnFormsSeen({multi_frame_form}, {});
+
+  // 1. Start session on foo_field (origin https://foo.com).
+  android_autofill_manager().SimulateOnAskForValuesToFill(multi_frame_form,
+                                                          foo_field);
+  android_autofill_manager().SimulateOnFocusOnFormField(multi_frame_form,
+                                                        foo_field);
+  ASSERT_EQ(test_api(autofill_provider()).last_focused_field_origin(),
+            foo_origin);
+
+  // 2. Focus bar_field (origin https://bar.com) which is part of the SAME form
+  // and triggers CredMan.
+  EXPECT_CALL(*sub_frame_mock_delegate_, TriggerCredManUi);
+
+  // Simulate Focus FIRST (which should proactively update origin to bar.com).
+  android_autofill_manager().SimulateOnFocusOnFormField(multi_frame_form,
+                                                        bar_field);
+  EXPECT_EQ(test_api(autofill_provider()).last_focused_field_origin(),
+            bar_origin);
+
+  // Simulate AskForValuesToFill() SECOND (which returns early because CredMan
+  // is showing) and verify origin is STILL bar.com.
+  android_autofill_manager().SimulateOnAskForValuesToFill(multi_frame_form,
+                                                          bar_field);
+  EXPECT_EQ(test_api(autofill_provider()).last_focused_field_origin(),
+            bar_origin);
+}
+
+// Tests that a compromised renderer cannot spoof the session origin by sending
+// a malicious FocusOnFormField() IPC while a CredMan sheet is active.
+// (see crbug.com/523714535).
+TEST_F(AndroidAutofillProviderWithCredManMultiFrameTest,
+       CredManActiveBlocksSpoofedFocusOnFormField) {
+  // 1. Start session on main frame (origin https://foo.com) and trigger
+  // CredMan.
+  android_autofill_manager().OnFormsSeen({test_form()}, {});
+  EXPECT_CALL(cred_man_delegate(), TriggerCredManUi);
+  android_autofill_manager().SimulateOnFocusOnFormField(test_form(),
+                                                        webauthn_email_field());
+  android_autofill_manager().SimulateOnAskForValuesToFill(
+      test_form(), webauthn_email_field());
+  // Because test_form() was not linked when CredMan opened on this fresh page,
+  // UpdateCurrentField() is skipped to prevent cross-origin poisoning, so
+  // last_focused_field_origin() remains uninitialized right while CredMan is
+  // showing.
+  ASSERT_TRUE(
+      test_api(autofill_provider()).last_focused_field_origin().opaque());
+  ASSERT_EQ(test_api(autofill_provider()).form(), nullptr);
+
+  // 2. Spoof FocusOnFormField() from attacker.com: Attacker sends fake
+  // FocusOnFormField() while CredMan is showing. Verify that origin remains
+  // unchanged and that the spoof is blocked.
+  android_autofill_manager().SimulateOnFocusOnFormField(
+      sub_frame_test_form(), sub_frame_webauthn_email_field());
+  EXPECT_TRUE(
+      test_api(autofill_provider()).last_focused_field_origin().opaque());
+  EXPECT_EQ(test_api(autofill_provider()).form(), nullptr);
 }
 
 // Tests that a compromised renderer cannot spoof the session origin by sending
@@ -1188,16 +1276,18 @@ TEST_F(AndroidAutofillProviderWithCredManMultiFrameTest,
                                                         webauthn_email_field());
   android_autofill_manager().SimulateOnAskForValuesToFill(
       test_form(), webauthn_email_field());
-  ASSERT_EQ(test_api(autofill_provider()).last_focused_field_origin(),
-            url::Origin::Create(GURL("https://foo.com")));
+  ASSERT_TRUE(
+      test_api(autofill_provider()).last_focused_field_origin().opaque());
+  ASSERT_EQ(test_api(autofill_provider()).form(), nullptr);
 
   // 2. Spoof AskForValuesToFill() from attacker.com: Attacker sends fake
   // AskForValuesToFill() while CredMan is showing. Verify that origin remains
-  // foo.com and that the spoof is blocked.
+  // unchanged and that the spoof is blocked.
   android_autofill_manager().SimulateOnAskForValuesToFill(
       sub_frame_test_form(), sub_frame_webauthn_email_field());
-  EXPECT_EQ(test_api(autofill_provider()).last_focused_field_origin(),
-            url::Origin::Create(GURL("https://foo.com")));
+  EXPECT_TRUE(
+      test_api(autofill_provider()).last_focused_field_origin().opaque());
+  EXPECT_EQ(test_api(autofill_provider()).form(), nullptr);
 }
 
 // Tests that a compromised renderer cannot spoof the session origin by sending
@@ -1216,19 +1306,21 @@ TEST_F(AndroidAutofillProviderWithCredManMultiFrameTest,
                                                         webauthn_email_field());
   android_autofill_manager().SimulateOnAskForValuesToFill(
       test_form(), webauthn_email_field());
-  ASSERT_EQ(test_api(autofill_provider()).last_focused_field_origin(),
-            url::Origin::Create(GURL("https://foo.com")));
+  ASSERT_TRUE(
+      test_api(autofill_provider()).last_focused_field_origin().opaque());
+  ASSERT_EQ(test_api(autofill_provider()).form(), nullptr);
 
   // 2. Spoof SelectControlSelectionChanged() from attacker.com: Attacker sends
   // fake SelectControlSelectionChanged() while CredMan is showing. Verify that
-  // origin remains foo.com and that the spoof is blocked.
+  // origin remains unchanged and that the spoof is blocked.
   autofill_provider().OnSelectControlSelectionChanged(
       &android_autofill_manager(), sub_frame_test_form(),
       sub_frame_webauthn_email_field());
 
-  // Verify origin remains foo.com (spoof blocked!).
-  EXPECT_EQ(test_api(autofill_provider()).last_focused_field_origin(),
-            url::Origin::Create(GURL("https://foo.com")));
+  // Verify origin remains unchanged (spoof blocked!).
+  EXPECT_TRUE(
+      test_api(autofill_provider()).last_focused_field_origin().opaque());
+  EXPECT_EQ(test_api(autofill_provider()).form(), nullptr);
 }
 
 class AndroidAutofillProviderCredManSpoofSheetStatusTest

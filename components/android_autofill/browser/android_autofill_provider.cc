@@ -596,6 +596,15 @@ void AndroidAutofillProvider::OnFocusOnFormField(
     const FormData& form,
     const FormFieldData& field) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  if (credman_sheet_status_ == CredManBottomSheetLifecycle::kIsShowing) {
+    // While CredMan is active, the user cannot legitimately interact with the
+    // page. We ignore this request to prevent a compromised renderer from
+    // spoofing the session origin (overwriting `current_field`) in the
+    // background. We preserve the session state that triggered CredMan so that
+    // the subsequent fill goes to the correct frame. If the user dismisses
+    // CredMan, a new session will be started on the next focus event.
+    return;
+  }
   std::optional<FieldInfo> field_to_focus = StartFocusChange(form, field);
   if (content::RenderFrameHost* rfh =
           GetRenderFrameHost(manager, field.host_frame());
@@ -605,7 +614,9 @@ void AndroidAutofillProvider::OnFocusOnFormField(
     // subsequent `OnAskForValuesToFill()` IPC will be ignored while CredMan is
     // showing (to block spoofing), we must set the correct origin now before
     // the block takes effect, otherwise the session will retain a stale origin.
-    UpdateCurrentField(manager, form, field);
+    if (field_to_focus) {
+      UpdateCurrentField(manager, form, field);
+    }
     return;  // The focus event will be completed after CredMan closes.
   }
   if (field_to_focus) {
