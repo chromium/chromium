@@ -846,11 +846,12 @@ void FindRequestManager::AddFrame(RenderFrameHost* rfh, bool force) {
 bool FindRequestManager::CheckFrame(RenderFrameHost* rfh) const {
   // TODO(crbug.com/40196212): Convert IsFindInPageDisabled to a DCHECK when we
   // replace DidFinishLoad with DidFinishNavigation in FrameObserver.
-  if (!rfh || !rfh->IsRenderFrameLive() || !rfh->IsActive() ||
-      !find_in_page_clients_.contains(rfh) || IsFindInPageDisabled(rfh)) {
+  if (!rfh || !find_in_page_clients_.contains(rfh) ||
+      IsFindInPageDisabled(rfh)) {
     return false;
   }
 
+  DCHECK(rfh->IsActive());
   return true;
 }
 
