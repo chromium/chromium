@@ -93,15 +93,15 @@
    * screen and the right edge of the content area.
    *
    * The animation begins translating to the right when the free space between
-   * the screen edge and the main content reaches 80% of the animation's width
-   * (2 * 40%). Bigger value makes the animation move earlier.
+   * the screen edge and the main content reaches 50% of the animation's width
+   * (2 * 25%). Bigger value makes the animation move earlier.
    *
    * Dividing by 2 makes the animation push out smoother, 1px of animation size
    * for every 2px of space shrank.
    * Everything is maxed with 0 to prevent the animation from being pulled
    * from the right edge to the center of the screen. */
   transform: translate(
-    max(0px, calc(40% - (50vw - var(--content-width) / 2) / 2)),
+    max(0px, calc(25% - (50vw - var(--content-width) / 2) / 2)),
     -50%);
   width: auto;
 }
