@@ -303,6 +303,7 @@ BASE_DECLARE_FEATURE(kTouchToSearchCallout);
 BASE_DECLARE_FEATURE(kTrustedWebActivityContactsDelegation);
 BASE_DECLARE_FEATURE(kUmaBackgroundSessions);
 BASE_DECLARE_FEATURE(kUmaSessionCorrectnessFixes);
+BASE_DECLARE_FEATURE(kUniversalKeyboardHandling);
 BASE_DECLARE_FEATURE(kUnparcelIntentFileDescriptors);
 BASE_DECLARE_FEATURE(kUpdateCompositorForSurfaceControl);
 BASE_DECLARE_FEATURE(kUseActivityManagerForTabActivation);

@@ -5552,6 +5552,12 @@ inline constexpr char kToolbarProgressBarRefactorDescription[] =
     "Enables the Toolbar Progress Bar Refactor feature which decouples the "
     "progress bar from the Toolbar";
 
+inline constexpr char kUniversalKeyboardHandlingName[] =
+    "Universal Keyboard Handling";
+inline constexpr char kUniversalKeyboardHandlingDescription[] =
+    "Enables universal keyboard treatment on Clank for UI types and IME "
+    "adapters.";
+
 inline constexpr char kUpdatePaddingForDisplayCalculationName[] =
     "Update Padding For Display Calculation";
 inline constexpr char kUpdatePaddingForDisplayCalculationDescription[] =

@@ -9515,7 +9515,8 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kUseWebUiNtpAndroidDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kUseWebUiNtpAndroid)},
 
-    {"webui-ntp-android-theming", flag_descriptions::kWebUiNtpAndroidThemingName,
+    {"webui-ntp-android-theming",
+     flag_descriptions::kWebUiNtpAndroidThemingName,
      flag_descriptions::kWebUiNtpAndroidThemingDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kWebUiNtpAndroidTheming)},
 
@@ -13399,6 +13400,12 @@ const FeatureEntry kFeatureEntries[] = {
      kOsAll,
      FEATURE_VALUE_TYPE(switches::kEnableAccountPreviewPreferredAccount)},
 
+#if BUILDFLAG(IS_ANDROID)
+    {"universal-keyboard-handling",
+     flag_descriptions::kUniversalKeyboardHandlingName,
+     flag_descriptions::kUniversalKeyboardHandlingDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kUniversalKeyboardHandling)},
+#endif
     // Add new entries above this line.
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag

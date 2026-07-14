@@ -716,6 +716,7 @@ public abstract class ChromeFeatureList {
     public static final String TRUSTED_WEB_ACTIVITY_CONTACTS_DELEGATION =
             "TrustedWebActivityContactsDelegation";
     public static final String UMA_SESSION_CORRECTNESS_FIXES = "UmaSessionCorrectnessFixes";
+    public static final String UNIVERSAL_KEYBOARD_HANDLING = "UniversalKeyboardHandling";
     public static final String UNPARCEL_INTENT_FILE_DESCRIPTORS = "UnparcelIntentFileDescriptors";
     public static final String UPDATE_COMPOSTIROR_FOR_SURFACE_CONTROL =
             "UpdateCompositorForSurfaceControl";
