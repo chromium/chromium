@@ -11,7 +11,7 @@
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
 #if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/ui/webui/drive_picker_host/drive_disclaimer_controller.h"
+#include "components/contextual_search/footprints/public/drive_disclaimer_controller.h"
 #endif
 #include "chrome/browser/ui/webui/omnibox/aim_eligibility/aim_eligibility.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"

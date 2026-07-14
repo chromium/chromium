@@ -45,7 +45,7 @@
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/views/drive_picker_host/drive_picker_result_handler.mojom.h"
-#include "chrome/browser/ui/webui/drive_picker_host/drive_disclaimer_controller.h"
+#include "components/contextual_search/footprints/public/drive_disclaimer_controller.h"
 #endif
 
 class Profile;

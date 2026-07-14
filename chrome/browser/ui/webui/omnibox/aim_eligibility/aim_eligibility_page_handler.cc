@@ -10,7 +10,7 @@
 #include "base/base64url.h"
 #include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
-#include "base/task/single_thread_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -139,9 +139,18 @@ AimEligibilityPageHandler::QueryEligibilityState() {
   #if !BUILDFLAG(IS_ANDROID)
   if (!disclaimer_check_started_) {
     disclaimer_check_started_ = true;
-    drive_disclaimer_controller_->CheckDisclaimerStatusAsync(
-        base::BindOnce(&AimEligibilityPageHandler::OnDisclaimerStatusChecked,
-                       weak_ptr_factory_.GetWeakPtr()));
+    if (base::FeatureList::IsEnabled(omnibox::kForceDriveDisclaimerAccepted)) {
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE,
+          base::BindOnce(&AimEligibilityPageHandler::OnDisclaimerStatusChecked,
+                         weak_ptr_factory_.GetWeakPtr(),
+                         drive_picker::DriveDisclaimerController::
+                             DisclaimerStatus::kAccepted));
+    } else {
+      drive_disclaimer_controller_->CheckDisclaimerStatusAsync(
+          base::BindOnce(&AimEligibilityPageHandler::OnDisclaimerStatusChecked,
+                         weak_ptr_factory_.GetWeakPtr()));
+    }
   }
   #endif
 

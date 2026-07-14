@@ -5,6 +5,8 @@
 source_set("public") {
   sources = [
     "constants.h",
+    "drive_disclaimer_controller.cc",
+    "drive_disclaimer_controller.h",
     "fpop_service.h",
   ]
 

@@ -2,7 +2,16 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-group("unit_tests") {
+source_set("unit_tests") {
   testonly = true
-  deps = [ "internal:unit_tests" ]
+  sources = [ "public/drive_disclaimer_controller_unittest.cc" ]
+  deps = [
+    "internal:unit_tests",
+    "public",
+    "//base",
+    "//base/test:test_support",
+    "//components/contextual_search/footprints/public/proto:footprints_oneplatform_proto",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
 }

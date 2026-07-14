@@ -2,22 +2,24 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/drive_picker_host/drive_disclaimer_controller.h"
+#include "components/contextual_search/footprints/public/drive_disclaimer_controller.h"
 
 #include <utility>
 
 #include "base/check.h"
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
-#include "base/task/sequenced_task_runner.h"
-#include "components/omnibox/common/omnibox_features.h"
+#include "build/build_config.h"
 
 namespace drive_picker {
 
 namespace {
+#if BUILDFLAG(IS_IOS)
+constexpr char kApplicationId[] = "chrome_ios_disclaimer";
+#else
 constexpr char kApplicationId[] = "chrome_desktop_disclaimer";
+#endif
 }  // namespace
 
 // static
@@ -45,16 +47,6 @@ void DriveDisclaimerController::CheckDisclaimerStatusAsync(
     base::OnceCallback<void(DisclaimerStatus status)> completion_callback) {
   DVLOG(1) << "DriveDisclaimerController::CheckDisclaimerStatusAsync: Checking "
               "FACS status for PersonalContextSearchUsingWorkspace.";
-  // This flag is used for testing purposes only to force the disclaimer to be
-  // accepted.
-  if (base::FeatureList::IsEnabled(omnibox::kForceDriveDisclaimerAccepted)) {
-    DVLOG(1) << "DriveDisclaimerController::CheckDisclaimerStatusAsync: "
-                "kForceDriveDisclaimerAccepted is enabled, forcing kAccepted.";
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(completion_callback),
-                                  DisclaimerStatus::kAccepted));
-    return;
-  }
 
   footprints::oneplatform::GetFacsRequest request;
   request.add_setting(contextual_search::kPersonalContextSearchUsingWorkspace);

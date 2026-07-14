@@ -99,8 +99,8 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/drive_picker_host/drive_picker_host_controller.h"
 #include "chrome/browser/ui/views/drive_picker_host/drive_picker_sanitizer.h"
-#include "chrome/browser/ui/webui/drive_picker_host/drive_disclaimer_controller.h"
 #include "chrome/browser/ui/webui/drive_picker_host/drive_picker_host_request.h"
+#include "components/contextual_search/footprints/public/drive_disclaimer_controller.h"
 #include "components/contextual_search/footprints/public/fpop_service.h"
 #include "content/public/browser/storage_partition.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
@@ -1229,7 +1229,10 @@ void ContextualSearchboxHandler::InitializeInputStateModel() {
 #if !BUILDFLAG(IS_ANDROID)
   if (base::FeatureList::IsEnabled(
           omnibox::kComposeboxDriveContextMenuOption)) {
-    if (auto* controller = GetDriveDisclaimerController()) {
+    if (base::FeatureList::IsEnabled(omnibox::kForceDriveDisclaimerAccepted)) {
+      OnDriveDisclaimerChecked(
+          drive_picker::DriveDisclaimerController::DisclaimerStatus::kAccepted);
+    } else if (auto* controller = GetDriveDisclaimerController()) {
       controller->CheckDisclaimerStatusAsync(
           base::BindOnce(&ContextualSearchboxHandler::OnDriveDisclaimerChecked,
                          weak_ptr_factory_.GetWeakPtr()));
@@ -1519,6 +1522,10 @@ void ContextualSearchboxHandler::GetDriveDisclaimerStatus(
 #if BUILDFLAG(IS_ANDROID)
   std::move(callback).Run(searchbox::mojom::DriveDisclaimerStatus::kRestricted);
 #else
+  if (base::FeatureList::IsEnabled(omnibox::kForceDriveDisclaimerAccepted)) {
+    std::move(callback).Run(searchbox::mojom::DriveDisclaimerStatus::kAccepted);
+    return;
+  }
   auto* controller = GetDriveDisclaimerController();
   if (!controller) {
     std::move(callback).Run(

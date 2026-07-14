@@ -486,10 +486,12 @@ bool InputStateModel::IsDriveSupported() const {
   // even if they have not consented, since selecting it will trigger the
   // disclaimer flow. Otherwise, the user must have consented to see Drive in
   // the menu. In either case, we do not show Drive if the user is restricted.
-  bool consented = drive_consent_state_ == DriveConsentState::kConsent ||
-                   (base::FeatureList::IsEnabled(
-                        omnibox::kComposeboxDriveContextMenuOptionDisclaimer) &&
-                    drive_consent_state_ != DriveConsentState::kRestricted);
+  bool consented =
+      drive_consent_state_ == DriveConsentState::kConsent ||
+      base::FeatureList::IsEnabled(omnibox::kForceDriveDisclaimerAccepted) ||
+      (base::FeatureList::IsEnabled(
+           omnibox::kComposeboxDriveContextMenuOptionDisclaimer) &&
+       drive_consent_state_ != DriveConsentState::kRestricted);
 
   return identity_matches && !incognito && feature_enabled && consented;
 }
