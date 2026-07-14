@@ -98,8 +98,9 @@ class ASH_EXPORT MediaNotificationProvider {
 
   // Use MediaNotificationProvider as a bridge to update the source origin of a
   // media notification item.
-  virtual void UpdateMediaItemSourceOrigin(const std::string& id,
-                                           const url::Origin& origin) = 0;
+  virtual void UpdateMediaItemSourceOrigin(
+      const std::string& id,
+      const std::optional<url::Origin>& origin) = 0;
 };
 
 }  // namespace ash

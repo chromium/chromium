@@ -212,6 +212,10 @@ class MediaNotificationServiceCastTest : public MediaNotificationServiceTest {
                                         url::Origin::Create(GURL()));
   }
 
+  bool HasPresentationContextForSession(const std::string& session_id) {
+    return service()->HasPresentationContextForSession(session_id);
+  }
+
   std::unique_ptr<StartPresentationContext> CreateStartPresentationContext(
       content::PresentationRequest presentation_request,
       StartPresentationContext::PresentationConnectionCallback success_cb =
@@ -764,4 +768,94 @@ TEST_F(MediaNotificationServiceCastTest, OnSinksDiscoveredForLocalMedia) {
 
   service()->OnSinksDiscovered(id.ToString());
   EXPECT_TRUE(service()->should_show_cast_local_media_iph());
+}
+
+TEST_F(MediaNotificationServiceCastTest, PresentationRequestOriginLifecycle) {
+  auto id = SimulatePlayingControllableMediaForWebContents(web_contents());
+  auto* item = GetNotificationSessionItem(id);
+  ASSERT_TRUE(item);
+  EXPECT_FALSE(item->optional_presentation_request_origin().has_value());
+
+  content::PresentationRequest presentation_request(
+      main_rfh()->GetGlobalId(),
+      {GURL("https://example.com"), GURL("https://example.com")},
+      url::Origin::Create(GURL("https://example.com")));
+  auto context = CreateStartPresentationContext(presentation_request);
+  auto origin = context->presentation_request().frame_origin;
+  service()->OnStartPresentationContextCreated(std::move(context));
+
+  // The origin override is set and the context is alive.
+  EXPECT_EQ(item->optional_presentation_request_origin(), origin);
+  EXPECT_TRUE(HasPresentationContextForSession(id.ToString()));
+
+  // Creating the cast dialog controller consumes the context, so the origin
+  // override is reset.
+  auto dialog_controller = CreateCastDialogControllerForSession(id.ToString());
+  EXPECT_FALSE(item->optional_presentation_request_origin().has_value());
+}
+
+TEST_F(MediaNotificationServiceCastTest,
+       PresentationRequestOriginNotResetByNewDummyRequest) {
+  auto id = SimulatePlayingControllableMediaForWebContents(web_contents());
+  auto* item = GetNotificationSessionItem(id);
+  ASSERT_TRUE(item);
+  EXPECT_FALSE(item->optional_presentation_request_origin().has_value());
+
+  content::PresentationRequest presentation_request1(
+      main_rfh()->GetGlobalId(),
+      {GURL("https://example.com"), GURL("https://example.com")},
+      url::Origin::Create(GURL("https://example.com")));
+  auto context1 = CreateStartPresentationContext(presentation_request1);
+  auto origin1 = context1->presentation_request().frame_origin;
+  service()->OnStartPresentationContextCreated(std::move(context1));
+
+  // The origin override is set and the context is alive.
+  EXPECT_EQ(item->optional_presentation_request_origin(), origin1);
+  EXPECT_TRUE(HasPresentationContextForSession(id.ToString()));
+
+  // Create a second WebContents and a second presentation request for it.
+  // There is no controllable media on this second WebContents.
+  std::unique_ptr<content::WebContents> web_contents2(CreateTestWebContents());
+  content::PresentationRequest presentation_request2(
+      web_contents2->GetPrimaryMainFrame()->GetGlobalId(),
+      {GURL("https://example2.com"), GURL("https://example2.com")},
+      url::Origin::Create(GURL("https://example2.com")));
+  auto context2 = CreateStartPresentationContext(presentation_request2);
+
+  // When we send the second request, since it doesn't have an active
+  // controllable session on web_contents2, it should go to
+  // presentation_request_notification_producer_ and we expect the previous
+  // presentation context for web_contents1 to remain intact.
+  service()->OnStartPresentationContextCreated(std::move(context2));
+
+  // The origin override on the first item should remain unchanged.
+  EXPECT_EQ(item->optional_presentation_request_origin(), origin1);
+  EXPECT_TRUE(HasPresentationContextForSession(id.ToString()));
+}
+
+TEST_F(MediaNotificationServiceCastTest,
+       HasPresentationContextForSessionWithInactiveFrame) {
+  auto id = SimulatePlayingControllableMediaForWebContents(web_contents());
+  auto* item = GetNotificationSessionItem(id);
+  ASSERT_TRUE(item);
+  EXPECT_FALSE(item->optional_presentation_request_origin().has_value());
+
+  content::PresentationRequest presentation_request(
+      main_rfh()->GetGlobalId(),
+      {GURL("https://example.com"), GURL("https://example.com")},
+      url::Origin::Create(GURL("https://example.com")));
+  auto context = CreateStartPresentationContext(presentation_request);
+  auto origin = context->presentation_request().frame_origin;
+  service()->OnStartPresentationContextCreated(std::move(context));
+
+  // The origin override is set and the context is alive.
+  EXPECT_EQ(item->optional_presentation_request_origin(), origin);
+  EXPECT_TRUE(HasPresentationContextForSession(id.ToString()));
+
+  // Simulate the WebContents being deleted.
+  DeleteContents();
+
+  // The session no longer has a presentation context because the initiating
+  // frame is deleted.
+  EXPECT_FALSE(HasPresentationContextForSession(id.ToString()));
 }

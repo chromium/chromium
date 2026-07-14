@@ -447,6 +447,8 @@ void MediaNotificationService::OnStartPresentationContextCreated(
       return;
     }
 
+    ResetPresentationContext();
+
     // If there exists a media session notification associated with
     // |web_contents|, hold onto the context for later use.
     context_ = std::move(context);
@@ -456,6 +458,7 @@ void MediaNotificationService::OnStartPresentationContextCreated(
     // the top frame.
     std::string item_id =
         GetActiveControllableSessionForWebContents(web_contents);
+    context_item_id_ = item_id;
     media_session_item_producer_->UpdateMediaItemSourceOrigin(
         item_id, context_->presentation_request().frame_origin);
 #if BUILDFLAG(IS_CHROMEOS)
@@ -519,8 +522,11 @@ MediaNotificationService::CreateCastDialogControllerForSession(
   }
 
   if (HasPresentationContextForSession(id)) {
-    return media_router::MediaRouterUI::CreateWithStartPresentationContext(
-        web_contents, std::move(context_));
+    auto dialog_controller =
+        media_router::MediaRouterUI::CreateWithStartPresentationContext(
+            web_contents, std::move(context_));
+    ResetPresentationContext();
+    return dialog_controller;
   }
 
   auto remote_playback_metadata =
@@ -602,13 +608,27 @@ bool MediaNotificationService::HasPresentationContextForSession(
   auto* initiator_rfh = content::RenderFrameHost::FromID(
       context_->presentation_request().render_frame_host_id);
   if (!initiator_rfh || !initiator_rfh->IsActive()) {
-    context_.reset();
+    ResetPresentationContext();
     return false;
   }
   auto* web_contents =
       content::MediaSession::GetWebContentsFromRequestId(session_id);
   return web_contents && content::WebContents::FromRenderFrameHost(
                              initiator_rfh) == web_contents;
+}
+
+void MediaNotificationService::ResetPresentationContext() {
+  context_.reset();
+  if (!context_item_id_.empty()) {
+    media_session_item_producer_->UpdateMediaItemSourceOrigin(context_item_id_,
+                                                              std::nullopt);
+#if BUILDFLAG(IS_CHROMEOS)
+    if (auto* provider = ash::MediaNotificationProvider::Get(); provider) {
+      provider->UpdateMediaItemSourceOrigin(context_item_id_, std::nullopt);
+    }
+#endif
+    context_item_id_.clear();
+  }
 }
 
 void MediaNotificationService::set_device_provider_for_testing(

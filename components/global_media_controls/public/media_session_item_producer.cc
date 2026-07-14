@@ -441,7 +441,7 @@ void MediaSessionItemProducer::SetIsIdBlockedCallback(
 
 void MediaSessionItemProducer::UpdateMediaItemSourceOrigin(
     const std::string& id,
-    const url::Origin& origin) {
+    const std::optional<url::Origin>& origin) {
   auto it = sessions_.find(id);
   if (it != sessions_.end())
     it->second.item()->UpdatePresentationRequestOrigin(origin);

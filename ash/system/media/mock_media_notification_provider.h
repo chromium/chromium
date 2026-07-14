@@ -36,7 +36,7 @@ class MockMediaNotificationProvider : public MediaNotificationProvider {
               ());
   MOCK_METHOD(void,
               UpdateMediaItemSourceOrigin,
-              (const std::string&, const url::Origin&),
+              (const std::string&, const std::optional<url::Origin>&),
               (override));
 
   void AddObserver(MediaNotificationProviderObserver* observer) override {}

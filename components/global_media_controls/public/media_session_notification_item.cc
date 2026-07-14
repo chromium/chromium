@@ -155,8 +155,8 @@ void MediaSessionNotificationItem::UpdateDeviceName(
 }
 
 void MediaSessionNotificationItem::UpdatePresentationRequestOrigin(
-    const url::Origin& origin) {
-  if (!media_message_center::IsOriginGoodForDisplay(origin)) {
+    const std::optional<url::Origin>& origin) {
+  if (origin && !media_message_center::IsOriginGoodForDisplay(*origin)) {
     return;
   }
 
@@ -223,8 +223,6 @@ void MediaSessionNotificationItem::SetView(
     }
     if (session_favicon_.has_value())
       view_->UpdateWithFavicon(*session_favicon_);
-  } else {
-    optional_presentation_request_origin_.reset();
   }
 }
 

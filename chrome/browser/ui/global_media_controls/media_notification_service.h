@@ -174,6 +174,9 @@ class MediaNotificationService
   // True if there is a presentation context for the given session ID.
   bool HasPresentationContextForSession(const std::string& session_id);
 
+  // Resets the presentation context and related states.
+  void ResetPresentationContext();
+
   // True if there are cast notifications associated with |web_contents|.
   bool HasCastNotificationsForWebContents(
       content::WebContents* web_contents) const;
@@ -211,6 +214,9 @@ class MediaNotificationService
 
   // Used to initialize a MediaRouterUI.
   std::unique_ptr<media_router::StartPresentationContext> context_;
+
+  // The ID of the media session item currently associated with `context_`.
+  std::string context_item_id_;
 
   // Generates a list of available audio devices.
   std::unique_ptr<MediaNotificationDeviceProvider> device_provider_;

@@ -119,10 +119,14 @@ TEST_F(MediaSessionNotificationItemTest,
   item().MediaSessionMetadataChanged(metadata);
   item().SetView(nullptr);
 
-  // Make sure that presentation request origin was reset after the view is set
-  // to null in SetView().
-  EXPECT_CALL(view(), UpdateWithMediaMetadata(metadata)).Times(1);
+  // Make sure that presentation request origin persists after the view is set
+  // to null and then set back to non-null.
+  EXPECT_CALL(view(), UpdateWithMediaMetadata(updated_metadata)).Times(1);
   item().SetView(&view());
+
+  // Make sure that presentation request origin can be reset.
+  EXPECT_CALL(view(), UpdateWithMediaMetadata(metadata)).Times(1);
+  item().UpdatePresentationRequestOrigin(std::nullopt);
 }
 
 TEST_F(MediaSessionNotificationItemTest, Freezing_DoNotUpdateImage) {

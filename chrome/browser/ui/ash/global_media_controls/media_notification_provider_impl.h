@@ -75,8 +75,9 @@ class ASH_EXPORT MediaNotificationProviderImpl
   std::unique_ptr<global_media_controls::MediaItemUIFooter> BuildFooterView(
       const std::string& id,
       base::WeakPtr<media_message_center::MediaNotificationItem> item) override;
-  void UpdateMediaItemSourceOrigin(const std::string& id,
-                                   const url::Origin& origin) override;
+  void UpdateMediaItemSourceOrigin(
+      const std::string& id,
+      const std::optional<url::Origin>& origin) override;
 
   // global_media_controls::MediaDialogDelegate:
   global_media_controls::MediaItemUI* ShowMediaItem(

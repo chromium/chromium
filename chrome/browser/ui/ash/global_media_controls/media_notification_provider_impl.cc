@@ -193,7 +193,7 @@ MediaNotificationProviderImpl::BuildFooterView(
 
 void MediaNotificationProviderImpl::UpdateMediaItemSourceOrigin(
     const std::string& id,
-    const url::Origin& origin) {
+    const std::optional<url::Origin>& origin) {
   if (media_session_item_producer_) {
     media_session_item_producer_->UpdateMediaItemSourceOrigin(id, origin);
   }

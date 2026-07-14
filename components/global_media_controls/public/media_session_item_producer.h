@@ -106,7 +106,7 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaSessionItemProducer
   // as to show the origin associated with the request rather than that for the
   // top frame.
   void UpdateMediaItemSourceOrigin(const std::string& id,
-                                   const url::Origin& origin);
+                                   const std::optional<url::Origin>& origin);
 
  private:
   friend class MediaSessionItemProducerTest;
