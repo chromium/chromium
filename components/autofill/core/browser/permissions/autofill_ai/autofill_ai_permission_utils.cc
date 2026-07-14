@@ -12,6 +12,7 @@
 
 #include "base/check.h"
 #include "base/containers/fixed_flat_set.h"
+#include "base/containers/flat_set.h"
 #include "base/feature.h"
 #include "base/feature_list.h"
 #include "base/functional/function_ref.h"
@@ -19,7 +20,9 @@
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
+#include "base/system/sys_info.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "build/buildflag.h"
 #include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
@@ -95,6 +98,18 @@ base::flat_set<int32_t> GetAutofillAmbientAutofillEligibleTiers() {
     }
   }
   return eligible_tiers;
+}
+
+[[nodiscard]] bool IsAndroidDeviceEligibleForAmbientAutofill() {
+#if BUILDFLAG(IS_ANDROID)
+  const std::string model_name = base::SysInfo::HardwareModelName();
+  const base::flat_set<std::string> enabled_devices =
+      base::SplitString(features::kAutofillAmbientAutofillEnabledDevices.Get(),
+                        ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+  return enabled_devices.contains(model_name);
+#else
+  return false;
+#endif
 }
 
 // Checks whether `country_code` belongs to a country where Wallet is
@@ -546,14 +561,16 @@ base::flat_set<int32_t> GetAutofillAmbientAutofillEligibleTiers() {
                           "Subscription eligibility service not available.");
         return false;
       }
-
       const int32_t tier = subscription_service->GetAiSubscriptionTier();
-      if (!GetAutofillAmbientAutofillEligibleTiers().contains(tier)) {
-        MaybeOutputReason(debug_message,
-                          "User subscription tier is not eligible.");
-        return false;
+      if (GetAutofillAmbientAutofillEligibleTiers().contains(tier) ||
+          IsAndroidDeviceEligibleForAmbientAutofill()) {
+        break;
       }
-      break;
+
+      MaybeOutputReason(debug_message,
+                        "User subscription tier is not eligible and device is "
+                        "not eligible.");
+      return false;
     }
     case AutofillAiAction::kOptIn: {
       if (!GetAccountGaiaIdHash(identity_manager).has_value()) {

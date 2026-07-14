@@ -10,9 +10,12 @@
 #include <utility>
 
 #include "base/feature_list.h"
+#include "base/system/sys_info.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "build/build_config.h"
+#include "build/buildflag.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
 #include "components/autofill/core/browser/test_utils/autofill_testing_pref_service.h"
@@ -682,6 +685,45 @@ TEST_F(AutofillAiPermissionUtilsTest, kAmbientAutofill_G1Tiers) {
         client(), AutofillAiAction::kAmbientAutofill));
   }
 }
+
+TEST_F(AutofillAiPermissionUtilsTest,
+       kAmbientAutofill_IneligibleTierAndDevice) {
+  client().set_personal_context_eligibility_state(
+      personal_context::PersonalContextEligibilityState::kEligible);
+
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kAutofillAmbientAutofill,
+      {{"ambient_autofill_eligible_tiers", "2"},
+       {"ambient_autofill_enabled_devices", "NonExistentDevice"}});
+
+  client().GetPrefs()->SetInteger(
+      subscription_eligibility::prefs::kAiSubscriptionTier, 1);
+
+  EXPECT_FALSE(
+      MayPerformAutofillAiAction(client(), AutofillAiAction::kAmbientAutofill));
+}
+
+#if BUILDFLAG(IS_ANDROID)
+TEST_F(AutofillAiPermissionUtilsTest, kAmbientAutofill_AndroidDeviceEligible) {
+  client().set_personal_context_eligibility_state(
+      personal_context::PersonalContextEligibilityState::kEligible);
+
+  const std::string actual_model_name = base::SysInfo::HardwareModelName();
+
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kAutofillAmbientAutofill,
+      {{"ambient_autofill_eligible_tiers", "2"},
+       {"ambient_autofill_enabled_devices", actual_model_name}});
+
+  client().GetPrefs()->SetInteger(
+      subscription_eligibility::prefs::kAiSubscriptionTier, 1);
+
+  EXPECT_TRUE(
+      MayPerformAutofillAiAction(client(), AutofillAiAction::kAmbientAutofill));
+}
+#endif  // BUILDFLAG(IS_ANDROID)
 
 TEST_F(AutofillAiPermissionUtilsTest,
        AmbientAutofillRequiresPersonalContextPref) {
