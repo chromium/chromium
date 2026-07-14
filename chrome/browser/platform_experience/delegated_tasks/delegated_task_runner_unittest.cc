@@ -78,6 +78,10 @@ MULTIPROCESS_TEST_MAIN(InvalidTaskProcess) {
   return static_cast<int>(PehExitCode::kInvalidTaskType);
 }
 
+MULTIPROCESS_TEST_MAIN(InvalidArgsProcess) {
+  return static_cast<int>(PehExitCode::kInvalidArgs);
+}
+
 MULTIPROCESS_TEST_MAIN(TimeoutProcess) {
   // Sleep for longer than the task timeout.
   base::PlatformThread::Sleep(base::Seconds(kTaskTimeoutSeconds * 2));
@@ -179,6 +183,31 @@ TEST_F(DelegatedTaskRunnerTest, InvalidTask) {
   EXPECT_FALSE(result.exit_code_or_status.has_value());
   EXPECT_EQ(result.exit_code_or_status.error(),
             DelegatedTaskStatus::kInvalidTaskType);
+}
+
+TEST_F(DelegatedTaskRunnerTest, InvalidArgs) {
+  auto mock_launcher = std::make_unique<MockPehLauncher>();
+  EXPECT_CALL(*mock_launcher, GetBinaryPath())
+      .WillOnce(Return(base::FilePath(kFakeBinaryPath)));
+
+  EXPECT_CALL(*mock_launcher, LaunchProcess(_, _))
+      .WillOnce([&](const base::CommandLine& cmd_line,
+                    const base::LaunchOptions& options) {
+        return base::SpawnMultiProcessTestChild(
+            "InvalidArgsProcess",
+            base::GetMultiProcessTestChildBaseCommandLine(), options);
+      });
+
+  auto runner = std::make_unique<DelegatedTaskRunner>(std::move(mock_launcher));
+  auto task = std::make_unique<TestDelegatedTask>();
+  base::test::TestFuture<DelegatedTaskResult> future;
+
+  runner->Run(std::move(task), future.GetCallback());
+
+  auto result = future.Get();
+  EXPECT_FALSE(result.exit_code_or_status.has_value());
+  EXPECT_EQ(result.exit_code_or_status.error(),
+            DelegatedTaskStatus::kInvalidArgs);
 }
 
 TEST_F(DelegatedTaskRunnerMockTimeTest, Timeout) {

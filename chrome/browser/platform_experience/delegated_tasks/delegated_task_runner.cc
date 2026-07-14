@@ -108,6 +108,10 @@ void DelegatedTaskRunner::OnObjectSignaled(HANDLE object) {
         exit_code_or_status =
             base::unexpected(DelegatedTaskStatus::kInvalidTaskType);
         break;
+      case static_cast<int>(PehExitCode::kInvalidArgs):
+        exit_code_or_status =
+            base::unexpected(DelegatedTaskStatus::kInvalidArgs);
+        break;
       default:
         exit_code_or_status = static_cast<int>(exit_code);
         break;

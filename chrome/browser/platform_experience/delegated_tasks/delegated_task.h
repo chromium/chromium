@@ -23,7 +23,8 @@ enum class DelegatedTaskStatus {
   kWatchProcessHandleFailure = 5,
   kTaskTimeout = 6,
   kInvalidTaskType = 7,
-  kMaxValue = kInvalidTaskType,
+  kInvalidArgs = 8,
+  kMaxValue = kInvalidArgs,
 };
 
 enum class DelegatedTaskType {
@@ -34,6 +35,7 @@ enum class DelegatedTaskType {
 // Standard exit codes returned by PEH.
 enum class PehExitCode {
   kInvalidTaskType = 1,
+  kInvalidArgs = 2,
 };
 
 std::optional<DelegatedTaskType> ParseDelegatedTaskType(
