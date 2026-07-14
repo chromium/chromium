@@ -6,13 +6,17 @@
 
 #include <memory>
 #include <optional>
+#include <vector>
 
+#include "base/base64.h"
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "chrome/browser/actor/actor_keyed_service.h"
+#include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/glic/experimental_opt_in/glic_experimental_opt_in_controller.h"
 #include "chrome/browser/glic/glic_pref_names.h"
@@ -28,6 +32,7 @@
 #include "components/sharing_message/proto/sharing_message.pb.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "crypto/keypair.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -78,6 +83,9 @@ class GlicExperimentalTriggeringMessageHandlerBrowserTest
             "./glic_experimental_triggering_message_handler_browsertest.js") {
     feature_list_.InitWithFeaturesAndParameters(
         {{features::kGlicExperimentalTriggering, {}},
+         {features::kGlicExperimentalTriggeringScreenshot, {}},
+         {features::kGlicActor,
+          {{features::kGlicActorPolicyControlExemption.name, "true"}}},
          {features::kGlicExperimentalTriggeringOptInTabFocus,
           {{"glic-experimental-triggering-tab-focus-hosts",
             "127.0.0.1,localhost"},
@@ -955,6 +963,116 @@ IN_PROC_BROWSER_TEST_F(GlicExperimentalTriggeringMessageHandlerBrowserTest,
   ASSERT_OK(WaitForGlicInstanceBoundToTab(new_tab));
 
   ExecuteJsTest();
+}
+
+IN_PROC_BROWSER_TEST_F(GlicExperimentalTriggeringMessageHandlerBrowserTest,
+                       testHandlesGetScreenshotRequestSuccessfully) {
+  OptIn();
+
+  // 1. Send an actuation request to open Glic and bind it to the tab.
+  auto actuation_message = CreateTriggeringMessage(101);
+  actuation_message.mutable_glic_experimental_triggering()
+      ->mutable_request()
+      ->mutable_trigger_actuation_request();
+
+  base::test::TestFuture<components_sharing_message::ServerChannelConfiguration,
+                         components_sharing_message::SharingMessage>
+      actuation_future;
+  SetupMessageSenderMock(&actuation_future);
+
+  int initial_tab_count = GetTabListInterface()->GetTabCount();
+  auto actuation_reply = SendMessageAndWait(std::move(actuation_message));
+  ASSERT_TRUE(actuation_reply);
+  ASSERT_TRUE(actuation_reply->has_glic_experimental_triggering());
+  std::string context_id =
+      actuation_reply->glic_experimental_triggering().context_id();
+
+  // Verify that the instance is bound to the tab.
+  ASSERT_EQ(GetTabListInterface()->GetTabCount(), initial_tab_count + 1);
+  auto* new_tab = GetTabListInterface()->GetTab(initial_tab_count);
+  ASSERT_TRUE(new_tab);
+  ASSERT_OK(WaitForGlicInstanceBoundToTab(new_tab));
+
+  // Activate the background tab where Glic is opened so it is focused and
+  // eligible for screenshot.
+  GetTabListInterface()->ActivateTab(new_tab->GetHandle());
+  ASSERT_EQ(GetTabListInterface()->GetActiveTab(), new_tab);
+
+  // Run the JS side to subscribe.
+  ExecuteJsTest();
+
+  // Consume the actuation completion update.
+  ASSERT_TRUE(actuation_future.Wait());
+  auto [actuation_channel, actuation_response] = actuation_future.Take();
+  EXPECT_EQ(actuation_channel.configuration(), "test_config");
+  ASSERT_TRUE(actuation_response.has_glic_experimental_triggering());
+
+  auto* glic_service = glic::GlicKeyedService::Get(GetProfile());
+  ASSERT_TRUE(glic_service);
+  glic::GlicInstance* instance = glic_service->GetInstanceForTab(new_tab);
+  ASSERT_TRUE(instance);
+  TestResult<actor::TaskId> task_id = CreateActorTask(instance);
+  ASSERT_OK(task_id);
+  actor::ActorKeyedService* actor_service =
+      actor::ActorKeyedService::Get(GetProfile());
+  ASSERT_TRUE(actor_service);
+  actor::ActorTask* task = actor_service->GetTask(task_id.value());
+  ASSERT_TRUE(task);
+  task->ObserveTabOnce(new_tab->GetHandle());
+
+  // 2. Prepare and send the GetScreenshotRequest.
+  // Use deterministic test vector (X9.62 uncompressed P-256 point) instead of
+  // dynamically generating randomized key pairs.
+  std::string public_key_str;
+  ASSERT_TRUE(base::Base64Decode(
+      "BFlvj1VrkwP8pxa1zSiJZzZ7yeMEO1DOPSbNw6XV8NK3Xo++7ql9NTcxNaciYM2eQ/"
+      "G1ebnwrtRrHyMXEDhN5ck=",
+      &public_key_str));
+  std::string auth_secret_str(16, 'a');
+
+  auto screenshot_message = CreateTriggeringMessage(102);
+  screenshot_message.mutable_glic_experimental_triggering()->set_context_id(
+      context_id);
+  auto* screenshot_req =
+      screenshot_message.mutable_glic_experimental_triggering()
+          ->mutable_request()
+          ->mutable_get_screenshot_request();
+  screenshot_req->set_public_key(public_key_str);
+  screenshot_req->set_auth_secret(auth_secret_str);
+
+  base::test::TestFuture<components_sharing_message::ServerChannelConfiguration,
+                         components_sharing_message::SharingMessage>
+      screenshot_future;
+  SetupMessageSenderMock(&screenshot_future);
+
+  // Send the screenshot request.
+  auto screenshot_reply = SendMessageAndWait(std::move(screenshot_message));
+  ASSERT_TRUE(screenshot_reply);
+  ASSERT_TRUE(screenshot_reply->has_glic_experimental_triggering());
+  EXPECT_EQ(screenshot_reply->glic_experimental_triggering()
+                .response()
+                .task_update()
+                .state(),
+            components_sharing_message::GlicExperimentalTriggering::
+                ExperimentalTriggeringResponse::TaskUpdate::STARTING);
+
+  // 3. Verify the screenshot response contains the uploaded token.
+  ASSERT_TRUE(screenshot_future.Wait());
+  auto [server_channel, received_message] = screenshot_future.Take();
+  EXPECT_EQ(server_channel.configuration(), "test_config");
+  ASSERT_TRUE(received_message.has_glic_experimental_triggering());
+  ASSERT_TRUE(received_message.glic_experimental_triggering().has_response());
+
+  const auto& response =
+      received_message.glic_experimental_triggering().response();
+  ASSERT_TRUE(response.has_screenshot_result());
+
+  const auto& result = response.screenshot_result();
+  EXPECT_EQ(result.status(),
+            components_sharing_message::GlicExperimentalTriggering::
+                ExperimentalTriggeringResponse::ScreenshotResult::SUCCESS);
+  EXPECT_EQ(result.file_token(), "mock_file_token_from_client");
+  EXPECT_TRUE(result.error_message().empty());
 }
 
 class GlicExperimentalTriggeringOpenWindowTest

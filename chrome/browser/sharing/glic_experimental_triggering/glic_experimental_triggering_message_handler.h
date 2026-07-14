@@ -5,9 +5,12 @@
 #ifndef CHROME_BROWSER_SHARING_GLIC_EXPERIMENTAL_TRIGGERING_GLIC_EXPERIMENTAL_TRIGGERING_MESSAGE_HANDLER_H_
 #define CHROME_BROWSER_SHARING_GLIC_EXPERIMENTAL_TRIGGERING_GLIC_EXPERIMENTAL_TRIGGERING_MESSAGE_HANDLER_H_
 
+#include <functional>
 #include <map>
+#include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -55,7 +58,7 @@ class GlicExperimentalTriggeringMessageHandler : public SharingMessageHandler {
  private:
   friend class ExperimentalTriggeringUpdatesHandler;
 
-  void OnUpdatesHandlerCleanup(std::string context_id);
+  void OnUpdatesHandlerCleanup(std::string_view context_id);
 
   // Returns true if the incoming experimental triggering version is supported
   // by the client. Returns false if the incoming version is newer than the
@@ -69,7 +72,9 @@ class GlicExperimentalTriggeringMessageHandler : public SharingMessageHandler {
 
   const raw_ptr<Profile> profile_;
   const raw_ptr<SharingMessageSender> message_sender_;
-  std::map<std::string, std::unique_ptr<ExperimentalTriggeringUpdatesHandler>>
+  std::map<std::string,
+           std::unique_ptr<ExperimentalTriggeringUpdatesHandler>,
+           std::less<>>
       context_id_to_updates_handler_map_;
   base::WeakPtrFactory<GlicExperimentalTriggeringMessageHandler>
       weak_ptr_factory_{this};

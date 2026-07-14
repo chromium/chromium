@@ -11,6 +11,7 @@ import {ApiTestFixtureBase, assertDefined, assertEquals, runUntil, testMain, Web
 class TriggeringUpdatesClient extends WebClient {
   triggeringUpdatesSubject = new Subject<ExperimentalTriggeringUpdate>();
   isSubscribed = false;
+  override mockFileToken = 'mock_file_token_from_client';
 
   async getExperimentalTriggeringUpdates():
       Promise<Observable2<ExperimentalTriggeringUpdate>> {
@@ -108,6 +109,14 @@ class TriggeringUpdatesTest extends ApiTestFixtureBase {
     assertDefined(metadata);
     assertEquals('test_init_id', metadata.conversationId);
     assertEquals('test_init_title', metadata.conversationTitle);
+  }
+
+  async testHandlesGetScreenshotRequestSuccessfully() {
+    await runUntil(() => client.isSubscribed);
+    client.triggeringUpdatesSubject.next({
+      type: ExperimentalTriggeringUpdateType.WORKLOG,
+      data: 'ready_for_screenshot',
+    });
   }
 }
 
