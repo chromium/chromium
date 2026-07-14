@@ -153,6 +153,7 @@ source_set("unit_tests") {
     "autofill_driver_ios_unittest.mm",
     "autofill_util_unittest.mm",
     "autofill_xhr_sumission_detection_unittest.mm",
+    "credit_card_save_metrics_ios_unittest.mm",
     "form_fetch_batcher_unittest.mm",
     "form_suggestion_provider_query_unittest.mm",
     "password_autofill_agent_unittest.mm",
