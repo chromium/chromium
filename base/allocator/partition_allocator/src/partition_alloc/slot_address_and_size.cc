@@ -80,8 +80,16 @@ SlotAddressAndSize SlotAddressAndSize::From(uintptr_t address,
   size_t offset_in_slot_span = address - slot_span_start.value();
 
   auto* bucket = slot_span->bucket;
-  if (!bucket) {
-    return {.slot_start = internal::UntaggedSlotStart::Unchecked(0u)};
+
+  // This branch handles a mystery whose root cause is still unknown.
+  // If we end up staring at crashes from here, it may be worth
+  // upgrading some of the DCHECK()s in `SlotSpanMetadata::FromAddr()`.
+  //
+  // See also: https://crrev.com/c/7953898
+  if (!bucket) [[unlikely]] {
+    PA_DEBUG_DATA_ON_STACK("address", address);
+    PA_DEBUG_DATA_ON_STACK("pool", pool);
+    PA_IMMEDIATE_CRASH();
   }
   return SlotAddressAndSize{
       .slot_start = internal::UntaggedSlotStart::Unchecked(

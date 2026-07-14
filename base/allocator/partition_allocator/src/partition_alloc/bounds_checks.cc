@@ -29,9 +29,7 @@ PtrPosWithinAlloc IsPtrWithinSameAlloc(uintptr_t orig_address,
                                        size_t type_size,
                                        internal::pool_handle pool) {
   auto [slot_start, _] = SlotAddressAndSize::From(orig_address, pool);
-  if (slot_start.value() == 0) {
-    return PtrPosWithinAlloc::kInBounds;
-  }
+
   // Don't use |orig_address| beyond this point at all. It was needed to
   // pick the right slot, but now we're dealing with very concrete addresses.
   // Zero it just in case, to catch errors.
