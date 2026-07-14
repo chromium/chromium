@@ -10,7 +10,6 @@
 #include "base/feature_list.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "components/attribution_reporting/features.h"
 #include "services/network/public/cpp/features.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/features_generated.h"

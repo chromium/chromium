@@ -408,8 +408,6 @@ component("core") {
     ":make_deprecation_info",
     ":xml_ffi",
     "//base",
-    "//components/attribution_reporting",
-    "//components/attribution_reporting:mojom_blink",
     "//components/paint_preview/common",
     "//components/performance_manager/public/mojom:mojom_blink",
     "//components/shared_highlighting/core/common",

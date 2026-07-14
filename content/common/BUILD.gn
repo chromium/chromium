@@ -584,7 +584,6 @@ mojom("mojo_bindings") {
 
   public_deps = [
     "//cc/mojom",
-    "//components/attribution_reporting:mojom",
     "//components/metrics/public/mojom:histogram_fetcher_mojo_bindings",
     "//components/variations:variations_mojom",
     "//content/public/common:interfaces",

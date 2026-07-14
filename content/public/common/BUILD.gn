@@ -286,6 +286,7 @@ source_set("common_sources") {
     "//build:android_buildflags",
     "//build:branding_buildflags",
     "//build/config/chromebox_for_meetings:buildflags",
+    "//components/attribution_reporting:features",
 
     # This looks needless as we have //content/common in public_deps, but it's
     # needed because of allow_circular_includes_from.
