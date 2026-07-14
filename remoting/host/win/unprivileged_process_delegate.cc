@@ -12,6 +12,7 @@
 // clang-format on
 
 #include <sddl.h>
+#include <userenv.h>
 
 #include <optional>
 #include <string>
@@ -57,16 +58,36 @@ namespace {
 // the strings below by the logon SID assigned to the worker process.
 
 // Security descriptor of the desktop the worker process attaches to. It gives
-// SYSTEM and the logon SID full access to the desktop.
-const char kDesktopSdFormat[] = "O:SYG:SYD:(A;;0xf01ff;;;SY)(A;;0xf01ff;;;%s)";
+// SYSTEM, our AppContainer (if isolated), and the logon SID full access to the
+// desktop. Granting access specifically to our AppContainer package SID allows
+// the isolated worker process to attach to the desktop without granting
+// universal access to ALL APPLICATION PACKAGES (AC).
+//
+// SDDL ACE format: (AceType;AceFlags;AccessRights;;;AccountSid)
+//   - (A;;0xf01ff;;;SY) / (A;;0xf01ff;;;%s):
+//     Access Allowed (A) with no inheritance flags (;;) granting
+//     DESKTOP_ALL_ACCESS (0xf01ff) directly to the desktop object.
+const char kDesktopSdFormat[] =
+    "O:SYG:SYD:(A;;0xf01ff;;;SY)%s(A;;0xf01ff;;;%s)";
 
 // Security descriptor of the window station the worker process attaches to. It
-// gives SYSTEM and the logon SID full access the window station. The child
-// containers and objects inherit ACE giving SYSTEM and the logon SID full
-// access to them as well.
+// gives SYSTEM, our AppContainer (if isolated), and the logon SID full access
+// to the window station. Granting access specifically to our AppContainer
+// package SID allows the isolated worker process to attach to the window
+// station without granting universal access to ALL APPLICATION PACKAGES (AC).
+//
+// SDDL ACE format: (AceType;AceFlags;AccessRights;;;AccountSid)
+//   - (A;CIOIIO;GA;;;SY) / (A;CIOIIO;GA;;;%s):
+//     Access Allowed (A) with Container Inherit | Object Inherit | Inherit Only
+//     (CIOIIO) granting GENERIC_ALL (GA) to be inherited by child desktops and
+//     objects.
+//   - (A;NP;0xf037f;;;SY) / (A;NP;0xf037f;;;%s):
+//     Access Allowed (A) with No Propagate (NP) granting WINSTA_ALL_ACCESS
+//     (0xf037f) directly to the window station container without propagating
+//     down to child objects.
 const char kWindowStationSdFormat[] =
-    "O:SYG:SYD:(A;CIOIIO;GA;;;SY)"
-    "(A;CIOIIO;GA;;;%s)(A;NP;0xf037f;;;SY)(A;NP;0xf037f;;;%s)";
+    "O:SYG:SYD:(A;CIOIIO;GA;;;SY)%s"
+    "(A;CIOIIO;GA;;;%s)(A;NP;0xf037f;;;SY)%s(A;NP;0xf037f;;;%s)";
 
 // Security descriptor of the worker process. It gives access SYSTEM full access
 // to the process. It gives READ_CONTROL, SYNCHRONIZE, PROCESS_QUERY_INFORMATION
@@ -140,16 +161,51 @@ bool CreateRestrictedToken(UnprivilegedProcessDelegate::IntegrityLevel level,
 }
 
 // Creates a window station with a given name and the default desktop giving
-// the complete access to |logon_sid|.
+// complete access to |logon_sid| and |app_container_sid| (if present).
 bool CreateWindowStationAndDesktop(
     UnprivilegedProcessDelegate::IntegrityLevel level,
     ScopedSid logon_sid,
+    SID* app_container_sid,
     WindowStationAndDesktop* handles_out) {
   // Convert the logon SID into a string.
   std::string logon_sid_string = ConvertSidToString(logon_sid.get());
   if (logon_sid_string.empty()) {
     PLOG(ERROR) << "Failed to convert a SID to string";
     return false;
+  }
+
+  std::string app_container_desktop_ace;
+  std::string app_container_winsta_ga_ace;
+  std::string app_container_winsta_np_ace;
+  // If launching inside an AppContainer, dynamically construct SDDL Access
+  // Control Entries (ACEs) granting access specifically to the AppContainer's
+  // derived Package SID. These access rights are needed so that various things
+  // in the worker process can function, such as the UI message pump
+  // (registering window classes on the window station and creating message-only
+  // windows on the desktop):
+  //   - Desktop ACE (A;;0xf01ff;;;%s):
+  //     Grant DESKTOP_ALL_ACCESS (0xf01ff) directly to the desktop object.
+  //   - Window Station Inherit ACE (A;CIOIIO;GA;;;%s):
+  //     Grant GENERIC_ALL (GA) with Container/Object Inherit Only (CIOIIO)
+  //     flags so child desktops created within the window station inherit full
+  //     rights.
+  //   - Window Station Direct ACE (A;NP;0xf037f;;;%s):
+  //     Grant WINSTA_ALL_ACCESS (0xf037f) directly to the window station
+  //     container with No Propagate (NP) flags so these bits don't propagate to
+  //     child desktops.
+
+  if (app_container_sid) {
+    std::string sid_string = ConvertSidToString(app_container_sid);
+    if (sid_string.empty()) {
+      PLOG(ERROR) << "Failed to convert AppContainer SID to string";
+      return false;
+    }
+    app_container_desktop_ace =
+        base::StringPrintf("(A;;0xf01ff;;;%s)", sid_string.c_str());
+    app_container_winsta_ga_ace =
+        base::StringPrintf("(A;CIOIIO;GA;;;%s)", sid_string.c_str());
+    app_container_winsta_np_ace =
+        base::StringPrintf("(A;NP;0xf037f;;;%s)", sid_string.c_str());
   }
 
   const char* integrity_label = "LW";
@@ -166,11 +222,14 @@ bool CreateWindowStationAndDesktop(
 
   // Format the security descriptors in SDDL form.
   std::string desktop_sddl =
-      base::StringPrintf(kDesktopSdFormat, logon_sid_string.c_str()) +
+      base::StringPrintf(kDesktopSdFormat, app_container_desktop_ace.c_str(),
+                         logon_sid_string.c_str()) +
       mandatory_label;
   std::string window_station_sddl =
-      base::StringPrintf(kWindowStationSdFormat, logon_sid_string.c_str(),
-                         logon_sid_string.c_str()) +
+      base::StringPrintf(
+          kWindowStationSdFormat, app_container_winsta_ga_ace.c_str(),
+          logon_sid_string.c_str(), app_container_winsta_np_ace.c_str(),
+          logon_sid_string.c_str()) +
       mandatory_label;
 
   // Create the desktop and window station security descriptors.
@@ -252,6 +311,111 @@ bool CreateWindowStationAndDesktop(
 
 }  // namespace
 
+UnprivilegedProcessDelegate::AppContainer::AppContainer() = default;
+UnprivilegedProcessDelegate::AppContainer::AppContainer(AppContainer&& other) {
+  *this = std::move(other);
+}
+UnprivilegedProcessDelegate::AppContainer&
+UnprivilegedProcessDelegate::AppContainer::operator=(AppContainer&& other) {
+  if (this != &other) {
+    if (!profile_name.empty()) {
+      ::DeleteAppContainerProfile(profile_name.c_str());
+    }
+    package_sid = std::move(other.package_sid);
+    capability_sids = std::move(other.capability_sids);
+    capabilities = std::move(other.capabilities);
+    profile_name = std::move(other.profile_name);
+    other.profile_name.clear();
+  }
+  return *this;
+}
+UnprivilegedProcessDelegate::AppContainer::~AppContainer() {
+  if (!profile_name.empty()) {
+    ::DeleteAppContainerProfile(profile_name.c_str());
+  }
+}
+
+SECURITY_CAPABILITIES
+UnprivilegedProcessDelegate::AppContainer::GetSecurityCapabilities() {
+  SECURITY_CAPABILITIES caps = {};
+  caps.AppContainerSid = package_sid.get();
+  caps.Capabilities = capabilities.data();
+  caps.CapabilityCount = base::checked_cast<DWORD>(capabilities.size());
+  caps.Reserved = 0;
+  return caps;
+}
+
+// static
+std::optional<UnprivilegedProcessDelegate::AppContainer>
+UnprivilegedProcessDelegate::CreateAppContainer(
+    const std::wstring& profile_name) {
+  PSID sid_ptr = nullptr;
+  HRESULT hr =
+      ::CreateAppContainerProfile(profile_name.c_str(), profile_name.c_str(),
+                                  profile_name.c_str(), nullptr, 0, &sid_ptr);
+  if (hr == HRESULT_FROM_WIN32(ERROR_ALREADY_EXISTS)) {
+    if (!sid_ptr) {
+      hr = ::DeriveAppContainerSidFromAppContainerName(profile_name.c_str(),
+                                                       &sid_ptr);
+    } else {
+      hr = S_OK;
+    }
+  }
+  if (FAILED(hr)) {
+    // If profile creation or SID derivation failed (e.g. residual or damaged
+    // profile registration), purge any damaged profile and retry once from
+    // scratch.
+    if (sid_ptr) {
+      ::FreeSid(sid_ptr);
+      sid_ptr = nullptr;
+    }
+    ::DeleteAppContainerProfile(profile_name.c_str());
+    hr =
+        ::CreateAppContainerProfile(profile_name.c_str(), profile_name.c_str(),
+                                    profile_name.c_str(), nullptr, 0, &sid_ptr);
+  }
+  if (FAILED(hr)) {
+    LOG(ERROR) << "CreateAppContainerProfile failed: " << std::hex << hr;
+    if (sid_ptr) {
+      ::FreeSid(sid_ptr);
+    }
+    return std::nullopt;
+  }
+
+  DWORD sid_length = ::GetLengthSid(sid_ptr);
+  AppContainer app_container;
+  app_container.profile_name = profile_name;
+  app_container.package_sid = ScopedSid(sid_length);
+
+  ::CopySid(sid_length, app_container.package_sid.get(), sid_ptr);
+  ::FreeSid(sid_ptr);
+
+  // Well-known AppContainer capabilities required for unprivileged network
+  // worker processes:
+  // kInternetClient / kInternetClientServer / kPrivateNetworkClientServer:
+  //   Allow outbound/inbound connections across Internet and private LANs
+  //   for WebRTC signaling and direct/STUN/TURN connections.
+  // kSharedUserCertificates / kEnterpriseAuthentication:
+  //   Allow reading client certificates and CNG private keys for mTLS
+  //   and authenticating against enterprise endpoints.
+  const base::win::WellKnownCapability kCapabilities[] = {
+      base::win::WellKnownCapability::kInternetClient,
+      base::win::WellKnownCapability::kInternetClientServer,
+      base::win::WellKnownCapability::kPrivateNetworkClientServer,
+      base::win::WellKnownCapability::kSharedUserCertificates,
+      base::win::WellKnownCapability::kEnterpriseAuthentication,
+  };
+  app_container.capability_sids =
+      base::win::Sid::FromKnownCapabilityVector(kCapabilities);
+
+  app_container.capabilities.reserve(app_container.capability_sids.size());
+  for (const auto& sid : app_container.capability_sids) {
+    app_container.capabilities.push_back({sid.GetPSID(), SE_GROUP_ENABLED});
+  }
+
+  return app_container;
+}
+
 UnprivilegedProcessDelegate::UnprivilegedProcessDelegate(
     scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
     std::unique_ptr<base::CommandLine> target_command,
@@ -264,6 +428,12 @@ UnprivilegedProcessDelegate::~UnprivilegedProcessDelegate() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!channel_);
   DCHECK(!worker_process_.is_valid());
+}
+
+void UnprivilegedProcessDelegate::UseAppContainer(
+    const std::wstring& profile_name) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  app_container_profile_name_ = profile_name;
 }
 
 void UnprivilegedProcessDelegate::LaunchProcess(
@@ -309,10 +479,25 @@ void UnprivilegedProcessDelegate::LaunchProcess(
   thread_attributes.lpSecurityDescriptor = thread_sd.get();
   thread_attributes.bInheritHandle = FALSE;
 
-  // Create our own window station and desktop accessible by |logon_sid|.
+  app_container_.reset();
+  SECURITY_CAPABILITIES capabilities_struct = {};
+  if (!app_container_profile_name_.empty()) {
+    app_container_ = CreateAppContainer(app_container_profile_name_);
+
+    if (!app_container_) {
+      ReportFatalError();
+      return;
+    }
+    capabilities_struct = app_container_->GetSecurityCapabilities();
+  }
+
+  // Create our own window station and desktop accessible by |logon_sid| and
+  // |app_container_| (if isolated).
   WindowStationAndDesktop handles;
-  if (!CreateWindowStationAndDesktop(integrity_level_, std::move(logon_sid),
-                                     &handles)) {
+  if (!CreateWindowStationAndDesktop(
+          integrity_level_, std::move(logon_sid),
+          app_container_ ? app_container_->package_sid.get() : nullptr,
+          &handles)) {
     PLOG(ERROR) << "Failed to create a window station and desktop";
     ReportFatalError();
     return;
@@ -362,7 +547,7 @@ void UnprivilegedProcessDelegate::LaunchProcess(
   if (!LaunchProcessWithToken(
           command_line.GetProgram(), command_line.GetCommandLineString(),
           token.Get(), &process_attributes, &thread_attributes,
-          handles_to_inherit, /*security_capabilities=*/nullptr,
+          handles_to_inherit, app_container_ ? &capabilities_struct : nullptr,
           /* creation_flags= */ 0,
           /* desktop_name= */ nullptr, &worker_process, &worker_thread)) {
     ReportFatalError();

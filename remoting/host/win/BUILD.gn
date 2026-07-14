@@ -228,6 +228,7 @@ source_set("win") {
   if (!is_ios) {
     deps += [ "//components/policy:generated" ]
   }
+  libs = [ "userenv.lib" ]
 }
 
 source_set("unit_tests") {

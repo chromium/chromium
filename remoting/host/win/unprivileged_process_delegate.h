@@ -8,17 +8,22 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
+#include <string>
+#include <vector>
 
 #include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "base/win/scoped_handle.h"
+#include "base/win/sid.h"
 #include "ipc/ipc_listener.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/generic_pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/scoped_interface_endpoint_handle.h"
 #include "remoting/host/mojom/desktop_session.mojom.h"
+#include "remoting/host/win/security_descriptor.h"
 #include "remoting/host/win/windows_process_delegate.h"
 
 namespace base {
@@ -53,6 +58,10 @@ class UnprivilegedProcessDelegate : public IPC::Listener,
 
   ~UnprivilegedProcessDelegate() override;
 
+  // If non-empty, the worker process will be launched inside an AppContainer
+  // with the specified profile name.
+  void UseAppContainer(const std::wstring& profile_name);
+
   // WorkerProcessLauncher::Delegate implementation.
   void LaunchProcess(WorkerProcessLauncher* event_handler) override;
   void GetRemoteAssociatedInterface(
@@ -65,6 +74,25 @@ class UnprivilegedProcessDelegate : public IPC::Listener,
   virtual void ReportProcessLaunched(base::win::ScopedHandle worker_process);
 
  private:
+  friend class UnprivilegedProcessDelegateTest;
+
+  struct AppContainer {
+    AppContainer();
+    AppContainer(AppContainer&&);
+    AppContainer& operator=(AppContainer&&);
+    ~AppContainer();
+
+    SECURITY_CAPABILITIES GetSecurityCapabilities();
+
+    ScopedSid package_sid;
+    std::vector<base::win::Sid> capability_sids;
+    std::vector<SID_AND_ATTRIBUTES> capabilities;
+    std::wstring profile_name;
+  };
+
+  static std::optional<AppContainer> CreateAppContainer(
+      const std::wstring& profile_name);
+
   // IPC::Listener implementation.
   void OnChannelConnected(int32_t peer_pid) override;
   void OnChannelError() override;
@@ -87,6 +115,8 @@ class UnprivilegedProcessDelegate : public IPC::Listener,
   mojo::AssociatedRemote<mojom::WorkerProcessControl> worker_process_control_;
 
   IntegrityLevel integrity_level_;
+  std::wstring app_container_profile_name_;
+  std::optional<AppContainer> app_container_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

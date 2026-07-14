@@ -212,6 +212,7 @@ void DaemonProcessWin::LaunchNetworkProcess() {
   auto delegate = std::make_unique<UnprivilegedProcessDelegate>(
       io_task_runner(), std::move(target),
       UnprivilegedProcessDelegate::IntegrityLevel::kLow);
+  delegate->UseAppContainer(L"chromoting.network");
 
   SetNetworkLauncherDelegate(std::move(delegate));
 }

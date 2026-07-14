@@ -4,13 +4,20 @@
 
 #include "remoting/host/win/unprivileged_process_delegate.h"
 
+#include <windows.h>
+
+#include <userenv.h>
+
 #include <memory>
 
 #include "base/command_line.h"
 #include "base/run_loop.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/multiprocess_test.h"
 #include "base/test/task_environment.h"
+#include "base/unguessable_token.h"
+#include "remoting/host/win/security_descriptor.h"
 #include "remoting/host/worker_process_ipc_delegate.h"
 #include "remoting/host/worker_process_launcher.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -89,6 +96,13 @@ class UnprivilegedProcessDelegateTest : public testing::Test {
   void TearDown() override { observed_process_.Close(); }
 
  protected:
+  using AppContainer = UnprivilegedProcessDelegate::AppContainer;
+
+  static std::optional<AppContainer> CreateAppContainer(
+      const std::wstring& profile_name) {
+    return UnprivilegedProcessDelegate::CreateAppContainer(profile_name);
+  }
+
   base::test::TaskEnvironment task_environment_;
   base::win::ScopedHandle observed_process_;
 };
@@ -133,6 +147,24 @@ TEST_F(UnprivilegedProcessDelegateTest, KillProcessTerminatesWorker) {
 
   ASSERT_TRUE(GetExitCodeProcess(observed_process_.Get(), &exit_code));
   EXPECT_NE(exit_code, static_cast<DWORD>(STILL_ACTIVE));
+}
+
+TEST_F(UnprivilegedProcessDelegateTest, AppContainerCapabilities) {
+  std::wstring profile_name =
+      L"chromoting.unittest." +
+      base::ASCIIToWide(base::UnguessableToken::Create().ToString());
+
+  std::optional<AppContainer> app_container = CreateAppContainer(profile_name);
+  ASSERT_TRUE(app_container.has_value());
+
+  SECURITY_CAPABILITIES capabilities = app_container->GetSecurityCapabilities();
+  EXPECT_TRUE(app_container->package_sid);
+  EXPECT_EQ(capabilities.AppContainerSid, app_container->package_sid.get());
+  EXPECT_EQ(capabilities.CapabilityCount, 5u);
+
+  ASSERT_NE(capabilities.Capabilities, nullptr);
+  EXPECT_EQ(capabilities.Capabilities[0].Attributes,
+            static_cast<DWORD>(SE_GROUP_ENABLED));
 }
 
 MULTIPROCESS_TEST_MAIN(UnprivilegedProcessDelegateTestChild) {
