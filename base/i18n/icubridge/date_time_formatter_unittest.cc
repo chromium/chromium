@@ -15,6 +15,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/icu_test_util.h"
 #include "base/time/time.h"
+#include "build/blink_buildflags.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/icu/source/common/unicode/locid.h"
@@ -1131,7 +1132,7 @@ TEST_F(DateTimeFormatterTest, YMD_WithEra_AllChromiumPlatformLocales) {
              {u"క్రీశ 20-01-07",
               u"క్రీశ 7, జన 2020",  //
               u"క్రీశ 7, జనవరి 2020"}},
-#if BUILDFLAG(IS_IOS)
+#if !BUILDFLAG(USE_BLINK)
             {"th", {u"7/1/พ.ศ. 63", u"7/1/พ.ศ. 2563", u"7/1/พ.ศ. 2563"}},
 #else
             {"th",
