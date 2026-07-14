@@ -11,6 +11,7 @@
 #include "base/test/test_future.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
+#include "gpu/config/gpu_finch_features.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/functions.h"
@@ -388,6 +389,51 @@ TEST_F(WebNNTensorImplBackendTest, CreateContextImplManyTest) {
   EXPECT_FALSE(bad_message_helper.GetLastBadMessage().has_value());
 }
 
+// Test that ExportTensor() is rejected when SyncPointGraphValidation is
+// disabled.
+TEST_F(WebNNTensorImplBackendTest,
+       ExportTensorAsyncRejectedWhenSyncPointGraphValidationDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      features::kSyncPointGraphValidation);
+  ASSERT_FALSE(features::IsSyncPointGraphValidationEnabled());
+
+  BadMessageTestHelper bad_message_helper;
+
+  mojo::Remote<mojom::WebNNContext> webnn_context_remote;
+  base::expected<CreateContextSuccess, webnn::mojom::Error::Code>
+      context_result = CreateWebNNContext();
+  if (!context_result.has_value() &&
+      context_result.error() == mojom::Error::Code::kNotSupportedError) {
+    GTEST_SKIP() << "WebNN not supported on this platform.";
+  } else {
+    webnn_context_remote =
+        std::move(context_result.value().webnn_context_remote);
+  }
+
+  mojo::AssociatedRemote<mojom::WebNNTensor> webnn_tensor_remote;
+  base::expected<CreateTensorSuccess, webnn::mojom::Error::Code> tensor_result =
+      CreateWebNNTensor(
+          webnn_context_remote,
+          mojom::TensorInfo::New(
+              OperandDescriptor::UnsafeCreateForTesting(
+                  OperandDataType::kUint8, std::array<uint32_t, 2>{2, 2}),
+              MLTensorUsage{MLTensorUsageFlags::kWebGpuInterop}));
+  if (tensor_result.has_value()) {
+    webnn_tensor_remote = std::move(tensor_result.value().webnn_tensor_remote);
+  }
+
+  ASSERT_TRUE(webnn_tensor_remote.is_bound());
+
+  // Simulate a compromised renderer calling the async entrypoint directly. With
+  // the feature disabled, the service must report a bad message and drop the
+  // call rather than scheduling the export.
+  webnn_tensor_remote->ExportTensor(/*flow_id=*/0u, /*release_count=*/1u);
+
+  webnn_context_remote.FlushForTesting();
+  EXPECT_EQ(bad_message_helper.GetLastBadMessage(),
+            kBadMessageAsyncExportNotSupported);
+}
 
 }  // namespace
 

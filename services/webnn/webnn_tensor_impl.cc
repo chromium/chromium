@@ -9,6 +9,7 @@
 #include "base/task/bind_post_task.h"
 #include "base/threading/thread_restrictions.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
+#include "gpu/config/gpu_finch_features.h"
 #include "services/webnn/error.h"
 #include "services/webnn/gpu_task_scheduler.h"
 #include "services/webnn/public/cpp/operand_descriptor.h"
@@ -163,6 +164,13 @@ void WebNNTensorImpl::ImportTensor(uint64_t flow_id,
 
 void WebNNTensorImpl::ExportTensor(uint64_t flow_id, uint64_t release_count) {
   ScopedTrace scoped_trace("WebNNTensorImpl::ExportTensor");
+
+  // Reject the call when the feature is disabled to avoid a cross-process
+  // release-token race on the shared-image tensor memory.
+  if (!features::IsSyncPointGraphValidationEnabled()) {
+    GetMojoReceiver().ReportBadMessage(kBadMessageAsyncExportNotSupported);
+    return;
+  }
 
   if (!usage().Has(MLTensorUsageFlags::kWebGpuInterop)) {
     GetMojoReceiver().ReportBadMessage(kBadMessageInvalidTensor);
