@@ -1228,6 +1228,8 @@ export class AppElement extends AppElementBase {
 
     if (query && query.trim().length > 0) {
       this.$.searchbox.setInputText(query);
+      this.$.searchbox.focusInput();
+      this.$.searchbox.queryAutocomplete(query, false, false);
     }
   }
   /**

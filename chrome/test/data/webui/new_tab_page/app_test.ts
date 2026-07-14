@@ -2916,6 +2916,73 @@ suite('NewTabPageAppTest', () => {
         });
 
     test(
+        'dialog handles recording stopped event by focusing searchbox and ' +
+            'querying autocomplete',
+        async () => {
+          loadTimeData.overrideValues({
+            googleBaseUrl: 'https://www.google.com/',
+            voiceSearchCoherenceAnySearchboxExperimentEnabled: true,
+            voiceSearchCoherenceSearchboxWithLiveTranscriptionEnabled: true,
+          });
+          await recreateApp();
+
+          // Open voice search dialog.
+          $$(app, '#searchbox')!.dispatchEvent(new Event('open-voice-search'));
+          await microtasksFinished();
+
+          const voiceSearch =
+              app.shadowRoot.querySelector('cr-composebox-voice-search');
+          assertTrue(!!voiceSearch);
+
+          const searchboxEl = $$(app, '#searchbox') as NtpSearchboxElement;
+          let setInputTextCalledWith = '';
+          const originalSetInputText = searchboxEl.setInputText;
+          searchboxEl.setInputText = (text: string) => {
+            setInputTextCalledWith = text;
+            originalSetInputText.call(searchboxEl, text);
+          };
+
+          let focusInputCalled = false;
+          const originalFocusInput = searchboxEl.focusInput;
+          searchboxEl.focusInput = () => {
+            focusInputCalled = true;
+            originalFocusInput.call(searchboxEl);
+          };
+
+          let queryAutocompleteCalledWith = '';
+          const originalQueryAutocomplete = searchboxEl.queryAutocomplete;
+          searchboxEl.queryAutocomplete =
+              (input: string, preventInlineAutocomplete: boolean,
+               isOnFocus: boolean) => {
+                queryAutocompleteCalledWith = input;
+                originalQueryAutocomplete.call(
+                    searchboxEl, input, preventInlineAutocomplete, isOnFocus);
+              };
+
+          // Simulate recording stopped event with valid query.
+          voiceSearch.dispatchEvent(new CustomEvent('recording-stopped', {
+            detail: 'hello world',
+          }));
+          await microtasksFinished();
+
+          // Assert dialog is closed (removed from DOM).
+          assertFalse(!!app.shadowRoot.querySelector('#voiceSearchDialog'));
+
+          // Assert windowProxy.navigate was NOT called.
+          assertEquals(0, windowProxy.getCallCount('navigate'));
+
+          // Assert setInputText, focusInput and queryAutocomplete were called.
+          assertEquals('hello world', setInputTextCalledWith);
+          assertTrue(focusInputCalled);
+          assertEquals('hello world', queryAutocompleteCalledWith);
+
+          // Restore original methods.
+          searchboxEl.setInputText = originalSetInputText;
+          searchboxEl.focusInput = originalFocusInput;
+          searchboxEl.queryAutocomplete = originalQueryAutocomplete;
+        });
+
+    test(
         'scrim is shown when voice search coherence dialog is open and ' +
             'closes dialog on click',
         async () => {
