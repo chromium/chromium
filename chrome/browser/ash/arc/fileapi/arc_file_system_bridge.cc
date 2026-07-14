@@ -80,6 +80,13 @@ bool IsMediaStoreDownloadMetadataValid(
   if (download->display_name.empty() || download->owner_package_name.empty())
     return false;
 
+  // `display_name` should be a single path component.
+  const base::FilePath display_name(download->display_name);
+  if (display_name != display_name.BaseName() ||
+      display_name.ReferencesParent()) {
+    return false;
+  }
+
   // Download should have path relative to "Download/" which is the download
   // directory for the associated profile.
   const base::FilePath download_path("Download/");

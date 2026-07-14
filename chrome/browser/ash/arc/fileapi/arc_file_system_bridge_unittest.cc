@@ -506,6 +506,40 @@ TEST_F(ArcFileSystemBridgeTest, PropagatesOnMediaStoreUriAddedEvents) {
   arc_file_system_bridge_->OnMediaStoreUriAdded(uri, mojo::Clone(metadata));
 }
 
+TEST_F(ArcFileSystemBridgeTest,
+       DropsOnMediaStoreUriAddedEventsForInvalidNames) {
+  class MockObserver : public ArcFileSystemBridge::Observer {
+   public:
+    MOCK_METHOD(void,
+                OnMediaStoreUriAdded,
+                (const GURL& uri, const mojom::MediaStoreMetadata& metadata),
+                (override));
+  };
+
+  // Register a mock observer.
+  testing::NiceMock<MockObserver> observer;
+  base::ScopedObservation<ArcFileSystemBridge, ArcFileSystemBridge::Observer>
+      observation{&observer};
+  observation.Observe(arc_file_system_bridge_.get());
+
+  // Expect observer never to be notified for any of the events below.
+  EXPECT_CALL(observer, OnMediaStoreUriAdded).Times(0);
+
+  // Display names which are not a single path component should be rejected.
+  for (const std::string display_name :
+       {"../foo.pdf", "..", "bar/foo.pdf", "/foo.pdf"}) {
+    auto metadata = mojom::MediaStoreMetadata::NewDownload(
+        mojom::MediaStoreDownloadMetadata::New(
+            display_name,
+            /*owner_package_name=*/"com.android.documentsui",
+            /*relative_path=*/base::FilePath("Download/")));
+
+    // Simulate an `OnMediaStoreUriAdded()` event from ARC.
+    arc_file_system_bridge_->OnMediaStoreUriAdded(GURL("uri"),
+                                                  std::move(metadata));
+  }
+}
+
 TEST_F(ArcFileSystemBridgeTest, OpenFileToReadOnArcVmRequiresSharedPath) {
   auto* command_line = base::CommandLine::ForCurrentProcess();
   command_line->InitFromArgv({"", "--enable-arcvm"});
