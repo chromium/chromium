@@ -19,6 +19,7 @@ import org.chromium.chrome.browser.readaloud.ReadAloudController;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.task_manager.TaskManager;
+import org.chromium.chrome.browser.ui.appmenu.AppMenuItemProperties;
 import org.chromium.chrome.browser.ui.vertical_tabs.VerticalTabUtils;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
@@ -27,8 +28,10 @@ import org.chromium.content_public.browser.ContentFeatureMap;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
+import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 
+import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
 /** Builds AppMenu items for the "More tools" submenu. */
@@ -40,6 +43,7 @@ public class MoreToolsItemBuilder {
     private final TabModelSelector mTabModelSelector;
     private final Supplier<@Nullable ReadAloudController> mReadAloudControllerSupplier;
     private final Supplier<Boolean> mPageInfoVisibilitySupplier;
+    private final BooleanSupplier mCanActivateTabLayoutToggleMenuSupplier;
 
     /**
      * Constructs a {@link MoreToolsItemBuilder} which is responsible for building more tools
@@ -48,6 +52,10 @@ public class MoreToolsItemBuilder {
      * @param context The Android Context used to get resources.
      * @param appMenuItemTheme The theme used to style the app menu items.
      * @param isMenuIconAtStart Whether the menu icon is displayed at the start.
+     * @param tabModelSelector {@link TabModelSelector} instance.
+     * @param readAloudControllerSupplier Supplier of {@link ReadAloudController} instance.
+     * @param pageInfoVisibilitySupplier Whether PageInfo is visible or not.
+     * @param canActivateTabLayoutToggleMenu Whether Tab layout toggle menu can be activated.
      */
     public MoreToolsItemBuilder(
             Context context,
@@ -55,13 +63,15 @@ public class MoreToolsItemBuilder {
             boolean isMenuIconAtStart,
             TabModelSelector tabModelSelector,
             Supplier<@Nullable ReadAloudController> readAloudControllerSupplier,
-            Supplier<Boolean> pageInfoVisibilitySupplier) {
+            Supplier<Boolean> pageInfoVisibilitySupplier,
+            BooleanSupplier canActivateTabLayoutToggleMenu) {
         mContext = context;
         this.mAppMenuItemTheme = mAppMenuItemTheme;
         mIsMenuIconAtStart = isMenuIconAtStart;
         mTabModelSelector = tabModelSelector;
         mReadAloudControllerSupplier = readAloudControllerSupplier;
         mPageInfoVisibilitySupplier = pageInfoVisibilitySupplier;
+        mCanActivateTabLayoutToggleMenuSupplier = canActivateTabLayoutToggleMenu;
     }
 
     private boolean isIncognitoShowing() {
@@ -169,15 +179,19 @@ public class MoreToolsItemBuilder {
                             : R.drawable.ic_dock_to_right_24dp;
         }
 
-        return AppMenuItemUtils.createStandardListItem(
+        PropertyModel model =
                 AppMenuItemUtils.buildModelForStandardMenuItem(
                         mContext,
                         mAppMenuItemTheme,
                         R.id.toggle_tab_layout_menu_id,
                         stringRes,
                         iconRes,
-                        mIsMenuIconAtStart),
-                showIcon);
+                        mIsMenuIconAtStart);
+        model.set(
+                AppMenuItemProperties.ENABLED,
+                mCanActivateTabLayoutToggleMenuSupplier.getAsBoolean());
+
+        return AppMenuItemUtils.createStandardListItem(model, showIcon);
     }
 
     /**

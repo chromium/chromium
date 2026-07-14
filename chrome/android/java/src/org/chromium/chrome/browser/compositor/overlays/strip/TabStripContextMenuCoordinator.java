@@ -51,6 +51,7 @@ import org.chromium.ui.widget.AnchoredPopupWindow.HorizontalOrientation;
 import org.chromium.ui.widget.RectProvider;
 
 import java.util.Set;
+import java.util.function.BooleanSupplier;
 
 /**
  * Coordinator for the context menu on the tab strip. It is responsible for creating a list of menu
@@ -64,6 +65,7 @@ public class TabStripContextMenuCoordinator {
     private final WindowAndroid mWindowAndroid;
     private final SnackbarManager mSnackbarManager;
     private final Runnable mOnNewTabClick;
+    private final @Nullable BooleanSupplier mCanActivateTabLayoutToggleMenuSupplier;
     private @Nullable AnchoredPopupWindow mMenuWindow;
 
     public static TabStripContextMenuCoordinator createContextMenuCoordinator(
@@ -71,9 +73,15 @@ public class TabStripContextMenuCoordinator {
             MultiInstanceManager multiInstanceManager,
             WindowAndroid windowAndroid,
             SnackbarManager snackbarManager,
-            Runnable onNewTabClick) {
+            Runnable onNewTabClick,
+            @Nullable BooleanSupplier canActivateTabLayoutToggleMenuSupplier) {
         return new TabStripContextMenuCoordinator(
-                tabModel, multiInstanceManager, windowAndroid, snackbarManager, onNewTabClick);
+                tabModel,
+                multiInstanceManager,
+                windowAndroid,
+                snackbarManager,
+                onNewTabClick,
+                canActivateTabLayoutToggleMenuSupplier);
     }
 
     private TabStripContextMenuCoordinator(
@@ -81,13 +89,15 @@ public class TabStripContextMenuCoordinator {
             MultiInstanceManager multiInstanceManager,
             WindowAndroid windowAndroid,
             SnackbarManager snackbarManager,
-            Runnable onNewTabClick) {
+            Runnable onNewTabClick,
+            @Nullable BooleanSupplier canActivateTabLayoutToggleMenuSupplier) {
         mTabModel = tabModel;
         mMultiInstanceManager = multiInstanceManager;
         mWindowAndroid = windowAndroid;
         mContext = assumeNonNull(windowAndroid.getActivity().get());
         mSnackbarManager = snackbarManager;
         mOnNewTabClick = onNewTabClick;
+        mCanActivateTabLayoutToggleMenuSupplier = canActivateTabLayoutToggleMenuSupplier;
     }
 
     /**
@@ -203,11 +213,16 @@ public class TabStripContextMenuCoordinator {
                             ? R.string.show_tabs_horizontally
                             : R.string.show_tabs_vertically;
 
+            boolean enabled =
+                    mCanActivateTabLayoutToggleMenuSupplier == null
+                            || mCanActivateTabLayoutToggleMenuSupplier.getAsBoolean();
+
             itemList.add(
                     new ListItemBuilder()
                             .withTitleRes(layoutTitleRes)
                             .withMenuId(R.id.toggle_tab_layout_menu_id)
                             .withIsIncognito(isIncognito)
+                            .withEnabled(enabled)
                             .build());
         }
         // Add "Pin Gemini" option with divider

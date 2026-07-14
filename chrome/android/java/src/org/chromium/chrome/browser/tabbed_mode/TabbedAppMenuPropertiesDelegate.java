@@ -99,6 +99,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiFunction;
+import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
 /** An {@link AppMenuPropertiesDelegateImpl} for ChromeTabbedActivity. */
@@ -178,7 +179,8 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
             @Nullable OpenInAppMenuItemProvider openInAppMenuItemProvider,
             Supplier<RecentlyClosedEntriesManager> recentlyClosedEntriesManagerSupplier,
             Supplier<SideUiStateProvider> sideUiStateProviderSupplier,
-            Supplier<Boolean> isXrFullSpaceModeSupplier) {
+            Supplier<Boolean> isXrFullSpaceModeSupplier,
+            BooleanSupplier canActivateTabLayoutToggleMenu) {
         super(
                 context,
                 activityTabProvider,
@@ -250,7 +252,8 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
                         isMenuIconAtStart(),
                         tabModelSelector,
                         readAloudControllerSupplier,
-                        this::shouldShowPageInfoItem);
+                        this::shouldShowPageInfoItem,
+                        canActivateTabLayoutToggleMenu);
     }
 
     @Override

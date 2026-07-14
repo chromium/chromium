@@ -78,6 +78,7 @@ import org.chromium.ui.recyclerview.widget.ItemTouchHelper2;
 import org.chromium.ui.widget.RectProvider;
 
 import java.util.List;
+import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
 /** Coordinator to manage and display the Vertical Tab List. */
@@ -113,6 +114,7 @@ public class VerticalTabListCoordinator {
 
     private final @Nullable DesktopWindowStateManager mDesktopWindowStateManager;
     private final @Nullable AppHeaderObserver mAppHeaderObserver;
+    private final @Nullable BooleanSupplier mCanActivateTabLayoutToggleMenuSupplier;
 
     private boolean mIsActive;
 
@@ -190,7 +192,9 @@ public class VerticalTabListCoordinator {
             @Nullable DesktopWindowStateManager desktopWindowStateManager,
             MonotonicObservableSupplier<ShareDelegate> shareDelegateSupplier,
             DataSharingTabManager dataSharingTabManager,
-            NonNullObservableSupplier<Boolean> verticalTabsActiveSupplier) {
+            NonNullObservableSupplier<Boolean> verticalTabsActiveSupplier,
+            @Nullable BooleanSupplier canActivateTabLayoutToggleMenuSupplier) {
+        mCanActivateTabLayoutToggleMenuSupplier = canActivateTabLayoutToggleMenuSupplier;
         mVerticalTabsActiveSupplier = verticalTabsActiveSupplier;
         mModelList = new TabListModel();
         SimpleRecyclerViewAdapter adapter =
@@ -907,7 +911,8 @@ public class VerticalTabListCoordinator {
                             mSnackbarManager,
                             /* activityResultTracker= */ null,
                             /* modalDialogManager= */ mWindowAndroid.getModalDialogManager(),
-                            TabClosingSource.VERTICAL_TAB_STRIP);
+                            TabClosingSource.VERTICAL_TAB_STRIP,
+                            mCanActivateTabLayoutToggleMenuSupplier);
         }
         mTabContextMenuCoordinator.showMenu(rectProvider, anchorInfo);
     }
@@ -923,7 +928,8 @@ public class VerticalTabListCoordinator {
                             mMultiInstanceManager,
                             mWindowAndroid,
                             mSnackbarManager,
-                            this::handleNewTabButtonClick);
+                            this::handleNewTabButtonClick,
+                            mCanActivateTabLayoutToggleMenuSupplier);
         }
 
         boolean isIncognito = mTabModelSelector.getCurrentModel().isIncognitoBranded();

@@ -220,7 +220,8 @@ public class VerticalTabListCoordinatorUnitTest {
                         mDesktopWindowStateManager,
                         mShareDelegateSupplier,
                         mDataSharingTabManager,
-                        mIsVerticalTabsActiveSupplier);
+                        mIsVerticalTabsActiveSupplier,
+                        /* canActivateTabLayoutToggleMenuSupplier= */ null);
     }
 
     private Tab prepareMockTab(int id) {

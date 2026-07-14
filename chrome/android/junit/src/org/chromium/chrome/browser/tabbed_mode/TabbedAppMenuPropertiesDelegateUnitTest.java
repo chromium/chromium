@@ -307,6 +307,8 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
     // Used to ensure all the combinations are tested.
     private final boolean[] mFlagCombinations = new boolean[1 << 5];
 
+    private boolean mCanActivateTabLayoutToggleMenu = true;
+
     @Before
     public void setUp() {
         Context context =
@@ -432,7 +434,9 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                         /* recentlyClosedEntriesManagerSupplier= */ () ->
                                 mRecentlyClosedEntriesManager,
                         () -> mSideUiStateProvider,
-                        /* isXrFullSpaceModeSupplier= */ () -> false);
+                        /* isXrFullSpaceModeSupplier= */ () -> false,
+                        /* canActivateTabLayoutToggleMenu= */ () ->
+                                mCanActivateTabLayoutToggleMenu);
         RobolectricUtil.runAllBackgroundAndUi();
         mTabbedAppMenuPropertiesDelegate = Mockito.spy(delegate);
         mSaveAndShareItemBuilder =
@@ -2739,6 +2743,24 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                                 .getString(
                                         org.chromium.chrome.tab_ui.R.string
                                                 .show_tabs_horizontally)));
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.ANDROID_VERTICAL_TABS})
+    @Config(qualifiers = "sw600dp")
+    public void tabLayoutToggleItem_Disabled_WhenNotShowable() {
+        mCanActivateTabLayoutToggleMenu = false;
+        ModelList moreToolsSubmenu =
+                setUpPageMenuAndGetMoreToolsSubmenu(/* isVerticalTabsEnabled= */ false);
+
+        assertTrue(
+                "Vertical tabs item should exist in more tools when enabled",
+                isMenuVisible(moreToolsSubmenu, R.id.toggle_tab_layout_menu_id));
+        ListItem item = findItemById(moreToolsSubmenu, R.id.toggle_tab_layout_menu_id);
+        assertNotNull(item);
+        assertFalse(
+                "Vertical tabs item should be disabled when not showable.",
+                item.model.get(AppMenuItemProperties.ENABLED));
     }
 
     @Test

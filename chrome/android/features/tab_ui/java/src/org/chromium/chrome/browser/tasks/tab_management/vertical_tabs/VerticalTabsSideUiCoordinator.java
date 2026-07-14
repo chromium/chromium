@@ -108,6 +108,14 @@ public class VerticalTabsSideUiCoordinator implements SideUiContainer {
         return mManualVisible;
     }
 
+    /**
+     * Returns whether or not Tab layout toggle menu can be activated. Used to grey out the menu
+     * item if it cannot be activated due to conditions such as a narrow app Window width.
+     */
+    public boolean canActivateTabLayoutToggleMenu() {
+        return mSideUiCoordinator.canShowSideUi(SideUiId.VERTICAL_TABS);
+    }
+
     @Override
     public void setWidth(int width) {
         ViewGroup.LayoutParams layoutParams = mRootView.getLayoutParams();

@@ -4911,7 +4911,8 @@ public class StripLayoutHelperTest {
                         () -> mTabBookmarker,
                         mBottomSheetCoordinatorFactory,
                         mSnackbarManager,
-                        mActivityResultTracker);
+                        mActivityResultTracker,
+                        /* canActivateTabLayoutToggleMenuSupplier= */ null);
         // Inject the test IPH controller so that setTabModel doesn't try to construct a real one
         // (which would call into TrackerFactory native).
         helper.setTabStripIphControllerForTesting(mController);

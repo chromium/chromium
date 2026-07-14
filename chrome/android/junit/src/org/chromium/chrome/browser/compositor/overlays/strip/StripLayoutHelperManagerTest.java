@@ -305,7 +305,8 @@ public class StripLayoutHelperManagerTest {
                         (preventClose, invocationSource) -> {},
                         mLeadingButtonDelegate,
                         mSideUiStateProviderSupplier,
-                        mTabObscuringHandler);
+                        mTabObscuringHandler,
+                        /* canActivateTabLayoutToggleMenuSupplier= */ null);
         ShadowLooper.idleMainLooper();
         mStripLayoutHelperManager.setTabStripTreeProviderForTesting(mTabStripTreeProvider);
         mStripLayoutHelperManager.setTabModelSelector(mTabModelSelector, mTabCreatorManager);

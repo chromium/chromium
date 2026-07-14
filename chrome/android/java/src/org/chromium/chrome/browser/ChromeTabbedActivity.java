@@ -1199,7 +1199,8 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                             glicClickHandler,
                             tabbedRootUiCoordinator.getLeadingButtonDelegate(),
                             tabbedRootUiCoordinator.getSideUiStateProviderSupplier(),
-                            mRootUiCoordinator.getTabObscuringHandler());
+                            mRootUiCoordinator.getTabObscuringHandler(),
+                            tabbedRootUiCoordinator.canActivateTabLayoutToggleMenu());
             mLayoutStateProviderSupplier.set(mLayoutManager);
         }
     }
@@ -3817,7 +3818,8 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                 mRootUiCoordinator.getOpenInAppMenuItemProvider(),
                 () -> mRecentlyClosedEntriesManager,
                 ((TabbedRootUiCoordinator) mRootUiCoordinator).getSideUiStateProviderSupplier(),
-                getXrSpaceModeObservableSupplier());
+                getXrSpaceModeObservableSupplier(),
+                ((TabbedRootUiCoordinator) mRootUiCoordinator).canActivateTabLayoutToggleMenu());
     }
 
     private TabDelegateFactory getTabDelegateFactory() {

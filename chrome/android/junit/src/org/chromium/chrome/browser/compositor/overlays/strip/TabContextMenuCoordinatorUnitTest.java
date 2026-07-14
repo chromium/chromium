@@ -434,7 +434,8 @@ public class TabContextMenuCoordinatorUnitTest {
                         mSnackbarManager,
                         mActivityResultTracker,
                         mModalDialogManager,
-                        TabClosingSource.TABLET_TAB_STRIP);
+                        TabClosingSource.TABLET_TAB_STRIP,
+                        /* canActivateTabLayoutToggleMenuSupplier= */ null);
     }
 
     @Test
@@ -2870,6 +2871,44 @@ public class TabContextMenuCoordinatorUnitTest {
 
         verify((MenuOrKeyboardActionController) mockMenuActivity, times(1))
                 .onMenuOrKeyboardAction(eq(R.id.toggle_tab_layout_menu_id), eq(false));
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.ANDROID_VERTICAL_TABS})
+    @Config(qualifiers = "sw600dp")
+    public void buildMenuActionItems_VerticalTabs_DisabledWhenCannotActivate() {
+        mTabContextMenuCoordinator =
+                TabContextMenuCoordinator.createContextMenuCoordinator(
+                        () -> mTabModel,
+                        mBottomSheetCoordinator,
+                        mTabGroupCreationCallback,
+                        mMultiInstanceManager,
+                        ObservableSuppliers.createMonotonic(mShareDelegate),
+                        mWindowAndroid,
+                        mActivity,
+                        () -> mTabBookmarker,
+                        mReorderFunction,
+                        mSnackbarManager,
+                        mActivityResultTracker,
+                        mModalDialogManager,
+                        TabClosingSource.TABLET_TAB_STRIP,
+                        () -> false);
+
+        mTabModel.addTab(
+                mTab1,
+                TabModel.INVALID_TAB_INDEX,
+                TabLaunchType.FROM_CHROME_UI,
+                TabCreationState.LIVE_IN_FOREGROUND);
+
+        var modelList = new ModelList();
+        mTabContextMenuCoordinator.configureMenuItemsForTesting(
+                modelList, new AnchorInfo(TAB_ID, Collections.singletonList(TAB_ID)));
+
+        ListItem verticalTabsItem = findItemByMenuId(modelList, R.id.toggle_tab_layout_menu_id);
+        assertNotNull("Toggle layout menu item should be present", verticalTabsItem);
+        assertFalse(
+                "Toggle layout menu item should be disabled when canActivate is false",
+                verticalTabsItem.model.get(ENABLED));
     }
 
     private void verifyAddToGroupSubmenuForTabOutsideOfGroup(

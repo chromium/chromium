@@ -108,7 +108,8 @@ public class TabStripContextMenuCoordinatorUnitTest {
                         mMultiInstanceManager,
                         mWindowAndroid,
                         mSnackbarManager,
-                        mOnNewTabClick);
+                        mOnNewTabClick,
+                        /* canActivateTabLayoutToggleMenuSupplier= */ null);
 
         UserPrefsJni.setInstanceForTesting(mUserPrefsJniMock);
         when(mUserPrefsJniMock.get(mProfile)).thenReturn(mPrefService);
@@ -165,6 +166,30 @@ public class TabStripContextMenuCoordinatorUnitTest {
     @Config(qualifiers = "sw600dp")
     public void showMenu_verifyHorizontalTabsEntryPoint() {
         runToggleLayoutMenuTest(/* isVerticalTabsEnabled= */ true, R.string.show_tabs_horizontally);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_VERTICAL_TABS)
+    @Config(qualifiers = "sw600dp")
+    public void showMenu_verifyVerticalTabsDisabledWhenCannotActivate() {
+        mCoordinator =
+                TabStripContextMenuCoordinator.createContextMenuCoordinator(
+                        mTabModel,
+                        mMultiInstanceManager,
+                        mWindowAndroid,
+                        mSnackbarManager,
+                        mOnNewTabClick,
+                        () -> false);
+        MultiWindowUtils.setMultiInstanceApi31EnabledForTesting(true);
+
+        mCoordinator.showMenu(mRectProvider, false, mActivity);
+        verifyMenuState(/* expectedNumItems= */ 6);
+
+        PropertyModel toggleLayoutItemModel = getItemModelAtPosition(5);
+        assertEquals(
+                R.id.toggle_tab_layout_menu_id,
+                toggleLayoutItemModel.get(ListMenuItemProperties.MENU_ITEM_ID));
+        assertFalse(toggleLayoutItemModel.get(ListMenuItemProperties.ENABLED));
     }
 
     @Test

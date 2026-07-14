@@ -100,6 +100,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.BiConsumer;
+import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
 /**
@@ -176,6 +177,7 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
     private final WindowAndroid mWindowAndroid;
     private final Activity mActivity;
     private final int mCircleSize;
+    private final @Nullable BooleanSupplier mCanActivateTabLayoutToggleMenuSupplier;
 
     private TabContextMenuCoordinator(
             Supplier<TabModel> tabModelSupplier,
@@ -192,7 +194,8 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
             SnackbarManager snackbarManager,
             @Nullable ActivityResultTracker activityResultTracker,
             @Nullable ModalDialogManager modalDialogManager,
-            @TabClosingSource int tabClosingSource) {
+            @TabClosingSource int tabClosingSource,
+            @Nullable BooleanSupplier canActivateTabLayoutToggleMenuSupplier) {
         super(
                 R.layout.tab_switcher_action_menu_layout,
                 R.layout.tab_switcher_action_menu_layout,
@@ -218,6 +221,7 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
         mTabGroupCreationCallback = tabGroupCreationCallback;
         mWindowAndroid = windowAndroid;
         mActivity = activity;
+        mCanActivateTabLayoutToggleMenuSupplier = canActivateTabLayoutToggleMenuSupplier;
 
         mCircleSize = getDimensionPixelSize(R.dimen.tab_group_nested_menu_color_icon_size);
     }
@@ -242,6 +246,8 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
      * @param activityResultTracker The {@link ActivityResultTracker} to track activity results.
      * @param modalDialogManager The {@link ModalDialogManager} to show modal dialogs.
      * @param tabClosingSource The {@link TabClosingSource} indicating where the tab is closed from.
+     * @param canActivateTabLayoutToggleMenuSupplier Supplies whether tab layout toggle menu can be
+     *     activated.
      */
     public static TabContextMenuCoordinator createContextMenuCoordinator(
             Supplier<TabModel> tabModelSupplier,
@@ -256,7 +262,8 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
             SnackbarManager snackbarManager,
             @Nullable ActivityResultTracker activityResultTracker,
             @Nullable ModalDialogManager modalDialogManager,
-            @TabClosingSource int tabClosingSource) {
+            @TabClosingSource int tabClosingSource,
+            @Nullable BooleanSupplier canActivateTabLayoutToggleMenuSupplier) {
         Profile profile = assumeNonNull(tabModelSupplier.get().getProfile());
 
         @Nullable TabGroupSyncService tabGroupSyncService =
@@ -280,7 +287,8 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
                 snackbarManager,
                 activityResultTracker,
                 modalDialogManager,
-                tabClosingSource);
+                tabClosingSource,
+                canActivateTabLayoutToggleMenuSupplier);
     }
 
     @VisibleForTesting
@@ -979,8 +987,17 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
                             ? R.string.show_tabs_horizontally
                             : R.string.show_tabs_vertically;
 
+            boolean enabled =
+                    mCanActivateTabLayoutToggleMenuSupplier == null
+                            || mCanActivateTabLayoutToggleMenuSupplier.getAsBoolean();
+
             itemList.add(
-                    buildListItem(layoutTitleRes, R.id.toggle_tab_layout_menu_id, isIncognito));
+                    new ListItemBuilder()
+                            .withTitleRes(layoutTitleRes)
+                            .withMenuId(R.id.toggle_tab_layout_menu_id)
+                            .withIsIncognito(isIncognito)
+                            .withEnabled(enabled)
+                            .build());
             itemList.add(buildMenuDivider(isIncognito));
         }
     }

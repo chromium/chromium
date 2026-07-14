@@ -157,6 +157,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
 /**
@@ -687,6 +688,7 @@ public class StripLayoutHelper
 
     // Tab context menu.
     private final MultiInstanceManager mMultiInstanceManager;
+    private final @Nullable BooleanSupplier mCanActivateTabLayoutToggleMenuSupplier;
     // Set when showTabContextMenu is called for the first time.
     private @MonotonicNonNull TabContextMenuCoordinator mTabContextMenuCoordinator;
     private @MonotonicNonNull TabGroupListBottomSheetCoordinator
@@ -785,7 +787,8 @@ public class StripLayoutHelper
             Supplier<TabBookmarker> tabBookmarkerSupplier,
             TabGroupListBottomSheetCoordinatorFactory tabGroupListBottomSheetCoordinatorFactory,
             SnackbarManager snackbarManager,
-            @Nullable ActivityResultTracker activityResultTracker) {
+            @Nullable ActivityResultTracker activityResultTracker,
+            @Nullable BooleanSupplier canActivateTabLayoutToggleMenuSupplier) {
         mGroupTitleDrawXOffset = TAB_OVERLAP_WIDTH_DP - FOLIO_FOOT_LENGTH_DP;
         mGroupTitleOverlapWidth = FOLIO_FOOT_LENGTH_DP - mGroupTitleDrawXOffset;
         mNewTabButtonWidth = BUTTON_BACKGROUND_SIZE_DP;
@@ -798,6 +801,7 @@ public class StripLayoutHelper
         mDataSharingTabManager = dataSharingTabManager;
         mBottomSheetController = bottomSheetController;
         mMultiInstanceManager = multiInstanceManager;
+        mCanActivateTabLayoutToggleMenuSupplier = canActivateTabLayoutToggleMenuSupplier;
         mShareDelegateSupplier = shareDelegateSupplier;
         mTabBookmarkerSupplier = tabBookmarkerSupplier;
         mTabGroupListBottomSheetCoordinatorFactory = tabGroupListBottomSheetCoordinatorFactory;
@@ -2659,7 +2663,8 @@ public class StripLayoutHelper
                             mSnackbarManager,
                             mActivityResultTracker,
                             mWindowAndroid.getModalDialogManager(),
-                            TabClosingSource.TABLET_TAB_STRIP);
+                            TabClosingSource.TABLET_TAB_STRIP,
+                            mCanActivateTabLayoutToggleMenuSupplier);
         }
         RectProvider anchorRectProvider = new RectProvider();
         anchorTab.getAnchorRect(anchorRectProvider.getRect());
@@ -3372,7 +3377,8 @@ public class StripLayoutHelper
                             mMultiInstanceManager,
                             mWindowAndroid,
                             mSnackbarManager,
-                            () -> handleNewTabClick(NewTabSource.EMPTY_SPACE_CONTEXT_MENU));
+                            () -> handleNewTabClick(NewTabSource.EMPTY_SPACE_CONTEXT_MENU),
+                            mCanActivateTabLayoutToggleMenuSupplier);
         }
 
         // Determine the anchor view rect to position the menu.

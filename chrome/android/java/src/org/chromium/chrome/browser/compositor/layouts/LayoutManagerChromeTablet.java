@@ -55,6 +55,7 @@ import org.chromium.ui.dragdrop.DragAndDropDelegate;
 import org.chromium.ui.resources.dynamics.DynamicResourceLoader;
 import org.chromium.ui.xr.scenecore.XrSceneCoreSessionManager;
 
+import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
 /** LayoutManagerChromeTablet is the specialization of LayoutManagerChrome for the tablet. */
@@ -113,6 +114,8 @@ public class LayoutManagerChromeTablet extends LayoutManagerChrome {
      *     button.
      * @param sideUiStateProviderSupplier Supplier of the {@link SideUiStateProvider}.
      * @param tabObscuringHandler The {@link TabObscuringHandler} to manage tab obscuring.
+     * @param canActivateTabLayoutToggleMenuSupplier Supplier indicating if tab layout toggle can be
+     *     activated.
      */
     public LayoutManagerChromeTablet(
             LayoutManagerHost host,
@@ -144,7 +147,8 @@ public class LayoutManagerChromeTablet extends LayoutManagerChrome {
             GlicButtonDelegate glicClickHandler,
             LeadingButtonDelegate leadingButtonDelegate,
             OneshotSupplier<SideUiStateProvider> sideUiStateProviderSupplier,
-            TabObscuringHandler tabObscuringHandler) {
+            TabObscuringHandler tabObscuringHandler,
+            @Nullable BooleanSupplier canActivateTabLayoutToggleMenuSupplier) {
         super(
                 host,
                 contentContainer,
@@ -190,7 +194,8 @@ public class LayoutManagerChromeTablet extends LayoutManagerChrome {
                         glicClickHandler,
                         leadingButtonDelegate,
                         sideUiStateProviderSupplier,
-                        tabObscuringHandler);
+                        tabObscuringHandler,
+                        canActivateTabLayoutToggleMenuSupplier);
         addSceneOverlay(mTabStripLayoutHelperManager);
         addObserver(mTabStripLayoutHelperManager.getTabSwitcherObserver());
         mDesktopWindowStateManager = desktopWindowStateManager;

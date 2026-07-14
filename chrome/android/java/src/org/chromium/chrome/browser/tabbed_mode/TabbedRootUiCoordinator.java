@@ -2278,7 +2278,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                                     getDesktopWindowStateManager(),
                                     mShareDelegateSupplier,
                                     mDataSharingTabManager,
-                                    mIsVerticalTabsActiveSupplier),
+                                    mIsVerticalTabsActiveSupplier,
+                                    canActivateTabLayoutToggleMenu()),
                             mIsVerticalTabsActiveSupplier);
             mSideUiCoordinator.registerSideUiContainer(mVerticalTabsSideUiCoordinator);
         }
@@ -2904,6 +2905,16 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     @Override
     public OneshotSupplier<SideUiStateProvider> getSideUiStateProviderSupplier() {
         return mSideUiStateProviderSupplier;
+    }
+
+    /**
+     * Returns a {@link BooleanSupplier} that indicates whether tab layout toggle menu can be
+     * activated.
+     */
+    public BooleanSupplier canActivateTabLayoutToggleMenu() {
+        return () ->
+                mVerticalTabsSideUiCoordinator != null
+                        && mVerticalTabsSideUiCoordinator.canActivateTabLayoutToggleMenu();
     }
 
     @Nullable GlicPromoCoordinator getGlicPromoCoordinatorForTesting() {
