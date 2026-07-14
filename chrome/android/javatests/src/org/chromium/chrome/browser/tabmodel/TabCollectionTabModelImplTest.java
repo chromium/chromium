@@ -112,7 +112,7 @@ public class TabCollectionTabModelImplTest {
                 () -> {
                     TabModelUtils.runOnTabStateInitialized(
                             mTabModelSelector,
-                            (unused) -> {
+                            _ -> {
                                 helper.notifyCalled();
                             });
                 });

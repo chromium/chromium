@@ -74,7 +74,7 @@ public class TwaVerifier implements Verifier, DestroyObserver {
         Promise<Boolean> promise = new Promise<>();
         if (getPendingOrigins().contains(origin)) {
             mOriginVerifier.start(
-                    (packageName, unused, verified, online) -> {
+                    (packageName, _, verified, online) -> {
                         if (mDestroyed) return;
 
                         getPendingOrigins().remove(origin);

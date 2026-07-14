@@ -304,7 +304,7 @@ class EntityEditorMediator {
                                 IS_REQUIRED,
                                 entityInstance.getEntityType().isRequiredAttribute(attributeType))
                         .build();
-        itemModel.set(VALUE_CHANGED_CALLBACK, (unused) -> onFieldValueChanged(itemModel));
+        itemModel.set(VALUE_CHANGED_CALLBACK, _ -> onFieldValueChanged(itemModel));
         return new EditorItem(TEXT_INPUT, itemModel, /* isFullLine= */ true);
     }
 
@@ -325,7 +325,7 @@ class EntityEditorMediator {
                                 entityInstance.getEntityType().isRequiredAttribute(attributeType))
                         .with(VALUE, value)
                         .build();
-        itemModel.set(VALUE_CHANGED_CALLBACK, (unused) -> onFieldValueChanged(itemModel));
+        itemModel.set(VALUE_CHANGED_CALLBACK, _ -> onFieldValueChanged(itemModel));
         return new EditorItem(DROPDOWN, itemModel, /* isFullLine= */ true);
     }
 
@@ -351,7 +351,7 @@ class EntityEditorMediator {
                                                 R.string
                                                         .autofill_ai_entity_editor_invalid_date_error_message)))
                         .build();
-        itemModel.set(VALUE_CHANGED_CALLBACK, (unused) -> onFieldValueChanged(itemModel));
+        itemModel.set(VALUE_CHANGED_CALLBACK, _ -> onFieldValueChanged(itemModel));
         return new EditorItem(DATE, itemModel, /* isFullLine= */ true);
     }
 

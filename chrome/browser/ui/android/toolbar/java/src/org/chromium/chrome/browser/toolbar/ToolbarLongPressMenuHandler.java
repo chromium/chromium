@@ -190,7 +190,7 @@ public class ToolbarLongPressMenuHandler implements ConfigurationChangedObserver
                 BrowserUiListMenuUtils.getBasicListMenu(
                         view.getContext(),
                         buildMenuItems(onTop),
-                        (model, unusedView) -> {
+                        (model, _) -> {
                             handleMenuClick(model.get(ListMenuItemProperties.MENU_ITEM_ID));
                             assumeNonNull(mPopupMenu);
                             mPopupMenu.dismiss();

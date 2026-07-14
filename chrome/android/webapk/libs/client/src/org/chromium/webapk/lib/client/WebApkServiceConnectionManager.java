@@ -202,7 +202,7 @@ public class WebApkServiceConnectionManager {
                     return true;
                 };
         Callback<Boolean> uiThreadReply =
-                (unused) -> {
+                _ -> {
                     if (mConnections.isEmpty() && mNumPendingPostedTasks == 0) {
                         destroyTaskRunner();
                     }

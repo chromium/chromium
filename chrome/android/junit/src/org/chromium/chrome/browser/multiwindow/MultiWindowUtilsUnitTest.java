@@ -1516,7 +1516,7 @@ public class MultiWindowUtilsUnitTest {
                 message.getValue().get(MessageBannerProperties.ICON_RESOURCE_ID));
 
         // Simulate and verify primary button click.
-        var unused = message.getValue().get(MessageBannerProperties.ON_PRIMARY_ACTION).get();
+        var _ = message.getValue().get(MessageBannerProperties.ON_PRIMARY_ACTION).get();
         assertEquals(
                 "Primary action callback was not called.",
                 primaryActionClickCount + 1,

@@ -114,7 +114,7 @@ public class PasswordSettingsUpdaterDispatcherBridge {
                 mSettingsAccessor.setOfferToSavePasswords(
                         value,
                         getAccount(account),
-                        unused ->
+                        _ ->
                                 mReceiverBridge.onSettingValueSet(
                                         OFFER_TO_SAVE_PASSWORDS, metricsRecorder),
                         exception ->
@@ -125,7 +125,7 @@ public class PasswordSettingsUpdaterDispatcherBridge {
                 mSettingsAccessor.setAutoSignIn(
                         value,
                         getAccount(account),
-                        unused -> mReceiverBridge.onSettingValueSet(AUTO_SIGN_IN, metricsRecorder),
+                        _ -> mReceiverBridge.onSettingValueSet(AUTO_SIGN_IN, metricsRecorder),
                         exception ->
                                 handleSettingExceptionOnUiThread(
                                         AUTO_SIGN_IN, exception, metricsRecorder));

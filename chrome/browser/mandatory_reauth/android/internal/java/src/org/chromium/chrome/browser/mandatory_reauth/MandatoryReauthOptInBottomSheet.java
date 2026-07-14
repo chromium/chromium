@@ -34,10 +34,10 @@ class MandatoryReauthOptInBottomSheet implements BottomSheetContent {
 
         Button acceptButton = mView.findViewById(R.id.mandatory_reauth_opt_in_accept_button);
         acceptButton.setOnClickListener(
-                unused -> interactionHandler.onResult(PaymentsUiClosedReason.ACCEPTED));
+                _ -> interactionHandler.onResult(PaymentsUiClosedReason.ACCEPTED));
         Button cancelButton = mView.findViewById(R.id.mandatory_reauth_opt_in_cancel_button);
         cancelButton.setOnClickListener(
-                unused -> interactionHandler.onResult(PaymentsUiClosedReason.CANCELLED));
+                _ -> interactionHandler.onResult(PaymentsUiClosedReason.CANCELLED));
     }
 
     /* BottomSheetContent implementation. */

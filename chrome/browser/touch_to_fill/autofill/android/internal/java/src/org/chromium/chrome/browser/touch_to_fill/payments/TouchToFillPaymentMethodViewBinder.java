@@ -279,7 +279,7 @@ class TouchToFillPaymentMethodViewBinder {
         } else if (propertyKey == SECOND_LINE_LABEL) {
             secondLineLabel.setText(model.get(SECOND_LINE_LABEL));
         } else if (propertyKey == ON_CREDIT_CARD_CLICK_ACTION) {
-            view.setOnClickListener(unusedView -> model.get(ON_CREDIT_CARD_CLICK_ACTION).run());
+            view.setOnClickListener(_ -> model.get(ON_CREDIT_CARD_CLICK_ACTION).run());
         } else if (propertyKey == ITEM_COLLECTION_INFO) {
             FillableItemCollectionInfo collectionInfo = model.get(ITEM_COLLECTION_INFO);
             if (collectionInfo != null) {
@@ -329,7 +329,7 @@ class TouchToFillPaymentMethodViewBinder {
                 ibanPrimaryText.setVisibility(View.VISIBLE);
             }
         } else if (propertyKey == ON_IBAN_CLICK_ACTION) {
-            view.setOnClickListener(unusedView -> model.get(ON_IBAN_CLICK_ACTION).run());
+            view.setOnClickListener(_ -> model.get(ON_IBAN_CLICK_ACTION).run());
         } else {
             assert false : "Unhandled update to property:" + propertyKey;
         }
@@ -349,7 +349,7 @@ class TouchToFillPaymentMethodViewBinder {
             ImageView loyaltyCardIcon = view.findViewById(R.id.loyalty_card_icon);
             loyaltyCardIcon.setImageDrawable(model.get(LOYALTY_CARD_ICON));
         } else if (propertyKey == ON_LOYALTY_CARD_CLICK_ACTION) {
-            view.setOnClickListener(unusedView -> model.get(ON_LOYALTY_CARD_CLICK_ACTION).run());
+            view.setOnClickListener(_ -> model.get(ON_LOYALTY_CARD_CLICK_ACTION).run());
         } else {
             assert false : "Unhandled update to property:" + propertyKey;
         }
@@ -367,7 +367,7 @@ class TouchToFillPaymentMethodViewBinder {
             PropertyModel model, View view, PropertyKey propertyKey) {
         if (propertyKey == AllLoyaltyCardsItemProperties.ON_CLICK_ACTION) {
             view.setOnClickListener(
-                    unusedView -> model.get(AllLoyaltyCardsItemProperties.ON_CLICK_ACTION).run());
+                    _ -> model.get(AllLoyaltyCardsItemProperties.ON_CLICK_ACTION).run());
         } else {
             assert false : "Unhandled update to property: " + propertyKey;
         }
@@ -491,8 +491,7 @@ class TouchToFillPaymentMethodViewBinder {
             backButton.setEnabled(isEnabled);
             backButton.setAlpha(isEnabled ? COMPLETE_OPACITY_ALPHA : GRAYED_OUT_OPACITY_ALPHA);
         } else if (propertyKey == BNPL_ON_BACK_BUTTON_CLICKED) {
-            backButton.setOnClickListener(
-                    unusedView -> model.get(BNPL_ON_BACK_BUTTON_CLICKED).run());
+            backButton.setOnClickListener(_ -> model.get(BNPL_ON_BACK_BUTTON_CLICKED).run());
         } else {
             assert false : "Unhandled update to property:" + propertyKey;
         }
@@ -556,7 +555,7 @@ class TouchToFillPaymentMethodViewBinder {
         if (propertyKey == TEXT_ID) {
             button.setText(model.get(TEXT_ID));
         } else if (propertyKey == ON_CLICK_ACTION) {
-            button.setOnClickListener(unusedView -> model.get(ON_CLICK_ACTION).run());
+            button.setOnClickListener(_ -> model.get(ON_CLICK_ACTION).run());
         } else {
             assert false : "Unhandled update to property:" + propertyKey;
         }
@@ -620,7 +619,7 @@ class TouchToFillPaymentMethodViewBinder {
         } else if (propertyKey == SECONDARY_TEXT) {
             secondaryText.setText(model.get(SECONDARY_TEXT));
         } else if (propertyKey == ON_BNPL_CLICK_ACTION) {
-            view.setOnClickListener(unusedView -> model.get(ON_BNPL_CLICK_ACTION).run());
+            view.setOnClickListener(_ -> model.get(ON_BNPL_CLICK_ACTION).run());
         } else if (propertyKey == IS_ENABLED) {
             if (model.get(IS_ENABLED)) {
                 view.setEnabled(true);
@@ -888,6 +887,6 @@ class TouchToFillPaymentMethodViewBinder {
 
     private static void setCallbackForButton(View view, @IdRes int buttonId, Runnable callback) {
         View buttonView = view.findViewById(buttonId);
-        buttonView.setOnClickListener(unused -> callback.run());
+        buttonView.setOnClickListener(_ -> callback.run());
     }
 }

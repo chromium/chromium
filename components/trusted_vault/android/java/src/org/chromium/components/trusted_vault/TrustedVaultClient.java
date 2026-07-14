@@ -399,7 +399,7 @@ public class TrustedVaultClient {
         get().mBackend
                 .addTrustedRecoveryMethod(accountInfo, publicKey, methodTypeHint)
                 .then(
-                        unused -> responseCallback.accept(true),
+                        _ -> responseCallback.accept(true),
                         exception -> responseCallback.accept(false));
     }
 

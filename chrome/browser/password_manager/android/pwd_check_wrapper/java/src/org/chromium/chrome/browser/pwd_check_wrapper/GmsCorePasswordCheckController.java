@@ -49,7 +49,7 @@ class GmsCorePasswordCheckController
                 PasswordCheckReferrer.SAFETY_CHECK,
                 PasswordCheckController.getAccountNameForPasswordStorageType(
                         passwordStorageType, mSyncService),
-                unused -> {
+                _ -> {
                     GmsCorePasswordCheckController controller = weakRef.get();
                     if (controller == null) return;
 

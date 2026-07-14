@@ -70,7 +70,7 @@ public final class ChromiumExecutorServiceFactoryTest {
 
     @Test
     public void submit_executesRunnable() {
-        var unused = mExecutor.submit(mMockRunnable);
+        var _ = mExecutor.submit(mMockRunnable);
         verifyNoInteractions(mMockRunnable);
         shadowOf(Looper.getMainLooper()).idle();
         verify(mMockRunnable).run();
@@ -173,7 +173,7 @@ public final class ChromiumExecutorServiceFactoryTest {
 
     @Test
     public void scheduleAtFixedRate_slowRunnable() {
-        var unused = mExecutor.scheduleAtFixedRate(mSlowRunnable, 5, 10, SECONDS);
+        var _ = mExecutor.scheduleAtFixedRate(mSlowRunnable, 5, 10, SECONDS);
         shadowOf(Looper.getMainLooper()).idle();
         verify(mSlowRunnable, never()).run();
 
@@ -216,7 +216,7 @@ public final class ChromiumExecutorServiceFactoryTest {
 
     @Test
     public void scheduleWithFixedDelay_slowRunnable() {
-        var unused = mExecutor.scheduleWithFixedDelay(mSlowRunnable, 5, 10, SECONDS);
+        var _ = mExecutor.scheduleWithFixedDelay(mSlowRunnable, 5, 10, SECONDS);
         shadowOf(Looper.getMainLooper()).idle();
         verify(mSlowRunnable, never()).run();
 

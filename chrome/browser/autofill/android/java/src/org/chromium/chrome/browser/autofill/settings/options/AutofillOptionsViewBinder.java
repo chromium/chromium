@@ -61,7 +61,7 @@ class AutofillOptionsViewBinder {
         } else if (key == ON_THIRD_PARTY_TOGGLE_CHANGED) {
             view.getThirdPartyFillingOption()
                     .setOnPreferenceChangeListener(
-                            (unused, newValue) -> {
+                            (_, newValue) -> {
                                 boolean optedIntoOtherProviders =
                                         (int) newValue
                                                 == RadioButtonGroupThirdPartyPreference

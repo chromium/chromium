@@ -716,7 +716,7 @@ public class CompositorViewHolder extends FrameLayout
         mLastViewportHeightForWebContentsSizing = null;
         mLastStableOutsetModeWebContentsHeight = null;
 
-        mOnViewportInsetsChanged = (unused) -> handleWindowInsetChanged();
+        mOnViewportInsetsChanged = _ -> handleWindowInsetChanged();
         mApplicationBottomInsetSupplier
                 .getSupplier()
                 .addSyncObserverAndPostIfNonNull(mOnViewportInsetsChanged);

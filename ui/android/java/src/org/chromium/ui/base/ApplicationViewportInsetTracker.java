@@ -58,7 +58,7 @@ public class ApplicationViewportInsetTracker implements Destroyable {
     private @Nullable InsetObserver mInsetObserver;
 
     /** The observer that gets attached to all inset suppliers. */
-    private final Callback<Integer> mInsetSupplierObserver = (unused) -> computeInsets();
+    private final Callback<Integer> mInsetSupplierObserver = _ -> computeInsets();
 
     private final SettableNonNullObservableSupplier<ViewportInsets> mInsetSupplier =
             ObservableSuppliers.createNonNull(new ViewportInsets());

@@ -252,8 +252,7 @@ public class IncognitoReauthControllerImpl
 
         TabModelUtils.runOnTabStateInitialized(
                 mTabModelSelector,
-                mCallbackController.makeCancelable(
-                        unusedTabModelSelector -> onTabStateInitializedForReauth()));
+                mCallbackController.makeCancelable(_ -> onTabStateInitializedForReauth()));
     }
 
     /**

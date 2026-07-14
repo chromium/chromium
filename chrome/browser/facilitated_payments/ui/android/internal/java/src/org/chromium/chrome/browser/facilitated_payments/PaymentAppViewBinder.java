@@ -51,7 +51,7 @@ class PaymentAppViewBinder {
             ImageView paymentAppIcon = view.findViewById(R.id.payment_app_icon);
             paymentAppIcon.setImageDrawable(model.get(PAYMENT_APP_ICON));
         } else if (propertyKey == ON_PAYMENT_APP_CLICK_ACTION) {
-            view.setOnClickListener(unusedView -> model.get(ON_PAYMENT_APP_CLICK_ACTION).run());
+            view.setOnClickListener(_ -> model.get(ON_PAYMENT_APP_CLICK_ACTION).run());
         } else {
             assert false : "Unhandled update to property:" + propertyKey;
         }

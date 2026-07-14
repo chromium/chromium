@@ -827,7 +827,7 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
         newPreference.setImageViewEnabled(false);
 
         newPreference.setOnPreferenceClickListener(
-                unused -> {
+                _ -> {
                     startActivity(settingsIntent);
                     return true;
                 });
@@ -876,12 +876,12 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
         newPreference.setImageView(
                 R.drawable.permission_popups,
                 R.string.website_notification_settings,
-                unused -> launchOsChannelSettingsFromPreference(preference));
+                _ -> launchOsChannelSettingsFromPreference(preference));
         newPreference.setImageColor(R.color.default_icon_color_secondary_tint_list);
         newPreference.setDefaultValue(value);
 
         newPreference.setOnPreferenceClickListener(
-                unused -> {
+                _ -> {
                     launchOsChannelSettingsFromPreference(preference);
                     return true;
                 });

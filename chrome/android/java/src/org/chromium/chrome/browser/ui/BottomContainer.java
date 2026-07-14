@@ -49,7 +49,7 @@ public class BottomContainer extends FrameLayout
     /** Constructor for XML inflation. */
     public BottomContainer(Context context, AttributeSet attrs) {
         super(context, attrs);
-        mInsetObserver = (unused) -> setTranslationY(mBaseYOffset);
+        mInsetObserver = _ -> setTranslationY(mBaseYOffset);
     }
 
     /** Initializes this container. */

@@ -64,7 +64,7 @@ public class PromiseTest {
 
         Promise<Integer> promise = new Promise<>();
         Callback<Integer> callback =
-                unusedArg -> {
+                _ -> {
                     value.set(value.get() + 1);
                 };
         promise.then(callback);
@@ -223,7 +223,7 @@ public class PromiseTest {
         Promise<Integer> promise = new Promise<>();
         promise.then(
                         (Function)
-                                unusedArg -> {
+                                _ -> {
                                     throw new IllegalArgumentException();
                                 })
                 .then(PromiseTest.pass(), PromiseTest.setValue(value, 5));
@@ -243,7 +243,7 @@ public class PromiseTest {
 
         promise.then(
                         (Promise.AsyncFunction)
-                                unusedArg -> {
+                                _ -> {
                                     throw new IllegalArgumentException();
                                 })
                 .then(PromiseTest.pass(), PromiseTest.setValue(value, 5));
@@ -261,7 +261,7 @@ public class PromiseTest {
         Promise<Integer> promise = new Promise<>();
         final Promise<Integer> inner = new Promise<>();
 
-        promise.then(unusedArg -> inner).then(PromiseTest.pass(), PromiseTest.setValue(value, 5));
+        promise.then(_ -> inner).then(PromiseTest.pass(), PromiseTest.setValue(value, 5));
 
         promise.fulfill(0);
 
@@ -344,14 +344,14 @@ public class PromiseTest {
     @Test
     public void testMultipleHandlersAllowed() {
         Promise<Integer> promise = new Promise<>();
-        promise.except(unused -> {});
+        promise.except(_ -> {});
         // This should not throw an AssertionError anymore.
-        promise.then(unused -> {}, unused -> {});
+        promise.then(_ -> {}, _ -> {});
     }
 
     /** Convenience method that returns a Callback that does nothing with its result. */
     private static <T> Callback<T> pass() {
-        return unusedArg -> {};
+        return _ -> {};
     }
 
     /** Convenience method that returns a Function that just passes through its argument. */
@@ -361,7 +361,7 @@ public class PromiseTest {
 
     /** Convenience method that returns a Callback that sets the given Value on execution. */
     private static <T> Callback<T> setValue(final Value toSet, final int value) {
-        return unusedArg -> {
+        return _ -> {
             toSet.set(value);
         };
     }

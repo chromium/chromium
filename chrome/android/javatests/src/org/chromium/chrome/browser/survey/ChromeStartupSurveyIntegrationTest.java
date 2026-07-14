@@ -71,8 +71,7 @@ public class ChromeStartupSurveyIntegrationTest {
     public void acceptSurvey() {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    var unused =
-                            mSurveyMessage.get(MessageBannerProperties.ON_PRIMARY_ACTION).get();
+                    var _ = mSurveyMessage.get(MessageBannerProperties.ON_PRIMARY_ACTION).get();
                 });
         Assert.assertEquals(
                 "Last shown survey triggerId not match.",

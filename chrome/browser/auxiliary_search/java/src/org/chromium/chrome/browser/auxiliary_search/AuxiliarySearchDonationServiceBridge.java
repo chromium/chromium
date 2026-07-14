@@ -147,7 +147,7 @@ class AuxiliarySearchDonationServiceBridge implements Closeable {
     @Override
     public void close() {
         if (mSessionFuture != null) {
-            var unused =
+            var _ =
                     Futures.transform(
                             mSessionFuture,
                             session -> {
@@ -216,7 +216,7 @@ class AuxiliarySearchDonationServiceBridge implements Closeable {
                 session ->
                         Futures.transform(
                                 session.setSchemaAsync(createSetSchemaRequest()),
-                                unusedResponse -> session,
+                                _ -> session,
                                 MoreExecutors.directExecutor()),
                 MoreExecutors.directExecutor());
     }

@@ -150,7 +150,7 @@ public class ChromeSelectionDropdownMenuDelegate
                 BrowserUiListMenuUtils.getBasicListMenu(
                         context,
                         modelList,
-                        (model, unusedView) -> {
+                        (model, _) -> {
                             assert mClickListener != null;
                             mClickListener.onItemClick(model);
                         });

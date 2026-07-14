@@ -39,7 +39,7 @@ class FooterViewBinder {
 
     private static void setShowPaymentMethodsSettingsCallback(View view, Runnable callback) {
         View managePaymentMethodsButton = view.findViewById(R.id.manage_payment_methods);
-        managePaymentMethodsButton.setOnClickListener(unused -> callback.run());
+        managePaymentMethodsButton.setOnClickListener(_ -> callback.run());
     }
 
     private FooterViewBinder() {}

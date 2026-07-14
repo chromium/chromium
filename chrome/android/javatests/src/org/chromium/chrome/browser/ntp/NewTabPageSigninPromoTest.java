@@ -176,7 +176,7 @@ public class NewTabPageSigninPromoTest {
     @Restriction({DeviceFormFactor.PHONE_OR_TABLET})
     @DisableFeatures(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)
     public void testSignInPromo_AccountsNotReady_Legacy() {
-        try (var unused = mSigninTestRule.blockGetAccountsUpdate()) {
+        try (var _ = mSigninTestRule.blockGetAccountsUpdate()) {
             openNewTabPage();
             // Check that the sign-in promo is not shown if accounts are not ready.
             onView(withId(R.id.feed_stream_recycler_view))
@@ -189,7 +189,7 @@ public class NewTabPageSigninPromoTest {
     @MediumTest
     @Feature({"FeedNewTabPage"})
     public void testSignInPromo_AccountsNotReady() {
-        try (var unused = mSigninTestRule.blockGetAccountsUpdate()) {
+        try (var _ = mSigninTestRule.blockGetAccountsUpdate()) {
             openNewTabPage();
             // Check that the sign-in promo is not shown if accounts are not ready.
             onView(withId(R.id.signin_promo_view_container)).check(doesNotExist());

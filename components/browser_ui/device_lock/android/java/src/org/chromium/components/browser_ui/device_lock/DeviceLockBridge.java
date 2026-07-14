@@ -62,7 +62,7 @@ public class DeviceLockBridge {
                     null,
                     false,
                     windowAndroid,
-                    (resultCode, unused) -> callback.onResult(resultCode == Activity.RESULT_OK),
+                    (resultCode, _) -> callback.onResult(resultCode == Activity.RESULT_OK),
                     DeviceLockActivityLauncher.Source.AUTOFILL);
         } else {
             callback.onResult(false);

@@ -43,8 +43,7 @@ public class TabViewAndroidDelegate extends ViewAndroidDelegate {
     /** The inset supplier the observer is currently attached to. */
     private @Nullable NonNullObservableSupplier<ViewportInsets> mCurrentInsetSupplier;
 
-    private final Callback<ViewportInsets> mInsetObserver =
-            (unused) -> updateVisualViewportBottomInset();
+    private final Callback<ViewportInsets> mInsetObserver = _ -> updateVisualViewportBottomInset();
 
     TabViewAndroidDelegate(Tab tab, ContentView containerView) {
         super(containerView);

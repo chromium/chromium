@@ -141,7 +141,7 @@ public class ContactEditorTest {
                         /* saveToDisk= */ false,
                         mPersonalDataManager);
         editor.setEditorDialog(mEditorDialog);
-        editor.showEditPrompt(null, unused -> {});
+        editor.showEditPrompt(null, _ -> {});
 
         PropertyModel editorModel = editor.getEditorModelForTesting();
         assertNotNull(editorModel);
@@ -167,7 +167,7 @@ public class ContactEditorTest {
                         /* saveToDisk= */ false,
                         mPersonalDataManager);
         editor.setEditorDialog(mEditorDialog);
-        editor.showEditPrompt(null, unused -> {});
+        editor.showEditPrompt(null, _ -> {});
 
         PropertyModel editorModel = editor.getEditorModelForTesting();
         assertNotNull(editorModel);
@@ -193,7 +193,7 @@ public class ContactEditorTest {
                         /* saveToDisk= */ false,
                         mPersonalDataManager);
         editor.setEditorDialog(mEditorDialog);
-        editor.showEditPrompt(null, unused -> {});
+        editor.showEditPrompt(null, _ -> {});
 
         PropertyModel editorModel = editor.getEditorModelForTesting();
         assertNotNull(editorModel);
@@ -219,7 +219,7 @@ public class ContactEditorTest {
                         /* saveToDisk= */ false,
                         mPersonalDataManager);
         editor.setEditorDialog(mEditorDialog);
-        editor.showEditPrompt(null, unused -> {});
+        editor.showEditPrompt(null, _ -> {});
 
         PropertyModel editorModel = editor.getEditorModelForTesting();
         assertNotNull(editorModel);
@@ -266,7 +266,7 @@ public class ContactEditorTest {
                         true,
                         false,
                         false);
-        editor.showEditPrompt(contact, unused -> {});
+        editor.showEditPrompt(contact, _ -> {});
 
         PropertyModel editorModel = editor.getEditorModelForTesting();
         assertNotNull(editorModel);
@@ -303,7 +303,7 @@ public class ContactEditorTest {
                         false,
                         true,
                         false);
-        editor.showEditPrompt(contact, unused -> {});
+        editor.showEditPrompt(contact, _ -> {});
 
         PropertyModel editorModel = editor.getEditorModelForTesting();
         assertNotNull(editorModel);
@@ -340,7 +340,7 @@ public class ContactEditorTest {
                         false,
                         false,
                         true);
-        editor.showEditPrompt(contact, unused -> {});
+        editor.showEditPrompt(contact, _ -> {});
 
         PropertyModel editorModel = editor.getEditorModelForTesting();
         assertNotNull(editorModel);
@@ -377,7 +377,7 @@ public class ContactEditorTest {
                         true,
                         true,
                         true);
-        editor.showEditPrompt(contact, unused -> {});
+        editor.showEditPrompt(contact, _ -> {});
 
         PropertyModel editorModel = editor.getEditorModelForTesting();
         assertNotNull(editorModel);
@@ -424,7 +424,7 @@ public class ContactEditorTest {
                         true,
                         false,
                         false);
-        editor.showEditPrompt(contact, unused -> {});
+        editor.showEditPrompt(contact, _ -> {});
 
         PropertyModel editorModel = editor.getEditorModelForTesting();
         assertNotNull(editorModel);
@@ -464,7 +464,7 @@ public class ContactEditorTest {
                         false,
                         true,
                         false);
-        editor.showEditPrompt(contact, unused -> {});
+        editor.showEditPrompt(contact, _ -> {});
 
         PropertyModel editorModel = editor.getEditorModelForTesting();
         assertNotNull(editorModel);
@@ -504,7 +504,7 @@ public class ContactEditorTest {
                         false,
                         false,
                         true);
-        editor.showEditPrompt(contact, unused -> {});
+        editor.showEditPrompt(contact, _ -> {});
 
         PropertyModel editorModel = editor.getEditorModelForTesting();
         assertNotNull(editorModel);
@@ -544,7 +544,7 @@ public class ContactEditorTest {
                         true,
                         false,
                         false);
-        editor.showEditPrompt(contact, unused -> {});
+        editor.showEditPrompt(contact, _ -> {});
 
         PropertyModel editorModel = editor.getEditorModelForTesting();
         assertNotNull(editorModel);
@@ -582,7 +582,7 @@ public class ContactEditorTest {
                         false,
                         true,
                         false);
-        editor.showEditPrompt(contact, unused -> {});
+        editor.showEditPrompt(contact, _ -> {});
 
         PropertyModel editorModel = editor.getEditorModelForTesting();
         assertNotNull(editorModel);
@@ -621,7 +621,7 @@ public class ContactEditorTest {
                         false,
                         false,
                         true);
-        editor.showEditPrompt(contact, unused -> {});
+        editor.showEditPrompt(contact, _ -> {});
 
         PropertyModel editorModel = editor.getEditorModelForTesting();
         assertNotNull(editorModel);
@@ -659,7 +659,7 @@ public class ContactEditorTest {
                         true,
                         true,
                         true);
-        editor.showEditPrompt(contact, unused -> {});
+        editor.showEditPrompt(contact, _ -> {});
 
         PropertyModel editorModel = editor.getEditorModelForTesting();
         assertNotNull(editorModel);
@@ -702,7 +702,7 @@ public class ContactEditorTest {
                         true,
                         true,
                         true);
-        editor.showEditPrompt(contact, unused -> {});
+        editor.showEditPrompt(contact, _ -> {});
 
         validateErrorMessages(editor.getEditorModelForTesting(), /* errorsPresent= */ false);
     }
@@ -734,7 +734,7 @@ public class ContactEditorTest {
                         true,
                         true,
                         true);
-        editor.showEditPrompt(contact, unused -> {});
+        editor.showEditPrompt(contact, _ -> {});
 
         validateErrorMessages(editor.getEditorModelForTesting(), /* errorsPresent= */ true);
     }
@@ -761,7 +761,7 @@ public class ContactEditorTest {
                         true,
                         true,
                         true);
-        editor.showEditPrompt(contact, unused -> {});
+        editor.showEditPrompt(contact, _ -> {});
 
         validateErrorMessages(editor.getEditorModelForTesting(), /* errorsPresent= */ true);
     }
@@ -788,7 +788,7 @@ public class ContactEditorTest {
                         true,
                         true,
                         true);
-        editor.showEditPrompt(contact, unused -> {});
+        editor.showEditPrompt(contact, _ -> {});
 
         PropertyModel editorModel = editor.getEditorModelForTesting();
         assertNotNull(editorModel);

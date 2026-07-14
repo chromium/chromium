@@ -34,7 +34,7 @@ public class SupplierUtils {
             ThreadUtils.assertOnUiThread();
             assert mCallback == null;
             int waitingSupplierCount = 0;
-            Callback<?> supplierCallback = (unused) -> onSupplierAvailable();
+            Callback<?> supplierCallback = _ -> onSupplierAvailable();
             for (Supplier<?> supplier : suppliers) {
                 if (supplier.get() != null) {
                     continue;

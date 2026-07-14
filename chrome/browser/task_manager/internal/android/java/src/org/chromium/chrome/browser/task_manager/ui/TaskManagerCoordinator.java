@@ -65,7 +65,7 @@ class TaskManagerCoordinator implements OnCreateContextMenuListener {
                             for (PropertyKey columnKey : TaskManagerProperties.ALL_COLUMN_KEYS) {
                                 view.findViewById(getTaskItemViewId(columnKey))
                                         .setOnClickListener(
-                                                (unused) -> mMediator.cycleSortOrder(columnKey));
+                                                _ -> mMediator.cycleSortOrder(columnKey));
                             }
                             bindHeader(model, view, key);
                         }));
@@ -90,7 +90,7 @@ class TaskManagerCoordinator implements OnCreateContextMenuListener {
                                     view,
                                     TaskManagerCoordinator::bindHeaderModelAndTaskView));
 
-                    view.setOnClickListener((unused) -> mMediator.toggleSelection(model));
+                    view.setOnClickListener(_ -> mMediator.toggleSelection(model));
                     bindTask(model, view, key);
                 });
 
@@ -129,7 +129,7 @@ class TaskManagerCoordinator implements OnCreateContextMenuListener {
             item.setChecked(selectedColumns.contains(columnKey));
 
             item.setOnMenuItemClickListener(
-                    (unused) -> {
+                    _ -> {
                         if (mMediator.toggleColumnFiltering(columnKey)) {
                             // Handle the visual update as it is being dismissed.
                             item.setChecked(!item.isChecked());

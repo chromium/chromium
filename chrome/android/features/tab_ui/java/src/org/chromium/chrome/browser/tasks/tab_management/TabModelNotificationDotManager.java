@@ -157,7 +157,7 @@ public class TabModelNotificationDotManager implements Destroyable {
         TabModelUtils.runOnTabStateInitialized(
                 tabModelSelector,
                 mCallbackController.makeCancelable(
-                        unused -> {
+                        _ -> {
                             mTabModelSelectorInitialized = true;
                             mTabModel.addTabGroupObserver(mTabGroupObserver);
                             mTabModel.addObserver(mTabModelObserver);

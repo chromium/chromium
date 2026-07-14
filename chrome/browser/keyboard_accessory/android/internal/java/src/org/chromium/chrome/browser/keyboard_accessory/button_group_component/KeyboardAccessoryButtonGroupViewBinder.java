@@ -76,7 +76,7 @@ public class KeyboardAccessoryButtonGroupViewBinder
             final int observedIconIndex = i;
             model.get(i)
                     .addIconObserver(
-                            (unused) -> {
+                            _ -> {
                                 onItemsChanged(model, view, observedIconIndex, 1, null);
                             });
         }

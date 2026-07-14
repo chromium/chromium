@@ -65,7 +65,7 @@ public class OriginVerificationScheduler {
 
         if (mPendingOrigins.contains(origin)) {
             mOriginVerifier.start(
-                    (packageName, unused, verified, online) -> {
+                    (packageName, _, verified, online) -> {
                         mPendingOrigins.remove(origin);
 
                         callback.onResult(verified);

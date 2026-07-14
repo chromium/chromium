@@ -69,7 +69,7 @@ class PasswordAccessorySheetViewBinder {
             chip.getPrimaryTextView().setText(passkeySection.getDisplayName());
             chip.getPrimaryTextView().setContentDescription(passkeySection.getDisplayName());
             chip.getSecondaryTextView().setText(R.string.password_accessory_passkey_label);
-            chip.setOnClickListener((unused) -> passkeySection.triggerSelection());
+            chip.setOnClickListener(_ -> passkeySection.triggerSelection());
         }
     }
 

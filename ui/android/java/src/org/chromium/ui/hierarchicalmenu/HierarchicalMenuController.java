@@ -772,7 +772,7 @@ public class HierarchicalMenuController<T> {
             Runnable backRunnable) {
         builder.with(keyProvider.getTitleKey(), title)
                 .with(keyProvider.getEnabledKey(), true)
-                .with(keyProvider.getClickListenerKey(), (unusedView) -> backRunnable.run())
+                .with(keyProvider.getClickListenerKey(), _ -> backRunnable.run())
                 .with(
                         keyProvider.getKeyListenerKey(),
                         (view, keyCode, keyEvent) -> {

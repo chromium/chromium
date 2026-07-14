@@ -148,7 +148,7 @@ public class AuthTabVerifier implements NativeInitObserver, DestroyObserver {
                         .build();
         mVerificationStartTime = SystemClock.elapsedRealtime();
         mOriginVerifier.start(
-                (packageName, unused, verified, online) -> {
+                (packageName, _, verified, online) -> {
                     if (mDestroyed) return;
                     if (verified) {
                         mStatus = VerificationStatus.SUCCESS;

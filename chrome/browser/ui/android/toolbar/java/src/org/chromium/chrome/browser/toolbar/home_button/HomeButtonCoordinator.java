@@ -114,8 +114,7 @@ public class HomeButtonCoordinator extends ToolbarChildButton implements TintObs
                                     BrowserUiListMenuUtils.getBasicListMenu(
                                             mContext,
                                             mMenuList,
-                                            (model, unusedView) ->
-                                                    mOnMenuClickCallback.onResult(mContext));
+                                            (model, _) -> mOnMenuClickCallback.onResult(mContext));
                         }
                         return mListMenu;
                     }

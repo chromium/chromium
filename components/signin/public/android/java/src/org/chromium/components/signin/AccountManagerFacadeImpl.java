@@ -191,7 +191,7 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
 
         getAccounts()
                 .then(
-                        unused -> {
+                        _ -> {
                             getAccessTokenHelper(coreAccountInfo, scope, callback);
                         });
     }
@@ -328,7 +328,7 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
         // Wait for list of accounts to be available before checking capabilities.
         getAccounts()
                 .then(
-                        unused -> {
+                        _ -> {
                             checkIsSubjectToParentalControlsHelper(coreAccountInfo, listener);
                         });
     }
@@ -401,7 +401,7 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
 
         getAccounts()
                 .then(
-                        unused -> {
+                        _ -> {
                             fetchCapabilitiesHelper(coreAccountInfo, accountCapabilitiesPromise);
                         });
         return accountCapabilitiesPromise;

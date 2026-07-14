@@ -145,7 +145,7 @@ class TouchToFillPaymentMethodView extends BottomSheetListViewBase {
     void setBackPressHandler(Runnable backPressHandler) {
         getContentView()
                 .findViewById(R.id.all_loyalty_cards_back_image_button)
-                .setOnClickListener((unused) -> backPressHandler.run());
+                .setOnClickListener(_ -> backPressHandler.run());
     }
 
     void setTabSelectionHandler(org.chromium.base.Callback<Integer> tabSelectionHandler) {

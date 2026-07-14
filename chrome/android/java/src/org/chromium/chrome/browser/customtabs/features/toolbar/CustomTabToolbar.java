@@ -1232,7 +1232,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
                             getContext(),
                             (UrlBar) mUrlBar,
                             actionModeCallback,
-                            /* focusChangeCallback= */ (unused) -> {},
+                            /* focusChangeCallback= */ _ -> {},
                             this,
                             new NoOpkeyboardVisibilityDelegate(),
                             isIncognitoBranded(),

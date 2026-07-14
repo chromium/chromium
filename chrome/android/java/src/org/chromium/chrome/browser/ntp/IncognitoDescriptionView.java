@@ -116,7 +116,7 @@ public class IncognitoDescriptionView extends LinearLayout {
                 context.getString(
                         R.string.incognito_ntp_block_third_party_cookies_description_android);
         Callback<View> spanOnClickCallback =
-                (unused) -> {
+                _ -> {
                     new ChromeAsyncTabLauncher(/* incognito= */ true)
                             .launchUrl(TRACKING_PROTECTION_URL, TabLaunchType.FROM_CHROME_UI);
                 };

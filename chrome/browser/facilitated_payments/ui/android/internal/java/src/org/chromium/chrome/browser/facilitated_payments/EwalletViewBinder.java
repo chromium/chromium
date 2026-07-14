@@ -50,7 +50,7 @@ class EwalletViewBinder {
             ImageView eWalletIcon = view.findViewById(R.id.ewallet_icon);
             eWalletIcon.setImageBitmap(model.get(EWALLET_ICON_BITMAP));
         } else if (propertyKey == ON_EWALLET_CLICK_ACTION) {
-            view.setOnClickListener(unusedView -> model.get(ON_EWALLET_CLICK_ACTION).run());
+            view.setOnClickListener(_ -> model.get(ON_EWALLET_CLICK_ACTION).run());
         } else {
             assert false : "Unhandled update to property:" + propertyKey;
         }

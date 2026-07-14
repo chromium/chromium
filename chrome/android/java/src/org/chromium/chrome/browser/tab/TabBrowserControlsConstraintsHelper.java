@@ -111,7 +111,7 @@ public class TabBrowserControlsConstraintsHelper implements UserData {
     private TabBrowserControlsConstraintsHelper(Tab tab) {
         mOffsetTagsInfo = new BrowserControlsOffsetTagsInfo(null, null, null);
         mTab = (TabImpl) tab;
-        mConstraintsChangedCallback = unused_constraints -> updateEnabledState();
+        mConstraintsChangedCallback = _ -> updateEnabledState();
         mTab.addObserver(
                 new EmptyTabObserver() {
                     @Override

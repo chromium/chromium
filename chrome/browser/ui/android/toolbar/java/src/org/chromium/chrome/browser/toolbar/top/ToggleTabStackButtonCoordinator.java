@@ -179,7 +179,7 @@ public class ToggleTabStackButtonCoordinator extends ToolbarChildButton {
         TabModelUtils.runOnTabStateInitialized(
                 tabModelSelector,
                 mCallbackController.makeCancelable(
-                        (unusedTabModelSelector) -> {
+                        _ -> {
                             handleTabRestoreCompleted();
                         }));
         if (tabModelSelector.isTabStateInitialized()) {

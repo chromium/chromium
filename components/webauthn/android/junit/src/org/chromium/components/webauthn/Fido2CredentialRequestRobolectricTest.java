@@ -1223,8 +1223,7 @@ public class Fido2CredentialRequestRobolectricTest {
 
     private void setUpReportCallback() {
         WebauthnRequestCallback callback =
-                WebauthnRequestCallback.forReport(
-                        (status, unused) -> mCallback.onReportOutcome(status));
+                WebauthnRequestCallback.forReport((status, _) -> mCallback.onReportOutcome(status));
         mRequestCallbackForTesting = callback;
         Mockito.when(mAuthenticationContextProviderMock.getRequestCallback()).thenReturn(callback);
     }

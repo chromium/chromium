@@ -72,7 +72,7 @@ public class NameGeneratorTest {
     private static <T> boolean classHasField(Class<T> clazz, String fieldName) {
         try {
             // We don't use the returned value, we are only checking if the field exists.
-            var unused = clazz.getField(fieldName);
+            var _ = clazz.getField(fieldName);
             return true;
         } catch (NoSuchFieldException e) {
             return false;

@@ -124,7 +124,7 @@ public class AutofillSaveIbanBottomSheetViewBinderTest {
                 mModelBuilder.with(
                         AutofillSaveIbanBottomSheetProperties.LEGAL_MESSAGE,
                         new AutofillSaveIbanBottomSheetProperties.LegalMessage(
-                                Collections.emptyList(), (unused) -> {})));
+                                Collections.emptyList(), _ -> {})));
         assertThat(String.valueOf(mView.mLegalMessage.getText()), isEmptyString());
         assertEquals(View.GONE, mView.mLegalMessage.getVisibility());
 
@@ -138,7 +138,7 @@ public class AutofillSaveIbanBottomSheetViewBinderTest {
                 mModelBuilder.with(
                         AutofillSaveIbanBottomSheetProperties.LEGAL_MESSAGE,
                         new AutofillSaveIbanBottomSheetProperties.LegalMessage(
-                                legalMessageLines, (unused) -> {})));
+                                legalMessageLines, _ -> {})));
         assertEquals(messageText, String.valueOf(mView.mLegalMessage.getText()));
         assertEquals(View.VISIBLE, mView.mLegalMessage.getVisibility());
     }

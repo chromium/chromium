@@ -60,7 +60,7 @@ class SimpleNoticeSheetView implements BottomSheetContent {
     void setButtonAction(Runnable runnable) {
         Button button = mContentView.findViewById(R.id.confirmation_button);
         button.setOnClickListener(
-                (unusedView) -> {
+                _ -> {
                     runnable.run();
                 });
     }

@@ -39,7 +39,7 @@ public class PassthroughTabUngrouper implements TabUngrouper {
             boolean trailing,
             boolean allowDialog,
             @Nullable TabModelActionListener listener) {
-        ungroupTabsInternal((unused) -> tabs, trailing, listener);
+        ungroupTabsInternal(_ -> tabs, trailing, listener);
     }
 
     @Override

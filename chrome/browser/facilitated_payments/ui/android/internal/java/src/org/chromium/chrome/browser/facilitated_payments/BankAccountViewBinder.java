@@ -54,7 +54,7 @@ class BankAccountViewBinder {
             ImageView bankAccountIcon = view.findViewById(R.id.bank_account_icon);
             bankAccountIcon.setImageDrawable(model.get(BANK_ACCOUNT_ICON));
         } else if (propertyKey == ON_BANK_ACCOUNT_CLICK_ACTION) {
-            view.setOnClickListener(unusedView -> model.get(ON_BANK_ACCOUNT_CLICK_ACTION).run());
+            view.setOnClickListener(_ -> model.get(ON_BANK_ACCOUNT_CLICK_ACTION).run());
         } else {
             assert false : "Unhandled update to property:" + propertyKey;
         }

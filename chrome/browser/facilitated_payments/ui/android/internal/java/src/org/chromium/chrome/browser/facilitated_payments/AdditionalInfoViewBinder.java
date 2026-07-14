@@ -59,7 +59,7 @@ class AdditionalInfoViewBinder {
                 new SpanApplier.SpanInfo(
                         "<link1>",
                         "</link1>",
-                        new ChromeClickableSpan(context, unused -> callback.run())));
+                        new ChromeClickableSpan(context, _ -> callback.run())));
     }
 
     private AdditionalInfoViewBinder() {}

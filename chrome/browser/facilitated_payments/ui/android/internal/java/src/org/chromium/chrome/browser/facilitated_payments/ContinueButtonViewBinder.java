@@ -42,17 +42,17 @@ class ContinueButtonViewBinder {
 
     static void bindContinueButtonView(PropertyModel model, View view, PropertyKey propertyKey) {
         if (propertyKey == ON_BANK_ACCOUNT_CLICK_ACTION) {
-            view.setOnClickListener(unusedView -> model.get(ON_BANK_ACCOUNT_CLICK_ACTION).run());
+            view.setOnClickListener(_ -> model.get(ON_BANK_ACCOUNT_CLICK_ACTION).run());
             TextView buttonTitleText =
                     view.findViewById(R.id.facilitated_payments_continue_button_title);
             buttonTitleText.setText(R.string.autofill_payment_method_continue_button);
         } else if (propertyKey == ON_EWALLET_CLICK_ACTION) {
-            view.setOnClickListener(unusedView -> model.get(ON_EWALLET_CLICK_ACTION).run());
+            view.setOnClickListener(_ -> model.get(ON_EWALLET_CLICK_ACTION).run());
             TextView buttonTitleText =
                     view.findViewById(R.id.facilitated_payments_continue_button_title);
             buttonTitleText.setText(R.string.autofill_payment_method_continue_button);
         } else if (propertyKey == ON_PAYMENT_APP_CLICK_ACTION) {
-            view.setOnClickListener(unusedView -> model.get(ON_PAYMENT_APP_CLICK_ACTION).run());
+            view.setOnClickListener(_ -> model.get(ON_PAYMENT_APP_CLICK_ACTION).run());
             TextView buttonTitleText =
                     view.findViewById(R.id.facilitated_payments_continue_button_title);
             buttonTitleText.setText(R.string.autofill_payment_method_continue_button);

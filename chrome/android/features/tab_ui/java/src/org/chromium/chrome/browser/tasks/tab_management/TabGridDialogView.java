@@ -1216,7 +1216,7 @@ public class TabGridDialogView extends FrameLayout {
     /** Sets an {@link Runnable} to be invoked when the feedback button is clicked. */
     void setSendFeedbackRunnable(@Nullable Runnable r) {
         mSendFeedbackButton.setOnClickListener(
-                unused -> {
+                _ -> {
                     if (r == null) return;
 
                     r.run();

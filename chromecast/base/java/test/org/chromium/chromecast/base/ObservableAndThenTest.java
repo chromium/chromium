@@ -62,7 +62,7 @@ public class ObservableAndThenTest {
         Controller<String> aState = new Controller<>();
         Controller<String> bState = new Controller<>();
         List<String> result = new ArrayList<>();
-        var unused =
+        var _ =
                 aState.andThen(bState)
                         .subscribe(
                                 Observer.onOpen(

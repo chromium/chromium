@@ -972,7 +972,7 @@ public class AutofillOptionsTest {
                 new SpanApplier.SpanInfo(
                         "<link>",
                         "</link>",
-                        new ChromeClickableSpan(mFragment.getContext(), unusedView -> fail())));
+                        new ChromeClickableSpan(mFragment.getContext(), _ -> fail())));
     }
 
     private void verifyOptionReflectedInView(

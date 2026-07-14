@@ -64,7 +64,7 @@ public class AutofillVcnEnrollBottomSheetRenderTest {
      * org.chromium.chrome.browser.autofill.vcn.AutofillVcnEnrollBottomSheetProperties.LinkOpener}'s
      * functional interface.
      */
-    private static final LinkOpener DO_NOTHING_LINK_OPENER = (unusedUrl, unusedLinkType) -> {};
+    private static final LinkOpener DO_NOTHING_LINK_OPENER = (_, _) -> {};
 
     @Rule
     public final FreshCtaTransitTestRule mTabbedActivityTestRule =

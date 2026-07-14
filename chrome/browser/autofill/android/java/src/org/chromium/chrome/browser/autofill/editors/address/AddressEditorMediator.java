@@ -668,7 +668,7 @@ public class AddressEditorMediator {
     private EditorFieldValidator getEmailValidator() {
         return EditorFieldValidator.builder()
                 .withValidationPredicate(
-                        unused -> true,
+                        _ -> true,
                         mContext.getString(R.string.payments_email_invalid_validation_message))
                 .build();
     }

@@ -264,7 +264,7 @@ public class MessageSurveyUiDelegate implements SurveyUiDelegate {
                     mState = State.ACCEPTED;
                     runIfNotNull(mOnSurveyAccepted);
                     if (wrappedOnAcceptAction != null) {
-                        var unused = wrappedOnAcceptAction.get();
+                        var _ = wrappedOnAcceptAction.get();
                     }
                     destroy();
                     return PrimaryActionClickBehavior.DISMISS_IMMEDIATELY;

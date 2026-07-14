@@ -208,7 +208,7 @@ public class SmsVerificationReceiver extends BroadcastReceiver {
         Task<Void> task = client.startSmsCodeBrowserRetriever();
 
         task.addOnSuccessListener(
-                unused -> {
+                _ -> {
                     this.reportBackendAvailability(BackendAvailability.AVAILABLE);
                     mProvider.verificationReceiverSucceeded(isLocalRequest);
                 });

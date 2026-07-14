@@ -112,7 +112,7 @@ public class TabbedAppMenuTest {
         mActivityTestRule.startOnUrl(TEST_URL);
 
         AppMenuTestSupport.overrideOnOptionItemSelectedListener(
-                mActivityTestRule.getAppMenuCoordinator(), unused -> {});
+                mActivityTestRule.getAppMenuCoordinator(), _ -> {});
         mAppMenuHandler = mActivityTestRule.getAppMenuCoordinator().getAppMenuHandler();
 
         showAppMenuAndAssertMenuShown();

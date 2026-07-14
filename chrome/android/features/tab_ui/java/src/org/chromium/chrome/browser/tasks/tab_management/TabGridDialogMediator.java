@@ -1118,7 +1118,7 @@ public class TabGridDialogMediator
     }
 
     private View.OnClickListener getShareClickListener() {
-        return unused -> handleShareClick();
+        return _ -> handleShareClick();
     }
 
     private void sendFeedback() {
@@ -1480,7 +1480,7 @@ public class TabGridDialogMediator
                     new CollaborationActivityMessageCardViewModel(
                             mActivity,
                             this::showRecentActivityOrDismissActivityMessageCard,
-                            (unused) -> {
+                            _ -> {
                                 // TODO(crbug.com/391946087): this shouldn't be required once
                                 // clearDirtyTabMessagesForCurrentGroup is fixed.
                                 removeCollaborationActivityMessageCard();

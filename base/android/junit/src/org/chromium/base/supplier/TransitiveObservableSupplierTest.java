@@ -240,7 +240,7 @@ public class TransitiveObservableSupplierTest {
         AtomicReference<MonotonicObservableSupplier<String>> retValue =
                 new AtomicReference<>(monotonicSupplier2);
         MonotonicObservableSupplier<String> transMonotonic =
-                monotonicSupplier.createTransitiveMonotonic(unused -> retValue.get());
+                monotonicSupplier.createTransitiveMonotonic(_ -> retValue.get());
         assertNull(transMonotonic.get());
         monotonicSupplier2.set("foo");
         assertEquals("foo", transMonotonic.get());
@@ -276,7 +276,7 @@ public class TransitiveObservableSupplierTest {
         AtomicReference<MonotonicObservableSupplier<String>> retValue =
                 new AtomicReference<>(monotonicSupplier2);
         MonotonicObservableSupplier<String> transMonotonic =
-                monotonicSupplier.createTransitiveMonotonic(unused -> retValue.get());
+                monotonicSupplier.createTransitiveMonotonic(_ -> retValue.get());
         assertNull(transMonotonic.addSyncObserverAndPostIfNonNull(mOnChangeCallback));
         monotonicSupplier2.set("foo");
         verify(mOnChangeCallback).onResult("foo");
@@ -297,7 +297,7 @@ public class TransitiveObservableSupplierTest {
 
         // Test NonNull due to default value.
         NonNullObservableSupplier<String> transitiveNonNull =
-                monotonicSupplier.createTransitiveNonNull("foo", unused -> nonNullSupplier);
+                monotonicSupplier.createTransitiveNonNull("foo", _ -> nonNullSupplier);
         transitiveNonNull.addSyncObserverAndCallIfNonNull(mOnChangeCallback);
         verify(mOnChangeCallback).onResult(eq("foo"));
         assertEquals("foo", transitiveNonNull.get());
@@ -319,7 +319,7 @@ public class TransitiveObservableSupplierTest {
                 new AtomicReference<>(nullableSupplier2);
 
         NullableObservableSupplier<String> transitive =
-                nullableSupplier1.createTransitiveNullable(unused -> secondSupplier.get());
+                nullableSupplier1.createTransitiveNullable(_ -> secondSupplier.get());
         transitive.addSyncObserverAndCallIfNonNull(mOnChangeCallback);
         verifyNoInteractions(mOnChangeCallback);
         assertNull(transitive.get());
@@ -359,7 +359,7 @@ public class TransitiveObservableSupplierTest {
 
         // Test NonNull due to default value.
         NonNullObservableSupplier<String> transitiveNonNull =
-                nullableSupplier.createTransitiveNonNull("foo", unused -> nonNullSupplier);
+                nullableSupplier.createTransitiveNonNull("foo", _ -> nonNullSupplier);
         transitiveNonNull.addSyncObserverAndCallIfNonNull(mOnChangeCallback);
         verify(mOnChangeCallback).onResult(eq("foo"));
         clearInvocations(mOnChangeCallback);
@@ -386,7 +386,7 @@ public class TransitiveObservableSupplierTest {
 
         // Test NonNull due to default value.
         NonNullObservableSupplier<String> transitiveNonNull =
-                nullableSupplier.createTransitiveNonNull("foo", unused -> nonNullSupplier);
+                nullableSupplier.createTransitiveNonNull("foo", _ -> nonNullSupplier);
         assertEquals("foo", transitiveNonNull.get());
 
         // Test transition away from default value.
@@ -407,7 +407,7 @@ public class TransitiveObservableSupplierTest {
                 ObservableSuppliers.createNullable();
 
         SettableNullableObservableSupplier<String> transitive =
-                nullableSupplier1.createTransitiveNullable(unused -> nullableSupplier2);
+                nullableSupplier1.createTransitiveNullable(_ -> nullableSupplier2);
         transitive.addSyncObserverAndCallIfNonNull(mOnChangeCallback);
         assertNull(transitive.get());
 
@@ -431,7 +431,7 @@ public class TransitiveObservableSupplierTest {
                 ObservableSuppliers.createNullable();
 
         SettableNullableObservableSupplier<String> transitive =
-                nullableSupplier1.createTransitiveNullable(unused -> nullableSupplier2);
+                nullableSupplier1.createTransitiveNullable(_ -> nullableSupplier2);
         transitive.addSyncObserverAndCallIfNonNull(mOnChangeCallback);
         transitive.destroy();
 

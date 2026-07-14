@@ -258,13 +258,10 @@ final class SigninPromoMediator
                 profileData == null || mPromoDelegate.shouldHideSecondaryButton());
         mModel.set(
                 SigninPromoProperties.ON_PRIMARY_BUTTON_CLICKED,
-                (unusedView) -> onPrimaryButtonClicked(profileData));
+                _ -> onPrimaryButtonClicked(profileData));
         mModel.set(
-                SigninPromoProperties.ON_SECONDARY_BUTTON_CLICKED,
-                (unusedView) -> onSecondaryButtonClicked());
-        mModel.set(
-                SigninPromoProperties.ON_DISMISS_BUTTON_CLICKED,
-                (unusedView) -> onDismissButtonClicked());
+                SigninPromoProperties.ON_SECONDARY_BUTTON_CLICKED, _ -> onSecondaryButtonClicked());
+        mModel.set(SigninPromoProperties.ON_DISMISS_BUTTON_CLICKED, _ -> onDismissButtonClicked());
         mModel.set(SigninPromoProperties.TITLE_TEXT, mPromoDelegate.getTitle());
         mModel.set(
                 SigninPromoProperties.DESCRIPTION_TEXT,

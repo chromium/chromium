@@ -105,9 +105,9 @@ final class SigninPromoProperties {
             int accountPickerBackground) {
         return new PropertyModel.Builder(ALL_KEYS)
                 .with(PROFILE_DATA, profileData)
-                .with(ON_PRIMARY_BUTTON_CLICKED, (unusedView) -> onPrimaryButtonClicked.run())
-                .with(ON_SECONDARY_BUTTON_CLICKED, (unusedView) -> onSecondaryButtonClicked.run())
-                .with(ON_DISMISS_BUTTON_CLICKED, (unusedView) -> onDismissButtonClicked.run())
+                .with(ON_PRIMARY_BUTTON_CLICKED, _ -> onPrimaryButtonClicked.run())
+                .with(ON_SECONDARY_BUTTON_CLICKED, _ -> onSecondaryButtonClicked.run())
+                .with(ON_DISMISS_BUTTON_CLICKED, _ -> onDismissButtonClicked.run())
                 .with(TITLE_TEXT, titleString)
                 .with(DESCRIPTION_TEXT, descriptionString)
                 .with(PRIMARY_BUTTON_TEXT, primaryButtonString)

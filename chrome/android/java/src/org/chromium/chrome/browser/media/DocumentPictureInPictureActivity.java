@@ -298,7 +298,7 @@ public class DocumentPictureInPictureActivity extends AsyncInitializationActivit
         aconfigFlaggedApiDelegate
                 .requestPinnedWindowingLayer(appTask, getMainExecutor())
                 .then(
-                        (unused) -> mIsPinned = true,
+                        _ -> mIsPinned = true,
                         (e) -> {
                             Log.e(
                                     TAG,

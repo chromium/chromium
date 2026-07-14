@@ -101,8 +101,7 @@ public class IncognitoRestoreAppLaunchDrawBlocker {
             (tabModelSelector) -> {
                 TabModelUtils.runOnTabStateInitialized(
                         tabModelSelector,
-                        mCallbackController.makeCancelable(
-                                unusedTabModelSelector -> maybeUnblockDraw()));
+                        mCallbackController.makeCancelable(_ -> maybeUnblockDraw()));
             };
 
     /**

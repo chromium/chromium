@@ -402,7 +402,7 @@ public class TabListItemAnimatorUnitTest {
     @Test
     public void animateRemove_NonTabCard_RunToCompletion() {
         var holder = buildViewHolder(MESSAGE, /* useShrinkCloseAnimation= */ false);
-        animateNonTabRemoveWithCompletionTrigger(holder, unused -> runAnimationToCompletion());
+        animateNonTabRemoveWithCompletionTrigger(holder, _ -> runAnimationToCompletion());
     }
 
     @Test
@@ -414,13 +414,13 @@ public class TabListItemAnimatorUnitTest {
     @Test
     public void animateRemove_NonTabCard_EndAnimations() {
         var holder = buildViewHolder(MESSAGE, /* useShrinkCloseAnimation= */ false);
-        animateNonTabRemoveWithCompletionTrigger(holder, unused -> mItemAnimator.endAnimations());
+        animateNonTabRemoveWithCompletionTrigger(holder, _ -> mItemAnimator.endAnimations());
     }
 
     @Test
     public void animateRemove_TabCardNoShrink() {
         var holder = buildViewHolder(TAB, /* useShrinkCloseAnimation= */ false);
-        animateNonTabRemoveWithCompletionTrigger(holder, unused -> mItemAnimator.endAnimations());
+        animateNonTabRemoveWithCompletionTrigger(holder, _ -> mItemAnimator.endAnimations());
     }
 
     @Test

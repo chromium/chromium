@@ -178,7 +178,7 @@ public class LeakCanaryChecker {
 
     private static void checkLeaks() {
         // Ensure LazyHolder is initialized, which sets up LeakCanary.
-        var unused = LazyHolder.sInstanceLeaks;
+        var _ = LazyHolder.sInstanceLeaks;
         try {
             LeakAssertions.INSTANCE.assertNoLeaks(TAG);
         } catch (AssertionError e) {

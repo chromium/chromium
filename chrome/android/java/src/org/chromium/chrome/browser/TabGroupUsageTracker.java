@@ -45,9 +45,7 @@ public class TabGroupUsageTracker implements PauseResumeWithNativeObserver, Dest
 
         mTabModelSelector = tabModelSelector;
         TabModelUtils.runOnTabStateInitialized(
-                tabModelSelector,
-                mCallbackController.makeCancelable(
-                        unusedTabModelSelector -> recordTabGroupCount()));
+                tabModelSelector, mCallbackController.makeCancelable(_ -> recordTabGroupCount()));
 
         mActivityLifecycleDispatcher = activityLifecycleDispatcher;
         activityLifecycleDispatcher.register(this);

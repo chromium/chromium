@@ -504,7 +504,7 @@ public class TabItemPickerCoordinator {
             mTabContentManager.cacheTabThumbnailWithCallback(
                     tab,
                     /* returnBitmap= */ false,
-                    (unused) -> {
+                    _ -> {
                         if (mIsDestroyed) return;
 
                         long thumbnailDuration = SystemClock.elapsedRealtime() - thumbnailStartTime;

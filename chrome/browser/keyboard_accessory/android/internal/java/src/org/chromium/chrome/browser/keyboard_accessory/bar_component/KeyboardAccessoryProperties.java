@@ -407,7 +407,7 @@ class KeyboardAccessoryProperties {
                     Type.DISMISS_CHIP,
                     new Action(
                             AccessoryAction.DISMISS,
-                            unused -> {
+                            _ -> {
                                 ManualFillingMetricsRecorder.recordActionSelected(
                                         AccessoryAction.DISMISS);
                                 dismissRunnable.run();

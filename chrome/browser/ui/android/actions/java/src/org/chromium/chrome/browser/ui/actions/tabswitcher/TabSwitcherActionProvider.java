@@ -147,7 +147,7 @@ public class TabSwitcherActionProvider implements Destroyable {
         TabModelUtils.runOnTabStateInitialized(
                 mTabModelSelector,
                 mCallbackController.makeCancelable(
-                        (unusedTabModelSelector) -> {
+                        _ -> {
                             mIsTabStateInitialized = true;
                             updateDependentProperties();
                         }));

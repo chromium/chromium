@@ -135,7 +135,7 @@ public class HomeModulesContextMenuManager {
         if (!hasItems) return null;
 
         ListMenu.Delegate delegate =
-                (model, unusedView) -> {
+                (model, _) -> {
                     switch (model.get(ListMenuItemProperties.MENU_ITEM_ID)) {
                         case ContextMenuItemId.HIDE_MODULE:
                             moduleDelegate.removeModuleAndDisable(moduleProvider.getModuleType());

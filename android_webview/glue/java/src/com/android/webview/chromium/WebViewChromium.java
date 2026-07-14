@@ -3049,7 +3049,7 @@ class WebViewChromium
             while (clientClass != WebChromeClient.class && (!foundShowMethod || !foundHideMethod)) {
                 if (!foundShowMethod) {
                     try {
-                        var unused =
+                        var _ =
                                 clientClass.getDeclaredMethod(
                                         "onShowCustomView", View.class, CustomViewCallback.class);
                         foundShowMethod = true;
@@ -3060,7 +3060,7 @@ class WebViewChromium
 
                 if (!foundHideMethod) {
                     try {
-                        var unused = clientClass.getDeclaredMethod("onHideCustomView");
+                        var _ = clientClass.getDeclaredMethod("onHideCustomView");
                         foundHideMethod = true;
                     } catch (NoSuchMethodException e) {
                         // Intentionally empty.

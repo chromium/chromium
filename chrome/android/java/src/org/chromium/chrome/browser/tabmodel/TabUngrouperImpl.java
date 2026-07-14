@@ -56,8 +56,7 @@ public class TabUngrouperImpl implements TabUngrouper {
             boolean trailing,
             boolean allowDialog,
             @Nullable TabModelActionListener listener) {
-        ungroupTabsInternal(
-                (unused) -> tabs, trailing, /* isTabGroup= */ false, allowDialog, listener);
+        ungroupTabsInternal(_ -> tabs, trailing, /* isTabGroup= */ false, allowDialog, listener);
     }
 
     @Override

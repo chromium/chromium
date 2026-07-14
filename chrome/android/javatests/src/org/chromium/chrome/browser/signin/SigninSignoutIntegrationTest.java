@@ -185,7 +185,7 @@ public class SigninSignoutIntegrationTest {
     public void testSecondaryAccountRemovedOnChildAccountSignIn() {
         mSigninTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
 
-        try (var unused = mSigninTestRule.blockGetAccountsUpdateAndPopulateCache()) {
+        try (var _ = mSigninTestRule.blockGetAccountsUpdateAndPopulateCache()) {
             // Remove TestAccounts.ACCOUNT1 from the device so that its still signed in.
             mSigninTestRule.removeAccount(TestAccounts.ACCOUNT1.getId());
 

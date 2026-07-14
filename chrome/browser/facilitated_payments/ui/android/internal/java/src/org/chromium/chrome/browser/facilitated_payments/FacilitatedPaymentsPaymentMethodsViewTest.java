@@ -216,7 +216,7 @@ public final class FacilitatedPaymentsPaymentMethodsViewTest {
                             new PropertyModel.Builder(
                                             FacilitatedPaymentsPaymentMethodsProperties.ALL_KEYS)
                                     .with(VISIBLE_STATE, HIDDEN)
-                                    .with(UI_EVENT_LISTENER, (Integer unused) -> {})
+                                    .with(UI_EVENT_LISTENER, _ -> {})
                                     .build();
                     mView =
                             new FacilitatedPaymentsPaymentMethodsView(
