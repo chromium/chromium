@@ -39,7 +39,10 @@ export function getHtml(this: RequestElement) {
       <cr-icon-button class="icon-copy-content" title="copy to clipboard"
           @click="${this.onCopyResponseClick_}">
       </cr-icon-button>
-      <cr-icon-button iron-icon="suggest:lock" title="hardcode response"
+      <cr-icon-button
+          iron-icon="${this.webuiRoundedIconsEnabled_
+              ? 'suggest:lock-filled'
+              : 'suggest:lock-old'}" title="hardcode response"
           @click="${this.onHardcodeResponseClick_}">
       </cr-icon-button>
     </div>

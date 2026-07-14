@@ -11,6 +11,7 @@ import '//resources/cr_elements/icons.html.js';
 import '//resources/cr_elements/cr_chip/cr_chip.js';
 
 import {assert} from '//resources/js/assert.js';
+import {loadTimeData} from '//resources/js/load_time_data.js';
 import {sanitizeInnerHtml} from '//resources/js/parse_html_subset.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
@@ -42,6 +43,7 @@ export class SuggestRequestElement extends CrLitElement {
       responseJson_: {type: String},
       pgcl_: {type: String},
       expanded_: {type: Boolean},
+      webuiRoundedIconsEnabled_: {type: Boolean},
     };
   }
 
@@ -50,6 +52,8 @@ export class SuggestRequestElement extends CrLitElement {
   protected accessor responseJson_: string = '';
   private accessor pgcl_: string = '';
   protected accessor expanded_: boolean = false;
+  protected accessor webuiRoundedIconsEnabled_: boolean =
+      loadTimeData.getBoolean('webuiRoundedIconsEnabled');
 
   override willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);
@@ -174,7 +178,8 @@ export class SuggestRequestElement extends CrLitElement {
   protected getStatusIcon_(): string {
     switch (this.request?.status) {
       case RequestStatus.kHardcoded:
-        return 'suggest:lock';
+        return this.webuiRoundedIconsEnabled_ ? 'suggest:lock-filled' :
+                                                'suggest:lock-old';
       case RequestStatus.kCreated:
         return 'cr:create';
       case RequestStatus.kSent:

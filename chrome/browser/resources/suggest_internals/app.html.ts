@@ -24,7 +24,10 @@ export function getHtml(this: AppElement) {
     <cr-button title="Import requests in JSON format"
         @click="${this.onImportClick_}">
       Import
-      <cr-icon icon="suggest:file-upload" slot="suffix-icon"></cr-icon>
+      <cr-icon
+          icon="${this.webuiRoundedIconsEnabled_
+              ? 'suggest:upload-2-filled'
+              : 'suggest:file-upload-old'}" slot="suffix-icon"></cr-icon>
     </cr-button>
     <input id="fileInput" type="file" accept=".json" style="display: none;"
       @change="${this.onImportFileChange_}">
