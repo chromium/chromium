@@ -1,0 +1,65 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/ui.gni")
+
+assert(toolkit_views)
+
+# record_replay has no circular dependency back into //chrome/browser/ui:ui, so
+# the public headers and implementation live in a single target (no :impl
+# split).
+source_set("record_replay") {
+  public = [
+    "replay_recording_bubble_view.h",
+    "save_recording_bubble_view.h",
+  ]
+
+  sources = [
+    "replay_recording_bubble_view.cc",
+    "save_recording_bubble_view.cc",
+  ]
+
+  public_deps = [
+    "//base",
+    "//chrome/browser/ui/record_replay",
+    "//chrome/browser/ui/views/location_bar",
+    "//components/record_replay/core/browser",
+    "//ui/views",
+  ]
+
+  deps = [
+    "//components/vector_icons",
+    "//content/public/browser",
+    "//net",
+    "//ui/base",
+    "//ui/color",
+    "//ui/gfx",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [
+    "replay_recording_bubble_view_browsertest.cc",
+    "save_recording_bubble_view_browsertest.cc",
+  ]
+
+  deps = [
+    ":record_replay",
+    "//base",
+    "//chrome/browser/ui/tabs:tab_strip",
+    "//chrome/browser/ui/test:dialog",
+    "//chrome/browser/ui/views/frame",
+    "//chrome/browser/ui/views/toolbar",
+    "//chrome/test:test_support",
+    "//content/public/browser",
+    "//content/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//ui/base",
+    "//ui/views",
+  ]
+}

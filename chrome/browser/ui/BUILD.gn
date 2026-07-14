@@ -4352,10 +4352,6 @@ static_library("ui") {
       "views/profiles/avatar_toolbar_button_state_manager.cc",
       "views/profiles/avatar_toolbar_button_state_manager.h",
       "views/profiles/avatar_toolbar_button_types.h",
-      "views/record_replay/replay_recording_bubble_view.cc",
-      "views/record_replay/replay_recording_bubble_view.h",
-      "views/record_replay/save_recording_bubble_view.cc",
-      "views/record_replay/save_recording_bubble_view.h",
       "views/sad_tab_view.cc",
       "views/sad_tab_view.h",
       "views/safe_browsing/password_reuse_modal_warning_dialog.cc",
@@ -4713,6 +4709,7 @@ static_library("ui") {
       "//chrome/browser/ui/views/personal_context",
       "//chrome/browser/ui/views/promos",
       "//chrome/browser/ui/views/qrcode_generator",
+      "//chrome/browser/ui/views/record_replay",
       "//chrome/browser/ui/views/select_audio_output",
       "//chrome/browser/ui/views/select_audio_output:impl",
       "//chrome/browser/ui/views/send_tab_to_self",
@@ -4969,8 +4966,6 @@ static_library("ui") {
       # c/b/ui/views/permissions/chip/permission_dashboard_controller.h
       # c/b/ui/views/permissions/chip/permission_dashboard_view.h
       # c/b/ui/views/permissions/chip/webui_permission_dashboard.h
-      # c/b/ui/views/record_replay/replay_recording_bubble_view.h
-      # c/b/ui/views/record_replay/save_recording_bubble_view.h
       # c/b/ui/views/user_education/browser_help_bubble.h
       "//chrome/browser/ui/views/location_bar:impl",
 
