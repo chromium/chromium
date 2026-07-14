@@ -24,7 +24,9 @@ message PrivateUserMetrics {
   // client ids.
   fixed64 client_id = 1;
 
-  // A list of histogram events which is the actual metric data being reported
+  // This field is deprecated in favor of profile_keyed_histogram_events.
+  // A list of histogram events, which is the actual metric data
+  // being reported.
   repeated metrics.HistogramEventProto histogram_events = 2;
 
   // Only one system profile type can be set.
@@ -33,8 +35,17 @@ message PrivateUserMetrics {
     SearchSystemProfile search_profile = 4;
   }
 
-  // The PrivateUserMetrics profile id. Not joinable with any other profile ids.
-  // This field is semantically optional. In the absence of a value or if the
-  // value is zero, we are collecting per-client metrics.
-  fixed64 profile_id = 5;
+  // A list of profile keyed histogram events, which is the actual metric data
+  // being reported.
+  repeated ProfileKeyedHistogramEvent profile_keyed_histogram_events = 5;
+}
+
+message ProfileKeyedHistogramEvent {
+  // The profile id which keys the histogram events. Not joinable with any other
+  // profile ids. This field is semantically optional. In the absence of a value
+  // or if the value is zero, we are collecting per-client metrics.
+  fixed64 profile_id = 1;
+
+  // A list of histogram events which is the actual metric data being reported.
+  repeated metrics.HistogramEventProto histogram_events = 2;
 }
