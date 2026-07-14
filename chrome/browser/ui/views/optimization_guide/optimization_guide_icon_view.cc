@@ -8,9 +8,8 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
-#include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
 #include "components/optimization_guide/core/hints/optimization_metadata.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
@@ -26,7 +25,7 @@
 OptimizationGuideIconView::OptimizationGuideIconView(
     IconLabelBubbleView::Delegate* parent_delegate,
     Delegate* delegate,
-    Browser* browser)
+    BrowserWindowInterface* browser)
     : PageActionIconView(nullptr,
                          0,
                          parent_delegate,

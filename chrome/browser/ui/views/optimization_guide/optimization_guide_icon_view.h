@@ -12,7 +12,7 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/vector_icon_types.h"
 
-class Browser;
+class BrowserWindowInterface;
 class OptimizationGuideKeyedService;
 
 namespace optimization_guide::proto {
@@ -27,7 +27,7 @@ class OptimizationGuideIconView : public PageActionIconView {
  public:
   OptimizationGuideIconView(IconLabelBubbleView::Delegate* parent_delegate,
                             Delegate* delegate,
-                            Browser* browser);
+                            BrowserWindowInterface* browser);
   ~OptimizationGuideIconView() override;
 
   // PageActionIconView:
