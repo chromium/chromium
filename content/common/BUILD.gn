@@ -678,3 +678,11 @@ if (is_android) {
     srcjar_deps = [ ":java_features_srcjar" ]
   }
 }
+
+rust_static_library("common_id_types") {
+  crate_name = "content_common_id_types"
+  crate_root = "child_process_id.rs"
+  sources = [ crate_root ]
+  allow_unsafe = true
+  deps = [ "//third_party/rust/cxx/v1:lib" ]
+}

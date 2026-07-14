@@ -52,6 +52,14 @@ if (is_android) {
   }
 }
 
+rust_static_library("browser_id_types") {
+  crate_name = "content_browser_id_types"
+  crate_root = "browsing_instance_id.rs"
+  sources = [ crate_root ]
+  allow_unsafe = true
+  deps = [ "//third_party/rust/cxx/v1:lib" ]
+}
+
 rust_static_library("child_process_security_policy_impl") {
   # allow_unsafe is needed for FFI that underpins the `cxx` crate. While this
   # allows allow_unsafe for the entire crate, the Rust file also implements
@@ -64,7 +72,9 @@ rust_static_library("child_process_security_policy_impl") {
   visibility = [ ":browser" ]
   configs += [ "//content:content_implementation" ]
   deps = [
+    ":browser_id_types",
     "//base:feature",
+    "//content/common:common_id_types",
     "//storage/common:storage_common_rust",
     "//third_party/blink/public/common",
     "//third_party/rust/cxx/v1:lib",

@@ -1209,8 +1209,7 @@ ChildProcessSecurityPolicyImpl* ChildProcessSecurityPolicyImpl::GetInstance() {
 void ChildProcessSecurityPolicyImpl::Add(ChildProcessId child_id,
                                          BrowserContext* browser_context) {
   if (IsRustEnabled(GetRustPolicy(CpspRustFeature::kProcessState))) {
-    // TODO(crbug.com/522844976): Pass ChildProcessId directly to Rust.
-    rust::child_process_security_policy::add_process(child_id.GetUnsafeValue());
+    rust::child_process_security_policy::add_process(child_id);
   }
   // Note: We explicitly continue to create process_state_ even when in
   // Rust-only mode, since the values tracked by ProcessState have only
@@ -1573,7 +1572,8 @@ void ChildProcessSecurityPolicyImpl::GrantDeleteFromFileSystem(
 
 void ChildProcessSecurityPolicyImpl::GrantSendMidiMessage(int child_id) {
   RUST_CPP_PROCESS_STATE_VOID_FUNCTION(
-      rust::child_process_security_policy::grant_send_midi_message(child_id),
+      rust::child_process_security_policy::grant_send_midi_message(
+          ChildProcessId::FromUnsafeValue(child_id)),
       GrantSendMidiMessage_Cpp(child_id));
 }
 
@@ -1592,7 +1592,7 @@ void ChildProcessSecurityPolicyImpl::GrantSendMidiMessage_Cpp(int child_id) {
 void ChildProcessSecurityPolicyImpl::GrantSendMidiSysExMessage(int child_id) {
   RUST_CPP_PROCESS_STATE_VOID_FUNCTION(
       rust::child_process_security_policy::grant_send_midi_sysex_message(
-          child_id),
+          ChildProcessId::FromUnsafeValue(child_id)),
       GrantSendMidiSysExMessage_Cpp(child_id));
 }
 
@@ -2902,9 +2902,7 @@ void ChildProcessSecurityPolicyImpl::RegisterFileSystemPermissionPolicy_Cpp(
 bool ChildProcessSecurityPolicyImpl::CanSendMidiMessage(
     ChildProcessId child_id) {
   RUST_CPP_PROCESS_STATE_RETURN_FUNCTION(
-      // TODO(crbug.com/522844976): Pass ChildProcessId directly to Rust.
-      rust::child_process_security_policy::can_send_midi_message(
-          child_id.GetUnsafeValue()),
+      rust::child_process_security_policy::can_send_midi_message(child_id),
       CanSendMidiMessage_Cpp(child_id));
 }
 
@@ -2921,9 +2919,8 @@ bool ChildProcessSecurityPolicyImpl::CanSendMidiMessage_Cpp(
 bool ChildProcessSecurityPolicyImpl::CanSendMidiSysExMessage(
     ChildProcessId child_id) {
   RUST_CPP_PROCESS_STATE_RETURN_FUNCTION(
-      // TODO(crbug.com/522844976): Pass ChildProcessId directly to Rust.
       rust::child_process_security_policy::can_send_midi_sysex_message(
-          child_id.GetUnsafeValue()),
+          child_id),
       CanSendMidiSysExMessage_Cpp(child_id));
 }
 
@@ -3418,7 +3415,7 @@ ChildProcessSecurityPolicyImpl::LookupOriginAgentClusterState(
             OriginAgentClusterIsolationState::SiteKeyedByDefault;
     if (rust::child_process_security_policy::lookup_origin_agent_cluster_state(
             // Make a copy of the origin for Rust to own.
-            browsing_instance_id.value(), std::make_unique<url::Origin>(origin),
+            browsing_instance_id, std::make_unique<url::Origin>(origin),
             state)) {
       rust_result =
           std::make_optional(FromRustOriginAgentClusterIsolationState(state));
@@ -3471,7 +3468,7 @@ void ChildProcessSecurityPolicyImpl::RecordDefaultOriginAgentClusterOriginIfNew(
   RUST_CPP_VOID_FUNCTION(
       rust::child_process_security_policy::
           record_default_origin_agent_cluster_origin_if_new(
-              isolation_context.browsing_instance_id().value(),
+              isolation_context.browsing_instance_id(),
               browser_context->UniqueId(),
               // Make a copy of the origin for Rust to own.
               std::make_unique<url::Origin>(origin),
@@ -3601,7 +3598,7 @@ void ChildProcessSecurityPolicyImpl::EraseOriginAgentClusterState(
     const BrowsingInstanceId& browsing_instance_id) {
   RUST_CPP_VOID_FUNCTION(
       rust::child_process_security_policy::erase_origin_agent_cluster_state(
-          browsing_instance_id.value()),
+          browsing_instance_id),
       EraseOriginAgentClusterState_Cpp(browsing_instance_id));
 }
 
@@ -3615,7 +3612,7 @@ void ChildProcessSecurityPolicyImpl::EraseV8OptimizationState(
     const BrowsingInstanceId& browsing_instance_id) {
   RUST_CPP_VOID_FUNCTION(
       rust::child_process_security_policy::erase_v8_optimization_state(
-          browsing_instance_id.value()),
+          browsing_instance_id),
       EraseV8OptimizationState_Cpp(browsing_instance_id));
 }
 
@@ -3694,7 +3691,7 @@ void ChildProcessSecurityPolicyImpl::
   RUST_CPP_VOID_FUNCTION(
       rust::child_process_security_policy::
           add_origin_agent_cluster_state_for_browsing_instance(
-              isolation_context.browsing_instance_id().value(),
+              isolation_context.browsing_instance_id(),
               // Make a copy of the origin for Rust to own.
               std::make_unique<url::Origin>(origin),
               ToRustOriginAgentClusterIsolationState(oac_isolation_state),
@@ -3805,7 +3802,7 @@ void ChildProcessSecurityPolicyImpl::
   RUST_CPP_VOID_FUNCTION(
       rust::child_process_security_policy::
           add_v8_optimization_disabled_state_for_origin_if_not_cached(
-              browsing_instance_id.value(),
+              browsing_instance_id,
               // Make a copy for Rust to own.
               std::make_unique<url::Origin>(process_lock_origin),
               are_v8_optimizations_disabled),
@@ -3853,7 +3850,7 @@ ChildProcessSecurityPolicyImpl::LookupAreV8OptimizationsDisabled(
     bool result = false;
     if (rust::child_process_security_policy::
             lookup_are_v8_optimizations_disabled(
-                browsing_instance_id.value(),
+                browsing_instance_id,
                 // Make a copy for Rust to own.
                 std::make_unique<url::Origin>(process_lock_origin), result)) {
       rust_result = std::make_optional(result);
@@ -4063,9 +4060,7 @@ void ChildProcessSecurityPolicyImpl::ProcessStateMaps::RemoveProcessReference(
   // allow the C++ cleanup code to complete, since Rust doesn't yet support
   // everything in ProcessState.
   if (IsRustEnabled(GetRustPolicy(CpspRustFeature::kProcessState))) {
-    // TODO(crbug.com/522844976): Pass ChildProcessId directly to Rust.
-    rust::child_process_security_policy::remove_process(
-        child_id.GetUnsafeValue());
+    rust::child_process_security_policy::remove_process(child_id);
   }
 
   // |child_id| could be inside tasks that are on the IO thread task queues. We
