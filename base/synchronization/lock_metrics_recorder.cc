@@ -4,12 +4,17 @@
 
 #include "base/synchronization/lock_metrics_recorder.h"
 
+#include <algorithm>
+
 #include "base/auto_reset.h"
 #include "base/check.h"
 #include "base/containers/ring_buffer.h"
+#include "base/feature_list.h"
+#include "base/features.h"
 #include "base/metrics/histogram.h"
 #include "base/no_destructor.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_split.h"
 #include "base/synchronization/lock.h"
 #include "base/threading/platform_thread.h"
 #include "base/threading/platform_thread_ref.h"
@@ -80,6 +85,14 @@ base::HistogramBase* CreateLockHistogram(std::string_view lock_name,
               histogram_suffix}),
       Microseconds(1), Seconds(1), kHistogramBucketCount,
       base::HistogramBase::kUmaTargetedHistogramFlag);
+}
+
+std::vector<std::string>& GetAllowedThreads() {
+  static base::NoDestructor<std::vector<std::string>> allowed_threads(
+      base::SplitString(
+          base::features::kRecordLockAcquisitionTimeAllowedThreads.Get(), ",",
+          base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY));
+  return *allowed_threads;
 }
 
 }  // namespace
@@ -183,6 +196,16 @@ void LockMetricsRecorder::EnableRecordingOnCurrentThread(
     std::string_view histogram_suffix) {
   CHECK(!histogram_suffix.empty());
 
+  if (!base::FeatureList::IsEnabled(
+          base::features::kRecordLockAcquisitionTime)) {
+    return;
+  }
+
+  std::vector<std::string>& allowed = GetAllowedThreads();
+  if (std::ranges::find(allowed, histogram_suffix) == allowed.end()) {
+    return;
+  }
+
   static base::NoDestructor<base::ThreadLocalOwnedPointer<LockMetricsRecorder>>
       tls_slot;
   g_tls_slot.store(tls_slot.get(), std::memory_order_release);
@@ -213,6 +236,12 @@ void LockMetricsRecorder::DisableRecordingOnCurrentThreadForTesting() {
   if (slot) {
     slot->Set(nullptr);
   }
+}
+
+// static
+void LockMetricsRecorder::SetAllowedThreadsForTesting(
+    std::vector<std::string> allowed_threads) {
+  GetAllowedThreads() = std::move(allowed_threads);
 }
 
 }  // namespace base

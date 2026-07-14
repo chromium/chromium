@@ -81,6 +81,15 @@ BASE_FEATURE_PARAM(int,
                    &kLowEndMemoryExperiment,
                    LOW_MEMORY_DEVICE_THRESHOLD_MB);
 
+// Controls whether lock acquisition times are recorded and reported by a
+// given thread.
+BASE_FEATURE(kRecordLockAcquisitionTime, FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE_PARAM(std::string,
+                   kRecordLockAcquisitionTimeAllowedThreads,
+                   &kRecordLockAcquisitionTime,
+                   "RecordLockAcquisitionTimeAllowedThreads",
+                   "CrBrowserMain,CrRendererMain");
+
 BASE_FEATURE(kReducePPMs, FEATURE_ENABLED_BY_DEFAULT);
 
 // Apply base::ScopedBestEffortExecutionFence to registered task queues as well

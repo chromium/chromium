@@ -599,6 +599,9 @@ TEST(LockTest, PriorityIsInherited) {
 class LockTrySpinTest : public testing::Test {
  public:
   void SetUp() override {
+    scoped_feature_list_.InitAndEnableFeature(
+        base::features::kRecordLockAcquisitionTime);
+    LockMetricsRecorder::SetAllowedThreadsForTesting({"LockTrySpinTest"});
     LockMetricsRecorder::EnableRecordingOnCurrentThread("LockTrySpinTest");
   }
 
@@ -655,6 +658,7 @@ class LockTrySpinTest : public testing::Test {
   }
 
  private:
+  base::test::ScopedFeatureList scoped_feature_list_;
   MetricsSubSampler::ScopedAlwaysSampleForTesting always_sample_;
 };
 

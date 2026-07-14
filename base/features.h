@@ -27,6 +27,11 @@ BASE_EXPORT BASE_DECLARE_FEATURE(kLowEndMemoryExperiment);
 
 BASE_EXPORT BASE_DECLARE_FEATURE_PARAM(int, kLowMemoryDeviceThresholdMB);
 
+BASE_EXPORT BASE_DECLARE_FEATURE(kRecordLockAcquisitionTime);
+BASE_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    std::string,
+    kRecordLockAcquisitionTimeAllowedThreads);
+
 // PPM: Poor performance moment.
 //
 // This feature covers fixes to many egregious performance problems and the goal

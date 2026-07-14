@@ -68,6 +68,9 @@ class BASE_EXPORT LockMetricsRecorder {
 
   static void DisableRecordingOnCurrentThreadForTesting();
 
+  static void SetAllowedThreadsForTesting(
+      std::vector<std::string> allowed_threads);
+
   bool ShouldRecordLockAcquisitionTime() const;
 
   // Records a sample into the internal buffer. Must be called on the target

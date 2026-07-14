@@ -12,6 +12,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/features.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
@@ -2259,6 +2260,12 @@ TEST_F(ThreadControllerWithMessagePumpTest, WorkIdIncrementedDelegateRun) {
 }
 
 TEST_F(ThreadControllerWithMessagePumpTest, LockMetricsReportedOnIdle) {
+  base::test::ScopedFeatureList scoped_feature_list_;
+  scoped_feature_list_.InitAndEnableFeature(
+      base::features::kRecordLockAcquisitionTime);
+
+  LockMetricsRecorder::SetAllowedThreadsForTesting(
+      {"LockMetricsReportedOnIdle"});
   constexpr TimeDelta test_sample1 = Microseconds(42);
   constexpr TimeDelta test_sample2 = Milliseconds(42);
   constexpr std::string_view kBaseLockHistogramName =

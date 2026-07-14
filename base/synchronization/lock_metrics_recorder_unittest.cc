@@ -8,14 +8,17 @@
 #include <cstddef>
 #include <memory>
 
+#include "base/features.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/rand_util.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_util.h"
 #include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -33,6 +36,40 @@ class LockMetricsRecorderTest : public testing::Test {
  private:
   MetricsSubSampler::ScopedAlwaysSampleForTesting always_sample_;
 };
+
+namespace {
+
+class IsolatedTestThread : public PlatformThread::Delegate {
+ public:
+  IsolatedTestThread(std::string_view thread_name, base::OnceClosure task)
+      : thread_name_(thread_name), task_(std::move(task)) {}
+
+  void ThreadMain() override {
+    LockMetricsRecorder::EnableRecordingOnCurrentThread(thread_name_);
+    std::move(task_).Run();
+  }
+
+ private:
+  const std::string_view thread_name_;
+  base::OnceClosure task_;
+};
+
+void RecordAndVerifySampleOnCurrentThread(TimeDelta duration) {
+  LockMetricsRecorder* recorder = LockMetricsRecorder::GetForCurrentThread();
+  ASSERT_NE(recorder, nullptr);
+
+  recorder->RecordLockAcquisitionTime(duration,
+                                      LockMetricsRecorder::LockType::kBaseLock);
+  size_t num_samples = 0;
+  recorder->ForEachSample(LockMetricsRecorder::LockType::kBaseLock,
+                          [&](const TimeDelta& sample) {
+                            EXPECT_EQ(sample, duration);
+                            num_samples++;
+                          });
+  EXPECT_EQ(num_samples, 1u);
+}
+
+}  // namespace
 
 // Test that samples are classified internally by type
 TEST_F(LockMetricsRecorderTest, SamplesClassifiedByLockType) {
@@ -146,6 +183,69 @@ TEST_F(LockMetricsRecorderTest, ScopedLockAcquisitionTimerRecordsSample) {
   EXPECT_EQ(num_samples, 1);
 }
 
+// Test that recording is only enabled for threads matching the parameter
+// filter.
+TEST(LockMetricsRecorderFeatureTest, FilterByThreadName) {
+  MetricsSubSampler::ScopedAlwaysSampleForTesting always_sample;
+
+  base::test::ScopedFeatureList scoped_feature_list_;
+  scoped_feature_list_.InitAndEnableFeature(
+      base::features::kRecordLockAcquisitionTime);
+  LockMetricsRecorder::SetAllowedThreadsForTesting({"AllowedThread"});
+
+  // Attempt to enable recording on an allowed thread.
+  LockMetricsRecorder::EnableRecordingOnCurrentThread("AllowedThread");
+  RecordAndVerifySampleOnCurrentThread(Microseconds(100));
+  LockMetricsRecorder::DisableRecordingOnCurrentThreadForTesting();
+
+  // Attempt to enable recording on a blocked thread.
+  LockMetricsRecorder::EnableRecordingOnCurrentThread("BlockedThread");
+  EXPECT_EQ(LockMetricsRecorder::GetForCurrentThread(), nullptr);
+
+  // Instantiating a ScopedLockAcquisitionTimer on a blocked thread should
+  // not record anything.
+  {
+    LockMetricsRecorder::ScopedLockAcquisitionTimer timer;
+    PlatformThread::Sleep(Microseconds(500));
+  }
+
+  EXPECT_EQ(LockMetricsRecorder::GetForCurrentThread(), nullptr);
+
+  LockMetricsRecorder::DisableRecordingOnCurrentThreadForTesting();
+}
+
+// Test that different threads are able to record samples when they are allowed
+// to by the thread name filter.
+TEST(LockMetricsRecorderFeatureTest, MultipleThreadsFilterByThreadName) {
+  MetricsSubSampler::ScopedAlwaysSampleForTesting always_sample;
+
+  constexpr size_t kNumThreads = 3;
+  const std::vector<std::string> kAllowedThreads = {
+      "AllowedThread1", "AllowedThread2", "AllowedThread3"};
+
+  base::test::ScopedFeatureList scoped_feature_list_;
+  scoped_feature_list_.InitAndEnableFeature(
+      base::features::kRecordLockAcquisitionTime);
+
+  LockMetricsRecorder::SetAllowedThreadsForTesting(kAllowedThreads);
+
+  std::array<std::unique_ptr<IsolatedTestThread>, kNumThreads> delegates;
+  std::array<PlatformThreadHandle, kNumThreads> handles;
+
+  // Verify that allowed threads are able to record samples.
+  for (size_t i = 0; i < kNumThreads; ++i) {
+    delegates[i] = std::make_unique<IsolatedTestThread>(
+        kAllowedThreads[i], base::BindLambdaForTesting([]() {
+          RecordAndVerifySampleOnCurrentThread(Microseconds(1));
+        }));
+    ASSERT_TRUE(PlatformThread::Create(0, delegates[i].get(), &handles[i]));
+  }
+
+  for (size_t i = 0; i < kNumThreads; ++i) {
+    PlatformThread::Join(handles[i]);
+  }
+}
+
 namespace {
 class MetricsRecorderTestThread : public PlatformThread::Delegate {
  public:
@@ -164,21 +264,6 @@ class MetricsRecorderTestThread : public PlatformThread::Delegate {
  private:
   raw_ptr<Lock> lock_;
   raw_ptr<WaitableEvent> should_start_;
-};
-
-class IsolatedTestThread : public PlatformThread::Delegate {
- public:
-  IsolatedTestThread(const char* thread_name, base::OnceClosure task)
-      : thread_name_(thread_name), task_(std::move(task)) {}
-
-  void ThreadMain() override {
-    LockMetricsRecorder::EnableRecordingOnCurrentThread(thread_name_);
-    std::move(task_).Run();
-  }
-
- private:
-  const char* thread_name_;
-  base::OnceClosure task_;
 };
 
 // Two threads try to acquire the lock with very high-probability of lock
@@ -205,6 +290,12 @@ void MakeThreadsContendOnLock() {
 class BaseLockMetricsTest : public testing::Test {
  public:
   BaseLockMetricsTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        base::features::kRecordLockAcquisitionTime);
+    LockMetricsRecorder::SetAllowedThreadsForTesting(
+        {"BaseLockMetricsTest", "BackgroundThread", "HammerThread",
+         "MetricsTestThread"});
+
     LockMetricsRecorder::EnableRecordingOnCurrentThread("BaseLockMetricsTest");
   }
 
@@ -218,6 +309,7 @@ class BaseLockMetricsTest : public testing::Test {
   }
 
  private:
+  base::test::ScopedFeatureList scoped_feature_list_;
   MetricsSubSampler::ScopedAlwaysSampleForTesting always_sample_;
 };
 
@@ -248,7 +340,7 @@ TEST_F(BaseLockMetricsTest, SamplesRecordedWhenContended) {
 
 // Test that samples are correctly flushed to histograms.
 TEST_F(BaseLockMetricsTest, ReportLockAcquisitionTimesFlushesToHistograms) {
-  const char* kThreadName = "MetricsTestThread";
+  constexpr std::string_view kThreadName = "MetricsTestThread";
   base::HistogramTester histogram_tester;
 
   IsolatedTestThread background_thread(
@@ -352,7 +444,7 @@ TEST_F(BaseLockMetricsTest, ThreadLocalBufferIsolation) {
 TEST_F(BaseLockMetricsTest, ConcurrentReportingStressTest) {
   constexpr size_t kNumThreads = 4;
   constexpr size_t kIterations = 1000;
-  const char* kSharedThreadName = "HammerThread";
+  constexpr std::string_view kSharedThreadName = "HammerThread";
 
   base::HistogramTester histogram_tester;
 
