@@ -10,6 +10,8 @@ static_library("uploading") {
     "status_uploader.h",
     "system_log_uploader.cc",
     "system_log_uploader.h",
+    "system_log_uploader_delegate.cc",
+    "system_log_uploader_delegate.h",
     "upload_job.h",
     "upload_job_impl.cc",
     "upload_job_impl.h",

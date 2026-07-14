@@ -18,7 +18,7 @@ all,services/network/cors/cors_url_loader_factory.cc
 
 # ChromeOS-specific annotations.
 all,chromeos/ash/components/geolocation/simple_geolocation_request.cc
-all,chrome/browser/ash/policy/uploading/system_log_uploader.cc
+all,chrome/browser/ash/policy/uploading/system_log_uploader_delegate.cc
 all,chromeos/geolocation/simple_geolocation_request.cc
 all,components/quirks/quirks_client.cc
 all,chromeos/ash/services/device_sync/cryptauth_client_impl.cc
