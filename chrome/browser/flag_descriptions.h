@@ -4285,6 +4285,10 @@ inline constexpr char kSafetyHubUnifiedPasswordsModuleDescription[] =
     "Enables the unified passwords module in Safety Hub, which includes "
     "account and local passwords.";
 
+inline constexpr char kSafetyFrePromoName[] = "SafetyFrePromo";
+inline constexpr char kSafetyFrePromoDescription[] =
+    "Enables the Safety Promo during the First Run Experience (FRE).";
+
 inline constexpr char kSafetyHubWeakAndReusedPasswordsName[] =
     "Enables Weak and Reused passwords in Safety Hub";
 inline constexpr char kSafetyHubWeakAndReusedPasswordsDescription[] =

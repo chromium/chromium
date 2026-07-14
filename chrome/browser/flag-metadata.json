@@ -8614,6 +8614,14 @@
     "expiry_milestone": 136
   },
   {
+    "name": "safety-fre-promo",
+    "owners": [
+      "yyanting@google.com",
+      "hanxi@chromium.org"
+    ],
+    "expiry_milestone": 162
+  },
+  {
     "name": "safety-hub-disruptive-notification-revocation",
     "owners": [
       "olesiamarukhno@google.com",

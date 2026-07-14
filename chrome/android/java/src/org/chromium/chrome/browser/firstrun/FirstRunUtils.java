@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.firstrun;
 
+import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.NativeMethods;
@@ -15,9 +16,29 @@ import org.chromium.chrome.browser.metrics.ChangeMetricsReportingStateCalledFrom
 import org.chromium.chrome.browser.metrics.UmaSessionStats;
 import org.chromium.ui.accessibility.AccessibilityState;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
 /** Provides first run related utility functions. */
 @NullMarked
 public class FirstRunUtils {
+    /** Arm variations for the Safety FRE promo field trial parameter. */
+    @IntDef({
+        SafetyFrePromoArm.UNDEFINED,
+        SafetyFrePromoArm.PASSWORD_MANAGER,
+        SafetyFrePromoArm.HISTORY_QUICK_DELETE,
+        SafetyFrePromoArm.PASSWORD_MANAGER_AND_HISTORY_QUICK_DELETE,
+        SafetyFrePromoArm.ANIMATED_ILLUSTRATION
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface SafetyFrePromoArm {
+        int UNDEFINED = 0;
+        int PASSWORD_MANAGER = 1;
+        int HISTORY_QUICK_DELETE = 2;
+        int PASSWORD_MANAGER_AND_HISTORY_QUICK_DELETE = 3;
+        int ANIMATED_ILLUSTRATION = 4;
+    }
+
     private static final int DEFAULT_SKIP_TOS_EXIT_DELAY_MS = 1000;
 
     private static boolean sDisableDelayOnExitFreForTest;

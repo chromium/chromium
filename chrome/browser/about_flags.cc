@@ -4349,6 +4349,25 @@ const FeatureEntry::FeatureVariation kDefaultBrowserPromoFreVariations[] = {
      nullptr},
     {"(Primer - with promotional text)",
      kDefaultBrowserPromoFrePrimerWithPromotionalText, nullptr}};
+
+const FeatureEntry::FeatureParam kSafetyFrePromoPasswordManager[] = {
+    {"safety_fre_promo_arm", "1"}};
+const FeatureEntry::FeatureParam kSafetyFrePromoHistoryQuickDelete[] = {
+    {"safety_fre_promo_arm", "2"}};
+const FeatureEntry::FeatureParam
+    kSafetyFrePromoPasswordManagerAndHistoryQuickDelete[] = {
+        {"safety_fre_promo_arm", "3"}};
+const FeatureEntry::FeatureParam kSafetyFrePromoAnimatedIllustration[] = {
+    {"safety_fre_promo_arm", "4"}};
+
+const FeatureEntry::FeatureVariation kSafetyFrePromoVariations[] = {
+    {"(Password Manager, ESB, Incognito)", kSafetyFrePromoPasswordManager,
+     nullptr},
+    {"(History, ESB, Incognito)", kSafetyFrePromoHistoryQuickDelete, nullptr},
+    {"(Password Manager, History, ESB)",
+     kSafetyFrePromoPasswordManagerAndHistoryQuickDelete, nullptr},
+    {"(Animated illustration)", kSafetyFrePromoAnimatedIllustration, nullptr}};
+
 const FeatureEntry::FeatureParam kAndroidDesktopZoomScalingFactorSmall[] = {
     {"desktop-zoom-scaling-factor", "109"},
     {"monitor-zoom-scaling-factor", "120"}};
@@ -9347,6 +9366,12 @@ const FeatureEntry kFeatureEntries[] = {
          "SafetyCheckUnusedSitePermissions")},
 
 #if BUILDFLAG(IS_ANDROID)
+    {"safety-fre-promo", flag_descriptions::kSafetyFrePromoName,
+     flag_descriptions::kSafetyFrePromoDescription, kOsAndroid,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kSafetyFrePromo,
+                                    kSafetyFrePromoVariations,
+                                    "SafetyFrePromo")},
+
     {"safety-hub-weak-reused-passwords",
      flag_descriptions::kSafetyHubWeakAndReusedPasswordsName,
      flag_descriptions::kSafetyHubWeakAndReusedPasswordsDescription, kOsAndroid,
