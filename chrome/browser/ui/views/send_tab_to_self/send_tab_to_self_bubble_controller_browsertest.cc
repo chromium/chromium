@@ -697,6 +697,8 @@ const char* DisplayReasonToString(EntryPointDisplayReason reason) {
       return "OfferFeature";
     case EntryPointDisplayReason::kOfferSignIn:
       return "OfferSignIn";
+    case EntryPointDisplayReason::kOfferReauth:
+      return "OfferReauth";
     case EntryPointDisplayReason::kInformNoTargetDevice:
       return "InformNoTargetDevice";
   }

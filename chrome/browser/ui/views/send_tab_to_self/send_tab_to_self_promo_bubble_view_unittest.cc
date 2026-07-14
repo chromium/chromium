@@ -96,7 +96,17 @@ class SendTabToSelfPromoBubbleViewTest : public ChromeViewsTestBase {
   void CreateSignInPromoBubble() {
     auto* bubble = new SendTabToSelfSignInPromoBubbleView(
         views::BubbleAnchor(anchor_widget_->GetContentsView()),
-        web_contents_.get());
+        web_contents_.get(),
+        SendTabToSelfSignInPromoBubbleView::PromoMode::kSignIn);
+    bubble_widget_ = views::BubbleDialogDelegateView::CreateBubble(bubble);
+    bubble_ = bubble;
+  }
+
+  void CreateReauthPromoBubble() {
+    auto* bubble = new SendTabToSelfSignInPromoBubbleView(
+        views::BubbleAnchor(anchor_widget_->GetContentsView()),
+        web_contents_.get(),
+        SendTabToSelfSignInPromoBubbleView::PromoMode::kReauth);
     bubble_widget_ = views::BubbleDialogDelegateView::CreateBubble(bubble);
     bubble_ = bubble;
   }
@@ -300,6 +310,37 @@ TEST_F(SendTabToSelfPromoBubbleViewEnhancedTest, LoadsAccountAwareDesign) {
 
   // Should have a single child (BubbleSignInPromoView).
   EXPECT_EQ(bubble_->children().size(), 1u);
+}
+
+// Verifies that the verify-it-is-you promo layout is loaded correctly when the
+// user has an account in a persistent auth error state and enhanced UI is
+// enabled.
+TEST_F(SendTabToSelfPromoBubbleViewEnhancedTest,
+       LoadsVerifyItsYouDesignModernized) {
+  AccountInfo account_info = identity_test_env()->MakePrimaryAccountAvailable(
+      "user@host.com", signin::ConsentLevel::kSignin);
+  identity_test_env()->SetInvalidRefreshTokenForPrimaryAccount();
+
+  CreateReauthPromoBubble();
+
+  // Title should match verify title strictly.
+  EXPECT_EQ(bubble_->GetWindowTitle(),
+            l10n_util::GetStringUTF16(
+                IDS_SEND_TAB_TO_SELF_VERIFY_ITS_YOU_PROMO_TITLE));
+
+  // Dialog button should be null.
+  EXPECT_FALSE(bubble_->GetOkButton());
+
+  // Sign in button inside the content view should be visible and use verify
+  // label.
+  auto* sign_in_button = GetSignInButton();
+  ASSERT_TRUE(sign_in_button);
+  EXPECT_EQ(sign_in_button->GetText(),
+            l10n_util::GetStringUTF16(IDS_PROFILES_VERIFY_ACCOUNT_BUTTON));
+
+  // Verify body contains the verify text string.
+  EXPECT_NE(nullptr, FindLabelWithText(l10n_util::GetStringUTF16(
+                         IDS_SEND_TAB_TO_SELF_VERIFY_ITS_YOU_PROMO_LABEL)));
 }
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 

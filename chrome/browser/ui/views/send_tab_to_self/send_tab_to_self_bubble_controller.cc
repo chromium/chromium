@@ -165,8 +165,12 @@ void SendTabToSelfBubbleController::ShowBubbleWithAnchor(
           std::move(anchor.value()), &GetWebContents());
       break;
     case send_tab_to_self::EntryPointDisplayReason::kOfferSignIn:
+    case send_tab_to_self::EntryPointDisplayReason::kOfferReauth:
       bubble_view = std::make_unique<SendTabToSelfSignInPromoBubbleView>(
-          std::move(anchor.value()), &GetWebContents());
+          std::move(anchor.value()), &GetWebContents(),
+          reason == send_tab_to_self::EntryPointDisplayReason::kOfferReauth
+              ? SendTabToSelfSignInPromoBubbleView::PromoMode::kReauth
+              : SendTabToSelfSignInPromoBubbleView::PromoMode::kSignIn);
       break;
     case send_tab_to_self::EntryPointDisplayReason::kInformNoTargetDevice:
       bubble_view = std::make_unique<SendTabToSelfNoTargetDeviceBubbleView>(
@@ -368,7 +372,8 @@ void SendTabToSelfBubbleController::OnModelReady() {
   // wait, the model will no longer be in a state where we should show the
   // bubble.
   if (!reason.has_value() ||
-      reason.value() == EntryPointDisplayReason::kOfferSignIn) {
+      reason.value() == EntryPointDisplayReason::kOfferSignIn ||
+      reason.value() == EntryPointDisplayReason::kOfferReauth) {
     return;
   }
 

@@ -7,6 +7,9 @@
 #include <string>
 
 #include "base/functional/bind.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
@@ -20,6 +23,7 @@
 #include "components/send_tab_to_self/features.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/base/signin_metrics.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -87,17 +91,19 @@ void SendTabToSelfNoTargetDeviceBubbleView::InitLayout() {
 
 SendTabToSelfSignInPromoBubbleView::SendTabToSelfSignInPromoBubbleView(
     views::BubbleAnchor anchor,
-    content::WebContents* web_contents)
+    content::WebContents* web_contents,
+    PromoMode promo_mode)
     : SendTabToSelfBubbleView(anchor, web_contents) {
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   if (IsEnhancedUiEnabled()) {
-    InitEnhancedLayout();
+    InitEnhancedLayout(promo_mode);
     return;
   }
 #endif
+  CHECK(promo_mode == PromoMode::kSignIn);
   InitBasicLayout();
 }
 
@@ -126,10 +132,13 @@ void SendTabToSelfSignInPromoBubbleView::InitBasicLayout() {
 }
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-void SendTabToSelfSignInPromoBubbleView::InitEnhancedLayout() {
+void SendTabToSelfSignInPromoBubbleView::InitEnhancedLayout(
+    PromoMode promo_mode) {
   set_margins(BubbleSignInPromoView::GetBubbleSigninPromoMargins());
   SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
-  SetTitle(IDS_SEND_TAB_TO_SELF_SIGN_IN_PROMO_TITLE);
+  SetTitle(promo_mode == PromoMode::kReauth
+               ? IDS_SEND_TAB_TO_SELF_VERIFY_ITS_YOU_PROMO_TITLE
+               : IDS_SEND_TAB_TO_SELF_SIGN_IN_PROMO_TITLE);
 
   // Use the shared, callback-based promo delegate to resume the STTS flow
   // automatically after sign-in.

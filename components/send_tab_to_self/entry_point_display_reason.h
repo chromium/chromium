@@ -29,6 +29,9 @@ enum class EntryPointDisplayReason {
   // that. "Might" because the list of target devices can't be known yet, it
   // could be empty (see below).
   kOfferSignIn,
+  // The user is in a signin pending / reauth state (e.g. invalid credentials).
+  // Offer reauthentication if the enhanced desktop UI feature is enabled.
+  kOfferReauth,
   // All the conditions for send-tab-to-self are met, but there is no valid
   // target device. In that case the entry point should inform the user they
   // can enjoy the feature by signing in on other devices.

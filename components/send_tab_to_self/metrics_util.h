@@ -261,7 +261,8 @@ enum class SendTabToSelfDeviceCount {
   kFourDevices = 5,
   kFiveDevices = 6,
   kMoreThanFiveDevices = 7,
-  kMaxValue = kMoreThanFiveDevices,
+  kNoTargetDevicesBecauseSigninPending = 8,
+  kMaxValue = kNoTargetDevicesBecauseSigninPending,
 };
 // LINT.ThenChange(/tools/metrics/histograms/enums.xml:SendTabToSelfDeviceCount)
 

@@ -255,6 +255,7 @@ class TargetDeviceListWaiter : public syncer::SyncServiceObserver {
     }
     switch (*display_reason) {
       case send_tab_to_self::EntryPointDisplayReason::kOfferSignIn:
+      case send_tab_to_self::EntryPointDisplayReason::kOfferReauth:
         break;
       case send_tab_to_self::EntryPointDisplayReason::kOfferFeature:
       case send_tab_to_self::EntryPointDisplayReason::kInformNoTargetDevice:
@@ -619,6 +620,7 @@ void OpenManageDevicesTab(CommandDispatcher* dispatcher) {
       [self showSendTabToSelf];
       break;
     case send_tab_to_self::EntryPointDisplayReason::kOfferSignIn:
+    case send_tab_to_self::EntryPointDisplayReason::kOfferReauth:
       [self showSigninPromo];
       break;
   }

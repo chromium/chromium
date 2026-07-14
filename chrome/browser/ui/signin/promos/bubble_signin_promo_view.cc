@@ -141,14 +141,15 @@ int GetSubtitleID(bool is_signin_promo,
         switch (signed_in_state) {
           case SignedInState::kSignedOut:
           case SignedInState::kWebOnlySignedIn:
-          case SignedInState::kSignInPending:
             return base::FeatureList::IsEnabled(
                        send_tab_to_self::kSendTabToSelfEnhancedDesktopUI)
                        ? IDS_SEND_TAB_TO_SELF_SIGN_IN_PROMO_BODY
                        : IDS_SEND_TAB_TO_SELF_SIGN_IN_PROMO_LABEL;
+          case SignedInState::kSignInPending:
+          case SignedInState::kSyncPaused:
+            return IDS_SEND_TAB_TO_SELF_VERIFY_ITS_YOU_PROMO_LABEL;
           case SignedInState::kSignedIn:
           case SignedInState::kSyncing:
-          case SignedInState::kSyncPaused:
             break;
         }
       } break;

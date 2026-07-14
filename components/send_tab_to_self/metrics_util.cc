@@ -101,6 +101,8 @@ SendTabToSelfDeviceCount GetSendTabToSelfDeviceCount(
   switch (reason) {
     case EntryPointDisplayReason::kOfferSignIn:
       return SendTabToSelfDeviceCount::kNoTargetDevicesBecauseSignedOut;
+    case EntryPointDisplayReason::kOfferReauth:
+      return SendTabToSelfDeviceCount::kNoTargetDevicesBecauseSigninPending;
     case EntryPointDisplayReason::kInformNoTargetDevice:
       return SendTabToSelfDeviceCount::kZeroDevices;
     case EntryPointDisplayReason::kOfferFeature:

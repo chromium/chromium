@@ -4,10 +4,13 @@
 
 #include "components/send_tab_to_self/entry_point_display_reason.h"
 
+#include "base/feature_list.h"
 #include "components/prefs/pref_service.h"
+#include "components/send_tab_to_self/features.h"
 #include "components/send_tab_to_self/send_tab_to_self_entry.h"
 #include "components/send_tab_to_self/send_tab_to_self_model.h"
 #include "components/send_tab_to_self/send_tab_to_self_sync_service.h"
+#include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/sync/service/sync_service.h"
@@ -18,14 +21,41 @@ namespace send_tab_to_self {
 
 namespace {
 
+bool IsSigninPossible(syncer::SyncService* sync_service,
+                      PrefService* pref_service) {
+  const bool signin_allowed = pref_service->GetBoolean(prefs::kSigninAllowed);
+  if (!signin_allowed) {
+    return false;
+  }
+
+  const bool disabled_by_policy = sync_service->HasDisableReason(
+      syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY);
+  if (disabled_by_policy || sync_service->IsLocalSyncEnabled()) {
+    return false;
+  }
+
+  return true;
+}
+
 bool ShouldOfferSignin(syncer::SyncService* sync_service,
                        PrefService* pref_service) {
-  // TODO(crbug.com/529721376): Handle "signin pending" state (sync paused).
-  return pref_service->GetBoolean(prefs::kSigninAllowed) &&
-         sync_service->GetAccountInfo().IsEmpty() &&
-         !sync_service->HasDisableReason(
-             syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY) &&
-         !sync_service->IsLocalSyncEnabled();
+  return IsSigninPossible(sync_service, pref_service) &&
+         sync_service->GetAccountInfo().IsEmpty();
+}
+
+bool ShouldOfferReauth(syncer::SyncService* sync_service,
+                       PrefService* pref_service) {
+#if !BUILDFLAG(ENABLE_DICE_SUPPORT)
+  return false;
+#else
+  if (!base::FeatureList::IsEnabled(kSendTabToSelfEnhancedDesktopUI)) {
+    return false;
+  }
+
+  return IsSigninPossible(sync_service, pref_service) &&
+         sync_service->GetTransportState() ==
+             syncer::SyncService::TransportState::PAUSED;
+#endif
 }
 
 }  // namespace
@@ -48,6 +78,10 @@ std::optional<EntryPointDisplayReason> GetEntryPointDisplayReason(
 
   if (ShouldOfferSignin(sync_service, pref_service)) {
     return EntryPointDisplayReason::kOfferSignIn;
+  }
+
+  if (ShouldOfferReauth(sync_service, pref_service)) {
+    return EntryPointDisplayReason::kOfferReauth;
   }
 
   if (!send_tab_to_self_model->IsReady()) {

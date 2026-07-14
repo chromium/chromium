@@ -23,6 +23,7 @@
 #include "components/send_tab_to_self/features.h"
 #include "components/send_tab_to_self/metrics_util.h"
 #include "components/send_tab_to_self/target_device_info.h"
+#include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "content/public/test/browser_test.h"
 #include "ui/events/base_event_utils.h"
@@ -112,6 +113,9 @@ class SendTabToSelfBubbleTest : public DialogBrowserTest {
     } else if (name == "ShowSigninPromo") {
       controller_->SetEntryPointDisplayReason(
           send_tab_to_self::EntryPointDisplayReason::kOfferSignIn);
+    } else if (name == "ShowVerifyPromo") {
+      controller_->SetEntryPointDisplayReason(
+          send_tab_to_self::EntryPointDisplayReason::kOfferReauth);
     } else {
       CHECK_EQ(name, "ShowNoTargetDevicePromo");
       controller_->SetEntryPointDisplayReason(
@@ -161,14 +165,45 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfBubbleOldUITest,
   ShowAndVerifyUi();
 }
 
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+class SendTabToSelfBubbleEnhancedUITest : public SendTabToSelfBubbleTest {
+ public:
+  SendTabToSelfBubbleEnhancedUITest() {
+    feature_list_.InitAndEnableFeature(kSendTabToSelfEnhancedDesktopUI);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(SendTabToSelfBubbleEnhancedUITest,
+                       InvokeUi_ShowSigninPromo) {
+  ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_F(SendTabToSelfBubbleEnhancedUITest,
+                       InvokeUi_ShowVerifyPromo) {
+  ShowAndVerifyUi();
+}
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
+
 class SendTabToSelfBubbleParameterizedTest
     : public SendTabToSelfBubbleTest,
       public testing::WithParamInterface<EntryPointDisplayReason> {
  public:
+  SendTabToSelfBubbleParameterizedTest() {
+    if (GetParam() == EntryPointDisplayReason::kOfferReauth) {
+      feature_list_.InitAndEnableFeature(kSendTabToSelfEnhancedDesktopUI);
+    }
+  }
+
   void SetUpOnMainThread() override {
     SendTabToSelfBubbleTest::SetUpOnMainThread();
     controller_->SetEntryPointDisplayReason(GetParam());
   }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 INSTANTIATE_TEST_SUITE_P(
@@ -176,6 +211,9 @@ INSTANTIATE_TEST_SUITE_P(
     SendTabToSelfBubbleParameterizedTest,
     testing::Values(EntryPointDisplayReason::kOfferFeature,
                     EntryPointDisplayReason::kOfferSignIn,
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+                    EntryPointDisplayReason::kOfferReauth,
+#endif
                     EntryPointDisplayReason::kInformNoTargetDevice));
 
 IN_PROC_BROWSER_TEST_P(SendTabToSelfBubbleParameterizedTest,

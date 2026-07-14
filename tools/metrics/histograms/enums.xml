@@ -25608,6 +25608,7 @@ Called by update_net_error_codes.py.-->
   <int value="5" label="4 target devices"/>
   <int value="6" label="5 target devices"/>
   <int value="7" label="More than 5 target devices"/>
+  <int value="8" label="No target devices because sign-in pending"/>
 </enum>
 
 <enum name="SendTabToSelfNotificationStatus">

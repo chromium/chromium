@@ -13737,6 +13737,12 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
       <message name="IDS_SEND_TAB_TO_SELF_SIGN_IN_PROMO_BODY" desc="Body label text of the send-tab-to-self sign-in promo bubble.">
         To send links between devices, ensure both are signed in to the same Google account.
       </message>
+      <message name="IDS_SEND_TAB_TO_SELF_VERIFY_ITS_YOU_PROMO_TITLE" desc="Title of the send-tab-to-self sign-in promo bubble when the user needs to verify their identity (reauthenticate).">
+        Send a link to another device
+      </message>
+      <message name="IDS_SEND_TAB_TO_SELF_VERIFY_ITS_YOU_PROMO_LABEL" desc="Text when a user in the verify it's you (signin pending) state attempts to use send-tab-to-self.">
+        To send links, verify it’s you. You can send links when you’re signed in to the same Google Account on both devices.
+      </message>
 
       <!-- Share via QR Code strings -->
       <if expr="not use_titlecase">
