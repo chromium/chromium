@@ -1376,4 +1376,19 @@ public class StripLayoutHelperManagerTest {
         mStripLayoutHelperManager.getVirtualViews(views);
         assertFalse("Should have virtual views again after unobscured", views.isEmpty());
     }
+
+    @Test
+    public void testUrlTextChangeClearsHoverState() {
+        var activeLayoutHelper = mStripLayoutHelperManager.getActiveStripLayoutHelper();
+        activeLayoutHelper.setLastHoveredTabForTesting(mHoveredStripTab);
+        assertNotNull(
+                "Last hovered tab should be set initially.",
+                activeLayoutHelper.getLastHoveredTab());
+
+        mStripLayoutHelperManager.simulateUrlTextChangeForTesting("test");
+
+        assertNull(
+                "Last hovered tab should be cleared on URL text change.",
+                activeLayoutHelper.getLastHoveredTab());
+    }
 }

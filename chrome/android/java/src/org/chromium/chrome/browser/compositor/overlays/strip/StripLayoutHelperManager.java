@@ -78,6 +78,7 @@ import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
 import org.chromium.chrome.browser.lifecycle.TopResumedActivityChangedObserver;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
+import org.chromium.chrome.browser.omnibox.OmniboxStub;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tab.MediaState;
@@ -241,6 +242,11 @@ public class StripLayoutHelperManager
     private final View mControlContainer;
     private final ViewStub mTabHoverCardViewStub;
     private float mLastVisibleViewportOffsetY;
+    private @Nullable OmniboxStub mOmniboxStub;
+    private final Callback<String> mUrlTextChangeListener =
+            (ignored) -> {
+                getActiveStripLayoutHelper().onHoverExit(/* inTabStrip= */ false);
+            };
     private float mSceneLayerYOffset;
     private float mSceneLayerVisibleHeight; // Used during height transition.
 
@@ -764,6 +770,14 @@ public class StripLayoutHelperManager
         mXrSpaceModeObservableSupplier = xrSpaceModeObservableSupplier;
         mTabObscuringHandler = tabObscuringHandler;
         mTabObscuringHandler.addObserver(this);
+        if (mToolbarManager != null && mToolbarManager.getOmniboxStubSupplier() != null) {
+            mToolbarManager.getOmniboxStubSupplier().onAvailable(this::onOmniboxStubAvailable);
+        }
+    }
+
+    private void onOmniboxStubAvailable(OmniboxStub omniboxStub) {
+        mOmniboxStub = omniboxStub;
+        mOmniboxStub.addUrlTextChangeListener(mUrlTextChangeListener);
     }
 
     @EnsuresNonNullIf("mDesktopWindowStateManager")
@@ -790,6 +804,10 @@ public class StripLayoutHelperManager
     /** Cleans up internal state. An instance should not be used after this method is called. */
     @SuppressWarnings({"NullAway", "UseSharedPreferencesManagerFromChromeCheck"})
     public void destroy() {
+        if (mOmniboxStub != null) {
+            mOmniboxStub.removeUrlTextChangeListener(mUrlTextChangeListener);
+            mOmniboxStub = null;
+        }
         mTabObscuringHandler.removeObserver(this);
         mTabStripTreeProvider.destroy();
         mTabStripTreeProvider = null;
@@ -854,6 +872,10 @@ public class StripLayoutHelperManager
         if (modelSelectorButton == null || !modelSelectorButton.isVisible()) return;
         mTabModelSelector.selectModel(!mTabModelSelector.isIncognitoSelected());
         RecordUserAction.record("MobileToolbarModelSelected");
+    }
+
+    public void simulateUrlTextChangeForTesting(String text) {
+        mUrlTextChangeListener.onResult(text);
     }
 
     @VisibleForTesting

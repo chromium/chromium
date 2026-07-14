@@ -3625,6 +3625,11 @@ public class ToolbarManager
         return mLocationBar.getOmniboxStub();
     }
 
+    /** Returns the {@link OneshotSupplier} of {@link OmniboxStub}. */
+    public OneshotSupplier<OmniboxStub> getOmniboxStubSupplier() {
+        return mOmniboxStubSupplier;
+    }
+
     public @Nullable VoiceRecognitionHandler getVoiceRecognitionHandler() {
         return mLocationBar.getVoiceRecognitionHandler();
     }

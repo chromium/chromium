@@ -235,6 +235,7 @@ class LocationBarMediator
     private final WindowAndroid mWindowAndroid;
     private final ObserverList<UrlFocusChangeListener> mUrlFocusChangeListeners =
             new ObserverList<>();
+    private final ObserverList<Callback<String>> mUrlTextChangeListeners = new ObserverList<>();
     private final Rect mRootViewBounds = new Rect();
     private final OmniboxUma mOmniboxUma;
     private final OmniboxSuggestionsDropdownEmbedderImpl mEmbedderImpl;
@@ -568,6 +569,7 @@ class LocationBarMediator
         mVoiceRecognitionHandler = null;
         mLocationBarDataProvider.removeObserver(this);
         mUrlFocusChangeListeners.clear();
+        mUrlTextChangeListeners.clear();
         if (mPageZoomIndicatorCoordinator != null) {
             mPageZoomIndicatorCoordinator.setOnDismissCallbacks(null);
         }
@@ -836,6 +838,9 @@ class LocationBarMediator
 
     /** Triggers only when IME input batch completes to drive autocomplete. */
     /* package */ void onUrlTextChanged(String text) {
+        for (Callback<String> listener : mUrlTextChangeListeners) {
+            listener.onResult(text);
+        }
         updateButtonVisibility();
         if (mCurrentInput == null) return;
 
@@ -2911,6 +2916,16 @@ class LocationBarMediator
     @Override
     public void removeUrlFocusChangeListener(UrlFocusChangeListener listener) {
         mUrlFocusChangeListeners.removeObserver(listener);
+    }
+
+    @Override
+    public void addUrlTextChangeListener(Callback<String> listener) {
+        mUrlTextChangeListeners.addObserver(listener);
+    }
+
+    @Override
+    public void removeUrlTextChangeListener(Callback<String> listener) {
+        mUrlTextChangeListeners.removeObserver(listener);
     }
 
     @Override
