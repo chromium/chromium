@@ -9,8 +9,10 @@
 #import "base/memory/ref_counted.h"
 #import "base/memory/scoped_refptr.h"
 #import "base/run_loop.h"
+#include "base/synchronization/waitable_event.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/threading/thread.h"
 #include "media/capture/video/apple/test/fake_av_capture_device_format.h"
 #import "media/capture/video/apple/test/video_capture_test_utils.h"
 #include "media/capture/video/apple/video_capture_device_avfoundation.h"
@@ -134,6 +136,36 @@ TEST(VideoCaptureDeviceMacTest, FindBestCaptureFormat) {
   result = FindBestCaptureFormat(@[ fmt_640_480_2vuy_30, fmt_640_480_yuvs_30 ],
                                  640, 480, 30);
   EXPECT_EQ(result, fmt_640_480_2vuy_30);
+}
+
+// OnPhotoTaken() and OnPhotoError() are documented as safe to call from any
+// thread. Exercise OnPhotoError() concurrently from the device task runner and
+// a background thread to ensure the in-flight TakePhoto callback is accessed
+// safely without data races or sequence checker violations.
+TEST(VideoCaptureDeviceMacTest, ConcurrentOnPhotoErrorIsThreadSafe) {
+  RunTestCase(base::BindOnce([] {
+    constexpr int kIterations = 1000;
+    VideoCaptureDeviceDescriptor descriptor;
+    auto device = std::make_unique<VideoCaptureDeviceApple>(descriptor);
+    VideoCaptureDeviceAVFoundationFrameReceiver* frame_receiver = device.get();
+
+    base::Thread other_thread("OnPhotoErrorTestThread");
+    ASSERT_TRUE(other_thread.Start());
+
+    base::WaitableEvent done;
+    other_thread.task_runner()->PostTask(
+        FROM_HERE, base::BindLambdaForTesting([&] {
+          for (int i = 0; i < kIterations; ++i) {
+            frame_receiver->OnPhotoError();
+          }
+          done.Signal();
+        }));
+    for (int i = 0; i < kIterations; ++i) {
+      frame_receiver->OnPhotoError();
+    }
+    done.Wait();
+    other_thread.Stop();
+  }));
 }
 
 class MockImageCaptureClient
