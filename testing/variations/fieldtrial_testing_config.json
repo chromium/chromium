@@ -20913,7 +20913,7 @@
             ]
         }
     ],
-    "QuicUseReadMultiple": [
+    "QuicUseReadMultipleV2": [
         {
             "platforms": [
                 "android",
