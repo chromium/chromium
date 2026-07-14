@@ -316,7 +316,7 @@ TEST_F(AutoPictureInPictureHatsServiceTest, RecordsCorrectPSD) {
                   kHatsSurveyTriggerAutoPipAllowed, web_contents(), _,
                   AllOf(Contains(Pair("AutoPip Reason", "VideoConferencing")),
                         Contains(Pair("Opener site URL", test_url.spec())),
-                        Contains(Pair("Pip window duration", "15s")),
+                        Contains(Pair("Pip window duration", "8s")),
                         Contains(Pair("Prompt Result", "AllowOnce"))),
                   _, _, _, _));
 

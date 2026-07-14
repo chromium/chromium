@@ -18,6 +18,7 @@
 #include "components/unified_consent/pref_names.h"
 #include "content/public/browser/web_contents.h"
 #include "media/base/media_switches.h"
+#include "services/metrics/public/cpp/metrics_utils.h"
 
 namespace {
 
@@ -96,6 +97,17 @@ void RecordTimeFromWindowOpenToSurveyLaunch(base::TimeDelta duration) {
       AutoPictureInPictureHatsService::
           kTimeFromWindowOpenToSurveyLaunchHistogramName,
       duration, base::Milliseconds(1), base::Hours(10), 100);
+}
+
+// Returns the bucketed duration in seconds as a string (e.g. "8s").
+// The duration is capped at 10 hours and then bucketed exponentially using
+// `ukm::GetExponentialBucketMinForUserTiming` (spacing factor of 2.0).
+std::string BucketizeDurationToSeconds(base::TimeDelta duration) {
+  constexpr int64_t kMaxTimeSeconds = 10 * 60 * 60;  // 10 hours
+  int64_t duration_seconds = std::min(duration.InSeconds(), kMaxTimeSeconds);
+  int64_t bucketed_seconds =
+      ukm::GetExponentialBucketMinForUserTiming(duration_seconds);
+  return base::NumberToString(bucketed_seconds) + "s";
 }
 
 }  // namespace
@@ -198,9 +210,7 @@ void AutoPictureInPictureHatsService::MaybeLaunchSurvey(
       AutoPipReasonToString(auto_pip_trigger_reason);
 
   product_specific_string_data["Pip window duration"] =
-      base::NumberToString(
-          active_window_context_->window_duration->InSeconds()) +
-      "s";
+      BucketizeDurationToSeconds(*active_window_context_->window_duration);
 
   // Record Opener site URL only if UKM is enabled for this profile.
   const bool is_ukm_enabled = profile_->GetPrefs()->GetBoolean(
