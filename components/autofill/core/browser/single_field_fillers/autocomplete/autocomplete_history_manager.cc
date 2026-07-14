@@ -205,6 +205,7 @@ bool IsFieldTypeSaveable(const FormStructure* form, FieldGlobalId field_id) {
   }
   return true;
 }
+
 }  // namespace
 
 AutocompleteHistoryManager::AutocompleteHistoryManager() = default;
@@ -369,10 +370,13 @@ void AutocompleteHistoryManager::OnAutofillCleanupReturned(
 //  - neither empty nor whitespace-only value
 //  - text field
 //  - autocomplete is not disabled
-//  - value is not a credit card number nor IBAN
-//  - field is not a credit card verification code (CVC)
-//  - field is not an autofilled loyalty card ID
-//  - field has user typed input or is focusable (this is a mild criteria but
+//  - field type is eligible (e.g. not a CVC, promo code, or autofilled loyalty
+//    card)
+//  - field was not autofilled by a structured product (e.g., Address,
+//    Payments), when
+//    `features::kAutofillPreventAutofillFromSavingToAutocomplete` is enabled.
+//  - value is not a credit card number, IBAN, or Social Security Number (SSN)
+//  - field has user-typed input or is focusable (this is a mild criterion but
 //    this way it is consistent for all platforms)
 //  - not a presentation field
 bool AutocompleteHistoryManager::IsFieldValueSaveable(
