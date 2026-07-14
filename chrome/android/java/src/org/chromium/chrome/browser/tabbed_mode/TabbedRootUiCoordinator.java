@@ -2304,7 +2304,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                             mModalDialogManagerSupplier,
                             mActivityLifecycleDispatcher,
                             mTabModelSelectorSupplier,
-                            mEdgeToEdgeManager.getEdgeToEdgeSystemBarColorHelper());
+                            mEdgeToEdgeManager.getEdgeToEdgeSystemBarColorHelper(),
+                            mBackPressManager);
         }
     }
 

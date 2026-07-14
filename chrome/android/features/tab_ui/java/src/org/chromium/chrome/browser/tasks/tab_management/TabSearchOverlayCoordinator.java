@@ -25,12 +25,16 @@ import org.chromium.base.Callback;
 import org.chromium.base.CallbackUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
+import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.NullableObservableSupplier;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
+import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
@@ -47,6 +51,7 @@ import org.chromium.chrome.browser.tabwindow.TabWindowInfo;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.IntentOrigin;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.SearchType;
+import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
 import org.chromium.ui.AsyncViewStub;
 import org.chromium.ui.base.WindowAndroid;
@@ -62,7 +67,7 @@ import org.chromium.url.GURL;
  * the Vertical Tabs rail.
  */
 @NullMarked
-public class TabSearchOverlayCoordinator {
+public class TabSearchOverlayCoordinator implements BackPressHandler {
     private final Activity mActivity;
     private final ViewGroup mParentContainer;
     private final WindowAndroid mWindowAndroid;
@@ -72,6 +77,9 @@ public class TabSearchOverlayCoordinator {
     private final ActivityLifecycleDispatcher mLifecycleDispatcher;
     private final MonotonicObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
     private final @Nullable EdgeToEdgeSystemBarColorHelper mEdgeToEdgeSystemBarColorHelper;
+    private final BackPressManager mBackPressManager;
+    private final SettableNonNullObservableSupplier<Boolean> mBackPressStateSupplier =
+            ObservableSuppliers.createNonNull(false);
     private final PropertyModel mModel;
 
     private @Nullable
@@ -95,6 +103,7 @@ public class TabSearchOverlayCoordinator {
      * @param lifecycleDispatcher Dispatcher for activity lifecycle events.
      * @param tabModelSelectorSupplier Supplier for the tab model selector.
      * @param edgeToEdgeSystemBarColorHelper Helper for managing system bar colors in edge-to-edge.
+     * @param backPressManager Manager for intercepting and handling system-level back presses.
      */
     public TabSearchOverlayCoordinator(
             Activity activity,
@@ -105,7 +114,8 @@ public class TabSearchOverlayCoordinator {
             NullableObservableSupplier<ModalDialogManager> modalDialogManagerSupplier,
             ActivityLifecycleDispatcher lifecycleDispatcher,
             MonotonicObservableSupplier<TabModelSelector> tabModelSelectorSupplier,
-            @Nullable EdgeToEdgeSystemBarColorHelper edgeToEdgeSystemBarColorHelper) {
+            @Nullable EdgeToEdgeSystemBarColorHelper edgeToEdgeSystemBarColorHelper,
+            BackPressManager backPressManager) {
         mActivity = activity;
         mParentContainer = parentContainer;
         mWindowAndroid = windowAndroid;
@@ -115,6 +125,8 @@ public class TabSearchOverlayCoordinator {
         mLifecycleDispatcher = lifecycleDispatcher;
         mTabModelSelectorSupplier = tabModelSelectorSupplier;
         mEdgeToEdgeSystemBarColorHelper = edgeToEdgeSystemBarColorHelper;
+        mBackPressManager = backPressManager;
+        mBackPressManager.addHandler(this, BackPressHandler.Type.TAB_SEARCH_OVERLAY);
 
         mModel = TabSearchOverlayProperties.createDefaultModel();
         mModel.set(TabSearchOverlayProperties.VISIBLE, false);
@@ -130,6 +142,7 @@ public class TabSearchOverlayCoordinator {
     /** Destroys the coordinator, cleaning up resources and child coordinators. */
     public void destroy() {
         mProfileSupplier.removeObserver(mProfileObserver);
+        mBackPressManager.removeHandler(this);
         if (mChangeProcessor != null) {
             mChangeProcessor.destroy();
             mChangeProcessor = null;
@@ -311,6 +324,7 @@ public class TabSearchOverlayCoordinator {
         if (mModel.get(TabSearchOverlayProperties.VISIBLE)) return;
 
         mModel.set(TabSearchOverlayProperties.VISIBLE, true);
+        mBackPressStateSupplier.set(true);
         assumeNonNull(mSearchUiCoordinator)
                 .beginQuery(IntentOrigin.HUB, SearchType.TEXT, /* query= */ null, mWindowAndroid);
     }
@@ -318,6 +332,7 @@ public class TabSearchOverlayCoordinator {
     /** Hides the tab search overlay and clears the focus from the search box. */
     public void hide() {
         mModel.set(TabSearchOverlayProperties.VISIBLE, false);
+        mBackPressStateSupplier.set(false);
         if (mSearchUiCoordinator != null) {
             var locationBar = mSearchUiCoordinator.getLocationBarCoordinator();
             locationBar.clearOmniboxFocus();
@@ -327,18 +342,6 @@ public class TabSearchOverlayCoordinator {
     /** Returns whether the tab search overlay is currently visible. */
     public boolean isVisible() {
         return mModel.get(TabSearchOverlayProperties.VISIBLE);
-    }
-
-    @Nullable SearchUiCoordinator getSearchUiCoordinatorForTesting() {
-        return mSearchUiCoordinator;
-    }
-
-    @Nullable LinearLayout getPanelContainerForTesting() {
-        return mPanelContainer;
-    }
-
-    void setSearchUiCoordinatorForTesting(SearchUiCoordinator searchUiCoordinator) {
-        mSearchUiCoordinator = searchUiCoordinator;
     }
 
     /**
@@ -354,5 +357,32 @@ public class TabSearchOverlayCoordinator {
         if (mSearchUiCoordinator != null) {
             mSearchUiCoordinator.setColorScheme(isIncognito);
         }
+    }
+
+    // BackPressHandler implementation.
+
+    @Override
+    public @BackPressResult int handleBackPress() {
+        hide();
+        return BackPressResult.SUCCESS;
+    }
+
+    @Override
+    public NonNullObservableSupplier<Boolean> getHandleBackPressChangedSupplier() {
+        return mBackPressStateSupplier;
+    }
+
+    // Testing methods.
+
+    @Nullable SearchUiCoordinator getSearchUiCoordinatorForTesting() {
+        return mSearchUiCoordinator;
+    }
+
+    @Nullable LinearLayout getPanelContainerForTesting() {
+        return mPanelContainer;
+    }
+
+    void setSearchUiCoordinatorForTesting(SearchUiCoordinator searchUiCoordinator) {
+        mSearchUiCoordinator = searchUiCoordinator;
     }
 }

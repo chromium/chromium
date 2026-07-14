@@ -46,6 +46,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.IntentHandler;
+import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
@@ -60,6 +61,8 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.IntentOrigin;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.SearchType;
+import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
+import org.chromium.components.browser_ui.widget.gesture.BackPressHandler.BackPressResult;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -89,6 +92,7 @@ public class TabSearchOverlayCoordinatorUnitTest {
     @Mock private SnackbarManager mSnackbarManager;
     @Mock private ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     @Mock private ModalDialogManager mModalDialogManager;
+    @Mock private BackPressManager mBackPressManager;
 
     private final SettableMonotonicObservableSupplier<Profile> mProfileSupplier =
             ObservableSuppliers.createMonotonic();
@@ -123,7 +127,8 @@ public class TabSearchOverlayCoordinatorUnitTest {
                         ObservableSuppliers.createNonNull(mModalDialogManager),
                         mActivityLifecycleDispatcher,
                         mTabModelSelectorSupplier,
-                        /* edgeToEdgeSystemBarColorHelper= */ null);
+                        /* edgeToEdgeSystemBarColorHelper= */ null,
+                        mBackPressManager);
         mCoordinator.setSearchUiCoordinatorForTesting(mSearchUiCoordinator);
 
         // Inflate the overlay and initialize member views.
@@ -132,8 +137,12 @@ public class TabSearchOverlayCoordinatorUnitTest {
         mPanelContainer = mParentContainer.findViewById(R.id.tab_search_overlay_container);
         mScrim = mParentContainer.findViewById(R.id.tab_search_overlay_scrim);
 
+        verify(mBackPressManager)
+                .addHandler(mCoordinator, BackPressHandler.Type.TAB_SEARCH_OVERLAY);
+
         // Clear mock invocations from setup phase to ensure test assertions are isolated.
         clearInvocations(mLocationBarCoordinator);
+        clearInvocations(mBackPressManager);
     }
 
     @After
@@ -141,6 +150,7 @@ public class TabSearchOverlayCoordinatorUnitTest {
         mCoordinator.destroy();
         assertNull(mCoordinator.getPanelContainerForTesting());
         verify(mSearchUiCoordinator).destroy();
+        verify(mBackPressManager).removeHandler(mCoordinator);
     }
 
     @Test
@@ -331,5 +341,26 @@ public class TabSearchOverlayCoordinatorUnitTest {
 
         // Verify that setColorScheme was called with false.
         verify(mSearchUiCoordinator).setColorScheme(false);
+    }
+
+    @Test
+    public void testBackPressSupplierState() {
+        assertFalse(mCoordinator.getHandleBackPressChangedSupplier().get());
+
+        showOverlay();
+        assertTrue(mCoordinator.getHandleBackPressChangedSupplier().get());
+
+        mCoordinator.hide();
+        assertFalse(mCoordinator.getHandleBackPressChangedSupplier().get());
+    }
+
+    @Test
+    public void testHandleBackPress_hidesOverlay() {
+        showOverlay();
+        assertTrue(mCoordinator.isVisible());
+
+        int result = mCoordinator.handleBackPress();
+        assertEquals(BackPressResult.SUCCESS, result);
+        assertOverlayHidden();
     }
 }
