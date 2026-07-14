@@ -484,7 +484,6 @@ if (is_android) {
       "src/org/chromium/chrome/browser/app/tabmodel/TabModelOrchestratorUnitTest.java",
       "src/org/chromium/chrome/browser/app/tabmodel/TabRestorerUnitTest.java",
       "src/org/chromium/chrome/browser/app/tabmodel/TabStateStoreUnitTest.java",
-      "src/org/chromium/chrome/browser/app/tabmodel/TabStoreMetricsServiceUnitTest.java",
       "src/org/chromium/chrome/browser/app/tabmodel/TabbedModeTabModelOrchestratorUnitTest.java",
     ]
 

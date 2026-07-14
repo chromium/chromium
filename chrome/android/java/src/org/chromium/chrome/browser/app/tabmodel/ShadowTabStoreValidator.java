@@ -4,8 +4,11 @@
 
 package org.chromium.chrome.browser.app.tabmodel;
 
+import android.text.TextUtils;
+import android.util.SparseArray;
+
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.WebContentsState;
 import org.chromium.chrome.browser.tabmodel.AccumulatingTabCreator;
 import org.chromium.chrome.browser.tabmodel.AccumulatingTabCreator.CreateFrozenTabArguments;
@@ -33,7 +36,6 @@ public class ShadowTabStoreValidator {
     public static final String ARCHIVED_TAG = "Archived";
     // LINT.ThenChange(//tools/metrics/histograms/metadata/tab/histograms.xml:TabModelOrchestratorType)
 
-    private final Profile mProfile;
     private final TabPersistentStore mAuthoritativeStore;
     private final TabPersistentStore mShadowStore;
     private final RecordingTabCreator mAuthoritativeTabCreator;
@@ -41,7 +43,7 @@ public class ShadowTabStoreValidator {
     private final PersistentStoreMigrationManager mPersistentStoreMigrationManager;
     private final StoreMetricsObserver mAuthoritativeObserver;
     private final StoreMetricsObserver mShadowObserver;
-    private final String mOrchestratorTag;
+    private final String mSuffix;
     private final boolean mShadowStoreCaughtUp;
 
     /**
@@ -55,20 +57,18 @@ public class ShadowTabStoreValidator {
      * @param orchestratorTag The type of tab model orchestrator this validator is for.
      */
     public ShadowTabStoreValidator(
-            Profile profile,
             TabPersistentStore authoritativeStore,
             TabPersistentStore shadowStore,
             RecordingTabCreator authoritativeTabCreator,
             AccumulatingTabCreator shadowTabCreator,
             PersistentStoreMigrationManager persistentStoreMigrationManager,
             String orchestratorTag) {
-        mProfile = profile;
         mAuthoritativeStore = authoritativeStore;
         mShadowStore = shadowStore;
         mAuthoritativeTabCreator = authoritativeTabCreator;
         mShadowTabCreator = shadowTabCreator;
         mPersistentStoreMigrationManager = persistentStoreMigrationManager;
-        mOrchestratorTag = orchestratorTag;
+        mSuffix = "." + orchestratorTag;
 
         mAuthoritativeObserver = new StoreMetricsObserver(this);
         mShadowObserver = new StoreMetricsObserver(this);
@@ -119,18 +119,63 @@ public class ShadowTabStoreValidator {
         List<TabCreationData> authoritativeNewTabData =
                 mAuthoritativeTabCreator.getNewTabCreationData();
 
-        TabStoreMetricsService.getForProfileAndWindowTag(mProfile, mOrchestratorTag)
-                .recordDiffMetrics(
-                        authoritativeFrozenData,
-                        authoritativeNewTabData,
-                        mShadowTabCreator.createFrozenTabArgumentsList,
-                        mShadowTabCreator.createNewTabArgumentsList,
-                        mShadowStoreCaughtUp);
+        int tabCountDelta =
+                (authoritativeNewTabData.size() + authoritativeFrozenData.size())
+                        - (mShadowTabCreator.createFrozenTabArgumentsList.size()
+                                + mShadowTabCreator.createNewTabArgumentsList.size());
+
+        if (tabCountDelta > 0) {
+            recordCountHistogram(
+                    "Tabs.TabStateStore.TabCountDelta.AuthoritativeHigher", tabCountDelta);
+        } else if (tabCountDelta < 0) {
+            recordCountHistogram("Tabs.TabStateStore.TabCountDelta.ShadowHigher", -tabCountDelta);
+        } else {
+            recordEqualTabCountHistogram();
+        }
+
+        SparseArray<TabCreationData> authoritativeDataMap =
+                new SparseArray<>(authoritativeFrozenData.size());
+        for (TabCreationData data : authoritativeFrozenData) {
+            authoritativeDataMap.put(data.id, data);
+        }
+
+        for (CreateFrozenTabArguments arguments : mShadowTabCreator.createFrozenTabArgumentsList) {
+            TabCreationData authoritativeData = authoritativeDataMap.get(arguments.id);
+            if (authoritativeData == null || arguments.state.url == null) continue;
+
+            String authUrl = authoritativeData.url;
+            String shadowUrl = arguments.state.url.getSpec();
+
+            if (!TextUtils.equals(authUrl, shadowUrl)) {
+                long timeDelta =
+                        authoritativeData.timestampMillis - arguments.state.timestampMillis;
+                if (timeDelta > 0) {
+                    recordTimesHistogram(
+                            "Tabs.TabStateStore.TimeDeltaOnMismatch.AuthoritativeNewer", timeDelta);
+                } else if (timeDelta < 0) {
+                    recordTimesHistogram(
+                            "Tabs.TabStateStore.TimeDeltaOnMismatch.ShadowNewer", -timeDelta);
+                }
+            }
+        }
     }
 
     private boolean isTabStateStoreShadowing() {
         return mAuthoritativeStore.getStoreType() == StoreType.LEGACY
                 && mShadowStore.getStoreType() == StoreType.TAB_STATE_STORE;
+    }
+
+    private void recordCountHistogram(String histogramStr, int tabCountDelta) {
+        RecordHistogram.recordCount1000Histogram(histogramStr + mSuffix, tabCountDelta);
+    }
+
+    private void recordEqualTabCountHistogram() {
+        RecordHistogram.recordBooleanHistogram(
+                "Tabs.TabStateStore.TabCountDelta.Equal" + mSuffix, true);
+    }
+
+    private void recordTimesHistogram(String histogramStr, long timeDelta) {
+        RecordHistogram.recordTimesHistogram(histogramStr + mSuffix, timeDelta);
     }
 
     private static class StoreMetricsObserver implements TabPersistentStoreObserver {

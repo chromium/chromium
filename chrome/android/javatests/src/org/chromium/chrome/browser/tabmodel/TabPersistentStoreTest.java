@@ -50,7 +50,6 @@ import org.chromium.base.test.util.Matchers;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.app.metrics.LaunchCauseMetrics;
-import org.chromium.chrome.browser.app.tabmodel.HeadlessTabModelOrchestrator;
 import org.chromium.chrome.browser.app.tabmodel.TabModelOrchestrator;
 import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.crypto.CipherFactory;
@@ -1513,18 +1512,7 @@ public class TabPersistentStoreTest {
         return selector;
     }
 
-    @Test
-    @SmallTest
-    @Feature({"TabPersistentStore"})
-    public void testHeadlessTabModelOrchestratorInitialization() throws Exception {
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    Profile profile = ProfileManager.getLastUsedRegularProfile();
-                    HeadlessTabModelOrchestrator orchestrator =
-                            new HeadlessTabModelOrchestrator(0, profile);
-                    orchestrator.destroy();
-                });
-    }
+
 
     /**
      * Getting the http and https schemes to match is now quite difficult as the default is https
