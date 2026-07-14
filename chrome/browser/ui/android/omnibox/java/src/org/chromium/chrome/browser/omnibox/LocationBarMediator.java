@@ -827,12 +827,8 @@ class LocationBarMediator
     /* package */ void onUrlTextRichChanged(UrlBarTextChangeInfo info) {
         if (mCurrentInput == null) return;
 
-        if (shouldTriggerSiteSearch(info)) {
-            if (mAutocompleteCoordinator != null
-                    && mAutocompleteCoordinator.triggerSiteSearch(
-                            SiteSearchActivationSource.SPACE)) {
-                return;
-            }
+        if (shouldTriggerSiteSearch(info) && mAutocompleteCoordinator != null) {
+            mAutocompleteCoordinator.triggerSiteSearch(SiteSearchActivationSource.SPACE);
         }
     }
 
