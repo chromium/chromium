@@ -15,6 +15,7 @@
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
+#include "base/test/test_future.h"
 #include "base/time/time_override.h"
 #include "base/types/strong_alias.h"
 #include "base/values.h"
@@ -22,6 +23,7 @@
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/test/browser_test_utils.h"
 #include "services/network/public/cpp/network_switches.h"
 
@@ -138,11 +140,10 @@ class IFrameWaiter : public content::WebContentsObserver {
                         const std::string& name) override;
 
   QueryType query_type_ = QueryType::kUrl;
-  base::RunLoop run_loop_;
-  raw_ptr<content::RenderFrameHost> target_frame_ = nullptr;
   std::string frame_name_;
   GURL origin_;
   GURL url_;
+  base::test::TestFuture<content::GlobalRenderFrameHostId> future_;
 };
 
 // WebPageReplayServerWrapper

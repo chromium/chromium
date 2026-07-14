@@ -19,6 +19,7 @@
 #include "base/json/json_reader.h"
 #include "base/json/json_string_value_serializer.h"
 #include "base/logging.h"
+#include "base/notreached.h"
 #include "base/path_service.h"
 #include "base/process/launch.h"
 #include "base/strings/strcat.h"
@@ -30,6 +31,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
+#include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
 #include "base/time/time_override.h"
@@ -572,10 +574,11 @@ content::RenderFrameHost* IFrameWaiter::WaitForFrameMatchingName(
 
   query_type_ = QueryType::kName;
   frame_name_ = name;
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-      FROM_HERE, run_loop_.QuitClosure(), timeout);
-  run_loop_.Run();
-  return target_frame_;
+  base::test::ScopedRunLoopTimeout scoped_timeout(
+      FROM_HERE, timeout, base::BindRepeating([]() -> std::string {
+        return "IFrameWaiter timed out waiting for iframe.";
+      }));
+  return content::RenderFrameHost::FromID(future_.Get());
 }
 
 content::RenderFrameHost* IFrameWaiter::WaitForFrameMatchingOrigin(
@@ -589,10 +592,11 @@ content::RenderFrameHost* IFrameWaiter::WaitForFrameMatchingOrigin(
 
   query_type_ = QueryType::kOrigin;
   origin_ = origin;
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-      FROM_HERE, run_loop_.QuitClosure(), timeout);
-  run_loop_.Run();
-  return target_frame_;
+  base::test::ScopedRunLoopTimeout scoped_timeout(
+      FROM_HERE, timeout, base::BindRepeating([]() -> std::string {
+        return "IFrameWaiter timed out waiting for iframe.";
+      }));
+  return content::RenderFrameHost::FromID(future_.Get());
 }
 
 content::RenderFrameHost* IFrameWaiter::WaitForFrameMatchingUrl(
@@ -606,63 +610,73 @@ content::RenderFrameHost* IFrameWaiter::WaitForFrameMatchingUrl(
 
   query_type_ = QueryType::kUrl;
   url_ = url;
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-      FROM_HERE, run_loop_.QuitClosure(), timeout);
-  run_loop_.Run();
-  return target_frame_;
+  base::test::ScopedRunLoopTimeout scoped_timeout(
+      FROM_HERE, timeout, base::BindRepeating([]() -> std::string {
+        return "IFrameWaiter timed out waiting for iframe.";
+      }));
+  return content::RenderFrameHost::FromID(future_.Get());
 }
 
 void IFrameWaiter::RenderFrameCreated(
     content::RenderFrameHost* render_frame_host) {
-  if (!run_loop_.running())
+  if (future_.IsReady()) {
     return;
-  switch (query_type_) {
-    case QueryType::kName:
-      if (FrameMatchesName(frame_name_, render_frame_host))
-        run_loop_.Quit();
-      break;
-    case QueryType::kOrigin:
-      if (render_frame_host->GetLastCommittedURL().DeprecatedGetOriginAsURL() ==
-          origin_)
-        run_loop_.Quit();
-      break;
-    case QueryType::kUrl:
-      if (FrameHasSourceUrl(url_, render_frame_host))
-        run_loop_.Quit();
-      break;
+  }
+  const bool matches = [&] {
+    switch (query_type_) {
+      case QueryType::kName:
+        return FrameMatchesName(frame_name_, render_frame_host);
+      case QueryType::kOrigin:
+        return render_frame_host->GetLastCommittedURL()
+                   .DeprecatedGetOriginAsURL() == origin_;
+      case QueryType::kUrl:
+        return FrameHasSourceUrl(url_, render_frame_host);
+    }
+    NOTREACHED();
+  }();
+  if (matches) {
+    future_.SetValue(render_frame_host->GetGlobalId());
   }
 }
 
 void IFrameWaiter::DidFinishLoad(content::RenderFrameHost* render_frame_host,
                                  const GURL& validated_url) {
-  if (!run_loop_.running())
+  if (future_.IsReady()) {
     return;
-  switch (query_type_) {
-    case QueryType::kOrigin:
-      if (validated_url.DeprecatedGetOriginAsURL() == origin_)
-        run_loop_.Quit();
-      break;
-    case QueryType::kUrl:
-      if (FrameHasSourceUrl(validated_url, render_frame_host))
-        run_loop_.Quit();
-      break;
-    case QueryType::kName:
-      break;
+  }
+  const bool matches = [&] {
+    switch (query_type_) {
+      case QueryType::kOrigin:
+        return validated_url.DeprecatedGetOriginAsURL() == origin_;
+      case QueryType::kUrl:
+        return FrameHasSourceUrl(validated_url, render_frame_host);
+      case QueryType::kName:
+        return false;
+    }
+    NOTREACHED();
+  }();
+  if (matches) {
+    future_.SetValue(render_frame_host->GetGlobalId());
   }
 }
 
 void IFrameWaiter::FrameNameChanged(content::RenderFrameHost* render_frame_host,
                                     const std::string& name) {
-  if (!run_loop_.running())
+  if (future_.IsReady()) {
     return;
-  switch (query_type_) {
-    case QueryType::kName:
-      if (FrameMatchesName(name, render_frame_host))
-        run_loop_.Quit();
-      break;
-    case QueryType::kOrigin:
-    case QueryType::kUrl:
-      break;
+  }
+  const bool matches = [&] {
+    switch (query_type_) {
+      case QueryType::kName:
+        return FrameMatchesName(name, render_frame_host);
+      case QueryType::kOrigin:
+      case QueryType::kUrl:
+        return false;
+    }
+    NOTREACHED();
+  }();
+  if (matches) {
+    future_.SetValue(render_frame_host->GetGlobalId());
   }
 }
 
