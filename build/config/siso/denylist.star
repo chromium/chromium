@@ -96,7 +96,6 @@ def __step_config(ctx, step_config):
         "tools/polymer/html_to_wrapper.py",
         "ui/webui/resources/tools/bundle_js.py",
         "ui/webui/resources/tools/generate_code_cache.py",
-        "ui/webui/resources/tools/minify_js.py",
         "v8/third_party/inspector_protocol/check_protocol_compatibility.py",
         "v8/third_party/inspector_protocol/code_generator.py",
     ]

@@ -46,6 +46,9 @@ def __step_config(ctx, step_config):
             "third_party/node/node.py",
             "third_party/node/node_modules:node_modules",
         ],
+        "ui/webui/resources/tools/minify_js.py": [
+            "third_party/node/node_modules:node_modules",
+        ],
         "ui/webui/resources/tools/stylelint.py": [
             "third_party/node/node_modules:node_modules",
         ],
@@ -89,6 +92,14 @@ def __step_config(ctx, step_config):
             "timeout": "2m",
             "handler": "typescript_ts_definitions" if remote_run else None,
             "input_root_absolute_path": use_input_root_absolute_path,
+            # Only runs on Linux workers.
+            "remote_command": "python3",
+        },
+        {
+            "name": "webui/minify_js",
+            "command_prefix": platform.python_bin + " ../../ui/webui/resources/tools/minify_js.py",
+            "remote": remote_run,
+            "timeout": "2m",
             # Only runs on Linux workers.
             "remote_command": "python3",
         },
