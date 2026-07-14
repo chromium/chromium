@@ -19,11 +19,13 @@
     writing-mode: vertical-rl;
     ruby-position: over;
     text-emphasis-position: over right;
+    display: inline-block;
   }
   .ruby-vertical-lr {
     writing-mode: vertical-lr;
     ruby-position: under;
     text-emphasis-position: under left;
+    display: inline-block;
   }
   em {
     text-emphasis: circle;
@@ -31,6 +33,16 @@
   }
   hr {
     margin: 0px;
+  }
+  rt {
+    color: #E0115F;
+  }
+  rt ruby rt {
+    color: black;
+    background-color: rgba(143, 11, 30, 0.3);
+  }
+  body {
+    font-family: "Hiragino Sans", "Noto Sans JP";
   }
 </style>
 <p>The emphasis marks should be outside the ruby:</p>
@@ -43,7 +55,7 @@
   <hr>
   <div style="column-count: 2; column-rule: 1px solid gray; column-gap: 0px;">
     <div>
-      <span><ruby><ruby>[base]<rt><em>[inner rt]</em></rt></ruby><rt>[outer rt]<ruby>[nested base]<rt>[rt]</rt></ruby></rt></ruby></span>
+      <span style="text-emphasis:'🍌'"><ruby><ruby>[base]<rt style="font-size:80%"><em>[inner rt]</em></rt></ruby><rt style="font-size:80%">[outer rt]<ruby style="text-emphasis:sesame; text-emphasis-position:under;">[nested base]<rt>[rt]</rt></ruby></rt></ruby> [after]</span>
     </div>
     <hr>
     <div>
@@ -57,10 +69,11 @@
       &nbsp;
       <em><ruby><ruby style="ruby-position:under">圏点<rt style="font-size:24px">けんてん</ruby><rt>ケンテン</ruby></em>
     </div>
+
     <div>
-      <span class="ruby-vertical-rl">ルビ<em>と<ruby>圏<rt>けん</rt>点<rt>てん</rt></ruby><ruby style="ruby-position: under">を<rt>けんてん</rt></ruby>同</em>時</span>
-      &nbsp;
-      <span class="ruby-vertical-lr">ルビ<em>と<ruby>圏<rt>けん</rt>点<rt>てん</rt></ruby><ruby style="ruby-position: under; text-emphasis-position: over right">を<rt>けんてん</rt></ruby></ruby>同</em>時</span>
+      <div class="ruby-vertical-rl">ルビ<em>と<ruby>圏<rt>けん</rt>点<rt>てん</rt></ruby><ruby style="ruby-position: under">を<rt>けんてん</rt></ruby>同</em>時</div>
+
+      <div class="ruby-vertical-lr">ルビ<em>と<ruby>圏<rt>けん</rt>点<rt>てん</rt></ruby><ruby style="ruby-position: under; text-emphasis-position: over right">を<rt>けんてん</rt></ruby></ruby>同</em>時</div>
     </div>
   </div>
 </div>
