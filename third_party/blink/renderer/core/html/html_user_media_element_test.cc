@@ -20,6 +20,7 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
+#include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/web_test_support.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 
@@ -109,11 +110,13 @@ TEST_F(HTMLUserMediaElementTest, StartRequestOnClick) {
           *GetDocument().domWindow());
 
   auto* element = MakeGarbageCollected<HTMLUserMediaElement>(GetDocument());
-  element->OnConstraintsSet(/*has_video=*/true, /*has_audio=*/false);
+  element->ApplyDefaultConstraints();  // Initialize standard mode
 
   HashMap<mojom::blink::PermissionName, mojom::blink::PermissionStatus>
       init_map;
   init_map.insert(mojom::blink::PermissionName::VIDEO_CAPTURE,
+                  mojom::blink::PermissionStatus::ASK);
+  init_map.insert(mojom::blink::PermissionName::AUDIO_CAPTURE,
                   mojom::blink::PermissionStatus::ASK);
   element->OnPermissionStatusInitialized(init_map);
 
@@ -122,9 +125,15 @@ TEST_F(HTMLUserMediaElementTest, StartRequestOnClick) {
   element->click();
   ::testing::Mock::VerifyAndClearExpectations(provider);
 
-  // Grant the permission. This automatically calls StartRequest once.
-  EXPECT_CALL(*provider, StartRequest(element, _)).Times(1);
+  // Grant camera permission. Still should not trigger because we need both.
+  EXPECT_CALL(*provider, StartRequest(element, _)).Times(0);
   element->OnPermissionStatusChange(mojom::blink::PermissionName::VIDEO_CAPTURE,
+                                    mojom::blink::PermissionStatus::GRANTED);
+  ::testing::Mock::VerifyAndClearExpectations(provider);
+
+  // Grant mic permission. Now it should trigger.
+  EXPECT_CALL(*provider, StartRequest(element, _)).Times(1);
+  element->OnPermissionStatusChange(mojom::blink::PermissionName::AUDIO_CAPTURE,
                                     mojom::blink::PermissionStatus::GRANTED);
   ::testing::Mock::VerifyAndClearExpectations(provider);
 }
@@ -136,56 +145,31 @@ TEST_F(HTMLUserMediaElementTest, OnConstraintsSetTriggersRequest) {
           *GetDocument().domWindow());
 
   auto* element = MakeGarbageCollected<HTMLUserMediaElement>(GetDocument());
-
-  // Set constraints instead of 'type'
-  element->OnConstraintsSet(/*has_video=*/true, /*has_audio=*/false);
+  element->ApplyDefaultConstraints();
 
   // Initialize status to ASK
   HashMap<mojom::blink::PermissionName, mojom::blink::PermissionStatus>
       init_map;
   init_map.insert(mojom::blink::PermissionName::VIDEO_CAPTURE,
                   mojom::blink::PermissionStatus::ASK);
+  init_map.insert(mojom::blink::PermissionName::AUDIO_CAPTURE,
+                  mojom::blink::PermissionStatus::ASK);
   element->OnPermissionStatusInitialized(init_map);
 
   // Simulate a click to create a pending request
   element->click();
 
-  // Grant the permission. This should now trigger StartRequest.
-  EXPECT_CALL(*provider, StartRequest(element, _)).Times(1);
+  // Grant camera permission. Still should not trigger.
+  EXPECT_CALL(*provider, StartRequest(element, _)).Times(0);
   element->OnPermissionStatusChange(mojom::blink::PermissionName::VIDEO_CAPTURE,
                                     mojom::blink::PermissionStatus::GRANTED);
   ::testing::Mock::VerifyAndClearExpectations(provider);
-}
 
-TEST_F(HTMLUserMediaElementTest, NoRequestWhenNoConstraintsSet) {
-  ScopedBypassPepcSecurityForTestingForTest bypass_pepc(true);
-  MockUserMediaRequestProvider* provider =
-      MockUserMediaRequestProvider::CreateAndProvideTo(
-          *GetDocument().domWindow());
-
-  auto* element = MakeGarbageCollected<HTMLUserMediaElement>(GetDocument());
-
-  // We grant permission, but no constraints are set.
-  HashMap<mojom::blink::PermissionName, mojom::blink::PermissionStatus>
-      init_map;
-  init_map.insert(mojom::blink::PermissionName::VIDEO_CAPTURE,
-                  mojom::blink::PermissionStatus::GRANTED);
-  element->OnPermissionStatusInitialized(init_map);
-
-  EXPECT_EQ(element->error(), nullptr);
-
-  // A click should NOT trigger a request because no constraints were set.
-  EXPECT_CALL(*provider, StartRequest(element, _)).Times(0);
-  element->click();
+  // Grant mic permission. Now it should trigger.
+  EXPECT_CALL(*provider, StartRequest(element, _)).Times(1);
+  element->OnPermissionStatusChange(mojom::blink::PermissionName::AUDIO_CAPTURE,
+                                    mojom::blink::PermissionStatus::GRANTED);
   ::testing::Mock::VerifyAndClearExpectations(provider);
-
-  // An error should be set because the element was clicked but not
-  // initialized.
-  ASSERT_NE(element->error(), nullptr);
-  EXPECT_EQ(element->error()->code(),
-            static_cast<uint16_t>(DOMExceptionCode::kInvalidStateError));
-  EXPECT_EQ(element->error()->message(),
-            "The permission element is not fully initialized.");
 }
 
 TEST_F(HTMLUserMediaElementTest, NoRequestWhenNoPermissionGranted) {
@@ -195,12 +179,14 @@ TEST_F(HTMLUserMediaElementTest, NoRequestWhenNoPermissionGranted) {
           *GetDocument().domWindow());
 
   auto* element = MakeGarbageCollected<HTMLUserMediaElement>(GetDocument());
-  element->OnConstraintsSet(/*has_video=*/true, /*has_audio=*/false);
+  element->ApplyDefaultConstraints();
 
   // Initialize status to ASK (not granted)
   HashMap<mojom::blink::PermissionName, mojom::blink::PermissionStatus>
       init_map;
   init_map.insert(mojom::blink::PermissionName::VIDEO_CAPTURE,
+                  mojom::blink::PermissionStatus::ASK);
+  init_map.insert(mojom::blink::PermissionName::AUDIO_CAPTURE,
                   mojom::blink::PermissionStatus::ASK);
   element->OnPermissionStatusInitialized(init_map);
 
@@ -217,12 +203,14 @@ TEST_F(HTMLUserMediaElementTest, DoNotStartRequestTwiceOnClick) {
           *GetDocument().domWindow());
 
   auto* element = MakeGarbageCollected<HTMLUserMediaElement>(GetDocument());
-  element->OnConstraintsSet(/*has_video=*/true, /*has_audio=*/false);
+  element->ApplyDefaultConstraints();
 
-  // Initialize and grant the permission.
+  // Initialize and grant both permissions.
   HashMap<mojom::blink::PermissionName, mojom::blink::PermissionStatus>
       init_map;
   init_map.insert(mojom::blink::PermissionName::VIDEO_CAPTURE,
+                  mojom::blink::PermissionStatus::GRANTED);
+  init_map.insert(mojom::blink::PermissionName::AUDIO_CAPTURE,
                   mojom::blink::PermissionStatus::GRANTED);
   element->OnPermissionStatusInitialized(init_map);
 
@@ -258,12 +246,21 @@ TEST_F(HTMLUserMediaElementTest, GrantedText) {
   EXPECT_EQ(element->permission_text_span_for_testing()->innerText(),
             kCameraAllowedString);
 
-  // Case 2: Camera only - With Constraints
+  // Case 2: Standard mode (requires both) - Camera initialized as GRANTED, Mic
+  // as ASK (not both, so not allowed text)
   element = MakeGarbageCollected<HTMLUserMediaElement>(GetDocument());
-  element->OnConstraintsSet(/*has_video=*/true, /*has_audio=*/false);
-  element->OnPermissionStatusInitialized(init_map_camera);
+  element->ApplyDefaultConstraints();
+  HashMap<mojom::blink::PermissionName, mojom::blink::PermissionStatus>
+      init_map_camera_only_granted;
+  init_map_camera_only_granted.insert(
+      mojom::blink::PermissionName::VIDEO_CAPTURE,
+      mojom::blink::PermissionStatus::GRANTED);
+  init_map_camera_only_granted.insert(
+      mojom::blink::PermissionName::AUDIO_CAPTURE,
+      mojom::blink::PermissionStatus::ASK);
+  element->OnPermissionStatusInitialized(init_map_camera_only_granted);
   EXPECT_EQ(element->permission_text_span_for_testing()->innerText(),
-            kCameraString);
+            kCameraMicrophoneString);
 
   // Case 3: Microphone only - No Constraints (Legacy)
   element = MakeGarbageCollected<HTMLUserMediaElement>(GetDocument());
@@ -276,12 +273,19 @@ TEST_F(HTMLUserMediaElementTest, GrantedText) {
   EXPECT_EQ(element->permission_text_span_for_testing()->innerText(),
             kMicrophoneAllowedString);
 
-  // Case 4: Microphone only - With Constraints
+  // Case 4: Standard mode - Microphone initialized as GRANTED, Camera as ASK
+  // (not allowed text)
   element = MakeGarbageCollected<HTMLUserMediaElement>(GetDocument());
-  element->OnConstraintsSet(/*has_video=*/false, /*has_audio=*/true);
-  element->OnPermissionStatusInitialized(init_map_mic);
+  element->ApplyDefaultConstraints();
+  HashMap<mojom::blink::PermissionName, mojom::blink::PermissionStatus>
+      init_map_mic_only_granted;
+  init_map_mic_only_granted.insert(mojom::blink::PermissionName::AUDIO_CAPTURE,
+                                   mojom::blink::PermissionStatus::GRANTED);
+  init_map_mic_only_granted.insert(mojom::blink::PermissionName::VIDEO_CAPTURE,
+                                   mojom::blink::PermissionStatus::ASK);
+  element->OnPermissionStatusInitialized(init_map_mic_only_granted);
   EXPECT_EQ(element->permission_text_span_for_testing()->innerText(),
-            kMicrophoneString);
+            kCameraMicrophoneString);
 
   // Case 5: Camera and Microphone - No Constraints (Legacy)
   element = MakeGarbageCollected<HTMLUserMediaElement>(GetDocument());
@@ -297,9 +301,10 @@ TEST_F(HTMLUserMediaElementTest, GrantedText) {
   EXPECT_EQ(element->permission_text_span_for_testing()->innerText(),
             kCameraMicrophoneAllowedString);
 
-  // Case 6: Camera and Microphone - With Constraints
+  // Case 6: Camera and Microphone - With Constraints (Standard always both, not
+  // allowed text even if granted)
   element = MakeGarbageCollected<HTMLUserMediaElement>(GetDocument());
-  element->OnConstraintsSet(/*has_video=*/true, /*has_audio=*/true);
+  element->ApplyDefaultConstraints();
   element->OnPermissionStatusInitialized(init_map_both);
   EXPECT_EQ(element->permission_text_span_for_testing()->innerText(),
             kCameraMicrophoneString);
@@ -311,12 +316,14 @@ TEST_F(HTMLUserMediaElementTest,
   MockUserMediaRequestProvider::CreateAndProvideTo(*GetDocument().domWindow());
 
   auto* element = MakeGarbageCollected<HTMLUserMediaElement>(GetDocument());
-  element->OnConstraintsSet(/*has_video=*/true, /*has_audio=*/false);
+  element->ApplyDefaultConstraints();
 
   // Initialize status to ASK.
   HashMap<mojom::blink::PermissionName, mojom::blink::PermissionStatus>
       init_map;
   init_map.insert(mojom::blink::PermissionName::VIDEO_CAPTURE,
+                  mojom::blink::PermissionStatus::ASK);
+  init_map.insert(mojom::blink::PermissionName::AUDIO_CAPTURE,
                   mojom::blink::PermissionStatus::ASK);
   element->OnPermissionStatusInitialized(init_map);
 
@@ -353,12 +360,14 @@ TEST_F(HTMLUserMediaElementTest, ClickWhenStyleIsInvalidFiresError) {
   MockUserMediaRequestProvider::CreateAndProvideTo(*GetDocument().domWindow());
 
   auto* element = MakeGarbageCollected<HTMLUserMediaElement>(GetDocument());
-  element->OnConstraintsSet(/*has_video=*/true, /*has_audio=*/false);
+  element->ApplyDefaultConstraints();  // Initialize before append
 
   // Initialize status to ASK.
   HashMap<mojom::blink::PermissionName, mojom::blink::PermissionStatus>
       init_map;
   init_map.insert(mojom::blink::PermissionName::VIDEO_CAPTURE,
+                  mojom::blink::PermissionStatus::ASK);
+  init_map.insert(mojom::blink::PermissionName::AUDIO_CAPTURE,
                   mojom::blink::PermissionStatus::ASK);
   element->OnPermissionStatusInitialized(init_map);
 
@@ -410,7 +419,7 @@ TEST_F(HTMLUserMediaElementTest, UntrustedClickFiresError) {
 
   // Do NOT bypass security.
   auto* element = MakeGarbageCollected<HTMLUserMediaElement>(GetDocument());
-  element->OnConstraintsSet(/*has_video=*/true, /*has_audio=*/false);
+  element->ApplyDefaultConstraints();
 
   EXPECT_EQ(element->error(), nullptr);
 
@@ -483,11 +492,13 @@ TEST_F(HTMLUserMediaElementTest, NonSecureContextBlocked) {
           *GetDocument().domWindow());
 
   auto* element = MakeGarbageCollected<HTMLUserMediaElement>(GetDocument());
-  element->OnConstraintsSet(/*has_video=*/true, /*has_audio=*/false);
+  element->ApplyDefaultConstraints();
 
   HashMap<mojom::blink::PermissionName, mojom::blink::PermissionStatus>
       init_map;
   init_map.insert(mojom::blink::PermissionName::VIDEO_CAPTURE,
+                  mojom::blink::PermissionStatus::GRANTED);
+  init_map.insert(mojom::blink::PermissionName::AUDIO_CAPTURE,
                   mojom::blink::PermissionStatus::GRANTED);
   element->OnPermissionStatusInitialized(init_map);
 
@@ -510,11 +521,13 @@ TEST_F(HTMLUserMediaElementTest, MissingTransientUserActivationBlocked) {
           *GetDocument().domWindow());
 
   auto* element = MakeGarbageCollected<HTMLUserMediaElement>(GetDocument());
-  element->OnConstraintsSet(/*has_video=*/true, /*has_audio=*/false);
+  element->ApplyDefaultConstraints();
 
   HashMap<mojom::blink::PermissionName, mojom::blink::PermissionStatus>
       init_map;
   init_map.insert(mojom::blink::PermissionName::VIDEO_CAPTURE,
+                  mojom::blink::PermissionStatus::GRANTED);
+  init_map.insert(mojom::blink::PermissionName::AUDIO_CAPTURE,
                   mojom::blink::PermissionStatus::GRANTED);
   element->OnPermissionStatusInitialized(init_map);
 
@@ -522,4 +535,33 @@ TEST_F(HTMLUserMediaElementTest, MissingTransientUserActivationBlocked) {
   element->click();
   ::testing::Mock::VerifyAndClearExpectations(provider);
 }
+
+TEST_F(HTMLUserMediaElementTest, DefaultConstraintsNoSetConstraintsClick) {
+  ScopedBypassPepcSecurityForTestingForTest bypass_pepc(true);
+  MockUserMediaRequestProvider* provider =
+      MockUserMediaRequestProvider::CreateAndProvideTo(
+          *GetDocument().domWindow());
+
+  auto* element = MakeGarbageCollected<HTMLUserMediaElement>(GetDocument());
+  GetDocument().body()->AppendChild(element);
+
+  // Run pending tasks to let the deferred ApplyDefaultConstraints execute!
+  test::RunPendingTasks();
+
+  const auto& descriptors = element->GetPermissionDescriptors();
+  ASSERT_EQ(descriptors.size(), 2U);
+
+  HashMap<mojom::blink::PermissionName, mojom::blink::PermissionStatus>
+      init_map;
+  init_map.insert(mojom::blink::PermissionName::VIDEO_CAPTURE,
+                  mojom::blink::PermissionStatus::GRANTED);
+  init_map.insert(mojom::blink::PermissionName::AUDIO_CAPTURE,
+                  mojom::blink::PermissionStatus::GRANTED);
+  element->OnPermissionStatusInitialized(init_map);
+
+  EXPECT_CALL(*provider, StartRequest(element, _)).Times(1);
+  element->click();
+  ::testing::Mock::VerifyAndClearExpectations(provider);
+}
+
 }  // namespace blink
