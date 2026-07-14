@@ -14,9 +14,11 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
+#include "chrome/browser/actor/tools/attempt_otp_filling_tool_metrics.h"
 #include "chrome/browser/actor/tools/tool_delegate.h"
 #include "chrome/browser/actor/tools/tool_request.h"
 #include "chrome/browser/autofill/actor/one_time_tokens/actor_login_context.h"
@@ -196,6 +198,12 @@ class AttemptOtpFillingToolTest : public testing::Test {
         {{web_contents_->GetPrimaryMainFrame()->GetFrameTreeNodeId(), 1}});
   }
 
+  void assertHistogramBucketCount(AttemptOtpFillingToolEvent event,
+                                  int expected_count = 1) {
+    histogram_tester_.ExpectBucketCount(kAttemptOtpFillingToolHistogram, event,
+                                        expected_count);
+  }
+
  protected:
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_;
@@ -203,6 +211,7 @@ class AttemptOtpFillingToolTest : public testing::Test {
   raw_ptr<content::WebContents> web_contents_ = nullptr;
   std::unique_ptr<FakeToolDelegate> delegate_;
   std::unique_ptr<tabs::MockTabInterface> mock_tab_;
+  base::HistogramTester histogram_tester_;
 };
 
 namespace {  // Have commonly used namespaces here to make tests more readable
@@ -273,6 +282,8 @@ TEST_F(AttemptOtpFillingToolTest, Validate_OptInPermissionDenied) {
   EXPECT_FALSE(IsAutofillGmailOtpFillingEnabled(prefs()));
   EXPECT_EQ(base::Time::Now(),
             GetAutofillGmailOtpFillingActivationDismissalTimestamp(prefs()));
+  assertHistogramBucketCount(
+      AttemptOtpFillingToolEvent::kOptInPermissionDenied);
 }
 
 // When the asking the user for opting into using Gmail OTPs fails, the tool
@@ -295,6 +306,7 @@ TEST_F(AttemptOtpFillingToolTest, Validate_OptInPermissionCallbackError) {
   EXPECT_FALSE(IsAutofillGmailOtpFillingEnabled(prefs()));
   EXPECT_EQ(base::Time::Now() - base::Days(90),
             GetAutofillGmailOtpFillingActivationDismissalTimestamp(prefs()));
+  assertHistogramBucketCount(AttemptOtpFillingToolEvent::kOptInErrorResponse);
 }
 
 // When Gmail OTP is disabled, but we're within the cool off period for asking
@@ -318,6 +330,8 @@ TEST_F(AttemptOtpFillingToolTest,
   EXPECT_FALSE(IsAutofillGmailOtpFillingEnabled(prefs()));
   EXPECT_EQ(base::Time::Now() - base::Days(89),
             GetAutofillGmailOtpFillingActivationDismissalTimestamp(prefs()));
+  assertHistogramBucketCount(
+      AttemptOtpFillingToolEvent::kWithinOptInCoolOffPeriod);
 }
 
 // When Gmail OTP is disabled, and we're outside the cool off period for asking
@@ -337,6 +351,7 @@ TEST_F(AttemptOtpFillingToolTest,
   tool.Validate(future.GetCallback());
 
   // expect call to RequestToShowGmailOtpOptInDialog, see EXPECT_CALL above
+  assertHistogramBucketCount(AttemptOtpFillingToolEvent::kStartFillingAttempt);
 }
 
 // Time of use validation returns kTabWentAway when the target tab is not
@@ -351,6 +366,8 @@ TEST_F(AttemptOtpFillingToolTest, TimeOfUseValidation_TabWentAway) {
   ActionResultPtr result = tool.TimeOfUseValidation(&observation);
 
   EXPECT_EQ(kTabWentAway, result->code);
+  assertHistogramBucketCount(
+      AttemptOtpFillingToolEvent::kTabWentAwayBeforeInvocation);
 }
 
 // Time of use validation returns kFormFillingNoLastTabObservation when a tool
@@ -364,6 +381,7 @@ TEST_F(AttemptOtpFillingToolTest, TimeOfUseValidation_NoLastObservation) {
   ActionResultPtr result = tool.TimeOfUseValidation(nullptr);
 
   EXPECT_EQ(kFormFillingNoLastTabObservation, result->code);
+  assertHistogramBucketCount(AttemptOtpFillingToolEvent::kNoLastTabObservation);
 }
 
 // Time of use validation returns kFormFillingFieldNotFound when any of the
@@ -377,6 +395,7 @@ TEST_F(AttemptOtpFillingToolTest, TimeOfUseValidation_FieldNotFound) {
   ActionResultPtr result = tool.TimeOfUseValidation(&observation);
 
   EXPECT_EQ(kFormFillingFieldNotFound, result->code);
+  assertHistogramBucketCount(AttemptOtpFillingToolEvent::kTriggerFieldNotFound);
 }
 
 // Time of use validation returns kOk when all conditions are met.
@@ -399,6 +418,7 @@ TEST_F(AttemptOtpFillingToolTest, TimeOfUseValidation_HappyPath) {
   ActionResultPtr result = tool.TimeOfUseValidation(&observation);
 
   EXPECT_EQ(kOk, result->code);
+  histogram_tester_.ExpectTotalCount(kAttemptOtpFillingToolHistogram, 0);
 }
 
 // Time of use validation returns `kOtpInsecureContext` when form filling
@@ -424,6 +444,8 @@ TEST_F(AttemptOtpFillingToolTest, TimeOfUseValidation_InsecureContext) {
   ActionResultPtr result = tool.TimeOfUseValidation(&observation);
 
   EXPECT_EQ(mojom::ActionResultCode::kOtpInsecureContext, result->code);
+  assertHistogramBucketCount(
+      AttemptOtpFillingToolEvent::kFormFillingStatusInsecureContext);
 }
 
 // Invoke() returns kOk when all conditions are met.
@@ -443,6 +465,7 @@ TEST_F(AttemptOtpFillingToolTest, Invoke_HappyPath) {
   tool.Invoke(future.GetCallback());
 
   EXPECT_EQ(kOk, future.Take()->code);
+  assertHistogramBucketCount(AttemptOtpFillingToolEvent::kFillingOtpSuccess);
 }
 
 // Invoke() fails with kOtpFillFailure when the result of
@@ -463,6 +486,7 @@ TEST_F(AttemptOtpFillingToolTest, Invoke_ErrorFilling) {
   tool.Invoke(future.GetCallback());
 
   EXPECT_EQ(kOtpFillFailure, future.Take()->code);
+  assertHistogramBucketCount(AttemptOtpFillingToolEvent::kFillingOtpError);
 }
 
 // Invoke() fails with kFormFillingError when retrieving the OTP fails.
@@ -484,6 +508,136 @@ TEST_F(AttemptOtpFillingToolTest, Invoke_ErrorRetrievingGmailOtp) {
   EXPECT_EQ(kOtpRetrievalError, action_result->code);
   EXPECT_EQ("An error occurred during OTP retrieval: 0",
             action_result->message);
+  assertHistogramBucketCount(AttemptOtpFillingToolEvent::kOtpRetrievalError);
+}
+
+TEST_F(AttemptOtpFillingToolTest,
+       Validate_OptInPermissionCallbackNullResponse) {
+  EXPECT_CALL(delegate(), RequestToShowGmailOtpOptInDialog)
+      .WillOnce(RunOnceCallback<0>(nullptr));
+  AttemptOtpFillingTool tool(TaskId(1), delegate(), mock_tab().GetHandle(),
+                             {PageTarget(gfx::Point(10, 10))},
+                             /*for_signin=*/true);
+  SetAutofillGmailOtpFillingEnabled(prefs(), false);
+  SetAutofillGmailOtpFillingActivationDismissalTimestamp(
+      prefs(), base::Time::Now() - base::Days(90));
+
+  TestFuture<ActionResultPtr> future;
+  tool.Validate(future.GetCallback());
+
+  EXPECT_EQ(kFormFillingDialogError, future.Take()->code);
+  assertHistogramBucketCount(AttemptOtpFillingToolEvent::kOptInNullResponse);
+}
+
+TEST_F(AttemptOtpFillingToolTest, Validate_GmailOtpFillingEnabled) {
+  AttemptOtpFillingTool tool(TaskId(1), delegate(), mock_tab().GetHandle(),
+                             {PageTarget(gfx::Point(10, 10))},
+                             /*for_signin=*/true);
+  SetAutofillGmailOtpFillingEnabled(prefs(), true);
+
+  TestFuture<ActionResultPtr> future;
+  tool.Validate(future.GetCallback());
+
+  EXPECT_EQ(kOk, future.Take()->code);
+}
+
+TEST_F(AttemptOtpFillingToolTest, TimeOfUseValidation_FormNotFound) {
+  EXPECT_CALL(delegate().mock_otp_service(), ValidateFormFillingContext)
+      .WillOnce(Return(autofill::FormFillingContextStatus::kFormNotFound));
+  auto* user_data = DocumentIdentifierUserData::GetOrCreateForCurrentDocument(
+      web_contents_->GetPrimaryMainFrame());
+  std::string doc_token = user_data->serialized_token();
+  AttemptOtpFillingTool tool(
+      TaskId(1), delegate(), mock_tab().GetHandle(),
+      {PageTarget(DomNode{.node_id = 1234, .document_identifier = doc_token})},
+      /*for_signin=*/true);
+  AnnotatedPageContent observation;
+  observation.mutable_main_frame_data()
+      ->mutable_document_identifier()
+      ->set_serialized_token(doc_token);
+  observation.mutable_root_node()
+      ->mutable_content_attributes()
+      ->set_common_ancestor_dom_node_id(1234);
+
+  ActionResultPtr result = tool.TimeOfUseValidation(&observation);
+
+  EXPECT_EQ(mojom::ActionResultCode::kFormFillingFieldNotFound, result->code);
+  assertHistogramBucketCount(
+      AttemptOtpFillingToolEvent::kFormFillingStatusFormNotFound);
+}
+
+TEST_F(AttemptOtpFillingToolTest, TimeOfUseValidation_TabNotAvailable) {
+  EXPECT_CALL(delegate().mock_otp_service(), ValidateFormFillingContext)
+      .WillOnce(Return(autofill::FormFillingContextStatus::kTabNotAvailable));
+  auto* user_data = DocumentIdentifierUserData::GetOrCreateForCurrentDocument(
+      web_contents_->GetPrimaryMainFrame());
+  std::string doc_token = user_data->serialized_token();
+  AttemptOtpFillingTool tool(
+      TaskId(1), delegate(), mock_tab().GetHandle(),
+      {PageTarget(DomNode{.node_id = 1234, .document_identifier = doc_token})},
+      /*for_signin=*/true);
+  AnnotatedPageContent observation;
+  observation.mutable_main_frame_data()
+      ->mutable_document_identifier()
+      ->set_serialized_token(doc_token);
+  observation.mutable_root_node()
+      ->mutable_content_attributes()
+      ->set_common_ancestor_dom_node_id(1234);
+
+  ActionResultPtr result = tool.TimeOfUseValidation(&observation);
+
+  EXPECT_EQ(mojom::ActionResultCode::kTabWentAway, result->code);
+  assertHistogramBucketCount(
+      AttemptOtpFillingToolEvent::kFormFillingStatusTabNotAvailable);
+}
+
+TEST_F(AttemptOtpFillingToolTest, Invoke_NoTargetFrameWithOtpFound) {
+  EXPECT_CALL(mock_tab(), GetContents()).WillRepeatedly(Return(nullptr));
+  AttemptOtpFillingTool tool(TaskId(1), delegate(), mock_tab().GetHandle(),
+                             {PageTarget(gfx::Point(10, 10))},
+                             /*for_signin=*/true);
+
+  TestFuture<ActionResultPtr> future;
+  tool.Invoke(future.GetCallback());
+
+  EXPECT_EQ(kFormFillingFieldNotFound, future.Take()->code);
+  assertHistogramBucketCount(
+      AttemptOtpFillingToolEvent::kNoTargetFrameWithOtpFound);
+}
+
+TEST_F(AttemptOtpFillingToolTest, Invoke_NoLoginContextAvailable) {
+  EXPECT_CALL(delegate().mock_otp_service(), ConsumeLoginContext())
+      .WillOnce(Return(std::nullopt));
+  AttemptOtpFillingTool tool(TaskId(1), delegate(), mock_tab().GetHandle(),
+                             {PageTarget(gfx::Point(10, 10))},
+                             /*for_signin=*/true);
+
+  TestFuture<ActionResultPtr> future;
+  tool.Invoke(future.GetCallback());
+
+  EXPECT_EQ(mojom::ActionResultCode::kOtpSigninContextMismatch,
+            future.Take()->code);
+  assertHistogramBucketCount(AttemptOtpFillingToolEvent::kNoActorLogin);
+}
+
+TEST_F(AttemptOtpFillingToolTest, Invoke_InsecureBeforeFilling) {
+  EXPECT_CALL(delegate().mock_otp_service(), ConsumeLoginContext())
+      .WillOnce(Return(CreateValidLoginContext()));
+  EXPECT_CALL(delegate().mock_otp_service(), RetrieveOtp)
+      .WillOnce(RunOnceCallback<2>("123456"));
+  EXPECT_CALL(delegate().mock_otp_service(), ValidateFormFillingContext)
+      .WillOnce(Return(autofill::FormFillingContextStatus::kInsecureContext));
+  AttemptOtpFillingTool tool(TaskId(1), delegate(), mock_tab().GetHandle(),
+                             {PageTarget(gfx::Point(10, 10))},
+                             /*for_signin=*/true);
+  SetAutofillGmailOtpFillingEnabled(prefs(), true);
+
+  TestFuture<ActionResultPtr> future;
+  tool.Invoke(future.GetCallback());
+
+  EXPECT_EQ(mojom::ActionResultCode::kOtpInsecureContext, future.Take()->code);
+  assertHistogramBucketCount(
+      AttemptOtpFillingToolEvent::kFormFillingNotSecureBeforeFilling);
 }
 
 }  // namespace actor

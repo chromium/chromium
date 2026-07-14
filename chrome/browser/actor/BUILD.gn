@@ -131,6 +131,8 @@ source_set("impl") {
     "tools/attempt_login_tool_request.cc",
     "tools/attempt_otp_filling_tool.cc",
     "tools/attempt_otp_filling_tool.h",
+    "tools/attempt_otp_filling_tool_metrics.cc",
+    "tools/attempt_otp_filling_tool_metrics.h",
     "tools/attempt_otp_filling_tool_request.cc",
     "tools/click_tool_request.cc",
     "tools/drag_and_release_tool_request.cc",

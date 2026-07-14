@@ -8,6 +8,30 @@ found in the LICENSE file.
 
 <enums>
 
+<!-- LINT.IfChange(AttemptOtpFillingEvent) -->
+
+<enum name="AttemptOtpFillingEvent">
+  <int value="0" label="StartFillingAttempt"/>
+  <int value="1" label="WithinOptInCoolOffPeriod"/>
+  <int value="2" label="OptInNullResponse"/>
+  <int value="3" label="OptInErrorResponse"/>
+  <int value="4" label="OptInPermissionDenied"/>
+  <int value="5" label="TabWentAwayBeforeInvocation"/>
+  <int value="6" label="NoLastTabObservation"/>
+  <int value="7" label="TriggerFieldNotFound"/>
+  <int value="8" label="FormFillingStatusInsecureContext"/>
+  <int value="9" label="FormFillingStatusFormNotFound"/>
+  <int value="10" label="FormFillingStatusTabNotAvailable"/>
+  <int value="11" label="NoTargetFrameWithOtpFound"/>
+  <int value="12" label="NoActorLogin"/>
+  <int value="13" label="OtpRetrievalError"/>
+  <int value="14" label="FormFillingNotSecureBeforeFilling"/>
+  <int value="15" label="FillingOtpSuccess"/>
+  <int value="16" label="FillingOtpError"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/actor/tools/attempt_otp_filling_tool_metrics.h:AttemptOtpFillingEvent) -->
+
 <!-- LINT.IfChange(AttemptOtpFillingPredictedOtpType) -->
 
 <enum name="AttemptOtpFillingPredictedOtpType">
