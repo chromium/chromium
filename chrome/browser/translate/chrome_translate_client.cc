@@ -292,8 +292,9 @@ bool ChromeTranslateClient::ShowTranslateUI(
     const std::string& target_language,
     translate::TranslateErrors error_type,
     bool triggered_from_menu) {
-  DCHECK(web_contents());
-  DCHECK(translate_manager_);
+  if (!web_contents() || !translate_manager_) {
+    return false;
+  }
 
   if (error_type != translate::TranslateErrors::NONE) {
     step = translate::TRANSLATE_STEP_TRANSLATE_ERROR;

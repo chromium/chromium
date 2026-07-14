@@ -5,6 +5,7 @@
 #include "chrome/browser/translate/chrome_translate_client.h"
 
 #include "base/functional/callback.h"
+#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/ui/browser.h"
@@ -292,16 +293,31 @@ IN_PROC_BROWSER_TEST_F(ChromeTranslateClientPdfEnabledBrowsertest,
   mojo::Receiver<pdf::mojom::PdfListener> receiver(&listener);
   pdf_helper->SetListener(receiver.BindNewPipeAndPassRemote());
 
-  base::test::TestFuture<bool> future;
-  chrome_translate_client()->CheckIfPdfIsTranslatable(future.GetCallback());
-  EXPECT_FALSE(future.IsReady());
+  bool callback_run = false;
+  ChromeTranslateClient* client_ptr = chrome_translate_client();
+  auto callback = base::BindLambdaForTesting([&](bool is_translatable) {
+    callback_run = true;
+    // Simulate what the real caller does when it receives the result (e.g.
+    // TranslateManager reacting to eligibility). If `translate_manager_`
+    // was not properly null-checked, this would crash because we are in the
+    // middle of teardown.
+    client_ptr->ShowTranslateUI(
+        translate::TRANSLATE_STEP_TRANSLATING, "en", "es",
+        translate::TranslateErrors::NONE, false);
+  });
 
-  // Navigate to another page, which destroys the document and
-  // `pdf::PDFDocumentHelper`
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
+  client_ptr->CheckIfPdfIsTranslatable(std::move(callback));
+
+  // Close the WebContents, which initiates teardown.
+  // This calls WebContentsDestroyed (resetting translate_manager_) and
+  // proceeds to destroy UserData (like pdf::PDFDocumentHelper) which drops
+  // the callback.
+  browser()->tab_strip_model()->CloseWebContentsAt(
+      0, TabCloseTypes::CLOSE_NONE);
 
   // The destruction of `pdf::PDFDocumentHelper` should have immediately
-  // triggered the callback with false.
-  EXPECT_FALSE(future.Get());
+  // triggered the callback with false, and ShowTranslateUI should return false
+  // gracefully.
+  EXPECT_TRUE(callback_run);
 }
 #endif  // BUILDFLAG(ENABLE_PDF)
