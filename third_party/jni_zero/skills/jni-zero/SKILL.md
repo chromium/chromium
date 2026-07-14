@@ -36,8 +36,8 @@ API Usage:
 
 - When returning or passing a null `JavaRef`, use `nullptr` rather than calling
   a constructor.
-- Prefer `JArray<jobject>` over `jobjectArray`, as well as for other array types
-  (`JArray<*>` over `j*Array`)
+- Prefer type-safe `JArray<JFoo>` over `jobjectArray` / `JArray<jobject>`, as
+  well as for other array types (`JArray<T>` over `jTArray`).
 - Use the `jni_zero::` namespace instead of the `base::android::` aliases (e.g.
   for `*JavaRef`, and `AttachBaseContext()`)
 - To call static Java methods, do not call the `Java_Clazz_method()` functions
@@ -45,6 +45,17 @@ API Usage:
 - To call constructors methods, use `ClazzJni::New()`
 - To call member functions given a `JavaRef<jobject>`, use `Java_Clazz_method()`
 - To call member functions given a `JavaRef<JFoo>`, use `foo->method()`
+
+Creation and ownership of Java counterparts:
+
+- A native object owns a Java class if it creates it via JNI.
+- If a native object owns a Java object, ensure that its destructor sets the
+  Java object's native pointer field to 0 from its destructor.
+- Add a comment explaining the ownership and lifecycle of the class and its Java
+  counterpart.
+  - E.g.: "This class creates and owns its Java counterpart, and holds a strong
+    JNI global reference to it. When this is destroyed, it must call
+    clearNativePtr to prevent Java from calling back into destroyed memory."
 
 Defining native entry point methods:
 
@@ -58,11 +69,13 @@ Defining native entry point methods:
 - Parameters and return types that may be `null` must be annotated as
   `@Nullable` to avoid a runtime null-check.
 - A Java class owns a native object if it creates it via JNI.
-- A native object owns a Java class if it creates it via JNI.
 - If a Java class owns a native object, ensure that there is an `onDestroy()`
   method that calls `delete` via JNI, and sets the field `0`.
-- If a native object owns a Java object, ensure that its destructor sets the
-  Java object's native pointer field to 0 from its destructor.
+- Add a comment explaining the ownership and lifecycle of the class and its C++
+  counterpart.
+  - E.g.: "This class is created and owned by its C++ counterpart. It holds a
+    reference to it in the field mNativePtr, which the C++ counterpart must set
+    to 0 when it is destroyed by calling clearNativePtr."
 
 ## Guidance for @JniType
 
@@ -90,6 +103,9 @@ Defining native entry point methods:
 - Use `.As<JFoo>()` to convert from `JavaRef<jobject>` to a specific generated
   type.
 - Convert `ScopedJavaLocalRef<jobject>()` (empty constructor) to `nullptr`.
+- Use type-safe jobjects for generics and arrays:
+  - Generics: `jni_zero::ScopedJavaLocalRef<JList<JBar>> bars;`
+  - Arrays: `jni_zero::ScopedJavaLocalRef<JArray<JBaz>> baz;`
 
 #### 2. Method Calls
 

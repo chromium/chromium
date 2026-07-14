@@ -76,3 +76,99 @@ return ScopedJavaLocalRef<jobject>();
 ```cpp
 return nullptr;
 ```
+
+## 5. Arrays
+
+### Creating Object Arrays
+
+**Before:**
+
+```cpp
+jobjectArray j_strs = env->NewObjectArray(size, string_clazz, nullptr);
+```
+
+**After:**
+
+```cpp
+ScopedJavaLocalRef<JArray<jstring>> strs = NewStringArray(env, size);
+```
+
+### Accessing Elements
+
+**Before:**
+
+```cpp
+jobject j_obj = env->GetObjectArrayElement(j_array, index);
+ScopedJavaLocalRef<MyClass> obj = AdoptRef(env, static_cast<MyClass>(j_obj));
+
+jstring j_str = static_cast<jstring>(env->GetObjectArrayElement(j_strs, index));
+std::string str = ConvertJavaStringToUTF8(env, j_str);
+```
+
+**After:**
+
+```cpp
+ScopedJavaLocalRef<JMyClass> obj = array.Get(env, index);
+
+std::string str = strs.GetAs<std::string>(env, index);
+```
+
+### Setting Elements
+
+**Before:**
+
+```cpp
+env->SetObjectArrayElement(j_array, index, value.obj());
+```
+
+**After:**
+
+```cpp
+array.Set(env, index, value);
+```
+
+### Iterating Arrays
+
+**Before:**
+
+```cpp
+jsize length = env->GetArrayLength(j_array);
+for (jsize i = 0; i < length; ++i) {
+  ScopedJavaLocalRef<jstring> j_str = AdoptRef(env, static_cast<jstring>(env->GetObjectArrayElement(j_array, i)));
+  std::string str = ConvertJavaStringToUTF8(env, j_str);
+  // ...
+}
+```
+
+**After:**
+
+```cpp
+for (auto str : strs.CreateView(env)) {
+  std::string s = str.ConvertTo<std::string>(env);
+  // ...
+}
+```
+
+### Primitive Arrays
+
+**Before:**
+
+```cpp
+jbyteArray j_array = ...;
+jbyte* bytes = env->GetByteArrayElements(j_array, nullptr);
+jsize length = env->GetArrayLength(j_array);
+std::string_view sv(reinterpret_cast<char*>(bytes), length);
+// ...
+env->ReleaseByteArrayElements(j_array, bytes, JNI_ABORT);
+```
+
+**After:**
+
+```cpp
+ScopedJavaLocalRef<JArray<int8_t>> array = ...;
+JArrayView<int8_t> array_view = array.CreateView(env);
+std::string_view sv = array_view.as_string_view();
+```
+
+*(Note: `JArrayView` automatically releases the elements when it goes out of
+scope.)*
