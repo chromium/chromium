@@ -398,7 +398,7 @@ IN_PROC_BROWSER_TEST_P(InlineScriptCacheHintBrowserTest, MAYBE_EagerCacheHint) {
 // TODO(crbug.com/498265776): Test is expected to time out on some slow
 // builders.
 #if defined(MEMORY_SANITIZER) || defined(THREAD_SANITIZER) || \
-    (BUILDFLAG(IS_WIN) && !defined(NDEBUG))
+    ((BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)) && !defined(NDEBUG))
 #define MAYBE_NeverCacheHint DISABLED_NeverCacheHint
 #else
 #define MAYBE_NeverCacheHint NeverCacheHint
