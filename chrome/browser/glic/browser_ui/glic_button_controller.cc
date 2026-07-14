@@ -11,11 +11,21 @@
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/service/glic_instance_coordinator.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "components/feature_engagement/public/feature_list.h"
 #include "components/prefs/pref_service.h"
 #include "ui/views/widget/widget.h"
 
 namespace glic {
+
+DEFINE_USER_DATA(GlicButtonController);
+
+// static
+GlicButtonController* GlicButtonController::From(
+    BrowserWindowInterface* browser) {
+  return browser ? GlicButtonController::Get(browser->GetUnownedUserDataHost())
+                 : nullptr;
+}
 
 GlicButtonController::GlicButtonController(
     Profile* profile,
@@ -27,13 +37,11 @@ GlicButtonController::GlicButtonController(
       browser_(browser),
       tab_strip_glic_controller_delegate_(tab_strip_delegate),
       toolbar_glic_controller_delegate_(toolbar_delegate),
-      glic_keyed_service_(service) {
+      glic_keyed_service_(service),
+      scoped_unowned_user_data_(browser.GetUnownedUserDataHost(), *this) {
   CHECK(tab_strip_glic_controller_delegate_);
   CHECK(toolbar_glic_controller_delegate_);
   CHECK(glic_keyed_service_);
-
-  tab_strip_glic_controller_delegate_->SetButtonController(this);
-  toolbar_glic_controller_delegate_->SetButtonController(this);
 
   // Set initial button state.
   UpdateButton();
@@ -52,14 +60,7 @@ GlicButtonController::GlicButtonController(
           update_callback));
 }
 
-GlicButtonController::~GlicButtonController() {
-  if (tab_strip_glic_controller_delegate_) {
-    tab_strip_glic_controller_delegate_->SetButtonController(nullptr);
-  }
-  if (toolbar_glic_controller_delegate_) {
-    toolbar_glic_controller_delegate_->SetButtonController(nullptr);
-  }
-}
+GlicButtonController::~GlicButtonController() = default;
 
 void GlicButtonController::UpdateButton() {
   // Attempt to record startup metrics when the button controller is first

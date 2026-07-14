@@ -10,8 +10,6 @@
 
 namespace glic {
 
-class GlicButtonController;
-
 // Details needed for showing a nudge.
 struct NudgeParams {
   ~NudgeParams();
@@ -76,10 +74,6 @@ class GlicSplitButtonDelegate {
   virtual void ShowActorTaskListBubble();
 
   // Methods related to glic button visibility and glic panel visibility
-
-  // Sets the button controller.
-  // TODO(crbug.com/511309088): Remove.
-  virtual void SetButtonController(GlicButtonController* controller);
 
   // Set the show state of the button
   virtual void SetGlicShowState(bool show);

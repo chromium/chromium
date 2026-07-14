@@ -227,6 +227,8 @@ TabStripActionContainer::TabStripActionContainer(
     : AnimationDelegateViews(this),
       locked_expansion_view_(this),
       glic_nudge_controller_(glic_nudge_controller),
+      glic_button_controller_(
+          glic::GlicButtonController::From(browser_window_interface)),
       browser_window_interface_(browser_window_interface) {
   SetProperty(views::kElementIdentifierKey, kTabStripActionContainerElementId);
 
@@ -326,11 +328,6 @@ void TabStripActionContainer::OnHideGlicNudgeUI() {
 
 bool TabStripActionContainer::GetIsShowingGlicNudge() {
   return glic_button_ && glic_button_->GetIsShowingNudge();
-}
-
-void TabStripActionContainer::SetButtonController(
-    glic::GlicButtonController* controller) {
-  button_controller_ = controller;
 }
 
 void TabStripActionContainer::SetGlicShowState(bool show) {
@@ -571,8 +568,8 @@ void TabStripActionContainer::OnGlicButtonClicked() {
   }
 
   glic::mojom::InvocationSource source;
-  if (button_controller_) {
-    source = button_controller_->GetInvocationSource(
+  if (glic_button_controller_) {
+    source = glic_button_controller_->GetInvocationSource(
         glic_button_->GetIsShowingNudge(), /*is_toolbar=*/false);
   } else {
     source = glic_button_->GetIsShowingNudge()

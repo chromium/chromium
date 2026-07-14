@@ -233,7 +233,6 @@ class ToolbarView : public views::AccessiblePaneView,
   // GlicSplitButtonDelegate:
   void SetGlicShowState(bool show) override;
   void SetGlicPanelIsOpen(bool open) override;
-  void SetButtonController(glic::GlicButtonController* controller) override;
   // Called when the glic nudge UI needs to be triggered. `label' holds the
   // nudge label. `anchored_message_text` and `prompt_suggestion` are unused in
   // this UI.
@@ -397,7 +396,7 @@ class ToolbarView : public views::AccessiblePaneView,
   raw_ptr<glic::ToolbarGlicButton> glic_button_ = nullptr;
   raw_ptr<glic::ToolbarGlicActorTaskIcon> glic_actor_task_icon_ = nullptr;
   raw_ptr<ToolbarDivider> glic_button_divider_ = nullptr;
-  raw_ptr<glic::GlicButtonController> button_controller_ = nullptr;
+  raw_ptr<glic::GlicButtonController> glic_button_controller_ = nullptr;
 
   // When locked, the container is unable to change its expanded state.
   // Changes will be staged until after this is unlocked.

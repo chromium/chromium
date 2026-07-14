@@ -110,18 +110,13 @@ class MockGlicButtonControllerDelegate : public glic::GlicSplitButtonDelegate {
   void SetGlicPanelIsOpen(bool panel_open) override {
     panel_open_ = panel_open;
   }
-  void SetButtonController(GlicButtonController* controller) override {
-    controller_ = controller;
-  }
 
   bool show_state() const { return show_state_; }
   bool panel_open() const { return panel_open_; }
-  GlicButtonController* controller() const { return controller_; }
 
  private:
   bool show_state_ = false;
   bool panel_open_ = false;
-  raw_ptr<GlicButtonController> controller_ = nullptr;
 };
 
 }  // namespace
@@ -303,6 +298,12 @@ TEST_F(GlicButtonControllerTest, RecordStartupMetrics) {
   // Startup metrics should not have been logged again.
   histograms().ExpectUniqueSample("Glic.ProfileEnablement.IsEnabled.Startup",
                                   false, 1);
+}
+
+TEST_F(GlicButtonControllerTest, FromBrowserWindowInterface) {
+  EXPECT_EQ(GlicButtonController::From(browser_window_interface()),
+            controller());
+  EXPECT_EQ(GlicButtonController::From(nullptr), nullptr);
 }
 
 }  // namespace glic

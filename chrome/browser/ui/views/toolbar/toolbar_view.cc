@@ -258,6 +258,7 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(ToolbarView, kToolbarElementId);
 
 ToolbarView::ToolbarView(Browser* browser, BrowserView* browser_view)
     : AnimationDelegateViews(this),
+      glic_button_controller_(glic::GlicButtonController::From(browser)),
       browser_(browser),
       browser_view_(browser_view),
       app_menu_icon_controller_(browser->GetProfile(), this),
@@ -284,11 +285,10 @@ ToolbarView::ToolbarView(Browser* browser, BrowserView* browser_view)
   mouse_watcher_ = std::make_unique<views::MouseWatcher>(
       std::make_unique<views::MouseWatcherViewHost>(this, gfx::Insets()), this);
 
-  glic::GlicNudgeController* glic_nudge_controller =
-      browser_->browser_window_features()->glic_nudge_controller();
 
   // `glic_nudge_controller` will be null if feature is not enabled.
-  if (glic_nudge_controller) {
+  if (glic::GlicNudgeController* glic_nudge_controller =
+          glic::GlicNudgeController::From(browser_)) {
     glic_nudge_controller->SetVerticalTabsDelegate(this);
   }
 }
@@ -779,8 +779,8 @@ void ToolbarView::OnGlicButtonClicked() {
   }
 
   glic::mojom::InvocationSource source;
-  if (button_controller_) {
-    source = button_controller_->GetInvocationSource(
+  if (glic_button_controller_) {
+    source = glic_button_controller_->GetInvocationSource(
         glic_button_->GetIsShowingNudge(), /*is_toolbar=*/true);
   } else {
     source = glic_button_->GetIsShowingNudge()
@@ -1103,10 +1103,6 @@ void ToolbarView::UpdateGlicButtonVisibility() {
 void ToolbarView::SetGlicActorShowState(bool show) {
   should_show_glic_actor_ = show;
   UpdateGlicActorVisibility();
-}
-
-void ToolbarView::SetButtonController(glic::GlicButtonController* controller) {
-  button_controller_ = controller;
 }
 
 void ToolbarView::SetGlicShowState(bool show) {

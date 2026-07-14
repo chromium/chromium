@@ -11,7 +11,9 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/glic/public/service/glic_instance_coordinator.h"
 #include "components/prefs/pref_change_registrar.h"
+#include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
+class BrowserWindowInterface;
 class Profile;
 
 namespace glic {
@@ -23,6 +25,9 @@ class GlicKeyedService;
 // and attachment indicator for the button.
 class GlicButtonController {
  public:
+  DECLARE_USER_DATA(GlicButtonController);
+
+  static GlicButtonController* From(BrowserWindowInterface* browser);
   GlicButtonController(Profile* profile,
                        BrowserWindowInterface& browser,
                        GlicSplitButtonDelegate* tab_strip_delegate,
@@ -45,6 +50,8 @@ class GlicButtonController {
 
   // Holds subscriptions for callbacks.
   std::vector<base::CallbackListSubscription> subscriptions_;
+
+  ui::ScopedUnownedUserData<GlicButtonController> scoped_unowned_user_data_;
 };
 
 }  // namespace glic
