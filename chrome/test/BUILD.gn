@@ -3143,8 +3143,6 @@ if (!is_android) {
       "../browser/media/webrtc/sub_capture_browsertest.cc",
       "../browser/media/webrtc/tab_desktop_media_list_browsertest.cc",
       "../browser/media/webrtc/test_stats_dictionary_unittest.cc",
-      "../browser/media/webrtc/webrtc_browsertest_perf.cc",
-      "../browser/media/webrtc/webrtc_browsertest_perf.h",
       "../browser/media/webrtc/webrtc_browsertest_perf_unittest.cc",
       "../browser/media/webrtc/webrtc_desktop_capture_browsertest.cc",
       "../browser/media/webrtc/webrtc_disable_encryption_flag_browsertest.cc",

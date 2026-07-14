@@ -362,6 +362,8 @@ if (!is_android) {
       "webrtc_browsertest_base.h",
       "webrtc_browsertest_common.cc",
       "webrtc_browsertest_common.h",
+      "webrtc_browsertest_perf.cc",
+      "webrtc_browsertest_perf.h",
     ]
     deps = [
       "//chrome/browser/ui/tabs:tab_strip",
