@@ -34,6 +34,7 @@
 #include "components/actor/core/shared_types.h"
 #include "components/affiliations/core/browser/domain_matching/domain_relation_checker.h"
 #include "components/affiliations/core/browser/match_type.h"
+#include "components/autofill/content/browser/renderer_forms_from_browser_form.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/one_time_tokens/core/browser/one_time_token_retrieval_error.h"
 #include "components/prefs/pref_service.h"
@@ -117,11 +118,17 @@ void VerifyOtpFrameOriginMatch(affiliations::DomainRelationChecker* checker,
 // Returns the `RenderFrameHost` containing the OTP fields.
 content::RenderFrameHost* GetOtpFrame(
     tabs::TabHandle tab_handle,
-    base::span<const PageTarget> trigger_fields) {
-  if (trigger_fields.empty()) {
+    base::span<const autofill::FieldGlobalId> trigger_field_ids) {
+  if (trigger_field_ids.empty()) {
     return nullptr;
   }
-  return FindTargetLocalRootFrame(tab_handle, trigger_fields[0]);
+  tabs::TabInterface* tab = tab_handle.Get();
+  content::WebContents* web_contents = tab ? tab->GetContents() : nullptr;
+  if (!web_contents) {
+    return nullptr;
+  }
+  return autofill::FindRenderFrameHostByToken(
+      *web_contents, trigger_field_ids.front().frame_token);
 }
 
 // Checks if the tool execution corresponds to an actor login's sign in flow.
@@ -404,7 +411,7 @@ void AttemptOtpFillingTool::Invoke(ToolCallback callback) {
       predicted_otp_type_);
 
   content::RenderFrameHost* otp_frame =
-      GetOtpFrame(GetTargetTab(), trigger_fields_);
+      GetOtpFrame(GetTargetTab(), trigger_field_ids_);
   if (!otp_frame) {
     RecordAttemptOtpFillingEvent(
         AttemptOtpFillingToolEvent::kNoTargetFrameWithOtpFound);

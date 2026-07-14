@@ -14,6 +14,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -238,7 +239,39 @@ std::optional<DomNode> GetDomNodeOnPage(content::RenderFrameHost& rfh,
                  .document_identifier = std::move(document_identifier)};
 }
 
-// The tool can be created with one field and the task returns OK.
+// Gets the DOM node in an iframe.
+std::optional<DomNode> GetDomNodeInIframe(content::RenderFrameHost& main_rfh,
+                                          content::RenderFrameHost& iframe_rfh,
+                                          std::string_view iframe_selector,
+                                          std::string_view query_selector) {
+  // In main frame tests, `optimization_guide::DocumentIdentifierUserData` is
+  // pre-populated by the page load or preceding tool requests. In iframe tests,
+  // the iframe navigation (`content::NavigateIframeToURL`) creates a brand new
+  // document that lacks the user data until it is requested. Therefore, using
+  // `GetOrCreateForCurrentDocument` instead of `GetDocumentIdentifier`
+  // guarantees existence and avoids `std::nullopt`.
+  std::string document_identifier =
+      optimization_guide::DocumentIdentifierUserData::
+          GetOrCreateForCurrentDocument(&iframe_rfh)
+              ->serialized_token();
+
+  std::optional<int> node_id = content::GetDOMNodeIdFromSubframe(
+      main_rfh, iframe_selector, query_selector);
+  // Fallback support: Cross-origin iframes run in a separate renderer process
+  // due to Site Isolation, returning `std::nullopt` from same-process lookups.
+  // In that case, querying their renderer process directly via `GetDOMNodeId`
+  // yields the correct node ID.
+  if (!node_id.has_value()) {
+    node_id = GetDOMNodeId(iframe_rfh, query_selector);
+  }
+  if (!node_id.has_value()) {
+    return std::nullopt;
+  }
+
+  return DomNode{.node_id = *node_id,
+                 .document_identifier = std::move(document_identifier)};
+}
+
 IN_PROC_BROWSER_TEST_F(AttemptOtpFillingToolBrowserTest,
                        ToolGetsCreatedWithOneFieldAndTaskReturnsOk) {
   base::HistogramTester histogram_tester;
@@ -838,6 +871,105 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(HasJournalEntryWithDetails(
       "AttemptOtpFillingTool::OnActorLoginFlowChecked",
       "is_actor_login=false;"));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    AttemptOtpFillingToolBrowserTest,
+    IsActorLoginFlow_EmbeddedOtpIframeOriginMismatch_ToolFails) {
+  const GURL main_url = embedded_https_test_server().GetURL(
+      "example.com", "/actor/positioned_iframe.html");
+  const GURL iframe_url =
+      embedded_https_test_server().GetURL("a.com", "/actor/otp_page.html");
+
+  // 1. Navigate to the main application page.
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), main_url));
+  ASSERT_NO_FATAL_FAILURE(WaitForTabObservation());
+
+  // 2. Embed the OTP page inside an iframe on the main application page.
+  ASSERT_TRUE(
+      content::NavigateIframeToURL(web_contents(), "iframe", iframe_url));
+  ASSERT_NO_FATAL_FAILURE(WaitForTabObservation());
+
+  // 3. Locate the OTP field directly inside the iframe.
+  content::RenderFrameHost* iframe_host =
+      content::ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 0);
+  ASSERT_TRUE(iframe_host);
+  std::optional<DomNode> otp_field = GetDomNodeInIframe(
+      *web_contents()->GetPrimaryMainFrame(), *iframe_host, "#iframe", "#otp");
+  ASSERT_TRUE(otp_field.has_value());
+
+  // 4. Start login tracking on example.com.
+  int iframe_id = iframe_host->GetFrameTreeNodeId().value();
+  actor_task()
+      .GetExecutionEngine()
+      .GetActorOneTimeTokenFillingService()
+      .OnPasswordFillingStarted(
+          active_tab()->GetHandle(), url::Origin::Create(main_url),
+          /*should_use_strong_matching=*/false, {iframe_id});
+
+  std::unique_ptr<ToolRequest> request =
+      std::make_unique<AttemptOtpFillingToolRequest>(
+          active_tab()->GetHandle(), std::vector<PageTarget>{*otp_field},
+          /*for_signin=*/true);
+
+  ActResultFuture result;
+  actor_task().Act(ToRequestList(std::move(request)), result.GetCallback());
+
+  ExpectErrorResult(result, mojom::ActionResultCode::kOtpSigninContextMismatch);
+
+  EXPECT_TRUE(HasJournalEntryWithDetails(
+      "AttemptOtpFillingTool::OnActorLoginFlowChecked",
+      "is_actor_login=false;"));
+}
+
+IN_PROC_BROWSER_TEST_F(AttemptOtpFillingToolBrowserTest,
+                       IsActorLoginFlow_EmbeddedOtpIframe_SucceedsValidation) {
+  const GURL main_url = embedded_https_test_server().GetURL(
+      "example.com", "/actor/positioned_iframe.html");
+  const GURL iframe_url = embedded_https_test_server().GetURL(
+      "www.example.com", "/actor/otp_page.html");
+
+  // 1. Navigate to the main application page.
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), main_url));
+  ASSERT_NO_FATAL_FAILURE(WaitForTabObservation());
+
+  // 2. Embed the OTP page inside a same-site iframe.
+  ASSERT_TRUE(
+      content::NavigateIframeToURL(web_contents(), "iframe", iframe_url));
+  ASSERT_NO_FATAL_FAILURE(WaitForTabObservation());
+
+  // 3. Locate the OTP field inside the same-site iframe.
+  content::RenderFrameHost* iframe_host =
+      content::ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 0);
+  ASSERT_TRUE(iframe_host);
+
+  std::optional<DomNode> otp_field = GetDomNodeInIframe(
+      *web_contents()->GetPrimaryMainFrame(), *iframe_host, "#iframe", "#otp");
+  ASSERT_TRUE(otp_field.has_value());
+
+  // 4. Start login tracking, passing the iframe's frame ID.
+  int iframe_id = iframe_host->GetFrameTreeNodeId().value();
+  actor_task()
+      .GetExecutionEngine()
+      .GetActorOneTimeTokenFillingService()
+      .OnPasswordFillingStarted(
+          active_tab()->GetHandle(), url::Origin::Create(main_url),
+          /*should_use_strong_matching=*/false, {iframe_id});
+
+  std::unique_ptr<ToolRequest> request =
+      std::make_unique<AttemptOtpFillingToolRequest>(
+          active_tab()->GetHandle(), std::vector<PageTarget>{*otp_field},
+          /*for_signin=*/true);
+  SetExpectedOtp("1234");
+
+  ActResultFuture result;
+  actor_task().Act(ToRequestList(std::move(request)), result.GetCallback());
+
+  ExpectOkResult(result);
+
+  EXPECT_TRUE(HasJournalEntryWithDetails(
+      "AttemptOtpFillingTool::OnActorLoginFlowChecked",
+      "is_actor_login=true;"));
 }
 
 }  // namespace
