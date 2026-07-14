@@ -60,10 +60,10 @@ AudioSocketService::AudioSocketService(const std::string& endpoint,
   DCHECK(!endpoint.empty());
   LOG(INFO) << "Using endpoint " << endpoint;
   auto unix_socket = std::make_unique<net::UnixDomainServerSocket>(
-      base::BindRepeating([](const net::UnixDomainServerSocket::Credentials&) {
-        // Always accept the connection.
-        return true;
-      }),
+      base::BindRepeating(
+          [](const net::UnixDomainServerSocket::Credentials& credentials) {
+            return credentials.user_id == getuid() || credentials.user_id == 0;
+          }),
       true /* use_abstract_namespace */);
   int result = unix_socket->BindAndListen(endpoint, kListenBacklog);
   listen_socket_ = std::move(unix_socket);
