@@ -42,6 +42,12 @@ found in the LICENSE file.
             android:padding="@dimen/vertical_tabs_header_button_padding"
             android:layout_marginEnd="@dimen/vertical_tabs_header_button_collapsed_margin_end"
             android:visibility="gone" />
+        <View
+            android:id="@+id/header_spacer"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:visibility="gone" />
         <ImageButton
             android:id="@+id/grid_button"
             android:layout_width="@dimen/vertical_tabs_header_button_size"

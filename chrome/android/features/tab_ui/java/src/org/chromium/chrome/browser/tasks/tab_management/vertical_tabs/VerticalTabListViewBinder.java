@@ -60,7 +60,8 @@ public class VerticalTabListViewBinder {
     }
 
     private static void updateCollapsedState(boolean isCollapsed, View view) {
-        @Nullable View collapseButton = view.findViewById(R.id.collapse_button);
+        View collapseButton = view.findViewById(R.id.collapse_button);
+        assert collapseButton != null;
         if (collapseButton instanceof ImageView imageView) {
             imageView.setImageResource(
                     isCollapsed
@@ -83,15 +84,12 @@ public class VerticalTabListViewBinder {
 
         Resources res = view.getResources();
         int gap = res.getDimensionPixelSize(R.dimen.vertical_tabs_header_button_gap);
-        if (collapseButton != null) {
-            var collapseParams = (ViewGroup.MarginLayoutParams) collapseButton.getLayoutParams();
-            int collapseMarginEnd =
-                    res.getDimensionPixelSize(
-                            R.dimen.vertical_tabs_header_button_collapsed_margin_end);
-            collapseParams.setMarginEnd(isCollapsed ? 0 : collapseMarginEnd);
-            collapseParams.bottomMargin = isCollapsed ? gap : 0;
-            collapseButton.setLayoutParams(collapseParams);
-        }
+        int collapseMarginEnd =
+                res.getDimensionPixelSize(R.dimen.vertical_tabs_header_button_collapsed_margin_end);
+        var collapseParams = (ViewGroup.MarginLayoutParams) collapseButton.getLayoutParams();
+        collapseParams.setMarginEnd(isCollapsed ? 0 : collapseMarginEnd);
+        collapseParams.bottomMargin = isCollapsed ? gap : 0;
+        collapseButton.setLayoutParams(collapseParams);
 
         View gridButton = view.findViewById(R.id.grid_button);
         assert gridButton != null;
@@ -99,5 +97,20 @@ public class VerticalTabListViewBinder {
         gridParams.setMarginEnd(isCollapsed ? 0 : gap);
         gridParams.bottomMargin = isCollapsed ? gap : 0;
         gridButton.setLayoutParams(gridParams);
+        gridButton.setBackgroundResource(
+                isCollapsed
+                        ? R.drawable.vertical_tabs_top_rounded_button_background
+                        : R.drawable.vertical_tabs_left_rounded_button_background);
+
+        View searchButton = view.findViewById(R.id.tab_search_button);
+        assert searchButton != null;
+        searchButton.setBackgroundResource(
+                isCollapsed
+                        ? R.drawable.vertical_tabs_bottom_rounded_button_background
+                        : R.drawable.vertical_tabs_right_rounded_button_background);
+
+        View spacer = view.findViewById(R.id.header_spacer);
+        assert spacer != null;
+        spacer.setVisibility(isCollapsed ? View.GONE : View.VISIBLE);
     }
 }

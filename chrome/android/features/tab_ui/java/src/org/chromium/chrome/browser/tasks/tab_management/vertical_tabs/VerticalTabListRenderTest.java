@@ -698,6 +698,54 @@ public class VerticalTabListRenderTest {
                 /* isIncognito= */ true);
     }
 
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    public void testHeaderContainer_Expanded() throws IOException {
+        testHeaderContainer(/* isCollapsed= */ false, "vertical_tab_header_expanded");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    public void testHeaderContainer_Collapsed() throws IOException {
+        testHeaderContainer(/* isCollapsed= */ true, "vertical_tab_header_collapsed");
+    }
+
+    private void testHeaderContainer(boolean isCollapsed, String goldenName) throws IOException {
+        ViewGroup[] view = new ViewGroup[1];
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    ViewGroup container = inflateAndAttachView(R.layout.vertical_tab_layout);
+                    View collapseButton = container.findViewById(R.id.collapse_button);
+                    if (collapseButton != null) {
+                        collapseButton.setVisibility(View.VISIBLE);
+                    }
+                    View headerSpacer = container.findViewById(R.id.header_spacer);
+                    if (headerSpacer != null) {
+                        headerSpacer.setVisibility(View.VISIBLE);
+                    }
+
+                    int widthDp = isCollapsed ? 74 : 206;
+                    int widthPx = ViewUtils.dpToPx(mActivity, widthDp);
+                    container.setLayoutParams(
+                            new FrameLayout.LayoutParams(
+                                    widthPx, ViewGroup.LayoutParams.WRAP_CONTENT));
+
+                    PropertyModel model =
+                            new PropertyModel.Builder(VerticalTabListProperties.ALL_KEYS)
+                                    .with(VerticalTabListProperties.IS_COLLAPSED, isCollapsed)
+                                    .build();
+                    PropertyModelChangeProcessor.create(
+                            model, container, VerticalTabListViewBinder::bind);
+
+                    view[0] = container.findViewById(R.id.vertical_tab_header_container);
+                });
+        CriteriaHelper.pollUiThread(() -> view[0].getHeight() > 0);
+
+        mRenderTestRule.render(view[0], goldenName);
+    }
+
     private void testTabGroupSpine(
             boolean isCollapsed, boolean isRtl, boolean isHeaderOffScreen, boolean isIncognito)
             throws IOException {

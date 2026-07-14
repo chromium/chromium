@@ -246,14 +246,14 @@ public class VerticalTabListCoordinator {
                 new ViewGroup.LayoutParams(
                         ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
 
+        boolean isCollapsibleEnabled =
+                ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
+                        ChromeFeatureList.ANDROID_VERTICAL_TABS, "enable_collapsible_rail", false);
         View collapseButton = mContainerView.findViewById(R.id.collapse_button);
+        View headerSpacer = mContainerView.findViewById(R.id.header_spacer);
         if (collapseButton != null) {
-            boolean isCollapsibleEnabled =
-                    ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                            ChromeFeatureList.ANDROID_VERTICAL_TABS,
-                            "enable_collapsible_rail",
-                            false);
             collapseButton.setVisibility(isCollapsibleEnabled ? View.VISIBLE : View.GONE);
+            headerSpacer.setVisibility(isCollapsibleEnabled ? View.VISIBLE : View.GONE);
         }
 
         mSpacerView = mContainerView.findViewById(R.id.desktop_window_spacer);
