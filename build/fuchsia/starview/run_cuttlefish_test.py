@@ -14,7 +14,7 @@ def main():
   parser = argparse.ArgumentParser(description="Test run_cuttlefish.py script")
   parser.add_argument(
       '--packages',
-      default='/tmp/cuttlefish/',
+      default='.',
       help='Directory containing the cuttlefish guest images and tools.')
   args_parsed, extra_args = parser.parse_known_args()
 
