@@ -4,6 +4,8 @@
 
 source_set("storage") {
   sources = [
+    "context_hub_database.cc",
+    "context_hub_database.h",
     "memory_bank_table.cc",
     "memory_bank_table.h",
   ]
@@ -19,7 +21,10 @@ source_set("storage") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "memory_bank_table_unittest.cc" ]
+  sources = [
+    "context_hub_database_unittest.cc",
+    "memory_bank_table_unittest.cc",
+  ]
 
   deps = [
     ":storage",

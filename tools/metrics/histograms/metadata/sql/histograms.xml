@@ -42,6 +42,7 @@ chromium-metrics-reviews@google.com.
   <variant name="CodeCache"/>
   <variant name="CollaborationMessageStorage"
       summary="CollaborationMessageStorage"/>
+  <variant name="ContextHub" summary="ContextHub"/>
   <variant name="Conversions" summary="Conversions"/>
   <variant name="Cookie" summary="Cookie"/>
   <variant name="CriticalActions" summary="CriticalActions"/>
