@@ -182,11 +182,6 @@ public class AwBrowserContext implements BrowserContextHandle {
         try (StrictModeContext ignored = StrictModeContext.allowDiskWrites()) {
             // Prefs dir will be created if it doesn't exist, so must allow writes.
             mSharedPreferences = createSharedPrefs(relativePath);
-
-            if (isDefaultAwBrowserContext()) {
-                // Migration requires disk writes.
-                migrateGeolocationPreferences();
-            }
         }
 
         // Register MemoryPressureMonitor callbacks and make sure it polls only if there is at
@@ -312,17 +307,6 @@ public class AwBrowserContext implements BrowserContextHandle {
     @NonNull
     public AwPreconnector getPreconnector() {
         return mPreconnector;
-    }
-
-    private void migrateGeolocationPreferences() {
-        // Prefs dir will be created if it doesn't exist, so must allow writes
-        // for this and so that the actual prefs can be written to the new
-        // location if needed.
-        final String oldGlobalPrefsName = "WebViewChromiumPrefs";
-        SharedPreferences oldGlobalPrefs =
-                ContextUtils.getApplicationContext()
-                        .getSharedPreferences(oldGlobalPrefsName, Context.MODE_PRIVATE);
-        AwGeolocationPermissions.migrateGeolocationPreferences(oldGlobalPrefs, mSharedPreferences);
     }
 
     public void setOriginMatchedHeader(
