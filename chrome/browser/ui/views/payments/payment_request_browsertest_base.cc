@@ -313,6 +313,12 @@ void PaymentRequestBrowserTestBase::OnPaymentHandlerTitleSet() {
   }
 }
 
+void PaymentRequestBrowserTestBase::OnDialogSizeCheckAfterBrowserResize() {
+  if (event_waiter_) {
+    event_waiter_->OnEvent(DialogEvent::DIALOG_SIZE_CHECK_AFTER_BROWSER_RESIZE);
+  }
+}
+
 // Install the payment app specified by `hostname`, e.g., "a.com". Specify the
 // filename of the service worker with `service_worker_filename`. Note that
 // the origin has to be initialized first to be supported here. The payment
@@ -988,6 +994,9 @@ std::ostream& operator<<(
       break;
     case DialogEvent::PAYMENT_HANDLER_TITLE_SET:
       out << "PAYMENT_HANDLER_TITLE_SET";
+      break;
+    case DialogEvent::DIALOG_SIZE_CHECK_AFTER_BROWSER_RESIZE:
+      out << "DIALOG_SIZE_CHECK_AFTER_BROWSER_RESIZE";
       break;
   }
   return out;

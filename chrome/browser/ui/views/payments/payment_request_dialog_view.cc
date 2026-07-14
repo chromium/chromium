@@ -776,6 +776,10 @@ void PaymentRequestDialogView::CheckIfDialogFitsInBrowserWindow() {
         JourneyLogger::WindowSizeCheckRejectionReason::kRejectedAtResize);
     request_->OnInternalError(errors::kBrowserWindowTooSmall);
   }
+
+  if (observer_for_testing_) {
+    observer_for_testing_->OnDialogSizeCheckAfterBrowserResize();
+  }
 }
 
 bool PaymentRequestDialogView::DialogFitsInBrowserWindow() const {
@@ -810,14 +814,12 @@ bool PaymentRequestDialogView::DialogFitsInBrowserWindow() const {
     // exists, we can use it directly to do the size calculation.
     gfx::Size payment_request_size =
         CalculatePreferredSize(views::SizeBounds());
-    gfx::Rect dialog_bounds;
+    gfx::Point origin_in_browser;
     if (GetWidget()) {
-      dialog_bounds = GetWidget()->GetWindowBoundsInScreen();
-      gfx::Point origin_in_browser = views::View::ConvertPointFromScreen(
+      gfx::Rect dialog_bounds = GetWidget()->GetWindowBoundsInScreen();
+      origin_in_browser = views::View::ConvertPointFromScreen(
           browser_widget->GetRootView(), dialog_bounds.origin());
-      payment_request_size =
-          gfx::Size(origin_in_browser.x() + dialog_bounds.width(),
-                    origin_in_browser.y() + dialog_bounds.height());
+      payment_request_size = dialog_bounds.size();
       VLOG(2) << "DialogFitsInBrowserWindow: Dialog widget exists. "
               << "Dialog bounds: " << dialog_bounds.ToString()
               << ", origin in browser: " << origin_in_browser.ToString();
@@ -832,12 +834,18 @@ bool PaymentRequestDialogView::DialogFitsInBrowserWindow() const {
     // window - the user should remain aware of the background context.
     payment_request_size = gfx::ScaleToRoundedSize(payment_request_size,
                                                    kMinimumWindowToDialogRatio);
+    gfx::Size scaled_dialog_size = payment_request_size;
+
+    // Offset the size by the position of the dialog within the browser window,
+    // to find the actual size the browser window needs to have to fit it.
+    payment_request_size.Enlarge(origin_in_browser.x(), origin_in_browser.y());
 
     VLOG(2) << "DialogFitsInBrowserWindow: "
             << "Browser bounds: " << browser_bounds.ToString()
-            << ", Payment Request size (unscaled): "
+            << ", Dialog size (unscaled): "
             << unscaled_payment_request_size.ToString()
-            << ", Payment Request size (scaled): "
+            << ", Dialog size (scaled): " << scaled_dialog_size.ToString()
+            << ", Required window size (scaled + offset): "
             << payment_request_size.ToString();
 
     if (browser_bounds.width() < payment_request_size.width() ||

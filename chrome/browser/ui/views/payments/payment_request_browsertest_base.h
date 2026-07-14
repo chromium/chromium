@@ -99,6 +99,7 @@ class PaymentRequestBrowserTestBase
     // Note that this is a merchant html title set event, and the signal is
     // provided by WebcontentsObserver::TitleWasSet.
     PAYMENT_HANDLER_TITLE_SET,
+    DIALOG_SIZE_CHECK_AFTER_BROWSER_RESIZE,
   };
 
   PaymentRequestBrowserTestBase(const PaymentRequestBrowserTestBase&) = delete;
@@ -154,6 +155,7 @@ class PaymentRequestBrowserTestBase
   void OnProcessingSpinnerHidden() override;
   void OnPaymentHandlerWindowOpened() override;
   void OnPaymentHandlerTitleSet() override;
+  void OnDialogSizeCheckAfterBrowserResize() override;
 
   void InstallPaymentApp(const std::string& hostname,
                          const std::string& service_worker_filename,

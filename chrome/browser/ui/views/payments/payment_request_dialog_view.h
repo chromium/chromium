@@ -97,6 +97,8 @@ class PaymentRequestDialogView : public views::DialogDelegateView,
     virtual void OnPaymentHandlerWindowOpened() = 0;
 
     virtual void OnPaymentHandlerTitleSet() = 0;
+
+    virtual void OnDialogSizeCheckAfterBrowserResize() = 0;
   };
 
   PaymentRequestDialogView(const PaymentRequestDialogView&) = delete;
