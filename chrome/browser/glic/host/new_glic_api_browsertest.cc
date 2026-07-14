@@ -183,6 +183,7 @@ using ::testing::UnorderedElementsAre;
 std::vector<std::string> GetTestSuiteNames() {
   std::vector<std::string> names = {
       "NewGlicApiTest",
+      "NewGlicApiTestNoFloatyOrLiveMode",
       "NewGlicApiTestForNoWebUiLoader",
       "NewGlicApiTestWithFastTimeout",
       "NewGlicApiTestWithWebContentsWarming",
@@ -357,6 +358,20 @@ class NewGlicApiTest : public GlicApiBrowserTest,
  private:
   logging::ScopedVmoduleSwitches scoped_vmodule_switches_;
   base::test::ScopedFeatureList features_;
+};
+
+class NewGlicApiTestNoFloatyOrLiveMode : public NewGlicApiTest {
+ public:
+  NewGlicApiTestNoFloatyOrLiveMode() {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/
+        {},
+        /*disabled_features=*/
+        {features::kGlicLiveMode});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 class NewGlicApiTestWithFastTimeout : public NewGlicApiTest {
@@ -745,6 +760,19 @@ IN_PROC_BROWSER_TEST_P(NewGlicApiTest, MAYBE_testCanAttachPanelDetached) {
 #define MAYBE_testDetachPanel testDetachPanel
 #endif
 IN_PROC_BROWSER_TEST_P(NewGlicApiTest, MAYBE_testDetachPanel) {
+  ASSERT_OK(OpenGlicForActiveTab());
+  ExecuteJsTest();
+}
+
+#if defined(NOT_VETTED_ON_ANDROID)
+#define MAYBE_testDetachPanelNoFloatyOrLiveMode \
+  DISABLED_testDetachPanelNoFloatyOrLiveMode
+#else
+#define MAYBE_testDetachPanelNoFloatyOrLiveMode \
+  testDetachPanelNoFloatyOrLiveMode
+#endif
+IN_PROC_BROWSER_TEST_P(NewGlicApiTestNoFloatyOrLiveMode,
+                       MAYBE_testDetachPanelNoFloatyOrLiveMode) {
   ASSERT_OK(OpenGlicForActiveTab());
   ExecuteJsTest();
 }
@@ -2877,6 +2905,11 @@ auto DefaultTestParamSet() {
 #ifndef DISABLE_ALL_TESTS
 INSTANTIATE_TEST_SUITE_P(,
                          NewGlicApiTest,
+                         DefaultTestParamSet(),
+                         &WithTestParams::PrintTestVariant);
+
+INSTANTIATE_TEST_SUITE_P(,
+                         NewGlicApiTestNoFloatyOrLiveMode,
                          DefaultTestParamSet(),
                          &WithTestParams::PrintTestVariant);
 

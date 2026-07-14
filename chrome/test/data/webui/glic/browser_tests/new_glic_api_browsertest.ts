@@ -1035,6 +1035,17 @@ class ApiTests extends ApiTestFixtureBase {
     // await panelStates.waitFor(state => state.kind ===
     //    PanelStateKind.ATTACHED);
   }
+
+  async testDetachPanelNoFloatyOrLiveMode() {
+    assertDefined(this.host.getPanelState);
+    // getPanelState and notifyPanelWillOpen should signal the ATTACHED state.
+    const panelStates = observeSequence(this.host.getPanelState());
+    await panelStates.waitFor(state => state.kind === PanelStateKind.ATTACHED);
+
+    assertRejects((async () => {
+      this.host.detachPanel?.();
+    })());
+  }
 }
 
 class FaviconTest extends ApiTests {

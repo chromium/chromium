@@ -192,7 +192,6 @@ std::vector<std::string> GetTestSuiteNames() {
       "GlicApiTestHibernateAllOnMemoryPressure",
       "GlicOnboardingApiTest",
       "GlicApiTestWithDaisyChain",
-      "GlicApiTestNoFloatyOrLiveMode",
       "GlicApiTestGeminiEnterpriseSettingsOverride",
       "GlicApiTestGeminiEnterpriseSettingsDisabled",
       "GlicApiTestGeminiEnterpriseSettingsPolicy",
@@ -388,20 +387,6 @@ class GlicApiTestWithMqlsIdGetterDisabled : public GlicApiTestWithOneTab {
         {},
         /*disabled_features=*/
         {mojom::features::kGlicAppendModelQualityClientId});
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-class GlicApiTestNoFloatyOrLiveMode : public GlicApiTest {
- public:
-  GlicApiTestNoFloatyOrLiveMode() {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/
-        {},
-        /*disabled_features=*/
-        {features::kGlicLiveMode});
   }
 
  private:
@@ -952,12 +937,6 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithDaisyChain,
   // Continue the JS test to verify canAttachPanel is still true since it will
   // now attach to the fallback embedder.
   ContinueJsTest();
-}
-
-IN_PROC_BROWSER_TEST_P(GlicApiTestNoFloatyOrLiveMode,
-                       testDetachPanelNoFloatyOrLiveMode) {
-  NavigateTabAndOpenGlic();
-  ExecuteJsTest();
 }
 
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab,
@@ -3005,10 +2984,6 @@ INSTANTIATE_TEST_SUITE_P(,
                          &WithTestParams::PrintTestVariant);
 INSTANTIATE_TEST_SUITE_P(,
                          GlicApiTestWithDaisyChain,
-                         DefaultTestParamSet(),
-                         &WithTestParams::PrintTestVariant);
-INSTANTIATE_TEST_SUITE_P(,
-                         GlicApiTestNoFloatyOrLiveMode,
                          DefaultTestParamSet(),
                          &WithTestParams::PrintTestVariant);
 INSTANTIATE_TEST_SUITE_P(,
