@@ -955,6 +955,28 @@ void CloudPolicyClient::DeterminePromotionEligibility(
   request_jobs_.push_back(service_->CreateJob(std::move(config)));
 }
 
+void CloudPolicyClient::GenerateChromeProfileChallenge(
+    GenerateChromeProfileChallengeCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(service_);
+  CHECK(is_registered());
+
+  auto params = DMServerJobConfiguration::CreateParams::WithClient(
+      DeviceManagementService::JobConfiguration::
+          TYPE_GENERATE_CHROME_PROFILE_CHALLENGE,
+      this);
+  params.auth_data = DMAuth::FromDMToken(dm_token_);
+  params.profile_id = profile_id_;
+  params.callback = base::BindOnce(
+      &CloudPolicyClient::OnGenerateChromeProfileChallengeCompleted,
+      weak_ptr_factory_.GetWeakPtr(), std::move(callback));
+  auto config = std::make_unique<DMServerJobConfiguration>(std::move(params));
+
+  config->request()->mutable_generate_chrome_profile_challenge_request();
+
+  request_jobs_.push_back(service_->CreateJob(std::move(config)));
+}
+
 #if BUILDFLAG(IS_WIN)
 void CloudPolicyClient::SetBrowserDeviceIdentifier(
     em::PolicyFetchRequest* request,
@@ -2026,6 +2048,29 @@ void CloudPolicyClient::OnPromotionEligibilityDetermined(
 
   std::move(callback).Run(
       result.response.get_user_eligible_promotions_response());
+}
+
+void CloudPolicyClient::OnGenerateChromeProfileChallengeCompleted(
+    GenerateChromeProfileChallengeCallback callback,
+    DMServerJobResult result) {
+  if (result.dm_status == DM_STATUS_SUCCESS &&
+      !result.response.has_generate_chrome_profile_challenge_response()) {
+    result.dm_status = DM_STATUS_RESPONSE_DECODING_ERROR;
+  }
+
+  base::UmaHistogramSparse("Enterprise.GenerateChromeProfileChallenge.Status",
+                           result.dm_status);
+
+  last_dm_status_ = result.dm_status;
+  if (last_dm_status_ != DM_STATUS_SUCCESS) {
+    NotifyClientError();
+  }
+
+  RemoveJob(result.job);
+
+  std::move(callback).Run(
+      last_dm_status_,
+      result.response.generate_chrome_profile_challenge_response());
 }
 
 void CloudPolicyClient::NotifyPolicyFetched() {

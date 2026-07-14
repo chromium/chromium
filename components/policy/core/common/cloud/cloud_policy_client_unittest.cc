@@ -3465,6 +3465,74 @@ TEST_F(CloudPolicyClientTest, DeterminePromotionEligibilityRequest) {
   EXPECT_EQ(DM_STATUS_SUCCESS, client_->last_dm_status());
 }
 
+TEST_F(CloudPolicyClientTest, GenerateChromeProfileChallengeRequest) {
+  base::HistogramTester histogram_tester;
+  RegisterClient();
+
+  em::DeviceManagementRequest expected_request;
+  expected_request.mutable_generate_chrome_profile_challenge_request();
+
+  em::DeviceManagementResponse outer_response;
+  em::GenerateChromeProfileChallengeResponse* fake_response =
+      outer_response.mutable_generate_chrome_profile_challenge_response();
+  fake_response->set_challenge("fake_challenge_bytes");
+
+  ExpectAndCaptureJob(outer_response);
+
+  base::test::TestFuture<DeviceManagementStatus,
+                         const em::GenerateChromeProfileChallengeResponse&>
+      result_future;
+
+  client_->GenerateChromeProfileChallenge(result_future.GetCallback());
+
+  EXPECT_TRUE(result_future.Wait());
+  EXPECT_EQ(DeviceManagementService::JobConfiguration::
+                TYPE_GENERATE_CHROME_PROFILE_CHALLENGE,
+            job_type_);
+  EXPECT_EQ(job_request_.SerializePartialAsString(),
+            expected_request.SerializePartialAsString());
+  EXPECT_EQ(DM_STATUS_SUCCESS, client_->last_dm_status());
+
+  const auto [status, response] = result_future.Get();
+  EXPECT_EQ(status, DM_STATUS_SUCCESS);
+  EXPECT_EQ(response.challenge(), "fake_challenge_bytes");
+  histogram_tester.ExpectUniqueSample(
+      "Enterprise.GenerateChromeProfileChallenge.Status", DM_STATUS_SUCCESS, 1);
+}
+
+TEST_F(CloudPolicyClientTest,
+       GenerateChromeProfileChallengeRequestDecodingError) {
+  base::HistogramTester histogram_tester;
+  RegisterClient();
+
+  em::DeviceManagementResponse outer_response;
+  // Do not set generate_chrome_profile_challenge_response.
+
+  ExpectAndCaptureJob(outer_response);
+
+  StrictMock<MockCloudPolicyClientObserverWithObservation> client_observer(
+      client_.get());
+  EXPECT_CALL(client_observer, OnClientError);
+
+  base::test::TestFuture<DeviceManagementStatus,
+                         const em::GenerateChromeProfileChallengeResponse&>
+      result_future;
+
+  client_->GenerateChromeProfileChallenge(result_future.GetCallback());
+
+  EXPECT_TRUE(result_future.Wait());
+  EXPECT_EQ(DeviceManagementService::JobConfiguration::
+                TYPE_GENERATE_CHROME_PROFILE_CHALLENGE,
+            job_type_);
+  EXPECT_EQ(DM_STATUS_RESPONSE_DECODING_ERROR, client_->last_dm_status());
+
+  const auto [status, response] = result_future.Get();
+  EXPECT_EQ(status, DM_STATUS_RESPONSE_DECODING_ERROR);
+  histogram_tester.ExpectUniqueSample(
+      "Enterprise.GenerateChromeProfileChallenge.Status",
+      DM_STATUS_RESPONSE_DECODING_ERROR, 1);
+}
+
 struct MockClientCertProvisioningRequestCallbackObserver {
   MOCK_METHOD(
       void,

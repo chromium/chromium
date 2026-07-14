@@ -171,6 +171,10 @@ class MockCloudPolicyClient : public CloudPolicyClient {
               DeterminePromotionEligibility,
               (PromotionEligibilityCallback callback),
               (override));
+  MOCK_METHOD(void,
+              GenerateChromeProfileChallenge,
+              (GenerateChromeProfileChallengeCallback callback),
+              (override));
 
   // Sets the DMToken.
   void SetDMToken(const std::string& token);

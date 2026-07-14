@@ -107,6 +107,11 @@ class POLICY_EXPORT CloudPolicyClient {
   using PromotionEligibilityCallback = base::OnceCallback<void(
       enterprise_management::GetUserEligiblePromotionsResponse)>;
 
+  using GenerateChromeProfileChallengeCallback = base::OnceCallback<void(
+      DeviceManagementStatus,
+      const enterprise_management::GenerateChromeProfileChallengeResponse&
+          response)>;
+
   using MacAddress = std::array<uint8_t, 6>;
 
   // Observer interface for state and policy changes.
@@ -551,6 +556,9 @@ class POLICY_EXPORT CloudPolicyClient {
   virtual void DeterminePromotionEligibility(
       PromotionEligibilityCallback callback);
 
+  virtual void GenerateChromeProfileChallenge(
+      GenerateChromeProfileChallengeCallback callback);
+
   // Adds an observer to be called back upon policy and state changes.
   void AddObserver(Observer* observer);
 
@@ -844,6 +852,10 @@ class POLICY_EXPORT CloudPolicyClient {
 
   void OnPromotionEligibilityDetermined(PromotionEligibilityCallback callback,
                                         DMServerJobResult result);
+
+  void OnGenerateChromeProfileChallengeCompleted(
+      GenerateChromeProfileChallengeCallback callback,
+      DMServerJobResult result);
 
   // Callback for `UploadFmRegistrationToken` request.
   void OnUploadFmRegistrationTokenResponse(ResultCallback callback,

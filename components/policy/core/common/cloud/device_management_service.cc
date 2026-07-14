@@ -293,6 +293,9 @@ std::string DeviceManagementService::JobConfiguration::GetJobTypeAsString(
     case DeviceManagementService::JobConfiguration::
         TYPE_DETERMINE_PROMOTION_ELIGIBILITY:
       return "DeterminePromotionEligibility";
+    case DeviceManagementService::JobConfiguration::
+        TYPE_GENERATE_CHROME_PROFILE_CHALLENGE:
+      return "GenerateChromeProfileChallenge";
   }
 }
 
@@ -502,6 +505,8 @@ JobConfigurationBase::GetTrafficAnnotationTag() {
     case DeviceManagementService::JobConfiguration::TYPE_API_AUTH_CODE_FETCH:
     case DeviceManagementService::JobConfiguration::
         TYPE_DETERMINE_PROMOTION_ELIGIBILITY:
+    case DeviceManagementService::JobConfiguration::
+        TYPE_GENERATE_CHROME_PROFILE_CHALLENGE:
     case DeviceManagementService::JobConfiguration::TYPE_GCM_ID_UPDATE:
     case DeviceManagementService::JobConfiguration::
         TYPE_UPLOAD_FM_REGISTRATION_TOKEN:

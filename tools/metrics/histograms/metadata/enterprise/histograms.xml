@@ -266,6 +266,11 @@ chromium-metrics-reviews@google.com.
     <owner>rbock@google.com</owner>
     <owner>zmin@chromium.org</owner>
   </variant>
+  <variant name=".GenerateChromeProfileChallenge"
+      summary="Generate Chrome Profile Challenges..">
+    <owner>hmare@google.com</owner>
+    <owner>cbe-eng@google.com</owner>
+  </variant>
   <variant name=".InitialEnrollmentStateRetrieval"
       summary="Initial Enrollment State Retrieval.">
     <owner>rbock@google.com</owner>
@@ -2952,6 +2957,16 @@ chromium-metrics-reviews@google.com.
                  only the first error exit/success is recorded per
                  obfuscation attempt."/>
   </token>
+</histogram>
+
+<histogram name="Enterprise.GenerateChromeProfileChallenge.Status"
+    enum="EnterpriseDeviceManagementStatus" expires_after="2027-01-02">
+  <owner>seblalancette@chromium.org</owner>
+  <owner>hmare@google.com</owner>
+  <summary>
+    Device management server status returned when requesting a profile-level
+    attestation challenge for enterprise reporting.
+  </summary>
 </histogram>
 
 <histogram name="Enterprise.IdleTimeoutPolicies.ActionSuccess.{ActionType}"

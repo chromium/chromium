@@ -224,6 +224,7 @@ class POLICY_EXPORT DeviceManagementService {
       TYPE_UPLOAD_FM_REGISTRATION_TOKEN = 34,
       TYPE_POLICY_AGENT_REGISTRATION = 35,
       TYPE_DETERMINE_PROMOTION_ELIGIBILITY = 36,
+      TYPE_GENERATE_CHROME_PROFILE_CHALLENGE = 37,
     };
 
     // The set of HTTP query parameters of the request.

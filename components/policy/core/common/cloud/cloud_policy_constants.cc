@@ -87,6 +87,8 @@ const char kValueRequestFmRegistrationTokenUpload[] =
     "fm_registration_token_upload";
 const char kValueRequestDeterminePromotionEligibility[] =
     "promotion_eligibility";
+const char kValueRequestGenerateChromeProfileChallenge[] =
+    "generate_chrome_profile_challenge";
 
 // User policy type is determined in GetChromeUserPolicyType.
 const char kChromeDevicePolicyType[] = "google/chromeos/device";
