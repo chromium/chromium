@@ -143,6 +143,7 @@ SkillsUI::SkillsUI(content::WebUI* web_ui) : ui::MojoWebUIController(web_ui) {
   if (base::FeatureList::IsEnabled(features::kSkillsWebViewV2Enabled)) {
     webui::SetupWebUIDataSource(source, kSkillsResources,
                                 IDR_SKILLS_V2_SKILLS_HTML);
+    source->AddResourcePath("dialog", IDR_SKILLS_V2_SKILLS_DIALOG_HTML);
   } else {
     webui::SetupWebUIDataSource(source, kSkillsResources,
                                 IDR_SKILLS_SKILLS_HTML);

@@ -12,6 +12,7 @@ build_webui("build") {
     "skills.html",
     "skills_dialog.html",
     "v2/skills.html",
+    "v2/skills_dialog.html",
   ]
 
   ts_composite = true
@@ -40,9 +41,11 @@ build_webui("build") {
     "skills_page_browser_proxy.ts",
     "v2/skills_webview_bridge.ts",
     "v2/skills_webview_bridge_constants.ts",
+    "v2/skills_webview.ts",
     "user_skills_page.html.ts",
     "user_skills_page.ts",
     "v2/skills.ts",
+    "v2/skills_dialog.ts",
   ]
 
   css_files = [

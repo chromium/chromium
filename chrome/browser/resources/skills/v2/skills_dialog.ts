@@ -5,7 +5,7 @@
 import '/strings.m.js';
 
 import {SkillsWebview} from './skills_webview.js';
-import {SKILLS_HOST_URL} from './skills_webview_bridge_constants.js';
+import {SKILLS_DIALOG_HOST_URL} from './skills_webview_bridge_constants.js';
 
-const page = new SkillsWebview(SKILLS_HOST_URL);
+const page = new SkillsWebview(SKILLS_DIALOG_HOST_URL);
 page.init();

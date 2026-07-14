@@ -171,10 +171,6 @@ export class SkillsWebviewBridge {
   }
 
   private onMessage(e: MessageEvent) {
-    if (this.webview_.contentWindow &&
-        e.source !== this.webview_.contentWindow) {
-      return;
-    }
     if (this.targetOrigin_ && e.origin !== this.targetOrigin_) {
       return;
     }

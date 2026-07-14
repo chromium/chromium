@@ -34,3 +34,7 @@ export const SKILLS_API_ALLOWED_ORIGINS = [
 
 /** The host URL that the guest webview loads. */
 export const SKILLS_HOST_URL = `${PRIMARY_SKILLS_ORIGIN}/chromeskills/browse`;
+
+/** The dialog URL that the guest webview loads. */
+export const SKILLS_DIALOG_HOST_URL =
+    `${PRIMARY_SKILLS_ORIGIN}/chromeskills/create-skill-form`;

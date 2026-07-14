@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="chrome://theme/colors.css?sets=ui,chrome">
+  <style>
+    html,
+    body {
+      height: 100%;
+      margin: 0;
+      overflow: hidden;
+      background-color: var(--color-webui-page-background, var(--color-sys-base, white));
+    }
+    webview {
+      display: block;
+      border: none;
+      width: 100%;
+      height: 100%;
+    }
+    webview[hidden] {
+      display: block !important;
+      position: absolute;
+      top: 0;
+      left: 0;
+      opacity: 0;
+      pointer-events: none;
+    }
+    [hidden] {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <webview id="webview" partition="glicskillspart" autosize="on"></webview>
+  <script type="module" src="v2/skills_dialog.js"></script>
+  <error-page id="error-page" hidden></error-page>
+</body>
+</html>
