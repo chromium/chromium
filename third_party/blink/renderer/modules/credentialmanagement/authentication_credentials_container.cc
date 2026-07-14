@@ -2001,7 +2001,7 @@ AuthenticationCredentialsContainer::create(
           mojom::blink::ConsoleMessageSource::kJavaScript,
           mojom::blink::ConsoleMessageLevel::kWarning,
           "Ignoring unknown "
-          "publicKey.authenticatorSelection.authnticatorAttachment value"));
+          "publicKey.authenticatorSelection.authenticatorAttachment value"));
     }
   }
 
