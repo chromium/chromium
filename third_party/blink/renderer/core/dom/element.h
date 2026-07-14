@@ -145,7 +145,6 @@ class ScrollIntoViewOptions;
 class ScrollMarkerGroupData;
 class ScrollPromiseResolver;
 class ScrollResult;
-class ScrollMarkerPseudoElement;
 class ScrollToOptions;
 class SetHTMLOptions;
 class SetHTMLUnsafeOptions;
@@ -2700,12 +2699,6 @@ class CORE_EXPORT Element : public ContainerNode {
       const QualifiedName& name,
       const GCedHeapVector<Member<Element>>* given_elements);
 
-  // Find the scroll-marker that should be active when told to scroll |this|
-  // into view.
-  ScrollMarkerPseudoElement* FindScrollMarkerForTargetedScroll();
-  // Let the appropriate scroll-marker-group know to pin its active
-  // scroll-marker due to a targeted scroll.
-  void NotifyScrollMarkerGroupOfTargetedScroll();
 
   // ContainerNode ends on a 32-bit member, so put this Member first
   // to eliminate padding.

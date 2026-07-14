@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>CSS Test: scroll tracking for ::scroll-marker updated by Find on Page</title>
+<link rel="help" href="https://drafts.csswg.org/css-overflow-5/#scroll-container-scroll">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/css/css-transitions/support/helper.js"></script>
+<script src="/dom/events/scrolling/scroll_support.js"></script>
+<style>
+  #scroller {
+    overflow: scroll;
+    scroll-marker-group: before;
+    height: 100px;
+  }
+
+  #scroller::scroll-marker-group {
+    border: 3px solid black;
+    display: flex;
+    width: 100px;
+    height: 20px;
+  }
+
+  #scroller div {
+    width: 100px;
+    height: 100px;
+  }
+
+  #scroller div::scroll-marker {
+    content: '';
+    background-color: red;
+    display: inline-flex;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+  }
+
+  #scroller div::scroll-marker:target-current {
+    background-color: green;
+  }
+</style>
+<div id='scroller'>
+  <div id="marker1_target" class="marker">text1</div>
+  <div id="marker2_target" class="marker">text2</div>
+  <div id="marker3_target" class="marker">text3</div>
+</div>
+<script>
+  let scroll_marker_originating_elements =
+    scroller.querySelectorAll(".marker");
+  const GREEN = "rgb(0, 128, 0)";
+
+  function isSelectedScrollMarker(element) {
+    const pseudoStyle = getComputedStyle(element, "::scroll-marker");
+    const pseudoBackgroundColor =
+      pseudoStyle.getPropertyValue('background-color');
+    return pseudoBackgroundColor === GREEN;
+  }
+
+  promise_test(async (t) => {
+    assert_true(!!window.testRunner, "This test requires testRunner");
+
+    await waitForCompositorCommit();
+
+    // Initially, first marker should be selected.
+    assert_true(isSelectedScrollMarker(marker1_target), "marker1 should be selected initially");
+
+    // Scroll to marker2_target via JS. This should pin marker2.
+    marker2_target.scrollIntoView();
+
+    // Wait a few frames for scroll and layout/paint to update.
+    await new Promise(resolve => requestAnimationFrame(resolve));
+    await new Promise(resolve => requestAnimationFrame(resolve));
+    await new Promise(resolve => requestAnimationFrame(resolve));
+
+    assert_true(isSelectedScrollMarker(marker2_target), "marker2 should be selected after JS scrollIntoView");
+
+    // Now Find "text3". This should scroll to marker3_target.
+    // Without the fix, marker2 will remain pinned, so marker3 will NOT be selected.
+    testRunner.findString('text3', []);
+
+    await new Promise(resolve => requestAnimationFrame(resolve));
+    await new Promise(resolve => requestAnimationFrame(resolve));
+    await new Promise(resolve => requestAnimationFrame(resolve));
+
+    assert_true(isSelectedScrollMarker(marker3_target), "marker3 should be selected after findString 'text3'");
+    assert_false(isSelectedScrollMarker(marker2_target), "marker2 should no longer be selected");
+  }, "The selected ::scroll-marker is updated using the current scroll position for a Find on Page scroll");
+</script>
