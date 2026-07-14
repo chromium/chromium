@@ -33,15 +33,7 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountManagerFacadeImpl
  public:
   // `account_manager` is the local AccountManager instance. It must be non-null
   // and outlive the constructed `AccountManagerFacadeImpl` instance.
-  // `init_finished` is called after `this` has been fully initialized.
-  //
-  // TODO(b/365741912, b/365902693): Remove `init_finished`. Now that the
-  // observer is registered in-process rather than over crosapi, the facade
-  // finishes initializing before the constructor returns, so callers can just
-  // run their setup right after constructing it.
-  AccountManagerFacadeImpl(
-      AccountManager* account_manager,
-      base::OnceClosure init_finished = base::DoNothing());
+  explicit AccountManagerFacadeImpl(AccountManager* account_manager);
   AccountManagerFacadeImpl(const AccountManagerFacadeImpl&) = delete;
   AccountManagerFacadeImpl& operator=(const AccountManagerFacadeImpl&) = delete;
   ~AccountManagerFacadeImpl() override;

@@ -75,11 +75,7 @@ class AccountManagerFacadeImplTest : public testing::Test {
   AccountManager* real_account_manager() { return real_account_manager_.get(); }
 
   std::unique_ptr<AccountManagerFacadeImpl> CreateFacade() {
-    base::test::TestFuture<void> future;
-    auto result = std::make_unique<AccountManagerFacadeImpl>(
-        real_account_manager(), future.GetCallback());
-    EXPECT_TRUE(future.Wait());
-    return result;
+    return std::make_unique<AccountManagerFacadeImpl>(real_account_manager());
   }
 
   Account AddTestGaiaAccount(const std::string& email,

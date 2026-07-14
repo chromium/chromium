@@ -24,14 +24,9 @@
 namespace account_manager {
 
 AccountManagerFacadeImpl::AccountManagerFacadeImpl(
-    AccountManager* account_manager,
-    base::OnceClosure init_finished)
+    AccountManager* account_manager)
     : account_manager_(CHECK_DEREF(account_manager)) {
-  DCHECK(init_finished);
-
   account_manager_observation_.Observe(account_manager);
-
-  std::move(init_finished).Run();
 }
 
 AccountManagerFacadeImpl::~AccountManagerFacadeImpl() = default;
