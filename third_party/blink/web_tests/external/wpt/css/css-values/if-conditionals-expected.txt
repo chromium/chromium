@@ -1,0 +1,10 @@
+This is a testharness.js-based test.
+Found 3 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] CSS Values and Units Test: CSS inline if() function 191
+  assert_equals: "if(style(--x) and invalid: true_value;\n          else: false_value)" should be substituted to "false_value". expected "false_value" but got ""
+[FAIL] CSS Values and Units Test: CSS inline if() function 192
+  assert_equals: "if(invalid or style(--x): true_value;\n          else: false_value)" should be substituted to "false_value". expected "false_value" but got ""
+[FAIL] CSS Values and Units Test: CSS inline if() function 193
+  assert_equals: "if(style(not (--x: 5) or (--z: 10px)): true_value;\n          else: false_value;)" should be substituted to "false_value". expected "false_value" but got ""
+Harness: the test ran to completion.
+
