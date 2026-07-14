@@ -1892,36 +1892,6 @@ mojom::URLResponseHeadPtr CreateResponse(std::string raw_headers) {
   return response;
 }
 
-TEST(CrossOriginReadBlockingTest, OrbReportsIssuesOnARAResponse) {
-  struct {
-    std::string header;
-    bool expect_report;
-  } kTestCases[] = {
-      {/*header=*/"", /*expect_report=*/false},
-      {"Attribution-Reporting-Register-Source: {}", /*expect_report=*/true},
-      {"Attribution-Reporting-Register-Trigger: {}", /*expect_report=*/true},
-      {"Attribution-Reporting-Register-OS-Source: {}", /*expect_report=*/true},
-      {"Attribution-Reporting-Register-OS-Trigger: {}",
-       /*expect_report=*/true},
-  };
-
-  for (const auto& test_case : kTestCases) {
-    PerFactoryState per_factory_state;
-    auto analyzer =
-        std::make_unique<OpaqueResponseBlockingAnalyzer>(&per_factory_state);
-    auto ara_response = CreateResponse("HTTP/1.1 200 OK\n" + test_case.header);
-
-    // Mark the response as empty s.t. it would normally not report.
-    ara_response->content_length = 0;
-
-    analyzer->Init(GURL("https://b.test"),
-                   url::Origin::Create(GURL("https://a.test")),
-                   mojom::RequestMode::kNoCors,
-                   mojom::RequestDestination::kEmpty, *ara_response);
-    EXPECT_EQ(analyzer->ShouldReportBlockedResponse(), test_case.expect_report);
-  }
-}
-
 TEST(CrossOriginReadBlockingTest, NosniffSpecCompliance) {
   struct {
     const char* description;
