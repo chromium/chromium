@@ -110,7 +110,7 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <variants name="NewWindowMetricVersion">
-  <variant name="" summary=""/>
+  <variant name="" summary="(DEPRECATED in M152. Replaced by V2)"/>
   <variant name="2" summary="(V2 with fixed metric start times)"/>
 </variants>
 
@@ -552,7 +552,7 @@ chromium-metrics-reviews@google.com.
   <owner>chrome-webium-product-eng@google.com</owner>
   <summary>
     Records the duration from window creation to closing the browser window for
-    new windows {CreationSource} {ExistingWindow}{Version}.
+    new windows {CreationSource} {ExistingWindow} {Version}.
 
     This is only recorded for desktop platforms when the InitialWebUIMetrics is
     enabled, and when the initial paint has not been recorded.
@@ -569,7 +569,7 @@ chromium-metrics-reviews@google.com.
   <owner>chrome-webium-product-eng@google.com</owner>
   <summary>
     Records the time from {StartPoint} to 'First Paint' of the new browser
-    window. {CreationSource} {ExistingWindow}.
+    window. {CreationSource} {ExistingWindow} {Version}.
 
     This is only recorded for desktop platforms when the InitialWebUIMetrics is
     enabled.
@@ -612,7 +612,7 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the delay between the native browser window's first presentation
     (paint) and the Reload Button first paint in a new window. {CreationSource}
-    {ExistingWindow}{Version}.
+    {ExistingWindow} {Version}.
 
     This is a direct, session-linked measurement of the delta, unlike the
     separately logged `.FirstPaint` metrics. Used to quantify the rendering lag.
@@ -632,7 +632,7 @@ chromium-metrics-reviews@google.com.
   <owner>chrome-webium-product-eng@google.com</owner>
   <summary>
     Records the time from {StartPoint} to first {PaintType} of the Reload Button
-    in the new browser window. {CreationSource} {ExistingWindow}{Version}.
+    in the new browser window. {CreationSource} {ExistingWindow} {Version}.
 
     This is only recorded for desktop platforms when the InitialWebUIMetrics is
     enabled.
