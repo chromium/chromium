@@ -765,6 +765,8 @@ void AddDeviceAudioStrings(content::WebUIDataSource* html_source) {
       {"audioDeviceUsbLabel", IDS_SETTINGS_AUDIO_DEVICE_USB_LABEL},
       {"audioInputDeviceTitle", IDS_SETTINGS_AUDIO_INPUT_DEVICE_TITLE},
       {"audioInputAllowAGCTitle", IDS_SETTINGS_AUDIO_INPUT_ALLOW_AGC_TITLE},
+      {"audioFocusEnforcementTitle",
+       IDS_SETTINGS_AUDIO_FOCUS_ENFORCEMENT_TITLE},
       {"audioHfpMicSrTitle", IDS_SETTINGS_AUDIO_HFP_MIC_SR_TITLE},
       {"audioHfpMicSrDescription", IDS_SETTINGS_AUDIO_HFP_MIC_SR_DESCRIPTION},
       {"audioInputGainTitle", IDS_SETTINGS_AUDIO_INPUT_GAIN_TITLE},
@@ -1648,6 +1650,10 @@ void DeviceSection::AddDeviceDisplayStrings(
 
   html_source->AddBoolean("enableSpatialAudioToggle",
                           IsShowSpatialAudioToggleEnabled());
+
+  html_source->AddBoolean(
+      "enableAudioFocusSetting",
+      base::FeatureList::IsEnabled(ash::features::kAudioFocusSetting));
 
   html_source->AddBoolean("enableTouchCalibrationSetting",
                           IsTouchCalibrationAvailable());

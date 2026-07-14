@@ -135,6 +135,12 @@ export class SettingsAudioElement extends SettingsAudioElementBase {
         type: Boolean,
       },
 
+      showAudioFocusEnforcement: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('enableAudioFocusSetting'),
+        readOnly: true,
+      },
+
       isSpatialAudioEnabled_: {
         type: Boolean,
         value: true,
@@ -153,6 +159,7 @@ export class SettingsAudioElement extends SettingsAudioElementBase {
   protected isHfpMicSrEnabled: boolean;
   protected isHfpMicSrSupported: boolean;
   protected showSpatialAudio: boolean;
+  protected showAudioFocusEnforcement: boolean;
 
   private audioAndCaptionsBrowserProxy_: AudioAndCaptionsPageBrowserProxy;
   private devicePageBrowserProxy_: DevicePageBrowserProxy;

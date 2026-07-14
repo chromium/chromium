@@ -75,6 +75,9 @@ BASE_FEATURE(kAssistMultiWord, base::FEATURE_ENABLED_BY_DEFAULT);
 // Enables audio I/O selection improvement algorithm. http://launch/4301655.
 BASE_FEATURE(kAudioSelectionImprovement, base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Controls whether to enable the audio focus enforcement toggle in settings.
+BASE_FEATURE(kAudioFocusSetting, base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables the Auto Night Light feature which sets the default schedule type to
 // sunset-to-sunrise until the user changes it to something else. This feature
 // is not exposed to the end user, and is enabled only via cros_config for

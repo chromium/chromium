@@ -1168,6 +1168,8 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
       settings_api::PrefType::kBoolean;
   (*s_allowlist)[::ash::prefs::kInputVoiceIsolationEnabled] =
       settings_api::PrefType::kBoolean;
+  (*s_allowlist)[::ash::prefs::kAudioFocusEnforcementEnabled] =
+      settings_api::PrefType::kBoolean;
   (*s_allowlist)[::ash::prefs::kInputVoiceIsolationPreferredEffect] =
       settings_api::PrefType::kNumber;
 

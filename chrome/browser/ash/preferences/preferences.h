@@ -16,6 +16,8 @@
 #include "components/prefs/pref_member.h"
 #include "components/sync_preferences/pref_service_syncable_observer.h"
 #include "components/user_manager/user_manager.h"
+#include "mojo/public/cpp/bindings/remote.h"
+#include "services/media_session/public/mojom/audio_focus.mojom.h"
 #include "ui/base/ime/ash/input_method_manager.h"
 
 class ApplicationLocaleStorage;
@@ -141,6 +143,10 @@ class Preferences : public sync_preferences::PrefServiceSyncableObserver,
   // underlying XKB API requires it.
   void UpdateAutoRepeatRate();
 
+  // Binds the AudioFocusManager remote if not already bound.
+  void EnsureAudioFocusManagerBound();
+  void OnAudioFocusManagerDisconnected();
+
   // Force natural scroll to on if --enable-natural-scroll-default is specified
   // on the cmd line.
   void ForceNaturalScrollDefault();
@@ -209,6 +215,11 @@ class Preferences : public sync_preferences::PrefServiceSyncableObserver,
   BooleanPrefMember pci_data_access_enabled_pref_;
 
   BooleanPrefMember consumer_auto_update_toggle_pref_;
+
+  BooleanPrefMember audio_focus_enforcement_enabled_;
+
+  // Remote to the global AudioFocusManager service.
+  mojo::Remote<media_session::mojom::AudioFocusManager> audio_focus_manager_;
 
   PrefChangeRegistrar pref_change_registrar_;
 

@@ -318,6 +318,11 @@ inline constexpr char kInputVoiceIsolationEnabled[] =
 inline constexpr char kInputVoiceIsolationPreferredEffect[] =
     "ash.input_voice_isolation_preferred_effect";
 
+// A boolean pref that controls whether audio focus enforcement (audio ducking)
+// is enabled.
+inline constexpr char kAudioFocusEnforcementEnabled[] =
+    "ash.audio_focus_enforcement_enabled";
+
 // A boolean pref that controls whether Krisp noise cancellation is enabled.
 inline constexpr char kInputKrispNoiseCancellationEnabled[] =
     "ash.input_krisp_noise_cancellation_enabled";

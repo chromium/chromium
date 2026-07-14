@@ -81,6 +81,7 @@
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/media_session_service.h"
 #include "third_party/blink/public/mojom/speech/speech_synthesis.mojom.h"
 #include "third_party/cros_system_api/dbus/update_engine/dbus-constants.h"
 #include "third_party/icu/source/i18n/unicode/timezone.h"
@@ -613,6 +614,10 @@ void Preferences::RegisterProfilePrefs(
 
   registry->RegisterBooleanPref(prefs::kMagicBoostEnabled, true);
 
+  registry->RegisterBooleanPref(
+      ash::prefs::kAudioFocusEnforcementEnabled, true,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
+
   registry->RegisterBooleanPref(prefs::kHmrEnabled, true);
   registry->RegisterIntegerPref(prefs::kHmrManagedSettings, 0);
 
@@ -781,6 +786,8 @@ void Preferences::InitUserPrefs(sync_preferences::PrefServiceSyncable* prefs) {
 
   consumer_auto_update_toggle_pref_.Init(ash::prefs::kConsumerAutoUpdateToggle,
                                          &local_state_.get(), callback);
+  audio_focus_enforcement_enabled_.Init(
+      ash::prefs::kAudioFocusEnforcementEnabled, prefs, callback);
   pref_change_registrar_.Init(prefs);
   pref_change_registrar_.Add(ash::prefs::kUserGeolocationAccessLevel, callback);
   pref_change_registrar_.Add(ash::prefs::kUserPreviousGeolocationAccessLevel,
@@ -954,6 +961,16 @@ void Preferences::ApplyPreferences(ApplyReason reason,
       tracing_manager_.reset();
     }
     SystemTrayClientImpl::Get()->SetPerformanceTracingIconVisible(enabled);
+  }
+  if (reason != REASON_PREF_CHANGED ||
+      pref_name == ash::prefs::kAudioFocusEnforcementEnabled) {
+    const bool enabled = audio_focus_enforcement_enabled_.GetValue();
+    EnsureAudioFocusManagerBound();
+    if (audio_focus_manager_.is_bound()) {
+      audio_focus_manager_->SetEnforcementMode(
+          enabled ? media_session::mojom::EnforcementMode::kDefault
+                  : media_session::mojom::EnforcementMode::kNone);
+    }
   }
   if (reason != REASON_PREF_CHANGED || pref_name == prefs::kTapToClickEnabled) {
     const bool enabled = tap_to_click_enabled_.GetValue();
@@ -1495,6 +1512,20 @@ void Preferences::OnIsConsumerAutoUpdateEnabled(std::optional<bool> enabled) {
     return;
   }
   consumer_auto_update_toggle_pref_.SetValue(enabled.value());
+}
+
+void Preferences::EnsureAudioFocusManagerBound() {
+  if (audio_focus_manager_.is_bound()) {
+    return;
+  }
+  content::GetMediaSessionService().BindAudioFocusManager(
+      audio_focus_manager_.BindNewPipeAndPassReceiver());
+  audio_focus_manager_.set_disconnect_handler(base::BindOnce(
+      &Preferences::OnAudioFocusManagerDisconnected, base::Unretained(this)));
+}
+
+void Preferences::OnAudioFocusManagerDisconnected() {
+  audio_focus_manager_.reset();
 }
 
 }  // namespace ash

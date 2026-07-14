@@ -158,6 +158,12 @@
           on-change="toggleSpatialAudioEnabled_">
       </cr-toggle>
     </div>
+    <template is="dom-if" if="[[showAudioFocusEnforcement]]">
+      <settings-toggle-button id="audioFocusEnforcementToggle"
+          pref="{{prefs.ash.audio_focus_enforcement_enabled}}"
+          label="$i18n{audioFocusEnforcementTitle}">
+      </settings-toggle-button>
+    </template>
   </div>
 </div>
 <div id="input"

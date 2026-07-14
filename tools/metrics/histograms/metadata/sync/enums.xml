@@ -821,6 +821,7 @@ chromium-metrics-reviews@google.com.
       label="ProfileContentSettingsPartitionedExceptionsInlineCueMenu"/>
   <int value="100384" label="ProfileDefaultContentSettingValuesInlineCueMenu"/>
   <int value="100385" label="ExtensionsPinnedByDefault"/>
+  <int value="100386" label="AudioFocusEnforcementEnabled"/>
 <!-- LINT.ThenChange(/chrome/browser/sync/prefs/chrome_syncable_prefs_database.cc:ChromeSyncablePref)-->
 
 <!-- LINT.IfChange(IosSyncablePref) -->

@@ -446,6 +446,7 @@ enum {
   kProfileContentSettingsPartitionedExceptionsInlineCueMenu = 100383,
   kProfileDefaultContentSettingValuesInlineCueMenu = 100384,
   kExtensionsPinnedByDefault = 100385,
+  kAudioFocusEnforcementEnabled = 100386,
   // See components/sync_preferences/README.md about adding new entries here.
   // vvvvv IMPORTANT! vvvvv
   // Note to the reviewer: IT IS YOUR RESPONSIBILITY to ensure that new syncable
@@ -844,6 +845,10 @@ constexpr auto kChromeSyncablePrefsAllowlist = base::MakeFixedFlatMap<
     {ash::prefs::kAppNotificationBadgingEnabled,
      {syncable_prefs_ids::kAppNotificationBadgingEnabled,
       syncer::OS_PREFERENCES, sync_preferences::PrefSensitivity::kNone,
+      sync_preferences::MergeBehavior::kNone}},
+    {ash::prefs::kAudioFocusEnforcementEnabled,
+     {syncable_prefs_ids::kAudioFocusEnforcementEnabled, syncer::OS_PREFERENCES,
+      sync_preferences::PrefSensitivity::kNone,
       sync_preferences::MergeBehavior::kNone}},
     {ash::prefs::kClassManagementToolsOOBEAccessCountSetting,
      {syncable_prefs_ids::kClassManagementToolsOOBEAccessCountSetting,
