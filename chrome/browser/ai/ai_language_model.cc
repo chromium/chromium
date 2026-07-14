@@ -447,9 +447,7 @@ class AILanguageModel::PromptState
       auto generate_options = on_device_model::mojom::GenerateOptions::New();
       generate_options->constraint = std::move(constraint_);
       generate_options->max_output_tokens = max_output_tokens_;
-      generate_options->add_output_tokens_to_context =
-          base::FeatureList::IsEnabled(
-              features::kAILanguageModelAppendOutputTokensToContext);
+      generate_options->add_output_tokens_to_context = true;
       session_->Generate(std::move(generate_options),
                          response_receiver_.BindNewPipeAndPassRemote());
       response_receiver_.set_disconnect_with_reason_handler(
@@ -1118,25 +1116,10 @@ void AILanguageModel::OnPromptOutputComplete() {
   item.tokens = prompt_state_->token_count();
   item.input = prompt_state_->TakeInput();
 
-  on_device_model::mojom::InputPtr model_output;
   if (prompt_state_->mode() == PromptState::Mode::kAppendAndGenerate) {
-    model_output = on_device_model::mojom::Input::New();
-    model_output->pieces.push_back(
+    item.input->pieces.push_back(
         InputPiece::NewText(prompt_state_->response()));
-    model_output->pieces.push_back(InputPiece::NewToken(ml::Token::kEnd));
-    if (base::FeatureList::IsEnabled(
-            features::kAILanguageModelAppendOutputTokensToContext)) {
-      item.input->pieces.insert(
-          item.input->pieces.end(),
-          std::make_move_iterator(model_output->pieces.begin()),
-          std::make_move_iterator(model_output->pieces.end()));
-    } else {
-      // Preserve `model_output->pieces` for potential use below when
-      // kAILanguageModelAppendOutputTokensToContext is disabled.
-      for (const auto& piece : model_output->pieces) {
-        item.input->pieces.push_back(piece->Clone());
-      }
-    }
+    item.input->pieces.push_back(InputPiece::NewToken(ml::Token::kEnd));
     // One extra token for the end token on the model output.
     item.tokens++;
   }
@@ -1162,17 +1145,6 @@ void AILanguageModel::OnPromptOutputComplete() {
     // here.
     HandleOverflow();
     responder->OnContextOverflow();
-  } else if (!base::FeatureList::IsEnabled(
-                 features::kAILanguageModelAppendOutputTokensToContext) &&
-             model_output) {
-    // Add the output to the session since this is not added automatically from
-    // the Generate() call. The previous token will be a kModel token from
-    // ConvertToInputForExecute().
-    current_session_->Append(
-        MakeAppendOptions(
-            std::move(model_output),
-            on_device_model::mojom::InputSource::kModelOutputFeedback),
-        {});
   }
   uint32_t total_tokens =
       context_->non_evictable_tokens() + context_->evictable_tokens();

@@ -9,9 +9,6 @@ namespace features {
 BASE_FEATURE(kAILanguageModelOverrideConfiguration,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kAILanguageModelAppendOutputTokensToContext,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // The number of tokens to use as a buffer for generating output. At least this
 // many tokens will be available between the language model token limit and the
 // max model tokens.
