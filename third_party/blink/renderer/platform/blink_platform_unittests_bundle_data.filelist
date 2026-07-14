@@ -705,6 +705,8 @@
 ../../web_tests/images/resources/test.webp
 ../../web_tests/images/resources/test2.webp
 ../../web_tests/images/resources/test3.webp
+../../web_tests/images/resources/tiny-24bit-1x1.bmp
+../../web_tests/images/resources/tiny-pal4-1x1.bmp
 ../../web_tests/images/resources/truncated.webp
 ../../web_tests/images/resources/truncated2.webp
 ../../web_tests/images/resources/twitter_favicon.ico

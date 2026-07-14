@@ -23,6 +23,8 @@
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/text/ascii_ctype.h"
 #include "third_party/skia/include/core/SkAlphaType.h"
+#include "third_party/skia/include/core/SkBitmap.h"
+#include "third_party/skia/include/core/SkColor.h"
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || \
     (BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CASTOS))
@@ -91,6 +93,74 @@ TEST_P(BMPImageDecoderTest, parseAndDecode) {
   EXPECT_EQ(256, frame->Bitmap().width());
   EXPECT_EQ(256, frame->Bitmap().height());
   EXPECT_FALSE(decoder->Failed());
+}
+
+// Verify that tiny complete BMPs decode successfully. These inputs exercise the
+// small complete-data path in the Rust decoder.
+TEST_P(BMPImageDecoderTest, tinyCompleteBMPsDecode) {
+  struct TestCase {
+    const char* path;
+    SkColor expected_color;
+  };
+  static constexpr TestCase kTestCases[] = {
+      {"/images/resources/tiny-24bit-1x1.bmp", SkColorSetRGB(0, 0, 0)},
+      {"/images/resources/tiny-pal4-1x1.bmp", SkColorSetRGB(0, 0, 0)},
+  };
+
+  for (const auto& test_case : kTestCases) {
+    SCOPED_TRACE(test_case.path);
+    scoped_refptr<SharedBuffer> data = ReadFileToSharedBuffer(test_case.path);
+    ASSERT_TRUE(data.get());
+
+    std::unique_ptr<ImageDecoder> decoder = CreateBMPDecoder();
+    decoder->SetData(data.get(), true);
+    EXPECT_TRUE(decoder->IsSizeAvailable());
+    EXPECT_EQ(1, decoder->Size().width());
+    EXPECT_EQ(1, decoder->Size().height());
+
+    ImageFrame* frame = decoder->DecodeFrameBufferAtIndex(0);
+    ASSERT_TRUE(frame);
+    EXPECT_EQ(ImageFrame::kFrameComplete, frame->GetStatus());
+    EXPECT_FALSE(decoder->Failed());
+    EXPECT_EQ(test_case.expected_color, frame->Bitmap().getColor(0, 0));
+  }
+}
+
+// Verify that tiny partial BMPs stay on the streaming path until the rest of
+// the data arrives.
+TEST_P(BMPImageDecoderTest, tinyPartialBMPStaysStreamingUntilComplete) {
+  if (GetParam() == RustFeatureState::kRustDisabled) {
+    return;
+  }
+
+  scoped_refptr<SharedBuffer> full_data =
+      ReadFileToSharedBuffer("/images/resources/tiny-24bit-1x1.bmp");
+  ASSERT_TRUE(full_data.get());
+
+  constexpr size_t kBmpHeaderSize = 54;
+  Vector<char> full_data_vec = full_data->CopyAs<Vector<char>>();
+  ASSERT_GT(full_data_vec.size(), kBmpHeaderSize);
+
+  std::unique_ptr<ImageDecoder> decoder = CreateBMPDecoder();
+  scoped_refptr<SharedBuffer> partial_data =
+      SharedBuffer::Create(base::span(full_data_vec).first(kBmpHeaderSize));
+  decoder->SetData(partial_data.get(), false);
+
+  EXPECT_TRUE(decoder->IsSizeAvailable());
+  EXPECT_EQ(1, decoder->Size().width());
+  EXPECT_EQ(1, decoder->Size().height());
+
+  ImageFrame* frame = decoder->DecodeFrameBufferAtIndex(0);
+  ASSERT_TRUE(frame);
+  EXPECT_NE(ImageFrame::kFrameComplete, frame->GetStatus());
+  EXPECT_FALSE(decoder->Failed());
+
+  decoder->SetData(full_data.get(), true);
+  frame = decoder->DecodeFrameBufferAtIndex(0);
+  ASSERT_TRUE(frame);
+  EXPECT_EQ(ImageFrame::kFrameComplete, frame->GetStatus());
+  EXPECT_FALSE(decoder->Failed());
+  EXPECT_EQ(SkColorSetRGB(0, 0, 0), frame->Bitmap().getColor(0, 0));
 }
 
 // Test if a BMP decoder returns a proper error while decoding an empty image.
