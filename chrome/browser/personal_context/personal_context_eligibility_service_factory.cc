@@ -76,7 +76,7 @@ PersonalContextEligibilityServiceFactory::BuildServiceInstanceForBrowserContext(
       IdentityManagerFactory::GetForProfile(profile->GetOriginalProfile());
   return std::make_unique<
       personal_context::PersonalContextEligibilityServiceImpl>(
-      account_settings_service, identity_manager, profile->GetPrefs(),
+      account_settings_service, identity_manager,
       GetCountryCodeFromVariations(),
       g_browser_process->GetFeatures()->application_locale_storage()->Get());
 }

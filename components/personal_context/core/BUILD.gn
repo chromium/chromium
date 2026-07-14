@@ -31,7 +31,6 @@ source_set("core") {
     "//components/account_settings",
     "//components/keyed_service/core",
     "//components/personal_context/proto:personal_context_proto",
-    "//components/prefs",
     "//components/signin/public/identity_manager",
     "//components/variations/net",
     "//net",

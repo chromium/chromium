@@ -14,12 +14,9 @@
 #include "components/personal_context/core/personal_context_debug_features.h"
 #include "components/personal_context/core/personal_context_eligibility_service_impl_test_api.h"
 #include "components/personal_context/core/personal_context_features.h"
-#include "components/personal_context/core/personal_context_prefs.h"
-#include "components/prefs/testing_pref_service.h"
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
-#include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace personal_context {
@@ -43,7 +40,8 @@ class MockPersonalContextEligibilityServiceObserver
 class PersonalContextEligibilityServiceImplTest : public testing::Test {
  public:
   PersonalContextEligibilityServiceImplTest() {
-    SetPrefs();
+    ON_CALL(mock_account_settings_service_, GetBoolean(testing::_))
+        .WillByDefault(Return(true));
     CreateService("us");
     SignIn("test@gmail.com");
   }
@@ -72,22 +70,7 @@ class PersonalContextEligibilityServiceImplTest : public testing::Test {
                      const std::string& locale = "en-US") {
     service_ = std::make_unique<PersonalContextEligibilityServiceImpl>(
         &mock_account_settings_service_, identity_test_env_.identity_manager(),
-        &pref_service_, GeoIpCountryCode(base::ToUpperASCII(country_code)),
-        locale);
-  }
-
-  void SetPrefs() {
-    personal_context::prefs::RegisterProfilePrefs(pref_service_.registry());
-    pref_service_.SetBoolean(
-        personal_context::prefs::
-            kPersonalContextAmbientAutofillNoticeShouldBeShown,
-        false);
-    pref_service_.SetBoolean(
-        personal_context::prefs::kPersonalContextInAutofillSettingsToggleStatus,
-        true);
-    // Enable all by default to satisfy requirements.
-    ON_CALL(mock_account_settings_service_, GetBoolean(testing::_))
-        .WillByDefault(Return(true));
+        GeoIpCountryCode(base::ToUpperASCII(country_code)), locale);
   }
 
   PersonalContextEligibilityServiceImpl& service() { return *service_; }
@@ -97,7 +80,7 @@ class PersonalContextEligibilityServiceImplTest : public testing::Test {
   signin::IdentityTestEnvironment identity_test_env_;
   base::test::ScopedFeatureList scoped_feature_list_{
       features::kPersonalContextLogNonEligibilityUma};
-  sync_preferences::TestingPrefServiceSyncable pref_service_;
+
   testing::NiceMock<account_settings::MockAccountSettingService>
       mock_account_settings_service_;
   base::HistogramTester histogram_tester_;
@@ -188,8 +171,8 @@ TEST_F(PersonalContextEligibilityServiceImplTest, DisabledWhenManaged) {
 TEST_F(PersonalContextEligibilityServiceImplTest,
        DisabledWhenAccountSettingsServiceNotAvailable) {
   service_ = std::make_unique<PersonalContextEligibilityServiceImpl>(
-      nullptr, identity_test_env_.identity_manager(), &pref_service_,
-      GeoIpCountryCode("US"), "en-US");
+      nullptr, identity_test_env_.identity_manager(), GeoIpCountryCode("US"),
+      "en-US");
 
   EXPECT_EQ(service().GetEligibilityState(),
             PersonalContextEligibilityState::kDisabledNotEligible);
@@ -334,8 +317,8 @@ TEST_F(PersonalContextEligibilityServiceImplTest,
       features::kPersonalContextFirstRunOptIn};
 
   service_ = std::make_unique<PersonalContextEligibilityServiceImpl>(
-      nullptr, identity_test_env_.identity_manager(), &pref_service_,
-      GeoIpCountryCode("US"), "en-US");
+      nullptr, identity_test_env_.identity_manager(), GeoIpCountryCode("US"),
+      "en-US");
 
   EXPECT_EQ(service().GetEligibilityState(),
             PersonalContextEligibilityState::kDisabledNotEligible);

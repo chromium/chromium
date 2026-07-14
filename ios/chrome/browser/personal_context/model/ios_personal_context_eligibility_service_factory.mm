@@ -82,6 +82,6 @@ IOSPersonalContextEligibilityServiceFactory::BuildServiceInstanceFor(
 
   return std::make_unique<
       personal_context::PersonalContextEligibilityServiceImpl>(
-      account_settings_service, identity_manager, profile->GetPrefs(),
+      account_settings_service, identity_manager,
       GetCountryCodeFromVariations(), locale);
 }
