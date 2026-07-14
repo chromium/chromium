@@ -113,25 +113,6 @@ struct GoogleServiceAuthError {
   ScopeLimitedUnrecoverableErrorReason scope_limited_unrecoverable_error_reason@5;
 };
 
-// Next id: 3
-struct AccessTokenInfo {
-  // OAuth2 access token.
-  string access_token@0;
-
-  // Expiration time of `access_token`. This value has a built-in safety margin
-  // so it can be used as-is.
-  mojo_base.mojom.Time expiration_time@1;
-
-  // Contains extra information regarding the user's currently registered
-  // services.
-  string id_token@2;
-};
-
-union AccessTokenResult {
-  AccessTokenInfo access_token_info;
-  GoogleServiceAuthError error;
-};
-
 // Interface for ChromeOS Account Manager.
 // ChromeOS Account Manager is the source of truth for accounts on ChromeOS -
 // including ARC, and Chrome content area. It only supports Gaia accounts, as
@@ -158,31 +139,6 @@ interface AccountManager {
 
   // GetPersistentErrorForAccount@6 was removed.
 
-  // Returns a remote to an interface to fetch an access token for
-  // `account_key`, to be used by `oauth_consumer_name` OAuth2 client.
-  // `account_key` must be a Gaia account. If `account_key` is invalid or not
-  // known to ChromeOS Account Manager, fetching an access token via
-  // `AccessTokenFetcher` will result in an error (`kAccountNotFound`). If the
-  // account's refresh token is no longer valid, it will result in
-  // `kInvalidGaiaCredentials` error. See `GoogleServiceAuthError` for all error
-  // types.
-  [MinVersion = 6]
-  CreateAccessTokenFetcher@7(AccountKey account_key,
-      string oauth_consumer_name) =>
-          (pending_remote<AccessTokenFetcher> access_token_fetcher);
-
+  // CreateAccessTokenFetcher@7 was removed.
   // ReportAuthError@8 was removed.
-};
-
-// Interface for fetching OAuth2 access tokens.
-//
-// Next id: 1
-[Uuid="71476f25-fb77-414f-848e-3e5368a9ee35"]
-interface AccessTokenFetcher {
-  // Starts the request for fetching an access token with the provided `scopes`.
-  // If `scopes` is empty, `access_token` will have the same scope as the
-  // underlying refresh token - login scope.
-  // Don't call this method multiple times - create a new `AccessTokenFetcher`
-  // instead.
-  Start@0(array<string> scopes) => (AccessTokenResult result);
 };

@@ -22,8 +22,6 @@ component("account_manager_core") {
     "account_manager_util.h",
     "account_upsertion_result.cc",
     "account_upsertion_result.h",
-    "chromeos/access_token_fetcher.cc",
-    "chromeos/access_token_fetcher.h",
     "chromeos/account_manager.cc",
     "chromeos/account_manager.h",
     "chromeos/account_manager_mojo_service.cc",

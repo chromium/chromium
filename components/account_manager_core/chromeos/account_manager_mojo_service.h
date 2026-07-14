@@ -5,13 +5,9 @@
 #ifndef COMPONENTS_ACCOUNT_MANAGER_CORE_CHROMEOS_ACCOUNT_MANAGER_MOJO_SERVICE_H_
 #define COMPONENTS_ACCOUNT_MANAGER_CORE_CHROMEOS_ACCOUNT_MANAGER_MOJO_SERVICE_H_
 
-#include <memory>
-#include <vector>
-
 #include "base/memory/raw_ptr.h"
 #include "chromeos/crosapi/mojom/account_manager.mojom.h"
 #include "components/account_manager_core/account.h"
-#include "components/account_manager_core/chromeos/access_token_fetcher.h"
 #include "components/account_manager_core/chromeos/account_manager.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -37,23 +33,10 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountManagerMojoService
 
   void BindReceiver(mojo::PendingReceiver<mojom::AccountManager> receiver);
 
-  // crosapi::mojom::AccountManager:
-  void CreateAccessTokenFetcher(
-      mojom::AccountKeyPtr mojo_account_key,
-      const std::string& oauth_consumer_name,
-      CreateAccessTokenFetcherCallback callback) override;
-
  private:
   friend class AccountManagerMojoServiceTest;
 
-  // Deletes `request` from `pending_access_token_requests_`, if present.
-  void DeletePendingAccessTokenFetchRequest(AccessTokenFetcher* request);
-
-  int GetNumPendingAccessTokenRequests() const;
-
   const raw_ptr<account_manager::AccountManager> account_manager_;
-  std::vector<std::unique_ptr<AccessTokenFetcher>>
-      pending_access_token_requests_;
 
   // Don't add new members below this. `receivers_` should be destroyed as soon
   // as `this` is getting destroyed so that we don't deal with message handling

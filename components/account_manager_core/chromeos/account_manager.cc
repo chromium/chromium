@@ -37,6 +37,7 @@
 #include "google_apis/gaia/gaia_auth_fetcher.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "google_apis/gaia/gaia_constants.h"
+#include "google_apis/gaia/gaia_urls.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "google_apis/gaia/oauth2_access_token_consumer.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -195,12 +196,21 @@ class AccountManager::AccessTokenFetcher : public OAuth2AccessTokenFetcher {
   }
 
   // OAuth2AccessTokenFetcher override:
+  // Note: OAuth2AccessTokenManager relies on asynchronous completions from
+  // OAuth2AccessTokenFetcher::Start(). Firing the callback synchronously can
+  // cause re-entrancy crashes, as observed e.g. in
+  // BookmarkMessageHandlerTest.CanNotUploadInSigninPending.
   void Start(const std::string& client_id,
              const std::string& client_secret,
              const std::vector<std::string>& scopes) override {
     DCHECK(!is_request_pending_);
-    client_id_ = client_id;
-    client_secret_ = client_secret;
+    client_id_ = client_id.empty()
+                     ? GaiaUrls::GetInstance()->oauth2_chrome_client_id()
+                     : client_id;
+    client_secret_ =
+        client_secret.empty()
+            ? GaiaUrls::GetInstance()->oauth2_chrome_client_secret()
+            : client_secret;
     scopes_ = scopes;
     if (!are_token_requests_allowed_) {
       is_request_pending_ = true;
@@ -227,14 +237,24 @@ class AccountManager::AccessTokenFetcher : public OAuth2AccessTokenFetcher {
     is_request_pending_ = false;
 
     if (account_key_.account_type() != ::account_manager::AccountType::kGaia) {
-      FireOnGetTokenFailure(GoogleServiceAuthError::CreateAccountNotFound());
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE,
+          base::BindOnce(
+              &AccountManager::AccessTokenFetcher::FireOnGetTokenFailure,
+              weak_factory_.GetWeakPtr(),
+              GoogleServiceAuthError::CreateAccountNotFound()));
       return;
     }
 
     std::optional<std::string> maybe_token =
         account_manager_->GetRefreshToken(account_key_);
     if (!maybe_token.has_value()) {
-      FireOnGetTokenFailure(GoogleServiceAuthError::CreateAccountNotFound());
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE,
+          base::BindOnce(
+              &AccountManager::AccessTokenFetcher::FireOnGetTokenFailure,
+              weak_factory_.GetWeakPtr(),
+              GoogleServiceAuthError::CreateAccountNotFound()));
       return;
     }
 

@@ -113,19 +113,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="AccountManager.MojoDisconnections.AccessTokenFetcherRemote"
-    units="count" expires_after="2024-11-01">
-  <owner>sinhak@chromium.org</owner>
-  <owner>emaamari@google.com</owner>
-  <summary>
-    Tracks the number of Mojo pipe disconnections observed by the access token
-    fetcher Mojo remote in `AccountManagerFacadeImpl`. This is logged at the end
-    of the destruction of `AccountManagerFacadeImpl::AccessTokenFetcher`. This
-    will correspond to the end of an access token fetch request. This is logged
-    for Ash - ChromeOS and Lacros - ChromeOS.
-  </summary>
-</histogram>
-
 <histogram name="AccountManager.MojoDisconnections.AccountManagerRemote"
     units="count" expires_after="2024-11-01">
   <owner>sinhak@chromium.org</owner>

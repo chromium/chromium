@@ -106,6 +106,11 @@ class ChromeSessionManagerTest : public LoginManagerTest {
     command_line->AppendSwitch(switches::kOobeSkipPostLogin);
   }
 
+  void SetUpOnMainThread() override {
+    LoginManagerTest::SetUpOnMainThread();
+    fake_gaia_.SetupFakeGaiaForLoginWithDefaults();
+  }
+
  protected:
   FakeGaiaMixin fake_gaia_{&mixin_host_};
   DeviceStateMixin device_state_{

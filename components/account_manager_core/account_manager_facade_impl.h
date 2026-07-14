@@ -83,18 +83,6 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountManagerFacadeImpl
   FRIEND_TEST_ALL_PREFIXES(AccountManagerFacadeImplTest,
                            HistogramsForAccountManagerRemoteDisconnection);
 
-  // A utility class to fetch access tokens over Mojo.
-  class AccessTokenFetcher;
-
-  // Proxy method to call `CreateAccessTokenFetcher` on
-  // `account_manager_remote_`. Returns `true` if `account_manager_remote_` is
-  // bound and the call was queued successfully.
-  bool CreateAccessTokenFetcher(
-      crosapi::mojom::AccountKeyPtr account_key,
-      const std::string& oauth_consumer_name,
-      crosapi::mojom::AccountManager::CreateAccessTokenFetcherCallback
-          callback);
-
   // Runs `closure` if/when `account_manager_remote_` gets disconnected.
   void RunOnAccountManagerRemoteDisconnection(base::OnceClosure closure);
 
