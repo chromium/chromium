@@ -72,6 +72,8 @@ class CONTENT_EXPORT PrefetchedSignedExchangeCache
   void AddObserverForTesting(TestObserver* observer);
   void RemoveObserverForTesting(const TestObserver* observer);
 
+  void AddEntryForTesting(const GURL& url);
+
  private:
   friend class base::RefCountedThreadSafe<PrefetchedSignedExchangeCache>;
 

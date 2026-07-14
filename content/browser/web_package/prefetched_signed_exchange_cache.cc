@@ -552,4 +552,8 @@ void PrefetchedSignedExchangeCache::RemoveObserverForTesting(
   test_observers_.RemoveObserver(observer);
 }
 
+void PrefetchedSignedExchangeCache::AddEntryForTesting(const GURL& url) {
+  exchanges_[url] = nullptr;
+}
+
 }  // namespace content

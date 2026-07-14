@@ -123,6 +123,7 @@ class PrerenderHostRegistry;
 class RenderFrameHostCSPContext;
 class ServiceWorkerMainResourceHandle;
 class SubframeHistoryNavigationThrottle;
+class NavigationFastFetchManager;
 
 // The primary implementation of NavigationHandle.
 //
@@ -739,6 +740,17 @@ class CONTENT_EXPORT NavigationRequest
 
   void set_has_user_gesture(bool has_user_gesture) {
     common_params_->has_possibly_filtered_user_gesture = has_user_gesture;
+  }
+
+  NavigationFastFetchManager* fast_fetch_manager_for_testing() const {
+    return fast_fetch_manager_.get();
+  }
+
+  bool HasPrefetchedSignedExchange() const;
+
+  void SetNavigationHandleTimingForTesting(
+      const NavigationHandleTiming& timing) {
+    navigation_handle_timing_ = timing;
   }
 
   // Ignores any interface disconnect that might happen to the
@@ -2745,6 +2757,8 @@ class CONTENT_EXPORT NavigationRequest
   std::optional<BindingsPolicySet> bindings_;
 
   scoped_refptr<SiteInstanceImpl> starting_site_instance_;
+
+  std::unique_ptr<NavigationFastFetchManager> fast_fetch_manager_;
 
   // Whether the navigation should be sent to a renderer a process. This is
   // true, except for 204/205 responses and downloads.
