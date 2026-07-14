@@ -134,6 +134,14 @@ chromium-metrics-reviews@google.com.
   <int value="104" label="ExitInk2TextAnnotationMode"/>
   <int value="105" label="AddInk2TextAnnotationFirst"/>
   <int value="106" label="AddInk2TextAnnotation"/>
+  <int value="107" label="AddInk2TextAnnotationAbortedFirst"/>
+  <int value="108" label="AddInk2TextAnnotationAborted"/>
+  <int value="109" label="EditInk2TextAnnotationFirst"/>
+  <int value="110" label="EditInk2TextAnnotation"/>
+  <int value="111" label="EditInk2TextAnnotationAbortedFirst"/>
+  <int value="112" label="EditInk2TextAnnotationAborted"/>
+  <int value="113" label="DeleteInk2TextAnnotationFirst"/>
+  <int value="114" label="DeleteInk2TextAnnotation"/>
 </enum>
 
 <enum name="ChromePDFViewerLoadStatus">

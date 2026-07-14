@@ -307,10 +307,12 @@ export class InkTextBoxElement extends InkTextBoxElementBase {
 
     this.resetDrag_();
 
-    if ((this.state_ !== TextBoxState.EDITED || this.textValue_ === '') &&
+    const hasTextValue = this.textValue_ !== '';
+    if ((!hasTextValue || this.state_ !== TextBoxState.EDITED) &&
         !this.existing_) {
       // Empty textbox.
       this.finishCommit_();
+      record(UserAction.ADD_INK2_TEXT_ANNOTATION_ABORTED);
       return promise;
     }
 
@@ -339,6 +341,7 @@ export class InkTextBoxElement extends InkTextBoxElementBase {
       Ink2Manager.getInstance().commitTextAnnotation(
           annotation, isEdited, /*typefaces=*/[]);
       this.finishCommit_();
+      record(UserAction.EDIT_INK2_TEXT_ANNOTATION_ABORTED);
       return promise;
     }
 
@@ -356,9 +359,15 @@ export class InkTextBoxElement extends InkTextBoxElementBase {
         annotation.mojoTextInfo = result.mojoTextInfo;
         Ink2Manager.getInstance().commitTextAnnotation(
             annotation, isEdited, result.typefaces);
-        if (!this.existing_) {
-          record(UserAction.ADD_INK2_TEXT_ANNOTATION);
+        let action;
+        if (this.existing_) {
+          action = hasTextValue ?
+              UserAction.EDIT_INK2_TEXT_ANNOTATION :
+              action = UserAction.DELETE_INK2_TEXT_ANNOTATION;
+        } else {
+          action = UserAction.ADD_INK2_TEXT_ANNOTATION;
         }
+        record(action);
       } catch (e) {
         console.error('Error committing text annotation:', e);
       } finally {
