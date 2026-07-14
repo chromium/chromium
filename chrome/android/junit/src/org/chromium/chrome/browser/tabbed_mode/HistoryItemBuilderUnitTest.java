@@ -491,6 +491,7 @@ public class HistoryItemBuilderUnitTest {
                                 item(R.id.open_history_menu_id),
                                 item(R.id.recent_tabs_menu_id),
                                 item(R.id.divider_line_id),
+                                item(R.id.your_devices_header_menu_id),
                                 item(
                                         R.id.recent_entry_menu_item,
                                         item(R.id.recent_entry_foreign_tab_menu_item),
@@ -502,6 +503,7 @@ public class HistoryItemBuilderUnitTest {
                                 item(R.string.menu_open_history),
                                 item(R.string.menu_recent_tabs),
                                 item(0),
+                                item(R.string.menu_your_devices_header),
                                 item("Laptop", item("Tab 1 Title"), item("Tab 2 Title"))));
 
         List<ListItem> items =
@@ -515,7 +517,7 @@ public class HistoryItemBuilderUnitTest {
 
         assertMenuTitlesAreEqual(items, expectedTitles);
 
-        ListItem laptopSessionItem = items.get(3);
+        ListItem laptopSessionItem = items.get(4);
         List<ListItem> laptopSubmenu =
                 laptopSessionItem
                         .model

@@ -172,6 +172,13 @@ public class HistoryItemBuilder implements Destroyable {
                                         AppMenuHandler.AppMenuItemType.DIVIDER,
                                         AppMenuItemUtils.buildModelForDivider(
                                                 R.id.divider_line_id)));
+                        submenuItems.add(
+                                AppMenuItemUtils.buildHeaderItem(
+                                        mContext,
+                                        mAppMenuItemTheme,
+                                        R.id.your_devices_header_menu_id,
+                                        R.string.menu_your_devices_header,
+                                        mIsMenuIconAtStart));
                         submenuItems.addAll(foreignSessions);
                     }
 

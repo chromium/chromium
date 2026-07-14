@@ -4363,6 +4363,9 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_MENU_RECENT_ENTRY_RESTORE_GROUP" desc="Menu item to restore a recently closed tab group. [CHAR_LIMIT=27]">
         Restore group
       </message>
+      <message name="IDS_MENU_YOUR_DEVICES_HEADER" desc="Menu header for listing user's devices. [CHAR_LIMIT=27]">
+        Your devices
+      </message>
       <message name="IDS_MENU_WINDOW_TITLE_WITH_TAB_COUNT" desc="Format string to display a window title followed by the number of tabs in that window, for example 'Window 1 - 5 tabs'. [CHAR_LIMIT=27]">
         <ph name="WINDOW_TITLE">%1$s<ex>Window name</ex></ph> - <ph name="TAB_COUNT">%2$s<ex>5 tabs</ex></ph>
       </message>
