@@ -67,6 +67,7 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <variants name="LogAiDataRequestFeature">
+  <variant name="AtMemory" summary="At Memory"/>
   <variant name="BlingPrototyping" summary="Bling Prototyping"/>
   <variant name="Compose" summary="Compose"/>
   <variant name="ContextualTasksContext" summary="Contextual Tasks Context"/>
