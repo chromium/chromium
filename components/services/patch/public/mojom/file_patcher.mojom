@@ -25,6 +25,14 @@ enum ZucchiniStatus {
 // Interface to the out-of-process file patcher. The file patcher runs
 // utilities to apply a differential patch to a file, often for the purposes of
 // software updates.
+//
+// FilePatcher is not suitable for processing untrusted patch data, even when
+// running under a sandbox. Patch files should be secured by CUP during normal
+// operation. Consequently, this sandbox is not a security boundary, but it
+// remains useful for browser stability (e.g. isolating OOM crashes).
+//
+// See crbug.com/532928300 for further explanation of why this operation
+// couldn't be made secure against untrusted inputs.
 [ServiceSandbox=sandbox.mojom.Sandbox.kService]
 interface FilePatcher {
   // Patches `input_file` with `patch_file` using the PuffPatch algorithm and
