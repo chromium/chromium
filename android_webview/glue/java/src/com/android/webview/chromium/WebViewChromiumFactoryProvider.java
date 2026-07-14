@@ -936,15 +936,6 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
         return mWebViewDelegate;
     }
 
-    WebViewContentsClientAdapter createWebViewContentsClientAdapter(
-            WebView webView, Context context) {
-        try (DualTraceEvent e =
-                DualTraceEvent.scoped(
-                        "WebViewChromiumFactoryProvider.insideCreateWebViewContentsClientAdapter")) {
-            return new WebViewContentsClientAdapter(webView, context, mWebViewDelegate);
-        }
-    }
-
     WebViewChromiumAwInit getAwInit() {
         return mAwInit;
     }

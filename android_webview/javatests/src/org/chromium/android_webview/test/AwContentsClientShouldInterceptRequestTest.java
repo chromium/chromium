@@ -153,6 +153,29 @@ public class AwContentsClientShouldInterceptRequestTest extends AwParameterizedT
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
+    public void testShouldInterceptRequestAfterReparent() throws Throwable {
+        final String aboutPageUrl = addAboutPageToTestServer(mWebServer);
+
+        int callCount = mShouldInterceptRequestHelper.getCallCount();
+        mActivityTestRule.loadUrlAsync(mAwContents, aboutPageUrl);
+        mShouldInterceptRequestHelper.waitForCallback(callCount);
+        Assert.assertEquals(1, mShouldInterceptRequestHelper.getUrls().size());
+        Assert.assertEquals(aboutPageUrl, mShouldInterceptRequestHelper.getUrls().get(0));
+
+        AwTestContainerView newView = mActivityTestRule.reparentAwContents(mTestContainerView);
+
+        final String syncUrl =
+                addPageToTestServer(mWebServer, "/sync.html", "<html><body>hello</body></html>");
+        callCount = mShouldInterceptRequestHelper.getCallCount();
+        mActivityTestRule.loadUrlAsync(newView.getAwContents(), syncUrl);
+        mShouldInterceptRequestHelper.waitForCallback(callCount);
+        Assert.assertEquals(2, mShouldInterceptRequestHelper.getUrls().size());
+        Assert.assertEquals(syncUrl, mShouldInterceptRequestHelper.getUrls().get(1));
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
     public void testCalledWithCorrectIsMainFrameParam() throws Throwable {
         final String subframeUrl = addAboutPageToTestServer(mWebServer);
         final String pageWithIframeUrl =

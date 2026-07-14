@@ -250,7 +250,7 @@ public class AwShellActivity extends Activity {
                         testContainerView.getContext(),
                         testContainerView.getInternalAccessDelegate(),
                         new AwTestContainerView.RoutingDrawFnAccess(),
-                        awContentsClient));
+                        aw -> awContentsClient));
 
         AwSettings awSettings = testContainerView.getAwContents().getSettings();
 

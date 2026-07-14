@@ -10,8 +10,10 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.webkit.WebViewDelegate;
 
+import androidx.annotation.AnyThread;
 import androidx.annotation.Nullable;
 
+import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.AwContentsClient;
 import org.chromium.android_webview.AwHistogramRecorder;
 import org.chromium.android_webview.AwRenderProcess;
@@ -31,12 +33,10 @@ abstract class SharedWebViewContentsClientAdapter extends AwContentsClient {
     protected static final String TAG = "WebViewCallback";
     // Enables API callback tracing
     protected static final boolean TRACE = false;
-    // The WebView instance that this adapter is serving.
-    protected final WebView mWebView;
+    // The WebView instance that this adapter is serving (dynamically resolved).
+    protected final AwContents mAwContents;
     // The WebView delegate object that provides access to required framework APIs.
     protected final WebViewDelegate mWebViewDelegate;
-    // The Context to use. This is different from mWebView.getContext(), which should not be used.
-    protected final Context mContext;
     // A reference to the current WebViewClient associated with this WebView.
     protected WebViewClient mWebViewClient = SharedWebViewChromium.sNullWebViewClient;
     // Some callbacks will be forwarded to this client for apps using the support library.
@@ -49,22 +49,26 @@ abstract class SharedWebViewContentsClientAdapter extends AwContentsClient {
      *
      * @param webView the {@link WebView} instance that this adapter is serving.
      */
-    SharedWebViewContentsClientAdapter(
-            WebView webView, WebViewDelegate webViewDelegate, Context context) {
-        if (webView == null) {
-            throw new IllegalArgumentException("webView can't be null.");
+    SharedWebViewContentsClientAdapter(AwContents awContents, WebViewDelegate webViewDelegate) {
+        if (awContents == null) {
+            throw new IllegalArgumentException("awContents can't be null.");
         }
         if (webViewDelegate == null) {
             throw new IllegalArgumentException("delegate can't be null.");
         }
-        if (context == null) {
-            throw new IllegalArgumentException("context can't be null.");
-        }
 
-        mWebView = webView;
+        mAwContents = awContents;
         mWebViewDelegate = webViewDelegate;
-        mContext = context;
         mSupportLibClient = new SupportLibWebViewContentsClientAdapter();
+    }
+
+    @AnyThread
+    public WebView getWebView() {
+        return (WebView) mAwContents.getPrimaryContainerView();
+    }
+
+    public Context getContext() {
+        return mAwContents.getProvidedContext();
     }
 
     void setWebViewClient(WebViewClient client) {
@@ -90,11 +94,11 @@ abstract class SharedWebViewContentsClientAdapter extends AwContentsClient {
             if (mSupportLibClient.isFeatureAvailable(Features.SHOULD_OVERRIDE_WITH_REDIRECTS)) {
                 result =
                         mSupportLibClient.shouldOverrideUrlLoading(
-                                mWebView, new WebResourceRequestAdapter(request));
+                                getWebView(), new WebResourceRequestAdapter(request));
             } else {
                 result =
                         mWebViewClient.shouldOverrideUrlLoading(
-                                mWebView, new WebResourceRequestAdapter(request));
+                                getWebView(), new WebResourceRequestAdapter(request));
             }
             if (TRACE) Log.i(TAG, "shouldOverrideUrlLoading result=" + result);
 
@@ -113,9 +117,9 @@ abstract class SharedWebViewContentsClientAdapter extends AwContentsClient {
                 TraceEvent.scoped("WebView.APICallback.WebViewClient.onPageCommitVisible")) {
             if (TRACE) Log.i(TAG, "onPageCommitVisible=" + url);
             if (mSupportLibClient.isFeatureAvailable(Features.VISUAL_STATE_CALLBACK)) {
-                mSupportLibClient.onPageCommitVisible(mWebView, url);
+                mSupportLibClient.onPageCommitVisible(getWebView(), url);
             } else {
-                mWebViewClient.onPageCommitVisible(mWebView, url);
+                mWebViewClient.onPageCommitVisible(getWebView(), url);
             }
 
             // Record UMA for onPageCommitVisible.
@@ -137,15 +141,15 @@ abstract class SharedWebViewContentsClientAdapter extends AwContentsClient {
                 // layer will set a valid description, but for synthesized callbacks (like in the
                 // case for intercepted requests) AwContents will pass in null.
                 error.setDescription(
-                        mWebViewDelegate.getErrorString(mContext, error.getWebviewError()));
+                        mWebViewDelegate.getErrorString(getContext(), error.getWebviewError()));
             }
             if (TRACE) Log.i(TAG, "onReceivedError=" + request.getUrl());
             if (mSupportLibClient.isFeatureAvailable(Features.RECEIVE_WEB_RESOURCE_ERROR)) {
                 mSupportLibClient.onReceivedError(
-                        mWebView, new WebResourceRequestAdapter(request), error);
+                        getWebView(), new WebResourceRequestAdapter(request), error);
             } else {
                 mWebViewClient.onReceivedError(
-                        mWebView,
+                        getWebView(),
                         new WebResourceRequestAdapter(request),
                         new WebResourceErrorAdapter(error));
             }
@@ -163,10 +167,10 @@ abstract class SharedWebViewContentsClientAdapter extends AwContentsClient {
                     AwHistogramRecorder.WebViewCallbackType.ON_SAFE_BROWSING_HIT);
             if (mSupportLibClient.isFeatureAvailable(Features.SAFE_BROWSING_HIT)) {
                 mSupportLibClient.onSafeBrowsingHit(
-                        mWebView, new WebResourceRequestAdapter(request), threatType, callback);
+                        getWebView(), new WebResourceRequestAdapter(request), threatType, callback);
             } else {
                 mWebViewClient.onSafeBrowsingHit(
-                        mWebView,
+                        getWebView(),
                         new WebResourceRequestAdapter(request),
                         threatType,
                         new SafeBrowsingResponseAdapter(callback));
@@ -194,7 +198,7 @@ abstract class SharedWebViewContentsClientAdapter extends AwContentsClient {
                 // the WebResourceResponse received in this callback (they can always construct
                 // their own instance).
                 mSupportLibClient.onReceivedHttpError(
-                        mWebView,
+                        getWebView(),
                         new WebResourceRequestAdapter(request),
                         new WebResourceResponse(
                                 /* immutable= */ true,
@@ -206,7 +210,7 @@ abstract class SharedWebViewContentsClientAdapter extends AwContentsClient {
                                 response.getData()));
             } else {
                 mWebViewClient.onReceivedHttpError(
-                        mWebView,
+                        getWebView(),
                         new WebResourceRequestAdapter(request),
                         new WebResourceResponse(
                                 /* immutable= */ true,
@@ -233,14 +237,14 @@ abstract class SharedWebViewContentsClientAdapter extends AwContentsClient {
     @Override
     public void onRendererUnresponsive(final AwRenderProcess renderProcess) {
         if (mWebViewRendererClientAdapter != null) {
-            mWebViewRendererClientAdapter.onRendererUnresponsive(mWebView, renderProcess);
+            mWebViewRendererClientAdapter.onRendererUnresponsive(getWebView(), renderProcess);
         }
     }
 
     @Override
     public void onRendererResponsive(final AwRenderProcess renderProcess) {
         if (mWebViewRendererClientAdapter != null) {
-            mWebViewRendererClientAdapter.onRendererResponsive(mWebView, renderProcess);
+            mWebViewRendererClientAdapter.onRendererResponsive(getWebView(), renderProcess);
         }
     }
 }

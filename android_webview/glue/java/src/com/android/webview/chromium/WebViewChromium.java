@@ -1325,9 +1325,6 @@ class WebViewChromium
             // Check that the current thread is the UI thread, which will throw if it was
             // already started using a different thread as the UI thread.
             checkThread();
-            mContentsClientAdapter =
-                    mFactory.createWebViewContentsClientAdapter(mWebView, mContext);
-            mSharedWebViewChromium.init(mContentsClientAdapter);
 
             // This will run initForReal synchronously except when the experiment to defer running
             // Chromium startup is enabled.
@@ -1402,9 +1399,11 @@ class WebViewChromium
                             mContext,
                             new InternalAccessAdapter(),
                             mFactory.getWebViewDelegate()::drawWebViewFunctor,
-                            mContentsClientAdapter,
+                            awContents ->
+                                    new WebViewContentsClientAdapter(
+                                            awContents, mFactory.getWebViewDelegate()),
                             new AwContents.DependencyFactory());
-
+            mContentsClientAdapter = (WebViewContentsClientAdapter) mAwContents.getContentsClient();
             try (ScopedSysTraceEvent e2 =
                     ScopedSysTraceEvent.scoped("WebViewChromium.ContentSettingsAdapter")) {
                 mWebSettings = mFactory.createContentSettingsAdapter(mAwContents.getSettings());
@@ -2727,6 +2726,13 @@ class WebViewChromium
     @Override
     public void setFindListener(WebView.FindListener listener) {
         forbidBuilderConfiguration();
+        if (checkNeedsPost()) {
+            mFactory.addTask(
+                    () -> {
+                        setFindListener(listener);
+                    });
+            return;
+        }
         try (TraceEvent event = TraceEvent.scoped("WebView.APICall.Framework.SET_FIND_LISTENER")) {
             recordWebViewApiCall(
                     ApiCall.SET_FIND_LISTENER,
@@ -2968,6 +2974,13 @@ class WebViewChromium
     @Override
     public void setDownloadListener(DownloadListener listener) {
         forbidBuilderConfiguration();
+        if (checkNeedsPost()) {
+            mFactory.addTask(
+                    () -> {
+                        setDownloadListener(listener);
+                    });
+            return;
+        }
         try (TraceEvent event =
                 TraceEvent.scoped("WebView.APICall.Framework.SET_DOWNLOAD_LISTENER")) {
             recordWebViewApiCall(

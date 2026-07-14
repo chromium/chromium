@@ -1050,7 +1050,7 @@ public class AwActivityTestRule extends BaseActivityTestRule<AwTestRunnerActivit
                     context,
                     internalAccessAdapter,
                     drawFnAccess,
-                    contentsClient,
+                    aw -> contentsClient,
                     dependencyFactory);
         }
     }

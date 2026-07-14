@@ -49,7 +49,7 @@ public class TestAwContents extends AwContents {
                 context,
                 internalAccessAdapter,
                 drawFnAccess,
-                contentsClient,
+                aw -> contentsClient,
                 dependencyFactory);
 
         mRenderProcessGoneHelper = new RenderProcessGoneHelper();
