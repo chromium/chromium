@@ -1,0 +1,9 @@
+Tests Service Worker (classic) Update Registration emits Network Events for disallowed content-type
+==== INITIAL service worker request ====
+Registration Result: SUCCESS!
+requestWillBeSent url: http://127.0.0.1:8000/inspector-protocol/fetch/resources/service-workers/worker.php?defer=uuid&content_type=application%2Fjson
+responseReceived status: 200
+requestIds match: true
+==== UPDATE service worker request ====
+Update Registration Result: FAILURE: SecurityError: Failed to update a ServiceWorker for scope ('http://127.0.0.1:8000/inspector-protocol/fetch/resources/service-workers/') with script ('http://127.0.0.1:8000/inspector-protocol/fetch/resources/service-workers/worker.php?defer=uuid&content_type=application%2Fjson'): The script has an unsupported MIME type ('application/json').
+

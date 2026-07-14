@@ -371,16 +371,6 @@ crbug.com/369423339 http/tests/inspector-protocol/emulation/device-posture-chang
 crbug.com/369423339 http/tests/inspector-protocol/emulation/device-posture-event-listener.js [ Pass Timeout ]
 crbug.com/369423339 http/tests/inspector-protocol/emulation/device-posture-media-queries.js [ Pass Timeout ]
 
-# Service Worker registration.update() Network Requests require more instrumentation
-crbug.com/1334900 http/tests/inspector-protocol/fetch/service-worker-classic-update-network-id-disallowed-content-type.js [ Failure ]
-crbug.com/1334900 http/tests/inspector-protocol/fetch/service-worker-classic-update-network-id-disallowed-redirect.js [ Failure ]
-crbug.com/1334900 http/tests/inspector-protocol/fetch/service-worker-classic-update-network-id-disallowed-response-code.js [ Failure ]
-crbug.com/1334900 http/tests/inspector-protocol/fetch/service-worker-classic-update-network-id-disallowed-service-worker-allowed-header.js [ Failure ]
-crbug.com/1334900 http/tests/inspector-protocol/fetch/service-worker-module-update-network-id-disallowed-content-type.js [ Failure ]
-crbug.com/1334900 http/tests/inspector-protocol/fetch/service-worker-module-update-network-id-disallowed-redirect.js [ Failure ]
-crbug.com/1334900 http/tests/inspector-protocol/fetch/service-worker-module-update-network-id-disallowed-response-code.js [ Failure ]
-crbug.com/1334900 http/tests/inspector-protocol/fetch/service-worker-module-update-network-id-disallowed-service-worker-allowed-header.js [ Failure ]
-
 # This test was attributed to site isolation but times out with or without it. Broken test?
 crbug.com/1050826 external/wpt/mixed-content/gen/top.http-rp/opt-in/object-tag.https.html [ Skip Timeout ]
 
