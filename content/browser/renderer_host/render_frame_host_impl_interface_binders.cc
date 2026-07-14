@@ -14,7 +14,6 @@
 #include "base/metrics/metrics_hashes.h"
 #include "base/task/single_thread_task_runner.h"
 #include "content/browser/accessibility/render_accessibility_host.h"
-#include "content/browser/attribution_reporting/attribution_host.h"
 #include "content/browser/back_forward_cache/back_forward_cache_impl.h"
 #include "content/browser/blob_storage/chrome_blob_storage_context.h"
 #include "content/browser/file_system/file_system_manager_impl.h"
@@ -314,15 +313,6 @@ void RenderFrameHostImpl::SetUpMojoConnection() {
              mojo::PendingAssociatedReceiver<blink::mojom::DisplayCutoutHost>
                  receiver) {
             impl->delegate()->BindDisplayCutoutHost(impl, std::move(receiver));
-          },
-          base::Unretained(this)));
-
-  associated_registry_->AddInterface<blink::mojom::AttributionHost>(
-      base::BindRepeating(
-          [](RenderFrameHostImpl* impl,
-             mojo::PendingAssociatedReceiver<blink::mojom::AttributionHost>
-                 receiver) {
-            AttributionHost::BindReceiver(std::move(receiver), impl);
           },
           base::Unretained(this)));
 

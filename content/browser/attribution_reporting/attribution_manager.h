@@ -26,7 +26,6 @@ class Time;
 
 namespace content {
 
-class AttributionDataHostManager;
 class AttributionObserver;
 class AttributionTrigger;
 class BrowserContext;
@@ -54,9 +53,6 @@ class CONTENT_EXPORT AttributionManager : public AttributionDataModel {
   virtual void AddObserver(AttributionObserver* observer) = 0;
 
   virtual void RemoveObserver(AttributionObserver* observer) = 0;
-
-  // Gets manager responsible for tracking pending data hosts targeting `this`.
-  virtual AttributionDataHostManager* GetDataHostManager() = 0;
 
   // Persists the given |source| to storage. Called when a navigation
   // originating from a source tag finishes.

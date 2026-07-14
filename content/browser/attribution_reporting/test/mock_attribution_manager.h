@@ -39,7 +39,6 @@ class ValueView;
 namespace content {
 
 class AggregatableDebugReport;
-class AttributionDataHostManager;
 class AttributionDebugReport;
 class BrowsingDataFilterBuilder;
 class CreateReportResult;
@@ -117,7 +116,6 @@ class MockAttributionManager : public AttributionManager {
 
   void AddObserver(AttributionObserver*) override;
   void RemoveObserver(AttributionObserver*) override;
-  AttributionDataHostManager* GetDataHostManager() override;
 
   void NotifySourcesChanged();
   void NotifyReportsChanged();
@@ -144,12 +142,9 @@ class MockAttributionManager : public AttributionManager {
                             attribution_reporting::mojom::OsRegistrationResult);
   void NotifyDebugModeChanged(bool debug_mode);
 
-  void SetDataHostManager(std::unique_ptr<AttributionDataHostManager>);
-
   void SetOnObserverRegistered(base::OnceClosure done);
 
  private:
-  std::unique_ptr<AttributionDataHostManager> data_host_manager_;
   base::ObserverList<AttributionObserver, /*check_empty=*/true> observers_;
 
   base::OnceClosure on_observer_registered_;

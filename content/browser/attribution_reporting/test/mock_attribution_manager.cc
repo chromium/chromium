@@ -16,7 +16,6 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/attribution_reporting/os_registration.h"
-#include "content/browser/attribution_reporting/attribution_data_host_manager.h"
 #include "content/browser/attribution_reporting/attribution_observer.h"
 #include "content/browser/attribution_reporting/attribution_reporting.mojom-forward.h"
 #include "content/browser/attribution_reporting/os_registration.h"
@@ -38,11 +37,6 @@ void MockAttributionManager::AddObserver(AttributionObserver* observer) {
 
 void MockAttributionManager::RemoveObserver(AttributionObserver* observer) {
   observers_.RemoveObserver(observer);
-}
-
-AttributionDataHostManager* MockAttributionManager::GetDataHostManager() {
-  DCHECK(data_host_manager_);
-  return data_host_manager_.get();
 }
 
 void MockAttributionManager::NotifySourcesChanged() {
@@ -123,12 +117,6 @@ void MockAttributionManager::NotifyDebugModeChanged(bool debug_mode) {
   for (auto& observer : observers_) {
     observer.OnDebugModeChanged(debug_mode);
   }
-}
-
-void MockAttributionManager::SetDataHostManager(
-    std::unique_ptr<AttributionDataHostManager> manager) {
-  DCHECK(manager);
-  data_host_manager_ = std::move(manager);
 }
 
 void MockAttributionManager::SetOnObserverRegistered(base::OnceClosure done) {

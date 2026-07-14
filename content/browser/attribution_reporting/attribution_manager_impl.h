@@ -51,7 +51,6 @@ namespace content {
 class AggregatableDebugReport;
 class AggregatableReport;
 class AggregatableReportRequest;
-class AttributionDataHostManager;
 class AttributionDebugReport;
 class AttributionOsLevelManager;
 class AttributionReportSender;
@@ -116,7 +115,6 @@ class CONTENT_EXPORT AttributionManagerImpl : public AttributionManager {
   // AttributionManager:
   void AddObserver(AttributionObserver* observer) override;
   void RemoveObserver(AttributionObserver* observer) override;
-  AttributionDataHostManager* GetDataHostManager() override;
   void HandleSource(StorableSource source,
                     GlobalRenderFrameHostId render_frame_id) override;
   void HandleTrigger(AttributionTrigger trigger,
@@ -267,8 +265,6 @@ class CONTENT_EXPORT AttributionManagerImpl : public AttributionManager {
   base::SequenceBound<AttributionResolver> attribution_resolver_;
 
   std::unique_ptr<ReportSchedulerTimer> scheduler_timer_;
-
-  std::unique_ptr<AttributionDataHostManager> data_host_manager_;
 
   // Storage policy for the browser context |this| is in. May be nullptr.
   scoped_refptr<storage::SpecialStoragePolicy> special_storage_policy_;

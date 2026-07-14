@@ -1758,7 +1758,7 @@ chromium-metrics-reviews@google.com.
       label="extensions.mojom.EventRouter (Obsolete in M122)"/>
   <int value="-71187962" label="supervised_user.mojom.SupervisedUserCommands"/>
   <int value="-10666109" label="chrome.mojom.PluginInfoHost"/>
-  <int value="-4973921" label="blink.mojom.AttributionHost"/>
+  <int value="-4973921" label="blink.mojom.AttributionHost (Obsolete in M152)"/>
   <int value="191605727" label="content.mojom.PepperHost"/>
   <int value="828689080" label="blink.mojom.BlobURLStore (Obsolete)"/>
   <int value="1054828948" label="extensions.mojom.GuestView"/>

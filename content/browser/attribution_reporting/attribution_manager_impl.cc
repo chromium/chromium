@@ -46,6 +46,7 @@
 #include "components/attribution_reporting/constants.h"
 #include "components/attribution_reporting/os_registration.h"
 #include "components/attribution_reporting/registration.mojom.h"
+#include "components/attribution_reporting/registration_header_error.h"
 #include "components/attribution_reporting/source_registration.h"
 #include "components/attribution_reporting/suitable_origin.h"
 #include "components/attribution_reporting/trigger_registration.h"
@@ -57,8 +58,6 @@
 #include "content/browser/attribution_reporting/aggregatable_attribution_utils.h"
 #include "content/browser/attribution_reporting/aggregatable_debug_report.h"
 #include "content/browser/attribution_reporting/attribution_constants.h"
-#include "content/browser/attribution_reporting/attribution_data_host_manager.h"
-#include "content/browser/attribution_reporting/attribution_data_host_manager_impl.h"
 #include "content/browser/attribution_reporting/attribution_debug_report.h"
 #include "content/browser/attribution_reporting/attribution_info.h"
 #include "content/browser/attribution_reporting/attribution_observer.h"
@@ -650,8 +649,6 @@ AttributionManagerImpl::AttributionManagerImpl(
           g_run_in_memory ? base::FilePath() : user_data_directory,
           resolver_delegate ? std::move(resolver_delegate)
                             : MakeResolverDelegate(debug_mode))),
-      data_host_manager_(
-          std::make_unique<AttributionDataHostManagerImpl>(this)),
       special_storage_policy_(std::move(special_storage_policy)),
       report_sender_(std::move(report_sender)),
       os_level_manager_(std::move(os_level_manager)),
@@ -689,11 +686,6 @@ void AttributionManagerImpl::AddObserver(AttributionObserver* observer) {
 
 void AttributionManagerImpl::RemoveObserver(AttributionObserver* observer) {
   observers_.RemoveObserver(observer);
-}
-
-AttributionDataHostManager* AttributionManagerImpl::GetDataHostManager() {
-  CHECK(data_host_manager_);
-  return data_host_manager_.get();
 }
 
 namespace {
