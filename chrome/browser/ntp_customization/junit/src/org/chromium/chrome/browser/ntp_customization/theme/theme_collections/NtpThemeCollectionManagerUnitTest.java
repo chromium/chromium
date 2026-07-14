@@ -135,44 +135,6 @@ public class NtpThemeCollectionManagerUnitTest {
     }
 
     @Test
-    public void testOnCustomBackgroundImageUpdated_saveNextImageForDailyRefresh() {
-        mNtpThemeCollectionManager =
-                new NtpThemeCollectionManager(mContext, mProfile, mOnThemeImageSelectedCallback);
-        // Set up current state: daily refresh is on for "collectionId".
-        CustomBackgroundInfo currentInfo =
-                new CustomBackgroundInfo(
-                        JUnitTestGURLs.URL_1,
-                        /* collectionId= */ "collectionId",
-                        /* isUploadedImage= */ false,
-                        /* isDailyRefreshEnabled= */ true);
-        when(mNtpCustomizationConfigManager.getBackgroundType())
-                .thenReturn(NtpCustomizationUtils.NtpBackgroundType.THEME_COLLECTION);
-        when(mNtpCustomizationConfigManager.getCustomBackgroundInfo()).thenReturn(currentInfo);
-
-        // A new image for the same collection arrives (simulating the pre-fetched image).
-        CustomBackgroundInfo nextInfo =
-                new CustomBackgroundInfo(
-                        JUnitTestGURLs.URL_2,
-                        /* collectionId= */ "collectionId",
-                        /* isUploadedImage= */ false,
-                        /* isDailyRefreshEnabled= */ true);
-        Bitmap bitmap = Bitmap.createBitmap(100, 100, Bitmap.Config.ARGB_8888);
-
-        mNtpThemeCollectionManager.onCustomBackgroundImageUpdated(nextInfo);
-
-        verify(mImageFetcher).fetchImage(any(), mBitmapCallbackCaptor.capture());
-        mBitmapCallbackCaptor.getValue().onResult(bitmap);
-        RobolectricUtil.runAllBackgroundAndUi();
-
-        // Verify it saves for daily refresh and does NOT apply it immediately.
-        assertTrue(NtpCustomizationUtils.createDailyRefreshBackgroundImageFile().exists());
-        assertNotNull(
-                NtpCustomizationUtils.getDailyRefreshCustomBackgroundInfoFromSharedPreference());
-        verify(mNtpCustomizationConfigManager, never()).onBackgroundDataChanged(any(), any());
-        verify(mOnThemeImageSelectedCallback, never()).onResult(any());
-    }
-
-    @Test
     public void testConstructorWithCustomBackground() {
         CustomBackgroundInfo info =
                 new CustomBackgroundInfo(
@@ -253,11 +215,6 @@ public class NtpThemeCollectionManagerUnitTest {
                         /* isUploadedImage= */ false,
                         /* isDailyRefreshEnabled= */ true);
         Bitmap bitmap = Bitmap.createBitmap(100, 100, Bitmap.Config.ARGB_8888);
-
-        // Mock config manager so isNextThemeCollectionImage returns false. This simulates the
-        // first image for a collection arriving, not the prefetched "next day" image.
-        when(mNtpCustomizationConfigManager.getBackgroundType())
-                .thenReturn(NtpCustomizationUtils.NtpBackgroundType.DEFAULT);
 
         mNtpThemeCollectionManager.onCustomBackgroundImageUpdated(info);
 

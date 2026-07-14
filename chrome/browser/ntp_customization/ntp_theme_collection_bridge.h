@@ -90,17 +90,23 @@ class NtpThemeCollectionBridge : public NtpBackgroundServiceObserver,
   // Resets the New Tab Page background to the default theme.
   void ResetCustomBackground(JNIEnv* env);
 
- private:
+  // Disconnects from the custom background service when the service is
+  // destroyed.
+  void DisconnectCustomBackgroundService();
+
+  // NtpCustomBackgroundServiceObserver:
+  void OnCustomBackgroundImageUpdated() override;
+
+ protected:
+  NtpThemeCollectionBridge();
   ~NtpThemeCollectionBridge() override;
 
+ private:
   // NtpBackgroundServiceObserver:
   void OnCollectionInfoAvailable() override;
   void OnCollectionImagesAvailable() override;
   void OnNextCollectionImageAvailable() override;
   void OnNtpBackgroundServiceShuttingDown() override;
-
-  // NtpCustomBackgroundServiceObserver:
-  void OnCustomBackgroundImageUpdated() override;
 
   raw_ptr<Profile> profile_;
   raw_ptr<NtpBackgroundService> ntp_background_service_;

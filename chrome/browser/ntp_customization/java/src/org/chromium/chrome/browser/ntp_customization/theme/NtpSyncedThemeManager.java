@@ -34,12 +34,14 @@ public class NtpSyncedThemeManager {
         mContext = context;
         mProfile = profile;
         mImageFetcher = NtpCustomizationUtils.createImageFetcher(profile);
+        mNtpSyncedThemeBridge = new NtpSyncedThemeBridge(mProfile, this::onThemeCollectionSynced);
     }
 
     /** Cleans up the C++ side of {@link NtpSyncedThemeBridge}. */
     public void destroy() {
         if (mNtpSyncedThemeBridge != null) {
             mNtpSyncedThemeBridge.destroy();
+            mNtpSyncedThemeBridge = null;
         }
     }
 
@@ -63,10 +65,9 @@ public class NtpSyncedThemeManager {
             return;
         }
 
-        // TODO(crbug.com/423579377): Move this back to constructor when adding specific android
-        // service for theme collections.
-        mNtpSyncedThemeBridge = new NtpSyncedThemeBridge(mProfile, this::onThemeCollectionSynced);
-        mNtpSyncedThemeBridge.fetchNextThemeCollectionImage();
+        if (mNtpSyncedThemeBridge != null) {
+            mNtpSyncedThemeBridge.fetchNextThemeCollectionImage();
+        }
     }
 
     /**
@@ -92,7 +93,6 @@ public class NtpSyncedThemeManager {
                                         mContext, bitmap);
                         NtpCustomizationUtils.saveDailyRefreshBackgroundInfo(
                                 info, bitmap, backgroundImageInfo);
-                        destroy();
                     }
                 });
     }

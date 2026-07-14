@@ -35,16 +35,21 @@ NtpSyncedThemeBridge::NtpSyncedThemeBridge(JNIEnv* env,
           NtpAndroidCustomBackgroundServiceFactory::GetForProfile(profile)),
       j_java_obj_(env, j_java_obj) {
   CHECK(ntp_custom_background_service_);
-  ntp_custom_background_service_->AddObserver(this);
+  ntp_custom_background_service_->SetSyncedThemeBridge(this);
 }
 
 void NtpSyncedThemeBridge::Destroy(JNIEnv* env) {
   if (ntp_custom_background_service_) {
-    ntp_custom_background_service_->RemoveObserver(this);
+    ntp_custom_background_service_->SetSyncedThemeBridge(nullptr);
   }
   delete this;
 }
 
+void NtpSyncedThemeBridge::DisconnectCustomBackgroundService() {
+  ntp_custom_background_service_ = nullptr;
+}
+
+NtpSyncedThemeBridge::NtpSyncedThemeBridge() = default;
 NtpSyncedThemeBridge::~NtpSyncedThemeBridge() = default;
 
 void NtpSyncedThemeBridge::FetchNextThemeCollectionImage(JNIEnv* env) {
@@ -56,6 +61,9 @@ void NtpSyncedThemeBridge::FetchNextThemeCollectionImage(JNIEnv* env) {
 
 ScopedJavaLocalRef<jobject> NtpSyncedThemeBridge::GetCustomBackgroundInfo(
     JNIEnv* env) {
+  if (!ntp_custom_background_service_) {
+    return nullptr;
+  }
   std::optional<CustomBackground> background =
       ntp_custom_background_service_->GetCustomBackground();
   if (!background.has_value()) {

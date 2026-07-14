@@ -88,7 +88,7 @@ public class NtpSyncedThemeManagerUnitTest {
 
         mNtpSyncedThemeManager = new NtpSyncedThemeManager(mContext, mProfile);
         mNtpSyncedThemeManager.fetchNextThemeCollectionImageAfterDailyRefreshApplied();
-        verify(mNatives, never()).init(any(), any());
+        verify(mNatives, never()).fetchNextThemeCollectionImage(anyLong());
     }
 
     @Test
@@ -113,7 +113,7 @@ public class NtpSyncedThemeManagerUnitTest {
 
         mNtpSyncedThemeManager = new NtpSyncedThemeManager(mContext, mProfile);
         mNtpSyncedThemeManager.fetchNextThemeCollectionImageAfterDailyRefreshApplied();
-        verify(mNatives, never()).init(any(), any());
+        verify(mNatives, never()).fetchNextThemeCollectionImage(anyLong());
     }
 
     @Test
@@ -158,7 +158,7 @@ public class NtpSyncedThemeManagerUnitTest {
 
         RobolectricUtil.runAllBackgroundAndUi();
 
-        // 6. Verify daily refresh info is saved and bridge is destroyed.
+        // 6. Verify daily refresh info is saved and bridge is kept alive.
         assertTrue(NtpCustomizationUtils.createDailyRefreshBackgroundImageFile().exists());
         assertNotNull(
                 NtpCustomizationUtils.getDailyRefreshCustomBackgroundInfoFromSharedPreference());
@@ -167,6 +167,13 @@ public class NtpSyncedThemeManagerUnitTest {
                 NtpThemeColorInfo.COLOR_NOT_SET,
                 NtpCustomizationUtils.getDailyRefreshCustomizedPrimaryColorFromSharedPreference());
 
+        verify(mNatives, never()).destroy(anyLong());
+    }
+
+    @Test
+    public void testDestroy() {
+        mNtpSyncedThemeManager = new NtpSyncedThemeManager(mContext, mProfile);
+        mNtpSyncedThemeManager.destroy();
         verify(mNatives).destroy(anyLong());
     }
 }

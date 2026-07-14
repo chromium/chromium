@@ -42,12 +42,18 @@ class NtpSyncedThemeBridge : public NtpCustomBackgroundServiceObserver {
   base::android::ScopedJavaLocalRef<jobject> GetCustomBackgroundInfo(
       JNIEnv* env);
 
- private:
-  ~NtpSyncedThemeBridge() override;
+  // Disconnects from the custom background service when the service is
+  // destroyed.
+  void DisconnectCustomBackgroundService();
 
   // NtpCustomBackgroundServiceObserver:
   void OnCustomBackgroundImageUpdated() override;
 
+ protected:
+  NtpSyncedThemeBridge();
+  ~NtpSyncedThemeBridge() override;
+
+ private:
   raw_ptr<Profile> profile_;
   raw_ptr<NtpAndroidCustomBackgroundService> ntp_custom_background_service_;
   base::android::ScopedJavaGlobalRef<jobject> j_java_obj_;

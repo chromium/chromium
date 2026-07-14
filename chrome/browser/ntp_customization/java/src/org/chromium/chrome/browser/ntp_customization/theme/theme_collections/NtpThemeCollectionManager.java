@@ -166,12 +166,6 @@ public class NtpThemeCollectionManager {
                     BackgroundImageInfo backgroundImageInfo =
                             NtpCustomizationUtils.getDefaultBackgroundImageInfo(mContext, bitmap);
 
-                    if (isNextThemeCollectionImage(info)) {
-                        NtpCustomizationUtils.saveDailyRefreshBackgroundInfo(
-                                info, bitmap, backgroundImageInfo);
-                        return;
-                    }
-
                     // We do not set the theme collection image as the background if the bottom
                     // sheet is dismissed; this is done to ensure proper theme color handling. Note
                     // that this does not affect the prepared daily refresh image, as we only save
@@ -221,29 +215,6 @@ public class NtpThemeCollectionManager {
     /** Fetches the next image for a theme collection with daily refresh enabled. */
     private void fetchNextThemeCollectionImage() {
         mNtpThemeCollectionBridge.fetchNextThemeCollectionImage();
-    }
-
-    /**
-     * Determines if the updated background information is for the next daily refresh image.
-     *
-     * <p>This is true if the new image belongs to the same collection as the current one and daily
-     * refresh is enabled for both.
-     *
-     * @param info The incoming {@link CustomBackgroundInfo}.
-     */
-    private boolean isNextThemeCollectionImage(CustomBackgroundInfo info) {
-        if (mNtpCustomizationConfigManager.getBackgroundType() != THEME_COLLECTION) {
-            return false;
-        }
-
-        CustomBackgroundInfo currentInfo = mNtpCustomizationConfigManager.getCustomBackgroundInfo();
-        if (currentInfo == null) {
-            return false;
-        }
-
-        return currentInfo.isDailyRefreshEnabled
-                && info.isDailyRefreshEnabled
-                && currentInfo.collectionId.equals(info.collectionId);
     }
 
     /** Clears the state related to pending theme selections. */

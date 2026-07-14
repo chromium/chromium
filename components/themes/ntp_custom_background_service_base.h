@@ -97,7 +97,7 @@ class NtpCustomBackgroundServiceBase : public KeyedService,
       const std::optional<std::string>& resume_token,
       std::optional<int> refresh_timestamp);
 
-  void NotifyAboutBackgrounds();
+  virtual void NotifyAboutBackgrounds();
 
   raw_ptr<PrefService, DanglingUntriaged> pref_service_;
   raw_ptr<NtpBackgroundService, DanglingUntriaged> background_service_;

@@ -43,7 +43,7 @@ NtpThemeCollectionBridge::NtpThemeCollectionBridge(
   CHECK(ntp_background_service_);
   CHECK(ntp_custom_background_service_);
   ntp_background_service_->AddObserver(this);
-  ntp_custom_background_service_->AddObserver(this);
+  ntp_custom_background_service_->SetThemeCollectionBridge(this);
 }
 
 void NtpThemeCollectionBridge::Destroy(JNIEnv* env) {
@@ -51,11 +51,16 @@ void NtpThemeCollectionBridge::Destroy(JNIEnv* env) {
     ntp_background_service_->RemoveObserver(this);
   }
   if (ntp_custom_background_service_) {
-    ntp_custom_background_service_->RemoveObserver(this);
+    ntp_custom_background_service_->SetThemeCollectionBridge(nullptr);
   }
   delete this;
 }
 
+void NtpThemeCollectionBridge::DisconnectCustomBackgroundService() {
+  ntp_custom_background_service_ = nullptr;
+}
+
+NtpThemeCollectionBridge::NtpThemeCollectionBridge() = default;
 NtpThemeCollectionBridge::~NtpThemeCollectionBridge() = default;
 
 void NtpThemeCollectionBridge::GetBackgroundCollections(
@@ -165,6 +170,9 @@ void NtpThemeCollectionBridge::OnNtpBackgroundServiceShuttingDown() {
 
 ScopedJavaLocalRef<jobject> NtpThemeCollectionBridge::GetCustomBackgroundInfo(
     JNIEnv* env) {
+  if (!ntp_custom_background_service_) {
+    return nullptr;
+  }
   std::optional<CustomBackground> background =
       ntp_custom_background_service_->GetCustomBackground();
   if (!background.has_value()) {
