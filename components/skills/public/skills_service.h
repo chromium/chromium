@@ -28,6 +28,7 @@ class DataTypeControllerDelegate;
 
 namespace skills {
 
+class SkillsProvider;
 struct Skill;
 
 // Core service in charge of performing CRUD operations for skills. Each profile
@@ -95,6 +96,8 @@ class SkillsService : public KeyedService {
     virtual void OnDiscoverySkillsUpdated(
         const FirstPartySkillData* first_party_skill_data) {}
 
+    // Called when a skills provider notifies that its skills have changed.
+    virtual void OnProvidedSkillsChanged(SkillsProvider* provider) {}
     // Called when the service is shutting down. Observers should remove
     // themselves.
     virtual void OnSkillsServiceShuttingDown() {}
@@ -212,6 +215,10 @@ class SkillsService : public KeyedService {
   // Notify that a glic panel associated with the skills service is being
   // opened.
   virtual void NotifyPanelWillOpen() = 0;
+
+  // Registers a skills provider with the service. The service takes ownership
+  // of the provider.
+  virtual void AddProvider(std::unique_ptr<SkillsProvider> provider) = 0;
 
   // Checks if the image url of a skill is valid.
   static bool IsValidSkillImageUrl(const GURL& gurl);

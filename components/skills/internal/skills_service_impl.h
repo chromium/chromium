@@ -21,6 +21,7 @@
 #include "components/skills/internal/skills_fetcher.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
 #include "components/skills/public/skill.h"
+#include "components/skills/public/skills_provider.h"
 #include "components/skills/public/skills_service.h"
 #include "components/skills/public/skills_types.h"
 #include "components/sync/model/data_type_store.h"
@@ -112,6 +113,9 @@ class SkillsServiceImpl : public SkillsService {
   void NotifyTemporarySkillDisplayChanged(std::string_view skill_id,
                                           DisplayState display_state) override;
   void NotifyPanelWillOpen() override;
+  void AddProvider(std::unique_ptr<SkillsProvider> provider) override;
+
+  void OnProviderSkillsChanged(SkillsProvider* provider);
 
  private:
   void NotifySkillChanged(std::string_view skill_id,
@@ -151,6 +155,12 @@ class SkillsServiceImpl : public SkillsService {
 
   // The list of skills managed by this service.
   std::vector<std::unique_ptr<Skill>> skills_;
+
+  // The list of skill providers.
+  std::vector<std::unique_ptr<SkillsProvider>> providers_;
+
+  // The list of subscriptions to the skills providers.
+  std::vector<base::CallbackListSubscription> provider_subscriptions_;
 
   // The struct of loaded 1p discovery skill protos and topics list.
   FirstPartySkillData first_party_data_;

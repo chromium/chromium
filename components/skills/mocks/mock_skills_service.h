@@ -6,6 +6,7 @@
 #define COMPONENTS_SKILLS_MOCKS_MOCK_SKILLS_SERVICE_H_
 
 #include "components/skills/public/skill.h"
+#include "components/skills/public/skills_provider.h"
 #include "components/skills/public/skills_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -70,6 +71,7 @@ class MockSkillsService : public SkillsService {
               NotifyTemporarySkillDisplayChanged,
               (std::string_view, DisplayState));
   MOCK_METHOD(void, NotifyPanelWillOpen, ());
+  MOCK_METHOD(void, AddProvider, (std::unique_ptr<SkillsProvider>));
 };
 
 }  // namespace skills

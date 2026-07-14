@@ -64,6 +64,7 @@ source_set("public") {
     "skills_features.h",
     "skills_prefs.cc",
     "skills_prefs.h",
+    "skills_provider.h",
     "skills_service.cc",
     "skills_service.h",
   ]

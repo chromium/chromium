@@ -451,6 +451,23 @@ void SkillsServiceImpl::RefreshDiscoverySkills() {
 
   if (requires_refresh) {
     FetchDiscoverySkills();
+    for (auto& provider : providers_) {
+      provider->RefreshSkills();
+    }
+  }
+}
+
+void SkillsServiceImpl::AddProvider(std::unique_ptr<SkillsProvider> provider) {
+  SkillsProvider* provider_ptr = provider.get();
+  provider_subscriptions_.push_back(provider->RegisterSkillsChangedCallback(
+      base::BindRepeating(&SkillsServiceImpl::OnProviderSkillsChanged,
+                          base::Unretained(this), provider_ptr)));
+  providers_.push_back(std::move(provider));
+}
+
+void SkillsServiceImpl::OnProviderSkillsChanged(SkillsProvider* provider) {
+  for (Observer& observer : observers_) {
+    observer.OnProvidedSkillsChanged(provider);
   }
 }
 
