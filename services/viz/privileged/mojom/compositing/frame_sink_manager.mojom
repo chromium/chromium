@@ -49,7 +49,7 @@ struct RootCompositorFrameSinkParams {
   // frame interval decider.
   bool enable_video_conference_matcher = false;
 
-  [EnableIf=is_android]
+  [EnableIf=is_android|is_mac]
   float refresh_rate;
 
   // Whether Viz should wait for all sinks to finish processing (true, used

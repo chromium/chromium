@@ -34,6 +34,7 @@ class VIZ_COMMON_EXPORT ExternalBeginFrameSourceMac
 
   ExternalBeginFrameSourceMac(uint32_t restart_id,
                               int64_t display_id,
+                              float refresh_rate,
                               OutputSurface* output_surface);
 
   ExternalBeginFrameSourceMac(const ExternalBeginFrameSourceMac&) = delete;
@@ -138,6 +139,9 @@ class VIZ_COMMON_EXPORT ExternalBeginFrameSourceMac
   int vsync_callback_keep_alive_counter_ = 0;
 
   const raw_ptr<OutputSurface, DanglingUntriaged> output_surface_;
+
+  // When `min_refresh_interval_` changes, this callback is called and
+  // FrameIntervalDecider is updated.
   UpdateVSyncParametersCallback update_vsync_params_callback_;
 
   MultipleHWRefreshRatesCallback multiple_hw_refresh_rates_callback_;
@@ -147,8 +151,10 @@ class VIZ_COMMON_EXPORT ExternalBeginFrameSourceMac
   // FrameRateDecider. No preferred refresh rate is adjusted.
   bool hw_takes_any_refresh_rate_ = false;
 
-  // Screen refresh interval caps.
+  // This is the last known refresh interval. It's updated every time a VSync
+  // arrives and OnDisplayLinkCallback() is called.
   base::TimeDelta min_refresh_interval_ = BeginFrameArgs::DefaultInterval();
+
   base::TimeDelta max_refresh_interval_ = BeginFrameArgs::DefaultInterval();
 
   base::WeakPtrFactory<ExternalBeginFrameSourceMac> weak_ptr_factory_{this};

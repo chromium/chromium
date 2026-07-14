@@ -71,12 +71,18 @@ void RecordVSyncCallbackDelay(base::TimeDelta delay) {
 ExternalBeginFrameSourceMac::ExternalBeginFrameSourceMac(
     uint32_t restart_id,
     int64_t display_id,
+    float refresh_rate,
     OutputSurface* output_surface)
     : ExternalBeginFrameSource(this, restart_id),
       create_time_(base::TimeTicks::Now()),
       output_surface_(output_surface) {
   VLOG(kOutputLevel) << "ExternalBeginFrameSourceMac(" << this << ")"
                      << "::ExternalBeginFrameSourceMac() ID:" << display_id;
+
+  // Set the default refresh interval.
+  min_refresh_interval_ = (refresh_rate > 0)
+                              ? base::Hertz(refresh_rate)
+                              : BeginFrameArgs::DefaultInterval();
 
   // TODO(crbug.com/345275139): Remove this suspend observer once
   // RecordFirstFrameHistograms() is no longer required.

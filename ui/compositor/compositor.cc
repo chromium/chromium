@@ -62,7 +62,9 @@
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator_collection.h"
 #include "ui/compositor/overscroll/scroll_input_handler.h"
+#include "ui/display/display.h"
 #include "ui/display/display_switches.h"
+#include "ui/display/screen.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/icc_profile.h"
@@ -550,6 +552,14 @@ void Compositor::SetVSyncDisplayID(const int64_t display_id) {
   }
 
   display_id_ = display_id;
+
+  display::Display display;
+  if (display::Screen::Get() &&
+      display::Screen::Get()->GetDisplayWithDisplayId(display_id, &display)) {
+    if (display.display_frequency() > 0) {
+      refresh_rate_ = display.display_frequency();
+    }
+  }
 
   if (display_private_) {
     display_private_->SetVSyncDisplayID(display_id);

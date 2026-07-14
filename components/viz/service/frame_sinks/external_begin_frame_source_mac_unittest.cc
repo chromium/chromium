@@ -151,7 +151,8 @@ class ExternalBeginFrameSourceMacTest : public testing::Test {
   void SetUp() override {
     // Start with an invalid display ID because override does not work in Ctor.
     source_ = std::make_unique<ExternalBeginFrameSourceMacWrapper>(
-        0, display::kInvalidDisplayId, output_surface_.get());
+        0, display::kInvalidDisplayId, /*refresh_rate=*/60.f,
+        output_surface_.get());
     source_->SetUpdateVSyncParametersCallback(
         update_vsync_callback_.GetCallback());
 
@@ -348,7 +349,8 @@ class ExternalBeginFrameSourceMacTimerTest
 
     // Start with an invalid display ID to force fallback to timer.
     source_ = std::make_unique<ExternalBeginFrameSourceMacWrapper>(
-        0, display::kInvalidDisplayId, output_surface_.get());
+        0, display::kInvalidDisplayId, /*refresh_rate=*/60.f,
+        output_surface_.get());
 
     // Simulate a failing ExternalBeginFrameSourceMac case with a valid
     // display ID, 100. We cannot use `SetVSyncDisplayID(kInvalidDisplayId
