@@ -32,9 +32,10 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.R;
+import org.chromium.chrome.browser.bookmarks.R;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.listmenu.BasicListMenu;
+import org.chromium.ui.modelutil.ModelListAdapter;
 import org.chromium.ui.widget.AnchoredPopupWindow;
 
 /** Unit tests for the {@link BookmarkBarPopupCoordinator}. */
@@ -103,15 +104,56 @@ public class BookmarkBarPopupCoordinatorTest {
 
     @Test
     @SmallTest
-    public void testConfigurePopupWindowSize_smokeTest() {
+    public void testConfigurePopupWindowSize_measuredWidthLessThanMax() {
         mCoordinator.setAnchoredPopupWindowForTesting(mAnchoredPopupWindow);
-        when(mMockListMenu.getMenuDimensions()).thenReturn(new int[] {300, 100});
+        setupMockListMenuWithContent();
+
+        android.content.res.Resources resources = mActivity.getResources();
+        int maxWidthPx = resources.getDimensionPixelSize(R.dimen.bookmarks_bar_popup_max_width);
+        int widthPixels = resources.getDisplayMetrics().widthPixels;
+        int expectedFinalWidth = Math.min(maxWidthPx, widthPixels);
+
+        int measuredWidth = expectedFinalWidth - 100;
+        int measuredHeight = 200;
+        when(mMockListMenu.getMenuDimensions())
+                .thenReturn(new int[] {measuredWidth, measuredHeight});
 
         mCoordinator.configurePopupWindowSize(mMockListMenu);
 
-        // Verify that the setDesiredContentSize method was called at least once with
-        // any integer values.
-        verify(mAnchoredPopupWindow, Mockito.atLeastOnce())
-                .setDesiredContentSize(Mockito.anyInt(), Mockito.anyInt());
+        verify(mAnchoredPopupWindow).setDesiredContentSize(measuredWidth, measuredHeight);
+    }
+
+    @Test
+    @SmallTest
+    public void testConfigurePopupWindowSize_measuredWidthGreaterThanMax() {
+        mCoordinator.setAnchoredPopupWindowForTesting(mAnchoredPopupWindow);
+        setupMockListMenuWithContent();
+
+        android.content.res.Resources resources = mActivity.getResources();
+        int maxWidthPx = resources.getDimensionPixelSize(R.dimen.bookmarks_bar_popup_max_width);
+        int widthPixels = resources.getDisplayMetrics().widthPixels;
+        int expectedFinalWidth = Math.min(maxWidthPx, widthPixels);
+
+        int measuredWidth = expectedFinalWidth + 100;
+        int measuredHeight = 200;
+        when(mMockListMenu.getMenuDimensions())
+                .thenReturn(new int[] {measuredWidth, measuredHeight});
+
+        mCoordinator.configurePopupWindowSize(mMockListMenu);
+
+        verify(mAnchoredPopupWindow).setDesiredContentSize(expectedFinalWidth, measuredHeight);
+    }
+
+    private void setupMockListMenuWithContent() {
+        ModelListAdapter mockAdapter = Mockito.mock(ModelListAdapter.class);
+        when(mockAdapter.getCount()).thenReturn(1);
+        when(mMockListMenu.getContentAdapter()).thenReturn(mockAdapter);
+
+        // Required to prevent NPE during scrollbar checks in configurePopupWindowSize.
+        ViewGroup contentParent = new LinearLayout(mActivity);
+        ListView menuList = new ListView(mActivity);
+        menuList.setId(R.id.menu_list);
+        contentParent.addView(menuList);
+        when(mMockListMenu.getContentView()).thenReturn(contentParent);
     }
 }

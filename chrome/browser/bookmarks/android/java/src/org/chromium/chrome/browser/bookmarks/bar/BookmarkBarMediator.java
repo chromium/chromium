@@ -639,6 +639,7 @@ class BookmarkBarMediator implements BookmarkBarItemsProvider.Observer {
                         .with(ListMenuItemProperties.TITLE, bookmarkItem.getTitle())
                         .with(ListMenuItemProperties.TOOLTIP, bookmarkItem.getTitle())
                         .with(ListMenuItemProperties.IS_TEXT_ELLIPSIZED_AT_END, true)
+                        .with(ListMenuItemProperties.KEEP_START_ICON_SPACING_WHEN_HIDDEN, true)
                         .with(ListMenuItemProperties.ENABLED, true)
                         .with(ListMenuItemProperties.TOUCH_LISTENER, touchListener)
                         .with(
