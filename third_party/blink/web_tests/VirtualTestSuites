@@ -177,46 +177,6 @@
     "expires": "Jan 24, 2027"
   },
   {
-    "prefix": "attribution-reporting-aggregatable-debug",
-    "platforms": [
-      "Linux",
-      "Mac",
-      "Win"
-    ],
-    "bases": [
-      "external/wpt/attribution-reporting/aggregatable-debug"
-    ],
-    "exclusive_tests": "ALL",
-    "args": [
-      "--enable-features=AggregationServiceMultipleCloudProviders:allowlist/https%3A%2F%2Fweb-platform%2Etest%3A8444%2Chttps%3A%2F%2Fwww1%2Eweb-platform%2Etest%3A8444"
-    ],
-    "owners": [
-      "linnan@chromium.org"
-    ],
-    "expires": "Jul 2, 2026"
-  },
-  {
-    "prefix": "attribution-reporting-debug-mode",
-    "owners": [
-      "apaseltiner@chromium.org"
-    ],
-    "platforms": [
-      "Linux",
-      "Mac",
-      "Win"
-    ],
-    "bases": [
-      "wpt_internal/attribution-reporting"
-    ],
-    "exclusive_tests": "ALL",
-    "args": [
-      "--attribution-reporting-debug-mode",
-      "--enable-features=AggregationServiceMultipleCloudProviders:allowlist/https%3A%2F%2Fweb-platform%2Etest%3A8444%2Chttps%3A%2F%2Fwww1%2Eweb-platform%2Etest%3A8444,FencedFramesLocalUnpartitionedDataAccess",
-      "--enable-blink-features=FencedFramesDefaultMode"
-    ],
-    "expires": "Jul 2, 2026"
-  },
-  {
     "prefix": "background-fetch-service-worker-allowed",
     "owners": [
       "sisidovski@chromium.org"
