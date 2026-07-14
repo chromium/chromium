@@ -687,7 +687,14 @@ IN_PROC_BROWSER_TEST_P(PasswordBubbleInteractiveUiTest, LeakPromptHidesBubble) {
 }
 
 // This is a regression test for crbug.com/40228526
-IN_PROC_BROWSER_TEST_P(PasswordBubbleInteractiveUiTest, SaveUiDismissalReason) {
+// TODO(crbug.com/330095872): Flaky on Mac
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_SaveUiDismissalReason DISABLED_SaveUiDismissalReason
+#else
+#define MAYBE_SaveUiDismissalReason SaveUiDismissalReason
+#endif
+IN_PROC_BROWSER_TEST_P(PasswordBubbleInteractiveUiTest,
+                       MAYBE_SaveUiDismissalReason) {
   base::HistogramTester histogram_tester;
 
   SetupPendingPassword();
