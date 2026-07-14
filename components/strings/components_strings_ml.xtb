@@ -909,7 +909,6 @@
 <translation id="2380886658946992094">നിയമപരം</translation>
 <translation id="2383455408879745299">Chrome ക്രമീകരണത്തിൽ നിങ്ങളുടെ ഉപയോഗസഹായി ടൂളുകൾ വ്യക്തിപരമാക്കുക</translation>
 <translation id="2384307209577226199">എന്റര്‍പ്രൈസ് ഡിഫോൾട്ട്</translation>
-<translation id="2384823392576123225">ബുക്ക്‌മാർക്കുകൾ തിരയുക</translation>
 <translation id="2385809941344967209">നിങ്ങളുടെ Chrome ക്രമീകരണത്തിൽ നിന്ന് Chrome അപ്‌ഡേറ്റ് ചെയ്യുക</translation>
 <translation id="2386255080630008482">സെർവറിന്റെ സർട്ടിഫിക്കറ്റ് റദ്ദാക്കി.</translation>
 <translation id="2388828676877700238">നികുതി തയ്യാറാക്കലും ആസൂത്രണവും</translation>
@@ -1425,6 +1424,7 @@
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome ക്രമീകരണത്തിൽ നിങ്ങൾ സമന്വയിപ്പിക്കുന്ന വിവരങ്ങൾ മാനേജ് ചെയ്യാൻ 'Tab' അമർത്തിയ ശേഷം 'Enter' അമർത്തുക</translation>
 <translation id="3203025201812691413">URL ശൂന്യമായിരിക്കരുത്</translation>
 <translation id="320323717674993345">പേയ്‌മെന്റ് റദ്ദാക്കുക</translation>
+<translation id="3204534477198689393">നിർദ്ദേശങ്ങൾ മെച്ചപ്പെടുത്താനും ഫോമുകൾ വേഗത്തിൽ പൂരിപ്പിക്കാനും, നിങ്ങൾ സന്ദർശിക്കുന്ന പേജുകളുടെ ഉള്ളടക്കവും URL-കളും ക്ലൗഡിലെ സ്വകാര്യ സ്പേസിൽ പ്രോസസ് ചെയ്യാം.</translation>
 <translation id="3207830513221832868"><ph name="BLOCKED_URL" /> എന്നതിൽ മുതിർന്നവർക്കുള്ള ഉള്ളടക്കം ഉണ്ടായിരിക്കാം</translation>
 <translation id="3207960819495026254">ബുക്ക്‌മാർക്കുചെയ്‌തു</translation>
 <translation id="3208701679386778924">റിപ്പോർട്ട് അയയ്‌ക്കുക, അതുവഴി ഞങ്ങൾക്ക് ഭാവിയിലെ ChromeOS അപ്‌ഡേറ്റുകൾ മെച്ചപ്പെടുത്താനാകും.</translation>
@@ -1480,6 +1480,7 @@
 <translation id="3272643614306383237">ഒരു MB-യിൽ കുറവാണ്. നിങ്ങൾ അടുത്ത തവണ സന്ദർശിക്കുമ്പോൾ ചില സെെറ്റുകൾ ലോഡ് ചെയ്യുന്നത് വളരെ പതുക്കെയായിരിക്കും.</translation>
 <translation id="3273738040255912340">നിങ്ങളുടെ അഡ്‌മിന് പ്രൊഫൈലിലും ബ്രൗസറിലും വിദൂരമായി മാറ്റങ്ങൾ വരുത്താനും റിപ്പോർട്ടിംഗിലൂടെ ബ്രൗസറിനെക്കുറിച്ചുള്ള വിവരങ്ങൾ വിശകലനം ചെയ്യാനും ആവശ്യമായ മറ്റ് ടാസ്‌ക്കുകൾ ചെയ്യാനും കഴിയും. ഈ ഉപകരണത്തിലെ ആക്‌റ്റിവിറ്റി Chromium-ന് പുറത്തും മാനേജ് ചെയ്തേക്കാം. <ph name="BEGIN_LINK" />കൂടുതലറിയുക<ph name="END_LINK" /></translation>
 <translation id="3273757719652748628">'IBAN സംരക്ഷിക്കുക' മുഴുവൻ ഉയരത്തിൽ തുറന്നു.</translation>
+<translation id="327455571215090823">സ്വകാര്യമായി നിലനിർത്തുന്ന, മികച്ച സ്വയമേവ പൂരിപ്പിക്കൽ</translation>
 <translation id="3281350579597955952">{0,plural, =1{<ph name="DESTINATION_NAME" /> എന്നതിൽ ഈ ഫയൽ തുറക്കുന്നത് അഡ്‌മിൻ നയം ശുപാർശ ചെയ്യുന്നില്ല}other{<ph name="DESTINATION_NAME" /> എന്നതിൽ ഈ ഫയലുകൾ തുറക്കുന്നത് അഡ്‌മിൻ നയം ശുപാർശ ചെയ്യുന്നില്ല}}</translation>
 <translation id="3282085321714087552">നിങ്ങളുടെ സ്ഥാപനം, <ph name="ENROLLMENT_DOMAIN" />, ക്രമീകരണമോ നയങ്ങളോ പോലുള്ള ചില വിവരങ്ങൾ ഇനിപ്പറയുന്ന വെബ്‌സൈറ്റുകളിലേക്ക് അയച്ചു.</translation>
 <translation id="3286372614333682499">പോർട്രെയ്‌റ്റ്</translation>
@@ -2242,7 +2243,6 @@
 <translation id="4438821706955556403">സാധാരണ നിരക്ക്</translation>
 <translation id="4441832193888514600">ക്ലൗഡ് ഉപയോക്തൃ നയം ആയി മാത്രമേ നയം സജ്ജീകരിക്കാനാകൂ എന്നതിനാൽ അവഗണിക്കൂ.</translation>
 <translation id="4444062564459679679">നിങ്ങളുടെ <ph name="DEVICE_NAME" /> എന്നതിലെ Chrome-ലേക്ക് ഇതിനകം അയച്ചു</translation>
-<translation id="4445694043187340808"><ph name="STARTER_PACK_TABS_FOCUSED_FRIENDLY_MATCH_TEXT" />, ടാബുകൾ തിരയാൻ Enter അമർത്തുക</translation>
 <translation id="4445964943162061557">ഇതൊരു പരീക്ഷണാത്മക ഫീച്ചറാണ്, അത് എല്ലായ്‌പ്പോഴും ശരിയായിരിക്കണമെന്നില്ല.</translation>
 <translation id="4449116177348980384">'സൈറ്റ് ക്രമീകരണം മാനേജ് ചെയ്യുക' ബട്ടൺ, Chrome ക്രമീകരണത്തിൽ സൈറ്റുകളിലുടനീളം സംഭരിച്ചിരിക്കുന്ന അനുമതികളും ഡാറ്റയും മാനേജ് ചെയ്യാൻ സജീവമാക്കുക</translation>
 <translation id="4451135742916150903">HID ഉപകരണങ്ങളിലേക്ക് കണക്‌റ്റ് ചെയ്യാൻ ആവശ്യപ്പെടാം</translation>
@@ -2462,7 +2462,6 @@
 <translation id="4811918461974803225">Google Pay, Affirm ലോഗോ</translation>
 <translation id="4813512666221746211">നെറ്റ്‌വര്‍ക്ക് പിശക്</translation>
 <translation id="4814114628197290459">IBAN ഇല്ലാതാക്കുക</translation>
-<translation id="4816341377198595747">ബുക്ക്‌മാർക്കുകൾ തിരയുക ബട്ടൺ, ബുക്ക്‌മാർക്കുകൾ തിരയാൻ സജീവമാക്കുക</translation>
 <translation id="4816492930507672669">പേജിന് യുക്തമാക്കുക</translation>
 <translation id="4822493756793346865">വെബിൽ ഉടനീളമുള്ള സ്റ്റോറുകളിലെ കഴിഞ്ഞ 90 ദിവസത്തെ നിരക്കുകൾ അടിസ്ഥാനമാക്കിയുള്ളതാണ് 'സാധാരണ നിരക്കുകൾ'.</translation>
 <translation id="4822922322149719535">പിശക് ലോഗ് അവലോകനം ചെയ്യുക</translation>
@@ -2598,7 +2597,6 @@
 <translation id="5021557570875267742">Chrome ഉപയോഗിച്ച് നിരക്കുകൾ ട്രാക്ക് ചെയ്യുക</translation>
 <translation id="5023310440958281426">നിങ്ങളുടെ അഡ്‌മിനിസ്ട്രേറ്ററുടെ നയങ്ങൾ പരിശോധിക്കുക.</translation>
 <translation id="5024171724744627792">നിങ്ങളുടെ കാർഡ് സംരക്ഷിച്ചിരിക്കുമ്പോൾ വേഗത്തിൽ പേ ചെയ്യുക. നിങ്ങളുടെ Google Account-ൽ കാർഡ് വിശദാംശങ്ങൾ എൻക്രിപ്റ്റ് ചെയ്തിരിക്കുന്നു.</translation>
-<translation id="5026466266082155886"><ph name="STARTER_PACK_HISTORY_FOCUSED_FRIENDLY_MATCH_TEXT" />, തിരയൽ ചരിത്രത്തിനായി Enter അമർത്തുക</translation>
 <translation id="5030338702439866405">ഇനിപ്പറയുന്നത് നല്‍‌കിയത്</translation>
 <translation id="503069730517007720">"<ph name="SOFTWARE_NAME" />" സോഫ്റ്റ്‌വെയറിന് ഒരു റൂട്ട് സർട്ടിഫിക്കറ്റ് ആവശ്യമാണ്, എന്നാൽ അത് ഇൻസ്‌റ്റാൾ ചെയ്‌‌തിട്ടില്ല. ഈ പ്രശ്‌നം പരിഹരിക്കാൻ, "<ph name="SOFTWARE_NAME" />" സോഫ്റ്റ്‌വെയറിനുള്ള കോൺഫിഗറേഷൻ നിർദ്ദേശങ്ങൾ ഐടി അഡ്‌മിൻ പരിശോധിക്കേണ്ടതുണ്ട്. <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="503498442187459473">നിങ്ങളുടെ ക്യാമറയും മൈക്രോഫോണും ഉപയോഗിക്കാൻ <ph name="HOST" /> ആഗ്രഹിക്കുന്നു</translation>
@@ -3320,7 +3318,6 @@
 <translation id="6124432979022149706">Chrome എന്റർപ്രൈസ് കണക്റ്ററുകൾ</translation>
 <translation id="6124996493718543728">'ഇപ്പോൾ വാങ്ങി പിന്നീട് പണമടയ്ക്കുക' പുരോഗതി സ്‌ക്രീൻ മുഴുവനായും തുറന്നു.</translation>
 <translation id="6125864963080902918"><ph name="BEGIN_LINK" />കൂടുതൽ വിശദാംശങ്ങൾ<ph name="END_LINK" /></translation>
-<translation id="6125935847555014178"><ph name="STARTER_PACK_AI_MODE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Search-ൽ AI മോഡിനോട് ചോദിക്കാൻ Enter അമർത്തുക</translation>
 <translation id="6126565365696310362">Envelope Chinese #2</translation>
 <translation id="6131824478727057281">ലൊക്കേഷന്‍</translation>
 <translation id="6133320744616005677">അനുവദിക്കുന്നത് തുടരുക</translation>
@@ -3355,7 +3352,6 @@
 <translation id="6177531123306197852">Envelope C2</translation>
 <translation id="6180316780098470077">വീണ്ടും ശ്രമിക്കുന്നതിനുള്ള ഇടവേള</translation>
 <translation id="6182972682129119950">A4x5</translation>
-<translation id="6184099524311454384">ടാബുകൾ തിരയുക</translation>
 <translation id="6189351761800074311">നിങ്ങളുടെ ടെക്സ്റ്റും പേജ് ഉള്ളടക്കവും Google-ലേക്ക് അയയ്ക്കും, എന്നാൽ AI മെച്ചപ്പെടുത്താൻ ഉപയോഗിക്കില്ല.
     <ph name="BEGIN_LINK" />കൂടുതലറിയുക<ph name="END_LINK" /></translation>
 <translation id="6190518157737269631">നിങ്ങളുടെ കീബോർഡിലെ Esc പോലുള്ള ചില കീകൾ അസാധുവാക്കുക</translation>
@@ -3973,7 +3969,6 @@
 <translation id="7139892792842608322">പ്രാഥമിക ട്രേ</translation>
 <translation id="7140087718106278457">പേയ്‌മെന്റ് രീതികളുടെ ലിസ്‌റ്റ് അടച്ചു.</translation>
 <translation id="714064300541049402">സൈഡ് 2 ചിത്രം X ഷിഫ്റ്റ്</translation>
-<translation id="7140922144008419614">ടാബുകൾ തിരയുക ബട്ടൺ, ടാബുകൾ തിരയാൻ സജീവമാക്കുക</translation>
 <translation id="7143668445748322952">ക്യാമറാ ഫയലുകൾ, ഡൗൺലോഡുകൾ, സ്ക്രീൻഷോട്ടുകൾ എന്നിവ</translation>
 <translation id="7143682719845053166">PRC 32K</translation>
 <translation id="7144878232160441200">വീണ്ടും ശ്രമിക്കുക</translation>
@@ -4085,7 +4080,6 @@
 <translation id="7337248890521463931">കൂടുതൽ വരികൾ കാണിക്കുക</translation>
 <translation id="7337706099755338005">നിങ്ങളുടെ പ്ലാറ്റ്‌ഫോമിൽ ലഭ്യമല്ല.</translation>
 <translation id="733923710415886693">സർട്ടിഫിക്കറ്റ് സുതാര്യതയിലൂടെ സെർവറുടെ സർട്ടിഫിക്കറ്റ് വെളിപ്പെടുത്തിയിട്ടില്ല.</translation>
-<translation id="73398226265793546">AI മോഡ് ബട്ടൺ, Google Search-ൽ AI മോഡിനോട് ചോദിക്കാൻ സജീവമാക്കുക</translation>
 <translation id="7343620778718789463">ഐഡി കാർഡുകൾ</translation>
 <translation id="7346048084945669753">അംഗമായി ഉള്‍പ്പെട്ടിട്ടുണ്ടോ:</translation>
 <translation id="7346062987309535530">ഡൈനിംഗ്‌വെയർ</translation>
@@ -4230,7 +4224,6 @@
 <translation id="7526934274050461096">ഈ സൈറ്റിലേക്കുള്ള നിങ്ങളുടെ കണക്ഷൻ സ്വകാര്യമല്ല</translation>
 <translation id="7529884293139707752">ഹോംസ്‌കൂളിംഗ്</translation>
 <translation id="7531464389616946220">കാർഡ് സ്കാൻ ചെയ്യുക</translation>
-<translation id="7534473948927234329"><ph name="STARTER_PACK_BOOKMARKS_FOCUSED_FRIENDLY_MATCH_TEXT" />, ബുക്ക്‌മാർക്കുകൾ തിരയാൻ Enter അമർത്തുക</translation>
 <translation id="7534987659046836932">Envelope C7</translation>
 <translation id="7535087603100972091">മൂല്യം</translation>
 <translation id="753556296624075801">Google നൽകുന്നത്</translation>
@@ -4604,7 +4597,6 @@
 <translation id="8092254339843485299">6 x 8 ഇഞ്ച്</translation>
 <translation id="8094917007353911263">നിങ്ങൾക്ക് ഉപയോഗിക്കുന്ന നെറ്റ്‌വർക്ക് <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> സന്ദർശിക്കാൻ നിങ്ങളോട് ആവശ്യപ്പെടാം.</translation>
 <translation id="8095168258866348967">ഭാഷാ പാക്കേജുകൾ ഇൻസ്റ്റാൾ ചെയ്യുന്നു...</translation>
-<translation id="809543534949702122">തിരയൽ ചരിത്രം</translation>
 <translation id="8098855213644561659">A3 എക്‌സ്ട്രാ</translation>
 <translation id="809898108652741896">A6</translation>
 <translation id="8099473231501330216">ഇല്ലാതാക്കാൻ ആവശ്യപ്പെടാം</translation>
@@ -4654,7 +4646,6 @@
 <translation id="8194412401381329820">മാനേജ് ചെയ്യപ്പെടാത്ത ഈ ഉപകരണത്തിലെ മാനേജ് ചെയ്യപ്പെടുന്ന അക്കൗണ്ടിൽ നിന്ന് നിങ്ങൾക്ക് ഈ പേജ് ഉപയോഗിക്കാൻ കഴിയില്ല. നിങ്ങൾ ഈ പേജ് ഉപയോഗിക്കുകയാണെങ്കിൽ, ഈ ഉപകരണം മാനേജ് ചെയ്യുന്ന അതേ സ്ഥാപനം മാനേജ് ചെയ്യുന്ന അക്കൗണ്ടുകൾ (അഫിലിയേറ്റ് ചെയ്ത അക്കൗണ്ടുകൾ) ഒഴികെ, മാനേജ് ചെയ്യപ്പെടുന്ന എല്ലാ അക്കൗണ്ടുകളും ലോക്ക് ചെയ്യും.</translation>
 <translation id="8194797478851900357">&amp;നീക്കുന്നത് പഴയപടിയാക്കുക</translation>
 <translation id="8194956568907463262">ഷൂട്ടർ ഗെയിമുകൾ</translation>
-<translation id="8198379961710069585">തിരയൽ ചരിത്ര ബട്ടൺ, തിരയൽ ചരിത്രത്തിനായി സജീവമാക്കുക</translation>
 <translation id="8199437620497683918">ഒപ്റ്റിക്കല്‍ ഡിസ്‌ക് (ഗ്ലോസി)</translation>
 <translation id="8200772114523450471">പുനരാരംഭിക്കുക</translation>
 <translation id="8202097416529803614">ഓർഡർ സംഗ്രഹം</translation>

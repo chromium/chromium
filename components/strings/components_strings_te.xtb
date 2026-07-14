@@ -904,7 +904,6 @@
 <translation id="2380886658946992094">చట్టపరం</translation>
 <translation id="2383455408879745299">Chrome సెట్టింగ్‌లలో మీ యాక్సెసిబిలిటీ టూల్స్‌ను వ్యక్తిగతీకరించండి</translation>
 <translation id="2384307209577226199">ఎంటర్‌ప్రైజ్ డిఫాల్ట్</translation>
-<translation id="2384823392576123225">బుక్‌మార్క్‌లను సెర్చ్ చేయండి</translation>
 <translation id="2385809941344967209">మీ Chrome సెట్టింగ్‌ల నుండి Chromeను అప్‌డేట్ చేయండి</translation>
 <translation id="2386255080630008482">సర్వర్ ప్రమాణపత్రం రద్దు చేయబడింది.</translation>
 <translation id="2388828676877700238">ట్యాక్స్ ప్రిపరేషన్ &amp; ప్లానింగ్</translation>
@@ -1421,6 +1420,7 @@
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome సెట్టింగ్‌లలో మీరు ఏ సమాచారాన్ని సింక్ చేయాలనుకుంటున్నారో మేనేజ్ చేయడానికి 'Tab'ను నొక్కి, ఆపై 'Enter'ను నొక్కండి</translation>
 <translation id="3203025201812691413">URL ఖాళీగా ఉండకూడదు</translation>
 <translation id="320323717674993345">పేమెంట్‌ను రద్దు చేయండి</translation>
+<translation id="3204534477198689393">మెరుగైన సూచనలను (సజెషన్లను) అందించడానికి, ఫారమ్‌లను మరింత వేగంగా నింపడానికి, మీరు విజిట్ చేసే (సందర్శించే) పేజీల కంటెంట్‌ను, URLలను క్లౌడ్‌లోని ప్రైవేట్ స్పేస్‌లో ప్రాసెస్ చేయవచ్చు.</translation>
 <translation id="3207830513221832868"><ph name="BLOCKED_URL" />లో పెద్దవారికి మాత్రమే తగిన కంటెంట్ ఉండవచ్చు</translation>
 <translation id="3207960819495026254">బుక్‌మార్క్ చేయబడింది</translation>
 <translation id="3208701679386778924">దయచేసి రిపోర్ట్‌ను పంపండి, తద్వారా మేము మరిన్ని ChromeOS అప్‌డేట్‌లను మెరుగుపరచగలము.</translation>
@@ -1476,6 +1476,7 @@
 <translation id="3272643614306383237">1 MB కంటే తక్కువ. మీరు తర్వాతిసారి ఉపయోగించినప్పుడు కొన్ని సైట్‌లు మరింత నిదానంగా లోడ్ కావచ్చు.</translation>
 <translation id="3273738040255912340">మీ అడ్మినిస్ట్రేటర్ మీ ప్రొఫైల్, బ్రౌజర్ సెట్టింగ్‌లకు రిమోట్‌గా మార్పులు చేయవచ్చు, రిపోర్టింగ్ ద్వారా బ్రౌజర్ గురించిన సమాచారాన్ని విశ్లేషించవచ్చు, అవసరమైన ఇతర టాస్క్‌లను అమలు చేయవచ్చు. ఈ పరికరంలోని యాక్టివిటీని Chromium వెలుపల కూడా మేనేజ్ చేయవచ్చు. <ph name="BEGIN_LINK" />మరింత తెలుసుకోండి<ph name="END_LINK" /></translation>
 <translation id="3273757719652748628">పూర్తి ఎత్తులో తెరవబడిన IBANను సేవ్ చేయండి.</translation>
+<translation id="327455571215090823">స్మార్ట్ ఆటోఫిల్, ప్రైవేట్‌గా ఉంటుంది</translation>
 <translation id="3281350579597955952">{0,plural, =1{<ph name="DESTINATION_NAME" />‌లో ఈ ఫైల్‌ను తెరవవద్దని అడ్మినిస్ట్రేటర్ పాలసీ సిఫార్సు చేస్తోంది}other{<ph name="DESTINATION_NAME" />‌లో ఈ ఫైల్స్‌ను తెరవవద్దని అడ్మినిస్ట్రేటర్ పాలసీ సిఫార్సు చేస్తోంది}}</translation>
 <translation id="3282085321714087552">సెట్టింగ్‌లు లేదా పాలసీల వంటి కొంత సమాచారాన్ని మీ సంస్థ <ph name="ENROLLMENT_DOMAIN" />, దిగువున పేర్కొన్న వెబ్‌సైట్‌లకు పంపింది.</translation>
 <translation id="3286372614333682499">పోర్ట్రెయిట్‌లో ఉంది</translation>
@@ -2238,7 +2239,6 @@
 <translation id="4438821706955556403">సాధారణ ధర</translation>
 <translation id="4441832193888514600">క్లౌడ్ యూజర్ పాలసీ ద్వారా మాత్రమే పాలసీని సెట్ చేయాలి కాబట్టి ఇది విస్మరించబడింది.</translation>
 <translation id="4444062564459679679">ఇప్పటికే మీ <ph name="DEVICE_NAME" />‌లోని Chromeకు పంపబడింది</translation>
-<translation id="4445694043187340808"><ph name="STARTER_PACK_TABS_FOCUSED_FRIENDLY_MATCH_TEXT" />, ట్యాబ్‌లను సెర్చ్ చేయడానికి Enterను నొక్కండి</translation>
 <translation id="4445964943162061557">ఇది ప్రయోగాత్మక ఫీచర్, ఇది నూటికి నూరు శాతం సరైనదని చెప్పలేము.</translation>
 <translation id="4449116177348980384">'సైట్ సెట్టింగ్‌లను మేనేజ్ చేయండి' బటన్, Chrome సెట్టింగ్‌లలో అనుమతులను, సైట్‌లలో స్టోర్ చేసిన డేటాను మేనేజ్ చేయడానికి దీన్ని యాక్టివేట్ చేయండి</translation>
 <translation id="4451135742916150903">HID పరికరాలకు కనెక్ట్ చేయడానికి సైట్ అనుమతి అడగవచ్చు</translation>
@@ -2458,7 +2458,6 @@
 <translation id="4811918461974803225">Google Pay, Affirm లోగో</translation>
 <translation id="4813512666221746211">నెట్‌వర్క్ ఎర్రర్</translation>
 <translation id="4814114628197290459">IBANని తొలగించండి</translation>
-<translation id="4816341377198595747">'బుక్‌మార్క్‌లను సెర్చ్ చేయండి' అనే బటన్, బుక్‌మార్క్‌లను సెర్చ్ చేయడానికి దీన్ని యాక్టివేట్ చేయండి</translation>
 <translation id="4816492930507672669">పేజీకి తగినట్లు అమర్చు</translation>
 <translation id="4822493756793346865">సాధారణ ధరలు గత 90 రోజులలో వెబ్ అంతటా ఉన్న స్టోర్‌లపై ఆధారపడి ఉంటాయి.</translation>
 <translation id="4822922322149719535">ఎర్రర్ లాగ్‌ను రివ్యూ చేయండి</translation>
@@ -2594,7 +2593,6 @@
 <translation id="5021557570875267742">Chromeతో ధరలు ట్రాక్ చేయండి</translation>
 <translation id="5023310440958281426">మీ నిర్వాహకుని విధానాలను చూడండి</translation>
 <translation id="5024171724744627792">మీ కార్డ్ సేవ్ అయినప్పుడు వేగంగా పేమెంట్ చేయండి. కార్డ్ వివరాలు మీ Google ఖాతాలో ఎన్‌క్రిప్ట్ చేసి ఉంటాయి.</translation>
-<translation id="5026466266082155886"><ph name="STARTER_PACK_HISTORY_FOCUSED_FRIENDLY_MATCH_TEXT" />, హిస్టరీని సెర్చ్ చేయడానికి Enterను నొక్కండి</translation>
 <translation id="5030338702439866405">వీరిచే జారీచేయబడింది</translation>
 <translation id="503069730517007720">"<ph name="SOFTWARE_NAME" />" యొక్క రూట్ సర్టిఫికేట్ అవసరం, కానీ అది ఇన్‌స్టాల్ చేయబడలేదు. ఈ సమస్యను పరిష్కరించాలంటే, మీ IT నిర్వాహకులు "<ph name="SOFTWARE_NAME" />" యొక్క కాన్ఫిగరేషన్ సూచనలను పరిశీలించాలి. <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="503498442187459473"><ph name="HOST" /> మీ కెమెరాను మరియు మైక్రోఫోన్‌ను ఉపయోగించాలనుకుంటోంది</translation>
@@ -3316,7 +3314,6 @@
 <translation id="6124432979022149706">Chrome Enterprise కనెక్టర్‌లు</translation>
 <translation id="6124996493718543728">'ఇప్పుడు కొనండి, పేమెంట్ తర్వాత చేయండి' ప్రోగ్రెస్, ఫుల్ స్క్రీన్‌లో తెరవబడింది.</translation>
 <translation id="6125864963080902918"><ph name="BEGIN_LINK" />మరిన్ని వివరాలు<ph name="END_LINK" /></translation>
-<translation id="6125935847555014178"><ph name="STARTER_PACK_AI_MODE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Searchలో AI మోడ్‌ను అడగడానికి Enterను నొక్కండి</translation>
 <translation id="6126565365696310362">ఎన్వలప్ చైనీస్ #2</translation>
 <translation id="6131824478727057281">లొకేషన్</translation>
 <translation id="6133320744616005677">అనుమతించడం కొనసాగించండి</translation>
@@ -3351,7 +3348,6 @@
 <translation id="6177531123306197852">ఎన్వలప్ C2</translation>
 <translation id="6180316780098470077">పునఃప్రయత్నాల మధ్య విరామం</translation>
 <translation id="6182972682129119950">A4x5</translation>
-<translation id="6184099524311454384">ట్యాబ్‌లలో సెర్చ్ చేయండి</translation>
 <translation id="6189351761800074311">మీ టెక్స్ట్‌ను, పేజీ కంటెంట్‌ను Googleకు పంపాము, కానీ వీటిని AIని మెరుగుపరచడానికి ఉపయోగించము.
     <ph name="BEGIN_LINK" />మరింత తెలుసుకోండి<ph name="END_LINK" /></translation>
 <translation id="6190518157737269631">మీ కీబోర్డ్‌లోని కొన్ని కీలను ఓవర్‌రైడ్ చేయండి, ఉదా., Esc</translation>
@@ -3969,7 +3965,6 @@
 <translation id="7139892792842608322">ప్రైమరీ ట్రే</translation>
 <translation id="7140087718106278457">పేమెంట్ ఆప్షన్‌ల లిస్ట్ మూసివేయబడింది.</translation>
 <translation id="714064300541049402">2వ వైపు ప్రింట్‌లో చిత్రాన్ని X అక్షంలో జరపు</translation>
-<translation id="7140922144008419614">'ట్యాబ్‌లను సెర్చ్ చేయండి' అనే బటన్, ట్యాబ్‌లను సెర్చ్ చేయడానికి దీన్ని యాక్టివేట్ చేయండి</translation>
 <translation id="7143668445748322952">కెమెరా ఫైల్స్, డౌన్‌లోడ్‌లు, స్క్రీన్‌షాట్‌లు</translation>
 <translation id="7143682719845053166">PRC 32K</translation>
 <translation id="7144878232160441200">మళ్లీ ట్రై చేయండి</translation>
@@ -4081,7 +4076,6 @@
 <translation id="7337248890521463931">మరిన్ని వరుసలను చూపించు</translation>
 <translation id="7337706099755338005">మీ ప్లాట్‌ఫారమ్‌లో అందుబాటులో లేదు.</translation>
 <translation id="733923710415886693">సర్వర్ ప్రమాణపత్రాన్ని ప్రమాణపత్రం పారదర్శకత ద్వారా బహిరంగపరచలేదు.</translation>
-<translation id="73398226265793546">AI మోడ్ బటన్, Google Searchలో AI మోడ్‌ను అడగడానికి, దాన్ని యాక్టివేట్ చేయండి</translation>
 <translation id="7343620778718789463">ID కార్డ్‌లు</translation>
 <translation id="7346048084945669753">అనుబంధితం:</translation>
 <translation id="7346062987309535530">డైనింగ్ సామాగ్రి</translation>
@@ -4228,7 +4222,6 @@
 <translation id="7526934274050461096">ఈ సైట్‌తో మీకున్న కనెక్షన్ ప్రైవేట్‌గా లేదు</translation>
 <translation id="7529884293139707752">ఇంటి వద్దనే చదువు నేర్చుకోవడం</translation>
 <translation id="7531464389616946220">కార్డ్‌ను స్కాన్ చేయండి</translation>
-<translation id="7534473948927234329"><ph name="STARTER_PACK_BOOKMARKS_FOCUSED_FRIENDLY_MATCH_TEXT" />, బుక్‌మార్క్‌లను సెర్చ్ చేయడానికి Enterను నొక్కండి</translation>
 <translation id="7534987659046836932">ఎన్వలప్ C7</translation>
 <translation id="7535087603100972091">విలువ</translation>
 <translation id="753556296624075801">Google అందిస్తోంది</translation>
@@ -4602,7 +4595,6 @@
 <translation id="8092254339843485299">6 x 8 అంగుళాలు</translation>
 <translation id="8094917007353911263">మీరు ఉపయోగిస్తున్న నెట్‌వర్క్‌కు మీరు <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />ను సందర్శించడం అవసరం.</translation>
 <translation id="8095168258866348967">భాషా ప్యాకేజీలు ఇన్‌స్టాల్ అవుతున్నాయి...</translation>
-<translation id="809543534949702122">సెర్చ్ హిస్టరీ</translation>
 <translation id="8098855213644561659">A3 అదనం</translation>
 <translation id="809898108652741896">A6</translation>
 <translation id="8099473231501330216">తొలగించమని అడగండి</translation>
@@ -4652,7 +4644,6 @@
 <translation id="8194412401381329820">మీరు మేనేజ్ చేయని ఈ డివైజ్‌లో మేనేజ్ చేసే ఖాతా నుండి ఈ పేజీని ఉపయోగించలేరు. ఈ పేజీని ఉపయోగించినట్లయితే, మేనేజ్ చేయబడే ఖాతాలన్నీ లాక్ చేయబడతాయి. అయితే, ఈ డివైజ్‌ను నిర్వహించే ఎంటిటీ ద్వారా మేనేజ్ చేయబడే ఖాతాలు (అనుబంధ ఖాతాలు) లాక్ చేయబడవు.</translation>
 <translation id="8194797478851900357">&amp;తరలించడాన్ని రద్దు చేయండి</translation>
 <translation id="8194956568907463262">షూటర్ గేమ్‌లు</translation>
-<translation id="8198379961710069585">'హిస్టరీని సెర్చ్ చేయండి' అనే బటన్, హిస్టరీని సెర్చ్ చేయడానికి దీన్ని యాక్టివేట్ చేయండి</translation>
 <translation id="8199437620497683918">ఆప్టికల్ డిస్క్ (గ్లాసీ)</translation>
 <translation id="8200772114523450471">మ‌ళ్లీ ప్రారంభించండి</translation>
 <translation id="8202097416529803614">ఆర్డర్ సారాంశం</translation>

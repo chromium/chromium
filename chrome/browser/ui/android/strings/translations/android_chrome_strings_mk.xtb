@@ -558,6 +558,7 @@
 <translation id="3331974543021145906">Информации за апликациите</translation>
 <translation id="3334729583274622784">Дали да се промени наставката на датотеката?</translation>
 <translation id="333863344734218290">Ве предупредува за небезбедни јавни и приватни сајтови</translation>
+<translation id="3339788961947270565">Се довршува исклучувањето</translation>
 <translation id="3340978935015468852">поставки</translation>
 <translation id="3351959803838327376">Долго притиснете на вебсајтот и отворете го менито</translation>
 <translation id="3359667936385849800">Користете го тековниот давател на услуги</translation>
@@ -721,6 +722,7 @@
 <translation id="4044708993631234325">Долен лист</translation>
 <translation id="4045441967987592849">Отвори повторно</translation>
 <translation id="4049920046559074950">Повеќе опции за <ph name="INSTANCE_TITLE" /></translation>
+<translation id="4051569243832293689">{NUM_BOOKMARKS,plural, =1{Отвори во прозорец „Инкогнито“}one{Отвори ги сите (#) во прозорец „Инкогнито“}other{Отвори ги сите (#) во прозорец „Инкогнито“}}</translation>
 <translation id="4052419222954753986">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> стандардна картичка со нова активност во споделените групи картички}one{<ph name="TABS_COUNT_MANY" /> стандардна картичка со нова активност во споделените групи картички}other{<ph name="TABS_COUNT_MANY" /> стандардни картички со нова активност во споделените групи картички}}</translation>
 <translation id="405365679581583349">Ажурирајте ги „Услугите на Google Play“</translation>
 <translation id="405399507749852140">Добивајте предупредувања ако цената се намали на кој било сајт</translation>
@@ -1072,6 +1074,7 @@
 <translation id="5517326820028369152">Долен лист на неодамнешна активност</translation>
 <translation id="5526281268548144413">Не може да се затворат во повеќе прозорци</translation>
 <translation id="5532536403031755365">Додајте дополнителен слој заштита од онлајн закани со „Подобрена заштита“</translation>
+<translation id="5540127996007641535">{NUM_BOOKMARKS,plural, =1{Отвори го обележувачот}one{Отвори ги сите (#)}other{Отвори ги сите (#)}}</translation>
 <translation id="5548606607480005320">Безбедносна проверка</translation>
 <translation id="5554520618550346933">Кога користите лозинка, Chrome ве предупредува ако е објавена онлајн. Кога го прави ова, вашите лозинки и кориснички имиња се шифрирани така што не може да ги прочита никој, па дури ни Google.</translation>
 <translation id="5555525474779371165">Изберете ја вашата заштита со „Безбедно прелистување“</translation>
@@ -1245,6 +1248,7 @@
 <translation id="6246073558347462570">Контекстуален скокачки прозорец</translation>
 <translation id="6247557882553405851">Google Password Manager</translation>
 <translation id="6248988683584659830">Пребарувајте низ поставките</translation>
+<translation id="6250486830372700930">Може и да ги отстраните екстензиите од уредов</translation>
 <translation id="6250847299079540062"><ph name="TAB_TITLE" />, повеќекратно избрана прикачена картичка „Инкогнито“</translation>
 <translation id="6251449557817521191">Прегледајте ја вашата историја на Chrome тука</translation>
 <translation id="6254139308321626268">Прегледувате PDF-датотека</translation>
@@ -1420,7 +1424,9 @@
 <translation id="6850830437481525139"><ph name="TAB_COUNT" /> затворени картички</translation>
 <translation id="6852437757508328589">{NUM_RESULTS,plural, =1{Најдени резултати: 1}one{Најдени резултати: #}other{Најдени резултати: #}}</translation>
 <translation id="685340923442249391">{FILE_COUNT,plural, =1{Аудиодатотеки, 1 аудиодатотека во список}one{Аудиодатотеки, # аудиодатотека во список}other{Аудиодатотеки, # аудиодатотеки во список}}</translation>
+<translation id="6857043990326114901">Додајте папка…</translation>
 <translation id="685850645784703949">Discover од Google - исклучена</translation>
+<translation id="6858893072923394368">Додајте страница…</translation>
 <translation id="6864459304226931083">Преземи слика</translation>
 <translation id="686490460830618322">Лист за филтрирање според апликација</translation>
 <translation id="6865313869410766144">Автоматско пополнување податоци во формулар</translation>
@@ -1597,6 +1603,7 @@
 <translation id="7475688122056506577">SD-картичката не е најдена. Дел од вашите датотеки може да недостасуваат.</translation>
 <translation id="7479104141328977413">Управување со картички</translation>
 <translation id="7481312909269577407">Напред</translation>
+<translation id="7481588001304663390">{NUM_BOOKMARKS,plural, =1{Отвори во нова група картички}one{Отвори ги сите (#) во нова група картички}other{Отвори ги сите (#) во нова група картички}}</translation>
 <translation id="7482656565088326534">Картичка за преглед</translation>
 <translation id="7484997419527351112">Discover е исклучена</translation>
 <translation id="7485033510383818941">За освежување на содржините на активност, повлечете ја страницата надолу</translation>
@@ -1753,6 +1760,7 @@
 <translation id="8103578431304235997">Инкогнито-картичка</translation>
 <translation id="810433609302852">Долен лист со промоција на функцијата „Известувања за совети“ и чекори за користење</translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
+<translation id="8109802255973641442">Отстрани ги екстензиите и податоците што ги зачувале на уредов</translation>
 <translation id="8110024788458304985">Помогнете да се подобрат функциите и изведбата на Chrome</translation>
 <translation id="8110087112193408731">Да се прикажува вашата активност на Chrome во „Дигитална благосостојба“?</translation>
 <translation id="8118117428362942925">Ако ти треба помош, прашај го родителот (<ph name="PARENT_NAME" />)</translation>
@@ -1852,6 +1860,7 @@
 <translation id="8460448946170646641">Прегледајте ги клучните контроли за приватноста и безбедноста</translation>
 <translation id="8460932807646981183">Управувајте со пребарувачи и пребарување сајтови</translation>
 <translation id="8465252176946159372">Неважечко</translation>
+<translation id="8472353072135865937">{NUM_BOOKMARKS,plural, =1{Отвори во нов прозорец}one{Отвори ги сите (#) во нов прозорец}other{Отвори ги сите (#) во нов прозорец}}</translation>
 <translation id="8473863474539038330">Адреси и друго</translation>
 <translation id="847433688444405067">Прелистување на уредите</translation>
 <translation id="8477178913400731244">Избришете ги податоците</translation>

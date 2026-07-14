@@ -911,7 +911,6 @@
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2383455408879745299">កំណត់ឧបករណ៍​ភាពងាយស្រួល​ឱ្យស្របនឹងអ្នក​នៅក្នុង​ការកំណត់ Chrome</translation>
 <translation id="2384307209577226199">លំនាំដើមសហគ្រាស</translation>
-<translation id="2384823392576123225">ស្វែងរក​ចំណាំ</translation>
 <translation id="2385809941344967209">ដំឡើង​កំណែ Chrome ពីការកំណត់ Chrome របស់អ្នក</translation>
 <translation id="2386255080630008482">វិញ្ញាបនប័ត្រម៉ាស៊ីនមេត្រូវបានបញ្ឈប់សុពលភាព។</translation>
 <translation id="2388828676877700238">ការ​រៀបចំលិខិតប្រកាស និង​ផែនការ​ពន្ធ</translation>
@@ -2249,7 +2248,6 @@
 <translation id="4438821706955556403">តម្លៃធម្មតា</translation>
 <translation id="4441832193888514600">បានមិនអើពើ ដោយសារអាចកំណត់​គោលការណ៍​ជាគោលការណ៍​អ្នកប្រើប្រាស់ពពក​តែប៉ុណ្ណោះ។</translation>
 <translation id="4444062564459679679">បានផ្ញើ​ទៅ Chrome នៅលើ <ph name="DEVICE_NAME" /> របស់អ្នក​រួចហើយ</translation>
-<translation id="4445694043187340808"><ph name="STARTER_PACK_TABS_FOCUSED_FRIENDLY_MATCH_TEXT" />, ចុច Enter ដើម្បី​ស្វែងរក​ផ្ទាំង</translation>
 <translation id="4445964943162061557">នេះគឺជាមុខងារដែលស្ថិតក្នុងការពិសោធ ហើយនឹងមិនធ្វើបានត្រឹមត្រូវជានិច្ចនោះទេ។</translation>
 <translation id="4449116177348980384">ប៊ូតុង "គ្រប់គ្រងការកំណត់គេហទំព័រ", បើកដំណើរការ ដើម្បីគ្រប់គ្រងការអនុញ្ញាត និងទិន្នន័យដែលត្រូវបានរក្សាទុកនៅលើគេហទំព័រនានានៅក្នុងការកំណត់ Chrome</translation>
 <translation id="4451135742916150903">អាចស្នើសុំ​ភ្ជាប់ជាមួយ​ឧបករណ៍ HID</translation>
@@ -2469,7 +2467,6 @@
 <translation id="4811918461974803225">Google Pay, និមិត្តសញ្ញា Affirm</translation>
 <translation id="4813512666221746211">កំហុសឆ្គងបណ្តាញ</translation>
 <translation id="4814114628197290459">លុប IBAN</translation>
-<translation id="4816341377198595747">ប៊ូតុង​ស្វែងរក​ចំណាំ, បើក​ដំណើរការ ដើម្បី​ស្វែងរក​ចំណាំ</translation>
 <translation id="4816492930507672669">សមនឹងទំព័រ</translation>
 <translation id="4822493756793346865">តម្លៃធម្មតាគឺផ្អែកលើហាងនៅលើបណ្ដាញក្នុងរយៈពេល 90 ថ្ងៃចុងក្រោយ។</translation>
 <translation id="4822922322149719535">ពិនិត្យមើលកំណត់​ហេតុបញ្ហា</translation>
@@ -2605,7 +2602,6 @@
 <translation id="5021557570875267742">តាមដាន​តម្លៃ​ដោយប្រើ Chrome</translation>
 <translation id="5023310440958281426">ពិនិត្យគោលការណ៍អ្នកគ្រប់គ្រងរបស់អ្នក</translation>
 <translation id="5024171724744627792">បង់​ប្រាក់​លឿនជាងមុន នៅពេលកាតរបស់អ្នកត្រូវបានរក្សាទុក។ ព័ត៌មានលម្អិតអំពីកាតត្រូវបានអ៊ីនគ្រីបនៅក្នុងគណនី Google របស់អ្នក។</translation>
-<translation id="5026466266082155886"><ph name="STARTER_PACK_HISTORY_FOCUSED_FRIENDLY_MATCH_TEXT" />, ចុច Enter ដើម្បី​ស្វែងរក​ប្រវត្តិ</translation>
 <translation id="5030338702439866405">ចេញដោយ</translation>
 <translation id="503069730517007720">តម្រូវឱ្យមានវិញ្ញាបនបត្រគោលសម្រាប់ "<ph name="SOFTWARE_NAME" />" ប៉ុន្តែមិនចាំបាច់ដំឡើងទេ។ អ្នកគ្រប់គ្រងផ្នែកព័ត៌មានវិទ្យារបស់អ្នកគួរតែមើលការណែនាំអំពីការកំណត់រចនាសម្ព័ន្ធសម្រាប់ "<ph name="SOFTWARE_NAME" />" ដើម្បីដោះស្រាយបញ្ហានេះ។ <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="503498442187459473"><ph name="HOST" /> ចង់ប្រើកាមេរ៉ា និងមីក្រូហ្វូនរបស់អ្នក</translation>
@@ -3327,7 +3323,6 @@
 <translation id="6124432979022149706">កម្មវិធីភ្ជាប់ Chrome Enterprise</translation>
 <translation id="6124996493718543728">បានបើក​អេក្រង់​ដំណើរវិវឌ្ឍន៍ "ទិញឥឡូវនេះ ទូទាត់ពេលក្រោយ" ពេញអេក្រង់។</translation>
 <translation id="6125864963080902918"><ph name="BEGIN_LINK" />ព័ត៌មានលម្អិតបន្ថែម<ph name="END_LINK" /></translation>
-<translation id="6125935847555014178"><ph name="STARTER_PACK_AI_MODE_FOCUSED_FRIENDLY_MATCH_TEXT" />, ចុច Enter ដើម្បី​សួរ​មុខងារ AI នៅក្នុង​ម៉ាស៊ីន​ស្វែងរក​នៅលើ Google</translation>
 <translation id="6126565365696310362">ស្រោមសំបុត្រចិន #2</translation>
 <translation id="6131824478727057281">ទីតាំង</translation>
 <translation id="6133320744616005677">បន្តការអនុញ្ញាត</translation>
@@ -3362,7 +3357,6 @@
 <translation id="6177531123306197852">ស្រោមសំបុត្រ C2</translation>
 <translation id="6180316780098470077">ចន្លោះ​ពេលនៃ​ការព្យាយាមម្ដងទៀត</translation>
 <translation id="6182972682129119950">A4x5</translation>
-<translation id="6184099524311454384">ស្វែងរកផ្ទាំង</translation>
 <translation id="6189351761800074311">ខ្លឹមសារ​ទំព័រ និង​អក្សរ​របស់អ្នក​ត្រូវបាន​បញ្ជូនទៅ Google ប៉ុន្តែ​នឹងមិន​ត្រូវបានប្រើ ដើម្បី​កែលម្អ AI ទេ។
     <ph name="BEGIN_LINK" />ស្វែងយល់បន្ថែម<ph name="END_LINK" /></translation>
 <translation id="6190518157737269631">លុបពីលើគ្រាប់ចុចមួយចំនួនដូចជា Esc នៅលើក្ដារចុចរបស់អ្នក</translation>
@@ -3980,7 +3974,6 @@
 <translation id="7139892792842608322">ទម្រ​ចម្បង</translation>
 <translation id="7140087718106278457">បញ្ជី​វិធីបង់ប្រាក់​ត្រូ​វបានបិទ។</translation>
 <translation id="714064300541049402">ការប្ដូរ​រូបភាព X នៃចំហៀងទី 2</translation>
-<translation id="7140922144008419614">ប៊ូតុង​ស្វែងរក​ផ្ទាំង, បើក​ដំណើរការ ដើម្បី​ស្វែងរក​ផ្ទាំង</translation>
 <translation id="7143668445748322952">រូបថត​អេក្រង់ ឯកសារ​ដែលបាន​ទាញយក និង​ឯកសារ​កាមេរ៉ា</translation>
 <translation id="7143682719845053166">PRC 32K</translation>
 <translation id="7144878232160441200">ព្យាយាមម្តងទៀត</translation>
@@ -4091,7 +4084,6 @@
 <translation id="7337248890521463931">បង្ហាញបន្ទាត់ច្រើនជាងនេះ</translation>
 <translation id="7337706099755338005">មិនមាន​នៅលើ​ប្រព័ន្ធ​របស់អ្នក​ទេ។</translation>
 <translation id="733923710415886693">វិញ្ញាបនបត្រម៉ាស៊ីនមេមិនត្រូវបានបង្ហាញឲ្យដឹងតាមរយៈគោលការណ៍តម្លាភាពវិញ្ញាបនបត្រ។</translation>
-<translation id="73398226265793546">ប៊ូតុង​មុខងារ AI, បើក​ដំណើរការ ដើម្បីសួរ​មុខងារ AI នៅក្នុង​ម៉ាស៊ីន​ស្វែងរក​នៅលើ Google</translation>
 <translation id="7343620778718789463">កាតសម្គាល់ខ្លួន</translation>
 <translation id="7346048084945669753">បានភ្ជាប់៖</translation>
 <translation id="7346062987309535530">សម្ភារ​សម្រាប់​ទទួលទាន​អាហារ</translation>
@@ -4238,7 +4230,6 @@
 <translation id="7526934274050461096">ការតភ្ជាប់​របស់អ្នក​ទៅ​ទំព័រនេះ​មិនមែន​ជាលក្ខណៈ​ឯកជន​ទេ</translation>
 <translation id="7529884293139707752">ការអប់រំ​នៅផ្ទះ</translation>
 <translation id="7531464389616946220">ស្កេនកាត</translation>
-<translation id="7534473948927234329"><ph name="STARTER_PACK_BOOKMARKS_FOCUSED_FRIENDLY_MATCH_TEXT" />, ចុច Enter ដើម្បី​ស្វែងរក​ចំណាំ</translation>
 <translation id="7534987659046836932">ស្រោមសំបុត្រ C7</translation>
 <translation id="7535087603100972091">តម្លៃ</translation>
 <translation id="753556296624075801">ដំណើរការ​ដោយ Google</translation>
@@ -4614,7 +4605,6 @@
 <translation id="8092254339843485299">6 x 8 in</translation>
 <translation id="8094917007353911263">បណ្តាញដែលអ្នកកំពុងប្រើអាចតម្រូវឲ្យអ្នកទៅកាន់ <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />។</translation>
 <translation id="8095168258866348967">កំពុង​ដំឡើង​កញ្ចប់​ភាសា...</translation>
-<translation id="809543534949702122">ប្រវត្តិ​ស្វែងរក</translation>
 <translation id="8098855213644561659">A3 Extra</translation>
 <translation id="809898108652741896">A6</translation>
 <translation id="8099473231501330216">ស្នើសុំ​ឱ្យលុប</translation>
@@ -4664,7 +4654,6 @@
 <translation id="8194412401381329820">អ្នកមិនអាច​ប្រើទំព័រនេះ​ពីគណនី​ដែលស្ថិតក្រោមការគ្រប់គ្រង​នៅលើ​ឧបករណ៍​ដែលមិនស្ថិតក្រោម​ការគ្រប់គ្រង​នេះបានទេ។ គណនី​ដែលស្ថិត​ក្រោមការគ្រប់គ្រង​ទាំងអស់​នឹងត្រូវបាន​ចាក់សោ ប្រសិនបើ​អ្នកប្រើ​ទំព័រនេះ លើក​លែងតែ​គណនី​ដែលគ្រប់គ្រងដោយ​ស្ថាប័ន​តែមួយជាមួយនឹងឧបករណ៍នេះ (គណនី​ជាសម្ព័ន្ធ)។</translation>
 <translation id="8194797478851900357">បកក្រោយការផ្លាស់ទី</translation>
 <translation id="8194956568907463262">ហ្គេម​បាញ់​កាំភ្លើង</translation>
-<translation id="8198379961710069585">ប៊ូតុង​ស្វែងរក​ប្រវត្តិ, បើក​ដំណើរការ ដើម្បី​ស្វែងរក​ប្រវត្តិ</translation>
 <translation id="8199437620497683918">ឌីសអុបទិក (រលោង)</translation>
 <translation id="8200772114523450471">បន្ត</translation>
 <translation id="8202097416529803614">សង្ខេបនៃការបញ្ជាទិញ</translation>

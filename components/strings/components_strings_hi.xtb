@@ -912,7 +912,6 @@
 <translation id="2380886658946992094">कानूनी</translation>
 <translation id="2383455408879745299">Chrome की सेटिंग में सुलभता टूल को अपने हिसाब से बनाएं</translation>
 <translation id="2384307209577226199">एंटरप्राइज़ डिफ़ॉल्ट</translation>
-<translation id="2384823392576123225">बुकमार्क खोजें</translation>
 <translation id="2385809941344967209">अपनी Chrome की सेटिंग में जाकर Chrome को अपडेट करें</translation>
 <translation id="2386255080630008482">सर्वर का प्रमाणपत्र निरस्त कर दिया गया है.</translation>
 <translation id="2388828676877700238">टैक्स की रकम का पता लगाना और योजना बनाना</translation>
@@ -1428,6 +1427,7 @@
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome की सेटिंग में, आपने जो जानकारी सिंक की है उसे मैनेज करने के लिए, पहले Tab और फिर Enter दबाएं</translation>
 <translation id="3203025201812691413">यूआरएल वाला फ़ील्ड खाली नहीं छोड़ा जा सकता</translation>
 <translation id="320323717674993345">भुगतान रद्द करें</translation>
+<translation id="3204534477198689393">बेहतर सुझाव देने और फ़ॉर्म तेज़ी से भरने के लिए, आपके विज़िट किए गए पेजों के कॉन्टेंट और यूआरएल को क्लाउड में एक प्राइवेट स्पेस में प्रोसेस किया जा सकता है.</translation>
 <translation id="3207830513221832868"><ph name="BLOCKED_URL" /> में वयस्कों के लिए बना कॉन्टेंट मौजूद हो सकता है</translation>
 <translation id="3207960819495026254">बुकमार्क किया गया</translation>
 <translation id="3208701679386778924">कृपया एक रिपोर्ट भेजें, ताकि हम ChromeOS के आने वाले अपडेट में सुधार कर सकें.</translation>
@@ -1483,6 +1483,7 @@
 <translation id="3272643614306383237">1 एमबी से कम. अगली बार जब आप कुछ साइटों पर जाएं, तो हो सकता है कि उन्हें लोड होने में थोड़ा ज़्यादा समय लगे.</translation>
 <translation id="3273738040255912340">प्रोफ़ाइल का एडमिन, दूर से आपकी प्रोफ़ाइल और ब्राउज़र में बदलाव कर सकता है. साथ ही, रिपोर्टिंग के ज़रिए ब्राउज़र से जुड़ी जानकारी का विश्लेषण और दूसरे ज़रूरी काम कर सकता है. इस डिवाइस में की गई गतिविधि को Chromium से बाहर भी मैनेज किया जा सकता है. <ph name="BEGIN_LINK" />ज़्यादा जानें<ph name="END_LINK" /></translation>
 <translation id="3273757719652748628">IBAN को सेव करने की सुविधा, पूरी स्क्रीन पर खोल दी गई है.</translation>
+<translation id="327455571215090823">ऑटोमैटिक तरीके से भरने की सुविधा के लिए बेहतर सुझाव, निजता के साथ</translation>
 <translation id="3281350579597955952">{0,plural, =1{एडमिन नीति, इस फ़ाइल को <ph name="DESTINATION_NAME" /> में खोलने का सुझाव नहीं देती}one{एडमिन नीति, इस फ़ाइल को <ph name="DESTINATION_NAME" /> में खोलने का सुझाव नहीं देती}other{एडमिन नीति, इन फ़ाइलों को <ph name="DESTINATION_NAME" /> में खोलने का सुझाव नहीं देती}}</translation>
 <translation id="3282085321714087552">आपके संगठन <ph name="ENROLLMENT_DOMAIN" /> ने नीचे दी गई वेबसाइटों को सेटिंग या नीतियों वगैरह के बारे में कुछ जानकारी भेजी है.</translation>
 <translation id="3286372614333682499">पोर्ट्रेट</translation>
@@ -2245,7 +2246,6 @@
 <translation id="4438821706955556403">औसत कीमत</translation>
 <translation id="4441832193888514600">अनदेखा किया गया है, क्योंकि इस नीति को सिर्फ़ क्लाउड की उपयोगकर्ता नीति के तौर पर सेट किया जा सकता है.</translation>
 <translation id="4444062564459679679">आपके <ph name="DEVICE_NAME" /> पर Chrome में पहले ही भेजा जा चुका है</translation>
-<translation id="4445694043187340808"><ph name="STARTER_PACK_TABS_FOCUSED_FRIENDLY_MATCH_TEXT" />, टैब खोजने के लिए Enter दबाएं</translation>
 <translation id="4445964943162061557">यह सुविधा एक्सपेरिमेंट के तौर पर उपलब्ध है. यह ज़रूरी नहीं है कि यह सुविधा हमेशा सही तरीके से काम करें.</translation>
 <translation id="4449116177348980384">'साइट की सेटिंग मैनेज करें' बटन, Chrome की सेटिंग में अलग-अलग साइटों पर सेव की गई अनुमतियों और डेटा को मैनेज करने के लिए इसे चालू करें</translation>
 <translation id="4451135742916150903">साइट, एचआईडी डिवाइसों से कनेक्ट करने की अनुमति मांग सकती है</translation>
@@ -2465,7 +2465,6 @@
 <translation id="4811918461974803225">Google Pay, Affirm का लोगो</translation>
 <translation id="4813512666221746211">नेटवर्क गड़बड़ी</translation>
 <translation id="4814114628197290459">IBAN मिटाएं</translation>
-<translation id="4816341377198595747">'बुकमार्क खोजें' बटन, बुकमार्क खोजने के लिए इसे चालू करें</translation>
 <translation id="4816492930507672669">पेज में फ़िट करें</translation>
 <translation id="4822493756793346865">आम कीमतों की जानकारी, वेब पर मौजूद सभी स्टोर से ली गई है. यह पिछले 90 दिनों की कीमतों के हिसाब से है.</translation>
 <translation id="4822922322149719535">गड़बड़ियों की जानकारी देखें</translation>
@@ -2601,7 +2600,6 @@
 <translation id="5021557570875267742">Chrome की मदद से कीमतों को ट्रैक करें</translation>
 <translation id="5023310440958281426">अपने एडमिन की नीतियां देखें</translation>
 <translation id="5024171724744627792">कार्ड की जानकारी सेव होने पर तेज़ी से पेमेंट किया जा सकता है. यह जानकारी आपके Google खाते में एन्क्रिप्ट (सुरक्षित) की जाती है.</translation>
-<translation id="5026466266082155886"><ph name="STARTER_PACK_HISTORY_FOCUSED_FRIENDLY_MATCH_TEXT" />, इतिहास खोजने के लिए Enter दबाएं</translation>
 <translation id="5030338702439866405">जारीकर्ता</translation>
 <translation id="503069730517007720">"<ph name="SOFTWARE_NAME" />" के रूट प्रमाणपत्र की ज़रूरत है लेकिन वह इंस्टॉल नहीं है. यह समस्या ठीक करने के लिए आपके आईटी व्यवस्थापक को "<ph name="SOFTWARE_NAME" />" के कॉन्फ़िगरेशन से जुड़े निर्देशों पर नज़र डालनी चाहिए. <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="503498442187459473"><ph name="HOST" /> आपके कैमरा और माइक्रोफ़ोन का उपयोग करना चाहता है</translation>
@@ -3323,7 +3321,6 @@
 <translation id="6124432979022149706">Chrome Enterprise Connectors</translation>
 <translation id="6124996493718543728">'अभी खरीदें, बाद में पेमेंट करें' सुविधा की प्रोग्रेस स्क्रीन, पूरी स्क्रीन पर खुली है.</translation>
 <translation id="6125864963080902918"><ph name="BEGIN_LINK" />ज़्यादा जानकारी<ph name="END_LINK" /></translation>
-<translation id="6125935847555014178"><ph name="STARTER_PACK_AI_MODE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Search के एआई मोड में सवाल पूछने के लिए Enter दबाएं</translation>
 <translation id="6126565365696310362">चाइनीज़ #2 साइज़ का लिफ़ाफ़ा</translation>
 <translation id="6131824478727057281">जगह की जानकारी</translation>
 <translation id="6133320744616005677">अनुमति देना जारी रखें</translation>
@@ -3358,7 +3355,6 @@
 <translation id="6177531123306197852">C2 साइज़ का लिफ़ाफ़ा</translation>
 <translation id="6180316780098470077">बार-बार कोशिश किए जाने के बीच का समय</translation>
 <translation id="6182972682129119950">A4x5</translation>
-<translation id="6184099524311454384">टैब खोजें</translation>
 <translation id="6189351761800074311">आपका टेक्स्ट और पेज का कॉन्टेंट, Google को भेजा जाता है. हालांकि, इनका इस्तेमाल एआई को बेहतर बनाने के लिए नहीं किया जाएगा.
     <ph name="BEGIN_LINK" />ज़्यादा जानें<ph name="END_LINK" /></translation>
 <translation id="6190518157737269631">अपने कीबोर्ड पर Esc जैसे कुछ बटनों के इनपुट को बदलने की अनुमति दें</translation>
@@ -3976,7 +3972,6 @@
 <translation id="7139892792842608322">प्राइमरी ट्रे</translation>
 <translation id="7140087718106278457">पेमेंट के तरीके दिखाने वाली सूची बंद है.</translation>
 <translation id="714064300541049402">साइड 2 इमेज X शिफ़्ट</translation>
-<translation id="7140922144008419614">'टैब खोजें' बटन, टैब खोजने के लिए इसे चालू करें</translation>
 <translation id="7143668445748322952">कैमरा फ़ाइलें, डाउनलोड की गई फ़ाइलें, और स्क्रीनशॉट</translation>
 <translation id="7143682719845053166">PRC 32K</translation>
 <translation id="7144878232160441200">फिर से प्रयास करें</translation>
@@ -4088,7 +4083,6 @@
 <translation id="7337248890521463931">और लाइनें दिखाएं</translation>
 <translation id="7337706099755338005">आपके प्लेटफ़ॉर्म पर उपलब्ध नहीं है.</translation>
 <translation id="733923710415886693">प्रमाणपत्र पारदर्शिता के माध्यम से सर्वर के प्रमाणपत्र को प्रकट नहीं किया गया.</translation>
-<translation id="73398226265793546">एआई मोड का बटन. Google Search के एआई मोड में सवाल पूछने के लिए टैप करें</translation>
 <translation id="7343620778718789463">आईडी कार्ड</translation>
 <translation id="7346048084945669753">जुड़ा हुआ है या नहीं:</translation>
 <translation id="7346062987309535530">खाने के बर्तन</translation>
@@ -4235,7 +4229,6 @@
 <translation id="7526934274050461096">इस साइट से आपका कनेक्‍शन निजी नहीं है</translation>
 <translation id="7529884293139707752">घर पर शिक्षा</translation>
 <translation id="7531464389616946220">कार्ड स्कैन करें</translation>
-<translation id="7534473948927234329"><ph name="STARTER_PACK_BOOKMARKS_FOCUSED_FRIENDLY_MATCH_TEXT" />, बुकमार्क खोजने के लिए Enter दबाएं</translation>
 <translation id="7534987659046836932">C7 साइज़ का लिफ़ाफ़ा</translation>
 <translation id="7535087603100972091">मान</translation>
 <translation id="753556296624075801">Google की ओर से</translation>
@@ -4609,7 +4602,6 @@
 <translation id="8092254339843485299">6 x 8 इंच</translation>
 <translation id="8094917007353911263">आप जिस नेटवर्क का उपयोग कर रहे हैं उसके लिए आपको <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> पर जाने की ज़रूरत पड़ सकती है.</translation>
 <translation id="8095168258866348967">लैंग्वेज पैकेज इंस्टॉल किए जा रहे हैं...</translation>
-<translation id="809543534949702122">खोज इतिहास</translation>
 <translation id="8098855213644561659">A3 Extra</translation>
 <translation id="809898108652741896">ए6</translation>
 <translation id="8099473231501330216">डेटा मिटाने का अनुरोध करें</translation>
@@ -4659,7 +4651,6 @@
 <translation id="8194412401381329820">मैनेज नहीं किए जा रहे इस डिवाइस पर, मैनेज किए जा रहे खाते से इस पेज का इस्तेमाल नहीं किया जा सकता. अगर इस पेज का इस्तेमाल किया जाता है, तो मैनेज किए जा रहे सभी खाते लॉक हो जाएंगे. हालांकि, इस डिवाइस को मैनेज करने वाली इकाई जिन खातों को मैनेज करती है उन्हें लॉक नहीं किया जाएगा (अफ़िलिएट खाते).</translation>
 <translation id="8194797478851900357">&amp;ले जाना वापस लाएं</translation>
 <translation id="8194956568907463262">शूटर गेम</translation>
-<translation id="8198379961710069585">'इतिहास खोजें' बटन, इतिहास खोजने के लिए इसे चालू करें</translation>
 <translation id="8199437620497683918">ऑप्टिकल डिस्क (ग्लॉसी)</translation>
 <translation id="8200772114523450471">फिर से शुरू करें</translation>
 <translation id="8202097416529803614">ऑर्डर की जानकारी</translation>

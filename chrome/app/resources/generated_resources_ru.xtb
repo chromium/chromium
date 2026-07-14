@@ -1537,6 +1537,7 @@
 <translation id="2199298570273670671">Ошибка</translation>
 <translation id="2200094388063410062">Электронная почта</translation>
 <translation id="2200781749203116929">Системные журналы ChromeOS</translation>
+<translation id="2202391868799679245">Включить сочетание клавиш</translation>
 <translation id="2203088913459920044">В названии можно использовать буквы, цифры и специальные символы.</translation>
 <translation id="220321590587754225">Не удалось подключиться. Повторите попытку.</translation>
 <translation id="2203903197029773650"><ph name="BRAND" /> сможет проверить ваши пароли, когда вы войдете в аккаунт Google</translation>
@@ -5083,6 +5084,7 @@
 <translation id="4906490889887219338">Настройте общие папки сети. <ph name="LINK_BEGIN" />Подробнее…<ph name="LINK_END" /></translation>
 <translation id="4906679076183257864">Масштаб по умолчанию</translation>
 <translation id="4907129260985716018">Укажите, когда расширение может считывать и изменять данные сайтов.</translation>
+<translation id="4908076691331874303">Скрыто на этом сайте.</translation>
 <translation id="4908811072292128752">Откройте новую вкладку, чтобы перейти на другой сайт, не закрывая предыдущий</translation>
 <translation id="4910241725741323970">Приложение уже установлено</translation>
 <translation id="4912643508233590958">Переходы в активный режим</translation>

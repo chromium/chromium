@@ -909,7 +909,6 @@
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2383455408879745299">Персонализиране на инструментите за достъпност в настройките на Chrome</translation>
 <translation id="2384307209577226199">Зададено по подразбиране в корпоративна среда</translation>
-<translation id="2384823392576123225">Търсене в отметките</translation>
 <translation id="2385809941344967209">Актуализирайте Chrome от настройките на браузъра</translation>
 <translation id="2386255080630008482">Сертификатът на сървъра е анулиран.</translation>
 <translation id="2388828676877700238">Данъчна подготовка и планиране</translation>
@@ -2245,7 +2244,6 @@
 <translation id="4438821706955556403">Обичайна цена</translation>
 <translation id="4441832193888514600">Пренебрегнато, защото правилото може да бъде зададено само като правило за потребители в облака.</translation>
 <translation id="4444062564459679679">Вече е изпратено до Chrome на устройството ви <ph name="DEVICE_NAME" /></translation>
-<translation id="4445694043187340808"><ph name="STARTER_PACK_TABS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Натиснете Enter, за да търсите раздели</translation>
 <translation id="4445964943162061557">Това е експериментална функция и понякога греши.</translation>
 <translation id="4449116177348980384">Бутон „Управление на настройките за сайтовете“. Активирайте, за да управлявате разрешенията и съхраняваните данни от сайтовете в настройките на Chrome</translation>
 <translation id="4451135742916150903">Може да поиска разрешение да се свързва с HID устройства</translation>
@@ -2465,7 +2463,6 @@
 <translation id="4811918461974803225">Лого на Google Pay и Affirm</translation>
 <translation id="4813512666221746211">Грешка в мрежата</translation>
 <translation id="4814114628197290459">Изтриване на IBAN</translation>
-<translation id="4816341377198595747">Бутон за търсене в отметките. Активирайте, за да търсите в отметките</translation>
 <translation id="4816492930507672669">Да се побере в страницата</translation>
 <translation id="4822493756793346865">Обичайните цени са въз основа на магазините в мрежата през последните 90 дни.</translation>
 <translation id="4822922322149719535">Преглед на регистрационния файл за грешките</translation>
@@ -2601,7 +2598,6 @@
 <translation id="5021557570875267742">Проследяване на цените с Chrome</translation>
 <translation id="5023310440958281426">Проверете правилата на администратора</translation>
 <translation id="5024171724744627792">Плащайте по-бързо, когато картата ви е запазена. Данните за нея се шифроват в профила ви в Google.</translation>
-<translation id="5026466266082155886"><ph name="STARTER_PACK_HISTORY_FOCUSED_FRIENDLY_MATCH_TEXT" />. Натиснете Enter, за да търсите в историята</translation>
 <translation id="5030338702439866405">Издаден от</translation>
 <translation id="503069730517007720">За <ph name="SOFTWARE_NAME" /> се изисква основен сертификат, но такъв не е инсталиран. Системният ви администратор трябва да прегледа инструкциите за конфигуриране на <ph name="SOFTWARE_NAME" />, за да отстрани проблема. <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="503498442187459473"><ph name="HOST" /> иска да използва камерата и микрофона ви</translation>
@@ -3323,7 +3319,6 @@
 <translation id="6124432979022149706">Конектори за Chrome Enterprise</translation>
 <translation id="6124996493718543728">Екранът за напредъка на „Купете сега, платете по-късно“ е отворен на пълната височина.</translation>
 <translation id="6125864963080902918"><ph name="BEGIN_LINK" />Още подробности<ph name="END_LINK" /></translation>
-<translation id="6125935847555014178"><ph name="STARTER_PACK_AI_MODE_FOCUSED_FRIENDLY_MATCH_TEXT" />. Натиснете Enter, за да зададете въпрос на режима с AI в Google Търсене</translation>
 <translation id="6126565365696310362">Плик, китайски №2</translation>
 <translation id="6131824478727057281">местоположение</translation>
 <translation id="6133320744616005677">Продължаване на достъпа</translation>
@@ -3358,7 +3353,6 @@
 <translation id="6177531123306197852">Плик C2</translation>
 <translation id="6180316780098470077">Интервал за повторен опит</translation>
 <translation id="6182972682129119950">A4 x 5</translation>
-<translation id="6184099524311454384">Търсене на раздели</translation>
 <translation id="6189351761800074311">Текстът ви и съдържанието на страницата се изпращат до Google, но няма да се използват за подобряване на AI.
     <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
 <translation id="6190518157737269631">Замяна на някои клавиши на клавиатурата ви, като например Esc</translation>
@@ -3976,7 +3970,6 @@
 <translation id="7139892792842608322">Основна тава</translation>
 <translation id="7140087718106278457">Списъкът с начини на плащане е затворен.</translation>
 <translation id="714064300541049402">Изместване на изображението от страна 2 по оста X</translation>
-<translation id="7140922144008419614">Бутон за търсене на раздели. Активирайте, за да търсите раздели</translation>
 <translation id="7143668445748322952">файловете от камерата, изтеглянията и екранните снимки</translation>
 <translation id="7143682719845053166">PRC 32K</translation>
 <translation id="7144878232160441200">Повторен опит</translation>
@@ -4088,7 +4081,6 @@
 <translation id="7337248890521463931">Показване на повече редове</translation>
 <translation id="7337706099755338005">Не е налице за платформата ви.</translation>
 <translation id="733923710415886693">Сертификатът на сървъра не е разкрит чрез Прозрачност на сертификатите.</translation>
-<translation id="73398226265793546">Бутон за режима с AI. Активирайте го, за да задавате въпроси на режима с AI в Google Търсене</translation>
 <translation id="7343620778718789463">Документи за самоличност</translation>
 <translation id="7346048084945669753">Потребителят е вътрешен:</translation>
 <translation id="7346062987309535530">Прибори и посуда за хранене</translation>
@@ -4235,7 +4227,6 @@
 <translation id="7526934274050461096">Връзката ви с този сайт не е частна</translation>
 <translation id="7529884293139707752">Домашно образование</translation>
 <translation id="7531464389616946220">Сканиране на картата</translation>
-<translation id="7534473948927234329"><ph name="STARTER_PACK_BOOKMARKS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Натиснете Enter, за да търсите в отметките</translation>
 <translation id="7534987659046836932">Плик C7</translation>
 <translation id="7535087603100972091">Стойност</translation>
 <translation id="753556296624075801">Предоставено от Google</translation>
@@ -4609,7 +4600,6 @@
 <translation id="8092254339843485299">6 x 8 инча</translation>
 <translation id="8094917007353911263">Използваната от вас мрежа може да изисква да посетите <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
 <translation id="8095168258866348967">Езиковите пакети се инсталират...</translation>
-<translation id="809543534949702122">История на търсенията</translation>
 <translation id="8098855213644561659">A3 Extra</translation>
 <translation id="809898108652741896">A6</translation>
 <translation id="8099473231501330216">да заявите изтриването ѝ</translation>
@@ -4659,7 +4649,6 @@
 <translation id="8194412401381329820">Не можете да използвате тази страница от управляван профил на това неуправлявано устройство. Ако използвате съответната страница, всички управлявани профили ще бъдат заключени освен тези, които се контролират от същото юридическо лице, което управлява това устройство (свързани профили).</translation>
 <translation id="8194797478851900357">&amp;Отмяна на преместването</translation>
 <translation id="8194956568907463262">Игри със стрелба</translation>
-<translation id="8198379961710069585">Бутон за търсене в историята. Активирайте, за да търсите в историята</translation>
 <translation id="8199437620497683918">Оптичен диск (гланциран)</translation>
 <translation id="8200772114523450471">Възобновяване</translation>
 <translation id="8202097416529803614">Обобщена информация за поръчката</translation>
