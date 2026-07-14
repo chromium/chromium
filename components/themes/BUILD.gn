@@ -13,11 +13,13 @@ source_set("themes") {
     "ntp_custom_background_service_base.h",
     "ntp_custom_background_service_constants.h",
     "ntp_custom_background_service_observer.h",
+    "theme_utils.h",
   ]
   sources = [
     "ntp_background_data.cc",
     "ntp_background_service.cc",
     "ntp_custom_background_service_base.cc",
+    "theme_utils.cc",
   ]
   public_deps = [
     ":ntp_background_proto",
@@ -38,6 +40,7 @@ source_set("themes") {
     "//components/optimization_guide/core:features",
     "//components/pref_registry",
     "//components/search",
+    "//components/sync/protocol",
     "//components/themes/cross_device:features",
     "//components/version_info",
     "//ui/base:features",
@@ -58,6 +61,7 @@ source_set("unit_tests") {
   sources = [
     "ntp_background_service_unittest.cc",
     "ntp_custom_background_service_base_unittest.cc",
+    "theme_utils_unittest.cc",
   ]
 
   deps = [
@@ -69,6 +73,7 @@ source_set("unit_tests") {
     "//components/prefs",
     "//components/prefs:test_support",
     "//components/search",
+    "//components/sync/protocol",
     "//components/themes/cross_device:unit_tests",
     "//components/version_info",
     "//services/network:test_support",
