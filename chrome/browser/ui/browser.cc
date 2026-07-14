@@ -100,7 +100,6 @@
 #include "chrome/browser/ui/bookmarks/bookmark_utils.h"
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/browser_commands.h"
-#include "chrome/browser/ui/browser_init_state.h"
 #include "chrome/browser/ui/browser_live_tab_context.h"
 #include "chrome/browser/ui/browser_manager_service.h"
 #include "chrome/browser/ui/browser_manager_service_factory.h"
@@ -490,7 +489,8 @@ std::unique_ptr<Browser> Browser::DeprecatedCreateOwnedForTesting(
 }
 
 Browser::Browser(const CreateParams& params)
-    : type_(params.type),
+    : create_params_(params),
+      type_(params.type),
       profile_(params.profile),
       window_(nullptr),
       tab_strip_model_delegate_(
@@ -504,16 +504,22 @@ Browser::Browser(const CreateParams& params)
               : TabGroupModelFactory::GetInstance())),
       app_name_(params.app_name),
       session_id_(SessionID::NewUnique()),
+      omit_from_session_restore_(params.omit_from_session_restore),
+      should_trigger_session_restore_(params.should_trigger_session_restore),
+      override_bounds_(params.initial_bounds),
+      initial_show_state_(params.initial_show_state),
+      initial_workspace_(params.initial_workspace),
+      initial_visible_on_all_workspaces_state_(
+          params.initial_visible_on_all_workspaces_state),
+      creation_source_(params.creation_source),
       window_has_shown_(false),
+      initial_vertical_tab_strip_collapsed_(
+          params.vertical_tab_strip_collapsed),
+      initial_vertical_tab_strip_uncollapsed_width_(
+          params.vertical_tab_strip_uncollapsed_width),
       keep_alive_(
           std::make_unique<ScopedKeepAlive>(KeepAliveOrigin::BROWSER,
                                             KeepAliveRestartOption::DISABLED)) {
-  // Constructed first so that downstream features and window setup (e.g.
-  // BrowserWindowFeatures and the window sizer) can query the creation and
-  // initial parameters of this window.
-  init_state_ =
-      std::make_unique<BrowserInitState>(params, unowned_user_data_host_);
-
   if (!profile_->IsOffTheRecord()) {
     profile_keep_alive_ = std::make_unique<ScopedProfileKeepAlive>(
         params.profile->GetOriginalProfile(),
@@ -648,71 +654,6 @@ base::WeakPtr<Browser> Browser::AsWeakPtr() {
 
 base::WeakPtr<const Browser> Browser::AsWeakPtr() const {
   return weak_factory_.GetWeakPtr();
-}
-
-///////////////////////////////////////////////////////////////////////////////
-// Browser, Creation and initial parameters (forwarded to BrowserInitState):
-
-const Browser::CreateParams& Browser::create_params() const {
-  return init_state_->create_params();
-}
-
-Browser::CreationSource Browser::creation_source() const {
-  return init_state_->creation_source();
-}
-
-void Browser::set_is_session_restore(bool is_session_restore) {
-  init_state_->set_is_session_restore(is_session_restore);
-}
-
-bool Browser::is_session_restore() const {
-  return init_state_->is_session_restore();
-}
-
-void Browser::set_override_bounds(const gfx::Rect& bounds) {
-  init_state_->set_override_bounds(bounds);
-}
-
-gfx::Rect Browser::override_bounds() const {
-  return init_state_->override_bounds();
-}
-
-bool Browser::bounds_overridden() const {
-  return init_state_->bounds_overridden();
-}
-
-ui::mojom::WindowShowState Browser::initial_show_state() const {
-  return init_state_->initial_show_state();
-}
-
-void Browser::set_initial_show_state(
-    ui::mojom::WindowShowState initial_show_state) {
-  init_state_->set_initial_show_state(initial_show_state);
-}
-
-const std::string& Browser::initial_workspace() const {
-  return init_state_->initial_workspace();
-}
-
-bool Browser::initial_visible_on_all_workspaces_state() const {
-  return init_state_->initial_visible_on_all_workspaces_state();
-}
-
-std::optional<bool> Browser::is_vertical_tabs_initially_collapsed() const {
-  return init_state_->is_vertical_tabs_initially_collapsed();
-}
-
-std::optional<int> Browser::get_vertical_tabs_initial_uncollapsed_width()
-    const {
-  return init_state_->get_vertical_tabs_initial_uncollapsed_width();
-}
-
-bool Browser::omit_from_session_restore() const {
-  return init_state_->omit_from_session_restore();
-}
-
-bool Browser::should_trigger_session_restore() const {
-  return init_state_->should_trigger_session_restore();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
