@@ -92,7 +92,7 @@ import java.util.function.Supplier;
 
 /** Unit tests for {@link NewTabAnimationLayout}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(sdk = 35)
+@Config(minSdk = 35)
 @EnableFeatures({
     ChromeFeatureList.SENSITIVE_CONTENT,
     ChromeFeatureList.SENSITIVE_CONTENT_WHILE_SWITCHING_TABS
@@ -130,6 +130,8 @@ public class NewTabAnimationLayoutUnitTest {
     @Mock private NewTabPage mNtp;
     @Mock private TopInsetProvider mTopInsetProvider;
     @Mock private EdgeToEdgeController mEdgeToEdgeController;
+    @Mock private View mBottomBar;
+    @Mock private View mBottomBarTabSwitcherButton;
     private SceneLayer mSceneLayer;
 
     private final SettableNullableObservableSupplier<Tab> mCurrentTabSupplier =
@@ -241,6 +243,11 @@ public class NewTabAnimationLayoutUnitTest {
         mNewTabAnimationLayout.setTabContentManager(mTabContentManager);
         when(mAnimationHostView.findViewById(R.id.toolbar)).thenReturn(mToolbar);
         when(mToolbar.findViewById(R.id.tab_switcher_button)).thenReturn(mTabSwitcherButton);
+        when(mAnimationHostView.findViewById(
+                        org.chromium.chrome.browser.ui.bottombar.R.id.bottom_bar_container))
+                .thenReturn(mBottomBar);
+        when(mBottomBar.findViewById(R.id.tab_switcher_button))
+                .thenReturn(mBottomBarTabSwitcherButton);
         when(mAnimationHostView.getWidth()).thenReturn(40);
         when(mAnimationHostView.getHeight()).thenReturn(40);
         doAnswer(

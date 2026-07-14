@@ -81,7 +81,7 @@ public class EdgeToEdgeInstrumentationTest {
             new RenderTestRule.Builder()
                     .setBugComponent(Component.UI_BROWSER_MOBILE_EDGE_TO_EDGE)
                     .setCorpus(Corpus.ANDROID_RENDER_TESTS_PUBLIC)
-                    .setRevision(0)
+                    .setRevision(1)
                     .build();
 
     private static final String TEST_AUTO_PAGE =
@@ -368,7 +368,17 @@ public class EdgeToEdgeInstrumentationTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
+    @DisableFeatures({ChromeFeatureList.ANDROID_BOTTOM_BAR})
+    @CommandLineFlags.Add(UiSwitches.ENABLE_EDGE_TO_EDGE_DEBUG_LAYERS)
+    public void testPadWithEdgeToEdgeLayout_NoBottomBar() throws IOException {
+        testPadWithEdgeToEdgeLayoutImpl("e2e-everywhere-no-bottom-padding-no-bottom-bar");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
     @EnableFeatures({ChromeFeatureList.HOME_BUTTON_REMOVAL + ":keep_home_button_on_ntp/true"})
+    @DisableFeatures({ChromeFeatureList.ANDROID_BOTTOM_BAR})
     @CommandLineFlags.Add(UiSwitches.ENABLE_EDGE_TO_EDGE_DEBUG_LAYERS)
     public void testPadWithEdgeToEdgeLayout_withHomeButtonRemovalKeepOnNtp() throws IOException {
         testPadWithEdgeToEdgeLayoutImpl(
