@@ -355,12 +355,6 @@ BASE_FEATURE_PARAM(bool,
 );
 
 BASE_FEATURE_PARAM(bool,
-                   kPageActionsMigrationZoom,
-                   &kPageActionsMigration,
-                   "zoom",
-                   true);
-
-BASE_FEATURE_PARAM(bool,
                    kPageActionsMigrationAutofillMandatoryReauth,
                    &kPageActionsMigration,
                    "mandatory_reauth",

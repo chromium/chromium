@@ -1206,7 +1206,6 @@ const FeatureEntry::FeatureParam kPageActionsMigrationParams[] = {
     {"save_payments", "true"},
     {"sharing_hub", "true"},
     {"virtual_card", "true"},
-    {"zoom", "true"},
 };
 const FeatureEntry::FeatureVariation kPageActionsMigrationVariations[] = {
     {"with all migrated page actions enabled", kPageActionsMigrationParams,

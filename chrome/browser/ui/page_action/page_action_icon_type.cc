@@ -14,8 +14,6 @@ const base::FeatureParam<bool>* GetPageActionsMigrationParam(
   switch (page_action) {
     case PageActionIconType::kIntentPicker:
       return &features::kPageActionsMigrationIntentPicker;
-    case PageActionIconType::kZoom:
-      return &features::kPageActionsMigrationZoom;
     case PageActionIconType::kMandatoryReauth:
       return &features::kPageActionsMigrationAutofillMandatoryReauth;
     case PageActionIconType::kVirtualCardEnroll:
@@ -64,6 +62,7 @@ bool IsPageActionMigrated(PageActionIconType page_action) {
     case PageActionIconType::kFederation:
     case PageActionIconType::kCookieControls:
     case PageActionIconType::kManagePasswords:
+    case PageActionIconType::kZoom:
     case PageActionIconType::kWebAuthnAmbientSignin:
     case PageActionIconType::kFileSystemAccess:
     case PageActionIconType::kAiMode:

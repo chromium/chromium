@@ -25,7 +25,6 @@ source_set("page_action") {
     "page_action_view_interface.h",
     "page_action_view_params.h",
     "webui_page_action_control.h",
-    "zoom_view.h",
   ]
 
   public_deps = [
@@ -69,7 +68,6 @@ source_set("impl") {
     "page_action_icon_view.cc",
     "page_action_view.cc",
     "webui_page_action_control.cc",
-    "zoom_view.cc",
   ]
 
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]

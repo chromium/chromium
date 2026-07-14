@@ -39,8 +39,6 @@ gfx::NativeView ZoomBubbleManagerWebUIBrowser::GetNativeView() {
   return window_->widget()->GetNativeView();
 }
 
-void ZoomBubbleManagerWebUIBrowser::UpdateLegacyPageActionIcon() {}
-
 std::u16string ZoomBubbleManagerWebUIBrowser::GetZoomActionAccessibleName() {
   // TODO(webium): Fetch accessible name from the page action view once
   // it's supported for webium.

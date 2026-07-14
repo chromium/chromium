@@ -212,11 +212,6 @@ void ZoomBubbleCoordinator::UpdateZoomBubbleStateAndIconVisibility(
     return;
   }
 
-  if (!IsPageActionMigrated(PageActionIconType::kZoom)) {
-    manager_->UpdateLegacyPageActionIcon();
-    return;
-  }
-
   // Update the bubble visibility state before we refresh the icon so that
   // UpdateZoomIconVisibility() sees the correct value bubble state value.
   UpdateBubbleVisibilityState(base::to_address(browser_), is_bubble_visible);

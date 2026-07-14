@@ -234,8 +234,7 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
         std::make_unique<FileSystemAccessPageActionController>(tab);
   }
 
-  if (IsPageActionMigrated(PageActionIconType::kZoom) &&
-      page_action_controller_->ActionExists(kActionZoomNormal)) {
+  if (page_action_controller_->ActionExists(kActionZoomNormal)) {
     zoom_view_controller_ = std::make_unique<zoom::ZoomViewController>(
         tab, *page_action_controller_);
   }

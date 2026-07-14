@@ -1798,21 +1798,12 @@ views::BubbleAnchor ToolbarView::GetPageActionBubbleAnchor(
 }
 
 void ToolbarView::ZoomChangedForActiveTab(bool can_show_bubble) {
-  if (IsPageActionMigrated(PageActionIconType::kZoom)) {
-    auto* zoom_view_controller = browser_->GetActiveTabInterface()
-                                     ->GetTabFeatures()
-                                     ->zoom_view_controller();
-    CHECK(zoom_view_controller);
-    zoom_view_controller->UpdatePageActionIconAndBubbleVisibility(
-        /*prefer_to_show_bubble=*/can_show_bubble, /*from_user_gesture=*/false);
-    return;
-  }
-
-  // Other impls are expected to only launch after page action migration.
-  if (location_bar_view_) {
-    location_bar_view_->page_action_icon_controller()->ZoomChangedForActiveTab(
-        can_show_bubble);
-  }
+  auto* zoom_view_controller = browser_->GetActiveTabInterface()
+                                   ->GetTabFeatures()
+                                   ->zoom_view_controller();
+  CHECK(zoom_view_controller);
+  zoom_view_controller->UpdatePageActionIconAndBubbleVisibility(
+      /*prefer_to_show_bubble=*/can_show_bubble, /*from_user_gesture=*/false);
 }
 
 AvatarToolbarButtonInterface* ToolbarView::GetAvatarToolbarButtonInterface() {

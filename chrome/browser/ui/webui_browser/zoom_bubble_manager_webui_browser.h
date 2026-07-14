@@ -22,7 +22,6 @@ class ZoomBubbleManagerWebUIBrowser : public ZoomBubbleManager {
   // ZoomBubbleManager:
   views::BubbleAnchor GetZoomBubbleAnchor() override;
   gfx::NativeView GetNativeView() override;
-  void UpdateLegacyPageActionIcon() override;
   std::u16string GetZoomActionAccessibleName() override;
 
  private:

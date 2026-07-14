@@ -141,12 +141,7 @@ class PageActionUiTestBase {
     feature_list_.InitWithFeaturesAndParameters(
         /*enabled_features=*/
         {
-            {
-                features::kPageActionsMigration,
-                {
-                    {features::kPageActionsMigrationZoom.name, "true"},
-                },
-            },
+            {features::kPageActionsMigration, {}},
             {lens::features::kLensOverlayOmniboxEntryPoint, {}},
         },
         /*disabled_features=*/{

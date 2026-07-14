@@ -366,19 +366,13 @@ views::BubbleAnchor WebAppFrameToolbarView::GetPageActionBubbleAnchor(
 }
 
 void WebAppFrameToolbarView::ZoomChangedForActiveTab(bool can_show_bubble) {
-  if (IsPageActionMigrated(PageActionIconType::kZoom)) {
-    auto* zoom_view_controller = browser_view_->browser()
-                                     ->GetActiveTabInterface()
-                                     ->GetTabFeatures()
-                                     ->zoom_view_controller();
-    CHECK(zoom_view_controller);
-    zoom_view_controller->UpdatePageActionIconAndBubbleVisibility(
-        /*prefer_to_show_bubble=*/can_show_bubble, /*from_user_gesture=*/false);
-    return;
-  }
-
-  right_container_->page_action_icon_controller()->ZoomChangedForActiveTab(
-      can_show_bubble);
+  auto* zoom_view_controller = browser_view_->browser()
+                                   ->GetActiveTabInterface()
+                                   ->GetTabFeatures()
+                                   ->zoom_view_controller();
+  CHECK(zoom_view_controller);
+  zoom_view_controller->UpdatePageActionIconAndBubbleVisibility(
+      /*prefer_to_show_bubble=*/can_show_bubble, /*from_user_gesture=*/false);
 }
 
 AvatarToolbarButtonInterface*

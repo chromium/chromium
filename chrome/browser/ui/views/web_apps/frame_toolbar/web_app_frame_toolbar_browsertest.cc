@@ -284,8 +284,7 @@ class WebAppFrameToolbarBrowserTest : public web_app::WebAppBrowserTestBase {
   WebAppFrameToolbarBrowserTest() {
     scoped_feature_list_.InitWithFeaturesAndParameters(
         /*enabled_features=*/
-        {{features::kPageActionsMigration,
-          {{features::kPageActionsMigrationZoom.name, "true"}}},
+        {{features::kPageActionsMigration, {}},
          {blink::features::kWebAppMigrationApi, {}}},
         /*disabled_features=*/{});
   }

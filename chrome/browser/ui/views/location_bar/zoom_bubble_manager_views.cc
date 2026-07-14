@@ -49,10 +49,6 @@ gfx::NativeView ZoomBubbleManagerViews::GetNativeView() {
   return browser_view_->GetWidget()->GetNativeView();
 }
 
-void ZoomBubbleManagerViews::UpdateLegacyPageActionIcon() {
-  browser_view_->UpdatePageActionIcon(PageActionIconType::kZoom);
-}
-
 std::u16string ZoomBubbleManagerViews::GetZoomActionAccessibleName() {
   ToolbarButtonProvider* provider = browser_view_->toolbar_button_provider();
   return provider->GetPageActionViewInterface(kActionZoomNormal)

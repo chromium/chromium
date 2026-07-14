@@ -598,11 +598,8 @@ class LocationBarViewPageActionHideWhileEditingTests
     : public InProcessBrowserTest {
  public:
   LocationBarViewPageActionHideWhileEditingTests() {
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        ::features::kPageActionsMigration,
-        {
-            {features::kPageActionsMigrationZoom.name, "true"},
-        });
+    scoped_feature_list_.InitAndEnableFeature(
+        ::features::kPageActionsMigration);
   }
 
   void SetUpOnMainThread() override {

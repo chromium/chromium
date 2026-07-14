@@ -496,7 +496,6 @@ void LocationBarView::Init() {
     if (!apps::features::ShouldShowLinkCapturingUX()) {
       params.types_enabled.push_back(PageActionIconType::kIntentPicker);
     }
-    params.types_enabled.push_back(PageActionIconType::kZoom);
     params.types_enabled.push_back(PageActionIconType::kFederation);
   }
   params.types_enabled.push_back(PageActionIconType::kSaveCard);

@@ -23,9 +23,6 @@ class ZoomBubbleManager {
   // Returns the native view for parent window assignment.
   virtual gfx::NativeView GetNativeView() = 0;
 
-  // Updates the legacy (pre-migration) page action icon for zoom.
-  virtual void UpdateLegacyPageActionIcon() = 0;
-
   // Returns the accessible name for the zoom action in the toolbar, used as
   // the accessible window title for the zoom bubble.
   virtual std::u16string GetZoomActionAccessibleName() = 0;

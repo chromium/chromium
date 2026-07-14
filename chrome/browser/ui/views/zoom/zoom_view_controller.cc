@@ -34,9 +34,7 @@ ZoomViewController::ZoomViewController(
     tabs::TabInterface& tab_interface,
     page_actions::PageActionController& page_action_controller)
     : tab_interface_(tab_interface),
-      page_action_controller_(page_action_controller) {
-  DCHECK(IsPageActionMigrated(PageActionIconType::kZoom));
-}
+      page_action_controller_(page_action_controller) {}
 
 ZoomViewController::~ZoomViewController() = default;
 

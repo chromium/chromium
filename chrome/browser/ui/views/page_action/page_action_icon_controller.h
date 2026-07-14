@@ -12,8 +12,6 @@
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view_observer.h"
 #include "components/prefs/pref_change_registrar.h"
-#include "components/zoom/zoom_event_manager.h"
-#include "components/zoom/zoom_event_manager_observer.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/page.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -24,10 +22,8 @@
 class Browser;
 class PageActionIconContainer;
 struct PageActionIconParams;
-class ZoomView;
 
 class PageActionIconController : public PageActionIconViewObserver,
-                                 public zoom::ZoomEventManagerObserver,
                                  public content::WebContentsObserver {
  public:
   PageActionIconController();
@@ -52,9 +48,6 @@ class PageActionIconController : public PageActionIconViewObserver,
   // Update the icons' fonts.
   void SetFontList(const gfx::FontList& font_list);
 
-  // See comment in browser_window.h for more info.
-  void ZoomChangedForActiveTab(bool can_show_bubble);
-
   // Observe the new web contents.
   void UpdateWebContents(content::WebContents* contents);
 
@@ -74,10 +67,6 @@ class PageActionIconController : public PageActionIconViewObserver,
   // PageActionIconViewObserver:
   void OnPageActionIconViewShown(PageActionIconView* view) override;
   void OnPageActionIconViewClicked(PageActionIconView* view) override;
-
-  // ZoomEventManagerObserver:
-  // Updates the view for the zoom icon when default zoom levels change.
-  void OnDefaultZoomLevelChanged() override;
 
   // Returns the number of page actions which are currently visible. Does not
   // include permanent page actions, such as the bookmarks star and sharing
@@ -104,18 +93,12 @@ class PageActionIconController : public PageActionIconViewObserver,
 
   raw_ptr<PageActionIconContainer> icon_container_ = nullptr;
 
-  raw_ptr<ZoomView> zoom_icon_ = nullptr;
-
   IconViews page_action_icon_views_;
 
   PrefChangeRegistrar pref_change_registrar_;
 
   std::map<GURL, std::vector<raw_ptr<PageActionIconView, VectorExperimental>>>
       page_actions_excluded_from_logging_;
-
-  base::ScopedObservation<zoom::ZoomEventManager,
-                          zoom::ZoomEventManagerObserver>
-      zoom_observation_{this};
 
   // Max number of actions shown concurrently after the latest page change, as
   // tracked in metrics logging. Used to ensure we don't double-count certain

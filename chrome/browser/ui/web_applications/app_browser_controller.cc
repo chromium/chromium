@@ -463,7 +463,7 @@ std::vector<PageActionIconType>
 AppBrowserController::GetTitleBarPageActionTypes() const {
 #if BUILDFLAG(IS_CHROMEOS)
   if (system_app()) {
-    return {PageActionIconType::kFind, PageActionIconType::kZoom};
+    return {PageActionIconType::kFind};
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
@@ -471,7 +471,6 @@ AppBrowserController::GetTitleBarPageActionTypes() const {
   types_enabled.push_back(PageActionIconType::kFind);
   types_enabled.push_back(PageActionIconType::kManagePasswords);
   types_enabled.push_back(PageActionIconType::kTranslate);
-  types_enabled.push_back(PageActionIconType::kZoom);
   types_enabled.push_back(PageActionIconType::kFileSystemAccess);
   types_enabled.push_back(PageActionIconType::kSaveCard);
 
