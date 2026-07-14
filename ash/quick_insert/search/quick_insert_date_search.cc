@@ -15,7 +15,8 @@
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/to_vector.h"
 #include "base/i18n/case_conversion.h"
-#include "base/i18n/time_formatting.h"
+#include "base/i18n/icubridge/date_time_formatter.h"
+#include "base/i18n/icubridge/icu_bridge.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -26,6 +27,9 @@
 
 namespace ash {
 namespace {
+
+using ::base::i18n::DateTimeFormatterOptions;
+using ::base::i18n::IcuBridge;
 
 constexpr int kDaysPerWeek = 7;
 constexpr LazyRE2 kDaysOrWeeksAwayRegex = {
@@ -69,7 +73,8 @@ constexpr std::u16string_view kSuggestedDates[] = {
 };
 
 std::u16string GetLocalizedDayOfWeek(const base::Time& time) {
-  return base::LocalizedTimeFormatWithPattern(time, "EEEE");
+  return IcuBridge::GetInstance().date_time_formatter().Format(
+      time, base::i18n::datetime_options::E::Long());
 }
 
 // The result of parsing a date expression query.
@@ -83,7 +88,8 @@ struct ResolvedDate {
 
 QuickInsertSearchResult MakeResult(const ResolvedDate& date) {
   return QuickInsertTextResult(
-      base::LocalizedTimeFormatWithPattern(date.time, "LLLd"),
+      IcuBridge::GetInstance().date_time_formatter().Format(
+          date.time, base::i18n::datetime_options::MD::Medium()),
       date.disambiguation_text.value_or(u""),
       ui::ImageModel::FromVectorIcon(kQuickInsertCalendarIcon,
                                      cros_tokens::kCrosSysOnSurface),
@@ -94,7 +100,9 @@ QuickInsertSearchResult MakeSuggestedResult(std::u16string_view query_text,
                                             const ResolvedDate& date) {
   CHECK(!date.disambiguation_text.has_value());
   return QuickInsertSearchRequestResult(
-      query_text, base::LocalizedTimeFormatWithPattern(date.time, "LLLd"),
+      query_text,
+      IcuBridge::GetInstance().date_time_formatter().Format(
+          date.time, base::i18n::datetime_options::MD::Medium()),
       ui::ImageModel::FromVectorIcon(kQuickInsertCalendarIcon,
                                      cros_tokens::kCrosSysOnSurface));
 }

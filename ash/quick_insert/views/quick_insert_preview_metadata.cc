@@ -5,11 +5,16 @@
 #include "ash/quick_insert/views/quick_insert_preview_metadata.h"
 
 #include "ash/strings/grit/ash_strings.h"
+#include "base/i18n/icubridge/date_time_formatter.h"
+#include "base/i18n/icubridge/icu_bridge.h"
 #include "base/i18n/time_formatting.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace ash {
 namespace {
+
+using ::base::i18n::DateTimeFormatterOptions;
+using ::base::i18n::IcuBridge;
 
 // Taken from //chrome/browser/ash/app_list/search/files/justifications.cc.
 // Time limits for how last accessed or modified time maps to each justification
@@ -28,7 +33,8 @@ std::u16string GetTimeString(base::Time timestamp) {
     return base::TimeFormatTimeOfDay(timestamp);
   }
 
-  return base::LocalizedTimeFormatWithPattern(timestamp, "MMMd");
+  return IcuBridge::GetInstance().date_time_formatter().Format(
+      timestamp, base::i18n::datetime_options::MD::Medium());
 }
 
 std::u16string GetJustificationString(base::Time viewed, base::Time modified) {
