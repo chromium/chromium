@@ -164,7 +164,8 @@ constexpr auto kTwoPageVerticalLayoutHorzLinePage1Inputs =
     });
 
 // Commonly used test brush color. The color corresponds to "Yellow 1" for pen
-// brushes and "Light Yellow" for highlighter brushes.
+// brushes and "Light Yellow" for highlighter brushes. It is also "Yellow 1" for
+// text annotations.
 constexpr SkColor kYellow = SkColorSetRGB(0xFD, 0xD6, 0x63);
 
 // Commonly used test brush color and message params. The color corresponds to
@@ -1025,7 +1026,7 @@ class PdfInkModuleTextTest : public testing::Test {
     InkTextBox test_box(
         /*id=*/42, InkTextBoxAttributes(
                        /*rect=*/gfx::RectF(10.0f, 20.0f, 100.0f, 15.0f),
-                       /*color=*/SkColorSetRGB(255, 111, 99),
+                       /*color=*/kYellow,
                        /*css_font_size=*/12.0f,
                        /*typeface=*/TextTypeface::kSerif,
                        /*alignment=*/TextAlignment::kCenter,
@@ -1051,8 +1052,9 @@ class PdfInkModuleTextTest : public testing::Test {
 
   static base::DictValue SampleTextAttributesDict() {
     base::DictValue text_attributes;
+    // Color components values for `kYellow`.
     text_attributes.Set(
-        "color", base::DictValue().Set("r", 255).Set("g", 111).Set("b", 99));
+        "color", base::DictValue().Set("r", 253).Set("g", 214).Set("b", 99));
     text_attributes.Set("size", 12.0f);
     text_attributes.Set("typeface", "serif");
     text_attributes.Set("alignment", "center");
@@ -1076,7 +1078,7 @@ class PdfInkModuleTextTest : public testing::Test {
   SampleInkTextBoxAttributesMatcher() {
     return InkTextBoxAttributesEq(
         /*rect=*/gfx::RectF(10.0f, 20.0f, 100.0f, 15.0f),
-        /*color=*/SkColorSetRGB(255, 111, 99),
+        /*color=*/kYellow,
         /*css_font_size=*/12.0f,
         /*typeface=*/TextTypeface::kSerif,
         /*alignment=*/TextAlignment::kCenter,
@@ -1092,7 +1094,7 @@ class PdfInkModuleTextTest : public testing::Test {
                                         PageOrientation viewport_orientation) {
     return InkTextBoxAttributesEq(
         /*rect=*/gfx::RectF(10.0f, 20.0f, 100.0f, 15.0f),
-        /*color=*/SkColorSetRGB(255, 111, 99),
+        /*color=*/kYellow,
         /*css_font_size=*/12.0f,
         /*typeface=*/TextTypeface::kSerif,
         /*alignment=*/TextAlignment::kCenter,
@@ -1368,7 +1370,7 @@ TEST_F(PdfInkModuleTextTest, HandleFinishTextAnnotationMessageEdit) {
                  kPdfZoom,
                  InkTextBoxAttributesEq(
                      /*rect=*/gfx::RectF(10.0f, 20.0f, 100.0f, 15.0f),
-                     /*color=*/SkColorSetRGB(255, 111, 99),
+                     /*color=*/kYellow,
                      /*css_font_size=*/12.0f,
                      /*typeface=*/TextTypeface::kSerif,
                      /*alignment=*/TextAlignment::kCenter,
