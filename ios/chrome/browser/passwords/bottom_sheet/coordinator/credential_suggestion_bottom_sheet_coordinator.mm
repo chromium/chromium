@@ -171,6 +171,8 @@ using PasswordSuggestionBottomSheetExitReason::kUsePasswordSuggestion;
   // If the bottom sheet has no suggestion to show, stop the presentation right
   // away.
   if (![_mediator hasSuggestions]) {
+    // If there is an active passkey request, defer it to the renderer.
+    [_mediator deferPasskeyRequestToRenderer];
     // Cleanup the coordinator if it couldn't be started.
     [self.browserCoordinatorCommandsHandler dismissPasswordSuggestions];
     // Do not add any logic past this point in this specific context since the
@@ -432,6 +434,7 @@ using PasswordSuggestionBottomSheetExitReason::kUsePasswordSuggestion;
   if (!_navigationController.presentingViewController &&
       !_navigationController.beingPresented) {
     [_mediator logExitReason:kCouldNotPresent];
+    [_mediator deferPasskeyRequestToRenderer];
     [self.browserCoordinatorCommandsHandler dismissPasswordSuggestions];
   }
 }

@@ -266,4 +266,13 @@ TEST_F(PasskeyCreationBottomSheetMediatorTest, CreatePasskeyReauthNotPossible) {
   [(OCMockObject*)mock_delegate_ verify];
   // Verify client did NOT fetch keys.
   EXPECT_FALSE(fake_client_->DidFetchKeys());
+
+  // Verify that the request was deferred to the renderer.
+  web::WebFramesManager* frames_manager =
+      webauthn::PasskeyJavaScriptFeature::GetInstance()->GetWebFramesManager(
+          web_state_);
+  web::FakeWebFrame* main_frame =
+      static_cast<web::FakeWebFrame*>(frames_manager->GetMainWebFrame());
+  EXPECT_NE(main_frame->GetLastJavaScriptCall().find(u"deferToRenderer"),
+            std::u16string::npos);
 }

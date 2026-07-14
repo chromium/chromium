@@ -71,6 +71,10 @@ enum class PasswordSuggestionBottomSheetExitReason;
 - (BOOL)hasPendingRequest:
     (const webauthn::IOSPasskeyClient::RequestInfo&)requestInfo;
 
+// Cancels the passkey request and defers to the renderer to save the passkey,
+// potentially using a different credential provider.
+- (void)deferPasskeyRequestToRenderer;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_PASSWORDS_BOTTOM_SHEET_COORDINATOR_CREDENTIAL_SUGGESTION_BOTTOM_SHEET_MEDIATOR_BASE_H_

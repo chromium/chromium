@@ -14,6 +14,7 @@
 #import "components/webauthn/ios/ios_webauthn_credentials_delegate.h"
 #import "components/webauthn/ios/ios_webauthn_credentials_delegate_factory.h"
 #import "components/webauthn/ios/passkey_suggestion_utils.h"
+#import "components/webauthn/ios/passkey_tab_helper.h"
 #import "ios/chrome/browser/favicon/model/favicon_loader.h"
 #import "ios/chrome/browser/passwords/bottom_sheet/coordinator/credential_suggestion_bottom_sheet_mediator_base+Subclassing.h"
 #import "ios/chrome/browser/passwords/bottom_sheet/coordinator/password_suggestion_bottom_sheet_exit_reason.h"
@@ -47,6 +48,10 @@
 @property(nonatomic, assign)
     base::WeakPtr<webauthn::IOSWebAuthnCredentialsDelegate>
         webAuthnCredentialsDelegate;
+
+// Returns the webauthn::PasskeyTabHelper for the active webstate or nil if it
+// can't be retrieved.
+- (webauthn::PasskeyTabHelper*)passkeyTabHelper;
 
 @end
 
@@ -193,6 +198,7 @@
 }
 
 - (void)onDismissWithoutAnyCredentialAction {
+  [self deferPasskeyRequestToRenderer];
 }
 
 - (BOOL)hasPendingRequest:
@@ -246,6 +252,28 @@
   // As there is no more context for showing the bottom sheet, end the
   // presentation.
   [self.presenter endPresentation];
+}
+
+- (webauthn::PasskeyTabHelper*)passkeyTabHelper {
+  if (!self.webStateList) {
+    return nil;
+  }
+
+  web::WebState* activeWebState = self.webStateList->GetActiveWebState();
+  if (!activeWebState) {
+    return nil;
+  }
+
+  return webauthn::PasskeyTabHelper::FromWebState(activeWebState);
+}
+
+- (void)deferPasskeyRequestToRenderer {
+  webauthn::PasskeyTabHelper* passkeyTabHelper = [self passkeyTabHelper];
+  if (!passkeyTabHelper || !_requestInfo.has_value()) {
+    return;
+  }
+
+  passkeyTabHelper->DeferPendingRequestToRenderer(_requestInfo->request_id);
 }
 
 @end
