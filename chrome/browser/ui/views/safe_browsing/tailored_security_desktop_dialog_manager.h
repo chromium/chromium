@@ -7,7 +7,7 @@
 
 #include "base/functional/callback.h"
 
-class Browser;
+class BrowserWindowInterface;
 
 namespace safe_browsing {
 
@@ -29,7 +29,7 @@ class TailoredSecurityDesktopDialogManager {
   // manager has opened any other dialogs, calling this method will close those
   // dialogs.
   void ShowEnabledDialogForBrowser(
-      Browser* browser,
+      BrowserWindowInterface* browser,
       base::OnceCallback<void()> on_destroyed_callback);
 
   // Creates and shows a dialog for when Tailored Security is disabled. If this
@@ -37,7 +37,7 @@ class TailoredSecurityDesktopDialogManager {
   // dialogs. Upon closing a dialog, on_destroyed_callback will run. This is
   // needed to relenquish the queue handle.
   void ShowDisabledDialogForBrowser(
-      Browser* browser,
+      BrowserWindowInterface* browser,
       base::OnceCallback<void()> on_destroyed_callback);
 
  private:

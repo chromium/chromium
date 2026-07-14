@@ -11,8 +11,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
@@ -20,6 +19,7 @@
 #include "components/safe_browsing/core/browser/tailored_security_service/tailored_security_outcome.h"
 #include "components/safe_browsing/core/browser/tailored_security_service/tailored_security_service_util.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/base/base_window.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/dialog_model.h"
@@ -53,7 +53,7 @@ class TailoredSecurityDialogModelDelegate : public ui::DialogModelDelegate {
     base::RecordAction(accept_user_action_);
   }
 
-  void OnDialogRejected(Browser* browser) {
+  void OnDialogRejected(BrowserWindowInterface* browser) {
     // Redirect to the Chrome safe browsing settings page.
     base::UmaHistogramEnumeration(kOutcomeMetricName_,
                                   TailoredSecurityOutcome::kSettings);
@@ -112,7 +112,7 @@ TailoredSecurityDesktopDialogManager::~TailoredSecurityDesktopDialogManager() =
     default;
 
 void TailoredSecurityDesktopDialogManager::ShowEnabledDialogForBrowser(
-    Browser* browser,
+    BrowserWindowInterface* browser,
     base::OnceCallback<void()> on_destroyed_callback) {
   auto model_delegate = std::make_unique<EnabledDialogModelDelegate>();
   auto* model_delegate_ptr = model_delegate.get();
@@ -162,7 +162,7 @@ void TailoredSecurityDesktopDialogManager::ShowEnabledDialogForBrowser(
 }
 
 void TailoredSecurityDesktopDialogManager::ShowDisabledDialogForBrowser(
-    Browser* browser,
+    BrowserWindowInterface* browser,
     base::OnceCallback<void()> on_destroyed_callback) {
   auto model_delegate = std::make_unique<DisabledDialogModelDelegate>();
   auto* model_delegate_ptr = model_delegate.get();
