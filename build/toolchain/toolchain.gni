@@ -41,7 +41,12 @@ declare_args() {
 }
 
 declare_args() {
-  clang_version = "23"
+  if (llvm_force_head_revision) {
+    clang_version = "24"
+  } else {
+    # TODO(crbug.com/534655507): Remove in the next Clang roll.
+    clang_version = "23"
+  }
 }
 
 # Extension for shared library files (including leading dot).
