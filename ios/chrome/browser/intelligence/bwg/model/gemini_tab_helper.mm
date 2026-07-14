@@ -156,13 +156,17 @@ bool GeminiTabHelper::HasObserver(GeminiTabHelperObserver* observer) {
 }
 
 void GeminiTabHelper::GeneratePageContext(
-    base::RepeatingCallback<void(GeminiPageContext*)> callback) {
+    base::RepeatingCallback<void(GeminiPageContext*)> callback,
+    bool is_background_tab) {
   page_context_consumer_callback_ = std::move(callback);
 
+  bool can_extract = CanExtractPageContextForGemini(is_background_tab);
+
   // Call back immediately if the page context cannot be extracted.
-  if (!CanExtractPageContextForGemini()) {
+  if (!can_extract) {
     if (page_context_consumer_callback_) {
-      page_context_consumer_callback_.Run(GetPartialPageContext());
+      page_context_consumer_callback_.Run(
+          GetPartialPageContext(is_background_tab));
     }
     return;
   }
@@ -255,9 +259,9 @@ UIImage* GeminiTabHelper::GetFavicon() {
   return current_favicon_;
 }
 
-GeminiPageContext* GeminiTabHelper::GetPartialPageContext(bool forced) {
-  bool is_eligible = forced ? CanExtractPageContextForWebState(web_state_)
-                            : CanExtractPageContextForGemini();
+GeminiPageContext* GeminiTabHelper::GetPartialPageContext(
+    bool is_background_tab) {
+  bool is_eligible = CanExtractPageContextForGemini(is_background_tab);
 
   return gemini::CreatePartialPageContextForWebState(web_state_, is_eligible);
 }
@@ -830,9 +834,10 @@ void GeminiTabHelper::OnGeminiEligibilityOnDemandDecision(
                               it->second.decision, it->second.metadata);
 }
 
-bool GeminiTabHelper::CanExtractPageContextForGemini() {
+bool GeminiTabHelper::CanExtractPageContextForGemini(bool is_background_tab) {
   return CanExtractPageContextForWebState(web_state_) &&
-         (!IsNextIaOrLiveMode() || web_state_->IsVisible());
+         (is_background_tab || !IsNextIaOrLiveMode() ||
+          web_state_->IsVisible());
 }
 
 bool GeminiTabHelper::IsInGeminiLiveMode() const {
