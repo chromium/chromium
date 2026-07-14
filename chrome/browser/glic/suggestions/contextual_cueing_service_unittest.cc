@@ -488,6 +488,8 @@ class ContextualCueingServiceTestZeroStateSuggestions : public testing::Test {
 
   content::WebContents* web_contents() { return web_contents_.get(); }
 
+  Profile* profile() { return &profile_; }
+
   PrefService* pref_service() { return pref_service_.get(); }
 
  private:
@@ -597,6 +599,31 @@ TEST_F(ContextualCueingServiceTestZeroStateSuggestions,
   SetGlicTabContextEnabled(false);
   InitializeContextualCueingService();
   service()->PrepareToFetchContextualGlicZeroStateSuggestions(web_contents());
+}
+
+TEST_F(ContextualCueingServiceTestZeroStateSuggestions,
+       NullOptimizationGuideServiceNoCrash) {
+  SetGlicTabContextEnabled(true);
+
+  // Initialize the service manually, passing nullptr for the optimization
+  // guide service.
+  auto local_service = std::make_unique<ContextualCueingService>(
+      /*page_content_extraction_service=*/nullptr,
+      /*optimization_guide_keyed_service=*/nullptr, loading_predictor(),
+      IdentityManagerFactory::GetForProfile(profile()), pref_service(),
+      /*template_url_service=*/nullptr);
+
+  // Verify PrepareToFetch does not crash.
+  local_service->PrepareToFetchContextualGlicZeroStateSuggestions(
+      web_contents());
+
+  // Verify GetSuggestions runs the callback with empty results and does not
+  // crash.
+  base::test::TestFuture<std::vector<std::string>> future;
+  local_service->GetContextualGlicZeroStateSuggestionsForFocusedTab(
+      web_contents(), /*is_fre=*/false, /*supported_tools=*/std::nullopt,
+      future.GetCallback());
+  EXPECT_TRUE(future.Get().empty());
 }
 
 TEST_F(ContextualCueingServiceTestZeroStateSuggestions,

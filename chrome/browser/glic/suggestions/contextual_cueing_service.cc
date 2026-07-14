@@ -339,6 +339,10 @@ void ContextualCueingService::PrepareToFetchContextualGlicZeroStateSuggestions(
     return;
   }
 
+  if (!optimization_guide_keyed_service_) {
+    return;
+  }
+
   if (!IsPageTypeEligibleForContextualSuggestions(
           web_contents->GetLastCommittedURL())) {
     return;
@@ -401,6 +405,11 @@ void ContextualCueingService::
     return;
   }
 
+  if (!optimization_guide_keyed_service_) {
+    std::move(callback).Run({});
+    return;
+  }
+
   bool page_type_eligible = IsPageTypeEligibleForContextualSuggestions(
       web_contents->GetLastCommittedURL());
   base::UmaHistogramBoolean(
@@ -449,6 +458,11 @@ bool ContextualCueingService::
         GlicSuggestionsCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!IsZeroStateSuggestionsEnabled()) {
+    std::move(callback).Run({});
+    return false;
+  }
+
+  if (!optimization_guide_keyed_service_) {
     std::move(callback).Run({});
     return false;
   }
