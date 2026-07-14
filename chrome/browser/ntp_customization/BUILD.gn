@@ -222,6 +222,7 @@ android_resources("java_resources") {
     "java/res/drawable/default_theme_icon.xml",
     "java/res/drawable/desktop_badge.xml",
     "java/res/drawable/edit_icon_circle_background.xml",
+    "java/res/drawable/edit_icon_circle_background_base.xml",
     "java/res/drawable/fitbit_heart_rate_icon.xml",
     "java/res/drawable/forward_arrow_icon.xml",
     "java/res/drawable/mobile_badge.xml",
