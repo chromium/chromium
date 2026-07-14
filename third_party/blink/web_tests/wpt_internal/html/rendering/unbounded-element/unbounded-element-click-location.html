@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<link rel="author" href="mailto:masonf@chromium.org">
+<link rel="help" href="https://crbug.com/508672616">
+
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<style>
+  #container {
+    position: relative;
+    margin-top: 100px;
+    margin-left: 100px;
+  }
+  #unbounded-menu {
+    position: absolute;
+    top: 50px;
+    left: 50px;
+    width: 200px;
+    height: 200px;
+    background: green;
+  }
+</style>
+
+<div id="container">
+  <button id="trigger">Open Menu</button>
+  <div id="unbounded-menu" unbounded>
+    <button id="menu-btn">Menu Button</button>
+  </div>
+</div>
+
+<script>
+function clickAt(x, y) {
+  return new Promise(resolve => {
+    chrome.gpuBenchmarking.pointerActionSequence([{
+      source: 'mouse',
+      actions: [
+        { name: 'pointerMove', x: x, y: y },
+        { name: 'pointerDown', x: x, y: y },
+        { name: 'pointerUp' }
+      ]
+    }], resolve);
+  });
+}
+
+function touchAt(x, y) {
+  return new Promise(resolve => {
+    chrome.gpuBenchmarking.pointerActionSequence([{
+      source: 'touch',
+      actions: [
+        { name: 'pointerDown', x: x, y: y },
+        { name: 'pointerUp' }
+      ]
+    }], resolve);
+  });
+}
+
+for (const inputType of ['mouse', 'touch']) {
+  promise_test(async t => {
+    assert_true(!!(window.chrome && chrome.gpuBenchmarking), "chrome.gpuBenchmarking is required for this test");
+
+    const trigger = document.getElementById('trigger');
+    const menu = document.getElementById('unbounded-menu');
+    const menuBtn = document.getElementById('menu-btn');
+
+    let triggerClicked = false;
+    const onTriggerClick = () => {
+      triggerClicked = true;
+      menu.showUnboundedElement();
+    };
+    trigger.addEventListener('click', onTriggerClick);
+
+    let menuBtnClicked = false;
+    const onMenuBtnClick = () => {
+      menuBtnClicked = true;
+    };
+    menuBtn.addEventListener('click', onMenuBtnClick);
+
+    t.add_cleanup(async () => {
+      trigger.removeEventListener('click', onTriggerClick);
+      menuBtn.removeEventListener('click', onMenuBtnClick);
+      await menu.hideUnboundedElement();
+    });
+
+    const tRect = trigger.getBoundingClientRect();
+    const triggerX = tRect.left + tRect.width / 2;
+    const triggerY = tRect.top + tRect.height / 2;
+
+    const actionFn = inputType === 'touch' ? touchAt : clickAt;
+
+    // Activate the unbounded element.
+    await actionFn(triggerX, triggerY);
+    assert_true(triggerClicked, `Trigger button should be clicked via ${inputType}.`);
+
+    // Inline wait for two frames to let the unbounded window initialize and position.
+    await new Promise(resolve => {
+      requestAnimationFrame(() => {
+        requestAnimationFrame(resolve);
+      });
+    });
+
+    const mRect = menuBtn.getBoundingClientRect();
+    const menuBtnX = mRect.left + mRect.width / 2;
+    const menuBtnY = mRect.top + mRect.height / 2;
+
+    // Click/touch the menu button inside the active unbounded element.
+    await actionFn(menuBtnX, menuBtnY);
+    assert_true(menuBtnClicked, `Menu button inside the active unbounded element should be clicked via ${inputType}.`);
+  }, `Verify hit-testing and input events on buttons inside active unbounded elements work correctly with ${inputType}.`);
+}
+</script>

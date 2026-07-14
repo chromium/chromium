@@ -398,16 +398,18 @@ void UnboundedSurfaceWindowAura::RouteMouseEvent(
   if (!parent_window || !parent_window->GetRootWindow()) {
     return;
   }
-  aura::client::ScreenPositionClient* screen_position_client =
-      aura::client::GetScreenPositionClient(parent_window->GetRootWindow());
-  if (!screen_position_client) {
-    return;
-  }
 
   blink::WebMouseEvent web_event = event;
   gfx::PointF parent_local_point = web_event.PositionInScreen();
-  screen_position_client->ConvertPointFromScreen(parent_window,
-                                                 &parent_local_point);
+  if (auto* screen_position_client = aura::client::GetScreenPositionClient(
+          parent_window->GetRootWindow())) {
+    // Since the input coordinate is in screen space and both windows share a
+    // root, ConvertPointToTarget would bypass the ScreenPositionClient and fail
+    // to apply the screen-to-root offset. We must explicitly use
+    // ConvertPointFromScreen to convert from screen coordinates.
+    screen_position_client->ConvertPointFromScreen(parent_window,
+                                                   &parent_local_point);
+  }
   web_event.SetPositionInWidget(parent_local_point.x(), parent_local_point.y());
 
   router->RouteMouseEvent(parent_view_, &web_event, ui::LatencyInfo());
@@ -475,12 +477,6 @@ void UnboundedSurfaceWindowAura::OnTouchEvent(ui::TouchEvent* event) {
   if (!parent_window || !parent_window->GetRootWindow()) {
     return;
   }
-  aura::client::ScreenPositionClient* screen_position_client =
-      aura::client::GetScreenPositionClient(parent_window->GetRootWindow());
-  if (!screen_position_client) {
-    return;
-  }
-
   blink::WebTouchEvent touch_event = ui::CreateWebTouchEventFromMotionEvent(
       pointer_state_, event->may_cause_scrolling(), event->hovering());
   pointer_state_.CleanupRemovedTouchPoints(*event);
@@ -488,8 +484,12 @@ void UnboundedSurfaceWindowAura::OnTouchEvent(ui::TouchEvent* event) {
   for (unsigned int i = 0; i < touch_event.touches_length; ++i) {
     blink::WebTouchPoint& touch_point = touch_event.touches[i];
     gfx::PointF parent_local_point = touch_point.PositionInScreen();
-    screen_position_client->ConvertPointFromScreen(parent_window,
-                                                   &parent_local_point);
+    // Since the touch event's PositionInScreen is populated from the
+    // MotionEvent's raw coordinates which are in root window space, not screen
+    // space, we must convert from root window coordinates to parent local
+    // coordinates.
+    aura::Window::ConvertPointToTarget(parent_window->GetRootWindow(),
+                                       parent_window, &parent_local_point);
     touch_point.SetPositionInWidget(parent_local_point.x(),
                                     parent_local_point.y());
   }
@@ -497,7 +497,8 @@ void UnboundedSurfaceWindowAura::OnTouchEvent(ui::TouchEvent* event) {
   ui::LatencyInfo latency_info =
       event->latency() ? *event->latency() : ui::LatencyInfo();
   router->RouteTouchEvent(parent_view_, &touch_event, latency_info);
-  event->SetHandled();
+  // Disable synchronous handling to allow gesture generation after ACK.
+  event->DisableSynchronousHandling();
 }
 
 }  // namespace content

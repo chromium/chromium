@@ -159,8 +159,8 @@ void PaintLayerClipper::CalculateBackgroundClipRectInternal(
     DCHECK(RuntimeEnabledFeatures::UnboundedElementEnabled());
     const auto& unbounded_fragment =
         unbounded_ancestor->GetLayoutObject()->FirstFragment();
-    destination_property_tree_state =
-        unbounded_fragment.LocalBorderBoxProperties();
+    destination_property_tree_state.SetClip(
+        unbounded_fragment.LocalBorderBoxProperties().Clip());
   }
 
   // The background rect applies all clips *above* m_layer, but not the overflow
