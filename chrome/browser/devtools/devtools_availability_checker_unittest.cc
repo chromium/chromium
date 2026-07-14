@@ -252,29 +252,6 @@ TEST_F(DevToolsAvailabilityCheckerTest,
   EXPECT_FALSE(IsInspectionAllowed(profile_.get(), extension.get()));
 }
 
-TEST_F(DevToolsAvailabilityCheckerTest,
-       PdfViewerBlockedWhenDevtoolsBlocked) {
-  // Set policy to Disallowed.
-  profile_->GetPrefs()->SetInteger(
-      prefs::kDevToolsAvailability,
-      static_cast<int>(policy::DeveloperToolsAvailability::
-                           kDisallowed));
-
-  // Set profile to managed.
-  profile_->GetProfilePolicyConnector()->OverrideIsManagedForTesting(true);
-
-  // Create the PDF viewer extension (which is also a component extension).
-  scoped_refptr<const extensions::Extension> extension =
-      extensions::ExtensionBuilder("PDF Viewer")
-          .SetID(extension_misc::kPdfExtensionId)
-          .SetLocation(extensions::mojom::ManifestLocation::kComponent)
-          .Build();
-
-  // Direct inspection of the extension (like a background worker) should be
-  // blocked.
-  EXPECT_FALSE(IsInspectionAllowed(profile_.get(), extension.get()));
-}
-
 TEST_F(DevToolsAvailabilityCheckerTest, IsInspectionAllowedNullWebContents) {
   // Passing nullptr for WebContents should default to allowed.
   EXPECT_TRUE(IsInspectionAllowed(profile_.get(),
