@@ -14,6 +14,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_init_state.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
@@ -460,7 +461,7 @@ ui::mojom::WindowShowState WindowSizer::GetWindowDefaultShowState(
     return ui::mojom::WindowShowState::kMaximized;
   }
 
-  return browser->initial_show_state();
+  return BrowserInitState::From(browser)->initial_show_state();
 }
 
 // static

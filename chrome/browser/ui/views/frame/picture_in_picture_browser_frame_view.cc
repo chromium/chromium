@@ -11,6 +11,7 @@
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chrome/browser/ui/browser_content_setting_bubble_model_delegate.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/browser_init_state.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
@@ -802,7 +803,8 @@ void PictureInPictureBrowserFrameView::OnBrowserViewInitViewsComplete() {
           GetMinimumSize() + gfx::Size(insets.width(), insets.height()),
           excluded_margin);
 
-  GetBrowserView()->browser()->set_override_bounds(window_bounds);
+  BrowserInitState::From(GetBrowserView()->browser())
+      ->set_override_bounds(window_bounds);
 }
 
 gfx::Rect PictureInPictureBrowserFrameView::GetBoundsForClientView() const {

@@ -34,6 +34,7 @@
 #include "chrome/browser/sessions/session_restore.h"
 #include "chrome/browser/sessions/session_service_factory.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_init_state.h"
 #include "chrome/browser/ui/browser_window/public/browser_collection.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
@@ -101,8 +102,7 @@ void SavePreRestartTabWindowCounts() {
             return true;
           }
           // Skip windows that are explicitly not restored.
-          if (browser->GetBrowserForMigrationOnly()
-                  ->omit_from_session_restore()) {
+          if (BrowserInitState::From(browser)->omit_from_session_restore()) {
             return true;
           }
 

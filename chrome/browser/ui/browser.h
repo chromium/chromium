@@ -323,18 +323,6 @@ class Browser : public TabStripModelObserver,
 
   ~Browser() override;
 
-  // Set overrides for the initial window bounds and maximized state.
-  void set_override_bounds(const gfx::Rect& bounds);
-  ui::mojom::WindowShowState initial_show_state() const;
-  void set_initial_show_state(ui::mojom::WindowShowState initial_show_state);
-  // Return true if the initial window bounds have been overridden.
-  bool bounds_overridden() const;
-  // Set indicator that this browser is being created via session restore.
-  // This is used on the Mac (only) to determine animation style when the
-  // browser window is shown.
-  void set_is_session_restore(bool is_session_restore);
-  bool is_session_restore() const;
-
   // Sets whether the UI should be immediately updated when scheduled on a
   // test.
   void set_update_ui_immediately_for_testing() {
@@ -346,14 +334,7 @@ class Browser : public TabStripModelObserver,
   const CreateParams& create_params() const;
   Type type() const { return type_; }
   const std::string& app_name() const { return app_name_; }
-  std::optional<bool> is_vertical_tabs_initially_collapsed() const;
-  std::optional<int> get_vertical_tabs_initial_uncollapsed_width() const;
   Profile* profile() const { return profile_; }
-  gfx::Rect override_bounds() const;
-  const std::string& initial_workspace() const;
-  bool initial_visible_on_all_workspaces_state() const;
-  CreationSource creation_source() const;
-
   // In production code, each instance of Browser will always instantiate an
   // instance of BrowserView in the constructor. Some tests instantiate a
   // Browser without a BrowserView: this is an anti-pattern and should be
@@ -368,9 +349,6 @@ class Browser : public TabStripModelObserver,
   }
 
   SessionID session_id() const { return session_id_; }
-  bool omit_from_session_restore() const;
-  bool should_trigger_session_restore() const;
-
   BrowserWindowFeatures* browser_window_features() const {
     return features_.get();
   }

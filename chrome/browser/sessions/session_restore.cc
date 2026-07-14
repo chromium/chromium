@@ -58,6 +58,7 @@
 #include "chrome/browser/sessions/session_service_utils.h"
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_init_state.h"
 #include "chrome/browser/ui/browser_tabrestore.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -1302,7 +1303,7 @@ class SessionRestoreImpl : public BrowserCollectionObserver {
     }
 
     browser->GetWindow()->Show();
-    browser->set_is_session_restore(false);
+    BrowserInitState::From(browser)->set_is_session_restore(false);
   }
 
   // Appends the urls in |startup_tabs| to |browser|.

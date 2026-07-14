@@ -17,6 +17,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/lifetime/browser_shutdown.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_init_state.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/browser_widget.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
@@ -86,7 +87,8 @@ BrowserNativeWidgetAsh::BrowserNativeWidgetAsh(BrowserWidget* browser_widget,
 
   // Turn on auto window management if we don't need an explicit bounds.
   // This way the requested bounds are honored.
-  if (!browser->bounds_overridden() && !browser->is_session_restore()) {
+  if (!BrowserInitState::From(browser)->bounds_overridden() &&
+      !BrowserInitState::From(browser)->is_session_restore()) {
     SetWindowAutoManaged();
   }
 }
@@ -218,7 +220,7 @@ views::Widget::InitParams BrowserNativeWidgetAsh::GetWidgetParams(
   app_restore::ModifyWidgetParams(restore_id, &params);
   // Override session restore bounds with Full Restore bounds if they exist.
   if (!params.bounds.IsEmpty()) {
-    browser->set_override_bounds(params.bounds);
+    BrowserInitState::From(browser)->set_override_bounds(params.bounds);
   } else {
     params.bounds = browser->create_params().initial_bounds;
   }

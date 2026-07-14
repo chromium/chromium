@@ -26,6 +26,7 @@
 #include "chrome/browser/sessions/session_service_utils.h"
 #include "chrome/browser/sessions/tab_restore_service_factory.h"
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
+#include "chrome/browser/ui/browser_init_state.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
@@ -819,7 +820,7 @@ bool SessionServiceBase::ShouldTrackBrowser(
     return false;
   }
 
-  if (browser->GetBrowserForMigrationOnly()->omit_from_session_restore()) {
+  if (BrowserInitState::From(browser)->omit_from_session_restore()) {
     return false;
   }
 

@@ -33,6 +33,7 @@
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_init_state.h"
 #include "chrome/browser/ui/browser_live_tab_context.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -589,8 +590,7 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, RestoreWindowBounds) {
   // specified at window creation. The actual bounds of the window itself may
   // change as the browser refuses to create windows that are offscreen, so will
   // adjust bounds slightly in some cases.
-  EXPECT_EQ(bounds,
-            new_browser->GetBrowserForMigrationOnly()->override_bounds());
+  EXPECT_EQ(bounds, BrowserInitState::From(new_browser)->override_bounds());
 }
 
 // Close a group not at the end of the current window, then restore it. The

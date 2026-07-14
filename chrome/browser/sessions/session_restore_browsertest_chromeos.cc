@@ -22,6 +22,7 @@
 #include "chrome/browser/sessions/session_restore_test_helper.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_init_state.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
@@ -196,7 +197,7 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTestChromeOS,
             [&](BrowserWindowInterface* browser) {
               int desk_index = 0;
               EXPECT_TRUE(base::StringToInt(
-                  browser->GetBrowserForMigrationOnly()->initial_workspace(),
+                  BrowserInitState::From(browser)->initial_workspace(),
                   &desk_index));
               return desk_index == i;
             })
@@ -264,7 +265,7 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTestChromeOS,
                aura::client::kWindowWorkspaceVisibleOnAllWorkspaces;
       }).front();
   ASSERT_TRUE(visible_on_all_desks_browser);
-  EXPECT_EQ("", visible_on_all_desks_browser->GetBrowserForMigrationOnly()
+  EXPECT_EQ("", BrowserInitState::From(visible_on_all_desks_browser)
                     ->initial_workspace());
 
   // Visible on all desks windows should always reside on the active desk,

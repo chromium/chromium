@@ -21,6 +21,7 @@
 #include "chrome/browser/search/search.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_init_state.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
@@ -2105,7 +2106,7 @@ IN_PROC_BROWSER_TEST_P(BrowserNavigatorPictureInPictureTest,
 
   // The window should have respected the initial aspect ratio.
   const gfx::Rect override_bounds =
-      params.browser->GetBrowserForMigrationOnly()->override_bounds();
+      BrowserInitState::From(params.browser)->override_bounds();
   const double aspect_ratio = static_cast<double>(override_bounds.width()) /
                               static_cast<double>(override_bounds.height());
   EXPECT_DOUBLE_EQ(1.0, aspect_ratio);
@@ -2149,7 +2150,7 @@ IN_PROC_BROWSER_TEST_P(BrowserNavigatorPictureInPictureTest,
     ASSERT_TRUE(pip_bounds.has_value());
     bounds = *pip_bounds;
   } else {
-    bounds = params.browser->GetBrowserForMigrationOnly()->override_bounds();
+    bounds = BrowserInitState::From(params.browser)->override_bounds();
   }
   const float expected_aspect_ratio =
       static_cast<float>(bounds.width()) / bounds.height();

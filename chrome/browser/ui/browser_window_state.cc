@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-
 #include "chrome/browser/ui/browser_window_state.h"
 
 #include <stddef.h>
@@ -17,6 +16,7 @@
 #include "chrome/browser/sessions/session_service_base.h"
 #include "chrome/browser/sessions/session_service_lookup.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_init_state.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/window_sizer/window_sizer.h"
 #include "chrome/common/chrome_switches.h"
@@ -151,7 +151,7 @@ void GetSavedWindowBoundsAndShowState(Browser* browser,
   DCHECK(browser);
   DCHECK(bounds);
   DCHECK(show_state);
-  *bounds = browser->override_bounds();
+  *bounds = BrowserInitState::From(browser)->override_bounds();
   WindowSizer::GetBrowserWindowBoundsAndShowState(*bounds, browser, bounds,
                                                   show_state);
 

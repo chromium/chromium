@@ -81,6 +81,7 @@
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_init_state.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
 #include "chrome/browser/ui/window_sizer/window_sizer.h"
@@ -1383,7 +1384,7 @@ ExtensionFunction::ResponseValue WindowsCreateFunction::OnBrowserWindowCreated(
 // TODO(crbug.com/40254339): Remove this workaround when linux is fixed.
 // TODO(crbug.com/40254339): Find a fix for wayland as well.
 #if BUILDFLAG(IS_LINUX) && BUILDFLAG(SUPPORTS_OZONE_X11)
-  if (new_window->GetBrowserForMigrationOnly()->initial_show_state() ==
+  if (BrowserInitState::From(new_window)->initial_show_state() ==
       ui::mojom::WindowShowState::kMinimized) {
     new_window->GetWindow()->Minimize();
   }

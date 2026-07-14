@@ -17,6 +17,7 @@
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_init_state.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window_state.h"
 #include "chrome/browser/ui/immersive/immersive_mode_controller.h"
@@ -185,10 +186,11 @@ void BrowserWidget::InitBrowserWidget() {
       chrome::GetSavedWindowBoundsAndShowState(browser, &params.bounds,
                                                &params.show_state);
 
-      params.workspace = browser->initial_workspace();
+      params.workspace = BrowserInitState::From(browser)->initial_workspace();
       if (browser_native_widget_->ShouldUseInitialVisibleOnAllWorkspaces()) {
         params.visible_on_all_workspaces =
-            browser->initial_visible_on_all_workspaces_state();
+            BrowserInitState::From(browser)
+                ->initial_visible_on_all_workspaces_state();
       }
       const base::CommandLine& parsed_command_line =
           *base::CommandLine::ForCurrentProcess();

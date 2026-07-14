@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_init_state.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -66,12 +67,12 @@ bool BrowserDelegateImpl::IsOffTheRecord() const {
 }
 
 bool BrowserDelegateImpl::IsCreatedByStartupCreator() const {
-  return browser_->creation_source() ==
+  return BrowserInitState::From(&*browser_)->creation_source() ==
          Browser::CreationSource::kStartupCreator;
 }
 
 bool BrowserDelegateImpl::IsCreatedBySessionRestoreForStartupUrls() const {
-  return browser_->creation_source() ==
+  return BrowserInitState::From(&*browser_)->creation_source() ==
          Browser::CreationSource::kLastAndUrlsStartupPref;
 }
 

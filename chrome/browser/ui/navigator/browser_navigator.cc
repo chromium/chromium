@@ -29,6 +29,7 @@
 #include "chrome/browser/renderer_host/chrome_navigation_ui_data.h"
 #include "chrome/browser/tab_contents/tab_util.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_init_state.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
@@ -116,7 +117,7 @@ bool WindowCanOpenTabs(const NavigateParams& params) {
 
   // If the browser is created from a template, we do not need to check if the
   // url is in the app scope since we know it was saved directly from the app.
-  if (params.browser->GetBrowserForMigrationOnly()->creation_source() !=
+  if (BrowserInitState::From(params.browser)->creation_source() !=
           Browser::CreationSource::kDeskTemplate &&
       web_app::AppBrowserController::From(params.browser) &&
       !web_app::AppBrowserController::From(params.browser)

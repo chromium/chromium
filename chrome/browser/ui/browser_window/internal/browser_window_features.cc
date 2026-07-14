@@ -54,6 +54,7 @@
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/browser_content_setting_bubble_model_delegate.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/browser_init_state.h"
 #include "chrome/browser/ui/browser_instant_controller.h"
 #include "chrome/browser/ui/browser_live_tab_context.h"
 #include "chrome/browser/ui/browser_location_bar_model_delegate.h"
@@ -586,9 +587,11 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
       Browser* raw_browser = browser->GetBrowserForMigrationOnly();
 
       std::optional<bool> restored_state_collapsed =
-          raw_browser->is_vertical_tabs_initially_collapsed();
+          BrowserInitState::From(raw_browser)
+              ->is_vertical_tabs_initially_collapsed();
       std::optional<int> restored_state_uncollapsed_width =
-          raw_browser->get_vertical_tabs_initial_uncollapsed_width();
+          BrowserInitState::From(raw_browser)
+              ->get_vertical_tabs_initial_uncollapsed_width();
 
       if (!restored_state_collapsed.has_value() &&
           !restored_state_uncollapsed_width.has_value() &&

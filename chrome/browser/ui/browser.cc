@@ -657,64 +657,6 @@ const Browser::CreateParams& Browser::create_params() const {
   return init_state_->create_params();
 }
 
-Browser::CreationSource Browser::creation_source() const {
-  return init_state_->creation_source();
-}
-
-void Browser::set_is_session_restore(bool is_session_restore) {
-  init_state_->set_is_session_restore(is_session_restore);
-}
-
-bool Browser::is_session_restore() const {
-  return init_state_->is_session_restore();
-}
-
-void Browser::set_override_bounds(const gfx::Rect& bounds) {
-  init_state_->set_override_bounds(bounds);
-}
-
-gfx::Rect Browser::override_bounds() const {
-  return init_state_->override_bounds();
-}
-
-bool Browser::bounds_overridden() const {
-  return init_state_->bounds_overridden();
-}
-
-ui::mojom::WindowShowState Browser::initial_show_state() const {
-  return init_state_->initial_show_state();
-}
-
-void Browser::set_initial_show_state(
-    ui::mojom::WindowShowState initial_show_state) {
-  init_state_->set_initial_show_state(initial_show_state);
-}
-
-const std::string& Browser::initial_workspace() const {
-  return init_state_->initial_workspace();
-}
-
-bool Browser::initial_visible_on_all_workspaces_state() const {
-  return init_state_->initial_visible_on_all_workspaces_state();
-}
-
-std::optional<bool> Browser::is_vertical_tabs_initially_collapsed() const {
-  return init_state_->is_vertical_tabs_initially_collapsed();
-}
-
-std::optional<int> Browser::get_vertical_tabs_initial_uncollapsed_width()
-    const {
-  return init_state_->get_vertical_tabs_initial_uncollapsed_width();
-}
-
-bool Browser::omit_from_session_restore() const {
-  return init_state_->omit_from_session_restore();
-}
-
-bool Browser::should_trigger_session_restore() const {
-  return init_state_->should_trigger_session_restore();
-}
-
 ///////////////////////////////////////////////////////////////////////////////
 // Browser, State Storage and Retrieval for UI:
 
@@ -911,7 +853,7 @@ void Browser::SetIsTabModalPopup(bool is_tab_modal_popup,
 }
 
 bool Browser::CreatedBySessionRestore() const {
-  return creation_source() == CreationSource::kSessionRestore;
+  return BrowserInitState::From(this)->is_session_restore();
 }
 
 ui::BaseWindow* Browser::GetWindow() {
