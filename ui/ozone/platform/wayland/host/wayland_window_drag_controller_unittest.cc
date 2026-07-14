@@ -1880,6 +1880,57 @@ TEST_P(WaylandWindowDragControllerTest, CancelDuringAttaching) {
   EXPECT_EQ(State::kIdle, drag_controller_state());
 }
 
+// Regression test for crbug.com/532860184. Ensures that when dragging with a
+// tablet pen, lifting the pen (which causes proximity_out) and hovering it
+// back (proximity_in) does not cancel/destroy the active drag session and cause
+// subsequent CHECK failure in RunLoop.
+TEST_P(WaylandWindowDragControllerTest, TabletPenDragProximityInAndOut) {
+  auto* event_source = connection_->event_source();
+  base::TimeTicks time = base::TimeTicks::Now();
+
+  // 1. Enter pointer and press mouse button to set up pointer focus.
+  SendPointerEnter(window_.get(), &delegate_);
+  SendPointerPress(window_.get(), &delegate_, BTN_LEFT);
+
+  // 2. Hover/proximity-in and press pen tip to start the drag.
+  event_source->OnTabletToolProximityIn(window_.get(), {10, 10}, {}, time);
+  event_source->OnTabletToolButton(EF_LEFT_MOUSE_BUTTON, true, {}, time);
+  event_source->OnTabletToolMotion({10, 10}, {}, time);
+
+  // 3. Start the window drag session.
+  auto* wayland_extension = GetWaylandToplevelExtension(*window_);
+  wayland_extension->StartWindowDraggingSessionIfNeeded(
+      DragEventSource::kMouse,
+      /*allow_system_drag=*/false);
+  EXPECT_EQ(State::kAttached, drag_controller_state());
+
+  // 4. While dragging, lift the pen (proximity-out).
+  // Note: tablet_tool_buttons_ remains treated as pressed during drag.
+  event_source->OnTabletToolProximityOut(time);
+
+  // 5. Hover the pen back in (proximity-in).
+  // Under the bug, this unilaterally released the buttons and cancelled the
+  // drag session because IsDragInProgress() wasn't checked.
+  // With the fix, we check IsDragInProgress() and do NOT release/cancel.
+  event_source->OnTabletToolProximityIn(window_.get(), {15, 15}, {}, time);
+
+  // The drag session must still be active.
+  EXPECT_EQ(State::kAttached, drag_controller_state());
+
+  // 6. Drag the tab to detach it.
+  auto* move_loop_handler = GetWmMoveLoopHandler(*window_);
+  ASSERT_TRUE(move_loop_handler);
+  ScheduleTestTask(base::BindLambdaForTesting([&]() {
+    // End the drag cleanly.
+    SendDndDropAndFinished();
+  }));
+
+  // This runs the nested run loop. It should NOT crash because
+  // nested_dispatcher_ is still valid and has not been reset!
+  EXPECT_TRUE(move_loop_handler->RunMoveLoop({}));
+  EXPECT_EQ(State::kIdle, drag_controller_state());
+}
+
 INSTANTIATE_TEST_SUITE_P(XdgVersionStableTest,
                          WaylandWindowDragControllerTest,
                          Values(wl::ServerConfig{}));
