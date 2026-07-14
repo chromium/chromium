@@ -370,6 +370,17 @@ if (!is_android) {
       "//chrome/test:test_support",
     ]
   }
+
+  source_set("browser_tests") {
+    testonly = true
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+    sources = [ "webrtc_browsertest_perf_unittest.cc" ]
+    deps = [
+      ":webrtc_browser_tests_base",
+      "//base",
+      "//testing/gtest",
+    ]
+  }
 }
 
 if (is_android) {
