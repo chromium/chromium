@@ -32,4 +32,6 @@ found in the LICENSE file.
     <!-- Menu header dimensions. -->
     <dimen name="menu_header_height">26dp</dimen>
     <dimen name="menu_header_padding_bottom">2dp</dimen>
+
+    <dimen name="overflow_menu_icon_row_padding">8dp</dimen>
 </resources>
