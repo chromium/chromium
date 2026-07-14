@@ -166,6 +166,19 @@ public class SpannableAutocompleteEditTextModelUnitTest {
     }
 
     @Test
+    public void dispatchKeyEvent_ctrlTabBypassed() {
+        mCurrentState.setAutocompleteText("google.com");
+        var event =
+                new KeyEvent(
+                        0, 0, KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_TAB, 0, KeyEvent.META_CTRL_ON);
+
+        clearInvocations(mConnection, mDelegate);
+        mModel.dispatchKeyEvent(event);
+        verify(mConnection, times(0)).commitAutocomplete();
+        verify(mDelegate).super_dispatchKeyEvent(event);
+    }
+
+    @Test
     public void dispatchKeyEvent_handleForwardDel() {
         mCurrentState.setUserText("goo");
         mCurrentState.setAutocompleteText("gle.com");

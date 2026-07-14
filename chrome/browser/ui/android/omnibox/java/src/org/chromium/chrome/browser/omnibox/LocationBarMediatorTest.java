@@ -3604,6 +3604,17 @@ public class LocationBarMediatorTest {
     }
 
     @Test
+    public void testHandleKeyNavigationEvent_ctrlTab_notHandled() {
+        doReturn(KeyEvent.KEYCODE_TAB).when(mKeyEvent).getKeyCode();
+        doReturn(false).when(mKeyEvent).hasNoModifiers();
+        doReturn(false).when(mKeyEvent).hasModifiers(KeyEvent.META_SHIFT_ON);
+        doReturn(true).when(mKeyEvent).isCtrlPressed();
+        doReturn(KeyEvent.ACTION_DOWN).when(mKeyEvent).getAction();
+
+        assertFalse(mMediator.handleKeyNavigationEvent(KeyEvent.KEYCODE_TAB, mKeyEvent));
+    }
+
+    @Test
     public void testHandleKeyNavigationEvent_urlBarAutocomplete() {
         doReturn(KeyEvent.KEYCODE_TAB).when(mKeyEvent).getKeyCode();
         doReturn(true).when(mKeyEvent).hasNoModifiers();

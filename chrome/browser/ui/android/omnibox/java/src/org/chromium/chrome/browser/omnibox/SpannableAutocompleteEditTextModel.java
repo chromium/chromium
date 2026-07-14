@@ -19,6 +19,7 @@ import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.omnibox.OmniboxWordBoundary;
 import org.chromium.components.omnibox.TextSelection;
 import org.chromium.ui.accessibility.AccessibilityState;
+import org.chromium.ui.base.KeyNavigationUtil;
 
 import java.util.regex.Pattern;
 
@@ -346,7 +347,7 @@ public class SpannableAutocompleteEditTextModel
                 mInputConnection.commitAutocomplete();
                 mDelegate.setSelection(currentPos, totalLength);
                 retVal = mDelegate.super_dispatchKeyEvent(dispatchedEvent);
-            } else if (dispatchedEvent.getKeyCode() == KeyEvent.KEYCODE_TAB) {
+            } else if (KeyNavigationUtil.isTabNavigation(dispatchedEvent)) {
                 mInputConnection.commitAutocomplete();
                 retVal = true;
             } else {
