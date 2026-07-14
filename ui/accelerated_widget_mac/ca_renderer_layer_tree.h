@@ -17,7 +17,6 @@
 #include "base/apple/scoped_cftyperef.h"
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -171,8 +170,9 @@ class ACCELERATED_WIDGET_MAC_EXPORT CARendererLayerTree {
     CARendererLayerTree* tree() { return parent_layer_->tree_; }
 
     // Parent layer that owns `this`, and child layers that `this` owns.
-    // RAW_PTR_EXCLUSION: Performance reasons (based on analysis of MotionMark).
-    RAW_PTR_EXCLUSION RootLayer* const parent_layer_ = nullptr;
+    // Uses kUnprotectedInRelease: Performance reasons (based on analysis of
+    // MotionMark).
+    const raw_ptr<RootLayer, kUnprotectedInRelease> parent_layer_ = nullptr;
     std::list<TransformLayer> transform_layers_;
 
     bool is_clipped_ = false;
@@ -211,8 +211,10 @@ class ACCELERATED_WIDGET_MAC_EXPORT CARendererLayerTree {
     CARendererLayerTree* tree() { return parent_layer_->tree(); }
 
     // Parent layer that owns `this`, and child layers that `this` owns.
-    // RAW_PTR_EXCLUSION: Performance reasons (based on analysis of MotionMark).
-    RAW_PTR_EXCLUSION ClipAndSortingLayer* const parent_layer_ = nullptr;
+    // Uses kUnprotectedInRelease: Performance reasons (based on analysis of
+    // MotionMark).
+    const raw_ptr<ClipAndSortingLayer, kUnprotectedInRelease> parent_layer_ =
+        nullptr;
     std::list<ContentLayer> content_layers_;
 
     gfx::Transform transform_;
@@ -256,8 +258,10 @@ class ACCELERATED_WIDGET_MAC_EXPORT CARendererLayerTree {
                                     int& last_old_layer_order);
 
     // Parent layer that owns `this`.
-    // RAW_PTR_EXCLUSION: Performance reasons (based on analysis of MotionMark).
-    RAW_PTR_EXCLUSION TransformLayer* const parent_layer_ = nullptr;
+    // Uses kUnprotectedInRelease: Performance reasons (based on analysis of
+    // MotionMark).
+    const raw_ptr<TransformLayer, kUnprotectedInRelease> parent_layer_ =
+        nullptr;
 
     // Ensure that the IOSurface be marked as in-use as soon as it is received.
     // When they are committed to the window server, that will also increment

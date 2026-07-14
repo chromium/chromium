@@ -409,8 +409,10 @@ void CARendererLayerTree::ContentLayer::UpdateMapAndMatchOldLayers(
   if (matched_content_layer->ca_layer_used_)
     return;
 
-  auto* matched_transform_layer = matched_content_layer->parent_layer_;
-  auto* matched_clip_layer = matched_transform_layer->parent_layer_;
+  TransformLayer* matched_transform_layer =
+      matched_content_layer->parent_layer_;
+  ClipAndSortingLayer* matched_clip_layer =
+      matched_transform_layer->parent_layer_;
 
   // If the parent is different, the superlayer must have changed. It should be
   // removed from its superlayer and inserted back to the new superlayer in
