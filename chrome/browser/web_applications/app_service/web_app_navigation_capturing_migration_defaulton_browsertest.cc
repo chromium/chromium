@@ -8,7 +8,6 @@
 #include "base/memory/raw_ref.h"
 #include "base/notreached.h"
 #include "base/run_loop.h"
-#include "base/scoped_observation.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/scoped_feature_list.h"
@@ -40,6 +39,8 @@
 
 namespace web_app {
 
+using apps_util::PreferredAppsListReadyWaiter;
+
 webapps::AppId FindAppIdByPath(WebAppProvider& provider,
                                std::string_view path) {
   for (const WebApp& app : provider.registrar_unsafe().GetApps()) {
@@ -50,47 +51,6 @@ webapps::AppId FindAppIdByPath(WebAppProvider& provider,
   ADD_FAILURE() << "App not found for path: " << path;
   return "";
 }
-
-// Waiter class that blocks until the `apps::PreferredAppsListHandle` has
-// finished initializing and is ready to be queried.
-class PreferredAppsListReadyWaiter
-    : public apps::PreferredAppsListHandle::Observer {
- public:
-  explicit PreferredAppsListReadyWaiter(apps::PreferredAppsListHandle& handle)
-      : handle_(handle) {
-    if (!handle_->IsInitialized()) {
-      observation_.Observe(&*handle_);
-    }
-  }
-
-  PreferredAppsListReadyWaiter(const PreferredAppsListReadyWaiter&) = delete;
-  PreferredAppsListReadyWaiter& operator=(const PreferredAppsListReadyWaiter&) =
-      delete;
-  ~PreferredAppsListReadyWaiter() override = default;
-
-  void Wait() {
-    if (handle_->IsInitialized()) {
-      return;
-    }
-    run_loop_.Run();
-  }
-
-  void OnPreferredAppsListInitialized() override { run_loop_.Quit(); }
-
-  void OnPreferredAppChanged(const std::string& app_id,
-                             bool is_preferred_app) override {}
-  void OnPreferredAppsListWillBeDestroyed(
-      apps::PreferredAppsListHandle* handle) override {
-    observation_.Reset();
-  }
-
- private:
-  const raw_ref<apps::PreferredAppsListHandle> handle_;
-  base::RunLoop run_loop_;
-  base::ScopedObservation<apps::PreferredAppsListHandle,
-                          apps::PreferredAppsListHandle::Observer>
-      observation_{this};
-};
 
 // Verifies the automated startup migration routine for PWA navigation capturing
 // user preferences across two successive browser sessions:

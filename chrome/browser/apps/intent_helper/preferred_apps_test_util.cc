@@ -70,6 +70,37 @@ void PreferredAppUpdateWaiter::OnPreferredAppsListWillBeDestroyed(
   observation_.Reset();
 }
 
+PreferredAppsListReadyWaiter::PreferredAppsListReadyWaiter(
+    apps::PreferredAppsListHandle& handle)
+    : handle_(handle) {
+  if (handle_->IsInitialized()) {
+    return;
+  }
+  observation_.Observe(&handle);
+}
+
+PreferredAppsListReadyWaiter::~PreferredAppsListReadyWaiter() = default;
+
+void PreferredAppsListReadyWaiter::Wait() {
+  if (handle_->IsInitialized()) {
+    return;
+  }
+  run_loop_.Run();
+}
+
+void PreferredAppsListReadyWaiter::OnPreferredAppsListInitialized() {
+  run_loop_.Quit();
+}
+
+void PreferredAppsListReadyWaiter::OnPreferredAppChanged(
+    const std::string& app_id,
+    bool is_preferred_app) {}
+
+void PreferredAppsListReadyWaiter::OnPreferredAppsListWillBeDestroyed(
+    apps::PreferredAppsListHandle* handle) {
+  observation_.Reset();
+}
+
 void SetSupportedLinksPreferenceAndWait(Profile* profile,
                                         const std::string& app_id) {
   auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile);

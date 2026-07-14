@@ -75,6 +75,34 @@ class PreferredAppUpdateWaiter
       observation_{this};
 };
 
+// Waiter class that blocks until the `apps::PreferredAppsListHandle` has
+// finished initializing and is ready to be queried.
+class PreferredAppsListReadyWaiter
+    : public apps::PreferredAppsListHandle::Observer {
+ public:
+  explicit PreferredAppsListReadyWaiter(apps::PreferredAppsListHandle& handle);
+  PreferredAppsListReadyWaiter(const PreferredAppsListReadyWaiter&) = delete;
+  PreferredAppsListReadyWaiter& operator=(const PreferredAppsListReadyWaiter&) =
+      delete;
+  ~PreferredAppsListReadyWaiter() override;
+
+  void Wait();
+
+  // apps::PreferredAppsListHandle::Observer:
+  void OnPreferredAppsListInitialized() override;
+  void OnPreferredAppChanged(const std::string& app_id,
+                             bool is_preferred_app) override;
+  void OnPreferredAppsListWillBeDestroyed(
+      apps::PreferredAppsListHandle* handle) override;
+
+ private:
+  const raw_ref<apps::PreferredAppsListHandle> handle_;
+  base::RunLoop run_loop_;
+  base::ScopedObservation<apps::PreferredAppsListHandle,
+                          apps::PreferredAppsListHandle::Observer>
+      observation_{this};
+};
+
 // Utility to set an app to be the preferred app for its supported links
 // and wait for the change to propagate through to the current process.
 void SetSupportedLinksPreferenceAndWait(Profile* profile,
