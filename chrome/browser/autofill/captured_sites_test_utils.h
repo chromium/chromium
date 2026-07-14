@@ -125,7 +125,7 @@ class IFrameWaiter : public content::WebContentsObserver {
       const base::TimeDelta timeout = default_action_timeout);
 
  private:
-  enum QueryType { NAME, ORIGIN, URL };
+  enum class QueryType { kName, kOrigin, kUrl };
 
   static bool FrameHasOrigin(const GURL& origin,
                              content::RenderFrameHost* frame);
@@ -137,9 +137,9 @@ class IFrameWaiter : public content::WebContentsObserver {
   void FrameNameChanged(content::RenderFrameHost* render_frame_host,
                         const std::string& name) override;
 
-  QueryType query_type_;
+  QueryType query_type_ = QueryType::kUrl;
   base::RunLoop run_loop_;
-  raw_ptr<content::RenderFrameHost> target_frame_;
+  raw_ptr<content::RenderFrameHost> target_frame_ = nullptr;
   std::string frame_name_;
   GURL origin_;
   GURL url_;
