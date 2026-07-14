@@ -22,10 +22,12 @@ static_library("core") {
     public += [
       "enterprise_proxy_service.h",
       "types.h",
+      "utils.h",
     ]
     sources += [
       "enterprise_proxy_service.cc",
       "types.cc",
+      "utils.cc",
     ]
     deps = [
       "//components/enterprise/browser/identifiers",
@@ -42,7 +44,10 @@ source_set("unit_tests") {
   deps = []
 
   if (is_android) {
-    sources += [ "enterprise_proxy_service_unittest.cc" ]
+    sources += [
+      "enterprise_proxy_service_unittest.cc",
+      "utils_unittest.cc",
+    ]
     deps += [
       ":core",
       "//base",
