@@ -94,7 +94,7 @@ struct StateEntry {
  public:
   // Remembers the type of paired begin that caused a state to be saved.
   // This is for checking integrity of the algorithm.
-  enum PairedType { kClip, kClipOmitted, kEffect };
+  enum PairedType { kClip, kClipOmitted, kEffect, kEffectContents };
   explicit StateEntry(PairedType type,
                       const TransformPaintPropertyNode* transform,
                       const ClipPaintPropertyNode* clip,
@@ -113,8 +113,9 @@ struct StateEntry {
     visitor->Trace(previous_transform);
   }
 
-  bool IsClip() const { return type_ != kEffect; }
-  bool IsEffect() const { return type_ == kEffect; }
+  bool IsClip() const { return type_ != kEffect && type_ != kEffectContents; }
+  bool IsEffect() const { return !IsClip(); }
+  bool IsEffectContents() const { return type_ == kEffectContents; }
   bool NeedsRestore() const { return type_ != kClipOmitted; }
 
   // These fields are never nullptr. They save ConversionContext::
@@ -329,6 +330,21 @@ class ConversionContext {
   // and update the bounds of the SaveLayer[Alpha]Op of the effect.
   void EndEffect();
   void UpdateEffectBounds(const gfx::RectF&, const TransformPaintPropertyNode&);
+
+  // Masks for backdrop-filter require special handling to ensure the mask
+  // applies to both the filtered backdrop, and the layer contents.
+  bool MostRecentEffectIsChildOfBackdropFilter() const {
+    for (auto it = state_stack_.rbegin(); it != state_stack_.rend(); ++it) {
+      if (it->IsEffect()) {
+        return it->IsEffectContents();
+      }
+    }
+    return false;
+  }
+
+  // Helper function that emits a backdrop-filter and applies its clip.
+  size_t EmitBackdropFilter(const EffectPaintPropertyNode&,
+                            const cc::PaintFlags&);
 
   // Starts a clip state by adjusting the transform state, applying
   // |combined_clip_rect| which is combined from one or more consecutive clips,
@@ -671,11 +687,50 @@ ScrollTranslationAction ConversionContext<Result>::SwitchToEffect(
 }
 
 template <typename Result>
+size_t ConversionContext<Result>::EmitBackdropFilter(
+    const EffectPaintPropertyNode& effect,
+    const cc::PaintFlags& flags) {
+  DCHECK(effect.BackdropFilter());
+  const SkPath& backdrop_filter_bounds = effect.BackdropFilterBounds();
+  size_t save_layer_id = push<cc::SaveLayerFiltersOp>(
+      backdrop_filter_bounds.getBounds(),
+      std::array<sk_sp<cc::PaintFilter>, 0>{},
+      cc::RenderSurfaceFilters::BuildImageFilter(
+          effect.BackdropFilter()->AsCcFilterOperations()),
+      flags);
+  // Equivalent to ClearOutsideBackdropBounds in skia_renderer. We clear all
+  // content outside the backdrop filter bounds.
+  push<cc::SaveOp>();
+  SkRect bounds_rect;
+  if (backdrop_filter_bounds.isRect(&bounds_rect)) {
+    push<cc::ClipRectOp>(bounds_rect, SkClipOp::kDifference,
+                         /*antialias=*/false);
+  } else {
+    push<cc::ClipPathOp>(backdrop_filter_bounds, SkClipOp::kDifference,
+                         /*antialias=*/true);
+  }
+  push<cc::DrawColorOp>(SkColors::kTransparent, SkBlendMode::kSrc);
+  push<cc::RestoreOp>();
+  return save_layer_id;
+}
+
+template <typename Result>
 ScrollTranslationAction ConversionContext<Result>::StartEffect(
     const EffectPaintPropertyNode& effect) {
   // Before each effect can be applied, we must enter its output clip first,
   // or exit all clips if it doesn't have one.
   if (effect.OutputClip()) {
+    // If we are applying a mask, first we need to exit the backdrop contents so
+    // that we apply the mask to both the contents and the filtered backdrop,
+    // not just the contents.
+    if (state_stack_.size() && effect.BlendMode() == SkBlendMode::kDstIn &&
+        MostRecentEffectIsChildOfBackdropFilter()) {
+      if (auto action = EndClips()) {
+        return action;
+      }
+      EndEffect();
+    }
+
     if (auto action = SwitchToClip(effect.OutputClip()->Unalias())) {
       return action;
     }
@@ -712,24 +767,14 @@ ScrollTranslationAction ConversionContext<Result>::StartEffect(
       flags.setBlendMode(effect.BlendMode());
       flags.setAlphaf(effect.Opacity());
       if (has_backdrop_filter) {
-        save_layer_id = push<cc::SaveLayerFiltersOp>(
-            effect.BackdropFilterBounds().getBounds(),
-            std::array<sk_sp<cc::PaintFilter>, 0>{},
-            cc::RenderSurfaceFilters::BuildImageFilter(
-                effect.BackdropFilter()->AsCcFilterOperations()),
-            flags);
+        save_layer_id = EmitBackdropFilter(effect, flags);
       } else {
         save_layer_id = push<cc::SaveLayerOp>(flags);
       }
     } else if (has_backdrop_filter) {
       cc::PaintFlags flags;
       flags.setAlphaf(effect.Opacity());
-      save_layer_id = push<cc::SaveLayerFiltersOp>(
-          effect.BackdropFilterBounds().getBounds(),
-          std::array<sk_sp<cc::PaintFilter>, 0>{},
-          cc::RenderSurfaceFilters::BuildImageFilter(
-              effect.BackdropFilter()->AsCcFilterOperations()),
-          flags);
+      save_layer_id = EmitBackdropFilter(effect, flags);
     } else {
       save_layer_id = push<cc::SaveLayerAlphaOp>(effect.Opacity());
     }
@@ -777,6 +822,15 @@ ScrollTranslationAction ConversionContext<Result>::StartEffect(
     result_.StartPaint();
     result_.EndPaintOfUnpaired(
         chunk_to_layer_mapper_.MapVisualRect(filtered_bounds));
+
+    // We need to start a new saveLayer here, so that our filtered backdrop
+    // isn't visible to nested mix-blend-mode or backdrop-filter.
+    PushState(StateEntry::kEffectContents);
+    effect_bounds_stack_.emplace_back(
+        EffectBoundsInfo{save_layer_id, current_transform_});
+    result_.StartPaint();
+    save_layer_id = push<cc::SaveLayerAlphaOp>(1.f);
+    result_.EndPaintOfPairedBegin();
   }
   return {};
 }
@@ -800,7 +854,8 @@ void ConversionContext<Result>::EndEffect() {
 #if DCHECK_IS_ON()
   const auto& previous_state = state_stack_.back();
   DCHECK(previous_state.IsEffect());
-  if (!previous_state.has_effect_hierarchy_issue) {
+  if (!previous_state.IsEffectContents() &&
+      !previous_state.has_effect_hierarchy_issue) {
     DCHECK_EQ(current_effect_->UnaliasedParent(), previous_state.effect);
   }
   DCHECK_EQ(current_clip_, previous_state.clip);

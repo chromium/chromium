@@ -2003,9 +2003,13 @@ TEST_P(PaintChunksToCcLayerTest, NonCompositedBackdropFilter) {
 
   PaintRecord output =
       PaintChunksToCcLayer::Convert(chunks.Build(), PropertyTreeState::Root());
-  EXPECT_THAT(output, ElementsAre(PaintOpIs<cc::SaveLayerFiltersOp>(),
-                                  PaintOpIs<cc::DrawRecordOp>(),
-                                  PaintOpIs<cc::RestoreOp>()));
+  EXPECT_THAT(
+      output,
+      ElementsAre(PaintOpIs<cc::SaveLayerFiltersOp>(), PaintOpIs<cc::SaveOp>(),
+                  PaintOpIs<cc::ClipPathOp>(), PaintOpIs<cc::DrawColorOp>(),
+                  PaintOpIs<cc::RestoreOp>(), PaintOpIs<cc::SaveLayerAlphaOp>(),
+                  PaintOpIs<cc::DrawRecordOp>(), PaintOpIs<cc::RestoreOp>(),
+                  PaintOpIs<cc::RestoreOp>()));
 }
 
 }  // namespace
