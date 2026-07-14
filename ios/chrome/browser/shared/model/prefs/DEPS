@@ -17,6 +17,7 @@ include_rules = [
   "+ios/chrome/browser/default_browser/default_status/model/default_status_helper_prefs.h",
   "+ios/chrome/browser/download/model/auto_deletion/auto_deletion_service.h",
   "+ios/chrome/browser/drive/model/drive_policy.h",
+  "+ios/chrome/browser/enterprise/data_protection/public/pref_names.h",
   "+ios/chrome/browser/first_run/model/first_run.h",
   "+ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_scene_agent.h",
   "+ios/chrome/browser/level_up/model/level_up_service.h",

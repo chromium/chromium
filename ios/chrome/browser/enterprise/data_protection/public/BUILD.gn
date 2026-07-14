@@ -9,3 +9,11 @@ source_set("features") {
   ]
   deps = [ "//base" ]
 }
+
+source_set("pref_names") {
+  sources = [
+    "pref_names.h",
+    "pref_names.mm",
+  ]
+  deps = [ "//components/prefs" ]
+}
