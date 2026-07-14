@@ -7,6 +7,8 @@
 
 #include <optional>
 
+#include "base/functional/callback.h"
+#include "components/cast_receiver/proto/input_event.pb.h"
 #include "components/cast_receiver/proto/keyboard_input_service.pb.h"
 #include "components/cast_receiver/proto/mouse_input_service.pb.h"
 #include "components/cast_receiver/proto/touch_input_service.pb.h"
@@ -35,8 +37,12 @@ class StreamingInputObserver
       public content::RenderWidgetHost::InputEventObserver,
       public content::RenderWidgetHostObserver {
  public:
+  using InputEventCallback =
+      base::RepeatingCallback<void(const cast_receiver::InputEvent&)>;
+
   // |web_contents| must outlive this instance.
-  explicit StreamingInputObserver(content::WebContents* web_contents);
+  StreamingInputObserver(content::WebContents* web_contents,
+                         InputEventCallback callback);
   ~StreamingInputObserver() override;
 
   StreamingInputObserver(const StreamingInputObserver&) = delete;
@@ -65,6 +71,7 @@ class StreamingInputObserver
       const gfx::Size& visible_viewport_size);
 
   content::RenderWidgetHost* observed_widget_ = nullptr;
+  InputEventCallback callback_;
 
   // Helper method to translate touch events. Returns the translated proto if
   // the event should be handled, or std::nullopt if ignored.

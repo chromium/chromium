@@ -63,6 +63,9 @@ struct ApplicationConfig {
 
   // Permissions to be granted to this application.
   ContentPermissions permissions;
+
+  // Whether extended input is supported.
+  bool is_extended_input_supported = false;
 };
 
 }  // namespace cast_receiver

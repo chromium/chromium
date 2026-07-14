@@ -23,7 +23,7 @@ namespace cast_receiver {
 class StreamingInputCapabilitiesObserver : public ui::InputDeviceEventObserver {
  public:
   using InputCapabilitiesCallback =
-      base::RepeatingCallback<void(cast_receiver::InputCapabilities)>;
+      base::RepeatingCallback<void(const cast_receiver::InputCapabilities&)>;
 
   // Registers itself as an observer to the non-null DeviceDataManager.
   // |callback| will be invoked with the initial capabilities if the device

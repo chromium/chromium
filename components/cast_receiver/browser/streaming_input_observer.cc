@@ -7,6 +7,7 @@
 #include <algorithm>
 
 #include "base/check.h"
+#include "base/functional/callback_helpers.h"
 #include "components/cast_receiver/proto/input_event.pb.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_widget_host_view.h"
@@ -92,8 +93,10 @@ constexpr float kPixelsPerLineStep = 40.0f;
 }  // namespace
 
 StreamingInputObserver::StreamingInputObserver(
-    content::WebContents* web_contents)
-    : content::WebContentsObserver(web_contents) {
+    content::WebContents* web_contents,
+    InputEventCallback callback)
+    : content::WebContentsObserver(web_contents),
+      callback_(std::move(callback)) {
   CHECK(web_contents);
 
   content::RenderFrameHost* rfh = web_contents->GetPrimaryMainFrame();
@@ -200,7 +203,7 @@ void StreamingInputObserver::OnInputEvent(const content::RenderWidgetHost& host,
   if (input_event_proto) {
     input_event_proto->set_timestamp_ms(
         (event.TimeStamp() - base::TimeTicks()).InMilliseconds());
-    // TODO(b/501522425): Feed input_event_proto into OpenScreen input stream.
+    callback_.Run(std::move(*input_event_proto));
   }
 }
 

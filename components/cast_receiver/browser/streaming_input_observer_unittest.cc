@@ -6,6 +6,7 @@
 
 #include <optional>
 
+#include "base/functional/callback_helpers.h"
 #include "components/cast_receiver/proto/keyboard_input_service.pb.h"
 #include "components/cast_receiver/proto/touch_input_service.pb.h"
 #include "content/public/browser/render_widget_host_view.h"
@@ -61,7 +62,7 @@ class StreamingInputObserverTest : public content::RenderViewHostTestHarness {
 };
 
 TEST_F(StreamingInputObserverTest, TranslateMouseMove) {
-  StreamingInputObserver observer(web_contents());
+  StreamingInputObserver observer(web_contents(), base::DoNothing());
 
   blink::WebMouseEvent mouse_event(
       blink::WebInputEvent::Type::kMouseMove,
@@ -85,7 +86,7 @@ TEST_F(StreamingInputObserverTest, TranslateMouseMove) {
 }
 
 TEST_F(StreamingInputObserverTest, TranslateModifiers) {
-  StreamingInputObserver observer(web_contents());
+  StreamingInputObserver observer(web_contents(), base::DoNothing());
 
   blink::WebMouseEvent mouse_event(
       blink::WebInputEvent::Type::kMouseMove,
@@ -106,7 +107,7 @@ TEST_F(StreamingInputObserverTest, TranslateModifiers) {
 }
 
 TEST_F(StreamingInputObserverTest, TranslateMouseDownLeftButton) {
-  StreamingInputObserver observer(web_contents());
+  StreamingInputObserver observer(web_contents(), base::DoNothing());
 
   blink::WebMouseEvent mouse_event(
       blink::WebInputEvent::Type::kMouseDown,
@@ -130,7 +131,7 @@ TEST_F(StreamingInputObserverTest, TranslateMouseDownLeftButton) {
 }
 
 TEST_F(StreamingInputObserverTest, TranslateMouseUpMultipleButtons) {
-  StreamingInputObserver observer(web_contents());
+  StreamingInputObserver observer(web_contents(), base::DoNothing());
 
   blink::WebMouseEvent mouse_event(
       blink::WebInputEvent::Type::kMouseUp,
@@ -157,7 +158,7 @@ TEST_F(StreamingInputObserverTest, TranslateMouseUpMultipleButtons) {
 }
 
 TEST_F(StreamingInputObserverTest, EnterAndLeaveMappedToUnknown) {
-  StreamingInputObserver observer(web_contents());
+  StreamingInputObserver observer(web_contents(), base::DoNothing());
 
   blink::WebMouseEvent mouse_event(
       blink::WebInputEvent::Type::kMouseEnter,
@@ -171,7 +172,7 @@ TEST_F(StreamingInputObserverTest, EnterAndLeaveMappedToUnknown) {
 }
 
 TEST_F(StreamingInputObserverTest, ClampsCoordinatesToViewportRatios) {
-  StreamingInputObserver observer(web_contents());
+  StreamingInputObserver observer(web_contents(), base::DoNothing());
 
   blink::WebMouseEvent mouse_event(
       blink::WebInputEvent::Type::kMouseMove,
@@ -190,7 +191,7 @@ TEST_F(StreamingInputObserverTest, ClampsCoordinatesToViewportRatios) {
 }
 
 TEST_F(StreamingInputObserverTest, TranslateTouchStartWithActiveFiltering) {
-  StreamingInputObserver observer(web_contents());
+  StreamingInputObserver observer(web_contents(), base::DoNothing());
 
   blink::WebTouchEvent touch_event(
       blink::WebInputEvent::Type::kTouchStart, blink::WebInputEvent::kShiftKey,
@@ -222,7 +223,7 @@ TEST_F(StreamingInputObserverTest, TranslateTouchStartWithActiveFiltering) {
 }
 
 TEST_F(StreamingInputObserverTest, TranslateTouchMove) {
-  StreamingInputObserver observer(web_contents());
+  StreamingInputObserver observer(web_contents(), base::DoNothing());
 
   blink::WebTouchEvent touch_event(
       blink::WebInputEvent::Type::kTouchMove, blink::WebInputEvent::kMetaKey,
@@ -247,7 +248,7 @@ TEST_F(StreamingInputObserverTest, TranslateTouchMove) {
 }
 
 TEST_F(StreamingInputObserverTest, TranslateMouseWheelScrollByPixel) {
-  StreamingInputObserver observer(web_contents());
+  StreamingInputObserver observer(web_contents(), base::DoNothing());
 
   blink::WebMouseWheelEvent wheel_event(
       blink::WebInputEvent::Type::kMouseWheel, blink::WebInputEvent::kAltKey,
@@ -273,7 +274,7 @@ TEST_F(StreamingInputObserverTest, TranslateMouseWheelScrollByPixel) {
 }
 
 TEST_F(StreamingInputObserverTest, TranslateMouseWheelScrollByPage) {
-  StreamingInputObserver observer(web_contents());
+  StreamingInputObserver observer(web_contents(), base::DoNothing());
 
   blink::WebMouseWheelEvent wheel_event(
       blink::WebInputEvent::Type::kMouseWheel,
@@ -298,7 +299,7 @@ TEST_F(StreamingInputObserverTest, TranslateMouseWheelScrollByPage) {
 }
 
 TEST_F(StreamingInputObserverTest, TranslateMouseWheelScrollByLine) {
-  StreamingInputObserver observer(web_contents());
+  StreamingInputObserver observer(web_contents(), base::DoNothing());
 
   blink::WebMouseWheelEvent wheel_event(
       blink::WebInputEvent::Type::kMouseWheel,
@@ -324,7 +325,7 @@ TEST_F(StreamingInputObserverTest, TranslateMouseWheelScrollByLine) {
 }
 
 TEST_F(StreamingInputObserverTest, TranslateMouseWheelScrollByDocument) {
-  StreamingInputObserver observer(web_contents());
+  StreamingInputObserver observer(web_contents(), base::DoNothing());
 
   blink::WebMouseWheelEvent wheel_event(
       blink::WebInputEvent::Type::kMouseWheel,
@@ -350,7 +351,7 @@ TEST_F(StreamingInputObserverTest, TranslateMouseWheelScrollByDocument) {
 }
 
 TEST_F(StreamingInputObserverTest, TranslateKeyDown) {
-  StreamingInputObserver observer(web_contents());
+  StreamingInputObserver observer(web_contents(), base::DoNothing());
 
   blink::WebKeyboardEvent key_event(
       blink::WebInputEvent::Type::kRawKeyDown, blink::WebInputEvent::kShiftKey,
@@ -371,7 +372,7 @@ TEST_F(StreamingInputObserverTest, TranslateKeyDown) {
 }
 
 TEST_F(StreamingInputObserverTest, TranslateKeyDownNonRaw) {
-  StreamingInputObserver observer(web_contents());
+  StreamingInputObserver observer(web_contents(), base::DoNothing());
 
   blink::WebKeyboardEvent key_event(
       blink::WebInputEvent::Type::kKeyDown, blink::WebInputEvent::kShiftKey,
@@ -392,7 +393,7 @@ TEST_F(StreamingInputObserverTest, TranslateKeyDownNonRaw) {
 }
 
 TEST_F(StreamingInputObserverTest, TranslateKeyUpWithRepeatAndCapsLock) {
-  StreamingInputObserver observer(web_contents());
+  StreamingInputObserver observer(web_contents(), base::DoNothing());
 
   blink::WebKeyboardEvent key_event(
       blink::WebInputEvent::Type::kKeyUp,
@@ -415,7 +416,7 @@ TEST_F(StreamingInputObserverTest, TranslateKeyUpWithRepeatAndCapsLock) {
 }
 
 TEST_F(StreamingInputObserverTest, IgnoreCharEvents) {
-  StreamingInputObserver observer(web_contents());
+  StreamingInputObserver observer(web_contents(), base::DoNothing());
 
   blink::WebKeyboardEvent key_event(
       blink::WebInputEvent::Type::kChar, blink::WebInputEvent::kNoModifiers,
@@ -423,6 +424,37 @@ TEST_F(StreamingInputObserverTest, IgnoreCharEvents) {
 
   std::optional<KeyboardEvent> opt_proto = HandleKeyEvent(observer, key_event);
   EXPECT_FALSE(opt_proto.has_value());
+}
+
+TEST_F(StreamingInputObserverTest, CallbackTriggeredOnMouseEvent) {
+  std::optional<cast_receiver::InputEvent> received_event;
+  auto callback = base::BindRepeating(
+      [](std::optional<cast_receiver::InputEvent>* dest,
+         const cast_receiver::InputEvent& event) { *dest = event; },
+      base::Unretained(&received_event));
+
+  StreamingInputObserver observer(web_contents(), std::move(callback));
+
+  content::RenderWidgetHost* rwh =
+      web_contents()->GetPrimaryMainFrame()->GetRenderWidgetHost();
+  ASSERT_TRUE(rwh);
+
+  blink::WebMouseEvent mouse_event(
+      blink::WebInputEvent::Type::kMouseMove,
+      blink::WebInputEvent::kNoModifiers,
+      blink::WebInputEvent::GetStaticTimeStampForTests());
+  mouse_event.SetPositionInWidget(gfx::PointF(250.0f, 100.0f));
+  mouse_event.movement_x = 10;
+  mouse_event.movement_y = -5;
+
+  rwh->ForwardMouseEvent(mouse_event);
+
+  ASSERT_TRUE(received_event.has_value());
+  EXPECT_TRUE(received_event->has_mouse_event());
+  const MouseEvent& proto = received_event->mouse_event();
+  EXPECT_EQ(proto.action_type(), MouseEvent::MOUSE_MOVE);
+  EXPECT_FLOAT_EQ(proto.x_ratio(), 0.25f);
+  EXPECT_FLOAT_EQ(proto.y_ratio(), 0.20f);
 }
 
 }  // namespace cast_receiver

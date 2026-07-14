@@ -139,6 +139,7 @@ source_set("unit_tests") {
       "streaming_input_observer_unittest.cc",
       "streaming_receiver_channel_unittest.cc",
       "streaming_receiver_session_client_unittest.cc",
+      "streaming_runtime_application_unittest.cc",
     ]
   }
 }

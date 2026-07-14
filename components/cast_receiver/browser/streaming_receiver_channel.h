@@ -6,25 +6,34 @@
 #define COMPONENTS_CAST_RECEIVER_BROWSER_STREAMING_RECEIVER_CHANNEL_H_
 
 #include <memory>
+#include <string>
 #include <string_view>
 #include <vector>
 
 #include "components/cast/message_port/message_port.h"
 
+namespace google::protobuf {
+class MessageLite;
+}
+
 namespace cast_receiver {
 
+class InputCapabilities;
 class InputEvent;
+class MessagePortService;
 
 // Represents a channel for transmitting various messages over the connected
-// channel.
-//
-// This class wraps a MessagePort and handles the serialization of input events.
-class StreamingReceiverChannel
-    : public cast_api_bindings::MessagePort::Receiver {
+// channels.
+class StreamingReceiverChannel {
  public:
-  explicit StreamingReceiverChannel(
-      std::unique_ptr<cast_api_bindings::MessagePort> message_port);
-  ~StreamingReceiverChannel() override;
+  // TODO(b/501522425): Use channel name from sender negotiation.
+  static inline constexpr char kInputEventChannelNamespace[] =
+      "cast.__platform__.input_event_temp";
+  static inline constexpr char kInputCapabilitiesChannelNamespace[] =
+      "cast.__platform__.input_capabilities_temp";
+
+  explicit StreamingReceiverChannel(MessagePortService* message_port_service);
+  ~StreamingReceiverChannel();
 
   StreamingReceiverChannel(const StreamingReceiverChannel&) = delete;
   StreamingReceiverChannel& operator=(const StreamingReceiverChannel&) = delete;
@@ -32,14 +41,34 @@ class StreamingReceiverChannel
   // Sends an InputEvent to the sender.
   void SendInputEvent(const InputEvent& event);
 
- private:
-  // cast_api_bindings::MessagePort::Receiver implementation:
-  bool OnMessage(std::string_view message,
-                 std::vector<std::unique_ptr<cast_api_bindings::MessagePort>>
-                     ports) override;
-  void OnPipeError() override;
+  // Sends InputCapabilities to the sender.
+  void SendInputCapabilities(const InputCapabilities& capabilities);
 
-  std::unique_ptr<cast_api_bindings::MessagePort> message_port_;
+ private:
+  class PortHandler : public cast_api_bindings::MessagePort::Receiver {
+   public:
+    PortHandler(std::string_view name,
+                std::unique_ptr<cast_api_bindings::MessagePort> port);
+    ~PortHandler() override;
+
+    cast_api_bindings::MessagePort* port() { return port_.get(); }
+
+   private:
+    // cast_api_bindings::MessagePort::Receiver implementation:
+    bool OnMessage(std::string_view message,
+                   std::vector<std::unique_ptr<cast_api_bindings::MessagePort>>
+                       ports) override;
+    void OnPipeError() override;
+
+    std::string name_;
+    std::unique_ptr<cast_api_bindings::MessagePort> port_;
+  };
+
+  void SendProtoMessage(PortHandler* handler,
+                        const google::protobuf::MessageLite& message);
+
+  std::unique_ptr<PortHandler> input_event_handler_;
+  std::unique_ptr<PortHandler> input_capabilities_handler_;
 };
 
 }  // namespace cast_receiver

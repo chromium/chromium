@@ -10,6 +10,8 @@
 #include "components/cast_receiver/browser/application_client.h"
 #include "components/cast_receiver/browser/public/embedder_application.h"
 #include "components/cast_receiver/browser/public/message_port_service.h"
+#include "components/cast_receiver/browser/streaming_input_observer.h"
+#include "components/cast_receiver/browser/streaming_receiver_channel.h"
 #include "components/cast_streaming/common/public/app_ids.h"
 #include "components/cast_streaming/common/public/cast_streaming_url.h"
 #include "content/public/browser/navigation_handle.h"
@@ -59,12 +61,12 @@ void StreamingRuntimeApplication::OnError() {
 void StreamingRuntimeApplication::Launch(StatusCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  DCHECK(embedder_application().GetWebContents());
+  CHECK(embedder_application().GetWebContents());
   SetContentPermissions(*embedder_application().GetWebContents());
 
   // Bind Cast Transport.
   auto* message_port_service = embedder_application().GetMessagePortService();
-  DCHECK(message_port_service);
+  CHECK(message_port_service);
   std::unique_ptr<cast_api_bindings::MessagePort> server_port;
   std::unique_ptr<cast_api_bindings::MessagePort> client_port;
   cast_api_bindings::CreatePlatformMessagePortPair(&client_port, &server_port);
@@ -81,16 +83,31 @@ void StreamingRuntimeApplication::Launch(StatusCallback callback) {
       /* supports_video= */ true);
   receiver_session_client_->LaunchStreamingReceiverAsync();
 
-  if (ui::DeviceDataManager::HasInstance()) {
-    streaming_input_capabilities_observer_ =
-        std::make_unique<StreamingInputCapabilitiesObserver>(
-            ui::DeviceDataManager::GetInstance(),
-            base::BindRepeating([](cast_receiver::InputCapabilities caps) {
-              // TODO(b/518997655): Send to channel.
-            }));
+  if (config().is_extended_input_supported) {
+    LOG(INFO) << "Extended input is supported, setting up input channels.";
+
+    streaming_receiver_channel_ =
+        std::make_unique<StreamingReceiverChannel>(message_port_service);
+
+    // Instantiate observers.
+    streaming_input_observer_ = std::make_unique<StreamingInputObserver>(
+        embedder_application().GetWebContents(),
+        base::BindRepeating(&StreamingRuntimeApplication::OnInputEvent,
+                            weak_factory_.GetWeakPtr()));
+
+    if (ui::DeviceDataManager::HasInstance()) {
+      streaming_input_capabilities_observer_ =
+          std::make_unique<StreamingInputCapabilitiesObserver>(
+              ui::DeviceDataManager::GetInstance(),
+              base::BindRepeating(
+                  &StreamingRuntimeApplication::OnInputCapabilitiesChanged,
+                  weak_factory_.GetWeakPtr()));
+    } else {
+      LOG(INFO) << "DeviceDataManager instance is unavailable. "
+                   "StreamingInputCapabilitiesObserver will not be created.";
+    }
   } else {
-    LOG(INFO) << "DeviceDataManager instance is unavailable. "
-                 "StreamingInputCapabilitiesObserver will not be created.";
+    LOG(INFO) << "Extended input is not supported.";
   }
 
   // Application is initialized now - we can load the URL.
@@ -112,13 +129,29 @@ void StreamingRuntimeApplication::StopApplication(
   }
 
   receiver_session_client_.reset();
+  streaming_input_observer_.reset();
   streaming_input_capabilities_observer_.reset();
+  streaming_receiver_channel_.reset();
   RuntimeApplicationBase::StopApplication(stop_reason, net_error_code);
 }
 
 bool StreamingRuntimeApplication::IsStreamingApplication() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return true;
+}
+
+void StreamingRuntimeApplication::OnInputEvent(
+    const cast_receiver::InputEvent& event) {
+  if (streaming_receiver_channel_) {
+    streaming_receiver_channel_->SendInputEvent(event);
+  }
+}
+
+void StreamingRuntimeApplication::OnInputCapabilitiesChanged(
+    const cast_receiver::InputCapabilities& caps) {
+  if (streaming_receiver_channel_) {
+    streaming_receiver_channel_->SendInputCapabilities(caps);
+  }
 }
 
 }  // namespace cast_receiver

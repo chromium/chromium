@@ -60,6 +60,30 @@ std::vector<url::Origin> GetAdditionalFeaturePermissionOrigins(
   return feature_permission_origins;
 }
 
+bool GetExtendedInputSupported(
+    const cast::common::ApplicationConfig& core_config) {
+  const auto& extra_features = core_config.extra_features().entries();
+  auto it =
+      std::ranges::find(extra_features, feature::kCastCoreRendererFeatures,
+                        &cast::common::Dictionary::Entry::key);
+  if (it == extra_features.end()) {
+    return false;
+  }
+
+  if (!it->value().has_dictionary()) {
+    return false;
+  }
+
+  const auto& entries = it->value().dictionary().entries();
+  auto feature_it = std::ranges::find(entries, feature::kExtendedInputSupported,
+                                      &cast::common::Dictionary::Entry::key);
+  if (feature_it == entries.end()) {
+    return false;
+  }
+  return feature_it->value().value_case() == cast::common::Value::kFlag &&
+         feature_it->value().flag();
+}
+
 cast_receiver::ApplicationConfig::ContentPermissions ToReceiverPermissions(
     const cast::common::ApplicationConfig& core_config) {
   return cast_receiver::ApplicationConfig::ContentPermissions{
@@ -74,6 +98,7 @@ cast_receiver::ApplicationConfig ToReceiverConfig(
   cast_receiver::ApplicationConfig config{core_config.app_id(),
                                           core_config.display_name(),
                                           ToReceiverPermissions(core_config)};
+  config.is_extended_input_supported = GetExtendedInputSupported(core_config);
   if (core_config.has_cast_web_app_config()) {
     config.url = GURL(core_config.cast_web_app_config().url());
     if (!config.url->is_valid()) {

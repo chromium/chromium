@@ -41,11 +41,11 @@ TEST_F(StreamingInputCapabilitiesObserverTest, EmptyInitially) {
   int callback_count = 0;
   auto* manager = ui::DeviceDataManager::GetInstance();
   StreamingInputCapabilitiesObserver observer(
-      manager,
-      base::BindLambdaForTesting([&](cast_receiver::InputCapabilities caps) {
-        EXPECT_EQ(caps.devices_size(), 0);
-        callback_count++;
-      }));
+      manager, base::BindLambdaForTesting(
+                   [&](const cast_receiver::InputCapabilities& caps) {
+                     EXPECT_EQ(caps.devices_size(), 0);
+                     callback_count++;
+                   }));
 
   // Since lists are not complete and we didn't trigger them, no initial update.
   static_cast<ui::DeviceHotplugEventObserver*>(manager)
@@ -76,11 +76,11 @@ TEST_F(StreamingInputCapabilitiesObserverTest, TriggersOnDeviceListsComplete) {
   cast_receiver::InputCapabilities received_caps;
 
   StreamingInputCapabilitiesObserver observer(
-      manager,
-      base::BindLambdaForTesting([&](cast_receiver::InputCapabilities caps) {
-        received_caps = std::move(caps);
-        callback_count++;
-      }));
+      manager, base::BindLambdaForTesting(
+                   [&](const cast_receiver::InputCapabilities& caps) {
+                     received_caps = caps;
+                     callback_count++;
+                   }));
 
   // Trigger OnDeviceListsComplete to signal initial scan is done.
   static_cast<ui::DeviceHotplugEventObserver*>(manager)
@@ -121,9 +121,10 @@ TEST_F(StreamingInputCapabilitiesObserverTest, DeduplicatesIdenticalUpdates) {
 
   int callback_count = 0;
   StreamingInputCapabilitiesObserver observer(
-      manager,
-      base::BindLambdaForTesting(
-          [&](cast_receiver::InputCapabilities caps) { callback_count++; }));
+      manager, base::BindLambdaForTesting(
+                   [&](const cast_receiver::InputCapabilities& caps) {
+                     callback_count++;
+                   }));
 
   // Initial update triggered because lists were already complete.
   EXPECT_EQ(callback_count, 1);
@@ -146,11 +147,11 @@ TEST_F(StreamingInputCapabilitiesObserverTest, TriggersOnConfigurationChanged) {
   cast_receiver::InputCapabilities received_caps;
 
   StreamingInputCapabilitiesObserver observer(
-      manager,
-      base::BindLambdaForTesting([&](cast_receiver::InputCapabilities caps) {
-        received_caps = std::move(caps);
-        callback_count++;
-      }));
+      manager, base::BindLambdaForTesting(
+                   [&](const cast_receiver::InputCapabilities& caps) {
+                     received_caps = caps;
+                     callback_count++;
+                   }));
 
   EXPECT_EQ(callback_count, 1);
   EXPECT_EQ(received_caps.devices_size(), 0);
