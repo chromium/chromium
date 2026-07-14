@@ -56,6 +56,8 @@ import org.chromium.chrome.browser.layouts.animation.CompositorAnimator;
 import org.chromium.chrome.browser.layouts.components.VirtualView;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask;
+import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTaskFeatureKey;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTaskTracker;
 import org.chromium.chrome.browser.ui.side_panel.AndroidSidePanelEnabledFn;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.SideUiId;
@@ -66,6 +68,7 @@ import org.chromium.chrome.browser.ui.side_ui.SideUiStateProvider;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.prefs.PrefChangeRegistrar;
 import org.chromium.components.user_prefs.UserPrefs;
+import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.interpolators.Interpolators;
@@ -113,7 +116,7 @@ public class StripLayoutTrailingButtonsCoordinator {
     private final Context mContext;
     private final LayoutUpdateHost mUpdateHost;
     private final LayoutRenderHost mRenderHost;
-    private final WindowAndroid mWindowAndroid;
+    private final ActivityWindowAndroid mWindowAndroid;
 
     // Configuration & Delegates
     private final float mDensity;
@@ -170,8 +173,7 @@ public class StripLayoutTrailingButtonsCoordinator {
                 public void onTriggerGlicNudgeUi(
                         String label, String anchoredMessageText, String promptSuggestion) {
                     if (mGlicIphShowingSupplier.getAsBoolean()) {
-                        GlicNudgeDelegateBridge.onNudgeActivity(
-                                mWindowAndroid,
+                        mGlicNudgeDelegateBridge.onNudgeActivity(
                                 GlicNudgeActivity.NUDGE_NOT_SHOWN_WINDOW_CALL_TO_ACTION_UI);
                         return;
                     }
@@ -192,6 +194,8 @@ public class StripLayoutTrailingButtonsCoordinator {
                     return mNudgeLabel != null;
                 }
             };
+    private final GlicNudgeDelegateBridge mGlicNudgeDelegateBridge =
+            new GlicNudgeDelegateBridge(mGlicNudgeDelegate);
 
     // Layout & State Parameters
     private float mWidth;
@@ -303,7 +307,7 @@ public class StripLayoutTrailingButtonsCoordinator {
             Context context,
             LayoutUpdateHost updateHost,
             LayoutRenderHost renderHost,
-            WindowAndroid windowAndroid,
+            ActivityWindowAndroid windowAndroid,
             float density,
             View toolbarControlContainer,
             boolean isAppInDesktopWindow,
@@ -465,7 +469,6 @@ public class StripLayoutTrailingButtonsCoordinator {
 
     /** Destroys the coordinator and unregisters observers. */
     public void destroy() {
-        GlicNudgeDelegateBridge.setDelegate(mWindowAndroid, null);
         if (mSideUiStateProvider != null) {
             mSideUiStateProvider.removeObserver(mSideUiObserver);
             mSideUiStateProvider = null;
@@ -494,14 +497,26 @@ public class StripLayoutTrailingButtonsCoordinator {
     }
 
     /**
-     * Registers a pref observer for Glic button changes when the profile is available.
+     * Registers a pref observer for Glic button changes when the profile is available, and
+     * creates/recreates the nudge delegate bridge.
      *
      * @param profile The {@link Profile} to observe.
      */
     public void onProfileAvailable(Profile profile) {
         if (mProfile == profile) return;
         mProfile = profile;
-        GlicNudgeDelegateBridge.setDelegate(mWindowAndroid, mGlicNudgeDelegate);
+
+        Activity activity = mWindowAndroid.getActivity().get();
+        if (activity != null) {
+            ChromeAndroidTask task = mTaskTracker.get(activity.getTaskId());
+            if (task != null) {
+                task.addFeature(
+                        new ChromeAndroidTaskFeatureKey(
+                                GlicNudgeDelegateBridge.class, profile, mWindowAndroid),
+                        () -> mGlicNudgeDelegateBridge);
+            }
+        }
+
         if (mPrefChangeRegistrar != null) {
             mPrefChangeRegistrar.destroy();
             mPrefChangeRegistrar = null;
@@ -1719,15 +1734,14 @@ public class StripLayoutTrailingButtonsCoordinator {
         @GlicInvocationSource int invocationSource = GlicInvocationSource.TOP_CHROME_BUTTON;
         if (mGlicNudgeDelegate.getIsShowingGlicNudge()) {
             invocationSource = GlicInvocationSource.NUDGE;
-            GlicNudgeDelegateBridge.onNudgeActivity(
-                    mWindowAndroid, GlicNudgeActivity.NUDGE_CLICKED);
+            mGlicNudgeDelegateBridge.onNudgeActivity(GlicNudgeActivity.NUDGE_CLICKED);
             mGlicNudgeDelegate.onHideGlicNudgeUi();
         }
         mGlicClickHandler.onClick(/* preventClose= */ false, invocationSource);
     }
 
     private void handleDismissButtonClick() {
-        GlicNudgeDelegateBridge.onNudgeActivity(mWindowAndroid, GlicNudgeActivity.NUDGE_DISMISSED);
+        mGlicNudgeDelegateBridge.onNudgeActivity(GlicNudgeActivity.NUDGE_DISMISSED);
         mGlicNudgeDelegate.onHideGlicNudgeUi();
     }
 

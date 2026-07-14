@@ -16,10 +16,6 @@
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/web_contents.h"
 
-#if BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/glic/browser_ui/glic_nudge_delegate_android.h"
-#endif
-
 namespace glic {
 
 GlicNudgeControllerImpl::GlicNudgeControllerImpl(
@@ -31,14 +27,6 @@ GlicNudgeControllerImpl::GlicNudgeControllerImpl(
   if (TabListInterface* tab_list = GetTabList()) {
     tab_list_observation_.Observe(tab_list);
   }
-
-#if BUILDFLAG(IS_ANDROID)
-  // TODO(crbug.com/511309088): Have the Android UI create and own the delegate
-  // instead.
-  android_delegate_ = std::make_unique<GlicNudgeDelegateAndroid>(
-      this, browser_window_interface);
-  SetHorizontalTabsDelegate(android_delegate_.get());
-#endif
 }
 
 GlicNudgeControllerImpl::~GlicNudgeControllerImpl() = default;
@@ -210,6 +198,10 @@ GlicSplitButtonDelegate* GlicNudgeControllerImpl::GetActiveDelegate() {
 
 TabListInterface* GlicNudgeControllerImpl::GetTabList() {
   return TabListInterface::From(browser_window_interface_);
+}
+
+base::WeakPtr<GlicNudgeController> GlicNudgeControllerImpl::GetWeakPtr() {
+  return weak_factory_.GetWeakPtr();
 }
 
 }  // namespace glic

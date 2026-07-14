@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/functional/callback.h"
+#include "base/memory/weak_ptr.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
 namespace content {
@@ -65,6 +66,8 @@ class GlicNudgeController {
 
   virtual std::optional<std::string> GetPromptSuggestion() = 0;
   virtual void ClearPromptSuggestion() = 0;
+
+  virtual base::WeakPtr<GlicNudgeController> GetWeakPtr() = 0;
 };
 
 }  // namespace glic

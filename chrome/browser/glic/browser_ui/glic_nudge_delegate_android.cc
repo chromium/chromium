@@ -2,110 +2,93 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/glic/browser_ui/glic_nudge_delegate_android.h"
-
-#include <algorithm>
-#include <vector>
-
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/check.h"
-#include "base/no_destructor.h"
 #include "chrome/browser/glic/android/jni_headers/GlicNudgeDelegateBridge_jni.h"
 #include "chrome/browser/glic/browser_ui/glic_nudge_controller.h"
+#include "chrome/browser/glic/browser_ui/glic_split_button_delegate.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "content/public/browser/web_contents.h"
-#include "ui/android/window_android.h"
-#include "ui/base/base_window.h"
 
 namespace glic {
 
-namespace {
-std::vector<GlicNudgeDelegateAndroid*>& GetDelegates() {
-  static base::NoDestructor<std::vector<GlicNudgeDelegateAndroid*>> delegates;
-  return *delegates;
-}
-}  // namespace
-
-GlicNudgeDelegateAndroid::GlicNudgeDelegateAndroid(
-    GlicNudgeController* controller,
-    BrowserWindowInterface* browser)
-    : controller_(controller), browser_(browser) {
-  CHECK(controller_);
-  GetDelegates().push_back(this);
-}
-
-GlicNudgeDelegateAndroid::~GlicNudgeDelegateAndroid() {
-  auto& delegates = GetDelegates();
-  auto it = std::find(delegates.begin(), delegates.end(), this);
-  if (it != delegates.end()) {
-    delegates.erase(it);
+// C++ implementation of GlicNudgeDelegate for Android.
+// Acts as JNI bridge to forward C++ nudge trigger/hide calls to Java's
+// GlicNudgeDelegateBridge.
+class GlicNudgeDelegateAndroid : public GlicSplitButtonDelegate {
+ public:
+  GlicNudgeDelegateAndroid(
+      base::WeakPtr<GlicNudgeController> controller,
+      const base::android::ScopedJavaGlobalRef<JGlicNudgeDelegateBridge>&
+          j_delegate)
+      : controller_(controller), j_delegate_(j_delegate) {
+    CHECK(controller_);
+    controller_->SetHorizontalTabsDelegate(this);
   }
-}
 
-void GlicNudgeDelegateAndroid::OnTriggerGlicNudgeUI(NudgeParams params) {
-  ui::WindowAndroid* window = GetWindowAndroid();
-  if (!window) {
-    return;
-  }
-  JNIEnv* env = base::android::AttachCurrentThread();
-  base::android::ScopedJavaLocalRef<jstring> j_label =
-      base::android::ConvertUTF8ToJavaString(env, params.label);
-  base::android::ScopedJavaLocalRef<jstring> j_msg =
-      base::android::ConvertUTF8ToJavaString(env, params.anchored_message_text);
-  base::android::ScopedJavaLocalRef<jstring> j_suggestion =
-      base::android::ConvertUTF8ToJavaString(
-          env, params.prompt_suggestion.value_or(""));
-
-  Java_GlicNudgeDelegateBridge_triggerGlicNudge(env, window->GetJavaObject(),
-                                                j_label, j_msg, j_suggestion);
-}
-
-void GlicNudgeDelegateAndroid::OnHideGlicNudgeUI() {
-  ui::WindowAndroid* window = GetWindowAndroid();
-  if (!window) {
-    return;
-  }
-  JNIEnv* env = base::android::AttachCurrentThread();
-  Java_GlicNudgeDelegateBridge_hideGlicNudge(env, window->GetJavaObject());
-}
-
-bool GlicNudgeDelegateAndroid::GetIsShowingGlicNudge() {
-  ui::WindowAndroid* window = GetWindowAndroid();
-  if (!window) {
-    return false;
-  }
-  JNIEnv* env = base::android::AttachCurrentThread();
-  return Java_GlicNudgeDelegateBridge_getIsShowingGlicNudge(
-      env, window->GetJavaObject());
-}
-
-void GlicNudgeDelegateAndroid::OnNudgeActivity(GlicNudgeActivity activity) {
-  controller_->OnNudgeActivity(activity);
-}
-
-ui::WindowAndroid* GlicNudgeDelegateAndroid::GetWindowAndroid() {
-  if (!browser_ || !browser_->GetWindow()) {
-    return nullptr;
-  }
-  return browser_->GetWindow()->GetNativeWindow();
-}
-
-static void JNI_GlicNudgeDelegateBridge_OnNudgeActivity(
-    JNIEnv* env,
-    const jni_zero::JavaRef<jobject>& j_window,
-    int32_t event) {
-  ui::WindowAndroid* target_window =
-      ui::WindowAndroid::FromJavaWindowAndroid(j_window);
-  if (!target_window) {
-    return;
-  }
-  for (GlicNudgeDelegateAndroid* delegate : GetDelegates()) {
-    if (delegate->GetWindowAndroid() == target_window) {
-      delegate->OnNudgeActivity(static_cast<GlicNudgeActivity>(event));
-      break;
+  GlicNudgeDelegateAndroid(const GlicNudgeDelegateAndroid&) = delete;
+  GlicNudgeDelegateAndroid& operator=(const GlicNudgeDelegateAndroid&) = delete;
+  ~GlicNudgeDelegateAndroid() override {
+    if (controller_) {
+      controller_->SetHorizontalTabsDelegate(nullptr);
     }
   }
+
+  // GlicSplitButtonDelegate:
+  void OnTriggerGlicNudgeUI(NudgeParams params) override {
+    JNIEnv* env = base::android::AttachCurrentThread();
+    Java_GlicNudgeDelegateBridge_onTriggerGlicNudgeUi(
+        env, j_delegate_,
+        base::android::ConvertUTF8ToJavaString(env, params.label),
+        base::android::ConvertUTF8ToJavaString(env,
+                                               params.anchored_message_text),
+        base::android::ConvertUTF8ToJavaString(
+            env, params.prompt_suggestion.value_or("")));
+  }
+
+  void OnHideGlicNudgeUI() override {
+    Java_GlicNudgeDelegateBridge_onHideGlicNudgeUi(
+        base::android::AttachCurrentThread(), j_delegate_);
+  }
+
+  bool GetIsShowingGlicNudge() override {
+    return Java_GlicNudgeDelegateBridge_getIsShowingGlicNudge(
+        base::android::AttachCurrentThread(), j_delegate_);
+  }
+
+  // Java GlicNudgeDelegateBridge native methods:
+  void OnNudgeActivity(GlicNudgeActivity activity) {
+    if (controller_) {
+      controller_->OnNudgeActivity(activity);
+    }
+  }
+
+  void Destroy() { delete this; }
+
+ private:
+  base::WeakPtr<GlicNudgeController> controller_;
+  base::android::ScopedJavaGlobalRef<JGlicNudgeDelegateBridge> j_delegate_;
+};
+
+static int64_t JNI_GlicNudgeDelegateBridge_Create(
+    JNIEnv* env,
+    int64_t j_native_browser_window_interface,
+    const base::android::JavaRef<JGlicNudgeDelegateBridge>& j_delegate) {
+  BrowserWindowInterface* browser = reinterpret_cast<BrowserWindowInterface*>(
+      j_native_browser_window_interface);
+  if (!browser) {
+    return 0l;
+  }
+  GlicNudgeController* glic_nudge_controller =
+      GlicNudgeController::From(browser);
+  if (!glic_nudge_controller) {
+    // TODO(crbug.com/484037810): CHECK instead.
+    return 0l;
+  }
+  return reinterpret_cast<int64_t>(new GlicNudgeDelegateAndroid(
+      glic_nudge_controller->GetWeakPtr(),
+      base::android::ScopedJavaGlobalRef<JGlicNudgeDelegateBridge>(
+          j_delegate)));
 }
 
 DEFINE_JNI(GlicNudgeDelegateBridge)

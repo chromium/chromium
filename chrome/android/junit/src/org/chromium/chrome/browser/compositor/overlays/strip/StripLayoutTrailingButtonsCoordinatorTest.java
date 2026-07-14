@@ -76,9 +76,9 @@ import org.chromium.components.prefs.PrefChangeRegistrarJni;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.user_prefs.UserPrefsJni;
+import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.base.TestActivity;
-import org.chromium.ui.base.WindowAndroid;
 
 import java.lang.ref.WeakReference;
 import java.util.Collections;
@@ -95,7 +95,7 @@ public class StripLayoutTrailingButtonsCoordinatorTest {
     @Mock private GlicKeyedService mGlicKeyedService;
     @Mock private GlicButtonDelegate mGlicClickHandler;
     @Mock private View mToolbarContainerView;
-    @Mock private WindowAndroid mWindowAndroid;
+    @Mock private ActivityWindowAndroid mWindowAndroid;
     @Mock private Profile mProfile;
     @Mock private UserPrefs.Natives mUserPrefsJniMock;
     @Mock private PrefChangeRegistrar.Natives mPrefChangeRegistrarJniMock;

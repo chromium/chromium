@@ -50,7 +50,7 @@ import org.chromium.chrome.browser.ui.vertical_tabs.VerticalTabUtils;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.ui.base.ActivityResultTracker;
-import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.dragdrop.DragAndDropDelegate;
 import org.chromium.ui.resources.dynamics.DynamicResourceLoader;
 import org.chromium.ui.xr.scenecore.XrSceneCoreSessionManager;
@@ -132,7 +132,7 @@ public class LayoutManagerChromeTablet extends LayoutManagerChrome {
             DragAndDropDelegate dragAndDropDelegate,
             View controlContainerView,
             ViewStub tabHoverCardViewStub,
-            WindowAndroid windowAndroid,
+            ActivityWindowAndroid windowAndroid,
             ToolbarManager toolbarManager,
             @Nullable DesktopWindowStateManager desktopWindowStateManager,
             ActionConfirmationManager actionConfirmationManager,

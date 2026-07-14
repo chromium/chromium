@@ -6,60 +6,73 @@ package org.chromium.chrome.browser.glic;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
-import org.chromium.base.UnownedUserDataKey;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
-import org.chromium.ui.base.WindowAndroid;
+import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTaskFeature;
+import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTaskFeature.InitInfo;
 
 /** JNI Bridge to dispatch native C++ Glic nudge requests to the active tab strip. */
 @JNINamespace("glic")
 @NullMarked
-public class GlicNudgeDelegateBridge {
-    private static final UnownedUserDataKey<GlicNudgeDelegate> KEY = new UnownedUserDataKey<>();
+public class GlicNudgeDelegateBridge implements ChromeAndroidTaskFeature {
+    private final GlicNudgeDelegate mDelegate;
+    private long mNativePtr;
 
-    public static void setDelegate(WindowAndroid window, @Nullable GlicNudgeDelegate delegate) {
-        if (delegate == null) {
-            KEY.detachFromHost(window.getUnownedUserDataHost());
-        } else {
-            KEY.attachToHost(window.getUnownedUserDataHost(), delegate);
+    public GlicNudgeDelegateBridge(GlicNudgeDelegate delegate) {
+        mDelegate = delegate;
+    }
+
+    public void destroy() {
+        if (mNativePtr != 0) {
+            GlicNudgeDelegateBridgeJni.get().destroy(mNativePtr);
+            mNativePtr = 0;
         }
+    }
+
+    @Override
+    public void onAddedToTask(InitInfo initInfo) {
+        long nativeBrowserWindowPtr = initInfo.nativeBrowserWindowPtr;
+        if (nativeBrowserWindowPtr == 0) return;
+        mNativePtr = GlicNudgeDelegateBridgeJni.get().create(nativeBrowserWindowPtr, this);
+    }
+
+    @Override
+    public void onFeatureRemoved() {
+        destroy();
+    }
+
+    @CalledByNative
+    public void onTriggerGlicNudgeUi(
+            String label, String anchoredMessageText, String promptSuggestion) {
+        mDelegate.onTriggerGlicNudgeUi(label, anchoredMessageText, promptSuggestion);
+    }
+
+    @CalledByNative
+    public void onHideGlicNudgeUi() {
+        mDelegate.onHideGlicNudgeUi();
+    }
+
+    @CalledByNative
+    public boolean getIsShowingGlicNudge() {
+        return mDelegate.getIsShowingGlicNudge();
     }
 
     /** Notifies native side of user nudge activity. */
-    public static void onNudgeActivity(WindowAndroid window, @GlicNudgeActivity int event) {
-        GlicNudgeDelegateBridgeJni.get().onNudgeActivity(window, event);
-    }
-
-    @CalledByNative
-    private static void triggerGlicNudge(
-            WindowAndroid window,
-            String label,
-            String anchoredMessageText,
-            String promptSuggestion) {
-        GlicNudgeDelegate delegate = KEY.retrieveDataFromHost(window.getUnownedUserDataHost());
-        if (delegate != null) {
-            delegate.onTriggerGlicNudgeUi(label, anchoredMessageText, promptSuggestion);
+    public void onNudgeActivity(@GlicNudgeActivity int event) {
+        if (mNativePtr != 0) {
+            GlicNudgeDelegateBridgeJni.get().onNudgeActivity(mNativePtr, event);
         }
-    }
-
-    @CalledByNative
-    private static void hideGlicNudge(WindowAndroid window) {
-        GlicNudgeDelegate delegate = KEY.retrieveDataFromHost(window.getUnownedUserDataHost());
-        if (delegate != null) {
-            delegate.onHideGlicNudgeUi();
-        }
-    }
-
-    @CalledByNative
-    private static boolean getIsShowingGlicNudge(WindowAndroid window) {
-        GlicNudgeDelegate delegate = KEY.retrieveDataFromHost(window.getUnownedUserDataHost());
-        return delegate != null && delegate.getIsShowingGlicNudge();
     }
 
     @NativeMethods
     public interface Natives {
-        void onNudgeActivity(WindowAndroid window, int event);
+        long create(long browserWindowInterfacePtr, GlicNudgeDelegateBridge delegate);
+
+        void destroy(long nativeGlicNudgeDelegateAndroid);
+
+        void onNudgeActivity(
+                long nativeGlicNudgeDelegateAndroid, @JniType("GlicNudgeActivity") int event);
     }
 }

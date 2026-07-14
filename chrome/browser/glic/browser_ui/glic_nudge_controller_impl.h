@@ -50,15 +50,13 @@ class GlicNudgeControllerImpl : public GlicNudgeController,
   std::optional<std::string> GetPromptSuggestion() override;
   void ClearPromptSuggestion() override;
 
+  base::WeakPtr<GlicNudgeController> GetWeakPtr() override;
+
  private:
   GlicSplitButtonDelegate* GetActiveDelegate();
   TabListInterface* GetTabList();
 
   const raw_ptr<BrowserWindowInterface> browser_window_interface_;
-
-#if BUILDFLAG(IS_ANDROID)
-  std::unique_ptr<GlicSplitButtonDelegate> android_delegate_;
-#endif
 
   tabs::TabHandle nudged_tab_handle_;
   raw_ptr<GlicSplitButtonDelegate> horizontal_tabs_delegate_ = nullptr;
@@ -72,6 +70,7 @@ class GlicNudgeControllerImpl : public GlicNudgeController,
   std::unique_ptr<ScopedCallToActionLock> scoped_call_to_action_lock_;
 
   ui::ScopedUnownedUserData<GlicNudgeController> scoped_unowned_user_data_;
+  base::WeakPtrFactory<GlicNudgeController> weak_factory_{this};
 };
 
 }  // namespace glic

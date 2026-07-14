@@ -116,8 +116,8 @@ import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateMa
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.ActivityResultTracker;
+import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.PageTransition;
-import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.display.DisplayUtil;
 import org.chromium.ui.dragdrop.DragAndDropDelegate;
 import org.chromium.ui.dragdrop.DragDropGlobalState;
@@ -236,7 +236,7 @@ public class StripLayoutHelperManager
     private final ToolbarManager mToolbarManager;
     private final StatusBarColorController mStatusBarColorController;
     private TabStripSceneLayer mTabStripTreeProvider;
-    private final WindowAndroid mWindowAndroid;
+    private final ActivityWindowAndroid mWindowAndroid;
     private TabStripEventHandler mTabStripEventHandler;
     private final TabSwitcherLayoutObserver mTabSwitcherLayoutObserver;
     private @Nullable Runnable mFadeTransitionThresholdChangedCallback;
@@ -506,7 +506,7 @@ public class StripLayoutHelperManager
             ViewStub tabHoverCardViewStub,
             MonotonicObservableSupplier<TabContentManager> tabContentManagerSupplier,
             BrowserControlsStateProvider browserControlsStateProvider,
-            WindowAndroid windowAndroid,
+            ActivityWindowAndroid windowAndroid,
             // TODO(crbug.com/40939440): Avoid passing the ToolbarManager instance. Potentially
             // implement an interface to manage strip transition states.
             ToolbarManager toolbarManager,

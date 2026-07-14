@@ -45,10 +45,7 @@ source_set("browser_ui") {
       "//ui/base/unowned_user_data",
     ]
   } else {
-    sources += [
-      "glic_nudge_delegate_android.h",
-      "glic_toast.h",
-    ]
+    sources += [ "glic_toast.h" ]
     deps += [ "//components/messages/android" ]
   }
 }
