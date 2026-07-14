@@ -625,13 +625,6 @@ IN_PROC_BROWSER_TEST_F(CommandsApiTest, TabParameter) {
 // Test Keybinding in incognito mode.
 // Disabled because flaky: crbug.com/519947934
 IN_PROC_BROWSER_TEST_P(IncognitoCommandsApiTest, DISABLED_IncognitoMode) {
-#if defined(MEMORY_SANITIZER)
-  if (base::FeatureList::IsEnabled(features::kInitialWebUI)) {
-    GTEST_SKIP() << "Skipping test on MSAN with InitialWebUI enabled. "
-                    "See crbug.com/477426026.";
-  }
-#endif
-
   ASSERT_TRUE(embedded_test_server()->Start());
 
   bool is_incognito_enabled = GetParam();
