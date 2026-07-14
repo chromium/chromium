@@ -4,23 +4,31 @@
 
 #include "services/audio/voice_isolation_handler.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/logging.h"
+#include "base/memory/ptr_util.h"
 #include "media/base/audio_bus.h"
 #include "media/webrtc/voice_isolation/voice_isolation.h"
+#include "services/audio/ml_model_manager.h"
 
 namespace audio {
 
 VoiceIsolationHandler::VoiceIsolationHandler(
-    std::unique_ptr<media::VoiceIsolation> voice_isolation,
+    std::unique_ptr<MlModelHandle> model_handle,
     const media::AudioParameters& output_params,
     DeliverProcessedAudioCallback deliver_processed_audio_callback)
-    : voice_isolation_(std::move(voice_isolation)),
+    : model_handle_(std::move(model_handle)),
+      // TODO(b/512016773): Pass the model to VoiceIsolation once it is
+      // supported.
+      voice_isolation_(std::make_unique<media::VoiceIsolation>()),
       deliver_processed_audio_callback_(
           std::move(deliver_processed_audio_callback)),
       output_bus_(media::AudioBus::Create(output_params)) {
-  DCHECK(voice_isolation_);
+  CHECK(voice_isolation_);
+  CHECK(!deliver_processed_audio_callback_.is_null());
+  CHECK(output_bus_);
 }
 
 VoiceIsolationHandler::~VoiceIsolationHandler() = default;
@@ -37,4 +45,20 @@ void VoiceIsolationHandler::ProcessCapturedAudio(
                                         volume, audio_glitch_info);
 }
 
+std::unique_ptr<VoiceIsolationHandler> VoiceIsolationHandler::MaybeCreate(
+    MlModelManager& ml_model_manager,
+    const media::AudioParameters& output_params,
+    DeliverProcessedAudioCallback deliver_processed_audio_callback) {
+  std::unique_ptr<MlModelHandle> model_handle =
+      ml_model_manager.GetModel(mojom::MlModelType::kVoiceIsolationDenoiser);
+
+  if (!model_handle || !model_handle->Get()) {
+    // Model not available or there is a problem with the model manager.
+    return nullptr;
+  }
+
+  return base::WrapUnique(
+      new VoiceIsolationHandler(std::move(model_handle), output_params,
+                                std::move(deliver_processed_audio_callback)));
+}
 }  // namespace audio

@@ -17,6 +17,7 @@
 #include "media/base/audio_parameters.h"
 #include "media/webrtc/voice_isolation/voice_isolation.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "services/audio/ml_model_manager.h"
 #include "services/audio/voice_isolation_handler.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -60,11 +61,40 @@ class AudioProcessorHandlerTest : public ::testing::Test {
 namespace {
 
 #if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
+
+class FakeMlModelHandle : public MlModelHandle {
+ public:
+  FakeMlModelHandle() = default;
+  ~FakeMlModelHandle() override = default;
+
+  const tflite::FlatBufferModel* Get() override {
+    // Return a dummy non-null pointer so that model verification passes.
+    return reinterpret_cast<const tflite::FlatBufferModel*>(0x1234);
+  }
+};
+
+class MockMlModelManager : public MlModelManager {
+ public:
+  MockMlModelManager() {
+    ON_CALL(*this, GetModel(testing::_)).WillByDefault([](mojom::MlModelType) {
+      return std::make_unique<FakeMlModelHandle>();
+    });
+  }
+  MOCK_METHOD(std::unique_ptr<MlModelHandle>,
+              GetModel,
+              (mojom::MlModelType model_type),
+              (override));
+};
+
 std::unique_ptr<VoiceIsolationHandler> GetVoiceIsolationHandler(
     const media::AudioParameters& output_params,
     VoiceIsolationHandler::DeliverProcessedAudioCallback callback) {
-  return std::make_unique<VoiceIsolationHandler>(
-      std::make_unique<media::VoiceIsolation>(), output_params, callback);
+  auto voice_isolation = std::make_unique<media::VoiceIsolation>();
+
+  MockMlModelManager model_manager;
+
+  return VoiceIsolationHandler::MaybeCreate(
+      /*ml_model_manager=*/model_manager, output_params, callback);
 }
 #endif
 

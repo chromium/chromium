@@ -449,18 +449,15 @@ InputController::MaybeCreateVoiceIsolationHandler(
     raw_ptr<MlModelManager> ml_model_manager,
     const media::AudioParameters& processing_output_params,
     DeliverProcessedAudioCallback deliver_processed_audio_callback) {
-  std::unique_ptr<MlModelHandle> model_handle =
-      ml_model_manager ? ml_model_manager->GetModel(
-                             mojom::MlModelType::kVoiceIsolationDenoiser)
-                       : nullptr;
-  if (!model_handle || !model_handle->Get()) {
+  if (!ml_model_manager) {
     return nullptr;
   }
-  // TODO(b/512016773): Pass the model to VoiceIsolation once it is supported.
-  return std::make_unique<VoiceIsolationHandler>(
-      std::make_unique<media::VoiceIsolation>(), processing_output_params,
+
+  return VoiceIsolationHandler::MaybeCreate(
+      *ml_model_manager, processing_output_params,
       std::move(deliver_processed_audio_callback));
 }
+
 #endif
 
 InputController::~InputController() {
