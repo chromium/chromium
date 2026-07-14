@@ -220,6 +220,7 @@ cargo_crate("lib") {
     "agl",
     "default",
     "experimental_font_api",
+    "ift",
     "std",
   ]
 

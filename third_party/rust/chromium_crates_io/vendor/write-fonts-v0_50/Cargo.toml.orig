@@ -1,0 +1,47 @@
+[package]
+name = "write-fonts"
+version = "0.50.0"
+description = "Writing font files."
+readme = "README.md"
+categories = ["text-processing", "parsing", "graphics"]
+
+rust-version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+
+[package.metadata.docs.rs]
+# To build locally:
+# RUSTDOCFLAGS="--cfg docsrs" cargo +nightly doc --all-features
+all-features = true
+
+[features]
+default = ["tables"]
+tables = ["dep:indexmap", "dep:kurbo"]
+read = []
+dot2 = ["dep:dot2"]
+serde = ["dep:serde", "font-types/serde", "read-fonts/serde"]
+ift = ["read-fonts/ift"]
+
+[dependencies]
+font-types = { workspace = true }
+read-fonts = { workspace = true, default-features = true }
+log = "0.4"
+kurbo = { workspace = true, optional = true }
+dot2 = { version = "1.0", optional = true }
+serde = { version = "1.0", features = ["derive"], optional = true }
+indexmap = { version = "2.0", optional = true }
+
+[dev-dependencies]
+diff = "0.1.12"
+nu-ansi-term = "0.50.1"
+font-test-data = { workspace = true }
+read-fonts = { workspace = true, features = [
+  "codegen_test", "experimental_traverse"
+] }
+rstest = "0.26.1"
+bincode = { version = "2", features = ["serde"] }
+rand = { version = "0.10.1", features = ["thread_rng"] }
+
+pretty_assertions.workspace = true
+env_logger.workspace = true

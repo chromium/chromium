@@ -1,0 +1,57 @@
+[package]
+name = "incremental-font-transfer"
+version = "0.5.0"
+description = "Client side implementation of the Incremental Font Transfer standard (https://w3c.github.io/IFT/Overview.html)"
+readme = "README.md"
+categories = ["text-processing", "parsing", "graphics"]
+exclude = ["/resources/testdata"]
+
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+
+[package.metadata.docs.rs]
+# To build locally:
+# RUSTDOCFLAGS="--cfg docsrs" cargo +nightly doc --all-features
+all-features = true
+
+[features]
+default = ["read-fonts/std", "c-brotli"]
+cli = ["clap", "regex", "woff2-patched"]
+rust-brotli = ["shared-brotli-patch-decoder/rust-brotli"]
+c-brotli = ["shared-brotli-patch-decoder/c-brotli"]
+
+[dependencies]
+read-fonts = { workspace = true, features = ["ift"] }
+write-fonts = { workspace = true }
+font-types = { workspace = true }
+skrifa = { workspace = true }
+skera = { workspace = true }
+shared-brotli-patch-decoder = { workspace = true, default-features = false }
+woff2-patched = { version = "0.4.0", optional = true }
+clap = { version = "4.5.4", features = ["derive"], optional = true }
+regex = { version = "1.11.1", optional = true }
+
+[dev-dependencies]
+brotlic = {version = "0.8.2"}
+criterion = { workspace = true }
+font-test-data = { workspace = true }
+read-fonts = { workspace = true }
+woff2-patched = "0.4.0"
+write-fonts = { workspace = true, features = ["tables", "ift"] }
+
+[lib]
+name = "incremental_font_transfer"
+path = "src/lib.rs"
+
+[[bench]]
+name = "ift-benchmarks"
+harness = false
+
+[[bin]]
+name = "ift_extend"
+required-features = ["cli"]
+
+[[bin]]
+name = "ift_graph"
+required-features = ["cli"]

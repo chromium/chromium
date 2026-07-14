@@ -1,0 +1,11 @@
+Name: write-fonts
+URL: https://crates.io/crates/write-fonts
+Version: 0.50.0
+Revision: b373cdbc6043a791fb23b3e0f413649458f5e63a
+Update Mechanism: Manual (https://crbug.com/449898466)
+License: Apache-2.0
+License File: //third_party/rust/chromium_crates_io/vendor/write-fonts-v0_50/LICENSE-APACHE
+Shipped: yes
+Security Critical: yes
+
+Description: Writing font files.

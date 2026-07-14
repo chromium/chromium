@@ -1,0 +1,11 @@
+Name: incremental-font-transfer
+URL: https://crates.io/crates/incremental-font-transfer
+Version: 0.5.0
+Revision: 699ee1d738921895e3866f7d24cb286fda84410b
+Update Mechanism: Manual (https://crbug.com/449898466)
+License: Apache-2.0
+License File: //third_party/rust/chromium_crates_io/vendor/incremental-font-transfer-v0_5/LICENSE-APACHE
+Shipped: yes
+Security Critical: yes
+
+Description: Client side implementation of the Incremental Font Transfer standard (https://w3c.github.io/IFT/Overview.html)

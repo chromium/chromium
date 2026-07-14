@@ -1,0 +1,130 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# @generated from third_party/rust/chromium_crates_io/BUILD.gn.hbs by
+# tools/crates/gnrt.
+# Do not edit!
+
+import("//build/rust/cargo_crate.gni")
+
+cargo_crate("lib") {
+  crate_name = "skera"
+  epoch = "0.4"
+  crate_type = "rlib"
+  crate_root =
+      "//third_party/rust/chromium_crates_io/vendor/skera-v0_4/src/lib.rs"
+  sources = [
+    "//third_party/rust/chromium_crates_io/vendor/skera-v0_4/src/base.rs",
+    "//third_party/rust/chromium_crates_io/vendor/skera-v0_4/src/cblc.rs",
+    "//third_party/rust/chromium_crates_io/vendor/skera-v0_4/src/cmap.rs",
+    "//third_party/rust/chromium_crates_io/vendor/skera-v0_4/src/colr.rs",
+    "//third_party/rust/chromium_crates_io/vendor/skera-v0_4/src/cpal.rs",
+    "//third_party/rust/chromium_crates_io/vendor/skera-v0_4/src/fnv.rs",
+    "//third_party/rust/chromium_crates_io/vendor/skera-v0_4/src/fvar.rs",
+    "//third_party/rust/chromium_crates_io/vendor/skera-v0_4/src/gdef.rs",
+    "//third_party/rust/chromium_crates_io/vendor/skera-v0_4/src/glyf_loca.rs",
+    "//third_party/rust/chromium_crates_io/vendor/skera-v0_4/src/gpos.rs",
+    "//third_party/rust/chromium_crates_io/vendor/skera-v0_4/src/gpos/anchor.rs",
+    "//third_party/rust/chromium_crates_io/vendor/skera-v0_4/src/gpos/cursive_pos.rs",
+    "//third_party/rust/chromium_crates_io/vendor/skera-v0_4/src/gpos/mark_array.rs",
+    "//third_party/rust/chromium_crates_io/vendor/skera-v0_4/src/gpos/mark_base_pos.rs",
+    "//third_party/rust/chromium_crates_io/vendor/skera-v0_4/src/gpos/mark_lig_pos.rs",
+    "//third_party/rust/chromium_crates_io/vendor/skera-v0_4/src/gpos/mark_mark_pos.rs",
+    "//third_party/rust/chromium_crates_io/vendor/skera-v0_4/src/gpos/pair_pos.rs",
+    "//third_party/rust/chromium_crates_io/vendor/skera-v0_4/src/gpos/single_pos.rs",
+    "//third_party/rust/chromium_crates_io/vendor/skera-v0_4/src/gpos/value_record.rs",
+    "//third_party/rust/chromium_crates_io/vendor/skera-v0_4/src/graph.rs",
+    "//third_party/rust/chromium_crates_io/vendor/skera-v0_4/src/graph/coverage_graph.rs",
+    "//third_party/rust/chromium_crates_io/vendor/skera-v0_4/src/graph/layout.rs",
+    "//third_party/rust/chromium_crates_io/vendor/skera-v0_4/src/graph/ligature_graph.rs",
+    "//third_party/rust/chromium_crates_io/vendor/skera-v0_4/src/graph/markbasepos_graph.rs",
+    "//third_party/rust/chromium_crates_io/vendor/skera-v0_4/src/graph/pairpos_graph.rs",
+    "//third_party/rust/chromium_crates_io/vendor/skera-v0_4/src/gsub.rs",
+    "//third_party/rust/chromium_crates_io/vendor/skera-v0_4/src/gsub/alternate_subst.rs",
+    "//third_party/rust/chromium_crates_io/vendor/skera-v0_4/src/gsub/ligature_subst.rs",
+    "//third_party/rust/chromium_crates_io/vendor/skera-v0_4/src/gsub/multiple_subst.rs",
+    "//third_party/rust/chromium_crates_io/vendor/skera-v0_4/src/gsub/reverse_chain_single_subst.rs",
+    "//third_party/rust/chromium_crates_io/vendor/skera-v0_4/src/gsub/single_subst.rs",
+    "//third_party/rust/chromium_crates_io/vendor/skera-v0_4/src/gsubgpos.rs",
+    "//third_party/rust/chromium_crates_io/vendor/skera-v0_4/src/gvar.rs",
+    "//third_party/rust/chromium_crates_io/vendor/skera-v0_4/src/hdmx.rs",
+    "//third_party/rust/chromium_crates_io/vendor/skera-v0_4/src/head.rs",
+    "//third_party/rust/chromium_crates_io/vendor/skera-v0_4/src/hmtx.rs",
+    "//third_party/rust/chromium_crates_io/vendor/skera-v0_4/src/hvar.rs",
+    "//third_party/rust/chromium_crates_io/vendor/skera-v0_4/src/inc_bimap.rs",
+    "//third_party/rust/chromium_crates_io/vendor/skera-v0_4/src/layout.rs",
+    "//third_party/rust/chromium_crates_io/vendor/skera-v0_4/src/lib.rs",
+    "//third_party/rust/chromium_crates_io/vendor/skera-v0_4/src/main.rs",
+    "//third_party/rust/chromium_crates_io/vendor/skera-v0_4/src/maxp.rs",
+    "//third_party/rust/chromium_crates_io/vendor/skera-v0_4/src/name.rs",
+    "//third_party/rust/chromium_crates_io/vendor/skera-v0_4/src/offset.rs",
+    "//third_party/rust/chromium_crates_io/vendor/skera-v0_4/src/offset_array.rs",
+    "//third_party/rust/chromium_crates_io/vendor/skera-v0_4/src/os2.rs",
+    "//third_party/rust/chromium_crates_io/vendor/skera-v0_4/src/parsing_util.rs",
+    "//third_party/rust/chromium_crates_io/vendor/skera-v0_4/src/post.rs",
+    "//third_party/rust/chromium_crates_io/vendor/skera-v0_4/src/priority_queue.rs",
+    "//third_party/rust/chromium_crates_io/vendor/skera-v0_4/src/repack.rs",
+    "//third_party/rust/chromium_crates_io/vendor/skera-v0_4/src/sbix.rs",
+    "//third_party/rust/chromium_crates_io/vendor/skera-v0_4/src/serialize.rs",
+    "//third_party/rust/chromium_crates_io/vendor/skera-v0_4/src/stat.rs",
+    "//third_party/rust/chromium_crates_io/vendor/skera-v0_4/src/unicode_closure.rs",
+    "//third_party/rust/chromium_crates_io/vendor/skera-v0_4/src/variations.rs",
+    "//third_party/rust/chromium_crates_io/vendor/skera-v0_4/src/vmtx.rs",
+    "//third_party/rust/chromium_crates_io/vendor/skera-v0_4/src/vorg.rs",
+    "//third_party/rust/chromium_crates_io/vendor/skera-v0_4/src/vvar.rs",
+  ]
+  inputs = []
+
+  build_native_rust_unit_tests = false
+  edition = "2021"
+  cargo_pkg_name = "skera"
+  cargo_pkg_description = "Subsetting a font file according to provided input."
+  cargo_pkg_repository = "https://github.com/googlefonts/fontations"
+  cargo_pkg_version = "0.4.0"
+
+  allow_unsafe = false
+
+  deps = [
+    "//third_party/rust/hashbrown/v0_17:lib",
+    "//third_party/rust/skrifa/v0_44:lib",
+    "//third_party/rust/thiserror/v2:lib",
+    "//third_party/rust/write_fonts/v0_50:lib",
+  ]
+  features = [ "default" ]
+
+  # Only for usage from third-party crates. Add the crate to
+  # //third_party/rust/chromium_crates_io/Cargo.toml to use
+  # it from first-party code.
+  visibility = [ "//third_party/rust/*" ]
+
+  #####################################################################
+  # Tweaking which GN `config`s apply to this target.
+
+  # Config changes that apply to all `//third_party/rust` crates.
+  _configs_to_remove = [
+    # We don't need code coverage data for any `chromium_crates_io` crates.
+    "//build/config/coverage:default_coverage",
+
+    # This is third-party code, so remove `chromium_code` config.  We are not
+    # at the same time adding `//build/config/compiler:no_chromium_code`,
+    # because 1) we don't want to pull how warnings are handled by that config
+    # and 2) that config doesn't have any non-warnings-related stuff.
+    "//build/config/compiler:chromium_code",
+  ]
+  _configs_to_add = []
+
+  # Changing (if needed) which configs apply to this specific crate (based on
+  # `extra_kv.configs_to_remove` and `extra_kv.configs_to_add` from
+  # `gnrt_config.toml`).
+  _configs_to_remove += []
+  _configs_to_add += []
+
+  # Applying config changes.
+  library_configs -= _configs_to_remove
+  library_configs += _configs_to_add
+  executable_configs -= _configs_to_remove
+  executable_configs += _configs_to_add
+  proc_macro_configs -= _configs_to_remove
+  proc_macro_configs += _configs_to_add
+}

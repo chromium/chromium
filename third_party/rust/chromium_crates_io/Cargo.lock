@@ -253,6 +253,7 @@ dependencies = [
  "icu_properties",
  "icu_provider",
  "image",
+ "incremental-font-transfer",
  "indexmap",
  "itertools",
  "jpeg-encoder",
@@ -1005,6 +1006,19 @@ dependencies = [
  "byteorder-lite",
  "moxcms",
  "num-traits",
+]
+
+[[package]]
+name = "incremental-font-transfer"
+version = "0.5.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+dependencies = [
+ "font-types",
+ "read-fonts",
+ "shared-brotli-patch-decoder",
+ "skera",
+ "skrifa",
+ "write-fonts",
 ]
 
 [[package]]
@@ -1800,6 +1814,17 @@ version = "1.0.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
+name = "skera"
+version = "0.4.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+dependencies = [
+ "hashbrown 0.17.1",
+ "skrifa",
+ "thiserror",
+ "write-fonts",
+]
+
+[[package]]
 name = "skrifa"
 version = "0.44.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2441,6 +2466,16 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 name = "wit-bindgen"
 version = "0.57.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
+
+[[package]]
+name = "write-fonts"
+version = "0.50.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+dependencies = [
+ "font-types",
+ "log",
+ "read-fonts",
+]
 
 [[package]]
 name = "writeable"

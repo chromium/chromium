@@ -1,0 +1,11 @@
+Name: skera
+URL: https://crates.io/crates/skera
+Version: 0.4.0
+Revision: 699ee1d738921895e3866f7d24cb286fda84410b
+Update Mechanism: Manual (https://crbug.com/449898466)
+License: Apache-2.0
+License File: //third_party/rust/chromium_crates_io/vendor/skera-v0_4/LICENSE-APACHE
+Shipped: yes
+Security Critical: yes
+
+Description: Subsetting a font file according to provided input.
