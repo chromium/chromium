@@ -2194,7 +2194,7 @@
           "can_use_on_swarming_builders": true,
           "dimensions": {
             "gpu": "102b:0536-4.5.0.5",
-            "os": "Windows-11-22631.2428",
+            "os": "Windows-11",
             "pool": "chrome.tests.perf",
             "synthetic_product_name": "PowerEdge R350 (Dell Inc.)"
           },
@@ -2240,7 +2240,7 @@
           "can_use_on_swarming_builders": true,
           "dimensions": {
             "gpu": "102b:0536-4.5.0.5",
-            "os": "Windows-11-22631.2428",
+            "os": "Windows-11",
             "pool": "chrome.tests.perf",
             "synthetic_product_name": "PowerEdge R350 (Dell Inc.)"
           },
