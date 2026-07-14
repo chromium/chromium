@@ -3882,3 +3882,32 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksComposeboxHandlerAutoTriggerTest, AutoTrig
 
   custom_handler->OnTaskChanged();
 }
+
+class ContextualTasksComposeboxHandlerSmartTabSharingTest
+    : public ContextualTasksComposeboxHandlerTest {
+ public:
+  ContextualTasksComposeboxHandlerSmartTabSharingTest() {
+    feature_list_sts_.InitWithFeaturesAndParameters(
+        {{contextual_tasks::kContextualTasksContext,
+          {{"ContextualTasksContextSmartTabSharing", "true"}}},
+         {contextual_tasks::kContextualTasksForceEntryPointEligibility, {}}},
+        {});
+  }
+  ~ContextualTasksComposeboxHandlerSmartTabSharingTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList feature_list_sts_;
+};
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksComposeboxHandlerSmartTabSharingTest,
+                       OnTaskChangedResetsSmartTabSharing) {
+  // Enable STS.
+  handler_->SetSmartTabSharingActive(true);
+  EXPECT_TRUE(handler_->IsSmartTabSharingActive());
+
+  // Call OnTaskChanged.
+  handler_->OnTaskChanged();
+
+  // Verify STS is disabled.
+  EXPECT_FALSE(handler_->IsSmartTabSharingActive());
+}
