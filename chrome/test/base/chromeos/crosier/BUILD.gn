@@ -30,8 +30,6 @@ source_set("test_support") {
     "crosier_util.h",
     "power_manager_emitter.cc",
     "power_manager_emitter.h",
-    "supervised_user_login_delegate.cc",
-    "supervised_user_login_delegate.h",
     "upstart.cc",
     "upstart.h",
   ]
@@ -70,6 +68,8 @@ source_set("test_support") {
       "chromeos_integration_arc_mixin.h",
       "gaia_host_util.cc",
       "gaia_host_util.h",
+      "supervised_user_login_delegate.cc",
+      "supervised_user_login_delegate.h",
       "test_accounts.cc",
       "test_accounts.h",
     ]
