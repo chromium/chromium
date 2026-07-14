@@ -231,12 +231,7 @@ export function getHtml(this: GlicInternalsAppElement) {
                     @change="${this.onInvokeShowPanelChange_}">
                 Show Panel
               </label>
-            ` : html`<div style="flex: 1;"></div>`}
-            <label style="flex: 1;">
-              <input type="checkbox" .checked="${this.invokeNewConversation_}"
-                  @change="${this.onInvokeNewConversationChange_}">
-              New Conversation
-            </label>
+            ` : html``}
           </div>
           <label for="invokeInvocationSourceSelect">Invocation Source</label>
           <select id="invokeInvocationSourceSelect"
@@ -335,6 +330,28 @@ export function getHtml(this: GlicInternalsAppElement) {
                     @change="${this.onInvokeOpenInForegroundChange}">
                 Open in Foreground
               </label>
+            ` : html``}
+          </div>
+
+          <div style="display: flex; gap: 8px; align-items: center;
+                      margin-top: 8px;">
+            <label for="invokeConversationTypeSelect">
+              Target Conversation
+            </label>
+            <select id="invokeConversationTypeSelect"
+                .value="${this.invokeConversationType_}"
+                @change="${this.onInvokeConversationTypeChange_}">
+              <option value="default">Default</option>
+              <option value="new">New Conversation</option>
+              <option value="conversationId">Specific Conversation ID</option>
+            </select>
+            ${this.invokeConversationType_ === 'conversationId' ? html`
+              <label for="invokeConversationIdInput"
+                     style="margin-left: 8px;">ID:</label>
+              <input id="invokeConversationIdInput"
+                  .value="${this.invokeConversationId_}"
+                  @input="${this.onInvokeConversationIdInput_}">
+              </input>
             ` : html``}
           </div>
 

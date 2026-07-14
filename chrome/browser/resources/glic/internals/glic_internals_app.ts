@@ -51,7 +51,8 @@ export class GlicInternalsAppElement extends CrLitElement {
       freCompletionWaitModeEnumValues_: {type: Array},
 
       selectedTabIndex_: {type: Number},
-      invokeNewConversation_: {type: Boolean},
+      invokeConversationType_: {type: String},
+      invokeConversationId_: {type: String},
       tabNames_: {type: Array},
       featureModeEnumValues_: {type: Array},
     };
@@ -76,7 +77,8 @@ export class GlicInternalsAppElement extends CrLitElement {
   protected accessor invokePayloadUniversalCartMetadata_: string = '';
   protected accessor invokeFreCompletionWaitMode_: FreCompletionWaitMode =
       FreCompletionWaitMode.kDefault;
-  protected accessor invokeNewConversation_: boolean = false;
+  protected accessor invokeConversationType_: string = 'default';
+  protected accessor invokeConversationId_: string = '';
 
   protected accessor selectedTabIndex_: number = 0;
   protected accessor tabNames_: string[] = ['General', 'Debug Controls'];
@@ -293,8 +295,12 @@ export class GlicInternalsAppElement extends CrLitElement {
     this.invokeWaitForPanelOpen_ = (e.target as HTMLInputElement).checked;
   }
 
-  protected onInvokeNewConversationChange_(e: Event) {
-    this.invokeNewConversation_ = (e.target as HTMLInputElement).checked;
+  protected onInvokeConversationTypeChange_(e: Event) {
+    this.invokeConversationType_ = (e.target as HTMLSelectElement).value;
+  }
+
+  protected onInvokeConversationIdInput_(e: Event) {
+    this.invokeConversationId_ = (e.target as HTMLInputElement).value;
   }
 
   protected onPayloadUniversalCartMetadataInput_(e: Event) {
@@ -348,12 +354,21 @@ export class GlicInternalsAppElement extends CrLitElement {
       };
     }
 
+    let conversationSelection:
+        TriggerInvokeFromInternalsOptions['conversation'] = {
+          defaultConversation: {},
+        };
+    if (this.invokeConversationType_ === 'new') {
+      conversationSelection = {newConversation: {}};
+    } else if (this.invokeConversationType_ === 'conversationId') {
+      conversationSelection = {conversationId: this.invokeConversationId_};
+    }
+
     const options: TriggerInvokeFromInternalsOptions = {
       invocationSource: this.invokeInvocationSource_,
       prompts: this.invokePrompt_ ? [this.invokePrompt_] : [],
       additionalContext: null,
-      conversation: this.invokeNewConversation_ ? {newConversation: {}} :
-                                                  {defaultConversation: {}},
+      conversation: conversationSelection,
       featureMode: this.invokeFeatureMode_,
       disableZss: false,
       zssConfig: this.invokeZssOverride_ ?
