@@ -28,6 +28,7 @@ import androidx.lifecycle.Lifecycle.State;
 import androidx.preference.Preference;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -41,6 +42,7 @@ import org.robolectric.Shadows;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
@@ -72,6 +74,7 @@ public class GlicSettingsUnitTest {
             new ActivityScenarioRule<>(TestActivity.class);
 
     private TestActivity mActivity;
+    private UserActionTester mUserActionTester;
 
     @Mock private Profile mProfileMock;
     @Mock private UserPrefs.Natives mUserPrefsJniMock;
@@ -86,6 +89,7 @@ public class GlicSettingsUnitTest {
 
     @Before
     public void setUp() {
+        mUserActionTester = new UserActionTester();
         UserPrefsJni.setInstanceForTesting(mUserPrefsJniMock);
         PrefChangeRegistrarJni.setInstanceForTesting(mPrefChangeRegistrarJniMock);
         GlicKeyedServiceFactoryJni.setInstanceForTesting(mGlicKeyedServiceFactoryJniMock);
@@ -101,6 +105,13 @@ public class GlicSettingsUnitTest {
         doNothing().when(mCustomTabLauncher).openUrlInCct(any(Context.class), anyString());
 
         mActivityScenarioRule.getScenario().onActivity(activity -> mActivity = activity);
+    }
+
+    @After
+    public void tearDown() {
+        if (mUserActionTester != null) {
+            mUserActionTester.tearDown();
+        }
     }
 
     private GlicSettings launchFragment() {
@@ -242,12 +253,14 @@ public class GlicSettingsUnitTest {
         // Test toggling on
         togglePreference.getOnPreferenceChangeListener().onPreferenceChange(togglePreference, true);
         verify(mPrefServiceMock).setBoolean(GlicPrefNames.GLIC_PINNED_TO_TABSTRIP, true);
+        assertEquals(1, mUserActionTester.getActionCount("Glic.Settings.TabstripButton.Enabled"));
 
         // Test toggling off
         togglePreference
                 .getOnPreferenceChangeListener()
                 .onPreferenceChange(togglePreference, false);
         verify(mPrefServiceMock).setBoolean(GlicPrefNames.GLIC_PINNED_TO_TABSTRIP, false);
+        assertEquals(1, mUserActionTester.getActionCount("Glic.Settings.TabstripButton.Disabled"));
     }
 
     @Test

@@ -25,6 +25,7 @@ import androidx.preference.PreferenceGroup.PreferencePositionCallback;
 import androidx.preference.TwoStatePreference;
 import androidx.recyclerview.widget.RecyclerView;
 
+import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
@@ -191,6 +192,11 @@ public class GlicSettings extends ChromeBaseSettingsFragment {
             buttonTogglePref.setOnPreferenceChangeListener(
                     (preference, newValue) -> {
                         boolean enabled = (boolean) newValue;
+                        if (enabled) {
+                            RecordUserAction.record("Glic.Settings.TabstripButton.Enabled");
+                        } else {
+                            RecordUserAction.record("Glic.Settings.TabstripButton.Disabled");
+                        }
                         GlicUtils.setButtonPinnedToTabStrip(getProfile(), enabled);
                         return true;
                     });

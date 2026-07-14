@@ -107,7 +107,7 @@ public class GlicButtonContextMenuCoordinator {
     Delegate getListMenuDelegate(Profile profile) {
         return (model, view) -> {
             if (model.get(MENU_ITEM_ID) == R.id.unpin_glic) {
-                RecordUserAction.record("Android.TabStrip.GlicButton.Unpin");
+                RecordUserAction.record("Glic.Interaction.TabStripButton.UnpinnedInContextMenu");
                 GlicUtils.setButtonPinnedToTabStrip(profile, false);
             }
             assumeNonNull(mMenuWindow).dismiss();

@@ -16,6 +16,7 @@ import android.graphics.Rect;
 import android.view.View;
 import android.widget.ListView;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -50,6 +51,7 @@ public class GlicButtonContextMenuCoordinatorUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     private Activity mActivity;
+    private UserActionTester mUserActionTester;
     @Mock private RectProvider mRectProvider;
     @Mock private Profile mProfile;
     @Mock private PrefService mPrefService;
@@ -59,6 +61,7 @@ public class GlicButtonContextMenuCoordinatorUnitTest {
 
     @Before
     public void setUp() {
+        mUserActionTester = new UserActionTester();
         mActivity = Robolectric.buildActivity(Activity.class).setup().get();
         mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
         when(mRectProvider.getRect())
@@ -68,6 +71,13 @@ public class GlicButtonContextMenuCoordinatorUnitTest {
         UserPrefsJni.setInstanceForTesting(mUserPrefsJniMock);
         when(mUserPrefsJniMock.get(mProfile)).thenReturn(mPrefService);
         when(mPrefService.getBoolean(GlicPrefNames.GLIC_PINNED_TO_TABSTRIP)).thenReturn(true);
+    }
+
+    @After
+    public void tearDown() {
+        if (mUserActionTester != null) {
+            mUserActionTester.tearDown();
+        }
     }
 
     @Test
@@ -81,8 +91,6 @@ public class GlicButtonContextMenuCoordinatorUnitTest {
 
     @Test
     public void testClickUnpin() {
-        var userActionTester = new UserActionTester();
-
         // Show menu
         mCoordinator.showMenu(mRectProvider, mActivity, mProfile, /* menuWidth= */ 250f);
 
@@ -101,6 +109,9 @@ public class GlicButtonContextMenuCoordinatorUnitTest {
         // Verify the menu dismissed and the pin state updated
         assertFalse("Menu should be dismissed.", mCoordinator.isShowing());
         verify(mPrefService).setBoolean(GlicPrefNames.GLIC_PINNED_TO_TABSTRIP, false);
-        assertEquals(1, userActionTester.getActionCount("Android.TabStrip.GlicButton.Unpin"));
+        assertEquals(
+                1,
+                mUserActionTester.getActionCount(
+                        "Glic.Interaction.TabStripButton.UnpinnedInContextMenu"));
     }
 }

@@ -5072,10 +5072,13 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Android.TabStrip.GlicButton.Unpin">
+  <obsolete>
+    Renamed to Glic.Interaction.TabStripButton.UnpinnedInContextMenu in 7/2026.
+  </obsolete>
   <owner>mklw@google.com</owner>
   <description>
-    User tapped 'Unpin' on the Glic button context menu to unpin the Glic button
-    from the tab strip.
+    Deprecated metric for when a user tapped 'Unpin' on the Glic button context
+    menu on Android.
   </description>
 </action>
 
@@ -16001,6 +16004,14 @@ should be able to be added at any place in this file.
   <description>The Glic instance WebUI is warmed.</description>
 </action>
 
+<action name="Glic.Interaction.TabStripButton.UnpinnedInContextMenu">
+  <owner>mklw@google.com</owner>
+  <description>
+    User tapped 'Unpin' on the Glic button context menu to unpin the Glic button
+    from the tab strip.
+  </description>
+</action>
+
 <action name="Glic.Onboarding.Invoked">
   <owner>perrier@google.com</owner>
   <owner>glic+metrics@google.com</owner>
@@ -16167,6 +16178,7 @@ should be able to be added at any place in this file.
 <action name="Glic.Settings.TabstripButton.Disabled">
   <owner>sanaakbani@google.com</owner>
   <owner>iwells@chromium.org</owner>
+  <owner>mklw@google.com</owner>
   <description>
     Logged if the user disables the tabstrip button in glic settings.
   </description>
@@ -16175,6 +16187,7 @@ should be able to be added at any place in this file.
 <action name="Glic.Settings.TabstripButton.Enabled">
   <owner>sanaakbani@google.com</owner>
   <owner>iwells@chromium.org</owner>
+  <owner>mklw@google.com</owner>
   <description>
     Logged if the user enables the tabstrip button in glic settings.
   </description>
