@@ -898,6 +898,26 @@ public class UrlBarUnitTest {
     }
 
     @Test
+    @EnableFeatures({ChromeFeatureList.ANDROID_BOTTOM_BAR})
+    public void calculateVisibleHint_withEllipsis() {
+        mUrlBar.setBoundsEllipsisEnabled(true);
+        doReturn(mLayout).when(mUrlBar).getLayout();
+
+        String urlText = SHORT_DOMAIN + SHORT_PATH;
+        SpannableStringBuilder text = new SpannableStringBuilder(urlText);
+        text.setSpan(
+                EllipsisSpan.INSTANCE,
+                SHORT_DOMAIN.length(),
+                urlText.length(),
+                Editable.SPAN_INCLUSIVE_EXCLUSIVE);
+        mUrlBar.setText(text);
+
+        CharSequence hint = mUrlBar.calculateVisibleHint();
+        assertNotNull(hint);
+        assertEquals("www.a.com/", hint.toString());
+    }
+
+    @Test
     public void keyEvents_letterActionDownKeyHandling() {
         var keysToCheck =
                 List.of(
