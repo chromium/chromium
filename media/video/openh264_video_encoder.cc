@@ -5,6 +5,7 @@
 #include "media/video/openh264_video_encoder.h"
 
 #include <algorithm>
+#include <cmath>
 #include <limits>
 #include <numeric>
 
@@ -18,6 +19,8 @@
 #include "media/base/video_aspect_ratio.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_util.h"
+#include "media/parsers/h264_level_limits.h"
+#include "media/parsers/h264_parser.h"
 #include "media/video/video_encoder_info.h"
 
 namespace media {
@@ -155,8 +158,8 @@ void SetUpOpenH264Params(VideoCodecProfile profile,
 constexpr int kOpenH264MaxMBs = 36864;
 
 bool IsFrameSizeTooLarge(const gfx::Size& frame_size) {
-  int mb_width = (frame_size.width() + 15) / 16;
-  int mb_height = (frame_size.height() + 15) / 16;
+  uint64_t mb_width = (static_cast<uint64_t>(frame_size.width()) + 15) / 16;
+  uint64_t mb_height = (static_cast<uint64_t>(frame_size.height()) + 15) / 16;
   return mb_width * mb_height > kOpenH264MaxMBs;
 }
 
@@ -178,6 +181,38 @@ bool NeedsManualResizing(const gfx::Size& src, const gfx::Size& dst) {
 
   return VideoAspectRatio::PAR(src.width(), src.height()) !=
          VideoAspectRatio::PAR(dst.width(), dst.height());
+}
+
+// Validates that the frame size is within the limits defined by H.264
+// Level 6.1.
+EncoderStatus ValidateH264Resolution(const gfx::Size& frame_size) {
+  uint8_t level = H264SPS::kLevelIDC6p1;
+  uint32_t max_fs = H264LevelToMaxFS(level);
+  if (max_fs == 0) {
+    return EncoderStatus(EncoderStatus::Codes::kEncoderUnsupportedConfig,
+                         "Invalid H.264 level");
+  }
+
+  uint64_t mb_width = (static_cast<uint64_t>(frame_size.width()) + 15) / 16;
+  uint64_t mb_height = (static_cast<uint64_t>(frame_size.height()) + 15) / 16;
+  uint64_t mb_count = mb_width * mb_height;
+
+  if (mb_count > max_fs) {
+    return EncoderStatus(
+        EncoderStatus::Codes::kEncoderUnsupportedConfig,
+        "Configured frame size exceeds H.264 level max macroblocks");
+  }
+
+  // Aspect ratio constraint from H.264 standard Annex A:
+  // PicWidthInMbs <= Sqrt(MaxFS * 8)
+  // FrameHeightInMbs <= Sqrt(MaxFS * 8)
+  double max_mb_dim = std::sqrt(static_cast<double>(max_fs) * 8.0);
+  if (mb_width > max_mb_dim || mb_height > max_mb_dim) {
+    return EncoderStatus(EncoderStatus::Codes::kEncoderUnsupportedConfig,
+                         "Configured aspect ratio exceeds H.264 level limits");
+  }
+
+  return EncoderStatus::Codes::kOk;
 }
 
 }  // namespace
@@ -270,6 +305,12 @@ void OpenH264VideoEncoder::Initialize(VideoCodecProfile profile,
     std::move(done_cb).Run(EncoderStatus(
         EncoderStatus::Codes::kEncoderUnsupportedConfig,
         "Configured frame size exceeds OpenH264 max macroblocks"));
+    return;
+  }
+
+  if (auto status = ValidateH264Resolution(options.frame_size);
+      !status.is_ok()) {
+    std::move(done_cb).Run(status);
     return;
   }
 
@@ -549,6 +590,12 @@ void OpenH264VideoEncoder::ChangeOptions(const Options& options,
     std::move(done_cb).Run(EncoderStatus(
         EncoderStatus::Codes::kEncoderUnsupportedConfig,
         "Configured frame size exceeds OpenH264 max macroblocks"));
+    return;
+  }
+
+  if (auto status = ValidateH264Resolution(options.frame_size);
+      !status.is_ok()) {
+    std::move(done_cb).Run(status);
     return;
   }
 

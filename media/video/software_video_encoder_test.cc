@@ -1739,4 +1739,92 @@ TEST(SoftwareVideoEncoderTest, DefaultBitrate) {
   EXPECT_EQ(GetDefaultVideoEncodeBitrate({1280, 720}, 1000u), 20'000'000u);
 }
 
+#if BUILDFLAG(ENABLE_OPENH264)
+class OpenH264VideoEncoderResolutionTest : public ::testing::Test {
+ public:
+  OpenH264VideoEncoderResolutionTest() = default;
+
+  void SetUp() override { encoder_ = std::make_unique<OpenH264VideoEncoder>(); }
+
+  void TearDown() override { encoder_.reset(); }
+
+ protected:
+  base::test::TaskEnvironment task_environment_;
+  std::unique_ptr<OpenH264VideoEncoder> encoder_;
+};
+
+TEST_F(OpenH264VideoEncoderResolutionTest, HighestValidResolution) {
+  // 4096x2304 is exactly 36864 macroblocks, which is the OpenH264 limit.
+  VideoEncoder::Options options;
+  options.frame_size = gfx::Size(4096, 2304);
+
+  base::RunLoop run_loop;
+  encoder_->Initialize(H264PROFILE_BASELINE, options,
+                       /*info_cb=*/base::DoNothing(),
+                       /*output_cb=*/base::DoNothing(),
+                       base::BindLambdaForTesting([&](EncoderStatus status) {
+                         EXPECT_TRUE(status.is_ok());
+                         run_loop.Quit();
+                       }));
+  run_loop.Run();
+}
+
+TEST_F(OpenH264VideoEncoderResolutionTest, ResolutionExceedingMaxMBs) {
+  // 4097x2304 is 37008 macroblocks, exceeding the OpenH264 limit of 36864.
+  VideoEncoder::Options options;
+  options.frame_size = gfx::Size(4097, 2304);
+
+  base::RunLoop run_loop;
+  encoder_->Initialize(
+      H264PROFILE_BASELINE, options, /*info_cb=*/base::DoNothing(),
+      /*output_cb=*/base::DoNothing(),
+      base::BindLambdaForTesting([&](EncoderStatus status) {
+        EXPECT_EQ(status.code(),
+                  EncoderStatus::Codes::kEncoderUnsupportedConfig);
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+}
+
+TEST_F(OpenH264VideoEncoderResolutionTest, WidthExceeding6p1AspectRatioLimit) {
+  // A resolution that is extremely wide (e.g. 17280x256) has 1080x16
+  // macroblocks. This is only 17280 macroblocks (well within OpenH264's 36864
+  // limit), but its width (1080 MBs) exceeds the Level 6.1 limit of Sqrt(139264
+  // * 8) = 1055.
+  VideoEncoder::Options options;
+  options.frame_size = gfx::Size(17280, 256);
+
+  base::RunLoop run_loop;
+  encoder_->Initialize(
+      H264PROFILE_BASELINE, options, /*info_cb=*/base::DoNothing(),
+      /*output_cb=*/base::DoNothing(),
+      base::BindLambdaForTesting([&](EncoderStatus status) {
+        EXPECT_EQ(status.code(),
+                  EncoderStatus::Codes::kEncoderUnsupportedConfig);
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+}
+
+TEST_F(OpenH264VideoEncoderResolutionTest, HeightExceeding6p1AspectRatioLimit) {
+  // A resolution that is extremely tall (e.g. 256x17280) has 16x1080
+  // macroblocks. This is only 17280 macroblocks (well within OpenH264's 36864
+  // limit), but its height (1080 MBs) exceeds the Level 6.1 limit of
+  // Sqrt(139264 * 8) = 1055.
+  VideoEncoder::Options options;
+  options.frame_size = gfx::Size(256, 17280);
+
+  base::RunLoop run_loop;
+  encoder_->Initialize(
+      H264PROFILE_BASELINE, options, /*info_cb=*/base::DoNothing(),
+      /*output_cb=*/base::DoNothing(),
+      base::BindLambdaForTesting([&](EncoderStatus status) {
+        EXPECT_EQ(status.code(),
+                  EncoderStatus::Codes::kEncoderUnsupportedConfig);
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+}
+#endif
+
 }  // namespace media
