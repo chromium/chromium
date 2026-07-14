@@ -84,6 +84,7 @@ constexpr auto kOldDataResources = base::MakeFixedFlatMap<Suggestion::Icon,
     {Suggestion::Icon::kTextSpark, IDR_ANDROID_AUTOFILL_TEXT_SPARK},
     {Suggestion::Icon::kEmail, IDR_ANDROID_AUTOFILL_EMAIL},
     {Suggestion::Icon::kSadTab, IDR_ANDROID_AUTOFILL_SAD_TAB},
+    {Suggestion::Icon::kSettings, IDR_ANDROID_AUTOFILL_SETTINGS},
 #endif  // BUILDFLAG(IS_ANDROID)
 });
 
@@ -138,6 +139,7 @@ constexpr auto kDataResources = base::MakeFixedFlatMap<Suggestion::Icon, int>({
     {Suggestion::Icon::kTextSpark, IDR_ANDROID_AUTOFILL_TEXT_SPARK},
     {Suggestion::Icon::kEmail, IDR_ANDROID_AUTOFILL_EMAIL},
     {Suggestion::Icon::kSadTab, IDR_ANDROID_AUTOFILL_SAD_TAB},
+    {Suggestion::Icon::kSettings, IDR_ANDROID_AUTOFILL_SETTINGS},
 #endif  // BUILDFLAG(IS_ANDROID)
 });
 

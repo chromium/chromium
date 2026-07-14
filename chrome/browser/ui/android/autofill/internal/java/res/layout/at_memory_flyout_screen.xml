@@ -84,12 +84,10 @@ found in the LICENSE file.
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
             android:layout_marginBottom="@dimen/at_memory_flyout_margin_bottom"
+            android:visibility="gone"
             android:background="@drawable/at_memory_flyout_buttons_bg"
             android:padding="@dimen/at_memory_flyout_default_margin"
-            android:text=
-                "@string/autofill_at_memory_manage_suggestion_main_text"
             android:textAppearance="@style/TextAppearance.TextLarge.Primary"
-            android:drawableStart="@drawable/ic_chrome"
             android:drawablePadding="@dimen/at_memory_flyout_default_margin"
             android:gravity="center_vertical" />
 

@@ -232,10 +232,6 @@ class AtMemoryBottomSheetMediator implements AtMemorySearchBarView.Delegate {
         mModel.set(CURRENT_SCREEN, ScreenId.HOME_SCREEN);
     }
 
-    private void onFlyoutManageClicked() {
-        // TODO(crbug.com/505255929): Implement manage clicked handler
-    }
-
     private void onFlyoutSuggestionClicked(int parentPosition, int childPosition) {
         mDelegate.onChildSuggestionClicked(parentPosition, childPosition);
     }
@@ -306,7 +302,6 @@ class AtMemoryBottomSheetMediator implements AtMemorySearchBarView.Delegate {
                 .with(FlyoutProperties.TITLE, "")
                 .with(FlyoutProperties.SUGGESTIONS, List.of())
                 .with(FlyoutProperties.ON_BACK_CLICKED, this::onFlyoutBackClicked)
-                .with(FlyoutProperties.ON_MANAGE_CLICKED, this::onFlyoutManageClicked)
                 .with(FlyoutProperties.ON_SUGGESTION_CLICKED, childPos -> {})
                 .build();
     }

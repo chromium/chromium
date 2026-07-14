@@ -40,6 +40,7 @@ import org.chromium.chrome.browser.ui.autofill.AtMemoryBottomSheetProperties.Hom
 import org.chromium.chrome.browser.ui.autofill.AtMemoryBottomSheetProperties.ScreenId;
 import org.chromium.chrome.browser.ui.autofill.internal.R;
 import org.chromium.components.autofill.AutofillSuggestion;
+import org.chromium.components.autofill.SuggestionType;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent.HeightMode;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.widget.chips.ChipView;
@@ -56,7 +57,6 @@ public class AtMemoryBottomSheetViewTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private Runnable mMockBackClickListener;
-    @Mock private Runnable mMockManageClickListener;
     @Mock private Callback<Integer> mMockSuggestionClickListener;
     @Mock private BottomSheetController mBottomSheetController;
 
@@ -113,10 +113,12 @@ public class AtMemoryBottomSheetViewTest {
                         new AutofillSuggestion.Builder()
                                 .setLabel("Label 1")
                                 .setSubLabel("Sublabel 1")
+                                .setSuggestionType(SuggestionType.AT_MEMORY_SEARCH_RESULT)
                                 .build(),
                         new AutofillSuggestion.Builder()
                                 .setLabel("Label 2")
                                 .setSubLabel("")
+                                .setSuggestionType(SuggestionType.AT_MEMORY_SEARCH_RESULT)
                                 .build());
 
         PropertyModel model =
@@ -220,9 +222,17 @@ public class AtMemoryBottomSheetViewTest {
 
     @Test
     public void testFlyoutManageClickNotifiesCallback() {
+        AutofillSuggestion manageSuggestion =
+                new AutofillSuggestion.Builder()
+                        .setLabel("Manage information")
+                        .setSubLabel("")
+                        .setSuggestionType(SuggestionType.MANAGE_AUTOFILL_AI)
+                        .setIconId(R.drawable.ic_chrome)
+                        .build();
         PropertyModel model =
                 new PropertyModel.Builder(FlyoutProperties.ALL_KEYS)
-                        .with(FlyoutProperties.ON_MANAGE_CLICKED, mMockManageClickListener)
+                        .with(FlyoutProperties.SUGGESTIONS, List.of(manageSuggestion))
+                        .with(FlyoutProperties.ON_SUGGESTION_CLICKED, mMockSuggestionClickListener)
                         .build();
         PropertyModelChangeProcessor.create(
                 model,
@@ -230,15 +240,20 @@ public class AtMemoryBottomSheetViewTest {
                 AtMemoryBottomSheetViewBinder::bindAtMemoryFlyoutView);
 
         View manageButton = mView.getContentView().findViewById(R.id.flyout_manage_button);
+        assertEquals(View.VISIBLE, manageButton.getVisibility());
         manageButton.performClick();
 
-        verify(mMockManageClickListener).run();
+        verify(mMockSuggestionClickListener).onResult(0);
     }
 
     @Test
     public void testFlyoutSuggestionClickNotifiesCallback() {
         AutofillSuggestion suggestion =
-                new AutofillSuggestion.Builder().setLabel("Label 1").setSubLabel("").build();
+                new AutofillSuggestion.Builder()
+                        .setLabel("Label 1")
+                        .setSubLabel("")
+                        .setSuggestionType(SuggestionType.AT_MEMORY_SEARCH_RESULT)
+                        .build();
 
         PropertyModel model =
                 new PropertyModel.Builder(FlyoutProperties.ALL_KEYS)

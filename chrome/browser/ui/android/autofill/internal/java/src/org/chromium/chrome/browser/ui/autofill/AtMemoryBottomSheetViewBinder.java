@@ -86,8 +86,6 @@ class AtMemoryBottomSheetViewBinder {
             view.setSuggestions(model.get(FlyoutProperties.SUGGESTIONS));
         } else if (propertyKey == FlyoutProperties.ON_BACK_CLICKED) {
             view.setBackClickListener(model.get(FlyoutProperties.ON_BACK_CLICKED));
-        } else if (propertyKey == FlyoutProperties.ON_MANAGE_CLICKED) {
-            view.setManageClickListener(model.get(FlyoutProperties.ON_MANAGE_CLICKED));
         } else if (propertyKey == FlyoutProperties.ON_SUGGESTION_CLICKED) {
             view.setSuggestionClickListener(model.get(FlyoutProperties.ON_SUGGESTION_CLICKED));
         } else {

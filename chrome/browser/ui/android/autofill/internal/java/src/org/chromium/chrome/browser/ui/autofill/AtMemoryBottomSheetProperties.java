@@ -112,15 +112,12 @@ class AtMemoryBottomSheetProperties {
         // Invoked when the back button is clicked in the flyout screen.
         static final ReadableObjectPropertyKey<Runnable> ON_BACK_CLICKED =
                 new ReadableObjectPropertyKey<>();
-        // Invoked when the manage button is clicked in the flyout screen.
-        static final ReadableObjectPropertyKey<Runnable> ON_MANAGE_CLICKED =
-                new ReadableObjectPropertyKey<>();
         // Invoked when an autofill suggestion is clicked in the flyout screen.
         static final WritableObjectPropertyKey<Callback<Integer>> ON_SUGGESTION_CLICKED =
                 new WritableObjectPropertyKey<>();
 
         static final PropertyKey[] ALL_KEYS = {
-            TITLE, SUGGESTIONS, ON_BACK_CLICKED, ON_MANAGE_CLICKED, ON_SUGGESTION_CLICKED
+            TITLE, SUGGESTIONS, ON_BACK_CLICKED, ON_SUGGESTION_CLICKED
         };
 
         private FlyoutProperties() {}

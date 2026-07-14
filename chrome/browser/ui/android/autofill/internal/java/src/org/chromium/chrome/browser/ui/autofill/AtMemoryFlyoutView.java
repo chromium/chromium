@@ -21,6 +21,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ui.autofill.internal.R;
 import org.chromium.components.autofill.AutofillSuggestion;
+import org.chromium.components.autofill.SuggestionType;
 import org.chromium.components.browser_ui.widget.chips.ChipView;
 
 import java.util.ArrayList;
@@ -65,28 +66,66 @@ public class AtMemoryFlyoutView extends LinearLayout {
     }
 
     public void setSuggestions(List<AutofillSuggestion> suggestions) {
-        for (ChipView chip : mActiveChips) {
-            mChipsContainer.removeView(chip);
-        }
-        mActiveChips.clear();
+        resetViews();
 
-        int[] ids = new int[suggestions.size()];
-        for (int i = 0; i < suggestions.size(); i++) {
-            AutofillSuggestion suggestion = suggestions.get(i);
-            ChipView chip = createFlyoutChipView(mChipsContainer, suggestion, i);
-            ids[i] = chip.getId();
-            mChipsContainer.addView(chip);
-            mActiveChips.add(chip);
+        List<Integer> chipViewIds = new ArrayList<>();
+
+        for (int index = 0; index < suggestions.size(); index++) {
+            AutofillSuggestion suggestion = suggestions.get(index);
+            switch (suggestion.getSuggestionType()) {
+                case SuggestionType.MANAGE_ADDRESS:
+                case SuggestionType.MANAGE_AUTOFILL_AI:
+                case SuggestionType.MANAGE_AUTOFILL_AI_IDENTITY_DOCS:
+                case SuggestionType.MANAGE_AUTOFILL_AI_TRAVEL:
+                case SuggestionType.MANAGE_AUTOFILL_AI_SHOPPING:
+                case SuggestionType.MANAGE_CREDIT_CARD:
+                case SuggestionType.MANAGE_IBAN:
+                case SuggestionType.MANAGE_LOYALTY_CARD:
+                case SuggestionType.MANAGE_ENHANCED_AUTOFILL:
+                    setupManageButton(suggestion, index);
+                    break;
+                case SuggestionType.AT_MEMORY_SEARCH_RESULT:
+                    ChipView chip = createFlyoutChipView(mChipsContainer, suggestion, index);
+                    chipViewIds.add(chip.getId());
+                    mChipsContainer.addView(chip);
+                    mActiveChips.add(chip);
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        int[] ids = new int[chipViewIds.size()];
+        for (int i = 0; i < chipViewIds.size(); i++) {
+            ids[i] = chipViewIds.get(i);
         }
         mChipsFlow.setReferencedIds(ids);
     }
 
-    public void setBackClickListener(Runnable onClickListener) {
-        mBackButton.setOnClickListener(v -> onClickListener.run());
+    private void resetViews() {
+        for (ChipView chip : mActiveChips) {
+            mChipsContainer.removeView(chip);
+        }
+        mActiveChips.clear();
+        mManageButton.setVisibility(View.GONE);
+        mManageButton.setOnClickListener(null);
     }
 
-    public void setManageClickListener(Runnable onClickListener) {
-        mManageButton.setOnClickListener(v -> onClickListener.run());
+    private void setupManageButton(AutofillSuggestion suggestion, int index) {
+        mManageButton.setText(suggestion.getLabel());
+        mManageButton.setCompoundDrawablesRelativeWithIntrinsicBounds(
+                suggestion.getIconId(), 0, 0, 0);
+        mManageButton.setVisibility(View.VISIBLE);
+        mManageButton.setOnClickListener(
+                v -> {
+                    if (mSuggestionClickListener != null) {
+                        mSuggestionClickListener.onResult(index);
+                    }
+                });
+    }
+
+    public void setBackClickListener(Runnable onClickListener) {
+        mBackButton.setOnClickListener(v -> onClickListener.run());
     }
 
     public void setSuggestionClickListener(Callback<Integer> onClickListener) {
