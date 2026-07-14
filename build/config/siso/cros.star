@@ -20,10 +20,14 @@ def __cros_sysroot(ctx):
     arg = "target_sysroot"
     if arg not in gn_args:
         return
-    fp = ctx.fs.canonpath(gn_args.get(arg).strip('"'))
-    if "chrome-sdk" not in fp:
+    target_sysroot = gn_args.get(arg).strip('"')
+    if target_sysroot.startswith("//"):
+        target_sysroot = target_sysroot[2:]
+    else:
+        target_sysroot = ctx.fs.canonpath(target_sysroot)
+    if "chrome-sdk" not in target_sysroot:
         return
-    return fp
+    return target_sysroot
 
 def __filegroups(ctx):
     fg = {}
