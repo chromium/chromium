@@ -47,6 +47,9 @@ const char kLivePrivacyNoticeLinkURL[] =
 const char kLiveLearnMoreLinkURL[] =
     "https://support.google.com/gemini/answer/13594961";
 const char kLivePrivacyPolicyLinkURL[] = "https://policies.google.com/privacy";
+const char kLivePrivacyHubManagedLinkURL[] =
+    "https://knowledge.workspace.google.com/admin/generative-ai/"
+    "generative-ai-in-google-workspace-privacy-hub";
 
 // Footnote links.
 const char kFirstFootnoteLinkURL[] = "https://policies.google.com/terms";
@@ -83,6 +86,8 @@ NSString* const kGeminiLiveLearnMoreLinkAction =
     @"GeminiLiveLearnMoreLinkAction";
 NSString* const kGeminiLivePrivacyPolicyLinkAction =
     @"GeminiLivePrivacyPolicyLinkAction";
+NSString* const kGeminiLivePrivacyHubManagedLinkAction =
+    @"GeminiLivePrivacyHubManagedLinkAction";
 
 // Action identifier for links in the Gemini consent footnote.
 NSString* const kGeminiFirstFootnoteLinkAction =

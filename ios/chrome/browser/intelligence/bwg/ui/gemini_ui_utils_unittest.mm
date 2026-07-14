@@ -107,4 +107,26 @@ TEST_F(GeminiUIUtilsTest, CreateGradientGeminiLogoWithNegativeSize) {
   EXPECT_GT(image.size.height, 0);
 }
 
+// Tests that contentHeightForView returns 0 when given a nil view.
+TEST_F(GeminiUIUtilsTest, ContentHeightForNilViewReturnsZero) {
+  EXPECT_EQ(0, [GeminiUIUtils contentHeightForView:nil withContainerWidth:100]);
+}
+
+// Tests that contentHeightForView measures accurately both unconstrained (when
+// width is 0) and constrained to a specific container width.
+TEST_F(GeminiUIUtilsTest, ContentHeightForViewMeasurement) {
+  UILabel* label = [[UILabel alloc] init];
+  label.text = @"A long multi-line label text that will definitely wrap when "
+               @"constrained to a small container width.";
+  label.numberOfLines = 0;
+
+  CGFloat unconstrained_height = [GeminiUIUtils contentHeightForView:label
+                                                  withContainerWidth:0];
+  EXPECT_GT(unconstrained_height, 0);
+
+  CGFloat constrained_height = [GeminiUIUtils contentHeightForView:label
+                                                withContainerWidth:100];
+  EXPECT_GT(constrained_height, unconstrained_height);
+}
+
 }  // namespace

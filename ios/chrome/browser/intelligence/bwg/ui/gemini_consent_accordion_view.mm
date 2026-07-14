@@ -80,6 +80,8 @@ const NSTimeInterval kAnimationDuration = 0.3;
   BOOL _collapsible;
   // Weak reference to the parent view and its delegate.
   __weak GeminiConsentAccordionView* _accordionView;
+  // The last recorded bounds width during layout.
+  CGFloat _lastLayoutWidth;
 }
 
 // Initializes the view with a data model, collapsible setting, and parent view.
@@ -258,6 +260,16 @@ const NSTimeInterval kAnimationDuration = 0.3;
   return [UIAction actionWithHandler:^(UIAction* action) {
     [weakAccordionView didTapLink:url];
   }];
+}
+
+// Forces the body text view to recalculate its intrinsic height when the layout
+// width changes, preventing text clipping.
+- (void)layoutSubviews {
+  [super layoutSubviews];
+  if (self.bounds.size.width != _lastLayoutWidth) {
+    _lastLayoutWidth = self.bounds.size.width;
+    [_bodyView invalidateIntrinsicContentSize];
+  }
 }
 
 @end

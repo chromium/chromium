@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/intelligence/bwg/ui/gemini_promo_view_controller.h"
 
 #import "ios/chrome/browser/intelligence/bwg/ui/gemini_first_run_mutator.h"
+#import "ios/chrome/browser/intelligence/bwg/ui/gemini_ui_utils.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
@@ -74,10 +75,10 @@ const CGFloat kBaselineAdjustment = 10.0;
 
 #pragma mark - GeminiFirstRunViewControllerProtocol
 
+// Returns the expected content height of this view.
 - (CGFloat)contentHeight {
-  return
-      [_mainStackView systemLayoutSizeFittingSize:UILayoutFittingCompressedSize]
-          .height;
+  return [GeminiUIUtils contentHeightForView:_mainStackView
+                          withContainerWidth:self.view.bounds.size.width];
 }
 
 #pragma mark - Private

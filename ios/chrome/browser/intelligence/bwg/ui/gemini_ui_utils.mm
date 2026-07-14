@@ -57,4 +57,23 @@
   return gradientImage;
 }
 
++ (CGFloat)contentHeightForView:(UIView*)targetView
+             withContainerWidth:(CGFloat)containerWidth {
+  if (!targetView) {
+    return 0;
+  }
+  if (containerWidth <= 0) {
+    return
+        [targetView systemLayoutSizeFittingSize:UILayoutFittingCompressedSize]
+            .height;
+  }
+  CGSize targetSize =
+      CGSizeMake(containerWidth, UILayoutFittingCompressedSize.height);
+  return
+      [targetView systemLayoutSizeFittingSize:targetSize
+                withHorizontalFittingPriority:UILayoutPriorityRequired
+                      verticalFittingPriority:UILayoutPriorityFittingSizeLevel]
+          .height;
+}
+
 @end
