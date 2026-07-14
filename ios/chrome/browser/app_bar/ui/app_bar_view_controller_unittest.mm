@@ -434,6 +434,7 @@ TEST_F(AppBarViewControllerTest, TestTabGridButtonAccessibilityAndTraits) {
   // 1. By default, tab grid is not visible, and we are not in a tab group.
   [view_controller_ setTabGridVisible:NO];
   [view_controller_ setInTabGroup:NO];
+  [button layoutIfNeeded];
   EXPECT_NSEQ(button.accessibilityLabel,
               l10n_util::GetNSString(IDS_IOS_APP_BAR_ALL_TABS));
   EXPECT_TRUE(button.accessibilityTraits & UIAccessibilityTraitButton);
@@ -441,6 +442,7 @@ TEST_F(AppBarViewControllerTest, TestTabGridButtonAccessibilityAndTraits) {
 
   // 2. Set tab grid visible.
   [view_controller_ setTabGridVisible:YES];
+  [button layoutIfNeeded];
   EXPECT_NSEQ(button.accessibilityLabel,
               l10n_util::GetNSString(IDS_IOS_APP_BAR_ALL_TABS));
   EXPECT_TRUE(button.accessibilityTraits & UIAccessibilityTraitButton);
@@ -449,6 +451,7 @@ TEST_F(AppBarViewControllerTest, TestTabGridButtonAccessibilityAndTraits) {
   // 3. Set tab grid not visible, and enter tab group.
   [view_controller_ setTabGridVisible:NO];
   [view_controller_ setInTabGroup:YES];
+  [button layoutIfNeeded];
   EXPECT_NSEQ(button.accessibilityLabel,
               l10n_util::GetNSString(IDS_IOS_TOOLBAR_SHOW_TAB_GROUP));
   EXPECT_TRUE(button.accessibilityTraits & UIAccessibilityTraitButton);
@@ -456,6 +459,7 @@ TEST_F(AppBarViewControllerTest, TestTabGridButtonAccessibilityAndTraits) {
 
   // 4. Set tab grid visible while in a tab group.
   [view_controller_ setTabGridVisible:YES];
+  [button layoutIfNeeded];
   EXPECT_NSEQ(button.accessibilityLabel,
               l10n_util::GetNSString(IDS_IOS_TOOLBAR_SHOW_TAB_GROUP));
   EXPECT_TRUE(button.accessibilityTraits & UIAccessibilityTraitButton);

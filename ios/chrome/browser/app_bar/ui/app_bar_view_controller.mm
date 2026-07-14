@@ -1332,7 +1332,6 @@ UIColor* AssistantHighlightBackgroundColor() {
                     completion:nil];
   } else {
     [button setNeedsUpdateConfiguration];
-    [button layoutIfNeeded];
   }
 }
 
