@@ -22987,6 +22987,7 @@
     "SimpleCachePrefetchExperiment2": [
         {
             "platforms": [
+                "android",
                 "android_webview"
             ],
             "experiments": [
