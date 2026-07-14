@@ -23,10 +23,6 @@
 #include "build/buildflag.h"
 #include "components/network_session_configurator/common/network_switches.h"
 #include "components/ukm/test_ukm_recorder.h"
-#include "content/browser/attribution_reporting/attribution_manager.h"
-#include "content/browser/attribution_reporting/attribution_os_level_manager.h"
-#include "content/browser/attribution_reporting/attribution_test_utils.h"
-#include "content/browser/attribution_reporting/test/mock_content_browser_client.h"
 #include "content/browser/back_forward_cache_browsertest.h"
 #include "content/browser/fenced_frame/fenced_frame_reporter.h"
 #include "content/browser/preloading/prefetch/prefetch_service.h"
@@ -5756,9 +5752,6 @@ class FencedFrameReportEventBrowserTest
     // Whether the navigation should be via a urn:uuid or a normal URL.
     // (This should always be false when `!is_embedder_initiated`.
     bool is_opaque = false;
-    // Whether attribution-reporting permission policy is expected to be
-    // allowed.
-    bool expect_attribution_reporting_allowed = true;
     // Whether the report should disregard the `event` field and instead
     // send to a custom destination URL.
     bool use_custom_destination_url = false;
@@ -6162,22 +6155,6 @@ class FencedFrameReportEventBrowserTest
                   navigation_target_node->current_frame_host()
                       ->GetLastCommittedOrigin()
                       .GetURL());
-        // Verify the request contains the eligibility header.
-        if (step.expect_attribution_reporting_allowed) {
-          ExpectValidAttributionReportingEligibleHeaderForEventBeacon(
-              response.http_request()->headers.at(
-                  "Attribution-Reporting-Eligible"));
-          ExpectValidAttributionReportingSupportHeader(
-              response.http_request()->headers.at(
-                  "Attribution-Reporting-Support"),
-              /*web_expected=*/true,
-              /*os_expected=*/false);
-        } else {
-          EXPECT_FALSE(response.http_request()->headers.contains(
-              "Attribution-Reporting-Eligible"));
-          EXPECT_FALSE(response.http_request()->headers.contains(
-              "Attribution-Reporting-Support"));
-        }
 
         // TODO(crbug.com/40286778): Remove this check after 3PCD.
         EXPECT_EQ(0U, response.http_request()->headers.count("Cookie"));
@@ -6601,48 +6578,6 @@ IN_PROC_BROWSER_TEST_F(FencedFrameReportEventBrowserTest,
   RunTest(config);
 }
 
-// Attribution Reporting headers are not set if attribution-reporting permission
-// policy is disallowed for the fenced frame.
-IN_PROC_BROWSER_TEST_F(FencedFrameReportEventBrowserTest,
-                       FencedFrameReportEventAttributionReportingDisallowed) {
-  std::vector<Step> config = {
-      {
-          .is_embedder_initiated = true,
-          .is_opaque = true,
-          .expect_attribution_reporting_allowed = false,
-          .destination =
-              {"a.test",
-               "/fenced_frames/attribution_reporting_disallowed.html"},
-          .report_event_result = Step::Result::kSuccess,
-      },
-  };
-  RunTest(config);
-}
-
-// Attribution Reporting headers are not set if attribution-reporting permission
-// policy is disallowed for the nested iframe.
-IN_PROC_BROWSER_TEST_F(
-    FencedFrameReportEventBrowserTest,
-    FencedFrameReportEventNestedIframeAttributionReportingDisallowed) {
-  std::vector<Step> config = {
-      {
-          .is_embedder_initiated = true,
-          .is_opaque = true,
-          .destination = {"a.test", "/fenced_frames/title1.html"},
-          .report_event_result = Step::Result::kSuccess,
-      },
-      {
-          .is_target_nested_iframe = true,
-          .expect_attribution_reporting_allowed = false,
-          .destination =
-              {"a.test",
-               "/fenced_frames/attribution_reporting_disallowed.html"},
-          .report_event_result = Step::Result::kSuccess,
-      },
-  };
-  RunTest(config);
-}
-
 // Tests for reportEvent to a custom destinationURL:
 
 // The simplest test case: URN navigation into reportEvent.
@@ -6730,26 +6665,6 @@ IN_PROC_BROWSER_TEST_F(
   RunTest(config);
 }
 
-// Attribution Reporting headers are not set if attribution-reporting permission
-// policy is disallowed for the fenced frame.
-IN_PROC_BROWSER_TEST_F(
-    FencedFrameReportEventBrowserTest,
-    FencedFrameReportEventCustomURLAttributionReportingDisallowed) {
-  std::vector<Step> config = {
-      {
-          .is_embedder_initiated = true,
-          .is_opaque = true,
-          .expect_attribution_reporting_allowed = false,
-          .use_custom_destination_url = true,
-          .destination =
-              {"a.test",
-               "/fenced_frames/attribution_reporting_disallowed.html"},
-          .report_event_result = Step::Result::kSuccess,
-      },
-  };
-  RunTest(config);
-}
-
 // (Temporary test for FLEDGE iframe OT.)
 // Tests that an iframe with a urn:uuid commits the navigation with the
 // associated reporting metadata and `fence.reportEvent` sends the beacon to
@@ -6825,15 +6740,6 @@ IN_PROC_BROWSER_TEST_F(FencedFrameReportEventBrowserTest,
   reporting_response.WaitForRequest();
   // Verify the request has the correct content.
   EXPECT_EQ(reporting_response.http_request()->content, event_data);
-  // Verify the request contains the eligibility header.
-  ExpectValidAttributionReportingEligibleHeaderForEventBeacon(
-      reporting_response.http_request()->headers.at(
-          "Attribution-Reporting-Eligible"));
-  ExpectValidAttributionReportingSupportHeader(
-      reporting_response.http_request()->headers.at(
-          "Attribution-Reporting-Support"),
-      /*web_expected=*/true,
-      /*os_expected=*/false);
 }
 
 // The reportEvent beacon is a POST request. Upon receiving a 302 redirect
@@ -6917,12 +6823,6 @@ IN_PROC_BROWSER_TEST_F(FencedFrameReportEventBrowserTest,
     EXPECT_EQ(response.http_request()->content, event_data);
     EXPECT_EQ(response.http_request()->method,
               net::test_server::HttpMethod::METHOD_POST);
-    ExpectValidAttributionReportingEligibleHeaderForEventBeacon(
-        response.http_request()->headers.at("Attribution-Reporting-Eligible"));
-    ExpectValidAttributionReportingSupportHeader(
-        response.http_request()->headers.at("Attribution-Reporting-Support"),
-        /*web_expected=*/true,
-        /*os_expected=*/false);
     EXPECT_TRUE(response.http_request()->headers.contains("Content-Length"));
     EXPECT_TRUE(response.http_request()->headers.contains("Content-Type"));
     EXPECT_TRUE(response.http_request()->headers.contains("Origin"));
@@ -6951,14 +6851,6 @@ IN_PROC_BROWSER_TEST_F(FencedFrameReportEventBrowserTest,
     EXPECT_FALSE(redirect_response.http_request()->headers.contains("Origin"));
     // Check that the content body was stripped.
     EXPECT_TRUE(redirect_response.http_request()->content.empty());
-    // These extra request headers were not stripped.
-    ExpectValidAttributionReportingEligibleHeaderForEventBeacon(
-        redirect_response.http_request()->headers.at(
-            "Attribution-Reporting-Eligible"));
-    ExpectValidAttributionReportingSupportHeader(
-        response.http_request()->headers.at("Attribution-Reporting-Support"),
-        /*web_expected=*/true,
-        /*os_expected=*/false);
   }
 }
 
@@ -7047,14 +6939,6 @@ IN_PROC_BROWSER_TEST_F(FencedFrameReportEventBrowserTest,
     EXPECT_TRUE(
         reporting_response.http_request()->headers.contains("Content-Type"));
     EXPECT_TRUE(reporting_response.http_request()->headers.contains("Origin"));
-    ExpectValidAttributionReportingEligibleHeaderForEventBeacon(
-        reporting_response.http_request()->headers.at(
-            "Attribution-Reporting-Eligible"));
-    ExpectValidAttributionReportingSupportHeader(
-        reporting_response.http_request()->headers.at(
-            "Attribution-Reporting-Support"),
-        /*web_expected=*/true,
-        /*os_expected=*/false);
 
     // Send 302 redirect response, with "Access-Control-Allow-Origin" header.
     // This header is needed to get the redirect through.
@@ -7080,105 +6964,7 @@ IN_PROC_BROWSER_TEST_F(FencedFrameReportEventBrowserTest,
         redirect_response.http_request()->headers.contains("Content-Type"));
     // Check that the content body was stripped.
     EXPECT_TRUE(redirect_response.http_request()->content.empty());
-    // These extra request headers were not stripped.
-    ExpectValidAttributionReportingEligibleHeaderForEventBeacon(
-        redirect_response.http_request()->headers.at(
-            "Attribution-Reporting-Eligible"));
-    ExpectValidAttributionReportingSupportHeader(
-        redirect_response.http_request()->headers.at(
-            "Attribution-Reporting-Support"),
-        /*web_expected=*/true,
-        /*os_expected=*/false);
   }
-}
-
-IN_PROC_BROWSER_TEST_F(FencedFrameReportEventBrowserTest,
-                       AttributionNoneSupported_EligibleHeaderNotSet) {
-  MockAttributionReportingContentBrowserClientBase<
-      ContentBrowserTestContentBrowserClient>
-      browser_client;
-  EXPECT_CALL(
-      browser_client,
-      GetAttributionSupport(
-          ContentBrowserClient::AttributionReportingOsApiState::kDisabled,
-          /*client_os_disabled=*/false))
-      .WillRepeatedly(
-          testing::Return(network::mojom::AttributionSupport::kNone));
-  ON_CALL(browser_client, IsPrivacySandboxReportingDestinationAttested)
-      .WillByDefault(testing::Return(true));
-
-  net::test_server::ControllableHttpResponse response(https_server(),
-                                                      kReportingURL);
-  ASSERT_TRUE(https_server()->Start());
-
-  GURL main_url = https_server()->GetURL("a.test", "/hello.html");
-  EXPECT_TRUE(NavigateToURL(shell(), main_url));
-  FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
-                            ->GetPrimaryFrameTree()
-                            .root();
-  EXPECT_TRUE(ExecJs(root,
-                     "var f = document.createElement('fencedframe');"
-                     "document.body.appendChild(f);"));
-
-  EXPECT_EQ(1U, root->child_count());
-  FrameTreeNode* fenced_frame_root_node =
-      GetFencedFrameRootNode(root->child_at(0));
-  EXPECT_TRUE(fenced_frame_root_node->IsFencedFrameRoot());
-  EXPECT_TRUE(fenced_frame_root_node->IsInFencedFrameTree());
-
-  GURL https_url(
-      https_server()->GetURL("a.test", "/fenced_frames/title1.html"));
-
-  // Create a FencedFrameReporter and pass it reporting metadata.
-  scoped_refptr<FencedFrameReporter> fenced_frame_reporter =
-      CreateFencedFrameReporter();
-  GURL reporting_url(https_server()->GetURL("a.test", kReportingURL));
-  // Set valid reporting metadata for buyer.
-  fenced_frame_reporter->OnUrlMappingReady(
-      blink::FencedFrame::ReportingDestination::kBuyer,
-      url::Origin::Create(GURL()), {{"click", reporting_url}});
-
-  // Get the urn mapping object.
-  FencedFrameURLMapping& url_mapping =
-      root->current_frame_host()->GetPage().fenced_frame_urls_map();
-
-  // Add url and its reporting metadata to fenced frame url mapping.
-  auto urn_uuid = test::AddAndVerifyFencedFrameURL(&url_mapping, https_url,
-                                                   fenced_frame_reporter);
-
-  TestFencedFrameURLMappingResultObserver mapping_observer;
-  url_mapping.ConvertFencedFrameURNToURL(urn_uuid, &mapping_observer);
-  TestFrameNavigationObserver observer(
-      fenced_frame_root_node->current_frame_host());
-
-  // Navigate the fenced frame.
-  EXPECT_TRUE(ExecJs(
-      root, JsReplace("f.config = new FencedFrameConfig($1);", urn_uuid)));
-
-  observer.WaitForCommit();
-  EXPECT_TRUE(mapping_observer.mapping_complete_observed());
-  EXPECT_EQ(fenced_frame_reporter, mapping_observer.fenced_frame_reporter());
-
-  // Perform the reportEvent call, with a unique body.
-  std::string event_data = "this is a click";
-  std::string report_event_script = JsReplace(R"(
-        window.fence.reportEvent({
-          eventType: 'click',
-          eventData: $1,
-          destination: ['buyer'],
-        });
-      )",
-                                              event_data);
-  EXPECT_TRUE(ExecJs(fenced_frame_root_node, report_event_script));
-
-  response.WaitForRequest();
-  EXPECT_EQ(response.http_request()->content, event_data);
-  ExpectEmptyAttributionReportingEligibleHeader(
-      response.http_request()->headers.at("Attribution-Reporting-Eligible"));
-  ExpectValidAttributionReportingSupportHeader(
-      response.http_request()->headers.at("Attribution-Reporting-Support"),
-      /*web_expected=*/false,
-      /*os_expected=*/false);
 }
 
 // This test case covers the crash due to different implementations are used to
@@ -7443,174 +7229,6 @@ IN_PROC_BROWSER_TEST_F(FencedFrameReportEventBrowserTest,
   EXPECT_TRUE(NavigateToURL(shell(), new_url));
   histogram_tester.ExpectUniqueSample(
       blink::kFencedFrameBeaconReportingCountUMA, 1, 1);
-}
-
-class FencedFrameReportEventAttributionCrossAppWebEnabledBrowserTest
-    : public FencedFrameReportEventBrowserTest {};
-
-IN_PROC_BROWSER_TEST_F(
-    FencedFrameReportEventAttributionCrossAppWebEnabledBrowserTest,
-    ReportEventSameOriginSetsSupportHeader) {
-  AttributionOsLevelManager::ScopedApiStateForTesting scoped_api_state_setting(
-      AttributionOsLevelManager::ApiState::kEnabled);
-
-  net::test_server::ControllableHttpResponse response(https_server(),
-                                                      kReportingURL);
-  ASSERT_TRUE(https_server()->Start());
-
-  // Set up the embedder and a default mode fenced frame.
-  GURL main_url = https_server()->GetURL("a.test", "/hello.html");
-  EXPECT_TRUE(NavigateToURL(shell(), main_url));
-  FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
-                            ->GetPrimaryFrameTree()
-                            .root();
-  EXPECT_TRUE(ExecJs(root,
-                     "var f = document.createElement('fencedframe');"
-                     "document.body.appendChild(f);"));
-
-  EXPECT_EQ(1U, root->child_count());
-  FrameTreeNode* fenced_frame_root_node =
-      GetFencedFrameRootNode(root->child_at(0));
-  EXPECT_TRUE(fenced_frame_root_node->IsFencedFrameRoot());
-  EXPECT_TRUE(fenced_frame_root_node->IsInFencedFrameTree());
-
-  GURL https_url(
-      https_server()->GetURL("a.test", "/fenced_frames/title1.html"));
-
-  // Create a FencedFrameReporter and pass it reporting metadata.
-  scoped_refptr<FencedFrameReporter> fenced_frame_reporter =
-      CreateFencedFrameReporter();
-  GURL reporting_url(https_server()->GetURL("a.test", kReportingURL));
-  // Set valid reporting metadata for buyer.
-  fenced_frame_reporter->OnUrlMappingReady(
-      blink::FencedFrame::ReportingDestination::kBuyer,
-      url::Origin::Create(GURL()), {{"click", reporting_url}});
-
-  // Get the urn mapping object.
-  FencedFrameURLMapping& url_mapping =
-      root->current_frame_host()->GetPage().fenced_frame_urls_map();
-
-  // Add url and its reporting metadata to fenced frame url mapping.
-  auto urn_uuid = test::AddAndVerifyFencedFrameURL(&url_mapping, https_url,
-                                                   fenced_frame_reporter);
-
-  TestFencedFrameURLMappingResultObserver mapping_observer;
-  url_mapping.ConvertFencedFrameURNToURL(urn_uuid, &mapping_observer);
-  TestFrameNavigationObserver observer(
-      fenced_frame_root_node->current_frame_host());
-
-  // Navigate the fenced frame.
-  EXPECT_TRUE(ExecJs(
-      root, JsReplace("f.config = new FencedFrameConfig($1);", urn_uuid)));
-
-  observer.WaitForCommit();
-  EXPECT_TRUE(mapping_observer.mapping_complete_observed());
-  EXPECT_EQ(fenced_frame_reporter, mapping_observer.fenced_frame_reporter());
-
-  // Perform the reportEvent call, with a unique body.
-  std::string event_data = "this is a click";
-  std::string report_event_script = JsReplace(R"(
-        window.fence.reportEvent({
-          eventType: 'click',
-          eventData: $1,
-          destination: ['buyer'],
-        });
-      )",
-                                              event_data);
-  EXPECT_TRUE(ExecJs(fenced_frame_root_node, report_event_script));
-
-  // Verify the request contains the eligibility header.
-  response.WaitForRequest();
-  EXPECT_EQ(response.http_request()->content, event_data);
-  ExpectValidAttributionReportingEligibleHeaderForEventBeacon(
-      response.http_request()->headers.at("Attribution-Reporting-Eligible"));
-  ExpectValidAttributionReportingSupportHeader(
-      response.http_request()->headers.at("Attribution-Reporting-Support"),
-      /*web_expected=*/true,
-      /*os_expected=*/true);
-}
-
-IN_PROC_BROWSER_TEST_F(
-    FencedFrameReportEventAttributionCrossAppWebEnabledBrowserTest,
-    ReportEventCrossOriginSetsSupportHeader) {
-  net::test_server::ControllableHttpResponse reporting_response(https_server(),
-                                                                kReportingURL);
-  ASSERT_TRUE(https_server()->Start());
-
-  // Set up the embedder and a default mode fenced frame.
-  GURL main_url = https_server()->GetURL("a.test", "/hello.html");
-  EXPECT_TRUE(NavigateToURL(shell(), main_url));
-  FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
-                            ->GetPrimaryFrameTree()
-                            .root();
-  EXPECT_TRUE(ExecJs(root,
-                     "var f = document.createElement('fencedframe');"
-                     "document.body.appendChild(f);"));
-
-  EXPECT_EQ(1U, root->child_count());
-  FrameTreeNode* fenced_frame_root_node =
-      GetFencedFrameRootNode(root->child_at(0));
-  EXPECT_TRUE(fenced_frame_root_node->IsFencedFrameRoot());
-  EXPECT_TRUE(fenced_frame_root_node->IsInFencedFrameTree());
-
-  GURL https_url(
-      https_server()->GetURL("a.test", "/fenced_frames/title1.html"));
-
-  // Create a FencedFrameReporter and pass it reporting metadata.
-  scoped_refptr<FencedFrameReporter> fenced_frame_reporter =
-      CreateFencedFrameReporter();
-  GURL reporting_url(https_server()->GetURL("c.test", kReportingURL));
-  // Set valid reporting metadata for buyer.
-  fenced_frame_reporter->OnUrlMappingReady(
-      blink::FencedFrame::ReportingDestination::kBuyer,
-      url::Origin::Create(GURL()), {{"click", reporting_url}});
-
-  // Get the urn mapping object.
-  FencedFrameURLMapping& url_mapping =
-      root->current_frame_host()->GetPage().fenced_frame_urls_map();
-
-  // Add url and its reporting metadata to fenced frame url mapping.
-  auto urn_uuid = test::AddAndVerifyFencedFrameURL(&url_mapping, https_url,
-                                                   fenced_frame_reporter);
-
-  TestFencedFrameURLMappingResultObserver mapping_observer;
-  url_mapping.ConvertFencedFrameURNToURL(urn_uuid, &mapping_observer);
-  TestFrameNavigationObserver observer(
-      fenced_frame_root_node->current_frame_host());
-
-  // Navigate the fenced frame.
-  EXPECT_TRUE(ExecJs(
-      root, JsReplace("f.config = new FencedFrameConfig($1);", urn_uuid)));
-
-  observer.WaitForCommit();
-  EXPECT_TRUE(mapping_observer.mapping_complete_observed());
-  EXPECT_EQ(fenced_frame_reporter, mapping_observer.fenced_frame_reporter());
-
-  // Perform the reportEvent call, with a unique body.
-  std::string event_data = "this is a click";
-  std::string report_event_script = JsReplace(R"(
-        window.fence.reportEvent({
-          eventType: 'click',
-          eventData: $1,
-          destination: ['buyer'],
-        });
-      )",
-                                              event_data);
-  EXPECT_TRUE(ExecJs(fenced_frame_root_node, report_event_script));
-
-  // Verify the request contains the eligibility header.
-  {
-    reporting_response.WaitForRequest();
-    EXPECT_EQ(reporting_response.http_request()->content, event_data);
-    ExpectValidAttributionReportingEligibleHeaderForEventBeacon(
-        reporting_response.http_request()->headers.at(
-            "Attribution-Reporting-Eligible"));
-    ExpectValidAttributionReportingSupportHeader(
-        reporting_response.http_request()->headers.at(
-            "Attribution-Reporting-Support"),
-        /*web_expected=*/true,
-        /*os_expected=*/false);
-  }
 }
 
 // Parameterized on whether the feature is enabled or not.
@@ -8118,13 +7736,6 @@ class FencedFrameAutomaticBeaconBrowserTest
     } else {
       EXPECT_EQ(response.http_request()->content, config.message);
     }
-    // Verify the request contains the eligibility header.
-    ExpectValidAttributionReportingEligibleHeaderForNavigation(
-        response.http_request()->headers.at("Attribution-Reporting-Eligible"));
-    ExpectValidAttributionReportingSupportHeader(
-        response.http_request()->headers.at("Attribution-Reporting-Support"),
-        /*web_expected=*/true,
-        /*os_expected=*/false);
 
     // Verify the request has credentials attached.
     // TODO(crbug.com/40286778): Remove this block after 3PCD.

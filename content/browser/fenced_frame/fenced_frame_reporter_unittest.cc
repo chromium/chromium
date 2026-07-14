@@ -15,9 +15,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
-#include "content/browser/attribution_reporting/attribution_manager.h"
-#include "content/browser/attribution_reporting/test/mock_attribution_data_host_manager.h"
-#include "content/browser/attribution_reporting/test/mock_attribution_manager.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/browser_context.h"
@@ -71,10 +68,6 @@ class FencedFrameReporterTest : public RenderViewHostTestHarness {
 
   scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory() {
     return test_url_loader_factory_.GetSafeWeakWrapper();
-  }
-
-  AttributionManager* attribution_manager() {
-    return AttributionManager::FromBrowserContext(browser_context());
   }
 
   void SetUp() override {
@@ -134,13 +127,6 @@ class FencedFrameReporterTest : public RenderViewHostTestHarness {
 
   const base::HistogramTester& histogram_tester() const {
     return histogram_tester_;
-  }
-
-  void ShutDownAttributionManager() {
-    auto* partition = static_cast<StoragePartitionImpl*>(
-        browser_context()->GetDefaultStoragePartition());
-    partition->OverrideAttributionManagerForTesting(
-        /*attribution_manager=*/nullptr);
   }
 
   network::TestURLLoaderFactory test_url_loader_factory_;
@@ -513,23 +499,6 @@ TEST_F(FencedFrameReporterTest, SendReportsFledgeBeforeMapsReceived) {
 // URL, missing event types). No error messages are generated in this case
 // because there's nowhere to pass them
 TEST_F(FencedFrameReporterTest, SendFledgeReportsBeforeMapsReceivedWithErrors) {
-  auto attribution_data_host_manager =
-      std::make_unique<MockAttributionDataHostManager>();
-  auto* mock_attribution_data_host_manager =
-      attribution_data_host_manager.get();
-
-  auto mock_manager = std::make_unique<MockAttributionManager>();
-  mock_manager->SetDataHostManager(std::move(attribution_data_host_manager));
-  static_cast<StoragePartitionImpl*>(
-      browser_context()->GetDefaultStoragePartition())
-      ->OverrideAttributionManagerForTesting(std::move(mock_manager));
-
-  // `AttributionDataHostManager` is notified for the errors.
-  EXPECT_CALL(*mock_attribution_data_host_manager,
-              NotifyFencedFrameReportingBeaconData(_, _, /*headers=*/nullptr,
-                                                   /*is_final_response=*/true))
-      .Times(3);
-
   scoped_refptr<FencedFrameReporter> reporter =
       FencedFrameReporter::CreateForFledge(
           shared_url_loader_factory(), browser_context(),
@@ -1002,67 +971,20 @@ TEST_F(FencedFrameReporterTest, CustomDestinationURLAllowlist) {
 
 // Test reports in the FLEDGE case, where reporting URL map is never received.
 TEST_F(FencedFrameReporterTest, SendFledgeReportsNoMapReceived) {
-  auto attribution_data_host_manager =
-      std::make_unique<MockAttributionDataHostManager>();
-  auto* mock_attribution_data_host_manager =
-      attribution_data_host_manager.get();
-
-  auto mock_manager = std::make_unique<MockAttributionManager>();
-  mock_manager->SetDataHostManager(std::move(attribution_data_host_manager));
-  static_cast<StoragePartitionImpl*>(
-      browser_context()->GetDefaultStoragePartition())
-      ->OverrideAttributionManagerForTesting(std::move(mock_manager));
-
-  // `AttributionDataHostManager` is notified for the pending events.
-  EXPECT_CALL(*mock_attribution_data_host_manager,
-              NotifyFencedFrameReportingBeaconData(_, _, /*headers=*/nullptr,
-                                                   /*is_final_response=*/true));
-  {
-    scoped_refptr<FencedFrameReporter> reporter =
-        FencedFrameReporter::CreateForFledge(
-            shared_url_loader_factory(), browser_context(),
-            /*direct_seller_is_seller=*/false, main_frame_origin_);
-
-    // SendReport() is called, but a mapping is never received.
-    std::string error_message;
-    blink::mojom::ConsoleMessageLevel console_message_level =
-        blink::mojom::ConsoleMessageLevel::kError;
-    EXPECT_TRUE(reporter->SendReport(
-        DestinationEnumEvent("event_type2", "event_data"),
-        blink::FencedFrame::ReportingDestination::kSeller, main_rfh_impl(),
-        error_message, console_message_level));
-    EXPECT_EQ(test_url_loader_factory_.NumPending(), 0);
-  }
-}
-
-TEST_F(FencedFrameReporterTest, AttributionManagerShutDown_NoCrash) {
-  EXPECT_TRUE(attribution_manager());
-
   scoped_refptr<FencedFrameReporter> reporter =
-      FencedFrameReporter::CreateForSharedStorage(
+      FencedFrameReporter::CreateForFledge(
           shared_url_loader_factory(), browser_context(),
-          report_url_declarer_origin_,
-          /*reporting_url_map=*/
-          {{"event_type", report_destination_}});
+          /*direct_seller_is_seller=*/false, main_frame_origin_);
 
-  // Make a report.
+  // SendReport() is called, but a mapping is never received.
   std::string error_message;
   blink::mojom::ConsoleMessageLevel console_message_level =
       blink::mojom::ConsoleMessageLevel::kError;
   EXPECT_TRUE(reporter->SendReport(
-      DestinationEnumEvent("event_type", "event_data"),
-      blink::FencedFrame::ReportingDestination::kSharedStorageSelectUrl,
-      main_rfh_impl(), error_message, console_message_level));
-  EXPECT_EQ(test_url_loader_factory_.NumPending(), 1);
-  ValidateRequest((*test_url_loader_factory_.pending_requests())[0].request,
-                  report_destination_, "event_data");
-
-  ShutDownAttributionManager();
-
-  EXPECT_FALSE(attribution_manager());
-
-  EXPECT_TRUE(test_url_loader_factory_.SimulateResponseForPendingRequest(
-      report_destination_.spec(), ""));
+      DestinationEnumEvent("event_type2", "event_data"),
+      blink::FencedFrame::ReportingDestination::kSeller, main_rfh_impl(),
+      error_message, console_message_level));
+  EXPECT_EQ(test_url_loader_factory_.NumPending(), 0);
 }
 
 TEST_F(FencedFrameReporterTest, SendReportsEnumWithSimulatedResponse) {
