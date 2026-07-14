@@ -1939,7 +1939,7 @@ tot_mac_builder(
             "all",
         ],
         mixins = [
-            "mac_default_x64",
+            "mac_15_x64",
         ],
     ),
     console_view_entry = consoles.console_view_entry(
@@ -1976,9 +1976,6 @@ tot_mac_builder(
     targets = targets.bundle(
         additional_compile_targets = [
             "all",
-        ],
-        mixins = [
-            "mac_default_x64",
         ],
     ),
     console_view_entry = consoles.console_view_entry(
@@ -2026,7 +2023,7 @@ tot_mac_builder(
                     "--test-launcher-print-test-stdio=always",
                 ],
             ),
-            "mac_default_x64",
+            "mac_15_x64",
         ],
     ),
     console_view_entry = consoles.console_view_entry(
@@ -2071,7 +2068,7 @@ tot_mac_builder(
             "all",
         ],
         mixins = [
-            "mac_default_x64",
+            "mac_15_x64",
         ],
     ),
     console_view_entry = consoles.console_view_entry(
@@ -2112,9 +2109,6 @@ tot_mac_builder(
         additional_compile_targets = [
             "all",
         ],
-        mixins = [
-            "mac_default_x64",
-        ],
     ),
     console_view_entry = consoles.console_view_entry(
         category = "ToT Mac",
@@ -2152,9 +2146,6 @@ tot_mac_builder(
     targets = targets.bundle(
         additional_compile_targets = [
             "all",
-        ],
-        mixins = [
-            "mac_default_x64",
         ],
     ),
     console_view_entry = consoles.console_view_entry(
