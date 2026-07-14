@@ -9,6 +9,7 @@
 
 #include "base/no_destructor.h"
 #include "build/build_config.h"
+#include "chrome/browser/ui/browser_init_state.h"
 #include "chrome/browser/ui/views/frame/browser_frame_view_linux.h"
 #include "chrome/browser/ui/views/frame/browser_native_widget_aura_linux.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -255,7 +256,9 @@ void BrowserDesktopWindowTreeHostLinux::Show(
   DesktopWindowTreeHostLinux::Show(show_state, restore_bounds);
 
   const std::string& startup_id =
-      browser_view_->browser()->create_params().startup_id;
+      BrowserInitState::From(browser_view_->browser())
+          ->create_params()
+          .startup_id;
   if (!startup_id.empty() && !SentStartupIds().contains(startup_id)) {
     platform_window()->NotifyStartupComplete(startup_id);
     SentStartupIds().insert(startup_id);

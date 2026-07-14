@@ -28,6 +28,7 @@
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/browser_init_state.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/sad_tab_helper.h"
@@ -742,7 +743,7 @@ TabDragController::Liveness TabDragController::Drag(
     }
 
     current_state_ = DragState::kDraggingTabs;
-      StartDraggingTabsSession(true, point_in_screen);
+    StartDraggingTabsSession(true, point_in_screen);
   }
 
   return ContinueDragging(point_in_screen);
@@ -2665,7 +2666,7 @@ Browser* TabDragController::CreateBrowserForDrag(TabDragContext* source,
                             /* trusted_source=*/true, gfx::Rect(),
                             from_browser->GetProfile(),
                             /* user_gesture=*/true)
-                      : from_browser->create_params();
+                      : BrowserInitState::From(from_browser)->create_params();
 
   // Web app windows have their own initial size independent of the source
   // browser window.

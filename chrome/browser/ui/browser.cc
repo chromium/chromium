@@ -653,10 +653,6 @@ base::WeakPtr<const Browser> Browser::AsWeakPtr() const {
 ///////////////////////////////////////////////////////////////////////////////
 // Browser, Creation and initial parameters (forwarded to BrowserInitState):
 
-const Browser::CreateParams& Browser::create_params() const {
-  return init_state_->create_params();
-}
-
 ///////////////////////////////////////////////////////////////////////////////
 // Browser, State Storage and Retrieval for UI:
 

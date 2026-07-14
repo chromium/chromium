@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/browser_init_state.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window_theme_observer.h"
@@ -937,7 +938,6 @@ ShowTranslateBubbleResult WebUIBrowserWindow::ShowTranslateBubble(
   return ShowTranslateBubbleResult::kBrowserWindowNotValid;
 }
 
-
 DownloadBubbleUIController*
 WebUIBrowserWindow::GetDownloadBubbleUIController() {
   NOTIMPLEMENTED_LOG_ONCE();
@@ -1233,9 +1233,15 @@ WebUIBrowserWindow::WidgetDelegate::WidgetDelegate(
     WebUIBrowserWebContentsDelegate* web_contents_delegate)
     : browser_window_(window), web_contents_delegate_(web_contents_delegate) {
   // TODO(webium): May want to override these for Apps or Picture-in-picture.
-  SetCanResize(browser_window_->browser_->create_params().can_resize);
-  SetCanMaximize(browser_window_->browser_->create_params().can_maximize);
-  SetCanFullscreen(browser_window_->browser_->create_params().can_fullscreen);
+  SetCanResize(BrowserInitState::From(&*browser_window_->browser_)
+                   ->create_params()
+                   .can_resize);
+  SetCanMaximize(BrowserInitState::From(&*browser_window_->browser_)
+                     ->create_params()
+                     .can_maximize);
+  SetCanFullscreen(BrowserInitState::From(&*browser_window_->browser_)
+                       ->create_params()
+                       .can_fullscreen);
   SetCanMinimize(true);
 }
 

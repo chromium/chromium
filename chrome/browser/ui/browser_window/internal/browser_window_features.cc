@@ -302,7 +302,7 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
       GetUserDataFactory().CreateInstance<WindowFeatureController>(
           *browser, fullscreen_controller_.get(), app_browser_controller_.get(),
           browser->GetType(),
-          browser->GetBrowserForMigrationOnly()->create_params().trusted_source,
+          BrowserInitState::From(browser)->create_params().trusted_source,
           browser->GetUnownedUserDataHost());
 
   side_panel_registry_ =
@@ -534,8 +534,7 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
           *browser, browser);
 
   window_metadata_controller_ = std::make_unique<WindowMetadataController>(
-      *browser,
-      browser->GetBrowserForMigrationOnly()->create_params().user_title);
+      *browser, BrowserInitState::From(browser)->create_params().user_title);
 
   // ---------------------------------------------------------------------------
   // Members owned only when the browser is TYPE_NORMAL (e.g. a window with an

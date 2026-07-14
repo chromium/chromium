@@ -42,6 +42,7 @@
 #include "chrome/browser/ui/ash/login/user_adding_screen.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
+#include "chrome/browser/ui/browser_init_state.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -517,7 +518,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerWindowSizeControlsTest,
   Browser* app_browser;
   LaunchApp(GetAppType(), &app_browser);
 
-  EXPECT_FALSE(app_browser->create_params().can_resize);
+  EXPECT_FALSE(BrowserInitState::From(app_browser)->create_params().can_resize);
 }
 
 IN_PROC_BROWSER_TEST_P(SystemWebAppManagerWindowSizeControlsTest,
@@ -529,7 +530,8 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerWindowSizeControlsTest,
   Browser* app_browser;
   LaunchApp(GetAppType(), &app_browser);
 
-  EXPECT_FALSE(app_browser->create_params().can_maximize);
+  EXPECT_FALSE(
+      BrowserInitState::From(app_browser)->create_params().can_maximize);
 }
 
 // Use LoginManagerTest here instead of SystemWebAppManagerBrowserTest, because

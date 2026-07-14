@@ -164,7 +164,8 @@ void BrowserWidget::InitBrowserWidget() {
   }
 
 #if BUILDFLAG(IS_LINUX)
-  params.startup_id = browser->create_params().startup_id;
+  params.startup_id =
+      BrowserInitState::From(browser)->create_params().startup_id;
 #endif
 
 #if BUILDFLAG(IS_OZONE)

@@ -106,7 +106,7 @@ bool WindowSizerChromeOS::GetBrowserBounds(
       if (!browser()->is_type_app() ||
           !web_app::AppBrowserController::From(browser()) ||
           !GetAppBrowserBoundsFromLastActive(bounds, show_state)) {
-        if (!browser()->create_params().can_resize ||
+        if (!BrowserInitState::From(browser())->create_params().can_resize ||
             !GetSavedWindowBounds(bounds, show_state)) {
           *bounds = GetDefaultWindowBounds(GetDisplayForNewWindow());
         }

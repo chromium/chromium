@@ -83,6 +83,7 @@
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/browser_init_state.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -899,9 +900,12 @@ BrowserView::BrowserView(Browser* browser)
     SetCanFullscreen(false);
     SetCanResize(true);
   } else {
-    SetCanResize(browser_->create_params().can_resize);
-    SetCanMaximize(browser_->create_params().can_maximize);
-    SetCanFullscreen(browser_->create_params().can_fullscreen);
+    SetCanResize(
+        BrowserInitState::From(&*browser_)->create_params().can_resize);
+    SetCanMaximize(
+        BrowserInitState::From(&*browser_)->create_params().can_maximize);
+    SetCanFullscreen(
+        BrowserInitState::From(&*browser_)->create_params().can_fullscreen);
     SetCanMinimize(true);
   }
 
@@ -1495,7 +1499,7 @@ bool BrowserView::GetIsPictureInPictureType() const {
 
 std::optional<blink::mojom::PictureInPictureWindowOptions>
 BrowserView::GetDocumentPictureInPictureOptions() const {
-  return browser_->create_params().pip_options;
+  return BrowserInitState::From(&*browser_)->create_params().pip_options;
 }
 
 bool BrowserView::GetTopControlsSlideBehaviorEnabled() const {
@@ -3994,9 +3998,10 @@ bool BrowserView::GetSavedWindowPlacement(
 
     // Set a default popup origin if the x/y coordinates are 0 and the original
     // values were not known to be explicitly specified via window.open() in JS.
-    if (rect.origin().IsOrigin() &&
-        browser_->create_params().initial_origin_specified !=
-            Browser::ValueSpecified::kSpecified) {
+    if (rect.origin().IsOrigin() && BrowserInitState::From(&*browser_)
+                                            ->create_params()
+                                            .initial_origin_specified !=
+                                        Browser::ValueSpecified::kSpecified) {
       rect.set_origin(WindowSizer::GetDefaultPopupOrigin(rect.size()));
     }
 

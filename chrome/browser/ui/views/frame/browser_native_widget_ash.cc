@@ -190,7 +190,8 @@ views::Widget::InitParams BrowserNativeWidgetAsh::GetWidgetParams(
   params.context = ash::Shell::GetPrimaryRootWindow();
 
   Browser* browser = browser_view_->browser();
-  const int32_t restore_id = browser->create_params().restore_id;
+  const int32_t restore_id =
+      BrowserInitState::From(browser)->create_params().restore_id;
   params.init_properties_container.SetProperty(app_restore::kWindowIdKey,
                                                browser->session_id().id());
   params.init_properties_container.SetProperty(app_restore::kRestoreWindowIdKey,
@@ -222,9 +223,11 @@ views::Widget::InitParams BrowserNativeWidgetAsh::GetWidgetParams(
   if (!params.bounds.IsEmpty()) {
     BrowserInitState::From(browser)->set_override_bounds(params.bounds);
   } else {
-    params.bounds = browser->create_params().initial_bounds;
+    params.bounds =
+        BrowserInitState::From(browser)->create_params().initial_bounds;
   }
-  params.display_id = browser->create_params().display_id;
+  params.display_id =
+      BrowserInitState::From(browser)->create_params().display_id;
   params.rounded_corners = chromeos::GetWindowRoundedCorners();
 
   return params;
@@ -242,14 +245,19 @@ bool BrowserNativeWidgetAsh::ShouldRestorePreviousBrowserWidgetState() const {
   CHECK(browser_view_);
   // If there is no window info from full restore, maybe use the session
   // restore.
-  const int32_t restore_id =
-      browser_view_->browser()->create_params().restore_id;
+  const int32_t restore_id = BrowserInitState::From(browser_view_->browser())
+                                 ->create_params()
+                                 .restore_id;
   // Don't restore unresizable browser apps, because they can get stuck at a
   // broken size, or the browser being dragged because it should use the
   // specified bounds.
   return !app_restore::HasWindowInfo(restore_id) &&
-         browser_view_->browser()->create_params().can_resize &&
-         !browser_view_->browser()->create_params().in_tab_dragging;
+         BrowserInitState::From(browser_view_->browser())
+             ->create_params()
+             .can_resize &&
+         !BrowserInitState::From(browser_view_->browser())
+              ->create_params()
+              .in_tab_dragging;
 }
 
 bool BrowserNativeWidgetAsh::ShouldUseInitialVisibleOnAllWorkspaces() const {

@@ -61,6 +61,7 @@
 #include "chrome/browser/signin/signin_promo.h"
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_init_state.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
@@ -1969,7 +1970,8 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest,
 }
 
 #if BUILDFLAG(IS_LINUX)
-IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest, RemoteActivationTokenPropagation) {
+IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest,
+                       RemoteActivationTokenPropagation) {
   base::CommandLine cmd_line(base::CommandLine::NO_PROGRAM);
   cmd_line.AppendSwitchASCII("xdg-activation-token", "test-token-123");
 
@@ -1978,12 +1980,13 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest, RemoteActivationTokenPropagati
 
   ui_test_utils::BrowserCreatedObserver observer;
 
-  StartupBrowserCreator::ProcessCommandLineAlreadyRunning(
-      cmd_line, {}, path_info);
+  StartupBrowserCreator::ProcessCommandLineAlreadyRunning(cmd_line, {},
+                                                          path_info);
 
   Browser* new_browser = observer.Wait();
   ASSERT_TRUE(new_browser);
-  EXPECT_EQ(new_browser->create_params().startup_id, "test-token-123");
+  EXPECT_EQ(BrowserInitState::From(new_browser)->create_params().startup_id,
+            "test-token-123");
 }
 #endif  // BUILDFLAG(IS_LINUX)
 
