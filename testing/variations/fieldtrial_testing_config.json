@@ -26752,8 +26752,8 @@
                     "name": "Enabled",
                     "enable_features": [
                         "AomVpxUsePresentationThreadType",
-                        "IOThreadInteractiveThreadType",
                         "UseHighPriorityThreadGroup",
+                        "WebRTCBoostMediaIOThreads",
                         "WebRtcUseMediaThreadTypes"
                     ]
                 }
