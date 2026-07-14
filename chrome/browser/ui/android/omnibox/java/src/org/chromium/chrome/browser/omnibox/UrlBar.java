@@ -883,6 +883,13 @@ public class UrlBar extends AutocompleteEditText {
             return true;
         }
 
+        if (id == R.id.url_bar_always_show_ai_mode) {
+            if (mShowAiModeCallback != null) {
+                mShowAiModeCallback.onResult(!mShowAiMode);
+            }
+            return true;
+        }
+
         if (mTextContextMenuDelegate == null) return super.onTextContextMenuItem(id);
 
         boolean isCutOption = false;

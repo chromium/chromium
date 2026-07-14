@@ -50,7 +50,8 @@ class UrlBarContextMenuHelper implements OnCreateContextMenuListener {
                     android.R.id.shareText,
                     android.R.id.undo,
                     android.R.id.redo,
-                    R.id.url_bar_delete);
+                    R.id.url_bar_delete,
+                    R.id.url_bar_always_show_ai_mode);
 
     public static final float INVALID_TOUCH_COORDINATE = -1f;
 
@@ -120,6 +121,10 @@ class UrlBarContextMenuHelper implements OnCreateContextMenuListener {
                                 .withTitle(title != null ? title.toString() : "")
                                 .withMenuId(itemId)
                                 .withEnabled(item.isEnabled());
+
+                if (item.isCheckable() && item.isChecked()) {
+                    builder.withStartIconRes(R.drawable.ic_done_blue);
+                }
                 mListItems.add(builder.build());
             }
         }
