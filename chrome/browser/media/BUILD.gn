@@ -192,10 +192,18 @@ source_set("browser_tests") {
       "cast_mirroring_service_host_browsertest.cc",
       "defer_background_media_browsertest.cc",
       "encrypted_media_supported_types_browsertest.cc",
+      "media_browsertest.cc",
+      "media_browsertest.h",
       "media_engagement_autoplay_browsertest.cc",
       "media_session_browsertest.cc",
       "unified_autoplay_browsertest.cc",
     ]
+
+    # TODO(crbug.com/40553979): encrypted_media_browsertest is flaky on the
+    # Linux Asan Lsan bot.
+    if (!((is_linux || is_chromeos) && is_asan && is_lsan)) {
+      sources += [ "encrypted_media_browsertest.cc" ]
+    }
     deps += [
       ":impl",
       "//chrome/browser:chrome_content_browser_client",
@@ -215,6 +223,7 @@ source_set("browser_tests") {
       "//media/mojo/mojom",
       "//services/media_session/public/cpp/test:test_support",
       "//services/metrics/public/cpp:ukm_builders",
+      "//third_party/widevine/cdm:headers",
     ]
   }
 }

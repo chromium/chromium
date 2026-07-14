@@ -3154,9 +3154,6 @@ if (!is_android) {
       "../../components/live_caption/views/caption_bubble_browsertest.cc",
       "../../components/record_replay/content/renderer/record_replay_agent_browsertest.cc",
       "../app/chrome_main_delegate_browsertest.cc",
-      "../browser/media/encrypted_media_browsertest.cc",
-      "../browser/media/media_browsertest.cc",
-      "../browser/media/media_browsertest.h",
       "../browser/media/media_engagement_browsertest.cc",
       "../browser/media/webrtc/capture_handle_browsertest.cc",
       "../browser/media/webrtc/display_media_access_handler_browsertest.cc",
@@ -4764,10 +4761,6 @@ if (!is_android) {
       ]
     }
 
-    if ((is_linux || is_chromeos) && is_asan && is_lsan) {
-      # TODO(crbug.com/40553979): Fix the flakiness on Linux Asan Lsan bot.
-      sources -= [ "../browser/media/encrypted_media_browsertest.cc" ]
-    }
     if (enable_library_cdms) {
       deps += [ "//media/cdm:cdm_paths" ]
 
