@@ -64,9 +64,9 @@ public class ColorPickerDialogRenderTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Activity activity = mActivityTestRule.getActivity();
-                    ColorPickerDialogView dialog = new ColorPickerDialogView(activity);
-                    ColorPickerCoordinator colorPickerCoordinator =
-                            new ColorPickerCoordinator(activity, (i) -> {}, dialog);
+                    HtmlColorPickerDialogView dialog = new HtmlColorPickerDialogView(activity);
+                    HtmlColorPickerCoordinator colorPickerCoordinator =
+                            new HtmlColorPickerCoordinator(activity, (i) -> {}, dialog);
                     mView = dialog.getContentView();
                     mView.setBackgroundResource(R.color.default_bg_color_baseline);
                     colorPickerCoordinator.show(Color.RED);

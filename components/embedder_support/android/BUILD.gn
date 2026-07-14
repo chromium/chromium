@@ -96,15 +96,15 @@ static_library("view") {
 
 generate_jni("web_contents_delegate_jni") {
   sources = [
-    "java/src/org/chromium/components/embedder_support/delegate/ColorPickerBridge.java",
+    "java/src/org/chromium/components/embedder_support/delegate/HtmlColorPickerBridge.java",
     "java/src/org/chromium/components/embedder_support/delegate/WebContentsDelegateAndroid.java",
   ]
 }
 
 static_library("web_contents_delegate") {
   sources = [
-    "delegate/color_picker_bridge.cc",
-    "delegate/color_picker_bridge.h",
+    "delegate/html_color_picker_bridge.cc",
+    "delegate/html_color_picker_bridge.h",
     "delegate/web_contents_delegate_android.cc",
     "delegate/web_contents_delegate_android.h",
   ]
@@ -301,17 +301,17 @@ if (current_toolchain == default_toolchain) {
     resources_package = "org.chromium.components.embedder_support.delegate"
 
     sources = [
-      "java/src/org/chromium/components/embedder_support/delegate/ColorPickerAdvanced.java",
-      "java/src/org/chromium/components/embedder_support/delegate/ColorPickerAdvancedComponent.java",
-      "java/src/org/chromium/components/embedder_support/delegate/ColorPickerBridge.java",
-      "java/src/org/chromium/components/embedder_support/delegate/ColorPickerCoordinator.java",
-      "java/src/org/chromium/components/embedder_support/delegate/ColorPickerDialogView.java",
-      "java/src/org/chromium/components/embedder_support/delegate/ColorPickerProperties.java",
-      "java/src/org/chromium/components/embedder_support/delegate/ColorPickerSuggestionProperties.java",
-      "java/src/org/chromium/components/embedder_support/delegate/ColorPickerSuggestionsView.java",
-      "java/src/org/chromium/components/embedder_support/delegate/ColorPickerViewBinder.java",
-      "java/src/org/chromium/components/embedder_support/delegate/ColorSuggestion.java",
-      "java/src/org/chromium/components/embedder_support/delegate/OnColorChangedListener.java",
+      "java/src/org/chromium/components/embedder_support/delegate/HtmlColorPickerAdvanced.java",
+      "java/src/org/chromium/components/embedder_support/delegate/HtmlColorPickerAdvancedComponent.java",
+      "java/src/org/chromium/components/embedder_support/delegate/HtmlColorPickerBridge.java",
+      "java/src/org/chromium/components/embedder_support/delegate/HtmlColorPickerCoordinator.java",
+      "java/src/org/chromium/components/embedder_support/delegate/HtmlColorPickerDialogView.java",
+      "java/src/org/chromium/components/embedder_support/delegate/HtmlColorPickerProperties.java",
+      "java/src/org/chromium/components/embedder_support/delegate/HtmlColorPickerSuggestionProperties.java",
+      "java/src/org/chromium/components/embedder_support/delegate/HtmlColorPickerSuggestionsView.java",
+      "java/src/org/chromium/components/embedder_support/delegate/HtmlColorPickerViewBinder.java",
+      "java/src/org/chromium/components/embedder_support/delegate/HtmlColorSuggestion.java",
+      "java/src/org/chromium/components/embedder_support/delegate/HtmlOnColorChangedListener.java",
       "java/src/org/chromium/components/embedder_support/delegate/WebContentsDelegateAndroid.java",
     ]
   }

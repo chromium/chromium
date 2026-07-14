@@ -8,7 +8,7 @@ import org.chromium.build.annotations.NullMarked;
 
 /** The callback used to indicate the user changed the color. */
 @NullMarked
-public interface OnColorChangedListener {
+public interface HtmlOnColorChangedListener {
     /**
      * Called upon a color change.
      *

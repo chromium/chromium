@@ -30,14 +30,14 @@ import org.chromium.components.tab_groups.TabGroupsFeatureMap;
 import java.util.Arrays;
 import java.util.List;
 
-/** Tests for ColorPickerCoordinator. */
+/** Tests for TabGroupColorPickerCoordinator. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 @Features.DisableFeatures({TabGroupsFeatureMap.UPDATE_TAB_GROUP_COLORS})
-public class ColorPickerCoordinatorUnitTest {
+public class TabGroupColorPickerCoordinatorUnitTest {
     private Activity mActivity;
-    private ColorPickerCoordinator mCoordinator;
-    private ColorPickerContainer mContainerView;
+    private TabGroupColorPickerCoordinator mCoordinator;
+    private TabGroupColorPickerContainer mContainerView;
     private final List<Integer> mColors =
             Arrays.asList(TabGroupColorId.GREY, TabGroupColorId.BLUE, TabGroupColorId.RED);
 
@@ -48,17 +48,17 @@ public class ColorPickerCoordinatorUnitTest {
         View root =
                 LayoutInflater.from(mActivity)
                         .inflate(R.layout.tab_group_color_picker_container, null);
-        ColorPickerContainer container = root.findViewById(R.id.color_picker_container);
+        TabGroupColorPickerContainer container = root.findViewById(R.id.color_picker_container);
         mCoordinator =
-                new ColorPickerCoordinator(
+                new TabGroupColorPickerCoordinator(
                         mActivity,
                         mColors,
                         container,
-                        ColorPickerType.TAB_GROUP,
+                        TabGroupColorPickerType.TAB_GROUP,
                         /* isIncognito= */ false,
-                        ColorPickerCoordinator.ColorPickerLayoutType.DYNAMIC,
+                        TabGroupColorPickerCoordinator.TabGroupColorPickerLayoutType.DYNAMIC,
                         /* onColorItemClicked= */ null);
-        mContainerView = (ColorPickerContainer) mCoordinator.getContainerView();
+        mContainerView = (TabGroupColorPickerContainer) mCoordinator.getContainerView();
     }
 
     @Test

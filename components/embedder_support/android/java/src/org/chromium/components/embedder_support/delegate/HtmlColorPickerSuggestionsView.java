@@ -13,20 +13,20 @@ import org.chromium.build.annotations.NullMarked;
 
 /** This class is to have the constructors for the suggestions view */
 @NullMarked
-public class ColorPickerSuggestionsView extends GridView {
-    public ColorPickerSuggestionsView(Context context) {
+public class HtmlColorPickerSuggestionsView extends GridView {
+    public HtmlColorPickerSuggestionsView(Context context) {
         super(context);
     }
 
-    public ColorPickerSuggestionsView(Context context, AttributeSet attrs) {
+    public HtmlColorPickerSuggestionsView(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 
-    public ColorPickerSuggestionsView(Context context, AttributeSet attrs, int defStyleAttr) {
+    public HtmlColorPickerSuggestionsView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
     }
 
-    public ColorPickerSuggestionsView(
+    public HtmlColorPickerSuggestionsView(
             Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
     }

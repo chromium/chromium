@@ -33,10 +33,10 @@ import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeatures;
 import org.chromium.chrome.browser.tabmodel.TabGroupTitleUtils;
 import org.chromium.chrome.browser.tabmodel.TabModel;
-import org.chromium.chrome.browser.tasks.tab_management.color_picker.ColorPickerContainer;
-import org.chromium.chrome.browser.tasks.tab_management.color_picker.ColorPickerCoordinator;
-import org.chromium.chrome.browser.tasks.tab_management.color_picker.ColorPickerCoordinator.ColorPickerLayoutType;
-import org.chromium.chrome.browser.tasks.tab_management.color_picker.ColorPickerType;
+import org.chromium.chrome.browser.tasks.tab_management.color_picker.TabGroupColorPickerContainer;
+import org.chromium.chrome.browser.tasks.tab_management.color_picker.TabGroupColorPickerCoordinator;
+import org.chromium.chrome.browser.tasks.tab_management.color_picker.TabGroupColorPickerCoordinator.TabGroupColorPickerLayoutType;
+import org.chromium.chrome.browser.tasks.tab_management.color_picker.TabGroupColorPickerType;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.FeatureConstants;
@@ -82,7 +82,7 @@ public class TabGroupVisualDataDialogManager {
     private View mCustomView;
     private TabGroupVisualDataTextInputLayout mTextInputLayout;
     private String mInitialGroupTitle;
-    private ColorPickerCoordinator mColorPickerCoordinator;
+    private TabGroupColorPickerCoordinator mTabGroupColorPickerCoordinator;
     private @TabGroupColorId int mDefaultColorId;
 
     // If non-null, it means TAB_GROUP_CREATION_DIALOG_SYNC_TEXT_FEATURE was triggered and needs to
@@ -128,7 +128,7 @@ public class TabGroupVisualDataDialogManager {
             assert mCustomView != null;
             assert mTextInputLayout != null;
             assert mInitialGroupTitle != null;
-            assert mColorPickerCoordinator != null;
+            assert mTabGroupColorPickerCoordinator != null;
             return;
         }
 
@@ -174,18 +174,18 @@ public class TabGroupVisualDataDialogManager {
                                 R.layout.tab_group_color_picker_container,
                                 linearLayout,
                                 /* attachToRoot= */ false);
-        ColorPickerContainer container = root.findViewById(R.id.color_picker_container);
-        mColorPickerCoordinator =
-                new ColorPickerCoordinator(
+        TabGroupColorPickerContainer container = root.findViewById(R.id.color_picker_container);
+        mTabGroupColorPickerCoordinator =
+                new TabGroupColorPickerCoordinator(
                         mContext,
                         colors,
                         container,
-                        ColorPickerType.TAB_GROUP,
+                        TabGroupColorPickerType.TAB_GROUP,
                         /* isIncognito= */ false,
-                        ColorPickerLayoutType.DYNAMIC,
+                        TabGroupColorPickerLayoutType.DYNAMIC,
                         null);
         mDefaultColorId = tabModel.getTabGroupColorWithFallback(tabGroupId);
-        mColorPickerCoordinator.setSelectedColorItem(mDefaultColorId);
+        mTabGroupColorPickerCoordinator.setSelectedColorItem(mDefaultColorId);
 
         linearLayout.addView(root);
 
@@ -255,7 +255,7 @@ public class TabGroupVisualDataDialogManager {
     }
 
     public @TabGroupColorId int getCurrentColorId() {
-        return assertNonNull(mColorPickerCoordinator.getSelectedColorSupplier().get());
+        return assertNonNull(mTabGroupColorPickerCoordinator.getSelectedColorSupplier().get());
     }
 
     private void setDescriptionText(TabModel tabModel) {

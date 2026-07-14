@@ -26,23 +26,24 @@ import org.chromium.ui.base.WindowAndroid;
  */
 @JNINamespace("web_contents_delegate_android")
 @NullMarked
-public class ColorPickerBridge {
+public class HtmlColorPickerBridge {
     private long mNativeColorPicker;
-    private final ColorPickerCoordinator mColorPickerCoordinator;
+    private final HtmlColorPickerCoordinator mHtmlColorPickerCoordinator;
 
     @CalledByNative
-    static @Nullable ColorPickerBridge create(
+    static @Nullable HtmlColorPickerBridge create(
             long nativeColorPicker, @JniType("ui::WindowAndroid*") WindowAndroid windowAndroid) {
         if (windowAndroid == null) return null;
         Context context = windowAndroid.getContext().get();
         if (ContextUtils.activityFromContext(context) == null) return null;
         assumeNonNull(context);
-        return new ColorPickerBridge(nativeColorPicker, context);
+        return new HtmlColorPickerBridge(nativeColorPicker, context);
     }
 
-    private ColorPickerBridge(long nativeColorPicker, Context context) {
+    private HtmlColorPickerBridge(long nativeColorPicker, Context context) {
         mNativeColorPicker = nativeColorPicker;
-        mColorPickerCoordinator = ColorPickerCoordinator.create(context, this::onDialogDismissed);
+        mHtmlColorPickerCoordinator =
+                HtmlColorPickerCoordinator.create(context, this::onDialogDismissed);
     }
 
     @CalledByNative
@@ -52,30 +53,30 @@ public class ColorPickerBridge {
 
     @CalledByNative
     void showColorPicker(int initialColor) {
-        mColorPickerCoordinator.show(initialColor);
+        mHtmlColorPickerCoordinator.show(initialColor);
     }
 
     @CalledByNative
     void closeColorPicker() {
-        mColorPickerCoordinator.close();
+        mHtmlColorPickerCoordinator.close();
     }
 
     @CalledByNative
     void addColorSuggestion(int color, @JniType("std::string") String label) {
-        if (mColorPickerCoordinator != null) {
-            mColorPickerCoordinator.addColorSuggestion(color, label);
+        if (mHtmlColorPickerCoordinator != null) {
+            mHtmlColorPickerCoordinator.addColorSuggestion(color, label);
         }
     }
 
     void onDialogDismissed(int newColor) {
         if (mNativeColorPicker != 0) {
-            ColorPickerBridgeJni.get().onColorChosen(mNativeColorPicker, newColor);
+            HtmlColorPickerBridgeJni.get().onColorChosen(mNativeColorPicker, newColor);
         }
     }
 
     @NativeMethods
     interface Natives {
         // Implemented in color_picker_bridge.cc
-        void onColorChosen(long nativeColorPickerBridge, int color);
+        void onColorChosen(long nativeHtmlColorPickerBridge, int color);
     }
 }

@@ -26,17 +26,17 @@ import java.util.List;
 
 /** Coordinator for the color picker interface. */
 @NullMarked
-public class ColorPickerCoordinator implements ColorPicker {
-    private final ColorPickerContainer mContainerView;
-    private final ColorPickerMediator mMediator;
+public class TabGroupColorPickerCoordinator implements TabGroupColorPicker {
+    private final TabGroupColorPickerContainer mContainerView;
+    private final TabGroupColorPickerMediator mMediator;
 
     @IntDef({
-        ColorPickerLayoutType.DYNAMIC,
-        ColorPickerLayoutType.SINGLE_ROW,
-        ColorPickerLayoutType.DOUBLE_ROW,
+        TabGroupColorPickerLayoutType.DYNAMIC,
+        TabGroupColorPickerLayoutType.SINGLE_ROW,
+        TabGroupColorPickerLayoutType.DOUBLE_ROW,
     })
     @Retention(RetentionPolicy.SOURCE)
-    public @interface ColorPickerLayoutType {
+    public @interface TabGroupColorPickerLayoutType {
         int DYNAMIC = 0;
         int SINGLE_ROW = 1;
         int DOUBLE_ROW = 2;
@@ -48,33 +48,34 @@ public class ColorPickerCoordinator implements ColorPicker {
      * @param context The current context.
      * @param colors The list of color ids corresponding to the color items in this color picker.
      * @param colorPickerView The view used for the color picker container.
-     * @param colorPickerType The {@link ColorPickerType} associated with this color picker.
+     * @param colorPickerType The {@link TabGroupColorPickerType} associated with this color picker.
      * @param isIncognito Whether the current tab model is in incognito mode.
-     * @param layoutType The {@ColorPickerLayoutType} that the component will be arranged as.
+     * @param layoutType The {@TabGroupColorPickerLayoutType} that the component will be arranged
+     *     as.
      * @param onColorItemClicked The runnable for performing an action on each color click event.
      */
-    public ColorPickerCoordinator(
+    public TabGroupColorPickerCoordinator(
             Context context,
             List<Integer> colors,
             View colorPickerView,
-            @ColorPickerType int colorPickerType,
+            @TabGroupColorPickerType int colorPickerType,
             boolean isIncognito,
-            @ColorPickerLayoutType int layoutType,
+            @TabGroupColorPickerLayoutType int layoutType,
             @Nullable Runnable onColorItemClicked) {
-        mContainerView = (ColorPickerContainer) colorPickerView;
+        mContainerView = (TabGroupColorPickerContainer) colorPickerView;
 
-        mContainerView.setColorPickerLayoutType(layoutType);
+        mContainerView.setTabGroupColorPickerLayoutType(layoutType);
 
         List<PropertyModel> colorItems = new ArrayList<>();
         List<View> colorViews = new ArrayList<>();
 
         for (int i = 0; i < colors.size(); i++) {
             int color = colors.get(i);
-            View view = ColorPickerItemViewBinder.createItemView(mContainerView);
+            View view = TabGroupColorPickerItemViewBinder.createItemView(mContainerView);
             colorViews.add(view);
 
             PropertyModel model =
-                    ColorPickerItemProperties.create(
+                    TabGroupColorPickerItemProperties.create(
                             /* color= */ color,
                             /* colorPickerType= */ colorPickerType,
                             /* isIncognito= */ isIncognito,
@@ -89,7 +90,8 @@ public class ColorPickerCoordinator implements ColorPicker {
                             /* isSelected= */ false,
                             /* itemIndex= */ i);
             colorItems.add(model);
-            PropertyModelChangeProcessor.create(model, view, ColorPickerItemViewBinder::bind);
+            PropertyModelChangeProcessor.create(
+                    model, view, TabGroupColorPickerItemViewBinder::bind);
         }
 
         // Set all color item views on the parent container view.
@@ -113,12 +115,12 @@ public class ColorPickerCoordinator implements ColorPicker {
                     }
                 });
 
-        mMediator = new ColorPickerMediator(colorItems);
+        mMediator = new TabGroupColorPickerMediator(colorItems);
     }
 
     /** Returns the container view hosting the color picker component */
     @Override
-    public ColorPickerContainer getContainerView() {
+    public TabGroupColorPickerContainer getContainerView() {
         return mContainerView;
     }
 

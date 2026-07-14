@@ -42,6 +42,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
+import static org.chromium.chrome.R.plurals.bottom_tab_grid_title_placeholder;
 import static org.chromium.chrome.browser.flags.ChromeFeatureList.DATA_SHARING;
 import static org.chromium.chrome.browser.flags.ChromeFeatureList.DATA_SHARING_JOIN_ONLY;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.addBlankTabs;
@@ -143,6 +144,7 @@ import org.chromium.chrome.browser.tab_ui.ActionConfirmationManager;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tasks.tab_management.color_picker.TabGroupColorPickerContainer;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
@@ -1992,14 +1994,11 @@ public class TabGridDialogTest {
 
                             Assert.assertTrue(v instanceof EditText);
                             EditText titleText = (EditText) v;
+                            Resources res = cta.getResources();
+                            int resId = bottom_tab_grid_title_placeholder;
                             String title =
                                     customizedTitle == null
-                                            ? cta.getResources()
-                                                    .getQuantityString(
-                                                            R.plurals
-                                                                    .bottom_tab_grid_title_placeholder,
-                                                            tabCount,
-                                                            tabCount)
+                                            ? res.getQuantityString(resId, tabCount, tabCount)
                                             : customizedTitle;
                             Assert.assertEquals(title, titleText.getText().toString());
                             assertFalse(v.isFocused());

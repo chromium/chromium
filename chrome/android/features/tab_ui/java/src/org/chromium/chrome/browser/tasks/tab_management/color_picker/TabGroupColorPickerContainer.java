@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.tasks.tab_management;
+package org.chromium.chrome.browser.tasks.tab_management.color_picker;
 
 import android.content.Context;
 import android.graphics.Canvas;
@@ -10,12 +10,12 @@ import android.util.AttributeSet;
 import android.view.View;
 
 import com.google.android.material.button.MaterialButton;
+import com.google.android.material.button.MaterialButtonToggleGroup;
 import com.google.android.material.shape.ShapeAppearance;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.tasks.tab_management.color_picker.ColorPickerContainer;
-import org.chromium.chrome.browser.tasks.tab_management.color_picker.ColorPickerCoordinator.ColorPickerLayoutType;
+import org.chromium.chrome.browser.tasks.tab_management.color_picker.TabGroupColorPickerCoordinator.TabGroupColorPickerLayoutType;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.ui.util.AttrUtils;
 
@@ -23,9 +23,9 @@ import java.util.List;
 
 /** LinearLayout for the tab group specific color picker component. */
 @NullMarked
-public class TabGroupColorPickerContainer extends ColorPickerContainer {
+public class TabGroupColorPickerContainer extends MaterialButtonToggleGroup {
     private @Nullable List<View> mColorViews;
-    private @ColorPickerLayoutType int mLayoutType;
+    private @TabGroupColorPickerLayoutType int mLayoutType;
 
     /** Constructs a new tab group color picker. */
     public TabGroupColorPickerContainer(Context context, AttributeSet attrs) {
@@ -43,9 +43,9 @@ public class TabGroupColorPickerContainer extends ColorPickerContainer {
         int widthSize = MeasureSpec.getSize(widthMeasureSpec);
 
         int desiredWidth = getSingleRowWidth();
-        if (mLayoutType == ColorPickerLayoutType.DOUBLE_ROW) {
+        if (mLayoutType == TabGroupColorPickerLayoutType.DOUBLE_ROW) {
             desiredWidth = getDoubleRowWidth();
-        } else if (mLayoutType == ColorPickerLayoutType.DYNAMIC) {
+        } else if (mLayoutType == TabGroupColorPickerLayoutType.DYNAMIC) {
             if (widthMode != MeasureSpec.UNSPECIFIED && getSingleRowWidth() > widthSize) {
                 desiredWidth = getDoubleRowWidth();
             }
@@ -82,7 +82,6 @@ public class TabGroupColorPickerContainer extends ColorPickerContainer {
         }
     }
 
-    @Override
     public void setColorViews(List<View> colorViews) {
         mColorViews = colorViews;
         removeAllViews();
@@ -91,23 +90,19 @@ public class TabGroupColorPickerContainer extends ColorPickerContainer {
         }
     }
 
-    @Override
-    public @ColorPickerLayoutType int getColorPickerLayoutType() {
+    public @TabGroupColorPickerLayoutType int getTabGroupColorPickerLayoutType() {
         return mLayoutType;
     }
 
-    @Override
-    public void setColorPickerLayoutType(@ColorPickerLayoutType int layoutType) {
+    public void setTabGroupColorPickerLayoutType(@TabGroupColorPickerLayoutType int layoutType) {
         mLayoutType = layoutType;
     }
 
-    @Override
     public int getSingleRowWidth() {
         if (mColorViews == null) return 0;
         return mColorViews.size() * getColorButtonSize() + getPaddingLeft() + getPaddingRight();
     }
 
-    @Override
     public int getDoubleRowWidth() {
         if (mColorViews == null) return 0;
         return ((mColorViews.size() + 1) / 2) * getColorButtonSize()

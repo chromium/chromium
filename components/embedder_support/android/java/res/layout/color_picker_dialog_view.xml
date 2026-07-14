@@ -19,7 +19,7 @@ found in the LICENSE file.
       android:layout_height="wrap_content"
       android:orientation="vertical">
 
-    <org.chromium.components.embedder_support.delegate.ColorPickerSuggestionsView
+    <org.chromium.components.embedder_support.delegate.HtmlColorPickerSuggestionsView
         android:id="@+id/color_picker_suggestions_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -28,7 +28,7 @@ found in the LICENSE file.
         android:verticalSpacing="8dp"
         android:visibility="gone" />
 
-    <org.chromium.components.embedder_support.delegate.ColorPickerAdvanced
+    <org.chromium.components.embedder_support.delegate.HtmlColorPickerAdvanced
         android:id="@+id/color_picker_custom_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

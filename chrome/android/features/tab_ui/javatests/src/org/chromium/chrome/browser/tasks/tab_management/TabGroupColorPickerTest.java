@@ -35,10 +35,10 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.tasks.tab_management.color_picker.ColorPickerContainer;
-import org.chromium.chrome.browser.tasks.tab_management.color_picker.ColorPickerCoordinator;
-import org.chromium.chrome.browser.tasks.tab_management.color_picker.ColorPickerCoordinator.ColorPickerLayoutType;
-import org.chromium.chrome.browser.tasks.tab_management.color_picker.ColorPickerType;
+import org.chromium.chrome.browser.tasks.tab_management.color_picker.TabGroupColorPickerContainer;
+import org.chromium.chrome.browser.tasks.tab_management.color_picker.TabGroupColorPickerCoordinator;
+import org.chromium.chrome.browser.tasks.tab_management.color_picker.TabGroupColorPickerCoordinator.TabGroupColorPickerLayoutType;
+import org.chromium.chrome.browser.tasks.tab_management.color_picker.TabGroupColorPickerType;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.components.tab_groups.TabGroupsFeatureMap;
@@ -51,7 +51,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-/** Integration and render tests for the ColorPicker feature. */
+/** Integration and render tests for the TabGroupColorPicker feature. */
 @RunWith(ParameterizedRunner.class)
 @ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @Batch(Batch.PER_CLASS)
@@ -74,8 +74,8 @@ public class TabGroupColorPickerTest {
     public BaseActivityTestRule<BlankUiTestActivity> mActivityTestRule =
             new BaseActivityTestRule<>(BlankUiTestActivity.class);
 
-    private ColorPickerCoordinator mCoordinator;
-    private ColorPickerContainer mContainerView;
+    private TabGroupColorPickerCoordinator mCoordinator;
+    private TabGroupColorPickerContainer mContainerView;
     private FrameLayout mRootView;
     private List<Integer> mColorList;
 
@@ -104,18 +104,19 @@ public class TabGroupColorPickerTest {
                                     .inflate(
                                             R.layout.tab_group_color_picker_container,
                                             /* root= */ null);
-                    ColorPickerContainer container = root.findViewById(R.id.color_picker_container);
+                    TabGroupColorPickerContainer container =
+                            root.findViewById(R.id.color_picker_container);
                     mCoordinator =
-                            new ColorPickerCoordinator(
+                            new TabGroupColorPickerCoordinator(
                                     mActivityTestRule.getActivity(),
                                     colors,
                                     container,
-                                    ColorPickerType.TAB_GROUP,
+                                    TabGroupColorPickerType.TAB_GROUP,
                                     false,
-                                    ColorPickerLayoutType.DYNAMIC,
+                                    TabGroupColorPickerLayoutType.DYNAMIC,
                                     null);
                     mCoordinator.setSelectedColorItem(colors.get(selectedIndex));
-                    mContainerView = (ColorPickerContainer) mCoordinator.getContainerView();
+                    mContainerView = (TabGroupColorPickerContainer) mCoordinator.getContainerView();
                     if (mContainerView.getParent() != null) {
                         ((ViewGroup) mContainerView.getParent()).removeView(mContainerView);
                     }
@@ -130,10 +131,11 @@ public class TabGroupColorPickerTest {
 
     @Test
     @MediumTest
-    public void testColorPicker_forceSingleRow() {
+    public void testTabGroupColorPicker_forceSingleRow() {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mContainerView.setColorPickerLayoutType(ColorPickerLayoutType.SINGLE_ROW);
+                    mContainerView.setTabGroupColorPickerLayoutType(
+                            TabGroupColorPickerLayoutType.SINGLE_ROW);
                     mRootView.addView(mContainerView);
                 });
 
@@ -176,16 +178,18 @@ public class TabGroupColorPickerTest {
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mContainerView.setColorPickerLayoutType(ColorPickerLayoutType.DYNAMIC);
+                    mContainerView.setTabGroupColorPickerLayoutType(
+                            TabGroupColorPickerLayoutType.DYNAMIC);
                 });
     }
 
     @Test
     @MediumTest
-    public void testColorPicker_forceDoubleRow() {
+    public void testTabGroupColorPicker_forceDoubleRow() {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mContainerView.setColorPickerLayoutType(ColorPickerLayoutType.DOUBLE_ROW);
+                    mContainerView.setTabGroupColorPickerLayoutType(
+                            TabGroupColorPickerLayoutType.DOUBLE_ROW);
                     mRootView.addView(mContainerView);
                 });
 
@@ -226,13 +230,14 @@ public class TabGroupColorPickerTest {
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mContainerView.setColorPickerLayoutType(ColorPickerLayoutType.DYNAMIC);
+                    mContainerView.setTabGroupColorPickerLayoutType(
+                            TabGroupColorPickerLayoutType.DYNAMIC);
                 });
     }
 
     @Test
     @MediumTest
-    public void testColorPicker_dynamicSingleRow() {
+    public void testTabGroupColorPicker_dynamicSingleRow() {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mRootView.addView(mContainerView);
@@ -261,7 +266,7 @@ public class TabGroupColorPickerTest {
 
     @Test
     @MediumTest
-    public void testColorPicker_dynamicAlternateSelection() {
+    public void testTabGroupColorPicker_dynamicAlternateSelection() {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mRootView.addView(mContainerView);
@@ -289,7 +294,7 @@ public class TabGroupColorPickerTest {
 
     @Test
     @MediumTest
-    public void testColorPicker_dynamicDoubleRow() {
+    public void testTabGroupColorPicker_dynamicDoubleRow() {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mRootView.addView(mContainerView);
@@ -367,10 +372,11 @@ public class TabGroupColorPickerTest {
     @Test
     @MediumTest
     @Feature("RenderTest")
-    public void testColorPicker_singleRowRender() throws IOException {
+    public void testTabGroupColorPicker_singleRowRender() throws IOException {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mContainerView.setColorPickerLayoutType(ColorPickerLayoutType.SINGLE_ROW);
+                    mContainerView.setTabGroupColorPickerLayoutType(
+                            TabGroupColorPickerLayoutType.SINGLE_ROW);
                     mRootView.addView(mContainerView);
 
                     // Set parent width to fit single row to prevent cutting off
@@ -388,7 +394,7 @@ public class TabGroupColorPickerTest {
     @Test
     @MediumTest
     @Feature("RenderTest")
-    public void testColorPicker_doubleRowRender() throws IOException {
+    public void testTabGroupColorPicker_doubleRowRender() throws IOException {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mRootView.addView(mContainerView);

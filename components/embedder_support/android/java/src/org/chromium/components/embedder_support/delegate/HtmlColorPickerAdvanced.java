@@ -17,11 +17,11 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
 /**
- * Represents a more advanced way for the user to choose a color, based on selecting each of
- * the Hue, Saturation and Value attributes.
+ * Represents a more advanced way for the user to choose a color, based on selecting each of the
+ * Hue, Saturation and Value attributes.
  */
 @NullMarked
-public class ColorPickerAdvanced extends LinearLayout implements OnSeekBarChangeListener {
+public class HtmlColorPickerAdvanced extends LinearLayout implements OnSeekBarChangeListener {
     private static final int HUE_SEEK_BAR_MAX = 360;
 
     private static final int HUE_COLOR_COUNT = 7;
@@ -34,29 +34,29 @@ public class ColorPickerAdvanced extends LinearLayout implements OnSeekBarChange
 
     private static final int VALUE_COLOR_COUNT = 2;
 
-    ColorPickerAdvancedComponent mHueDetails;
+    HtmlColorPickerAdvancedComponent mHueDetails;
 
-    ColorPickerAdvancedComponent mSaturationDetails;
+    HtmlColorPickerAdvancedComponent mSaturationDetails;
 
-    ColorPickerAdvancedComponent mValueDetails;
+    HtmlColorPickerAdvancedComponent mValueDetails;
 
-    private @Nullable OnColorChangedListener mOnColorChangedListener;
+    private @Nullable HtmlOnColorChangedListener mHtmlOnColorChangedListener;
 
     private int mCurrentColor;
 
     private final float[] mCurrentHsvValues = new float[3];
 
-    public ColorPickerAdvanced(Context context, AttributeSet attrs) {
+    public HtmlColorPickerAdvanced(Context context, AttributeSet attrs) {
         super(context, attrs);
         init();
     }
 
-    public ColorPickerAdvanced(Context context, AttributeSet attrs, int defStyle) {
+    public HtmlColorPickerAdvanced(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
         init();
     }
 
-    public ColorPickerAdvanced(Context context) {
+    public HtmlColorPickerAdvanced(Context context) {
         super(context);
         init();
     }
@@ -75,23 +75,22 @@ public class ColorPickerAdvanced extends LinearLayout implements OnSeekBarChange
     }
 
     /**
-     * Creates a new GradientDetails object from the parameters provided, initializes it,
-     * and adds it to this advanced view.
+     * Creates a new GradientDetails object from the parameters provided, initializes it, and adds
+     * it to this advanced view.
      *
      * @param textResourceId The text to display for the label.
      * @param seekBarMax The maximum value of the seek bar for the gradient.
      * @param seekBarListener Object listening to when the user changes the seek bar.
-     *
      * @return A new GradientDetails object initialized with the given parameters.
      */
-    public ColorPickerAdvancedComponent createAndAddNewGradient(
+    public HtmlColorPickerAdvancedComponent createAndAddNewGradient(
             int textResourceId, int seekBarMax, OnSeekBarChangeListener seekBarListener) {
         LayoutInflater inflater =
                 (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View newComponent = inflater.inflate(R.layout.color_picker_advanced_component, null);
         addView(newComponent);
 
-        return new ColorPickerAdvancedComponent(
+        return new HtmlColorPickerAdvancedComponent(
                 newComponent, textResourceId, seekBarMax, seekBarListener);
     }
 
@@ -100,11 +99,13 @@ public class ColorPickerAdvanced extends LinearLayout implements OnSeekBarChange
      *
      * @param onColorChangedListener The object listening for the change in color.
      */
-    public void setListener(OnColorChangedListener onColorChangedListener) {
-        mOnColorChangedListener = onColorChangedListener;
+    public void setListener(HtmlOnColorChangedListener onColorChangedListener) {
+        mHtmlOnColorChangedListener = onColorChangedListener;
     }
 
-    /** @return The color the user has currently chosen. */
+    /**
+     * @return The color the user has currently chosen.
+     */
     public int getColor() {
         return mCurrentColor;
     }
@@ -122,8 +123,8 @@ public class ColorPickerAdvanced extends LinearLayout implements OnSeekBarChange
 
     /** Notifies the listener, if there is one, of a change in the selected color. */
     private void notifyColorChanged() {
-        if (mOnColorChangedListener != null) {
-            mOnColorChangedListener.onColorChanged(getColor());
+        if (mHtmlOnColorChangedListener != null) {
+            mHtmlOnColorChangedListener.onColorChanged(getColor());
         }
     }
 
@@ -132,8 +133,8 @@ public class ColorPickerAdvanced extends LinearLayout implements OnSeekBarChange
      *
      * @param seekBar The color slider that was updated.
      * @param progress The new value of the color slider.
-     * @param fromUser Whether it was the user the changed the value, or whether
-     *            we were setting it up.
+     * @param fromUser Whether it was the user the changed the value, or whether we were setting it
+     *     up.
      */
     @Override
     public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
@@ -152,8 +153,8 @@ public class ColorPickerAdvanced extends LinearLayout implements OnSeekBarChange
     }
 
     /**
-     * Updates only the hue gradient display. The gradient is always the same
-     * regardless of what the currently selected color is.
+     * Updates only the hue gradient display. The gradient is always the same regardless of what the
+     * currently selected color is.
      */
     private void updateHueGradient() {
         float[] tempHsvValues = new float[3];
@@ -170,8 +171,8 @@ public class ColorPickerAdvanced extends LinearLayout implements OnSeekBarChange
     }
 
     /**
-     * Updates only the saturation gradient display with the saturation value
-     * for the currently selected color.
+     * Updates only the saturation gradient display with the saturation value for the currently
+     * selected color.
      */
     private void updateSaturationGradient() {
         float[] tempHsvValues = new float[3];
@@ -189,8 +190,8 @@ public class ColorPickerAdvanced extends LinearLayout implements OnSeekBarChange
     }
 
     /**
-     * Updates only the Value gradient display with the Value amount for
-     * the currently selected color.
+     * Updates only the Value gradient display with the Value amount for the currently selected
+     * color.
      */
     private void updateValueGradient() {
         float[] tempHsvValues = new float[3];

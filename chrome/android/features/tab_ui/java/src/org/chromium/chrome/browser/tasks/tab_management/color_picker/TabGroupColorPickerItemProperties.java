@@ -14,11 +14,11 @@ import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 
 /** Model for a color entry in the color picker UI. */
 @NullMarked
-public class ColorPickerItemProperties {
+public class TabGroupColorPickerItemProperties {
     /** The {@link TabGroupColorId} represented by this entry. */
     public static final ReadableIntPropertyKey COLOR_ID = new ReadableIntPropertyKey();
 
-    /** The {@link ColorPickerType} that this color item corresponds to. */
+    /** The {@link TabGroupColorPickerType} that this color item corresponds to. */
     public static final ReadableIntPropertyKey COLOR_PICKER_TYPE = new ReadableIntPropertyKey();
 
     /** An indicator of whether the current tab model is in incognito mode. */
@@ -37,7 +37,7 @@ public class ColorPickerItemProperties {
     /** Creates a model for a color item. */
     public static PropertyModel create(
             int color,
-            @ColorPickerType int colorPickerType,
+            @TabGroupColorPickerType int colorPickerType,
             boolean isIncognito,
             Runnable onClickListener,
             boolean isSelected,

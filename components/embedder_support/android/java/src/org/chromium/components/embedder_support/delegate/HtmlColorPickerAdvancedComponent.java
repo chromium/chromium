@@ -16,13 +16,13 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
 /**
- * Encapsulates a single gradient view of the HSV color display, including its label, gradient
- * view and seek bar.
+ * Encapsulates a single gradient view of the HSV color display, including its label, gradient view
+ * and seek bar.
  *
- * Mirrors a "color_picker_advanced_component" layout.
+ * <p>Mirrors a "color_picker_advanced_component" layout.
  */
 @NullMarked
-public class ColorPickerAdvancedComponent {
+public class HtmlColorPickerAdvancedComponent {
     // The view that displays the gradient.
     private final View mGradientView;
     // The seek bar that allows the user to change the value of this component.
@@ -42,7 +42,7 @@ public class ColorPickerAdvancedComponent {
      * @param seekBarMax The range of the seek bar.
      * @param seekBarListener The listener for when the seek bar value changes.
      */
-    ColorPickerAdvancedComponent(
+    HtmlColorPickerAdvancedComponent(
             final View rootView,
             final int textResourceId,
             final int seekBarMax,
@@ -66,7 +66,9 @@ public class ColorPickerAdvancedComponent {
         mSeekBar.setContentDescription(context.getString(textResourceId));
     }
 
-    /** @return The value represented by this component, maintained by the seek bar progress. */
+    /**
+     * @return The value represented by this component, maintained by the seek bar progress.
+     */
     public float getValue() {
         return mSeekBar.getProgress();
     }

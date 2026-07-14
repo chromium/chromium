@@ -9,9 +9,9 @@ import org.chromium.build.annotations.NullMarked;
 
 /** Interface for the color picker related UI. */
 @NullMarked
-public interface ColorPicker {
+public interface TabGroupColorPicker {
     /** Return the inflated container view for the color picker component. */
-    ColorPickerContainer getContainerView();
+    TabGroupColorPickerContainer getContainerView();
 
     /**
      * Set a selected color item. No item will be selected by default, so it is recommended to call

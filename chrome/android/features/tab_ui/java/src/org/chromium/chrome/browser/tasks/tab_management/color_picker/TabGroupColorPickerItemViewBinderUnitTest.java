@@ -9,9 +9,9 @@ import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.junit.Assert.assertEquals;
 
-import static org.chromium.chrome.browser.tasks.tab_management.color_picker.ColorPickerItemProperties.COLOR_ID;
-import static org.chromium.chrome.browser.tasks.tab_management.color_picker.ColorPickerItemProperties.IS_SELECTED;
-import static org.chromium.chrome.browser.tasks.tab_management.color_picker.ColorPickerItemProperties.ON_CLICK_LISTENER;
+import static org.chromium.chrome.browser.tasks.tab_management.color_picker.TabGroupColorPickerItemProperties.COLOR_ID;
+import static org.chromium.chrome.browser.tasks.tab_management.color_picker.TabGroupColorPickerItemProperties.IS_SELECTED;
+import static org.chromium.chrome.browser.tasks.tab_management.color_picker.TabGroupColorPickerItemProperties.ON_CLICK_LISTENER;
 
 import android.app.Activity;
 import android.content.res.ColorStateList;
@@ -40,7 +40,7 @@ import org.chromium.components.tab_groups.TabGroupsFeatureMap;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
-/** Tests for ColorPickerItemViewBinder. */
+/** Tests for TabGroupColorPickerItemViewBinder. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 // TODO(crbug.com/419289558): Re-enable color surface feature flags
@@ -49,9 +49,9 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
     ChromeFeatureList.GRID_TAB_SWITCHER_SURFACE_COLOR_UPDATE,
     TabGroupsFeatureMap.UPDATE_TAB_GROUP_COLORS
 })
-public class ColorPickerItemViewBinderUnitTest {
+public class TabGroupColorPickerItemViewBinderUnitTest {
     private Activity mActivity;
-    private View mColorPickerItemView;
+    private View mTabGroupColorPickerItemView;
     private PropertyModel mModel;
     private PropertyModelChangeProcessor mPropertyModelChangeProcessor;
 
@@ -63,12 +63,12 @@ public class ColorPickerItemViewBinderUnitTest {
         // This is necessary so that createItemView can resolve and preserve the view's
         // layout parameters (e.g. 48dp touch target size) from the layout XML.
         FrameLayout parent = new FrameLayout(mActivity);
-        mColorPickerItemView = ColorPickerItemViewBinder.createItemView(parent);
+        mTabGroupColorPickerItemView = TabGroupColorPickerItemViewBinder.createItemView(parent);
 
         mModel =
-                ColorPickerItemProperties.create(
+                TabGroupColorPickerItemProperties.create(
                         TabGroupColorId.BLUE,
-                        ColorPickerType.TAB_GROUP,
+                        TabGroupColorPickerType.TAB_GROUP,
                         false,
                         () -> {
                             mModel.set(IS_SELECTED, !mModel.get(IS_SELECTED));
@@ -78,14 +78,16 @@ public class ColorPickerItemViewBinderUnitTest {
 
         mPropertyModelChangeProcessor =
                 PropertyModelChangeProcessor.create(
-                        mModel, mColorPickerItemView, ColorPickerItemViewBinder::bind);
+                        mModel,
+                        mTabGroupColorPickerItemView,
+                        TabGroupColorPickerItemViewBinder::bind);
     }
 
     @Test
-    public void testColorPickerItem_color() {
+    public void testTabGroupColorPickerItem_color() {
         mModel.get(COLOR_ID);
 
-        View colorButton = mColorPickerItemView;
+        View colorButton = mTabGroupColorPickerItemView;
         assertThat(colorButton, instanceOf(MaterialButton.class));
         MaterialButton button = (MaterialButton) colorButton;
 
@@ -97,20 +99,20 @@ public class ColorPickerItemViewBinderUnitTest {
     }
 
     @Test
-    public void testColorPickerItem_onClickListener() {
+    public void testTabGroupColorPickerItem_onClickListener() {
         mModel.get(ON_CLICK_LISTENER);
 
-        View onClickListener = mColorPickerItemView;
+        View onClickListener = mTabGroupColorPickerItemView;
         Assert.assertNotNull(onClickListener);
         onClickListener.performClick();
     }
 
     @Test
-    public void testColorPickerItem_accessibilityDelegate() {
+    public void testTabGroupColorPickerItem_accessibilityDelegate() {
         AccessibilityNodeInfoCompat info = AccessibilityNodeInfoCompat.obtain();
-        mColorPickerItemView
+        mTabGroupColorPickerItemView
                 .getAccessibilityDelegate()
-                .onInitializeAccessibilityNodeInfo(mColorPickerItemView, info.unwrap());
+                .onInitializeAccessibilityNodeInfo(mTabGroupColorPickerItemView, info.unwrap());
 
         AccessibilityNodeInfoCompat.CollectionItemInfoCompat itemInfo =
                 info.getCollectionItemInfo();
@@ -122,30 +124,30 @@ public class ColorPickerItemViewBinderUnitTest {
         Assert.assertFalse(itemInfo.isSelected());
 
         mModel.set(IS_SELECTED, true);
-        mColorPickerItemView
+        mTabGroupColorPickerItemView
                 .getAccessibilityDelegate()
-                .onInitializeAccessibilityNodeInfo(mColorPickerItemView, info.unwrap());
+                .onInitializeAccessibilityNodeInfo(mTabGroupColorPickerItemView, info.unwrap());
         itemInfo = info.getCollectionItemInfo();
         Assert.assertTrue(itemInfo.isSelected());
     }
 
     @Test
-    public void testColorPickerItem_accessibilityDelegate_customPosition() {
+    public void testTabGroupColorPickerItem_accessibilityDelegate_customPosition() {
         PropertyModel model =
-                ColorPickerItemProperties.create(
+                TabGroupColorPickerItemProperties.create(
                         TabGroupColorId.BLUE,
-                        ColorPickerType.TAB_GROUP,
+                        TabGroupColorPickerType.TAB_GROUP,
                         false,
                         () -> {},
                         false,
                         /* itemIndex= */ 5);
         PropertyModelChangeProcessor.create(
-                model, mColorPickerItemView, ColorPickerItemViewBinder::bind);
+                model, mTabGroupColorPickerItemView, TabGroupColorPickerItemViewBinder::bind);
 
         AccessibilityNodeInfoCompat info = AccessibilityNodeInfoCompat.obtain();
-        mColorPickerItemView
+        mTabGroupColorPickerItemView
                 .getAccessibilityDelegate()
-                .onInitializeAccessibilityNodeInfo(mColorPickerItemView, info.unwrap());
+                .onInitializeAccessibilityNodeInfo(mTabGroupColorPickerItemView, info.unwrap());
 
         AccessibilityNodeInfoCompat.CollectionItemInfoCompat itemInfo =
                 info.getCollectionItemInfo();
@@ -154,8 +156,8 @@ public class ColorPickerItemViewBinderUnitTest {
     }
 
     @Test
-    public void testColorPickerItem_isSelected() {
-        MaterialButton view = (MaterialButton) mColorPickerItemView;
+    public void testTabGroupColorPickerItem_isSelected() {
+        MaterialButton view = (MaterialButton) mTabGroupColorPickerItemView;
         String color = mActivity.getString(R.string.tab_group_color_blue);
 
         assertEquals(color, view.getContentDescription());

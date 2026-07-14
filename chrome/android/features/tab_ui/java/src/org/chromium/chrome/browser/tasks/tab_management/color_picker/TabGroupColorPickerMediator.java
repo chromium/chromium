@@ -14,7 +14,7 @@ import java.util.List;
 
 /** Contains the logic to set the state of the model and react to color change clicks. */
 @NullMarked
-public class ColorPickerMediator {
+public class TabGroupColorPickerMediator {
     private final List<PropertyModel> mColorItems;
     private final SettableMonotonicObservableSupplier<Integer> mSelectedColorSupplier =
             ObservableSuppliers.createMonotonic();
@@ -26,14 +26,15 @@ public class ColorPickerMediator {
      * @param colorItems The list of property models representing the color items in this color
      *     picker.
      */
-    public ColorPickerMediator(List<PropertyModel> colorItems) {
+    public TabGroupColorPickerMediator(List<PropertyModel> colorItems) {
         mColorItems = colorItems;
     }
 
     void setSelectedColorItem(int selectedColor) {
         for (PropertyModel model : mColorItems) {
-            boolean isSelected = selectedColor == model.get(ColorPickerItemProperties.COLOR_ID);
-            model.set(ColorPickerItemProperties.IS_SELECTED, isSelected);
+            boolean isSelected =
+                    selectedColor == model.get(TabGroupColorPickerItemProperties.COLOR_ID);
+            model.set(TabGroupColorPickerItemProperties.IS_SELECTED, isSelected);
         }
 
         mSelectedColorSupplier.set(selectedColor);

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_EMBEDDER_SUPPORT_ANDROID_DELEGATE_COLOR_PICKER_BRIDGE_H_
-#define COMPONENTS_EMBEDDER_SUPPORT_ANDROID_DELEGATE_COLOR_PICKER_BRIDGE_H_
+#ifndef COMPONENTS_EMBEDDER_SUPPORT_ANDROID_DELEGATE_HTML_COLOR_PICKER_BRIDGE_H_
+#define COMPONENTS_EMBEDDER_SUPPORT_ANDROID_DELEGATE_HTML_COLOR_PICKER_BRIDGE_H_
 
 #include <vector>
 
@@ -24,20 +24,20 @@ class WebContents;
 namespace web_contents_delegate_android {
 
 // Glues the Java (ColorPickerDialogView.java) picker with the native part.
-class ColorPickerBridge : public content::ColorChooser {
+class HtmlColorPickerBridge : public content::ColorChooser {
   // TODO(https://crbug.com/495898193): Remove this macro.
   ADVANCED_MEMORY_SAFETY_CHECKS();
 
  public:
-  ColorPickerBridge(
+  HtmlColorPickerBridge(
       content::WebContents* tab,
       SkColor initial_color,
       const std::vector<blink::mojom::ColorSuggestionPtr>& suggestions);
 
-  ColorPickerBridge(const ColorPickerBridge&) = delete;
-  ColorPickerBridge& operator=(const ColorPickerBridge&) = delete;
+  HtmlColorPickerBridge(const HtmlColorPickerBridge&) = delete;
+  HtmlColorPickerBridge& operator=(const HtmlColorPickerBridge&) = delete;
 
-  ~ColorPickerBridge() override;
+  ~HtmlColorPickerBridge() override;
 
   void OnColorChosen(JNIEnv* env, int32_t color);
 
@@ -55,4 +55,4 @@ class ColorPickerBridge : public content::ColorChooser {
 
 }  // namespace web_contents_delegate_android
 
-#endif  // COMPONENTS_EMBEDDER_SUPPORT_ANDROID_DELEGATE_COLOR_PICKER_BRIDGE_H_
+#endif  // COMPONENTS_EMBEDDER_SUPPORT_ANDROID_DELEGATE_HTML_COLOR_PICKER_BRIDGE_H_

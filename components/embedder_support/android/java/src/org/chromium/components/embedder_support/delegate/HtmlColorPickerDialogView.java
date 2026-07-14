@@ -31,7 +31,7 @@ import org.chromium.ui.widget.ButtonCompat;
  * advanced views.
  */
 @NullMarked
-public class ColorPickerDialogView extends AlertDialog implements OnColorChangedListener {
+public class HtmlColorPickerDialogView extends AlertDialog implements HtmlOnColorChangedListener {
     // Callbacks to handle user interactions (picking a color, switching views, and closing dialog).
     private @Nullable Callback<Integer> mCustomColorPickedCallback;
     private @Nullable Callback<@Nullable Void> mViewSwitchedCallback;
@@ -39,16 +39,16 @@ public class ColorPickerDialogView extends AlertDialog implements OnColorChanged
     private @Nullable Callback<Integer> mDialogDismissedCallback;
 
     // GridView of the suggested colors from the web dev (or the default list if empty).
-    private final ColorPickerSuggestionsView mSuggestionsView;
+    private final HtmlColorPickerSuggestionsView mSuggestionsView;
 
     // View elements.
     private final View mDialogContent;
     private final View mChosenColor;
     private final LinearLayout mChosenColorContainer;
     private final ButtonCompat mViewSwitcher;
-    private final ColorPickerAdvanced mCustomView;
+    private final HtmlColorPickerAdvanced mCustomView;
 
-    public ColorPickerDialogView(Context context) {
+    public HtmlColorPickerDialogView(Context context) {
         super(context);
 
         // Inflate dialog content and set the title.
@@ -59,14 +59,15 @@ public class ColorPickerDialogView extends AlertDialog implements OnColorChanged
 
         // Set other view elements and their listeners.
         mSuggestionsView =
-                (ColorPickerSuggestionsView)
+                (HtmlColorPickerSuggestionsView)
                         mDialogContent.findViewById(R.id.color_picker_suggestions_view);
         mChosenColor = mDialogContent.findViewById(R.id.color_picker_dialog_chosen_color_view);
         mChosenColorContainer =
                 mDialogContent.findViewById(R.id.color_picker_dialog_chosen_color_container);
 
         mCustomView =
-                (ColorPickerAdvanced) mDialogContent.findViewById(R.id.color_picker_custom_view);
+                (HtmlColorPickerAdvanced)
+                        mDialogContent.findViewById(R.id.color_picker_custom_view);
         mCustomView.setListener(this);
 
         mViewSwitcher =

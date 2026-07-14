@@ -5,12 +5,12 @@
 package org.chromium.chrome.browser.tasks.tab_management.color_picker;
 
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiThemeProvider.getColorPickerDialogBackgroundColor;
-import static org.chromium.chrome.browser.tasks.tab_management.color_picker.ColorPickerItemProperties.COLOR_ID;
-import static org.chromium.chrome.browser.tasks.tab_management.color_picker.ColorPickerItemProperties.COLOR_PICKER_TYPE;
-import static org.chromium.chrome.browser.tasks.tab_management.color_picker.ColorPickerItemProperties.IS_INCOGNITO;
-import static org.chromium.chrome.browser.tasks.tab_management.color_picker.ColorPickerItemProperties.IS_SELECTED;
-import static org.chromium.chrome.browser.tasks.tab_management.color_picker.ColorPickerItemProperties.ITEM_INDEX;
-import static org.chromium.chrome.browser.tasks.tab_management.color_picker.ColorPickerItemProperties.ON_CLICK_LISTENER;
+import static org.chromium.chrome.browser.tasks.tab_management.color_picker.TabGroupColorPickerItemProperties.COLOR_ID;
+import static org.chromium.chrome.browser.tasks.tab_management.color_picker.TabGroupColorPickerItemProperties.COLOR_PICKER_TYPE;
+import static org.chromium.chrome.browser.tasks.tab_management.color_picker.TabGroupColorPickerItemProperties.IS_INCOGNITO;
+import static org.chromium.chrome.browser.tasks.tab_management.color_picker.TabGroupColorPickerItemProperties.IS_SELECTED;
+import static org.chromium.chrome.browser.tasks.tab_management.color_picker.TabGroupColorPickerItemProperties.ITEM_INDEX;
+import static org.chromium.chrome.browser.tasks.tab_management.color_picker.TabGroupColorPickerItemProperties.ON_CLICK_LISTENER;
 
 import android.content.Context;
 import android.content.res.ColorStateList;
@@ -42,7 +42,7 @@ import org.chromium.ui.util.AttrUtils;
 
 /** A binder class for color items on the color picker view. */
 @NullMarked
-public class ColorPickerItemViewBinder {
+public class TabGroupColorPickerItemViewBinder {
     private static final int[] CHECKED_STATE_SET =
             new int[] {android.R.attr.state_checkable, android.R.attr.state_checked};
 
@@ -83,7 +83,7 @@ public class ColorPickerItemViewBinder {
 
     private static void setColorOnColorIcon(PropertyModel model, View view) {
         Context context = view.getContext();
-        @ColorPickerType int colorPickerType = model.get(COLOR_PICKER_TYPE);
+        @TabGroupColorPickerType int colorPickerType = model.get(COLOR_PICKER_TYPE);
         boolean isIncognito = model.get(IS_INCOGNITO);
         int colorId = model.get(COLOR_ID);
 
@@ -208,10 +208,10 @@ public class ColorPickerItemViewBinder {
 
     private static @ColorInt int getColor(
             Context context,
-            @ColorPickerType int colorPickerType,
+            @TabGroupColorPickerType int colorPickerType,
             int colorListIndex,
             boolean isIncognito) {
-        if (colorPickerType == ColorPickerType.TAB_GROUP) {
+        if (colorPickerType == TabGroupColorPickerType.TAB_GROUP) {
             return TabGroupColorPickerUtils.getTabGroupColorPickerItemColor(
                     context, colorListIndex, isIncognito);
         } else {

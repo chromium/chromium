@@ -4,14 +4,14 @@
 
 package org.chromium.components.embedder_support.delegate;
 
-import static org.chromium.components.embedder_support.delegate.ColorPickerProperties.CHOSEN_COLOR;
-import static org.chromium.components.embedder_support.delegate.ColorPickerProperties.CUSTOM_COLOR_PICKED_CALLBACK;
-import static org.chromium.components.embedder_support.delegate.ColorPickerProperties.DIALOG_DISMISSED_CALLBACK;
-import static org.chromium.components.embedder_support.delegate.ColorPickerProperties.IS_ADVANCED_VIEW;
-import static org.chromium.components.embedder_support.delegate.ColorPickerProperties.MAKE_CHOICE_CALLBACK;
-import static org.chromium.components.embedder_support.delegate.ColorPickerProperties.SUGGESTIONS_ADAPTER;
-import static org.chromium.components.embedder_support.delegate.ColorPickerProperties.SUGGESTIONS_NUM_COLUMNS;
-import static org.chromium.components.embedder_support.delegate.ColorPickerProperties.VIEW_SWITCHED_CALLBACK;
+import static org.chromium.components.embedder_support.delegate.HtmlColorPickerProperties.CHOSEN_COLOR;
+import static org.chromium.components.embedder_support.delegate.HtmlColorPickerProperties.CUSTOM_COLOR_PICKED_CALLBACK;
+import static org.chromium.components.embedder_support.delegate.HtmlColorPickerProperties.DIALOG_DISMISSED_CALLBACK;
+import static org.chromium.components.embedder_support.delegate.HtmlColorPickerProperties.IS_ADVANCED_VIEW;
+import static org.chromium.components.embedder_support.delegate.HtmlColorPickerProperties.MAKE_CHOICE_CALLBACK;
+import static org.chromium.components.embedder_support.delegate.HtmlColorPickerProperties.SUGGESTIONS_ADAPTER;
+import static org.chromium.components.embedder_support.delegate.HtmlColorPickerProperties.SUGGESTIONS_NUM_COLUMNS;
+import static org.chromium.components.embedder_support.delegate.HtmlColorPickerProperties.VIEW_SWITCHED_CALLBACK;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -27,9 +27,9 @@ import org.chromium.ui.modelutil.PropertyModel;
  * properties.
  */
 @NullMarked
-public class ColorPickerViewBinder {
+public class HtmlColorPickerViewBinder {
     public static void bind(
-            PropertyModel model, ColorPickerDialogView dialogView, PropertyKey propertyKey) {
+            PropertyModel model, HtmlColorPickerDialogView dialogView, PropertyKey propertyKey) {
         if (CHOSEN_COLOR == propertyKey) {
             dialogView.setColor(model.get(CHOSEN_COLOR));
         } else if (SUGGESTIONS_NUM_COLUMNS == propertyKey) {
@@ -56,18 +56,21 @@ public class ColorPickerViewBinder {
 
     public static void bindAdapter(
             PropertyModel model, View suggestionView, PropertyKey propertyKey) {
-        if (ColorPickerSuggestionProperties.COLOR == propertyKey) {
+        if (HtmlColorPickerSuggestionProperties.COLOR == propertyKey) {
             final View colorSuggestion =
                     suggestionView.findViewById(R.id.color_picker_suggestion_color_view);
-            colorSuggestion.setBackgroundColor(model.get(ColorPickerSuggestionProperties.COLOR));
-        } else if (ColorPickerSuggestionProperties.ONCLICK == propertyKey) {
+            colorSuggestion.setBackgroundColor(
+                    model.get(HtmlColorPickerSuggestionProperties.COLOR));
+        } else if (HtmlColorPickerSuggestionProperties.ONCLICK == propertyKey) {
             suggestionView.setOnClickListener(
                     v ->
-                            model.get(ColorPickerSuggestionProperties.ONCLICK)
-                                    .onResult(model.get(ColorPickerSuggestionProperties.INDEX)));
+                            model.get(HtmlColorPickerSuggestionProperties.ONCLICK)
+                                    .onResult(
+                                            model.get(HtmlColorPickerSuggestionProperties.INDEX)));
         } else {
-            suggestionView.setContentDescription(model.get(ColorPickerSuggestionProperties.LABEL));
-            suggestionView.setSelected(model.get(ColorPickerSuggestionProperties.IS_SELECTED));
+            suggestionView.setContentDescription(
+                    model.get(HtmlColorPickerSuggestionProperties.LABEL));
+            suggestionView.setSelected(model.get(HtmlColorPickerSuggestionProperties.IS_SELECTED));
             suggestionView.setAccessibilityDelegate(
                     new View.AccessibilityDelegate() {
                         @Override
@@ -76,7 +79,7 @@ public class ColorPickerViewBinder {
                             super.onInitializeAccessibilityNodeInfo(host, info);
                             info.setCollectionItemInfo(
                                     AccessibilityNodeInfo.CollectionItemInfo.obtain(
-                                            model.get(ColorPickerSuggestionProperties.INDEX),
+                                            model.get(HtmlColorPickerSuggestionProperties.INDEX),
                                             1,
                                             1,
                                             1,
@@ -86,5 +89,5 @@ public class ColorPickerViewBinder {
         }
     }
 
-    private ColorPickerViewBinder() {}
+    private HtmlColorPickerViewBinder() {}
 }

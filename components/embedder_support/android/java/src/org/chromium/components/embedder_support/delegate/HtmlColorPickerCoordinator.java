@@ -4,15 +4,15 @@
 
 package org.chromium.components.embedder_support.delegate;
 
-import static org.chromium.components.embedder_support.delegate.ColorPickerProperties.CHOSEN_COLOR;
-import static org.chromium.components.embedder_support.delegate.ColorPickerProperties.CHOSEN_SUGGESTION_INDEX;
-import static org.chromium.components.embedder_support.delegate.ColorPickerProperties.CUSTOM_COLOR_PICKED_CALLBACK;
-import static org.chromium.components.embedder_support.delegate.ColorPickerProperties.DIALOG_DISMISSED_CALLBACK;
-import static org.chromium.components.embedder_support.delegate.ColorPickerProperties.IS_ADVANCED_VIEW;
-import static org.chromium.components.embedder_support.delegate.ColorPickerProperties.MAKE_CHOICE_CALLBACK;
-import static org.chromium.components.embedder_support.delegate.ColorPickerProperties.SUGGESTIONS_ADAPTER;
-import static org.chromium.components.embedder_support.delegate.ColorPickerProperties.SUGGESTIONS_NUM_COLUMNS;
-import static org.chromium.components.embedder_support.delegate.ColorPickerProperties.VIEW_SWITCHED_CALLBACK;
+import static org.chromium.components.embedder_support.delegate.HtmlColorPickerProperties.CHOSEN_COLOR;
+import static org.chromium.components.embedder_support.delegate.HtmlColorPickerProperties.CHOSEN_SUGGESTION_INDEX;
+import static org.chromium.components.embedder_support.delegate.HtmlColorPickerProperties.CUSTOM_COLOR_PICKED_CALLBACK;
+import static org.chromium.components.embedder_support.delegate.HtmlColorPickerProperties.DIALOG_DISMISSED_CALLBACK;
+import static org.chromium.components.embedder_support.delegate.HtmlColorPickerProperties.IS_ADVANCED_VIEW;
+import static org.chromium.components.embedder_support.delegate.HtmlColorPickerProperties.MAKE_CHOICE_CALLBACK;
+import static org.chromium.components.embedder_support.delegate.HtmlColorPickerProperties.SUGGESTIONS_ADAPTER;
+import static org.chromium.components.embedder_support.delegate.HtmlColorPickerProperties.SUGGESTIONS_NUM_COLUMNS;
+import static org.chromium.components.embedder_support.delegate.HtmlColorPickerProperties.VIEW_SWITCHED_CALLBACK;
 
 import android.content.Context;
 import android.graphics.Color;
@@ -36,7 +36,7 @@ import java.util.List;
  * also handles the switches between simple and advanced views.
  */
 @NullMarked
-public class ColorPickerCoordinator {
+public class HtmlColorPickerCoordinator {
     // Default color suggestions, overridden if a single suggestion is provided by the web.
     private static final int[] DEFAULT_COLORS = {
         Color.RED,
@@ -65,26 +65,26 @@ public class ColorPickerCoordinator {
     private int mInitialColor;
     private final Context mContext;
     private final Callback<Integer> mDialogDismissedCallback;
-    private final ColorPickerDialogView mColorPickerDialogView;
-    private final List<ColorSuggestion> mSuggestions;
+    private final HtmlColorPickerDialogView mHtmlColorPickerDialogView;
+    private final List<HtmlColorSuggestion> mSuggestions;
     private PropertyModel mModel;
     private MVCListAdapter.ModelList mSuggestionsModelList;
     private ModelListAdapter mSuggestionsAdapter;
 
-    static ColorPickerCoordinator create(
+    static HtmlColorPickerCoordinator create(
             Context context, Callback<Integer> dialogDismissedCallback) {
-        ColorPickerDialogView dialogView = new ColorPickerDialogView(context);
-        return new ColorPickerCoordinator(context, dialogDismissedCallback, dialogView);
+        HtmlColorPickerDialogView dialogView = new HtmlColorPickerDialogView(context);
+        return new HtmlColorPickerCoordinator(context, dialogDismissedCallback, dialogView);
     }
 
-    public ColorPickerCoordinator(
+    public HtmlColorPickerCoordinator(
             Context context,
             Callback<Integer> dialogDismissedCallback,
-            ColorPickerDialogView dialogView) {
+            HtmlColorPickerDialogView dialogView) {
         mContext = context;
         mDialogDismissedCallback = dialogDismissedCallback;
         mSuggestions = new ArrayList<>();
-        mColorPickerDialogView = dialogView;
+        mHtmlColorPickerDialogView = dialogView;
     }
 
     @Initializer
@@ -99,12 +99,12 @@ public class ColorPickerCoordinator {
         generateSuggestionsModelList();
         mSuggestionsAdapter = new ModelListAdapter(mSuggestionsModelList);
         mSuggestionsAdapter.registerType(
-                ColorPickerSuggestionProperties.ListItemType.DEFAULT,
-                ColorPickerViewBinder::buildView,
-                ColorPickerViewBinder::bindAdapter);
+                HtmlColorPickerSuggestionProperties.ListItemType.DEFAULT,
+                HtmlColorPickerViewBinder::buildView,
+                HtmlColorPickerViewBinder::bindAdapter);
 
         mModel =
-                new PropertyModel.Builder(ColorPickerProperties.ALL_KEYS)
+                new PropertyModel.Builder(HtmlColorPickerProperties.ALL_KEYS)
                         .with(CHOSEN_COLOR, initialColor)
                         .with(CHOSEN_SUGGESTION_INDEX, -1)
                         .with(SUGGESTIONS_NUM_COLUMNS, calculateNumberOfColumns())
@@ -117,18 +117,18 @@ public class ColorPickerCoordinator {
                         .build();
 
         PropertyModelChangeProcessor.create(
-                mModel, mColorPickerDialogView, ColorPickerViewBinder::bind);
+                mModel, mHtmlColorPickerDialogView, HtmlColorPickerViewBinder::bind);
 
-        mColorPickerDialogView.show();
+        mHtmlColorPickerDialogView.show();
         DialogTypeRecorder.recordDialogType(DialogTypeRecorder.DialogType.COLOR_PICKER);
     }
 
     void close() {
-        mColorPickerDialogView.dismiss();
+        mHtmlColorPickerDialogView.dismiss();
     }
 
     public void addColorSuggestion(int color, String label) {
-        mSuggestions.add(new ColorSuggestion(color, label));
+        mSuggestions.add(new HtmlColorSuggestion(color, label));
     }
 
     private void createDefaultSuggestions() {
@@ -136,7 +136,7 @@ public class ColorPickerCoordinator {
         assert DEFAULT_COLORS.length == DEFAULT_COLOR_LABEL_IDS.length;
         for (int i = 0; i < DEFAULT_COLORS.length; i++) {
             mSuggestions.add(
-                    new ColorSuggestion(
+                    new HtmlColorSuggestion(
                             DEFAULT_COLORS[i], mContext.getString(DEFAULT_COLOR_LABEL_IDS[i])));
         }
     }
@@ -145,20 +145,20 @@ public class ColorPickerCoordinator {
         assert !mSuggestions.isEmpty();
         mSuggestionsModelList = new MVCListAdapter.ModelList();
         for (int i = 0; i < mSuggestions.size(); i++) {
-            ColorSuggestion suggestion = mSuggestions.get(i);
+            HtmlColorSuggestion suggestion = mSuggestions.get(i);
             PropertyModel itemModel =
-                    new PropertyModel.Builder(ColorPickerSuggestionProperties.ALL_KEYS)
-                            .with(ColorPickerSuggestionProperties.INDEX, i)
-                            .with(ColorPickerSuggestionProperties.COLOR, suggestion.mColor)
-                            .with(ColorPickerSuggestionProperties.LABEL, suggestion.mLabel)
-                            .with(ColorPickerSuggestionProperties.IS_SELECTED, false)
+                    new PropertyModel.Builder(HtmlColorPickerSuggestionProperties.ALL_KEYS)
+                            .with(HtmlColorPickerSuggestionProperties.INDEX, i)
+                            .with(HtmlColorPickerSuggestionProperties.COLOR, suggestion.mColor)
+                            .with(HtmlColorPickerSuggestionProperties.LABEL, suggestion.mLabel)
+                            .with(HtmlColorPickerSuggestionProperties.IS_SELECTED, false)
                             .with(
-                                    ColorPickerSuggestionProperties.ONCLICK,
+                                    HtmlColorPickerSuggestionProperties.ONCLICK,
                                     this::handleSuggestionColorPicked)
                             .build();
             mSuggestionsModelList.add(
                     new MVCListAdapter.ListItem(
-                            ColorPickerSuggestionProperties.ListItemType.DEFAULT, itemModel));
+                            HtmlColorPickerSuggestionProperties.ListItemType.DEFAULT, itemModel));
         }
     }
 
@@ -182,16 +182,19 @@ public class ColorPickerCoordinator {
             mSuggestionsModelList
                     .get(mModel.get(CHOSEN_SUGGESTION_INDEX))
                     .model
-                    .set(ColorPickerSuggestionProperties.IS_SELECTED, false);
+                    .set(HtmlColorPickerSuggestionProperties.IS_SELECTED, false);
         }
         mSuggestionsModelList
                 .get(index)
                 .model
-                .set(ColorPickerSuggestionProperties.IS_SELECTED, true);
+                .set(HtmlColorPickerSuggestionProperties.IS_SELECTED, true);
         mModel.set(CHOSEN_SUGGESTION_INDEX, index);
         mModel.set(
                 CHOSEN_COLOR,
-                mSuggestionsModelList.get(index).model.get(ColorPickerSuggestionProperties.COLOR));
+                mSuggestionsModelList
+                        .get(index)
+                        .model
+                        .get(HtmlColorPickerSuggestionProperties.COLOR));
     }
 
     private void handleCustomColorPicked(int newColor) {
@@ -201,7 +204,7 @@ public class ColorPickerCoordinator {
             mSuggestionsModelList
                     .get(mModel.get(CHOSEN_SUGGESTION_INDEX))
                     .model
-                    .set(ColorPickerSuggestionProperties.IS_SELECTED, false);
+                    .set(HtmlColorPickerSuggestionProperties.IS_SELECTED, false);
             mModel.set(CHOSEN_SUGGESTION_INDEX, -1);
         }
         mModel.set(CHOSEN_COLOR, newColor);

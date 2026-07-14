@@ -11,16 +11,17 @@ import org.chromium.build.annotations.NullMarked;
  * the simple color picker.
  */
 @NullMarked
-public class ColorSuggestion {
+public class HtmlColorSuggestion {
     final int mColor;
     final String mLabel;
 
     /**
      * Constructs a color suggestion container.
+     *
      * @param color The suggested color.
      * @param label The label for the suggestion.
      */
-    public ColorSuggestion(int color, String label) {
+    public HtmlColorSuggestion(int color, String label) {
         mColor = color;
         mLabel = label;
     }

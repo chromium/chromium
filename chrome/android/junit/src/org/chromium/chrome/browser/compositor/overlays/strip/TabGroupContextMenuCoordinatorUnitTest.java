@@ -83,8 +83,8 @@ import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabRemover;
 import org.chromium.chrome.browser.tabmodel.TabUngrouper;
 import org.chromium.chrome.browser.tasks.tab_management.TabOverflowMenuCoordinator.OnItemClickedCallback;
-import org.chromium.chrome.browser.tasks.tab_management.color_picker.ColorPickerContainer;
-import org.chromium.chrome.browser.tasks.tab_management.color_picker.ColorPickerCoordinator;
+import org.chromium.chrome.browser.tasks.tab_management.color_picker.TabGroupColorPickerContainer;
+import org.chromium.chrome.browser.tasks.tab_management.color_picker.TabGroupColorPickerCoordinator;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
 import org.chromium.components.browser_ui.util.motion.MotionEventTestUtils;
 import org.chromium.components.browser_ui.widget.list_view.FakeListViewTouchTracker;
@@ -421,8 +421,8 @@ public class TabGroupContextMenuCoordinatorUnitTest {
         assertNotNull(groupTitleEditText);
 
         // Verify color picker.
-        ColorPickerCoordinator colorPickerCoordinator =
-                mTabGroupContextMenuCoordinator.getColorPickerCoordinatorForTesting();
+        TabGroupColorPickerCoordinator colorPickerCoordinator =
+                mTabGroupContextMenuCoordinator.getTabGroupColorPickerCoordinatorForTesting();
         assertNotNull(colorPickerCoordinator);
     }
 
@@ -1212,7 +1212,7 @@ public class TabGroupContextMenuCoordinatorUnitTest {
 
     @Test
     @Feature("Tab Strip Group Context Menu")
-    public void testMenuWidthAndColorPicker_MainMenu() {
+    public void testMenuWidthAndTabGroupColorPicker_MainMenu() {
         mTabGroupContextMenuCoordinator.showMenu(new RectProvider(), TAB_GROUP_ID);
 
         // 1. Verify visibility of title editor and color picker.
@@ -1228,7 +1228,7 @@ public class TabGroupContextMenuCoordinatorUnitTest {
                 contentView.findViewById(R.id.color_picker_container).getVisibility());
 
         // 2. Verify menu width.
-        verifyMenuWidthAndColorPicker(contentView);
+        verifyMenuWidthAndTabGroupColorPicker(contentView);
     }
 
     @Test
@@ -1319,16 +1319,17 @@ public class TabGroupContextMenuCoordinatorUnitTest {
                 contentView.findViewById(R.id.color_picker_container).getVisibility());
 
         // 2. Verify menu width.
-        verifyMenuWidthAndColorPicker(contentView);
+        verifyMenuWidthAndTabGroupColorPicker(contentView);
     }
 
-    private void verifyMenuWidthAndColorPicker(View contentView) {
+    private void verifyMenuWidthAndTabGroupColorPicker(View contentView) {
         ListView listView = contentView.findViewById(R.id.tab_group_action_menu_list);
         // Hierarchy: ScrollView -> LinearLayout (container) -> FrameLayout -> ListView
         ViewGroup container = (ViewGroup) listView.getParent().getParent();
         int width = container.getLayoutParams().width;
 
-        ColorPickerContainer colorPicker = container.findViewById(R.id.color_picker_container);
+        TabGroupColorPickerContainer colorPicker =
+                container.findViewById(R.id.color_picker_container);
 
         int minWidthPx = mActivity.getResources().getDimensionPixelSize(R.dimen.list_menu_width);
         int maxWidthPx =

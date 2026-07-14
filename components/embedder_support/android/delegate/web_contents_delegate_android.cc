@@ -18,7 +18,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/notimplemented.h"
 #include "base/trace_event/trace_event.h"
-#include "components/embedder_support/android/delegate/color_picker_bridge.h"
+#include "components/embedder_support/android/delegate/html_color_picker_bridge.h"
 #include "components/input/native_web_keyboard_event.h"
 #include "content/public/browser/color_chooser.h"
 #include "content/public/browser/global_request_id.h"
@@ -94,7 +94,7 @@ WebContentsDelegateAndroid::OpenColorChooser(
     WebContents* source,
     SkColor color,
     const std::vector<blink::mojom::ColorSuggestionPtr>& suggestions) {
-  return std::make_unique<ColorPickerBridge>(source, color, suggestions);
+  return std::make_unique<HtmlColorPickerBridge>(source, color, suggestions);
 }
 
 // OpenURLFromTab() will be called when we're performing a browser-intiated

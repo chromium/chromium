@@ -28,15 +28,15 @@ import org.chromium.ui.modelutil.PropertyModel;
 import java.util.ArrayList;
 import java.util.List;
 
-/** Tests for the ColorPickerMediator. */
+/** Tests for the TabGroupColorPickerMediator. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 @DisableFeatures({TabGroupsFeatureMap.UPDATE_TAB_GROUP_COLORS})
-public class ColorPickerMediatorUnitTest {
+public class TabGroupColorPickerMediatorUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     private Activity mActivity;
-    private ColorPickerMediator mMediator;
+    private TabGroupColorPickerMediator mMediator;
     private List<Integer> mColorIds;
     private final List<PropertyModel> mColorItems = new ArrayList<>();
 
@@ -48,9 +48,9 @@ public class ColorPickerMediatorUnitTest {
         for (int i = 0; i < mColorIds.size(); i++) {
             int color = mColorIds.get(i);
             PropertyModel model =
-                    ColorPickerItemProperties.create(
+                    TabGroupColorPickerItemProperties.create(
                             /* color= */ color,
-                            /* colorPickerType= */ ColorPickerType.TAB_GROUP,
+                            /* colorPickerType= */ TabGroupColorPickerType.TAB_GROUP,
                             /* isIncognito= */ false,
                             /* onClickListener= */ () -> {
                                 mMediator.setSelectedColorItem(color);
@@ -60,19 +60,19 @@ public class ColorPickerMediatorUnitTest {
             mColorItems.add(model);
         }
 
-        mMediator = new ColorPickerMediator(mColorItems);
+        mMediator = new TabGroupColorPickerMediator(mColorItems);
     }
 
     @Test
-    public void testColorPicker_setSelectedColor() {
+    public void testTabGroupColorPicker_setSelectedColor() {
         int selectedColor = mColorIds.get(1);
         mMediator.setSelectedColorItem(selectedColor);
 
         for (PropertyModel model : mColorItems) {
-            if (selectedColor == model.get(ColorPickerItemProperties.COLOR_ID)) {
-                assertTrue(model.get(ColorPickerItemProperties.IS_SELECTED));
+            if (selectedColor == model.get(TabGroupColorPickerItemProperties.COLOR_ID)) {
+                assertTrue(model.get(TabGroupColorPickerItemProperties.IS_SELECTED));
             } else {
-                assertFalse(model.get(ColorPickerItemProperties.IS_SELECTED));
+                assertFalse(model.get(TabGroupColorPickerItemProperties.IS_SELECTED));
             }
         }
 

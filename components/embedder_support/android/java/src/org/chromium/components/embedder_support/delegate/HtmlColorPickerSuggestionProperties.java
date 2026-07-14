@@ -16,7 +16,7 @@ import java.lang.annotation.RetentionPolicy;
 
 /** This class is to store everything needed for the suggestion view */
 @NullMarked
-public class ColorPickerSuggestionProperties {
+public class HtmlColorPickerSuggestionProperties {
     @IntDef({ListItemType.DEFAULT})
     @Retention(RetentionPolicy.SOURCE)
     public @interface ListItemType {

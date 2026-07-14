@@ -16,7 +16,7 @@ import org.chromium.ui.modelutil.PropertyModel;
  * view.
  */
 @NullMarked
-public class ColorPickerProperties {
+public class HtmlColorPickerProperties {
     public static final PropertyModel.WritableIntPropertyKey CHOSEN_COLOR =
             new PropertyModel.WritableIntPropertyKey();
 
