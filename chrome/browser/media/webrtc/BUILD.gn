@@ -348,6 +348,28 @@ source_set("test_support") {
   ]
 }
 
+if (!is_android) {
+  # Shared WebRTC browser-test base fixtures (WebRtcTestBase etc.), used by
+  # the media/webrtc browser tests and by several other browser-test suites
+  # (picture_in_picture, ash video conference, ...).
+  static_library("webrtc_browser_tests_base") {
+    testonly = true
+
+    sources = [
+      "test_stats_dictionary.cc",
+      "test_stats_dictionary.h",
+      "webrtc_browsertest_base.cc",
+      "webrtc_browsertest_base.h",
+      "webrtc_browsertest_common.cc",
+      "webrtc_browsertest_common.h",
+    ]
+    deps = [
+      "//chrome/browser/ui/tabs:tab_strip",
+      "//chrome/test:test_support",
+    ]
+  }
+}
+
 if (is_android) {
   import("//build/config/android/rules.gni")
 

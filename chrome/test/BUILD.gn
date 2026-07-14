@@ -2090,23 +2090,6 @@ static_library("browser_tests_runner") {
 }
 
 if (!is_android) {
-  static_library("webrtc_browser_tests_base") {
-    testonly = true
-
-    sources = [
-      "../browser/media/webrtc/test_stats_dictionary.cc",
-      "../browser/media/webrtc/test_stats_dictionary.h",
-      "../browser/media/webrtc/webrtc_browsertest_base.cc",
-      "../browser/media/webrtc/webrtc_browsertest_base.h",
-      "../browser/media/webrtc/webrtc_browsertest_common.cc",
-      "../browser/media/webrtc/webrtc_browsertest_common.h",
-    ]
-    deps = [
-      ":test_support",
-      "//chrome/browser/ui/tabs:tab_strip",
-    ]
-  }
-
   test("browser_tests") {
     use_xvfb = use_xvfb_in_this_config
 
@@ -2119,7 +2102,6 @@ if (!is_android) {
       ":platform_browser_tests",
       ":test_support",
       ":test_support_ui",
-      ":webrtc_browser_tests_base",
       "//base",
       "//base:build_time",
       "//base:i18n",
@@ -2295,6 +2277,7 @@ if (!is_android) {
       "//chrome/browser/media/router/discovery/access_code:access_code_sink_service",
       "//chrome/browser/media/webrtc",
       "//chrome/browser/media/webrtc:test_support",
+      "//chrome/browser/media/webrtc:webrtc_browser_tests_base",
       "//chrome/browser/metrics:test_support",
       "//chrome/browser/metrics/desktop_session_duration",
       "//chrome/browser/metrics/structured:test_support",
@@ -8959,7 +8942,6 @@ if (!is_android && !is_chromeos_device) {
     deps = [
       ":test_support",
       ":test_support_ui",
-      ":webrtc_browser_tests_base",
       "//build/config/linux/dbus:buildflags",
       "//chrome:packed_resources",
       "//chrome:resources",
@@ -9008,6 +8990,7 @@ if (!is_android && !is_chromeos_device) {
       "//chrome/browser/media/router/discovery/access_code:access_code_cast_feature",
       "//chrome/browser/media/router/discovery/access_code:access_code_sink_service",
       "//chrome/browser/media/webrtc",
+      "//chrome/browser/media/webrtc:webrtc_browser_tests_base",
       "//chrome/browser/metrics/critical_user_journeys",
       "//chrome/browser/metrics/critical_user_journeys:interactive_ui_tests",
       "//chrome/browser/net:interactive_ui_tests",
