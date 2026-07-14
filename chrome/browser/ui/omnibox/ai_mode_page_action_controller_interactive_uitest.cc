@@ -264,20 +264,6 @@ class AiModePageActionControllerDynamicAiModeButtonInteractiveUiTest
 
 IN_PROC_BROWSER_TEST_F(
     AiModePageActionControllerDynamicAiModeButtonInteractiveUiTest,
-    HidesOnWebPageFocus) {
-  RunTestSequence(OpenTabWithPageUrlAndFocusOmnibox(/*is_ntp=*/false),
-                  CheckChipVisible(/*visible=*/false));
-}
-
-IN_PROC_BROWSER_TEST_F(
-    AiModePageActionControllerDynamicAiModeButtonInteractiveUiTest,
-    ShowsOnNtpFocus) {
-  RunTestSequence(OpenTabWithPageUrlAndFocusOmnibox(/*is_ntp=*/true),
-                  CheckChipVisible(/*visible=*/true));
-}
-
-IN_PROC_BROWSER_TEST_F(
-    AiModePageActionControllerDynamicAiModeButtonInteractiveUiTest,
     HidesOnUrlSuggestion) {
   RunTestSequence(OpenTabWithPageUrlAndFocusOmnibox(/*is_ntp=*/true),
                   CheckChipVisible(true),

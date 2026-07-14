@@ -236,16 +236,6 @@ bool AiModePageActionController::ShouldShowPageAction(
   // icon views.
   const bool has_focus = location_bar.IsFocusWithin();
 
-  const auto page_classification = edit_model->GetPageClassification();
-
-  // Suppress the AI Mode page action button when OnFocus on web pages.
-  if (base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxDynamicAiModeButton)) {
-    if (has_focus && !edit_model->user_input_in_progress() &&
-        !omnibox::IsNTPPage(page_classification)) {
-      return false;
-    }
-  }
-
   // TODO(crbug.com/448234135): Remove this logic from the migrated path when
   // Page Action framework supports suggestion chip queueing.
   //
@@ -253,6 +243,7 @@ bool AiModePageActionController::ShouldShowPageAction(
   // popup. In this case, we suppress the AIM page action in order to ensure
   // that it doesn't get visually "sandwiched" in between the other page actions
   // that show up in this state.
+  const auto page_classification = edit_model->GetPageClassification();
   if (has_focus && !edit_model->user_input_in_progress() &&
       !location_bar.GetOmniboxController()->IsPopupOpen() &&
       !omnibox::IsNTPPage(page_classification)) {
