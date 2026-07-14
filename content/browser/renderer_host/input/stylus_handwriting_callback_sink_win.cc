@@ -38,9 +38,24 @@ StylusHandwritingCallbackSinkWin::DetermineProximateHandwritingTarget(
   return E_NOTIMPL;
 }
 
+void StylusHandwritingCallbackSinkWin::SetCallback(
+    OnFocusHandwritingTargetCallback callback) {
+  // Called defensively to clean up any pending callback args. If this is being
+  // called, it means the previous session is no longer valid.
+  OnFocusFailed();
+  handwriting_callback_ = std::move(callback);
+  decline_next_target_ = false;
+}
+
 HRESULT STDMETHODCALLTYPE
 StylusHandwritingCallbackSinkWin::FocusHandwritingTarget(
     ::ITfFocusHandwritingTargetArgs* args) {
+  if (decline_next_target_) {
+    decline_next_target_ = false;
+    args->SetResponse(::TF_NO_HANDWRITING_TARGET);
+    return S_OK;
+  }
+
   CHECK(handwriting_callback_);
   HWND window;
   RECT rect;

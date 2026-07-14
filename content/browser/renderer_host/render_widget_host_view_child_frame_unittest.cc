@@ -50,6 +50,17 @@
 #include "ui/base/ui_base_features.h"
 #include "ui/compositor/compositor.h"
 
+#if BUILDFLAG(IS_WIN)
+#include "components/stylus_handwriting/win/features.h"
+#include "content/browser/renderer_host/input/mock_tfhandwriting.h"
+#include "content/browser/renderer_host/input/stylus_handwriting_callback_sink_win.h"
+#include "content/browser/renderer_host/input/stylus_handwriting_controller_win.h"
+#include "content/browser/renderer_host/input/stylus_handwriting_win_test_helper.h"
+
+using testing::_;
+using testing::Return;
+#endif  // BUILDFLAG(IS_WIN)
+
 namespace content {
 namespace {
 
@@ -561,5 +572,136 @@ TEST_F(RenderWidgetHostViewChildFrameTest,
   EXPECT_FALSE(ConnectionHasRegisteredHierarchy());
   EXPECT_FALSE(GetParentFrameSinkId().is_valid());
 }
+
+#if BUILDFLAG(IS_WIN)
+// Test fixture for verifying OnFocusFailed behavior in
+// RenderWidgetHostViewChildFrame for stylus handwriting scenarios.
+class StylusHandwritingOnFocusFailedChildFrameTest
+    : public RenderWidgetHostViewChildFrameTest {
+ public:
+  void SetUp() override {
+    RenderWidgetHostViewChildFrameTest::SetUp();
+    scoped_feature_list_.InitAndEnableFeature(
+        stylus_handwriting::win::kStylusHandwritingWin);
+    stylus_handwriting_win_test_helper_.SetUpDefaultMockInfrastructure();
+    stylus_handwriting_win_test_helper_
+        .DefaultMockRequestHandwritingForPointerMethod();
+  }
+
+ protected:
+  base::test::ScopedFeatureList scoped_feature_list_;
+  StylusHandwritingWinTestHelper stylus_handwriting_win_test_helper_;
+  Microsoft::WRL::ComPtr<MockTfFocusHandwritingTargetArgsImpl> mock_focus_args_;
+};
+
+// Verify that destroying the child frame view that initiated an in-flight
+// handwriting session calls OnFocusFailed.
+TEST_F(StylusHandwritingOnFocusFailedChildFrameTest,
+       InitiatingViewDestructionFailsFocus) {
+  mock_focus_args_ =
+      stylus_handwriting_win_test_helper_.SetUpWaitingForFocusResult(
+          view_->GetWeakPtr());
+
+  EXPECT_CALL(*mock_focus_args_.Get(), SetResponse(::TF_NO_HANDWRITING_TARGET))
+      .Times(1);
+
+  RenderWidgetHostViewChildFrame* local_view = view_;
+  view_ = nullptr;
+  local_view->Destroy();
+
+  EXPECT_FALSE(
+      StylusHandwritingControllerWin::GetInstance()->IsWaitingForFocusResult());
+}
+
+// Verify that destroying a child frame view that did NOT initiate the in-flight
+// handwriting session leaves the session untouched. Regression test for a
+// non-initiating ~RenderWidgetHostViewChildFrame ending an unrelated session.
+TEST_F(StylusHandwritingOnFocusFailedChildFrameTest,
+       NonInitiatingViewDestructionPreservesFocus) {
+  // Create a separate child frame view to initiate the handwriting session.
+  auto root_view =
+      std::make_unique<testing::NiceMock<MockRenderWidgetHostView>>(
+          widget_host_.get());
+  RenderWidgetHostViewChildFrame* initiating_view =
+      RenderWidgetHostViewChildFrame::Create(widget_host_.get(),
+                                             display::ScreenInfos());
+  auto connector = std::make_unique<MockFrameConnector>();
+  connector->SetView(initiating_view, false);
+  connector->SetRootRenderWidgetHostView(root_view.get());
+  initiating_view->SetFrameConnector(connector.get());
+
+  mock_focus_args_ =
+      stylus_handwriting_win_test_helper_.SetUpWaitingForFocusResult(
+          initiating_view->GetWeakPtr());
+
+  EXPECT_CALL(*mock_focus_args_.Get(), SetResponse(_)).Times(0);
+
+  // Destroy the unrelated fixture view; it did not initiate the session.
+  RenderWidgetHostViewChildFrame* local_view = view_;
+  view_ = nullptr;
+  local_view->Destroy();
+
+  EXPECT_TRUE(
+      StylusHandwritingControllerWin::GetInstance()->IsWaitingForFocusResult());
+
+  // Verify now; the session is resolved when `initiating_view` is destroyed
+  // below, which would otherwise trip the Times(0) expectation.
+  testing::Mock::VerifyAndClearExpectations(mock_focus_args_.Get());
+
+  initiating_view->Destroy();
+  connector->SetRootRenderWidgetHostView(nullptr);
+}
+
+// Verify that destroying the child frame view that initiated an in-flight
+// session after the session started but before TSF delivers
+// FocusHandwritingTarget causes the subsequent FocusHandwritingTarget to be
+// declined immediately rather than forwarded, so the Shell Handwriting API is
+// not left awaiting a response that can never arrive.
+TEST_F(StylusHandwritingOnFocusFailedChildFrameTest,
+       InitiatingViewDestroyedBeforeTargetDeclinesFocus) {
+  // Start the session but do not deliver FocusHandwritingTarget yet.
+  mock_focus_args_ =
+      stylus_handwriting_win_test_helper_.SetUpStartedStylusWriting(
+          view_->GetWeakPtr());
+  auto* controller = StylusHandwritingControllerWin::GetInstance();
+  ASSERT_FALSE(controller->IsWaitingForFocusResult());
+
+  // The target must be declined, not forwarded to the renderer.
+  EXPECT_CALL(*mock_focus_args_.Get(), SetResponse(::TF_NO_HANDWRITING_TARGET))
+      .Times(1);
+
+  // Destroying the initiating view before the target arrives arms the decline.
+  RenderWidgetHostViewChildFrame* local_view = view_;
+  view_ = nullptr;
+  local_view->Destroy();
+
+  // When TSF finally delivers the target, it is declined synchronously (S_OK,
+  // not TF_S_ASYNC) and no focus result remains pending.
+  auto sink = controller->GetCallbackSinkForTesting();
+  ASSERT_TRUE(sink);
+  EXPECT_EQ(S_OK, sink->FocusHandwritingTarget(mock_focus_args_.Get()));
+  EXPECT_FALSE(controller->IsWaitingForFocusResult());
+}
+
+// Verify that OnEditElementFocusedForStylusWriting calls OnFocusFailed when
+// the child frame has no root view.
+TEST_F(StylusHandwritingOnFocusFailedChildFrameTest, NoRootView) {
+  mock_focus_args_ =
+      stylus_handwriting_win_test_helper_.SetUpWaitingForFocusResult(
+          view_->GetWeakPtr());
+
+  // Remove the root view from the frame connector so GetRootView() returns
+  // nullptr.
+  test_frame_connector_->SetRootRenderWidgetHostView(nullptr);
+
+  EXPECT_CALL(*mock_focus_args_.Get(), SetResponse(::TF_NO_HANDWRITING_TARGET))
+      .Times(1);
+
+  view_->OnEditElementFocusedForStylusWriting(nullptr);
+
+  EXPECT_FALSE(
+      StylusHandwritingControllerWin::GetInstance()->IsWaitingForFocusResult());
+}
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace content

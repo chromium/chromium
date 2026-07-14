@@ -39,12 +39,20 @@ class CONTENT_EXPORT StylusHandwritingCallbackSinkWin
   HRESULT STDMETHODCALLTYPE
   FocusHandwritingTarget(::ITfFocusHandwritingTargetArgs* args) override;
 
-  void SetCallback(OnFocusHandwritingTargetCallback callback) {
-    handwriting_callback_ = std::move(callback);
-  }
+  void SetCallback(OnFocusHandwritingTargetCallback callback);
 
   void OnFocusHandled();
   void OnFocusFailed();
+
+  // Causes the next FocusHandwritingTarget call to short circuit and return
+  // TF_NO_HANDWRITING_TARGET. Called when the view that initiated the session
+  // is destroyed before TSF delivered FocusHandwritingTarget, so the Shell
+  // Handwriting API is not left awaiting a response.
+  void AbandonInFlightFocus() { decline_next_target_ = true; }
+
+  bool IsFocusHandwritingTargetPending() const {
+    return !!pending_target_args_;
+  }
 
  private:
   // Stores the callback to request setting the renderer focus based on the
@@ -58,7 +66,14 @@ class CONTENT_EXPORT StylusHandwritingCallbackSinkWin
   // Args passed during FocusHandwritingTarget() call by Shell Handwriting
   // which help to retrieve pointer input details and specify the response
   // about focus handling back to Shell Handwriting.
+  // Called 'pending' because after we receive the args from Shell Handwriting
+  // we must wait for an async round-trip callout to the renderer to know if
+  // focus succeeded.
   Microsoft::WRL::ComPtr<::ITfFocusHandwritingTargetArgs> pending_target_args_;
+  // Set when initiating view is destroyed before FocusHandwritingTarget is
+  // called. When true, the next FocusHandwritingTarget immediately returns
+  // TF_NO_HANDWRITING_TARGET.
+  bool decline_next_target_ = false;
   // Stores the address of a DWORD valued used to correctly uninstall the advise
   // sink on the object destruction.
   DWORD sink_cookie_ = TF_INVALID_COOKIE;

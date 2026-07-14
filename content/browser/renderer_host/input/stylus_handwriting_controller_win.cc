@@ -10,6 +10,7 @@
 #include "base/win/windows_version.h"
 #include "components/stylus_handwriting/win/features.h"
 #include "content/browser/renderer_host/input/stylus_handwriting_callback_sink_win.h"
+#include "content/browser/renderer_host/render_widget_host_view_base.h"
 #include "content/public/browser/browser_thread.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
@@ -151,6 +152,7 @@ int StylusHandwritingControllerWin::GetStylusHandwritingToleranceInDips(
 }
 
 void StylusHandwritingControllerWin::OnStartStylusWriting(
+    RenderWidgetHostViewBase* view,
     OnFocusHandwritingTargetCallback callback,
     const ui::StylusHandwritingPropertiesWin& properties) {
   BOOL accepted;
@@ -162,6 +164,7 @@ void StylusHandwritingControllerWin::OnStartStylusWriting(
       &accepted, &handwriting_request);
 
   if (SUCCEEDED(hr) && accepted && handwriting_request) {
+    current_handwriting_view_ = view->GetWeakPtr();
     handwriting_callback_sink_->SetCallback(std::move(callback));
     handwriting_request->SetInputEvaluation(
         ::TfInputEvaluation::TF_IE_HANDWRITING);
@@ -174,11 +177,37 @@ void StylusHandwritingControllerWin::OnStartStylusWriting(
 void StylusHandwritingControllerWin::OnFocusHandled() {
   CHECK(handwriting_callback_sink_);
   handwriting_callback_sink_->OnFocusHandled();
+  current_handwriting_view_.reset();
 }
 
 void StylusHandwritingControllerWin::OnFocusFailed() {
   CHECK(handwriting_callback_sink_);
   handwriting_callback_sink_->OnFocusFailed();
+  current_handwriting_view_.reset();
+}
+
+void StylusHandwritingControllerWin::OnHandwritingViewDestroyed(
+    RenderWidgetHostViewBase* view) {
+  if (current_handwriting_view_.get() != view) {
+    return;
+  }
+
+  // If the current view is being destroyed, we need to signal failure to the
+  // Shell Handwriting API.
+  if (IsWaitingForFocusResult()) {
+    OnFocusFailed();
+  } else {
+    // The session was started but FocusHandwritingTarget has not arrived yet.
+    // Arm the sink to decline it on arrival.
+    CHECK(handwriting_callback_sink_);
+    handwriting_callback_sink_->AbandonInFlightFocus();
+    current_handwriting_view_.reset();
+  }
+}
+
+bool StylusHandwritingControllerWin::IsWaitingForFocusResult() const {
+  return handwriting_callback_sink_ &&
+         handwriting_callback_sink_->IsFocusHandwritingTargetPending();
 }
 
 // static

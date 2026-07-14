@@ -2556,6 +2556,15 @@ bool RenderWidgetHostViewAura::ShouldInitiateStylusWriting() {
 }
 
 void RenderWidgetHostViewAura::OnStartStylusWriting() {
+  StartStylusWritingImpl(
+      this,
+      base::BindRepeating(&RenderWidgetHostViewAura::OnFocusHandwritingTarget,
+                          weak_ptr_factory_.GetWeakPtr()));
+}
+
+void RenderWidgetHostViewAura::StartStylusWritingImpl(
+    RenderWidgetHostViewBase* initiating_view,
+    OnFocusHandwritingTargetCallback callback) {
   StylusHandwritingControllerWin* handwriting_controller =
       StylusHandwritingControllerWin::GetInstance();
   if (!handwriting_controller) {
@@ -2588,16 +2597,13 @@ void RenderWidgetHostViewAura::OnStartStylusWriting() {
   // on content eligible for handwriting with the RECT provided by
   // GetPointerTargetInfo, then focus will fallback to the eligible element
   // that was initially tapped.
-  // TODO(crbug.com/355578906): Pass and save the identifier of the currently
-  // focused RWHA in case the views focus is changed while we waiting for the
-  // callback response from the renderer process. This will be used to discard
-  // responses in OnFocusHandled()/OnFocusFailed() later for such cases.
+  //
+  // `initiating_view` is the view that will deliver the focus result: this view
+  // for a main-frame handwriting session, or the child frame view for an OOPIF.
+  // The controller tracks it so the session is only canceled if that specific
+  // view is destroyed while a focus result is pending.
   handwriting_controller->OnStartStylusWriting(
-      stylus_handwriting_focus_callback_.is_null()
-          ? base::BindRepeating(
-                &RenderWidgetHostViewAura::OnFocusHandwritingTarget,
-                weak_ptr_factory_.GetWeakPtr())
-          : std::move(stylus_handwriting_focus_callback_),
+      initiating_view, std::move(callback),
       last_stylus_handwriting_properties_.value());
   last_stylus_handwriting_properties_.reset();
 }
@@ -2645,9 +2651,10 @@ void RenderWidgetHostViewAura::OnEditElementFocusedForStylusWriting(
                : handwriting_controller->OnFocusFailed();
 }
 
-void RenderWidgetHostViewAura::SetStylusHandwritingFocusCallback(
+void RenderWidgetHostViewAura::StartStylusWritingFromChildHostView(
+    RenderWidgetHostViewBase* view,
     OnFocusHandwritingTargetCallback callback) {
-  stylus_handwriting_focus_callback_ = std::move(callback);
+  StartStylusWritingImpl(view, std::move(callback));
 }
 
 void RenderWidgetHostViewAura::OnFocusHandwritingTarget(
@@ -2655,9 +2662,6 @@ void RenderWidgetHostViewAura::OnFocusHandwritingTarget(
     const gfx::Size& tolerance_screen_distance_in_dips) {
   // TODO(crbug.com/355578906): Consider `tolerance_screen_distance_in_dips`.
   if (!host()) {
-    if (StylusHandwritingControllerWin::GetInstance()) {
-      StylusHandwritingControllerWin::GetInstance()->OnFocusFailed();
-    }
     return;
   }
 

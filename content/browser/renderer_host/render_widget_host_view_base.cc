@@ -60,6 +60,10 @@
 #include "ui/ozone/public/ozone_platform.h"
 #endif
 
+#if BUILDFLAG(IS_WIN)
+#include "content/browser/renderer_host/input/stylus_handwriting_controller_win.h"
+#endif
+
 namespace content {
 
 void RenderWidgetHostViewBase::OnUnconfirmedTapConvertedToTap() {}
@@ -74,6 +78,12 @@ RenderWidgetHostViewBase::RenderWidgetHostViewBase(RenderWidgetHost* host)
 RenderWidgetHostViewBase::~RenderWidgetHostViewBase() {
   CHECK(!keyboard_locked_);
   CHECK(!IsPointerLocked());
+#if BUILDFLAG(IS_WIN)
+  if (StylusHandwritingControllerWin::IsHandwritingAPIAvailable()) {
+    StylusHandwritingControllerWin::GetInstance()->OnHandwritingViewDestroyed(
+        this);
+  }
+#endif  // BUILDFLAG(IS_WIN)
   // We call this here to guarantee that observers are notified before we go
   // away. However, some subclasses may wish to call this earlier in their
   // shutdown process, e.g. to force removal from

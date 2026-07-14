@@ -10,10 +10,14 @@
 #include <wrl/client.h>
 
 #include "base/functional/callback_helpers.h"
+#include "base/memory/weak_ptr.h"
 
 namespace content {
 
 class MockTfImpl;
+class MockTfFocusHandwritingTargetArgsImpl;
+class MockTfHandwritingRequest;
+class RenderWidgetHostViewBase;
 
 // A test helper that configures and manages mock ShellHandwriting.h interfaces
 // and initializes StylusHandwritingControllerWin for testing.
@@ -111,8 +115,31 @@ class StylusHandwritingWinTestHelper {
   // Configures a default implementation of ITfSource::AdviseSink.
   void DefaultMockAdviseSinkMethod();
 
+  // Configures a default implementation of
+  // ITfHandwriting::RequestHandwritingForPointer that accepts the request.
+  void DefaultMockRequestHandwritingForPointerMethod();
+
+  // Puts the StylusHandwritingControllerWin into a "waiting for focus result"
+  // state by simulating OnStartStylusWriting and FocusHandwritingTarget, with
+  // `view` recorded as the session owner. Returns the mock
+  // ITfFocusHandwritingTargetArgs for test assertions (e.g., EXPECT_CALL on
+  // SetResponse). SetUpDefaultMockInfrastructure and
+  // DefaultMockRequestHandwritingForPointerMethod must be called before this.
+  Microsoft::WRL::ComPtr<MockTfFocusHandwritingTargetArgsImpl>
+  SetUpWaitingForFocusResult(base::WeakPtr<RenderWidgetHostViewBase> view);
+
+  // Simulates only OnStartStylusWriting with `view` recorded as the session
+  // owner, leaving the controller in the "session started but
+  // FocusHandwritingTarget not yet delivered" state (i.e. not yet waiting for a
+  // focus result). Returns the mock ITfFocusHandwritingTargetArgs that the test
+  // can later pass to the callback sink's FocusHandwritingTarget(). Same
+  // prerequisites as SetUpWaitingForFocusResult.
+  Microsoft::WRL::ComPtr<MockTfFocusHandwritingTargetArgsImpl>
+  SetUpStartedStylusWriting(base::WeakPtr<RenderWidgetHostViewBase> view);
+
  private:
   Microsoft::WRL::ComPtr<MockTfImpl> mock_tf_impl_;
+  Microsoft::WRL::ComPtr<MockTfHandwritingRequest> mock_handwriting_request_;
   base::ScopedClosureRunner controller_resetter_;
 };
 

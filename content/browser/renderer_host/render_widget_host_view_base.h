@@ -601,13 +601,13 @@ class CONTENT_EXPORT RenderWidgetHostViewBase
   virtual viz::SurfaceId GetFallbackSurfaceIdForTesting() const;
 
 #if BUILDFLAG(IS_WIN)
-  // Called by child frame views before delegating OnStartStylusWriting to the
-  // root view, so the root view uses the provided callback for the TSF
-  // FocusHandwritingTarget response instead of its own.
   using OnFocusHandwritingTargetCallback =
       base::RepeatingCallback<void(const gfx::Rect& /*rect_in_screen*/,
                                    const gfx::Size& /*distance_threshold*/)>;
-  virtual void SetStylusHandwritingFocusCallback(
+  // Called by a child host view to start a handwriting session on the root
+  // view on its behalf. Only implemented by the root (Aura) view.
+  virtual void StartStylusWritingFromChildHostView(
+      RenderWidgetHostViewBase* view,
       OnFocusHandwritingTargetCallback callback) {}
 #endif  // BUILDFLAG(IS_WIN)
 
