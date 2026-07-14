@@ -71,4 +71,10 @@ enum ChromeAimEntryPoint {
   // AIM is entered from pinned toolbar button to enter cobrowsing mode in
   // Chrome.
   DESKTOP_CHROME_COBROWSE_PINNED_TOOLBAR_BUTTON = 175;
+
+  // AIM is entered from the Desktop Chrome omnibox everywhere entry point.
+  DESKTOP_CHROME_OMNIBOX_EVERYWHERE = 190;
+
+  // AIM is entered from the Desktop Chrome composebox everywhere entry point.
+  DESKTOP_CHROME_COMPOSEBOX_EVERYWHERE = 191;
 }
