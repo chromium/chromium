@@ -104,8 +104,6 @@ class PermissionsPolicyTest : public testing::Test {
               network::PermissionsPolicyFeatureDefault::EnableForSelf},
              {network::mojom::PermissionsPolicyFeature::kClientHintDPR,
               network::PermissionsPolicyFeatureDefault::EnableForSelf},
-             {network::mojom::PermissionsPolicyFeature::kAttributionReporting,
-              network::PermissionsPolicyFeatureDefault::EnableForSelf},
              {network::mojom::PermissionsPolicyFeature::kJoinAdInterestGroup,
               network::PermissionsPolicyFeatureDefault::EnableForSelf},
              {network::mojom::PermissionsPolicyFeature::kSharedStorage,
@@ -2954,8 +2952,6 @@ TEST_F(PermissionsPolicyTest, CreateFlexibleForFencedFrame) {
       policy1.get(), /*header_policy=*/{}, origin_a_);
   EXPECT_FALSE(policy->IsFeatureEnabled(kDefaultOnFeature));
   EXPECT_FALSE(policy->IsFeatureEnabled(kDefaultSelfFeature));
-  EXPECT_FALSE(policy->IsFeatureEnabled(
-      network::mojom::PermissionsPolicyFeature::kAttributionReporting));
   EXPECT_TRUE(policy->IsFeatureEnabled(
       network::mojom::PermissionsPolicyFeature::kSharedStorage));
   EXPECT_TRUE(policy->IsFeatureEnabled(
@@ -2977,8 +2973,6 @@ TEST_F(PermissionsPolicyTest, CreateForFledgeFencedFrame) {
   EXPECT_FALSE(policy->IsFeatureEnabled(kDefaultOnFeature));
   EXPECT_FALSE(policy->IsFeatureEnabled(kDefaultSelfFeature));
   EXPECT_TRUE(policy->IsFeatureEnabled(
-      network::mojom::PermissionsPolicyFeature::kAttributionReporting));
-  EXPECT_TRUE(policy->IsFeatureEnabled(
       network::mojom::PermissionsPolicyFeature::kSharedStorage));
 }
 
@@ -2994,8 +2988,6 @@ TEST_F(PermissionsPolicyTest, CreateForSharedStorageFencedFrame) {
       origin_a_, /*header_policy=*/{}, effective_enabled_permissions);
   EXPECT_FALSE(policy->IsFeatureEnabled(kDefaultOnFeature));
   EXPECT_FALSE(policy->IsFeatureEnabled(kDefaultSelfFeature));
-  EXPECT_TRUE(policy->IsFeatureEnabled(
-      network::mojom::PermissionsPolicyFeature::kAttributionReporting));
   EXPECT_TRUE(policy->IsFeatureEnabled(
       network::mojom::PermissionsPolicyFeature::kSharedStorage));
 }

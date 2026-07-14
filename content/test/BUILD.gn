@@ -1929,7 +1929,6 @@ test("content_browsertests") {
     "//cc/slim",
     "//components//unexportable_keys",
     "//components/aggregation_service",
-    "//components/attribution_reporting:features",
     "//components/cbor",
     "//components/discardable_memory/client",
     "//components/discardable_memory/common",

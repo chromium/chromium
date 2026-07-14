@@ -350,22 +350,6 @@ this also lets the fenced frame learn about its embedder by trying
 `document.hasPrivateToken()` on known issuers and seeing which ones work and
 which ones error out, creating a fingerprint of its context.
 
-### 🔺✅ Attribution Reporting: partial exfiltration risk
-*Feature: kAttributionReporting*
-
-While data can be exfiltrated through reporting, as long as the reporting is
-aggregate-level and not per-event, the report cannot be used to accurately
-exfiltrate information or be traced back to any one frame. This API can both
-send data in aggregate as well as per-event. The aggregate data is safe to send,
-but the per-event data must be blocked after network revocation. The API cannot
-be used to infiltrate data into the fenced frame, and no fingerprinting
-identifiers are revealed by enabling this API.
-
-Registering sources and triggers requires network connectivity. After network
-revocation, the requests to the servers that establishes the sources/triggers
-will not go through, so no new reports can be registered, and no sensitive
-information guarded by network revocation can be added to reports.
-
 ### ✅ Cross-origin Isolated: no risk
 *Feature: kCrossOriginIsolated*
 

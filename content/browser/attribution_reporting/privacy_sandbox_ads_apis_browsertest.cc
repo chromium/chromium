@@ -7,7 +7,6 @@
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
-#include "components/attribution_reporting/features.h"
 #include "content/browser/browsing_topics/test_util.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/web_contents/web_contents_impl.h"
@@ -138,9 +137,6 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxAdsAPIsM1OverrideBrowserTest,
 
   EXPECT_EQ(true, EvalJs(shell(),
                          "document.featurePolicy.features().includes('"
-                         "attribution-reporting')"));
-  EXPECT_EQ(true, EvalJs(shell(),
-                         "document.featurePolicy.features().includes('"
                          "browsing-topics')"));
   EXPECT_EQ(true, EvalJs(shell(),
                          "document.featurePolicy.features().includes('"
@@ -162,8 +158,7 @@ class PrivacySandboxAdsAPIsM1OverrideNoFeatureBrowserTest
   PrivacySandboxAdsAPIsM1OverrideNoFeatureBrowserTest() {
     feature_list_.InitWithFeatures(
         {features::kPrivacySandboxAdsAPIsM1Override},
-        {attribution_reporting::features::kConversionMeasurement,
-         network::features::kBrowsingTopics,
+        {network::features::kBrowsingTopics,
          blink::features::kBrowsingTopicsDocumentAPI,
          network::features::kInterestGroupStorage,
          blink::features::kFencedFrames, network::features::kSharedStorageAPI});
@@ -177,9 +172,6 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxAdsAPIsM1OverrideNoFeatureBrowserTest,
                        OverrideWithoutFeature_IDLNotExposed) {
   EXPECT_TRUE(NavigateToURL(shell(), GURL("https://example.test/title1.html")));
 
-  EXPECT_EQ(false, EvalJs(shell(),
-                          "document.featurePolicy.features().includes('"
-                          "attribution-reporting')"));
   EXPECT_EQ(false, EvalJs(shell(),
                           "document.featurePolicy.features().includes('"
                           "browsing-topics')"));

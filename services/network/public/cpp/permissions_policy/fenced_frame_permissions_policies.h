@@ -25,14 +25,12 @@ static inline constexpr network::mojom::PermissionsPolicyFeature
 // features will be allowed as if its policy was set to "allow: feature(*)".
 static inline constexpr network::mojom::PermissionsPolicyFeature
     kFencedFrameFledgeDefaultRequiredFeatures[] = {
-        network::mojom::PermissionsPolicyFeature::kAttributionReporting,
         network::mojom::PermissionsPolicyFeature::kPrivateAggregation,
         network::mojom::PermissionsPolicyFeature::kSharedStorage,
         network::mojom::PermissionsPolicyFeature::kSharedStorageSelectUrl};
 
 static inline constexpr network::mojom::PermissionsPolicyFeature
     kFencedFrameSharedStorageDefaultRequiredFeatures[] = {
-        network::mojom::PermissionsPolicyFeature::kAttributionReporting,
         network::mojom::PermissionsPolicyFeature::kSharedStorage,
         network::mojom::PermissionsPolicyFeature::kSharedStorageSelectUrl};
 

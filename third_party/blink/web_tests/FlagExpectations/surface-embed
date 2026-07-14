@@ -3049,7 +3049,6 @@ external/wpt/fenced-frame/default-enabled-features-allow-self.https.html [ Failu
 external/wpt/fenced-frame/default-enabled-features-allow-unspecified.https.html [ Failure Pass ]
 external/wpt/fenced-frame/default-enabled-features-attribute-allow.https.html [ Failure Pass ]
 external/wpt/fenced-frame/default-enabled-features-attribute-disallow.https.html [ Failure Pass ]
-external/wpt/fenced-frame/default-enabled-features-attribution-disabled.https.html [ Failure Pass ]
 external/wpt/fenced-frame/default-enabled-features-subframe.https.html [ Pass Timeout ]
 external/wpt/fenced-frame/default-enabled-features-unset.https.html [ Failure Pass ]
 external/wpt/fenced-frame/disallowed-navigation-to-blob.https.html [ Pass Timeout ]

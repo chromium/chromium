@@ -21,10 +21,7 @@ promise_test(async(t) => {
     assert_true(
         document.permissionsPolicy.allowsFeature('private-aggregation'),
         "Private aggregation should be allowed in the fenced frame.");
-    assert_false(
-        document.permissionsPolicy.allowsFeature('attribution-reporting'),
-        "Attribution reporting should be disallowed in the fenced frame.");
-    assert_false(
+      assert_false(
         document.permissionsPolicy.allowsFeature('sync-xhr'),
         "USB access should be disallowed in the fenced frame.");
   }, []);
@@ -34,8 +31,7 @@ promise_test(async(t) => {
   const fencedframe = await attachFencedFrameContext({
       origin: get_host_info().REMOTE_ORIGIN,
       attributes: [["allow",
-          "shared-storage *; attribution-reporting *; " +
-          "private-aggregation 'none'"]]});
+          "shared-storage *; " + "private-aggregation 'none'"]]});
 
   await fencedframe.execute(async () => {
     assert_true(
@@ -44,9 +40,6 @@ promise_test(async(t) => {
     assert_false(
         document.permissionsPolicy.allowsFeature('private-aggregation'),
         "Private aggregation should be disallowed in the fenced frame.");
-    assert_false(
-        document.permissionsPolicy.allowsFeature('attribution-reporting'),
-        "Attribution reporting should be disallowed in the fenced frame.");
     assert_false(
         document.permissionsPolicy.allowsFeature('sync-xhr'),
         "USB access should be disallowed in the fenced frame.");
