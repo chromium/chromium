@@ -172,7 +172,7 @@ class GlicInstanceImpl : public GlicInstance,
   // These methods should only be called by the GlicInstanceCoordinator.
   // This method will either show an embedder or create an inactive embedder and
   // bind a tab to conversation.
-  void Show(const ShowOptions& options) override;
+  void Show(ShowOptions options) override;
 
   // Called when a new tab is created from a source tab that is bound to this
   // instance. This attempts to daisy chain the new tab to the same instance.
@@ -329,7 +329,7 @@ class GlicInstanceImpl : public GlicInstance,
   EmbedderEntry* GetEmbedderEntry(EmbedderKey key);
   void DeactivateCurrentEmbedder();
   void OnAllEmbeddersInactive();
-  GlicUiEmbedder* CreateActiveEmbedder(const ShowOptions& options);
+  GlicUiEmbedder* CreateActiveEmbedder(ShowOptions& options);
   GlicUiEmbedder* CreateActiveEmbedderForSidePanel(
       const SidePanelShowOptions& options);
   GlicUiEmbedder* CreateActiveEmbedderForFloaty(

@@ -41,7 +41,7 @@ class GlicUiEmbedder {
     // the become inactive.
     virtual void DidCloseFor(EmbedderKey key, EmbedderCloseReason reason) = 0;
     virtual Host& host() = 0;
-    virtual void Show(const ShowOptions& options) = 0;
+    virtual void Show(ShowOptions options) = 0;
     // Closes the side panel UI and opens the floating UI for this instance.
     virtual void Detach(tabs::TabInterface& tab) = 0;
     // Closes the floating UI for this instance and opens the side panel UI.

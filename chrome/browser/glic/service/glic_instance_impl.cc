@@ -430,7 +430,7 @@ bool GlicInstanceImpl::ShouldShowInactiveSidePanel(
   return coordinator && coordinator->SupportsPeek();
 }
 
-void GlicInstanceImpl::Show(const ShowOptions& options) {
+void GlicInstanceImpl::Show(ShowOptions options) {
   VLOG(1) << "Glic [InstanceImpl] Show, id=" << id_.value();
 
   TRACE_EVENT("glic", "GlicInstanceImpl::Show",
@@ -1082,8 +1082,7 @@ void GlicInstanceImpl::DeactivateCurrentEmbedder() {
   }
 }
 
-GlicUiEmbedder* GlicInstanceImpl::CreateActiveEmbedder(
-    const ShowOptions& options) {
+GlicUiEmbedder* GlicInstanceImpl::CreateActiveEmbedder(ShowOptions& options) {
   return std::visit(
       absl::Overload{
           [&](const SidePanelShowOptions& opts) {
