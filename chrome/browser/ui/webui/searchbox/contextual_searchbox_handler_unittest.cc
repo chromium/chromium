@@ -1242,6 +1242,7 @@ class SmartTabSharingTest : public ContextualSearchboxHandlerTestHarness {
 
     feature_list_.InitWithFeaturesAndParameters(
         {{contextual_tasks::kContextualTasks, {}},
+         {contextual_tasks::kContextualTasksForceEntryPointEligibility, {}},
          {contextual_tasks::kContextualTasksContext,
           {{"ContextualTasksContextSmartTabSharing", "true"}}},
          {contextual_tasks::
