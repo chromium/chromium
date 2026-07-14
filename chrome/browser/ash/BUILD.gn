@@ -250,7 +250,6 @@ group("browser_tests") {
     "//chrome/browser/ash/boca/spotlight:browser_tests",
     "//chrome/browser/ash/bruschetta:browser_tests",
     "//chrome/browser/ash/child_accounts:browser_tests",
-    "//chrome/browser/ash/crosapi:browser_tests",
     "//chrome/browser/ash/crostini:browser_tests",
     "//chrome/browser/ash/customization:browser_tests",
     "//chrome/browser/ash/dbus:browser_tests",
