@@ -3261,7 +3261,6 @@ test("content_unittests") {
     data = [
       "$root_out_dir/content_shell.pak",
       "data/",
-      "//content/test/data/attribution_reporting/databases/",
       "//content/test/data/browsing_topics/",
       "//content/test/data/btm/",
       "//media/test/data/",
