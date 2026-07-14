@@ -21,12 +21,14 @@
                 ],
                 "build_config": "Release",
                 "config": "chromium",
+                "target_arch": "arm",
                 "target_bits": 64,
                 "target_platform": "mac"
               },
               "legacy_gclient_config": {
                 "apply_configs": [
-                  "chromium_with_telemetry_dependencies"
+                  "chromium_with_telemetry_dependencies",
+                  "arm64"
                 ],
                 "config": "chromium"
               }

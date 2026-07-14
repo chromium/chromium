@@ -64,7 +64,7 @@ try_.builder(
             "chrome_for_testing",
             "chrome_with_codecs",
             "mac",
-            "x64",
+            "arm64",
         ],
     ),
     cores = None,

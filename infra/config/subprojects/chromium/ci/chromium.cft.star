@@ -72,6 +72,7 @@ ci.builder(
             # telemetry_perf_unittests suite.
             "chromium_with_telemetry_dependencies",
         ],
+        is_arm64 = True,
     ),
     gn_args = gn_args.config(
         configs = [
@@ -81,7 +82,7 @@ ci.builder(
             "chrome_for_testing",
             "chrome_with_codecs",
             "mac",
-            "x64",
+            "arm64",
         ],
     ),
     targets = targets.bundle(
@@ -102,7 +103,7 @@ ci.builder(
         #     "all",
         # ],
         mixins = [
-            "mac_default_x64",
+            "mac_default_arm64",
             "isolate_profile_data",
         ],
         per_test_modifications = {
