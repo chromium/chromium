@@ -69,7 +69,6 @@ def __step_config(ctx, step_config):
         "third_party/devtools-frontend/src/scripts/build/build_inspector_overlay.py",
         "third_party/inspector_protocol/check_protocol_compatibility.py",
         "third_party/inspector_protocol/code_generator.py",
-        "third_party/inspector_protocol/concatenate_protocols.py",
         "third_party/libei/scanner.py",
         "third_party/lottie/minify_lottie.py",
         "third_party/perfetto/src/trace_processor/plugins/wattson/gen_wattson_curves.py",

@@ -66,7 +66,10 @@ action("concatenate_protocols") {
 
   _blink_protocol_path =
       "$root_gen_dir/third_party/blink/public/devtools_protocol/protocol.json"
-  inputs = [ _blink_protocol_path ]
+  inputs = [
+    _blink_protocol_path,
+    "$_inspector_protocol/pdl.py",
+  ]
   output_file = _concatenated_protocol_path
   outputs = [ output_file ]
 
