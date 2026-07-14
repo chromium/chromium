@@ -57,6 +57,7 @@ import org.chromium.chrome.browser.lifecycle.NativeInitObserver;
 import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.omnibox.LocationBarMediator.OmniboxUma;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator;
+import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.FuseboxLayoutMode;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.FuseboxState;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.PopupState;
 import org.chromium.chrome.browser.omnibox.geo.GeolocationHeader;
@@ -1021,11 +1022,14 @@ public class LocationBarCoordinator
         // <--> expanded; they don't look good otherwise.
         boolean transitioningFromOrToDisabledState =
                 mCurrentFuseboxState == FuseboxState.DISABLED || newState == FuseboxState.DISABLED;
+        // The popover UI doesn't look good when animating bounds changes.
+        boolean isPopover =
+                getFuseboxLayoutModeSupplier().get() == FuseboxLayoutMode.SUGGESTIONS_POPOVER;
 
         mCurrentFuseboxState = newState;
         updateUrlBarForMultilineInput();
 
-        if (transitioningFromOrToDisabledState) return;
+        if (transitioningFromOrToDisabledState || isPopover) return;
 
         ChangeBounds changeBounds = new ChangeBounds();
         changeBounds
@@ -1068,6 +1072,11 @@ public class LocationBarCoordinator
         } else {
             TransitionManager.beginDelayedTransition(mLocationBarLayout, transition);
         }
+    }
+
+    @VisibleForTesting
+    NonNullObservableSupplier<Integer> getFuseboxLayoutModeSupplier() {
+        return mFuseboxCoordinator.getFuseboxLayoutModeSupplier();
     }
 
     /* package */ void onPopupStateChange(@PopupState int popupState) {
@@ -1389,6 +1398,10 @@ public class LocationBarCoordinator
     /** Set an instance of UrlBarCoordinator for testing. */
     void setUrlCoordinatorForTesting(UrlBarCoordinator urlCoordinator) {
         mUrlCoordinator = urlCoordinator;
+    }
+
+    void setFuseboxCoordinatorForTesting(FuseboxCoordinator fuseboxCoordinator) {
+        mFuseboxCoordinator = fuseboxCoordinator;
     }
 
     /** Set an instance of UrlBar for testing. */

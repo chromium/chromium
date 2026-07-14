@@ -35,7 +35,10 @@ public class GlifStrokeDrawable extends Drawable {
     private final Paint mBlurPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 
     private final Rect mSharpBounds = new Rect();
+    private final RectF mSharpBoundsF = new RectF();
     private final Rect mBlurBounds = new Rect();
+    private final RectF mBlurBoundsF = new RectF();
+
     private final float mStrokePx;
     private float mBlurStrokePx;
     private float mCornerRadius;
@@ -134,8 +137,10 @@ public class GlifStrokeDrawable extends Drawable {
     protected void onBoundsChange(Rect bounds) {
         super.onBoundsChange(bounds);
         mSharpBounds.set(bounds);
+        mSharpBoundsF.set(mSharpBounds);
         mBlurBounds.set(bounds);
         mBlurBounds.inset((int) mStrokePx, (int) mStrokePx);
+        mBlurBoundsF.set(mBlurBounds);
     }
 
     @Override
@@ -151,11 +156,8 @@ public class GlifStrokeDrawable extends Drawable {
     @Override
     public void draw(Canvas canvas) {
         canvas.drawRoundRect(
-                new RectF(mBlurBounds),
-                mCornerRadius - mStrokePx,
-                mCornerRadius - mStrokePx,
-                mBlurPaint);
-        canvas.drawRoundRect(new RectF(mSharpBounds), mCornerRadius, mCornerRadius, mSharpPaint);
+                mBlurBoundsF, mCornerRadius - mStrokePx, mCornerRadius - mStrokePx, mBlurPaint);
+        canvas.drawRoundRect(mSharpBoundsF, mCornerRadius, mCornerRadius, mSharpPaint);
     }
 
     @Override

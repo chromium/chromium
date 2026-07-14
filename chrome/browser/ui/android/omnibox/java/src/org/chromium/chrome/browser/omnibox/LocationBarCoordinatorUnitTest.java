@@ -23,10 +23,14 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.RuntimeEnvironment;
 
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
+import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator;
+import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.FuseboxLayoutMode;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.FuseboxState;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.PopupState;
 import org.chromium.chrome.browser.toolbar.optional_button.OptionalButtonCoordinator;
@@ -39,6 +43,7 @@ public class LocationBarCoordinatorUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private UrlBarCoordinator mUrlCoordinator;
+    @Mock private FuseboxCoordinator mFuseboxCoordinator;
     @Mock private View mUrlBar;
     @Mock private LocationBarLayout mLocationBarLayout;
     @Mock private LocationBarEmbedder mLocationBarEmbedder;
@@ -54,9 +59,13 @@ public class LocationBarCoordinatorUnitTest {
     @Mock(answer = Answers.CALLS_REAL_METHODS)
     private LocationBarCoordinator mCoordinator;
 
+    private final SettableNonNullObservableSupplier<Integer> mFuseboxLayoutModeSupplier =
+            ObservableSuppliers.createNonNull(FuseboxLayoutMode.TOOLBAR);
+
     @Before
     public void setUp() {
         mCoordinator.setUrlCoordinatorForTesting(mUrlCoordinator);
+        mCoordinator.setFuseboxCoordinatorForTesting(mFuseboxCoordinator);
         mCoordinator.setUrlBarForTesting(mUrlBar);
         mCoordinator.setLocationBarLayoutForTesting(mLocationBarLayout);
         mCoordinator.setLocationBarEmbedderForTesting(mLocationBarEmbedder);
@@ -69,6 +78,8 @@ public class LocationBarCoordinatorUnitTest {
         when(mLocationBarDataProvider.getNewTabPageDelegate()).thenReturn(mNewTabPageDelegate);
         when(mLocationBarLayout.findViewById(R.id.fusebox_plus_button)).thenReturn(mPlusButton);
         when(mLocationBarLayout.getContext()).thenReturn(RuntimeEnvironment.getApplication());
+        when(mFuseboxCoordinator.getFuseboxLayoutModeSupplier())
+                .thenReturn(mFuseboxLayoutModeSupplier);
     }
 
     @Test
@@ -102,6 +113,20 @@ public class LocationBarCoordinatorUnitTest {
         // Verify state is updated and animation runs by calling beginEmbeddedDelayedTransition.
         assertEquals(FuseboxState.EXPANDED, mCoordinator.getCurrentFuseboxStateForTesting());
         verify(mLocationBarEmbedder).beginEmbeddedDelayedTransition(eq(mLocationBarLayout), any());
+    }
+
+    @Test
+    public void testOnFuseboxStateChange_StopsEarlyFromPopover() {
+        mFuseboxLayoutModeSupplier.set(FuseboxLayoutMode.SUGGESTIONS_POPOVER);
+        when(mFuseboxCoordinator.getFuseboxLayoutModeSupplier())
+                .thenReturn(mFuseboxLayoutModeSupplier);
+        mCoordinator.setCurrentFuseboxStateForTesting(FuseboxState.COMPACT);
+
+        mCoordinator.onFuseboxStateChange(FuseboxState.EXPANDED);
+
+        // Verify state is updated but animation doesn't run.
+        assertEquals(FuseboxState.EXPANDED, mCoordinator.getCurrentFuseboxStateForTesting());
+        verify(mLocationBarEmbedder, never()).beginEmbeddedDelayedTransition(any(), any());
     }
 
     @Test
