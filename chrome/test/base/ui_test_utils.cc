@@ -127,12 +127,20 @@ namespace ui_test_utils {
 namespace {
 
 BrowserWindowInterface* WaitForBrowserNotInSet(
-    std::set<BrowserWindowInterface*> excluded_browsers) {
-  BrowserWindowInterface* new_browser = GetBrowserNotInSet(excluded_browsers);
+    std::set<SessionID> excluded_browsers) {
+  BrowserWindowInterface* new_browser = nullptr;
+  GlobalBrowserCollection::GetInstance()->ForEach(
+      [&](BrowserWindowInterface* browser) {
+        if (!excluded_browsers.contains(browser->GetSessionID())) {
+          new_browser = browser;
+          return false;  // Stop iterating.
+        }
+        return true;  // Continue iterating.
+      });
   if (!new_browser) {
     new_browser = WaitForBrowserToOpen();
     // The new browser should never be in |excluded_browsers|.
-    DCHECK(!excluded_browsers.contains(new_browser));
+    DCHECK(!excluded_browsers.contains(new_browser->GetSessionID()));
   }
   return new_browser;
 }
@@ -334,10 +342,10 @@ NavigateToURLWithDispositionBlockUntilNavigationsComplete(
   if (!blink::IsRendererDebugURL(url))
     same_tab_observer.set_expected_initial_url(url);
 
-  std::set<BrowserWindowInterface*> initial_browsers;
+  std::set<SessionID> initial_browsers;
   ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
       [&](BrowserWindowInterface* initial_browser) {
-        initial_browsers.insert(initial_browser);
+        initial_browsers.insert(initial_browser->GetSessionID());
         return true;  // Continue iterating.
       });
 
