@@ -1,0 +1,67 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//chrome/browser/page_load_metrics/integration_tests/jsdeps.gni")
+
+# Shared base for the Web Vitals / page-load metric integration browser tests.
+# Also depended on by //chrome/browser/page_load_metrics/observers tests.
+source_set("test_support") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [
+    "metric_integration_test.cc",
+    "metric_integration_test.h",
+  ]
+
+  public_deps = [
+    "//base/test:test_support",
+    "//chrome/browser/preloading:test_support",
+    "//chrome/test:test_support_ui",
+    "//components/ukm:test_support",
+    "//content/public/browser",
+  ]
+
+  deps = [
+    "//chrome/browser/ui",
+    "//chrome/common:constants",
+    "//content/test:test_support",
+    "//net:test_support",
+    "//services/metrics/public/cpp:ukm_builders",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [
+    "cross_document_resource_reuse_test.cc",
+    "event_counts_browsertest.cc",
+    "first_input_delay_browsertest.cc",
+    "first_scroll_delay_browsertest.cc",
+    "image_loading_uma_browsertest.cc",
+    "interaction_to_next_paint_browsertest.cc",
+    "largest_contentful_paint_browsertest.cc",
+    "layout_instability_browsertest.cc",
+    "render_blocking_browsertest.cc",
+    "soft_navigation_metrics_browsertest.cc",
+    "unused_preloads_browsertest.cc",
+    "user_timing_browsertest.cc",
+  ]
+
+  data = metric_integration_jsdeps
+
+  deps = [
+    ":test_support",
+    "//chrome/browser/ui",
+    "//chrome/common:constants",
+    "//components/metrics:content",
+    "//components/page_load_metrics/browser",
+    "//components/page_load_metrics/browser:test_support",
+    "//content/test:browsertest_support",
+    "//content/test:test_support",
+    "//ui/events:test_support",
+  ]
+}

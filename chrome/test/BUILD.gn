@@ -13,8 +13,6 @@ import("//build/config/ui.gni")
 import("//build/toolchain/toolchain.gni")
 import("//chrome/browser/buildflags.gni")
 import("//chrome/browser/downgrade/buildflags.gni")
-import("//chrome/browser/page_load_metrics/integration_tests/jsdeps.gni")
-import("//chrome/browser/page_load_metrics/integration_tests/sources.gni")
 import("//chrome/common/features.gni")
 import("//chrome/common/request_header_integrity/buildflags.gni")
 import("//chrome/services/speech/buildflags/buildflags.gni")
@@ -3154,8 +3152,6 @@ if (!is_android) {
       "$root_gen_dir/third_party/perfetto/protos/perfetto/config/chrome/scenario_config.descriptor",
     ]
 
-    data += metric_integration_jsdeps
-
     sources = [
       "../../components/live_caption/views/caption_bubble_browsertest.cc",
       "../../components/record_replay/content/renderer/record_replay_agent_browsertest.cc",
@@ -4888,7 +4884,14 @@ if (!is_android) {
       deps += [ "//chrome/browser/enterprise/data_controls:test_support" ]
     }
 
-    sources += metric_integration_sources
+    deps += [
+      "//chrome/browser/page_load_metrics/integration_tests:browser_tests",
+
+      # TODO(crbug.com/...): the page_load_metrics/observers browsertests in
+      # this target derive from MetricIntegrationTest; depend on its target
+      # directly until those observers are modularized too.
+      "//chrome/browser/page_load_metrics/integration_tests:test_support",
+    ]
 
     if (!is_chromeos) {
       deps += [
