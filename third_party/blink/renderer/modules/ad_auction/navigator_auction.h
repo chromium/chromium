@@ -13,17 +13,12 @@
 #include "base/uuid.h"
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "third_party/blink/public/common/fenced_frame/redacted_fenced_frame_config.h"
-#include "third_party/blink/public/common/interest_group/auction_config.h"
-#include "third_party/blink/public/mojom/interest_group/ad_auction_service.mojom-blink.h"
-#include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/core/frame/navigator.h"
-#include "third_party/blink/renderer/modules/ad_auction/join_leave_queue.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
-#include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -212,91 +207,11 @@ class MODULES_EXPORT NavigatorAuction final
                                               Navigator& navigator);
 
   void Trace(Visitor* visitor) const override {
-    visitor->Trace(ad_auction_service_);
     visitor->Trace(protected_audience_);
     Supplement<Navigator>::Trace(visitor);
   }
 
  private:
-  // Pending cross-site interest group joins and leaves. These may be added to a
-  // queue before being passed to the browser process.
-
-  struct PendingJoin {
-    mojom::blink::InterestGroupPtr interest_group;
-    mojom::blink::AdAuctionService::JoinInterestGroupCallback callback;
-  };
-
-  struct PendingLeave {
-    scoped_refptr<const SecurityOrigin> owner;
-    String name;
-    mojom::blink::AdAuctionService::LeaveInterestGroupCallback callback;
-  };
-
-  struct PendingClear {
-    scoped_refptr<const SecurityOrigin> owner;
-    Vector<String> interest_groups_to_keep;
-    mojom::blink::AdAuctionService::LeaveInterestGroupCallback callback;
-  };
-
-  // Tells the browser process to start `pending_join`. Its callback will be
-  // invoked on completion.
-  void StartJoin(PendingJoin&& pending_join);
-
-  // Completion callback for joinInterestGroup() Mojo calls.
-  void JoinComplete(bool is_cross_origin,
-                    ScriptPromiseResolver<IDLUndefined>* resolver,
-                    bool failed_well_known_check);
-
-  // Tells the browser process to start `pending_leave`. Its callback will be
-  // invoked on completion.
-  void StartLeave(PendingLeave&& pending_leave);
-
-  // Completion callback for clearOriginJoinedAdInterestGroups() Mojo calls.
-  void LeaveComplete(bool is_cross_origin,
-                     ScriptPromiseResolver<IDLUndefined>* resolver,
-                     bool failed_well_known_check);
-
-  // Tells the browser process to start `pending_clear`. Its callback will be
-  // invoked on completion.
-  void StartClear(PendingClear&& pending_clear);
-
-  // Completion callback for leaveInterestGroup() Mojo calls.
-  void ClearComplete(bool is_cross_origin,
-                     ScriptPromiseResolver<IDLUndefined>* resolver,
-                     bool failed_well_known_check);
-
-  // Completion callback for createAdRequest() Mojo call.
-  void AdsRequested(ScriptPromiseResolver<Ads>* resolver,
-                    const String& ads_guid);
-  // Completion callback for finalizeAd() Mojo call.
-  void FinalizeAdComplete(ScriptPromiseResolver<IDLString>* resolver,
-                          const std::optional<KURL>& creative_url);
-  // Completion callback for Mojo call made by deprecatedURNToURL().
-  void GetURLFromURNComplete(ScriptPromiseResolver<IDLUSVString>*,
-                             const std::optional<KURL>&);
-  // Completion callback for Mojo call made by deprecatedReplaceInURNComplete().
-  void ReplaceInURNComplete(ScriptPromiseResolver<IDLUndefined>* resolver);
-
-  void GetInterestGroupAdAuctionDataComplete(
-      base::TimeTicks start_time,
-      bool is_single_seller,
-      ScriptPromiseResolver<AdAuctionData>* resolver,
-      Vector<mojom::blink::AdAuctionPerSellerRequestPtr> requests,
-      const std::optional<base::Uuid>& request_id);
-
-  // Manage queues of cross-site join and leave operations that have yet to be
-  // sent to the browser process.
-  JoinLeaveQueue<PendingJoin> queued_cross_site_joins_;
-  JoinLeaveQueue<PendingLeave> queued_cross_site_leaves_;
-  JoinLeaveQueue<PendingClear> queued_cross_site_clears_;
-
-  // The next available auction nonce suffix, used alongside the
-  // `base_auction_nonce` provided by the Browser process to create unique
-  // auction nonces when createAuctionNonce. Though this counter has 32 bits,
-  // only the least significant 24 bits are used.
-  uint32_t auction_nonce_counter_ = 0;
-
-  HeapMojoRemote<mojom::blink::AdAuctionService> ad_auction_service_;
   Member<ProtectedAudience> protected_audience_;
 };
 

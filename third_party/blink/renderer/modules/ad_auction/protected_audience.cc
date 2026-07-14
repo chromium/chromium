@@ -10,7 +10,6 @@
 #include "base/feature_list.h"
 #include "base/time/time.h"
 #include "third_party/blink/public/common/features.h"
-#include "third_party/blink/public/common/interest_group/ad_auction_constants.h"
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
@@ -43,35 +42,21 @@ v8::Local<v8::Value> MakeV8Val(ScriptState* script_state,
 Vector<std::pair<String, FeatureVal>> MakeFeatureStatusVector(
     ExecutionContext* execution_context) {
   Vector<std::pair<String, FeatureVal>> feature_status;
+  // Hardcode default values now that Protected Audience is deprecated.
   feature_status.emplace_back(String("adComponentsLimit"),
-                              FeatureVal(MaxAdAuctionAdComponents()));
-  feature_status.emplace_back(
-      String("deprecatedRenderURLReplacements"),
-      FeatureVal(
-          RuntimeEnabledFeatures::FledgeDeprecatedRenderURLReplacementsEnabled(
-              execution_context)));
-  feature_status.emplace_back(String("reportingTimeout"), FeatureVal(true));
+                              FeatureVal(static_cast<size_t>(20)));
+  feature_status.emplace_back(String("deprecatedRenderURLReplacements"),
+                              FeatureVal(false));
+  feature_status.emplace_back(String("reportingTimeout"), FeatureVal(false));
   feature_status.emplace_back(String("permitCrossOriginTrustedSignals"),
-                              FeatureVal(true));
-  feature_status.emplace_back(
-      String("realTimeReporting"),
-      FeatureVal(RuntimeEnabledFeatures::FledgeRealTimeReportingEnabled(
-          execution_context)));
-  feature_status.emplace_back(
-      String("selectableReportingIds"),
-      FeatureVal(RuntimeEnabledFeatures::FledgeAuctionDealSupportEnabled(
-          execution_context)));
-  feature_status.emplace_back(
-      String("sellerNonce"),
-      FeatureVal(
-          RuntimeEnabledFeatures::FledgeSellerNonceEnabled(execution_context)));
-  feature_status.emplace_back(
-      String("trustedSignalsKVv2"),
-      FeatureVal(RuntimeEnabledFeatures::FledgeTrustedSignalsKVv2SupportEnabled(
-          execution_context)));
-  feature_status.emplace_back(
-      String("maxGroupLifetimeMs"),
-      FeatureVal(MaxInterestGroupLifetime().InMillisecondsF()));
+                              FeatureVal(false));
+  feature_status.emplace_back(String("realTimeReporting"), FeatureVal(false));
+  feature_status.emplace_back(String("selectableReportingIds"),
+                              FeatureVal(false));
+  feature_status.emplace_back(String("sellerNonce"), FeatureVal(false));
+  feature_status.emplace_back(String("trustedSignalsKVv2"), FeatureVal(false));
+  feature_status.emplace_back(String("maxGroupLifetimeMs"),
+                              FeatureVal(base::Days(30).InMillisecondsF()));
   return feature_status;
 }
 
