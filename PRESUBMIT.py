@@ -4003,22 +4003,6 @@ def CheckAddedDepsHaveTargetApprovals(input_api, output_api):
         return []
     if 'PRESUBMIT_SKIP_NETWORK' in input_api.environ:
         return []
-    try:
-        if (input_api.change.issue
-                and input_api.gerrit.IsOwnersOverrideApproved(
-                    input_api.change.issue)):
-            # Skip OWNERS check when Owners-Override label is approved. This is
-            # intended for global owners, trusted bots, and on-call sheriffs.
-            # Review is still required for these changes.
-            return []
-    except Exception as e:
-        return [
-            output_api.PresubmitPromptWarning(
-                'Failed to retrieve owner override status - %s' % str(e))
-        ]
-
-    # A set of paths (that might not exist) that are being added as DEPS
-    # (via lines like "+foo/bar/baz").
     depended_on_paths = set()
 
     file_filter = lambda f: not input_api.re.match(r'^third_party/blink/.*',
@@ -4059,6 +4043,20 @@ def CheckAddedDepsHaveTargetApprovals(input_api, output_api):
                     "DEPS approval by OWNERS check failed: this change has "
                     "no change number, so we can't check it for approvals.")
             ]
+
+        # Try/except because this does a network call.
+        try:
+            # Skip OWNERS check when Owners-Override label is approved. This is
+            # intended for global owners, trusted bots, and on-call sheriffs.
+            # Review is still required for these changes.
+            if input_api.gerrit.IsOwnersOverrideApproved(input_api.change.issue):
+                return []
+        except Exception as e:
+            return [
+                output_api.PresubmitPromptWarning(
+                    'Failed to retrieve owner override status - %s' % str(e))
+            ]
+
         output = output_api.PresubmitError
     else:
         output = output_api.PresubmitNotifyResult
