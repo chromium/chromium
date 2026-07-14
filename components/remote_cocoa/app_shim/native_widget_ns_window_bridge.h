@@ -370,6 +370,11 @@ class REMOTE_COCOA_APP_SHIM_EXPORT NativeWidgetNSWindowBridge
   // frame.
   void OnLiveResizeToFrame(NSRect new_window_frame);
 
+  // Update `host_` and its compositor with a new NSWindow frame size. This
+  // can be done in response to the -[NSWindow frame] attribute changing, or
+  // in anticipation of a live-resize step.
+  void SendWindowFrameChangeToHost(NSRect new_window_frame);
+
  private:
   friend class views::test::BridgedNativeWidgetTestApi;
 
@@ -414,11 +419,6 @@ class REMOTE_COCOA_APP_SHIM_EXPORT NativeWidgetNSWindowBridge
   // Restores the initial collection behavior after temporarily changing it in
   // `MoveToActiveFullscreenSpace()`.
   void RestoreCollectionBehavior();
-
-  // Update `host_` and its compositor with a new NSWindow frame size. This
-  // can be done in response to the -[NSWindow frame] attribute changing, or
-  // in anticipation of a live-resize step.
-  void SendWindowFrameChangeToHost(NSRect new_window_frame);
 
   // CocoaMouseCaptureDelegate:
   bool PostCapturedEvent(NSEvent* event) override;

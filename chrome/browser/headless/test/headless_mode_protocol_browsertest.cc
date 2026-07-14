@@ -320,13 +320,7 @@ HEADLESS_MODE_PROTOCOL_TEST(FullscreenWindowSizeScaled,
                             "shared/fullscreen-window-size-scaled.js")
 #endif  // !BUILDFLAG(IS_MAC)
 
-// TODO(http://crbug.com/491505696): Fails on macOS.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_SetZoomedWindowBounds DISABLED_SetZoomedWindowBounds
-#else
-#define MAYBE_SetZoomedWindowBounds SetZoomedWindowBounds
-#endif
-HEADLESS_MODE_PROTOCOL_TEST(MAYBE_SetZoomedWindowBounds,
+HEADLESS_MODE_PROTOCOL_TEST(SetZoomedWindowBounds,
                             "shared/set-zoomed-window-bounds.js")
 
 HEADLESS_MODE_PROTOCOL_TEST(PrintToPdfTinyPage,

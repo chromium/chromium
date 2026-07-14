@@ -10,6 +10,7 @@
 #include "base/check_deref.h"
 #include "base/no_destructor.h"
 #import "components/remote_cocoa/app_shim/native_widget_mac_nswindow.h"
+#import "components/remote_cocoa/app_shim/native_widget_ns_window_bridge.h"
 #import "components/remote_cocoa/app_shim/views_nswindow_delegate.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
@@ -32,6 +33,12 @@ using enum NativeWidgetMacNSWindowHeadlessInfo::WindowState;
 // Window key state.
 - (BOOL)isKeyWindow;
 - (void)makeKeyAndOrderFront:(id)sender;
+
+// Window geometry.
+- (NSRect)frame;
+- (void)setFrame:(NSRect)frameRect
+         display:(BOOL)displayFlag
+         animate:(BOOL)animateFlag;
 
 // Window fullscreen.
 - (NSWindowStyleMask)styleMask;
@@ -76,6 +83,9 @@ DEFINE_SWIZZLER(orderFrontRegardless, orderFrontRegardless)
 DEFINE_SWIZZLER(isKeyWindow, isKeyWindow)
 DEFINE_SWIZZLER(makeKeyAndOrderFront, makeKeyAndOrderFront:)
 
+DEFINE_SWIZZLER(frame, frame)
+DEFINE_SWIZZLER(setFrame, setFrame:display:animate:)
+
 DEFINE_SWIZZLER(styleMask, styleMask)
 DEFINE_SWIZZLER(setStyleMask, setStyleMask:)
 DEFINE_SWIZZLER(toggleFullScreen, toggleFullScreen:)
@@ -102,6 +112,9 @@ void InstallSwizzlers() {
 
     isKeyWindowSwizzler();
     makeKeyAndOrderFrontSwizzler();
+
+    frameSwizzler();
+    setFrameSwizzler();
 
     styleMaskSwizzler();
     setStyleMaskSwizzler();
@@ -325,6 +338,33 @@ void InstallSwizzlers() {
       self, setStyleMaskSelector(), styleMask);
 }
 
+- (NSRect)frame {
+  NativeWidgetMacNSWindowHeadlessInfo* headless_info = GET_HEADLESS_INFO;
+  if (headless_info && headless_info->window_state == kFullscreen &&
+      headless_info->headless_frame) {
+    return gfx::ScreenRectToNSRect(headless_info->headless_frame.value());
+  }
+
+  return frameSwizzler().InvokeOriginal<NSRect>(self, frameSelector());
+}
+
+- (void)setFrame:(NSRect)frameRect
+         display:(BOOL)displayFlag
+         animate:(BOOL)animateFlag {
+  NativeWidgetMacNSWindowHeadlessInfo* headless_info = GET_HEADLESS_INFO;
+  if (headless_info && headless_info->window_state == kFullscreen) {
+    headless_info->headless_frame = gfx::ScreenRectFromNSRect(frameRect);
+    NativeWidgetMacNSWindow* window = (NativeWidgetMacNSWindow*)self;
+    if (window.bridge) {
+      window.bridge->SendWindowFrameChangeToHost(frameRect);
+    }
+    return;
+  }
+
+  setFrameSwizzler().InvokeOriginal<void, NSRect, BOOL, BOOL>(
+      self, setFrameSelector(), frameRect, displayFlag, animateFlag);
+}
+
 - (void)toggleFullScreen:(id)sender {
   NativeWidgetMacNSWindowHeadlessInfo* headless_info = GET_HEADLESS_INFO;
   if (!headless_info) {
@@ -349,17 +389,31 @@ void InstallSwizzlers() {
     display::Screen& screen = CHECK_DEREF(display::Screen::Get());
     display::Display display = screen.GetDisplayMatching(frame_rect);
     NSRect zoomed_frame = gfx::ScreenRectToNSRect(display.bounds());
-    [self setFrame:zoomed_frame display:NO animate:NO];
+
+    // Set headless frame and manually notify the host.
+    headless_info->headless_frame = gfx::ScreenRectFromNSRect(zoomed_frame);
+    NativeWidgetMacNSWindow* window = (NativeWidgetMacNSWindow*)self;
+    if (window.bridge) {
+      window.bridge->SendWindowFrameChangeToHost(zoomed_frame);
+    }
 
     if (delegate) {
       [delegate windowDidEnterFullScreen:nil];
     }
+
+    [[NSNotificationCenter defaultCenter]
+        postNotificationName:NSWindowDidMoveNotification
+                      object:self];
+    [[NSNotificationCenter defaultCenter]
+        postNotificationName:NSWindowDidResizeNotification
+                      object:self];
   } else {
     if (delegate) {
       [delegate windowWillExitFullScreen:nil];
     }
 
     headless_info->window_state = kNormal;
+    headless_info->headless_frame.reset();
 
     if (headless_info->restored_bounds) {
       NSRect restored_frame =
@@ -371,6 +425,13 @@ void InstallSwizzlers() {
     if (delegate) {
       [delegate windowDidExitFullScreen:nil];
     }
+
+    [[NSNotificationCenter defaultCenter]
+        postNotificationName:NSWindowDidMoveNotification
+                      object:self];
+    [[NSNotificationCenter defaultCenter]
+        postNotificationName:NSWindowDidResizeNotification
+                      object:self];
   }
 }
 
