@@ -104,43 +104,22 @@ std::optional<base::FilePath> GetCommandFilePath();
 // `test_file_name` should be without the .cc suffix.
 void PrintInstructions(const char* test_file_name);
 
-// IFrameWaiter
-//
-// IFrameWaiter is an waiter object that waits for an iframe befitting a
-// criteria to appear. The criteria can be the iframe's 'name' attribute,
-// the iframe's origin, or the iframe's full url.
-class IFrameWaiter : public content::WebContentsObserver {
- public:
-  explicit IFrameWaiter(content::WebContents* webcontents);
-  IFrameWaiter(const IFrameWaiter&) = delete;
-  IFrameWaiter& operator=(const IFrameWaiter&) = delete;
-  ~IFrameWaiter() override;
-
-  [[nodiscard]] content::RenderFrameHost* WaitForFrameMatchingName(
-      const std::string& name,
-      const base::TimeDelta timeout = default_action_timeout);
-  [[nodiscard]] content::RenderFrameHost* WaitForFrameMatchingOrigin(
-      const GURL& origin,
-      const base::TimeDelta timeout = default_action_timeout);
-  [[nodiscard]] content::RenderFrameHost* WaitForFrameMatchingUrl(
-      const GURL& url,
-      const base::TimeDelta timeout = default_action_timeout);
-
- private:
-  [[nodiscard]] content::RenderFrameHost* WaitForFrame(
-      base::RepeatingCallback<bool(content::RenderFrameHost*)> predicate,
-      base::TimeDelta timeout);
-
-  // content::WebContentsObserver
-  void RenderFrameCreated(content::RenderFrameHost* render_frame_host) override;
-  void DidFinishLoad(content::RenderFrameHost* render_frame_host,
-                     const GURL& validated_url) override;
-  void FrameNameChanged(content::RenderFrameHost* render_frame_host,
-                        const std::string& name) override;
-
-  base::RepeatingCallback<bool(content::RenderFrameHost*)> predicate_;
-  base::test::TestFuture<content::GlobalRenderFrameHostId> future_;
-};
+[[nodiscard]] content::RenderFrameHost* WaitForFrameMatchingName(
+    content::WebContents& web_contents,
+    const std::string& name,
+    const base::TimeDelta timeout = default_action_timeout);
+[[nodiscard]] content::RenderFrameHost* WaitForFrameMatchingOrigin(
+    content::WebContents& web_contents,
+    const GURL& origin,
+    const base::TimeDelta timeout = default_action_timeout);
+[[nodiscard]] content::RenderFrameHost* WaitForFrameMatchingUrl(
+    content::WebContents& web_contents,
+    const GURL& url,
+    const base::TimeDelta timeout = default_action_timeout);
+[[nodiscard]] content::RenderFrameHost* WaitForFrame(
+    content::WebContents& web_contents,
+    base::RepeatingCallback<bool(content::RenderFrameHost*)> predicate,
+    const base::TimeDelta timeout = default_action_timeout);
 
 // WebPageReplayServerWrapper
 
