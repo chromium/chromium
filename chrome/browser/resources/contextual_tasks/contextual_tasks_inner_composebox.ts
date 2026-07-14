@@ -10,6 +10,7 @@ import '//resources/cr_components/composebox/composebox_tool_chip.js';
 import '//resources/cr_components/composebox/contextual_entrypoint_and_menu.js';
 import '//resources/cr_components/composebox/error_scrim.js';
 import '//resources/cr_components/composebox/file_carousel.js';
+import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 
 import {GlifAnimationState} from '//resources/cr_components/composebox/common.js';
 import type {ComposeboxFile} from '//resources/cr_components/composebox/common.js';
@@ -118,6 +119,7 @@ export class
 
   static override get properties() {
     return {
+      carouselOnTop_: {type: Boolean},
       disableFallbackGlifAnimation: {type: Boolean},
       enableCarouselScrolling: {type: Boolean},
       enableFileHint: {type: Boolean},
@@ -126,14 +128,16 @@ export class
       isFollowupQuery: {type: Boolean},
       isSidePanel: {type: Boolean},
       isZeroState: {type: Boolean},
-      lensButtonDisabled: {type: Boolean},
+      lensButtonDisabled: {
+        reflect: true,
+        type: Boolean,
+      },
       lensButtonTriggersOverlay: {type: Boolean},
       showLensButton: {type: Boolean},
     };
   }
 
-  // Wrapper-bound properties, declared no-op for compile/smoke.
-  // TODO (in the following CL): Migrate behavior.
+  // Wrapper-bound properties.
   accessor disableFallbackGlifAnimation: boolean = false;
   accessor enableCarouselScrolling: boolean = true;
   accessor enableFileHint: boolean = false;
@@ -146,6 +150,8 @@ export class
   accessor lensButtonDisabled: boolean = false;
   accessor lensButtonTriggersOverlay: boolean = false;
   accessor showLensButton: boolean = true;
+
+  protected accessor carouselOnTop_: boolean = false;
 
   private searchboxCallbackRouter_: SearchboxPageCallbackRouter;
   private pageHandler_: PageHandlerRemote;
@@ -220,7 +226,8 @@ export class
 
   override willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);
-    if (changedProperties.has('inputPlaceholderOverride')) {
+    if (changedProperties.has('inputPlaceholderOverride') ||
+        changedProperties.has('enableFileHint')) {
       this.updateInputPlaceholder();
     }
   }
@@ -342,11 +349,47 @@ export class
     this.fire('composebox-focus-out');
   }
 
+  protected onLensClick_() {
+    if (this.lensButtonTriggersOverlay) {
+      this.pageHandler_.handleLensButtonClick();
+    } else {
+      this.pageHandler_.handleFileUpload(/*is_image=*/ true);
+    }
+  }
+
+  protected onLensIconMousedown_(e: MouseEvent) {
+    // Capture the mousedown so clicking the Lens icon does not focus (and
+    // expand) the composebox.
+    e.preventDefault();
+  }
+
   override updateInputPlaceholder() {
     if (this.inputPlaceholderOverride) {
       this.inputPlaceholder = this.inputPlaceholderOverride;
       return;
     }
+
+    const shouldUseFileHint = this.enableFileHint && this.hasFiles() &&
+        this.inputState?.activeTool === ToolMode.kUnspecified;
+    if (shouldUseFileHint) {
+      if (this.files.size > 1) {
+        this.inputPlaceholder = this.i18n('composeboxHintTextAskAboutThese');
+        return;
+      }
+      const file = this.files.values().next().value!;
+      if (file.type === 'tab') {
+        this.inputPlaceholder = this.i18n('composeboxHintTextAskAboutThisTab');
+        return;
+      } else if (file.type.includes('image')) {
+        this.inputPlaceholder =
+            this.i18n('composeboxHintTextAskAboutThisImage');
+        return;
+      } else if (file.type === 'pdf' || file.type === 'application/pdf') {
+        this.inputPlaceholder = this.i18n('composeboxHintTextAskAboutThisDoc');
+        return;
+      }
+    }
+
     super.updateInputPlaceholder();
   }
 
@@ -358,6 +401,21 @@ export class
     return super.hasValidQuery() ||
         (this.inputState?.activeTool === ToolMode.kDeepSearch &&
          this.isFollowupQuery);
+  }
+
+  override shouldShowDivider(): boolean {
+    // Retain the divider when only tab favicons are present.
+    const hasNonTabFiles = Array.from(this.files.values()).some(f => !f.url);
+    if (this.hasTabs() && !hasNonTabFiles) {
+      return this.showDropdown;
+    }
+    return super.shouldShowDivider();
+  }
+
+  override shouldDisableFileInputs(): boolean {
+    // Contextual Tasks never uploads through the hidden file inputs; uploads
+    // go through the browser handler (Lens, drag/drop, paste).
+    return true;
   }
 
   getAutomaticActiveTabChipElement(): HTMLElement|null {

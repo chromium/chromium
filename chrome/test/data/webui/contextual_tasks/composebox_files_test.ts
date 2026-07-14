@@ -10,6 +10,7 @@ import type {ComposeboxFile} from 'chrome://resources/cr_components/composebox/c
 import {LensOverlayDismissalSource, PageCallbackRouter as ComposeboxPageCallbackRouter, PageHandlerRemote as ComposeboxPageHandlerRemote} from 'chrome://resources/cr_components/composebox/composebox.mojom-webui.js';
 import {ComposeboxProxyImpl} from 'chrome://resources/cr_components/composebox/composebox_proxy.js';
 import {ContextUploadStatus, InputType, ToolMode} from 'chrome://resources/cr_components/composebox/composebox_query.mojom-webui.js';
+import type {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {PageRemote as SearchboxPageRemote} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
@@ -19,9 +20,10 @@ import {MockTimer} from 'chrome://webui-test/mock_timer.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
+import type {CtComposeboxAppParts} from './contextual_tasks_test_utils.js';
+import {assertStyle, createCtComposeboxApp, deleteLastFile, FAKE_TOKEN_STRING, FAKE_TOKEN_STRING_2, fixtureUrl, getSubmitButton, getSubmitContainer} from './contextual_tasks_test_utils.js';
 import {TestContextualTasksBrowserProxy} from './test_contextual_tasks_browser_proxy.js';
-import {uploadFileAndVerify} from './test_searchbox_utils.js';
-import {assertStyle, deleteLastFile, FAKE_TOKEN_STRING, FAKE_TOKEN_STRING_2, fixtureUrl, getSubmitButton, getSubmitContainer} from './contextual_tasks_test_utils.js';
+import {ADD_FILE_CONTEXT_FN, uploadFileAndVerify} from './test_searchbox_utils.js';
 
 suite('ContextualTasksComposeboxFilesTest', () => {
   let contextualTasksApp: ContextualTasksAppElement;
@@ -146,43 +148,6 @@ suite('ContextualTasksComposeboxFilesTest', () => {
 
   teardown(() => {
     mockTimer.uninstall();
-  });
-
-  test('closes Lens overlay when image uploads are disabled', async () => {
-    const disabledState = {
-      ...new MockInputState(),
-      disabledInputTypes: [InputType.kLensImage],
-    };
-
-    const innerComposebox = contextualTasksApp.$.composebox.$.composebox;
-    innerComposebox.dispatchEvent(new CustomEvent('input-state-changed', {
-      detail: {inputState: disabledState},
-      bubbles: true,
-      composed: true,
-    }));
-
-    await microtasksFinished();
-
-    assertEquals(
-        1, mockComposeboxPageHandler.getCallCount('closeLensOverlayFromWebUI'));
-    assertEquals(
-        LensOverlayDismissalSource.kContextualTasksImageUploadsDisabled,
-        mockComposeboxPageHandler.getArgs('closeLensOverlayFromWebUI')[0]);
-  });
-
-  test('lens button is disabled when image uploads are disabled', async () => {
-    const disabledState = {
-      ...new MockInputState(),
-      disabledInputTypes: [InputType.kLensImage],
-    };
-
-    searchboxCallbackRouterRemote.onInputStateChanged(disabledState);
-    await searchboxCallbackRouterRemote.$.flushForTesting();
-    await contextualTasksApp.$.composebox.updateComplete;
-    await composebox.updateComplete;
-    await microtasksFinished();
-
-    assertTrue(composebox.lensButtonDisabled);
   });
 
   test(
@@ -546,4 +511,280 @@ suite('ContextualTasksComposeboxFilesTest', () => {
     const [isImage] = mockComposeboxPageHandler.getArgs('handleFileUpload');
     assertFalse(isImage);
   });
+});
+
+[true, false].forEach(useFork => {
+  suite(
+      `ContextualTasksComposeboxForkFilesTest ` +
+          `(useContextualTasksComposeboxFork = ${useFork})`,
+      () => {
+        let mockComposeboxPageHandler: TestMock<ComposeboxPageHandlerRemote>&
+            ComposeboxPageHandlerRemote;
+        let mockSearchboxPageHandler: TestMock<SearchboxPageHandlerRemote>&
+            SearchboxPageHandlerRemote;
+        let searchboxCallbackRouterRemote: SearchboxPageRemote;
+        let parts: CtComposeboxAppParts;
+
+        setup(async () => {
+          if (!window.chrome) {
+            Object.assign(window, {chrome: {}});
+          }
+
+          if (!window.chrome.histograms) {
+            Object.assign(window.chrome, {
+              histograms: {
+                recordEnumerationValue: () => {},
+                recordUserAction: () => {},
+                recordBoolean: () => {},
+              },
+            });
+          }
+          document.body.innerHTML = window.trustedTypes!.emptyHTML;
+
+          loadTimeData.overrideValues({
+            contextualMenuUsePecApi: false,
+            composeboxSmartTabSharingVisible: false,
+            contextManagementInComposeboxEnabled: false,
+            enableComposeboxJumpFix: false,
+            composeboxShowTypedSuggest: true,
+            composeboxShowZps: true,
+            enableBasicModeZOrder: true,
+            composeboxShowContextMenu: true,
+            composeboxContextDragAndDropEnabled: true,
+            enableFileHint: true,
+            supportsLensButtonInComposebox: true,
+            lensSearchButtonLabel: 'Lens search',
+            composeboxHintTextLensOverlay: 'Test Lens Hint',
+            composeboxHintTextAskAboutThese: 'Ask about these',
+            composeboxHintTextAskAboutThisTab: 'Ask about this tab',
+            composeboxHintTextAskAboutThisImage: 'Ask about this image',
+            composeboxHintTextAskAboutThisDoc: 'Ask about this doc',
+            forcedEmbeddedPageHost: '',
+            tabFaviconChipsToCoinsEnabled: false,
+          });
+
+          const testProxy = new TestContextualTasksBrowserProxy(fixtureUrl);
+          BrowserProxyImpl.setInstance(testProxy);
+
+          mockComposeboxPageHandler =
+              TestMock.fromClass(ComposeboxPageHandlerRemote);
+          mockComposeboxPageHandler.setResultFor(
+              'getSmartTabSharingActive', Promise.resolve({active: false}));
+          mockComposeboxPageHandler.setResultFor(
+              'canShowNextboxAnimation', Promise.resolve({canShow: true}));
+          mockSearchboxPageHandler =
+              TestMock.fromClass(SearchboxPageHandlerRemote);
+          mockSearchboxPageHandler.setResultFor(
+              'getRecentTabs', Promise.resolve({tabs: []}));
+          mockSearchboxPageHandler.setResultFor(
+              'getPageClassification',
+              Promise.resolve({metricSource: 'CO_BROWSING_COMPOSEBOX'}));
+          mockSearchboxPageHandler.setResultFor(
+              'getInputState', Promise.resolve({state: new MockInputState()}));
+          const searchboxCallbackRouter = new SearchboxPageCallbackRouter();
+          searchboxCallbackRouterRemote =
+              searchboxCallbackRouter.$.bindNewPipeAndPassRemote();
+          ComposeboxProxyImpl.setInstance(new ComposeboxProxyImpl(
+              mockComposeboxPageHandler, new ComposeboxPageCallbackRouter(),
+              mockSearchboxPageHandler, searchboxCallbackRouter));
+
+          parts = await createCtComposeboxApp(useFork);
+
+          searchboxCallbackRouterRemote.onInputStateChanged(
+              new MockInputState());
+          await microtasksFinished();
+        });
+
+        test(
+            'closes Lens overlay when image uploads are disabled', async () => {
+              const disabledState = {
+                ...new MockInputState(),
+                disabledInputTypes: [InputType.kLensImage],
+              };
+
+              parts.innerComposebox.dispatchEvent(
+                  new CustomEvent('input-state-changed', {
+                    detail: {inputState: disabledState},
+                    bubbles: true,
+                    composed: true,
+                  }));
+
+              await microtasksFinished();
+
+              assertEquals(
+                  1,
+                  mockComposeboxPageHandler.getCallCount(
+                      'closeLensOverlayFromWebUI'));
+              assertEquals(
+                  LensOverlayDismissalSource
+                      .kContextualTasksImageUploadsDisabled,
+                  mockComposeboxPageHandler.getArgs(
+                      'closeLensOverlayFromWebUI')[0]);
+            });
+
+        test(
+            'lens button is disabled when image uploads are disabled',
+            async () => {
+              const disabledState = {
+                ...new MockInputState(),
+                disabledInputTypes: [InputType.kLensImage],
+              };
+
+              searchboxCallbackRouterRemote.onInputStateChanged(disabledState);
+              await searchboxCallbackRouterRemote.$.flushForTesting();
+              await parts.wrapper.updateComplete;
+              await parts.innerComposebox.updateComplete;
+              await microtasksFinished();
+
+              assertTrue(parts.innerComposebox.lensButtonDisabled);
+            });
+
+        test(
+            'lens button renders in side panel and click opens overlay',
+            async () => {
+              const {wrapper, innerComposebox} = parts;
+              wrapper.isSidePanel = true;
+              await wrapper.updateComplete;
+              await innerComposebox.updateComplete;
+
+              const lensIcon =
+                  innerComposebox.shadowRoot.querySelector<CrIconButtonElement>(
+                      '#lensIcon');
+              assertTrue(
+                  lensIcon !== null, 'Lens icon should render in side panel');
+
+              lensIcon.click();
+              await mockComposeboxPageHandler.whenCalled(
+                  'handleLensButtonClick');
+              assertEquals(
+                  1,
+                  mockComposeboxPageHandler.getCallCount(
+                      'handleLensButtonClick'));
+              assertEquals(
+                  0,
+                  mockComposeboxPageHandler.getCallCount('handleFileUpload'));
+            });
+
+        test('lens icon disabled state reflects on the icon', async () => {
+          const {wrapper, innerComposebox} = parts;
+          wrapper.isSidePanel = true;
+          await wrapper.updateComplete;
+
+          searchboxCallbackRouterRemote.onInputStateChanged({
+            ...new MockInputState(),
+            disabledInputTypes: [InputType.kLensImage],
+          });
+          await searchboxCallbackRouterRemote.$.flushForTesting();
+          await wrapper.updateComplete;
+          await innerComposebox.updateComplete;
+
+          const lensIcon =
+              innerComposebox.shadowRoot.querySelector<CrIconButtonElement>(
+                  '#lensIcon');
+          assertTrue(lensIcon !== null);
+          assertTrue(lensIcon.disabled);
+        });
+
+        test('file inputs are disabled', () => {
+          const fileInputs = parts.innerComposebox.$.fileInputs;
+          assertTrue(fileInputs.disableFileInputs);
+          assertFalse(!!fileInputs.shadowRoot.querySelector('#imageInput'));
+        });
+
+        test(
+            'file upload renders the carousel and delete removes it',
+            async () => {
+              const {innerComposebox} = parts;
+              const testFile =
+                  new File(['test'], 'test.jpg', {type: 'image/jpeg'});
+              await uploadFileAndVerify(
+                  FAKE_TOKEN_STRING, testFile, innerComposebox,
+                  mockSearchboxPageHandler);
+
+              const carouselContainer =
+                  innerComposebox.shadowRoot.querySelector(
+                      '#carouselContainer');
+              assertTrue(carouselContainer !== null);
+              assertEquals(
+                  'carousel-container', carouselContainer.getAttribute('part'));
+              const carousel =
+                  innerComposebox.shadowRoot.querySelector('#carousel');
+              assertTrue(carousel !== null);
+              assertEquals(
+                  'cr-composebox-file-carousel', carousel.getAttribute('part'));
+              const exportparts = carousel.getAttribute('exportparts');
+              assertTrue(exportparts !== null);
+              const exportedParts = exportparts.split(',').map(p => p.trim());
+              assertTrue(exportedParts.includes('thumbnail'));
+              assertTrue(exportedParts.includes('thumbnail-title'));
+
+              await deleteLastFile(innerComposebox);
+              await innerComposebox.updateComplete;
+              assertFalse(
+                  !!innerComposebox.shadowRoot.querySelector('#carousel'));
+            });
+
+        test(
+            'paste with a file attaches it and renders the carousel',
+            async () => {
+              const {innerComposebox} = parts;
+              assertFalse(
+                  !!innerComposebox.shadowRoot.querySelector('#carousel'));
+
+              mockSearchboxPageHandler.resetResolver(ADD_FILE_CONTEXT_FN);
+              mockSearchboxPageHandler.setResultFor(
+                  ADD_FILE_CONTEXT_FN, Promise.resolve(FAKE_TOKEN_STRING));
+
+              const dataTransfer = new DataTransfer();
+              dataTransfer.items.add(
+                  new File(['test'], 'test.jpg', {type: 'image/jpeg'}));
+              const composeboxDiv =
+                  innerComposebox.shadowRoot.querySelector<HTMLElement>(
+                      '#composebox');
+              assertTrue(composeboxDiv !== null);
+
+              let pasteEvent = new ClipboardEvent('paste', {
+                clipboardData: dataTransfer,
+                bubbles: true,
+                composed: true,
+              });
+              if (!pasteEvent.clipboardData) {
+                // The clipboardData constructor init is ignored in some
+                // environments; fall back to injecting the property.
+                pasteEvent = new Event('paste', {
+                               bubbles: true,
+                               composed: true,
+                             }) as ClipboardEvent;
+                Object.defineProperty(
+                    pasteEvent, 'clipboardData', {value: dataTransfer});
+              }
+              composeboxDiv.dispatchEvent(pasteEvent);
+
+              await mockSearchboxPageHandler.whenCalled(ADD_FILE_CONTEXT_FN);
+              await innerComposebox.updateComplete;
+              await microtasksFinished();
+
+              assertEquals(1, innerComposebox.files.size);
+              assertTrue(
+                  !!innerComposebox.shadowRoot.querySelector('#carousel'));
+            });
+
+        test('file hint updates the input placeholder', async () => {
+          const {innerComposebox} = parts;
+          const imageFile =
+              new File(['test'], 'test.jpg', {type: 'image/jpeg'});
+          await uploadFileAndVerify(
+              FAKE_TOKEN_STRING, imageFile, innerComposebox,
+              mockSearchboxPageHandler);
+          assertEquals(
+              'Ask about this image', innerComposebox.inputPlaceholder);
+
+          const pdfFile =
+              new File(['test2'], 'test2.pdf', {type: 'application/pdf'});
+          await uploadFileAndVerify(
+              FAKE_TOKEN_STRING_2, pdfFile, innerComposebox,
+              mockSearchboxPageHandler, 1);
+          assertEquals('Ask about these', innerComposebox.inputPlaceholder);
+        });
+      });
 });

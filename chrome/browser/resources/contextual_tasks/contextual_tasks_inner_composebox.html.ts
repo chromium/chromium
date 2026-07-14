@@ -19,7 +19,8 @@ export function getHtml(this: ContextualTasksInnerComposeboxElement) {
         @dragenter="${this.dragAndDropHandler_.handleDragEnter}"
         @dragover="${this.dragAndDropHandler_.handleDragOver}"
         @dragleave="${this.dragAndDropHandler_.handleDragLeave}"
-        @drop="${this.dragAndDropHandler_.handleDrop}">
+        @drop="${this.dragAndDropHandler_.handleDrop}"
+        @paste="${this.onPaste}">
       <div id="inputContainer" part="input-container">
         <cr-composebox-input id="composeboxInput"
             .entrypointName="${'ContextualTasks'}"
@@ -36,9 +37,26 @@ export function getHtml(this: ContextualTasksInnerComposeboxElement) {
             @input-focusin="${this.onInputFocusin}"
             @cancel-click="${this.onCancelClick}">
         </cr-composebox-input>
-        <cr-composebox-file-inputs id="fileInputs">
-          <cr-composebox-file-carousel id="carousel">
-          </cr-composebox-file-carousel>
+        <cr-composebox-file-inputs id="fileInputs"
+            @file-change="${this.onFileChange}"
+            .disableFileInputs="${this.shouldDisableFileInputs()}">
+          <div id="carouselContainer" part="carousel-container">
+            <div class="carousel-container-inner">
+              ${this.showFileCarousel ? html`
+                <cr-composebox-file-carousel
+                  part="cr-composebox-file-carousel"
+                  exportparts="thumbnail, thumbnail-title"
+                  id="carousel"
+                  class="${this.carouselOnTop_ ? 'top' : ''}"
+                  .files="${this.getFilteredCarouselFiles()}"
+                  ?enable-scrolling="${this.enableCarouselScrolling}"
+                  @delete-file="${this.onDeleteFile}">
+                </cr-composebox-file-carousel> ` : ''}
+            </div>
+          </div>
+          ${this.shouldShowDivider() ? html`
+          <div class="carousel-divider" part="carousel-divider"></div>
+          ` : ''}
           <cr-composebox-dropdown id="matches" part="dropdown"
               exportparts="match-text-container"
               role="listbox"
@@ -55,6 +73,15 @@ export function getHtml(this: ContextualTasksInnerComposeboxElement) {
           ${this.contextMenuEnabled ? getContextMenuHtml.bind(this)() : ''}
         </cr-composebox-file-inputs>
       </div>
+      ${this.showLensButton ? html`<cr-icon-button
+          class="action-icon"
+          id="lensIcon"
+          part="action-icon lens-icon"
+          title="${this.i18n('lensSearchButtonLabel')}"
+          @click="${this.onLensClick_}"
+          ?disabled="${this.lensButtonDisabled}"
+          @mousedown="${this.onLensIconMousedown_}">
+      </cr-icon-button>` : ''}
       <cr-composebox-submit
           exportparts="action-icon, submit, submit-icon, submit-overlay"
           ?disabled="${!this.canSubmitFilesAndInput}"
