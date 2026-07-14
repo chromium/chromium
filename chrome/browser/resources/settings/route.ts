@@ -236,7 +236,7 @@ function createRoutes(): SettingsRoutes {
       r.YOUR_SAVED_INFO_IDENTITY_DOCS =
           r.YOUR_SAVED_INFO.createChild('/identityDocs');
       r.YOUR_SAVED_INFO_TRAVEL = r.YOUR_SAVED_INFO.createChild('/travel');
-      if (loadTimeData.getBoolean('enableYourSavedInfoShoppingPage')) {
+      if (loadTimeData.getBoolean('ambientAutofillEnabled')) {
         r.YOUR_SAVED_INFO_SHOPPING = r.YOUR_SAVED_INFO.createChild('/shopping');
       }
       if (loadTimeData.getBoolean('showSuggestionsFromGeminiSettings')) {

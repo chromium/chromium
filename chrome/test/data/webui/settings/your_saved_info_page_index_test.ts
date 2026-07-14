@@ -30,6 +30,7 @@ suite('YourSavedInfoPageIndex', function() {
     loadTimeData.overrideValues({
       enableYourSavedInfoSettingsPage: true,
       showSuggestionsFromGeminiSettings: true,
+      ambientAutofillEnabled: true,
     });
     resetRouterForTesting();
 
@@ -80,6 +81,10 @@ suite('YourSavedInfoPageIndex', function() {
     assertActiveView('passkeys');
     // </if>
 
+    Router.getInstance().navigateTo(routes.YOUR_SAVED_INFO_SHOPPING);
+    await microtasksFinished();
+    assertActiveView('shopping');
+
     Router.getInstance().navigateTo(routes.SUGGESTIONS_FROM_GEMINI);
     await microtasksFinished();
     assertActiveView('suggestionsFromGemini');
@@ -103,12 +108,31 @@ suite('YourSavedInfoPageIndex', function() {
     assertFalse(!!subpage);
   });
 
+  test('ShoppingRouteDisabled', async function() {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    loadTimeData.overrideValues({
+      enableYourSavedInfoSettingsPage: true,
+      ambientAutofillEnabled: false,
+    });
+    resetRouterForTesting();
+
+    index = document.createElement('settings-your-saved-info-page-index');
+    index.prefs = settingsPrefs.prefs!;
+    document.body.appendChild(index);
+    await flushTasks();
+
+    assertEquals(undefined, routes.YOUR_SAVED_INFO_SHOPPING);
+    const subpage = index.$.viewManager.querySelector('#shopping');
+    assertFalse(!!subpage);
+  });
+
   // Minimal (non-exhaustive) tests to ensure SearchableViewContainerMixin is
   // inherited correctly.
   test('Search', async function() {
     // Test that the child views are properly annotated.
     const childViewsId = [
       'payments',
+      'shopping',
       'suggestionsFromGemini',
     ];
     for (const id of childViewsId) {

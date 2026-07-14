@@ -56,7 +56,7 @@ suite('YourSavedInfoPage', function() {
       enableYourSavedInfoSettingsPage: true,
       showIbansSettings: true,
       shouldShowPayOverTimeSettings: true,
-      enableYourSavedInfoShoppingPage: true,
+      ambientAutofillEnabled: true,
       showSuggestionsFromGeminiSettings: true,
     });
   });
@@ -105,7 +105,7 @@ suite('YourSavedInfoPage', function() {
 
   test('ShoppingCategoryHiddenWhenFlagDisabled', async function() {
     await setupPage({
-      enableYourSavedInfoShoppingPage: false,
+      ambientAutofillEnabled: false,
     });
 
     const shoppingCard =
@@ -258,6 +258,29 @@ suite('YourSavedInfoPage', function() {
     assertEquals('Settings.YourSavedInfo.ChipClick.ADDRESSES', action);
   });
 
+  test('ClickOnShoppingChipNavigatesToLeafPage', async function() {
+    const card = yourSavedInfoPage.shadowRoot!.querySelector<HTMLElement>(
+        `category-reference-card[card-title="${
+            loadTimeData.getString('shoppingCardTitle')}"]`);
+    assertTrue(!!card);
+    const chips: HTMLElement[] =
+        Array.from(card.shadowRoot!.querySelectorAll('cr-button'));
+    const chip: HTMLElement = chips.find(chip => {
+      const labelSpan = chip.querySelector('span:not(.counter)');
+      return labelSpan &&
+          labelSpan.textContent ===
+          loadTimeData.getString('yourSavedInfoOrdersChip');
+    })!;
+
+    chip.click();
+    assertEquals('/shopping', Router.getInstance().currentRoute.path);
+    const [metricChip] = await metricsBrowserProxy.whenCalled(
+        'recordYourSavedInfoDataChipClick');
+    assertEquals(YourSavedInfoDataChip.ORDERS, metricChip);
+    const action = await metricsBrowserProxy.whenCalled('recordAction');
+    assertEquals('Settings.YourSavedInfo.ChipClick.ORDERS', action);
+  });
+
   test('SuggestionsFromGeminiHiddenWhenFlagDisabled', async function() {
     await setupPage({
       showSuggestionsFromGeminiSettings: false,
@@ -361,6 +384,7 @@ suite('DataChipsVisibility', function() {
       enableYourSavedInfoSettingsPage: true,
       showIbansSettings: true,
       shouldShowPayOverTimeSettings: true,
+      ambientAutofillEnabled: true,
     });
     await entityDataManager.whenCalled('getWritableEntityTypes');
 
@@ -391,6 +415,16 @@ suite('DataChipsVisibility', function() {
           loadTimeData.getString('yourSavedInfoVehiclesChip'),
         ],
         getChipLabels(yourSavedInfoPage, '#travelManagerButton'));
+
+    assertTrue(
+        isChildVisible(yourSavedInfoPage, '#shoppingManagerButton'),
+        'Shopping category should be visible');
+    assertDeepEquals(
+        [
+          loadTimeData.getString('yourSavedInfoOrdersChip'),
+          loadTimeData.getString('yourSavedInfoShipmentsChip'),
+        ],
+        getChipLabels(yourSavedInfoPage, '#shoppingManagerButton'));
   });
 
   test('DisabledIbans', async function() {
@@ -451,6 +485,18 @@ suite('DataChipsVisibility', function() {
     assertTrue(
         isChildVisible(yourSavedInfoPage, '#travelManagerButton'),
         'Travel category should be visible');
+    assertTrue(
+        isChildVisible(yourSavedInfoPage, '#shoppingManagerButton'),
+        'Shopping category should be visible');
+  });
+
+  test('DisabledAmbientAutofill', async function() {
+    const yourSavedInfoPage = await setupPage({
+      ambientAutofillEnabled: false,
+    });
+    assertFalse(
+        isChildVisible(yourSavedInfoPage, '#shoppingManagerButton'),
+        'Shopping category should not be visible');
   });
 
   test('UnsupportedAutofillAiDataTypeWithExistingItems', async function() {

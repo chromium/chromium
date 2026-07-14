@@ -364,7 +364,6 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
       (!ShouldDisplayManagedUi(profile) && !profile->IsChild());
   html_source->AddBoolean("showPrivacyGuide", show_privacy_guide);
 
-
   html_source->AddBoolean("enableHandTrackingContentSetting",
 #if BUILDFLAG(ENABLE_VR)
                           device::features::IsHandTrackingEnabled());
@@ -429,10 +428,9 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
                           base::FeatureList::IsEnabled(
                               autofill::features::kYourSavedInfoSettingsPage));
 
-  html_source->AddBoolean(
-      "enableYourSavedInfoShoppingPage",
-      base::FeatureList::IsEnabled(
-          autofill::features::kYourSavedInfoSettingsPageShoppingIntegration));
+  html_source->AddBoolean("ambientAutofillEnabled",
+                          base::FeatureList::IsEnabled(
+                              autofill::features::kAutofillAmbientAutofill));
 
   AddSettingsPageUIHandler(std::make_unique<AboutHandler>(profile));
   AddSettingsPageUIHandler(std::make_unique<ResetSettingsHandler>(profile));

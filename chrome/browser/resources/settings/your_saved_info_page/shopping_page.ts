@@ -11,7 +11,6 @@
 import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import '/shared/settings/controls/extension_controlled_indicator.js';
 import '/shared/settings/prefs/prefs.js';
-import '../autofill_page/autofill_ai_entries_list.js';
 import '../autofill_page/your_saved_info_shared.css.js';
 import '../controls/settings_toggle_button.js';
 import '../settings_page/settings_subpage.js';
@@ -23,7 +22,6 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {AiEnterpriseFeaturePrefName} from '../ai_page/constants.js';
 import type {ModelExecutionEnterprisePolicyValue} from '../ai_page/constants.js';
-import {EntityTypeName} from '../autofill_ai_enums.mojom-webui.js';
 import type {EntityDataManagerProxy} from '../autofill_page/entity_data_manager_proxy.js';
 import {EntityDataManagerProxyImpl} from '../autofill_page/entity_data_manager_proxy.js';
 import type {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
@@ -223,10 +221,6 @@ export class SettingsShoppingPageElement extends
     this.setPrefValue(
         'autofill.autofill_ai.shopping_entities_enabled',
         this.$.optInToggle.checked);
-  }
-
-  private getAllowedEntityTypes_(): Set<EntityTypeName> {
-    return new Set([EntityTypeName.kOrder, EntityTypeName.kShipment]);
   }
 
   private extensionControlledIndicatorIsVisible_(): boolean {

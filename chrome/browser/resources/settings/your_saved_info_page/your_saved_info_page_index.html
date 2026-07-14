@@ -33,7 +33,7 @@
       data-parent-view-id="parent">
   </settings-travel-page>
 
-  <template is="dom-if" if="[[enableYourSavedInfoShoppingPage_]]">
+  <template is="dom-if" if="[[ambientAutofillEnabled_]]">
     <settings-shopping-page slot="view" id="shopping" prefs="{{prefs}}"
         data-parent-view-id="parent">
     </settings-shopping-page>

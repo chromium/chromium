@@ -40,16 +40,4 @@
       </div>
     </template>
   </div>
-
-  <!-- Entities list card -->
-  <div class="card">
-    <!-- TODO(crbug.com/493434633): Replace with custom list. -->
-    <settings-autofill-ai-entries-list
-        list-title="$i18n{shoppingCardTitle}"
-        allowed-entity-types="[[getAllowedEntityTypes_()]]"
-        allow-editing-pref="[[
-            prefs.autofill.autofill_ai.shopping_entities_enabled]]"
-        prefs="{{prefs}}">
-    </settings-autofill-ai-entries-list>
-  </div>
 </settings-subpage>
