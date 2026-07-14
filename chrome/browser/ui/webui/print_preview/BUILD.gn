@@ -103,6 +103,7 @@ source_set("impl") {
     "//components/device_event_log",
     "//components/drive",
     "//components/enterprise/buildflags",
+    "//components/pdf/common:constants",
     "//components/policy/core/common",
     "//components/pref_registry",
     "//components/prefs",

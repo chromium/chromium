@@ -31,6 +31,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/account_id/account_id.h"
 #include "components/cloud_devices/common/printer_description.h"
+#include "components/pdf/common/constants.h"
 #include "components/url_formatter/url_formatter.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
@@ -311,7 +312,8 @@ void PdfPrinterHandler::StartPrint(
   bool is_savable = false;
   if (initiator) {
     initiator_url = initiator->GetLastCommittedURL();
-    is_savable = initiator->IsSavable();
+    is_savable = initiator->IsSavable() ||
+                 initiator->GetContentsMimeType() == pdf::kPDFMimeType;
   }
   base::FilePath path = GetFileName(initiator_url, job_title, is_savable);
 

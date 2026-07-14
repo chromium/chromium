@@ -4,15 +4,21 @@
 
 #include "chrome/browser/ui/webui/print_preview/pdf_printer_handler.h"
 
+#include <memory>
 #include <optional>
 
+#include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/values_test_util.h"
+#include "base/values.h"
 #include "build/build_config.h"
+#include "chrome/browser/printing/print_preview_dialog_controller.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/scoped_browser_locale.h"
 #include "components/url_formatter/url_formatter.h"
+#include "content/public/test/web_contents_tester.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -187,6 +193,19 @@ base::DictValue GetValueFromCustomPaper(
   return paper_value;
 }
 #endif
+
+class MockPdfPrinterHandler : public PdfPrinterHandler {
+ public:
+  MockPdfPrinterHandler(Profile* profile,
+                        content::WebContents* preview_web_contents,
+                        PrintPreviewStickySettings* sticky_settings)
+      : PdfPrinterHandler(profile, preview_web_contents, sticky_settings) {}
+
+  MOCK_METHOD3(SelectFile,
+               void(const base::FilePath& default_filename,
+                    content::WebContents* initiator,
+                    bool prompt_user));
+};
 
 }  // namespace
 
@@ -364,5 +383,56 @@ TEST_F(PdfPrinterHandlerGetCapabilityTest,
   EXPECT_EQ(*expected_paper_options, *paper_options);
 }
 #endif
+
+class PdfPrinterHandlerStartPrintTest
+    : public ChromeRenderViewHostTestHarness,
+      public testing::WithParamInterface<const char*> {
+ public:
+  PdfPrinterHandlerStartPrintTest() = default;
+  ~PdfPrinterHandlerStartPrintTest() override = default;
+
+  void SetUp() override {
+    ChromeRenderViewHostTestHarness::SetUp();
+    preview_dialog_ =
+        content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
+  }
+
+  void TearDown() override {
+    preview_dialog_.reset();
+    ChromeRenderViewHostTestHarness::TearDown();
+  }
+
+  GURL url() { return GURL(GetParam()); }
+
+ protected:
+  std::unique_ptr<content::WebContents> preview_dialog_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    PdfPrinterHandlerStartPrintTest,
+    testing::Values("https://example.com/document-without-extension",
+                    "https://example.com/document-with-extension.pdf"));
+
+TEST_P(PdfPrinterHandlerStartPrintTest, PdfFileName) {
+  content::WebContentsTester::For(web_contents())->NavigateAndCommit(url());
+  content::WebContentsTester::For(web_contents())
+      ->SetMainFrameMimeType("application/pdf");
+
+  PrintPreviewDialogController::GetInstance()->AssociateWebContentsesForTesting(
+      web_contents(), preview_dialog_.get());
+
+  auto handler = std::make_unique<testing::NiceMock<MockPdfPrinterHandler>>(
+      profile(), preview_dialog_.get(), /*sticky_settings=*/nullptr);
+
+  EXPECT_CALL(*handler, SelectFile(base::FilePath(FPL("My PDF Document.pdf")),
+                                   web_contents(), testing::_));
+
+  handler->StartPrint(u"My PDF Document", base::DictValue(),
+                      /*print_data=*/nullptr, base::DoNothing());
+
+  PrintPreviewDialogController::GetInstance()
+      ->DisassociateWebContentsesForTesting(preview_dialog_.get());
+}
 
 }  // namespace printing
