@@ -1339,9 +1339,10 @@ class CORE_EXPORT LocalFrameView final
   // The set of children may be empty if the onpaint event has been requested
   // with `requestPaint`. This map is cleared at the end of the lifecycle
   // update.
-  HeapHashMap<Member<HTMLCanvasElement>,
-              Member<GCedHeapLinkedHashSet<Member<Element>>>>
-      canvas_elements_needing_onpaint_;
+  using CanvasOnpaintMap =
+      HeapHashMap<Member<HTMLCanvasElement>,
+                  Member<GCedHeapLinkedHashSet<Member<Element>>>>;
+  CanvasOnpaintMap canvas_elements_needing_onpaint_;
   bool did_run_post_lifecycle_steps_before_commit_ = false;
   scoped_refptr<const cc::AnimatedImageFrameIndexMap>
       animated_image_frame_indexes_;
