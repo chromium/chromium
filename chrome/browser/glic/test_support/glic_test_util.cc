@@ -21,6 +21,7 @@
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
@@ -382,6 +383,16 @@ bool IsSidePanelEnabled() {
 #else
   return false;
 #endif
+}
+
+BrowserWindowInterface* CreateBrowserWindow(Profile* profile) {
+  base::test::TestFuture<BrowserWindowInterface*> future;
+  CreateBrowserWindow(
+      BrowserWindowCreateParams(*profile, /*from_user_gesture=*/false),
+      future.GetCallback());
+  BrowserWindowInterface* window = future.Get();
+  CHECK(window);
+  return window;
 }
 
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kGlicHostElementId);

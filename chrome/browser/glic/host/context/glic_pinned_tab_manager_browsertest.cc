@@ -5,18 +5,13 @@
 #include "base/containers/fixed_flat_map.h"
 #include "base/test/test_future.h"
 #include "base/test/test_mock_time_task_runner.h"
+#include "build/build_config.h"
 #include "chrome/browser/glic/host/context/glic_pinned_tab_manager_impl.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/public/context/glic_sharing_manager.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
-#include "chrome/browser/glic/test_support/non_interactive_glic_test.h"
-#include "chrome/browser/resource_coordinator/lifecycle_unit_state.mojom.h"
-#include "chrome/browser/resource_coordinator/tab_lifecycle_unit_external.h"
-#include "chrome/browser/resource_coordinator/tab_lifecycle_unit_source.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_commands.h"
-#include "chrome/test/base/in_process_browser_test.h"
-#include "chrome/test/base/ui_test_utils.h"
+#include "chrome/browser/glic/test_support/glic_browser_test.h"
+#include "chrome/browser/glic/test_support/glic_test_util.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/restore_type.h"
@@ -116,22 +111,22 @@ class GlicPinnedTabManagerWithOverrides : public GlicPinnedTabManagerImpl {
   MOCK_METHOD(bool, IsGlicWindowShowing, (), (override));
 };
 
-class GlicPinnedTabManagerBrowserTest : public NonInteractiveGlicTest {
+class GlicPinnedTabManagerBrowserTest : public GlicBrowserTest {
  public:
   GlicPinnedTabManagerBrowserTest()
       : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {}
 
   void SetUpOnMainThread() override {
-    NonInteractiveGlicTest::SetUpOnMainThread();
+    GlicBrowserTest::SetUpOnMainThread();
     https_server_.RegisterRequestHandler(
         base::BindRepeating(&GlicPinnedTabManagerBrowserTest::HandleRequest,
                             base::Unretained(this)));
     https_server_handle_ = https_server_.StartAndReturnHandle();
     ASSERT_TRUE(https_server_handle_);
 
-    auto* metrics = glic_service()->metrics();
+    auto* metrics = service()->metrics();
     pinned_tab_manager_ = std::make_unique<GlicPinnedTabManagerWithOverrides>(
-        browser()->GetProfile(), /*window_controller=*/nullptr, metrics);
+        GetProfile(), /*window_controller=*/nullptr, metrics);
     ON_CALL(*pinned_tab_manager_, IsBrowserValidForSharing(_))
         .WillByDefault(Return(true));
     // TODO(mcrouse): Add tests for invalid candidates once testing harness for
@@ -145,16 +140,7 @@ class GlicPinnedTabManagerBrowserTest : public NonInteractiveGlicTest {
 
   void TearDownOnMainThread() override {
     pinned_tab_manager_.reset();
-    NonInteractiveGlicTest::TearDownOnMainThread();
-  }
-
-  // Helper function to create, navigate, set title, and add a new tab to the
-  // current browser's tab strip.
-  void CreateAndAddTab(const std::string& url_path) {
-    GURL url = https_server_.GetURL(url_path);
-    ui_test_utils::NavigateToURLWithDisposition(
-        browser(), url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
-        ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+    GlicBrowserTest::TearDownOnMainThread();
   }
 
  protected:
@@ -179,12 +165,22 @@ class GlicPinnedTabManagerBrowserTest : public NonInteractiveGlicTest {
   std::unique_ptr<GlicPinnedTabManagerWithOverrides> pinned_tab_manager_;
 };
 
+// TODO(b/534710453): Re-enable this test on Android. Currently flaky.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_ReturnsMultipleCandidatesSortedByActivation \
+  DISABLED_ReturnsMultipleCandidatesSortedByActivation
+#else
+#define MAYBE_ReturnsMultipleCandidatesSortedByActivation \
+  ReturnsMultipleCandidatesSortedByActivation
+#endif
 IN_PROC_BROWSER_TEST_F(GlicPinnedTabManagerBrowserTest,
-                       ReturnsMultipleCandidatesSortedByActivation) {
+                       MAYBE_ReturnsMultipleCandidatesSortedByActivation) {
   // By default, the browser starts with a single tab open to "about:blank".
-  CreateAndAddTab("/why-cats-are-liquid");
-  CreateAndAddTab("/sentient-toaster-manual");
-  CreateAndAddTab("/zombie-squirrels");
+  tabs::TabInterface* tab_1 =
+      CreateAndActivateTab(https_server_.GetURL("/why-cats-are-liquid"));
+  CreateAndActivateTab(https_server_.GetURL("/sentient-toaster-manual"));
+  tabs::TabInterface* tab_3 =
+      CreateAndActivateTab(https_server_.GetURL("/zombie-squirrels"));
 
   FakePinCandidatesObserver observer;
   auto options = mojom::GetPinCandidatesOptions::New();
@@ -193,13 +189,13 @@ IN_PROC_BROWSER_TEST_F(GlicPinnedTabManagerBrowserTest,
                                                 observer.Bind());
 
   // Set up the ordering so toggling between them is predictable.
-  browser()->tab_strip_model()->ActivateTabAt(3);
-  browser()->tab_strip_model()->ActivateTabAt(1);
+  GetTabListInterface()->ActivateTab(tab_3->GetHandle());
+  GetTabListInterface()->ActivateTab(tab_1->GetHandle());
 
   // Toggle between the tabs a few times to make sure that it gets updated
   // for every activation event.
   for (size_t i = 0; i < 3; ++i) {
-    browser()->tab_strip_model()->ActivateTabAt(3);
+    GetTabListInterface()->ActivateTab(tab_3->GetHandle());
 
     // The activated tab should now be at the front of the list.
     ExpectThatEventually(
@@ -208,7 +204,7 @@ IN_PROC_BROWSER_TEST_F(GlicPinnedTabManagerBrowserTest,
                     HasTitle("The Physics of Feline Fluid Dynamics"),
                     HasTitle("My Toaster Is Evil: A User's Guide")));
 
-    browser()->tab_strip_model()->ActivateTabAt(1);
+    GetTabListInterface()->ActivateTab(tab_1->GetHandle());
 
     // The activated tab should now be at the front of the list.
     ExpectThatEventually(
@@ -219,13 +215,19 @@ IN_PROC_BROWSER_TEST_F(GlicPinnedTabManagerBrowserTest,
   }
 }
 
+// TODO(b/534710453): Re-enable this test on Android. Currently flaky.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_SortsCandidatesByQuery DISABLED_SortsCandidatesByQuery
+#else
+#define MAYBE_SortsCandidatesByQuery SortsCandidatesByQuery
+#endif
 IN_PROC_BROWSER_TEST_F(GlicPinnedTabManagerBrowserTest,
-                       SortsCandidatesByQuery) {
+                       MAYBE_SortsCandidatesByQuery) {
   // By default, the browser starts with a single tab open to "about:blank".
-  CreateAndAddTab("/how-to-train-your-goldfish");
-  CreateAndAddTab("/the-art-of-the-nap");
-  CreateAndAddTab("/advanced-sock-puppetry");
-  CreateAndAddTab("/pigeon-espionage");
+  CreateAndActivateTab(https_server_.GetURL("/how-to-train-your-goldfish"));
+  CreateAndActivateTab(https_server_.GetURL("/the-art-of-the-nap"));
+  CreateAndActivateTab(https_server_.GetURL("/advanced-sock-puppetry"));
+  CreateAndActivateTab(https_server_.GetURL("/pigeon-espionage"));
 
   FakePinCandidatesObserver observer;
   auto options = mojom::GetPinCandidatesOptions::New();
@@ -246,11 +248,8 @@ IN_PROC_BROWSER_TEST_F(GlicPinnedTabManagerBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(GlicPinnedTabManagerBrowserTest, PinTabs) {
-  CreateAndAddTab("/why-cats-are-liquid");
-
-  TabStripModel* tab_strip_model = browser()->tab_strip_model();
   tabs::TabInterface* tab_interface =
-      tabs::TabInterface::GetFromContents(tab_strip_model->GetWebContentsAt(1));
+      CreateAndActivateTab(https_server_.GetURL("/why-cats-are-liquid"));
   ASSERT_TRUE(tab_interface);
   const tabs::TabHandle tab_handle = tab_interface->GetHandle();
 
@@ -276,11 +275,8 @@ IN_PROC_BROWSER_TEST_F(GlicPinnedTabManagerBrowserTest, PinTabs) {
 // crashing.
 IN_PROC_BROWSER_TEST_F(GlicPinnedTabManagerBrowserTest,
                        DragPinnedTabsToNewWindow) {
-  CreateAndAddTab("/why-cats-are-liquid");
-
-  TabStripModel* tab_strip_model = browser()->tab_strip_model();
   tabs::TabInterface* tab_interface =
-      tabs::TabInterface::GetFromContents(tab_strip_model->GetWebContentsAt(1));
+      CreateAndActivateTab(https_server_.GetURL("/why-cats-are-liquid"));
   ASSERT_TRUE(tab_interface);
   const tabs::TabHandle tab_handle = tab_interface->GetHandle();
 
@@ -288,15 +284,16 @@ IN_PROC_BROWSER_TEST_F(GlicPinnedTabManagerBrowserTest,
       pinned_tab_manager_->PinTabs({tab_handle}, GlicPinTrigger::kUnknown));
   EXPECT_TRUE(pinned_tab_manager_->IsTabPinned(tab_handle));
 
-  chrome::MoveTabsToNewWindow(browser(), {1});
+  BrowserWindowInterface* new_window = CreateBrowserWindow(GetProfile());
+  ASSERT_TRUE(new_window);
+
+  GetTabListInterface()->MoveTabToWindow(tab_handle, new_window->GetSessionID(),
+                                         /*destination_index=*/0);
 }
 
 IN_PROC_BROWSER_TEST_F(GlicPinnedTabManagerBrowserTest, unpinTabs) {
-  CreateAndAddTab("/why-cats-are-liquid");
-
-  TabStripModel* tab_strip_model = browser()->tab_strip_model();
   tabs::TabInterface* tab_interface =
-      tabs::TabInterface::GetFromContents(tab_strip_model->GetWebContentsAt(1));
+      CreateAndActivateTab(https_server_.GetURL("/why-cats-are-liquid"));
   ASSERT_TRUE(tab_interface);
   const tabs::TabHandle tab_handle = tab_interface->GetHandle();
 
@@ -326,11 +323,8 @@ IN_PROC_BROWSER_TEST_F(GlicPinnedTabManagerBrowserTest, unpinTabs) {
 
 IN_PROC_BROWSER_TEST_F(GlicPinnedTabManagerBrowserTest,
                        UnpinTabOnTabDestroyed) {
-  CreateAndAddTab("/why-cats-are-liquid");
-
-  TabStripModel* tab_strip_model = browser()->tab_strip_model();
   tabs::TabInterface* tab_interface =
-      tabs::TabInterface::GetFromContents(tab_strip_model->GetWebContentsAt(1));
+      CreateAndActivateTab(https_server_.GetURL("/why-cats-are-liquid"));
   ASSERT_TRUE(tab_interface);
   const tabs::TabHandle tab_handle = tab_interface->GetHandle();
 
@@ -344,8 +338,10 @@ IN_PROC_BROWSER_TEST_F(GlicPinnedTabManagerBrowserTest,
   auto subscription = pinned_tab_manager_->AddTabPinningStatusChangedCallback(
       pin_status_future.GetRepeatingCallback());
 
-  // Close the browser, which should destroy the tab.
-  browser()->tab_strip_model()->CloseAllTabs();
+  // Close all tabs, which should destroy them.
+  for (auto* tab : GetTabListInterface()->GetAllTabs()) {
+    GetTabListInterface()->CloseTab(tab->GetHandle());
+  }
 
   // Check that the callback was called with pinned=false.
   {
@@ -361,11 +357,8 @@ IN_PROC_BROWSER_TEST_F(GlicPinnedTabManagerBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(GlicPinnedTabManagerBrowserTest,
                        VerifyPinnedStatePersistsOnRestore) {
-  CreateAndAddTab("/why-cats-are-liquid");
-
-  TabStripModel* tab_strip_model = browser()->tab_strip_model();
   tabs::TabInterface* tab_interface =
-      tabs::TabInterface::GetFromContents(tab_strip_model->GetWebContentsAt(1));
+      CreateAndActivateTab(https_server_.GetURL("/why-cats-are-liquid"));
   ASSERT_TRUE(tab_interface);
   const tabs::TabHandle tab_handle = tab_interface->GetHandle();
 
@@ -374,23 +367,19 @@ IN_PROC_BROWSER_TEST_F(GlicPinnedTabManagerBrowserTest,
   EXPECT_TRUE(pinned_tab_manager_->IsTabPinned(tab_handle));
 
   // Switch to another tab to ensure the pinned tab is in the background.
-  CreateAndAddTab("/sentient-toaster-manual");
-  EXPECT_NE(tab_strip_model->GetActiveWebContents(),
-            tab_interface->GetContents());
+  CreateAndActivateTab(https_server_.GetURL("/sentient-toaster-manual"));
+  EXPECT_NE(GetTabListInterface()->GetActiveTab(), tab_interface);
 
   // Discard the pinned tab to simulate a situation where it needs to be
   // restored.
-  auto* lifecycle_unit =
-      resource_coordinator::TabLifecycleUnitSource::GetTabLifecycleUnitExternal(
-          tab_interface->GetContents());
-  ASSERT_TRUE(lifecycle_unit);
-  lifecycle_unit->DiscardTab(::mojom::LifecycleUnitDiscardReason::EXTERNAL);
-  EXPECT_TRUE(tab_interface->GetContents()->WasDiscarded());
+  content::WebContents* discarded_contents =
+      GetTabListInterface()->DiscardTab(tab_handle);
+  ASSERT_TRUE(discarded_contents);
+  EXPECT_TRUE(discarded_contents->WasDiscarded());
 
   // Activate the tab to trigger a restore (reload).
-  tab_strip_model->ActivateTabAt(1);
-  EXPECT_EQ(tab_strip_model->GetActiveWebContents(),
-            tab_interface->GetContents());
+  GetTabListInterface()->ActivateTab(tab_handle);
+  EXPECT_EQ(GetTabListInterface()->GetActiveTab(), tab_interface);
   content::WaitForLoadStop(tab_interface->GetContents());
 
   // Verify the tab remains pinned.
@@ -399,11 +388,8 @@ IN_PROC_BROWSER_TEST_F(GlicPinnedTabManagerBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(GlicPinnedTabManagerBrowserTest,
                        VerifyUnpinningOnBackgroundOriginChange) {
-  CreateAndAddTab("/why-cats-are-liquid");
-
-  TabStripModel* tab_strip_model = browser()->tab_strip_model();
   tabs::TabInterface* tab_interface =
-      tabs::TabInterface::GetFromContents(tab_strip_model->GetWebContentsAt(1));
+      CreateAndActivateTab(https_server_.GetURL("/why-cats-are-liquid"));
   ASSERT_TRUE(tab_interface);
   const tabs::TabHandle tab_handle = tab_interface->GetHandle();
 
@@ -412,9 +398,8 @@ IN_PROC_BROWSER_TEST_F(GlicPinnedTabManagerBrowserTest,
   EXPECT_TRUE(pinned_tab_manager_->IsTabPinned(tab_handle));
 
   // Switch to another tab to ensure the pinned tab is in the background.
-  CreateAndAddTab("/sentient-toaster-manual");
-  EXPECT_NE(tab_strip_model->GetActiveWebContents(),
-            tab_interface->GetContents());
+  CreateAndActivateTab(https_server_.GetURL("/sentient-toaster-manual"));
+  EXPECT_NE(GetTabListInterface()->GetActiveTab(), tab_interface);
 
   // Navigate the pinned tab to a different origin.
   GURL new_origin_url("data:text/html,<html><body>New Origin</body></html>");

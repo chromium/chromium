@@ -197,12 +197,7 @@ IN_PROC_BROWSER_TEST_F(GlicAndroidPeekBrowserTest,
   EXPECT_EQ(instance->GetActiveEmbedderTabForTesting(), tab1);
 
   // Create a second window/browser.
-  BrowserWindowCreateParams create_params = BrowserWindowCreateParams(
-      BrowserWindowInterface::Type::TYPE_NORMAL, *GetProfile(),
-      /*from_user_gesture=*/false);
-  base::test::TestFuture<BrowserWindowInterface*> future;
-  CreateBrowserWindow(std::move(create_params), future.GetCallback());
-  BrowserWindowInterface* browser2 = future.Get();
+  BrowserWindowInterface* browser2 = CreateBrowserWindow(GetProfile());
   ASSERT_TRUE(browser2);
   ASSERT_NE(GetBrowser(), browser2);
 

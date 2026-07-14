@@ -237,6 +237,8 @@ void ReauthAccount(Profile* profile);
 
 bool IsSidePanelEnabled();
 
+BrowserWindowInterface* CreateBrowserWindow(Profile* profile);
+
 // The glic WebUI web contents.
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kGlicHostElementId);
 

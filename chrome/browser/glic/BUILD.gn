@@ -761,6 +761,7 @@ source_set("browser_tests") {
   sources = [
     "glic_tab_restore_helper_browsertest.cc",
     "host/context/glic_delegating_sharing_manager_browsertest.cc",
+    "host/context/glic_pinned_tab_manager_browsertest.cc",
     "host/glic_web_contents_warming_pool_browsertest.cc",
     "host/new_glic_api_browsertest.cc",
     "service/glic_instance_coordinator_browsertest.cc",
@@ -824,7 +825,6 @@ source_set("browser_tests") {
       "glic_zoom_browsertest.cc",
       "host/context/glic_active_instance_sharing_manager_browsertest.cc",
       "host/context/glic_active_pinned_focused_tab_manager_browsertest.cc",
-      "host/context/glic_pinned_tab_manager_browsertest.cc",
       "host/context/glic_tab_data_browsertest.cc",
       "host/glic_api_browsertest.cc",
       "host/glic_permission_enforcement_browsertest.cc",

@@ -20,6 +20,7 @@
 #include "base/types/expected_macros.h"
 #include "build/build_config.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
+#include "chrome/browser/glic/test_support/glic_test_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -197,11 +198,7 @@ class GlicTabObserverBrowserTest : public PlatformBrowserTest {
   }
 
   BrowserWindowInterface* CreateNewWindowWithTab() {
-    BrowserWindowCreateParams create_params(BrowserWindowInterface::TYPE_NORMAL,
-                                            *GetProfile(), false);
-    base::test::TestFuture<BrowserWindowInterface*> future;
-    CreateBrowserWindow(std::move(create_params), future.GetCallback());
-    BrowserWindowInterface* window = future.Get();
+    BrowserWindowInterface* window = glic::CreateBrowserWindow(GetProfile());
     CHECK(window);
     TabListInterface* tab_list = TabListInterface::From(window);
     CHECK(tab_list);
@@ -217,11 +214,9 @@ class GlicTabObserverBrowserTest : public PlatformBrowserTest {
   TabListInterface* CreateIncognitoTabList() {
     Profile* incognito_profile =
         GetProfile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
-    BrowserWindowCreateParams create_params(BrowserWindowInterface::TYPE_NORMAL,
-                                            *incognito_profile, false);
-    base::test::TestFuture<BrowserWindowInterface*> future;
-    CreateBrowserWindow(std::move(create_params), future.GetCallback());
-    return TabListInterface::From(future.Get());
+    BrowserWindowInterface* window =
+        glic::CreateBrowserWindow(incognito_profile);
+    return TabListInterface::From(window);
   }
 #endif
 
@@ -310,11 +305,7 @@ IN_PROC_BROWSER_TEST_F(GlicTabObserverBrowserTest,
                        ObservesTabCreationInNewWindow) {
   GlicTabEventCollector collector(GetProfile());
 
-  BrowserWindowCreateParams create_params(BrowserWindowInterface::TYPE_NORMAL,
-                                          *GetProfile(), false);
-  base::test::TestFuture<BrowserWindowInterface*> future;
-  CreateBrowserWindow(std::move(create_params), future.GetCallback());
-  BrowserWindowInterface* new_window = future.Get();
+  BrowserWindowInterface* new_window = glic::CreateBrowserWindow(GetProfile());
   ASSERT_TRUE(new_window);
 
   TabListInterface* new_tab_list = TabListInterface::From(new_window);

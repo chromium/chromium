@@ -1141,11 +1141,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(browser()->tab_strip_model()->count(), 1);
 
   // 2. Create Window B (background window).
-  BrowserWindowCreateParams params(*browser()->GetProfile(),
-                                   /*from_user_gesture=*/true);
-  base::test::TestFuture<BrowserWindowInterface*> window_future;
-  CreateBrowserWindow(std::move(params), window_future.GetCallback());
-  BrowserWindowInterface* window_b = window_future.Get();
+  BrowserWindowInterface* window_b = CreateBrowserWindow(GetProfile());
   ASSERT_TRUE(window_b);
 
   // Ensure Window A is active.
