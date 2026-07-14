@@ -2695,6 +2695,136 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="AtMemory.SearchQuery">
+  <owner>rahimis@google.com</owner>
+  <owner>ireneuszszulc@google.com</owner>
+  <summary>
+    Describes an AtMemory search query and the users response to the results.
+    Recorded when the UI containing the results is destroyed (due to a new
+    search query or the overall UI closing).
+  </summary>
+  <metric name="AcceptedSuggestionDataSources"
+      enum="AutofillAtMemoryAcceptedSuggestionDataSourcesBitmask">
+    <summary>
+      A bitmask of the data sources that provided an entry. Currently, the
+      sources are local Autofill, Gmail, Calendar, and Photos.
+    </summary>
+  </metric>
+  <metric name="AcceptedSuggestionDataType" enum="MemoryDataType">
+    <summary>
+      The accepted data type.
+    </summary>
+  </metric>
+  <metric name="AcceptedSuggestionIndex">
+    <summary>
+      Records the 0-based index (position) of the selected suggestion from the
+      first-level list. In case of selected sub-suggestion from a fly-out menu,
+      this records the position of the top-level suggestion.
+    </summary>
+  </metric>
+  <metric name="AcceptedSuggestionSecondaryIndex">
+    <summary>
+      Records the 0-based index (position) of the selected secondary attribute
+      from the fly-out menu when a suggestion is accepted. -1 means the user
+      accepted the top-level primary attribute directly without selecting from
+      the fly-out menu. 0, 1, 2... means the user opened the fly-out menu and
+      accepted the secondary attribute at that 0-based position.
+    </summary>
+  </metric>
+  <metric name="QueryCompleted" enum="AutofillAtMemoryQueryCompletedStatus">
+    <summary>
+      Describes the return value of the search query.
+    </summary>
+  </metric>
+  <metric name="QueryLatencyMs">
+    <summary>
+      Time in milliseconds between when a query was submitted and the query
+      response received.
+    </summary>
+  </metric>
+  <metric name="SuggestionAccepted" enum="Boolean">
+    <summary>
+      Whether a search result in response to this query was accepted.
+    </summary>
+  </metric>
+  <metric name="SuggestionFilled" enum="Boolean">
+    <summary>
+      Whether a suggestion was autofilled after it was accepted.
+    </summary>
+  </metric>
+  <metric name="UiSessionId">
+    <summary>
+      A randomly generated identifier that connects multiple
+      AtMemory.SearchQuery to the same AtMemory.UiSession. Unique only for the
+      duration that a popup is showing.
+    </summary>
+  </metric>
+  <metric name="UiSessionOrder">
+    <summary>
+      A 0-based index that stores the order in which different
+      AtMemory.SearchQuery entries are emitted.
+    </summary>
+  </metric>
+</event>
+
+<event name="AtMemory.UiSession">
+  <owner>rahimis@google.com</owner>
+  <owner>ireneuszszulc@google.com</owner>
+  <summary>
+    Contains information about an AtMemory UI session. A UI session corresponds
+    to showing the Autofill popup (from initial show to hide) on Desktop or the
+    AtMemory bottomsheet on Android. The metric is recorded when the AtMemory UI
+    is closed.
+  </summary>
+  <metric name="FieldSessionIdentifier">
+    <summary>
+      A random variable assigned to a specific instance of a form control (e.g.
+      a HTML input element). This should be globally unique and suitable for
+      distinguishing fields. Two different users would have different values.
+      For the same user, the same field in the same form in two different tabs
+      would have two different values.
+    </summary>
+  </metric>
+  <metric name="FieldSignature">
+    <summary>
+      The field signature of the field that AtMemory was triggered on (value
+      taken modulo 1021).
+    </summary>
+  </metric>
+  <metric name="FormSignature">
+    <summary>
+      The form signature of the field that AtMemory was triggered on (value
+      taken modulo 1021).
+    </summary>
+  </metric>
+  <metric name="QuerySubmitted" enum="Boolean">
+    <summary>
+      Whether a search query was submitted.
+    </summary>
+  </metric>
+  <metric name="SearchBarDisplayed" enum="AutofillAtMemoryTriggerSource">
+    <summary>
+      Tracks how the suggestion UI was triggered.
+    </summary>
+  </metric>
+  <metric name="SuggestionAccepted" enum="Boolean">
+    <summary>
+      Whether at least one search result was accepted during the entire session.
+    </summary>
+  </metric>
+  <metric name="SuggestionFilled" enum="Boolean">
+    <summary>
+      Whether a suggestion was filled.
+    </summary>
+  </metric>
+  <metric name="UiSessionId">
+    <summary>
+      A randomly generated identifier that connects multiple
+      AtMemory.SearchQuery to the same AtMemory.UiSession.
+    </summary>
+  </metric>
+</event>
+
 <event name="Autofill.AiAmountExtraction.ApcFetchResult" singular="true">
   <owner>jamessun@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>

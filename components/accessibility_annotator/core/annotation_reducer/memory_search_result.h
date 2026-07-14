@@ -41,15 +41,20 @@ struct EntryMetadata {
 std::ostream& operator<<(std::ostream& os, const EntryMetadata& metadata);
 
 // Type of the data source.
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 // LINT.IfChange(MemoryEntrySourceType)
 enum class MemoryEntrySourceType {
-  kAutofill,
-  kGmail,
-  kCalendar,
-  kPhotos,
+  kAutofill = 1 << 0,
+  kGmail = 1 << 1,
+  kCalendar = 1 << 2,
+  kPhotos = 1 << 3,
   kMaxValue = kPhotos,
 };
-// LINT.ThenChange(//components/accessibility_annotator/core/annotation_reducer/util.cc:SourceTypeToMemoryEntrySourceType)
+// LINT.ThenChange(
+//     //components/accessibility_annotator/core/annotation_reducer/util.cc:SourceTypeToMemoryEntrySourceType,
+//     //tools/metrics/histograms/metadata/autofill/enums.xml:AutofillAtMemoryAcceptedSuggestionDataSourcesBitmask)
 
 // Source of the search result entry, including the data source type and an
 // optional direct attribution.

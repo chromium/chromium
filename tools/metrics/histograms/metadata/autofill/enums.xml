@@ -608,6 +608,32 @@ Called by update_autofill_enums.py.-->
   <int value="2" label="Other"/>
 </enum>
 
+<!-- LINT.IfChange(AutofillAtMemoryAcceptedSuggestionDataSourcesBitmask) -->
+
+<enum name="AutofillAtMemoryAcceptedSuggestionDataSourcesBitmask">
+  <summary>
+    A bitmask indicating which data sources provided an accepted AtMemory
+    suggestion.
+  </summary>
+  <int value="1" label="Autofill"/>
+  <int value="2" label="Gmail"/>
+  <int value="3" label="Autofill, Gmail"/>
+  <int value="4" label="Calendar"/>
+  <int value="5" label="Autofill, Calendar"/>
+  <int value="6" label="Gmail, Calendar"/>
+  <int value="7" label="Autofill, Gmail, Calendar"/>
+  <int value="8" label="Photos"/>
+  <int value="9" label="Autofill, Photos"/>
+  <int value="10" label="Gmail, Photos"/>
+  <int value="11" label="Autofill, Gmail, Photos"/>
+  <int value="12" label="Calendar, Photos"/>
+  <int value="13" label="Autofill, Calendar, Photos"/>
+  <int value="14" label="Gmail, Calendar, Photos"/>
+  <int value="15" label="Autofill, Gmail, Calendar, Photos"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/accessibility_annotator/core/annotation_reducer/memory_search_result.h:MemoryEntrySourceType) -->
+
 <enum name="AutofillAtMemoryQueryCompletedStatus">
   <int value="0" label="Query returned data"/>
   <int value="1" label="Query unsupported"/>
