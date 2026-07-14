@@ -807,16 +807,7 @@ void SavedTabGroupSyncBridge::AddDataToLocalStorage(
           TimeFromWindowsEpochMicros(
               specifics.update_time_windows_epoch_micros()),
           /*updated_by=*/GaiaId());
-      // Copy over the pinned_position to avoid overwriting it when performing
-      // a sync update.
-      if (tab_groups::IsProjectsPanelFeatureEnabled()) {
-        std::optional<size_t> pinned_position = std::nullopt;
-        if (specifics.group().has_pinned_position()) {
-          pinned_position = specifics.group().pinned_position();
-        }
-        model_wrapper_->UpdateGroupPinnedPositionForMigration(group_guid,
-                                                              pinned_position);
-      }
+
       proto::SavedTabGroupData updated_data =
           SavedTabGroupToData(*existing_group);
 

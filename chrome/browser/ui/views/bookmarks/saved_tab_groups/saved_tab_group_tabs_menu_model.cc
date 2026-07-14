@@ -101,26 +101,24 @@ void STGTabsMenuModel::Build(
                          sync_id_.value()});
 
   // Add item: pin or unpin.
-  if (!tab_groups::IsProjectsPanelFeatureEnabled()) {
-    latest_command_id = get_next_command_id.Run();
-    bool group_pinned = saved_group.is_pinned();
-    AddItemWithStringIdAndIcon(
-        latest_command_id,
-        group_pinned ? IDS_TAB_GROUP_HEADER_CXMENU_UNPIN_GROUP
-                     : IDS_TAB_GROUP_HEADER_CXMENU_PIN_GROUP,
-        ui::ImageModel::FromVectorIcon(
-            group_pinned ? features::IsRoundedIconsEnabled() ? kKeepOffIcon
-                                                             : kKeepOffOldIcon
-            : features::IsRoundedIconsEnabled() ? kKeepIcon
-                                                : kKeepOldIcon,
-            ui::kColorMenuIcon, kUIUpdateIconSize));
-    SetElementIdentifierAt(GetIndexOfCommandId(latest_command_id).value(),
-                           kToggleGroupPinStateMenuItem);
-    command_id_to_action_.emplace(
-        latest_command_id,
-        TabGroupMenuAction{TabGroupMenuAction::Type::PIN_OR_UNPIN_GROUP,
-                           sync_id_.value()});
-  }
+  latest_command_id = get_next_command_id.Run();
+  bool group_pinned = saved_group.is_pinned();
+  AddItemWithStringIdAndIcon(
+      latest_command_id,
+      group_pinned ? IDS_TAB_GROUP_HEADER_CXMENU_UNPIN_GROUP
+                   : IDS_TAB_GROUP_HEADER_CXMENU_PIN_GROUP,
+      ui::ImageModel::FromVectorIcon(
+          group_pinned ? features::IsRoundedIconsEnabled() ? kKeepOffIcon
+                                                           : kKeepOffOldIcon
+          : features::IsRoundedIconsEnabled() ? kKeepIcon
+                                              : kKeepOldIcon,
+          ui::kColorMenuIcon, kUIUpdateIconSize));
+  SetElementIdentifierAt(GetIndexOfCommandId(latest_command_id).value(),
+                         kToggleGroupPinStateMenuItem);
+  command_id_to_action_.emplace(
+      latest_command_id,
+      TabGroupMenuAction{TabGroupMenuAction::Type::PIN_OR_UNPIN_GROUP,
+                         sync_id_.value()});
 
   latest_command_id = get_next_command_id.Run();
   if (SavedTabGroupUtils::IsOwnerOfSharedTabGroup(browser_->GetProfile(),

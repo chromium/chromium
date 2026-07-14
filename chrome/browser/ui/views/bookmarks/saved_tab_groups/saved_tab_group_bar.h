@@ -182,8 +182,6 @@ class SavedTabGroupBar : public views::AccessiblePaneView,
   // the maximum visible.
   bool ShouldShowOverflowButtonForWidth(int max_width) const;
 
-  // Updates `resumption_iph_dismissed_` based on Projects Panel feature state.
-  void UpdateResumptionRailIPHDismissedState();
 
   // Returns whether the overflow button is explicitly hidden by logic (e.g. for
   // promo or if there are no groups with projects panel).
@@ -246,9 +244,6 @@ class SavedTabGroupBar : public views::AccessiblePaneView,
 
   base::ScopedObservation<views::Widget, SavedTabGroupBar> widget_observation_{
       this};
-
-  // True if the IPH has been dismissed by the user.
-  bool resumption_iph_dismissed_ = false;
 
   // Factory for creating WeakPtrs to this class. This is used to ensure that
   // callbacks to this class are not run after the class is destroyed.

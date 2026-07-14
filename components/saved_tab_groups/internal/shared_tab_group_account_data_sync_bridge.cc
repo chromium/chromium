@@ -639,22 +639,8 @@ void SharedTabGroupAccountDataSyncBridge::UpdateTabGroupDetailsModel(
     return;
   }
 
-  // If the group is in the model, update its position based on the specifics.
   std::optional<size_t> position;
-  if (tab_groups::IsProjectsPanelFeatureEnabled()) {
-    if (specifics.shared_tab_group_details().has_projects_position()) {
-      position = specifics.shared_tab_group_details().projects_position();
-    }
-
-    // Copy over the pinned_position to avoid overwriting it when performing
-    // a sync update.
-    std::optional<size_t> pinned_position = std::nullopt;
-    if (specifics.shared_tab_group_details().has_pinned_position()) {
-      pinned_position = specifics.shared_tab_group_details().pinned_position();
-    }
-    model_->UpdateGroupPinnedPositionForMigration(tab_group_id,
-                                                  pinned_position);
-  } else if (specifics.shared_tab_group_details().has_pinned_position()) {
+  if (specifics.shared_tab_group_details().has_pinned_position()) {
     position = specifics.shared_tab_group_details().pinned_position();
   }
   model_->UpdatePositionForSharedGroupFromSync(tab_group_id, position);
@@ -822,17 +808,10 @@ void SharedTabGroupAccountDataSyncBridge::
   if (specifics.has_value()) {
     std::optional<size_t> specifics_position;
     if (specifics->has_shared_tab_group_details()) {
-      if (tab_groups::IsProjectsPanelFeatureEnabled()) {
-        if (specifics->shared_tab_group_details().has_projects_position()) {
-          specifics_position =
-              specifics->shared_tab_group_details().projects_position();
-        }
-      } else {
         if (specifics->shared_tab_group_details().has_pinned_position()) {
           specifics_position =
               specifics->shared_tab_group_details().pinned_position();
         }
-      }
     }
     if (group.position() != specifics_position) {
       has_changed = true;

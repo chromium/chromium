@@ -159,13 +159,11 @@ void TabGroupMenuBridge::BuildMenu() {
                         : IDS_TAB_GROUP_HEADER_CXMENU_OPEN_GROUP_IN_NEW_WINDOW,
                     TabGroupMenuAction::Type::OPEN_OR_MOVE_TO_NEW_WINDOW,
                     uuid)];
-    if (!tab_groups::IsProjectsPanelFeatureEnabled()) {
-      [submenu addItem:CreateStaticSubmenuItem(
-                           group->is_pinned()
-                               ? IDS_TAB_GROUP_HEADER_CXMENU_UNPIN_GROUP
-                               : IDS_TAB_GROUP_HEADER_CXMENU_PIN_GROUP,
-                           TabGroupMenuAction::Type::PIN_OR_UNPIN_GROUP, uuid)];
-    }
+    [submenu
+        addItem:CreateStaticSubmenuItem(
+                    group->is_pinned() ? IDS_TAB_GROUP_HEADER_CXMENU_UNPIN_GROUP
+                                       : IDS_TAB_GROUP_HEADER_CXMENU_PIN_GROUP,
+                    TabGroupMenuAction::Type::PIN_OR_UNPIN_GROUP, uuid)];
     bool is_owner =
         tab_groups::SavedTabGroupUtils::IsOwnerOfSharedTabGroup(profile_, uuid);
     [submenu addItem:CreateStaticSubmenuItem(

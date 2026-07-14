@@ -107,10 +107,7 @@ class SavedTabGroup {
     return bookmark_node_id_;
   }
 
-  bool is_pinned() const {
-    return !tab_groups::IsProjectsPanelFeatureEnabled() &&
-           position_.has_value();
-  }
+  bool is_pinned() const { return position_.has_value(); }
   bool is_shared_tab_group() const { return collaboration_id_.has_value(); }
   bool is_transitioning_to_shared() const {
     return is_transitioning_to_shared_;

@@ -72,13 +72,6 @@ std::optional<std::string> GetCacheGuidFromSpecifics(
 
 std::optional<size_t> GroupPositionFromSpecifics(
     const sync_pb::SavedTabGroupSpecifics& specifics) {
-  if (tab_groups::IsProjectsPanelFeatureEnabled()) {
-    if (specifics.group().has_projects_position()) {
-      return specifics.group().projects_position();
-    }
-    return std::nullopt;
-  }
-
   // We leave the position unset if the proto is not set for unpinned tab
   // groups.
   if (specifics.group().has_pinned_position()) {
@@ -198,11 +191,6 @@ SavedTabGroup DataToSavedTabGroup(const proto::SavedTabGroupData& data) {
   group.SetUpdateTime(update_time);
   group.SetLastUserInteractionTime(last_user_interaction_time);
 
-  if (tab_groups::IsProjectsPanelFeatureEnabled() &&
-      specific.group().has_pinned_position()) {
-    group.SetPinnedPositionForMigration(specific.group().pinned_position());
-  }
-
   if (originating_tab_group_guid.is_valid()) {
     // The user is always an owner of saved tab groups.
     group.SetOriginatingTabGroupGuid(std::move(originating_tab_group_guid),
@@ -271,20 +259,7 @@ proto::SavedTabGroupData SavedTabGroupToData(
     }
   }
 
-  if (tab_groups::IsProjectsPanelFeatureEnabled()) {
-    if (group.position().has_value()) {
-      pb_group->set_projects_position(group.position().value());
-    } else {
-      pb_group->clear_projects_position();
-    }
-    // We store pinned_position so it doesn't get overwritten by a sync update.
-    if (group.pinned_position_for_migration().has_value()) {
-      pb_group->set_pinned_position(
-          group.pinned_position_for_migration().value());
-    } else {
-      pb_group->clear_pinned_position();
-    }
-  } else if (group.position().has_value()) {
+  if (group.position().has_value()) {
     pb_group->set_pinned_position(group.position().value());
   } else {
     pb_group->clear_pinned_position();
