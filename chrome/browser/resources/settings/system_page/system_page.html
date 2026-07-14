@@ -12,16 +12,16 @@
       class="cr-centered-card-container">
 <if expr="not is_macosx">
     <settings-toggle-button
-        pref="{{prefs.background_mode.enabled}}"
+        pref-key="background_mode.enabled"
         label="$i18n{backgroundAppsLabel}">
     </settings-toggle-button>
     <div class="hr"></div>
 </if>
     <settings-toggle-button id="hardwareAcceleration"
-        pref="{{prefs.hardware_acceleration_mode.enabled}}"
+        pref-key="hardware_acceleration_mode.enabled"
         label="$i18n{hardwareAccelerationLabel}">
       <template is="dom-if" if="[[shouldShowRestart_(
-          prefs.hardware_acceleration_mode.enabled.value)]]">
+          hardwareAccelerationModeEnabledPref_.value)]]">
         <cr-button on-click="onRestartClick_" slot="more-actions">
           $i18n{restart}
         </cr-button>
@@ -31,12 +31,12 @@
     <template is="dom-if" if="[[showProcessIsolationSetting_]]" restamp>
       <div class="hr"></div>
       <settings-toggle-button id="isolationState"
-          pref="{{prefs.isolation_state.enabled}}"
+          pref-key="isolation_state.enabled"
           label="$i18n{isolationStateLabel}"
           sub-label="$i18n{isolationStateSubLabel}"
           learn-more-url="$i18n{isolationStateLearnMoreUrl}">
         <template is="dom-if" if="[[shouldShowIsolationRestart_(
-            prefs.isolation_state.enabled.value)]]">
+            isolationStateEnabledPref_.value)]]">
           <cr-button on-click="onRestartClick_" slot="more-actions">
             $i18n{restart}
           </cr-button>
@@ -50,7 +50,7 @@
         <div class="hr"></div>
         <settings-toggle-button id="featureNotificationsEnabled"
             on-settings-boolean-control-change="onFeatureNotificationsChange_"
-            pref="{{prefs.feature_notifications_enabled}}"
+            pref-key="feature_notifications_enabled"
             label="$i18n{featureNotificationsLabel}">
         </settings-toggle-button>
       </template>
@@ -64,7 +64,7 @@
           $i18n{proxySettingsLabel}
         </div>
         <div class="flex cr-row-text"
-            hidden$="[[!prefs.proxy.extensionId]]">
+            hidden$="[[!proxyPref_.extensionId]]">
           $i18n{proxySettingsExtensionLabel}
         </div>
         <div class="flex cr-row-text"
@@ -75,7 +75,7 @@
             hidden$="[[!isProxyDefault_]]"
             aria-label="$i18n{proxySettingsLabel}"></cr-icon-button>
         <template is="dom-if" if="[[isProxyEnforcedByPolicy_]]">
-          <cr-policy-pref-indicator pref="[[prefs.proxy]]"
+          <cr-policy-pref-indicator pref="[[proxyPref_]]"
               icon-aria-label="$i18n{proxySettingsLabel}">
           </cr-policy-pref-indicator>
         </template>
@@ -97,36 +97,36 @@
             hidden$="[[!isProxyDefault_]]"
             aria-label="$i18n{proxySettingsLabel}"></cr-icon-button>
       </div>
-      <template is="dom-if" if="[[!prefs.proxy_override_rules.extensionId]]">
+      <template is="dom-if" if="[[!proxyOverrideRulesPref_.extensionId]]">
         <div class="cr-row continuation">
           <div class="flex cr-row-text proxy-multisource-padding">
             $i18n{proxySettingsYourOrganization}
           </div>
-          <cr-policy-pref-indicator pref="[[prefs.proxy_override_rules]]"
+          <cr-policy-pref-indicator pref="[[proxyOverrideRulesPref_]]"
               icon-aria-label="$i18n{proxySettingsLabel}">
           </cr-policy-pref-indicator>
         </div>
       </template>
-      <template is="dom-if" if="[[prefs.proxy_override_rules.extensionId]]">
+      <template is="dom-if" if="[[proxyOverrideRulesPref_.extensionId]]">
         <div class="cr-row continuation">
           <extension-controlled-indicator class="flex proxy-multisource-padding"
-              extension-id="[[prefs.proxy_override_rules.extensionId]]"
-              extension-name="[[prefs.proxy_override_rules.controlledByName]]"
+              extension-id="[[proxyOverrideRulesPref_.extensionId]]"
+              extension-name="[[proxyOverrideRulesPref_.controlledByName]]"
               extension-name-only-in-label=
                   "[[isProxyEnforcedByMultipleSources_]]"
               extension-can-be-disabled=
-                  "[[prefs.proxy_override_rules.extensionCanBeDisabled]]">
+                  "[[proxyOverrideRulesPref_.extensionCanBeDisabled]]">
           </extension-controlled-indicator>
         </div>
       </template>
     </div>
-    <template is="dom-if" if="[[prefs.proxy.extensionId]]">
+    <template is="dom-if" if="[[proxyPref_.extensionId]]">
       <div class="cr-row continuation">
         <extension-controlled-indicator class="flex"
-            extension-id="[[prefs.proxy.extensionId]]"
-            extension-name="[[prefs.proxy.controlledByName]]"
+            extension-id="[[proxyPref_.extensionId]]"
+            extension-name="[[proxyPref_.controlledByName]]"
             extension-name-only-in-label="[[isProxyEnforcedByMultipleSources_]]"
-            extension-can-be-disabled="[[prefs.proxy.extensionCanBeDisabled]]"
+            extension-can-be-disabled="[[proxyPref_.extensionCanBeDisabled]]"
             on-disable-extension-click="onDisableExtensionClick_">
         </extension-controlled-indicator>
       </div>

@@ -8,10 +8,12 @@ import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import type {SettingsSystemPageElement, SystemPageBrowserProxy} from 'chrome://settings/lazy_load.js';
 import {SystemPageBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
-import {CrSettingsPrefs, LifetimeBrowserProxyImpl} from 'chrome://settings/settings.js';
-import type {SettingsPrefsElement} from 'chrome://settings/settings.js';
+import {LifetimeBrowserProxyImpl, PrefService, PrefsBrowserProxy} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {FakeSettingsPrivate} from 'chrome://webui-test/fake_settings_private.js';
+import type {FakeSettingsPrivate} from 'chrome://webui-test/fake_settings_private.js';
+
+import {TestPrefsBrowserProxy} from './test_prefs_browser_proxy.js';
+
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
 
@@ -54,7 +56,7 @@ suite('settings system page', function() {
   let metricsBrowserProxy: TestMetricsBrowserProxy;
   // </if>
   let systemPage: SettingsSystemPageElement;
-  let settingsPrefs: SettingsPrefsElement;
+  let fakeSettingsPrivate: FakeSettingsPrivate;
 
   function getInitialPrefs(_isolationEnabledAtStartup: boolean):
       chrome.settingsPrivate.PrefObject[] {
@@ -97,12 +99,6 @@ suite('settings system page', function() {
     return prefs;
   }
 
-  suiteSetup(function() {
-    CrSettingsPrefs.deferInitialization = true;
-    settingsPrefs = document.createElement('settings-prefs');
-    document.body.appendChild(settingsPrefs);
-  });
-
   setup(async function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     // <if expr="is_win">
@@ -120,16 +116,15 @@ suite('settings system page', function() {
     systemBrowserProxy = new TestSystemPageBrowserProxy();
     SystemPageBrowserProxyImpl.setInstance(systemBrowserProxy);
 
-    settingsPrefs.resetForTesting();
-    CrSettingsPrefs.resetForTesting();
-    const fakeSettingsPrivate = new FakeSettingsPrivate(
+    const prefsBrowserProxy = new TestPrefsBrowserProxy(
         getInitialPrefs(/*_isolationEnabledAtStartup=*/ false));
-    settingsPrefs.initialize(fakeSettingsPrivate);
+    PrefsBrowserProxy.setInstance(prefsBrowserProxy);
+    fakeSettingsPrivate = prefsBrowserProxy.fakeApi;
+    PrefService.resetInstanceForTesting();
 
-    await CrSettingsPrefs.initialized;
+    await PrefService.getInstance().whenInitialized();
 
     systemPage = document.createElement('settings-system-page');
-    systemPage.prefs = settingsPrefs.prefs!;
     document.body.appendChild(systemPage);
 
     // Ensure that dynamic Polymer nodes (i.e., featureNotificationsEnabled,
@@ -148,8 +143,8 @@ suite('settings system page', function() {
     // Restart button should be hidden by default.
     assertFalse(!!control.querySelector('cr-button'));
 
-    systemPage.set(
-        'prefs.hardware_acceleration_mode.enabled.value',
+    PrefService.getInstance().setPrefValue(
+        'hardware_acceleration_mode.enabled',
         !HARDWARE_ACCELERATION_AT_STARTUP);
     flush();
     assertNotEquals(HARDWARE_ACCELERATION_AT_STARTUP, control.checked);
@@ -173,7 +168,7 @@ suite('settings system page', function() {
     // Restart button should be hidden by default.
     assertFalse(!!control.querySelector('cr-button'));
 
-    systemPage.setPrefValue('isolation_state.enabled', true);
+    PrefService.getInstance().setPrefValue('isolation_state.enabled', true);
     flush();
     assertTrue(control.checked);
 
@@ -187,17 +182,15 @@ suite('settings system page', function() {
   test('process isolation restart button (starts enabled)', async function() {
     // Recreate the page with the pref starting as true.
     systemPage.remove();
-    settingsPrefs.resetForTesting();
-    CrSettingsPrefs.resetForTesting();
-
-    const fakeSettingsPrivate = new FakeSettingsPrivate(
+    const prefsBrowserProxy = new TestPrefsBrowserProxy(
         getInitialPrefs(/*_isolationEnabledAtStartup=*/ true));
-    settingsPrefs.initialize(fakeSettingsPrivate);
+    PrefsBrowserProxy.setInstance(prefsBrowserProxy);
+    fakeSettingsPrivate = prefsBrowserProxy.fakeApi;
+    PrefService.resetInstanceForTesting();
 
-    await CrSettingsPrefs.initialized;
+    await PrefService.getInstance().whenInitialized();
 
     systemPage = document.createElement('settings-system-page');
-    systemPage.prefs = settingsPrefs.prefs!;
     document.body.appendChild(systemPage);
     await flushTasks();
 
@@ -213,7 +206,7 @@ suite('settings system page', function() {
     assertFalse(!!control.querySelector('cr-button'));
 
     // Toggle the setting off.
-    systemPage.setPrefValue('isolation_state.enabled', false);
+    PrefService.getInstance().setPrefValue('isolation_state.enabled', false);
     flush();
     assertFalse(control.checked);
 
@@ -238,14 +231,14 @@ suite('settings system page', function() {
     assertEquals(null, control.querySelector('cr-policy-pref-indicator'));
     assertTrue(isVisible(showProxyButton));
 
-    systemPage.set('prefs.proxy', {
+    fakeSettingsPrivate.sendPrefChanges([{
       key: 'proxy',
       type: chrome.settingsPrivate.PrefType.DICTIONARY,
       value: {mode: 'system'},
       controlledBy: chrome.settingsPrivate.ControlledBy.EXTENSION,
       extensionId: 'blah',
       enforcement: chrome.settingsPrivate.Enforcement.ENFORCED,
-    });
+    }]);
     flush();
 
     // When managed by extensions, we disable the ability to show proxy
@@ -254,13 +247,13 @@ suite('settings system page', function() {
     assertEquals(null, control.querySelector('cr-policy-pref-indicator'));
     assertFalse(isVisible(showProxyButton));
 
-    systemPage.set('prefs.proxy', {
+    fakeSettingsPrivate.sendPrefChanges([{
       key: 'proxy',
       type: chrome.settingsPrivate.PrefType.DICTIONARY,
       value: {mode: 'system'},
       controlledBy: chrome.settingsPrivate.ControlledBy.USER_POLICY,
       enforcement: chrome.settingsPrivate.Enforcement.ENFORCED,
-    });
+    }]);
     flush();
 
     // When managed by policy directly, we disable the ability to show proxy
@@ -283,7 +276,7 @@ suite('settings system page', function() {
 
     // Case 1: ProxyOverrideRules is set by policy, proxy is not set (using
     // system default). Multiple sources should be shown.
-    systemPage.set('prefs.proxy_override_rules', {
+    fakeSettingsPrivate.sendPrefChanges([{
       key: 'proxy_override_rules',
       type: chrome.settingsPrivate.PrefType.LIST,
       value: [{
@@ -292,7 +285,7 @@ suite('settings system page', function() {
       }],
       controlledBy: chrome.settingsPrivate.ControlledBy.USER_POLICY,
       enforcement: chrome.settingsPrivate.Enforcement.ENFORCED,
-    });
+    }]);
     flush();
 
     assertTrue(deviceSettings.hasAttribute('actionable'));
@@ -301,13 +294,13 @@ suite('settings system page', function() {
 
     // Case 2: Both ProxyOverrideRules and proxy are set by policy.
     // A single combined sources should be shown.
-    systemPage.set('prefs.proxy', {
+    fakeSettingsPrivate.sendPrefChanges([{
       key: 'proxy',
       type: chrome.settingsPrivate.PrefType.DICTIONARY,
       value: {mode: 'system'},
       controlledBy: chrome.settingsPrivate.ControlledBy.USER_POLICY,
       enforcement: chrome.settingsPrivate.Enforcement.ENFORCED,
-    });
+    }]);
     flush();
 
     assertFalse(deviceSettings.hasAttribute('actionable'));
@@ -316,14 +309,14 @@ suite('settings system page', function() {
 
     // Case 3: ProxyOverrideRules is set by policy, proxy is set by an
     // extension. Multiple sources should be shown.
-    systemPage.set('prefs.proxy', {
+    fakeSettingsPrivate.sendPrefChanges([{
       key: 'proxy',
       type: chrome.settingsPrivate.PrefType.DICTIONARY,
       value: {mode: 'system'},
       controlledBy: chrome.settingsPrivate.ControlledBy.EXTENSION,
       extensionId: 'extension-id-1',
       enforcement: chrome.settingsPrivate.Enforcement.ENFORCED,
-    });
+    }]);
     flush();
 
     assertFalse(deviceSettings.hasAttribute('actionable'));
@@ -332,7 +325,7 @@ suite('settings system page', function() {
 
     // Case 4: ProxyOverrideRules and proxy are set by the same extension.
     // A single combined sources should be shown.
-    systemPage.set('prefs.proxy_override_rules', {
+    fakeSettingsPrivate.sendPrefChanges([{
       key: 'proxy_override_rules',
       type: chrome.settingsPrivate.PrefType.LIST,
       value: [{
@@ -342,7 +335,7 @@ suite('settings system page', function() {
       controlledBy: chrome.settingsPrivate.ControlledBy.EXTENSION,
       extensionId: 'extension-id-1',
       enforcement: chrome.settingsPrivate.Enforcement.ENFORCED,
-    });
+    }]);
     flush();
 
     assertFalse(deviceSettings.hasAttribute('actionable'));
@@ -351,14 +344,14 @@ suite('settings system page', function() {
 
     // Case 5: ProxyOverrideRules and proxy are set by different extension.
     // Multiple sources should be shown.
-    systemPage.set('prefs.proxy', {
+    fakeSettingsPrivate.sendPrefChanges([{
       key: 'proxy',
       type: chrome.settingsPrivate.PrefType.DICTIONARY,
       value: {mode: 'system'},
       controlledBy: chrome.settingsPrivate.ControlledBy.EXTENSION,
       extensionId: 'extension-id-2',
       enforcement: chrome.settingsPrivate.Enforcement.ENFORCED,
-    });
+    }]);
     flush();
 
     assertFalse(deviceSettings.hasAttribute('actionable'));
@@ -369,7 +362,8 @@ suite('settings system page', function() {
   // <if expr="_google_chrome and is_win">
   test('feature notifications changed', async function() {
     function getPrefValue(): boolean {
-      return systemPage.get('feature_notifications_enabled', systemPage.prefs)
+      return PrefService.getInstance()
+          .getPref<boolean>('feature_notifications_enabled')
           .value;
     }
 
@@ -379,7 +373,8 @@ suite('settings system page', function() {
         '#featureNotificationsEnabled');
     assertTrue(!!toggle);
     assertNotEquals(
-        undefined, systemPage.get('prefs.feature_notifications_enabled'));
+        undefined,
+        PrefService.getInstance().getPref('feature_notifications_enabled'));
     assertTrue(getPrefValue());
 
     toggle.click();

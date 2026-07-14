@@ -17,8 +17,8 @@ import '../relaunch_confirmation_dialog.js';
 import '../settings_page/settings_section.js';
 import '../settings_shared.css.js';
 
-import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
-import {CrSettingsPrefs} from '/shared/settings/prefs/prefs_types.js';
+import {PrefService} from '/shared/settings/prefs2/pref_service.js';
+import {PrefServiceObserverMixin} from '/shared/settings/prefs2/pref_service_observer_mixin.js';
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -61,7 +61,7 @@ export interface SettingsSystemPageElement {
 }
 
 const SettingsSystemPageElementBase =
-    WebUiListenerMixin(PrefsMixin(RelaunchMixin(PolymerElement)));
+    WebUiListenerMixin(PrefServiceObserverMixin(RelaunchMixin(PolymerElement)));
 
 export class SettingsSystemPageElement extends SettingsSystemPageElementBase
     implements SettingsPlugin {
@@ -115,13 +115,19 @@ export class SettingsSystemPageElement extends SettingsSystemPageElementBase
         },
       },
       // </if>
+
+      proxyPref_: Object,
+      proxyOverrideRulesPref_: Object,
+      hardwareAccelerationModeEnabledPref_: Object,
+      // <if expr="is_win">
+      isolationStateEnabledPref_: Object,
+      // </if>
     };
   }
 
   static get observers() {
     return [
-      'observeProxyPrefChanged_(prefs.proxy.*)',
-      'observeProxyPrefChanged_(prefs.proxy_override_rules.*)',
+      'observeProxyPrefChanged_(proxyPref_.*, proxyOverrideRulesPref_.*)',
     ];
   }
 
@@ -142,6 +148,17 @@ export class SettingsSystemPageElement extends SettingsSystemPageElementBase
   private processIsolationEnabledAtStartup_: boolean|undefined;
   // </if>
 
+  declare private proxyPref_: chrome.settingsPrivate.PrefObject<unknown>|
+      undefined;
+  declare private proxyOverrideRulesPref_:
+      chrome.settingsPrivate.PrefObject<ProxyOverrideRule[]>|undefined;
+  declare private hardwareAccelerationModeEnabledPref_:
+      chrome.settingsPrivate.PrefObject<boolean>|undefined;
+  // <if expr="is_win">
+  declare private isolationStateEnabledPref_:
+      chrome.settingsPrivate.PrefObject<boolean>|undefined;
+  // </if>
+
   // <if expr="_google_chrome">
   override ready() {
     super.ready();
@@ -152,28 +169,45 @@ export class SettingsSystemPageElement extends SettingsSystemPageElementBase
   }
   // </if>
 
-  // <if expr="is_win">
   override connectedCallback() {
     super.connectedCallback();
-    CrSettingsPrefs.initialized.then(() => {
-      this.processIsolationEnabledAtStartup_ =
-          this.getPref<boolean>('isolation_state.enabled').value;
+
+    this.mirrorPrefs({
+      'proxy': 'proxyPref_',
+      'proxy_override_rules': 'proxyOverrideRulesPref_',
+      'hardware_acceleration_mode.enabled':
+          'hardwareAccelerationModeEnabledPref_',
+      // <if expr="is_win">
+      'isolation_state.enabled': 'isolationStateEnabledPref_',
+      // </if>
     });
+
+    // <if expr="is_win">
+    PrefService.getInstance().whenInitialized().then(() => {
+      this.processIsolationEnabledAtStartup_ =
+          PrefService.getInstance()
+              .getPref<boolean>('isolation_state.enabled')
+              .value;
+    });
+    // </if>
   }
-  // </if>
 
   private observeProxyPrefChanged_() {
-    const pref = this.getPref('proxy');
+    if (!this.proxyPref_ || !this.proxyOverrideRulesPref_) {
+      return;
+    }
     // TODO(dbeam): do types of policy other than USER apply on ChromeOS?
-    this.isProxyEnforcedByPolicy_ =
-        pref.enforcement === chrome.settingsPrivate.Enforcement.ENFORCED &&
-        pref.controlledBy === chrome.settingsPrivate.ControlledBy.USER_POLICY;
-    this.isProxyDefault_ = !this.isProxyEnforcedByPolicy_ && !pref.extensionId;
+    this.isProxyEnforcedByPolicy_ = this.proxyPref_.enforcement ===
+            chrome.settingsPrivate.Enforcement.ENFORCED &&
+        this.proxyPref_.controlledBy ===
+            chrome.settingsPrivate.ControlledBy.USER_POLICY;
+    this.isProxyDefault_ =
+        !this.isProxyEnforcedByPolicy_ && !this.proxyPref_.extensionId;
 
-    const rulesPref = this.getPref<ProxyOverrideRule[]>('proxy_override_rules');
     // Don't need to consider multiple source display when
     // `ProxyOverrideRules` preference is not set
-    if (!rulesPref.value || rulesPref.value.length === 0) {
+    if (!this.proxyOverrideRulesPref_.value ||
+        this.proxyOverrideRulesPref_.value.length === 0) {
       this.isProxyEnforcedByMultipleSources_ = false;
       return;
     }
@@ -187,14 +221,16 @@ export class SettingsSystemPageElement extends SettingsSystemPageElementBase
 
     // When proxy settings and `ProxyOverrideRules` are from different levels of
     // sources
-    if (pref.controlledBy !== rulesPref.controlledBy) {
+    if (this.proxyPref_.controlledBy !==
+        this.proxyOverrideRulesPref_.controlledBy) {
       this.isProxyEnforcedByMultipleSources_ = true;
       return;
     }
 
     // When proxy settings and `ProxyOverrideRules` are both from policies, the
     // sources are considered to be the same
-    if (pref.controlledBy === chrome.settingsPrivate.ControlledBy.USER_POLICY) {
+    if (this.proxyPref_.controlledBy ===
+        chrome.settingsPrivate.ControlledBy.USER_POLICY) {
       this.isProxyEnforcedByMultipleSources_ = false;
       return;
     }
@@ -203,7 +239,8 @@ export class SettingsSystemPageElement extends SettingsSystemPageElementBase
     // the sources are considered to be the same only if they are set by the
     // same extension
     this.isProxyEnforcedByMultipleSources_ =
-        (pref.extensionId !== rulesPref.extensionId);
+        (this.proxyPref_.extensionId !==
+         this.proxyOverrideRulesPref_.extensionId);
   }
 
   private onDisableExtensionClick_() {
@@ -272,10 +309,11 @@ export class SettingsSystemPageElement extends SettingsSystemPageElementBase
 
   // <if expr="is_win">
   private shouldShowIsolationRestart_(): boolean {
-    if (this.processIsolationEnabledAtStartup_ === undefined) {
+    if (this.processIsolationEnabledAtStartup_ === undefined ||
+        !this.isolationStateEnabledPref_) {
       return false;
     }
-    return this.getPref('isolation_state.enabled').value !==
+    return this.isolationStateEnabledPref_.value !==
         this.processIsolationEnabledAtStartup_;
   }
   // </if>
