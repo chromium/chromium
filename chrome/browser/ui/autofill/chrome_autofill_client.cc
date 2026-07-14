@@ -186,6 +186,7 @@
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/keyboard_accessory/android/manual_filling_controller.h"
 #include "chrome/browser/signin/android/signin_bridge.h"
+#include "chrome/browser/touch_to_fill/autofill/android/touch_to_fill_autofill_controller.h"
 #include "chrome/browser/ui/android/autofill/at_memory_bottom_sheet_bridge.h"
 #include "chrome/browser/ui/android/autofill/at_memory_bottom_sheet_delegate_android.h"
 #include "chrome/browser/ui/android/autofill/autofill_ai_save_update_entity_flow_manager.h"
@@ -1213,6 +1214,13 @@ ChromeAutofillClient::GetAutofillMessageController() {
 
   return autofill_message_controller_.get();
 }
+
+void ChromeAutofillClient::SetTouchToFillAutofillControllerForTesting(
+    std::unique_ptr<TouchToFillAutofillController>
+        touch_to_fill_autofill_controller) {
+  touch_to_fill_autofill_controller_ =
+      std::move(touch_to_fill_autofill_controller);
+}
 #endif
 
 std::unique_ptr<device_reauth::DeviceAuthenticator>
@@ -1308,6 +1316,8 @@ ChromeAutofillClient::ChromeAutofillClient(content::WebContents* web_contents)
   save_update_address_profile_flow_manager_ =
       std::make_unique<SaveUpdateAddressProfileFlowManager>(
           this, GetAutofillMessageController());
+  touch_to_fill_autofill_controller_ =
+      TouchToFillAutofillController::Create(this);
 #endif
 
   if (actor::ActorKeyedService* actor_service =

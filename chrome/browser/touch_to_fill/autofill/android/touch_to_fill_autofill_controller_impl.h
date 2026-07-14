@@ -21,8 +21,8 @@ namespace autofill {
 class ContentAutofillClient;
 class TouchToFillAutofillView;
 
-// Controller of the bottom sheet surface for filling autofill data on Android.
-// It is responsible for showing the view and handling user interactions.
+// Controller for showing non-payments autofill bottomsheets on Android. It is
+// responsible for showing the view and handling user interactions.
 class TouchToFillAutofillControllerImpl
     : public TouchToFillAutofillController,
       public ContentAutofillDriverFactory::Observer {

@@ -5,6 +5,7 @@
 #include "chrome/browser/touch_to_fill/autofill/android/touch_to_fill_autofill_delegate_android_impl.h"
 
 #include "base/check_deref.h"
+#include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_field_data.h"
@@ -21,9 +22,7 @@ TouchToFillAutofillDelegateAndroidImpl::
 bool TouchToFillAutofillDelegateAndroidImpl::IntendsToShowTouchToFill(
     FormGlobalId form_id,
     FieldGlobalId field_id) {
-  // TODO(crbug.com/521716313): Call FirstRunService to check whether to show
-  // the TTF surface.
-  return false;
+  return manager_->client().ShouldShowPersonalContextAmbientAutofillNotice();
 }
 
 bool TouchToFillAutofillDelegateAndroidImpl::TryToShowTouchToFill(
@@ -43,8 +42,7 @@ void TouchToFillAutofillDelegateAndroidImpl::OnShow() {
 }
 
 void TouchToFillAutofillDelegateAndroidImpl::OnNoticeAcknowledged() {
-  // TODO(crbug.com/521716313): Call FirstRunService to mark the notice
-  // acknowledged event.
+  manager_->client().MarkPersonalContextAmbientAutofillNoticeAsAcknowledged();
 }
 
 void TouchToFillAutofillDelegateAndroidImpl::OnDismissed() {}

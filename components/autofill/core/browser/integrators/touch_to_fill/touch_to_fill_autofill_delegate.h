@@ -11,9 +11,10 @@
 
 namespace autofill {
 
-// An interface for interaction with the bottom sheet UI controller, which is
-// `TouchToFillAutofillController` on Android. The delegate will supply the
-// data to show and will be notified of events by the controller.
+// An interface for interaction with the bottom sheet UI controller for
+// non-payments autofill, which is `TouchToFillAutofillController` on Android.
+// The delegate will supply the data to show and will be notified of events by
+// the controller.
 class TouchToFillAutofillDelegate {
  public:
   virtual ~TouchToFillAutofillDelegate() = default;

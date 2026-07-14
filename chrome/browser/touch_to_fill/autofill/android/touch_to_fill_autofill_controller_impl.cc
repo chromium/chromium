@@ -20,6 +20,12 @@
 
 namespace autofill {
 
+// static
+std::unique_ptr<TouchToFillAutofillController>
+TouchToFillAutofillController::Create(ContentAutofillClient* autofill_client) {
+  return std::make_unique<TouchToFillAutofillControllerImpl>(autofill_client);
+}
+
 namespace {
 TouchToFillAutofillDelegate* GetDelegate(AutofillManager& manager) {
   auto* bam = static_cast<BrowserAutofillManager*>(&manager);
