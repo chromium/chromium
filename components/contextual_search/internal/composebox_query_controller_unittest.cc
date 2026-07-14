@@ -3779,6 +3779,47 @@ TEST_F(ComposeboxQueryControllerTest,
 }
 
 TEST_F(ComposeboxQueryControllerTest,
+       CreateClientToAimRequestWithRemovedContexts) {
+  // Act: Start the session.
+  controller().InitializeIfNeeded();
+
+  // Act: Create the ClientToAimRequest.
+  std::unique_ptr<CreateClientToAimRequestInfo> client_to_aim_request_info =
+      std::make_unique<CreateClientToAimRequestInfo>();
+  client_to_aim_request_info->query_text = "hello";
+  client_to_aim_request_info->query_text_source =
+      lens::QueryPayload::QUERY_TEXT_SOURCE_KEYBOARD_INPUT;
+
+  lens::LensOverlayRequestId removed_context_1;
+  removed_context_1.set_uuid(12345);
+  removed_context_1.set_sequence_id(1);
+
+  lens::LensOverlayRequestId removed_context_2;
+  removed_context_2.set_uuid(67890);
+  removed_context_2.set_sequence_id(2);
+
+  client_to_aim_request_info->removed_contexts.push_back(removed_context_1);
+  client_to_aim_request_info->removed_contexts.push_back(removed_context_2);
+
+  lens::ClientToAimMessage client_to_aim_request =
+      controller().CreateClientToAimRequest(
+          std::move(client_to_aim_request_info));
+
+  // Assert: The ClientToAimRequest is populated correctly.
+  EXPECT_EQ(client_to_aim_request.submit_query().payload().query_text(),
+            "hello");
+  EXPECT_EQ(client_to_aim_request.submit_query().payload().query_text_source(),
+            lens::QueryPayload::QUERY_TEXT_SOURCE_KEYBOARD_INPUT);
+  ASSERT_EQ(
+      client_to_aim_request.submit_query().payload().expired_lens_ids_size(),
+      2);
+  EXPECT_EQ(client_to_aim_request.submit_query().payload().expired_lens_ids(0),
+            lens::Base64EncodeRequestId(removed_context_1));
+  EXPECT_EQ(client_to_aim_request.submit_query().payload().expired_lens_ids(1),
+            lens::Base64EncodeRequestId(removed_context_2));
+}
+
+TEST_F(ComposeboxQueryControllerTest,
        QuerySubmittedWithUploadedPdfStandardSearch) {
   // Act: Start the session.
   controller().InitializeIfNeeded();
