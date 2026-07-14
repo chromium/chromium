@@ -316,7 +316,7 @@ suite('GlicPageFocusTest', function() {
       assertTrue(!launcherToggle.checked);
       userActions = await metricsBrowserProxy.getArgs('recordAction');
       assertEquals(1, userActions.length);
-      verifyUserAction('Glic.OsEntrypoint.Settings.Toggle.Disabled');
+      verifyUserAction('GlicOsEntrypoint.Settings.Toggle.Disabled');
 
       // Act.
       launcherToggle.click();
@@ -325,7 +325,7 @@ suite('GlicPageFocusTest', function() {
       // Assert.
       userActions = await metricsBrowserProxy.getArgs('recordAction');
       assertEquals(2, userActions.length);
-      verifyUserAction('Glic.OsEntrypoint.Settings.Toggle.Enabled');
+      verifyUserAction('GlicOsEntrypoint.Settings.Toggle.Enabled');
     });
   });
 });

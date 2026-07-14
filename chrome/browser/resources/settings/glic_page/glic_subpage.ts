@@ -456,7 +456,7 @@ export class SettingsGlicSubpageElement extends SettingsGlicSubpageElementBase {
     const enabled = (event.target as SettingsToggleButtonElement).checked;
     this.browserProxy_.setGlicOsLauncherEnabled(enabled);
     this.metricsBrowserProxy_.recordAction(
-        'Glic.OsEntrypoint.Settings.Toggle' +
+        'GlicOsEntrypoint.Settings.Toggle' +
         (enabled ? '.Enabled' : '.Disabled'));
     this.hideHelpBubble(OS_WIDGET_TOGGLE_ELEMENT_ID);
   }
