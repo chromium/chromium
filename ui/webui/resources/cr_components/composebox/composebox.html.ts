@@ -230,7 +230,6 @@ export function getHtml(this: ComposeboxElement) {
         .submitButtonIconType="${this.submitButtonIconType}"
         .dynamicTimeoutEnabled="${false}"
         .pageCallbackRouter="${this.searchboxCallbackRouter_}"
-        .metricSource="${this.composeboxSource}"
         exportparts="voice-close-button, voice-details-link, voice-stop-button, voice-submit-button">
     </cr-composebox-voice-search>
   ` : ''}

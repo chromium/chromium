@@ -115,6 +115,70 @@ suite('ComposeboxVoiceSearchMetrics', () => {
             VoiceSearchError.NETWORK));
   });
 
+  test(
+      'Records metrics suffix to CO_BROWSING_COMPOSEBOX when ' +
+          'page classification is CO_BROWSING_COMPOSEBOX',
+      async () => {
+        // Recreate the element so it fetches the new classification on connect
+        document.body.removeChild(voiceSearchElement);
+        searchboxHandler.resetResolver('getPageClassification');
+        searchboxHandler.setResultFor(
+            'getPageClassification',
+            Promise.resolve({metricSource: 'CO_BROWSING_COMPOSEBOX'}));
+        voiceSearchElement.metricSource = '';
+        document.body.appendChild(voiceSearchElement);
+
+        await searchboxHandler.whenCalled('getPageClassification');
+        await microtasksFinished();
+
+        // Verify metricSource property on element is set correctly
+        assertEquals('CO_BROWSING_COMPOSEBOX', voiceSearchElement.metricSource);
+
+        // Trigger Close click
+        mockVoiceSearch.onCloseClick_();
+        await microtasksFinished();
+
+        // Verify metrics logged to CO_BROWSING_COMPOSEBOX and not NTP_REALBOX
+        // or ContextualTasks
+        assertEquals(
+            1,
+            metrics.count(
+                'VoiceSearch.Action.CO_BROWSING_COMPOSEBOX',
+                VoiceSearchAction.CANCELED_BY_USER));
+        assertEquals(
+            0,
+            metrics.count(
+                'VoiceSearch.Action.NTP_REALBOX',
+                VoiceSearchAction.CANCELED_BY_USER));
+        assertEquals(
+            0,
+            metrics.count(
+                'VoiceSearch.Action.ContextualTasks',
+                VoiceSearchAction.CANCELED_BY_USER));
+
+        // Trigger submit query (final result)
+        mockVoiceSearch.onFinalResult_('hello', /*forceSubmit=*/ true);
+        await microtasksFinished();
+
+        // Verify metrics logged query submission to CO_BROWSING_COMPOSEBOX and
+        // not NTP_REALBOX or ContextualTasks
+        assertEquals(
+            1,
+            metrics.count(
+                'VoiceSearch.Action.CO_BROWSING_COMPOSEBOX',
+                VoiceSearchAction.QUERY_SUBMITTED));
+        assertEquals(
+            0,
+            metrics.count(
+                'VoiceSearch.Action.NTP_REALBOX',
+                VoiceSearchAction.QUERY_SUBMITTED));
+        assertEquals(
+            0,
+            metrics.count(
+                'VoiceSearch.Action.ContextualTasks',
+                VoiceSearchAction.QUERY_SUBMITTED));
+      });
+
   test('Records ERROR_NON_CANCELING state for NOT_ALLOWED error', async () => {
     const errorEvent = new SpeechRecognitionErrorEvent(
         'error', {message: '', error: 'not-allowed'});
