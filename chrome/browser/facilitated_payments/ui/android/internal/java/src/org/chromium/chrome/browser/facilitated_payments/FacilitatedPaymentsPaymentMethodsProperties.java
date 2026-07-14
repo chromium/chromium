@@ -88,6 +88,8 @@ class FacilitatedPaymentsPaymentMethodsProperties {
         int PIX_ACCOUNT_LINKING_PROMPT = 4;
         // The screen showing the account linking success screen.
         int ACCOUNT_LINKING_SUCCESS_SCREEN = 5;
+        // The screen showing the eWallet account linking prompt.
+        int EWALLET_ACCOUNT_LINKING_PROMPT = 6;
     }
 
     /**
@@ -289,6 +291,26 @@ class FacilitatedPaymentsPaymentMethodsProperties {
         static final PropertyKey[] ALL_KEYS = {PRIMARY_BUTTON_CALLBACK};
 
         private AccountLinkingSuccessScreenProperties() {}
+    }
+
+    /**
+     * Properties defined here reflect the visible state of the eWallet account linking prompt shown
+     * in a bottom sheet.
+     */
+    static class EwalletAccountLinkingPromptProperties {
+        static final WritableObjectPropertyKey<String> EWALLET_NAME =
+                new WritableObjectPropertyKey<>("ewallet_name");
+        static final WritableObjectPropertyKey<OnClickListener> ACCEPT_BUTTON_CALLBACK =
+                new WritableObjectPropertyKey<>("accept_button_callback");
+        static final WritableObjectPropertyKey<OnClickListener> DECLINE_BUTTON_CALLBACK =
+                new WritableObjectPropertyKey<>("decline_button_callback");
+        static final WritableIntPropertyKey DECLINE_BUTTON_TEXT_ID =
+                new WritableIntPropertyKey("decline_button_text_id");
+
+        /** All the properties of eWallet account linking prompt. */
+        static final PropertyKey[] ALL_KEYS = {
+            EWALLET_NAME, ACCEPT_BUTTON_CALLBACK, DECLINE_BUTTON_CALLBACK, DECLINE_BUTTON_TEXT_ID
+        };
     }
 
     private FacilitatedPaymentsPaymentMethodsProperties() {}

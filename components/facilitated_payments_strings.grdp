@@ -185,6 +185,19 @@
   <message name="IDS_PIX_ACCOUNT_LINKING_SUCCESS_SCREEN_GOT_IT" desc="Text for the primary button in the Pix account linking success screen." formatter_data="android_java">
     Got it
   </message>
+  <!-- eWallet account linking prompt strings -->
+  <message name="IDS_EWALLET_ACCOUNT_LINKING_PROMPT_TITLE" desc="Title for the bottom sheet showing eWallet account linking prompt. It asks users to link their eWallet to Google Wallet so they can directly pay on Chrome. The placeholder is the eWallet provider name." formatter_data="android_java">
+    Add <ph name="PROVIDER">%1$s<ex>ChiliPay</ex></ph> to pay without switching apps
+  </message>
+  <message name="IDS_EWALLET_ACCOUNT_LINKING_PROMPT_ACTION_GET_STARTED" desc="Text for the accept button in the bottom sheet showing eWallet account linking prompt. It accepts to link their eWallet accounts to Google Wallet." formatter_data="android_java">
+    Get started
+  </message>
+  <message name="IDS_EWALLET_ACCOUNT_LINKING_PROMPT_ACTION_NO_THANKS" desc="Text for the decline button in the bottom sheet showing eWallet account linking prompt." formatter_data="android_java">
+    No thanks
+  </message>
+  <message name="IDS_EWALLET_ACCOUNT_LINKING_PROMPT_ACTION_NOT_NOW" desc="Text for the decline button in the bottom sheet showing eWallet account linking prompt. This string is used for the first two times the prompt is shown, where we show 'Not now' instead of 'No thanks'." formatter_data="android_java">
+    Not now
+  </message>
 </if>
 
 </grit-part>

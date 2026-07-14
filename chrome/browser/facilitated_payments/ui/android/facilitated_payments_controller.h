@@ -83,6 +83,8 @@ class FacilitatedPaymentsController {
 
   // Asks the `view_` to show the PIX account linking prompt. Virtual for
   // overriding in tests.
+  // TODO(crbug.com/532367369): Deprecate the Pix specific callbacks for account
+  // linking.
   virtual void ShowPixAccountLinkingPrompt(
       int strike_count,
       base::OnceCallback<void()> on_accepted,
@@ -95,6 +97,13 @@ class FacilitatedPaymentsController {
   // Called by the Java view to communicate that the Pix account linking prompt
   // was declined.
   void OnPixAccountLinkingPromptDeclined(JNIEnv* env);
+
+  // Called by the Java view when an account linking prompt is shown.
+  void OnAccountLinkingPromptShown(JNIEnv* env, jint type);
+
+  // Called by the Java view when the user takes an action on the account
+  // linking prompt.
+  void OnAccountLinkingPromptAction(JNIEnv* env, jint type, jint action);
 
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject();
 

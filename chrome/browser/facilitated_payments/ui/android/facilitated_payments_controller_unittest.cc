@@ -5,17 +5,20 @@
 #include "chrome/browser/facilitated_payments/ui/android/facilitated_payments_controller.h"
 
 #include <memory>
+#include <tuple>
 #include <vector>
 
 #include "base/android/jni_string.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "chrome/browser/facilitated_payments/ui/android/facilitated_payments_bottom_sheet_bridge.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/facilitated_payments/core/browser/facilitated_payments_app_info_list.h"
 #include "components/facilitated_payments/core/browser/mock_facilitated_payments_app_info_list.h"
+#include "components/facilitated_payments/core/metrics/facilitated_payments_metrics.h"
 #include "components/facilitated_payments/core/utils/facilitated_payments_ui_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -338,4 +341,68 @@ TEST_F(FacilitatedPaymentsControllerTest, OnPaymentAppSelected) {
   controller_->OnPaymentAppSelected(
       env, base::android::ConvertUTF8ToJavaString(env, package_name),
       base::android::ConvertUTF8ToJavaString(env, activity_name));
+}
+
+class FacilitatedPaymentsControllerTestForAccountLinking
+    : public FacilitatedPaymentsControllerTest,
+      public testing::WithParamInterface<
+          std::tuple<payments::facilitated::FacilitatedPaymentsType,
+                     payments::facilitated::AccountLinkingPromptUserAction>> {
+ public:
+  payments::facilitated::FacilitatedPaymentsType GetPaymentType() const {
+    return std::get<0>(GetParam());
+  }
+
+  payments::facilitated::AccountLinkingPromptUserAction GetUserAction() const {
+    return std::get<1>(GetParam());
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    FacilitatedPaymentsControllerTest,
+    FacilitatedPaymentsControllerTestForAccountLinking,
+    testing::Combine(
+        testing::Values(
+            payments::facilitated::FacilitatedPaymentsType::kEwallet,
+            payments::facilitated::FacilitatedPaymentsType::kPix),
+        testing::Values(
+            payments::facilitated::AccountLinkingPromptUserAction::kShown,
+            payments::facilitated::AccountLinkingPromptUserAction::kAccepted,
+            payments::facilitated::AccountLinkingPromptUserAction::kDeclined,
+            payments::facilitated::AccountLinkingPromptUserAction::kDismissed)));
+
+TEST_P(FacilitatedPaymentsControllerTestForAccountLinking,
+       OnAccountLinkingPromptShown) {
+  base::HistogramTester histogram_tester;
+
+  controller_->OnAccountLinkingPromptShown(
+      /*env=*/nullptr, /*type=*/static_cast<jint>(GetPaymentType()));
+
+  std::string histogram_prefix =
+      GetPaymentType() == payments::facilitated::FacilitatedPaymentsType::kPix
+          ? "FacilitatedPayments.Pix.AccountLinking.PromptUserAction"
+          : "FacilitatedPayments.Ewallet.AccountLinking.PromptUserAction";
+
+  histogram_tester.ExpectUniqueSample(
+      histogram_prefix,
+      payments::facilitated::AccountLinkingPromptUserAction::kShown,
+      /*expected_bucket_count=*/1);
+}
+
+TEST_P(FacilitatedPaymentsControllerTestForAccountLinking,
+       OnAccountLinkingPromptAction) {
+  base::HistogramTester histogram_tester;
+
+  controller_->OnAccountLinkingPromptAction(
+      /*env=*/nullptr, /*type=*/static_cast<jint>(GetPaymentType()),
+      /*action=*/static_cast<jint>(GetUserAction()));
+
+  std::string histogram_prefix =
+      GetPaymentType() == payments::facilitated::FacilitatedPaymentsType::kPix
+          ? "FacilitatedPayments.Pix.AccountLinking.PromptUserAction"
+          : "FacilitatedPayments.Ewallet.AccountLinking.PromptUserAction";
+
+  histogram_tester.ExpectUniqueSample(
+      histogram_prefix, GetUserAction(),
+      /*expected_bucket_count=*/1);
 }

@@ -21,6 +21,7 @@ import org.chromium.components.autofill.payments.BankAccount;
 import org.chromium.components.autofill.payments.Ewallet;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
+import org.chromium.components.facilitated_payments.core.metrics.FacilitatedPaymentsType;
 import org.chromium.ui.base.WindowAndroid;
 
 import java.util.Arrays;
@@ -148,5 +149,14 @@ public class FacilitatedPaymentsPaymentMethodsViewBridge {
     @CalledByNative
     public void showPixAccountLinkingSuccessScreen() {
         mComponent.showPixAccountLinkingSuccessScreen();
+    }
+
+    /** Requests to show the account linking prompt in a bottom sheet. */
+    @CalledByNative
+    public void showAccountLinkingPrompt(
+            @FacilitatedPaymentsType int fopType,
+            @JniType("std::u16string") String fopDisplayName,
+            int strikeCount) {
+        mComponent.showAccountLinkingPrompt(fopType, fopDisplayName, strikeCount);
     }
 }

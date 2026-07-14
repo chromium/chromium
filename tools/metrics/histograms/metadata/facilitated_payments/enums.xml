@@ -68,6 +68,17 @@ reviewer.
 
 <!-- LINT.ThenChange(/components/facilitated_payments/core/metrics/facilitated_payments_metrics.h:AccountLinkingFlowExitedReason) -->
 
+<!-- LINT.IfChange(FacilitatedPayments.AccountLinking.PromptUserAction) -->
+
+<enum name="FacilitatedPayments.AccountLinking.PromptUserAction">
+  <int value="0" label="Shown"/>
+  <int value="1" label="Accepted"/>
+  <int value="2" label="Declined"/>
+  <int value="3" label="Dismissed"/>
+</enum>
+
+<!-- LINT.ThenChange(/components/facilitated_payments/core/metrics/facilitated_payments_metrics.h:AccountLinkingPromptUserAction) -->
+
 <!-- LINT.IfChange(FacilitatedPayments.EwalletFlowExitedReason) -->
 
 <enum name="FacilitatedPayments.EwalletFlowExitedReason">

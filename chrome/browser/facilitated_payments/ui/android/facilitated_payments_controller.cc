@@ -16,6 +16,7 @@
 #include "components/autofill/core/browser/data_model/payments/ewallet.h"
 #include "components/facilitated_payments/core/browser/facilitated_payments_app_info_list.h"
 #include "components/facilitated_payments/core/browser/payment_link_manager.h"
+#include "components/facilitated_payments/core/metrics/facilitated_payments_metrics.h"
 #include "components/facilitated_payments/core/utils/facilitated_payments_ui_utils.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
@@ -156,6 +157,31 @@ void FacilitatedPaymentsController::OnPixAccountLinkingPromptDeclined(
   if (on_pix_account_linking_prompt_declined_) {
     std::move(on_pix_account_linking_prompt_declined_).Run();
   }
+}
+
+void FacilitatedPaymentsController::OnAccountLinkingPromptShown(JNIEnv* env,
+                                                                jint type) {
+  payments::facilitated::LogAccountLinkingPromptUserAction(
+      static_cast<payments::facilitated::FacilitatedPaymentsType>(type),
+      payments::facilitated::AccountLinkingPromptUserAction::kShown);
+}
+
+void FacilitatedPaymentsController::OnAccountLinkingPromptAction(JNIEnv* env,
+                                                                 jint type,
+                                                                 jint action) {
+  CHECK(action >=
+            static_cast<jint>(
+                payments::facilitated::AccountLinkingPromptUserAction::kShown) &&
+        action <= static_cast<jint>(
+                      payments::facilitated::AccountLinkingPromptUserAction::
+                          kMaxValue))
+      << "Invalid payments::facilitated::AccountLinkingPromptUserAction value: "
+      << action;
+
+  payments::facilitated::LogAccountLinkingPromptUserAction(
+      static_cast<payments::facilitated::FacilitatedPaymentsType>(type),
+      static_cast<payments::facilitated::AccountLinkingPromptUserAction>(
+          action));
 }
 
 base::android::ScopedJavaLocalRef<jobject>

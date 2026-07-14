@@ -9,6 +9,7 @@ import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymen
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SURVIVES_NAVIGATION;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SequenceScreen.ACCOUNT_LINKING_SUCCESS_SCREEN;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SequenceScreen.ERROR_SCREEN;
+import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SequenceScreen.EWALLET_ACCOUNT_LINKING_PROMPT;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SequenceScreen.FOP_SELECTOR;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SequenceScreen.PIX_ACCOUNT_LINKING_PROMPT;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SequenceScreen.PROGRESS_SCREEN;
@@ -96,6 +97,15 @@ class FacilitatedPaymentsPaymentMethodsViewBinder {
                         successScreen.setupView(view.getScreenHolder());
                         view.setNextScreen(successScreen);
                         model.set(SCREEN_VIEW_MODEL, successScreen.getModel());
+                        break;
+                    }
+                case EWALLET_ACCOUNT_LINKING_PROMPT:
+                    {
+                        FacilitatedPaymentsSequenceView ewalletAccountLinkingPrompt =
+                                new EwalletAccountLinkingPrompt();
+                        ewalletAccountLinkingPrompt.setupView(view.getScreenHolder());
+                        view.setNextScreen(ewalletAccountLinkingPrompt);
+                        model.set(SCREEN_VIEW_MODEL, ewalletAccountLinkingPrompt.getModel());
                         break;
                     }
                 default:

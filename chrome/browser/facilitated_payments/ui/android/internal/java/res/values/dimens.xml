@@ -59,4 +59,12 @@ found in the LICENSE file.
     <dimen name="pix_account_linking_success_icon_top_margin">16dp</dimen>
     <dimen name="pix_account_linking_success_icon_bottom_margin">0dp</dimen>
     <dimen name="pix_account_linking_success_title_top_margin">4dp</dimen>
+    <dimen name="ewallet_account_linking_prompt_product_icon_height">32dp</dimen>
+    <dimen name="ewallet_account_linking_prompt_product_icon_vertical_padding">2dp</dimen>
+    <dimen name="ewallet_account_linking_prompt_illustration_height">114dp</dimen>
+    <dimen name="ewallet_account_linking_prompt_illustration_margin_top">24dp</dimen>
+    <dimen name="ewallet_account_linking_prompt_title_margin_top">24dp</dimen>
+    <dimen name="ewallet_account_linking_prompt_accept_button_margin_top">32dp</dimen>
+    <dimen name="ewallet_account_linking_prompt_decline_button_top_margin">8dp</dimen>
+    <dimen name="ewallet_account_linking_prompt_decline_button_bottom_margin">8dp</dimen>
 </resources>

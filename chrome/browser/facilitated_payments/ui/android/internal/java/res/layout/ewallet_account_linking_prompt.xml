@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/ewallet_account_linking_prompt_scroll_view"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:scrollbars="none">
+
+    <LinearLayout
+        android:id="@+id/ewallet_account_linking_prompt"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/facilitated_payments_horizontal_margin"
+        android:orientation="vertical">
+
+        <ImageView
+            android:id="@+id/gpay_logo"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/ewallet_account_linking_prompt_product_icon_height"
+            android:paddingTop="@dimen/ewallet_account_linking_prompt_product_icon_vertical_padding"
+            android:paddingBottom="@dimen/ewallet_account_linking_prompt_product_icon_vertical_padding"
+            android:layout_gravity="center_horizontal"
+            android:src="@drawable/google_pay"
+            android:importantForAccessibility="no" />
+
+        <ImageView
+            android:id="@+id/illustration"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/ewallet_account_linking_prompt_illustration_height"
+            android:layout_marginTop="@dimen/ewallet_account_linking_prompt_illustration_margin_top"
+            android:layout_gravity="center_horizontal"
+            android:src="@drawable/security_check_illustration"
+            android:importantForAccessibility="no" />
+
+        <androidx.appcompat.widget.DialogTitle
+            android:id="@+id/title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:textAlignment="center"
+            android:layout_marginTop="@dimen/ewallet_account_linking_prompt_title_margin_top"
+            android:textAppearance="@style/TextAppearance.AlertDialogTitleStyle" />
+
+        <org.chromium.ui.widget.ButtonCompat
+            android:id="@+id/accept_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/ewallet_account_linking_prompt_accept_button_margin_top"
+            style="@style/FilledButton"
+            android:filterTouchesWhenObscured="true"
+            android:text="@string/ewallet_account_linking_prompt_action_get_started" />
+
+        <org.chromium.ui.widget.ButtonCompat
+            android:id="@+id/decline_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/ewallet_account_linking_prompt_decline_button_bottom_margin"
+            android:layout_marginTop="@dimen/ewallet_account_linking_prompt_decline_button_top_margin"
+            style="@style/TextButton"
+            android:filterTouchesWhenObscured="true"
+            android:text="@string/ewallet_account_linking_prompt_action_not_now" />
+
+    </LinearLayout>
+</ScrollView>

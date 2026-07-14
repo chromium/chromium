@@ -877,6 +877,21 @@ reviewer.
 </histogram>
 
 <histogram
+    name="FacilitatedPayments.{FacilitatedPaymentsType}.AccountLinking.PromptUserAction"
+    enum="FacilitatedPayments.AccountLinking.PromptUserAction"
+    expires_after="2027-04-30">
+  <owner>hfizt@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    On a webpage that is eligible for {FacilitatedPaymentsType} transactions on
+    Chrome, this histogram logs events related to the account linking prompt.
+    [Frequency] Logged once per event. [Trigger] The prompt is shown or the user
+    interacts with the account linking prompt.
+  </summary>
+  <token key="FacilitatedPaymentsType" variants="FacilitatedPaymentsTypes"/>
+</histogram>
+
+<histogram
     name="FacilitatedPayments.{FacilitatedPaymentsType}.GetClientToken.{Result}.Latency"
     units="ms" expires_after="2027-04-30">
   <owner>siashah@google.com</owner>

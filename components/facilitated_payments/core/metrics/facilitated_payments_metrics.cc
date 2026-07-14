@@ -559,6 +559,16 @@ void LogInvokePaymentAppResultAndLatency(
   }
 }
 
+void LogAccountLinkingPromptUserAction(
+    FacilitatedPaymentsType payment_type,
+    AccountLinkingPromptUserAction user_action) {
+  base::UmaHistogramEnumeration(
+      base::StrCat({"FacilitatedPayments.", PaymentTypeToString(payment_type),
+                    ".AccountLinking.PromptUserAction"}),
+      user_action);
+}
+
+
 void LogPixAccountLinkingPromptAccepted() {
   base::UmaHistogramBoolean(
       base::StrCat({kPixAccountLinkingHistogramPrefix, "PromptAccepted"}),

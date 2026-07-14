@@ -32,6 +32,7 @@ import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymen
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SURVIVES_NAVIGATION;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SequenceScreen.ACCOUNT_LINKING_SUCCESS_SCREEN;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SequenceScreen.ERROR_SCREEN;
+import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SequenceScreen.EWALLET_ACCOUNT_LINKING_PROMPT;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SequenceScreen.FOP_SELECTOR;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SequenceScreen.PIX_ACCOUNT_LINKING_PROMPT;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SequenceScreen.PROGRESS_SCREEN;
@@ -67,8 +68,10 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.DisabledTest;
+import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.EwalletAccountLinkingPromptProperties;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -86,6 +89,9 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetTestSupport;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
+import org.chromium.ui.test.util.RenderTestRule;
+import org.chromium.ui.test.util.RenderTestRule.Component;
+import org.chromium.ui.test.util.ViewUtils;
 import org.chromium.ui.widget.ButtonCompat;
 
 import java.util.List;
@@ -177,6 +183,13 @@ public final class FacilitatedPaymentsPaymentMethodsViewTest {
     @Rule
     public FreshCtaTransitTestRule mActivityTestRule =
             ChromeTransitTestRules.freshChromeTabbedActivityRule();
+
+    @Rule
+    public final RenderTestRule mRenderTestRule =
+            RenderTestRule.Builder.withPublicCorpus()
+                    .setRevision(1)
+                    .setBugComponent(Component.UI_BROWSER_AUTOFILL)
+                    .build();
 
     @Mock private FacilitatedPaymentsPaymentMethodsComponent.Delegate mDelegateMock;
 
@@ -1107,6 +1120,70 @@ public final class FacilitatedPaymentsPaymentMethodsViewTest {
                 });
 
         assertThat(mView.hasCustomLifecycle(), is(false));
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    public void testEwalletAccountLinkingPromptRender() throws Exception {
+        runOnUiThreadBlocking(
+                () -> {
+                    mModel.set(SCREEN, EWALLET_ACCOUNT_LINKING_PROMPT);
+                    mModel.get(SCREEN_VIEW_MODEL)
+                            .set(EwalletAccountLinkingPromptProperties.EWALLET_NAME, "ChilliPay");
+                    mModel.get(SCREEN_VIEW_MODEL)
+                            .set(
+                                    EwalletAccountLinkingPromptProperties.ACCEPT_BUTTON_CALLBACK,
+                                    (View v) -> {});
+                    mModel.get(SCREEN_VIEW_MODEL)
+                            .set(
+                                    EwalletAccountLinkingPromptProperties.DECLINE_BUTTON_TEXT_ID,
+                                    R.string.ewallet_account_linking_prompt_action_no_thanks);
+                    mModel.get(SCREEN_VIEW_MODEL)
+                            .set(
+                                    EwalletAccountLinkingPromptProperties.DECLINE_BUTTON_CALLBACK,
+                                    (View v) -> {});
+                    mModel.set(VISIBLE_STATE, SHOWN);
+                });
+        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
+        runOnUiThreadBlocking(
+                () -> {
+                    new BottomSheetTestSupport(mBottomSheetController).endAllAnimations();
+                });
+
+        View bottomSheetView = mView.getContentView();
+
+        TextView title = bottomSheetView.findViewById(R.id.title);
+        assertThat(
+                title.getText().toString(),
+                is(
+                        bottomSheetView
+                                .getContext()
+                                .getString(
+                                        R.string.ewallet_account_linking_prompt_title,
+                                        "ChilliPay")));
+
+        TextView acceptButton = bottomSheetView.findViewById(R.id.accept_button);
+        assertThat(
+                acceptButton.getText().toString(),
+                is(
+                        bottomSheetView
+                                .getContext()
+                                .getString(
+                                        R.string
+                                                .ewallet_account_linking_prompt_action_get_started)));
+
+        TextView declineButton = bottomSheetView.findViewById(R.id.decline_button);
+        assertThat(
+                declineButton.getText().toString(),
+                is(
+                        bottomSheetView
+                                .getContext()
+                                .getString(
+                                        R.string.ewallet_account_linking_prompt_action_no_thanks)));
+
+        ViewUtils.waitForStableView(bottomSheetView);
+        mRenderTestRule.render(bottomSheetView, "ewallet_account_linking_prompt");
     }
 
     private RecyclerView getSheetItems() {

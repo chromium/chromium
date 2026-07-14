@@ -24,6 +24,7 @@ android_library("java") {
   deps = [
     "//base:base_java",
     "//build/android:build_java",
+    "//components/facilitated_payments/core/metrics:facilitated_payments_metrics_enums_java",
     "//components/facilitated_payments/core/utils:facilitated_payments_enums_java",
     "//components/signin/public/android:java",
     "//content/public/android:content_full_java",

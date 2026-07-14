@@ -21,10 +21,26 @@ class TimeDelta;
 namespace payments::facilitated {
 
 // A payment system that is currently running.
+// GENERATED_JAVA_ENUM_PACKAGE: (
+//   org.chromium.components.facilitated_payments.core.metrics)
 enum class FacilitatedPaymentsType {
   kEwallet = 0,
   kPix = 1,
 };
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// GENERATED_JAVA_ENUM_PACKAGE: (
+//   org.chromium.components.facilitated_payments.core.metrics)
+// LINT.IfChange(AccountLinkingPromptUserAction)
+enum class AccountLinkingPromptUserAction {
+  kShown = 0,
+  kAccepted = 1,
+  kDeclined = 2,
+  kDismissed = 3,
+  kMaxValue = kDismissed,
+};
+// LINT.ThenChange(/tools/metrics/histograms/metadata/facilitated_payments/enums.xml:FacilitatedPayments.AccountLinking.PromptUserAction)
 
 // Different types of payment link fop selector option available.
 enum class PaymentLinkFopSelectorTypes {
@@ -486,6 +502,11 @@ void LogInvokePaymentAppResultAndLatency(
     bool result,
     base::TimeDelta latency,
     std::optional<PaymentLinkValidator::Scheme> scheme);
+
+// Logs the user action taken on the account linking prompt.
+void LogAccountLinkingPromptUserAction(
+    FacilitatedPaymentsType payment_type,
+    AccountLinkingPromptUserAction user_action);
 
 // Logs that the Pix account linking prompt was shown.
 void LogPixAccountLinkingPromptShown();
