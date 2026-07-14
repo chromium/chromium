@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/views/tabs/common/tab_collection_animating_layout_manager.h"
 #include "chrome/browser/ui/views/tabs/common/tab_collection_node.h"
 #include "chrome/browser/ui/views/tabs/common/tab_group_header_view.h"
+#include "chrome/browser/ui/views/tabs/common/tab_group_view_layout.h"
 #include "chrome/browser/ui/views/tabs/common/tab_strip_collection_controller.h"
 #include "chrome/browser/ui/views/tabs/common/tab_strip_utils.h"
 #include "chrome/browser/ui/views/tabs/common/tab_strip_view.h"
@@ -42,12 +43,7 @@
 #include "ui/views/widget/widget.h"
 
 namespace {
-constexpr int kTabVerticalPadding = 2;
-constexpr int kGroupLineWidth = 2;
-constexpr int kGroupLineCollapsedLeadingPadding = 6;
 constexpr int kGroupLineCornerRadius = 4;
-constexpr int kGroupHeaderHeight = 26;
-constexpr int kGroupHeaderVerticalMargin = 4;
 
 const TabGroup* GetTabGroupFromNode(TabCollectionNode* node) {
   CHECK(node);
@@ -72,7 +68,8 @@ TabGroupView::TabGroupView(TabCollectionNode* collection_node)
       group_line_(AddChildView(std::make_unique<views::View>())),
       layout_manager_(*SetLayoutManager(
           std::make_unique<TabCollectionAnimatingLayoutManager>(
-              std::make_unique<views::DelegatingLayoutManager>(this),
+              std::make_unique<TabGroupViewLayout>(
+                  collection_node->orientation()),
               *this))) {
   collection_node->set_remove_child_from_node(base::BindRepeating(
       &TabCollectionAnimatingLayoutManager::AnimateAndDestroyChildView,
@@ -112,99 +109,6 @@ void TabGroupView::OnGestureEvent(ui::GestureEvent* event) {
     group_header_->OnGestureEvent(&converted_event);
     event->SetHandled();
   }
-}
-
-views::ProposedLayout TabGroupView::CalculateProposedLayout(
-    const views::SizeBounds& size_bounds) const {
-  views::ProposedLayout layouts;
-  int width = 0;
-  int height = kGroupHeaderVerticalMargin;
-  auto tab_strip_collapse_state = GetTabStripCollapseState();
-
-  gfx::Rect header_bounds;
-  gfx::Rect group_line_bounds;
-  group_line_bounds.set_width(kGroupLineWidth);
-
-  // If the tab strip is collapsed then the group line should appear on the
-  // leading side of all grouped tabs and the header.
-  if (tab_strip_collapse_state !=
-      tabs::VerticalTabStripCollapseState::kExpanded) {
-    group_line_bounds.set_x(kGroupLineCollapsedLeadingPadding);
-    group_line_bounds.set_y(height);
-    header_bounds.set_x(
-        GetLayoutConstant(LayoutConstant::kVerticalTabStripHorizontalPadding));
-  }
-
-  header_bounds.set_y(height);
-  header_bounds.set_height(kGroupHeaderHeight);
-  // If width is bounded, the group header should respect the width constraints
-  // and take up the available width excluding trailing horizontal padding.
-  if (size_bounds.width().is_bounded()) {
-    header_bounds.set_width(size_bounds.width().value() - header_bounds.x());
-  }
-  layouts.child_layouts.emplace_back(
-      group_header_.get(), group_header_->GetVisible(), header_bounds);
-  height +=
-      header_bounds.height() + kGroupHeaderVerticalMargin + kTabVerticalPadding;
-  width = std::max(width, header_bounds.width());
-
-  // If the tab strip is not collapsed then the group line is below and left
-  // aligned with the header.
-  if (tab_strip_collapse_state ==
-      tabs::VerticalTabStripCollapseState::kExpanded) {
-    group_line_bounds.set_x(
-        (TabGroupView::kTabLeadingPadding - kGroupLineWidth) / 2);
-    group_line_bounds.set_y(height);
-  }
-
-  const std::vector<views::View*> children =
-      collection_node_ ? collection_node_->GetDirectChildren()
-                       : std::vector<views::View*>();
-
-  // Layout children in order. Children will have their preferred height and
-  // fill available width.
-  for (auto* child : children) {
-    gfx::Rect bounds = gfx::Rect(child->GetPreferredSize(size_bounds));
-
-    auto drag_data = GetVisualDataForDraggedView(*child);
-    CHECK(!drag_data || !drag_data->should_hide);
-    bounds.set_y(drag_data ? drag_data->offset.y() : height);
-
-    // If the tab strip is not collapsed then the groups tabs should be inset.
-    bounds.set_x(tab_strip_collapse_state !=
-                         tabs::VerticalTabStripCollapseState::kExpanded
-                     ? GetLayoutConstant(
-                           LayoutConstant::kVerticalTabStripHorizontalPadding)
-                     : TabGroupView::kTabLeadingPadding);
-    // If width is bounded, child views should respect the width constraints
-    // and take up the available width excluding trailing horizontal padding.
-    if (size_bounds.width().is_bounded()) {
-      bounds.set_width(size_bounds.width().value() - bounds.x());
-    }
-    layouts.child_layouts.emplace_back(child, child->GetVisible(), bounds);
-    height += bounds.height() + kTabVerticalPadding;
-    width = std::max(width, bounds.width());
-  }
-  // Remove excess padding.
-  height -= kTabVerticalPadding;
-
-  if (!children.empty()) {
-    group_line_bounds.set_height(height - group_line_bounds.y());
-  }
-  layouts.child_layouts.emplace_back(
-      group_line_.get(), group_line_->GetVisible(), group_line_bounds);
-
-  // Add extra padding below the group if not collapsed.
-  const bool is_group_collapsed = IsCollapsed();
-  if (!is_group_collapsed) {
-    height += kTabVerticalPadding;
-  }
-
-  layouts.host_size = gfx::Size(
-      width, is_group_collapsed
-                 ? header_bounds.height() + (2 * kGroupHeaderVerticalMargin)
-                 : height);
-  return layouts;
 }
 
 void TabGroupView::ToggleCollapsedState(
