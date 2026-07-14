@@ -266,7 +266,7 @@ void IOSIOThread::CleanUp() {
 void IOSIOThread::CreateDefaultAuthPreferences() {
   globals_->http_auth_preferences =
       std::make_unique<net::HttpAuthPreferences>();
-  globals_->http_auth_preferences->set_allowed_schemes(
+  globals_->http_auth_preferences->SetAllowedSchemes(
       base::flat_set<std::string>(kSupportedAuthSchemes.begin(),
                                   kSupportedAuthSchemes.end()));
 }

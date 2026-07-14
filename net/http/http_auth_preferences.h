@@ -95,10 +95,8 @@ class NET_EXPORT HttpAuthPreferences {
     return allowed_schemes_;
   }
 
-  void set_allowed_schemes(
-      const std::optional<base::flat_set<std::string>>& allowed_schemes) {
-    allowed_schemes_ = allowed_schemes;
-  }
+  void SetAllowedSchemes(
+      const std::optional<base::flat_set<std::string>>& allowed_schemes);
 
   void set_http_auth_scheme_filter(
       base::RepeatingCallback<bool(const url::SchemeHostPort&)>&& filter) {

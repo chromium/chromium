@@ -366,7 +366,7 @@ void MCSProbe::InitializeNetworkState() {
   builder.set_net_log(net_log_);
   builder.set_host_resolver(
       net::HostResolver::CreateStandaloneResolver(net_log_));
-  http_auth_preferences_.set_allowed_schemes(
+  http_auth_preferences_.SetAllowedSchemes(
       base::flat_set<std::string>({net::kBasicAuthScheme}));
   builder.SetHttpAuthHandlerFactory(
       net::HttpAuthHandlerRegistryFactory::Create(&http_auth_preferences_));

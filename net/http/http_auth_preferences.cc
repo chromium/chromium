@@ -5,8 +5,10 @@
 #include "net/http/http_auth_preferences.h"
 
 #include <utility>
+#include <vector>
 
 #include "base/strings/string_split.h"
+#include "base/strings/string_util.h"
 #include "build/build_config.h"
 #include "net/http/http_auth_filter.h"
 #include "net/http/url_security_manager.h"
@@ -65,6 +67,18 @@ DelegationType HttpAuthPreferences::GetDelegationType(
 
 void HttpAuthPreferences::SetAllowDefaultCredentials(DefaultCredentials creds) {
   allow_default_credentials_ = creds;
+}
+
+void HttpAuthPreferences::SetAllowedSchemes(
+    const std::optional<base::flat_set<std::string>>& allowed_schemes) {
+  if (allowed_schemes) {
+    allowed_schemes_ = base::MakeFlatSet<std::string>(
+        *allowed_schemes,
+        /*comp=*/{},
+        [](const auto& scheme) { return base::ToLowerASCII(scheme); });
+  } else {
+    allowed_schemes_ = std::nullopt;
+  }
 }
 
 bool HttpAuthPreferences::IsAllowedToUseAllHttpAuthSchemes(

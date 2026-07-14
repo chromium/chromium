@@ -2811,12 +2811,11 @@ void NetworkContext::OnHttpAuthDynamicParamsChanged(
       http_auth_dynamic_network_service_params->allow_gssapi_library_load);
 #endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
   if (http_auth_dynamic_network_service_params->allowed_schemes.has_value()) {
-    http_auth_merged_preferences_.set_allowed_schemes(
-        base::flat_set<std::string>(
-            http_auth_dynamic_network_service_params->allowed_schemes->begin(),
-            http_auth_dynamic_network_service_params->allowed_schemes->end()));
+    http_auth_merged_preferences_.SetAllowedSchemes(base::flat_set<std::string>(
+        http_auth_dynamic_network_service_params->allowed_schemes->begin(),
+        http_auth_dynamic_network_service_params->allowed_schemes->end()));
   } else {
-    http_auth_merged_preferences_.set_allowed_schemes(std::nullopt);
+    http_auth_merged_preferences_.SetAllowedSchemes(std::nullopt);
   }
 
   url_matcher_ = std::make_unique<url_matcher::URLMatcher>();

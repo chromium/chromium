@@ -106,4 +106,21 @@ TEST(HttpAuthPreferencesTest, HttpAuthSchemesFilter) {
       url::SchemeHostPort(GURL("https://www.example.com"))));
 }
 
+TEST(HttpAuthPreferencesTest, SetAllowedSchemes) {
+  HttpAuthPreferences http_auth_preferences;
+  EXPECT_FALSE(http_auth_preferences.allowed_schemes().has_value());
+
+  base::flat_set<std::string> schemes{"Basic", "NTLM", "negotiate"};
+  http_auth_preferences.SetAllowedSchemes(schemes);
+
+  ASSERT_TRUE(http_auth_preferences.allowed_schemes().has_value());
+  const auto& allowed_schemes = http_auth_preferences.allowed_schemes().value();
+  EXPECT_EQ(3u, allowed_schemes.size());
+  EXPECT_TRUE(allowed_schemes.contains("basic"));
+  EXPECT_TRUE(allowed_schemes.contains("ntlm"));
+  EXPECT_TRUE(allowed_schemes.contains("negotiate"));
+  EXPECT_FALSE(allowed_schemes.contains("Basic"));
+  EXPECT_FALSE(allowed_schemes.contains("NTLM"));
+}
+
 }  // namespace net

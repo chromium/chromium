@@ -54,7 +54,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   net::HttpAuthCache auth_cache(
       false /* key_server_entries_by_network_anonymization_key */);
   net::HttpAuthPreferences http_auth_preferences;
-  http_auth_preferences.set_allowed_schemes(base::flat_set<std::string>{
+  http_auth_preferences.SetAllowedSchemes(base::flat_set<std::string>{
       net::kBasicAuthScheme, net::kDigestAuthScheme});
   net::HttpAuthHandlerRegistryFactory auth_handler_factory(
       &http_auth_preferences);
