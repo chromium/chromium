@@ -111,6 +111,19 @@ public class TabbedCrashRecoveryDelegate {
         // Reset state before processing a new crash recovery request to avoid using stale state.
         resetState();
 
+        // Avoid showing the dialog on an incognito host window. We will clean up crash recovery
+        // data because of the uncertainty surrounding when the next regular window will be opened,
+        // which could happen after several incognito windows are opened, at which point recovering
+        // these crashed windows may be confusing.
+        if (hostActivity.isIncognitoWindow()) {
+            for (CrashRecoveryWindowInfo windowInfo : crashedWindows) {
+                if (windowInfo.windowId == hostActivity.getWindowId()) continue;
+                ChromeMultiInstancePersistentStore.writeIsRecoverable(
+                        windowInfo.windowId, /* isRecoverable= */ false);
+            }
+            return false;
+        }
+
         // If the only crashed window is the host activity itself, do not show the dialog.
         if (crashedWindows.size() == 1
                 && crashedWindows.get(0).windowId == hostActivity.getWindowId()) {
