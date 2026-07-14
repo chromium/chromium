@@ -30,6 +30,15 @@ class TouchToFillAutofillController : public TouchToFillControllerBase {
   virtual bool ShowPersonalContextNotice(
       std::unique_ptr<TouchToFillAutofillView> view,
       base::WeakPtr<TouchToFillAutofillDelegate> delegate) = 0;
+
+  // Called by the UI when the user acknowledges the notice.
+  virtual void OnNoticeAcknowledged() = 0;
+
+  // Called by the UI when the user clicks the Manage settings link.
+  virtual void OnSettingsLinkClicked() = 0;
+
+  // Called by the UI when the notice bottom sheet is dismissed.
+  virtual void OnDismissed() = 0;
 };
 
 }  // namespace autofill

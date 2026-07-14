@@ -42,7 +42,7 @@ class MockTouchToFillAutofillView : public TouchToFillAutofillView {
 
 class MockTouchToFillAutofillDelegate : public TouchToFillAutofillDelegate {
  public:
-  explicit MockTouchToFillAutofillDelegate() = default;
+  MockTouchToFillAutofillDelegate() = default;
   ~MockTouchToFillAutofillDelegate() override = default;
 
   base::WeakPtr<MockTouchToFillAutofillDelegate> GetWeakPointer() {
@@ -61,6 +61,7 @@ class MockTouchToFillAutofillDelegate : public TouchToFillAutofillDelegate {
   MOCK_METHOD(void, HideTouchToFill, (), (override));
   MOCK_METHOD(void, OnShow, (), (override));
   MOCK_METHOD(void, OnNoticeAcknowledged, (), (override));
+  MOCK_METHOD(void, OnSettingsLinkClicked, (), (override));
   MOCK_METHOD(void, OnDismissed, (), (override));
 
  private:

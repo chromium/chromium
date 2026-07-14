@@ -47,6 +47,9 @@ class TouchToFillAutofillControllerImpl
   bool ShowPersonalContextNotice(
       std::unique_ptr<TouchToFillAutofillView> view,
       base::WeakPtr<TouchToFillAutofillDelegate> delegate) override;
+  void OnNoticeAcknowledged() override;
+  void OnSettingsLinkClicked() override;
+  void OnDismissed() override;
 
   TouchToFillKeyboardSuppressor& keyboard_suppressor_for_test() {
     return keyboard_suppressor_;

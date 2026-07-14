@@ -3142,6 +3142,7 @@ if (_is_default_toolchain) {
       "java/src/org/chromium/chrome/browser/tabmodel/TabCollectionTabModelImpl.java",
       "java/src/org/chromium/chrome/browser/tabmodel/TabModelJniBridge.java",
       "java/src/org/chromium/chrome/browser/tabmodel/TabModelObserverJniBridge.java",
+      "java/src/org/chromium/chrome/browser/touch_to_fill/autofill/TouchToFillAutofillViewBridge.java",
       "java/src/org/chromium/chrome/browser/touch_to_fill/payments/TouchToFillPaymentMethodControllerBridge.java",
       "java/src/org/chromium/chrome/browser/touch_to_fill/payments/TouchToFillPaymentMethodViewBridge.java",
       "java/src/org/chromium/chrome/browser/ui/ExclusiveAccessBubble.java",

@@ -32,6 +32,7 @@ class TouchToFillAutofillDelegateAndroidImpl
   void HideTouchToFill() override;
   void OnShow() override;
   void OnNoticeAcknowledged() override;
+  void OnSettingsLinkClicked() override;
   void OnDismissed() override;
 
  private:

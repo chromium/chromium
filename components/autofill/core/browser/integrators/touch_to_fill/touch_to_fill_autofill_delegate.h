@@ -40,6 +40,9 @@ class TouchToFillAutofillDelegate {
   // Called when the user acknowledges the TTF Autofill notice.
   virtual void OnNoticeAcknowledged() = 0;
 
+  // Called when the user clicks the Manage settings link on the notice.
+  virtual void OnSettingsLinkClicked() = 0;
+
   // Called when the TTF Autofill surface is dismissed.
   virtual void OnDismissed() = 0;
 };

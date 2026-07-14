@@ -45,6 +45,11 @@ void TouchToFillAutofillDelegateAndroidImpl::OnNoticeAcknowledged() {
   manager_->client().MarkPersonalContextAmbientAutofillNoticeAsAcknowledged();
 }
 
+void TouchToFillAutofillDelegateAndroidImpl::OnSettingsLinkClicked() {
+  // TODO(crbug.com/521716313): Open Chrome settings page for Autofill/Personal
+  // Context.
+}
+
 void TouchToFillAutofillDelegateAndroidImpl::OnDismissed() {}
 
 }  // namespace autofill

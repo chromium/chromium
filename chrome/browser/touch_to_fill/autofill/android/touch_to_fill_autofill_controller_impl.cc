@@ -83,4 +83,22 @@ bool TouchToFillAutofillControllerImpl::ShowPersonalContextNotice(
   return view_->ShowPersonalContextNotice(this);
 }
 
+void TouchToFillAutofillControllerImpl::OnNoticeAcknowledged() {
+  if (delegate_) {
+    delegate_->OnNoticeAcknowledged();
+  }
+}
+
+void TouchToFillAutofillControllerImpl::OnSettingsLinkClicked() {
+  if (delegate_) {
+    delegate_->OnSettingsLinkClicked();
+  }
+}
+
+void TouchToFillAutofillControllerImpl::OnDismissed() {
+  if (delegate_) {
+    delegate_->OnDismissed();
+  }
+}
+
 }  // namespace autofill
