@@ -98,7 +98,6 @@ def __step_config(ctx, step_config):
         "ui/webui/resources/tools/eslint_ts.py",
         "ui/webui/resources/tools/generate_code_cache.py",
         "ui/webui/resources/tools/minify_js.py",
-        "ui/webui/resources/tools/stylelint.py",
         "v8/third_party/inspector_protocol/check_protocol_compatibility.py",
         "v8/third_party/inspector_protocol/code_generator.py",
     ]

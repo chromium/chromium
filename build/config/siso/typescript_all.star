@@ -46,6 +46,9 @@ def __step_config(ctx, step_config):
             "third_party/node/node.py",
             "third_party/node/node_modules:node_modules",
         ],
+        "ui/webui/resources/tools/stylelint.py": [
+            "third_party/node/node_modules:node_modules",
+        ],
     })
 
     # Do not attach Starlark handlers for local builds to avoid overhead
@@ -85,6 +88,14 @@ def __step_config(ctx, step_config):
             # Only runs on Linux workers.
             "remote_command": "python3",
         },
+        {
+            "name": "webui/stylelint",
+            "command_prefix": platform.python_bin + " ../../ui/webui/resources/tools/stylelint.py",
+            "remote": remote_run,
+            "timeout": "2m",
+            # Only runs on Linux workers.
+            "remote_command": "python3",
+        },
     ])
     return step_config
 
@@ -94,8 +105,10 @@ def __filegroups(ctx):
         "third_party/node/node_modules:node_modules": {
             "type": "glob",
             "includes": [
+                "*.cjs",
                 "*.js",
                 "*.json",
+                "*.mjs",
                 "*.ts",
                 "tsc",
             ],
