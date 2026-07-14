@@ -8600,54 +8600,6 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
-<event name="Conversions.SourceRegistration">
-  <owner>linnan@google.com</owner>
-  <owner>measurement-api-dev+metrics@google.com</owner>
-  <summary>
-    Recorded when the source registration is processed by Attribution Reporting
-    API. The event is associated with the UKM source ID from the navigation ID
-    of the most recent primary page navigation as a workaround for prerendered
-    pages. For ongoing navigation, the UKM source ID would be obtained from the
-    navigation handle to avoid the timing issue as the cached UKM source ID
-    would not be updated until the navigation completes.
-  </summary>
-  <metric name="StoreSourceResult" enum="ConversionStorageSourceStatus">
-    <summary>
-      Records the status of source registration processing. Recorded once for
-      each source event processed by the attribution manager layer.
-    </summary>
-  </metric>
-</event>
-
-<event name="Conversions.TriggerRegistration">
-  <owner>linnan@google.com</owner>
-  <owner>measurement-api-dev+metrics@google.com</owner>
-  <summary>
-    Recorded when the trigger registration is processed by Attribution Reporting
-    API. he event is associated with the UKM source ID from the navigation ID of
-    the most recent primary page navigation as a workaround for prerendered
-    pages. For ongoing navigation, the UKM source ID would be obtained from the
-    navigation handle to avoid the timing issue as the cached UKM source ID
-    would not be updated until the navigation completes.
-  </summary>
-  <metric name="CreateAggregatableReportStatus"
-      enum="ConversionCreateAggregatableReportStatus">
-    <summary>
-      Records the status of trigger registration processing for the aggregatable
-      reports. Recorded once for each trigger event processed by the attribution
-      manager layer.
-    </summary>
-  </metric>
-  <metric name="CreateEventLevelReportStatus"
-      enum="ConversionStorageCreateReportStatus">
-    <summary>
-      Records the status of trigger registration processing for the event-level
-      reports. Recorded once for each trigger event processed by the attribution
-      manager layer.
-    </summary>
-  </metric>
-</event>
-
 <event name="CookieHasNonAsciiCharacter">
   <owner>bingler@chromium.org</owner>
   <summary>
@@ -9996,8 +9948,8 @@ be describing additional metrics about the same event.
   <metric name="RequestType" enum="FetchKeepAliveRequestType">
     <summary>
       An enum representing the type of the fetch keepalive request. It tells
-      whether this request is a fetch request, an attribution reporting request,
-      or a fetchLater request.
+      whether this request is a fetch request, an attribution reporting request
+      (obsolete), or a fetchLater request.
     </summary>
   </metric>
   <metric name="TimeDelta.BrowserShutdown">
@@ -15482,21 +15434,9 @@ be describing additional metrics about the same event.
       request which is sent for the main resource of a main frame navigation.
     </summary>
   </metric>
-  <metric name="HasImpression" enum="Boolean">
-    <summary>
-      Whether the current navigation has any impression associated. This is set
-      when the Attribution Reporting API is used, and the navigation is
-      initiated from an anchor link with the Attribution Src element.
-    </summary>
-  </metric>
   <metric name="IsCommitted" enum="Boolean">
     <summary>
       Determines whether the navigation is committed or not.
-    </summary>
-  </metric>
-  <metric name="IsEmptyAttributionSrc" enum="Boolean">
-    <summary>
-      Determines whether the attributionsrc tag had empty values or not.
     </summary>
   </metric>
   <metric name="LargestContentfulPaintTime">
