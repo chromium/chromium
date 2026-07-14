@@ -11,9 +11,9 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
-#include "chrome/browser/context_hub/features.h"
 #include "chrome/browser/context_hub/memory_bank/in_memory_memory_bank.h"
 #include "chrome/browser/context_hub/memory_bank/noop_memory_bank.h"
+#include "chrome/browser/ui/webui/context_hub/context_hub.mojom-features.h"
 #include "components/optimization_guide/core/model_execution/test/mock_remote_model_executor.h"
 #include "components/optimization_guide/proto/features/context_hub.pb.h"
 #include "components/personal_context/core/context_memory_error.h"
@@ -35,33 +35,26 @@ class ContextHubServiceTest : public testing::Test {
   ContextHubServiceTest()
       : service_(&mock_personal_context_service_,
                  &mock_remote_model_executor_,
-                 std::make_unique<InMemoryMemoryBank>()) {}
+                 std::make_unique<InMemoryMemoryBank>()) {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/
+        {
+            browser::context_hub::mojom::kAutoTodos,
+            browser::context_hub::mojom::kAutoTabGroups,
+        },
+        /*disabled_features=*/{});
+  }
   ~ContextHubServiceTest() override = default;
 
  protected:
-  base::test::TaskEnvironment task_environment_;
   base::test::ScopedFeatureList scoped_feature_list_;
+  base::test::TaskEnvironment task_environment_;
   personal_context::MockPersonalContextService mock_personal_context_service_;
   optimization_guide::MockRemoteModelExecutor mock_remote_model_executor_;
   ContextHubService service_;
 };
 
-TEST_F(ContextHubServiceTest, GenerateAutoTodos_FeatureDisabled) {
-  scoped_feature_list_.InitAndDisableFeature(features::kAutoTodos);
-
-  EXPECT_CALL(mock_personal_context_service_, FetchContext).Times(0);
-
-  base::test::TestFuture<
-      std::optional<personal_context::proto::AutoTodosResponse>>
-      future;
-  service_.GenerateAutoTodos(future.GetCallback());
-
-  EXPECT_FALSE(future.Get().has_value());
-}
-
-TEST_F(ContextHubServiceTest, GenerateAutoTodos_FeatureEnabled_ServiceSuccess) {
-  scoped_feature_list_.InitAndEnableFeature(features::kAutoTodos);
-
+TEST_F(ContextHubServiceTest, GenerateAutoTodos_ServiceSuccess) {
   personal_context::proto::AutoTodosResponse expected_response;
   auto* todo = expected_response.add_todos();
   todo->set_title("Test Todo");
@@ -89,9 +82,7 @@ TEST_F(ContextHubServiceTest, GenerateAutoTodos_FeatureEnabled_ServiceSuccess) {
   EXPECT_EQ(result.value().todos(0).description(), "Test Description");
 }
 
-TEST_F(ContextHubServiceTest, GenerateAutoTodos_FeatureEnabled_ServiceError) {
-  scoped_feature_list_.InitAndEnableFeature(features::kAutoTodos);
-
+TEST_F(ContextHubServiceTest, GenerateAutoTodos_ServiceError) {
   personal_context::ContextMemoryError expected_error =
       personal_context::ContextMemoryError::FromExecutionError(
           personal_context::ContextMemoryError::ExecutionError::
@@ -112,9 +103,7 @@ TEST_F(ContextHubServiceTest, GenerateAutoTodos_FeatureEnabled_ServiceError) {
   EXPECT_FALSE(future.Get().has_value());
 }
 
-TEST_F(ContextHubServiceTest, GenerateAutoTodos_FeatureEnabled_ParseError) {
-  scoped_feature_list_.InitAndEnableFeature(features::kAutoTodos);
-
+TEST_F(ContextHubServiceTest, GenerateAutoTodos_ParseError) {
   personal_context::proto::Any any_response;
   any_response.set_value("corrupted proto data");
 
@@ -175,8 +164,7 @@ TEST_F(ContextHubServiceTest, DeleteEntries) {
 
   base::test::TestFuture<void> delete_future;
   std::vector<int64_t> ids_to_delete = {entries[0].id, entries[1].id};
-  service_.DeleteEntries(ids_to_delete,
-                         delete_future.GetCallback());
+  service_.DeleteEntries(ids_to_delete, delete_future.GetCallback());
   EXPECT_TRUE(delete_future.Wait());
 
   base::test::TestFuture<std::vector<MemoryBankEntry>> get_entries_future2;

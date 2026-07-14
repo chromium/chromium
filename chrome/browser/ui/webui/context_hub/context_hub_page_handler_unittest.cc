@@ -56,8 +56,7 @@ class ContextHubPageHandlerTest : public testing::Test {
  public:
   ContextHubPageHandlerTest() {
     feature_list_.InitWithFeatures(
-        {features::kContextHub, features::kAutoTodos, features::kMemoryBanks},
-        {});
+        {features::kContextHub, features::kMemoryBanks}, {});
   }
 
   void SetUp() override {

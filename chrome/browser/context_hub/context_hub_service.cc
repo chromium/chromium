@@ -46,16 +46,9 @@ ContextHubService::ContextHubService(
 ContextHubService::~ContextHubService() = default;
 
 void ContextHubService::GenerateAutoTodos(AutoTodosCallback callback) {
-  if (!base::FeatureList::IsEnabled(features::kAutoTodos)) {
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), std::nullopt));
-    return;
-  }
-
   personal_context::proto::AutoTodosRequest request_metadata;
   personal_context::ContextMemoryRequestOptions options;
-  options.request_timeout =
-      base::Seconds(features::kAutoTodosTimeoutSeconds.Get());
+  options.request_timeout = features::kAutoTodosTimeoutSeconds.Get();
 
   personal_context_service_->FetchContext(
       personal_context::proto::CONTEXT_MEMORY_FEATURE_AUTO_TODOS,

@@ -9,6 +9,7 @@ import '//resources/cr_elements/cr_menu_selector/cr_menu_selector.js';
 import '//resources/cr_elements/cr_icon/cr_icon.js';
 import '//resources/cr_elements/icons.html.js';
 
+import {loadTimeData} from '//resources/js/load_time_data.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
 import {getCss} from './app.css.js';
@@ -43,10 +44,12 @@ export class ContextHubAppElement extends CrLitElement {
 
   override connectedCallback() {
     super.connectedCallback();
-    BrowserProxyImpl.getInstance().handler.generateAutoTodos().then(
-        ({todos}) => {
-          this.todos_ = todos;
-        });
+    if (loadTimeData.getBoolean('kAutoTodos')) {
+      BrowserProxyImpl.getInstance().handler.generateAutoTodos().then(
+          ({todos}) => {
+            this.todos_ = todos;
+          });
+    }
   }
 
   protected onSelectedChanged_(e: CustomEvent<{value: ViewType}>) {

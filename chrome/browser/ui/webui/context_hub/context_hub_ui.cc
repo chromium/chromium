@@ -36,6 +36,9 @@ ContextHubUI::ContextHubUI(content::WebUI* web_ui)
   source->AddBoolean("kAutoTabGroups",
                      base::FeatureList::IsEnabled(
                          browser::context_hub::mojom::kAutoTabGroups));
+  source->AddBoolean(
+      "kAutoTodos",
+      base::FeatureList::IsEnabled(browser::context_hub::mojom::kAutoTodos));
 
 #if !BUILDFLAG(IS_ANDROID)
   content::URLDataSource::Add(

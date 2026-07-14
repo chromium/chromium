@@ -4,16 +4,17 @@
 
 #include "chrome/browser/context_hub/features.h"
 
+#include "chrome/browser/ui/webui/context_hub/context_hub.mojom-features.h"
+
 namespace context_hub::features {
 
 BASE_FEATURE(kContextHub, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kAutoTodos, base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE_PARAM(int,
+BASE_FEATURE_PARAM(base::TimeDelta,
                    kAutoTodosTimeoutSeconds,
-                   &kAutoTodos,
-                   "timeout_seconds",
-                   30);
+                   &browser::context_hub::mojom::kAutoTodos,
+                   "auto_todos_timeout_seconds",
+                   base::Seconds(30));
 
 BASE_FEATURE(kMemoryBanks, base::FEATURE_DISABLED_BY_DEFAULT);
 
