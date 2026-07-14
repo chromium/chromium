@@ -294,7 +294,7 @@ void TabStripCollectionController::ToggleTabGroupCollapsedState(
   base::WeakPtr<const TabGroup> weak_group = group->AsWeakPtr();
 
   tabs::TabInterface* active_tab = model_->GetActiveTab();
-  if (!is_currently_collapsed && active_tab && !drag_handler_->IsDragging()) {
+  if (!is_currently_collapsed && active_tab) {
     if (active_tab->GetGroup() == group->id()) {
       // If the active tab is in the group that is toggling to collapse, the
       // active tab should switch to the next available tab. If there are no

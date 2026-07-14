@@ -715,11 +715,10 @@ void TabDragHandlerImpl::StartedDragging(
         tab_strip_model_->group_model()->GetTabGroup(group_id);
     if (group && !group->visual_data()->is_collapsed()) {
       drag_controller_->SetGroupHeaderWasCollapsedFromDrag(true);
-      TabCollectionNode* group_node = GetNodeForTabGroup(group_id);
-      if (group_node) {
-        group_node->GetController()->ToggleTabGroupCollapsedState(
-            group, ToggleTabGroupCollapsedStateOrigin::kMouse);
-      }
+      tab_groups::TabGroupVisualData new_data(group->visual_data()->title(),
+                                              group->visual_data()->color(),
+                                              /*is_collapsed=*/true);
+      tab_strip_model_->ChangeTabGroupVisuals(group_id, new_data);
     }
   }
 
@@ -797,11 +796,10 @@ void TabDragHandlerImpl::StoppedDragging() {
       const TabGroup* group =
           tab_strip_model_->group_model()->GetTabGroup(group_id);
       if (group && group->visual_data()->is_collapsed()) {
-        TabCollectionNode* group_node = GetNodeForTabGroup(group_id);
-        if (group_node) {
-          group_node->GetController()->ToggleTabGroupCollapsedState(
-              group, ToggleTabGroupCollapsedStateOrigin::kMouse);
-        }
+        tab_groups::TabGroupVisualData new_data(group->visual_data()->title(),
+                                                group->visual_data()->color(),
+                                                /*is_collapsed=*/false);
+        tab_strip_model_->ChangeTabGroupVisuals(group_id, new_data);
       }
     }
   }

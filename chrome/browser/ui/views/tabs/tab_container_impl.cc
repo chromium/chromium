@@ -732,6 +732,8 @@ void TabContainerImpl::ExitTabClosingMode() {
 }
 
 void TabContainerImpl::SetTabSlotVisibility() {
+  UpdateIdealBounds();
+
   std::set<tab_groups::TabGroupId> visibility_changed_groups;
   bool last_tab_visible = false;
   std::optional<tab_groups::TabGroupId> last_tab_group;
@@ -1180,8 +1182,12 @@ void TabContainerImpl::SnapToIdealBounds() {
 }
 
 int TabContainerImpl::CalculateAvailableWidthForTabs() const {
-  return override_available_width_for_tabs_.value_or(
-      GetAvailableWidthForTabContainer());
+  int available_width = GetAvailableWidthForTabContainer();
+  if (override_available_width_for_tabs_.has_value()) {
+    int capped = std::min(*override_available_width_for_tabs_, available_width);
+    return capped;
+  }
+  return available_width;
 }
 
 void TabContainerImpl::StartInsertTabAnimation(int model_index) {
@@ -1560,6 +1566,7 @@ bool TabContainerImpl::ShouldTabBeVisible(const Tab* tab) const {
   // tabstrip were resized to its greatest possible width, it shouldn't be
   // visible.
   int right_edge = tab->bounds().right();
+
   const int tabstrip_right =
       tab->parent() != this ? drag_position_delegate_->GetTabDragAreaWidth()
                             : GetAvailableWidthForTabContainer();
