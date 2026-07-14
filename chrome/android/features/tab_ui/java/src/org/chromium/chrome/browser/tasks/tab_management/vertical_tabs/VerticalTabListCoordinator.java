@@ -760,6 +760,16 @@ public class VerticalTabListCoordinator {
         VerticalTabListItemTouchHelperCallback touchHelperCallback =
                 new VerticalTabListItemTouchHelperCallback(activity, modelList, tabModelSupplier);
 
+        touchHelperCallback.setOnDragOutListener(
+                (viewHolder, dX, dY) -> {
+                    /* Do nothing for now
+                    Log.i(
+                            "VerticalTabs",
+                            "Tab dragged out of bounding box! Triggering OS Drag. dX: " + dX);
+                     */
+                    if (viewHolder == null) return;
+                });
+
         // Handles long-presses for tab item/group context menus. Long-presses for empty space
         // context menus are handled by the gesture detector.
         touchHelperCallback.setOnLongPressTabItemEventListener(
