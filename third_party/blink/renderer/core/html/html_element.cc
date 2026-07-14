@@ -157,6 +157,7 @@
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/rect_conversions.h"
 
 namespace blink {
 
@@ -1634,6 +1635,10 @@ ScriptPromise<IDLUndefined> HTMLElement::showUnboundedElement(
   if (auto* layout_object = GetLayoutObject()) {
     bounds = layout_object->AbsoluteBoundingBoxRectForUnboundedElement();
     bounds = view->FrameToViewport(bounds);
+    if (auto* local_root_widget = frame->GetWidgetForLocalRoot()) {
+      bounds = gfx::ToRoundedRect(
+          local_root_widget->BlinkSpaceToDIPs(gfx::RectF(bounds)));
+    }
   }
   SetLastSentUnboundedBounds(bounds);
 

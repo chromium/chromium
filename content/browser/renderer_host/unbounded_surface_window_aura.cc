@@ -82,10 +82,12 @@ std::unique_ptr<UnboundedSurfaceWindowAura> UnboundedSurfaceWindowAura::Create(
     RenderWidgetHostViewAura* parent_view,
     mojo::PendingAssociatedReceiver<blink::mojom::UnboundedSurfaceHost> host,
     mojo::PendingAssociatedRemote<blink::mojom::UnboundedSurfaceClient> client,
-    const gfx::Rect& bounds_in_dips) {
+    const gfx::Rect& bounds_in_screen,
+    base::WeakPtr<RenderWidgetHostViewBase> subframe_view) {
   auto window = base::WrapUnique(new UnboundedSurfaceWindowAura(
-      parent_view, std::move(host), std::move(client)));
-  if (!window->InitWindow(bounds_in_dips)) {
+      parent_view, std::move(host), std::move(client),
+      std::move(subframe_view)));
+  if (!window->InitWindow(bounds_in_screen)) {
     return nullptr;
   }
   return window;
@@ -94,8 +96,9 @@ std::unique_ptr<UnboundedSurfaceWindowAura> UnboundedSurfaceWindowAura::Create(
 UnboundedSurfaceWindowAura::UnboundedSurfaceWindowAura(
     RenderWidgetHostViewAura* parent_view,
     mojo::PendingAssociatedReceiver<blink::mojom::UnboundedSurfaceHost> host,
-    mojo::PendingAssociatedRemote<blink::mojom::UnboundedSurfaceClient> client)
-    : parent_view_(parent_view) {
+    mojo::PendingAssociatedRemote<blink::mojom::UnboundedSurfaceClient> client,
+    base::WeakPtr<RenderWidgetHostViewBase> subframe_view)
+    : parent_view_(parent_view), subframe_view_(std::move(subframe_view)) {
   if (host.is_valid()) {
     receiver_.Bind(std::move(host));
     receiver_.set_disconnect_handler(
@@ -243,7 +246,7 @@ bool UnboundedSurfaceWindowAura::HasHitTestMask() const {
   return false;
 }
 
-bool UnboundedSurfaceWindowAura::InitWindow(const gfx::Rect& bounds_in_dips) {
+bool UnboundedSurfaceWindowAura::InitWindow(const gfx::Rect& bounds_in_screen) {
   if (!parent_view_) {
     return false;
   }
@@ -291,8 +294,6 @@ bool UnboundedSurfaceWindowAura::InitWindow(const gfx::Rect& bounds_in_dips) {
     transient_window_client->AddTransientChild(parent_native_view,
                                                window_.get());
   }
-
-  gfx::Rect bounds_in_screen = ConvertDIPToScreenBounds(bounds_in_dips);
 
   aura::client::ParentWindowWithContext(window_.get(), root, bounds_in_screen,
                                         display::kInvalidDisplayId);
@@ -351,7 +352,8 @@ void UnboundedSurfaceWindowAura::UpdateBounds(const gfx::Rect& bounds) {
   if (!parent_view_) {
     return;
   }
-  SetBounds(ConvertDIPToScreenBounds(bounds));
+  parent_view_->UpdateUnboundedSurfaceBoundsInSubframeContext(
+      bounds, subframe_view_.get());
   if (client_remote_.is_bound()) {
     client_remote_->OnSurfaceAllocated(GetFrameSinkId(), GetLocalSurfaceId());
   }
@@ -372,18 +374,6 @@ void UnboundedSurfaceWindowAura::Dismiss() {
 
 void UnboundedSurfaceWindowAura::OnConnectionError() {
   Dismiss();
-}
-
-gfx::Rect UnboundedSurfaceWindowAura::ConvertDIPToScreenBounds(
-    const gfx::Rect& bounds_in_dips) const {
-  if (!parent_view_) {
-    return bounds_in_dips;
-  }
-  float dsf = parent_view_->GetDeviceScaleFactor();
-  gfx::Rect bounds_in_screen =
-      gfx::ScaleToRoundedRect(bounds_in_dips, 1.f / dsf);
-  bounds_in_screen.Offset(parent_view_->GetViewBounds().OffsetFromOrigin());
-  return bounds_in_screen;
 }
 
 void UnboundedSurfaceWindowAura::GetCompositorFrameSink(

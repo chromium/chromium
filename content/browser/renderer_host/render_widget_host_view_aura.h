@@ -242,7 +242,8 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
       mojo::PendingAssociatedReceiver<blink::mojom::UnboundedSurfaceHost> host,
       mojo::PendingAssociatedRemote<blink::mojom::UnboundedSurfaceClient>
           client,
-      const gfx::Rect& bounds_in_dips) override;
+      const gfx::Rect& bounds_in_dips,
+      base::WeakPtr<RenderWidgetHostViewBase> subframe_view) override;
 
   void TakeFallbackContentFrom(RenderWidgetHostView* view) override;
   bool CanSynchronizeVisualProperties() override;

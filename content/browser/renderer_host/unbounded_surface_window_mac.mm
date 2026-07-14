@@ -98,8 +98,10 @@ UnboundedSurfaceWindowMac::UnboundedSurfaceWindowMac(
     RenderWidgetHostViewMac* parent_view,
     mojo::PendingAssociatedReceiver<blink::mojom::UnboundedSurfaceHost> host,
     mojo::PendingAssociatedRemote<blink::mojom::UnboundedSurfaceClient> client,
-    const gfx::Rect& bounds_in_dips)
+    const gfx::Rect& bounds_in_screen,
+    base::WeakPtr<RenderWidgetHostViewBase> subframe_view)
     : parent_view_(parent_view),
+      subframe_view_(std::move(subframe_view)),
       frame_sink_id_(content::AllocateFrameSinkId()) {
   CHECK(base::FeatureList::IsEnabled(blink::features::kUnboundedElement),
         base::NotFatalUntil::M152);
@@ -111,7 +113,7 @@ UnboundedSurfaceWindowMac::UnboundedSurfaceWindowMac(
   if (client.is_valid()) {
     client_remote_.Bind(std::move(client));
   }
-  InitWindow(bounds_in_dips);
+  InitWindow(bounds_in_screen);
 }
 
 bool UnboundedSurfaceWindowMac::is_valid() const {
@@ -166,8 +168,7 @@ UnboundedSurfaceWindowMac::GetDisplayInfo() const {
   return info;
 }
 
-void UnboundedSurfaceWindowMac::InitWindow(const gfx::Rect& bounds_in_dips) {
-  gfx::Rect bounds_in_screen = ConvertDIPToScreenBounds(bounds_in_dips);
+void UnboundedSurfaceWindowMac::InitWindow(const gfx::Rect& bounds_in_screen) {
   NSRect ns_rect = gfx::ScreenRectToNSRect(bounds_in_screen);
 
   window_ =
@@ -406,7 +407,8 @@ void UnboundedSurfaceWindowMac::UpdateBounds(const gfx::Rect& bounds) {
   if (!parent_view_) {
     return;
   }
-  SetBounds(ConvertDIPToScreenBounds(bounds));
+  parent_view_->UpdateUnboundedSurfaceBoundsInSubframeContext(
+      bounds, subframe_view_.get());
   if (client_remote_.is_bound()) {
     client_remote_->OnSurfaceAllocated(GetFrameSinkId(), GetLocalSurfaceId());
   }
@@ -427,18 +429,6 @@ void UnboundedSurfaceWindowMac::Dismiss() {
 
 void UnboundedSurfaceWindowMac::OnConnectionError() {
   Dismiss();
-}
-
-gfx::Rect UnboundedSurfaceWindowMac::ConvertDIPToScreenBounds(
-    const gfx::Rect& bounds_in_dips) const {
-  if (!parent_view_) {
-    return bounds_in_dips;
-  }
-  float dsf = parent_view_->GetDeviceScaleFactor();
-  gfx::Rect bounds_in_screen =
-      gfx::ScaleToRoundedRect(bounds_in_dips, 1.f / dsf);
-  bounds_in_screen.Offset(parent_view_->GetViewBounds().OffsetFromOrigin());
-  return bounds_in_screen;
 }
 
 void UnboundedSurfaceWindowMac::AcceleratedWidgetCALayerParamsUpdated(

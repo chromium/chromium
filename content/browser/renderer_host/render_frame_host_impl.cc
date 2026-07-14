@@ -11293,7 +11293,8 @@ void RenderFrameHostImpl::RequestUnboundedSurface(
         "RequestUnboundedSurface called with empty bounds.");
     return;
   }
-  if (auto* root_view = GetUnboundedSurfaceRootView()) {
+  RenderWidgetHostViewBase* parent_view = nullptr;
+  if (auto* root_view = GetUnboundedSurfaceRootView(&parent_view)) {
     // If an unbounded surface is already active, synchronously destroy it
     // first to enforce that only one is active per window.
     if (root_view->HasActiveUnboundedSurface()) {
@@ -11301,8 +11302,9 @@ void RenderFrameHostImpl::RequestUnboundedSurface(
           root_view->GetUnboundedSurfaceWindow()->GetWeakPtr());
     }
     CHECK(!root_view->HasActiveUnboundedSurface());
-    root_view->CreateUnboundedSurface(std::move(host), std::move(client),
-                                      bounds);
+    root_view->CreateUnboundedSurface(
+        std::move(host), std::move(client), bounds,
+        parent_view ? parent_view->GetWeakPtr() : nullptr);
   }
 }
 

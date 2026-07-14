@@ -434,7 +434,14 @@ class CONTENT_EXPORT RenderWidgetHostViewBase
       mojo::PendingAssociatedReceiver<blink::mojom::UnboundedSurfaceHost> host,
       mojo::PendingAssociatedRemote<blink::mojom::UnboundedSurfaceClient>
           client,
-      const gfx::Rect& bounds_in_dips);
+      const gfx::Rect& bounds_in_dips,
+      base::WeakPtr<RenderWidgetHostViewBase> subframe_view);
+  virtual void UpdateUnboundedSurfaceBoundsInSubframeContext(
+      const gfx::Rect& bounds_in_dips,
+      RenderWidgetHostViewBase* subframe_view);
+  gfx::Rect ConvertSubframeBoundsToScreen(
+      const gfx::Rect& bounds_in_dips,
+      RenderWidgetHostViewBase* subframe_view);
   virtual void UpdateUnboundedSurfaceBounds(const gfx::Rect& bounds_in_screen);
   virtual void DismissUnboundedSurface();
   virtual void DestroyUnboundedSurface(

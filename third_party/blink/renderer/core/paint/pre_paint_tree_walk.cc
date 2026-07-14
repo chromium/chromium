@@ -41,6 +41,7 @@
 #include "third_party/blink/renderer/core/timing/soft_navigation_heuristics.h"
 #include "third_party/blink/renderer/core/timing/soft_navigation_paint_attribution_tracker.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "ui/gfx/geometry/rect_conversions.h"
 
 namespace blink {
 
@@ -650,6 +651,10 @@ void PrePaintTreeWalk::WalkInternal(const LayoutObject& object,
     if (frame) {
       if (auto* view = frame->View()) {
         current_bounds = view->FrameToViewport(current_bounds);
+      }
+      if (auto* widget = frame->GetWidgetForLocalRoot()) {
+        current_bounds = gfx::ToRoundedRect(
+            widget->BlinkSpaceToDIPs(gfx::RectF(current_bounds)));
       }
     }
     if (current_bounds != html_element->LastSentUnboundedBounds()) {

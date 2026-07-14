@@ -204,7 +204,8 @@ class CONTENT_EXPORT RenderWidgetHostViewMac
       mojo::PendingAssociatedReceiver<blink::mojom::UnboundedSurfaceHost> host,
       mojo::PendingAssociatedRemote<blink::mojom::UnboundedSurfaceClient>
           client,
-      const gfx::Rect& bounds_in_dips) override;
+      const gfx::Rect& bounds_in_dips,
+      base::WeakPtr<RenderWidgetHostViewBase> subframe_view) override;
 
   blink::mojom::PointerLockResult LockPointer(bool) override;
   blink::mojom::PointerLockResult ChangePointerLock(bool) override;

@@ -5071,7 +5071,8 @@
     "bases": ["wpt_internal/html/rendering/unbounded-element"],
     "args": [
       "--enable-features=UnboundedElement,UnboundedElementOnTheOpenWeb",
-      "--disable-features=TreesInViz"
+      "--disable-features=TreesInViz",
+      "--force-device-scale-factor=1.5"
     ],
     "owners": [
       "masonf@chromium.org"

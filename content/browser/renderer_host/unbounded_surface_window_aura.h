@@ -31,6 +31,7 @@ class Layer;
 namespace content {
 
 class RenderWidgetHostViewAura;
+class RenderWidgetHostViewBase;
 
 class UnboundedSurfaceWindowAura : public UnboundedSurfaceWindow,
                                    public aura::WindowDelegate,
@@ -43,7 +44,8 @@ class UnboundedSurfaceWindowAura : public UnboundedSurfaceWindow,
       mojo::PendingAssociatedReceiver<blink::mojom::UnboundedSurfaceHost> host,
       mojo::PendingAssociatedRemote<blink::mojom::UnboundedSurfaceClient>
           client,
-      const gfx::Rect& bounds_in_dips);
+      const gfx::Rect& bounds_in_screen,
+      base::WeakPtr<RenderWidgetHostViewBase> subframe_view);
 
   ~UnboundedSurfaceWindowAura() override;
 
@@ -114,12 +116,13 @@ class UnboundedSurfaceWindowAura : public UnboundedSurfaceWindow,
       RenderWidgetHostViewAura* parent_view,
       mojo::PendingAssociatedReceiver<blink::mojom::UnboundedSurfaceHost> host,
       mojo::PendingAssociatedRemote<blink::mojom::UnboundedSurfaceClient>
-          client);
-  bool InitWindow(const gfx::Rect& bounds_in_dips);
+          client,
+      base::WeakPtr<RenderWidgetHostViewBase> subframe_view);
+  bool InitWindow(const gfx::Rect& bounds_in_screen);
   void OnConnectionError();
-  gfx::Rect ConvertDIPToScreenBounds(const gfx::Rect& bounds_in_dips) const;
 
   raw_ptr<RenderWidgetHostViewAura> parent_view_;
+  base::WeakPtr<RenderWidgetHostViewBase> subframe_view_;
   viz::FrameSinkId frame_sink_id_;
   viz::FrameSinkId parent_frame_sink_id_;
   viz::ParentLocalSurfaceIdAllocator local_surface_id_allocator_;

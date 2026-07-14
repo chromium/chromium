@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html class="reftest-wait">
+<meta charset="utf-8">
+<link rel="author" href="mailto:masonf@chromium.org">
+<link rel="help" href="https://crbug.com/508672616">
+<link rel="match" href="sandboxed-iframe-appearance-ref.html">
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="resources/unbounded-utils.js"></script>
+
+<style>
+  iframe, #red {
+    position: absolute;
+    top: 50px;
+    left: 100px;
+  }
+  iframe {
+    width: 100px;
+    height: 100px;
+    border: 0;
+  }
+  #red {
+    width: 201px;
+    height: 201px;
+    background: red;
+    z-index: -1;
+  }
+</style>
+
+<div id="red"></div>
+<iframe id="iframe" sandbox="allow-scripts" srcdoc="
+  <!DOCTYPE html>
+  <style>
+    body {
+      margin: 0;
+    }
+    #target {
+      position: absolute;
+      inset: 0;
+      width: 201px;
+      height: 201px;
+      background: green;
+    }
+  </style>
+
+  <div id='target' unbounded></div>
+
+  <script>
+    window.onclick = async () => {
+      try {
+        await target.showUnboundedElement();
+      } finally {
+        parent.postMessage('finish', '*');
+      }
+    };
+  </script>
+"></iframe>
+
+<script>
+unbounded_appearance_test(async () => {
+  // Wait for the window and iframe to be fully loaded
+  if (document.readyState !== 'complete') {
+    await new Promise(resolve => window.addEventListener('load', resolve));
+  }
+
+  const gotMessage = new Promise((resolve) => {
+    window.addEventListener('message', (e) => {
+      if (e.data === 'finish') {
+        resolve();
+      }
+    });
+  });
+
+  await test_driver.click(iframe);
+  await gotMessage;
+});
+</script>
