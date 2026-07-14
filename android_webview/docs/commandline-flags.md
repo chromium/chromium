@@ -48,11 +48,12 @@ Then follow the steps below.
 ## Applying Commandline Switches {#commandline-switches}
 
 <!-- Note: keep this language consistent with the section below. Search for
-"kill and restart" -->
+"force stop and restart" -->
 WebView reads flags from a specific file on the device as part of the startup
-sequence. Therefore, it's important to always **kill and restart the
-WebView-based app** you're examining after modifying commandline flags to ensure
-the flags are picked up.
+sequence. Swiping an app away in the recent app switcher is usually sufficient
+to restart it, but if flags are not being picked up, you must **force stop and
+restart the WebView-based app** (`adb shell am force-stop <package>` or via
+App Info > Force Stop).
 
 WebView always looks for the same file on the device
 (`/data/local/tmp/webview-command-line`), regardless of which package is the
@@ -150,9 +151,11 @@ As with [Commandline Switches](#commandline-switches), we support multiple tools
 for toggling Feature Flags (Python script, Generated Wrapper Script, manual).
 
 <!-- Note: keep this language consistent with the section above. Search for
-"kill and restart" -->
-As before, it's important to **kill and restart the WebView-based app** you're
-examining after modifying flags to ensure the flags are picked up.
+"force stop and restart" -->
+As before, swiping an app away in the recent app switcher is usually sufficient
+to restart it, but if flags are not being picked up, you must **force stop and
+restart the WebView-based app** (`adb shell am force-stop <package>` or via
+App Info > Force Stop).
 
 ## Finding Feature Flags and Commandline Switches
 
