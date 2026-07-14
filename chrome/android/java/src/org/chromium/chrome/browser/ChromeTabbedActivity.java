@@ -63,6 +63,7 @@ import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
 import org.chromium.base.MemoryPressureListener;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.Token;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
@@ -4966,6 +4967,30 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                     LoadUrlParams copy = LoadUrlParams.copy(loadUrlParams);
                     copy.setUrl(url);
                     tabCreator.createNewTab(copy, additionalUrlLaunchType, parent);
+                }
+            }
+
+            TabModel tabModel =
+                    mTabModelSelector != null
+                            ? mTabModelSelector.getModel(firstTab.isIncognito())
+                            : null;
+            if (tabModel != null) {
+                if (launchType == TabLaunchType.FROM_LONGPRESS_BACKGROUND_IN_GROUP
+                        && parentTab == null) {
+                    if (additionalUrls == null || additionalUrls.isEmpty()) {
+                        // For single-tab launches, we must explicitly wrap the tab in a new group.
+                        tabModel.createSingleTabGroup(firstTab);
+                    }
+                    // Apply passed tab group title when creating a new tab group.
+                    Token groupId = firstTab.getTabGroupId();
+                    if (groupId != null) {
+                        String groupTitle =
+                                IntentUtils.safeGetStringExtra(
+                                        intent, IntentHandler.EXTRA_TAB_GROUP_TITLE);
+                        if (groupTitle != null) {
+                            tabModel.setTabGroupTitle(groupId, groupTitle);
+                        }
+                    }
                 }
             }
             return firstTab;

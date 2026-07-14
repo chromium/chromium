@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.bookmarks;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
@@ -12,6 +14,7 @@ import static org.robolectric.Shadows.shadowOf;
 import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Intent;
+import android.os.Bundle;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -23,6 +26,8 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.IntentHandler;
+import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkItem;
 import org.chromium.components.bookmarks.BookmarkType;
@@ -86,5 +91,64 @@ public class BookmarkOpenerImplUnitTest {
 
         Intent startedIntent = shadowOf(mActivity).getNextStartedActivity();
         assertNotNull(startedIntent);
+    }
+
+    @Test
+    public void testOpenBookmarksInNewTabGroupWithTitle() {
+        String testTitle = "Custom Folder Title";
+        assertTrue(
+                mOpener.openBookmarksInNewTabGroup(
+                        Collections.singletonList(mBookmarkId), /* incognito= */ false, testTitle));
+
+        Intent startedIntent = shadowOf(mActivity).getNextStartedActivity();
+        assertNotNull(startedIntent);
+        assertEquals(
+                (Integer) TabLaunchType.FROM_LONGPRESS_BACKGROUND_IN_GROUP,
+                IntentHandler.getTabLaunchType(startedIntent));
+        assertTrue(
+                startedIntent.getBooleanExtra(
+                        IntentHandler.EXTRA_OPEN_ADDITIONAL_URLS_IN_TAB_GROUP, false));
+        assertEquals(testTitle, startedIntent.getStringExtra(IntentHandler.EXTRA_TAB_GROUP_TITLE));
+    }
+
+    @Test
+    public void testOpenBookmarksInNewTabGroupWithoutTitle() {
+        assertTrue(
+                mOpener.openBookmarksInNewTabGroup(
+                        Collections.singletonList(mBookmarkId),
+                        /* incognito= */ false,
+                        /* title= */ null));
+
+        Intent startedIntent = shadowOf(mActivity).getNextStartedActivity();
+        assertNotNull(startedIntent);
+        assertEquals(
+                (Integer) TabLaunchType.FROM_LONGPRESS_BACKGROUND_IN_GROUP,
+                IntentHandler.getTabLaunchType(startedIntent));
+        assertTrue(
+                startedIntent.getBooleanExtra(
+                        IntentHandler.EXTRA_OPEN_ADDITIONAL_URLS_IN_TAB_GROUP, false));
+        assertTrue(!startedIntent.hasExtra(IntentHandler.EXTRA_TAB_GROUP_TITLE));
+    }
+
+    @Test
+    public void testOpenBookmarksInNewTabs_WithTitleButNonGroupLaunchType() {
+        String testTitle = "Custom Folder Title";
+        Bundle extras = new Bundle();
+        extras.putString(IntentHandler.EXTRA_TAB_GROUP_TITLE, testTitle);
+        assertTrue(
+                mOpener.openBookmarksInNewTabs(
+                        Collections.singletonList(mBookmarkId),
+                        /* incognito= */ false,
+                        TabLaunchType.FROM_LINK,
+                        extras));
+
+        Intent startedIntent = shadowOf(mActivity).getNextStartedActivity();
+        assertNotNull(startedIntent);
+        assertEquals(
+                (Integer) TabLaunchType.FROM_LINK, IntentHandler.getTabLaunchType(startedIntent));
+        assertFalse(
+                startedIntent.getBooleanExtra(
+                        IntentHandler.EXTRA_OPEN_ADDITIONAL_URLS_IN_TAB_GROUP, false));
+        assertEquals(testTitle, startedIntent.getStringExtra(IntentHandler.EXTRA_TAB_GROUP_TITLE));
     }
 }

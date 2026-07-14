@@ -255,6 +255,62 @@ public class ChromeTabbedActivityTest {
 
     @Test
     @MediumTest
+    public void testSingleTabGroupWithoutMetadataIntent() {
+        testTabGroupIntentWithoutMetadata(/* isSingleTab= */ true, "Single Tab Group");
+    }
+
+    @Test
+    @MediumTest
+    public void testMultipleTabGroupWithoutMetadataIntent() {
+        testTabGroupIntentWithoutMetadata(/* isSingleTab= */ false, "Multiple Tab Group");
+    }
+
+    private void testTabGroupIntentWithoutMetadata(boolean isSingleTab, String expectedTitle) {
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(JUnitTestGURLs.URL_1.getSpec()));
+        intent.addCategory(Intent.CATEGORY_BROWSABLE);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.addFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
+        intent.setClass(mActivity, ChromeTabbedActivity.class);
+        IntentHandler.setTabLaunchType(intent, TabLaunchType.FROM_LONGPRESS_BACKGROUND_IN_GROUP);
+        if (expectedTitle != null) {
+            intent.putExtra(IntentHandler.EXTRA_TAB_GROUP_TITLE, expectedTitle);
+        }
+
+        if (!isSingleTab) {
+            ArrayList<String> extraUrls =
+                    Lists.newArrayList(
+                            JUnitTestGURLs.URL_2.getSpec(), JUnitTestGURLs.URL_3.getSpec());
+            intent.putExtra(IntentHandler.EXTRA_ADDITIONAL_URLS, extraUrls);
+            intent.putExtra(IntentHandler.EXTRA_OPEN_ADDITIONAL_URLS_IN_TAB_GROUP, true);
+        }
+        IntentUtils.setForceIsTrustedIntentForTesting(true);
+
+        ThreadUtils.runOnUiThreadBlocking(() -> mActivity.onNewIntent(intent));
+
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    TabModel tabModel = mActivity.getCurrentTabModel();
+                    Tab targetTab = null;
+                    for (int i = 0; i < tabModel.getCount(); i++) {
+                        Tab tab = tabModel.getTabAt(i);
+                        if (tab.getUrl().getSpec().equals(JUnitTestGURLs.URL_1.getSpec())) {
+                            targetTab = tab;
+                            break;
+                        }
+                    }
+                    Assert.assertNotNull("Tab with URL_1 not found", targetTab);
+
+                    Token groupId = targetTab.getTabGroupId();
+                    Assert.assertNotNull("Tab should be in a group", groupId);
+
+                    if (expectedTitle != null) {
+                        Assert.assertEquals(expectedTitle, tabModel.getTabGroupTitle(groupId));
+                    }
+                });
+    }
+
+    @Test
+    @MediumTest
     @MinAndroidSdkLevel(VERSION_CODES.S)
     @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
     public void testTabGroupIntent_collapseGroup() {

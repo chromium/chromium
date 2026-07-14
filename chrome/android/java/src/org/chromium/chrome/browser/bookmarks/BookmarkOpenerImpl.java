@@ -11,6 +11,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Bundle;
 import android.provider.Browser;
 import android.text.format.DateUtils;
 
@@ -74,7 +75,8 @@ public class BookmarkOpenerImpl implements BookmarkOpener {
     public boolean openBookmarksInNewTabs(
             List<BookmarkId> bookmarkIds,
             boolean incognito,
-            @Nullable @TabLaunchType Integer tabLaunchType) {
+            @Nullable @TabLaunchType Integer tabLaunchType,
+            @Nullable Bundle extras) {
         if (bookmarkIds.size() == 0) return false;
 
         BookmarkModel bookmarkModel = assumeNonNull(mBookmarkModelSupplier.get());
@@ -105,10 +107,27 @@ public class BookmarkOpenerImpl implements BookmarkOpener {
         intent.putExtra(IntentHandler.EXTRA_ADDITIONAL_URLS, additionalUrls);
         if (tabLaunchType != null) {
             IntentHandler.setTabLaunchType(intent, tabLaunchType);
+            if (tabLaunchType == TabLaunchType.FROM_LONGPRESS_BACKGROUND_IN_GROUP) {
+                intent.putExtra(IntentHandler.EXTRA_OPEN_ADDITIONAL_URLS_IN_TAB_GROUP, true);
+            }
+        }
+        if (extras != null) {
+            intent.putExtras(extras);
         }
         IntentHandler.startActivityForTrustedIntent(mContext, intent);
 
         return true;
+    }
+
+    @Override
+    public boolean openBookmarksInNewTabGroup(
+            List<BookmarkId> bookmarkIds, boolean incognito, @Nullable String title) {
+        Bundle extras = new Bundle();
+        if (title != null) {
+            extras.putString(IntentHandler.EXTRA_TAB_GROUP_TITLE, title);
+        }
+        return openBookmarksInNewTabs(
+                bookmarkIds, incognito, TabLaunchType.FROM_LONGPRESS_BACKGROUND_IN_GROUP, extras);
     }
 
     @Override
