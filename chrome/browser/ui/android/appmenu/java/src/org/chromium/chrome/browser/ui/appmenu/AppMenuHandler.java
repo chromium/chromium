@@ -149,6 +149,19 @@ public interface AppMenuHandler {
     boolean showAppMenu(@Nullable View anchorView, boolean startDragging);
 
     /**
+     * Show the app menu.
+     *
+     * @param anchorView Anchor view used for the popup
+     * @param startDragging Whether dragging is started
+     * @param isFromBottomBar Whether the menu is anchored to the bottom bar
+     * @return True, if the menu is shown, false, if menu is not shown.
+     */
+    default boolean showAppMenu(
+            @Nullable View anchorView, boolean startDragging, boolean isFromBottomBar) {
+        return showAppMenu(anchorView, startDragging);
+    }
+
+    /**
      * @return A new {@link AppMenuButtonHelper} to hook up to a view containing a menu button.
      */
     AppMenuButtonHelper createAppMenuButtonHelper();

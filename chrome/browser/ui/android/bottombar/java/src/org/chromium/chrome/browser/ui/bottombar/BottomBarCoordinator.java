@@ -165,8 +165,6 @@ public class BottomBarCoordinator implements BottomBar, Destroyable {
                 menuContainer.setStubLayoutResource(R.layout.bottom_bar_app_menu_template);
             }
             menuContainer.inflateStub();
-            View targetView = menuContainer.getTargetView();
-            BottomBarUtils.setAppMenuAnchor(targetView);
             menuContainer.setVisibility(View.VISIBLE);
             configs.add(
                     new ActionConfig(

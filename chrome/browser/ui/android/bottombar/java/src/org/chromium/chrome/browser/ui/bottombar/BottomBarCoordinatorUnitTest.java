@@ -213,7 +213,6 @@ public class BottomBarCoordinatorUnitTest {
 
         View menuButton = mCoordinator.getView().findViewById(R.id.menu_button);
         assertNotNull(menuButton);
-        assertEquals(true, menuButton.getTag(R.id.is_bottom_bar_menu_anchor));
     }
 
     @Test

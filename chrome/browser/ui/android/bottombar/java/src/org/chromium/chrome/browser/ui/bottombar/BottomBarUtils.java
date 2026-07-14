@@ -9,7 +9,6 @@ import static org.chromium.build.NullUtil.assertNonNull;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.graphics.drawable.RippleDrawable;
-import android.view.View;
 
 import androidx.annotation.ColorInt;
 
@@ -116,14 +115,5 @@ public class BottomBarUtils {
         boolean isIncognito = brandedColorScheme == BrandedColorScheme.INCOGNITO;
         int onSurface = IncognitoColors.getColorOnSurface(context, isIncognito);
         return ColorUtils.setAlphaComponentWithFloat(onSurface, 0.08f);
-    }
-
-    /**
-     * Tags the given view as the anchor for the bottom bar app menu.
-     *
-     * @param view The view to tag.
-     */
-    public static void setAppMenuAnchor(View view) {
-        view.setTag(R.id.is_bottom_bar_menu_anchor, true);
     }
 }

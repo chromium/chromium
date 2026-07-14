@@ -329,6 +329,7 @@ class AppMenu implements OnKeyListener {
             boolean isMenuIconAtStart,
             @ControlsPosition int controlsPosition,
             boolean addTopPaddingBeforeFirstRow,
+            boolean isFromBottomBar,
             FlyoutHandler<AppMenuPopup> flyoutHandler) {
         mContext = context;
         PopupWindow popup = new PopupWindow(context);
@@ -376,7 +377,6 @@ class AppMenu implements OnKeyListener {
         // Make sure that the popup window will be closed when touch outside of it.
         popup.setOutsideTouchable(true);
 
-        boolean isFromBottomBar = isAnchorFromBottomBar(anchorView);
         if (!isByPermanentButton) {
             popup.setAnimationStyle(
                     isMenuIconAtStart
@@ -1011,15 +1011,5 @@ class AppMenu implements OnKeyListener {
             // http://crbug.com/41379062 & https://crbug.com/40706027.
             return;
         }
-    }
-
-    // TODO(crbug.com/516522346): Pass this value down in the call stack.
-    private static boolean isAnchorFromBottomBar(@Nullable View anchorView) {
-        if (anchorView != null
-                && anchorView.getTag(R.id.is_bottom_bar_menu_anchor)
-                        instanceof Boolean isBottomBarMenuAnchor) {
-            return isBottomBarMenuAnchor;
-        }
-        return false;
     }
 }

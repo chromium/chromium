@@ -148,7 +148,6 @@ public class AppMenuPopupPositionTest {
 
     @Test
     public void testBottomButton_LTR() {
-        when(mAnchorView.getTag(R.id.is_bottom_bar_menu_anchor)).thenReturn(true);
         int[] results =
                 getPopupPosition(false, true, Surface.ROTATION_0, View.LAYOUT_DIRECTION_LTR, false);
 
@@ -160,7 +159,6 @@ public class AppMenuPopupPositionTest {
 
     @Test
     public void testBottomButton_RTL() {
-        when(mAnchorView.getTag(R.id.is_bottom_bar_menu_anchor)).thenReturn(true);
         int[] results =
                 getPopupPosition(false, true, Surface.ROTATION_0, View.LAYOUT_DIRECTION_RTL, false);
 

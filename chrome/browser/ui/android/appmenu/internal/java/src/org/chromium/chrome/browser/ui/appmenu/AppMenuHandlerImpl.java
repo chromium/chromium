@@ -284,6 +284,13 @@ class AppMenuHandlerImpl
     // TODO(crbug.com/40479664): Fix this properly.
     @SuppressLint("ResourceType")
     public boolean showAppMenu(@Nullable View anchorView, boolean startDragging) {
+        return showAppMenu(anchorView, startDragging, false);
+    }
+
+    @Override
+    @SuppressLint("ResourceType")
+    public boolean showAppMenu(
+            @Nullable View anchorView, boolean startDragging, boolean isFromBottomBar) {
         if (!shouldShowAppMenu() || isAppMenuShowing()) return false;
 
         TextBubble.dismissBubbles();
@@ -401,7 +408,8 @@ class AppMenuHandlerImpl
                                     finalIsByPermanentButton,
                                     rotation,
                                     mAppRect.get(),
-                                    startDragging);
+                                    startDragging,
+                                    isFromBottomBar);
                             // https://github.com/uber/NullAway/issues/1190
                             assumeNonNull(mKeyboardVisibilityListener);
                             keyboardVisibilityDelegate.removeKeyboardVisibilityListener(
@@ -417,7 +425,8 @@ class AppMenuHandlerImpl
                     isByPermanentButton,
                     rotation,
                     mAppRect.get(),
-                    startDragging);
+                    startDragging,
+                    isFromBottomBar);
         }
         return true;
     }
@@ -771,7 +780,8 @@ class AppMenuHandlerImpl
             boolean isByPermanentButton,
             Integer rotation,
             Rect appRect,
-            boolean startDragging) {
+            boolean startDragging,
+            boolean isFromBottomBar) {
         // Use full size of window for abnormal appRect.
         if (appRect.left < 0 && appRect.top < 0) {
             appRect.left = 0;
@@ -792,6 +802,7 @@ class AppMenuHandlerImpl
                 mDelegate.isMenuIconAtStart(),
                 mBrowserControlsStateProvider.getControlsPosition(),
                 addTopPaddingBeforeFirstRow(),
+                isFromBottomBar,
                 this);
         assumeNonNull(mAppMenuDragHelper);
         mAppMenuDragHelper.onShow(startDragging);

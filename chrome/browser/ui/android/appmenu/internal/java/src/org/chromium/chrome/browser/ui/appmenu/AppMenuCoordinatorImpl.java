@@ -100,10 +100,12 @@ class AppMenuCoordinatorImpl implements AppMenuCoordinator {
     public void showAppMenuForKeyboardEvent() {
         if (mAppMenuHandler == null || !mAppMenuHandler.shouldShowAppMenu()) return;
 
-        showAppMenuInternal(mButtonDelegate.getMenuButtonView(), false);
+        showAppMenuInternal(
+                mButtonDelegate.getMenuButtonView(), false, /* isFromBottomBar= */ false);
     }
 
-    private void showAppMenuInternal(@Nullable View specificAnchorView, boolean startDragging) {
+    private void showAppMenuInternal(
+            @Nullable View specificAnchorView, boolean startDragging, boolean isFromBottomBar) {
         if (mAppMenuHandler == null || !mAppMenuHandler.shouldShowAppMenu()) return;
 
         boolean hasPermanentMenuKey =
@@ -111,7 +113,8 @@ class AppMenuCoordinatorImpl implements AppMenuCoordinator {
                         ? sHasPermanentMenuKeyForTesting.booleanValue()
                         : ViewConfiguration.get(mContext).hasPermanentMenuKey();
 
-        mAppMenuHandler.showAppMenu(hasPermanentMenuKey ? null : specificAnchorView, startDragging);
+        mAppMenuHandler.showAppMenu(
+                hasPermanentMenuKey ? null : specificAnchorView, startDragging, isFromBottomBar);
     }
 
     @Override
@@ -145,7 +148,7 @@ class AppMenuCoordinatorImpl implements AppMenuCoordinator {
         model.set(
                 ActionProperties.ON_PRESS_CALLBACK,
                 view -> {
-                    showAppMenuInternal(view, false);
+                    showAppMenuInternal(view, false, /* isFromBottomBar= */ true);
                 });
         // TODO(crbug.com/508649103): Add support for long press in bottom-aligned app menu from
         // action registry.
