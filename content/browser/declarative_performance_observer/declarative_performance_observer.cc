@@ -128,9 +128,9 @@ DeclarativePerformanceObserver::DeclarativePerformanceObserver(
 }
 
 DeclarativePerformanceObserver::~DeclarativePerformanceObserver() {
-  if (render_frame_host().IsActive()) {
-    AppendSessionEndEntry();
-    FlushMetrics();
+  if (render_frame_host().GetLifecycleState() !=
+      RenderFrameHost::LifecycleState::kPrerendering) {
+    EndSessionAndFlush();
   }
   base::UmaHistogramMemoryKB("DeclarativePerformanceObserver.PeakBufferSize",
                              peak_buffer_bytes_ / 1024);
@@ -218,13 +218,11 @@ void DeclarativePerformanceObserver::OnVisibilityChanged(
 }
 
 void DeclarativePerformanceObserver::OnFrameDeleted() {
-  AppendSessionEndEntry();
-  FlushMetrics();
+  EndSessionAndFlush();
 }
 
 void DeclarativePerformanceObserver::OnEnterBFCache() {
-  AppendSessionEndEntry();
-  FlushMetrics();
+  EndSessionAndFlush();
 }
 
 void DeclarativePerformanceObserver::SetStoragePartitionForTesting(  // IN-TEST
@@ -273,6 +271,14 @@ void DeclarativePerformanceObserver::AppendSessionEndEntry() {
     entry.Set("duration", 0.0);
     AddEntryToBuffer(std::move(entry));
   }
+}
+
+void DeclarativePerformanceObserver::EndSessionAndFlush() {
+  if (is_session_ended_) {
+    return;
+  }
+  AppendSessionEndEntry();
+  FlushMetrics();
 }
 
 void DeclarativePerformanceObserver::AddEntryToBuffer(base::DictValue entry) {

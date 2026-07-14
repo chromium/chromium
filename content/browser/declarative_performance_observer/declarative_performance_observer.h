@@ -85,6 +85,7 @@ class CONTENT_EXPORT DeclarativePerformanceObserver
   void AddEntryToBuffer(base::DictValue entry);
   void FlushMetrics();
   void AppendSessionEndEntry();
+  void EndSessionAndFlush();
   void OnEarlyFailureReportsTaken(base::ListValue reports);
 
   std::string reporting_endpoint_;
