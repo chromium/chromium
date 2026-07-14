@@ -7,12 +7,11 @@
 #include <utility>
 
 #include "base/check.h"
-#include "base/debug/dump_without_crashing.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/not_fatal_until.h"
+#include "base/notreached.h"
 #include "base/strings/strcat.h"
-#include "base/strings/to_string.h"
 #include "base/types/expected_macros.h"
 #include "chrome/browser/apps/app_service/metrics/app_platform_metrics_utils.h"
 #include "chrome/browser/ash/borealis/borealis_util.h"
@@ -20,7 +19,6 @@
 #include "chrome/browser/ash/guest_os/guest_os_registry_service_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
-#include "components/crash/core/common/crash_key.h"
 #include "components/metrics/structured/structured_events.h"
 #include "components/metrics/structured/structured_metrics_client.h"
 #include "components/prefs/pref_service.h"
@@ -408,60 +406,43 @@ void AppDiscoveryMetrics::RecordAppClosed(
 std::optional<std::string> AppDiscoveryMetrics::GetAppStringToRecord(
     const std::string& hashed_app_id,
     AppType app_type) {
-  // Generates a URL for the given |profile_| and |hashed_app_id| that may
-  // return the canonical app name for certain |app_type|.
-  GURL url = AppPlatformMetrics::GetURLForApp(profile_, hashed_app_id);
-
-  static crash_reporter::CrashKeyString<256> bad_app_url_key("bad-app-url");
-  static crash_reporter::CrashKeyString<64> bad_app_id_key("bad-app-id");
-  static crash_reporter::CrashKeyString<32> bad_app_type_key("bad-app-type");
-
-  if (!url.is_valid()) {
-    bad_app_url_key.Set(url.possibly_invalid_spec());
-    bad_app_id_key.Set(hashed_app_id);
-    bad_app_type_key.Set(base::ToString(app_type));
-    base::debug::DumpWithoutCrashing();
-    return std::nullopt;
-  }
-
-  bad_app_url_key.Clear();
-  bad_app_id_key.Clear();
-  bad_app_type_key.Clear();
-
   switch (app_type) {
-    // Collects the app package name unhashed. App package names are public and
-    // in the play store.
-    case AppType::kArc:
-      return url.spec();
-
-    // Crostini apps are identified by concatenating the desktop_id and the
-    // app_id. For more documentation as to what the desktop_id and app_id,
-    // refer to the documentation in
-    // //chrome/browser/ash/guest_os/guest_os_registery_service.h.
-    case AppType::kCrostini:
-
-    // Borealis apps are identified using the steam app ID, which is a number
-    // assigned to games by steam.
-    case AppType::kBorealis:
-      return url.spec();
-
     // Web apps may contain sensitive data in the URLs. Collect the
     // |hashed_app_id| of the app to avoid collecting potentially sensitive data
     // in the URL.
     case AppType::kWeb:
       return hashed_app_id;
 
+    // Collects the app package name unhashed. App package names are public and
+    // in the play store.
+    case AppType::kArc:
+    // Crostini apps are identified by concatenating the desktop_id and the
+    // app_id. For more documentation as to what the desktop_id and app_id,
+    // refer to the documentation in
+    // //chrome/browser/ash/guest_os/guest_os_registry_service.h.
+    case AppType::kCrostini:
+    // Borealis apps are identified using the steam app ID, which is a number
+    // assigned to games by steam.
+    case AppType::kBorealis:
     // These app types have app names that are hashed before the URLs are
     // generated.
     case AppType::kChromeApp:
     case AppType::kExtension:
-    case AppType::kSystemWeb:
+    case AppType::kSystemWeb: {
+      GURL url = AppPlatformMetrics::GetURLForApp(profile_, hashed_app_id);
+      if (!url.is_valid()) {
+        return std::nullopt;
+      }
       return url.spec();
-
-    // Any other app types should not be collected.
-    default:
+    }
+    // App types should not be collected.
+    case AppType::kBruschetta:
+    case AppType::kPluginVm:
+    case AppType::kRemote:
+    case AppType::kUnknown:
       return std::nullopt;
   }
+  NOTREACHED();
 }
 
 void AppDiscoveryMetrics::OnCapabilityAccessUpdate(
