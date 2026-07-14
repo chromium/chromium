@@ -302,6 +302,7 @@ class CORE_EXPORT HTMLImageElement
   bool is_lcp_element_ : 1;
   bool is_auto_sized_ : 1;
   bool is_predicted_lcp_element_ : 1;
+  bool is_lazy_load_issue_reported_ : 1;
 
   HashSet<String> creator_scripts_;
 };

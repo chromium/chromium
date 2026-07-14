@@ -232,6 +232,10 @@ class CORE_EXPORT AuditsIssue {
       const AdTracker::AdScriptAncestry& ad_ancestry,
       const SourceLocation& source_location);
 
+  static void ReportLazyLoadImageIssue(ExecutionContext* execution_context,
+                                       Element* element,
+                                       const String& url);
+
  private:
   std::unique_ptr<protocol::Audits::InspectorIssue> issue_;
 };

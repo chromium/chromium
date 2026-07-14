@@ -1152,4 +1152,34 @@ AuditsIssue AuditsIssue::CreateContentSecurityPolicyIssue(
   return AuditsIssue(std::move(issue));
 }
 
+void AuditsIssue::ReportLazyLoadImageIssue(ExecutionContext* execution_context,
+                                           Element* element,
+                                           const String& url) {
+  if (!execution_context || !element) {
+    return;
+  }
+  auto* window = DynamicTo<LocalDOMWindow>(execution_context);
+  if (!window || !window->GetFrame()) {
+    return;
+  }
+  auto lazy_load_image_issue_details =
+      protocol::Audits::LazyLoadImageIssueDetails::create()
+          .setNodeId(element->GetDomNodeId())
+          .setUrl(url)
+          .setFrameId(IdentifiersFactory::FrameId(window->GetFrame()))
+          .build();
+
+  auto details = protocol::Audits::InspectorIssueDetails::create()
+                     .setLazyLoadImageIssueDetails(
+                         std::move(lazy_load_image_issue_details))
+                     .build();
+
+  auto issue =
+      protocol::Audits::InspectorIssue::create()
+          .setCode(protocol::Audits::InspectorIssueCodeEnum::LazyLoadImageIssue)
+          .setDetails(std::move(details))
+          .build();
+  execution_context->AddInspectorIssue(AuditsIssue(std::move(issue)));
+}
+
 }  // namespace blink

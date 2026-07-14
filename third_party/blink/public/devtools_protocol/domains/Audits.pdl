@@ -778,6 +778,16 @@ experimental domain Audits
       # The stack trace at the time of the intervention.
       optional Runtime.StackTrace stackTrace
 
+  # Details for issues about lazy-loaded images without explicit dimensions.
+  type LazyLoadImageIssueDetails extends object
+    properties
+      # DOM node of the problematic HTMLImageElement.
+      DOM.BackendNodeId nodeId
+      # URL or src attribute of the image.
+      string url
+      # Frame containing the image.
+      Page.FrameId frameId
+
   # A unique identifier for the type of issue. Each type may use one of the
   # optional fields in InspectorIssueDetails to convey more specific
   # information about the kind of issue.
@@ -814,6 +824,7 @@ experimental domain Audits
       PerformanceIssue
       SelectivePermissionsInterventionIssue
       EmailVerificationRequestIssue
+      LazyLoadImageIssue
 
   # This struct holds a list of optional fields with additional information
   # specific to the kind of issue. When adding a new issue code, please also
@@ -850,6 +861,7 @@ experimental domain Audits
       optional PerformanceIssueDetails performanceIssueDetails
       optional SelectivePermissionsInterventionIssueDetails selectivePermissionsInterventionIssueDetails
       optional EmailVerificationRequestIssueDetails emailVerificationRequestIssueDetails
+      optional LazyLoadImageIssueDetails lazyLoadImageIssueDetails
 
   # A unique id for a DevTools inspector issue. Allows other entities (e.g.
   # exceptions, CDP message, console messages, etc.) to reference an issue.

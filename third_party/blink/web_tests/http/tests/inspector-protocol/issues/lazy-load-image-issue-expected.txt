@@ -1,0 +1,14 @@
+Tests that lazy-load image zero-size issues are reported
+Inspector issue: {
+    issue : {
+        code : LazyLoadImageIssue
+        details : {
+            lazyLoadImageIssueDetails : {
+                frameId : <string>
+                nodeId : <number>
+                url : data:image/png,
+            }
+        }
+    }
+}
+

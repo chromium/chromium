@@ -14,7 +14,10 @@
 #include "third_party/blink/renderer/core/html/html_image_element.h"
 #include "third_party/blink/renderer/core/html/media/lazy_load_media_observer.h"
 #include "third_party/blink/renderer/core/html_names.h"
+#include "third_party/blink/renderer/core/inspector/inspector_issue_storage.h"
+#include "third_party/blink/renderer/core/inspector/protocol/audits.h"
 #include "third_party/blink/renderer/core/loader/resource/image_resource.h"
+#include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/style/style_image.h"
@@ -741,6 +744,51 @@ TEST_F(LazyLoadImagesTest, DeferredLazyLoadImagesKeptAliveForDecodeRequest) {
   // After GC, the image is still non-null, since it is kept alive due to the
   // outstanding decode request.
   EXPECT_NE(image, nullptr);
+}
+
+TEST_F(LazyLoadImagesTest, ReportLazyLoadImageIssueForUnsizedImage) {
+  SimRequest main_resource("https://example.com/", "text/html");
+  LoadURL("https://example.com/");
+  main_resource.Complete(R"HTML(
+    <body>
+    <img src='data:image/png,' loading='lazy'>
+    </body>)HTML");
+
+  Compositor().BeginFrame();
+  test::RunPendingTasks();
+
+  auto& storage = GetDocument().GetPage()->GetInspectorIssueStorage();
+  bool found_issue = false;
+  for (wtf_size_t i = 0; i < storage.size(); ++i) {
+    auto* issue = storage.at(i);
+    if (issue->getCode() ==
+            protocol::Audits::InspectorIssueCodeEnum::LazyLoadImageIssue &&
+        issue->getDetails()->hasLazyLoadImageIssueDetails()) {
+      found_issue = true;
+      const auto& details = issue->getDetails()->getLazyLoadImageIssueDetails();
+      EXPECT_EQ("data:image/png,", details->getUrl());
+    }
+  }
+  EXPECT_TRUE(found_issue);
+}
+
+TEST_F(LazyLoadImagesTest, NoLazyLoadImageIssueForSizedImage) {
+  SimRequest main_resource("https://example.com/", "text/html");
+  LoadURL("https://example.com/");
+  main_resource.Complete(R"HTML(
+    <body>
+    <img src='data:image/png,' loading='lazy' width='100' height='100'>
+    </body>)HTML");
+
+  Compositor().BeginFrame();
+  test::RunPendingTasks();
+
+  auto& storage = GetDocument().GetPage()->GetInspectorIssueStorage();
+  for (wtf_size_t i = 0; i < storage.size(); ++i) {
+    auto* issue = storage.at(i);
+    EXPECT_NE(protocol::Audits::InspectorIssueCodeEnum::LazyLoadImageIssue,
+              issue->getCode());
+  }
 }
 
 }  // namespace
