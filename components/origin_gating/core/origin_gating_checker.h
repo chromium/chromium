@@ -13,6 +13,7 @@
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
+#include "base/thread_annotations.h"
 #include "components/origin_gating/core/origin_gating_cache.h"
 #include "components/origin_gating/core/origin_gating_configuration.h"
 #include "components/origin_gating/core/types.h"
@@ -78,9 +79,11 @@ class OriginGatingChecker {
 
   // Exposes mutation methods to manage allowed origins in the cache.
   void AllowNavigationTo(url::Origin origin, bool is_user_confirmed) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     cache_.AllowNavigationTo(std::move(origin), is_user_confirmed);
   }
   void AllowNavigationTo(const absl::flat_hash_set<url::Origin>& origins) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     cache_.AllowNavigationTo(origins);
   }
 
@@ -126,13 +129,15 @@ class OriginGatingChecker {
 
   // Predicate that returns `kAllowed` if `destination` is in the cache with
   // user confirmation; `kNoDecision` otherwise.
-  Decision IsCachedWithUserConfirmation(const url::Origin& origin) const;
+  Decision IsCachedWithUserConfirmation(const url::Origin& origin) const
+      VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   SEQUENCE_CHECKER(sequence_checker_);
-  const raw_ref<Delegate> delegate_;
-  OriginGatingConfiguration config_;
-  OriginGatingCache cache_;
-  base::WeakPtrFactory<OriginGatingChecker> weak_ptr_factory_{this};
+  const raw_ref<Delegate> delegate_ GUARDED_BY_CONTEXT(sequence_checker_);
+  OriginGatingConfiguration config_ GUARDED_BY_CONTEXT(sequence_checker_);
+  OriginGatingCache cache_ GUARDED_BY_CONTEXT(sequence_checker_);
+  base::WeakPtrFactory<OriginGatingChecker> weak_ptr_factory_
+      GUARDED_BY_CONTEXT(sequence_checker_){this};
 };
 
 }  // namespace origin_gating

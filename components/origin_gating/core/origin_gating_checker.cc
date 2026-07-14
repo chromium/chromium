@@ -12,6 +12,7 @@
 #include "base/functional/callback.h"
 #include "base/notreached.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/thread_annotations.h"
 #include "components/origin_gating/core/origin_gating_cache.h"
 #include "components/origin_gating/core/types.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
@@ -109,7 +110,8 @@ void OriginGatingChecker::RunNextPredicate(
 
   std::visit(
       absl::Overload{
-          [&](DecisionSource source_enum) {
+          [&](DecisionSource source_enum) VALID_CONTEXT_REQUIRED(
+              sequence_checker_) {
             switch (source_enum) {
               case DecisionSource::kAllowSameOrigin: {
                 Decision decision = EvaluateAllowSameOrigin(
@@ -163,7 +165,8 @@ void OriginGatingChecker::RunNextPredicate(
                 NOTREACHED();
             }
           },
-          [&](const CustomPredicate& custom_predicate) {
+          [&](const CustomPredicate& custom_predicate) VALID_CONTEXT_REQUIRED(
+              sequence_checker_) {
             GatingDecisionContext* raw_context = context.get();
             custom_predicate.Run(
                 raw_context, input.event, input.source, input.destination,
