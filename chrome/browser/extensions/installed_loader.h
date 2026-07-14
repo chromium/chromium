@@ -9,6 +9,7 @@
 
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
+#include "extensions/browser/extension_prefs.h"
 #include "extensions/buildflags/buildflags.h"
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
@@ -18,9 +19,7 @@ class Profile;
 namespace extensions {
 
 class Extension;
-class ExtensionPrefs;
 class ExtensionRegistry;
-struct ExtensionInfo;
 class ExtensionManagement;
 class ManagementPolicy;
 
@@ -47,7 +46,7 @@ class InstalledLoader {
   virtual ~InstalledLoader();
 
   // Loads extension from prefs.
-  void Load(const ExtensionInfo& info, bool write_to_prefs);
+  void Load(const ExtensionPrefs::InstallRecord& info, bool write_to_prefs);
 
   // Loads all installed extensions (used by startup and testing code).
   void LoadAllExtensions();
@@ -75,7 +74,7 @@ class InstalledLoader {
  private:
   // Returns the flags that should be used with Extension::Create() for an
   // extension that is already installed.
-  int GetCreationFlags(const ExtensionInfo* info);
+  int GetCreationFlags(const ExtensionPrefs::InstallRecord* info);
 
   // Records metrics related to the loaded extensions. Meant to be called only
   // for profiles where users can install extensions, specifically profiles that

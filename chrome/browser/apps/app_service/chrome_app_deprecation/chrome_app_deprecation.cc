@@ -351,8 +351,8 @@ bool IsUserInstalled(std::string_view app_id, Profile* profile) {
     return false;
   }
 
-  std::optional<const extensions::ExtensionInfo> extension_info =
-      prefs->GetInstalledExtensionInfo(app_id.data());
+  std::optional<const extensions::ExtensionPrefs::InstallRecord>
+      extension_info = prefs->GetInstalledExtensionInfo(app_id.data());
   if (!extension_info) {
     return false;
   }

@@ -770,20 +770,4 @@ const std::string& Extension::description() const {
   return DescriptionInfo::GetDescription(*this);
 }
 
-ExtensionInfo::ExtensionInfo(const base::DictValue* manifest,
-                             const ExtensionId& id,
-                             const base::FilePath& path,
-                             ManifestLocation location)
-    : extension_id(id), extension_path(path), extension_location(location) {
-  if (manifest) {
-    extension_manifest = std::make_unique<base::DictValue>(manifest->Clone());
-  }
-}
-
-ExtensionInfo::ExtensionInfo(ExtensionInfo&&) noexcept = default;
-
-ExtensionInfo& ExtensionInfo::operator=(ExtensionInfo&&) = default;
-
-ExtensionInfo::~ExtensionInfo() = default;
-
 }   // namespace extensions

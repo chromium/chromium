@@ -152,7 +152,7 @@ void ExternalProviderManager::OnAllExternalProvidersReady() {
   }
 
   // Uninstall all the unclaimed extensions.
-  ExtensionPrefs::ExtensionsInfo extensions_info =
+  ExtensionPrefs::InstallRecords extensions_info =
       extension_prefs_->GetInstalledExtensionsInfo();
   for (const auto& info : extensions_info) {
     if (Manifest::IsExternalLocation(info.extension_location)) {
@@ -360,7 +360,7 @@ bool ExternalProviderManager::OnExternalExtensionUpdateUrlFound(
 
       // Fetch the installation info from the prefs, and reload the extension
       // with a modified install location.
-      std::optional<ExtensionInfo> installed_extension(
+      std::optional<ExtensionPrefs::InstallRecord> installed_extension(
           extension_prefs_->GetInstalledExtensionInfo(info.extension_id));
       installed_extension->extension_location = info.download_location;
 

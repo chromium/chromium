@@ -274,7 +274,7 @@ void ChromeExtensionRegistrarDelegate::DoLoadExtensionForReload(
 
   // Check the installed extensions to see if what we're reloading was already
   // installed.
-  std::optional<ExtensionInfo> installed_extension(
+  std::optional<ExtensionPrefs::InstallRecord> installed_extension(
       extension_prefs_->GetInstalledExtensionInfo(extension_id));
   if (installed_extension && installed_extension->extension_manifest.get()) {
     InstalledLoader(profile_).Load(*installed_extension, false);

@@ -4391,8 +4391,8 @@ TEST_F(ExtensionServiceTest, ManagementPolicyProhibitsLoadFromPrefs) {
   // UNPACKED is for extensions loaded from a directory. We use it here, even
   // though we're testing loading from prefs, so that we don't need to provide
   // an extension key.
-  ExtensionInfo extension_info(&manifest, std::string(), path,
-                               ManifestLocation::kUnpacked);
+  ExtensionPrefs::InstallRecord extension_info(&manifest, std::string(), path,
+                                               ManifestLocation::kUnpacked);
 
   // Ensure we can load it with no management policy in place.
   GetManagementPolicy()->UnregisterAllProviders();

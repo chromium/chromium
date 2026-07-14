@@ -451,27 +451,6 @@ class Extension final : public base::RefCountedThreadSafe<Extension> {
 
 using ExtensionList = std::vector<scoped_refptr<const Extension>>;
 
-// Handy struct to pass core extension info around.
-struct ExtensionInfo {
-  ExtensionInfo(const base::DictValue* manifest,
-                const ExtensionId& id,
-                const base::FilePath& path,
-                mojom::ManifestLocation location);
-  ExtensionInfo(ExtensionInfo&&) noexcept;
-  ExtensionInfo(const ExtensionInfo&) = delete;
-  ExtensionInfo& operator=(const ExtensionInfo&) = delete;
-  ExtensionInfo& operator=(ExtensionInfo&&);
-  ~ExtensionInfo();
-
-  // Note: This may be null (e.g. for unpacked extensions retrieved from the
-  // Preferences file).
-  std::unique_ptr<base::DictValue> extension_manifest;
-
-  ExtensionId extension_id;
-  base::FilePath extension_path;
-  mojom::ManifestLocation extension_location;
-};
-
 }  // namespace extensions
 
 #endif  // EXTENSIONS_COMMON_EXTENSION_H_

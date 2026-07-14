@@ -59,7 +59,7 @@ void DelayedInstallManager::FinishInstallationsDelayedByShutdown() {
   TRACE_EVENT0("browser,startup",
                "DelayedInstallManager::FinishInstallationsDelayedByShutdown");
 
-  const ExtensionPrefs::ExtensionsInfo delayed_info =
+  const ExtensionPrefs::InstallRecords delayed_info =
       extension_prefs_->GetAllDelayedInstallInfo();
   for (const auto& info : delayed_info) {
     scoped_refptr<const Extension> extension;

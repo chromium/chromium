@@ -46,7 +46,7 @@ size_t CalculateAllocatedGlobalRuleCount(
 // browser session has just started).
 size_t CalculateInitialAllocatedGlobalRuleCount(
     ExtensionPrefs* extension_prefs) {
-  const ExtensionPrefs::ExtensionsInfo extensions_info =
+  const ExtensionPrefs::InstallRecords extensions_info =
       extension_prefs->GetInstalledExtensionsInfo();
   const PrefsHelper helper(*extension_prefs);
 

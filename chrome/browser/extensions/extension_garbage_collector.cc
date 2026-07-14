@@ -216,7 +216,7 @@ void ExtensionGarbageCollector::GarbageCollectExtensions() {
   // containing the extension installs is not a direct subdir of the profile
   // directory whereas this is true in production. So we can't do a simple check
   // like that to ensure we're inside the profile directory.
-  ExtensionPrefs::ExtensionsInfo extensions_info =
+  ExtensionPrefs::InstallRecords extensions_info =
       extension_prefs->GetInstalledExtensionsInfo();
   std::multimap<ExtensionId, base::FilePath> extension_paths;
   for (const auto& info : extensions_info) {

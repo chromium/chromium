@@ -521,7 +521,7 @@ class ExtensionPrefsDelayedInstallInfo : public ExtensionPrefsTest {
       const syncer::StringOrdinal& expected_page_ordinal =
           syncer::StringOrdinal(),
       const std::string& expected_install_parameter = std::string()) {
-    std::optional<ExtensionInfo> info(
+    std::optional<ExtensionPrefs::InstallRecord> info(
         prefs()->GetDelayedInstallExtensionInfo(id));
     ASSERT_TRUE(info);
     const std::string* version =
@@ -543,12 +543,13 @@ class ExtensionPrefsDelayedInstallInfo : public ExtensionPrefsTest {
     EXPECT_TRUE(delayed_info.ruleset_install_prefs.empty());
   }
 
-  bool HasInfoForId(const ExtensionPrefs::ExtensionsInfo& info,
+  bool HasInfoForId(const ExtensionPrefs::InstallRecords& info,
                     const std::string& id) {
-    return std::ranges::find_if(info.begin(), info.end(),
-                                [&id](const ExtensionInfo& info) {
-                                  return info.extension_id == id;
-                                }) != info.end();
+    return std::ranges::find_if(
+               info.begin(), info.end(),
+               [&id](const ExtensionPrefs::InstallRecord& info) {
+                 return info.extension_id == id;
+               }) != info.end();
   }
 
   void Initialize() override {
@@ -564,7 +565,7 @@ class ExtensionPrefsDelayedInstallInfo : public ExtensionPrefsTest {
     SetIdleInfo(id2_, 2);
     VerifyIdleInfo(id1_, 1);
     VerifyIdleInfo(id2_, 2);
-    ExtensionPrefs::ExtensionsInfo info = prefs()->GetAllDelayedInstallInfo();
+    ExtensionPrefs::InstallRecords info = prefs()->GetAllDelayedInstallInfo();
     EXPECT_EQ(2u, info.size());
     EXPECT_TRUE(HasInfoForId(info, id1_));
     EXPECT_TRUE(HasInfoForId(info, id2_));
@@ -578,7 +579,7 @@ class ExtensionPrefsDelayedInstallInfo : public ExtensionPrefsTest {
 
   void Verify() override {
     // Make sure the info for the 4 extensions we expect is present.
-    ExtensionPrefs::ExtensionsInfo info = prefs()->GetAllDelayedInstallInfo();
+    ExtensionPrefs::InstallRecords info = prefs()->GetAllDelayedInstallInfo();
     EXPECT_EQ(4u, info.size());
     EXPECT_TRUE(HasInfoForId(info, id1_));
     EXPECT_TRUE(HasInfoForId(info, id2_));

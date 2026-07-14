@@ -124,7 +124,7 @@ bool IsManifestCorrupt(const base::DictValue& manifest) {
          manifest.contains(manifest_keys::kBackgroundScripts);
 }
 
-bool ShouldReloadExtensionManifest(const ExtensionInfo& info) {
+bool ShouldReloadExtensionManifest(const ExtensionPrefs::InstallRecord& info) {
   // Always reload manifests of unpacked extensions, because they can change
   // on disk independent of the manifest in our prefs.
   if (Manifest::IsUnpackedLocation(info.extension_location)) {
@@ -282,7 +282,8 @@ InstalledLoader::InstalledLoader(Profile* profile)
 
 InstalledLoader::~InstalledLoader() = default;
 
-void InstalledLoader::Load(const ExtensionInfo& info, bool write_to_prefs) {
+void InstalledLoader::Load(const ExtensionPrefs::InstallRecord& info,
+                           bool write_to_prefs) {
   // TODO(asargent): add a test to confirm that we can't load extensions if
   // their ID in preferences does not match the extension's actual ID.
   if (invalid_extensions_.find(info.extension_path) !=
@@ -365,7 +366,7 @@ void InstalledLoader::LoadAllExtensions(Profile* profile) {
       profile_util::ProfileCanUseNonComponentExtensions(profile);
   const base::TimeTicks load_start_time = base::TimeTicks::Now();
 
-  ExtensionPrefs::ExtensionsInfo extensions_info =
+  ExtensionPrefs::InstallRecords extensions_info =
       extension_prefs_->GetInstalledExtensionsInfo();
 
   bool should_write_prefs = false;
@@ -994,7 +995,8 @@ void InstalledLoader::RecordExtensionsMetrics(Profile* profile) {
   }
 }
 
-int InstalledLoader::GetCreationFlags(const ExtensionInfo* info) {
+int InstalledLoader::GetCreationFlags(
+    const ExtensionPrefs::InstallRecord* info) {
   int flags = extension_prefs_->GetCreationFlags(info->extension_id);
   if (!Manifest::IsUnpackedLocation(info->extension_location)) {
     flags |= Extension::REQUIRE_KEY;
