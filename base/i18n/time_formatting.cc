@@ -9,7 +9,7 @@
 
 #include "base/i18n/icubridge/date_time_formatter.h"
 #include "base/i18n/icubridge/icu_bridge.h"
-#include "base/i18n/tags.h"
+#include "base/i18n/language_tag.h"
 #include "base/i18n/timezone.h"
 #include "base/i18n/unicodestring.h"
 #include "base/notreached.h"

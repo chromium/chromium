@@ -9,7 +9,6 @@
 #include "base/i18n/language_tag.h"
 #include "base/i18n/string_compare.h"
 #include "base/i18n/tag_converters.h"
-#include "base/i18n/tags.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"

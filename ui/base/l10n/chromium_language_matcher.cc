@@ -9,7 +9,6 @@
 
 #include "base/i18n/language_tag.h"
 #include "base/i18n/language_tag_matcher.h"
-#include "base/i18n/tags.h"
 #include "base/no_destructor.h"
 #include "ui/base/buildflags.h"
 

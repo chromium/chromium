@@ -6,8 +6,8 @@
 
 #include <memory>
 
+#include "base/i18n/language_tag.h"
 #include "base/i18n/rtl.h"
-#include "base/i18n/tags.h"
 #include "base/test/icu_test_util.h"
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"

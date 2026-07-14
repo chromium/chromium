@@ -5,7 +5,7 @@
 // This is a "No Compile Test" suite.
 // http://dev.chromium.org/developers/testing/no-compile-tests
 
-#include "base/i18n/tags.h"
+#include "base/i18n/language_tag.h"
 
 namespace base::i18n {
 

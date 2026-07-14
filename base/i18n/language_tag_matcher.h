@@ -11,7 +11,6 @@
 #include "base/containers/span.h"
 #include "base/i18n/base_i18n_export.h"
 #include "base/i18n/language_tag.h"
-#include "base/i18n/tags.h"
 #include "third_party/rust/cxx/v1/cxx.h"
 
 namespace base::i18n_internal {

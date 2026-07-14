@@ -8,7 +8,6 @@
 
 #include "base/containers/fixed_flat_set.h"
 #include "base/i18n/tag_converters.h"
-#include "base/i18n/tags.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/values.h"
 #include "testing/gmock/include/gmock/gmock.h"

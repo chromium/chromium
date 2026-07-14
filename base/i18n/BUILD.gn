@@ -16,7 +16,6 @@ source_set("language_tag") {
     "language_tag_matcher.h",
     "tag_converters.cc",
     "tag_converters.h",
-    "tags.h",
   ]
 
   defines = [ "BASE_I18N_IMPLEMENTATION" ]

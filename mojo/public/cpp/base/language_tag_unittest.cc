@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 #include "base/i18n/language_tag.h"
-
-#include "base/i18n/tags.h"
 #include "mojo/public/cpp/base/language_tag_mojom_traits.h"
 #include "mojo/public/cpp/bindings/lib/default_construct_tag_internal.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
