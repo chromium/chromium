@@ -3972,7 +3972,8 @@ auto GraphBuilderTflite::SerializeWhereOperation(
 }
 
 auto GraphBuilderTflite::InsertPadOperation(const TensorInfo& input_tensor_info,
-                                            base::span<const int16_t> paddings)
+                                            base::span<const int16_t> paddings,
+                                            std::optional<float> padding_value)
     -> base::expected<TensorIndex, std::string> {
   // WebNN explicit padding is in [beginning_height, ending_height,
   // beginning_width, ending_width] sequence.
@@ -4022,11 +4023,33 @@ auto GraphBuilderTflite::InsertPadOperation(const TensorInfo& input_tensor_info,
   // Create `tflite::Operator` with the tensor index of inputs and outputs
   // operand. The type of operation is determined by the index of the operator
   // code.
+  const std::array<TensorIndex, 1> op_outputs = {output_tensor_index};
+
+  if (padding_value.has_value()) {
+    // Use PADV2 with a scalar constant so the padded region is filled with the
+    // caller-supplied value (e.g. -inf for maxPool) instead of zero.
+    CHECK_EQ(input_tensor_info.data_type, ::tflite::TensorType_FLOAT32);
+    ASSIGN_OR_RETURN(const TensorIndex padding_value_index,
+                     SerializeTensorWithBuffer<float>(
+                         std::array<float, 1>{padding_value.value()},
+                         /*dimensions=*/std::array<int32_t, 1>{1}));
+    const OperatorCodeIndex padv2_operator_code_index =
+        GetOperatorCodeIndex(::tflite::BuiltinOperator_PADV2);
+    const std::array<TensorIndex, 3> padv2_inputs = {
+        input_tensor_info.index, padding_tensor_index, padding_value_index};
+    operators_.emplace_back(::tflite::CreateOperator(
+        builder_, padv2_operator_code_index,
+        builder_.CreateVector<TensorIndex>(padv2_inputs),
+        builder_.CreateVector<TensorIndex>(op_outputs),
+        ::tflite::BuiltinOptions_PadV2Options,
+        ::tflite::CreatePadV2Options(builder_).Union()));
+    return output_tensor_index;
+  }
+
   const OperatorCodeIndex operator_code_index =
       GetOperatorCodeIndex(::tflite::BuiltinOperator_PAD);
-  std::array<TensorIndex, 2> op_inputs = {input_tensor_info.index,
-                                          padding_tensor_index};
-  const std::array<TensorIndex, 1> op_outputs = {output_tensor_index};
+  const std::array<TensorIndex, 2> op_inputs = {input_tensor_info.index,
+                                                padding_tensor_index};
   operators_.emplace_back(
       ::tflite::CreateOperator(builder_, operator_code_index,
                                builder_.CreateVector<TensorIndex>(op_inputs),
@@ -8085,18 +8108,62 @@ auto GraphBuilderTflite::SerializePool2d(const mojom::Pool2d& pool2d)
         sum_pooled_index, input_tensor_info.data_type, output_tensor_index);
   }
 
-  // TODO(crbug.com/475285740): Support explicit padding for average and max
-  // pool. Currently, inserting a PAD operator before the TFLite Pool2d operator
-  // is used as a workaround.
+  // MaxPool pads with -inf (via PADV2) so real values always win the max;
+  // zero-fill would corrupt windows of all-negative real values.
+  const bool use_neg_inf_padding =
+      pool2d.kind == mojom::Pool2d::Kind::kMaxPool2d &&
+      !quantized_output.has_value();
   std::optional<TensorIndex> explicit_pad_index;
   if (padding_mode.paddings) {
     ASSIGN_OR_RETURN(
         explicit_pad_index,
-        InsertPadOperation(input_tensor_info, padding_mode.paddings.value()));
+        InsertPadOperation(
+            input_tensor_info, padding_mode.paddings.value(),
+            use_neg_inf_padding
+                ? std::optional<float>(-std::numeric_limits<float>::infinity())
+                : std::nullopt));
   }
   const std::array<TensorIndex, 1> op_inputs = {explicit_pad_index
                                                     ? explicit_pad_index.value()
                                                     : input_tensor_info.index};
+
+  // Windows overlapping only padding (e.g. from ceil rounding) pool to -inf;
+  // WebNN expects 0 for those, so remap after pooling.
+  if (use_neg_inf_padding && padding_mode.paddings) {
+    // Pool into a temporary tensor, then remap -inf outputs to 0.
+    ASSIGN_OR_RETURN(
+        const TensorIndex pooled_index,
+        SerializeTemporaryTensorWithByteSizeCheck(output_tensor_info.dimensions,
+                                                  input_tensor_info.data_type));
+    const std::array<TensorIndex, 1> pool_outputs = {pooled_index};
+    operators_.emplace_back(::tflite::CreateOperator(
+        builder_, operator_code_index,
+        builder_.CreateVector<TensorIndex>(op_inputs),
+        builder_.CreateVector<TensorIndex>(pool_outputs),
+        ::tflite::BuiltinOptions_Pool2DOptions, pool_2d_options.Union()));
+
+    // condition = (pooled == -inf)
+    ASSIGN_OR_RETURN(
+        const TensorIndex neg_inf_index,
+        SerializeTensorWithBuffer<float>(
+            std::vector<float>{-std::numeric_limits<float>::infinity()},
+            /*dimensions=*/{}));
+    ASSIGN_OR_RETURN(
+        const TensorIndex is_neg_inf_index,
+        SerializeTemporaryTensorWithByteSizeCheck(output_tensor_info.dimensions,
+                                                  ::tflite::TensorType_BOOL));
+    operators_.emplace_back(
+        SerializeBinaryOperation(::tflite::BuiltinOperator_EQUAL, pooled_index,
+                                 neg_inf_index, is_neg_inf_index));
+
+    // output = condition ? 0 : pooled
+    ASSIGN_OR_RETURN(const TensorIndex zero_index,
+                     SerializeTensorWithBuffer<float>(std::vector<float>{0.0f},
+                                                      /*dimensions=*/{}));
+    return SerializeWhereOperation(is_neg_inf_index, zero_index, pooled_index,
+                                   output_tensor_index);
+  }
+
   const std::array<TensorIndex, 1> op_outputs = {output_tensor_index};
   return ::tflite::CreateOperator(
       builder_, operator_code_index,
