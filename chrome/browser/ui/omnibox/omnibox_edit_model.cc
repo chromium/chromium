@@ -53,6 +53,7 @@
 #include "components/lens/lens_overlay_invocation_source.h"
 #include "components/navigation_metrics/navigation_metrics.h"
 #include "components/omnibox/browser/actions/omnibox_action.h"
+#include "components/omnibox/browser/actions/omnibox_action_client_delegator.h"
 #include "components/omnibox/browser/actions/omnibox_pedal.h"
 #include "components/omnibox/browser/actions/omnibox_pedal_concepts.h"
 #include "components/omnibox/browser/autocomplete_classifier.h"
@@ -207,6 +208,19 @@ const ai_mode_button_config::AiModeButtonConfig* GetAiModeButtonConfig(
   CHECK(config);
   return config;
 }
+
+class OmniboxEditModelActionClient : public OmniboxActionClientDelegator {
+ public:
+  OmniboxEditModelActionClient(
+      AutocompleteProviderClient& autocomplete_provider_client,
+      OmniboxEditModel& edit_model)
+      : OmniboxActionClientDelegator(autocomplete_provider_client),
+        edit_model_(&edit_model) {}
+  ~OmniboxEditModelActionClient() override = default;
+
+ private:
+  const raw_ptr<OmniboxEditModel> edit_model_;
+};
 
 }  // namespace
 
@@ -2870,9 +2884,10 @@ void OmniboxEditModel::OpenMatch(OmniboxPopupSelection selection,
   }
 
   if (action) {
+    OmniboxEditModelActionClient action_client(
+        *(autocomplete_controller()->autocomplete_provider_client()), *this);
     controller_->client()->ExecuteAction(
-        action, disposition, match_selection_timestamp,
-        *(autocomplete_controller()->autocomplete_provider_client()));
+        action, disposition, match_selection_timestamp, action_client);
   }
 
   if (disposition != WindowOpenDisposition::NEW_BACKGROUND_TAB && view_) {

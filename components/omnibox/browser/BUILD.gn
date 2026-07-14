@@ -161,6 +161,8 @@ static_library("browser") {
     "actions/cross_device_tab_action.h",
     "actions/omnibox_action.cc",
     "actions/omnibox_action.h",
+    "actions/omnibox_action_client_delegator.cc",
+    "actions/omnibox_action_client_delegator.h",
     "actions/omnibox_action_concepts.h",
     "actions/omnibox_action_in_suggest.cc",
     "actions/omnibox_action_in_suggest.h",

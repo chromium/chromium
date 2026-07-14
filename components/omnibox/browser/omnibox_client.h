@@ -357,7 +357,7 @@ class OmniboxClient {
   void ExecuteAction(OmniboxAction* action,
                      WindowOpenDisposition disposition,
                      base::TimeTicks match_selection_timestamp,
-                     AutocompleteProviderClient& provider_client);
+                     OmniboxAction::Client& action_client);
 
   // Called when the input is accepted with a thumbnail and no user text. This
   // is required because there is no verbatim match when the input is just an

@@ -175,12 +175,12 @@ omnibox::InputState OmniboxClient::GetInputState() const {
 void OmniboxClient::ExecuteAction(OmniboxAction* action,
                                   WindowOpenDisposition disposition,
                                   base::TimeTicks match_selection_timestamp,
-                                  AutocompleteProviderClient& provider_client) {
+                                  OmniboxAction::Client& action_client) {
   if (!action) {
     return;
   }
   OmniboxAction::ExecutionContext context(
-      provider_client,
+      action_client,
       base::BindOnce(&OmniboxClient::OnAutocompleteAccept, AsWeakPtr()),
       match_selection_timestamp, disposition);
   base::UmaHistogramMicrosecondsTimes(

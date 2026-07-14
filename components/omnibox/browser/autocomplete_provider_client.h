@@ -84,7 +84,7 @@ class TemplateURLService;
 
 class AutocompleteProviderClient : public OmniboxAction::Client {
  public:
-  virtual ~AutocompleteProviderClient() = default;
+  ~AutocompleteProviderClient() override = default;
 
   virtual scoped_refptr<network::SharedURLLoaderFactory>
   GetURLLoaderFactory() = 0;
