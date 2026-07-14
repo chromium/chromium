@@ -14,7 +14,7 @@ def _load(ctx, tsconfig_path, loaded):
     return tsconfig
 
 def _paths(ctx, tsconfig_path, tsconfig, loaded):
-    paths = [tsconfig_path]
+    paths = []
     tsconfig_dir = path.dir(tsconfig_path)
     if "files" in tsconfig:
         paths.extend([path.join(tsconfig_dir, file) for file in tsconfig["files"]])
