@@ -7875,13 +7875,11 @@ test("unit_tests") {
     # Use this scope to migrate files/deps from
     # `enterprise_cloud_content_analysis` conditions that now need to compile
     # on Android.
-    sources += [
-      "../browser/interstitials/enterprise_util_unittest.cc",
-      "../browser/safe_browsing/download_protection/deep_scanning_request_unittest.cc",
-    ]
+    sources += [ "../browser/safe_browsing/download_protection/deep_scanning_request_unittest.cc" ]
     deps += [
       "//chrome/browser/enterprise/connectors/reporting:unit_tests",
       "//chrome/browser/enterprise/connectors/test:test_support",
+      "//chrome/browser/interstitials:unit_tests",
       "//components/enterprise/common/proto:browser_events_proto",
       "//components/enterprise/common/proto:chrome_reporting_entity",
       "//components/enterprise/connectors/core",
