@@ -40,6 +40,9 @@ void AndroidDataControlsDialogFactory::ShowDialogIfNeeded(
       window->ShowToast(
           l10n_util::GetStringUTF8(IDS_POLICY_ACTION_BLOCKED_BY_ORGANIZATION));
     }
+    if (callback) {
+      std::move(callback).Run(/*bypassed=*/false);
+    }
     return;
   }
   DataControlsDialogFactory::ShowDialogIfNeeded(web_contents, type,
