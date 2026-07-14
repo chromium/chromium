@@ -52,7 +52,6 @@
       {
         "args": [
           "--avd-config=../../tools/android/avd/proto/android_33_google_apis_x64.textpb",
-          "--gtest_filter=-OfferNotificationControllerAndroidBrowserTestForMessagesUi.MessageShown",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],

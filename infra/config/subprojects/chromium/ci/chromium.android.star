@@ -3047,10 +3047,6 @@ ci.builder(
         ],
         per_test_modifications = {
             "android_browsertests": targets.mixin(
-                args = [
-                    # https://crbug.com/1414886
-                    "--gtest_filter=-OfferNotificationControllerAndroidBrowserTestForMessagesUi.MessageShown",
-                ],
                 swarming = targets.swarming(
                     shards = 12,
                 ),
