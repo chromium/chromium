@@ -79,6 +79,7 @@ source_set("test_support") {
       "//chrome/browser/ash/arc/boot_phase_monitor",
       "//chromeos/ash/components/browser_context_helper",
       "//chromeos/ash/experiences/arc:arc_metrics_constants",
+      "//components/session_manager/core",
     ]
 
     data += [
