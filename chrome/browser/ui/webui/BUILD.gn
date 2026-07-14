@@ -597,6 +597,7 @@ source_set("ntp_tiles_internals_ui") {
     "//base",
     "//chrome/browser/favicon",
     "//chrome/browser/history",
+    "//chrome/browser/new_tab_page/prefs",
     "//chrome/browser/ntp_tiles",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/search_engines",

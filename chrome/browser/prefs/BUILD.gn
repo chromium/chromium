@@ -89,6 +89,7 @@ source_set("impl") {
     "//chrome/browser/memory",
     "//chrome/browser/metrics",
     "//chrome/browser/net",
+    "//chrome/browser/new_tab_page/prefs",
     "//chrome/browser/permissions",
     "//chrome/browser/platform_experience:prefs",
     "//chrome/browser/preloading:prefs",
