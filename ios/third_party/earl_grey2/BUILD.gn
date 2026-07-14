@@ -6,36 +6,6 @@ import("//build/config/ios/ios_sdk.gni")
 import("//build/config/ios/rules.gni")
 import("//build/config/sanitizers/sanitizers.gni")
 
-template("patch_file") {
-  assert(defined(invoker.patch_path),
-         "patch_path must be defined for $target_name")
-  assert(defined(invoker.source_file),
-         "source_file must be defined for $target_name")
-
-  action(target_name) {
-    forward_variables_from(invoker,
-                           [
-                             "testonly",
-                             "visibility",
-                           ])
-
-    script = "patch.py"
-    sources = [
-      invoker.patch_path,
-      invoker.source_file,
-    ]
-    outputs = [ "$target_gen_dir/" + invoker.source_file ]
-
-    args = rebase_path(sources, root_build_dir) +
-           rebase_path(outputs, root_build_dir)
-  }
-}
-
-patch_file("patch_GREYTouchInjector_m") {
-  patch_path = "patches/GREYTouchInjector.m.diff"
-  source_file = "src/AppFramework/Event/GREYTouchInjector.m"
-}
-
 config("config") {
   include_dirs = [
     "//ios/third_party/earl_grey2/src",
@@ -412,6 +382,7 @@ ios_framework_bundle("app_framework") {
     "src/AppFramework/Event/GREYIOHIDEventTypes.h",
     "src/AppFramework/Event/GREYSyntheticEvents.m",
     "src/AppFramework/Event/GREYTouchInjector.h",
+    "src/AppFramework/Event/GREYTouchInjector.m",
     "src/AppFramework/IdlingResources/GREYDispatchQueueIdlingResource.h",
     "src/AppFramework/IdlingResources/GREYDispatchQueueIdlingResource.m",
     "src/AppFramework/IdlingResources/GREYIdlingResource.h",
@@ -453,11 +424,8 @@ ios_framework_bundle("app_framework") {
     "src/AppFramework/Synchronization/UIApplication+ActiveRunLoopMode.m",
   ]
 
-  sources += get_target_outputs(":patch_GREYTouchInjector_m")
-
   deps = [
     ":common_lib",
-    ":patch_GREYTouchInjector_m",
     ":test_lib_shared_headers",
     ":ui_lib",
     "//build/config/ios:xctest",
