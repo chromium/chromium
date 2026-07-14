@@ -885,6 +885,28 @@ TEST_F(TooltipControllerTest, SynthesizedMouseMoveUpdatesObservedWindow) {
   helper_->HideAndReset();
 }
 
+TEST_F(TooltipControllerTest, DontCrashWhenScreenTargetIsNullAfterCapture) {
+  // Set capture on the main widget.
+  widget_->SetCapture(view_);
+  EXPECT_TRUE(widget_->HasCapture());
+
+  // Create a second window under the mouse cursor that has no delegate and
+  // no event-handling children, so GetEventHandlerForPoint returns nullptr.
+  std::unique_ptr<aura::Window> target_window(
+      CreateNormalWindow(100, GetRootWindow(), nullptr));
+  target_window->SetBounds(gfx::Rect(10, 10, 100, 100));
+  target_window->SetEventTargetingPolicy(
+      aura::EventTargetingPolicy::kDescendantsOnly);
+
+  // Move the mouse over the second window. This should not crash when
+  // GetTooltipTarget attempts to convert points to the target window.
+  generator_->MoveMouseTo(target_window->GetBoundsInScreen().CenterPoint());
+  EXPECT_EQ(nullptr, helper_->GetObservedWindow());
+  EXPECT_FALSE(helper_->IsTooltipVisible());
+
+  helper_->HideAndReset();
+}
+
 // This test validates that the TooltipController correctly triggers a position
 // update for a tooltip that is about to be shown.
 TEST_F(TooltipControllerTest, TooltipPositionUpdatedWhenTimerRunning) {

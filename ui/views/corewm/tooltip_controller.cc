@@ -119,6 +119,16 @@ aura::Window* GetTooltipTarget(const ui::MouseEvent& event,
       aura::client::GetScreenPositionClient(target->GetRootWindow())
           ->ConvertPointFromScreen(target, &target_loc);
       aura::Window* screen_target = target->GetEventHandlerForPoint(target_loc);
+      // `screen_target` can be nullptr if no window inside `target` accepts the
+      // event at `target_loc` (e.g., `target` or its subtrees use
+      // `EventTargetingPolicy::kNone` or `kDescendantsOnly` with no matching
+      // child, or `ShouldDescendIntoChildForEventHandling()` /
+      // `GetCanProcessEventsWithinSubtree()` reject the event). If no window
+      // handles the event, no tooltip target exists.
+      if (!screen_target) {
+        return nullptr;
+      }
+
       if (!IsValidTarget(event_target, screen_target)) {
         return nullptr;
       }
