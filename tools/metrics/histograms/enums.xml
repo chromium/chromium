@@ -4113,7 +4113,7 @@ shown properly on the user-facing crash UI.
       label="kPing: Includes both kBeacon and kAttribution when used in
              browser process"/>
   <int value="3" label="kReporting"/>
-  <int value="4" label="kAttribution"/>
+  <int value="4" label="kAttribution (obsolete)"/>
   <int value="5" label="kBackgroundFetchIcon"/>
 </enum>
 

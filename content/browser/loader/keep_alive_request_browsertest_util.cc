@@ -143,8 +143,7 @@ void KeepAliveRequestBrowserTestBase::ExpectFetchKeepAliveHistogram(
   const int renderer_sample = static_cast<int>(expected_sample);
   const int browser_sample =
       (expected_sample == FetchKeepAliveRequestMetricType::kBeacon ||
-       expected_sample == FetchKeepAliveRequestMetricType::kPing ||
-       expected_sample == FetchKeepAliveRequestMetricType::kAttribution)
+       expected_sample == FetchKeepAliveRequestMetricType::kPing)
           ? static_cast<int>(FetchKeepAliveRequestMetricType::kPing)
           : static_cast<int>(expected_sample);
   histogram_tester().ExpectUniqueSample(

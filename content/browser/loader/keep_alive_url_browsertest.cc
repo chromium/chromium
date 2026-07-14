@@ -20,8 +20,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "build/build_config.h"
-#include "content/browser/attribution_reporting/test/mock_attribution_data_host_manager.h"
-#include "content/browser/attribution_reporting/test/mock_attribution_manager.h"
 #include "content/browser/back_forward_cache_test_util.h"
 #include "content/browser/loader/keep_alive_request_browsertest_util.h"
 #include "content/browser/loader/keep_alive_url_loader.h"
@@ -979,118 +977,6 @@ IN_PROC_BROWSER_TEST_P(FetchKeepAlivePreMigrationBrowserTest,
       ExpectedFailedRequests(/*browser=*/0));
 }
 
-class KeepAliveURLAttributionReportingBrowserTest
-    : public FetchKeepAliveCommonTestBase,
-      public ::testing::WithParamInterface<std::string> {
- protected:
-  void SetUp() override {
-    // Attribution Reporting API only supports HTTPS requests.
-    SetUseHttps();
-    FetchKeepAliveCommonTestBase::SetUp();
-  }
-
-  void SetUpOnMainThread() override {
-    auto mock_manager = std::make_unique<MockAttributionManager>();
-    auto mock_data_host_manager =
-        std::make_unique<MockAttributionDataHostManager>();
-    mock_manager->SetDataHostManager(std::move(mock_data_host_manager));
-    static_cast<StoragePartitionImpl*>(
-        web_contents()->GetBrowserContext()->GetDefaultStoragePartition())
-        ->OverrideAttributionManagerForTesting(std::move(mock_manager));
-
-    FetchKeepAliveCommonTestBase::SetUpOnMainThread();
-  }
-
-  const FeaturesType& GetEnabledFeatures() override {
-    static const FeaturesType enabled_features =
-        GetDefaultEnabledBackForwardCacheFeaturesForTesting(
-            {{blink::features::kKeepAliveInBrowserMigration, {}}});
-    return enabled_features;
-  }
-};
-
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    KeepAliveURLAttributionReportingBrowserTest,
-    ::testing::Values(net::HttpRequestHeaders::kGetMethod,
-                      net::HttpRequestHeaders::kPostMethod),
-    [](const testing::TestParamInfo<
-        KeepAliveURLAttributionReportingBrowserTest::ParamType>& info) {
-      return info.param;
-    });
-
-IN_PROC_BROWSER_TEST_P(KeepAliveURLAttributionReportingBrowserTest,
-                       ReceiveViolatingCSPRedirect_NotForwarded) {
-  const std::string method = GetParam();
-  const char violating_csp_redirect_target[] =
-      "http://b.test/beacon-redirected";
-  auto request_handler =
-      std::move(RegisterRequestHandlers({kKeepAliveEndpoint})[0]);
-  ASSERT_TRUE(server()->Start());
-  const GURL allowed_csp_url = server()->GetURL(kAllowedCspHost, "/");
-
-  auto* data_host_manager = static_cast<MockAttributionDataHostManager*>(
-      AttributionManager::FromWebContents(web_contents())
-          ->GetDataHostManager());
-  EXPECT_CALL(*data_host_manager, NotifyBackgroundRegistrationStarted).Times(1);
-  EXPECT_CALL(*data_host_manager, NotifyBackgroundRegistrationData).Times(0);
-  base::test::TestFuture<void> completed_future;
-  EXPECT_CALL(*data_host_manager, NotifyBackgroundRegistrationCompleted)
-      .Times(1)
-      .WillOnce(
-          [&](BackgroundRegistrationsId) { completed_future.SetValue(); });
-
-  // Load a page with the correct CSP header without firing a fetch immediately.
-  ASSERT_TRUE(NavigateToURL(
-      web_contents(),
-      GetKeepAlivePageURL(
-          method, /*num_requests=*/0,
-          GetConnectSrcCSPHeader(url::Origin::Create(allowed_csp_url)))));
-  RenderFrameHostImplWrapper rfh_1(current_frame_host());
-  DisableBackForwardCache(web_contents());
-
-  // Trigger the fetch keepalive request after navigation commit, so the
-  // KeepAliveURLLoaderFactory has the committed document's attribution context.
-  // Omitting `attributionReporting` is intentional: `kUnset` maps to trigger
-  // eligibility in GetRegistrationEligibility(), matching the old request
-  // shape.
-  ASSERT_TRUE(ExecJs(
-      web_contents(),
-      JsReplace("fetch($1, {keepalive: true, cache: 'no-store', method: $2});",
-                GetKeepAliveEndpoint(), method),
-      content::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
-
-  request_handler->WaitForRequest();
-  if (loader_service()) {
-    ASSERT_EQ(loader_service()->NumLoadersForTesting(), 1u);
-  }
-  // Collects any potential histogram before the process is gone.
-  FetchHistogramsFromChildProcesses();
-
-  // Navigate to cross-origin page to ensure the 1st page can be unloaded.
-  ASSERT_TRUE(NavigateToURL(web_contents(), GetCrossOriginPageURL()));
-  ASSERT_NE(current_frame_host(), rfh_1.get());
-  ASSERT_TRUE(rfh_1.WaitUntilRenderFrameDeleted());
-
-  if (loader_service()) {
-    ASSERT_EQ(loader_service()->NumLoadersForTesting(), 1u);
-  }
-
-  // Send back the violating redirect response to terminate request handling.
-  request_handler->Send(
-      base::StringPrintf(k301Response, violating_csp_redirect_target));
-  request_handler->Done();
-
-  // The redirect doesn't match CSP source from the 1st page, so the loader is
-  // terminated.
-  // While the 1st page is unloaded, the disconnection may not propagate to
-  // browser process in time, such that calling
-  // `WaitForTotalOnCompleteProcessed()` here might be flaky.
-  loaders_observer().WaitForTotalOnComplete({net::ERR_BLOCKED_BY_CSP});
-  ASSERT_TRUE(completed_future.Wait())
-      << "Timed out waiting for background registration completion.";
-}
-
 class KeepAliveFetchRetryBrowserTest
     : public FetchKeepAliveCommonTestBase,
       public ::testing::WithParamInterface<std::string> {
@@ -1517,7 +1403,7 @@ IN_PROC_BROWSER_TEST_P(KeepAliveFetchRetryBrowserTest, RetryOptionsSet) {
                                                    beacon_url)));
 }
 
-// TODO(crbug.com/417930271): test unload, redirects, timeout, attribution.
+// TODO(crbug.com/417930271): test unload, redirects, timeout.
 
 // Regression test for crbug.com/489744805: when the renderer is disconnected
 // (page unloaded), the browser-side EndReceiveRedirect() must strip the

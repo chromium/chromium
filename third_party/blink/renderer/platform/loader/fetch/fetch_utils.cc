@@ -34,7 +34,7 @@ enum class FetchKeepAliveRequestMetricType {
   kBeacon = 1,
   kPing = 2,
   kReporting = 3,
-  kAttribution = 4,
+  // kAttribution = 4, obsolete
   kBackgroundFetchIcon = 5,
   kMaxValue = kBackgroundFetchIcon,
 };
@@ -218,12 +218,10 @@ void FetchUtils::LogFetchKeepAliveRequestMetric(
     case mojom::blink::RequestContextType::CSP_REPORT:
       sample_type = FetchKeepAliveRequestMetricType::kReporting;
       break;
-    case mojom::blink::RequestContextType::ATTRIBUTION_SRC:
-      sample_type = FetchKeepAliveRequestMetricType::kAttribution;
-      break;
     case mojom::blink::RequestContextType::IMAGE:
       sample_type = FetchKeepAliveRequestMetricType::kBackgroundFetchIcon;
       break;
+    case mojom::blink::RequestContextType::ATTRIBUTION_SRC:
     case mojom::blink::RequestContextType::AUDIO:
     case mojom::blink::RequestContextType::DOWNLOAD:
     case mojom::blink::RequestContextType::EMBED:

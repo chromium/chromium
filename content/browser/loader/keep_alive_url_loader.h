@@ -46,7 +46,6 @@ class URLLoaderThrottle;
 
 namespace content {
 
-class KeepAliveAttributionRequestHelper;
 class KeepAliveRequestTracker;
 class KeepAliveRequestBrowserTestBase;
 class KeepAliveURLLoaderService;
@@ -135,9 +134,7 @@ class CONTENT_EXPORT KeepAliveURLLoader
       std::optional<ukm::SourceId> ukm_source_id,
       StoragePartitionImpl* storage_partition,
       URLLoaderThrottlesGetter throttles_getter,
-      base::PassKey<KeepAliveURLLoaderService>,
-      std::unique_ptr<KeepAliveAttributionRequestHelper>
-          attribution_request_helper);
+      base::PassKey<KeepAliveURLLoaderService>);
   ~KeepAliveURLLoader() override;
 
   // Not copyable.
@@ -371,7 +368,7 @@ class CONTENT_EXPORT KeepAliveURLLoader
     kBeacon = 1,  // not used here.
     kPing = 2,
     kReporting = 3,
-    kAttribution = 4,  // not used here.
+    // kAttribution = 4,  obsolete.
     kBackgroundFetchIcon = 5,
     kMaxValue = kBackgroundFetchIcon,
   };
@@ -537,13 +534,6 @@ class CONTENT_EXPORT KeepAliveURLLoader
   // See also
   // https://docs.google.com/document/d/1RKPgoLBrrLZBPn01XtwHJiLlH9rA7nIRXQJIR7BUqJA/edit#heading=h.y1og20bzkuf7
   std::unique_ptr<blink::ThrottlingURLLoader> url_loader_;
-
-  // Request helper responsible for processing Attribution Reporting API
-  // operations (https://github.com/WICG/attribution-reporting-api). Only set if
-  // the request is related to attribution. When set, responses (redirects &
-  // final) handled by the loader will be forwarded to the helper.
-  std::unique_ptr<KeepAliveAttributionRequestHelper>
-      attribution_request_helper_;
 
   // For testing only:
   // Not owned.
