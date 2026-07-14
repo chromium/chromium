@@ -123,6 +123,7 @@ void LocaleSwitchScreenBrowserTest::ProceedToLocaleSwitchScreen() {
   // Make sure that all of the capabilities are already loaded after login.
   Profile* profile = ProfileManager::GetPrimaryUserProfile();
   auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
+  signin::WaitForRefreshTokensLoaded(identity_manager);
   AccountInfo account_info = identity_manager->FindExtendedAccountInfoByGaiaId(
       FakeGaiaMixin::kFakeUserGaiaId);
   AccountCapabilitiesTestMutator mutator(&account_info);
