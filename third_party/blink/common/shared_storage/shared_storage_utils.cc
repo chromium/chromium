@@ -32,9 +32,7 @@ void LogSharedStorageSelectURLBudgetStatus(
 }
 
 bool ShouldDefinePrivateAggregationInSharedStorage() {
-  return base::FeatureList::IsEnabled(
-             blink::features::kPrivateAggregationApi) &&
-         blink::features::kPrivateAggregationApiEnabledInSharedStorage.Get();
+  return false;
 }
 
 bool IsValidPrivateAggregationContextId(std::string_view context_id) {

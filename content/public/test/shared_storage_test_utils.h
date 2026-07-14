@@ -13,7 +13,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_split.h"
 #include "components/services/storage/shared_storage/shared_storage_manager.h"
-#include "content/browser/private_aggregation/private_aggregation_host.h"
 #include "services/network/public/mojom/url_loader_network_service_observer.mojom.h"
 #include "url/origin.h"
 
@@ -113,11 +112,7 @@ SharedStorageWriteOperationAndResult HeaderOperationSuccess(
     const url::Origin& request_origin,
     std::vector<MethodWithOptionsPtr> methods_with_options);
 
-PrivateAggregationHost::PipeResult
-GetPrivateAggregationHostPipeReportSuccessValue();
 
-PrivateAggregationHost::PipeResult
-GetPrivateAggregationHostPipeApiDisabledValue();
 
 base::WeakPtr<TestSharedStorageHeaderObserver>
 CreateAndOverrideSharedStorageHeaderObserver(StoragePartition* partition);

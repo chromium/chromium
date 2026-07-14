@@ -16,7 +16,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/to_string.h"
-#include "content/browser/private_aggregation/private_aggregation_host.h"
 #include "third_party/blink/public/mojom/shared_storage/shared_storage.mojom.h"
 
 namespace content {
@@ -185,8 +184,9 @@ std::string MaybeTruncateSerializedData(
 SharedStorageEventParams::PrivateAggregationConfigWrapper::
     PrivateAggregationConfigWrapper()
     : config(blink::mojom::PrivateAggregationConfig::New()) {
-  config->filtering_id_max_bytes =
-      PrivateAggregationHost::kDefaultFilteringIdMaxBytes;
+  // Hardcode the default value to avoid dependence on the Private Aggregation
+  // directory, simplifying removal.
+  config->filtering_id_max_bytes = 1;
 }
 
 SharedStorageEventParams::PrivateAggregationConfigWrapper::

@@ -29,8 +29,6 @@
 #include "content/browser/devtools/shared_storage_worklet_devtools_manager.h"
 #include "content/browser/fenced_frame/fenced_frame_reporter.h"
 #include "content/browser/interest_group/interest_group_manager_impl.h"
-#include "content/browser/private_aggregation/private_aggregation_caller_api.h"
-#include "content/browser/private_aggregation/private_aggregation_manager.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/page_impl.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
@@ -1760,44 +1758,7 @@ blink::mojom::PrivateAggregationOperationDetailsPtr
 SharedStorageWorkletHost::MaybeConstructPrivateAggregationOperationDetails(
     const blink::mojom::PrivateAggregationConfigPtr&
         private_aggregation_config) {
-  CHECK(browser_context_);
-  CHECK(private_aggregation_config);
-
-  if (!blink::ShouldDefinePrivateAggregationInSharedStorage()) {
-    return nullptr;
-  }
-
-  PrivateAggregationManager* private_aggregation_manager =
-      PrivateAggregationManager::GetManager(*browser_context_);
-  CHECK(private_aggregation_manager);
-
-  blink::mojom::PrivateAggregationOperationDetailsPtr pa_operation_details =
-      blink::mojom::PrivateAggregationOperationDetails::New(
-          mojo::PendingRemote<blink::mojom::PrivateAggregationHost>(),
-          private_aggregation_config->filtering_id_max_bytes);
-
-  std::optional<base::TimeDelta> timeout;
-  if (PrivateAggregationManager::ShouldSendReportDeterministically(
-          PrivateAggregationCallerApi::kSharedStorage,
-          private_aggregation_config->context_id,
-          private_aggregation_config->filtering_id_max_bytes,
-          static_cast<std::optional<size_t>>(
-              private_aggregation_config->max_contributions))) {
-    timeout = base::Seconds(5);
-  }
-
-  bool success = private_aggregation_manager->BindNewReceiver(
-      shared_storage_origin_, main_frame_origin_,
-      PrivateAggregationCallerApi::kSharedStorage,
-      private_aggregation_config->context_id, std::move(timeout),
-      private_aggregation_config->aggregation_coordinator_origin,
-      private_aggregation_config->filtering_id_max_bytes,
-      static_cast<std::optional<size_t>>(
-          private_aggregation_config->max_contributions),
-      pa_operation_details->pa_host.InitWithNewPipeAndPassReceiver());
-  CHECK(success);
-
-  return pa_operation_details;
+  return nullptr;
 }
 
 bool SharedStorageWorkletHost::IsSharedStorageAllowed(

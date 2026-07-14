@@ -92,9 +92,6 @@ specific_include_rules = {
   "scoped_time_zone.h": [
     "+services/device/time_zone_monitor/fake_time_zone_monitor.h"
   ],
-  "shared_storage_test_utils.h": [
-    "+content/browser/private_aggregation/private_aggregation_host.h"
-  ],
   "test_image_transport_factory.h": [
     "+content/browser/compositor/image_transport_factory.h"
   ],

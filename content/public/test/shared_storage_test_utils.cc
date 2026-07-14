@@ -266,16 +266,6 @@ SharedStorageWriteOperationAndResult HeaderOperationSuccess(
                                               /*success=*/true);
 }
 
-PrivateAggregationHost::PipeResult
-GetPrivateAggregationHostPipeReportSuccessValue() {
-  return PrivateAggregationHost::PipeResult::kReportSuccess;
-}
-
-PrivateAggregationHost::PipeResult
-GetPrivateAggregationHostPipeApiDisabledValue() {
-  return PrivateAggregationHost::PipeResult::kApiDisabledInSettings;
-}
-
 base::WeakPtr<TestSharedStorageHeaderObserver>
 CreateAndOverrideSharedStorageHeaderObserver(StoragePartition* partition) {
   auto observer = std::make_unique<TestSharedStorageHeaderObserver>(partition);
