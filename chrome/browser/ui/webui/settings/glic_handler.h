@@ -60,6 +60,8 @@ class GlicHandler : public SettingsPageUIHandler,
  private:
   FRIEND_TEST_ALL_PREFIXES(GlicHandlerBrowserTest, UpdateShortcutSuspension);
   FRIEND_TEST_ALL_PREFIXES(GlicHandlerBrowserTest, UpdateGlicShortcut);
+  FRIEND_TEST_ALL_PREFIXES(GlicHandlerBrowserTest,
+                           ToggleActorLoginPermissionsObservation);
   FRIEND_TEST_ALL_PREFIXES(GlicHandlerBrowserTest, GetActorLoginPermissions);
   FRIEND_TEST_ALL_PREFIXES(GlicHandlerBrowserTest, GetWebActuationEnabled);
   FRIEND_TEST_ALL_PREFIXES(GlicHandlerBrowserTest, SetWebActuationEnabled);
@@ -111,6 +113,12 @@ class GlicHandler : public SettingsPageUIHandler,
 
   // Handles requests for actor login permissions for display in settings.
   void HandleGetActorLoginPermissions(const base::ListValue& args);
+
+  // Starts observing actor login permissions changes.
+  void HandleStartObservingActorLoginPermissions(const base::ListValue& args);
+
+  // Stops observing actor login permissions changes.
+  void HandleStopObservingActorLoginPermissions(const base::ListValue& args);
 
   // Handles requests to revoke an actor login permission.
   void HandleRevokeActorLoginPermission(const base::ListValue& args);

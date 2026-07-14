@@ -212,6 +212,20 @@ IN_PROC_BROWSER_TEST_F(GlicHandlerBrowserTest, GetActorLoginPermissions) {
 }
 
 IN_PROC_BROWSER_TEST_F(GlicHandlerBrowserTest,
+                       ToggleActorLoginPermissionsObservation) {
+  glic_handler()->AllowJavascript();
+  EXPECT_FALSE(glic_handler()->observation_.IsObserving());
+
+  base::ListValue start_args;
+  glic_handler()->HandleStartObservingActorLoginPermissions(start_args);
+  EXPECT_TRUE(glic_handler()->observation_.IsObserving());
+
+  base::ListValue stop_args;
+  glic_handler()->HandleStopObservingActorLoginPermissions(stop_args);
+  EXPECT_FALSE(glic_handler()->observation_.IsObserving());
+}
+
+IN_PROC_BROWSER_TEST_F(GlicHandlerBrowserTest,
                        RevokeActorLoginPermissionSucceeded) {
   glic_handler()->AllowJavascript();
 

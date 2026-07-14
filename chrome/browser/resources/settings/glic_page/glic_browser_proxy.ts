@@ -39,6 +39,8 @@ export interface GlicBrowserProxy {
   setWebActuationEnabled(enabled: boolean): void;
   getExperimentalTriggeringEnabled(): Promise<boolean>;
   setExperimentalTriggeringEnabled(enabled: boolean): void;
+  startObservingActorLoginPermissions(): void;
+  stopObservingActorLoginPermissions(): void;
 }
 
 export class GlicBrowserProxyImpl implements GlicBrowserProxy {
@@ -105,6 +107,14 @@ export class GlicBrowserProxyImpl implements GlicBrowserProxy {
 
   setExperimentalTriggeringEnabled(enabled: boolean) {
     chrome.send('setExperimentalTriggeringEnabled', [enabled]);
+  }
+
+  startObservingActorLoginPermissions() {
+    chrome.send('startObservingActorLoginPermissions');
+  }
+
+  stopObservingActorLoginPermissions() {
+    chrome.send('stopObservingActorLoginPermissions');
   }
 
   static getInstance(): GlicBrowserProxy {

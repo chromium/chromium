@@ -17,6 +17,9 @@ import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {DomRepeatEvent} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {routes} from '../route.js';
+import {RouteObserverMixin} from '../router.js';
+import type {Route} from '../router.js';
 import type {SettingsSimpleConfirmationDialogElement} from '../simple_confirmation_dialog.js';
 
 import {GlicBrowserProxyImpl} from './glic_browser_proxy.js';
@@ -24,7 +27,7 @@ import type {GlicBrowserProxy, LoginPermission} from './glic_browser_proxy.js';
 import {getTemplate} from './glic_login_permissions_page.html.js';
 
 const SettingsGlicLoginPermissionsPageElementBase =
-    WebUiListenerMixin(I18nMixin(PolymerElement));
+    RouteObserverMixin(WebUiListenerMixin(I18nMixin(PolymerElement)));
 
 export class SettingsGlicLoginPermissionsPageElement extends
     SettingsGlicLoginPermissionsPageElementBase {
@@ -62,6 +65,17 @@ export class SettingsGlicLoginPermissionsPageElement extends
   private boundOnOnline_ = () => this.isOnline_ = true;
   private boundOnOffline_ = () => this.isOnline_ = false;
 
+  override currentRouteChanged(newRoute: Route, _oldRoute?: Route) {
+    if (newRoute === routes.GEMINI_LOGIN) {
+      this.browserProxy_.startObservingActorLoginPermissions();
+      this.browserProxy_.getActorLoginPermissions().then(permissions => {
+        this.actorLoginPermissions_ = permissions;
+      });
+    } else {
+      this.browserProxy_.stopObservingActorLoginPermissions();
+    }
+  }
+
   override connectedCallback() {
     super.connectedCallback();
     this.addWebUiListener(
@@ -71,14 +85,11 @@ export class SettingsGlicLoginPermissionsPageElement extends
 
     window.addEventListener('online', this.boundOnOnline_);
     window.addEventListener('offline', this.boundOnOffline_);
-
-    this.browserProxy_.getActorLoginPermissions().then(permissions => {
-      this.actorLoginPermissions_ = permissions;
-    });
   }
 
   override disconnectedCallback() {
     super.disconnectedCallback();
+    this.browserProxy_.stopObservingActorLoginPermissions();
     window.removeEventListener('online', this.boundOnOnline_);
     window.removeEventListener('offline', this.boundOnOffline_);
   }

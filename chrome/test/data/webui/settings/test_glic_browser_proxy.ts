@@ -24,6 +24,8 @@ export class TestGlicBrowserProxy extends TestBrowserProxy implements
   constructor() {
     super([
       'getActorLoginPermissions',
+      'startObservingActorLoginPermissions',
+      'stopObservingActorLoginPermissions',
       'revokeActorLoginPermission',
       'setGlicOsLauncherEnabled',
       'getGlicShortcut',
@@ -147,6 +149,14 @@ export class TestGlicBrowserProxy extends TestBrowserProxy implements
   getActorLoginPermissions() {
     this.methodCalled('getActorLoginPermissions');
     return Promise.resolve(this.actorLoginPermissions_);
+  }
+
+  startObservingActorLoginPermissions() {
+    this.methodCalled('startObservingActorLoginPermissions');
+  }
+
+  stopObservingActorLoginPermissions() {
+    this.methodCalled('stopObservingActorLoginPermissions');
   }
 
   setActorLoginPermissions(permissions: LoginPermission[]) {

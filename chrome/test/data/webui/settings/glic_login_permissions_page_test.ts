@@ -5,7 +5,7 @@
 import 'chrome://settings/settings.js';
 
 import type {CrToastElement, SettingsGlicLoginPermissionsPageElement} from 'chrome://settings/lazy_load.js';
-import {GlicBrowserProxyImpl} from 'chrome://settings/settings.js';
+import {GlicBrowserProxyImpl, loadTimeData, resetRouterForTesting, Router, routes} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
@@ -31,7 +31,15 @@ suite('GlicLoginPermissionsPage', function() {
       faviconUrl: 'http://example.com/favicon.ico',
     }]);
 
+    loadTimeData.overrideValues({
+      showAiPage: true,
+      showGlicSettings: true,
+      actorLoginFederatedLoginSupportEnabled: true,
+    });
+    resetRouterForTesting();
+
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    Router.getInstance().navigateTo(routes.GEMINI_LOGIN);
     page = document.createElement('settings-glic-login-permissions-page');
     document.body.appendChild(page);
     await flushTasks();
@@ -167,5 +175,32 @@ suite('GlicLoginPermissionsPage', function() {
     assertTrue(!!loginPermissionsList);
     assertEquals(
         1, page.shadowRoot!.querySelectorAll('.permission-item').length);
+  });
+
+  test('start and stop observing on navigation', async () => {
+    browserProxy.resetResolver('startObservingActorLoginPermissions');
+    browserProxy.resetResolver('stopObservingActorLoginPermissions');
+
+    Router.getInstance().navigateTo(routes.GEMINI);
+    await browserProxy.whenCalled('stopObservingActorLoginPermissions');
+
+    Router.getInstance().navigateTo(routes.GEMINI_LOGIN);
+    await browserProxy.whenCalled('startObservingActorLoginPermissions');
+  });
+
+  test('getActorLoginPermissions called on navigation', async () => {
+    browserProxy.reset();
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    Router.getInstance().navigateTo(routes.GEMINI);
+    page = document.createElement('settings-glic-login-permissions-page');
+    document.body.appendChild(page);
+    await flushTasks();
+
+    assertEquals(0, browserProxy.getCallCount('getActorLoginPermissions'));
+
+    Router.getInstance().navigateTo(routes.GEMINI_LOGIN);
+    await browserProxy.whenCalled('getActorLoginPermissions');
+
+    assertEquals(1, browserProxy.getCallCount('getActorLoginPermissions'));
   });
 });

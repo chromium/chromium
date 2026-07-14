@@ -105,6 +105,16 @@ void GlicHandler::RegisterMessages() {
       base::BindRepeating(&GlicHandler::HandleGetActorLoginPermissions,
                           base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
+      "startObservingActorLoginPermissions",
+      base::BindRepeating(
+          &GlicHandler::HandleStartObservingActorLoginPermissions,
+          base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "stopObservingActorLoginPermissions",
+      base::BindRepeating(
+          &GlicHandler::HandleStopObservingActorLoginPermissions,
+          base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
       "revokeActorLoginPermission",
       base::BindRepeating(&GlicHandler::HandleRevokeActorLoginPermission,
                           base::Unretained(this)));
@@ -169,16 +179,17 @@ void GlicHandler::OnJavascriptAllowed() {
                             base::Unretained(this)));
   }
 
-  actor_login_permissions_manager_ =
-      std::make_unique<actor_login::ActorLoginPermissionsManagerImpl>(
-          AffiliationServiceFactory::GetForProfile(profile),
-          actor_login::ActorLoginPermissionServiceFactory::GetForProfile(
-              profile),
-          ProfilePasswordStoreFactory::GetForProfile(
-              profile, ServiceAccessType::EXPLICIT_ACCESS),
-          AccountPasswordStoreFactory::GetForProfile(
-              profile, ServiceAccessType::EXPLICIT_ACCESS));
-  observation_.Observe(actor_login_permissions_manager_.get());
+  if (!actor_login_permissions_manager_) {
+    actor_login_permissions_manager_ =
+        std::make_unique<actor_login::ActorLoginPermissionsManagerImpl>(
+            AffiliationServiceFactory::GetForProfile(profile),
+            actor_login::ActorLoginPermissionServiceFactory::GetForProfile(
+                profile),
+            ProfilePasswordStoreFactory::GetForProfile(
+                profile, ServiceAccessType::EXPLICIT_ACCESS),
+            AccountPasswordStoreFactory::GetForProfile(
+                profile, ServiceAccessType::EXPLICIT_ACCESS));
+  }
 }
 
 void GlicHandler::OnJavascriptDisallowed() {
@@ -474,6 +485,19 @@ void GlicHandler::HandleRevokeActorLoginPermission(
         base::BindOnce(&GlicHandler::OnRevokeActorLoginPermission,
                        weak_ptr_factory_.GetWeakPtr(), callback_id));
   }
+}
+
+void GlicHandler::HandleStartObservingActorLoginPermissions(
+    const base::ListValue& args) {
+  AllowJavascript();
+  if (actor_login_permissions_manager_ && !observation_.IsObserving()) {
+    observation_.Observe(actor_login_permissions_manager_.get());
+  }
+}
+
+void GlicHandler::HandleStopObservingActorLoginPermissions(
+    const base::ListValue& args) {
+  observation_.Reset();
 }
 
 void GlicHandler::OnRevokeActorLoginPermission(std::string callback_id_str,
