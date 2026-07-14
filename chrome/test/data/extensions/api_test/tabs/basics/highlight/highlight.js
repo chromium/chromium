@@ -44,10 +44,40 @@ loadScript.then(async function() {
         'http://a.com/c.html',
       ];
       const tabs2 = ['http://c.com/', 'http://a.com', 'http://a.com/b.html'];
+
+      const initialHighlightWindows = new Set();
+      let onHighlightChanged;
+      const initialHighlightListener = function(highlightInfo) {
+        initialHighlightWindows.add(highlightInfo.windowId);
+        if (onHighlightChanged) {
+          onHighlightChanged();
+        }
+      };
+      chrome.tabs.onHighlighted.addListener(initialHighlightListener);
+
       testWindowId1 = (await chrome.windows.create({url: tabs1})).id;
       testWindowId2 = (await chrome.windows.create({url: tabs2})).id;
       isAndroid = (await chrome.runtime.getPlatformInfo()).os === 'android';
-      waitForAllTabs(chrome.test.succeed);
+
+      // Wait for all tabs to be loaded *and* for each window to have set its
+      // "initial highlight". This prevents highlight calls from leaking into
+      // subtests.
+      waitForAllTabs(function() {
+        function waitForInitialHighlights() {
+          onHighlightChanged = undefined;
+          // TODO(https://crbug.com/473593117): Port this once we support the
+          // tabs.onHighlighted event.
+          if (isAndroid ||
+              (initialHighlightWindows.has(testWindowId1) &&
+               initialHighlightWindows.has(testWindowId2))) {
+            chrome.tabs.onHighlighted.removeListener(initialHighlightListener);
+            chrome.test.succeed();
+          } else {
+            onHighlightChanged = waitForInitialHighlights;
+          }
+        }
+        waitForInitialHighlights();
+      });
     },
 
     // TODO(crbug.com/40254426): "Current window" can rely on window focus,
