@@ -16,10 +16,9 @@ ActorContainerConfigSlot::~ActorContainerConfigSlot() = default;
 void ActorContainerConfigSlot::Assign(
     base::optional_ref<const optimization_guide::proto::AgentContainerConfig>
         config) {
-  if (assigned_) {
+  if (config_.has_value()) {
     return;
   }
-  assigned_ = true;
   if (config.has_value()) {
     config_.emplace(*config);
   }
