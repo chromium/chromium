@@ -44,22 +44,9 @@ const PERMISSION_PROMPT_CSS_CLASS = 'permission-prompt-showing';
 
 type Constructor<T> = new (...args: any[]) => T;
 
-function getUrlString(url: string|{url: string}|null|undefined): string {
-  if (!url) {
-    return '';
-  }
-  if (typeof url === 'string') {
-    return url;
-  }
-  if (typeof url.url === 'string') {
-    return url.url;
-  }
-  return '';
-}
-
 function dedupeTabs(restoredTabs: TabInfo[], recentTabs: TabInfo[]): TabInfo[] {
-  const restoredUrls = new Set(restoredTabs.map(t => getUrlString(t.url)));
-  return recentTabs.filter(t => !restoredUrls.has(getUrlString(t.url)));
+  const restoredIds = new Set(restoredTabs.map(t => t.tabId));
+  return recentTabs.filter(t => !restoredIds.has(t.tabId));
 }
 
 export const ComposeboxEmbedderMixin =
