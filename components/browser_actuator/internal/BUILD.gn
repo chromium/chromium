@@ -30,6 +30,7 @@ source_set("unit_tests") {
     ":internal",
     "//base",
     "//base/test:test_support",
+    "//components/browser_actuator/internal/transport:unit_tests",
     "//components/browser_actuator/public",
     "//components/browser_actuator/test_support",
     "//testing/gmock",

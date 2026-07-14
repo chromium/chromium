@@ -1,0 +1,20 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("test_support") {
+  testonly = true
+
+  sources = [
+    "mock_message_stream_client.cc",
+    "mock_message_stream_client.h",
+    "mock_stream_connection_delegate.cc",
+    "mock_stream_connection_delegate.h",
+  ]
+
+  public_deps = [
+    "//components/browser_actuator/internal/transport",
+    "//services/network/public/cpp",
+    "//testing/gmock",
+  ]
+}

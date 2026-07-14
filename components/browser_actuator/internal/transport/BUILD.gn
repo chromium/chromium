@@ -1,0 +1,37 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Wire-format-agnostic seams of the browser_actuator transport (see
+# README.md): the consumer-facing MessageStreamClient interface and the
+# StreamConnectionDelegate resume/auth policy seam. Concrete transports
+# live in subdirectories.
+source_set("transport") {
+  sources = [
+    "message_stream_client.h",
+    "stream_connection_delegate.cc",
+    "stream_connection_delegate.h",
+  ]
+
+  public_deps = [ "//base" ]
+
+  deps = [ "//services/network/public/cpp" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "stream_connection_delegate_unittest.cc" ]
+
+  deps = [
+    ":transport",
+    "test_support",
+    "//base",
+    "//base/test:test_support",
+    "//services/network/public/cpp",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+
+  visibility = [ "//components/browser_actuator/internal:unit_tests" ]
+}
