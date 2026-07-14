@@ -133,8 +133,7 @@ class CAPTURE_EXPORT CameraDeviceContext {
   void SubmitCapturedVideoCaptureBuffer(
       ClientType client_type,
       VideoCaptureDevice::Client::Buffer buffer,
-      VideoCaptureFormat frame_format,
-      const gfx::Size& coded_size,
+      const VideoCaptureFormat& frame_format,
       base::TimeTicks reference_time,
       base::TimeDelta timestamp,
       const VideoFrameMetadata& metadata);
