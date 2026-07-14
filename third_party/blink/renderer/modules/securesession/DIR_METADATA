@@ -1,0 +1,7 @@
+buganizer_public {
+  component_id: 1456828
+}
+monorail {
+  component: "Blink>SecurityFeature"
+}
+team_email: "safebrowsing@chromium.org"
