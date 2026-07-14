@@ -69,6 +69,7 @@ glic::GlicInvokeOptions CreateInvokeOptions(
   options.target.surface = new_tab;
 
   options.feature_mode = glic::mojom::FeatureMode::kExperimentalTriggering;
+  options.timeout = base::Minutes(5);
 
   if (request.has_request() &&
       request.request().has_trigger_actuation_request() &&
