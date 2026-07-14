@@ -5120,6 +5120,7 @@ static_library("test_support") {
     "//chrome/browser/bookmarks:browser_tests",
     "//chrome/browser/browsing_data:browser_tests",
     "//chrome/browser/extensions:test_support",
+    "//chrome/browser/media/webrtc:browser_tests",
     "//chrome/browser/printing:test_support",
     "//chrome/browser/search_engine_choice:browser_tests",
     "//chrome/browser/subresource_filter:android_test_support",
