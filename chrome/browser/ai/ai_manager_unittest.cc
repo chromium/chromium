@@ -152,7 +152,7 @@ TEST_F(AIManagerTest, CanCreateSemanticEmbedderCrashLimit) {
   auto* service_launcher = AISemanticEmbedderServiceLauncher::Get();
   service_launcher->RecordSuccessfulUse();
   service_launcher->controller()->MaybeUpdateModelInfo(
-      passage_embeddings::GetBuilderWithValidModelInfo().Build().get());
+      passage_embeddings::GetBuilderWithValidModelInfo().Build());
 
   // Ensure it's ready.
   EXPECT_TRUE(service_launcher->controller()->IsModelAvailable());

@@ -5,6 +5,7 @@
 #include "components/passage_embeddings/core/passage_embedder_model_observer.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
@@ -75,31 +76,28 @@ class TestOptimizationGuideModelProvider
   }
 
   // Set the model info to be sent to the observer.
-  void SetModelInfo(std::unique_ptr<optimization_guide::ModelInfo> model_info) {
+  void SetModelInfo(optimization_guide::ModelInfo model_info) {
     model_info_ = std::move(model_info);
     NotifyObservers();
   }
 
  private:
   void NotifyObservers() {
-    if (model_info_) {
-      observer_list_.Notify(
-          &optimization_guide::OptimizationTargetModelObserver::OnModelUpdated,
-          optimization_guide::proto::OPTIMIZATION_TARGET_PASSAGE_EMBEDDER,
-          *model_info_);
-    } else {
-      observer_list_.Notify(
-          &optimization_guide::OptimizationTargetModelObserver::OnModelUpdated,
-          optimization_guide::proto::OPTIMIZATION_TARGET_PASSAGE_EMBEDDER,
-          std::nullopt);
-    }
+    observer_list_.Notify(
+        &optimization_guide::OptimizationTargetModelObserver::OnModelUpdated,
+        optimization_guide::proto::OPTIMIZATION_TARGET_PASSAGE_EMBEDDER,
+        model_info_);
   }
 
   base::test::TaskEnvironment task_environment_;
   raw_ptr<base::test::TestFuture<bool>> target_observed_future_;
   base::ObserverList<optimization_guide::OptimizationTargetModelObserver>
       observer_list_;
-  std::unique_ptr<optimization_guide::ModelInfo> model_info_;
+  // `model_info_` is optional because observers receive an initial notification
+  // upon registration (`NotifyObservers()` in `AddObserver...()`) before
+  // `SetModelInfo()` has been invoked, passing `std::nullopt` to indicate that
+  // no model info is yet available.
+  std::optional<optimization_guide::ModelInfo> model_info_;
 };
 
 class PassageEmbedderModelObserverTest : public testing::Test {

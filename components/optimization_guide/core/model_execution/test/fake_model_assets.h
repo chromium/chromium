@@ -87,7 +87,7 @@ class FakeAdaptationAsset {
   mojom::OnDeviceFeature feature() const { return feature_; }
   OnDeviceModelAdaptationMetadata metadata() const { return *metadata_; }
 
-  const ModelInfo& model_info() const { return *model_info_; }
+  const ModelInfo& model_info() const { return model_info_; }
 
   void SendTo(OnDeviceModelServiceController& controller) const;
 
@@ -96,7 +96,7 @@ class FakeAdaptationAsset {
  private:
   base::ScopedTempDir temp_dir_;
   mojom::OnDeviceFeature feature_;
-  std::unique_ptr<ModelInfo> model_info_;
+  ModelInfo model_info_;
   std::unique_ptr<on_device_model::AdaptationAssetPaths> paths_;
   std::unique_ptr<OnDeviceModelAdaptationMetadata> metadata_;
 };
@@ -107,12 +107,12 @@ class FakeLanguageModelAsset {
   FakeLanguageModelAsset();
   ~FakeLanguageModelAsset();
 
-  const ModelInfo& model_info() const { return *model_info_; }
+  const ModelInfo& model_info() const { return model_info_; }
   base::FilePath model_path() const;
 
  private:
   base::ScopedTempDir temp_dir_;
-  std::unique_ptr<ModelInfo> model_info_;
+  ModelInfo model_info_;
 };
 
 // Safety model files and metadata suitable for a FakeOnDeviceModelService.
@@ -130,15 +130,15 @@ class FakeSafetyModelAsset {
 
   ~FakeSafetyModelAsset();
 
-  const ModelInfo& model_info() const { return *model_info_; }
+  const ModelInfo& model_info() const { return model_info_; }
 
   base::flat_set<base::FilePath> AdditionalFiles() const {
-    return model_info_->additional_files;
+    return model_info_.additional_files;
   }
 
  private:
   base::ScopedTempDir temp_dir_;
-  std::unique_ptr<ModelInfo> model_info_;
+  ModelInfo model_info_;
 };
 
 }  // namespace optimization_guide

@@ -693,11 +693,11 @@ IN_PROC_BROWSER_TEST_F(BrowsingTopicsInternalsBrowserTest, ClassifierTab) {
   // Configure the (mock) model.
 
   fixed_browsing_topics_service()->test_annotator()->UseModelInfo(
-      *optimization_guide::TestModelInfoBuilder()
-           .SetVersion(1)
-           .SetModelFilePath(
-               base::FilePath::FromASCII("/test_path/test_model.tflite"))
-           .Build());
+      optimization_guide::TestModelInfoBuilder()
+          .SetVersion(1)
+          .SetModelFilePath(
+              base::FilePath::FromASCII("/test_path/test_model.tflite"))
+          .Build());
   fixed_browsing_topics_service()->test_annotator()->UseAnnotations({
       {"foo1.com", {1, 2}},
       {"foo2.com", {3, 4, 5}},
@@ -740,11 +740,11 @@ IN_PROC_BROWSER_TEST_F(BrowsingTopicsInternalsBrowserTest,
   // Configure the (mock) model.
 
   fixed_browsing_topics_service()->test_annotator()->UseModelInfo(
-      *optimization_guide::TestModelInfoBuilder()
-           .SetVersion(1)
-           .SetModelFilePath(
-               base::FilePath::FromASCII("/test_path/test_model.tflite"))
-           .Build());
+      optimization_guide::TestModelInfoBuilder()
+          .SetVersion(1)
+          .SetModelFilePath(
+              base::FilePath::FromASCII("/test_path/test_model.tflite"))
+          .Build());
   fixed_browsing_topics_service()->test_annotator()->UseAnnotations({
       {"foo1.com", {1, 2}},
       {"foo2.com", {3, 4, 5}},

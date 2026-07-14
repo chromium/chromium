@@ -57,7 +57,7 @@ class ModelProvider
             .AppendASCII("data")
             .AppendASCII("browsing_topics")
             .AppendASCII("golden_data_model.tflite");
-    std::unique_ptr<optimization_guide::ModelInfo> model_info =
+    optimization_guide::ModelInfo model_info =
         optimization_guide::TestModelInfoBuilder()
             .SetModelFilePath(model_file_path)
             .SetModelMetadata(any_metadata)
@@ -65,7 +65,7 @@ class ModelProvider
 
     observer->OnModelUpdated(
         optimization_guide::proto::OPTIMIZATION_TARGET_PAGE_TOPICS_V2,
-        *model_info);
+        model_info);
   }
 };
 

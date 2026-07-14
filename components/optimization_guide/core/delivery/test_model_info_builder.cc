@@ -4,7 +4,6 @@
 
 #include "components/optimization_guide/core/delivery/test_model_info_builder.h"
 
-#include <memory>
 #include <utility>
 
 #include "build/build_config.h"
@@ -63,13 +62,13 @@ TestModelInfoBuilder& TestModelInfoBuilder::SetModelMetadata(
   return *this;
 }
 
-std::unique_ptr<ModelInfo> TestModelInfoBuilder::Build() {
-  return std::make_unique<ModelInfo>(ModelInfo{
+ModelInfo TestModelInfoBuilder::Build() {
+  return ModelInfo{
       .model_file_path = model_file_path_,
       .additional_files = additional_files_,
       .version = version_,
       .model_metadata = model_metadata_,
-  });
+  };
 }
 
 }  // namespace optimization_guide

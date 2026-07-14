@@ -93,13 +93,13 @@ class PageContentAnnotationsModelManagerTest : public testing::Test {
     // execution: job, queue, background sequences, etc, are working correctly.
     base::FilePath model_file_path =
         source_root_dir.AppendASCII("non_existent_model.tflite");
-    std::unique_ptr<optimization_guide::ModelInfo> model_info =
+    optimization_guide::ModelInfo model_info =
         optimization_guide::TestModelInfoBuilder()
             .SetModelFilePath(model_file_path)
             .Build();
     model_manager()->page_visibility_model_handler_->OnModelUpdated(
         optimization_guide::proto::OPTIMIZATION_TARGET_PAGE_VISIBILITY,
-        *model_info);
+        model_info);
     RunUntilIdle();
   }
 

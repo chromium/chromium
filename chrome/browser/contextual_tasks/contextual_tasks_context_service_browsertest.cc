@@ -1049,7 +1049,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest,
                         .Build();
   UpdateModel(optimization_guide::proto::
                   OPTIMIZATION_TARGET_CONTEXTUAL_TASKS_TAB_RELEVANCE,
-              *model_info, model_executor_task_runner);
+              model_info, model_executor_task_runner);
 
   NavigateToValidURL();
 
@@ -1901,7 +1901,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest, SuccessWithMlModel) {
                         .Build();
   UpdateModel(optimization_guide::proto::
                   OPTIMIZATION_TARGET_CONTEXTUAL_TASKS_TAB_RELEVANCE,
-              *model_info);
+              model_info);
 
   NavigateToValidURL();
 

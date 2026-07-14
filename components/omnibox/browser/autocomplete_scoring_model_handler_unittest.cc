@@ -127,7 +127,7 @@ class AutocompleteScoringModelHandlerTest : public testing::Test {
                               .Build();
     model_handler_->OnModelUpdated(
         optimization_guide::proto::OPTIMIZATION_TARGET_OMNIBOX_URL_SCORING,
-        *model_metadata);
+        model_metadata);
     task_environment_.RunUntilIdle();
   }
 

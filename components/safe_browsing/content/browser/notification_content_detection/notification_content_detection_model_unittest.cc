@@ -107,7 +107,7 @@ class NotificationContentDetectionModelTest : public testing::Test {
 
   void SendModelToNotificationContentDetectionModel() {
     base::FilePath model_file_path = GetValidModelFile();
-    std::unique_ptr<optimization_guide::ModelInfo> model_info =
+    optimization_guide::ModelInfo model_info =
         optimization_guide::TestModelInfoBuilder()
             .SetVersion(kModelVersion)
             .SetModelFilePath(model_file_path)
@@ -115,7 +115,7 @@ class NotificationContentDetectionModelTest : public testing::Test {
     notification_content_detection_model()->OnModelUpdated(
         optimization_guide::proto::
             OPTIMIZATION_TARGET_NOTIFICATION_CONTENT_DETECTION,
-        *model_info);
+        model_info);
   }
 
   TestNotificationContentDetectionModel* notification_content_detection_model()

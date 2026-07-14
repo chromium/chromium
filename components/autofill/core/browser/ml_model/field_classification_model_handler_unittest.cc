@@ -158,7 +158,7 @@ class FieldClassificationModelHandlerTest : public testing::Test {
   void SimulateRetrieveModelFromServer(
       const std::string file_name,
       FieldClassificationModelHandler& model_handler) {
-    std::unique_ptr<optimization_guide::ModelInfo> model_info =
+    optimization_guide::ModelInfo model_info =
         optimization_guide::TestModelInfoBuilder()
             .SetModelFilePath(test_data_dir_.AppendASCII(file_name))
             .SetModelMetadata(AnyWrapProto(model_metadata_))
@@ -166,7 +166,7 @@ class FieldClassificationModelHandlerTest : public testing::Test {
     model_handler.OnModelUpdated(
         optimization_guide::proto::
             OPTIMIZATION_TARGET_AUTOFILL_FIELD_CLASSIFICATION,
-        *model_info);
+        model_info);
     task_environment_.RunUntilIdle();
   }
 

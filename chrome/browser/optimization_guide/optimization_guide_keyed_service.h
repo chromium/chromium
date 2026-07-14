@@ -16,6 +16,7 @@
 #include "chrome/browser/optimization_guide/model_execution/optimization_guide_global_state.h"
 #include "chrome/browser/profiles/profile_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/optimization_guide/core/delivery/model_info.h"
 #include "components/optimization_guide/core/delivery/optimization_guide_model_provider.h"
 #include "components/optimization_guide/core/hints/optimization_guide_decider.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
@@ -54,7 +55,6 @@ class ChromeHintsManager;
 class ModelExecutionEnabledBrowserTest;
 class ModelExecutionLiveTest;
 class ModelExecutionManager;
-struct ModelInfo;
 class ModelQualityLogsUploaderService;
 class ModelValidatorKeyedService;
 class OnDeviceModelAvailabilityObserver;
@@ -256,7 +256,7 @@ class OptimizationGuideKeyedService
   // testing purposes only.
   void OverrideTargetModelForTesting(
       optimization_guide::proto::OptimizationTarget optimization_target,
-      std::unique_ptr<optimization_guide::ModelInfo> model_info);
+      std::optional<optimization_guide::ModelInfo> model_info);
 
   void SetModelQualityLogsUploaderServiceForTesting(
       std::unique_ptr<optimization_guide::ModelQualityLogsUploaderService>

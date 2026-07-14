@@ -102,7 +102,7 @@ class OptimizationGuideSegmentationModelProviderTest : public testing::Test {
         target);
   }
 
-  std::unique_ptr<optimization_guide::ModelInfo>
+  optimization_guide::ModelInfo
   CreateOptGuideModelInfoWithSegmentationMetadata() {
     proto::SegmentationModelMetadata metadata;
     std::string serialized_metadata;
@@ -214,7 +214,7 @@ TEST_F(OptimizationGuideSegmentationModelProviderTest, NotifyOnDeletedModel) {
 
   provider->InitAndFetchModel(model_updated_callback.Get());
 
-  std::unique_ptr<optimization_guide::ModelInfo> model_info =
+  optimization_guide::ModelInfo model_info =
       CreateOptGuideModelInfoWithSegmentationMetadata();
 
   auto* model_observer = model_observer_tracker_->GetObserverForTarget(
@@ -223,7 +223,7 @@ TEST_F(OptimizationGuideSegmentationModelProviderTest, NotifyOnDeletedModel) {
   // event should be propagated to the rest of Segmentation Platform.
   model_observer->OnModelUpdated(
       optimization_guide::proto::OPTIMIZATION_TARGET_SEGMENTATION_SHARE,
-      *model_info);
+      model_info);
 
   EXPECT_TRUE(provider->ModelAvailable());
   EXPECT_TRUE(updated_model_metadata.has_value());

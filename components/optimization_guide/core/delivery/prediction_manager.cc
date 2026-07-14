@@ -768,7 +768,7 @@ base::FilePath PredictionManager::GetBaseModelDirForDownload(
 
 void PredictionManager::OverrideTargetModelForTesting(
     proto::OptimizationTarget optimization_target,
-    std::unique_ptr<ModelInfo> model_info) {
+    std::optional<ModelInfo> model_info) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (model_info) {
     registry_.UpdateModelImmediatelyForTesting(  // IN-TEST

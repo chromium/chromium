@@ -152,12 +152,12 @@ TEST_F(OnDeviceAssetManagerTest, UpdateSafetyModel) {
   {
     base::HistogramTester histogram_tester;
 
-    std::unique_ptr<optimization_guide::ModelInfo> model_info =
+    optimization_guide::ModelInfo model_info =
         TestModelInfoBuilder()
             .SetVersion(10)
             .SetAdditionalFiles(fake_safety_asset.AdditionalFiles())
             .Build();
-    UpdateSafetyTarget(*model_info);
+    UpdateSafetyTarget(model_info);
     histogram_tester.ExpectUniqueSample(
         "OptimizationGuide.ModelExecution."
         "OnDeviceTextSafetyModelMetadataValidity",
@@ -170,13 +170,13 @@ TEST_F(OnDeviceAssetManagerTest, UpdateSafetyModel) {
 
     proto::Any any;
     any.set_type_url("garbagetype");
-    std::unique_ptr<optimization_guide::ModelInfo> model_info =
+    optimization_guide::ModelInfo model_info =
         TestModelInfoBuilder()
             .SetVersion(20)
             .SetAdditionalFiles(fake_safety_asset.AdditionalFiles())
             .SetModelMetadata(any)
             .Build();
-    UpdateSafetyTarget(*model_info);
+    UpdateSafetyTarget(model_info);
     histogram_tester.ExpectUniqueSample(
         "OptimizationGuide.ModelExecution."
         "OnDeviceTextSafetyModelMetadataValidity",
@@ -188,13 +188,13 @@ TEST_F(OnDeviceAssetManagerTest, UpdateSafetyModel) {
     base::HistogramTester histogram_tester;
 
     proto::TextSafetyModelMetadata model_metadata;
-    std::unique_ptr<optimization_guide::ModelInfo> model_info =
+    optimization_guide::ModelInfo model_info =
         TestModelInfoBuilder()
             .SetVersion(30)
             .SetAdditionalFiles(fake_safety_asset.AdditionalFiles())
             .SetModelMetadata(AnyWrapProto(model_metadata))
             .Build();
-    UpdateSafetyTarget(*model_info);
+    UpdateSafetyTarget(model_info);
     histogram_tester.ExpectUniqueSample(
         "OptimizationGuide.ModelExecution."
         "OnDeviceTextSafetyModelMetadataValidity",
@@ -208,13 +208,13 @@ TEST_F(OnDeviceAssetManagerTest, UpdateSafetyModel) {
     proto::TextSafetyModelMetadata model_metadata;
     model_metadata.add_feature_text_safety_configurations()->set_feature(
         ToModelExecutionFeatureProto(mojom::OnDeviceFeature::kCompose));
-    std::unique_ptr<optimization_guide::ModelInfo> model_info =
+    optimization_guide::ModelInfo model_info =
         TestModelInfoBuilder()
             .SetVersion(40)
             .SetAdditionalFiles(fake_safety_asset.AdditionalFiles())
             .SetModelMetadata(AnyWrapProto(model_metadata))
             .Build();
-    UpdateSafetyTarget(*model_info);
+    UpdateSafetyTarget(model_info);
     histogram_tester.ExpectUniqueSample(
         "OptimizationGuide.ModelExecution."
         "OnDeviceTextSafetyModelMetadataValidity",
@@ -228,13 +228,13 @@ TEST_F(OnDeviceAssetManagerTest, UpdateSafetyModel) {
     proto::TextSafetyModelMetadata model_metadata;
     model_metadata.add_feature_text_safety_configurations()->set_feature(
         ToModelExecutionFeatureProto(mojom::OnDeviceFeature::kCompose));
-    std::unique_ptr<optimization_guide::ModelInfo> model_info =
+    optimization_guide::ModelInfo model_info =
         TestModelInfoBuilder()
             .SetVersion(40)
             .SetAdditionalFiles(fake_safety_asset.AdditionalFiles())
             .SetModelMetadata(AnyWrapProto(model_metadata))
             .Build();
-    UpdateSafetyTarget(*model_info);
+    UpdateSafetyTarget(model_info);
     histogram_tester.ExpectTotalCount(
         "OptimizationGuide.ModelExecution.OnDeviceTextSafetyUpdateSkipped", 1);
   }

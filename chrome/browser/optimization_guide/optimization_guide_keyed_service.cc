@@ -620,7 +620,7 @@ void OptimizationGuideKeyedService::Shutdown() {
 
 void OptimizationGuideKeyedService::OverrideTargetModelForTesting(
     optimization_guide::proto::OptimizationTarget optimization_target,
-    std::unique_ptr<optimization_guide::ModelInfo> model_info) {
+    std::optional<optimization_guide::ModelInfo> model_info) {
   GetPredictionManager()->OverrideTargetModelForTesting(  // IN-TEST
       optimization_target, std::move(model_info));
 }

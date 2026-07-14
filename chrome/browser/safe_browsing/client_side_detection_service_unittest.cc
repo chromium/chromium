@@ -91,7 +91,7 @@ class ClientSidePhishingModelObserverTracker
                                 .SetModelFilePath(model_file_path)
                                 .SetAdditionalFiles(additional_files_path)
                                 .Build();
-      model_observer_->OnModelUpdated(optimization_target, *model_metadata);
+      model_observer_->OnModelUpdated(optimization_target, model_metadata);
     }
   }
 

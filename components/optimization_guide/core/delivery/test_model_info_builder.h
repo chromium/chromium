@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_OPTIMIZATION_GUIDE_CORE_DELIVERY_TEST_MODEL_INFO_BUILDER_H_
 #define COMPONENTS_OPTIMIZATION_GUIDE_CORE_DELIVERY_TEST_MODEL_INFO_BUILDER_H_
 
-#include <memory>
 #include <optional>
 
 #include "base/containers/flat_set.h"
@@ -43,7 +42,7 @@ class TestModelInfoBuilder {
   TestModelInfoBuilder& SetModelMetadata(
       std::optional<proto::Any> model_metadata);
 
-  std::unique_ptr<ModelInfo> Build();
+  ModelInfo Build();
 
  private:
   base::FilePath model_file_path_;

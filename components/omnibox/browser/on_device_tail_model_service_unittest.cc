@@ -4,6 +4,8 @@
 
 #include "components/omnibox/browser/on_device_tail_model_service.h"
 
+#include <optional>
+
 #include "base/containers/flat_set.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
@@ -87,14 +89,14 @@ class OnDeviceTailModelServiceTest : public ::testing::Test {
   std::unique_ptr<OnDeviceTailModelService> service_;
   std::unique_ptr<optimization_guide::TestOptimizationGuideModelProvider>
       test_model_provider_;
-  std::unique_ptr<optimization_guide::ModelInfo> model_info_;
+  std::optional<optimization_guide::ModelInfo> model_info_;
 };
 
 TEST_F(OnDeviceTailModelServiceTest, OnModelUpdated) {
   service_->OnModelUpdated(
       optimization_guide::proto::OptimizationTarget::
           OPTIMIZATION_TARGET_OMNIBOX_ON_DEVICE_TAIL_SUGGEST,
-      *model_info_);
+      model_info_);
   task_environment_.RunUntilIdle();
 
   EXPECT_TRUE(IsExecutorReady());
@@ -114,7 +116,7 @@ TEST_F(OnDeviceTailModelServiceTest, GetPredictionsForInput) {
   service_->OnModelUpdated(
       optimization_guide::proto::OptimizationTarget::
           OPTIMIZATION_TARGET_OMNIBOX_ON_DEVICE_TAIL_SUGGEST,
-      *model_info_);
+      model_info_);
   service_->GetPredictionsForInput(input, std::move(callback));
 
   task_environment_.RunUntilIdle();
@@ -128,7 +130,7 @@ TEST_F(OnDeviceTailModelServiceTest, NullModelUpdate) {
   service_->OnModelUpdated(
       optimization_guide::proto::OptimizationTarget::
           OPTIMIZATION_TARGET_OMNIBOX_ON_DEVICE_TAIL_SUGGEST,
-      *model_info_);
+      model_info_);
   task_environment_.RunUntilIdle();
   EXPECT_TRUE(IsExecutorReady());
 
@@ -145,7 +147,7 @@ TEST_F(OnDeviceTailModelServiceTest, MemoryPressureLevel) {
   service_->OnModelUpdated(
       optimization_guide::proto::OptimizationTarget::
           OPTIMIZATION_TARGET_OMNIBOX_ON_DEVICE_TAIL_SUGGEST,
-      *model_info_);
+      model_info_);
   task_environment_.RunUntilIdle();
   EXPECT_TRUE(IsExecutorReady());
 

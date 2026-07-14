@@ -154,11 +154,11 @@ TEST_F(OnDeviceCategoryClassifierTest, ExecutesIfVersionsMatch) {
 
   model_provider_->PushModel(
       optimization_guide::proto::OPTIMIZATION_TARGET_EDU_CLASSIFIER,
-      *model_info);
+      model_info);
 
   model_provider_->PushModel(
       optimization_guide::proto::OPTIMIZATION_TARGET_SHOPPING_CLASSIFIER,
-      *model_info);
+      model_info);
 
   TestObserver observer;
   classifier_->AddObserver(&observer);
@@ -202,11 +202,11 @@ TEST_F(OnDeviceCategoryClassifierTest, NoTitleUrlEmbedding) {
 
   model_provider_->PushModel(
       optimization_guide::proto::OPTIMIZATION_TARGET_EDU_CLASSIFIER,
-      *model_info);
+      model_info);
 
   model_provider_->PushModel(
       optimization_guide::proto::OPTIMIZATION_TARGET_SHOPPING_CLASSIFIER,
-      *model_info);
+      model_info);
 
   TestObserver observer;
   classifier_->AddObserver(&observer);
@@ -246,7 +246,7 @@ TEST_F(OnDeviceCategoryClassifierTest, SkipsIfVersionsMismatch) {
 
   model_provider_->PushModel(
       optimization_guide::proto::OPTIMIZATION_TARGET_EDU_CLASSIFIER,
-      *model_info);
+      model_info);
 
   TestObserver observer;
   classifier_->AddObserver(&observer);
@@ -274,7 +274,7 @@ TEST_F(OnDeviceCategoryClassifierTest, SkipsIfModelMetadataMissing) {
 
   model_provider_->PushModel(
       optimization_guide::proto::OPTIMIZATION_TARGET_EDU_CLASSIFIER,
-      *model_info);
+      model_info);
 
   TestObserver observer;
   classifier_->AddObserver(&observer);

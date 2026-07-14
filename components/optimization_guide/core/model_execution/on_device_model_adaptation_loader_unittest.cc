@@ -212,7 +212,7 @@ TEST_F(OnDeviceModelAdaptationLoaderTest, ProvidesValidAssetWithEmptyHints) {
 TEST_F(OnDeviceModelAdaptationLoaderTest, RemovedOnInvalidAsset) {
   loaders_.MaybeRegisterModelDownload(feature(), spec_, true);
   TestModelInfoBuilder invalid_builder;
-  SendAdaptationModelUpdated(*invalid_builder.Build());
+  SendAdaptationModelUpdated(invalid_builder.Build());
   histogram_tester_.ExpectUniqueSample(
       "OptimizationGuide.ModelExecution.OnDeviceAdaptationModelAvailability."
       "Test",
@@ -269,9 +269,9 @@ TEST_F(OnDeviceModelAdaptationLoaderTest,
       .metadata = MatchingMetadata(spec_),
   }};
   SendAdaptationModelUpdated(
-      *TestModelInfoBuilder(asset.model_info())
-           .RemoveAdditionalFileWithBasename(kOnDeviceModelExecutionConfigFile)
-           .Build());
+      TestModelInfoBuilder(asset.model_info())
+          .RemoveAdditionalFileWithBasename(kOnDeviceModelExecutionConfigFile)
+          .Build());
   histogram_tester_.ExpectUniqueSample(
       "OptimizationGuide.ModelExecution.OnDeviceAdaptationModelAvailability."
       "Test",

@@ -575,7 +575,7 @@ void HeuristicClassificationTests::SetUp() {
     optimization_guide::proto::ModelInfo model_metadata;
     ASSERT_TRUE(model_metadata.ParseFromString(proto_content));
 
-    std::unique_ptr<optimization_guide::ModelInfo> model_info =
+    optimization_guide::ModelInfo model_info =
         optimization_guide::TestModelInfoBuilder()
             .SetModelMetadata(/*any_metadata*/ model_metadata.model_metadata())
             .SetModelFilePath(model_path.AppendASCII("model.tflite"))
@@ -584,7 +584,7 @@ void HeuristicClassificationTests::SetUp() {
     ml_predictions_handler_.OnModelUpdated(
         optimization_guide::proto::
             OPTIMIZATION_TARGET_AUTOFILL_FIELD_CLASSIFICATION,
-        *model_info);
+        model_info);
   }
 }
 

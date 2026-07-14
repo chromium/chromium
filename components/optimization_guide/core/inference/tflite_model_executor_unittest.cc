@@ -119,12 +119,11 @@ class TFLiteModelExecutorTest : public testing::Test {
       proto::OptimizationTarget optimization_target,
       const std::optional<proto::Any>& model_metadata) {
     DCHECK(model_handler());
-    std::unique_ptr<ModelInfo> model_info =
-        TestModelInfoBuilder()
-            .SetModelFilePath(model_file_path_)
-            .SetModelMetadata(model_metadata)
-            .Build();
-    model_handler()->OnModelUpdated(optimization_target, *model_info);
+    ModelInfo model_info = TestModelInfoBuilder()
+                               .SetModelFilePath(model_file_path_)
+                               .SetModelMetadata(model_metadata)
+                               .Build();
+    model_handler()->OnModelUpdated(optimization_target, model_info);
     RunUntilIdle();
   }
 

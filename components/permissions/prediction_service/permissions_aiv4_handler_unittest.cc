@@ -210,7 +210,7 @@ class Aiv4HandlerTestBase : public testing::Test {
                               .SetVersion(123)
                               .Build();
 
-    model_handler()->OnModelUpdated(opt_target, *model_metadata);
+    model_handler()->OnModelUpdated(opt_target, model_metadata);
 
     task_environment_.RunUntilIdle();
   }

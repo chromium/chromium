@@ -6,6 +6,7 @@
 #define COMPONENTS_OPTIMIZATION_GUIDE_CORE_DELIVERY_PREDICTION_MANAGER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -102,7 +103,7 @@ class PredictionManager : public PredictionModelDownloadObserver,
   // testing purposes only.
   void OverrideTargetModelForTesting(
       proto::OptimizationTarget optimization_target,
-      std::unique_ptr<ModelInfo> model_info);
+      std::optional<ModelInfo> model_info);
 
   // PredictionModelDownloadObserver:
   void OnModelReady(const base::FilePath& base_model_dir,

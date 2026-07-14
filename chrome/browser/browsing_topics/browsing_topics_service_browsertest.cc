@@ -527,7 +527,7 @@ class BrowsingTopicsBrowserTest : public BrowsingTopicsBrowserTestBase {
     // Configure the (mock) model.
 
     annotator->UseModelInfo(
-        *optimization_guide::TestModelInfoBuilder().SetVersion(1).Build());
+        optimization_guide::TestModelInfoBuilder().SetVersion(1).Build());
     annotator->UseAnnotations({
         {"foo6.com", {1, 2, 3, 4, 5, 6}},
         {"foo5.com", {2, 3, 4, 5, 6}},

@@ -71,7 +71,7 @@ class ModelValidatorModelObserverTracker
       auto model_metadata =
           TestModelInfoBuilder().SetModelFilePath(model_file_path).Build();
       model_validation_observer_->OnModelUpdated(optimization_target,
-                                                 *model_metadata);
+                                                 model_metadata);
     }
   }
 

@@ -199,7 +199,7 @@ class PassageEmbeddingsServiceControllerTest : public testing::Test {
 #endif
 TEST_F(PassageEmbeddingsServiceControllerTest, MAYBE_ReceivesValidModelInfo) {
   EXPECT_TRUE(service_controller_->MaybeUpdateModelInfo(
-      *GetBuilderWithValidModelInfo().Build()));
+      GetBuilderWithValidModelInfo().Build()));
   EXPECT_TRUE(service_controller_->IsModelAvailable());
   auto metadata = embedder_metadata_future()->Take();
   EXPECT_TRUE(metadata.IsValid());
@@ -237,7 +237,7 @@ TEST_F(PassageEmbeddingsServiceControllerTest,
       GetBuilderWithValidModelInfo();
   builder.SetModelMetadata(metadata_any);
 
-  EXPECT_FALSE(service_controller_->MaybeUpdateModelInfo(*builder.Build()));
+  EXPECT_FALSE(service_controller_->MaybeUpdateModelInfo(builder.Build()));
   EXPECT_FALSE(embedder_metadata_future()->IsReady());
 
   histogram_tester_.ExpectTotalCount(kModelInfoMetricName, 1);
@@ -259,7 +259,7 @@ TEST_F(PassageEmbeddingsServiceControllerTest,
       GetBuilderWithValidModelInfo();
   builder.SetModelMetadata(std::nullopt);
 
-  EXPECT_FALSE(service_controller_->MaybeUpdateModelInfo(*builder.Build()));
+  EXPECT_FALSE(service_controller_->MaybeUpdateModelInfo(builder.Build()));
   EXPECT_FALSE(embedder_metadata_future()->IsReady());
 
   histogram_tester_.ExpectTotalCount(kModelInfoMetricName, 1);
@@ -284,7 +284,7 @@ TEST_F(PassageEmbeddingsServiceControllerTest,
   builder.SetAdditionalFiles(
       {test_data_dir.AppendASCII("foo"), test_data_dir.AppendASCII("bar")});
 
-  EXPECT_FALSE(service_controller_->MaybeUpdateModelInfo(*builder.Build()));
+  EXPECT_FALSE(service_controller_->MaybeUpdateModelInfo(builder.Build()));
   EXPECT_FALSE(embedder_metadata_future()->IsReady());
 
   histogram_tester_.ExpectTotalCount(kModelInfoMetricName, 1);
@@ -301,7 +301,7 @@ TEST_F(PassageEmbeddingsServiceControllerTest,
 #endif
 TEST_F(PassageEmbeddingsServiceControllerTest, MAYBE_GetEmbeddingsEmpty) {
   EXPECT_TRUE(service_controller_->MaybeUpdateModelInfo(
-      *GetBuilderWithValidModelInfo().Build()));
+      GetBuilderWithValidModelInfo().Build()));
 
   GetEmbeddingsTestFuture future;
   auto job = service_controller_->GetEmbedder()->ComputePassagesEmbeddings(
@@ -321,7 +321,7 @@ TEST_F(PassageEmbeddingsServiceControllerTest, MAYBE_GetEmbeddingsEmpty) {
 #endif
 TEST_F(PassageEmbeddingsServiceControllerTest, MAYBE_GetEmbeddingsNonEmpty) {
   EXPECT_TRUE(service_controller_->MaybeUpdateModelInfo(
-      *GetBuilderWithValidModelInfo().Build()));
+      GetBuilderWithValidModelInfo().Build()));
 
   GetEmbeddingsTestFuture future;
   auto job = service_controller_->GetEmbedder()->ComputePassagesEmbeddings(
@@ -346,8 +346,7 @@ TEST_F(PassageEmbeddingsServiceControllerTest,
        MAYBE_ReturnsModelUnavailableErrorIfModelInfoNotValid) {
   optimization_guide::TestModelInfoBuilder valid_builder =
       GetBuilderWithValidModelInfo();
-  EXPECT_TRUE(
-      service_controller_->MaybeUpdateModelInfo(*valid_builder.Build()));
+  EXPECT_TRUE(service_controller_->MaybeUpdateModelInfo(valid_builder.Build()));
 
   optimization_guide::TestModelInfoBuilder invalid_builder =
       GetBuilderWithValidModelInfo();
@@ -355,7 +354,7 @@ TEST_F(PassageEmbeddingsServiceControllerTest,
   invalid_builder.SetModelMetadata(std::nullopt);
 
   EXPECT_FALSE(
-      service_controller_->MaybeUpdateModelInfo(*invalid_builder.Build()));
+      service_controller_->MaybeUpdateModelInfo(invalid_builder.Build()));
 
   GetEmbeddingsTestFuture future;
   auto job = service_controller_->GetEmbedder()->ComputePassagesEmbeddings(
@@ -374,7 +373,7 @@ TEST_F(PassageEmbeddingsServiceControllerTest,
 #endif
 TEST_F(PassageEmbeddingsServiceControllerTest, MAYBE_ReturnsExecutionFailure) {
   EXPECT_TRUE(service_controller_->MaybeUpdateModelInfo(
-      *GetBuilderWithValidModelInfo().Build()));
+      GetBuilderWithValidModelInfo().Build()));
 
   GetEmbeddingsTestFuture future;
   auto job = service_controller_->GetEmbedder()->ComputePassagesEmbeddings(
@@ -393,7 +392,7 @@ TEST_F(PassageEmbeddingsServiceControllerTest, MAYBE_ReturnsExecutionFailure) {
 #endif
 TEST_F(PassageEmbeddingsServiceControllerTest, MAYBE_EmbedderRunningStatus) {
   EXPECT_TRUE(service_controller_->MaybeUpdateModelInfo(
-      *GetBuilderWithValidModelInfo().Build()));
+      GetBuilderWithValidModelInfo().Build()));
 
   {
     GetEmbeddingsTestFuture future1;
@@ -491,7 +490,7 @@ TEST_F(PassageEmbeddingsServiceControllerTest, MAYBE_RecordsGemmaHistograms) {
       std::make_unique<PassageEmbeddingsServiceController>(
           launcher_, /*execute_for_gemma=*/true);
   EXPECT_TRUE(gemma_service_controller->MaybeUpdateModelInfo(
-      *GetBuilderWithValidModelInfo().Build()));
+      GetBuilderWithValidModelInfo().Build()));
 
   GetEmbeddingsTestFuture future;
   auto job = gemma_service_controller->GetEmbedder()->ComputePassagesEmbeddings(
@@ -510,7 +509,7 @@ TEST_F(PassageEmbeddingsServiceControllerTest, MAYBE_RecordsGemmaHistograms) {
 TEST_F(PassageEmbeddingsServiceControllerTest, DistinguishesIdleFromCrashes) {
   optimization_guide::TestModelInfoBuilder builder =
       GetBuilderWithValidModelInfo();
-  EXPECT_TRUE(service_controller_->MaybeUpdateModelInfo(*builder.Build()));
+  EXPECT_TRUE(service_controller_->MaybeUpdateModelInfo(builder.Build()));
 
   // Run the embedder to launch the service.
   GetEmbeddingsTestFuture future;

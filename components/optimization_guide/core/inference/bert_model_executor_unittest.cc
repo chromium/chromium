@@ -51,10 +51,10 @@ class BertModelExecutorTest : public testing::Test {
     model_file_path =
         is_valid ? model_file_path.AppendASCII("bert_page_topics_model.tflite")
                  : model_file_path.AppendASCII("simple_test.tflite");
-    std::unique_ptr<ModelInfo> model_info =
+    ModelInfo model_info =
         TestModelInfoBuilder().SetModelFilePath(model_file_path).Build();
     model_handler_->OnModelUpdated(proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD,
-                                   *model_info);
+                                   model_info);
     task_environment_.RunUntilIdle();
   }
 

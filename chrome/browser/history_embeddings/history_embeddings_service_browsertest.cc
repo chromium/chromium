@@ -157,14 +157,13 @@ class HistoryEmbeddingsBrowserTest : public InProcessBrowserTest {
 
   void OverrideVisibilityScoresForTesting(
       const base::flat_map<std::string, double>& visibility_scores_for_input) {
-    std::unique_ptr<optimization_guide::ModelInfo> model_info =
+    optimization_guide::ModelInfo model_info =
         optimization_guide::TestModelInfoBuilder()
             .SetModelFilePath(
                 base::FilePath(FILE_PATH_LITERAL("visibility_model")))
             .SetVersion(123)
             .Build();
-    CHECK(model_info);
-    page_content_annotator_.UseVisibilityScores(*model_info,
+    page_content_annotator_.UseVisibilityScores(model_info,
                                                 visibility_scores_for_input);
     page_content_annotations_service()->OverridePageContentAnnotatorForTesting(
         &page_content_annotator_);

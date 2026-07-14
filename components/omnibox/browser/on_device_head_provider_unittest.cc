@@ -87,7 +87,7 @@ class OnDeviceHeadProviderTest : public testing::Test,
         "type.googleapis.com/com.foo.OnDeviceTailSuggestModelMetadata");
     metadata.SerializeToString(any_metadata.mutable_value());
 
-    std::unique_ptr<optimization_guide::ModelInfo> model_info =
+    optimization_guide::ModelInfo model_info =
         optimization_guide::TestModelInfoBuilder()
             .SetModelFilePath(tail_model_path)
             .SetAdditionalFiles(additional_files)
@@ -98,7 +98,7 @@ class OnDeviceHeadProviderTest : public testing::Test,
     client_->GetOnDeviceTailModelService()->OnModelUpdated(
         optimization_guide::proto::OptimizationTarget::
             OPTIMIZATION_TARGET_OMNIBOX_ON_DEVICE_TAIL_SUGGEST,
-        *model_info);
+        model_info);
 
     task_environment_.RunUntilIdle();
   }

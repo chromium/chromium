@@ -45,7 +45,7 @@ class ContextualTasksModelProvider
                                 .SetModelFilePath(model_file_path_)
                                 .SetModelMetadata(model_metadata_)
                                 .Build();
-      observer->OnModelUpdated(optimization_target, *model_metadata);
+      observer->OnModelUpdated(optimization_target, model_metadata);
       model_observers_.AddObserver(observer);
     }
   }
@@ -62,7 +62,7 @@ class ContextualTasksModelProvider
         &optimization_guide::OptimizationTargetModelObserver::OnModelUpdated,
         optimization_guide::proto::
             OPTIMIZATION_TARGET_CONTEXTUAL_TASKS_TAB_RELEVANCE,
-        *model_info);
+        model_info);
   }
 
  private:

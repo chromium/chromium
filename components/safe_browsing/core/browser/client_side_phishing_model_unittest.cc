@@ -88,7 +88,7 @@ class ClientSidePhishingModelObserverTracker
               .SetAdditionalFiles(additional_files_path)
               .SetModelMetadata(AnyWrapProto(trigger_model_metadata))
               .Build();
-      model_observer_->OnModelUpdated(optimization_target, *model_metadata);
+      model_observer_->OnModelUpdated(optimization_target, model_metadata);
     } else if (optimization_target ==
                optimization_guide::proto::
                    OPTIMIZATION_TARGET_CLIENT_SIDE_PHISHING_IMAGE_EMBEDDER) {
@@ -101,7 +101,7 @@ class ClientSidePhishingModelObserverTracker
               .SetAdditionalFiles(additional_files_path)
               .SetModelMetadata(AnyWrapProto(image_embedding_model_metadata))
               .Build();
-      model_observer_->OnModelUpdated(optimization_target, *model_metadata);
+      model_observer_->OnModelUpdated(optimization_target, model_metadata);
     }
   }
 
