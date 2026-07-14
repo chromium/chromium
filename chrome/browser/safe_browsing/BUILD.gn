@@ -833,4 +833,16 @@ source_set("test_support") {
       "android:test_support_java",
     ]
   }
+
+  if (enable_extensions) {
+    sources += [
+      "test_extension_event_observer.cc",
+      "test_extension_event_observer.h",
+    ]
+    deps += [
+      "//chrome/browser/extensions",
+      "//chrome/common/extensions/api",
+      "//extensions:test_support",
+    ]
+  }
 }

@@ -7589,11 +7589,6 @@ test("unit_tests") {
   # //chrome/browser/extensions/BUILD.gn.
   # TODO(crbug.com/1229899): Clean up and move this to a separate target.
   if (enable_extensions) {
-    sources += [
-      "../browser/safe_browsing/test_extension_event_observer.cc",
-      "../browser/safe_browsing/test_extension_event_observer.h",
-    ]
-
     if (enterprise_data_controls) {
       sources += [ "../../components/enterprise/data_controls/core/browser/data_controls_policy_handler_unittest.cc" ]
       deps += [
