@@ -22,6 +22,7 @@ import {browserProxyFactory, OmniboxEscapeAction} from './omnibox_popup.mojom-we
 import type {OmniboxInputState, PageCallbackRouter as PopupPageCallbackRouter, PageHandlerInterface as PopupPageHandlerInterface} from './omnibox_popup.mojom-webui.js';
 import {getCss} from './omnibox_popup_searchbox.css.js';
 import {getHtml} from './omnibox_popup_searchbox.html.js';
+import {sanitizeTextForPaste} from './utils.js';
 
 /**
  * Focus actions deferred when `document.visibilityState` is hidden.
@@ -322,6 +323,40 @@ export class OmniboxPopupSearchboxElement extends
         }
       }
     }
+  }
+
+  protected onInputPaste_(e: ClipboardEvent) {
+    let text = e.clipboardData?.getData('text/plain');
+    if (!text && e.clipboardData?.types.includes('text/x-moz-url')) {
+      // 'text/x-moz-url' is formatted as "URL\nTitle" when copying bookmarks.
+      // Extract the URL part, while dropping the Title part.
+      // This logic aligns with the native `GetClipboardText()` behavior in
+      // Views.
+      text = e.clipboardData.getData('text/x-moz-url').split(/\r?\n/)[0];
+    }
+    if (!text) {
+      return;
+    }
+
+    e.preventDefault();
+    const sanitizedText = sanitizeTextForPaste(text);
+
+    const input = this.getInputElement().inputElement;
+    const start = input.selectionStart || 0;
+    const end = input.selectionEnd || 0;
+    const newValue = input.value.substring(0, start) + sanitizedText +
+        input.value.substring(end);
+
+    this.getInputElement().setInput({text: newValue, inline: ''});
+    const cursorPos = start + sanitizedText.length;
+    this.getInputElement().setSelectionRange(cursorPos, cursorPos);
+    this.getInputElement().dispatchEvent(
+        new CustomEvent('searchbox-input-text-updated', {
+          detail: {
+            value: newValue,
+            isComposing: false,
+          },
+        }));
   }
 
   protected showFullUrlOnDeselect_() {
