@@ -14,6 +14,9 @@
 
 namespace base::i18n_internal {
 
+using ::testing::ElementsAre;
+using ::testing::Pair;
+
 TEST(Bcp47ParserTest, Constexprness) {
   // Constexpr checks for individual subtag types.
   static_assert(!IsLanguageSubtag(""));
@@ -120,6 +123,13 @@ TEST(Bcp47ParserTest, ParseBcp47TagFromString) {
     EXPECT_EQ(parsed.region, "TW");
     EXPECT_TRUE(parsed.variants.empty());
   }
+  {
+    ASSERT_OK_AND_ASSIGN(ParsedBcp47Tag parsed, ParseBcp47Tag("Zh-tw"));
+    EXPECT_EQ(parsed.language, "Zh");
+    EXPECT_EQ(parsed.script, "");
+    EXPECT_EQ(parsed.region, "tw");
+    EXPECT_TRUE(parsed.variants.empty());
+  }
 
   {
     ASSERT_OK_AND_ASSIGN(ParsedBcp47Tag parsed,
@@ -131,6 +141,70 @@ TEST(Bcp47ParserTest, ParseBcp47TagFromString) {
     EXPECT_EQ(parsed.variants[0], "scouse");
     EXPECT_EQ(parsed.variants[1], "nedis");
   }
+}
+
+TEST(Bcp47ParserTest, ParseBcp47TagFromStringExtension) {
+  ASSERT_OK_AND_ASSIGN(
+      ParsedBcp47Tag parsed,
+      ParseBcp47Tag("zh-Hant-TW-a-abc-def-u-ca-gregory-co-phonebk"));
+  EXPECT_EQ(parsed.language, "zh");
+  EXPECT_EQ(parsed.script, "Hant");
+  EXPECT_EQ(parsed.region, "TW");
+  EXPECT_TRUE(parsed.variants.empty());
+  EXPECT_THAT(
+      parsed.extensions,
+      ElementsAre(Pair('a', ElementsAre("abc", "def")),
+                  Pair('u', ElementsAre("ca", "gregory", "co", "phonebk"))));
+}
+
+TEST(Bcp47ParserTest, ParseBcp47TagFromStringExtensionAndPrivateUse) {
+  ASSERT_OK_AND_ASSIGN(ParsedBcp47Tag parsed,
+                       ParseBcp47Tag("zh-Hant-TW-a-abc-def-u-ca-gregory-co-"
+                                     "phonebk-x-bla1-bla2-bla3-a-b-c-def"));
+  EXPECT_EQ(parsed.language, "zh");
+  EXPECT_EQ(parsed.script, "Hant");
+  EXPECT_EQ(parsed.region, "TW");
+  EXPECT_TRUE(parsed.variants.empty());
+  EXPECT_THAT(
+      parsed.extensions,
+      ElementsAre(Pair('a', ElementsAre("abc", "def")),
+                  Pair('u', ElementsAre("ca", "gregory", "co", "phonebk"))));
+  EXPECT_THAT(parsed.private_use,
+              ElementsAre("bla1", "bla2", "bla3", "a", "b", "c", "def"));
+}
+
+TEST(Bcp47ParserTest, ParseBcp47TagFromStringPrivateUseCaseInsensitive) {
+  ASSERT_OK_AND_ASSIGN(ParsedBcp47Tag parsed,
+                       ParseBcp47Tag("zh-Hant-TW-A-abc-def-U-ca-gregory-co-"
+                                     "phonebk-X-bla1-bla2-bla3-a-b-c-def"));
+  EXPECT_THAT(
+      parsed.extensions,
+      ElementsAre(Pair('a', ElementsAre("abc", "def")),
+                  Pair('u', ElementsAre("ca", "gregory", "co", "phonebk"))));
+
+  EXPECT_THAT(parsed.private_use,
+              ElementsAre("bla1", "bla2", "bla3", "a", "b", "c", "def"));
+}
+
+TEST(Bcp47ParserTest, ParseBcp47TagFromStringInvalidExtension) {
+  // Too long.
+  EXPECT_FALSE(ParseBcp47Tag("zh-Hant-TW-a-abc-def-u-123456789").has_value());
+  // Too short.
+  EXPECT_FALSE(ParseBcp47Tag("zh-Hant-TW-a-abc-def-u-x").has_value());
+  // Space.
+  EXPECT_FALSE(ParseBcp47Tag("zh-Hant-TW-a-abc-def-u-1234 -x-abc").has_value());
+  // Duplicated singleton case-insensitive.
+  EXPECT_FALSE(ParseBcp47Tag("zh-Hant-TW-a-abc-def-u-1234-U-5678").has_value());
+}
+
+TEST(Bcp47ParserTest, ParseBcp47TagFromStringInvalidPrivateUse) {
+  // Too long.
+  EXPECT_FALSE(
+      ParseBcp47Tag("zh-Hant-TW-a-abc-def-u-aaa-x-123456789").has_value());
+  // Too short.
+  EXPECT_FALSE(ParseBcp47Tag("zh-Hant-TW-x-").has_value());
+  // Invalid character.
+  EXPECT_FALSE(ParseBcp47Tag("zh-Hant-TW-a-abc-def-u-1234-x-$bc").has_value());
 }
 
 }  // namespace base::i18n_internal
