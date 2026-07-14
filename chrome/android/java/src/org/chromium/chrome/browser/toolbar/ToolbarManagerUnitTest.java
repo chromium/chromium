@@ -555,6 +555,9 @@ public class ToolbarManagerUnitTest {
     }
 
     @Test
+    @DisableFeatures(
+            ChromeFeatureList
+                    .ANDROID_BOTTOM_BAR) // TODO(crbug.com/527933081): Re-enable or add coverage.
     public void testSetUrlBarFocusAfterDestroy() {
         mToolbarManager.beginFuseboxInput(new AutocompleteInput(OmniboxFocusReason.OMNIBOX_TAP));
         assertTrue(mToolbarManager.isUrlBarFocused());
