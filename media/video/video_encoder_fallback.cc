@@ -121,8 +121,39 @@ void VideoEncoderFallback::ChangeOptions(const Options& options,
 
 void VideoEncoderFallback::Flush(EncoderStatusCB done_cb) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (encoder_)
-    encoder_->Flush(std::move(done_cb));
+
+  if (state_ == State::kError) {
+    std::move(done_cb).Run(EncoderStatus::Codes::kEncoderFailedFlush);
+    return;
+  }
+
+  DCHECK(!pending_flush_cb_);
+  pending_flush_cb_ = std::move(done_cb);
+
+  if (state_ == State::kInitializingFallbackEncoder) {
+    return;
+  }
+
+  if (encoder_) {
+    encoder_->Flush(base::BindOnce(&VideoEncoderFallback::OnEncoderFlushDone,
+                                   weak_factory_.GetWeakPtr(), state_));
+  } else {
+    std::move(pending_flush_cb_).Run(EncoderStatus::Codes::kEncoderFailedFlush);
+  }
+}
+
+void VideoEncoderFallback::OnEncoderFlushDone(State initial_state,
+                                              EncoderStatus status) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (initial_state != state_) {
+    // Ignore stale flush completions from a previous encoder before fallback.
+    return;
+  }
+
+  if (pending_flush_cb_) {
+    std::move(pending_flush_cb_).Run(status);
+  }
 }
 
 void VideoEncoderFallback::FallbackInitCompleted(PendingEncode args,
@@ -138,10 +169,19 @@ void VideoEncoderFallback::FallbackInitCompleted(PendingEncode args,
       encoder_->Encode(std::move(encode->frame), encode->options,
                        std::move(encode->done_callback));
     }
+    if (pending_flush_cb_) {
+      encoder_->Flush(base::BindOnce(&VideoEncoderFallback::OnEncoderFlushDone,
+                                     weak_factory_.GetWeakPtr(), state_));
+    }
   } else {
     state_ = State::kError;
-    for (auto& encode : encodes_to_retry_)
+    for (auto& encode : encodes_to_retry_) {
       std::move(encode->done_callback).Run(status);
+    }
+    if (pending_flush_cb_) {
+      std::move(pending_flush_cb_)
+          .Run(EncoderStatus::Codes::kEncoderFailedFlush);
+    }
   }
   encodes_to_retry_.clear();
 }
@@ -190,6 +230,10 @@ void VideoEncoderFallback::FallbackEncode(PendingEncode args,
     if (!fallback_encoder.has_value()) {
       state_ = State::kError;
       std::move(args.done_callback).Run(main_encoder_status.code());
+      if (pending_flush_cb_) {
+        std::move(pending_flush_cb_)
+            .Run(EncoderStatus::Codes::kEncoderFailedFlush);
+      }
       return;
     }
     state_ = State::kInitializingFallbackEncoder;

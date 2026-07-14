@@ -62,6 +62,7 @@ class MEDIA_EXPORT VideoEncoderFallback : public VideoEncoder {
   void FallbackInitialize(EncoderStatusCB init_done_cb);
   void FallbackEncode(PendingEncode args, EncoderStatus main_encoder_status);
   void FallbackInitCompleted(PendingEncode args, EncoderStatus status);
+  void OnEncoderFlushDone(State initial_state, EncoderStatus status);
   PendingEncode MakePendingEncode(scoped_refptr<VideoFrame> frame,
                                   const EncodeOptions& encode_options,
                                   EncoderStatusCB done_cb);
@@ -77,6 +78,8 @@ class MEDIA_EXPORT VideoEncoderFallback : public VideoEncoder {
   // Pending encodes that need to be retried once the fallback encoder is
   // initialized.
   std::vector<std::unique_ptr<PendingEncode>> encodes_to_retry_;
+
+  EncoderStatusCB pending_flush_cb_;
 
   CreateFallbackCB create_fallback_cb_;
   EncoderInfoCB info_cb_;

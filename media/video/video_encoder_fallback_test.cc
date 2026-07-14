@@ -430,7 +430,6 @@ TEST_F(VideoEncoderFallbackTest, SecondaryFailureOnEncode) {
   // All encodes should come to the secondary encoder. Again fail encoding
   // once we reach 3/4 the total frame count.
   auto second_encoder_fail_time = base::Seconds(3 * kFrameCount / 4);
-  LOG(ERROR) << second_encoder_fail_time << "!!!!";
   EXPECT_CALL(*secondary_video_encoder_, Encode(_, _, _))
       .WillRepeatedly([&, this](scoped_refptr<VideoFrame> frame,
                                 const VideoEncoder::EncodeOptions& options,
@@ -539,6 +538,110 @@ TEST_F(VideoEncoderFallbackTest, SecondaryFailureOnCreation) {
   }
   RunLoop();
   EXPECT_EQ(outputs, kFrameCount / 2);
+}
+
+TEST_F(VideoEncoderFallbackTest, FlushDuringFallbackOnEncode) {
+  VideoEncoder::Options options;
+  VideoCodecProfile profile = VIDEO_CODEC_PROFILE_UNKNOWN;
+
+  VideoEncoder::OutputCB secondary_output_cb;
+
+  EXPECT_CALL(*main_video_encoder_, Initialize(_, _, _, _, _))
+      .WillOnce([&, this](VideoCodecProfile profile,
+                          const VideoEncoder::Options& options,
+                          VideoEncoder::EncoderInfoCB info_cb,
+                          VideoEncoder::OutputCB output_cb,
+                          VideoEncoder::EncoderStatusCB done_cb) {
+        RunStatusCallbackAync(std::move(done_cb));
+      });
+
+  EXPECT_CALL(*main_video_encoder_, Encode(_, _, _))
+      .WillOnce([&, this](scoped_refptr<VideoFrame> frame,
+                          const VideoEncoder::EncodeOptions& options,
+                          VideoEncoder::EncoderStatusCB done_cb) {
+        // Main encoder fails asynchronously on encode.
+        RunStatusCallbackAync(std::move(done_cb),
+                              EncoderStatus::Codes::kEncoderFailedEncode);
+      });
+
+  EXPECT_CALL(*main_video_encoder_, Flush(_))
+      .WillOnce([&, this](VideoEncoder::EncoderStatusCB done_cb) {
+        // Main encoder flush returns kOk (simulating VEA adapter behavior when
+        // active_encodes_ is empty).
+        RunStatusCallbackAync(std::move(done_cb));
+      });
+
+  EXPECT_CALL(*secondary_video_encoder_, Initialize(_, _, _, _, _))
+      .WillOnce([&, this](VideoCodecProfile profile,
+                          const VideoEncoder::Options& options,
+                          VideoEncoder::EncoderInfoCB info_cb,
+                          VideoEncoder::OutputCB output_cb,
+                          VideoEncoder::EncoderStatusCB done_cb) {
+        secondary_output_cb = std::move(output_cb);
+        RunStatusCallbackAync(std::move(done_cb));
+      });
+
+  EXPECT_CALL(*secondary_video_encoder_, Encode(_, _, _))
+      .WillOnce([&, this](scoped_refptr<VideoFrame> frame,
+                          const VideoEncoder::EncodeOptions& options,
+                          VideoEncoder::EncoderStatusCB done_cb) {
+        VideoEncoderOutput output;
+        output.timestamp = frame->timestamp();
+        secondary_output_cb.Run(std::move(output), {});
+        RunStatusCallbackAync(std::move(done_cb));
+      });
+
+  EXPECT_CALL(*secondary_video_encoder_, Flush(_))
+      .WillOnce([&, this](VideoEncoder::EncoderStatusCB done_cb) {
+        RunStatusCallbackAync(std::move(done_cb));
+      });
+
+  fallback_encoder_->Initialize(profile, options, /*info_cb=*/base::DoNothing(),
+                                /*output_cb=*/base::DoNothing(),
+                                ValidatingStatusCB());
+
+  auto frame = VideoFrame::CreateFrame(PIXEL_FORMAT_I420, kFrameSize,
+                                       gfx::Rect(kFrameSize), kFrameSize,
+                                       base::Seconds(1));
+  fallback_encoder_->Encode(frame, VideoEncoder::EncodeOptions(true),
+                            ValidatingStatusCB());
+  fallback_encoder_->Flush(ValidatingStatusCB());
+
+  RunLoop();
+  EXPECT_TRUE(FallbackHappened());
+}
+
+TEST_F(VideoEncoderFallbackTest, FlushDuringMainInitialize) {
+  VideoEncoder::Options options;
+  VideoCodecProfile profile = VIDEO_CODEC_PROFILE_UNKNOWN;
+
+  VideoEncoder::EncoderStatusCB saved_init_cb;
+
+  EXPECT_CALL(*main_video_encoder_, Initialize(_, _, _, _, _))
+      .WillOnce([&](VideoCodecProfile profile,
+                    const VideoEncoder::Options& options,
+                    VideoEncoder::EncoderInfoCB info_cb,
+                    VideoEncoder::OutputCB output_cb,
+                    VideoEncoder::EncoderStatusCB done_cb) {
+        saved_init_cb = std::move(done_cb);
+      });
+
+  EXPECT_CALL(*main_video_encoder_, Flush(_))
+      .WillOnce([&, this](VideoEncoder::EncoderStatusCB done_cb) {
+        RunStatusCallbackAync(std::move(done_cb));
+      });
+
+  fallback_encoder_->Initialize(profile, options, /*info_cb=*/base::DoNothing(),
+                                /*output_cb=*/base::DoNothing(),
+                                ValidatingStatusCB());
+
+  fallback_encoder_->Flush(ValidatingStatusCB());
+
+  // Complete initialization after Flush() was called.
+  RunStatusCallbackAync(std::move(saved_init_cb));
+
+  RunLoop();
+  EXPECT_FALSE(FallbackHappened());
 }
 
 }  // namespace media
