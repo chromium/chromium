@@ -860,6 +860,9 @@
    <message name="IDS_AUTOFILL_AT_MEMORY_SUGGESTION_SOURCE_TEXT" desc="The label for a text in the At Memory flyout that shows the source of the autofill suggestion." formatter_data="android_java" translateable="false">
     Suggested by Gemini
   </message>
+  <message name="IDS_AUTOFILL_AI_SUGGESTED_BY_GEMINI" desc="Sublabel text indicating that a suggestion is sourced from Gemini.">
+    Suggested by Gemini
+  </message>
 
   <!-- Autofill Address Edit Dialog -->
   <!-- Common on all platforms -->

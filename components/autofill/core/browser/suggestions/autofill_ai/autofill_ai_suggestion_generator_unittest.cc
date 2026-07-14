@@ -72,7 +72,6 @@ Matcher<const Suggestion&> HasLabel(const std::u16string& label) {
       ElementsAre(ElementsAre(Field(&Suggestion::Text::value, label))));
 }
 
-
 Matcher<const Suggestion&> HasRequiresServerFetch(bool requires_server_fetch) {
   return ResultOf(
       "Suggestion::payload",
@@ -491,6 +490,43 @@ TEST_F(
   std::vector<Suggestion> suggestions =
       CreateAutofillAiFillingSuggestions(field(0));
   EXPECT_THAT(suggestions[0], HasIcon(Suggestion::Icon::kPassportSpark));
+}
+
+TEST_F(
+    AutofillAiSuggestionGeneratorTest,
+    GetFillingSuggestion_PersonalContextAndLocalEntities_SuggestedByGeminiLabel) {
+  EntityInstance passport_local = GetPassportEntityInstanceWithRandomGuid(
+      {.name = u"Jon Doe",
+       .number = u"123456",
+       .record_type = EntityInstance::RecordType::kLocal,
+       .use_count = 1});
+  EntityInstance passport_personal_context =
+      GetPassportEntityInstanceWithRandomGuid(
+          {.name = u"Harry Potter",
+           .number = u"987654",
+           .record_type = EntityInstance::RecordType::kPersonalContext,
+           .use_count = 0});
+  SetEntities({passport_local, passport_personal_context});
+  SetForm({PASSPORT_NUMBER, NAME_FULL});
+
+  std::vector<Suggestion> suggestions =
+      CreateAutofillAiFillingSuggestions(field(0));
+  ASSERT_GE(suggestions.size(), 2u);
+
+  const Suggestion::AutofillAiPayload* local_payload =
+      std::get_if<Suggestion::AutofillAiPayload>(&suggestions[0].payload);
+  ASSERT_TRUE(local_payload);
+  EXPECT_EQ(local_payload->guid, passport_local.guid());
+  ASSERT_EQ(suggestions[0].labels.size(), 1u);
+
+  const Suggestion::AutofillAiPayload* pc_payload =
+      std::get_if<Suggestion::AutofillAiPayload>(&suggestions[1].payload);
+  ASSERT_TRUE(pc_payload);
+  EXPECT_EQ(pc_payload->guid, passport_personal_context.guid());
+  ASSERT_EQ(suggestions[1].labels.size(), 2u);
+  ASSERT_EQ(suggestions[1].labels[1].size(), 1u);
+  EXPECT_EQ(suggestions[1].labels[1][0].value,
+            l10n_util::GetStringUTF16(IDS_AUTOFILL_AI_SUGGESTED_BY_GEMINI));
 }
 
 TEST_F(AutofillAiSuggestionGeneratorTest, GetFillingSuggestion_PrefixMatching) {

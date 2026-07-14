@@ -530,7 +530,13 @@ Suggestion GetSuggestionForEntity(
 
   Suggestion suggestion =
       Suggestion(main_text, SuggestionType::kFillAutofillAi);
-  suggestion.labels = {{Suggestion::Text(std::move(label))}};
+  if (entity.record_type() == EntityInstance::RecordType::kPersonalContext) {
+    suggestion.labels = {{Suggestion::Text(std::move(label))},
+                         {Suggestion::Text(l10n_util::GetStringUTF16(
+                             IDS_AUTOFILL_AI_SUGGESTED_BY_GEMINI))}};
+  } else {
+    suggestion.labels = {{Suggestion::Text(std::move(label))}};
+  }
 
   const bool requires_server_fetch = WillRequireServerFetch(
       entity, form, trigger_field.field->section(), app_locale);
