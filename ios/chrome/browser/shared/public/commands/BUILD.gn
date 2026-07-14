@@ -107,6 +107,7 @@ source_set("commands") {
     "tab_strip_last_tab_dragged_alert_command.mm",
     "tabs_animation_commands.h",
     "text_zoom_commands.h",
+    "tips_passwords_commands.h",
     "toolbar_commands.h",
     "unit_conversion_commands.h",
     "web_content_commands.h",

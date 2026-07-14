@@ -20,6 +20,7 @@ source_set("tasks") {
   ]
   deps = [
     "//base",
+    "//components/segmentation_platform/embedder/home_modules/tips_manager:constants",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/level_up/model:task_info",
     "//ios/chrome/browser/ntp/shared/metrics:constants",

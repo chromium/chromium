@@ -32,6 +32,7 @@ include_rules = [
   "+ios/chrome/browser/composebox/public/composebox_focus_params.h",
   "+ios/chrome/browser/content_settings/model/host_content_settings_map_factory.h",
   "+ios/chrome/browser/content_suggestions/public",
+  "+ios/chrome/browser/content_suggestions/tips",
   "+ios/chrome/browser/context_menu/ui_bundled/context_menu_configuration_provider.h",
   "+ios/chrome/browser/contextual_panel",
   "+ios/chrome/browser/crash_report/model/crash_keys_helper.h",

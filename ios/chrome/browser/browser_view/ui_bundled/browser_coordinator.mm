@@ -39,6 +39,7 @@
 #import "components/prefs/pref_service.h"
 #import "components/profile_metrics/browser_profile_type.h"
 #import "components/safe_browsing/core/common/features.h"
+#import "components/segmentation_platform/embedder/home_modules/tips_manager/constants.h"
 #import "components/segmentation_platform/embedder/home_modules/tips_manager/signal_constants.h"
 #import "components/send_tab_to_self/features.h"
 #import "components/send_tab_to_self/metrics_util.h"
@@ -107,6 +108,7 @@
 #import "ios/chrome/browser/composebox/public/composebox_entrypoint.h"
 #import "ios/chrome/browser/composebox/public/composebox_focus_params.h"
 #import "ios/chrome/browser/content_settings/model/host_content_settings_map_factory.h"
+#import "ios/chrome/browser/content_suggestions/tips/coordinator/tips_passwords_coordinator.h"
 #import "ios/chrome/browser/context_menu/ui_bundled/context_menu_configuration_provider.h"
 #import "ios/chrome/browser/contextual_panel/coordinator/contextual_sheet_coordinator.h"
 #import "ios/chrome/browser/contextual_panel/entrypoint/coordinator/contextual_panel_entrypoint_constants.h"
@@ -304,6 +306,7 @@
 #import "ios/chrome/browser/shared/public/commands/synced_set_up_commands.h"
 #import "ios/chrome/browser/shared/public/commands/tab_picker_commands.h"
 #import "ios/chrome/browser/shared/public/commands/text_zoom_commands.h"
+#import "ios/chrome/browser/shared/public/commands/tips_passwords_commands.h"
 #import "ios/chrome/browser/shared/public/commands/toolbar_commands.h"
 #import "ios/chrome/browser/shared/public/commands/unit_conversion_commands.h"
 #import "ios/chrome/browser/shared/public/commands/web_content_commands.h"
@@ -490,6 +493,8 @@ const char kChromeAppStoreUrl[] =
     SyncPresenterCommands,
     TabPickerCommands,
     TextZoomCommands,
+    TipsPasswordsCommands,
+    TipsPasswordsCoordinatorDelegate,
     TrustedVaultReauthenticationCoordinatorDelegate,
     UnitConversionCommands,
     URLLoadingDelegate,
@@ -801,6 +806,7 @@ const char kChromeAppStoreUrl[] =
   EnhancedSafeBrowsingPromoCoordinator* _enhancedSafeBrowsingPromoCoordinator;
   PriceTrackingPromoCoordinator* _priceTrackingPromoCoordinator;
   TabGroupsPromoCoordinator* _tabGroupsPromoCoordinator;
+  TipsPasswordsCoordinator* _tipsPasswordsCoordinator;
   AutoDeletionCoordinator* _autoDeletionCoordinator;
   TrustedVaultReauthenticationCoordinator*
       _trustedVaultReauthenticationCoordinator;
@@ -1385,6 +1391,7 @@ const char kChromeAppStoreUrl[] =
     @protocol(SyncPresenterCommands),
     @protocol(TabPickerCommands),
     @protocol(TextZoomCommands),
+    @protocol(TipsPasswordsCommands),
     @protocol(WebContentCommands),
     @protocol(DefaultBrowserGenericPromoCommands),
     @protocol(MiniMapCommands),
@@ -1962,6 +1969,9 @@ const char kChromeAppStoreUrl[] =
 
   [self.nonModalSignInPromoCoordinator stop];
   self.nonModalSignInPromoCoordinator = nil;
+
+  [_tipsPasswordsCoordinator stop];
+  _tipsPasswordsCoordinator = nil;
 
   [_addContactsCoordinator stop];
   _addContactsCoordinator = nil;
@@ -4074,6 +4084,24 @@ const char kChromeAppStoreUrl[] =
   [self stopTabPickerCoordinator];
 }
 
+#pragma mark - TipsPasswordsCommands
+
+- (void)showPasswordsTipForIdentifier:
+    (segmentation_platform::TipIdentifier)identifier {
+  [_tipsPasswordsCoordinator stop];
+  _tipsPasswordsCoordinator = [[TipsPasswordsCoordinator alloc]
+      initWithBaseViewController:self.viewController
+                         browser:self.browser
+                      identifier:identifier];
+  _tipsPasswordsCoordinator.delegate = self;
+  [_tipsPasswordsCoordinator start];
+}
+
+- (void)dismissPasswordsTip {
+  [_tipsPasswordsCoordinator stop];
+  _tipsPasswordsCoordinator = nil;
+}
+
 #pragma mark - TextZoomCommands
 
 - (void)openTextZoom {
@@ -5743,6 +5771,14 @@ const char kChromeAppStoreUrl[] =
     (PasskeyWelcomeScreenCoordinator*)coordinator {
   CHECK_EQ(coordinator, _passkeyWelcomeScreenCoordinator);
   [self stopPasskeyWelcomeScreenCoordinator];
+}
+
+#pragma mark - TipsPasswordsCoordinatorDelegate
+
+- (void)tipsPasswordsCoordinatorDidFinish:
+    (TipsPasswordsCoordinator*)coordinator {
+  CHECK_EQ(coordinator, _tipsPasswordsCoordinator);
+  [self dismissPasswordsTip];
 }
 
 #pragma mark - DownloadListCommands
