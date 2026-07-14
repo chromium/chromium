@@ -7,6 +7,7 @@
 #include <string>
 #include <utility>
 
+#include "ash/constants/ash_login_pref_names.h"
 #include "ash/public/cpp/login_screen_test_api.h"
 #include "ash/public/cpp/reauth_reason.h"
 #include "ash/shell.h"
@@ -19,6 +20,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
+#include "base/timer/timer.h"
 #include "chrome/browser/ash/login/login_manager_test.h"
 #include "chrome/browser/ash/login/reauth_stats.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
@@ -335,6 +337,74 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeTest, ClosePasswordChangedDialog) {
   SetGaiaScreenCredentials(test_account_id_, test::kNewPassword);
 
   test::CreateOldPasswordEnterPageWaiter()->Wait();
+}
+
+// Verifies that AutoWipe is triggered when the
+// `kDeviceOnlinePasswordMismatchBehavior` pref is set to 1.
+IN_PROC_BROWSER_TEST_F(PasswordChangeTest,
+                       DeviceOnlinePasswordMismatchBehavior_AutoWipe) {
+  CreateTestingFile();
+  OpenGaiaDialog(test_account_id_);
+
+  // Set the AutoWipe behavior in Local State.
+  g_browser_process->local_state()->SetInteger(
+      ash::prefs::kDeviceOnlinePasswordMismatchBehavior,
+      static_cast<int>(DeviceOnlinePasswordMismatchBehavior::kAutoWipe));
+
+  // Skip post-login screens to reach ACTIVE session state immediately after
+  // wipe.
+  login_mixin_.SkipPostLoginScreens();
+
+  SetGaiaScreenCredentials(test_account_id_, test::kNewPassword);
+
+  // Wait for the cryptohome removal to be triggered asynchronously.
+  {
+    base::RunLoop run_loop;
+    base::RepeatingTimer timer;
+    timer.Start(
+        FROM_HERE, base::Milliseconds(100),
+        base::BindRepeating(
+            [](base::RunLoop* run_loop) {
+              if (FakeUserDataAuthClient::Get()->WasCalled<AuthOp::kRemove>()) {
+                run_loop->Quit();
+              }
+            },
+            &run_loop));
+    // Fail the test if wipe doesn't happen within 10 seconds.
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE, run_loop.QuitClosure(), base::Seconds(10));
+    run_loop.Run();
+  }
+
+  // Verify that the cryptohome was actually removed.
+  EXPECT_TRUE(FakeUserDataAuthClient::Get()->WasCalled<AuthOp::kRemove>());
+  EXPECT_FALSE(TestingFileExists());
+
+  // Wait for active session to fully stabilize before concluding the test to
+  // avoid dangling profile pointers during teardown.
+  login_mixin_.WaitForActiveSession();
+}
+
+// Verifies that recovery/enter-old-password screen is shown when the
+// `kDeviceOnlinePasswordMismatchBehavior` pref is set to 0 (default).
+IN_PROC_BROWSER_TEST_F(PasswordChangeTest,
+                       DeviceOnlinePasswordMismatchBehavior_Default) {
+  CreateTestingFile();
+  OpenGaiaDialog(test_account_id_);
+
+  // Set the default behavior in Local State.
+  g_browser_process->local_state()->SetInteger(
+      ash::prefs::kDeviceOnlinePasswordMismatchBehavior,
+      static_cast<int>(DeviceOnlinePasswordMismatchBehavior::kDefault));
+
+  SetGaiaScreenCredentials(test_account_id_, test::kNewPassword);
+
+  // Verify that we land on the Enter Old Password screen.
+  test::CreateOldPasswordEnterPageWaiter()->Wait();
+
+  // Verify that the cryptohome was NOT removed.
+  EXPECT_FALSE(FakeUserDataAuthClient::Get()->WasCalled<AuthOp::kRemove>());
+  EXPECT_TRUE(TestingFileExists());
 }
 
 class PasswordChangeTokenCheck : public PasswordChangeTest {

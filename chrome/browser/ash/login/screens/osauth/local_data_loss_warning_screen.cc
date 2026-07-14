@@ -9,6 +9,7 @@
 #include <string>
 #include <utility>
 
+#include "ash/constants/ash_login_pref_names.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -25,7 +26,9 @@
 #include "chromeos/ash/components/login/auth/mount_performer.h"
 #include "chromeos/ash/components/login/auth/public/authentication_error.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
+#include "chromeos/ash/components/osauth/public/common_types.h"
 #include "components/device_event_log/device_event_log.h"
+#include "components/prefs/pref_service.h"
 #include "components/user_manager/user_manager.h"
 
 namespace ash {
@@ -59,16 +62,20 @@ std::string LocalDataLossWarningScreen::GetResultString(Result result) {
       return "CryptohomeError";
     case Result::kCancel:
       return "Cancel";
+    case Result::kAutoWipe:
+      return "AutoWipe";
   }
   // LINT.ThenChange(//tools/metrics/histograms/metadata/oobe/histograms.xml)
 }
 
 LocalDataLossWarningScreen::LocalDataLossWarningScreen(
+    PrefService* local_state,
     base::WeakPtr<LocalDataLossWarningScreenView> view,
     const ScreenExitCallback& exit_callback)
     : BaseOSAuthSetupScreen(LocalDataLossWarningScreenView::kScreenId,
                             OobeScreenPriority::DEFAULT),
       OobeMojoBinder(this),
+      local_state_(local_state),
       view_(std::move(view)),
       exit_callback_(exit_callback),
       mount_performer_(std::make_unique<MountPerformer>()) {}
@@ -76,6 +83,18 @@ LocalDataLossWarningScreen::LocalDataLossWarningScreen(
 LocalDataLossWarningScreen::~LocalDataLossWarningScreen() = default;
 
 void LocalDataLossWarningScreen::ShowImpl() {
+  if (local_state_->GetInteger(prefs::kDeviceOnlinePasswordMismatchBehavior) ==
+      static_cast<int>(DeviceOnlinePasswordMismatchBehavior::kAutoWipe)) {
+    LOGIN_LOG(EVENT)
+        << "AutoWipe behavior active: removing user directory directly";
+    SYSLOG(INFO)
+        << "(LOGIN) AutoWipe behavior active: removing user directory directly";
+    mount_performer_->RemoveUserDirectory(
+        std::move(context()->user_context),
+        base::BindOnce(&LocalDataLossWarningScreen::OnRemovedUserDirectory,
+                       weak_factory_.GetWeakPtr()));
+    return;
+  }
   bool can_go_back = context()->knowledge_factor_setup.data_loss_back_option !=
                      WizardContext::DataLossBackOptions::kNone;
   view_->Show(isOwner(context()->user_context->GetAccountId()),
@@ -161,7 +180,15 @@ void LocalDataLossWarningScreen::OnRemovedUserDirectory(
   if (context()->user_context->HasReplacementKey()) {
     context()->user_context->ReuseReplacementKey();
   }
-  exit_callback_.Run(Result::kRemoveUser);
+
+  // Choose the appropriate screen exit result based on the AutoWipe policy
+  // behavior
+  if (local_state_->GetInteger(prefs::kDeviceOnlinePasswordMismatchBehavior) ==
+      static_cast<int>(DeviceOnlinePasswordMismatchBehavior::kAutoWipe)) {
+    exit_callback_.Run(Result::kAutoWipe);
+  } else {
+    exit_callback_.Run(Result::kRemoveUser);
+  }
 }
 
 }  // namespace ash

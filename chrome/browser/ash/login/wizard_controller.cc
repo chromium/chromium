@@ -256,6 +256,7 @@
 #include "chromeos/ash/components/geolocation/system_location_provider.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "chromeos/ash/components/language_packs/language_pack_manager.h"
+#include "chromeos/ash/components/login/auth/mount_performer.h"
 #include "chromeos/ash/components/network/network_state.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/components/osauth/public/auth_session_storage.h"
@@ -1065,11 +1066,13 @@ WizardController::CreateScreens() {
                           weak_factory_.GetWeakPtr())));
 
   append(std::make_unique<LocalDataLossWarningScreen>(
+      &local_state_.get(),
       oobe_ui->GetView<LocalDataLossWarningScreenHandler>()->AsWeakPtr(),
       base::BindRepeating(&WizardController::OnLocalDataLossWarningScreenExit,
                           weak_factory_.GetWeakPtr())));
 
   append(std::make_unique<EnterOldPasswordScreen>(
+      &local_state_.get(),
       oobe_ui->GetView<EnterOldPasswordScreenHandler>()->AsWeakPtr(),
       base::BindRepeating(&WizardController::OnEnterOldPasswordScreenExit,
                           weak_factory_.GetWeakPtr())));
@@ -2019,7 +2022,8 @@ void WizardController::OnLocalDataLossWarningScreenExit(
   OnScreenExit(LocalDataLossWarningScreenView::kScreenId,
                LocalDataLossWarningScreen::GetResultString(result));
   switch (result) {
-    case LocalDataLossWarningScreen::Result::kRemoveUser: {
+    case LocalDataLossWarningScreen::Result::kRemoveUser:
+    case LocalDataLossWarningScreen::Result::kAutoWipe: {
       std::unique_ptr<UserContext> context =
           std::move(wizard_context_->user_context);
       ash::LoginDisplayHost::default_host()->CompleteLogin(*context);

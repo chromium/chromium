@@ -10,12 +10,15 @@
 #include <string>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/screens/osauth/base_osauth_setup_screen.h"
 #include "chromeos/ash/components/login/auth/auth_performer.h"
 #include "chromeos/ash/components/login/auth/mount_performer.h"
 #include "chromeos/ash/components/login/auth/public/authentication_error.h"
+
+class PrefService;
 
 namespace ash {
 
@@ -35,7 +38,8 @@ class EnterOldPasswordScreen : public BaseOSAuthSetupScreen {
 
   using ScreenExitCallback = base::RepeatingCallback<void(Result result)>;
 
-  EnterOldPasswordScreen(base::WeakPtr<EnterOldPasswordScreenView> view,
+  EnterOldPasswordScreen(PrefService* local_state,
+                         base::WeakPtr<EnterOldPasswordScreenView> view,
                          const ScreenExitCallback& exit_callback);
 
   EnterOldPasswordScreen(const EnterOldPasswordScreen&) = delete;
@@ -55,6 +59,7 @@ class EnterOldPasswordScreen : public BaseOSAuthSetupScreen {
   void OnPasswordAuthentication(std::unique_ptr<UserContext> user_context,
                                 std::optional<AuthenticationError> error);
 
+  const raw_ptr<PrefService> local_state_;
   base::WeakPtr<EnterOldPasswordScreenView> view_;
 
   ScreenExitCallback exit_callback_;

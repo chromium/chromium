@@ -9,9 +9,11 @@
 #include <string>
 #include <utility>
 
+#include "ash/constants/ash_login_pref_names.h"
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
+#include "base/syslog_logging.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
 #include "chrome/browser/ash/login/screens/osauth/base_osauth_setup_screen.h"
@@ -26,6 +28,8 @@
 #include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "chromeos/ash/components/osauth/public/auth_session_storage.h"
 #include "chromeos/ash/components/osauth/public/common_types.h"
+#include "components/device_event_log/device_event_log.h"
+#include "components/prefs/pref_service.h"
 
 namespace ash {
 namespace {
@@ -50,10 +54,12 @@ std::string EnterOldPasswordScreen::GetResultString(Result result) {
 }
 
 EnterOldPasswordScreen::EnterOldPasswordScreen(
+    PrefService* local_state,
     base::WeakPtr<EnterOldPasswordScreenView> view,
     const ScreenExitCallback& exit_callback)
     : BaseOSAuthSetupScreen(EnterOldPasswordScreenView::kScreenId,
                             OobeScreenPriority::DEFAULT),
+      local_state_(local_state),
       view_(std::move(view)),
       exit_callback_(exit_callback),
       auth_performer_(
@@ -62,6 +68,15 @@ EnterOldPasswordScreen::EnterOldPasswordScreen(
 EnterOldPasswordScreen::~EnterOldPasswordScreen() = default;
 
 void EnterOldPasswordScreen::ShowImpl() {
+  if (local_state_->GetInteger(prefs::kDeviceOnlinePasswordMismatchBehavior) ==
+      static_cast<int>(DeviceOnlinePasswordMismatchBehavior::kAutoWipe)) {
+    LOGIN_LOG(EVENT)
+        << "AutoWipe behavior active: skipping entering old password";
+    SYSLOG(INFO)
+        << "(LOGIN) AutoWipe behavior active: skipping entering old password";
+    exit_callback_.Run(Result::kForgotOldPassword);
+    return;
+  }
   view_->Show();
 }
 

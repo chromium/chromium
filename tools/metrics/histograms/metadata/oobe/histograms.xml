@@ -327,6 +327,7 @@ chromium-metrics-reviews@google.com.
   <variant name="Hid-detection.Next"/>
   <variant name="Hw-data-collection.AcceptedWithHWDataUsage"/>
   <variant name="Hw-data-collection.AcceptedWithoutHWDataUsage"/>
+  <variant name="Local-data-loss-warning.AutoWipe"/>
   <variant name="Local-data-loss-warning.Back"/>
   <variant name="Local-data-loss-warning.Cancel"/>
   <variant name="Local-data-loss-warning.CryptohomeError"/>
