@@ -60,9 +60,9 @@
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/core/device_policy_cros_test_helper.h"
 #include "chrome/browser/ash/policy/test_support/embedded_policy_test_server_mixin.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ssl/ssl_client_certificate_selector.h"
 #include "chrome/browser/sync/sync_service_factory.h"
@@ -79,6 +79,7 @@
 #include "chrome/test/base/ash/scoped_test_system_nss_key_slot_mixin.h"
 #include "chrome/test/base/fake_gaia_mixin.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
 #include "chromeos/ash/components/http_auth_dialog/http_auth_dialog.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
@@ -1580,7 +1581,9 @@ class WebviewClientCertsLoginTestBase : public WebviewLoginTest {
         device_policy_builder_.GetBlob());
     PrefChangeRegistrar registrar;
     base::test::TestFuture<const char*> pref_changed_future;
-    registrar.Init(ProfileHelper::GetSigninProfile()->GetPrefs());
+    registrar.Init(Profile::FromBrowserContext(
+                       BrowserContextHelper::Get()->GetSigninBrowserContext())
+                       ->GetPrefs());
     registrar.Add(
         ::prefs::kManagedAutoSelectCertificateForUrls,
         base::BindRepeating(pref_changed_future.GetRepeatingCallback(),
@@ -1636,7 +1639,9 @@ class WebviewClientCertsLoginTestBase : public WebviewLoginTest {
         device_policy_builder_.GetBlob());
     PrefChangeRegistrar registrar;
     base::test::TestFuture<const char*> pref_changed_future;
-    registrar.Init(ProfileHelper::GetSigninProfile()->GetPrefs());
+    registrar.Init(Profile::FromBrowserContext(
+                       BrowserContextHelper::Get()->GetSigninBrowserContext())
+                       ->GetPrefs());
     registrar.Add(
         ::prefs::kPromptOnMultipleMatchingCertificates,
         base::BindRepeating(pref_changed_future.GetRepeatingCallback(),
