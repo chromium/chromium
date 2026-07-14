@@ -9294,6 +9294,7 @@ from previous Chrome versions.
   <int value="-1671494049" label="TrimOnFreeze:disabled"/>
   <int value="-1670137340"
       label="OptimizeLoadingIPCForSmallResources:disabled"/>
+  <int value="-1670089225" label="GlicGeminiEnterpriseConsentEnabled:enabled"/>
   <int value="-1669727073"
       label="HandwritingLegacyRecognitionAllLang:disabled"/>
   <int value="-1669486359" label="ImportantSitesInCBD:enabled"/>
@@ -13435,6 +13436,7 @@ from previous Chrome versions.
   <int value="-351830087" label="AssistantConsentSimplifiedText:enabled"/>
   <int value="-351744276"
       label="ExperimentalAccessibilityDictationContextChecking:enabled"/>
+  <int value="-351685390" label="GlicGeminiEnterpriseConsentEnabled:disabled"/>
   <int value="-351552989" label="disable-hosted-apps-in-windows"/>
   <int value="-351127770" label="enable-offline-pages-as-bookmarks"/>
   <int value="-350558651" label="EnableWebHidInWebView:disabled"/>

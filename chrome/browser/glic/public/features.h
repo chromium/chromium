@@ -119,6 +119,7 @@ BASE_DECLARE_FEATURE(kGlicAnchorEntryPointForOnboardedUsers);
 BASE_DECLARE_FEATURE(kGlicProcessCounterAbuseVerdict);
 BASE_DECLARE_FEATURE(kGlicNoWebUiLoader);
 BASE_DECLARE_FEATURE(kGlicGeminiEnterpriseSettingsEnabled);
+BASE_DECLARE_FEATURE(kGlicGeminiEnterpriseConsentEnabled);
 
 BASE_DECLARE_FEATURE(kGlicHotkeyLocalScope);
 }  // namespace features

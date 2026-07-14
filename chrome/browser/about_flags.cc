@@ -10854,6 +10854,12 @@ const FeatureEntry kFeatureEntries[] = {
      kOsDesktop,
      FEATURE_VALUE_TYPE(features::kGlicGeminiEnterpriseSettingsEnabled)},
 
+    {"glic-gemini-enterprise-consent-enabled",
+     flag_descriptions::kGlicGeminiEnterpriseConsentEnabledName,
+     flag_descriptions::kGlicGeminiEnterpriseConsentEnabledDescription,
+     kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kGlicGeminiEnterpriseConsentEnabled)},
+
     {"glic-selection-prompt", flag_descriptions::kGlicSelectionPromptName,
      flag_descriptions::kGlicSelectionPromptDescription, kOsDesktop,
      MULTI_VALUE_TYPE(kGlicSelectionPromptChoices)},

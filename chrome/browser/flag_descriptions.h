@@ -1695,6 +1695,11 @@ inline constexpr char kGlicGeminiEnterpriseSettingsEnabledName[] =
     "Glic Gemini Enterprise Settings Enabled Feature";
 inline constexpr char kGlicGeminiEnterpriseSettingsEnabledDescription[] =
     "Enables the Glic Gemini Enterprise settings feature.";
+inline constexpr char kGlicGeminiEnterpriseConsentEnabledName[] =
+    "Glic Gemini Enterprise Consent Toggle Enabled Feature";
+inline constexpr char kGlicGeminiEnterpriseConsentEnabledDescription[] =
+    "Enables the user consent toggle in Chrome settings for the Gemini "
+    "Enterprise integration.";
 inline constexpr char kGlicDisableActorSafetyChecksName[] =
     "Glic disable actor safety checks";
 inline constexpr char kGlicDisableActorSafetyChecksDescription[] =

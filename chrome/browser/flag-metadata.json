@@ -5560,6 +5560,14 @@
     "expiry_milestone": 154
   },
   {
+    "name": "glic-gemini-enterprise-consent-enabled",
+    "owners": [
+      "esalma@google.com",
+      "sugandhagoyal@google.com"
+    ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "glic-gemini-enterprise-settings-enabled",
     "owners": [
       "alexwchen@google.com",
