@@ -15,4 +15,16 @@ const base::FeatureParam<bool> kKeepMenuOpenOnTabSelectForRealbox(
     &kContextManagementInComposebox,
     "KeepMenuOpenOnTabSelectForRealboxComposebox",
     false);
+
+const base::FeatureParam<bool>
+    kContextManagementInComposeboxEnableTabDeselection(
+        &kContextManagementInComposebox,
+        "enable_tab_deselection",
+        false);
+
+bool IsTabDeselectionInComposeboxEnabled() {
+  return base::FeatureList::IsEnabled(kContextManagementInComposebox) &&
+         kContextManagementInComposeboxEnableTabDeselection.Get();
+}
+
 }  // namespace omnibox

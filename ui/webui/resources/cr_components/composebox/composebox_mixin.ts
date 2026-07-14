@@ -1172,9 +1172,18 @@ export const ComposeboxEmbedderMixin =
         }
 
         async onDeleteTabContext(
-            e: CustomEvent<
-                {uuid: UnguessableToken, fromUserAction?: boolean}>) {
-          this.deleteFile(e.detail.uuid, e.detail.fromUserAction);
+            e: CustomEvent<{tabId: number, fromUserAction?: boolean}>) {
+          const tabId = e.detail.tabId;
+          const token = this.addedTabsIds.get(tabId);
+          if (token) {
+            this.deleteFile(token, e.detail.fromUserAction);
+          } else {
+            this.getSearchboxHandler().deleteTabContext(tabId);
+          }
+
+          this.aimThreadRestoredTabs =
+              this.aimThreadRestoredTabs.filter(tab => tab.tabId !== tabId);
+
           await this.updateComplete;
           this.keepMenuOpenForMultiSelection();
         }
@@ -2696,8 +2705,8 @@ export interface ComposeboxEmbedderMixinInterface extends
   // Common event handlers
   onContextMenuContainerMousedown(e: FocusEvent): void;
   onContextMenuContainerClick(e: MouseEvent): void;
-  onDeleteTabContext(
-      e: CustomEvent<{uuid: UnguessableToken, fromUserAction?: boolean}>): void;
+  onDeleteTabContext(e: CustomEvent<{tabId: number, fromUserAction?: boolean}>):
+      void;
   onShareTabsFlyoutOpenChanged(e: CustomEvent<{open: boolean}>): void;
   onAddTabContext(e: CustomEvent<{
     id: number,

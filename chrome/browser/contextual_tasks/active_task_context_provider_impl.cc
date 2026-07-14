@@ -4,6 +4,7 @@
 
 #include "chrome/browser/contextual_tasks/active_task_context_provider_impl.h"
 
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/contextual_search/contextual_search_web_contents_helper.h"
 #include "chrome/browser/contextual_tasks/active_task_context_provider.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_panel_controller.h"
@@ -26,7 +27,8 @@ namespace {
 
 std::set<tabs::TabHandle> GetTabsFromContext(
     const ContextualTaskContext& context,
-    BrowserWindowInterface* browser_window) {
+    BrowserWindowInterface* browser_window,
+    contextual_search::ContextualSearchSessionHandle* session_handle) {
   std::set<tabs::TabHandle> tabs;
 
   // Add the tabs from context if they exist in the current browser window.
@@ -55,6 +57,11 @@ std::set<tabs::TabHandle> GetTabsFromContext(
     }
     SessionID tab_id = sessions::SessionTabHelper::IdForTab(web_contents);
     if (context_session_ids.contains(tab_id)) {
+      if (session_handle && session_handle->IsTabDeselected(
+                                tab_id, web_contents->GetLastCommittedURL(),
+                                base::UTF16ToUTF8(tab->GetTitle()))) {
+        continue;
+      }
       tabs.insert(tab->GetHandle());
     }
   }
@@ -222,6 +229,8 @@ void ActiveTaskContextProviderImpl::RefreshContext() {
     ResetStateAndNotifyObservers();
   }
 
+  session_handle_ = session_handle ? session_handle->AsWeakPtr() : nullptr;
+
   if (!active_task_id_.has_value()) {
     ResetStateAndNotifyObservers();
     return;
@@ -250,7 +259,8 @@ void ActiveTaskContextProviderImpl::OnGetContextForTask(
   }
 
   if (context) {
-    backend_context_tabs_ = GetTabsFromContext(*context, browser_window_);
+    backend_context_tabs_ =
+        GetTabsFromContext(*context, browser_window_, session_handle_.get());
   } else {
     backend_context_tabs_.clear();
   }
@@ -261,6 +271,7 @@ void ActiveTaskContextProviderImpl::OnGetContextForTask(
 void ActiveTaskContextProviderImpl::ResetStateAndNotifyObservers() {
   active_task_id_ = std::nullopt;
   backend_context_tabs_.clear();
+  session_handle_ = nullptr;
   NotifyObservers();
 }
 

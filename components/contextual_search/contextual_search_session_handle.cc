@@ -14,6 +14,7 @@
 #include "components/contextual_search/contextual_search_context_controller.h"
 #include "components/contextual_search/contextual_search_metrics_recorder.h"
 #include "components/contextual_search/contextual_search_service.h"
+#include "components/contextual_tasks/public/features.h"
 #include "components/contextual_tasks/public/query_contextualizer.h"
 #include "components/lens/contextual_input.h"
 #include "components/lens/lens_features.h"
@@ -214,6 +215,11 @@ void ContextualSearchSessionHandle::StartTabContextUploadFlow(
     return;
   }
 
+  if (contextual_input_data &&
+      contextual_input_data->tab_session_id.has_value()) {
+    deselected_tabs_urls_.erase(contextual_input_data->tab_session_id.value());
+  }
+
   if (auto* metrics_recorder = GetMetricsRecorder()) {
     auto mime_type = contextual_input_data->primary_content_type.value_or(
         lens::MimeType::kUnknown);
@@ -336,14 +342,28 @@ void ContextualSearchSessionHandle::StartModalityChipUploadFlow(
 
 bool ContextualSearchSessionHandle::DeleteFile(
     const base::UnguessableToken& file_token) {
-  // If the file was already submitted, don't delete it from the context
-  // controller, so that the file info can be looked up in the future.
-  // This prevents the file info for submitted content from being deleted
-  // prematurely, such as when controlling the auto-tab chip for the transition
-  // from the LensOverlay searchbox to the contextual tasks page.
-  if (std::find(submitted_context_tokens_.begin(),
-                submitted_context_tokens_.end(),
-                file_token) != submitted_context_tokens_.end()) {
+  auto* context_controller = GetController();
+  const contextual_search::FileInfo* file_info =
+      context_controller ? context_controller->GetFileInfo(file_token)
+                         : nullptr;
+
+  if (file_info == nullptr) {
+    return false;
+  }
+
+  // Only support deselection for tabs when the feature is enabled.
+  // Other file types (like images) cannot be deselected once submitted.
+  bool is_tab = file_info->tab_session_id.has_value();
+  bool enable_tab_deselection =
+      omnibox::IsTabDeselectionInComposeboxEnabled() && is_tab;
+
+  bool is_submitted = std::find(submitted_context_tokens_.begin(),
+                                submitted_context_tokens_.end(),
+                                file_token) != submitted_context_tokens_.end();
+
+  if (is_submitted && !enable_tab_deselection) {
+    // If the file was already submitted and deselection is not supported for
+    // it, do not delete it.
     return false;
   }
 
@@ -354,28 +374,39 @@ bool ContextualSearchSessionHandle::DeleteFile(
     uploaded_context_tokens_.erase(it);
   }
 
-  // Also delete the file from the context controller if it exists.
-  if (auto* context_controller = GetController()) {
-    const contextual_search::FileInfo* file_info =
-        context_controller->GetFileInfo(file_token);
+  bool should_delete_from_controller = true;
 
-    if (file_info == nullptr) {
-      return false;
+  if (enable_tab_deselection) {
+    // Track that this tab was explicitly deselected in this session.
+    if (file_info->tab_url.has_value()) {
+      deselected_tabs_urls_[file_info->tab_session_id.value()] = std::make_pair(
+          file_info->tab_url.value(), file_info->tab_title.value_or(""));
     }
-    lens::MimeType file_type =
-        file_info ? file_info->mime_type : lens::MimeType::kUnknown;
-    contextual_search::ContextUploadStatus file_status =
-        file_info ? file_info->upload_status
-                  : contextual_search::ContextUploadStatus::kNotUploaded;
-
-    bool success = context_controller->DeleteFile(file_token);
-    if (auto* metrics_recorder = GetMetricsRecorder()) {
-      metrics_recorder->RecordFileDeletedMetrics(success, file_type,
-                                                 file_status);
+    if (is_submitted) {
+      // Since only tabs support deselection, this block is only reached for tab
+      // contexts. Remove the deselected tab from `submitted_context_tokens_`
+      // so it is immediately excluded from the active query context and
+      // tabstrip underlines. Do NOT delete it from the context controller
+      // yet, as previous turns (e.g. `previous_turns_` tracking) still
+      // reference this token to render their attachment metadata.
+      std::erase(submitted_context_tokens_, file_token);
+      should_delete_from_controller = false;
     }
-    return success;
   }
-  return false;
+
+  lens::MimeType file_type = file_info->mime_type;
+  contextual_search::ContextUploadStatus file_status = file_info->upload_status;
+
+  bool success = true;
+  if (should_delete_from_controller && context_controller) {
+    success = context_controller->DeleteFile(file_token);
+  }
+
+  if (auto* metrics_recorder = GetMetricsRecorder()) {
+    metrics_recorder->RecordFileDeletedMetrics(success, file_type, file_status);
+  }
+
+  return success;
 }
 
 void ContextualSearchSessionHandle::ClearFiles(bool query_submitted) {
@@ -474,14 +505,17 @@ ContextualSearchSessionHandle::CreateClientToAimRequest(
     base::UnguessableToken token_to_validate;
 
     if (context_management_enabled) {
-      // TODO(crbug.com/524332787): Stop using uploaded_context_tokens_ for tab
-      // persistence when context management is enabled.
-      token_to_validate = GetActiveTokenForTab(session_id);
-
-      // Case A: User removed it from UI.
-      if (token_to_validate.is_empty()) {
+      // If explicitly deselected by user, treat as deleted. Check this
+      // directly because committed tabs are cleared from active lists.
+      if (deselected_tabs_urls_.contains(session_id)) {
         deleted_tabs.push_back(session_id);
         continue;
+      }
+
+      token_to_validate = GetActiveTokenForTab(session_id);
+      if (token_to_validate.is_empty()) {
+        // If not active, it might be committed. Fallback to the original token.
+        token_to_validate = token_and_req.first;
       }
     } else {
       // Flag disabled: uploaded_context_tokens_ is cleared after each query.
@@ -513,7 +547,14 @@ ContextualSearchSessionHandle::CreateClientToAimRequest(
         // If there is an active (potentially new) token for this tab, check if
         // it is valid. If it is valid, the tab is still open (navigated).
         base::UnguessableToken active_token = GetActiveTokenForTab(session_id);
-        if (!active_token.is_empty()) {
+        base::UnguessableToken validated_token =
+            context_management_enabled ? active_token : it->second.first;
+        // If context management is enabled, always validate the active token
+        // if present (it might be a deselected tab skipped during validation
+        // earlier). If disabled, only validate if it is a new token
+        // (navigated).
+        if (!active_token.is_empty() &&
+            (context_management_enabled || active_token != validated_token)) {
           const auto* active_file_info =
               context_controller->GetFileInfo(active_token);
           if (active_file_info &&
@@ -687,6 +728,16 @@ base::UnguessableToken ContextualSearchSessionHandle::GetActiveTokenForTab(
       }
     }
   }
+  // TODO(crbug.com/528416084): Deduplicate these loops using a helper.
+  for (const auto& token : submitted_context_tokens_) {
+    if (IsTabToken(token)) {
+      const auto* file_info = context_controller->GetFileInfo(token);
+      if (file_info && file_info->tab_session_id == tab_session_id &&
+          !file_info->is_superceded) {
+        return token;
+      }
+    }
+  }
   return base::UnguessableToken();
 }
 
@@ -724,6 +775,49 @@ void ContextualSearchSessionHandle::NotifyQuerySubmittedSessionState(
 void ContextualSearchSessionHandle::AddThreadTurn(
     const contextual_tasks::ThreadTurn& turn) {
   previous_turns_.push_back(turn);
+}
+
+base::UnguessableToken ContextualSearchSessionHandle::GetTokenForTab(
+    SessionID tab_session_id) const {
+  base::UnguessableToken active_token = GetActiveTokenForTab(tab_session_id);
+  if (!active_token.is_empty()) {
+    return active_token;
+  }
+  auto it = submitted_tabs_.find(tab_session_id);
+  if (it != submitted_tabs_.end()) {
+    return it->second.first;
+  }
+  return base::UnguessableToken();
+}
+
+bool ContextualSearchSessionHandle::IsTabDeselected(
+    SessionID tab_session_id,
+    const GURL& current_url,
+    const std::string& current_title) const {
+  auto it = deselected_tabs_urls_.find(tab_session_id);
+  if (it == deselected_tabs_urls_.end()) {
+    return false;
+  }
+
+  bool is_equivalent = false;
+  if (auto* validator = GetTabValidator()) {
+    is_equivalent = validator->AreUrlsEquivalent(
+        it->second.first, it->second.second, current_url, current_title);
+  } else {
+    is_equivalent =
+        it->second.first.GetWithoutRef() == current_url.GetWithoutRef();
+  }
+
+  if (!is_equivalent) {
+    deselected_tabs_urls_.erase(it);
+    return false;
+  }
+  return true;
+}
+
+void ContextualSearchSessionHandle::RemoveDeselectedTab(
+    SessionID tab_session_id) {
+  deselected_tabs_urls_.erase(tab_session_id);
 }
 
 }  // namespace contextual_search

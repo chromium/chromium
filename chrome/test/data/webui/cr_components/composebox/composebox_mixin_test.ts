@@ -1464,7 +1464,7 @@ suite('ComposeboxMixinTest', () => {
         keepMenuOpenCalled = false;
         await element.onDeleteTabContext(new CustomEvent('delete-tab-context', {
           detail: {
-            uuid: '0',
+            tabId: 1,
           },
         }));
         assertTrue(keepMenuOpenCalled);

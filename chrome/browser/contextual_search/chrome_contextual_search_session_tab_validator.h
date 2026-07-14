@@ -27,6 +27,10 @@ class ChromeContextualSearchSessionTabValidator
   // contextual_search::ContextualSearchSessionHandle::TabValidator:
   bool IsTabValidAndPointingToUrl(
       const contextual_search::FileInfo& file_info) override;
+  bool AreUrlsEquivalent(const GURL& url1,
+                         const std::string& title1,
+                         const GURL& url2,
+                         const std::string& title2) override;
 
  private:
   raw_ptr<Profile> profile_;

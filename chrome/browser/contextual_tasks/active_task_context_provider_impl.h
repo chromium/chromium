@@ -23,6 +23,10 @@
 
 class BrowserWindowInterface;
 
+namespace contextual_search {
+class ContextualSearchSessionHandle;
+}
+
 namespace contextual_tasks {
 class ContextualTask;
 struct ContextualTaskContext;
@@ -83,6 +87,8 @@ class ActiveTaskContextProviderImpl : public ActiveTaskContextProvider,
   raw_ptr<ContextualTasksPanelController> contextual_tasks_panel_controller_;
   std::map<tabs::TabHandle, std::set<tabs::TabHandle>> local_tab_underlines_;
   std::set<tabs::TabHandle> backend_context_tabs_;
+  base::WeakPtr<contextual_search::ContextualSearchSessionHandle>
+      session_handle_;
 
   // The task associated with the currently active tab.
   std::optional<base::Uuid> active_task_id_;
