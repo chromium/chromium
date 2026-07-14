@@ -170,26 +170,6 @@ TEST_F(ProjectsPanelViewTest, CallbackDoesNotRunWhenVisible) {
   EXPECT_TRUE(projects_panel_view()->GetVisible());
 }
 
-TEST_F(ProjectsPanelViewTest, ThreadsContainerHiddenWhenNoThreads) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      tab_groups::kProjectsPanel,
-      {{tab_groups::kProjectsPanelWithThreads.name, "true"}});
-
-  CreateView();
-  ProjectsPanelView::disable_animations_for_testing();
-
-  // Show the panel
-  state_controller()->SetProjectsVisible(true);
-  projects_panel_view()->OnProjectsPanelStateChanged(state_controller());
-
-  // Verify threads container and separator are hidden when there are no
-  // threads.
-  EXPECT_FALSE(
-      projects_panel_view()->threads_container_for_testing()->GetVisible());
-  EXPECT_FALSE(projects_panel_view()->separator_for_testing()->GetVisible());
-}
-
 class ProjectsPanelViewRTLTest : public ProjectsPanelViewTest {
  public:
   void SetUp() override {

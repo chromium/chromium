@@ -17,10 +17,7 @@
 //     section, split the height evenly between both sections.
 class ProjectsPanelViewLayout : public views::LayoutManagerBase {
  public:
-  ProjectsPanelViewLayout(views::View* controls_view,
-                          views::View* tab_groups_container,
-                          views::View* threads_container,
-                          views::View* separator_view);
+  explicit ProjectsPanelViewLayout(views::View* controls_view);
   ~ProjectsPanelViewLayout() override;
 
   // views::LayoutManagerBase:
@@ -29,9 +26,6 @@ class ProjectsPanelViewLayout : public views::LayoutManagerBase {
 
  private:
   raw_ptr<views::View> controls_view_ = nullptr;
-  raw_ptr<views::View> tab_groups_container_ = nullptr;
-  raw_ptr<views::View> threads_container_ = nullptr;
-  raw_ptr<views::View> separator_view_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_PROJECTS_PROJECTS_PANEL_VIEW_LAYOUT_H_

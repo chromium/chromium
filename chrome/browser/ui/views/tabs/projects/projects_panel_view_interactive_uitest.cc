@@ -37,8 +37,6 @@ constexpr int kBrowserWindowHeight = 800;
 
 namespace base::test {
 
-DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewTabElementId);
-
 class MockProjectsPanelStateController : public ProjectsPanelStateController {
  public:
   MockProjectsPanelStateController(BrowserWindowInterface* browser_window,
@@ -70,7 +68,6 @@ class ProjectsPanelInteractiveUiTest : public InteractiveBrowserTest {
          {tab_groups::kProjectsPanel,
           {{tab_groups::kProjectsPanelWithThreads.name, "true"}}}},
         {});
-    ProjectsPanelView::set_threads_visible_for_testing(true);
     ProjectsPanelView::disable_animations_for_testing();
   }
 
@@ -270,8 +267,8 @@ IN_PROC_BROWSER_TEST_F(ProjectsPanelInteractiveUiTest, StaysOpenOnClickInside) {
           true),
       Do([this]() { RunScheduledLayouts(); }),
       WaitForShow(kProjectsPanelViewElementId),
-      // Click on the Tab groups list title (inside the panel).
-      MoveMouseTo(kProjectsPanelTabGroupsListTitleElementId), ClickMouse(),
+      // Click inside the panel view (background).
+      MoveMouseTo(kProjectsPanelViewElementId), ClickMouse(),
       // Verify Projects Panel is still shown.
       Do([this]() { RunScheduledLayouts(); }),
       CheckResult(
@@ -377,113 +374,6 @@ IN_PROC_BROWSER_TEST_F(ProjectsPanelInteractiveUiTest,
       CheckPanelHasExpectedWidthAndStyling(
           projects_panel::kProjectsPanelMinWidth - views::Separator::kThickness,
           /*should_have_rounded_corners=*/false));
-}
-
-IN_PROC_BROWSER_TEST_F(ProjectsPanelInteractiveUiTest,
-                       ThreadsActivityMenu_GeminiActivityOpensURL) {
-  RunTestSequence(
-      OpenProjectsPanel(),
-      // Click the threads activity menu button.
-      MoveMouseTo(kProjectsPanelThreadsActivityButtonElementId), ClickMouse(),
-      InstrumentNextTab(kNewTabElementId),
-      // Select "Gemini app activity" from the menu.
-      SelectMenuItem(kProjectsPanelThreadsActivityGeminiItemElementId),
-      // Verify that a new tab was opened with the correct URL.
-      WaitForWebContentsNavigation(kNewTabElementId,
-                                   GURL(chrome::kMyActivityGeminiAppsUrl)),
-      // Verify Projects Panel is hidden.
-      WaitForHide(kProjectsPanelViewElementId),
-      CheckResult(
-          [this]() {
-            return projects_panel_state_controller()->IsProjectsPanelVisible();
-          },
-          false));
-}
-
-IN_PROC_BROWSER_TEST_F(ProjectsPanelInteractiveUiTest,
-                       ThreadsActivityMenu_AiModeActivityOpensURL) {
-  RunTestSequence(
-      OpenProjectsPanel(),
-      // Click the threads activity menu button.
-      MoveMouseTo(kProjectsPanelThreadsActivityButtonElementId), ClickMouse(),
-      InstrumentNextTab(kNewTabElementId),
-      // Select "AI Mode activity" from the menu.
-      SelectMenuItem(kProjectsPanelThreadsActivityAiModeItemElementId),
-      // Verify that a new tab was opened with the correct URL.
-      WaitForWebContentsNavigation(kNewTabElementId,
-                                   GURL(chrome::kMyActivityAiModeUrl)),
-      // Verify Projects Panel is hidden.
-      WaitForHide(kProjectsPanelViewElementId),
-      CheckResult(
-          [this]() {
-            return projects_panel_state_controller()->IsProjectsPanelVisible();
-          },
-          false));
-}
-
-// This test checks that clicking the "Create new tab group" button creates a
-// new tab group and closes the panel.
-IN_PROC_BROWSER_TEST_F(ProjectsPanelInteractiveUiTest, CreateNewTabGroup) {
-  RunTestSequence(
-      // Verify Vertical Tabs is showing.
-      WaitForShow(kVerticalTabStripTopContainerElementId),
-      // Open the Projects Panel.
-      EnsurePresent(kVerticalTabStripProjectsButtonElementId),
-      MoveMouseTo(kVerticalTabStripProjectsButtonElementId), ClickMouse(),
-      Do([this]() { RunScheduledLayouts(); }),
-      WaitForShow(kProjectsPanelViewElementId),
-      WaitForShow(kProjectsPanelNewTabGroupButtonElementId),
-      // Click the Create New Tab Group button.
-      MoveMouseTo(kProjectsPanelNewTabGroupButtonElementId),
-      ClickMouse().SetMustRemainVisible(false),
-      // Verify the panel closes.
-      WaitForHide(kProjectsPanelViewElementId),
-      // Verify a new tab group is created.
-      CheckResult(
-          [this]() {
-            return browser()
-                ->tab_strip_model()
-                ->group_model()
-                ->ListTabGroups()
-                .size();
-          },
-          1u));
-}
-
-class ProjectsPanelAimIneligibleInteractiveUiTest
-    : public ProjectsPanelInteractiveUiTest {
- public:
-  ProjectsPanelAimIneligibleInteractiveUiTest()
-      : ProjectsPanelInteractiveUiTest(/*is_aim_eligible=*/false,
-                                       /*is_gemini_eligible=*/true) {}
-};
-
-IN_PROC_BROWSER_TEST_F(ProjectsPanelAimIneligibleInteractiveUiTest,
-                       ThreadsActivityMenu_AiModeActivityHiddenWhenIneligible) {
-  RunTestSequence(
-      OpenProjectsPanel(),
-      // Click the threads activity menu button.
-      MoveMouseTo(kProjectsPanelThreadsActivityButtonElementId), ClickMouse(),
-      // Verify that "AI Mode activity" is NOT present in the menu.
-      EnsureNotPresent(kProjectsPanelThreadsActivityAiModeItemElementId));
-}
-
-class ProjectsPanelGeminiIneligibleInteractiveUiTest
-    : public ProjectsPanelInteractiveUiTest {
- public:
-  ProjectsPanelGeminiIneligibleInteractiveUiTest()
-      : ProjectsPanelInteractiveUiTest(/*is_aim_eligible=*/true,
-                                       /*is_gemini_eligible=*/false) {}
-};
-
-IN_PROC_BROWSER_TEST_F(ProjectsPanelGeminiIneligibleInteractiveUiTest,
-                       ThreadsActivityMenu_GeminiActivityHiddenWhenIneligible) {
-  RunTestSequence(
-      OpenProjectsPanel(),
-      // Click the threads activity menu button.
-      MoveMouseTo(kProjectsPanelThreadsActivityButtonElementId), ClickMouse(),
-      // Verify that "Gemini app activity" is NOT present in the menu.
-      EnsureNotPresent(kProjectsPanelThreadsActivityGeminiItemElementId));
 }
 
 }  // namespace base::test

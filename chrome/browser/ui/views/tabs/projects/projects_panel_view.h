@@ -28,31 +28,20 @@ namespace gfx {
 class Point;
 }  // namespace gfx
 
-namespace tab_groups {
-class STGTabsMenuModel;
-}
-
 namespace views {
 class ActionViewController;
 class EventMonitor;
-class MenuButton;
-class MenuRunner;
-class ScrollView;
 class ViewShadow;
 }  // namespace views
 
 class BrowserWindowInterface;
 
 class ProjectsPanelController;
-class ProjectsPanelRecentThreadsExpandButton;
-class ProjectsPanelRecentThreadsView;
 class ProjectsPanelStateController;
-class ProjectsPanelTabGroupsView;
 
 // Parent view of the Projects Panel - holds together the views
-// hierarchy including Tab Groups and AI threads.
+// hierarchy including controls and close action.
 class ProjectsPanelView : public views::View,
-                          public ui::SimpleMenuModel::Delegate,
                           public views::FocusChangeListener,
                           public views::FocusTraversable,
                           public gfx::AnimationDelegate,
@@ -119,17 +108,7 @@ class ProjectsPanelView : public views::View,
   void OnThreadsInitialized(
       const std::vector<contextual_tasks::Thread>& threads) override;
 
-  // ui::SimpleMenuModel::Delegate:
-  void ExecuteCommand(int command_id, int event_flags) override;
-  bool IsCommandIdChecked(int command_id) const override;
-  bool IsCommandIdEnabled(int command_id) const override;
-
   views::View* content_container_for_testing() { return content_container_; }
-  views::View* threads_container_for_testing() { return threads_container_; }
-  views::Separator* separator_for_testing() { return separator_; }
-  views::Button* create_new_tab_group_button_for_testing() {
-    return create_new_tab_group_button_;
-  }
   ProjectsPanelControlsView* controls_view_for_testing() {
     return controls_view_;
   }
@@ -140,7 +119,6 @@ class ProjectsPanelView : public views::View,
         std::move(on_close_animation_ended_callback);
   }
 
-  static void set_threads_visible_for_testing(bool visible);
   static void disable_animations_for_testing();
 
  private:
@@ -160,33 +138,11 @@ class ProjectsPanelView : public views::View,
 
   void ClosePanel(bool caused_by_focus_lost = false);
 
-  void OnTabGroupButtonPressed(const base::Uuid& group_guid);
-  void OnTabGroupMoreButtonPressed(const base::Uuid& group_guid,
-                                   views::MenuButton& button);
-  void OnThreadsActivityMenuButtonPressed();
-  void OnTabGroupMoved(const base::Uuid& group_guid, int new_index);
-  void OnCreateNewTabGroupButtonPressed();
-  void OnThreadButtonPressed(const std::string& thread_server_id,
-                             contextual_tasks::ThreadType thread_type);
-  void OnTabGroupDragUpdated(const gfx::Point& location);
-  void OnTabGroupDragExited();
-  void OnThreadExpandButtonPressed();
-
   const raw_ptr<BrowserWindowInterface> browser_;
   raw_ptr<actions::ActionItem> root_action_item_ = nullptr;
 
   raw_ptr<views::View> content_container_ = nullptr;
   raw_ptr<ProjectsPanelControlsView> controls_view_ = nullptr;
-  raw_ptr<views::View> tab_groups_container_ = nullptr;
-  raw_ptr<views::ScrollView> tab_groups_scroll_view_ = nullptr;
-  raw_ptr<ProjectsPanelTabGroupsView> tab_groups_view_ = nullptr;
-  raw_ptr<views::View> threads_container_ = nullptr;
-  raw_ptr<ProjectsPanelRecentThreadsView> threads_view_ = nullptr;
-  raw_ptr<ProjectsPanelRecentThreadsExpandButton> threads_expand_button_ =
-      nullptr;
-  raw_ptr<views::Separator> separator_ = nullptr;
-  raw_ptr<views::MenuButton> threads_activity_menu_button_ = nullptr;
-  raw_ptr<views::Button> create_new_tab_group_button_ = nullptr;
 
   std::unique_ptr<views::ViewShadow> content_shadow_;
 
@@ -202,12 +158,6 @@ class ProjectsPanelView : public views::View,
   MouseEventHandler mouse_event_handler_{this};
   std::unique_ptr<views::EventMonitor> event_monitor_;
 
-  std::unique_ptr<tab_groups::STGTabsMenuModel> tab_group_menu_model_;
-  std::unique_ptr<views::MenuRunner> tab_group_menu_runner_;
-
-  std::unique_ptr<ui::SimpleMenuModel> threads_activity_menu_model_;
-  std::unique_ptr<views::MenuRunner> threads_activity_menu_runner_;
-
   std::unique_ptr<views::FocusSearch> focus_search_;
 
   // The target width of the panel when expanded. Used when vertical tabs is
@@ -218,10 +168,6 @@ class ProjectsPanelView : public views::View,
   // The default appearance of the panel is elevated, but this must be false
   // for the SetIsElevated call in the constructor to be effective.
   bool elevated_ = false;
-
-  // Handles auto-scrolling the tab groups view as a group is held near the top
-  // or bottom of the list.
-  ProjectsPanelTabGroupsDragScrollHandler tab_groups_drag_scroll_handler_;
 
   // Prevents attempting to (un)observe the focus manager more than once if
   // OnProjectsPanelStateChanged is called twice with the same visibility value.

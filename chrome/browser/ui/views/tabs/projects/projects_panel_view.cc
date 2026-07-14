@@ -12,217 +12,45 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "build/build_config.h"
-#include "chrome/app/vector_icons/vector_icons.h"
-#include "chrome/browser/contextual_tasks/contextual_tasks_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/tabs/projects/projects_panel_state_controller.h"
-#include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_menu_utils.h"
-#include "chrome/browser/ui/views/bookmarks/saved_tab_groups/saved_tab_group_tabs_menu_model.h"
 #include "chrome/browser/ui/views/tabs/projects/layout_constants.h"
 #include "chrome/browser/ui/views/tabs/projects/projects_panel_controller.h"
 #include "chrome/browser/ui/views/tabs/projects/projects_panel_controls_view.h"
-#include "chrome/browser/ui/views/tabs/projects/projects_panel_recent_threads_expand_button.h"
-#include "chrome/browser/ui/views/tabs/projects/projects_panel_recent_threads_view.h"
-#include "chrome/browser/ui/views/tabs/projects/projects_panel_tab_groups_view.h"
-#include "chrome/browser/ui/views/tabs/projects/projects_panel_utils.h"
 #include "chrome/browser/ui/views/tabs/projects/projects_panel_view_layout.h"
-#include "chrome/browser/ui/views/tabs/shared/rounded_scroll_bar.h"
-#include "chrome/browser/ui/views/toolbar/toolbar_ink_drop_util.h"
-#include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/contextual_tasks/public/contextual_task.h"
 #include "components/saved_tab_groups/public/features.h"
 #include "ui/actions/actions.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
-#include "ui/base/models/image_model.h"
-#include "ui/base/mojom/menu_source_type.mojom.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor_extra/shadow.h"
-#include "ui/gfx/text_constants.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/actions/action_view_controller.h"
-#include "ui/views/animation/ink_drop.h"
 #include "ui/views/background.h"
-#include "ui/views/controls/button/button.h"
-#include "ui/views/controls/button/label_button.h"
-#include "ui/views/controls/button/menu_button.h"
-#include "ui/views/controls/image_view.h"
-#include "ui/views/controls/label.h"
-#include "ui/views/controls/menu/menu_runner.h"
-#include "ui/views/controls/scroll_view.h"
 #include "ui/views/event_monitor.h"
 #include "ui/views/focus/focus_search.h"
-#include "ui/views/layout/flex_layout.h"
-#include "ui/views/layout/flex_layout_view.h"
-#include "ui/views/style/typography.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_shadow.h"
 #include "ui/views/widget/widget.h"
 
 namespace {
 
-enum ThreadsActivityMenuCommandId {
-  kGeminiActivity = 1,
-  kAiModeActivity = 2,
-};
-
 constexpr int kClipRectMarginForShadow = 32;
 constexpr int kProjectPanelRightCornerRadius = 16;
 constexpr int kShadowElevation = 2;
-constexpr gfx::Insets kListHeaderMargins = gfx::Insets::TLBR(
-    8,
-    8 + projects_panel::kProjectsPanelRegionInteriorMargins.left(),
-    8,
-    8 + projects_panel::kProjectsPanelRegionInteriorMargins.right());
-constexpr int kListHeaderHeight = 28;
-constexpr int kCreateNewTabGroupIconSize = 20;
-constexpr gfx::Insets kCreateNewTabGroupIconMargins =
-    gfx::Insets::TLBR(0, 2, 0, 2);
-
-// Border insets applied to the tab groups and threads list to reserve space for
-// their scroll bar.
-constexpr gfx::Insets kListsInsideBorderInsets = gfx::Insets::TLBR(
-    0,
-    0,
-    0,
-    projects_panel::kProjectsPanelRegionInteriorMargins.right());
-
-// Insets containing only the horizontal margins of the panel region. Used by
-// the ProjectsPanelNewTabGroupButton and ProjectsPanelRecentThreadsExpandButton
-// to account for their containers taking the full width of the panel.
-constexpr gfx::Insets kProjectsPanelRegionHorizontalMargins = gfx::Insets::TLBR(
-    0,
-    projects_panel::kProjectsPanelRegionInteriorMargins.left(),
-    0,
-    projects_panel::kProjectsPanelRegionInteriorMargins.right());
 
 constexpr base::TimeDelta kPanelShowAnimationDuration = base::Milliseconds(250);
 constexpr base::TimeDelta kPanelHideAnimationDuration = base::Milliseconds(200);
 
-constexpr int kThreadsActivityMenuButtonIconSize = 18;
-constexpr gfx::Size kThreadsActivityMenuButtonSize =
-    gfx::Size(kListHeaderHeight, kListHeaderHeight);
-constexpr int kThreadsActivityMenuIconSize = 16;
-
-// Whether the threads section should be visible even if no threads exist. This
-// setting is applied the next time the panel is opened.
-static bool show_threads_for_testing_ = false;
-
 static bool disable_animations_for_testing_ = false;
 
-class ProjectsPanelNewTabGroupButton : public views::Button {
-  METADATA_HEADER(ProjectsPanelNewTabGroupButton, views::Button)
-
- public:
-  explicit ProjectsPanelNewTabGroupButton(base::RepeatingClosure callback)
-      : views::Button(std::move(callback)) {
-    SetLayoutManager(std::make_unique<views::FlexLayout>())
-        ->SetInteriorMargin(projects_panel::kListItemMargins)
-        .SetOrientation(views::LayoutOrientation::kHorizontal)
-        .SetCrossAxisAlignment(views::LayoutAlignment::kCenter);
-
-    auto* icon = AddChildView(std::make_unique<views::ImageView>());
-    icon->SetCanProcessEventsWithinSubtree(false);
-    icon->SetProperty(views::kMarginsKey, kCreateNewTabGroupIconMargins);
-    icon->SetImage(ui::ImageModel::FromVectorIcon(
-        features::IsRoundedIconsEnabled() ? kLibraryAddIcon
-                                          : kCreateNewTabGroupOldIcon,
-        kColorProjectsPanelButtonIcon, kCreateNewTabGroupIconSize));
-
-    auto* title = AddChildView(std::make_unique<views::Label>(
-        l10n_util::GetStringUTF16(IDS_CREATE_NEW_TAB_GROUP)));
-    title->SetTextStyle(views::style::STYLE_BODY_3);
-    title->SetHorizontalAlignment(gfx::ALIGN_TO_HEAD);
-    title->SetBackgroundColor(SK_ColorTRANSPARENT);
-    title->SetProperty(views::kMarginsKey,
-                       projects_panel::kListItemTitleMargins);
-    title->SetProperty(
-        views::kFlexBehaviorKey,
-        views::FlexSpecification(views::LayoutOrientation::kHorizontal,
-                                 views::MinimumFlexSizeRule::kScaleToMinimum,
-                                 views::MaximumFlexSizeRule::kUnbounded));
-
-    // This view is inside the tab groups container view, which is given the
-    // full width of the panel to account for its scroll bar. These margins are
-    // applied to properly distance it from the edges of the panel.
-    SetProperty(views::kMarginsKey, kProjectsPanelRegionHorizontalMargins);
-
-    projects_panel::ConfigureInkDropForButton(this);
-    GetViewAccessibility().SetName(
-        l10n_util::GetStringUTF16(IDS_CREATE_NEW_TAB_GROUP));
-  }
-  ProjectsPanelNewTabGroupButton(const ProjectsPanelNewTabGroupButton&) =
-      delete;
-  ProjectsPanelNewTabGroupButton& operator=(
-      const ProjectsPanelNewTabGroupButton&) = delete;
-  ~ProjectsPanelNewTabGroupButton() override = default;
-};
-
-BEGIN_METADATA(ProjectsPanelNewTabGroupButton)
-END_METADATA
-
-// Assigns shared list title properties.
-void SetListTitleProperties(views::Label& label) {
-  label.SetTextStyle(views::style::TextStyle::STYLE_HEADLINE_5);
-  label.SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_TO_HEAD);
-}
-
-void SetListTitleContainerProperties(views::View& list_title_container) {
-  list_title_container.SetProperty(views::kMarginsKey, kListHeaderMargins);
-  list_title_container.SetPreferredSize(gfx::Size(0, kListHeaderHeight));
-}
-
-void SetScrollViewProperties(views::ScrollView& scroll_view) {
-  scroll_view.SetBackgroundColor(projects_panel::kProjectsPanelBackgroundColor);
-  scroll_view.SetHorizontalScrollBarMode(
-      views::ScrollView::ScrollBarMode::kDisabled);
-  scroll_view.SetVerticalScrollBarMode(
-      views::ScrollView::ScrollBarMode::kEnabled);
-  scroll_view.SetVerticalScrollBar(std::make_unique<tabs::RoundedScrollBar>());
-  scroll_view.SetOverflowGradientMask(
-      views::ScrollView::GradientDirection::kVertical);
-  scroll_view.SetUseContentsPreferredSize(true);
-  // The tab groups and threads containers are given the full width of the panel
-  // to account for their scroll bars. The left panel margin is applied here
-  // while the right margin is applied to the contents view, so the scroll bar
-  // appears beside the content instead of overlapping.
-  scroll_view.SetProperty(
-      views::kMarginsKey,
-      gfx::Insets::TLBR(
-          0, projects_panel::kProjectsPanelRegionInteriorMargins.left(), 0, 0));
-  scroll_view.SetProperty(
-      views::kFlexBehaviorKey,
-      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
-                               views::MaximumFlexSizeRule::kUnbounded));
-}
-
-class STGTabsMenuModelWithCallback : public tab_groups::STGTabsMenuModel {
- public:
-  STGTabsMenuModelWithCallback(BrowserWindowInterface* browser,
-                               tab_groups::TabGroupMenuContext context,
-                               base::RepeatingClosure callback)
-      : tab_groups::STGTabsMenuModel(browser->GetBrowserForMigrationOnly(),
-                                     context),
-        callback_(std::move(callback)) {}
-
-  void ExecuteCommand(int command_id, int event_flags) override {
-    tab_groups::STGTabsMenuModel::ExecuteCommand(command_id, event_flags);
-    callback_.Run();
-  }
-
- private:
-  base::RepeatingClosure callback_;
-};
 }  // namespace
 
 ProjectsPanelView::ProjectsPanelView(
@@ -238,8 +66,6 @@ ProjectsPanelView::ProjectsPanelView(
                                                          /*cycle=*/true,
                                                          /*accessibility_mode=*/
                                                          true)) {
-  // The vertical tab strip contains ScrollViews that paint to a layer. This
-  // view must also paint to a layer to ensure it overlays those components.
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
 
@@ -251,144 +77,20 @@ ProjectsPanelView::ProjectsPanelView(
       std::make_unique<views::ViewShadow>(content_container_, kShadowElevation);
   content_shadow_->SetRoundedCornerRadius(kProjectPanelRightCornerRadius);
 
-  // Apply the elevated state by default.
   SetIsElevated(true);
 
-  bool threads_enabled = tab_groups::IsThreadsInProjectsPanelEnabled();
   panel_controller_ = std::make_unique<ProjectsPanelController>(
       browser_, state_controller_,
       tab_groups::TabGroupSyncServiceFactory::GetForProfile(
           browser->GetProfile()),
-      threads_enabled
-          ? contextual_tasks::ContextualTasksServiceFactory::GetForProfile(
-                browser->GetProfile())
-          : nullptr);
+      nullptr);
   panel_controller_observer_.Observe(panel_controller_.get());
 
   controls_view_ = content_container_->AddChildView(
       std::make_unique<ProjectsPanelControlsView>(root_action_item_.get()));
 
-  auto* tab_groups_container = content_container_->AddChildView(
-      std::make_unique<views::FlexLayoutView>());
-  tab_groups_container->SetOrientation(views::LayoutOrientation::kVertical);
-  tab_groups_container_ = tab_groups_container;
-
-  auto* groups_list_title =
-      tab_groups_container_->AddChildView(std::make_unique<views::Label>());
-  groups_list_title->SetText(l10n_util::GetStringUTF16(IDS_TAB_GROUPS_TITLE));
-  groups_list_title->SetProperty(views::kElementIdentifierKey,
-                                 kProjectsPanelTabGroupsListTitleElementId);
-  SetListTitleProperties(*groups_list_title);
-  SetListTitleContainerProperties(*groups_list_title);
-
-  create_new_tab_group_button_ = tab_groups_container_->AddChildView(
-      std::make_unique<ProjectsPanelNewTabGroupButton>(base::BindRepeating(
-          &ProjectsPanelView::OnCreateNewTabGroupButtonPressed,
-          base::Unretained(this))));
-  create_new_tab_group_button_->SetProperty(
-      views::kElementIdentifierKey, kProjectsPanelNewTabGroupButtonElementId);
-
-  tab_groups_scroll_view_ =
-      tab_groups_container_->AddChildView(std::make_unique<views::ScrollView>(
-          views::ScrollView::ScrollWithLayers::kEnabled));
-  tab_groups_view_ = tab_groups_scroll_view_->SetContents(
-      std::make_unique<ProjectsPanelTabGroupsView>(
-          root_action_item_.get(), action_view_controller_.get(),
-          base::BindRepeating(&ProjectsPanelView::OnTabGroupButtonPressed,
-                              base::Unretained(this)),
-          base::BindRepeating(&ProjectsPanelView::OnTabGroupMoreButtonPressed,
-                              base::Unretained(this)),
-          base::BindRepeating(&ProjectsPanelView::OnTabGroupMoved,
-                              base::Unretained(this)),
-          base::BindRepeating(&ProjectsPanelView::OnTabGroupDragUpdated,
-                              base::Unretained(this)),
-          base::BindRepeating(&ProjectsPanelView::OnTabGroupDragExited,
-                              base::Unretained(this))));
-  tab_groups_view_->SetInsideBorderInsets(kListsInsideBorderInsets);
-  SetScrollViewProperties(*tab_groups_scroll_view_);
-  if (disable_animations_for_testing_) {
-    tab_groups_view_->disable_animations_for_testing();  // IN-TEST
-  }
-
-  if (threads_enabled) {
-    separator_ =
-        content_container_->AddChildView(std::make_unique<views::Separator>());
-    separator_->SetColorId(kColorProjectsPanelListsSeparator);
-
-    auto* threads_container = content_container_->AddChildView(
-        std::make_unique<views::FlexLayoutView>());
-    threads_container->SetOrientation(views::LayoutOrientation::kVertical);
-    threads_container_ = threads_container;
-
-    auto* threads_title_container = threads_container_->AddChildView(
-        std::make_unique<views::FlexLayoutView>());
-    threads_title_container->SetOrientation(
-        views::LayoutOrientation::kHorizontal);
-    threads_title_container->SetCrossAxisAlignment(
-        views::LayoutAlignment::kCenter);
-    threads_title_container->SetProperty(
-        views::kFlexBehaviorKey,
-        views::FlexSpecification(views::MinimumFlexSizeRule::kPreferred,
-                                 views::MaximumFlexSizeRule::kPreferred));
-    SetListTitleContainerProperties(*threads_title_container);
-
-    auto* threads_list_title =
-        threads_title_container->AddChildView(std::make_unique<views::Label>());
-    threads_list_title->SetText(
-        l10n_util::GetStringUTF16(IDS_RECENT_CHATS_TITLE));
-    threads_list_title->SetProperty(
-        views::kFlexBehaviorKey,
-        views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
-                                 views::MaximumFlexSizeRule::kUnbounded));
-    SetListTitleProperties(*threads_list_title);
-
-    threads_activity_menu_button_ = threads_title_container->AddChildView(
-        std::make_unique<views::MenuButton>(base::BindRepeating(
-            &ProjectsPanelView::OnThreadsActivityMenuButtonPressed,
-            base::Unretained(this))));
-    threads_activity_menu_button_->SetImageModel(
-        views::Button::STATE_NORMAL,
-        ui::ImageModel::FromVectorIcon(features::IsRoundedIconsEnabled()
-                                           ? kMoreVertIcon
-                                           : kBrowserToolsChromeRefreshOldIcon,
-                                       kColorProjectsPanelButtonIcon,
-                                       kThreadsActivityMenuButtonIconSize));
-    threads_activity_menu_button_->SetPreferredSize(
-        kThreadsActivityMenuButtonSize);
-    threads_activity_menu_button_->SetTooltipText(
-        l10n_util::GetStringUTF16(IDS_TAB_GROUP_MORE_OPTIONS));
-    threads_activity_menu_button_->SetProperty(
-        views::kElementIdentifierKey,
-        kProjectsPanelThreadsActivityButtonElementId);
-    ConfigureInkDrop(threads_activity_menu_button_);
-
-    views::ScrollView* threads_scroll_view =
-        threads_container_->AddChildView(std::make_unique<views::ScrollView>(
-            views::ScrollView::ScrollWithLayers::kEnabled));
-    auto threads_view =
-        std::make_unique<ProjectsPanelRecentThreadsView>(base::BindRepeating(
-            &ProjectsPanelView::OnThreadButtonPressed, base::Unretained(this)));
-    threads_view_ = threads_scroll_view->SetContents(std::move(threads_view));
-    threads_view_->SetInsideBorderInsets(kListsInsideBorderInsets);
-    SetScrollViewProperties(*threads_scroll_view);
-    if (disable_animations_for_testing_) {
-      threads_view_->disable_animations_for_testing();  // IN-TEST
-    }
-
-    threads_expand_button_ = threads_container_->AddChildView(
-        std::make_unique<ProjectsPanelRecentThreadsExpandButton>(
-            base::BindRepeating(&ProjectsPanelView::OnThreadExpandButtonPressed,
-                                base::Unretained(this))));
-    threads_expand_button_->SetProperty(views::kMarginsKey,
-                                        kProjectsPanelRegionHorizontalMargins);
-
-    threads_activity_menu_model_ = std::make_unique<ui::SimpleMenuModel>(this);
-  }
-
   content_container_->SetLayoutManager(
-      std::make_unique<ProjectsPanelViewLayout>(
-          controls_view_, tab_groups_container_, threads_container_,
-          separator_));
+      std::make_unique<ProjectsPanelViewLayout>(controls_view_));
 
   resize_animation_.SetTweenType(gfx::Tween::Type::EASE_IN_OUT_EMPHASIZED);
 
@@ -404,12 +106,7 @@ ProjectsPanelView::ProjectsPanelView(
   SetProperty(views::kElementIdentifierKey, kProjectsPanelViewElementId);
 }
 
-ProjectsPanelView::~ProjectsPanelView() {
-  // Owned by subviews which are cleaned up after ProjectsPanelView is
-  // cleaned up. Avoid dangling pointer.
-  tab_groups_view_ = nullptr;
-  threads_view_ = nullptr;
-}
+ProjectsPanelView::~ProjectsPanelView() = default;
 
 bool ProjectsPanelView::IsPositionInWindowCaption(const gfx::Point& point) {
   gfx::Point point_in_target = point;
@@ -443,41 +140,6 @@ void ProjectsPanelView::OnProjectsPanelStateChanged(
       observing_focus_manager_ = true;
     }
 
-    // TODO(crbug.com/477602874): Have the panel view observe the controller and
-    // pipe updates to the list.
-    auto tab_groups = panel_controller_->GetTabGroups();
-    tab_groups_view_->SetTabGroups(tab_groups);
-    int num_threads_visible = 0;
-    if (threads_view_) {
-      const auto threads = panel_controller_->GetThreads();
-      num_threads_visible =
-          std::min(threads.size(), projects_panel::kMaxNumberOfRecentThreads);
-      threads_view_->SetThreads(threads);
-
-      // Hide the threads section when empty.
-      const bool show_threads = show_threads_for_testing_ || threads.size() > 0;
-      threads_container_->SetVisible(show_threads);
-      separator_->SetVisible(show_threads);
-
-      if (show_threads) {
-        threads_expand_button_->SetExpanded(threads_view_->expanded());
-        threads_expand_button_->SetVisible(
-            threads.size() > projects_panel::kNumThreadsVisibleWhenCollapsed);
-      }
-    }
-
-    base::UmaHistogramCounts100(
-        "Projects.ProjectsPanel.TabGroups.CountOnPanelOpen", tab_groups.size());
-    if (threads_view_) {
-      base::UmaHistogramCustomCounts(
-          "Projects.ProjectsPanel.Threads.CountOnPanelOpen",
-          num_threads_visible, 1, projects_panel::kMaxNumberOfRecentThreads,
-          50);
-    }
-
-    base::UmaHistogramBoolean("Projects.ProjectsPanel.OpenedToEmptyState",
-                              tab_groups.empty() && num_threads_visible == 0);
-
     last_opened_time_ = base::TimeTicks::Now();
   } else {
     if (observing_focus_manager_ && GetFocusManager()) {
@@ -498,8 +160,6 @@ void ProjectsPanelView::OnProjectsPanelStateChanged(
   }
 
   if (disable_animations_for_testing_) {
-    // Fast-forward the animation to its final state (1.0 = shown, 0.0 =
-    // hidden).
     resize_animation_.SetSlideDuration(base::TimeDelta());
     resize_animation_.Reset(/*value=*/visible ? 1.0 : 0.0);
     SetVisible(visible);
@@ -638,41 +298,22 @@ void ProjectsPanelView::AnimationCanceled(const gfx::Animation* animation) {
 }
 
 void ProjectsPanelView::OnTabGroupsInitialized(
-    const std::vector<tab_groups::SavedTabGroup>& tab_groups) {
-  // TODO(crbug.com/477602874): Handle incremental data updates.
-}
+    const std::vector<tab_groups::SavedTabGroup>& tab_groups) {}
 
 void ProjectsPanelView::OnTabGroupAdded(const tab_groups::SavedTabGroup& group,
-                                        int index) {
-  // TODO(crbug.com/477602874): Handle incremental data updates.
-}
+                                        int index) {}
 
 void ProjectsPanelView::OnTabGroupUpdated(
-    const tab_groups::SavedTabGroup& group) {
-  // TODO(crbug.com/477602874): Handle incremental data updates.
-}
+    const tab_groups::SavedTabGroup& group) {}
 
 void ProjectsPanelView::OnTabGroupRemoved(const base::Uuid& sync_id,
-                                          int old_index) {
-  // TODO(crbug.com/477602874): Handle incremental data updates.
-}
+                                          int old_index) {}
 
 void ProjectsPanelView::OnTabGroupsReordered(
-    const std::vector<tab_groups::SavedTabGroup>& tab_groups) {
-  tab_groups_view_->SetTabGroups(tab_groups);
-}
+    const std::vector<tab_groups::SavedTabGroup>& tab_groups) {}
 
 void ProjectsPanelView::OnThreadsInitialized(
-    const std::vector<contextual_tasks::Thread>& threads) {
-  if (threads_view_) {
-    threads_view_->SetThreads(threads);
-  }
-}
-
-// static
-void ProjectsPanelView::set_threads_visible_for_testing(bool visible) {
-  show_threads_for_testing_ = visible;
-}
+    const std::vector<contextual_tasks::Thread>& threads) {}
 
 // static
 void ProjectsPanelView::disable_animations_for_testing() {
@@ -697,173 +338,6 @@ void ProjectsPanelView::ClosePanel(bool caused_by_focus_lost) {
   if (action_item) {
     action_item->InvokeAction();
   }
-}
-
-void ProjectsPanelView::OnTabGroupButtonPressed(const base::Uuid& group_guid) {
-  base::RecordAction(
-      base::UserMetricsAction("ProjectsPanel.TabGroups.OpenGroup"));
-  panel_controller_->OpenTabGroup(group_guid);
-  ClosePanel();
-}
-
-void ProjectsPanelView::OnTabGroupMoreButtonPressed(
-    const base::Uuid& group_guid,
-    views::MenuButton& button) {
-  auto* tab_group_service =
-      tab_groups::TabGroupSyncServiceFactory::GetForProfile(
-          browser_->GetProfile());
-
-  auto saved_group = tab_group_service->GetGroup(group_guid);
-  if (!saved_group.has_value()) {
-    return;
-  }
-
-  tab_group_menu_model_ = std::make_unique<STGTabsMenuModelWithCallback>(
-      browser_,
-      tab_groups::TabGroupMenuContext::SAVED_TAB_GROUP_BUTTON_CONTEXT_MENU,
-      base::BindRepeating(&ProjectsPanelView::ClosePanel,
-                          base::Unretained(this),
-                          /*closed_due_to_focus_lost=*/true));
-  tab_group_menu_model_->Build(saved_group.value(), base::BindRepeating([]() {
-                                 static int latest_command_id = 0;
-                                 return latest_command_id++;
-                               }));
-
-  tab_group_menu_runner_ = std::make_unique<views::MenuRunner>(
-      tab_group_menu_model_.get(),
-      views::MenuRunner::CONTEXT_MENU | views::MenuRunner::IS_NESTED);
-  tab_group_menu_runner_->RunMenuAt(
-      button.GetWidget(), button.button_controller(),
-      button.GetAnchorBoundsInScreen(), views::MenuAnchorPosition::kTopRight,
-      ui::mojom::MenuSourceType::kNone);
-}
-
-void ProjectsPanelView::OnTabGroupMoved(const base::Uuid& group_guid,
-                                        int new_index) {
-  panel_controller_->MoveTabGroup(group_guid, new_index);
-}
-
-void ProjectsPanelView::OnCreateNewTabGroupButtonPressed() {
-  base::RecordAction(base::UserMetricsAction(
-      tab_groups_view_->num_tab_groups() > 0
-          ? "ProjectsPanel.TabGroups.CreateNewGroup.WithExistingGroups"
-          : "ProjectsPanel.TabGroups.CreateNewGroup.WithoutExistingGroups"));
-  on_close_animation_ended_callback_ = base::BindOnce(
-      // We must wait for the panel to fully close before executing the command
-      // so we don't interfere with the panel's animation and UI state.
-      [](base::WeakPtr<ProjectsPanelView> panel) {
-        if (!panel) {
-          return;
-        }
-        panel->browser_->GetFeatures()
-            .browser_command_controller()
-            ->ExecuteCommand(IDC_CREATE_NEW_TAB_GROUP);
-      },
-      weak_ptr_factory_.GetWeakPtr());
-  ClosePanel();
-}
-
-void ProjectsPanelView::OnThreadButtonPressed(
-    const std::string& thread_server_id,
-    contextual_tasks::ThreadType thread_type) {
-  switch (thread_type) {
-    case contextual_tasks::ThreadType::kAiMode:
-      base::RecordAction(
-          base::UserMetricsAction("ProjectsPanel.Threads.OpenThread.AiMode"));
-      break;
-    case contextual_tasks::ThreadType::kGemini:
-      base::RecordAction(
-          base::UserMetricsAction("ProjectsPanel.Threads.OpenThread.Gemini"));
-      break;
-    case contextual_tasks::ThreadType::kUnknown:
-      base::RecordAction(
-          base::UserMetricsAction("ProjectsPanel.Threads.OpenThread.Unknown"));
-      break;
-  }
-  panel_controller_->OpenThread(thread_server_id);
-  ClosePanel();
-}
-
-void ProjectsPanelView::OnThreadExpandButtonPressed() {
-  const bool expanded = !threads_view_->expanded();
-  threads_view_->SetExpanded(expanded);
-  threads_expand_button_->SetExpanded(expanded);
-}
-
-void ProjectsPanelView::OnThreadsActivityMenuButtonPressed() {
-  threads_activity_menu_model_->Clear();
-
-  if (state_controller_->CanShowGeminiThreads()) {
-    threads_activity_menu_model_->AddItemWithIcon(
-        kGeminiActivity,
-        l10n_util::GetStringUTF16(IDS_PROJECTS_PANEL_GEMINI_ACTIVITY),
-        ui::ImageModel::FromVectorIcon(
-            projects_panel::GetIconForThreadType(
-                contextual_tasks::ThreadType::kGemini),
-            ui::kColorIcon, kThreadsActivityMenuIconSize));
-    threads_activity_menu_model_->SetElementIdentifierAt(
-        threads_activity_menu_model_->GetItemCount() - 1,
-        kProjectsPanelThreadsActivityGeminiItemElementId);
-  }
-
-  if (state_controller_->CanShowAimThreads()) {
-    threads_activity_menu_model_->AddItemWithIcon(
-        kAiModeActivity,
-        l10n_util::GetStringUTF16(IDS_PROJECTS_PANEL_AI_MODE_ACTIVITY),
-        ui::ImageModel::FromVectorIcon(
-            projects_panel::GetIconForThreadType(
-                contextual_tasks::ThreadType::kAiMode),
-            ui::kColorIcon, kThreadsActivityMenuIconSize));
-    threads_activity_menu_model_->SetElementIdentifierAt(
-        threads_activity_menu_model_->GetItemCount() - 1,
-        kProjectsPanelThreadsActivityAiModeItemElementId);
-  }
-
-  threads_activity_menu_runner_ = std::make_unique<views::MenuRunner>(
-      threads_activity_menu_model_.get(),
-      views::MenuRunner::CONTEXT_MENU | views::MenuRunner::IS_NESTED);
-  threads_activity_menu_runner_->RunMenuAt(
-      GetWidget(), threads_activity_menu_button_->button_controller(),
-      threads_activity_menu_button_->GetAnchorBoundsInScreen(),
-      views::MenuAnchorPosition::kTopLeft, ui::mojom::MenuSourceType::kNone);
-}
-
-void ProjectsPanelView::OnTabGroupDragUpdated(const gfx::Point& location) {
-  if (tab_groups_scroll_view_) {
-    gfx::Point location_in_scroll_view = location;
-    views::View::ConvertPointToTarget(tab_groups_view_, tab_groups_scroll_view_,
-                                      &location_in_scroll_view);
-    tab_groups_drag_scroll_handler_.OnDraggedTabGroupPositionUpdated(
-        *tab_groups_scroll_view_, location_in_scroll_view);
-  }
-}
-
-void ProjectsPanelView::OnTabGroupDragExited() {
-  tab_groups_drag_scroll_handler_.StopScrolling();
-}
-
-void ProjectsPanelView::ExecuteCommand(int command_id, int event_flags) {
-  GURL activity_url;
-  switch (command_id) {
-    case ThreadsActivityMenuCommandId::kGeminiActivity:
-      activity_url = GURL(chrome::kMyActivityGeminiAppsUrl);
-      break;
-    case ThreadsActivityMenuCommandId::kAiModeActivity:
-      activity_url = GURL(chrome::kMyActivityAiModeUrl);
-      break;
-    default:
-      return;
-  }
-  browser_->OpenGURL(activity_url, WindowOpenDisposition::SINGLETON_TAB);
-  ClosePanel();
-}
-
-bool ProjectsPanelView::IsCommandIdChecked(int command_id) const {
-  return false;
-}
-
-bool ProjectsPanelView::IsCommandIdEnabled(int command_id) const {
-  return true;
 }
 
 ProjectsPanelView::MouseEventHandler::MouseEventHandler(
