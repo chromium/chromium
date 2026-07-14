@@ -364,7 +364,11 @@ void HttpsUpgradesInterceptor::MaybeCreateLoader(
   // portal hostnames.
   if (!IsStrictInterstitialEnabled(*interstitial_state_) &&
       ShouldExcludeNavigationFromUpgrades(navigation_ui_data_, web_contents)) {
-    if (state) {
+    // Only allowlist the initial host of the navigation. Server-side redirect
+    // targets are not chosen by the user and shouldn't be persistently
+    // allowlisted.
+    if (state &&
+        tentative_resource_request.navigation_redirect_chain.size() <= 1) {
       state->AllowHttpForHost(tentative_resource_request.url.GetHost(),
                               storage_partition);
     }

@@ -3656,6 +3656,56 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
       contents->GetPrimaryMainFrame()->GetStoragePartition()));
 }
 
+// Tests that when a URL typed with an explicit http:// scheme is redirected by
+// the server to other hosts, only the host of the originally typed URL is
+// added to the allowlist. The exemption applies to the navigation as a whole,
+// but server-chosen redirect targets must not be persistently allowlisted.
+IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
+                       URLsTypedWithHttpSchemeAllowlistOnlyInitialHost) {
+  if (IsHttpsFirstModeInterstitialEnabledAcrossSites()) {
+    return;
+  }
+  GURL final_url = http_server()->GetURL("baz.com", "/simple.html");
+  GURL hop_url = http_server()->GetURL(
+      "bar.com", "/server-redirect?" + final_url.spec());
+  GURL initial_url = http_server()->GetURL(
+      "foo.com", "/server-redirect?" + hop_url.spec());
+  auto* contents = GetBrowser()->tab_strip_model()->GetActiveWebContents();
+  OmniboxClient* omnibox_client = BrowserWindow::FromBrowser(GetBrowser())
+                                      ->GetLocationBar()
+                                      ->GetOmniboxController()
+                                      ->client();
+
+  Profile* profile = Profile::FromBrowserContext(contents->GetBrowserContext());
+  content::SSLHostStateDelegate* state = profile->GetSSLHostStateDelegate();
+  auto* storage_partition =
+      contents->GetPrimaryMainFrame()->GetStoragePartition();
+
+  // None of the hosts should be in the allowlist yet.
+  EXPECT_FALSE(state->IsHttpAllowedForHost("foo.com", storage_partition));
+  EXPECT_FALSE(state->IsHttpAllowedForHost("bar.com", storage_partition));
+  EXPECT_FALSE(state->IsHttpAllowedForHost("baz.com", storage_partition));
+
+  // Simulate the full URL was typed with an http scheme. The server redirects
+  // through bar.com and baz.com.
+  content::TestNavigationObserver nav_observer(contents, 1);
+  omnibox_client->OnAutocompleteAccept(
+      initial_url, nullptr, WindowOpenDisposition::CURRENT_TAB,
+      ui::PAGE_TRANSITION_TYPED, AutocompleteMatchType::URL_WHAT_YOU_TYPED,
+      base::TimeTicks(), false, true, std::u16string(), AutocompleteMatch(),
+      AutocompleteMatch());
+  nav_observer.Wait();
+
+  // None of the hops should have been upgraded.
+  EXPECT_EQ(final_url, contents->GetLastCommittedURL());
+
+  // The host the user typed should be in the allowlist, but the
+  // server-selected redirect targets should not.
+  EXPECT_TRUE(state->IsHttpAllowedForHost("foo.com", storage_partition));
+  EXPECT_FALSE(state->IsHttpAllowedForHost("bar.com", storage_partition));
+  EXPECT_FALSE(state->IsHttpAllowedForHost("baz.com", storage_partition));
+}
+
 // Returns a URL loader interceptor that responds to HTTPS URLs with a timeout
 // error.
 std::unique_ptr<content::URLLoaderInterceptor> MakeTimeoutInterceptor() {
