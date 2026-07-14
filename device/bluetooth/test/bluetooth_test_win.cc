@@ -21,6 +21,7 @@
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
@@ -214,15 +215,13 @@ class TestBluetoothAdapterWinrt : public BluetoothAdapterWinrt {
 
 BLUETOOTH_ADDRESS
 CanonicalStringToBLUETOOTH_ADDRESS(std::string device_address) {
-  BLUETOOTH_ADDRESS win_addr;
-  unsigned int data[6];
-  int result = UNSAFE_TODO(
-      sscanf_s(device_address.c_str(), "%02X:%02X:%02X:%02X:%02X:%02X",
-               &data[5], &data[4], &data[3], &data[2], &data[1], &data[0]));
-  CHECK_EQ(6, result);
-  for (int i = 0; i < 6; i++) {
-    UNSAFE_TODO(win_addr.rgBytes[i] = data[i]);
-  }
+  BLUETOOTH_ADDRESS win_addr = {};
+  std::erase(device_address, ':');
+  std::vector<uint8_t> bytes;
+  CHECK(base::HexStringToBytes(device_address, &bytes));
+  auto rgBytes_span = base::span(win_addr.rgBytes);
+  CHECK_EQ(bytes.size(), rgBytes_span.size());
+  std::reverse_copy(bytes.begin(), bytes.end(), rgBytes_span.begin());
   return win_addr;
 }
 

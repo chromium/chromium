@@ -6,6 +6,7 @@
 
 #include "base/apple/foundation_util.h"
 #include "base/compiler_specific.h"
+#include "base/containers/to_vector.h"
 #include "device/bluetooth/test/bluetooth_test_mac.h"
 #include "device/bluetooth/test/mock_bluetooth_cbcharacteristic_mac.h"
 #include "device/bluetooth/test/mock_bluetooth_cbdescriptor_mac.h"
@@ -97,9 +98,8 @@ using base::apple::ObjCCast;
     forCharacteristic:(CBCharacteristic*)characteristic
                  type:(CBCharacteristicWriteType)type {
   DCHECK(_bluetoothTestMac);
-  const uint8_t* buffer = static_cast<const uint8_t*>(data.bytes);
-  std::vector<uint8_t> value(buffer, UNSAFE_TODO(buffer + data.length));
-  _bluetoothTestMac->OnFakeBluetoothCharacteristicWriteValue(value);
+  _bluetoothTestMac->OnFakeBluetoothCharacteristicWriteValue(
+      base::ToVector(base::apple::NSDataToSpan(data)));
 }
 
 - (void)readValueForDescriptor:(CBDescriptor*)descriptor {
@@ -109,9 +109,8 @@ using base::apple::ObjCCast;
 
 - (void)writeValue:(NSData*)data forDescriptor:(CBDescriptor*)descriptor {
   DCHECK(_bluetoothTestMac);
-  const uint8_t* buffer = static_cast<const uint8_t*>(data.bytes);
-  std::vector<uint8_t> value(buffer, UNSAFE_TODO(buffer + data.length));
-  _bluetoothTestMac->OnFakeBluetoothDescriptorWriteValue(value);
+  _bluetoothTestMac->OnFakeBluetoothDescriptorWriteValue(
+      base::ToVector(base::apple::NSDataToSpan(data)));
 }
 
 - (void)removeAllServices {

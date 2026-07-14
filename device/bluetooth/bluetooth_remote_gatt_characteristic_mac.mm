@@ -4,6 +4,7 @@
 
 #include "device/bluetooth/bluetooth_remote_gatt_characteristic_mac.h"
 
+#include "base/apple/foundation_util.h"
 #include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
@@ -309,8 +310,8 @@ void BluetoothRemoteGattCharacteristicMac::DidUpdateValue(NSError* error) {
 
 void BluetoothRemoteGattCharacteristicMac::UpdateValue() {
   NSData* nsdata_value = [cb_characteristic_ value];
-  const uint8_t* buffer = static_cast<const uint8_t*>(nsdata_value.bytes);
-  value_.assign(buffer, UNSAFE_TODO(buffer + nsdata_value.length));
+  auto span = base::apple::NSDataToSpan(nsdata_value);
+  value_.assign(span.begin(), span.end());
 }
 
 void BluetoothRemoteGattCharacteristicMac::DidWriteValue(NSError* error) {

@@ -5,12 +5,12 @@
 #ifndef DEVICE_GAMEPAD_GAMEPAD_DEVICE_MAC_H_
 #define DEVICE_GAMEPAD_GAMEPAD_DEVICE_MAC_H_
 
-#include <stddef.h>
-
 #include <CoreFoundation/CoreFoundation.h>
 #include <ForceFeedback/ForceFeedback.h>
 #include <IOKit/hid/IOHIDManager.h>
+#include <stddef.h>
 
+#include <array>
 #include <string_view>
 
 #include "base/memory/weak_ptr.h"
@@ -92,29 +92,29 @@ class GamepadDeviceMac final : public AbstractHapticGamepad {
       FFDeviceObjectReference ff_device_ref,
       FFEFFECT* ff_effect,
       FFCUSTOMFORCE* ff_custom_force,
-      LONG* force_data,
-      DWORD* axes_data,
-      LONG* direction_data);
+      base::span<LONG, 2> force_data,
+      base::span<DWORD, 2> axes_data,
+      base::span<LONG, 2> direction_data);
 
   int location_id_;
   IOHIDDeviceRef device_ref_;
   GamepadBusType bus_type_;
   std::string product_name_;
 
-  IOHIDElementRef button_elements_[Gamepad::kButtonsLengthCap];
-  IOHIDElementRef axis_elements_[Gamepad::kAxesLengthCap];
-  CFIndex axis_minimums_[Gamepad::kAxesLengthCap];
-  CFIndex axis_maximums_[Gamepad::kAxesLengthCap];
-  CFIndex axis_report_sizes_[Gamepad::kAxesLengthCap];
+  std::array<IOHIDElementRef, Gamepad::kButtonsLengthCap> button_elements_;
+  std::array<IOHIDElementRef, Gamepad::kAxesLengthCap> axis_elements_;
+  std::array<CFIndex, Gamepad::kAxesLengthCap> axis_minimums_;
+  std::array<CFIndex, Gamepad::kAxesLengthCap> axis_maximums_;
+  std::array<CFIndex, Gamepad::kAxesLengthCap> axis_report_sizes_;
 
   // Force feedback
   FFDeviceObjectReference ff_device_ref_;
   FFEffectObjectReference ff_effect_ref_;
   FFEFFECT ff_effect_{};
   FFCUSTOMFORCE ff_custom_force_{};
-  LONG force_data_[2];
-  DWORD axes_data_[2];
-  LONG direction_data_[2];
+  std::array<LONG, 2> force_data_;
+  std::array<DWORD, 2> axes_data_;
+  std::array<LONG, 2> direction_data_;
 
   // Dualshock4 functionality, if available.
   std::unique_ptr<Dualshock4Controller> dualshock4_;
