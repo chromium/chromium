@@ -224,7 +224,6 @@ class AccessibilityStateDelegateImpl {
                 return mPreInitCachedValuePerformGesturesEnabled;
             }
 
-            fetchAccessibilityManager();
             AccessibilityManager accessibilityManager = fetchAccessibilityManager();
             if (accessibilityManager.isEnabled()) {
                 for (AccessibilityServiceInfo service :
