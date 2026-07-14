@@ -6,6 +6,7 @@
 
 #include <optional>
 
+#include "base/no_destructor.h"
 #include "build/build_config.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
@@ -41,9 +42,10 @@ std::u16string ConfirmInfoBarDelegate::GetMessageTextTemplate() const {
   return std::u16string();
 }
 
-std::vector<MessageSubstitution>
+const std::vector<MessageSubstitution>&
 ConfirmInfoBarDelegate::GetMessageSubstitutions() const {
-  return {};
+  static const base::NoDestructor<std::vector<MessageSubstitution>> empty_subs;
+  return *empty_subs;
 }
 
 MessageSubstitution::MessageSubstitution(

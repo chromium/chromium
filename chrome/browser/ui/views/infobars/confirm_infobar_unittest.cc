@@ -68,7 +68,8 @@ class InlineSubstitutionTestDelegate : public FakeConfirmInfoBarDelegate {
         clicked_index_out_(clicked_index_out) {}
 
   std::u16string GetMessageTextTemplate() const override { return template_; }
-  std::vector<MessageSubstitution> GetMessageSubstitutions() const override {
+  const std::vector<MessageSubstitution>& GetMessageSubstitutions()
+      const override {
     return substitutions_;
   }
 

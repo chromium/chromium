@@ -89,7 +89,8 @@ class ConfirmInfoBarDelegate : public infobars::InfoBarDelegate {
 
   // Returns the list of substitutions to be used with the template
   // returned by GetMessageTextTemplate().
-  virtual std::vector<MessageSubstitution> GetMessageSubstitutions() const;
+  virtual const std::vector<MessageSubstitution>& GetMessageSubstitutions()
+      const;
 
   // Returns the elide behavior for the message string.
   // Not supported on Android.

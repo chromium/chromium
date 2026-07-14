@@ -51,7 +51,8 @@ class AlternateNavInfoBarDelegate : public ConfirmInfoBarDelegate {
   // ConfirmInfoBarDelegate:
   std::u16string GetMessageText() const override;
   std::u16string GetMessageTextTemplate() const override;
-  std::vector<MessageSubstitution> GetMessageSubstitutions() const override;
+  const std::vector<MessageSubstitution>& GetMessageSubstitutions()
+      const override;
   bool InlineSubstitutionLinkClicked(
       size_t index,
       WindowOpenDisposition disposition) override;
@@ -83,6 +84,8 @@ class AlternateNavInfoBarDelegate : public ConfirmInfoBarDelegate {
   // navigation link, this will be removed from history.
   // For search navigations this is the search URL.
   const GURL original_url_;
+
+  std::vector<MessageSubstitution> substitutions_;
 };
 
 #endif  // CHROME_BROWSER_UI_OMNIBOX_ALTERNATE_NAV_INFOBAR_DELEGATE_H_

@@ -110,12 +110,9 @@ std::u16string AlternateNavInfoBarDelegate::GetMessageTextTemplate() const {
   return l10n_util::GetStringUTF16(IDS_ALTERNATE_NAV_URL_VIEW_LABEL);
 }
 
-std::vector<MessageSubstitution>
+const std::vector<MessageSubstitution>&
 AlternateNavInfoBarDelegate::GetMessageSubstitutions() const {
-  std::vector<MessageSubstitution> substitutions;
-  substitutions.emplace_back(base::UTF8ToUTF16(destination_url_.spec()),
-                             /*is_link=*/true, std::nullopt);
-  return substitutions;
+  return substitutions_;
 }
 
 bool AlternateNavInfoBarDelegate::InlineSubstitutionLinkClicked(
@@ -146,6 +143,9 @@ AlternateNavInfoBarDelegate::AlternateNavInfoBarDelegate(
 
   DCHECK(destination_url_.is_valid());
   DCHECK(original_url_.is_valid());
+
+  substitutions_.emplace_back(base::UTF8ToUTF16(destination_url_.spec()),
+                              /*is_link=*/true, std::nullopt);
 }
 
 // AlternateNavInfoBarDelegate::CreateInfoBar() is implemented in
