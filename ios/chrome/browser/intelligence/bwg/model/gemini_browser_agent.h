@@ -341,6 +341,9 @@ class GeminiBrowserAgent : public BrowserUserData<GeminiBrowserAgent>,
   // Called when the page content sharing preference changes.
   void OnPageContentPrefChanged();
 
+  // Called when the microphone preference changes.
+  void OnMicrophonePrefChanged();
+
   // The gateway for bridging internal protocols.
   __strong id<BWGGatewayProtocol> bwg_gateway_ = nullptr;
 
