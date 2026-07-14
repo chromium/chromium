@@ -113,7 +113,8 @@ class GlicUserStatusBrowserTest : public InProcessBrowserTest {
 
     profile()->GetPrefs()->SetInteger(
         optimization_guide::prefs::kGeminiSettings,
-        std::to_underlying(glic::prefs::SettingsPolicyState::kEnabled));
+        std::to_underlying(
+            optimization_guide::prefs::GeminiSettingsPolicyState::kEnabled));
 
 #if !BUILDFLAG(IS_CHROMEOS)
     // TODO(crbug.com/460830699): Evaluate whether this is necessary on
@@ -335,7 +336,8 @@ IN_PROC_BROWSER_TEST_F(GlicUserStatusBrowserTest,
   // Setting kGeminiSettings to disabled so that no RPC would be sent.
   profile()->GetPrefs()->SetInteger(
       optimization_guide::prefs::kGeminiSettings,
-      std::to_underlying(glic::prefs::SettingsPolicyState::kDisabled));
+      std::to_underlying(
+          optimization_guide::prefs::GeminiSettingsPolicyState::kDisabled));
 
   // Sign in again and wait for a while.
   SimulatePrimaryAccountChangedSignIn(&enterpriseAccount);
@@ -357,7 +359,8 @@ IN_PROC_BROWSER_TEST_F(GlicUserStatusBrowserTest,
   // Make the account enterprise again by setting kGeminiSettings to enabled.
   profile()->GetPrefs()->SetInteger(
       optimization_guide::prefs::kGeminiSettings,
-      std::to_underlying(glic::prefs::SettingsPolicyState::kEnabled));
+      std::to_underlying(
+          optimization_guide::prefs::GeminiSettingsPolicyState::kEnabled));
 
   // Sign in again.
   SimulatePrimaryAccountChangedSignIn(&enterpriseAccount);
@@ -414,7 +417,8 @@ IN_PROC_BROWSER_TEST_F(GlicUserStatusBrowserTest,
   request_received = false;
   profile()->GetPrefs()->SetInteger(
       optimization_guide::prefs::kGeminiSettings,
-      std::to_underlying(glic::prefs::SettingsPolicyState::kDisabled));
+      std::to_underlying(
+          optimization_guide::prefs::GeminiSettingsPolicyState::kDisabled));
 
   // Verifying the absence of a request by verifying the absence for a time
   // period longer than the polling interval.
@@ -429,7 +433,8 @@ IN_PROC_BROWSER_TEST_F(GlicUserStatusBrowserTest,
   // Make the account enterprise again by setting kGeminiSettings to enabled.
   profile()->GetPrefs()->SetInteger(
       optimization_guide::prefs::kGeminiSettings,
-      std::to_underlying(glic::prefs::SettingsPolicyState::kEnabled));
+      std::to_underlying(
+          optimization_guide::prefs::GeminiSettingsPolicyState::kEnabled));
 
   // Verify request handler is inovked.
   ASSERT_TRUE(base::test::RunUntil([&]() { return request_received; }));

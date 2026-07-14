@@ -7,6 +7,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <utility>
 
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
@@ -1089,7 +1090,9 @@ class AtMemoryContextMenuManagerTest
     personal_context::prefs::RegisterProfilePrefs(
         autofill_client()->GetPrefs()->registry());
     autofill_client()->GetPrefs()->registry()->RegisterIntegerPref(
-        optimization_guide::prefs::kGeminiSettings, 0);
+        optimization_guide::prefs::kGeminiSettings,
+        std::to_underlying(
+            optimization_guide::prefs::GeminiSettingsPolicyState::kEnabled));
     autofill_client()->GetPrefs()->SetBoolean(
         personal_context::prefs::kPersonalContextInAutofillSettingsToggleStatus,
         true);

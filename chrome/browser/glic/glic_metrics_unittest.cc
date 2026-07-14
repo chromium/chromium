@@ -817,7 +817,8 @@ TEST_F(GlicMetricsFeaturesEnabledTest, ImpressionAfterFreNotPermittedByPolicy) {
   // Disable kGeminiSettings
   profile()->GetPrefs()->SetInteger(
       optimization_guide::prefs::kGeminiSettings,
-      std::to_underlying(glic::prefs::SettingsPolicyState::kDisabled));
+      std::to_underlying(
+          optimization_guide::prefs::GeminiSettingsPolicyState::kDisabled));
 
   ExpectEntryPointImpressionLogged(EntryPointStatus::kAfterFreNotEligible);
 }
@@ -840,13 +841,15 @@ TEST_F(GlicMetricsFeaturesEnabledTest, EnablingChanged) {
 
   profile()->GetPrefs()->SetInteger(
       optimization_guide::prefs::kGeminiSettings,
-      std::to_underlying(glic::prefs::SettingsPolicyState::kDisabled));
+      std::to_underlying(
+          optimization_guide::prefs::GeminiSettingsPolicyState::kDisabled));
   EXPECT_EQ(user_action_tester().GetActionCount("Glic.Disabled"), 2);
   EXPECT_EQ(user_action_tester().GetActionCount("Glic.Enabled"), 2);
 
   profile()->GetPrefs()->SetInteger(
       optimization_guide::prefs::kGeminiSettings,
-      std::to_underlying(glic::prefs::SettingsPolicyState::kEnabled));
+      std::to_underlying(
+          optimization_guide::prefs::GeminiSettingsPolicyState::kEnabled));
   EXPECT_EQ(user_action_tester().GetActionCount("Glic.Disabled"), 2);
   EXPECT_EQ(user_action_tester().GetActionCount("Glic.Enabled"), 3);
 

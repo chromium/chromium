@@ -34,6 +34,18 @@ COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 extern const char kChromeSuggestionsSettings[];
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 extern const char kGeminiSettings[];
+
+// Values for the `kGeminiSettings` pref. Integer pref that determines
+// the Gemini enabling state for this user profile. This is controlled by
+// enterprise policy.
+enum class GeminiSettingsPolicyState {
+  kMinValue = 0,
+
+  kEnabled = kMinValue,
+  kDisabled = 1,
+
+  kMaxValue = kDisabled
+};
 }  // namespace prefs
 
 namespace features {

@@ -6,6 +6,7 @@
 
 #include <string>
 #include <string_view>
+#include <utility>
 
 #include "base/containers/flat_set.h"
 #include "base/feature_list.h"
@@ -143,12 +144,10 @@ base::flat_set<int32_t> GetAutofillAtMemoryEligibleTiers() {
   // TODO(crbug.com/521270638) Add a check for the AtMemory specific policy on
   // top of the enterprise policy for Gemini.
 
-  constexpr int kGeminiSettingsAvailable = 0;
-  // TODO(crbug.com/393537628) Move the pref values enum to components and use
-  // this value here.
   const bool gemini_settings_allowed =
       pref_service->GetInteger(optimization_guide::prefs::kGeminiSettings) ==
-      kGeminiSettingsAvailable;
+      std::to_underlying(
+          optimization_guide::prefs::GeminiSettingsPolicyState::kEnabled);
   if (!gemini_settings_allowed) {
     MaybeOutputReason(debug_message,
                       "Disallowed by GeminiSettings enterprise policy.");

@@ -57,19 +57,6 @@ inline constexpr char kGlicWebContinuityOriginatingHostUrlPreset[] =
 // ************* PROFILE PREFS ***************
 // Prefs below are tied to a user profile.
 
-// Values for the browser.gemini_settings pref. Integer pref that determines
-// the Glic enabling state for this user profile. This is controlled by
-// enterprise policy.
-// TODO(crbug.com/393537628): This should be moved to a less Glic-specific
-// place.
-enum class SettingsPolicyState {
-  kMinValue = 0,
-
-  kEnabled = kMinValue,
-  kDisabled = 1,
-
-  kMaxValue = kDisabled
-};
 
 // Values for the glic.completed_fre pref.
 enum class FreStatus {

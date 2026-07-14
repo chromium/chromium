@@ -821,7 +821,8 @@ IN_PROC_BROWSER_TEST_F(GlicUiConnectedUiTest, AccessDeniedAdminWithoutLink) {
       OpenGlic(GlicInstrumentMode::kHostOnly), InAnyContext(Do([&]() {
         browser()->profile()->GetPrefs()->SetInteger(
             optimization_guide::prefs::kGeminiSettings,
-            std::to_underlying(glic::prefs::SettingsPolicyState::kDisabled));
+            std::to_underlying(optimization_guide::prefs::
+                                   GeminiSettingsPolicyState::kDisabled));
       })),
 
       InAnyContext(WaitForElementVisible(

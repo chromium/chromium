@@ -652,7 +652,8 @@ GlicEnabling::ProfileEnablement GlicEnabling::EnablementForProfile(
 
   if (profile->GetPrefs()->GetInteger(
           optimization_guide::prefs::kGeminiSettings) !=
-      std::to_underlying(glic::prefs::SettingsPolicyState::kEnabled)) {
+      std::to_underlying(
+          optimization_guide::prefs::GeminiSettingsPolicyState::kEnabled)) {
     result.allowed_by_chrome_policy = false;
   }
 

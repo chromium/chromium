@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <optional>
+#include <utility>
 
 #include "base/check_deref.h"
 #include "base/test/scoped_feature_list.h"
@@ -87,7 +88,9 @@ class AtMemoryEnablementUtilsTest : public testing::Test {
     feature_list_.InitAndEnableFeatureWithParameters(
         features::kAutofillAtMemory, {{"at_memory_eligible_tiers", ""}});
     autofill_client().GetPrefs()->registry()->RegisterIntegerPref(
-        optimization_guide::prefs::kGeminiSettings, 0);
+        optimization_guide::prefs::kGeminiSettings,
+        std::to_underlying(
+            optimization_guide::prefs::GeminiSettingsPolicyState::kEnabled));
     // Enable the toggle by default in tests since it represents the default
     // active state.
     autofill_client().GetPrefs()->SetUserPref(
@@ -145,10 +148,10 @@ TEST_F(AtMemoryEnablementUtilsTest,
       .WillRepeatedly(
           Return(personal_context::PersonalContextEligibilityState::kEligible));
 
-  // Value 1 means not available.
-  // components/policy/resources/templates/policy_definitions/GenerativeAI/GeminiSettings.yaml
   autofill_client().GetPrefs()->SetInteger(
-      optimization_guide::prefs::kGeminiSettings, 1);
+      optimization_guide::prefs::kGeminiSettings,
+      std::to_underlying(
+          optimization_guide::prefs::GeminiSettingsPolicyState::kDisabled));
 
   EXPECT_FALSE(MayPerformAtMemoryAction(
       AtMemoryAction::kTriggerSearchUI, autofill_client(),
@@ -436,8 +439,10 @@ class AtMemoryEnablementUtilsFeatureCheckedLastTest : public testing::Test {
     registry_->RegisterBooleanPref(
         personal_context::prefs::kPersonalContextInAutofillSettingsToggleStatus,
         true);
-    registry_->RegisterIntegerPref(optimization_guide::prefs::kGeminiSettings,
-                                   0);
+    registry_->RegisterIntegerPref(
+        optimization_guide::prefs::kGeminiSettings,
+        std::to_underlying(
+            optimization_guide::prefs::GeminiSettingsPolicyState::kEnabled));
     pref_service_ = std::make_unique<TestPrefService>(pref_store_, registry_);
 
     autofill_client_.set_last_committed_primary_main_frame_url(

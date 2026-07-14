@@ -54,7 +54,9 @@ class PersonalContextAutofillUtilTest : public testing::Test {
     client_.GetPrefs()->SetInteger(
         subscription_eligibility::prefs::kAiSubscriptionTier, 1);
     client_.GetPrefs()->registry()->RegisterIntegerPref(
-        optimization_guide::prefs::kGeminiSettings, 0);
+        optimization_guide::prefs::kGeminiSettings,
+        std::to_underlying(
+            optimization_guide::prefs::GeminiSettingsPolicyState::kEnabled));
     client_.SetUpPrefsAndIdentityForAutofillAi();
     client_.set_entity_data_manager(std::make_unique<EntityDataManager>(
         client_.GetPrefs(), client_.GetIdentityManager(),

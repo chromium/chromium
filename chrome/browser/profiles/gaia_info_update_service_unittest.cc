@@ -453,7 +453,8 @@ class GAIAInfoUpdateServiceWithGlicEnablingTest
     // Enable enterprise policy for glic control
     pref_service_.SetInteger(
         optimization_guide::prefs::kGeminiSettings,
-        std::to_underlying(glic::prefs::SettingsPolicyState::kEnabled));
+        std::to_underlying(
+            optimization_guide::prefs::GeminiSettingsPolicyState::kEnabled));
   }
 
  private:

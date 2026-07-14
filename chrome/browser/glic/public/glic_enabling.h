@@ -34,7 +34,6 @@ class ProfileAttributesStorage;
 
 namespace glic {
 namespace prefs {
-enum class SettingsPolicyState;
 enum class FreStatus;
 }  // namespace prefs
 namespace mojom {
