@@ -983,7 +983,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.Canvas.HeuristicResult"
-    enum="CanvasAccessibilityHeuristicResult" expires_after="2026-08-27">
+    enum="CanvasAccessibilityHeuristicResult" expires_after="2027-06-01">
   <owner>rhalavati@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
