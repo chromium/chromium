@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/config/locales.gni")
+import("//build/config/python.gni")
 import("//tools/grit/grit_rule.gni")
 
 # This file defines a template to invoke grit repack in a consistent manner.
@@ -41,7 +42,7 @@ template("repack") {
 
   _compress = defined(invoker.compress) && invoker.compress
 
-  action(_repack_target_name) {
+  action_with_pydeps(_repack_target_name) {
     forward_variables_from(invoker,
                            [
                              "deps",

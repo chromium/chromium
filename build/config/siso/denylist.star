@@ -81,7 +81,6 @@ def __step_config(ctx, step_config):
         "third_party/webgpu-cts/scripts/run_regenerate_internal_cts_html.py",
         "tools/grit/grit_info.py",
         "tools/grit/grit.py",
-        "tools/grit/pak_util.py",
         "tools/licenses/licenses.py",
 
         # merge_xml.py relies on expand_owners.py, which
