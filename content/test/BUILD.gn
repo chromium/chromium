@@ -84,13 +84,6 @@ static_library("test_support") {
   sources = [
     "../browser/aggregation_service/aggregation_service_test_utils.cc",
     "../browser/aggregation_service/aggregation_service_test_utils.h",
-    "../browser/attribution_reporting/attribution_test_utils.cc",
-    "../browser/attribution_reporting/attribution_test_utils.h",
-    "../browser/attribution_reporting/test/configurable_storage_delegate.cc",
-    "../browser/attribution_reporting/test/configurable_storage_delegate.h",
-    "../browser/attribution_reporting/test/mock_attribution_observer.cc",
-    "../browser/attribution_reporting/test/mock_attribution_observer.h",
-    "../browser/attribution_reporting/test/mock_content_browser_client.h",
     "../browser/back_forward_cache_test_util.cc",
     "../browser/back_forward_cache_test_util.h",
     "../browser/background_fetch/background_fetch_test_base.cc",
@@ -614,8 +607,6 @@ static_library("test_support") {
     "//components/web_package/test_support",
     "//content/app:for_content_tests",
     "//content/browser:for_content_tests",
-    "//content/browser/attribution_reporting:mojo_bindings",
-    "//content/browser/attribution_reporting:registration_result_mojom",
     "//content/child:for_content_tests",
     "//content/common:for_content_tests",
     "//content/gpu",
@@ -1971,8 +1962,6 @@ test("content_browsertests") {
     "//components/web_package/test_support",
     "//content/app:for_content_tests",
     "//content/browser:for_content_tests",
-    "//content/browser/attribution_reporting:mojo_bindings",
-    "//content/browser/attribution_reporting:registration_result_mojom",
     "//content/browser/background_sync:background_sync_proto",
     "//content/browser/tracing/traces_internals:mojo_bindings",
     "//content/child:for_content_tests",
@@ -2593,19 +2582,6 @@ test("content_unittests") {
     "../browser/aggregation_service/aggregation_service_storage_sql_unittest.cc",
     "../browser/aggregation_service/public_key_parsing_utils_unittest.cc",
     "../browser/aggregation_service/report_scheduler_timer_unittest.cc",
-    "../browser/attribution_reporting/aggregatable_attribution_utils_unittest.cc",
-    "../browser/attribution_reporting/aggregatable_debug_rate_limit_table_unittest.cc",
-    "../browser/attribution_reporting/aggregatable_debug_report_unittest.cc",
-    "../browser/attribution_reporting/attribution_aggregatable_report_golden_unittest.cc",
-    "../browser/attribution_reporting/attribution_debug_report_unittest.cc",
-    "../browser/attribution_reporting/attribution_report_network_sender_unittest.cc",
-    "../browser/attribution_reporting/attribution_report_unittest.cc",
-    "../browser/attribution_reporting/attribution_resolver_delegate_impl_unittest.cc",
-    "../browser/attribution_reporting/attribution_resolver_unittest.cc",
-    "../browser/attribution_reporting/attribution_storage_sql_migrations_unittest.cc",
-    "../browser/attribution_reporting/attribution_storage_sql_unittest.cc",
-    "../browser/attribution_reporting/os_registrations_table_unittest.cc",
-    "../browser/attribution_reporting/rate_limit_table_unittest.cc",
     "../browser/back_forward_cache/back_forward_cache_impl_unittest.cc",
     "../browser/back_forward_cache/back_forward_cache_metrics_unittest.cc",
     "../browser/back_forward_cache/back_forward_cache_subframe_navigation_throttle_unittest.cc",
@@ -3234,8 +3210,6 @@ test("content_unittests") {
       "../browser/accessibility/browser_accessibility_android_unittest.cc",
       "../browser/accessibility/text_formatting_metrics_android_unittest.cc",
       "../browser/android/nfc_host_unittest.cc",
-      "../browser/attribution_reporting/attribution_input_event_tracker_android_unittest.cc",
-      "../browser/attribution_reporting/attribution_os_level_manager_android_unittest.cc",
       "../browser/display_cutout/display_cutout_host_impl_unittest.cc",
       "../browser/display_cutout/safe_area_insets_host_impl_unittest.cc",
       "../browser/navigation_transitions/blur_transition_animation_manager_unittest.cc",
@@ -3373,9 +3347,6 @@ test("content_unittests") {
     "//components/webauthn/core/browser:common_utils",
     "//content/app:for_content_tests",
     "//content/browser:for_content_tests",
-    "//content/browser/attribution_reporting:attribution_reporting_proto",
-    "//content/browser/attribution_reporting:mojo_bindings",
-    "//content/browser/attribution_reporting:registration_result_mojom",
     "//content/browser/background_fetch:background_fetch_proto",
     "//content/browser/cache_storage:cache_storage_proto",
     "//content/browser/devtools:devtools_background_services_proto",
@@ -3529,12 +3500,6 @@ test("content_unittests") {
       "$root_gen_dir/third_party/perfetto/protos/perfetto/config/chrome/scenario_config.descriptor",
       "$root_gen_dir/third_party/perfetto/protos/perfetto/config/config.descriptor",
     ]
-  }
-
-  # Platforms where sqlite_dev_shell is defined.
-  if (is_win || is_mac || is_linux || is_chromeos) {
-    sources += [ "../browser/attribution_reporting/attribution_storage_sql_query_plans_unittest.cc" ]
-    deps += [ "../browser/attribution_reporting:sqlite_test_utils" ]
   }
 
   if (is_mac) {

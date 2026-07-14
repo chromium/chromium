@@ -1099,42 +1099,6 @@ class CONTENT_EXPORT ContentBrowserClient {
       bool is_on_device_auction,
       AuctionResult result);
 
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused.
-  enum class AttributionReportingOsApiState {
-    kDisabled = 0,
-    kEnabled = 1,
-    kMaxValue = kEnabled,
-  };
-
-  // Specifies whether an OS attribution event should register
-  // against the top level origin (web) or the app (OS) or if
-  // OS attribution is disabled.
-  enum class AttributionReportingOsRegistrar {
-    kWeb,
-    kOs,
-    kDisabled,
-  };
-
-  // Attribution reporting generates source and trigger events.
-  // An embedder can specify whether OS attribution source/trigger events
-  // should register against the top level origin (web) or the app (OS) or if
-  // OS attribution is disabled. The behaviour can be the same or different
-  // for source and trigger events so this struct is used to hold the behaviour
-  // for the different event types.
-  struct AttributionReportingOsRegistrars {
-    AttributionReportingOsRegistrar source_registrar;
-    AttributionReportingOsRegistrar trigger_registrar;
-
-    auto operator<=>(const AttributionReportingOsRegistrars&) const = default;
-  };
-
-  // Allows the embedder to control if OS attribution source/trigger events
-  // should register against the top level origin (web) or the app (OS) or if
-  // OS attribution is disabled.
-  virtual AttributionReportingOsRegistrars GetAttributionReportingOsRegistrars(
-      WebContents* web_contents);
-
   // Allows the embedder to control if Shared Storage API operations can happen
   // in a given context.
   //

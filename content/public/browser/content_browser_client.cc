@@ -108,9 +108,6 @@
 #include "third_party/blink/public/mojom/installedapp/related_application.mojom.h"
 #endif
 
-using AttributionReportType =
-    content::ContentBrowserClient::AttributionReportingOsRegistrar;
-
 namespace content {
 
 std::unique_ptr<BrowserMainParts> ContentBrowserClient::CreateBrowserMainParts(
@@ -662,12 +659,6 @@ void ContentBrowserClient::OnAuctionComplete(
     bool is_server_auction,
     bool is_on_device_auction,
     AuctionResult result) {}
-
-ContentBrowserClient::AttributionReportingOsRegistrars
-ContentBrowserClient::GetAttributionReportingOsRegistrars(
-    WebContents* web_contents) {
-  return {AttributionReportType::kDisabled, AttributionReportType::kDisabled};
-}
 
 bool ContentBrowserClient::IsSharedStorageAllowed(
     content::BrowserContext* browser_context,
