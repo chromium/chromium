@@ -153,6 +153,7 @@ build_webui("build") {
     "toolbar_button.css",
     "toolbar_chip_button.css",
     "toolbar_divider.css",
+    "webui_toolbar_shared_vars.css",
   ]
 
   # ts_composite is needed for JS tests to depend on this.
