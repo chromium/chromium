@@ -33,6 +33,7 @@
 #include "components/metrics/client_info.h"
 #include "components/metrics/metrics_pref_names.h"
 #include "components/metrics/metrics_state_manager.h"
+#include "components/metrics/startup_visibility.h"
 #include "components/metrics/test/test_enabled_state_provider.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/variations/pref_names.h"
@@ -340,13 +341,15 @@ class VariationsServiceTest : public ::testing::Test {
     VariationsService::RegisterPrefs(prefs_.registry());
   }
 
-  metrics::MetricsStateManager* GetMetricsStateManager() {
+  metrics::MetricsStateManager* GetMetricsStateManager(
+      metrics::StartupVisibility startup_visibility =
+          metrics::StartupVisibility::kUnknown) {
     // Lazy-initialize the metrics_state_manager so that it correctly reads the
     // stability state from prefs after tests have a chance to initialize it.
     if (!metrics_state_manager_) {
       metrics_state_manager_ = metrics::MetricsStateManager::Create(
           &prefs_, enabled_state_provider_.get(), std::wstring(),
-          base::FilePath());
+          base::FilePath(), startup_visibility);
       metrics_state_manager_->InstantiateFieldTrialList();
     }
     return metrics_state_manager_.get();
@@ -859,19 +862,45 @@ TEST_F(VariationsServiceTest, OverrideStoredPermanentCountry) {
   }
 }
 
-TEST_F(VariationsServiceTest, SafeMode_StartingRequestIncrementsFetchFailures) {
+struct VariationsServiceSafeModeFetchTestCase {
+  metrics::StartupVisibility visibility;
+  int expected_streak;
+};
+
+class VariationsServiceSafeModeFetchTest
+    : public VariationsServiceTest,
+      public ::testing::WithParamInterface<
+          VariationsServiceSafeModeFetchTestCase> {};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    VariationsServiceSafeModeFetchTest,
+    ::testing::Values(
+        VariationsServiceSafeModeFetchTestCase{
+            .visibility = metrics::StartupVisibility::kUnknown,
+            .expected_streak = 2},
+        VariationsServiceSafeModeFetchTestCase{
+            .visibility = metrics::StartupVisibility::kForeground,
+            .expected_streak = 2},
+        VariationsServiceSafeModeFetchTestCase{
+            .visibility = metrics::StartupVisibility::kBackground,
+            .expected_streak = 1}));
+
+TEST_P(VariationsServiceSafeModeFetchTest, RecordFetchStarted) {
+  const VariationsServiceSafeModeFetchTestCase& test_case = GetParam();
   prefs_.SetInteger(prefs::kVariationsFailedToFetchSeedStreak, 1);
   VariationsService::EnableFetchForTesting();
 
-  // Create a variations service and start the fetch.
+  // Create a variations service with the given visibility and start the fetch.
   TestVariationsService service(
       std::make_unique<web_resource::TestRequestAllowedNotifier>(
           &prefs_, network_tracker_),
-      &prefs_, GetMetricsStateManager(), true);
+      &prefs_, GetMetricsStateManager(test_case.visibility), true);
   service.set_intercepts_fetch(false);
   service.DoActualFetch();
 
-  EXPECT_EQ(2, prefs_.GetInteger(prefs::kVariationsFailedToFetchSeedStreak));
+  EXPECT_EQ(test_case.expected_streak,
+            prefs_.GetInteger(prefs::kVariationsFailedToFetchSeedStreak));
 }
 
 TEST_F(VariationsServiceTest, SafeMode_SuccessfulFetchClearsFailureStreaks) {

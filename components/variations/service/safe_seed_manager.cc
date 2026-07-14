@@ -11,6 +11,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "components/metrics/startup_visibility.h"
 #include "components/prefs/pref_registry.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -104,7 +105,11 @@ SeedType SafeSeedManager::GetSeedType() const {
   return SeedType::kRegularSeed;
 }
 
-void SafeSeedManager::RecordFetchStarted() {
+void SafeSeedManager::RecordFetchStarted(
+    metrics::StartupVisibility startup_visibility) {
+  if (startup_visibility == metrics::StartupVisibility::kBackground) {
+    return;
+  }
   // Pessimistically assume the fetch will fail. The failure streak will be
   // reset upon success.
   int num_failures_to_fetch =

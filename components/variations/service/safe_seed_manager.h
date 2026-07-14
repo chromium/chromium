@@ -9,6 +9,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
+#include "components/metrics/startup_visibility.h"
 
 class PrefRegistrySimple;
 class PrefService;
@@ -79,7 +80,9 @@ class SafeSeedManager {
 
   // Records that a fetch has started: pessimistically increments the
   // corresponding failure streak for safe mode.
-  void RecordFetchStarted();
+  // Throttling or other connectivity constraints in background sessions should
+  // not be counted towards variations safe mode.
+  void RecordFetchStarted(metrics::StartupVisibility startup_visibility);
 
   // Records a successful fetch: resets the failure streaks for safe mode.
   // Writes the currently active seed to the |seed_store| as a safe seed, if

@@ -14,6 +14,7 @@
 #include "base/time/time.h"
 #include "base/version_info/channel.h"
 #include "components/metrics/clean_exit_beacon.h"
+#include "components/metrics/startup_visibility.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/variations/client_filterable_state.h"
 #include "components/variations/pref_names.h"
@@ -186,6 +187,41 @@ TEST_F(SafeSeedManagerTest,
   EXPECT_EQ(std::string(), seed_store.session_consistency_country());
   EXPECT_EQ(base::Time(), seed_store.date());
   EXPECT_EQ(base::Time(), seed_store.fetch_time());
+}
+
+struct SafeSeedManagerFetchStartedTestCase {
+  metrics::StartupVisibility visibility;
+  int expected_streak;
+};
+
+class SafeSeedManagerFetchStartedTest
+    : public SafeSeedManagerTest,
+      public ::testing::WithParamInterface<
+          SafeSeedManagerFetchStartedTestCase> {};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    SafeSeedManagerFetchStartedTest,
+    ::testing::Values(
+        SafeSeedManagerFetchStartedTestCase{
+            .visibility = metrics::StartupVisibility::kUnknown,
+            .expected_streak = 1},
+        SafeSeedManagerFetchStartedTestCase{
+            .visibility = metrics::StartupVisibility::kForeground,
+            .expected_streak = 1},
+        SafeSeedManagerFetchStartedTestCase{
+            .visibility = metrics::StartupVisibility::kBackground,
+            .expected_streak = 0}));
+
+TEST_P(SafeSeedManagerFetchStartedTest, RecordFetchStarted) {
+  const SafeSeedManagerFetchStartedTestCase& test_case = GetParam();
+  SafeSeedManager safe_seed_manager(&prefs_);
+
+  EXPECT_EQ(0, prefs_.GetInteger(prefs::kVariationsFailedToFetchSeedStreak));
+
+  safe_seed_manager.RecordFetchStarted(test_case.visibility);
+  EXPECT_EQ(test_case.expected_streak,
+            prefs_.GetInteger(prefs::kVariationsFailedToFetchSeedStreak));
 }
 
 TEST_F(SafeSeedManagerTest, FetchFailureMetrics_DefaultPrefs) {

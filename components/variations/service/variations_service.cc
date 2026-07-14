@@ -35,6 +35,7 @@
 #include "components/encrypted_messages/encrypted_message.pb.h"
 #include "components/encrypted_messages/message_encrypter.h"
 #include "components/metrics/metrics_state_manager.h"
+#include "components/metrics/startup_visibility.h"
 #include "components/network_time/network_time_tracker.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -631,7 +632,8 @@ bool VariationsService::DoFetchFromURL(const GURL& url, bool is_http_retry) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(IsFetchingEnabled());
 
-  safe_seed_manager_.RecordFetchStarted();
+  CHECK(state_manager_);
+  safe_seed_manager_.RecordFetchStarted(state_manager_->startup_visibility());
 
   // Normally, there shouldn't be a |pending_seed_request_| when this fires.
   // However it's not impossible - for example if Chrome was paused (e.g. in a
