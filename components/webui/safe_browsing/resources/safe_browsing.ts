@@ -556,19 +556,17 @@ function addDeepScan(result: DeepScanResult) {
 
 
   if (result.response_time != null) {
-    if (result.response_status === 'SUCCESS') {
-      // Display the response instead
-      const resultFormatted = '[' +
-          (new Date(result.response_time)).toLocaleString() + ']\n' +
-          result.response;
-      addResultToTable('deep-scan-list', result.token, resultFormatted, 1);
-    } else {
-      // Display the error
-      const resultFormatted = '[' +
-          (new Date(result.response_time)).toLocaleString() + ']\n' +
-          result.response_status;
-      addResultToTable('deep-scan-list', result.token, resultFormatted, 1);
+    let resultFormatted =
+        '[' + (new Date(result.response_time)).toLocaleString() + ']\n';
+    // Display result if it is non-success
+    if (result.response_status && result.response_status !== 'SUCCESS') {
+      resultFormatted += result.response_status + '\n';
     }
+    // Regardless of the result status, the response is always logged.
+    if (result.response) {
+      resultFormatted += result.response;
+    }
+    addResultToTable('deep-scan-list', result.token, resultFormatted, 1);
   }
 
   deepScanData.set(result.token, result);
