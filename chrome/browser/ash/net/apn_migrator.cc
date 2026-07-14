@@ -118,6 +118,16 @@ void ApnMigrator::NetworkListChanged() {
   if (has_iccids_changed(new_iccids, old_iccids_)) {
     old_iccids_ = new_iccids;
 
+    std::string username_hash;
+    auto* primary_session =
+        session_manager::SessionManager::Get()->GetPrimarySession();
+    if (primary_session) {
+      const AccountId& account_id = primary_session->account_id();
+      if (auto* user = user_manager::UserManager::Get()->FindUser(account_id)) {
+        username_hash = user->username_hash();
+      }
+    }
+
     for (const NetworkState* network : network_list) {
       // Only attempt to migrate networks known by Shill.
       if (network->IsNonShillCellularNetwork()) {
@@ -159,12 +169,21 @@ void ApnMigrator::NetworkListChanged() {
         }
         continue;
       }
+      if (username_hash.empty()) {
+        // There's no primary session on the login screen, avoid spamming logs.
+        if (primary_session) {
+          NET_LOG(DEBUG)
+              << "Delaying APN migration/application until user logs in: "
+              << network->iccid();
+        }
+        continue;
+      }
 
       if (!has_network_been_migrated) {
         NET_LOG(EVENT)
             << "Network has not been migrated, attempting to migrate: "
             << network->iccid();
-        MigrateNetwork(*network);
+        MigrateNetwork(*network, username_hash);
         continue;
       }
 
@@ -243,8 +262,10 @@ void ApnMigrator::OnSetShillCustomApnListFailure(
   CompleteMigrationAttempt(iccid, /*success=*/false);
 }
 
-void ApnMigrator::MigrateNetwork(const NetworkState& network) {
+void ApnMigrator::MigrateNetwork(const NetworkState& network,
+                                 const std::string& username_hash) {
   DCHECK(ash::features::IsApnRevampEnabled());
+  DCHECK(!username_hash.empty());
 
   // Return early if the network is already in the process of being migrated.
   if (iccids_in_migration_.contains(network.iccid())) {
@@ -274,15 +295,12 @@ void ApnMigrator::MigrateNetwork(const NetworkState& network) {
   // If the pre-revamp APN list is non-empty, get the network's managed
   // properties, to be used for the migration heuristic. This call is
   // asynchronous; mark the ICCID as migrating so that the network won't
-  // be attempted to be migrated again while these properties are being fetched.
+  // be attempted to be migrated again while these properties are being
+  // fetched.
   iccids_in_migration_.emplace(network.iccid());
 
   NET_LOG(EVENT) << "Fetching managed properties for network: "
                  << network.iccid();
-  const AccountId& account_id =
-      session_manager::SessionManager::Get()->GetPrimarySession()->account_id();
-  const std::string& username_hash =
-      user_manager::UserManager::Get()->FindUser(account_id)->username_hash();
   network_configuration_handler_->GetManagedProperties(
       username_hash, network.path(),
       base::BindOnce(&ApnMigrator::OnGetManagedProperties,

@@ -60,7 +60,10 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ApnMigrator
   // Migrate the |network|'s custom APNs to the APN Revamp feature. If the
   // migration requires the network's managed properties, this function will
   // invoke an async call, and mark the network as "in migration".
-  void MigrateNetwork(const NetworkState& network);
+  // |username_hash| is the logged-in user's username hash, used to associate
+  // the migrated APNs with the user's profile.
+  void MigrateNetwork(const NetworkState& network,
+                      const std::string& username_hash);
 
   // Finishes the migration process for networks that require managed properties
   // fields.
