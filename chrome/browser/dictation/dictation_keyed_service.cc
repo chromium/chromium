@@ -16,8 +16,10 @@
 #include "chrome/browser/dictation/session_controller.h"
 #include "chrome/browser/dictation/session_ui_impl.h"
 #include "chrome/browser/dictation/target.h"
+#include "chrome/browser/glic/host/guest_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/tabs/public/tab_interface.h"
@@ -28,6 +30,21 @@ namespace dictation {
 
 namespace {
 constexpr int kVoiceTypingSettingsDisabled = 2;
+
+tabs::TabInterface* GetActiveTabFromGlic(content::WebContents* web_contents) {
+  if (!glic::IsGlicGuest(web_contents)) {
+    return nullptr;
+  }
+
+  content::WebContents* outermost_web_contents =
+      web_contents->GetOutermostWebContents();
+  gfx::NativeWindow native_window =
+      outermost_web_contents->GetTopLevelNativeWindow();
+  BrowserWindowInterface* browser =
+      GlobalBrowserCollection::GetInstance()->FindBrowserWithWindow(
+          native_window);
+  return browser ? browser->GetActiveTabInterface() : nullptr;
+}
 
 tabs::TabInterface* GetTabFromTargetId(
     const content::GlobalDOMNodeId& target_id) {
@@ -42,7 +59,18 @@ tabs::TabInterface* GetTabFromTargetId(
     return nullptr;
   }
 
-  return tabs::TabInterface::MaybeGetFromContents(web_contents);
+  // Use normal tab lookup first
+  if (auto* tab = tabs::TabInterface::MaybeGetFromContents(web_contents)) {
+    return tab;
+  }
+
+  // If the Glic side panel is being targeted, then associate the session with
+  // the active tab of the window.
+  if (tabs::TabInterface* tab = GetActiveTabFromGlic(web_contents)) {
+    return tab;
+  }
+
+  return nullptr;
 }
 
 }  // namespace
@@ -141,19 +169,7 @@ void DictationKeyedService::ContextMenuHandler(
     return;
   }
 
-  content::RenderFrameHost* rfh = target_id.document.AsRenderFrameHostIfValid();
-  if (!rfh) {
-    return;
-  }
-
-  content::WebContents* web_contents =
-      content::WebContents::FromRenderFrameHost(rfh);
-  if (!web_contents) {
-    return;
-  }
-
-  tabs::TabInterface* tab =
-      tabs::TabInterface::MaybeGetFromContents(web_contents);
+  tabs::TabInterface* tab = GetTabFromTargetId(target_id);
   if (!tab) {
     return;
   }
