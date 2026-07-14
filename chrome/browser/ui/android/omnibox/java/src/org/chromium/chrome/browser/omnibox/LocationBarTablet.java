@@ -609,7 +609,12 @@ class LocationBarTablet extends LocationBarLayout implements OnLongClickListener
             parentParams.topMargin = isPopover ? 0 : -expansionPx;
             setMarginsForWindowWidth(parentParams, expansionPx);
             parentParams.gravity = Gravity.TOP;
-            setPadding(expansionPx, expansionPx, expansionPx, getPaddingBottom());
+            int topExpansionPx =
+                    isPopover
+                            ? resources.getDimensionPixelSize(
+                                    R.dimen.location_bar_tablet_fusebox_popover_top_padding)
+                            : expansionPx;
+            setPadding(expansionPx, topExpansionPx, expansionPx, getPaddingBottom());
             mHolder.setTranslationZ(OVERLAY_Z_TRANSLATION);
             // Call super to avoid overwriting our locally saved reference to our OutlineProvider.
             // Null out the outline provider to avoid casting a shadow on views with translationZ
@@ -648,7 +653,7 @@ class LocationBarTablet extends LocationBarLayout implements OnLongClickListener
         MarginLayoutParams statusViewLayoutParams =
                 (MarginLayoutParams) mStatusView.getLayoutParams();
         Resources resources = getResources();
-        if (state == FuseboxState.COMPACT && !mShowStandbyRing) {
+        if (state == FuseboxState.COMPACT && !mShowStandbyRing && !mIsReparentedToPopover) {
             // In the compact fusebox state, the location bar is taller than its inner background,
             // creating the appearance of vertical misalignment. We resolve this by translating
             // constituent views to be centered withing the 56 dp inner background, shifting them

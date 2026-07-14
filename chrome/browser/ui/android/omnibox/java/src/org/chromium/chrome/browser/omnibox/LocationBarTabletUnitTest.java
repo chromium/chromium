@@ -281,6 +281,13 @@ public class LocationBarTabletUnitTest {
         LinearLayout.LayoutParams layoutParams =
                 (LinearLayout.LayoutParams) mHolderView.getLayoutParams();
         assertEquals(0, layoutParams.topMargin);
+        assertEquals(
+                mLocationBarTablet
+                        .getResources()
+                        .getDimensionPixelSize(
+                                R.dimen.location_bar_tablet_fusebox_popover_top_padding),
+                mLocationBarTablet.getPaddingTop());
+        assertEquals(0, urlBar.getTranslationY(), MathUtils.EPSILON);
     }
 
     @Test
