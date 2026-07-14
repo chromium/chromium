@@ -8,12 +8,28 @@ import android.content.res.Resources;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.IntDef;
+
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.R;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
 /** Collection of util methods for help launching a NewTabPage. */
 @NullMarked
 public class NewTabPageUtils {
+    /** Padding style options for NTP Aurora. */
+    @IntDef({PaddingStyle.DEFAULT, PaddingStyle.TIGHT, PaddingStyle.MEDIUM, PaddingStyle.LARGE})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface PaddingStyle {
+        int DEFAULT = 0;
+        int TIGHT = 1;
+        int MEDIUM = 2;
+        int LARGE = 3;
+        int NUM_ENTRIES = 4;
+    }
+
     /**
      * Updates the margins for the most visited tiles layout.
      *

@@ -18744,6 +18744,7 @@ from previous Chrome versions.
   <int value="1311658248" label="SyncEnableHistoryDataType:disabled"/>
   <int value="1311860720" label="ChromeHomeNtpRedesign:disabled"/>
   <int value="1312025202" label="NTPOfflinePageSuggestions:disabled"/>
+  <int value="1312201151" label="NtpAurora:enabled"/>
   <int value="1312920918" label="EnableBubbleCornerRadiusUpdate:disabled"/>
   <int value="1313476409" label="ReportFeedUserActions:disabled"/>
   <int value="1313570156"
@@ -20205,6 +20206,7 @@ from previous Chrome versions.
   <int value="1781225884" label="FedCmAuthz:disabled"/>
   <int value="1781422070" label="PasspointARCSupport:enabled"/>
   <int value="1781434583" label="AutofillLocalSaveCardBottomSheet:disabled"/>
+  <int value="1781700175" label="NtpAurora:disabled"/>
   <int value="1782210532" label="PerNavigationMojoInterface:disabled"/>
   <int value="1782416979"
       label="AutofillEnableSaveCardLoadingAndConfirmation:disabled"/>

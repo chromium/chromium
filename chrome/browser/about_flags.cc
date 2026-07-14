@@ -2670,6 +2670,20 @@ const FeatureEntry::FeatureVariation kAuxiliarySearchDonationVariations[] = {
     {"500 counts", kAuxiliarySearchDonation_MaxDonation_500, nullptr},
 };
 
+const FeatureEntry::FeatureParam kNtpAurora_TightPadding[] = {
+    {"change_button_color", "true"},
+    {"padding_style", "1"}};
+const FeatureEntry::FeatureParam kNtpAurora_MediumPadding[] = {
+    {"change_button_color", "true"},
+    {"padding_style", "2"}};
+const FeatureEntry::FeatureParam kNtpAurora_LargePadding[] = {
+    {"change_button_color", "true"},
+    {"padding_style", "3"}};
+const FeatureEntry::FeatureVariation kNtpAuroraVariations[] = {
+    {"Tight padding", kNtpAurora_TightPadding, nullptr},
+    {"Medium padding", kNtpAurora_MediumPadding, nullptr},
+    {"Large padding", kNtpAurora_LargePadding, nullptr}};
+
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)
@@ -13360,6 +13374,13 @@ const FeatureEntry kFeatureEntries[] = {
     {"cct-tab-resumption", flag_descriptions::kCctTabResumptionName,
      flag_descriptions::kCctTabResumptionDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kCctTabResumption)},
+#endif
+#if BUILDFLAG(IS_ANDROID)
+    {"ntp-aurora", flag_descriptions::kNtpAuroraName,
+     flag_descriptions::kNtpAuroraDescription, kOsAndroid,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kNtpAurora,
+                                    kNtpAuroraVariations,
+                                    "NtpAurora")},
 #endif
 
     {"enable-account-preview-data",
