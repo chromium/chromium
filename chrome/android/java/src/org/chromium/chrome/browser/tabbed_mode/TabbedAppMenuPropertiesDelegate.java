@@ -62,6 +62,7 @@ import org.chromium.chrome.browser.share.ShareUtils;
 import org.chromium.chrome.browser.supervised_user.SupervisedUserServiceBridge;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.task_manager.TaskManager;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuItemState;
 import org.chromium.chrome.browser.toolbar.top.ToolbarUtils;
@@ -1272,7 +1273,7 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
                         submenuItems.add(buildPageInfoItem(currentTab, /* showIcon= */ false));
                     }
 
-                    if (mMoreToolsItemBuilder.shouldShowTaskManagerItem()) {
+                    if (TaskManager.isEnabled()) {
                         submenuItems.add(mMoreToolsItemBuilder.buildTaskManagerItem());
                     }
 

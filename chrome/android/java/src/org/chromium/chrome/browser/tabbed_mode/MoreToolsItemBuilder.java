@@ -14,11 +14,11 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.app.appmenu.AppMenuItemTheme;
 import org.chromium.chrome.browser.app.appmenu.AppMenuItemUtils;
 import org.chromium.chrome.browser.devtools.DevToolsWindowAndroid;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.readaloud.ReadAloudController;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.task_manager.TaskManager;
 import org.chromium.chrome.browser.ui.vertical_tabs.VerticalTabUtils;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
@@ -109,7 +109,7 @@ public class MoreToolsItemBuilder {
                 || shouldShowTabLayoutToggleItem()
                 || shouldShowNtpCustomizations(currentTab)
                 || mPageInfoVisibilitySupplier.get()
-                || shouldShowTaskManagerItem()
+                || TaskManager.isEnabled()
                 || shouldShowDevToolsItem(currentTab)) {
             return true;
         }
@@ -204,13 +204,9 @@ public class MoreToolsItemBuilder {
                 showIcon);
     }
 
-    /** Returns whether the "Task manager" menu item should be displayed. */
-    public boolean shouldShowTaskManagerItem() {
-        return ChromeFeatureList.isEnabled(ChromeFeatureList.TASK_MANAGER_CLANK);
-    }
-
     /** Builds the "Task manager" menu item. */
     public ListItem buildTaskManagerItem() {
+        assert TaskManager.isEnabled();
         return AppMenuItemUtils.createStandardListItem(
                 AppMenuItemUtils.buildModelForStandardMenuItem(
                         mContext,

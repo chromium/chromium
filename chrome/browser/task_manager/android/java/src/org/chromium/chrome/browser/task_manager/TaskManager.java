@@ -6,7 +6,9 @@ package org.chromium.chrome.browser.task_manager;
 
 import android.content.Context;
 
+import org.chromium.base.DeviceInfo;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 
 /**
  * Chrome's task manager is a tool that provides detailed information about the process and
@@ -18,6 +20,13 @@ import org.chromium.build.annotations.NullMarked;
  */
 @NullMarked
 public interface TaskManager {
+    /** Returns whether the task manager feature is enabled. */
+    static boolean isEnabled() {
+        // Use of `isDesktop()` here is approved in https://crbug.com/525590366
+        return DeviceInfo.isDesktop()
+                || ChromeFeatureList.isEnabled(ChromeFeatureList.TASK_MANAGER_CLANK);
+    }
+
     /** Launches the task manager. */
     void launch(Context context);
 }

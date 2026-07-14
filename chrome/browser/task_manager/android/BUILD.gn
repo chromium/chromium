@@ -27,6 +27,10 @@ group("jni_headers") {
 android_library("java") {
   sources =
       [ "java/src/org/chromium/chrome/browser/task_manager/TaskManager.java" ]
+  deps = [
+    "//base:base_java",
+    "//chrome/browser/flags:java",
+  ]
 }
 
 android_library_factory("factory_java") {

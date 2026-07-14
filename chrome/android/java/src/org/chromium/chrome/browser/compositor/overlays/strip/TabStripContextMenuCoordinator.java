@@ -23,7 +23,6 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.bookmarks.BookmarkAllTabsHandler;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.glic.GlicEnabling;
 import org.chromium.chrome.browser.glic.GlicUtils;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
@@ -228,7 +227,7 @@ public class TabStripContextMenuCoordinator {
             }
         }
         // Add "Task Manager" option with divider.
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.TASK_MANAGER_CLANK)) {
+        if (TaskManager.isEnabled()) {
             itemList.add(BasicListMenu.buildMenuDivider(isIncognito));
             itemList.add(
                     new ListItemBuilder()

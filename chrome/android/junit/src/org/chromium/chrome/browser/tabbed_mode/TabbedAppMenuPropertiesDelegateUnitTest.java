@@ -1945,7 +1945,8 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                                 R.id.more_tools_menu_id,
                                 item(R.id.reader_mode_menu_id),
                                 item(R.id.divider_line_id),
-                                item(R.id.info_menu_id)),
+                                item(R.id.info_menu_id),
+                                item(R.id.task_manager)),
                         // Request desktop site is hidden.
                         item(R.id.auto_dark_web_contents_id),
                         item(R.id.divider_line_id),
