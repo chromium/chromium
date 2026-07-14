@@ -80,16 +80,21 @@ constexpr int kZoomModifier = ui::EF_CONTROL_DOWN;
 
 constexpr std::array kZoomInAccelerators = {
     ui::Accelerator{ui::VKEY_OEM_PLUS, kZoomModifier},
-    ui::Accelerator{ui::VKEY_ADD, kZoomModifier}};
+    ui::Accelerator{ui::VKEY_OEM_PLUS, kZoomModifier | ui::EF_SHIFT_DOWN},
+    ui::Accelerator{ui::VKEY_ADD, kZoomModifier},
+    ui::Accelerator{ui::VKEY_ADD, kZoomModifier | ui::EF_SHIFT_DOWN}};
 
 constexpr std::array kZoomOutAccelerators = {
     ui::Accelerator{ui::VKEY_OEM_MINUS, kZoomModifier},
-    ui::Accelerator{ui::VKEY_SUBTRACT, kZoomModifier}};
+    ui::Accelerator{ui::VKEY_OEM_MINUS, kZoomModifier | ui::EF_SHIFT_DOWN},
+    ui::Accelerator{ui::VKEY_SUBTRACT, kZoomModifier},
+    ui::Accelerator{ui::VKEY_SUBTRACT, kZoomModifier | ui::EF_SHIFT_DOWN}};
 
 constexpr std::array kZoomResetAccelerators = {
     ui::Accelerator{ui::VKEY_0, kZoomModifier},
-    ui::Accelerator{ui::VKEY_NUMPAD0, kZoomModifier}};
-
+    ui::Accelerator{ui::VKEY_0, kZoomModifier | ui::EF_SHIFT_DOWN},
+    ui::Accelerator{ui::VKEY_NUMPAD0, kZoomModifier},
+    ui::Accelerator{ui::VKEY_NUMPAD0, kZoomModifier | ui::EF_SHIFT_DOWN}};
 
 constexpr auto kCommandToStaticAcceleratorsMap =
     base::MakeFixedFlatMap<LocalHotkeyManager::Command,

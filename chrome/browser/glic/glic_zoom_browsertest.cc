@@ -26,7 +26,7 @@ class GlicZoomBrowserTest : public GlicBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(GlicZoomBrowserTest, ZoomHotkey) {
+IN_PROC_BROWSER_TEST_F(GlicZoomBrowserTest, ZoomHotkeys) {
   ASSERT_OK_AND_ASSIGN(GlicInstanceImpl * instance, OpenGlicForActiveTab());
   ASSERT_TRUE(instance);
 
@@ -89,6 +89,41 @@ IN_PROC_BROWSER_TEST_F(GlicZoomBrowserTest, ZoomHotkey) {
   // Verify zoom level reset to 1.0.
   ASSERT_OK(RunUntilEqual<double>([&]() { return get_zoom_level(); }, 1.0,
                                   "Zoom level did not reset to 1.0"));
+
+  // Repeat with Shift variations of hotkeys.
+  // Ensure that Shift variations exist in the accelerator arrays.
+  ASSERT_GT(zoom_in_accels.size(), 1u);
+  ASSERT_TRUE(zoom_in_accels[1].modifiers() & ui::EF_SHIFT_DOWN);
+  ASSERT_GT(zoom_out_accels.size(), 1u);
+  ASSERT_TRUE(zoom_out_accels[1].modifiers() & ui::EF_SHIFT_DOWN);
+  ASSERT_GT(zoom_reset_accels.size(), 1u);
+  ASSERT_TRUE(zoom_reset_accels[1].modifiers() & ui::EF_SHIFT_DOWN);
+
+  // Trigger accelerator for zoom-in with Shift
+  EXPECT_TRUE(focus_manager->ProcessAccelerator(zoom_in_accels[1]));
+  ASSERT_OK(RunUntilEqual<double>(
+      [&]() { return get_zoom_level(); }, 1.1,
+      "Zoom level did not increase to 1.1 with Shift modifier"));
+
+  // Trigger accelerator for zoom-out with Shift
+  EXPECT_TRUE(focus_manager->ProcessAccelerator(zoom_out_accels[1]));
+  ASSERT_OK(RunUntilEqual<double>(
+      [&]() { return get_zoom_level(); }, 1.0,
+      "Zoom level did not decrease to 1.0 with Shift modifier"));
+
+  // Trigger accelerator for zoom-reset with Shift
+  // (First zoom in again so we can prove that reset scales it back)
+  EXPECT_TRUE(focus_manager->ProcessAccelerator(zoom_in_accels[1]));
+  ASSERT_OK(RunUntilEqual<double>(
+      [&]() { return get_zoom_level(); }, 1.1,
+      "Zoom level did not increase to 1.1 with Shift modifier"));
+
+  EXPECT_TRUE(focus_manager->ProcessAccelerator(zoom_reset_accels[1]));
+  ASSERT_OK(RunUntilEqual<double>(
+      [&]() { return get_zoom_level(); }, 1.0,
+      "Zoom level did not reset to 1.0 with Shift modifier"));
+
+  // --- END NEW TEST CODE ---
 }
 
 }  // namespace glic
