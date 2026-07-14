@@ -22,6 +22,7 @@
 #include "chrome/browser/ash/policy/uploading/upload_job.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
 #include "components/policy/core/common/remote_commands/remote_command_job.h"
+#include "url/gurl.h"
 
 class GURL;
 class PrefService;
@@ -95,10 +96,10 @@ class SystemLogUploader : public UploadJob::Delegate {
 
   // `local_state` must be non-null and must outlive `this`.
   // `syslog_delegate` must be non-null.
-  SystemLogUploader(
-      PrefService* local_state,
-      std::unique_ptr<Delegate> syslog_delegate,
-      const scoped_refptr<base::SequencedTaskRunner>& task_runner);
+  SystemLogUploader(PrefService* local_state,
+                    std::unique_ptr<Delegate> syslog_delegate,
+                    const scoped_refptr<base::SequencedTaskRunner>& task_runner,
+                    const GURL& upload_url);
 
   SystemLogUploader(const SystemLogUploader&) = delete;
   SystemLogUploader& operator=(const SystemLogUploader&) = delete;
@@ -176,6 +177,9 @@ class SystemLogUploader : public UploadJob::Delegate {
   // CrosSettings can switch to an unstrusted state temporarily, and we want to
   // use the last-known trusted values.
   bool upload_enabled_;
+
+  // The URL to upload system logs to.
+  const GURL upload_url_;
 
   // Subscription for callback on changes in system log upload settings.
   base::CallbackListSubscription upload_enabled_subscription_;

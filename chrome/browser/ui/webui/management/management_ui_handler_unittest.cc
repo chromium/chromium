@@ -632,7 +632,8 @@ class ManagementUIHandlerTests :
         std::make_unique<policy::SystemLogUploaderDelegate>(
             TestingBrowserProcess::GetGlobal()->shared_url_loader_factory(),
             task_runner_),
-        /*task_runner=*/task_runner_);
+        /*task_runner=*/task_runner_,
+        /*upload_url=*/GURL("https://example.com/upload"));
     ON_CALL(testing::Const(handler_), GetDeviceCloudPolicyManager())
         .WillByDefault(Return(manager_.get()));
     base::ListValue result;

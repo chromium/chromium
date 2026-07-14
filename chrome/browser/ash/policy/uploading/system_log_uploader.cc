@@ -23,10 +23,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/values.h"
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "components/feedback/redaction_tool/redaction_tool.h"
-#include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/common/remote_commands/remote_command_job.h"
 #include "components/prefs/pref_service.h"
 #include "net/http/http_request_headers.h"
@@ -37,9 +34,6 @@ namespace {
 
 // The maximum number of successive retries.
 const int kMaxNumRetries = 1;
-
-// String constant defining the url tail we upload system logs to.
-constexpr char kSystemLogUploadUrlTail[] = "/upload";
 
 // Pseudo-location of policy dump file. Policy is uploaded from memory,
 // there is no actual file on disk.
@@ -60,12 +54,6 @@ base::TimeDelta GetUploadFrequency() {
     }
   }
   return upload_frequency;
-}
-
-std::string GetUploadUrl() {
-  return g_browser_process->browser_policy_connector()
-             ->GetDeviceManagementUrl() +
-         kSystemLogUploadUrlTail;
 }
 
 }  // namespace
@@ -110,14 +98,18 @@ const char* const SystemLogUploader::kContentTypeOctetStream =
 SystemLogUploader::SystemLogUploader(
     PrefService* local_state,
     std::unique_ptr<Delegate> syslog_delegate,
-    const scoped_refptr<base::SequencedTaskRunner>& task_runner)
+    const scoped_refptr<base::SequencedTaskRunner>& task_runner,
+    const GURL& upload_url)
     : local_state_(CHECK_DEREF(local_state)),
       retry_count_(0),
       upload_frequency_(GetUploadFrequency()),
       task_runner_(task_runner),
       syslog_delegate_(std::move(syslog_delegate)),
-      upload_enabled_(false) {
+      upload_enabled_(false),
+      upload_url_(upload_url) {
   CHECK(syslog_delegate_);
+  CHECK(upload_url_.is_valid());
+
   SYSLOG(INFO) << "Creating system log uploader.";
 
   // Watch for policy changes.
@@ -220,9 +212,7 @@ void SystemLogUploader::UploadZippedSystemLogs(
 
   SYSLOG(INFO) << "Uploading zipped system logs.";
 
-  GURL upload_url(GetUploadUrl());
-  DCHECK(upload_url.is_valid());
-  upload_job_ = syslog_delegate_->CreateUploadJob(upload_url, this);
+  upload_job_ = syslog_delegate_->CreateUploadJob(upload_url_, this);
 
   // Start a system log upload.
   std::map<std::string, std::string> header_fields;
