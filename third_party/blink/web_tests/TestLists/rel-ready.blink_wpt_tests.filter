@@ -71,7 +71,6 @@ external/wpt/eventsource
 external/wpt/eyedropper
 external/wpt/feature-policy
 external/wpt/file-system-access
-external/wpt/fledge
 external/wpt/focus
 external/wpt/font-access
 external/wpt/fonts
@@ -147,7 +146,6 @@ external/wpt/orientation-sensor
 external/wpt/page-lifecycle
 external/wpt/page-visibility
 external/wpt/paint-timing
-external/wpt/parakeet
 external/wpt/payment-handler
 external/wpt/payment-method-basic-card
 external/wpt/payment-method-id

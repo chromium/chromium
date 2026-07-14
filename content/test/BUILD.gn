@@ -1601,7 +1601,6 @@ test("content_browsertests") {
     "../browser/host_zoom_map_impl_browsertest.cc",
     "../browser/indexed_db/indexed_db_browsertest.cc",
     "../browser/indexed_db/indexed_db_transaction_feature_observer_browsertest.cc",
-    "../browser/interest_group/interest_group_browsertest.cc",
     "../browser/internal_urls_browsertest.cc",
     "../browser/isolated_origin_browsertest.cc",
     "../browser/keyboard_lock_browsertest.cc",

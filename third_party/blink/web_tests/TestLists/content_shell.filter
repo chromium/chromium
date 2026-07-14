@@ -395,8 +395,6 @@ external/wpt/fedcm/fedcm-not-observed-by-service-worker.https.html
 external/wpt/fetch/stale-while-revalidate/stale-css.html
 external/wpt/fetch/stale-while-revalidate/stale-image.html
 external/wpt/fetch/stale-while-revalidate/stale-script.html
-external/wpt/fledge/tentative/component-ads.https.window.html?11-15
-external/wpt/fledge/tentative/reporting-arguments.https.window.html?16-last
 external/wpt/fs/FileSystemObserver-sync-access-handle.https.tentative.*
 external/wpt/html-aam/names.html
 external/wpt/html-aam/roles.html

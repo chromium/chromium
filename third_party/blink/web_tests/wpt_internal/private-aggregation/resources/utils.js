@@ -2,7 +2,6 @@
 // ../../aggregation-service/support/aggregation-service.js
 
 const NUM_CONTRIBUTIONS_SHARED_STORAGE = 20;
-const NUM_CONTRIBUTIONS_PROTECTED_AUDIENCE = 100;
 
 const NULL_CONTRIBUTION_WITH_CUSTOM_FILTERING_ID_MAX_BYTES = Object.freeze({
   bucket: encodeBigInt(0n, 16),
@@ -110,10 +109,7 @@ const private_aggregation_promise_test = (f, name) => promise_test(async t => {
 }, name);
 
 const resetWptServer = () => Promise.all([
-  resetReports(
-      '/.well-known/private-aggregation/debug/report-protected-audience'),
   resetReports('/.well-known/private-aggregation/debug/report-shared-storage'),
-  resetReports('/.well-known/private-aggregation/report-protected-audience'),
   resetReports('/.well-known/private-aggregation/report-shared-storage'),
 ]);
 

@@ -19,9 +19,7 @@ async function runTest(generator_api) {
   });
 }
 
-promise_test(async () => {
-  return runTest("fledge");
-}, 'window.fence in a URN iframe created with Protected Audience');
+
 
 promise_test(async () => {
   return runTest("sharedstorage");

@@ -175,7 +175,6 @@ external/wpt/orientation-event/idlharness.https.window.html
 external/wpt/orientation-sensor/idlharness.https.window.html
 external/wpt/page-lifecycle/idlharness.html
 external/wpt/paint-timing/idlharness.window.html
-external/wpt/parakeet/idlharness.tentative.https.window.html
 external/wpt/payment-handler/idlharness.https.any.html
 external/wpt/payment-handler/idlharness.https.any.serviceworker.html
 external/wpt/payment-handler/idlharness.https.any.sharedworker.html

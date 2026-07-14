@@ -37,12 +37,7 @@ allowedCSPs.forEach((csp) => {
          (resolve_to_config ? "config" : "urn:uuid"));
 
   }
-  promise_test(async() => {
-    const iframe = setupCSP(csp);
-    await iframe.execute(() => {
-      assert_true(navigator.canLoadAdAuctionFencedFrame());
-    });
-  }, "Opaque-ads can load API returns true for " + csp);
+
 });
 </script>
 </body>
