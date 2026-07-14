@@ -499,6 +499,7 @@
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/multistep_filter/core/multistep_filter_log_router_factory.h"
 #include "chrome/browser/multistep_filter/core/multistep_filter_service_factory.h"
+#include "chrome/browser/notebooks/notebooks_service_factory.h"
 #include "chrome/browser/password_manager/factories/startup_passwords_import_service_factory.h"  // nogncheck (Desktop only)
 #include "chrome/browser/ui/omnibox/omnibox_everywhere_service_factory.h"
 #include "chrome/browser/webauthn/passkey_unlock_manager_factory.h"
@@ -1219,6 +1220,9 @@ void ChromeBrowserMainExtraPartsProfiles::
     // Desktop builds.
     push_notification::PushNotificationServiceFactory::GetInstance();
   }
+#endif
+#if !BUILDFLAG(IS_ANDROID)
+  notebooks::NotebooksServiceFactory::GetInstance();
 #endif
   NotificationDisplayServiceFactory::GetInstance();
   NotificationMetricsLoggerFactory::GetInstance();

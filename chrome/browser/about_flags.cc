@@ -137,6 +137,7 @@
 #include "components/metrics/private_metrics/private_metrics_features.h"
 #include "components/mirroring/service/mirroring_features.h"
 #include "components/network_session_configurator/common/network_switches.h"
+#include "components/notebooks/public/features.h"
 #include "components/ntp_tiles/features.h"
 #include "components/offline_pages/core/offline_page_feature.h"
 #include "components/omnibox/browser/aim_eligibility_service_features.h"
@@ -6792,6 +6793,12 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kMemlogStackModeDescription, kOsAll,
      MULTI_VALUE_TYPE(kMemlogStackModeChoices)},
 
+#if !BUILDFLAG(IS_ANDROID)
+    {"notebooks", flag_descriptions::kNotebooksName,
+     flag_descriptions::kNotebooksDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(notebooks::features::kNotebooks)},
+#endif
+
     {"ntp-searchbox-voice-search-coherence",
      flag_descriptions::kVoiceSearchCoherenceSearchboxName,
      flag_descriptions::kVoiceSearchCoherenceSearchboxDescription, kOsDesktop,
@@ -7099,11 +7106,6 @@ const FeatureEntry kFeatureEntries[] = {
      kOsDesktop | kOsAndroid,
      FEATURE_VALUE_TYPE(omnibox::kComposeboxUsesChromeComposeClient)},
 
-#if !BUILDFLAG(IS_ANDROID)
-    {"context-containers", flag_descriptions::kContextContainersName,
-     flag_descriptions::kContextContainersDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(features::kContextContainers)},
-#endif
     {"context-management-in-composebox",
      flag_descriptions::kContextManagementInComposeboxName,
      flag_descriptions::kContextManagementInComposeboxDescription, kOsDesktop,

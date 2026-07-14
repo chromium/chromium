@@ -678,6 +678,7 @@ source_set("profiles_extra_parts_impl") {
     "//chrome/browser/manta:impl",
     "//chrome/browser/media/router",
     "//chrome/browser/media/webrtc",
+    "//chrome/browser/notebooks",
     "//chrome/browser/notifications",
     "//chrome/browser/omnibox",
     "//chrome/browser/optimization_guide",

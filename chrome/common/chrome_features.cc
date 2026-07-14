@@ -144,10 +144,6 @@ BASE_FEATURE(kPreinstalledWebAppAlwaysMigrateForTesting,
 // Controls the enablement of structured metrics on Windows, Linux, and Mac.
 BASE_FEATURE(kChromeStructuredMetrics, base::FEATURE_ENABLED_BY_DEFAULT);
 
-#if !BUILDFLAG(IS_ANDROID)
-BASE_FEATURE(kContextContainers, base::FEATURE_DISABLED_BY_DEFAULT);
-#endif
-
 // Moves the Extensions "puzzle piece" icon from the title bar into the app menu
 // for web app windows.
 BASE_FEATURE(kDesktopPWAsElidedExtensionsMenu,

@@ -13417,6 +13417,7 @@ from previous Chrome versions.
   <int value="-357272449" label="AutoRevokeSuspiciousNotification:disabled"/>
   <int value="-357250869"
       label="ActivateMetricsReportingEnabledPolicyAndroid:enabled"/>
+  <int value="-356786376" label="Notebooks:disabled"/>
   <int value="-356767031" label="DataSharingJoinOnly:disabled"/>
   <int value="-356140869" label="NewTabPageCustomizationForMvt:disabled"/>
   <int value="-355931495" label="FastPair:enabled"/>
@@ -18259,6 +18260,7 @@ from previous Chrome versions.
   <int value="1196644408" label="performance-monitor-gathering"/>
   <int value="1196670943" label="WebAuthFlowInBrowserTab:enabled"/>
   <int value="1196834473" label="disable-smart-virtual-keyboard"/>
+  <int value="1196909666" label="Notebooks:enabled"/>
   <int value="1197336536" label="printing-ppd-channel"/>
   <int value="1197363734" label="force-companion-pinned-state:disabled"/>
   <int value="1197439314" label="SwapBackquoteKeysInISOKeyboard:disabled"/>

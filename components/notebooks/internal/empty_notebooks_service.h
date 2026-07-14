@@ -1,0 +1,29 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef COMPONENTS_NOTEBOOKS_INTERNAL_EMPTY_NOTEBOOKS_SERVICE_H_
+#define COMPONENTS_NOTEBOOKS_INTERNAL_EMPTY_NOTEBOOKS_SERVICE_H_
+
+#include "components/notebooks/public/notebooks_service.h"
+
+namespace notebooks {
+
+// An empty implementation of NotebooksService that can be used when the
+// Notebooks feature is disabled.
+class EmptyNotebooksService : public NotebooksService {
+ public:
+  EmptyNotebooksService();
+  ~EmptyNotebooksService() override;
+
+  // Disallow copy/assign.
+  EmptyNotebooksService(const EmptyNotebooksService&) = delete;
+  EmptyNotebooksService& operator=(const EmptyNotebooksService&) = delete;
+
+  // NotebooksService:
+  bool IsEmptyForTesting() const override;
+};
+
+}  // namespace notebooks
+
+#endif  // COMPONENTS_NOTEBOOKS_INTERNAL_EMPTY_NOTEBOOKS_SERVICE_H_

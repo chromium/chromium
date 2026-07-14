@@ -1,0 +1,38 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+static_library("internal") {
+  visibility = [
+    ":*",
+    "//chrome/browser/notebooks:factory",
+  ]
+
+  sources = [
+    "empty_notebooks_service.cc",
+    "empty_notebooks_service.h",
+    "notebooks_service_impl.cc",
+    "notebooks_service_impl.h",
+  ]
+
+  deps = [
+    "//components/keyed_service/core",
+    "//components/notebooks/public",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  visibility = [ "//components/notebooks:unit_tests" ]
+
+  sources = [
+    "empty_notebooks_service_unittest.cc",
+    "notebooks_service_impl_unittest.cc",
+  ]
+
+  deps = [
+    ":internal",
+    "//testing/gtest",
+  ]
+}

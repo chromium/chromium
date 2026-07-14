@@ -6950,6 +6950,7 @@ test("unit_tests") {
       "//chrome/browser/new_tab_page/modules/v2/authentication:mojo_bindings",
       "//chrome/browser/new_tab_page/modules/v2/calendar:mojo_bindings",
       "//chrome/browser/new_tab_page/modules/v2/most_relevant_tab_resumption:mojo_bindings",
+      "//chrome/browser/notebooks:unit_tests",
       "//chrome/browser/omnibox:unit_tests",
       "//chrome/browser/page_content_annotations",
       "//chrome/browser/personal_context",

@@ -1522,10 +1522,6 @@ inline constexpr char kCompressionDictionaryTTLDescription[] =
     "Enables support for the 'ttl' parameter in the 'use-as-dictionary' HTTP "
     "response header.";
 
-inline constexpr char kContextContainersName[] = "Context Containers";
-inline constexpr char kContextContainersDescription[] =
-    "Enables Context Container.";
-
 inline constexpr char kContextManagementInComposeboxName[] =
     "Context management in the Composebox";
 inline constexpr char kContextManagementInComposeboxDescription[] =
@@ -6080,6 +6076,9 @@ inline constexpr char kNoPauseMediaOnHeadphoneUnplugName[] =
     "Do not pause media on headphone unplug";
 inline constexpr char kNoPauseMediaOnHeadphoneUnplugDescription[] =
     "When enabled, playback will not be paused when headphones are unplugged.";
+
+inline constexpr char kNotebooksName[] = "Notebooks";
+inline constexpr char kNotebooksDescription[] = "Enables Notebooks.";
 
 inline constexpr char kNotificationPermissionRationaleName[] =
     "Notification Permission Rationale UI";
