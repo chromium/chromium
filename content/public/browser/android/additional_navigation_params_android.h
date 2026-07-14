@@ -5,10 +5,7 @@
 #ifndef CONTENT_PUBLIC_BROWSER_ANDROID_ADDITIONAL_NAVIGATION_PARAMS_ANDROID_H_
 #define CONTENT_PUBLIC_BROWSER_ANDROID_ADDITIONAL_NAVIGATION_PARAMS_ANDROID_H_
 
-#include <optional>
-
 #include "base/android/scoped_java_ref.h"
-#include "base/unguessable_token.h"
 #include "content/common/content_export.h"
 
 namespace content {
@@ -22,10 +19,8 @@ class RenderFrameHost;
 // available; callers must ensure the Java object is destroyed when no longer
 // needed.
 CONTENT_EXPORT base::android::ScopedJavaLocalRef<jobject>
-CreateJavaAdditionalNavigationParams(
-    JNIEnv* env,
-    RenderFrameHost& initiator_frame_host,
-    std::optional<base::UnguessableToken> attribution_src_token);
+CreateJavaAdditionalNavigationParams(JNIEnv* env,
+                                     RenderFrameHost& initiator_frame_host);
 
 }  // namespace content
 

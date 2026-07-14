@@ -13,8 +13,8 @@
 
 #include "build/build_config.h"
 #include "services/network/public/mojom/referrer_policy.mojom.h"
+#include "third_party/blink/public/common/common_export.h"
 #include "third_party/blink/public/common/dom/dom_node_id.h"
-#include "third_party/blink/public/common/navigation/impression.h"
 #include "third_party/blink/public/mojom/annotation/annotation.mojom-forward.h"
 #include "third_party/blink/public/mojom/context_menu/context_menu.mojom-forward.h"
 #include "third_party/blink/public/mojom/forms/form_control_type.mojom-shared.h"
@@ -51,10 +51,6 @@ struct BLINK_COMMON_EXPORT UntrustworthyContextMenuParams {
   // of the link are an image.
   // Will be empty if |link_url| is empty.
   std::u16string link_text;
-
-  // The impression declared by the link. May be std::nullopt even if
-  // |link_url| is non-empty.
-  std::optional<blink::Impression> impression;
 
   // The link URL to be used ONLY for "copy link address". We don't validate
   // this field in the frontend process.

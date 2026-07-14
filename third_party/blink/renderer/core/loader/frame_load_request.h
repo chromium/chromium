@@ -32,7 +32,6 @@
 #include "base/time/time.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/mojom/referrer_policy.mojom-blink.h"
-#include "third_party/blink/public/common/navigation/impression.h"
 #include "third_party/blink/public/mojom/blob/blob_url_store.mojom-blink.h"
 #include "third_party/blink/public/mojom/frame/policy_container.mojom-blink.h"
 #include "third_party/blink/public/mojom/frame/triggering_event_info.mojom-blink.h"
@@ -190,16 +189,6 @@ struct CORE_EXPORT FrameLoadRequest {
     resource_request_.ClearHTTPOrigin();
   }
 
-  // Impressions are set when a FrameLoadRequest is created for a click on an
-  // anchor tag that has conversion measurement attributes.
-  void SetImpression(const std::optional<Impression>& impression) {
-    impression_ = impression;
-  }
-
-  const std::optional<blink::Impression>& Impression() const {
-    return impression_;
-  }
-
   bool CanDisplay(const KURL&) const;
 
   void SetInitiatorFrameToken(const LocalFrameToken& token) {
@@ -260,7 +249,6 @@ struct CORE_EXPORT FrameLoadRequest {
   WebWindowFeatures window_features_;
   std::optional<WebPictureInPictureWindowOptions>
       picture_in_picture_window_options_;
-  std::optional<blink::Impression> impression_;
   std::optional<LocalFrameToken> initiator_frame_token_;
   mojo::PendingRemote<mojom::blink::NavigationStateKeepAliveHandle>
       initiator_navigation_state_keep_alive_handle_;

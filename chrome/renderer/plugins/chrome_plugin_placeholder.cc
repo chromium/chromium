@@ -318,9 +318,7 @@ void ChromePluginPlaceholder::CustomContextMenuAction(uint32_t action) {
   }
 }
 
-void ChromePluginPlaceholder::ContextMenuClosed(
-    const GURL&,
-    const std::optional<blink::Impression>&) {
+void ChromePluginPlaceholder::ContextMenuClosed(const GURL&) {
   context_menu_client_receiver_.reset();
   render_frame()->GetWebFrame()->View()->DidCloseContextMenu();
 }

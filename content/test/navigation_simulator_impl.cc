@@ -1186,7 +1186,6 @@ void NavigationSimulatorImpl::BrowserInitiatedStartAndWaitBeforeUnload() {
       load_url_params.should_replace_current_entry =
           should_replace_current_entry_;
       load_url_params.initiator_origin = initiator_origin_;
-      load_url_params.impression = impression_;
       if (initial_method_ == "POST")
         load_url_params.load_type = NavigationController::LOAD_TYPE_HTTP_POST;
 
@@ -1397,7 +1396,7 @@ bool NavigationSimulatorImpl::SimulateRendererInitiatedStart() {
           blink::mojom::ForceHistoryPush::kNo, searchable_form_url_,
           searchable_form_encoding_, GURL() /* client_side_redirect_url */,
           std::nullopt /* detools_initiator_info */,
-          nullptr /* trust_token_params */, impression_,
+          nullptr /* trust_token_params */,
           base::TimeTicks() /* renderer_before_unload_start */,
           base::TimeTicks() /* renderer_before_unload_end */,
           base::TimeTicks() /* before_unload_dialog_opened */,

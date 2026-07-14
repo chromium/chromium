@@ -55,7 +55,6 @@ content::NavigationController::LoadURLParams LoadURLParamsFromNavigateParams(
   load_url_params.was_activated = params->was_activated;
   load_url_params.href_translate = params->href_translate;
   load_url_params.reload_type = params->reload_type;
-  load_url_params.impression = params->impression;
   load_url_params.internal_scroll_to_text_fragment =
       params->internal_scroll_to_text_fragment;
   load_url_params.started_by_ad = params->started_by_ad;

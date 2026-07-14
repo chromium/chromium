@@ -27,7 +27,6 @@
 #include "content/public/common/child_process_id.h"
 #include "content/public/common/referrer.h"
 #include "services/network/public/cpp/resource_request_body.h"
-#include "third_party/blink/public/common/navigation/impression.h"
 #include "third_party/blink/public/common/navigation/navigation_policy.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/navigation/was_activated_option.mojom.h"
@@ -319,10 +318,6 @@ class NavigationController {
 
     // Indicates a form submission created this navigation.
     bool is_form_submission = false;
-
-    // Impression info associated with this navigation. Should only be populated
-    // for navigations originating from a link click.
-    std::optional<blink::Impression> impression;
 
     // Download policy to be applied if this navigation turns into a download.
     blink::NavigationDownloadPolicy download_policy;

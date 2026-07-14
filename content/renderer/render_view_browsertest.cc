@@ -960,7 +960,7 @@ TEST_F(RenderViewImplTest, BeginNavigationForWebUI) {
       gfx::Rect(0, 0, 100, 100), blink::kWebNavigationPolicyNewForegroundTab,
       network::mojom::WebSandboxFlags::kNone,
       blink::AllocateSessionStorageNamespaceId(), consumed_user_gesture,
-      std::nullopt, std::nullopt, /*base_url=*/blink::WebURL());
+      std::nullopt, /*base_url=*/blink::WebURL());
   auto popup_navigation_info = std::make_unique<blink::WebNavigationInfo>();
   popup_navigation_info->url_request = std::move(popup_request);
   popup_navigation_info->frame_type =

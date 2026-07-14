@@ -148,7 +148,6 @@ class WebURLRequest;
 class WebURLResponse;
 class WebView;
 struct FramePolicy;
-struct Impression;
 struct JavaScriptFrameworkDetectionResult;
 struct WebConsoleMessage;
 struct ContextMenuData;
@@ -882,7 +881,6 @@ class BLINK_EXPORT WebLocalFrameClient {
       network::mojom::WebSandboxFlags,
       const SessionStorageNamespaceId& session_storage_namespace_id,
       bool& consumed_user_gesture,
-      const std::optional<Impression>&,
       const std::optional<WebPictureInPictureWindowOptions>& pip_options,
       const WebURL& base_url) {
     return nullptr;

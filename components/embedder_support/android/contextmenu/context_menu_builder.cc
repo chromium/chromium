@@ -10,7 +10,6 @@
 #include "base/check_op.h"
 #include "base/unguessable_token.h"
 #include "content/public/browser/android/additional_navigation_params_android.h"
-#include "content/public/browser/android/impression_android.h"
 #include "content/public/browser/context_menu_params.h"
 #include "content/public/browser/render_frame_host.h"
 #include "third_party/blink/public/common/context_menu_data/context_menu_data.h"
@@ -38,13 +37,8 @@ base::android::ScopedJavaGlobalRef<jobject> BuildJavaContextMenuParams(
   std::u16string title_text =
       (params.title_text.empty() ? params.alt_text : params.title_text);
 
-  std::optional<base::UnguessableToken> attribution_src_token =
-      params.impression
-          ? std::make_optional(params.impression->attribution_src_token.value())
-          : std::nullopt;
   base::android::ScopedJavaLocalRef<jobject> additional_navigation_params =
-      content::CreateJavaAdditionalNavigationParams(env, initiator_frame_host,
-                                                    attribution_src_token);
+      content::CreateJavaAdditionalNavigationParams(env, initiator_frame_host);
 
   ui::MenuModelBridge* menu_model_bridge =
       new ui::MenuModelBridge(menu_model ? menu_model->AsWeakPtr() : nullptr);

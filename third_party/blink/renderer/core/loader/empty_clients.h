@@ -363,7 +363,6 @@ class CORE_EXPORT EmptyLocalFrameClient : public LocalFrameClient {
       base::TimeTicks,
       base::TimeTicks,
       const String&,
-      const std::optional<Impression>&,
       const LocalFrameToken* initiator_frame_token,
       SourceLocation*,
       mojo::PendingRemote<mojom::blink::NavigationStateKeepAliveHandle>,

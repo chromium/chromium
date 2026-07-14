@@ -79,7 +79,7 @@ class CONTENT_EXPORT PrerenderHost {
     kTrustTokenParams = 10,
     kWebBundleToken = 11,
     kRequestContextType = 12,
-    kImpressionHasValue = 13,
+    // kImpressionHasValue = 13, Obsolete
     kInitiatorOrigin = 14,
     kTransition = 15,
     kNavigationType = 16,

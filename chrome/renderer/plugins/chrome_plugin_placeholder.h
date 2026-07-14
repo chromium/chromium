@@ -76,8 +76,7 @@ class ChromePluginPlaceholder final
 
   // blink::mojom::ContextMenuClient methods.
   void CustomContextMenuAction(uint32_t action) override;
-  void ContextMenuClosed(const GURL& link_followed,
-                         const std::optional<blink::Impression>&) override;
+  void ContextMenuClosed(const GURL& link_followed) override;
 
   // prerender::NoStatePrefetchObserver methods:
   void OnDestruct() override;

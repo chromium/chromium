@@ -1686,7 +1686,7 @@ chromium-metrics-reviews@google.com.
   <int value="10" label="kTrustTokenParams"/>
   <int value="11" label="kWebBundleToken"/>
   <int value="12" label="kRequestContextType"/>
-  <int value="13" label="kImpressionHasValue"/>
+  <int value="13" label="kImpressionHasValue (Obsolete)"/>
   <int value="14" label="kInitiatorOrigin"/>
   <int value="15" label="kTransition"/>
   <int value="16" label="kNavigationType"/>

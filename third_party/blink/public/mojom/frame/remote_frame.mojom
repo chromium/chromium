@@ -15,7 +15,6 @@ import "services/network/public/mojom/url_request.mojom";
 import "services/network/public/mojom/web_sandbox_flags.mojom";
 import "services/viz/public/mojom/compositing/frame_sink_id.mojom";
 import "third_party/blink/public/mojom/blob/blob_url_store.mojom";
-import "third_party/blink/public/mojom/conversions/conversions.mojom";
 import "third_party/blink/public/mojom/frame/frame_owner_properties.mojom";
 import "third_party/blink/public/mojom/frame/frame_policy.mojom";
 import "third_party/blink/public/mojom/frame/frame_replication_state.mojom";
@@ -136,7 +135,6 @@ struct OpenURLParams {
   blink.mojom.TriggeringEventInfo triggering_event_info;
   pending_remote<blink.mojom.BlobURLToken>? blob_url_token;
   string href_translate;
-  Impression? impression;
   NavigationDownloadPolicy download_policy;
 
   // Information about the Javascript source for this navigation. Used for

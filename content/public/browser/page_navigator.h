@@ -23,7 +23,6 @@
 #include "content/public/browser/reload_type.h"
 #include "content/public/common/referrer.h"
 #include "ipc/constants.mojom-forward.h"
-#include "third_party/blink/public/common/navigation/impression.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/frame/triggering_event_info.mojom-shared.h"
 #include "ui/base/page_transition_types.h"
@@ -171,11 +170,6 @@ struct CONTENT_EXPORT OpenURLParams {
 
   // Indicates if this navigation is a reload.
   ReloadType reload_type = ReloadType::NONE;
-
-  // Optional impression associated with this navigation. Only set on
-  // navigations that originate from links with impression attributes. Used for
-  // conversion measurement.
-  std::optional<blink::Impression> impression;
 
   // Indicates that this navigation is for PDF content in a renderer.
   bool is_pdf = false;

@@ -27,11 +27,6 @@ content::ChildProcessId GetInitiatorProcessIdFromJavaAdditionalNavigationParams(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& j_object);
 
-std::optional<blink::AttributionSrcToken>
-GetAttributionSrcTokenFromJavaAdditionalNavigationParams(
-    JNIEnv* env,
-    const base::android::JavaRef<jobject>& j_object);
-
 scoped_refptr<InitiatorNavigationState>
 TakeNativeStateFromJavaAdditionalNavigationParams(
     JNIEnv* env,

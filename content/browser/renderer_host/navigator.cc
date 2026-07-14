@@ -1088,7 +1088,6 @@ void Navigator::RequestOpenURL(
     blink::mojom::TriggeringEventInfo triggering_event_info,
     const std::string& href_translate,
     scoped_refptr<network::SharedURLLoaderFactory> blob_url_loader_factory,
-    const std::optional<blink::Impression>& impression,
     bool has_rel_opener,
     bool started_by_ad) {
   // Note: This can be called for subframes (even when OOPIFs are not possible)
@@ -1166,7 +1165,6 @@ void Navigator::RequestOpenURL(
 
   params.blob_url_loader_factory = std::move(blob_url_loader_factory);
   params.href_translate = href_translate;
-  params.impression = impression;
   params.has_rel_opener = has_rel_opener;
 
   delegate_->OpenURL(params, /*navigation_handle_callback=*/{});
@@ -1191,7 +1189,6 @@ void Navigator::NavigateFromFrameProxy(
     network::mojom::SourceLocationPtr source_location,
     bool has_user_gesture,
     bool is_form_submission,
-    const std::optional<blink::Impression>& impression,
     bool started_by_ad,
     base::TimeTicks actual_navigation_start_time,
     base::TimeTicks navigation_start_time,
@@ -1253,11 +1250,11 @@ void Navigator::NavigateFromFrameProxy(
       initiator_navigation_state, referrer_to_use, page_transition,
       should_replace_current_entry, download_policy, method, post_body,
       extra_headers, std::move(source_location),
-      std::move(blob_url_loader_factory), is_form_submission, impression,
-      has_user_gesture, started_by_ad, actual_navigation_start_time,
-      navigation_start_time, is_embedder_initiated_fenced_frame_navigation,
-      is_unfenced_top_navigation, force_new_browsing_instance,
-      is_container_initiated, has_rel_opener, embedder_shared_storage_context);
+      std::move(blob_url_loader_factory), is_form_submission, has_user_gesture,
+      started_by_ad, actual_navigation_start_time, navigation_start_time,
+      is_embedder_initiated_fenced_frame_navigation, is_unfenced_top_navigation,
+      force_new_browsing_instance, is_container_initiated, has_rel_opener,
+      embedder_shared_storage_context);
 }
 
 void Navigator::BeforeUnloadCompleted(FrameTreeNode* frame_tree_node,

@@ -227,8 +227,7 @@ class NavigationRequestTest : public RenderViewHostImplTestHarness {
         std::move(commit_params), false /* was_opener_suppressed */,
         std::string() /* extra_headers */, nullptr /* frame_entry */,
         nullptr /* entry */, false /* is_form_submission */,
-        nullptr /* navigation_ui_data */, std::nullopt /* impression */,
-        EmbedderIsolationInfo::Mode::kNone);
+        nullptr /* navigation_ui_data */, EmbedderIsolationInfo::Mode::kNone);
     main_test_rfh()->frame_tree_node()->TakeNavigationRequest(
         std::move(request));
     GetNavigationRequest()->StartNavigation();
@@ -251,7 +250,7 @@ class NavigationRequestTest : public RenderViewHostImplTestHarness {
         /*was_opener_suppressed=*/false, /*extra_headers=*/std::string(),
         /*frame_entry=*/nullptr, /*entry=*/nullptr,
         /*is_form_submission=*/false, /*navigation_ui_data=*/nullptr,
-        /*impression=*/std::nullopt, EmbedderIsolationInfo::Mode::kNone);
+        EmbedderIsolationInfo::Mode::kNone);
   }
 
   FrameTreeNode* AddFrame(FrameTree& frame_tree,

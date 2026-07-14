@@ -116,7 +116,6 @@ class WebTextCheckClient;
 class URLLoader;
 class ResourceLoadInfoNotifierWrapper;
 enum class SyncCondition;
-struct Impression;
 struct JavaScriptFrameworkDetectionResult;
 
 namespace scheduler {
@@ -196,7 +195,6 @@ class CORE_EXPORT LocalFrameClient : public FrameClient {
       base::TimeTicks input_start_time,
       base::TimeTicks actual_navigation_start,
       const String& href_translate,
-      const std::optional<Impression>& impression,
       const LocalFrameToken* initiator_frame_token,
       SourceLocation* source_location,
       mojo::PendingRemote<mojom::blink::NavigationStateKeepAliveHandle>

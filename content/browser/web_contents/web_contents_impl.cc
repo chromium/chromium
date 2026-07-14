@@ -5763,7 +5763,6 @@ FrameTree* WebContentsImpl::CreateNewWindow(
       load_params->post_data = params.form_submission_post_data;
       load_params->post_content_type = params.form_submission_post_content_type;
     }
-    load_params->impression = params.impression;
     load_params->override_user_agent =
         contents_to_load->should_override_user_agent_in_new_tabs_
             ? NavigationController::UA_OVERRIDE_TRUE
@@ -6887,9 +6886,7 @@ void WebContentsImpl::ReplaceMisspelling(const std::u16string& word) {
   input_handler->ReplaceMisspelling(word);
 }
 
-void WebContentsImpl::NotifyContextMenuClosed(
-    const GURL& link_followed,
-    const std::optional<blink::Impression>& impression) {
+void WebContentsImpl::NotifyContextMenuClosed(const GURL& link_followed) {
   OPTIONAL_TRACE_EVENT0("content", "WebContentsImpl::NotifyContextMenuClosed");
   RenderFrameHost* focused_frame = GetFocusedFrame();
   if (!focused_frame) {
@@ -6897,7 +6894,7 @@ void WebContentsImpl::NotifyContextMenuClosed(
   }
 
   if (context_menu_client_) {
-    context_menu_client_->ContextMenuClosed(link_followed, impression);
+    context_menu_client_->ContextMenuClosed(link_followed);
   }
 
   context_menu_client_.reset();

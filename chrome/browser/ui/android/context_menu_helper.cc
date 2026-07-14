@@ -83,8 +83,7 @@ void ContextMenuHelper::DismissContextMenu() {
 }
 
 void ContextMenuHelper::OnContextMenuClosed(JNIEnv* env) {
-  GetWebContents().NotifyContextMenuClosed(context_menu_params_.link_followed,
-                                           context_menu_params_.impression);
+  GetWebContents().NotifyContextMenuClosed(context_menu_params_.link_followed);
 }
 
 void ContextMenuHelper::SetPopulatorFactory(

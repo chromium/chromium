@@ -270,16 +270,6 @@ base::android::ScopedJavaLocalRef<jobject> NavigationControllerAndroid::LoadUrl(
     params.initiator_navigation_state =
         TakeNativeStateFromJavaAdditionalNavigationParams(
             env, j_additional_navigation_params);
-
-    // If the attribution src token exists, then an impression exists with this
-    // navigation.
-    if (std::optional<blink::AttributionSrcToken> attribution_src_token =
-            GetAttributionSrcTokenFromJavaAdditionalNavigationParams(
-                env, j_additional_navigation_params)) {
-      params.impression = blink::Impression{
-          .attribution_src_token = *attribution_src_token,
-      };
-    }
   }
 
   if (extra_headers)

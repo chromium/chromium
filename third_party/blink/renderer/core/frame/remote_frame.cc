@@ -296,8 +296,6 @@ void RemoteFrame::Navigate(FrameLoadRequest& frame_request,
     params->source_location->column = source_location->ColumnNumber();
   }
 
-  params->impression = frame_request.Impression();
-
   // Note: For the AdFrame/Sandbox download policy here it only covers the case
   // where the navigation initiator frame is ad. The download_policy may be
   // further augmented in RenderFrameProxyHost::OnOpenURL if the navigating

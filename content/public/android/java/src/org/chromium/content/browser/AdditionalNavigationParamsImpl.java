@@ -22,7 +22,6 @@ import org.chromium.content_public.common.ChildProcessId;
 public class AdditionalNavigationParamsImpl implements AdditionalNavigationParams {
     private final UnguessableToken mInitiatorFrameToken;
     private final ChildProcessId mInitiatorProcessId;
-    private final @Nullable UnguessableToken mAttributionSrcToken;
     private final @Nullable LifetimeAssert mLifetimeAssert = LifetimeAssert.create(this);
     private long mNativePtr;
 
@@ -30,12 +29,9 @@ public class AdditionalNavigationParamsImpl implements AdditionalNavigationParam
     private AdditionalNavigationParamsImpl(
             @JniType("base::UnguessableToken") UnguessableToken initiatorFrameToken,
             @JniType("content::ChildProcessId") ChildProcessId initiatorProcessId,
-            @JniType("std::optional<base::UnguessableToken>")
-                    @Nullable UnguessableToken attributionSrcToken,
             long nativePtr) {
         mInitiatorFrameToken = initiatorFrameToken;
         mInitiatorProcessId = initiatorProcessId;
-        mAttributionSrcToken = attributionSrcToken;
         mNativePtr = nativePtr;
     }
 
@@ -48,12 +44,6 @@ public class AdditionalNavigationParamsImpl implements AdditionalNavigationParam
     @CalledByNative
     private @JniType("content::ChildProcessId") ChildProcessId getInitiatorProcessId() {
         return mInitiatorProcessId;
-    }
-
-    @CalledByNative
-    private @JniType("std::optional<base::UnguessableToken>") @Nullable UnguessableToken
-            getAttributionSrcToken() {
-        return mAttributionSrcToken;
     }
 
     @CalledByNative

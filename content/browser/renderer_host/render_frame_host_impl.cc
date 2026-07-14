@@ -10159,7 +10159,7 @@ void RenderFrameHostImpl::OpenURL(blink::mojom::OpenURLParamsPtr params) {
         /*post_body=*/nullptr, params->extra_headers,
         /*blob_url_loader_factory=*/nullptr,
         network::mojom::SourceLocation::New(), params->user_gesture,
-        params->is_form_submission, params->impression, params->started_by_ad,
+        params->is_form_submission, params->started_by_ad,
         params->actual_navigation_start,
         /*navigation_start_time=*/base::TimeTicks::Now(),
         /*is_embedder_initiated_fenced_frame_navigation=*/false,
@@ -10219,7 +10219,7 @@ void RenderFrameHostImpl::OpenURL(blink::mojom::OpenURLParamsPtr params) {
       params->disposition, params->should_replace_current_entry,
       params->user_gesture, params->triggering_event_info,
       params->href_translate, std::move(blob_url_loader_factory),
-      params->impression, params->has_rel_opener, params->started_by_ad);
+      params->has_rel_opener, params->started_by_ad);
 }
 
 void RenderFrameHostImpl::GetAssociatedInterface(

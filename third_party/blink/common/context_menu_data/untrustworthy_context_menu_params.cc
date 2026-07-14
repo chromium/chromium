@@ -50,7 +50,6 @@ void UntrustworthyContextMenuParams::Assign(
   y = other.y;
   link_url = other.link_url;
   link_text = other.link_text;
-  impression = other.impression;
   unfiltered_link_url = other.unfiltered_link_url;
   src_url = other.src_url;
   has_image_contents = other.has_image_contents;

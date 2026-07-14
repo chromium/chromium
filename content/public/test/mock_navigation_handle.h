@@ -223,9 +223,6 @@ class MockNavigationHandle : public NavigationHandle {
   bool WasResponseCached() override { return was_response_cached_; }
   bool NetworkAccessed() override { return network_accessed_; }
   const std::string& GetHrefTranslate() override { return href_translate_; }
-  const std::optional<blink::Impression>& GetImpression() override {
-    return impression_;
-  }
   const std::optional<blink::LocalFrameToken>& GetInitiatorFrameToken()
       override {
     return initiator_frame_token_;
@@ -393,9 +390,6 @@ class MockNavigationHandle : public NavigationHandle {
   void set_was_response_cached(bool was_response_cached) {
     was_response_cached_ = was_response_cached;
   }
-  void set_impression(const blink::Impression& impression) {
-    impression_ = impression;
-  }
   void set_initiator_frame_token(
       const blink::LocalFrameToken* initiator_frame_token) {
     initiator_frame_token_ = base::OptionalFromPtr(initiator_frame_token);
@@ -455,7 +449,6 @@ class MockNavigationHandle : public NavigationHandle {
   std::optional<GURL> initiator_base_url_;
   ReloadType reload_type_ = content::ReloadType::NONE;
   std::string href_translate_;
-  std::optional<blink::Impression> impression_;
   std::optional<blink::LocalFrameToken> initiator_frame_token_;
   ChildProcessId initiator_process_id_;
   bool was_started_from_context_menu_ = false;

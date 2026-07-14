@@ -7,7 +7,6 @@ module blink.mojom;
 import "mojo/public/mojom/base/string16.mojom";
 import "services/network/public/mojom/referrer_policy.mojom";
 import "third_party/blink/public/mojom/annotation/annotation.mojom";
-import "third_party/blink/public/mojom/conversions/conversions.mojom";
 import "third_party/blink/public/mojom/forms/form_control_type.mojom";
 import "ui/base/mojom/menu_source_type.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
@@ -95,10 +94,6 @@ struct UntrustworthyContextMenuParams {
   // of the link are an image.
   // Will be empty if |link_url| is empty.
   mojo_base.mojom.BigString16 link_text;
-
-  // The impression declared by the link. May be std::nullopt even if
-  // |link_url| is non-empty.
-  Impression? impression;
 
   // The link URL to be used ONLY for "copy link address". We don't validate
   // this field in the frontend process.
@@ -224,7 +219,6 @@ interface ContextMenuClient {
   CustomContextMenuAction(uint32 action);
 
   // Called in response to a blink.mojom.ShowContextMenu to let the renderer
-  // know that the menu has been closed. Must be called with the impression,
-  // if any, that was present on the UntrustworthyContextMenuParams.
-  ContextMenuClosed(url.mojom.Url link_followed, Impression? impression);
+  // know that the menu has been closed.
+  ContextMenuClosed(url.mojom.Url link_followed);
 };

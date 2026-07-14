@@ -19,7 +19,6 @@ bool StructTraits<blink::mojom::UntrustworthyContextMenuParamsDataView,
   if (!data.ReadMediaType(&out->media_type) ||
       !data.ReadLinkUrl(&out->link_url) ||
       !data.ReadLinkText(&out->link_text) ||
-      !data.ReadImpression(&out->impression) ||
       !data.ReadUnfilteredLinkUrl(&out->unfiltered_link_url) ||
       !data.ReadSrcUrl(&out->src_url) ||
       !data.ReadSelectionText(&out->selection_text) ||

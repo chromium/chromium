@@ -39,7 +39,6 @@
 #include "third_party/blink/public/common/context_menu_data/edit_flags.h"
 #include "third_party/blink/public/common/dom/dom_node_id.h"
 #include "third_party/blink/public/common/features.h"
-#include "third_party/blink/public/common/navigation/impression.h"
 #include "third_party/blink/public/mojom/context_menu/context_menu.mojom-blink.h"
 #include "third_party/blink/public/web/web_local_frame_client.h"
 #include "third_party/blink/public/web/web_plugin.h"
@@ -372,9 +371,7 @@ void ContextMenuController::CustomContextMenuAction(uint32_t action) {
   CustomContextMenuItemSelected(action);
 }
 
-void ContextMenuController::ContextMenuClosed(
-    const KURL& link_followed,
-    const std::optional<Impression>& impression) {
+void ContextMenuController::ContextMenuClosed(const KURL& link_followed) {
   if (auto* selected_web_frame =
           WebLocalFrameImpl::FromFrame(hit_test_result_.InnerNodeFrame())) {
     if (link_followed.IsValid()) {

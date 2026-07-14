@@ -43,11 +43,6 @@ struct BLINK_COMMON_EXPORT
     return r.link_text;
   }
 
-  static const std::optional<blink::Impression>& impression(
-      const blink::UntrustworthyContextMenuParams& r) {
-    return r.impression;
-  }
-
   static const GURL& unfiltered_link_url(
       const blink::UntrustworthyContextMenuParams& r) {
     return r.unfiltered_link_url;

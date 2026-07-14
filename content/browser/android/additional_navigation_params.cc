@@ -15,8 +15,7 @@ namespace content {
 
 base::android::ScopedJavaLocalRef<jobject> CreateJavaAdditionalNavigationParams(
     JNIEnv* env,
-    RenderFrameHost& initiator_frame_host,
-    std::optional<base::UnguessableToken> attribution_src_token) {
+    RenderFrameHost& initiator_frame_host) {
   auto* rfhi = static_cast<RenderFrameHostImpl*>(&initiator_frame_host);
   scoped_refptr<InitiatorNavigationState> initiator_navigation_state =
       rfhi->CreateInitiatorStateFromCurrentFrame();
@@ -28,8 +27,7 @@ base::android::ScopedJavaLocalRef<jobject> CreateJavaAdditionalNavigationParams(
   }
   return Java_AdditionalNavigationParamsImpl_Constructor(
       env, initiator_frame_host.GetFrameToken().value(),
-      initiator_frame_host.GetProcess()->GetID(), attribution_src_token,
-      native_state_ptr);
+      initiator_frame_host.GetProcess()->GetID(), native_state_ptr);
 }
 
 void JNI_AdditionalNavigationParamsImpl_Destroy(JNIEnv* env,
@@ -63,21 +61,6 @@ content::ChildProcessId GetInitiatorProcessIdFromJavaAdditionalNavigationParams(
   }
   return Java_AdditionalNavigationParamsImpl_getInitiatorProcessId(env,
                                                                    j_object);
-}
-
-std::optional<blink::AttributionSrcToken>
-GetAttributionSrcTokenFromJavaAdditionalNavigationParams(
-    JNIEnv* env,
-    const base::android::JavaRef<jobject>& j_object) {
-  if (!j_object) {
-    return std::nullopt;
-  }
-  std::optional<base::UnguessableToken> optional_token =
-      Java_AdditionalNavigationParamsImpl_getAttributionSrcToken(env, j_object);
-  if (optional_token) {
-    return blink::AttributionSrcToken(optional_token.value());
-  }
-  return std::nullopt;
 }
 
 scoped_refptr<InitiatorNavigationState>

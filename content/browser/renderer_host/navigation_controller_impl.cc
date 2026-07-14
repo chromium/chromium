@@ -3327,7 +3327,6 @@ void NavigationControllerImpl::NavigateFromFrameProxy(
     network::mojom::SourceLocationPtr source_location,
     scoped_refptr<network::SharedURLLoaderFactory> blob_url_loader_factory,
     bool is_form_submission,
-    const std::optional<blink::Impression>& impression,
     bool has_user_gesture,
     bool started_by_ad,
     base::TimeTicks actual_navigation_start_time,
@@ -3458,7 +3457,6 @@ void NavigationControllerImpl::NavigateFromFrameProxy(
   /* params.input_start: skip */
   params.was_activated = blink::mojom::WasActivatedOption::kUnknown;
   /* params.reload_type: skip */
-  params.impression = impression;
   params.download_policy = std::move(download_policy);
   params.is_form_submission = is_form_submission;
   params.started_by_ad = started_by_ad;
@@ -4840,10 +4838,10 @@ NavigationControllerImpl::CreateNavigationRequestFromLoadParams(
       params.should_ignore_initiator_policies_for_inheritance,
       extra_headers_crlf, frame_entry, entry, params.is_form_submission,
       params.navigation_ui_data ? params.navigation_ui_data->Clone() : nullptr,
-      params.impression, started_with_transient_activation,
-      params.started_by_ad, embedder_isolation_mode,
-      is_embedder_initiated_fenced_frame_navigation, is_container_initiated,
-      params.has_rel_opener, embedder_shared_storage_context);
+      started_with_transient_activation, params.started_by_ad,
+      embedder_isolation_mode, is_embedder_initiated_fenced_frame_navigation,
+      is_container_initiated, params.has_rel_opener,
+      embedder_shared_storage_context);
 
   if (!navigation_request) {
     return nullptr;
@@ -4996,7 +4994,7 @@ NavigationControllerImpl::CreateNavigationRequestFromEntry(
       initiator_frame_token, initiator_process_id, initiator_navigation_state,
       false /* should_ignore_initiator_policies_for_inheritance */,
       entry->extra_headers(), frame_entry, entry, is_form_submission,
-      nullptr /* navigation_ui_data */, std::nullopt /* impression */,
+      nullptr /* navigation_ui_data */,
       false /* started_with_transient_activation */, false /* started_by_ad */,
       EmbedderIsolationInfo::Mode::kNone);
 
@@ -5879,7 +5877,7 @@ NavigationControllerImpl::CreateNavigationRequestForErrorPage(
           false /* was_opener_suppressed */, "" /* extra_headers */,
           nullptr /* frame_entry */, nullptr /* entry */,
           false /* is_form_submission */, nullptr /* navigation_ui_data */,
-          std::nullopt /* impression */, EmbedderIsolationInfo::Mode::kNone);
+          EmbedderIsolationInfo::Mode::kNone);
   if (is_post_commit_error_page) {
     navigation_request->set_browser_initiated_error_navigation_type(
         NavigationRequest::BrowserInitiatedErrorNavigationType::kPostCommit);

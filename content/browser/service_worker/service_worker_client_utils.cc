@@ -647,7 +647,7 @@ void NavigateClient(
       false /* should_replace_current_entry */, false /* user_gesture */,
       blink::mojom::TriggeringEventInfo::kUnknown,
       std::string() /* href_translate */, nullptr /* blob_url_loader_factory */,
-      std::nullopt, false /* has_rel_opener */, false /* started_by_ad */);
+      false /* has_rel_opener */, false /* started_by_ad */);
 }
 
 void GetClient(ServiceWorkerClient* service_worker_client,

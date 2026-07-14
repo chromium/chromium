@@ -1257,7 +1257,6 @@ std::unique_ptr<NavigationRequest> NavigationRequest::CreateBrowserInitiated(
     NavigationEntryImpl* entry,
     bool is_form_submission,
     std::unique_ptr<NavigationUIData> navigation_ui_data,
-    const std::optional<blink::Impression>& impression,
     EmbedderIsolationInfo::Mode embedder_isolation_mode,
     bool is_embedder_initiated_fenced_frame_navigation,
     std::optional<std::u16string> embedder_shared_storage_context) {
@@ -1269,7 +1268,7 @@ std::unique_ptr<NavigationRequest> NavigationRequest::CreateBrowserInitiated(
       nullptr /* initiator_navigation_state */,
       false /* should_ignore_initiator_policies_for_inheritance */,
       extra_headers, frame_entry, entry, is_form_submission,
-      std::move(navigation_ui_data), impression,
+      std::move(navigation_ui_data),
       /*started_with_transient_activation=*/false,
       /*started_by_ad=*/false, embedder_isolation_mode,
       is_embedder_initiated_fenced_frame_navigation,
@@ -1297,7 +1296,6 @@ std::unique_ptr<NavigationRequest> NavigationRequest::Create(
     NavigationEntryImpl* entry,
     bool is_form_submission,
     std::unique_ptr<NavigationUIData> navigation_ui_data,
-    const std::optional<blink::Impression>& impression,
     bool started_with_transient_activation,
     bool started_by_ad,
     EmbedderIsolationInfo::Mode embedder_isolation_mode,
@@ -1321,7 +1319,7 @@ std::unique_ptr<NavigationRequest> NavigationRequest::Create(
       std::string() /* searchable_form_encoding */,
       GURL() /* client_side_redirect_url */,
       std::nullopt /* devtools_initiator_info */,
-      nullptr /* trust_token_params */, impression,
+      nullptr /* trust_token_params */,
       base::TimeTicks() /* renderer_before_unload_start */,
       base::TimeTicks() /* renderer_before_unload_end */,
       base::TimeTicks() /* before_unload_dialog_opened */,
@@ -10513,10 +10511,6 @@ bool NavigationRequest::WasInitiatedByLinkClick() {
 
 const std::string& NavigationRequest::GetHrefTranslate() {
   return common_params().href_translate;
-}
-
-const std::optional<blink::Impression>& NavigationRequest::GetImpression() {
-  return begin_params().impression;
 }
 
 const std::optional<blink::LocalFrameToken>&

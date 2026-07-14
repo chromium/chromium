@@ -630,7 +630,6 @@ void LocalFrameClientImpl::BeginNavigation(
     base::TimeTicks input_start_time,
     base::TimeTicks actual_navigation_start,
     const String& href_translate,
-    const std::optional<Impression>& impression,
     const LocalFrameToken* initiator_frame_token,
     SourceLocation* source_location,
     mojo::PendingRemote<mojom::blink::NavigationStateKeepAliveHandle>
@@ -697,8 +696,6 @@ void LocalFrameClientImpl::BeginNavigation(
     // |initiator_navigation_state_keep_alive_handle| if |origin_window| is not
     // set.
   }
-
-  navigation_info->impression = impression;
 
   // Can be null.
   LocalFrame* local_parent_frame = GetLocalParentFrame(web_frame_);

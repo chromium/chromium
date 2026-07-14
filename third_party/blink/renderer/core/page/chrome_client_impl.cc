@@ -434,8 +434,7 @@ Page* ChromeClientImpl::CreateWindowDelegate(
           requested_screen_rect,
           static_cast<WebNavigationPolicy>(r.GetNavigationPolicy()),
           sandbox_flags, session_storage_namespace_id, consumed_user_gesture,
-          r.Impression(), r.GetPictureInPictureWindowOptions(),
-          r.GetRequestorBaseURL()));
+          r.GetPictureInPictureWindowOptions(), r.GetRequestorBaseURL()));
   if (!new_view) {
     return nullptr;
   }

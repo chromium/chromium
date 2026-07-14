@@ -78,7 +78,6 @@ void NavigateParams::FillNavigateParamsFromOpenURLParams(
   this->user_gesture = params.user_gesture;
   this->blob_url_loader_factory = params.blob_url_loader_factory;
   this->href_translate = params.href_translate;
-  this->impression = params.impression;
   this->internal_scroll_to_text_fragment =
       params.internal_scroll_to_text_fragment;
   this->started_by_ad = params.started_by_ad;

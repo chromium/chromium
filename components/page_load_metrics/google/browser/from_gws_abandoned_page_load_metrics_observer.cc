@@ -48,7 +48,6 @@ FromGWSAbandonedPageLoadMetricsObserver::OnStart(
 
   category_parameter_id_ =
       page_load_metrics::GetCategoryIdFromUrl(navigation_handle->GetURL());
-  impression_ = navigation_handle->GetImpression();
   return AbandonedPageLoadMetricsObserver::OnStart(
       navigation_handle, currently_committed_url, started_in_foreground);
 }
@@ -189,13 +188,7 @@ void FromGWSAbandonedPageLoadMetricsObserver::LogTimingInformationMetrics() {
     return;
   }
 
-  builder.SetHasImpression(impression_.has_value())
-      .SetIsCommitted(is_committed_)
-      .SetRedirectCount(redirect_num_);
-
-  if (impression_.has_value()) {
-    builder.SetIsEmptyAttributionSrc(impression_->is_empty_attribution_src_tag);
-  }
+  builder.SetIsCommitted(is_committed_).SetRedirectCount(redirect_num_);
 
   if (category_parameter_id_.has_value()) {
     builder.SetCategory(category_parameter_id_.value());

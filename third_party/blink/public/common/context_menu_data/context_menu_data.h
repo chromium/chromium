@@ -37,7 +37,6 @@
 #include "services/network/public/mojom/referrer_policy.mojom-shared.h"
 #include "third_party/blink/public/common/context_menu_data/menu_item_info.h"
 #include "third_party/blink/public/common/dom/dom_node_id.h"
-#include "third_party/blink/public/common/navigation/impression.h"
 #include "third_party/blink/public/mojom/annotation/annotation.mojom-shared.h"
 #include "third_party/blink/public/mojom/context_menu/context_menu.mojom-shared.h"
 #include "third_party/blink/public/mojom/forms/form_control_type.mojom-shared.h"
@@ -102,10 +101,6 @@ struct ContextMenuData {
 
   // The text of the link that is in the context.
   std::string link_text;
-
-  // If the node is a link, the impression declared by the link's conversion
-  // measurement attributes.
-  std::optional<Impression> impression;
 
   // The raw text of the selection in context.
   std::string selected_text;

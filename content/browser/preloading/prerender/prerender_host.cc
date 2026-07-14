@@ -1194,12 +1194,6 @@ PrerenderHost::AreBeginNavigationParamsCompatibleWithNavigation(
       return ActivationNavigationParamsMatch::kRequestContextType;
   }
 
-  // Since impression should not be set, no need to compare contents.
-  CHECK(!begin_params_->impression);
-  if (potential_activation.impression.has_value()) {
-    return ActivationNavigationParamsMatch::kImpressionHasValue;
-  }
-
   // No need to test for devtools_initiator because this field is used for
   // tracking what triggered a network request, and prerender activation will
   // not use network requests.

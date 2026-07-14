@@ -21,7 +21,6 @@ import "services/network/public/mojom/web_client_hints_types.mojom";
 import "services/network/public/mojom/web_sandbox_flags.mojom";
 import "services/viz/public/mojom/compositing/local_surface_id.mojom";
 import "third_party/blink/public/mojom/back_forward_cache_not_restored_reasons.mojom";
-import "third_party/blink/public/mojom/conversions/conversions.mojom";
 import "third_party/blink/public/mojom/fenced_frame/fenced_frame_config.mojom";
 import "third_party/blink/public/mojom/fetch/fetch_api_request.mojom";
 import "third_party/blink/public/mojom/frame/agent_cluster_key.mojom";
@@ -162,11 +161,6 @@ struct BeginNavigationParams {
   // operation (https://github.com/wicg/trust-token-api) and attach headers
   // conveying the result of the operation. Set on some child frame navigations.
   network.mojom.TrustTokenParams? trust_token_params;
-
-  // Carries optional information associated with conversion measurement for
-  // this navigation. Only set on navigations originating from anchors with
-  // relevant impression attributes set.
-  Impression? impression;
 
   // Timestamps of the renderer running beforeunload handlers on local frames
   // in preparation for navigating. Used for metrics.

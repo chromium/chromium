@@ -67,7 +67,6 @@ mojom("mojom_platform") {
     "content_extraction/script_tools.mojom",
     "content_index/content_index.mojom",
     "context_menu/context_menu.mojom",
-    "conversions/conversions.mojom",
     "cookie_store/cookie_store.mojom",
     "cpu_performance.mojom",
     "crash/crash_memory_metrics_reporter.mojom",
@@ -545,15 +544,6 @@ mojom("mojom_platform") {
         },
       ]
       traits_headers = [ "//third_party/blink/public/common/web_preferences/web_preferences_mojom_traits.h" ]
-    },
-    {
-      types = [
-        {
-          mojom = "blink.mojom.Impression"
-          cpp = "::blink::Impression"
-        },
-      ]
-      traits_headers = [ "//third_party/blink/public/common/navigation/impression_mojom_traits.h" ]
     },
     {
       types = [

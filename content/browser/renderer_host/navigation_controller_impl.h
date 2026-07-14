@@ -241,7 +241,6 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
       network::mojom::SourceLocationPtr source_location,
       scoped_refptr<network::SharedURLLoaderFactory> blob_url_loader_factory,
       bool is_form_submission,
-      const std::optional<blink::Impression>& impression,
       bool has_user_gesture,
       bool started_by_ad,
       base::TimeTicks actual_navigation_start_time,

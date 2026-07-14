@@ -156,7 +156,6 @@ void FencedFrame::Navigate(
       /*blob_url_loader_factory=*/nullptr,
       network::mojom::SourceLocation::New(), /*has_user_gesture=*/false,
       /*is_form_submission=*/false,
-      /*impression=*/std::nullopt,
       /*started_by_ad=*/false,
       /*actual_navigation_start_time=*/navigation_start_time,
       navigation_start_time,

@@ -84,9 +84,6 @@ UntrustworthyContextMenuParams ContextMenuParamsBuilder::Build(
 
   params.link_text = base::UTF8ToUTF16(data.link_text);
 
-  if (data.impression)
-    params.impression = data.impression;
-
   params.form_control_type = data.form_control_type;
   params.is_content_editable_for_autofill =
       data.is_content_editable_for_autofill;

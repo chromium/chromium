@@ -357,9 +357,7 @@ std::unique_ptr<network::ResourceRequest> CreateResourceRequest(
                          /*client_os_disabled=*/false);
 
   new_request->attribution_reporting_eligibility =
-      request_info.begin_params->impression.has_value()
-          ? network::mojom::AttributionReportingEligibility::kNavigationSource
-          : network::mojom::AttributionReportingEligibility::kUnset;
+      network::mojom::AttributionReportingEligibility::kUnset;
 
   new_request->shared_storage_writable_eligible =
       request_info.shared_storage_writable_eligible;
