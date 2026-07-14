@@ -117,14 +117,6 @@ class CORE_EXPORT AuditsIssue {
                               String failedParameter,
                               std::optional<base::UnguessableToken> issue_id);
 
-  static void ReportAttributionIssue(
-      ExecutionContext* execution_context,
-      mojom::blink::AttributionReportingIssueType type,
-      Element* element,
-      const String& request_url,
-      const String& request_id,
-      const String& invalid_parameter);
-
   static void ReportSharedArrayBufferIssue(
       ExecutionContext* execution_context,
       bool shared_buffer_transfer_allowed,

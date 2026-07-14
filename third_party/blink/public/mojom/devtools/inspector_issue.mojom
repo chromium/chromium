@@ -20,7 +20,6 @@ enum InspectorIssueCode {
   kContentSecurityPolicyIssue,
   kSharedArrayBufferIssue,
   kHeavyAdIssue,
-  kAttributionReportingIssue,
   kFederatedAuthRequestIssue,
   kBounceTrackingIssue,
   kCookieDeprecationMetadataIssue,
@@ -78,36 +77,6 @@ struct HeavyAdIssueDetails {
   HeavyAdResolutionStatus resolution;
   HeavyAdReason reason;
   AffectedFrame frame;
-};
-
-enum AttributionReportingIssueType {
-  kPermissionPolicyDisabled,
-  kUntrustworthyReportingOrigin,
-  kInsecureContext,
-  kInvalidRegisterSourceHeader,
-  kInvalidRegisterTriggerHeader,
-  kSourceAndTriggerHeaders,
-  kSourceIgnored,
-  kTriggerIgnored,
-  kOsSourceIgnored,
-  kOsTriggerIgnored,
-  kInvalidRegisterOsSourceHeader,
-  kInvalidRegisterOsTriggerHeader,
-  kWebAndOsHeaders,
-  kNoWebOrOsSupport,
-  kNavigationRegistrationWithoutTransientUserActivation,
-  kInvalidInfoHeader,
-  kNoRegisterSourceHeader,
-  kNoRegisterTriggerHeader,
-  kNoRegisterOsSourceHeader,
-  kNoRegisterOsTriggerHeader,
-  kNavigationRegistrationUniqueScopeAlreadySet,
-};
-
-struct AttributionReportingIssueDetails {
-  AttributionReportingIssueType violation_type;
-  AffectedRequest? request;
-  string? invalid_parameter;
 };
 
 enum MixedContentResolutionStatus {
@@ -380,7 +349,6 @@ struct InspectorIssueDetails {
   ContentSecurityPolicyIssueDetails? csp_issue_details;
   SharedArrayBufferIssueDetails? sab_issue_details;
   HeavyAdIssueDetails? heavy_ad_issue_details;
-  AttributionReportingIssueDetails? attribution_reporting_issue_details;
   FederatedRequestIssueDetails? federated_request_details;
   BounceTrackingIssueDetails? bounce_tracking_issue_details;
   PartitioningBlobURLIssueDetails? partitioning_blob_url_issue_details;

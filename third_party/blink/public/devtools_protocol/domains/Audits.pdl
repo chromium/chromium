@@ -270,31 +270,6 @@ experimental domain Audits
       optional Network.IPAddressSpace resourceIPAddressSpace
       optional Network.ClientSecurityState clientSecurityState
 
-  type AttributionReportingIssueType extends string
-    enum
-      PermissionPolicyDisabled
-      UntrustworthyReportingOrigin
-      InsecureContext
-      # TODO(apaseltiner): Rename this to InvalidRegisterSourceHeader
-      InvalidHeader
-      InvalidRegisterTriggerHeader
-      SourceAndTriggerHeaders
-      SourceIgnored
-      TriggerIgnored
-      OsSourceIgnored
-      OsTriggerIgnored
-      InvalidRegisterOsSourceHeader
-      InvalidRegisterOsTriggerHeader
-      WebAndOsHeaders
-      NoWebOrOsSupport
-      NavigationRegistrationWithoutTransientUserActivation
-      InvalidInfoHeader
-      NoRegisterSourceHeader
-      NoRegisterTriggerHeader
-      NoRegisterOsSourceHeader
-      NoRegisterOsTriggerHeader
-      NavigationRegistrationUniqueScopeAlreadySet
-
   type SharedDictionaryError extends string
     enum
       UseErrorCrossOriginNoCorsRequest
@@ -367,15 +342,6 @@ experimental domain Audits
       InvalidAllowlistItemType
       ReportingEndpointNotToken
       InvalidUrlPattern
-
-  # Details for issues around "Attribution Reporting API" usage.
-  # Explainer: https://github.com/WICG/attribution-reporting-api
-  type AttributionReportingIssueDetails extends object
-    properties
-      AttributionReportingIssueType violationType
-      optional AffectedRequest request
-      optional DOM.BackendNodeId violatingNodeId
-      optional string invalidParameter
 
 # Details for issues about documents in Quirks Mode
 # or Limited Quirks Mode that affects page layouting.
@@ -800,7 +766,6 @@ experimental domain Audits
       ContentSecurityPolicyIssue
       SharedArrayBufferIssue
       CorsIssue
-      AttributionReportingIssue
       QuirksModeIssue
       PartitioningBlobURLIssue
       # Deprecated
@@ -838,7 +803,6 @@ experimental domain Audits
       optional ContentSecurityPolicyIssueDetails contentSecurityPolicyIssueDetails
       optional SharedArrayBufferIssueDetails sharedArrayBufferIssueDetails
       optional CorsIssueDetails corsIssueDetails
-      optional AttributionReportingIssueDetails attributionReportingIssueDetails
       optional QuirksModeIssueDetails quirksModeIssueDetails
       optional PartitioningBlobURLIssueDetails partitioningBlobURLIssueDetails
       deprecated optional NavigatorUserAgentIssueDetails navigatorUserAgentIssueDetails

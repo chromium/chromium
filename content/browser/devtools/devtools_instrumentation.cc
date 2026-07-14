@@ -75,9 +75,6 @@ namespace devtools_instrumentation {
 
 namespace {
 
-namespace AttributionReportingIssueTypeEnum =
-    protocol::Audits::AttributionReportingIssueTypeEnum;
-
 const char kExampleBrowserProcessDeprecation[] =
     "ExampleBrowserProcessDeprecation";
 const char kRelatedWebsiteSets[] = "RelatedWebsiteSets";
@@ -167,101 +164,6 @@ std::unique_ptr<protocol::Audits::InspectorIssue> BuildHeavyAdIssue(
           .SetCode(protocol::Audits::InspectorIssueCodeEnum::HeavyAdIssue)
           .SetDetails(std::move(protocol_issue_details))
           .Build();
-  return issue;
-}
-
-protocol::Audits::AttributionReportingIssueType
-BuildAttributionReportingIssueViolationType(
-    blink::mojom::AttributionReportingIssueType type) {
-  switch (type) {
-    case blink::mojom::AttributionReportingIssueType::kPermissionPolicyDisabled:
-      return AttributionReportingIssueTypeEnum::PermissionPolicyDisabled;
-    case blink::mojom::AttributionReportingIssueType::
-        kUntrustworthyReportingOrigin:
-      return AttributionReportingIssueTypeEnum::UntrustworthyReportingOrigin;
-    case blink::mojom::AttributionReportingIssueType::kInsecureContext:
-      return AttributionReportingIssueTypeEnum::InsecureContext;
-    case blink::mojom::AttributionReportingIssueType::
-        kInvalidRegisterSourceHeader:
-      return AttributionReportingIssueTypeEnum::InvalidHeader;
-    case blink::mojom::AttributionReportingIssueType::
-        kInvalidRegisterTriggerHeader:
-      return AttributionReportingIssueTypeEnum::InvalidRegisterTriggerHeader;
-    case blink::mojom::AttributionReportingIssueType::kSourceAndTriggerHeaders:
-      return AttributionReportingIssueTypeEnum::SourceAndTriggerHeaders;
-    case blink::mojom::AttributionReportingIssueType::kSourceIgnored:
-      return AttributionReportingIssueTypeEnum::SourceIgnored;
-    case blink::mojom::AttributionReportingIssueType::kTriggerIgnored:
-      return AttributionReportingIssueTypeEnum::TriggerIgnored;
-    case blink::mojom::AttributionReportingIssueType::kOsSourceIgnored:
-      return AttributionReportingIssueTypeEnum::OsSourceIgnored;
-    case blink::mojom::AttributionReportingIssueType::kOsTriggerIgnored:
-      return AttributionReportingIssueTypeEnum::OsTriggerIgnored;
-    case blink::mojom::AttributionReportingIssueType::
-        kInvalidRegisterOsSourceHeader:
-      return AttributionReportingIssueTypeEnum::InvalidRegisterOsSourceHeader;
-    case blink::mojom::AttributionReportingIssueType::
-        kInvalidRegisterOsTriggerHeader:
-      return AttributionReportingIssueTypeEnum::InvalidRegisterOsTriggerHeader;
-    case blink::mojom::AttributionReportingIssueType::kWebAndOsHeaders:
-      return AttributionReportingIssueTypeEnum::WebAndOsHeaders;
-    case blink::mojom::AttributionReportingIssueType::kNoWebOrOsSupport:
-      return AttributionReportingIssueTypeEnum::NoWebOrOsSupport;
-    case blink::mojom::AttributionReportingIssueType::
-        kNavigationRegistrationWithoutTransientUserActivation:
-      // This issue is not reported from the browser.
-      NOTREACHED();
-    case blink::mojom::AttributionReportingIssueType::kInvalidInfoHeader:
-      return AttributionReportingIssueTypeEnum::InvalidInfoHeader;
-    case blink::mojom::AttributionReportingIssueType::kNoRegisterSourceHeader:
-      return AttributionReportingIssueTypeEnum::NoRegisterSourceHeader;
-    case blink::mojom::AttributionReportingIssueType::kNoRegisterTriggerHeader:
-      return AttributionReportingIssueTypeEnum::NoRegisterTriggerHeader;
-    case blink::mojom::AttributionReportingIssueType::kNoRegisterOsSourceHeader:
-      return AttributionReportingIssueTypeEnum::NoRegisterOsSourceHeader;
-    case blink::mojom::AttributionReportingIssueType::
-        kNoRegisterOsTriggerHeader:
-      return AttributionReportingIssueTypeEnum::NoRegisterOsTriggerHeader;
-    case blink::mojom::AttributionReportingIssueType::
-        kNavigationRegistrationUniqueScopeAlreadySet:
-      return AttributionReportingIssueTypeEnum::
-          NavigationRegistrationUniqueScopeAlreadySet;
-  }
-}
-
-std::unique_ptr<protocol::Audits::InspectorIssue>
-BuildAttributionReportingIssue(
-    const blink::mojom::AttributionReportingIssueDetailsPtr& issue_details) {
-  protocol::String violation_type = BuildAttributionReportingIssueViolationType(
-      issue_details->violation_type);
-
-  auto request = protocol::Audits::AffectedRequest::Create()
-                     .SetUrl(issue_details->request->url)
-                     .Build();
-  if (issue_details->request->request_id.has_value()) {
-    request->SetRequestId(issue_details->request->request_id.value());
-  }
-  auto attribution_reporting_issue_details =
-      protocol::Audits::AttributionReportingIssueDetails::Create()
-          .SetViolationType(violation_type)
-          .SetRequest(std::move(request))
-          .Build();
-  if (issue_details->invalid_parameter.has_value()) {
-    attribution_reporting_issue_details->SetInvalidParameter(
-        issue_details->invalid_parameter.value());
-  }
-
-  auto protocol_issue_details =
-      protocol::Audits::InspectorIssueDetails::Create()
-          .SetAttributionReportingIssueDetails(
-              std::move(attribution_reporting_issue_details))
-          .Build();
-
-  auto issue = protocol::Audits::InspectorIssue::Create()
-                   .SetCode(protocol::Audits::InspectorIssueCodeEnum::
-                                AttributionReportingIssue)
-                   .SetDetails(std::move(protocol_issue_details))
-                   .Build();
   return issue;
 }
 
@@ -2576,10 +2478,6 @@ void BuildAndReportBrowserInitiatedIssue(
                                kFederatedAuthUserInfoRequestIssue) {
     issue = BuildFederatedAuthUserInfoRequestIssue(
         info->details->federated_auth_user_info_request_details);
-  } else if (info->code ==
-             blink::mojom::InspectorIssueCode::kAttributionReportingIssue) {
-    issue = BuildAttributionReportingIssue(
-        info->details->attribution_reporting_issue_details);
   } else if (info->code ==
              blink::mojom::InspectorIssueCode::kUserReidentificationIssue) {
     issue = BuildUserReidentificationIssue(
