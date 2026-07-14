@@ -6,6 +6,8 @@ static_library("browser") {
   sources = [
     "account_linking_result.h",
     "device_delegate.h",
+    "ewallet_account_linking_manager.cc",
+    "ewallet_account_linking_manager.h",
     "facilitated_payments_api_client.h",
     "facilitated_payments_app_info_list.h",
     "facilitated_payments_client.cc",
@@ -60,6 +62,7 @@ static_library("browser") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "ewallet_account_linking_manager_unittest.cc",
     "facilitated_payments_driver_unittest.cc",
     "native_account_linking_handler_unittest.cc",
     "network_api/facilitated_payments_initiate_payment_request_details_unittest.cc",
@@ -92,6 +95,7 @@ source_set("unit_tests") {
 static_library("test_support") {
   testonly = true
   sources = [
+    "ewallet_account_linking_manager_test_api.h",
     "mock_device_delegate.cc",
     "mock_device_delegate.h",
     "mock_facilitated_payments_api_client.cc",
