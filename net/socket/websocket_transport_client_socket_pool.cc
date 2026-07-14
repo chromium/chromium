@@ -32,11 +32,9 @@ namespace net {
 
 WebSocketTransportClientSocketPool::WebSocketTransportClientSocketPool(
     size_t socket_soft_cap,
-    SocketPoolAdditionalCapacity additional_capacity,
     const ProxyChain& proxy_chain,
     const CommonConnectJobParams* common_connect_job_params)
     : ClientSocketPool(socket_soft_cap,
-                       additional_capacity,
                        proxy_chain,
                        /*is_for_websockets=*/true,
                        common_connect_job_params,

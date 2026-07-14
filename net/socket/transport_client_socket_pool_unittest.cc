@@ -141,7 +141,6 @@ class TransportClientSocketPoolTestBase : public WithTaskEnvironment,
     common_connect_job_params_->client_socket_factory = &client_socket_factory_;
     pool_ = std::make_unique<TransportClientSocketPool>(
         kMaxSockets, kMaxSocketsPerGroup,
-        SocketPoolAdditionalCapacity::Create(kMaxSockets),
         kUnusedIdleSocketTimeout, ProxyChain::Direct(),
         /*is_for_websockets=*/false, common_connect_job_params_.get());
 
@@ -152,7 +151,6 @@ class TransportClientSocketPoolTestBase : public WithTaskEnvironment,
         &tagging_client_socket_factory_;
     tagging_pool_ = std::make_unique<TransportClientSocketPool>(
         kMaxSockets, kMaxSocketsPerGroup,
-        SocketPoolAdditionalCapacity::Create(kMaxSockets),
         kUnusedIdleSocketTimeout, ProxyChain::Direct(),
         /*is_for_websockets=*/false, tagging_common_connect_job_params_.get());
 
@@ -163,7 +161,6 @@ class TransportClientSocketPoolTestBase : public WithTaskEnvironment,
         ClientSocketFactory::GetDefaultFactory();
     pool_for_real_sockets_ = std::make_unique<TransportClientSocketPool>(
         kMaxSockets, kMaxSocketsPerGroup,
-        SocketPoolAdditionalCapacity::Create(kMaxSockets),
         kUnusedIdleSocketTimeout, ProxyChain::Direct(),
         /*is_for_websockets=*/false,
         common_connect_job_params_for_real_sockets_.get());
@@ -555,8 +552,7 @@ TEST_P(TransportClientSocketPoolTest, ReprioritizeRequests) {
 
 TEST_P(TransportClientSocketPoolTest, RequestIgnoringLimitsIsReprioritized) {
   TransportClientSocketPool pool(
-      kMaxSockets, 1, SocketPoolAdditionalCapacity::Create(kMaxSockets),
-      kUnusedIdleSocketTimeout, ProxyChain::Direct(),
+      kMaxSockets, 1, kUnusedIdleSocketTimeout, ProxyChain::Direct(),
       /*is_for_websockets=*/false, common_connect_job_params_.get());
 
   // Creates a job which ignores limits whose priority is MAXIMUM_PRIORITY.
@@ -1084,7 +1080,6 @@ TEST(TransportClientSocketPoolStandaloneTest, DontCleanupOnIPAddressChange) {
       ClientSocketPool::SocketParams::CreateForHttpForTesting());
   auto pool = std::make_unique<TransportClientSocketPool>(
       kMaxSockets, kMaxSocketsPerGroup,
-      SocketPoolAdditionalCapacity::Create(kMaxSockets),
       kUnusedIdleSocketTimeout, ProxyChain::Direct(),
       /*is_for_websockets=*/false, common_connect_job_params.get(),
       /*cleanup_on_ip_address_change=*/false);
@@ -1161,9 +1156,10 @@ TEST_P(TransportClientSocketPoolTest,
        EnsureExpandabilityRecalculationDuringIdleSocketDrop) {
   TransportClientSocketPool pool(
       /*socket_soft_cap=*/2, /*max_sockets_per_group=*/1,
-      SocketPoolAdditionalCapacity::CreateEmpty(), kUnusedIdleSocketTimeout,
-      ProxyChain::Direct(),
+      kUnusedIdleSocketTimeout, ProxyChain::Direct(),
       /*is_for_websockets=*/false, common_connect_job_params_.get());
+  pool.SetAdditionalCapacityForTest(
+      SocketPoolAdditionalCapacity::CreateEmpty());
   ClientSocketPool::GroupId group_id_1(
       url::SchemeHostPort(url::kHttpScheme, "www.example.com", 80),
       PrivacyMode::PRIVACY_MODE_DISABLED, NetworkAnonymizationKey(),
@@ -1649,7 +1645,6 @@ TEST_P(TransportClientSocketPoolTest, SOCKS) {
 
   TransportClientSocketPool proxy_pool(
       kMaxSockets, kMaxSocketsPerGroup,
-      SocketPoolAdditionalCapacity::Create(kMaxSockets),
       kUnusedIdleSocketTimeout,
       ProxyUriToProxyChain("socks5://foopy",
                            /*default_scheme=*/ProxyServer::SCHEME_HTTP),
@@ -1694,11 +1689,12 @@ TEST_P(TransportClientSocketPoolTest, SpdyOneConnectJobTwoRequestsError) {
 
   // Create a socket pool which only allows a single connection at a time.
   TransportClientSocketPool pool(
-      1, 1, SocketPoolAdditionalCapacity::CreateEmpty(),
-      kUnusedIdleSocketTimeout,
+      1, 1, kUnusedIdleSocketTimeout,
       ProxyUriToProxyChain("https://unresolvable.proxy.name",
                            /*default_scheme=*/ProxyServer::SCHEME_HTTP),
       /*is_for_websockets=*/false, tagging_common_connect_job_params_.get());
+  pool.SetAdditionalCapacityForTest(
+      SocketPoolAdditionalCapacity::CreateEmpty());
 
   // First connection attempt will get an error after creating the SpdyStream.
 
@@ -1788,11 +1784,12 @@ TEST_P(TransportClientSocketPoolTest, SpdyAuthOneConnectJobTwoRequests) {
 
   // Create a socket pool which only allows a single connection at a time.
   TransportClientSocketPool pool(
-      1, 1, SocketPoolAdditionalCapacity::CreateEmpty(),
-      kUnusedIdleSocketTimeout,
+      1, 1, kUnusedIdleSocketTimeout,
       ProxyUriToProxyChain("https://unresolvable.proxy.name",
                            /*default_scheme=*/ProxyServer::SCHEME_HTTP),
       /*is_for_websockets=*/false, tagging_common_connect_job_params_.get());
+  pool.SetAdditionalCapacityForTest(
+      SocketPoolAdditionalCapacity::CreateEmpty());
 
   SpdyTestUtil spdy_util;
   spdy::SpdySerializedFrame connect(spdy_util.ConstructSpdyConnect(
@@ -1911,7 +1908,6 @@ TEST_P(TransportClientSocketPoolTest, HttpTunnelSetupRedirect) {
 
       TransportClientSocketPool proxy_pool(
           kMaxSockets, kMaxSocketsPerGroup,
-          SocketPoolAdditionalCapacity::Create(kMaxSockets),
           kUnusedIdleSocketTimeout,
           ProxyUriToProxyChain(
               use_https_proxy ? "https://proxy.test" : "http://proxy.test",
@@ -2053,7 +2049,6 @@ TEST_P(TransportClientSocketPoolTest, NetworkAnonymizationKeyHttpProxy) {
 
   TransportClientSocketPool proxy_pool(
       kMaxSockets, kMaxSocketsPerGroup,
-      SocketPoolAdditionalCapacity::Create(kMaxSockets),
       kUnusedIdleSocketTimeout, kProxyChain,
       /*is_for_websockets=*/false, tagging_common_connect_job_params_.get());
 
@@ -2122,7 +2117,6 @@ TEST_P(TransportClientSocketPoolTest, NetworkAnonymizationKeyHttpsProxy) {
 
   TransportClientSocketPool proxy_pool(
       kMaxSockets, kMaxSocketsPerGroup,
-      SocketPoolAdditionalCapacity::Create(kMaxSockets),
       kUnusedIdleSocketTimeout, kProxyChain, false /* is_for_websockets */,
       tagging_common_connect_job_params_.get());
 
@@ -2201,7 +2195,6 @@ TEST_P(TransportClientSocketPoolTest, NetworkAnonymizationKeySocks4Proxy) {
 
   TransportClientSocketPool proxy_pool(
       kMaxSockets, kMaxSocketsPerGroup,
-      SocketPoolAdditionalCapacity::Create(kMaxSockets),
       kUnusedIdleSocketTimeout, kProxyChain,
       /*is_for_websockets=*/false, tagging_common_connect_job_params_.get());
 
@@ -2284,7 +2277,6 @@ TEST_P(TransportClientSocketPoolTest, NetworkAnonymizationKeySocks5Proxy) {
 
   TransportClientSocketPool proxy_pool(
       kMaxSockets, kMaxSocketsPerGroup,
-      SocketPoolAdditionalCapacity::Create(kMaxSockets),
       kUnusedIdleSocketTimeout, kProxyChain,
       /*is_for_websockets=*/false, tagging_common_connect_job_params_.get());
 
@@ -2403,8 +2395,7 @@ TEST_P(TransportClientSocketPoolTest, HasActiveSocket) {
 TEST_P(TransportClientSocketPoolTest,
        ValidateAdditionalCapacityForTransportClientSocketPool) {
   TransportClientSocketPool pool(
-      /*socket_soft_cap=*/256, kMaxSocketsPerGroup,
-      SocketPoolAdditionalCapacity::Create(256), kUnusedIdleSocketTimeout,
+      /*socket_soft_cap=*/256, kMaxSocketsPerGroup, kUnusedIdleSocketTimeout,
       ProxyChain::Direct(),
       /*is_for_websockets=*/false, common_connect_job_params_.get());
   ValidateAdditionalCapacityForSocketPool(
@@ -2684,7 +2675,6 @@ TEST_P(TransportClientSocketPoolTest, TagSOCKSProxy) {
 
   TransportClientSocketPool proxy_pool(
       kMaxSockets, kMaxSocketsPerGroup,
-      SocketPoolAdditionalCapacity::Create(kMaxSockets),
       kUnusedIdleSocketTimeout,
       ProxyUriToProxyChain("socks5://proxy",
                            /*default_scheme=*/ProxyServer::SCHEME_HTTP),
@@ -2991,7 +2981,6 @@ TEST_P(TransportClientSocketPoolTest, TagHttpProxyNoTunnel) {
 
   TransportClientSocketPool proxy_pool(
       kMaxSockets, kMaxSocketsPerGroup,
-      SocketPoolAdditionalCapacity::Create(kMaxSockets),
       kUnusedIdleSocketTimeout,
       ProxyUriToProxyChain("http://proxy",
                            /*default_scheme=*/ProxyServer::SCHEME_HTTP),
@@ -3053,7 +3042,6 @@ TEST_P(TransportClientSocketPoolTest, TagHttpProxyTunnel) {
 
   TransportClientSocketPool proxy_pool(
       kMaxSockets, kMaxSocketsPerGroup,
-      SocketPoolAdditionalCapacity::Create(kMaxSockets),
       kUnusedIdleSocketTimeout,
       ProxyUriToProxyChain("http://proxy",
                            /*default_scheme=*/ProxyServer::SCHEME_HTTP),

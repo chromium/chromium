@@ -42,7 +42,6 @@ class NET_EXPORT_PRIVATE WebSocketTransportClientSocketPool
  public:
   WebSocketTransportClientSocketPool(
       size_t socket_soft_cap,
-      SocketPoolAdditionalCapacity additional_capacity,
       const ProxyChain& proxy_chain,
       const CommonConnectJobParams* common_connect_job_params);
 

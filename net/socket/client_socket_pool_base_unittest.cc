@@ -677,7 +677,6 @@ class ClientSocketPoolBaseTest : public TestWithTaskEnvironment {
     connect_job_factory_ = connect_job_factory.get();
     pool_ = TransportClientSocketPool::CreateForTesting(
         max_sockets, max_sockets_per_group,
-        SocketPoolAdditionalCapacity::Create(max_sockets),
         unused_idle_socket_timeout, used_idle_socket_timeout, proxy_chain,
         /*is_for_websockets=*/false, &common_connect_job_params_,
         std::move(connect_job_factory), nullptr /* ssl_config_service */,

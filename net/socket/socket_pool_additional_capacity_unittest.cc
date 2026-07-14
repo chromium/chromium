@@ -377,7 +377,6 @@ class MockClientSocketPool : public ClientSocketPool {
  public:
   MockClientSocketPool()
       : ClientSocketPool(/*socket_soft_cap=*/256,
-                         SocketPoolAdditionalCapacity::Create(256),
                          ProxyChain::Direct(),
                          /*is_for_websockets=*/false,
                          /*common_connect_job_params*/ nullptr,

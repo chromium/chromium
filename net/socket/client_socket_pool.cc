@@ -21,6 +21,7 @@
 #include "net/http/http_proxy_connect_job.h"
 #include "net/log/net_log_event_type.h"
 #include "net/log/net_log_with_source.h"
+#include "net/socket/client_socket_pool_manager.h"
 #include "net/socket/connect_job.h"
 #include "net/socket/connect_job_factory.h"
 #include "net/socket/socks_connect_job.h"
@@ -183,13 +184,16 @@ void ClientSocketPool::set_used_idle_socket_timeout(base::TimeDelta timeout) {
 
 ClientSocketPool::ClientSocketPool(
     size_t socket_soft_cap,
-    SocketPoolAdditionalCapacity additional_capacity,
     const ProxyChain& proxy_chain,
     bool is_for_websockets,
     const CommonConnectJobParams* common_connect_job_params,
     std::unique_ptr<ConnectJobFactory> connect_job_factory)
     : socket_soft_cap_(socket_soft_cap),
-      additional_capacity_(additional_capacity),
+      additional_capacity_(
+          (proxy_chain.is_direct() ||
+           ClientSocketPoolManager::allow_size_randomization_for_proxy())
+              ? SocketPoolAdditionalCapacity::Create(socket_soft_cap)
+              : SocketPoolAdditionalCapacity::CreateEmpty()),
       proxy_chain_(proxy_chain),
       is_for_websockets_(is_for_websockets),
       common_connect_job_params_(common_connect_job_params),

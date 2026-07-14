@@ -369,6 +369,11 @@ class NET_EXPORT ClientSocketPool : public LowerLayeredPool {
   static base::TimeDelta used_idle_socket_timeout();
   static void set_used_idle_socket_timeout(base::TimeDelta timeout);
 
+  void SetAdditionalCapacityForTest(
+      const SocketPoolAdditionalCapacity& additional_capacity) {
+    additional_capacity_ = additional_capacity;
+  }
+
   const SocketPoolAdditionalCapacity& AdditionalCapacityForTest() const {
     return AdditionalCapacity();
   }
@@ -384,7 +389,6 @@ class NET_EXPORT ClientSocketPool : public LowerLayeredPool {
 
  protected:
   ClientSocketPool(size_t socket_soft_cap,
-                   SocketPoolAdditionalCapacity additional_capacity,
                    const ProxyChain& proxy_chain,
                    bool is_for_websockets,
                    const CommonConnectJobParams* common_connect_job_params,
@@ -452,7 +456,7 @@ class NET_EXPORT ClientSocketPool : public LowerLayeredPool {
   // randomization the exact amount of sockets available to this pool will
   // fluctuate over time.
   const size_t socket_soft_cap_;
-  const SocketPoolAdditionalCapacity additional_capacity_;
+  SocketPoolAdditionalCapacity additional_capacity_;
   SocketPoolExpandability expandability_ = SocketPoolExpandability::kUncapped;
 
   // If set, this overrides `socket_soft_cap_` for future calculations.

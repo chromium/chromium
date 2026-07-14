@@ -131,7 +131,6 @@ struct TransportClientSocketPool::IdleSocket {
 TransportClientSocketPool::TransportClientSocketPool(
     size_t socket_soft_cap,
     size_t max_sockets_per_group,
-    SocketPoolAdditionalCapacity additional_capacity,
     base::TimeDelta unused_idle_socket_timeout,
     const ProxyChain& proxy_chain,
     bool is_for_websockets,
@@ -139,7 +138,6 @@ TransportClientSocketPool::TransportClientSocketPool(
     bool cleanup_on_ip_address_change)
     : TransportClientSocketPool(socket_soft_cap,
                                 max_sockets_per_group,
-                                additional_capacity,
                                 unused_idle_socket_timeout,
                                 ClientSocketPool::used_idle_socket_timeout(),
                                 proxy_chain,
@@ -172,7 +170,6 @@ std::unique_ptr<TransportClientSocketPool>
 TransportClientSocketPool::CreateForTesting(
     size_t socket_soft_cap,
     size_t max_sockets_per_group,
-    SocketPoolAdditionalCapacity additional_capacity,
     base::TimeDelta unused_idle_socket_timeout,
     base::TimeDelta used_idle_socket_timeout,
     const ProxyChain& proxy_chain,
@@ -183,9 +180,9 @@ TransportClientSocketPool::CreateForTesting(
     bool connect_backup_jobs_enabled) {
   return base::WrapUnique<TransportClientSocketPool>(
       new TransportClientSocketPool(
-          socket_soft_cap, max_sockets_per_group, additional_capacity,
-          unused_idle_socket_timeout, used_idle_socket_timeout, proxy_chain,
-          is_for_websockets, common_connect_job_params,
+          socket_soft_cap, max_sockets_per_group, unused_idle_socket_timeout,
+          used_idle_socket_timeout, proxy_chain, is_for_websockets,
+          common_connect_job_params,
           /*cleanup_on_ip_address_change=*/true, std::move(connect_job_factory),
           ssl_client_context, connect_backup_jobs_enabled));
 }
@@ -829,7 +826,6 @@ bool TransportClientSocketPool::IdleSocket::IsUsable(
 TransportClientSocketPool::TransportClientSocketPool(
     size_t socket_soft_cap,
     size_t max_sockets_per_group,
-    SocketPoolAdditionalCapacity additional_capacity,
     base::TimeDelta unused_idle_socket_timeout,
     base::TimeDelta used_idle_socket_timeout,
     const ProxyChain& proxy_chain,
@@ -840,7 +836,6 @@ TransportClientSocketPool::TransportClientSocketPool(
     SSLClientContext* ssl_client_context,
     bool connect_backup_jobs_enabled)
     : ClientSocketPool(socket_soft_cap,
-                       additional_capacity,
                        proxy_chain,
                        is_for_websockets,
                        common_connect_job_params,
