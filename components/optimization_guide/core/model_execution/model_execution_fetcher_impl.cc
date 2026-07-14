@@ -491,6 +491,86 @@ net::NetworkTrafficAnnotationTag GetNetworkTrafficAnnotation(
     case ModelBasedCapabilityKey::kContextHub:
       // TODO(crbug.com/532549697): Add network traffic annotation.
       return MISSING_TRAFFIC_ANNOTATION;
+    case ModelBasedCapabilityKey::kReadAloudGenerateText:
+      return net::DefineNetworkTrafficAnnotation("read_aloud_generate_text", R"(
+        semantics {
+          sender: "Read Aloud AI Playback Text Generation"
+          description:
+            "Generates conversational, distilled text from a webpage for "
+            "the Read Aloud conversational audio playback feature."
+          trigger:
+            "User triggers the Read Aloud conversational playback mode."
+          destination: GOOGLE_OWNED_SERVICE
+          data:
+            "The webpage title, main distilled content segments, and "
+            "sanitized page URL."
+          internal {
+            contacts {
+              email: "ericchao@google.com"
+            }
+            contacts {
+              email: "andresmolina@google.com"
+            }
+          }
+          user_data {
+            type: SENSITIVE_URL
+            type: WEB_CONTENT
+          }
+          last_reviewed: "2026-07-10"
+        }
+        policy {
+          cookies_allowed: NO
+          setting:
+            "This feature cannot be disabled directly by a settings toggle. "
+            "It is enabled for users who have 'Make searches and browsing "
+            "better' enabled in Chrome settings."
+          chrome_policy {
+            UrlKeyedAnonymizedDataCollectionEnabled {
+              policy_options {mode: MANDATORY}
+              UrlKeyedAnonymizedDataCollectionEnabled: false
+            }
+          }
+        })");
+    case ModelBasedCapabilityKey::kReadAloudSynthesize:
+      return net::DefineNetworkTrafficAnnotation("read_aloud_synthesize", R"(
+        semantics {
+          sender: "Read Aloud AI Playback Speech Synthesis"
+          description:
+            "Sends text chunks to Google servers to synthesize and stream back "
+            "audio speech bytes for Read Aloud playback."
+          trigger:
+            "User plays or seeks in Read Aloud playback mode, or when "
+            "pre-fetching the next audio segment."
+          destination: GOOGLE_OWNED_SERVICE
+          data:
+            "The text chunk to be synthesized, target voice identifier, and "
+            "BCP-47 language code."
+          internal {
+            contacts {
+              email: "ericchao@google.com"
+            }
+            contacts {
+              email: "andresmolina@google.com"
+            }
+          }
+          user_data {
+            type: WEB_CONTENT
+          }
+          last_reviewed: "2026-07-10"
+        }
+        policy {
+          cookies_allowed: NO
+          setting:
+            "This feature cannot be disabled directly by a settings toggle. "
+            "It is enabled for users who have 'Make searches and browsing "
+            "better' enabled in Chrome settings."
+          chrome_policy {
+            UrlKeyedAnonymizedDataCollectionEnabled {
+              policy_options {mode: MANDATORY}
+              UrlKeyedAnonymizedDataCollectionEnabled: false
+            }
+          }
+        })");
   }
 }
 
@@ -532,6 +612,8 @@ bool IsAccessTokenRequiredForFeature(ModelBasedCapabilityKey feature) {
     case ModelBasedCapabilityKey::kScamDetection:
     case ModelBasedCapabilityKey::kGeminiAntiscamProtection:
     case ModelBasedCapabilityKey::kAmountExtraction:
+    case ModelBasedCapabilityKey::kReadAloudGenerateText:
+    case ModelBasedCapabilityKey::kReadAloudSynthesize:
       return false;
     case ModelBasedCapabilityKey::kPasswordChangeSubmission:
       return !base::FeatureList::IsEnabled(

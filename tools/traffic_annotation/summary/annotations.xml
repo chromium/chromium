@@ -539,4 +539,6 @@ Refer to README.md for content description and update process.
  <item id="private_insights_fcp_http" added_in_milestone="151" content_hash_code="0459da1c" os_list="linux,windows,android,chromeos" file_path="components/metrics/private_metrics/private_insights/fcp_http_client.cc" />
  <item id="doodle_impression_android" added_in_milestone="152" content_hash_code="00cd483d" os_list="android" file_path="chrome/browser/ui/android/logo/logo_bridge.cc" />
  <item id="enterprise_proxy_pvd_fetch" added_in_milestone="152" content_hash_code="0635c190" os_list="android" file_path="components/enterprise/net/core/enterprise_proxy_service.cc" />
+ <item id="read_aloud_generate_text" added_in_milestone="152" content_hash_code="004d1146" os_list="linux,windows,android,chromeos" file_path="components/optimization_guide/core/model_execution/model_execution_fetcher_impl.cc" />
+ <item id="read_aloud_synthesize" added_in_milestone="152" content_hash_code="01f5f507" os_list="linux,windows,android,chromeos" file_path="components/optimization_guide/core/model_execution/model_execution_fetcher_impl.cc" />
 </annotations>

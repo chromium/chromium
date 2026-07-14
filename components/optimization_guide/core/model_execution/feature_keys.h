@@ -57,6 +57,10 @@ enum class ModelBasedCapabilityKey {
       proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_UPDATER_CHAT,
   kContextHub =
       proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_CONTEXT_HUB,
+  kReadAloudGenerateText = proto::ModelExecutionFeature::
+      MODEL_EXECUTION_FEATURE_READ_ALOUD_GENERATE_TEXT,
+  kReadAloudSynthesize = proto::ModelExecutionFeature::
+      MODEL_EXECUTION_FEATURE_READ_ALOUD_SYNTHESIZE,
 };
 
 inline std::ostream& operator<<(std::ostream& out,
@@ -106,6 +110,10 @@ inline std::ostream& operator<<(std::ostream& out,
       return out << "UpdaterChat";
     case ModelBasedCapabilityKey::kContextHub:
       return out << "ContextHub";
+    case ModelBasedCapabilityKey::kReadAloudGenerateText:
+      return out << "ReadAloudGenerateText";
+    case ModelBasedCapabilityKey::kReadAloudSynthesize:
+      return out << "ReadAloudSynthesize";
   }
   return out;
 }
@@ -215,6 +223,12 @@ inline proto::ModelExecutionFeature ToModelExecutionFeatureProto(
       return proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_UPDATER_CHAT;
     case ModelBasedCapabilityKey::kContextHub:
       return proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_CONTEXT_HUB;
+    case ModelBasedCapabilityKey::kReadAloudGenerateText:
+      return proto::ModelExecutionFeature::
+          MODEL_EXECUTION_FEATURE_READ_ALOUD_GENERATE_TEXT;
+    case ModelBasedCapabilityKey::kReadAloudSynthesize:
+      return proto::ModelExecutionFeature::
+          MODEL_EXECUTION_FEATURE_READ_ALOUD_SYNTHESIZE;
   }
 }
 

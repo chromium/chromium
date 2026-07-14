@@ -110,6 +110,8 @@ size_t GetMaxParallelFeatureExecutions(ModelBasedCapabilityKey feature) {
     case ModelBasedCapabilityKey::kAnnotationReducerQueryClassifier:
     case ModelBasedCapabilityKey::kContextualCueing:
     case ModelBasedCapabilityKey::kContextHub:
+    case ModelBasedCapabilityKey::kReadAloudGenerateText:
+    case ModelBasedCapabilityKey::kReadAloudSynthesize:
       return 1;
     case ModelBasedCapabilityKey::kFormsClassifications:
       // Since there can be multiple forms on a single page, multiple parallel
