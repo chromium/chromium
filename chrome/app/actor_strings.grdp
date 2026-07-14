@@ -21,7 +21,7 @@
       =1 {Check your task}
       other {Check your tasks}}
   </message>
-  <message name="IDS_ACTOR_TASK_NUDGE_TASK_COMPLETE_LABEL" desc="Text shown in a tab strip nudge informing the user that their task is done.">
+  <message name="IDS_ACTOR_TASK_NUDGE_TASK_COMPLETE_LABEL" desc="Text shown in a tab strip nudge informing the user that their task is done." formatter_data="android_java">
     {NUM_TASKS, plural,
       =1 {Task done}
       other {Tasks done}}

@@ -438,7 +438,7 @@ public class StripLayoutTrailingButtonsCoordinator {
                             bgHeightDp,
                             (tooltipText) -> mToolbarControlContainer.setTooltipText(tooltipText),
                             (time, view, motionEventButtonState, modifiers) ->
-                                    toggleActorTaskMenu(),
+                                    handleGlicActorButtonClick(),
                             glicKeyboardFocusHandler,
                             R.drawable.ic_arrow_selector_spark_16dp,
                             /* clickSlopDp= */ 0.f,
@@ -660,7 +660,7 @@ public class StripLayoutTrailingButtonsCoordinator {
         }
     }
 
-    private void toggleActorTaskMenu() {
+    private void handleGlicActorButtonClick() {
         GlicButtonStateController stateController = getOrCreateStateController();
         if (stateController != null) {
             stateController.setPersistDoneState(false);
@@ -676,7 +676,10 @@ public class StripLayoutTrailingButtonsCoordinator {
         if (actorService == null) return;
 
         List<ActorTask> tasks = actorService.getActiveTasks();
-        if (tasks.isEmpty()) return;
+        if (tasks.isEmpty()) {
+            handleGlicButtonClick();
+            return;
+        }
 
         RectProvider anchorRectProvider = new RectProvider();
         mGlicActorButton.getAnchorRect(anchorRectProvider.getRect());
@@ -987,7 +990,10 @@ public class StripLayoutTrailingButtonsCoordinator {
                 if (mWidth >= GLIC_ACTOR_TEXT_HIDE_THRESHOLD_DP) {
                     targetActorText =
                             (mLastGlicActorButtonState == ButtonState.DONE)
-                                    ? mContext.getString(R.string.glic_button_status_done)
+                                    ? mContext.getResources()
+                                            .getQuantityString(
+                                                    R.plurals.actor_task_nudge_task_complete_label,
+                                                    1)
                                     : null;
                 }
             } else {

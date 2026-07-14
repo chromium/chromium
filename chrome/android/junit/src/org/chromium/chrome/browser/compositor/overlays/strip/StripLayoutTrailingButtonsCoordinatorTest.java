@@ -820,8 +820,10 @@ public class StripLayoutTrailingButtonsCoordinatorTest {
         // Verify actor button is still visible and text becomes "Done".
         assertTrue("Actor button should remain visible.", actorButton.isVisible());
         assertEquals(
-                "Actor button text should become 'Done'.",
-                mActivity.getString(R.string.glic_button_status_done),
+                "Actor button text should become 'Task done'.",
+                mActivity
+                        .getResources()
+                        .getQuantityString(R.plurals.actor_task_nudge_task_complete_label, 1),
                 actorButton.getText());
         assertNull(
                 "Primary Glic button text should remain null in done state.", glicButton.getText());
