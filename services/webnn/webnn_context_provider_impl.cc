@@ -799,17 +799,7 @@ void WebNNContextProviderImpl::OnOrtEnvCreated(
                << env_creation_results.error();
   } else {
     auto env = std::move(env_creation_results.value());
-
-    // Create session options before posting context creation, so that
-    // if no EP device is available we can fall back to TFLite/LiteRT.
-    auto session_options_result =
-        ort::SessionOptions::Create(options.Clone(), env);
-
-    if (!session_options_result.has_value()) {
-      LOG(ERROR) << "[WebNN] Failed to create ONNX Runtime session options: "
-                 << session_options_result.error();
-    } else if (base::FeatureList::IsEnabled(
-                   mojom::features::kWebNNCompilerProcess)) {
+    if (base::FeatureList::IsEnabled(mojom::features::kWebNNCompilerProcess)) {
       // When the Compiler process is enabled, create a dispatch-only context
       // that delegates graph building/compilation to a per-EP-device Compiler
       // process. Fall back to another backend if no compatible EP device is
@@ -826,7 +816,6 @@ void WebNNContextProviderImpl::OnOrtEnvCreated(
                            std::move(receiver), AsWeakPtr(), std::move(options),
                            std::move(write_tensor_consumer),
                            std::move(read_tensor_producer), std::move(env),
-                           std::move(session_options_result.value()),
                            std::move(gpu_task_scheduler),
                            std::move(memory_tracker), task_runner,
                            base::Unretained(shared_image_manager_.get()),
@@ -839,26 +828,35 @@ void WebNNContextProviderImpl::OnOrtEnvCreated(
         return;
       }
     } else {
-      scoped_trace.AddStep("ort::ContextImplOrt::Create");
-      // Safe to use base::Unretained for shared_image_manager_ since it
-      // lives on the GPU service, which is guaranteed to outlive the provider
-      // and its contexts.
-      task_runner->PostTaskAndReplyWithResult(
-          FROM_HERE,
-          base::BindOnce(
-              &ort::ContextImplOrt::Create, std::move(receiver), AsWeakPtr(),
-              std::move(options), std::move(write_tensor_consumer),
-              std::move(read_tensor_producer), std::move(env),
-              std::move(session_options_result.value()),
-              std::move(gpu_task_scheduler), std::move(memory_tracker),
-              task_runner, base::Unretained(shared_image_manager_.get()),
-              main_thread_task_runner_, std::move(scoped_trace)),
-          base::BindOnce(&WebNNContextProviderImpl::OnCreateWebNNContextImpl,
-                         AsWeakPtr(), std::move(callback), std::move(remote),
-                         std::move(write_tensor_producer),
-                         std::move(read_tensor_consumer), sequence_id,
-                         command_buffer_id));
-      return;
+      // Create session options before posting context creation, so that
+      // if no EP device is available we can fall back to TFLite/LiteRT.
+      auto session_options_result =
+          ort::SessionOptions::Create(options.Clone(), env);
+      if (!session_options_result.has_value()) {
+        LOG(ERROR) << "[WebNN] Failed to create ONNX Runtime session options: "
+                   << session_options_result.error();
+      } else {
+        scoped_trace.AddStep("ort::ContextImplOrt::Create");
+        // Safe to use base::Unretained for shared_image_manager_ since it
+        // lives on the GPU service, which is guaranteed to outlive the provider
+        // and its contexts.
+        task_runner->PostTaskAndReplyWithResult(
+            FROM_HERE,
+            base::BindOnce(
+                &ort::ContextImplOrt::Create, std::move(receiver), AsWeakPtr(),
+                std::move(options), std::move(write_tensor_consumer),
+                std::move(read_tensor_producer), std::move(env),
+                std::move(session_options_result.value()),
+                std::move(gpu_task_scheduler), std::move(memory_tracker),
+                task_runner, base::Unretained(shared_image_manager_.get()),
+                main_thread_task_runner_, std::move(scoped_trace)),
+            base::BindOnce(&WebNNContextProviderImpl::OnCreateWebNNContextImpl,
+                           AsWeakPtr(), std::move(callback), std::move(remote),
+                           std::move(write_tensor_producer),
+                           std::move(read_tensor_consumer), sequence_id,
+                           command_buffer_id));
+        return;
+      }
     }
   }
 

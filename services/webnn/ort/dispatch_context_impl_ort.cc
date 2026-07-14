@@ -26,7 +26,6 @@ DispatchContextImplOrt::Create(
     mojo::ScopedDataPipeConsumerHandle write_tensor_consumer,
     mojo::ScopedDataPipeProducerHandle read_tensor_producer,
     scoped_refptr<Environment> env,
-    scoped_refptr<SessionOptions> session_options,
     std::unique_ptr<GpuTaskScheduler> gpu_task_scheduler,
     scoped_refptr<gpu::MemoryTracker> memory_tracker,
     scoped_refptr<base::SingleThreadTaskRunner> owning_task_runner,
@@ -35,6 +34,9 @@ DispatchContextImplOrt::Create(
     ScopedTrace scoped_trace,
     EpDeviceInfo target_device) {
   DCHECK(owning_task_runner->RunsTasksInCurrentSequence());
+
+  // Create the session options on the target EP device.
+  auto session_options = ort::SessionOptions::Create(target_device, env);
 
   auto task_runner = owning_task_runner;
   OrtHardwareDeviceType device_type = WebnnToOrtDeviceType(options->device);
