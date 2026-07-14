@@ -13,7 +13,6 @@
 #include "chrome/browser/ui/views/media_preview/media_view.h"
 #include "components/user_prefs/user_prefs.h"
 #include "content/public/browser/browser_context.h"
-#include "media/base/media_switches.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/video_capture/public/mojom/video_source.mojom.h"
 

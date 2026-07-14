@@ -8,7 +8,6 @@
 
 #include "base/check_deref.h"
 #include "base/command_line.h"
-#include "base/i18n/break_iterator.h"
 #include "base/memory/raw_ref.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"

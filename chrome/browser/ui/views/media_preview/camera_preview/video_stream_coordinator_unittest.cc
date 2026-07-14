@@ -6,11 +6,9 @@
 
 #include <memory>
 #include <utility>
-#include <vector>
 
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/mock_callback.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -18,7 +16,6 @@
 #include "chrome/browser/ui/views/media_preview/media_preview_metrics.h"
 #include "components/media_effects/test/fake_video_source.h"
 #include "content/public/test/browser_task_environment.h"
-#include "content/public/test/test_image_transport_factory.h"
 #include "content/public/test/test_renderer_host.h"
 #include "media/capture/video_capture_types.h"
 #include "testing/gmock/include/gmock/gmock.h"

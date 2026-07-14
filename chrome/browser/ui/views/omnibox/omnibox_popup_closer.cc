@@ -4,14 +4,10 @@
 
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_closer.h"
 
-#include "base/feature_list.h"
 #include "base/logging.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
-#include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/omnibox/omnibox_view_views.h"
-#include "ui/views/view.h"
 
 namespace omnibox {
 

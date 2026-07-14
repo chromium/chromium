@@ -4,8 +4,6 @@
 
 #include "chrome/browser/ui/views/media_preview/camera_preview/video_format_comparison.h"
 
-#include <algorithm>
-
 #include "media/capture/video_capture_types.h"
 #include "ui/gfx/geometry/size.h"
 

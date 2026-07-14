@@ -9,10 +9,8 @@
 #include "chrome/browser/ui/media_router/media_route_starter.h"
 #include "chrome/browser/ui/media_router/ui_media_sink.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
-#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/media_router/cast_dialog_coordinator.h"
 #include "components/media_router/browser/presentation/start_presentation_context.h"
-#include "components/media_router/common/mojom/media_router.mojom.h"
 #include "content/public/test/browser_test.h"
 
 namespace {

@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/views/media_router/cast_browser_controller.h"
 
-#include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/media/router/discovery/access_code/access_code_cast_feature.h"
 #include "chrome/browser/media/router/mojo/media_router_desktop.h"
@@ -24,13 +23,10 @@
 #include "components/media_router/browser/mirroring_media_controller_host_impl.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/test/browser_test.h"
-#include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/ui_base_features.h"
-#include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
-#include "ui/gfx/color_palette.h"
 #include "ui/gfx/image/image_unittest_util.h"
 #include "ui/gfx/paint_vector_icon.h"
 

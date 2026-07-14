@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/views/media_preview/camera_preview/camera_mediator.h"
 
-#include "base/functional/bind.h"
 #include "chrome/browser/media/prefs/capture_device_ranking.h"
 #include "content/public/browser/video_capture_service.h"
 #include "services/video_capture/public/mojom/video_capture_service.mojom.h"

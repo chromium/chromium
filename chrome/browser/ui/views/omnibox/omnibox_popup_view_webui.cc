@@ -5,17 +5,11 @@
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_view_webui.h"
 
 #include <memory>
-#include <numeric>
-#include <optional>
-#include <string_view>
 
 #include "base/feature_list.h"
-#include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "build/build_config.h"
-#include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
@@ -24,25 +18,10 @@
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter_base.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_webui_content.h"
-#include "chrome/browser/ui/views/omnibox/omnibox_result_view.h"
-#include "chrome/browser/ui/views/omnibox/omnibox_row_view.h"
-#include "chrome/browser/ui/views/omnibox/omnibox_view_views.h"
 #include "chrome/browser/ui/views/omnibox/rounded_omnibox_results_frame.h"
-#include "chrome/browser/ui/views/theme_copying_widget.h"
 #include "chrome/browser/ui/webui/searchbox/webui_omnibox_handler.h"
 #include "chrome/browser/ui/webui/top_chrome/webui_contents_preload_manager.h"
-#include "components/omnibox/browser/omnibox_prefs.h"
-#include "components/omnibox/common/omnibox_features.h"
 #include "ui/accessibility/ax_node_data.h"
-#include "ui/base/metadata/metadata_impl_macros.h"
-#include "ui/compositor/closure_animation_observer.h"
-#include "ui/compositor/layer.h"
-#include "ui/compositor/scoped_layer_animation_settings.h"
-#include "ui/gfx/image/image.h"
-#include "ui/views/accessibility/view_accessibility.h"
-#include "ui/views/cascading_property.h"
-#include "ui/views/layout/box_layout.h"
-#include "ui/views/views_features.h"
 #include "ui/views/widget/widget.h"
 
 OmniboxPopupViewWebUI::OmniboxPopupViewWebUI(

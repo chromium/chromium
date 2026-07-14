@@ -12,9 +12,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "components/media_router/common/mojom/media_route_provider_id.mojom-shared.h"
-#include "components/media_router/common/pref_names.h"
 #include "components/prefs/pref_service.h"
-#include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

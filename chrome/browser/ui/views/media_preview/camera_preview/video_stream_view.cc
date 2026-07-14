@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/views/media_preview/camera_preview/video_stream_view.h"
 
-#include <algorithm>
 #include <utility>
 
 #include "chrome/browser/ui/views/chrome_layout_provider.h"

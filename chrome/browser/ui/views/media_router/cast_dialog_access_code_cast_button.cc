@@ -7,17 +7,13 @@
 #include <memory>
 #include <utility>
 
-#include "chrome/browser/media/router/discovery/access_code/access_code_cast_feature.h"
-#include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/ui/views/media_router/cast_dialog_helper.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/ui_base_features.h"
-#include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/border.h"
-#include "ui/views/vector_icons.h"
 
 namespace media_router {
 

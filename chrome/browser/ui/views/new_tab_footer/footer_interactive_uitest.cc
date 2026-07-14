@@ -16,7 +16,6 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/extensions/settings_api_bubble_helpers.h"
 #include "chrome/browser/ui/interaction/browser_elements.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/contents_container_view.h"
 #include "chrome/browser/ui/views/frame/multi_contents_view.h"
 #include "chrome/browser/ui/views/new_tab_footer/footer_web_view.h"
@@ -31,12 +30,10 @@
 #include "components/policy/core/common/management/scoped_management_service_override_for_testing.h"
 #include "components/prefs/pref_service.h"
 #include "components/search/ntp_features.h"
-#include "content/public/common/url_constants.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/install_verifier.h"
 #include "extensions/test/test_extension_dir.h"
 #include "ui/base/interaction/element_identifier.h"
-#include "ui/views/view_class_properties.h"
 
 namespace {
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewTabElementId);

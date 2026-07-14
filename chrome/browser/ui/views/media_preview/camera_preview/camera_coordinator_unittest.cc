@@ -6,15 +6,11 @@
 
 #include <stddef.h>
 
-#include <memory>
 #include <optional>
 #include <string>
 
-#include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/mock_callback.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/media/prefs/capture_device_ranking.h"
 #include "chrome/browser/ui/views/frame/test_with_browser_view.h"
@@ -24,7 +20,6 @@
 #include "components/media_effects/test/scoped_media_device_info.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/l10n/l10n_util.h"
 #include "ui/views/view.h"
 
 using testing::_;

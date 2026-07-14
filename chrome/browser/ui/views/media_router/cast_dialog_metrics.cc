@@ -6,10 +6,8 @@
 
 #include "base/metrics/histogram_macros.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/media_router/ui_media_sink.h"
 #include "chrome/common/pref_names.h"
 #include "components/media_router/common/mojom/media_route_provider_id.mojom-shared.h"
-#include "components/media_router/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 
 namespace media_router {

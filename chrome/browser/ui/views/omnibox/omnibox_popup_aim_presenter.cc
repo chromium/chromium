@@ -14,8 +14,6 @@
 #include "chrome/browser/ui/webui/top_chrome/webui_contents_preload_manager.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/permissions/permission_request_manager.h"
-#include "content/public/browser/browser_accessibility_state.h"
-#include "ui/accessibility/ax_mode.h"
 
 OmniboxPopupAimPresenter::OmniboxPopupAimPresenter(
     LocationBar* location_bar,

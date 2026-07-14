@@ -12,7 +12,6 @@
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/controls/scrollbar/overlay_scroll_bar.h"
 #include "ui/views/view.h"
-#include "ui/views/view_class_properties.h"
 
 namespace scroll_media_preview {
 

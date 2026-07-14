@@ -2,11 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/feature_list.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_view_views_test.h"
-#include "components/omnibox/common/omnibox_features.h"
 #include "content/public/test/browser_test.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/native_theme/mock_os_settings_provider.h"

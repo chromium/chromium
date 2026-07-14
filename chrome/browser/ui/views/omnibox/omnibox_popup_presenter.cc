@@ -10,13 +10,10 @@
 #include "base/feature_list.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
-#include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/omnibox/omnibox_popup_state_manager.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter_base.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_webui_content.h"
-#include "chrome/common/webui_url_constants.h"
 #include "components/omnibox/common/omnibox_features.h"
-#include "ui/views/view_utils.h"
 
 OmniboxPopupPresenter::OmniboxPopupPresenter(
     LocationBar* location_bar,

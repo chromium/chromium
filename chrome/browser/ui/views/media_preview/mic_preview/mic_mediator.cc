@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "base/functional/bind.h"
 #include "chrome/browser/media/prefs/capture_device_ranking.h"
 #include "content/public/browser/audio_service.h"
 #include "media/audio/audio_device_description.h"
