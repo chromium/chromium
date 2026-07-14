@@ -186,8 +186,7 @@ std::array<std::atomic<partition_alloc::PartitionRoot*>, kNumPartitions>
 std::atomic<bool> g_roots_finalized = false;
 
 partition_alloc::PartitionRoot* OriginalAllocator(AllocToken alloc_token) {
-  return PA_UNSAFE_TODO(g_original_roots[alloc_token.value()])
-      .load(std::memory_order_relaxed);
+  return g_original_roots[alloc_token.value()].load(std::memory_order_relaxed);
 }
 
 bool AllocatorConfigurationFinalized() {

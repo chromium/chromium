@@ -244,7 +244,7 @@ void SchedulerLoopQuarantineBranch<thread_bound>::Quarantine(
   }
   PA_DCHECK(!allocator_root_->IsDirectMapped(slot_span));
   PA_DCHECK(
-      slot_span->bucket >= PA_UNSAFE_TODO(&allocator_root_->buckets_[0]) &&
+      slot_span->bucket >= &allocator_root_->buckets_[0] &&
       slot_span->bucket <=
           PA_UNSAFE_TODO(&allocator_root_->buckets_[largest_bucket_index_]));
 
