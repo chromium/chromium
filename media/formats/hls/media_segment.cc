@@ -95,7 +95,8 @@ MediaSegment::MediaSegment(
     bool has_discontinuity,
     bool is_gap,
     bool has_new_init_segment,
-    bool has_new_encryption_data)
+    bool has_new_encryption_data,
+    std::optional<base::Time> program_date_time)
     : duration_(duration),
       media_sequence_number_(media_sequence_number),
       discontinuity_sequence_number_(discontinuity_sequence_number),
@@ -108,7 +109,8 @@ MediaSegment::MediaSegment(
       has_discontinuity_(has_discontinuity),
       is_gap_(is_gap),
       has_new_init_segment_(has_new_init_segment),
-      has_new_encryption_data_(has_new_encryption_data) {}
+      has_new_encryption_data_(has_new_encryption_data),
+      program_date_time_(program_date_time) {}
 
 MediaSegment::~MediaSegment() = default;
 

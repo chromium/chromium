@@ -4,7 +4,26 @@
 
 #include "media/formats/hls/segment_stream.h"
 
+#include <algorithm>
+
 namespace media::hls {
+
+namespace {
+std::vector<scoped_refptr<MediaSegment>>::const_iterator FindSegmentIndexByPdt(
+    const std::vector<scoped_refptr<MediaSegment>>& new_segments,
+    base::Time target_pdt) {
+  auto get_pdt_diff = [target_pdt](const scoped_refptr<MediaSegment>& segment) {
+    auto pdt = segment->GetProgramDateTime();
+    return pdt ? (*pdt - target_pdt).magnitude() : base::TimeDelta::Max();
+  };
+
+  auto it = std::ranges::min_element(new_segments, std::less<>{}, get_pdt_diff);
+  if (it != new_segments.end() && get_pdt_diff(*it) < base::Seconds(1)) {
+    return it;
+  }
+  return new_segments.end();
+}
+}  // namespace
 
 SegmentStream::SegmentIndex::SegmentIndex(const MediaSegment& segment)
     : SegmentIndex(segment.GetMediaSequenceNumber(),
@@ -81,6 +100,9 @@ SegmentInfo SegmentStream::GetNextSegment() {
   auto segment = std::move(segments_.front());
   segments_.pop();
 
+  last_popped_segment_pdt_ = segment->GetProgramDateTime();
+  last_popped_segment_duration_ = segment->GetDuration();
+
   if (auto init_segment = segment->GetInitializationSegment()) {
     if (segment->HasNewInitSegment()) {
       previous_segment_init_segment_ = init_segment->GetUri();
@@ -124,8 +146,8 @@ void SegmentStream::SetNewPlaylist(scoped_refptr<MediaPlaylist> playlist) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   active_playlist_ = std::move(playlist);
 
-  const auto& segments = active_playlist_->GetSegments();
-  if (segments.empty()) {
+  const auto& new_segments = active_playlist_->GetSegments();
+  if (new_segments.empty()) {
     // No new segments.
     // TODO(crbug.com/40057824): Should this be an error? I do not know if this
     // ever happens in the wild. I can imagine that it does, hence not raising
@@ -133,29 +155,44 @@ void SegmentStream::SetNewPlaylist(scoped_refptr<MediaPlaylist> playlist) {
     return;
   }
 
+  // If a live stream's queue was completely exhausted when receiving an updated
+  // playlist, we should skip early segments so playback starts near the live
+  // edge per RFC 8216.
   bool should_flush_live_segment_queue = !seekable_ && Exhausted();
 
   bool must_keep_encrypted_ = false;
   if (!Exhausted()) {
-    // If the head is a non-fresh encrypted segment, keep it.
+    // If the head of the current queue is an encrypted segment that relies on
+    // existing key/IV state (i.e. does not bring a new initialization
+    // section/key), we must preserve it in the queue so decryption context is
+    // not lost during rendition switching.
     must_keep_encrypted_ = !!segments_.front()->GetEncryptionData() &&
                            !segments_.front()->HasNewEncryptionData();
   }
 
-  SegmentIndex starting_segment_index = {0, 0};
-  if (Exhausted()) {
-    if (seekable_) {
-      // If a VOD stream is exhausted, there is nothing to append. Seeking later
-      // will use the new active playlist's queue.
-      return;
-    }
-    starting_segment_index = highest_segment_index_.Next();
-  } else {
-    starting_segment_index = SegmentIndex(*segments_.front());
+  scoped_refptr<MediaSegment> front_segment;
+  if (!Exhausted()) {
+    front_segment = segments_.front();
   }
 
-  if (must_keep_encrypted_) {
-    starting_segment_index = starting_segment_index.Next();
+  // Target Program Date Time (PDT) used to align segments across playlist
+  // updates. We prioritize the front segment's PDT (or the start time of the
+  // next segment if keeping the front encrypted segment), or fall back to the
+  // end timestamp of the most recently popped segment if the queue is
+  // exhausted.
+  std::optional<base::Time> target_pdt;
+  if (front_segment) {
+    if (must_keep_encrypted_) {
+      if (front_segment->GetProgramDateTime().has_value()) {
+        target_pdt = front_segment->GetProgramDateTime().value() +
+                     front_segment->GetDuration();
+      }
+    } else {
+      target_pdt = front_segment->GetProgramDateTime();
+    }
+  } else if (last_popped_segment_pdt_.has_value()) {
+    target_pdt =
+        last_popped_segment_pdt_.value() + last_popped_segment_duration_;
   }
 
   base::queue<scoped_refptr<MediaSegment>> new_queue;
@@ -163,13 +200,48 @@ void SegmentStream::SetNewPlaylist(scoped_refptr<MediaPlaylist> playlist) {
     new_queue.push(std::move(segments_.front()));
   }
 
-  for (const auto& segment : segments) {
-    auto segment_sequence_index = SegmentIndex(*segment);
-    if (starting_segment_index <= segment_sequence_index) {
-      new_queue.push(segment);
+  // Attempt to align segments using Program Date Time (PDT) tags if available.
+  bool aligned_by_pdt = false;
+  if (target_pdt.has_value()) {
+    auto new_start_it = FindSegmentIndexByPdt(new_segments, target_pdt.value());
+    if (new_start_it != new_segments.end()) {
+      aligned_by_pdt = true;
+      for (; new_start_it != new_segments.end(); ++new_start_it) {
+        new_queue.push(*new_start_it);
+      }
+      if (!new_segments.empty()) {
+        highest_segment_index_ = SegmentIndex(*new_segments.back());
+      }
     }
-    if (segment_sequence_index > highest_segment_index_) {
-      highest_segment_index_ = segment_sequence_index;
+  }
+
+  // If PDT tags are absent or alignment by PDT failed, fall back to sequence
+  // number and discontinuity sequence index matching.
+  if (!aligned_by_pdt) {
+    SegmentIndex starting_segment_index = {0, 0};
+    if (Exhausted()) {
+      if (seekable_) {
+        // If a VOD stream is exhausted, there is nothing to append. Seeking
+        // later will use the new active playlist's queue.
+        return;
+      }
+      starting_segment_index = highest_segment_index_.Next();
+    } else {
+      starting_segment_index = SegmentIndex(*front_segment);
+    }
+
+    if (must_keep_encrypted_) {
+      starting_segment_index = starting_segment_index.Next();
+    }
+
+    for (const auto& segment : new_segments) {
+      auto segment_sequence_index = SegmentIndex(*segment);
+      if (starting_segment_index <= segment_sequence_index) {
+        new_queue.push(segment);
+      }
+      if (segment_sequence_index > highest_segment_index_) {
+        highest_segment_index_ = segment_sequence_index;
+      }
     }
   }
 
@@ -209,6 +281,9 @@ void SegmentStream::ResetExpectingFutureManifest(base::TimeDelta time) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   segments_ = {};
   next_segment_start_ = time;
+  previous_segment_init_segment_.reset();
+  last_popped_segment_pdt_.reset();
+  last_popped_segment_duration_ = base::TimeDelta();
 }
 
 void SegmentStream::SetSeekable(bool seekable) {

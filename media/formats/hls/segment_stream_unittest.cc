@@ -459,4 +459,152 @@ TEST(SegmentStreamUnittest, InitSegmentGetsReloadedAfterRenditionAdaptation) {
   ASSERT_TRUE(need_init);
 }
 
+TEST(SegmentStreamUnittest, AdaptationWithPdt) {
+  auto playlist1 = CreateMediaPlaylist(
+      "#EXT-X-TARGETDURATION:10", "#EXT-X-VERSION:1",
+      "#EXT-X-MEDIA-SEQUENCE:100", "#EXT-X-MEDIA-PLAYLIST-TYPE:VOD",
+      "#EXT-X-PROGRAM-DATE-TIME:2010-02-19T14:54:23.000Z", "#EXTINF:10.0,",
+      "video100.ts", "#EXTINF:10.0,", "video101.ts", "#EXTINF:10.0,",
+      "video102.ts", "#EXT-X-ENDLIST");
+
+  auto playlist2 = CreateMediaPlaylist(
+      "#EXT-X-TARGETDURATION:10", "#EXT-X-VERSION:1",
+      "#EXT-X-MEDIA-SEQUENCE:200", "#EXT-X-MEDIA-PLAYLIST-TYPE:VOD",
+      "#EXT-X-PROGRAM-DATE-TIME:2010-02-19T14:54:23.000Z", "#EXTINF:10.0,",
+      "video200.ts", "#EXTINF:10.0,", "video201.ts", "#EXTINF:10.0,",
+      "video202.ts", "#EXT-X-ENDLIST");
+
+  auto segment_stream =
+      std::make_unique<SegmentStream>(playlist1, /*seekable=*/true);
+
+  ASSERT_TRUE(segment_stream->PlaylistHasSegments());
+  ASSERT_FALSE(segment_stream->Exhausted());
+
+  // Pop the first segment (video100.ts, PDT 14:54:23)
+  scoped_refptr<hls::MediaSegment> segment;
+  base::TimeDelta start;
+  base::TimeDelta end;
+  bool need_init;
+  std::tie(segment, start, end, need_init) = segment_stream->GetNextSegment();
+  ASSERT_EQ(segment->GetUri().GetPath(), "/video100.ts");
+  ASSERT_EQ(segment->GetMediaSequenceNumber(), 100lu);
+  ASSERT_TRUE(segment->GetProgramDateTime().has_value());
+
+  // Adapt to playlist2
+  segment_stream->SetNewPlaylist(playlist2);
+
+  // The next segment should be video201.ts (PDT 14:54:33) because it aligns
+  // with video101.ts
+  ASSERT_FALSE(segment_stream->Exhausted());
+  std::tie(segment, start, end, need_init) = segment_stream->GetNextSegment();
+  ASSERT_EQ(segment->GetUri().GetPath(), "/video201.ts");
+  ASSERT_EQ(segment->GetMediaSequenceNumber(), 201lu);
+
+  std::tie(segment, start, end, need_init) = segment_stream->GetNextSegment();
+  ASSERT_EQ(segment->GetUri().GetPath(), "/video202.ts");
+  ASSERT_EQ(segment->GetMediaSequenceNumber(), 202lu);
+
+  ASSERT_TRUE(segment_stream->Exhausted());
+}
+
+TEST(SegmentStreamUnittest, AdaptationWithPdtEmptyQueue) {
+  auto playlist1 = CreateMediaPlaylist(
+      "#EXT-X-TARGETDURATION:10", "#EXT-X-VERSION:1",
+      "#EXT-X-MEDIA-SEQUENCE:100", "#EXT-X-MEDIA-PLAYLIST-TYPE:VOD",
+      "#EXT-X-PROGRAM-DATE-TIME:2010-02-19T14:54:23.000Z", "#EXTINF:10.0,",
+      "video100.ts", "#EXTINF:10.0,", "video101.ts", "#EXTINF:10.0,",
+      "video102.ts", "#EXT-X-ENDLIST");
+
+  auto playlist2 = CreateMediaPlaylist(
+      "#EXT-X-TARGETDURATION:10", "#EXT-X-VERSION:1",
+      "#EXT-X-MEDIA-SEQUENCE:200", "#EXT-X-MEDIA-PLAYLIST-TYPE:VOD",
+      "#EXT-X-PROGRAM-DATE-TIME:2010-02-19T14:54:23.000Z", "#EXTINF:10.0,",
+      "video200.ts", "#EXTINF:10.0,", "video201.ts", "#EXTINF:10.0,",
+      "video202.ts", "#EXTINF:10.0,", "video203.ts", "#EXT-X-ENDLIST");
+
+  auto segment_stream =
+      std::make_unique<SegmentStream>(playlist1, /*seekable=*/true);
+
+  // Pop all segments
+  for (int i = 0; i < 3; ++i) {
+    segment_stream->GetNextSegment();
+  }
+  ASSERT_TRUE(segment_stream->Exhausted());
+
+  // Adapt to playlist2 which has one more segment
+  segment_stream->SetNewPlaylist(playlist2);
+
+  // The next segment should be video203.ts (PDT 14:54:53)
+  ASSERT_FALSE(segment_stream->Exhausted());
+  scoped_refptr<hls::MediaSegment> segment;
+  base::TimeDelta start;
+  base::TimeDelta end;
+  bool need_init;
+  std::tie(segment, start, end, need_init) = segment_stream->GetNextSegment();
+  ASSERT_EQ(segment->GetUri().GetPath(), "/video203.ts");
+  ASSERT_EQ(segment->GetMediaSequenceNumber(), 203lu);
+  ASSERT_TRUE(segment_stream->Exhausted());
+}
+
+TEST(SegmentStreamUnittest, ResetExpectingFutureManifestResetsState) {
+  auto segment_stream = std::make_unique<SegmentStream>(
+      CreateMediaPlaylist("#EXT-X-TARGETDURATION:10", "#EXT-X-VERSION:1",
+                          "#EXT-X-MEDIA-SEQUENCE:0",
+                          "#EXT-X-MAP:URI=\"init.mp4\"",
+                          "#EXT-X-MEDIA-PLAYLIST-TYPE:LIVE", "#EXTINF:10,",
+                          "a0.mp4", "#EXTINF:10,", "a1.mp4", "#EXTINF:10,",
+                          "a2.mp4", "#EXTINF:10,", "a3.mp4"),
+      /*seekable=*/false);
+
+  scoped_refptr<hls::MediaSegment> segment;
+  base::TimeDelta start;
+  base::TimeDelta end;
+  bool need_init;
+
+  // First segment requires init segment.
+  std::tie(segment, start, end, need_init) = segment_stream->GetNextSegment();
+  ASSERT_TRUE(need_init);
+
+  // Second segment with same init URI does not require init segment.
+  std::tie(segment, start, end, need_init) = segment_stream->GetNextSegment();
+  ASSERT_FALSE(need_init);
+
+  // Reset expecting future manifest clears state including
+  // previous_segment_init_segment_.
+  segment_stream->ResetExpectingFutureManifest(base::Seconds(100));
+  ASSERT_TRUE(segment_stream->Exhausted());
+  ASSERT_EQ(segment_stream->NextSegmentStartTime(), base::Seconds(100));
+
+  // Load new playlist after reset (with same init URI "init.mp4").
+  segment_stream->SetNewPlaylist(CreateMediaPlaylist(
+      "#EXT-X-TARGETDURATION:10", "#EXT-X-VERSION:1", "#EXT-X-MEDIA-SEQUENCE:2",
+      "#EXT-X-MAP:URI=\"init.mp4\"", "#EXT-X-MEDIA-PLAYLIST-TYPE:LIVE",
+      "#EXTINF:10,", "a2.mp4", "#EXTINF:10,", "a3.mp4", "#EXTINF:10,", "a4.mp4",
+      "#EXTINF:10,", "a5.mp4"));
+
+  ASSERT_FALSE(segment_stream->Exhausted());
+  // Because state was reset, first segment from new playlist requires init
+  // segment.
+  std::tie(segment, start, end, need_init) = segment_stream->GetNextSegment();
+  ASSERT_EQ(segment->GetUri().GetPath(), "/a4.mp4");
+  ASSERT_TRUE(need_init);
+
+  // Subsequent segment with same init URI does not require init segment.
+  std::tie(segment, start, end, need_init) = segment_stream->GetNextSegment();
+  ASSERT_EQ(segment->GetUri().GetPath(), "/a5.mp4");
+  ASSERT_FALSE(need_init);
+
+  // Now adapt to a playlist with a DIFFERENT init URI ("init2.mp4").
+  segment_stream->SetNewPlaylist(CreateMediaPlaylist(
+      "#EXT-X-TARGETDURATION:10", "#EXT-X-VERSION:1", "#EXT-X-MEDIA-SEQUENCE:4",
+      "#EXT-X-MAP:URI=\"init2.mp4\"", "#EXT-X-MEDIA-PLAYLIST-TYPE:LIVE",
+      "#EXTINF:10,", "a4.mp4", "#EXTINF:10,", "a5.mp4", "#EXTINF:10,",
+      "a6.mp4"));
+
+  // The new segment with a different init URI requires init segment.
+  std::tie(segment, start, end, need_init) = segment_stream->GetNextSegment();
+  ASSERT_EQ(segment->GetUri().GetPath(), "/a6.mp4");
+  ASSERT_TRUE(need_init);
+}
+
 }  // namespace media::hls

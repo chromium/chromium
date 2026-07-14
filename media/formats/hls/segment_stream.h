@@ -9,6 +9,7 @@
 
 #include "base/containers/queue.h"
 #include "base/sequence_checker.h"
+#include "base/time/time.h"
 #include "media/formats/hls/media_playlist.h"
 #include "media/formats/hls/media_segment.h"
 
@@ -105,6 +106,9 @@ class MEDIA_EXPORT SegmentStream {
 
   SegmentIndex highest_segment_index_ = {0, 0};
   std::optional<GURL> previous_segment_init_segment_;
+
+  std::optional<base::Time> last_popped_segment_pdt_;
+  base::TimeDelta last_popped_segment_duration_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

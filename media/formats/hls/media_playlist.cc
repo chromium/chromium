@@ -110,6 +110,7 @@ ParseStatus::Or<scoped_refptr<MediaPlaylist>> MediaPlaylist::Parse(
   bool new_encryption_data = false;
 
   types::DecimalInteger discontinuity_sequence_number = 0;
+  std::optional<base::Time> current_pdt;
 
   // If this media playlist was found through a multivariant playlist, it may
   // import variables from that playlist.
@@ -333,8 +334,11 @@ ParseStatus::Or<scoped_refptr<MediaPlaylist>> MediaPlaylist::Parse(
           break;
         }
         case MediaPlaylistTagName::kXProgramDateTime: {
-          // TODO(crbug.com/40057824): Implement the EXT-X-PROGRAM-DATE-TIME
-          // tag.
+          auto result = XProgramDateTimeTag::Parse(*tag);
+          if (!result.has_value()) {
+            return std::move(result).error();
+          }
+          current_pdt = std::move(result).value().time;
           break;
         }
         case MediaPlaylistTagName::kXRenditionReport: {
@@ -436,7 +440,11 @@ ParseStatus::Or<scoped_refptr<MediaPlaylist>> MediaPlaylist::Parse(
         inf_tag->duration, media_sequence_number, discontinuity_sequence_number,
         std::move(segment_uri), playlist_origin, initialization_segment,
         encryption_data, byterange, bitrate, discontinuity_tag.has_value(),
-        gap_tag.has_value(), new_init_segment, new_encryption_data));
+        gap_tag.has_value(), new_init_segment, new_encryption_data,
+        current_pdt));
+    if (current_pdt.has_value()) {
+      current_pdt = current_pdt.value() + inf_tag->duration;
+    }
     new_init_segment = false;
     new_encryption_data = false;
 

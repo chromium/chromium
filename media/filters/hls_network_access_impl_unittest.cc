@@ -75,7 +75,8 @@ class HlsNetworkAccessImplUnittest : public testing::Test {
     return base::MakeRefCounted<hls::MediaSegment>(
         base::Seconds(1), 0, 0, resource_uri, url::Origin::Create(manifest_uri),
         std::move(init), std::move(enc_data), ByteRangeFromTuple(byte_range),
-        std::nullopt, false, false, init_mode == InitMode::kPresent, false);
+        std::nullopt, false, false, init_mode == InitMode::kPresent, false,
+        std::nullopt);
   }
 
  protected:

@@ -114,7 +114,8 @@ class MEDIA_EXPORT MediaSegment : public base::RefCounted<MediaSegment> {
                bool has_discontinuity,
                bool is_gap,
                bool has_new_init_segment,
-               bool has_new_encryption_data);
+               bool has_new_encryption_data,
+               std::optional<base::Time> program_date_time);
   MediaSegment(const MediaSegment&) = delete;
   MediaSegment(MediaSegment&&) = delete;
   MediaSegment& operator=(const MediaSegment&) = delete;
@@ -180,6 +181,12 @@ class MEDIA_EXPORT MediaSegment : public base::RefCounted<MediaSegment> {
   // bits-per-second.
   std::optional<types::DecimalInteger> GetBitRate() const { return bitrate_; }
 
+  // Returns the absolute program date and time associated with this segment, if
+  // any.
+  std::optional<base::Time> GetProgramDateTime() const {
+    return program_date_time_;
+  }
+
   // Using the cryptographic properties of this segment, convert the source data
   // associated to plaintext. This operation might be a no-op, in the case where
   // this segment is unencrypted. In the case where decryption must be done,
@@ -206,6 +213,7 @@ class MEDIA_EXPORT MediaSegment : public base::RefCounted<MediaSegment> {
   bool is_gap_;
   bool has_new_init_segment_;
   bool has_new_encryption_data_;
+  std::optional<base::Time> program_date_time_;
 };
 
 }  // namespace media::hls
