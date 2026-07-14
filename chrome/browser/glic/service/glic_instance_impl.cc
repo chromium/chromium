@@ -887,6 +887,19 @@ void GlicInstanceImpl::CancelTask() {
   }
 }
 
+bool GlicInstanceImpl::IsInvoking() const {
+  if (coordinator_delegate_) {
+    return coordinator_delegate_->IsInvoking(this);
+  }
+  return false;
+}
+
+void GlicInstanceImpl::CancelInvoke() {
+  if (coordinator_delegate_) {
+    coordinator_delegate_->CancelInvoke(this);
+  }
+}
+
 GlicActorTaskManager* GlicInstanceImpl::GetActorTaskManager() {
   return actor_task_manager_.get();
 }

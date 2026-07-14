@@ -820,6 +820,9 @@ void GlicInternalsPageHandler::TriggerInvokeFromInternalsAction(
           case GlicInvokeError::kUnknown:
             error_msg = "Unknown Error";
             break;
+          case GlicInvokeError::kCancelled:
+            error_msg = "Cancelled";
+            break;
           default:
             error_msg = "Unknown Error";
             break;

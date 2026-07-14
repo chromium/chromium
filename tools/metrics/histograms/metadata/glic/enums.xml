@@ -627,6 +627,7 @@ chromium-metrics-reviews@google.com.
   <int value="14" label="Additional context no clipboard metadata"/>
   <int value="15" label="Instance not found"/>
   <int value="16" label="Profile not enabled"/>
+  <int value="17" label="Cancelled"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/glic/public/glic_invoke_options.h:GlicInvokeError) -->

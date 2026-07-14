@@ -190,6 +190,21 @@ void GlicInstanceCoordinatorImpl::OnInstanceVisibilityChanged(
   metrics_.OnInstanceVisibilityChanged();
 }
 
+bool GlicInstanceCoordinatorImpl::IsInvoking(
+    const GlicInstanceImpl* instance) const {
+  return invoke_handlers_.contains(const_cast<GlicInstanceImpl*>(instance));
+}
+
+void GlicInstanceCoordinatorImpl::CancelInvoke(GlicInstanceImpl* instance) {
+  if (auto it = invoke_handlers_.find(instance); it != invoke_handlers_.end()) {
+    auto handler = std::move(it->second);
+    invoke_handlers_.erase(it);
+    if (handler) {
+      handler->Cancel(GlicInvokeError::kCancelled);
+    }
+  }
+}
+
 void GlicInstanceCoordinatorImpl::OnInvoked() {
   if (onboarding_tracker_) {
     onboarding_tracker_->OnInvoke();

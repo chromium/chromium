@@ -203,7 +203,9 @@ enum class GlicInvokeError {
   kInstanceNotFound = 15,
   // Profile is not enabled for Glic.
   kProfileNotEnabled = 16,
-  kMaxValue = kProfileNotEnabled,
+  // The invocation was cancelled.
+  kCancelled = 17,
+  kMaxValue = kCancelled,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicInvokeResult,//chrome/browser/glic/host/glic_internals_page_handler.cc:GlicInvokeError)
 

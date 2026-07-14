@@ -121,6 +121,12 @@ class GlicInstance {
   // Cancels ongoing actuation task if one exists.
   virtual void CancelTask() = 0;
 
+  // Returns true if the instance is currently being invoked upon.
+  virtual bool IsInvoking() const = 0;
+
+  // Cancels any ongoing invocation if one exists.
+  virtual void CancelInvoke() = 0;
+
   // Exposes basic pinning controls to external Chrome consumers.
   virtual GlicSharingManager* GetSharingManager() = 0;
 

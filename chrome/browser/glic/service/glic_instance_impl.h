@@ -104,6 +104,9 @@ class GlicInstanceImpl : public GlicInstance,
         GlicInstanceImpl& source_instance,
         bool enabled) = 0;
 
+    virtual bool IsInvoking(const GlicInstanceImpl* instance) const = 0;
+    virtual void CancelInvoke(GlicInstanceImpl* instance) = 0;
+
     virtual void OnInvoked() = 0;
     virtual void OnUserInputSubmitted() = 0;
 
@@ -165,6 +168,7 @@ class GlicInstanceImpl : public GlicInstance,
   bool HasActiveEmbedder() const;
   bool IsDetached();
   bool IsActuating() const override;
+  bool IsInvoking() const override;
   bool IsLiveMode();
 
   glic::mojom::ConversationInfoPtr GetConversationInfo() const;
@@ -218,6 +222,7 @@ class GlicInstanceImpl : public GlicInstance,
   base::CallbackListSubscription AddConversationInfoChangedCallback(
       base::RepeatingCallback<void(const mojom::ConversationInfo&)> callback);
   void CancelTask() override;
+  void CancelInvoke() override;
   GlicActorTaskManager* GetActorTaskManager() override;
   GlicExperimentalTriggeringManager* GetExperimentalTriggeringManager()
       override;

@@ -60,6 +60,8 @@ class MockGlicInstance : public GlicInstance {
               (override));
   MOCK_METHOD(bool, IsActuating, (), (const, override));
   MOCK_METHOD(void, CancelTask, (), (override));
+  MOCK_METHOD(bool, IsInvoking, (), (const, override));
+  MOCK_METHOD(void, CancelInvoke, (), (override));
 
   MOCK_METHOD(GlicSharingManager*, GetSharingManager, (), (override));
   MOCK_METHOD(void,

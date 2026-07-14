@@ -104,6 +104,8 @@ class GlicInstanceCoordinatorImpl
       size_t limit) override;
   void ContextAccessIndicatorChanged(GlicInstanceImpl& instance,
                                      bool enabled) override;
+  bool IsInvoking(const GlicInstanceImpl* instance) const override;
+  void CancelInvoke(GlicInstanceImpl* instance) override;
   void OnInvoked() override;
   void OnUserInputSubmitted() override;
   std::unique_ptr<WebUIContentsContainer> CreateWebUIContentsContainer()
