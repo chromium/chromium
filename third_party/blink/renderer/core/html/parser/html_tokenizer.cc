@@ -152,7 +152,11 @@ static inline bool VectorEqualsString(
 #define HTML_SWITCH_TO(stateName) SWITCH_TO(HTMLTokenizer, stateName)
 
 HTMLTokenizer::HTMLTokenizer(const HTMLParserOptions& options)
-    : options_(options), input_stream_preprocessor_(this) {
+    : truncated_markup_declaration_enabled_(
+          RuntimeEnabledFeatures::
+              HTMLParserTruncatedMarkupDeclarationEnabled()),
+      options_(options),
+      input_stream_preprocessor_(this) {
   Reset();
 }
 
@@ -1234,24 +1238,30 @@ bool HTMLTokenizer::NextTokenImpl(SegmentedString& source) {
           source.AdvanceExpecting('-');
           token_.BeginComment();
           HTML_SWITCH_TO(kCommentStartState);
-        } else if (result == SegmentedString::kNotEnoughCharacters)
+        } else if (result == SegmentedString::kNotEnoughCharacters &&
+                   ShouldWaitForMoreInput(source)) {
           return HaveBufferedCharacterToken();
+        }
       } else if (cc == 'D' || cc == 'd') {
         SegmentedString::LookAheadResult result =
             source.LookAheadIgnoringCase(html_tokenizer_names::kDoctype);
         if (result == SegmentedString::kDidMatch) {
           source.AdvanceExpectingIgnoringAsciiCase("doctype");
           HTML_SWITCH_TO(kDOCTYPEState);
-        } else if (result == SegmentedString::kNotEnoughCharacters)
+        } else if (result == SegmentedString::kNotEnoughCharacters &&
+                   ShouldWaitForMoreInput(source)) {
           return HaveBufferedCharacterToken();
+        }
       } else if (cc == '[' && ShouldAllowCDATA()) {
         SegmentedString::LookAheadResult result =
             source.LookAhead(html_tokenizer_names::kCdata);
         if (result == SegmentedString::kDidMatch) {
           source.AdvanceExpecting("[CDATA[");
           HTML_SWITCH_TO(kCDATASectionState);
-        } else if (result == SegmentedString::kNotEnoughCharacters)
+        } else if (result == SegmentedString::kNotEnoughCharacters &&
+                   ShouldWaitForMoreInput(source)) {
           return HaveBufferedCharacterToken();
+        }
       }
       ParseError();
       HTML_RECONSUME_IN(kBogusCommentState);
@@ -1429,16 +1439,20 @@ bool HTMLTokenizer::NextTokenImpl(SegmentedString& source) {
           if (result == SegmentedString::kDidMatch) {
             source.AdvanceExpectingIgnoringAsciiCase("public");
             HTML_SWITCH_TO(kAfterDOCTYPEPublicKeywordState);
-          } else if (result == SegmentedString::kNotEnoughCharacters)
+          } else if (result == SegmentedString::kNotEnoughCharacters &&
+                     ShouldWaitForMoreInput(source)) {
             return HaveBufferedCharacterToken();
+          }
         } else if (cc == 'S' || cc == 's') {
           SegmentedString::LookAheadResult result =
               source.LookAheadIgnoringCase(html_tokenizer_names::kSystem);
           if (result == SegmentedString::kDidMatch) {
             source.AdvanceExpectingIgnoringAsciiCase("system");
             HTML_SWITCH_TO(kAfterDOCTYPESystemKeywordState);
-          } else if (result == SegmentedString::kNotEnoughCharacters)
+          } else if (result == SegmentedString::kNotEnoughCharacters &&
+                     ShouldWaitForMoreInput(source)) {
             return HaveBufferedCharacterToken();
+          }
         }
         ParseError();
         token_.SetForceQuirks();

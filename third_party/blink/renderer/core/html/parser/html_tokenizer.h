@@ -298,9 +298,17 @@ class CORE_EXPORT HTMLTokenizer {
     return token_.GetType() == HTMLToken::kCharacter;
   }
 
+  // A closed stream never gets more input, so stop waiting on a look-ahead
+  // that returned kNotEnoughCharacters and emit a bogus comment instead.
+  // crbug.com/40727112
+  inline bool ShouldWaitForMoreInput(const SegmentedString& source) const {
+    return !truncated_markup_declaration_enabled_ || !source.IsClosed();
+  }
+
   State state_;
   bool force_null_character_replacement_;
   bool should_allow_cdata_;
+  const bool truncated_markup_declaration_enabled_;
   bool should_allow_dom_parts_{false};
   const HTMLParserOptions options_;
 
