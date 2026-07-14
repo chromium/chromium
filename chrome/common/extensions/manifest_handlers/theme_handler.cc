@@ -197,13 +197,10 @@ bool LoadDisplayProperties(const base::DictValue& theme_dict,
   return true;
 }
 
-
-const ThemeInfo* GetInfo(const Extension* extension) {
-  return static_cast<const ThemeInfo*>(
-      extension->GetManifestData(keys::kTheme));
-}
-
 }  // namespace
+
+// static
+const char* ThemeInfo::kManifestDataKey = keys::kTheme;
 
 ThemeInfo::ThemeInfo() = default;
 
@@ -211,29 +208,28 @@ ThemeInfo::~ThemeInfo() = default;
 
 // static
 const ThemeInfo::ThemeImages* ThemeInfo::GetImages(const Extension* extension) {
-  const ThemeInfo* theme_info = GetInfo(extension);
+  const ThemeInfo* theme_info = extension->GetManifestData<ThemeInfo>();
   return theme_info ? &theme_info->theme_images_ : nullptr;
 }
 
 // static
 const base::DictValue* ThemeInfo::GetColors(const Extension* extension) {
-  const ThemeInfo* theme_info = GetInfo(extension);
+  const ThemeInfo* theme_info = extension->GetManifestData<ThemeInfo>();
   return theme_info ? &theme_info->theme_colors_ : nullptr;
 }
 
 // static
 const base::DictValue* ThemeInfo::GetTints(const Extension* extension) {
-  const ThemeInfo* theme_info = GetInfo(extension);
+  const ThemeInfo* theme_info = extension->GetManifestData<ThemeInfo>();
   return theme_info ? &theme_info->theme_tints_ : nullptr;
 }
 
 // static
 const base::DictValue* ThemeInfo::GetDisplayProperties(
     const Extension* extension) {
-  const ThemeInfo* theme_info = GetInfo(extension);
+  const ThemeInfo* theme_info = extension->GetManifestData<ThemeInfo>();
   return theme_info ? &theme_info->theme_display_properties_ : nullptr;
 }
-
 
 ThemeHandler::ThemeHandler() = default;
 

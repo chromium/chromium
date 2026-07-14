@@ -18,6 +18,8 @@ namespace extensions {
 class Extension;
 
 struct OmniboxInfo : public Extension::ManifestData {
+  static const char* kManifestDataKey;
+
   // The Omnibox keyword for an extension.
   std::string keyword;
 

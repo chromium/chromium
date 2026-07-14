@@ -18,6 +18,8 @@ namespace extensions {
 
 // A structure to hold the parsed theme data.
 struct ThemeInfo : public Extension::ManifestData {
+  static const char* kManifestDataKey;
+
   // Define out of line constructor/destructor to please Clang.
   ThemeInfo();
   ~ThemeInfo() override;

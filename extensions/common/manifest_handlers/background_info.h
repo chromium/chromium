@@ -23,6 +23,8 @@ enum class BackgroundServiceWorkerType {
 
 class BackgroundInfo : public Extension::ManifestData {
  public:
+  static const char* kManifestDataKey;
+
   BackgroundInfo();
 
   BackgroundInfo(const BackgroundInfo&) = delete;

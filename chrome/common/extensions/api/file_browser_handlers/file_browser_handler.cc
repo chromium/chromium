@@ -51,11 +51,17 @@ unsigned int GetAccessPermissionFlagFromString(const std::string& access_str) {
 
 // Stored on the Extension.
 struct FileBrowserHandlerInfo : public extensions::Extension::ManifestData {
+  static const char* kManifestDataKey;
+
   FileBrowserHandler::List file_browser_handlers;
 
   FileBrowserHandlerInfo();
   ~FileBrowserHandlerInfo() override;
 };
+
+// static
+const char* FileBrowserHandlerInfo::kManifestDataKey =
+    keys::kFileBrowserHandlers;
 
 FileBrowserHandlerInfo::FileBrowserHandlerInfo() = default;
 
@@ -120,9 +126,7 @@ bool FileBrowserHandler::HasCreateAccessPermission() const {
 // static
 const FileBrowserHandler::List* FileBrowserHandler::GetHandlers(
     const extensions::Extension* extension) {
-  const FileBrowserHandlerInfo* const info =
-      static_cast<const FileBrowserHandlerInfo*>(
-          extension->GetManifestData(keys::kFileBrowserHandlers));
+  const auto* info = extension->GetManifestData<FileBrowserHandlerInfo>();
   if (!info) {
     return nullptr;
   }

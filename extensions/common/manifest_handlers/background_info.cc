@@ -42,8 +42,7 @@ static base::LazyInstance<BackgroundInfo>::DestructorAtExit
     g_empty_background_info = LAZY_INSTANCE_INITIALIZER;
 
 const BackgroundInfo& GetBackgroundInfo(const Extension* extension) {
-  const BackgroundInfo* info = static_cast<const BackgroundInfo*>(
-      extension->GetManifestData(kBackground));
+  const BackgroundInfo* info = extension->GetManifestData<BackgroundInfo>();
   if (!info) {
     return g_empty_background_info.Get();
   }
@@ -51,6 +50,9 @@ const BackgroundInfo& GetBackgroundInfo(const Extension* extension) {
 }
 
 }  // namespace
+
+// static
+const char* BackgroundInfo::kManifestDataKey = kBackground;
 
 BackgroundInfo::BackgroundInfo()
     : is_persistent_(true),
