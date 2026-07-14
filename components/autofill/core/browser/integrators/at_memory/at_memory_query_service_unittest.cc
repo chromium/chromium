@@ -624,9 +624,9 @@ TEST_F(AtMemoryQueryServiceTest,
                                  u"Marienplatz 100, München, DE")));
 }
 
-// Tests that the query service falls back to returning all results for the
-// classified intent if none of the results match the filter words.
-TEST_F(AtMemoryQueryServiceTest, Query_WithFilterWords_NoMatch_ReturnsAll) {
+// Tests that the query service returns no results if filter keywords are
+// provided and no entries match.
+TEST_F(AtMemoryQueryServiceTest, Query_WithFilterWords_NoMatch_ReturnsEmpty) {
   personal_context::proto::AtMemoryQueryResponse response =
       CreateQueryResponse();
   personal_context::proto::AutofillFetchPlan* plan =
@@ -653,9 +653,7 @@ TEST_F(AtMemoryQueryServiceTest, Query_WithFilterWords_NoMatch_ReturnsAll) {
   ASSERT_TRUE(future.Wait());
   const auto& result = future.Get();
   EXPECT_EQ(result.status, MemorySearchStatus::kFinalResponseSuccess);
-  EXPECT_THAT(result.entries, testing::ElementsAre(testing::Field(
-                                  &MemorySearchResult::value,
-                                  u"123 San Diego St Home San Diego")));
+  EXPECT_TRUE(result.entries.empty());
 }
 
 // Tests that the query service returns the appropriate error status when the

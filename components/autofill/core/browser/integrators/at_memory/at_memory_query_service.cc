@@ -386,8 +386,9 @@ void DeduplicateResults(std::vector<MemorySearchResult>& results) {
 }
 
 // Filters search results by retaining only those entries that have the maximum
-// number of matching filter words. If `filter_words` is empty or if no entry
-// matches any filter word, all entries are returned.
+// number of matching filter words. If `filter_words` is empty, all entries are
+// returned. If `filter_words` is provided but no entry matches any filter word,
+// an empty vector is returned.
 std::vector<MemorySearchResult> FilterResults(
     const std::vector<MemorySearchResult>& entries,
     const base::flat_set<std::u16string>& filter_words) {
@@ -396,10 +397,13 @@ std::vector<MemorySearchResult> FilterResults(
   }
 
   std::vector<MemorySearchResult> filtered_entries;
-  filtered_entries.reserve(entries.size());
   size_t max_matches = 0;
   for (const MemorySearchResult& entry : entries) {
     size_t count = CountFilterWordMatchesInEntry(entry, filter_words);
+    if (count <= 0) {
+      continue;
+    }
+
     if (count > max_matches) {
       max_matches = count;
       filtered_entries.clear();
