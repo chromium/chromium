@@ -195,16 +195,18 @@ public class ListModelBase<T, P> extends ListObservableImpl<P> implements Simple
 
     /**
      * Moves a single {@code item} from current {@code index} to new {@code index}.
+     *
      * @param curIndex The position of the item before move.
      * @param newIndex The position of the item after move.
      */
     public void move(int curIndex, int newIndex) {
+        if (curIndex == newIndex) return;
+
+        assert curIndex >= 0 && curIndex < mItems.size();
+        assert newIndex >= 0 && newIndex < mItems.size();
+
         T item = mItems.remove(curIndex);
-        if (newIndex == mItems.size()) {
-            mItems.add(item);
-        } else {
-            mItems.add(newIndex, item);
-        }
+        mItems.add(newIndex, item);
         notifyItemMoved(curIndex, newIndex);
     }
 

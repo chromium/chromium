@@ -916,6 +916,15 @@ public class TabListMediator implements TabListNotificationHandler {
                             }
                             assert lastShownTab != null;
                             updateTab(desIndex, lastShownTab, true, false);
+                            int targetIndex = getInsertionIndexOfTab(lastShownTab);
+                            int modelSize = mModelList.size();
+                            if (srcIndex >= 0
+                                    && srcIndex < modelSize
+                                    && targetIndex >= 0
+                                    && targetIndex < modelSize
+                                    && srcIndex != targetIndex) {
+                                mModelList.move(srcIndex, targetIndex);
+                            }
                             return;
                         }
 
@@ -1433,6 +1442,26 @@ public class TabListMediator implements TabListNotificationHandler {
                         if (index == TabModel.INVALID_TAB_INDEX) return;
 
                         mModelList.removeAt(index);
+                    }
+
+                    @Override
+                    public void didChangePinState(Tab tab) {
+                        int index = mModelList.indexFromTabId(tab.getId());
+                        if (index != TabModel.INVALID_TAB_INDEX) {
+                            mModelList
+                                    .get(index)
+                                    .model
+                                    .set(TabProperties.IS_PINNED, tab.getIsPinned());
+                            int targetIndex = getInsertionIndexOfTab(tab);
+                            int modelSize = mModelList.size();
+                            if (index >= 0
+                                    && index < modelSize
+                                    && targetIndex >= 0
+                                    && targetIndex < modelSize
+                                    && index != targetIndex) {
+                                mModelList.move(index, targetIndex);
+                            }
+                        }
                     }
                 };
 
