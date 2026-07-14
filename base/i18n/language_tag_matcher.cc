@@ -31,6 +31,7 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/queue.h"
+#include "base/containers/span.h"
 #include "base/i18n/internal/icu_bridge.rs.h"
 #include "base/i18n/language_tag.h"
 #include "base/i18n/tag_converters.h"

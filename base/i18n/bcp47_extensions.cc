@@ -15,6 +15,7 @@
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/containers/flat_map.h"
+#include "base/containers/span.h"
 #include "base/i18n/language_tag.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_split.h"

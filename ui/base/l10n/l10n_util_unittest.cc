@@ -13,6 +13,7 @@
 #include <memory>
 
 #include "base/containers/flat_set.h"
+#include "base/containers/span.h"
 #include "base/environment.h"
 #include "base/files/file_util.h"
 #include "base/i18n/case_conversion.h"

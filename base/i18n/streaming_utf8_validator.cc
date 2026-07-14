@@ -10,6 +10,7 @@
 
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/i18n/utf8_validator_tables.h"
 
 namespace base {

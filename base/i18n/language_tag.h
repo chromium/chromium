@@ -15,6 +15,7 @@
 #include <string_view>
 
 #include "base/check.h"
+#include "base/containers/span.h"
 #include "base/i18n/base_i18n_export.h"
 #include "base/i18n/bcp47_extensions.h"
 #include "base/i18n/internal/immutable_string.h"
