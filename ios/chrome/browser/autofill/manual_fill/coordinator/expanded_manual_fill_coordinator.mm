@@ -105,7 +105,7 @@ using manual_fill::ManualFillDataType;
       UIPopoverArrowDirectionUp | UIPopoverArrowDirectionDown;
   popoverPresentationController.delegate = self;
   popoverPresentationController.backgroundColor =
-      [UIColor colorNamed:kBackgroundColor];
+      [UIColor colorNamed:kGroupedPrimaryBackgroundColor];
 }
 
 - (UIViewController*)viewController {
