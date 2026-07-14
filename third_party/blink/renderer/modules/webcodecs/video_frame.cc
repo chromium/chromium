@@ -18,6 +18,7 @@
 #include "base/time/time.h"
 #include "cc/paint/skia_paint_canvas.h"
 #include "components/viz/common/gpu/raster_context_provider.h"
+#include "media/base/format_utils.h"
 #include "media/base/limits.h"
 #include "media/base/timestamp_constants.h"
 #include "media/base/video_frame.h"
@@ -226,6 +227,9 @@ bool IsFormatEnabled(media::VideoPixelFormat fmt) {
       return false;
   }
 }
+
+BASE_FEATURE(kUseSharedImageFormatForWebcodecsVideoFrame,
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 class CachedVideoFramePool : public GarbageCollected<CachedVideoFramePool>,
                              public Supplement<ExecutionContext>,
@@ -820,21 +824,13 @@ VideoFrame* VideoFrame::Create(ScriptState* script_state,
   if (image->IsTextureBacked() && SharedGpuContext::IsGpuCompositingEnabled() &&
       !has_undiscarded_unpremultiplied_alpha) {
     DCHECK(image->IsStaticBitmapImage());
-    const auto format = media::VideoPixelFormatFromSkColorType(
-        paint_image.GetColorType(),
-        image->IsOpaque() || init->alpha() == V8AlphaOption::Enum::kDiscard);
-
-    ParsedVideoFrameInit parsed_init(init, format, coded_size,
-                                     default_visible_rect, default_display_size,
-                                     exception_state);
-    if (exception_state.HadException())
-      return nullptr;
-
     auto* sbi = To<StaticBitmapImage>(image.get());
 
     // We don't know which thread the video frame might end up on, so Transfer()
     // the image so that it doesn't hold on to any thread-affine state.
     sbi->Transfer();
+
+    const bool is_image_opaque = image->IsOpaque();
 
     // The sync token needs to be updated when |frame| is released, but
     // AcceleratedStaticBitmapImage::UpdateSyncToken() is not thread-safe.
@@ -853,8 +849,32 @@ VideoFrame* VideoFrame::Create(ScriptState* script_state,
                                 client_shared_image->debug_label());
       base::debug::DumpWithoutCrashing();
     }
+    std::optional<media::VideoPixelFormat> format;
+    // TODO(crbug.com/492116792): Add 1-copy path for copying RGBA to RGBX
+    // SharedImage with alpha discard.
+    if (base::FeatureList::IsEnabled(
+            kUseSharedImageFormatForWebcodecsVideoFrame)) {
+      format = media::SharedImageFormatToVideoPixelFormat(
+          client_shared_image->format());
+      if (!format.has_value()) {
+        exception_state.ThrowTypeError("Invalid shared image format");
+        return nullptr;
+      }
+    } else {
+      format = media::VideoPixelFormatFromSkColorType(
+          paint_image.GetColorType(),
+          is_image_opaque || init->alpha() == V8AlphaOption::Enum::kDiscard);
+    }
+
+    ParsedVideoFrameInit parsed_init(init, format.value(), coded_size,
+                                     default_visible_rect, default_display_size,
+                                     exception_state);
+    if (exception_state.HadException()) {
+      return nullptr;
+    }
+
     frame = media::VideoFrame::WrapSharedImage(
-        format, std::move(client_shared_image), sbi->GetSyncToken(),
+        format.value(), std::move(client_shared_image), sbi->GetSyncToken(),
         std::move(release_cb), parsed_init.visible_rect,
         parsed_init.display_size, timestamp);
 
