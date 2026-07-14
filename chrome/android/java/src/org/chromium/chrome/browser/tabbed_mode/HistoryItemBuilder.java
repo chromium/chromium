@@ -110,7 +110,7 @@ public class HistoryItemBuilder implements Destroyable {
      * @return true if the history parent item should be shown, false otherwise.
      */
     public boolean shouldShowHistoryParentItem() {
-        if (!TabbedAppMenuPropertiesDelegate.isSubmenusEnabled()) {
+        if (!TabbedAppMenuPropertiesDelegate.isSubmenusEnabled(mContext)) {
             return false;
         }
 

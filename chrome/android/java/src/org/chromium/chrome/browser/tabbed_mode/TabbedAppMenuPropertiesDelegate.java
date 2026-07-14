@@ -119,8 +119,16 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
         int NEW_INCOGNITO = AppMenuHandler.AppMenuItemType.NUM_ENTRIES + 2;
     }
 
-    public static boolean isSubmenusEnabled() {
-        return ChromeFeatureList.isEnabled(ChromeFeatureList.SUBMENUS_IN_APP_MENU);
+    public static boolean isSubmenusEnabled(Context context) {
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.SUBMENUS_IN_APP_MENU)) {
+            return true;
+        }
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.SUBMENUS_IN_APP_MENU_LFF)
+                && DeviceFormFactor.isNonMultiDisplayContextOnTablet(context)
+                && !DeviceInfo.isFoldable()) {
+            return true;
+        }
+        return false;
     }
 
     AppMenuDelegate mAppMenuDelegate;
@@ -340,7 +348,7 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
                     .registerObserver(mUpdateStateChangeObserver);
         }
 
-        if (isSubmenusEnabled()) {
+        if (isSubmenusEnabled(mContext)) {
             populatePageModeMenuWithSubmenus(
                     modelList, currentTab, url, isNativePage, isFileScheme, isContentScheme);
         } else {
@@ -483,7 +491,7 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
         }
 
         // Readaloud
-        if (!isSubmenusEnabled()) {
+        if (!isSubmenusEnabled(mContext)) {
             observeAndMaybeAddReadAloud(modelList, currentTab);
         }
 
@@ -956,7 +964,7 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
     }
 
     private boolean shouldShowPasswordsAndAutofillParentItem() {
-        return isSubmenusEnabled();
+        return isSubmenusEnabled(mContext);
     }
 
     private ListItem buildGooglePasswordManagerItem() {
@@ -1077,7 +1085,7 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
 
         // The id {@code R.id.extensions_menu_id} is used for both when this flag is enabled and
         // disabled but in different context.
-        assert isSubmenusEnabled();
+        assert isSubmenusEnabled(mContext);
 
         return AppMenuItemUtils.createStandardListItem(
                 AppMenuItemUtils.buildModelForStandardMenuItem(
@@ -1109,7 +1117,7 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
             boolean isFileScheme,
             boolean isContentScheme,
             GURL url) {
-        if (!isSubmenusEnabled()) {
+        if (!isSubmenusEnabled(mContext)) {
             return false;
         }
 
@@ -1236,7 +1244,7 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
                     List<ListItem> submenuItems = new ArrayList<>();
 
                     ReadAloudController readAloudController = mReadAloudControllerSupplier.get();
-                    if (isSubmenusEnabled()
+                    if (isSubmenusEnabled(mContext)
                             && readAloudController != null
                             && readAloudController.isReadable(currentTab)) {
                         submenuItems.add(
@@ -1772,7 +1780,7 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
     public void onMenuShown() {
         super.onMenuShown();
 
-        if (isSubmenusEnabled()) {
+        if (isSubmenusEnabled(mContext)) {
             // TODO(crbug.com/521223427): Implement dynamic updates so that we don't
             // have to rely on timing to load the {@link BookmarkModel} and {@link
             // HeadlessTabModel}.
@@ -1794,7 +1802,7 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
         // in the "More tools" submenu Supplier. Ideally, we should implement a mechanism to
         // dynamically update the item visibility in the submenu, rather than requiring the user to
         // reopen the App Menu.
-        if (!isSubmenusEnabled()) {
+        if (!isSubmenusEnabled(mContext)) {
             super.observeAndMaybeAddReadAloud(modelList, currentTab);
         }
     }

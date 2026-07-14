@@ -12116,6 +12116,7 @@ from previous Chrome versions.
   <int value="-800364245" label="DevToolsPwaHandler:enabled"/>
   <int value="-800301139" label="VCLightIntensity:enabled"/>
   <int value="-800127303" label="OmniboxPedalsTranslationConsole:disabled"/>
+  <int value="-799956030" label="SubmenusInAppMenuLff:enabled"/>
   <int value="-799931058" label="UseMultiloginEndpoint:disabled"/>
   <int value="-799638577" label="AndroidAnimatedProgressBarInViz:enabled"/>
   <int value="-799444168" label="WebApkInstallFailureNotification:enabled"/>
@@ -17075,6 +17076,7 @@ from previous Chrome versions.
   <int value="775148009" label="OsSettingsDeepLinking:disabled"/>
   <int value="775373286" label="TabModelInitFixes:enabled"/>
   <int value="775894411" label="AndroidContextMenuDuplicateTabs:disabled"/>
+  <int value="776589844" label="SubmenusInAppMenuLff:disabled"/>
   <int value="777569794" label="FeedWebUi:enabled"/>
   <int value="777667507" label="DesktopPWAsLinkCapturing:enabled"/>
   <int value="778000757" label="EnableInputEventLogging:disabled"/>

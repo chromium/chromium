@@ -98,7 +98,7 @@ public class MoreToolsItemBuilder {
      * @param currentTab The current tab.
      */
     public boolean shouldShowMoreToolsItem(@Nullable Tab currentTab) {
-        if (!TabbedAppMenuPropertiesDelegate.isSubmenusEnabled()) {
+        if (!TabbedAppMenuPropertiesDelegate.isSubmenusEnabled(mContext)) {
             return false;
         }
 

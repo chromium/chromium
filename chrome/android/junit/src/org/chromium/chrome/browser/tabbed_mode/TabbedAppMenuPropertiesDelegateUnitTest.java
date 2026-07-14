@@ -192,7 +192,8 @@ import java.util.List;
     // TODO(crbug.com/504757384): Add test for three dot menu flag.
     ChromeFeatureList.THREE_DOT_MENU_BACK_BUTTON,
     TabGroupsFeatureMap.UPDATE_TAB_GROUP_COLORS,
-    ChromeFeatureList.IN_APP_WINDOW_MANAGER_DEPRECATION
+    ChromeFeatureList.IN_APP_WINDOW_MANAGER_DEPRECATION,
+    ChromeFeatureList.SUBMENUS_IN_APP_MENU_LFF
 })
 @EnableFeatures({
     ChromeFeatureList.SUBMENUS_IN_APP_MENU,
@@ -676,7 +677,10 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.SUBMENUS_IN_APP_MENU)
+    @DisableFeatures({
+        ChromeFeatureList.SUBMENUS_IN_APP_MENU,
+        ChromeFeatureList.SUBMENUS_IN_APP_MENU_LFF
+    })
     public void testPageMenuItems_Phone_Ntp_SubmenusDisabled() {
         setUpMocksForPageMenu();
         when(mTab.getUrl()).thenReturn(JUnitTestGURLs.NTP_URL);

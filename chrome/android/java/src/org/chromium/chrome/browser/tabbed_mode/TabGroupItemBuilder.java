@@ -90,7 +90,7 @@ import java.util.function.Supplier;
      * @return true if the item should be shown, false otherwise.
      */
     /* package */ boolean shouldShowTabGroupsParentItem(@Nullable Tab currentTab) {
-        if (!TabbedAppMenuPropertiesDelegate.isSubmenusEnabled()) {
+        if (!TabbedAppMenuPropertiesDelegate.isSubmenusEnabled(mContext)) {
             return false;
         }
         return shouldShowAddToGroup() || currentTab != null;

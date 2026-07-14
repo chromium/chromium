@@ -9064,7 +9064,12 @@
   {
     "name": "submenus-in-app-menu",
     "owners": [ "massan@google.com", "nya@google.com", "lokeric@google.com" ],
-    "expiry_milestone": 155
+    "expiry_milestone": 159
+  },
+  {
+    "name": "submenus-in-app-menu-lff",
+    "owners": [ "massan@google.com", "nya@google.com", "lokeric@google.com" ],
+    "expiry_milestone": 159
   },
   {
     "name": "summarizer-api",

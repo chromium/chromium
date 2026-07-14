@@ -107,7 +107,7 @@ public class BookmarksItemBuilder implements Destroyable {
      * @return true if the bookmarks parent item should be shown, false otherwise.
      */
     public boolean shouldShowBookmarksParentItem() {
-        return TabbedAppMenuPropertiesDelegate.isSubmenusEnabled();
+        return TabbedAppMenuPropertiesDelegate.isSubmenusEnabled(mContext);
     }
 
     /**
