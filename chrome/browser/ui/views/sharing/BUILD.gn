@@ -1,0 +1,102 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/ui.gni")
+
+assert(toolkit_views)
+
+source_set("sharing") {
+  public = [
+    "sharing_dialog_view.h",
+    "sharing_icon_view.h",
+    "sharing_window_controller.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//chrome/browser/share",
+    "//chrome/browser/sharing",
+    "//chrome/browser/ui/views/location_bar",
+    "//chrome/browser/ui/views/page_action",
+    "//components/sharing_message",
+    "//skia",
+    "//ui/base/metadata",
+    "//ui/base/unowned_user_data",
+    "//ui/views",
+  ]
+}
+
+source_set("impl") {
+  sources = [
+    "sharing_dialog_view.cc",
+    "sharing_icon_view.cc",
+    "sharing_window_controller.cc",
+  ]
+
+  deps = [
+    ":sharing",
+    "//chrome/app/vector_icons",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/views:layout_provider",
+    "//chrome/browser/ui/views/accessibility",
+    "//chrome/browser/ui/views/controls",
+    "//chrome/browser/ui/views/frame:toolbar_button_provider",
+    "//components/sharing_message",
+    "//components/sync/protocol",
+    "//components/sync_device_info",
+    "//components/url_formatter",
+    "//components/vector_icons",
+    "//content/public/browser",
+    "//ui/accessibility",
+    "//ui/base",
+    "//ui/color",
+    "//ui/compositor",
+    "//ui/gfx",
+    "//ui/strings",
+    "//ui/views",
+  ]
+
+  # sharing_dialog_view.cc includes
+  # chrome/browser/ui/views/intent_picker_bubble_view.h (IntentPickerBubbleView)
+  # under an IS_CHROMEOS guard; it is still compiled in //chrome/browser/ui:ui
+  # with no modular home yet. The dependency is unconditional (not guarded under
+  # is_chromeos) because gn check on some platforms flags the guarded include
+  # regardless of the build flag. Reach it via browser_public_dependencies; the
+  # reverse edge is the allow_circular_includes_from entry on
+  # //chrome/browser/ui:ui.
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "sharing_dialog_view_unittest.cc",
+    "sharing_icon_view_unittest.cc",
+  ]
+
+  deps = [
+    ":sharing",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/app/vector_icons",
+    "//chrome/browser/sharing:impl",
+    "//chrome/browser/sharing/click_to_call",
+    "//chrome/browser/sharing/sms",
+    "//chrome/browser/ui/views/controls",
+    "//chrome/test:test_support",
+    "//components/sharing_message",
+    "//components/sync_device_info",
+    "//components/url_formatter",
+    "//content/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//ui/base",
+    "//ui/events:test_support",
+    "//ui/gfx",
+    "//ui/strings",
+    "//ui/views",
+    "//ui/views:test_support",
+  ]
+}

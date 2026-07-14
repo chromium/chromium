@@ -174,7 +174,7 @@ void MediaCaptureDevicesDispatcher::ProcessMediaAccessRequest(
 
 #if defined(TOOLKIT_VIEWS)
 void MediaCaptureDevicesDispatcher::ProcessSelectAudioOutputRequest(
-    Browser* browser,
+    BrowserWindowInterface* browser,
     const content::SelectAudioOutputRequest& request,
     content::SelectAudioOutputCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);

@@ -4139,8 +4139,6 @@ static_library("ui") {
       "views/frame/web_contents_close_handler.cc",
       "views/frame/web_contents_close_handler.h",
       "views/frame/web_contents_close_handler_delegate.h",
-      "views/fullscreen_control/fullscreen_control_host.cc",
-      "views/fullscreen_control/fullscreen_control_host.h",
       "views/global_error_bubble_view.cc",
       "views/global_error_bubble_view.h",
       "views/hung_renderer_view.cc",
@@ -4370,18 +4368,8 @@ static_library("ui") {
       "views/safe_browsing/tailored_security_unconsented_modal.h",
       "views/screen_sharing_util.cc",
       "views/screen_sharing_util.h",
-      "views/select_audio_output/select_audio_output_dialog.cc",
-      "views/select_audio_output/select_audio_output_dialog.h",
-      "views/select_audio_output/select_audio_output_views.cc",
-      "views/select_audio_output/select_audio_output_views.h",
       "views/session_crashed_bubble_view.cc",
       "views/session_crashed_bubble_view.h",
-      "views/sharing/sharing_dialog_view.cc",
-      "views/sharing/sharing_dialog_view.h",
-      "views/sharing/sharing_icon_view.cc",
-      "views/sharing/sharing_icon_view.h",
-      "views/sharing/sharing_window_controller.cc",
-      "views/sharing/sharing_window_controller.h",
       "views/simple_web_view_dialog.cc",
       "views/simple_web_view_dialog.h",
       "views/site_data/page_specific_site_data_dialog.cc",
@@ -4396,8 +4384,6 @@ static_library("ui") {
       "views/ssl_client_certificate_selector.h",
       "views/status_bubble_views.cc",
       "views/status_bubble_views.h",
-      "views/storage/storage_pressure_bubble_view.cc",
-      "views/storage/storage_pressure_bubble_view.h",
       "views/sub_apps_permission_explanation.cc",
       "views/sub_apps_permission_explanation.h",
       "views/tab_contents/chrome_web_contents_view_focus_helper.cc",
@@ -4700,6 +4686,8 @@ static_library("ui") {
       "//chrome/browser/ui/views/frame",
       "//chrome/browser/ui/views/frame:shadow",
       "//chrome/browser/ui/views/frame:toolbar_button_provider",
+      "//chrome/browser/ui/views/fullscreen_control",
+      "//chrome/browser/ui/views/fullscreen_control:impl",
       "//chrome/browser/ui/views/global_media_controls",
       "//chrome/browser/ui/views/global_media_controls:impl",
       "//chrome/browser/ui/views/importer",
@@ -4727,9 +4715,15 @@ static_library("ui") {
       "//chrome/browser/ui/views/personal_context",
       "//chrome/browser/ui/views/promos",
       "//chrome/browser/ui/views/qrcode_generator",
+      "//chrome/browser/ui/views/select_audio_output",
+      "//chrome/browser/ui/views/select_audio_output:impl",
       "//chrome/browser/ui/views/send_tab_to_self",
+      "//chrome/browser/ui/views/sharing",
+      "//chrome/browser/ui/views/sharing:impl",
       "//chrome/browser/ui/views/sharing_hub",
       "//chrome/browser/ui/views/sharing_hub:impl",
+      "//chrome/browser/ui/views/storage",
+      "//chrome/browser/ui/views/storage:impl",
       "//chrome/browser/ui/views/tabs/common",
       "//chrome/browser/ui/views/tabs/common:impl",
       "//chrome/browser/ui/views/tabs/dragging:tab_drag_target",
@@ -4846,6 +4840,30 @@ static_library("ui") {
       # c/b/ui/browser.h (video_overlay_window_views.cc reads
       # Browser::app_name(), which has no BrowserWindowInterface accessor yet)
       "//chrome/browser/ui/views/overlay:impl",
+
+      # TODO(crbug.com/353332589): Remove this circular dependency when the
+      # following header gets componentized:
+      # c/b/ui/views/media_picker_utils.h
+      "//chrome/browser/ui/views/select_audio_output:impl",
+
+      # TODO(crbug.com/353332589): Remove this circular dependency when the
+      # following header gets componentized:
+      # c/b/ui/views/frame/browser_view.h
+      "//chrome/browser/ui/views/storage:impl",
+
+      # TODO(crbug.com/353332589): Remove this circular dependency when the
+      # following headers get componentized:
+      # c/b/ui/views/exclusive_access_bubble_views.h
+      # c/b/ui/views/frame/browser_view.h
+      "//chrome/browser/ui/views/fullscreen_control:impl",
+
+      # TODO(crbug.com/353332589): Remove this circular dependency when the
+      # following header gets componentized:
+      # c/b/ui/views/intent_picker_bubble_view.h
+      # (sharing_dialog_view.cc includes it under an IS_CHROMEOS guard, but the
+      # entry is unconditional because gn check flags the guarded include on
+      # platforms where it is not compiled)
+      "//chrome/browser/ui/views/sharing:impl",
 
       # TODO(crbug.com/353332589): Remove this circular dependency when the
       # following headers get componentized:
@@ -4972,8 +4990,6 @@ static_library("ui") {
       # c/b/ui/views/autofill/payments/save_payment_icon_view.h
       # c/b/ui/views/autofill/payments/virtual_card_enroll_icon_view.h
       # c/b/ui/views/optimization_guide/optimization_guide_icon_view.h
-      # c/b/ui/views/sharing/sharing_dialog_view.h
-      # c/b/ui/views/sharing/sharing_icon_view.h
       "//chrome/browser/ui/views/page_action:impl",
 
       # TODO(crbug.com/451609048): Remove this circular dependency when the

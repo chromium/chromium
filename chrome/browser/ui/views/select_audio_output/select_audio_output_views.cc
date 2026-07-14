@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/views/select_audio_output/select_audio_output_views.h"
 
 #include "base/functional/callback.h"
-#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/extensions/extensions_container.h"
 #include "chrome/browser/ui/views/media_picker_utils.h"
 #include "chrome/browser/ui/views/select_audio_output/select_audio_output_dialog.h"
@@ -18,7 +17,7 @@
 #include "ui/views/window/dialog_delegate.h"
 
 void SelectAudioOutputPickerViews::Show(
-    Browser* browser,
+    BrowserWindowInterface* browser,
     const content::SelectAudioOutputRequest& request,
     content::SelectAudioOutputCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);

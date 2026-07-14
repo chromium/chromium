@@ -1,0 +1,51 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/ui.gni")
+
+assert(toolkit_views)
+
+source_set("select_audio_output") {
+  public = [
+    "select_audio_output_dialog.h",
+    "select_audio_output_views.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//chrome/browser/media/webrtc",
+    "//content/public/browser",
+    "//third_party/blink/public/common",
+    "//ui/base",
+    "//ui/views",
+  ]
+}
+
+source_set("impl") {
+  sources = [
+    "select_audio_output_dialog.cc",
+    "select_audio_output_views.cc",
+  ]
+
+  deps = [
+    ":select_audio_output",
+    "//chrome/app:generated_resources",
+    "//chrome/browser/ui/extensions",
+    "//chrome/browser/ui/views:layout_provider",
+    "//components/constrained_window",
+    "//components/web_modal",
+    "//content/public/browser",
+    "//ui/base",
+    "//ui/gfx/geometry",
+    "//ui/views",
+  ]
+
+  # select_audio_output_views.cc includes
+  # chrome/browser/ui/views/media_picker_utils.h
+  # (CreateMediaPickerDialogWidget), which is still compiled in
+  # //chrome/browser/ui:ui and has no modular home yet. Reach it via
+  # browser_public_dependencies; the reverse edge is the
+  # allow_circular_includes_from entry on //chrome/browser/ui:ui.
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+}

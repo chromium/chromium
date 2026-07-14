@@ -1,0 +1,40 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/ui.gni")
+
+assert(toolkit_views)
+
+source_set("fullscreen_control") {
+  public = [ "fullscreen_control_host.h" ]
+
+  public_deps = [
+    "//base",
+    "//components/fullscreen_control",
+    "//ui/events",
+  ]
+}
+
+source_set("impl") {
+  sources = [ "fullscreen_control_host.cc" ]
+
+  deps = [
+    ":fullscreen_control",
+    "//chrome/browser/app_mode",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/exclusive_access",
+    "//chrome/browser/ui/fullscreen",
+    "//content/public/browser",
+    "//ui/events",
+    "//ui/views",
+  ]
+
+  # fullscreen_control_host.cc includes
+  # chrome/browser/ui/views/frame/browser_view.h and
+  # chrome/browser/ui/views/exclusive_access_bubble_views.h, both still compiled
+  # in //chrome/browser/ui:ui with no BrowserWindowInterface accessor yet. Reach
+  # them via browser_public_dependencies; the reverse edge is the
+  # allow_circular_includes_from entry on //chrome/browser/ui:ui.
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+}

@@ -10,7 +10,7 @@
 #include "base/types/expected.h"
 #include "content/public/browser/select_audio_output_request.h"
 
-class Browser;
+class BrowserWindowInterface;
 
 class SelectAudioOutputPicker {
  public:
@@ -24,7 +24,7 @@ class SelectAudioOutputPicker {
 
   virtual ~SelectAudioOutputPicker() = default;
 
-  virtual void Show(Browser* browser,
+  virtual void Show(BrowserWindowInterface* browser,
                     const content::SelectAudioOutputRequest& request,
                     content::SelectAudioOutputCallback callback) = 0;
 };

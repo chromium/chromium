@@ -20,7 +20,7 @@
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 
-class Browser;
+class BrowserWindowInterface;
 class DesktopCaptureAccessHandler;
 class MediaAccessHandler;
 class MediaStreamCaptureIndicator;
@@ -92,7 +92,7 @@ class MediaCaptureDevicesDispatcher
 
 #if defined(TOOLKIT_VIEWS)
   void ProcessSelectAudioOutputRequest(
-      Browser* browser,
+      BrowserWindowInterface* browser,
       const content::SelectAudioOutputRequest& request,
       content::SelectAudioOutputCallback callback);
 #endif

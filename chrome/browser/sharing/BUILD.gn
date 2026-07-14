@@ -66,6 +66,7 @@ source_set("impl") {
     deps += [
       "//chrome/browser/sync:factories",
       "//chrome/browser/ui",
+      "//chrome/browser/ui/views/sharing",
       "//components/send_tab_to_self:features",
       "//components/sharing_message/proto",
     ]

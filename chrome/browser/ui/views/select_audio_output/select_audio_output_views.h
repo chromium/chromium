@@ -10,7 +10,7 @@
 #include "content/public/browser/select_audio_output_request.h"
 #include "ui/views/widget/widget.h"
 
-class Browser;
+class BrowserWindowInterface;
 
 // TODO(crbug.com/372214870): Merge this class with SelectAudioOutputDialog.
 class SelectAudioOutputPickerViews : public SelectAudioOutputPicker {
@@ -21,7 +21,7 @@ class SelectAudioOutputPickerViews : public SelectAudioOutputPicker {
       delete;
 
   // Shows the audio output picker dialog.
-  void Show(Browser* browser,
+  void Show(BrowserWindowInterface* browser,
             const content::SelectAudioOutputRequest& request,
             content::SelectAudioOutputCallback callback) override;
 };
