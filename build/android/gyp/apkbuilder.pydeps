@@ -2,8 +2,11 @@
 #   build/print_python_deps.py --root build/android/gyp --output build/android/gyp/apkbuilder.pydeps build/android/gyp/apkbuilder.py
 ../../action_helpers.py
 ../../gn_helpers.py
+../../print_python_deps.py
 ../../zip_helpers.py
 apkbuilder.py
+dex.py
 util/__init__.py
 util/build_utils.py
 util/diff_utils.py
+util/md5_check.py

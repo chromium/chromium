@@ -1749,10 +1749,7 @@ if (enable_java_templates) {
         if (_is_library) {
           args += [ "--intermediate" ]
         }
-        if (defined(invoker.tiered_dex_assembly_step) &&
-            invoker.tiered_dex_assembly_step) {
-          args += [ "--tiered-dex-assembly" ]
-        }
+
         if (defined(invoker.input_dex_filearg)) {
           args += [ "--dex-inputs-filearg=${invoker.input_dex_filearg}" ]
         }
@@ -2691,6 +2688,7 @@ if (enable_java_templates) {
   #       asset information.
   #   deps: Specifies the dependencies of this target.
   #   dex_path: Path to classes.dex file to include (optional).
+  #   dex_paths: List of paths to classes.dex or dex.jar files to include (optional).
   #   expected_libs_and_assets: Verify the list of included native libraries
   #     and assets is consistent with the given expectation file.
   #   expected_libs_and_assets_base: Treat expected_libs_and_assets as a diff
@@ -2712,6 +2710,8 @@ if (enable_java_templates) {
   #   keystore_name: Key alias to use.
   #   keystore_password: Keystore password.
   template("package_apk") {
+    assert(!(defined(invoker.dex_path) && defined(invoker.dex_paths)),
+           "Only one of dex_path or dex_paths can be defined")
     forward_variables_from(invoker, TESTONLY_AND_VISIBILITY + [ "public_deps" ])
     _is_robolectric_apk =
         defined(invoker.is_robolectric_apk) && invoker.is_robolectric_apk
@@ -2803,12 +2803,21 @@ if (enable_java_templates) {
       _args +=
           [ "--library-always-compress=${invoker.library_always_compress}" ]
     }
+    _dex_paths = []
     if (defined(invoker.dex_path)) {
-      _inputs += [ invoker.dex_path ]
-      _args += [
-        "--dex-file",
-        rebase_path(invoker.dex_path, root_build_dir),
-      ]
+      _dex_paths = [ invoker.dex_path ]
+    } else if (defined(invoker.dex_paths)) {
+      _dex_paths = invoker.dex_paths
+    }
+
+    if (_dex_paths != []) {
+      _inputs += _dex_paths
+      foreach(_dex_path, _dex_paths) {
+        _args += [
+          "--dex-file",
+          rebase_path(_dex_path, root_build_dir),
+        ]
+      }
     }
     if ((defined(invoker.loadable_modules) && invoker.loadable_modules != []) ||
         defined(invoker.native_libs_filearg) ||

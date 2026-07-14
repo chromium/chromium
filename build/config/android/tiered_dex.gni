@@ -15,22 +15,14 @@ import("//build/config/android/internal_rules.gni")
 #   build_config_target: Label of the target that generates the build config.
 #   min_sdk_version: The minimum SDK version.
 #   java_target_name: The name of the Java target.
-#   final_dex_target_name: The name of the final dex target to be defined.
-#   final_dex_path: The path where the final dex should be output.
 #   custom_assertion_handler: (Optional) Custom assertion handler.
-#   proguard_enable_obfuscation: (Optional) Whether to enable proguard obfuscation.
-#   repackage_classes: (Optional) Whether to repackage classes.
 #
 template("tiered_dex_assembly") {
-  assert(target_name == invoker.final_dex_target_name,
-         "target_name must match final_dex_target_name")
-
   _apk_template_name = invoker.apk_template_name
   _build_config = invoker.build_config
   _build_config_target = invoker.build_config_target
   _min_sdk_version = invoker.min_sdk_version
   _java_target_name = invoker.java_target_name
-  _final_dex_path = invoker.final_dex_path
 
   _tiered_dex_partitions_file = tiered_dex_partitions_file
 
@@ -108,33 +100,15 @@ template("tiered_dex_assembly") {
           "@FileArg(${_rebased_partition_build_config}:all_dex_files)"
       enable_desugar = false
 
-      deps = [ ":$_partition_target_name" ]
-      data_deps = [ _java_target_name ]
+      deps = [
+        ":$_partition_target_name",
+        _java_target_name,
+      ]
     }
   }
 
-  # The final assembly target. Instead of running D8 to merge all partitions,
-  # it runs a python script (via tiered_dex_assembly_step flag in dex.py)
-  # that extracts the precompiled .dex files from the partition giants,
-  # renames them contiguously (classes.dex, classes2.dex, etc.), and packages
-  # them directly into the APK.
-  dex(target_name) {
-    forward_variables_from(invoker,
-                           [
-                             "custom_assertion_handler",
-                             "proguard_enable_obfuscation",
-                             "repackage_classes",
-                             "testonly",
-                           ])
-    min_sdk_version = _min_sdk_version
-    proguard_enabled = false
-    build_config = _build_config
-    output = _final_dex_path
-
-    deps = [ _build_config_target ] + _partition_dex_deps
-
-    input_dex_jars = _partition_dex_outputs
-    enable_desugar = false
-    tiered_dex_assembly_step = true
+  group(target_name) {
+    forward_variables_from(invoker, [ "testonly" ])
+    public_deps = [ _build_config_target ] + _partition_dex_deps
   }
 }

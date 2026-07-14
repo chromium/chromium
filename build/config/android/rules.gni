@@ -2863,25 +2863,25 @@ if (!is_robolectric && enable_java_templates) {
         _shrunk_proto_resources_path =
             "$target_out_dir/${_template_name}.shrunk.proto.ap_"
       }
-      if (tiered_dex_assembly && !_proguard_enabled &&
-          _min_sdk_version >= default_min_sdk_version) {
+      _use_tiered_dex = tiered_dex_assembly && !_proguard_enabled &&
+                        _min_sdk_version >= default_min_sdk_version
+      if (_use_tiered_dex) {
         tiered_dex_assembly(_final_dex_target_name) {
           apk_template_name = _template_name
           build_config = _build_config
           build_config_target = ":$_build_config_target"
           min_sdk_version = _min_sdk_version
           java_target_name = ":$_java_target_name"
-          final_dex_target_name = _final_dex_target_name
-          final_dex_path = _final_dex_path
           if (defined(testonly)) {
             testonly = testonly
           }
-          forward_variables_from(invoker,
-                                 [
-                                   "custom_assertion_handler",
-                                   "proguard_enable_obfuscation",
-                                   "repackage_classes",
-                                 ])
+          forward_variables_from(invoker, [ "custom_assertion_handler" ])
+        }
+        _final_dex_paths = []
+        foreach(_partition, tiered_dex_partitions) {
+          _final_dex_paths += [
+            "$target_out_dir/${_template_name}__${_partition.name}.dex.jar",
+          ]
         }
       } else {
         dex(_final_dex_target_name) {
@@ -2951,6 +2951,7 @@ if (!is_robolectric && enable_java_templates) {
             ignore_desugar_missing_deps = true
           }
         }
+        _final_dex_paths = [ _final_dex_path ]
       }
 
       _final_dex_target_dep = ":$_final_dex_target_name"
@@ -3095,8 +3096,8 @@ if (!is_robolectric && enable_java_templates) {
                     ":$_merge_manifest_target",
                   ]
 
-          if (defined(_final_dex_path)) {
-            dex_path = _final_dex_path
+          if (defined(_final_dex_paths)) {
+            dex_paths = _final_dex_paths
             deps += [ _final_dex_target_dep ]
           }
 

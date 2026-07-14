@@ -132,10 +132,6 @@ def _ParseArgs(args):
                       action='store_true',
                       help='Use when filing D8 bugs to capture inputs.'
                       ' Stores inputs to d8inputs.zip')
-  parser.add_argument(
-      '--tiered-dex-assembly',
-      action='store_true',
-      help='Assemble input dex archives into final zip (bypassing D8 merge).')
   options = parser.parse_args(args)
 
   if options.force_enable_assertions and options.assertion_handler:
@@ -282,72 +278,39 @@ _MERGE_SERVICE_ENTRIES in dex.py.
   return ret
 
 
-def _PerformTieredDexAssembly(d8_inputs, output_path, services_map):
-  """Packages dex files from intermediate jars sequentially into the final zip.
-
-  Args:
-    d8_inputs: List of intermediate jar paths.
-    output_path: The output zip path.
-    services_map: Map of service paths to data.
-  """
-  dex_idx = 0
-  with zipfile.ZipFile(output_path, 'w') as out_zip:
-    for input_jar in d8_inputs:
-      with zipfile.ZipFile(input_jar, 'r') as in_zip:
-        dex_names = sorted([n for n in in_zip.namelist() if n.endswith('.dex')])
-        for name in dex_names:
-          data = in_zip.read(name)
-          dest_name = 'classes{}.dex'.format(dex_idx + 1 if dex_idx > 0 else '')
-          zip_helpers.add_to_zip_hermetic(out_zip,
-                                          dest_name,
-                                          data=data,
-                                          alignment=4)
-          dex_idx += 1
-
-    for path, data in sorted(services_map.items()):
-      zip_helpers.add_to_zip_hermetic(out_zip, path, data=data, alignment=4)
-
-
 def _CreateFinalDex(d8_inputs,
                     output,
                     tmp_dir,
                     dex_cmd,
-                    tiered_dex_assembly=False,
                     options=None,
                     service_jars=None):
   tmp_dex_output = os.path.join(tmp_dir, 'tmp_dex_output.zip')
   services_map = _CreateServicesMap(service_jars or [])
 
-  if tiered_dex_assembly:
-    _PerformTieredDexAssembly(d8_inputs, tmp_dex_output, services_map)
-    logging.debug('Performed tiered dex assembly')
-  else:
-    needs_dexing = not all(f.endswith('.dex') for f in d8_inputs)
-    needs_dexmerge = output.endswith('.dex') or not (options
-                                                     and options.intermediate)
-    if needs_dexing or needs_dexmerge:
-      tmp_dex_dir = os.path.join(tmp_dir, 'tmp_dex_dir')
-      os.mkdir(tmp_dex_dir)
+  needs_dexing = not all(f.endswith('.dex') for f in d8_inputs)
+  needs_dexmerge = output.endswith('.dex') or not (options
+                                                   and options.intermediate)
+  if needs_dexing or needs_dexmerge:
+    tmp_dex_dir = os.path.join(tmp_dir, 'tmp_dex_dir')
+    os.mkdir(tmp_dex_dir)
 
-      _RunD8(dex_cmd, d8_inputs, tmp_dex_dir,
-             (not options or options.warnings_as_errors),
-             (options and options.show_desugar_default_interface_warnings))
-      logging.debug('Performed dex merging')
+    _RunD8(dex_cmd, d8_inputs, tmp_dex_dir,
+           (not options or options.warnings_as_errors),
+           (options and options.show_desugar_default_interface_warnings))
+    logging.debug('Performed dex merging')
 
-      dex_files = [
-          os.path.join(tmp_dex_dir, f) for f in os.listdir(tmp_dex_dir)
-      ]
+    dex_files = [os.path.join(tmp_dex_dir, f) for f in os.listdir(tmp_dex_dir)]
 
-      if output.endswith('.dex'):
-        if len(dex_files) > 1:
-          raise Exception('%d files created, expected 1' % len(dex_files))
-        tmp_dex_output = dex_files[0]
-      else:
-        _ZipAligned(sorted(dex_files), tmp_dex_output, services_map)
+    if output.endswith('.dex'):
+      if len(dex_files) > 1:
+        raise Exception('%d files created, expected 1' % len(dex_files))
+      tmp_dex_output = dex_files[0]
     else:
-      # Skip dexmerger. Just put all incrementals into the .jar individually.
-      _ZipAligned(sorted(d8_inputs), tmp_dex_output, services_map)
-      logging.debug('Quick-zipped %d files', len(d8_inputs))
+      _ZipAligned(sorted(dex_files), tmp_dex_output, services_map)
+  else:
+    # Skip dexmerger. Just put all incrementals into the .jar individually.
+    _ZipAligned(sorted(d8_inputs), tmp_dex_output, services_map)
+    logging.debug('Quick-zipped %d files', len(d8_inputs))
 
   # The dex file is complete and can be moved out of tmp_dir.
   shutil.move(tmp_dex_output, output)
@@ -538,9 +501,54 @@ def _OnStaleMd5(changes, options, final_dex_inputs, service_jars, dex_cmd):
                     options.output,
                     tmp_dir,
                     dex_cmd,
-                    tiered_dex_assembly=options.tiered_dex_assembly,
                     options=options,
                     service_jars=service_jars)
+
+
+def MergeDexAndServices(src_jars,
+                        dest_zip,
+                        apk_root_dir='',
+                        apk_dex_dir='',
+                        uncompress_dex=False,
+                        compress_level=1):
+  """Merges dex files and services from src_jars into dest_zip.
+
+  Args:
+    src_jars: List of input jar paths.
+    dest_zip: An open zipfile.ZipFile object to write to.
+    apk_root_dir: Prefix for service paths in the zip.
+    apk_dex_dir: Prefix for dex paths in the zip.
+    uncompress_dex: Whether to store dex files uncompressed.
+    compress_level: Compression level for zip entries.
+  """
+  services_map = _CreateServicesMap(src_jars)
+  for path, data in sorted(services_map.items()):
+    zip_helpers.add_to_zip_hermetic(dest_zip,
+                                    apk_root_dir + path,
+                                    data=data.encode('utf8'),
+                                    compress=False,
+                                    alignment=4)
+
+  dex_idx = 0
+  for jar_path in src_jars:
+    with zipfile.ZipFile(jar_path, 'r') as z:
+      dex_names = sorted([n for n in z.namelist() if n.endswith('.dex')])
+      for name in dex_names:
+        data = z.read(name)
+        if len(src_jars) == 1:
+          dest_name = name
+        else:
+          dest_name = 'classes{}.dex'.format(dex_idx + 1 if dex_idx > 0 else '')
+
+        compress = not uncompress_dex
+        alignment = None if compress else 4
+        zip_helpers.add_to_zip_hermetic(dest_zip,
+                                        apk_dex_dir + dest_name,
+                                        data=data,
+                                        compress=compress,
+                                        compress_level=compress_level,
+                                        alignment=alignment)
+        dex_idx += 1
 
 
 def MergeDexForIncrementalInstall(r8_jar_path, src_paths, dest_dex_jar,
@@ -587,19 +595,6 @@ def main(args):
     service_jars = final_dex_inputs
   service_jars += options.dex_inputs
   final_dex_inputs += options.dex_inputs
-  if options.tiered_dex_assembly:
-    with build_utils.TempDir() as tmp_dir:
-      _CreateFinalDex(final_dex_inputs,
-                      options.output,
-                      tmp_dir,
-                      None,
-                      tiered_dex_assembly=True,
-                      options=options,
-                      service_jars=service_jars)
-    if options.depfile:
-      action_helpers.write_depfile(options.depfile, options.output,
-                                   final_dex_inputs)
-    return
 
   dex_cmd = build_utils.JavaCmd(xmx=_DEX_XMX)
 

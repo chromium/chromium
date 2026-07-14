@@ -17,6 +17,7 @@ import zipfile
 from util import build_utils
 from util import diff_utils
 import action_helpers  # build_utils adds //build to sys.path.
+import dex
 import zip_helpers
 
 
@@ -66,8 +67,11 @@ def _ParseArgs(args):
   parser.add_argument('--format', choices=['apk', 'bundle-module'],
                       default='apk', help='Specify output format.')
   parser.add_argument('--dex-file',
-                      help='Path to the classes.dex to use')
-  parser.add_argument('--uncompress-dex', action='store_true',
+                      action='append',
+                      dest='dex_files',
+                      help='Path to classes.dex or dex.jar files to use')
+  parser.add_argument('--uncompress-dex',
+                      action='store_true',
                       help='Store .dex files uncompressed in the APK')
   parser.add_argument('--native-libs',
                       action='append',
@@ -343,8 +347,8 @@ def main(args):
   # For targets that depend on static library APKs, dex paths are created by
   # the static library's dexsplitter target and GN doesn't know about these
   # paths.
-  if options.dex_file:
-    depfile_deps.append(options.dex_file)
+  if options.dex_files:
+    depfile_deps.extend(options.dex_files)
 
   secondary_native_libs = []
   if options.secondary_native_libs:
@@ -459,34 +463,22 @@ def main(args):
 
       # 3. DEX and META-INF/services/
       logging.debug('Adding classes.dex')
-      if options.dex_file:
-        with open(options.dex_file, 'rb') as dex_file_obj:
-          if options.dex_file.endswith('.dex'):
-            # This is the case for incremental_install=true.
-            add_to_zip(
-                apk_dex_dir + 'classes.dex',
-                dex_file_obj.read(),
-                compress=not options.uncompress_dex)
-          else:
-            with zipfile.ZipFile(dex_file_obj) as dex_zip:
-              # Add META-INF/services.
-              for name in sorted(dex_zip.namelist()):
-                if name.startswith('META-INF/services/'):
-                  # proguard.py does not bundle these files (dex.py does)
-                  # because R8 optimizes all ServiceLoader calls.
-                  if options.dex_file.endswith('.r8dex.jar'):
-                    raise Exception(
-                        f'Expected no META-INF/services, but found: {name}' +
-                        f'in {options.dex_file}')
-                  add_to_zip(apk_root_dir + name,
-                             dex_zip.read(name),
-                             compress=False)
-              # Add classes.dex.
-              for name in dex_zip.namelist():
-                if name.endswith('.dex'):
-                  add_to_zip(apk_dex_dir + name,
-                             dex_zip.read(name),
-                             compress=not options.uncompress_dex)
+      if options.dex_files:
+        if options.dex_files[0].endswith('.dex'):
+          # This is the case for incremental_install=true.
+          if len(options.dex_files) != 1:
+            raise Exception('Expected exactly 1 .dex file.')
+          with open(options.dex_files[0], 'rb') as dex_file_obj:
+            add_to_zip(apk_dex_dir + 'classes.dex',
+                       dex_file_obj.read(),
+                       compress=not options.uncompress_dex)
+        else:
+          dex.MergeDexAndServices(options.dex_files,
+                                  out_apk,
+                                  apk_root_dir=apk_root_dir,
+                                  apk_dex_dir=apk_dex_dir,
+                                  uncompress_dex=options.uncompress_dex,
+                                  compress_level=compress_level)
 
       # 4. Native libraries.
       logging.debug('Adding lib/')

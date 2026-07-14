@@ -4,6 +4,8 @@
 # found in the LICENSE file.
 
 import io
+import os
+import tempfile
 import unittest
 import unittest.mock
 import zipfile
@@ -141,6 +143,94 @@ Warning: PublicStopClientEvent is hungry.
             'META-INF/services/org.chromium.base.test.BaseJUnit4ClassRunner$ClassCleanupHook':
             'impl.Hook1\nimpl.Hook2\n'
         })
+
+  def testMergeDexAndServices(self):
+    with tempfile.TemporaryDirectory() as tmpdir:
+      # Create input jars
+      jar1_path = os.path.join(tmpdir, 'jar1.jar')
+      jar2_path = os.path.join(tmpdir, 'jar2.jar')
+      out_zip_path = os.path.join(tmpdir, 'out.zip')
+
+      # Use an allowlisted service name to avoid exception
+      service_name = 'META-INF/services/org.chromium.base.test.BaseJUnit4ClassRunner$ClassCleanupHook'
+
+      with _RealZipFile(jar1_path, 'w') as z1:
+        z1.writestr('classes.dex',
+                    b'dex1_data_is_long_enough_to_avoid_compression_bypass')
+        z1.writestr(service_name, b'impl.Hook1\n')
+
+      with _RealZipFile(jar2_path, 'w') as z2:
+        z2.writestr('classes.dex',
+                    b'dex2_data_is_long_enough_to_avoid_compression_bypass')
+        z2.writestr('classes2.dex',
+                    b'dex3_data_is_long_enough_to_avoid_compression_bypass')
+        z2.writestr(service_name, b'impl.Hook2\n')
+
+      # Merge with uncompress_dex = True
+      with _RealZipFile(out_zip_path, 'w') as out_z:
+        dex.MergeDexAndServices([jar1_path, jar2_path],
+                                out_z,
+                                apk_root_dir='root/',
+                                apk_dex_dir='dex/',
+                                uncompress_dex=True)
+
+      # Read merged zip and verify
+      with _RealZipFile(out_zip_path, 'r') as out_z:
+        namelist = out_z.namelist()
+        self.assertIn('root/' + service_name, namelist)
+        self.assertIn('dex/classes.dex', namelist)
+        self.assertIn('dex/classes2.dex', namelist)
+        self.assertIn('dex/classes3.dex', namelist)
+
+        # Verify service content is merged
+        self.assertEqual(out_z.read('root/' + service_name),
+                         b'impl.Hook1\nimpl.Hook2\n')
+
+        # Verify dex content
+        self.assertEqual(
+            out_z.read('dex/classes.dex'),
+            b'dex1_data_is_long_enough_to_avoid_compression_bypass')
+        self.assertEqual(
+            out_z.read('dex/classes2.dex'),
+            b'dex2_data_is_long_enough_to_avoid_compression_bypass')
+        self.assertEqual(
+            out_z.read('dex/classes3.dex'),
+            b'dex3_data_is_long_enough_to_avoid_compression_bypass')
+
+        # Verify alignment and compression
+        for name in ['dex/classes.dex', 'dex/classes2.dex', 'dex/classes3.dex']:
+          info = out_z.getinfo(name)
+          self.assertEqual(info.compress_type, zipfile.ZIP_STORED)
+
+  def testMergeDexAndServices_SingleJar(self):
+    with tempfile.TemporaryDirectory() as tmpdir:
+      jar_path = os.path.join(tmpdir, 'jar.jar')
+      out_zip_path = os.path.join(tmpdir, 'out.zip')
+      service_name = 'META-INF/services/org.chromium.base.test.BaseJUnit4ClassRunner$ClassCleanupHook'
+
+      with _RealZipFile(jar_path, 'w') as z:
+        z.writestr('classes.dex',
+                   b'dex2_data_is_long_enough_to_avoid_compression_bypass')
+        z.writestr('classes2.dex',
+                   b'dex3_data_is_long_enough_to_avoid_compression_bypass')
+        z.writestr(service_name, b'impl.Hook2\n')
+
+      with _RealZipFile(out_zip_path, 'w') as out_z:
+        dex.MergeDexAndServices([jar_path],
+                                out_z,
+                                apk_root_dir='root/',
+                                apk_dex_dir='dex/',
+                                uncompress_dex=False)
+
+      with _RealZipFile(out_zip_path, 'r') as out_z:
+        namelist = out_z.namelist()
+        self.assertIn('dex/classes.dex', namelist)
+        self.assertIn('dex/classes2.dex', namelist)
+        self.assertNotIn('dex/classes3.dex', namelist)
+        self.assertEqual(
+            out_z.getinfo('dex/classes.dex').compress_type,
+            zipfile.ZIP_DEFLATED)
+
 
 
 if __name__ == '__main__':
