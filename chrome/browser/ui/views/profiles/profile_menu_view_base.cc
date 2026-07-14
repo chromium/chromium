@@ -279,11 +279,13 @@ class MenuButtonRowView : public HoverButton {
   MenuButtonRowView(PressedCallback callback,
                     std::unique_ptr<views::View> icon_view,
                     const std::u16string& title_text,
-                    int icon_offset)
+                    int icon_offset,
+                    std::unique_ptr<views::View> badge_view = nullptr)
       : HoverButton(std::move(callback), [&]() {
           HoverButton::Params params;
           params.icon_view = std::move(icon_view);
           params.title = title_text;
+          params.secondary_view = std::move(badge_view);
           params.add_vertical_label_spacing = false;
           params.icon_vertical_offset = -icon_offset;
           params.icon_label_spacing -= icon_offset;
@@ -335,6 +337,33 @@ class MenuButtonRowView : public HoverButton {
 };
 
 BEGIN_METADATA(MenuButtonRowView)
+END_METADATA
+
+class ProfileMenuNewBadge : public views::View {
+  METADATA_HEADER(ProfileMenuNewBadge, views::View)
+
+ public:
+  ProfileMenuNewBadge() {
+    SetLayoutManager(std::make_unique<views::FillLayout>());
+    auto* label = AddChildView(std::make_unique<views::Label>(
+        l10n_util::GetStringUTF16(IDS_NEW_BADGE), views::style::CONTEXT_LABEL,
+        views::style::STYLE_SECONDARY));
+
+    // Use a smaller, lighter font for the badge to match standard app menu
+    // styling.
+    label->SetFontList(label->font_list().Derive(-1, gfx::Font::NORMAL,
+                                                 gfx::Font::Weight::MEDIUM));
+    label->SetEnabledColor(ui::kColorBadgeForeground);
+    label->SetBorder(views::CreateEmptyBorder(gfx::Insets::VH(1, 4)));
+
+    SetBackground(views::CreateRoundedRectBackground(
+        ui::kColorBadgeBackground,
+        views::LayoutProvider::Get()->GetCornerRadiusMetric(
+            views::ShapeContextTokens::kBadgeRadius)));
+  }
+};
+
+BEGIN_METADATA(ProfileMenuNewBadge)
 END_METADATA
 
 }  // namespace
@@ -632,17 +661,23 @@ void ProfileMenuViewBase::SetProfileIdentityWithCallToAction(
 void ProfileMenuViewBase::AddFeatureButton(const std::u16string& text,
                                            base::RepeatingClosure action,
                                            const gfx::VectorIcon& icon,
-                                           float icon_to_image_ratio) {
+                                           float icon_to_image_ratio,
+                                           bool is_new) {
   // Initialize layout if this is the first time a button is added.
   if (!features_container_->GetLayoutManager()) {
     features_container_->SetLayoutManager(std::make_unique<views::BoxLayout>(
         views::BoxLayout::Orientation::kVertical));
   }
 
+  std::unique_ptr<views::View> secondary_view;
+  if (is_new) {
+    secondary_view = std::make_unique<ProfileMenuNewBadge>();
+  }
+
   features_container_->AddChildView(CreateMenuRowButton(
       std::move(action),
       std::make_unique<FeatureButtonIconView>(icon, icon_to_image_ratio), text,
-      /*icon_offset=*/0));
+      /*icon_offset=*/0, std::move(secondary_view)));
 }
 
 void ProfileMenuViewBase::SetProfileManagementHeading(
@@ -874,12 +909,13 @@ std::unique_ptr<HoverButton> ProfileMenuViewBase::CreateMenuRowButton(
     base::RepeatingClosure action,
     std::unique_ptr<views::View> icon_view,
     const std::u16string& text,
-    int icon_offset) {
+    int icon_offset,
+    std::unique_ptr<views::View> badge_view) {
   CHECK(icon_view);
   return std::make_unique<MenuButtonRowView>(
       base::BindRepeating(&ProfileMenuViewBase::ButtonPressed,
                           base::Unretained(this), std::move(action)),
-      std::move(icon_view), text, icon_offset);
+      std::move(icon_view), text, icon_offset, std::move(badge_view));
 }
 
 BEGIN_METADATA(ProfileMenuViewBase)

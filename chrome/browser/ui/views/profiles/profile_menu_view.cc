@@ -71,6 +71,8 @@
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/webui/signin/signin_ui_error.h"
 #include "chrome/browser/ui/webui/signin/signin_utils_desktop.h"
+#include "chrome/browser/user_education/user_education_service.h"
+#include "chrome/browser/user_education/user_education_service_factory.h"
 #include "chrome/browser/webauthn/passkey_unlock_manager.h"
 #include "chrome/browser/webauthn/passkey_unlock_manager_factory.h"
 #include "chrome/common/pref_names.h"
@@ -93,6 +95,7 @@
 #include "components/subscription_eligibility/subscription_eligibility_service.h"
 #include "components/sync/base/features.h"
 #include "components/sync/service/sync_service.h"
+#include "components/user_education/common/new_badge/new_badge_controller.h"
 #include "components/vector_icons/vector_icons.h"
 #include "device/fido/public/features.h"
 #include "net/base/url_util.h"
@@ -1240,16 +1243,34 @@ void ProfileMenuView::BuildFeatureButtons() {
 void ProfileMenuView::MaybeBuildCrossDeviceSigninButton() {
   if (ShouldShowCrossDeviceSigninPromo(
           CrossDeviceSigninPromoEntryPoint::kProfileMenu, &profile())) {
+    bool is_new = false;
+    auto* user_education_service =
+        UserEducationServiceFactory::GetForBrowserContext(&profile());
+    if (user_education_service &&
+        switches::kCrossDeviceSigninFromDesktopNewBadge.Get()) {
+      if (user_education_service->new_badge_controller()->MaybeShowNewBadge(
+              switches::kCrossDeviceSigninFromDesktop)) {
+        is_new = true;
+      }
+    }
+
     AddFeatureButton(
         l10n_util::GetStringUTF16(
             IDS_PROFILE_MENU_SIGNIN_ON_PHONE_BUTTON_LABEL),
         base::BindRepeating(&ProfileMenuView::OnCrossDeviceSigninButtonClicked,
                             base::Unretained(this)),
-        kMobileIcon);
+        kMobileIcon,
+        /*icon_to_image_ratio=*/1.0f, is_new);
   }
 }
 
 void ProfileMenuView::OnCrossDeviceSigninButtonClicked() {
+  if (auto* user_education_service =
+          UserEducationServiceFactory::GetForBrowserContext(&profile())) {
+    user_education_service->new_badge_controller()->NotifyFeatureUsedIfValid(
+        switches::kCrossDeviceSigninFromDesktop);
+  }
+
   OnActionableItemClicked(ActionableItem::kSigninOnPhoneButton);
   if (!perform_menu_actions()) {
     return;
