@@ -5871,22 +5871,24 @@ TEST_F(AIPageContentAgentTest, AriaDisabled) {
   const auto& root = ContentRootNode();
   ASSERT_EQ(root.children_nodes.size(), 1u);
 
-  // The first node is not actionable anymore.
+  // aria-disabled is advisory, so the section keeps its normal clickability
+  // signal while also reporting why an actor may want to avoid it.
   const auto& section = *root.children_nodes.at(0);
   CheckContainerNode(section);
-  CheckHitTestableButNotInteractive(section);
-  EXPECT_TRUE(section.content_attributes->node_interaction_info->is_disabled);
+  CheckHitTestableAndInteractive(section, {ClickabilityReason::kCursorPointer});
+  EXPECT_FALSE(section.content_attributes->node_interaction_info->is_disabled);
   EXPECT_THAT(
       section.content_attributes->node_interaction_info
           ->interaction_disabled_reasons,
       testing::UnorderedElementsAre(InteractionDisabledReason::kAriaDisabled));
 
-  // The child is also not actionable.
+  // The inherited reason is also advisory for descendants. A child-level
+  // aria-disabled=false does not override the ancestor's true value.
   ASSERT_EQ(section.children_nodes.size(), 1u);
   const auto& input = *section.children_nodes.at(0);
-  CheckHitTestableButNotInteractive(input);
-  // Parent element `aria-disable` value overrides child element's.
-  EXPECT_TRUE(input.content_attributes->node_interaction_info->is_disabled);
+  CheckHitTestableAndInteractive(input,
+                                 {ClickabilityReason::kClickableControl});
+  EXPECT_FALSE(input.content_attributes->node_interaction_info->is_disabled);
   EXPECT_THAT(
       input.content_attributes->node_interaction_info
           ->interaction_disabled_reasons,

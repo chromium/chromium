@@ -906,7 +906,8 @@ void AddClickabilityReasons(
   }
 }
 
-// Returns whether interaction is determined to be disabled.
+// Returns whether the node is in the strong disabled state that requires click
+// rejection.
 bool AddInteractionDisabledReasons(
     const Element& element,
     bool is_aria_disabled,
@@ -917,9 +918,10 @@ bool AddInteractionDisabledReasons(
   bool is_disabled = false;
 
   if (is_aria_disabled) {
+    // aria-disabled asks consumers to avoid the node, but it does not prevent
+    // DOM events. Record the advisory reason without setting `is_disabled`.
     interaction_info.interaction_disabled_reasons.push_back(
         Reason::kAriaDisabled);
-    is_disabled = true;
   }
 
   if (is_aria_hidden) {
@@ -3267,13 +3269,14 @@ void AIPageContentAgent::ContentBuilder::AddNodeInteractionInfo(
         *element, is_aria_disabled, is_aria_hidden, *node_interaction_info);
   }
 
-  // TODO(linnan): Remove `is_disabled` when consumers move to use
-  // `interaction_disabled_reasons`.
+  // Strongly disabled nodes are not valid action targets, so do not populate
+  // their normal clickability or focus signals. Keep interaction information
+  // for visible nodes so consumers can see `is_disabled` and reject them.
   if (is_disabled) {
     if (node_interaction_info->document_scoped_z_order) {
       attributes.node_interaction_info = std::move(node_interaction_info);
-      // `is_disabled` is only set for nodes with `document_scoped_z_order`.
-      // This implies offscreen nodes will not be marked as disabled.
+      // Offscreen nodes do not have a z-order, so this branch cannot retain
+      // interaction information or expose `is_disabled` for them.
       attributes.node_interaction_info->is_disabled = true;
     }
 

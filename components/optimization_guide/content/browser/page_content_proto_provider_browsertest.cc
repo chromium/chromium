@@ -2478,8 +2478,11 @@ IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest,
   const auto& button = ActionableContentRootNode().children_nodes()[0];
   ASSERT_TRUE(button.content_attributes().has_interaction_info());
   const auto& interaction_info = button.content_attributes().interaction_info();
-  EXPECT_TRUE(interaction_info.clickability_reasons().empty());
-  EXPECT_TRUE(interaction_info.is_disabled());
+  EXPECT_THAT(
+      interaction_info.clickability_reasons(),
+      testing::UnorderedElementsAre(
+          optimization_guide::proto::CLICKABILITY_REASON_CLICKABLE_CONTROL));
+  EXPECT_FALSE(interaction_info.is_disabled());
   EXPECT_THAT(interaction_info.interaction_disabled_reasons(),
               testing::UnorderedElementsAre(
                   optimization_guide::proto::
