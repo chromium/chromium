@@ -19541,21 +19541,6 @@
             ]
         }
     ],
-    "PersistentDefaultBrowserPromo": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "PersistentDefaultBrowserPromo"
-                    ]
-                }
-            ]
-        }
-    ],
     "PersonalContextStudy": [
         {
             "platforms": [

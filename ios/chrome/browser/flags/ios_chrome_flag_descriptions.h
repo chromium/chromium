@@ -1666,13 +1666,6 @@ inline constexpr char kPersistTabContextRichExtractionName[] =
 inline constexpr char kPersistTabContextRichExtractionDescription[] =
     "Enables the PersistTabContextRichExtraction feature.";
 
-inline constexpr char kPersistentDefaultBrowserPromoName[] =
-    "Persist default browser promo through app backgrounding";
-inline constexpr char kPersistentDefaultBrowserPromoDescription[] =
-    "When enabled, the default browser promo will persist through "
-    "backgrounding the app so the instructions remain visible when coming "
-    "back.";
-
 inline constexpr char kPhoneNumberName[] = "Phone number experience enable";
 inline constexpr char kPhoneNumberDescription[] =
     "When enabled, one tapping or long pressing on a phone number will trigger "

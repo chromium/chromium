@@ -7982,11 +7982,6 @@
     "expiry_milestone": 153
   },
   {
-    "name": "persistent-default-browser-promo",
-    "owners": [ "gujen@google.com", "bling-mony-pod@google.com", "bling-flags@google.com" ],
-    "expiry_milestone": 155
-  },
-  {
     "name": "picture-in-picture-mute-control",
     "owners": [ "tibeekeocha@microsoft.com", "bkeen@google.com", "media-dev@chromium.org" ],
     "expiry_milestone": 151

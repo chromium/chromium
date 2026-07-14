@@ -1613,10 +1613,7 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
     {"display-tracing", flag_descriptions::kDisplayTracingName,
      flag_descriptions::kDisplayTracingDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kDisplayTracing)},
-    {"persistent-default-browser-promo",
-     flag_descriptions::kPersistentDefaultBrowserPromoName,
-     flag_descriptions::kPersistentDefaultBrowserPromoDescription,
-     flags_ui::kOsIos, FEATURE_VALUE_TYPE(kPersistentDefaultBrowserPromo)},
+
     {"default-browser-promo-ipad-instructions",
      flag_descriptions::kDefaultBrowserPromoIpadInstructionsName,
      flag_descriptions::kDefaultBrowserPromoIpadInstructionsDescription,

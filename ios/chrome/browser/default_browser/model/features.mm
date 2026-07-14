@@ -10,8 +10,3 @@ bool IsShareDefaultBrowserStatusEnabled() {
   return base::FeatureList::IsEnabled(kShareDefaultBrowserStatus);
 }
 
-BASE_FEATURE(kPersistentDefaultBrowserPromo, base::FEATURE_DISABLED_BY_DEFAULT);
-
-bool IsPersistentDefaultBrowserPromoEnabled() {
-  return base::FeatureList::IsEnabled(kPersistentDefaultBrowserPromo);
-}
