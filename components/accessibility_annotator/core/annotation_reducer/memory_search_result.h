@@ -47,9 +47,7 @@ enum class MemoryEntrySourceType {
   kGmail,
   kCalendar,
   kPhotos,
-  kAmbient,
-  kLiveTabs,
-  kMaxValue = kLiveTabs,
+  kMaxValue = kPhotos,
 };
 // LINT.ThenChange(//components/accessibility_annotator/core/annotation_reducer/util.cc:SourceTypeToMemoryEntrySourceType)
 

@@ -62,7 +62,9 @@ namespace autofill {
 
 namespace {
 
-using MemoryDataType = accessibility_annotator::MemoryDataType;
+using ::accessibility_annotator::MemoryDataType;
+using ::accessibility_annotator::MemoryEntrySourceType;
+using ::accessibility_annotator::MemorySearchResult;
 
 SuggestionType GetManageSuggestionType(MemoryDataType type) {
   std::optional<AtMemoryDataType> data_type = ToAtMemoryDataType(type);
@@ -178,12 +180,10 @@ Suggestion::AtMemoryPayload::Identifier GetPayloadIdentifier(
   }
 }
 
-Suggestion::Icon GetIcon(
-    const accessibility_annotator::MemorySearchResult& search_result) {
+Suggestion::Icon GetIcon(const MemorySearchResult& search_result) {
   const bool is_autofill_only =
       search_result.sources.size() == 1 &&
-      search_result.sources.front().type ==
-          accessibility_annotator::MemoryEntrySourceType::kAutofill;
+      search_result.sources.front().type == MemoryEntrySourceType::kAutofill;
   switch (search_result.type) {
     case MemoryDataType::kNameFull:
     case MemoryDataType::kAddressFull:
@@ -289,11 +289,10 @@ Suggestion::Icon GetIcon(
 // Returns true if `entry` is sourced from Autofill.
 // We assume that if an `entry` is Autofill-sourced, it is only sourced from
 // Autofill (no mixed sources).
-bool IsMemorySearchResultAutofillSourced(
-    const accessibility_annotator::MemorySearchResult& entry) {
-  const bool is_autofill_sourced = std::ranges::contains(
-      entry.sources, accessibility_annotator::MemoryEntrySourceType::kAutofill,
-      &accessibility_annotator::MemoryEntrySource::type);
+bool IsMemorySearchResultAutofillSourced(const MemorySearchResult& entry) {
+  const bool is_autofill_sourced =
+      std::ranges::contains(entry.sources, MemoryEntrySourceType::kAutofill,
+                            &accessibility_annotator::MemoryEntrySource::type);
   // Mixing Autofill with other sources is currently not in scope, and this
   // DCHECK acts as a temporary way to catch violations of this assumption.
   DCHECK(!is_autofill_sourced ||
@@ -331,7 +330,7 @@ Suggestion CreateManageEnhancedAutofillSuggestion() {
 // Creates secondary suggestions representing metadata items for the given
 // AtMemory search result entry.
 std::vector<Suggestion> CreateSecondarySuggestions(
-    const accessibility_annotator::MemorySearchResult& entry,
+    const MemorySearchResult& entry,
     bool is_personal_context_sourced) {
   std::vector<Suggestion> children;
   children.reserve(entry.metadata_list.size());
@@ -370,7 +369,7 @@ Suggestion CreateSourceAttributionSuggestion() {
 }
 
 std::vector<Suggestion> CreateFooterSuggestions(
-    const accessibility_annotator::MemorySearchResult& entry) {
+    const MemorySearchResult& entry) {
   if (entry.sources.empty()) {
     // If there's no source, default to "Manage enhanced autofill".
     std::vector<Suggestion> result;
@@ -382,11 +381,9 @@ std::vector<Suggestion> CreateFooterSuggestions(
       entry.sources.front();
 
   switch (source.type) {
-    case accessibility_annotator::MemoryEntrySourceType::kGmail:
-    case accessibility_annotator::MemoryEntrySourceType::kCalendar:
-    case accessibility_annotator::MemoryEntrySourceType::kPhotos:
-    case accessibility_annotator::MemoryEntrySourceType::kAmbient:
-    case accessibility_annotator::MemoryEntrySourceType::kLiveTabs: {
+    case MemoryEntrySourceType::kGmail:
+    case MemoryEntrySourceType::kCalendar:
+    case MemoryEntrySourceType::kPhotos: {
       Suggestion separator(SuggestionType::kSeparator);
       separator.filtration_policy = Suggestion::FiltrationPolicy::kStatic;
       std::vector<Suggestion> result;
@@ -396,7 +393,7 @@ std::vector<Suggestion> CreateFooterSuggestions(
       result.emplace_back(CreateManageEnhancedAutofillSuggestion());
       return result;
     }
-    case accessibility_annotator::MemoryEntrySourceType::kAutofill: {
+    case MemoryEntrySourceType::kAutofill: {
       Suggestion manage_information(
           l10n_util::GetStringUTF16(
               IDS_AUTOFILL_AI_MANAGE_SUGGESTION_MAIN_TEXT),
@@ -412,8 +409,7 @@ std::vector<Suggestion> CreateFooterSuggestions(
   NOTREACHED();
 }
 
-Suggestion TransformResultIntoSuggestion(
-    const accessibility_annotator::MemorySearchResult& entry) {
+Suggestion TransformResultIntoSuggestion(const MemorySearchResult& entry) {
   const bool is_personal_context_sourced =
       !IsMemorySearchResultAutofillSourced(entry);
   Suggestion suggestion(
@@ -884,11 +880,10 @@ void AtMemoryManager::OnSearchResultsReceived(
       (!owner_->client().SupportsDeviceReauth() &&
        !base::FeatureList::IsEnabled(
            features::debug::kAtMemoryNoDeviceReauthCheck))) {
-    std::erase_if(result.entries,
-                  [](const accessibility_annotator::MemorySearchResult& entry) {
-                    return IsSpiiMemoryDataType(entry.type);
-                  });
-    for (accessibility_annotator::MemorySearchResult& entry : result.entries) {
+    std::erase_if(result.entries, [](const MemorySearchResult& entry) {
+      return IsSpiiMemoryDataType(entry.type);
+    });
+    for (MemorySearchResult& entry : result.entries) {
       std::erase_if(entry.metadata_list,
                     [](const accessibility_annotator::EntryMetadata& metadata) {
                       return IsSpiiMemoryDataType(metadata.type);

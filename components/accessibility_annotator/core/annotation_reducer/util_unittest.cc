@@ -399,12 +399,6 @@ TEST(AnnotationReducerUtilTest,
   EXPECT_EQ(SourceTypeToMemoryEntrySourceType(
                 ReducedAnswer::Source::SOURCE_TYPE_PHOTOS),
             MemoryEntrySourceType::kPhotos);
-  EXPECT_EQ(SourceTypeToMemoryEntrySourceType(
-                ReducedAnswer::Source::SOURCE_TYPE_AMBIENT),
-            MemoryEntrySourceType::kAmbient);
-  EXPECT_EQ(SourceTypeToMemoryEntrySourceType(
-                ReducedAnswer::Source::SOURCE_TYPE_LIVE_TABS),
-            MemoryEntrySourceType::kLiveTabs);
 }
 
 // Verifies that an out-of-bounds SourceType proto enum maps to std::nullopt.

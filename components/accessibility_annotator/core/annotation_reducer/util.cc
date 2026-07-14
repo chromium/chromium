@@ -328,11 +328,6 @@ std::optional<MemoryEntrySourceType> SourceTypeToMemoryEntrySourceType(
       return MemoryEntrySourceType::kCalendar;
     case optimization_guide::proto::ReducedAnswer::Source::SOURCE_TYPE_PHOTOS:
       return MemoryEntrySourceType::kPhotos;
-    case optimization_guide::proto::ReducedAnswer::Source::SOURCE_TYPE_AMBIENT:
-      return MemoryEntrySourceType::kAmbient;
-    case optimization_guide::proto::ReducedAnswer::Source::
-        SOURCE_TYPE_LIVE_TABS:
-      return MemoryEntrySourceType::kLiveTabs;
     default:
       return std::nullopt;
   }
