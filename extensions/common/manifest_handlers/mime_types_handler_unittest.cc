@@ -5,9 +5,9 @@
 #include "extensions/common/manifest_handlers/mime_types_handler.h"
 
 #include <algorithm>
-#include <array>
 #include <string>
 
+#include "base/feature_list.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/version_info/channel.h"
@@ -42,6 +42,15 @@ constexpr char kDictManifest[] = R"({
       }
     }
   })";
+
+// Expected dict-format parsing availability for `channel`: the
+// ApiMimeHandler feature state (default or explicit override) with the
+// dev-channel fallback. Computed at runtime so a change to the flag's
+// default state moves these expectations together with the parser gate.
+bool ExpectDictFormatParsed(version_info::Channel channel) {
+  return base::FeatureList::IsEnabled(extensions_features::kApiMimeHandler) ||
+         channel <= version_info::Channel::DEV;
+}
 
 using MimeTypesHandlerNotAllowedTest = ManifestTest;
 
@@ -179,18 +188,12 @@ TEST_F(MimeTypesHandlerTest, DictFormatFlagDisabledByChannel) {
 }
 
 TEST_F(MimeTypesHandlerTest, DictFormatDefaultByChannel) {
-  // Without an explicit override, dict-format parsing is available on
-  // dev/canary/trunk and suppressed on beta/stable.
-  static constexpr std::array kCases =
-      std::to_array<std::pair<version_info::Channel, bool>>({
-          {version_info::Channel::UNKNOWN, true},  // Trunk.
-          {version_info::Channel::CANARY, true},
-          {version_info::Channel::DEV, true},
-          {version_info::Channel::BETA, false},
-          {version_info::Channel::STABLE, false},
-      });
-
-  for (const auto& [channel, expect_parsed] : kCases) {
+  // Without an explicit override, availability follows the flag's
+  // default state with the dev-channel fallback.
+  for (auto channel :
+       {version_info::Channel::UNKNOWN, version_info::Channel::CANARY,
+        version_info::Channel::DEV, version_info::Channel::BETA,
+        version_info::Channel::STABLE}) {
     SCOPED_TRACE(testing::Message()
                  << "channel=" << version_info::GetChannelString(channel));
     ScopedCurrentChannel scoped_channel(channel);
@@ -200,7 +203,7 @@ TEST_F(MimeTypesHandlerTest, DictFormatDefaultByChannel) {
     ASSERT_TRUE(extension);
 
     const MimeTypesHandler* handler = MimeTypesHandler::Get(*extension);
-    if (expect_parsed) {
+    if (ExpectDictFormatParsed(channel)) {
       ASSERT_TRUE(handler);
       EXPECT_THAT(handler->GetSupportedMimeTypes(), ElementsAre(kPdfMimeType));
     } else {

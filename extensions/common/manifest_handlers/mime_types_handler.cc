@@ -228,13 +228,16 @@ bool MimeTypesHandlerParser::Parse(extensions::Extension* extension,
   const base::Value* handler_value =
       extension->manifest()->FindPath(keys::kMimeTypesHandler);
   if (handler_value && handler_value->is_dict()) {
-    // Parse on dev/canary/trunk by default. An explicit disable override
-    // suppresses parsing on all channels; an explicit enable allows it on all.
+    // Parse when the ApiMimeHandler feature is enabled by default and on
+    // dev/canary/trunk. An explicit disable override suppresses parsing on
+    // all channels; an explicit enable allows it on all.
     const std::optional<bool> flag_override =
         base::FeatureList::GetStateIfOverridden(
             extensions_features::kApiMimeHandler);
-    if (!flag_override.value_or(extensions::GetCurrentChannel() <=
-                                version_info::Channel::DEV)) {
+    if (!flag_override.value_or(base::FeatureList::IsEnabled(
+                                    extensions_features::kApiMimeHandler) ||
+                                extensions::GetCurrentChannel() <=
+                                    version_info::Channel::DEV)) {
       return true;
     }
 
