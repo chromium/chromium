@@ -9269,6 +9269,9 @@ void NavigationRequest::DidCommitNavigation(
         PreloadActivationReportManager::GetOrCreateForBrowserContext(
             GetWebContents()->GetBrowserContext());
     manager->ReportActivation(activation_beacon_url_, GetRenderFrameHost());
+    GetContentClient()->browser()->LogWebFeatureForCurrentPage(
+        GetRenderFrameHost(),
+        blink::mojom::WebFeature::kPrefetchAndPrerenderActivationBeacon);
   }
 
   // DO NOT ADD CODE after this.

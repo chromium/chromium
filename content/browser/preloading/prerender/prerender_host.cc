@@ -834,6 +834,9 @@ std::unique_ptr<StoredPage> PrerenderHost::Activate(
             web_contents_->GetBrowserContext());
     manager->ReportActivation(activation_beacon_url_,
                               GetFrameTree()->root()->current_frame_host());
+    GetContentClient()->browser()->LogWebFeatureForCurrentPage(
+        GetFrameTree()->root()->current_frame_host(),
+        blink::mojom::WebFeature::kPrefetchAndPrerenderActivationBeacon);
   }
 
   FrameTree& target_frame_tree = web_contents_->GetPrimaryFrameTree();

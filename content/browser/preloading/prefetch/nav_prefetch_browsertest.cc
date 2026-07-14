@@ -53,6 +53,20 @@
 namespace content {
 namespace {
 
+class MockContentBrowserClient : public ContentBrowserTestContentBrowserClient {
+ public:
+  void LogWebFeatureForCurrentPage(RenderFrameHost* render_frame_host,
+                                   blink::mojom::WebFeature feature) override {
+    logged_features_.push_back(feature);
+  }
+  const std::vector<blink::mojom::WebFeature>& logged_features() const {
+    return logged_features_;
+  }
+
+ private:
+  std::vector<blink::mojom::WebFeature> logged_features_;
+};
+
 using net::test_server::ControllableHttpResponse;
 
 class NavPrefetchBrowserTest : public ContentBrowserTest,
@@ -847,6 +861,7 @@ INSTANTIATE_TEST_SUITE_P(All,
 
 IN_PROC_BROWSER_TEST_P(PrefetchActivationBeaconBrowserTest,
                        ActivationBeaconSent) {
+  MockContentBrowserClient mock_client;
   GURL referrer_url = GetUrl("a.test", "/empty.html");
   GURL prefetch_url = GetUrl("a.test", "/prefetch");
   GURL beacon_url = GetUrl("a.test", "/beacon");
@@ -898,6 +913,9 @@ IN_PROC_BROWSER_TEST_P(PrefetchActivationBeaconBrowserTest,
   nav_observer.Wait();
   EXPECT_EQ(nav_observer.last_committed_url(), prefetch_url);
   EXPECT_TRUE(beacon_seen);
+  EXPECT_TRUE(std::ranges::contains(
+      mock_client.logged_features(),
+      blink::mojom::WebFeature::kPrefetchAndPrerenderActivationBeacon));
 }
 
 IN_PROC_BROWSER_TEST_P(PrefetchActivationBeaconBrowserTest,

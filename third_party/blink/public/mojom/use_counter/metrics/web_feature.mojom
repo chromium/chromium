@@ -5281,6 +5281,7 @@ enum WebFeature {
   kWebAuthnCreatePublicKeyCredentialWithAttachment = 5964,
   kWebAuthnCreatePublicKeyCredentialWithAttachmentAndNoHints = 5965,
   kDeclarativePerformanceObserver = 5966,
+  kPrefetchAndPrerenderActivationBeacon = 5967,
 
   // Add new features immediately above this line. Don't change the existing
   // numbers of any item, and don't reuse removed slots. Also don't add extra
