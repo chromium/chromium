@@ -190,6 +190,10 @@ suite('NewTabPageVoiceSearchOverlayTest', () => {
     assertEquals(1, metrics.count('NewTabPage.VoiceActions'));
     assertEquals(
         1, metrics.count('NewTabPage.VoiceActions', Action.QUERY_SUBMITTED));
+    assertEquals(
+        1,
+        metrics.count(
+            'VoiceSearch.QuerySubmission.Source', 0 /* NTP_REALBOX */));
   });
 
   ([

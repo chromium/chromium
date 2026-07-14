@@ -6201,6 +6201,19 @@ Keep consistent with active providers. Doesn't need to include every provider in
   <token key="OmniboxPageContext" variants="OmniboxPageContext"/>
 </histogram>
 
+<histogram name="VoiceSearch.QuerySubmission.Source"
+    enum="VoiceSearchQuerySource" expires_after="2026-11-20">
+  <owner>wenhuc@google.com</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    Records the entrypoint source immediately when the user submits a voice
+    search query (i.e., QUERY_SUBMITTED action). This provides a consolidated
+    view to compare voice query volumes across all 4 Chrome searchbox
+    entrypoints (NTP Realbox Classic, NTP Composebox, Omnibox Composebox, and
+    Nextbox Composebox).
+  </summary>
+</histogram>
+
 </histograms>
 
 </histogram-configuration>

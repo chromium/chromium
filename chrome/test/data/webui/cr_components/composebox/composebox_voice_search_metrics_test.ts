@@ -8,7 +8,7 @@ import 'chrome://resources/cr_components/composebox/composebox_voice_search.js';
 import {PageCallbackRouter, PageHandlerRemote} from 'chrome://resources/cr_components/composebox/composebox.mojom-webui.js';
 import {ComposeboxProxyImpl} from 'chrome://resources/cr_components/composebox/composebox_proxy.js';
 import type {ComposeboxVoiceSearchElement} from 'chrome://resources/cr_components/composebox/composebox_voice_search.js';
-import {VoiceSearchAction, VoiceSearchError, VoiceSearchMetricType} from 'chrome://resources/cr_components/composebox/composebox_voice_search.js';
+import {VoiceSearchAction, VoiceSearchError, VoiceSearchMetricType, VoiceSearchQuerySource} from 'chrome://resources/cr_components/composebox/composebox_voice_search.js';
 import {WindowProxy} from 'chrome://resources/cr_components/composebox/window_proxy.js';
 import {PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
@@ -72,7 +72,53 @@ suite('ComposeboxVoiceSearchMetrics', () => {
         metrics.count(
             'VoiceSearch.Action.NTP_REALBOX',
             VoiceSearchAction.QUERY_SUBMITTED));
+    assertEquals(
+        1,
+        metrics.count(
+            'VoiceSearch.QuerySubmission.Source',
+            VoiceSearchQuerySource.NTP_REALBOX));
   });
+
+  test(
+      'Records QuerySubmission.Source for different metric sources',
+      async () => {
+        const testCases = [
+          {
+            source: 'NTP_COMPOSEBOX',
+            expectedEnum: VoiceSearchQuerySource.NTP_COMPOSEBOX,
+          },
+          {
+            source: 'OTHER_OMNIBOX_COMPOSEBOX',
+            expectedEnum: VoiceSearchQuerySource.OMNIBOX_COMPOSEBOX,
+          },
+          {
+            source: 'CO_BROWSING_COMPOSEBOX',
+            expectedEnum: VoiceSearchQuerySource.NEXTBOX_COMPOSEBOX,
+          },
+        ];
+
+        for (const {source, expectedEnum} of testCases) {
+          metrics = fakeMetricsPrivate();
+          searchboxHandler.setResultFor(
+              'getPageClassification', Promise.resolve({metricSource: source}));
+          voiceSearchElement.metricSource = '';
+          searchboxHandler.resetResolver('getPageClassification');
+          searchboxHandler.setResultFor(
+              'getPageClassification', Promise.resolve({metricSource: source}));
+          document.body.removeChild(voiceSearchElement);
+          document.body.appendChild(voiceSearchElement);
+          await searchboxHandler.whenCalled('getPageClassification');
+          await microtasksFinished();
+
+          mockVoiceSearch.onFinalResult_('hello world', /*forceSubmit=*/ true);
+          await microtasksFinished();
+
+          assertEquals(
+              1,
+              metrics.count(
+                  'VoiceSearch.QuerySubmission.Source', expectedEnum));
+        }
+      });
 
   test('Records CANCELED metrics on close button click', async () => {
     // Trigger: Simulate user clicking close.

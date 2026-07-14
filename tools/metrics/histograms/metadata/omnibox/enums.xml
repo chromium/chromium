@@ -787,6 +787,17 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//ui/webui/resources/cr_components/composebox/composebox_voice_search.ts:VoiceSearchError) -->
 
+<!-- LINT.IfChange(VoiceSearchQuerySource) -->
+
+<enum name="VoiceSearchQuerySource">
+  <int value="0" label="NTP Realbox Classic Voice Input"/>
+  <int value="1" label="NTP Composebox Voice Input"/>
+  <int value="2" label="Omnibox Composebox Voice Input"/>
+  <int value="3" label="Nextbox Composebox Voice Input"/>
+</enum>
+
+<!-- LINT.ThenChange(//ui/webui/resources/cr_components/composebox/composebox_voice_search.ts:VoiceSearchQuerySource) -->
+
 <!-- LINT.IfChange(VoiceSearchState) -->
 
 <enum name="VoiceSearchState">

@@ -109,6 +109,14 @@ export enum VoiceSearchMetricType {
   ERROR = 'Errors',
 }
 
+export enum VoiceSearchQuerySource {
+  NTP_REALBOX = 0,
+  NTP_COMPOSEBOX = 1,
+  OMNIBOX_COMPOSEBOX = 2,
+  NEXTBOX_COMPOSEBOX = 3,
+  MAX_VALUE = NEXTBOX_COMPOSEBOX,
+}
+
 function toError(webkitError: string): VoiceSearchError {
   switch (webkitError) {
     case 'aborted':
@@ -606,6 +614,29 @@ export class ComposeboxVoiceSearchElement extends
     const aggregateMetricName = `VoiceSearch.${type}`;
     chrome.metricsPrivate.recordEnumerationValue(
         aggregateMetricName, metricEnumValue, max);
+
+    // Record query submission source.
+    if (type === VoiceSearchMetricType.ACTION &&
+        metricEnumValue === VoiceSearchAction.QUERY_SUBMITTED) {
+      let sourceEnum: VoiceSearchQuerySource|null = null;
+      if (this.metricSource === 'NTP_REALBOX') {
+        sourceEnum = VoiceSearchQuerySource.NTP_REALBOX;
+      } else if (this.metricSource === 'NTP_COMPOSEBOX') {
+        sourceEnum = VoiceSearchQuerySource.NTP_COMPOSEBOX;
+      } else if (
+          this.metricSource === 'NTP_OMNIBOX_COMPOSEBOX' ||
+          this.metricSource === 'OTHER_OMNIBOX_COMPOSEBOX' ||
+          this.metricSource === 'SRP_OMNIBOX_COMPOSEBOX') {
+        sourceEnum = VoiceSearchQuerySource.OMNIBOX_COMPOSEBOX;
+      } else if (this.metricSource === 'CO_BROWSING_COMPOSEBOX') {
+        sourceEnum = VoiceSearchQuerySource.NEXTBOX_COMPOSEBOX;
+      }
+      if (sourceEnum !== null) {
+        chrome.metricsPrivate.recordEnumerationValue(
+            'VoiceSearch.QuerySubmission.Source', sourceEnum,
+            VoiceSearchQuerySource.MAX_VALUE + 1);
+      }
+    }
 
     // TODO(b/501544449): This dual-logging block is temporary to ensure data
     // continuity. Remove this once the unified VoiceSearch metrics are
