@@ -2,9 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import type {CrLazyListElement} from '//resources/cr_elements/cr_lazy_list/cr_lazy_list.js';
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
 
 import type {DisplayItem, PowerBookmarksListElement} from './power_bookmarks_list.js';
+
+export interface TemplatizedDomNodes {
+  list: CrLazyListElement<DisplayItem>;
+}
 
 export function getHtml(this: PowerBookmarksListElement) {
   // clang-format off

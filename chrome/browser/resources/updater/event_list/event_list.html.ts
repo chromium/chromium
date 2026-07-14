@@ -2,9 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import type {CrInfiniteListElement} from '//resources/cr_elements/cr_infinite_list/cr_infinite_list.js';
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
 
 import type {EventEntry, EventListElement} from './event_list.js';
+
+export interface TemplatizedDomNodes {
+  eventList: CrInfiniteListElement<EventEntry>;
+}
 
 export function getHtml(this: EventListElement) {
   // clang-format off
@@ -36,7 +41,7 @@ export function getHtml(this: EventListElement) {
     </span>
   ` : ''}
 </div>
-<cr-infinite-list class="event-list" .items="${this.events}" item-size="36"
+<cr-infinite-list id="eventList" class="event-list" .items="${this.events}" item-size="36"
     chunk-size="100" aria-rowcount="${this.events.length}"
     .scrollTarget="${this.scrollTarget}"
     .template="${(item: EventEntry) => html`

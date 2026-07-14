@@ -2,10 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import type {CrInfiniteListElement} from '//resources/cr_elements/cr_infinite_list/cr_infinite_list.js';
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
 
 import type {MojomData} from './data.js';
 import type {DownloadsManagerElement} from './manager.js';
+
+export interface TemplatizedDomNodes {
+  downloadsList: CrInfiniteListElement<MojomData>;
+}
 
 export function getHtml(this: DownloadsManagerElement) {
   // clang-format off

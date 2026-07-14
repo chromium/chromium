@@ -2,10 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import type {CrLazyListElement} from '//resources/cr_elements/cr_lazy_list/cr_lazy_list.js';
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
 
 import type {ReadLaterEntry} from './reading_list.mojom-webui.js';
 import type {ReadingListAppElement} from './reading_list_app.js';
+
+export interface TemplatizedDomNodes {
+  readingListList: CrLazyListElement<ReadLaterEntry>;
+}
 
 export function getHtml(this: ReadingListAppElement) {
   // clang-format off

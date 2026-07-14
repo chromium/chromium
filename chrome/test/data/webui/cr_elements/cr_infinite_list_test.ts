@@ -141,7 +141,9 @@ suite('InfiniteListTest', () => {
     testApp = createTestApp(useDefaultScroll);
     testApp.listItems = sampleData;
 
-    infiniteList = testApp.shadowRoot.querySelector('cr-infinite-list')!;
+    infiniteList =
+        testApp.shadowRoot.querySelector<CrInfiniteListElement<{name: string}>>(
+            'cr-infinite-list')!;
     const lazyList = infiniteList.querySelector('cr-lazy-list');
     assertTrue(!!lazyList);
     innerList = lazyList;
@@ -244,7 +246,9 @@ suite('InfiniteListFocusTest', () => {
     testApp = createTestApp();
     testApp.listItems = sampleData;
 
-    infiniteList = testApp.shadowRoot.querySelector('cr-infinite-list')!;
+    infiniteList =
+        testApp.shadowRoot.querySelector<CrInfiniteListElement<{name: string}>>(
+            'cr-infinite-list')!;
     const lazyList = infiniteList.querySelector('cr-lazy-list');
     assertTrue(!!lazyList);
     innerList = lazyList;

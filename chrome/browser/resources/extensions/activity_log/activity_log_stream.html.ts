@@ -2,10 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import type {CrInfiniteListElement} from '//resources/cr_elements/cr_infinite_list/cr_infinite_list.js';
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
 
 import type {ActivityLogStreamElement} from './activity_log_stream.js';
 import type {StreamItem} from './activity_log_stream_item.js';
+
+export interface TemplatizedDomNodes {
+  activityList: CrInfiniteListElement<StreamItem>;
+}
 
 export function getHtml(this: ActivityLogStreamElement) {
   // clang-format off
@@ -44,7 +49,7 @@ export function getHtml(this: ActivityLogStreamElement) {
   <span id="activity-key">$i18n{activityLogNameColumn}</span>
   <span id="activity-time">$i18n{activityLogTimeColumn}</span>
 </div>
-<cr-infinite-list .items="${this.filteredActivityStream_}" item-size="56"
+<cr-infinite-list id="activityList" .items="${this.filteredActivityStream_}" item-size="56"
     chunk-size="10"
     .template="${(item: StreamItem) => html`
         <activity-log-stream-item .data="${item}">

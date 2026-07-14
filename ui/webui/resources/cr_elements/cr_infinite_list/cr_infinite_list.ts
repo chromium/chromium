@@ -168,7 +168,7 @@ export class CrInfiniteListElement<T> extends CrLitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'cr-infinite-list': CrInfiniteListElement<any>;
+    'cr-infinite-list': CrInfiniteListElement<unknown>;
   }
 }
 

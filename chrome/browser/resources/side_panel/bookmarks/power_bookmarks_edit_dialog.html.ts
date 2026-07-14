@@ -2,10 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import type {CrLazyListElement} from '//resources/cr_elements/cr_lazy_list/cr_lazy_list.js';
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
 
 import type {BookmarksTreeNode} from './bookmarks.mojom-webui.js';
 import type {PowerBookmarksEditDialogElement} from './power_bookmarks_edit_dialog.js';
+
+export interface TemplatizedDomNodes {
+  folderList: CrLazyListElement<BookmarksTreeNode>;
+}
 
 export function getHtml(this: PowerBookmarksEditDialogElement) {
   // clang-format off

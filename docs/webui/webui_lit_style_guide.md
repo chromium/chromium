@@ -369,6 +369,53 @@ export function getHtml(this: MyCrLitElement) {
 }
 ```
 
+### Templatized UI elements
+
+When binding properties (such as `.template` or `.items`) on generic/templatized
+elements (e.g., `<cr-lazy-list>` or `<cr-infinite-list>`) in a Lit template file
+(`.html.ts`), the `@webui-eslint/lit-element-expressions` ESLint rule checks
+property type compatibility.
+
+By default, the ESLint rule resolves element tags using `HTMLElementTagNameMap`,
+which declares generic components with `unknown` type parameters (e.g.,
+`CrLazyListElement<unknown>`). If a binding provides a strongly-typed callback (e.g.,
+`(item: MyItem, index: number) => TemplateResult`), ESLint will flag a type
+mismatch error because callback parameters of type `MyItem` are not assignable
+to parameters expecting `unknown`.
+
+To provide the more accurate type information to ESLint:
+
+1. Ensure the element in the HTML template has an `id` attribute (e.g.,
+   `id="list"`).
+2. Export a `TemplatizedDomNodes` interface in the **`.html.ts`** template file
+   (not in the `.ts` class file) mapping the element's `id` to its concrete
+   generic type.
+
+**Example:**
+
+```ts
+// my_element.html.ts
+import type {CrLazyListElement} from '//resources/cr_elements/cr_lazy_list/cr_lazy_list.js';
+import {html} from '//resources/lit/v3_0/lit.rollup.js';
+
+import type {MyItem} from './my_item.js';
+import type {MyElement} from './my_element.js';
+
+export interface TemplatizedDomNodes {
+  list: CrLazyListElement<MyItem>;
+}
+
+export function getHtml(this: MyElement) {
+  return html`<!--_html_template_start_-->
+<cr-lazy-list id="list" .items="${this.items}"
+    .template="${(item: MyItem, index: number) => html`
+      <div>${item.name}</div>
+    `}">
+</cr-lazy-list>
+<!--_html_template_end_-->`;
+}
+```
+
 ## Naming Conventions
 
 ### CrLitElement DOM, file, class names.

@@ -430,7 +430,7 @@ export class CrLazyListElement<T> extends CrLitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'cr-lazy-list': CrLazyListElement<any>;
+    'cr-lazy-list': CrLazyListElement<unknown>;
   }
 }
 
