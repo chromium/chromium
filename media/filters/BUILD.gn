@@ -148,6 +148,10 @@ source_set("filters") {
 
   if (media_use_iamf_tools) {
     deps += [ "//third_party/iamf_tools:iamf_tools_lib" ]
+    sources += [
+      "iamf_audio_decoder.cc",
+      "iamf_audio_decoder.h",
+    ]
   }
 
   if (media_use_symphonia) {
@@ -447,6 +451,10 @@ source_set("unit_tests") {
   if (media_use_ffmpeg) {
     # Direct dependency required to inherit config.
     deps += [ "//third_party/ffmpeg" ]
+  }
+
+  if (media_use_iamf_tools) {
+    sources += [ "iamf_audio_decoder_unittest.cc" ]
   }
 }
 

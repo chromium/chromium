@@ -10,10 +10,13 @@
 #include <string_view>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/containers/circular_deque.h"
+#include "base/feature_list.h"
 #include "base/format_macros.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_span.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
@@ -24,6 +27,7 @@
 #include "crypto/hash.h"
 #include "media/base/audio_buffer.h"
 #include "media/base/audio_bus.h"
+#include "media/base/audio_codecs.h"
 #include "media/base/audio_hash.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/media_switches.h"
@@ -44,6 +48,10 @@
 
 #if BUILDFLAG(ENABLE_SYMPHONIA)
 #include "media/filters/symphonia_audio_decoder.h"
+#endif
+
+#if BUILDFLAG(ENABLE_IAMF_TOOLS)
+#include "media/filters/iamf_audio_decoder.h"
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
@@ -76,6 +84,9 @@ namespace {
 // The number of packets to read and then decode from each file.
 constexpr size_t kDecodeRuns = 3;
 
+// Corresponds to the 7.1.4 layout.
+constexpr int kIamfDiscreteChannelCount = 12;
+
 struct DecodedBufferExpectations {
   int64_t timestamp;
   int64_t duration;
@@ -95,6 +106,9 @@ struct TestParams {
 
   // When set, the test accepts either the primary or alternate expectations.
   std::optional<DataExpectations> alt_expectations;
+
+  base::raw_span<const uint8_t> extra_data;
+  ChannelLayout target_channel_layout = CHANNEL_LAYOUT_NONE;
 };
 
 // Tells gtest how to print our TestParams structure.
@@ -151,6 +165,13 @@ class AudioDecoderTest
         decoder_ = std::make_unique<OpusAudioDecoder>(
             task_environment_.GetMainThreadTaskRunner());
         break;
+#if BUILDFLAG(ENABLE_IAMF_TOOLS)
+      case AudioDecoderType::kIamf:
+        decoder_ = std::make_unique<IamfAudioDecoder>(
+            task_environment_.GetMainThreadTaskRunner(), &media_log_);
+        break;
+#endif
+
 #if BUILDFLAG(ENABLE_SYMPHONIA)
       case AudioDecoderType::kSymphonia:
         decoder_ = std::make_unique<SymphoniaAudioDecoder>(
@@ -213,6 +234,32 @@ class AudioDecoderTest
           {AudioCodec::kAAC, AudioCodecProfile::kXHE_AAC, false});
     }
     return true;
+  }
+
+  bool IsIamfTest() const { return params_.codec == AudioCodec::kIAMF; }
+
+  void VerifyIamfOutputLayout() {
+    ASSERT_GT(decoded_audio_size(), 0u);
+    const scoped_refptr<AudioBuffer>& buffer = decoded_audio_[0];
+
+    ChannelLayout expected_layout = params_.target_channel_layout;
+    if (expected_layout == CHANNEL_LAYOUT_NONE) {
+      expected_layout = (params_.channel_layout == CHANNEL_LAYOUT_DISCRETE)
+                            ? CHANNEL_LAYOUT_7_1_4
+                            : params_.channel_layout;
+    }
+
+    if (expected_layout == CHANNEL_LAYOUT_7_1_4 &&
+        !base::FeatureList::IsEnabled(kEnableHighChannelLayouts)) {
+      expected_layout = CHANNEL_LAYOUT_DISCRETE;
+    }
+
+    int expected_channels = (expected_layout == CHANNEL_LAYOUT_DISCRETE)
+                                ? kIamfDiscreteChannelCount
+                                : ChannelLayoutToChannelCount(expected_layout);
+
+    EXPECT_EQ(expected_layout, buffer->channel_layout());
+    EXPECT_EQ(expected_channels, buffer->channel_count());
   }
 
   void DecodeBuffer(scoped_refptr<DecoderBuffer> buffer) {
@@ -283,6 +330,31 @@ class AudioDecoderTest
 #endif
 
     av_packet_unref(packet.get());
+
+    if (IsIamfTest()) {
+      ASSERT_FALSE(params_.extra_data.empty());
+      int channels = (params_.channel_layout == CHANNEL_LAYOUT_DISCRETE)
+                         ? kIamfDiscreteChannelCount
+                         : ChannelLayoutToChannelCount(params_.channel_layout);
+      std::vector<uint8_t> extra_data(params_.extra_data.begin(),
+                                      params_.extra_data.end());
+      config.Initialize(AudioCodec::kIAMF, kSampleFormatS32,
+                        ChannelLayoutConfig(params_.channel_layout, channels),
+                        params_.samples_per_second, extra_data,
+                        EncryptionScheme::kUnencrypted, base::TimeDelta(), 0);
+      if (params_.target_channel_layout != CHANNEL_LAYOUT_NONE) {
+        ChannelLayoutConfig target_config;
+        if (params_.target_channel_layout == CHANNEL_LAYOUT_7_1_4 &&
+            !base::FeatureList::IsEnabled(kEnableHighChannelLayouts)) {
+          target_config = ChannelLayoutConfig(CHANNEL_LAYOUT_DISCRETE,
+                                              kIamfDiscreteChannelCount);
+        } else {
+          target_config =
+              ChannelLayoutConfig::FromLayout(params_.target_channel_layout);
+        }
+        config.set_target_output_channel_layout(target_config);
+      }
+    }
 
     EXPECT_EQ(params_.codec, config.codec());
     EXPECT_EQ(params_.samples_per_second, config.samples_per_second());
@@ -712,6 +784,59 @@ constexpr TestParams kSymphoniaTestParams[] = {
      192000, CHANNEL_LAYOUT_STEREO}};
 #endif
 
+#if BUILDFLAG(ENABLE_IAMF_TOOLS)
+constexpr DataExpectations kIamfExpectations = {{
+    {0, 20000, nullptr},      // Timestamp 0us, Duration 20ms
+    {20000, 20000, nullptr},  // Timestamp 20ms, Duration 20ms
+    {40000, 20000, nullptr}   // Timestamp 40ms, Duration 20ms
+}};
+
+static const uint8_t kIamf714ExtraData[] = {
+    0xf8, 0x06, 0x69, 0x61, 0x6d, 0x66, 0x00, 0x00, 0x00, 0x14, 0x00, 0x4f,
+    0x70, 0x75, 0x73, 0xc0, 0x07, 0xff, 0xfc, 0x01, 0x02, 0x01, 0x38, 0x00,
+    0x00, 0xbb, 0x80, 0x00, 0x00, 0x00, 0x08, 0x1c, 0x01, 0x00, 0x00, 0x07,
+    0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x01, 0x01, 0x00, 0x80, 0xf7,
+    0x02, 0x00, 0xc0, 0x07, 0xc0, 0x07, 0x00, 0x00, 0x20, 0x70, 0x07, 0x05,
+    0x10, 0x41, 0x03, 0x01, 0x65, 0x6e, 0x2d, 0x75, 0x73, 0x00, 0x64, 0x65,
+    0x66, 0x61, 0x75, 0x6c, 0x74, 0x5f, 0x6d, 0x69, 0x78, 0x5f, 0x70, 0x72,
+    0x65, 0x73, 0x65, 0x6e, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x00, 0x01,
+    0x01, 0x01, 0x37, 0x2e, 0x31, 0x2e, 0x34, 0x00, 0x40, 0x00, 0x65, 0x80,
+    0xf7, 0x02, 0x80, 0x00, 0x00, 0x64, 0x80, 0xf7, 0x02, 0x80, 0x00, 0x00,
+    0x01, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00};
+
+static const uint8_t kIamfStereoExtraData[] = {
+    0xf8, 0x06, 0x69, 0x61, 0x6d, 0x66, 0x00, 0x00, 0x00, 0x14, 0x00,
+    0x4f, 0x70, 0x75, 0x73, 0xc0, 0x07, 0xff, 0xfc, 0x01, 0x02, 0x01,
+    0x38, 0x00, 0x00, 0xbb, 0x80, 0x00, 0x00, 0x00, 0x08, 0x0a, 0x01,
+    0x00, 0x00, 0x01, 0x00, 0x00, 0x20, 0x10, 0x01, 0x01, 0x10, 0x42,
+    0x03, 0x01, 0x65, 0x6e, 0x2d, 0x75, 0x73, 0x00, 0x64, 0x65, 0x66,
+    0x61, 0x75, 0x6c, 0x74, 0x5f, 0x6d, 0x69, 0x78, 0x5f, 0x70, 0x72,
+    0x65, 0x73, 0x65, 0x6e, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x00,
+    0x01, 0x01, 0x01, 0x73, 0x74, 0x65, 0x72, 0x65, 0x6f, 0x00, 0x00,
+    0x00, 0x65, 0x80, 0xf7, 0x02, 0x80, 0x00, 0x00, 0x64, 0x80, 0xf7,
+    0x02, 0x80, 0x00, 0x00, 0x01, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00};
+
+// Only IAMF Audio Streams can be decoded by this decoder.
+constexpr TestParams kIamfTestParams[] = {
+    {AudioCodec::kIAMF, "iamf_alternating_sine_waves_714.mp4",
+     kIamfExpectations, 0, 48000, CHANNEL_LAYOUT_DISCRETE,
+     AudioCodecProfile::kUnknown, std::nullopt, kIamf714ExtraData,
+     CHANNEL_LAYOUT_NONE},
+    {AudioCodec::kIAMF, "iamf_alternating_sine_waves_714.mp4",
+     kIamfExpectations, 0, 48000, CHANNEL_LAYOUT_DISCRETE,
+     AudioCodecProfile::kUnknown, std::nullopt, kIamf714ExtraData,
+     CHANNEL_LAYOUT_STEREO},
+    {AudioCodec::kIAMF, "iamf_alternating_sine_waves_stereo.mp4",
+     kIamfExpectations, 0, 48000, CHANNEL_LAYOUT_STEREO,
+     AudioCodecProfile::kUnknown, std::nullopt, kIamfStereoExtraData,
+     CHANNEL_LAYOUT_NONE},
+    {AudioCodec::kIAMF, "iamf_alternating_sine_waves_stereo.mp4",
+     kIamfExpectations, 0, 48000, CHANNEL_LAYOUT_STEREO,
+     AudioCodecProfile::kUnknown, std::nullopt, kIamfStereoExtraData,
+     CHANNEL_LAYOUT_7_1_4},
+};
+#endif
+
 void AudioDecoderTest::SetReinitializeParams() {
 #if (BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)) && \
     BUILDFLAG(USE_PROPRIETARY_CODECS)
@@ -733,6 +858,13 @@ void AudioDecoderTest::SetReinitializeParams() {
     set_params(params_.channel_layout == kSymphoniaTestParams[0].channel_layout
                    ? kSymphoniaTestParams[2]
                    : kSymphoniaTestParams[0]);
+    return;
+  }
+#endif
+
+#if BUILDFLAG(ENABLE_IAMF_TOOLS)
+  if (decoder_type_ == AudioDecoderType::kIamf) {
+    set_params(kIamfTestParams[0]);
     return;
   }
 #endif
@@ -806,6 +938,16 @@ TEST_P(AudioDecoderTest, ProduceAudioSamples) {
     SendEndOfStream();
     ResetReader();
   }
+}
+
+TEST_P(AudioDecoderTest, VerifyIamfOutputLayout) {
+  if (!IsIamfTest()) {
+    GTEST_SKIP() << "Only for IAMF";
+  }
+  ASSERT_NO_FATAL_FAILURE(Initialize());
+  ASSERT_NO_FATAL_FAILURE(Decode());
+  EXPECT_TRUE(last_decode_status().is_ok());
+  VerifyIamfOutputLayout();
 }
 
 TEST_P(AudioDecoderTest, Decode) {
@@ -924,6 +1066,13 @@ INSTANTIATE_TEST_SUITE_P(Symphonia,
                          AudioDecoderTest,
                          Combine(Values(AudioDecoderType::kSymphonia),
                                  ValuesIn(kSymphoniaTestParams)));
+#endif
+
+#if BUILDFLAG(ENABLE_IAMF_TOOLS)
+INSTANTIATE_TEST_SUITE_P(Iamf,
+                         AudioDecoderTest,
+                         Combine(Values(AudioDecoderType::kIamf),
+                                 ValuesIn(kIamfTestParams)));
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
