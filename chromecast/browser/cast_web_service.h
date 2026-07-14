@@ -118,6 +118,7 @@ class CastWebService : public mojom::CastWebService {
   bool immediately_delete_webviews_ = false;
 
   std::vector<std::string> cast_webui_hosts_;
+  bool webui_factory_registered_ = false;
 
   const scoped_refptr<base::SequencedTaskRunner> task_runner_;
   base::WeakPtr<CastWebService> weak_ptr_;
