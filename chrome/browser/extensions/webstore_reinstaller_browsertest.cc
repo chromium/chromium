@@ -12,6 +12,7 @@
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
+#include "extensions/browser/uninstall_reason.h"
 #include "extensions/browser/webstore_data_fetcher.h"
 #include "extensions/browser/webstore_install_result.h"
 #include "extensions/buildflags/buildflags.h"
@@ -166,6 +167,68 @@ IN_PROC_BROWSER_TEST_F(WebstoreReinstallerBrowserTest, TestWebstoreReinstall) {
   ASSERT_TRUE(extension.get());
   // The name should not match, since the extension changed.
   EXPECT_NE(kExtensionName, extension->name());
+}
+
+// Regression test: the extension can be uninstalled (from another window, by
+// policy, by the blocklist, etc.) while the asynchronous repair prompt is
+// showing. Accepting the prompt must fail gracefully instead of crashing in
+// ExtensionRegistrar::UninstallExtension()'s CHECK() that the extension is
+// still installed.
+IN_PROC_BROWSER_TEST_F(WebstoreReinstallerBrowserTest,
+                       ReinstallAfterExtensionUninstalled) {
+  // Build an extension with the same id as our test extension and add it.
+  const std::string kExtensionName("ReinstallerExtension");
+  scoped_refptr<const Extension> extension =
+      ExtensionBuilder()
+          .SetLocation(mojom::ManifestLocation::kInternal)
+          .SetID(kTestExtensionId)
+          .SetManifest(
+              base::DictValue()
+                  .Set("name", kExtensionName)
+                  .Set("description", "Foo")
+                  .Set("manifest_version", 3)
+                  .Set("version", "1.0")
+                  .Set("update_url",
+                       "https://clients2.google.com/service/update2/crx"))
+          .Build();
+  extension_registrar()->AddExtension(extension.get());
+
+  auto mock_response = CreateMockResponse(kTestExtensionId);
+  WebstoreDataFetcher::SetMockItemSnippetReponseForTesting(mock_response.get());
+
+  ExtensionRegistry* registry = ExtensionRegistry::Get(profile());
+  ASSERT_TRUE(registry->enabled_extensions().GetByID(kTestExtensionId));
+
+  // WebstoreReinstaller expects corrupted extension.
+  extension_registrar()->DisableExtension(kTestExtensionId,
+                                          {disable_reason::DISABLE_CORRUPTED});
+
+  content::WebContents* active_web_contents = GetActiveWebContents();
+  ASSERT_TRUE(active_web_contents);
+
+  // Accept the repair prompt once it is shown.
+  AutoAcceptInstall();
+
+  base::RunLoop run_loop;
+  auto reinstaller = base::MakeRefCounted<WebstoreReinstaller>(
+      active_web_contents, kTestExtensionId,
+      base::BindOnce(&WebstoreReinstallerBrowserTest::OnInstallCompletion,
+                     base::Unretained(this), run_loop.QuitClosure()));
+  reinstaller->BeginReinstall();
+
+  // Uninstall the extension out from under the still-pending repair prompt. The
+  // webstore data fetch and prompt acceptance are asynchronous, so this runs
+  // before OnInstallPromptDone(), reproducing the uninstall-during-prompt race.
+  ASSERT_TRUE(extension_registrar()->UninstallExtension(
+      kTestExtensionId, UNINSTALL_REASON_FOR_TESTING, nullptr));
+  ASSERT_FALSE(registry->GetInstalledExtension(kTestExtensionId));
+
+  run_loop.Run();
+
+  // The reinstall should have failed gracefully, and the process should not
+  // have crashed.
+  EXPECT_FALSE(last_install_result());
+  EXPECT_FALSE(registry->GetInstalledExtension(kTestExtensionId));
 }
 
 }  // namespace extensions
