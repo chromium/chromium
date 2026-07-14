@@ -11,21 +11,8 @@
 
 namespace autofill {
 
-namespace {
-
-class StubAtMemoryQueryServiceDelegate : public AtMemoryQueryServiceDelegate {
- public:
-  void RetrieveLiveTabContext(
-      LiveTabContextQuery query,
-      base::OnceCallback<void(LiveTabContextResponse)> callback) override {
-    std::move(callback).Run({});
-  }
-};
-
-}  // namespace
-
 MockAtMemoryQueryService::MockAtMemoryQueryService()
-    : AtMemoryQueryService(std::make_unique<StubAtMemoryQueryServiceDelegate>(),
+    : AtMemoryQueryService(std::make_unique<AtMemoryQueryServiceDelegate>(),
                            /*data_provider=*/nullptr,
                            /*personal_context_service=*/nullptr,
                            /*locale=*/"") {}

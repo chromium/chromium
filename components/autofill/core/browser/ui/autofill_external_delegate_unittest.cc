@@ -377,15 +377,6 @@ class MockBrowserAutofillManager : public TestBrowserAutofillManager {
   }
 };
 
-class StubAtMemoryQueryServiceDelegate : public AtMemoryQueryServiceDelegate {
- public:
-  void RetrieveLiveTabContext(
-      LiveTabContextQuery query,
-      base::OnceCallback<void(LiveTabContextResponse)> callback) override {
-    std::move(callback).Run({});
-  }
-};
-
 class AutofillExternalDelegateTest : public testing::Test,
                                      public WithTestAutofillClientDriverManager<
                                          NiceMock<MockAutofillClient>,

@@ -2,23 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/accessibility_annotator/at_memory_query_service_factory.h"
+#include "chrome/browser/autofill/at_memory/at_memory_query_service_factory.h"
 
 #include <memory>
 #include <vector>
 
 #include "base/no_destructor.h"
-#include "chrome/browser/accessibility_annotator/at_memory_query_service_delegate_impl.h"
+#include "chrome/browser/autofill/at_memory/at_memory_query_service_delegate_impl.h"
 #include "chrome/browser/autofill/autofill_entity_data_manager_factory.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/metrics/variations/google_groups_manager_factory.h"
 #include "chrome/browser/personal_context/personal_context_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/accessibility_annotator/core/accessibility_annotator_features.h"
 #include "components/autofill/core/browser/at_memory/at_memory_enablement_utils.h"
 #include "components/autofill/core/browser/at_memory/autofill_data_provider.h"
 #include "components/autofill/core/browser/integrators/at_memory/at_memory_query_service.h"
+#include "components/autofill/core/browser/integrators/at_memory/at_memory_query_service_delegate.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "content/public/browser/storage_partition.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -64,8 +64,7 @@ AtMemoryQueryServiceFactory::BuildServiceInstanceForBrowserContext(
       PersonalContextServiceFactory::GetForProfile(profile);
 
   return std::make_unique<autofill::AtMemoryQueryService>(
-      std::make_unique<
-          accessibility_annotator::AtMemoryQueryServiceDelegateImpl>(profile),
+      std::make_unique<autofill::AtMemoryQueryServiceDelegateImpl>(profile),
       std::move(data_provider), personal_context_service,
       g_browser_process->GetApplicationLocale());
 }

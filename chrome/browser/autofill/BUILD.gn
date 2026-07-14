@@ -12,6 +12,10 @@ static_library("autofill") {
   sources = [
     "address_normalizer_factory.cc",
     "address_normalizer_factory.h",
+    "at_memory/at_memory_query_service_delegate_impl.cc",
+    "at_memory/at_memory_query_service_delegate_impl.h",
+    "at_memory/at_memory_query_service_factory.cc",
+    "at_memory/at_memory_query_service_factory.h",
     "at_memory_cross_tab_copy_paste_tracker_factory.cc",
     "at_memory_cross_tab_copy_paste_tracker_factory.h",
     "autocomplete_history_manager_factory.cc",
@@ -74,7 +78,6 @@ static_library("autofill") {
   ]
   deps = [
     "//chrome/browser:browser_process",
-    "//chrome/browser/accessibility_annotator",
     "//chrome/browser/account_settings",
     "//chrome/browser/history",
     "//chrome/browser/metrics",

@@ -37,9 +37,6 @@ struct LiveTabContextResponse {
 class AtMemoryQueryServiceDelegate {
  public:
   virtual ~AtMemoryQueryServiceDelegate() = default;
-  virtual void RetrieveLiveTabContext(
-      LiveTabContextQuery query,
-      base::OnceCallback<void(LiveTabContextResponse)> callback) = 0;
 };
 
 }  // namespace autofill
