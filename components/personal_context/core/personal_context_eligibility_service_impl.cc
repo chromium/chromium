@@ -16,7 +16,9 @@
 #include "components/account_settings/account_setting_service.h"
 #include "components/personal_context/core/personal_context_debug_features.h"
 #include "components/personal_context/core/personal_context_features.h"
+#include "components/personal_context/core/personal_context_prefs.h"
 #include "components/personal_context/core/personal_context_types.h"
+#include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 
@@ -156,10 +158,13 @@ SatisfiesMiscellaneousRequirements(GeoIpCountryCode country_code,
 PersonalContextEligibilityServiceImpl::PersonalContextEligibilityServiceImpl(
     account_settings::AccountSettingService* account_settings_service,
     signin::IdentityManager* identity_manager,
+    // TODO(b:494149753): PrefsService is no longer needed, remove it.
+    PrefService* pref_service,
     GeoIpCountryCode country_code,
     std::string locale)
     : account_settings_service_(account_settings_service),
       identity_manager_(identity_manager),
+      pref_service_(pref_service),
       country_code_(std::move(country_code)),
       locale_(std::move(locale)) {
   if (account_settings_service_) {

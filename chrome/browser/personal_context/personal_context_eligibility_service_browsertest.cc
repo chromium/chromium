@@ -67,8 +67,8 @@ std::unique_ptr<KeyedService> BuildEligibilityService(
   Profile* profile = Profile::FromBrowserContext(context);
   return std::make_unique<PersonalContextEligibilityServiceImpl>(
       AccountSettingServiceFactory::GetForProfile(profile),
-      IdentityManagerFactory::GetForProfile(profile), GeoIpCountryCode("US"),
-      "en-US");
+      IdentityManagerFactory::GetForProfile(profile), profile->GetPrefs(),
+      GeoIpCountryCode("US"), "en-US");
 }
 
 class PersonalContextEligibilityServiceImplBrowserTest

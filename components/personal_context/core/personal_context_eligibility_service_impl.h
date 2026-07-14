@@ -12,7 +12,10 @@
 #include "components/account_settings/account_setting_service.h"
 #include "components/personal_context/core/country_type.h"
 #include "components/personal_context/core/personal_context_eligibility_service.h"
+#include "components/prefs/pref_change_registrar.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+
+class PrefService;
 
 namespace personal_context {
 
@@ -24,6 +27,7 @@ class PersonalContextEligibilityServiceImpl
   explicit PersonalContextEligibilityServiceImpl(
       account_settings::AccountSettingService* account_settings_service,
       signin::IdentityManager* identity_manager,
+      PrefService* pref_service,
       GeoIpCountryCode country_code,
       std::string locale);
   PersonalContextEligibilityServiceImpl(
@@ -59,6 +63,7 @@ class PersonalContextEligibilityServiceImpl
   const raw_ptr<account_settings::AccountSettingService>
       account_settings_service_;
   const raw_ptr<signin::IdentityManager> identity_manager_;
+  const raw_ptr<PrefService> pref_service_;
   const GeoIpCountryCode country_code_;
   const std::string locale_;
   base::ObserverList<PersonalContextEligibilityService::Observer> observers_;
@@ -68,6 +73,7 @@ class PersonalContextEligibilityServiceImpl
   base::ScopedObservation<account_settings::AccountSettingService,
                           account_settings::AccountSettingService::Observer>
       account_settings_observation_{this};
+  PrefChangeRegistrar pref_registrar_;
   // Cached last eligibility state.
   PersonalContextEligibilityState eligibility_state_ =
       PersonalContextEligibilityState::kDisabledNotEligible;
