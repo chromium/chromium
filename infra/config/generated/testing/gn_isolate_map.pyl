@@ -2064,12 +2064,6 @@
     "module_scheme": "single",
     "skip_usage_check": True,
   },
-  "test_serde_json_lenient": {
-    "label": "//build/rust/tests/test_serde_json_lenient:test_serde_json_lenient",
-    "type": "console_test_launcher",
-    "module_scheme": "gtest",
-    "skip_usage_check": True,
-  },
   "testing_pytype": {
     "label": "//testing:testing_pytype",
     "type": "script",

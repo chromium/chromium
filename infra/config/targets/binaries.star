@@ -2342,14 +2342,6 @@ targets.binaries.generated_script(
     module_scheme = "single",
 )
 
-targets.binaries.console_test_launcher(
-    name = "test_serde_json_lenient",
-    label = "//build/rust/tests/test_serde_json_lenient:test_serde_json_lenient",
-    # All references have been moved to starlark
-    skip_usage_check = True,
-    module_scheme = "gtest",
-)
-
 targets.binaries.script(
     name = "testing_pytype",
     label = "//testing:testing_pytype",

@@ -6062,7 +6062,6 @@ targets.bundle(
         "base_unittests",
         "rust_gtest_interop_unittests",
         "test_cpp_including_rust_unittests",
-        "test_serde_json_lenient",
     ],
 )
 

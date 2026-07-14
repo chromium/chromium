@@ -51,22 +51,6 @@
         },
         "test": "test_cpp_including_rust_unittests",
         "test_id_prefix": "ninja://build/rust/tests/test_cpp_including_rust:test_cpp_including_rust_unittests/"
-      },
-      {
-        "merge": {
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "module_name": "//build/rust/tests/test_serde_json_lenient:test_serde_json_lenient",
-        "module_scheme": "gtest",
-        "name": "test_serde_json_lenient",
-        "swarming": {
-          "dimensions": {
-            "os": "Ubuntu-22.04"
-          },
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "test_serde_json_lenient",
-        "test_id_prefix": "ninja://build/rust/tests/test_serde_json_lenient:test_serde_json_lenient/"
       }
     ],
     "isolated_scripts": [

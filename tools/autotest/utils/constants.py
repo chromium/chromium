@@ -27,7 +27,6 @@ TEST_TARGET_ALLOWLIST: list[str] = [
 
     # The tests below this line were output from the ripgrep command just below:
     '//ash:ash_pixeltests',
-    '//build/rust/tests/test_serde_json_lenient:test_serde_json_lenient',
     '//chrome/browser/apps/app_service/app_install:app_install_fuzztests',
     '//chrome/browser/glic/e2e_test:glic_internal_e2e_interactive_ui_tests',
     '//chrome/browser/mac:install_sh_test',

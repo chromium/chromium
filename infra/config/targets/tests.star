@@ -2506,10 +2506,6 @@ targets.tests.gtest_test(
     name = "jni_zero_sample_apk_test",
 )
 
-targets.tests.gtest_test(
-    name = "test_serde_json_lenient",
-)
-
 targets.tests.script_test(
     name = "test_traffic_annotation_auditor",
     script = "test_traffic_annotation_auditor.py",
