@@ -58,6 +58,7 @@ class OmniboxAutofillBubbleController : public AutofillBubbleControllerBase {
       base::RepeatingCallback<void(SuggestionHidingReason)>
           on_suggestions_hidden,
       base::RepeatingCallback<void(const Suggestion&)> did_select_suggestion,
+      base::RepeatingClosure did_deselect_suggestion,
       base::RepeatingCallback<
           void(const Suggestion&,
                const AutofillSuggestionDelegate::SuggestionMetadata&)>
@@ -69,6 +70,7 @@ class OmniboxAutofillBubbleController : public AutofillBubbleControllerBase {
   base::WeakPtr<OmniboxAutofillBubbleController> GetWeakPtr();
 
   void OnSuggestionsShown();
+  void OnSuggestionDeselected();
   void OnBubbleClosed(PaymentsUiClosedReason reason);
   void OnSuggestionSelected(const Suggestion& suggestion);
   void OnSuggestionAccepted(const Suggestion& suggestion, size_t row);
@@ -91,6 +93,7 @@ class OmniboxAutofillBubbleController : public AutofillBubbleControllerBase {
       on_suggestions_hidden_callback_;
   base::RepeatingCallback<void(const Suggestion&)>
       did_select_suggestion_callback_;
+  base::RepeatingClosure did_deselect_suggestion_callback_;
   base::RepeatingCallback<void(
       const Suggestion&,
       const AutofillSuggestionDelegate::SuggestionMetadata&)>

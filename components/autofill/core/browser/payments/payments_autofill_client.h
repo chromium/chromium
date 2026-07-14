@@ -828,6 +828,7 @@ class PaymentsAutofillClient : public RiskDataLoader {
       base::RepeatingCallback<void(SuggestionHidingReason)>
           on_suggestions_hidden,
       base::RepeatingCallback<void(const Suggestion&)> did_select_suggestion,
+      base::RepeatingClosure did_deselect_suggestion,
       base::RepeatingCallback<
           void(const Suggestion&,
                const AutofillSuggestionDelegate::SuggestionMetadata&)>

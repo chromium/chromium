@@ -88,7 +88,8 @@ TEST_F(OmniboxAutofillBubbleControllerTest, ShouldShowGooglePayLogo_LocalCard) {
   suggestions[0].payload = Suggestion::Guid(guid);
 
   controller_->Initialize(suggestions, base::DoNothing(), base::DoNothing(),
-                          base::DoNothing(), base::DoNothing());
+                          base::DoNothing(), base::DoNothing(),
+                          base::DoNothing());
 
   EXPECT_FALSE(controller_->ShouldShowGooglePayLogo());
 }
@@ -107,7 +108,8 @@ TEST_F(OmniboxAutofillBubbleControllerTest,
   suggestions[0].payload = Suggestion::Guid(guid);
 
   controller_->Initialize(suggestions, base::DoNothing(), base::DoNothing(),
-                          base::DoNothing(), base::DoNothing());
+                          base::DoNothing(), base::DoNothing(),
+                          base::DoNothing());
 
   EXPECT_TRUE(controller_->ShouldShowGooglePayLogo());
 }
@@ -121,7 +123,7 @@ TEST_F(OmniboxAutofillBubbleControllerTest, OnSuggestionsShown) {
 
   controller_->Initialize(suggestions, on_suggestions_shown_callback.Get(),
                           base::DoNothing(), base::DoNothing(),
-                          base::DoNothing());
+                          base::DoNothing(), base::DoNothing());
 
   EXPECT_CALL(on_suggestions_shown_callback,
               Run(testing::ElementsAre(testing::Field(
@@ -138,12 +140,24 @@ TEST_F(OmniboxAutofillBubbleControllerTest, OnSuggestionSelected) {
 
   controller_->Initialize(suggestions, base::DoNothing(), base::DoNothing(),
                           did_select_suggestion_callback.Get(),
-                          base::DoNothing());
+                          base::DoNothing(), base::DoNothing());
 
   EXPECT_CALL(
       did_select_suggestion_callback,
       Run(testing::Field(&Suggestion::type, SuggestionType::kCreditCardEntry)));
   controller_->OnSuggestionSelected(suggestions[0]);
+}
+
+TEST_F(OmniboxAutofillBubbleControllerTest, OnSuggestionDeselected) {
+  base::MockRepeatingCallback<void()> did_deselect_suggestion_callback;
+
+  controller_->Initialize(/*suggestions=*/{}, base::DoNothing(),
+                          base::DoNothing(), base::DoNothing(),
+                          did_deselect_suggestion_callback.Get(),
+                          base::DoNothing());
+
+  EXPECT_CALL(did_deselect_suggestion_callback, Run());
+  controller_->OnSuggestionDeselected();
 }
 
 TEST_F(OmniboxAutofillBubbleControllerTest, OnSuggestionAccepted) {
@@ -155,7 +169,7 @@ TEST_F(OmniboxAutofillBubbleControllerTest, OnSuggestionAccepted) {
       did_accept_suggestion_callback;
 
   controller_->Initialize(suggestions, base::DoNothing(), base::DoNothing(),
-                          base::DoNothing(),
+                          base::DoNothing(), base::DoNothing(),
                           did_accept_suggestion_callback.Get());
 
   size_t expected_row = 2;
@@ -185,7 +199,8 @@ TEST_P(OmniboxAutofillBubbleControllerClosedReasonTest, OnBubbleClosed) {
 
   controller_->Initialize(/*suggestions=*/{}, base::DoNothing(),
                           on_suggestions_hidden_callback.Get(),
-                          base::DoNothing(), base::DoNothing());
+                          base::DoNothing(), base::DoNothing(),
+                          base::DoNothing());
 
   EXPECT_CALL(on_suggestions_hidden_callback, Run(mapping.hiding_reason));
   controller_->OnBubbleClosed(mapping.closed_reason);

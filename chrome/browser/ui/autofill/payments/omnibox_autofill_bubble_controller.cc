@@ -61,6 +61,7 @@ void OmniboxAutofillBubbleController::Initialize(
         on_suggestions_shown,
     base::RepeatingCallback<void(SuggestionHidingReason)> on_suggestions_hidden,
     base::RepeatingCallback<void(const Suggestion&)> did_select_suggestion,
+    base::RepeatingClosure did_deselect_suggestion,
     base::RepeatingCallback<
         void(const Suggestion&,
              const AutofillSuggestionDelegate::SuggestionMetadata&)>
@@ -69,6 +70,7 @@ void OmniboxAutofillBubbleController::Initialize(
   on_suggestions_shown_callback_ = std::move(on_suggestions_shown);
   on_suggestions_hidden_callback_ = std::move(on_suggestions_hidden);
   did_select_suggestion_callback_ = std::move(did_select_suggestion);
+  did_deselect_suggestion_callback_ = std::move(did_deselect_suggestion);
   did_accept_suggestion_callback_ = std::move(did_accept_suggestion);
 }
 
@@ -132,6 +134,12 @@ bool OmniboxAutofillBubbleController::ShouldShowGooglePayLogo() const {
 void OmniboxAutofillBubbleController::OnSuggestionsShown() {
   if (on_suggestions_shown_callback_) {
     on_suggestions_shown_callback_.Run(suggestions_);
+  }
+}
+
+void OmniboxAutofillBubbleController::OnSuggestionDeselected() {
+  if (did_deselect_suggestion_callback_) {
+    did_deselect_suggestion_callback_.Run();
   }
 }
 

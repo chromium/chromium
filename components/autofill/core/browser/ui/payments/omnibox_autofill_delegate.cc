@@ -455,6 +455,8 @@ void OmniboxAutofillDelegate::OnGetIntersectionObserverInfo(bool is_visible) {
           weak_ptr_factory_.GetWeakPtr()),
       base::BindRepeating(&OmniboxAutofillDelegate::DidSelectSuggestion,
                           weak_ptr_factory_.GetWeakPtr()),
+      base::BindRepeating(&OmniboxAutofillDelegate::ClearPreviewedForm,
+                          weak_ptr_factory_.GetWeakPtr()),
       base::BindRepeating(&OmniboxAutofillDelegate::DidAcceptSuggestion,
                           weak_ptr_factory_.GetWeakPtr()));
 }

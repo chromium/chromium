@@ -31,10 +31,12 @@ class SuggestionButton : public views::Button {
   SuggestionButton(std::unique_ptr<PopupRowContentView> content_view,
                    const std::u16string& accessible_name,
                    PressedCallback pressed_callback,
-                   base::RepeatingClosure selected_callback)
+                   base::RepeatingClosure selected_callback,
+                   base::RepeatingClosure deselection_callback)
       : views::Button(std::move(pressed_callback)),
         content_view_(AddChildView(std::move(content_view))),
-        selected_callback_(std::move(selected_callback)) {
+        selected_callback_(std::move(selected_callback)),
+        deselection_callback_(std::move(deselection_callback)) {
     SetLayoutManager(std::make_unique<views::FillLayout>());
     SetFocusBehavior(FocusBehavior::ALWAYS);
     SetRequestFocusOnPress(true);
@@ -71,12 +73,17 @@ class SuggestionButton : public views::Button {
         if (selected_callback_) {
           selected_callback_.Run();
         }
+      } else {
+        if (deselection_callback_) {
+          deselection_callback_.Run();
+        }
       }
     }
   }
 
   raw_ptr<PopupRowContentView> content_view_;
   base::RepeatingClosure selected_callback_;
+  base::RepeatingClosure deselection_callback_;
   bool selected_ = false;
 };
 
@@ -185,7 +192,9 @@ void OmniboxAutofillBubbleView::Init() {
         base::BindRepeating(&OmniboxAutofillBubbleView::OnSuggestionAccepted,
                             base::Unretained(this), suggestion, row_index),
         base::BindRepeating(&OmniboxAutofillBubbleView::OnSuggestionSelected,
-                            base::Unretained(this), suggestion));
+                            base::Unretained(this), suggestion),
+        base::BindRepeating(&OmniboxAutofillBubbleView::OnSuggestionDeselected,
+                            weak_ptr_factory_.GetWeakPtr()));
     // Ensures the first suggestion is initially focused.
     if (!initially_focused_view_) {
       initially_focused_view_ = suggestion_button.get();
@@ -207,6 +216,12 @@ void OmniboxAutofillBubbleView::OnSuggestionSelected(
     const Suggestion& suggestion) {
   if (controller_) {
     controller_->OnSuggestionSelected(suggestion);
+  }
+}
+
+void OmniboxAutofillBubbleView::OnSuggestionDeselected() {
+  if (controller_) {
+    controller_->OnSuggestionDeselected();
   }
 }
 

@@ -32,6 +32,12 @@ using autofill_metrics::OmniboxAutofillShowChipDecisionPart1;
 using test::CreateFormDataForFrame;
 using test::CreateTestFormField;
 
+class MockAutofillDriver : public TestAutofillDriver {
+ public:
+  using TestAutofillDriver::TestAutofillDriver;
+  MOCK_METHOD(void, RendererShouldClearPreviewedForm, (), (override));
+};
+
 class MockAutofillClient : public TestAutofillClient {
  public:
   MockAutofillClient() = default;
@@ -45,7 +51,8 @@ class MockAutofillClient : public TestAutofillClient {
 
 class OmniboxAutofillDelegateTest
     : public testing::Test,
-      public WithTestAutofillClientDriverManager<MockAutofillClient> {
+      public WithTestAutofillClientDriverManager<MockAutofillClient,
+                                                 MockAutofillDriver> {
  public:
   OmniboxAutofillDelegateTest() {
     scoped_feature_list_.InitAndEnableFeature(
@@ -467,6 +474,7 @@ TEST_F(OmniboxAutofillDelegateTest,
       /*on_suggestions_shown=*/base::DoNothing(),
       /*on_suggestions_hidden=*/base::DoNothing(),
       /*did_select_suggestion=*/base::DoNothing(),
+      /*did_deselect_suggestion=*/base::DoNothing(),
       /*did_accept_suggestion=*/base::DoNothing());
 
   EXPECT_TRUE(payments_autofill_client().omnibox_autofill_chip_shown());
@@ -523,6 +531,7 @@ TEST_F(OmniboxAutofillDelegateTest,
       /*on_suggestions_shown=*/base::DoNothing(),
       /*on_suggestions_hidden=*/base::DoNothing(),
       /*did_select_suggestion=*/base::DoNothing(),
+      /*did_deselect_suggestion=*/base::DoNothing(),
       /*did_accept_suggestion=*/base::DoNothing());
 
   EXPECT_TRUE(payments_autofill_client().omnibox_autofill_chip_shown());
@@ -550,6 +559,7 @@ TEST_F(OmniboxAutofillDelegateTest, OnAfterFormsSeen_FormRemoved_HidesChip) {
       /*on_suggestions_shown=*/base::DoNothing(),
       /*on_suggestions_hidden=*/base::DoNothing(),
       /*did_select_suggestion=*/base::DoNothing(),
+      /*did_deselect_suggestion=*/base::DoNothing(),
       /*did_accept_suggestion=*/base::DoNothing());
 
   EXPECT_TRUE(payments_autofill_client().omnibox_autofill_chip_shown());
@@ -599,6 +609,7 @@ TEST_F(OmniboxAutofillDelegateTest,
       /*on_suggestions_shown=*/base::DoNothing(),
       /*on_suggestions_hidden=*/base::DoNothing(),
       /*did_select_suggestion=*/base::DoNothing(),
+      /*did_deselect_suggestion=*/base::DoNothing(),
       /*did_accept_suggestion=*/base::DoNothing());
 
   EXPECT_TRUE(payments_autofill_client().omnibox_autofill_chip_shown());
@@ -880,6 +891,15 @@ TEST_F(OmniboxAutofillDelegateTest, OnSuggestionsHidden_ForwardToObserver) {
   delegate->OnSuggestionsHidden(SuggestionHidingReason::kUserAborted);
 
   autofill_manager().RemoveObserver(&observer);
+}
+
+TEST_F(OmniboxAutofillDelegateTest, ClearPreviewedForm) {
+  OmniboxAutofillDelegate* delegate =
+      payments_autofill_client().GetOmniboxAutofillDelegate();
+  ASSERT_TRUE(delegate);
+
+  EXPECT_CALL(autofill_driver(), RendererShouldClearPreviewedForm);
+  delegate->ClearPreviewedForm();
 }
 
 }  // namespace

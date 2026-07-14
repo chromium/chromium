@@ -1061,6 +1061,7 @@ TEST_F(ChromePaymentsAutofillClientOmniboxTest, ShowOmniboxAutofillChip) {
       /*on_suggestions_shown=*/base::DoNothing(),
       /*on_suggestions_hidden=*/base::DoNothing(),
       /*did_select_suggestion=*/base::DoNothing(),
+      /*did_deselect_suggestion=*/base::DoNothing(),
       /*did_accept_suggestion=*/base::DoNothing());
 }
 
