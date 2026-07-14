@@ -23,7 +23,6 @@
 #include "components/omnibox/browser/omnibox_client.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/models/image_model.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/range/range.h"
 
@@ -228,15 +227,6 @@ class OmniboxView {
 
   // Returns the delta between |before| and |after|.
   static StateChanges GetStateChanges(const State& before, const State& after);
-
-  // Computes window open disposition for handling enter in omnibox
-  // from the pressed keys. Logs the circumstances to UMA.
-  // Note: `alt` should include AltGr.
-  static WindowOpenDisposition ComputeOpenDispositionFromModifiersAndLogToUma(
-      bool shift,
-      bool control,
-      bool alt,
-      bool command);
 
   // Internally invoked whenever the text changes in some way.
   virtual void TextChanged();

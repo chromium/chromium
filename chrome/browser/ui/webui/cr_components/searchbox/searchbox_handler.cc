@@ -1005,6 +1005,18 @@ SearchboxHandler::CreateAutocompleteMatch(
   return mojom_match;
 }
 
+WindowOpenDisposition SearchboxHandler::ComputeWindowOpenDisposition(
+    uint8_t mouse_button,
+    bool alt_key,
+    bool ctrl_key,
+    bool meta_key,
+    bool shift_key,
+    bool via_keyboard) {
+  return ui::DispositionFromClick(
+      /*middle_button=*/mouse_button == 1, alt_key, ctrl_key, meta_key,
+      shift_key);
+}
+
 SearchboxHandler::SearchboxHandler(
     mojo::PendingReceiver<searchbox::mojom::PageHandler> pending_page_handler,
     mojo::PendingRemote<searchbox::mojom::Page> pending_page,
@@ -1225,9 +1237,8 @@ void SearchboxHandler::OpenAutocompleteMatch(uint8_t line,
   }
   const OmniboxPopupSelection selection(line);
   const base::TimeTicks timestamp = base::TimeTicks::Now();
-  const WindowOpenDisposition disposition = ui::DispositionFromClick(
-      /*middle_button=*/mouse_button == 1, alt_key, ctrl_key, meta_key,
-      shift_key);
+  const WindowOpenDisposition disposition = ComputeWindowOpenDisposition(
+      mouse_button, alt_key, ctrl_key, meta_key, shift_key, via_keyboard);
   if (base::FeatureList::IsEnabled(
           omnibox::kWebUISearchboxWithoutModelController)) {
     OpenMatch(selection, *match, disposition, timestamp);

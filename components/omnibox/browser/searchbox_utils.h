@@ -40,6 +40,12 @@ void EmitAcceptedKeywordSuggestionHistogram(
     const TemplateURL* turl);
 void RecordSuggestionUsedMetrics(const AutocompleteMatch& match);
 
+WindowOpenDisposition ComputeOpenDispositionFromModifiersAndLogToUma(
+    bool shift,
+    bool control,
+    bool alt,
+    bool command);
+
 }  // namespace searchbox
 
 #endif  // COMPONENTS_OMNIBOX_BROWSER_SEARCHBOX_UTILS_H_

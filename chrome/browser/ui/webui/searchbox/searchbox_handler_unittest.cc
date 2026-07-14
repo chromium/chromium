@@ -31,6 +31,8 @@
 #include "components/contextual_search/contextual_search_service.h"
 #include "components/contextual_search/mock_contextual_search_context_controller.h"
 #include "components/omnibox/browser/autocomplete_controller.h"
+#include "components/omnibox/browser/fake_autocomplete_controller.h"
+#include "components/omnibox/browser/fake_autocomplete_provider.h"
 #include "components/omnibox/browser/mock_aim_eligibility_service.h"
 #include "components/omnibox/browser/mock_autocomplete_provider_client.h"
 #include "components/omnibox/browser/omnibox_prefs.h"
@@ -865,6 +867,38 @@ TEST_F(WebuiOmniboxHandlerTest,
   EXPECT_EQ(mojom_match.value()->icon_path,
             searchbox_internal::kReplyRotated180IconResourceName);
 }
+
+TEST_F(WebuiOmniboxHandlerTest, OpenAutocompleteMatch_KeyboardModifiers) {
+  scoped_refptr<FakeAutocompleteProvider> provider =
+      new FakeAutocompleteProvider(AutocompleteProvider::TYPE_SEARCH);
+  AutocompleteMatch match(provider.get(), 1000, false,
+                          AutocompleteMatchType::URL_WHAT_YOU_TYPED);
+  match.destination_url = GURL("https://example.com");
+
+  auto fake_autocomplete_controller =
+      std::make_unique<FakeAutocompleteController>(&task_environment_);
+  fake_autocomplete_controller->providers_.push_back(provider);
+  fake_autocomplete_controller->internal_result_.AppendMatches({match});
+  fake_autocomplete_controller->published_result_.AppendMatches({match});
+  handler_->autocomplete_controller_observation_.Reset();
+  handler_->SetAutocompleteControllerForTesting(
+      std::move(fake_autocomplete_controller));
+
+  TestOmniboxClient* client =
+      static_cast<TestOmniboxClient*>(omnibox_controller_->client());
+  EXPECT_CALL(*client,
+              OnAutocompleteAccept(_, _, WindowOpenDisposition::NEW_WINDOW, _,
+                                   _, _, _, _, _, _, _))
+      .Times(1);
+
+  handler_->OpenAutocompleteMatch(0, GURL("https://example.com"), false, 0,
+                                  /*alt_key=*/false,
+                                  /*ctrl_key=*/false,
+                                  /*meta_key=*/false,
+                                  /*shift_key=*/true,
+                                  /*via_keyboard=*/true);
+}
+
 #endif
 
 namespace {

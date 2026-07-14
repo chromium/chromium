@@ -213,6 +213,8 @@ class SearchboxHandler : public searchbox::mojom::PageHandler,
   FRIEND_TEST_ALL_PREFIXES(RealboxHandlerTest, RealboxUpdatesEditModelInput);
   FRIEND_TEST_ALL_PREFIXES(LensSearchboxHandlerTest,
                            Lens_AutocompleteController_Start);
+  FRIEND_TEST_ALL_PREFIXES(WebuiOmniboxHandlerTest,
+                           OpenAutocompleteMatch_KeyboardModifiers);
   FRIEND_TEST_ALL_PREFIXES(ContextualSearchboxHandlerTest,
                            QueryAutocomplete_SetsLensInputs);
   FRIEND_TEST_ALL_PREFIXES(ContextualSearchboxHandlerTest,
@@ -307,6 +309,13 @@ class SearchboxHandler : public searchbox::mojom::PageHandler,
                           bookmarks::BookmarkModel* bookmark_model,
                           const omnibox::GroupConfigMap& suggestion_groups_map,
                           const TemplateURLService* turl_service) const;
+  virtual WindowOpenDisposition ComputeWindowOpenDisposition(
+      uint8_t mouse_button,
+      bool alt_key,
+      bool ctrl_key,
+      bool meta_key,
+      bool shift_key,
+      bool via_keyboard);
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_CR_COMPONENTS_SEARCHBOX_SEARCHBOX_HANDLER_H_

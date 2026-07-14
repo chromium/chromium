@@ -78,6 +78,7 @@
 #include "components/omnibox/browser/omnibox_pref_names.h"
 #include "components/omnibox/browser/omnibox_prefs.h"
 #include "components/omnibox/browser/omnibox_text_util.h"
+#include "components/omnibox/browser/searchbox_utils.h"
 #include "components/omnibox/common/omnibox_feature_configs.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/prefs/pref_service.h"
@@ -2014,8 +2015,8 @@ bool OmniboxViewViews::HandleKeyEvent(views::Textfield* textfield,
       }
 
       WindowOpenDisposition disposition =
-          ComputeOpenDispositionFromModifiersAndLogToUma(shift, control, alt,
-                                                         command);
+          searchbox::ComputeOpenDispositionFromModifiersAndLogToUma(
+              shift, control, alt, command);
       if (controller()->IsPopupOpen() && !control) {
         // Normal case of pressing <return> when the popup is open.
         controller()->edit_model()->OpenCurrentSelection(event.time_stamp(),

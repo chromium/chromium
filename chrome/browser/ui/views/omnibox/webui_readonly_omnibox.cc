@@ -27,6 +27,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/browser_apis/ui_controllers/toolbar/toolbar_ui_api_data_model.mojom.h"
 #include "components/omnibox/browser/omnibox_text_util.h"
+#include "components/omnibox/browser/searchbox_utils.h"
 #include "content/public/browser/web_contents.h"
 #include "net/cert/cert_status_flags.h"
 #include "third_party/blink/public/common/context_menu_data/edit_flags.h"
@@ -542,8 +543,8 @@ WebUIReadOnlyOmnibox::OnKey(
   switch (dom_key) {
     case ui::DomKey::ENTER: {
       WindowOpenDisposition disposition =
-          ComputeOpenDispositionFromModifiersAndLogToUma(shift, control, alt,
-                                                         command);
+          searchbox::ComputeOpenDispositionFromModifiersAndLogToUma(
+              shift, control, alt, command);
       // TODO(crbug.com/503784580): Views impl has some special handling of
       //   AIM button here. We may or may not need it depending on how we
       //   implement its focus behavior.

@@ -54,6 +54,7 @@
 #include "components/omnibox/browser/omnibox_prefs.h"
 #include "components/omnibox/browser/search_suggestion_parser.h"
 #include "components/omnibox/browser/searchbox.mojom-shared.h"
+#include "components/omnibox/browser/searchbox_utils.h"
 #include "components/omnibox/browser/suggestion_answer.h"
 #include "components/omnibox/browser/vector_icons.h"
 #include "components/omnibox/common/composebox_features.h"
@@ -282,6 +283,21 @@ void WebuiOmniboxHandler::OpenCurrentSelection(
 
 void WebuiOmniboxHandler::SetAimButtonVisible(bool visible) {
   page_->SetAimButtonVisible(visible);
+}
+
+WindowOpenDisposition WebuiOmniboxHandler::ComputeWindowOpenDisposition(
+    uint8_t mouse_button,
+    bool alt_key,
+    bool ctrl_key,
+    bool meta_key,
+    bool shift_key,
+    bool via_keyboard) {
+  return via_keyboard
+             ? searchbox::ComputeOpenDispositionFromModifiersAndLogToUma(
+                   shift_key, ctrl_key, alt_key, meta_key)
+             : ui::DispositionFromClick(
+                   /*middle_button=*/mouse_button == 1, alt_key, ctrl_key,
+                   meta_key, shift_key);
 }
 
 std::optional<searchbox::mojom::AutocompleteMatchPtr>

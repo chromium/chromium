@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/memory/scoped_refptr.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "components/omnibox/browser/actions/omnibox_action.h"
@@ -103,6 +104,45 @@ TEST_F(SearchboxUtilsTest, OpenMatchWithAction) {
             WindowOpenDisposition::CURRENT_TAB, searchbox_focused_timestamp,
             first_modification_timestamp, match_selection_timestamp,
             metrics::OmniboxEventProto::INVALID);
+}
+
+TEST_F(SearchboxUtilsTest, ComputeOpenDispositionFromModifiers) {
+  struct TestCase {
+    bool shift;
+    bool control;
+    bool alt;
+    bool command;
+    WindowOpenDisposition expected_disposition;
+    int expected_metric_value;
+  } test_cases[] = {
+      // {shift, control, alt, command, expected_disposition,
+      // expected_metric_value}
+      {false, false, false, false, WindowOpenDisposition::CURRENT_TAB, 0},
+      {false, true, false, false, WindowOpenDisposition::CURRENT_TAB, 1},
+      {false, false, true, false, WindowOpenDisposition::NEW_FOREGROUND_TAB, 2},
+      {false, true, true, false, WindowOpenDisposition::NEW_FOREGROUND_TAB, 3},
+      {true, false, false, true, WindowOpenDisposition::NEW_FOREGROUND_TAB, 4},
+      {true, true, false, true, WindowOpenDisposition::NEW_FOREGROUND_TAB, 5},
+      {true, false, true, false, WindowOpenDisposition::NEW_BACKGROUND_TAB, 6},
+      {true, true, true, false, WindowOpenDisposition::NEW_BACKGROUND_TAB, 7},
+      {false, false, false, true, WindowOpenDisposition::NEW_BACKGROUND_TAB, 8},
+      {false, true, false, true, WindowOpenDisposition::NEW_BACKGROUND_TAB, 9},
+      {true, false, false, false, WindowOpenDisposition::NEW_WINDOW, 10},
+      {true, true, false, false, WindowOpenDisposition::NEW_WINDOW, 11},
+  };
+
+  for (const auto& test_case : test_cases) {
+    base::HistogramTester histogram_tester;
+    WindowOpenDisposition disposition =
+        ComputeOpenDispositionFromModifiersAndLogToUma(
+            test_case.shift, test_case.control, test_case.alt,
+            test_case.command);
+
+    EXPECT_EQ(disposition, test_case.expected_disposition);
+    histogram_tester.ExpectUniqueSample(
+        "Omnibox.OpenMatchWithKeyboardModifiers",
+        test_case.expected_metric_value, 1);
+  }
 }
 
 }  // namespace searchbox
