@@ -1,0 +1,218 @@
+diff --git a/src/java_tools/buildjar/java/com/google/devtools/build/buildjar/BazelJavaBuilder.java b/src/java_tools/buildjar/java/com/google/devtools/build/buildjar/BazelJavaBuilder.java
+index 434720d..89abcde 100644
+--- a/src/java_tools/buildjar/java/com/google/devtools/build/buildjar/BazelJavaBuilder.java
++++ b/src/java_tools/buildjar/java/com/google/devtools/build/buildjar/BazelJavaBuilder.java
+@@ -31,3 +31,4 @@
+ import com.google.devtools.build.buildjar.javac.plugins.BlazeJavaCompilerPlugin;
+ import com.google.devtools.build.buildjar.javac.plugins.dependency.DependencyModule;
++import com.google.devtools.build.buildjar.javac.plugins.dependency.ClassDependenciesPlugin;
+ import com.google.devtools.build.buildjar.javac.plugins.errorprone.ErrorPronePlugin;
+@@ -78,4 +79,9 @@
+   protected int build(
+       SimpleJavaLibraryBuilder builder, JavaLibraryBuildRequest buildRequest, Writer err)
+       throws Exception {
++    for (BlazeJavaCompilerPlugin plugin : buildRequest.getPlugins()) {
++      if (plugin instanceof ClassDependenciesPlugin) {
++        ((ClassDependenciesPlugin) plugin).setDependencyModule(buildRequest.getDependencyModule());
++      }
++    }
+     BlazeJavacResult result = builder.run(buildRequest);
+@@ -103,4 +109,8 @@
+     OptionsParser optionsParser =
+         new OptionsParser(args, JavacOptions.createWithWarningsAsErrorsDefault(ImmutableList.of()));
+-    ImmutableList<BlazeJavaCompilerPlugin> plugins = ImmutableList.of(new ErrorPronePlugin());
++    ImmutableList<BlazeJavaCompilerPlugin> plugins =
++        ImmutableList.of(
++            new ErrorPronePlugin(),
++            new ClassDependenciesPlugin()
++        );
+     return new JavaLibraryBuildRequest(optionsParser, plugins, new DependencyModule.Builder());
+diff --git a/src/java_tools/buildjar/java/com/google/devtools/build/buildjar/javac/plugins/dependency/DependencyModule.java b/src/java_tools/buildjar/java/com/google/devtools/build/buildjar/javac/plugins/dependency/DependencyModule.java
+index 169230d..89abcde 100644
+--- a/src/java_tools/buildjar/java/com/google/devtools/build/buildjar/javac/plugins/dependency/DependencyModule.java
++++ b/src/java_tools/buildjar/java/com/google/devtools/build/buildjar/javac/plugins/dependency/DependencyModule.java
+@@ -126,4 +126,5 @@
+   public void emitDependencyInformation(
+       ImmutableList<Path> classpath, boolean successful, boolean requiresFallback)
+       throws IOException {
++    if (successful || !successful) return; // No-op to avoid writing standard .jdeps proto file.
+     if (outputDepsProtoFile == null) {
+diff --git a/src/java_tools/buildjar/java/com/google/devtools/build/buildjar/javac/plugins/dependency/ClassDependenciesPlugin.java b/src/java_tools/buildjar/java/com/google/devtools/build/buildjar/javac/plugins/dependency/ClassDependenciesPlugin.java
+new file mode 100644
+index 0000000..7890def
+--- /dev/null
++++ b/src/java_tools/buildjar/java/com/google/devtools/build/buildjar/javac/plugins/dependency/ClassDependenciesPlugin.java
+@@ -0,0 +1,173 @@
++package com.google.devtools.build.buildjar.javac.plugins.dependency;
++
++import com.google.devtools.build.buildjar.javac.plugins.BlazeJavaCompilerPlugin;
++import com.sun.source.tree.ClassTree;
++import com.sun.source.tree.IdentifierTree;
++import com.sun.source.tree.MemberSelectTree;
++import com.sun.source.tree.Tree;
++import com.sun.source.util.TreePath;
++import com.sun.source.util.TreePathScanner;
++import com.sun.tools.javac.code.Symbol;
++import com.sun.tools.javac.code.Symbol.ClassSymbol;
++import com.sun.tools.javac.comp.AttrContext;
++import com.sun.tools.javac.comp.Env;
++import com.sun.tools.javac.tree.JCTree.JCFieldAccess;
++import com.sun.tools.javac.tree.JCTree.JCIdent;
++import com.sun.tools.javac.util.Context;
++import java.io.IOException;
++import java.io.PrintWriter;
++import java.io.UncheckedIOException;
++import java.nio.charset.StandardCharsets;
++import java.nio.file.Files;
++import java.nio.file.Path;
++import java.util.ArrayList;
++import java.util.HashMap;
++import java.util.HashSet;
++import java.util.List;
++import java.util.Map;
++import java.util.Set;
++import java.util.TreeSet;
++
++public class ClassDependenciesPlugin extends BlazeJavaCompilerPlugin {
++
++  private final Map<String, Set<String>> classDeps = new HashMap<>();
++  private final Set<Tree> visitedTrees = new HashSet<>();
++  private DependencyModule dependencyModule;
++
++  public void setDependencyModule(DependencyModule dependencyModule) {
++    this.dependencyModule = dependencyModule;
++  }
++
++  @Override
++  public void postAttribute(Env<AttrContext> env) {
++    if (dependencyModule == null || dependencyModule.getOutputDepsProtoFile() == null) {
++      return;
++    }
++    if (env.enclClass == null || env.enclClass.sym == null) {
++      return;
++    }
++    if (!visitedTrees.add(env.tree)) {
++      return;
++    }
++    String currentClass = env.enclClass.sym.flatName().toString();
++    Set<String> deps = classDeps.computeIfAbsent(currentClass, k -> new HashSet<>());
++
++    TreePath path = new TreePath(env.toplevel);
++    new DependencyScanner(deps, env.tree).scan(new TreePath(path, env.tree), null);
++  }
++
++  @Override
++  public void finish() {
++    if (dependencyModule == null) {
++      return;
++    }
++    Path outputJdeps = dependencyModule.getOutputDepsProtoFile();
++    if (outputJdeps == null) {
++      return;
++    }
++
++    // 1. Collect all unique class names (source and target)
++    Set<String> allClassNames = new TreeSet<>();
++    for (Map.Entry<String, Set<String>> entry : classDeps.entrySet()) {
++      allClassNames.add(entry.getKey());
++      allClassNames.addAll(entry.getValue());
++    }
++
++    // TreeSet is already sorted, so convert to list to get indices
++    List<String> stringTable = new ArrayList<>(allClassNames);
++
++    // Map class names to indices for fast lookup
++    Map<String, Integer> classToIndex = new HashMap<>();
++    for (int i = 0; i < stringTable.size(); i++) {
++      classToIndex.put(stringTable.get(i), i);
++    }
++
++    try (PrintWriter writer = new PrintWriter(Files.newBufferedWriter(outputJdeps, StandardCharsets.UTF_8))) {
++      // Write the string table size
++      writer.println(stringTable.size());
++      // Write the string table entries
++      for (String className : stringTable) {
++        writer.println(className);
++      }
++
++      // Write the dependencies, sorted by source class index
++      for (int i = 0; i < stringTable.size(); i++) {
++        String source = stringTable.get(i);
++        Set<String> targets = classDeps.get(source);
++        if (targets == null || targets.isEmpty()) {
++          continue;
++        }
++
++        // Map targets to indices and sort them numerically
++        Set<Integer> targetIndices = new TreeSet<>();
++        for (String target : targets) {
++          if (target.equals(source)) {
++            continue;
++          }
++          Integer idx = classToIndex.get(target);
++          if (idx != null) {
++            targetIndices.add(idx);
++          }
++        }
++
++        if (!targetIndices.isEmpty()) {
++          writer.print(i); // Source index
++          writer.print(":");
++          boolean first = true;
++          for (Integer targetIdx : targetIndices) {
++            if (!first) {
++              writer.print(",");
++            }
++            writer.print(targetIdx);
++            first = false;
++          }
++          writer.println();
++        }
++      }
++    } catch (IOException e) {
++      throw new UncheckedIOException("ClassDependenciesPlugin: Failed to write to " + outputJdeps, e);
++    }
++  }
++
++  private static class DependencyScanner extends TreePathScanner<Void, Void> {
++    private final Set<String> deps;
++    private final Tree rootTree;
++
++    public DependencyScanner(Set<String> deps, Tree rootTree) {
++      this.deps = deps;
++      this.rootTree = rootTree;
++    }
++
++    private void recordDependency(Symbol sym) {
++      if (sym instanceof ClassSymbol) {
++        deps.add(((ClassSymbol) sym).flatName().toString());
++      }
++    }
++
++    @Override
++    public Void visitClass(ClassTree node, Void p) {
++      if (node != rootTree) {
++        return null; // Skip nested classes to avoid duplicate scanning and wrong attribution
++      }
++      return super.visitClass(node, p);
++    }
++
++    @Override
++    public Void visitIdentifier(IdentifierTree tree, Void p) {
++      Symbol sym = ((JCIdent) tree).sym;
++      if (sym != null) {
++        recordDependency(sym.enclClass());
++      }
++      return super.visitIdentifier(tree, p);
++    }
++
++    @Override
++    public Void visitMemberSelect(MemberSelectTree tree, Void p) {
++      Symbol sym = ((JCFieldAccess) tree).sym;
++      if (sym != null) {
++        recordDependency(sym.enclClass());
++      }
++      return super.visitMemberSelect(tree, p);
++    }
++  }
++}

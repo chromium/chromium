@@ -12,7 +12,8 @@ create {
         val: "3.7.2"
       }
     }
-    patch_version: "chromium.1"
+    patch_dir: "patches"
+    patch_version: "chromium.2"
   }
   build {
     install: "install.py"
