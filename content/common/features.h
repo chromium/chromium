@@ -207,6 +207,9 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrivacySandboxAdsAPIsM1Override);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kProcessReuseOnPrerenderCOOPSwap);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kProgressiveAccessibilityPhase2);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kReduceMojoURLLoaderFactoryCloning);
+CONTENT_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    bool,
+    kUseLazyURLLoaderFactoryForServiceWorkerFallback);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kReloadHiddenTabsWithCrashedSubframes);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kPreferWarmRendererProcess);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kReusePrerenderingProcessForMainFrames);
