@@ -437,4 +437,102 @@ TEST_F(TimelineTriggerTest, JSUseCounter) {
   EXPECT_TRUE(GetDocument().IsUseCounted(WebFeature::kTimelineTrigger));
 }
 
+TEST_F(TimelineTriggerTest, ScrollAndTimeDrivenAnimationReplay) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      @keyframes anim {
+        from { opacity: 0; }
+        to { opacity: 1; }
+      }
+      #scroller {
+        overflow-y: scroll; width: 100px; height: 100px;
+        scroll-timeline: --scroll-timeline y;
+      }
+      #wrapper {
+        timeline-trigger: --trigger scroll();
+      }
+      #sda-target {
+        animation: anim 5s both;
+        animation-timeline: --scroll-timeline;
+        animation-trigger: --trigger replay;
+        height: 100px;
+      }
+      #tda-target {
+        animation: anim 5s both;
+        animation-trigger: --trigger replay;
+        height: 50px;
+      }
+      #spacer { width: 100px; height: 200px; }
+    </style>
+    <div id='scroller'>
+      <div id='spacer'></div>
+      <div id='wrapper'>
+        <div id='sda-target'></div>
+        <div id='tda-target'></div>
+      </div>
+    </div>
+  )HTML");
+
+  UpdateAllLifecyclePhasesForTest();
+
+  Element* sda_target =
+      GetDocument().getElementById(AtomicString("sda-target"));
+  CSSAnimation* sda = DynamicTo<CSSAnimation>(
+      (*sda_target->GetElementAnimations()->Animations().begin()).key.Get());
+  Element* tda_target =
+      GetDocument().getElementById(AtomicString("tda-target"));
+  CSSAnimation* tda = DynamicTo<CSSAnimation>(
+      (*tda_target->GetElementAnimations()->Animations().begin()).key.Get());
+
+  Element* scroller = GetDocument().getElementById(AtomicString("scroller"));
+  Element* wrapper = GetDocument().getElementById(AtomicString("wrapper"));
+
+  // Retrieve the trigger from wrapper.
+  TimelineTrigger* trigger = DynamicTo<TimelineTrigger>(
+      wrapper->NamedTriggers()->begin()->value.Get());
+  // Verify both animations are registered with the trigger.
+  EXPECT_EQ(trigger->getAnimations().size(), 2u);
+
+  // Make progress on both animations, advance time for tda, scroll position for
+  // sda.
+
+  // Scroll to 50% of the scroll range.
+  // Content height = 200 (spacer) + 150 (wrapper) = 350px.
+  // Scroller height = 100px.
+  // Scroll range = 350 - 100 = 250px.
+  // 50% of scroll range = 125px.
+  scroller->scrollTo(nullptr, 0, 125);
+  // Advance clock to let time-driven animation progress.
+  AdvanceClockSeconds(1.0);
+  UpdateAllLifecyclePhasesForTest();
+
+  // Verify initial progress of scroll-driven animation is 50%.
+  double sda_duration_ms = sda->timeline()->GetDuration()->InMillisecondsF();
+  double sda_current_time_ms = sda->CurrentTimeInternal()->InMillisecondsF();
+  EXPECT_NEAR(50.0, (sda_current_time_ms / sda_duration_ms) * 100.0, 0.1);
+
+  // Verify time-driven animation progressed.
+  EXPECT_EQ(tda->CurrentTimeInternal().value(),
+            ANIMATION_TIME_DELTA_FROM_SECONDS(1));
+
+  // Manually trigger the "activate" behavior (replay).
+  cc::AnimationTriggerDelegate* delegate =
+      static_cast<cc::AnimationTriggerDelegate*>(trigger);
+  delegate->NotifyActivated(platform()->NowTicks());
+
+  // Verify:
+  // - Scroll-driven animation did NOT rewind (still 50%).
+  // - Time-driven animation DID rewind to 0.
+  sda_current_time_ms = sda->CurrentTimeInternal()->InMillisecondsF();
+  EXPECT_NEAR(50.0, (sda_current_time_ms / sda_duration_ms) * 100.0, 0.1);
+  EXPECT_EQ(tda->CurrentTimeInternal().value(), AnimationTimeDelta());
+
+  UpdateAllLifecyclePhasesForTest();
+
+  // Verify they remain in the same state after lifecycle update.
+  sda_current_time_ms = sda->CurrentTimeInternal()->InMillisecondsF();
+  EXPECT_NEAR(50.0, (sda_current_time_ms / sda_duration_ms) * 100.0, 0.1);
+  EXPECT_EQ(tda->CurrentTimeInternal().value(), AnimationTimeDelta());
+}
+
 }  // namespace blink

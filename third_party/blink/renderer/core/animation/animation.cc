@@ -1804,11 +1804,11 @@ void Animation::PlayInternal(AutoRewind auto_rewind,
   bool has_pending_ready_promise = false;
   bool has_finite_timeline =
       timeline_ && !timeline_->IsMonotonicallyIncreasing();
-  // TODO(crbug.com/451238244): Implement AutoRewind::kForced for
-  // blink::Animation.
-  DCHECK(auto_rewind != AutoRewind::kForced);
+  // TODO(crbug.com/519573765): Update web-animations-2 spec to include
+  // force_rewind.
+  bool force_rewind = auto_rewind == AutoRewind::kForced;
   bool enable_seek =
-      auto_rewind == AutoRewind::kEnabled && !has_finite_timeline;
+      auto_rewind != AutoRewind::kDisabled && !has_finite_timeline;
 
   // 7. Perform the steps corresponding to the first matching condition from the
   //    following, if any:
@@ -1838,20 +1838,23 @@ void Animation::PlayInternal(AutoRewind auto_rewind,
   double effective_playback_rate = EffectivePlaybackRate();
   std::optional<AnimationTimeDelta> current_time = CurrentTimeInternal();
   std::optional<AnimationTimeDelta> effect_end = EffectEnd();
-  if (effective_playback_rate > 0 && enable_seek &&
-      (!current_time || current_time < AnimationTimeDelta() ||
-       current_time >= effect_end)) {
+  if (effective_playback_rate > 0 &&
+      (enable_seek && ((!current_time || current_time < AnimationTimeDelta() ||
+                        current_time >= effect_end) ||
+                       force_rewind))) {
     hold_time_ = AnimationTimeDelta();
-  } else if (effective_playback_rate < 0 && enable_seek &&
-             (!current_time || current_time <= AnimationTimeDelta() ||
-              current_time > EffectEnd())) {
-    if (EffectEnd().is_inf()) {
+  } else if (effective_playback_rate < 0 &&
+             (enable_seek &&
+              ((!current_time || current_time <= AnimationTimeDelta() ||
+                current_time > effect_end) ||
+               force_rewind))) {
+    if (effect_end->is_inf()) {
       exception_state.ThrowDOMException(
           DOMExceptionCode::kInvalidStateError,
           "Cannot play reversed Animation with infinite target effect end.");
       return;
     }
-    hold_time_ = EffectEnd();
+    hold_time_ = effect_end;
   } else if (effective_playback_rate == 0 && !current_time) {
     hold_time_ = AnimationTimeDelta();
   }

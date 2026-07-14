@@ -137,7 +137,7 @@ void AnimationTrigger::DispatchAnimationTriggerEvent(
 
 void AnimationTrigger::PerformPlay(Animation& animation,
                                    base::TimeTicks monotonic_time) {
-  animation.Play(monotonic_time);
+  animation.Play(monotonic_time, Animation::AutoRewind::kDisabled);
 }
 
 void AnimationTrigger::PerformPause(Animation& animation,

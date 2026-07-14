@@ -5019,9 +5019,11 @@ TEST_F(CompositorTimelineTriggerBehaviorTest, PerformPlayOnFinishedAnimation) {
   EXPECT_EQ(event.type, cc::AnimationTriggerEvent::Type::kActivate);
   EXPECT_EQ(event.time, play_time);
 
-  TestKeyframeModel(impl_keyframe_model, gfx::KeyframeModel::RUNNING,
-                    /* hold_time=*/std::nullopt,
-                    /* start_time=*/play_time);
+  TestKeyframeModel(
+      impl_keyframe_model, gfx::KeyframeModel::PAUSED,
+      /* hold_time=*/
+      base::TimeDelta(base::Milliseconds(kAnimationDurationMilliSeconds)),
+      /* start_time=*/std::nullopt);
 
   cc::AnimationTrigger* main_trigger = GetMainCcTrigger();
 
@@ -5034,9 +5036,11 @@ TEST_F(CompositorTimelineTriggerBehaviorTest, PerformPlayOnFinishedAnimation) {
   // Simulate main thread sync.
   main_trigger->DispatchAnimationTriggerEvent(event);
 
-  TestKeyframeModel(main_keyframe_model, gfx::KeyframeModel::RUNNING,
-                    /*hold_time=*/std::nullopt,
-                    /*start_time=*/play_time);
+  TestKeyframeModel(
+      main_keyframe_model, gfx::KeyframeModel::PAUSED,
+      /*hold_time=*/
+      base::TimeDelta(base::Milliseconds(kAnimationDurationMilliSeconds)),
+      /*start_time=*/std::nullopt);
 }
 
 TEST_F(CompositorTimelineTriggerBehaviorTest, PlaySimple) {
