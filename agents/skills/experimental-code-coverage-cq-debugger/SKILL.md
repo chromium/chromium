@@ -18,8 +18,8 @@ resolved in subsequent steps.
 ### Variables to Initialize:
 
 When initializing variables in Step 1, reference
-[templates/triage_state_template.json](templates/triage_state_template.json) for the
-required variables and data contract. All variables from this schema MUST be
+[templates/triage_state_template.json](templates/triage_state_template.json) for
+the required variables and data contract. All variables from this schema MUST be
 loaded into `scratch/triage_state.json` at the start of Phase 1.
 
 ______________________________________________________________________
@@ -52,9 +52,9 @@ ______________________________________________________________________
 
 - **Action**: Load `scratch/triage_state.json` and initialize/append ALL
   variables defined in
-  [templates/triage_state_template.json](templates/triage_state_template.json) in
-  `scratch/triage_state.json` (setting unresolved variables to `null` or empty
-  dictionaries). Ensure all existing variables already defined in
+  [templates/triage_state_template.json](templates/triage_state_template.json)
+  in `scratch/triage_state.json` (setting unresolved variables to `null` or
+  empty dictionaries). Ensure all existing variables already defined in
   `scratch/triage_state.json` (such as `bug_id`, `status`, `bug_details`, etc.,
   initialized by the orchestrator) are preserved.
 - **Required Outputs**: All schema variables appended and initialized in
@@ -239,14 +239,13 @@ ______________________________________________________________________
   parallel by invoking a specialized sub-agent for each CL.
 - **Invocations**: Launch up to two `cl_generator` sub-agents in parallel (one
   for the baseline branch and one for the experimental fix branch if created).
-  Equip both sub-agents with the
-  `experimental-code-coverage-verification-prep` skill to inject dummy comments,
-  optimize Starlark configs, and upload CLs to Gerrit. When launching each
-  `cl_generator` sub-agent, instruct it to read its primary
-  inputs (`target_files`, `builders_of_concern`, `test_suites`, `bug_id`)
-  directly from `scratch/triage_state.json`. You MUST pass `role` (`"Control"`
-  or `"Fix"`). For `"Fix"` runs, also pass in a summary of the configuration and
-  recipe fixes applied (e.g. from `scratch/config_summary.md`,
+  Equip both sub-agents with the `experimental-code-coverage-verification-prep`
+  skill to inject dummy comments, optimize Starlark configs, and upload CLs to
+  Gerrit. When launching each `cl_generator` sub-agent, instruct it to read its
+  primary inputs (`target_files`, `builders_of_concern`, `test_suites`,
+  `bug_id`) directly from `scratch/triage_state.json`. You MUST pass `role`
+  (`"Control"` or `"Fix"`). For `"Fix"` runs, also pass in a summary of the
+  configuration and recipe fixes applied (e.g. from `scratch/config_summary.md`,
   `scratch/swarming_summary.md`, or `scratch/local_debugging.md`) so the
   sub-agent can generate a descriptive CL description.
 - **Gate**: Wait for all `cl_generator` sub-agents to return their results
@@ -300,10 +299,10 @@ ______________________________________________________________________
      present) from `scratch/triage_state.json`.
   2. Call `experimental-code-coverage-build-inspector` for the build link(s),
      passing `language_context` (`"cpp"`, `"objc"`, `"rust"`, `"java"`, `"js"`,
-     or `"ts"`), `test_suites`, and `target_files` (read from
-     `scratch/triage_state.json`), to verify GN arguments, inspect merge script
-     logs for the specific target test suites, and check whether coverage data
-     is generated for `target_files` in the HTML report and downloaded JSON
+     or `"ts"`), `test_suites`, `metrics_of_concern`, and `target_files` (read
+     from `scratch/triage_state.json`), to verify GN arguments, inspect merge
+     script logs for the specific target test suites, and check whether coverage
+     data is generated for `target_files` in the HTML report and downloaded JSON
      coverage artifacts. (Note: It is also possible that we only have a control
      build with no fix build. If `fix_builds[builder_name]` is omitted, inspect
      only the control build).
@@ -450,8 +449,8 @@ ______________________________________________________________________
        to avoid overflowing).*
 - **State Save**: Write the structured RCA dictionary into
   `scratch/triage_state.json` under the `"rca"` variable (referencing
-  [templates/triage_state_template.json](templates/triage_state_template.json) for
-  the variable contract).
+  [templates/triage_state_template.json](templates/triage_state_template.json)
+  for the variable contract).
 - **Resolution**: Set terminal `status` to `"FIXED"` or `"ESCALATED"` in
   `scratch/triage_state.json`.
 
