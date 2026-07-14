@@ -168,6 +168,7 @@ export const ComposeboxEmbedderMixin =
             tabSuggestions: {type: Array},
             tabSuggestionsState: {type: Number},
             aimThreadRestoredTabs: {type: Array},
+            tabDeselectionEnabled: {type: Boolean},
             transcript: {type: String},
             uploadButtonDisabled: {
               type: Boolean,
@@ -212,6 +213,8 @@ export const ComposeboxEmbedderMixin =
             getLoadTimeBoolean('composeboxSmartTabSharingVisible', false);
         accessor contextManagementInComposeboxEnabled: boolean =
             getLoadTimeBoolean('contextManagementInComposeboxEnabled', false);
+        accessor tabDeselectionEnabled: boolean = getLoadTimeBoolean(
+            'composeboxContextMenuEnableTabDeselection', false);
         contextMenuDescriptionEnabled: boolean =
             getLoadTimeBoolean('composeboxShowContextMenuDescription', false);
         accessor showContextMenuDescription: boolean =
@@ -2382,6 +2385,16 @@ export const ComposeboxEmbedderMixin =
               this.deleteFile(uuid, /*fromUserAction=*/ false);
             });
 
+            if (this.tabDeselectionEnabled) {
+              const closedRestoredTabs = this.aimThreadRestoredTabs.filter(
+                  tab => !openTabIds.has(tab.tabId));
+              closedRestoredTabs.forEach(tab => {
+                this.getSearchboxHandler().deleteTabContext(tab.tabId);
+              });
+              this.aimThreadRestoredTabs = this.aimThreadRestoredTabs.filter(
+                  tab => openTabIds.has(tab.tabId));
+            }
+
             const restored = this.contextManagementInComposeboxEnabled ?
                 (this.aimThreadRestoredTabs || []) :
                 [];
@@ -2709,6 +2722,7 @@ export interface ComposeboxEmbedderMixinInterface extends
   submitButtonIconType: SubmitButtonIconType;
   tabSuggestions: TabInfo[];
   tabSuggestionsState: TabSuggestionsState;
+  tabDeselectionEnabled: boolean;
   transcript: string;
   uploadButtonDisabled: boolean;
   composeboxNoFlickerSuggestionsFix: boolean;
