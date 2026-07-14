@@ -3675,6 +3675,42 @@ public class WebContentsAccessibilityTest {
                 rootVvid, paragraph1Vvid, 0, OFFSET_TYPE_TEXT, paragraph2Vvid, 0, OFFSET_TYPE_TEXT);
     }
 
+    /** Test extended selection action behavior when crossing video boundaries. */
+    @Test
+    @LargeTest
+    public void testPerformAction_setExtendedSelection_videoBoundaries() throws Throwable {
+        setupTestWithHTML(
+                """
+                <p id="heading">Header</p>
+                <video id="video" aria-label="Video"></video>
+                """);
+
+        // Find nodes.
+        int rootVvid = waitForNodeMatching(sClassNameMatcher, "android.webkit.WebView");
+        int headingVvid = waitForNodeMatching(sViewIdResourceNameMatcher, "heading");
+        int videoVvid = waitForNodeMatching(sViewIdResourceNameMatcher, "video");
+
+        // Selection inside video text should succeed.
+        mActivityTestRule.setSelectionOnUiThread(
+                rootVvid, videoVvid, 0, OFFSET_TYPE_TEXT, videoVvid, 3, OFFSET_TYPE_TEXT);
+
+        // Selection from outside the video to after it should succeed.
+        mActivityTestRule.setSelectionOnUiThread(
+                rootVvid, headingVvid, 0, OFFSET_TYPE_TEXT, rootVvid, 2, OFFSET_TYPE_CHILD);
+
+        // Select from outside the video to inside it should fail because selecting into the video
+        // element crosses widget/UA shadow DOM boundaries and is blocked in IsSelectionValid.
+        Assert.assertFalse(
+                mActivityTestRule.setSelectionOnUiThread(
+                        rootVvid,
+                        headingVvid,
+                        0,
+                        OFFSET_TYPE_TEXT,
+                        videoVvid,
+                        3,
+                        OFFSET_TYPE_TEXT));
+    }
+
     /** Test extended selection with a leaf node at the end of root to trigger at_end_of_anchor. */
     @Test
     @SmallTest

@@ -541,50 +541,28 @@ ScopedJavaLocalRef<jobject> ToJavaStringRangesMap(
       ranges_count);
 }
 
-// Returns the selection context boundary node (editable text field or collapsed
-// control widget), or nullptr if the node is in the main document.
-//
-// RATIONALE:
-// This function resolves the enclosing selection context container. Chromium
-// has the following selection restrictions:
-// 1. Text Fields (Editable Regions / Root Editables): A selection is allowed to
-//    start and end inside the same editable text field, but cannot span from
-//    one editable field to another, or cross in/out of an editable field
-//    boundary. Thus, we return the root editable node (IsAtomicTextField() or
-//    kNonAtomicTextFieldRoot) representing the local text editing scope.
-// 2. Collapsed Widgets: DOM selections (SelectionInDomTree) cannot cross
-//    user-agent shadow root boundaries (e.g. outside into a collapsed dropdown
-//    option element). These collapsed controls (exposed via
-//    HasState(ax::mojom::State::kCollapsed)) act as selection boundaries. Thus,
-//    we return the containing control widget node to block selections crossing
-//    control boundary edges. Selection into layouted non-collapsed controls
-//    (like visible listboxes) is valid and does not cross shadow boundaries.
-// If selection endpoints do not share the exact same selection context node,
-// the select request should be rejected early in the browser process.
-ui::AXNode* GetSelectionContext(ui::AXNode* node) {
+// Climbs up the platform parent hierarchy of |node| and returns the enclosing
+// selection context boundary container (e.g. the atomic textbox or media player
+// widget), or nullptr if the node belongs to the main document scope.
+BrowserAccessibilityAndroid* GetSelectionContext(
+    BrowserAccessibilityAndroid* node) {
   while (node) {
-    if (node->data().IsAtomicTextField() ||
-        node->data().GetBoolAttribute(
-            ax::mojom::BoolAttribute::kNonAtomicTextFieldRoot)) {
+    if (node->IsSelectionContextBoundary()) {
       return node;
     }
-    if (ui::IsControl(node->GetRole())) {
-      if (node->HasState(ax::mojom::State::kCollapsed)) {
-        return node;
-      }
-    }
-    node = node->parent();
+    node = static_cast<BrowserAccessibilityAndroid*>(node->PlatformGetParent());
   }
   return nullptr;
 }
 
-// Selection is not valid if it crosses document boundaries, or if its start and
-// end positions belong to different selection contexts (e.g. crossing widget
-// boundaries or different editable inputs).
-// These restrictions are primarily validated in `blink::AXSelection::IsValid()`
-// for atomic text fields and in `blink::AssertUserSelection` in general, and
-// are based on the behavior in `blink::SelectionAdjuster` class.
+// Returns true if the selection range from |start_position| to |end_position|
+// is valid. Selection is not valid if it crosses document boundaries (different
+// tree ids) or if its endpoints belong to different selection contexts (e.g.
+// spanning across different editables, or crossing into/out of form controls).
+// These restrictions are based on the behavior in Blink's `SelectionAdjuster`
+// class.
 bool IsSelectionValid(
+    BrowserAccessibilityManagerAndroid* root_manager,
     const ui::BrowserAccessibility::AXPosition& start_position,
     const ui::BrowserAccessibility::AXPosition& end_position) {
   CHECK(!start_position->IsNullPosition());
@@ -600,9 +578,11 @@ bool IsSelectionValid(
 
   // Ensure that both endpoints belong to the exact same selection context
   // (e.g., both are in the main document, or both are inside the same text
-  // input or select widget).
-  return GetSelectionContext(start_position->GetAnchor()) ==
-         GetSelectionContext(end_position->GetAnchor());
+  // input or widget).
+  return GetSelectionContext(static_cast<BrowserAccessibilityAndroid*>(
+             root_manager->GetFromAXNode(start_position->GetAnchor()))) ==
+         GetSelectionContext(static_cast<BrowserAccessibilityAndroid*>(
+             root_manager->GetFromAXNode(end_position->GetAnchor())));
 }
 
 std::optional<ExtendedSelectionOffsetType> AsExtendedSelectionOffsetType(
@@ -2256,7 +2236,7 @@ bool WebContentsAccessibilityAndroid::SetExtendedSelection(
     return false;
   }
 
-  if (!IsSelectionValid(start_position, end_position)) {
+  if (!IsSelectionValid(root_manager, start_position, end_position)) {
     return false;
   }
 

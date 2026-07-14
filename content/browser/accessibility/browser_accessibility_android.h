@@ -79,6 +79,10 @@ class CONTENT_EXPORT BrowserAccessibilityAndroid
   bool IsSuperscript() const;
   bool IsTableHeader() const;
   bool IsTextSelectable() const;
+
+  // Returns true if this node acts as a selection boundary that blocks
+  // selections from crossing into or out of its sub-hierarchy.
+  bool IsSelectionContextBoundary() const;
   bool IsVisibleToUser() const;
   bool ShouldUsePaneTitle() const;
 
