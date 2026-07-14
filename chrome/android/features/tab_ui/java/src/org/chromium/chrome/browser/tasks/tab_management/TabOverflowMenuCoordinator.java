@@ -423,6 +423,18 @@ public abstract class TabOverflowMenuCoordinator<T>
         }
     }
 
+    /** Forces the underlying main menu popup window to update its layout position. */
+    protected void updateMenuLayout() {
+        FlyoutController<TabOverflowMenuHolder<T>> controller =
+                mHierarchicalMenuController.getFlyoutController();
+        if (controller != null && controller.getMainPopup() != null) {
+            AnchoredPopupWindow menuWindow = controller.getMainPopup().getMenuWindow();
+            if (menuWindow != null) {
+                menuWindow.onRectChanged();
+            }
+        }
+    }
+
     public @Nullable ModelList getModelListForTesting() {
         FlyoutController<TabOverflowMenuHolder<T>> controller =
                 mHierarchicalMenuController.getFlyoutController();

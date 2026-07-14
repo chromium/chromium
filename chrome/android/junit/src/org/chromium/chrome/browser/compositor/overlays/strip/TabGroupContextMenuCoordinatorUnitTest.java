@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.compositor.overlays.strip;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -44,6 +45,8 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
+import org.robolectric.annotation.Config;
+import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.MathUtils;
 import org.chromium.base.Token;
@@ -65,6 +68,8 @@ import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.NewWindowApp
 import org.chromium.chrome.browser.multiwindow.MultiInstanceOrchestrator;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceOrchestratorFactory;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
+import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.Tab;
@@ -645,6 +650,48 @@ public class TabGroupContextMenuCoordinatorUnitTest {
         // Verify the previous title is deleted and is default to "N tabs"
         verify(mTabModel).deleteTabGroupTitle(TAB_GROUP_ID);
         assertEquals("1 tab", groupTitleEditText.getText().toString());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_VERTICAL_TABS)
+    @Config(qualifiers = "sw600dp")
+    @Feature("Vertical Tabs Tab Group Context Menu")
+    public void testKeyboardShowing_ForcesMenuLayoutUpdate() {
+        ChromeSharedPreferences.getInstance()
+                .writeBoolean(ChromePreferenceKeys.VERTICAL_TABS_ENABLED, true);
+
+        mTabGroupContextMenuCoordinator.buildCustomView(mMenuView, /* isIncognito= */ false);
+        mTabGroupContextMenuCoordinator.showMenu(new RectProvider(), TAB_GROUP_ID);
+        assertTrue(
+                "Menu should be showing initially",
+                mTabGroupContextMenuCoordinator.isMenuShowing());
+
+        // Extract the internal listener that we defined/modified in the constructor.
+        KeyboardVisibilityDelegate.KeyboardVisibilityListener listener =
+                mTabGroupContextMenuCoordinator.getKeyboardVisibilityListenerForTesting();
+        assertNotNull("KeyboardVisibilityListener should not be null", listener);
+
+        // Clear all initialization/inflation tasks so the looper queue is completely empty.
+        ShadowLooper.getShadowMainLooper().runToEndOfTasks();
+        assertTrue(
+                "Looper must be idle before simulating the keyboard event",
+                ShadowLooper.getShadowMainLooper().isIdle());
+
+        // Simulate the keyboard surfacing (isShowing = true).
+        listener.keyboardVisibilityChanged(true);
+
+        // Check if a layout task was successfully scheduled on the looper.
+        assertFalse(
+                "The keyboard visibility change must schedule a layout task, making the looper"
+                    + " non-idle",
+                ShadowLooper.getShadowMainLooper().isIdle());
+
+        // Execute the posted layout task cleanly to finish the test cycle.
+        ShadowLooper.getShadowMainLooper().runToEndOfTasks();
+
+        assertTrue(
+                "Menu should remain displayable after layout update",
+                mTabGroupContextMenuCoordinator.isMenuShowing());
     }
 
     @Test

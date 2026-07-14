@@ -66,6 +66,7 @@ import org.chromium.chrome.browser.tasks.tab_management.color_picker.ColorPicker
 import org.chromium.chrome.browser.tasks.tab_management.color_picker.ColorPickerCoordinator;
 import org.chromium.chrome.browser.tasks.tab_management.color_picker.ColorPickerCoordinator.ColorPickerLayoutType;
 import org.chromium.chrome.browser.tasks.tab_management.color_picker.ColorPickerType;
+import org.chromium.chrome.browser.ui.vertical_tabs.VerticalTabUtils;
 import org.chromium.chrome.browser.url_constants.UrlConstantResolver;
 import org.chromium.chrome.browser.url_constants.UrlConstantResolverFactory;
 import org.chromium.chrome.tab_ui.R;
@@ -161,7 +162,17 @@ public class TabGroupContextMenuCoordinator extends TabStripReorderingHelper<Tok
         mContext = windowAndroid.getActivity().get();
         mKeyboardVisibilityListener =
                 isShowing -> {
-                    if (!isShowing) updateTabGroupTitle();
+                    if (!isShowing) {
+                        updateTabGroupTitle();
+                    } else if (VerticalTabUtils.isVerticalTabsEnabled(mContext)) {
+                        if (isMenuShowing()) {
+                            // Using .post() to ensure the Android OS has finished resizing the
+                            // window (shrinking the visible viewport) to accommodate the keyboard
+                            // before we calculate the menu's new positioning coordinates (layout
+                            // pass).
+                            assumeNonNull(mContentView).post(this::updateMenuLayout);
+                        }
+                    }
                 };
         getTabModel().addTabGroupObserver(mTabGroupObserver);
         mCollaborationService = collaborationService;
