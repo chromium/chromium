@@ -10,6 +10,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "components/content_settings/core/common/content_settings.h"
@@ -281,6 +282,7 @@ TEST_P(ContentSettingsAgentImplBrowserTest, DidBlockContentType) {
 // Tests that multiple invocations of AllowStorageAccessSync result in a single
 // IPC.
 TEST_P(ContentSettingsAgentImplBrowserTest, AllowStorageAccessSync) {
+  base::HistogramTester histogram_tester;
   // Load some HTML, so we have a valid security origin.
   LoadHTMLWithUrlOverride("<html></html>", "https://example.com/");
   MockContentSettingsAgentImpl mock_agent(GetMainRenderFrame());
@@ -288,6 +290,10 @@ TEST_P(ContentSettingsAgentImplBrowserTest, AllowStorageAccessSync) {
       blink::WebContentSettingsClient::StorageType::kLocalStorage);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(1, mock_agent.allow_storage_access_count());
+  histogram_tester.ExpectTotalCount("ContentSettings.AllowStorageAccessSync",
+                                    1);
+  histogram_tester.ExpectBucketCount(
+      "ContentSettings.AllowStorageAccessSync.CacheHit", false, 1);
 
   // Accessing localStorage from the same origin again shouldn't result in a
   // new IPC.
@@ -295,6 +301,10 @@ TEST_P(ContentSettingsAgentImplBrowserTest, AllowStorageAccessSync) {
       blink::WebContentSettingsClient::StorageType::kLocalStorage);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(1, mock_agent.allow_storage_access_count());
+  histogram_tester.ExpectTotalCount("ContentSettings.AllowStorageAccessSync",
+                                    2);
+  histogram_tester.ExpectBucketCount(
+      "ContentSettings.AllowStorageAccessSync.CacheHit", true, 1);
 }
 
 // Tests that multiple invocations of AllowStorageAccess result in a single IPC.

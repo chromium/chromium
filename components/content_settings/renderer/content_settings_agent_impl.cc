@@ -8,7 +8,7 @@
 
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
-#include "base/metrics/histogram_macros.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings.mojom.h"
@@ -259,6 +259,12 @@ void ContentSettingsAgentImpl::AllowStorageAccess(
 
 bool ContentSettingsAgentImpl::AllowStorageAccessSync(
     StorageType storage_type) {
+  constexpr char kAllowStorageAccessSyncHistogram[] =
+      "ContentSettings.AllowStorageAccessSync";
+  constexpr char kCacheHitHistogram[] =
+      "ContentSettings.AllowStorageAccessSync.CacheHit";
+
+  base::ScopedUmaHistogramTimer timer(kAllowStorageAccessSyncHistogram);
   WebLocalFrame* frame = render_frame()->GetWebFrame();
   if (delegate_->IsFrameAllowlistedForStorageAccess(frame)) {
     return true;
@@ -271,8 +277,10 @@ bool ContentSettingsAgentImpl::AllowStorageAccessSync(
   StoragePermissionsKey key(url::Origin(frame->GetSecurityOrigin()),
                             storage_type);
   const auto permissions = cached_storage_permissions_.find(key);
-  if (permissions != cached_storage_permissions_.end())
+  if (permissions != cached_storage_permissions_.end()) {
+    base::UmaHistogramBoolean(kCacheHitHistogram, true);
     return permissions->second;
+  }
 
   bool result = false;
   GetContentSettingsManager().AllowStorageAccess(
@@ -280,6 +288,7 @@ bool ContentSettingsAgentImpl::AllowStorageAccessSync(
       frame->GetSecurityOrigin(), frame->GetDocument().SiteForCookies(),
       frame->GetDocument().TopFrameOrigin(), &result);
   cached_storage_permissions_[key] = result;
+  base::UmaHistogramBoolean(kCacheHitHistogram, false);
   return result;
 }
 

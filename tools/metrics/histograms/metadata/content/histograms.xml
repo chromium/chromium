@@ -291,6 +291,28 @@ chromium-metrics-reviews@google.com.
   <token key="ProviderType" variants="ContentAllProviderTypes"/>
 </histogram>
 
+<histogram name="ContentSettings.AllowStorageAccessSync" units="ms"
+    expires_after="2026-12-14">
+  <owner>sisidovski@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Measures how long a sync call to ContentSettingsManager::AllowStorageAccess
+    blocks the renderer thread. Logged each time the renderer asks the browser
+    for storage permission status synchronously.
+  </summary>
+</histogram>
+
+<histogram name="ContentSettings.AllowStorageAccessSync.CacheHit"
+    enum="Boolean" expires_after="2026-12-14">
+  <owner>sisidovski@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Logged when the renderer checks storage permissions. True if the permission
+    was already cached in ContentSettingsAgentImpl (e.g. via eager fetching),
+    false if it required a synchronous Mojo IPC to the browser process.
+  </summary>
+</histogram>
+
 <histogram name="ContentSettings.Bubble.StorageAccess.Action"
     enum="ContentSettingBubbleAction" expires_after="2024-07-10">
   <owner>fsenra@chromium.org</owner>
