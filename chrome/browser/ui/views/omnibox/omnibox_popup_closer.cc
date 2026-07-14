@@ -8,10 +8,8 @@
 #include "base/logging.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
-#include "chrome/browser/ui/omnibox/omnibox_popup_view.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter_base.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_view_views.h"
 #include "ui/views/view.h"
 
@@ -67,13 +65,6 @@ void OmniboxPopupCloser::CloseWithReason(PopupCloseReason reason) {
   VLOG(1) << "Closing omnibox popup with reason: "
           << CloseReasonToString(reason);
   auto* location_bar = browser_view_->GetLocationBar();
-  if (auto* popup_view = location_bar->GetOmniboxPopupView()) {
-    if (auto* presenter = popup_view->presenter()) {
-      if (presenter->has_active_blockers()) {
-        return;
-      }
-    }
-  }
   // Clearing the autocomplete results closes the popup.
   location_bar->GetOmniboxController()->StopAutocomplete(
       /*clear_result=*/true);
