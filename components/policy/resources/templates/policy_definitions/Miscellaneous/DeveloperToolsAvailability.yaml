@@ -5,11 +5,7 @@ arc_support: This policy also controls access to Android Developer Options. If y
   build number in the Android settings app.
 caption: Control where Developer Tools can be used
 desc: |-
-  Setting 0 (Default): Dev tools are available for standard web browsing, but restricted for enterprise-installed extensions and managed user built-in extensions. Starting in version M150, they are also blocked on any page that embeds these extensions, with the sole exception of the built-in PDF viewer.
-
-  Setting 1: Dev tools and the console are completely unlocked and accessible in all contexts, including within enterprise-policy extensions.
-
-  Setting 2: Dev tools and element inspection are entirely disabled browser-wide.
+  Setting the policy to 0 (the default) means you can access the developer tools and the JavaScript console, but not in the context of extensions installed by enterprise policy or, since version 114 and if this is a managed user, extensions built into the browser. Setting the policy to 1 means you can access the developer tools and the JavaScript console in all contexts, including that of extensions installed by enterprise policy. Setting the policy to 2 means you can't access developer tools, and you can't inspect website elements.
 
   This setting also turns off keyboard shortcuts and menu or context menu entries to open developer tools or the JavaScript console.
 
@@ -33,13 +29,16 @@ future_on:
 - android
 - fuchsia
 items:
-- caption: Allow Developer Tools for standard web browsing, but restrict them for enterprise-installed and managed user built-in extensions (blocked on pages embedding these extensions since M150, except for the built-in PDF viewer).
+- caption: Disallow usage of the Developer Tools on apps and extensions
+    installed by enterprise policy or, since version 114 and if this is a
+    managed user, extensions built into the browser. Allow usage of the
+    Developer Tools in other contexts
   name: DeveloperToolsDisallowedForForceInstalledExtensions
   value: 0
-- caption: Allow usage of the Developer Tools in all contexts, including within enterprise-policy extensions
+- caption: Allow usage of the Developer Tools
   name: DeveloperToolsAllowed
   value: 1
-- caption: Disallow usage of the Developer Tools entirely
+- caption: Disallow usage of the Developer Tools
   name: DeveloperToolsDisallowed
   value: 2
 owners:
