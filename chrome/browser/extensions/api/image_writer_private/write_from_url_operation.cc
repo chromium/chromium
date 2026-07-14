@@ -112,6 +112,10 @@ void WriteFromUrlOperation::Download(base::OnceClosure continuation) {
 
   auto request = std::make_unique<network::ResourceRequest>();
   request->url = GURL(url_);
+  // To accurately report progress we must request no content encoding, since that
+  // will affect the value of the "Content-Length" header. This doesn't impact
+  // download efficiency since the resource is already compressed.
+  request->headers.SetHeader(net::HttpRequestHeaders::kAcceptEncoding, "identity");
   simple_url_loader_ =
       network::SimpleURLLoader::Create(std::move(request), traffic_annotation);
 

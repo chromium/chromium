@@ -71,7 +71,7 @@ class WriteFromUrlOperation : public Operation {
   // Local state
   std::unique_ptr<network::SimpleURLLoader> simple_url_loader_;
   base::OnceClosure download_continuation_;
-  int total_response_bytes_ = -1;
+  int64_t total_response_bytes_ = -1;
 };
 
 } // namespace image_writer
