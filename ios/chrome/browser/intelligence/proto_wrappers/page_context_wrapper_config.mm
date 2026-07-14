@@ -27,7 +27,8 @@ PageContextWrapperConfig::PageContextWrapperConfig(
     bool extract_autofill,
     bool extract_autofill_credit_card_redactions,
     bool include_sensitive_payments_for_redaction,
-    bool block_unsafe_pages)
+    bool block_unsafe_pages,
+    bool include_same_site_only)
     : use_refactored_extractor_(use_refactored_extractor),
       graft_cross_origin_frame_content_(graft_cross_origin_frame_content),
       use_rich_extraction_(use_rich_extraction),
@@ -39,7 +40,8 @@ PageContextWrapperConfig::PageContextWrapperConfig(
           extract_autofill_credit_card_redactions),
       include_sensitive_payments_for_redaction_(
           include_sensitive_payments_for_redaction),
-      block_unsafe_pages_(block_unsafe_pages) {}
+      block_unsafe_pages_(block_unsafe_pages),
+      include_same_site_only_(include_same_site_only) {}
 
 bool PageContextWrapperConfig::use_refactored_extractor() const {
   return use_refactored_extractor_;
@@ -70,6 +72,10 @@ bool PageContextWrapperConfig::extract_autofill() const {
 
 bool PageContextWrapperConfig::extract_autofill_credit_card_redactions() const {
   return extract_autofill_credit_card_redactions_;
+}
+
+bool PageContextWrapperConfig::include_same_site_only() const {
+  return include_same_site_only_;
 }
 
 std::string PageContextWrapperConfig::GetApcConfigVariant() const {
@@ -110,6 +116,7 @@ PageContextWrapperConfigBuilder::PageContextWrapperConfigBuilder() {
   extract_autofill_credit_card_redactions_ = false;
   include_sensitive_payments_for_redaction_ = false;
   block_unsafe_pages_ = true;
+  include_same_site_only_ = false;
 }
 
 PageContextWrapperConfigBuilder::~PageContextWrapperConfigBuilder() = default;
@@ -184,11 +191,19 @@ PageContextWrapperConfigBuilder::SetBlockUnsafePages(bool block_unsafe_pages) {
   return *this;
 }
 
+PageContextWrapperConfigBuilder&
+PageContextWrapperConfigBuilder::SetIncludeSameSiteOnly(
+    bool include_same_site_only) {
+  include_same_site_only_ = include_same_site_only;
+  return *this;
+}
+
 PageContextWrapperConfig PageContextWrapperConfigBuilder::Build() const {
   return PageContextWrapperConfig(
       use_refactored_extractor_, graft_cross_origin_frame_content_,
       use_rich_extraction_, use_rich_extraction_with_actionable_,
       extract_paid_content_, attempt_paid_content_json_fixing_,
       extract_autofill_, extract_autofill_credit_card_redactions_,
-      include_sensitive_payments_for_redaction_, block_unsafe_pages_);
+      include_sensitive_payments_for_redaction_, block_unsafe_pages_,
+      include_same_site_only_);
 }

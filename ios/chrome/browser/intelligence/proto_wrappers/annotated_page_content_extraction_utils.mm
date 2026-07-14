@@ -874,8 +874,11 @@ void PopulateAPCNodeFromContentTree(
                                             kRemoteFrameTokenKey)) {
           // If we have a remote token, it means the content is in another
           // frame (likely cross-origin) and we should register a placeholder.
-          // We do not populate children or other data in this case which will
-          // be populated later on via the frame grafter.
+          // Populate the placeholder's basic frame metadata (like URL) so that
+          // post-processing can determine if it is cross-site.
+          // Note: This partial metadata will be replaced with full metadata
+          // when resolving placeholders via FrameGrafter, unless the frame is
+          // redacted.
           if (std::optional<autofill::RemoteFrameToken> remote =
                   DeserializeFrameIdAsRemoteFrameToken(*token_string)) {
             // Populate iframe data before registering placeholder to ensure
@@ -1084,6 +1087,7 @@ void PopulateAutofillInformation(
 void ResolveCrossSiteFrameContent(
     FrameGrafter& grafter,
     autofill::ChildFrameRegistrar* registrar,
+    bool include_same_site_only,
     optimization_guide::proto::AnnotatedPageContent* apc) {
   CHECK(registrar);
   CHECK(apc);
@@ -1105,8 +1109,11 @@ void ResolveCrossSiteFrameContent(
   net::SchemefulSite main_frame_site(main_frame_url);
 
   auto unresolved_handler = base::BindRepeating(
-      [](net::SchemefulSite main_frame_site,
+      [](bool include_same_site_only, net::SchemefulSite main_frame_site,
          optimization_guide::proto::ContentNode* placeholder) {
+        if (!include_same_site_only) {
+          return;
+        }
         const optimization_guide::proto::ContentAttributes& content_attributes =
             placeholder->content_attributes();
         if (content_attributes.attribute_type() !=
@@ -1132,7 +1139,7 @@ void ResolveCrossSiteFrameContent(
             optimization_guide::proto::
                 IframeData_RedactedFrameMetadata_Reason_REASON_CROSS_SITE);
       },
-      main_frame_site);
+      include_same_site_only, main_frame_site);
 
   grafter.ResolveUnregisteredContent(mapping_lookup, placer,
                                      unresolved_handler);

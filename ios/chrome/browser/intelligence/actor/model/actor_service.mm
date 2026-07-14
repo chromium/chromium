@@ -133,6 +133,7 @@ void ActorService::RequestTabObservation(ActorTaskId task_id,
   PageContextWrapperConfigBuilder builder;
   builder.SetUseRichExtraction(true);
   builder.SetUseRichExtractionWithActionable(true);
+  builder.SetIncludeSameSiteOnly(true);
   PageContextWrapperConfig config = builder.Build();
 
   web::WebStateID web_state_id = web_state->GetUniqueIdentifier();

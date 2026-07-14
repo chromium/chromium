@@ -90,10 +90,13 @@ void PopulateAutofillInformation(
 
 // Resolves all cross-site frame content by using `registrar` to map
 // placeholders to their content in `grafter`, and places them as children of
-// `apc`'s root node.
+// `apc`'s root node. If `include_same_site_only` is true, cross-site frame
+// content is redacted with REASON_CROSS_SITE rather than grafted into the
+// AnnotatedPageContent tree.
 void ResolveCrossSiteFrameContent(
     FrameGrafter& grafter,
     autofill::ChildFrameRegistrar* registrar,
+    bool include_same_site_only,
     optimization_guide::proto::AnnotatedPageContent* apc);
 
 // Resolves the focused frame by mapping local tokens to remote tokens and

@@ -51,6 +51,7 @@
 #import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/web_state.h"
+#import "net/base/schemeful_site.h"
 #import "url/gurl.h"
 #import "url/origin.h"
 #import "url/url_constants.h"
@@ -246,6 +247,10 @@ result.links = linksArray;
   // the constructor.
   std::optional<PageContextWrapperConfig> _config;
 
+  // The SchemefulSite of the main frame, captured synchronously at the start
+  // of extraction to prevent TOCTOU race conditions.
+  net::SchemefulSite _mainFrameSite;
+
   // Graft frames across origins.
   FrameGrafter _grafter;
 
@@ -277,11 +282,12 @@ result.links = linksArray;
     _asyncTasksToComplete = 0;
     _webState = webState->GetWeakPtr();
     _config = config;
+    _mainFrameSite = net::SchemefulSite(webState->GetLastCommittedURL());
     _completionCallback = std::move(completionCallback);
 
     // Create the PageContext proto/object.
     _pageContext = std::make_unique<optimization_guide::proto::PageContext>();
-    GURL url = _webState->GetVisibleURL();
+    GURL url = _webState->GetLastCommittedURL();
     if (url.SchemeIs(url::kDataScheme)) {
       _pageContext->set_url(kDataUrl);
     } else {
@@ -743,6 +749,14 @@ result.links = linksArray;
         continue;
       }
 
+      if (_config->include_same_site_only()) {
+        net::SchemefulSite childSite(webFrame->GetSecurityOrigin());
+        if (_mainFrameSite != childSite) {
+          annotatedPageContentBarrier.Run();
+          continue;
+        }
+      }
+
       [self extractPageContextForFrame:webFrame
                            isMainFrame:NO
                                  nonce:nonce
@@ -803,6 +817,14 @@ result.links = linksArray;
       if (!webFrame || webFrame->IsMainFrame() || _forceDetachPageContext) {
         annotatedPageContentBarrier.Run();
         continue;
+      }
+
+      if (_config->include_same_site_only()) {
+        net::SchemefulSite childSite(webFrame->GetSecurityOrigin());
+        if (_mainFrameSite != childSite) {
+          annotatedPageContentBarrier.Run();
+          continue;
+        }
       }
 
       webFrame->ExecuteJavaScript(
@@ -871,7 +893,8 @@ result.links = linksArray;
 
     if (_config->graft_cross_origin_frame_content() && registrar) {
       ResolveCrossSiteFrameContent(
-          _grafter, registrar, _pageContext->mutable_annotated_page_content());
+          _grafter, registrar, _config->include_same_site_only(),
+          _pageContext->mutable_annotated_page_content());
     }
     response = base::ok(std::move(_pageContext));
     completionStatus = PageContextCompletionStatus::kSuccess;

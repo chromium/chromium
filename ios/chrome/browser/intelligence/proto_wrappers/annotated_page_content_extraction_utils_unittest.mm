@@ -178,8 +178,9 @@ TEST_F(AnnotatedPageContentExtractionUtilsTest, EmptyGeometryIgnored) {
 }
 
 // Tests that ResolveCrossSiteFrameContent redacts placeholders that are left
-// unresolved and are cross-site. Same-site cross-origin placeholders are not
-// redacted.
+// unresolved and are cross-site when `include_same_site_only` is true.
+// Same-site cross-origin placeholders are not redacted when
+// `include_same_site_only` is true.
 TEST_F(AnnotatedPageContentExtractionUtilsTest,
        UnresolvedPlaceholdersRedacted) {
   web::FakeWebState web_state;
@@ -233,7 +234,8 @@ TEST_F(AnnotatedPageContentExtractionUtilsTest,
       ->set_url("https://different-domain.com/cross-site");
   grafter.RegisterPlaceholder(cross_site_token, cross_site_placeholder);
 
-  ResolveCrossSiteFrameContent(grafter, registrar, &apc);
+  ResolveCrossSiteFrameContent(grafter, registrar,
+                               /*include_same_site_only=*/true, &apc);
 
   // Same-origin placeholder should not be redacted.
   EXPECT_TRUE(same_origin_placeholder->content_attributes()
@@ -264,4 +266,45 @@ TEST_F(AnnotatedPageContentExtractionUtilsTest,
                 .reason(),
             optimization_guide::proto::
                 IframeData_RedactedFrameMetadata_Reason_REASON_CROSS_SITE);
+}
+
+// Tests that when include_same_site_only is false, unresolved placeholders are
+// NOT stamped with REASON_CROSS_SITE redaction metadata.
+TEST_F(AnnotatedPageContentExtractionUtilsTest,
+       ResolveCrossSiteFrameContent_NoRedactionWhenSameSiteDisabled) {
+  web::FakeWebState web_state;
+  web_state.SetWebFramesManager(web::ContentWorld::kPageContentWorld,
+                                std::make_unique<web::FakeWebFramesManager>());
+  web_state.SetWebFramesManager(web::ContentWorld::kIsolatedWorld,
+                                std::make_unique<web::FakeWebFramesManager>());
+  autofill::ChildFrameRegistrar::CreateForWebState(&web_state);
+  autofill::ChildFrameRegistrar* registrar =
+      autofill::ChildFrameRegistrar::FromWebState(&web_state);
+  FrameGrafter grafter;
+  autofill::RemoteFrameToken cross_site_token =
+      autofill::RemoteFrameToken(base::UnguessableToken::Create());
+
+  optimization_guide::proto::AnnotatedPageContent apc;
+  apc.mutable_main_frame_data()->set_url("https://example.com");
+
+  optimization_guide::proto::ContentNode* cross_site_placeholder =
+      apc.mutable_root_node()->add_children_nodes();
+  cross_site_placeholder->mutable_content_attributes()->set_attribute_type(
+      optimization_guide::proto::CONTENT_ATTRIBUTE_IFRAME);
+  cross_site_placeholder->mutable_content_attributes()
+      ->mutable_iframe_data()
+      ->mutable_frame_data()
+      ->set_url("https://different-domain.com/cross-site");
+  grafter.RegisterPlaceholder(cross_site_token, cross_site_placeholder);
+
+  ResolveCrossSiteFrameContent(grafter, registrar,
+                               /*include_same_site_only=*/false, &apc);
+
+  // Cross-site placeholder should NOT be redacted when same-site gating is off.
+  EXPECT_TRUE(cross_site_placeholder->content_attributes()
+                  .iframe_data()
+                  .has_frame_data());
+  EXPECT_FALSE(cross_site_placeholder->content_attributes()
+                   .iframe_data()
+                   .has_redacted_frame_metadata());
 }
