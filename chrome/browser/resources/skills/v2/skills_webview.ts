@@ -34,6 +34,7 @@ export class SkillsWebview {
     const delegate: SkillsWebviewBridgeDelegate = {
       onError: () => this.showError(ErrorType.REMOTE_AUTHORITY_UNREACHABLE),
       onShowToast: (toastType: ToastType) => this.handler.showToast(toastType),
+      onInvokeSkill: (skillId: string) => this.handler.invokeSkill(skillId),
     };
 
     // Initiate handshake. Show error page on failure.

@@ -7,10 +7,12 @@
 #include "base/check_deref.h"
 #include "chrome/browser/glic/host/glic_cookie_synchronizer.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/skills/skills_ui_tab_controller_interface.h"
 #include "chrome/browser/skills/skills_ui_window_controller.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/toasts/api/toast_id.h"
 #include "chrome/common/webui_url_constants.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/storage_partition_config.h"
 #include "content/public/browser/web_contents.h"
 
@@ -55,6 +57,17 @@ void SkillsPageHandlerV2::ShowToast(ToastType toast_type) {
           break;
       }
     }
+  }
+}
+
+void SkillsPageHandlerV2::InvokeSkill(const std::string& skill_id) {
+  tabs::TabInterface* tab =
+      tabs::TabInterface::GetFromContents(&web_contents_.get());
+  if (!tab) {
+    return;
+  }
+  if (auto* tab_controller = SkillsUiTabControllerInterface::From(tab)) {
+    tab_controller->InvokeSkill(skill_id);
   }
 }
 

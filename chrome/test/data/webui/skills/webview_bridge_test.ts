@@ -6,7 +6,7 @@ import {loadTimeData} from '//resources/js/load_time_data.js';
 import {ToastType} from 'chrome://skills/skills.mojom-webui.js';
 import type {SkillsWebviewBridgeDelegate} from 'chrome://skills/v2/skills_webview_bridge.js';
 import {SkillsWebviewBridge} from 'chrome://skills/v2/skills_webview_bridge.js';
-import {HANDSHAKE_TIMEOUT_MS, SKILLS_HANDSHAKE_ACK, SKILLS_HANDSHAKE_TYPE, SKILLS_HOST_URL, SKILLS_SHOW_TOAST} from 'chrome://skills/v2/skills_webview_bridge_constants.js';
+import {HANDSHAKE_TIMEOUT_MS, SKILLS_HANDSHAKE_ACK, SKILLS_HANDSHAKE_TYPE, SKILLS_HOST_URL, SKILLS_INVOKE_SKILL, SKILLS_SHOW_TOAST} from 'chrome://skills/v2/skills_webview_bridge_constants.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {MockTimer} from 'chrome://webui-test/mock_timer.js';
 
@@ -73,6 +73,7 @@ suite('SkillsWebviewBridgeTest', () => {
     const delegate: SkillsWebviewBridgeDelegate = {
       onError: () => {},
       onShowToast: () => {},
+      onInvokeSkill: () => {},
     };
     bridge = new SkillsWebviewBridge(webview, delegate);
 
@@ -145,6 +146,7 @@ suite('SkillsWebviewBridgeTest', () => {
         errorCalled = true;
       },
       onShowToast: () => {},
+      onInvokeSkill: () => {},
     };
     bridge = new SkillsWebviewBridge(webview, delegate);
 
@@ -176,6 +178,7 @@ suite('SkillsWebviewBridgeTest', () => {
       onShowToast: (toastType: ToastType) => {
         receivedToastType = toastType;
       },
+      onInvokeSkill: () => {},
     };
     bridge = new SkillsWebviewBridge(webview, delegate);
 
@@ -207,5 +210,46 @@ suite('SkillsWebviewBridgeTest', () => {
     window.dispatchEvent(toastEvent);
 
     assertEquals(ToastType.kDelete, receivedToastType);
+  });
+
+  test('HostReceivesInvokeSkillMessage', () => {
+    let receivedSkillId: string|null = null;
+    const delegate: SkillsWebviewBridgeDelegate = {
+      onError: () => {},
+      onShowToast: () => {},
+      onInvokeSkill: (skillId: string) => {
+        receivedSkillId = skillId;
+      },
+    };
+    bridge = new SkillsWebviewBridge(webview, delegate);
+
+    // Trigger loadcommit to start handshake.
+    const loadEvent = new CustomEvent('loadcommit');
+    Object.defineProperty(loadEvent, 'isTopLevel', {value: true});
+    Object.defineProperty(loadEvent, 'url', {value: SKILLS_HOST_URL});
+    webview.dispatchEvent(loadEvent);
+
+    // Send mock ACK to complete handshake.
+    const ackEvent = new MessageEvent('message', {
+      data: {type: SKILLS_HANDSHAKE_ACK},
+      origin: new URL(SKILLS_HOST_URL).origin,
+      source: window,
+    });
+    window.dispatchEvent(ackEvent);
+
+    assertTrue(bridge.isConnected());
+
+    // Send invoke-skill message via mock MessageEvent to match origin.
+    const invokeEvent = new MessageEvent('message', {
+      data: {
+        type: SKILLS_INVOKE_SKILL,
+        skillId: 'some_skill_id',
+      },
+      origin: new URL(SKILLS_HOST_URL).origin,
+      source: window,
+    });
+    window.dispatchEvent(invokeEvent);
+
+    assertEquals('some_skill_id', receivedSkillId);
   });
 });

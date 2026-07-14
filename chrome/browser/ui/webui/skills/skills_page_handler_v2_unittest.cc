@@ -7,15 +7,38 @@
 #include <memory>
 
 #include "base/test/test_future.h"
+#include "chrome/browser/glic/public/glic_invoke_options.h"
+#include "chrome/browser/skills/skills_ui_tab_controller_interface.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "components/skills/public/skill.h"
+#include "components/tabs/public/mock_tab_interface.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/unowned_user_data/unowned_user_data_host.h"
 
 namespace skills {
 namespace {
+
+class MockSkillsUiTabController : public SkillsUiTabControllerInterface {
+ public:
+  explicit MockSkillsUiTabController(tabs::TabInterface& tab)
+      : SkillsUiTabControllerInterface(tab) {}
+  ~MockSkillsUiTabController() override = default;
+
+  MOCK_METHOD(void,
+              ShowDialog,
+              (Skill skill,
+               SkillsDialogEntryPoint entrypoint,
+               skills::mojom::SkillsDialogType dialog_type,
+               std::unique_ptr<glic::Target> target),
+              (override));
+  MOCK_METHOD(void, InvokeSkill, (std::string_view skill_id), (override));
+};
 
 class SkillsPageHandlerV2Test : public ChromeRenderViewHostTestHarness {
  public:
@@ -42,6 +65,23 @@ TEST_F(SkillsPageHandlerV2Test, SyncCookies) {
   base::test::TestFuture<bool> future;
   remote_handler_->SyncCookies(future.GetCallback());
   EXPECT_FALSE(future.Get());
+}
+
+TEST_F(SkillsPageHandlerV2Test, InvokeSkill) {
+  tabs::MockTabInterface mock_tab;
+  ::ui::UnownedUserDataHost user_data_host;
+  EXPECT_CALL(mock_tab, GetUnownedUserDataHost())
+      .WillRepeatedly(testing::ReturnRef(user_data_host));
+
+  tabs::TabLookupFromWebContents::CreateForWebContents(web_contents(),
+                                                       &mock_tab);
+
+  MockSkillsUiTabController mock_tab_controller(mock_tab);
+
+  EXPECT_CALL(mock_tab_controller, InvokeSkill("test_skill_id")).Times(1);
+
+  remote_handler_->InvokeSkill("test_skill_id");
+  remote_handler_.FlushForTesting();
 }
 
 }  // namespace

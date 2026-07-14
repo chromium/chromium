@@ -146,5 +146,8 @@ interface SkillsPageHandler {
 
   // Shows a toast of `toast_type`.
   ShowToast(ToastType toast_type);
+
+  // Invokes a skill.
+  InvokeSkill(string skill_id);
 };
 
