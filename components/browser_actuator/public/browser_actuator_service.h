@@ -9,6 +9,8 @@
 
 namespace browser_actuator {
 
+class TransportChannel;
+
 // Service that provides browser actuation capabilities.
 class BrowserActuatorService : public KeyedService {
  public:
@@ -19,6 +21,9 @@ class BrowserActuatorService : public KeyedService {
 
   // Whether the service is initialized and ready to execute actions.
   virtual bool IsInitialized() const = 0;
+
+  // Exposes the transport channel.
+  virtual TransportChannel* GetChannel() = 0;
 
  protected:
   BrowserActuatorService();

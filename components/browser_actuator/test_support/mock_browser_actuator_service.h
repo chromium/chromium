@@ -10,12 +10,15 @@
 
 namespace browser_actuator {
 
+class TransportChannel;
+
 class MockBrowserActuatorService : public BrowserActuatorService {
  public:
   MockBrowserActuatorService();
   ~MockBrowserActuatorService() override;
 
   MOCK_METHOD(bool, IsInitialized, (), (const, override));
+  MOCK_METHOD(TransportChannel*, GetChannel, (), (override));
 };
 
 }  // namespace browser_actuator

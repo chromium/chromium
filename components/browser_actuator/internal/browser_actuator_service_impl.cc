@@ -14,4 +14,10 @@ bool BrowserActuatorServiceImpl::IsInitialized() const {
   return true;
 }
 
+TransportChannel* BrowserActuatorServiceImpl::GetChannel() {
+  // TODO(crbug.com/532660606): Implement this getter when the
+  // TransportChannel is implemented.
+  return nullptr;
+}
+
 }  // namespace browser_actuator

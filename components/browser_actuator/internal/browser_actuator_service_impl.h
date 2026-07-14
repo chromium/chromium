@@ -9,6 +9,8 @@
 
 namespace browser_actuator {
 
+class TransportChannel;
+
 class BrowserActuatorServiceImpl : public BrowserActuatorService {
  public:
   BrowserActuatorServiceImpl();
@@ -20,6 +22,7 @@ class BrowserActuatorServiceImpl : public BrowserActuatorService {
 
   // BrowserActuatorService implementation.
   bool IsInitialized() const override;
+  TransportChannel* GetChannel() override;
 };
 
 }  // namespace browser_actuator
