@@ -1916,7 +1916,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.Import.PerFile.{ErrorType}" units="units"
-    expires_after="2026-08-23">
+    expires_after="2027-08-23">
   <owner>natiahlyi@google.com</owner>
   <owner>markusheintz@google.com</owner>
   <summary>
@@ -1953,7 +1953,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.ImportEntryStatus"
-    enum="PasswordManagerImportEntryStatus" expires_after="2026-08-23">
+    enum="PasswordManagerImportEntryStatus" expires_after="2027-08-23">
   <owner>natiahlyi@google.com</owner>
   <owner>markusheintz@google.com</owner>
   <summary>
@@ -1976,7 +1976,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.ImportResultsStatus2"
-    enum="PasswordManagerImportResultsStatus" expires_after="2026-08-23">
+    enum="PasswordManagerImportResultsStatus" expires_after="2027-08-23">
   <owner>natiahlyi@google.com</owner>
   <owner>markusheintz@google.com</owner>
   <summary>
