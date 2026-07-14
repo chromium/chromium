@@ -61,12 +61,24 @@ source_set("unit_tests") {
     deps += [ ":sdk_manager" ]
   }
 
-  # file_transfer_analysis_delegate_unittest and
-  # source_destination_matcher_ash_unittest are intentionally left in
-  # //chrome/test: they include
-  # //chrome/browser/safe_browsing/test_extension_event_observer.h, which is
-  # built by //chrome/test:unit_tests, so extracting them here would create a
-  # dependency cycle.
+  if (is_chromeos) {
+    sources += [
+      "file_transfer_analysis_delegate_unittest.cc",
+      "source_destination_matcher_ash_unittest.cc",
+    ]
+    deps += [
+      "//chrome/browser/ash/file_manager",
+      "//chrome/browser/enterprise",
+      "//chrome/browser/enterprise/connectors/reporting",
+      "//chrome/browser/policy:test_support",
+      "//chrome/browser/safe_browsing:test_support",
+      "//chromeos/ash/components/disks",
+      "//chromeos/ash/components/disks:test_support",
+      "//components/enterprise/common/proto:connectors_proto",
+      "//storage/browser",
+      "//storage/browser:test_support",
+    ]
+  }
 }
 
 if (!is_android && enterprise_cloud_content_analysis) {
