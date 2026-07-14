@@ -13353,6 +13353,12 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(dictation::kDictation,
                                     kDictationVariations,
                                     "Dictation")},
+    {"populate-dom-node-id-in-focused-node-details",
+     flag_descriptions::kPopulateDOMNodeIdInFocusedNodeDetailsName,
+     flag_descriptions::kPopulateDOMNodeIdInFocusedNodeDetailsDescription,
+     kOsDesktop,
+     FEATURE_VALUE_TYPE(
+         blink::features::kPopulateDOMNodeIdInFocusedNodeDetails)},
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)
