@@ -4599,6 +4599,12 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_EDIT_BOOKMARK" desc='The string prompting the user to edit the content of a bookmark. [CHAR_LIMIT=30]'>
         Edit bookmark
       </message>
+      <message name="IDS_BOOKMARK_ADDED" desc='Title for the bookmark popup when a new bookmark is added. [CHAR_LIMIT=30]'>
+        Bookmark added
+      </message>
+      <message name="IDS_BOOKMARK_CHOOSE_FOLDER_WITH_NAME" desc="Accessibility announcement for the folder picker row indicating the currently selected folder.">
+        Choose folder, currently <ph name="FOLDER_NAME">%1$s</ph>
+      </message>
       <message name="IDS_EDIT_FOLDER" desc='Title of the "Edit Folder" form dialog. [CHAR_LIMIT=30]'>
         Edit folder
       </message>

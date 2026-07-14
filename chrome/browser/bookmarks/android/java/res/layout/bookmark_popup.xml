@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<org.chromium.chrome.browser.bookmarks.BookmarkPopupView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="@dimen/bookmark_popup_width"
+    android:layout_height="wrap_content"
+    android:padding="@dimen/bookmark_popup_padding"
+    android:background="@drawable/menu_bg_baseline"
+    tools:ignore="UnusedResources">
+
+    <!-- Popup Title and Close Button -->
+    <TextView
+        android:id="@+id/popup_title"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="@string/bookmark_added"
+        android:textAppearance="@style/TextAppearance.Headline.Primary"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/close_button"
+        app:layout_constraintTop_toTopOf="@id/close_button"
+        app:layout_constraintBottom_toBottomOf="@id/close_button" />
+
+    <org.chromium.ui.widget.ChromeImageButton
+        android:id="@+id/close_button"
+        android:layout_width="@dimen/min_touch_target_size"
+        android:layout_height="@dimen/min_touch_target_size"
+        android:layout_marginTop="@dimen/bookmark_popup_close_button_margin"
+        android:layout_marginEnd="@dimen/bookmark_popup_close_button_margin"
+        android:contentDescription="@string/close"
+        android:src="@drawable/material_ic_close_24dp"
+        app:tint="@color/default_icon_color_tint_list"
+        android:scaleType="center"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <FrameLayout
+        android:id="@+id/bookmark_image_container"
+        android:layout_width="@dimen/bookmark_popup_image_size"
+        android:layout_height="@dimen/bookmark_popup_image_size"
+        android:background=
+            "@drawable/rounded_rectangle_surface_container_low"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/close_button">
+
+        <org.chromium.components.browser_ui.widget.RoundedCornerImageView
+            android:id="@+id/bookmark_image"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:adjustViewBounds="true"
+            android:scaleType="fitCenter"
+            android:background="@drawable/rounded_rectangle_surface_0"
+            app:cornerRadiusBottomStart=
+                "@dimen/default_rounded_corner_radius"
+            app:cornerRadiusBottomEnd=
+                "@dimen/default_rounded_corner_radius"
+            app:cornerRadiusTopStart=
+                "@dimen/default_rounded_corner_radius"
+            app:cornerRadiusTopEnd=
+                "@dimen/default_rounded_corner_radius"
+            android:importantForAccessibility="no" />
+    </FrameLayout>
+
+    <!-- Title EditText -->
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/title_input_layout"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/bookmark_popup_title_input_height"
+        android:layout_marginStart="@dimen/bookmark_popup_row_margin_start"
+        app:helperTextEnabled="false"
+        app:errorEnabled="false"
+        app:layout_constraintStart_toEndOf="@id/bookmark_image_container"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/bookmark_image_container"
+        style="@style/Widget.Material3.TextInputLayout.OutlinedBox">
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/bookmark_title"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:hint="@string/bookmark_name"
+            android:inputType="textNoSuggestions"
+            android:maxLines="1"
+            android:paddingStart="@dimen/bookmark_popup_input_padding"
+            android:paddingEnd="@dimen/bookmark_popup_input_padding"
+            android:paddingVertical="0dp" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <!-- Folder Row Container Replica -->
+    <LinearLayout
+        android:id="@+id/folder_picker_row"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/bookmark_popup_folder_row_height"
+        android:layout_marginStart="@dimen/bookmark_popup_row_margin_start"
+        android:layout_marginTop=
+            "@dimen/bookmark_popup_folder_row_margin_top"
+        android:background="@drawable/rounded_rectangle_surface_container_low"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:padding="@dimen/bookmark_popup_folder_view_padding"
+        android:clickable="true"
+        android:focusable="true"
+        android:foreground="?attr/selectableItemBackground"
+        app:layout_constraintStart_toEndOf="@id/bookmark_image_container"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/title_input_layout">
+
+        <!-- Folder Icon -->
+        <ImageView
+            android:id="@+id/folder_icon"
+            android:layout_width=
+                "@dimen/bookmark_popup_folder_icon_container_size"
+            android:layout_height=
+                "@dimen/bookmark_popup_folder_icon_container_size"
+            android:scaleType="center"
+            android:importantForAccessibility="no"
+            android:src="@drawable/ic_folder_blue_24dp"
+            app:tint="@color/default_icon_color_tint_list"
+            android:background="@drawable/rounded_rectangle_surface_0" />
+
+        <View
+            android:layout_width=
+                "@dimen/bookmark_popup_folder_spacer_width"
+            android:layout_height="match_parent" />
+
+        <!-- Folder Title -->
+        <TextView
+            android:id="@+id/folder_title"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:textAppearance=
+                "@style/TextAppearance.TextMedium.Primary" />
+
+        <View
+            android:layout_width=
+                "@dimen/bookmark_popup_folder_spacer_width"
+            android:layout_height="match_parent" />
+
+        <!-- End Icon (Chevron) -->
+        <ImageView
+            android:id="@+id/folder_end_icon"
+            android:layout_width="@dimen/bookmark_popup_folder_icon_size"
+            android:layout_height="@dimen/bookmark_popup_folder_icon_size"
+            android:src="@drawable/outline_chevron_right_24dp"
+            app:tint="@color/default_icon_color_tint_list"
+            android:scaleType="center"
+            android:importantForAccessibility="no" />
+
+    </LinearLayout>
+
+    <androidx.constraintlayout.widget.Barrier
+        android:id="@+id/content_bottom_barrier"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:barrierDirection="bottom"
+        app:constraint_referenced_ids="bookmark_image_container,folder_picker_row" />
+
+    <!-- Buttons -->
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="@dimen/bookmark_popup_buttons_margin_top"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/content_bottom_barrier">
+
+        <org.chromium.ui.widget.ButtonCompat
+            android:id="@+id/remove_button"
+            style="@style/TextButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd=
+                "@dimen/bookmark_popup_remove_button_margin_end"
+            android:text="@string/remove" />
+
+        <org.chromium.ui.widget.ButtonCompat
+            android:id="@+id/done_button"
+            style="@style/FilledButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/done" />
+    </LinearLayout>
+
+</org.chromium.chrome.browser.bookmarks.BookmarkPopupView>

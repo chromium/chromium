@@ -42,6 +42,7 @@ source_set("impl") {
 
 android_resources("java_resources") {
   sources = [
+    "java/res/layout/bookmark_popup.xml",
     "java/res/values/dimens.xml",
     "java/res/values/ids.xml",
   ]
@@ -61,6 +62,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/bookmarks/BookmarkModel.java",
     "java/src/org/chromium/chrome/browser/bookmarks/BookmarkModelObserver.java",
     "java/src/org/chromium/chrome/browser/bookmarks/BookmarkOpener.java",
+    "java/src/org/chromium/chrome/browser/bookmarks/BookmarkPopupView.java",
     "java/src/org/chromium/chrome/browser/bookmarks/BookmarkQueryHandler.java",
     "java/src/org/chromium/chrome/browser/bookmarks/BookmarkSaveFlowCoordinator.java",
     "java/src/org/chromium/chrome/browser/bookmarks/BookmarkSaveFlowMediator.java",
@@ -168,6 +170,7 @@ android_library("java") {
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_appcompat_appcompat_java",
     "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
+    "//third_party/androidx:androidx_constraintlayout_constraintlayout_java",
     "//third_party/androidx:androidx_core_core_java",
     "//third_party/androidx:androidx_lifecycle_lifecycle_common_java",
     "//third_party/androidx:androidx_recyclerview_recyclerview_java",
@@ -260,6 +263,7 @@ android_library("javatests") {
     "javatests/src/org/chromium/chrome/browser/bookmarks/BookmarkPaneTest.java",
     "javatests/src/org/chromium/chrome/browser/bookmarks/BookmarkPersonalizedSigninPromoDismissTest.java",
     "javatests/src/org/chromium/chrome/browser/bookmarks/BookmarkPersonalizedSigninPromoTest.java",
+    "javatests/src/org/chromium/chrome/browser/bookmarks/BookmarkPopupViewRenderTest.java",
     "javatests/src/org/chromium/chrome/browser/bookmarks/BookmarkSaveFlowTest.java",
     "javatests/src/org/chromium/chrome/browser/bookmarks/BookmarkSearchBoxRowRenderTest.java",
     "javatests/src/org/chromium/chrome/browser/bookmarks/BookmarkSearchBoxRowTest.java",
@@ -274,6 +278,8 @@ android_library("javatests") {
   ]
 
   deps = [
+    ":java",
+    ":java_resources",
     "//chrome/android/javatests:chrome_test_java_helper",
     "//chrome/browser/ui/side_ui/public:java",
     "//chrome/browser/user_education:java",

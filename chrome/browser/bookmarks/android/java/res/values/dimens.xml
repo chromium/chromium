@@ -6,8 +6,25 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="UnusedResources">
   <dimen name="bookmarks_bar_popup_elevation">8dp</dimen>
-  <dimen name="bookmarks_bar_popup_max_width">400dp</dimen>
+  <dimen name="bookmarks_bar_popup_max_width">420dp</dimen>
   <dimen name="bookmarks_bar_popup_min_height">182dp</dimen>
+  <dimen name="bookmark_popup_width">420dp</dimen>
+  <dimen name="bookmark_popup_padding">20dp</dimen>
+  <dimen name="bookmark_popup_image_size">120dp</dimen>
+  <dimen name="bookmark_popup_title_margin_bottom">24dp</dimen>
+  <dimen name="bookmark_popup_row_margin_start">24dp</dimen>
+  <dimen name="bookmark_popup_row_padding_vertical">12dp</dimen>
+  <dimen name="bookmark_popup_title_input_height">48dp</dimen>
+  <dimen name="bookmark_popup_folder_row_height">48dp</dimen>
+  <dimen name="bookmark_popup_folder_row_margin_top">20dp</dimen>
+  <dimen name="bookmark_popup_folder_icon_size">24dp</dimen>
+  <dimen name="bookmark_popup_folder_spacer_width">12dp</dimen>
+  <dimen name="bookmark_popup_buttons_margin_top">24dp</dimen>
+  <dimen name="bookmark_popup_remove_button_margin_end">16dp</dimen>
+  <dimen name="bookmark_popup_close_button_margin">-12dp</dimen>
+  <dimen name="bookmark_popup_folder_view_padding">12dp</dimen>
+  <dimen name="bookmark_popup_folder_icon_container_size">32dp</dimen>
+  <dimen name="bookmark_popup_input_padding">16dp</dimen>
 </resources>
