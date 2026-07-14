@@ -23,6 +23,11 @@
 #include "components/webui/flags/flags_ui_switches.h"
 #include "content/public/common/content_switches.h"
 
+#if BUILDFLAG(IS_WIN)
+#include "base/win/access_token.h"
+#include "chrome/installer/util/isolation_support.h"
+#endif
+
 #if BUILDFLAG(IS_CHROMEOS)
 #include "components/crash/core/app/crash_switches.h"
 #include "gpu/command_buffer/service/gpu_switches.h"
@@ -214,6 +219,15 @@ void SetCrashKeysFromCommandLine(const base::CommandLine& command_line) {
   SetStringAnnotations(command_line);
   HandleEnableDisableFeatures(command_line);
   SetSwitchesFromCommandLine(command_line, &IsBoringSwitch);
+
+#if BUILDFLAG(IS_WIN)
+  auto process_token = base::win::AccessToken::FromCurrentProcess();
+  if (process_token && process_token->GetSecurityAttribute(
+                           installer::GetIsolationAttributeName())) {
+    static crash_reporter::CrashKeyString<32> is_isolated("is-isolated");
+    is_isolated.Set("yes");
+  }
+#endif
 }
 
 }  // namespace crash_keys

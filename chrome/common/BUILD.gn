@@ -364,7 +364,10 @@ static_library("common_lib") {
       "conflicts/remote_module_watcher_win.cc",
       "conflicts/remote_module_watcher_win.h",
     ]
-    deps += [ "//chrome/common/win:eventlog_messages" ]
+    deps += [
+      "//chrome/common/win:eventlog_messages",
+      "//chrome/installer/util:isolation_support",
+    ]
 
     public_deps += [
       "//components/dom_distiller/core",  # Needed by chrome_content_client.cc.

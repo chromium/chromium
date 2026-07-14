@@ -36,13 +36,16 @@
 #include "base/win/elevation_util.h"
 #include "base/win/scoped_bstr.h"
 #include "base/win/scoped_com_initializer.h"
+#include "build/branding_buildflags.h"
 #include "chrome/browser/os_crypt/app_bound_encryption_provider_win.h"
 #include "chrome/browser/os_crypt/app_bound_encryption_win.h"
 #include "chrome/browser/win/isolated_browser_test_support.h"
 #include "chrome/common/chrome_switches.h"
+#include "chrome/common/crash_keys.h"
 #include "chrome/elevation_service/elevation_service_idl.h"
 #include "chrome/elevation_service/elevator.h"
 #include "chrome/install_static/test/scoped_install_details.h"
+#include "components/crash/core/common/crash_key.h"
 #include "components/prefs/mock_pref_change_callback.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/testing_pref_service.h"
@@ -441,6 +444,33 @@ MULTIPROCESS_TEST_MAIN(CheckIsolatedCommandlineInChild) {
   if (cmd_line->HasSwitch(::switches::kIsolated)) {
     return 0;
   }
+  return 1;
+}
+
+TEST_F(IsolatedBrowserSupportLaunchTest, CheckIsolatedCrashKey) {
+  base::Process process = chrome::SpawnIsolatedMultiProcessTestChild(
+      "CheckIsolatedCrashKeyInChild");
+  ASSERT_TRUE(process.IsValid());
+  int exit_code = -1;
+  ASSERT_TRUE(process.WaitForExit(&exit_code));
+  EXPECT_EQ(exit_code, 0);
+}
+
+MULTIPROCESS_TEST_MAIN(CheckIsolatedCrashKeyInChild) {
+  crash_reporter::InitializeCrashKeys();
+  crash_keys::SetCrashKeysFromCommandLine(
+      *base::CommandLine::ForCurrentProcess());
+
+  // Only Chrome branded builds actually set the security attribute.
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  if (crash_reporter::GetCrashKeyValue("is-isolated") == "yes") {
+    return 0;
+  }
+#else
+  if (crash_reporter::GetCrashKeyValue("is-isolated").empty()) {
+    return 0;
+  }
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
   return 1;
 }
 
