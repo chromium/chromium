@@ -332,7 +332,6 @@
 #include "components/version_info/version_info.h"
 #include "components/webapps/common/web_app_id.h"
 #include "components/webui/chrome_urls/pref_names.h"
-#include "content/public/browser/attribution_data_model.h"
 #include "content/public/browser/browser_accessibility_state.h"
 #include "content/public/browser/browser_child_process_host.h"
 #include "content/public/browser/browser_context.h"
@@ -3664,107 +3663,6 @@ void ChromeContentBrowserClient::OnAuctionComplete(
     observer->OnAdAuctionComplete(render_frame_host, is_server_auction,
                                   is_on_device_auction, result);
   }
-}
-
-bool ChromeContentBrowserClient::IsAttributionReportingOperationAllowed(
-    content::BrowserContext* browser_context,
-    AttributionReportingOperation operation,
-    content::RenderFrameHost* rfh,
-    const url::Origin* source_origin,
-    const url::Origin* destination_origin,
-    const url::Origin* reporting_origin,
-    bool* can_bypass) {
-  Profile* profile = Profile::FromBrowserContext(browser_context);
-
-  auto* privacy_sandbox_settings =
-      PrivacySandboxSettingsFactory::GetForProfile(profile);
-  if (!privacy_sandbox_settings) {
-    return false;
-  }
-
-  switch (operation) {
-    case AttributionReportingOperation::kSource:
-    case AttributionReportingOperation::kOsSource: {
-      DCHECK(source_origin);
-      DCHECK(reporting_origin);
-      bool allowed = privacy_sandbox_settings->IsAttributionReportingAllowed(
-          *source_origin, *reporting_origin, rfh);
-      if (rfh) {
-        content_settings::PageSpecificContentSettings::BrowsingDataAccessed(
-            rfh, content::AttributionDataModel::DataKey(*reporting_origin),
-            BrowsingDataModel::StorageType::kAttributionReporting,
-            /*blocked=*/!allowed);
-      }
-      return allowed;
-    }
-    case AttributionReportingOperation::kSourceVerboseDebugReport:
-    case AttributionReportingOperation::kSourceAggregatableDebugReport:
-    case AttributionReportingOperation::kOsSourceVerboseDebugReport:
-      DCHECK(source_origin);
-      DCHECK(reporting_origin);
-      return privacy_sandbox_settings->IsAttributionReportingAllowed(
-          *source_origin, *reporting_origin, rfh);
-    case AttributionReportingOperation::kTrigger:
-    case AttributionReportingOperation::kOsTrigger: {
-      DCHECK(destination_origin);
-      DCHECK(reporting_origin);
-      bool allowed = privacy_sandbox_settings->IsAttributionReportingAllowed(
-          *destination_origin, *reporting_origin, rfh);
-      if (rfh) {
-        content_settings::PageSpecificContentSettings::BrowsingDataAccessed(
-            rfh, content::AttributionDataModel::DataKey(*reporting_origin),
-            BrowsingDataModel::StorageType::kAttributionReporting,
-            /*blocked=*/!allowed);
-      }
-      return allowed;
-    }
-    case AttributionReportingOperation::kTriggerVerboseDebugReport:
-    case AttributionReportingOperation::kTriggerAggregatableDebugReport:
-    case AttributionReportingOperation::kOsTriggerVerboseDebugReport:
-      DCHECK(destination_origin);
-      DCHECK(reporting_origin);
-      return privacy_sandbox_settings->IsAttributionReportingAllowed(
-          *destination_origin, *reporting_origin, rfh);
-    case AttributionReportingOperation::kReport:
-      DCHECK(source_origin);
-      DCHECK(destination_origin);
-      DCHECK(reporting_origin);
-      return privacy_sandbox_settings->MaySendAttributionReport(
-          *source_origin, *destination_origin, *reporting_origin, rfh);
-    case AttributionReportingOperation::kSourceTransitionalDebugReporting:
-    case AttributionReportingOperation::kOsSourceTransitionalDebugReporting:
-      DCHECK(source_origin);
-      DCHECK(reporting_origin);
-      return privacy_sandbox_settings
-          ->IsAttributionReportingTransitionalDebuggingAllowed(
-              *source_origin, *reporting_origin);
-    case AttributionReportingOperation::kTriggerTransitionalDebugReporting:
-    case AttributionReportingOperation::kOsTriggerTransitionalDebugReporting:
-      DCHECK(destination_origin);
-      DCHECK(reporting_origin);
-      return privacy_sandbox_settings
-          ->IsAttributionReportingTransitionalDebuggingAllowed(
-              *destination_origin, *reporting_origin);
-    case AttributionReportingOperation::kAny:
-      return privacy_sandbox_settings->IsAttributionReportingEverAllowed();
-  }
-}
-
-bool ChromeContentBrowserClient::IsAttributionReportingAllowedForContext(
-    content::BrowserContext* browser_context,
-    content::RenderFrameHost* rfh,
-    const url::Origin& context_origin,
-    const url::Origin& reporting_origin) {
-  Profile* profile = Profile::FromBrowserContext(browser_context);
-
-  auto* privacy_sandbox_settings =
-      PrivacySandboxSettingsFactory::GetForProfile(profile);
-  if (!privacy_sandbox_settings) {
-    return false;
-  }
-
-  return privacy_sandbox_settings->IsAttributionReportingAllowed(
-      context_origin, reporting_origin, rfh);
 }
 
 bool ChromeContentBrowserClient::IsSharedStorageAllowed(

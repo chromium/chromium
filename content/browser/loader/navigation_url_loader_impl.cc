@@ -28,7 +28,6 @@
 #include "build/build_config.h"
 #include "components/download/public/common/download_stats.h"
 #include "content/browser/about_url_loader_factory.h"
-#include "content/browser/attribution_reporting/attribution_manager.h"
 #include "content/browser/blob_storage/chrome_blob_storage_context.h"
 #include "content/browser/client_hints/client_hints.h"
 #include "content/browser/data_url_loader_factory.h"
@@ -348,16 +347,6 @@ std::unique_ptr<network::ResourceRequest> CreateResourceRequest(
       is_storage_access_grant_eligible && is_same_origin_initiator
           ? net::StorageAccessApiStatus::kAccessViaAPI
           : net::StorageAccessApiStatus::kNone;
-
-  WebContentsImpl* web_contents = static_cast<WebContentsImpl*>(
-      WebContents::FromFrameTreeNodeId(frame_tree_node->frame_tree_node_id()));
-  new_request->attribution_reporting_support =
-      web_contents ? web_contents->GetAttributionSupport()
-                   : AttributionManager::GetAttributionSupport(
-                         /*client_os_disabled=*/false);
-
-  new_request->attribution_reporting_eligibility =
-      network::mojom::AttributionReportingEligibility::kUnset;
 
   new_request->shared_storage_writable_eligible =
       request_info.shared_storage_writable_eligible;

@@ -16,7 +16,6 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
-#include "components/attribution_reporting/features.h"
 #include "components/browsing_data/content/browsing_data_quota_helper.h"
 #include "components/browsing_data/content/shared_worker_info.h"
 #include "components/browsing_data/core/browsing_data_utils.h"
@@ -138,15 +137,6 @@ BrowsingDataModel::DataOwner GetDataOwner::GetOwningOriginOrHost<
     const content::InterestGroupManager::InterestGroupDataKey& data_key) const {
   CHECK_EQ(BrowsingDataModel::StorageType::kInterestGroup, storage_type_);
   return GetOwnerBasedOnScheme(data_key.owner);
-}
-
-template <>
-BrowsingDataModel::DataOwner
-GetDataOwner::GetOwningOriginOrHost<content::AttributionDataModel::DataKey>(
-    const content::AttributionDataModel::DataKey& data_key) const {
-  CHECK_EQ(BrowsingDataModel::StorageType::kAttributionReporting,
-           storage_type_);
-  return GetOwnerBasedOnScheme(data_key.reporting_origin());
 }
 
 template <>
@@ -327,15 +317,6 @@ void StorageRemoverHelper::Visitor::operator()<
 
 template <>
 void StorageRemoverHelper::Visitor::operator()<
-    content::AttributionDataModel::DataKey>(
-    const content::AttributionDataModel::DataKey& data_key) {
-  CHECK(types.Has(BrowsingDataModel::StorageType::kAttributionReporting));
-  helper->storage_partition_->GetAttributionDataModel()
-      ->RemoveAttributionDataByDataKey(data_key, helper->GetCompleteCallback());
-}
-
-template <>
-void StorageRemoverHelper::Visitor::operator()<
     content::PrivateAggregationDataModel::DataKey>(
     const content::PrivateAggregationDataModel::DataKey& data_key) {
   CHECK(types.Has(BrowsingDataModel::StorageType::kPrivateAggregation));
@@ -484,18 +465,6 @@ void OnInterestGroupsLoaded(
   std::move(loaded_callback).Run();
 }
 
-void OnAttributionReportingLoaded(
-    BrowsingDataModel* model,
-    base::OnceClosure loaded_callback,
-    std::set<content::AttributionDataModel::DataKey> attribution_reporting) {
-  for (const auto& data_key : attribution_reporting) {
-    model->AddBrowsingData(
-        data_key, BrowsingDataModel::StorageType::kAttributionReporting,
-        kSmallAmountOfDataInBytes);
-  }
-  std::move(loaded_callback).Run();
-}
-
 void OnPrivateAggregationLoaded(
     BrowsingDataModel* model,
     base::OnceClosure loaded_callback,
@@ -602,7 +571,6 @@ std::optional<net::SchemefulSite> GetThirdPartyPartitioningSite(
       absl::Overload{
           [&](const url::Origin&) {},
           [&](const content::InterestGroupManager::InterestGroupDataKey) {},
-          [&](const content::AttributionDataModel::DataKey) {},
           [&](const content::PrivateAggregationDataModel::DataKey) {},
           [&](const blink::StorageKey& storage_key) {
             if (storage_key.IsThirdPartyContext()) {
@@ -675,10 +643,6 @@ const url::Origin BrowsingDataModel::GetOriginForDataKey(
           [](const url::Origin& origin) { return origin; },
           [](const content::InterestGroupManager::InterestGroupDataKey
                  interest_group_key) { return interest_group_key.owner; },
-          [](const content::AttributionDataModel::DataKey
-                 attribution_reporting_key) {
-            return attribution_reporting_key.reporting_origin();
-          },
           [](const content::PrivateAggregationDataModel::DataKey
                  private_aggregation_key) {
             return private_aggregation_key.reporting_origin();
@@ -953,7 +917,6 @@ bool BrowsingDataModel::IsStorageTypeCookieLike(
   switch (storage_type) {
     case BrowsingDataModel::StorageType::kTrustTokens:
     case BrowsingDataModel::StorageType::kInterestGroup:
-    case BrowsingDataModel::StorageType::kAttributionReporting:
     case BrowsingDataModel::StorageType::kPrivateAggregation:
     case BrowsingDataModel::StorageType::kSharedDictionary:
       return false;
@@ -997,8 +960,6 @@ void BrowsingDataModel::PopulateFromDisk(base::OnceClosure finished_callback) {
       network::features::kCompressionDictionaryTransport);
   bool is_interest_group_enabled =
       base::FeatureList::IsEnabled(network::features::kInterestGroupStorage);
-  bool is_attribution_reporting_enabled = base::FeatureList::IsEnabled(
-      attribution_reporting::features::kConversionMeasurement);
   bool is_private_aggregation_enabled =
       base::FeatureList::IsEnabled(blink::features::kPrivateAggregationApi);
 
@@ -1045,12 +1006,6 @@ void BrowsingDataModel::PopulateFromDisk(base::OnceClosure finished_callback) {
       manager->GetAllInterestGroupDataKeys(
           base::BindOnce(&OnInterestGroupsLoaded, this, completion));
     }
-  }
-
-  // Attribution Reporting
-  if (is_attribution_reporting_enabled) {
-    storage_partition_->GetAttributionDataModel()->GetAllDataKeys(
-        base::BindOnce(&OnAttributionReportingLoaded, this, completion));
   }
 
   // Private Aggregation

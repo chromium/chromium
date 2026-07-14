@@ -17,7 +17,6 @@
 #include "components/browsing_data/content/browsing_data_quota_helper.h"
 #include "components/browsing_data/content/shared_worker_info.h"
 #include "components/webid/federated_identity_data_model.h"
-#include "content/public/browser/attribution_data_model.h"
 #include "content/public/browser/cdm_storage_data_model.h"
 #include "content/public/browser/interest_group_manager.h"
 #include "content/public/browser/private_aggregation_data_model.h"
@@ -56,7 +55,6 @@ class BrowsingDataModel {
     kLocalStorage,
     kSessionStorage,
     kInterestGroup,
-    kAttributionReporting,
     kPrivateAggregation,
     kQuotaStorage,
     kSharedDictionary,
@@ -81,7 +79,6 @@ class BrowsingDataModel {
   typedef std::variant<url::Origin,        // Single origin, e.g. Trust Tokens
                        blink::StorageKey,  // Partitioned JS storage
                        content::InterestGroupManager::InterestGroupDataKey,
-                       content::AttributionDataModel::DataKey,
                        content::PrivateAggregationDataModel::DataKey,
                        content::SessionStorageUsageInfo,
                        net::SharedDictionaryIsolationKey,

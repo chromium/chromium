@@ -88,7 +88,6 @@ class IndexedDBControlWrapper;
 }
 
 class AggregationService;
-class AttributionManager;
 class BackgroundFetchContext;
 class BlobRegistryWrapper;
 class BluetoothAllowedDevicesMap;
@@ -166,8 +165,6 @@ class CONTENT_EXPORT StoragePartitionImpl
           shared_storage_header_observer);
   void OverrideAggregationServiceForTesting(
       std::unique_ptr<AggregationService> aggregation_service);
-  void OverrideAttributionManagerForTesting(
-      std::unique_ptr<AttributionManager> attribution_manager);
   void OverridePrivateAggregationManagerForTesting(
       std::unique_ptr<PrivateAggregationManagerImpl>
           private_aggregation_manager);
@@ -225,7 +222,6 @@ class CONTENT_EXPORT StoragePartitionImpl
   BrowsingTopicsSiteDataManager* GetBrowsingTopicsSiteDataManager() override;
   leveldb_proto::ProtoDatabaseProvider* GetProtoDatabaseProvider() override;
   // Use outside content.
-  AttributionDataModel* GetAttributionDataModel() override;
   PrivateAggregationDataModel* GetPrivateAggregationDataModel() override;
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
   CdmStorageDataModel* GetCdmStorageDataModel() override;
@@ -296,7 +292,6 @@ class CONTENT_EXPORT StoragePartitionImpl
   BucketManager* GetBucketManager();
   QuotaContext* GetQuotaContext();
   // Use inside content.
-  AttributionManager* GetAttributionManager();
   void SetFontAccessManagerForTesting(
       std::unique_ptr<FontAccessManager> font_access_manager);
   const std::string& GetPartitionDomain() const;
@@ -846,7 +841,6 @@ class CONTENT_EXPORT StoragePartitionImpl
   std::unique_ptr<leveldb_proto::ProtoDatabaseProvider>
       proto_database_provider_;
   scoped_refptr<ContentIndexContextImpl> content_index_context_;
-  std::unique_ptr<AttributionManager> attribution_manager_;
   std::unique_ptr<FontAccessManager> font_access_manager_;
   std::unique_ptr<InterestGroupManagerImpl> interest_group_manager_;
   std::unique_ptr<BrowsingTopicsSiteDataManager>

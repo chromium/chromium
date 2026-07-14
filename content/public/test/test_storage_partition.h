@@ -152,8 +152,6 @@ class TestStoragePartition : public StoragePartition {
 
   InterestGroupManager* GetInterestGroupManager() override;
 
-  AttributionDataModel* GetAttributionDataModel() override;
-
   PrivateAggregationDataModel* GetPrivateAggregationDataModel() override;
 
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)

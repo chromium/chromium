@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "content/common/content_export.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 
 using CdmStorageKeyUsageSize =

@@ -46,7 +46,6 @@
 #include "components/subresource_filter/core/common/test_ruleset_utils.h"
 #include "components/viz/common/frame_sinks/copy_output_result.h"
 #include "content/browser/aggregation_service/aggregation_service.h"
-#include "content/browser/attribution_reporting/attribution_manager.h"
 #include "content/browser/in_memory_federated_permission_context.h"
 #include "content/browser/renderer_host/frame_tree.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
@@ -777,22 +776,12 @@ void WebTestControlHost::ResetBrowserAfterWebTest() {
   }
 #endif  // BUILDFLAG(ENABLE_COMPUTE_PRESSURE)
 
-  // Delete all cookies, Attribution Reporting data and Aggregation service data
+  // Delete all cookies and Aggregation service data
   {
     StoragePartition* storage_partition =
         browser_context->GetDefaultStoragePartition();
     storage_partition->GetCookieManagerForBrowserProcess()->DeleteCookies(
         network::mojom::CookieDeletionFilter::New(), base::DoNothing());
-
-    if (auto* attribution_manager =
-            AttributionManager::FromBrowserContext(browser_context)) {
-      attribution_manager->ClearData(
-          /*delete_begin=*/base::Time::Min(), /*delete_end=*/base::Time::Max(),
-          /*filter=*/StoragePartition::StorageKeyMatcherFunction(),
-          /*filter_builder=*/nullptr,
-          /*delete_rate_limit_data=*/true,
-          /*done=*/base::DoNothing());
-    }
 
     if (auto* aggregation_service =
             AggregationService::GetService(browser_context)) {
@@ -1343,8 +1332,6 @@ void WebTestControlHost::OnTestFinished() {
       content::StoragePartition::REMOVE_DATA_MASK_MEDIA_LICENSES |
       // Internal flags manage browser-internal state, not website data, and
       // should not be cleared.
-      content::StoragePartition::
-          REMOVE_DATA_MASK_ATTRIBUTION_REPORTING_INTERNAL |
       content::StoragePartition::REMOVE_DATA_MASK_PRIVATE_AGGREGATION_INTERNAL |
       content::StoragePartition::REMOVE_DATA_MASK_INTEREST_GROUPS_INTERNAL |
       // These flags are designed for explicit user actions in settings.

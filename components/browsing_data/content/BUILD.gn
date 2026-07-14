@@ -26,7 +26,6 @@ static_library("content") {
 
   deps = [
     "//base",
-    "//components/attribution_reporting:features",
     "//components/browsing_data/core",
     "//components/content_settings/core/browser",
     "//components/content_settings/core/common",

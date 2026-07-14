@@ -30,7 +30,6 @@
 #include "components/attribution_reporting/os_registration.h"
 #include "components/attribution_reporting/registrar.h"
 #include "content/browser/attribution_reporting/attribution_input_event.h"
-#include "content/browser/attribution_reporting/attribution_manager.h"
 #include "content/browser/attribution_reporting/attribution_os_level_manager.h"
 #include "content/browser/attribution_reporting/attribution_reporting.mojom.h"
 #include "content/browser/attribution_reporting/os_registration.h"

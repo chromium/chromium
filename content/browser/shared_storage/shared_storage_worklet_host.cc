@@ -24,7 +24,6 @@
 #include "components/metrics/dwa/dwa_builders.h"
 #include "components/metrics/dwa/dwa_recorder.h"
 #include "components/services/storage/shared_storage/shared_storage_manager.h"
-#include "content/browser/attribution_reporting/attribution_manager.h"
 #include "content/browser/code_cache/generated_code_cache_context.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
 #include "content/browser/devtools/shared_storage_worklet_devtools_manager.h"

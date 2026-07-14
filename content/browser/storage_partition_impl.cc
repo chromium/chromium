@@ -38,7 +38,6 @@
 #include "base/types/optional_util.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
-#include "components/attribution_reporting/features.h"
 #include "components/leveldb_proto/public/proto_database_provider.h"
 #include "components/services/storage/privileged/cpp/bucket_client_info.h"
 #include "components/services/storage/privileged/mojom/indexed_db_control.mojom.h"
@@ -52,7 +51,6 @@
 #include "components/variations/net/variations_http_headers.h"
 #include "content/browser/aggregation_service/aggregation_service.h"
 #include "content/browser/aggregation_service/aggregation_service_impl.h"
-#include "content/browser/attribution_reporting/attribution_manager_impl.h"
 #include "content/browser/background_fetch/background_fetch_context.h"
 #include "content/browser/blob_storage/blob_registry_wrapper.h"
 #include "content/browser/blob_storage/chrome_blob_storage_context.h"
@@ -895,7 +893,6 @@ class StoragePartitionImpl::DataDeletionHelper {
       storage::FileSystemContext* filesystem_context,
       network::mojom::CookieManager* cookie_manager,
       InterestGroupManagerImpl* interest_group_manager,
-      AttributionManager* attribution_manager,
       AggregationService* aggregation_service,
       PrivateAggregationManagerImpl* private_aggregation_manager,
       storage::SharedStorageManager* shared_storage_manager,
@@ -1485,15 +1482,6 @@ void StoragePartitionImpl::Initialize(
 
   bucket_manager_ = std::make_unique<BucketManager>(this);
 
-  if (base::FeatureList::IsEnabled(
-          attribution_reporting::features::kConversionMeasurement)) {
-    // The Conversion Measurement API is not available in Incognito mode, but
-    // this is enforced by the `AttributionManagerImpl` itself for better error
-    // reporting and metrics.
-    attribution_manager_ = std::make_unique<AttributionManagerImpl>(
-        this, path, special_storage_policy_);
-  }
-
   if (base::FeatureList::IsEnabled(network::features::kInterestGroupStorage)) {
     // Auction worklets on non-Android use dedicated processes; on Android due
     // to high cost of process launch they try to reuse renderers.
@@ -1853,16 +1841,6 @@ FileSystemAccessManagerImpl*
 StoragePartitionImpl::GetFileSystemAccessManager() {
   DCHECK(initialized_);
   return file_system_access_manager_.get();
-}
-
-AttributionManager* StoragePartitionImpl::GetAttributionManager() {
-  DCHECK(initialized_);
-  return attribution_manager_.get();
-}
-
-AttributionDataModel* StoragePartitionImpl::GetAttributionDataModel() {
-  DCHECK(initialized_);
-  return attribution_manager_.get();
 }
 
 FontAccessManager* StoragePartitionImpl::GetFontAccessManager() {
@@ -2883,9 +2861,8 @@ void StoragePartitionImpl::ClearDataImpl(
       std::move(cookie_deletion_filter), GetPath(), dom_storage_context_.get(),
       quota_manager_.get(), special_storage_policy_.get(),
       filesystem_context_.get(), GetCookieManagerForBrowserProcess(),
-      interest_group_manager_.get(), attribution_manager_.get(),
-      aggregation_service_.get(), private_aggregation_manager_.get(),
-      shared_storage_manager_.get(),
+      interest_group_manager_.get(), aggregation_service_.get(),
+      private_aggregation_manager_.get(), shared_storage_manager_.get(),
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
       cdm_storage_manager_.get(),
 #endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
@@ -2987,7 +2964,6 @@ void StoragePartitionImpl::DataDeletionHelper::ClearData(
     storage::FileSystemContext* filesystem_context,
     network::mojom::CookieManager* cookie_manager,
     InterestGroupManagerImpl* interest_group_manager,
-    AttributionManager* attribution_manager,
     AggregationService* aggregation_service,
     PrivateAggregationManagerImpl* private_aggregation_manager,
     storage::SharedStorageManager* shared_storage_manager,
@@ -3186,31 +3162,6 @@ void StoragePartitionImpl::DataDeletionHelper::ClearData(
             path.Append(gpu::GetGpuDiskCacheSubdir(type)), begin, end,
             base::BindOnce(&ClearedGpuCache, barrier));
       }
-    }
-  }
-
-  // It is not expected to only delete internal attribution reporting data.
-  DCHECK(!(remove_mask_ & REMOVE_DATA_MASK_ATTRIBUTION_REPORTING_INTERNAL) ||
-         remove_mask_ & REMOVE_DATA_MASK_ATTRIBUTION_REPORTING_SITE_CREATED);
-  if (attribution_manager &&
-      (remove_mask_ & REMOVE_DATA_MASK_ATTRIBUTION_REPORTING_SITE_CREATED)) {
-    if (storage_key_origin_empty) {
-      attribution_manager->ClearData(
-          begin, end, generic_filter, filter_builder,
-          remove_mask_ & REMOVE_DATA_MASK_ATTRIBUTION_REPORTING_INTERNAL,
-          mojo::WrapCallbackWithDefaultInvokeIfNotRun(
-              CreateTaskCompletionClosure(TracingDataType::kConversions)));
-    } else if (storage_key.IsFirstPartyContext()) {
-      // Attribution Reporting API doesn't support cross-site data deletion.
-      std::unique_ptr<BrowsingDataFilterBuilder> effective_filter_builder =
-          BrowsingDataFilterBuilder::Create(
-              BrowsingDataFilterBuilder::Mode::kDelete);
-      effective_filter_builder->AddOrigin(storage_key.origin());
-      attribution_manager->ClearData(
-          begin, end, generic_filter, effective_filter_builder.get(),
-          remove_mask_ & REMOVE_DATA_MASK_ATTRIBUTION_REPORTING_INTERNAL,
-          mojo::WrapCallbackWithDefaultInvokeIfNotRun(
-              CreateTaskCompletionClosure(TracingDataType::kConversions)));
     }
   }
 
@@ -3599,12 +3550,6 @@ void StoragePartitionImpl::OverrideAggregationServiceForTesting(
     std::unique_ptr<AggregationService> aggregation_service) {
   DCHECK(initialized_);
   aggregation_service_ = std::move(aggregation_service);
-}
-
-void StoragePartitionImpl::OverrideAttributionManagerForTesting(
-    std::unique_ptr<AttributionManager> attribution_manager) {
-  DCHECK(initialized_);
-  attribution_manager_ = std::move(attribution_manager);
 }
 
 void StoragePartitionImpl::OverridePrivateAggregationManagerForTesting(

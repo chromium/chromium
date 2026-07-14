@@ -171,7 +171,6 @@ namespace network {
 class SharedURLLoaderFactory;
 class URLLoaderFactoryBuilder;
 namespace mojom {
-enum class AttributionSupport : int32_t;
 class TrustedHeaderClient;
 class URLLoader;
 class URLLoaderClient;
@@ -1108,64 +1107,6 @@ class CONTENT_EXPORT ContentBrowserClient {
     kMaxValue = kEnabled,
   };
 
-  // Allows the embedder to control the type of attribution reporting allowed.
-  // Web, Os, both or none
-  virtual network::mojom::AttributionSupport GetAttributionSupport(
-      AttributionReportingOsApiState state,
-      bool client_os_disabled);
-
-  enum class AttributionReportingOperation {
-    kSource,
-    kTrigger,
-    kReport,
-    kSourceVerboseDebugReport,
-    kTriggerVerboseDebugReport,
-    kOsSource,
-    kOsTrigger,
-    kOsSourceVerboseDebugReport,
-    kOsTriggerVerboseDebugReport,
-    kSourceTransitionalDebugReporting,
-    kTriggerTransitionalDebugReporting,
-    kOsSourceTransitionalDebugReporting,
-    kOsTriggerTransitionalDebugReporting,
-    kSourceAggregatableDebugReport,
-    kTriggerAggregatableDebugReport,
-    kAny,
-  };
-
-  // Allows the embedder to control if Attribution Reporting API operations can
-  // happen in a given context. Origins must be provided for a given operation
-  // as follows:
-  //   - `kSource`, `kOsSource`, `kSourceTransitionalDebugReporting`,
-  //   `kSourceVerboseDebugReport`, `kSourceAggregatableDebugReport` and
-  //   `kOsSourceTransitionalDebugReporting` must provide a non-null
-  //   `source_origin` and `reporting_origin`
-  //   - `kTrigger`, `kOsTrigger`, `kTriggerTransitionalDebugReporting`,
-  //   `kTriggerVerboseDebugReport`, `kTriggerAggregatableDebugReport` and
-  //   `kOsTriggerTransitionalDebugReporting` must provide a non-null
-  //   `destination_origin` and `reporting_origin`
-  //   - `kReport` must provide all non-null origins
-  //   - `kAny` may provide all null origins. It checks whether conversion
-  //   measurement is allowed anywhere in `browser_context`, returning false if
-  //   Attribution Reporting is not allowed by default on any origin.
-  // `can_bypass` is an out parameter that is used for transitional debug
-  // reporting to indicate whether the result can be bypassed if disallowed.
-  // `can_bypass` is required to be non-null for
-  // `kSourceTransitionalDebugReporting`, `kOsSourceTransitionalDebugReporting`,
-  // `kTriggerTransitionalDebugReporting` and
-  // `kOsTriggerTransitionalDebugReporting`.
-  //
-  // TODO(crbug.com/40941634): Clean up `can_bypass` after the cookie
-  // deprecation experiment.
-  virtual bool IsAttributionReportingOperationAllowed(
-      content::BrowserContext* browser_context,
-      AttributionReportingOperation operation,
-      content::RenderFrameHost* rfh,
-      const url::Origin* source_origin,
-      const url::Origin* destination_origin,
-      const url::Origin* reporting_origin,
-      bool* can_bypass);
-
   // Specifies whether an OS attribution event should register
   // against the top level origin (web) or the app (OS) or if
   // OS attribution is disabled.
@@ -1193,16 +1134,6 @@ class CONTENT_EXPORT ContentBrowserClient {
   // OS attribution is disabled.
   virtual AttributionReportingOsRegistrars GetAttributionReportingOsRegistrars(
       WebContents* web_contents);
-
-  // Allows the embedder to control if Attribution Reporting API is allowed in a
-  // given context. This method checks the API-level permission.
-  // `IsAttributionReportingOperationAllowed()` should be called to check the
-  // operation-level permission.
-  virtual bool IsAttributionReportingAllowedForContext(
-      content::BrowserContext* browser_context,
-      content::RenderFrameHost* rfh,
-      const url::Origin& context_origin,
-      const url::Origin& reporting_origin);
 
   // Allows the embedder to control if Shared Storage API operations can happen
   // in a given context.

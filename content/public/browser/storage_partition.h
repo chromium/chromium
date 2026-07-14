@@ -65,7 +65,6 @@ class Origin;
 
 namespace content {
 
-class AttributionDataModel;
 class BackgroundSyncContext;
 class BrowserContext;
 class BrowsingDataFilterBuilder;
@@ -169,7 +168,6 @@ class CONTENT_EXPORT StoragePartition {
   virtual PlatformNotificationContext* GetPlatformNotificationContext() = 0;
   virtual InterestGroupManager* GetInterestGroupManager() = 0;
   virtual BrowsingTopicsSiteDataManager* GetBrowsingTopicsSiteDataManager() = 0;
-  virtual AttributionDataModel* GetAttributionDataModel() = 0;
   virtual PrivateAggregationDataModel* GetPrivateAggregationDataModel() = 0;
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
   virtual CdmStorageDataModel* GetCdmStorageDataModel() = 0;
@@ -201,7 +199,6 @@ class CONTENT_EXPORT StoragePartition {
     REMOVE_DATA_MASK_CACHE_STORAGE = 1 << 8,
     REMOVE_DATA_MASK_MEDIA_LICENSES = 1 << 9,
     REMOVE_DATA_MASK_BACKGROUND_FETCH = 1 << 10,
-    REMOVE_DATA_MASK_ATTRIBUTION_REPORTING_SITE_CREATED = 1 << 11,
     // Interest groups are stored as part of the Interest Group API experiment
     // Public explainer here:
     // https://github.com/WICG/turtledove/blob/main/FLEDGE.md
@@ -216,7 +213,6 @@ class CONTENT_EXPORT StoragePartition {
     // https://github.com/WICG/turtledove/blob/main/FLEDGE.md
     REMOVE_DATA_MASK_INTEREST_GROUP_PERMISSIONS_CACHE = 1 << 15,
 
-    REMOVE_DATA_MASK_ATTRIBUTION_REPORTING_INTERNAL = 1 << 16,
     REMOVE_DATA_MASK_PRIVATE_AGGREGATION_INTERNAL = 1 << 17,
     REMOVE_DATA_MASK_INTEREST_GROUPS_INTERNAL = 1 << 18,
     // Device bound sessions. Public explainer:

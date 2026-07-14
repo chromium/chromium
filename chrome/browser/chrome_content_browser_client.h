@@ -414,19 +414,6 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       bool is_server_auction,
       bool is_on_device_auction,
       content::AuctionResult result) override;
-  bool IsAttributionReportingOperationAllowed(
-      content::BrowserContext* browser_context,
-      AttributionReportingOperation operation,
-      content::RenderFrameHost* rfh,
-      const url::Origin* impression_origin,
-      const url::Origin* conversion_origin,
-      const url::Origin* reporting_origin,
-      bool* can_bypass) override;
-  bool IsAttributionReportingAllowedForContext(
-      content::BrowserContext* browser_context,
-      content::RenderFrameHost* rfh,
-      const url::Origin& context_origin,
-      const url::Origin& reporting_origin) override;
   // TODO(crbug.com/369436599): Remove the default arguments in virtual methods.
   bool IsSharedStorageAllowed(
       content::BrowserContext* browser_context,

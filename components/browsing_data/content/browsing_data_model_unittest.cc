@@ -590,7 +590,6 @@ TEST_F(BrowsingDataModelTest, ThirdPartyCookieTypes) {
 
   content::InterestGroupManager::InterestGroupDataKey interest_group_key{
       kSiteOrigin, kSiteOrigin};
-  content::AttributionDataModel::DataKey attribution_reporting_key{kSiteOrigin};
   content::PrivateAggregationDataModel::DataKey private_aggregation_key{
       kSiteOrigin};
   net::device_bound_sessions::SessionKey device_bound_session_key(
@@ -630,8 +629,6 @@ TEST_F(BrowsingDataModelTest, ThirdPartyCookieTypes) {
           {BrowsingDataModel::StorageType::kCookie, *partitioned_cookie},
           {BrowsingDataModel::StorageType::kTrustTokens, kSiteOrigin},
           {BrowsingDataModel::StorageType::kInterestGroup, interest_group_key},
-          {BrowsingDataModel::StorageType::kAttributionReporting,
-           attribution_reporting_key},
           {BrowsingDataModel::StorageType::kPrivateAggregation,
            private_aggregation_key},
           {BrowsingDataModel::StorageType::kSharedDictionary,

@@ -1325,23 +1325,6 @@ TEST_F(BrowsingDataRemoverImplTest, RemoveCache) {
           StoragePartition::REMOVE_KEEPALIVE_LOADS_ATTEMPTING_RETRY);
 }
 
-TEST_F(BrowsingDataRemoverImplTest, RemoveAttributionReporting) {
-  BlockUntilBrowsingDataRemoved(
-      base::Time(), base::Time::Max(),
-      BrowsingDataRemover::DATA_TYPE_ATTRIBUTION_REPORTING_SITE_CREATED, false);
-  StoragePartitionRemovalData removal_data = GetStoragePartitionRemovalData();
-  EXPECT_EQ(
-      removal_data.remove_mask,
-      StoragePartition::REMOVE_DATA_MASK_ATTRIBUTION_REPORTING_SITE_CREATED);
-
-  BlockUntilBrowsingDataRemoved(
-      base::Time(), base::Time::Max(),
-      BrowsingDataRemover::DATA_TYPE_ATTRIBUTION_REPORTING_INTERNAL, false);
-  removal_data = GetStoragePartitionRemovalData();
-  EXPECT_EQ(removal_data.remove_mask,
-            StoragePartition::REMOVE_DATA_MASK_ATTRIBUTION_REPORTING_INTERNAL);
-}
-
 TEST_F(BrowsingDataRemoverImplTest, RemoveAggregationServiceData) {
   BlockUntilBrowsingDataRemoved(
       base::Time(), base::Time::Max(),

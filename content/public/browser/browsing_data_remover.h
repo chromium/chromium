@@ -104,12 +104,6 @@ class BrowsingDataRemover {
   // storage.
   static constexpr DataType DATA_TYPE_TRUST_TOKENS = 1 << 13;
 
-  // Attribution Reporting
-  // (https://github.com/WICG/conversion-measurement-api) persistent
-  // storage that was initiated by a site.
-  static constexpr DataType DATA_TYPE_ATTRIBUTION_REPORTING_SITE_CREATED =
-      1 << 14;
-
   // Aggregation Service
   // (https://github.com/WICG/attribution-reporting-api/blob/main/AGGREGATE.md#data-processing-through-a-secure-aggregation-service)
   // persistent storage.
@@ -123,11 +117,6 @@ class BrowsingDataRemover {
   // Shared storage API
   // (https://github.com/pythagoraskitty/shared-storage) persistent storage.
   static constexpr DataType DATA_TYPE_SHARED_STORAGE = 1 << 17;
-
-  // Similar to DATA_TYPE_ATTRIBUTION_REPORTING_SITE_INITIATED, but only
-  // refers to data stored internally by the API, such as privacy budgeting
-  // information.
-  static constexpr DataType DATA_TYPE_ATTRIBUTION_REPORTING_INTERNAL = 1 << 18;
 
   // Private Aggregation API
   // (https://github.com/alexmturner/private-aggregation-api) persistent
@@ -162,22 +151,16 @@ class BrowsingDataRemover {
   // Embedders can add more datatypes beyond this point.
   static constexpr DataType DATA_TYPE_CONTENT_END = DATA_TYPE_PRERENDER_CACHE;
 
-  // All data stored by the Attribution Reporting API.
-  static constexpr DataType DATA_TYPE_ATTRIBUTION_REPORTING =
-      DATA_TYPE_ATTRIBUTION_REPORTING_SITE_CREATED |
-      DATA_TYPE_ATTRIBUTION_REPORTING_INTERNAL;
-
   // Data stored by APIs in The Privacy Sandbox (https://privacysandbox.com/).
   static constexpr DataType DATA_TYPE_PRIVACY_SANDBOX =
-      DATA_TYPE_TRUST_TOKENS | DATA_TYPE_ATTRIBUTION_REPORTING |
-      DATA_TYPE_AGGREGATION_SERVICE | DATA_TYPE_INTEREST_GROUPS |
-      DATA_TYPE_SHARED_STORAGE | DATA_TYPE_PRIVATE_AGGREGATION_INTERNAL |
+      DATA_TYPE_TRUST_TOKENS | DATA_TYPE_AGGREGATION_SERVICE |
+      DATA_TYPE_INTEREST_GROUPS | DATA_TYPE_SHARED_STORAGE |
+      DATA_TYPE_PRIVATE_AGGREGATION_INTERNAL |
       DATA_TYPE_INTEREST_GROUPS_INTERNAL | DATA_TYPE_INTEREST_GROUPS_USER_CLEAR;
 
   // Internal data stored by APIs in the Privacy Sandbox, e.g. privacy budgeting
   // information.
   static constexpr DataType DATA_TYPE_PRIVACY_SANDBOX_INTERNAL =
-      DATA_TYPE_ATTRIBUTION_REPORTING_INTERNAL |
       DATA_TYPE_PRIVATE_AGGREGATION_INTERNAL |
       DATA_TYPE_INTEREST_GROUPS_INTERNAL;
 

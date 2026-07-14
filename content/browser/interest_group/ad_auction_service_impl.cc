@@ -30,7 +30,6 @@
 #include "base/types/expected.h"
 #include "base/uuid.h"
 #include "components/aggregation_service/aggregation_coordinator_utils.h"
-#include "content/browser/attribution_reporting/attribution_manager.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
 #include "content/browser/fenced_frame/fenced_frame_reporter.h"
 #include "content/browser/fenced_frame/fenced_frame_url_mapping.h"

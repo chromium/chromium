@@ -767,7 +767,6 @@ void PrivacySandboxServiceImpl::OnAdMeasurementPrefChanged() {
   if (browsing_data_remover_) {
     browsing_data_remover_->Remove(
         base::Time::Min(), base::Time::Max(),
-        content::BrowsingDataRemover::DATA_TYPE_ATTRIBUTION_REPORTING |
             content::BrowsingDataRemover::DATA_TYPE_AGGREGATION_SERVICE |
             content::BrowsingDataRemover::
                 DATA_TYPE_PRIVATE_AGGREGATION_INTERNAL,

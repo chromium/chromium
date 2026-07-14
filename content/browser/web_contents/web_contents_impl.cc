@@ -65,8 +65,6 @@
 #include "components/viz/common/features.h"
 #include "components/viz/host/host_frame_sink_manager.h"
 #include "content/browser/accessibility/browser_accessibility_state_impl.h"
-#include "content/browser/attribution_reporting/attribution_manager.h"
-#include "content/browser/attribution_reporting/attribution_os_level_manager.h"
 #include "content/browser/back_forward_cache/back_forward_cache_impl.h"
 #include "content/browser/bad_message.h"
 #include "content/browser/browser_context_impl.h"
@@ -314,8 +312,6 @@ BASE_FEATURE(kUpdateInnerWebContentsVisibility,
 
 using LifecycleState = RenderFrameHost::LifecycleState;
 using LifecycleStateImpl = RenderFrameHostImpl::LifecycleStateImpl;
-using AttributionReportingOsRegistrar =
-    ContentBrowserClient::AttributionReportingOsRegistrar;
 
 base::LazyInstance<base::RepeatingCallbackList<void(WebContents*)>>::
     DestructorAtExit g_created_callbacks = LAZY_INSTANCE_INITIALIZER;
@@ -12846,14 +12842,7 @@ void WebContentsImpl::SetOverscrollNavigationEnabled(bool enabled) {
 }
 
 network::mojom::AttributionSupport WebContentsImpl::GetAttributionSupport() {
-  ContentBrowserClient::AttributionReportingOsRegistrars reportTypes =
-      AttributionOsLevelManager::GetAttributionReportingOsRegistrars(this);
-
-  return AttributionManager::GetAttributionSupport(
-      reportTypes.source_registrar ==
-          AttributionReportingOsRegistrar::kDisabled &&
-      reportTypes.trigger_registrar ==
-          AttributionReportingOsRegistrar::kDisabled);
+  return network::mojom::AttributionSupport::kUnset;
 }
 
 void WebContentsImpl::UpdateAttributionSupportRenderer() {

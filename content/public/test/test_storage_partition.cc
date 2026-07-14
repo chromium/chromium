@@ -144,10 +144,6 @@ InterestGroupManager* TestStoragePartition::GetInterestGroupManager() {
   return nullptr;
 }
 
-AttributionDataModel* TestStoragePartition::GetAttributionDataModel() {
-  return nullptr;
-}
-
 PrivateAggregationDataModel*
 TestStoragePartition::GetPrivateAggregationDataModel() {
   return nullptr;
