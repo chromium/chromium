@@ -371,6 +371,10 @@ void PopupRowView::OnViewFocused(views::View* view) {
   OnCellSelected(type, PopupCellSelectionSource::kKeyboard);
 }
 
+std::optional<PopupRowView::CellType> PopupRowView::GetSelectedCell() const {
+  return selected_cell_;
+}
+
 void PopupRowView::SetSelectedCell(std::optional<CellType> new_cell) {
   if (!controller_) {
     return;

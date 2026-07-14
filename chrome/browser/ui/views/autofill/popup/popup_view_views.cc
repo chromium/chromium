@@ -43,6 +43,7 @@
 #include "chrome/browser/ui/passwords/ui_utils.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_base_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_bnpl_footnote_view.h"
+#include "chrome/browser/ui/views/autofill/popup/popup_interactive_row_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_loading_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_no_suggestions_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_personal_context_notice_view.h"
@@ -104,6 +105,7 @@
 #include "ui/views/metadata/view_factory.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
+#include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
 
 using views::BubbleBorder;
@@ -371,12 +373,13 @@ std::optional<PopupViewViews::CellIndex> PopupViewViews::GetSelectedCell()
   // current selection. Therefore some validity checks need to be performed
   // here.
   if (!row_with_selected_cell_ ||
-      !HasSelectablePopupRowViewAt(*row_with_selected_cell_)) {
+      !HasSelectablePopupInteractiveRowViewAt(*row_with_selected_cell_)) {
     return std::nullopt;
   }
 
   if (std::optional<PopupRowView::CellType> cell_type =
-          GetPopupRowViewAt(*row_with_selected_cell_).GetSelectedCell()) {
+          GetPopupInteractiveRowViewAt(*row_with_selected_cell_)
+              .GetSelectedCell()) {
     return CellIndex{*row_with_selected_cell_, *cell_type};
   }
   return std::nullopt;
@@ -409,7 +412,8 @@ bool PopupViewViews::HandleKeyPressEvent(
   // If the row can handle the event itself (e.g. switching between cells in the
   // same row), we let it.
   if (std::optional<CellIndex> selected_cell = GetSelectedCell()) {
-    if (GetPopupRowViewAt(selected_cell->first).HandleKeyPressEvent(event)) {
+    if (GetPopupInteractiveRowViewAt(selected_cell->first)
+            .HandleKeyPressEvent(event)) {
       return true;
     }
   }
@@ -619,7 +623,7 @@ bool PopupViewViews::HandleKeyPressEventForAtMemory(
         SelectNextRow(PopupCellSelectionSource::kKeyboard);
         return true;
       }
-      if (HasSelectablePopupRowViewAt(0)) {
+      if (HasSelectablePopupInteractiveRowViewAt(0)) {
         SetSelectedCell(CellIndex(0, PopupRowView::CellType::kContent),
                         PopupCellSelectionSource::kKeyboard);
         return true;
@@ -667,7 +671,8 @@ void PopupViewViews::SelectPreviousRow() {
   std::optional<CellIndex> old_index = GetSelectedCell();
   // Temporarily use an int to avoid underflows.
   int new_row = old_index ? static_cast<int>(old_index->first) - 1 : -1;
-  for (size_t i = 0; i < rows_.size() && !HasSelectablePopupRowViewAt(new_row);
+  for (size_t i = 0;
+       i < rows_.size() && !HasSelectablePopupInteractiveRowViewAt(new_row);
        i++) {
     --new_row;
     if (new_row < 0) {
@@ -678,9 +683,10 @@ void PopupViewViews::SelectPreviousRow() {
   // `kControl` is used to show a sub-popup with child suggestions. It can
   // only be selected on a new row if the corresponding suggestion has
   // children.
+  PopupRowView* row_view = MaybeGetPopupRowViewAt(new_row);
   const PopupRowView::CellType new_cell_type =
       (old_index && old_index->second == PopupRowView::CellType::kControl &&
-       GetPopupRowViewAt(new_row).GetExpandChildSuggestionsView())
+       row_view && row_view->GetExpandChildSuggestionsView())
           ? PopupRowView::CellType::kControl
           : PopupRowView::CellType::kContent;
   SetSelectedCell(CellIndex{new_row, new_cell_type},
@@ -692,7 +698,8 @@ void PopupViewViews::SelectNextRow(PopupCellSelectionSource source) {
   std::optional<CellIndex> old_index = GetSelectedCell();
 
   size_t new_row = old_index ? old_index->first + 1u : 0u;
-  for (size_t i = 0; i < rows_.size() && !HasSelectablePopupRowViewAt(new_row);
+  for (size_t i = 0;
+       i < rows_.size() && !HasSelectablePopupInteractiveRowViewAt(new_row);
        i++) {
     ++new_row;
     if (new_row >= rows_.size()) {
@@ -703,9 +710,10 @@ void PopupViewViews::SelectNextRow(PopupCellSelectionSource source) {
   // `kControl` is used to show a sub-popup with child suggestions. It can
   // only be selected on a new row if the corresponding suggestion has
   // children.
+  PopupRowView* row_view = MaybeGetPopupRowViewAt(new_row);
   const PopupRowView::CellType new_cell_type =
       (old_index && old_index->second == PopupRowView::CellType::kControl &&
-       GetPopupRowViewAt(new_row).GetExpandChildSuggestionsView())
+       row_view && row_view->GetExpandChildSuggestionsView())
           ? PopupRowView::CellType::kControl
           : PopupRowView::CellType::kContent;
   SetSelectedCell(CellIndex{new_row, new_cell_type}, source);
@@ -713,10 +721,11 @@ void PopupViewViews::SelectNextRow(PopupCellSelectionSource source) {
 
 bool PopupViewViews::SelectNextHorizontalCell() {
   std::optional<CellIndex> selected_cell = GetSelectedCell();
-  if (selected_cell && HasSelectablePopupRowViewAt(selected_cell->first)) {
-    PopupRowView& row = GetPopupRowViewAt(selected_cell->first);
-    if (selected_cell->second == PopupRowView::CellType::kContent &&
-        row.GetExpandChildSuggestionsView()) {
+  if (selected_cell &&
+      HasSelectablePopupInteractiveRowViewAt(selected_cell->first)) {
+    PopupRowView* row = MaybeGetPopupRowViewAt(selected_cell->first);
+    if (selected_cell->second == PopupRowView::CellType::kContent && row &&
+        row->GetExpandChildSuggestionsView()) {
       SetSelectedCell(
           CellIndex{selected_cell->first, PopupRowView::CellType::kControl},
           PopupCellSelectionSource::kKeyboard, AutoselectFirstSuggestion(true));
@@ -739,7 +748,7 @@ bool PopupViewViews::SelectPreviousHorizontalCell() {
   std::optional<CellIndex> selected_cell = GetSelectedCell();
   if (selected_cell &&
       selected_cell->second == PopupRowView::CellType::kControl &&
-      HasSelectablePopupRowViewAt(selected_cell->first)) {
+      HasSelectablePopupInteractiveRowViewAt(selected_cell->first)) {
     SetSelectedCell(
         CellIndex{selected_cell->first, PopupRowView::CellType::kContent},
         PopupCellSelectionSource::kKeyboard);
@@ -773,7 +782,8 @@ bool PopupViewViews::AcceptSelectedContentOrCreditCardCell(
     return false;
   }
 
-  return GetPopupRowViewAt(index->first).Accept(accept_method);
+  PopupRowView* row = MaybeGetPopupRowViewAt(index->first);
+  return row && row->Accept(accept_method);
 }
 
 bool PopupViewViews::RemoveSelectedCell() {
@@ -934,7 +944,8 @@ void PopupViewViews::SetSelectedCell(
 
   if (old_index) {
     if (!TrackAndRun(this, [this, old_index]() {
-          GetPopupRowViewAt(old_index->first).SetSelectedCell(std::nullopt);
+          GetPopupInteractiveRowViewAt(old_index->first)
+              .SetSelectedCell(std::nullopt);
         })) {
       return;
     }
@@ -943,7 +954,7 @@ void PopupViewViews::SetSelectedCell(
   // New selected cell invalidates this scheduling (if it's running), cancel it.
   open_sub_popup_timer_.Stop();
 
-  if (cell_index && HasSelectablePopupRowViewAt(cell_index->first)) {
+  if (cell_index && HasSelectablePopupInteractiveRowViewAt(cell_index->first)) {
     if (auto* footnote = GetBnplFootnoteView()) {
       // Since cell selection is based on virtual focus and not real focus,
       // we need to manually unfocus the settings link when updating virtual
@@ -959,7 +970,8 @@ void PopupViewViews::SetSelectedCell(
     no_selection_sub_popup_close_timer_.Stop();
 
     row_with_selected_cell_ = cell_index->first;
-    PopupRowView& new_selected_row = GetPopupRowViewAt(cell_index->first);
+    PopupInteractiveRowView& new_selected_row =
+        GetPopupInteractiveRowViewAt(cell_index->first);
     if (!TrackAndRun(&new_selected_row, [&new_selected_row, cell_index]() {
           new_selected_row.SetSelectedCell(cell_index->second);
         })) {
@@ -1096,10 +1108,12 @@ void PopupViewViews::UpdateAccessibleStates() const {
   }
 }
 
-bool PopupViewViews::HasSelectablePopupRowViewAt(size_t index) const {
+bool PopupViewViews::HasSelectablePopupInteractiveRowViewAt(
+    size_t index) const {
   return index < rows_.size() &&
-         std::holds_alternative<PopupRowView*>(rows_[index]) &&
-         GetPopupRowViewAt(index).IsSelectable();
+         (std::holds_alternative<PopupRowView*>(rows_[index]) ||
+          std::holds_alternative<PopupInteractiveRowView*>(rows_[index])) &&
+         GetPopupInteractiveRowViewAt(index).IsSelectable();
 }
 
 PopupBnplFootnoteView* PopupViewViews::GetBnplFootnoteView() const {
@@ -1599,6 +1613,16 @@ bool PopupViewViews::CanShowDropdownInBounds(
                              element_bounds);
 }
 
+PopupRowView* PopupViewViews::MaybeGetPopupRowViewAt(size_t index) {
+  if (index >= rows_.size()) {
+    return nullptr;
+  }
+  if (auto* row = std::get_if<PopupRowView*>(&rows_[index])) {
+    return *row;
+  }
+  return nullptr;
+}
+
 void PopupViewViews::SetRowWithOpenSubPopup(
     std::optional<size_t> row_index,
     AutoselectFirstSuggestion autoselect_first_suggestion) {
@@ -1611,28 +1635,30 @@ void PopupViewViews::SetRowWithOpenSubPopup(
   }
 
   // Close previously open sub-popup if any.
-  if (row_with_open_sub_popup_ &&
-      HasSelectablePopupRowViewAt(*row_with_open_sub_popup_)) {
-    controller_->HideSubPopup();
-    GetPopupRowViewAt(*row_with_open_sub_popup_)
-        .SetChildSuggestionsDisplayed(false);
-    row_with_open_sub_popup_ = std::nullopt;
+  if (row_with_open_sub_popup_) {
+    if (PopupRowView* row = MaybeGetPopupRowViewAt(*row_with_open_sub_popup_)) {
+      controller_->HideSubPopup();
+      row->SetChildSuggestionsDisplayed(false);
+      row_with_open_sub_popup_ = std::nullopt;
+    }
   }
 
   // Open a sub-popup on the new cell if provided.
-  if (row_index && HasSelectablePopupRowViewAt(*row_index)) {
-    const Suggestion& suggestion = controller_->GetSuggestionAt(*row_index);
+  if (row_index) {
+    PopupRowView* row = MaybeGetPopupRowViewAt(*row_index);
+    if (row && row->IsSelectable()) {
+      const Suggestion& suggestion = controller_->GetSuggestionAt(*row_index);
 
-    CHECK(!suggestion.children.empty());
+      CHECK(!suggestion.children.empty());
 
-    PopupRowView& row = GetPopupRowViewAt(*row_index);
-    if (controller_->OpenSubPopup(row.GetControlCellBounds(),
-                                  suggestion.children,
-                                  autoselect_first_suggestion)) {
-      row.SetChildSuggestionsDisplayed(true);
-      row_with_open_sub_popup_ = row_index;
-      if (autoselect_first_suggestion) {
-        row.SetSelectedCell(std::nullopt);
+      if (controller_->OpenSubPopup(row->GetControlCellBounds(),
+                                    suggestion.children,
+                                    autoselect_first_suggestion)) {
+        row->SetChildSuggestionsDisplayed(true);
+        row_with_open_sub_popup_ = row_index;
+        if (autoselect_first_suggestion) {
+          row->SetSelectedCell(std::nullopt);
+        }
       }
     }
   }

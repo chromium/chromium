@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/autofill/autofill_popup_view.h"
 #include "chrome/browser/ui/views/autofill/popup/password_favicon_loader.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_base_view.h"
+#include "chrome/browser/ui/views/autofill/popup/popup_interactive_row_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_row_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_search_bar_view.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
@@ -91,6 +92,7 @@ class PopupViewViews : public PopupBaseView,
       kAutofillAccountNameEmailSuggestionElementId);
 
   using RowPointer = std::variant<PopupRowView*,
+                                  PopupInteractiveRowView*,
                                   PopupSeparatorView*,
                                   PopupTitleView*,
                                   PopupWarningView*,
@@ -216,21 +218,32 @@ class PopupViewViews : public PopupBaseView,
   // it to the user in the same message, separated by a comma.
   void MaybeAnnounceCurrentTabAndFootnote();
 
-  // Returns the `PopupRowView` at line number `index`. Assumes that there is
-  // such a view at that line number - otherwise the underlying variant will
-  // check false.
-  PopupRowView& GetPopupRowViewAt(size_t index) {
-    return *std::get<PopupRowView*>(rows_[index]);
+  // Returns the `PopupInteractiveRowView` at line number `index`. Assumes that
+  // there is such a view at that line number - otherwise the underlying variant
+  // will check false.
+  PopupInteractiveRowView& GetPopupInteractiveRowViewAt(size_t index) {
+    if (auto* row = std::get_if<PopupRowView*>(&rows_[index])) {
+      return **row;
+    }
+    return *std::get<PopupInteractiveRowView*>(rows_[index]);
   }
-  const PopupRowView& GetPopupRowViewAt(size_t index) const {
-    return *std::get<PopupRowView*>(rows_[index]);
+  const PopupInteractiveRowView& GetPopupInteractiveRowViewAt(
+      size_t index) const {
+    if (auto* row = std::get_if<PopupRowView*>(&rows_[index])) {
+      return **row;
+    }
+    return *std::get<PopupInteractiveRowView*>(rows_[index]);
   }
+
+  // Returns the `PopupRowView` if a row at the line number `index` is of
+  // `PopupRowView` type, otherwise null.
+  PopupRowView* MaybeGetPopupRowViewAt(size_t index);
 
   void UpdateAccessibleStates() const;
 
   // Returns whether the row at `index` exists, is a `PopupRowView` and is
   // selectable.
-  bool HasSelectablePopupRowViewAt(size_t index) const;
+  bool HasSelectablePopupInteractiveRowViewAt(size_t index) const;
 
   PopupBnplFootnoteView* GetBnplFootnoteView() const;
 
