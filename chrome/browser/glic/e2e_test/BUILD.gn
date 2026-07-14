@@ -17,6 +17,7 @@ source_set("e2e_test_support") {
   sources = [
     "glic_e2e_test.cc",
     "glic_e2e_test.h",
+    "glic_e2e_test_symbol_reference.cc",
   ]
   if (checkout_glic_e2e_tests) {
     defines += [ "ENABLE_GLIC_INTERNAL_TESTS=1" ]

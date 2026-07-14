@@ -478,13 +478,4 @@ void GlicE2ETest::WebUiStateChanged(glic::mojom::WebUiState state) {
   }
 }
 
-namespace {
-// Ensure symbols needed by internal e2e tests remain available through
-// glic_e2e_test.h.
-[[maybe_unused]] void EnsureInternalSymbolsReferenced() {
-  (void)kGlicContentsElementId;
-  (void)kGlicHostElementId;
-}
-}  // namespace
-
 }  // namespace glic::test
