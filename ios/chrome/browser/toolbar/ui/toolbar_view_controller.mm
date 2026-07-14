@@ -25,6 +25,7 @@
 #import "ios/chrome/browser/shared/ui/util/util_swift.h"
 #import "ios/chrome/browser/toolbar/legacy/ui_bundled/banner_promo_view.h"
 #import "ios/chrome/browser/toolbar/legacy/ui_bundled/public/toolbar_constants.h"
+#import "ios/chrome/browser/toolbar/legacy/ui_bundled/public/toolbar_utils.h"
 #import "ios/chrome/browser/toolbar/legacy/ui_bundled/toolbar_progress_bar.h"
 #import "ios/chrome/browser/toolbar/tab_group/ui/tab_group_indicator_constants.h"
 #import "ios/chrome/browser/toolbar/tab_group/ui/tab_group_indicator_view.h"
@@ -767,8 +768,13 @@ const base::TimeDelta kProgressBarEndAnimationDuration =
   } else {
     locationBarExpandedHeight = kTopLocationBarIPhonePortraitHeight;
   }
+  CGFloat collapsedLocationBarHeight = kLocationBarHeightFullscreen;
+  if (IsAppBarHiddenInFullscreen() && !_topPosition) {
+    collapsedLocationBarHeight = ToolbarCollapsedHeight(
+        self.traitCollection.preferredContentSizeCategory);
+  }
   CGFloat locationBarHeight = progress * locationBarExpandedHeight +
-                              (1 - progress) * kLocationBarHeightFullscreen;
+                              (1 - progress) * collapsedLocationBarHeight;
   _locationBarHeightConstraint.constant = locationBarHeight;
   _locationBarBackground.layer.cornerRadius = locationBarHeight / 2.0;
   _locationBarContainer.layer.cornerRadius = locationBarHeight / 2.0;

@@ -638,6 +638,11 @@ inline LayoutStateToolbarPassKey PassKey() {
       return 0.0;
     }
     if ([self isToolbarPositionBottom]) {
+      if (IsAppBarHiddenInFullscreen() &&
+          _layoutState.appBarPosition == AppBarPosition::kBottom) {
+        return ToolbarCollapsedHeight(
+            self.traitEnvironment.traitCollection.preferredContentSizeCategory);
+      }
       return kToolbarHeightFullscreen;
     }
     return 0.0;
