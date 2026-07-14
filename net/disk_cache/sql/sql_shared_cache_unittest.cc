@@ -47,7 +47,7 @@ class SqlSharedCacheTest : public testing::TestWithParam<bool> {
          base::TaskShutdownBehavior::BLOCK_SHUTDOWN}));
     store_ = std::make_unique<SqlPersistentStore>(
         temp_dir_.GetPath(), 1024 * 1024, net::DISK_CACHE, task_runners_,
-        async_task_manager_);
+        async_task_manager_, /*cleanup_tracker=*/nullptr);
   }
 
   void TearDown() override {

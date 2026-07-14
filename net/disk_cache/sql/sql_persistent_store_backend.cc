@@ -16,6 +16,7 @@
 #include "base/debug/dump_without_crashing.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -3186,6 +3187,11 @@ SqlPersistentStore::Backend::MaybeRunIncrementalVacuumInternal(
         std::min(pages_vacuumed + page_count_to_vacuum, freelist_count);
   }
   return Error::kOk;
+}
+
+void SqlPersistentStore::Backend::Close() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  db_.Close();
 }
 
 base::FilePath SqlPersistentStore::Backend::GetDatabaseFilePath() const {

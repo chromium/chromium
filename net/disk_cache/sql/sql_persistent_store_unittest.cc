@@ -99,7 +99,7 @@ class SqlPersistentStoreTestBase : public testing::Test {
         GetTempPath(), max_bytes, net::CacheType::DISK_CACHE,
         std::vector<scoped_refptr<base::SequencedTaskRunner>>(
             background_task_runners_),
-        async_task_manager_);
+        async_task_manager_, /*cleanup_tracker=*/nullptr);
   }
 
   // Initializes the store and waits for the operation to complete.
@@ -858,7 +858,7 @@ TEST_P(SqlPersistentStoreTest, InitFailsWithCreationDirectoryFailure) {
       db_dir_path, kDefaultMaxBytes, net::CacheType::DISK_CACHE,
       std::vector<scoped_refptr<base::SequencedTaskRunner>>(
           background_task_runners_),
-      async_task_manager_);
+      async_task_manager_, /*cleanup_tracker=*/nullptr);
   ASSERT_EQ(Init(), SqlPersistentStore::Error::kFailedToCreateDirectory);
 }
 
@@ -4564,7 +4564,7 @@ int SqlPersistentStoreTestBase::GetNumberForWritesRequiredForCheckpoint(
       temp_dir.GetPath(), kDefaultMaxBytes, net::CacheType::DISK_CACHE,
       std::vector<scoped_refptr<base::SequencedTaskRunner>>(
           background_task_runners_),
-      async_task_manager_);
+      async_task_manager_, /*cleanup_tracker=*/nullptr);
   CHECK_EQ(Init(), SqlPersistentStore::Error::kOk);
 
   const base::FilePath db_path =
@@ -4667,7 +4667,7 @@ void SqlPersistentStoreTestBase::RunWalCheckpointTest(bool serial_checkpoint,
       GetTempPath(), kDefaultMaxBytes, net::CacheType::DISK_CACHE,
       std::vector<scoped_refptr<base::SequencedTaskRunner>>(
           background_task_runners_),
-      async_task_manager_);
+      async_task_manager_, /*cleanup_tracker=*/nullptr);
   CHECK_EQ(Init(), SqlPersistentStore::Error::kOk);
   const base::FilePath db_path = GetDatabaseFilePath();
   int64_t previous_db_size = CheckedGetFileSize(db_path);

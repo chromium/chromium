@@ -41,6 +41,7 @@
 #include "build/build_config.h"
 #include "net/base/cache_type.h"
 #include "net/base/completion_once_callback.h"
+#include "net/base/features.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
 #include "net/base/request_priority.h"
@@ -517,6 +518,68 @@ void DiskCacheBackendTest::BackendBasics() {
 
 TEST_P(DiskCacheGenericBackendTest, Basics) {
   BackendBasics();
+}
+
+TEST_P(DiskCacheGenericBackendTest, CreateBackendDoubleHttpCache) {
+#if BUILDFLAG(IS_ANDROID)
+  // Android does not support creating blockfile caches via CacheCreator.
+  if (backend_to_test_ == BackendToTest::kBlockfile) {
+    return;
+  }
+#endif
+
+  ASSERT_TRUE(CleanupCacheDir());
+
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      net::features::kEnableBackendCleanupTrackerOnHttpCache);
+
+  ASSERT_EQ(net::DISK_CACHE, type_);
+
+  net::BackendType backend_type = net::CACHE_BACKEND_DEFAULT;
+  switch (backend_to_test_) {
+    case BackendToTest::kBlockfile:
+      backend_type = net::CACHE_BACKEND_BLOCKFILE;
+      break;
+    case BackendToTest::kSimple:
+      backend_type = net::CACHE_BACKEND_SIMPLE;
+      break;
+    case BackendToTest::kMemory:
+      return;
+#if BUILDFLAG(ENABLE_DISK_CACHE_SQL_BACKEND)
+    case BackendToTest::kSql:
+      backend_type = net::CACHE_BACKEND_EXPERIMENTAL_SQL;
+      break;
+#endif
+  }
+
+  TestBackendResultCompletionCallback cb, cb2;
+
+  disk_cache::BackendResult rv = disk_cache::CreateCacheBackend(
+      type_, backend_type, /*file_operations=*/nullptr, cache_path_, 0,
+      disk_cache::ResetHandling::kNeverReset,
+      /*net_log=*/nullptr, /*cache_encryption_delegate=*/nullptr,
+      cb.callback());
+
+  disk_cache::BackendResult rv2 = disk_cache::CreateCacheBackend(
+      type_, backend_type, /*file_operations=*/nullptr, cache_path_, 0,
+      disk_cache::ResetHandling::kNeverReset,
+      /*net_log=*/nullptr, /*cache_encryption_delegate=*/nullptr,
+      cb2.callback());
+
+  rv = cb.GetResult(std::move(rv));
+  EXPECT_THAT(rv.net_error, IsOk());
+  EXPECT_TRUE(rv.backend);
+
+  EXPECT_EQ(net::ERR_IO_PENDING, rv2.net_error);
+  EXPECT_FALSE(rv2.backend);
+  EXPECT_FALSE(cb2.have_result());
+
+  rv.backend.reset();
+
+  rv2 = cb2.GetResult(std::move(rv2));
+  EXPECT_THAT(rv2.net_error, IsOk());
+  EXPECT_TRUE(rv2.backend);
 }
 
 TEST_F(DiskCacheBackendTest, NewEvictionBasics) {

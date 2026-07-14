@@ -24,6 +24,7 @@
 #include "base/types/strong_alias.h"
 #include "net/base/net_errors.h"
 #include "net/base/net_export.h"
+#include "net/disk_cache/backend_cleanup_tracker.h"
 #include "net/disk_cache/buildflags.h"
 #include "net/disk_cache/disk_cache.h"
 #include "net/disk_cache/sql/cache_entry_key.h"
@@ -44,6 +45,7 @@ class SequencedTaskRunner;
 
 namespace disk_cache {
 
+class BackendCleanupTracker;
 class SqlEntryImpl;
 
 // Provides a concrete implementation of the disk cache backend that stores
@@ -75,7 +77,8 @@ class NET_EXPORT_PRIVATE SqlBackendImpl final : public Backend {
 
   SqlBackendImpl(const base::FilePath& path,
                  int64_t max_bytes,
-                 net::CacheType cache_type);
+                 net::CacheType cache_type,
+                 scoped_refptr<BackendCleanupTracker> cleanup_tracker);
 
   SqlBackendImpl(const SqlBackendImpl&) = delete;
   SqlBackendImpl& operator=(const SqlBackendImpl&) = delete;
@@ -516,6 +519,8 @@ class NET_EXPORT_PRIVATE SqlBackendImpl final : public Backend {
       SqlPersistentStore::EntryInfo& entry_info);
 
   SqlAsyncTaskManager async_task_manager_;
+
+  scoped_refptr<BackendCleanupTracker> cleanup_tracker_;
 
   const base::FilePath path_;
 

@@ -485,8 +485,8 @@ void DiskCacheTestWithCache::CreateBackend(uint32_t flags) {
 #if BUILDFLAG(ENABLE_DISK_CACHE_SQL_BACKEND)
   if (backend_to_test_ == BackendToTest::kSql) {
     net::TestCompletionCallback cb;
-    auto sql_backend =
-        std::make_unique<disk_cache::SqlBackendImpl>(cache_path_, size_, type_);
+    auto sql_backend = std::make_unique<disk_cache::SqlBackendImpl>(
+        cache_path_, size_, type_, /*cleanup_tracker=*/nullptr);
     sql_backend->Init(cb.callback());
     ASSERT_THAT(cb.WaitForResult(), IsOk());
     sql_cache_impl_ = sql_backend.get();

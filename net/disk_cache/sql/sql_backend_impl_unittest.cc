@@ -115,13 +115,15 @@ class SqlBackendImplTest : public testing::Test {
 
   std::unique_ptr<SqlBackendImpl> CreateBackend() {
     return std::make_unique<SqlBackendImpl>(
-        temp_dir_.GetPath(), kDefaultMaxBytes, net::CacheType::DISK_CACHE);
+        temp_dir_.GetPath(), kDefaultMaxBytes, net::CacheType::DISK_CACHE,
+        /*cleanup_tracker=*/nullptr);
   }
 
   std::unique_ptr<SqlBackendImpl> CreateBackendAndInit(
       int64_t max_bytes = kDefaultMaxBytes) {
     auto backend = std::make_unique<SqlBackendImpl>(
-        temp_dir_.GetPath(), max_bytes, net::CacheType::DISK_CACHE);
+        temp_dir_.GetPath(), max_bytes, net::CacheType::DISK_CACHE,
+        /*cleanup_tracker=*/nullptr);
     base::test::TestFuture<int> future;
     backend->Init(future.GetCallback());
     CHECK_EQ(future.Get(), net::OK);
@@ -393,7 +395,8 @@ TEST_F(SqlBackendImplTest, InitWithFailedToCreateDirectory) {
   ASSERT_TRUE(base::WriteFile(cache_dir, ""));
 
   auto backend = std::make_unique<SqlBackendImpl>(cache_dir, kDefaultMaxBytes,
-                                                  net::CacheType::DISK_CACHE);
+                                                  net::CacheType::DISK_CACHE,
+                                                  /*cleanup_tracker=*/nullptr);
   base::test::TestFuture<int> future;
   backend->Init(future.GetCallback());
   ASSERT_EQ(future.Get(), net::ERR_FAILED);
@@ -1405,7 +1408,7 @@ TEST_F(SqlBackendImplTest, DoomedEntriesCleanup) {
     SqlAsyncTaskManager async_task_manager;
     auto store = std::make_unique<SqlPersistentStore>(
         temp_dir_.GetPath(), kDefaultMaxBytes, net::CacheType::DISK_CACHE,
-        task_runners, async_task_manager);
+        task_runners, async_task_manager, /*cleanup_tracker=*/nullptr);
 
     base::test::TestFuture<disk_cache::SqlPersistentStore::Error> future_init;
     store->Initialize(future_init.GetCallback());
@@ -2234,7 +2237,7 @@ void SqlBackendImplTest::RunDelayedPostInitializationTasksTest() {
     SqlAsyncTaskManager async_task_manager;
     auto store = std::make_unique<SqlPersistentStore>(
         temp_dir_.GetPath(), kDefaultMaxBytes, net::CacheType::DISK_CACHE,
-        task_runners, async_task_manager);
+        task_runners, async_task_manager, /*cleanup_tracker=*/nullptr);
 
     base::test::TestFuture<disk_cache::SqlPersistentStore::Error> future_init;
     store->Initialize(future_init.GetCallback());

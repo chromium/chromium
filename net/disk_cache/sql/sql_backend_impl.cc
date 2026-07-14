@@ -36,6 +36,7 @@
 #include "net/base/features.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
+#include "net/disk_cache/backend_cleanup_tracker.h"
 #include "net/disk_cache/cache_util.h"
 #include "net/disk_cache/sql/sql_async_task_token.h"
 #include "net/disk_cache/sql/sql_entry_impl.h"
@@ -395,17 +396,21 @@ class SqlBackendImpl::IteratorImpl : public Backend::Iterator {
   base::WeakPtrFactory<IteratorImpl> weak_factory_{this};
 };
 
-SqlBackendImpl::SqlBackendImpl(const base::FilePath& path,
-                               int64_t max_bytes,
-                               net::CacheType cache_type)
+SqlBackendImpl::SqlBackendImpl(
+    const base::FilePath& path,
+    int64_t max_bytes,
+    net::CacheType cache_type,
+    scoped_refptr<BackendCleanupTracker> cleanup_tracker)
     : Backend(cache_type),
+      cleanup_tracker_(std::move(cleanup_tracker)),
       path_(path),
       background_task_runners_(CreateTaskRunners()),
       store_(std::make_unique<SqlPersistentStore>(path,
                                                   max_bytes > 0 ? max_bytes : 0,
                                                   GetCacheType(),
                                                   background_task_runners_,
-                                                  async_task_manager_)),
+                                                  async_task_manager_,
+                                                  cleanup_tracker_)),
       optimistic_write_buffer_monitor_(
           net::features::kSqlDiskCacheOptimisticWriteBufferSize.Get()),
       write_buffer_monitor_(

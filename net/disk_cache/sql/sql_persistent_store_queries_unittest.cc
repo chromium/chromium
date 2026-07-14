@@ -58,7 +58,7 @@ class SqlPersistentStoreQueriesTest : public testing::Test {
         path, kDefaultMaxBytes, net::CacheType::DISK_CACHE,
         std::vector<scoped_refptr<base::SequencedTaskRunner>>(
             {background_task_runner}),
-        async_task_manager_);
+        async_task_manager_, /*cleanup_tracker=*/nullptr);
 
     base::test::TestFuture<disk_cache::SqlPersistentStore::Error> future;
     store->Initialize(future.GetCallback());

@@ -951,6 +951,10 @@ NET_EXPORT BASE_DECLARE_FEATURE_PARAM(int, kCacheCertVerificationTtlSecs);
 // deployed.
 NET_EXPORT BASE_DECLARE_FEATURE(kTlsGreaseSigalgs);
 
+// Enables the BackendCleanupTracker for HTTP cache backends (net::DISK_CACHE)
+// to prevent conflicts when multiple backends are created for the same path.
+NET_EXPORT BASE_DECLARE_FEATURE(kEnableBackendCleanupTrackerOnHttpCache);
+
 }  // namespace net::features
 
 #endif  // NET_BASE_FEATURES_H_

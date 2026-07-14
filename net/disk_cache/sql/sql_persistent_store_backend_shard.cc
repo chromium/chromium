@@ -10,6 +10,8 @@
 
 #include "base/check.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
@@ -19,6 +21,7 @@
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "net/base/features.h"
+#include "net/disk_cache/backend_cleanup_tracker.h"
 #include "net/disk_cache/memory_entry_data_hints.h"
 #include "net/disk_cache/sql/eviction_candidate_aggregator.h"
 #include "net/disk_cache/sql/sql_backend_constants.h"
@@ -32,16 +35,22 @@ SqlPersistentStore::BackendShard::BackendShard(
     net::CacheType type,
     scoped_refptr<SqlReadCacheMemoryMonitor> read_cache_memory_monitor,
     scoped_refptr<base::SequencedTaskRunner> background_task_runner,
-    SqlAsyncTaskManager& async_task_manager)
+    SqlAsyncTaskManager& async_task_manager,
+    scoped_refptr<BackendCleanupTracker> cleanup_tracker)
     : async_task_manager_(async_task_manager),
       backend_(background_task_runner,
                async_task_manager,
                shard_id,
                path,
                type,
-               std::move(read_cache_memory_monitor)) {}
+               std::move(read_cache_memory_monitor)),
+      cleanup_tracker_(std::move(cleanup_tracker)) {}
 
-SqlPersistentStore::BackendShard::~BackendShard() = default;
+SqlPersistentStore::BackendShard::~BackendShard() {
+  backend_.AsyncCall(&SqlPersistentStore::Backend::Close)
+      .Then(base::OnceClosure(
+          base::DoNothingWithBoundArgs(std::move(cleanup_tracker_))));
+}
 
 // Kicks off the asynchronous initialization of the backend.
 void SqlPersistentStore::BackendShard::Initialize(

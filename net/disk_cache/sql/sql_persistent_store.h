@@ -20,6 +20,7 @@
 #include "base/types/strong_alias.h"
 #include "net/base/cache_type.h"
 #include "net/base/net_export.h"
+#include "net/disk_cache/backend_cleanup_tracker.h"
 #include "net/disk_cache/buildflags.h"
 #include "net/disk_cache/disk_cache.h"
 #include "net/disk_cache/sql/cache_entry_key.h"
@@ -42,6 +43,7 @@ class IOBuffer;
 
 namespace disk_cache {
 
+class BackendCleanupTracker;
 class SqlAsyncTaskManager;
 
 // This class serves as the main entry point for the SQL-based disk cache's
@@ -347,7 +349,8 @@ class NET_EXPORT_PRIVATE SqlPersistentStore {
                      net::CacheType type,
                      std::vector<scoped_refptr<base::SequencedTaskRunner>>
                          background_task_runners,
-                     SqlAsyncTaskManager& async_task_manager);
+                     SqlAsyncTaskManager& async_task_manager,
+                     scoped_refptr<BackendCleanupTracker> cleanup_tracker);
   ~SqlPersistentStore();
 
   SqlPersistentStore(const SqlPersistentStore&) = delete;
@@ -698,7 +701,8 @@ class NET_EXPORT_PRIVATE SqlPersistentStore {
       net::CacheType type,
       std::vector<scoped_refptr<base::SequencedTaskRunner>>
           background_task_runners,
-      SqlAsyncTaskManager& async_task_manager);
+      SqlAsyncTaskManager& async_task_manager,
+      scoped_refptr<BackendCleanupTracker> cleanup_tracker);
 
   void OnInitializeFinished(ErrorCallback callback,
                             std::vector<InitResultOrError> results);

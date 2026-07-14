@@ -925,4 +925,7 @@ BASE_FEATURE_PARAM(int,
 
 BASE_FEATURE(kTlsGreaseSigalgs, base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kEnableBackendCleanupTrackerOnHttpCache,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 }  // namespace net::features

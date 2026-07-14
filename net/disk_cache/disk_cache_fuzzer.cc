@@ -1238,7 +1238,8 @@ void DiskCacheLPMFuzzer::CreateBackend(
       MAYBE_PRINT << "Using SQL cache" << std::endl;
       std::unique_ptr<disk_cache::SqlBackendImpl> cache =
           std::make_unique<disk_cache::SqlBackendImpl>(
-              cache_path_, ComputeMaxSize(maybe_max_size), type);
+              cache_path_, ComputeMaxSize(maybe_max_size), type,
+              std::move(cleanup_tracker));
       sql_cache_impl_ = cache.get();
       cache_ = std::move(cache);
       net::TestCompletionCallback cb;

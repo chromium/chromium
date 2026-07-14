@@ -183,6 +183,9 @@ class SqlPersistentStore::Backend {
   bool MaybeRunIncrementalVacuum(
       scoped_refptr<base::RefCountedData<std::atomic_bool>> abort_flag);
 
+  // Closes the database.
+  void Close();
+
   void EnableStrictCorruptionCheckForTesting() {
     strict_corruption_check_enabled_ = true;
   }
