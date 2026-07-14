@@ -2492,7 +2492,9 @@ TEST_F(ContextualSearchboxHandlerTestTabsTest, ClearFiles_KeepTabs) {
               StartFileUploadFlow(testing::_, testing::NotNull(), testing::_))
       .WillOnce([&](const base::UnguessableToken& token, auto, auto) {
         tab_token = token;
-        query_controller().AddTabFileInfoForTesting(token, sample_url);
+        query_controller().AddTabFileInfoForTesting(
+            token, sample_url, lens::MimeType::kAnnotatedPageContent,
+            SessionID::FromSerializedValue(sample_tab_id));
       });
   EXPECT_CALL(mock_searchbox_page_, OnInputStateChanged).Times(2);
   base::MockCallback<ComposeboxHandler::AddTabContextCallback> tab_callback;
@@ -2506,10 +2508,15 @@ TEST_F(ContextualSearchboxHandlerTestTabsTest, ClearFiles_KeepTabs) {
   handler().ClearFiles(/*should_block_auto_suggested_tabs=*/false,
                        /*query_submitted=*/true);
 
-  // Verify only tab token remains, file token was cleared:
-  auto remaining_tokens = handler().GetUploadedContextTokens();
-  EXPECT_EQ(remaining_tokens.size(), 1u);
-  EXPECT_EQ(remaining_tokens[0], tab_token);
+  // Verify all uploaded tokens are cleared:
+  EXPECT_EQ(handler().GetUploadedContextTokens().size(), 0u);
+
+  // Verify tab token remains in submitted tabs:
+  const auto& submitted_tabs = contextual_session_handle_->submitted_tabs();
+  EXPECT_EQ(submitted_tabs.size(), 1u);
+  auto it = submitted_tabs.find(SessionID::FromSerializedValue(sample_tab_id));
+  ASSERT_NE(it, submitted_tabs.end());
+  EXPECT_EQ(it->second.first, tab_token);
 }
 
 TEST_F(ContextualSearchboxHandlerTestTabsTest,
@@ -2561,7 +2568,9 @@ TEST_F(ContextualSearchboxHandlerTestTabsTest,
               StartFileUploadFlow(testing::_, testing::NotNull(), testing::_))
       .WillOnce([&](const base::UnguessableToken& token, auto, auto) {
         tab_token = token;
-        query_controller().AddTabFileInfoForTesting(token, sample_url);
+        query_controller().AddTabFileInfoForTesting(
+            token, sample_url, lens::MimeType::kAnnotatedPageContent,
+            SessionID::FromSerializedValue(sample_tab_id));
       });
   EXPECT_CALL(mock_searchbox_page_, OnInputStateChanged).Times(2);
   base::MockCallback<ComposeboxHandler::AddTabContextCallback> tab_callback;
