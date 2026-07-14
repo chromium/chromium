@@ -681,7 +681,14 @@ bool VerticalTabStripRegionView::IsCollapsing() {
 
 void VerticalTabStripRegionView::RequestCollapse(bool collapse) {
   target_collapse_state_.collapsed = collapse;
-  CHECK(tab_strip_view_);
+  // Do not trigger the animation before tab_strip_view_ is set, as the region
+  // view only subscribes to animation updates once tab_strip_view_ has been
+  // attached. target_collapse_state_ is still set so that when
+  // SetTabStripView() is eventually called, the region view and all child
+  // views initialize directly in the target collapse state.
+  if (!tab_strip_view_) {
+    return;
+  }
   const auto motion =
       collapse ? TabStripAnimations::kCollapse : TabStripAnimations::kExpand;
   BrowserAnimationController::From(browser_view_->browser())
