@@ -10,35 +10,39 @@
 #import "ios/chrome/browser/content_suggestions/ui/content_suggestions_collection_utils.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_framing_coordinates.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_image_view.h"
+#import "ios/chrome/browser/lens/ui_bundled/lens_availability.h"
 #import "ios/chrome/browser/ntp/search_engine_logo/ui/search_engine_logo_state.h"
 #import "ios/chrome/browser/ntp/ui_bundled/fake_location_bar_view.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_bottom_sheet_view_controller.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_color_palette.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_content_delegate.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_header_commands.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_header_view.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_image_background_trait.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_mutator.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_shortcuts_handler.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_trait.h"
 #import "ios/chrome/browser/ntp/ui_bundled/ntp_identity_disc_button.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/ui/elements/extended_touch_target_button.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
+#import "ios/chrome/common/NSString+Chromium.h"
+#import "ios/chrome/common/material_timing.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
+#import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 
 namespace {
 // Animation duration for wallpaper transition.
 constexpr CGFloat kBackgroundImageAnimationDuration = 0.25;
 
-// Height of the fake omnibox / location bar.
-constexpr CGFloat kFakeLocationBarHeight = 56.0;
-
 // Spacing between fake omnibox and most visited tiles (MVTs) container.
 constexpr CGFloat kOmniboxToMVTSpacing = 16.0;
 
 // Spacing between the Google logo and the fake location bar.
 constexpr CGFloat kLogoToOmniboxSpacing = 24.0;
-
-// Margin for elements on the leading/trailing edges of the screen.
-constexpr CGFloat kHorizontalMargin = 16.0;
 
 // Spacing from the top of the bottom sheet to the omnibox when expanded.
 constexpr CGFloat kExpandedSheetOmniboxTopMargin = 16.0;
@@ -56,7 +60,41 @@ constexpr CGFloat kLogoTopMargin = 40.0;
 // Width dimensions for Doodle and Google logo layouts.
 constexpr CGFloat kDoodleLogoWidth = 320.0;
 constexpr CGFloat kGoogleLogoWidth = 170.0;
+
+// Fakebox layout constants.
+constexpr CGFloat kFakeboxImageSize = 20.0;
+constexpr CGFloat kIconDividerHeight = 13.0;
+constexpr CGFloat kButtonSpacing = 9.0;
+constexpr CGFloat kHintLabelFakeboxTrailingSpace = 12.0f;
+constexpr CGFloat kEndButtonFakeboxTrailingSpace = 13.0f;
+constexpr CGFloat kEndButtonNormalSizeFakeboxWithBadgeTrailingSpace = 7.0f;
+
+constexpr CGFloat kHintLabelFakeboxLeadingSpaceWithIcon = 42.0;
+constexpr CGFloat kHintLabelFakeboxLeadingSpaceWithPlus = 46.0;
+constexpr CGFloat kFakeboxImageLeadingSpace = 13.0;
+constexpr CGFloat kFakeboxPlusLeadingSpace = 18.0;
+
+// Vertical visual alignment nudges for fakebox elements.
+constexpr CGFloat kLogoViewYOffset = 1.0;
+constexpr CGFloat kHintLabelYOffset = -1.0;
 }  // namespace
+
+@interface NTPRedesignTouchAreaOverflowStackView : UIStackView
+@end
+
+@implementation NTPRedesignTouchAreaOverflowStackView
+
+- (BOOL)pointInside:(CGPoint)point withEvent:(UIEvent*)event {
+  for (UIView* subview in self.arrangedSubviews) {
+    CGPoint convertedPoint = [self convertPoint:point toView:subview];
+    if ([subview pointInside:convertedPoint withEvent:event]) {
+      return YES;
+    }
+  }
+  return NO;
+}
+
+@end
 
 @interface NewTabPageRedesignViewController () <
     NewTabPageBottomSheetViewControllerDelegate>
@@ -64,6 +102,9 @@ constexpr CGFloat kGoogleLogoWidth = 170.0;
 // Properties conformed to by `NewTabPageConsumer`
 @property(nonatomic, assign, readwrite) CGFloat collectionShiftingOffset;
 @property(nonatomic, assign, readwrite) BOOL scrolledToMinimumHeight;
+
+// Private helpers
+- (void)handleTraitChanges;
 
 @end
 
@@ -85,6 +126,29 @@ constexpr CGFloat kGoogleLogoWidth = 170.0;
   NSString* _avatarName;
   NSString* _avatarEmail;
   BOOL _avatarImageLoaded;
+
+  // Fake omnibox subviews and state
+  NTPRedesignTouchAreaOverflowStackView* _buttonStack;
+  ExtendedTouchTargetButton* _voiceSearchButton;
+  ExtendedTouchTargetButton* _lensButton;
+  ExtendedTouchTargetButton* _plusButton;
+  UIView* _voiceAndLensDivider;
+  UIImageView* _logoView;
+  UILabel* _hintLabel;
+  UIImage* _dseLogo;
+  BOOL _voiceSearchIsEnabled;
+  NSString* _defaultSearchEngineName;
+  BOOL _isGoogleDefaultSearchEngine;
+  BOOL _isAIMAllowed;
+  BOOL _fuseboxEligible;
+  BOOL _didNotifyLensBadgeDisplay;
+  BOOL _lensButtonWithNewBadgeTapped;
+  NSLayoutConstraint* _fakeLocationBarWidthConstraint;
+  NSLayoutConstraint* _fakeLocationBarHeightConstraint;
+  __weak UIView* _leadingView;
+  NSLayoutConstraint* _leadingViewConstraint;
+  NSLayoutConstraint* _hintLabelLeadingConstraint;
+  NSLayoutConstraint* _hintLabelTrailingConstraint;
 }
 
 - (void)viewDidLoad {
@@ -104,6 +168,9 @@ constexpr CGFloat kGoogleLogoWidth = 170.0;
   [self.view addSubview:_bottomSheetViewController.view];
   [_bottomSheetViewController didMoveToParentViewController:self];
 
+  _defaultSearchEngineName = @"Google";
+  _isGoogleDefaultSearchEngine = YES;
+
   // Add fake location bar.
   _fakeLocationBar = [[FakeLocationBarView alloc] init];
   _fakeLocationBar.translatesAutoresizingMaskIntoConstraints = NO;
@@ -114,43 +181,29 @@ constexpr CGFloat kGoogleLogoWidth = 170.0;
   _fakeLocationBar.accessibilityIdentifier = @"ntp-redesign-fake-omnibox";
   [self.view addSubview:_fakeLocationBar];
 
-  // Add search icon and placeholder text inside the fake location bar.
-  UIImage* searchIconImage =
-      DefaultSymbolTemplateWithPointSize(kMagnifyingglassSymbol, 18);
-  UIImageView* searchIcon = [[UIImageView alloc] initWithImage:searchIconImage];
-  searchIcon.translatesAutoresizingMaskIntoConstraints = NO;
-  searchIcon.tintColor = [UIColor colorNamed:kTextfieldPlaceholderColor];
-  [_fakeLocationBar addSubview:searchIcon];
-
-  UILabel* hintLabel = [[UILabel alloc] init];
-  hintLabel.translatesAutoresizingMaskIntoConstraints = NO;
-  hintLabel.textColor = [UIColor colorNamed:kTextfieldPlaceholderColor];
-  hintLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
-  [_fakeLocationBar addSubview:hintLabel];
+  _hintLabel = [[UILabel alloc] init];
+  _hintLabel.translatesAutoresizingMaskIntoConstraints = NO;
+  _hintLabel.textColor = [UIColor colorNamed:kTextfieldPlaceholderColor];
+  _hintLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
+  _hintLabel.adjustsFontSizeToFitWidth = YES;
+  _hintLabel.minimumScaleFactor = 0.57;
+  _hintLabel.isAccessibilityElement = NO;
+  [_hintLabel
+      setContentCompressionResistancePriority:UILayoutPriorityDefaultLow
+                                      forAxis:UILayoutConstraintAxisHorizontal];
+  [_fakeLocationBar addSubview:_hintLabel];
 
   [NSLayoutConstraint activateConstraints:@[
-    [searchIcon.leadingAnchor
-        constraintEqualToAnchor:_fakeLocationBar.leadingAnchor
-                       constant:16],
-    [searchIcon.centerYAnchor
-        constraintEqualToAnchor:_fakeLocationBar.centerYAnchor],
-    [searchIcon.widthAnchor constraintEqualToConstant:18],
-    [searchIcon.heightAnchor constraintEqualToConstant:18],
-
-    [hintLabel.leadingAnchor constraintEqualToAnchor:searchIcon.trailingAnchor
-                                            constant:8],
-    [hintLabel.trailingAnchor
-        constraintEqualToAnchor:_fakeLocationBar.trailingAnchor
-                       constant:-16],
-    [hintLabel.centerYAnchor
-        constraintEqualToAnchor:_fakeLocationBar.centerYAnchor],
+    [_hintLabel.centerYAnchor constraintEqualToAnchor:_fakeLocationBar.centerYAnchor
+                                             constant:kHintLabelYOffset],
   ]];
 
-  // Set initial accessibility label for fake location bar.
-  NSString* askGoogleString = l10n_util::GetNSStringF(
-      IDS_OMNIBOX_EMPTY_ASK_HINT_WITH_DSE_NAME, std::u16string(u"Google"));
-  _fakeLocationBar.accessibilityLabel = askGoogleString;
-  hintLabel.text = askGoogleString;
+  _buttonStack = [[NTPRedesignTouchAreaOverflowStackView alloc] init];
+  _buttonStack.translatesAutoresizingMaskIntoConstraints = NO;
+  _buttonStack.alignment = UIStackViewAlignmentCenter;
+  _buttonStack.spacing = kButtonSpacing;
+  _buttonStack.layoutMarginsRelativeArrangement = YES;
+  [_fakeLocationBar addSubview:_buttonStack];
 
   [_fakeLocationBar applyBackgroundTheme];
   [_fakeLocationBar updateColorsWithProgress:0.0 colorPalette:nil];
@@ -165,17 +218,22 @@ constexpr CGFloat kGoogleLogoWidth = 170.0;
   _fakeLocationBarTopConstraint = [_fakeLocationBar.topAnchor
       constraintEqualToAnchor:self.view.topAnchor
                      constant:[self centeredFakeOmniboxTop]];
+  _fakeLocationBarWidthConstraint = [_fakeLocationBar.widthAnchor
+      constraintEqualToConstant:[self fakeLocationBarWidth]];
+  _fakeLocationBarHeightConstraint = [_fakeLocationBar.heightAnchor
+      constraintEqualToConstant:content_suggestions::FakeOmniboxHeight()];
 
   [NSLayoutConstraint activateConstraints:@[
     _fakeLocationBarTopConstraint,
-    [_fakeLocationBar.leadingAnchor
-        constraintEqualToAnchor:self.view.leadingAnchor
-                       constant:kHorizontalMargin],
-    [_fakeLocationBar.trailingAnchor
-        constraintEqualToAnchor:self.view.trailingAnchor
-                       constant:-kHorizontalMargin],
-    [_fakeLocationBar.heightAnchor
-        constraintEqualToConstant:kFakeLocationBarHeight],
+    [_fakeLocationBar.centerXAnchor
+        constraintEqualToAnchor:self.view.centerXAnchor],
+    _fakeLocationBarWidthConstraint,
+    _fakeLocationBarHeightConstraint,
+
+    [_buttonStack.trailingAnchor
+        constraintEqualToAnchor:_fakeLocationBar.trailingAnchor],
+    [_buttonStack.centerYAnchor
+        constraintEqualToAnchor:_fakeLocationBar.centerYAnchor],
 
     [_mostVisitedContainerView.topAnchor
         constraintEqualToAnchor:_fakeLocationBar.bottomAnchor
@@ -185,7 +243,10 @@ constexpr CGFloat kGoogleLogoWidth = 170.0;
     [_mostVisitedContainerView.widthAnchor
         constraintEqualToAnchor:_fakeLocationBar.widthAnchor],
   ]];
-  _fakeLocationBar.layer.cornerRadius = kFakeLocationBarHeight / 2.0;
+  _fakeLocationBar.layer.cornerRadius =
+      _fakeLocationBarHeightConstraint.constant / 2.0;
+
+  [self refreshFakeboxContent];
 
   if (_mostVisitedViewController) {
     [self embedMostVisitedViewController];
@@ -194,15 +255,6 @@ constexpr CGFloat kGoogleLogoWidth = 170.0;
   if (_searchEngineLogoView) {
     [self addSearchEngineLogoView];
   }
-
-  __weak __typeof(self) weakSelf = self;
-  [self
-      registerForTraitChanges:
-          @[ UITraitHorizontalSizeClass.class, UITraitVerticalSizeClass.class ]
-                  withHandler:^(id<UITraitEnvironment> traitEnvironment,
-                                UITraitCollection* previousCollection) {
-                    [weakSelf updateLogoConstraints];
-                  }];
 
   // Add identity disc button.
   _identityDiscButton = [[NTPIdentityDiscButton alloc] init];
@@ -230,10 +282,25 @@ constexpr CGFloat kGoogleLogoWidth = 170.0;
       [_identityDiscButton setSignedOutAccountImage];
     }
   }
+  __weak __typeof(self) weakSelf = self;
+  [self registerForTraitChanges:@[
+    UITraitHorizontalSizeClass.class, UITraitVerticalSizeClass.class,
+    UITraitPreferredContentSizeCategory.class, UITraitUserInterfaceStyle.class
+  ]
+                    withHandler:^(id<UITraitEnvironment> traitEnvironment,
+                                  UITraitCollection* previousCollection) {
+                      [weakSelf handleTraitChanges];
+                    }];
 }
 
 - (void)viewDidLayoutSubviews {
   [super viewDidLayoutSubviews];
+  _fakeLocationBarWidthConstraint.constant = [self fakeLocationBarWidth];
+  _fakeLocationBarHeightConstraint.constant =
+      content_suggestions::FakeOmniboxHeight();
+  _fakeLocationBar.layer.cornerRadius =
+      _fakeLocationBarHeightConstraint.constant / 2.0;
+
   // Update fake omnibox top if the bottom sheet is not pushing it
   if (_bottomSheetViewController) {
     CGFloat currentTopOffset = _bottomSheetViewController.view.frame.origin.y;
@@ -242,10 +309,41 @@ constexpr CGFloat kGoogleLogoWidth = 170.0;
   }
 }
 
+#pragma mark - UIViewController Overrides
+
+- (void)viewDidAppear:(BOOL)animated {
+  [super viewDidAppear:animated];
+  self.viewDidAppear = YES;
+
+  if (_lensButton && self.useNewBadgeForLensButton &&
+      !_didNotifyLensBadgeDisplay) {
+    [self.mutator notifyLensBadgeDisplayed];
+    _didNotifyLensBadgeDisplay = YES;
+  }
+}
+
+#pragma mark - Private Helper
+
+- (void)handleTraitChanges {
+  [self updateLogoConstraints];
+  [self refreshFakeboxContent];
+}
+
+- (void)setUseNewBadgeForLensButton:(BOOL)useNewBadgeForLensButton {
+  if (_useNewBadgeForLensButton == useNewBadgeForLensButton) {
+    return;
+  }
+  _useNewBadgeForLensButton = useNewBadgeForLensButton;
+  if (self.isViewLoaded) {
+    [self refreshFakeboxContent];
+  }
+}
+
 - (void)invalidate {
   self.mutator = nil;
   self.searchEngineLogoView = nil;
   self.NTPContentDelegate = nil;
+  self.NTPShortcutsHandler = nil;
   self.mostVisitedViewController = nil;
   [self setFeedViewController:nil];
   [_bottomSheetViewController invalidate];
@@ -276,8 +374,9 @@ constexpr CGFloat kGoogleLogoWidth = 170.0;
   if (mvtHeight <= 0) {
     mvtHeight = kDefaultMVTHeightFallback;
   }
-  return [self centeredFakeOmniboxTop] + kFakeLocationBarHeight +
-         kOmniboxToMVTSpacing + mvtHeight + kRestingSheetMVTTopMargin;
+  return [self centeredFakeOmniboxTop] +
+         content_suggestions::FakeOmniboxHeight() + kOmniboxToMVTSpacing +
+         mvtHeight + kRestingSheetMVTTopMargin;
 }
 
 - (CGFloat)collapsedOffsetForBottomSheetViewController:
@@ -308,8 +407,8 @@ constexpr CGFloat kGoogleLogoWidth = 170.0;
     mvtHeight = kDefaultMVTHeightFallback;
   }
   CGFloat restingOffsetFromSheet =
-      -(kFakeLocationBarHeight + kOmniboxToMVTSpacing + mvtHeight +
-        kRestingSheetMVTTopMargin);
+      -(content_suggestions::FakeOmniboxHeight() + kOmniboxToMVTSpacing +
+        mvtHeight + kRestingSheetMVTTopMargin);
 
   // Spacing offset from sheet top: restingOffsetFromSheet when
   // resting/collapsed (above sheet), +16 pt when expanded (inside sheet)
@@ -377,10 +476,6 @@ constexpr CGFloat kGoogleLogoWidth = 170.0;
                         framingCoordinates:weakFramingCoordinates];
                   }
                   completion:nil];
-}
-
-- (void)setAIMAllowed:(BOOL)allowed {
-  // TODO(crbug.com/526677926): To be implemented in Phase 2.
 }
 
 #pragma mark - Setters
@@ -477,6 +572,7 @@ constexpr CGFloat kGoogleLogoWidth = 170.0;
 
 - (CGFloat)centeredFakeOmniboxTop {
   CGFloat screenHeight = self.view.bounds.size.height;
+  CGFloat fakeOmniboxHeight = content_suggestions::FakeOmniboxHeight();
   // During the initial view loading sequence (e.g. before initial layout pass
   // occurs), screen height bounds will be 0. We fallback to the dynamic
   // top-down logo offset to avoid negative constraint values during early
@@ -487,7 +583,7 @@ constexpr CGFloat kGoogleLogoWidth = 170.0;
         content_suggestions::DoodleHeight(_logoState, self.traitCollection);
     return safeAreaTop + kLogoTopMargin + logoHeight + kLogoToOmniboxSpacing;
   }
-  return (screenHeight - kFakeLocationBarHeight) * 0.5;
+  return (screenHeight - fakeOmniboxHeight) * 0.5;
 }
 
 #pragma mark - SearchEngineLogoConsumer
@@ -540,6 +636,304 @@ constexpr CGFloat kGoogleLogoWidth = 170.0;
 
 - (void)identityDiscButtonTapped:(UIButton*)sender {
   [self.headerCommandsHandler identityDiscWasTapped:sender];
+}
+
+#pragma mark - NewTabPageHeaderConsumer
+
+- (void)setVoiceSearchIsEnabled:(BOOL)voiceSearchIsEnabled {
+  if (_voiceSearchIsEnabled == voiceSearchIsEnabled) {
+    return;
+  }
+  _voiceSearchIsEnabled = voiceSearchIsEnabled;
+  [self refreshFakeboxContent];
+}
+
+- (void)setDefaultSearchEngineName:(NSString*)dseName {
+  if ([_defaultSearchEngineName isEqualToString:dseName]) {
+    return;
+  }
+  _defaultSearchEngineName = [dseName copy];
+  _isGoogleDefaultSearchEngine =
+      [_defaultSearchEngineName isEqualToString:@"Google"];
+  [self refreshFakeboxContent];
+}
+
+- (void)setDefaultSearchEngineImage:(UIImage*)image {
+  _dseLogo = image;
+  [self refreshFakeboxContent];
+}
+
+- (void)setAIMAllowed:(BOOL)allowed {
+  if (_isAIMAllowed == allowed) {
+    return;
+  }
+  _isAIMAllowed = allowed;
+  [self refreshFakeboxContent];
+}
+
+- (void)setFuseboxEligible:(BOOL)eligible {
+  if (_fuseboxEligible == eligible) {
+    return;
+  }
+  _fuseboxEligible = eligible;
+  [self refreshFakeboxContent];
+}
+
+- (void)setOmniboxInBottomPosition:(BOOL)isBottomOmnibox {
+  // No-op for redesign.
+}
+
+- (void)updateADPBadgeWithErrorFound:(BOOL)hasAccountError
+                                name:(NSString*)name
+                               email:(NSString*)email {
+  // No-op for redesign.
+}
+
+#pragma mark - FakeboxButtonsSnapshotProvider
+
+- (UIView*)fakeboxButtonsSnapshot {
+  return [_buttonStack snapshotViewAfterScreenUpdates:NO];
+}
+
+
+
+#pragma mark - Private Fakebox Helpers
+
+- (BOOL)shouldShowPlusButton {
+  return IsPlusButtonInFakeboxEnabled() && _isAIMAllowed && _fuseboxEligible;
+}
+
+- (CGFloat)fakeLocationBarWidth {
+  return content_suggestions::SearchFieldWidth(self.view.bounds.size.width,
+                                               self.traitCollection);
+}
+
+- (CGFloat)fakeboxLeadingSpace {
+  if ([self shouldShowPlusButton]) {
+    return kFakeboxPlusLeadingSpace;
+  }
+  return kFakeboxImageLeadingSpace;
+}
+
+- (CGFloat)hintLabelFakeboxLeadingSpace {
+  if ([self shouldShowPlusButton]) {
+    return kHintLabelFakeboxLeadingSpaceWithPlus;
+  }
+  return kHintLabelFakeboxLeadingSpaceWithIcon;
+}
+
+- (CGFloat)endButtonFakeboxTrailingSpace {
+  if (self.useNewBadgeForLensButton && !IsAimEnabledInNtp()) {
+    return kEndButtonNormalSizeFakeboxWithBadgeTrailingSpace;
+  }
+  return kEndButtonFakeboxTrailingSpace;
+}
+
+- (NSString*)placeholderText {
+  NSString* dseName = _defaultSearchEngineName ?: @"Google";
+  if (IsAIOmniboxAskPlaceholderEnabled() && _isGoogleDefaultSearchEngine) {
+    return l10n_util::GetNSStringF(IDS_OMNIBOX_EMPTY_ASK_HINT_WITH_DSE_NAME,
+                                   dseName.cr_UTF16String);
+  } else {
+    return l10n_util::GetNSStringF(IDS_OMNIBOX_EMPTY_HINT_WITH_DSE_NAME,
+                                   dseName.cr_UTF16String);
+  }
+}
+
+- (void)addVoiceAndLensDivider {
+  UIView* divider = [self createDivider];
+  _voiceAndLensDivider = divider;
+  [_buttonStack addArrangedSubview:divider];
+}
+
+- (UIView*)createDivider {
+  UIView* divider = [[UIView alloc] init];
+  divider.translatesAutoresizingMaskIntoConstraints = NO;
+  CGFloat dividerWidth = 1.0 / self.traitCollection.displayScale;
+
+  [NSLayoutConstraint activateConstraints:@[
+    [divider.heightAnchor constraintEqualToConstant:kIconDividerHeight],
+    [divider.widthAnchor constraintEqualToConstant:dividerWidth],
+  ]];
+
+  return divider;
+}
+
+- (void)refreshFakeboxContent {
+  if (!self.isViewLoaded) {
+    return;
+  }
+  // 1. Remove existing subviews and constraints.
+  [_plusButton removeFromSuperview];
+  [_logoView removeFromSuperview];
+  _plusButton = nil;
+  _logoView = nil;
+  _leadingView = nil;
+
+  _leadingViewConstraint.active = NO;
+  _leadingViewConstraint = nil;
+  _hintLabelLeadingConstraint.active = NO;
+  _hintLabelLeadingConstraint = nil;
+  _hintLabelTrailingConstraint.active = NO;
+  _hintLabelTrailingConstraint = nil;
+
+  for (UIView* view in _buttonStack.arrangedSubviews) {
+    [view removeFromSuperview];
+  }
+  _voiceSearchButton = nil;
+  _lensButton = nil;
+  _voiceAndLensDivider = nil;
+
+  // 2. Set up leading view.
+  UIView* leadingView = nil;
+  CGFloat leadingViewYOffset = 0;
+  if ([self shouldShowPlusButton]) {
+    _plusButton = [ExtendedTouchTargetButton buttonWithType:UIButtonTypeSystem];
+    _plusButton.accessibilityLabel = l10n_util::GetNSString(
+        IDS_IOS_COMPOSEBOX_ADD_ATTACHMENT_BUTTON_ACCESSIBILITY_LABEL);
+    [_plusButton
+        setImage:DefaultSymbolWithPointSize(kPlusSymbol, kSymbolActionPointSize)
+        forState:UIControlStateNormal];
+    [_plusButton addTarget:self.NTPShortcutsHandler
+                    action:@selector(openMultimodalActionsMenu)
+          forControlEvents:UIControlEventTouchUpInside];
+    leadingView = _plusButton;
+  } else {
+    _logoView = [[UIImageView alloc] init];
+    _logoView.contentMode = UIViewContentModeScaleAspectFit;
+    _logoView.image = _dseLogo;
+    leadingView = _logoView;
+    leadingViewYOffset = kLogoViewYOffset;
+  }
+
+  if (leadingView) {
+    leadingView.translatesAutoresizingMaskIntoConstraints = NO;
+    [_fakeLocationBar addSubview:leadingView];
+    AddSquareConstraints(leadingView, kFakeboxImageSize);
+    _leadingView = leadingView;
+
+    _leadingViewConstraint = [leadingView.leadingAnchor
+        constraintEqualToAnchor:_fakeLocationBar.leadingAnchor
+                       constant:[self fakeboxLeadingSpace]];
+
+    [NSLayoutConstraint activateConstraints:@[
+      _leadingViewConstraint,
+      [leadingView.centerYAnchor
+          constraintEqualToAnchor:_fakeLocationBar.centerYAnchor
+                         constant:leadingViewYOffset]
+    ]];
+  }
+
+  // 3. Set up trailing buttons stack.
+  _buttonStack.directionalLayoutMargins = NSDirectionalEdgeInsetsMake(
+      0, 0, 0, [self endButtonFakeboxTrailingSpace]);
+
+  // Voice Search Button.
+  _voiceSearchButton =
+      [ExtendedTouchTargetButton buttonWithType:UIButtonTypeSystem];
+  _voiceSearchButton.enabled = _voiceSearchIsEnabled;
+  _voiceSearchButton.isAccessibilityElement = _voiceSearchIsEnabled;
+  [_voiceSearchButton addTarget:self
+                         action:@selector(loadVoiceSearch:)
+               forControlEvents:UIControlEventTouchUpInside];
+  [_voiceSearchButton addTarget:self
+                         action:@selector(preloadVoiceSearch:)
+               forControlEvents:UIControlEventTouchDown];
+  [_buttonStack addArrangedSubview:_voiceSearchButton];
+
+  // Lens Button.
+  const BOOL useLens =
+      lens_availability::CheckAndLogAvailabilityForLensEntryPoint(
+          LensEntrypoint::NewTabPage, _isGoogleDefaultSearchEngine);
+  if (useLens) {
+    [self addVoiceAndLensDivider];
+    _lensButton = [ExtendedTouchTargetButton buttonWithType:UIButtonTypeSystem];
+    [_lensButton addTarget:self
+                    action:@selector(openLensViewFinder)
+          forControlEvents:UIControlEventTouchUpInside];
+    if (self.useNewBadgeForLensButton) {
+      [_lensButton addTarget:self
+                      action:@selector(lensButtonWithNewBadgeTapped:)
+            forControlEvents:UIControlEventTouchUpInside];
+    }
+    [_buttonStack addArrangedSubview:_lensButton];
+  }
+
+  [self updateButtonsForCurrentTraitCollection];
+
+  // 4. Set placeholder text and hint label.
+  NSString* placeholder = [self placeholderText];
+  _hintLabel.text = placeholder;
+  _fakeLocationBar.accessibilityLabel = placeholder;
+
+  // 5. Update hint label constraints.
+  _hintLabelLeadingConstraint = [_hintLabel.leadingAnchor
+      constraintEqualToAnchor:_fakeLocationBar.leadingAnchor
+                     constant:[self hintLabelFakeboxLeadingSpace]];
+  _hintLabelLeadingConstraint.active = YES;
+
+  UIView* referenceView = _buttonStack.arrangedSubviews.firstObject;
+  NSLayoutXAxisAnchor* trailingAnchor = referenceView ? referenceView.leadingAnchor
+                                                      : _fakeLocationBar.trailingAnchor;
+
+  _hintLabelTrailingConstraint = [_hintLabel.trailingAnchor
+      constraintLessThanOrEqualToAnchor:trailingAnchor
+                               constant:-kHintLabelFakeboxTrailingSpace];
+  _hintLabelTrailingConstraint.priority = UILayoutPriorityDefaultHigh;
+  _hintLabelTrailingConstraint.active = YES;
+}
+
+- (void)updateButtonsForCurrentTraitCollection {
+  const BOOL forceDisableColors = IsAimEnabledInNtp();
+  const BOOL darkUIStyle =
+      self.traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark;
+  const BOOL ntpHasCustomBackground =
+      [self.traitCollection boolForNewTabPageImageBackgroundTrait] ||
+      [self.traitCollection objectForNewTabPageTrait];
+  const BOOL useColorIcon =
+      !darkUIStyle && !forceDisableColors && !ntpHasCustomBackground;
+
+  content_suggestions::ConfigureVoiceSearchButton(_voiceSearchButton,
+                                                  useColorIcon);
+  if (_lensButton) {
+    UIColor* newBadgeColor =
+        [self.traitCollection boolForNewTabPageImageBackgroundTrait]
+            ? nil
+            : [self.traitCollection objectForNewTabPageTrait].tintColor;
+    content_suggestions::ConfigureLensButtonAppearance(
+        _lensButton, self.useNewBadgeForLensButton, useColorIcon,
+        newBadgeColor);
+    if (self.useNewBadgeForLensButton) {
+      content_suggestions::ConfigureLensButtonWithNewBadgeAlpha(
+          _lensButton, _lensButtonWithNewBadgeTapped ? 0 : 1);
+    }
+  }
+}
+
+- (void)loadVoiceSearch:(id)sender {
+  [self.NTPShortcutsHandler preloadVoiceSearch];
+  [self.NTPShortcutsHandler loadVoiceSearchFromView:_voiceSearchButton];
+}
+
+- (void)preloadVoiceSearch:(id)sender {
+  [self.NTPShortcutsHandler preloadVoiceSearch];
+}
+
+- (void)openLensViewFinder {
+  [self.NTPShortcutsHandler openLensViewFinder];
+}
+
+- (void)lensButtonWithNewBadgeTapped:(id)sender {
+  if (!_lensButtonWithNewBadgeTapped) {
+    _lensButtonWithNewBadgeTapped = YES;
+    ExtendedTouchTargetButton* lensButton = _lensButton;
+    [UIView
+        animateWithDuration:kMaterialDuration1
+                 animations:^{
+                   content_suggestions::ConfigureLensButtonWithNewBadgeAlpha(
+                       lensButton, 0);
+                 }];
+  }
 }
 
 @end

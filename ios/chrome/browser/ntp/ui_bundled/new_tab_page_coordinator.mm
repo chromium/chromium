@@ -13,6 +13,7 @@
 #import "base/time/time.h"
 #import "components/contextual_search/contextual_search_service.h"
 #import "components/feature_engagement/public/event_constants.h"
+#import "components/feature_engagement/public/feature_constants.h"
 #import "components/feature_engagement/public/tracker.h"
 #import "components/feed/core/v2/public/common_enums.h"
 #import "components/feed/core/v2/public/ios/pref_names.h"
@@ -821,10 +822,11 @@
   NTPMediator.feedVisibilityObserver = self;
   NTPMediator.feedControlDelegate = self;
   NTPMediator.NTPContentDelegate = self;
-  NTPMediator.headerConsumer = self.headerView;
   if (IsNTPRedesignEnabled()) {
+    NTPMediator.headerConsumer = self.NTPRedesignViewController;
     NTPMediator.consumer = self.NTPRedesignViewController;
   } else {
+    NTPMediator.headerConsumer = self.headerView;
     NTPMediator.consumer = self.NTPViewController;
   }
   PlaceholderService* placeholderService =
@@ -874,6 +876,13 @@
     self.NTPRedesignViewController.feedViewController = self.feedViewController;
     self.NTPRedesignViewController.mostVisitedViewController =
         self.contentSuggestionsCoordinator.viewController;
+    self.NTPRedesignViewController.NTPShortcutsHandler = self;
+    feature_engagement::Tracker* tracker =
+        feature_engagement::TrackerFactory::GetForProfile(self.profile);
+    BOOL showLensBadge =
+        tracker && tracker->ShouldTriggerHelpUI(
+                       feature_engagement::kIPHiOSHomepageLensNewBadge);
+    self.NTPRedesignViewController.useNewBadgeForLensButton = showLensBadge;
     [self configureMainViewControllerUsing:self.NTPRedesignViewController];
     return;
   }
@@ -1327,9 +1336,12 @@
   } else {
     id<FakeboxFocuser> fakeboxFocuserHandler = HandlerForProtocol(
         self.browser->GetCommandDispatcher(), FakeboxFocuser);
+    id<FakeboxButtonsSnapshotProvider> snapshotProvider =
+        IsNTPRedesignEnabled() ? self.NTPRedesignViewController
+                               : self.headerView;
     [fakeboxFocuserHandler focusOmniboxFromFakebox:_fakeboxTapped
                                             pinned:[self isFakeboxPinned]
-                    fakeboxButtonsSnapshotProvider:self.headerView];
+                    fakeboxButtonsSnapshotProvider:snapshotProvider];
   }
 }
 
