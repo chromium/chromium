@@ -5868,10 +5868,13 @@
       status: "stable",
     },
     {
-      // Source-specific multicast support in the Direct Sockets API.
+      // Source-specific multicast support in the Direct Sockets API. Not
+      // depends_on: ["DirectSockets"] — DirectSockets is enabled per-context
+      // (isolated contexts) rather than via the static flag, so a static
+      // dependency would keep this feature off everywhere it matters. Actual
+      // exposure is gated by MulticastController's Exposed() clause.
       name: "SourceSpecificMulticastInDirectSockets",
       status: "test",
-      depends_on: ["DirectSockets"],
     },
     {
       // Whether spatial navigation should use cursor inheritance to exclude

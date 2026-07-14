@@ -43,6 +43,14 @@ CreateDOMExceptionCodeAndMessageFromNetErrorCode(int32_t net_error) {
     case net::ERR_BLOCKED_BY_LOCAL_NETWORK_ACCESS_CHECKS:
       return {DOMExceptionCode::kInvalidAccessError,
               "Access to local network is blocked."};
+    case net::ERR_NOT_IMPLEMENTED:
+      return {DOMExceptionCode::kNotSupportedError,
+              "This operation is not supported on the current platform."};
+    case net::ERR_SOCKET_NOT_CONNECTED:
+      return {DOMExceptionCode::kInvalidStateError,
+              "The socket is not in a state that allows this operation."};
+    case net::ERR_ADDRESS_INVALID:
+      return {DOMExceptionCode::kDataError, "The address is not valid."};
     default:
       return {DOMExceptionCode::kNetworkError, "Network Error."};
   }

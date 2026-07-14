@@ -18,6 +18,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
+#include "content/public/test/direct_sockets_test_helpers.h"
 #include "content/shell/browser/shell.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -59,6 +60,11 @@ constexpr char kLocalhostAddress[] = "127.0.0.1";
 
 class DirectSocketsUdpBrowserTest : public ContentBrowserTest {
  public:
+  DirectSocketsUdpBrowserTest() {
+    scoped_feature_list_.InitWithFeatures(
+        {blink::features::kSourceSpecificMulticastInDirectSockets}, {});
+  }
+
   virtual GURL GetTestPageURL() {
     return test::FileWithHeaders("/direct_sockets/udp.html")
         .WithCOIHeaders()
@@ -147,6 +153,8 @@ class DirectSocketsUdpBrowserTest : public ContentBrowserTest {
   }
 
   mojo::Remote<network::mojom::UDPSocket> server_socket_;
+
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(DirectSocketsUdpBrowserTest, CloseUdp) {
@@ -396,6 +404,114 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsBoundUdpBrowserTest, LeaveGroupAfterClose) {
 
   EXPECT_THAT(EvalJs(shell(), script).ExtractString(),
               ::testing::StartsWith("leaveGroupAfterClose failed:"));
+}
+
+// TODO(crbug.com/443716695): Fails on mac-rel bots.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_JoinGroupSSM DISABLED_JoinGroupSSM
+#else
+#define MAYBE_JoinGroupSSM JoinGroupSSM
+#endif
+IN_PROC_BROWSER_TEST_F(DirectSocketsBoundUdpBrowserTest, MAYBE_JoinGroupSSM) {
+  auto sources = DeriveSsmSourceAddresses(1);
+  if (sources.empty()) {
+    GTEST_SKIP() << "No IPv4 interface found";
+  }
+
+  EXPECT_EQ("joinGroupSSM succeeded.",
+            EvalJs(shell(), content::JsReplace(
+                                "joinGroupSSM({ localAddress: '0.0.0.0' }, "
+                                "'232.1.1.1', $1)",
+                                sources[0])));
+}
+
+// TODO(crbug.com/443716695): Fails on mac-rel bots.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_JoinGroupSSMSameGroupDifferentSources \
+  DISABLED_JoinGroupSSMSameGroupDifferentSources
+#else
+#define MAYBE_JoinGroupSSMSameGroupDifferentSources \
+  JoinGroupSSMSameGroupDifferentSources
+#endif
+IN_PROC_BROWSER_TEST_F(DirectSocketsBoundUdpBrowserTest,
+                       MAYBE_JoinGroupSSMSameGroupDifferentSources) {
+  auto sources = DeriveSsmSourceAddresses(2);
+  if (sources.empty()) {
+    GTEST_SKIP() << "No IPv4 interface found";
+  }
+
+  EXPECT_EQ("joinGroupSSMSameGroupDifferentSources succeeded.",
+            EvalJs(shell(),
+                   content::JsReplace(
+                       "joinGroupSSMSameGroupDifferentSources({ localAddress: "
+                       "'0.0.0.0' }, $1, $2)",
+                       sources[0], sources[1])));
+}
+
+// TODO(crbug.com/443716695): Fails on mac-rel bots.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_LeaveGroupSSMMustMatchSource DISABLED_LeaveGroupSSMMustMatchSource
+#else
+#define MAYBE_LeaveGroupSSMMustMatchSource LeaveGroupSSMMustMatchSource
+#endif
+IN_PROC_BROWSER_TEST_F(DirectSocketsBoundUdpBrowserTest,
+                       MAYBE_LeaveGroupSSMMustMatchSource) {
+  auto sources = DeriveSsmSourceAddresses(2);
+  if (sources.empty()) {
+    GTEST_SKIP() << "No IPv4 interface found";
+  }
+
+  // Test expects the leave operation to FAIL (mismatched source)
+  EXPECT_EQ("leaveGroupSSMMustMatchSource succeeded.",
+            EvalJs(shell(), content::JsReplace(
+                                "leaveGroupSSMMustMatchSource({ localAddress: "
+                                "'0.0.0.0' }, $1, $2)",
+                                sources[0], sources[1])));
+}
+
+// TODO(crbug.com/443716695): Fails on mac-rel bots.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_CannotMixASMAndSSM DISABLED_CannotMixASMAndSSM
+#else
+#define MAYBE_CannotMixASMAndSSM CannotMixASMAndSSM
+#endif
+IN_PROC_BROWSER_TEST_F(DirectSocketsBoundUdpBrowserTest,
+                       MAYBE_CannotMixASMAndSSM) {
+  auto sources = DeriveSsmSourceAddresses(1);
+  if (sources.empty()) {
+    GTEST_SKIP() << "No IPv4 interface found";
+  }
+
+  // Test expects joining SSM after ASM to FAIL
+  EXPECT_EQ(
+      "cannotMixASMAndSSM succeeded.",
+      EvalJs(shell(), content::JsReplace(
+                          "cannotMixASMAndSSM({ localAddress: '0.0.0.0' }, $1)",
+                          sources[0])));
+}
+
+IN_PROC_BROWSER_TEST_F(DirectSocketsBoundUdpBrowserTest,
+                       JoinGroupSSMTwiceWithSameSource) {
+  auto sources = DeriveSsmSourceAddresses(1);
+  if (sources.empty()) {
+    GTEST_SKIP() << "No IPv4 interface found";
+  }
+
+  // Test expects duplicate SSM join to FAIL
+  EXPECT_EQ(
+      "joinGroupSSMTwiceWithSameSource succeeded.",
+      EvalJs(shell(), content::JsReplace(
+                          "joinGroupSSMTwiceWithSameSource({ localAddress: "
+                          "'0.0.0.0' }, $1)",
+                          sources[0])));
+}
+
+IN_PROC_BROWSER_TEST_F(DirectSocketsBoundUdpBrowserTest,
+                       JoinGroupSSMInvalidSource) {
+  // Test expects invalid source address to FAIL
+  EXPECT_EQ("joinGroupSSMInvalidSource succeeded.",
+            EvalJs(shell(),
+                   "joinGroupSSMInvalidSource({ localAddress: '0.0.0.0' })"));
 }
 
 // TODO(crbug.com/443716695): Fails on mac-rel bots.

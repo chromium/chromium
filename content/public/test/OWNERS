@@ -27,6 +27,9 @@ per-file test_shared_storage_*=file://third_party/blink/renderer/modules/shared_
 # Network Service
 per-file network_service_test_helper.*=file://services/network/OWNERS
 
+# For Direct Sockets multicast test helpers.
+per-file direct_sockets*=file://content/browser/direct_sockets/OWNERS
+
 # DevTools-specific changes
 per-file *devtools*=file://content/browser/devtools/OWNERS
 

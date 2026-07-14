@@ -42,11 +42,15 @@ class FakeRestrictedUDPSocket
     : public GarbageCollected<FakeRestrictedUDPSocket>,
       public network::mojom::blink::RestrictedUDPSocket {
  public:
-  void JoinGroup(const net::IPAddress& address, const std::optional<net::IPAddress>&, JoinGroupCallback) override {
+  void JoinGroup(const net::IPAddress& address,
+                 const std::optional<net::IPAddress>& source_address,
+                 JoinGroupCallback) override {
     NOTREACHED();
   }
 
-  void LeaveGroup(const net::IPAddress& address, const std::optional<net::IPAddress>&, LeaveGroupCallback) override {
+  void LeaveGroup(const net::IPAddress& address,
+                  const std::optional<net::IPAddress>& source_address,
+                  LeaveGroupCallback) override {
     NOTREACHED();
   }
 

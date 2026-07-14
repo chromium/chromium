@@ -847,7 +847,9 @@ void DirectSocketsServiceImpl::CreateRestrictedUDPSocketImpl(
       net::MutableNetworkTrafficAnnotationTag(kDirectSocketsTrafficAnnotation),
       std::move(options), std::move(socket), std::move(listener),
       IsMulticastAllowed(context_),
-      /*allow_source_specific_multicast=*/false, std::move(callback));
+      base::FeatureList::IsEnabled(
+          blink::features::kSourceSpecificMulticastInDirectSockets),
+      std::move(callback));
 }
 
 }  // namespace content

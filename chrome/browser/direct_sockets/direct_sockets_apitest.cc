@@ -2,8 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <string>
 #include <string_view>
 #include <type_traits>
+#include <vector>
 
 #include "base/check_deref.h"
 #include "base/command_line.h"
@@ -31,6 +33,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_base.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/direct_sockets_test_helpers.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "extensions/browser/api/sockets_udp/test_udp_echo_server.h"
 #include "extensions/browser/extension_host.h"
@@ -38,6 +41,7 @@
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/manifest_constants.h"
 #include "net/base/host_port_pair.h"
+#include "net/base/ip_address.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "services/network/public/mojom/network_context.mojom.h"
@@ -825,7 +829,16 @@ class IsolatedWebAppApiTest : public web_app::IsolatedWebAppBrowserTestHarness {
   }
 };
 
-using IsolatedWebAppMulticastApiTest = IsolatedWebAppApiTest;
+class IsolatedWebAppMulticastApiTest : public IsolatedWebAppApiTest {
+ public:
+  IsolatedWebAppMulticastApiTest() {
+    features_.InitWithFeatures(
+        {blink::features::kSourceSpecificMulticastInDirectSockets}, {});
+  }
+
+ private:
+  base::test::ScopedFeatureList features_;
+};
 
 class IsolatedWebAppSharedWorkerApiTest
     : public web_app::IsolatedWebAppBrowserTestHarness {
@@ -1366,6 +1379,105 @@ IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsUdpIsolatedWebAppMulticastTest,
       app_frame,
       content::JsReplace(script, net::IPAddress::IPv4AllZeros().ToString(),
                          kMulticastAddress)));
+}
+
+// TODO(crbug.com/443716695): Fails on mac-rel bots.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_MulticastJoinLeaveGroupSSM DISABLED_MulticastJoinLeaveGroupSSM
+#else
+#define MAYBE_MulticastJoinLeaveGroupSSM MulticastJoinLeaveGroupSSM
+#endif
+IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsUdpIsolatedWebAppMulticastTest,
+                       MAYBE_MulticastJoinLeaveGroupSSM) {
+  content::RenderFrameHost* app_frame =
+      InstallAndOpenIsolatedWebApp(/*with_pna=*/true, /*with_multicast=*/true);
+
+  auto sources = content::DeriveSsmSourceAddresses(1);
+  if (sources.empty()) {
+    GTEST_SKIP() << "No IPv4 interface found";
+  }
+
+  constexpr std::string_view kMulticastJoinLeaveGroupSSM = R"(
+    (async () => {
+      const socket = new UDPSocket({ localAddress: $1 });
+      const { multicastController } = await socket.opened;
+
+      await multicastController.joinGroup($2, {sourceAddress: $3});
+      await multicastController.leaveGroup($2, {sourceAddress: $3});
+    })();
+  )";
+
+  ASSERT_TRUE(ExecJs(
+      app_frame, content::JsReplace(kMulticastJoinLeaveGroupSSM,
+                                    net::IPAddress::IPv4AllZeros().ToString(),
+                                    "232.1.1.1", sources[0])));
+}
+
+// TODO(crbug.com/443716695): Fails on mac-rel bots.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_MulticastJoinGroupSSMSameGroupDifferentSources \
+  DISABLED_MulticastJoinGroupSSMSameGroupDifferentSources
+#else
+#define MAYBE_MulticastJoinGroupSSMSameGroupDifferentSources \
+  MulticastJoinGroupSSMSameGroupDifferentSources
+#endif
+IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsUdpIsolatedWebAppMulticastTest,
+                       MAYBE_MulticastJoinGroupSSMSameGroupDifferentSources) {
+  content::RenderFrameHost* app_frame =
+      InstallAndOpenIsolatedWebApp(/*with_pna=*/true, /*with_multicast=*/true);
+
+  auto sources = content::DeriveSsmSourceAddresses(2);
+  if (sources.empty()) {
+    GTEST_SKIP() << "No IPv4 interface found";
+  }
+
+  constexpr std::string_view kJoinGroupSSMDifferentSources = R"(
+    (async () => {
+      const socket = new UDPSocket({ localAddress: $1 });
+      const { multicastController } = await socket.opened;
+
+      await multicastController.joinGroup($2, {sourceAddress: $3});
+      await multicastController.joinGroup($2, {sourceAddress: $4});
+      await multicastController.leaveGroup($2, {sourceAddress: $3});
+      await multicastController.leaveGroup($2, {sourceAddress: $4});
+    })();
+  )";
+
+  ASSERT_TRUE(ExecJs(
+      app_frame, content::JsReplace(kJoinGroupSSMDifferentSources,
+                                    net::IPAddress::IPv4AllZeros().ToString(),
+                                    "232.1.1.1", sources[0], sources[1])));
+}
+
+// TODO(crbug.com/443716695): Fails on mac-rel bots.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_MulticastCannotMixASMAndSSM DISABLED_MulticastCannotMixASMAndSSM
+#else
+#define MAYBE_MulticastCannotMixASMAndSSM MulticastCannotMixASMAndSSM
+#endif
+IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsUdpIsolatedWebAppMulticastTest,
+                       MAYBE_MulticastCannotMixASMAndSSM) {
+  content::RenderFrameHost* app_frame =
+      InstallAndOpenIsolatedWebApp(/*with_pna=*/true, /*with_multicast=*/true);
+
+  constexpr std::string_view kCannotMixASMAndSSM = R"(
+    (async () => {
+      const socket = new UDPSocket({ localAddress: $1 });
+      const { multicastController } = await socket.opened;
+
+      await multicastController.joinGroup($2);
+      await multicastController.joinGroup($2, {sourceAddress: $3});
+    })();
+  )";
+
+  // The SSM source address is arbitrary here: the join is rejected at the Blink
+  // layer (ASM/SSM mixing) before reaching the network service, so it never
+  // needs to be a routable on-subnet address.
+  ASSERT_THAT(EvalJs(app_frame, content::JsReplace(
+                                    kCannotMixASMAndSSM,
+                                    net::IPAddress::IPv4AllZeros().ToString(),
+                                    "232.1.1.1", "192.0.2.1")),
+              ErrorIs(testing::HasSubstr("Cannot join SSM group")));
 }
 
 // TODO(crbug.com/443716695): Fails on mac-rel bots.

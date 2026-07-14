@@ -2580,6 +2580,7 @@ _CONFIG = [
         'allowed': [
             'net::DefineNetworkTrafficAnnotation',
             'net::Error',
+            'net::IPAddress',
             'net::MutableNetworkTrafficAnnotationTag',
             'net::NetworkTrafficAnnotationTag',
         ]
