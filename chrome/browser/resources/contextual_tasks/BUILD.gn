@@ -64,8 +64,6 @@ build_webui("build") {
       "banner_promo.ts",
       "lens_search_tooltip.html.ts",
       "lens_search_tooltip.ts",
-      "onboarding_tooltip.html.ts",
-      "onboarding_tooltip.ts",
     ]
   }
   if (!is_android || enable_webui_contextual_tasks_composebox) {
@@ -75,6 +73,8 @@ build_webui("build") {
       "contextual_tasks_inner_composebox.html.ts",
       "contextual_tasks_inner_composebox.ts",
       "contextual_tasks_inner_composebox_context_menu.html.ts",
+      "onboarding_tooltip.html.ts",
+      "onboarding_tooltip.ts",
       "window_manager.ts",
     ]
   }
@@ -95,13 +95,13 @@ build_webui("build") {
     css_files += [
       "banner_promo.css",
       "lens_search_tooltip.css",
-      "onboarding_tooltip.css",
     ]
   }
   if (!is_android || enable_webui_contextual_tasks_composebox) {
     css_files += [
       "composebox.css",
       "contextual_tasks_inner_composebox.css",
+      "onboarding_tooltip.css",
     ]
   }
 
@@ -135,12 +135,10 @@ build_webui("build") {
     "//ui/webui/resources/js:build_ts",
     "//ui/webui/resources/mojo:build_ts",
   ]
-  if (!is_android) {
-    ts_deps += [ "//ui/webui/resources/cr_components/help_bubble:build_ts" ]
-  }
   if (!is_android || enable_webui_contextual_tasks_composebox) {
     ts_deps += [
       "//ui/webui/resources/cr_components/composebox:build_ts",
+      "//ui/webui/resources/cr_components/help_bubble:build_ts",
       "//ui/webui/resources/cr_components/localized_link:build_ts",
       "//ui/webui/resources/cr_components/search:build_ts",
     ]

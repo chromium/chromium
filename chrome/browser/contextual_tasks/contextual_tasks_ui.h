@@ -32,6 +32,7 @@
 #include "components/contextual_tasks/public/contextual_tasks_service.h"
 #include "components/lens/lens_overlay_invocation_source.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/user_education/webui/help_bubble_handler.h"  // nogncheck
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_ui_controller.h"
@@ -46,11 +47,10 @@
 #include "ui/base/resource/resource_scale_factor.h"
 #include "ui/webui/mojo_web_ui_controller.h"
 #include "ui/webui/resources/cr_components/composebox/composebox.mojom.h"
+#include "ui/webui/resources/cr_components/help_bubble/help_bubble.mojom.h"  // nogncheck
 
 #if !BUILDFLAG(IS_ANDROID)
-#include "components/user_education/webui/help_bubble_handler.h"  // nogncheck
 #include "content/public/browser/host_zoom_map.h"
-#include "ui/webui/resources/cr_components/help_bubble/help_bubble.mojom.h"  // nogncheck
 #endif
 
 #if !BUILDFLAG(ENABLE_EXTENSIONS_CORE)
@@ -89,9 +89,7 @@ class ContextualTasksUI
 #endif
       public contextual_tasks::mojom::PageHandlerFactory,
       public composebox::mojom::PageHandlerFactory,
-#if !BUILDFLAG(IS_ANDROID)
       public help_bubble::mojom::HelpBubbleHandlerFactory,
-#endif
       public contextual_tasks_internals::mojom::
           ContextualTasksInternalsPageHandlerFactory,
       public signin::IdentityManager::Observer,
@@ -151,13 +149,11 @@ class ContextualTasksUI
   void BindInterface(
       mojo::PendingReceiver<composebox::mojom::PageHandlerFactory> receiver);
 
-#if !BUILDFLAG(IS_ANDROID)
   // help_bubble::mojom::HelpBubbleHandlerFactory:
   void CreateHelpBubbleHandler(
       mojo::PendingRemote<help_bubble::mojom::HelpBubbleClient> client,
       mojo::PendingReceiver<help_bubble::mojom::HelpBubbleHandler> handler)
       override;
-#endif
 
   // contextual_tasks::mojom::PageHandlerFactory:
   void CreatePageHandler(
@@ -257,11 +253,9 @@ class ContextualTasksUI
       mojo::PendingReceiver<contextual_tasks::mojom::PageHandlerFactory>
           pending_receiver);
 
-#if !BUILDFLAG(IS_ANDROID)
   void BindInterface(
       mojo::PendingReceiver<help_bubble::mojom::HelpBubbleHandlerFactory>
           pending_receiver);
-#endif
 
   // Instantiates the implementor of the contextual_tasks::mojom::
   // ContextualTasksInternalsPageHandlerFactory mojo interface passing the
@@ -383,12 +377,10 @@ class ContextualTasksUI
 
   mojo::Remote<composebox::mojom::Page> page_remote_;
 
-#if !BUILDFLAG(IS_ANDROID)
   std::unique_ptr<user_education::HelpBubbleHandler> help_bubble_handler_;
 
   mojo::Receiver<help_bubble::mojom::HelpBubbleHandlerFactory>
       help_bubble_factory_receiver_{this};
-#endif
 
   std::unique_ptr<InnerFrameCreationObvserver>
       inner_web_contents_creation_observer_;

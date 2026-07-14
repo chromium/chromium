@@ -4,48 +4,57 @@
 
 source_set("webui") {
   sources = [
-    "floating_webui_help_bubble_factory.cc",
-    "floating_webui_help_bubble_factory.h",
     "help_bubble_handler.cc",
     "help_bubble_handler.h",
     "help_bubble_webui.cc",
     "help_bubble_webui.h",
-    "whats_new_registry.cc",
-    "whats_new_registry.h",
-    "whats_new_storage_service.h",
   ]
+  if (!is_android) {
+    sources += [
+      "floating_webui_help_bubble_factory.cc",
+      "floating_webui_help_bubble_factory.h",
+      "whats_new_registry.cc",
+      "whats_new_registry.h",
+      "whats_new_storage_service.h",
+    ]
+  }
 
   deps = [
     "//base",
     "//components/user_education/common",
     "//components/user_education/common:events",
-    "//components/user_education/views",
     "//components/vector_icons",
     "//content/public/browser",
     "//skia",
     "//third_party/abseil-cpp:absl",
     "//ui/accessibility",
     "//ui/base/interaction",
-    "//ui/views",
-    "//ui/views/controls/webview",
     "//ui/webui/resources/cr_components/help_bubble:mojo_bindings",
-    "//ui/webui/resources/js/browser_command:mojo_bindings",
     "//ui/webui/resources/js/tracked_element:mojo_bindings",
     "//ui/webui/tracked_element",
   ]
+  if (!is_android) {
+    deps += [
+      "//components/user_education/views",
+      "//ui/views",
+      "//ui/views/controls/webview",
+      "//ui/webui/resources/js/browser_command:mojo_bindings",
+    ]
+  }
 }
 
 source_set("unit_tests") {
   testonly = true
 
-  sources = [
-    "help_bubble_handler_unittest.cc",
-    "whats_new_registry_feature_param_unittest.cc",
-    "whats_new_registry_unittest.cc",
-  ]
+  sources = [ "help_bubble_handler_unittest.cc" ]
+  if (!is_android) {
+    sources += [
+      "whats_new_registry_feature_param_unittest.cc",
+      "whats_new_registry_unittest.cc",
+    ]
+  }
 
   deps = [
-    ":test_support",
     ":webui",
     "//base",
     "//base/test:test_support",
@@ -64,22 +73,29 @@ source_set("unit_tests") {
     "//ui/accessibility",
     "//ui/base/interaction:test_support",
     "//ui/webui/resources/cr_components/help_bubble:mojo_bindings",
-    "//ui/webui/resources/js/browser_command:mojo_bindings",
     "//ui/webui/tracked_element",
   ]
+  if (!is_android) {
+    deps += [
+      ":test_support",
+      "//ui/webui/resources/js/browser_command:mojo_bindings",
+    ]
+  }
 }
 
-source_set("test_support") {
-  testonly = true
+if (!is_android) {
+  source_set("test_support") {
+    testonly = true
 
-  sources = [
-    "mock_whats_new_storage_service.cc",
-    "mock_whats_new_storage_service.h",
-  ]
+    sources = [
+      "mock_whats_new_storage_service.cc",
+      "mock_whats_new_storage_service.h",
+    ]
 
-  deps = [
-    ":webui",
-    "//base",
-    "//testing/gmock",
-  ]
+    deps = [
+      ":webui",
+      "//base",
+      "//testing/gmock",
+    ]
+  }
 }

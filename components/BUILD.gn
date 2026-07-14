@@ -458,7 +458,6 @@ test("components_unittests") {
       "//components/global_media_controls:unit_tests",
       "//components/ui_devtools:unit_tests",
       "//components/user_education/views:unit_tests",
-      "//components/user_education/webui:unit_tests",
     ]
   }
 
@@ -581,6 +580,7 @@ test("components_unittests") {
       "//components/ukm/content:unit_tests",
       "//components/url_rewrite:unit_tests",
       "//components/user_education/common:unit_tests",
+      "//components/user_education/webui:unit_tests",
       "//components/value_store:unit_tests",
       "//components/visibility_timer:unit_tests",
       "//components/visited_url_ranking/public:unit_tests",

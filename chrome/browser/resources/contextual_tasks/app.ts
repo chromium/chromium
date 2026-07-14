@@ -2,33 +2,25 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// <if expr="not is_android">
+import './banner_promo.js';
+import './lens_search_tooltip.js';
+import type { ContextualActionMenuElement } from '//resources/cr_components/composebox/contextual_action_menu.js';
+import type { ContextualEntrypointAndMenuElement } from '//resources/cr_components/composebox/contextual_entrypoint_and_menu.js';
+import type { ContextualTasksLensSearchTooltipElement } from './lens_search_tooltip.js';
+// </if>
+
 // <if expr="not is_android or enable_webui_contextual_tasks_composebox">
 import './composebox.js';
-
-import type {ContextualTasksComposeboxElement} from './composebox.js';
-// </if>
-// <if expr="is_android and not enable_webui_contextual_tasks_composebox">
-// ContextualTasksComposeboxElement is not compiled on standard Android.
-type ContextualTasksComposeboxElement = any;
-// </if>
-
-// <if expr="not is_android">
-// TODO(crbug.com/511383725): Support onboarding tooltip on Android.
-import './lens_search_tooltip.js';
 import './onboarding_tooltip.js';
-import './banner_promo.js';
 import '//resources/cr_components/composebox/contextual_entrypoint_and_menu.js';
-import '//resources/cr_elements/cr_button/cr_button.js';
-
-import type {ContextualActionMenuElement} from '//resources/cr_components/composebox/contextual_action_menu.js';
-import type {ContextualEntrypointAndMenuElement} from '//resources/cr_components/composebox/contextual_entrypoint_and_menu.js';
 import {HelpBubbleMixinLit} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin_lit.js';
 
-import type {ContextualTasksLensSearchTooltipElement} from './lens_search_tooltip.js';
+import type { ContextualTasksComposeboxElement } from './composebox.js';
 import type {ContextualTasksOnboardingTooltipElement} from './onboarding_tooltip.js';
 // </if>
 
-
+import '//resources/cr_elements/cr_button/cr_button.js';
 import './error_dialog.js';
 import './error_page.js';
 import './ghost_loader.js';
@@ -56,6 +48,13 @@ import {getNonOccludedClipPath} from './utils/clip_path.js';
 import {recordAction} from './utils.js';
 // <if expr="not is_android">
 import {WindowManager} from './window_manager.js';
+// </if>
+
+// <if expr="is_android and not enable_webui_contextual_tasks_composebox">
+// ContextualTasksComposeboxElement and ContextualTasksOnboardingTooltipElement
+// are not compiled on standard Android without composebox.
+type ContextualTasksComposeboxElement = any;
+type ContextualTasksOnboardingTooltipElement = any;
 // </if>
 
 declare global {
@@ -109,9 +108,8 @@ export interface ContextualTasksAppElement {
     // <if expr="is_android and not enable_webui_contextual_tasks_composebox">
     composebox?: ContextualTasksComposeboxElement,
     // </if>
-    // <if expr="not is_android">
-    // TODO(crbug.com/511383725): Support onboarding tooltip on Android.
     onboardingTooltip?: ContextualTasksOnboardingTooltipElement,
+    // <if expr="not is_android">
     lensSearchTooltip?: ContextualTasksLensSearchTooltipElement,
     // </if>
   };
@@ -172,10 +170,10 @@ function hasExitCobrowseParam(url: URL): boolean {
   return debParam.indexOf('nocobrowse1') > -1;
 }
 
-// <if expr="is_android">
+// <if expr="is_android and not enable_webui_contextual_tasks_composebox">
 const ContextualTasksAppElementBase = CrLitElement;
 // </if>
-// <if expr="not is_android">
+// <if expr="not is_android or enable_webui_contextual_tasks_composebox">
 const ContextualTasksAppElementBase = HelpBubbleMixinLit(CrLitElement);
 // </if>
 
@@ -863,15 +861,14 @@ export class ContextualTasksAppElement extends ContextualTasksAppElementBase {
   // </if>
 
   private updateTooltipVisibility_() {
-    // Tooltip not supported on Android. Therefore, make calls to this method
-    // a no-op.
-    // <if expr="not is_android">
     const onboardingTooltip =
         this.shadowRoot?.querySelector<ContextualTasksOnboardingTooltipElement>(
             '#onboardingTooltip') || null;
+    // <if expr="not is_android">
     const lensSearchTooltip =
         this.shadowRoot?.querySelector<ContextualTasksLensSearchTooltipElement>(
             '#lensSearchTooltip') || null;
+    // </if>
 
     const composeboxContainer = this.composebox_;
     if (!composeboxContainer) {
@@ -887,7 +884,7 @@ export class ContextualTasksAppElement extends ContextualTasksAppElementBase {
       this.onboardingTooltipShowing_ = onboardingTooltip.shouldShow;
     }
 
-
+    // <if expr="not is_android">
     if (lensSearchTooltip) {
       lensSearchTooltip.updateTooltipVisibility(composeboxContainer, crComposebox);
       this.lensSearchTooltipShowing_ = lensSearchTooltip.shouldShow;
@@ -1623,8 +1620,6 @@ export class ContextualTasksAppElement extends ContextualTasksAppElementBase {
     this.updateTooltipVisibility_();
   }
 
-  // Onboarding tooltip is not supported on Android.
-  // <if expr="not is_android">
   get numberOfTimesTooltipShownForTesting() {
     return this.$.onboardingTooltip?.numberOfTimesTooltipShownForTesting ?? 0;
   }
@@ -1644,7 +1639,6 @@ export class ContextualTasksAppElement extends ContextualTasksAppElementBase {
   get tooltipResizeObserverForTesting() {
     return this.$.onboardingTooltip?.tooltipResizeObserverForTesting ?? null;
   }
-  // </if>
 
   private updateBasicModeAfterNavigation() {
     if (!this.enableBasicMode_ || !this.isNavigatingFromAiPage_) {

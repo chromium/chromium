@@ -80,8 +80,12 @@
 #include "chrome/browser/ui/webui/new_tab_page/action_chips/action_chips.mojom.h"
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page_ui.h"
 #include "components/search/ntp_features.h"
-#include "ui/webui/resources/cr_components/help_bubble/help_bubble.mojom.h"
 #endif  // BUILDFLAG(ENABLE_WEBUI_NTP)
+
+#if BUILDFLAG(ENABLE_WEBUI_NTP) || \
+    BUILDFLAG(ENABLE_WEBUI_CONTEXTUAL_TASKS_COMPOSEBOX)
+#include "ui/webui/resources/cr_components/help_bubble/help_bubble.mojom.h"
+#endif
 
 #if BUILDFLAG(ENABLE_WEBUI_CONTEXTUAL_TASKS_COMPOSEBOX)
 #include "ui/webui/resources/cr_components/composebox/composebox.mojom.h"
@@ -307,13 +311,9 @@ void PopulateChromeWebUIFrameBindersPartsAllPlatforms(
   // that enables them for more pages.
   content::RegisterWebUIControllerInterfaceBinder<
       searchbox::mojom::PageHandlerFactory, NewTabPageUI>(map);
-  content::RegisterWebUIControllerInterfaceBinder<
-      help_bubble::mojom::HelpBubbleHandlerFactory, NewTabPageUI>(map);
 #endif  // BUILDFLAG(ENABLE_WEBUI_NTP) && BUILDFLAG(IS_ANDROID)
 
-// For the case that's !IS_ANDROID, PageHandlerFactory is registered in
-// chrome_browser_interface_binders_webui_parts_desktop.cc.
-#if BUILDFLAG(IS_ANDROID) && \
+#if BUILDFLAG(IS_ANDROID) &&        \
     (BUILDFLAG(ENABLE_WEBUI_NTP) || \
      BUILDFLAG(ENABLE_WEBUI_CONTEXTUAL_TASKS_COMPOSEBOX))
   RegisterWebUIControllerInterfaceBinder<composebox::mojom::PageHandlerFactory
@@ -326,6 +326,18 @@ void PopulateChromeWebUIFrameBindersPartsAllPlatforms(
                                          ContextualTasksUI
 #endif
                                          >(map);
+
+  RegisterWebUIControllerInterfaceBinder<
+      help_bubble::mojom::HelpBubbleHandlerFactory
+#if BUILDFLAG(ENABLE_WEBUI_NTP)
+      ,
+      NewTabPageUI
+#endif
+#if BUILDFLAG(ENABLE_WEBUI_CONTEXTUAL_TASKS_COMPOSEBOX)
+      ,
+      ContextualTasksUI
+#endif
+      >(map);
 #endif  // BUILDFLAG(IS_ANDROID)
 
   map->Add<tracked_element::mojom::TrackedElementHandler>(

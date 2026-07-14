@@ -255,10 +255,12 @@ source_set("ui") {
       "//chrome/browser/ui/webui/cr_components/composebox",
       "//chrome/browser/ui/webui/searchbox",
       "//components/contextual_tasks/public:feature_list",
+      "//components/user_education/webui",
       "//content/public/browser",
       "//content/public/common",
       "//ui/webui",
       "//ui/webui/resources/cr_components/composebox:mojo_bindings",
+      "//ui/webui/resources/cr_components/help_bubble:mojo_bindings",
       "//url",
     ]
   }
@@ -269,7 +271,6 @@ source_set("ui") {
       "//chrome/browser/ui/side_panel:side_panel_views_dependent",
       "//chrome/browser/ui/tabs:tab_strip",
       "//chrome/browser/ui/views/side_panel",
-      "//ui/webui/resources/cr_components/help_bubble:mojo_bindings",
     ]
   }
 

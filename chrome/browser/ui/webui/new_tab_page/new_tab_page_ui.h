@@ -57,7 +57,7 @@
 #include "chrome/browser/ui/webui/new_tab_page/ntp_promo/ntp_promo.mojom.h"  // nogncheck
 #include "chrome/browser/ui/webui/new_tab_page/ntp_promo/ntp_promo_handler.h"  // nogncheck
 #include "components/user_education/common/ntp_promo/ntp_promo_controller.h"
-#include "components/user_education/webui/help_bubble_handler.h"
+#include "components/user_education/webui/help_bubble_handler.h"  // nogncheck
 #endif
 
 namespace base {

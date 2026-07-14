@@ -51,11 +51,6 @@ export function getHtml(this: ContextualTasksAppElement) {
       </h1>
     </div>
 <if expr="not is_android">
-    ${this.showOnboardingTooltip_ ? html`
-      <contextual-tasks-onboarding-tooltip id="onboardingTooltip"
-          @onboarding-tooltip-dismissed="${this.onOnboardingTooltipDismissed_}">
-      </contextual-tasks-onboarding-tooltip>
-    ` : ''}
     ${this.showLensSearchTooltip_ ? html`
       <contextual-tasks-lens-search-tooltip id="lensSearchTooltip"
           @lens-search-tooltip-dismissed="${this.onLensSearchTooltipDismissed_}">
@@ -91,6 +86,12 @@ export function getHtml(this: ContextualTasksAppElement) {
     ` : ''}
 </if>
 <if expr="not is_android or enable_webui_contextual_tasks_composebox">
+    ${this.showOnboardingTooltip_ ? html`
+      <contextual-tasks-onboarding-tooltip id="onboardingTooltip"
+          @onboarding-tooltip-dismissed="${this.onOnboardingTooltipDismissed_}">
+      </contextual-tasks-onboarding-tooltip>
+    ` : ''}
+
     <contextual-tasks-composebox id="composebox"
           style="${this.getComposeboxBoundsStyles()}"
           ?hidden="${this.isComposeboxHidden_()}"
