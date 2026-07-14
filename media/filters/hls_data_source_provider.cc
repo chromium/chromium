@@ -41,6 +41,10 @@ void HlsDataSourceStream::PrependInitStream(
     std::unique_ptr<HlsDataSourceStream> init_stream) {
   CHECK(!stream_locked_);
   CHECK(init_stream);
+  // Note - we must _always_ merge the security metadata, even if there is no
+  // data leaked!
+  MergeSecurityMetadata(init_stream->security_info_);
+
   size_t init_size = init_stream->buffer_.size();
   if (init_size == 0) {
     return;
@@ -48,7 +52,6 @@ void HlsDataSourceStream::PrependInitStream(
   buffer_.insert(buffer_.begin(), init_stream->buffer_.begin(),
                  init_stream->buffer_.end());
   write_index_ += init_size;
-  MergeSecurityMetadata(init_stream->security_info_);
 }
 
 void HlsDataSourceStream::TrackOrigin(const url::Origin& origin) {
