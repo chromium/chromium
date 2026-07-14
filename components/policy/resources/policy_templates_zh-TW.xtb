@@ -2620,6 +2620,7 @@ PAC 樣式的字串：
 <translation id="2707733461906745082">設定檔區隔</translation>
 <translation id="2707873794476722903">已啟用標準模式中的安全瀏覽功能。</translation>
 <translation id="2709516037105925701">自動填入</translation>
+<translation id="2712089199157322391">允許將開發人員工具用於標準網頁瀏覽，但針對企業安裝和受管理使用者的內建擴充功能則限制使用 (自 M150 版起，如果網頁嵌入這類擴充功能，系統會封鎖開發人員工具，但內建 PDF 檢視器除外)。</translation>
 <translation id="2713913573196284609">這個值已於 M121 淘汰。在 M121 和更高版本中，系統會將值視為 EnabledBelowThreshold。</translation>
 <translation id="2713977837384407666">一律傳送指標資料給 Google</translation>
 <translation id="2714359695399346815">如果將這項政策設為啟用或不設定，即可使用 STUN 伺服器，這樣即使遠端用戶端受到防火牆阻隔，也能偵測到這部裝置並建立連線。
@@ -3917,7 +3918,6 @@ Microsoft Outlook 資訊卡需要額外的管理員設定。想進一步瞭解�
 <translation id="3591584750136265240">設定登入驗證行為</translation>
 <translation id="3593905652755912452">系統將使用在已停用表單控制項上傳送事件的舊行為。</translation>
 <translation id="3596112486106491038">啟用虛擬機器指令列存取權</translation>
-<translation id="3600342552601917721">允許開發人員工具用於標準網頁瀏覽，但限制用於企業安裝的擴充功能和受管理使用者的內建擴充功能。自 M150 版起，如果網頁嵌入上述擴充功能，系統也會一併封鎖開發人員工具，但內建 PDF 檢視器不在此限。</translation>
 <translation id="3603469950773500315">在新版 <ph name="CORS" /> 模式中啟用寬鬆檢查機制來放寬 <ph name="CORS" /> 檢查標準，讓擴充功能保持相容行為，並允許 <ph name="PRODUCT_NAME" /> 不需經過 <ph name="CORS" /> 檢查即可傳送指定標頭。
 
       如果將這份清單設為空白，<ph name="PRODUCT_NAME" /> 會嘗試以相容方式執行擴充功能，且不會採用 <ph name="PRODUCT_NAME" /> 第 79 版的 <ph name="API" /> 變更，詳情請參閱 <ph name="WEB_REQUEST_API_MANUAL" />。

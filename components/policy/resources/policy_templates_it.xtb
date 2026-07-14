@@ -2734,6 +2734,7 @@ Se la policy viene impostata su 2 - "Disattivata", l'integrazione del Google Dev
 <translation id="2707733461906745082">Separazione profilo</translation>
 <translation id="2707873794476722903">Navigazione sicura è attiva in modalità standard.</translation>
 <translation id="2709516037105925701">Compilazione automatica</translation>
+<translation id="2712089199157322391">Consenti l'utilizzo degli Strumenti per sviluppatori per la navigazione web standard, ma limitalo per le estensioni installate a livello aziendale e per le estensioni integrate per gli utenti gestiti (l'utilizzo è bloccato sulle pagine che incorporano queste estensioni a partire dalla versione M150, ad eccezione del visualizzatore PDF integrato).</translation>
 <translation id="2713913573196284609">Questo valore è obsoleto a partire dalla versione M121. Nella versione M121 e successive, i valori verranno trattati come EnabledBelowThreshold.</translation>
 <translation id="2713977837384407666">Invia sempre le metriche a Google</translation>
 <translation id="2714359695399346815">Se la policy viene impostata su Attivata o se non viene configurata, viene consentito l'utilizzo di server STUN, permettendo ai client remoti di rilevare e collegarsi a questo computer anche se sono separati da un firewall.
@@ -4090,7 +4091,6 @@ Ricorda di non tenere questa policy sempre attiva, soprattutto nelle distribuzio
 <translation id="3591584750136265240">Configura il comportamento di autenticazione dell'accesso</translation>
 <translation id="3593905652755912452">Verrà utilizzato il comportamento precedente per l'esecuzione di eventi sui controlli dei moduli disattivati.</translation>
 <translation id="3596112486106491038">Attiva l'accesso alla riga di comando delle macchine virtuali</translation>
-<translation id="3600342552601917721">Consenti l'utilizzo degli Strumenti per sviluppatori per la navigazione web standard, ma limita l'utilizzo per le estensioni installate a livello aziendale e per le estensioni integrate per gli utenti gestiti. A partire dalla versione M150, sono bloccati anche su qualsiasi pagina che incorpora queste estensioni, con la sola eccezione del visualizzatore PDF integrato.</translation>
 <translation id="3603469950773500315">Consente di attivare le mitigazioni dei controlli <ph name="CORS" /> nella nuova implementazione <ph name="CORS" />, consentendo alle estensioni di mantenere un comportamento compatibile e a <ph name="PRODUCT_NAME" /> di inviare le intestazioni specificate senza controlli <ph name="CORS" />.
 
       Se questo elenco viene lasciato vuoto, <ph name="PRODUCT_NAME" /> prova a eseguire le estensioni in modalità compatibili e non introduce modifiche <ph name="API" /> per la versione 79 di <ph name="PRODUCT_NAME" />, come spiegato all'indirizzo <ph name="WEB_REQUEST_API_MANUAL" />.

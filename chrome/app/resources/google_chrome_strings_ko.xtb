@@ -266,7 +266,6 @@
 <translation id="3453763134178591239">ChromeOS 약관</translation>
 <translation id="3475778264501649775">휴대전화에서 Chrome 앱을 사용하여 이동 중에도 비밀번호, 탭 등을 이용하세요</translation>
 <translation id="3503306920980160878">이 사이트와 위치를 공유하려면 Chrome에 내 위치 액세스 권한이 있어야 합니다</translation>
-<translation id="3512495006767217696">Google 비밀번호 관리자는 안전한 비밀번호를 만들고, 저장하고, 자동 완성할 수 있도록 Chrome에 내장되어 있습니다. 바로가기를 추가하여 간편하게 액세스하세요.</translation>
 <translation id="3539955434060988644">Chrome 시크릿 창에서 링크 열기(&amp;G)</translation>
 <translation id="354621070532799440">알림: 주머니에 쏙 들어가는 Google 최고의 안전 기능</translation>
 <translation id="3547866758548131919">요약 버튼을 클릭하여 Chrome의 Gemini와 이 문서를 공유하고 간략한 개요를 확인한 후 후속 질문을 하세요.</translation>
@@ -318,6 +317,7 @@
 <translation id="4012899077942246412">로그인한 상태로 Chrome에서 Google 계정의 비밀번호 등을 사용할 수 있습니다. 이 설정을 변경하려면 'Chrome의 내 계정'으로 이동하세요.</translation>
 <translation id="4022972681110646219">화면 번역</translation>
 <translation id="4023601594785368013">원본 언어, <ph name="LANGUAGE" /></translation>
+<translation id="4034249157893816477">Chrome에 내장되어 있어 안전한 비밀번호를 만들고, 저장하고, 자동 완성하도록 도와줍니다. 바로가기를 추가하여 간편하게 액세스하세요</translation>
 <translation id="4035053306113201399">업데이트를 적용하려면 ChromeOS를 다시 시작해야 합니다.</translation>
 <translation id="4050175100176540509">최신 버전에는 중요한 보안 개선사항 및 새로운 기능이 포함되어 있습니다.</translation>
 <translation id="4053720452172726777">Chrome 맞춤설정 및 제어</translation>

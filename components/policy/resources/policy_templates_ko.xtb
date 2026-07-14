@@ -2719,6 +2719,7 @@ Chrome에서 퍼스트 파티 세트 관련 통합을 지원하는지 제어합�
 <translation id="2707733461906745082">프로필 분리</translation>
 <translation id="2707873794476722903">세이프 브라우징이 표준 모드에서 활성화됩니다.</translation>
 <translation id="2709516037105925701">자동 완성</translation>
+<translation id="2712089199157322391">표준 웹 탐색에는 개발자 도구를 사용하도록 허용하되, 엔터프라이즈에서 설치한 확장 프로그램 및 관리 사용자의 기본 제공 확장 프로그램에는 제한합니다(M150부터는 기본 제공 PDF 뷰어를 제외하고 이러한 확장 프로그램을 삽입하는 페이지에서 차단됨).</translation>
 <translation id="2713913573196284609">이 값은 M121부터 지원이 중단됩니다. M121 및 이후 버전에서는 값이 EnabledBelowThreshold로 처리됩니다.</translation>
 <translation id="2713977837384407666">측정항목을 Google에 항상 전송</translation>
 <translation id="2714359695399346815">정책을 사용 설정하거나 설정하지 않으면 STUN 서버를 사용할 수 있으므로 방화벽으로 분리되어 있더라도 원격 클라이언트에서 이 컴퓨터를 찾아서 연결할 수 있습니다.
@@ -4056,7 +4057,6 @@ false로 설정된 경우 기존 및 신규 Crostini 컨테이너에 대한 루�
 <translation id="3591584750136265240">로그인 인증 동작 설정</translation>
 <translation id="3593905652755912452">disabled 양식 컨트롤에서 기존 이벤트 전달 동작이 사용됩니다.</translation>
 <translation id="3596112486106491038">가상 머신 명령줄 액세스 권한 사용 설정</translation>
-<translation id="3600342552601917721">표준 웹 탐색에는 개발자 도구를 사용하도록 허용하지만 엔터프라이즈에서 설치한 확장 프로그램 및 관리 사용자의 기본 제공 확장 프로그램에 대한 사용은 제한합니다. M150 버전부터는 기본 제공 PDF 뷰어를 제외하고 이러한 확장 프로그램을 삽입하는 모든 페이지에서도 차단됩니다.</translation>
 <translation id="3603469950773500315">새로운 <ph name="CORS" /> 구현에서 <ph name="CORS" /> 확인 완화를 사용 설정하여 확장 프로그램이 호환되는 동작을 유지하도록 허용하고 <ph name="PRODUCT_NAME" />에서 <ph name="CORS" /> 확인 없이 지정된 헤더를 전송하도록 허용합니다.
 
       목록이 빈 상태로 설정되어 있으면 <ph name="PRODUCT_NAME" />은 호환되는 방식으로 확장 프로그램을 실행하도록 시도하고 <ph name="WEB_REQUEST_API_MANUAL" />에 설명된 것처럼 <ph name="PRODUCT_NAME" /> 79의 <ph name="API" /> 변경사항을 적용하지 않습니다.
