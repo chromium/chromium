@@ -301,6 +301,9 @@ are declared in tools/grit/grit_args.gni.
       <!-- Media Router specific strings -->
       <part file="media_router_strings.grdp" />
 
+      <!-- Notebooks specific strings -->
+      <part file="notebooks_strings.grdp" />
+
       <!-- Profiles specific strings -->
       <part file="profiles_strings.grdp" />
 

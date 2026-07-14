@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Notebooks specific strings (included from generated_resources.grd). -->
+<grit-part>
+  <message name="IDS_NOTEBOOKS_CREATE_NOTEBOOK" desc="Text on the button or menu item to create a new notebook." translateable="false">
+    Create notebook
+  </message>
+</grit-part>

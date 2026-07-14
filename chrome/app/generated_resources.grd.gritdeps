@@ -13,6 +13,7 @@ chrome/app/gmc_strings.grdp
 chrome/app/media_live_preview_strings.grdp
 chrome/app/media_router_strings.grdp
 chrome/app/nearby_share_strings.grdp
+chrome/app/notebooks_strings.grdp
 chrome/app/os_settings_search_tag_strings.grdp
 chrome/app/os_settings_strings.grdp
 chrome/app/password_manager_ui_strings.grdp
