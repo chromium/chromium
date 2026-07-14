@@ -84,7 +84,7 @@ EmailVerificationRequest::EmailVerificationRequest(
       render_frame_host_(render_frame_host.GetWeakPtr()) {}
 
 EmailVerificationRequest::~EmailVerificationRequest() {
-  observers_.Notify(&Observer::OnRequestDestroyed, this);
+  observers_.Notify(&Observer::OnRequestDestroyed);
 }
 
 void EmailVerificationRequest::AddObserver(Observer* observer) {
@@ -132,7 +132,7 @@ sdjwt::Jwt EmailVerificationRequest::CreateRequestToken(
 void EmailVerificationRequest::CheckIfVerifiable(
     const std::string& email,
     EmailVerifier::IsVerifiableCallback callback) {
-  observers_.Notify(&Observer::OnIsVerifiableStart, this);
+  observers_.Notify(&Observer::OnIsVerifiableStart);
   if (!render_frame_host_) {
     std::move(callback).Run(std::nullopt);
     return;
@@ -378,7 +378,7 @@ void EmailVerificationRequest::Verify(
     const EmailVerifier::Result& result,
     const std::string& nonce,
     EmailVerifier::OnEmailVerifiedCallback callback) {
-  observers_.Notify(&Observer::OnVerifyStart, this);
+  observers_.Notify(&Observer::OnVerifyStart);
   if (!render_frame_host_) {
     std::move(callback).Run(std::nullopt);
     return;
@@ -592,7 +592,7 @@ void EmailVerificationRequest::CompleteIsVerifiableRequest(
     std::optional<EmailVerifier::Result> response,
     blink::mojom::EmailVerificationRequestResult status) {
   base::UmaHistogramEnumeration("Blink.Evp.Status.IsVerifiable", status);
-  observers_.Notify(&Observer::OnIsVerifiableComplete, this, status);
+  observers_.Notify(&Observer::OnIsVerifiableComplete, status);
   if (status != EmailVerificationRequestResult::kSuccess) {
     MaybeAddDevToolsIssue(status);
   }
@@ -604,7 +604,7 @@ void EmailVerificationRequest::CompleteVerifyRequest(
     std::optional<std::string> response,
     blink::mojom::EmailVerificationRequestResult status) {
   base::UmaHistogramEnumeration("Blink.Evp.Status.Verify", status);
-  observers_.Notify(&Observer::OnVerifyComplete, this, status);
+  observers_.Notify(&Observer::OnVerifyComplete, status);
   if (status != EmailVerificationRequestResult::kSuccess) {
     MaybeAddDevToolsIssue(status);
   }
