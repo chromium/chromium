@@ -671,6 +671,10 @@ BASE_FEATURE(kSymphoniaPcmDecoding, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kSymphoniaVorbisDecoding, base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
+#if BUILDFLAG(ENABLE_IAMF_TOOLS)
+BASE_FEATURE(kIamfAudioDecoding, base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
+
 // Forces D3D11VideoDecoder to use one decoder texture per picture buffer.
 // Owner: media-gpu-team@chromium.org
 // Expiry: When no longer needed for decode texture selection experiments.

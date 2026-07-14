@@ -50,6 +50,10 @@
 #include "media/filters/symphonia_audio_decoder.h"
 #endif
 
+#if BUILDFLAG(ENABLE_IAMF_TOOLS)
+#include "media/filters/iamf_audio_decoder.h"
+#endif
+
 namespace media {
 
 DefaultDecoderFactory::DefaultDecoderFactory(
@@ -87,6 +91,13 @@ void DefaultDecoderFactory::CreateAudioDecoders(
       base::FeatureList::IsEnabled(kSymphoniaVorbisDecoding)) {
     audio_decoders->push_back(
         std::make_unique<SymphoniaAudioDecoder>(task_runner, media_log));
+  }
+#endif
+
+#if BUILDFLAG(ENABLE_IAMF_TOOLS)
+  if (base::FeatureList::IsEnabled(kIamfAudioDecoding)) {
+    audio_decoders->push_back(
+        std::make_unique<IamfAudioDecoder>(task_runner, media_log));
   }
 #endif
 
