@@ -218,6 +218,7 @@ suite('ComposeboxMixinTest', () => {
         searchboxHandler.setResultFor(
             'getRecentTabs', Promise.resolve({tabs: [tab2Recent, tab3]}));
 
+        element.contextManagementInComposeboxEnabled = true;
         // Set aimThreadRestoredTabs to contain tab1 and tab2Restored.
         element.aimThreadRestoredTabs = [tab1, tab2Restored];
 
@@ -353,6 +354,7 @@ suite('ComposeboxMixinTest', () => {
           },
         ];
 
+        element.contextManagementInComposeboxEnabled = true;
         element.cacheSubmittedTabs();
 
         assertEquals(3, element.aimThreadRestoredTabs.length);
