@@ -193,24 +193,6 @@ void ActorOneTimeTokenFillingServiceImpl::RetrieveOtp(
     }
   }
 
-  if (most_recent_token) {
-    subscription_ = {};
-    // If there is a pending request, its callback is superseded. We run the
-    // previous callback with a default error so the old caller can gracefully
-    // time out rather than hanging indefinitely.
-    if (retrieve_otp_callback_) {
-      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE,
-          base::BindOnce(
-              std::move(retrieve_otp_callback_),
-              base::unexpected(OneTimeTokenRetrievalError::kGmailOtpUnknown)));
-    }
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(std::move(callback), most_recent_token->value()));
-    return;
-  }
-
   // If there is a pending request, its callback is superseded. We run the
   // previous callback with a default error so the old caller can gracefully
   // time out rather than hanging indefinitely.
@@ -221,6 +203,15 @@ void ActorOneTimeTokenFillingServiceImpl::RetrieveOtp(
             std::move(retrieve_otp_callback_),
             base::unexpected(OneTimeTokenRetrievalError::kGmailOtpUnknown)));
   }
+
+  if (most_recent_token) {
+    subscription_ = {};
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(std::move(callback), most_recent_token->value()));
+    return;
+  }
+
   retrieve_otp_callback_ = std::move(callback);
 
   // Subscribe to OneTimeTokenService with 1-minute timeout.

@@ -248,6 +248,33 @@ TEST_F(ActorOneTimeTokenFillingServiceImplTest, RetrieveOtp_Superseded) {
             OneTimeTokenRetrievalError::kGmailOtpUnknown);
 }
 
+// Tests that multiple sequential `RetrieveOtp` calls supersede previous ones,
+// running previous callbacks with an error when the second call has a cached
+// token.
+TEST_F(ActorOneTimeTokenFillingServiceImplTest,
+       RetrieveOtp_SupersededByCachedToken) {
+  const std::string kOtp = "123456";
+  EXPECT_CALL(otp_service(), GetCachedOneTimeTokens())
+      .WillOnce(Return(std::vector<one_time_tokens::OneTimeToken>{}))
+      .WillOnce(Return(std::vector<one_time_tokens::OneTimeToken>{
+          {one_time_tokens::OneTimeTokenType::kGmail, kOtp,
+           base::TimeTicks::Now(), "sender@example.com"}}));
+
+  base::test::TestFuture<
+      base::expected<std::string, OneTimeTokenRetrievalError>>
+      future1;
+  base::test::TestFuture<
+      base::expected<std::string, OneTimeTokenRetrievalError>>
+      future2;
+
+  service().RetrieveOtp(tab().GetHandle(), {}, future1.GetCallback());
+  service().RetrieveOtp(tab().GetHandle(), {}, future2.GetCallback());
+
+  EXPECT_EQ(future1.Get().error(),
+            OneTimeTokenRetrievalError::kGmailOtpUnknown);
+  EXPECT_EQ(future2.Get().value(), kOtp);
+}
+
 // Tests that `FillOtp` fails gracefully when the tab is null.
 TEST_F(ActorOneTimeTokenFillingServiceImplTest, FillOtp_TabNull) {
   base::test::TestFuture<bool> future;
