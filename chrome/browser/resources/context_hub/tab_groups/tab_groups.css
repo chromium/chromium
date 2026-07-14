@@ -9,11 +9,16 @@
 
 :host {
   display: block;
-  max-width: 1000px;
+  width: 100%;
 }
 
 section {
   margin-bottom: 40px;
+  max-width: 1000px;
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+  box-sizing: border-box;
 }
 
 .header-section {
@@ -162,4 +167,18 @@ cr-expand-button {
   100% {
     transform: rotate(360deg);
   }
+}
+
+.input-section {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+
+#group-input {
+  flex: 1;
+  --cr-input-border-bottom: none;
+  --cr-input-underline-display: none;
+  --cr-input-border-radius: 8px;
+  --cr-input-error-display: none;
 }

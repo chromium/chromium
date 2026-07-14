@@ -5,6 +5,7 @@
 import '//resources/cr_elements/cr_collapse/cr_collapse.js';
 import '//resources/cr_elements/cr_expand_button/cr_expand_button.js';
 import '//resources/cr_elements/cr_button/cr_button.js';
+import '//resources/cr_elements/cr_input/cr_input.js';
 import '/strings.m.js';
 
 import {loadTimeData} from '//resources/js/load_time_data.js';
@@ -43,6 +44,7 @@ export class TabGroupsElement extends CrLitElement {
       isGrouped_: {type: Boolean},
       isGrouping_: {type: Boolean},
       autoTabGroupsEnabled_: {type: Boolean},
+      inputValue_: {type: String},
     };
   }
 
@@ -53,6 +55,7 @@ export class TabGroupsElement extends CrLitElement {
   protected accessor isGrouping_: boolean = false;
   protected accessor autoTabGroupsEnabled_: boolean =
       loadTimeData.getBoolean('kAutoTabGroups');
+  protected accessor inputValue_: string = '';
 
   override connectedCallback() {
     super.connectedCallback();
@@ -125,6 +128,10 @@ export class TabGroupsElement extends CrLitElement {
       }
       return g;
     });
+  }
+
+  protected onInputValueChanged_(e: CustomEvent<{value: string}>) {
+    this.inputValue_ = e.detail.value;
   }
 }
 
