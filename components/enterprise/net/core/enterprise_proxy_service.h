@@ -84,7 +84,7 @@ class EnterpriseProxyService : public KeyedService {
     ProxyProvisioningDomain& operator=(ProxyProvisioningDomain&&) noexcept;
     ~ProxyProvisioningDomain();
 
-    ProxyProvisioningDomainPolicy policy;
+    ProvisioningDomainConfig policy;
     std::unique_ptr<ProvisioningDomainFetcher> fetcher;
 
     ProvisioningDomainProxyConfig fetched_config;
