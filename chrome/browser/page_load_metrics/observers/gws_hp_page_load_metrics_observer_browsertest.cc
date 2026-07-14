@@ -69,7 +69,8 @@ class GWSHpPageLoadMetricsObserverBrowserTest : public MetricIntegrationTest {
     Start();
 
     // Ensure startup monitoring has started (idempotent for testing).
-    AfterStartupTaskUtils::BeginMonitoringStartupCompletionForTesting();
+    AfterStartupTaskUtils::BeginMonitoringStartupCompletionForTesting(
+        /*include_default_refs=*/true);
   }
 };
 

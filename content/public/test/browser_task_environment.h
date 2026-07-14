@@ -167,6 +167,11 @@ class BrowserTaskEnvironment : public base::test::TaskEnvironment {
   // RunLoop+QuitClosure() to await an async condition.
   void RunIOThreadUntilIdle();
 
+  // Winds down the BrowserTaskExecutor. After this no tasks posted to browser
+  // task queues will be executed. This is normally handled by the destructor,
+  // but tests can call this early to test shutdown behaviour.
+  void ShutdownBrowserTaskExecutor();
+
   BrowserTaskEnvironment(const BrowserTaskEnvironment&) = delete;
   BrowserTaskEnvironment& operator=(const BrowserTaskEnvironment&) = delete;
 

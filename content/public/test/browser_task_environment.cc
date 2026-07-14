@@ -245,4 +245,8 @@ void BrowserTaskEnvironment::RunIOThreadUntilIdle() {
   io_thread_idle.Wait();
 }
 
+void BrowserTaskEnvironment::ShutdownBrowserTaskExecutor() {
+  BrowserTaskExecutor::Shutdown();
+}
+
 }  // namespace content

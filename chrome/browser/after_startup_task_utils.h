@@ -55,8 +55,12 @@ class AfterStartupTaskUtils {
 
   // For use by tests where BeginMonitoringStartupCompletion() may already have
   // been called or where we want to ensure monitoring has begun without
-  // triggering duplicate initialization checks.
-  static void BeginMonitoringStartupCompletionForTesting();
+  // triggering duplicate initialization checks. If `include_default_refs` is
+  // true a set of standard StartupInProgressRefs will be registered first. The
+  // standard refs are always registered by the production
+  // BeginMonitoringStartupCompletion().
+  static void BeginMonitoringStartupCompletionForTesting(
+      bool include_default_refs);
 
   // Queues `task` to run on `destination_runner` after startup is complete.
   // Note: prefer to simply post a task with BEST_EFFORT priority. This will
@@ -85,6 +89,7 @@ class AfterStartupTaskUtils {
   // normal approach.
   friend class android::AfterStartupTaskUtilsJNI;
 
+  static void FinishStartupRegistration(bool include_default_refs);
   static void SetBrowserStartupIsComplete();
 };
 

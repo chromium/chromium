@@ -156,7 +156,11 @@ void MaybeSignalStartupComplete() {
   if (g_ref_count > 0) {
     return;
   }
-  SetBrowserStartupIsComplete();
+  // Don't signal startup complete if shutdown has already started. Posting a
+  // task is a convenient way to ensure this: if the UI thread is no longer
+  // accepting tasks, this won't run.
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(&SetBrowserStartupIsComplete));
 }
 
 void ReleaseRef() {
@@ -248,9 +252,28 @@ void StartupObserver::Start() {
 
 }  // namespace
 
+// static
 void AfterStartupTaskUtils::BeginMonitoringStartupCompletion() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   CHECK(!g_is_monitoring_started);
+  AfterStartupTaskUtils::FinishStartupRegistration(
+      /*include_default_refs=*/true);
+}
+
+// static
+void AfterStartupTaskUtils::BeginMonitoringStartupCompletionForTesting(
+    bool include_default_refs) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  if (g_is_monitoring_started) {
+    return;
+  }
+  AfterStartupTaskUtils::FinishStartupRegistration(include_default_refs);
+}
+
+// static
+void AfterStartupTaskUtils::FinishStartupRegistration(
+    bool include_default_refs) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   g_is_monitoring_started = true;
 #if BUILDFLAG(IS_CHROMEOS)
   // If we are on a login screen which does not expect WebUI to be loaded,
@@ -264,7 +287,10 @@ void AfterStartupTaskUtils::BeginMonitoringStartupCompletion() {
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)
-  StartupObserver::Start();
+  if (include_default_refs) {
+    StartupObserver::Start();
+  }
+
   // Release the implicit reference representing the startup sequence. This
   // enables considering startup complete once all other registered references
   // (e.g., paint, idle, restore) are released.
@@ -275,14 +301,6 @@ void AfterStartupTaskUtils::BeginMonitoringStartupCompletion() {
   content::GetUIThreadTaskRunner({})->PostDelayedTask(
       FROM_HERE, base::BindOnce(&SetBrowserStartupIsComplete),
       base::Minutes(3));
-}
-
-void AfterStartupTaskUtils::BeginMonitoringStartupCompletionForTesting() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (g_is_monitoring_started) {
-    return;
-  }
-  AfterStartupTaskUtils::BeginMonitoringStartupCompletion();
 }
 
 #if !BUILDFLAG(IS_ANDROID)

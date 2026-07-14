@@ -14,6 +14,8 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
+#include "build/build_config.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/test/browser_task_environment.h"
@@ -122,6 +124,12 @@ class AfterStartupTaskTest : public testing::Test {
     run_loop.Run();
   }
 
+  void FlushUIThread() {
+    ui_thread_->real_runner()->PostTask(FROM_HERE,
+                                        task_environment_.QuitClosure());
+    task_environment_.RunUntilQuit();
+  }
+
   static void VerifyExpectedSequence(base::SequencedTaskRunner* task_runner) {
     EXPECT_TRUE(task_runner->RunsTasksInCurrentSequence());
   }
@@ -129,6 +137,7 @@ class AfterStartupTaskTest : public testing::Test {
  protected:
   scoped_refptr<WrappedTaskRunner> ui_thread_;
   scoped_refptr<WrappedTaskRunner> background_sequence_;
+  content::BrowserTaskEnvironment task_environment_;
 
  private:
   static void GotIsOnBrowserStartupComplete(base::RunLoop* loop,
@@ -137,8 +146,6 @@ class AfterStartupTaskTest : public testing::Test {
     *out = is_complete;
     loop->Quit();
   }
-
-  content::BrowserTaskEnvironment task_environment_;
 };
 
 TEST_F(AfterStartupTaskTest, IsStartupComplete) {
@@ -207,3 +214,51 @@ TEST_F(AfterStartupTaskTest, PostTask) {
   EXPECT_EQ(2, background_sequence_->ran_task_count());
   EXPECT_EQ(2, ui_thread_->ran_task_count());
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+
+TEST_F(AfterStartupTaskTest, StartupInProgressRef_NoRefs) {
+  EXPECT_FALSE(AfterStartupTaskUtils::IsBrowserStartupComplete());
+  AfterStartupTaskUtils::BeginMonitoringStartupCompletionForTesting(
+      /*include_default_refs=*/false);
+  FlushUIThread();
+  EXPECT_TRUE(AfterStartupTaskUtils::IsBrowserStartupComplete());
+}
+
+TEST_F(AfterStartupTaskTest, StartupInProgressRef_MultipleRefs) {
+  EXPECT_FALSE(AfterStartupTaskUtils::IsBrowserStartupComplete());
+  auto ref1 = AfterStartupTaskUtils::RegisterStartupInProgressRef();
+  auto ref2 = AfterStartupTaskUtils::RegisterStartupInProgressRef();
+  AfterStartupTaskUtils::BeginMonitoringStartupCompletionForTesting(
+      /*include_default_refs=*/false);
+  FlushUIThread();
+  EXPECT_FALSE(AfterStartupTaskUtils::IsBrowserStartupComplete());
+  ref2.reset();
+  FlushUIThread();
+  EXPECT_FALSE(AfterStartupTaskUtils::IsBrowserStartupComplete());
+  ref1.reset();
+  FlushUIThread();
+  EXPECT_TRUE(AfterStartupTaskUtils::IsBrowserStartupComplete());
+}
+
+TEST_F(AfterStartupTaskTest, StartupInProgressRef_ShutdownWithRef) {
+  EXPECT_FALSE(AfterStartupTaskUtils::IsBrowserStartupComplete());
+  auto ref = AfterStartupTaskUtils::RegisterStartupInProgressRef();
+  AfterStartupTaskUtils::BeginMonitoringStartupCompletionForTesting(
+      /*include_default_refs=*/false);
+  FlushUIThread();
+  EXPECT_FALSE(AfterStartupTaskUtils::IsBrowserStartupComplete());
+
+  // Simulate browser shutdown: stop pumping tasks, then delete the global
+  // BrowserProcess. The test will crash if SetBrowserStartupIsComplete() is
+  // called after this point, as it tries to access the browser process.
+  task_environment_.ShutdownBrowserTaskExecutor();
+  TestingBrowserProcess::DeleteInstance();
+
+  ref.reset();
+
+  // FlushUIThread() will time out because tasks aren't being pumped.
+  EXPECT_FALSE(AfterStartupTaskUtils::IsBrowserStartupComplete());
+}
+
+#endif  // !BUILDFLAG(IS_ANDROID)
