@@ -70,6 +70,14 @@ class PinnedToolbarActions : public ToolbarController::PinnedActionsDelegate {
 
   // Set |id|'s pinned state to |pin| and announce it.
   virtual void UpdatePinnedStateAndAnnounce(actions::ActionId id, bool pin) = 0;
+
+  // Move the pinned action for |action_id| to |target_index|.
+  virtual void MovePinnedAction(actions::ActionId action_id,
+                                int target_index) = 0;
+
+  // Move the pinned action for |action_id| by |delta| (-1 for left/previous, +1
+  // for right/next).
+  virtual void MovePinnedActionBy(actions::ActionId action_id, int delta) = 0;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TOOLBAR_PINNED_TOOLBAR_ACTIONS_H_

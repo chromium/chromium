@@ -56,6 +56,8 @@ class TestToolbarUiHandler extends TestBrowserProxy implements
   onLhsChipPointerEntered() {}
   onLhsChipPointerExited() {}
   onLhsChipDrag() {}
+  movePinnedToolbarAction(_actionId: any, _targetIndex: any) {}
+  movePinnedToolbarActionBy(_actionId: any, _delta: any) {}
 
   onPageActionClick(actionId: PageActionId, trigger: PageActionTrigger) {
     this.methodCalled('onPageActionClick', [actionId, trigger]);

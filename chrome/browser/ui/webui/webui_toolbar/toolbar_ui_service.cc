@@ -185,6 +185,22 @@ void ToolbarUIService::OnLocationBarFocusWithinChanged(bool focused) {
   }
 }
 
+void ToolbarUIService::MovePinnedToolbarAction(
+    toolbar_ui_api::mojom::PinnedToolbarAction action_id,
+    int32_t target_index) {
+  if (delegate_) {
+    delegate_->MovePinnedToolbarAction(action_id, target_index);
+  }
+}
+
+void ToolbarUIService::MovePinnedToolbarActionBy(
+    toolbar_ui_api::mojom::PinnedToolbarAction action_id,
+    int32_t delta) {
+  if (delegate_) {
+    delegate_->MovePinnedToolbarActionBy(action_id, delta);
+  }
+}
+
 void ToolbarUIService::OnLhsChipMousePressed(
     toolbar_ui_api::mojom::LhsChipIdentifier identifier) {
   if (delegate_) {

@@ -57,6 +57,7 @@
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/browser/ui/webui/webui_toolbar/adapters/browser_controls_adapter_impl.h"
 #include "chrome/browser/ui/webui/webui_toolbar/adapters/navigation_controls_state_fetcher_impl.h"
+#include "chrome/browser/ui/webui/webui_toolbar/utils/toolbar_button_utils.h"
 #include "chrome/browser/ui/webui/webui_toolbar/webui_toolbar_drag_state.h"
 #include "chrome/browser/ui/webui/webui_toolbar/webui_toolbar_extensions_container.h"
 #include "chrome/common/chrome_features.h"
@@ -648,6 +649,24 @@ void WebUIToolbarWebView::OnPageInitialized() {
 void WebUIToolbarWebView::InvokePinnedToolbarAction(
     toolbar_ui_api::mojom::PinnedToolbarAction action_id) {
   pinned_toolbar_actions_.Invoke(action_id);
+}
+
+void WebUIToolbarWebView::MovePinnedToolbarAction(
+    toolbar_ui_api::mojom::PinnedToolbarAction action_id,
+    int32_t target_index) {
+  if (std::optional<actions::ActionId> id =
+          webui_toolbar::PinnedToolbarActionToActionId(action_id)) {
+    pinned_toolbar_actions_.MovePinnedAction(*id, target_index);
+  }
+}
+
+void WebUIToolbarWebView::MovePinnedToolbarActionBy(
+    toolbar_ui_api::mojom::PinnedToolbarAction action_id,
+    int32_t delta) {
+  if (std::optional<actions::ActionId> id =
+          webui_toolbar::PinnedToolbarActionToActionId(action_id)) {
+    pinned_toolbar_actions_.MovePinnedActionBy(*id, delta);
+  }
 }
 
 base::expected<std::monostate, mojo_base::mojom::ErrorPtr>

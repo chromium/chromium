@@ -90,6 +90,14 @@ interface ToolbarUIService {
   // page actions, etc) count as focus being inside.
   OnLocationBarFocusWithinChanged(bool focus_inside);
 
+  // Moves the pinned toolbar action identified by `action_id` to
+  // `target_index`.
+  MovePinnedToolbarAction(PinnedToolbarAction action_id, int32 target_index);
+
+  // Moves the pinned toolbar action by `delta` (-1 for left/previous, +1 for
+  // right/next).
+  MovePinnedToolbarActionBy(PinnedToolbarAction action_id, int32 delta);
+
   // Called when an LHS chip is pressed (e.g., pointerdown).
   OnLhsChipMousePressed(LhsChipIdentifier identifier);
 

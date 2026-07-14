@@ -6043,6 +6043,44 @@ IN_PROC_BROWSER_TEST_F(WebUIPinnedToolbarActionsBrowserTest,
   UnpinAction(action_id, mojom_action);
 }
 
+IN_PROC_BROWSER_TEST_F(WebUIPinnedToolbarActionsBrowserTest,
+                       MovePinnedAction_UpdatesModelAndOrder) {
+  auto* pinned_actions = GetPinnedToolbarActions();
+  actions::ActionId action1 = kActionShowDownloads;
+  actions::ActionId action2 = kActionPrint;
+
+  model_->UpdatePinnedState(action1, true);
+  model_->UpdatePinnedState(action2, true);
+
+  const auto& ids_before = pinned_actions->PinnedActionIds();
+  ASSERT_GE(ids_before.size(), 2u);
+
+  pinned_actions->MovePinnedAction(action2, 0);
+
+  const auto& ids_after = pinned_actions->PinnedActionIds();
+  EXPECT_EQ(ids_after[0], action2);
+}
+
+IN_PROC_BROWSER_TEST_F(WebUIPinnedToolbarActionsBrowserTest,
+                       MovePinnedActionBy_RespectsBounds) {
+  auto* pinned_actions = GetPinnedToolbarActions();
+  actions::ActionId action1 = kActionShowDownloads;
+  actions::ActionId action2 = kActionPrint;
+
+  model_->UpdatePinnedState(action1, true);
+  model_->UpdatePinnedState(action2, true);
+
+  pinned_actions->MovePinnedAction(action1, 0);
+  EXPECT_EQ(pinned_actions->PinnedActionIds()[0], action1);
+
+  pinned_actions->MovePinnedActionBy(action1, -1);
+  EXPECT_EQ(pinned_actions->PinnedActionIds()[0], action1);
+
+  pinned_actions->MovePinnedActionBy(action1, 1);
+  EXPECT_NE(pinned_actions->PinnedActionIds()[0], action1);
+  EXPECT_EQ(pinned_actions->PinnedActionIds()[1], action1);
+}
+
 struct DragTestParam {
   const char* test_name;
   const char* selector;

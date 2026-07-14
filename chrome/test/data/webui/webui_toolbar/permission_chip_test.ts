@@ -26,6 +26,8 @@ class TestToolbarUiHandler extends TestBrowserProxy implements
       'onLhsChipPointerEntered',
       'onLhsChipPointerExited',
       'onLhsChipDrag',
+      'movePinnedToolbarAction',
+      'movePinnedToolbarActionBy',
     ]);
   }
 
@@ -48,6 +50,8 @@ class TestToolbarUiHandler extends TestBrowserProxy implements
     return new Promise<never>(() => {});
   }
   invokePinnedToolbarAction() {}
+  movePinnedToolbarAction() {}
+  movePinnedToolbarActionBy() {}
   onHomeButtonDropUrl() {}
   onHomeButtonDropFile() {}
   onToolbarDropFile() {}

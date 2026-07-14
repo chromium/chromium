@@ -270,6 +270,12 @@ void PinnedToolbarActionsContainer::UpdatePinnedStateAndAnnounce(
   model_->UpdatePinnedState(id, pin);
 }
 
+void PinnedToolbarActionsContainer::MovePinnedAction(
+    actions::ActionId action_id,
+    int target_index) {
+  model_->MovePinnedAction(action_id, target_index);
+}
+
 void PinnedToolbarActionsContainer::MovePinnedActionBy(actions::ActionId id,
                                                        int delta) {
   DCHECK(IsActionPinned(id));
@@ -392,7 +398,7 @@ views::View::DropCallback PinnedToolbarActionsContainer::GetDropCallback(
   base::ScopedClosureRunner cleanup(
       base::BindOnce(&PinnedToolbarActionsContainer::DragDropCleanup,
                      weak_ptr_factory_.GetWeakPtr(), action_id));
-  return base::BindOnce(&PinnedToolbarActionsContainer::MovePinnedAction,
+  return base::BindOnce(&PinnedToolbarActionsContainer::MovePinnedActionOnDrop,
                         drop_weak_ptr_factory_.GetWeakPtr(), action_id, index,
                         std::move(cleanup));
 }
@@ -785,7 +791,7 @@ void PinnedToolbarActionsContainer::SetActionButtonIconVisibility(
   }
 }
 
-void PinnedToolbarActionsContainer::MovePinnedAction(
+void PinnedToolbarActionsContainer::MovePinnedActionOnDrop(
     actions::ActionId action_id,
     size_t index,
     base::ScopedClosureRunner cleanup,

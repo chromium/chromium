@@ -194,6 +194,12 @@ class WebUIToolbarWebView
   void InvokePinnedToolbarAction(
       toolbar_ui_api::mojom::PinnedToolbarAction action_id) override;
   void OnLocationBarFocusWithinChanged(bool focused) override;
+  void MovePinnedToolbarAction(
+      toolbar_ui_api::mojom::PinnedToolbarAction action_id,
+      int32_t target_index) override;
+  void MovePinnedToolbarActionBy(
+      toolbar_ui_api::mojom::PinnedToolbarAction action_id,
+      int32_t delta) override;
   void OnLhsChipMousePressed(
       toolbar_ui_api::mojom::LhsChipIdentifier identifier) override;
   void OnLhsChipClicked(toolbar_ui_api::mojom::LhsChipIdentifier identifier,

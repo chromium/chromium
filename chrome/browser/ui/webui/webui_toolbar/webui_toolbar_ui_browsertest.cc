@@ -148,6 +148,14 @@ class MockToolbarUIDelegate
               (override));
   MOCK_METHOD(void, OnLocationBarFocusWithinChanged, (bool), (override));
   MOCK_METHOD(void,
+              MovePinnedToolbarAction,
+              (toolbar_ui_api::mojom::PinnedToolbarAction, int32_t),
+              (override));
+  MOCK_METHOD(void,
+              MovePinnedToolbarActionBy,
+              (toolbar_ui_api::mojom::PinnedToolbarAction, int32_t),
+              (override));
+  MOCK_METHOD(void,
               OnLhsChipMousePressed,
               (toolbar_ui_api::mojom::LhsChipIdentifier),
               (override));
@@ -294,6 +302,34 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarUIBrowserTest, InvokePinnedToolbarAction) {
 
   service_remote->InvokePinnedToolbarAction(
       toolbar_ui_api::mojom::PinnedToolbarAction::kPrint);
+  service_remote.FlushForTesting();
+}
+
+IN_PROC_BROWSER_TEST_F(WebUIToolbarUIBrowserTest, MovePinnedToolbarAction) {
+  mojo::Remote<toolbar_ui_api::mojom::ToolbarUIService> service_remote;
+  ui()->BindInterface(service_remote.BindNewPipeAndPassReceiver());
+
+  EXPECT_CALL(toolbar_ui_delegate(),
+              MovePinnedToolbarAction(
+                  toolbar_ui_api::mojom::PinnedToolbarAction::kPrint, 0))
+      .Times(1);
+
+  service_remote->MovePinnedToolbarAction(
+      toolbar_ui_api::mojom::PinnedToolbarAction::kPrint, 0);
+  service_remote.FlushForTesting();
+}
+
+IN_PROC_BROWSER_TEST_F(WebUIToolbarUIBrowserTest, MovePinnedToolbarActionBy) {
+  mojo::Remote<toolbar_ui_api::mojom::ToolbarUIService> service_remote;
+  ui()->BindInterface(service_remote.BindNewPipeAndPassReceiver());
+
+  EXPECT_CALL(toolbar_ui_delegate(),
+              MovePinnedToolbarActionBy(
+                  toolbar_ui_api::mojom::PinnedToolbarAction::kPrint, -1))
+      .Times(1);
+
+  service_remote->MovePinnedToolbarActionBy(
+      toolbar_ui_api::mojom::PinnedToolbarAction::kPrint, -1);
   service_remote.FlushForTesting();
 }
 

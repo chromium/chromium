@@ -51,6 +51,12 @@ class ToolbarUIService : public toolbar_ui_api::mojom::ToolbarUIService {
     virtual void InvokePinnedToolbarAction(
         toolbar_ui_api::mojom::PinnedToolbarAction action_id) = 0;
     virtual void OnLocationBarFocusWithinChanged(bool focused) = 0;
+    virtual void MovePinnedToolbarAction(
+        toolbar_ui_api::mojom::PinnedToolbarAction action_id,
+        int32_t target_index) = 0;
+    virtual void MovePinnedToolbarActionBy(
+        toolbar_ui_api::mojom::PinnedToolbarAction action_id,
+        int32_t delta) = 0;
     virtual void OnLhsChipMousePressed(
         toolbar_ui_api::mojom::LhsChipIdentifier identifier) = 0;
     virtual void OnLhsChipClicked(
@@ -125,6 +131,12 @@ class ToolbarUIService : public toolbar_ui_api::mojom::ToolbarUIService {
   void InvokePinnedToolbarAction(
       toolbar_ui_api::mojom::PinnedToolbarAction action_id) override;
   void OnLocationBarFocusWithinChanged(bool focused) override;
+  void MovePinnedToolbarAction(
+      toolbar_ui_api::mojom::PinnedToolbarAction action_id,
+      int32_t target_index) override;
+  void MovePinnedToolbarActionBy(
+      toolbar_ui_api::mojom::PinnedToolbarAction action_id,
+      int32_t delta) override;
   void OnLhsChipMousePressed(
       toolbar_ui_api::mojom::LhsChipIdentifier identifier) override;
   void OnLhsChipClicked(toolbar_ui_api::mojom::LhsChipIdentifier identifier,

@@ -348,6 +348,27 @@ void WebUIPinnedToolbarActions::UpdatePinnedStateAndAnnounce(
   model_->UpdatePinnedState(id, pin);
 }
 
+void WebUIPinnedToolbarActions::MovePinnedAction(actions::ActionId action_id,
+                                                 int target_index) {
+  model_->MovePinnedAction(action_id, target_index);
+}
+
+void WebUIPinnedToolbarActions::MovePinnedActionBy(actions::ActionId action_id,
+                                                   int delta) {
+  DCHECK(IsActionPinned(action_id));
+  const auto& pinned_action_ids = model_->PinnedActionIds();
+  auto iter = std::ranges::find(pinned_action_ids, action_id);
+  if (iter == pinned_action_ids.end()) {
+    return;
+  }
+  int current_index = std::distance(pinned_action_ids.begin(), iter);
+  int target_index = current_index + delta;
+  if (target_index >= 0 &&
+      target_index < static_cast<int>(pinned_action_ids.size())) {
+    model_->MovePinnedAction(action_id, target_index);
+  }
+}
+
 void WebUIPinnedToolbarActions::Invoke(
     toolbar_ui_api::mojom::PinnedToolbarAction action_id) {
   std::optional<actions::ActionId> id =
