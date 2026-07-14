@@ -20,7 +20,6 @@
 #include "base/task/thread_pool.h"
 #include "chrome/browser/ash/policy/uploading/system_log_uploader.h"
 #include "chrome/browser/ash/policy/uploading/upload_job_impl.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/device_identity/device_oauth2_token_service.h"
 #include "chrome/browser/device_identity/device_oauth2_token_service_factory.h"
 #include "chrome/browser/policy/chrome_policy_conversions_client.h"
@@ -136,8 +135,12 @@ std::unique_ptr<SystemLogUploader::SystemLogs> ReadFiles() {
 }  // namespace
 
 SystemLogUploaderDelegate::SystemLogUploaderDelegate(
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     scoped_refptr<base::SequencedTaskRunner> task_runner)
-    : task_runner_(std::move(task_runner)) {}
+    : url_loader_factory_(std::move(url_loader_factory)),
+      task_runner_(std::move(task_runner)) {
+  CHECK(url_loader_factory_);
+}
 
 SystemLogUploaderDelegate::~SystemLogUploaderDelegate() = default;
 
@@ -200,9 +203,8 @@ std::unique_ptr<UploadJob> SystemLogUploaderDelegate::CreateUploadJob(
       )");
   return std::make_unique<UploadJobImpl>(
       upload_url, robot_account_id,
-      device_oauth2_token_service->GetAccessTokenManager(),
-      g_browser_process->shared_url_loader_factory(), delegate,
-      std::make_unique<UploadJobImpl::RandomMimeBoundaryGenerator>(),
+      device_oauth2_token_service->GetAccessTokenManager(), url_loader_factory_,
+      delegate, std::make_unique<UploadJobImpl::RandomMimeBoundaryGenerator>(),
       traffic_annotation, task_runner_);
 }
 

@@ -15,14 +15,20 @@ namespace base {
 class SequencedTaskRunner;
 }  // namespace base
 
+namespace network {
+class SharedURLLoaderFactory;
+}  // namespace network
+
 namespace policy {
 
 // An implementation of the `SystemLogUploader::Delegate`, that is used to
 // create an upload job and load system logs from the disk.
 class SystemLogUploaderDelegate : public SystemLogUploader::Delegate {
  public:
-  // `task_runner` is used for scheduling the upload task.
-  explicit SystemLogUploaderDelegate(
+  // `url_loader_factory` must be non-null and is used to perform network
+  // requests. `task_runner` is used for scheduling the upload task.
+  SystemLogUploaderDelegate(
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       scoped_refptr<base::SequencedTaskRunner> task_runner);
   SystemLogUploaderDelegate(const SystemLogUploaderDelegate&) = delete;
   SystemLogUploaderDelegate& operator=(const SystemLogUploaderDelegate&) =
@@ -39,6 +45,7 @@ class SystemLogUploaderDelegate : public SystemLogUploader::Delegate {
                      ZippedLogUploadCallback upload_callback) override;
 
  private:
+  const scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   const scoped_refptr<base::SequencedTaskRunner> task_runner_;
 };
 

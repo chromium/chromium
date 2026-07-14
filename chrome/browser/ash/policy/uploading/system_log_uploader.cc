@@ -31,6 +31,7 @@
 #include "components/policy/core/common/remote_commands/remote_command_job.h"
 #include "components/prefs/pref_service.h"
 #include "net/http/http_request_headers.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace policy {
 
@@ -118,8 +119,11 @@ SystemLogUploader::SystemLogUploader(
       task_runner_(task_runner),
       syslog_delegate_(std::move(syslog_delegate)),
       upload_enabled_(false) {
-  if (!syslog_delegate_)
-    syslog_delegate_ = std::make_unique<SystemLogUploaderDelegate>(task_runner);
+  if (!syslog_delegate_) {
+    // TODO(crbug.com/404133022): Avoid using g_browser_process.
+    syslog_delegate_ = std::make_unique<SystemLogUploaderDelegate>(
+        g_browser_process->shared_url_loader_factory(), task_runner);
+  }
   DCHECK(syslog_delegate_);
   SYSLOG(INFO) << "Creating system log uploader.";
 
