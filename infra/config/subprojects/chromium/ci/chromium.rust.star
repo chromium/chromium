@@ -272,48 +272,6 @@ ci.builder(
 )
 
 ci.builder(
-    name = "mac-rust-x64-dbg",
-    builder_spec = builder_config.builder_spec(
-        gclient_config = builder_config.gclient_config(
-            config = "chromium",
-        ),
-        chromium_config = builder_config.chromium_config(
-            config = "chromium",
-            apply_configs = ["mb"],
-            build_config = builder_config.build_config.DEBUG,
-            target_bits = 64,
-            target_platform = builder_config.target_platform.MAC,
-        ),
-    ),
-    gn_args = gn_args.config(
-        configs = [
-            "debug_builder",
-            "remoteexec",
-            "mac",
-            "x64",
-        ],
-    ),
-    targets = targets.bundle(
-        targets = [
-            "rust_host_gtests",
-            "rust_native_tests",
-        ],
-        additional_compile_targets = [
-            "rust_build_tests",
-        ],
-        mixins = [
-            "mac_default_x64",
-        ],
-    ),
-    cores = 12,
-    os = os.MAC_DEFAULT,
-    console_view_entry = consoles.console_view_entry(
-        category = "Mac x64",
-        short_name = "dbg",
-    ),
-)
-
-ci.builder(
     name = "mac-rust-arm64-dbg",
     description_html = "Runs rust tests on MacOS on CI",
     builder_spec = builder_config.builder_spec(

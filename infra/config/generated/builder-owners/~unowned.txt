@@ -66,7 +66,6 @@ ci/mac-intel-on-arm64-rel
 ci/mac-lsan-fyi-rel
 ci/mac-osxbeta-rel
 ci/mac-perfetto-rel
-ci/mac-rust-x64-dbg
 ci/mac-ubsan-fyi-rel
 ci/metadata-exporter
 ci/rts-suite-analysis
@@ -241,7 +240,6 @@ try/mac-perfetto-rel
 try/mac-rel
 try/mac-rel-cft
 try/mac-rel-compilator
-try/mac-rust-x64-dbg
 try/mac-swangle-chromium-try-x64
 try/mac-ubsan-fyi-rel
 try/mac13-arm64-rel

@@ -456,7 +456,6 @@
     "linux-rust-x64-dbg": "ci/linux-rust-x64-dbg/gn-args.json",
     "linux-rust-x64-rel": "ci/linux-rust-x64-rel/gn-args.json",
     "mac-rust-arm64-dbg": "ci/mac-rust-arm64-dbg/gn-args.json",
-    "mac-rust-x64-dbg": "ci/mac-rust-x64-dbg/gn-args.json",
     "win-rust-x64-dbg": "ci/win-rust-x64-dbg/gn-args.json",
     "win-rust-x64-rel": "ci/win-rust-x64-rel/gn-args.json"
   },
@@ -949,7 +948,6 @@
     "linux-rust-x64-dbg": "try/linux-rust-x64-dbg/gn-args.json",
     "linux-rust-x64-rel": "try/linux-rust-x64-rel/gn-args.json",
     "mac-rust-arm64-dbg": "try/mac-rust-arm64-dbg/gn-args.json",
-    "mac-rust-x64-dbg": "try/mac-rust-x64-dbg/gn-args.json",
     "win-rust-x64-dbg": "try/win-rust-x64-dbg/gn-args.json",
     "win-rust-x64-rel": "try/win-rust-x64-rel/gn-args.json"
   },

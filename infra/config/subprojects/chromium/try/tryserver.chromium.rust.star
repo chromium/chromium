@@ -75,14 +75,6 @@ try_.builder(
 )
 
 try_.builder(
-    name = "mac-rust-x64-dbg",
-    mirrors = ["ci/mac-rust-x64-dbg"],
-    gn_args = "ci/mac-rust-x64-dbg",
-    cores = None,
-    os = os.MAC_DEFAULT,
-)
-
-try_.builder(
     name = "mac-rust-arm64-dbg",
     description_html = "Runs rust tests on MacOS on try",
     mirrors = ["ci/mac-rust-arm64-dbg"],
