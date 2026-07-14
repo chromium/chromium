@@ -108,20 +108,17 @@ std::optional<ScopedPaintChunkProperties>
 EmbeddedContentPainter::RemoveSvgFilterPaint(
     const LayoutEmbeddedContent& layout_embedded_content,
     const PaintInfo& paint_info) {
-  // First, we gate the removal of the reference filter paint behind a feature
-  // flag. This is differentiated per-type of embedded content.
+  // First, we differentiate per-type of embedded content.
   const EmbeddedContentView* embedded_content_view =
       layout_embedded_content.GetEmbeddedContentView();
-  if (!embedded_content_view ||
-      !base::FeatureList::IsEnabled(features::kPreventSvgFilterPaint)) {
+  if (!embedded_content_view) {
     return std::nullopt;
   }
   DisplayItem::Type display_item_type = DisplayItem::kUninitializedType;
   switch (embedded_content_view->SvgFilterPaintedCounter()) {
     case mojom::blink::WebFeature::kSvgFilterPaintedOnLocalFrame:
       // We only care about restricted local frames.
-      if (!features::kPreventSvgFilterPaintOnLocalFrameRestricted.Get() ||
-          !To<LocalFrameView>(embedded_content_view)
+      if (!To<LocalFrameView>(embedded_content_view)
                ->GetFrame()
                .IsCrossOriginToParentOrOuterDocument()) {
         return std::nullopt;
@@ -131,15 +128,9 @@ EmbeddedContentPainter::RemoveSvgFilterPaint(
       // call CountDeprecation below, so we keep kUninitializedType as the type.
       break;
     case mojom::blink::WebFeature::kSvgFilterPaintedOnRemoteFrame:
-      if (!features::kPreventSvgFilterPaintOnRemoteFrame.Get()) {
-        return std::nullopt;
-      }
       display_item_type = DisplayItem::kForeignLayerRemoteFrame;
       break;
     case mojom::blink::WebFeature::kSvgFilterPaintedOnWebPlugin:
-      if (!features::kPreventSvgFilterPaintOnWebPlugin.Get()) {
-        return std::nullopt;
-      }
       display_item_type = DisplayItem::kWebPlugin;
       break;
     default:

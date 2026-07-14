@@ -102,24 +102,6 @@
 
 namespace blink {
 
-namespace features {
-
-BASE_FEATURE(kPreventSvgFilterPaint, base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE_PARAM(bool,
-                   kPreventSvgFilterPaintOnLocalFrameRestricted,
-                   &kPreventSvgFilterPaint,
-                   true);
-BASE_FEATURE_PARAM(bool,
-                   kPreventSvgFilterPaintOnRemoteFrame,
-                   &kPreventSvgFilterPaint,
-                   true);
-BASE_FEATURE_PARAM(bool,
-                   kPreventSvgFilterPaintOnWebPlugin,
-                   &kPreventSvgFilterPaint,
-                   true);
-
-}  // namespace features
-
 namespace {
 
 // This function is for convenience of debugging. For example, we can set a
@@ -211,10 +193,8 @@ void PaintPropertyTreeBuilder::SetupContextForFrame(
   PaintPropertyTreeBuilderFragmentContext& context =
       full_context.fragment_context;
 
-  // Potentially disable svg filter applied to restricted local frame.
-  if (base::FeatureList::IsEnabled(features::kPreventSvgFilterPaint) &&
-      features::kPreventSvgFilterPaintOnLocalFrameRestricted.Get() &&
-      frame_view.GetFrame().IsCrossOriginToParentOrOuterDocument()) {
+  // Disable svg filters applied to restricted local frames.
+  if (frame_view.GetFrame().IsCrossOriginToParentOrOuterDocument()) {
     const blink::EffectPaintPropertyNode* candidate_effect =
         GetFirstParentEffectWithoutReferenceFilter(context.current_effect);
     if (candidate_effect) {

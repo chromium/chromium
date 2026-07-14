@@ -1339,9 +1339,6 @@ public final class ProductionSupportedFlagList {
                         + " the main thread. Only takes effect if PREFETCH_OFF_THE_MAIN_THREAD is"
                         + " enabled as well."),
         Flag.baseFeature(
-                "PreventSvgFilterPaint",
-                "Disables SVG filter painting for remote frames and web plugins."),
-        Flag.baseFeature(
                 ContentFeatures.PREFETCH_REQUEST_STATUS_LISTENER_ASYNC,
                 "Make PrefetchRequestStatusListener notifications async."),
         Flag.baseFeature(AwFeatures.WEBVIEW_NAVIGATE, "Enables the WebView navigate method"),

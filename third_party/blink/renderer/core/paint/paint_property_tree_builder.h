@@ -17,15 +17,6 @@
 
 namespace blink {
 
-namespace features {
-
-BASE_DECLARE_FEATURE(kPreventSvgFilterPaint);
-BASE_DECLARE_FEATURE_PARAM(bool, kPreventSvgFilterPaintOnLocalFrameRestricted);
-BASE_DECLARE_FEATURE_PARAM(bool, kPreventSvgFilterPaintOnRemoteFrame);
-BASE_DECLARE_FEATURE_PARAM(bool, kPreventSvgFilterPaintOnWebPlugin);
-
-}  // namespace features
-
 class FragmentData;
 class LayoutObject;
 class LocalFrameView;
