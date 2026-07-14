@@ -186,6 +186,15 @@ ScopedOrtSessionOptions CreateBaseSessionOptions(
       /*config_key=*/kOrtSessionOptionsConfigStrictShapeTypeInference,
       /*config_value=*/"1"));
 
+  // Enable Cast chain elimination optimization. We need to insert bool <->
+  // uint8 Cast nodes in some cases since WebNN doesn't support bool data type
+  // but ONNX models may use bool type for some control flow. This optimization
+  // can help eliminate unnecessary Cast operations in the chain for bool type.
+  CHECK_STATUS(ort_api->AddSessionConfigEntry(
+      session_options.get(),
+      /*config_key=*/kOrtSessionOptionsEnableCastChainElimination,
+      /*config_value=*/"1"));
+
   // Only set graph optimization level if user provides a valid input.
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kWebNNOrtGraphOptimizationLevel)) {
