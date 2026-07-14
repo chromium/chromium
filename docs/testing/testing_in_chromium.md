@@ -175,7 +175,7 @@ out/Default/blink_unittests --gtest_filter='Foo*'
 Use `--help` for more ways to select and run tests.
 
 ### Run tests remotely(on Swarming)
->TODO: add the link to the instruction about how to run tests on Swarming.
+See [UTR - The Universal Test Runner].
 
 ## How to debug tests
 *  [Android Debugging Instructions]
@@ -213,6 +213,7 @@ Tests are not configured to upload metrics, such as UMA, UKM or crash reports.
 [Write Fuzz Target]: https://chromium.googlesource.com/chromium/src/+/main/testing/libfuzzer/getting_started.md#write-fuzz-target
 [Telemetry: Run benchmarks locally]: https://chromium.googlesource.com/catapult/+/HEAD/telemetry/docs/run_benchmarks_locally.md
 [Run fuzz target locally]: https://chromium.googlesource.com/chromium/src/+/main/testing/libfuzzer/getting_started.md#build-and-run-fuzz-target-locally
+[UTR - The Universal Test Runner]: https://chromium.googlesource.com/chromium/src/+/HEAD/tools/utr/README.md
 [Android Debugging Instructions]: https://chromium.googlesource.com/chromium/src/+/HEAD/docs/android_debugging_instructions.md
 [Chrome OS Debugging Tips]: ./chromeos_debugging_tips.md
 [Debugging Web Tests]: https://chromium.googlesource.com/chromium/src/+/HEAD/docs/testing/web_tests.md#Debugging-Web-Tests
