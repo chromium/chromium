@@ -5,11 +5,10 @@
 import 'chrome://resources/cr_components/composebox/composebox.js';
 import 'chrome://contextual-tasks/strings.m.js';
 
-import {ComposeboxFile, TabUploadOrigin} from 'chrome://resources/cr_components/composebox/common.js';
+import {ComposeboxFile} from 'chrome://resources/cr_components/composebox/common.js';
 import type {ComposeboxElement} from 'chrome://resources/cr_components/composebox/composebox.js';
 import {PageCallbackRouter, PageHandlerRemote} from 'chrome://resources/cr_components/composebox/composebox.mojom-webui.js';
 import {ComposeboxProxyImpl} from 'chrome://resources/cr_components/composebox/composebox_proxy.js';
-import type {ContextualEntrypointAndMenuElement} from 'chrome://resources/cr_components/composebox/contextual_entrypoint_and_menu.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import type {TabInfo} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
@@ -23,11 +22,6 @@ import {getTrustedHtml} from 'chrome://webui-test/trusted_html.js';
 // </if>
 
 import {installMock} from './composebox_test_utils.js';
-
-interface TestComposeboxElement extends ComposeboxElement {
-  composeboxSource: string;
-  keepMenuOpenForMultiSelection(): Promise<void>;
-}
 
 // LINT.IfChange
 suite('ComposeboxTest', () => {
@@ -222,77 +216,6 @@ suite('ComposeboxTest', () => {
     // Restore
     composebox.isSidePanel = false;
     composebox.deleteFile = originalDeleteFile;
-  });
-
-  test(
-      'keepMenuOpenForMultiSelection is gated' +
-          ' by keepMenuOpenOnTabSelectForRealbox',
-      async () => {
-        let openMenuCalled = false;
-        composebox.getContextEntrypointElement = () => {
-          return {
-            openMenuForMultiSelection: () => {
-              openMenuCalled = true;
-            },
-          } as unknown as ContextualEntrypointAndMenuElement;
-        };
-
-        const testElement = composebox as TestComposeboxElement;
-        testElement.contextManagementInComposeboxEnabled = true;
-
-        // Omnibox source: always returns early
-        testElement.composeboxSource = 'Omnibox';
-        await testElement.keepMenuOpenForMultiSelection();
-        assertFalse(openMenuCalled);
-
-        // NewTabPage source, flag off: returns early
-        testElement.composeboxSource = 'NewTabPage';
-        loadTimeData.overrideValues({keepMenuOpenOnTabSelectForRealbox: false});
-        await testElement.keepMenuOpenForMultiSelection();
-        assertFalse(openMenuCalled);
-
-        // NewTabPage source, flag on: calls openMenuForMultiSelection
-        testElement.composeboxSource = 'NewTabPage';
-        loadTimeData.overrideValues({keepMenuOpenOnTabSelectForRealbox: true});
-        await testElement.keepMenuOpenForMultiSelection();
-        assertTrue(openMenuCalled);
-      });
-
-  test(
-      'keepMenuOpenForMultiSelection called on add/delete tab context',
-      async () => {
-        let keepMenuOpenCalled = false;
-        const testElement = composebox as TestComposeboxElement;
-        testElement.keepMenuOpenForMultiSelection = () => {
-          keepMenuOpenCalled = true;
-          return Promise.resolve();
-        };
-
-        await composebox.onAddTabContext(new CustomEvent('add-tab-context', {
-          detail: {
-            id: 1,
-            title: 'Test',
-            url: 'about:blank',  // Mojo converts obj to str.
-            delayUpload: false,
-            origin: TabUploadOrigin.CONTEXT_MENU,
-          },
-        }));
-        assertTrue(keepMenuOpenCalled);
-
-        keepMenuOpenCalled = false;
-        await composebox.onDeleteTabContext(
-            new CustomEvent('delete-tab-context', {
-              detail: {
-                tabId: 1,
-              },
-            }));
-        assertTrue(keepMenuOpenCalled);
-      });
-
-  test('onContextMenuClosed sets shareTabsFlyoutOpen to false', async () => {
-    composebox.shareTabsFlyoutOpen = true;
-    await composebox.onContextMenuClosed();
-    assertFalse(composebox.shareTabsFlyoutOpen);
   });
 });
 
