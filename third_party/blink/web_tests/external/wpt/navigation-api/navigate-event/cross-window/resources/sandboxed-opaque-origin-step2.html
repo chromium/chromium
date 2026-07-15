@@ -1,0 +1,19 @@
+<!doctype html>
+<script>
+  navigation.addEventListener('navigate', (e) => {
+    if (e.destination.url.includes('sandboxed-opaque-origin.html')) {
+      let state = e.destination.getState();
+      top.postMessage({type: 'navigate_event', state: state}, '*');
+    }
+  });
+
+  window.onload = () => {
+    top.postMessage({type: 'attacker_loaded'}, '*');
+  };
+
+  window.addEventListener("message", (e) => {
+    if (e.data === "go_back") {
+      history.back();
+    }
+  });
+</script>
