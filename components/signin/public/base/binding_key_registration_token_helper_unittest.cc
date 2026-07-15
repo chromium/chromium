@@ -121,8 +121,8 @@ TEST_F(BindingKeyRegistrationTokenHelperTest, SuccessForTokenBinding) {
       "test_client_id", TokenBindingAuthCode("test_auth_code"),
       GURL("https://accounts.google.com/Register"), future.GetCallback());
   RunBackgroundTasks();
-  ASSERT_TRUE(future.Get().has_value());
-  VerifyResult(future.Get().value());
+  ASSERT_OK_AND_ASSIGN(auto result, future.Take());
+  VerifyResult(result);
   histogram_tester().ExpectUniqueSample(
       kTokenBindingResultHistogram,
       BindingKeyRegistrationTokenHelper::Error::kNone,
@@ -142,9 +142,9 @@ TEST_F(BindingKeyRegistrationTokenHelperTest, SuccessForTokenBindingReuseKey) {
       "test_client_id", TokenBindingAuthCode("test_auth_code"),
       GURL("https://accounts.google.com/Register"), future.GetCallback());
   RunBackgroundTasks();
-  ASSERT_TRUE(future.Get().has_value());
-  VerifyResult(future.Get().value());
-  EXPECT_EQ(future.Get()->wrapped_binding_key, wrapped_key);
+  ASSERT_OK_AND_ASSIGN(auto result, future.Take());
+  VerifyResult(result);
+  EXPECT_EQ(result.wrapped_binding_key, wrapped_key);
   histogram_tester().ExpectUniqueSample(
       kTokenBindingResultHistogram,
       BindingKeyRegistrationTokenHelper::Error::kNone,
@@ -162,8 +162,8 @@ TEST_F(BindingKeyRegistrationTokenHelperTest, SuccessForSessionBinding) {
                                    GURL("https://accounts.google.com/Register"),
                                    future.GetCallback());
   RunBackgroundTasks();
-  ASSERT_TRUE(future.Get().has_value());
-  VerifyResult(future.Get().value());
+  ASSERT_OK_AND_ASSIGN(auto result, future.Take());
+  VerifyResult(result);
   histogram_tester().ExpectUniqueSample(
       kSessionBindingResultHistogram,
       BindingKeyRegistrationTokenHelper::Error::kNone,
@@ -342,13 +342,12 @@ TEST_F(BindingKeyRegistrationTokenHelperTest,
       "test_client_id", TokenBindingChallenge("test_challenge"),
       GURL("https://accounts.google.com/Register"), future.GetCallback());
   RunBackgroundTasks();
-  ASSERT_TRUE(future.Get().has_value());
-  VerifyResult(future.Get().value());
+  ASSERT_OK_AND_ASSIGN(auto result, future.Take());
+  VerifyResult(result);
 
-  std::optional<base::DictValue> payload =
-      ExtractPayloadFromJwt(future.Get()->registration_token);
-  ASSERT_TRUE(payload.has_value());
-  EXPECT_THAT(payload->FindString("jti"),
+  ASSERT_OK_AND_ASSIGN(base::DictValue payload,
+                       ExtractPayloadFromJwt(result.registration_token));
+  EXPECT_THAT(payload.FindString("jti"),
               Pointee(std::string("test_challenge")));
 
   histogram_tester().ExpectUniqueSample(
