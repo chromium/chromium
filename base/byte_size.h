@@ -10,7 +10,6 @@
 #include <iosfwd>
 
 #include "base/base_export.h"
-#include "base/byte_count.h"
 #include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
 
@@ -182,16 +181,6 @@ class BASE_EXPORT ByteSize : public internal::ByteSizeBase {
   static constexpr ByteSize FromByteSizeDelta(ByteSizeDelta delta);
   constexpr ByteSizeDelta AsByteSizeDelta() const;
 
-  // Converts ByteSize to and from a deprecated ByteCount. Converting from a
-  // ByteCount CHECK's that it's in range (ie. non-negative). Converting to a
-  // ByteCount always succeeds.
-  static constexpr ByteSize FromDeprecatedByteCount(ByteCount count) {
-    return ByteSize(count.InBytesUnsigned());
-  }
-  constexpr ByteCount AsDeprecatedByteCount() const {
-    return ByteCount::FromUnsigned(InBytes());
-  }
-
   // Returns a value corresponding to the "maximum" number of bytes possible.
   // Useful as a constant to mean "unlimited".
   static constexpr ByteSize Max() {
@@ -311,14 +300,6 @@ class BASE_EXPORT ByteSizeDelta : public internal::ByteSizeBase {
     return ByteSize(checked_cast<uint64_t>(InBytes()));
   }
 
-  // Converts ByteSizeDelta to and from a deprecated ByteCount. Always succeeds.
-  static constexpr ByteSizeDelta FromDeprecatedByteCount(ByteCount count) {
-    return ByteSizeDelta(count.InBytes());
-  }
-  constexpr ByteCount AsDeprecatedByteCount() const {
-    return ByteCount(InBytes());
-  }
-
   // Returns a value corresponding to the "maximum" (positive) number of bytes
   // possible. Useful as a constant to mean "unlimited" in the positive
   // direction.
@@ -430,8 +411,7 @@ class BASE_EXPORT ByteSizeDelta : public internal::ByteSizeBase {
 // be converted to CheckedNumeric BEFORE multiplying to detect overflows, while
 // floats must be converted AFTER multiplying to avoid premature truncation.
 //
-// TODO(crbug.com/448661443): After all uses of KiB, etc, are migrated to
-// explicit signed/ unsigned, rename KiBU to KiB.
+// TODO(crbug.com/448661443): Rename KiBU, etc, to KiB, etc.
 
 template <typename T>
   requires std::integral<T>

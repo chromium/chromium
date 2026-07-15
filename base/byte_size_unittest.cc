@@ -7,7 +7,6 @@
 #include <limits>
 #include <sstream>
 
-#include "base/byte_count.h"
 #include "base/rand_util.h"
 #include "base/test/gtest_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -122,32 +121,6 @@ TEST(ByteSizeDeathTest, ConstructionDeltaOutOfRange) {
     BASE_EXPECT_DEATH(ByteSizeDelta(-1).AsByteSize(), "");
     BASE_EXPECT_DEATH(ByteSize::FromByteSizeDelta(ByteSizeDelta::Min()), "");
     BASE_EXPECT_DEATH(ByteSizeDelta::Min().AsByteSize(), "");
-  }
-}
-
-TEST(ByteSizeTest, ConstructionByteCount) {
-  EXPECT_EQ(ByteSize::FromDeprecatedByteCount(ByteCount()), ByteSize());
-  EXPECT_EQ(ByteCount(), ByteSize().AsDeprecatedByteCount());
-
-  EXPECT_EQ(ByteSize::FromDeprecatedByteCount(ByteCount(7)), ByteSize(7u));
-  EXPECT_EQ(ByteCount(7), ByteSize(7u).AsDeprecatedByteCount());
-
-  EXPECT_EQ(ByteSize::FromDeprecatedByteCount(ByteCount::Max()),
-            ByteSize::Max());
-  EXPECT_EQ(ByteCount::Max(), ByteSize::Max().AsDeprecatedByteCount());
-
-  // Make sure non-const expressions are accepted.
-  EXPECT_EQ(ByteSize::FromDeprecatedByteCount(ByteCount(RunTimeNum(3))),
-            ByteSize(3u));
-  EXPECT_EQ(ByteCount(3), ByteSize(RunTimeNum(3u)).AsDeprecatedByteCount());
-}
-
-TEST(ByteSizeDeathTest, ConstructionByteCountOutOfRange) {
-  BASE_EXPECT_DEATH(ByteSize::FromDeprecatedByteCount(ByteCount(-1)), "");
-  if (kRunAllDeathTests) {
-    BASE_EXPECT_DEATH(ByteSize::FromDeprecatedByteCount(
-                          ByteCount(std::numeric_limits<int64_t>::min())),
-                      "");
   }
 }
 
@@ -1000,40 +973,6 @@ TEST(ByteSizeDeltaTest, ConstructionByteSize) {
   ByteSize bytes(RunTimeNum(3u));
   EXPECT_EQ(ByteSizeDelta::FromByteSize(bytes), ByteSizeDelta(3));
   EXPECT_EQ(bytes.AsByteSizeDelta(), ByteSizeDelta(3));
-}
-
-TEST(ByteSizeDeltaTest, ConstructionByteCount) {
-  EXPECT_EQ(ByteSizeDelta::FromDeprecatedByteCount(ByteCount()),
-            ByteSizeDelta());
-  EXPECT_EQ(ByteCount(), ByteSizeDelta().AsDeprecatedByteCount());
-
-  EXPECT_EQ(ByteSizeDelta::FromDeprecatedByteCount(ByteCount(7)),
-            ByteSizeDelta(7));
-  EXPECT_EQ(ByteCount(7), ByteSizeDelta(7).AsDeprecatedByteCount());
-
-  EXPECT_EQ(ByteSizeDelta::FromDeprecatedByteCount(ByteCount::Max()),
-            ByteSizeDelta::Max());
-  EXPECT_EQ(ByteCount::Max(), ByteSizeDelta::Max().AsDeprecatedByteCount());
-
-  EXPECT_EQ(ByteSizeDelta::FromDeprecatedByteCount(ByteCount(-7)),
-            ByteSizeDelta(-7));
-  EXPECT_EQ(ByteCount(-7), ByteSizeDelta(-7).AsDeprecatedByteCount());
-
-  EXPECT_EQ(ByteSizeDelta::FromDeprecatedByteCount(
-                ByteCount(std::numeric_limits<int64_t>::min())),
-            ByteSizeDelta::Min());
-  EXPECT_EQ(ByteCount(std::numeric_limits<int64_t>::min()),
-            ByteSizeDelta::Min().AsDeprecatedByteCount());
-
-  // Make sure non-const expressions are accepted.
-  EXPECT_EQ(ByteSizeDelta::FromDeprecatedByteCount(ByteCount(RunTimeNum(3))),
-            ByteSizeDelta(3));
-  EXPECT_EQ(ByteCount(RunTimeNum(3)), ByteSizeDelta(3).AsDeprecatedByteCount());
-
-  EXPECT_EQ(ByteSizeDelta::FromDeprecatedByteCount(ByteCount(RunTimeNum(-3))),
-            ByteSizeDelta(-3));
-  EXPECT_EQ(ByteCount(RunTimeNum(-3)),
-            ByteSizeDelta(-3).AsDeprecatedByteCount());
 }
 
 TEST(ByteSizeDeltaTest, ConstructionMin) {
