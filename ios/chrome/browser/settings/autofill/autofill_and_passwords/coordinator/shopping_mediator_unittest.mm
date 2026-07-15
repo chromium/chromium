@@ -5,10 +5,14 @@
 #import "ios/chrome/browser/settings/autofill/autofill_and_passwords/coordinator/shopping_mediator.h"
 
 #import "base/memory/raw_ptr.h"
+#import "base/test/ios/wait_util.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
 #import "components/autofill/core/browser/test_utils/entity_data_test_utils.h"
 #import "components/autofill/core/common/autofill_features.h"
+#import "components/autofill/core/common/autofill_prefs.h"
+#import "components/optimization_guide/core/feature_registry/feature_registration.h"
+#import "components/optimization_guide/core/model_execution/model_execution_prefs.h"
 #import "components/prefs/pref_service.h"
 #import "components/sync/test/test_sync_service.h"
 #import "ios/chrome/browser/autofill/model/ios_autofill_entity_data_manager_factory.h"
@@ -61,7 +65,9 @@ class ShoppingMediatorTest : public PlatformTest {
 
 // Tests that setting the consumer does not crash.
 TEST_F(ShoppingMediatorTest, SetsConsumerValuesSafe) {
+  OCMExpect([consumer_ setShoppingToggleState:YES enabled:YES managed:NO]);
   mediator_.consumer = consumer_;
+  [consumer_ verify];
 }
 
 // Tests that pushing items correctly splits them by entity type and calls
@@ -104,4 +110,83 @@ TEST_F(ShoppingMediatorTest, DoesNotCrashOnSetConsumerAfterDisconnect) {
   [mediator_ disconnect];
 
   mediator_.consumer = consumer_;
+}
+
+// Tests that calling `didToggleShopping` updates the preference.
+TEST_F(ShoppingMediatorTest, TogglesShoppingPref) {
+  PrefService* prefs = profile_->GetPrefs();
+  prefs->SetBoolean(autofill::prefs::kAutofillAiShoppingEntitiesEnabled, false);
+
+  [mediator_ didToggleShopping:YES];
+  EXPECT_TRUE(
+      prefs->GetBoolean(autofill::prefs::kAutofillAiShoppingEntitiesEnabled));
+
+  [mediator_ didToggleShopping:NO];
+  EXPECT_FALSE(
+      prefs->GetBoolean(autofill::prefs::kAutofillAiShoppingEntitiesEnabled));
+}
+
+// Tests that a preference change updates the consumer toggle state.
+TEST_F(ShoppingMediatorTest, PrefChangeUpdatesConsumer) {
+  profile_->GetPrefs()->SetBoolean(
+      autofill::prefs::kAutofillAiShoppingEntitiesEnabled, false);
+  mediator_.consumer = consumer_;
+
+  OCMExpect([consumer_ setShoppingToggleState:YES enabled:YES managed:NO]);
+  profile_->GetPrefs()->SetBoolean(
+      autofill::prefs::kAutofillAiShoppingEntitiesEnabled, true);
+  [consumer_ verify];
+
+  OCMExpect([consumer_ setShoppingToggleState:NO enabled:YES managed:NO]);
+  profile_->GetPrefs()->SetBoolean(
+      autofill::prefs::kAutofillAiShoppingEntitiesEnabled, false);
+  [consumer_ verify];
+}
+
+// Tests that a preference change for address autofill updates the consumer
+// toggle enabled state.
+TEST_F(ShoppingMediatorTest, AutofillProfilePrefChangeUpdatesConsumer) {
+  profile_->GetPrefs()->SetBoolean(autofill::prefs::kAutofillProfileEnabled,
+                                   true);
+  profile_->GetPrefs()->SetBoolean(
+      autofill::prefs::kAutofillAiShoppingEntitiesEnabled, true);
+  mediator_.consumer = consumer_;
+
+  OCMExpect([consumer_ setShoppingToggleState:NO enabled:NO managed:NO]);
+  profile_->GetPrefs()->SetBoolean(autofill::prefs::kAutofillProfileEnabled,
+                                   false);
+  [consumer_ verify];
+
+  OCMExpect([consumer_ setShoppingToggleState:YES enabled:YES managed:NO]);
+  profile_->GetPrefs()->SetBoolean(autofill::prefs::kAutofillProfileEnabled,
+                                   true);
+  [consumer_ verify];
+}
+
+// Tests that a policy preference change updates the consumer toggle managed
+// state.
+TEST_F(ShoppingMediatorTest, PolicyPrefChangeUpdatesConsumer) {
+  using optimization_guide::model_execution::prefs::
+      ModelExecutionEnterprisePolicyValue;
+  const std::string kPolicyPref = optimization_guide::prefs::
+      kAutofillPredictionImprovementsEnterprisePolicyAllowed;
+
+  profile_->GetPrefs()->SetBoolean(
+      autofill::prefs::kAutofillAiShoppingEntitiesEnabled, true);
+  profile_->GetPrefs()->SetInteger(
+      kPolicyPref,
+      static_cast<int>(ModelExecutionEnterprisePolicyValue::kAllow));
+  mediator_.consumer = consumer_;
+
+  OCMExpect([consumer_ setShoppingToggleState:YES enabled:YES managed:YES]);
+  profile_->GetPrefs()->SetInteger(
+      kPolicyPref,
+      static_cast<int>(ModelExecutionEnterprisePolicyValue::kDisable));
+  [consumer_ verify];
+
+  OCMExpect([consumer_ setShoppingToggleState:YES enabled:YES managed:NO]);
+  profile_->GetPrefs()->SetInteger(
+      kPolicyPref,
+      static_cast<int>(ModelExecutionEnterprisePolicyValue::kAllow));
+  [consumer_ verify];
 }

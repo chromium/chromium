@@ -6,9 +6,13 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/notreached.h"
+#import "components/autofill/core/common/autofill_prefs.h"
+#import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/settings/autofill/autofill_ai/ui/autofill_ai_entity_item.h"
 #import "ios/chrome/browser/settings/autofill/autofill_and_passwords/coordinator/autofill_ai_base_mediator_protected.h"
 #import "ios/chrome/browser/settings/autofill/autofill_and_passwords/ui/shopping_consumer.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_backed_boolean.h"
+#import "ios/chrome/browser/shared/model/utils/observable_boolean.h"
 
 namespace {
 
@@ -18,8 +22,35 @@ static constexpr autofill::DenseSet<autofill::EntityTypeName> kShopping = {
 
 }  // namespace
 
+@interface ShoppingMediator () <BooleanObserver>
+@end
+
 // Mediator implementation for Shopping.
-@implementation ShoppingMediator
+@implementation ShoppingMediator {
+  PrefBackedBoolean* _shoppingEnabled;
+  PrefBackedBoolean* _autofillProfileEnabled;
+}
+
+- (instancetype)initWithEntityDataManager:
+                    (autofill::EntityDataManager*)entityDataManager
+                              prefService:(PrefService*)prefService {
+  self = [super initWithEntityDataManager:entityDataManager
+                              prefService:prefService];
+  if (self) {
+    if (prefService) {
+      _shoppingEnabled = [[PrefBackedBoolean alloc]
+          initWithPrefService:prefService
+                     prefName:autofill::prefs::
+                                  kAutofillAiShoppingEntitiesEnabled];
+      _shoppingEnabled.observer = self;
+      _autofillProfileEnabled = [[PrefBackedBoolean alloc]
+          initWithPrefService:prefService
+                     prefName:autofill::prefs::kAutofillProfileEnabled];
+      _autofillProfileEnabled.observer = self;
+    }
+  }
+  return self;
+}
 
 - (void)setConsumer:(id<ShoppingConsumer>)consumer {
   if (_consumer == consumer) {
@@ -29,19 +60,50 @@ static constexpr autofill::DenseSet<autofill::EntityTypeName> kShopping = {
   if (_consumer) {
     // Trigger initial push.
     [self pushEntitiesToConsumer];
+
+    [self updateConsumerToggleState];
   }
 }
 
 - (void)disconnect {
   [super disconnect];
+  _shoppingEnabled.observer = nil;
+  [_shoppingEnabled stop];
+  _shoppingEnabled = nil;
+  _autofillProfileEnabled.observer = nil;
+  [_autofillProfileEnabled stop];
+  _autofillProfileEnabled = nil;
   _consumer = nil;
+}
+
+#pragma mark - BooleanObserver
+
+- (void)booleanDidChange:(id<ObservableBoolean>)observableBoolean {
+  if (observableBoolean == _shoppingEnabled ||
+      observableBoolean == _autofillProfileEnabled) {
+    [self updateConsumerToggleState];
+  }
+}
+
+#pragma mark - Protected
+
+- (void)updateConsumerToggleState {
+  if (!self.consumer) {
+    return;
+  }
+  BOOL profileEnabled =
+      _autofillProfileEnabled ? _autofillProfileEnabled.value : YES;
+  BOOL shoppingEnabled = _shoppingEnabled ? _shoppingEnabled.value : YES;
+  BOOL managed = [self isAutofillAiDisabledByEnterprisePolicy];
+  [self.consumer setShoppingToggleState:shoppingEnabled && profileEnabled
+                                enabled:profileEnabled
+                                managed:managed];
 }
 
 #pragma mark - ShoppingMutator
 
 - (void)didToggleShopping:(BOOL)enabled {
-  // TODO(crbug.com/532938111): Prevent form filling with order/shipment data
-  // when disabled.
+  _shoppingEnabled.value = enabled;
 }
 
 #pragma mark - AutofillAIBaseMediator
