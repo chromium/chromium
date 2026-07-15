@@ -54,7 +54,7 @@
     To check if your passwords are safe from data breaches and other security issues, <ph name="BEGIN_LINK">&lt;a target='_blank' href='$1'&gt;</ph>sign in to Chromium<ph name="END_LINK">&lt;/a&gt;</ph>.
   </message>
 
-  <!-- Enhanced autofill Page-->
+  <!-- Autofill AI Page-->
   <message name="IDS_SETTINGS_AUTOFILL_AI_WHEN_ON_USE_TO_FILL"  desc="Bullet 2 of 2 that appears beneath the “When on” title. “Later”: this is a two-step feature. 1) data is saved, 2) it becomes valuable to the user later when they want to fill in a form with similar data. “Chromium can ask”: the user has a choice, every time, whether their data is saved and also whether they want to autofill their saved info into forms.">
     Later, Chromium can ask if you want to use saved info to autofill forms for you
   </message>

@@ -1277,8 +1277,11 @@ id<GREYMatcher> TextFieldWithLabel(NSString* textFieldLabel) {
       performAction:grey_tap()];
 
   // Verify that the detail text is "On".
-  id<GREYMatcher> labelMatcher = grey_accessibilityLabel(
-      l10n_util::GetNSString(IDS_SETTINGS_AUTOFILL_AI_PAGE_TITLE));
+  id<GREYMatcher> labelMatcher = grey_accessibilityLabel(l10n_util::GetNSString(
+      base::FeatureList::IsEnabled(
+          autofill::features::kAutofillAiOnlineModelToggleNewTitle)
+          ? IDS_SETTINGS_AUTOFILL_AI_PAGE_TITLE_V2
+          : IDS_SETTINGS_AUTOFILL_AI_PAGE_TITLE));
   id<GREYMatcher> valueOnMatcher =
       grey_accessibilityValue(l10n_util::GetNSString(IDS_IOS_SETTING_ON));
   [[EarlGrey

@@ -221,6 +221,11 @@ DEFINE_WALLET_FEATURE(kAutofillAiNewUpdatePrompt);
 BASE_FEATURE(kAutofillAiNoFillingIconsExperiment,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, Autofill AI Settings Page title uses "Smarter form understanding"
+// instead of "Enhanced autofill".
+BASE_FEATURE(kAutofillAiOnlineModelToggleNewTitle,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // If enabled, AutofillAi supports order entities.
 BASE_FEATURE(kAutofillAiOrder, base::FEATURE_ENABLED_BY_DEFAULT);
 

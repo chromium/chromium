@@ -1733,7 +1733,6 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
        IDS_SETTINGS_AUTOFILL_AI_AUTHENTICATION_TOGGLE_TITLE},
       {"autofillAiAuthenticationToggleSubtitle",
        IDS_SETTINGS_AUTOFILL_AI_AUTHENTICATION_TOGGLE_SUBTITLE},
-      {"autofillAiPageTitle", IDS_SETTINGS_AUTOFILL_AI_PAGE_TITLE},
       {"autofillAiDescription", IDS_SETTINGS_AUTOFILL_AI_DESCRIPTION},
       {"autofillAiManageYourInfo", IDS_AUTOFILL_MANAGE_YOUR_INFO_LINK},
       {"autofillAiToggleSubLabel", IDS_SETTINGS_AUTOFILL_AI_TOGGLE_SUB_LABEL},
@@ -1913,6 +1912,12 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
                   .spec())));
 
   html_source->AddLocalizedStrings(kLocalizedStrings);
+  html_source->AddLocalizedString(
+      "autofillAiPageTitle",
+      base::FeatureList::IsEnabled(
+          autofill::features::kAutofillAiOnlineModelToggleNewTitle)
+          ? IDS_SETTINGS_AUTOFILL_AI_PAGE_TITLE_V2
+          : IDS_SETTINGS_AUTOFILL_AI_PAGE_TITLE);
 
   html_source->AddString(
       "addressesSublabel",

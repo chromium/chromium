@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/settings/autofill/autofill_and_passwords/utils/autofill_and_passwords_item_utils.h"
 
 #import "build/branding_buildflags.h"
+#import "components/autofill/core/common/autofill_features.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/settings/ui_bundled/autofill/autofill_settings_constants.h"
 #import "ios/chrome/browser/settings/ui_bundled/settings_table_view_controller_constants.h"
@@ -205,7 +206,11 @@ TableViewSwitchItem* EnhancedAutofillSwitchItem(NSInteger itemType,
                                                 SEL action) {
   TableViewSwitchItem* switchItem =
       [[TableViewSwitchItem alloc] initWithType:itemType];
-  switchItem.text = l10n_util::GetNSString(IDS_SETTINGS_AUTOFILL_AI_PAGE_TITLE);
+  switchItem.text = l10n_util::GetNSString(
+      base::FeatureList::IsEnabled(
+          autofill::features::kAutofillAiOnlineModelToggleNewTitle)
+          ? IDS_SETTINGS_AUTOFILL_AI_PAGE_TITLE_V2
+          : IDS_SETTINGS_AUTOFILL_AI_PAGE_TITLE);
   switchItem.target = target;
   switchItem.selector = action;
   switchItem.on = enabled;

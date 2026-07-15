@@ -245,6 +245,23 @@ TEST_F(AutofillProfileTableViewControllerTest,
       base::apple::ObjCCastStrict<TableViewDetailIconItem>(
           GetTableViewItem(/*section=*/1, /*item=*/0));
 
+  NSString* text =
+      l10n_util::GetNSString(IDS_SETTINGS_AUTOFILL_AI_PAGE_TITLE_V2);
+  EXPECT_NSEQ(text, item.text);
+}
+
+TEST_F(AutofillProfileTableViewControllerTest,
+       TestEnhancedAutofillMenuPresent_OldTitle) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      autofill::features::kAutofillAiOnlineModelToggleNewTitle);
+  CreateController();
+  CheckController();
+
+  TableViewDetailIconItem* item =
+      base::apple::ObjCCastStrict<TableViewDetailIconItem>(
+          GetTableViewItem(/*section=*/1, /*item=*/0));
+
   NSString* text = l10n_util::GetNSString(IDS_SETTINGS_AUTOFILL_AI_PAGE_TITLE);
   EXPECT_NSEQ(text, item.text);
 }

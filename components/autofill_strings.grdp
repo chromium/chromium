@@ -662,25 +662,25 @@
   <message name="IDS_AUTOFILL_TRAVEL_TITLE" desc="Title for the Your saved info settings sub page that allows user to manage their list of saved travel info. Sentence-Cased." formatter_data="android_java">
     Travel
   </message>
-  <message name="IDS_AUTOFILL_TRAVEL_OPT_IN_TOGGLE_LABEL" desc="Label for a toggle allowing users to opt into Enhanced Autofill for travel-related data types. Sentence-Cased." formatter_data="android_java">
+  <message name="IDS_AUTOFILL_TRAVEL_OPT_IN_TOGGLE_LABEL" desc="Label for a toggle allowing users to opt into Autofill AI for travel-related data types. Sentence-Cased." formatter_data="android_java">
     Save and fill travel info
   </message>
-  <message name="IDS_AUTOFILL_TRAVEL_OPT_IN_TOGGLE_SUB_LABEL" desc="Sub-label for a toggle allowing users to opt into Enhanced Autofill for travel-related data types. Sentence-Cased." formatter_data="android_java">
+  <message name="IDS_AUTOFILL_TRAVEL_OPT_IN_TOGGLE_SUB_LABEL" desc="Sub-label for a toggle allowing users to opt into Autofill AI for travel-related data types. Sentence-Cased." formatter_data="android_java">
     Includes information such as flight bookings and vehicle info
   </message>
-  <message name="IDS_AUTOFILL_IDENTITY_DOCS_OPT_IN_TOGGLE_LABEL" desc="Label for a toggle allowing users to opt into Enhanced Autofill for identity docs. Sentence-Cased." formatter_data="android_java">
+  <message name="IDS_AUTOFILL_IDENTITY_DOCS_OPT_IN_TOGGLE_LABEL" desc="Label for a toggle allowing users to opt into Autofill AI for identity docs. Sentence-Cased." formatter_data="android_java">
     Save and fill identity docs
   </message>
-  <message name="IDS_AUTOFILL_IDENTITY_DOCS_OPT_IN_TOGGLE_SUB_LABEL" desc="Sub-label for a toggle allowing users to opt into Enhanced Autofill for identity docs. Sentence-Cased." formatter_data="android_java">
+  <message name="IDS_AUTOFILL_IDENTITY_DOCS_OPT_IN_TOGGLE_SUB_LABEL" desc="Sub-label for a toggle allowing users to opt into Autofill AI for identity docs. Sentence-Cased." formatter_data="android_java">
     Includes information such as passports and driver's licenses
   </message>
 
   <!-- TODO(crbug.com/498115758): Make this string translateable. -->
-  <message name="IDS_AUTOFILL_SHOPPING_OPT_IN_TOGGLE_LABEL" desc="Label for a toggle allowing users to opt into Enhanced Autofill for shopping-related data types. Sentence-Cased." formatter_data="android_java" translateable="false">
+  <message name="IDS_AUTOFILL_SHOPPING_OPT_IN_TOGGLE_LABEL" desc="Label for a toggle allowing users to opt into Autofill AI for shopping-related data types. Sentence-Cased." formatter_data="android_java" translateable="false">
     Fill shopping info
   </message>
   <!-- TODO(crbug.com/498115758): Make this string translateable. -->
-  <message name="IDS_AUTOFILL_SHOPPING_OPT_IN_TOGGLE_SUB_LABEL" desc="Sub-label for a toggle allowing users to opt into Enhanced Autofill for shopping-related data types. Sentence-Cased." formatter_data="android_java" translateable="false">
+  <message name="IDS_AUTOFILL_SHOPPING_OPT_IN_TOGGLE_SUB_LABEL" desc="Sub-label for a toggle allowing users to opt into Autofill AI for shopping-related data types. Sentence-Cased." formatter_data="android_java" translateable="false">
     Includes information such as orders and shipments
   </message>
 
@@ -1093,33 +1093,33 @@
 
 
   <!-- Attributes of the national id card entity -->
-  <message name="IDS_AUTOFILL_AI_NATIONAL_ID_CARD_NAME_ATTRIBUTE_NAME" desc="A label that describes a piece of user data. This label loosely aligns with the original form the user submitted. For example, United Airlines might label the field  “First and last name” and Delta might label it “Full name”. Once the information is saved with enhanced autofill, we just call the value “Name”.">
+  <message name="IDS_AUTOFILL_AI_NATIONAL_ID_CARD_NAME_ATTRIBUTE_NAME" desc="A label that describes a piece of user data. This label loosely aligns with the original form the user submitted. For example, United Airlines might label the field  “First and last name” and Delta might label it “Full name”. Once the information is saved with Autofill AI, we just call the value “Name”.">
     Name
   </message>
-  <message name="IDS_AUTOFILL_AI_NATIONAL_ID_CARD_NUMBER_ATTRIBUTE_NAME" desc="A label that describes a piece of user data. This label loosely aligns with the original form the user submitted. For example, United Airlines might label the field  “Id” and Delta might label it “National identity card”. Once the information is saved with enhanced autofill, we just call the value “Number”.">
+  <message name="IDS_AUTOFILL_AI_NATIONAL_ID_CARD_NUMBER_ATTRIBUTE_NAME" desc="A label that describes a piece of user data. This label loosely aligns with the original form the user submitted. For example, United Airlines might label the field  “Id” and Delta might label it “National identity card”. Once the information is saved with Autofill AI, we just call the value “Number”.">
     Number
   </message>
-  <message name="IDS_AUTOFILL_AI_NATIONAL_ID_CARD_COUNTRY_ATTRIBUTE_NAME" desc="A label that describes a piece of user data. This label loosely aligns with the original form the user submitted. For example, United Airlines might label the field  “Region” and Delta might label it “Country”. Once the information is saved with enhanced autofill, we just call the value “Country”.">
+  <message name="IDS_AUTOFILL_AI_NATIONAL_ID_CARD_COUNTRY_ATTRIBUTE_NAME" desc="A label that describes a piece of user data. This label loosely aligns with the original form the user submitted. For example, United Airlines might label the field  “Region” and Delta might label it “Country”. Once the information is saved with Autofill AI, we just call the value “Country”.">
     Country
   </message>
-  <message name="IDS_AUTOFILL_AI_NATIONAL_ID_CARD_COUNTRY_ATTRIBUTE_NAME_NEW" desc="A label that describes a piece of user data. This label loosely aligns with the original form the user submitted. For example, United Airlines might label the field  “Region” and Delta might label it “Country”. Once the information is saved with enhanced autofill, we just call the value “Country”.">
+  <message name="IDS_AUTOFILL_AI_NATIONAL_ID_CARD_COUNTRY_ATTRIBUTE_NAME_NEW" desc="A label that describes a piece of user data. This label loosely aligns with the original form the user submitted. For example, United Airlines might label the field  “Region” and Delta might label it “Country”. Once the information is saved with Autofill AI, we just call the value “Country”.">
     Issuing country
   </message>
-  <message name="IDS_AUTOFILL_AI_NATIONAL_ID_CARD_EXPIRATION_DATE_ATTRIBUTE_NAME" desc="A label that describes a piece of user data. This label loosely aligns with the original form the user submitted. For example, United Airlines might label the field  “Expires” and Delta might label it “Date document expires”. Once the information is saved with enhanced autofill, we just call the value “Expiration date”.">
+  <message name="IDS_AUTOFILL_AI_NATIONAL_ID_CARD_EXPIRATION_DATE_ATTRIBUTE_NAME" desc="A label that describes a piece of user data. This label loosely aligns with the original form the user submitted. For example, United Airlines might label the field  “Expires” and Delta might label it “Date document expires”. Once the information is saved with Autofill AI, we just call the value “Expiration date”.">
     Expiration date
   </message>
-  <message name="IDS_AUTOFILL_AI_NATIONAL_ID_CARD_ISSUE_DATE_ATTRIBUTE_NAME" desc="A label that describes a piece of user data. This label loosely aligns with the original form the user submitted. For example, United Airlines might label the field  “Issue” and Delta might label it “Date document issue”. Once the information is saved with enhanced autofill, we just call the value “Issue date”.">
+  <message name="IDS_AUTOFILL_AI_NATIONAL_ID_CARD_ISSUE_DATE_ATTRIBUTE_NAME" desc="A label that describes a piece of user data. This label loosely aligns with the original form the user submitted. For example, United Airlines might label the field  “Issue” and Delta might label it “Date document issue”. Once the information is saved with Autofill AI, we just call the value “Issue date”.">
     Issue date
   </message>
-  <message name="IDS_AUTOFILL_AI_NATIONAL_ID_CARD_ISSUE_DATE_ATTRIBUTE_NAME_NEW" desc="A label that describes a piece of user data. This label loosely aligns with the original form the user submitted. For example, United Airlines might label the field  “Issue” and Delta might label it “Date document issue”. Once the information is saved with enhanced autofill, we just call the value “Issue date”.">
+  <message name="IDS_AUTOFILL_AI_NATIONAL_ID_CARD_ISSUE_DATE_ATTRIBUTE_NAME_NEW" desc="A label that describes a piece of user data. This label loosely aligns with the original form the user submitted. For example, United Airlines might label the field  “Issue” and Delta might label it “Date document issue”. Once the information is saved with Autofill AI, we just call the value “Issue date”.">
     Date issued
   </message>
 
   <!-- Attributes of the Known Traveler Number entity -->
-  <message name="IDS_AUTOFILL_AI_KNOWN_TRAVELER_NUMBER_NAME_ATTRIBUTE_NAME" desc="A label that describes a piece of user data. This label loosely aligns with the original form the user submitted. For example, United Airlines might label the field  “First and last name” and Delta might label it “Full name”. Once the information is saved with enhanced autofill, we just call the value “Name”.">
+  <message name="IDS_AUTOFILL_AI_KNOWN_TRAVELER_NUMBER_NAME_ATTRIBUTE_NAME" desc="A label that describes a piece of user data. This label loosely aligns with the original form the user submitted. For example, United Airlines might label the field  “First and last name” and Delta might label it “Full name”. Once the information is saved with Autofill AI, we just call the value “Name”.">
     Name
   </message>
-  <message name="IDS_AUTOFILL_AI_KNOWN_TRAVELER_NUMBER_ATTRIBUTE_NAME" desc="A label that describes a piece of user data. This label loosely aligns with the original form the user submitted. For example, United Airlines might label the field “Traveler number” and Delta might label it “Known Traveler Number”. Once the information is saved with enhanced autofill, we just call the value “Number”.">
+  <message name="IDS_AUTOFILL_AI_KNOWN_TRAVELER_NUMBER_ATTRIBUTE_NAME" desc="A label that describes a piece of user data. This label loosely aligns with the original form the user submitted. For example, United Airlines might label the field “Traveler number” and Delta might label it “Known Traveler Number”. Once the information is saved with Autofill AI, we just call the value “Number”.">
     Number
   </message>
   <message name="IDS_AUTOFILL_AI_KNOWN_TRAVELER_NUMBER_EXPIRATION_DATE_ATTRIBUTE_NAME" desc="Used as a general label for the Known Traveler Number expiration date attribute.">
@@ -1127,50 +1127,50 @@
   </message>
 
   <!-- Attributes of redress number entity -->
-  <message name="IDS_AUTOFILL_AI_REDRESS_NUMBER_NAME_ATTRIBUTE_NAME" desc="A label that describes a piece of user data. This label loosely aligns with the original form the user submitted. For example, United Airlines might label the field  “First and last name” and Delta might label it “Full name”. Once the information is saved with enhanced autofill, we just call the value “Name”.">
+  <message name="IDS_AUTOFILL_AI_REDRESS_NUMBER_NAME_ATTRIBUTE_NAME" desc="A label that describes a piece of user data. This label loosely aligns with the original form the user submitted. For example, United Airlines might label the field  “First and last name” and Delta might label it “Full name”. Once the information is saved with Autofill AI, we just call the value “Name”.">
     Name
   </message>
-  <message name="IDS_AUTOFILL_AI_REDRESS_NUMBER_ATTRIBUTE_NAME" desc="A label that describes a piece of user data. This label loosely aligns with the original form the user submitted. For example, United Airlines might label the field “Redress“ and Delta might label it “Redress number”. Once the information is saved with enhanced autofill, we just call the value “Number”.">
+  <message name="IDS_AUTOFILL_AI_REDRESS_NUMBER_ATTRIBUTE_NAME" desc="A label that describes a piece of user data. This label loosely aligns with the original form the user submitted. For example, United Airlines might label the field “Redress“ and Delta might label it “Redress number”. Once the information is saved with Autofill AI, we just call the value “Number”.">
     Number
   </message>
 
   <!-- Attributes of the passport entity -->
-  <message name="IDS_AUTOFILL_AI_PASSPORT_NAME_ATTRIBUTE_NAME" desc="A label that describes a piece of user data. This label loosely aligns with the original form the user submitted. For example, United Airlines might label the field  “First and last name” and Delta might label it “Full name”. Once the information is saved with enhanced autofill, we just call the value “Name”.">
+  <message name="IDS_AUTOFILL_AI_PASSPORT_NAME_ATTRIBUTE_NAME" desc="A label that describes a piece of user data. This label loosely aligns with the original form the user submitted. For example, United Airlines might label the field  “First and last name” and Delta might label it “Full name”. Once the information is saved with Autofill AI, we just call the value “Name”.">
     Name
   </message>
-  <message name="IDS_AUTOFILL_AI_PASSPORT_NUMBER_ATTRIBUTE_NAME" desc="A label that describes a piece of user data. This label loosely aligns with the original form the user submitted. For example, United Airlines might label the field  “Passport” and Delta might label it “Passport number”. Once the information is saved with enhanced autofill, we just call the value “Number”.">
+  <message name="IDS_AUTOFILL_AI_PASSPORT_NUMBER_ATTRIBUTE_NAME" desc="A label that describes a piece of user data. This label loosely aligns with the original form the user submitted. For example, United Airlines might label the field  “Passport” and Delta might label it “Passport number”. Once the information is saved with Autofill AI, we just call the value “Number”.">
     Number
   </message>
-  <message name="IDS_AUTOFILL_AI_PASSPORT_COUNTRY_ATTRIBUTE_NAME" desc="A label that describes a piece of user data. This label loosely aligns with the original form the user submitted. For example, United Airlines might label the field  “Region” and Delta might label it “Country”. Once the information is saved with enhanced autofill, we just call the value “Country”.">
+  <message name="IDS_AUTOFILL_AI_PASSPORT_COUNTRY_ATTRIBUTE_NAME" desc="A label that describes a piece of user data. This label loosely aligns with the original form the user submitted. For example, United Airlines might label the field  “Region” and Delta might label it “Country”. Once the information is saved with Autofill AI, we just call the value “Country”.">
     Country
   </message>
-  <message name="IDS_AUTOFILL_AI_PASSPORT_EXPIRATION_DATE_ATTRIBUTE_NAME" desc="A label that describes a piece of user data. This label loosely aligns with the original form the user submitted. For example, United Airlines might label the field  “Expires” and Delta might label it “Date passport expires”. Once the information is saved with enhanced autofill, we just call the value “Expiration date”.">
+  <message name="IDS_AUTOFILL_AI_PASSPORT_EXPIRATION_DATE_ATTRIBUTE_NAME" desc="A label that describes a piece of user data. This label loosely aligns with the original form the user submitted. For example, United Airlines might label the field  “Expires” and Delta might label it “Date passport expires”. Once the information is saved with Autofill AI, we just call the value “Expiration date”.">
     Expiration date
   </message>
-  <message name="IDS_AUTOFILL_AI_PASSPORT_ISSUE_DATE_ATTRIBUTE_NAME" desc="A label that describes a piece of user data. This label loosely aligns with the original form the user submitted. For example, United Airlines might label the field  “Issue” and Delta might label it “Date passport issue”. Once the information is saved with enhanced autofill, we just call the value “Issue date”.">
+  <message name="IDS_AUTOFILL_AI_PASSPORT_ISSUE_DATE_ATTRIBUTE_NAME" desc="A label that describes a piece of user data. This label loosely aligns with the original form the user submitted. For example, United Airlines might label the field  “Issue” and Delta might label it “Date passport issue”. Once the information is saved with Autofill AI, we just call the value “Issue date”.">
     Issue date
   </message>
 
   <!-- Attributes of the vehicle entity -->
-  <message name="IDS_AUTOFILL_AI_VEHICLE_MAKE_ATTRIBUTE_NAME" desc="A label that describes a piece of user data. This label loosely aligns with the original form the user submitted. For example, one website might label the field  “Type of car” and another might label it “Car make”. Once the information is saved with enhanced autofill, we just call the value “Make”.">
+  <message name="IDS_AUTOFILL_AI_VEHICLE_MAKE_ATTRIBUTE_NAME" desc="A label that describes a piece of user data. This label loosely aligns with the original form the user submitted. For example, one website might label the field  “Type of car” and another might label it “Car make”. Once the information is saved with Autofill AI, we just call the value “Make”.">
     Make
   </message>
-  <message name="IDS_AUTOFILL_AI_VEHICLE_MODEL_ATTRIBUTE_NAME" desc="A label that describes a piece of user data. This label loosely aligns with the original form the user submitted. For example, one website might label the field  “Model picker” and another might label it “Car model”. Once the information is saved with enhanced autofill, we just call the value “Model”.">
+  <message name="IDS_AUTOFILL_AI_VEHICLE_MODEL_ATTRIBUTE_NAME" desc="A label that describes a piece of user data. This label loosely aligns with the original form the user submitted. For example, one website might label the field  “Model picker” and another might label it “Car model”. Once the information is saved with Autofill AI, we just call the value “Model”.">
     Model
   </message>
-  <message name="IDS_AUTOFILL_AI_VEHICLE_YEAR_ATTRIBUTE_NAME" desc="A label that describes a piece of user data. This label loosely aligns with the original form the user submitted. For example, one website might label the field  “Model year” and another might label it “Year of model”. Once the information is saved with enhanced autofill, we just call the value “Year”.">
+  <message name="IDS_AUTOFILL_AI_VEHICLE_YEAR_ATTRIBUTE_NAME" desc="A label that describes a piece of user data. This label loosely aligns with the original form the user submitted. For example, one website might label the field  “Model year” and another might label it “Year of model”. Once the information is saved with Autofill AI, we just call the value “Year”.">
     Year
   </message>
-  <message name="IDS_AUTOFILL_AI_VEHICLE_OWNER_ATTRIBUTE_NAME" desc="A label that describes a piece of user data. This label loosely aligns with the original form the user submitted. For example, one website might label the field  “Owner’s name” and another might label it “Your name”. Once the information is saved with enhanced autofill, we just call the value “Owner”.">
+  <message name="IDS_AUTOFILL_AI_VEHICLE_OWNER_ATTRIBUTE_NAME" desc="A label that describes a piece of user data. This label loosely aligns with the original form the user submitted. For example, one website might label the field  “Owner’s name” and another might label it “Your name”. Once the information is saved with Autofill AI, we just call the value “Owner”.">
     Owner
   </message>
-  <message name="IDS_AUTOFILL_AI_VEHICLE_PLATE_NUMBER_ATTRIBUTE_NAME" desc="A label that describes a piece of user data. This label loosely aligns with the original form the user submitted. For example, one website might label the field  “License” and another might label it “plate number”. Once the information is saved with enhanced autofill, we just call the value “License plater”.">
+  <message name="IDS_AUTOFILL_AI_VEHICLE_PLATE_NUMBER_ATTRIBUTE_NAME" desc="A label that describes a piece of user data. This label loosely aligns with the original form the user submitted. For example, one website might label the field  “License” and another might label it “plate number”. Once the information is saved with Autofill AI, we just call the value “License plater”.">
     License plate
   </message>
-  <message name="IDS_AUTOFILL_AI_VEHICLE_PLATE_STATE_ATTRIBUTE_NAME" desc="A label that describes a piece of user data. This label loosely aligns with the original form the user submitted. For example, one website might label the field  “State” and another might label it “Issuing state”. Once the information is saved with enhanced autofill, we just call the value “Plate state”.">
+  <message name="IDS_AUTOFILL_AI_VEHICLE_PLATE_STATE_ATTRIBUTE_NAME" desc="A label that describes a piece of user data. This label loosely aligns with the original form the user submitted. For example, one website might label the field  “State” and another might label it “Issuing state”. Once the information is saved with Autofill AI, we just call the value “Plate state”.">
     Plate state
   </message>
-  <message name="IDS_AUTOFILL_AI_VEHICLE_VEHICLE_IDENTIFICATION_NUMBER_ATTRIBUTE_NAME" desc="A label that describes a piece of user data. This label loosely aligns with the original form the user submitted. For example, one website might label the field “Registration“ and another might label it “Vehicle Identification Number“. Once the information is saved with enhanced autofill, we just call the value “VIN (Vehicle Identification Number)“. Please use Glossary Manager or look up the official term for your country.">
+  <message name="IDS_AUTOFILL_AI_VEHICLE_VEHICLE_IDENTIFICATION_NUMBER_ATTRIBUTE_NAME" desc="A label that describes a piece of user data. This label loosely aligns with the original form the user submitted. For example, one website might label the field “Registration“ and another might label it “Vehicle Identification Number“. Once the information is saved with Autofill AI, we just call the value “VIN (Vehicle Identification Number)“. Please use Glossary Manager or look up the official term for your country.">
     VIN (Vehicle Identification Number)
   </message>
 
@@ -1220,7 +1220,7 @@
   </message>
 
   <!-- Save/ Update dialog-->
-  <message name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" desc="The name of the Google Wallet product. This is displayed in some enhanced autofill save and update prompts as a link. Upon clicking the user is taken to a their wallet passes pages. For example the user would see 'Your info is saved to Google Wallet for elisa.beckett@gmail.com'" formatter_data="android_java">
+  <message name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" desc="The name of the Google Wallet product. This is displayed in some smarter form understanding save and update prompts as a link. Upon clicking the user is taken to a their wallet passes pages. For example the user would see 'Your info is saved to Google Wallet for elisa.beckett@gmail.com'" formatter_data="android_java">
     Google Wallet
   </message>
   <message name="IDS_AUTOFILL_AI_UPDATE_ENTITY_TO_WALLET_DIALOG_SUBTITLE" desc="A description that appears beneath the Update title prompt asking users whether they want to update their data stored in Google Wallet. For example, the user previously saved information related to their passport. Now, the user is filling out a new form either with additional details associated with the passport or with different values than what was previously saved. The interface shows new or modified values at the top with blue dots to indicate they’re new. Existing information associated with the passport that isn’t changing appears at the bottom without blue dots. Depending on the form and what Chrome recognizes, there might be just one or several pieces of data updated at this moment. This is a similar moment to updating a password or credit card with Chrome.">
@@ -1547,7 +1547,7 @@
   <message name="IDS_AUTOFILL_AI_FFR_CONSIDER_LEARN_MORE" desc="Link for the enhanced autofill settings page to learn more about this feature.">
     learn more about enhanced autofill in settings
   </message>
-  <message name="IDS_SETTINGS_AUTOFILL_AI_AUTHENTICATION_TOGGLE_TITLE" desc="The title of the toggle shown in the settings page that allows managing the authentication requirement before seeings enhanced autofill settings sensitive fields, such as passport number and national id card number." formatter_data="android_java">
+  <message name="IDS_SETTINGS_AUTOFILL_AI_AUTHENTICATION_TOGGLE_TITLE" desc="The title of the toggle shown in the settings page that allows managing the authentication requirement before seeings smarter form understanding settings sensitive fields, such as passport number and national id card number." formatter_data="android_java">
     Verify it’s you to autofill sensitive info
   </message>
   <message name="IDS_AT_MEMORY_PROMO_TITLE" desc="Title of the at-memory promo bubble.">
@@ -1562,16 +1562,19 @@
   <message name="IDS_AT_MEMORY_PROMO_GOT_IT_BUTTON" desc="Label of the 'Got it' button in the at-memory promo bubble.">
     Got it
   </message>
-  <message name="IDS_SETTINGS_AUTOFILL_AI_AUTHENTICATION_TOGGLE_SUBTITLE" desc="The subtitle of the toggle shown in the settings page that allows managing the authentication requirement before seeings enhanced autofill settings sensitive fields, such as passport number and natinal id card number." formatter_data="android_java">
+  <message name="IDS_SETTINGS_AUTOFILL_AI_AUTHENTICATION_TOGGLE_SUBTITLE" desc="The subtitle of the toggle shown in the settings page that allows managing the authentication requirement before seeings smarter form understanding settings sensitive fields, such as passport number and natinal id card number." formatter_data="android_java">
     For added protection, always use your fingerprint, face, or other screen lock when you use sensitive info like travel and identity docs
   </message>
-  <message name="IDS_SETTINGS_AUTOFILL_AI_PAGE_TITLE" desc="The title of the page in Settings that allows managing the enhanced autofill settings." formatter_data="android_java">
+  <message name="IDS_SETTINGS_AUTOFILL_AI_PAGE_TITLE" desc="The title of the page in Settings that allows managing the Autofill AI settings." formatter_data="android_java">
     Enhanced autofill
   </message>
-  <message name="IDS_SETTINGS_AUTOFILL_AI_WHEN_ON" desc="A title that contain a section highlighting what happens when ‘enhanced autofill’ is enabled." formatter_data="android_java">
+  <message name="IDS_SETTINGS_AUTOFILL_AI_PAGE_TITLE_V2" desc="The title of the page in Settings that allows managing the Autofill AI settings." formatter_data="android_java">
+    Smarter form understanding
+  </message>
+  <message name="IDS_SETTINGS_AUTOFILL_AI_WHEN_ON" desc="A title that contain a section highlighting what happens when ‘smarter form understanding’ is enabled." formatter_data="android_java">
     When on
   </message>
-  <message name="IDS_SETTINGS_AUTOFILL_AI_THINGS_TO_CONSIDER" desc="A title that contain a section highlighting things to consider when using ‘enhanced autofill’ to improve the feature." formatter_data="android_java">
+  <message name="IDS_SETTINGS_AUTOFILL_AI_THINGS_TO_CONSIDER" desc="A title that contain a section highlighting things to consider when using ‘smarter form understanding’ to improve the feature." formatter_data="android_java">
     Things to consider
   </message>
   <message name="IDS_SETTINGS_AUTOFILL_SERVICE_PROVIDER" desc="A title that contains a section that allows users to choose between Autofilling with Google or with another service profider" formatter_data="android_java">
@@ -1581,25 +1584,24 @@
     To offer suggestions and improve this feature, the page’s URL and content are shared with Google
   </message>
   <if expr="_google_chrome">
-    <message name="IDS_SETTINGS_AUTOFILL_AI_DESCRIPTION" desc="The description of the enhanced autofill button on chrome://settings/autofill." formatter_data="android_java">
+    <message name="IDS_SETTINGS_AUTOFILL_AI_DESCRIPTION" desc="The description of the smarter form understanding button on chrome://settings/autofill." formatter_data="android_java">
       Chrome understands forms better and can autofill them faster for you
     </message>
-    <message name="IDS_SETTINGS_AUTOFILL_AI_TOGGLE_SUB_LABEL" desc="The description of the setting. By 'understand forms better', we mean that when a user submits a form on a website, and if they're using enhanced autofill, this feature can offer to save the user's submitted info. When Chrome saves that info, we save the submitted values and consider the page context.">
+    <message name="IDS_SETTINGS_AUTOFILL_AI_TOGGLE_SUB_LABEL" desc="The description of the setting. By 'understand forms better', we mean that when a user submits a form on a website, and if they're using smarter form understanding, this feature can offer to save the user's submitted info. When Chrome saves that info, we save the submitted values and consider the page context.">
       Chrome understands forms better and can autofill them faster for you
     </message>
-    <message name="IDS_SETTINGS_AUTOFILL_AI_WHEN_ON_CAN_FILL_DIFFICULT_FIELDS" desc="Bullet point that appears beneath appears beneath the 'When on' title when seeing the Enhanced Autofill description page. This string explains one of the advantages users will get from enabling the feature and serves as a way to incentivize the user to do so." formatter_data="android_java">
+    <message name="IDS_SETTINGS_AUTOFILL_AI_WHEN_ON_CAN_FILL_DIFFICULT_FIELDS" desc="Bullet point that appears beneath appears beneath the 'When on' title when seeing the Smarter Form Understanding description page. This string explains one of the advantages users will get from enabling the feature and serves as a way to incentivize the user to do so." formatter_data="android_java">
       Chrome can autofill difficult fields that standard autofill might miss
     </message>
-
   </if>
   <if expr="not _google_chrome">
-    <message name="IDS_SETTINGS_AUTOFILL_AI_DESCRIPTION" desc="The description of the enhanced autofill button on chrome://settings/autofill." formatter_data="android_java">
+    <message name="IDS_SETTINGS_AUTOFILL_AI_DESCRIPTION" desc="The description of the smarter form understanding button on chrome://settings/autofill." formatter_data="android_java">
       Chromium understands forms better and can autofill them faster for you
     </message>
-    <message name="IDS_SETTINGS_AUTOFILL_AI_TOGGLE_SUB_LABEL" desc="The description of the setting. By 'understand forms better', we mean that when a user submits a form on a website, and if they're using enhanced autofill, this feature can offer to save the user's submitted info. When Chromium saves that info, we save the submitted values and consider the page context.">
+    <message name="IDS_SETTINGS_AUTOFILL_AI_TOGGLE_SUB_LABEL" desc="The description of the setting. By 'understand forms better', we mean that when a user submits a form on a website, and if they're using smarter form understanding, this feature can offer to save the user's submitted info. When Chromium saves that info, we save the submitted values and consider the page context.">
       Chromium understands forms better and can autofill them faster for you
     </message>
-    <message name="IDS_SETTINGS_AUTOFILL_AI_WHEN_ON_CAN_FILL_DIFFICULT_FIELDS" desc="Bullet point that appears beneath the 'When on' title when seeing the Enhanced Autofill description page. This string explains one of the advantages users will get from enabling the feature and serves as a way to incentivize the user to do so." formatter_data="android_java">
+    <message name="IDS_SETTINGS_AUTOFILL_AI_WHEN_ON_CAN_FILL_DIFFICULT_FIELDS" desc="Bullet point that appears beneath the 'When on' title when seeing the Smarter Form Understanding description page. This string explains one of the advantages users will get from enabling the feature and serves as a way to incentivize the user to do so." formatter_data="android_java">
       Chromium can autofill difficult fields that standard autofill might miss
     </message>
   </if>
@@ -1613,7 +1615,7 @@
   <message name="IDS_AUTOFILL_WALLET_DATA_SHARING_PROMO_BUTTON_LABEL" desc="Label of the button that opens the Google Wallet app." formatter_data="android_java">
     Open Google Wallet
   </message>
-  <message name="IDS_SETTINGS_SUGGESTIONS_FROM_GEMINI_QUALITY_LOGGING_TITLE" desc="Title of the collapsible quality logging section in Smarter autofill suggestions settings.">
+  <message name="IDS_SETTINGS_SUGGESTIONS_FROM_GEMINI_QUALITY_LOGGING_TITLE" desc="Title of the collapsible quality logging section in enhanced autofill settings.">
     You're helping improve enhanced autofill by sharing data with Google
   </message>
   <message name="IDS_SETTINGS_SUGGESTIONS_FROM_GEMINI_WHEN_USED_1" desc="Bullet point 1 under When used in the quality logging section.">

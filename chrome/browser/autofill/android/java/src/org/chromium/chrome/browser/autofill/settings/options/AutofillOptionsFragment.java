@@ -184,6 +184,17 @@ public class AutofillOptionsFragment extends ChromeBaseSettingsFragment {
 
         AutofillAiPreference autofillAiPreference = findPreference(PREF_AUTOFILL_AI_SWITCH);
         autofillAiPreference.setProfile(getProfile());
+
+        if (ChromeFeatureList.isEnabled(
+                ChromeFeatureList.AUTOFILL_AI_ONLINE_MODEL_TOGGLE_NEW_TITLE)) {
+            Preference category = findPreference(PREF_AUTOFILL_AI_CATEGORY);
+            if (category != null) {
+                category.setTitle(R.string.settings_autofill_ai_page_title_v2);
+            }
+            if (autofillAiPreference != null) {
+                autofillAiPreference.setTitle(R.string.settings_autofill_ai_page_title_v2);
+            }
+        }
     }
 
     @Override

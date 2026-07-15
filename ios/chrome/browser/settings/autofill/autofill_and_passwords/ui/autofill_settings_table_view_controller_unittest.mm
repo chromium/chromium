@@ -5,6 +5,8 @@
 #import "ios/chrome/browser/settings/autofill/autofill_and_passwords/ui/autofill_settings_table_view_controller.h"
 
 #import "base/apple/foundation_util.h"
+#import "base/test/scoped_feature_list.h"
+#import "components/autofill/core/common/autofill_features.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/settings/autofill/autofill_and_passwords/ui/autofill_settings_consumer.h"
 #import "ios/chrome/browser/settings/autofill/autofill_and_passwords/ui/autofill_settings_mutator.h"
@@ -106,6 +108,43 @@ TEST_F(AutofillSettingsTableViewControllerTest,
 
   // Section 0: Switches
   EXPECT_EQ(1, NumberOfItemsInSection(0));
+  CheckSwitchCellStateAndTextWithId(YES, IDS_SETTINGS_AUTOFILL_AI_PAGE_TITLE_V2,
+                                    0, 0);
+  CheckSectionFooterWithId(IDS_SETTINGS_AUTOFILL_AI_TOGGLE_SUB_LABEL, 0);
+
+  // Section 1: When On
+  EXPECT_EQ(1, NumberOfItemsInSection(1));
+  CheckSectionHeaderWithId(IDS_SETTINGS_AUTOFILL_AI_WHEN_ON, 1);
+  CheckTextCellTextWithId(
+      IDS_SETTINGS_AUTOFILL_AI_WHEN_ON_CAN_FILL_DIFFICULT_FIELDS, 1, 0);
+
+  // Section 2: Things to Consider
+  EXPECT_EQ(1, NumberOfItemsInSection(2));
+  CheckSectionHeaderWithId(IDS_SETTINGS_AUTOFILL_AI_THINGS_TO_CONSIDER, 2);
+  CheckTextCellTextWithId(IDS_SETTINGS_AUTOFILL_AI_TO_CONSIDER_DATA_USAGE, 2,
+                          0);
+}
+
+// Test model when Autofill AI is allowed by policy and enabled, with the new
+// title feature disabled.
+TEST_F(AutofillSettingsTableViewControllerTest,
+       TestModelWithPolicyAllowedAndEnabled_OldTitle) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      autofill::features::kAutofillAiOnlineModelToggleNewTitle);
+
+  AutofillSettingsTableViewController* view_controller =
+      base::apple::ObjCCastStrict<AutofillSettingsTableViewController>(
+          controller());
+
+  [view_controller setEnhancedAutofillEnabled:YES];
+  [view_controller setAutofillAIAllowedByPolicy:YES];
+  [view_controller reloadData];
+
+  EXPECT_EQ(3, NumberOfSections());
+
+  // Section 0: Switches
+  EXPECT_EQ(1, NumberOfItemsInSection(0));
   CheckSwitchCellStateAndTextWithId(YES, IDS_SETTINGS_AUTOFILL_AI_PAGE_TITLE, 0,
                                     0);
   CheckSectionFooterWithId(IDS_SETTINGS_AUTOFILL_AI_TOGGLE_SUB_LABEL, 0);
@@ -138,8 +177,8 @@ TEST_F(AutofillSettingsTableViewControllerTest,
 
   // Section 0: Switches
   EXPECT_EQ(1, NumberOfItemsInSection(0));
-  CheckSwitchCellStateAndTextWithId(NO, IDS_SETTINGS_AUTOFILL_AI_PAGE_TITLE, 0,
-                                    0);
+  CheckSwitchCellStateAndTextWithId(NO, IDS_SETTINGS_AUTOFILL_AI_PAGE_TITLE_V2,
+                                    0, 0);
   CheckSectionFooterWithId(IDS_SETTINGS_AUTOFILL_AI_TOGGLE_SUB_LABEL, 0);
 
   // Section 1: When On
@@ -170,8 +209,8 @@ TEST_F(AutofillSettingsTableViewControllerTest,
 
   // Section 0: Switches
   EXPECT_EQ(1, NumberOfItemsInSection(0));
-  CheckSwitchCellStateAndTextWithId(YES, IDS_SETTINGS_AUTOFILL_AI_PAGE_TITLE, 0,
-                                    0);
+  CheckSwitchCellStateAndTextWithId(YES, IDS_SETTINGS_AUTOFILL_AI_PAGE_TITLE_V2,
+                                    0, 0);
   CheckSectionFooterWithId(IDS_SETTINGS_AUTOFILL_AI_TOGGLE_SUB_LABEL, 0);
 
   // Section 1: When On
@@ -204,8 +243,8 @@ TEST_F(AutofillSettingsTableViewControllerTest,
 
   // Section 0: Switches
   EXPECT_EQ(1, NumberOfItemsInSection(0));
-  CheckSwitchCellStateAndTextWithId(NO, IDS_SETTINGS_AUTOFILL_AI_PAGE_TITLE, 0,
-                                    0);
+  CheckSwitchCellStateAndTextWithId(NO, IDS_SETTINGS_AUTOFILL_AI_PAGE_TITLE_V2,
+                                    0, 0);
   CheckSectionFooterWithId(IDS_SETTINGS_AUTOFILL_AI_TOGGLE_SUB_LABEL, 0);
 
   // Section 1: When On
@@ -258,8 +297,8 @@ TEST_F(AutofillSettingsTableViewControllerTest, TestSwitchChanged) {
   [view_controller reloadData];
 
   // Verify initial state.
-  CheckSwitchCellStateAndTextWithId(NO, IDS_SETTINGS_AUTOFILL_AI_PAGE_TITLE, 0,
-                                    0);
+  CheckSwitchCellStateAndTextWithId(NO, IDS_SETTINGS_AUTOFILL_AI_PAGE_TITLE_V2,
+                                    0, 0);
 
   // Toggle switch.
   TableViewCellContentView* content_view =
@@ -278,8 +317,8 @@ TEST_F(AutofillSettingsTableViewControllerTest, TestSwitchChanged) {
 
   EXPECT_TRUE(fake_mutator_.enhancedAutofillEnabled);
   EXPECT_EQ(1, fake_mutator_.setEnhancedAutofillEnabledCallCount);
-  CheckSwitchCellStateAndTextWithId(YES, IDS_SETTINGS_AUTOFILL_AI_PAGE_TITLE, 0,
-                                    0);
+  CheckSwitchCellStateAndTextWithId(YES, IDS_SETTINGS_AUTOFILL_AI_PAGE_TITLE_V2,
+                                    0, 0);
 }
 
 // Test user verification switch changed.

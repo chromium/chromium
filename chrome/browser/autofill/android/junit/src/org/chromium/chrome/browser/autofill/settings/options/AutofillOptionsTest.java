@@ -102,6 +102,7 @@ import org.chromium.ui.text.SpanApplier;
 /** Unit tests for autofill options settings screen. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
+@EnableFeatures({ChromeFeatureList.AUTOFILL_AI_ONLINE_MODEL_TOGGLE_NEW_TITLE})
 @DisableFeatures({
     ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA,
     ChromeFeatureList.AUTOFILL_AI_REAUTH_REQUIRED,
@@ -437,6 +438,38 @@ public class AutofillOptionsTest {
         AutofillOptionsCoordinator.createFor(mFragment, this::assertModalNotUsed, Assert::fail);
 
         assertEquals(mFragment.getPageTitle().get(), getString(R.string.autofill_settings_title));
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures({
+        ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA,
+        ChromeFeatureList.AUTOFILL_AI_ONLINE_MODEL_TOGGLE_NEW_TITLE
+    })
+    public void testAutofillAiTitle_NewTitle() {
+        AutofillOptionsCoordinator.createFor(mFragment, this::assertModalNotUsed, Assert::fail);
+
+        assertEquals(
+                mFragment.getAutofillAiCategory().getTitle(),
+                getString(R.string.settings_autofill_ai_page_title_v2));
+        assertEquals(
+                mFragment.getAutofillAiSwitch().getTitle(),
+                getString(R.string.settings_autofill_ai_page_title_v2));
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA)
+    @DisableFeatures(ChromeFeatureList.AUTOFILL_AI_ONLINE_MODEL_TOGGLE_NEW_TITLE)
+    public void testAutofillAiTitle_OldTitle() {
+        AutofillOptionsCoordinator.createFor(mFragment, this::assertModalNotUsed, Assert::fail);
+
+        assertEquals(
+                mFragment.getAutofillAiCategory().getTitle(),
+                getString(R.string.settings_autofill_ai_page_title));
+        assertEquals(
+                mFragment.getAutofillAiSwitch().getTitle(),
+                getString(R.string.settings_autofill_ai_page_title));
     }
 
     @Test

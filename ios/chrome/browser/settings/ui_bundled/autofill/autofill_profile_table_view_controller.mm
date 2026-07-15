@@ -515,7 +515,11 @@ ItemType ItemTypeForEntitySectionHeader(SectionIdentifier section_identifier) {
 }
 
 - (TableViewItem*)enhancedAutofillItem {
-  NSString* text = l10n_util::GetNSString(IDS_SETTINGS_AUTOFILL_AI_PAGE_TITLE);
+  NSString* text = l10n_util::GetNSString(
+      base::FeatureList::IsEnabled(
+          autofill::features::kAutofillAiOnlineModelToggleNewTitle)
+          ? IDS_SETTINGS_AUTOFILL_AI_PAGE_TITLE_V2
+          : IDS_SETTINGS_AUTOFILL_AI_PAGE_TITLE);
 
   _enhancedAutofillItem =
       [[TableViewDetailIconItem alloc] initWithType:ItemTypeEnhancedAutofill];
@@ -547,8 +551,11 @@ ItemType ItemTypeForEntitySectionHeader(SectionIdentifier section_identifier) {
   TableViewInfoButtonItem* managedEnhancedAutofillItem =
       [[TableViewInfoButtonItem alloc]
           initWithType:ItemTypeEnhancedAutofillManaged];
-  managedEnhancedAutofillItem.text =
-      l10n_util::GetNSString(IDS_SETTINGS_AUTOFILL_AI_PAGE_TITLE);
+  managedEnhancedAutofillItem.text = l10n_util::GetNSString(
+      base::FeatureList::IsEnabled(
+          autofill::features::kAutofillAiOnlineModelToggleNewTitle)
+          ? IDS_SETTINGS_AUTOFILL_AI_PAGE_TITLE_V2
+          : IDS_SETTINGS_AUTOFILL_AI_PAGE_TITLE);
   // The status could only be off when the pref is managed.
   managedEnhancedAutofillItem.statusText =
       l10n_util::GetNSString(IDS_IOS_SETTING_OFF);

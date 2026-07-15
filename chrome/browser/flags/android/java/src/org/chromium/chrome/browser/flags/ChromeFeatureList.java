@@ -248,6 +248,8 @@ public abstract class ChromeFeatureList {
     public static final String AUTOFILL_AI_AVAILABLE_BY_DEFAULT = "AutofillAiAvailableByDefault";
     public static final String AUTOFILL_AI_EDIT_ENTITIES_FROM_SAVE_UPDATE_PROMPT =
             "AutofillAiEditEntitiesFromSaveUpdatePrompt";
+    public static final String AUTOFILL_AI_ONLINE_MODEL_TOGGLE_NEW_TITLE =
+            "AutofillAiOnlineModelToggleNewTitle";
     public static final String AUTOFILL_AI_REAUTH_REQUIRED = "AutofillAiReauthRequired";
     public static final String AUTOFILL_AI_SHOW_DIALOG_IN_SETTINGS_WHEN_UPSTREAMING_FAILS =
             "AutofillAiShowDialogInSettingsWhenUpstreamingFails";
