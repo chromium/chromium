@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//extensions/buildflags/buildflags.gni")
+import("//media/media_options.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 import("//testing/test.gni")
 
@@ -190,6 +191,20 @@ static_library("router") {
       ]
 
       deps += [ "//chrome/installer/util:with_no_strings" ]
+    }
+
+    if (enable_media_remoting_redirection) {
+      sources += [
+        "providers/redirection/redirection_media_route_provider.cc",
+        "providers/redirection/redirection_media_route_provider.h",
+        "providers/redirection/redirection_service_host.cc",
+        "providers/redirection/redirection_service_host.h",
+      ]
+
+      deps += [
+        "//chrome/services/redirection/public/mojom",
+        "//media/mojo/mojom:remoting",
+      ]
     }
 
     if (enable_openscreen_protocol) {
@@ -393,6 +408,11 @@ source_set("unittests") {
       "providers/dial/dial_media_route_provider_unittest.cc",
       "providers/wired_display/wired_display_media_route_provider_unittest.cc",
     ]
+    if (enable_media_remoting_redirection) {
+      sources += [
+        "providers/redirection/redirection_media_route_provider_unittest.cc",
+      ]
+    }
     if (is_win) {
       sources += [ "discovery/discovery_network_list_win_unittest.cc" ]
     }

@@ -8,6 +8,7 @@ import("//chrome/services/speech/buildflags/buildflags.gni")
 import("//components/on_device_translation/buildflags/features.gni")
 import("//crypto/features.gni")
 import("//extensions/buildflags/buildflags.gni")
+import("//media/media_options.gni")
 import("//pdf/features.gni")
 import("//printing/buildflags/buildflags.gni")
 import("//services/screen_ai/buildflags/features.gni")
@@ -245,6 +246,10 @@ static_library("utility") {
       "//chrome/services/file_util",
       "//chrome/utility/safe_browsing",
     ]
+  }
+
+  if (enable_media_remoting_redirection) {
+    deps += [ "//chrome/services/redirection:redirection_service" ]
   }
 
   if (is_android || enable_extensions) {

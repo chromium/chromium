@@ -60,6 +60,10 @@
 #include "extensions/common/constants.h"
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
+#if BUILDFLAG(ENABLE_MEDIA_REMOTING_REDIRECTION)
+#include "chrome/browser/media/router/providers/redirection/redirection_media_route_provider.h"
+#endif  // BUILDFLAG(ENABLE_MEDIA_REMOTING_REDIRECTION)
+
 namespace media_router {
 namespace {
 
@@ -754,6 +758,9 @@ void MediaRouterDesktop::InitializeMediaRouteProviders() {
   if (DialMediaRouteProviderEnabled()) {
     InitializeDialMediaRouteProvider();
   }
+  if (RedirectionMediaRouteProviderEnabled()) {
+    InitializeRedirectionMediaRouteProvider();
+  }
 }
 
 void MediaRouterDesktop::InitializeWiredDisplayMediaRouteProvider() {
@@ -809,6 +816,22 @@ void MediaRouterDesktop::InitializeDialMediaRouteProvider() {
           base::OnTaskRunnerDeleter(task_runner));
   RegisterMediaRouteProvider(mojom::MediaRouteProviderId::DIAL,
                              std::move(dial_provider_remote));
+}
+
+void MediaRouterDesktop::InitializeRedirectionMediaRouteProvider() {
+#if BUILDFLAG(ENABLE_MEDIA_REMOTING_REDIRECTION)
+  mojo::PendingRemote<mojom::MediaRouter> media_router_remote;
+  MediaRouterDesktop::BindToMojoReceiver(
+      media_router_remote.InitWithNewPipeAndPassReceiver());
+  mojo::PendingRemote<mojom::MediaRouteProvider> redirection_provider_remote;
+  redirection_provider_ = std::make_unique<RedirectionMediaRouteProvider>(
+      redirection_provider_remote.InitWithNewPipeAndPassReceiver(),
+      std::move(media_router_remote));
+  RegisterMediaRouteProvider(mojom::MediaRouteProviderId::REDIRECTION,
+                             std::move(redirection_provider_remote));
+#else
+  NOTREACHED() << "Redirection Media Route Provider is not enabled.";
+#endif  // BUILDFLAG(ENABLE_MEDIA_REMOTING_REDIRECTION)
 }
 
 #if BUILDFLAG(IS_WIN)
@@ -1001,6 +1024,7 @@ void MediaRouterDesktop::RecordPresentationRequestUrlBySink(
       }
       break;
     case mojom::MediaRouteProviderId::ANDROID_CAF:
+    case mojom::MediaRouteProviderId::REDIRECTION:
     case mojom::MediaRouteProviderId::TEST:
       break;
   }

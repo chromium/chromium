@@ -13,6 +13,7 @@ include_rules = [
   "+chrome/services/printing/public/mojom",
   "+chrome/services/reading_mode_metrics/reading_mode_metrics_service.h",
   "+chrome/services/readaloud/read_aloud_playback_controller.h",
+  "+chrome/services/redirection/redirection_service.h",
   "+chrome/services/removable_storage_writer",
   "+chrome/services/sharing",
   "+chrome/services/speech",

@@ -24,6 +24,7 @@
 #include "components/user_data_importer/mojom/bookmark_html_parser.mojom.h"
 #include "content/public/utility/utility_thread.h"
 #include "extensions/buildflags/buildflags.h"
+#include "media/media_buildflags.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/service_factory.h"
 #include "pdf/buildflags.h"
@@ -70,6 +71,10 @@
 #include "services/screen_ai/public/mojom/screen_ai_factory.mojom.h"  // nogncheck
 #include "services/screen_ai/screen_ai_service_impl.h"  // nogncheck
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(ENABLE_MEDIA_REMOTING_REDIRECTION)
+#include "chrome/services/redirection/redirection_service.h"
+#endif  // BUILDFLAG(ENABLE_MEDIA_REMOTING_REDIRECTION)
 
 #if BUILDFLAG(ENABLE_BROWSER_SPEECH_SERVICE)
 #include "chrome/services/speech/speech_recognition_service_impl.h"  // nogncheck
@@ -255,6 +260,13 @@ auto RunMirroringService(
 }
 
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(ENABLE_MEDIA_REMOTING_REDIRECTION)
+auto RunRedirectionService(
+    mojo::PendingReceiver<redirection::mojom::RedirectionService> receiver) {
+  return std::make_unique<redirection::RedirectionService>(std::move(receiver));
+}
+#endif  // BUILDFLAG(ENABLE_MEDIA_REMOTING_REDIRECTION)
 
 auto RunPassageEmbeddingsService(
     mojo::PendingReceiver<passage_embeddings::mojom::PassageEmbeddingsService>
@@ -480,6 +492,10 @@ void RegisterMainThreadServices(mojo::ServiceFactory& services) {
   services.Add(RunReadingModeMetricsService);
   services.Add(RunScreenAIServiceFactory);
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(ENABLE_MEDIA_REMOTING_REDIRECTION)
+  services.Add(RunRedirectionService);
+#endif  // BUILDFLAG(ENABLE_MEDIA_REMOTING_REDIRECTION)
 
 #if BUILDFLAG(ENABLE_BROWSER_SPEECH_SERVICE)
   services.Add(RunSpeechRecognitionService);

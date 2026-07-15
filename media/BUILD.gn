@@ -50,6 +50,7 @@ buildflag_header("media_buildflags") {
     "ENABLE_MEDIA_DRM_STORAGE=$enable_media_drm_storage",
     "ENABLE_MEDIA_REMOTING=$enable_media_remoting",
     "ENABLE_MEDIA_REMOTING_RPC=$enable_media_remoting_rpc",
+    "ENABLE_MEDIA_REMOTING_REDIRECTION=$enable_media_remoting_redirection",
     "ENABLE_OPENH264=$media_use_openh264",
     "ENABLE_PASSTHROUGH_AUDIO_CODECS=$enable_passthrough_audio_codecs",
     "ENABLE_PLATFORM_DTS_AUDIO=$enable_platform_dts_audio",

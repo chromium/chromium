@@ -44,6 +44,8 @@ std::string GetHistogramNameForProvider(
       return base_name + ".WiredDisplay";
     case mojom::MediaRouteProviderId::ANDROID_CAF:
       return base_name + ".AndroidCaf";
+    case mojom::MediaRouteProviderId::REDIRECTION:
+      return base_name + ".Redirection";
     // The rest use the base histogram name.
     case mojom::MediaRouteProviderId::TEST:
       return base_name;

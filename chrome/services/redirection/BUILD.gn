@@ -1,0 +1,20 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+component("redirection_service") {
+  sources = [
+    "redirection_service.cc",
+    "redirection_service.h",
+  ]
+
+  public_deps = [ "//base" ]
+
+  deps = [
+    "//chrome/services/redirection/public/mojom",
+    "//media/mojo/mojom:remoting",
+    "//mojo/public/cpp/bindings",
+  ]
+
+  defines = [ "IS_REDIRECTION_SERVICE_IMPL" ]
+}

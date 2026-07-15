@@ -56,6 +56,11 @@ BASE_FEATURE(kShowCastPermissionRejectedError,
              base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kCastMessageLogging, base::FEATURE_DISABLED_BY_DEFAULT);
 
+#if BUILDFLAG(ENABLE_MEDIA_REMOTING_REDIRECTION)
+// If enabled, the redirection (MMR) Media Route Provider is registered.
+BASE_FEATURE(kRedirectionMediaRouteProvider, base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(ENABLE_MEDIA_REMOTING_REDIRECTION)
+
 // TODO(crbug.com/1486680): Remove once stopping mirroring routes in the global
 // media controls is implemented on ChromeOS.
 BASE_FEATURE(kFallbackToAudioTabMirroring,
@@ -179,6 +184,14 @@ std::string GetReceiverIdHashToken(PrefService* pref_service) {
 
 bool DialMediaRouteProviderEnabled() {
   return base::FeatureList::IsEnabled(kDialMediaRouteProvider);
+}
+
+bool RedirectionMediaRouteProviderEnabled() {
+#if BUILDFLAG(ENABLE_MEDIA_REMOTING_REDIRECTION)
+  return base::FeatureList::IsEnabled(kRedirectionMediaRouteProvider);
+#else
+  return false;
+#endif  // BUILDFLAG(ENABLE_MEDIA_REMOTING_REDIRECTION)
 }
 
 std::optional<base::TimeDelta> GetCastMirroringPlayoutDelay() {

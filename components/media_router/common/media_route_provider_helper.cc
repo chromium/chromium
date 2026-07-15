@@ -14,6 +14,7 @@ constexpr const char kWiredDisplay[] = "WIRED_DISPLAY";
 constexpr const char kDial[] = "DIAL";
 constexpr const char kCast[] = "CAST";
 constexpr const char kAndroidCaf[] = "ANDROID_CAF";
+constexpr const char kRedirection[] = "REDIRECTION";
 constexpr const char kTest[] = "TEST";
 
 namespace media_router {
@@ -28,6 +29,8 @@ const char* ProviderIdToString(mojom::MediaRouteProviderId provider_id) {
       return kDial;
     case mojom::MediaRouteProviderId::ANDROID_CAF:
       return kAndroidCaf;
+    case mojom::MediaRouteProviderId::REDIRECTION:
+      return kRedirection;
     case mojom::MediaRouteProviderId::TEST:
       return kTest;
   }
@@ -45,6 +48,8 @@ std::optional<mojom::MediaRouteProviderId> ProviderIdFromString(
     return mojom::MediaRouteProviderId::DIAL;
   } else if (provider_id == kAndroidCaf) {
     return mojom::MediaRouteProviderId::ANDROID_CAF;
+  } else if (provider_id == kRedirection) {
+    return mojom::MediaRouteProviderId::REDIRECTION;
   } else if (provider_id == kTest) {
     return mojom::MediaRouteProviderId::TEST;
   } else {

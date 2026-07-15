@@ -377,6 +377,13 @@ declare_args() {
 }
 
 declare_args() {
+  # Multimedia Redirection: redirects remoted video playback to a
+  # platform-provided redirection sink. Builds on the Media Remoting RPC
+  # courier renderer.
+  enable_media_remoting_redirection = enable_media_remoting_rpc && is_win
+}
+
+declare_args() {
   # Currently it is available on Win, Mac and Linux, since it requires the audio
   # service to run in a separate process.
   chrome_wide_echo_cancellation_supported = is_win || is_mac || is_linux

@@ -1,0 +1,20 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module redirection.mojom;
+
+import "media/mojo/mojom/remoting_common.mojom";
+import "sandbox/policy/mojom/context.mojom";
+import "sandbox/policy/mojom/sandbox.mojom";
+
+// This interface is used to discover and control a Multimedia Redirection (MMR)
+// session, which redirects remoted video playback to a platform-provided
+// redirection sink.
+[ServiceSandbox=sandbox.mojom.Sandbox.kService]
+interface RedirectionService {
+  // Starts the redirection service and returns the metadata describing the
+  // redirection sink it exposes.
+  [AllowedContext=sandbox.mojom.Context.kBrowser]
+  Start() => (media.mojom.RemotingSinkMetadata sink_metadata);
+};
