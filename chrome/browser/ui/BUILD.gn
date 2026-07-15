@@ -4752,6 +4752,7 @@ static_library("ui") {
 
     deps += [
       "//base",
+      "//chrome/app:generated_resources",
       "//chrome/browser:main_extra_parts",
       "//chrome/browser:resources",
       "//chrome/browser/accessibility",
