@@ -590,16 +590,7 @@ builder(
             "ios_build_chrome_false",
         ],
     ),
-    targets = targets.bundle(
-        mixins = [
-            "has_native_resultdb_integration",
-            "mac_default_x64",
-            "mac_toolchain",
-            "out_dir_arg",
-            "xcode_26_main",
-            "xctest",
-        ],
-    ),
+    targets = targets.bundle(),
     os = os.MAC_ANY,
     xcode = xcode.xcode_default,
 )
