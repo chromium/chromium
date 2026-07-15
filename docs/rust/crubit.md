@@ -229,16 +229,27 @@ After modifying `gnrt_config.toml` you have to re-run
 #### Bindings dependencies for Rust standard library
 
 C++ bindings for Rust standard library
-(i.e. the `//build/rust/std:std_bindings` target)
-are automatically injected as a dependency of all other bindings
-(i.e. there is no need to specify them explicitly in a `deps` entry).
+are automatically injected as a dependency of all other bindings.
+Therefore usually there is no need to explicitly depend on these bindings,
+but if needed other targets can depend on `//build/rust/crubit`.
 
 C++ bindings for Rust standard library are placed in a C++ namespace
 that corresponds to the original Rust crate as follows:
 
 * `std` crate => `rs_std` namespace
-* `core` crate => `rs_core` namespace
 * `alloc` crate => `rs_alloc` namespace
+* `core` crate => `rs_core` namespace
+
+The bindings can be `#include`d from the following paths:
+
+* `#include "third_party/crubit/support/rs_std/rs_std.h"`
+* `#include "third_party/crubit/support/rs_std/rs_alloc.h"`
+* `#include "third_party/crubit/support/rs_std/rs_core.h"`
+
+> Side-note: The auto-generated `build/rust/std/rules/BUILD.gn` overrides the
+> include paths to make sure that Chromium can use the canonical paths (ones
+> that are unified across other major Crubit clients).  There is no actual
+> `third_party/crubit/support` directory in the root of the Chromium repo.
 
 ## Troubleshooting
 

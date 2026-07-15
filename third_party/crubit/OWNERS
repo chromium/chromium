@@ -1,0 +1,6 @@
+# We don't anticipate a need to add additional files into Chromium's
+# `//third_party/crubit` directory, but in any case adding any non-`README.md`
+# files should continue to require approval by `//third_party/OWNERS`.  This is
+# why the entry below only declares / forwards ownership for the `README.md`
+# file.
+per-file README.md=file://build/rust/OWNERS

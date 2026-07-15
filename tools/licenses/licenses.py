@@ -65,6 +65,9 @@ PRUNE_PATHS = set([
     # Will remove it once converted private sdk using cipd.
     os.path.join('third_party', 'android_tools_internal'),
 
+    # Only README.md, not third-party code.
+    os.path.join('third_party', 'crubit'),
+
     # Build files only, not third-party code.
     os.path.join('third_party', 'widevine'),
 
