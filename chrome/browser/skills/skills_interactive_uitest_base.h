@@ -9,8 +9,10 @@
 #include <string>
 #include <vector>
 
+#include "base/callback_list.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/uuid.h"
+#include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/skills/skills_functional_browsertest.h"
 #include "chrome/browser/skills/skills_glic_mojom_util.h"
@@ -61,7 +63,10 @@ class SkillsInteractiveUiTestBase
   // Polls the UI until a Toast with the given `toast_id` is visibly shown.
   ui::test::InteractiveTestApi::MultiStep CheckToastIsShowing(ToastId toast_id);
 
+  void SetUpBrowserContextKeyedServices(
+      content::BrowserContext* context) override;
   void SetUpOnMainThread() override;
+  void TearDownOnMainThread() override;
 
   std::unique_ptr<KeyedService> CreateSkillsService(
       content::BrowserContext* context);
@@ -165,6 +170,8 @@ class SkillsInteractiveUiTestBase
   network::TestURLLoaderFactory test_url_loader_factory_;
   base::HistogramTester histogram_tester_;
   base::test::ScopedFeatureList scoped_feature_list_;
+  std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
+      identity_test_env_adaptor_;
 };
 
 testing::Matcher<const Skill*> VerifyUserCreatedSkill(const Skill& expected);

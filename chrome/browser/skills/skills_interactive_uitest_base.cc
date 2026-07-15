@@ -14,9 +14,11 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/skills/skills_glic_mojom_util.h"
 #include "chrome/browser/skills/skills_service_factory.h"
 #include "chrome/browser/skills/skills_ui_window_controller.h"
+#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "chrome/browser/sync/data_type_store_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
@@ -57,7 +59,8 @@ SkillsInteractiveUiTestBase::SkillsInteractiveUiTestBase() {
   scoped_feature_list_.InitWithFeatures(
       /*enabled_features=*/{features::kGlic, features::kGlicRollout,
                             features::kSkillsEnabled,
-                            features::kGlicMultitabUnderlines},
+                            features::kGlicMultitabUnderlines,
+                            features::kSkillsServiceApi},
       /*disabled_features=*/{features::kGlicWarming});
   // TODO(b:504651450): Consider adding support for the new FRE.
 }
@@ -110,8 +113,22 @@ SkillsInteractiveUiTestBase::CheckToastIsShowing(ToastId toast_id) {
       "polling until toast is showing");
 }
 
+void SkillsInteractiveUiTestBase::SetUpBrowserContextKeyedServices(
+    content::BrowserContext* context) {
+  IdentityTestEnvironmentProfileAdaptor::
+      SetIdentityTestEnvironmentFactoriesOnBrowserContext(context);
+  skills::SkillsFunctionalBrowserTestBase::SetUpBrowserContextKeyedServices(
+      context);
+}
+
 void SkillsInteractiveUiTestBase::SetUpOnMainThread() {
   skills::SkillsFunctionalBrowserTestBase::SetUpOnMainThread();
+
+  identity_test_env_adaptor_ =
+      std::make_unique<IdentityTestEnvironmentProfileAdaptor>(
+          browser()->GetProfile());
+  identity_test_env_adaptor_->identity_test_env()
+      ->SetAutomaticIssueOfAccessTokens(true);
 
   skills::SkillsServiceFactory::GetInstance()->SetTestingFactory(
       browser()->GetProfile(),
@@ -129,6 +146,14 @@ void SkillsInteractiveUiTestBase::SetUpOnMainThread() {
   GURL expected_url(skills::kSkillsDownloaderGstaticUrl);
   test_url_loader_factory_.AddResponse(expected_url.spec(), response_data,
                                        net::HTTP_OK);
+  GURL api_url(features::kSkillsServiceApiUrl.Get());
+  test_url_loader_factory_.AddResponse(api_url.spec(), response_data,
+                                       net::HTTP_OK);
+}
+
+void SkillsInteractiveUiTestBase::TearDownOnMainThread() {
+  identity_test_env_adaptor_.reset();
+  skills::SkillsFunctionalBrowserTestBase::TearDownOnMainThread();
 }
 
 std::unique_ptr<KeyedService> SkillsInteractiveUiTestBase::CreateSkillsService(
@@ -336,6 +361,9 @@ SkillsInteractiveUiTestBase::Seed1PSkills(
 
     GURL expected_url(skills::kSkillsDownloaderGstaticUrl);
     test_url_loader_factory_.AddResponse(expected_url.spec(), response_data,
+                                         net::HTTP_OK);
+    GURL api_url(features::kSkillsServiceApiUrl.Get());
+    test_url_loader_factory_.AddResponse(api_url.spec(), response_data,
                                          net::HTTP_OK);
   });
 }

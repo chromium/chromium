@@ -21,6 +21,7 @@
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
+#include "components/skills/features.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "url/url_util.h"
 
@@ -199,7 +200,7 @@ std::vector<base::test::FeatureRef> GetDefaultEnabledGlicTestFeatures() {
 }
 std::vector<base::test::FeatureRef> GetDefaultDisabledGlicTestFeatures() {
   return {features::kGlicWarming, features::kGlicCountryFiltering,
-          features::kGlicLocaleFiltering};
+          features::kGlicLocaleFiltering, features::kSkillsServiceApi};
 }
 
 GlicTestEnvironment::GlicTestEnvironment(

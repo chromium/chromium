@@ -9,10 +9,13 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
+#include "base/callback_list.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
+#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/skills/skills_service_factory.h"
 #include "chrome/browser/sync/data_type_store_service_factory.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
@@ -57,13 +60,29 @@ class SkillsPageInteractiveUITest : public InteractiveBrowserTest {
   SkillsPageInteractiveUITest() = default;
   ~SkillsPageInteractiveUITest() override = default;
 
+  void SetUpBrowserContextKeyedServices(
+      content::BrowserContext* context) override {
+    IdentityTestEnvironmentProfileAdaptor::
+        SetIdentityTestEnvironmentFactoriesOnBrowserContext(context);
+    InteractiveBrowserTest::SetUpBrowserContextKeyedServices(context);
+  }
+
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatures({features::kSkillsEnabled}, {});
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{features::kSkillsEnabled, features::kSkillsServiceApi},
+        /*disabled_features=*/{});
     InteractiveBrowserTest::SetUp();
   }
 
   void SetUpOnMainThread() override {
     InteractiveBrowserTest::SetUpOnMainThread();
+
+    identity_test_env_adaptor_ =
+        std::make_unique<IdentityTestEnvironmentProfileAdaptor>(
+            browser()->GetProfile());
+    identity_test_env_adaptor_->identity_test_env()
+        ->SetAutomaticIssueOfAccessTokens(true);
+
     skills::SkillsServiceFactory::GetInstance()->SetTestingFactory(
         browser()->GetProfile(),
         base::BindRepeating(&SkillsPageInteractiveUITest::CreateSkillsService,
@@ -73,6 +92,11 @@ class SkillsPageInteractiveUITest : public InteractiveBrowserTest {
     ASSERT_TRUE(skills_service);
     skills_service->SetServiceStatusForTesting(
         skills::SkillsService::ServiceStatus::kReady);
+  }
+
+  void TearDownOnMainThread() override {
+    identity_test_env_adaptor_.reset();
+    InteractiveBrowserTest::TearDownOnMainThread();
   }
 
   std::unique_ptr<KeyedService> CreateSkillsService(
@@ -204,6 +228,10 @@ class SkillsPageInteractiveUITest : public InteractiveBrowserTest {
   network::TestURLLoaderFactory test_url_loader_factory_;
   base::HistogramTester histogram_tester_;
   base::test::ScopedFeatureList scoped_feature_list_;
+
+ private:
+  std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
+      identity_test_env_adaptor_;
 };
 
 IN_PROC_BROWSER_TEST_F(SkillsPageInteractiveUITest, UndoFromDeletionFlow) {
@@ -412,6 +440,9 @@ IN_PROC_BROWSER_TEST_P(SkillsPageScreenshotInteractiveUITest,
   GURL expected_url(skills::kSkillsDownloaderGstaticUrl);
   test_url_loader_factory_.AddResponse(expected_url.spec(), response_data,
                                        net::HTTP_OK);
+  GURL api_url(features::kSkillsServiceApiUrl.Get());
+  test_url_loader_factory_.AddResponse(api_url.spec(), response_data,
+                                       net::HTTP_OK);
 
   const InteractiveBrowserWindowTestApi::DeepQuery kSkillCardQuery{
       "skills-app", "discover-skills-page", "skill-card"};
@@ -471,6 +502,9 @@ IN_PROC_BROWSER_TEST_P(SkillsPageScreenshotInteractiveUITest,
 
   GURL expected_url(skills::kSkillsDownloaderGstaticUrl);
   test_url_loader_factory_.AddResponse(expected_url.spec(), response_data,
+                                       net::HTTP_OK);
+  GURL api_url(features::kSkillsServiceApiUrl.Get());
+  test_url_loader_factory_.AddResponse(api_url.spec(), response_data,
                                        net::HTTP_OK);
 
   const InteractiveBrowserWindowTestApi::DeepQuery kSkillCardQuery{

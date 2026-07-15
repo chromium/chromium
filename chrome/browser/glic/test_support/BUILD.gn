@@ -55,6 +55,7 @@ source_set("test_support") {
     "//chrome/browser/ui/side_panel:side_panel_views_dependent",
     "//components/feature_engagement/test:test_support",
     "//components/signin/public/identity_manager:test_support",
+    "//components/skills:features",
   ]
   if (enable_desktop_aura || is_mac) {
     deps += [ "//ui/views:test_support" ]
