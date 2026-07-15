@@ -51,7 +51,8 @@ class UrlBarContextMenuHelper implements OnCreateContextMenuListener {
                     android.R.id.undo,
                     android.R.id.redo,
                     R.id.url_bar_delete,
-                    R.id.url_bar_always_show_ai_mode);
+                    R.id.url_bar_always_show_ai_mode,
+                    R.id.url_bar_manage_search_engines);
 
     public static final float INVALID_TOUCH_COORDINATE = -1f;
 
@@ -127,22 +128,6 @@ class UrlBarContextMenuHelper implements OnCreateContextMenuListener {
                 }
                 mListItems.add(builder.build());
             }
-        }
-
-        Runnable manageSearchEnginesCallback = mDelegate.getManageSearchEnginesCallback();
-        if (manageSearchEnginesCallback != null && OmniboxFeatures.sOmniboxSiteSearch.isEnabled()) {
-            if (!mListItems.isEmpty()) {
-                mListItems.add(BasicListMenu.buildMenuDivider(false));
-            }
-            mListItems.add(
-                    new ListItemBuilder()
-                            .withTitle(
-                                    mAnchorView
-                                            .getContext()
-                                            .getString(
-                                                    R.string.manage_search_engines_and_site_search))
-                            .withMenuId(R.id.url_bar_manage_search_engines)
-                            .build());
         }
 
         if (mListItems.isEmpty()) {

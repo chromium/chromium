@@ -1005,28 +1005,23 @@ public class UrlBar extends AutocompleteEditText {
             }
         }
 
-        if (mManageSearchEnginesCallback == null
-                || !OmniboxFeatures.sOmniboxSiteSearch.isEnabled()
-                || OmniboxFeatures.sOmniboxListMenuContextMenu.isEnabled()) {
-            return;
+        if (mManageSearchEnginesCallback != null
+                && OmniboxFeatures.sOmniboxSiteSearch.isEnabled()
+                && menu.findItem(R.id.url_bar_manage_search_engines) == null) {
+            MenuItem item =
+                    menu.add(
+                            Menu.NONE,
+                            R.id.url_bar_manage_search_engines,
+                            Menu.CATEGORY_SECONDARY,
+                            getContext().getString(R.string.manage_search_engines_and_site_search));
+            item.setOnMenuItemClickListener(
+                    clickedItem -> {
+                        if (mManageSearchEnginesCallback != null) {
+                            mManageSearchEnginesCallback.run();
+                        }
+                        return true;
+                    });
         }
-
-        if (menu.findItem(R.id.url_bar_manage_search_engines) != null) {
-            return;
-        }
-        MenuItem item =
-                menu.add(
-                        Menu.NONE,
-                        R.id.url_bar_manage_search_engines,
-                        Menu.CATEGORY_SECONDARY,
-                        getContext().getString(R.string.manage_search_engines_and_site_search));
-        item.setOnMenuItemClickListener(
-                clickedItem -> {
-                    if (mManageSearchEnginesCallback != null) {
-                        mManageSearchEnginesCallback.run();
-                    }
-                    return true;
-                });
     }
 
     /**
