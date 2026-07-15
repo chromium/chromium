@@ -26,6 +26,7 @@ if (!is_android) {
       "//chrome/app:generated_resources",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/page_info",
+      "//chrome/browser/ui/views:screen_sharing_util",
       "//components/infobars/content",
       "//components/page_load_metrics/browser",
       "//components/strings:components_strings",
@@ -53,6 +54,7 @@ if (!is_android) {
       ":tab_sharing",
       "//chrome/browser/ui",
       "//chrome/browser/ui/views",
+      "//chrome/browser/ui/views:screen_sharing_util",
       "//testing/gmock",
     ]
   }

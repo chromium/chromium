@@ -95,6 +95,18 @@ source_set("layout_provider_impl") {
   ]
 }
 
+source_set("screen_sharing_util") {
+  sources = [
+    "screen_sharing_util.cc",
+    "screen_sharing_util.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//content/public/browser",
+  ]
+}
+
 source_set("file_system_access_test_support") {
   testonly = true
   sources = [
