@@ -2181,6 +2181,73 @@ TEST_F(TabStripModelTest, CommandCloseOtherTabs) {
   EXPECT_TRUE(tabstrip()->empty());
 }
 
+TEST_F(TabStripModelTest, CloseOtherTabsInGroupIndices) {
+  if (!tabstrip()->SupportsTabGroups()) {
+    return;
+  }
+
+  class GroupIndexChangeObserver : public TabStripModelObserver {
+   public:
+    struct Call {
+      int tab_id;
+      int index;
+      std::optional<tab_groups::TabGroupId> old_group;
+      std::optional<tab_groups::TabGroupId> new_group;
+    };
+    std::vector<Call> calls;
+
+    void TabGroupedStateChanged(TabStripModel* tab_strip_model,
+                                std::optional<tab_groups::TabGroupId> old_group,
+                                std::optional<tab_groups::TabGroupId> new_group,
+                                tabs::TabInterface* tab,
+                                int index) override {
+      calls.push_back({GetID(tab->GetContents()), index, old_group, new_group});
+    }
+  };
+
+  // Create 3 tabs.
+  PrepareTabs(tabstrip(), 3);
+
+  // Group all 3 tabs.
+  tab_groups::TabGroupId group = tabstrip()->AddToNewGroup({0, 1, 2});
+
+  // Set T1 as active.
+  tabstrip()->ActivateTabAt(1);
+
+  GroupIndexChangeObserver observer;
+  tabstrip()->AddObserver(&observer);
+
+  // Execute "Close other tabs" on T1 (which is at index 1).
+  // This should close T0 (index 0) and T2 (index 2).
+  // T1 should remain in the group.
+  tabstrip()->ExecuteContextMenuCommand(1,
+                                        TabStripModel::CommandCloseOtherTabs);
+
+  // We expect T0 (id 0) and T2 (id 2) to be removed from the group.
+  // The observer should be notified with their indices BEFORE removals started.
+  // T0 was at index 0.
+  // T2 was at index 2.
+  ASSERT_EQ(2u, observer.calls.size());
+
+  EXPECT_EQ(0, observer.calls[0].tab_id);
+  EXPECT_EQ(0, observer.calls[0].index);
+  EXPECT_EQ(group, observer.calls[0].old_group);
+  EXPECT_EQ(std::nullopt, observer.calls[0].new_group);
+
+  EXPECT_EQ(2, observer.calls[1].tab_id);
+  EXPECT_EQ(2, observer.calls[1].index);
+  EXPECT_EQ(group, observer.calls[1].old_group);
+  EXPECT_EQ(std::nullopt, observer.calls[1].new_group);
+
+  // Verify T1 (id 1) remains and is still in the group.
+  EXPECT_EQ(1, tabstrip()->count());
+  EXPECT_EQ(1, GetID(tabstrip()->GetWebContentsAt(0)));
+  EXPECT_EQ(group, tabstrip()->GetTabAtIndex(0)->GetGroup());
+
+  tabstrip()->RemoveObserver(&observer);
+  tabstrip()->CloseAllTabs();
+}
+
 // Tests IsContextMenuCommandEnabled and ExecuteContextMenuCommand with
 // CommandCloseTabsToRight.
 TEST_F(TabStripModelTest, CommandCloseTabsToRight) {

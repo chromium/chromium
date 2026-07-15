@@ -1253,7 +1253,8 @@ class TabStripModel {
   // removing an existing tab in  the tabstrip.
   std::unique_ptr<tabs::TabModel> RemoveTabFromIndexImpl(
       int index,
-      tabs::TabInterface::DetachReason tab_detach_reason);
+      tabs::TabInterface::DetachReason tab_detach_reason,
+      int index_before_any_removals);
 
   // Updates the `contents_data_` and sends out observer notifications for
   // updating the index, pinned state or group property.

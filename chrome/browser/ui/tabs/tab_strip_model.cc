@@ -949,8 +949,8 @@ std::unique_ptr<DetachedTab> TabStripModel::DetachTabImpl(
     id = delegate_->CreateHistoricalTab(tab->GetContents());
   }
 
-  std::unique_ptr<tabs::TabModel> detached_tab =
-      RemoveTabFromIndexImpl(index_at_time_of_removal, tab_detach_reason);
+  std::unique_ptr<tabs::TabModel> detached_tab = RemoveTabFromIndexImpl(
+      index_at_time_of_removal, tab_detach_reason, index_before_any_removals);
 
   detached_tab->OnRemovedFromModel();
   return std::make_unique<DetachedTab>(
@@ -4497,7 +4497,8 @@ void TabStripModel::InsertTabAtIndexImpl(
 
 std::unique_ptr<tabs::TabModel> TabStripModel::RemoveTabFromIndexImpl(
     int index,
-    tabs::TabInterface::DetachReason tab_detach_reason) {
+    tabs::TabInterface::DetachReason tab_detach_reason,
+    int index_before_any_removals) {
   tabs::TabModel* const tab_to_remove = GetTabModelAtIndex(index);
   const std::optional<tab_groups::TabGroupId> old_group =
       tab_to_remove->GetGroup();
@@ -4555,7 +4556,8 @@ std::unique_ptr<tabs::TabModel> TabStripModel::RemoveTabFromIndexImpl(
   }
 
   if (group_model_ && old_group) {
-    TabGroupStateChanged(index, tab_to_remove, old_group, std::nullopt);
+    TabGroupStateChanged(index_before_any_removals, tab_to_remove, old_group,
+                         std::nullopt);
   }
 
   return old_data;
