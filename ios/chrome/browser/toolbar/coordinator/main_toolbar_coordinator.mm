@@ -640,8 +640,14 @@ inline LayoutStateToolbarPassKey PassKey() {
     if ([self isToolbarPositionBottom]) {
       if (IsAppBarHiddenInFullscreen() &&
           _layoutState.appBarPosition == AppBarPosition::kBottom) {
-        return ToolbarCollapsedHeight(
-            self.traitEnvironment.traitCollection.preferredContentSizeCategory);
+        CGFloat safeAreaBottom = 0.0;
+        if (self.browser->GetSceneState().window) {
+          safeAreaBottom =
+              self.browser->GetSceneState().window.safeAreaInsets.bottom;
+        }
+        return ToolbarCollapsedHeight(self.traitEnvironment.traitCollection
+                                          .preferredContentSizeCategory) +
+               safeAreaBottom;
       }
       return kToolbarHeightFullscreen;
     }

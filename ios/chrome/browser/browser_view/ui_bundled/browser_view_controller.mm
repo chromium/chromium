@@ -2352,9 +2352,7 @@ bool IsFullscreenNextIAEnabled() {
   CGFloat height = expandedHeight;
   if (IsAppBarHiddenInFullscreen() &&
       self.layoutState.appBarPosition == AppBarPosition::kBottom) {
-    CGFloat safeAreaBottom = self.safeAreaProvider.safeArea.bottom;
-    CGFloat collapsedHeightWithSafeArea =
-        [self collapsedBottomToolbarHeight] + safeAreaBottom;
+    CGFloat collapsedHeightWithSafeArea = [self collapsedBottomToolbarHeight];
     CGFloat targetHeight =
         collapsedHeightWithSafeArea +
         progress * (expandedHeight - collapsedHeightWithSafeArea);

@@ -804,7 +804,8 @@ const base::TimeDelta kProgressBarEndAnimationDuration =
   }
 
   if (!_topPosition) {
-    _locationBarTopConstraint.constant = progress * kToolbarPadding;
+    _locationBarTopConstraint.constant =
+        [self locationBarTopPaddingForFullscreenProgress:progress];
   } else {
     _locationBarBottomPaddingConstraint.constant =
         -[self locationBarBottomPaddingForFullscreenProgress:progress];
@@ -921,7 +922,8 @@ const base::TimeDelta kProgressBarEndAnimationDuration =
   _bannerPromoBackgroundHeightConstraint.constant =
       [self bannerPromoBackgroundHeightForFullscreenProgress:1];
   if (!_topPosition) {
-    _locationBarTopConstraint.constant = _fullscreenProgress * kToolbarPadding;
+    _locationBarTopConstraint.constant =
+        [self locationBarTopPaddingForFullscreenProgress:_fullscreenProgress];
   } else {
     _locationBarBottomPaddingConstraint.constant = -[self
         locationBarBottomPaddingForFullscreenProgress:_fullscreenProgress];
@@ -948,7 +950,8 @@ const base::TimeDelta kProgressBarEndAnimationDuration =
   _bannerPromoVisible = NO;
 
   if (!_topPosition) {
-    _locationBarTopConstraint.constant = _fullscreenProgress * kToolbarPadding;
+    _locationBarTopConstraint.constant =
+        [self locationBarTopPaddingForFullscreenProgress:_fullscreenProgress];
   } else {
     _locationBarBottomPaddingConstraint.constant = -[self
         locationBarBottomPaddingForFullscreenProgress:_fullscreenProgress];
@@ -999,6 +1002,13 @@ const base::TimeDelta kProgressBarEndAnimationDuration =
         [self bannerPromoBackgroundHeightForFullscreenProgress:1];
   }
   return progress * locationBarBottomPadding +
+         (1 - progress) * kToolbarPaddingFullscreen;
+}
+
+// Returns the location bar top padding for the given Fullscreen
+// `progress`.
+- (CGFloat)locationBarTopPaddingForFullscreenProgress:(CGFloat)progress {
+  return progress * kToolbarPadding +
          (1 - progress) * kToolbarPaddingFullscreen;
 }
 
