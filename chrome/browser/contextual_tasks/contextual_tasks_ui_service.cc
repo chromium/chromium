@@ -1741,6 +1741,26 @@ bool ContextualTasksUiService::HandleNavigationImpl(
       }
     }
 
+    // On mobile phones without window tracking, link navigations that request
+    // new window creation cannot create separate windows. Intercept them here
+    // and route to `OnThreadLinkClicked` for bottom-sheet handling, whereas
+    // Desktop/AL allows natural window creation and handles AIM links at line
+    // 1846.
+    if (IsAndroidMobileFormFactor() && from_can_create_window &&
+        ShouldAllowNewTabOpen(url_params.url, browser, task_id)) {
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE,
+          base::BindOnce(
+              &ContextualTasksUiService::OnThreadLinkClicked,
+              weak_ptr_factory_.GetWeakPtr(), url_params.url, task_id,
+              tab ? tab->GetWeakPtr() : nullptr,
+              browser ? browser->GetWeakPtr() : nullptr,
+              initiator_origin.value_or(source_contents->GetPrimaryMainFrame()
+                                            ->GetLastCommittedOrigin())));
+      return true;  // Return true to cancel natural (unsupported) window
+                    // creation on mobile.
+    }
+
     // If this is a navigation CanCreateWindow, check to see if this
     // navigation should open in a new tab, or needs to be cancelled. If the
     // former, return true to allow the window to be created. Afterwards, the
@@ -1800,26 +1820,6 @@ bool ContextualTasksUiService::HandleNavigationImpl(
           }
         }
       }
-
-      // On mobile phones without window tracking, link navigations that request
-      // new window creation cannot create separate windows. Intercept them here
-      // and route to `OnThreadLinkClicked` for bottom-sheet handling, whereas
-      // Desktop/AL allows natural window creation and handles AIM links at line
-      // 1846.
-      if (IsAndroidMobileFormFactor()) {
-        base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-            FROM_HERE,
-            base::BindOnce(
-                &ContextualTasksUiService::OnThreadLinkClicked,
-                weak_ptr_factory_.GetWeakPtr(), url_params.url, task_id,
-                tab ? tab->GetWeakPtr() : nullptr,
-                browser ? browser->GetWeakPtr() : nullptr,
-                initiator_origin.value_or(source_contents->GetPrimaryMainFrame()
-                                              ->GetLastCommittedOrigin())));
-        return true;  // Return true to cancel natural (unsupported) window
-                      // creation on mobile.
-      }
-
       return false;
     }
 

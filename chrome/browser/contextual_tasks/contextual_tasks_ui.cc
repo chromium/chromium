@@ -1645,7 +1645,12 @@ void ContextualTasksUI::FrameNavObserver::DidFinishNavigation(
 
   // Set whether this navigation is to a zero state so the UI can adjust
   // accordingly.
-  const bool is_zero_state = ContextualTasksUI::IsZeroState(url, ui_service_);
+  bool is_zero_state = ContextualTasksUI::IsZeroState(url, ui_service_);
+  if (contextual_tasks::IsAndroidMobileFormFactor() && is_zero_state &&
+      task_info_delegate_->GetThreadTitle().has_value() &&
+      !task_info_delegate_->GetThreadTitle()->empty()) {
+    is_zero_state = false;
+  }
 
   // Record the HTTP response code of the inner frame contents if response
   // headers are available.

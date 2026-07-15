@@ -995,7 +995,7 @@ export class ContextualTasksAppElement extends ContextualTasksAppElementBase {
       this.isFirstLoadCommit_ = false;
       const latencyMs =
           Math.round(performance.now() - this.constructorStartTime_);
-      chrome.metricsPrivate.recordMediumTime(
+      chrome.metricsPrivate?.recordMediumTime(
           'ContextualTasks.OAuth.StartToCommitLatency', latencyMs);
     }
     this.updateBasicModeAfterNavigation();
