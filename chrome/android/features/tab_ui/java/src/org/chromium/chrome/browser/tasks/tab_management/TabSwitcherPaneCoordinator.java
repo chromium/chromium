@@ -717,6 +717,59 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
         mActivity.unregisterComponentCallbacks(mComponentsCallbacks);
     }
 
+    /**
+     * Returns whether the touch at (x, y) (relative to the coordinator's parent view) is on an
+     * interactive element.
+     */
+    public boolean isTouchOnInteractiveElement(float x, float y) {
+        if (isEditorVisible() || isTabGridDialogVisible()) {
+            return true;
+        }
+
+        TabListRecyclerView recyclerView = mTabListCoordinator.getContainerView();
+        if (isTouchOnRecyclerViewItem(recyclerView, x, y)) {
+            return true;
+        }
+
+        if (mPinnedTabsCoordinator != null) {
+            TabListRecyclerView pinnedRecyclerView =
+                    mPinnedTabsCoordinator.getPinnedTabsRecyclerView();
+            return isTouchOnRecyclerViewItem(pinnedRecyclerView, x, y);
+        }
+
+        return false;
+    }
+
+    private boolean isTouchOnRecyclerViewItem(TabListRecyclerView recyclerView, float x, float y) {
+        if (recyclerView == null || recyclerView.getVisibility() != View.VISIBLE) {
+            return false;
+        }
+
+        int[] parentLocation = new int[2];
+        mParentView.getLocationOnScreen(parentLocation);
+
+        int[] rvLocation = new int[2];
+        recyclerView.getLocationOnScreen(rvLocation);
+
+        float rawX = x + parentLocation[0];
+        float rawY = y + parentLocation[1];
+
+        float rvX = rawX - rvLocation[0];
+        float rvY = rawY - rvLocation[1];
+
+        if (rvX < 0 || rvX > recyclerView.getWidth() || rvY < 0 || rvY > recyclerView.getHeight()) {
+            return false;
+        }
+
+        return recyclerView.findChildViewUnder(rvX, rvY) != null;
+    }
+
+    private boolean isEditorVisible() {
+        TabListEditorCoordinator.TabListEditorController controller =
+                mTabListEditorManager.getControllerSupplier().get();
+        return controller != null && controller.isVisible();
+    }
+
     /** Post native initialization. */
     public void initWithNative() {
         try (TraceEvent e = TraceEvent.scoped("TabSwitcherPaneCoordinator.initWithNative")) {

@@ -12,12 +12,14 @@ import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.robolectric.Shadows.shadowOf;
 
 import static org.chromium.chrome.browser.hub.HubColorMixer.COLOR_MIXER;
 import static org.chromium.chrome.browser.hub.HubPaneHostProperties.PANE_ROOT_VIEW;
 import static org.chromium.chrome.browser.hub.HubPaneHostProperties.SNACKBAR_CONTAINER_CALLBACK;
 
 import android.app.Activity;
+import android.os.Looper;
 import android.os.SystemClock;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -48,9 +50,11 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /** Unit tests for {@link HubPaneHostView}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@EnableFeatures(ChromeFeatureList.ENABLE_SWIPE_TO_SWITCH_PANE)
 public class HubPaneHostViewUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -178,14 +182,21 @@ public class HubPaneHostViewUnitTest {
     @Test
     @EnableFeatures(ChromeFeatureList.ENABLE_SWIPE_TO_SWITCH_PANE)
     public void testSwipeLeft() {
-        HubPaneHostView.OnPaneSwipeListener onPaneSwipeListener =
-                Mockito.mock(HubPaneHostView.OnPaneSwipeListener.class);
-        mPaneHost.setOnPaneSwipeListener(onPaneSwipeListener);
+        HubPaneHostView.PaneViewProvider paneViewProvider =
+                Mockito.mock(HubPaneHostView.PaneViewProvider.class);
+        View adjacentView = new View(mActivity);
+        when(paneViewProvider.prepareAndGetAdjacentPaneView(true)).thenReturn(adjacentView);
+        mPropertyModel.set(HubPaneHostProperties.PANE_VIEW_PROVIDER, paneViewProvider);
+
+        View currentViewRoot = new View(mActivity);
+        mPropertyModel.set(PANE_ROOT_VIEW, currentViewRoot);
+        RobolectricUtil.runAllBackgroundAndUi();
 
         int viewWidth = mPaneHost.getWidth();
         int viewHeight = mPaneHost.getHeight();
         long downTime = SystemClock.uptimeMillis();
-        float startX = mPaneHost.getSwipeEdgeGutterWidthForTesting() / 2f;
+        // Start outside the edge gutter width
+        float startX = viewWidth / 2f;
         float endX = startX - viewWidth / 2f; // Significant left displacement
 
         // Stub VelocityTracker behavior
@@ -193,35 +204,47 @@ public class HubPaneHostViewUnitTest {
         when(mVelocityTracker.getXVelocity()).thenReturn(-1000f);
         when(mVelocityTracker.getYVelocity()).thenReturn(0f); // Ensure it's horizontal
 
-        mPaneHost.onInterceptTouchEvent(
+        MotionEvent downEvent =
                 MotionEvent.obtain(
-                        downTime, downTime, MotionEvent.ACTION_DOWN, startX, viewHeight / 2f, 0));
-        mPaneHost.onTouchEvent(
-                MotionEvent.obtain(
-                        downTime,
-                        downTime + 10,
-                        MotionEvent.ACTION_MOVE,
-                        endX,
-                        viewHeight / 2f,
-                        0));
-        mPaneHost.onTouchEvent(
-                MotionEvent.obtain(
-                        downTime, downTime + 20, MotionEvent.ACTION_UP, endX, viewHeight / 2f, 0));
+                        downTime, downTime, MotionEvent.ACTION_DOWN, startX, viewHeight / 2f, 0);
+        mPaneHost.onInterceptTouchEvent(downEvent);
+        mPaneHost.onTouchEvent(downEvent);
 
-        verify(onPaneSwipeListener).onPaneSwipe(true);
+        MotionEvent moveEvent =
+                MotionEvent.obtain(
+                        downTime, downTime + 10, MotionEvent.ACTION_MOVE, endX, viewHeight / 2f, 0);
+        if (mPaneHost.onInterceptTouchEvent(moveEvent)) {
+            mPaneHost.onTouchEvent(moveEvent);
+        }
+
+        MotionEvent upEvent =
+                MotionEvent.obtain(
+                        downTime, downTime + 20, MotionEvent.ACTION_UP, endX, viewHeight / 2f, 0);
+        mPaneHost.onTouchEvent(upEvent);
+        shadowOf(Looper.getMainLooper()).idleFor(1, TimeUnit.SECONDS);
+
+        verify(paneViewProvider).prepareAndGetAdjacentPaneView(true);
+        verify(paneViewProvider).onSwipeSwitchComplete(true);
     }
 
     @Test
     @EnableFeatures(ChromeFeatureList.ENABLE_SWIPE_TO_SWITCH_PANE)
     public void testSwipeRight() {
-        HubPaneHostView.OnPaneSwipeListener onPaneSwipeListener =
-                Mockito.mock(HubPaneHostView.OnPaneSwipeListener.class);
-        mPaneHost.setOnPaneSwipeListener(onPaneSwipeListener);
+        HubPaneHostView.PaneViewProvider paneViewProvider =
+                Mockito.mock(HubPaneHostView.PaneViewProvider.class);
+        View adjacentView = new View(mActivity);
+        when(paneViewProvider.prepareAndGetAdjacentPaneView(false)).thenReturn(adjacentView);
+        mPropertyModel.set(HubPaneHostProperties.PANE_VIEW_PROVIDER, paneViewProvider);
+
+        View currentViewRoot = new View(mActivity);
+        mPropertyModel.set(PANE_ROOT_VIEW, currentViewRoot);
+        RobolectricUtil.runAllBackgroundAndUi();
 
         int viewWidth = mPaneHost.getWidth();
         int viewHeight = mPaneHost.getHeight();
         long downTime = SystemClock.uptimeMillis();
-        float startX = viewWidth - mPaneHost.getSwipeEdgeGutterWidthForTesting() / 2f;
+        // Start outside the edge gutter width
+        float startX = viewWidth / 2f;
         float endX = startX + viewWidth / 2f; // Significant right displacement
 
         // Stub VelocityTracker behavior
@@ -229,22 +252,124 @@ public class HubPaneHostViewUnitTest {
         when(mVelocityTracker.getXVelocity()).thenReturn(1000f);
         when(mVelocityTracker.getYVelocity()).thenReturn(0f); // Ensure it's horizontal
 
-        mPaneHost.onInterceptTouchEvent(
+        MotionEvent downEvent =
                 MotionEvent.obtain(
-                        downTime, downTime, MotionEvent.ACTION_DOWN, startX, viewHeight / 2f, 0));
-        mPaneHost.onTouchEvent(
-                MotionEvent.obtain(
-                        downTime,
-                        downTime + 10,
-                        MotionEvent.ACTION_MOVE,
-                        endX,
-                        viewHeight / 2f,
-                        0));
-        mPaneHost.onTouchEvent(
-                MotionEvent.obtain(
-                        downTime, downTime + 20, MotionEvent.ACTION_UP, endX, viewHeight / 2f, 0));
+                        downTime, downTime, MotionEvent.ACTION_DOWN, startX, viewHeight / 2f, 0);
+        mPaneHost.onInterceptTouchEvent(downEvent);
+        mPaneHost.onTouchEvent(downEvent);
 
-        verify(onPaneSwipeListener).onPaneSwipe(false);
+        MotionEvent moveEvent =
+                MotionEvent.obtain(
+                        downTime, downTime + 10, MotionEvent.ACTION_MOVE, endX, viewHeight / 2f, 0);
+        if (mPaneHost.onInterceptTouchEvent(moveEvent)) {
+            mPaneHost.onTouchEvent(moveEvent);
+        }
+
+        MotionEvent upEvent =
+                MotionEvent.obtain(
+                        downTime, downTime + 20, MotionEvent.ACTION_UP, endX, viewHeight / 2f, 0);
+        mPaneHost.onTouchEvent(upEvent);
+        shadowOf(Looper.getMainLooper()).idleFor(1, TimeUnit.SECONDS);
+
+        verify(paneViewProvider).prepareAndGetAdjacentPaneView(false);
+        verify(paneViewProvider).onSwipeSwitchComplete(false);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ENABLE_SWIPE_TO_SWITCH_PANE)
+    public void testSwipeLeft_ignoredAtEdge() {
+        HubPaneHostView.PaneViewProvider paneViewProvider =
+                Mockito.mock(HubPaneHostView.PaneViewProvider.class);
+        View adjacentView = new View(mActivity);
+        when(paneViewProvider.prepareAndGetAdjacentPaneView(true)).thenReturn(adjacentView);
+        mPropertyModel.set(HubPaneHostProperties.PANE_VIEW_PROVIDER, paneViewProvider);
+
+        View currentViewRoot = new View(mActivity);
+        mPropertyModel.set(PANE_ROOT_VIEW, currentViewRoot);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        int viewWidth = mPaneHost.getWidth();
+        int viewHeight = mPaneHost.getHeight();
+        long downTime = SystemClock.uptimeMillis();
+        // Start inside the left edge gutter (reserved for OS System Back)
+        float startX = mPaneHost.getSwipeEdgeGutterWidthForTesting() / 2f;
+        float endX = startX - viewWidth / 2f;
+
+        // Stub VelocityTracker behavior
+        doNothing().when(mVelocityTracker).computeCurrentVelocity(anyInt());
+        when(mVelocityTracker.getXVelocity()).thenReturn(-1000f);
+        when(mVelocityTracker.getYVelocity()).thenReturn(0f);
+
+        MotionEvent downEvent =
+                MotionEvent.obtain(
+                        downTime, downTime, MotionEvent.ACTION_DOWN, startX, viewHeight / 2f, 0);
+        mPaneHost.onInterceptTouchEvent(downEvent);
+        mPaneHost.onTouchEvent(downEvent);
+
+        MotionEvent moveEvent =
+                MotionEvent.obtain(
+                        downTime, downTime + 10, MotionEvent.ACTION_MOVE, endX, viewHeight / 2f, 0);
+        if (mPaneHost.onInterceptTouchEvent(moveEvent)) {
+            mPaneHost.onTouchEvent(moveEvent);
+        }
+
+        MotionEvent upEvent =
+                MotionEvent.obtain(
+                        downTime, downTime + 20, MotionEvent.ACTION_UP, endX, viewHeight / 2f, 0);
+        mPaneHost.onTouchEvent(upEvent);
+
+        verify(paneViewProvider, Mockito.never()).prepareAndGetAdjacentPaneView(any(Boolean.class));
+        verify(paneViewProvider, Mockito.never()).onSwipeSwitchComplete(any(Boolean.class));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ENABLE_SWIPE_TO_SWITCH_PANE)
+    public void testSwipe_ignoredOnInteractiveElement() {
+        HubPaneHostView.PaneViewProvider paneViewProvider =
+                Mockito.mock(HubPaneHostView.PaneViewProvider.class);
+        View adjacentView = new View(mActivity);
+        when(paneViewProvider.prepareAndGetAdjacentPaneView(true)).thenReturn(adjacentView);
+        mPropertyModel.set(HubPaneHostProperties.PANE_VIEW_PROVIDER, paneViewProvider);
+
+        // Stub InteractiveElementChecker to return true
+        HubPaneHostView.InteractiveElementChecker checker = (x, y) -> true;
+        mPaneHost.setInteractiveElementChecker(checker);
+
+        View currentViewRoot = new View(mActivity);
+        mPropertyModel.set(PANE_ROOT_VIEW, currentViewRoot);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        int viewWidth = mPaneHost.getWidth();
+        int viewHeight = mPaneHost.getHeight();
+        long downTime = SystemClock.uptimeMillis();
+        float startX = viewWidth / 2f;
+        float endX = startX - viewWidth / 2f;
+
+        // Stub VelocityTracker behavior
+        doNothing().when(mVelocityTracker).computeCurrentVelocity(anyInt());
+        when(mVelocityTracker.getXVelocity()).thenReturn(-1000f);
+        when(mVelocityTracker.getYVelocity()).thenReturn(0f);
+
+        MotionEvent downEvent2 =
+                MotionEvent.obtain(
+                        downTime, downTime, MotionEvent.ACTION_DOWN, startX, viewHeight / 2f, 0);
+        mPaneHost.onInterceptTouchEvent(downEvent2);
+        mPaneHost.onTouchEvent(downEvent2);
+
+        MotionEvent moveEvent2 =
+                MotionEvent.obtain(
+                        downTime, downTime + 10, MotionEvent.ACTION_MOVE, endX, viewHeight / 2f, 0);
+        if (mPaneHost.onInterceptTouchEvent(moveEvent2)) {
+            mPaneHost.onTouchEvent(moveEvent2);
+        }
+
+        MotionEvent upEvent2 =
+                MotionEvent.obtain(
+                        downTime, downTime + 20, MotionEvent.ACTION_UP, endX, viewHeight / 2f, 0);
+        mPaneHost.onTouchEvent(upEvent2);
+
+        verify(paneViewProvider, Mockito.never()).prepareAndGetAdjacentPaneView(any(Boolean.class));
+        verify(paneViewProvider, Mockito.never()).onSwipeSwitchComplete(any(Boolean.class));
     }
 
     @Test

@@ -448,7 +448,7 @@ public class HubCoordinatorUnitTest {
                         .expectIntRecord("Android.Hub.PaneSwiped.Left", PaneId.TAB_SWITCHER)
                         .expectNoRecords("Android.Hub.PaneSwiped.Right")
                         .build();
-        mHubCoordinator.onPaneSwipe(true);
+        mHubCoordinator.onSwipeSwitchComplete(true);
         leftSwipeWatcher.assertExpected("Expected a left swipe to be recorded.");
 
         var rightSwipeWatcher =
@@ -457,19 +457,19 @@ public class HubCoordinatorUnitTest {
                                 "Android.Hub.PaneSwiped.Right", PaneId.INCOGNITO_TAB_SWITCHER)
                         .expectNoRecords("Android.Hub.PaneSwiped.Left")
                         .build();
-        mHubCoordinator.onPaneSwipe(false);
+        mHubCoordinator.onSwipeSwitchComplete(false);
         rightSwipeWatcher.assertExpected("Expected a right swipe to be recorded.");
     }
 
     @Test
     public void onPaneSwipe_cyclesToNextPane() {
-        mHubCoordinator.onPaneSwipe(true);
+        mHubCoordinator.onSwipeSwitchComplete(true);
         verify(mPaneManager).focusPane(PaneId.INCOGNITO_TAB_SWITCHER);
     }
 
     @Test
     public void onPaneSwipe_cyclesToPreviousPane() {
-        mHubCoordinator.onPaneSwipe(false);
+        mHubCoordinator.onSwipeSwitchComplete(false);
         verify(mPaneManager).focusPane(PaneId.INCOGNITO_TAB_SWITCHER);
     }
 
@@ -477,7 +477,7 @@ public class HubCoordinatorUnitTest {
     public void onPaneSwipe_wrapsAroundFromLastPane() {
         reset(mPaneManager);
         assertTrue(mPaneManager.focusPane(PaneId.INCOGNITO_TAB_SWITCHER));
-        mHubCoordinator.onPaneSwipe(true);
+        mHubCoordinator.onSwipeSwitchComplete(true);
         verify(mPaneManager).focusPane(PaneId.TAB_SWITCHER);
     }
 }

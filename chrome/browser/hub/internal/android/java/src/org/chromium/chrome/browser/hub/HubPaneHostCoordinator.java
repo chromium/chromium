@@ -5,11 +5,14 @@
 package org.chromium.chrome.browser.hub;
 
 import static org.chromium.chrome.browser.hub.HubColorMixer.COLOR_MIXER;
+import static org.chromium.chrome.browser.hub.HubPaneHostProperties.PANE_VIEW_PROVIDER;
 
 import android.view.ViewGroup;
 
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.hub.HubPaneHostView.PaneViewProvider;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
@@ -27,16 +30,19 @@ public class HubPaneHostCoordinator {
      * @param paneSupplier A way to observe and get the current {@link Pane}.
      * @param hubColorMixer Mixes the Hub Overview Color.
      * @param defaultPaneId The default pane's Id.
+     * @param paneViewProvider Supplier of adjacent pane views for swipe gesture.
      */
     public HubPaneHostCoordinator(
             HubPaneHostView hubPaneHostView,
             MonotonicObservableSupplier<Pane> paneSupplier,
             HubColorMixer hubColorMixer,
-            @PaneId int defaultPaneId) {
+            @PaneId int defaultPaneId,
+            @Nullable PaneViewProvider paneViewProvider) {
         mHubPaneHostView = hubPaneHostView;
         mModel =
                 new PropertyModel.Builder(HubPaneHostProperties.ALL_KEYS)
                         .with(COLOR_MIXER, hubColorMixer)
+                        .with(PANE_VIEW_PROVIDER, paneViewProvider)
                         .build();
         PropertyModelChangeProcessor.create(mModel, hubPaneHostView, HubPaneHostViewBinder::bind);
         mMediator =

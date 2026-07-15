@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 
 import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.hub.HubPaneHostView.PaneViewProvider;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
@@ -31,7 +32,14 @@ class HubPaneHostProperties {
     public static final WritableObjectPropertyKey<Callback<ViewGroup>> SNACKBAR_CONTAINER_CALLBACK =
             new WritableObjectPropertyKey<>();
 
+    public static final WritableObjectPropertyKey<PaneViewProvider> PANE_VIEW_PROVIDER =
+            new WritableObjectPropertyKey<>();
+
     static final PropertyKey[] ALL_KEYS = {
-        PANE_ROOT_VIEW, COLOR_MIXER, SNACKBAR_CONTAINER_CALLBACK, SLIDE_ANIMATE_LEFT_TO_RIGHT
+        PANE_ROOT_VIEW,
+        COLOR_MIXER,
+        SNACKBAR_CONTAINER_CALLBACK,
+        SLIDE_ANIMATE_LEFT_TO_RIGHT,
+        PANE_VIEW_PROVIDER
     };
 }

@@ -11,6 +11,7 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
+import android.animation.ValueAnimator;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
@@ -35,14 +36,25 @@ import java.util.Objects;
 /** Holds the current pane's {@link View}. */
 @NullMarked
 public class HubPaneHostView extends FrameLayout {
-    /** A listener for swipe gestures on the pane host view. */
-    public interface OnPaneSwipeListener {
+    /** A provider of adjacent pane views during a swipe drag gesture. */
+    public interface PaneViewProvider {
         /**
-         * Called when a swipe gesture is completed.
-         *
-         * @param isSwipeLeft Whether the swipe was to the left.
+         * Prepares the adjacent pane for display (warming resources) and returns its root view, or
+         * null if there is no adjacent pane to switch to.
          */
-        void onPaneSwipe(boolean isSwipeLeft);
+        @Nullable View prepareAndGetAdjacentPaneView(boolean isSwipeLeft);
+
+        /**
+         * Notifies that the swipe drag has completed successfully, indicating the Hub should switch
+         * focus to the adjacent pane.
+         */
+        void onSwipeSwitchComplete(boolean isSwipeLeft);
+
+        /** Notifies that the swipe drag was cancelled or settled back to the original pane. */
+        default void onSwipeSwitchCancel(boolean isSwipeLeft) {}
+
+        /** Notifies of the active drag displacement progress (fraction from 0.0 to 1.0). */
+        default void onSwipeDragProgress(float progress, boolean isSwipeLeft) {}
     }
 
     private final HubColorMixerRegistrationHelper mColorMixerHelper =
@@ -52,7 +64,20 @@ public class HubPaneHostView extends FrameLayout {
     private @Nullable View mCurrentViewRoot;
     private final AnimationHandler mSlideAnimatorHandler;
     private @Nullable NonNullObservableSupplier<Boolean> mXrSpaceModeObservableSupplier;
-    private @Nullable OnPaneSwipeListener mOnPaneSwipeListener;
+    private @Nullable PaneViewProvider mPaneViewProvider;
+    private @Nullable InteractiveElementChecker mInteractiveElementChecker;
+
+    private @Nullable View mAdjacentViewRoot;
+    private boolean mSwipeDirectionIsLeft;
+    private boolean mIsInteractiveSwitchInProgress;
+
+    /** A checker to see if a touch is on an interactive element. */
+    public interface InteractiveElementChecker {
+        /**
+         * Returns whether the touch at (x, y) (relative to the pane's root view) is interactive.
+         */
+        boolean isTouchOnInteractiveElement(float x, float y);
+    }
 
     // Pane swipe-to-switch specifics.
     private final int mSwipeEdgeGutterWidth;
@@ -60,6 +85,7 @@ public class HubPaneHostView extends FrameLayout {
     private final int mMinSwipeFlingVelocity;
 
     private boolean mIsSwipeBeingDragged;
+    private boolean mCanInterceptSwipe;
     private float mSwipeInitialDownX;
     private float mSwipeInitialDownY;
     private @Nullable VelocityTracker mVelocityTracker;
@@ -91,8 +117,12 @@ public class HubPaneHostView extends FrameLayout {
                         mPaneFrame::setBackgroundColor));
     }
 
-    public void setOnPaneSwipeListener(OnPaneSwipeListener listener) {
-        mOnPaneSwipeListener = listener;
+    public void setPaneViewProvider(@Nullable PaneViewProvider provider) {
+        mPaneViewProvider = provider;
+    }
+
+    public void setInteractiveElementChecker(@Nullable InteractiveElementChecker checker) {
+        mInteractiveElementChecker = checker;
     }
 
     @Override
@@ -103,7 +133,7 @@ public class HubPaneHostView extends FrameLayout {
 
         // Reset drag state on CANCEL or UP.
         if (action == MotionEvent.ACTION_CANCEL || action == MotionEvent.ACTION_UP) {
-            mIsSwipeBeingDragged = false;
+            cleanupDrag();
             return false;
         }
 
@@ -118,12 +148,36 @@ public class HubPaneHostView extends FrameLayout {
                 mSwipeInitialDownX = motionEvent.getX();
                 mSwipeInitialDownY = motionEvent.getY();
                 mIsSwipeBeingDragged = false;
+
+                // 1. Exclude device edges (reserved for OS System Back).
+                boolean isEdgeTouch =
+                        mSwipeInitialDownX <= mSwipeEdgeGutterWidth
+                                || mSwipeInitialDownX >= getWidth() - mSwipeEdgeGutterWidth;
+
+                // 2. Exclude interactive child elements (reserved for tab swipe-to-close).
+                boolean isInteractiveTouch = false;
+                if (mInteractiveElementChecker != null && mCurrentViewRoot != null) {
+                    int[] paneLocation = new int[2];
+                    mCurrentViewRoot.getLocationOnScreen(paneLocation);
+
+                    int[] hostLocation = new int[2];
+                    getLocationOnScreen(hostLocation);
+
+                    float rawX = mSwipeInitialDownX + hostLocation[0];
+                    float rawY = mSwipeInitialDownY + hostLocation[1];
+
+                    float paneX = rawX - paneLocation[0];
+                    float paneY = rawY - paneLocation[1];
+
+                    isInteractiveTouch =
+                            mInteractiveElementChecker.isTouchOnInteractiveElement(paneX, paneY);
+                }
+
+                mCanInterceptSwipe = !isEdgeTouch && !isInteractiveTouch;
                 break;
 
             case MotionEvent.ACTION_MOVE:
-                // Only consider swipes that start at the edge.
-                if (mSwipeInitialDownX > mSwipeEdgeGutterWidth
-                        && mSwipeInitialDownX < getWidth() - mSwipeEdgeGutterWidth) {
+                if (!mCanInterceptSwipe) {
                     return false;
                 }
 
@@ -146,35 +200,164 @@ public class HubPaneHostView extends FrameLayout {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
+        if (!mCanInterceptSwipe) {
+            return false;
+        }
+
         if (mVelocityTracker == null) {
             mVelocityTracker = VelocityTracker.obtain();
         }
         mVelocityTracker.addMovement(event);
 
-        if (event.getActionMasked() == MotionEvent.ACTION_UP) {
-            // This is the up, we are NOT handling this as a click.
-            performClick();
+        final int action = event.getActionMasked();
+        final float x = event.getX();
 
-            // Calculate the velocity of the swipe.
-            mVelocityTracker.computeCurrentVelocity(1000);
-            float velocityX = mVelocityTracker.getXVelocity();
-            float velocityY = mVelocityTracker.getYVelocity();
+        switch (action) {
+            case MotionEvent.ACTION_DOWN:
+                mSwipeInitialDownX = event.getX();
+                mSwipeInitialDownY = event.getY();
+                break;
 
-            // Check if the swipe was a horizontal fling.
-            if (Math.abs(velocityX) > mMinSwipeFlingVelocity
-                    && Math.abs(velocityX) > Math.abs(velocityY)) {
-                if (mOnPaneSwipeListener != null) {
-                    mOnPaneSwipeListener.onPaneSwipe(velocityX < 0);
+            case MotionEvent.ACTION_MOVE:
+                if (mIsSwipeBeingDragged && mCurrentViewRoot != null) {
+                    float dx = x - mSwipeInitialDownX;
+                    if (mAdjacentViewRoot == null && mPaneViewProvider != null) {
+                        boolean isSwipeLeft = dx < 0;
+                        mAdjacentViewRoot =
+                                mPaneViewProvider.prepareAndGetAdjacentPaneView(isSwipeLeft);
+                        if (mAdjacentViewRoot != null) {
+                            mSwipeDirectionIsLeft = isSwipeLeft;
+                            mAdjacentViewRoot.setTranslationX(
+                                    isSwipeLeft ? getWidth() : -getWidth());
+                            tryAddViewToFrame(mAdjacentViewRoot);
+                        }
+                    }
+
+                    if (mAdjacentViewRoot != null) {
+                        if (mSwipeDirectionIsLeft) {
+                            dx = Math.min(0, Math.max(-getWidth(), dx));
+                        } else {
+                            dx = Math.max(0, Math.min(getWidth(), dx));
+                        }
+                        mCurrentViewRoot.setTranslationX(dx);
+                        mAdjacentViewRoot.setTranslationX(
+                                dx + (mSwipeDirectionIsLeft ? getWidth() : -getWidth()));
+
+                        int width = getWidth();
+                        if (width > 0) {
+                            float progress = Math.abs(dx) / width;
+                            if (mPaneViewProvider != null) {
+                                mPaneViewProvider.onSwipeDragProgress(
+                                        progress, mSwipeDirectionIsLeft);
+                            }
+                        }
+                    }
                 }
-            }
+                break;
 
-            mIsSwipeBeingDragged = false;
-            if (mVelocityTracker != null) {
-                mVelocityTracker.recycle();
-                mVelocityTracker = null;
-            }
+            case MotionEvent.ACTION_UP:
+                performClick();
+            // Fallthrough to settle the drag
+            case MotionEvent.ACTION_CANCEL:
+                if (mIsSwipeBeingDragged && mCurrentViewRoot != null && mAdjacentViewRoot != null) {
+                    mVelocityTracker.computeCurrentVelocity(1000);
+                    float velocityX = mVelocityTracker.getXVelocity();
+                    float velocityY = mVelocityTracker.getYVelocity();
+                    float dx = x - mSwipeInitialDownX;
+
+                    boolean isFling =
+                            Math.abs(velocityX) > mMinSwipeFlingVelocity
+                                    && Math.abs(velocityX) > Math.abs(velocityY);
+                    boolean isFlingInCorrectDirection =
+                            isFling
+                                    && ((mSwipeDirectionIsLeft && velocityX < 0)
+                                            || (!mSwipeDirectionIsLeft && velocityX > 0));
+
+                    boolean isDisplacementEnough = Math.abs(dx) > getWidth() / 2f;
+
+                    boolean shouldSwitch = isDisplacementEnough || isFlingInCorrectDirection;
+                    if (shouldSwitch) {
+                        mIsInteractiveSwitchInProgress = true;
+                    }
+                    animateSettle(shouldSwitch);
+                } else {
+                    cleanupDrag();
+                }
+                break;
         }
+
         return true;
+    }
+
+    private void animateSettle(boolean isSwitch) {
+        final View currentView = mCurrentViewRoot;
+        final View adjacentView = mAdjacentViewRoot;
+        if (currentView == null || adjacentView == null) {
+            cleanupDrag();
+            return;
+        }
+
+        mSlideAnimatorHandler.forceFinishAnimation();
+        int width = getWidth();
+        if (width <= 0) {
+            cleanupDrag();
+            return;
+        }
+
+        float currentTargetX = isSwitch ? (mSwipeDirectionIsLeft ? -width : width) : 0f;
+        float adjacentTargetX = isSwitch ? 0f : (mSwipeDirectionIsLeft ? width : -width);
+
+        Animator currentAnim =
+                ObjectAnimator.ofFloat(currentView, View.TRANSLATION_X, currentTargetX);
+        Animator adjacentAnim =
+                ObjectAnimator.ofFloat(adjacentView, View.TRANSLATION_X, adjacentTargetX);
+
+        AnimatorSet animatorSet = new AnimatorSet();
+        animatorSet.playTogether(currentAnim, adjacentAnim);
+        animatorSet.setDuration(PANE_SLIDE_ANIMATION_DURATION_MS);
+
+        ValueAnimator.AnimatorUpdateListener updateListener =
+                animation -> {
+                    float dx = currentView.getTranslationX();
+                    float progress = Math.abs(dx) / width;
+                    if (mPaneViewProvider != null) {
+                        mPaneViewProvider.onSwipeDragProgress(progress, mSwipeDirectionIsLeft);
+                    }
+                };
+        if (currentAnim instanceof ValueAnimator) {
+            ((ValueAnimator) currentAnim).addUpdateListener(updateListener);
+        }
+
+        animatorSet.addListener(
+                new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        if (isSwitch) {
+                            if (mPaneViewProvider != null) {
+                                mPaneViewProvider.onSwipeSwitchComplete(mSwipeDirectionIsLeft);
+                            }
+                        } else {
+                            if (mPaneViewProvider != null) {
+                                mPaneViewProvider.onSwipeSwitchCancel(mSwipeDirectionIsLeft);
+                            }
+                            mPaneFrame.removeView(adjacentView);
+                            adjacentView.setTranslationX(0);
+                            currentView.setTranslationX(0);
+                        }
+                        cleanupDrag();
+                    }
+                });
+        mSlideAnimatorHandler.startAnimation(animatorSet);
+    }
+
+    private void cleanupDrag() {
+        mIsSwipeBeingDragged = false;
+        mCanInterceptSwipe = false;
+        mAdjacentViewRoot = null;
+        if (mVelocityTracker != null) {
+            mVelocityTracker.recycle();
+            mVelocityTracker = null;
+        }
     }
 
     @Override
@@ -193,6 +376,16 @@ public class HubPaneHostView extends FrameLayout {
      *     (true) or right-to-left (false), only when slide animation is enabled.
      */
     void setRootView(@Nullable View newRootView, boolean isSlideAnimationLeftToRight) {
+        if (mIsInteractiveSwitchInProgress) {
+            mCurrentViewRoot = newRootView;
+            mPaneFrame.removeAllViews();
+            if (newRootView != null) {
+                tryAddViewToFrame(newRootView);
+                newRootView.setTranslationX(0);
+            }
+            mIsInteractiveSwitchInProgress = false;
+            return;
+        }
 
         final View oldRootView = mCurrentViewRoot;
         mCurrentViewRoot = newRootView;
