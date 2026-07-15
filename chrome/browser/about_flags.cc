@@ -11152,6 +11152,11 @@ const FeatureEntry kFeatureEntries[] = {
          default_browser::kDefaultBrowserSetterSelection,
          kDefaultBrowserSetterSelectionVariations,
          "DefaultBrowserSetterSelection")},
+
+    {"visual-guided-setter-docking",
+     flag_descriptions::kVisualGuidedSetterDockingName,
+     flag_descriptions::kVisualGuidedSetterDockingDescription, kOsWin,
+     FEATURE_VALUE_TYPE(default_browser::kVisualGuidedSetterDocking)},
 #endif  // !BUILDFLAG(IS_ANDROID) && ! BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_ANDROID)

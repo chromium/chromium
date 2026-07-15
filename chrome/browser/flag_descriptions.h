@@ -1471,6 +1471,11 @@ inline constexpr char
         "Enables filtering of visited URL aggregates based on history URL "
         "visibility scores.";
 
+inline constexpr char kVisualGuidedSetterDockingName[] =
+    "Visual Guided Setter Docking";
+inline constexpr char kVisualGuidedSetterDockingDescription[] =
+    "Enables continuous docking in visual guided setter.";
+
 inline constexpr char kDoubleBufferCompositingName[] =
     "Double buffered compositing";
 inline constexpr char kDoubleBufferCompositingDescription[] =

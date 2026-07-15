@@ -13177,6 +13177,7 @@ from previous Chrome versions.
   <int value="-441139232" label="ExcludeDisplayInMirrorMode:enabled"/>
   <int value="-440532303" label="FillRecoveryPassword:disabled"/>
   <int value="-440210229" label="AndroidHistoryPaneFavicons:enabled"/>
+  <int value="-439778992" label="VisualGuidedSetterDocking:enabled"/>
   <int value="-439728770" label="VidsAppExistingConsumerPreinstall:disabled"/>
   <int value="-439110184" label="AndroidWebAppLaunchHandler:disabled"/>
   <int value="-438529902" label="CaptivePortalErrorPage:enabled"/>
@@ -14702,6 +14703,7 @@ from previous Chrome versions.
   <int value="48619644" label="MostVisitedTilesVisualDeduplication:enabled"/>
   <int value="48666910" label="ClipboardHistoryLongpress:disabled"/>
   <int value="48850808" label="AutocorrectUseReplaceSurroundingText:enabled"/>
+  <int value="48874945" label="VisualGuidedSetterDocking:disabled"/>
   <int value="49971529" label="TabGroupEntryPointsAndroid:disabled"/>
   <int value="50643563" label="MBIMode:enabled"/>
   <int value="50719475" label="EnterprisePublishedSkillsPolicyEnabled:enabled"/>

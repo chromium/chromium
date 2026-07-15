@@ -35,6 +35,14 @@ bool IsDefaultBrowserPromptSurfacesEnabled() {
 #endif
 }
 
+bool IsVisualGuidedSetterDockingEnabled() {
+#if BUILDFLAG(IS_WIN)
+  return base::FeatureList::IsEnabled(kVisualGuidedSetterDocking);
+#else
+  return false;
+#endif
+}
+
 DefaultBrowserPromptSurface GetDefaultBrowserPromptSurface() {
   if (!IsDefaultBrowserPromptSurfacesEnabled()) {
     return DefaultBrowserPromptSurface::kInfobar;
@@ -87,6 +95,8 @@ BASE_FEATURE(kDefaultBrowserChangedOsNotification,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kDefaultBrowserSetterSelection, base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kVisualGuidedSetterDocking, base::FEATURE_DISABLED_BY_DEFAULT);
 
 constexpr inline auto kDefaultBrowserSetterSelectionOption =
     std::to_array<base::FeatureParam<DefaultBrowserSetterType>::Option>(

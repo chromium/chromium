@@ -32,6 +32,9 @@ bool IsDefaultBrowserChangedOsNotificationEnabled();
 // Returns whether the experimental default browser prompt surfaces are enabled.
 bool IsDefaultBrowserPromptSurfacesEnabled();
 
+// Returns whether the visual guided setter docking feature flag is enabled.
+bool IsVisualGuidedSetterDockingEnabled();
+
 // Returns the UI surface to use for Default Browser Prompt. Defaults to Infobar
 // if the `kDefaultBrowserFramework` feature is disabled.
 DefaultBrowserPromptSurface GetDefaultBrowserPromptSurface();
@@ -63,6 +66,9 @@ BASE_DECLARE_FEATURE(kDefaultBrowserChangedOsNotification);
 // Enables the framework to support multiple setter. When disabled, the setter
 // will default to the the `DefaultBrowserSetterType::kShellIntegration`.
 BASE_DECLARE_FEATURE(kDefaultBrowserSetterSelection);
+
+// Enables continuous docking in the visual guided setter.
+BASE_DECLARE_FEATURE(kVisualGuidedSetterDocking);
 
 // Switch linked to the flag `kDefaultBrowserSetterSelection` that help to set a
 // given setter (e.g. shell_integration, visual_guide).
