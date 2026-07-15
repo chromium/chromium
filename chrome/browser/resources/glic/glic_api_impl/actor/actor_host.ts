@@ -6,12 +6,12 @@
 // to the browser via mojo.
 
 import type * as actorWebUiMojom from '../../actor_webui.mojom-webui.js';
+import {enumFromClient, enumToClient} from '../../enum_conversions.js';
 import type {ActorClientInterface, ActorHandlerInterface, ActorTaskState as ActorTaskStateMojo, TabContextResult as TabContextMojo} from '../../glic.mojom-webui.js';
 import type * as api from '../../glic_api/glic_api.js';
 import type {ActorTaskInterruptReason, ActorTaskPauseReason, ActorTaskStopReason, CancelActionsResult, FormFillingResponse, Journal, TabContextOptions, TaskOptions} from '../../glic_api/glic_api.js';
 import {CreateTaskErrorReason, FeatureMode, PerformActionsErrorReason} from '../../glic_api/glic_api.js';
 import type {CheckEnumCompatibility} from '../conversions.js';
-import {enumFromClient, enumToClient} from '../enum_conversions.js';
 import {bitmapN32ToRGBAImage, byteArrayFromClient, getArrayBufferFromBigBuffer, idFromClient, idToClient, optionalFromClient, optionalToClient, originToClient, tabContextOptionsFromClient, tabContextToClient, urlToClient} from '../host/conversions.js';
 import {ErrorWithReasonImpl} from '../request_types.js';
 import type {ResumeActorTaskResultPrivate, RgbaImage, TabContextResultPrivate} from '../request_types.js';
