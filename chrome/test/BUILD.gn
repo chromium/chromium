@@ -3136,7 +3136,6 @@ if (!is_android) {
       "../../components/live_caption/views/caption_bubble_browsertest.cc",
       "../../components/record_replay/content/renderer/record_replay_agent_browsertest.cc",
       "../app/chrome_main_delegate_browsertest.cc",
-      "../browser/media/webrtc/tab_desktop_media_list_browsertest.cc",
       "../browser/os_crypt/os_crypt_async_browsertest.cc",
       "../browser/renderer_host/javascript_optimizer_feature_browsertest.cc",
       "../browser/safe_browsing/download_protection/download_protection_service_browsertest.cc",
