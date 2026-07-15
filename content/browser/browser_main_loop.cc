@@ -656,6 +656,7 @@ void BrowserMainLoop::PostCreateMainMessageLoop() {
         mojo::InterfaceEndpointClient::SetThreadNameSuffixForMetrics(
             "BrowserIO");
         base::MessagePumpWakeupCounter::InitializeForCurrentThread("BrowserIO");
+        base::LockMetricsRecorder::EnableRecordingOnCurrentThread("BrowserIO");
       }));
   {
     TRACE_EVENT0("startup", "BrowserMainLoop::Subsystem:SystemMonitor");

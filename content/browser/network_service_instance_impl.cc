@@ -31,6 +31,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/synchronization/lock_metrics_recorder.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
@@ -335,6 +336,8 @@ void CreateInProcessNetworkService(
           mojo::InterfaceEndpointClient::SetThreadNameSuffixForMetrics(
               kNetworkServiceSuffix);
           base::MessagePumpWakeupCounter::InitializeForCurrentThread(
+              kNetworkServiceSuffix);
+          base::LockMetricsRecorder::EnableRecordingOnCurrentThread(
               kNetworkServiceSuffix);
 #if BUILDFLAG(IS_ANDROID)
           base::PlatformThreadPriorityMonitor::Get().RegisterCurrentThread(
