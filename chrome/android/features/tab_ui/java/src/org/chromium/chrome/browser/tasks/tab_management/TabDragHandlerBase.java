@@ -59,15 +59,14 @@ public abstract class TabDragHandlerBase
     private static @Nullable Token sDragToken;
 
     private final Supplier<@Nullable Activity> mActivitySupplier;
-
+    private final SettableNonNullObservableSupplier<Boolean> mDragInProgressSupplier =
+            ObservableSuppliers.createNonNull(false);
     protected final MultiInstanceManager mMultiInstanceManager;
     protected final MultiInstanceOrchestrator mMultiInstanceOrchestrator;
     protected final DragAndDropDelegate mDragAndDropDelegate;
     private @Nullable TabModelSelector mTabModelSelector;
     private @Nullable MonotonicObservableSupplier<TabModel> mCurrentTabModelSupplier;
-    private @Nullable View mDragSourceView;
-    private final SettableNonNullObservableSupplier<Boolean> mDragInProgressSupplier =
-            ObservableSuppliers.createNonNull(false);
+    protected @Nullable View mDragSourceView;
 
     /**
      * Prepares the tab container view to listen to the drag events and data drop after the drag is
@@ -216,6 +215,9 @@ public abstract class TabDragHandlerBase
     }
 
     protected boolean isDragSource() {
+        // If this handler instance did not initiate the drag, it is not the drag source.
+        if (mDragSourceView == null) return false;
+
         DragDropGlobalState globalState = getDragDropGlobalState(null);
         // May attempt to check source on drag end.
         if (globalState == null) return false;

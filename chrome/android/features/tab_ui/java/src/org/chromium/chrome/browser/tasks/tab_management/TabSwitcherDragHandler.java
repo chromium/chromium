@@ -43,7 +43,7 @@ public class TabSwitcherDragHandler extends TabDragHandlerBase {
     static final long DRAG_SHADOW_ANIMATION_DURATION_MS = 200L;
 
     /** Allows to handle tab drag and drop events. */
-    interface DragHandlerDelegate {
+    public interface DragHandlerDelegate {
         default boolean handleDragStart(float xPx, float yPx) {
             return false;
         }
@@ -143,15 +143,17 @@ public class TabSwitcherDragHandler extends TabDragHandlerBase {
      * @param dragSourceView View used to create the drag shadow.
      * @param tab Tab is the selected tab being dragged.
      * @param startPoint Position of the drag start point in view coordinates.
+     * @param dragShadowView The view used to generate the drag shadow.
      * @return true if the drag action was initiated successfully.
      */
-    public boolean startTabDragAction(View dragSourceView, Tab tab, PointF startPoint) {
+    public boolean startTabDragAction(
+            View dragSourceView, Tab tab, PointF startPoint, @Nullable View dragShadowView) {
         if (!canStartTabDrag()) {
             return false;
         }
 
         ChromeDropDataAndroid dropData = prepareTabDropData(tab);
-        return startDragInternal(dropData, startPoint, dragSourceView);
+        return startDragInternal(dropData, startPoint, dragSourceView, dragShadowView);
     }
 
     /**
@@ -160,20 +162,28 @@ public class TabSwitcherDragHandler extends TabDragHandlerBase {
      * @param dragSourceView View used to create the drag shadow.
      * @param tabGroupId The dragged group's ID.
      * @param startPoint Position of the drag start point in view coordinates.
+     * @param dragShadowView The view used to generate the drag shadow (optional).
      * @return {@code True} if the drag action was initiated successfully.
      */
-    public boolean startGroupDragAction(View dragSourceView, Token tabGroupId, PointF startPoint) {
+    public boolean startGroupDragAction(
+            View dragSourceView,
+            Token tabGroupId,
+            PointF startPoint,
+            @Nullable View dragShadowView) {
         if (!canStartGroupDrag(tabGroupId)) {
             return false;
         }
 
         ChromeDropDataAndroid dropData = prepareGroupDropData(tabGroupId, false);
-        return startDragInternal(dropData, startPoint, dragSourceView);
+        return startDragInternal(dropData, startPoint, dragSourceView, dragShadowView);
     }
 
     private boolean startDragInternal(
-            ChromeDropDataAndroid dropData, PointF startPoint, View dragSourceView) {
-        updateShadowView(dragSourceView);
+            ChromeDropDataAndroid dropData,
+            PointF startPoint,
+            View dragSourceView,
+            @Nullable View dragShadowView) {
+        updateShadowView(dragSourceView, dragShadowView);
         assert mShadowView != null;
 
         // TODO(crbug.com/425901698): consider using {@link AnimatedImageDragShadowBuilder}.
@@ -192,16 +202,22 @@ public class TabSwitcherDragHandler extends TabDragHandlerBase {
         return dragStarted;
     }
 
-    private void updateShadowView(View dragSourceView) {
+    private void updateShadowView(View dragSourceView, @Nullable View dragShadowView) {
         initShadowView(dragSourceView);
         assert mShadowView != null;
 
+        View viewToSnapshot = dragShadowView != null ? dragShadowView : dragSourceView;
+
         // Capture the original view's drawing into a bitmap.
-        int width = dragSourceView.getWidth();
-        int height = dragSourceView.getHeight();
+        int width = viewToSnapshot.getWidth();
+        int height = viewToSnapshot.getHeight();
+        if (width <= 0 || height <= 0) {
+            width = dragSourceView.getWidth();
+            height = dragSourceView.getHeight();
+        }
         Bitmap canvasBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(canvasBitmap);
-        dragSourceView.draw(canvas);
+        viewToSnapshot.draw(canvas);
 
         // Update dragShadowView with the captured bitmap.
         mShadowView.layout(0, 0, width, height);
@@ -253,8 +269,22 @@ public class TabSwitcherDragHandler extends TabDragHandlerBase {
                 break;
             case DragEvent.ACTION_DRAG_ENDED:
                 // Restore items's visibility.
-                view.setAlpha(1);
-                finishDrag(dragEvent.getResult());
+                if (mDragSourceView != null) {
+                    boolean isOSNewWindowDrop =
+                            dragEvent.getResult()
+                                    && DragDropGlobalState.hasValue()
+                                    && !DragDropGlobalState.didChromeHandleDrop();
+                    if (isOSNewWindowDrop) {
+                        View draggedView = mDragSourceView;
+                        // TODO(crbug.com/518307037): Use a TabModelObserver.
+                        draggedView.postDelayed(() -> draggedView.setAlpha(1), 1000L);
+                    } else {
+                        mDragSourceView.setAlpha(1);
+                    }
+                    finishDrag(dragEvent.getResult());
+                } else {
+                    view.setAlpha(1);
+                }
                 res =
                         mDragHandlerDelegate.handleExternalDragEnd(
                                 dragEvent.getX(), dragEvent.getY());
@@ -296,15 +326,39 @@ public class TabSwitcherDragHandler extends TabDragHandlerBase {
         private final long mAnimationDuration;
         private float mProgress;
 
+        private final float mStartWidth;
+        private final float mStartHeight;
+
         public AnimatedDragShadowBuilder(
-                View view, View dragShadowView, PointF starPointF, long animationDuration) {
+                View view, View dragShadowView, PointF startPointF, long animationDuration) {
             super(dragShadowView);
             mOriginalView = view;
             mAnimationDuration = animationDuration;
-            mTouchPointF =
-                    new PointF(
-                            starPointF.x - mOriginalView.getX(),
-                            starPointF.y - mOriginalView.getY());
+            mStartWidth = dragShadowView.getWidth();
+            mStartHeight = dragShadowView.getHeight();
+
+            if (dragShadowView != mOriginalView) {
+                // If using a custom shadow representing a grid card, mimic horizontal tab strip
+                // logic
+                android.content.res.Resources resources =
+                        dragShadowView.getContext().getResources();
+                float headerHeight = resources.getDimension(R.dimen.tab_grid_card_header_height);
+                float cardMargin = resources.getDimension(R.dimen.tab_grid_card_margin);
+
+                // Horizontally center with the cursor
+                float dragShadowOffsetX = mStartWidth / 2;
+
+                // Vertically center in the tab title header
+                float dragShadowOffsetY = (headerHeight / 2) + cardMargin;
+
+                mTouchPointF = new PointF(dragShadowOffsetX, dragShadowOffsetY);
+            } else {
+                float relativeX = (startPointF.x - mOriginalView.getX()) / mOriginalView.getWidth();
+                float relativeY =
+                        (startPointF.y - mOriginalView.getY()) / mOriginalView.getHeight();
+                mTouchPointF = new PointF(mStartWidth * relativeX, mStartHeight * relativeY);
+            }
+
             dragShadowView.post(this::animate);
         }
 
@@ -322,8 +376,8 @@ public class TabSwitcherDragHandler extends TabDragHandlerBase {
             if (view != null) {
                 // Apply scaled measurements to the LayoutParams.
                 ViewGroup.LayoutParams layoutParams = view.getLayoutParams();
-                layoutParams.width = (int) (mOriginalView.getWidth() * progress);
-                layoutParams.height = (int) (mOriginalView.getHeight() * progress);
+                layoutParams.width = (int) (mStartWidth * progress);
+                layoutParams.height = (int) (mStartHeight * progress);
                 view.setLayoutParams(layoutParams);
                 view.post(this::update);
             }

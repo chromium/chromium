@@ -83,6 +83,8 @@ public class TabGridViewBinder {
             bindClosableTabProperties(model, (ViewLookupCachingFrameLayout) view, propertyKey);
         } else if (tabActionState == TabActionState.SELECTABLE) {
             bindSelectableTabProperties(model, (ViewLookupCachingFrameLayout) view, propertyKey);
+        } else if (tabActionState == TabActionState.UNSET) {
+            // No action button bindings needed for UNSET.
         } else {
             assert false : "Unsupported TabActionState provided to bindTab.";
         }

@@ -273,11 +273,10 @@ public class TabStripDragHandler extends TabDragHandlerBase {
                 mLayerTitleCacheSupplier,
                 getTabModelSelector(),
                 () -> {
-                    TabDragShadowBuilder builder =
-                            (TabDragShadowBuilder) DragDropGlobalState.getDragShadowBuilder();
-                    // We register callbacks (e.g. to update the thumbnail) that may attempt to
-                    // update the shadow after the drop has already ended. No-op in that case.
-                    if (builder != null) {
+                    DragShadowBuilder shadowBuilder = DragDropGlobalState.getDragShadowBuilder();
+                    if (shadowBuilder instanceof TabDragShadowBuilder builder) {
+                        // We register callbacks (e.g. to update the thumbnail) that may attempt to
+                        // update the shadow after the drop has already ended. No-op in that case.
                         showDragShadow(builder.mShowDragShadow);
                     }
                 });
@@ -645,11 +644,12 @@ public class TabStripDragHandler extends TabDragHandlerBase {
         }
         boolean isDragSource = isDragSource();
         if (isDragSource) {
-            TabDragShadowBuilder builder =
-                    (TabDragShadowBuilder) DragDropGlobalState.getDragShadowBuilder();
-            if (builder != null && mShadowView != null) {
-                builder.mShowDragShadow = true;
-                mShadowView.expand();
+            DragShadowBuilder shadowBuilder = DragDropGlobalState.getDragShadowBuilder();
+            if (shadowBuilder instanceof TabDragShadowBuilder builder) {
+                if (mShadowView != null) {
+                    builder.mShowDragShadow = true;
+                    mShadowView.expand();
+                }
             }
         }
         mStripLayoutHelperSupplier.get().handleDragExit(isDragSource, isDraggedItemIncognito());
@@ -662,10 +662,10 @@ public class TabStripDragHandler extends TabDragHandlerBase {
             return;
         }
 
-        TabDragShadowBuilder builder =
-                (TabDragShadowBuilder) DragDropGlobalState.getDragShadowBuilder();
-        if (builder == null) return;
-        builder.update(show);
+        DragShadowBuilder shadowBuilder = DragDropGlobalState.getDragShadowBuilder();
+        if (shadowBuilder instanceof TabDragShadowBuilder builder) {
+            builder.update(show);
+        }
     }
 
     public static boolean isDraggingUnpinnedTab() {

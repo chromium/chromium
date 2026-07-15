@@ -1126,9 +1126,11 @@ public class TabListCoordinator implements PriceWelcomeMessageProvider, DestroyO
                     if (isGroupTile && groupToken != null) {
                         res =
                                 mTabSwitcherDragHandler.startGroupDragAction(
-                                        view, groupToken, touchPoint);
+                                        view, groupToken, touchPoint, /* dragShadowView= */ null);
                     } else if (!isGroupTile) {
-                        res = mTabSwitcherDragHandler.startTabDragAction(view, tab, touchPoint);
+                        res =
+                                mTabSwitcherDragHandler.startTabDragAction(
+                                        view, tab, touchPoint, /* dragShadowView= */ null);
                     }
                 }
             }
