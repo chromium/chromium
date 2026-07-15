@@ -2,17 +2,19 @@
     settings-columned-section cr-icons">
 </style>
 
-<settings-subpage page-title="Lorem Ipsum" class="multi-card">
+<settings-subpage page-title="$i18n{personalContextAutofillSettingsTitle}"
+    class="multi-card">
   <div class="card">
-    <!-- TODO(crbug.com/512202637) Add strings and make them translatable.-->
+    <!-- TODO(crbug.com/512202637) Make strings translatable.-->
     <!-- TODO(crbug.com/519142450) Fix styling to match the mocks. -->
     <settings-toggle-button id="suggestionsFromGeminiToggle"
         pref="{{prefs.autofill.personal_context.settings_toggle_status}}"
-        label="Lorem Ipsum">
+        label="$i18n{personalContextAutofillSettingsSwitchTitle}"
+        sub-label="$i18n{personalContextAutofillSettingsSwitchSummary}">
     </settings-toggle-button>
     <cr-link-row id="manageConnectedAppsLinkRow"
-        label="Lorem ipsum"
-        sub-label="Lorem Ipsum"
+        label="$i18n{personalContextAutofillSettingsManageConnectedAppsTitle}"
+        sub-label="$i18n{personalContextAutofillSettingsManageConnectedAppsSummary}"
         on-click="onManageConnectedAppsClick_"
         external>
     </cr-link-row>

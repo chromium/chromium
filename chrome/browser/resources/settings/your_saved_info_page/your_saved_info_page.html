@@ -98,16 +98,17 @@
         chips="[[getVisibleChips_(hierarchy_.shopping.chips)]]">
     </category-reference-card>
   </template>
-   <!-- TODO(crbug.com/512202637): Add strings and make them translatable.-->
+   <!-- TODO(crbug.com/512202637): Make strings translatable.-->
   <template is="dom-if" if="[[showSuggestionsFromGeminiSettings_]]">
     <div id="suggestionsFromGeminiCard">
       <cr-link-row id="suggestionsFromGeminiLinkRow"
-        label="Lorem Ipsum" on-click="onSuggestionsFromGeminiClick_">
+        label="$i18n{personalContextAutofillSettingsTitle}"
+        on-click="onSuggestionsFromGeminiClick_">
       </cr-link-row>
       <hr>
       <!-- TODO(crbug.com/519496250): Add spark icon-->
       <div id="suggestionsFromGeminiSubLabel" class="secondary">
-        Lorem Ipsum
+        $i18n{personalContextAutofillSettingsSummary}
       </div>
     </div>
   </template>

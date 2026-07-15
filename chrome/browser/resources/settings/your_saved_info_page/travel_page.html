@@ -20,10 +20,11 @@
         label="$i18n{travelOptInToggleLabel}"
         sub-label="$i18n{travelOptInToggleSubLabel}">
     </settings-toggle-button>
-     <!-- TODO(crbug.com/512202637): Add strings and make them translatable.-->
+     <!-- TODO(crbug.com/512202637): Make strings translatable.-->
     <template is="dom-if" if="[[showSuggestionsFromGeminiSettings_]]">
-      <cr-link-row id="suggestionsFromGeminiLinkRow" label="Lorem Ipsum"
-          sub-label="lorem ipsum"
+      <cr-link-row id="suggestionsFromGeminiLinkRow"
+          label="$i18n{personalContextAutofillSettingsTitle}"
+          sub-label="$i18n{personalContextAutofillSettingsSubpageSummary}"
           on-click="onSuggestionsFromGeminiClick_" class="hr">
       </cr-link-row>
     </template>

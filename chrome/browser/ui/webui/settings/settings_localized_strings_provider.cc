@@ -1832,7 +1832,21 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
       {"walletablePassDetectionToConsiderDataStorage",
        IDS_SETTINGS_WALLETABLE_PASS_DETECTION_TO_CONSIDER_DATA_STORAGE},
       {"autofillAiSaveOrUpdateLocalEntitySourceNotice",
-       IDS_AUTOFILL_AI_SAVE_OR_UPDATE_LOCAL_ENTITY_SOURCE_NOTICE}};
+       IDS_AUTOFILL_AI_SAVE_OR_UPDATE_LOCAL_ENTITY_SOURCE_NOTICE},
+      {"personalContextAutofillSettingsTitle",
+       IDS_PERSONAL_CONTEXT_AUTOFILL_SETTINGS_TITLE},
+      {"personalContextAutofillSettingsSummary",
+       IDS_PERSONAL_CONTEXT_AUTOFILL_SETTINGS_SUMMARY},
+      {"personalContextAutofillSettingsSubpageSummary",
+       IDS_PERSONAL_CONTEXT_AUTOFILL_SETTINGS_SUBPAGE_SUMMARY},
+      {"personalContextAutofillSettingsSwitchTitle",
+       IDS_PERSONAL_CONTEXT_AUTOFILL_SETTINGS_SWITCH_TITLE},
+      {"personalContextAutofillSettingsSwitchSummary",
+       IDS_PERSONAL_CONTEXT_AUTOFILL_SETTINGS_SWITCH_SUMMARY},
+      {"personalContextAutofillSettingsManageConnectedAppsTitle",
+       IDS_PERSONAL_CONTEXT_AUTOFILL_SETTINGS_MANAGE_CONNECTED_APPS_TITLE},
+      {"personalContextAutofillSettingsManageConnectedAppsSummary",
+       IDS_PERSONAL_CONTEXT_AUTOFILL_SETTINGS_MANAGE_CONNECTED_APPS_SUMMARY}};
 
   html_source->AddString("manageAddressesUrl",
                          autofill::payments::GetManageAddressesUrl().spec());
