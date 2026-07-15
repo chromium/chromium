@@ -1,6 +1,5 @@
 specific_include_rules = {
   "^image_fetch_tab_helper_unittest.mm": [
-    "+ios/web/js_messaging/java_script_feature_manager.h",
     "+ios/web/web_state/ui/crw_web_controller.h"
   ]
 }
