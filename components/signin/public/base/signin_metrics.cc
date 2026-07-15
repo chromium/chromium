@@ -151,6 +151,7 @@ std::optional<AccessPoint> AccessPointFromInt(int value) {
     case AccessPoint::kAgeMismatchSignout:
     case AccessPoint::kOverflowMenu:
     case AccessPoint::kLevelUp:
+    case AccessPoint::kSignoutUndoSnackbar:
       return access_point;
   }
 
@@ -761,6 +762,10 @@ void RecordSigninUserActionForAccessPoint(AccessPoint access_point) {
     case AccessPoint::kLevelUp:
       base::RecordAction(base::UserMetricsAction("Signin_Signin_FromLevelUp"));
       break;
+    case AccessPoint::kSignoutUndoSnackbar:
+      base::RecordAction(
+          base::UserMetricsAction("Signin_Signin_FromSignoutUndoSnackbar"));
+      break;
   }
 }
 
@@ -956,6 +961,7 @@ void RecordSigninImpressionUserActionForAccessPoint(AccessPoint access_point) {
     case AccessPoint::kDeepLinkDefault:
     case AccessPoint::kAgeMismatchSignout:
     case AccessPoint::kLevelUp:
+    case AccessPoint::kSignoutUndoSnackbar:
       NOTREACHED() << "Signin_Impression_From* user actions are not recorded "
                       "for access point "
                    << static_cast<int>(access_point);

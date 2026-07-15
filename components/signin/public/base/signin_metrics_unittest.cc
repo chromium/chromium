@@ -262,6 +262,8 @@ class SigninMetricsTest : public ::testing::Test {
         return "OverflowMenu";
       case AccessPoint::kLevelUp:
         return "LevelUp";
+      case AccessPoint::kSignoutUndoSnackbar:
+        return "SignoutUndoSnackbar";
     }
   }
 };

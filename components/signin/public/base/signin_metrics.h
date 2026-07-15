@@ -359,10 +359,14 @@ enum class AccessPoint : int {
   // Triggered when the user taps the sign-in action on the Level Up screen
   // snackbar. iOS only.
   kLevelUp = 107,
+  // Triggered when the user taps the Undo action on the sign-out snackbar.
+  // The snackbar is displayed after the user signs out from the account menu,
+  // when IdentityAwareness is enabled. iOS only.
+  kSignoutUndoSnackbar = 108,
   // Add values above this line with a corresponding label to the
   // "SigninAccessPoint" enum in
   // tools/metrics/histograms/metadata/signin/enums.xml.
-  kMaxValue = kLevelUp,  // This must be last.
+  kMaxValue = kSignoutUndoSnackbar,  // This must be last.
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/signin/enums.xml)
 

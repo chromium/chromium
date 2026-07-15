@@ -47759,6 +47759,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Signin_Signin_FromSignoutUndoSnackbar">
+  <owner>jlebel@chromium.org</owner>
+  <owner>chrome-signin-mobile-team@google.com</owner>
+  <description>
+    Recorded on sign in start from access point
+    signin_metrics::AccessPoint::kSignoutUndoSnackbar. iOS only.
+  </description>
+</action>
+
 <action name="Signin_Signin_FromStartPage">
   <owner>gogerald@chromium.org</owner>
   <description>

@@ -295,6 +295,7 @@ void HistorySyncOptinService::OnPrimaryAccountChanged(
     case signin_metrics::AccessPoint::kIosGeminiButtonToolbar:
     case signin_metrics::AccessPoint::kOverflowMenu:
     case signin_metrics::AccessPoint::kLevelUp:
+    case signin_metrics::AccessPoint::kSignoutUndoSnackbar:
       return;
   }
 
