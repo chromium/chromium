@@ -1,0 +1,58 @@
+{
+  "description": "Required GN/gclient code coverage configs per language.",
+  "cpp": {
+    "required_gn_args": {
+      "use_clang_coverage": true,
+      "is_clang": true,
+      "is_debug": false
+    },
+    "required_gclient_vars": {
+      "checkout_clang_coverage_tools": true
+    }
+  },
+  "objc": {
+    "required_gn_args": {
+      "use_clang_coverage": true,
+      "is_clang": true,
+      "is_debug": false
+    },
+    "platform_gn_args": {
+      "mac": {
+        "target_os": "mac"
+      },
+      "ios": {
+        "target_os": "ios"
+      }
+    },
+    "required_gclient_vars": {
+      "checkout_clang_coverage_tools": true
+    }
+  },
+  "rust": {
+    "required_gn_args": {
+      "use_clang_coverage": true,
+      "is_clang": true,
+      "is_debug": false
+    },
+    "required_gclient_vars": {
+      "checkout_clang_coverage_tools": true
+    }
+  },
+  "java": {
+    "required_gn_args": {
+      "use_jacoco_coverage": true,
+      "target_os": "android",
+      "is_debug": false
+    }
+  },
+  "js": {
+    "required_gn_args": {
+      "use_javascript_coverage": true
+    }
+  },
+  "ts": {
+    "required_gn_args": {
+      "use_javascript_coverage": true
+    }
+  }
+}
