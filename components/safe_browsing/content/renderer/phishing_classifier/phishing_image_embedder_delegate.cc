@@ -184,9 +184,7 @@ void PhishingImageEmbedderDelegate::CancelPendingImageEmbedding(
     UMA_HISTOGRAM_ENUMERATION("SBClientPhishing.CancelImageEmbeddingReason",
                               reason, CancelImageEmbeddingReason::kMaxValue);
     is_image_embedding_ = false;
-    if (image_embedder_->is_ready()) {
-      image_embedder_->CancelPendingImageEmbedding();
-    }
+    image_embedder_->CancelPendingImageEmbedding();
   }
 }
 

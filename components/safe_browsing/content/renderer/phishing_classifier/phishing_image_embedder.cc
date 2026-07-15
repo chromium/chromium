@@ -81,7 +81,6 @@ void PhishingImageEmbedder::OnPlaybackDone(bool can_extract_visual_features,
 }
 
 void PhishingImageEmbedder::CancelPendingImageEmbedding() {
-  DCHECK(is_ready());
   visual_extractor_.reset();
   weak_factory_.InvalidateWeakPtrs();
   Clear();

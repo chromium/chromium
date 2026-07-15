@@ -166,7 +166,7 @@ class PhishingClassifierDelegateTest
 
   void OnStartPhishingDetection(const GURL& url) {
     EXPECT_CALL(*classifier_, CancelPendingClassification())
-        .Times(testing::AtMost(1));
+        .Times(testing::AnyNumber());
     EXPECT_CALL(*classifier_,
                 SetClientSideDetectionType(std::optional(kTriggerModels)));
     delegate_->StartPhishingDetection(
@@ -349,9 +349,14 @@ TEST_P(PhishingClassifierDelegateTest, Navigation) {
 
 TEST_P(PhishingClassifierDelegateTest, NoPhishingModel) {
   ASSERT_FALSE(classifier_->is_ready());
+  EXPECT_CALL(*classifier_, CancelPendingClassification())
+      .Times(testing::AnyNumber());
   ScorerStorage::GetInstance()->SetScorer(nullptr);
   // The scorer is nullptr so the classifier should still not be ready.
   ASSERT_FALSE(classifier_->is_ready());
+
+  // The delegate will cancel pending classification on destruction.
+  EXPECT_CALL(*classifier_, CancelPendingClassification());
 }
 
 TEST_P(PhishingClassifierDelegateTest, HasFlatBufferModel) {
@@ -398,6 +403,8 @@ TEST_P(PhishingClassifierDelegateTest, NoScorerWithRetry) {
   ASSERT_FALSE(classifier_->is_ready());
 
   // Queue up a pending classification, cancel it, then queue up another one.
+  EXPECT_CALL(*classifier_, CancelPendingClassification())
+      .Times(testing::AnyNumber());
   GURL url("http://host.test");
   LoadHTMLWithUrlOverride("dummy", url.spec().c_str());
   OnStartPhishingDetection(url);
@@ -450,6 +457,8 @@ TEST_P(PhishingClassifierDelegateTest, NoScorer_Ref_WithRetry) {
   ASSERT_FALSE(classifier_->is_ready());
 
   // Queue up a pending classification, cancel it, then queue up another one.
+  EXPECT_CALL(*classifier_, CancelPendingClassification())
+      .Times(testing::AnyNumber());
   GURL url("http://host.test");
   LoadHTMLWithUrlOverride("dummy", url.spec().c_str());
   OnStartPhishingDetection(url);
@@ -502,6 +511,8 @@ TEST_P(PhishingClassifierDelegateTest, NoScorer) {
   ASSERT_FALSE(classifier_->is_ready());
 
   // Queue up a pending classification, cancel it, then queue up another one.
+  EXPECT_CALL(*classifier_, CancelPendingClassification())
+      .Times(testing::AnyNumber());
   GURL url("http://host.test");
   LoadHTMLWithUrlOverride("dummy", url.spec().c_str());
   OnStartPhishingDetection(url);
@@ -553,6 +564,8 @@ TEST_P(PhishingClassifierDelegateTest, NoScorer_Ref) {
   ASSERT_FALSE(classifier_->is_ready());
 
   // Queue up a pending classification, cancel it, then queue up another one.
+  EXPECT_CALL(*classifier_, CancelPendingClassification())
+      .Times(testing::AnyNumber());
   GURL url("http://host.test");
   LoadHTMLWithUrlOverride("dummy", url.spec().c_str());
   OnStartPhishingDetection(url);
@@ -602,6 +615,8 @@ TEST_P(PhishingClassifierDelegateTest, NoScorerWithinTimeout) {
   EXPECT_FALSE(classifier_not_ready_);
 
   // Queue up a pending classification.
+  EXPECT_CALL(*classifier_, CancelPendingClassification())
+      .Times(testing::AnyNumber());
   GURL url("http://host.test");
   LoadHTMLWithUrlOverride("dummy", url.spec().c_str());
   OnStartPhishingDetection(url);
@@ -614,6 +629,9 @@ TEST_P(PhishingClassifierDelegateTest, NoScorerWithinTimeout) {
       base::Seconds(kCsdClassificationDelay.Get() + 0.2));
 
   EXPECT_TRUE(classifier_not_ready_);
+
+  // The delegate will cancel pending classification on destruction.
+  EXPECT_CALL(*classifier_, CancelPendingClassification());
 }
 
 TEST_P(PhishingClassifierDelegateTest, NoStartPhishingDetection) {
@@ -687,6 +705,36 @@ TEST_P(PhishingClassifierDelegateTest, NoStartPhishingDetection) {
     run_loop2.Run();
     Mock::VerifyAndClearExpectations(classifier_);
   }
+
+  // The delegate will cancel pending classification on destruction.
+  EXPECT_CALL(*classifier_, CancelPendingClassification());
+}
+
+TEST_P(PhishingClassifierDelegateTest, CancelWhenScorerCleared) {
+  SetScorer(/*model_version=*/1);
+  ASSERT_TRUE(classifier_->is_ready());
+
+  EXPECT_CALL(*classifier_, CancelPendingClassification());
+  GURL url("http://host.test");
+  LoadHTMLWithUrlOverride("<html><body>phish</body></html>",
+                          url.spec().c_str());
+  Mock::VerifyAndClearExpectations(classifier_);
+
+  OnStartPhishingDetection(url);
+  {
+    base::RunLoop run_loop;
+    EXPECT_CALL(*classifier_, BeginClassification(_))
+        .WillOnce(base::test::RunOnceClosure(run_loop.QuitClosure()));
+    delegate_->PageCaptured(false);
+    run_loop.Run();
+    Mock::VerifyAndClearExpectations(classifier_);
+  }
+
+  // Now clear the scorer while classification is ongoing.
+  // It should cancel the pending classification.
+  EXPECT_CALL(*classifier_, CancelPendingClassification());
+  ScorerStorage::GetInstance()->SetScorer(nullptr);
+  Mock::VerifyAndClearExpectations(classifier_);
 
   // The delegate will cancel pending classification on destruction.
   EXPECT_CALL(*classifier_, CancelPendingClassification());

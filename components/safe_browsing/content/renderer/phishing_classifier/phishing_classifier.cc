@@ -99,7 +99,6 @@ void PhishingClassifier::BeginClassification(DoneCallback done_callback) {
 void PhishingClassifier::CancelPendingClassification() {
   // Note that cancelling the feature extractors is simply a no-op if they
   // were not running.
-  DCHECK(is_ready());
   visual_extractor_.reset();
   weak_factory_.InvalidateWeakPtrs();
   Clear();

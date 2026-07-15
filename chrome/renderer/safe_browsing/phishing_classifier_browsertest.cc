@@ -350,6 +350,27 @@ TEST_F(PhishingClassifierTest, DisableDetection) {
   EXPECT_FALSE(classifier_->is_ready());
 }
 
+TEST_F(PhishingClassifierTest, CancelWhenNotReady) {
+  EXPECT_TRUE(classifier_->is_ready());
+  // Set a NULL scorer, which turns detection back off.
+  ScorerStorage::GetInstance()->SetScorer(nullptr);
+  EXPECT_FALSE(classifier_->is_ready());
+
+  // This used to DCHECK, but now it should safely do nothing.
+  classifier_->CancelPendingClassification();
+}
+
+TEST_F(PhishingClassifierTest, CancelImageEmbeddingWhenNotReady) {
+  SetUpImageEmbedder();
+  EXPECT_TRUE(image_embedder_->is_ready());
+  // Set a NULL scorer, which turns detection back off.
+  ScorerStorage::GetInstance()->SetScorer(nullptr);
+  EXPECT_FALSE(image_embedder_->is_ready());
+
+  // This used to DCHECK, but now it should safely do nothing.
+  image_embedder_->CancelPendingImageEmbedding();
+}
+
 #if BUILDFLAG(IS_ANDROID)
 TEST_F(PhishingClassifierTest, TestImageEmbeddingMatchPopulatesEmbedding) {
   LoadHtml(

@@ -286,9 +286,7 @@ void PhishingClassifierDelegate::CancelPendingClassification(
           reason);
     }
   }
-  if (classifier_->is_ready()) {
-    classifier_->CancelPendingClassification();
-  }
+  classifier_->CancelPendingClassification();
   is_phishing_detection_running_ = false;
   last_url_received_from_browser_ = GURL();
   awaiting_retry_ = false;
