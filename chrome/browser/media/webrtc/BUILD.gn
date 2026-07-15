@@ -425,10 +425,22 @@ if (!is_android) {
     ]
 
     if (is_chromeos) {
+      sources += [
+        "capture_handle_app_window_browsertest.cc",
+        "get_all_screens_media_browsertest.cc",
+        "multi_capture/multi_capture_data_service_browsertest.cc",
+        "multi_capture/multi_capture_usage_indicator_service_browsertest.cc",
+      ]
       deps += [
+        "//chrome/browser:chrome_content_browser_client",
+        "//chrome/browser/apps/app_service",
         "//chrome/browser/ash/login/users",
+        "//chrome/browser/ash/system_web_apps/test_support:test_support_ui",
         "//chrome/browser/chromeos/policy/dlp",
         "//chrome/browser/chromeos/policy/dlp/test:test_support",
+        "//chrome/browser/policy:test_support",
+        "//chrome/browser/ui/ash/system_web_apps",
+        "//components/embedder_support",
       ]
     }
   }
