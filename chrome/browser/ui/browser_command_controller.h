@@ -95,12 +95,15 @@ class BrowserCommandController : public CommandUpdater,
   // Overriden from CommandUpdater:
   bool SupportsCommand(int id) const override;
   bool IsCommandEnabled(int id) const override;
-  using CommandUpdater::ExecuteCommand;
-  bool ExecuteCommand(int id, base::TimeTicks time_stamp) override;
-  using CommandUpdater::ExecuteCommandWithDisposition;
-  bool ExecuteCommandWithDisposition(int id,
-                                     WindowOpenDisposition disposition,
-                                     base::TimeTicks time_stamp) override;
+  bool ExecuteCommandImpl(
+      int id,
+      base::TimeTicks time_stamp,
+      std::optional<actions::ActionInvocationContext> context) override;
+  bool ExecuteCommandWithDispositionImpl(
+      int id,
+      WindowOpenDisposition disposition,
+      base::TimeTicks time_stamp,
+      std::optional<actions::ActionInvocationContext> context) override;
   void AddCommandObserver(int id, CommandObserver* observer) override;
   void RemoveCommandObserver(int id, CommandObserver* observer) override;
   void RemoveCommandObserver(CommandObserver* observer) override;

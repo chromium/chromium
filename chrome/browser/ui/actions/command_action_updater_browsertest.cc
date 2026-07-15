@@ -14,10 +14,16 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_command_controller.h"
+#include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
 #include "ui/actions/actions.h"
+#include "ui/base/class_property.h"
+
+namespace {
+DEFINE_UI_CLASS_PROPERTY_KEY(int, kTestPropertyKey, -1)
+}  // namespace
 
 class CommandActionUpdaterBrowserTest : public InProcessBrowserTest {
  public:
@@ -95,4 +101,37 @@ IN_PROC_BROWSER_TEST_F(CommandActionUpdaterBrowserTest,
 
   // Action should be invoked.
   EXPECT_TRUE(action_invoked_);
+}
+
+IN_PROC_BROWSER_TEST_F(CommandActionUpdaterBrowserTest,
+                       ExecuteCommandWithContextPassesContextToAction) {
+  EXPECT_FALSE(action_invoked_);
+
+  browser()->command_controller()->UpdateCommandEnabled(IDC_BACK, true);
+
+  auto context = actions::ActionInvocationContext::Builder()
+                     .SetProperty(kTestPropertyKey, 42)
+                     .Build();
+
+  EXPECT_TRUE(chrome::ExecuteCommandWithContext(browser(), IDC_BACK,
+                                                std::move(context)));
+  EXPECT_TRUE(action_invoked_);
+  EXPECT_EQ(last_context_.GetProperty(kTestPropertyKey), 42);
+}
+
+IN_PROC_BROWSER_TEST_F(CommandActionUpdaterBrowserTest,
+                       ExecuteCommandWithDispositionAndContextPassesContext) {
+  EXPECT_FALSE(action_invoked_);
+
+  browser()->command_controller()->UpdateCommandEnabled(IDC_BACK, true);
+
+  auto context = actions::ActionInvocationContext::Builder()
+                     .SetProperty(kTestPropertyKey, 99)
+                     .Build();
+
+  EXPECT_TRUE(chrome::ExecuteCommandWithDispositionAndContext(
+      browser(), IDC_BACK, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      std::move(context)));
+  EXPECT_TRUE(action_invoked_);
+  EXPECT_EQ(last_context_.GetProperty(kTestPropertyKey), 99);
 }

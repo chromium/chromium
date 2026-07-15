@@ -92,6 +92,8 @@ if (!is_android) {
       "//chrome/browser/ui",
       "//chrome/browser/ui:browser_actions",
       "//chrome/browser/ui:ui_features",
+      "//chrome/browser/ui/side_panel",
+      "//chrome/browser/ui/side_panel:side_panel_views_dependent",
       "//chrome/test:test_support",
       "//content/test:test_support",
       "//testing/gmock",

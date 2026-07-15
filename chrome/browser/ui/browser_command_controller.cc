@@ -605,16 +605,19 @@ bool BrowserCommandController::IsCommandEnabled(int id) const {
   return command_updater_->IsCommandEnabled(id);
 }
 
-bool BrowserCommandController::ExecuteCommand(int id,
-                                              base::TimeTicks time_stamp) {
-  return ExecuteCommandWithDisposition(id, WindowOpenDisposition::CURRENT_TAB,
-                                       time_stamp);
+bool BrowserCommandController::ExecuteCommandImpl(
+    int id,
+    base::TimeTicks time_stamp,
+    std::optional<actions::ActionInvocationContext> context) {
+  return ExecuteCommandWithDispositionImpl(
+      id, WindowOpenDisposition::CURRENT_TAB, time_stamp, std::move(context));
 }
 
-bool BrowserCommandController::ExecuteCommandWithDisposition(
+bool BrowserCommandController::ExecuteCommandWithDispositionImpl(
     int id,
     WindowOpenDisposition disposition,
-    base::TimeTicks time_stamp) {
+    base::TimeTicks time_stamp,
+    std::optional<actions::ActionInvocationContext> context) {
   if (!SupportsCommand(id) || !IsCommandEnabled(id)) {
     return false;
   }
@@ -632,6 +635,10 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
 
   DCHECK(IsCommandEnabled(id)) << "Invalid/disabled command " << id;
 
+  if (context.has_value()) {
+    return command_updater_->ExecuteCommandWithDispositionAndContext(
+        id, disposition, std::move(*context), time_stamp);
+  }
   return command_updater_->ExecuteCommandWithDisposition(id, disposition,
                                                          time_stamp);
 }

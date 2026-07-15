@@ -22,6 +22,7 @@
 #include "components/split_tabs/split_tab_id.h"
 #include "content/public/common/page_zoom.h"
 #include "printing/buildflags/buildflags.h"
+#include "ui/actions/actions.h"
 #include "ui/base/window_open_disposition.h"
 
 class BrowserWindowInterface;
@@ -53,9 +54,22 @@ bool SupportsCommand(BrowserWindowInterface* browser, int command);
 bool ExecuteCommand(BrowserWindowInterface* browser,
                     int command,
                     base::TimeTicks time_stamp = base::TimeTicks::Now());
-bool ExecuteCommandWithDisposition(BrowserWindowInterface* browser,
-                                   int command,
-                                   WindowOpenDisposition disposition);
+bool ExecuteCommandWithContext(
+    BrowserWindowInterface* browser,
+    int command,
+    actions::ActionInvocationContext context,
+    base::TimeTicks time_stamp = base::TimeTicks::Now());
+bool ExecuteCommandWithDisposition(
+    BrowserWindowInterface* browser,
+    int command,
+    WindowOpenDisposition disposition,
+    base::TimeTicks time_stamp = base::TimeTicks::Now());
+bool ExecuteCommandWithDispositionAndContext(
+    BrowserWindowInterface* browser,
+    int command,
+    WindowOpenDisposition disposition,
+    actions::ActionInvocationContext context,
+    base::TimeTicks time_stamp = base::TimeTicks::Now());
 void UpdateCommandEnabled(BrowserWindowInterface* browser, int command, bool enabled);
 void AddCommandObserver(BrowserWindowInterface*, int command, CommandObserver* observer);
 void RemoveCommandObserver(BrowserWindowInterface*, int command, CommandObserver* observer);

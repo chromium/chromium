@@ -334,8 +334,11 @@ source_set("command_updater_impl") {
     "command_updater_impl.h",
   ]
   sources = [ "command_updater_impl.cc" ]
-  deps = [
+  public_deps = [
     ":primitives",
+    "//ui/actions:actions_headers",
+  ]
+  deps = [
     "//base",
     "//ui/base",
   ]
@@ -4970,6 +4973,7 @@ source_set("primitives") {
   public_deps = [
     "//base",
     "//chrome/common:buildflags",
+    "//ui/actions:actions_headers",
     "//ui/base",
     "//ui/gfx",
   ]

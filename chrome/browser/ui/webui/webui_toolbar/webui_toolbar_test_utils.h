@@ -184,14 +184,17 @@ class MockCommandUpdater : public CommandUpdater {
   MOCK_METHOD(bool, SupportsCommand, (int id), (const, override));
   MOCK_METHOD(bool, IsCommandEnabled, (int id), (const, override));
   MOCK_METHOD(bool,
-              ExecuteCommand,
-              (int id, base::TimeTicks time_stamp),
+              ExecuteCommandImpl,
+              (int id,
+               base::TimeTicks time_stamp,
+               std::optional<actions::ActionInvocationContext> context),
               (override));
   MOCK_METHOD(bool,
-              ExecuteCommandWithDisposition,
+              ExecuteCommandWithDispositionImpl,
               (int id,
                WindowOpenDisposition disposition,
-               base::TimeTicks time_stamp),
+               base::TimeTicks time_stamp,
+               std::optional<actions::ActionInvocationContext> context),
               (override));
   MOCK_METHOD(void,
               AddCommandObserver,

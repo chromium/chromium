@@ -14,6 +14,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/command_updater.h"
 #include "ui/actions/action_id.h"
+#include "ui/actions/actions.h"
 #include "ui/base/window_open_disposition.h"
 
 class CommandObserver;
@@ -34,10 +35,15 @@ class CommandActionUpdater : public CommandUpdater {
   // CommandUpdater implementation:
   bool SupportsCommand(int id) const override;
   bool IsCommandEnabled(int id) const override;
-  bool ExecuteCommand(int id, base::TimeTicks time_stamp) override;
-  bool ExecuteCommandWithDisposition(int id,
-                                     WindowOpenDisposition disposition,
-                                     base::TimeTicks time_stamp) override;
+  bool ExecuteCommandImpl(
+      int id,
+      base::TimeTicks time_stamp,
+      std::optional<actions::ActionInvocationContext> context) override;
+  bool ExecuteCommandWithDispositionImpl(
+      int id,
+      WindowOpenDisposition disposition,
+      base::TimeTicks time_stamp,
+      std::optional<actions::ActionInvocationContext> context) override;
   void AddCommandObserver(int id, CommandObserver* observer) override;
   void RemoveCommandObserver(int id, CommandObserver* observer) override;
   void RemoveCommandObserver(CommandObserver* observer) override;
@@ -49,8 +55,10 @@ class CommandActionUpdater : public CommandUpdater {
 
  private:
   actions::ActionItem* FindAction(actions::ActionId action_id) const;
-  void ExecuteAction(actions::ActionId action_id,
-                     WindowOpenDisposition disposition);
+  void ExecuteAction(
+      actions::ActionId action_id,
+      WindowOpenDisposition disposition,
+      std::optional<actions::ActionInvocationContext> context = std::nullopt);
   void OnActionChanged(int id, CommandObserver* observer);
 
   struct ObserverEntry {

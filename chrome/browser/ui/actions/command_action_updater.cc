@@ -86,18 +86,22 @@ bool CommandActionUpdater::IsCommandEnabled(int id) const {
   return false;
 }
 
-bool CommandActionUpdater::ExecuteCommand(int id, base::TimeTicks time_stamp) {
-  return ExecuteCommandWithDisposition(id, WindowOpenDisposition::CURRENT_TAB,
-                                       time_stamp);
+bool CommandActionUpdater::ExecuteCommandImpl(
+    int id,
+    base::TimeTicks time_stamp,
+    std::optional<actions::ActionInvocationContext> context) {
+  return ExecuteCommandWithDispositionImpl(
+      id, WindowOpenDisposition::CURRENT_TAB, time_stamp, std::move(context));
 }
 
-bool CommandActionUpdater::ExecuteCommandWithDisposition(
+bool CommandActionUpdater::ExecuteCommandWithDispositionImpl(
     int id,
     WindowOpenDisposition disposition,
-    base::TimeTicks time_stamp) {
+    base::TimeTicks time_stamp,
+    std::optional<actions::ActionInvocationContext> context) {
   if (SupportsCommand(id) && IsCommandEnabled(id)) {
     if (auto action_id = GetActionId(id)) {
-      ExecuteAction(*action_id, disposition);
+      ExecuteAction(*action_id, disposition, std::move(context));
       return true;
     }
   }
@@ -171,14 +175,16 @@ actions::ActionItem* CommandActionUpdater::FindAction(
   return actions::ActionManager::Get().FindAction(action_id, root_action_item_);
 }
 
-void CommandActionUpdater::ExecuteAction(actions::ActionId action_id,
-                                         WindowOpenDisposition disposition) {
+void CommandActionUpdater::ExecuteAction(
+    actions::ActionId action_id,
+    WindowOpenDisposition disposition,
+    std::optional<actions::ActionInvocationContext> context) {
   if (auto* const action = FindAction(action_id)) {
-    actions::ActionInvocationContext context =
-        actions::ActionInvocationContext::Builder()
-            .SetProperty(kDispositionKey, disposition)
-            .Build();
-    action->InvokeAction(std::move(context));
+    actions::ActionInvocationContext invocation_context =
+        context.has_value() ? std::move(*context)
+                            : actions::ActionInvocationContext();
+    invocation_context.SetProperty(kDispositionKey, disposition);
+    action->InvokeAction(std::move(invocation_context));
   }
 }
 
