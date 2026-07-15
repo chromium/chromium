@@ -108,7 +108,8 @@ bool MLTensor::writable() const {
 }
 
 bool MLTensor::constant() const {
-  return usage_.Has(webnn::MLTensorUsageFlags::kGraphConstant);
+  // TODO(crbug.com/516844144): No backend currently supports constant tensors.
+  return false;
 }
 
 void MLTensor::destroy() {

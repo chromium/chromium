@@ -8,7 +8,6 @@
 #include "base/component_export.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/callback_forward.h"
-#include "base/memory/scoped_refptr.h"
 #include "base/types/expected.h"
 #include "base/types/pass_key.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -24,7 +23,6 @@
 namespace webnn {
 
 class WebNNGraphBuilderImpl;
-class WebNNTensorImpl;
 
 // Interface for the context that hosts WebNNGraphBuilderImpl instances.
 // Implemented by WebNNContextImpl (GPU process) and CompilerContextImplOrt
@@ -60,8 +58,6 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) GraphBuilderContext {
       WebNNGraphImpl::ComputeResourceInfo compute_resource_info,
       base::flat_map<OperandId, std::unique_ptr<WebNNConstantOperand>>
           constant_operands,
-      base::flat_map<OperandId, scoped_refptr<WebNNTensorImpl>>
-          constant_tensor_operands,
       BuildGraphCallback callback) = 0;
 
   // Called by a graph builder to destroy itself.

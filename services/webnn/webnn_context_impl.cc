@@ -313,12 +313,9 @@ void WebNNContextImpl::BuildGraph(
     WebNNGraphImpl::ComputeResourceInfo compute_resource_info,
     base::flat_map<OperandId, std::unique_ptr<WebNNConstantOperand>>
         constant_operands,
-    base::flat_map<OperandId, scoped_refptr<WebNNTensorImpl>>
-        constant_tensor_operands,
     BuildGraphCallback callback) {
   CreateGraphImpl(std::move(graph_info), std::move(compute_resource_info),
                   std::move(constant_operands),
-                  std::move(constant_tensor_operands),
                   base::BindOnce(&WebNNContextImpl::OnGraphBuilt, AsWeakPtr(),
                                  std::move(callback)));
 }
@@ -345,7 +342,6 @@ void WebNNContextImpl::CreateGraphBuilder(
 
 void WebNNContextImpl::CreateTensor(
     mojom::TensorInfoPtr tensor_info,
-    mojo_base::BigBuffer tensor_data,
     mojom::WebNNContext::CreateTensorCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -356,35 +352,6 @@ void WebNNContextImpl::CreateTensor(
     return;
   }
 
-  MLTensorUsage usage = tensor_info->usage;
-  if (usage.Has(MLTensorUsageFlags::kGraphConstant)) {
-    const base::expected<OperandDescriptor, std::string> validated_descriptor =
-        webnn::OperandDescriptor::Create(
-            properties_, tensor_info->descriptor.data_type(),
-            tensor_info->descriptor.shape(), "WebNNGraphConstant");
-    if (!validated_descriptor.has_value()) {
-      ReportBadMessageAndDisconnect(kBadMessageInvalidTensor);
-      return;
-    }
-
-    if (!properties_.data_type_limits.constant.Supports(
-            validated_descriptor.value())) {
-      ReportBadMessageAndDisconnect(kBadMessageInvalidTensor);
-      return;
-    }
-
-    if (tensor_data.size() != validated_descriptor->PackedByteLength()) {
-      ReportBadMessageAndDisconnect(kBadMessageInvalidTensor);
-      return;
-    }
-  } else {
-    // The renderer doesn't provide an initial value for non-constant tensors.
-    if (tensor_data.size() != 0) {
-      GetMojoReceiver().ReportBadMessage(kBadMessageInvalidTensor);
-      return;
-    }
-  }
-
   mojo::PendingAssociatedRemote<mojom::WebNNTensor> remote;
   auto receiver = remote.InitWithNewEndpointAndPassReceiver();
 
@@ -393,11 +360,6 @@ void WebNNContextImpl::CreateTensor(
     std::move(callback).Run(
         mojom::CreateTensorResult::NewError(std::move(result.error())));
     return;
-  }
-
-  if (usage.Has(MLTensorUsageFlags::kGraphConstant)) {
-    // The size of `tensor_data` was checked above.
-    result.value()->WriteTensorImpl(std::move(tensor_data));
   }
 
   auto success = mojom::CreateTensorSuccess::New(std::move(remote),
@@ -464,12 +426,6 @@ void WebNNContextImpl::CreateTensorFromMailbox(mojom::TensorInfoPtr tensor_info,
   }
 
   if (!ValidateTensor(properties_, tensor_info->descriptor).has_value()) {
-    ReportBadMessageAndDisconnect(kBadMessageInvalidTensor);
-    return;
-  }
-
-  // WebNN graph constants cannot be shared since they may not be readable.
-  if (tensor_info->usage.Has(MLTensorUsageFlags::kGraphConstant)) {
     ReportBadMessageAndDisconnect(kBadMessageInvalidTensor);
     return;
   }
@@ -583,13 +539,6 @@ void WebNNContextImpl::Dispatch(
       return;
     }
 
-    // Input MLTensor is always dispatchable, which isn't allowed when used as
-    // a graph constant.
-    if (input_tensor->usage().Has(MLTensorUsageFlags::kGraphConstant)) {
-      ReportBadMessageAndDisconnect(kBadMessageInvalidTensor);
-      return;
-    }
-
     name_to_input_tensors.emplace_back(name, std::move(input_tensor));
   }
   base::flat_map<std::string, scoped_refptr<WebNNTensorImpl>>
@@ -610,13 +559,6 @@ void WebNNContextImpl::Dispatch(
     scoped_refptr<WebNNTensorImpl> output_tensor =
         GetWebNNTensorImpl(tensor_handle);
     if (!output_tensor) {
-      return;
-    }
-
-    // Output MLTensor is always dispatchable, which isn't allowed when used as
-    // a graph constant.
-    if (output_tensor->usage().Has(MLTensorUsageFlags::kGraphConstant)) {
-      ReportBadMessageAndDisconnect(kBadMessageInvalidTensor);
       return;
     }
 

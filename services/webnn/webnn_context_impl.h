@@ -145,8 +145,6 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
       WebNNGraphImpl::ComputeResourceInfo compute_resource_info,
       base::flat_map<OperandId, std::unique_ptr<WebNNConstantOperand>>
           constant_operands,
-      base::flat_map<OperandId, scoped_refptr<WebNNTensorImpl>>
-          constant_tensor_operands,
       CreateGraphImplCallback callback) = 0;
 
   // Get context properties with op support limits that are intersection
@@ -163,8 +161,6 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
       WebNNGraphImpl::ComputeResourceInfo compute_resource_info,
       base::flat_map<OperandId, std::unique_ptr<WebNNConstantOperand>>
           constant_operands,
-      base::flat_map<OperandId, scoped_refptr<WebNNTensorImpl>>
-          constant_tensor_operands,
       BuildGraphCallback callback) override;
 
   // Closes the `receiver_` pipe with the renderer process, then self destructs
@@ -254,7 +250,6 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
   void CreateGraphBuilder(
       mojo::PendingReceiver<mojom::WebNNGraphBuilder> receiver) override;
   void CreateTensor(mojom::TensorInfoPtr tensor_info,
-                    mojo_base::BigBuffer tensor_data,
                     CreateTensorCallback callback) override;
   void CreateTensorFromMailbox(mojom::TensorInfoPtr tensor_info,
                                const gpu::Mailbox& mailbox,

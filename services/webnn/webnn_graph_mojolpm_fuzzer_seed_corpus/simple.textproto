@@ -97,7 +97,6 @@ actions {
           }
         }
         m_constant_operand_ids_to_handles: {}
-        m_id_to_constant_tensor_operand_map: {}
       }
     }
   }
@@ -203,7 +202,6 @@ actions {
           }
         }
         m_constant_operand_ids_to_handles: {}
-        m_id_to_constant_tensor_operand_map: {}
       }
     }
   }

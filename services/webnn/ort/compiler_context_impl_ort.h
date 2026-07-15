@@ -31,7 +31,6 @@ namespace webnn {
 
 struct EpDeviceInfo;
 
-class WebNNTensorImpl;
 class WebNNConstantOperand;
 
 namespace ort {
@@ -76,8 +75,6 @@ class CompilerContextImplOrt final : public GraphBuilderContext,
       WebNNGraphImpl::ComputeResourceInfo compute_resource_info,
       base::flat_map<OperandId, std::unique_ptr<WebNNConstantOperand>>
           constant_operands,
-      base::flat_map<OperandId, scoped_refptr<WebNNTensorImpl>>
-          constant_tensor_operands,
       BuildGraphCallback callback) override;
 
  private:

@@ -479,8 +479,6 @@ void GraphImplLiteRt::CreateAndBuild(
     ComputeResourceInfo compute_resource_info,
     base::flat_map<OperandId, std::unique_ptr<WebNNConstantOperand>>
         constant_operands,
-    base::flat_map<OperandId, scoped_refptr<WebNNTensorImpl>>
-        constant_tensor_operands,
     ContextImplLiteRt& context,
     base::File weights_file,
     WebNNContextImpl::CreateGraphImplCallback callback) {

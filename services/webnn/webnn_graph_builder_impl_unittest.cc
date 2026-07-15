@@ -115,8 +115,6 @@ class FakeWebNNContextImpl final : public WebNNContextImpl {
       WebNNGraphImpl::ComputeResourceInfo compute_resource_info,
       base::flat_map<OperandId, std::unique_ptr<WebNNConstantOperand>>
           constant_operands,
-      base::flat_map<OperandId, scoped_refptr<WebNNTensorImpl>>
-      /*constant_tensor_operands*/,
       CreateGraphImplCallback callback) override {
     if (captured_constant_operands_) {
       *captured_constant_operands_ = std::move(constant_operands);

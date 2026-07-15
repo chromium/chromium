@@ -1475,20 +1475,17 @@ blink_mojom::GraphInfoPtr BuildWebNNGraphInfo(
           break;
         }
         case blink_mojom::Operand::Kind::kConstant: {
+          // Tensor-backed constants are not supported. The
+          // MLGraphBuilder::constant(MLTensor*) overload rejects early,
+          // so this should never happen.
+          CHECK(!operand->AsConstantOperand()->tensor());
           // Convert `mojo::Operand` for constant operand.
           webnn::OperandId operand_id = AddOperand(
               *graph_info,
               mojo::ConvertTo<blink_mojom::OperandPtr>(operand.Get()));
           // Build the map of constant operands for this graph with the id.
-          MLConstantOperand const* constant_operand =
-              operand->AsConstantOperand();
-          if (constant_operand->tensor()) {
-            graph_info->id_to_constant_tensor_operand_map.insert(
-                operand_id, constant_operand->tensor()->handle());
-          } else {
-            graph_info->constant_operand_ids_to_handles.insert(
-                operand_id, operand->AsConstantOperand()->handle());
-          }
+          graph_info->constant_operand_ids_to_handles.insert(
+              operand_id, operand->AsConstantOperand()->handle());
           operand_to_id_map.insert(operand, operand_id);
           break;
         }
@@ -1748,26 +1745,12 @@ MLOperand* MLGraphBuilder::constant(ScriptState* script_state,
                                     ExceptionState& exception_state) {
   THROW_AND_RETURN_IF_ERROR(ValidateGraphBuilderState(), nullptr);
 
-  if (tensor->context() != ml_context_) {
-    exception_state.ThrowTypeError(
-        "The tensor wasn't created with this context.");
-    return nullptr;
-  }
-
-  if (!tensor->IsValid()) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kInvalidStateError,
-        "Tensor has been destroyed or context is lost.");
-    return nullptr;
-  }
-
-  if (!tensor->Usage().Has(webnn::MLTensorUsageFlags::kGraphConstant)) {
-    exception_state.ThrowTypeError(
-        "Tensor was not created by createConstantTensor.");
-    return nullptr;
-  }
-
-  return MakeGarbageCollected<MLConstantOperand>(this, tensor);
+  // TODO(crbug.com/516844144): No backend currently supports tensor-backed
+  // graph constants. Reject early until support is added.
+  exception_state.ThrowDOMException(
+      DOMExceptionCode::kNotSupportedError,
+      "Tensor-backed graph constants are not supported.");
+  return nullptr;
 }
 
 MLOperand* MLGraphBuilder::constant(

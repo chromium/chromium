@@ -318,8 +318,6 @@ void GraphImplCoreml::CreateAndBuild(
     ComputeResourceInfo compute_resource_info,
     base::flat_map<OperandId, std::unique_ptr<WebNNConstantOperand>>
         constant_operands,
-    base::flat_map<OperandId, scoped_refptr<WebNNTensorImpl>>
-        constant_tensor_operands,
     mojom::CreateContextOptionsPtr context_options,
     ContextProperties context_properties,
     WebNNContextImpl::CreateGraphImplCallback callback) {

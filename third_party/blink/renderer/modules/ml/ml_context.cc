@@ -1341,7 +1341,7 @@ ScriptPromise<MLTensor> MLContext::createTensor(
   //
   // This assertion protects against the usage flags changing without updating
   // this mapping.
-  static_assert(std::to_underlying(webnn::MLTensorUsageFlags::kMaxValue) == 3);
+  static_assert(std::to_underlying(webnn::MLTensorUsageFlags::kMaxValue) == 2);
   webnn::MLTensorUsage usage;
   if (descriptor->readable()) {
     usage.Put(webnn::MLTensorUsageFlags::kRead);
@@ -1349,8 +1349,6 @@ ScriptPromise<MLTensor> MLContext::createTensor(
   if (descriptor->writable()) {
     usage.Put(webnn::MLTensorUsageFlags::kWrite);
   }
-  // MLTensorUsageFlags::kGraphConstant is only assigned for
-  // createConstantTensor().
 
   // MLTensorUsageFlags::kWebGpuInterop is only assigned for
   // createExportableTensor().
@@ -1364,7 +1362,7 @@ ScriptPromise<MLTensor> MLContext::createTensor(
 
   // Use `WebNNContext` to create `WebNNTensor` message pipe.
   context_remote_->CreateTensor(
-      std::move(tensor_info), mojo_base::BigBuffer(0),
+      std::move(tensor_info),
       blink::BindOnce(&MLContext::DidCreateWebNNTensor, WrapPersistent(this),
                       std::move(scoped_trace), WrapPersistent(resolver),
                       std::move(validated_descriptor), usage,
@@ -1428,7 +1426,7 @@ ScriptPromise<MLTensor> MLContext::createExportableTensor(
   //
   // This assertion protects against the usage flags changing without updating
   // this mapping.
-  static_assert(std::to_underlying(webnn::MLTensorUsageFlags::kMaxValue) == 3);
+  static_assert(std::to_underlying(webnn::MLTensorUsageFlags::kMaxValue) == 2);
   webnn::MLTensorUsage usage;
   usage.Put(webnn::MLTensorUsageFlags::kWebGpuInterop);
   if (descriptor->readable()) {
@@ -1437,9 +1435,6 @@ ScriptPromise<MLTensor> MLContext::createExportableTensor(
   if (descriptor->writable()) {
     usage.Put(webnn::MLTensorUsageFlags::kWrite);
   }
-
-  // MLTensorUsageFlags::kGraphConstant is only assigned for
-  // createConstantTensor().
 
   scoped_refptr<gpu::ClientSharedImage> shared_image;
   gpu::SyncToken shared_image_create_finished_token;
@@ -1522,75 +1517,11 @@ ScriptPromise<MLTensor> MLContext::createConstantTensor(
     const MLOperandDescriptor* descriptor,
     AllowSharedBufferSource* src_data,
     ExceptionState& exception_state) {
-  webnn::ScopedTrace scoped_trace("MLContext::createConstantTensor");
-  if (!script_state->ContextIsValid()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      "Invalid script state");
-    return EmptyPromise();
-  }
-
-  if (!base::FeatureList::IsEnabled(
-          webnn::mojom::features::kWebMachineLearningNeuralNetwork)) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
-                                      "Not implemented");
-    return EmptyPromise();
-  }
-
-  if (!context_remote_.is_bound()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      "Context is lost.");
-    return EmptyPromise();
-  }
-
-  ASSIGN_OR_RETURN(
-      webnn::OperandDescriptor validated_descriptor,
-      webnn::OperandDescriptor::Create(
-          properties_, FromBlinkDataType(descriptor->dataType().AsEnum()),
-          descriptor->shape(), "constant_tensor"),
-      [&exception_state](std::string error) {
-        exception_state.ThrowTypeError(String(error));
-        return ScriptPromise<MLTensor>();
-      });
-
-  RETURN_IF_ERROR(webnn::ValidateTensor(properties_, validated_descriptor),
-                  [&exception_state](std::string error) {
-                    exception_state.ThrowTypeError(String(error));
-                    return ScriptPromise<MLTensor>();
-                  });
-
-  base::span<const uint8_t> bytes = AsByteSpan(*src_data);
-  if (validated_descriptor.PackedByteLength() != bytes.size()) {
-    exception_state.ThrowTypeError(
-        String::Format("The source data byte length (%zu) doesn't match the "
-                       "expected byte length (%zu).",
-                       bytes.size(), validated_descriptor.PackedByteLength()));
-    return ScriptPromise<MLTensor>();
-  }
-
-  if (!properties_.data_type_limits.constant.Supports(validated_descriptor)) {
-    exception_state.ThrowTypeError(String(webnn::NotSupportedConstantError(
-        validated_descriptor, properties_.data_type_limits.constant)));
-    return ScriptPromise<MLTensor>();
-  }
-
-  webnn::MLTensorUsage usage =
-      webnn::MLTensorUsage{webnn::MLTensorUsageFlags::kGraphConstant};
-  auto tensor_info =
-      webnn::mojom::blink::TensorInfo::New(validated_descriptor, usage);
-
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<MLTensor>>(
-      script_state, exception_state.GetContext());
-  pending_resolvers_.insert(resolver);
-
-  // Use `WebNNContext` to create `WebNNTensor` message pipe.
-  context_remote_->CreateTensor(
-      std::move(tensor_info), bytes,
-      blink::BindOnce(&MLContext::DidCreateWebNNTensor, WrapPersistent(this),
-                      std::move(scoped_trace), WrapPersistent(resolver),
-                      std::move(validated_descriptor), usage,
-                      /*shared_image=*/nullptr, /*gpu_device=*/nullptr));
-
-  return resolver->Promise();
+  // TODO(crbug.com/516844144): No backend currently supports constant tensors.
+  // Reject early until support is added.
+  exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
+                                    "Constant tensors are not supported.");
+  return EmptyPromise();
 }
 
 void MLContext::writeTensor(ScriptState* script_state,
@@ -1736,11 +1667,6 @@ void MLContext::dispatch(ScriptState* script_state,
       return;
     }
 
-    if (input_tensor->Usage().Has(webnn::MLTensorUsageFlags::kGraphConstant)) {
-      exception_state.ThrowTypeError("Invalid input tensor usage");
-      return;
-    }
-
     if (input_tensor->is_exported_to_webgpu()) {
       exception_state.ThrowTypeError(
           "Input tensor has been exported to WebGPU");
@@ -1755,11 +1681,6 @@ void MLContext::dispatch(ScriptState* script_state,
     if (!output_tensor->IsValid()) {
       exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                         "Invalid output tensor state");
-      return;
-    }
-
-    if (output_tensor->Usage().Has(webnn::MLTensorUsageFlags::kGraphConstant)) {
-      exception_state.ThrowTypeError("Invalid output tensor usage");
       return;
     }
 

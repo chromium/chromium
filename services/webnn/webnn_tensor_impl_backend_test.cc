@@ -154,7 +154,6 @@ CreateWebNNTensor(mojo::Remote<mojom::WebNNContext>& webnn_context_remote,
                   mojom::TensorInfoPtr tensor_info) {
   base::test::TestFuture<mojom::CreateTensorResultPtr> create_tensor_future;
   webnn_context_remote->CreateTensor(std::move(tensor_info),
-                                     mojo_base::BigBuffer(0),
                                      create_tensor_future.GetCallback());
   mojom::CreateTensorResultPtr create_tensor_result =
       create_tensor_future.Take();
@@ -267,7 +266,7 @@ TEST_F(WebNNTensorImplBackendTest, CreateTooLargeTensorTest) {
       mojom::TensorInfo::New(
           OperandDescriptor::UnsafeCreateForTesting(data_type, large_shape),
           MLTensorUsage{MLTensorUsageFlags::kWrite}),
-      mojo_base::BigBuffer(0), std::move(create_tensor_callback));
+      std::move(create_tensor_callback));
 
   webnn_context_remote.FlushForTesting();
   EXPECT_EQ(bad_message_helper.GetLastBadMessage(), kBadMessageInvalidTensor);

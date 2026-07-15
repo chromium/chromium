@@ -504,25 +504,16 @@ void ContextImplOrt::CreateGraphImpl(
     WebNNGraphImpl::ComputeResourceInfo compute_resource_info,
     base::flat_map<OperandId, std::unique_ptr<WebNNConstantOperand>>
         constant_operands,
-    base::flat_map<OperandId, scoped_refptr<WebNNTensorImpl>>
-        constant_tensor_operands,
     CreateGraphImplCallback callback) {
   GraphImplOrt::CreateAndBuild(
       std::move(graph_info), std::move(compute_resource_info),
-      std::move(constant_operands), std::move(constant_tensor_operands), *this,
-      std::move(callback));
+      std::move(constant_operands), *this, std::move(callback));
 }
 
 base::expected<scoped_refptr<WebNNTensorImpl>, mojom::ErrorPtr>
 ContextImplOrt::CreateTensorImpl(
     mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
     mojom::TensorInfoPtr tensor_info) {
-  // TODO(crbug.com/332350952): Implement constant tensors for ORT backend.
-  if (tensor_info->usage.Has(MLTensorUsageFlags::kGraphConstant)) {
-    return base::unexpected(
-        mojom::Error::New(mojom::Error::Code::kNotSupportedError,
-                          "Creation of constant tensors is not supported."));
-  }
   const OrtApi* ort_api = PlatformFunctions::GetInstance()->ort_api();
 
   OrtAllocator* allocator = nullptr;

@@ -24,7 +24,6 @@
 #include "services/webnn/ort/scoped_ort_types.h"
 #include "services/webnn/public/cpp/ep_device_info.h"
 #include "services/webnn/webnn_constant_operand.h"
-#include "services/webnn/webnn_tensor_impl.h"
 
 namespace webnn::ort {
 
@@ -100,14 +99,11 @@ void CompilerContextImplOrt::CreateGraphBuilder(
   CreateGraphBuilderImpl(std::move(receiver));
 }
 
-// TODO(crbug.com/508864477): Remove the constant tensor operands parameter.
 void CompilerContextImplOrt::BuildGraph(
     mojom::GraphInfoPtr graph_info,
     WebNNGraphImpl::ComputeResourceInfo compute_resource_info,
     base::flat_map<OperandId, std::unique_ptr<WebNNConstantOperand>>
         constant_operands,
-    base::flat_map<OperandId, scoped_refptr<WebNNTensorImpl>>
-    /*constant_tensor_operands*/,
     BuildGraphCallback callback) {
   // Wrap the callback so it is automatically called with an error if dropped
   // without being run (e.g. the model loader is disconnected).
