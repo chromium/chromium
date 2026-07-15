@@ -37,7 +37,6 @@ class WebState;
 // Shows the scan card save and fill suggestion bottom sheet view controller.
 - (void)showScanCardSaveAndFillBottomSheet:
     (const autofill::FormActivityParams&)params;
-
 // Commands to manage save card bottomsheet.
 - (void)showSaveCardBottomSheetOnOriginWebState:(web::WebState*)originWebState;
 - (void)dismissSaveCardBottomSheet;
@@ -74,6 +73,10 @@ class WebState;
 // Commands to manage the Autofill save entity dialog.
 - (void)showSaveEntityDialog:(autofill::SaveEntityParams)params;
 - (void)dismissSaveEntityDialog;
+
+// Commands to manage the Autofill notice bottom sheet.
+- (void)showAmbientAutofillNotice;
+- (void)dismissAmbientAutofillNotice;
 
 @end
 

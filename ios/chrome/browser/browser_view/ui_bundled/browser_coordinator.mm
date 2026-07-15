@@ -2348,7 +2348,6 @@ const char kChromeAppStoreUrl[] =
       HandlerForProtocol(self.dispatcher, BrowserCoordinatorCommands);
   [self.paymentsSuggestionBottomSheetCoordinator start];
 }
-
 - (void)showScanCardSaveAndFillBottomSheet:
     (const autofill::FormActivityParams&)params {
   if (self.paymentsScanCoordinator) {
@@ -2544,6 +2543,14 @@ const char kChromeAppStoreUrl[] =
 - (void)dismissSaveEntityDialog {
   [_autofillAISaveEntityCoordinator stop];
   _autofillAISaveEntityCoordinator = nil;
+}
+
+- (void)showAmbientAutofillNotice {
+  // TODO(crbug.com/533502803): Implement presenting the notice bottom sheet.
+}
+
+- (void)dismissAmbientAutofillNotice {
+  // TODO(crbug.com/533502803): Implement dismissing the notice bottom sheet.
 }
 
 #pragma mark - IOSPasskeyClientCommands

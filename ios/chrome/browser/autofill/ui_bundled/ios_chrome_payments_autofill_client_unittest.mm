@@ -142,6 +142,15 @@
 - (void)dismissSaveEntityDialog {
 }
 
+- (void)showAmbientAutofillNotice {
+  // TODO(crbug.com/533502803): Implement displaying of the ambient notice
+  // sheet.
+}
+
+- (void)dismissAmbientAutofillNotice {
+  // TODO(crbug.com/533502803): Implement dismissal of the ambient notice sheet.
+}
+
 @end
 
 namespace autofill {
