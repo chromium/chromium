@@ -1636,6 +1636,12 @@ void HTMLDocumentParser::ScanInBackground(const String& source) {
     return;
   }
 
+  // Text documents don't have any external resources, so they won't benefit
+  // from the background scanner.
+  if (GetDocument()->IsTextDocument()) {
+    return;
+  }
+
   if (ThreadedPreloadScannerEnabled() && preloader_ &&
       // TODO(crbug.com/1329535): Support scanning prefetch documents in the
       // background.
