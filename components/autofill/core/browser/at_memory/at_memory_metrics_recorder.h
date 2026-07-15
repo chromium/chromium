@@ -20,6 +20,7 @@
 #include "components/autofill/core/browser/ui/autofill_suggestion_delegate.h"
 #include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/signatures.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "url/gurl.h"
 
@@ -114,6 +115,9 @@ class AtMemoryMetricsRecorder {
 
   bool CanLogUkm() const;
 
+  // Emits the record in `ukm_search_query_builder_` if it exists.
+  void MaybeFlushSearchQueryUkm();
+
   // Emits the `SuggestionAccepted` metric if `suggestion_accepted_` is not
   // `std::nullopt`.
   void MaybeLogSuggestionAccepted();
@@ -171,6 +175,9 @@ class AtMemoryMetricsRecorder {
 
   const raw_ptr<ukm::UkmRecorder> ukm_recorder_;
   const ukm::SourceId ukm_source_id_;
+
+  // Used to assemble the data emitted in an `AtMemory.SearchQuery` record.
+  std::optional<ukm::builders::AtMemory_SearchQuery> ukm_search_query_builder_;
 
   // Members related to MQLS:
 
