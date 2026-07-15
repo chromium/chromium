@@ -25,7 +25,12 @@ public class ViewCurvedMotionAnimatorFactory {
     public static ObjectAnimator build(
             View view, float[] startPoint, float[] endPoint, boolean isClockwise) {
         Path path = new Path();
-        PathAnimationUtils.addArcToPathForArcAnimation(startPoint, endPoint, isClockwise, path);
+        if (startPoint[0] == endPoint[0] || startPoint[1] == endPoint[1]) {
+            path.moveTo(startPoint[0], startPoint[1]);
+            path.lineTo(endPoint[0], endPoint[1]);
+        } else {
+            PathAnimationUtils.addArcToPathForArcAnimation(startPoint, endPoint, isClockwise, path);
+        }
         return ObjectAnimator.ofFloat(view, View.X, View.Y, path);
     }
 
