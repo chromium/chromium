@@ -55228,6 +55228,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="WebAppInstallDialogShowInFinderClicked">
+  <owner>ksukh@chromium.org</owner>
+  <owner>pwa-team@google.com</owner>
+  <description>
+    The user clicks the &quot;Show in Finder&quot; button in the PWA install
+    success dialog on macOS.
+  </description>
+</action>
+
 <action name="WebAppInstallShown">
   <owner>dmurph@gchromium.org</owner>
   <owner>pwa-team@google.com</owner>

@@ -604,8 +604,8 @@ void WebAppInstallFlowDialogDelegate::OnCancelOrCloseClicked() {
         FROM_HERE, base::BindOnce(&RevealAppShimInFinder, app_id_));
 
     if (dialog_model() && dialog_model()->host()) {
-      // TODO(b/532701412): Record custom Success metric for Finder reveal
-      // instead of Drop-off.
+      base::RecordAction(
+          base::UserMetricsAction("WebAppInstallDialogShowInFinderClicked"));
       dialog_model()->host()->Close();
     }
 
