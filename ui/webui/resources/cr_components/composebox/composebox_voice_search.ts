@@ -168,7 +168,10 @@ export class ComposeboxVoiceSearchElement extends
   static override get properties() {
     return {
       submitStopButtonsEnabled: {type: Boolean},
-      liveTranscriptEnabled: {type: Boolean},
+      liveTranscriptEnabled: {
+        type: Boolean,
+        reflect: true,
+      },
       pageCallbackRouter: {type: Object},
       metricSource: {type: String, attribute: 'metric-source'},
       transcript_: {type: String},
