@@ -35,7 +35,6 @@
 #include "chrome/browser/file_system_access/chrome_file_system_access_permission_context.h"
 #include "chrome/browser/file_system_access/file_system_access_permission_context_factory.h"
 #include "chrome/browser/heavy_ad_intervention/heavy_ad_service_factory.h"
-#include "chrome/browser/k_anonymity_service/k_anonymity_service_factory.h"
 #include "chrome/browser/notifications/platform_notification_service_factory.h"
 #include "chrome/browser/notifications/platform_notification_service_impl.h"
 #include "chrome/browser/origin_trials/origin_trials_factory.h"
@@ -689,11 +688,6 @@ content::FederatedIdentityAutoReauthnPermissionContextDelegate*
 OffTheRecordProfileImpl::GetFederatedIdentityAutoReauthnPermissionContext() {
   return FederatedIdentityAutoReauthnPermissionContextFactory::GetForProfile(
       this);
-}
-
-content::KAnonymityServiceDelegate*
-OffTheRecordProfileImpl::GetKAnonymityServiceDelegate() {
-  return KAnonymityServiceFactory::GetForProfile(this);
 }
 
 #if BUILDFLAG(IS_WIN)

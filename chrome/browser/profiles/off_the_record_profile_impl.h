@@ -122,7 +122,6 @@ class OffTheRecordProfileImpl : public Profile {
   GetFederatedIdentityApiPermissionContext() override;
   content::FederatedIdentityAutoReauthnPermissionContextDelegate*
   GetFederatedIdentityAutoReauthnPermissionContext() override;
-  content::KAnonymityServiceDelegate* GetKAnonymityServiceDelegate() override;
 
 #if BUILDFLAG(IS_WIN)
   void AckCrashForTracking() override;

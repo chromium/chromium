@@ -111,7 +111,6 @@ class ProfileImpl : public Profile {
   GetFederatedIdentityAutoReauthnPermissionContext() override;
   content::FederatedIdentityPermissionContextDelegate*
   GetFederatedIdentityPermissionContext() override;
-  content::KAnonymityServiceDelegate* GetKAnonymityServiceDelegate() override;
   content::OriginTrialsControllerDelegate* GetOriginTrialsControllerDelegate()
       override;
   std::unique_ptr<leveldb_proto::ProtoDatabaseProvider>

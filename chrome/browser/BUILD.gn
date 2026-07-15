@@ -2184,8 +2184,6 @@ source_set("browser") {
     "//chrome/browser/interstitials:impl",
     "//chrome/browser/invalidation",
     "//chrome/browser/invalidation:impl",
-    "//chrome/browser/k_anonymity_service",
-    "//chrome/browser/k_anonymity_service:impl",
     "//chrome/browser/language",
     "//chrome/browser/language:impl",
     "//chrome/browser/lifetime",
