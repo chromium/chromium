@@ -50,9 +50,6 @@ class PrefService;
 // Point size for AI entity icons.
 + (CGFloat)entityIconPointSize;
 
-- (instancetype)initWithEntityDataManager:
-    (autofill::EntityDataManager*)entityDataManager;
-
 - (instancetype)initWithEntityDataManager:(autofill::EntityDataManager*)entityDataManager
                               prefService:(PrefService*)prefService NS_DESIGNATED_INITIALIZER;
 

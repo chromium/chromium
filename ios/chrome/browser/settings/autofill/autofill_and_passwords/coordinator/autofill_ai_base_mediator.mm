@@ -51,11 +51,6 @@
 }
 
 - (instancetype)initWithEntityDataManager:
-    (autofill::EntityDataManager*)entityDataManager {
-  return [self initWithEntityDataManager:entityDataManager prefService:nullptr];
-}
-
-- (instancetype)initWithEntityDataManager:
                     (autofill::EntityDataManager*)entityDataManager
                               prefService:(PrefService*)prefService {
   self = [super init];

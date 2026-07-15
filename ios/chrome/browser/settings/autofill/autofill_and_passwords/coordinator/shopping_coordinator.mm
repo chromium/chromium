@@ -7,6 +7,8 @@
 #import "base/check_op.h"
 #import "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
 #import "ios/chrome/browser/autofill/model/ios_autofill_entity_data_manager_factory.h"
+#import "ios/chrome/browser/settings/autofill/autofill_ai/coordinator/autofill_ai_entity_edit_coordinator.h"
+#import "ios/chrome/browser/settings/autofill/autofill_ai/coordinator/autofill_ai_entity_edit_coordinator_delegate.h"
 #import "ios/chrome/browser/settings/autofill/autofill_and_passwords/coordinator/shopping_mediator.h"
 #import "ios/chrome/browser/settings/autofill/autofill_and_passwords/ui/shopping_table_view_controller.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -14,7 +16,9 @@
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 
-@interface ShoppingCoordinator () <ShoppingTableViewControllerDelegate>
+@interface ShoppingCoordinator () <AutofillAIEntityEditCoordinatorDelegate,
+                                   AutofillAIBaseMediatorDelegate,
+                                   ShoppingTableViewControllerDelegate>
 @end
 
 @implementation ShoppingCoordinator {
@@ -26,6 +30,9 @@
 
   // Mediator providing the data and fulfilling mutator actions for the view.
   ShoppingMediator* _mediator;
+
+  // Coordinator for displaying a selected shopping entity (read-only).
+  AutofillAIEntityEditCoordinator* _entityEditCoordinator;
 }
 
 - (instancetype)initWithBaseNavigationController:
@@ -57,12 +64,15 @@
       initWithEntityDataManager:entityDataManager
                     prefService:self.browser->GetProfile()->GetPrefs()];
   _mediator.consumer = _viewController;
+  _mediator.delegate = self;
   _viewController.mutator = _mediator;
 
   [_baseNavigationController pushViewController:_viewController animated:YES];
 }
 
 - (void)stop {
+  [self stopEntityEditCoordinator];
+
   [_mediator disconnect];
   _mediator = nil;
 
@@ -76,6 +86,47 @@
     (ShoppingTableViewController*)controller {
   CHECK_EQ(_viewController, controller);
   [self.delegate shoppingCoordinatorDidRemove:self];
+}
+
+#pragma mark - AutofillAIBaseMediatorDelegate
+
+- (void)autofillAIBaseMediator:(AutofillAIBaseMediator*)mediator
+    didRequestToOpenEntityWithID:(autofill::EntityInstance::EntityId)entityID {
+  [self startEntityEditCoordinatorWithID:entityID];
+}
+
+- (void)autofillAIBaseMediator:(AutofillAIBaseMediator*)mediator
+    didRequestToCreateEntityWithType:(autofill::EntityType)entityType {
+  // No-op: Shopping entities cannot be created.
+}
+
+#pragma mark - AutofillAIEntityEditCoordinatorDelegate
+
+- (void)autofillAIEntityEditCoordinatorDidFinish:
+    (AutofillAIEntityEditCoordinator*)coordinator {
+  [self stopEntityEditCoordinator];
+}
+
+#pragma mark - Private
+
+// Starts the coordinator responsible for displaying the shopping entity
+// with the specified ID.
+- (void)startEntityEditCoordinatorWithID:
+    (autofill::EntityInstance::EntityId)entityID {
+  [self stopEntityEditCoordinator];
+  _entityEditCoordinator = [[AutofillAIEntityEditCoordinator alloc]
+      initWithBaseNavigationController:_baseNavigationController
+                               browser:self.browser
+                              entityID:entityID];
+  _entityEditCoordinator.delegate = self;
+  [_entityEditCoordinator start];
+}
+
+// Stops and disconnects the active entity edit coordinator.
+- (void)stopEntityEditCoordinator {
+  [_entityEditCoordinator stop];
+  _entityEditCoordinator.delegate = nil;
+  _entityEditCoordinator = nil;
 }
 
 @end

@@ -205,6 +205,17 @@ enum ItemType {
   return YES;
 }
 
+#pragma mark - UITableViewDelegate
+
+- (void)tableView:(UITableView*)tableView
+    didSelectRowAtIndexPath:(NSIndexPath*)indexPath {
+  [super tableView:tableView didSelectRowAtIndexPath:indexPath];
+
+  TableViewItem* item = [self.tableViewModel itemAtIndexPath:indexPath];
+  [self.mutator didSelectEntityItem:item];
+  [self.tableView deselectRowAtIndexPath:indexPath animated:YES];
+}
+
 #pragma mark - SettingsControllerProtocol
 
 - (void)reportDismissalUserAction {
