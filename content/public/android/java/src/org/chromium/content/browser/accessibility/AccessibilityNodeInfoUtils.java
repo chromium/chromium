@@ -100,6 +100,8 @@ public final class AccessibilityNodeInfoUtils {
                         (int) selection[WebContentsAccessibilityImpl.EXT_SEL_START_OFFSET];
                 int startOffsetType =
                         (int) selection[WebContentsAccessibilityImpl.EXT_SEL_START_OFFSET_TYPE];
+                assert startOffsetType == OFFSET_TYPE_TEXT
+                        || startOffsetType == AccessibilityNodeInfoBuilder.OFFSET_TYPE_CHILD;
                 builder.append(" extendedSelectionStart:")
                         .append(startOffset)
                         .append(
@@ -111,6 +113,8 @@ public final class AccessibilityNodeInfoUtils {
                 int endOffset = (int) selection[WebContentsAccessibilityImpl.EXT_SEL_END_OFFSET];
                 int endOffsetType =
                         (int) selection[WebContentsAccessibilityImpl.EXT_SEL_END_OFFSET_TYPE];
+                assert endOffsetType == OFFSET_TYPE_TEXT
+                        || endOffsetType == AccessibilityNodeInfoBuilder.OFFSET_TYPE_CHILD;
                 builder.append(" extendedSelectionEnd:")
                         .append(endOffset)
                         .append(endOffsetType == OFFSET_TYPE_TEXT ? " (text)" : " (child)");
