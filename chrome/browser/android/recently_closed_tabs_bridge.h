@@ -48,7 +48,7 @@ class TabIterator {
 
   TabIterator& operator++();
   TabIterator operator++(int);
-  bool operator==(TabIterator other) const;
+  bool operator==(const TabIterator& other) const;
   const sessions::tab_restore::Tab& operator*() const;
   const sessions::tab_restore::Tab* operator->() const;
 
@@ -62,6 +62,7 @@ class TabIterator {
   std::optional<std::vector<
       std::unique_ptr<sessions::tab_restore::Tab>>::const_reverse_iterator>
       current_tab_ = std::nullopt;
+  raw_ptr<const sessions::tab_restore::Tab> current_tab_ptr_ = nullptr;
 };
 
 // Provides the list of recently closed tabs to Java.

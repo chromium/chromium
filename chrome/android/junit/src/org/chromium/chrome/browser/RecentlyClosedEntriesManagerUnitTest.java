@@ -152,8 +152,8 @@ public class RecentlyClosedEntriesManagerUnitTest {
             if (i > 0) {
                 assertThat(
                         "The entries should be sorted by timestamp",
-                        entries.get(i - 1).getDate().getTime(),
-                        greaterThan(entry.getDate().getTime()));
+                        entries.get(i - 1).getTimestamp(),
+                        greaterThan(entry.getTimestamp()));
             }
         }
     }
@@ -184,8 +184,8 @@ public class RecentlyClosedEntriesManagerUnitTest {
             if (i > 0) {
                 assertThat(
                         "The entries should be sorted by timestamp",
-                        entries.get(i - 1).getDate().getTime(),
-                        greaterThan(entry.getDate().getTime()));
+                        entries.get(i - 1).getTimestamp(),
+                        greaterThan(entry.getTimestamp()));
             }
         }
     }
@@ -261,8 +261,8 @@ public class RecentlyClosedEntriesManagerUnitTest {
             if (i > 0) {
                 assertThat(
                         "The entries should be sorted by timestamp",
-                        entries.get(i - 1).getDate().getTime(),
-                        greaterThan(entry.getDate().getTime()));
+                        entries.get(i - 1).getTimestamp(),
+                        greaterThan(entry.getTimestamp()));
             }
         }
     }
@@ -293,8 +293,8 @@ public class RecentlyClosedEntriesManagerUnitTest {
             if (i > 0) {
                 assertThat(
                         "The entries should be sorted by timestamp",
-                        entries.get(i - 1).getDate().getTime(),
-                        greaterThan(entry.getDate().getTime()));
+                        entries.get(i - 1).getTimestamp(),
+                        greaterThan(entry.getTimestamp()));
             }
         }
     }
@@ -325,8 +325,8 @@ public class RecentlyClosedEntriesManagerUnitTest {
             if (i > 0) {
                 assertThat(
                         "The entries should be sorted by timestamp",
-                        entries.get(i - 1).getDate().getTime(),
-                        greaterThan(entry.getDate().getTime()));
+                        entries.get(i - 1).getTimestamp(),
+                        greaterThan(entry.getTimestamp()));
             }
         }
     }
@@ -365,8 +365,8 @@ public class RecentlyClosedEntriesManagerUnitTest {
             if (i > 0) {
                 assertThat(
                         "The entries should be sorted by timestamp",
-                        entries.get(i - 1).getDate().getTime(),
-                        greaterThan(entry.getDate().getTime()));
+                        entries.get(i - 1).getTimestamp(),
+                        greaterThan(entry.getTimestamp()));
             }
         }
     }
@@ -405,8 +405,8 @@ public class RecentlyClosedEntriesManagerUnitTest {
             if (i > 0) {
                 assertThat(
                         "The entries should be sorted by timestamp",
-                        entries.get(i - 1).getDate().getTime(),
-                        greaterThan(entry.getDate().getTime()));
+                        entries.get(i - 1).getTimestamp(),
+                        greaterThan(entry.getTimestamp()));
             }
         }
     }
@@ -447,8 +447,8 @@ public class RecentlyClosedEntriesManagerUnitTest {
             if (i > 0) {
                 assertThat(
                         "The entries should be sorted by timestamp",
-                        entries.get(i - 1).getDate().getTime(),
-                        greaterThan(entry.getDate().getTime()));
+                        entries.get(i - 1).getTimestamp(),
+                        greaterThan(entry.getTimestamp()));
             }
         }
 
@@ -1005,7 +1005,7 @@ public class RecentlyClosedEntriesManagerUnitTest {
         assertEquals(2, entries.size());
         assertTrue(
                 "Window entries are not sorted by most recent closure time.",
-                entries.get(0).getDate().getTime() > entries.get(1).getDate().getTime());
+                entries.get(0).getTimestamp() > entries.get(1).getTimestamp());
     }
 
     @Test
@@ -1059,9 +1059,9 @@ public class RecentlyClosedEntriesManagerUnitTest {
                 mRecentlyClosedEntriesManager.getRecentlyClosedEntries();
 
         assertEquals(3, entries.size());
-        assertEquals(3, entries.get(0).getDate().getTime());
-        assertEquals(2, entries.get(1).getDate().getTime());
-        assertEquals(1, entries.get(2).getDate().getTime());
+        assertEquals(3, entries.get(0).getTimestamp());
+        assertEquals(2, entries.get(1).getTimestamp());
+        assertEquals(1, entries.get(2).getTimestamp());
     }
 
     @Test
@@ -1073,7 +1073,7 @@ public class RecentlyClosedEntriesManagerUnitTest {
         // Get the timestamp for the closed window entry.
         RecentlyClosedEntry entry = mRecentlyClosedEntriesManager.getRecentlyClosedEntries().get(0);
         RecentlyClosedWindow window = (RecentlyClosedWindow) entry;
-        long timestamp = window.getDate().getTime();
+        long timestamp = window.getTimestamp();
         int instanceId = window.getInstanceId();
 
         // Mock out our dependencies. Always return mTabModelSelector.

@@ -12,7 +12,7 @@ import java.util.List;
 
 /** Represents a recently closed group from TabRestoreService. */
 @NullMarked
-public class RecentlyClosedGroup extends SessionRecentlyClosedEntry {
+public class RecentlyClosedGroup extends SessionRecentlyClosedEntry implements TabGroupContainer {
     private final String mTitle;
     private final @TabGroupColorId int mColor;
     private final List<RecentlyClosedTab> mTabs = new ArrayList<>();
@@ -44,6 +44,7 @@ public class RecentlyClosedGroup extends SessionRecentlyClosedEntry {
     }
 
     /** Returns the list of tabs for this group. */
+    @Override
     public List<RecentlyClosedTab> getTabs() {
         return mTabs;
     }

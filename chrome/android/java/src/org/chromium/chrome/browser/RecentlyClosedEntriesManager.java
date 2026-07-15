@@ -29,13 +29,12 @@ import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.NewWindowApp
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.PersistedInstanceType;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.ntp.RecentlyClosedBridge;
-import org.chromium.chrome.browser.ntp.RecentlyClosedBulkEvent;
 import org.chromium.chrome.browser.ntp.RecentlyClosedEntry;
-import org.chromium.chrome.browser.ntp.RecentlyClosedGroup;
 import org.chromium.chrome.browser.ntp.RecentlyClosedTab;
 import org.chromium.chrome.browser.ntp.RecentlyClosedTabManager;
 import org.chromium.chrome.browser.ntp.RecentlyClosedWindow;
 import org.chromium.chrome.browser.ntp.SessionRecentlyClosedEntry;
+import org.chromium.chrome.browser.ntp.TabGroupContainer;
 import org.chromium.chrome.browser.ntp.TitleUtil;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -249,7 +248,7 @@ public class RecentlyClosedEntriesManager {
         }
 
         // Milliseconds since UNIX epoch when this entry was created.
-        final long timestamp = window.getDate().getTime();
+        final long timestamp = window.getTimestamp();
 
         // Get the window's instance ID in case we looked it up with instanceId == -1.
         final int windowInstanceId = window.getInstanceId();
@@ -332,14 +331,8 @@ public class RecentlyClosedEntriesManager {
                 // both the parent group entry as well as the exact tab entry.
                 // TODO(crbug.com/509065811): Consider adding an interface that allows us to call
                 // {@link getTabs()} so that we can combine these blocks.
-                if (sessionEntry instanceof RecentlyClosedGroup group) {
-                    for (RecentlyClosedTab tab : group.getTabs()) {
-                        if (tab.getSessionId() == id) {
-                            return tab;
-                        }
-                    }
-                } else if (sessionEntry instanceof RecentlyClosedBulkEvent bulkEvent) {
-                    for (RecentlyClosedTab tab : bulkEvent.getTabs()) {
+                if (sessionEntry instanceof TabGroupContainer container) {
+                    for (RecentlyClosedTab tab : container.getTabs()) {
                         if (tab.getSessionId() == id) {
                             return tab;
                         }
@@ -402,7 +395,7 @@ public class RecentlyClosedEntriesManager {
         // Tab and window entries are both available for restoration.
         if (closedWindowExists && closedTabEventExists) {
             RecentlyClosedWindow mostRecentlyClosedWindow = recentlyClosedWindows.get(0);
-            if (mostRecentlyClosedWindow.getDate().getTime() >= mostRecentTabClosureTime
+            if (mostRecentlyClosedWindow.getTimestamp() >= mostRecentTabClosureTime
                     && canRestoreWindow()) {
                 mMultiInstanceManager.openWindow(
                         mostRecentlyClosedWindow.getInstanceId(), newWindowSource);
@@ -600,8 +593,8 @@ public class RecentlyClosedEntriesManager {
             assumeNonNull(window);
             assumeNonNull(tab);
 
-            long t1 = window.getDate().getTime();
-            long t2 = tab.getDate().getTime();
+            long t1 = window.getTimestamp();
+            long t2 = tab.getTimestamp();
             boolean isWindowNewer = t2 > 0 && t1 >= t2;
             if (isWindowNewer) {
                 // Window is more recently closed than tab entry with a valid timestamp.
@@ -617,7 +610,7 @@ public class RecentlyClosedEntriesManager {
                     RecentlyClosedEntry nextTab =
                             recentlyClosedSessionEntries.get(sessionEntryCount + 1);
 
-                    long t3 = nextTab.getDate().getTime();
+                    long t3 = nextTab.getTimestamp();
                     boolean isNextTabNewer = t3 > 0 && t3 >= t1;
                     if (isNextTabNewer) {
                         // Prioritize tab entry with timestamp = 0, since next tab entry is more
@@ -663,7 +656,7 @@ public class RecentlyClosedEntriesManager {
         int currentIndex = 0;
         int size = sessionEntries.size();
         while (currentIndex < size) {
-            long timestampMs = sessionEntries.get(currentIndex).getDate().getTime();
+            long timestampMs = sessionEntries.get(currentIndex).getTimestamp();
             if (timestampMs > 0 && (TimeUtils.currentTimeMillis() - timestampMs) > SIX_MONTHS_MS) {
                 break;
             }
@@ -697,8 +690,7 @@ public class RecentlyClosedEntriesManager {
         }
 
         recentlyClosedWindows.sort(
-                (window1, window2) ->
-                        Long.compare(window2.getDate().getTime(), window1.getDate().getTime()));
+                (window1, window2) -> Long.compare(window2.getTimestamp(), window1.getTimestamp()));
         return recentlyClosedWindows;
     }
 
@@ -769,7 +761,7 @@ public class RecentlyClosedEntriesManager {
             tabs.add(
                     new RecentlyClosedTab(
                             info.id,
-                            window.getDate().getTime(),
+                            window.getTimestamp(),
                             title,
                             info.url,
                             /* tabGroupId= */ null));

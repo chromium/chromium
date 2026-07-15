@@ -6,24 +6,22 @@ package org.chromium.chrome.browser.ntp;
 
 import org.chromium.build.annotations.NullMarked;
 
-import java.util.Date;
-
 /** Represents a recent tab or window closure event. */
 @NullMarked
 public class RecentlyClosedEntry {
-    private final Date mDate;
+    private final long mTimestamp;
 
     /**
      * @param timestamp The milliseconds since the Unix Epoch this entry was created.
      */
     protected RecentlyClosedEntry(long timestamp) {
-        mDate = new Date(timestamp);
+        mTimestamp = timestamp;
     }
 
     /**
-     * @return the {@link Date} when this entry was created.
+     * @return the timestamp in milliseconds since the Unix Epoch when this entry was created.
      */
-    public Date getDate() {
-        return mDate;
+    public long getTimestamp() {
+        return mTimestamp;
     }
 }

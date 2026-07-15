@@ -305,7 +305,7 @@ public class TabModelSelectorImpl extends TabModelSelectorBase implements TabMod
         List<RecentlyClosedEntry> entries =
                 mRecentlyClosedBridge.getRecentlyClosedEntries(/* maxEntryCount= */ 1);
         if (entries == null || entries.isEmpty()) return TabModel.INVALID_TIMESTAMP;
-        return entries.get(0).getDate().getTime();
+        return entries.get(0).getTimestamp();
     }
 
     @Override

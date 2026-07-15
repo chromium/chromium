@@ -14,7 +14,8 @@ import java.util.Map;
 
 /** Represents a recent closure of multiple tabs and groups (AKA Window) from TabRestoreService. */
 @NullMarked
-public class RecentlyClosedBulkEvent extends SessionRecentlyClosedEntry {
+public class RecentlyClosedBulkEvent extends SessionRecentlyClosedEntry
+        implements TabGroupContainer {
     private final List<RecentlyClosedTab> mTabs = new ArrayList<>();
     private final Map<Token, String> mTabGroupIdToTitle = new HashMap<>();
 
@@ -27,6 +28,7 @@ public class RecentlyClosedBulkEvent extends SessionRecentlyClosedEntry {
     }
 
     /** Returns a list of {@link RecentlyClosedTab} in this event. */
+    @Override
     public List<RecentlyClosedTab> getTabs() {
         return mTabs;
     }

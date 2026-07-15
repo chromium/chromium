@@ -180,11 +180,8 @@ public class HistoricalTabModelObserver implements TabModelObserver {
         } else {
             // Case: Group information already lost (undoable closure). Rely on whether any unclosed
             // tabs share a tab group id with the closing group.
-            TabList comprehensiveModel = mTabModel.getComprehensiveModel();
-            for (Tab tab : comprehensiveModel) {
-                if (tabGroupId.equals(tab.getTabGroupId())) {
-                    return true;
-                }
+            if (isTabGroupIdInComprehensiveModel(tabGroupId)) {
+                return true;
             }
         }
         return false;
@@ -202,14 +199,18 @@ public class HistoricalTabModelObserver implements TabModelObserver {
         } else {
             // Case: Group information already lost (undoable closure). Rely on whether the tab
             // still has a tab group ID.
-            TabList comprehensiveModel = mTabModel.getComprehensiveModel();
-            for (Tab tabInComprehensiveModel : comprehensiveModel) {
-                if (tabGroupId.equals(tabInComprehensiveModel.getTabGroupId())) {
-                    return false;
-                }
-            }
-            return true;
+            return !isTabGroupIdInComprehensiveModel(tabGroupId);
         }
+    }
+
+    private boolean isTabGroupIdInComprehensiveModel(Token tabGroupId) {
+        TabList comprehensiveModel = mTabModel.getComprehensiveModel();
+        for (Tab tabInComprehensiveModel : comprehensiveModel) {
+            if (tabGroupId.equals(tabInComprehensiveModel.getTabGroupId())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private boolean isCollaborationTabGroup(
