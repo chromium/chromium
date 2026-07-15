@@ -62,6 +62,9 @@ class BluetoothL2capChannelMac : public BluetoothChannelMac {
 
   // The delegate for the native channel.
   BluetoothL2capChannelDelegate* __strong delegate_;
+
+  // True if the channel is currently open.
+  bool is_opened_;
 };
 
 }  // namespace device

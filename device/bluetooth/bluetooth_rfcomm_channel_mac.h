@@ -63,6 +63,9 @@ class BluetoothRfcommChannelMac : public BluetoothChannelMac {
 
   // The delegate for the native channel.
   BluetoothRfcommChannelDelegate* __strong delegate_;
+
+  // True if the channel is currently open.
+  bool is_opened_;
 };
 
 }  // namespace device

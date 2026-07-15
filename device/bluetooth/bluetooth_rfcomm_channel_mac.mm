@@ -116,8 +116,7 @@ namespace device {
 BluetoothRfcommChannelMac::BluetoothRfcommChannelMac(
     BluetoothSocketMac* socket,
     IOBluetoothRFCOMMChannel* channel)
-    : channel_(channel),
-      delegate_(nil) {
+    : channel_(channel), delegate_(nil), is_opened_(channel != nil) {
   SetSocket(socket);
 }
 
@@ -128,7 +127,9 @@ BluetoothRfcommChannelMac::~BluetoothRfcommChannelMac() {
   // for events that occur after our destruction.
   [delegate_ resetOwner];
   [channel_ setDelegate:nil];
-  [channel_ closeChannel];
+  if (is_opened_) {
+    [channel_ closeChannel];
+  }
   // `delegate_`'s self-retain (`_strongSelf`) is only armed after a successful
   // open. If we are destroyed during a pending or failed open, keep the
   // delegate alive across one main-run-loop turn so any already-enqueued
@@ -203,6 +204,10 @@ void BluetoothRfcommChannelMac::OnChannelOpenComplete(
     DCHECK_EQ(status, kIOReturnSuccess);
   }
 
+  if (status == kIOReturnSuccess) {
+    is_opened_ = true;
+  }
+
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&BluetoothSocketMac::OnChannelOpenComplete,
                                 base::WrapRefCounted(socket()),
@@ -215,6 +220,7 @@ void BluetoothRfcommChannelMac::OnChannelClosed(
     IOBluetoothRFCOMMChannel* channel) {
   DCHECK_EQ(channel_, channel);
   channel_ = nil;
+  is_opened_ = false;
   [delegate_ resetOwner];
   delegate_ = nil;
   socket()->OnChannelClosed();
