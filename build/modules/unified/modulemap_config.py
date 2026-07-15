@@ -90,6 +90,7 @@ def headers(os):
       Header('asm/unistd.h'),
       Header('asm/unistd_64.h'),
       Header('asm-generic/errno-base.h'),
+      Header('asm-generic/errno.h'),
       Header('asm-generic/fcntl.h',
              module_name='asm_generic_fcntl',
              exists=is_android),
