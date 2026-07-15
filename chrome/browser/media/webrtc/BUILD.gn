@@ -381,6 +381,7 @@ if (!is_android) {
 
     sources = [
       "capture_handle_browsertest.cc",
+      "display_media_access_handler_browsertest.cc",
       "media_stream_devices_controller_browsertest.cc",
       "media_stream_focus_delegate_browsertest.cc",
       "same_origin_observer_browsertest.cc",
@@ -388,6 +389,8 @@ if (!is_android) {
       "webrtc_browsertest_perf_unittest.cc",
       "webrtc_desktop_capture_browsertest.cc",
       "webrtc_disable_encryption_flag_browsertest.cc",
+      "webrtc_getdisplaymedia_browsertest.cc",
+      "webrtc_internals_integration_browsertest.cc",
       "webrtc_pan_tilt_zoom_browsertest.cc",
       "webrtc_stats_perf_browsertest.cc",
       "webrtc_video_display_perf_browsertest.cc",
@@ -400,6 +403,7 @@ if (!is_android) {
       ":webrtc_browser_tests_base",
       "//base",
       "//chrome/browser:test_support",
+      "//chrome/browser/apps/platform_apps:browser_test_support",
       "//chrome/browser/extensions:test_support",
       "//chrome/browser/extensions/api/desktop_capture",
       "//chrome/browser/permissions",
@@ -415,6 +419,13 @@ if (!is_android) {
       "//net:test_support",
       "//testing/gtest",
     ]
+
+    if (is_chromeos) {
+      deps += [
+        "//chrome/browser/chromeos/policy/dlp",
+        "//chrome/browser/chromeos/policy/dlp/test:test_support",
+      ]
+    }
   }
 }
 
