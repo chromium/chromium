@@ -81,6 +81,9 @@ class MEDIA_EXPORT FuchsiaVideoDecoder : public VideoDecoder,
   void OnSysmemBufferStreamNoKey() override;
 
   // StreamProcessorHelper::Client implementation.
+  void OnStreamProcessorAllocateInputBuffers(
+      const fuchsia::media::StreamBufferConstraints& stream_constraints)
+      override;
   void OnStreamProcessorAllocateOutputBuffers(
       const fuchsia::media::StreamBufferConstraints& stream_constraints)
       override;
@@ -121,6 +124,7 @@ class MEDIA_EXPORT FuchsiaVideoDecoder : public VideoDecoder,
 
   OutputCB output_cb_;
   WaitingCB waiting_cb_;
+  InitCB init_cb_;
 
   std::unique_ptr<SysmemBufferStream> sysmem_buffer_stream_;
 
