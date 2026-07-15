@@ -751,6 +751,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Startup.BrowserMessageLoopStartHardFaultBytes" units="bytes"
+    expires_after="2027-07-08">
+  <owner>aattar@google.com</owner>
+  <owner>olivierli@chromium.org</owner>
+  <summary>
+    The number of bytes loaded via hard faults in the browser process from
+    startup to the start of the main thread's message loop, not including first
+    runs of the browser.
+
+    This is a normalized metric calculated as (HardFaultCount * OSPageSize) to
+    allow comparison between platforms with different page sizes (e.g. 16KB on
+    Apple Silicon Mac vs 4KB on Windows/Linux/Intel Mac).
+  </summary>
+</histogram>
+
 <histogram name="Startup.BrowserMessageLoopStartHardFaultCount" units="faults"
     expires_after="never">
 <!-- expires-never: calibration metric for StartupTemperature, see

@@ -37,6 +37,7 @@ constexpr const char* kStartupMetrics[] = {
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+    "Startup.BrowserMessageLoopStartHardFaultBytes",
     "Startup.BrowserMessageLoopStartHardFaultCount",
     "Startup.Temperature",
 #endif

@@ -17,6 +17,7 @@
 #include "base/compiler_specific.h"
 #include "base/dcheck_is_on.h"
 #include "base/location.h"
+#include "base/memory/page_size.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
@@ -615,6 +616,11 @@ void BrowserStartupMetricRecorder::RecordHardFaultHistogram() {
     base::UmaHistogramCustomCounts(
         "Startup.BrowserMessageLoopStartHardFaultCount",
         hard_fault_count.value(), 1, 40000, 50);
+    int hard_fault_bytes = base::saturated_cast<int>(hard_fault_count.value() *
+                                                     base::GetPageSize());
+    base::UmaHistogramCustomCounts(
+        "Startup.BrowserMessageLoopStartHardFaultBytes", hard_fault_bytes, 1024,
+        1073741824, 50);
 
     // Determine the startup type based on the number of observed hard faults.
     if (hard_fault_count < kWarmStartHardFaultCountThreshold) {
