@@ -9,13 +9,14 @@
 #include <optional>
 #include <string>
 #include <string_view>
+#include <type_traits>
 
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/token.h"
 #include "base/types/optional_ref.h"
-#include "components/accessibility_annotator/core/annotation_reducer/memory_data_type.h"
+#include "components/accessibility_annotator/core/annotation_reducer/memory_search_result.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/ui/autofill_suggestion_delegate.h"
 #include "components/autofill/core/common/aliases.h"
@@ -96,8 +97,11 @@ class AtMemoryMetricsRecorder {
       const accessibility_annotator::MemorySearchResults& result);
 
   // Records that a suggestion was accepted during this session.
+  using MemorySourcesBitmask =
+      std::underlying_type_t<accessibility_annotator::MemoryEntrySourceType>;
   void OnSuggestionAccepted(
       accessibility_annotator::MemoryDataType memory_data_type,
+      MemorySourcesBitmask sources_bitmask = 0,
       base::optional_ref<const AutofillSuggestionDelegate::SuggestionMetadata>
           metadata = std::nullopt);
 
@@ -162,7 +166,10 @@ class AtMemoryMetricsRecorder {
   struct {
     // Whether a non-empty query response has been received.
     bool suggestions_received = false;
+
     std::optional<accessibility_annotator::MemoryDataType> accepted_data_type;
+
+    std::optional<MemorySourcesBitmask> accepted_sources_bitmask;
   } suggestion_acceptance_;
 
   // The start time of the asynchronous fetch/unmask process.

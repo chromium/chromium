@@ -201,10 +201,12 @@ void AtMemoryMetricsRecorder::OnQuerySubmitted(std::u16string_view query) {
 
 void AtMemoryMetricsRecorder::OnSuggestionAccepted(
     accessibility_annotator::MemoryDataType memory_data_type,
+    MemorySourcesBitmask sources_bitmask,
     base::optional_ref<const AutofillSuggestionDelegate::SuggestionMetadata>
         metadata) {
   suggestion_acceptance_.accepted_data_type = memory_data_type;
   suggestion_accepted_in_session_ = true;
+  suggestion_acceptance_.accepted_sources_bitmask = sources_bitmask;
 
   if (ukm_search_query_builder_) {
     ukm_search_query_builder_->SetSuggestionAccepted(true);

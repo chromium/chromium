@@ -444,6 +444,14 @@ Suggestion TransformResultIntoSuggestion(const MemorySearchResult& entry) {
   at_memory_payload.identifier =
       GetPayloadIdentifier(entry.type, entry.identifier);
   at_memory_payload.is_personal_context_sourced = is_personal_context_sourced;
+
+  std::underlying_type_t<accessibility_annotator::MemoryEntrySourceType>
+      sources_bitmask = 0;
+  for (const auto& source : entry.sources) {
+    sources_bitmask |= std::to_underlying(source.type);
+  }
+  at_memory_payload.sources_bitmask = sources_bitmask;
+
   suggestion.payload = std::move(at_memory_payload);
   suggestion.filtration_policy = Suggestion::FiltrationPolicy::kStatic;
 
@@ -643,8 +651,8 @@ void AtMemoryManager::FillSearchResult(
       suggestion.GetPayload<Suggestion::AtMemoryPayload>();
 
   if (at_memory_metrics_recorder_) {
-    at_memory_metrics_recorder_->OnSuggestionAccepted(payload.memory_data_type,
-                                                      metadata);
+    at_memory_metrics_recorder_->OnSuggestionAccepted(
+        payload.memory_data_type, payload.sources_bitmask, metadata);
   }
   // Transfer ownership of the metrics session to the filling path.
   // Ensures that the metrics will be properly recorded once the suggestion

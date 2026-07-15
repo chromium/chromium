@@ -493,7 +493,7 @@ TEST_F(AtMemoryMetricsRecorderTest, LogEntryUploaded_SuggestionAccepted_Root) {
         MemorySearchStatus::kFinalResponseSuccess, {local_suggestion}));
 
     metrics.OnSuggestionAccepted(
-        MemoryDataType::kAddressFull,
+        MemoryDataType::kAddressFull, /*sources_bitmask=*/0,
         AutofillSuggestionDelegate::SuggestionMetadata{.multi_index = {0}});
   }
 
@@ -531,7 +531,7 @@ TEST_F(AtMemoryMetricsRecorderTest, LogEntryUploaded_SuggestionAccepted_Sub) {
                              .multi_index = {0}});
 
     metrics.OnSuggestionAccepted(
-        MemoryDataType::kAddressFull,
+        MemoryDataType::kAddressFull, /*sources_bitmask=*/0,
         AutofillSuggestionDelegate::SuggestionMetadata{.multi_index = {0, 1}});
   }
 
@@ -596,7 +596,7 @@ TEST_F(AtMemoryMetricsRecorderTest, OnSuggestionAccepted_LogsIndices) {
     metrics.OnPopupShown(AutofillSuggestionTriggerSource::kAtMemory,
                          std::nullopt);
     metrics.OnSuggestionAccepted(
-        MemoryDataType::kAddressFull,
+        MemoryDataType::kAddressFull, /*sources_bitmask=*/0,
         AutofillSuggestionDelegate::SuggestionMetadata{.multi_index = {2}});
     histogram_tester.ExpectUniqueSample(
         "Autofill.AtMemory.AcceptedSuggestionIndex", 2, 1);
@@ -613,7 +613,7 @@ TEST_F(AtMemoryMetricsRecorderTest, OnSuggestionAccepted_LogsIndices) {
     metrics.OnPopupShown(AutofillSuggestionTriggerSource::kAtMemory,
                          std::nullopt);
     metrics.OnSuggestionAccepted(
-        MemoryDataType::kAddressFull,
+        MemoryDataType::kAddressFull, /*sources_bitmask=*/0,
         AutofillSuggestionDelegate::SuggestionMetadata{.multi_index = {2, 1}});
     histogram_tester.ExpectUniqueSample(
         "Autofill.AtMemory.AcceptedSuggestionIndex", 2, 1);
@@ -720,7 +720,7 @@ TEST_F(AtMemoryMetricsRecorderTest, LogsSearchQueryUkm_WithAcceptanceAndFill) {
                             {MemorySearchResult(MemoryDataType::kAddressFull,
                                                 u"Address", u"123 Main St")}));
     metrics.OnSuggestionAccepted(
-        MemoryDataType::kAddressFull,
+        MemoryDataType::kAddressFull, /*sources_bitmask=*/0,
         AutofillSuggestionDelegate::SuggestionMetadata{.multi_index = {2}});
     metrics.MarkFilled();
   }
@@ -787,7 +787,7 @@ TEST_F(AtMemoryMetricsRecorderTest, LogsSearchQueryUkm_MultipleQueries) {
                             {MemorySearchResult(MemoryDataType::kAddressFull,
                                                 u"Address", u"123 Main St")}));
     metrics.OnSuggestionAccepted(
-        MemoryDataType::kAddressFull,
+        MemoryDataType::kAddressFull, /*sources_bitmask=*/0,
         AutofillSuggestionDelegate::SuggestionMetadata{.multi_index = {0}});
   }
 
