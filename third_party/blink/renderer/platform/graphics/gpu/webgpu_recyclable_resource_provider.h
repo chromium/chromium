@@ -67,8 +67,6 @@ class PLATFORM_EXPORT WebGpuRecyclableResourceProvider final
   scoped_refptr<gpu::ClientSharedImage> GetSharedImage() const;
   gpu::SyncToken GetSyncToken() const;
 
-
-  // NOTE: Can only be used if this instance is accelerated.
   bool UploadToBackingSharedImage(const SkPixmap& pixmap,
                                   uint32_t src_x,
                                   uint32_t src_y);
@@ -122,13 +120,10 @@ class PLATFORM_EXPORT WebGpuRecyclableResourceProvider final
 
   bool IsGpuContextLost() const;
 
-
   // CanvasMemoryDumpClient implementation.
   base::ByteSize EstimatedSizeInBytes() const;
   void OnMemoryDump(base::trace_event::ProcessMemoryDump* pmd) override;
   size_t GetSize() const override;
-
-
 
   gpu::raster::RasterInterface* RasterInterface() const;
 
