@@ -58,7 +58,6 @@ void WorkletModuleScriptFetcher::Fetch(
 void WorkletModuleScriptFetcher::NotifyFinished(Resource* resource) {
   ClearResource();
 
-  std::optional<ModuleScriptCreationParams> params;
   auto* script_resource = To<ScriptResource>(resource);
   HeapVector<Member<ConsoleMessage>> error_messages;
   std::optional<ResolvedModuleType> resolved_module_type =
@@ -81,19 +80,23 @@ void WorkletModuleScriptFetcher::NotifyFinished(Resource* resource) {
 
     // Create an external module script where base_url == source_url.
     // https://html.spec.whatwg.org/multipage/webappapis.html#concept-script-base-url
-    params.emplace(
+    ModuleScriptCreationParams params(
         /*source_url=*/url, /*base_url=*/url,
         ScriptSourceLocationType::kExternalFile, resolved_module_type.value(),
         script_resource->GetSourceTextOrWasmSource(
             resolved_module_type.value()),
         script_resource->CacheHandler(), response_referrer_policy,
         script_resource->GetResponse().HttpHeaderField(http_names::kSourceMap));
-  }
 
-  // This will eventually notify |client| passed to
-  // WorkletModuleScriptFetcher::Fetch().
-  global_scope_->GetModuleResponsesMap()->SetEntryParams(
-      url_, expected_module_type_, params);
+    global_scope_->GetModuleResponsesMap()->SetEntryParams(
+        url_, expected_module_type_, std::move(params));
+  } else {
+    // Pass placeholder error for now. Real extraction logic will be implemented
+    // later.
+    global_scope_->GetModuleResponsesMap()->SetEntryError(
+        url_, expected_module_type_,
+        WorkletModuleError{.type = WorkletModuleError::Type::kUnknown});
+  }
 }
 
 void WorkletModuleScriptFetcher::Trace(Visitor* visitor) const {
