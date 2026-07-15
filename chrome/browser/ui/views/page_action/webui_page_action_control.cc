@@ -16,7 +16,10 @@
 #include "chrome/browser/ui/page_action/page_action_controller.h"
 #include "chrome/browser/ui/page_action/page_action_model.h"
 #include "chrome/browser/ui/page_action/page_action_triggers.h"
+#include "chrome/browser/ui/side_panel/side_panel_action_callback.h"
+#include "chrome/browser/ui/side_panel/side_panel_enums.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
+#include "chrome/browser/ui/views/page_action/page_action_view_util.h"
 #include "chrome/browser/ui/views/toolbar/webui_toolbar_web_view.h"
 #include "components/tabs/public/tab_interface.h"
 #include "mojo/public/mojom/base/error.mojom.h"
@@ -342,7 +345,7 @@ void WebUIPageActionControl::WebUIPageActionDelegate::NotifyClick(
     PageActionTrigger trigger) {
   click_callback_.Run(trigger);
 
-  action_item_->InvokeAction(
+  auto builder =
       actions::ActionInvocationContext::Builder()
           .SetProperty(
               page_actions::kPageActionTriggerKey,
@@ -353,8 +356,15 @@ void WebUIPageActionControl::WebUIPageActionDelegate::NotifyClick(
               page_actions::kPageActionEntryPointKey,
               static_cast<
                   std::underlying_type_t<page_actions::PageActionEntryPoint>>(
-                  page_actions::PageActionEntryPoint::kSuggestionChip))
-          .Build());
+                  page_actions::PageActionEntryPoint::kSuggestionChip));
+  if (auto side_panel_trigger =
+          GetSidePanelOpenTriggerForPageAction(action_item_->GetActionId())) {
+    builder = std::move(builder).SetProperty(
+        kSidePanelOpenTriggerKey,
+        static_cast<std::underlying_type_t<SidePanelOpenTrigger>>(
+            *side_panel_trigger));
+  }
+  action_item_->InvokeAction(std::move(builder).Build());
 }
 
 void WebUIPageActionControl::WebUIPageActionDelegate::

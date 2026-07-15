@@ -13,11 +13,16 @@
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/task/sequenced_task_runner.h"
+#include "chrome/browser/ui/actions/chrome_action_id.h"
+#include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/page_action/page_action_controller.h"
 #include "chrome/browser/ui/page_action/page_action_model.h"
 #include "chrome/browser/ui/page_action/page_action_triggers.h"
+#include "chrome/browser/ui/side_panel/side_panel_action_callback.h"
+#include "chrome/browser/ui/side_panel/side_panel_enums.h"
 #include "chrome/browser/ui/views/location_bar/icon_label_bubble_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_view_params.h"
+#include "chrome/browser/ui/views/page_action/page_action_view_util.h"
 #include "ui/actions/actions.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
@@ -344,7 +349,7 @@ void PageActionView::NotifyClick(const ui::Event& event) {
   click_callback_.Run(trigger_source);
 
   IconLabelBubbleView::NotifyClick(event);
-  action_item_->InvokeAction(
+  auto builder =
       actions::ActionInvocationContext::Builder()
           .SetProperty(kPageActionTriggerKey,
                        static_cast<std::underlying_type_t<PageActionTrigger>>(
@@ -352,8 +357,15 @@ void PageActionView::NotifyClick(const ui::Event& event) {
           .SetProperty(
               kPageActionEntryPointKey,
               static_cast<std::underlying_type_t<PageActionEntryPoint>>(
-                  PageActionEntryPoint::kSuggestionChip))
-          .Build());
+                  PageActionEntryPoint::kSuggestionChip));
+  if (auto side_panel_trigger =
+          GetSidePanelOpenTriggerForPageAction(action_item_->GetActionId())) {
+    builder = std::move(builder).SetProperty(
+        kSidePanelOpenTriggerKey,
+        static_cast<std::underlying_type_t<SidePanelOpenTrigger>>(
+            *side_panel_trigger));
+  }
+  action_item_->InvokeAction(std::move(builder).Build());
 }
 
 void PageActionView::AnimationEnded(const gfx::Animation* animation) {
@@ -573,7 +585,7 @@ void PageActionView::OnAnchoredMessageWidgetClose(
 void PageActionView::AnchoredMessageChipClick() {
   CHECK(click_callback_);
   click_callback_.Run(PageActionTrigger::kMouse);
-  action_item_->InvokeAction(
+  auto builder =
       actions::ActionInvocationContext::Builder()
           .SetProperty(kPageActionTriggerKey,
                        static_cast<std::underlying_type_t<PageActionTrigger>>(
@@ -581,8 +593,15 @@ void PageActionView::AnchoredMessageChipClick() {
           .SetProperty(
               kPageActionEntryPointKey,
               static_cast<std::underlying_type_t<PageActionEntryPoint>>(
-                  PageActionEntryPoint::kAnchoredMessage))
-          .Build());
+                  PageActionEntryPoint::kAnchoredMessage));
+  if (auto side_panel_trigger =
+          GetSidePanelOpenTriggerForPageAction(action_item_->GetActionId())) {
+    builder = std::move(builder).SetProperty(
+        kSidePanelOpenTriggerKey,
+        static_cast<std::underlying_type_t<SidePanelOpenTrigger>>(
+            *side_panel_trigger));
+  }
+  action_item_->InvokeAction(std::move(builder).Build());
   anchored_message_close_callback_.Run();
 }
 
