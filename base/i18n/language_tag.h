@@ -24,8 +24,6 @@
 namespace base::i18n {
 
 class BASE_I18N_EXPORT LanguageTagConverter;
-class BASE_I18N_EXPORT LanguageSubtag;
-class BASE_I18N_EXPORT RegionSubtag;
 
 class LanguageTag;
 consteval LanguageTag GetKnownLanguageTag(std::string_view tag);
@@ -80,7 +78,9 @@ class BASE_I18N_EXPORT LanguageTag {
   }
 
   // Returns the BCP47 language tag (e.g., "en-US", "zh-CN").
-  constexpr std::string_view tag_string() const { return tag_.AsString(); }
+  constexpr std::string_view tag_string() const LIFETIME_BOUND {
+    return tag_.AsString();
+  }
 
   // Returns the language tag in legacy ICU format, replacing hyphens with
   // underscores (e.g., "en_US", "zh_CN").
@@ -98,15 +98,25 @@ class BASE_I18N_EXPORT LanguageTag {
   //
   // Notice that this does not necessarily represent the language itself as some
   // of them need their region, script and variant to be properly represented.
-  LanguageSubtag GetLanguageSubtag() const;
+  constexpr std::string_view language_subtag() const LIFETIME_BOUND {
+    return i18n_internal::ParseBcp47Tag(tag_string())
+        .value_or(i18n_internal::ParsedBcp47Tag())
+        .language;
+  }
 
   // Returns the region subtag in the language tag if present.
   // Examples:
   // - "en-US" -> "US"
   // - "zh-Hant-TW" -> "TW"
-  // - "en" -> std::nullopt
-  // - "sr-Latn" -> std::nullopt
-  std::optional<RegionSubtag> GetRegionSubtag() const;
+  // - "en" -> ""
+  // - "sr-Latn" -> ""
+  // Note that the region subtag is not always present, if it is not set, an
+  // empty string is returned.
+  constexpr std::string_view region_subtag() const LIFETIME_BOUND {
+    return i18n_internal::ParseBcp47Tag(tag_string())
+        .value_or(i18n_internal::ParsedBcp47Tag())
+        .region;
+  }
 
   // Retrieves the singleton and subtag(s) for an extension to a BCP47 language
   // tag.
@@ -166,79 +176,7 @@ class BASE_I18N_EXPORT LanguageTag {
 
 }  // namespace base::i18n
 
-namespace base::i18n_internal {
-
-// General representation of a BCP47 subtag
-// (https://www.rfc-editor.org/info/rfc5646/#section-2.1)
-template <size_t MinLen, size_t MaxLen>
-class BASE_I18N_EXPORT Bcp47Subtag {
- public:
-  static_assert(MinLen <= MaxLen);
-  static_assert(MaxLen <= std::numeric_limits<uint8_t>::max());
-
-  using SubtagType = Bcp47Subtag<MinLen, MaxLen>;
-
-  explicit Bcp47Subtag(std::string_view subtag)
-      : size_(static_cast<uint8_t>(subtag.size())) {
-    std::copy(subtag.begin(), subtag.end(), value_.begin());
-    CHECK_GE(subtag.size(), MinLen);
-    CHECK_LE(subtag.size(), MaxLen);
-  }
-
-  friend bool operator==(const SubtagType& lhs, const SubtagType& rhs) {
-    return lhs.subtag_string() == rhs.subtag_string();
-  }
-  friend std::strong_ordering operator<=>(const SubtagType& lhs,
-                                          const SubtagType& rhs) {
-    return lhs.subtag_string() <=> rhs.subtag_string();
-  }
-  friend std::ostream& operator<<(std::ostream& os, const SubtagType& tag) {
-    return os << tag.subtag_string();
-  }
-  friend std::ostream& operator<<(std::ostream& os,
-                                  const std::optional<SubtagType>& opt) {
-    return opt ? os << *opt : os << "nullopt";
-  }
-
-  std::string_view subtag_string() const {
-    return std::string_view(value_.data(), static_cast<size_t>(size_));
-  }
-
- private:
-  std::array<char, MaxLen> value_;
-  uint8_t size_;
-};
-
-}  // namespace base::i18n_internal
-
 namespace base::i18n {
-
-// Represents the language subtag extracted from a LanguageTag.
-// The spec definition can be found here:
-// https://www.rfc-editor.org/info/rfc5646/#section-2.1
-// They are defined as:
-// language      = 2*3ALPHA            ; shortest ISO 639 code
-//                 ["-" extlang]       ; sometimes followed by
-//                                     ; extended language subtags
-//               / 4ALPHA              ; or reserved for future use
-//               / 5*8ALPHA            ; or registered language subtag
-class LanguageSubtag : public i18n_internal::Bcp47Subtag<2, 3> {
- public:
-  using base_type = i18n_internal::Bcp47Subtag<2, 3>;
-  using base_type::base_type;
-};
-
-// Represents the region subtag extracted from a LanguageTag.
-// The spec definition can be found here:
-// https://www.rfc-editor.org/info/rfc5646/#section-2.1
-// They are defined as:
-// region        = 2ALPHA
-//              / 3DIGIT
-class RegionSubtag : public i18n_internal::Bcp47Subtag<2, 3> {
- public:
-  using base_type = i18n_internal::Bcp47Subtag<2, 3>;
-  using base_type::base_type;
-};
 
 // Returns a LanguageTag checked at compile time. does not compile if tag is
 // not one of the predefined supported language tags.
@@ -273,21 +211,6 @@ template <>
 struct hash<base::i18n::LanguageTag> {
   std::size_t operator()(const base::i18n::LanguageTag& tag) const {
     return std::hash<std::string_view>()(tag.tag_string());
-  }
-};
-
-template <>
-struct hash<base::i18n::RegionSubtag> {
-  std::size_t operator()(const base::i18n::RegionSubtag& region_subtag) const {
-    return std::hash<std::string_view>()(region_subtag.subtag_string());
-  }
-};
-
-template <>
-struct hash<base::i18n::LanguageSubtag> {
-  std::size_t operator()(
-      const base::i18n::LanguageSubtag& language_subtag) const {
-    return std::hash<std::string_view>()(language_subtag.subtag_string());
   }
 };
 

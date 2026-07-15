@@ -26,18 +26,6 @@ MATCHER_P(OptionalToString, expected, "") {
       result_listener);
 }
 
-MATCHER_P(OptionalRegionToString, expected, "") {
-  return ExplainMatchResult(
-      Optional(Property(&RegionSubtag::base_type::subtag_string, Eq(expected))),
-      arg, result_listener);
-}
-
-MATCHER_P(LanguageSubtagString, expected, "") {
-  return ExplainMatchResult(
-      Property(&LanguageSubtag::base_type::subtag_string, Eq(expected)), arg,
-      result_listener);
-}
-
 TEST(LanguageTagTest, CompileTimeTags) {
   // Verifies that multi-subtag tags can be created at compile-time.
   static_assert(GetKnownLanguageTag("ja-JP").tag_string() == "ja-JP");
@@ -583,67 +571,67 @@ TEST(LanguageTagTest, GetLanguageSubtag) {
   // Simple case.
   ASSERT_OK_AND_ASSIGN(LanguageTag lt_en_us,
                        LanguageTagConverter::GetInstance().FromString("en-US"));
-  EXPECT_THAT(lt_en_us.GetLanguageSubtag(), LanguageSubtagString("en"));
+  EXPECT_EQ(lt_en_us.language_subtag(), "en");
 
   // Undefined case.
   ASSERT_OK_AND_ASSIGN(
       LanguageTag und_us,
       LanguageTagConverter::GetInstance().FromString("und-US"));
-  EXPECT_THAT(und_us.GetLanguageSubtag(), LanguageSubtagString("und"));
+  EXPECT_EQ(und_us.language_subtag(), "und");
 
   // Chinese case.
   ASSERT_OK_AND_ASSIGN(
       LanguageTag zh_cn,
       LanguageTagConverter::GetInstance().FromString("zh-Hans-CN"));
-  EXPECT_THAT(zh_cn.GetLanguageSubtag(), LanguageSubtagString("zh"));
+  EXPECT_EQ(zh_cn.language_subtag(), "zh");
 }
 
 TEST(LanguageTagTest, GetRegionSubtag) {
   // Simple case.
   ASSERT_OK_AND_ASSIGN(LanguageTag lt_en_us,
                        LanguageTagConverter::GetInstance().FromString("en-US"));
-  EXPECT_THAT(lt_en_us.GetRegionSubtag(), OptionalRegionToString("US"));
+  EXPECT_EQ(lt_en_us.region_subtag(), "US");
 
   // No region.
   ASSERT_OK_AND_ASSIGN(LanguageTag lt_en,
                        LanguageTagConverter::GetInstance().FromString("en"));
-  EXPECT_FALSE(lt_en.GetRegionSubtag().has_value());
+  EXPECT_TRUE(lt_en.region_subtag().empty());
 
   // Language, Script, Region.
   ASSERT_OK_AND_ASSIGN(
       LanguageTag lt_zh_hant_tw,
       LanguageTagConverter::GetInstance().FromString("zh-Hant-TW"));
-  EXPECT_THAT(lt_zh_hant_tw.GetRegionSubtag(), OptionalRegionToString("TW"));
+  EXPECT_EQ(lt_zh_hant_tw.region_subtag(), "TW");
 
   // Numeric region.
   ASSERT_OK_AND_ASSIGN(
       LanguageTag lt_es_419,
       LanguageTagConverter::GetInstance().FromString("es-419"));
-  EXPECT_THAT(lt_es_419.GetRegionSubtag(), OptionalRegionToString("419"));
+  EXPECT_EQ(lt_es_419.region_subtag(), "419");
 
   // Script but no region.
   ASSERT_OK_AND_ASSIGN(
       LanguageTag lt_sr_latn,
       LanguageTagConverter::GetInstance().FromString("sr-Latn"));
-  EXPECT_FALSE(lt_sr_latn.GetRegionSubtag().has_value());
+  EXPECT_TRUE(lt_sr_latn.region_subtag().empty());
 
   // Complex case with extensions.
   ASSERT_OK_AND_ASSIGN(
       LanguageTag lt_complex,
       LanguageTagConverter::GetInstance().FromString("en-US-u-ca-gregory"));
-  EXPECT_THAT(lt_complex.GetRegionSubtag(), OptionalRegionToString("US"));
+  EXPECT_EQ(lt_complex.region_subtag(), "US");
 
   // Extension but no region.
   ASSERT_OK_AND_ASSIGN(
       LanguageTag lt_ext_no_region,
       LanguageTagConverter::GetInstance().FromString("en-u-ca-gregory"));
-  EXPECT_FALSE(lt_ext_no_region.GetRegionSubtag().has_value());
+  EXPECT_TRUE(lt_ext_no_region.region_subtag().empty());
 
   // Script + Extension but no region.
   ASSERT_OK_AND_ASSIGN(
       LanguageTag lt_script_ext_no_region,
       LanguageTagConverter::GetInstance().FromString("sr-Latn-u-ca-gregory"));
-  EXPECT_FALSE(lt_script_ext_no_region.GetRegionSubtag().has_value());
+  EXPECT_TRUE(lt_script_ext_no_region.region_subtag().empty());
 }
 
 struct LanguageTestData {
