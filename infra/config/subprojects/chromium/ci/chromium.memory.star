@@ -1029,7 +1029,7 @@ ci.builder(
                     "--test-launcher-print-test-stdio=always",
                 ],
             ),
-            "mac_default_x64",
+            "mac_15_x64",
         ],
         per_test_modifications = {
             "browser_tests": targets.mixin(
