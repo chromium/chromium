@@ -24,5 +24,8 @@ source_set("ui_bundled") {
   deps = [
     ":protocols",
     "//base",
+    "//ios/chrome/app/application_delegate:app_state",
+    "//ios/chrome/app/profile",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
   ]
 }

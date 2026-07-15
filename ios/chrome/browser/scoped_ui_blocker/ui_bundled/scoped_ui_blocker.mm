@@ -6,19 +6,42 @@
 
 #import "base/check.h"
 #import "base/logging.h"
+#import "ios/chrome/app/application_delegate/app_state.h"
+#import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/browser/scoped_ui_blocker/ui_bundled/ui_blocker_manager.h"
 #import "ios/chrome/browser/scoped_ui_blocker/ui_bundled/ui_blocker_target.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 
 ScopedUIBlocker::ScopedUIBlocker(id<UIBlockerTarget> target,
                                  UIBlockerExtent extent)
-    : target_(target) {
+    : ScopedUIBlocker(PassKey{},
+                      target,
+                      [target uiBlockerManagerForExtent:extent]) {}
+
+ScopedUIBlocker::ScopedUIBlocker(PassKey,
+                                 id<UIBlockerTarget> target,
+                                 id<UIBlockerManager> manager)
+    : target_(target), manager_(manager) {
   DCHECK(target_);
-  uiBlockerManager_ = [target uiBlockerManagerForExtent:extent];
-  DCHECK(uiBlockerManager_);
-  [uiBlockerManager_ incrementBlockingUICounterForTarget:target_];
+  DCHECK(manager_);
+  [manager_ incrementBlockingUICounterForTarget:target_];
 }
 
 ScopedUIBlocker::~ScopedUIBlocker() {
   DCHECK(target_) << "Cannot unlock the blocking UI if scene is deallocated.";
-  [uiBlockerManager_ decrementBlockingUICounterForTarget:target_];
+  [manager_ decrementBlockingUICounterForTarget:target_];
+}
+
+// static
+std::unique_ptr<ScopedUIBlocker> ScopedUIBlocker::ProfileScoped(
+    SceneState* scene) {
+  return std::make_unique<ScopedUIBlocker>(PassKey{}, scene,
+                                           scene.profileState);
+}
+
+// static
+std::unique_ptr<ScopedUIBlocker> ScopedUIBlocker::AppScoped(
+    SceneState* scene,
+    AppState* app_state) {
+  return std::make_unique<ScopedUIBlocker>(PassKey{}, scene, app_state);
 }
