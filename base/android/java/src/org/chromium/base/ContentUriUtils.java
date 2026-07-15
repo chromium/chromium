@@ -656,6 +656,7 @@ public abstract class ContentUriUtils {
      */
     public static boolean isOpenableFile(@Nullable Uri uri) {
         if (uri == null) return false;
+        if (!ContentResolver.SCHEME_CONTENT.equals(uri.getScheme())) return true;
         ContentResolver cr = ContextUtils.getApplicationContext().getContentResolver();
         try (Cursor cursor =
                 cr.query(
@@ -726,7 +727,10 @@ public abstract class ContentUriUtils {
      * @return True if the URI is from the current application, false otherwise.
      */
     public static boolean isUriFromThisApp(@Nullable Uri uri, Context context) {
-        if (uri == null || !ContentResolver.SCHEME_CONTENT.equals(uri.getScheme())) return false;
+        if (uri == null) return false;
+        if (!ContentResolver.SCHEME_CONTENT.equals(uri.getScheme())) {
+            return PathUtils.isPathUnderAppDir(uri.toString(), context);
+        }
         String authority = uri.getAuthority();
         if (TextUtils.isEmpty(authority)) return false;
 
