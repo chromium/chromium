@@ -34,6 +34,16 @@ const EMPTY_LOG: Log = {
 };
 
 /**
+ * An empty log. It is appended to a UKM logs table when there are no logs.
+ */
+const EMPTY_UKM_LOG: Log = {
+  hash: 'N/A',
+  timestamp: '',
+  size: -1,
+  events: [],
+};
+
+/**
  * The maximum length of a value in the seed info table. Values longer than
  * this will be truncated with an ellipsis.
  */
@@ -62,6 +72,7 @@ export class MetricsInternalsAppElement extends CustomElement {
    */
   private previousVariationsSummaryData_: string = '';
   private previousUmaSummaryData_: string = '';
+  private previousUkmSummaryData_: string = '';
 
   constructor() {
     super();
@@ -74,6 +85,14 @@ export class MetricsInternalsAppElement extends CustomElement {
    */
   getUmaLogsExportContent(): Promise<string> {
     return this.browserProxy_.getUmaLogData(/*includeLogProtoData*/ true);
+  }
+
+  /**
+   * Returns UKM logs data (with their proto) as a JSON string. Used when
+   * exporting UKM logs data. Returns a promise.
+   */
+  getUkmLogsExportContent(): Promise<string> {
+    return this.browserProxy_.getUkmLogData(/*includeLogProtoData*/ true);
   }
 
   private async init_(): Promise<void> {
@@ -139,6 +158,47 @@ export class MetricsInternalsAppElement extends CustomElement {
     const exportUmaLogsButton = this.getRequiredElement('#export-uma-logs');
     exportUmaLogsButton.addEventListener('click', () => this.exportUmaLogs_());
 
+    // Fetch UKM summary data and set up a recurring timer.
+    await this.updateUkmSummary_();
+    setInterval(() => this.updateUkmSummary_(), 3000);
+
+    // Set up the UKM table caption.
+    const ukmTableCaption = this.getRequiredElement('#ukm-table-caption');
+    const isUsingUkmServiceObserver =
+        await this.browserProxy_.isUsingUkmServiceObserver();
+    const ukmServiceObserverCaption =
+        'List of all UKM logs closed since browser startup.';
+    const ephemeralUkmObserverCaption =
+        'List of UKM logs closed since opening this page. Starting the browser \
+        with the --export-ukm-logs-to-file command line flag will instead show \
+        all logs closed since browser startup.';
+    let firstPartOfUkmCaption = isUsingUkmServiceObserver ?
+        ukmServiceObserverCaption :
+        ephemeralUkmObserverCaption;
+    firstPartOfUkmCaption += ' See ';
+    const ukmLinkInCaptionNode = document.createElement('a');
+    ukmLinkInCaptionNode.appendChild(document.createTextNode('documentation'));
+    ukmLinkInCaptionNode.href =
+        'https://chromium.googlesource.com/chromium/src/components/metrics/+/HEAD/debug/README.md';
+    ukmLinkInCaptionNode.target = '_blank';
+    const secondPartOfUkmCaption =
+        ' for more information about this debug page and tools for working \
+         with the exported logs.';
+    ukmTableCaption.appendChild(document.createTextNode(firstPartOfUkmCaption));
+    ukmTableCaption.appendChild(ukmLinkInCaptionNode);
+    ukmTableCaption.appendChild(
+        document.createTextNode(secondPartOfUkmCaption));
+
+    // Set up a listener for UKM logs. Also update UKM log data immediately in
+    // case there are logs that we already have data on.
+    addWebUiListener(
+        'ukm-log-created-or-event', () => this.updateUkmLogsData_());
+    await this.updateUkmLogsData_();
+
+    // Set up the UKM "Export logs" button.
+    const exportUkmLogsButton = this.getRequiredElement('#export-ukm-logs');
+    exportUkmLogsButton.addEventListener('click', () => this.exportUkmLogs_());
+
     if (!loadTimeData.getBoolean('enablePrivateMetricsTab')) {
       this.getRequiredElement('#private-metrics-tab').style.display = 'none';
       this.getRequiredElement('#private-metrics-panel').style.display = 'none';
@@ -152,6 +212,7 @@ export class MetricsInternalsAppElement extends CustomElement {
   private syncTabsWithUrlHash_() {
     const tabUrlHashes: string[] = [
       '#uma',
+      '#ukm',
       '#variations',
       '#field-trials',
       '#runtime-mutable-features',
@@ -300,23 +361,59 @@ export class MetricsInternalsAppElement extends CustomElement {
   }
 
   /**
+   * Fetches UKM summary data and updates the view.
+   */
+  private async updateUkmSummary_(): Promise<void> {
+    const summary: KeyValue[] = await this.browserProxy_.fetchUkmSummary();
+    const ukmSummaryTableBody = this.$('#ukm-summary-body') as HTMLElement;
+
+    // Don't re-render the table if the data has not changed.
+    const newDataString = summary.toString();
+    if (newDataString === this.previousUkmSummaryData_) {
+      return;
+    }
+
+    this.previousUkmSummaryData_ = newDataString;
+    this.updateSummaryTable_(ukmSummaryTableBody, summary);
+  }
+
+  /**
    * Fills the passed table element with the given logs.
    */
-  private updateLogsTable_(tableBody: HTMLElement, logs: Log[]): void {
+  private updateLogsTable_(
+      tableBody: HTMLElement, logs: Log[], templateId: string,
+      isUkm: boolean = false): void {
     // Clear the table first.
     tableBody.replaceChildren();
 
-    const template =
-        this.getRequiredElement<HTMLTemplateElement>('#uma-log-row-template');
+    const template = this.getRequiredElement<HTMLTemplateElement>(templateId);
 
     // Iterate through the logs in reverse order so that the most recent log
     // shows up first.
     for (const log of logs.slice(0).reverse()) {
       const row = template.content.cloneNode(true) as HTMLElement;
-      const [type, hash, timestamp, size, events] = row.querySelectorAll('td');
+      let hash: Element|null|undefined = null;
+      let timestamp: Element|null|undefined = null;
+      let size: Element|null|undefined = null;
+      let events: Element|null|undefined = null;
 
-      assert(type);
-      type.textContent = umaLogTypeToString(log.type);
+      if (!isUkm) {
+        const [typeCell, hashCell, timestampCell, sizeCell, eventsCell] =
+            row.querySelectorAll('td');
+        assert(typeCell);
+        typeCell.textContent = umaLogTypeToString(log.type);
+        hash = hashCell;
+        timestamp = timestampCell;
+        size = sizeCell;
+        events = eventsCell;
+      } else {
+        const [hashCell, timestampCell, sizeCell, eventsCell] =
+            row.querySelectorAll('td');
+        hash = hashCell;
+        timestamp = timestampCell;
+        size = sizeCell;
+        events = eventsCell;
+      }
 
       assert(hash);
       hash.textContent = log.hash;
@@ -369,7 +466,27 @@ export class MetricsInternalsAppElement extends CustomElement {
     // because this should only be called when there is an actual change.
 
     const umaLogsTableBody = this.getRequiredElement('#uma-logs-body');
-    this.updateLogsTable_(umaLogsTableBody, logs.logs);
+    this.updateLogsTable_(
+        umaLogsTableBody, logs.logs, '#uma-log-row-template', false);
+  }
+
+  /**
+   * Fetches the latest UKM logs and renders them. This is called when the page
+   * is loaded and whenever there is a log that created or changed.
+   */
+  private async updateUkmLogsData_(): Promise<void> {
+    const logsData: string =
+        await this.browserProxy_.getUkmLogData(/*includeLogProtoData=*/ false);
+    const logs: LogData = JSON.parse(logsData);
+    // If there are no logs, append an empty log. This is purely for aesthetic
+    // reasons. Otherwise, the table may look confusing.
+    if (!logs.logs.length) {
+      logs.logs = [EMPTY_UKM_LOG];
+    }
+
+    const ukmLogsTableBody = this.getRequiredElement('#ukm-logs-body');
+    this.updateLogsTable_(
+        ukmLogsTableBody, logs.logs, '#ukm-log-row-template', true);
   }
 
   /**
@@ -382,6 +499,19 @@ export class MetricsInternalsAppElement extends CustomElement {
     const a = document.createElement('a');
     a.href = URL.createObjectURL(file);
     a.download = `uma_logs_${new Date().getTime()}.json`;
+    a.click();
+  }
+
+  /**
+   * Exports the accumulated UKM logs, including their proto data, as a JSON
+   * file. This will initiate a download.
+   */
+  private async exportUkmLogs_(): Promise<void> {
+    const logsData: string = await this.getUkmLogsExportContent();
+    const file = new Blob([logsData], {type: 'text/plain'});
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(file);
+    a.download = `ukm_logs_${new Date().getTime()}.json`;
     a.click();
   }
 }

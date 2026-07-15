@@ -32,6 +32,7 @@ FORWARD_DECLARE_TEST(IOSChromeMetricsServiceClientTest,
 class ChromeMetricsServiceClientTestIgnoredForAppMetrics;
 
 namespace metrics {
+class MetricsServiceObserver;
 class MetricsServiceClient;
 class UkmBrowserTestBase;
 class UkmRecorderClientInterfaceRegistry;
@@ -127,6 +128,17 @@ class UkmService : public UkmRecorderImpl {
   int32_t report_count() const { return report_count_; }
 
   ukm::UkmReportingService* reporting_service() { return &reporting_service_; }
+
+  uint64_t client_id() const { return client_id_; }
+  int32_t session_id() const { return session_id_; }
+
+  // Adds/removes an observer that monitors logs events.
+  void AddLogsObserver(metrics::MetricsLogsEventManager::Observer* observer);
+  void RemoveLogsObserver(metrics::MetricsLogsEventManager::Observer* observer);
+
+  metrics::MetricsServiceObserver* logs_event_observer() {
+    return logs_event_observer_.get();
+  }
 
   // Makes sure that the serialized UKM report can be parsed.
   static bool LogCanBeParsed(const std::string& serialized_data);
@@ -235,6 +247,16 @@ class UkmService : public UkmRecorderImpl {
   // Subscription for a callback that runs if this install is detected as
   // cloned.
   base::CallbackListSubscription cloned_install_subscription_;
+
+  // Event manager to notify observers of log events.
+  metrics::MetricsLogsEventManager logs_event_manager_;
+
+  // An observer that observes all events notified through |logs_event_manager_|
+  // since the creation of this UkmService instance. This is only created if
+  // this is a debug build, or the |kExportUkmLogsToFile| command line flag is
+  // passed. This is primarily used by the chrome://metrics-internals debug
+  // page.
+  std::unique_ptr<metrics::MetricsServiceObserver> logs_event_observer_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

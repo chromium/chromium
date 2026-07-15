@@ -133,10 +133,27 @@ export interface MetricsInternalsBrowserProxy {
   fetchUmaSummary(): Promise<KeyValue[]>;
 
   /**
+   * Fetches a summary of UKM info.
+   */
+  fetchUkmSummary(): Promise<KeyValue[]>;
+
+  /**
+   * Gets UKM log data. |includeLogProtoData| determines whether or not the
+   * fetched data should also include the protos of the logs.
+   */
+  getUkmLogData(includeLogProtoData: boolean): Promise<string>;
+
+  /**
    * Fetches whether the logs observer being used is owned by the metrics
    * service or is owned by the page.
    */
   isUsingMetricsServiceObserver(): Promise<boolean>;
+
+  /**
+   * Fetches whether the UKM logs observer being used is owned by the UKM
+   * service or is owned by the page.
+   */
+  isUsingUkmServiceObserver(): Promise<boolean>;
 
   /**
    * Overrides the enroll state of a field trial which will be realized after a
@@ -208,8 +225,20 @@ export class MetricsInternalsBrowserProxyImpl implements
     return sendWithPromise('fetchUmaSummary');
   }
 
+  fetchUkmSummary(): Promise<KeyValue[]> {
+    return sendWithPromise('fetchUkmSummary');
+  }
+
+  getUkmLogData(includeLogProtoData: boolean): Promise<string> {
+    return sendWithPromise('fetchUkmLogsData', includeLogProtoData);
+  }
+
   isUsingMetricsServiceObserver(): Promise<boolean> {
     return sendWithPromise('isUsingMetricsServiceObserver');
+  }
+
+  isUsingUkmServiceObserver(): Promise<boolean> {
+    return sendWithPromise('isUsingUkmServiceObserver');
   }
 
   setTrialEnrollState(

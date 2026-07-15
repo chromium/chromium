@@ -23,6 +23,10 @@ namespace metrics_services_manager {
 class MetricsServicesManager;
 }  // namespace metrics_services_manager
 
+namespace ukm {
+class UkmService;
+}  // namespace ukm
+
 namespace metrics {
 
 class MetricsService;
@@ -44,6 +48,7 @@ class MetricsInternalsHandlerBase : public dwa::DwaService::Observer {
 
   MetricsInternalsHandlerBase(Delegate* delegate,
                               MetricsService* metrics_service,
+                              ukm::UkmService* ukm_service,
                               metrics_services_manager::MetricsServicesManager*
                                   metrics_services_manager);
 
@@ -63,10 +68,15 @@ class MetricsInternalsHandlerBase : public dwa::DwaService::Observer {
   void HandleFetchUmaSummary(const base::Value& callback_id);
   void HandleFetchUmaLogsData(const base::Value& callback_id,
                               bool include_log_proto_data);
+  void HandleFetchUkmSummary(const base::Value& callback_id);
+  void HandleFetchUkmLogsData(const base::Value& callback_id,
+                              bool include_log_proto_data);
   void HandleFetchEncryptionPublicKey(const base::Value& callback_id);
   void HandleIsUsingMetricsServiceObserver(const base::Value& callback_id);
+  void HandleIsUsingUkmServiceObserver(const base::Value& callback_id);
 
   bool ShouldUseMetricsServiceObserver();
+  bool ShouldUseUkmServiceObserver();
 
   // dwa::DwaService::Observer:
   void OnEncryptionPublicKeyChanged(
@@ -76,10 +86,14 @@ class MetricsInternalsHandlerBase : public dwa::DwaService::Observer {
   metrics::MetricsServiceObserver* GetUmaObserver();
   void OnUmaLogCreatedOrEvent();
 
+  metrics::MetricsServiceObserver* GetUkmObserver();
+  void OnUkmLogCreatedOrEvent();
+
   void ResolveJsCallbackHelper(base::Value callback_id, base::ValueView result);
 
   const raw_ptr<Delegate> delegate_;
   const raw_ptr<MetricsService> metrics_service_;
+  const raw_ptr<ukm::UkmService> ukm_service_;
   const raw_ptr<metrics_services_manager::MetricsServicesManager>
       metrics_services_manager_;
 
@@ -92,6 +106,15 @@ class MetricsInternalsHandlerBase : public dwa::DwaService::Observer {
   // of changes. When this subscription is destroyed, it is automatically
   // de-registered from the callback list.
   base::CallbackListSubscription uma_log_notified_subscription_;
+
+  // This UKM log observer keeps track of logs since its creation. It is unused
+  // if the UKM service has its own observer that has observed all events since
+  // browser startup.
+  std::unique_ptr<metrics::MetricsServiceObserver> ukm_log_observer_;
+
+  // The callback subscription to |ukm_log_observer_| that notifies the WebUI
+  // of changes.
+  base::CallbackListSubscription ukm_log_notified_subscription_;
 
   base::ScopedObservation<dwa::DwaService, dwa::DwaService::Observer>
       dwa_service_observation_{this};

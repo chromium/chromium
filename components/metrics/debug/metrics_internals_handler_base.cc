@@ -9,6 +9,7 @@
 #include "base/values.h"
 #include "components/metrics/debug/metrics_internals_utils.h"
 #include "components/metrics/metrics_service.h"
+#include "components/ukm/ukm_service.h"
 #include "third_party/abseil-cpp/absl/time/time.h"
 
 namespace metrics {
@@ -58,15 +59,24 @@ base::DictValue OkpCwtToDict(
 MetricsInternalsHandlerBase::MetricsInternalsHandlerBase(
     Delegate* delegate,
     MetricsService* metrics_service,
+    ukm::UkmService* ukm_service,
     metrics_services_manager::MetricsServicesManager* metrics_services_manager)
     : delegate_(delegate),
       metrics_service_(metrics_service),
+      ukm_service_(ukm_service),
       metrics_services_manager_(metrics_services_manager) {
   if (metrics_service_) {
     if (!ShouldUseMetricsServiceObserver()) {
       uma_log_observer_ = std::make_unique<MetricsServiceObserver>(
           MetricsServiceObserver::MetricsServiceType::UMA);
       metrics_service_->AddLogsObserver(uma_log_observer_.get());
+    }
+  }
+  if (ukm_service_) {
+    if (!ShouldUseUkmServiceObserver()) {
+      ukm_log_observer_ = std::make_unique<MetricsServiceObserver>(
+          MetricsServiceObserver::MetricsServiceType::UKM);
+      ukm_service_->AddLogsObserver(ukm_log_observer_.get());
     }
   }
 }
@@ -76,6 +86,9 @@ MetricsInternalsHandlerBase::~MetricsInternalsHandlerBase() {
   if (uma_log_observer_ && metrics_service_) {
     metrics_service_->RemoveLogsObserver(uma_log_observer_.get());
   }
+  if (ukm_log_observer_ && ukm_service_) {
+    ukm_service_->RemoveLogsObserver(ukm_log_observer_.get());
+  }
 }
 
 void MetricsInternalsHandlerBase::StartObserving() {
@@ -83,6 +96,12 @@ void MetricsInternalsHandlerBase::StartObserving() {
     uma_log_notified_subscription_ =
         GetUmaObserver()->AddNotifiedCallback(base::BindRepeating(
             &MetricsInternalsHandlerBase::OnUmaLogCreatedOrEvent,
+            weak_ptr_factory_.GetWeakPtr()));
+  }
+  if (ukm_service_ && !ukm_log_notified_subscription_) {
+    ukm_log_notified_subscription_ =
+        GetUkmObserver()->AddNotifiedCallback(base::BindRepeating(
+            &MetricsInternalsHandlerBase::OnUkmLogCreatedOrEvent,
             weak_ptr_factory_.GetWeakPtr()));
   }
   if (metrics_services_manager_ && !dwa_service_observation_.IsObserving()) {
@@ -94,6 +113,7 @@ void MetricsInternalsHandlerBase::StartObserving() {
 
 void MetricsInternalsHandlerBase::StopObserving() {
   uma_log_notified_subscription_ = base::CallbackListSubscription();
+  ukm_log_notified_subscription_ = base::CallbackListSubscription();
   dwa_service_observation_.Reset();
 }
 
@@ -101,10 +121,19 @@ bool MetricsInternalsHandlerBase::ShouldUseMetricsServiceObserver() {
   return metrics_service_ && metrics_service_->logs_event_observer() != nullptr;
 }
 
+bool MetricsInternalsHandlerBase::ShouldUseUkmServiceObserver() {
+  return ukm_service_ && ukm_service_->logs_event_observer() != nullptr;
+}
+
 MetricsServiceObserver* MetricsInternalsHandlerBase::GetUmaObserver() {
   return ShouldUseMetricsServiceObserver()
              ? metrics_service_->logs_event_observer()
              : uma_log_observer_.get();
+}
+
+MetricsServiceObserver* MetricsInternalsHandlerBase::GetUkmObserver() {
+  return ShouldUseUkmServiceObserver() ? ukm_service_->logs_event_observer()
+                                       : ukm_log_observer_.get();
 }
 
 void MetricsInternalsHandlerBase::HandleFetchVariationsSummary(
@@ -148,6 +177,25 @@ void MetricsInternalsHandlerBase::HandleFetchUmaLogsData(
                                  base::Value(std::move(logs_json)));
 }
 
+void MetricsInternalsHandlerBase::HandleFetchUkmSummary(
+    const base::Value& callback_id) {
+  delegate_->ResolvePageCallback(callback_id, GetUkmSummary(ukm_service_));
+}
+
+void MetricsInternalsHandlerBase::HandleFetchUkmLogsData(
+    const base::Value& callback_id,
+    bool include_log_proto_data) {
+  std::string logs_json;
+  auto* observer = GetUkmObserver();
+  if (observer) {
+    bool result =
+        observer->ExportLogsAsJson(include_log_proto_data, &logs_json);
+    DCHECK(result);
+  }
+  delegate_->ResolvePageCallback(callback_id,
+                                 base::Value(std::move(logs_json)));
+}
+
 void MetricsInternalsHandlerBase::HandleFetchEncryptionPublicKey(
     const base::Value& callback_id) {
   base::DictValue result;
@@ -168,8 +216,18 @@ void MetricsInternalsHandlerBase::HandleIsUsingMetricsServiceObserver(
       callback_id, base::Value(ShouldUseMetricsServiceObserver()));
 }
 
+void MetricsInternalsHandlerBase::HandleIsUsingUkmServiceObserver(
+    const base::Value& callback_id) {
+  delegate_->ResolvePageCallback(callback_id,
+                                 base::Value(ShouldUseUkmServiceObserver()));
+}
+
 void MetricsInternalsHandlerBase::OnUmaLogCreatedOrEvent() {
   delegate_->FireWebUIListener("uma-log-created-or-event");
+}
+
+void MetricsInternalsHandlerBase::OnUkmLogCreatedOrEvent() {
+  delegate_->FireWebUIListener("ukm-log-created-or-event");
 }
 
 void MetricsInternalsHandlerBase::OnEncryptionPublicKeyChanged(

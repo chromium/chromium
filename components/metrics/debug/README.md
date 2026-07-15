@@ -3,7 +3,7 @@
 **chrome://metrics-internals** is a debug page that reports the state of various
 metrics systems.
 
-The page displays logs that have been collected by the UMA metrics service,
+The page displays logs that have been collected by the UMA/UKM metrics services,
 which are eventually sent to Google servers. These logs can be exported, and
 their proto data can later be inspected using a Google-internal tool:
 [go/metrics-internals-inspector](http://go/metrics-internals-inspector).
@@ -14,11 +14,12 @@ the page will instead show logs collected since the page was opened. This
 difference is mostly due to memory concerns (on official releases, we don't want
 logs to be lingering in memory since they can be relatively large).
 
-> Tip: By using the `--export-uma-logs-to-file=FILE_PATH` command line flag, all
-logs collected throughout the Chrome session will be exported to the passed
-`FILE_PATH` on shutdown (the file is created if it does not already exist). For
-release builds, this flag also has the effect of showing all logs collected
-since browser startup on the page.
+> Tip: By using the `--export-uma-logs-to-file=FILE_PATH`
+or `--export-ukm-logs-to-file=FILE_PATH` command line flags, all logs collected
+throughout the Chrome session will be exported to the passed `FILE_PATH` on
+shutdown (the file is created if it does not already exist). For release builds,
+this flag also has the effect of showing all logs collected since browser startup
+on the page.
 
 > Note: The delay between logs being closed can be [long]. If you are just
 testing to see if a certain metric (e.g., histogram, user action, etc.) is being

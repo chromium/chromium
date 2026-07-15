@@ -6,6 +6,8 @@
 
 #import "base/functional/bind.h"
 #import "base/values.h"
+#import "components/metrics_services_manager/metrics_services_manager.h"
+#import "components/ukm/ukm_service.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/web/public/webui/web_ui_ios.h"
 
@@ -14,6 +16,11 @@
 MetricsInternalsHandler::MetricsInternalsHandler() {
   base_handler_ = std::make_unique<metrics::MetricsInternalsHandlerBase>(
       this, GetApplicationContext()->GetMetricsService(),
+      GetApplicationContext()->GetMetricsServicesManager()
+          ? GetApplicationContext()
+                ->GetMetricsServicesManager()
+                ->GetUkmService()
+          : nullptr,
       GetApplicationContext()->GetMetricsServicesManager());
 }
 
@@ -48,9 +55,22 @@ void MetricsInternalsHandler::RegisterMessages() {
       base::BindRepeating(&MetricsInternalsHandler::HandleFetchUmaLogsData,
                           base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
+      "fetchUkmSummary",
+      base::BindRepeating(&MetricsInternalsHandler::HandleFetchUkmSummary,
+                          base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "fetchUkmLogsData",
+      base::BindRepeating(&MetricsInternalsHandler::HandleFetchUkmLogsData,
+                          base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
       "isUsingMetricsServiceObserver",
       base::BindRepeating(
           &MetricsInternalsHandler::HandleIsUsingMetricsServiceObserver,
+          base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "isUsingUkmServiceObserver",
+      base::BindRepeating(
+          &MetricsInternalsHandler::HandleIsUsingUkmServiceObserver,
           base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
       "fetchEncryptionPublicKey",
@@ -104,6 +124,21 @@ void MetricsInternalsHandler::HandleFetchUmaLogsData(
   base_handler_->HandleFetchUmaLogsData(args[0], args[1].GetBool());
 }
 
+void MetricsInternalsHandler::HandleFetchUkmSummary(
+    const base::ListValue& args) {
+  // args[0]: Callback ID.
+  CHECK_EQ(args.size(), 1U);
+  base_handler_->HandleFetchUkmSummary(args[0]);
+}
+
+void MetricsInternalsHandler::HandleFetchUkmLogsData(
+    const base::ListValue& args) {
+  // args[0]: Callback ID.
+  // args[1]: Whether to include log proto data (bool).
+  CHECK_EQ(args.size(), 2U);
+  base_handler_->HandleFetchUkmLogsData(args[0], args[1].GetBool());
+}
+
 void MetricsInternalsHandler::HandleFetchEncryptionPublicKey(
     const base::ListValue& args) {
   // args[0]: Callback ID.
@@ -116,6 +151,13 @@ void MetricsInternalsHandler::HandleIsUsingMetricsServiceObserver(
   // args[0]: Callback ID.
   CHECK_EQ(args.size(), 1U);
   base_handler_->HandleIsUsingMetricsServiceObserver(args[0]);
+}
+
+void MetricsInternalsHandler::HandleIsUsingUkmServiceObserver(
+    const base::ListValue& args) {
+  // args[0]: Callback ID.
+  CHECK_EQ(args.size(), 1U);
+  base_handler_->HandleIsUsingUkmServiceObserver(args[0]);
 }
 
 // LINT.ThenChange(//chrome/browser/ui/webui/metrics_internals/metrics_internals_handler.cc)

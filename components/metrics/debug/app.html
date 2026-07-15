@@ -70,7 +70,8 @@
     background: rgb(239, 243, 255);
   }
 
-  #export-uma-logs {
+  #export-uma-logs,
+  #export-ukm-logs {
     margin-top: 10px;
   }
 </style>
@@ -97,6 +98,28 @@
       <tbody id="uma-logs-body"></tbody>
     </table>
     <button id="export-uma-logs">Export logs</button>
+  </div>
+  <div slot="tab">UKM</div>
+  <div slot="panel">
+    <h2>UKM Summary</h2>
+    <table>
+      <tbody id="ukm-summary-body"></tbody>
+    </table>
+    <h2>Logs</h2>
+    <div id="ukm-table-caption" class="uma-callout"></div>
+    <div class="uma-callout">Proto data is available by exporting.</div>
+    <table>
+      <thead>
+        <tr>
+          <th class="uma-header-hash">Hash</th>
+          <th class="uma-header-timestamp">Closed Timestamp</th>
+          <th class="uma-header-size">Size</th>
+          <th class="uma-header-status">Status</th>
+        </tr>
+      </thead>
+      <tbody id="ukm-logs-body"></tbody>
+    </table>
+    <button id="export-ukm-logs">Export logs</button>
   </div>
   <div slot="tab">Variations</div>
   <div slot="panel">
@@ -134,6 +157,23 @@
 <template id="uma-log-row-template">
   <tr>
     <td><!-- Type --></td>
+    <td><!-- Hash --></td>
+    <td><!-- Closed Timestamp --></td>
+    <td><!-- Size --></td>
+    <td>
+      <!-- Status -->
+      <div class="uma-log-events">
+        <div class="uma-log-events-peek">
+          <span class="uma-log-events-peek-text"></span>
+          <span class="expand-or-collapse-icon"></span>
+        </div>
+        <pre class="uma-log-events-text"></pre>
+      </div>
+    </td>
+  </tr>
+</template>
+<template id="ukm-log-row-template">
+  <tr>
     <td><!-- Hash --></td>
     <td><!-- Closed Timestamp --></td>
     <td><!-- Size --></td>

@@ -10,9 +10,15 @@
 #include "components/metrics_services_manager/metrics_services_manager.h"
 #include "components/variations/variations_seed_store.h"
 
+namespace ukm {
+class UkmService;
+}
+
 namespace metrics {
 
 base::ListValue GetUmaSummary(MetricsService* metrics_service);
+
+base::ListValue GetUkmSummary(ukm::UkmService* ukm_service);
 
 base::ListValue GetVariationsSummary(
     metrics_services_manager::MetricsServicesManager* metrics_service_manager);

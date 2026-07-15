@@ -1,0 +1,6 @@
+include_rules = [
+  "+components/metrics",
+  "+components/metrics_services_manager",
+  "+components/ukm",
+  "+services/metrics/public/cpp",
+]

@@ -22,6 +22,7 @@ source_set("metrics_internals") {
     "//components/metrics/structured/buildflags",
     "//components/metrics_services_manager",
     "//components/signin/public/identity_manager",
+    "//components/ukm",
     "//components/variations/service",
     "//google_apis",
     "//ios/chrome/browser/shared/model/application_context",

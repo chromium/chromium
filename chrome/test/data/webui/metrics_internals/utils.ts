@@ -14,5 +14,6 @@ export function getTableRowAsStringArray(
   assertGT(rows.length, row);
   const rowEl = rows[row];
   assert(rowEl);
-  return Array.from(rowEl.querySelectorAll('td')).map(el => el.innerText);
+  return Array.from(rowEl.querySelectorAll('td'))
+      .map(el => el.innerText.trim());
 }

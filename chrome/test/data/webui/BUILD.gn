@@ -43,7 +43,12 @@ source_set("browser_tests") {
     "//chrome/test:test_support",
     "//components/commerce/core:commerce_constants",
     "//components/contextual_tasks/public",
+    "//components/metrics_services_manager",
+    "//components/ukm",
+    "//components/ukm:ukm_test_helper",
     "//components/webui/chrome_urls/",
+    "//services/metrics/public/cpp:test_support",
+    "//services/metrics/public/cpp:ukm_builders",
     "//ui/compositor",
   ]
 

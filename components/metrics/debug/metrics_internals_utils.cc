@@ -4,15 +4,19 @@
 
 #include "components/metrics/debug/metrics_internals_utils.h"
 
+#include <inttypes.h>
+
 #include <string>
 #include <string_view>
 
 #include "base/base64.h"
 #include "base/i18n/time_formatting.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/stringprintf.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "components/metrics/metrics_pref_names.h"
+#include "components/ukm/ukm_service.h"
 #include "components/variations/client_filterable_state.h"
 #include "components/variations/proto/study.pb.h"
 #include "components/variations/seed_reader_writer.h"
@@ -178,6 +182,33 @@ base::ListValue GetUmaSummary(MetricsService* metrics_service) {
   list.Append(
       CreateKeyValueDict("Currently Reporting",
                          BoolToString(metrics_service->reporting_active())));
+  return list;
+}
+
+base::ListValue GetUkmSummary(ukm::UkmService* ukm_service) {
+  base::ListValue list;
+  if (!ukm_service) {
+    return list;
+  }
+  list.Append(CreateKeyValueDict(
+      "Client ID", base::NumberToString(ukm_service->client_id())));
+  list.Append(CreateKeyValueDict(
+      "Session ID", base::NumberToString(ukm_service->session_id())));
+  list.Append(CreateKeyValueDict(
+      "Recording Enabled", BoolToString(ukm_service->recording_enabled())));
+  list.Append(CreateKeyValueDict(
+      "Reporting Enabled",
+      BoolToString(ukm_service->reporting_service()->reporting_active())));
+  list.Append(CreateKeyValueDict(
+      "MSBB Consent", BoolToString(ukm_service->recording_enabled(ukm::MSBB))));
+  list.Append(CreateKeyValueDict(
+      "Extensions Consent",
+      BoolToString(ukm_service->recording_enabled(ukm::EXTENSIONS))));
+  list.Append(CreateKeyValueDict(
+      "Apps Consent", BoolToString(ukm_service->recording_enabled(ukm::APPS))));
+  list.Append(
+      CreateKeyValueDict("Event Sampling Configured",
+                         BoolToString(ukm_service->IsSamplingConfigured())));
   return list;
 }
 

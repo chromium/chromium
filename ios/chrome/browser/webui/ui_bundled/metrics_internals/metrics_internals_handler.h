@@ -41,8 +41,11 @@ class MetricsInternalsHandler
       const base::ListValue& args);
   void HandleFetchUmaSummary(const base::ListValue& args);
   void HandleFetchUmaLogsData(const base::ListValue& args);
+  void HandleFetchUkmSummary(const base::ListValue& args);
+  void HandleFetchUkmLogsData(const base::ListValue& args);
   void HandleFetchEncryptionPublicKey(const base::ListValue& args);
   void HandleIsUsingMetricsServiceObserver(const base::ListValue& args);
+  void HandleIsUsingUkmServiceObserver(const base::ListValue& args);
 
   std::unique_ptr<metrics::MetricsInternalsHandlerBase> base_handler_;
 };

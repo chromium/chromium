@@ -20,6 +20,7 @@ class PrefService;
 class PrefRegistrySimple;
 
 namespace metrics {
+class MetricsLogsEventManager;
 class MetricsServiceClient;
 }
 
@@ -32,8 +33,10 @@ class UkmReportingService : public metrics::ReportingService {
   // |local_state|.  Does not take ownership of the paramaters; instead stores
   // a weak pointer to each. Caller should ensure that the parameters are valid
   // for the lifetime of this class.
-  UkmReportingService(metrics::MetricsServiceClient* client,
-                      PrefService* local_state);
+  UkmReportingService(
+      metrics::MetricsServiceClient* client,
+      PrefService* local_state,
+      metrics::MetricsLogsEventManager* logs_event_manager = nullptr);
 
   UkmReportingService(const UkmReportingService&) = delete;
   UkmReportingService& operator=(const UkmReportingService&) = delete;

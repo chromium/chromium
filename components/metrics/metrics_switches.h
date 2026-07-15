@@ -22,6 +22,14 @@ namespace switches {
 // Example usage: --export-uma-logs-to-file=/tmp/logs.json
 inline constexpr char kExportUmaLogsToFile[] = "export-uma-logs-to-file";
 
+// Enables the observing of all UKM logs created during the session and
+// automatically exports them to the passed file path on shutdown (the file is
+// created if it does not already exist). This also enables viewing all UKM logs
+// in the chrome://metrics-internals debug page. The format of the exported file
+// is outlined in MetricsServiceObserver::ExportLogsAsJson().
+// Example usage: --export-ukm-logs-to-file=/tmp/logs.json
+inline constexpr char kExportUkmLogsToFile[] = "export-ukm-logs-to-file";
+
 // Forces metrics reporting to be enabled. Should not be used for tests as it
 // will send data to servers.
 inline constexpr char kForceEnableMetricsReporting[] =

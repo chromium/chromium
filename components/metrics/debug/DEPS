@@ -2,6 +2,7 @@ include_rules = [
   "+components/metrics/dwa",
   "+components/metrics/private_metrics",
   "+components/metrics_services_manager",
+  "+components/ukm",
   # absl::Time is needed for fcp::confidential_compute integration.
   "+third_party/abseil-cpp/absl/time/time.h",
   "+third_party/federated_compute/src/fcp/confidentialcompute/cose.h",

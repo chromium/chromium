@@ -43,6 +43,9 @@ class FakeBrowser extends TestBrowserProxy implements
       'setSeedFetchingPaused',
       'uploadSeed',
       'restart',
+      'fetchUkmSummary',
+      'getUkmLogData',
+      'isUsingUkmServiceObserver',
     ]);
   }
 
@@ -133,6 +136,24 @@ class FakeBrowser extends TestBrowserProxy implements
   async restart(): Promise<void> {
     this.methodCalled('restart');
     await wait();
+  }
+
+  async fetchUkmSummary(): Promise<KeyValue[]> {
+    this.methodCalled('fetchUkmSummary');
+    await wait();
+    return [];
+  }
+
+  async getUkmLogData(): Promise<string> {
+    this.methodCalled('getUkmLogData');
+    await wait();
+    return '';
+  }
+
+  async isUsingUkmServiceObserver(): Promise<boolean> {
+    this.methodCalled('isUsingUkmServiceObserver');
+    await wait();
+    return false;
   }
 }
 
