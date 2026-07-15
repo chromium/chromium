@@ -94,6 +94,8 @@ ______________________________________________________________________
   full Buildbucket tryjob URLs across iterations). Do NOT re-summarize or
   synthesize the findings.
 - **Clean up:** Prompt the user if they would like to remove
-  `scratch/triage_state.json` after reporting.
+  `scratch/triage_state.json` and optionally remove
+  `@agents/prompts/templates/code_coverage.md` from their local `//GEMINI.md`
+  after reporting.
 
 ______________________________________________________________________

@@ -22,7 +22,13 @@ SRC_ROOT = pathlib.Path(__file__).resolve().parents[2]
 
 
 def print_indented(text, level=1, file=None):
-  """Prints text with indentation (2 spaces per level)."""
+  """Prints multi-line text with indentation.
+
+  Args:
+      text: The string message to print.
+      level: Number of indentation levels (2 spaces per level).
+      file: Optional output file stream (defaults to sys.stdout).
+  """
   if file is None:
     file = sys.stdout
   indent = '  ' * level
@@ -31,7 +37,15 @@ def print_indented(text, level=1, file=None):
 
 
 def run_command(args, cwd=None):
-  """Helper to run commands and print stdout/stderr."""
+  """Executes a subprocess command and prints captured output.
+
+  Args:
+      args: Command argument list to run.
+      cwd: Optional working directory path for execution.
+
+  Returns:
+      The integer return code of the subprocess execution.
+  """
   result = subprocess.run(
       args,
       stdout=subprocess.PIPE,
@@ -46,7 +60,14 @@ def run_command(args, cwd=None):
 
 
 def verify_chromium_checkout(src_root):
-  """Step 1: Confirms that a valid Chromium checkout exists."""
+  """Confirms that a valid Chromium checkout exists on disk.
+
+  Args:
+      src_root: Path to the Chromium source repository root directory.
+
+  Returns:
+      True if DEPS file is found indicating a valid checkout, False otherwise.
+  """
   print('Verifying Chromium checkout... ', end='', flush=True)
   try:
     deps_path = src_root / 'DEPS'
@@ -64,7 +85,14 @@ def verify_chromium_checkout(src_root):
 
 
 def verify_llvm_tools(src_root):
-  """Step 2: Confirms that LLVM coverage tools are present."""
+  """Confirms that LLVM coverage binaries are installed.
+
+  Args:
+      src_root: Path to the Chromium source repository root directory.
+
+  Returns:
+      True if llvm-cov and llvm-profdata binaries exist, False otherwise.
+  """
   print('Verifying LLVM coverage tools... ', end='', flush=True)
   try:
     llvm_bin_dir = (src_root / 'third_party' / 'llvm-build' /
@@ -92,7 +120,14 @@ def verify_llvm_tools(src_root):
 
 
 def verify_recipes(infra_dir):
-  """Step 3: Confirms that recipe codebase is present."""
+  """Confirms that the code coverage recipes codebase exists.
+
+  Args:
+      infra_dir: Path to the root chrome infra directory.
+
+  Returns:
+      True if the code_coverage recipe module directory exists, False otherwise.
+  """
   print('Verifying code coverage recipe code... ', end='', flush=True)
   recipe_module_path = (infra_dir / 'build' / 'recipes' / 'recipe_modules' /
                         'code_coverage')
@@ -104,7 +139,14 @@ def verify_recipes(infra_dir):
 
 
 def verify_service(infra_dir):
-  """Step 4: Confirms that coverage service codebase is present."""
+  """Confirms that the code coverage FindIt service codebase exists.
+
+  Args:
+      infra_dir: Path to the root chrome infra directory.
+
+  Returns:
+      True if the findit service directory exists, False otherwise.
+  """
   print('Verifying code coverage service code... ', end='', flush=True)
   service_path = infra_dir / 'infra' / 'appengine' / 'findit'
   if service_path.exists():
@@ -115,7 +157,14 @@ def verify_service(infra_dir):
 
 
 def setup_infra(infra_dir):
-  """Sets up the infra_superproject in the specified directory."""
+  """Sets up or syncs the infra_superproject repository checkout.
+
+  Args:
+      infra_dir: Target directory path where chrome infra is checked out.
+
+  Returns:
+      True if gclient sync or fetch completed successfully, False otherwise.
+  """
   print_indented(f'Setting up infra_superproject in {infra_dir}...')
   if not infra_dir.exists():
     infra_dir.mkdir(parents=True)
@@ -142,7 +191,45 @@ def setup_infra(infra_dir):
   return False
 
 
+def verify_gemini_md(src_root):
+  """Confirms global code coverage prompt template is imported in GEMINI.md.
+
+  Args:
+      src_root: Path to the Chromium source repository root directory.
+
+  Returns:
+      True if GEMINI.md was successfully verified or updated, False on error.
+  """
+  print(
+      'Verifying global coverage agent rules in GEMINI.md... ',
+      end='',
+      flush=True,
+  )
+  gemini_md = src_root / 'GEMINI.md'
+  target_line = '@agents/prompts/templates/code_coverage.md'
+  try:
+    if gemini_md.exists():
+      content = gemini_md.read_text(encoding='utf-8')
+      if target_line in content:
+        print('OK')
+        return True
+      with gemini_md.open('a', encoding='utf-8') as f:
+        if not content.endswith('\n') and content:
+          f.write('\n')
+        f.write(f'{target_line}\n')
+      print('OK (Appended)')
+      return True
+    gemini_md.write_text(f'{target_line}\n', encoding='utf-8')
+    print('OK (Created)')
+    return True
+  except Exception as e:
+    print('FAIL')
+    print_indented(f'Error updating GEMINI.md: {e}', file=sys.stderr)
+    return False
+
+
 def main():
+  """Parses command line arguments and runs all verification steps."""
   parser = argparse.ArgumentParser(
       description=
       'Verifies and initializes Code Coverage development environment.')
@@ -153,7 +240,6 @@ def main():
       help='Path to the directory containing (or to checkout) chrome infra '
       'repositories.')
   args = parser.parse_args()
-
   infra_dir = args.infra_dir.resolve()
 
   if not verify_chromium_checkout(SRC_ROOT):
@@ -172,6 +258,12 @@ def main():
     if not verify_recipes(infra_dir) or not verify_service(infra_dir):
       print_indented('Error: Verification failed after setup.', file=sys.stderr)
       sys.exit(1)
+
+  if not verify_gemini_md(SRC_ROOT):
+    print_indented(
+        'Error: Could not verify or initialize GEMINI.md configuration.',
+        file=sys.stderr)
+    sys.exit(1)
 
   print('\nCode Coverage environment successfully verified and initialized')
 

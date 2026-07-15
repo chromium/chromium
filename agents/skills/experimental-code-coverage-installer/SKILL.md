@@ -138,3 +138,13 @@ together using the `infra_superproject` configuration.
      cd <infra_dir>
      fetch infra_superproject
      ```
+
+### Step 6: Verify Global Coverage Agent Rules in `GEMINI.md`
+
+Check that your local `//GEMINI.md` file imports the global code coverage agent template:
+1. Check if `GEMINI.md` exists in the repository root.
+2. Verify that it contains:
+   ```markdown
+   @agents/prompts/templates/code_coverage.md
+   ```
+3. If missing, append `@agents/prompts/templates/code_coverage.md` so all code coverage agents and subagents automatically inherit infrastructure constraints (e.g., prohibiting web page scraping on LUCI/Swarming).
