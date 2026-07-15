@@ -10,8 +10,10 @@
 #include "base/android/jni_string.h"
 #include "base/i18n/char_iterator.h"
 #include "base/i18n/unicodestring.h"
+#include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_view_host.h"
+#include "content/public/common/content_client.h"
 #include "third_party/icu/source/common/unicode/uchar.h"
 #include "third_party/icu/source/common/unicode/unistr.h"
 #include "ui/android/window_android.h"
@@ -63,6 +65,12 @@ void DateTimeChooserAndroid::OpenPlatformDialog(
         "DateTimeChooserAndroid: Previous picker's binding isn't closed.");
     return;
   }
+  if (!GetContentClient()->browser()->ShouldAllowSystemUiPopups(
+          &GetWebContents())) {
+    std::move(callback).Run(false, 0.0);
+    return;
+  }
+
   open_date_time_response_callback_ = std::move(callback);
 
   ScopedJavaLocalRef<jobjectArray> suggestions_array;

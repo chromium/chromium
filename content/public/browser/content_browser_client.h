@@ -3363,6 +3363,14 @@ class CONTENT_EXPORT ContentBrowserClient {
       const GURL& url,
       const std::string& embedder_histogram_suffix);
 
+#if BUILDFLAG(IS_ANDROID)
+  // Gives the content embedder a chance to allow a system UI popup request.
+  // System UI popups have the ability to extend beyond the bounds of the web
+  // contents, e.g. date/time pickers, select dropdowns, file choosers, and
+  // color pickers.
+  virtual bool ShouldAllowSystemUiPopups(WebContents* web_contents);
+#endif
+
   // Allows the embedder to modify the request headers for a prefetch request
   // initiated by `content::PrefetchContainer` (not by other prefetches).
   //

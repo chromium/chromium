@@ -2078,4 +2078,11 @@ bool ContentBrowserClient::IsFullscreenAllowedForUnfocusedWebContents(
   return false;
 }
 
+#if BUILDFLAG(IS_ANDROID)
+bool ContentBrowserClient::ShouldAllowSystemUiPopups(
+    content::WebContents* web_contents) {
+  return true;
+}
+#endif
+
 }  // namespace content

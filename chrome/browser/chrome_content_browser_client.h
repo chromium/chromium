@@ -1222,7 +1222,12 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
 #if !BUILDFLAG(IS_ANDROID)
   bool ShouldDisallowCredentialRequest(
       content::WebContents* web_contents) override;
-#endif  //! BUILDFLAG(IS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_ANDROID)
+  bool ShouldAllowSystemUiPopups(content::WebContents* web_contents) override;
+#endif
+
   void ModifyRequestHeadersForPrefetch(
       const GURL& url,
       std::vector<std::string>& removed_headers,

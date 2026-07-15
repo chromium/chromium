@@ -2,13 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/date_time_chooser/android/date_time_chooser_android.h"
+#include "content/browser/date_time_chooser/date_time_chooser.h"
 
 #include "base/run_loop.h"
-#include "content/browser/date_time_chooser/date_time_chooser.h"
+#include "base/test/test_future.h"
+#include "content/browser/date_time_chooser/android/date_time_chooser_android.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/content_browser_test.h"
+#include "content/public/test/content_browser_test_content_browser_client.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/shell/browser/shell.h"
 #include "third_party/blink/public/mojom/choosers/date_time_chooser.mojom.h"
@@ -82,6 +84,42 @@ IN_PROC_BROWSER_TEST_F(DateTimeChooserBrowserTest,
   date_time_chooser->OpenDateTimeDialog(CreateDummyDateTimeDialogValue(),
                                         std::move(response_callback));
   EXPECT_TRUE(date_time_chooser->j_date_time_chooser_);
+}
+
+class DisallowSystemUiPopupsContentBrowserClient
+    : public ContentBrowserTestContentBrowserClient {
+ public:
+  bool ShouldAllowSystemUiPopups(WebContents* web_contents) override {
+    return false;
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(DateTimeChooserBrowserTest, DisallowSystemUiPopups) {
+  DisallowSystemUiPopupsContentBrowserClient test_client;
+  const GURL test_url(R"HTML(data:text/html,
+      <input id=test type="date" list="src" />
+        <datalist id="src">
+          <option value='2022-01-29'/>
+          <option value='2022-01-30'/>
+        </datalist>
+      )HTML");
+  EXPECT_TRUE(NavigateToURL(shell(), test_url));
+
+  auto* date_time_chooser = static_cast<DateTimeChooserAndroid*>(
+      DateTimeChooser::GetDateTimeChooser(web_contents()));
+  ASSERT_TRUE(date_time_chooser);
+
+  mojo::Remote<blink::mojom::DateTimeChooser> date_time_chooser_remote;
+  date_time_chooser->OnDateTimeChooserReceiver(
+      date_time_chooser_remote.BindNewPipeAndPassReceiver());
+
+  base::test::TestFuture<bool, double> future;
+  date_time_chooser->OpenDateTimeDialog(CreateDummyDateTimeDialogValue(),
+                                        future.GetCallback());
+  // Since ShouldAllowSystemUiPopups() returns false, j_date_time_chooser_
+  // should not be created, and the callback should be run with false.
+  EXPECT_FALSE(date_time_chooser->j_date_time_chooser_);
+  EXPECT_FALSE(future.Get<0>());
 }
 
 }  // namespace content
