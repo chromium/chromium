@@ -2885,17 +2885,17 @@ IN_PROC_BROWSER_TEST_F(SiteIsolationForOAuthSitesBrowserTest, PopupFlow) {
       IsolatedOriginSource::USER_TRIGGERED));
 
   // Create a popup that emulates an OAuth sign-in flow.
-  content::WebContentsAddedObserver web_contents_added_observer;
-  content::TestNavigationObserver navigation_observer(nullptr, 1);
-  navigation_observer.StartWatchingNewWebContents();
+  content::CreateAndLoadWebContentsObserver create_and_load_observer(
+      1, base::BindRepeating([](content::WebContents* wc) {
+        return wc->GetWebUI() == nullptr;
+      }));
   ASSERT_TRUE(content::ExecJs(
       browser()->tab_strip_model()->GetActiveWebContents(),
       content::JsReplace(
           "window.open($1, 'oauth_window', 'width=10,height=10');",
           https_server()->GetURL("www.oauthprovider.com",
                                  "/title2.html?client_id=123"))));
-  auto* popup_contents = web_contents_added_observer.GetWebContents();
-  navigation_observer.WaitForNavigationFinished();
+  auto* popup_contents = create_and_load_observer.Wait();
 
   // When the popup is closed, it will be detected as an OAuth login.
   content::WebContentsDestroyedWatcher destroyed_watcher(popup_contents);
