@@ -71,7 +71,7 @@ FillingProduct GetFillingProductFromFieldTypeGroup(
     FieldTypeGroup field_type_group);
 
 // Returns a string representation of `filling_product`.
-std::string FillingProductToString(FillingProduct filling_product);
+std::string_view FillingProductToString(FillingProduct filling_product);
 
 constexpr std::optional<FillingProduct> ToSafeFillingProduct(
     std::underlying_type_t<FillingProduct> raw_value) {

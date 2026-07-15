@@ -20,7 +20,7 @@
 namespace autofill {
 
 // LINT.IfChange(FillingProductToString)
-std::string FillingProductToString(FillingProduct filling_product) {
+std::string_view FillingProductToString(FillingProduct filling_product) {
   switch (filling_product) {
     case FillingProduct::kNone:
       return "None";
