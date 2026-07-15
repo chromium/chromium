@@ -32,9 +32,13 @@
 
 VisualGuidedSetterControllerWin::VisualGuidedSetterControllerWin(
     views::Widget* parent_widget)
-    : parent_widget_(parent_widget) {
+    : parent_widget_(parent_widget),
+      is_continuous_docking_enabled_(
+          default_browser::IsVisualGuidedSetterDockingEnabled()) {
   CHECK(parent_widget_);
-  widget_observation_.Observe(parent_widget_);
+  if (is_continuous_docking_enabled_) {
+    widget_observation_.Observe(parent_widget_);
+  }
 
   CHECK(parent_widget_->GetNativeWindow());
   chrome_hwnd_ = views::HWNDForNativeWindow(parent_widget_->GetNativeWindow());
@@ -90,6 +94,11 @@ void VisualGuidedSetterControllerWin::SetWebContents(
     content::WebContents* web_contents) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   web_contents_ = web_contents;
+
+  if (!is_continuous_docking_enabled_) {
+    return;
+  }
+
   content::WebContentsObserver::Observe(web_contents);
   if (is_running_) {
     UpdateDockedLayout();
@@ -262,7 +271,9 @@ void VisualGuidedSetterControllerWin::OnSettingsWindowFound(HWND hwnd) {
     ::ShowWindow(settings_hwnd_, SW_HIDE);
     return;
   }
-  StartRuntimeTimers();
+  if (is_continuous_docking_enabled_) {
+    StartRuntimeTimers();
+  }
   UpdateDockedLayout();
 }
 

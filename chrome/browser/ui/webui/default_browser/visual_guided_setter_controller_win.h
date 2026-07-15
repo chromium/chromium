@@ -168,6 +168,7 @@ class VisualGuidedSetterControllerWin : public views::WidgetObserver,
 
   gfx::Rect anchor_rect_in_webui_;
   bool has_anchor_rect_ = false;
+  bool is_continuous_docking_enabled_ = false;
 
   std::optional<Outcome> outcome_ = std::nullopt;
 

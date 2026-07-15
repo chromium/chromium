@@ -8,6 +8,7 @@
 
 #include "base/functional/bind.h"
 #include "base/path_service.h"
+#include "chrome/browser/default_browser/default_browser_features.h"
 #include "chrome/installer/util/shell_util.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/views/widget/widget.h"
@@ -53,11 +54,11 @@ void VisualGuidedSetterPageHandler::SetAnchorRect(const gfx::Rect& rect) {
     controller_->SetErrorCallback(
         base::BindRepeating(&VisualGuidedSetterPageHandler::OnErrorStateChanged,
                             weak_ptr_factory_.GetWeakPtr()));
-  }
 
-  controller_->SetAnchorRectInWebUi(rect);
-  if (!controller_->is_running()) {
+    controller_->SetAnchorRectInWebUi(rect);
     controller_->Start();
+  } else if (default_browser::IsVisualGuidedSetterDockingEnabled()) {
+    controller_->SetAnchorRectInWebUi(rect);
   }
 }
 

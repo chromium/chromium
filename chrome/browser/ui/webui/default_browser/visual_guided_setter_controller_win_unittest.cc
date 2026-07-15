@@ -160,7 +160,10 @@ class VisualGuidedSetterControllerWinTest : public views::ViewsTestBase {
  protected:
   VisualGuidedSetterControllerWinTest()
       : views::ViewsTestBase(
-            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
+    scoped_feature_list_.InitAndEnableFeature(
+        default_browser::kVisualGuidedSetterDocking);
+  }
 
   void SetUp() override {
     views::ViewsTestBase::SetUp();
@@ -181,6 +184,7 @@ class VisualGuidedSetterControllerWinTest : public views::ViewsTestBase {
     views::ViewsTestBase::TearDown();
   }
 
+  base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<views::Widget> widget_;
   std::unique_ptr<TestVisualGuidedSetterControllerWin> controller_;
 };
@@ -334,4 +338,48 @@ TEST_F(VisualGuidedSetterControllerWinTest, SettingsWindowClosedRecordsError) {
   histograms.ExpectUniqueSample(
       "DefaultBrowser.VisualGuide.Outcome",
       TestVisualGuidedSetterControllerWin::Outcome::kSettingsWindowClosed, 1);
+}
+
+TEST_F(VisualGuidedSetterControllerWinTest, ContinuousDockingDisabled) {
+  // Disable the continuous docking feature for this test.
+  base::test::ScopedFeatureList disabled_feature_list;
+  disabled_feature_list.InitAndDisableFeature(
+      default_browser::kVisualGuidedSetterDocking);
+
+  // We must recreate the controller so that it reads the new feature state
+  // at construction.
+  controller_ =
+      std::make_unique<TestVisualGuidedSetterControllerWin>(widget_.get());
+  gfx::Rect anchor(400, 300, 600, 400);
+  controller_->SetAnchorRect(anchor);
+  controller_->SetAnchorRectInWebUi(gfx::Rect(0, 0, 600, 400));
+
+  base::HistogramTester histograms;
+  HWND fake_hwnd = reinterpret_cast<HWND>(0x12345);
+
+  controller_->Start();
+
+  EXPECT_TRUE(controller_->is_running());
+  EXPECT_EQ(controller_->test_finder()->start_called_count(), 1);
+
+  // Simulate finding the window.
+  controller_->test_finder()->TriggerFound(fake_hwnd);
+
+  // The initial docking operation should apply.
+  EXPECT_GT(controller_->applied_rects().size(), 0u);
+  controller_->clear_applied_rects();
+  controller_->clear_applied_z_orders();
+
+  // Fast-forwarding time should NOT run the timer.
+  task_environment()->FastForwardBy(base::Milliseconds(100));
+  // No subsequent positioning should be applied because timers are not started.
+  EXPECT_EQ(controller_->applied_rects().size(), 0u);
+
+  // Simulate window changes (e.g. Chrome loses focus).
+  controller_->SetChromeWindowActive(false);
+  task_environment()->FastForwardBy(base::Milliseconds(100));
+  // No Z-order changes should be applied.
+  EXPECT_EQ(controller_->applied_z_orders().size(), 0u);
+
+  controller_->Stop();
 }
