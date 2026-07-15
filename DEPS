@@ -3616,13 +3616,13 @@ deps = {
 
   'src/chrome/app/theme/default_100_percent/google_chrome': {
       'url': Var('chrome_git') + '/chrome/theme/default_100_percent/google_chrome.git' + '@' +
-        '6cf3ceff1e0dc9de311a64f255caa169a2cdfcf9',
+        '8fad1df4763d10a5503ba71d05e0cb54ff3c57cb',
       'condition': 'checkout_src_internal',
   },
 
   'src/chrome/app/theme/default_200_percent/google_chrome': {
       'url': Var('chrome_git') + '/chrome/theme/default_200_percent/google_chrome.git' + '@' +
-        'cf5a14730f8ba600f960b925e0b60ef6145c82dc',
+        '4aa5c316ca310be70e6c39c99561df7a61566e03',
       'condition': 'checkout_src_internal',
   },
 
@@ -3939,7 +3939,7 @@ deps = {
 
   'src/components/vector_icons/google_chrome': {
       'url': Var('chrome_git') + '/chrome/vector_icons/google_chrome.git' + '@' +
-        '2550fc5f336f8832b1c9b6dfeedb5ccc5eb7d0da',
+        '503fe230ea9016041008bcbffc05679e28c4a066',
       'condition': 'checkout_src_internal',
   },
 
