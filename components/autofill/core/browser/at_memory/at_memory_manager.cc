@@ -561,8 +561,10 @@ void AtMemoryManager::OnPopupShown(
     update_callback_ = std::move(update_callback);
     at_memory_metrics_recorder_ = std::make_unique<AtMemoryMetricsRecorder>(
         owner_->client().GetMqlsUploadService(),
+        owner_->client().GetUkmRecorder(), ukm_source_id,
         owner_->client().GetLastCommittedPrimaryMainFrameURL(),
-        owner_->client().GetPageTitle(), form_signature, field_signature);
+        owner_->client().GetPageTitle(), field_id, form_signature,
+        field_signature);
   }
   at_memory_metrics_recorder_->OnPopupShown(trigger_source,
                                             parent_suggestion_metadata);

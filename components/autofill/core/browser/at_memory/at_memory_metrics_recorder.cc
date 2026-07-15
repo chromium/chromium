@@ -13,9 +13,11 @@
 #include "base/strings/utf_string_conversions.h"
 #include "components/accessibility_annotator/core/annotation_reducer/memory_search_result.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
+#include "components/autofill/core/browser/metrics/autofill_metrics_utils.h"
 #include "components/autofill/core/common/aliases.h"
 #include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
 #include "components/optimization_guide/core/model_quality/model_quality_logs_uploader_service.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
 
 namespace autofill {
 
@@ -49,8 +51,11 @@ std::optional<AtMemoryQueryCompletedStatus> GetQueryCompletedStatus(
 
 AtMemoryMetricsRecorder::AtMemoryMetricsRecorder(
     optimization_guide::ModelQualityLogsUploaderService* uploader_service,
+    ukm::UkmRecorder* ukm_recorder,
+    ukm::SourceId ukm_source_id,
     GURL url,
     std::u16string_view title,
+    const FieldGlobalId& field_id,
     FormSignature form_signature,
     FieldSignature field_signature)
     : session_id_token_(base::Token::CreateRandom()),
@@ -58,7 +63,10 @@ AtMemoryMetricsRecorder::AtMemoryMetricsRecorder(
       title_(title),
       form_signature_(form_signature),
       field_signature_(field_signature),
-      uploader_service_(uploader_service) {}
+      uploader_service_(uploader_service),
+      ukm_recorder_(ukm_recorder),
+      ukm_source_id_(ukm_source_id),
+      field_id_(field_id) {}
 
 AtMemoryMetricsRecorder::~AtMemoryMetricsRecorder() {
   // Only log summary metrics if the popup was successfully shown.
@@ -81,6 +89,20 @@ AtMemoryMetricsRecorder::~AtMemoryMetricsRecorder() {
       base::UmaHistogramTimes("Autofill.AtMemory.Funnel.TimeToFetchUnmasked",
                               *fetch_pii_duration_);
     }
+  }
+
+  if (CanLogUkm()) {
+    ukm::builders::AtMemory_UiSession(ukm_source_id_)
+        .SetFieldSessionIdentifier(
+            autofill_metrics::FieldGlobalIdToHash64Bit(field_id_))
+        .SetFieldSignature(HashFieldSignature(field_signature_))
+        .SetFormSignature(HashFormSignature(form_signature_))
+        .SetQuerySubmitted(query_submitted_)
+        .SetSearchBarDisplayed(std::to_underlying(*source_))
+        .SetSuggestionAccepted(suggestion_accepted_in_session_)
+        .SetSuggestionFilled(was_filled_)
+        .SetUiSessionId(session_id_token_.low())
+        .Record(ukm_recorder_);
   }
 }
 
@@ -281,6 +303,10 @@ void AtMemoryMetricsRecorder::MaybeLogSuggestionAccepted() {
     base::UmaHistogramCounts100("Autofill.AtMemory.QueryCountBeforeAcceptance",
                                 query_count_);
   }
+}
+
+bool AtMemoryMetricsRecorder::CanLogUkm() const {
+  return ukm_recorder_ && ukm_source_id_ != ukm::kInvalidSourceId;
 }
 
 }  // namespace autofill

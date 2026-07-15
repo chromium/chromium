@@ -20,6 +20,7 @@
 #include "components/autofill/core/browser/ui/autofill_suggestion_delegate.h"
 #include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/signatures.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "url/gurl.h"
 
 namespace accessibility_annotator {
@@ -30,6 +31,10 @@ namespace optimization_guide {
 class ModelQualityLogEntry;
 class ModelQualityLogsUploaderService;
 }  // namespace optimization_guide
+
+namespace ukm {
+class UkmRecorder;
+}  // namespace ukm
 
 namespace autofill {
 
@@ -60,8 +65,11 @@ class AtMemoryMetricsRecorder {
  public:
   AtMemoryMetricsRecorder(
       optimization_guide::ModelQualityLogsUploaderService* uploader_service,
+      ukm::UkmRecorder* ukm_recorder,
+      ukm::SourceId ukm_source_id,
       GURL url,
       std::u16string_view title,
+      const FieldGlobalId& field_id,
       FormSignature form_signature,
       FieldSignature field_signature);
   AtMemoryMetricsRecorder(const AtMemoryMetricsRecorder&) = delete;
@@ -103,6 +111,8 @@ class AtMemoryMetricsRecorder {
 
  private:
   friend class AtMemoryMetricsRecorderTestApi;
+
+  bool CanLogUkm() const;
 
   // Emits the `SuggestionAccepted` metric if `suggestion_accepted_` is not
   // `std::nullopt`.
@@ -159,6 +169,10 @@ class AtMemoryMetricsRecorder {
   // outlive `this`.
   raw_ptr<optimization_guide::ModelQualityLogsUploaderService>
       uploader_service_;
+
+  raw_ptr<ukm::UkmRecorder> ukm_recorder_;
+  const ukm::SourceId ukm_source_id_;
+  const FieldGlobalId field_id_;
 };
 
 }  // namespace autofill
