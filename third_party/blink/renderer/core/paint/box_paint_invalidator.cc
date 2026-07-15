@@ -323,9 +323,13 @@ BoxPaintInvalidator::ComputeBackgroundInvalidation(
     bool& should_invalidate_all_layers) {
   // If background changed, we may paint the background on different graphics
   // layer, so we need to fully invalidate the background on all layers.
+  //
+  // Gap decoration geometry may change independently of the background, so it
+  // may also require full invalidation on all layers.
   if (box_.BackgroundNeedsFullPaintInvalidation() ||
       (context_.subtree_flags &
-       PaintInvalidatorContext::kSubtreeFullInvalidation)) {
+       PaintInvalidatorContext::kSubtreeFullInvalidation) ||
+      ShouldInvalidateGapDecorations()) {
     should_invalidate_all_layers = true;
     return BackgroundInvalidationType::kFull;
   }
@@ -411,7 +415,6 @@ void BoxPaintInvalidator::InvalidateBackground() {
 
 void BoxPaintInvalidator::InvalidatePaint() {
   InvalidateBackground();
-  InvalidateGapDecorations();
 
   ObjectPaintInvalidatorWithContext(box_, context_)
       .InvalidatePaintWithComputedReason(ComputePaintInvalidationReason());
@@ -477,47 +480,39 @@ bool BoxPaintInvalidator::NeedsToSavePreviousGapGeometries() {
   return false;
 }
 
-void BoxPaintInvalidator::InvalidateGapDecorations() {
+bool BoxPaintInvalidator::ShouldInvalidateGapDecorations() const {
   if (!RuntimeEnabledFeatures::CSSGapDecorationEnabled()) {
-    return;
+    return false;
   }
   if (!box_.StyleRef().IsGapDecorationsContainer() ||
       !box_.StyleRef().HasGapRule()) {
-    return;
+    return false;
   }
 
   const auto* previous = box_.PreviousGapGeometries();
 
   // If there's no previous gap geometry, nothing to do.
   if (!previous) {
-    return;
+    return false;
   }
 
   // Compare previous vs current gap geometries. The previous vector is indexed
   // by fragment position (including nullptr entries for fragments without gap
   // geometry), so each fragment's previous geometry is compared against the
   // same fragment's current geometry.
-  const bool changed = [&]() {
-    if (previous->size() != box_.PhysicalFragmentCount()) {
-      // Different fragment count means gap geometry may have changed.
+  if (previous->size() != box_.PhysicalFragmentCount()) {
+    // Different fragment count means gap geometry may have changed.
+    return true;
+  }
+  auto fragments = box_.PhysicalFragments();
+  for (const auto [previous_geometry, fragment] :
+       base::zip(*previous, fragments)) {
+    if (!base::ValuesEquivalent(previous_geometry.Get(),
+                                fragment.GetGapGeometry())) {
       return true;
     }
-    auto fragments = box_.PhysicalFragments();
-    for (const auto [previous_geometry, fragment] :
-         base::zip(*previous, fragments)) {
-      if (!base::ValuesEquivalent(previous_geometry.Get(),
-                                  fragment.GetGapGeometry())) {
-        return true;
-      }
-    }
-    return false;
-  }();
-
-  if (changed) {
-    box_.GetMutableForPainting()
-        .SetShouldDoFullPaintInvalidationWithoutLayoutChange(
-            PaintInvalidationReason::kBackground);
   }
+  return false;
 }
 
 void BoxPaintInvalidator::SavePreviousBoxGeometriesIfNeeded() {

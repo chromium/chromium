@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<div id="scroller" style="
+    column-width: 7em;
+    column-height: 150px;
+    column-wrap: wrap;
+    column-fill: auto;
+    column-gap: 1.5em;
+    row-gap: 1em;
+    column-rule: 4px solid red;
+    height: 210px;
+    overflow: auto;
+    scrollbar-width: none;
+    width: 600px">
+</div>
+<script>
+  let html = "";
+  for (let i = 1; i <= 60; i++)
+    html += "<p style='margin:0'>" + i + ". Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>";
+  document.getElementById("scroller").innerHTML = html;
+</script>

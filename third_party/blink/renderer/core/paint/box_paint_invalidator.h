@@ -50,7 +50,7 @@ class CORE_EXPORT BoxPaintInvalidator {
   bool NeedsToSavePreviousOverflowData();
 
   bool NeedsToSavePreviousGapGeometries();
-  void InvalidateGapDecorations();
+  bool ShouldInvalidateGapDecorations() const;
 
   void SavePreviousBoxGeometriesIfNeeded();
 

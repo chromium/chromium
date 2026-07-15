@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<div id="scroller" style="
+    display: flex;
+    flex-wrap: wrap;
+    column-gap: 1.5em;
+    row-gap: 1em;
+    column-rule: 4px solid red;
+    row-rule: 4px solid blue;
+    height: 210px;
+    overflow: auto;
+    scrollbar-width: none;
+    width: 600px">
+</div>
+<script>
+  let html = "";
+  for (let i = 1; i <= 40; i++)
+    html += "<div style='width: 100px'>" + i + ". Lorem ipsum dolor sit amet.</div>";
+  document.getElementById("scroller").innerHTML = html;
+</script>
