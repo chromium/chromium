@@ -46,7 +46,6 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) DispatchContextImplOrt final
       mojo::PendingReceiver<mojom::WebNNContext> receiver,
       base::WeakPtr<WebNNContextProviderImpl> context_provider,
       const EpWorkarounds& ep_workarounds,
-      bool dequantize_linear_input_support_int32,
       mojom::CreateContextOptionsPtr options,
       scoped_refptr<SessionOptions> session_options,
       mojo::ScopedDataPipeConsumerHandle write_tensor_consumer,
