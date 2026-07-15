@@ -51,6 +51,7 @@
   font-size: 13px;
   min-width: 180px;
   padding-left: 20px;
+  padding-block: 4px;
 }
 
 cr-icon {
