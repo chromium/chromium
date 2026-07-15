@@ -428,11 +428,9 @@ bool ManifestParser::Parse() {
   if (!manifest_->icons.empty()) {
     UseCounter::Count(execution_context_, WebFeature::kWebAppManifestIcons);
   }
-  if (base::FeatureList::IsEnabled(features::kWebAppManifestLocalization)) {
-    auto icons_localized = ParseIconsLocalized(root_object.get());
-    if (!icons_localized.empty()) {
-      manifest_->icons_localized = std::move(icons_localized);
-    }
+  auto icons_localized = ParseIconsLocalized(root_object.get());
+  if (!icons_localized.empty()) {
+    manifest_->icons_localized = std::move(icons_localized);
   }
   manifest_->screenshots = ParseScreenshots(root_object.get());
   if (!manifest_->screenshots.empty()) {
@@ -554,21 +552,19 @@ bool ManifestParser::Parse() {
     UseCounter::Count(execution_context_, WebFeature::kWebAppManifestVersion);
   }
 
-  if (base::FeatureList::IsEnabled(features::kWebAppManifestLocalization)) {
-    auto name_localized = ParseNameLocalized(root_object.get());
-    if (!name_localized.empty()) {
-      manifest_->name_localized = std::move(name_localized);
-    }
+  auto name_localized = ParseNameLocalized(root_object.get());
+  if (!name_localized.empty()) {
+    manifest_->name_localized = std::move(name_localized);
+  }
 
-    auto short_name_localized = ParseShortNameLocalized(root_object.get());
-    if (!short_name_localized.empty()) {
-      manifest_->short_name_localized = std::move(short_name_localized);
-    }
+  auto short_name_localized = ParseShortNameLocalized(root_object.get());
+  if (!short_name_localized.empty()) {
+    manifest_->short_name_localized = std::move(short_name_localized);
+  }
 
-    auto description_localized = ParseDescriptionLocalized(root_object.get());
-    if (!description_localized.empty()) {
-      manifest_->description_localized = std::move(description_localized);
-    }
+  auto description_localized = ParseDescriptionLocalized(root_object.get());
+  if (!description_localized.empty()) {
+    manifest_->description_localized = std::move(description_localized);
   }
 
   ParseSucceeded(manifest_, document_url_);
@@ -1378,19 +1374,17 @@ Vector<mojom::blink::ManifestShortcutItemPtr> ManifestParser::ParseShortcuts(
     shortcut->description = ParseShortcutDescription(shortcut_object);
 
     // Parse localized text fields
-    if (base::FeatureList::IsEnabled(features::kWebAppManifestLocalization)) {
-      auto name_localized = ParseNameLocalized(shortcut_object);
-      if (!name_localized.empty()) {
-        shortcut->name_localized = std::move(name_localized);
-      }
-      auto short_name_localized = ParseShortNameLocalized(shortcut_object);
-      if (!short_name_localized.empty()) {
-        shortcut->short_name_localized = std::move(short_name_localized);
-      }
-      auto description_localized = ParseDescriptionLocalized(shortcut_object);
-      if (!description_localized.empty()) {
-        shortcut->description_localized = std::move(description_localized);
-      }
+    auto name_localized = ParseNameLocalized(shortcut_object);
+    if (!name_localized.empty()) {
+      shortcut->name_localized = std::move(name_localized);
+    }
+    auto short_name_localized = ParseShortNameLocalized(shortcut_object);
+    if (!short_name_localized.empty()) {
+      shortcut->short_name_localized = std::move(short_name_localized);
+    }
+    auto description_localized = ParseDescriptionLocalized(shortcut_object);
+    if (!description_localized.empty()) {
+      shortcut->description_localized = std::move(description_localized);
     }
 
     auto icons = ParseIcons(shortcut_object);
@@ -1398,11 +1392,9 @@ Vector<mojom::blink::ManifestShortcutItemPtr> ManifestParser::ParseShortcuts(
       shortcut->icons = std::move(icons);
     }
 
-    if (base::FeatureList::IsEnabled(features::kWebAppManifestLocalization)) {
-      auto icons_localized = ParseIconsLocalized(shortcut_object);
-      if (!icons_localized.empty()) {
-        shortcut->icons_localized = std::move(icons_localized);
-      }
+    auto icons_localized = ParseIconsLocalized(shortcut_object);
+    if (!icons_localized.empty()) {
+      shortcut->icons_localized = std::move(icons_localized);
     }
 
     shortcuts.push_back(std::move(shortcut));

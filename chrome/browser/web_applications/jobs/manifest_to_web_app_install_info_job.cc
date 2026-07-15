@@ -141,22 +141,19 @@ const std::u16string& GetLocalizedShortcutName(
 LocalizedText GetLocalizedTitleFromManifestFields(
     const blink::mojom::Manifest& manifest,
     const icu::Locale& application_locale) {
-  if (base::FeatureList::IsEnabled(
-          blink::features::kWebAppManifestLocalization)) {
-    blink::mojom::ManifestLocalizedTextObjectPtr localized_name;
-    if (manifest.name_localized.has_value()) {
-      localized_name =
-          MatchLocalizedText(*manifest.name_localized, application_locale);
-    }
-    if (!localized_name && manifest.short_name_localized.has_value()) {
-      localized_name = MatchLocalizedText(*manifest.short_name_localized,
-                                          application_locale);
-    }
+  blink::mojom::ManifestLocalizedTextObjectPtr localized_name;
+  if (manifest.name_localized.has_value()) {
+    localized_name =
+        MatchLocalizedText(*manifest.name_localized, application_locale);
+  }
+  if (!localized_name && manifest.short_name_localized.has_value()) {
+    localized_name =
+        MatchLocalizedText(*manifest.short_name_localized, application_locale);
+  }
 
-    if (localized_name && !localized_name->value.empty()) {
-      return LocalizedText(localized_name->value, localized_name->lang,
-                           localized_name->dir);
-    }
+  if (localized_name && !localized_name->value.empty()) {
+    return LocalizedText(localized_name->value, localized_name->lang,
+                         localized_name->dir);
   }
   // Fall back to non-localized fields. Use assignment operator which handles
   // clearing lang/dir fields.
@@ -173,17 +170,13 @@ LocalizedText GetLocalizedTitleFromManifestFields(
 LocalizedText GetLocalizedDescriptionFromManifestFields(
     const blink::mojom::Manifest& manifest,
     const icu::Locale& application_locale) {
-  if (base::FeatureList::IsEnabled(
-          blink::features::kWebAppManifestLocalization)) {
-    if (manifest.description_localized.has_value()) {
-      blink::mojom::ManifestLocalizedTextObjectPtr localized_description =
-          MatchLocalizedText(*manifest.description_localized,
-                             application_locale);
-      if (localized_description && !localized_description->value.empty()) {
-        return LocalizedText(localized_description->value,
-                             localized_description->lang,
-                             localized_description->dir);
-      }
+  if (manifest.description_localized.has_value()) {
+    blink::mojom::ManifestLocalizedTextObjectPtr localized_description =
+        MatchLocalizedText(*manifest.description_localized, application_locale);
+    if (localized_description && !localized_description->value.empty()) {
+      return LocalizedText(localized_description->value,
+                           localized_description->lang,
+                           localized_description->dir);
     }
   }
   // Fall back to non-localized field. Use assignment operator which handles
@@ -198,9 +191,7 @@ LocalizedText GetLocalizedDescriptionFromManifestFields(
 const std::vector<blink::Manifest::ImageResource>&
 GetLocalizedIconsFromManifest(const blink::mojom::Manifest& manifest,
                               const icu::Locale& application_locale) {
-  if (base::FeatureList::IsEnabled(
-          blink::features::kWebAppManifestLocalization) &&
-      manifest.icons_localized.has_value() &&
+  if (manifest.icons_localized.has_value() &&
       !manifest.icons_localized->empty()) {
     const std::vector<blink::Manifest::ImageResource>* localized_icons =
         FindLocalizedValue(*manifest.icons_localized, application_locale);
@@ -292,8 +283,6 @@ void PopulateWebAppShortcutsMenuItemInfos(
     const std::vector<blink::Manifest::ShortcutItem>& shortcuts,
     WebAppInstallInfo* web_app_info,
     const icu::Locale& application_locale) {
-  const bool localization_enabled = base::FeatureList::IsEnabled(
-      blink::features::kWebAppManifestLocalization);
   std::vector<WebAppShortcutsMenuItemInfo> web_app_shortcut_infos;
   web_app_shortcut_infos.reserve(shortcuts.size());
   int num_shortcut_icons = 0;
@@ -303,16 +292,11 @@ void PopulateWebAppShortcutsMenuItemInfos(
     }
 
     WebAppShortcutsMenuItemInfo shortcut_info;
-    shortcut_info.name =
-        localization_enabled
-            ? GetLocalizedShortcutName(shortcut, application_locale)
-            : shortcut.name;
+    shortcut_info.name = GetLocalizedShortcutName(shortcut, application_locale);
     shortcut_info.url = shortcut.url;
 
     const std::vector<blink::Manifest::ImageResource>& shortcut_icons_list =
-        localization_enabled
-            ? GetLocalizedShortcutIcons(shortcut, application_locale)
-            : shortcut.icons;
+        GetLocalizedShortcutIcons(shortcut, application_locale);
 
     for (IconPurpose purpose : kIconPurposes) {
       std::vector<WebAppShortcutsMenuItemInfo::Icon> shortcut_icons;
@@ -777,13 +761,10 @@ void ManifestToWebAppInstallInfoJob::FetchIconsInternal(
 
 void ManifestToWebAppInstallInfoJob::ParseManifestAndPopulateInfo() {
   // Create the application locale once for all localization lookups.
-  const icu::Locale application_locale(
-      base::FeatureList::IsEnabled(blink::features::kWebAppManifestLocalization)
-          ? icu::Locale(g_browser_process->GetFeatures()
-                            ->application_locale_storage()
-                            ->Get()
-                            .c_str())
-          : icu::Locale());
+  const icu::Locale application_locale(g_browser_process->GetFeatures()
+                                           ->application_locale_storage()
+                                           ->Get()
+                                           .c_str());
 
   install_info().title =
       GetLocalizedTitleFromManifestFields(*manifest_, application_locale);

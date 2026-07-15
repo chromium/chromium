@@ -1369,12 +1369,6 @@ TEST_F(ManifestToWebAppInstallInfoTrustedIconTest,
 class ManifestToWebAppInstallInfoLocalizationTest
     : public ManifestToWebAppInstallInfoJobTest {
  protected:
-  void SetUp() override {
-    ManifestToWebAppInstallInfoJobTest::SetUp();
-    feature_list_.InitAndEnableFeature(
-        blink::features::kWebAppManifestLocalization);
-  }
-
   std::pair<icu::Locale, blink::mojom::ManifestLocalizedTextObjectPtr>
   AddLocalizedText(const std::string& locale,
                    const std::u16string& value,
@@ -1461,8 +1455,6 @@ class ManifestToWebAppInstallInfoLocalizationTest
     }
     return shortcut_item;
   }
-
-  base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_F(ManifestToWebAppInstallInfoLocalizationTest, ExactLocaleMatchFound) {
