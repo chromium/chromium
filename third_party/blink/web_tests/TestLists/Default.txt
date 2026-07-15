@@ -697,7 +697,6 @@ fast/scrolling/scroll-without-document-element-renderer.html
 fast/scrolling/scrollable-area-overflow-auto-display-none.html
 fast/scrolling/scrollable-area-overflow-auto-display-none-in-parent.html
 fast/scrolling/scrollable-area-overflow-not-set.html
-fast/selectors/018.html
 fast/selectors/061.html
 fast/serviceworker/serviceworkercontainer-interface.html
 fast/shapes/crash-caused-by-dirtying-a-shape-while-computing-it-requires-a-long-filename-to-crash.html
