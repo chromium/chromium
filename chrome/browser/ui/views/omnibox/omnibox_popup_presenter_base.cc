@@ -68,6 +68,14 @@ void OmniboxPopupPresenterBase::Show() {
   if (auto* content = GetWebUIContent()) {
     content->ShowUI();
 
+    // Call WasShown to mark the WebContents as visible so that a frame will
+    // eventually be produced that triggers the OnVisualStateReady callback.
+    // This must be called prior to `LogResultToContentReadyMetric`. If the
+    // WebContents is still technically hidden when the metric attempts to
+    // register its `InsertVisualStateCallback`, the graphics pipeline will
+    // immediately drop the callback, resulting in lost telemetry data.
+    content->GetWebContents()->WasShown();
+
     // TODO(crbug.com/507159575): Refactor into `OnVisualStateReady` callback to
     // avoid registering a 2nd callback when the classic popup is deferred.
     // Log result ready metric before checking deferral logic. This ensures we
@@ -78,10 +86,6 @@ void OmniboxPopupPresenterBase::Show() {
     auto timeout = ShouldDeferUntilVisualStateReady();
     if (timeout.has_value()) {
       is_deferred_ = true;
-
-      // Call WasShown to mark the WebContents as visible so that a frame will
-      // eventually be produced that triggers the OnVisualStateReady callback.
-      content->GetWebContents()->WasShown();
 
       content->GetWebContents()
           ->GetPrimaryMainFrame()
