@@ -720,7 +720,11 @@ TEST_F(AtMemoryMetricsRecorderTest, LogsSearchQueryUkm_WithAcceptanceAndFill) {
                             {MemorySearchResult(MemoryDataType::kAddressFull,
                                                 u"Address", u"123 Main St")}));
     metrics.OnSuggestionAccepted(
-        MemoryDataType::kAddressFull, /*sources_bitmask=*/0,
+        MemoryDataType::kAddressFull,
+        std::to_underlying(
+            accessibility_annotator::MemoryEntrySourceType::kAutofill) |
+            std::to_underlying(
+                accessibility_annotator::MemoryEntrySourceType::kGmail),
         AutofillSuggestionDelegate::SuggestionMetadata{.multi_index = {2}});
     metrics.MarkFilled();
   }
@@ -746,6 +750,13 @@ TEST_F(AtMemoryMetricsRecorderTest, LogsSearchQueryUkm_WithAcceptanceAndFill) {
       entries[0],
       ukm::builders::AtMemory_SearchQuery::kAcceptedSuggestionDataTypeName,
       std::to_underlying(MemoryDataType::kAddressFull));
+  test_ukm_recorder_.ExpectEntryMetric(
+      entries[0],
+      ukm::builders::AtMemory_SearchQuery::kAcceptedSuggestionDataSourcesName,
+      std::to_underlying(
+          accessibility_annotator::MemoryEntrySourceType::kAutofill) |
+          std::to_underlying(
+              accessibility_annotator::MemoryEntrySourceType::kGmail));
 }
 
 // Tests that AtMemory.SearchQuery UKM is logged for each query when multiple

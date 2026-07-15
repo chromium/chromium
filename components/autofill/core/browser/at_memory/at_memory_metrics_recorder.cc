@@ -212,6 +212,8 @@ void AtMemoryMetricsRecorder::OnSuggestionAccepted(
     ukm_search_query_builder_->SetSuggestionAccepted(true);
     ukm_search_query_builder_->SetAcceptedSuggestionDataType(
         std::to_underlying(memory_data_type));
+    ukm_search_query_builder_->SetAcceptedSuggestionDataSources(
+        sources_bitmask);
   }
 
   if (metadata.has_value() && !metadata->multi_index.empty()) {
