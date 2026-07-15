@@ -20,6 +20,8 @@ namespace extensions {
 // that may be specified in the manifest of an extension using
 // "web_accessible_resources" key.
 struct WebAccessibleResourcesInfo : public Extension::ManifestData {
+  static const char* kManifestDataKey;
+
   // Define out of line constructor/destructor to please Clang.
   WebAccessibleResourcesInfo();
   ~WebAccessibleResourcesInfo() override;

@@ -10,6 +10,9 @@
 
 namespace extensions {
 
+// static
+const char* VersionNameInfo::kManifestDataKey = manifest_keys::kVersionName;
+
 VersionNameInfo::VersionNameInfo(const std::string& version_name)
     : version_name_(version_name) {}
 
@@ -17,8 +20,7 @@ VersionNameInfo::~VersionNameInfo() = default;
 
 // static
 const std::string& VersionNameInfo::GetVersionName(const Extension& extension) {
-  const VersionNameInfo* info = static_cast<const VersionNameInfo*>(
-      extension.GetManifestData(manifest_keys::kVersionName));
+  const VersionNameInfo* info = extension.GetManifestData<VersionNameInfo>();
   return info ? info->version_name_ : base::EmptyString();
 }
 
@@ -37,7 +39,7 @@ bool VersionNameHandler::Parse(Extension* extension, std::u16string* error) {
   const std::string& version_name = version_name_value->GetString();
   // If "version_name" is empty, we do not need to save it at all.
   if (!version_name.empty()) {
-    extension->SetManifestData(manifest_keys::kVersionName,
+    extension->SetManifestData(VersionNameInfo::kManifestDataKey,
                                std::make_unique<VersionNameInfo>(version_name));
   }
 

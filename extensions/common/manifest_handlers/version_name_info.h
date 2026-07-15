@@ -14,6 +14,8 @@
 namespace extensions {
 
 struct VersionNameInfo : public Extension::ManifestData {
+  static const char* kManifestDataKey;
+
   explicit VersionNameInfo(const std::string& version_name);
   ~VersionNameInfo() override;
 

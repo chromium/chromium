@@ -38,12 +38,6 @@ using WebAccessibleResourcesMv2ManifestKeys =
 
 namespace {
 
-const WebAccessibleResourcesInfo* GetResourcesInfo(const Extension* extension) {
-  return static_cast<const WebAccessibleResourcesInfo*>(
-      extension->GetManifestData(
-          WebAccessibleResourcesManifestKeys::kWebAccessibleResources));
-}
-
 URLPattern GetPattern(std::string relative_path, const Extension& extension) {
   URLPattern pattern(URLPattern::SCHEME_EXTENSION);
   URLPattern::ParseResult result = pattern.Parse(extension.url().spec());
@@ -188,7 +182,7 @@ bool IsResourceWebAccessibleImpl(
     const GURL& target_url,
     const std::optional<url::Origin>& initiator_origin,
     const GURL& upstream_url) {
-  const WebAccessibleResourcesInfo* info = GetResourcesInfo(&extension);
+  const auto* info = extension.GetManifestData<WebAccessibleResourcesInfo>();
   if (!info) {
     return false;
   }
@@ -254,6 +248,10 @@ bool IsResourceWebAccessibleImpl(
 
 }  // namespace
 
+// static
+const char* WebAccessibleResourcesInfo::kManifestDataKey =
+    WebAccessibleResourcesManifestKeys::kWebAccessibleResources;
+
 WebAccessibleResourcesInfo::WebAccessibleResourcesInfo() = default;
 
 WebAccessibleResourcesInfo::~WebAccessibleResourcesInfo() = default;
@@ -288,14 +286,14 @@ bool WebAccessibleResourcesInfo::IsResourceWebAccessibleRedirect(
 // static
 bool WebAccessibleResourcesInfo::HasWebAccessibleResources(
     const Extension* extension) {
-  const WebAccessibleResourcesInfo* info = GetResourcesInfo(extension);
+  const auto* info = extension->GetManifestData<WebAccessibleResourcesInfo>();
   return info && (info->web_accessible_resources.size() > 0);
 }
 
 // static
 bool WebAccessibleResourcesInfo::ShouldUseDynamicUrl(const Extension* extension,
                                                      const std::string& path) {
-  const WebAccessibleResourcesInfo* info = GetResourcesInfo(extension);
+  const auto* info = extension->GetManifestData<WebAccessibleResourcesInfo>();
   if (!info) {
     return false;
   }
@@ -338,9 +336,8 @@ bool WebAccessibleResourcesHandler::Parse(Extension* extension,
   if (!info) {
     return false;
   }
-  extension->SetManifestData(
-      WebAccessibleResourcesManifestKeys::kWebAccessibleResources,
-      std::move(info));
+  extension->SetManifestData(WebAccessibleResourcesInfo::kManifestDataKey,
+                             std::move(info));
   return true;
 }
 base::span<const char* const> WebAccessibleResourcesHandler::Keys() const {

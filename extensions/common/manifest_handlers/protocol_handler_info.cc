@@ -87,14 +87,16 @@ bool SupportsProtocolHandlers() {
 
 }  // namespace
 
+// static
+const char* ProtocolHandlers::kManifestDataKey = keys::kProtocolHandlers;
+
 ProtocolHandlers::ProtocolHandlers() = default;
 ProtocolHandlers::~ProtocolHandlers() = default;
 
 // static
 const ProtocolHandlersInfo* ProtocolHandlers::GetProtocolHandlers(
     const Extension& extension) {
-  const ProtocolHandlers* info = static_cast<const ProtocolHandlers*>(
-      extension.GetManifestData(keys::kProtocolHandlers));
+  const ProtocolHandlers* info = extension.GetManifestData<ProtocolHandlers>();
   CHECK(!info || SupportsProtocolHandlers());
   return info ? &info->protocol_handlers : nullptr;
 }
@@ -154,7 +156,8 @@ bool ProtocolHandlersParser::Parse(Extension* extension,
   std::vector<InstallWarning> install_warnings;
   auto info = ParseEntryList(*extension, install_warnings);
   if (info) {
-    extension->SetManifestData(keys::kProtocolHandlers, std::move(info));
+    extension->SetManifestData(ProtocolHandlers::kManifestDataKey,
+                               std::move(info));
   }
 
   extension->AddInstallWarnings(std::move(install_warnings));

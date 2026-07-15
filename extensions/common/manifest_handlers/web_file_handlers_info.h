@@ -35,6 +35,8 @@ using WebFileHandlersInfo = std::vector<WebFileHandler>;
 
 // Structured contents of the `file_handlers` manifest key.
 struct WebFileHandlers : public Extension::ManifestData {
+  static const char* kManifestDataKey;
+
   WebFileHandlers();
   ~WebFileHandlers() override;
 

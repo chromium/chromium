@@ -19,14 +19,16 @@ namespace errors = manifest_errors;
 
 using ManifestKeys = api::requirements::ManifestKeys;
 
+// static
+const char* RequirementsInfo::kManifestDataKey = ManifestKeys::kRequirements;
+
 RequirementsInfo::RequirementsInfo() = default;
 RequirementsInfo::~RequirementsInfo() = default;
 
 // static
 const RequirementsInfo& RequirementsInfo::GetRequirements(
     const Extension* extension) {
-  const RequirementsInfo* info = static_cast<const RequirementsInfo*>(
-      extension->GetManifestData(ManifestKeys::kRequirements));
+  const RequirementsInfo* info = extension->GetManifestData<RequirementsInfo>();
 
   // We should be guaranteed to have requirements, since they are parsed for all
   // extension types.
@@ -55,7 +57,7 @@ bool RequirementsHandler::Parse(Extension* extension, std::u16string* error) {
 
   auto requirements_info = std::make_unique<RequirementsInfo>();
   if (!manifest_keys.requirements) {
-    extension->SetManifestData(ManifestKeys::kRequirements,
+    extension->SetManifestData(RequirementsInfo::kManifestDataKey,
                                std::move(requirements_info));
     return true;
   }
@@ -80,7 +82,7 @@ bool RequirementsHandler::Parse(Extension* extension, std::u16string* error) {
         requirements._3d->features, api::requirements::_3DFeature::kWebgl);
   }
 
-  extension->SetManifestData(ManifestKeys::kRequirements,
+  extension->SetManifestData(RequirementsInfo::kManifestDataKey,
                              std::move(requirements_info));
   return true;
 }

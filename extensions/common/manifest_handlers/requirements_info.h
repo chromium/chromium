@@ -16,6 +16,8 @@ namespace extensions {
 
 // Declared requirements for the extension.
 struct RequirementsInfo : public Extension::ManifestData {
+  static const char* kManifestDataKey;
+
   RequirementsInfo();
   ~RequirementsInfo() override;
 

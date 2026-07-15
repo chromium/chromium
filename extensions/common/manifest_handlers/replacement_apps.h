@@ -25,6 +25,8 @@ struct ReplacementAppsInfo : public Extension::ManifestData {
 
   ~ReplacementAppsInfo() override;
 
+  static const char* kManifestDataKey;
+
   // Returns true if the `extension` has a replacement web app.
   static bool HasReplacementWebApp(const Extension* extension);
 

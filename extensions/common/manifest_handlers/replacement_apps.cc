@@ -19,16 +19,8 @@ namespace extensions {
 namespace keys = manifest_keys;
 namespace errors = manifest_errors;
 
-namespace {
-
-const char kReplacementApps[] = "replacement_apps";
-
-const ReplacementAppsInfo* GetReplacementAppsInfo(const Extension* extension) {
-  return static_cast<const ReplacementAppsInfo*>(
-      extension->GetManifestData(kReplacementApps));
-}
-
-}  // namespace
+// static
+const char* ReplacementAppsInfo::kManifestDataKey = "replacement_apps";
 
 ReplacementAppsInfo::ReplacementAppsInfo() = default;
 
@@ -36,13 +28,13 @@ ReplacementAppsInfo::~ReplacementAppsInfo() = default;
 
 // static
 bool ReplacementAppsInfo::HasReplacementWebApp(const Extension* extension) {
-  const ReplacementAppsInfo* info = GetReplacementAppsInfo(extension);
+  const auto* info = extension->GetManifestData<ReplacementAppsInfo>();
   return info && !info->replacement_web_app.is_empty();
 }
 
 // static
 GURL ReplacementAppsInfo::GetReplacementWebApp(const Extension* extension) {
-  const ReplacementAppsInfo* info = GetReplacementAppsInfo(extension);
+  const auto* info = extension->GetManifestData<ReplacementAppsInfo>();
 
   if (info && !info->replacement_web_app.is_empty()) {
     return info->replacement_web_app;
@@ -95,7 +87,8 @@ bool ReplacementAppsHandler::Parse(Extension* extension,
     return false;
   }
 
-  extension->SetManifestData(kReplacementApps, std::move(info));
+  extension->SetManifestData(ReplacementAppsInfo::kManifestDataKey,
+                             std::move(info));
   return true;
 }
 

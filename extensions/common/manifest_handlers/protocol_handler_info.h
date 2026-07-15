@@ -21,6 +21,8 @@ namespace extensions {
 using ProtocolHandlersInfo = std::vector<apps::ProtocolHandlerInfo>;
 
 struct ProtocolHandlers : public Extension::ManifestData {
+  static const char* kManifestDataKey;
+
   ProtocolHandlers();
   ~ProtocolHandlers() override;
 

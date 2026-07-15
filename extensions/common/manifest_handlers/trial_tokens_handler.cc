@@ -25,12 +25,10 @@ const size_t kMaxTokenCount = 100;
 // third_party/blink/public/common/origin_trials/trial_token.cc
 const size_t kMaxTokenSize = 6144;
 
-const TrialTokens* GetTokens(const Extension& extension) {
-  return static_cast<const TrialTokens*>(
-      extension.GetManifestData(manifest_keys::kTrialTokens));
-}
-
 }  // namespace
+
+// static
+const char* TrialTokens::kManifestDataKey = manifest_keys::kTrialTokens;
 
 TrialTokens::TrialTokens(std::set<std::string> tokens)
     : tokens_(std::move(tokens)) {}
@@ -41,7 +39,7 @@ TrialTokens::~TrialTokens() = default;
 // static
 const std::set<std::string>* TrialTokens::GetTrialTokens(
     const Extension& extension) {
-  const auto* tokens = GetTokens(extension);
+  const auto* tokens = extension.GetManifestData<TrialTokens>();
   if (!tokens) {
     return nullptr;
   }
@@ -51,7 +49,7 @@ const std::set<std::string>* TrialTokens::GetTrialTokens(
 
 // static
 bool TrialTokens::HasTrialTokens(const Extension& extension) {
-  return GetTokens(extension);
+  return extension.GetManifestData<TrialTokens>();
 }
 
 TrialTokensHandler::TrialTokensHandler() = default;
@@ -117,7 +115,7 @@ bool TrialTokensHandler::Parse(Extension* extension, std::u16string* error) {
     return true;
   }
 
-  extension->SetManifestData(manifest_keys::kTrialTokens,
+  extension->SetManifestData(TrialTokens::kManifestDataKey,
                              std::make_unique<TrialTokens>(std::move(tokens)));
   return true;
 }

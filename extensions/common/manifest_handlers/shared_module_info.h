@@ -16,6 +16,8 @@ namespace extensions {
 
 class SharedModuleInfo : public Extension::ManifestData {
  public:
+  static const char* kManifestDataKey;
+
   SharedModuleInfo();
   ~SharedModuleInfo() override;
 

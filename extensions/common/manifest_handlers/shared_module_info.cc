@@ -33,7 +33,6 @@ namespace errors = manifest_errors;
 
 namespace {
 
-const char kSharedModule[] = "shared_module";
 const char kAllowlist[] = "allowlist";
 
 using ManifestKeys = api::shared_module::ManifestKeys;
@@ -42,8 +41,7 @@ static base::LazyInstance<SharedModuleInfo>::DestructorAtExit
     g_empty_shared_module_info = LAZY_INSTANCE_INITIALIZER;
 
 const SharedModuleInfo& GetSharedModuleInfo(const Extension* extension) {
-  const SharedModuleInfo* info = static_cast<const SharedModuleInfo*>(
-      extension->GetManifestData(kSharedModule));
+  const SharedModuleInfo* info = extension->GetManifestData<SharedModuleInfo>();
   if (!info) {
     return g_empty_shared_module_info.Get();
   }
@@ -51,6 +49,9 @@ const SharedModuleInfo& GetSharedModuleInfo(const Extension* extension) {
 }
 
 }  // namespace
+
+// static
+const char* SharedModuleInfo::kManifestDataKey = "shared_module";
 
 SharedModuleInfo::SharedModuleInfo() = default;
 SharedModuleInfo::~SharedModuleInfo() = default;
@@ -222,7 +223,8 @@ bool SharedModuleHandler::Parse(Extension* extension, std::u16string* error) {
     info->set_imports(std::move(imports));
   }
 
-  extension->SetManifestData(kSharedModule, std::move(info));
+  extension->SetManifestData(SharedModuleInfo::kManifestDataKey,
+                             std::move(info));
   return true;
 }
 

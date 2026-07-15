@@ -18,6 +18,8 @@ struct SandboxedPageInfo : public Extension::ManifestData {
   SandboxedPageInfo();
   ~SandboxedPageInfo() override;
 
+  static const char* kManifestDataKey;
+
   // Returns the extension's sandboxed pages.
   static const URLPatternSet& GetPages(const Extension* extension);
 

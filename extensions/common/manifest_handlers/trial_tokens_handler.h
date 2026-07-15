@@ -16,6 +16,8 @@ namespace extensions {
 
 // A structure to hold the set of tokens provided by this extension.
 struct TrialTokens : public Extension::ManifestData {
+  static const char* kManifestDataKey;
+
   TrialTokens(std::set<std::string> tokens);
 
   TrialTokens(const TrialTokens&) = delete;

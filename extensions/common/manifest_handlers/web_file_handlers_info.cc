@@ -215,6 +215,9 @@ std::unique_ptr<WebFileHandlers> ParseFromList(const Extension& extension,
 
 }  // namespace
 
+// static
+const char* WebFileHandlers::kManifestDataKey = manifest_keys::kFileHandlers;
+
 WebFileHandlers::WebFileHandlers() = default;
 WebFileHandlers::~WebFileHandlers() = default;
 
@@ -232,8 +235,7 @@ const WebFileHandlersInfo* WebFileHandlers::GetFileHandlers(
     return nullptr;
   }
 
-  const WebFileHandlers* info = static_cast<const WebFileHandlers*>(
-      extension.GetManifestData(manifest_keys::kFileHandlers));
+  const WebFileHandlers* info = extension.GetManifestData<WebFileHandlers>();
   return info ? &info->file_handlers : nullptr;
 }
 
@@ -258,7 +260,8 @@ bool WebFileHandlersParser::Parse(Extension* extension, std::u16string* error) {
     return false;
   }
 
-  extension->SetManifestData(manifest_keys::kFileHandlers, std::move(info));
+  extension->SetManifestData(WebFileHandlers::kManifestDataKey,
+                             std::move(info));
   return true;
 }
 

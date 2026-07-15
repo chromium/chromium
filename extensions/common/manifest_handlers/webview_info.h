@@ -22,6 +22,8 @@ class PartitionItem;
 // "webview" key.
 class WebviewInfo : public Extension::ManifestData {
  public:
+  static const char* kManifestDataKey;
+
   // Returns true if `extension`'s resource at `relative_path` is accessible
   // from the WebView partition with ID `partition_id`.
   static bool IsResourceWebviewAccessible(const Extension* extension,
