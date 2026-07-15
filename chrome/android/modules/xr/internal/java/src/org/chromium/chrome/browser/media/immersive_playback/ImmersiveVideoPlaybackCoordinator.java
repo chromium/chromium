@@ -90,6 +90,7 @@ public class ImmersiveVideoPlaybackCoordinator
      */
     public CompositorView show() {
         mPlayerCoordinator.show();
+        mPlayerCoordinator.setInteractable(true);
         showControlPanel();
         return mPlayerCoordinator.getCompositorView();
     }
@@ -256,9 +257,6 @@ public class ImmersiveVideoPlaybackCoordinator
 
     private void showControlPanel() {
         mControlCoordinator.show(assumeNonNull(mPlayerCoordinator.getHolder()));
-        // TODO(crbug.com/515422620): The player panel should be interactable all the time and
-        // should toggle the visibility of the control panel.
-        mPlayerCoordinator.setInteractable(false);
         updateControlPanel();
         mAutoHideManager.startTimer();
     }
@@ -266,7 +264,6 @@ public class ImmersiveVideoPlaybackCoordinator
     private void hideControlPanel() {
         hideFormatSelectionPanel();
         mControlCoordinator.dismiss();
-        mPlayerCoordinator.setInteractable(true);
         mAutoHideManager.stopTimer();
     }
 
