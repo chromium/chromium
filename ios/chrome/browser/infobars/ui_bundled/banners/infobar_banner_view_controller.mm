@@ -145,6 +145,40 @@ constexpr base::TimeDelta kLongPressTimeDuration = base::Milliseconds(400);
 - (void)viewDidLoad {
   [super viewDidLoad];
 
+  self.view.accessibilityIdentifier = kInfobarBannerViewIdentifier;
+  self.view.accessibilityCustomActions = [self accessibilityActions];
+
+  [self setupLegacyBanner];
+
+  // Gestures setup.
+  UIPanGestureRecognizer* panGestureRecognizer =
+      [[UIPanGestureRecognizer alloc] init];
+  [panGestureRecognizer addTarget:self action:@selector(handleGestures:)];
+  [panGestureRecognizer setMaximumNumberOfTouches:1];
+  [self.view addGestureRecognizer:panGestureRecognizer];
+
+  UILongPressGestureRecognizer* longPressGestureRecognizer =
+      [[UILongPressGestureRecognizer alloc] init];
+  [longPressGestureRecognizer addTarget:self action:@selector(handleGestures:)];
+  longPressGestureRecognizer.minimumPressDuration =
+      kLongPressTimeDuration.InSecondsF();
+  [self.view addGestureRecognizer:longPressGestureRecognizer];
+
+  NSArray<UITrait>* traits = @[
+    UITraitUserInterfaceIdiom.class, UITraitUserInterfaceStyle.class,
+    UITraitDisplayGamut.class, UITraitAccessibilityContrast.class,
+    UITraitUserInterfaceLevel.class
+  ];
+  __weak __typeof(self) weakSelf = self;
+  UITraitChangeHandler handler = ^(id<UITraitEnvironment> traitEnvironment,
+                                   UITraitCollection* previousCollection) {
+    [weakSelf updateShadowColorOnTraitChange:previousCollection];
+  };
+  [self registerForTraitChanges:traits withHandler:handler];
+}
+
+// Configures the legacy banner view.
+- (void)setupLegacyBanner {
   // BannerView setup.
   self.view.backgroundColor = [UIColor colorNamed:kBackgroundColor];
   self.view.layer.cornerRadius = kBannerViewCornerRadius;
@@ -157,8 +191,6 @@ constexpr base::TimeDelta kLongPressTimeDuration = base::Milliseconds(400);
     [self.view.layer
         setShadowColor:[UIColor colorNamed:kToolbarShadowColor].CGColor];
   }];
-  self.view.accessibilityIdentifier = kInfobarBannerViewIdentifier;
-  self.view.accessibilityCustomActions = [self accessibilityActions];
 
   // Icon setup.
   UIView* iconContainerView = nil;
@@ -328,32 +360,6 @@ constexpr base::TimeDelta kLongPressTimeDuration = base::Milliseconds(400);
                                 multiplier:1
                                   constant:0],
   ]];
-
-  // Gestures setup.
-  UIPanGestureRecognizer* panGestureRecognizer =
-      [[UIPanGestureRecognizer alloc] init];
-  [panGestureRecognizer addTarget:self action:@selector(handleGestures:)];
-  [panGestureRecognizer setMaximumNumberOfTouches:1];
-  [self.view addGestureRecognizer:panGestureRecognizer];
-
-  UILongPressGestureRecognizer* longPressGestureRecognizer =
-      [[UILongPressGestureRecognizer alloc] init];
-  [longPressGestureRecognizer addTarget:self action:@selector(handleGestures:)];
-  longPressGestureRecognizer.minimumPressDuration =
-      kLongPressTimeDuration.InSecondsF();
-  [self.view addGestureRecognizer:longPressGestureRecognizer];
-
-  NSArray<UITrait>* traits = @[
-    UITraitUserInterfaceIdiom.class, UITraitUserInterfaceStyle.class,
-    UITraitDisplayGamut.class, UITraitAccessibilityContrast.class,
-    UITraitUserInterfaceLevel.class
-  ];
-  __weak __typeof(self) weakSelf = self;
-  UITraitChangeHandler handler = ^(id<UITraitEnvironment> traitEnvironment,
-                                   UITraitCollection* previousCollection) {
-    [weakSelf updateShadowColorOnTraitChange:previousCollection];
-  };
-  [self registerForTraitChanges:traits withHandler:handler];
 }
 
 - (void)viewDidLayoutSubviews {
