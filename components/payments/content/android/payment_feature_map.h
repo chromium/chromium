@@ -31,6 +31,10 @@ BASE_DECLARE_FEATURE(kGooglePayViaAndroidIntents);
 // omitted from the isReadyToPayRequest. See: https://crbug.com/1406655.
 BASE_DECLARE_FEATURE(kOmitParametersInReadyToPay);
 
+// If enabled, the Payment Handler dialog includes an initiator during
+// the URL load
+BASE_DECLARE_FEATURE(kPaymentHandlerDialogUseInitiatorInUrlLoadForAndroid);
+
 // If enabled, the payment details update service reconnects to the Android
 // payment app when the connection is lost unexpectedly.
 BASE_DECLARE_FEATURE(kReconnectOnLostConnectionToUpdatePaymentDetailsService);

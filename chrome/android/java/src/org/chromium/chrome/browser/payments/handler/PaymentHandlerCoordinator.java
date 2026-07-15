@@ -217,7 +217,7 @@ public class PaymentHandlerCoordinator {
 
         LoadUrlParams params = new LoadUrlParams(url.getSpec());
         if (PaymentFeatureList.isEnabled(
-                PaymentFeatureList.PAYMENT_HANDLER_DIALOG_USE_INITIATOR_IN_URL_LOAD)) {
+                PaymentFeatureList.PAYMENT_HANDLER_DIALOG_USE_INITIATOR_IN_URL_LOAD_FOR_ANDROID)) {
             params.setInitiatorOrigin(
                     Origin.create(paymentRequestWebContents.getLastCommittedUrl()));
         }
