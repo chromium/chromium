@@ -27,7 +27,7 @@
           },
           function(task, should) {
             testStartSampling(should, 1.25, {
-              error: 1.0880e-4,
+              error: 1.0881e-4,
               snrThreshold: 84.054
             }).then(task.done.bind(task));
           });
@@ -58,7 +58,7 @@
             // of the internal implementation.
             testStartWithGain(should, defaultSampleRate, {
               error: 1.9521e-6,
-              snrThreshold: 128.12
+              snrThreshold: 128.02
             }).then(task.done.bind(task));
           });
 
@@ -76,7 +76,7 @@
             // the internal implementation.
             testStartWithGain(should, 48000, {
               error: 1.9521e-6,
-              snrThreshold: 122.92
+              snrThreshold: 122.90
             }).then(task.done.bind(task));
           });
 

@@ -6889,6 +6889,10 @@
       origin_trial_feature_name: "WebAudioConfigurableRenderQuantum",
       status: "experimental",
     },
+    {
+      name: "WebAudioRustFft",
+      status: "stable",
+    },
     // WebAuth is disabled on Android versions prior to N (7.0) due to lack of
     // supporting APIs, see runtime_features.cc.
     {

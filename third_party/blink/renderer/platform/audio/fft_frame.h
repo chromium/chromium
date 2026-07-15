@@ -30,15 +30,18 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_AUDIO_FFT_FRAME_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "third_party/blink/renderer/platform/audio/audio_array.h"
+#include "third_party/blink/renderer/platform/audio/rustfft_ffi.rs.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/threading.h"
+#include "third_party/rust/cxx/v1/cxx.h"
 
 #if BUILDFLAG(IS_MAC)
 #include <Accelerate/Accelerate.h>
@@ -172,6 +175,8 @@ class PLATFORM_EXPORT FFTFrame final {
   // be the same size as the FFT size.
   AudioFloatArray pffft_work_;
 #endif
+
+  std::optional<rust::Box<blink::rust_fft::RustFft>> rust_fft_;
 };
 
 }  // namespace blink

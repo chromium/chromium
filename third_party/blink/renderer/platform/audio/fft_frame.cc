@@ -31,8 +31,10 @@
 #include <complex>
 #include <memory>
 
+#include "base/check_op.h"
 #include "base/compiler_specific.h"
 #include "third_party/blink/renderer/platform/audio/vector_math.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/fdlibm/ieee754.h"
 
@@ -43,18 +45,30 @@
 namespace blink {
 
 unsigned FFTFrame::MinFFTSize() {
+  if (RuntimeEnabledFeatures::WebAudioRustFftEnabled()) {
+    return 2;
+  }
   return PlatformMinFFTSize();
 }
 
 unsigned FFTFrame::MaxFFTSize() {
+  if (RuntimeEnabledFeatures::WebAudioRustFftEnabled()) {
+    return 1u << 30;
+  }
   return PlatformMaxFFTSize();
 }
 
 void FFTFrame::Initialize(float sample_rate) {
+  if (RuntimeEnabledFeatures::WebAudioRustFftEnabled()) {
+    return;
+  }
   PlatformInitialize(sample_rate);
 }
 
 void FFTFrame::Cleanup() {
+  if (RuntimeEnabledFeatures::WebAudioRustFftEnabled()) {
+    return;
+  }
   PlatformCleanup();
 }
 
@@ -63,16 +77,37 @@ FFTFrame::FFTFrame(unsigned fft_size)
       log2fft_size_(static_cast<unsigned>(log2(fft_size))) {
   CHECK_GE(fft_size_, MinFFTSize());
   CHECK_LE(fft_size_, MaxFFTSize());
+  if (RuntimeEnabledFeatures::WebAudioRustFftEnabled()) {
+    const unsigned packed_size = (fft_size_ + 1) / 2;
+    real_data_.Allocate(packed_size);
+    imag_data_.Allocate(packed_size);
+    rust_fft_ = blink::rust_fft::rustfft_new(fft_size_);
+    return;
+  }
   PlatformConstruct();
 }
 
 void FFTFrame::DoFFT(base::span<const float> data) {
   CHECK_GE(data.size(), FftSize());
+  if (rust_fft_.has_value()) {
+    rust_fft_.value()->do_fft(
+        rust::Slice<const float>(data.data(), fft_size_),
+        rust::Slice<float>(real_data_.Data(), real_data_.size()),
+        rust::Slice<float>(imag_data_.Data(), imag_data_.size()));
+    return;
+  }
   PlatformDoFFT(data);
 }
 
 void FFTFrame::DoInverseFFT(base::span<float> data) {
   CHECK_GE(data.size(), FftSize());
+  if (rust_fft_.has_value()) {
+    rust_fft_.value()->do_inverse_fft(
+        rust::Slice<const float>(real_data_.Data(), real_data_.size()),
+        rust::Slice<const float>(imag_data_.Data(), imag_data_.size()),
+        rust::Slice<float>(data.data(), fft_size_));
+    return;
+  }
   PlatformDoInverseFFT(data);
 }
 

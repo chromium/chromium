@@ -198,6 +198,26 @@ rust_static_library("font_format_check") {
   ]
 }
 
+rust_static_library("rustfft_ffi") {
+  allow_unsafe = true  # Needed for FFI that underpins the `cxx` crate.
+  crate_root = "audio/rustfft_ffi.rs"
+  sources = [ crate_root ]
+  cxx_bindings = [ crate_root ]
+  deps = [ "//third_party/rust/rustfft/v6:lib" ]
+}
+
+rust_static_library("rustfft_ffi_unittests") {
+  testonly = true
+  is_gtest_unittests = true
+  crate_root = "audio/rustfft_ffi_unittest.rs"
+  sources = [ crate_root ]
+  deps = [
+    ":rustfft_ffi",
+    "//testing/rust_gtest_interop",
+    "//third_party/rust/rustfft/v6:lib",
+  ]
+}
+
 import("//build/config/pch.gni")
 
 config("blink_platform_config") {
@@ -1821,6 +1841,7 @@ component("platform") {
   ]
   deps = [
     ":font_format_check",
+    ":rustfft_ffi",
     "//base:base_static",
     "//base/allocator:buildflags",
     "//build:chromecast_buildflags",
@@ -2542,7 +2563,10 @@ source_set("blink_platform_unittests_sources") {
     "//url/mojom:test_url_mojom_gurl_blink",
   ]
 
-  deps += [ ":bridge_ice_controller_tests" ]
+  deps += [
+    ":bridge_ice_controller_tests",
+    ":rustfft_ffi_unittests",
+  ]
 
   data_deps = [ ":blink_platform_unittests_data" ]
 
