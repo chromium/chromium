@@ -18,7 +18,6 @@
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
-#include "chrome/test/supervised_user/child_account_test_utils.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_switches.h"

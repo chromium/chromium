@@ -15,7 +15,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
-#include "chrome/test/supervised_user/child_account_test_utils.h"
+#include "components/supervised_user/test_support/kids_chrome_management_test_utils.h"
 #include "content/public/test/browser_test_utils.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"

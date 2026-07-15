@@ -16,12 +16,12 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/test/supervised_user/child_account_test_utils.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
 #include "components/supervised_user/core/browser/proto/kidsmanagement_messages.pb.h"
 #include "components/supervised_user/core/common/pref_names.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
+#include "components/supervised_user/test_support/kids_chrome_management_test_utils.h"
 #include "components/supervised_user/test_support/kids_management_api_server_mock.h"
 #include "net/dns/mock_host_resolver.h"
 

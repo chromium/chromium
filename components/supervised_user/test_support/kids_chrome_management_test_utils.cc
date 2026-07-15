@@ -7,10 +7,13 @@
 #include <string>
 #include <string_view>
 
+#include "base/command_line.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_util.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/supervised_user/core/browser/proto/kidsmanagement_messages.pb.h"
 #include "google_apis/gaia/gaia_id.h"
+#include "services/network/public/cpp/network_switches.h"
 
 namespace supervised_user {
 
@@ -27,6 +30,21 @@ void SetFamilyMemberAttributesForTesting(
       base::StrCat({"http://image.url/", username}));
   mutable_member->set_role(role);
   mutable_member->set_user_id(signin::GetTestGaiaIdForEmail(email).ToString());
+}
+
+void AddHostResolverRule(base::CommandLine* command_line,
+                         std::string_view host,
+                         const net::test_server::EmbeddedTestServer& target) {
+  CHECK(target.Started());
+
+  std::string current_rules =
+      command_line->GetSwitchValueASCII(network::switches::kHostResolverRules);
+  std::string new_rule =
+      base::JoinString({"MAP", host, target.host_port_pair().ToString()}, " ");
+
+  command_line->AppendSwitchASCII(
+      network::switches::kHostResolverRules,
+      base::JoinString({current_rules, new_rule}, ","));
 }
 
 }  // namespace supervised_user
