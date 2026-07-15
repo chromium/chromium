@@ -115,7 +115,7 @@ void ContentSettingBubbleDialogTest::ApplyMediastreamSettings(
 
   GURL last_committed_url = web_contents->GetLastCommittedURL();
   // Default opt-in for camera PTZ permission to current tab.
-  HostContentSettingsMapFactory::GetForProfile(browser()->profile())
+  HostContentSettingsMapFactory::GetForProfile(browser()->GetProfile())
       ->SetContentSettingDefaultScope(last_committed_url, GURL(),
                                       ContentSettingsType::CAMERA_PAN_TILT_ZOOM,
                                       CONTENT_SETTING_ASK);
@@ -212,7 +212,7 @@ void ContentSettingBubbleDialogTest::OverrideContentSettingsProvider(
     const std::vector<ContentSettingsType>& types) {
   auto provider = std::make_unique<content_settings::MockProvider>();
   HostContentSettingsMap* map =
-      HostContentSettingsMapFactory::GetForProfile(browser()->profile());
+      HostContentSettingsMapFactory::GetForProfile(browser()->GetProfile());
 
   // All settings should have a default value defined.
   if (GetParam() == content_settings::ProviderType::kDefaultProvider) {

@@ -1336,7 +1336,7 @@ INSTANTIATE_TEST_SUITE_P(
 IN_PROC_BROWSER_TEST_P(MultiContentsViewBookmarkDragEntrypointsUiTest,
                        DISABLED_ShowsDropTargetOnBookmarkedLinkDragged) {
   bookmarks::BookmarkModel* const model =
-      BookmarkModelFactory::GetForBrowserContext(browser()->profile());
+      BookmarkModelFactory::GetForBrowserContext(browser()->GetProfile());
   const std::u16string bookmark_title = u"Bookmark";
   model->AddNewURL(model->bookmark_bar_node(), 0, u"Bookmark",
                    GetURL("/links.html"));

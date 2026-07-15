@@ -1207,7 +1207,8 @@ class PictureInPictureBrowserFrameViewLinuxNoClientNativeDecorationsTest
     // default. This has to wait until `SetUpOnMainThread()` so browser startup
     // doesn't overwrite it with the real getter.
     linux_ui_getter_ = std::make_unique<FakeLinuxUiGetter>();
-    ThemeServiceFactory::GetForProfile(browser()->profile())->UseSystemTheme();
+    ThemeServiceFactory::GetForProfile(browser()->GetProfile())
+        ->UseSystemTheme();
     PictureInPictureBrowserFrameViewTest::SetUpOnMainThread();
   }
 

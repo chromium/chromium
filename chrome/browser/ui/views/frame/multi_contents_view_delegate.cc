@@ -70,7 +70,7 @@ void MultiContentsViewDelegateImpl::ResizeWebContents(double start_ratio,
         tab_strip_model_->GetActiveTab()->GetSplit().value();
 
     SessionService* const session_service =
-        SessionServiceFactory::GetForProfile(browser_->profile());
+        SessionServiceFactory::GetForProfile(browser_->GetProfile());
 
     if (!session_service) {
       return;

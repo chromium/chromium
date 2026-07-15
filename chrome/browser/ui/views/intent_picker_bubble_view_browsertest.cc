@@ -416,7 +416,8 @@ IN_PROC_BROWSER_TEST_P(IntentPickerIconBrowserTest,
   // The test infra doesn't run the scope extension validation, so we can just
   // copy them to the validated set.
   web_app_info->validated_scope_extensions = web_app_info->scope_extensions;
-  web_app::test::InstallWebApp(browser()->profile(), std::move(web_app_info));
+  web_app::test::InstallWebApp(browser()->GetProfile(),
+                               std::move(web_app_info));
 
   // Go to a URL in the extended scope and wait for the intent picker icon to
   // load.

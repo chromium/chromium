@@ -284,7 +284,7 @@ class MediaDialogViewBrowserTest : public InProcessBrowserTest {
     base::RunLoop().RunUntilIdle();
     base::RunLoop run_loop;
     PrefChangeRegistrar change_observer;
-    change_observer.Init(browser()->profile()->GetPrefs());
+    change_observer.Init(browser()->GetProfile()->GetPrefs());
     change_observer.Add(prefs::kLiveCaptionEnabled, run_loop.QuitClosure());
 
     ASSERT_TRUE(MediaDialogView::IsShowing());
@@ -298,7 +298,7 @@ class MediaDialogViewBrowserTest : public InProcessBrowserTest {
     base::RunLoop().RunUntilIdle();
     base::RunLoop run_loop;
     PrefChangeRegistrar change_observer;
-    change_observer.Init(browser()->profile()->GetPrefs());
+    change_observer.Init(browser()->GetProfile()->GetPrefs());
     change_observer.Add(prefs::kLiveTranslateEnabled, run_loop.QuitClosure());
 
     ASSERT_TRUE(MediaDialogView::IsShowing());
@@ -399,7 +399,7 @@ class MediaDialogViewBrowserTest : public InProcessBrowserTest {
   TestMediaRouter* GetMediaRouter() {
     return static_cast<TestMediaRouter*>(
         media_router::MediaRouterFactory::GetApiForBrowserContext(
-            browser()->profile()));
+            browser()->GetProfile()));
   }
 
  protected:
@@ -760,16 +760,16 @@ IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest, MAYBE_LiveCaption) {
 
   // Click the Live Caption toggle to toggle it on.
   ClickEnableLiveCaptionOnDialog();
-  EXPECT_TRUE(
-      browser()->profile()->GetPrefs()->GetBoolean(prefs::kLiveCaptionEnabled));
+  EXPECT_TRUE(browser()->GetProfile()->GetPrefs()->GetBoolean(
+      prefs::kLiveCaptionEnabled));
   EXPECT_TRUE(GetLiveCaptionTitleLabel()->GetVisible());
   EXPECT_EQ("Live Caption - English",
             base::UTF16ToUTF8(GetLiveCaptionTitleLabel()->GetText()));
 
   // Click the Live Caption toggle again to toggle it off.
   ClickEnableLiveCaptionOnDialog();
-  EXPECT_FALSE(
-      browser()->profile()->GetPrefs()->GetBoolean(prefs::kLiveCaptionEnabled));
+  EXPECT_FALSE(browser()->GetProfile()->GetPrefs()->GetBoolean(
+      prefs::kLiveCaptionEnabled));
   EXPECT_TRUE(GetLiveCaptionTitleLabel()->GetVisible());
   EXPECT_EQ("Live Caption",
             base::UTF16ToUTF8(GetLiveCaptionTitleLabel()->GetText()));
@@ -788,8 +788,8 @@ IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest, MAYBE_LiveCaption) {
 
   // Click the Live Caption toggle to toggle it off.
   ClickEnableLiveCaptionOnDialog();
-  EXPECT_FALSE(
-      browser()->profile()->GetPrefs()->GetBoolean(prefs::kLiveCaptionEnabled));
+  EXPECT_FALSE(browser()->GetProfile()->GetPrefs()->GetBoolean(
+      prefs::kLiveCaptionEnabled));
   EXPECT_TRUE(GetLiveCaptionTitleLabel()->GetVisible());
   EXPECT_EQ("Live Caption",
             base::UTF16ToUTF8(GetLiveCaptionTitleLabel()->GetText()));
@@ -848,8 +848,8 @@ IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest,
 
   // Click the Live Caption toggle again to toggle it off.
   ClickEnableLiveCaptionOnDialog();
-  EXPECT_FALSE(
-      browser()->profile()->GetPrefs()->GetBoolean(prefs::kLiveCaptionEnabled));
+  EXPECT_FALSE(browser()->GetProfile()->GetPrefs()->GetBoolean(
+      prefs::kLiveCaptionEnabled));
   EXPECT_TRUE(GetLiveCaptionTitleLabel()->GetVisible());
   EXPECT_EQ("Downloading… 12%",
             base::UTF16ToUTF8(GetLiveCaptionTitleLabel()->GetText()));
@@ -862,8 +862,8 @@ IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest,
 
   // Click the Live Caption toggle again to toggle it on.
   ClickEnableLiveCaptionOnDialog();
-  EXPECT_TRUE(
-      browser()->profile()->GetPrefs()->GetBoolean(prefs::kLiveCaptionEnabled));
+  EXPECT_TRUE(browser()->GetProfile()->GetPrefs()->GetBoolean(
+      prefs::kLiveCaptionEnabled));
   EXPECT_TRUE(GetLiveCaptionTitleLabel()->GetVisible());
   EXPECT_EQ("Downloading… 42%",
             base::UTF16ToUTF8(GetLiveCaptionTitleLabel()->GetText()));
@@ -961,8 +961,8 @@ IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest, MAYBE_LiveTranslate) {
 
   // Click the Live Caption toggle to toggle it on.
   ClickEnableLiveCaptionOnDialog();
-  EXPECT_TRUE(
-      browser()->profile()->GetPrefs()->GetBoolean(prefs::kLiveCaptionEnabled));
+  EXPECT_TRUE(browser()->GetProfile()->GetPrefs()->GetBoolean(
+      prefs::kLiveCaptionEnabled));
 
   // The Live Translate title should appear.
   EXPECT_TRUE(GetLiveTranslateTitleLabel()->GetVisible());
@@ -971,15 +971,15 @@ IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest, MAYBE_LiveTranslate) {
 
   // Click the Live Translate toggle to toggle it on.
   ClickEnableLiveTranslateOnDialog();
-  EXPECT_TRUE(browser()->profile()->GetPrefs()->GetBoolean(
+  EXPECT_TRUE(browser()->GetProfile()->GetPrefs()->GetBoolean(
       prefs::kLiveTranslateEnabled));
 
   // Click the Live Caption toggle to toggle it off, which does not toggle off
   // Translate.
   ClickEnableLiveCaptionOnDialog();
-  EXPECT_FALSE(
-      browser()->profile()->GetPrefs()->GetBoolean(prefs::kLiveCaptionEnabled));
-  EXPECT_TRUE(browser()->profile()->GetPrefs()->GetBoolean(
+  EXPECT_FALSE(browser()->GetProfile()->GetPrefs()->GetBoolean(
+      prefs::kLiveCaptionEnabled));
+  EXPECT_TRUE(browser()->GetProfile()->GetPrefs()->GetBoolean(
       prefs::kLiveTranslateEnabled));
 }
 
@@ -1006,30 +1006,30 @@ IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest,
   ui_.ClickToolbarIcon();
   EXPECT_TRUE(ui_.WaitForDialogOpened());
   EXPECT_TRUE(ui_.IsDialogVisible());
-  EXPECT_FALSE(
-      browser()->profile()->GetPrefs()->GetBoolean(prefs::kLiveCaptionEnabled));
+  EXPECT_FALSE(browser()->GetProfile()->GetPrefs()->GetBoolean(
+      prefs::kLiveCaptionEnabled));
   EXPECT_FALSE(GetLiveTranslateDropdown()->GetVisible());
 
   // Click the Live Caption toggle to toggle it on. The dropdown should be
   // hidden.
   ClickEnableLiveCaptionOnDialog();
-  EXPECT_TRUE(
-      browser()->profile()->GetPrefs()->GetBoolean(prefs::kLiveCaptionEnabled));
+  EXPECT_TRUE(browser()->GetProfile()->GetPrefs()->GetBoolean(
+      prefs::kLiveCaptionEnabled));
   EXPECT_FALSE(GetLiveTranslateDropdown()->GetVisible());
 
   // Click the Live Translate toggle to toggle it on. The dropdown should be
   // visible.
   ClickEnableLiveTranslateOnDialog();
-  EXPECT_TRUE(browser()->profile()->GetPrefs()->GetBoolean(
+  EXPECT_TRUE(browser()->GetProfile()->GetPrefs()->GetBoolean(
       prefs::kLiveTranslateEnabled));
   EXPECT_TRUE(GetLiveTranslateDropdown()->GetVisible());
 
   // Click the Live Caption toggle to toggle it off. Live Translate should still
   // be enabled but the dropdown should be hidden.
   ClickEnableLiveCaptionOnDialog();
-  EXPECT_FALSE(
-      browser()->profile()->GetPrefs()->GetBoolean(prefs::kLiveCaptionEnabled));
-  EXPECT_TRUE(browser()->profile()->GetPrefs()->GetBoolean(
+  EXPECT_FALSE(browser()->GetProfile()->GetPrefs()->GetBoolean(
+      prefs::kLiveCaptionEnabled));
+  EXPECT_TRUE(browser()->GetProfile()->GetPrefs()->GetBoolean(
       prefs::kLiveTranslateEnabled));
   EXPECT_FALSE(GetLiveTranslateDropdown()->GetVisible());
 }

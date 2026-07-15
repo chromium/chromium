@@ -65,6 +65,6 @@ void WindowsTaskbarIconUpdater::OnWidgetVisibilityChanged(views::Widget* widget,
 }
 
 void WindowsTaskbarIconUpdater::UpdateIcon() {
-  taskbar::UpdateTaskbarDecoration(browser_view_->browser()->profile(),
+  taskbar::UpdateTaskbarDecoration(browser_view_->browser()->GetProfile(),
                                    browser_view_->GetNativeWindow());
 }

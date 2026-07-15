@@ -342,7 +342,7 @@ void BrowserNativeWidgetMac::ValidateUserInterfaceItem(
     case IDC_ROUTE_MEDIA: {
       // Hide this menu option if Media Router is disabled.
       result->new_hidden_state =
-          !media_router::MediaRouterEnabled(browser->profile());
+          !media_router::MediaRouterEnabled(browser->GetProfile());
       break;
     }
     case IDC_BACK:
@@ -398,7 +398,7 @@ void BrowserNativeWidgetMac::ValidateUserInterfaceItem(
       result->set_toggle_state = false;
       break;
     case IDC_SHOW_BOOKMARK_BAR: {
-      PrefService* prefs = browser->profile()->GetPrefs();
+      PrefService* prefs = browser->GetProfile()->GetPrefs();
       result->new_toggle_state =
           prefs->GetBoolean(bookmarks::prefs::kShowBookmarkBar);
       break;
@@ -410,14 +410,14 @@ void BrowserNativeWidgetMac::ValidateUserInterfaceItem(
         result->new_toggle_state =
             app_controller->AlwaysShowToolbarInFullscreen();
       } else {
-        PrefService* prefs = browser->profile()->GetPrefs();
+        PrefService* prefs = browser->GetProfile()->GetPrefs();
         result->new_toggle_state =
             prefs->GetBoolean(prefs::kShowFullscreenToolbar);
       }
       break;
     }
     case IDC_SHOW_FULL_URLS: {
-      PrefService* prefs = browser->profile()->GetPrefs();
+      PrefService* prefs = browser->GetProfile()->GetPrefs();
       result->new_toggle_state =
           prefs->GetBoolean(omnibox::kPreventUrlElisionsInOmnibox);
       // Disable this menu option if the show full URLs pref is managed.
@@ -427,7 +427,7 @@ void BrowserNativeWidgetMac::ValidateUserInterfaceItem(
       break;
     }
     case IDC_SHOW_GOOGLE_LENS_SHORTCUT: {
-      PrefService* prefs = browser->profile()->GetPrefs();
+      PrefService* prefs = browser->GetProfile()->GetPrefs();
       result->new_toggle_state =
           prefs->GetBoolean(omnibox::kShowGoogleLensShortcut);
       // Disable this menu option if the LensOverlay feature is not enabled.
@@ -437,16 +437,16 @@ void BrowserNativeWidgetMac::ValidateUserInterfaceItem(
       break;
     }
     case IDC_SHOW_AI_MODE_OMNIBOX_BUTTON: {
-      PrefService* prefs = browser->profile()->GetPrefs();
+      PrefService* prefs = browser->GetProfile()->GetPrefs();
       result->new_toggle_state =
           prefs->GetBoolean(omnibox::kShowAiModeOmniboxButton);
       // Disable this menu option if the AI Mode feature is not enabled.
       result->enable =
-          omnibox::ShouldShowAimContextMenuOption(browser->profile());
+          omnibox::ShouldShowAimContextMenuOption(browser->GetProfile());
       break;
     }
     case IDC_SHOW_SEARCH_TOOLS: {
-      PrefService* prefs = browser->profile()->GetPrefs();
+      PrefService* prefs = browser->GetProfile()->GetPrefs();
       result->new_toggle_state = prefs->GetBoolean(omnibox::kShowSearchTools);
       // Disable this menu option if the toolbelt feature is not enabled.
       result->enable = omnibox_feature_configs::Toolbelt::Get().enabled;
@@ -481,7 +481,7 @@ void BrowserNativeWidgetMac::ValidateUserInterfaceItem(
       break;
     }
     case IDC_TOGGLE_JAVASCRIPT_APPLE_EVENTS: {
-      PrefService* prefs = browser->profile()->GetPrefs();
+      PrefService* prefs = browser->GetProfile()->GetPrefs();
       result->new_toggle_state =
           prefs->GetBoolean(prefs::kAllowJavascriptAppleEvents);
       break;

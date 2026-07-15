@@ -51,7 +51,7 @@ SystemMenuModelDelegate::~SystemMenuModelDelegate() = default;
 bool SystemMenuModelDelegate::IsCommandIdChecked(int command_id) const {
 #if BUILDFLAG(IS_LINUX)
   if (command_id == IDC_USE_SYSTEM_TITLE_BAR) {
-    PrefService* prefs = browser_->profile()->GetPrefs();
+    PrefService* prefs = browser_->GetProfile()->GetPrefs();
     return !prefs->GetBoolean(prefs::kUseCustomChromeFrame);
   }
 #endif
@@ -66,7 +66,7 @@ bool SystemMenuModelDelegate::IsCommandIdEnabled(int command_id) const {
 #endif
   // Disable the glic toggle pin if it is showing and glic is not enabled.
   if (command_id == IDC_GLIC_TOGGLE_PIN) {
-    return glic::GlicEnabling::IsEnabledForProfile(browser_->profile());
+    return glic::GlicEnabling::IsEnabledForProfile(browser_->GetProfile());
   }
 
 #if BUILDFLAG(IS_WIN)
@@ -108,7 +108,7 @@ bool SystemMenuModelDelegate::IsCommandIdVisible(int command_id) const {
   }
 #endif
   if (command_id == IDC_GLIC_TOGGLE_PIN) {
-    return glic::GlicEnabling::IsEnabledForProfile(browser_->profile());
+    return glic::GlicEnabling::IsEnabledForProfile(browser_->GetProfile());
   }
   return true;
 }
@@ -139,7 +139,7 @@ std::u16string SystemMenuModelDelegate::GetLabelForCommandId(
       string_id = IDS_RESTORE_TAB;
       if (IsCommandIdEnabled(command_id)) {
         sessions::TabRestoreService* trs =
-            TabRestoreServiceFactory::GetForProfile(browser_->profile());
+            TabRestoreServiceFactory::GetForProfile(browser_->GetProfile());
         DCHECK(trs);
         trs->LoadTabsFromLastSession();
         if (!trs->entries().empty()) {
@@ -183,13 +183,13 @@ std::u16string SystemMenuModelDelegate::GetLabelForCommandId(
       break;
     }
     case IDC_TAB_SEARCH_TOGGLE_PIN:
-      string_id = browser_->profile()->GetPrefs()->GetBoolean(
+      string_id = browser_->GetProfile()->GetPrefs()->GetBoolean(
                       prefs::kTabSearchPinnedToTabstrip)
                       ? IDS_TAB_STRIP_UNPIN_TAB_SEARCH
                       : IDS_TAB_STRIP_PIN_TAB_SEARCH;
       break;
     case IDC_GLIC_TOGGLE_PIN:
-      string_id = browser_->profile()->GetPrefs()->GetBoolean(
+      string_id = browser_->GetProfile()->GetPrefs()->GetBoolean(
                       glic::prefs::kGlicPinnedToTabstrip)
                       ? IDS_GLIC_UNPIN
                       : IDS_GLIC_PIN;
@@ -242,7 +242,7 @@ void SystemMenuModelDelegate::ExecuteCommand(int command_id, int event_flags) {
       break;
     }
     case IDC_TAB_SEARCH_TOGGLE_PIN: {
-      PrefService* prefs = browser_->profile()->GetPrefs();
+      PrefService* prefs = browser_->GetProfile()->GetPrefs();
       const bool is_pinned =
           prefs->GetBoolean(prefs::kTabSearchPinnedToTabstrip);
       base::RecordAction(base::UserMetricsAction(

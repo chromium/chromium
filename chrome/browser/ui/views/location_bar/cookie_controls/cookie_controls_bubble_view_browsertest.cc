@@ -62,14 +62,14 @@ class CookieControlsBubbleViewBrowserTest : public InProcessBrowserTest {
         ui_test_utils::NavigateToURL(browser(), third_party_cookie_page_url()));
 
     controller_ = std::make_unique<content_settings::CookieControlsController>(
-        CookieSettingsFactory::GetForProfile(browser()->profile()), nullptr,
-        HostContentSettingsMapFactory::GetForProfile(browser()->profile()),
+        CookieSettingsFactory::GetForProfile(browser()->GetProfile()), nullptr,
+        HostContentSettingsMapFactory::GetForProfile(browser()->GetProfile()),
         /*is_incognito_profile=*/false);
 
     incognito_controller_ =
         std::make_unique<content_settings::CookieControlsController>(
             CookieSettingsFactory::GetForProfile(incognito_profile()),
-            CookieSettingsFactory::GetForProfile(browser()->profile()),
+            CookieSettingsFactory::GetForProfile(browser()->GetProfile()),
             HostContentSettingsMapFactory::GetForProfile(incognito_profile()),
             /*is_incognito_profile=*/true);
   }
@@ -144,7 +144,8 @@ class CookieControlsBubbleViewBrowserTest : public InProcessBrowserTest {
     return coordinator()->GetViewControllerForTesting();
   }
   HostContentSettingsMap* host_content_settings_map() {
-    return HostContentSettingsMapFactory::GetForProfile(browser()->profile());
+    return HostContentSettingsMapFactory::GetForProfile(
+        browser()->GetProfile());
   }
   content::WebContents* active_web_contents() {
     return browser()->tab_strip_model()->GetActiveWebContents();

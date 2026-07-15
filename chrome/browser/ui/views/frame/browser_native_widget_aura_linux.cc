@@ -21,7 +21,7 @@ BrowserNativeWidgetAuraLinux::BrowserNativeWidgetAuraLinux(
     : BrowserNativeWidgetAura(browser_widget, browser_view) {
   use_custom_frame_pref_.Init(
       prefs::kUseCustomChromeFrame,
-      browser_view->browser()->profile()->GetPrefs(),
+      browser_view->browser()->GetProfile()->GetPrefs(),
       base::BindRepeating(
           &BrowserNativeWidgetAuraLinux::OnUseCustomChromeFrameChanged,
           base::Unretained(this)));
@@ -60,9 +60,9 @@ views::Widget::InitParams BrowserNativeWidgetAuraLinux::GetWidgetParams(
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
 
   if ((browser.is_type_app() || browser.is_type_app_popup()) &&
-      browser.profile()) {
+      browser.GetProfile()) {
     params.wayland_app_id = shell_integration_linux::GetXdgAppIdForWebApp(
-        browser.app_name(), browser.profile()->GetPath());
+        browser.app_name(), browser.GetProfile()->GetPath());
   } else {
     params.wayland_app_id = params.wm_class_class;
   }

@@ -106,7 +106,7 @@ class HatsNextWebDialogBrowserTest : public InProcessBrowserTest {
  public:
   void SetUpOnMainThread() override {
     HatsServiceFactory::GetInstance()->SetTestingFactoryAndUse(
-        browser()->profile(), base::BindRepeating(&BuildMockHatsService));
+        browser()->GetProfile(), base::BindRepeating(&BuildMockHatsService));
   }
 
   // Open a blank tab in the main browser, inspect it, and return the devtools
@@ -122,7 +122,7 @@ class HatsNextWebDialogBrowserTest : public InProcessBrowserTest {
 
   MockHatsService* hats_service() {
     return static_cast<MockHatsService*>(HatsServiceFactory::GetForProfile(
-        browser()->profile(), /*create_if_necessary=*/false));
+        browser()->GetProfile(), /*create_if_necessary=*/false));
   }
 
   base::OnceClosure GetSuccessClosure() {

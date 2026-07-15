@@ -94,11 +94,11 @@ IN_PROC_BROWSER_TEST_F(BrowserWidgetTest, DevToolsHasBoundsOnOpen) {
 IN_PROC_BROWSER_TEST_F(BrowserWidgetTest, WebAppsHasBoundsOnOpen) {
   auto web_app_info = web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(
       GURL("https://example.org/"));
-  webapps::AppId app_id = web_app::test::InstallWebApp(browser()->profile(),
+  webapps::AppId app_id = web_app::test::InstallWebApp(browser()->GetProfile(),
                                                        std::move(web_app_info));
 
   Browser* app_browser =
-      web_app::LaunchWebAppBrowser(browser()->profile(), app_id);
+      web_app::LaunchWebAppBrowser(browser()->GetProfile(), app_id);
   ASSERT_TRUE(app_browser->is_type_app());
   app_browser->GetWindow()->Close();
 }
@@ -268,12 +268,12 @@ IN_PROC_BROWSER_TEST_F(BrowserWidgetColorProviderTest,
 
   // The incognito browser should reflect the dark color mode irrespective of
   // the current BrowserColorScheme.
-  SetBrowserColorScheme(incognito_browser->profile(),
+  SetBrowserColorScheme(incognito_browser->GetProfile(),
                         ThemeService::BrowserColorScheme::kLight);
   EXPECT_EQ(ui::ColorProviderKey::ColorMode::kDark,
             GetColorProviderKey(incognito_browser).color_mode);
 
-  SetBrowserColorScheme(incognito_browser->profile(),
+  SetBrowserColorScheme(incognito_browser->GetProfile(),
                         ThemeService::BrowserColorScheme::kDark);
   EXPECT_EQ(ui::ColorProviderKey::ColorMode::kDark,
             GetColorProviderKey(incognito_browser).color_mode);
@@ -360,7 +360,7 @@ IN_PROC_BROWSER_TEST_F(BrowserWidgetColorProviderTest,
 
   // Set the user color in both the OS and the profile pref.
   os_settings_provider().SetAccentColor(SK_ColorBLUE);
-  SetUserColor(incognito_browser->profile(), SK_ColorGREEN);
+  SetUserColor(incognito_browser->GetProfile(), SK_ColorGREEN);
   incognito_browser_frame->ThemeChanged();
 
   // The incognito browser should always set the user_color_source to grayscale.
@@ -406,13 +406,13 @@ IN_PROC_BROWSER_TEST_F(BrowserWidgetColorProviderTest,
 
   // Set the is_grayscale pref to false. The incognito browser should force the
   // is_grayscale setting to true.
-  SetIsGrayscale(incognito_browser->profile(), false);
+  SetIsGrayscale(incognito_browser->GetProfile(), false);
   EXPECT_EQ(ui::ColorProviderKey::UserColorSource::kGrayscale,
             GetColorProviderKey(incognito_browser).user_color_source);
 
   // Set the is_grayscale pref to true. The incognito browser should continue to
   // force the is_grayscale setting to true.
-  SetIsGrayscale(incognito_browser->profile(), true);
+  SetIsGrayscale(incognito_browser->GetProfile(), true);
   EXPECT_EQ(ui::ColorProviderKey::UserColorSource::kGrayscale,
             GetColorProviderKey(incognito_browser).user_color_source);
 }

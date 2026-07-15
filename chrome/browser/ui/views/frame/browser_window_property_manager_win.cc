@@ -30,7 +30,8 @@ BrowserWindowPropertyManager::BrowserWindowPropertyManager(
     : view_(view), hwnd_(hwnd) {
   // At this point, the HWND is unavailable from BrowserView.
   DCHECK(hwnd);
-  profile_pref_registrar_.Init(view_->browser()->profile()->GetPrefs());
+  profile_pref_registrar_.Init(
+      const_cast<Profile*>(view_->browser()->GetProfile())->GetPrefs());
 
   // Monitor the profile icon version on Windows so that we can set the browser
   // relaunch icon when the version changes (e.g on initial icon creation).
@@ -47,7 +48,7 @@ BrowserWindowPropertyManager::~BrowserWindowPropertyManager() {
 
 void BrowserWindowPropertyManager::UpdateWindowProperties() {
   const Browser* browser = view_->browser();
-  Profile* profile = browser->profile();
+  Profile* profile = const_cast<Profile*>(browser->GetProfile());
 
   // Set the app user model id for this application to that of the application
   // name. See http://crbug.com/41308099.

@@ -126,7 +126,7 @@ IN_PROC_BROWSER_TEST_F(BrowserViewPipTest, DynamicStatePropagation) {
 
   // Create a PIP browser.
   Browser::CreateParams params(Browser::TYPE_PICTURE_IN_PICTURE,
-                               browser()->profile(), true);
+                               browser()->GetProfile(), true);
   Browser* pip_browser = Browser::Create(params);
   pip_browser->GetWindow()->Show();
   BrowserView* pip_browser_view =
@@ -150,7 +150,7 @@ IN_PROC_BROWSER_TEST_F(BrowserViewPipTest, InitialStateVerification) {
 
   // Create a PIP browser.
   Browser::CreateParams params(Browser::TYPE_PICTURE_IN_PICTURE,
-                               browser()->profile(), true);
+                               browser()->GetProfile(), true);
   Browser* pip_browser = Browser::Create(params);
   pip_browser->GetWindow()->Show();
   BrowserView* pip_browser_view =
@@ -178,7 +178,7 @@ IN_PROC_BROWSER_TEST_F(BrowserViewPipDisabledTest, FeatureFlagEnforcement) {
 
   // Create a PIP browser.
   Browser::CreateParams params(Browser::TYPE_PICTURE_IN_PICTURE,
-                               browser()->profile(), true);
+                               browser()->GetProfile(), true);
   Browser* pip_browser = Browser::Create(params);
   pip_browser->GetWindow()->Show();
   BrowserView* pip_browser_view =
@@ -213,7 +213,7 @@ IN_PROC_BROWSER_TEST_F(BrowserViewPipTest, NewWindowInitializationIsolation) {
   content::ScopedPipExclusionOverride exclusion_override(true);
 
   // Create a normal browser.
-  Browser::CreateParams params(Browser::TYPE_NORMAL, browser()->profile(),
+  Browser::CreateParams params(Browser::TYPE_NORMAL, browser()->GetProfile(),
                                true);
   Browser* new_normal_browser = Browser::Create(params);
   new_normal_browser->GetWindow()->Show();
@@ -392,7 +392,7 @@ class TestTabModalConfirmDialogDelegate : public TabModalConfirmDialogDelegate {
 // is invoked on the other.
 IN_PROC_BROWSER_TEST_F(BrowserViewTest, CloseWithTabs) {
   Browser* browser2 =
-      Browser::Create(Browser::CreateParams(browser()->profile(), true));
+      Browser::Create(Browser::CreateParams(browser()->GetProfile(), true));
   chrome::AddTabAt(browser2, GURL(), -1, true);
   chrome::AddTabAt(browser2, GURL(), -1, true);
   TestWebContentsObserver observer(
@@ -405,7 +405,7 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, CloseWithTabs) {
 // BrowserView will destroy.
 IN_PROC_BROWSER_TEST_F(BrowserViewTest, CloseWithTabsStartWithActive) {
   Browser* browser2 =
-      Browser::Create(Browser::CreateParams(browser()->profile(), true));
+      Browser::Create(Browser::CreateParams(browser()->GetProfile(), true));
   chrome::AddTabAt(browser2, GURL(), -1, true);
   chrome::AddTabAt(browser2, GURL(), -1, true);
   browser2->tab_strip_model()->ActivateTabAt(
@@ -1441,7 +1441,7 @@ class BrowserViewDataProtectionTest : public InProcessBrowserTest {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 
 IN_PROC_BROWSER_TEST_F(BrowserViewDataProtectionTest, DC_Screenshot) {
-  data_controls::SetDataControls(browser()->profile()->GetPrefs(), {R"(
+  data_controls::SetDataControls(browser()->GetProfile()->GetPrefs(), {R"(
         {
           "name":"block",
           "rule_id":"1234",
@@ -1581,7 +1581,7 @@ class TabAddingWidgetObserver : public views::WidgetObserver {
 // ContentsWebView::CloneWebContentsLayer during synchronous widget destruction.
 IN_PROC_BROWSER_TEST_F(BrowserViewTest, CloseWidgetWithTabsNoCrash) {
   BrowserWindowInterface* browser2 =
-      Browser::Create(Browser::CreateParams(browser()->profile(), true));
+      Browser::Create(Browser::CreateParams(browser()->GetProfile(), true));
   chrome::AddTabAt(browser2, GURL("about:blank"), -1, true);
   EXPECT_EQ(1, browser2->GetTabStripModel()->count());
 

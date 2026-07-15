@@ -53,7 +53,8 @@ StarView::StarView(CommandUpdater* command_updater,
   DCHECK(browser);
 
   edit_bookmarks_enabled_.Init(
-      bookmarks::prefs::kEditBookmarksEnabled, browser->profile()->GetPrefs(),
+      bookmarks::prefs::kEditBookmarksEnabled,
+      browser->GetProfile()->GetPrefs(),
       base::BindRepeating(&StarView::EditBookmarksPrefUpdated,
                           base::Unretained(this)));
   SetID(VIEW_ID_STAR_BUTTON);

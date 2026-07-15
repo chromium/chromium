@@ -67,7 +67,7 @@ views::BubbleDialogDelegate* IntentPickerView::GetBubble() const {
 }
 
 bool IntentPickerView::GetShowIcon() const {
-  if (browser_->profile()->IsOffTheRecord()) {
+  if (browser_->GetProfile()->IsOffTheRecord()) {
     return false;
   }
 

@@ -133,7 +133,7 @@ IN_PROC_BROWSER_TEST_F(InfoBarRefreshViewBrowserTest,
   ASSERT_TRUE(color_provider);
 
   ThemeService* theme_service =
-      ThemeServiceFactory::GetForProfile(browser()->profile());
+      ThemeServiceFactory::GetForProfile(browser()->GetProfile());
   EXPECT_NE(SK_ColorGREEN, theme_service->GetUserColor());
   test::ThemeServiceChangedWaiter waiter(theme_service);
   const SkColor expected_bg = color_provider->GetColor(kColorInfoBarBackground);

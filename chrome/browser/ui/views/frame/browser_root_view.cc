@@ -267,7 +267,7 @@ void BrowserRootView::OnDragEntered(const ui::DropTargetEvent& event) {
       FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
       base::BindOnce(&GetURLMimeTypes, urls),
       base::BindOnce(&FilterURLsForDropability, urls,
-                     browser_view_->browser()->profile(),
+                     browser_view_->browser()->GetProfile(),
                      base::BindOnce(&BrowserRootView::OnFilteringComplete,
                                     weak_ptr_factory_.GetWeakPtr(),
                                     drop_info_->sequence)));
@@ -567,7 +567,7 @@ std::optional<GURL> BrowserRootView::GetPasteAndGoURL(
 
   AutocompleteMatch match;
   AutocompleteClassifierFactory::GetForProfile(
-      browser_view_->browser()->profile())
+      browser_view_->browser()->GetProfile())
       ->Classify(text, false, false, metrics::OmniboxEventProto::INVALID_SPEC,
                  &match, nullptr);
   if (!match.destination_url.is_valid()) {

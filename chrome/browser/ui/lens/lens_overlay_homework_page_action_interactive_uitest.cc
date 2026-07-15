@@ -151,7 +151,7 @@ class LensOverlayHomeworkPageActionTest
 };
 
 IN_PROC_BROWSER_TEST_F(LensOverlayHomeworkPageActionTest, ShowsOnMatchingPage) {
-  SetLensOverlayEduActionChipShownCount(browser()->profile(), 0);
+  SetLensOverlayEduActionChipShownCount(browser()->GetProfile(), 0);
   // Navigate to a matching page.
   const GURL url = embedded_test_server()->GetURL(kDocumentWithNamedElement);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(url)));
@@ -169,12 +169,12 @@ IN_PROC_BROWSER_TEST_F(LensOverlayHomeworkPageActionTest, ShowsOnMatchingPage) {
 
   EXPECT_TRUE(focus_manager->GetFocusedView());
   EXPECT_FALSE(icon_view->GetVisible());
-  EXPECT_EQ(GetLensOverlayEduActionChipShownCount(browser()->profile()), 1);
+  EXPECT_EQ(GetLensOverlayEduActionChipShownCount(browser()->GetProfile()), 1);
 }
 
 IN_PROC_BROWSER_TEST_F(LensOverlayHomeworkPageActionTest,
                        HidesOnNonMatchingPage) {
-  SetLensOverlayEduActionChipShownCount(browser()->profile(), 0);
+  SetLensOverlayEduActionChipShownCount(browser()->GetProfile(), 0);
   // Navigate to a non-matching page.
   const GURL url = embedded_test_server()->GetURL(kDocument2);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(url)));
@@ -192,12 +192,12 @@ IN_PROC_BROWSER_TEST_F(LensOverlayHomeworkPageActionTest,
 
   EXPECT_TRUE(focus_manager->GetFocusedView());
   EXPECT_FALSE(icon_view->GetVisible());
-  EXPECT_EQ(GetLensOverlayEduActionChipShownCount(browser()->profile()), 0);
+  EXPECT_EQ(GetLensOverlayEduActionChipShownCount(browser()->GetProfile()), 0);
 }
 
 IN_PROC_BROWSER_TEST_F(LensOverlayHomeworkPageActionTest,
                        HidesAfterMaxShownCountReached) {
-  SetLensOverlayEduActionChipShownCount(browser()->profile(), 4);
+  SetLensOverlayEduActionChipShownCount(browser()->GetProfile(), 4);
   // Navigate to a matching page.
   const GURL url = embedded_test_server()->GetURL(kDocumentWithNamedElement);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(url)));
@@ -215,7 +215,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayHomeworkPageActionTest,
 
   EXPECT_TRUE(focus_manager->GetFocusedView());
   EXPECT_FALSE(icon_view->GetVisible());
-  EXPECT_EQ(GetLensOverlayEduActionChipShownCount(browser()->profile()), 4);
+  EXPECT_EQ(GetLensOverlayEduActionChipShownCount(browser()->GetProfile()), 4);
 }
 
 #if BUILDFLAG(IS_WIN)
@@ -228,7 +228,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayHomeworkPageActionTest,
 // Flaky failures on Windows; see https://crbug.com/419308044.
 IN_PROC_BROWSER_TEST_F(LensOverlayHomeworkPageActionTest,
                        MAYBE_OpensNewTabWhenEnteredThroughKeyboard) {
-  SetLensOverlayEduActionChipShownCount(browser()->profile(), 0);
+  SetLensOverlayEduActionChipShownCount(browser()->GetProfile(), 0);
   const GURL url = embedded_test_server()->GetURL(kDocumentWithNamedElement);
   // Navigate to a matching page.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(url)));
@@ -280,7 +280,7 @@ class LensOverlayHomeworkPageActionTest_OptimizationFilter
   void SetupOptimizationFilter() {
     auto* optimization_guide_decider =
         OptimizationGuideKeyedServiceFactory::GetForProfile(
-            browser()->profile());
+            browser()->GetProfile());
     // Simulate the URL being allowed by both the allowlist and the blocklist.
     optimization_guide_decider->AddHintWithMultipleOptimizationsForTesting(
         GURL(embedded_test_server()->GetURL(kDocumentWithNamedElement)),
@@ -292,7 +292,7 @@ class LensOverlayHomeworkPageActionTest_OptimizationFilter
 IN_PROC_BROWSER_TEST_F(LensOverlayHomeworkPageActionTest_OptimizationFilter,
                        ShowsOnMatchingPage) {
   SetupOptimizationFilter();
-  SetLensOverlayEduActionChipShownCount(browser()->profile(), 0);
+  SetLensOverlayEduActionChipShownCount(browser()->GetProfile(), 0);
   // Navigate to a matching page.
   const GURL url = embedded_test_server()->GetURL(kDocumentWithNamedElement);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(url)));
@@ -310,13 +310,13 @@ IN_PROC_BROWSER_TEST_F(LensOverlayHomeworkPageActionTest_OptimizationFilter,
 
   EXPECT_TRUE(focus_manager->GetFocusedView());
   EXPECT_FALSE(icon_view->GetVisible());
-  EXPECT_EQ(GetLensOverlayEduActionChipShownCount(browser()->profile()), 1);
+  EXPECT_EQ(GetLensOverlayEduActionChipShownCount(browser()->GetProfile()), 1);
 }
 
 IN_PROC_BROWSER_TEST_F(LensOverlayHomeworkPageActionTest_OptimizationFilter,
                        HidesOnNonMatchingPage) {
   SetupOptimizationFilter();
-  SetLensOverlayEduActionChipShownCount(browser()->profile(), 0);
+  SetLensOverlayEduActionChipShownCount(browser()->GetProfile(), 0);
   // Navigate to a non-matching page.
   const GURL url = embedded_test_server()->GetURL(kDocument2);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(url)));
@@ -334,13 +334,13 @@ IN_PROC_BROWSER_TEST_F(LensOverlayHomeworkPageActionTest_OptimizationFilter,
 
   EXPECT_TRUE(focus_manager->GetFocusedView());
   EXPECT_FALSE(icon_view->GetVisible());
-  EXPECT_EQ(GetLensOverlayEduActionChipShownCount(browser()->profile()), 0);
+  EXPECT_EQ(GetLensOverlayEduActionChipShownCount(browser()->GetProfile()), 0);
 }
 
 IN_PROC_BROWSER_TEST_F(LensOverlayHomeworkPageActionTest_OptimizationFilter,
                        HidesAfterMaxShownCountReached) {
   SetupOptimizationFilter();
-  SetLensOverlayEduActionChipShownCount(browser()->profile(), 4);
+  SetLensOverlayEduActionChipShownCount(browser()->GetProfile(), 4);
   // Navigate to a matching page.
   const GURL url = embedded_test_server()->GetURL(kDocumentWithNamedElement);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(url)));
@@ -358,7 +358,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayHomeworkPageActionTest_OptimizationFilter,
 
   EXPECT_TRUE(focus_manager->GetFocusedView());
   EXPECT_FALSE(icon_view->GetVisible());
-  EXPECT_EQ(GetLensOverlayEduActionChipShownCount(browser()->profile()), 4);
+  EXPECT_EQ(GetLensOverlayEduActionChipShownCount(browser()->GetProfile()), 4);
 }
 
 // fix
@@ -373,7 +373,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayHomeworkPageActionTest_OptimizationFilter,
 IN_PROC_BROWSER_TEST_F(LensOverlayHomeworkPageActionTest_OptimizationFilter,
                        MAYBE_OpensNewTabWhenEnteredThroughKeyboard) {
   SetupOptimizationFilter();
-  SetLensOverlayEduActionChipShownCount(browser()->profile(), 0);
+  SetLensOverlayEduActionChipShownCount(browser()->GetProfile(), 0);
   const GURL url = embedded_test_server()->GetURL(kDocumentWithNamedElement);
   // Navigate to a matching page.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(url)));

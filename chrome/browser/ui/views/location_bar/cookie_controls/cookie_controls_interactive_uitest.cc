@@ -173,14 +173,14 @@ class CookieControlsInteractiveTestBase : public InteractiveFeaturePromoTest {
   void SetHighSiteEngagement() {
     // Force high site engagement.
     auto* site_engagement =
-        site_engagement::SiteEngagementService::Get(browser()->profile());
+        site_engagement::SiteEngagementService::Get(browser()->GetProfile());
     site_engagement->ResetBaseScoreForURL(third_party_cookie_page_url(),
                                           /*score=*/100);
   }
 
   net::EmbeddedTestServer* https_server() { return https_server_.get(); }
   content_settings::CookieSettings* cookie_settings() {
-    return CookieSettingsFactory::GetForProfile(browser()->profile()).get();
+    return CookieSettingsFactory::GetForProfile(browser()->GetProfile()).get();
   }
 
   // If slow is set to true will return a URL for a page that never finishes

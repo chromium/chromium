@@ -40,7 +40,7 @@
 class ScopedAlwaysShowToolbar {
  public:
   ScopedAlwaysShowToolbar(Browser* browser, bool always_show) {
-    prefs_ = browser->profile()->GetPrefs();
+    prefs_ = browser->GetProfile()->GetPrefs();
     original_ = prefs_->GetBoolean(prefs::kShowFullscreenToolbar);
     prefs_->SetBoolean(prefs::kShowFullscreenToolbar, always_show);
   }
@@ -108,7 +108,7 @@ class ImmersiveModeControllerMacInteractiveTest : public InProcessBrowserTest {
   void HideWidget() { widget_->Hide(); }
 
   void CreateSecondBrowserWindow() {
-    this->second_browser_ = CreateBrowser(browser()->profile());
+    this->second_browser_ = CreateBrowser(browser()->GetProfile());
   }
 
   // Makes the second browser window the active window and ensures it's on the

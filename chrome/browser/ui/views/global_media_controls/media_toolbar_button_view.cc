@@ -37,7 +37,7 @@ MediaToolbarButtonView::MediaToolbarButtonView(
                     /** trigger_menu_on_long_press */ false),
       browser_(browser_view->browser()),
       service_(MediaNotificationServiceFactory::GetForProfile(
-          browser_view->browser()->profile())),
+          browser_view->browser()->GetProfile())),
       context_menu_(std::move(context_menu)) {
   button_controller()->set_notify_action(
       views::ButtonController::NotifyAction::kOnPress);
@@ -133,7 +133,8 @@ void MediaToolbarButtonView::ButtonPressed() {
   if (MediaDialogView::IsShowing()) {
     MediaDialogView::HideDialog();
   } else {
-    MediaDialogView::ShowDialogFromToolbar(this, service_, browser_->profile());
+    MediaDialogView::ShowDialogFromToolbar(this, service_,
+                                           browser_->GetProfile());
     ClosePromoBubble(/*engaged=*/true);
     observers_.Notify(&MediaToolbarButtonObserver::OnMediaDialogOpened);
   }

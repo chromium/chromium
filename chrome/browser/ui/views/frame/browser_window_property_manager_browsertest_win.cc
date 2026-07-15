@@ -88,7 +88,7 @@ void ValidateBrowserWindowProperties(
   EXPECT_EQ(VT_LPWSTR, prop_var.get().vt);
   base::CommandLine cmd_line(
       base::CommandLine::FromString(prop_var.get().pwszVal));
-  EXPECT_EQ(browser->profile()->GetBaseName().value(),
+  EXPECT_EQ(browser->GetProfile()->GetBaseName().value(),
             cmd_line.GetSwitchValueNative(switches::kProfileDirectory));
   prop_var.Reset();
 
@@ -97,7 +97,7 @@ void ValidateBrowserWindowProperties(
                                 prop_var.Receive()));
   EXPECT_EQ(VT_LPWSTR, prop_var.get().vt);
   EXPECT_EQ(AddIdToIconPath(profiles::internal::GetProfileIconPath(
-                                browser->profile()->GetPath())
+                                browser->GetProfile()->GetPath())
                                 .value()),
             prop_var.get().pwszVal);
   prop_var.Reset();
@@ -188,7 +188,8 @@ IN_PROC_BROWSER_TEST_F(BrowserTestWithProfileShortcutManager,
 
   // The default profile's name should be part of the relaunch name.
   ValidateBrowserWindowProperties(
-      browser(), base::UTF8ToUTF16(browser()->profile()->GetProfileUserName()));
+      browser(),
+      base::UTF8ToUTF16(browser()->GetProfile()->GetProfileUserName()));
 
   // The second profile's name should be part of the relaunch name.
   Browser* profile2_browser =
@@ -208,7 +209,7 @@ IN_PROC_BROWSER_TEST_F(BrowserWindowPropertyManagerTest, DISABLED_HostedApp) {
 
   base::RunLoop done;
   web_app::LaunchExtensionOrWebApp(
-      browser()->profile(),
+      browser()->GetProfile(),
       apps::AppLaunchParams(extension->id(),
                             apps::LaunchContainer::kLaunchContainerWindow,
                             WindowOpenDisposition::NEW_FOREGROUND_TAB,
@@ -218,9 +219,8 @@ IN_PROC_BROWSER_TEST_F(BrowserWindowPropertyManagerTest, DISABLED_HostedApp) {
 
   // Check that the new browser has an app name.
   // The launch should have created a new browser.
-  ASSERT_EQ(
-      2u,
-      ProfileBrowserCollection::GetForProfile(browser()->profile())->GetSize());
+  ASSERT_EQ(2u, ProfileBrowserCollection::GetForProfile(browser()->GetProfile())
+                    ->GetSize());
 
   // Find the new browser.
   BrowserWindowInterface* app_browser =
@@ -236,7 +236,7 @@ IN_PROC_BROWSER_TEST_F(BrowserWindowPropertyManagerTest,
   std::string app_name = "TestAppName";
   Browser::CreateParams params =
       Browser::CreateParams::CreateForPictureInPicture(
-          app_name, true, browser()->profile(), true);
+          app_name, true, browser()->GetProfile(), true);
   Browser* pip_browser = Browser::Create(params);
   ASSERT_TRUE(pip_browser->is_type_picture_in_picture());
   ASSERT_EQ(app_name, pip_browser->app_name());
@@ -265,7 +265,7 @@ IN_PROC_BROWSER_TEST_F(BrowserWindowPropertyManagerTest,
                        PictureInPictureWithoutAppName) {
   Browser::CreateParams params =
       Browser::CreateParams::CreateForPictureInPicture(
-          "", true, browser()->profile(), true);
+          "", true, browser()->GetProfile(), true);
   Browser* pip_browser = Browser::Create(params);
   ASSERT_TRUE(pip_browser->is_type_picture_in_picture());
   ASSERT_TRUE(pip_browser->app_name().empty());
@@ -285,7 +285,7 @@ IN_PROC_BROWSER_TEST_F(BrowserWindowPropertyManagerTest,
 
   std::wstring expected_app_id =
       shell_integration::win::GetAppUserModelIdForBrowser(
-          browser()->profile()->GetPath());
+          browser()->GetProfile()->GetPath());
 
   EXPECT_EQ(expected_app_id, prop_var.get().pwszVal);
 }

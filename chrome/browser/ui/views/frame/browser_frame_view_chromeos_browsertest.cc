@@ -468,10 +468,11 @@ class WebAppFrameViewChromeOSTest
     web_app_info->theme_color = GetThemeColor();
 
     webapps::AppId app_id = web_app::test::InstallWebApp(
-        browser()->profile(), std::move(web_app_info));
+        browser()->GetProfile(), std::move(web_app_info));
     content::TestNavigationObserver navigation_observer(GetAppURL());
     navigation_observer.StartWatchingNewWebContents();
-    app_browser_ = web_app::LaunchWebAppBrowser(browser()->profile(), app_id);
+    app_browser_ =
+        web_app::LaunchWebAppBrowser(browser()->GetProfile(), app_id);
     navigation_observer.WaitForNavigationFinished();
 
     browser_view_ = BrowserView::GetBrowserViewForBrowser(app_browser_);
@@ -867,7 +868,7 @@ IN_PROC_BROWSER_TEST_P(BrowserFrameViewChromeOSTest,
 
   // Create a bookmark that will be focused.
   bookmarks::BookmarkModel* bookmark_model =
-      BookmarkModelFactory::GetForBrowserContext(browser()->profile());
+      BookmarkModelFactory::GetForBrowserContext(browser()->GetProfile());
   const bookmarks::BookmarkNode* bookmark_bar_node =
       bookmark_model->bookmark_bar_node();
   bookmark_model->AddURL(bookmark_bar_node, 0, u"Test Bookmark",
@@ -1168,7 +1169,7 @@ IN_PROC_BROWSER_TEST_P(BrowserFrameViewChromeOSTest,
 // Update expectation if change is intentional.
 IN_PROC_BROWSER_TEST_P(BrowserFrameViewChromeOSTest, AppFrameColor) {
   Browser* app_browser =
-      CreateBrowserForApp("test_browser_app", browser()->profile());
+      CreateBrowserForApp("test_browser_app", browser()->GetProfile());
 
   aura::Window* window = app_browser->GetWindow()->GetNativeWindow();
   SkColor active_frame_color =
@@ -1264,7 +1265,7 @@ IN_PROC_BROWSER_TEST_F(PreventCloseBrowserFrameViewChromeOSTest,
 
   {
     apps::AppUpdateWaiter waiter(
-        browser->profile(), ash::kCalculatorAppId,
+        browser->GetProfile(), ash::kCalculatorAppId,
         base::BindRepeating([](const apps::AppUpdate& update) {
           return update.AllowClose().has_value() && update.AllowClose().value();
         }));
@@ -1297,7 +1298,7 @@ IN_PROC_BROWSER_TEST_F(PreventCloseBrowserFrameViewChromeOSTest,
 IN_PROC_BROWSER_TEST_P(BrowserFrameViewChromeOSTest,
                        ImmersiveModeTopViewInset) {
   Browser* app_browser =
-      CreateBrowserForApp("test_browser_app", browser()->profile());
+      CreateBrowserForApp("test_browser_app", browser()->GetProfile());
 
   auto* const immersive_mode_controller =
       ImmersiveModeController::From(app_browser);
@@ -1465,7 +1466,7 @@ IN_PROC_BROWSER_TEST_P(FloatBrowserFrameViewChromeOSTest,
 IN_PROC_BROWSER_TEST_P(FloatBrowserFrameViewChromeOSTest,
                        BrowserAppHeaderVisibilityInTabletModeTest) {
   Browser* browser2 =
-      CreateBrowserForApp("test_browser_app", browser()->profile());
+      CreateBrowserForApp("test_browser_app", browser()->GetProfile());
   BrowserView* browser_view2 = BrowserView::GetBrowserViewForBrowser(browser2);
   views::Widget* widget2 = browser_view2->GetWidget();
   BrowserFrameViewChromeOS* frame_view2 = GetFrameViewChromeOS(browser_view2);
@@ -1595,7 +1596,7 @@ IN_PROC_BROWSER_TEST_P(HomeLauncherBrowserFrameViewChromeOSTest,
 IN_PROC_BROWSER_TEST_P(HomeLauncherBrowserFrameViewChromeOSTest,
                        CaptionButtonVisibilityForBrowserLaunchedInTabletMode) {
   EnterTabletMode();
-  auto* new_browser = CreateBrowser(browser()->profile());
+  auto* new_browser = CreateBrowser(browser()->GetProfile());
   auto* frame_view =
       GetFrameViewChromeOS(BrowserView::GetBrowserViewForBrowser(new_browser));
   EXPECT_FALSE(frame_view->caption_button_container()->GetVisible());
@@ -1604,7 +1605,7 @@ IN_PROC_BROWSER_TEST_P(HomeLauncherBrowserFrameViewChromeOSTest,
 IN_PROC_BROWSER_TEST_P(HomeLauncherBrowserFrameViewChromeOSTest,
                        TabletModeAppCaptionButtonVisibility) {
   Browser* app_browser =
-      CreateBrowserForApp("test_browser_app", browser()->profile());
+      CreateBrowserForApp("test_browser_app", browser()->GetProfile());
   BrowserView* browser_view =
       BrowserView::GetBrowserViewForBrowser(app_browser);
   BrowserFrameViewChromeOS* frame_view = GetFrameViewChromeOS(browser_view);
@@ -1963,17 +1964,17 @@ using BrowserFrameViewAshTest = BrowserFrameViewChromeOSTest;
 IN_PROC_BROWSER_TEST_P(BrowserFrameViewAshTest,
                        SettingsSystemWebAppHasMinimumWindowSize) {
   // Install the Settings System Web App.
-  ash::SystemWebAppManager::GetForTest(browser()->profile())
+  ash::SystemWebAppManager::GetForTest(browser()->GetProfile())
       ->InstallSystemAppsForTesting();
 
   // Open a settings window.
   ui_test_utils::BrowserCreatedObserver browser_created_observer;
   auto* settings_manager = chrome::SettingsWindowManager::GetInstance();
-  settings_manager->ShowOSSettings(browser()->profile());
+  settings_manager->ShowOSSettings(browser()->GetProfile());
   browser_created_observer.Wait();
 
   BrowserWindowInterface* settings_browser =
-      settings_manager->FindBrowserForProfile(browser()->profile());
+      settings_manager->FindBrowserForProfile(browser()->GetProfile());
 
   // Try to set the bounds to a tiny value.
   settings_browser->GetWindow()->SetBounds(gfx::Rect(1, 1));

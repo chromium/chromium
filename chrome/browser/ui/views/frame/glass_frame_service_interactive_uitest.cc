@@ -53,8 +53,10 @@ IN_PROC_BROWSER_TEST_F(GlassFrameServiceInteractiveTest,
   }
 
   BrowserWindowInterface* const browser1 = browser();
-  BrowserWindowInterface* const browser2 = CreateBrowser(browser()->profile());
-  BrowserWindowInterface* const browser3 = CreateBrowser(browser()->profile());
+  BrowserWindowInterface* const browser2 =
+      CreateBrowser(browser()->GetProfile());
+  BrowserWindowInterface* const browser3 =
+      CreateBrowser(browser()->GetProfile());
 
   // Initially browser3 is active, so it should be eligible.
   EXPECT_TRUE(
@@ -86,8 +88,10 @@ IN_PROC_BROWSER_TEST_F(GlassFrameServiceInteractiveTest,
   }
 
   BrowserWindowInterface* const browser1 = browser();
-  BrowserWindowInterface* const browser2 = CreateBrowser(browser()->profile());
-  BrowserWindowInterface* const browser3 = CreateBrowser(browser()->profile());
+  BrowserWindowInterface* const browser2 =
+      CreateBrowser(browser()->GetProfile());
+  BrowserWindowInterface* const browser3 =
+      CreateBrowser(browser()->GetProfile());
 
   // Initially browser3 is active and eligible.
   EXPECT_TRUE(

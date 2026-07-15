@@ -106,7 +106,7 @@ void IntentChipButton::HandlePressed() {
 }
 
 IntentPickerTabHelper* IntentChipButton::GetTabHelper() const {
-  if (browser_->profile()->IsOffTheRecord()) {
+  if (browser_->GetProfile()->IsOffTheRecord()) {
     return nullptr;
   }
 

@@ -230,7 +230,7 @@ IN_PROC_BROWSER_TEST_P(ImmersiveModeBrowserViewTest,
                        TestCaptionButtonsReceiveEventsInAppImmersiveMode) {
   // Open a new app window.
   Browser* app_browser =
-      CreateBrowserForApp("test_browser_app", browser()->profile());
+      CreateBrowserForApp("test_browser_app", browser()->GetProfile());
   auto* const immersive_mode_controller =
       ImmersiveModeController::From(app_browser);
   BrowserView* const app_view =
@@ -503,7 +503,7 @@ IN_PROC_BROWSER_TEST_P(ImmersiveModeBrowserViewVerticalTabsTest,
   verify_no_reveal(browser(), "1st browser");
 
   // Create a new browser with VT on, and test it
-  Browser* new_browser = CreateBrowser(browser()->profile());
+  Browser* new_browser = CreateBrowser(browser()->GetProfile());
   verify_no_reveal(new_browser, "2nd browser");
 }
 

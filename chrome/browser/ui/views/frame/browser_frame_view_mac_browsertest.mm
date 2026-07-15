@@ -173,7 +173,7 @@ IN_PROC_BROWSER_TEST_F(BrowserFrameViewMacBrowserTest,
   // Assert that the layout of the frame view is in a valid state.
   EXPECT_FALSE(frame_view_test_api.needs_layout());
 
-  PrefService* prefs = browser->profile()->GetPrefs();
+  PrefService* prefs = browser->GetProfile()->GetPrefs();
   prefs->SetBoolean(prefs::kShowFullscreenToolbar, false);
 
   chrome::ToggleFullscreenMode(browser);
