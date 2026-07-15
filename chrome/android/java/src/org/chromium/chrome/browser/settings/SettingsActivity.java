@@ -53,7 +53,7 @@ import org.chromium.chrome.browser.back_press.BackPressHelper;
 import org.chromium.chrome.browser.back_press.BackPressHelper.OnKeyDownHandler;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
-import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
+import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.glic.GlicHelper;
 import org.chromium.chrome.browser.init.ActivityLifecycleDispatcherImpl;
@@ -875,7 +875,7 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
 
     @Override
     public HelpAndFeedbackLauncher getHelpAndFeedbackLauncher() {
-        return HelpAndFeedbackLauncherImpl.getForProfile(mProfile);
+        return HelpAndFeedbackLauncherFactory.getForProfile(mProfile);
     }
 
     @Override

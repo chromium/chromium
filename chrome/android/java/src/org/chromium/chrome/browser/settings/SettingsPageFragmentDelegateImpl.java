@@ -30,7 +30,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
-import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
+import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.search.SettingsSearchCoordinator;
@@ -324,7 +324,7 @@ public class SettingsPageFragmentDelegateImpl
 
     @Override
     public HelpAndFeedbackLauncher getHelpAndFeedbackLauncher() {
-        return HelpAndFeedbackLauncherImpl.getForProfile(mProfile);
+        return HelpAndFeedbackLauncherFactory.getForProfile(mProfile);
     }
 
     @Override
