@@ -20,6 +20,7 @@ enum EntityType {
   FLIGHT_RESERVATION = 6;
   VEHICLE = 7;
   KNOWN_TRAVELER_NUMBER = 8;
+  SENSITIVE_PII_PRESENCE = 9;
 }
 
 // This is a mirror of google.protobuf.Duration.

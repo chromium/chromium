@@ -18,12 +18,14 @@ message AtMemoryQueryRequest {
   // The list of Autofill data types supported by this client build.
   repeated MemoryDataType supported_local_data_types = 2;
 
-  // The site URL, improving the quality of results by giving more context where
-  // the popup has been triggered.
+  // The URL of the page where the popup has been triggered.
   string url = 3;
 
   // locale of a user's Chrome client: "en-us"
   string locale = 4;
+
+  // The title of the page where the popup has been triggered.
+  string title = 5;
 }
 
 // The response payload returned to answer the query.
@@ -37,6 +39,8 @@ message AtMemoryQueryResponse {
     QUERY_CLASSIFICATION_UNSUPPORTED = 2;
     // Blocked by safety filters (CSAM, adult)
     QUERY_CLASSIFICATION_SENSITIVE = 3;
+    // Blocked by recitation check
+    QUERY_CLASSIFICATION_RECITATION = 4;
   }
   QueryClassification query_classification = 1;
 
