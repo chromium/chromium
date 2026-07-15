@@ -11,7 +11,6 @@
 #include "base/no_destructor.h"
 #include "base/numerics/ranges.h"
 #include "content/browser/media/capture/android_cursor_renderer.h"
-#include "content/public/browser/web_contents.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkPaint.h"
@@ -32,12 +31,8 @@ class MouseCursorOverlayController::Observer
     : public ui::EventForwarder::Observer,
       public ui::ViewAndroidObserver {
  public:
-  Observer(MouseCursorOverlayController* controller,
-           gfx::NativeView view,
-           base::WeakPtr<WebContents> target_web_contents)
-      : controller_(controller),
-        view_(view),
-        target_web_contents_(target_web_contents) {
+  Observer(MouseCursorOverlayController* controller, gfx::NativeView view)
+      : controller_(controller), view_(view) {
     CHECK(controller_);
     CHECK(view_);
 
@@ -83,29 +78,7 @@ class MouseCursorOverlayController::Observer
     view_->RequestUnbufferedDispatch(event);
 
     const gfx::PointF location_px(event.GetXPix(0), event.GetYPix(0));
-    bool cursor_within_surface = true;
 
-    if (target_web_contents_) {
-      // On Android, we assume coordinates are relative to `view_`. To check if
-      // the cursor is within `target_web_contents_`, we scale its bounds to
-      // pixels and check if the event coordinates are within those bounds.
-      gfx::RectF target_rect_px(gfx::ScaleToRoundedSize(
-          target_web_contents_->GetViewBounds().size(), view_->GetDipScale()));
-      if (!target_rect_px.Contains(location_px)) {
-        cursor_within_surface = false;
-      }
-    }
-
-    // We always update the visual cursor overlay (processed in the switch
-    // statement below) regardless of whether the page is listening to mouse
-    // events (ShouldSendMouseEvents) or if the cursor is currently within the
-    // captured surface (cursor_within_surface).
-    // - We want the captured video to show the cursor even if the page doesn't
-    //   handle mouse events.
-    // - If the cursor is outside the captured surface, we still send updates
-    //   so the controller doesn't go idle. This prevents a laggy "warm-up"
-    //   effect when the cursor re-enters the surface. Downstream Viz will
-    //   naturally clip the cursor if it is out of bounds.
     switch (event.GetAction()) {
       case ui::MotionEvent::Action::HOVER_MOVE:
       case ui::MotionEvent::Action::MOVE:
@@ -124,14 +97,6 @@ class MouseCursorOverlayController::Observer
       default:
         break;
     }
-
-    if (controller_->ShouldSendMouseEvents()) {
-      controller_->OnMouseCoordinatesUpdated(
-          cursor_within_surface
-              ? gfx::Point(std::round(location_px.x()),
-                           std::round(location_px.y()))
-              : MouseCursorOverlayController::kOutsideSurface);
-    }
   }
 
   void OnTouchEvent(const ui::MotionEventAndroid& event) override {
@@ -142,14 +107,10 @@ class MouseCursorOverlayController::Observer
   void OnViewAndroidDestroyed() override { StopTracking(); }
 
   gfx::NativeView view() const { return view_; }
-  WebContents* GetCursorWebContents() const {
-    return target_web_contents_.get();
-  }
 
  private:
   raw_ptr<MouseCursorOverlayController> controller_;
   raw_ptr<ui::ViewAndroid> view_;
-  base::WeakPtr<WebContents> target_web_contents_;
   // The specific forwarder we are observing (the parent's).
   raw_ptr<ui::EventForwarder> observed_forwarder_ = nullptr;
 };
@@ -178,10 +139,7 @@ void MouseCursorOverlayController::SetTargetView(
   DCHECK_CALLED_ON_VALID_SEQUENCE(ui_sequence_checker_);
   observer_.reset();
   if (view) {
-    observer_ = std::make_unique<Observer>(
-        this, view,
-        target_web_contents ? target_web_contents->GetWeakPtr()
-                            : base::WeakPtr<WebContents>());
+    observer_ = std::make_unique<Observer>(this, view);
   }
 }
 
@@ -232,10 +190,6 @@ gfx::RectF MouseCursorOverlayController::ComputeRelativeBoundsForOverlay(
   if (observer_ && observer_->view()) {
     shared_surface_size_px = observer_->view()->GetPhysicalBackingSize();
     dip_scale = observer_->view()->GetDipScale();
-    if (WebContents* target_web_contents = observer_->GetCursorWebContents()) {
-      gfx::Size bounds_size = target_web_contents->GetViewBounds().size();
-      shared_surface_size_px = gfx::ScaleToRoundedSize(bounds_size, dip_scale);
-    }
   } else if (!target_size_.IsEmpty()) {
     // target_size_ is used + set in tests. This is used in tests because during
     // testing, it explicitly disconnects the controller from the view. My

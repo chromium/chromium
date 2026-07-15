@@ -159,7 +159,8 @@ class MouseCursorOverlayControllerAndroidTest
   raw_ptr<ui::EventForwarder> event_forwarder_ = nullptr;
 };
 
-TEST_F(MouseCursorOverlayControllerAndroidTest, RestrictsToWebContents) {
+TEST_F(MouseCursorOverlayControllerAndroidTest,
+       DISABLED_RestrictsToWebContents) {
   RunRestrictsToWebContentsTest();
 }
 
