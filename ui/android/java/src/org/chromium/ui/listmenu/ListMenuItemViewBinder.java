@@ -116,9 +116,13 @@ public class ListMenuItemViewBinder {
                 // We specifically need to check whether bitmap == null. If we do not, creating a
                 // BitmapDrawable from null does not fail; it instead creates an empty drawable and
                 // makes it visible. To achieve the correct behavior of hiding the start icon, we
-                // therefore need to perform a separate check for the bitmap being null and hide the
-                // start icon if so.
-                hideStartIcon(startIcon, keepIconSpacing);
+                // therefore need to perform a separate check for the bitmap being null.
+                // If hasStartIcon is true, that means a different start icon property was set, so
+                // we need to maintain the start icon. If no other start icon property is set and
+                // the bitmap is null, we should clear (hide) the start icon.
+                if (!hasStartIcon) {
+                    hideStartIcon(startIcon, keepIconSpacing);
+                }
             } else if (hasStartIcon) {
                 Drawable drawable = new BitmapDrawable(view.getResources(), bitmap);
                 setStartIcon(startIcon, drawable, keepIconSpacing);

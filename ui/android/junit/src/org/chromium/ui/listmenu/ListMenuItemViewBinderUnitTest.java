@@ -6,6 +6,7 @@ package org.chromium.ui.listmenu;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -23,6 +24,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
@@ -357,5 +359,60 @@ public class ListMenuItemViewBinderUnitTest {
         verify(mEndIcon).setVisibility(View.VISIBLE);
         // Verify start icon wasn't touched again (total count remains 1).
         verify(mStartIcon).setVisibility(anyInt());
+    }
+
+    @Test
+    @SmallTest
+    public void testStartIconBitmapDoesNotOverrideDrawable() {
+        Drawable drawable =
+                AppCompatResources.getDrawable(mContext, R.drawable.ic_delete_fill_24dp);
+        PropertyModel propertyModel =
+                new PropertyModel.Builder(ListMenuItemProperties.ALL_KEYS)
+                        .with(ListMenuItemProperties.START_ICON_DRAWABLE, drawable)
+                        .with(ListMenuItemProperties.START_ICON_BITMAP, null)
+                        .build();
+
+        // 1. Bind START_ICON_DRAWABLE. Should set drawable and make visible.
+        ListMenuItemViewBinder.binder(
+                propertyModel, mListItemView, ListMenuItemProperties.START_ICON_DRAWABLE);
+        verify(mStartIcon).setImageDrawable(drawable);
+        verify(mStartIcon).setVisibility(View.VISIBLE);
+
+        // Reset mock.
+        clearInvocations(mStartIcon);
+
+        // 2. Bind START_ICON_BITMAP (which is null). Should NOT hide the icon.
+        ListMenuItemViewBinder.binder(
+                propertyModel, mListItemView, ListMenuItemProperties.START_ICON_BITMAP);
+        verify(mStartIcon, never()).setImageDrawable(null);
+        verify(mStartIcon, never()).setVisibility(View.INVISIBLE);
+        verify(mStartIcon, never()).setVisibility(View.GONE);
+    }
+
+    @Test
+    @SmallTest
+    public void testStartIconDrawableDoesNotOverrideBitmap() {
+        Bitmap bitmap = Bitmap.createBitmap(10, 10, Bitmap.Config.ARGB_8888);
+        PropertyModel propertyModel =
+                new PropertyModel.Builder(ListMenuItemProperties.ALL_KEYS)
+                        .with(ListMenuItemProperties.START_ICON_BITMAP, bitmap)
+                        .with(ListMenuItemProperties.START_ICON_DRAWABLE, null)
+                        .build();
+
+        // 1. Bind START_ICON_BITMAP. Should set drawable and make visible.
+        ListMenuItemViewBinder.binder(
+                propertyModel, mListItemView, ListMenuItemProperties.START_ICON_BITMAP);
+        verify(mStartIcon).setImageDrawable(any(BitmapDrawable.class));
+        verify(mStartIcon).setVisibility(View.VISIBLE);
+
+        // Reset mock.
+        clearInvocations(mStartIcon);
+
+        // 2. Bind START_ICON_DRAWABLE (which is null). Should NOT hide the icon.
+        ListMenuItemViewBinder.binder(
+                propertyModel, mListItemView, ListMenuItemProperties.START_ICON_DRAWABLE);
+        verify(mStartIcon, never()).setImageDrawable(null);
+        verify(mStartIcon, never()).setVisibility(View.INVISIBLE);
+        verify(mStartIcon, never()).setVisibility(View.GONE);
     }
 }
