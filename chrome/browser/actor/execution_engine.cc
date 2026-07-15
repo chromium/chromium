@@ -8,7 +8,10 @@
 #include <cstddef>
 #include <memory>
 #include <optional>
+#include <string>
+#include <string_view>
 #include <utility>
+#include <vector>
 
 #include "base/check.h"
 #include "base/check_deref.h"
@@ -22,6 +25,7 @@
 #include "base/no_destructor.h"
 #include "base/notimplemented.h"
 #include "base/state_transitions.h"
+#include "base/strings/string_split.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "base/types/expected.h"
@@ -44,6 +48,7 @@
 #include "chrome/browser/autofill/actor/actor_form_filling_service_impl.h"
 #include "chrome/browser/autofill/actor/one_time_tokens/actor_one_time_token_filling_service.h"
 #include "chrome/browser/autofill/actor/one_time_tokens/actor_one_time_token_filling_service_impl.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/lookalikes/lookalike_url_service.h"
 #include "chrome/browser/lookalikes/lookalike_url_service_factory.h"
@@ -52,6 +57,7 @@
 #include "chrome/common/actor/action_result.h"
 #include "chrome/common/chrome_features.h"
 #include "components/actor/core/actor_features.h"
+#include "components/actor/core/actor_logging.h"
 #include "components/actor/core/actor_metrics.h"
 #include "components/actor/core/actor_util.h"
 #include "components/actor/core/journal_details_builder.h"
@@ -72,12 +78,14 @@
 #include "components/password_manager/core/browser/actor_login/actor_login_types.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/tabs/public/tab_interface.h"
+#include "components/variations/service/variations_service.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/navigation_throttle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "mojo/public/cpp/base/proto_wrapper.h"
+#include "net/base/url_util.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
@@ -101,6 +109,7 @@ namespace {
 constexpr char kSafetyListPredicateName[] = "actor_safety_list_check";
 constexpr char kSensitiveUrlPredicateName[] = "actor_sensitive_url_check";
 constexpr char kLookalikeUrlPredicateName[] = "actor_lookalike_url_check";
+constexpr char kActionAllowlistPredicateName[] = "actor_action_allowlist_check";
 
 struct ActorGatingContext : public origin_gating::GatingDecisionContext {
   ActorGatingContext(ukm::SourceId ukm_id,
@@ -188,6 +197,70 @@ origin_gating::Decision EvaluateLookalikeUrl(
   return origin_gating::Decision::kNoDecision;
 }
 
+// Returns true if `url`'s host is in the `allowlist`. If `include_subdomains`
+// is true, subdomains also match if the parent domain is in the list.
+bool IsHostInAllowList(const std::vector<std::string_view>& allowlist,
+                       const GURL& url,
+                       bool include_subdomains) {
+  if (!include_subdomains) {
+    return std::ranges::contains(allowlist, url.host());
+  }
+
+  std::string host = url.GetHost();
+  while (!host.empty()) {
+    if (std::ranges::contains(allowlist, host)) {
+      return true;
+    }
+    host = net::GetSuperdomain(host);
+  }
+  return false;
+}
+
+origin_gating::Decision EvaluateActionAllowlist(
+    const origin_gating::GatingDecisionContext* context,
+    origin_gating::GateableEvent event,
+    const GURL& source,
+    const GURL& destination) {
+  if (!base::FeatureList::IsEnabled(kGlicActionAllowlist)) {
+    return origin_gating::Decision::kNoDecision;
+  }
+
+  const std::string allowlist_joined = kAllowlist.Get();
+  const std::vector<std::string_view> allowlist = base::SplitStringPiece(
+      allowlist_joined, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+  if (IsHostInAllowList(allowlist, destination, /*include_subdomains=*/true)) {
+    return origin_gating::Decision::kAllowed;
+  }
+
+  const std::string allowlist_exact_joined = kAllowlistExact.Get();
+  const std::vector<std::string_view> allowlist_exact =
+      base::SplitStringPiece(allowlist_exact_joined, ",", base::TRIM_WHITESPACE,
+                             base::SPLIT_WANT_NONEMPTY);
+  if (IsHostInAllowList(allowlist_exact, destination,
+                        /*include_subdomains=*/false)) {
+    return origin_gating::Decision::kAllowed;
+  }
+
+  if (kAllowlistOnly.Get()) {
+    if (allowlist.empty() && allowlist_exact.empty()) {
+      if (variations::VariationsService* variations_service =
+              g_browser_process->variations_service()) {
+        if (!variations_service->IsLikelyDogfoodClient()) {
+          ACTOR_LOG() << __func__ << ": Non-dogfood client";
+        }
+        if (variations_service->GetClientFilterableStateForVersion()
+                ->GoogleGroups()
+                .empty()) {
+          ACTOR_LOG() << __func__ << ": No Google groups";
+        }
+      }
+    }
+    return origin_gating::Decision::kBlocked;
+  }
+
+  return origin_gating::Decision::kNoDecision;
+}
+
 static constexpr std::string_view kPermissionGrantedHistogram =
     "Actor.NavigationGating.PermissionGranted";
 
@@ -269,6 +342,10 @@ MayActOnUrlBlockResult MapGatingDecisionToBlockResult(
       if (decision.attribution == kLookalikeUrlPredicateName) {
         return {kLookalikeUrlPredicateName,
                 MayActOnUrlBlockReason::kLookalikeDomain};
+      }
+      if (decision.attribution == kActionAllowlistPredicateName) {
+        return {kActionAllowlistPredicateName,
+                MayActOnUrlBlockReason::kUrlNotInAllowlist};
       }
       NOTREACHED() << "Unrecognized custom predicate attribution: "
                    << decision.attribution.CustomPredicateName();
@@ -359,6 +436,11 @@ ExecutionEngine::ExecutionEngine(
           *this,
           origin_gating::OriginGatingConfiguration(
               {
+                  {origin_gating::CustomPredicate(
+                       base::BindRepeating(&EvaluateActionAllowlist),
+                       kActionAllowlistPredicateName),
+                   {origin_gating::GateableEvent::kNavigationRequest,
+                    origin_gating::GateableEvent::kPageAction}},
                   {origin_gating::DecisionSource::kEnterprisePolicy,
                    {origin_gating::GateableEvent::kNavigationRequest,
                     origin_gating::GateableEvent::kPageAction}},

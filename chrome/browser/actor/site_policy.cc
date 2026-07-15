@@ -4,24 +4,19 @@
 
 #include "chrome/browser/actor/site_policy.h"
 
-#include <algorithm>
 #include <string>
 #include <string_view>
-#include <vector>
 
 #include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/notimplemented.h"
-#include "base/strings/string_split.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/types/expected.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_io_data.h"
 #include "components/actor/core/actor_features.h"
-#include "components/actor/core/actor_logging.h"
 #include "components/actor/core/actor_util.h"
 #include "components/actor/core/aggregated_journal.h"
 #include "components/actor/core/journal_details_builder.h"
@@ -32,7 +27,6 @@
 #include "components/optimization_guide/proto/hints.pb.h"
 #include "components/safe_browsing/buildflags.h"
 #include "components/tabs/public/tab_interface.h"
-#include "components/variations/service/variations_service.h"
 #include "content/public/browser/web_contents.h"
 #include "net/base/url_util.h"
 #include "url/gurl.h"
@@ -87,25 +81,6 @@ class DecisionWrapper {
   std::unique_ptr<AggregatedJournal::PendingAsyncEntry> journal_entry_;
 };
 
-// Returns true if `url`'s host is in the `allowlist`. If `include_subdomains`
-// is true, subdomains also match if the parent domain is in the list.
-bool IsHostInAllowList(const std::vector<std::string_view>& allowlist,
-                       const GURL& url,
-                       bool include_subdomains) {
-  if (!include_subdomains) {
-    return std::ranges::contains(allowlist, url.host());
-  }
-
-  std::string host = url.GetHost();
-  while (!host.empty()) {
-    if (std::ranges::contains(allowlist, host)) {
-      return true;
-    }
-    host = net::GetSuperdomain(host);
-  }
-  return false;
-}
-
 // Whether to continue with the action or navigation based on the optimization
 // guide decision. Since we want to not block navigation in case the service has
 // an issue, we only stop the actor when the decision is kFalse, explicitly
@@ -158,49 +133,6 @@ void MayActOnUrlInternal(const GURL& url,
     decision_wrapper->Reject("Safebrowsing unavailable",
                              MayActOnUrlBlockReason::kSafeBrowsing);
     return;
-  }
-
-  if (base::FeatureList::IsEnabled(kGlicActionAllowlist)) {
-    const std::string allowlist_joined = kAllowlist.Get();
-    const std::vector<std::string_view> allowlist =
-        base::SplitStringPiece(allowlist_joined, ",", base::TRIM_WHITESPACE,
-                               base::SPLIT_WANT_NONEMPTY);
-    if (IsHostInAllowList(allowlist, url, /*include_subdomains=*/true)) {
-      decision_wrapper->Accept();
-      return;
-    }
-
-    const std::string allowlist_exact_joined = kAllowlistExact.Get();
-    const std::vector<std::string_view> allowlist_exact =
-        base::SplitStringPiece(allowlist_exact_joined, ",",
-                               base::TRIM_WHITESPACE,
-                               base::SPLIT_WANT_NONEMPTY);
-    if (IsHostInAllowList(allowlist_exact, url, /*include_subdomains=*/false)) {
-      decision_wrapper->Accept();
-      return;
-    }
-
-    if (kAllowlistOnly.Get()) {
-      if (allowlist.empty() && allowlist_exact.empty()) {
-        if (variations::VariationsService* variations_service =
-                g_browser_process->variations_service()) {
-          if (!variations_service->IsLikelyDogfoodClient()) {
-            ACTOR_LOG() << __func__ << ": Non-dogfood client";
-          }
-          if (variations_service->GetClientFilterableStateForVersion()
-                  ->GoogleGroups()
-                  .empty()) {
-            ACTOR_LOG() << __func__ << ": No Google groups";
-          }
-        }
-        decision_wrapper->Reject("Allowlist is empty",
-                                 MayActOnUrlBlockReason::kUrlNotInAllowlist);
-      } else {
-        decision_wrapper->Reject("URL not in allowlist",
-                                 MayActOnUrlBlockReason::kUrlNotInAllowlist);
-      }
-      return;
-    }
   }
 
   std::move(resolve_no_verdict)
