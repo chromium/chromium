@@ -1,0 +1,5 @@
+include_rules = [
+  # keep-sorted start
+  "+ios/chrome/browser/popup_menu/overflow_menu/public/features.h",
+  # keep-sorted end
+]

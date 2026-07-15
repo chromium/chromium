@@ -68,6 +68,7 @@ source_set("ui_bundled") {
     "//ios/chrome/browser/lens/ui_bundled:lens_entrypoint",
     "//ios/chrome/browser/lens_overlay/model:presentation_type",
     "//ios/chrome/browser/lens_overlay/public:lens_overlay_availability",
+    "//ios/chrome/browser/lens_overlay/public:lens_overlay_availability_utils",
     "//ios/chrome/browser/lens_overlay/ui:entry_point",
     "//ios/chrome/browser/location_bar/badge/coordinator",
     "//ios/chrome/browser/location_bar/badge/ui",

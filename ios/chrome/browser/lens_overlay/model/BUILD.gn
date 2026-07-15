@@ -105,10 +105,10 @@ source_set("configuration_factory") {
     "lens_overlay_configuration_factory.mm",
   ]
   deps = [
-    ":entrypoint",
     "//base",
     "//components/signin/public/base",
     "//ios/chrome/browser/lens/ui_bundled:lens_entrypoint",
+    "//ios/chrome/browser/lens_overlay/public:entrypoint",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/public/features",
@@ -170,21 +170,9 @@ source_set("metrics_recorder") {
     "//ui/base",
   ]
   public_deps = [
-    ":entrypoint",
     "//components/lens",
+    "//ios/chrome/browser/lens_overlay/public:entrypoint",
   ]
-}
-
-source_set("entrypoint") {
-  sources = [
-    "lens_overlay_entrypoint.h",
-    "lens_overlay_entrypoint.mm",
-  ]
-  deps = [
-    "//base",
-    "//components/lens",
-  ]
-  public_deps = [ "//base" ]
 }
 
 source_set("unit_tests") {

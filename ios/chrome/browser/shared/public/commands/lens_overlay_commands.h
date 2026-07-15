@@ -8,7 +8,7 @@
 #import <UIKit/UIKit.h>
 
 #import "components/lens/lens_overlay_dismissal_source.h"
-#import "ios/chrome/browser/lens_overlay/model/lens_overlay_entrypoint.h"
+#import "ios/chrome/browser/lens_overlay/public/lens_overlay_entrypoint.h"
 
 @protocol LensImageMetadata;
 @protocol LensOverlayResultsPagePresenting;

@@ -49,7 +49,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/intelligence/features",
     "//ios/chrome/browser/intents/model:model_donation_helper",
     "//ios/chrome/browser/lens_overlay/model",
-    "//ios/chrome/browser/lens_overlay/public:lens_overlay_availability",
+    "//ios/chrome/browser/lens_overlay/public:lens_overlay_availability_utils",
     "//ios/chrome/browser/menu/ui_bundled",
     "//ios/chrome/browser/ntp/model",
     "//ios/chrome/browser/ntp/shared/metrics",

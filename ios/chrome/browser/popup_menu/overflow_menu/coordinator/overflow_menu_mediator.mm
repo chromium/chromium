@@ -55,6 +55,8 @@
 #import "ios/chrome/browser/intents/model/intents_donation_helper.h"
 #import "ios/chrome/browser/lens_overlay/model/lens_overlay_tab_helper.h"
 #import "ios/chrome/browser/lens_overlay/public/lens_overlay_availability.h"
+#import "ios/chrome/browser/lens_overlay/public/lens_overlay_availability_utils.h"
+#import "ios/chrome/browser/lens_overlay/public/lens_overlay_entrypoint.h"
 #import "ios/chrome/browser/ntp/shared/metrics/feed_metrics_recorder.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_color_palette.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_color_palette_util.h"
@@ -901,7 +903,7 @@ void GetPresetNTPBackgroundPreview(
                                    [weakSelf showShareSheetForChromeApp];
                                  }];
 
-  if ([self isLensOverlayEnabled]) {
+  if ([self isLensOverlayAvailable]) {
     self.lensOverlayAction = [self openLensOverlayAction];
   }
 
@@ -1890,7 +1892,7 @@ void GetPresetNTPBackgroundPreview(
       IsIncognitoModeDisabled(self.profilePrefs);
 
   if (IsLensOverlayAllowedByPolicy(_profilePrefs)) {
-    self.lensOverlayAction.enabled = ![self isLensOverlayVisible];
+    self.lensOverlayAction.enabled = [self isLensOverlayEnabled];
   }
 
   if (IsReaderModeAvailable()) {
@@ -2113,29 +2115,21 @@ void GetPresetNTPBackgroundPreview(
 }
 
 // Returns whether lens overlay is enabled on the current page.
+- (BOOL)isLensOverlayAvailable {
+  return IsLensOverlayEntrypointAvailable(
+      LensOverlayEntrypoint::kOverflowMenu, _profilePrefs,
+      self.templateURLService, self.webState,
+      self.baseViewController.traitCollection);
+}
+
+// Returns whether lens overlay is enabled on the current page.
 - (BOOL)isLensOverlayEnabled {
-  if (IsOverflowMenuNTPRefactorEnabled() && [self isCurrentWebPageNTP]) {
-    return NO;
-  }
-  BOOL isPortrait = !IsCompactHeight(self.baseViewController.traitCollection);
-  BOOL isSupported =
-      search_engines::SupportsSearchImageWithLens(self.templateURLService);
-  BOOL portraitOverride =
-      IsLensOverlayLandscapeOrientationEnabled(_profilePrefs);
-  BOOL isAvailable = IsLensOverlayAllowedByPolicy(_profilePrefs);
-  return isAvailable && isSupported && (isPortrait || portraitOverride) &&
-         ![self isLensOverlayVisible];
+  return !IsLensOverlayVisible(self.webState);
 }
 
 // Returns whether Lens Overlay is currently being displayed.
 - (BOOL)isLensOverlayVisible {
-  if (!self.webState) {
-    return NO;
-  }
-  LensOverlayTabHelper* lensOverlayTabHelper =
-      LensOverlayTabHelper::FromWebState(self.webState);
-  return lensOverlayTabHelper &&
-         lensOverlayTabHelper->IsLensOverlayUIAttachedAndAlive();
+  return IsLensOverlayVisible(self.webState);
 }
 
 // Determines whether or not translate is available on the page and logs the
@@ -2636,7 +2630,7 @@ void GetPresetNTPBackgroundPreview(
   actions.push_back(overflow_menu::ActionType::FindInPage);
   actions.push_back(overflow_menu::ActionType::TextZoom);
 
-  if ([self isLensOverlayEnabled]) {
+  if ([self isLensOverlayAvailable]) {
     actions.push_back(overflow_menu::ActionType::LensOverlay);
   }
 

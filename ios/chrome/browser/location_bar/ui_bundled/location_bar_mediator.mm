@@ -8,8 +8,6 @@
 #import "base/memory/ptr_util.h"
 #import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/public/tracker.h"
-#import "components/google/core/common/google_util.h"
-#import "components/lens/lens_url_utils.h"
 #import "components/omnibox/common/omnibox_features.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
@@ -21,6 +19,8 @@
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/lens_overlay/public/lens_overlay_availability.h"
+#import "ios/chrome/browser/lens_overlay/public/lens_overlay_availability_utils.h"
+#import "ios/chrome/browser/lens_overlay/public/lens_overlay_entrypoint.h"
 #import "ios/chrome/browser/location_bar/ui_bundled/location_bar_consumer.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_util.h"
 #import "ios/chrome/browser/omnibox/model/placeholder_service/placeholder_service.h"
@@ -435,24 +435,15 @@ const CGFloat kIconPointSize = 16.0;
 
 /// Whether the lens overlay entrypoint should be available.
 - (BOOL)isLensOverlayEntrypointAvailable {
-  if (![self isLensOverlayAvailable] ||
-      _isIncognito ||
-      !search_engines::SupportsSearchImageWithLens(self.templateURLService)) {
-    return NO;
-  }
-  GURL visibleURL = GURL();
   web::WebState* webState = [self activeWebState];
-  if (webState) {
-    visibleURL = webState->GetVisibleURL();
-  }
+  ProfileIOS* profile =
+      webState ? ProfileIOS::FromBrowserState(webState->GetBrowserState())
+               : nullptr;
+  const PrefService* prefs = profile ? profile->GetPrefs() : nullptr;
 
-  if (google_util::IsGoogleSearchUrl(visibleURL) ||
-      google_util::IsGoogleHomePageUrl(visibleURL)) {
-    return NO;
-  }
-
-  return !IsVisibleURLNewTabPage(webState) &&
-         !lens::IsLensMWebResult(visibleURL);
+  return IsLensOverlayEntrypointAvailable(LensOverlayEntrypoint::kLocationBar,
+                                          prefs, self.templateURLService,
+                                          webState);
 }
 
 - (BOOL)isCurrentPageNTP {

@@ -1,9 +1,9 @@
-// Copyright 2024 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_LENS_OVERLAY_MODEL_LENS_OVERLAY_ENTRYPOINT_H_
-#define IOS_CHROME_BROWSER_LENS_OVERLAY_MODEL_LENS_OVERLAY_ENTRYPOINT_H_
+#ifndef IOS_CHROME_BROWSER_LENS_OVERLAY_PUBLIC_LENS_OVERLAY_ENTRYPOINT_H_
+#define IOS_CHROME_BROWSER_LENS_OVERLAY_PUBLIC_LENS_OVERLAY_ENTRYPOINT_H_
 
 #import "components/lens/lens_overlay_invocation_source.h"
 
@@ -43,4 +43,4 @@ LensOverlayInvocationSource InvocationSourceFromEntrypoint(
 
 }  // namespace lens
 
-#endif  // IOS_CHROME_BROWSER_LENS_OVERLAY_MODEL_LENS_OVERLAY_ENTRYPOINT_H_
+#endif  // IOS_CHROME_BROWSER_LENS_OVERLAY_PUBLIC_LENS_OVERLAY_ENTRYPOINT_H_

@@ -124,7 +124,7 @@ source_set("commands") {
     "//ios/chrome/browser/enterprise/enterprise_dialog/model",
     "//ios/chrome/browser/fullscreen/public:metrics",
     "//ios/chrome/browser/intelligence/bwg/utils:constants",
-    "//ios/chrome/browser/lens_overlay/model:entrypoint",
+    "//ios/chrome/browser/lens_overlay/public:entrypoint",
     "//ios/chrome/browser/reader_mode/model:constants",
     "//ios/chrome/browser/shared/ui/util:url_with_title",
     "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid:tab_grid_paging",

@@ -10,7 +10,7 @@
 #import "components/lens/lens_overlay_dismissal_source.h"
 #import "components/lens/lens_overlay_first_interaction_type.h"
 #import "components/lens/lens_overlay_metrics.h"
-#import "ios/chrome/browser/lens_overlay/model/lens_overlay_entrypoint.h"
+#import "ios/chrome/browser/lens_overlay/public/lens_overlay_entrypoint.h"
 
 namespace web {
 class WebState;

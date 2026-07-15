@@ -22,3 +22,63 @@ source_set("public") {
   sources = [ "lens_overlay_constants.h" ]
   deps = []
 }
+
+source_set("entrypoint") {
+  sources = [
+    "lens_overlay_entrypoint.h",
+    "lens_overlay_entrypoint.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/lens",
+  ]
+  public_deps = [ "//base" ]
+}
+
+source_set("lens_overlay_availability_utils") {
+  sources = [
+    "lens_overlay_availability_utils.h",
+    "lens_overlay_availability_utils.mm",
+  ]
+  deps = [
+    ":lens_overlay_availability",
+    "//base",
+    "//components/google/core/common",
+    "//components/lens",
+    "//components/prefs",
+    "//components/search_engines",
+    "//ios/chrome/browser/lens_overlay/model",
+    "//ios/chrome/browser/lens_overlay/model:utils",
+    "//ios/chrome/browser/ntp/model:util",
+    "//ios/chrome/browser/popup_menu/overflow_menu/public:features",
+    "//ios/chrome/browser/search_engines/model:search_engines_util",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/web/public",
+  ]
+  public_deps = [ ":entrypoint" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "lens_overlay_availability_utils_unittest.mm" ]
+  deps = [
+    ":lens_overlay_availability",
+    ":lens_overlay_availability_utils",
+    "//base/test:test_support",
+    "//components/lens:enterprise_policy",
+    "//components/prefs",
+    "//components/search_engines",
+    "//ios/chrome/browser/lens_overlay/model",
+    "//ios/chrome/browser/ntp/model",
+    "//ios/chrome/browser/popup_menu/overflow_menu/public:features",
+    "//ios/chrome/browser/search_engines/model:template_url_service_factory",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/shared/model/url:constants",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/test:test_support",
+    "//ios/web/public/test",
+    "//testing/gtest",
+    "//url",
+  ]
+}
