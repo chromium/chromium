@@ -1176,41 +1176,6 @@ suite('ContextualTasksComposeboxTest', () => {
       await mockSearchboxPageHandler.whenCalled('submitQuery');
     }
 
-    test(
-        'voice error scrim is absolute when not hidden; display none otherwise',
-        async () => {
-          // When no error: errorScrim should be absent:
-          let errorScrim = composebox.shadowRoot.querySelector('#errorScrim');
-          assertFalse(!!errorScrim);
-
-          // When error: errorScrim is shown, must be position absolute:
-          composebox.inVoiceSearchMode = true;
-          composebox.errorMessage = 'Network error';
-          await composebox.updateComplete;
-
-          errorScrim = composebox.shadowRoot.querySelector('#errorScrim');
-          assertTrue(!!errorScrim);
-          assertEquals(
-              'absolute', window.getComputedStyle(errorScrim).position);
-
-          // When dismissed (hidden again):
-          const shadowRoot = errorScrim.shadowRoot;
-          assertTrue(!!shadowRoot);
-          if (!shadowRoot) {
-            return;
-          }
-          const dismissErrorButton =
-              shadowRoot.querySelector('#dismissErrorButton');
-          assertTrue(!!dismissErrorButton);
-          dismissErrorButton.click();
-          await microtasksFinished();
-          await composebox.updateComplete;
-
-          errorScrim = composebox.shadowRoot.querySelector('#errorScrim');
-          // Equivalent to checking 'display none':
-          assertFalse(!!errorScrim);
-        });
-
     test('toolchip and image added, then removed in voice search', async () => {
       // Add tool chip:
       composebox.contextMenuEnabled = true;
@@ -2818,5 +2783,139 @@ suite(`ContextualTasksComposeboxResizeTest`, () => {
           await glow.updateComplete;
           assertTrue(glow.energyEffectAnimationEnabled);
         });
+      });
+});
+
+[true, false].forEach(useFork => {
+  suite(
+      `ContextualTasksComposeboxForkErrorScrimTest ` +
+          `(useContextualTasksComposeboxFork = ${useFork})`,
+      () => {
+        let mockComposeboxPageHandler: TestMock<ComposeboxPageHandlerRemote>&
+            ComposeboxPageHandlerRemote;
+        let mockSearchboxPageHandler: TestMock<SearchboxPageHandlerRemote>&
+            SearchboxPageHandlerRemote;
+        let searchboxCallbackRouterRemote: SearchboxPageRemote;
+        let parts: CtComposeboxAppParts;
+
+        setup(async () => {
+          if (!window.chrome) {
+            Object.assign(window, {chrome: {}});
+          }
+          if (!window.chrome.histograms) {
+            Object.assign(window.chrome, {
+              histograms: {
+                recordEnumerationValue: () => {},
+                recordUserAction: () => {},
+                recordBoolean: () => {},
+              },
+            });
+          }
+          document.body.innerHTML = window.trustedTypes!.emptyHTML;
+
+          loadTimeData.overrideValues({
+            contextualMenuUsePecApi: false,
+            composeboxSmartTabSharingVisible: false,
+            enableComposeboxJumpFix: false,
+            composeboxShowTypedSuggest: true,
+            composeboxShowZps: true,
+            enableBasicModeZOrder: true,
+            composeboxShowContextMenu: true,
+            composeboxHintTextLensOverlay: 'Test Lens Hint',
+            forcedEmbeddedPageHost: '',
+            tabFaviconChipsToCoinsEnabled: false,
+          });
+
+          const testProxy = new TestContextualTasksBrowserProxy(fixtureUrl);
+          BrowserProxyImpl.setInstance(testProxy);
+
+          mockComposeboxPageHandler =
+              TestMock.fromClass(ComposeboxPageHandlerRemote);
+          mockComposeboxPageHandler.setResultFor(
+              'getSmartTabSharingActive', Promise.resolve({active: false}));
+          mockComposeboxPageHandler.setResultFor(
+              'canShowNextboxAnimation', Promise.resolve({canShow: true}));
+          mockSearchboxPageHandler =
+              TestMock.fromClass(SearchboxPageHandlerRemote);
+          mockSearchboxPageHandler.setResultFor(
+              'getRecentTabs', Promise.resolve({tabs: []}));
+          mockSearchboxPageHandler.setResultFor(
+              'getPageClassification',
+              Promise.resolve({metricSource: 'CO_BROWSING_COMPOSEBOX'}));
+          mockSearchboxPageHandler.setResultFor(
+              'addTabContext',
+              Promise.resolve({high: BigInt(1), low: BigInt(2)}));
+          mockSearchboxPageHandler.setResultFor(
+              'getInputState', Promise.resolve({state: new MockInputState()}));
+          const searchboxCallbackRouter = new SearchboxPageCallbackRouter();
+          searchboxCallbackRouterRemote =
+              searchboxCallbackRouter.$.bindNewPipeAndPassRemote();
+          ComposeboxProxyImpl.setInstance(new ComposeboxProxyImpl(
+              mockComposeboxPageHandler, new ComposeboxPageCallbackRouter(),
+              mockSearchboxPageHandler, searchboxCallbackRouter));
+
+          parts = await createCtComposeboxApp(useFork);
+          searchboxCallbackRouterRemote.onInputStateChanged(
+              new MockInputState());
+          await microtasksFinished();
+        });
+
+        test('error scrim lifecycle: render, inert, dismiss', async () => {
+          const {innerComposebox} = parts;
+          const composeboxDiv =
+              innerComposebox.shadowRoot.querySelector('#composebox');
+          assertTrue(!!composeboxDiv);
+
+          // No error: no scrim in the DOM, composebox stays interactive.
+          assertFalse(
+              !!innerComposebox.shadowRoot.querySelector('ntp-error-scrim'));
+          assertFalse(composeboxDiv.hasAttribute('inert'));
+
+          innerComposebox.errorMessage = 'Upload failed';
+          await innerComposebox.updateComplete;
+
+          const errorScrim =
+              innerComposebox.shadowRoot.querySelector('ntp-error-scrim');
+          assertTrue(!!errorScrim);
+          await errorScrim.updateComplete;
+          assertEquals('Upload failed', errorScrim.errorMessage);
+          const errorMessageElement =
+              errorScrim.shadowRoot.querySelector('#errorMessage');
+          assertTrue(!!errorMessageElement);
+          assertEquals('Upload failed', errorMessageElement.textContent);
+          assertTrue(composeboxDiv.hasAttribute('inert'));
+          // Outside voice search mode the scrim host must stay static, as in
+          // the shared template (no fork-specific positioning).
+          assertEquals('static', window.getComputedStyle(errorScrim).position);
+
+          const dismissErrorButton =
+              errorScrim.shadowRoot.querySelector<HTMLElement>(
+                  '#dismissErrorButton');
+          assertTrue(!!dismissErrorButton);
+          dismissErrorButton.click();
+          await microtasksFinished();
+          await innerComposebox.updateComplete;
+
+          assertEquals('', innerComposebox.errorMessage);
+          assertFalse(
+              !!innerComposebox.shadowRoot.querySelector('ntp-error-scrim'));
+          assertFalse(composeboxDiv.hasAttribute('inert'));
+        });
+
+        test(
+            'error scrim is position absolute in voice search mode',
+            async () => {
+              const {innerComposebox} = parts;
+              innerComposebox.inVoiceSearchMode = true;
+              innerComposebox.errorMessage = 'Network error';
+              await innerComposebox.updateComplete;
+
+              const errorScrim =
+                  innerComposebox.shadowRoot.querySelector('ntp-error-scrim');
+              assertTrue(!!errorScrim);
+              await errorScrim.updateComplete;
+              assertEquals(
+                  'absolute', window.getComputedStyle(errorScrim).position);
+            });
       });
 });

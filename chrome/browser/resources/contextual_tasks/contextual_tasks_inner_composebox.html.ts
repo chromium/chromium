@@ -19,8 +19,13 @@ export function getHtml(this: ContextualTasksInnerComposeboxElement) {
         .darkThemeColorsEnabled="${true}"
         exportparts="composebox-background">
     </search-animated-glow>
-    <ntp-error-scrim id="errorScrim" part="error-scrim"></ntp-error-scrim>
-    <div id="composebox" part="composebox"
+    ${this.errorMessage ?
+        html`<ntp-error-scrim id="errorScrim" part="error-scrim"
+            .errorMessage="${this.errorMessage}"
+            @dismiss-error-scrim="${this.onDismissErrorScrim}">
+        </ntp-error-scrim>`
+    : ''}
+    <div id="composebox" part="composebox" ?inert="${!!this.errorMessage}"
         @keydown="${this.onKeydown}"
         @focusin="${this.onComposeboxFocusin_}"
         @focusout="${this.onComposeboxFocusout_}"
