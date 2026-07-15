@@ -4404,6 +4404,7 @@ source_set("browser") {
       "//chrome/browser/resources:component_extension_resources",
       "//chrome/browser/supervised_user",
       "//chrome/browser/ui/extensions",
+      "//chrome/browser/ui/webui/omnibox/aim_eligibility_extension",
 
       # This dependency should be removed when //chrome/browser/notifications
       # is modularized.
