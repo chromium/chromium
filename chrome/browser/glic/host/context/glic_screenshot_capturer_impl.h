@@ -11,6 +11,7 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/glic/host/context/glic_screenshot_capturer.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "content/public/browser/desktop_capture.h"
 #include "content/public/browser/desktop_media_id.h"
@@ -19,7 +20,8 @@ class DesktopMediaPickerController;
 
 namespace glic {
 
-class GlicScreenshotCapturerImpl : public webrtc::DesktopCapturer::Callback {
+class GlicScreenshotCapturerImpl : public GlicScreenshotCapturer,
+                                   public webrtc::DesktopCapturer::Callback {
  public:
   GlicScreenshotCapturerImpl();
   GlicScreenshotCapturerImpl(const GlicScreenshotCapturerImpl&) = delete;
@@ -30,8 +32,9 @@ class GlicScreenshotCapturerImpl : public webrtc::DesktopCapturer::Callback {
   // GlicScreenshotCapturer:
   void CaptureScreenshot(
       gfx::NativeWindow parent_window,
-      glic::mojom::WebClientHandler::CaptureScreenshotCallback callback);
-  void CloseScreenPicker();
+      glic::mojom::WebClientHandler::CaptureScreenshotCallback callback)
+      override;
+  void CloseScreenPicker() override;
 
   // Exposes the internal ConvertFrameToJpeg() function to unit tests.
   static std::vector<uint8_t> ConvertFrameToJpegForTesting(

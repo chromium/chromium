@@ -7,6 +7,7 @@
 
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/glic/host/context/glic_screenshot_capturer.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/host/host.h"
 #include "chrome/browser/glic/public/glic_side_panel_coordinator.h"
@@ -17,10 +18,6 @@
 class BrowserWindowInterface;
 class GlobalBrowserCollection;
 class Profile;
-
-namespace gfx {
-class Image;
-}
 
 namespace tabs {
 class TabInterface;
@@ -97,10 +94,6 @@ class GlicSidePanelUi
   void SidePanelStateChanged(GlicSidePanelCoordinator::State state);
 
  private:
-  void OnScreenshotCaptured(
-      glic::mojom::WebClientHandler::CaptureScreenshotCallback callback,
-      gfx::Image snapshot);
-
   GlicSidePanelCoordinator* GetGlicSidePanelCoordinator() const;
 
   base::CallbackListSubscription panel_visibility_subscription_;
@@ -110,6 +103,8 @@ class GlicSidePanelUi
   base::WeakPtr<tabs::TabInterface> tab_;
   const raw_ref<GlicUiEmbedder::Delegate> delegate_;
   const raw_ref<GlicInstanceMetrics> instance_metrics_;
+
+  std::unique_ptr<GlicScreenshotCapturer> screenshot_capturer_;
 
   base::WeakPtrFactory<GlicSidePanelUi> weak_ptr_factory_{this};
 };

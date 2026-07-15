@@ -186,7 +186,7 @@ void GlicSidePanelUi::CaptureScreenshot(
     return;
   }
   if (!screenshot_capturer_) {
-    screenshot_capturer_ = std::make_unique<GlicScreenshotCapturerImpl>();
+    screenshot_capturer_ = GlicScreenshotCapturer::Create();
   }
   auto* browser_window = tab_->GetBrowserWindowInterface();
   CHECK(browser_window);
