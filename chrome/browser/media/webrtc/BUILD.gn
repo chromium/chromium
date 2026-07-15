@@ -408,6 +408,54 @@ if (!is_android) {
   }
 }
 
+source_set("unit_tests") {
+  testonly = true
+  sources = []
+  deps = [
+    ":webrtc",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/prefs",
+    "//chrome/common",
+    "//chrome/test:test_support",
+    "//components/prefs:test_support",
+    "//components/sync_preferences:test_support",
+    "//components/user_manager",
+    "//content/test:test_support",
+    "//net:test_support",
+    "//services/network:test_support",
+    "//services/network/public/cpp",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party/zlib/google:compression_utils",
+  ]
+
+  if (is_chromeos) {
+    deps += [
+      "//chrome/browser/ash/login/users:test_support",
+      "//chromeos/ash/components/system",
+      "//components/account_id",
+    ]
+  }
+
+  # The WebRTC logging / remote-bound event-log tests are desktop-only.
+  if (!is_android) {
+    sources += [
+      "rtc_diagnostic_logging_unittest.cc",
+      "webrtc_event_log_manager_common_unittest.cc",
+      "webrtc_event_log_manager_unittest.cc",
+      "webrtc_event_log_manager_unittest_helpers.cc",
+      "webrtc_event_log_manager_unittest_helpers.h",
+      "webrtc_event_log_uploader_impl_unittest.cc",
+      "webrtc_log_uploader_unittest.cc",
+      "webrtc_logging_controller_unittest.cc",
+      "webrtc_rtp_dump_handler_unittest.cc",
+      "webrtc_rtp_dump_writer_unittest.cc",
+      "webrtc_text_log_handler_unittest.cc",
+    ]
+  }
+}
+
 if (is_android) {
   import("//build/config/android/rules.gni")
 
