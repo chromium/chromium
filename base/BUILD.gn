@@ -208,6 +208,7 @@ source_set("asan_raw_ptr_service") {
 
     deps += [
       ":compiler_specific",
+      ":synchronization_buildflags",
       "//base/allocator/partition_allocator/src/partition_alloc",
       "//third_party/abseil-cpp:absl",
       "//third_party/perfetto:libperfetto",
