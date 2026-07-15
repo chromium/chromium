@@ -60,10 +60,6 @@ class GlicWebContentsWarmingPool {
   // initial cold-start pre-warming if allowed. Returns true if pre-warming
   // proceeded, or false otherwise.
   bool MaybeStartInitialWarming();
-  // Unconditionally ensures that a WebUIContentsContainer is preloaded. If the
-  // existing one is crashed, it will be replaced.
-  void EnsurePreload(ContainerCreationReason reason =
-                         ContainerCreationReason::kUserTriggeredColdStart);
   // Clears the warming pool and destroys any warmed WebContents.
   void Clear(ClearReason reason);
 
@@ -104,10 +100,18 @@ class GlicWebContentsWarmingPool {
 
   bool HasWarmedContainerForTesting() const;
   base::OneShotTimer& GetDelayTimerForTesting() { return delay_timer_; }
+  bool IsExpiryTimerRunningForTesting() const {
+    return expiry_timer_.IsRunning();
+  }
   WebUIContentsContainer* GetWarmedContainerForTesting() const;
   content::WebContents* GetWarmedWebContents() const;
 
  protected:
+  // Provides derived classes access to the profile when overriding
+  // CreateContainer().
+  Profile* profile() const { return profile_; }
+
+ private:
   class Metrics;
 
   // Virtual for testing.
@@ -115,6 +119,9 @@ class GlicWebContentsWarmingPool {
   void OnWarmedContentCreated(ContainerCreationReason reason);
 
   void OnContainerExpired();
+  // Unconditionally ensures that a WebUIContentsContainer is preloaded. If the
+  // existing one is crashed, it will be replaced.
+  void EnsurePreload(ContainerCreationReason reason);
   // Starts a timer to preload a WebContents after a delay.
   void EnsurePreloadDelayed(ContainerCreationReason reason);
 

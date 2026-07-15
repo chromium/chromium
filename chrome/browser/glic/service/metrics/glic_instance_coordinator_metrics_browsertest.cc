@@ -173,8 +173,10 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorMetricsWarmingTest,
                        MemoryPressureWithOnlyWarmedInstance) {
   GlicHistogramTester histogram_tester;
 
-  // 1. Ensure preload (warmed instance exists) and wait for it to load.
-  coordinator().GetWebContentsWarmingPoolForTesting().EnsurePreload();
+  // 1. Start initial warming (warmed instance exists) and wait for it to load.
+  ASSERT_TRUE(coordinator()
+                  .GetWebContentsWarmingPoolForTesting()
+                  .MaybeStartInitialWarming());
   ASSERT_TRUE(base::test::RunUntil([&]() {
     return coordinator()
                .GetWebContentsWarmingPoolForTesting()

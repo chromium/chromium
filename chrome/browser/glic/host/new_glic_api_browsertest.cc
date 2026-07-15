@@ -2250,7 +2250,9 @@ IN_PROC_BROWSER_TEST_P(NewGlicApiMultiProfileTest, testGetContextCrossProfile) {
 
 IN_PROC_BROWSER_TEST_P(NewGlicApiTestWithWebContentsWarming,
                        testWebClientReadyOnFullLoad) {
-  coordinator().GetWebContentsWarmingPoolForTesting().EnsurePreload();
+  ASSERT_TRUE(coordinator()
+                  .GetWebContentsWarmingPoolForTesting()
+                  .MaybeStartInitialWarming());
   ASSERT_OK(RunUntilEqual(
       [&]() {
         return coordinator()
