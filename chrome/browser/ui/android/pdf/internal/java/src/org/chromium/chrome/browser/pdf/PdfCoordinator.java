@@ -1003,7 +1003,18 @@ public class PdfCoordinator
     @Override
     public void onDownloadComplete(String pdfFilePath, String pdfFileName) {
         mTitle = pdfFileName;
-        loadPdfFile(pdfFilePath);
+        // `mIsPdfLoaded` is true when the PDF is reloaded. In this case, a new download is
+        // triggered while the current PDF is still loaded. Since the `PdfCoordinator` is reused,
+        // `mIsPdfLoaded` remains true. We then reload the fragment with the new file path.
+        // This reload flow is only used when fragment reuse is disabled.
+        if (mIsPdfLoaded) {
+            assert !PdfUtils.isReuseFragmentEnabled();
+            mPdfFilePath = pdfFilePath;
+            mUri = PdfUtils.getUriFromFilePath(mPdfFilePath);
+            reload();
+        } else {
+            loadPdfFile(pdfFilePath);
+        }
     }
 
     /** Returns the filepath of the pdf document. */

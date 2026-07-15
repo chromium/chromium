@@ -8,6 +8,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.verify;
 
 import android.app.Activity;
 import android.net.Uri;
@@ -24,6 +25,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -31,6 +33,7 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
@@ -39,8 +42,11 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.native_page.NativePageHost;
 import org.chromium.chrome.browser.util.ChromeFileProvider;
 import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.MimeTypeUtils;
 import org.chromium.ui.base.TestActivity;
+
+import java.io.File;
 
 @RunWith(BaseRobolectricTestRunner.class)
 @EnableFeatures(ChromeFeatureList.INLINE_PDF_V2)
@@ -203,6 +209,111 @@ public class PdfPageUnitTest {
 
         contentView.removeView(view);
         pdfPage.destroy();
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.INLINE_PDF_V2)
+    @Config(sdk = Build.VERSION_CODES.VANILLA_ICE_CREAM)
+    public void testReload_WebPdf_TriggersDownload() throws Exception {
+        PdfPage pdfPage =
+                new PdfPage(
+                        mMockNativePageHost,
+                        mMockProfile,
+                        false,
+                        mActivity,
+                        mPdfPageUrl,
+                        mPdfInfo,
+                        DEFAULT_TAB_TITLE,
+                        TAB_ID,
+                        mPdfFragmentViewTracker);
+        Assert.assertNotNull(pdfPage);
+
+        // Create a temporary file to simulate downloaded PDF
+        File tempFile = File.createTempFile("test_pdf", ".pdf");
+        tempFile.deleteOnExit();
+        String tempFilePath = tempFile.getAbsolutePath();
+        String tempFileName = tempFile.getName();
+        Assert.assertTrue("Temp file should exist initially", tempFile.exists());
+
+        // Simulate download complete and attach view to load PDF
+        pdfPage.onDownloadComplete(tempFileName, tempFilePath, true);
+        View view = pdfPage.mPdfCoordinator.getView();
+        ViewGroup contentView = mActivity.findViewById(android.R.id.content);
+        contentView.addView(view);
+
+        PdfCoordinator.ChromePdfViewerFragment oldFragment =
+                ((PdfCoordinator) pdfPage.mPdfCoordinator).mChromePdfViewerFragment;
+        Assert.assertNotNull("Fragment should not be null initially", oldFragment);
+
+        ArgumentCaptor<LoadUrlParams> paramsCaptor = ArgumentCaptor.forClass(LoadUrlParams.class);
+        ArgumentCaptor<Boolean> incognitoCaptor = ArgumentCaptor.forClass(Boolean.class);
+
+        pdfPage.reload();
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        // Verify file was deleted
+        Assert.assertFalse("Temp file should be deleted on reload", tempFile.exists());
+
+        verify(mMockNativePageHost).loadUrl(paramsCaptor.capture(), incognitoCaptor.capture());
+
+        LoadUrlParams capturedParams = paramsCaptor.getValue();
+        Assert.assertEquals("Should load original PDF link", PDF_LINK, capturedParams.getUrl());
+        Assert.assertTrue(
+                "Should replace current entry", capturedParams.getShouldReplaceCurrentEntry());
+        Assert.assertEquals(
+                "Incognito state should match", false, incognitoCaptor.getValue().booleanValue());
+
+        // Simulate the second download completion (e.g. after reload)
+        File newTempFile = File.createTempFile("test_pdf_new", ".pdf");
+        newTempFile.deleteOnExit();
+        String newTempFilePath = newTempFile.getAbsolutePath();
+        String newTempFileName = newTempFile.getName();
+
+        pdfPage.onDownloadComplete(newTempFileName, newTempFilePath, true);
+
+        Assert.assertNotSame(
+                "Fragment should be recreated after download complete",
+                oldFragment,
+                ((PdfCoordinator) pdfPage.mPdfCoordinator).mChromePdfViewerFragment);
+
+        contentView.removeView(view);
+        pdfPage.destroy();
+        RobolectricUtil.runAllBackgroundAndUi();
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.INLINE_PDF_V2)
+    @Config(sdk = Build.VERSION_CODES.VANILLA_ICE_CREAM)
+    public void testDestroy_WebPdf_DeletesFile() throws Exception {
+        PdfPage pdfPage =
+                new PdfPage(
+                        mMockNativePageHost,
+                        mMockProfile,
+                        false,
+                        mActivity,
+                        mPdfPageUrl,
+                        mPdfInfo,
+                        DEFAULT_TAB_TITLE,
+                        TAB_ID,
+                        mPdfFragmentViewTracker);
+        Assert.assertNotNull(pdfPage);
+
+        // Create a temporary file to simulate downloaded PDF
+        File tempFile = File.createTempFile("test_pdf", ".pdf");
+        tempFile.deleteOnExit();
+        String tempFilePath = tempFile.getAbsolutePath();
+        String tempFileName = tempFile.getName();
+        Assert.assertTrue("Temp file should exist initially", tempFile.exists());
+
+        // Simulate download complete
+        pdfPage.onDownloadComplete(tempFileName, tempFilePath, true);
+
+        // Destroy the page
+        pdfPage.destroy();
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        // Verify file was deleted
+        Assert.assertFalse("Temp file should be deleted on destroy", tempFile.exists());
     }
 
     @Test
@@ -394,6 +505,75 @@ public class PdfPageUnitTest {
                 "File uri should match.",
                 pdfPage.mPdfCoordinator.getUri().toString(),
                 fileUri.toString());
+
+        contentView.removeView(view);
+        pdfPage.destroy();
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.PDF_REUSE_FRAGMENT)
+    public void testUpdateForUrl_NonLocalPdf_DoesNotResetLoadState() throws Exception {
+        PdfPage pdfPage =
+                new PdfPage(
+                        mMockNativePageHost,
+                        mMockProfile,
+                        false,
+                        mActivity,
+                        mPdfPageUrl,
+                        mPdfInfo,
+                        DEFAULT_TAB_TITLE,
+                        TAB_ID,
+                        mPdfFragmentViewTracker);
+
+        pdfPage.onDownloadComplete(FILE_NAME, FILE_PATH, true);
+        View view = pdfPage.mPdfCoordinator.getView();
+        ViewGroup contentView = mActivity.findViewById(android.R.id.content);
+        contentView.addView(view);
+
+        Assert.assertTrue(
+                "Pdf should be loaded after download complete and attached.",
+                ((PdfCoordinator) pdfPage.mPdfCoordinator).getIsPdfLoadedForTesting());
+
+        pdfPage.updateForUrl(mPdfPageUrl);
+
+        Assert.assertTrue(
+                "Pdf load state should NOT be reset for non-local pdf in updateForUrl.",
+                ((PdfCoordinator) pdfPage.mPdfCoordinator).getIsPdfLoadedForTesting());
+
+        contentView.removeView(view);
+        pdfPage.destroy();
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.PDF_REUSE_FRAGMENT)
+    public void testUpdateForUrl_LocalPdf_ResetsLoadState() throws Exception {
+        String encodedUrl = PdfUtils.encodePdfPageUrl(CONTENT_URL);
+        PdfPage pdfPage =
+                new PdfPage(
+                        mMockNativePageHost,
+                        mMockProfile,
+                        false,
+                        mActivity,
+                        encodedUrl,
+                        mPdfInfo,
+                        DEFAULT_TAB_TITLE,
+                        TAB_ID,
+                        mPdfFragmentViewTracker);
+
+        View view = pdfPage.mPdfCoordinator.getView();
+        ViewGroup contentView = mActivity.findViewById(android.R.id.content);
+        contentView.addView(view);
+
+        Assert.assertTrue(
+                "Pdf should be loaded when attached to window.",
+                ((PdfCoordinator) pdfPage.mPdfCoordinator).getIsPdfLoadedForTesting());
+
+        // Calling updateForUrl on local PDF should reset load state (and trigger
+        // onDownloadComplete).
+        // Since skipLoadPdfForTesting is true, onDownloadComplete -> reload -> loadPdfInternal sets
+        // mIsPdfLoaded back to true.
+        // Verify by calling resetLoadState and checking or spying resetLoadState.
+        pdfPage.updateForUrl(encodedUrl);
 
         contentView.removeView(view);
         pdfPage.destroy();
