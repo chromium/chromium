@@ -9,6 +9,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/shared_memory_mapping.h"
@@ -273,16 +274,12 @@ void VaapiJpegEncodeAccelerator::Encoder::EncodeWithDmaBufTask(
   }
 
   // Prepare exif.
-  const uint8_t* exif_buffer = nullptr;
-  size_t exif_buffer_size = 0;
-  if (exif_mapping.IsValid()) {
-    exif_buffer = exif_mapping.GetMemoryAs<uint8_t>();
-    exif_buffer_size = exif_mapping.size();
-  }
+  const base::span<const uint8_t> exif_buffer =
+      exif_mapping.GetMemoryAsSpan<uint8_t>();
+  const size_t exif_buffer_size = exif_buffer.size();
 
-  if (!jpeg_encoder_->Encode(input_size, /*exif_buffer=*/nullptr,
-                             /*exif_buffer_size=*/0u, quality, va_surface_id_,
-                             cached_output_buffer_->id(),
+  if (!jpeg_encoder_->Encode(input_size, /*exif_buffer=*/{}, quality,
+                             va_surface_id_, cached_output_buffer_->id(),
                              /*exif_offset=*/nullptr)) {
     VLOGF(1) << "Encode JPEG failed";
     notify_error_cb_.Run(task_id, PLATFORM_FAILURE);
@@ -403,8 +400,8 @@ void VaapiJpegEncodeAccelerator::Encoder::EncodeWithDmaBufTask(
       }
       memcpy(output_memory, jpeg_soi_and_app1_header,
              std::size(jpeg_soi_and_app1_header));
-      memcpy(output_memory + std::size(jpeg_soi_and_app1_header), exif_buffer,
-             exif_buffer_size);
+      memcpy(output_memory + std::size(jpeg_soi_and_app1_header),
+             exif_buffer.data(), exif_buffer_size);
       encoded_size += output_offset;
     }
   });
@@ -480,9 +477,9 @@ void VaapiJpegEncodeAccelerator::Encoder::EncodeTask(
   // TODO(shenghao): Remove this mechanism after b/79840013 is fixed.
   std::vector<uint8_t> exif_buffer_dummy(exif_buffer_size, 0);
   size_t exif_offset = 0;
-  if (!jpeg_encoder_->Encode(input_size, exif_buffer_dummy.data(),
-                             exif_buffer_size, request->quality, va_surface_id_,
-                             cached_output_buffer_->id(), &exif_offset)) {
+  if (!jpeg_encoder_->Encode(input_size, exif_buffer_dummy, request->quality,
+                             va_surface_id_, cached_output_buffer_->id(),
+                             &exif_offset)) {
     VLOGF(1) << "Encode JPEG failed";
     notify_error_cb_.Run(task_id, PLATFORM_FAILURE);
     return;
