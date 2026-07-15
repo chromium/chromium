@@ -373,26 +373,10 @@ bool AudioBufferSourceHandler::RenderFromBuffer(
   uint32_t buffer_length = shared_buffer_->length();
   double buffer_sample_rate = shared_buffer_->sampleRate();
 
-  // If the .loop attribute is true, then values of
-  // m_loopStart == 0 && m_loopEnd == 0 implies that we should use the entire
-  // buffer as the loop, otherwise use the loop values in m_loopStart and
-  // m_loopEnd.
-  double virtual_start_frame = 0;
-  double virtual_end_frame = buffer_length;
-  double virtual_delta_frames = buffer_length;
+  const double virtual_start_frame = effective_loop_start_ * buffer_sample_rate;
+  const double virtual_end_frame = effective_loop_end_ * buffer_sample_rate;
+  const double virtual_delta_frames = virtual_end_frame - virtual_start_frame;
 
-  if (Loop() && (loop_start_ || loop_end_) && loop_start_ >= 0 &&
-      loop_end_ > 0 && loop_start_ < loop_end_) {
-    // Convert from seconds to sample-frames.
-    double loop_start_frame = loop_start_ * shared_buffer_->sampleRate();
-    double loop_end_frame = loop_end_ * shared_buffer_->sampleRate();
-
-    virtual_start_frame = loop_start_frame;
-    virtual_end_frame = std::min(loop_end_frame, virtual_end_frame);
-    virtual_delta_frames = virtual_end_frame - loop_start_frame;
-  }
-
-  // Check that our playback rate isn't larger than the loop size.
   double computed_playback_rate = ComputePlaybackRate();
   if (std::abs(computed_playback_rate) > virtual_delta_frames) {
     return false;
@@ -406,8 +390,7 @@ bool AudioBufferSourceHandler::RenderFromBuffer(
   if (computed_playback_rate >= 0) {
     // 1. Forward Loop Clamping
     if (Loop() && virtual_read_index >= virtual_end_frame) {
-      virtual_read_index =
-          (loop_start_ < 0) ? 0 : (loop_start_ * shared_buffer_->sampleRate());
+      virtual_read_index = virtual_start_frame;
       virtual_read_index =
           std::min(virtual_read_index, static_cast<double>(buffer_length - 1));
       virtual_read_index_ = virtual_read_index;
@@ -579,6 +562,8 @@ void AudioBufferSourceHandler::SetBuffer(AudioBuffer* buffer,
     }
   }
 
+  UpdateEffectiveLoopPoints();
+
   virtual_read_index_ = 0;
   buffer_played_frames_ = 0;
 }
@@ -621,6 +606,43 @@ void AudioBufferSourceHandler::ClampGrainParameters(
     // TimeToSampleFrame rounds to integers; raw multiplication preserves
     // sub-sample accuracy for fractional rates.
     virtual_read_index_ = grain_offset_ * shared_buffer_->sampleRate();
+  }
+}
+
+void AudioBufferSourceHandler::UpdateEffectiveLoopPoints() {
+  if (!Buffer()) {
+    effective_loop_start_ = 0;
+    effective_loop_end_ = 0;
+    return;
+  }
+
+  double buffer_duration = shared_buffer_->duration();
+
+  if (!Loop()) {
+    effective_loop_start_ = 0;
+    effective_loop_end_ = buffer_duration;
+    return;
+  }
+
+  // Clamp loopStart to [0, buffer_duration]
+  double start = std::clamp(loop_start_, 0.0, buffer_duration);
+
+  // Resolve loopEnd: 0 means buffer duration, otherwise clamp to [0,
+  // buffer_duration]
+  double end = loop_end_;
+  if (end == 0) {
+    end = buffer_duration;
+  } else {
+    end = std::clamp(end, 0.0, buffer_duration);
+  }
+
+  if (start < end) {
+    effective_loop_start_ = start;
+    effective_loop_end_ = end;
+  } else {
+    // Fallback to entire buffer
+    effective_loop_start_ = 0;
+    effective_loop_end_ = buffer_duration;
   }
 }
 
@@ -716,6 +738,7 @@ void AudioBufferSourceHandler::SetLoop(bool looping) {
 
   is_looping_ = looping;
   SetDidSetLooping(looping);
+  UpdateEffectiveLoopPoints();
 }
 
 void AudioBufferSourceHandler::SetLoopStart(double loop_start) {
@@ -725,6 +748,7 @@ void AudioBufferSourceHandler::SetLoopStart(double loop_start) {
   base::AutoLock process_locker(process_lock_);
 
   loop_start_ = loop_start;
+  UpdateEffectiveLoopPoints();
 }
 
 void AudioBufferSourceHandler::SetLoopEnd(double loop_end) {
@@ -734,6 +758,7 @@ void AudioBufferSourceHandler::SetLoopEnd(double loop_end) {
   base::AutoLock process_locker(process_lock_);
 
   loop_end_ = loop_end;
+  UpdateEffectiveLoopPoints();
 }
 
 double AudioBufferSourceHandler::ComputePlaybackRate() {

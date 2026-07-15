@@ -138,6 +138,9 @@ class AudioBufferSourceHandler final : public AudioScheduledSourceHandler {
   void ClampGrainParameters(const SharedAudioBuffer*)
       EXCLUSIVE_LOCKS_REQUIRED(process_lock_);
 
+  // Updates effective loop start and end points.
+  void UpdateEffectiveLoopPoints() EXCLUSIVE_LOCKS_REQUIRED(process_lock_);
+
   bool DidSetLooping() const { return did_set_looping_; }
   void SetDidSetLooping(bool loop) {
     if (loop) {
@@ -180,6 +183,10 @@ class AudioBufferSourceHandler final : public AudioScheduledSourceHandler {
   // `loop_end_`.
   double loop_start_ = 0;
   double loop_end_ = 0;
+
+  // Effective loop points resolved under `process_lock_`.
+  double effective_loop_start_ = 0;
+  double effective_loop_end_ = 0;
 
   // `virtual_read_index_` is a sample-frame index into our buffer representing
   // the current playback position.  Since it's floating-point, it has

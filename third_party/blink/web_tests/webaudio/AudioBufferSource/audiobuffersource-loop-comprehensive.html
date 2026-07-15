@@ -173,14 +173,13 @@
         },
 
         {
-          description: 'illegal loop: loopStartFrame < 0',
+          description: 'illegal loop: loopStartFrame < 0 (clamps to 0)',
           loopStartFrame: -8,
           loopEndFrame: 3,
           renderFrames: 16,
           playbackRate: 1,
-          expectWholeBuffer: true,
           expected: [
-            0, 1, 2, 3, 4, 5, 6, 7, 0, 1, 2, 3, 4, 5, 6, 7
+            0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2, 0
           ]
         },
 
@@ -193,6 +192,52 @@
           expectWholeBuffer: true,
           expected: [
             0, 1, 2, 3, 4, 5, 6, 7, 0, 1, 2, 3, 4, 5, 6, 7
+          ]
+        },
+
+        {
+          description: 'illegal loop: loopStartFrame > bufferLength',
+          loopStartFrame: 12,
+          loopEndFrame: 15,
+          renderFrames: 16,
+          playbackRate: 1,
+          expectWholeBuffer: true,
+          expected: [
+            0, 1, 2, 3, 4, 5, 6, 7, 0, 1, 2, 3, 4, 5, 6, 7
+          ]
+        },
+
+        {
+          description: 'illegal loop: loopEndFrame < 0',
+          loopStartFrame: 2,
+          loopEndFrame: -4,
+          renderFrames: 16,
+          playbackRate: 1,
+          expectWholeBuffer: true,
+          expected: [
+            0, 1, 2, 3, 4, 5, 6, 7, 0, 1, 2, 3, 4, 5, 6, 7
+          ]
+        },
+
+        {
+          description: 'loopEndFrame = 0 (default to bufferLength)',
+          loopStartFrame: 2,
+          loopEndFrame: 0,
+          renderFrames: 16,
+          playbackRate: 1,
+          expected: [
+            0, 1, 2, 3, 4, 5, 6, 7, 2, 3, 4, 5, 6, 7, 2, 3
+          ]
+        },
+
+        {
+          description: 'loopEndFrame > bufferLength (clamping)',
+          loopStartFrame: 4,
+          loopEndFrame: 30000,
+          renderFrames: 16,
+          playbackRate: 1,
+          expected: [
+            0, 1, 2, 3, 4, 5, 6, 7, 4, 5, 6, 7, 4, 5, 6, 7
           ]
         },
 
@@ -268,11 +313,14 @@
         source.playbackRate.value = test.playbackRate;
         source.loop = true;
 
-        const invalidLoop =
-            test.loopStartFrame < 0 ||
-            test.loopEndFrame > buffer.length ||
-            (test.loopEndFrame !== 0 &&
-             test.loopStartFrame >= test.loopEndFrame);
+        const start = Math.max(0, Math.min(test.loopStartFrame, buffer.length));
+        let end = test.loopEndFrame;
+        if (end === 0) {
+          end = buffer.length;
+        } else {
+          end = Math.max(0, Math.min(end, buffer.length));
+        }
+        const invalidLoop = start >= end;
 
         if (invalidLoop && !test.expectWholeBuffer) {
           throw new Error(
