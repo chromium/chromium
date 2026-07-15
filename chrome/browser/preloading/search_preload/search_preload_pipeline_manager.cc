@@ -5,6 +5,7 @@
 #include "chrome/browser/preloading/search_preload/search_preload_pipeline_manager.h"
 
 #include "base/metrics/histogram_functions.h"
+#include "base/trace_event/trace_event.h"
 #include "chrome/browser/preloading/chrome_preloading.h"
 #include "chrome/browser/preloading/prefetch/search_prefetch/search_prefetch_service.h"
 #include "chrome/browser/preloading/prerender/search_prewarm_progress_service.h"
@@ -315,11 +316,17 @@ void SearchPreloadPipelineManager::RecordPreloadHistograms(
                std::optional<SearchPreloadSignalResult>> signal_results) {
   auto [signal_result_prefetch, signal_result_prerender] = signal_results;
   if (signal_result_prefetch.has_value()) {
+    TRACE_EVENT("loading",
+                "SearchPreloadPipelineManager::SignalResultOnSuggestPrefetch",
+                "result", static_cast<int>(signal_result_prefetch.value()));
     base::UmaHistogramEnumeration(
         "Omnibox.DsePreload.SignalResult.OnSuggest.Prefetch",
         signal_result_prefetch.value());
   }
   if (signal_result_prerender.has_value()) {
+    TRACE_EVENT("loading",
+                "SearchPreloadPipelineManager::SignalResultOnSuggestPrerender",
+                "result", static_cast<int>(signal_result_prerender.value()));
     base::UmaHistogramEnumeration(
         "Omnibox.DsePreload.SignalResult.OnSuggest.Prerender",
         signal_result_prerender.value());
@@ -435,6 +442,9 @@ bool SearchPreloadPipelineManager::OnNavigationLikely(
   }();
 
   if (signal_result_prefetch.has_value()) {
+    TRACE_EVENT("loading",
+                "SearchPreloadPipelineManager::SignalResultOnPressPrefetch",
+                "result", static_cast<int>(signal_result_prefetch.value()));
     base::UmaHistogramEnumeration(
         "Omnibox.DsePreload.SignalResult.OnPress.Prefetch",
         signal_result_prefetch.value());
