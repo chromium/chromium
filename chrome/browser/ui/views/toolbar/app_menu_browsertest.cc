@@ -29,6 +29,9 @@
 #include "build/buildflag.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_attributes_entry.h"
+#include "chrome/browser/profiles/profile_attributes_init_params.h"
+#include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/browser/sessions/tab_restore_service_factory.h"
@@ -155,6 +158,12 @@ void AppMenuBrowserTest::ShowUi(const std::string& name) {
       {"profile_menu_in_app_menu_signed_in",
        AppMenuModel::kProfileMenuPlaceholder},
       {"profile_menu_in_app_menu_signin_not_allowed",
+       AppMenuModel::kProfileMenuPlaceholder},
+      {"profile_menu_in_app_menu_no_ring",
+       AppMenuModel::kProfileMenuPlaceholder},
+      {"profile_menu_in_app_menu_single_ring",
+       AppMenuModel::kProfileMenuPlaceholder},
+      {"profile_menu_in_app_menu_two_consecutive_rings",
        AppMenuModel::kProfileMenuPlaceholder},
   });
   const auto id_entry = kSubmenus.find(name);
@@ -452,6 +461,96 @@ IN_PROC_BROWSER_TEST_F(AppMenuBrowserTest,
 IN_PROC_BROWSER_TEST_F(AppMenuBrowserTest,
                        InvokeUi_profile_menu_in_app_menu_signin_not_allowed) {
   browser()->profile()->GetPrefs()->SetBoolean(prefs::kSigninAllowed, false);
+  ShowAndVerifyUi();
+}
+
+class AppMenuAiRingBrowserTest : public AppMenuBrowserTest {
+ public:
+  AppMenuAiRingBrowserTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        switches::kEnableAiSubscriptionAvatarRing);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(AppMenuAiRingBrowserTest,
+                       InvokeUi_profile_menu_in_app_menu_no_ring) {
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  ProfileAttributesStorage& storage =
+      profile_manager->GetProfileAttributesStorage();
+
+  // Profiles without rings.
+  base::FilePath path1 = profile_manager->GenerateNextProfileDirectoryPath();
+  ProfileAttributesInitParams params1;
+  params1.profile_path = path1;
+  params1.profile_name = u"Profile 1";
+  storage.AddProfile(std::move(params1));
+
+  base::FilePath path2 = profile_manager->GenerateNextProfileDirectoryPath();
+  ProfileAttributesInitParams params2;
+  params2.profile_path = path2;
+  params2.profile_name = u"Profile 2";
+  storage.AddProfile(std::move(params2));
+
+  ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_F(AppMenuAiRingBrowserTest,
+                       InvokeUi_profile_menu_in_app_menu_single_ring) {
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  ProfileAttributesStorage& storage =
+      profile_manager->GetProfileAttributesStorage();
+
+  // Profile with ring
+  base::FilePath path1 = profile_manager->GenerateNextProfileDirectoryPath();
+  ProfileAttributesInitParams params1;
+  params1.profile_path = path1;
+  params1.profile_name = u"Profile 1";
+  storage.AddProfile(std::move(params1));
+  storage.GetProfileAttributesWithPath(path1)->SetAiSubscriptionTier(1);
+
+  // Profile without ring
+  base::FilePath path2 = profile_manager->GenerateNextProfileDirectoryPath();
+  ProfileAttributesInitParams params2;
+  params2.profile_path = path2;
+  params2.profile_name = u"Profile 2";
+  storage.AddProfile(std::move(params2));
+
+  ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    AppMenuAiRingBrowserTest,
+    InvokeUi_profile_menu_in_app_menu_two_consecutive_rings) {
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  ProfileAttributesStorage& storage =
+      profile_manager->GetProfileAttributesStorage();
+
+  // Profile with ring
+  base::FilePath path1 = profile_manager->GenerateNextProfileDirectoryPath();
+  ProfileAttributesInitParams params1;
+  params1.profile_path = path1;
+  params1.profile_name = u"Profile 1";
+  storage.AddProfile(std::move(params1));
+  storage.GetProfileAttributesWithPath(path1)->SetAiSubscriptionTier(1);
+
+  // Profile with ring
+  base::FilePath path2 = profile_manager->GenerateNextProfileDirectoryPath();
+  ProfileAttributesInitParams params2;
+  params2.profile_path = path2;
+  params2.profile_name = u"Profile 2";
+  storage.AddProfile(std::move(params2));
+  storage.GetProfileAttributesWithPath(path2)->SetAiSubscriptionTier(1);
+
+  // Profile without ring
+  base::FilePath path3 = profile_manager->GenerateNextProfileDirectoryPath();
+  ProfileAttributesInitParams params3;
+  params3.profile_path = path3;
+  params3.profile_name = u"Profile 3";
+  storage.AddProfile(std::move(params3));
+
   ShowAndVerifyUi();
 }
 

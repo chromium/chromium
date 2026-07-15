@@ -129,6 +129,7 @@
 #include "components/send_tab_to_self/features.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_pref_names.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/sync/base/features.h"
@@ -576,16 +577,27 @@ ProfileSubMenuModel::ProfileSubMenuModel(
     for (ProfileAttributesEntry* profile_entry : profile_entries) {
       std::u16string display_name = GetProfileMenuDisplayName(profile_entry);
       int menu_id = GetAndIncrementNextMenuID();
+
+      ui::ImageModel avatar_model =
+          ui::ImageModel::FromImage(profiles::GetSizedAvatarIcon(
+              profile_entry->GetAvatarIcon(
+                  avatar_icon_size, /*use_high_res_file=*/true, icon_params),
+              avatar_icon_size, avatar_icon_size, profiles::SHAPE_CIRCLE));
+
+      if (base::FeatureList::IsEnabled(
+              switches::kEnableAiSubscriptionAvatarRing) &&
+          profile_entry->GetAiSubscriptionTier() > 0) {
+        avatar_model = ui::ImageModel::FromImageSkia(
+            AddAiRingToAvatar(avatar_model, *color_provider, avatar_icon_size));
+      }
+
       AddItemWithIcon(
           menu_id,
           ui::EscapeMenuLabelAmpersands(gfx::TruncateString(
               display_name,
               GetLayoutConstant(LayoutConstant::kAppMenuMaximumCharacterLength),
               gfx::CHARACTER_BREAK)),
-          ui::ImageModel::FromImage(profiles::GetSizedAvatarIcon(
-              profile_entry->GetAvatarIcon(
-                  avatar_icon_size, /*use_high_res_file=*/true, icon_params),
-              avatar_icon_size, avatar_icon_size, profiles::SHAPE_CIRCLE)));
+          avatar_model);
       other_profiles_.insert({menu_id, profile_entry->GetPath()});
     }
 
