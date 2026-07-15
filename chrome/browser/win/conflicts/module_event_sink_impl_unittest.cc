@@ -47,7 +47,7 @@ class ModuleEventSinkImplTest : public testing::Test {
   }
 
   void OnModuleEvent(content::ProcessType process_type,
-                     const base::FilePath& module_path,
+                     base::FilePath module_path,
                      uint32_t module_size,
                      uint32_t module_time_date_stamp) {
     ++module_event_count_;

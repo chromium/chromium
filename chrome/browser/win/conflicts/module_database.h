@@ -96,7 +96,7 @@ class ModuleDatabase : public ModuleDatabaseEventSource {
   // OnModuleLoad() on the ModuleDatabase task runner. Can be called on any
   // threads. Provided for convenience.
   static void HandleModuleLoadEvent(content::ProcessType process_type,
-                                    const base::FilePath& module_path,
+                                    base::FilePath module_path,
                                     uint32_t module_size,
                                     uint32_t module_time_date_stamp);
 

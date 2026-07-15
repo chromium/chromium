@@ -241,9 +241,8 @@ void InitializeModuleDatabase() {
 
 // Gets the TimeDateStamp from the file on disk and, if successful, sends the
 // load event to the ModuleDatabase.
-void HandleModuleLoadEventWithoutTimeDateStamp(
-    const base::FilePath& module_path,
-    size_t module_size) {
+void HandleModuleLoadEventWithoutTimeDateStamp(base::FilePath module_path,
+                                               size_t module_size) {
   uint32_t size_of_image = 0;
   uint32_t time_date_stamp = 0;
   bool got_time_date_stamp = GetModuleImageSizeAndTimeDateStamp(
@@ -256,8 +255,9 @@ void HandleModuleLoadEventWithoutTimeDateStamp(
   if (!got_time_date_stamp)
     return;
 
-  ModuleDatabase::HandleModuleLoadEvent(
-      content::PROCESS_TYPE_BROWSER, module_path, module_size, time_date_stamp);
+  ModuleDatabase::HandleModuleLoadEvent(content::PROCESS_TYPE_BROWSER,
+                                        std::move(module_path), module_size,
+                                        time_date_stamp);
 }
 
 // Helper function for getting the module size associated with a module in this
