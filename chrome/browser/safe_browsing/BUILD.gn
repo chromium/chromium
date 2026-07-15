@@ -536,6 +536,7 @@ static_library("safe_browsing") {
         "//build:branding_buildflags",
         "//build:chromeos_buildflags",
         "//chrome/app/vector_icons",
+        "//chrome/browser/safe_browsing/incident_reporting:state_store_data_proto",
         "//chrome/browser/ui/hats",
         "//chrome/common",
         "//chrome/common/extensions",
@@ -572,10 +573,7 @@ static_library("safe_browsing") {
       if (is_mac) {
         deps += [ "//chrome/common/safe_browsing:disk_image_type_sniffer_mac" ]
       } else if (is_win) {
-        deps += [
-          "//chrome/browser/safe_browsing/incident_reporting:state_store_data_proto",
-          "//chrome/common:version_header",
-        ]
+        deps += [ "//chrome/common:version_header" ]
       }
       if (is_chromeos) {
         deps += [
@@ -802,6 +800,52 @@ source_set("unit_tests") {
       "//extensions/browser",
       "//extensions/common",
     ]
+
+    sources += [
+      "incident_reporting/binary_integrity_incident_unittest.cc",
+      "incident_reporting/delayed_callback_runner_unittest.cc",
+      "incident_reporting/download_metadata_manager_unittest.cc",
+      "incident_reporting/extension_data_collection_unittest.cc",
+      "incident_reporting/incident_report_uploader_impl_unittest.cc",
+      "incident_reporting/incident_reporting_service_unittest.cc",
+      "incident_reporting/last_download_finder_unittest.cc",
+      "incident_reporting/mock_incident_receiver.cc",
+      "incident_reporting/mock_incident_receiver.h",
+      "incident_reporting/platform_state_store_unittest.cc",
+      "incident_reporting/preference_validation_delegate_unittest.cc",
+      "incident_reporting/state_store_unittest.cc",
+      "incident_reporting/tracked_preference_incident_unittest.cc",
+    ]
+    deps += [
+      "//chrome/browser/prefs",
+      "//chrome/browser/safe_browsing/incident_reporting:state_store_data_proto",
+      "//components/history/content/browser",
+    ]
+
+    if (is_chromeos) {
+      deps += [ "//chrome/browser/ash/login/users" ]
+    }
+
+    if (is_mac) {
+      sources +=
+          [ "incident_reporting/binary_integrity_analyzer_mac_unittest.cc" ]
+      deps += [ "//chrome/common:constants" ]
+    }
+
+    if (is_win) {
+      sources += [
+        "incident_reporting/binary_integrity_analyzer_win_unittest.cc",
+        "incident_reporting/environment_data_collection_win_unittest.cc",
+        "incident_reporting/module_integrity_unittest_util_win.cc",
+        "incident_reporting/module_integrity_unittest_util_win.h",
+        "incident_reporting/module_integrity_verifier_win_unittest.cc",
+        "incident_reporting/platform_state_store_win_unittest.cc",
+      ]
+      data_deps = [
+        "//chrome/browser/safe_browsing/incident_reporting/verifier_test:verifier_test_dll_1",
+        "//chrome/browser/safe_browsing/incident_reporting/verifier_test:verifier_test_dll_2",
+      ]
+    }
   }
 
   if (is_android) {
