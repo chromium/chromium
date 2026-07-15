@@ -3299,7 +3299,11 @@ void OmniboxEditModel::InitializeQueryContextualizerIfNeeded() {
           std::move(get_viewport_options_callback),
           contextual_tasks::ContextualTasksContextServiceFactory::GetForProfile(
               profile),
-          chrome_omnibox_client->browser());
+          base::BindRepeating(
+              [](ChromeOmniboxClient* client) -> BrowserWindowInterface* {
+                return client->browser();
+              },
+              base::Unretained(chrome_omnibox_client)));
   auto* service =
       contextual_tasks::ContextualTasksServiceFactory::GetForProfile(profile);
   query_contextualizer_ =
