@@ -65,6 +65,7 @@ export class SkillCardElement extends CrLitElement {
       cardType: {type: String},
       saveDisabled: {type: Boolean},
       hideTooltip: {type: Boolean},
+      webuiRoundedIconsEnabled_: {type: Boolean},
     };
   }
 
@@ -85,6 +86,9 @@ export class SkillCardElement extends CrLitElement {
   accessor cardType: CardType = CardType.USER_SKILL_CARD;
   accessor saveDisabled: boolean = false;
   accessor hideTooltip: boolean = false;
+
+  protected accessor webuiRoundedIconsEnabled_: boolean =
+      loadTimeData.getBoolean('webuiRoundedIconsEnabled');
 
   private proxy_: SkillsPageBrowserProxy = SkillsPageBrowserProxy.getInstance();
 

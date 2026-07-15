@@ -47,7 +47,10 @@ export function getHtml(this: SkillCardElement) {
         <cr-button class="dropdown-item" id="copyButton"
             @click="${this.onCopyButtonClick_}"
             aria-label="${this.ariaLabelForSkill_('copyInstructions')}">
-          <cr-icon icon="skills:copy" slot="prefix-icon"></cr-icon>
+          <cr-icon
+              icon="${this.webuiRoundedIconsEnabled_
+                  ? 'skills:content-copy'
+                  : 'skills:copy-old'}" slot="prefix-icon"></cr-icon>
           $i18n{copyInstructions}
         </cr-button>
       </cr-action-menu>
@@ -71,7 +74,10 @@ export function getHtml(this: SkillCardElement) {
     ` : html`
       <cr-button id="editButton" @click="${this.onEditButtonClick_}"
           aria-label="${this.ariaLabelForSkill_('edit')}">
-        <cr-icon id="editIcon" icon="skills:create" slot="prefix-icon"></cr-icon>
+        <cr-icon id="editIcon"
+            icon="${this.webuiRoundedIconsEnabled_
+                ? 'skills:edit'
+                : 'skills:create-old'}" slot="prefix-icon"></cr-icon>
         $i18n{edit}
       </cr-button>
     `}

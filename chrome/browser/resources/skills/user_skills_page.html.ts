@@ -37,7 +37,10 @@ ${this.filteredSkills_().length === 0 ? html`
     ${!this.shouldDisableBrowseSkillsPage_ ? html`
       <cr-button id="browseSkillsButton" class="floating-button"
           @click="${this.onExploreButtonClick_}">
-        <cr-icon icon="skills:explore" slot="prefix-icon"></cr-icon>
+        <cr-icon
+            icon="${this.webuiRoundedIconsEnabled_
+                ? 'skills:explore'
+                : 'skills:explore-old'}" slot="prefix-icon"></cr-icon>
         $i18n{browseSkillsTitle}
       </cr-button>` : ''}
   </div>` : html`

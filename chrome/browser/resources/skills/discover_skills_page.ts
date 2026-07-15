@@ -130,19 +130,33 @@ export class DiscoverSkillsPageElement extends CrLitElement {
   protected getIconForCategory_(category: string): string {
     switch (category) {
       case 'All':
-        return 'skills:grid';
+        return loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+            'skills:grid-view' :
+            'skills:grid-old';
       case 'Fun':
-        return 'skills:celebration';
+        return loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+            'skills:celebration' :
+            'skills:celebration-old';
       case 'Learning':
-        return 'skills:book';
+        return loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+            'skills:book-2' :
+            'skills:book-old';
       case 'Research':
-        return 'skills:search';
+        return loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+            'skills:manage-search' :
+            'skills:search-old';
       case 'Shopping':
-        return 'skills:shopping';
+        return loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+            'skills:shopping-bag' :
+            'skills:shopping-old';
       case 'Understand':
-        return 'skills:lightbulb';
+        return loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+            'skills:lightbulb' :
+            'skills:lightbulb-old';
       case 'Writing':
-        return 'skills:write';
+        return loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+            'skills:ink-pen' :
+            'skills:write-old';
       default:
         return 'cr:add';
     }

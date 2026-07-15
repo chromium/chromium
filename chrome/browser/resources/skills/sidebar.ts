@@ -44,12 +44,17 @@ export class SkillsSidebarElement extends CrLitElement {
 
   accessor menuItems: MenuItem[] = [
     ...(!loadTimeData.getBoolean('shouldDisableBrowseSkillsPage') ? [{
-      icon: 'skills:explore',
+      icon: loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+          'skills:explore' :
+          'skills:explore-old',
       name: loadTimeData.getString('browseSkillsTitle'),
       page: Page.DISCOVER_SKILLS,
-    }] : []),
+    }] :
+                                                                    []),
     {
-      icon: 'skills:bolt',
+      icon: loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+          'skills:bolt-filled' :
+          'skills:bolt-old',
       name: loadTimeData.getString('userSkillsTitle'),
       page: Page.USER_SKILLS,
     },

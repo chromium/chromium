@@ -39,6 +39,7 @@ export class UserSkillsPageElement extends CrLitElement {
       searchTerm_: {type: String},
       addSkillButtonDisabled_: {type: Boolean},
       shouldDisableBrowseSkillsPage_: {type: Boolean},
+      webuiRoundedIconsEnabled_: {type: Boolean},
     };
   }
 
@@ -48,6 +49,8 @@ export class UserSkillsPageElement extends CrLitElement {
   protected accessor searchTerm_: string = '';
   protected accessor shouldDisableBrowseSkillsPage_: boolean =
       loadTimeData.getBoolean('shouldDisableBrowseSkillsPage');
+  protected accessor webuiRoundedIconsEnabled_: boolean =
+      loadTimeData.getBoolean('webuiRoundedIconsEnabled');
   private proxy_: SkillsPageBrowserProxy = SkillsPageBrowserProxy.getInstance();
   private listenerIds_: number[] = [];
   private addSkillButtonDisabledTimer_: number|undefined = undefined;

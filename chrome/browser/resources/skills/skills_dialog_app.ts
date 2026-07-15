@@ -129,6 +129,7 @@ export class SkillsDialogAppElement extends CrLitElement {
       generatedIcon_: {type: String},
       isNameInputFocused_: {type: Boolean},
       hasSeenGeneratedSuggestion_: {type: Boolean},
+      webuiRoundedIconsEnabled_: {type: Boolean},
     };
   }
 
@@ -165,6 +166,8 @@ export class SkillsDialogAppElement extends CrLitElement {
   protected accessor generatedIcon_: string = '';
   protected accessor isNameInputFocused_: boolean = false;
   protected accessor hasSeenGeneratedSuggestion_: boolean = false;
+  protected accessor webuiRoundedIconsEnabled_: boolean =
+      loadTimeData.getBoolean('webuiRoundedIconsEnabled');
 
   private originalPrompt_: string = '';
   private refinedPrompt_: string = '';

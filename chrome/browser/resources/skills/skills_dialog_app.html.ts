@@ -45,7 +45,9 @@ ${this.shouldShowErrorPage_ ? html`<error-page></error-page>` : html`
                 ?invalid="${this.hasNameCharLimitError_}">
               <div class="emoji-prefix-container" slot="inline-prefix">
                 <cr-icon id="emojiZeroStateIcon"
-                    icon="skills:add-reaction" aria-hidden="true"
+                    icon="${this.webuiRoundedIconsEnabled_
+                        ? 'skills:add-reaction'
+                        : 'skills:add-reaction-old'}" aria-hidden="true"
                     ?hidden="${this.shouldHideEmojiZeroState_()}">
                 </cr-icon>
                 <input id="emojiTrigger" type="text"
@@ -103,19 +105,28 @@ ${this.shouldShowErrorPage_ ? html`<error-page></error-page>` : html`
             `}
             ${this.isRefinementEnabled_() ? html`
               <div class="textarea-actions">
-                <cr-icon-button id="iconUndo" iron-icon="skills:undo"
+                <cr-icon-button id="iconUndo"
+                    iron-icon="${this.webuiRoundedIconsEnabled_
+                        ? 'skills:undo'
+                        : 'skills:undo-old'}"
                     class="refine-icon" title="$i18n{undo}"
                     aria-label="$i18n{undo}"
                     ?disabled="${this.isUndoDisabled_()}"
                     @click="${this.onUndoClick_}">
                 </cr-icon-button>
-                <cr-icon-button id="iconRedo" iron-icon="skills:redo"
+                <cr-icon-button id="iconRedo"
+                    iron-icon="${this.webuiRoundedIconsEnabled_
+                        ? 'skills:redo'
+                        : 'skills:redo-old'}"
                     class="refine-icon" title="$i18n{redo}"
                     aria-label="$i18n{redo}"
                     ?disabled="${this.isRedoDisabled_()}"
                     @click="${this.onRedoClick_}">
                 </cr-icon-button>
-                <cr-icon-button id="iconRefine" iron-icon="skills:refine"
+                <cr-icon-button id="iconRefine"
+                    iron-icon="${this.webuiRoundedIconsEnabled_
+                        ? 'skills:pen-spark'
+                        : 'skills:refine-old'}"
                     class="refine-icon" title="$i18n{refine}"
                     aria-label="$i18n{refine}"
                     ?disabled="${this.isRefineDisabled_()}"
