@@ -997,22 +997,41 @@ public class VerticalTabListCoordinatorUnitTest {
         // Click collapse
         collapseButton.performClick();
 
-        // Verify model updated
-        assertTrue(
-                mCoordinator
-                        .getContainerModelForTesting()
-                        .get(VerticalTabListProperties.IS_COLLAPSED));
-        // Verify listener notified
-        verify(mockListener).onRailCollapseChanged(true);
-        assertEquals(1, mCoordinator.getPinnedLayoutManagerForTesting().getSpanCount());
-
-        // Click again to expand
-        collapseButton.performClick();
+        // Verify listener requested collapse, but model is NOT updated yet (deferred)
+        verify(mockListener).onRailCollapseRequested(true);
         assertFalse(
                 mCoordinator
                         .getContainerModelForTesting()
                         .get(VerticalTabListProperties.IS_COLLAPSED));
-        verify(mockListener).onRailCollapseChanged(false);
+
+        // Apply the collapsed state manually (simulating the SideUiCoordinator transition flow)
+        mCoordinator.setCollapsed(true);
+
+        // Verify model is now updated
+        assertTrue(
+                mCoordinator
+                        .getContainerModelForTesting()
+                        .get(VerticalTabListProperties.IS_COLLAPSED));
+        assertEquals(1, mCoordinator.getPinnedLayoutManagerForTesting().getSpanCount());
+
+        // Click again to expand
+        collapseButton.performClick();
+
+        // Verify listener requested expand, but model is still collapsed
+        verify(mockListener).onRailCollapseRequested(false);
+        assertTrue(
+                mCoordinator
+                        .getContainerModelForTesting()
+                        .get(VerticalTabListProperties.IS_COLLAPSED));
+
+        // Apply the expanded state manually
+        mCoordinator.setCollapsed(false);
+
+        // Verify model is now expanded
+        assertFalse(
+                mCoordinator
+                        .getContainerModelForTesting()
+                        .get(VerticalTabListProperties.IS_COLLAPSED));
         assertEquals(4, mCoordinator.getPinnedLayoutManagerForTesting().getSpanCount());
     }
 }

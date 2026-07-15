@@ -77,6 +77,7 @@ import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 import org.chromium.ui.recyclerview.widget.ItemTouchHelper2;
 import org.chromium.ui.widget.RectProvider;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
@@ -125,8 +126,8 @@ public class VerticalTabListCoordinator {
     private @Nullable ListObserver<Void> mModelListObserver;
 
     /** Listener for collapse state changes. */
-    public interface RailCollapseListener {
-        void onRailCollapseChanged(boolean isCollapsed);
+    interface RailCollapseListener {
+        void onRailCollapseRequested(boolean isCollapsed);
     }
 
     private class VerticalTabListClickHandler implements TabListItemOnClickListenerProvider {
@@ -620,6 +621,23 @@ public class VerticalTabListCoordinator {
         mRailCollapseListener = null;
     }
 
+    /** Returns the list of views that should participate in the resize transition animation. */
+    List<View> getViewsForResizeAnimation() {
+        List<View> views = new ArrayList<>();
+        views.add(mContainerView);
+        for (int i = 0; i < mContainerView.getChildCount(); i++) {
+            View child = mContainerView.getChildAt(i);
+            views.add(child);
+            if (child.getId() == R.id.vertical_tab_header_container
+                    && child instanceof ViewGroup header) {
+                for (int j = 0; j < header.getChildCount(); j++) {
+                    views.add(header.getChildAt(j));
+                }
+            }
+        }
+        return views;
+    }
+
     /**
      * Sets the listener to be notified when the rail's collapsed state changes.
      *
@@ -627,6 +645,22 @@ public class VerticalTabListCoordinator {
      */
     public void setCollapseListener(@Nullable RailCollapseListener listener) {
         mRailCollapseListener = listener;
+    }
+
+    /**
+     * Sets the collapsed state of the vertical tab rail.
+     *
+     * <p>This updates the model properties and layouts for the rail container and all tab items to
+     * transition between the expanded (icons + text) and collapsed (icons only) states.
+     *
+     * @param collapsed True if the rail should be collapsed, false if it should be expanded.
+     */
+    void setCollapsed(boolean collapsed) {
+        mContainerModel.set(VerticalTabListProperties.IS_COLLAPSED, collapsed);
+        mPinnedLayoutManager.setSpanCount(collapsed ? 1 : getSpanCount());
+        updateRailCollapsedStateForRange(mModelList, 0, mModelList.size(), collapsed);
+        updateRailCollapsedStateForRange(
+                mPinnedTabsModelList, 0, mPinnedTabsModelList.size(), collapsed);
     }
 
     private void setActive(boolean isActive) {
@@ -731,16 +765,10 @@ public class VerticalTabListCoordinator {
     private void toggleCollapseState() {
         boolean isCollapsed = mContainerModel.get(VerticalTabListProperties.IS_COLLAPSED);
         boolean newCollapsedState = !isCollapsed;
-        mContainerModel.set(VerticalTabListProperties.IS_COLLAPSED, newCollapsedState);
-
-        mPinnedLayoutManager.setSpanCount(newCollapsedState ? 1 : getSpanCount());
-
-        updateRailCollapsedStateForRange(mModelList, 0, mModelList.size(), newCollapsedState);
-        updateRailCollapsedStateForRange(
-                mPinnedTabsModelList, 0, mPinnedTabsModelList.size(), newCollapsedState);
-
         if (mRailCollapseListener != null) {
-            mRailCollapseListener.onRailCollapseChanged(newCollapsedState);
+            mRailCollapseListener.onRailCollapseRequested(newCollapsedState);
+        } else {
+            setCollapsed(newCollapsedState);
         }
     }
 

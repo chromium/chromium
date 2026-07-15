@@ -435,12 +435,13 @@ final class SideUiCoordinatorImpl implements SideUiCoordinator, ConfigurationCha
 
         for (Map.Entry<@AnchorSide Integer, Integer> entry : uiUpdateSpecs.mSpecsDiff.entrySet()) {
             int side = entry.getKey();
-            int width = entry.getValue();
+            int newWidth = entry.getValue();
+            int oldWidth = uiUpdateSpecs.mCurrentSpecs.getWidth(side);
             // Add transitions for the side UI containers.
             ViewGroup anchorContainer = assumeNonNull(mAnchorContainers.get(side));
             transitionSet.addTransition(
                     SideUiContainerTransition.createContainerTransition(
-                            anchorContainer, side, width));
+                            anchorContainer, side, oldWidth, newWidth));
         }
 
         List<Transition> transitions =
@@ -475,17 +476,21 @@ final class SideUiCoordinatorImpl implements SideUiCoordinator, ConfigurationCha
             SideUiUpdateSpecs uiUpdateSpecs, TransitionSet transitionSet) {
         SideUiSpecs newSideUiSpecs = uiUpdateSpecs.mNewSpecs;
         SideUiSpecs sideUiSpecsDiff = uiUpdateSpecs.mSpecsDiff;
+        SideUiSpecs currentSideUiSpecs = uiUpdateSpecs.mCurrentSpecs;
 
         for (Map.Entry<@AnchorSide Integer, Integer> entry : sideUiSpecsDiff.entrySet()) {
             @AnchorSide int anchorSide = entry.getKey();
-            int sideUiWidth = entry.getValue();
+            int newWidth = entry.getValue();
+            int oldWidth = currentSideUiSpecs.getWidth(anchorSide);
             SideUiContainer sideUiContainer = assumeNonNull(getSideUiContainerBySide(anchorSide));
-            // Ensure side UI container is attached and, if showing, starts offscreen with the
-            // side UI width. If hiding, i.e. side UI width is 0, then setWidth() should be
-            // delayed until after the Transition is finished.
+            // Ensure side UI container is attached.
             attachSideUiContainerView(sideUiContainer, anchorSide);
-            if (sideUiWidth != 0) {
-                sideUiContainer.setWidth(sideUiWidth);
+
+            // Only set the width immediately if it's a show event (0 -> non-zero).
+            // For resize, we set it after beginDelayedTransition.
+            // For hide, it's set after the transition ends.
+            if (newWidth != 0 && oldWidth == 0) {
+                sideUiContainer.setWidth(newWidth);
             }
         }
 
@@ -524,12 +529,16 @@ final class SideUiCoordinatorImpl implements SideUiCoordinator, ConfigurationCha
         ViewUtils.triggerSynchronousMeasureAndLayout(mAnchorContainerParent);
         TransitionManager.beginDelayedTransition(getRootView(), transitionSet);
 
+        // Apply target layout changes (setting width for resize, translation for slide) after
+        // capturing the starting state with beginDelayedTransition.
         for (Map.Entry<@AnchorSide Integer, Integer> entry : sideUiSpecsDiff.entrySet()) {
             @AnchorSide int anchorSide = entry.getKey();
-            int sideUiWidth = entry.getValue();
+            int newWidth = entry.getValue();
+            int oldWidth = currentSideUiSpecs.getWidth(anchorSide);
             ViewGroup anchorContainer = assumeNonNull(mAnchorContainers.get(anchorSide));
+            SideUiContainer sideUiContainer = assumeNonNull(getSideUiContainerBySide(anchorSide));
             SideUiContainerTransition.triggerContainerTransition(
-                    anchorContainer, anchorContainer.getWidth(), anchorSide, sideUiWidth);
+                    anchorContainer, sideUiContainer, anchorSide, oldWidth, newWidth);
         }
 
         mSideUiObserverNotifier.notifyTransitionBegun(newSideUiSpecs);

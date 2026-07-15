@@ -5,6 +5,9 @@
 package org.chromium.chrome.browser.tasks.tab_management.vertical_tabs;
 
 import android.app.Activity;
+import android.transition.ChangeBounds;
+import android.transition.Transition;
+import android.transition.TransitionSet;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -13,13 +16,19 @@ import androidx.annotation.Px;
 
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ui.side_ui.SideUiContainer;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.AnchorSide;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.SideUiId;
+import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.SideUiSpecs;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.UiUpdateRequest;
+import org.chromium.chrome.browser.ui.side_ui.SideUiObserver;
 import org.chromium.chrome.browser.ui.vertical_tabs.VerticalTabUtils;
 import org.chromium.ui.base.ViewUtils;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Coordinator that acts as a container for the Vertical Tab List within the Side UI framework. This
@@ -27,7 +36,7 @@ import org.chromium.ui.base.ViewUtils;
  * separating container-level layout and sizing concerns from the tab list itself.
  */
 @NullMarked
-public class VerticalTabsSideUiCoordinator implements SideUiContainer {
+public class VerticalTabsSideUiCoordinator implements SideUiContainer, SideUiObserver {
     static final int VIEW_WIDTH_DP = VerticalTabUtils.SIDE_UI_CONTAINER_WIDTH_DP;
     static final int COLLAPSED_WIDTH_DP = VerticalTabUtils.SIDE_UI_CONTAINER_COLLAPSED_WIDTH_DP;
 
@@ -38,6 +47,7 @@ public class VerticalTabsSideUiCoordinator implements SideUiContainer {
     private final @Px int mExpandedViewWidth;
     private final @Px int mCollapsedViewWidth;
     private final SettableNonNullObservableSupplier<Boolean> mIsVerticalTabsActiveSupplier;
+    private @Nullable Boolean mPendingCollapsedState;
     private boolean mIsCollapsed;
 
     // Whether the vertical tab is automatically hidden due to run-time conditions.
@@ -50,7 +60,7 @@ public class VerticalTabsSideUiCoordinator implements SideUiContainer {
     private boolean mManualVisible;
 
     private final VerticalTabListCoordinator.RailCollapseListener mCollapseListener =
-            this::onCollapseChanged;
+            this::onCollapseRequested;
 
     public VerticalTabsSideUiCoordinator(
             Activity activity,
@@ -62,6 +72,7 @@ public class VerticalTabsSideUiCoordinator implements SideUiContainer {
         mSideUiCoordinator = sideUiCoordinator;
         mTabListCoordinator = tabListCoordinator;
         mIsVerticalTabsActiveSupplier = isVerticalTabsActiveSupplier;
+        mSideUiCoordinator.addObserver(this);
 
         mRootView = new FrameLayout(activity);
         mRootView.setLayoutParams(
@@ -80,6 +91,13 @@ public class VerticalTabsSideUiCoordinator implements SideUiContainer {
                 new UiUpdateRequest(getSideUiId(), /* suppressAnimations= */ false));
     }
 
+    public void destroy() {
+        mSideUiCoordinator.removeObserver(this);
+        mTabListCoordinator.setCollapseListener(null);
+        mTabListCoordinator.destroy();
+    }
+
+    // SideUiContainer implementation:
     @Override
     public View getView() {
         return mRootView;
@@ -130,14 +148,39 @@ public class VerticalTabsSideUiCoordinator implements SideUiContainer {
         mIsVerticalTabsActiveSupplier.set(newWidth > 0);
     }
 
-    private void onCollapseChanged(boolean isCollapsed) {
-        mIsCollapsed = isCollapsed;
-        mSideUiCoordinator.updateUi(
-                new UiUpdateRequest(getSideUiId(), /* suppressAnimations= */ true));
+    // SideUiObserver implementation:
+    @Override
+    public @Nullable Transition onPreSideUiSpecsChange(SideUiSpecs sideUiSpecs) {
+        int side = getAnchorSide();
+        int newWidth = sideUiSpecs.getWidth(side);
+        int oldWidth = mSideUiCoordinator.getCurrentSideUiSpecs().getWidth(side);
+
+        if (oldWidth > 0 && newWidth > 0 && oldWidth != newWidth) {
+            TransitionSet transitionSet = new TransitionSet();
+            List<View> views = new ArrayList<>(mTabListCoordinator.getViewsForResizeAnimation());
+            views.add(getView());
+            Transition changeBounds = new ChangeBounds();
+            for (View view : views) {
+                changeBounds.addTarget(view);
+            }
+            transitionSet.addTransition(changeBounds);
+            return transitionSet;
+        }
+        return null;
     }
 
-    public void destroy() {
-        mTabListCoordinator.setCollapseListener(null);
-        mTabListCoordinator.destroy();
+    @Override
+    public void onSideUiSpecsChanged(SideUiSpecs sideUiSpecs) {
+        if (mPendingCollapsedState != null) {
+            mTabListCoordinator.setCollapsed(mPendingCollapsedState);
+            mPendingCollapsedState = null;
+        }
+    }
+
+    private void onCollapseRequested(boolean isCollapsed) {
+        mIsCollapsed = isCollapsed;
+        mPendingCollapsedState = isCollapsed;
+        mSideUiCoordinator.updateUi(
+                new UiUpdateRequest(getSideUiId(), /* suppressAnimations= */ false));
     }
 }
