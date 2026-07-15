@@ -106,6 +106,7 @@
 #include "extensions/browser/test_extension_prefs.h"
 #include "extensions/common/url_pattern.h"
 #include "media/base/media_switches.h"
+#include "net/base/url_util.h"
 #include "printing/buildflags/buildflags.h"
 #include "services/network/test/test_shared_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -969,6 +970,47 @@ TEST_F(RenderViewContextMenuPrefsTest, OpenLinkNavigationInitiatorSet) {
   EXPECT_TRUE(delegate.last_navigation_params()->initiator_origin.has_value());
   EXPECT_EQ(delegate.last_navigation_params()->initiator_origin->GetURL(),
             params.page_url.DeprecatedGetOriginAsURL());
+}
+
+TEST_F(RenderViewContextMenuPrefsTest,
+       SearchWebForNewTabAppendsSourceParameter) {
+  TestNavigationDelegate delegate;
+  web_contents()->SetDelegate(&delegate);
+  content::RenderFrameHost& main_frame = *web_contents()->GetPrimaryMainFrame();
+
+  SetUserSelectedDefaultSearchProvider("https://www.google.com/search", true);
+
+  content::ContextMenuParams params = CreateParams(MenuItem::SELECTION);
+  params.selection_text = u"hello world";
+  auto menu = std::make_unique<TestRenderViewContextMenu>(main_frame, params);
+  menu->Init();
+  menu->ExecuteCommand(IDC_CONTENT_CONTEXT_SEARCHWEBFORNEWTAB, 0);
+
+  ASSERT_TRUE(delegate.last_navigation_params());
+  std::string source_param;
+  EXPECT_TRUE(net::GetValueForKeyInQuery(delegate.last_navigation_params()->url,
+                                         "source", &source_param));
+  EXPECT_EQ("chrome.ctxt", source_param);
+}
+
+TEST_F(RenderViewContextMenuPrefsTest,
+       SearchWebForNewTabDoesNotAppendSourceForNonGoogle) {
+  TestNavigationDelegate delegate;
+  web_contents()->SetDelegate(&delegate);
+  content::RenderFrameHost& main_frame = *web_contents()->GetPrimaryMainFrame();
+
+  SetUserSelectedDefaultSearchProvider("https://www.example.com/search", true);
+
+  content::ContextMenuParams params = CreateParams(MenuItem::SELECTION);
+  params.selection_text = u"hello world";
+  auto menu = std::make_unique<TestRenderViewContextMenu>(main_frame, params);
+  menu->Init();
+  menu->ExecuteCommand(IDC_CONTENT_CONTEXT_SEARCHWEBFORNEWTAB, 0);
+
+  ASSERT_TRUE(delegate.last_navigation_params());
+  std::string source_param;
+  EXPECT_FALSE(net::GetValueForKeyInQuery(
+      delegate.last_navigation_params()->url, "source", &source_param));
 }
 
 TEST_F(RenderViewContextMenuPrefsTest,

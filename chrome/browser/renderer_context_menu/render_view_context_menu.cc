@@ -237,6 +237,7 @@
 #include "media/base/media_switches.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "net/base/network_anonymization_key.h"
+#include "net/base/url_util.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "pdf/buildflags.h"
 #include "printing/buildflags/buildflags.h"
@@ -4054,8 +4055,14 @@ void RenderViewContextMenu::ExecuteCommand(int id, int event_flags) {
       auto disposition = ui::DispositionFromEventFlags(
           event_flags, WindowOpenDisposition::NEW_FOREGROUND_TAB);
 
+      GURL navigation_url = selection_navigation_url_;
+      if (google_util::IsGoogleSearchUrl(navigation_url)) {
+        navigation_url = net::AppendOrReplaceQueryParameter(
+            navigation_url, "source", "chrome.ctxt");
+      }
+
       content::OpenURLParams open_url_params = GetOpenURLParamsWithExtraHeaders(
-          selection_navigation_url_, /*referring_url=*/GURL(),
+          navigation_url, /*referring_url=*/GURL(),
           /*initiator=*/{}, disposition, ui::PAGE_TRANSITION_LINK,
           /*extra_headers=*/std::string(), /*started_from_context_menu=*/true);
 

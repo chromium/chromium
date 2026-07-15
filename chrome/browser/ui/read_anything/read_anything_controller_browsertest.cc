@@ -40,6 +40,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/blocked_content/popup_blocker_tab_helper.h"
+#include "components/google/core/common/google_util.h"
 #include "components/input/native_web_keyboard_event.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/page_load_metrics/browser/page_load_metrics_test_waiter.h"
@@ -53,6 +54,7 @@
 #include "content/public/test/hit_test_region_observer.h"
 #include "content/public/test/pwn_open_url_helper.h"
 #include "content/public/test/test_navigation_observer.h"
+#include "net/base/url_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
@@ -2003,6 +2005,10 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
   TemplateURLRef::SearchTermsArgs search_args(u"test");
   GURL expected_url(default_provider->url_ref().ReplaceSearchTerms(
       search_args, template_url_service->search_terms_data()));
+  if (google_util::IsGoogleSearchUrl(expected_url)) {
+    expected_url = net::AppendOrReplaceQueryParameter(expected_url, "source",
+                                                      "chrome.ctxt");
+  }
 
   EXPECT_EQ(expected_url, new_tab->GetURL());
 }
