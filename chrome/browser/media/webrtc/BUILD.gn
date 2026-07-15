@@ -410,15 +410,29 @@ if (!is_android) {
 
 source_set("unit_tests") {
   testonly = true
-  sources = []
+
+  # Some of these tests declare file-scope objects with non-trivial
+  # destructors (e.g. media_stream_capture_indicator_unittest.cc).
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
+
+  # These tests build on all platforms (matching the original monolithic
+  # //chrome/test:unit_tests target).
+  sources = [
+    "capture_policy_utils_unittest.cc",
+    "media_device_salt_service_factory_unittest.cc",
+    "media_stream_device_permission_context_unittest.cc",
+  ]
   deps = [
     ":webrtc",
     "//base",
     "//base/test:test_support",
     "//chrome/browser/content_settings:content_settings_factory",
+    "//chrome/browser/media/prefs",
     "//chrome/browser/prefs",
     "//chrome/common",
     "//chrome/test:test_support",
+    "//components/infobars/content",
+    "//components/media_device_salt",
     "//components/prefs:test_support",
     "//components/sync_preferences:test_support",
     "//components/user_manager",
@@ -434,21 +448,24 @@ source_set("unit_tests") {
   if (is_chromeos) {
     deps += [
       "//chrome/browser/ash/login/users:test_support",
+      "//chrome/browser/chromeos/policy/dlp",
       "//chrome/browser/chromeos/policy/dlp/test:test_support",
       "//chromeos/ash/components/system",
       "//components/account_id",
     ]
   }
 
-  # All of the media/webrtc unit tests are desktop-only (!is_android);
+  # These media/webrtc unit tests are desktop-only (!is_android);
   # test_stats_dictionary additionally lives in the desktop-only browser-test
   # base.
   if (!is_android) {
     sources += [
-      "capture_policy_utils_unittest.cc",
       "desktop_capture_access_handler_unittest.cc",
       "desktop_media_picker_controller_unittest.cc",
+      "media_capture_devices_dispatcher_unittest.cc",
+      "media_stream_capture_indicator_unittest.cc",
       "rtc_diagnostic_logging_unittest.cc",
+      "tab_capture_access_handler_unittest.cc",
       "test_stats_dictionary_unittest.cc",
       "webrtc_event_log_manager_common_unittest.cc",
       "webrtc_event_log_manager_unittest.cc",
