@@ -157,6 +157,7 @@ source_set("app_state") {
     "//ios/chrome/app/background_refresh:headers",
     "//ios/chrome/browser/crash_report/model",
     "//ios/chrome/browser/device_orientation/ui_bundled",
+    "//ios/chrome/browser/scoped_ui_blocker/ui_bundled:protocols",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/coordinator/scene/state",
     "//ios/chrome/browser/shared/model/application_context",

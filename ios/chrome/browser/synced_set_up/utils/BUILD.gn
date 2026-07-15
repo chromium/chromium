@@ -32,7 +32,7 @@ source_set("unit_tests") {
     ":utils",
     "//ios/chrome/app/profile",
     "//ios/chrome/app/profile:test_utils",
-    "//ios/chrome/browser/scoped_ui_blocker/ui_bundled",
+    "//ios/chrome/browser/scoped_ui_blocker/ui_bundled:protocols",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/model/browser",
     "//testing/gtest",

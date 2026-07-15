@@ -7,15 +7,10 @@
 
 #import <Foundation/Foundation.h>
 
-#include "base/logging.h"
+#import "ios/chrome/browser/scoped_ui_blocker/ui_bundled/ui_blocker_extent.h"
 
 @protocol UIBlockerManager;
 @protocol UIBlockerTarget;
-
-enum class UIBlockerExtent {
-  kProfile,
-  kApplication,
-};
 
 // A helper object that increments AppState's or ProfileState's blocking UI
 // counter for its entire lifetime.

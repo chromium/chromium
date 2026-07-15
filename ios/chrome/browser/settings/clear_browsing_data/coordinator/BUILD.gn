@@ -60,7 +60,7 @@ source_set("mediator") {
     "//ios/chrome/browser/browsing_data/model:counters",
     "//ios/chrome/browser/browsing_data/model:model_remove_mask",
     "//ios/chrome/browser/discover_feed/model",
-    "//ios/chrome/browser/scoped_ui_blocker/ui_bundled",
+    "//ios/chrome/browser/scoped_ui_blocker/ui_bundled:protocols",
     "//ios/chrome/browser/search_engines/model",
     "//ios/chrome/browser/settings/clear_browsing_data/model",
     "//ios/chrome/browser/settings/clear_browsing_data/public:util",

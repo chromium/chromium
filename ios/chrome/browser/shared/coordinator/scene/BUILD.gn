@@ -41,7 +41,7 @@ source_set("scene_state_header") {
     ":scene_state_observer",
     ":url_context",
     "//ios/chrome/app/application_delegate:tab_opening",
-    "//ios/chrome/browser/scoped_ui_blocker/ui_bundled",
+    "//ios/chrome/browser/scoped_ui_blocker/ui_bundled:protocols",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/public/commands",

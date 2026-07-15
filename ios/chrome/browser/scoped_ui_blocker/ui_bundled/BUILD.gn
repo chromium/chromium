@@ -2,13 +2,27 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+source_set("ui_blocker_extent") {
+  sources = [ "ui_blocker_extent.h" ]
+}
+
+source_set("protocols") {
+  sources = [
+    "ui_blocker_manager.h",
+    "ui_blocker_target.h",
+  ]
+  deps = [ ":ui_blocker_extent" ]
+}
+
 source_set("ui_bundled") {
   sources = [
     "scoped_ui_blocker.h",
     "scoped_ui_blocker.mm",
-    "ui_blocker_manager.h",
-    "ui_blocker_target.h",
   ]
 
-  deps = [ "//base" ]
+  public_deps = [ ":ui_blocker_extent" ]
+  deps = [
+    ":protocols",
+    "//base",
+  ]
 }

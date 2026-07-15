@@ -7,7 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
-#import "ios/chrome/browser/scoped_ui_blocker/ui_bundled/scoped_ui_blocker.h"
+#import "ios/chrome/browser/scoped_ui_blocker/ui_bundled/ui_blocker_extent.h"
 
 @protocol UIBlockerManager;
 @class UIScene;

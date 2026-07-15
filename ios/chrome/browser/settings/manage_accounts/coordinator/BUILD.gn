@@ -26,6 +26,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/authentication/ui_bundled/signout_action_sheet",
     "//ios/chrome/browser/net/model:crurl",
     "//ios/chrome/browser/ntp/ui_bundled:feature_flags",
+    "//ios/chrome/browser/scoped_ui_blocker/ui_bundled",
     "//ios/chrome/browser/settings/manage_accounts/public",
     "//ios/chrome/browser/settings/manage_accounts/ui",
     "//ios/chrome/browser/settings/model/sync/utils",
