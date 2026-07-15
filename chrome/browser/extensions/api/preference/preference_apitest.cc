@@ -89,6 +89,9 @@ class ExtensionPreferenceApiTest : public extensions::ExtensionApiTest {
                             .FindList("blocked_types")
                             ->front()
                             .GetString());
+    EXPECT_EQ("all",
+              (*blocked_types_pref[1].GetDict().FindList("blocked_types"))[1]
+                  .GetString());
     EXPECT_EQ(GetCookieControlsMode(prefs), CookieControlsMode::kOff);
     EXPECT_TRUE(prefs->GetBoolean(prefs::kEnableHyperlinkAuditing));
     EXPECT_TRUE(prefs->GetBoolean(prefs::kEnableReferrers));

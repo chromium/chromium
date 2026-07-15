@@ -293,7 +293,7 @@ chrome.test.sendMessage('ready', function(message) {
           },
           {
             urlPattern: '*',
-            blockedTypes: ['travel'],
+            blockedTypes: ['travel', 'all'],
           },
         ];
         ps.autofillSettings.set({value: rules}, function() {

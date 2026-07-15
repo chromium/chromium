@@ -16,7 +16,7 @@
       {
         "id": "AutofillBlockedType",
         "type": "string",
-        "enum": ["contact_info", "payments", "identity_docs", "travel"],
+        "enum": ["contact_info", "payments", "identity_docs", "travel", "all"],
         "description": "Categories of Autofill data."
       },
       {

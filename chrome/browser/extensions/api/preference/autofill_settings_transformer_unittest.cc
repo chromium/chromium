@@ -83,6 +83,7 @@ TEST(AutofillSettingsTransformerTest, ExtensionToBrowserPref_MultipleRules) {
   blocked_types1.Append("payments");
   base::ListValue blocked_types2;
   blocked_types2.Append("travel");
+  blocked_types2.Append("all");
 
   auto browser_pref = transformer.ExtensionToBrowserPref(
       base::Value(
@@ -108,6 +109,15 @@ TEST(AutofillSettingsTransformerTest, ExtensionToBrowserPref_MultipleRules) {
   EXPECT_EQ("https://b.com",
             *browser_pref->GetList()[1].GetDict().FindString(
                 autofill::prefs::kAutofillBlockedTypesUrlPatternKey));
+  EXPECT_EQ(2u,
+            browser_pref->GetList()[1]
+                .GetDict()
+                .FindList(autofill::prefs::kAutofillBlockedTypesBlockedTypesKey)
+                ->size());
+  EXPECT_EQ("all",
+            (*browser_pref->GetList()[1].GetDict().FindList(
+                autofill::prefs::kAutofillBlockedTypesBlockedTypesKey))[1]
+                .GetString());
 }
 
 TEST(AutofillSettingsTransformerTest, BrowserToExtensionPref_NotList) {
