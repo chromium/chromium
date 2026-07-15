@@ -29,12 +29,14 @@ export class TabFaviconElement extends CrLitElement {
       url: {type: String},
       size: {type: Number},
       tabId: {type: Number},
+      isSubmitted: {type: Boolean},
     };
   }
 
   accessor url: string = '';
   accessor size: number = 16;
   accessor tabId: number|null = null;
+  accessor isSubmitted: boolean = false;
 
   override willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);
@@ -57,7 +59,7 @@ export class TabFaviconElement extends CrLitElement {
     super.updated(changedProperties);
 
     if ((changedProperties.has('url') || changedProperties.has('tabId')) &&
-        this.url && this.tabId) {
+        this.url && this.tabId && !this.isSubmitted) {
       const capturedTabId = this.tabId;
       this.fire('wait-for-tab-load', {
         tabId: capturedTabId,

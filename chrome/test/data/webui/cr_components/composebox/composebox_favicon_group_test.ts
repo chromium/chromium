@@ -115,4 +115,37 @@ suite('ComposeboxFaviconGroupTest', () => {
 
         flyoutOverlay.remove();
       });
+
+  test('Submitted tabs do not subscribe to live tab load updates', async () => {
+    let fired = false;
+    element.addEventListener('wait-for-tab-load', () => {
+      fired = true;
+    });
+
+    element.submittedTabIds = new Set([1]);
+    element.tabs = [
+      {tabId: 1, url: 'https://google.com'},
+    ] as any;
+    await element.updateComplete;
+
+    assertFalse(fired);
+  });
+
+  test('Retain original favicon for submitted tabs', async () => {
+    element.submittedTabIds = new Set([1]);
+    element.tabs = [
+      {tabId: 1, url: 'https://google.com'},
+    ] as any;
+    await element.updateComplete;
+
+    const internalElement = element as any;
+    internalElement.loadedFavicons_ =
+        new Map([[1, 'url("data:image/png;base64,wikipedia")']]);
+
+    const faviconUrl = internalElement.getFaviconUrl_(element.tabs[0]);
+
+    assertFalse(faviconUrl.includes('data:image/png;base64,wikipedia'));
+    assertTrue(faviconUrl.includes('chrome://favicon2/'));
+    assertTrue(faviconUrl.includes('pageUrl=https%3A%2F%2Fgoogle.com'));
+  });
 });

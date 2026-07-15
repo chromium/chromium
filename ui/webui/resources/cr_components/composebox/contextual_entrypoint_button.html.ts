@@ -34,7 +34,8 @@ export function getHtml(this: ContextualEntrypointButtonElement) {
         ` : this.tabFaviconChipsToCoinsEnabled_ &&
           this.getTabs_().length > 0 ? html`
           <composebox-favicon-group .tabs="${this.getTabs_()}"
-          title="${this.i18n('sharingTabsWithGoogle')}">
+              .submittedTabIds="${this.getSubmittedTabIds_()}"
+              title="${this.i18n('sharingTabsWithGoogle')}">
           </composebox-favicon-group>
         ` : ''}
       </cr-button>
@@ -55,7 +56,8 @@ export function getHtml(this: ContextualEntrypointButtonElement) {
               title="${this.i18n('stsMegaplusShareRelevantOpenTabs')}"></cr-icon>
         ` : html`
           <composebox-favicon-group .tabs="${this.getTabs_()}"
-          title="${this.i18n('sharingTabsWithGoogle')}">
+              .submittedTabIds="${this.getSubmittedTabIds_()}"
+              title="${this.i18n('sharingTabsWithGoogle')}">
           </composebox-favicon-group>
         `}
       </cr-button>

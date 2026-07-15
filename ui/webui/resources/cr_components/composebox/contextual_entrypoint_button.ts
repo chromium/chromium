@@ -111,6 +111,10 @@ export class ContextualEntrypointButtonElement extends
     return reversedShared.concat(reversedRestored);
   }
 
+  protected getSubmittedTabIds_(): Set<number> {
+    return new Set((this.restoredTabs || []).map(t => t.tabId));
+  }
+
   override connectedCallback() {
     super.connectedCallback();
     this.eventTracker_.add(
