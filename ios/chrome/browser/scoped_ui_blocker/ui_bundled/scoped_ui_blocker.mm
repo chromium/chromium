@@ -12,12 +12,6 @@
 #import "ios/chrome/browser/scoped_ui_blocker/ui_bundled/ui_blocker_target.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 
-ScopedUIBlocker::ScopedUIBlocker(id<UIBlockerTarget> target,
-                                 UIBlockerExtent extent)
-    : ScopedUIBlocker(PassKey{},
-                      target,
-                      [target uiBlockerManagerForExtent:extent]) {}
-
 ScopedUIBlocker::ScopedUIBlocker(PassKey,
                                  id<UIBlockerTarget> target,
                                  id<UIBlockerManager> manager)

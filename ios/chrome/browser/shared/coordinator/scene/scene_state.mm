@@ -211,15 +211,6 @@
   return self.uiBlockerState.presentingModalOverlay;
 }
 
-- (id<UIBlockerManager>)uiBlockerManagerForExtent:(UIBlockerExtent)extent {
-  switch (extent) {
-    case UIBlockerExtent::kProfile:
-      return _sceneStateOptions.profile_state;
-    case UIBlockerExtent::kApplication:
-      return _appState;
-  }
-}
-
 - (void)bringBlockerToFront:(UIScene*)requestingScene {
   if (!base::ios::IsMultipleScenesSupported()) {
     return;

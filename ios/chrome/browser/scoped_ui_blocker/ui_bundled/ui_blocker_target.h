@@ -7,18 +7,12 @@
 
 #import <Foundation/Foundation.h>
 
-#import "ios/chrome/browser/scoped_ui_blocker/ui_bundled/ui_blocker_extent.h"
-
-@protocol UIBlockerManager;
 @class UIScene;
 
 // Target to block all UI.
 @protocol UIBlockerTarget <NSObject>
 
 @property(nonatomic, readonly, getter=isUIBlocked) BOOL uiBlocked;
-
-// Returns UI blocker manager.
-- (id<UIBlockerManager>)uiBlockerManagerForExtent:(UIBlockerExtent)extent;
 
 // Force the blocking UI to appear. Specifically, bring the blocking UI window
 // forward.

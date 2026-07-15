@@ -10,7 +10,6 @@
 #import <memory>
 
 #import "base/types/pass_key.h"
-#import "ios/chrome/browser/scoped_ui_blocker/ui_bundled/ui_blocker_extent.h"
 
 @class SceneState;
 @class AppState;
@@ -21,11 +20,6 @@
 // counter for its entire lifetime.
 class ScopedUIBlocker {
  public:
-  // Set `extent` to UIBlockerExtent::kApplication if the entire app should be
-  // block and not only profile related scenes.
-  explicit ScopedUIBlocker(id<UIBlockerTarget> target,
-                           UIBlockerExtent extent = UIBlockerExtent::kProfile);
-
   // Used to make the constructor private.
   using PassKey = base::PassKey<ScopedUIBlocker>;
 
