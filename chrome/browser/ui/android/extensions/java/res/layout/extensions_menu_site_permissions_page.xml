@@ -48,7 +48,6 @@ found in the LICENSE file.
                 android:id="@+id/extensions_menu_site_permissions_radio_group"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingStart="8dp"
                 android:paddingBottom="10dp">
 
                 <org.chromium.components.browser_ui.widget.RadioButtonWithDescription

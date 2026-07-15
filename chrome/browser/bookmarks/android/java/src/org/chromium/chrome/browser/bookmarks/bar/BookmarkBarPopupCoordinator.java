@@ -5,11 +5,10 @@
 package org.chromium.chrome.browser.bookmarks.bar;
 
 import android.app.Activity;
-import android.content.Context;
-import android.content.res.ColorStateList;
 import android.content.res.Resources;
+import android.graphics.Color;
 import android.graphics.Point;
-import android.graphics.drawable.Drawable;
+import android.graphics.drawable.ColorDrawable;
 import android.util.DisplayMetrics;
 import android.util.Pair;
 import android.view.Gravity;
@@ -19,9 +18,7 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import androidx.annotation.DrawableRes;
 import androidx.annotation.VisibleForTesting;
-import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
@@ -31,9 +28,7 @@ import org.chromium.chrome.browser.bookmarks.R;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.bookmarks.BookmarkItem;
-import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
-import org.chromium.ui.UiUtils;
 import org.chromium.ui.listmenu.BasicListMenu;
 import org.chromium.ui.listmenu.ListMenuItemProperties;
 import org.chromium.ui.listmenu.ListMenuUtils;
@@ -150,9 +145,17 @@ public class BookmarkBarPopupCoordinator {
 
         popupListMenu.setupCallbacks(
                 this::dismiss, ListMenuUtils.createHierarchicalMenuController(mActivity));
-
+        // popupContentView (list_menu_layout) is the inner container housing the ListView.
+        // AnchoredPopupWindow is the outer popup window container wrapping popupContentView.
+        // We keep the default background (default_popup_menu_bg) on popupContentView and set
+        // AnchoredPopupWindow's background to transparent for two reasons:
+        // 1. Setting default_popup_menu_bg on both containers applies the 6dp shadow inset padding
+        //    twice, causing a 6dp gap where list item selection highlights won't go all the way to
+        //    the horizontal edges of the visible menu.
+        // 2. If we strip the background from popupContentView and put default_popup_menu_bg on
+        //    AnchoredPopupWindow, clipToOutline="true" on popupContentView has no outline provider
+        //    and fails to clip list item highlights to the rounded corners of the popup.
         View popupContentView = popupListMenu.getContentView();
-        popupContentView.setBackground(null);
         ListMenuUtils.clipContentViewOutline(popupContentView, R.attr.popupBgCornerRadius);
 
         // Set up empty view if the menu has no items.
@@ -161,9 +164,6 @@ public class BookmarkBarPopupCoordinator {
         Pair<Integer, Integer> initialHeights = mControlsHeightSupplier.get();
         mBrowserControlsRectProvider.updateRectAndNotify(
                 initialHeights.first, initialHeights.second);
-
-        final Profile profile = mProfileSupplier.get();
-        boolean isIncognito = profile != null && profile.isOffTheRecord();
 
         ViewRectProvider rectProvider =
                 new ViewRectProvider(
@@ -181,11 +181,13 @@ public class BookmarkBarPopupCoordinator {
             rectProvider.setInsetPx(left, top, right, bottom);
         }
 
+        // Pass a transparent background to AnchoredPopupWindow to avoid double backgrounds and
+        // double padding.
         mAnchoredPopupWindow =
                 new AnchoredPopupWindow(
                         mActivity,
                         mBookmarkBarView,
-                        getMenuBackground(mActivity, isIncognito),
+                        new ColorDrawable(Color.TRANSPARENT),
                         popupListMenu::getContentView,
                         rectProvider,
                         mBrowserControlsRectProvider);
@@ -239,8 +241,14 @@ public class BookmarkBarPopupCoordinator {
         mActiveSizeUpdaterObserver = sizeUpdaterObserver;
         bookmarkItems.addObserver(sizeUpdaterObserver);
 
-        mAnchoredPopupWindow.show();
+        // We must call configurePopupWindowSize before show() because AnchoredPopupWindow's
+        // transparent background removes the 20dp outer background padding. When show() runs first
+        // on an empty folder popup (~30dp unconfigured height), the height falls below the 50dp min
+        // touchable target requirement in AnchoredPopupWindow#hasMinimalSize(), causing show() to
+        // abort. Configuring the desired dimensions (182dp min height) prior to show() ensures the
+        // initial minimal size check passes cleanly on transparent popups.
         configurePopupWindowSize(popupListMenu);
+        mAnchoredPopupWindow.show();
     }
 
     private void onPopupWindowDismissed() {
@@ -252,18 +260,6 @@ public class BookmarkBarPopupCoordinator {
             mActiveBookmarkItems = null;
             mActiveSizeUpdaterObserver = null;
         }
-    }
-
-    private Drawable getMenuBackground(Context context, boolean isIncognito) {
-        final @DrawableRes int bgDrawableId =
-                isIncognito ? R.drawable.menu_bg_tinted_on_dark_bg : R.drawable.menu_bg_tinted;
-
-        if (!isIncognito) {
-            ColorStateList menuBgColor =
-                    ColorStateList.valueOf(SemanticColorUtils.getMenuBgColor(context));
-            return UiUtils.getTintedDrawable(context, bgDrawableId, menuBgColor);
-        }
-        return AppCompatResources.getDrawable(context, bgDrawableId);
     }
 
     @VisibleForTesting

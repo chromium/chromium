@@ -7,10 +7,15 @@ package org.chromium.chrome.browser.bookmarks.bar;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
+import android.content.Context;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.util.Pair;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,6 +30,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
@@ -35,8 +42,11 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.bookmarks.R;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.listmenu.BasicListMenu;
+import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.ModelListAdapter;
 import org.chromium.ui.widget.AnchoredPopupWindow;
+import org.chromium.ui.widget.ChromePopupWindow;
+import org.chromium.ui.widget.UiWidgetFactory;
 
 /** Unit tests for the {@link BookmarkBarPopupCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -50,6 +60,9 @@ public class BookmarkBarPopupCoordinatorTest {
     @Mock private AnchoredPopupWindow mAnchoredPopupWindow;
     @Mock private BasicListMenu mMockListMenu;
     @Mock private View mBookmarkBarView;
+    @Mock private View mAnchorView;
+    @Mock private ChromePopupWindow mMockPopupWindow;
+    @Captor private ArgumentCaptor<Drawable> mDrawableCaptor;
 
     private Activity mActivity;
     private BookmarkBarPopupCoordinator mCoordinator;
@@ -177,5 +190,35 @@ public class BookmarkBarPopupCoordinatorTest {
         menuList.setId(R.id.menu_list);
         contentParent.addView(menuList);
         when(mMockListMenu.getContentView()).thenReturn(contentParent);
+    }
+
+    @Test
+    @SmallTest
+    public void testShowFolderItemsPopup_usesTransparentBackground() {
+        View rootView = new View(mActivity);
+        when(mBookmarkBarView.getRootView()).thenReturn(rootView);
+        when(mAnchorView.getRootView()).thenReturn(rootView);
+        when(mAnchorView.getViewTreeObserver()).thenReturn(rootView.getViewTreeObserver());
+
+        UiWidgetFactory originalFactory = UiWidgetFactory.getInstance();
+        UiWidgetFactory.setInstance(
+                new UiWidgetFactory() {
+                    @Override
+                    public ChromePopupWindow createPopupWindow(Context context) {
+                        return mMockPopupWindow;
+                    }
+                });
+
+        try {
+            mCoordinator.showFolderItemsPopup(mAnchorView, new ModelList());
+
+            verify(mMockPopupWindow).setBackgroundDrawable(mDrawableCaptor.capture());
+
+            assertTrue(mDrawableCaptor.getValue() instanceof ColorDrawable);
+            assertEquals(
+                    Color.TRANSPARENT, ((ColorDrawable) mDrawableCaptor.getValue()).getColor());
+        } finally {
+            UiWidgetFactory.setInstance(originalFactory);
+        }
     }
 }
