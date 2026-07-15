@@ -28,6 +28,7 @@ _CONVERTED_SCHEMAS = [
     ('virtual_keyboard.idl', 'virtual_keyboard.webidl'),
     ('webcam_private.idl', 'webcam_private.webidl'),
     ('extension_options_internal.idl', 'extension_options_internal.webidl'),
+    ('login_screen_ui.idl', 'login_screen_ui.webidl'),
     ('system_cpu.idl', 'system_cpu.webidl'),
     ('system_memory.idl', 'system_memory.webidl'),
     ('system_network.idl', 'system_network.webidl'),

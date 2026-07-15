@@ -132,7 +132,7 @@ if (enable_extensions) {
       "input_method_private.json",
       "login.idl",
       "login_screen_storage.webidl",
-      "login_screen_ui.idl",
+      "login_screen_ui.webidl",
       "login_state.idl",
       "odfs_config_private.idl",
       "platform_keys.idl",
