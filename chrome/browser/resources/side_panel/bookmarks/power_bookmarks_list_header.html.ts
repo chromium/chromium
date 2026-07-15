@@ -22,7 +22,9 @@ export function getHtml(this: PowerBookmarksListHeaderElement) {
     ${this.activeSortType_.label}
   </div>
   <cr-icon-button slot="buttons" class="sort-menu-button"
-      iron-icon="sp:filter-list"
+      iron-icon="${this.webuiRoundedIconsEnabled_
+          ? 'sp:filter-list'
+          : 'sp:filter-list-old'}"
       title="$i18n{tooltipOrganize}"
       aria-label="$i18n{sortMenuA11yLabel}"
       aria-description="${this.activeSortType_.label}"

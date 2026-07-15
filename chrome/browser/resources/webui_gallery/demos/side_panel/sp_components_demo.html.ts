@@ -84,7 +84,10 @@ export function getHtml(this: SpComponentsDemoElement) {
       body="Some more descriptive text explaining how to add content">
   </sp-empty-state>
   <cr-button class="floating-button">
-    <cr-icon slot="prefix-icon" icon="sp:add-circle"></cr-icon>
+    <cr-icon slot="prefix-icon"
+        icon="${this.webuiRoundedIconsEnabled_
+            ? 'sp:add-circle'
+            : 'sp:add-circle-old'}"></cr-icon>
     Add content
   </cr-button>
 </div>

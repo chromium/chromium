@@ -58,6 +58,7 @@ export class PowerBookmarksListHeaderElement extends CrLitElement {
       disableEdit: {type: Boolean},
       editing: {type: Boolean},
       sortTypes_: {type: Array},
+      webuiRoundedIconsEnabled_: {type: Boolean},
     };
   }
 
@@ -97,6 +98,8 @@ export class PowerBookmarksListHeaderElement extends CrLitElement {
       lowerLabel: loadTimeData.getString('sortReverseAlphabetically'),
     },
   ];
+  protected accessor webuiRoundedIconsEnabled_: boolean =
+      loadTimeData.getBoolean('webuiRoundedIconsEnabled');
   private bookmarksService_: PowerBookmarksService =
       PowerBookmarksService.getInstance();
 

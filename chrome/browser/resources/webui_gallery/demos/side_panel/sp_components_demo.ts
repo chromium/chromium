@@ -17,6 +17,7 @@ import '//webui-gallery/shared/sp_list_item_badge.js';
 
 import type {CrSliderElement} from '//resources/cr_elements/cr_slider/cr_slider.js';
 import {CrUrlListItemSize} from '//resources/cr_elements/cr_url_list_item/cr_url_list_item.js';
+import {loadTimeData} from '//resources/js/load_time_data.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 
@@ -56,6 +57,7 @@ export class SpComponentsDemoElement extends CrLitElement {
       showBadges_: {type: Boolean},
       urlCount_: {type: Number},
       urls_: {type: Array},
+      webuiRoundedIconsEnabled_: {type: Boolean},
     };
   }
 
@@ -69,6 +71,8 @@ export class SpComponentsDemoElement extends CrLitElement {
   protected accessor showBadges_: boolean = false;
   protected accessor urlCount_: number = 15;
   protected accessor urls_: UrlItem[] = [];
+  protected accessor webuiRoundedIconsEnabled_: boolean =
+      loadTimeData.getBoolean('webuiRoundedIconsEnabled');
 
   override willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);

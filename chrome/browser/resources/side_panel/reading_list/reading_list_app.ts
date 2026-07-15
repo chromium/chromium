@@ -341,7 +341,11 @@ export class ReadingListAppElement extends ReadingListAppElementBase {
    * @return The appropriate cr icon for the current page action button
    */
   protected getCurrentPageActionButtonIcon_(): string {
-    return this.getCurrentPageActionButtonMarkAsRead_() ? 'cr:check' : 'sp:add-circle';
+    return this.getCurrentPageActionButtonMarkAsRead_() ?
+        'cr:check' :
+        (loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+             'sp:add-circle' :
+             'sp:add-circle-old');
   }
 
   /**

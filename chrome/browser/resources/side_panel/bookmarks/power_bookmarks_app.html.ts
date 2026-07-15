@@ -65,7 +65,10 @@ export function getHtml(this: PowerBookmarksAppElement) {
         ?hidden="${this.hideAddTabButton_()}"
         @click="${this.onAddTabClick_}"
         ?disabled="${!this.canAddCurrentUrl_}">
-      <cr-icon slot="prefix-icon" icon="sp:add-circle"></cr-icon>
+      <cr-icon slot="prefix-icon"
+          icon="${this.webuiRoundedIconsEnabled_
+              ? 'sp:add-circle'
+              : 'sp:add-circle-old'}"></cr-icon>
       $i18n{addCurrentTab}
     </cr-button>
 
