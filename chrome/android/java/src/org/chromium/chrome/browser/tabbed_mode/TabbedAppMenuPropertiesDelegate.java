@@ -378,7 +378,7 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
 
         // Add to Group
         boolean shouldShowIconBeforeItem = shouldShowIconBeforeItem();
-        if (mTabGroupItemBuilder.shouldShowAddToGroup()) {
+        if (mTabGroupItemBuilder.shouldShowAddToGroup(currentTab)) {
             modelList.add(
                     mTabGroupItemBuilder.buildAddToGroupItem(currentTab, shouldShowIconBeforeItem));
         }

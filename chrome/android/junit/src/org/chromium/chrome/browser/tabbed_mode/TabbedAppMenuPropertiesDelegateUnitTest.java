@@ -56,6 +56,7 @@ import org.robolectric.shadows.ShadowPackageManager;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.Token;
 import org.chromium.base.UserDataHost;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplierImpl;
@@ -176,6 +177,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 /** Unit tests for {@link TabbedAppMenuPropertiesDelegate}. */
 // TODO(crbug.com/376238770): Removes ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION from
@@ -608,8 +610,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                                 item(R.id.new_incognito_tab_menu_id),
                                 item(
                                         R.id.tab_groups_parent_menu_id,
-                                        item(R.id.create_new_tab_group_menu_id),
-                                        item(R.id.add_to_group_menu_id)),
+                                        item(R.id.create_new_tab_group_menu_id)),
                                 item(R.id.divider_line_id),
                                 item(
                                         R.id.history_parent_menu_id,
@@ -720,8 +721,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                                 item(R.id.new_incognito_tab_menu_id),
                                 item(
                                         R.id.tab_groups_parent_menu_id,
-                                        item(R.id.create_new_tab_group_menu_id),
-                                        item(R.id.add_to_group_menu_id)),
+                                        item(R.id.create_new_tab_group_menu_id)),
                                 item(R.id.divider_line_id),
                                 item(
                                         R.id.history_parent_menu_id,
@@ -849,15 +849,9 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         }
 
         expectedItems.add(
-                item(
-                        R.id.tab_groups_parent_menu_id,
-                        item(R.id.create_new_tab_group_menu_id),
-                        item(R.id.add_to_group_menu_id)));
+                item(R.id.tab_groups_parent_menu_id, item(R.id.create_new_tab_group_menu_id)));
         expectedTitles.add(
-                item(
-                        R.string.menu_tab_groups,
-                        item(R.string.menu_create_new_tab_group),
-                        item(R.string.menu_add_tab_to_new_group)));
+                item(R.string.menu_tab_groups, item(R.string.menu_create_new_tab_group)));
 
         expectedItems.add(item(R.id.divider_line_id));
         expectedTitles.add(item(0));
@@ -1197,15 +1191,9 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         expectedTitles.add(item(R.string.menu_new_incognito_tab));
 
         expectedItems.add(
-                item(
-                        R.id.tab_groups_parent_menu_id,
-                        item(R.id.create_new_tab_group_menu_id),
-                        item(R.id.add_to_group_menu_id)));
+                item(R.id.tab_groups_parent_menu_id, item(R.id.create_new_tab_group_menu_id)));
         expectedTitles.add(
-                item(
-                        R.string.menu_tab_groups,
-                        item(R.string.menu_create_new_tab_group),
-                        item(R.string.menu_add_tab_to_new_group)));
+                item(R.string.menu_tab_groups, item(R.string.menu_create_new_tab_group)));
 
         expectedItems.add(item(R.id.divider_line_id));
         expectedTitles.add(item(0));
@@ -1504,15 +1492,9 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         expectedTitles.add(item(R.string.menu_new_incognito_tab));
 
         expectedItems.add(
-                item(
-                        R.id.tab_groups_parent_menu_id,
-                        item(R.id.create_new_tab_group_menu_id),
-                        item(R.id.add_to_group_menu_id)));
+                item(R.id.tab_groups_parent_menu_id, item(R.id.create_new_tab_group_menu_id)));
         expectedTitles.add(
-                item(
-                        R.string.menu_tab_groups,
-                        item(R.string.menu_create_new_tab_group),
-                        item(R.string.menu_add_tab_to_new_group)));
+                item(R.string.menu_tab_groups, item(R.string.menu_create_new_tab_group)));
 
         expectedItems.add(item(R.id.divider_line_id));
         expectedTitles.add(item(0));
@@ -1679,8 +1661,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                                 item(R.id.new_incognito_tab_menu_id),
                                 item(
                                         R.id.tab_groups_parent_menu_id,
-                                        item(R.id.create_new_tab_group_menu_id),
-                                        item(R.id.add_to_group_menu_id)),
+                                        item(R.id.create_new_tab_group_menu_id)),
                                 item(R.id.divider_line_id),
                                 item(
                                         R.id.history_parent_menu_id,
@@ -1763,8 +1744,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                                 item(R.id.new_incognito_tab_menu_id),
                                 item(
                                         R.id.tab_groups_parent_menu_id,
-                                        item(R.id.create_new_tab_group_menu_id),
-                                        item(R.id.add_to_group_menu_id)),
+                                        item(R.id.create_new_tab_group_menu_id)),
                                 item(R.id.divider_line_id),
                                 item(
                                         R.id.history_parent_menu_id,
@@ -2191,8 +2171,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                                 item(R.id.new_incognito_tab_menu_id),
                                 item(
                                         R.id.tab_groups_parent_menu_id,
-                                        item(R.id.create_new_tab_group_menu_id),
-                                        item(R.id.add_to_group_menu_id)),
+                                        item(R.id.create_new_tab_group_menu_id)),
                                 item(R.id.divider_line_id),
                                 item(
                                         R.id.history_parent_menu_id,
@@ -2307,8 +2286,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                                 item(R.id.new_incognito_tab_menu_id),
                                 item(
                                         R.id.tab_groups_parent_menu_id,
-                                        item(R.id.create_new_tab_group_menu_id),
-                                        item(R.id.add_to_group_menu_id)),
+                                        item(R.id.create_new_tab_group_menu_id)),
                                 item(R.id.divider_line_id),
                                 item(
                                         R.id.history_parent_menu_id,
@@ -3447,6 +3425,8 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
     @Test
     public void testAddToGroup() {
         setUpMocksForPageMenu();
+        Token token1 = new Token(1L, 1L);
+        when(mTabModel.getAllTabGroupIds()).thenReturn(Set.of(token1));
         when(mTab.getUrl()).thenReturn(GURL.emptyGURL());
         ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
         assertTrue(isMenuVisible(modelList, R.id.tab_groups_parent_menu_id));

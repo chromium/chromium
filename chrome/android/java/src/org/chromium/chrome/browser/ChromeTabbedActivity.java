@@ -4265,6 +4265,32 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                             getModalDialogManager(),
                             profile)
                     .handleAddToGroupAction(currentTab);
+        } else if (id == R.id.add_to_existing_group_menu_item_id) {
+            if (!mTabModelSelector.isTabStateInitialized() || currentTab == null) {
+                return false;
+            }
+
+            assert menuItemData != null
+                    && menuItemData.containsKey(
+                            AppMenuPropertiesDelegateImpl.TAB_GROUP_ID_BUNDLE_KEY);
+            Bundle groupBundle =
+                    menuItemData.getBundle(AppMenuPropertiesDelegateImpl.TAB_GROUP_ID_BUNDLE_KEY);
+
+            Token groupId = Token.maybeCreateFromBundle(groupBundle);
+            if (groupId == null) {
+                return false;
+            }
+
+            TabModel tabModel = mTabModelSelector.getCurrentModel();
+            List<Tab> groupTabs = tabModel.getTabsInGroup(groupId);
+            if (groupTabs.isEmpty()) {
+                return false;
+            }
+
+            Tab destTab = groupTabs.get(0);
+            TabGroupUtils.mergeTabsToDest(
+                    List.of(currentTab), destTab.getId(), tabModel, /* tabMovedCallback= */ null);
+            return true;
         } else if (id == R.id.create_new_tab_group_menu_id) {
             RecordUserAction.record("MobileMenuCreateTabGroup");
             return handleCreateNewTabGroupAction(currentTab);

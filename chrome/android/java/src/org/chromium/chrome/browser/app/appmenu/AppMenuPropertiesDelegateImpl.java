@@ -71,6 +71,7 @@ import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler.AppMenuItemType;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuItemProperties;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuPropertiesDelegate;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuRecentEntryItemProperties;
+import org.chromium.chrome.browser.ui.appmenu.AppMenuTabGroupItemProperties;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuTabItemProperties;
 import org.chromium.chrome.browser.util.BrowserUiUtils;
 import org.chromium.chrome.browser.util.BrowserUiUtils.ModuleTypeOnStartAndNtp;
@@ -118,6 +119,7 @@ public abstract class AppMenuPropertiesDelegateImpl implements AppMenuProperties
 
     public static final String BOOKMARK_ID_BUNDLE_KEY = "BookmarkId";
     public static final String TAB_ID_BUNDLE_KEY = "TabId";
+    public static final String TAB_GROUP_ID_BUNDLE_KEY = "TabGroupId";
     public static final String RECENT_ENTRY_SESSION_ID_BUNDLE_KEY = "RecentEntrySessionId";
     public static final String RECENT_ENTRY_INSTANCE_ID_BUNDLE_KEY = "RecentEntryInstanceId";
     public static final String RECENT_ENTRY_SESSION_TAG_BUNDLE_KEY = "RecentEntrySessionTag";
@@ -684,6 +686,14 @@ public abstract class AppMenuPropertiesDelegateImpl implements AppMenuProperties
             bundle.putString(
                     AppMenuPropertiesDelegateImpl.BOOKMARK_ID_BUNDLE_KEY, bookmarkId.toString());
             return bundle;
+        }
+        if (model.containsKey(AppMenuTabGroupItemProperties.TAB_GROUP_ID)) {
+            Token tabGroupId = model.get(AppMenuTabGroupItemProperties.TAB_GROUP_ID);
+            if (tabGroupId != null) {
+                Bundle bundle = new Bundle();
+                bundle.putBundle(TAB_GROUP_ID_BUNDLE_KEY, tabGroupId.toBundle());
+                return bundle;
+            }
         }
         if (model.containsKey(AppMenuTabItemProperties.TAB_ID)) {
             Bundle bundle = new Bundle();
