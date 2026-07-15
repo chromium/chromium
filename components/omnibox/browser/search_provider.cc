@@ -952,6 +952,9 @@ std::unique_ptr<network::SimpleURLLoader> SearchProvider::CreateSuggestLoader(
   search_term_args.input_state = input.input_state();
   search_term_args.previous_query = input.previous_query();
   search_term_args.suggest_inventory = input.suggest_inventory();
+  if (input.input_method().has_value()) {
+    search_term_args.input_method = static_cast<int>(*input.input_method());
+  }
 
   const SearchTermsData& search_terms_data =
       client()->GetTemplateURLService()->search_terms_data();

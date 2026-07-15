@@ -309,6 +309,10 @@ class TemplateURLRef {
 
     // The previously submitted query within this context thread/session.
     std::string previous_query;
+
+    // The method in which the last input was entered. This is an enum that
+    // gets mapped to third_party/omnibox_proto/chrome_searchbox_stats.proto.
+    int input_method = 0;
   };
 
   TemplateURLRef(const TemplateURL* owner, Type type);

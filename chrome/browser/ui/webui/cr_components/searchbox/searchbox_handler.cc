@@ -76,6 +76,7 @@
 #include "content/public/common/url_constants.h"
 #include "third_party/omnibox_proto/answer_data.pb.h"
 #include "third_party/omnibox_proto/answer_type.pb.h"
+#include "third_party/omnibox_proto/chrome_searchbox_stats.pb.h"
 #include "third_party/omnibox_proto/groups.pb.h"
 #include "third_party/omnibox_proto/input_type.pb.h"
 #include "third_party/omnibox_proto/rich_answer_template.pb.h"
@@ -1169,6 +1170,10 @@ void SearchboxHandler::QueryAutocompleteWithSuggestInventory(
   autocomplete_input.set_input_state(GetInputState());
   autocomplete_input.set_previous_query(GetPreviousQuery());
   autocomplete_input.set_suggest_inventory(suggest_inventory);
+  // Reset input method on browser so the UI doesn't have to send another
+  // mojom request to clear it.
+  autocomplete_input.set_input_method(input_method_);
+  input_method_ = omnibox::metrics::ChromeSearchboxStats::KEYBOARD;
 
   if (base::FeatureList::IsEnabled(
           omnibox::kWebUISearchboxWithoutModelController)) {
@@ -1179,7 +1184,15 @@ void SearchboxHandler::QueryAutocompleteWithSuggestInventory(
   }
 }
 
+void SearchboxHandler::SetInputMethod(
+    searchbox::mojom::InputMethod input_method) {
+  input_method_ =
+      static_cast<omnibox::metrics::ChromeSearchboxStats::InputMethod>(
+          input_method);
+}
+
 void SearchboxHandler::StopAutocomplete(bool clear_result) {
+  input_method_ = omnibox::metrics::ChromeSearchboxStats::KEYBOARD;
   if (base::FeatureList::IsEnabled(
           omnibox::kWebUISearchboxWithoutModelController)) {
     autocomplete_controller()->Stop(clear_result

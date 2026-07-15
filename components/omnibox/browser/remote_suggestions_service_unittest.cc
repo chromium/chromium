@@ -1298,3 +1298,22 @@ TEST_F(RemoteSuggestionsServiceTest, LensOverlaySuggestPath) {
     EXPECT_FALSE(base::EndsWith(url.path(), "s"));
   }
 }
+
+TEST_F(RemoteSuggestionsServiceTest, QueryBuilderStatsQueryParams) {
+  // Set up a Google search provider.
+  auto google_template_url = CreateGoogleTemplateURL();
+
+  TemplateURLRef::SearchTermsArgs search_terms_args(u"query");
+
+  // By default, input_method is 0, so no qbi parameters are appended.
+  GURL endpoint_url = RemoteSuggestionsService::EndpointUrl(
+      *google_template_url, search_terms_args, SearchTermsData());
+  CheckUrl(endpoint_url, "https://www.google.com/suggest", {{"q", "query"}});
+
+  // When input_method is set, qbi.m and qbi.l are appended.
+  search_terms_args.input_method = 11;  // SMART_COMPOSE
+  endpoint_url = RemoteSuggestionsService::EndpointUrl(
+      *google_template_url, search_terms_args, SearchTermsData());
+  CheckUrl(endpoint_url, "https://www.google.com/suggest",
+           {{"q", "query"}, {"qbi.m", "11"}, {"qbi.l", "5"}});
+}

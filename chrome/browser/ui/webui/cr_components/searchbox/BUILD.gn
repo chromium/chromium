@@ -17,6 +17,7 @@ source_set("searchbox") {
   public_deps = [
     "//components/contextual_search/footprints/public",
     "//components/tabs:public",
+    "//third_party/omnibox_proto",
   ]
   deps = [
     "//base",
