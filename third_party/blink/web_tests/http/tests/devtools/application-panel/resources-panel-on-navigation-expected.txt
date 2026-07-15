@@ -15,16 +15,16 @@ Storage
     http://127.0.0.1:8000
   Session storage
     http://127.0.0.1:8000
+  Extension storage
   IndexedDB
     Database1
-  Web SQL
   Cookies
     http://127.0.0.1:8000
   Private state tokens
-  Interest groups
   Shared storage
     http://127.0.0.1:8000
   Cache storage
+  Storage buckets
 Background services
   Back/forward cache
   Background fetch
@@ -33,12 +33,12 @@ Background services
   Notifications
   Payment handler
   Periodic background sync
+  Speculative loads
+    Rules
+    Speculations
   Push messaging
   Reporting API
-Speculative loads
-  Rules
-  Speculations
-  This page
+    Crash Report Context
 Frames
   top
     inspected-page.html
@@ -59,16 +59,16 @@ Storage
     http://127.0.0.1:8000
   Session storage
     http://127.0.0.1:8000
+  Extension storage
   IndexedDB
     Database1
-  Web SQL
   Cookies
     http://127.0.0.1:8000
   Private state tokens
-  Interest groups
   Shared storage
     http://127.0.0.1:8000
   Cache storage
+  Storage buckets
 Background services
   Back/forward cache
   Background fetch
@@ -77,12 +77,12 @@ Background services
   Notifications
   Payment handler
   Periodic background sync
+  Speculative loads
+    Rules
+    Speculations
   Push messaging
   Reporting API
-Speculative loads
-  Rules
-  Speculations
-  This page
+    Crash Report Context
 Frames
   top
     inspected-page.html
