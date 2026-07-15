@@ -95,6 +95,8 @@ public class StatusBarColorControllerUnitTest {
     @Test
     @Config(sdk = 30) // Min version needed for e2e everywhere
     public void testSetStatusBarColor_EdgeToEdgeEnabled() {
+        when(mSystemBarColorHelper.canSetStatusBarColor()).thenReturn(true);
+
         StatusBarColorController.setStatusBarColor(mSystemBarColorHelper, mActivity, Color.BLUE);
         verify(mSystemBarColorHelper).setStatusBarColor(Color.BLUE, false);
 
@@ -105,6 +107,8 @@ public class StatusBarColorControllerUnitTest {
     @Test
     @Config(sdk = 30) // Min version needed for e2e everywhere
     public void testSetStatusBarColor_EdgeToEdgeEnabled_UseLightIconColor() {
+        when(mSystemBarColorHelper.canSetStatusBarColor()).thenReturn(true);
+
         StatusBarColorController.setStatusBarColor(
                 mSystemBarColorHelper, mActivity, Color.BLUE, /* forceLightIconColor= */ true);
         verify(mSystemBarColorHelper).setStatusBarColor(Color.BLUE, true);
@@ -316,6 +320,7 @@ public class StatusBarColorControllerUnitTest {
     public void testForceLightIconColorForNtp_DisabledWhenOmniboxFocused() {
         // Set up a mock NTP tab.
         when(mNtpTab.getNativePage()).thenReturn(mNewTabPage);
+        when(mSystemBarColorHelper.canSetStatusBarColor()).thenReturn(true);
 
         initialize(
                 /* isTablet= */ false,

@@ -1643,6 +1643,7 @@ android_library("chrome_test_java_org.chromium.chrome.browser.webapps") {
     "src/org/chromium/chrome/browser/webapps/WebappSplashScreenIconTest.java",
     "src/org/chromium/chrome/browser/webapps/WebappSplashScreenTest.java",
     "src/org/chromium/chrome/browser/webapps/WebappSplashScreenThemeColorTest.java",
+    "src/org/chromium/chrome/browser/webapps/WebappThemeColorShortEdgesCutoutTest.java",
   ]
 
   deps = [

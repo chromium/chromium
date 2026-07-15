@@ -52,7 +52,6 @@ import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.top.TopToolbarCoordinator;
 import org.chromium.chrome.browser.ui.bottombar.BottomBarConfigUtils;
 import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderUtils;
-import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
 import org.chromium.chrome.browser.ui.theme.ChromeSemanticColorUtils;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.components.browser_ui.styles.ChromeColors;
@@ -652,8 +651,11 @@ public class StatusBarColorController
         Window window = activity.getWindow();
         final View root = window.getDecorView().getRootView();
         boolean needsDarkStatusBarIcons = !ColorUtils.shouldUseLightForegroundOnBackground(color);
-        if (EdgeToEdgeUtils.isEdgeToEdgeEverywhereEnabled()
-                && edgeToEdgeSystemBarColorHelper != null) {
+        // The helper is the single source of truth whenever it is allowed to color the status bar
+        // (including activities like webapps in short-edges cutout mode that opt in on API 29).
+        // Otherwise fall back to writing the window directly, matching legacy Tabbed Chrome.
+        if (edgeToEdgeSystemBarColorHelper != null
+                && edgeToEdgeSystemBarColorHelper.canSetStatusBarColor()) {
             edgeToEdgeSystemBarColorHelper.setStatusBarColor(color, forceLightIconColor);
         } else {
             UiUtils.setStatusBarIconColor(root, needsDarkStatusBarIcons);

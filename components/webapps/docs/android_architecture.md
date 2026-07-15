@@ -462,14 +462,38 @@ controls, Twa theme colors) before layout inflation.
 `SharedActivityCoordinator` also manages how the app draws relative to system
 bars (status bar and navigation bar) and display cutouts.
 
-Currently, the main path to enable drawing into the cutout area is:
+There are two paths that enable drawing into the cutout area:
 
 - **`TrustedWebActivityDisplayMode.ImmersiveMode`**:
+
   - Used when a TWA explicitly requests immersive mode via intent, or
     synthesized for installed webapps/WebAPKs when the manifest declares
     `display: fullscreen`.
   - This triggers full immersive mode, honoring client-supplied cutout mode and
     sticky flags. It hides system bars.
+  - When the `WebAppShortEdgesCutoutMode` feature is enabled, the immersive mode
+    synthesized for `display: fullscreen` webapps uses sticky immersive and
+    `LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES`, so fullscreen webapps draw into
+    the cutout immediately at activity creation, without waiting for the page's
+    `viewport-fit` value.
+
+- **Non-immersive edge-to-edge, deferred to `DisplayCutoutController`** (behind
+  the `WebAppShortEdgesCutoutMode` feature):
+
+  - With the feature enabled, `display: standalone` webapps no longer draw
+    edge-to-edge unconditionally at activity creation:
+    `WebappActivity#shouldDrawEdgeToEdgeOnCreate` returns false, so the activity
+    starts with the default (non-edge-to-edge) window layout.
+  - Instead, `DisplayCutoutController` takes over once the page's `viewport-fit`
+    value is known. Only pages declaring `viewport-fit=cover` get
+    `LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES` together with the matching
+    edge-to-edge window state; all other pages keep the default layout, and web
+    content stays below the status bar.
+  - The controller also reacts to dynamic changes: if a page updates its
+    `viewport-fit` meta tag via JavaScript after load, the window layout is
+    updated accordingly.
+  - With the feature disabled, standalone webapps keep the legacy behavior of
+    drawing edge-to-edge on creation regardless of `viewport-fit`.
 
 ______________________________________________________________________
 

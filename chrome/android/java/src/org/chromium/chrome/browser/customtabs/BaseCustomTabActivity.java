@@ -317,8 +317,21 @@ public abstract class BaseCustomTabActivity extends ChromeActivity {
 
     @Override
     protected boolean wrapContentWithEdgeToEdgeLayout() {
+        if (!super.wrapContentWithEdgeToEdgeLayout()) {
+            return false;
+        }
+
+        // Webapp/WebAPK display-cutout handling uses its own window-level edge-to-edge flow.
+        // Wrapping the content view in EdgeToEdgeLayoutCoordinator adds system-bar padding that
+        // prevents standalone/fullscreen webapp content from filling the viewport on newer
+        // Android versions.
+        if (ChromeFeatureList.sWebAppShortEdgesCutoutMode.isEnabled()
+                && mIntentDataProvider.isWebappOrWebApkActivity()) {
+            return false;
+        }
+
         // TODO(crbug.com/392774038): Enable for e2e everywhere for PCCT.
-        return super.wrapContentWithEdgeToEdgeLayout() && !mIntentDataProvider.isPartialCustomTab();
+        return !mIntentDataProvider.isPartialCustomTab();
     }
 
     @Override
@@ -1209,8 +1222,8 @@ public abstract class BaseCustomTabActivity extends ChromeActivity {
 
     @Override
     public int getBaseStatusBarColor(Tab tab) {
-        // TODO(crbug.com/465719853): Pass the CCT Top Bar Color in AGSA intent after Google Bottom
-        // Bar is launched
+        // TODO(crbug.com/465719853): Pass the CCT Top Bar Color in AGSA intent after Google
+        // Bottom Bar is launched.
         if (GoogleBottomBarCoordinator.isFeatureEnabled()
                 && CustomTabsConnection.getInstance()
                         .shouldEnableGoogleBottomBarForIntent(mIntentDataProvider)) {
@@ -1327,7 +1340,7 @@ public abstract class BaseCustomTabActivity extends ChromeActivity {
 
     /**
      * @return The package name of the Trusted Web Activity, if the activity is a TWA; null
-     * otherwise.
+     *     otherwise.
      */
     public @Nullable String getTwaPackage() {
         return mTwaCoordinator == null ? null : mTwaCoordinator.getTwaPackage();
@@ -1394,11 +1407,12 @@ public abstract class BaseCustomTabActivity extends ChromeActivity {
         return switch (getActivityType()) {
             case ActivityType.WEB_APK -> new WebApkVerifier(mIntentDataProvider);
             case ActivityType.WEBAPP -> new AddToHomescreenVerifier(mIntentDataProvider);
-            case ActivityType.TRUSTED_WEB_ACTIVITY -> new TwaVerifier(
-                    getLifecycleDispatcher(),
-                    mIntentDataProvider,
-                    getClientPackageNameProvider(),
-                    getCustomTabActivityTabProvider());
+            case ActivityType.TRUSTED_WEB_ACTIVITY ->
+                    new TwaVerifier(
+                            getLifecycleDispatcher(),
+                            mIntentDataProvider,
+                            getClientPackageNameProvider(),
+                            getCustomTabActivityTabProvider());
             default -> new EmptyVerifier();
         };
     }
@@ -1480,7 +1494,11 @@ public abstract class BaseCustomTabActivity extends ChromeActivity {
     }
 
     private ImmersiveModeController createImmersiveModeController() {
-        return new ImmersiveModeController(this, getWindowAndroid(), getLifecycleDispatcher());
+        return new ImmersiveModeController(
+                this,
+                getWindowAndroid(),
+                assumeNonNull(getEdgeToEdgeManager()).getEdgeToEdgeStateProvider(),
+                getLifecycleDispatcher());
     }
 
     private CustomTabToolbarColorController getCustomTabToolbarColorController() {
@@ -1570,7 +1588,6 @@ public abstract class BaseCustomTabActivity extends ChromeActivity {
             mTabFactory =
                     new CustomTabActivityTabFactory(
                             this,
-
                             getCustomTabTabPersistencePolicy(),
                             getWindowAndroid(),
                             getProfileProviderSupplier(),

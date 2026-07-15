@@ -386,9 +386,9 @@ public class AppHeaderCoordinator
 
     private void setEdgeToEdgeState(boolean active) {
         if (active) {
-            mEdgeToEdgeToken = mEdgeToEdgeStateProvider.acquireSetDecorFitsSystemWindowToken();
+            mEdgeToEdgeToken = mEdgeToEdgeStateProvider.acquireEdgeToEdgeToken();
         } else {
-            mEdgeToEdgeStateProvider.releaseSetDecorFitsSystemWindowToken(mEdgeToEdgeToken);
+            mEdgeToEdgeStateProvider.releaseEdgeToEdgeToken(mEdgeToEdgeToken);
             mEdgeToEdgeToken = TokenHolder.INVALID_TOKEN;
         }
     }

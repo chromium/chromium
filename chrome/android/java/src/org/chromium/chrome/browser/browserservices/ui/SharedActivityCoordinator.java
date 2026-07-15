@@ -24,7 +24,18 @@ import org.chromium.chrome.browser.lifecycle.InflationObserver;
 
 import java.util.function.Supplier;
 
-/** Coordinator for shared functionality between Trusted Web Activities and webapps. */
+/**
+ * Coordinates shared functionality between Trusted Web Activities and standalone webapps.
+ *
+ * <p>Responsibilities:
+ *
+ * <ul>
+ *   <li>Decide whether app-mode UI should be shown based on current page verification state.
+ *   <li>Enter and exit immersive mode when app-mode status changes.
+ *   <li>Apply shared app-mode UI updates (theme usage, browser controls visibility, status bar, and
+ *       orientation control).
+ * </ul>
+ */
 @NullMarked
 public class SharedActivityCoordinator implements InflationObserver {
     private final CurrentPageVerifier mCurrentPageVerifier;
@@ -37,7 +48,7 @@ public class SharedActivityCoordinator implements InflationObserver {
 
     private final @Nullable ImmersiveMode mImmersiveDisplayMode;
 
-    private boolean mUseAppModeUi = true;
+    private boolean mUseAppModeUi;
 
     public SharedActivityCoordinator(
             CurrentPageVerifier currentPageVerifier,
@@ -57,15 +68,19 @@ public class SharedActivityCoordinator implements InflationObserver {
         mImmersiveDisplayMode = computeImmersiveMode(intentDataProvider);
         mCustomTabOrientationController = customTabOrientationController;
         mBrowserServicesThemeColorProvider = browserServicesThemeColorProvider;
+        mUseAppModeUi = appModeUiAllowedFor(mCurrentPageVerifier.getState());
 
         customTabActivityNavigationController.setLandingPageOnCloseCriterion(
                 verifier::wasPreviouslyVerified);
 
         mCurrentPageVerifier.addVerificationObserver(this::onVerificationUpdate);
         lifecycleDispatcher.register(this);
-        if (mCurrentPageVerifier.getState() == null) {
-            updateImmersiveMode(true); // Set immersive mode ASAP, before layout inflation.
-        }
+
+        // Apply immersive mode ASAP, before layout inflation. This is a no-op unless the
+        // intent's display mode is TrustedWebActivityDisplayMode.ImmersiveMode -- non-immersive
+        // edge-to-edge (e.g. display: standalone webapps) is handled by DisplayCutoutController
+        // once the page's viewport-fit value is known.
+        updateImmersiveMode();
     }
 
     public boolean shouldUseAppModeUi() {
@@ -77,37 +92,34 @@ public class SharedActivityCoordinator implements InflationObserver {
 
     @Override
     public void onPostInflationStartup() {
-        // Before the verification completes, we optimistically expect it to be successful and
-        // apply the app mode UI.
-        if (mCurrentPageVerifier.getState() == null) {
-            updateUi(true);
-        }
+        // Apply the best-known app-mode state after inflation. This handles the case where the
+        // verifier already progressed beyond null before observers were wired.
+        updateUi();
     }
 
     private void onVerificationUpdate() {
-        CurrentPageVerifier.VerificationState state = mCurrentPageVerifier.getState();
-
-        // The state will start off as null and progress to PENDING then SUCCESS/FAILURE.
-        // We can show the app mode UI while the state is null or pending.
-        boolean useAppModeUi = state == null || state.status != VerificationStatus.FAILURE;
+        boolean useAppModeUi = appModeUiAllowedFor(mCurrentPageVerifier.getState());
         if (mUseAppModeUi == useAppModeUi) return;
+
         mUseAppModeUi = useAppModeUi;
-        updateUi(useAppModeUi);
+        updateUi();
     }
 
-    private void updateUi(boolean useAppModeUi) {
-        updateImmersiveMode(useAppModeUi);
-        mBrowserServicesThemeColorProvider.setUseTabTheme(useAppModeUi);
-        mBrowserControlsVisibilityManager.updateIsInAppMode(useAppModeUi);
-        mStatusBarColorProvider.setUseTabThemeColor(useAppModeUi);
-        mCustomTabOrientationController.setCanControlOrientation(useAppModeUi);
+    private void updateUi() {
+        updateImmersiveMode();
+        mBrowserServicesThemeColorProvider.setUseTabTheme(mUseAppModeUi);
+        mBrowserControlsVisibilityManager.updateIsInAppMode(mUseAppModeUi);
+        mStatusBarColorProvider.setUseTabThemeColor(mUseAppModeUi);
+        mCustomTabOrientationController.setCanControlOrientation(mUseAppModeUi);
     }
 
-    private void updateImmersiveMode(boolean inAppMode) {
-        if (mImmersiveDisplayMode == null) {
-            return;
-        }
-        if (inAppMode) {
+    // TrustedWebActivityDisplayMode.ImmersiveMode is used for TWA immersive mode and for webapps
+    // with display: fullscreen. Non-immersive edge-to-edge for standalone webapps is controlled by
+    // DisplayCutoutController after the page's viewport-fit value is known.
+    private void updateImmersiveMode() {
+        if (mImmersiveDisplayMode == null) return;
+
+        if (mUseAppModeUi) {
             mImmersiveModeController
                     .get()
                     .enterImmersiveMode(
@@ -118,7 +130,12 @@ public class SharedActivityCoordinator implements InflationObserver {
         }
     }
 
-    private @Nullable ImmersiveMode computeImmersiveMode(
+    private static boolean appModeUiAllowedFor(
+            CurrentPageVerifier.@Nullable VerificationState state) {
+        return state == null || state.status != VerificationStatus.FAILURE;
+    }
+
+    private static @Nullable ImmersiveMode computeImmersiveMode(
             BrowserServicesIntentDataProvider intentDataProvider) {
         TrustedWebActivityDisplayMode displayMode = intentDataProvider.getProvidedTwaDisplayMode();
         return (displayMode instanceof ImmersiveMode) ? (ImmersiveMode) displayMode : null;

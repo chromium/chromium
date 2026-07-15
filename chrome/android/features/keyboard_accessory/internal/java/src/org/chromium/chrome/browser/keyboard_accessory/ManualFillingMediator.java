@@ -92,6 +92,7 @@ import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.base.ViewportInsets;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.display.DisplayUtil;
+import org.chromium.ui.edge_to_edge.EdgeToEdgeStateProvider;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -914,13 +915,9 @@ class ManualFillingMediator
                     Math.round(
                             mModel.get(FIELD_BOUNDS).left
                                     * mWindowAndroid.getDisplay().getDipScale());
-            @Px
-            int offset =
-                    mActivity
-                            .getResources()
-                            .getDimensionPixelSize(
-                                    R.dimen
-                                            .keyboard_accessory_bar_dynamic_positioning_horizontal_margin);
+            final int marginResId =
+                    R.dimen.keyboard_accessory_bar_dynamic_positioning_horizontal_margin;
+            @Px int offset = mActivity.getResources().getDimensionPixelSize(marginResId);
             return leftBound + offset;
         }
         return 0;
@@ -1006,13 +1003,17 @@ class ManualFillingMediator
 
     // TODO(crbug.com/41483806): Treat VirtualKeyboardMode.OVERLAYS_CONTENT like fullscreen?
     private boolean isKeyboardOverlayingContent() {
-        boolean isEdgeToEdgeActive = mEdgeToEdgeControllerSupplier.get() != null;
         // Hides UI and lets keyboard overlay webContents.
         // No need to set the controls height to 0 in edge-to-edge since the content
         // view will resize to account for the keyboard.
         // Don't resize the page because the keyboard doesn't do that either in
         // fullscreen mode. It's overlaying the content and the accessory mimics that.
-        return mModel.get(IS_FULLSCREEN) && !isEdgeToEdgeActive;
+        return mModel.get(IS_FULLSCREEN) && !isEdgeToEdgeActive();
+    }
+
+    private boolean isEdgeToEdgeActive() {
+        return mEdgeToEdgeControllerSupplier.get() != null
+                || EdgeToEdgeStateProvider.isEdgeToEdgeEnabledForWindow(mWindowAndroid);
     }
 
     private void onViewportInsetChanged(ViewportInsets newViewportInsets) {

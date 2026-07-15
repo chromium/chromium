@@ -18,6 +18,7 @@ import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.blink.mojom.DisplayMode;
 import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.webapps.WebappActivity;
 
 import java.lang.annotation.ElementType;
@@ -42,6 +43,12 @@ public class WebappDisplayCutoutTestRule extends DisplayCutoutTestRule<WebappAct
     public @interface TestConfiguration {
         @DisplayMode.EnumType
         int displayMode();
+
+        /**
+         * Whether to observe the real {@link ActivityDisplayCutoutModeSupplier} attached to the
+         * activity's window instead of a test-supplied one.
+         */
+        boolean useRealBrowserCutoutSupplier() default false;
     }
 
     private TestConfiguration mTestConfiguration;
@@ -59,6 +66,14 @@ public class WebappDisplayCutoutTestRule extends DisplayCutoutTestRule<WebappAct
     @Override
     protected void startActivity() {
         startWebappActivity(mTestConfiguration.displayMode());
+    }
+
+    @Override
+    protected TestDisplayCutoutController createDisplayCutoutController(Tab tab) {
+        if (mTestConfiguration.useRealBrowserCutoutSupplier()) {
+            return TestDisplayCutoutController.createWithRealBrowserCutoutSupplier(tab);
+        }
+        return super.createDisplayCutoutController(tab);
     }
 
     private void startWebappActivity(@DisplayMode.EnumType int displayMode) {

@@ -24,6 +24,7 @@ import org.chromium.chrome.browser.app.metrics.LaunchCauseMetrics;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.WebappIntentUtils;
 import org.chromium.chrome.browser.customtabs.BaseCustomTabActivity;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.browser_ui.util.motion.MotionEventInfo;
 
 /** Displays a webapp in a nearly UI-less Chrome (InfoBars still appear). */
@@ -51,6 +52,27 @@ public class WebappActivity extends BaseCustomTabActivity {
             BrowserServicesIntentDataProvider intentDataProvider) {
         sIntentDataProviderForTesting = intentDataProvider;
         ResettersForTesting.register(() -> sIntentDataProviderForTesting = null);
+    }
+
+    // When sWebAppShortEdgesCutoutMode is enabled, intentionally skip the activity-level
+    // edge-to-edge token at creation time and let DisplayCutoutController acquire it later,
+    // only after the page declares viewport-fit=cover. Drawing edge-to-edge unconditionally on
+    // create would push standalone PWAs under the status bar even when the page never opted in.
+    @Override
+    protected boolean shouldDrawEdgeToEdgeOnCreate() {
+        return !ChromeFeatureList.sWebAppShortEdgesCutoutMode.isEnabled()
+                && super.shouldDrawEdgeToEdgeOnCreate();
+    }
+
+    @Override
+    protected boolean canColorStatusBarWithEdgeToEdgeHelper() {
+        return ChromeFeatureList.sWebAppShortEdgesCutoutMode.isEnabled()
+                || super.canColorStatusBarWithEdgeToEdgeHelper();
+    }
+
+    @Override
+    protected boolean canSetTransparentStatusBarWithoutDelegate() {
+        return ChromeFeatureList.sWebAppShortEdgesCutoutMode.isEnabled();
     }
 
     @Override
