@@ -108,8 +108,9 @@ class ManagedUserProfileNoticeDeviceSignalsDisclaimerPixelTest
         ->ShowModalManagedUserNoticeDialog(
             signin::EnterpriseProfileCreationDialogParams::
                 CreateForDeviceSignalsDisclaimer(
-                    account_info, signin::DeviceSignalsDisclaimerCallback(
-                                      base::DoNothing())));
+                    account_info,
+                    signin::DeviceSignalsDisclaimerCallback(base::DoNothing()),
+                    /*is_modal_dialog=*/true));
 
     widget_waiter.WaitIfNeededAndGet();
   }
@@ -295,7 +296,8 @@ IN_PROC_BROWSER_TEST_F(DeviceSignalsDisclaimerInteractiveTest, ClickProceed) {
       ->ShowModalManagedUserNoticeDialog(
           signin::EnterpriseProfileCreationDialogParams::
               CreateForDeviceSignalsDisclaimer(account_info,
-                                               result_future.GetCallback()));
+                                               result_future.GetCallback(),
+                                               /*is_modal_dialog=*/true));
 
   std::ignore = widget_waiter.WaitIfNeededAndGet();
   content::WebContents* dialog_contents = GetModalDialogWebContents(browser());
@@ -321,7 +323,8 @@ IN_PROC_BROWSER_TEST_F(DeviceSignalsDisclaimerInteractiveTest, ClickCancel) {
       ->ShowModalManagedUserNoticeDialog(
           signin::EnterpriseProfileCreationDialogParams::
               CreateForDeviceSignalsDisclaimer(account_info,
-                                               result_future.GetCallback()));
+                                               result_future.GetCallback(),
+                                               /*is_modal_dialog=*/true));
 
   std::ignore = widget_waiter.WaitIfNeededAndGet();
   content::WebContents* dialog_contents = GetModalDialogWebContents(browser());
@@ -347,7 +350,8 @@ IN_PROC_BROWSER_TEST_F(DeviceSignalsDisclaimerInteractiveTest, CloseBrowser) {
       ->ShowModalManagedUserNoticeDialog(
           signin::EnterpriseProfileCreationDialogParams::
               CreateForDeviceSignalsDisclaimer(account_info,
-                                               result_future.GetCallback()));
+                                               result_future.GetCallback(),
+                                               /*is_modal_dialog=*/true));
 
   std::ignore = widget_waiter.WaitIfNeededAndGet();
 

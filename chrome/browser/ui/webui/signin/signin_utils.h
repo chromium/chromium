@@ -104,7 +104,8 @@ class EnterpriseProfileCreationDialogParams {
   static std::unique_ptr<EnterpriseProfileCreationDialogParams>
   CreateForDeviceSignalsDisclaimer(
       AccountInfo account_info,
-      DeviceSignalsDisclaimerCallback process_user_choice_callback);
+      DeviceSignalsDisclaimerCallback process_user_choice_callback,
+      bool is_modal_dialog);
 
   const AccountInfo account_info;
   const bool is_oidc_account = false;
@@ -116,6 +117,10 @@ class EnterpriseProfileCreationDialogParams {
   const bool profile_creation_required_by_policy = false;
   const bool show_link_data_option = false;
   const bool is_device_signals_disclaimer = false;
+  // Should only be set if `is_device_signals_disclaimer` is true. Denotes
+  // whether the disclaimer is shown within the modal dialog or the profile
+  // picker window.
+  const bool is_device_signals_disclaimer_modal = false;
   EnterpriseDisclaimerResultCallbackVariant process_user_choice_callback;
   base::OnceClosure done_callback = base::DoNothing();
   base::RepeatingClosure retry_callback = base::DoNothing();
@@ -124,7 +129,8 @@ class EnterpriseProfileCreationDialogParams {
   // Used only for creating the params for the device disclaimer screen.
   EnterpriseProfileCreationDialogParams(
       AccountInfo account_info,
-      DeviceSignalsDisclaimerCallback process_user_choice_callback);
+      DeviceSignalsDisclaimerCallback process_user_choice_callback,
+      bool is_modal_dialog);
 };
 
 // Gets a webview within an auth page that has the specified parent frame name

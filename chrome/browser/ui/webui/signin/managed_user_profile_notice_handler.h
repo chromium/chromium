@@ -49,6 +49,7 @@ class ManagedUserProfileNoticeHandler
     kError = 4,
     kValueProposition = 5,
     kUserDataHandling = 6,
+    kSignalsDisclaimer = 7,
   };
   ManagedUserProfileNoticeHandler(
       Browser* browser,

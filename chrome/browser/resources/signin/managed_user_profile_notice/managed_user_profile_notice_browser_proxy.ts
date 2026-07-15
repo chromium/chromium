@@ -22,6 +22,7 @@ export enum State {
   ERROR = 4,
   VALUE_PROPOSITION = 5,
   USER_DATA_HANDLING = 6,
+  SIGNALS_DISCLAIMER = 7,
 }
 
 // LINT.IfChange(ScreenType)

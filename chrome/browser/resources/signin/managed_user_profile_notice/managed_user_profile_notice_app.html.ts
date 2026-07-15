@@ -23,6 +23,10 @@ ${html`
             ?show-enterprise-badge="${this.showEnterpriseBadge_}">
         </managed-user-profile-notice-value-prop>
       ` : ''}
+      ${this.showSignalsDisclaimer_ ? html`
+        <signals-disclaimer picture-url="${this.pictureUrl_}">
+        </signals-disclaimer>
+      ` : ''}
       ${this.showDisclosure_ ? html`
         <managed-user-profile-notice-disclosure id="disclosure"
             title="${this.disclosureTitle_}"
@@ -69,7 +73,7 @@ ${html`
     </div>
   </div>
   <div class="action-container tangible-sync-style"
-    id="${this.showTimeout_ ? 'timeout-action-container' : ''}">
+    id="${this.getActionContainerId_()}">
     <cr-button id="proceed-button" class="action-button"
         @click="${this.onProceedClick_}"
         ?disabled="${!this.allowProceedButton_()}"

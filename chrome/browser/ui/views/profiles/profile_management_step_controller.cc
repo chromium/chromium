@@ -406,6 +406,9 @@ class DeviceSignalsDisclaimerStepController
                 &DeviceSignalsDisclaimerStepController::OnLoadFinished,
                 weak_ptr_factory_.GetWeakPtr()));
 
+    // TODO(b/535164842): Once the refreshed profile picker UI is launched this
+    // screen will be inconsistent with the rest of the flow. This screen should
+    // be then updated to match the new flow.
     host()->ShowScreen(web_contents_,
                        GURL(chrome::kChromeUIManagedUserProfileNoticeUrl),
                        std::move(navigation_finished_closure));
@@ -436,7 +439,8 @@ class DeviceSignalsDisclaimerStepController
     // If the account info is empty the disclaimer can still be shown,
     // it is only used for the profile pic with a fallback available.
     auto params = signin::EnterpriseProfileCreationDialogParams::
-        CreateForDeviceSignalsDisclaimer(account_info, std::move(callback_));
+        CreateForDeviceSignalsDisclaimer(account_info, std::move(callback_),
+                                         /*is_modal_dialog=*/false);
     managed_user_profile_notice_ui->Initialize(
         /*browser=*/nullptr,
         ManagedUserProfileNoticeUI::ScreenType::kDeviceSignalsDisclaimer,

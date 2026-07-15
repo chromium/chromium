@@ -78,36 +78,6 @@ ManagedUserProfileNoticeUI::ScreenType GetScreenTypeFromURL(const GURL& url) {
   return ManagedUserProfileNoticeUI::ScreenType::kProfilePicker;
 }
 
-base::DictValue GetSignalsDisclaimerScreenUpdateData() {
-  return base::DictValue()
-      .Set(
-          "screenType",
-          static_cast<int>(
-              ManagedUserProfileNoticeUI::ScreenType::kDeviceSignalsDisclaimer))
-      .Set("isModalDialog", true)
-      .Set("initialState", ManagedUserProfileNoticeHandler::State::kDisclosure)
-      .Set("profileDisclosureTitle",
-           l10n_util::GetStringUTF16(
-               IDS_ENTERPRISE_DEVICE_SIGNALS_DISCLAIMER_TITLE))
-      .Set("profileDisclosureSubtitle",
-           l10n_util::GetStringUTF16(
-               IDS_ENTERPRISE_DEVICE_SIGNALS_DISCLAIMER_SUBTITLE))
-      .Set(
-          "profileInformationDetails",
-          l10n_util::GetStringUTF16(
-              IDS_ENTERPRISE_DEVICE_SIGNALS_DISCLAIMER_PROFILE_INFORMATION_DETAILS))
-      .Set(
-          "deviceInformationDetails",
-          l10n_util::GetStringUTF16(
-              IDS_ENTERPRISE_DEVICE_SIGNALS_DISCLAIMER_DEVICE_INFORMATION_DETAILS))
-      .Set("continueLabel",
-           l10n_util::GetStringUTF16(
-               IDS_ENTERPRISE_DEVICE_SIGNALS_DISCLAIMER_CONTINUE_BUTTON_LABEL))
-      .Set("cancelLabel",
-           l10n_util::GetStringUTF16(
-               IDS_ENTERPRISE_DEVICE_SIGNALS_DISCLAIMER_CANCEL_BUTTON_LABEL));
-}
-
 }  // namespace
 
 ManagedUserProfileNoticeUI::ManagedUserProfileNoticeUI(content::WebUI* web_ui)
@@ -134,14 +104,20 @@ ManagedUserProfileNoticeUI::ManagedUserProfileNoticeUI(content::WebUI* web_ui)
        IDR_SIGNIN_MANAGED_USER_PROFILE_NOTICE_MANAGED_USER_PROFILE_NOTICE_APP_REFRESH_HTML_JS},
       {"managed_user_profile_notice_disclosure.css.js",
        IDR_SIGNIN_MANAGED_USER_PROFILE_NOTICE_MANAGED_USER_PROFILE_NOTICE_DISCLOSURE_CSS_JS},
+      {"signals_disclaimer.css.js",
+       IDR_SIGNIN_MANAGED_USER_PROFILE_NOTICE_SIGNALS_DISCLAIMER_CSS_JS},
       {"managed_user_profile_notice_disclosure_refresh.css.js",
        IDR_SIGNIN_MANAGED_USER_PROFILE_NOTICE_MANAGED_USER_PROFILE_NOTICE_DISCLOSURE_REFRESH_CSS_JS},
       {"managed_user_profile_notice_disclosure.html.js",
        IDR_SIGNIN_MANAGED_USER_PROFILE_NOTICE_MANAGED_USER_PROFILE_NOTICE_DISCLOSURE_HTML_JS},
+      {"signals_disclaimer.html.js",
+       IDR_SIGNIN_MANAGED_USER_PROFILE_NOTICE_SIGNALS_DISCLAIMER_HTML_JS},
       {"managed_user_profile_notice_disclosure_refresh.html.js",
        IDR_SIGNIN_MANAGED_USER_PROFILE_NOTICE_MANAGED_USER_PROFILE_NOTICE_DISCLOSURE_REFRESH_HTML_JS},
       {"managed_user_profile_notice_disclosure.js",
        IDR_SIGNIN_MANAGED_USER_PROFILE_NOTICE_MANAGED_USER_PROFILE_NOTICE_DISCLOSURE_JS},
+      {"signals_disclaimer.js",
+       IDR_SIGNIN_MANAGED_USER_PROFILE_NOTICE_SIGNALS_DISCLAIMER_JS},
       {"managed_user_profile_notice_disclosure_refresh.js",
        IDR_SIGNIN_MANAGED_USER_PROFILE_NOTICE_MANAGED_USER_PROFILE_NOTICE_DISCLOSURE_REFRESH_JS},
       {"managed_user_profile_notice_state.css.js",
@@ -291,6 +267,24 @@ ManagedUserProfileNoticeUI::ManagedUserProfileNoticeUI(content::WebUI* web_ui)
   source->AddBoolean("usePrimaryAndTonalButtonsForPromos",
                      base::FeatureList::IsEnabled(
                          switches::kUsePrimaryAndTonalButtonsForPromos));
+
+  // Signals disclaimer screen:
+  source->AddLocalizedString("signalsDisclaimerTitle",
+                             IDS_ENTERPRISE_DEVICE_SIGNALS_DISCLAIMER_TITLE);
+  source->AddLocalizedString("signalsDisclaimerSubtitle",
+                             IDS_ENTERPRISE_DEVICE_SIGNALS_DISCLAIMER_SUBTITLE);
+  source->AddLocalizedString(
+      "signalsDisclaimerProfileInformationDetails",
+      IDS_ENTERPRISE_DEVICE_SIGNALS_DISCLAIMER_PROFILE_INFORMATION_DETAILS);
+  source->AddLocalizedString(
+      "signalsDisclaimerDeviceInformationDetails",
+      IDS_ENTERPRISE_DEVICE_SIGNALS_DISCLAIMER_DEVICE_INFORMATION_DETAILS);
+  source->AddLocalizedString(
+      "signalsDisclaimerContinueLabel",
+      IDS_ENTERPRISE_DEVICE_SIGNALS_DISCLAIMER_CONTINUE_BUTTON_LABEL);
+  source->AddLocalizedString(
+      "signalsDisclaimerCancelLabel",
+      IDS_ENTERPRISE_DEVICE_SIGNALS_DISCLAIMER_CANCEL_BUTTON_LABEL);
 
   if (base::FeatureList::IsEnabled(
           switches::kDisableFirstRunAnimationsForTesting)) {
@@ -576,10 +570,19 @@ void ManagedUserProfileNoticeUI::InitializeForDeviceSignalsDisclaimer(
     Browser* browser,
     std::unique_ptr<signin::EnterpriseProfileCreationDialogParams>
         create_param) {
+  base::DictValue update_data =
+      base::DictValue()
+          .Set("screenType",
+               static_cast<int>(ManagedUserProfileNoticeUI::ScreenType::
+                                    kDeviceSignalsDisclaimer))
+          .Set("isModalDialog",
+               create_param->is_device_signals_disclaimer_modal)
+          .Set("initialState",
+               ManagedUserProfileNoticeHandler::State::kSignalsDisclaimer);
   auto* profile = Profile::FromWebUI(web_ui());
   content::WebUIDataSource::Update(
       profile, chrome::kChromeUIManagedUserProfileNoticeHost,
-      GetSignalsDisclaimerScreenUpdateData());
+      std::move(update_data));
 
   auto handler = std::make_unique<ManagedUserProfileNoticeHandler>(
       browser, ScreenType::kDeviceSignalsDisclaimer, std::move(create_param));

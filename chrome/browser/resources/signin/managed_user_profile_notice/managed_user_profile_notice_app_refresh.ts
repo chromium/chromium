@@ -264,6 +264,8 @@ export class ManagedUserProfileNoticeAppRefreshElement extends
         return this.i18n('closeLabel');
       case State.TIMEOUT:
         return this.i18n('retryLabel');
+      case State.SIGNALS_DISCLAIMER:
+        assertNotReached();
       default:
         assertNotReachedCase(this.currentState_);
     }

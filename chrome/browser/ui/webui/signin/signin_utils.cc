@@ -57,18 +57,21 @@ EnterpriseProfileCreationDialogParams::EnterpriseProfileCreationDialogParams(
 
 EnterpriseProfileCreationDialogParams::EnterpriseProfileCreationDialogParams(
     AccountInfo account_info,
-    DeviceSignalsDisclaimerCallback process_user_choice_callback)
+    DeviceSignalsDisclaimerCallback process_user_choice_callback,
+    bool is_modal_dialog)
     : account_info(account_info),
       is_device_signals_disclaimer(true),
+      is_device_signals_disclaimer_modal(is_modal_dialog),
       process_user_choice_callback(std::move(process_user_choice_callback)) {}
 
 // static
 std::unique_ptr<EnterpriseProfileCreationDialogParams>
 EnterpriseProfileCreationDialogParams::CreateForDeviceSignalsDisclaimer(
     AccountInfo account_info,
-    DeviceSignalsDisclaimerCallback process_user_choice_callback) {
+    DeviceSignalsDisclaimerCallback process_user_choice_callback,
+    bool is_modal_dialog) {
   return base::WrapUnique(new EnterpriseProfileCreationDialogParams(
-      account_info, std::move(process_user_choice_callback)));
+      account_info, std::move(process_user_choice_callback), is_modal_dialog));
 }
 
 EnterpriseProfileCreationDialogParams::
