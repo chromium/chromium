@@ -9,6 +9,7 @@
 #include "chrome/browser/dictation/test_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/views/dictation/onboarding_dialog_controller.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
@@ -139,6 +140,44 @@ IN_PROC_BROWSER_TEST_F(DictationOnboardingInteractiveTest,
   histogram_tester.ExpectUniqueSample(
       kStreamStartTriggerHistogramName,
       DictationStreamStartTrigger::kSessionStart, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(DictationOnboardingInteractiveTest,
+                       ShowOnboardingOnSecondTabClosesFirst) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSecondTabElementId);
+  // clang-format off
+  RunTestSequence(
+      // Try starting a session on Tab A. It shows onboarding dialog.
+      CheckHasSession(false),
+      StartSession(),
+      WaitForShow(kDictationOnboardingDialogElementId),
+
+      // Open a second tab (Tab B).
+      AddInstrumentedTab(kSecondTabElementId, GURL("about:blank")),
+
+      // Start session on Tab B.
+      // It should close FRE on Tab A and open a new FRE on Tab B.
+      StartSession(),
+      WaitForShow(kDictationOnboardingDialogElementId),
+
+      // Switch back to Tab A and ensure the FRE dialog on Tab A is
+      // hidden/not present.
+      SelectTab(kTabStripElementId, 0),
+      EnsureNotPresent(kDictationOnboardingDialogElementId),
+
+      // Switch back to Tab B (index 1).
+      SelectTab(kTabStripElementId, 1),
+      WaitForShow(kDictationOnboardingDialogElementId),
+
+      // Complete onboarding on Tab B.
+      PressButton(kDictationOnboardingOkButtonElementId),
+      WaitForHide(kDictationOnboardingDialogElementId),
+
+      // Verify pref is set to completed and session started.
+      CheckHasCompletedOnboardingPref(true),
+      CheckHasSession(true)
+  );
+  // clang-format on
 }
 
 }  // namespace dictation

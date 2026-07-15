@@ -30,10 +30,13 @@ bool OnboardingManager::ShowOnboardingIfNeeded(
     return false;
   }
 
-  // TODO(b/525857719): Handle the case where the FRE is triggered from a second
-  // tab while a first tab already has an active FRE.
+  // If an FRE dialog is already active on another tab, close it before opening
+  // a new FRE dialog on the current tab.
   if (dialog_controller_) {
-    return true;
+    dialog_controller_.reset();
+    pending_tab_.reset();
+    pending_target_id_.reset();
+    pending_entry_point_.reset();
   }
 
   // TODO(bokan): I think we can extract this from the dialog_controller_ rather
