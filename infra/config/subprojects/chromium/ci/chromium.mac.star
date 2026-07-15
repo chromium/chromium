@@ -1072,8 +1072,6 @@ ci.thin_tester(
             "mac_26_x64",
         ],
     ),
-    # TODO(crbug.com/530285559): Enable rotation when builder stabalizes.
-    gardener_rotations = args.ignore_default(None),
     console_view_entry = consoles.console_view_entry(
         category = "mac",
         short_name = "26",

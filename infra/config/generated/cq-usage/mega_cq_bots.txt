@@ -160,6 +160,7 @@ chromium/try/mac14-arm64-rel
 chromium/try/mac15-arm64-rel
 chromium/try/mac15-x64-rel-tests
 chromium/try/mac26-arm64-rel
+chromium/try/mac26-x64-rel-tests
 chromium/try/mac_chromium_asan_rel_ng
 chromium/try/mac_chromium_compile_dbg_ng
 chromium/try/mac_chromium_compile_rel_ng
