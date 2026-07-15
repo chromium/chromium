@@ -113,7 +113,7 @@ public class SecurePaymentConfirmationRenderTest {
     @Rule
     public final RenderTestRule mRenderTestRule =
             RenderTestRule.Builder.withPublicCorpus()
-                    .setRevision(1)
+                    .setRevision(2)
                     .setBugComponent(Component.BLINK_PAYMENTS)
                     .build();
 
@@ -285,31 +285,38 @@ public class SecurePaymentConfirmationRenderTest {
 
         List<PaymentEntityLogo> paymentEntityLogos =
                 switch (numberOfPaymentEntitiesLogos) {
-                    case 1 -> List.of(
-                            new TestPaymentEntityLogo(
-                                    Bitmap.createBitmap(
-                                            greenBitmapArray,
-                                            /* width= */ 20,
-                                            /* height= */ 5,
-                                            Config.ARGB_8888),
-                                    "logo label"));
-                    case 2 -> List.of(
-                            new TestPaymentEntityLogo(
-                                    Bitmap.createBitmap(
-                                            greenBitmapArray,
-                                            /* width= */ 20,
-                                            /* height= */ 5,
-                                            Config.ARGB_8888),
-                                    "first logo label"),
-                            new TestPaymentEntityLogo(
-                                    Bitmap.createBitmap(
-                                            blueBitmapArray,
-                                            /* width= */ 20,
-                                            /* height= */ 5,
-                                            Config.ARGB_8888),
-                                    "second logo label"));
+                    case 1 ->
+                            List.of(
+                                    new TestPaymentEntityLogo(
+                                            Bitmap.createBitmap(
+                                                    greenBitmapArray,
+                                                    /* width= */ 20,
+                                                    /* height= */ 5,
+                                                    Config.ARGB_8888),
+                                            "logo label"));
+                    case 2 ->
+                            List.of(
+                                    new TestPaymentEntityLogo(
+                                            Bitmap.createBitmap(
+                                                    greenBitmapArray,
+                                                    /* width= */ 20,
+                                                    /* height= */ 5,
+                                                    Config.ARGB_8888),
+                                            "first logo label"),
+                                    new TestPaymentEntityLogo(
+                                            Bitmap.createBitmap(
+                                                    blueBitmapArray,
+                                                    /* width= */ 20,
+                                                    /* height= */ 5,
+                                                    Config.ARGB_8888),
+                                            "second logo label"));
                     default -> emptyList();
                 };
+
+        final int paymentItemIconWidth = 40;
+        final int paymentItemIconHeight = 20;
+        int[] redBitmapArray = new int[paymentItemIconWidth * paymentItemIconHeight];
+        Arrays.fill(redBitmapArray, Color.RED);
 
         return new SecurePaymentConfirmationController(
                 Objects.requireNonNull(mActivityTestRule.getActivity().getWindowAndroid()),
@@ -324,9 +331,9 @@ public class SecurePaymentConfirmationRenderTest {
                 new BitmapDrawable(
                         ContextUtils.getApplicationContext().getResources(),
                         Bitmap.createBitmap(
-                                new int[] {Color.RED},
-                                /* width= */ 1,
-                                /* height= */ 1,
+                                redBitmapArray,
+                                /* width= */ paymentItemIconWidth,
+                                /* height= */ paymentItemIconHeight,
                                 Bitmap.Config.ARGB_8888)),
                 /* relyingPartyId= */ "test.store",
                 showOptOut,

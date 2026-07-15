@@ -7,6 +7,7 @@ package org.chromium.components.payments.secure_payment_confirmation;
 import static org.chromium.build.NullUtil.assertNonNull;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.text.SpannableString;
@@ -30,6 +31,7 @@ import org.chromium.components.url_formatter.SchemeDisplay;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.payments.mojom.PaymentItem;
 import org.chromium.ui.base.DeviceFormFactor;
+import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
@@ -173,10 +175,39 @@ public class SecurePaymentConfirmationController implements ControllerDelegate {
         // iconMustBeShown was set to false. In that case, use a default icon. The actual display
         // color is set based on the theme in OnThemeChanged.
         assert paymentIcon instanceof BitmapDrawable;
-        if (((BitmapDrawable) paymentIcon).getBitmap() == null) {
+        Bitmap paymentIconBitmap = ((BitmapDrawable) paymentIcon).getBitmap();
+        if (paymentIconBitmap == null) {
             paymentIcon =
                     ResourcesCompat.getDrawable(
                             context.getResources(), R.drawable.credit_card, context.getTheme());
+        } else {
+            // Need to round the corners of the provided payment icon. The target corner radius must
+            // be scaled according to how large the original icon is compared to the target icon
+            // dimensions.
+            final int paymentIconTargetWidth =
+                    context.getResources()
+                            .getDimensionPixelSize(R.dimen.payments_instrument_icon_width);
+            final int paymentIconTargetHeight =
+                    context.getResources()
+                            .getDimensionPixelSize(R.dimen.payments_instrument_icon_height);
+            final int paymentIconCurrentWidth = paymentIconBitmap.getWidth();
+            final int paymentIconCurrentHeight = paymentIconBitmap.getHeight();
+            // We compute the scale factor this way to match the android:scaleType="fit-center"
+            // attribute in payments_instrument.xml.
+            final float paymentIconTargetScale =
+                    Math.min(
+                            (float) paymentIconTargetWidth / paymentIconCurrentWidth,
+                            (float) paymentIconTargetHeight / paymentIconCurrentHeight);
+            final int targetCornerRadius =
+                    context.getResources()
+                            .getDimensionPixelSize(R.dimen.payments_instrument_icon_corner_radius);
+            final int scaledCornerRadius =
+                    paymentIconTargetScale > 0
+                            ? Math.round((float) targetCornerRadius / paymentIconTargetScale)
+                            : 0;
+            paymentIcon =
+                    ViewUtils.createRoundedBitmapDrawable(
+                            context.getResources(), paymentIconBitmap, scaledCornerRadius);
         }
         // Add the payment row.
         itemList.add(

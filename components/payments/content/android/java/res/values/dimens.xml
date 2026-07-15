@@ -13,6 +13,7 @@ found in the LICENSE file.
            a 16dp bottom margin on the "Checking" text + 10dp section padding + 6dp leftover.
     -->
     <dimen name="payments_favicon_size">24dp</dimen>
+    <dimen name="payments_instrument_icon_corner_radius">2dp</dimen>
     <dimen name="payments_instrument_icon_height">20dp</dimen>
     <dimen name="payments_instrument_icon_width">32dp</dimen>
     <dimen name="payments_request_bottom_bar_horizontal_padding">16dp</dimen>

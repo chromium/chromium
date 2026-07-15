@@ -28,6 +28,8 @@ import android.graphics.drawable.Drawable;
 import android.text.SpannableString;
 import android.text.style.ClickableSpan;
 
+import androidx.core.graphics.drawable.RoundedBitmapDrawable;
+
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -230,7 +232,9 @@ public class SecurePaymentConfirmationControllerTest {
                         mPayeeOrigin, SchemeDisplay.OMIT_HTTP_AND_HTTPS),
                 storeItem.model.get(ItemProperties.SECONDARY_TEXT));
         ListItem paymentItem = itemList.get(1);
-        assertEquals(mPaymentIcon, paymentItem.model.get(ItemProperties.ICON));
+        assertEquals(
+                ((BitmapDrawable) mPaymentIcon).getBitmap(),
+                ((RoundedBitmapDrawable) paymentItem.model.get(ItemProperties.ICON)).getBitmap());
         assertEquals(
                 mPaymentInstrumentLabelPrimary, paymentItem.model.get(ItemProperties.PRIMARY_TEXT));
         assertEquals(
