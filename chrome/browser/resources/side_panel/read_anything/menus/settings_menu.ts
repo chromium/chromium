@@ -62,25 +62,33 @@ const MENU_ITEM_DATA: Record<SettingsOption, SettingsItem> = {
   },
   [SettingsOption.COLOR]: {
     id: SettingsOption.COLOR,
-    icon: 'read-anything:color',
+    icon: loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+        'read-anything:palette' :
+        'read-anything:color-old',
     title: 'themeTitle',
     itemType: SettingsItemType.MENU,
   },
   [SettingsOption.FONT]: {
     id: SettingsOption.FONT,
-    icon: 'read-anything:font',
+    icon: loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+        'read-anything:font-download' :
+        'read-anything:font-old',
     title: 'fontNameTitle',
     itemType: SettingsItemType.MENU,
   },
   [SettingsOption.FONT_SIZE]: {
     id: SettingsOption.FONT_SIZE,
-    icon: 'read-anything:font-size',
+    icon: loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+        'read-anything:format-size' :
+        'read-anything:font-size-old',
     title: 'fontSizeTitle',
     itemType: SettingsItemType.MENU,
   },
   [SettingsOption.IMAGES]: {
     id: SettingsOption.IMAGES,
-    icon: 'read-anything:images-enabled',
+    icon: loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+        'read-anything:image' :
+        'read-anything:images-enabled-old',
     title: 'imagesLabel',
     itemType: SettingsItemType.TOGGLE,
   },
@@ -99,7 +107,9 @@ const MENU_ITEM_DATA: Record<SettingsOption, SettingsItem> = {
   },
   [SettingsOption.LETTER_SPACING]: {
     id: SettingsOption.LETTER_SPACING,
-    icon: 'read-anything:letter-spacing',
+    icon: loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+        'read-anything:format-letter-spacing-2' :
+        'read-anything:letter-spacing-old',
     title: 'letterSpacingTitle',
     itemType: SettingsItemType.MENU,
   },
@@ -141,7 +151,9 @@ const MENU_ITEM_DATA: Record<SettingsOption, SettingsItem> = {
   },
   [SettingsOption.VOICE_HIGHLIGHT]: {
     id: SettingsOption.VOICE_HIGHLIGHT,
-    icon: 'read-anything:highlight-on',
+    icon: loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+        'read-anything:ink-highlighter-move' :
+        'read-anything:highlight-on-old',
     title: 'voiceHighlightLabel',
     itemType: SettingsItemType.MENU,
   },

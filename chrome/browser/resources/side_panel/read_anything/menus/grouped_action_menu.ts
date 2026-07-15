@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import '/strings.m.js';
 import '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import '//resources/cr_elements/cr_icon/cr_icon.js';
 import '//resources/cr_elements/cr_lazy_render/cr_lazy_render_lit.js';
@@ -10,6 +11,7 @@ import type {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/c
 import type {CrLazyRenderLitElement} from '//resources/cr_elements/cr_lazy_render/cr_lazy_render_lit.js';
 import {WebUiListenerMixinLit} from '//resources/cr_elements/web_ui_listener_mixin_lit.js';
 import {assert} from '//resources/js/assert.js';
+import {loadTimeData} from '//resources/js/load_time_data.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
 import type {ShowAtConfigPrefs} from '../content/read_anything_types.js';
@@ -48,6 +50,7 @@ export class GroupedActionMenuElement extends GroupedActionMenuElementBase {
       label: {type: String},
       nonModal: {type: Boolean},
       closeOnClick: {type: Boolean},
+      webuiRoundedIconsEnabled_: {type: Boolean},
     };
   }
 
@@ -57,6 +60,8 @@ export class GroupedActionMenuElement extends GroupedActionMenuElementBase {
 
   // Initializing to random value, but this is set by the parent.
   accessor label: string = '';
+  protected accessor webuiRoundedIconsEnabled_: boolean =
+      loadTimeData.getBoolean('webuiRoundedIconsEnabled');
 
   open(anchor: HTMLElement, showAtConfig?: ShowAtConfigPrefs) {
     openMenu(

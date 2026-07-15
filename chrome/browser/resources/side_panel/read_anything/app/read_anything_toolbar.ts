@@ -104,8 +104,14 @@ export const LINKS_DISABLED_ICON = 'read-anything:links-disabled';
 export const LINK_TOGGLE_BUTTON_ID = 'link-toggle-button';
 
 // Images toggle button constants.
-export const IMAGES_ENABLED_ICON = 'read-anything:images-enabled';
-export const IMAGES_DISABLED_ICON = 'read-anything:images-disabled';
+export const IMAGES_ENABLED_ICON =
+    loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+    'read-anything:images-enabled' :
+    'read-anything:images-enabled-old';
+export const IMAGES_DISABLED_ICON =
+    loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+    'read-anything:hide-image' :
+    'read-anything:images-disabled-old';
 export const IMAGES_TOGGLE_BUTTON_ID = 'images-toggle-button';
 
 // Max number of paragraph elements inside an aria-live region for
@@ -160,6 +166,7 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
       isImmersiveEnabled_: {type: Boolean},
       lineFocusStyle: {type: Object},
       lineFocusMovement: {type: Number},
+      webuiRoundedIconsEnabled_: {type: Boolean},
     };
   }
 
@@ -205,6 +212,8 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
     },
   ];
   protected accessor areFontsLoaded_: boolean = false;
+  protected accessor webuiRoundedIconsEnabled_: boolean =
+      loadTimeData.getBoolean('webuiRoundedIconsEnabled');
 
   // Member variables below
   private startTime_: number = Date.now();
@@ -404,7 +413,9 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
   private initializeMenuButtons_() {
     const fontSizeElement = {
       id: 'font-size',
-      icon: 'read-anything:font-size',
+      icon: loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+          'read-anything:font-size' :
+          'read-anything:font-size-old',
       ariaLabel: loadTimeData.getString('fontSizeTitle'),
       openMenu: (target: HTMLElement) =>
           openMenu(this.$.fontSizeMenu.get(), target),
@@ -419,13 +430,17 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
         fontSizeElement,
         {
           id: 'font',
-          icon: 'read-anything:font',
+          icon: loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+              'read-anything:font' :
+              'read-anything:font-old',
           ariaLabel: loadTimeData.getString('fontNameTitle'),
           openMenu: (target: HTMLElement) => this.$.fontMenu.open(target),
         },
         {
           id: 'color',
-          icon: 'read-anything:color',
+          icon: loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+              'read-anything:color' :
+              'read-anything:color-old',
           ariaLabel: loadTimeData.getString('themeTitle'),
           openMenu: (target: HTMLElement) => this.$.colorMenu.open(target),
         },
@@ -438,7 +453,9 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
         },
         {
           id: 'letter-spacing',
-          icon: 'read-anything:letter-spacing',
+          icon: loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+              'read-anything:letter-spacing' :
+              'read-anything:letter-spacing-old',
           ariaLabel: loadTimeData.getString('letterSpacingTitle'),
           openMenu: (target: HTMLElement) =>
               this.$.letterSpacingMenu.open(target),
@@ -536,8 +553,14 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
   }
 
   protected playPauseButtonIronIcon_() {
-    return this.isSpeechActive ? 'read-anything-20:pause' :
-                                 'read-anything-20:play';
+    if (this.isSpeechActive) {
+      return loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+          'read-anything-20:pause-circle-filled' :
+          'read-anything-20:pause-old';
+    }
+    return loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+        'read-anything-20:play-circle-filled' :
+        'read-anything-20:play-old';
   }
 
   protected onNextGranularityClick_() {
@@ -612,9 +635,17 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
     const button = this.$.toolbarContainer.querySelector('#highlight');
     assert(button, 'no highlight button');
     if (turnOn) {
-      button.setAttribute('iron-icon', 'read-anything:highlight-on');
+      button.setAttribute(
+          'iron-icon',
+          loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+              'read-anything:ink-highlighter-move' :
+              'read-anything:highlight-on-old');
     } else {
-      button.setAttribute('iron-icon', 'read-anything:highlight-off');
+      button.setAttribute(
+          'iron-icon',
+          loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+              'read-anything:ink-highlighter' :
+              'read-anything:highlight-off-old');
     }
   }
 

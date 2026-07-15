@@ -42,7 +42,9 @@ export function getHtml(this: VoiceSelectionMenuElement) {
               <span class="voice-name">
                 <cr-icon id="check-mark"
                     class="item-hidden-${!voice.selected} check-mark"
-                    icon="read-anything-20:check-mark">
+                    icon="${this.webuiRoundedIconsEnabled_
+                        ? 'read-anything-20:check-small'
+                        : 'read-anything-20:check-mark-old'}">
                 </cr-icon>
                 ${voice.title}
               </span>

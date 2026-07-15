@@ -94,6 +94,7 @@ export class VoiceSelectionMenuElement extends VoiceSelectionMenuElementBase
       voiceGroups_: {type: Array},
       nonModal: {type: Boolean},
       errorMessages_: {type: Array},
+      webuiRoundedIconsEnabled_: {type: Boolean},
     };
   }
 
@@ -113,6 +114,8 @@ export class VoiceSelectionMenuElement extends VoiceSelectionMenuElementBase
   protected accessor downloadingMessages_: string[] = [];
   protected accessor voiceGroups_: VoiceDropdownGroup[] = [];
   protected accessor showLanguageMenuDialog_: boolean = false;
+  protected accessor webuiRoundedIconsEnabled_: boolean =
+      loadTimeData.getBoolean('webuiRoundedIconsEnabled');
 
   private readonly spBodyPadding_ = Number.parseInt(
       window.getComputedStyle(document.body)
@@ -421,9 +424,13 @@ export class VoiceSelectionMenuElement extends VoiceSelectionMenuElementBase
 
   protected previewIcon_(previewInitiated: boolean): string {
     if (previewInitiated) {
-      return 'read-anything-20:stop-circle';
+      return loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+          'read-anything-20:stop-circle' :
+          'read-anything-20:stop-circle-old';
     } else {
-      return 'read-anything-20:play-circle';
+      return loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+          'read-anything-20:play-circle' :
+          'read-anything-20:play-circle-old';
     }
   }
 

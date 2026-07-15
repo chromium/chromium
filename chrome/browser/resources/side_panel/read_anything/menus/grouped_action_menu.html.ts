@@ -38,7 +38,9 @@ export function getHtml(this: GroupedActionMenuElement) {
             data-item-index="${itemIndex}">
           <cr-icon
               class="button-image check-mark check-mark-showing-${item.selected}"
-              icon="read-anything-20:check-mark">
+              icon="${this.webuiRoundedIconsEnabled_
+                  ? 'read-anything-20:check-small'
+                  : 'read-anything-20:check-mark-old'}">
           </cr-icon>
           <cr-icon
               class="button-image has-icon-${!!item.icon}"

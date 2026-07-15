@@ -51,7 +51,9 @@ export class LetterSpacingMenuElement extends LetterSpacingMenuElementBase
   protected accessor options_: Array<MenuStateItem<number>> = [
     {
       title: loadTimeData.getString('letterSpacingStandardTitle'),
-      icon: 'read-anything:letter-spacing-standard',
+      icon: loadTimeData.getBoolean('webuiRoundedIconsEnabled')?
+      'read-anything:format-letter-spacing-standard':
+          'read-anything:letter-spacing-standard-old',
       data: chrome.readingMode.standardLetterSpacing,
     },
     {
