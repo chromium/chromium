@@ -1680,7 +1680,7 @@ deps = {
   },
 
   'src/chrome/test/data/autofill/captured_sites/artifacts': {
-    'url': Var('chrome_git') + '/chrome/test/captured_sites/autofill.git' + '@' + '5e2476f1a8afb1bb6f8bcb9a6882ed3905c2fdc8',
+    'url': Var('chrome_git') + '/chrome/test/captured_sites/autofill.git' + '@' + '05d69ce50ade74fb0bdb22c247b36975f8cf4d16',
     'condition': 'checkout_chromium_autofill_test_dependencies',
   },
 
