@@ -2031,6 +2031,22 @@ TEST_P(SendTabToSelfBridgeNamingTest,
   }
 }
 
+// Tests that SendEntry records false for local device name availability and
+// leaves the device name empty when there is no local device info.
+TEST_F(SendTabToSelfBridgeTest, SendEntry_NoLocalDeviceEntry) {
+  InitializeBridgeWithoutDevice();
+
+  base::HistogramTester histogram_tester;
+  const SendTabToSelfEntry* result = bridge()->SendEntry(
+      GURL("http://a.com"), "title", "cache_guid", PageContext(),
+      NavigationHistory(), base::DoNothing(), ShareEntryPoint::kShareSheet);
+  ASSERT_NE(nullptr, result);
+  EXPECT_TRUE(result->GetDeviceName().empty());
+  histogram_tester.ExpectUniqueSample(
+      "Sharing.SendTabToSelf.IsLocalDeviceNameAvailableOnSend",
+      /*sample=*/false, /*expected_bucket_count=*/1);
+}
+
 // Tests that SendEntry uses the fallback full name of the local device.
 TEST_F(SendTabToSelfBridgeTest, SendEntry_UsesFullName) {
   base::test::ScopedFeatureList scoped_feature_list;
@@ -2077,12 +2093,16 @@ TEST_F(SendTabToSelfBridgeTest, SendEntry_UsesSimplifiedName) {
 
   // Send a new entry and verify that the entry stores the simplified device
   // name.
+  base::HistogramTester histogram_tester;
   const SendTabToSelfEntry* result = bridge()->SendEntry(
       GURL("https://www.example.com/"), "title", "target", PageContext(),
       NavigationHistory(), base::DoNothing(), ShareEntryPoint::kShareSheet);
 
   ASSERT_NE(nullptr, result);
   EXPECT_EQ("Manufacturer Computer", result->GetDeviceName());
+  histogram_tester.ExpectUniqueSample(
+      "Sharing.SendTabToSelf.IsLocalDeviceNameAvailableOnSend",
+      /*sample=*/true, /*expected_bucket_count=*/1);
 }
 
 TEST_F(SendTabToSelfBridgeTest, SendEntry_RecordsDeviceFormFactorCombination) {

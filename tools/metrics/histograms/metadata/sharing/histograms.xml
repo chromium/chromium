@@ -427,6 +427,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Sharing.SendTabToSelf.IsLocalDeviceNameAvailableOnSend"
+    enum="BooleanAvailable" expires_after="2027-07-01">
+  <owner>mtatarski@google.com</owner>
+  <owner>src/components/sync/OWNERS</owner>
+  <summary>
+    Records whether the local device name is available when sending a Send Tab
+    To Self entry. The device name can be unavailable during early startup
+    before DeviceInfoTracker initialization. This metric helps determine whether
+    receiver-side toast and snackbar UIs require a fallback display string. Note
+    that this metric is recorded once per share attempt rather than once per
+    user or device, so users who share frequently will contribute more samples.
+  </summary>
+</histogram>
+
 <histogram name="Sharing.SendTabToSelf.NotificationClicked.HasScrollPosition"
     enum="Boolean" expires_after="2027-03-04">
   <owner>mtatarski@google.com</owner>

@@ -529,9 +529,12 @@ const SendTabToSelfEntry* SendTabToSelfBridge::SendEntry(
         base::CollapseWhitespace(base::UTF8ToUTF16(title), false));
   }
 
+  std::string local_device_name = GetLocalDeviceName();
+  RecordIsLocalDeviceNameAvailableOnSend(!local_device_name.empty());
+
   std::unique_ptr<SendTabToSelfEntry> entry =
       std::make_unique<SendTabToSelfEntry>(
-          guid, url, trimmed_title, shared_time, GetLocalDeviceName(),
+          guid, url, trimmed_title, shared_time, std::move(local_device_name),
           target_device_cache_guid, context, std::move(navigation_history));
 
   // The size is recorded before potential truncation (dropping) of the context
@@ -941,9 +944,6 @@ std::string SendTabToSelfBridge::GetLocalDeviceName() const {
   const syncer::DeviceInfo* local_device = GetLocalDeviceInfo();
   if (!local_device) {
     return std::string();
-    // TODO(crbug.com/532954900): Add a metric to track the number of times the
-    // local device is null if and only if kSyncSimplifyDeviceNaming is
-    // enabled.
   }
 
   // TODO(crbug.com/531649027): Remove fallback_full_name logic once

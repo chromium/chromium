@@ -289,4 +289,9 @@ void RecordSendResult(SendTabToSelfResult result) {
   base::UmaHistogramEnumeration("Sharing.SendTabToSelf.SendResult", result);
 }
 
+void RecordIsLocalDeviceNameAvailableOnSend(bool is_available) {
+  base::UmaHistogramBoolean(
+      "Sharing.SendTabToSelf.IsLocalDeviceNameAvailableOnSend", is_available);
+}
+
 }  // namespace send_tab_to_self
