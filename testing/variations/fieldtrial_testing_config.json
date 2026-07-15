@@ -7251,6 +7251,7 @@
                 {
                     "name": "PermanentPinButtonHeader",
                     "params": {
+                        "ContextualTasksEntryPoint": "toolbar-ephemeral-branded",
                         "overflow-items": "all-without-new-thread"
                     },
                     "enable_features": [
