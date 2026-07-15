@@ -53,3 +53,7 @@ h2 {
 .path {
   word-break: break-all;
 }
+
+a {
+  color: var(--cr-link-color);
+}
