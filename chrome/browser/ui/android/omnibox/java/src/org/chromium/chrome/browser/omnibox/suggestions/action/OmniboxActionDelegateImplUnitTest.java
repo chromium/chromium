@@ -33,6 +33,7 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
+import org.chromium.base.UserDataHost;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -42,6 +43,8 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabwindow.TabWindowInfo;
 import org.chromium.chrome.browser.tabwindow.TabWindowManager;
+import org.chromium.chrome.browser.ui.lens.LensOverlayCoordinator;
+import org.chromium.chrome.browser.ui.lens.LensOverlayInvocationSource;
 import org.chromium.components.browser_ui.settings.SettingsNavigation;
 import org.chromium.components.browser_ui.settings.SettingsNavigation.SettingsFragment;
 import org.chromium.content_public.browser.LoadUrlParams;
@@ -59,21 +62,25 @@ public class OmniboxActionDelegateImplUnitTest {
     private static final int TEST_WINDOW_ID = 2;
     private static final GURL TEST_URL = new GURL("https://www.example.com/");
     public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule();
+
+    private @Mock Tab mTab;
     private @Mock Consumer<String> mMockOpenUrl;
     private @Mock Runnable mMockOpenIncognitoPage;
     private @Mock Runnable mMockOpenPasswordSettings;
-    private @Mock SettingsNavigation mMockSettingsNavigation;
-    private @Mock Tab mTab;
     private @Mock Runnable mMockOpenQuickDeleteDialog;
-    private final AtomicReference<Tab> mTabReference = new AtomicReference<>();
-    private Context mContext;
-    private OmniboxActionDelegateImpl mDelegate;
-
     private @Mock TabWindowManager mTabManager;
     private @Mock OmniboxActionDelegateImpl.BringTabToFrontCallback mBringTabToFrontCallback;
+
+    private @Mock SettingsNavigation mMockSettingsNavigation;
     private @Mock TabModel mTabModel;
     private @Mock TabModelSelector mTabModelSelector;
+    private @Mock LensOverlayCoordinator mLensOverlayCoordinator;
+
+    private final AtomicReference<Tab> mTabReference = new AtomicReference<>();
     private SettableMonotonicObservableSupplier<TabWindowManager> mTabManagerSupplier;
+
+    private Context mContext;
+    private OmniboxActionDelegateImpl mDelegate;
 
     @Before
     public void setUp() {
@@ -167,6 +174,18 @@ public class OmniboxActionDelegateImplUnitTest {
     public void openQuickDeleteDialog() {
         mDelegate.handleClearBrowsingData();
         verify(mMockOpenQuickDeleteDialog).run();
+    }
+
+    @Test
+    public void openLensOverlay() {
+        // Provide a UserDataHost to prevent LensOverlayCoordinator from crashing on
+        // getOrCreateForTab.
+        UserDataHost userDataHost = new UserDataHost();
+        userDataHost.setUserData(LensOverlayCoordinator.class, mLensOverlayCoordinator);
+        doReturn(userDataHost).when(mTab).getUserDataHost();
+        mDelegate.openLensOverlay();
+        verify(mLensOverlayCoordinator, times(1))
+                .start(LensOverlayInvocationSource.OMNIBOX_PAGE_ACTION);
     }
 
     @Test

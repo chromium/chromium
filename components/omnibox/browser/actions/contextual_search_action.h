@@ -53,6 +53,10 @@ class ContextualSearchOpenLensAction : public OmniboxAction {
   OmniboxActionId ActionId() const override;
   void RecordActionShown(size_t position, bool executed) const override;
   void Execute(ExecutionContext& context) const override;
+#if BUILDFLAG(IS_ANDROID)
+  base::android::ScopedJavaLocalRef<jobject> GetOrCreateJavaObject(
+      JNIEnv* env) const override;
+#endif
 #if defined(SUPPORT_PEDALS_VECTOR_ICONS)
   const gfx::VectorIcon& GetVectorIcon() const override;
 #endif
