@@ -83,7 +83,7 @@ AddressList AddressList::CopyWithPort(const AddressList& list, uint16_t port) {
   AddressList out;
   out.SetDnsAliases(list.dns_aliases());
   for (const auto& i : list)
-    out.push_back(IPEndPoint(i.address(), port));
+    out.push_back(i.CopyWithPort(port));
   return out;
 }
 

@@ -498,6 +498,19 @@ TEST_F(IPEndPointTest, FromMalformedValues) {
   EXPECT_FALSE(IPEndPoint::FromValue(invalid_scope_id).has_value());
 }
 
+TEST_F(IPEndPointTest, CopyWithPort) {
+  IPEndPoint ipv4_endpoint(IPAddress(192, 168, 1, 1), 80);
+  EXPECT_EQ(IPEndPoint(IPAddress(192, 168, 1, 1), 443),
+            ipv4_endpoint.CopyWithPort(443));
+
+  IPEndPoint ipv6_endpoint(
+      IPAddress(0xfe, 0x80, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1), 0,
+      /*scope_id=*/5);
+  IPEndPoint copied = ipv6_endpoint.CopyWithPort(8443);
+  EXPECT_EQ(8443, copied.port());
+  EXPECT_EQ(std::optional<uint32_t>(5), copied.scope_id());
+}
+
 TEST_F(IPEndPointTest, SupportsAbslHash) {
   constexpr IPAddress kIPv4Address(192, 168, 0, 1);
   constexpr IPAddress kIPv6Address(0x20, 0x01, 0x0d, 0xb8, 0, 0, 0, 0, 0, 0, 0,

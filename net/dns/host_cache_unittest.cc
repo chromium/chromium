@@ -2971,6 +2971,263 @@ TEST(HostCacheTest, ConvertFromInternalMergedNodata) {
 //
 // TODO(dmcardle): Check the other direction of this property. Starting from an
 // arbitrary HostCache, serialize it and then parse a different HostCache.
+TEST(HostCacheTest, CopyWithDefaultPortPreservesScopeId) {
+  IPEndPoint endpoint(
+      IPAddress(0xfe, 0x80, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1), 0,
+      /*scope_id=*/15);
+  HostCache::Entry entry(OK, {endpoint}, /*aliases=*/{},
+                         HostCache::Entry::SOURCE_DNS);
+
+  HostCache::Entry copied = entry.CopyWithDefaultPort(443);
+  ASSERT_EQ(1u, copied.ip_endpoints().size());
+  EXPECT_EQ(443, copied.ip_endpoints()[0].port());
+  EXPECT_EQ(std::optional<uint32_t>(15), copied.ip_endpoints()[0].scope_id());
+}
+
+TEST(HostCacheTest, ConvertToServiceEndpointsPreservesScopeId) {
+  IPEndPoint endpoint(
+      IPAddress(0xfe, 0x80, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1), 0,
+      /*scope_id=*/15);
+  HostCache::Entry entry(OK, {endpoint}, /*aliases=*/{},
+                         HostCache::Entry::SOURCE_DNS);
+  entry.set_canonical_names({"example.com"});
+
+  std::vector<ServiceEndpoint> service_endpoints =
+      entry.ConvertToServiceEndpoints(443);
+  ASSERT_EQ(1u, service_endpoints.size());
+  ASSERT_EQ(1u, service_endpoints[0].ipv6_endpoints.size());
+  EXPECT_EQ(443, service_endpoints[0].ipv6_endpoints[0].port());
+  EXPECT_EQ(std::optional<uint32_t>(15),
+            service_endpoints[0].ipv6_endpoints[0].scope_id());
+}
+
+TEST(HostCacheTest, SerializeAndDeserializeScopeId) {
+  IPEndPoint::SetIndexToNameFuncForTesting(
+      [](unsigned int index, base::span<char> ifname) -> char* {
+        if (index == 3 && ifname.size() >= 5) {
+          ifname[0] = 'e';
+          ifname[1] = 't';
+          ifname[2] = 'h';
+          ifname[3] = '0';
+          ifname[4] = '\0';
+          return ifname.data();
+        }
+        return nullptr;
+      });
+  IPEndPoint::SetNameToIndexFuncForTesting([](const char* name) -> uint32_t {
+    if (std::string_view(name) == "eth0") {
+      return 3;
+    }
+    return 0;
+  });
+
+  base::TimeTicks now;
+  base::TimeDelta ttl = base::Seconds(100);
+
+  IPEndPoint endpoint(
+      IPAddress(0xfe, 0x80, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1), 80,
+      /*scope_id=*/3);
+  HostCache::Entry entry(OK, {endpoint}, /*aliases=*/{},
+                         HostCache::Entry::SOURCE_DNS, ttl);
+
+  base::ListValue serialized;
+  HostCache cache(kMaxCacheEntries);
+  HostCache::Key key = Key("example.local");
+  cache.Set(key, entry, now, ttl);
+  cache.GetList(serialized, /*include_staleness=*/false,
+                HostCache::SerializationType::kRestorable);
+
+  HostCache restored_cache(kMaxCacheEntries);
+  EXPECT_TRUE(restored_cache.RestoreFromListValue(serialized));
+  HostCache::EntryStaleness staleness;
+  const std::pair<const HostCache::Key, HostCache::Entry>* restored =
+      restored_cache.LookupStale(key, now, &staleness);
+  ASSERT_TRUE(restored);
+
+  ASSERT_EQ(1u, restored->second.ip_endpoints().size());
+  EXPECT_EQ(endpoint, restored->second.ip_endpoints()[0]);
+  EXPECT_EQ(std::optional<uint32_t>(3),
+            restored->second.ip_endpoints()[0].scope_id());
+
+  IPEndPoint::SetIndexToNameFuncForTesting(nullptr);
+  IPEndPoint::SetNameToIndexFuncForTesting(nullptr);
+}
+
+TEST(HostCacheTest, DeserializeWithMultipleInterfacesAndOneDeleted) {
+  IPEndPoint::SetIndexToNameFuncForTesting(
+      [](unsigned int index, base::span<char> ifname) -> char* {
+        if (ifname.size() < 6) {
+          return nullptr;
+        }
+        if (index == 3) {
+          ifname[0] = 'e';
+          ifname[1] = 't';
+          ifname[2] = 'h';
+          ifname[3] = '0';
+          ifname[4] = '\0';
+          return ifname.data();
+        } else if (index == 4) {
+          ifname[0] = 'w';
+          ifname[1] = 'l';
+          ifname[2] = 'a';
+          ifname[3] = 'n';
+          ifname[4] = '0';
+          ifname[5] = '\0';
+          return ifname.data();
+        } else if (index == 5) {
+          ifname[0] = 'e';
+          ifname[1] = 't';
+          ifname[2] = 'h';
+          ifname[3] = '1';
+          ifname[4] = '\0';
+          return ifname.data();
+        }
+        return nullptr;
+      });
+  IPEndPoint::SetNameToIndexFuncForTesting([](const char* name) -> uint32_t {
+    if (std::string_view(name) == "eth0") {
+      return 3;
+    } else if (std::string_view(name) == "wlan0") {
+      return 4;
+    } else if (std::string_view(name) == "eth1") {
+      return 5;
+    }
+    return 0;
+  });
+
+  base::TimeTicks now;
+  base::TimeDelta ttl = base::Seconds(100);
+
+  IPEndPoint endpoint1(
+      IPAddress(0xfe, 0x80, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1), 80,
+      /*scope_id=*/3);
+  IPEndPoint endpoint2(
+      IPAddress(0xfe, 0x80, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2), 80,
+      /*scope_id=*/4);
+  IPEndPoint endpoint3(
+      IPAddress(0xfe, 0x80, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3), 80,
+      /*scope_id=*/5);
+
+  HostCache::Key key1 = Key("host1.local");
+  HostCache::Key key2 = Key("host2.local");
+  HostCache::Key key3 = Key("host3.local");
+
+  HostCache cache(kMaxCacheEntries);
+  cache.Set(key1,
+            HostCache::Entry(OK, {endpoint1}, /*aliases=*/{},
+                             HostCache::Entry::SOURCE_DNS, ttl),
+            now, ttl);
+  cache.Set(key2,
+            HostCache::Entry(OK, {endpoint2}, /*aliases=*/{},
+                             HostCache::Entry::SOURCE_DNS, ttl),
+            now, ttl);
+  cache.Set(key3,
+            HostCache::Entry(OK, {endpoint3}, /*aliases=*/{},
+                             HostCache::Entry::SOURCE_DNS, ttl),
+            now, ttl);
+
+  base::ListValue serialized;
+  cache.GetList(serialized, /*include_staleness=*/false,
+                HostCache::SerializationType::kRestorable);
+
+  // Simulate interface "wlan0" being deleted before the cache is loaded.
+  IPEndPoint::SetNameToIndexFuncForTesting([](const char* name) -> uint32_t {
+    if (std::string_view(name) == "eth0") {
+      return 3;
+    } else if (std::string_view(name) == "eth1") {
+      return 5;
+    }
+    return 0;
+  });
+
+  HostCache restored_cache(kMaxCacheEntries);
+  EXPECT_TRUE(restored_cache.RestoreFromListValue(serialized));
+
+  HostCache::EntryStaleness staleness;
+  const std::pair<const HostCache::Key, HostCache::Entry>* restored1 =
+      restored_cache.LookupStale(key1, now, &staleness);
+  ASSERT_TRUE(restored1);
+  ASSERT_EQ(1u, restored1->second.ip_endpoints().size());
+  EXPECT_EQ(std::optional<uint32_t>(3),
+            restored1->second.ip_endpoints()[0].scope_id());
+
+  const std::pair<const HostCache::Key, HostCache::Entry>* restored2 =
+      restored_cache.LookupStale(key2, now, &staleness);
+  EXPECT_FALSE(restored2);
+
+  const std::pair<const HostCache::Key, HostCache::Entry>* restored3 =
+      restored_cache.LookupStale(key3, now, &staleness);
+  ASSERT_TRUE(restored3);
+  ASSERT_EQ(1u, restored3->second.ip_endpoints().size());
+  EXPECT_EQ(std::optional<uint32_t>(5),
+            restored3->second.ip_endpoints()[0].scope_id());
+
+  IPEndPoint::SetIndexToNameFuncForTesting(nullptr);
+  IPEndPoint::SetNameToIndexFuncForTesting(nullptr);
+}
+
+TEST(HostCacheTest, DeserializeWithIndexChangedAcrossReload) {
+  IPEndPoint::SetIndexToNameFuncForTesting(
+      [](unsigned int index, base::span<char> ifname) -> char* {
+        if (ifname.size() < 5) {
+          return nullptr;
+        }
+        if (index == 3 || index == 7) {
+          ifname[0] = 'e';
+          ifname[1] = 't';
+          ifname[2] = 'h';
+          ifname[3] = '0';
+          ifname[4] = '\0';
+          return ifname.data();
+        }
+        return nullptr;
+      });
+  IPEndPoint::SetNameToIndexFuncForTesting([](const char* name) -> uint32_t {
+    if (std::string_view(name) == "eth0") {
+      return 3;
+    }
+    return 0;
+  });
+
+  base::TimeTicks now;
+  base::TimeDelta ttl = base::Seconds(100);
+
+  IPEndPoint endpoint(
+      IPAddress(0xfe, 0x80, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1), 80,
+      /*scope_id=*/3);
+  HostCache::Entry entry(OK, {endpoint}, /*aliases=*/{},
+                         HostCache::Entry::SOURCE_DNS, ttl);
+
+  base::ListValue serialized;
+  HostCache cache(kMaxCacheEntries);
+  HostCache::Key key = Key("example.local");
+  cache.Set(key, entry, now, ttl);
+  cache.GetList(serialized, /*include_staleness=*/false,
+                HostCache::SerializationType::kRestorable);
+
+  // Simulate interface "eth0" changing from index 3 to index 7 across reload.
+  IPEndPoint::SetNameToIndexFuncForTesting([](const char* name) -> uint32_t {
+    if (std::string_view(name) == "eth0") {
+      return 7;
+    }
+    return 0;
+  });
+
+  HostCache restored_cache(kMaxCacheEntries);
+  EXPECT_TRUE(restored_cache.RestoreFromListValue(serialized));
+
+  HostCache::EntryStaleness staleness;
+  const std::pair<const HostCache::Key, HostCache::Entry>* restored =
+      restored_cache.LookupStale(key, now, &staleness);
+  ASSERT_TRUE(restored);
+  ASSERT_EQ(1u, restored->second.ip_endpoints().size());
+  EXPECT_EQ(std::optional<uint32_t>(7),
+            restored->second.ip_endpoints()[0].scope_id());
+
+  IPEndPoint::SetIndexToNameFuncForTesting(nullptr);
+  IPEndPoint::SetNameToIndexFuncForTesting(nullptr);
+}
+
 // Verify that the two HostCaches are equal.
 void CheckHostCacheSerialization(const base::ListValue& list) {
   // Parse the HostCache.

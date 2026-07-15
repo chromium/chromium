@@ -276,5 +276,17 @@ TEST(AddressListTest, DeduplicatePreservesOrder) {
   } while (std::next_permutation(permutation.begin(), permutation.end()));
 }
 
+TEST(AddressListTest, CopyWithPortPreservesScopeId) {
+  IPEndPoint endpoint(
+      IPAddress(0xfe, 0x80, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1), 0,
+      /*scope_id=*/10);
+  AddressList list(endpoint);
+
+  AddressList copied = AddressList::CopyWithPort(list, 443);
+  ASSERT_EQ(1u, copied.size());
+  EXPECT_EQ(443, copied[0].port());
+  EXPECT_EQ(std::optional<uint32_t>(10), copied[0].scope_id());
+}
+
 }  // namespace
 }  // namespace net

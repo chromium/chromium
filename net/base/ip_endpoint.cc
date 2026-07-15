@@ -63,25 +63,26 @@ void IPEndPoint::SetIndexToNameFuncForTesting(IndexToNameFunc func) {
 }
 
 // static
-std::optional<uint32_t> IPEndPoint::ScopeIdFromDict(
-    const base::DictValue& dict) {
-  const std::string* name = dict.FindString(kInterfaceName);
-  if (!name) {
+std::optional<uint32_t> IPEndPoint::ScopeIdFromInterfaceName(
+    const base::Value* value) {
+  if (!value || !value->is_string()) {
     return std::nullopt;
   }
 
+  const std::string& name = value->GetString();
   unsigned int index = 0;
   if (name_to_index_func_for_testing_) {
-    index = name_to_index_func_for_testing_(name->c_str());
+    index = name_to_index_func_for_testing_(name.c_str());
   } else {
-    index = if_nametoindex(name->c_str());
+    index = if_nametoindex(name.c_str());
   }
 
   return index;
 }
 
 // static
-base::Value IPEndPoint::ScopeIdToValue(std::optional<uint32_t> scope_id) {
+base::Value IPEndPoint::ScopeIdToInterfaceNameValue(
+    std::optional<uint32_t> scope_id) {
   if (!scope_id.has_value()) {
     return base::Value();
   }
@@ -126,7 +127,8 @@ std::optional<IPEndPoint> IPEndPoint::FromValue(const base::Value& value) {
   IPEndPoint endpoint(address.value(),
                       base::checked_cast<uint16_t>(port.value()));
 
-  std::optional<uint32_t> scope_id = ScopeIdFromDict(*dict);
+  std::optional<uint32_t> scope_id =
+      ScopeIdFromInterfaceName(dict->Find(kInterfaceName));
   if (scope_id.has_value()) {
     if (scope_id.value() == 0 || !endpoint.IsIPv6LinkLocal() ||
         !base::IsValueInRangeForNumericType<uint32_t>(scope_id.value())) {
@@ -154,6 +156,13 @@ uint16_t IPEndPoint::port() const {
   DCHECK_NE(address_.size(), kBluetoothAddressSize);
 #endif
   return port_;
+}
+
+IPEndPoint IPEndPoint::CopyWithPort(uint16_t port) const {
+#if BUILDFLAG(IS_WIN)
+  DCHECK_NE(address_.size(), kBluetoothAddressSize);
+#endif
+  return IPEndPoint(address_, port, scope_id_);
 }
 
 AddressFamily IPEndPoint::GetFamily() const {
@@ -300,7 +309,7 @@ base::Value IPEndPoint::ToValue() const {
   dict.Set(kValueAddressKey, address_.ToValue());
   dict.Set(kValuePortKey, port_);
 
-  base::Value interface_name = ScopeIdToValue(scope_id_);
+  base::Value interface_name = ScopeIdToInterfaceNameValue(scope_id_);
   if (!interface_name.is_none()) {
     DCHECK(IsIPv6LinkLocal());
     dict.Set(kInterfaceName, std::move(interface_name));

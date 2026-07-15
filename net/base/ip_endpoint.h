@@ -69,6 +69,11 @@ class NET_EXPORT IPEndPoint {
   // the address is link-local.
   std::optional<uint32_t> scope_id() const { return scope_id_; }
 
+  // Returns a copy of this IPEndPoint with `port` updated, preserving the
+  // scope ID. This function will crash if the IPEndPoint is for a Bluetooth
+  // socket.
+  IPEndPoint CopyWithPort(uint16_t port) const;
+
   // Returns AddressFamily of the address. Returns ADDRESS_FAMILY_UNSPECIFIED if
   // this is the IPEndPoint for a Bluetooth socket.
   AddressFamily GetFamily() const;
@@ -121,16 +126,18 @@ class NET_EXPORT IPEndPoint {
 
   base::Value ToValue() const;
 
+  // Returns a scope ID from `value` when `value` is a valid string interface
+  // name that can be converted to an interface index.
+  static std::optional<uint32_t> ScopeIdFromInterfaceName(
+      const base::Value* value);
+
+  // Converts `scope_id` to an interface name as a base::Value.
+  static base::Value ScopeIdToInterfaceNameValue(
+      std::optional<uint32_t> scope_id);
+
  private:
   static NameToIndexFunc name_to_index_func_for_testing_;
   static IndexToNameFunc index_to_name_func_for_testing_;
-
-  // Returns a scope ID from `dict` when `dict` has a valid interface name that
-  // can be converted to an interface index.
-  static std::optional<uint32_t> ScopeIdFromDict(const base::DictValue& dict);
-
-  // Converts `scope_id` to an interface name as a base::Value.
-  static base::Value ScopeIdToValue(std::optional<uint32_t> scope_id);
 
   bool IsIPv6LinkLocal() const;
 

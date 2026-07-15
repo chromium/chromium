@@ -66,6 +66,7 @@ const char kNetErrorKey[] = "net_error";
 const char kIpEndpointsKey[] = "ip_endpoints";
 const char kEndpointAddressKey[] = "endpoint_address";
 const char kEndpointPortKey[] = "endpoint_port";
+const char kInterfaceNameKey[] = "interface_name";
 const char kEndpointMetadatasKey[] = "endpoint_metadatas";
 const char kEndpointMetadataWeightKey[] = "endpoint_metadata_weight";
 const char kEndpointMetadataValueKey[] = "endpoint_metadata_value";
@@ -81,6 +82,13 @@ base::Value IpEndpointToValue(const IPEndPoint& endpoint) {
   base::DictValue dictionary;
   dictionary.Set(kEndpointAddressKey, endpoint.ToStringWithoutPort());
   dictionary.Set(kEndpointPortKey, endpoint.port());
+  if (endpoint.scope_id().has_value()) {
+    base::Value interface_name =
+        IPEndPoint::ScopeIdToInterfaceNameValue(endpoint.scope_id());
+    if (!interface_name.is_none()) {
+      dictionary.Set(kInterfaceNameKey, std::move(interface_name));
+    }
+  }
   return base::Value(std::move(dictionary));
 }
 
@@ -101,7 +109,16 @@ std::optional<IPEndPoint> IpEndpointFromValue(const base::Value& value) {
   if (!ip.AssignFromIPLiteral(*ip_str))
     return std::nullopt;
 
-  return IPEndPoint(ip, base::checked_cast<uint16_t>(port.value()));
+  std::optional<uint32_t> scope_id =
+      IPEndPoint::ScopeIdFromInterfaceName(dict.Find(kInterfaceNameKey));
+  if (scope_id.has_value()) {
+    if (scope_id.value() == 0 || !(ip.IsIPv6() && ip.IsLinkLocal()) ||
+        !base::IsValueInRangeForNumericType<uint32_t>(scope_id.value())) {
+      return std::nullopt;
+    }
+  }
+
+  return IPEndPoint(ip, base::checked_cast<uint16_t>(port.value()), scope_id);
 }
 
 base::Value EndpointMetadataPairToValue(
@@ -495,7 +512,7 @@ HostCache::Entry HostCache::Entry::CopyWithDefaultPort(uint16_t port) const {
 
   for (IPEndPoint& endpoint : copy.ip_endpoints_) {
     if (endpoint.port() == 0) {
-      endpoint = IPEndPoint(endpoint.address(), port);
+      endpoint = endpoint.CopyWithPort(port);
     }
   }
 
@@ -520,9 +537,9 @@ std::vector<ServiceEndpoint> HostCache::Entry::ConvertToServiceEndpoints(
     std::vector<IPEndPoint>& ip_endpoints =
         ip_endpoint.address().IsIPv6() ? ipv6_endpoints : ipv4_endpoints;
     if (ip_endpoint.port() == 0) {
-      ip_endpoints.emplace_back(ip_endpoint.address(), port);
+      ip_endpoints.push_back(ip_endpoint.CopyWithPort(port));
     } else {
-      ip_endpoints.emplace_back(ip_endpoint);
+      ip_endpoints.push_back(ip_endpoint);
     }
   }
 
@@ -1129,12 +1146,22 @@ bool HostCache::RestoreFromListValue(const base::ListValue& old_cache) {
 
     std::vector<IPEndPoint> ip_endpoints;
     if (ip_endpoints_list) {
+      bool interface_unavailable = false;
       for (const base::Value& ip_endpoint_value : *ip_endpoints_list) {
         std::optional<IPEndPoint> ip_endpoint =
             IpEndpointFromValue(ip_endpoint_value);
-        if (!ip_endpoint)
+        if (!ip_endpoint) {
+          const base::DictValue* ep_dict = ip_endpoint_value.GetIfDict();
+          if (ep_dict && ep_dict->FindString(kInterfaceNameKey)) {
+            interface_unavailable = true;
+            break;
+          }
           return false;
+        }
         ip_endpoints.push_back(std::move(ip_endpoint).value());
+      }
+      if (interface_unavailable) {
+        continue;
       }
     }
 
