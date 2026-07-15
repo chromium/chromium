@@ -45,6 +45,7 @@
 #include "build/build_config.h"
 #include "components/services/storage/public/mojom/cache_storage_control.mojom.h"
 #include "components/ukm/test_ukm_recorder.h"
+#include "content/browser/preloading/prefetch/prefetch_features.h"
 #include "content/browser/process_lock.h"
 #include "content/browser/renderer_host/code_cache_host_impl.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
@@ -71,6 +72,7 @@
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/cors_origin_pattern_setter.h"
 #include "content/public/browser/navigation_entry.h"
+#include "content/public/browser/preload_pipeline_info.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
@@ -93,6 +95,8 @@
 #include "content/public/test/fenced_frame_test_util.h"
 #include "content/public/test/mock_client_hints_controller_delegate.h"
 #include "content/public/test/navigation_handle_observer.h"
+#include "content/public/test/prefetch_test_util.h"
+#include "content/public/test/preloading_test_util.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
 #include "content/public/test/url_loader_interceptor.h"
@@ -106,6 +110,7 @@
 #include "net/cert/cert_status_flags.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/filter/filter_source_stream_test_util.h"
+#include "net/http/http_no_vary_search_data.h"
 #include "net/http/http_status_code.h"
 #include "net/test/embedded_test_server/default_handlers.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -5263,7 +5268,7 @@ class ServiceWorkerStaticRouterRaceNetworkAndFetchHandlerSourceBrowserTest
 
   scoped_refptr<ServiceWorkerVersion>
   SetupAndRegisterServiceWorkerWithHTTPSServer() {
-    return RegisterRaceNetowrkRequestServiceWorker(https_server(),
+    return RegisterRaceNetworkRequestServiceWorker(https_server(),
                                                    kSwScriptUrl);
   }
 
@@ -5300,7 +5305,7 @@ class ServiceWorkerStaticRouterRaceNetworkAndFetchHandlerSourceBrowserTest
   scoped_refptr<ServiceWorkerVersion> SetupAndRegisterServiceWorkerInternal(
       const std::string& script_url) {
     StartServerAndNavigateToSetup();
-    return RegisterRaceNetowrkRequestServiceWorker(embedded_test_server(),
+    return RegisterRaceNetworkRequestServiceWorker(embedded_test_server(),
                                                    script_url);
   }
 
@@ -5385,20 +5390,20 @@ class ServiceWorkerStaticRouterRaceNetworkAndFetchHandlerSourceBrowserTest
     request_log_[request.relative_url].push_back(request);
   }
 
-  scoped_refptr<ServiceWorkerVersion> RegisterRaceNetowrkRequestServiceWorker(
+  scoped_refptr<ServiceWorkerVersion> RegisterRaceNetworkRequestServiceWorker(
       net::EmbeddedTestServer* test_server,
       const std::string& script_url) {
     const GURL create_service_worker_url(
         test_server->GetURL("/service_worker/create_service_worker.html"));
 
     // Register a service worker.
-    WorkerRunningStatusObserver observer1(public_context());
+    WorkerRunningStatusObserver observer(public_context());
     EXPECT_TRUE(NavigateToURL(shell(), create_service_worker_url));
     EXPECT_EQ("DONE", EvalJs(GetPrimaryMainFrame(),
                              base::StrCat({"register('", script_url, "')"})));
-    observer1.WaitUntilRunning();
+    observer.WaitUntilRunning();
     scoped_refptr<ServiceWorkerVersion> version =
-        wrapper()->GetLiveVersion(observer1.version_id());
+        wrapper()->GetLiveVersion(observer.version_id());
     EXPECT_EQ(blink::EmbeddedWorkerStatus::kRunning, version->running_status());
 
     // Stop the current running service worker.
@@ -8253,4 +8258,68 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerSyntheticResponseBrowserTest,
       static_cast<int>(ServiceWorkerMetrics::SyntheticResponseEligibility::
                            kNotEligibleByIntercepted), 1);
 }
+
+IN_PROC_BROWSER_TEST_F(ServiceWorkerBrowserTest,
+                       StoppedServiceWorkerWakesUpOnSubresource) {
+  StartServerAndNavigateToSetup();
+  GURL initiator_url =
+      embedded_test_server()->GetURL("/service_worker/empty.html");
+  GURL target_url =
+      embedded_test_server()->GetURL("/service_worker/empty2.html");
+
+  EXPECT_TRUE(NavigateToURL(shell(), initiator_url));
+
+  WorkerRunningStatusObserver observer(public_context());
+  const std::string_view script = R"(
+    (async () => {
+      await navigator.serviceWorker.register(
+            '/service_worker/fetch_event_pass_through.js',
+            {scope: '/'});
+      await navigator.serviceWorker.ready;
+      return 'DONE';
+    })();
+  )";
+  EXPECT_EQ("DONE", EvalJs(shell(), script));
+  observer.WaitUntilRunning();
+  scoped_refptr<ServiceWorkerVersion> version =
+      wrapper()->GetLiveVersion(observer.version_id());
+  EXPECT_EQ(blink::EmbeddedWorkerStatus::kRunning, version->running_status());
+
+  test::TestPrefetchWatcher test_prefetch_watcher;
+  auto* browser_context = shell()->web_contents()->GetBrowserContext();
+  std::unique_ptr<PrefetchHandle> prefetch_handle =
+      browser_context->StartBrowserPrefetchRequest(
+          target_url, "TestMetrics", /*javascript_enabled=*/true, std::nullopt,
+          std::nullopt,
+          content::PreloadPipelineInfo::Create(
+              content::PreloadingType::kPrefetch),
+          net::HttpRequestHeaders(), nullptr, base::Days(1), false, false,
+          false);
+
+  test_prefetch_watcher.WaitUntilPrefetchResponseCompleted(std::nullopt,
+                                                           target_url);
+
+  StopServiceWorker(version.get());
+  EXPECT_EQ(blink::EmbeddedWorkerStatus::kStopped, version->running_status());
+
+  EXPECT_TRUE(NavigateToURL(shell(), target_url));
+
+  EXPECT_TRUE(test_prefetch_watcher.PrefetchUsedInLastNavigation());
+
+  // Create a subresource request. If the Service Worker is stalled, this will
+  // times out.
+  const std::string_view validation_script =
+      R"(
+            new Promise(resolve => {
+              setTimeout(() => resolve('timeout'), 3000);
+              let s = document.createElement('script');
+              s.src = '/service_worker/empty.js';
+              s.onload = () => resolve('success');
+              s.onerror = () => resolve('error');
+              document.head.appendChild(s);
+            })
+    )";
+  EXPECT_EQ("success", EvalJs(shell(), validation_script));
+}
+
 }  // namespace content

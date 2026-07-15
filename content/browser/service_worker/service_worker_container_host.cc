@@ -9,7 +9,9 @@
 
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
+#include "base/feature.h"
 #include "base/feature_list.h"
+#include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/stringprintf.h"
@@ -30,12 +32,19 @@
 #include "content/public/common/origin_util.h"
 #include "ipc/constants.mojom.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
+#include "service_worker_container_host.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/service_worker/embedded_worker_status.h"
+#include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration_options.mojom.h"
 #include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 namespace content {
+
+// Kill-switch for dropping the binding in CloneControllerServiceWorker.
+BASE_FEATURE(kAvoidBindingStoppedServiceWorkerClone,
+             base::FeatureState::FEATURE_ENABLED_BY_DEFAULT);
 
 namespace {
 
@@ -703,6 +712,18 @@ ServiceWorkerContainerHostForClient::GetRemoteControllerServiceWorker() {
   if (controller()->fetch_handler_existence() ==
       ServiceWorkerVersion::FetchHandlerExistence::DOES_NOT_EXIST) {
     return mojo::PendingRemote<blink::mojom::ControllerServiceWorker>();
+  }
+
+  if (base::FeatureList::IsEnabled(kAvoidBindingStoppedServiceWorkerClone)) {
+    if (controller()->running_status() ==
+            blink::EmbeddedWorkerStatus::kStopped ||
+        controller()->running_status() ==
+            blink::EmbeddedWorkerStatus::kStopping) {
+      // If the worker is not running, simply return an unbound controller. This
+      // will trigger a restart of the worker by the client if it needs a
+      // started client.
+      return mojo::NullRemote();
+    }
   }
 
   mojo::PendingRemote<blink::mojom::ControllerServiceWorker> remote_controller;

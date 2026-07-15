@@ -9,6 +9,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/feature.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
@@ -29,6 +30,8 @@
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration.mojom.h"
 
 namespace content {
+
+BASE_DECLARE_FEATURE(kAvoidBindingStoppedServiceWorkerClone);
 
 namespace service_worker_object_host_unittest {
 class ServiceWorkerObjectHostTest;
