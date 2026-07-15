@@ -382,8 +382,11 @@ TEST_F(ClipboardHostImplWriteTest, MainFrameURL) {
   bool is_policy_callback_called = false;
   ClipboardHostImpl::ClipboardPasteData clipboard_paste_data;
   clipboard_paste_data.text = u"data";
+
   fake_clipboard_host_impl_grandchild->PasteIfPolicyAllowed(
       ui::ClipboardBuffer::kCopyPaste, ui::ClipboardFormatType::PlainTextType(),
+      ui::Clipboard::GetForCurrentThread()->GetSequenceNumber(
+          ui::ClipboardBuffer::kCopyPaste),
       clipboard_paste_data,
       base::BindLambdaForTesting(
           [&is_policy_callback_called](
@@ -1320,6 +1323,377 @@ TEST_F(ClipboardHostImplTest,
 
   // Verify: Should return empty vector due to permission check failure
   EXPECT_EQ(0u, future.Get().size());
+}
+
+class SequenceNumberInterceptBrowserClient : public TestContentBrowserClient {
+ public:
+  SequenceNumberInterceptBrowserClient() = default;
+  ~SequenceNumberInterceptBrowserClient() override = default;
+
+  void IsClipboardPasteAllowedByPolicy(
+      const ClipboardEndpoint& source,
+      const ClipboardEndpoint& destination,
+      const ui::ClipboardMetadata& metadata,
+      ClipboardPasteData data,
+      IsClipboardPasteAllowedCallback callback) override {
+    last_seqno_ = metadata.seqno;
+    std::move(callback).Run(std::move(data));
+  }
+
+  ui::ClipboardSequenceNumberToken last_seqno() const { return last_seqno_; }
+
+ private:
+  ui::ClipboardSequenceNumberToken last_seqno_;
+};
+
+class RaceConditionTestClipboard : public ui::TestClipboard {
+ public:
+  RaceConditionTestClipboard() = default;
+  ~RaceConditionTestClipboard() override = default;
+
+  void SetCallbackOnRead(base::RepeatingClosure callback) {
+    on_read_callback_ = std::move(callback);
+  }
+
+  void ReadText(ui::ClipboardBuffer buffer,
+                const std::optional<ui::DataTransferEndpoint>& data_dst,
+                ReadTextCallback callback) const override {
+    ui::TestClipboard::ReadText(
+        buffer, data_dst,
+        base::BindOnce(
+            [](base::RepeatingClosure on_read_callback,
+               ReadTextCallback callback, std::u16string result) {
+              if (on_read_callback) {
+                on_read_callback.Run();
+              }
+              std::move(callback).Run(std::move(result));
+            },
+            on_read_callback_, std::move(callback)));
+  }
+
+  void ReadHTML(ui::ClipboardBuffer buffer,
+                const std::optional<ui::DataTransferEndpoint>& data_dst,
+                ReadHtmlCallback callback) const override {
+    ui::TestClipboard::ReadHTML(
+        buffer, data_dst,
+        base::BindOnce(
+            [](base::RepeatingClosure on_read_callback,
+               ReadHtmlCallback callback, std::u16string markup, GURL src_url,
+               uint32_t fragment_start, uint32_t fragment_end) {
+              if (on_read_callback) {
+                on_read_callback.Run();
+              }
+              std::move(callback).Run(std::move(markup), std::move(src_url),
+                                      fragment_start, fragment_end);
+            },
+            on_read_callback_, std::move(callback)));
+  }
+
+  void ReadSvg(ui::ClipboardBuffer buffer,
+               const std::optional<ui::DataTransferEndpoint>& data_dst,
+               ReadSvgCallback callback) const override {
+    ui::TestClipboard::ReadSvg(
+        buffer, data_dst,
+        base::BindOnce(
+            [](base::RepeatingClosure on_read_callback,
+               ReadSvgCallback callback, std::u16string svg) {
+              if (on_read_callback) {
+                on_read_callback.Run();
+              }
+              std::move(callback).Run(std::move(svg));
+            },
+            on_read_callback_, std::move(callback)));
+  }
+
+  void ReadRTF(ui::ClipboardBuffer buffer,
+               const std::optional<ui::DataTransferEndpoint>& data_dst,
+               ReadRTFCallback callback) const override {
+    ui::TestClipboard::ReadRTF(
+        buffer, data_dst,
+        base::BindOnce(
+            [](base::RepeatingClosure on_read_callback,
+               ReadRTFCallback callback, std::string rtf) {
+              if (on_read_callback) {
+                on_read_callback.Run();
+              }
+              std::move(callback).Run(std::move(rtf));
+            },
+            on_read_callback_, std::move(callback)));
+  }
+
+  void ReadPng(ui::ClipboardBuffer buffer,
+               const std::optional<ui::DataTransferEndpoint>& data_dst,
+               ReadPngCallback callback) const override {
+    ui::TestClipboard::ReadPng(
+        buffer, data_dst,
+        base::BindOnce(
+            [](base::RepeatingClosure on_read_callback,
+               ReadPngCallback callback, const std::vector<uint8_t>& data) {
+              std::vector<uint8_t> png_copy = data;
+              if (on_read_callback) {
+                on_read_callback.Run();
+              }
+              std::move(callback).Run(std::move(png_copy));
+            },
+            on_read_callback_, std::move(callback)));
+  }
+
+  void ReadFilenames(ui::ClipboardBuffer buffer,
+                     const std::optional<ui::DataTransferEndpoint>& data_dst,
+                     ReadFilenamesCallback callback) const override {
+    ui::TestClipboard::ReadFilenames(
+        buffer, data_dst,
+        base::BindOnce(
+            [](base::RepeatingClosure on_read_callback,
+               ReadFilenamesCallback callback,
+               std::vector<ui::FileInfo> filenames) {
+              if (on_read_callback) {
+                on_read_callback.Run();
+              }
+              std::move(callback).Run(std::move(filenames));
+            },
+            on_read_callback_, std::move(callback)));
+  }
+
+  void ReadDataTransferCustomData(
+      ui::ClipboardBuffer buffer,
+      const std::u16string& type,
+      const std::optional<ui::DataTransferEndpoint>& data_dst,
+      ReadDataTransferCustomDataCallback callback) const override {
+    ui::TestClipboard::ReadDataTransferCustomData(
+        buffer, type, data_dst,
+        base::BindOnce(
+            [](base::RepeatingClosure on_read_callback,
+               ReadDataTransferCustomDataCallback callback,
+               std::u16string result) {
+              if (on_read_callback) {
+                on_read_callback.Run();
+              }
+              std::move(callback).Run(std::move(result));
+            },
+            on_read_callback_, std::move(callback)));
+  }
+
+  void ReadData(const ui::ClipboardFormatType& format,
+                const std::optional<ui::DataTransferEndpoint>& data_dst,
+                ReadDataCallback callback) const override {
+    ui::TestClipboard::ReadData(
+        format, data_dst,
+        base::BindOnce(
+            [](base::RepeatingClosure on_read_callback,
+               ReadDataCallback callback, std::string result) {
+              if (on_read_callback) {
+                on_read_callback.Run();
+              }
+              std::move(callback).Run(std::move(result));
+            },
+            on_read_callback_, std::move(callback)));
+  }
+
+ private:
+  base::RepeatingClosure on_read_callback_;
+};
+
+class ClipboardHostImplRaceConditionTest : public ClipboardHostImplTest {
+ protected:
+  void SetUp() override {
+    ClipboardHostImplTest::SetUp();
+    browser_client_setting_ =
+        std::make_unique<ScopedContentBrowserClientSetting>(&browser_client_);
+
+    ui::Clipboard::DestroyClipboardForCurrentThread();
+    auto test_clipboard = std::make_unique<RaceConditionTestClipboard>();
+    test_clipboard_ = test_clipboard.get();
+    ui::Clipboard::SetClipboardForCurrentThread(std::move(test_clipboard));
+  }
+
+  void TearDown() override {
+    test_clipboard_ = nullptr;
+    DeleteAndRecreateClipboard();
+    browser_client_setting_.reset();
+    ClipboardHostImplTest::TearDown();
+  }
+
+  SequenceNumberInterceptBrowserClient& browser_client() {
+    return browser_client_;
+  }
+
+  RaceConditionTestClipboard* test_clipboard() { return test_clipboard_; }
+
+ private:
+  SequenceNumberInterceptBrowserClient browser_client_;
+  std::unique_ptr<ScopedContentBrowserClientSetting> browser_client_setting_;
+  raw_ptr<RaceConditionTestClipboard> test_clipboard_ = nullptr;
+};
+
+TEST_F(ClipboardHostImplRaceConditionTest, ReadTextUsesCapturedSequenceNumber) {
+  {
+    ui::ScopedClipboardWriter writer(ui::ClipboardBuffer::kCopyPaste);
+    writer.WriteText(u"initial text");
+  }
+
+  ui::ClipboardSequenceNumberToken expected_seqno =
+      test_clipboard()->GetSequenceNumber(ui::ClipboardBuffer::kCopyPaste);
+
+  test_clipboard()->SetCallbackOnRead(base::BindLambdaForTesting([]() {
+    ui::ScopedClipboardWriter writer(ui::ClipboardBuffer::kCopyPaste);
+    writer.WriteText(u"Benign text to increment sequence number");
+  }));
+
+  std::u16string result;
+  mojo_clipboard()->ReadText(ui::ClipboardBuffer::kCopyPaste, &result);
+
+  EXPECT_EQ(browser_client().last_seqno(), expected_seqno);
+  EXPECT_EQ(result, u"initial text");
+}
+
+TEST_F(ClipboardHostImplRaceConditionTest, ReadHtmlUsesCapturedSequenceNumber) {
+  {
+    ui::ScopedClipboardWriter writer(ui::ClipboardBuffer::kCopyPaste);
+    writer.WriteHTML(u"<b>html</b>", "https://example.com");
+  }
+
+  ui::ClipboardSequenceNumberToken expected_seqno =
+      test_clipboard()->GetSequenceNumber(ui::ClipboardBuffer::kCopyPaste);
+
+  test_clipboard()->SetCallbackOnRead(base::BindLambdaForTesting([]() {
+    ui::ScopedClipboardWriter writer(ui::ClipboardBuffer::kCopyPaste);
+    writer.WriteText(u"Benign text to increment sequence number");
+  }));
+
+  std::u16string markup;
+  GURL url;
+  uint32_t start = 0;
+  uint32_t end = 0;
+  mojo_clipboard()->ReadHtml(ui::ClipboardBuffer::kCopyPaste, &markup, &url,
+                             &start, &end);
+
+  EXPECT_EQ(browser_client().last_seqno(), expected_seqno);
+  EXPECT_EQ(markup, u"<b>html</b>");
+}
+
+TEST_F(ClipboardHostImplRaceConditionTest, ReadSvgUsesCapturedSequenceNumber) {
+  {
+    ui::ScopedClipboardWriter writer(ui::ClipboardBuffer::kCopyPaste);
+    writer.WriteSvg(u"<svg></svg>");
+  }
+
+  ui::ClipboardSequenceNumberToken expected_seqno =
+      test_clipboard()->GetSequenceNumber(ui::ClipboardBuffer::kCopyPaste);
+
+  test_clipboard()->SetCallbackOnRead(base::BindLambdaForTesting([]() {
+    ui::ScopedClipboardWriter writer(ui::ClipboardBuffer::kCopyPaste);
+    writer.WriteText(u"Benign text to increment sequence number");
+  }));
+
+  base::test::TestFuture<const std::u16string&> future;
+  mojo_clipboard()->ReadSvg(ui::ClipboardBuffer::kCopyPaste,
+                            future.GetCallback());
+  ASSERT_TRUE(future.Wait());
+
+  EXPECT_EQ(browser_client().last_seqno(), expected_seqno);
+  EXPECT_EQ(future.Get(), u"<svg></svg>");
+}
+
+TEST_F(ClipboardHostImplRaceConditionTest, ReadRtfUsesCapturedSequenceNumber) {
+  {
+    ui::ScopedClipboardWriter writer(ui::ClipboardBuffer::kCopyPaste);
+    writer.WriteRTF("{\\rtf1\\ansi}");
+  }
+
+  ui::ClipboardSequenceNumberToken expected_seqno =
+      test_clipboard()->GetSequenceNumber(ui::ClipboardBuffer::kCopyPaste);
+
+  test_clipboard()->SetCallbackOnRead(base::BindLambdaForTesting([]() {
+    ui::ScopedClipboardWriter writer(ui::ClipboardBuffer::kCopyPaste);
+    writer.WriteText(u"Benign text to increment sequence number");
+  }));
+
+  std::string result;
+  mojo_clipboard()->ReadRtf(ui::ClipboardBuffer::kCopyPaste, &result);
+
+  EXPECT_EQ(browser_client().last_seqno(), expected_seqno);
+  EXPECT_EQ(result, "{\\rtf1\\ansi}");
+}
+
+TEST_F(ClipboardHostImplRaceConditionTest, ReadPngUsesCapturedSequenceNumber) {
+  SkBitmap bitmap = gfx::test::CreateBitmap(3, 2);
+  mojo_clipboard()->WriteImage(bitmap);
+  mojo_clipboard()->CommitWrite();
+  mojo_clipboard().FlushForTesting();
+
+  ui::ClipboardSequenceNumberToken expected_seqno =
+      test_clipboard()->GetSequenceNumber(ui::ClipboardBuffer::kCopyPaste);
+
+  test_clipboard()->SetCallbackOnRead(base::BindLambdaForTesting([]() {
+    ui::ScopedClipboardWriter writer(ui::ClipboardBuffer::kCopyPaste);
+    writer.WriteText(u"Benign text to increment sequence number");
+  }));
+
+  base::test::TestFuture<mojo_base::BigBuffer> future;
+  mojo_clipboard()->ReadPng(ui::ClipboardBuffer::kCopyPaste,
+                            future.GetCallback());
+  ASSERT_TRUE(future.Wait());
+
+  EXPECT_EQ(browser_client().last_seqno(), expected_seqno);
+  mojo_base::BigBuffer buffer = future.Take();
+  EXPECT_FALSE(buffer.byte_span().empty());
+  SkBitmap actual = gfx::PNGCodec::Decode(buffer.byte_span());
+  ASSERT_TRUE(!actual.isNull());
+  EXPECT_TRUE(gfx::BitmapsAreEqual(bitmap, actual));
+}
+
+TEST_F(ClipboardHostImplRaceConditionTest,
+       ReadFilesUsesCapturedSequenceNumber) {
+  {
+    ui::ScopedClipboardWriter writer(ui::ClipboardBuffer::kCopyPaste);
+    writer.WriteFilenames("file:///test/file");
+  }
+
+  ui::ClipboardSequenceNumberToken expected_seqno =
+      test_clipboard()->GetSequenceNumber(ui::ClipboardBuffer::kCopyPaste);
+
+  test_clipboard()->SetCallbackOnRead(base::BindLambdaForTesting([]() {
+    ui::ScopedClipboardWriter writer(ui::ClipboardBuffer::kCopyPaste);
+    writer.WriteText(u"Benign text to increment sequence number");
+  }));
+
+  blink::mojom::ClipboardFilesPtr result;
+  mojo_clipboard()->ReadFiles(ui::ClipboardBuffer::kCopyPaste, &result);
+
+  EXPECT_EQ(browser_client().last_seqno(), expected_seqno);
+  EXPECT_TRUE(result);
+  EXPECT_EQ(result->files.size(), 1u);
+  EXPECT_EQ(result->files[0]->path,
+#if BUILDFLAG(IS_WIN)
+            base::FilePath(FILE_PATH_LITERAL("\\test\\file")));
+#else
+            base::FilePath(FILE_PATH_LITERAL("/test/file")));
+#endif
+}
+
+TEST_F(ClipboardHostImplRaceConditionTest,
+       ReadDataTransferCustomDataUsesCapturedSequenceNumber) {
+  base::flat_map<std::u16string, std::u16string> custom_data;
+  custom_data[u"custom/type"] = u"custom data";
+  mojo_clipboard()->WriteDataTransferCustomData(custom_data);
+  mojo_clipboard()->CommitWrite();
+  mojo_clipboard().FlushForTesting();
+
+  ui::ClipboardSequenceNumberToken expected_seqno =
+      test_clipboard()->GetSequenceNumber(ui::ClipboardBuffer::kCopyPaste);
+
+  test_clipboard()->SetCallbackOnRead(base::BindLambdaForTesting([]() {
+    ui::ScopedClipboardWriter writer(ui::ClipboardBuffer::kCopyPaste);
+    writer.WriteText(u"Benign text to increment sequence number");
+  }));
+
+  std::u16string result;
+  mojo_clipboard()->ReadDataTransferCustomData(ui::ClipboardBuffer::kCopyPaste,
+                                               u"custom/type", &result);
+
+  EXPECT_EQ(browser_client().last_seqno(), expected_seqno);
+  EXPECT_EQ(result, u"custom data");
 }
 
 }  // namespace content

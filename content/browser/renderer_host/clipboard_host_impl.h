@@ -65,6 +65,7 @@ class CONTENT_EXPORT ClipboardHostImpl
   // policies and invokes FinishPasteIfAllowed upon completion.
   void PasteIfPolicyAllowed(ui::ClipboardBuffer clipboard_buffer,
                             const ui::ClipboardFormatType& data_type,
+                            ui::ClipboardSequenceNumberToken seqno,
                             ClipboardPasteData clipboard_paste_data,
                             IsClipboardPasteAllowedCallback callback);
 
@@ -213,19 +214,23 @@ class CONTENT_EXPORT ClipboardHostImpl
       base::flat_set<ui::ClipboardFormatType> formats);
 
   void OnReadPng(ui::ClipboardBuffer clipboard_buffer,
+                 ui::ClipboardSequenceNumberToken seqno,
                  ReadPngCallback callback,
                  const std::vector<uint8_t>& data);
 
   void OnReadPngWithText(ui::ClipboardBuffer clipboard_buffer,
+                         ui::ClipboardSequenceNumberToken seqno,
                          ReadPngCallback callback,
                          std::vector<uint8_t> data,
                          std::u16string text);
 
   void OnReadText(ui::ClipboardBuffer clipboard_buffer,
+                  ui::ClipboardSequenceNumberToken seqno,
                   ReadTextCallback callback,
                   std::u16string text);
 
   void OnReadHtml(ui::ClipboardBuffer clipboard_buffer,
+                  ui::ClipboardSequenceNumberToken seqno,
                   ReadHtmlCallback callback,
                   std::u16string markup,
                   GURL src_url,
@@ -233,19 +238,23 @@ class CONTENT_EXPORT ClipboardHostImpl
                   uint32_t fragment_end);
 
   void OnReadSvg(ui::ClipboardBuffer clipboard_buffer,
+                 ui::ClipboardSequenceNumberToken seqno,
                  ReadSvgCallback callback,
                  std::u16string svg);
 
   void OnReadRtf(ui::ClipboardBuffer clipboard_buffer,
+                 ui::ClipboardSequenceNumberToken seqno,
                  ReadRtfCallback callback,
                  std::string rtf);
 
   void OnReadFiles(ui::ClipboardBuffer clipboard_buffer,
+                   ui::ClipboardSequenceNumberToken seqno,
                    ReadFilesCallback callback,
                    std::vector<ui::FileInfo> filenames);
 
   void OnReadDataTransferCustomData(ui::ClipboardBuffer clipboard_buffer,
                                     const std::u16string& type,
+                                    ui::ClipboardSequenceNumberToken seqno,
                                     ReadDataTransferCustomDataCallback callback,
                                     std::u16string data);
 
@@ -258,12 +267,14 @@ class CONTENT_EXPORT ClipboardHostImpl
                                     content::ClipboardEndpoint source);
 
   void OnReadUnsanitizedCustomFormat(
+      ui::ClipboardSequenceNumberToken seqno,
       ReadUnsanitizedCustomFormatCallback callback,
       std::string data);
 
   void OnExtractCustomPlatformNames(
       const std::string& format_name,
       std::optional<ui::DataTransferEndpoint> data_endpoint,
+      ui::ClipboardSequenceNumberToken seqno,
       ReadUnsanitizedCustomFormatCallback callback,
       std::map<std::string, std::string> custom_format_names);
 
