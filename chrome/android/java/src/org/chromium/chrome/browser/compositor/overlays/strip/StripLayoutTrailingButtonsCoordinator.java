@@ -375,7 +375,8 @@ public class StripLayoutTrailingButtonsCoordinator {
                     });
 
             StripLayoutViewOnClickHandler glicClickHandlerOnButton =
-                    (time, view, motionEventButtonState, modifiers) -> handleGlicButtonClick();
+                    (time, view, motionEventButtonState, modifiers) ->
+                            handleGlicButtonClick(/* preventClose= */ false);
 
             float dismissIconWidthDp = getDimensionDp(R.dimen.tab_strip_glic_dismiss_icon_width);
             mGlicDismissNudgeButton =
@@ -692,7 +693,7 @@ public class StripLayoutTrailingButtonsCoordinator {
 
         List<ActorTask> tasks = actorService.getActiveTasks();
         if (tasks.isEmpty()) {
-            handleGlicButtonClick();
+            handleGlicButtonClick(/* preventClose= */ true);
             return;
         }
 
@@ -1557,7 +1558,7 @@ public class StripLayoutTrailingButtonsCoordinator {
                 handleDismissButtonClick();
                 return true;
             } else if (mGlicButton.onUpOrCancel()) {
-                handleGlicButtonClick();
+                handleGlicButtonClick(/* preventClose= */ false);
                 return true;
             }
         } else if (mGlicActorButton != null && mGlicActorButton.onUpOrCancel()) {
@@ -1723,7 +1724,7 @@ public class StripLayoutTrailingButtonsCoordinator {
         return false;
     }
 
-    private void handleGlicButtonClick() {
+    private void handleGlicButtonClick(boolean preventClose) {
         if (mIsIncognito) {
             Activity activity = mWindowAndroid.getActivity().get();
             if (activity != null) {
@@ -1737,7 +1738,7 @@ public class StripLayoutTrailingButtonsCoordinator {
             mGlicNudgeDelegateBridge.onNudgeActivity(GlicNudgeActivity.NUDGE_CLICKED);
             mGlicNudgeDelegate.onHideGlicNudgeUi();
         }
-        mGlicClickHandler.onClick(/* preventClose= */ false, invocationSource);
+        mGlicClickHandler.onClick(preventClose, invocationSource);
     }
 
     private void handleDismissButtonClick() {
