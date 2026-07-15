@@ -475,7 +475,7 @@ TEST_F(GlicWebContentsWarmingPoolTest,
   EXPECT_TRUE(warming_pool.HasWarmedContainerForTesting());
 
   // Explicitly clear the container prior to any memory pressure.
-  warming_pool.Clear(std::nullopt);
+  warming_pool.Clear(GlicWebContentsWarmingPool::ClearReason::kShutdown);
   EXPECT_FALSE(warming_pool.HasWarmedContainerForTesting());
 
   // Receiving critical memory pressure when already empty should not schedule

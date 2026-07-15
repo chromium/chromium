@@ -34,6 +34,7 @@ class GlicWebContentsWarmingPool {
   enum class ClearReason {
     kShutdown,
     kMemoryPressure,
+    kExpired,
   };
 
   // LINT.IfChange(GlicContainerCreationReason)
@@ -64,7 +65,7 @@ class GlicWebContentsWarmingPool {
   void EnsurePreload(ContainerCreationReason reason =
                          ContainerCreationReason::kUserTriggeredColdStart);
   // Clears the warming pool and destroys any warmed WebContents.
-  void Clear(std::optional<ClearReason> reason);
+  void Clear(ClearReason reason);
 
   // Handles memory pressure notifications by clearing or statefully disabling
   // pre-warming, depending on feature configuration.
