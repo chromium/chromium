@@ -70,7 +70,7 @@ std::unique_ptr<media::Demuxer> ResourceProviderImpl::MaybeGetDemuxerOverride(
   if (per_frame_resources_ && IsCastStreamingMediaSourceUrl(url) &&
       per_frame_resources_->demuxer_connector().IsBound()) {
     return std::make_unique<FrameInjectingDemuxer>(
-        &per_frame_resources_->demuxer_connector(),
+        per_frame_resources_->demuxer_connector().config_buffer(),
         std::move(media_task_runner));
   }
 
