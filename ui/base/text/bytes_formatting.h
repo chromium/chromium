@@ -49,7 +49,7 @@ COMPONENT_EXPORT(UI_BASE) DataUnits GetByteDisplayUnits(base::ByteSize bytes);
 //
 // For example:
 //   FormatBytes(base::ByteSize(512), DataUnits::kKibibyte, true) => "0.5 kB"
-//   FormatBytes(base::KiB(10), DataUnits::kMebibyte, false) => "0.1"
+//   FormatBytes(base::KiBU(10), DataUnits::kMebibyte, false) => "0.1"
 COMPONENT_EXPORT(UI_BASE)
 std::u16string FormatBytesWithUnits(base::ByteSize bytes,
                                     DataUnits units,
@@ -59,7 +59,7 @@ std::u16string FormatBytesWithUnits(base::ByteSize bytes,
 //
 // For example:
 //   FormatSpeed(base::ByteSize(512), DataUnits::kKibibyte, true) => "0.5 kB/s"
-//   FormatSpeed(base::KiB(10), DataUnits::kMebibyte, false) => "0.1"
+//   FormatSpeed(base::KiBU(10), DataUnits::kMebibyte, false) => "0.1"
 COMPONENT_EXPORT(UI_BASE)
 std::u16string FormatSpeedWithUnits(base::ByteSize bytes,
                                     DataUnits units,

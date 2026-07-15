@@ -52,7 +52,7 @@ bool NavigationTransitionConfig::SupportsBackForwardTransitions(
 
 // static
 size_t NavigationTransitionConfig::ComputeCacheSizeInBytes() {
-  // TODO(crbug.com/429140103): Convert the return type to ByteCount.
+  // TODO(crbug.com/429140103): Convert the return type to ByteSize.
 
   // Assume 4 bytes per pixel. This value estimates the max number of bytes of
   // the physical screen's uncompressed bitmap.

@@ -4,6 +4,7 @@
 
 #include "services/network/public/cpp/features.h"
 
+#include "base/byte_size.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/no_destructor.h"
@@ -636,7 +637,7 @@ BASE_FEATURE_PARAM(int,
                    kDurableMessagesGlobalBufferSize,
                    &kDurableMessages,
                    /*name=*/"max_global_buffer_size",
-                   /*default_value=*/base::MiB(350).InBytes());
+                   /*default_value=*/base::MiBU(350).InBytes());
 
 BASE_FEATURE(kReportingApiEnableVariationsHeaders,
              base::FEATURE_ENABLED_BY_DEFAULT);

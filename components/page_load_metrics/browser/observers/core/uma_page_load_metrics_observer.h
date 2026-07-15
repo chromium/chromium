@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_PAGE_LOAD_METRICS_BROWSER_OBSERVERS_CORE_UMA_PAGE_LOAD_METRICS_OBSERVER_H_
 #define COMPONENTS_PAGE_LOAD_METRICS_BROWSER_OBSERVERS_CORE_UMA_PAGE_LOAD_METRICS_OBSERVER_H_
 
+#include "base/byte_size.h"
 #include "base/time/time.h"
 #include "base/trace_event/typed_macros.h"
 #include "components/page_load_metrics/browser/observers/click_input_tracker.h"
@@ -261,12 +262,12 @@ class UmaPageLoadMetricsObserver
 
   // The number of body (not header) prefilter bytes consumed by completed
   // requests for the page.
-  base::ByteCount cache_bytes_;
-  base::ByteCount network_bytes_;
+  base::ByteSize cache_bytes_;
+  base::ByteSize network_bytes_;
 
   // The number of prefilter bytes consumed by completed and partial network
   // requests for the page.
-  base::ByteCount network_bytes_including_headers_;
+  base::ByteSize network_bytes_including_headers_;
 
   // The CPU usage attributed to this page.
   base::TimeDelta total_cpu_usage_;

@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/byte_size.h"
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
 #include "base/feature_list.h"
@@ -462,7 +463,7 @@ void WebNNContextProviderImpl::CreateWebNNContext(
   mojo::ScopedDataPipeProducerHandle read_tensor_producer;
   mojo::ScopedDataPipeConsumerHandle read_tensor_consumer;
   if (base::FeatureList::IsEnabled(kWebNNUseDataPipe)) {
-    constexpr base::ByteCount kDataPipeSize = base::MiB(16);
+    constexpr base::ByteSize kDataPipeSize = base::MiBU(16);
     MojoResult result = mojo::CreateDataPipe(
         kDataPipeSize.InBytes(), write_tensor_producer, write_tensor_consumer);
     if (result != MOJO_RESULT_OK) {

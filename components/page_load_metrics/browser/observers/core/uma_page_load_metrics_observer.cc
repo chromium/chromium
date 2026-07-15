@@ -1000,13 +1000,12 @@ void UmaPageLoadMetricsObserver::OnResourceDataUseObserved(
     if (resource->is_complete) {
       if (resource->cache_type ==
           page_load_metrics::mojom::CacheType::kNotCached) {
-        network_bytes_ += resource->encoded_body_length.AsDeprecatedByteCount();
+        network_bytes_ += resource->encoded_body_length;
       } else {
-        cache_bytes_ += resource->encoded_body_length.AsDeprecatedByteCount();
+        cache_bytes_ += resource->encoded_body_length;
       }
     }
-    network_bytes_including_headers_ +=
-        resource->delta_bytes.AsDeprecatedByteCount();
+    network_bytes_including_headers_ += resource->delta_bytes;
   }
 }
 
@@ -1300,8 +1299,6 @@ void UmaPageLoadMetricsObserver::OnCpuTimingUpdate(
 
 void UmaPageLoadMetricsObserver::RecordByteAndResourceHistograms(
     const page_load_metrics::mojom::PageLoadTiming& timing) {
-  DCHECK(!network_bytes_.is_negative());
-  DCHECK(!cache_bytes_.is_negative());
   click_tracker_.RecordClickBurst(GetDelegate().GetPageUkmSourceId());
 }
 
