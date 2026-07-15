@@ -74,6 +74,9 @@ class ChromiumSystemIdentityManager final : public SystemIdentityManager {
                              NSArray<id<SystemIdentity>>* active_identities,
                              id<RefreshAccessTokenError> error,
                              HandleMDMCallback callback) final;
+  bool DisplayMDMNotification(id<SystemIdentity> identity,
+                              const GoogleServiceAuthError& error,
+                              HandleMDMCallback callback) final;
   bool IsScopeLimitedError(id<RefreshAccessTokenError> error) final;
   bool IsMDMError(id<SystemIdentity> identity, NSError* error) final;
   void FetchTokenAuthURL(id<SystemIdentity> identity,
@@ -220,6 +223,13 @@ bool ChromiumSystemIdentityManager::HandleMDMNotification(
     id<SystemIdentity> identity,
     NSArray<id<SystemIdentity>>* active_identities,
     id<RefreshAccessTokenError> error,
+    HandleMDMCallback callback) {
+  NOTREACHED();
+}
+
+bool ChromiumSystemIdentityManager::DisplayMDMNotification(
+    id<SystemIdentity> identity,
+    const GoogleServiceAuthError& error,
     HandleMDMCallback callback) {
   NOTREACHED();
 }

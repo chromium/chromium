@@ -322,7 +322,7 @@ class SystemIdentityManager {
   // Should not be called if the error is not an MDM error.
   virtual bool DisplayMDMNotification(id<SystemIdentity> identity,
                                       const GoogleServiceAuthError& error,
-                                      HandleMDMCallback callback);
+                                      HandleMDMCallback callback) = 0;
 
   // Asynchronously handles a potential MDM (Mobile Device Management) event.
   // The callback is invoked on the calling sequence when the operation

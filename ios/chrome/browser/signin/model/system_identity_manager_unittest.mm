@@ -105,6 +105,11 @@ class TestSystemIdentityManager : public SystemIdentityManager {
                              HandleMDMCallback callback) final {
     NOTREACHED();
   }
+  bool DisplayMDMNotification(id<SystemIdentity> identity,
+                              const GoogleServiceAuthError& error,
+                              HandleMDMCallback callback) final {
+    NOTREACHED();
+  }
   bool IsScopeLimitedError(id<RefreshAccessTokenError> error) final {
     NOTREACHED();
   }
