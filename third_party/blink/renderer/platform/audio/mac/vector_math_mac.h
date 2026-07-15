@@ -66,15 +66,13 @@ ALWAYS_INLINE static void Vsub(base::span<const float> source1,
 #endif
 }
 
-ALWAYS_INLINE static void Vclip(const float* source_p,
-                                int source_stride,
-                                const float* low_threshold_p,
-                                const float* high_threshold_p,
-                                float* dest_p,
-                                int dest_stride,
-                                size_t frames_to_process) {
-  vDSP_vclip(source_p, source_stride, low_threshold_p, high_threshold_p, dest_p,
-             dest_stride, frames_to_process);
+ALWAYS_INLINE static void Vclip(base::span<const float> source,
+                                float low_threshold,
+                                float high_threshold,
+                                base::span<float> dest) {
+  DCHECK_EQ(source.size(), dest.size());
+  vDSP_vclip(source.data(), 1, &low_threshold, &high_threshold, dest.data(), 1,
+             dest.size());
 }
 
 ALWAYS_INLINE static void Vmaxmgv(const float* source_p,

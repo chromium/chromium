@@ -72,32 +72,32 @@ ALWAYS_INLINE static void Vsub(base::span<const float> source1,
   }
 }
 
-ALWAYS_INLINE static void Vclip(const float* source_p,
-                                int source_stride,
-                                const float* low_threshold_p,
-                                const float* high_threshold_p,
-                                float* dest_p,
-                                int dest_stride,
-                                size_t frames_to_process) {
-  size_t n = frames_to_process;
+ALWAYS_INLINE static void Vclip(base::span<const float> source,
+                                float low_threshold,
+                                float high_threshold,
+                                base::span<float> dest) {
+  DCHECK_EQ(source.size(), dest.size());
 
-  if (source_stride == 1 && dest_stride == 1) {
-    size_t tail_frames = n % kPackedFloatsPerRegister;
-    const float* end_p = UNSAFE_TODO(dest_p + n - tail_frames);
+  const size_t n = dest.size();
+  const size_t tail_frames = n % kPackedFloatsPerRegister;
+  const size_t aligned_frames = n - tail_frames;
 
-    float32x4_t low = vdupq_n_f32(*low_threshold_p);
-    float32x4_t high = vdupq_n_f32(*high_threshold_p);
-    while (dest_p < end_p) {
-      float32x4_t source = vld1q_f32(source_p);
-      vst1q_f32(dest_p, vmaxq_f32(vminq_f32(source, high), low));
-      UNSAFE_TODO(source_p += kPackedFloatsPerRegister);
-      UNSAFE_TODO(dest_p += kPackedFloatsPerRegister);
-    }
-    n = tail_frames;
+  float32x4_t low = vdupq_n_f32(low_threshold);
+  float32x4_t high = vdupq_n_f32(high_threshold);
+  for (size_t i = 0; i < aligned_frames; i += kPackedFloatsPerRegister) {
+    vst1q_f32(
+        dest.subspan(i, kPackedFloatsPerRegister).data(),
+        vmaxq_f32(
+            vminq_f32(
+                vld1q_f32(source.subspan(i, kPackedFloatsPerRegister).data()),
+                high),
+            low));
   }
 
-  scalar::Vclip(source_p, source_stride, low_threshold_p, high_threshold_p,
-                dest_p, dest_stride, n);
+  if (tail_frames > 0u) {
+    scalar::Vclip(source.subspan(aligned_frames, tail_frames), low_threshold,
+                  high_threshold, dest.subspan(aligned_frames, tail_frames));
+  }
 }
 
 ALWAYS_INLINE static void Vmaxmgv(const float* source_p,

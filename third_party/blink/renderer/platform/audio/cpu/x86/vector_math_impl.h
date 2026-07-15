@@ -173,33 +173,31 @@ void Vsub(base::span<const float> source1,
 
 // dest[k] = clip(source[k], low_threshold, high_threshold)
 //         = max(low_threshold, min(high_threshold, source[k]))
-void Vclip(const float* source_p,
-           const float* low_threshold_p,
-           const float* high_threshold_p,
-           float* dest_p,
-           size_t frames_to_process) {
-  const float* const source_end_p = UNSAFE_TODO(source_p + frames_to_process);
+void Vclip(base::span<const float> source,
+           float low_threshold,
+           float high_threshold,
+           base::span<float> dest) {
+  DCHECK_EQ(source.size(), dest.size());
+  DCHECK(IsAligned(source.data()));
+  DCHECK_EQ(0u, dest.size() % kPackedFloatsPerRegister);
 
-  DCHECK(IsAligned(source_p));
-  DCHECK_EQ(0u, frames_to_process % kPackedFloatsPerRegister);
-
-  MType m_low_threshold = MM_PS(set1)(*low_threshold_p);
-  MType m_high_threshold = MM_PS(set1)(*high_threshold_p);
+  MType m_low_threshold = MM_PS(set1)(low_threshold);
+  MType m_high_threshold = MM_PS(set1)(high_threshold);
 
 #define CLIP_ALL(storeDest)                                                  \
-  while (source_p < source_end_p) {                                          \
-    MType m_source = MM_PS(load)(source_p);                                  \
+  for (size_t i = 0; i < dest.size(); i += kPackedFloatsPerRegister) {       \
+    MType m_source =                                                         \
+        MM_PS(load)(source.subspan(i, kPackedFloatsPerRegister).data());     \
     MType m_dest =                                                           \
         MM_PS(max)(m_low_threshold, MM_PS(min)(m_high_threshold, m_source)); \
-    MM_PS(storeDest)(dest_p, m_dest);                                        \
-    source_p += kPackedFloatsPerRegister;                                    \
-    dest_p += kPackedFloatsPerRegister;                                      \
+    MM_PS(storeDest)(dest.subspan(i, kPackedFloatsPerRegister).data(),       \
+                     m_dest);                                                \
   }
 
-  if (IsAligned(dest_p)) {
-    UNSAFE_TODO(CLIP_ALL(store));
+  if (IsAligned(dest.data())) {
+    CLIP_ALL(store);
   } else {
-    UNSAFE_TODO(CLIP_ALL(storeu));
+    CLIP_ALL(storeu);
   }
 
 #undef CLIP_ALL

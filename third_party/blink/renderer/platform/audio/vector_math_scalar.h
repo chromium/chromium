@@ -329,18 +329,13 @@ ALWAYS_INLINE static void Vsub(base::span<const float> source1,
   }
 }
 
-ALWAYS_INLINE static void Vclip(const float* source_p,
-                                int source_stride,
-                                const float* low_threshold_p,
-                                const float* high_threshold_p,
-                                float* dest_p,
-                                int dest_stride,
-                                size_t frames_to_process) {
-  while (frames_to_process > 0u) {
-    *dest_p = ClampTo(*source_p, *low_threshold_p, *high_threshold_p);
-    UNSAFE_TODO(source_p += source_stride);
-    UNSAFE_TODO(dest_p += dest_stride);
-    --frames_to_process;
+ALWAYS_INLINE static void Vclip(base::span<const float> source,
+                                float low_threshold,
+                                float high_threshold,
+                                base::span<float> dest) {
+  DCHECK_EQ(source.size(), dest.size());
+  for (size_t i = 0; i < dest.size(); ++i) {
+    dest[i] = ClampTo(source[i], low_threshold, high_threshold);
   }
 }
 

@@ -114,8 +114,7 @@ void Vclip(base::span<const float> source,
   DCHECK_LE(low_threshold, high_threshold);
 #endif
 
-  impl::Vclip(source.data(), 1, &low_threshold, &high_threshold, dest.data(), 1,
-              dest.size());
+  impl::Vclip(source, low_threshold, high_threshold, dest);
 }
 
 void Vclip(base::span<const float> source,
@@ -133,8 +132,8 @@ void Vclip(base::span<const float> source,
   DCHECK_LE(low_threshold, high_threshold);
 #endif
 
-  impl::Vclip(source.data(), 1, &low_threshold, &high_threshold, dest.data(), 1,
-              frames_to_process);
+  impl::Vclip(source.first(frames_to_process), low_threshold, high_threshold,
+              dest.first(frames_to_process));
 }
 
 float Vmaxmgv(base::span<const float> source, size_t frames_to_process) {

@@ -229,43 +229,44 @@ ALWAYS_INLINE static void Vsub(base::span<const float> source1,
   DCHECK_EQ(dest.size(), offset);
 }
 
-ALWAYS_INLINE static void Vclip(const float* source_p,
-                                int source_stride,
-                                const float* low_threshold_p,
-                                const float* high_threshold_p,
-                                float* dest_p,
-                                int dest_stride,
-                                size_t frames_to_process) {
-  if (source_stride == 1 && dest_stride == 1) {
-    const FrameCounts frame_counts =
-        SplitFramesToProcess(source_p, frames_to_process);
+ALWAYS_INLINE static void Vclip(base::span<const float> source,
+                                float low_threshold,
+                                float high_threshold,
+                                base::span<float> dest) {
+  DCHECK_EQ(source.size(), dest.size());
 
-    scalar::Vclip(source_p, 1, low_threshold_p, high_threshold_p, dest_p, 1,
-                  frame_counts.scalar_for_alignment);
-    size_t i = frame_counts.scalar_for_alignment;
-    if (frame_counts.sse_for_alignment > 0u) {
-      sse::Vclip(UNSAFE_TODO(source_p + i), low_threshold_p, high_threshold_p,
-                 UNSAFE_TODO(dest_p + i), frame_counts.sse_for_alignment);
-      i += frame_counts.sse_for_alignment;
-    }
-    if (frame_counts.avx > 0u) {
-      avx::Vclip(UNSAFE_TODO(source_p + i), low_threshold_p, high_threshold_p,
-                 UNSAFE_TODO(dest_p + i), frame_counts.avx);
-      i += frame_counts.avx;
-    }
-    if (frame_counts.sse > 0u) {
-      sse::Vclip(UNSAFE_TODO(source_p + i), low_threshold_p, high_threshold_p,
-                 UNSAFE_TODO(dest_p + i), frame_counts.sse);
-      i += frame_counts.sse;
-    }
-    scalar::Vclip(UNSAFE_TODO(source_p + i), 1, low_threshold_p,
-                  high_threshold_p, UNSAFE_TODO(dest_p + i), 1,
-                  frame_counts.scalar);
-    DCHECK_EQ(frames_to_process, i + frame_counts.scalar);
-  } else {
-    scalar::Vclip(source_p, source_stride, low_threshold_p, high_threshold_p,
-                  dest_p, dest_stride, frames_to_process);
+  const FrameCounts frame_counts =
+      SplitFramesToProcess(source.data(), dest.size());
+
+  size_t offset = 0;
+  if (frame_counts.scalar_for_alignment > 0u) {
+    scalar::Vclip(source.subspan(offset, frame_counts.scalar_for_alignment),
+                  low_threshold, high_threshold,
+                  dest.subspan(offset, frame_counts.scalar_for_alignment));
+    offset += frame_counts.scalar_for_alignment;
   }
+  if (frame_counts.sse_for_alignment > 0u) {
+    sse::Vclip(source.subspan(offset, frame_counts.sse_for_alignment),
+               low_threshold, high_threshold,
+               dest.subspan(offset, frame_counts.sse_for_alignment));
+    offset += frame_counts.sse_for_alignment;
+  }
+  if (frame_counts.avx > 0u) {
+    avx::Vclip(source.subspan(offset, frame_counts.avx), low_threshold,
+               high_threshold, dest.subspan(offset, frame_counts.avx));
+    offset += frame_counts.avx;
+  }
+  if (frame_counts.sse > 0u) {
+    sse::Vclip(source.subspan(offset, frame_counts.sse), low_threshold,
+               high_threshold, dest.subspan(offset, frame_counts.sse));
+    offset += frame_counts.sse;
+  }
+  if (frame_counts.scalar > 0u) {
+    scalar::Vclip(source.subspan(offset, frame_counts.scalar), low_threshold,
+                  high_threshold, dest.subspan(offset, frame_counts.scalar));
+    offset += frame_counts.scalar;
+  }
+  DCHECK_EQ(dest.size(), offset);
 }
 
 ALWAYS_INLINE static void Vmaxmgv(const float* source_p,

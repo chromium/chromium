@@ -48,11 +48,10 @@ void Vsub(base::span<const float> source1,
 
 // dest[k] = clip(source[k], low_threshold, high_threshold)
 //         = max(low_threshold, min(high_threshold, source[k]))
-void Vclip(const float* source_p,
-           const float* low_threshold_p,
-           const float* high_threshold_p,
-           float* dest_p,
-           size_t frames_to_process);
+void Vclip(base::span<const float> source,
+           float low_threshold,
+           float high_threshold,
+           base::span<float> dest);
 
 // *max_p = max(*max_p, source_max) where
 // source_max = max(abs(source[k])) for all k
