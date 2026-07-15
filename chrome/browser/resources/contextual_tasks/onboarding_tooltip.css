@@ -13,6 +13,7 @@ cr-tooltip {
   --paper-tooltip-delay-out: 0ms;
   --paper-tooltip-opacity: 1.0;
   margin-top: -20px;
+  pointer-events: all;
 }
 
 cr-tooltip::part(tooltip) {
