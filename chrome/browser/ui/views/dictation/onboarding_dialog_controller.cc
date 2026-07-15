@@ -9,6 +9,7 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "build/branding_buildflags.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/public/tab_dialog_manager.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
@@ -45,6 +46,13 @@ inline constexpr char kOnboardingDialogName[] = "DictationOnboardingDialog";
 // TODO(crbug.com/530962875): Update typography font styles once PM & UX
 // reach alignment.
 std::unique_ptr<views::View> CreateOnboardingCardView() {
+  const gfx::VectorIcon& data_sharing_icon =
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+      vector_icons::kAudioSparkIcon;
+#else
+      vector_icons::kLightbulbIcon;
+#endif
+
   return views::Builder<views::BoxLayoutView>()
       .SetOrientation(views::BoxLayout::Orientation::kVertical)
       .SetBetweenChildSpacing(2)
@@ -88,12 +96,9 @@ std::unique_ptr<views::View> CreateOnboardingCardView() {
                   gfx::RoundedCornersF(0.0f, 0.0f, 16.0f, 16.0f)))
               .SetInsideBorderInsets(gfx::Insets(16))
               .AddChildren(
-                  // TODO(crbug.com/530949784): Add speech-spark icon to
-                  // src-internal and replace vector_icons::kLightbulbIcon.
                   views::Builder<views::ImageView>()
                       .SetImage(ui::ImageModel::FromVectorIcon(
-                          vector_icons::kLightbulbIcon, ui::kColorSysPrimary,
-                          20))
+                          data_sharing_icon, ui::kColorSysPrimary, 20))
                       .SetProperty(views::kMarginsKey,
                                    gfx::Insets::TLBR(2, 0, 0, 0)),
                   views::Builder<views::Label>()

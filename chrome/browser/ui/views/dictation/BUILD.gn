@@ -26,6 +26,7 @@ source_set("dictation") {
   ]
 
   deps = [
+    "//build:branding_buildflags",
     "//chrome/app:branded_strings",
     "//chrome/app:generated_resources",
     "//chrome/app/theme:theme_resources",
