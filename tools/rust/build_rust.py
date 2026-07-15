@@ -80,6 +80,14 @@ EXCLUDED_TESTS = [
     # Temporarily disabled due to https://crbug.com/522257311
     os.path.join('tests', 'codegen-llvm', 'issues', 'issue-118306.rs'),
     os.path.join('tests', 'codegen-llvm', 'pow_known_base.rs'),
+    # Temporarily disabled due to https://crbug.com/531751211
+    os.path.join('tests', 'codegen-llvm', 'asm', 'global_asm.rs'),
+    os.path.join('tests', 'codegen-llvm', 'asm', 'global_asm_x2.rs'),
+    os.path.join('tests', 'codegen-llvm', 'asm', 'global_asm_include.rs'),
+    os.path.join('tests', 'codegen-llvm', 'array-cmp.rs'),
+    os.path.join('tests', 'codegen-llvm', 'enum', 'enum-match.rs'),
+    # Temporarily disabled due to https://crbug.com/535127458
+    os.path.join('tests', 'ui', 'asm', 'riscv', 'riscv32e-registers.rs'),
 ]
 EXCLUDED_TESTS_WINDOWS = [
     # Temporarily disabled due to https://crbug.com/379308086
