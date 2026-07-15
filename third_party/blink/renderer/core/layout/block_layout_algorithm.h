@@ -35,7 +35,11 @@ struct PreviousInflowPosition {
   MarginStrut margin_strut;
   // > 0: Block-end annotation space of the previous line
   // < 0: Block-end annotation overflow of the previous line
+  // This field is used to pass information across line boxes.
   LayoutUnit block_end_annotation_space;
+  // Block-end annotation space of the previous sibling block.
+  // This field is used to pass information across child IFCs.
+  LayoutUnit previous_sibling_block_end_annotation_space;
   bool self_collapsing_child_had_clearance;
 };
 

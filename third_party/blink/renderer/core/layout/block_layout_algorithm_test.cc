@@ -2555,5 +2555,129 @@ TEST_F(BlockLayoutAlgorithmTest, ComputeInitialBlockStartAnnotationSpace) {
   }
 }
 
+TEST_F(BlockLayoutAlgorithmTest, PreviousSiblingBlockEndAnnotationSpace) {
+  ScopedAnnotationSpaceOnStartForTest enable_flag(true);
+  LoadAhem();
+
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      div { font: 10px/1 Ahem; }
+      .container { writing-mode: horizontal-tb; width: 200px; }
+      .prev-basic { border-bottom: 0 solid black; overflow: visible; }
+      .prev-border { border-bottom: 5px solid black; overflow: visible; }
+      .prev-hidden { border-bottom: 0 solid black; overflow: hidden; }
+      .prev-vertical {
+        writing-mode: vertical-rl;
+        border-left: 0 solid black;
+        overflow: visible;
+      }
+      .prev-small-height { height: 10px; overflow: visible; }
+
+      #target1, #target2, #target3, #target4, #target5 {
+        margin-top: 0px;
+        padding-top: 0px;
+        border-top: 0 solid black;
+        overflow: visible;
+      }
+      .prev-ruby { font-size: 10px; line-height: 60px; }
+      .prev-rt { font-size: 5px; line-height: 5px; ruby-position: under; }
+      .prev-no-ruby {
+        font-size: 10px;
+        line-height: 60px;
+        border-bottom: 0 solid black;
+        overflow: visible;
+      }
+      .target-ruby {
+        font-size: 10px;
+        line-height: 10px;
+        ruby-position: over;
+      }
+      .target-rt { font-size: 20px; line-height: 20px; }
+    </style>
+
+    <!-- Case 1: Matching conditions (Border=0, overflow=visible,
+         matching writing mode) -->
+    <div id="c1" class="container">
+      <div id="prev1" class="prev-basic">
+        <ruby class="prev-ruby">base<rt class="prev-rt">annotation</rt></ruby>
+      </div>
+      <div id="target1">
+        <ruby class="target-ruby">base<rt class="target-rt">annotation</rt></ruby>
+      </div>
+    </div>
+
+    <!-- Case 2: Block Prev has insufficient height and content overflows -->
+    <div id="c2" class="container">
+      <div id="prev2" class="prev-small-height">
+        line1<br>
+        <ruby class="prev-ruby">base<rt class="prev-rt">annotation</rt></ruby>
+      </div>
+      <div id="target2">
+        <ruby class="target-ruby">base<rt class="target-rt">annotation</rt></ruby>
+      </div>
+    </div>
+
+    <!-- Case 3: Sibling has border-bottom (propagation should be blocked) -->
+    <div id="c3" class="container">
+      <div id="prev3" class="prev-border">
+        <ruby class="prev-ruby">base<rt class="prev-rt">annotation</rt></ruby>
+      </div>
+      <div id="target3">
+        <ruby class="target-ruby">base<rt class="target-rt">annotation</rt></ruby>
+      </div>
+    </div>
+
+    <!-- Case 4: Sibling has overflow: hidden (propagation should be blocked) -->
+    <div id="c4" class="container">
+      <div id="prev4" class="prev-hidden">
+        <ruby class="prev-ruby">base<rt class="prev-rt">annotation</rt></ruby>
+      </div>
+      <div id="target4">
+        <ruby class="target-ruby">base<rt class="target-rt">annotation</rt></ruby>
+      </div>
+    </div>
+
+    <!-- Case 5: Writing mode mismatch (propagation should be blocked) -->
+    <div id="c5" class="container">
+      <div id="prev5" class="prev-vertical">
+        <ruby class="prev-ruby">base<rt class="prev-rt">annotation</rt></ruby>
+      </div>
+      <div id="target5">
+        <ruby class="target-ruby">base<rt class="target-rt">annotation</rt></ruby>
+      </div>
+    </div>
+
+    <!-- Case 6: Sibling has no ruby, but has large line-height (half-leading) -->
+    <div id="c6" class="container">
+      <div id="prev6" class="prev-no-ruby">
+        normal text
+      </div>
+      <div id="target6">
+        <ruby class="target-ruby">base<rt class="target-rt">annotation</rt></ruby>
+      </div>
+    </div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  const auto* prev1 = GetLayoutBoxByElementId("prev1")->GetLayoutResult(0);
+  EXPECT_GT(prev1->BlockEndAnnotationSpace(), LayoutUnit(0));
+
+  const auto* prev2 = GetLayoutBoxByElementId("prev2")->GetLayoutResult(0);
+  EXPECT_EQ(prev2->BlockEndAnnotationSpace(), LayoutUnit(0));
+
+  const auto* prev3 = GetLayoutBoxByElementId("prev3")->GetLayoutResult(0);
+  EXPECT_EQ(prev3->BlockEndAnnotationSpace(), LayoutUnit(0));
+
+  const auto* prev4 = GetLayoutBoxByElementId("prev4")->GetLayoutResult(0);
+  EXPECT_EQ(prev4->BlockEndAnnotationSpace(), LayoutUnit(0));
+
+  const auto* prev5 = GetLayoutBoxByElementId("prev5")->GetLayoutResult(0);
+  // prev5 itself is a writing-mode root and has no block-end annotation space
+  EXPECT_EQ(prev5->BlockEndAnnotationSpace(), LayoutUnit(0));
+
+  const auto* prev6 = GetLayoutBoxByElementId("prev6")->GetLayoutResult(0);
+  EXPECT_GT(prev6->BlockEndAnnotationSpace(), LayoutUnit(0));
+}
+
 }  // namespace
 }  // namespace blink

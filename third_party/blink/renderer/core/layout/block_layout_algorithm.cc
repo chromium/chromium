@@ -862,6 +862,7 @@ inline const LayoutResult* BlockLayoutAlgorithm::Layout(
   PreviousInflowPosition previous_inflow_position = {
       LayoutUnit(), constraint_space.GetMarginStrut(),
       is_resuming_ ? LayoutUnit() : ComputeInitialBlockStartAnnotationSpace(),
+      /* previous_sibling_block_end_annotation_space */ LayoutUnit(),
       /* self_collapsing_child_had_clearance */ false};
 
   if (GetBreakToken()) {
@@ -1412,6 +1413,25 @@ const LayoutResult* BlockLayoutAlgorithm::FinishLayout(
       previously_consumed_block_size + intrinsic_block_size_,
       border_box_size.inline_size);
   container_builder_.SetFragmentsTotalBlockSize(border_box_size.block_size);
+
+  if (RuntimeEnabledFeatures::AnnotationSpaceOnStartEnabled() &&
+      GetConstraintSpace().ContainsAnnotations() &&
+      !GetConstraintSpace().IsNewFormattingContext() &&
+      previous_inflow_position->block_end_annotation_space > LayoutUnit() &&
+      Borders().block_end == 0) {
+    const LayoutUnit content_end_offset =
+        BorderScrollbarPadding().block_start +
+        previous_inflow_position->logical_block_offset;
+    const LayoutUnit annotation_space_start_offset =
+        content_end_offset -
+        previous_inflow_position->block_end_annotation_space;
+    const LayoutUnit container_end_offset = border_box_size.block_size -
+                                            Borders().block_end -
+                                            Scrollbar().block_end;
+    const LayoutUnit available_space = std::max(
+        LayoutUnit(), container_end_offset - annotation_space_start_offset);
+    container_builder_.SetBlockEndAnnotationSpace(available_space);
+  }
 
   // If our BFC block-offset is still unknown, we check:
   //  - If we have a non-zero block-size (margins don't collapse through us).
@@ -3066,7 +3086,15 @@ PreviousInflowPosition BlockLayoutAlgorithm::ComputeInflowPosition(
     }
   }
 
+  LayoutUnit previous_sibling_block_end_annotation_space;
+  if (RuntimeEnabledFeatures::AnnotationSpaceOnStartEnabled() &&
+      GetConstraintSpace().ContainsAnnotations() && child.IsBlock() &&
+      annotation_space > LayoutUnit()) {
+    previous_sibling_block_end_annotation_space = annotation_space;
+  }
+
   return {logical_block_offset, margin_strut, annotation_space,
+          previous_sibling_block_end_annotation_space,
           self_or_sibling_self_collapsing_child_had_clearance};
 }
 
