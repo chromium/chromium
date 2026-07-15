@@ -11,6 +11,14 @@ import {getHtml as getContextMenuHtml} from './contextual_tasks_inner_composebox
 export function getHtml(this: ContextualTasksInnerComposeboxElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
+    <search-animated-glow id="animatedSearchElement"
+        animation-state="${this.animationState}"
+        entrypoint-name="ContextualTasks"
+        .energyEffectAnimationEnabled="${this.energyEffectAnimationEnabled}"
+        .isZeroState="${this.isZeroState}"
+        .darkThemeColorsEnabled="${true}"
+        exportparts="composebox-background">
+    </search-animated-glow>
     <ntp-error-scrim id="errorScrim" part="error-scrim"></ntp-error-scrim>
     <div id="composebox" part="composebox"
         @keydown="${this.onKeydown}"

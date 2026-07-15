@@ -13,6 +13,7 @@ import {InputType, ToolMode} from 'chrome://resources/cr_components/composebox/c
 import type {ComposeboxToolChipElement} from 'chrome://resources/cr_components/composebox/composebox_tool_chip.js';
 import type {ContextualActionMenuElement} from 'chrome://resources/cr_components/composebox/contextual_action_menu.js';
 import {WindowProxy} from 'chrome://resources/cr_components/composebox/window_proxy.js';
+import {GlowAnimationState} from 'chrome://resources/cr_components/search/constants.js';
 import {createAutocompleteMatch, createAutocompleteResultForTesting} from 'chrome://resources/cr_components/searchbox/searchbox_browser_proxy.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote, SuggestInventory} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
@@ -2707,4 +2708,115 @@ suite(`ContextualTasksComposeboxResizeTest`, () => {
     assertEquals(
         '68px', innerComposebox.style.getPropertyValue('--carousel-height'));
   });
+});
+
+// =============================================================================
+// Fork GLOW RENDER SURFACE SUITE (both paths)
+// The wrapper drives animation and energy-effect state on whichever inner
+// element the flag selects, so both templates must render the same
+// `search-animated-glow` consumer; the legacy path doubles as the baseline for
+// the fork's render and state-propagation contract.
+// =============================================================================
+[true, false].forEach(useFork => {
+  suite(
+      `ContextualTasksComposeboxForkGlowTest ` +
+          `(useContextualTasksComposeboxFork = ${useFork})`,
+      () => {
+        let parts: CtComposeboxAppParts;
+
+        setup(async () => {
+          if (!window.chrome) {
+            Object.assign(window, {chrome: {}});
+          }
+          if (!window.chrome.histograms) {
+            Object.assign(window.chrome, {
+              histograms: {
+                recordEnumerationValue: () => {},
+                recordUserAction: () => {},
+                recordBoolean: () => {},
+              },
+            });
+          }
+          document.body.innerHTML = window.trustedTypes!.emptyHTML;
+
+          loadTimeData.overrideValues({
+            contextualMenuUsePecApi: false,
+            composeboxSmartTabSharingVisible: false,
+            enableComposeboxJumpFix: false,
+            composeboxShowTypedSuggest: true,
+            composeboxShowZps: true,
+            enableBasicModeZOrder: true,
+            composeboxShowContextMenu: true,
+            forcedEmbeddedPageHost: '',
+            tabFaviconChipsToCoinsEnabled: false,
+            energyEffectEnabled: true,
+          });
+
+          const testProxy = new TestContextualTasksBrowserProxy(fixtureUrl);
+          BrowserProxyImpl.setInstance(testProxy);
+
+          const mockComposeboxPageHandler =
+              TestMock.fromClass(ComposeboxPageHandlerRemote);
+          mockComposeboxPageHandler.setResultFor(
+              'getSmartTabSharingActive', Promise.resolve({active: false}));
+          mockComposeboxPageHandler.setResultFor(
+              'canShowNextboxAnimation', Promise.resolve({canShow: true}));
+          const mockSearchboxPageHandler =
+              TestMock.fromClass(SearchboxPageHandlerRemote);
+          mockSearchboxPageHandler.setResultFor(
+              'getRecentTabs', Promise.resolve({tabs: []}));
+          mockSearchboxPageHandler.setResultFor(
+              'getPageClassification',
+              Promise.resolve({metricSource: 'CO_BROWSING_COMPOSEBOX'}));
+          mockSearchboxPageHandler.setResultFor(
+              'addTabContext',
+              Promise.resolve({high: BigInt(1), low: BigInt(2)}));
+          mockSearchboxPageHandler.setResultFor(
+              'getInputState', Promise.resolve({state: new MockInputState()}));
+          const searchboxCallbackRouter = new SearchboxPageCallbackRouter();
+          searchboxCallbackRouter.$.bindNewPipeAndPassRemote();
+          ComposeboxProxyImpl.setInstance(new ComposeboxProxyImpl(
+              mockComposeboxPageHandler, new ComposeboxPageCallbackRouter(),
+              mockSearchboxPageHandler, searchboxCallbackRouter));
+
+          parts = await createCtComposeboxApp(useFork);
+        });
+
+        test('both paths render the glow render surface', () => {
+          const {innerComposebox} = parts;
+          const glow =
+              innerComposebox.shadowRoot.querySelector('search-animated-glow');
+          assertTrue(!!glow, 'search-animated-glow should be in the DOM');
+          assertEquals('animatedSearchElement', glow.id);
+          const exportparts = glow.getAttribute('exportparts');
+          assertTrue(
+              !!exportparts && exportparts.includes('composebox-background'),
+              'Glow should re-export the composebox-background part');
+        });
+
+        test('wrapper startExpandAnimation reaches the glow', async () => {
+          const {wrapper, innerComposebox} = parts;
+          const glow =
+              innerComposebox.shadowRoot.querySelector('search-animated-glow');
+          assertTrue(!!glow);
+          await wrapper.startExpandAnimation();
+          await wrapper.updateComplete;
+          await innerComposebox.updateComplete;
+          await glow.updateComplete;
+          assertEquals(GlowAnimationState.EXPANDING, glow.animationState);
+        });
+
+        test('energy state reaches the inner host and the glow', async () => {
+          const {wrapper, innerComposebox} = parts;
+          await wrapper.updateComplete;
+          await innerComposebox.updateComplete;
+          assertTrue(innerComposebox.energyEffectEnabled);
+          assertTrue(innerComposebox.hasAttribute('energy-effect-enabled'));
+          const glow =
+              innerComposebox.shadowRoot.querySelector('search-animated-glow');
+          assertTrue(!!glow);
+          await glow.updateComplete;
+          assertTrue(glow.energyEffectAnimationEnabled);
+        });
+      });
 });
