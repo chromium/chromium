@@ -33,7 +33,6 @@ public class AtMemoryHomeView extends LinearLayout {
     private RecyclerView mRecyclerView;
     private View mNoticeContainer;
     private View mNoticeOkButton;
-    private View mNoticeSettingsLink;
 
     public AtMemoryHomeView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
@@ -48,7 +47,6 @@ public class AtMemoryHomeView extends LinearLayout {
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         mNoticeContainer = findViewById(R.id.notice_container);
         mNoticeOkButton = findViewById(R.id.notice_ok_button);
-        mNoticeSettingsLink = findViewById(R.id.notice_manage_settings_link);
     }
 
     public void setUpSheetItems(ModelList items) {
@@ -89,7 +87,21 @@ public class AtMemoryHomeView extends LinearLayout {
     }
 
     public void setNoticeSettingsClickListener(Runnable listener) {
-        mNoticeSettingsLink.setOnClickListener(v -> listener.run());
+        android.widget.TextView noticeTextView = findViewById(R.id.notice_text);
+        android.content.Context context = getContext();
+        String rawText = context.getString(R.string.at_memory_notice_text);
+
+        org.chromium.ui.text.ChromeClickableSpan settingsSpan =
+                new org.chromium.ui.text.ChromeClickableSpan(context, (widget) -> listener.run());
+
+        android.text.SpannableString formattedText =
+                org.chromium.ui.text.SpanApplier.applySpans(
+                        rawText,
+                        new org.chromium.ui.text.SpanApplier.SpanInfo(
+                                "<link>", "</link>", settingsSpan));
+
+        noticeTextView.setText(formattedText);
+        noticeTextView.setMovementMethod(android.text.method.LinkMovementMethod.getInstance());
     }
 
     public void setSearchBarDelegate(AtMemorySearchBarView.Delegate delegate) {

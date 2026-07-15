@@ -44,32 +44,13 @@ found in the LICENSE file.
                 android:textAppearance=
                     "@style/TextAppearance.TextMediumThick.Primary" />
 
-            <LinearLayout
+            <org.chromium.ui.widget.TextViewWithClickableSpans
+                android:id="@+id/notice_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginTop="4dp">
-
-                <TextView
-                    android:id="@+id/notice_text"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/at_memory_notice_text"
-                    android:textAppearance=
-                        "@style/TextAppearance.TextSmall.Secondary" />
-
-                <TextView
-                    android:id="@+id/notice_manage_settings_link"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/at_memory_notice_manage_settings_link"
-                    android:textAppearance=
-                        "@style/TextAppearance.TextSmall.Accent1"
-                    android:background=
-                        "?attr/selectableItemBackgroundBorderless"
-                    android:clickable="true"
-                    android:focusable="true" />
-            </LinearLayout>
+                android:layout_marginTop="4dp"
+                android:textAppearance=
+                    "@style/TextAppearance.TextSmall.Secondary" />
         </LinearLayout>
 
         <TextView
