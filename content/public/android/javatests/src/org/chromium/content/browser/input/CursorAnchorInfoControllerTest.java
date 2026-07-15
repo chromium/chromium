@@ -19,7 +19,10 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.blink.mojom.InputCursorAnchorInfo;
+import org.chromium.blink_public.common.BlinkFeatures;
 import org.chromium.content_public.browser.test.ContentJUnit4ClassRunner;
 import org.chromium.content_public.browser.test.util.TestInputMethodManagerWrapper;
 import org.chromium.gfx.mojom.Rect;
@@ -27,6 +30,7 @@ import org.chromium.gfx.mojom.Rect;
 /** Test for {@link CursorAnchorInfoController}. */
 @RunWith(ContentJUnit4ClassRunner.class)
 @Batch(Batch.UNIT_TESTS)
+@DisableFeatures(BlinkFeatures.INPUT_CURSOR_ANCHOR_INFO_MIGRATION)
 public class CursorAnchorInfoControllerTest {
     private static final class TestViewDelegate implements CursorAnchorInfoController.ViewDelegate {
         public int locationX;
@@ -656,6 +660,53 @@ public class CursorAnchorInfoControllerTest {
                 23.0f,
                 29.0f,
                 29.0f,
+                immw.getLastCursorAnchorInfo());
+        immw.clearLastCursorAnchorInfo();
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Input-Text-IME"})
+    @EnableFeatures(BlinkFeatures.INPUT_CURSOR_ANCHOR_INFO_MIGRATION)
+    public void testInsertionMarker_MigrationEnabled() {
+        TestInputMethodManagerWrapper immw = new TestInputMethodManagerWrapper(null);
+        TestViewDelegate viewDelegate = new TestViewDelegate();
+        TestComposingTextDelegate composingTextDelegate = new TestComposingTextDelegate();
+        CursorAnchorInfoController controller =
+                CursorAnchorInfoController.createForTest(immw, composingTextDelegate, viewDelegate);
+        View view = null;
+
+        controller.focusedNodeChanged(true);
+        composingTextDelegate.clearTextAndSelection(controller);
+        Assert.assertTrue(
+                controller.onRequestCursorUpdates(
+                        false /* immediate request */, true /* monitor request */, view));
+
+        // Test that onUpdateFrameInfo alone with legacy marker values does NOT set insertion marker
+        // when migration is enabled.
+        controller.onUpdateFrameInfo(1.0f, 0.0f, true, true, 10.0f, 23.0f, 29.0f, view);
+        Assert.assertEquals(1, immw.getUpdateCursorAnchorInfoCounter());
+        AssertionHelper.assertHasNoInsertionMarker(immw.getLastCursorAnchorInfo());
+        immw.clearLastCursorAnchorInfo();
+
+        // Now provide insertion marker data via mInputCursorAnchorInfo and verify it is used.
+        InputCursorAnchorInfo data = new InputCursorAnchorInfo();
+        data.insertionMarker = new Rect();
+        data.insertionMarker.x = 15;
+        data.insertionMarker.y = 25;
+        data.insertionMarker.width = 2;
+        data.insertionMarker.height = 10;
+        data.editorBoundsInfo = new org.chromium.blink.mojom.EditorBoundsInfo();
+        data.textAppearanceInfo = new org.chromium.blink.mojom.TextAppearanceInfo();
+        controller.updateCursorAnchorInfoData(data, view);
+
+        Assert.assertEquals(2, immw.getUpdateCursorAnchorInfoCounter());
+        AssertionHelper.assertHasInsertionMarker(
+                CursorAnchorInfo.FLAG_HAS_VISIBLE_REGION,
+                15.0f,
+                25.0f,
+                35.0f,
+                35.0f,
                 immw.getLastCursorAnchorInfo());
         immw.clearLastCursorAnchorInfo();
     }

@@ -13,8 +13,10 @@ import android.view.inputmethod.EditorBoundsInfo;
 import android.view.inputmethod.TextAppearanceInfo;
 
 import org.chromium.blink.mojom.InputCursorAnchorInfo;
+import org.chromium.blink_public.common.BlinkFeatures;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.content_public.browser.ContentFeatureMap;
 import org.chromium.content_public.browser.InputMethodManagerWrapper;
 import org.chromium.gfx.mojom.Rect;
 
@@ -172,11 +174,13 @@ final class CursorAnchorInfoController {
             mScale = scale;
             mTranslationX = translationX;
             mTranslationY = translationY;
-            mHasInsertionMarker = hasInsertionMarker;
-            mIsInsertionMarkerVisible = isInsertionMarkerVisible;
-            mInsertionMarkerHorizontal = insertionMarkerHorizontal;
-            mInsertionMarkerTop = insertionMarkerTop;
-            mInsertionMarkerBottom = insertionMarkerBottom;
+            if (!ContentFeatureMap.isEnabled(BlinkFeatures.INPUT_CURSOR_ANCHOR_INFO_MIGRATION)) {
+                mHasInsertionMarker = hasInsertionMarker;
+                mIsInsertionMarkerVisible = isInsertionMarkerVisible;
+                mInsertionMarkerHorizontal = insertionMarkerHorizontal;
+                mInsertionMarkerTop = insertionMarkerTop;
+                mInsertionMarkerBottom = insertionMarkerBottom;
+            }
         }
 
         // Notify to IME if there is a pending request, or if it is in monitor mode and we have
@@ -287,15 +291,26 @@ final class CursorAnchorInfoController {
             mMatrix.setScale(mScale, mScale);
             mMatrix.postTranslate(mTranslationX, mTranslationY);
             mCursorAnchorInfoBuilder.setMatrix(mMatrix);
-            if (mHasInsertionMarker) {
+            if (!ContentFeatureMap.isEnabled(BlinkFeatures.INPUT_CURSOR_ANCHOR_INFO_MIGRATION)) {
+                if (mHasInsertionMarker) {
+                    mCursorAnchorInfoBuilder.setInsertionMarkerLocation(
+                            mInsertionMarkerHorizontal,
+                            mInsertionMarkerTop,
+                            mInsertionMarkerBottom,
+                            mInsertionMarkerBottom,
+                            mIsInsertionMarkerVisible
+                                    ? CursorAnchorInfo.FLAG_HAS_VISIBLE_REGION
+                                    : CursorAnchorInfo.FLAG_HAS_INVISIBLE_REGION);
+                }
+            } else if (mInputCursorAnchorInfo != null
+                    && mInputCursorAnchorInfo.insertionMarker != null) {
+                Rect marker = mInputCursorAnchorInfo.insertionMarker;
                 mCursorAnchorInfoBuilder.setInsertionMarkerLocation(
-                        mInsertionMarkerHorizontal,
-                        mInsertionMarkerTop,
-                        mInsertionMarkerBottom,
-                        mInsertionMarkerBottom,
-                        mIsInsertionMarkerVisible
-                                ? CursorAnchorInfo.FLAG_HAS_VISIBLE_REGION
-                                : CursorAnchorInfo.FLAG_HAS_INVISIBLE_REGION);
+                        marker.x,
+                        marker.y,
+                        marker.y + marker.height,
+                        marker.y + marker.height,
+                        CursorAnchorInfo.FLAG_HAS_VISIBLE_REGION);
             }
             if (mInputCursorAnchorInfo != null) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {

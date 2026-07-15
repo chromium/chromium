@@ -26,6 +26,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &blink::features::kAndroidDesktopWebPrefsLargeDisplays,
     &blink::features::kAndroidSpellcheckFullApiBlink,
     &blink::features::kDevicePosture,
+    &blink::features::kInputCursorAnchorInfoMigration,
     &blink::features::kViewportSegments,
     &media::kAllowDelayedAudioFocusGainAndroid,
     &media::kAndroidEnableBackgroundMediaCapturing,
