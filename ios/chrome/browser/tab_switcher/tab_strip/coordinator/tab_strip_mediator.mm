@@ -895,6 +895,9 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
   }
   int indexToKeep = GetWebStateIndex(self.webStateList,
                                      WebStateSearchCriteria(item.identifier));
+  if (indexToKeep == WebStateList::kInvalidIndex) {
+    return;
+  }
 
   int closedGroupCount = 0;
   if (_tabGroupSyncService) {

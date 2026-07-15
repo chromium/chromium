@@ -109,10 +109,13 @@
 }
 
 - (void)closeOtherTabsButtonTapped:(id)sender {
+  int indexToKeep = self.webStateList->active_index();
+  if (indexToKeep == WebStateList::kInvalidIndex) {
+    return;
+  }
   RecordTabGridCloseOtherTabs(/*incognito=*/true);
   // There is no pinned tabs in incognito.
   RecordTabGridCloseTabsCount(self.webStateList->count() - 1);
-  int indexToKeep = self.webStateList->active_index();
   CloseOtherWebStates(*self.webStateList, indexToKeep,
                       WebStateList::ClosingReason::kUserAction);
 }
