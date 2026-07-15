@@ -2848,6 +2848,48 @@ TEST_F(RenderWidgetHostTest, ZoomToFindInPageRectValidBounds) {
       ->ZoomToFindInPageRectInMainFrame(valid_rect);
 }
 
+TEST_F(RenderWidgetHostTest, ZoomToFindInPageRectClippedToViewBounds) {
+  view_->SetBounds(gfx::Rect(0, 0, 200, 200));
+
+  // Rect that overlaps the view bounds but extends well beyond them. The
+  // forwarded rect must be clipped so that no part of it (including its
+  // center) lies outside the sender's view.
+  gfx::Rect overlapping_rect(-1800, -10, 3900, 3900);
+
+  EXPECT_CALL(mock_owner_delegate_,
+              ZoomToFindInPageRect(gfx::Rect(0, 0, 200, 200)))
+      .Times(1);
+
+  static_cast<blink::mojom::FrameWidgetHost*>(host_.get())
+      ->ZoomToFindInPageRectInMainFrame(overlapping_rect);
+}
+
+TEST_F(RenderWidgetHostTest, ZoomToFindInPageRectPartiallyClipped) {
+  view_->SetBounds(gfx::Rect(0, 0, 200, 200));
+
+  // Rect that partially overlaps the view bounds; the forwarded rect should
+  // be the intersection with the view bounds.
+  gfx::Rect partial_rect(150, 150, 100, 100);
+
+  EXPECT_CALL(mock_owner_delegate_,
+              ZoomToFindInPageRect(gfx::Rect(150, 150, 50, 50)))
+      .Times(1);
+
+  static_cast<blink::mojom::FrameWidgetHost*>(host_.get())
+      ->ZoomToFindInPageRectInMainFrame(partial_rect);
+}
+
+TEST_F(RenderWidgetHostTest, ZoomToFindInPageRectEmptyBounds) {
+  view_->SetBounds(gfx::Rect(0, 0, 0, 0));
+
+  gfx::Rect valid_rect(10, 10, 5, 5);
+
+  EXPECT_CALL(mock_owner_delegate_, ZoomToFindInPageRect(_)).Times(0);
+
+  static_cast<blink::mojom::FrameWidgetHost*>(host_.get())
+      ->ZoomToFindInPageRectInMainFrame(valid_rect);
+}
+
 TEST_F(RenderWidgetHostTest, AnimateDoubleTapZoomBoundsCheck) {
   view_->SetBounds(gfx::Rect(0, 0, 200, 200));
 
@@ -2874,6 +2916,35 @@ TEST_F(RenderWidgetHostTest, AnimateDoubleTapZoomValidBounds) {
   EXPECT_CALL(mock_owner_delegate_,
               AnimateDoubleTapZoom(gfx::Point(12, 12), gfx::Rect(10, 10, 5, 5)))
       .Times(1);
+
+  static_cast<blink::mojom::FrameWidgetHost*>(host_.get())
+      ->AnimateDoubleTapZoomInMainFrame(tap_point, valid_rect);
+}
+
+TEST_F(RenderWidgetHostTest, AnimateDoubleTapZoomRectClippedToViewBounds) {
+  view_->SetBounds(gfx::Rect(0, 0, 200, 200));
+
+  // Rect that overlaps the view bounds but extends beyond them. The forwarded
+  // rect must be clipped to the sender's view bounds.
+  gfx::Rect overlapping_rect(150, 150, 100, 100);
+  gfx::Point tap_point(160, 160);
+
+  EXPECT_CALL(
+      mock_owner_delegate_,
+      AnimateDoubleTapZoom(gfx::Point(160, 160), gfx::Rect(150, 150, 50, 50)))
+      .Times(1);
+
+  static_cast<blink::mojom::FrameWidgetHost*>(host_.get())
+      ->AnimateDoubleTapZoomInMainFrame(tap_point, overlapping_rect);
+}
+
+TEST_F(RenderWidgetHostTest, AnimateDoubleTapZoomEmptyBounds) {
+  view_->SetBounds(gfx::Rect(0, 0, 0, 0));
+
+  gfx::Rect valid_rect(10, 10, 5, 5);
+  gfx::Point tap_point(12, 12);
+
+  EXPECT_CALL(mock_owner_delegate_, AnimateDoubleTapZoom(_, _)).Times(0);
 
   static_cast<blink::mojom::FrameWidgetHost*>(host_.get())
       ->AnimateDoubleTapZoomInMainFrame(tap_point, valid_rect);

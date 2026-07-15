@@ -4249,15 +4249,18 @@ void RenderWidgetHostImpl::AnimateDoubleTapZoomInMainFrame(
   }
 
   gfx::Rect view_local_bounds(view_->GetViewBounds().size());
-  if (!view_local_bounds.IsEmpty() &&
-      (!view_local_bounds.Contains(point) ||
-       !view_local_bounds.Intersects(rect_to_zoom))) {
+  if (!view_local_bounds.Contains(point)) {
+    return;
+  }
+  gfx::Rect clipped_rect_to_zoom(rect_to_zoom);
+  clipped_rect_to_zoom.Intersect(view_local_bounds);
+  if (clipped_rect_to_zoom.IsEmpty()) {
     return;
   }
 
   auto* root_view = view_->GetRootView();
   gfx::Point transformed_point(point);
-  gfx::Rect transformed_rect_to_zoom(rect_to_zoom);
+  gfx::Rect transformed_rect_to_zoom(clipped_rect_to_zoom);
   if (!RenderWidgetHostViewBase::TransformPointAndRectToRootView(
           view_.get(), root_view, &transformed_point,
           &transformed_rect_to_zoom)) {
@@ -4279,13 +4282,14 @@ void RenderWidgetHostImpl::ZoomToFindInPageRectInMainFrame(
   }
 
   gfx::Rect view_local_bounds(view_->GetViewBounds().size());
-  if (!view_local_bounds.IsEmpty() &&
-      !view_local_bounds.Intersects(rect_to_zoom)) {
+  gfx::Rect clipped_rect_to_zoom(rect_to_zoom);
+  clipped_rect_to_zoom.Intersect(view_local_bounds);
+  if (clipped_rect_to_zoom.IsEmpty()) {
     return;
   }
 
   auto* root_view = view_->GetRootView();
-  gfx::Rect transformed_rect_to_zoom(rect_to_zoom);
+  gfx::Rect transformed_rect_to_zoom(clipped_rect_to_zoom);
   if (!RenderWidgetHostViewBase::TransformPointAndRectToRootView(
           view_.get(), root_view, nullptr, &transformed_rect_to_zoom)) {
     return;
