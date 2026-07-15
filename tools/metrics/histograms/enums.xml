@@ -13806,6 +13806,7 @@ from previous Chrome versions.
   <int value="-240531943" label="ContextualSearchRankerQuery:disabled"/>
   <int value="-240481438"
       label="CompressionDictionaryTransportOverHttp2:enabled"/>
+  <int value="-239822577" label="ContextualTasksSearchQuery:enabled"/>
   <int value="-239616243" label="HighDynamicRange:enabled"/>
   <int value="-239253496" label="CastStreamingMaxVideoBitrate:5 Mbps"/>
   <int value="-239176328" label="BluetoothAggressiveAppearanceFilter:enabled"/>
@@ -16181,6 +16182,7 @@ from previous Chrome versions.
   <int value="522179748" label="DataControlsSearchWith:disabled"/>
   <int value="524557829" label="OmniboxSteadyStateTextColor:enabled"/>
   <int value="525286392" label="PageInfoAboutThisSiteNonMsbb:disabled"/>
+  <int value="525789079" label="ContextualTasksSearchQuery:disabled"/>
   <int value="525950194"
       label="AndroidOpenIncognitoAsWindowRestrictions:disabled"/>
   <int value="527010182"

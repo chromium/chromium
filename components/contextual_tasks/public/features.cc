@@ -52,6 +52,8 @@ BASE_FEATURE(kEnableContextualTasksPinButtonInToolbar,
 // Enables relevant context determination for contextual tasks.
 BASE_FEATURE(kContextualTasksContext, base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kContextualTasksSearchQuery, base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables whether the option to enable smart tab sharing by default is enabled.
 BASE_FEATURE(kContextualTasksContextSmartTabSharingDefaultOnAvailability,
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -177,6 +179,10 @@ bool GetIsContextualTasksPdfCitationsEnabled() {
 
 bool ShouldContextualTasksPrivateApiUseNoAnimation() {
   return base::FeatureList::IsEnabled(kContextualTasksPrivateApiNoAnimation);
+}
+
+bool GetIsContextualTasksSearchQueryEnabled() {
+  return base::FeatureList::IsEnabled(kContextualTasksSearchQuery);
 }
 
 bool GetIsContextualTasksLazyFetchClusterInfoEnabled() {
@@ -795,6 +801,10 @@ const char kContextualTasksDescription[] =
 const char kContextualTasksContextName[] = "Contextual Tasks Context";
 const char kContextualTasksContextDescription[] =
     "Enables relevant context determination for contextual tasks.";
+
+const char kContextualTasksSearchQueryName[] = "Contextual Tasks Search Query";
+const char kContextualTasksSearchQueryDescription[] =
+    "Enables forwarding the search query parameter 'q' in contextual tasks.";
 
 const char kContextualTasksContextLibraryName[] =
     "Contextual Tasks Context Library";

@@ -12091,6 +12091,13 @@ const FeatureEntry kFeatureEntries[] = {
      kOsDesktop | kOsAndroid,
      FEATURE_VALUE_TYPE(contextual_tasks::kContextualTasksHideMenuOnAiPage)},
 
+    {"contextual-tasks-search-query",
+     contextual_tasks::flag_descriptions::kContextualTasksSearchQueryName,
+     contextual_tasks::flag_descriptions::
+         kContextualTasksSearchQueryDescription,
+     kOsDesktop | kOsAndroid,
+     FEATURE_VALUE_TYPE(contextual_tasks::kContextualTasksSearchQuery)},
+
     {"contextual-tasks-context-library",
      contextual_tasks::flag_descriptions::kContextualTasksContextLibraryName,
      contextual_tasks::flag_descriptions::

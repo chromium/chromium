@@ -19,6 +19,7 @@ BASE_DECLARE_FEATURE(kContextualTasksEphemeralBrandedEntryPoint);
 BASE_DECLARE_FEATURE(kContextualTasksExtraOauthScopes);
 BASE_DECLARE_FEATURE(kEnableContextualTasksPinButtonInToolbar);
 BASE_DECLARE_FEATURE(kContextualTasksContext);
+BASE_DECLARE_FEATURE(kContextualTasksSearchQuery);
 BASE_DECLARE_FEATURE(
     kContextualTasksContextSmartTabSharingDefaultOnAvailability);
 BASE_DECLARE_FEATURE(kContextualTasksContextLibrary);
@@ -143,6 +144,7 @@ extern const base::FeatureParam<OverflowMenuItems>
 
 bool GetIsContextualTasksPdfCitationsEnabled();
 bool ShouldContextualTasksPrivateApiUseNoAnimation();
+bool GetIsContextualTasksSearchQueryEnabled();
 
 bool GetIsContextualTasksLazyFetchClusterInfoEnabled();
 
@@ -449,6 +451,8 @@ extern const char kContextualTasksContextLibraryName[];
 extern const char kContextualTasksContextLibraryDescription[];
 extern const char kContextualTasksContextName[];
 extern const char kContextualTasksContextDescription[];
+extern const char kContextualTasksSearchQueryName[];
+extern const char kContextualTasksSearchQueryDescription[];
 extern const char kContextualTasksSuggestionsEnabledName[];
 extern const char kContextualTasksSuggestionsEnabledDescription[];
 extern const char kContextualTasksJavaFuseboxName[];

@@ -68,6 +68,9 @@ import {openTab} from '/_test_resources/test_util/tabs_util.js';
       case 'launch_panel_popup_window':
         tests_runLaunchPanelInNewTabPopupWindow(documentId);
         return;
+      case 'launch_panel_missing_mstk':
+        tests_runLaunchPanelInNewTabMissingMstk(documentId);
+        return;
       default:
         chrome.test.fail('Unexpected mode: ' + mode);
         return;
@@ -139,6 +142,7 @@ function tests_runLaunchPanelInNewTabEligible(documentId) {
           cs: '1',
           sxsrf: 'xyz',
           ei: '456',
+          q: 'some_query',
         },
         targetUrl: 'https://example.com',
         documentId: documentId,
@@ -155,7 +159,7 @@ function tests_runLaunchPanelInNewTabInvalidTargetUrl(documentId) {
       const details = {
         aimParams: {
           ntc: '',
-          mstk: '',
+          mstk: 'dummy',
           aioh: '',
           csuir: '',
           ved: '',
@@ -184,7 +188,7 @@ function tests_runLaunchPanelInNewTabPopupWindow(documentId) {
       const details = {
         aimParams: {
           ntc: '',
-          mstk: '',
+          mstk: 'dummy',
           aioh: '',
           csuir: '',
           ved: '',
@@ -198,6 +202,31 @@ function tests_runLaunchPanelInNewTabPopupWindow(documentId) {
       await chrome.test.assertPromiseRejects(
           chrome.contextualTasksPrivate.launchPanelInNewTab(details),
           expectedError);
+      chrome.test.succeed();
+    },
+  ]);
+}
+
+function tests_runLaunchPanelInNewTabMissingMstk(documentId) {
+  chrome.test.runTests([
+    async function testLaunchPanelInNewTabMissingMstk() {
+      const details = {
+        aimParams: {
+          ntc: '1',
+          // mstk is missing
+          aioh: '1',
+          csuir: '1',
+          ved: '123',
+          cs: '1',
+          sxsrf: 'xyz',
+          ei: '456',
+        },
+        targetUrl: 'https://example.com',
+        documentId: documentId,
+      };
+      await chrome.test.assertPromiseRejects(
+          chrome.contextualTasksPrivate.launchPanelInNewTab(details),
+          'Error: Missing required URL params');
       chrome.test.succeed();
     },
   ]);

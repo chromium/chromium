@@ -28,6 +28,7 @@ declare namespace chrome {
       cs?: string;
       sxsrf?: string;
       ei?: string;
+      q?: string;
     }
 
     export interface LaunchPanelInNewTabDetails {
@@ -43,3 +44,4 @@ declare namespace chrome {
 
   }
 }
+

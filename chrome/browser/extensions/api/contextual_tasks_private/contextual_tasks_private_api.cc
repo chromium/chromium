@@ -53,14 +53,21 @@ GURL AppendAimUrlParams(
     const GURL& base_url,
     const api::contextual_tasks_private::AimParams& aim_params) {
   GURL url = base_url;
+  bool enabled = contextual_tasks::GetIsContextualTasksSearchQueryEnabled();
+  std::optional<std::string> q_val = enabled ? aim_params.q : std::nullopt;
   const struct {
     const char* name;
     std::optional<std::string> value;
   } kParams[] = {
-      {"ntc", aim_params.ntc},     {"mstk", aim_params.mstk},
-      {"aioh", aim_params.aioh},   {"csuir", aim_params.csuir},
-      {"ved", aim_params.ved},     {"cs", aim_params.cs},
-      {"sxsrf", aim_params.sxsrf}, {"ei", aim_params.ei},
+      {"ntc", aim_params.ntc},
+      {"mstk", aim_params.mstk},
+      {"q", q_val},
+      {"aioh", aim_params.aioh},
+      {"csuir", aim_params.csuir},
+      {"ved", aim_params.ved},
+      {"cs", aim_params.cs},
+      {"sxsrf", aim_params.sxsrf},
+      {"ei", aim_params.ei},
   };
   for (const auto& param : kParams) {
     if (param.value && !param.value->empty()) {
@@ -121,6 +128,11 @@ ContextualTasksPrivateLaunchPanelInNewTabFunction::Run() {
   if (!IsContextualTasksEnabledForProfile(profile)) {
     return RespondNow(
         Error("ContextualTasks Private API is not eligible for this profile"));
+  }
+
+  if (!params->details.aim_params.mstk ||
+      params->details.aim_params.mstk->empty()) {
+    return RespondNow(Error("Missing required URL params"));
   }
 
   GURL target_url(params->details.target_url);

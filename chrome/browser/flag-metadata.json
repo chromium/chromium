@@ -2107,6 +2107,11 @@
     "expiry_milestone": 155
   },
   {
+    "name": "contextual-tasks-search-query",
+    "owners": [ "mercerd@google.com", "chrome-contextual-tasks-eng@google.com" ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "contextual-tasks-side-panel-rearchitecture",
     "owners": [ "jamesleung@google.com", "mercerd@google.com", "chrome-contextual-tasks-eng@google.com"],
     "expiry_milestone": 155
