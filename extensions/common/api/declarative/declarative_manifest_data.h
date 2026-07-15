@@ -17,6 +17,8 @@ namespace extensions {
 // The parsed form of the "event_rules" manifest entry.
 class DeclarativeManifestData : public Extension::ManifestData {
  public:
+  static const char* kManifestDataKey;
+
   using Rule = extensions::api::events::Rule;
 
   DeclarativeManifestData();

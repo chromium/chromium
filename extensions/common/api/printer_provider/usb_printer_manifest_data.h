@@ -18,6 +18,8 @@ namespace extensions {
 // The parsed form of the "usb_printers" manifest entry.
 class UsbPrinterManifestData : public Extension::ManifestData {
  public:
+  static const char* kManifestDataKey;
+
   UsbPrinterManifestData();
   ~UsbPrinterManifestData() override;
 

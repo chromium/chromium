@@ -14,6 +14,10 @@
 
 namespace extensions {
 
+// static
+const char* UsbPrinterManifestData::kManifestDataKey =
+    manifest_keys::kUsbPrinters;
+
 UsbPrinterManifestData::UsbPrinterManifestData() {
 }
 
@@ -23,8 +27,7 @@ UsbPrinterManifestData::~UsbPrinterManifestData() {
 // static
 const UsbPrinterManifestData* UsbPrinterManifestData::Get(
     const Extension* extension) {
-  return static_cast<const UsbPrinterManifestData*>(
-      extension->GetManifestData(manifest_keys::kUsbPrinters));
+  return extension->GetManifestData<UsbPrinterManifestData>();
 }
 
 // static

@@ -24,6 +24,8 @@ namespace extensions {
 // The parsed form of the "sockets" manifest entry.
 class SocketsManifestData : public Extension::ManifestData {
  public:
+  static const char* kManifestDataKey;
+
   explicit SocketsManifestData(
       std::unique_ptr<SocketsManifestPermission> permission);
   ~SocketsManifestData() override;

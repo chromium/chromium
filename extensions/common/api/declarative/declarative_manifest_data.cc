@@ -75,6 +75,10 @@ bool ConvertManifestRule(DeclarativeManifestData::Rule& rule,
 
 }  // namespace
 
+// static
+const char* DeclarativeManifestData::kManifestDataKey =
+    manifest_keys::kEventRules;
+
 DeclarativeManifestData::DeclarativeManifestData() {
 }
 
@@ -84,8 +88,7 @@ DeclarativeManifestData::~DeclarativeManifestData() {
 // static
 const DeclarativeManifestData* DeclarativeManifestData::Get(
     const Extension* extension) {
-  return static_cast<const DeclarativeManifestData*>(
-      extension->GetManifestData(manifest_keys::kEventRules));
+  return extension->GetManifestData<DeclarativeManifestData>();
 }
 
 // static

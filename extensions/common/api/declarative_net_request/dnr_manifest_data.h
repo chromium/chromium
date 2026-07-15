@@ -19,6 +19,8 @@ namespace extensions::declarative_net_request {
 // Manifest data required for the kDeclarativeNetRequestKey manifest
 // key.
 struct DNRManifestData : Extension::ManifestData {
+  static const char* kManifestDataKey;
+
   struct RulesetInfo {
     RulesetInfo();
     ~RulesetInfo();

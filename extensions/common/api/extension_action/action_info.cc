@@ -34,12 +34,17 @@ constexpr char kDisabled[] = "disabled";
 // The manifest data container for the ActionInfos for BrowserActions and
 // PageActions.
 struct ActionInfoData : public Extension::ManifestData {
+  static const char* kManifestDataKey;
+
   explicit ActionInfoData(std::unique_ptr<ActionInfo> action_info);
   ~ActionInfoData() override;
 
   // The action associated with the BrowserAction.
   std::unique_ptr<ActionInfo> action_info;
 };
+
+// static
+const char* ActionInfoData::kManifestDataKey = keys::kAction;
 
 ActionInfoData::ActionInfoData(std::unique_ptr<ActionInfo> info)
     : action_info(std::move(info)) {}
@@ -255,8 +260,7 @@ std::unique_ptr<ActionInfo> ActionInfo::Load(
 // static
 const ActionInfo* ActionInfo::GetExtensionActionInfo(
     const Extension* extension) {
-  const ActionInfoData* data = static_cast<const ActionInfoData*>(
-      extension->GetManifestData(keys::kAction));
+  const auto* data = extension->GetManifestData<ActionInfoData>();
   return data ? data->action_info.get() : nullptr;
 }
 

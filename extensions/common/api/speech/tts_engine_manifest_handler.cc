@@ -29,6 +29,9 @@ TtsVoice::TtsVoice(const TtsVoice& other) = default;
 
 TtsVoice::~TtsVoice() = default;
 
+// static
+const char* TtsEngine::kManifestDataKey = keys::kTtsVoices;
+
 TtsEngine::TtsEngine() = default;
 TtsEngine::~TtsEngine() = default;
 
@@ -117,9 +120,7 @@ const std::vector<TtsVoice>* TtsEngine::GetTtsVoices(
 
 // static
 const TtsEngine* TtsEngine::GetTtsEngineInfo(const Extension* extension) {
-  const TtsEngine* info = static_cast<const TtsEngine*>(
-      extension->GetManifestData(keys::kTtsVoices));
-  return info;
+  return extension->GetManifestData<TtsEngine>();
 }
 
 TtsEngineManifestHandler::TtsEngineManifestHandler() = default;

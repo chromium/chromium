@@ -27,36 +27,35 @@ namespace {
 const int kMaxCommandsWithKeybindingPerExtension = 4;
 }  // namespace
 
+// static
+const char* CommandsInfo::kManifestDataKey = keys::kCommands;
+
 CommandsInfo::CommandsInfo() = default;
 CommandsInfo::~CommandsInfo() = default;
 
 // static
 const Command* CommandsInfo::GetBrowserActionCommand(
     const Extension* extension) {
-  const CommandsInfo* info = static_cast<const CommandsInfo*>(
-      extension->GetManifestData(keys::kCommands));
+  const auto* info = extension->GetManifestData<CommandsInfo>();
   return info ? info->browser_action_command.get() : nullptr;
 }
 
 // static
 const Command* CommandsInfo::GetPageActionCommand(const Extension* extension) {
-  const CommandsInfo* info = static_cast<const CommandsInfo*>(
-      extension->GetManifestData(keys::kCommands));
+  const auto* info = extension->GetManifestData<CommandsInfo>();
   return info ? info->page_action_command.get() : nullptr;
 }
 
 // static
 const Command* CommandsInfo::GetActionCommand(const Extension* extension) {
-  const CommandsInfo* info = static_cast<const CommandsInfo*>(
-      extension->GetManifestData(keys::kCommands));
+  const auto* info = extension->GetManifestData<CommandsInfo>();
   return info ? info->action_command.get() : nullptr;
 }
 
 // static
 const ui::CommandMap* CommandsInfo::GetNamedCommands(
     const Extension* extension) {
-  const CommandsInfo* info = static_cast<const CommandsInfo*>(
-      extension->GetManifestData(keys::kCommands));
+  const auto* info = extension->GetManifestData<CommandsInfo>();
   return info ? &info->named_commands : nullptr;
 }
 

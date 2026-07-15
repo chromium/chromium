@@ -21,6 +21,8 @@ namespace extensions {
 // The parsed form of the "bluetooth" manifest entry.
 class BluetoothManifestData : public Extension::ManifestData {
  public:
+  static const char* kManifestDataKey;
+
   explicit BluetoothManifestData(
       std::unique_ptr<BluetoothManifestPermission> permission);
   ~BluetoothManifestData() override;

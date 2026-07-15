@@ -31,6 +31,8 @@ struct TtsVoice {
 };
 
 struct TtsEngine : public Extension::ManifestData {
+  static const char* kManifestDataKey;
+
   TtsEngine();
   ~TtsEngine() override;
   static bool Parse(const base::ListValue& tts_voices,

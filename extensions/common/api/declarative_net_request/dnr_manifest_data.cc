@@ -15,6 +15,10 @@ namespace extensions {
 namespace dnr_api = api::declarative_net_request;
 namespace declarative_net_request {
 
+// static
+const char* DNRManifestData::kManifestDataKey =
+    dnr_api::ManifestKeys::kDeclarativeNetRequest;
+
 DNRManifestData::RulesetInfo::RulesetInfo() = default;
 DNRManifestData::RulesetInfo::~RulesetInfo() = default;
 DNRManifestData::RulesetInfo::RulesetInfo(RulesetInfo&&) = default;
@@ -37,8 +41,7 @@ const std::vector<DNRManifestData::RulesetInfo>& DNRManifestData::GetRulesets(
   static const base::NoDestructor<std::vector<DNRManifestData::RulesetInfo>>
       empty_vector;
 
-  const DNRManifestData* data = static_cast<const DNRManifestData*>(
-      extension.GetManifestData(dnr_api::ManifestKeys::kDeclarativeNetRequest));
+  const auto* data = extension.GetManifestData<DNRManifestData>();
   if (!data)
     return *empty_vector;
 
@@ -51,8 +54,7 @@ DNRManifestData::GetManifestIDToRulesetMap(const Extension& extension) {
   // the extension didn't specify any rulesets.
   static const base::NoDestructor<ManifestIDToRulesetMap> empty_map;
 
-  const DNRManifestData* data = static_cast<const DNRManifestData*>(
-      extension.GetManifestData(dnr_api::ManifestKeys::kDeclarativeNetRequest));
+  const auto* data = extension.GetManifestData<DNRManifestData>();
   if (!data)
     return *empty_map;
 
@@ -63,8 +65,7 @@ DNRManifestData::GetManifestIDToRulesetMap(const Extension& extension) {
 const DNRManifestData::RulesetInfo& DNRManifestData::GetRuleset(
     const Extension& extension,
     RulesetID ruleset_id) {
-  const DNRManifestData* data = static_cast<const DNRManifestData*>(
-      extension.GetManifestData(dnr_api::ManifestKeys::kDeclarativeNetRequest));
+  const auto* data = extension.GetManifestData<DNRManifestData>();
   DCHECK(data);
 
   const std::vector<DNRManifestData::RulesetInfo>& rulesets = data->rulesets;
