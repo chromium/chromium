@@ -74,6 +74,8 @@
 #include "ui/events/keycodes/dom/dom_key.h"
 #include "ui/events/keycodes/keyboard_code_conversion.h"
 #include "ui/events/keycodes/keyboard_codes.h"
+#include "url/gurl.h"
+#include "url/scheme_host_port.h"
 
 using base::JSONParserOptions;
 using base::JSONReader;
@@ -569,15 +571,14 @@ content::RenderFrameHost* WaitForFrameMatchingName(
 
 content::RenderFrameHost* WaitForFrameMatchingOrigin(
     content::WebContents& web_contents,
-    const GURL& origin,
+    const url::SchemeHostPort& origin,
     base::TimeDelta timeout) {
   return WaitForFrame(
       web_contents,
       base::BindRepeating(
-          [](const GURL& origin, content::RenderFrameHost* frame) {
-            GURL url = frame->GetLastCommittedURL();
-            return url.DeprecatedGetOriginAsURL() ==
-                   origin.DeprecatedGetOriginAsURL();
+          [](const url::SchemeHostPort& origin,
+             content::RenderFrameHost* frame) {
+            return url::SchemeHostPort(frame->GetLastCommittedURL()) == origin;
           },
           origin),
       timeout);
@@ -2002,7 +2003,8 @@ bool TestRecipeReplayer::GetTargetFrameFromAction(
     *frame = WaitForFrameMatchingName(*GetWebContents(), frame_name);
   } else if (frame_origin_container != nullptr) {
     std::string frame_origin = frame_origin_container->GetString();
-    *frame = WaitForFrameMatchingOrigin(*GetWebContents(), GURL(frame_origin));
+    *frame = WaitForFrameMatchingOrigin(
+        *GetWebContents(), url::SchemeHostPort(GURL(frame_origin)));
   } else if (frame_url_container != nullptr) {
     std::string frame_url = frame_url_container->GetString();
     *frame = WaitForFrameMatchingUrl(*GetWebContents(), GURL(frame_url));

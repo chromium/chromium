@@ -27,6 +27,8 @@
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/test/browser_test_utils.h"
 #include "services/network/public/cpp/network_switches.h"
+#include "url/gurl.h"
+#include "url/scheme_host_port.h"
 
 namespace content {
 class RenderFrameHost;
@@ -110,7 +112,7 @@ void PrintInstructions(const char* test_file_name);
     const base::TimeDelta timeout = default_action_timeout);
 [[nodiscard]] content::RenderFrameHost* WaitForFrameMatchingOrigin(
     content::WebContents& web_contents,
-    const GURL& origin,
+    const url::SchemeHostPort& origin,
     const base::TimeDelta timeout = default_action_timeout);
 [[nodiscard]] content::RenderFrameHost* WaitForFrameMatchingUrl(
     content::WebContents& web_contents,
