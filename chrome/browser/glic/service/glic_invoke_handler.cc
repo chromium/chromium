@@ -15,6 +15,7 @@
 #include "chrome/browser/glic/host/host.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
+#include "chrome/browser/glic/public/glic_side_panel_coordinator.h"
 #include "chrome/browser/glic/service/glic_instance_helper.h"
 #include "chrome/browser/glic/service/glic_instance_impl.h"
 #include "chrome/browser/glic/service/glic_invoke_task.h"
@@ -234,6 +235,18 @@ void GlicInvokeHandler::Invoke() {
   }
 
   ShowOptions show_options = CreateShowOptions(resolved_target_, options_);
+
+  // If the side panel is already active, suppress the opening animation. This
+  // avoids a visual flicker when swapping from one conversation instance to
+  // another (e.g. starting a New Conversation when the panel is already open).
+  if (IsTabTarget()) {
+    if (GlicSidePanelCoordinator::IsGlicSidePanelActive(&GetTab())) {
+      if (auto* panel_options = std::get_if<SidePanelShowOptions>(
+              &show_options.embedder_options)) {
+        panel_options->suppress_opening_animation = true;
+      }
+    }
+  }
 
   if (options_.fre_override != mojom::FreOverride::kUnspecified) {
     show_options.fre_override = options_.fre_override;
