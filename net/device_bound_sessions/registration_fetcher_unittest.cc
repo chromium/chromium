@@ -513,19 +513,14 @@ TEST_F(RegistrationTest, BasicSuccess) {
 }
 
 TEST_F(RegistrationTest, VerifyTaskPriority) {
+  crypto::ScopedFakeUnexportableKeyProvider scoped_fake_key_provider;
   unexportable_keys::MockUnexportableKeyService mock_service;
-
-  EXPECT_CALL(mock_service, GetAlgorithm)
-      .WillRepeatedly(
-          Return(crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256));
-  EXPECT_CALL(mock_service, GetSubjectPublicKeyInfo)
-      .WillRepeatedly(Return(std::vector<uint8_t>{1, 2, 3}));
+  mock_service.DelegateToService(unexportable_key_service());
 
   EXPECT_CALL(
       mock_service,
       SignSlowlyAsync(
-          _, _, Eq(unexportable_keys::BackgroundTaskPriority::kUserVisible), _))
-      .WillOnce(base::test::RunOnceCallback<3>(std::vector<uint8_t>{4, 5, 6}));
+          _, _, unexportable_keys::BackgroundTaskPriority::kUserVisible, _));
 
   auto isolation_info = IsolationInfo::CreateTransient(/*nonce=*/std::nullopt);
   auto request_param = RegistrationRequestParam::CreateForTesting(
@@ -541,9 +536,8 @@ TEST_F(RegistrationTest, VerifyTaskPriority) {
           unexportable_keys::BackgroundTaskPriority::kUserVisible);
 
   TestRegistrationCallback callback;
-  fetcher->StartFetchWithExistingKey(
-      request_param, unexportable_keys::UnexportableSigningKeyId(),
-      callback.callback());
+  fetcher->StartFetchWithExistingKey(request_param, CreateSigningKey(),
+                                     callback.callback());
   callback.WaitForCall();
 }
 
@@ -576,12 +570,9 @@ TEST_F(RegistrationTest, SigningKeyGenerationFailure) {
 }
 
 TEST_F(RegistrationTest, AttestationKeyGenerationFailure) {
+  crypto::ScopedFakeUnexportableKeyProvider scoped_fake_key_provider;
   unexportable_keys::MockUnexportableKeyService mock_service;
-
-  // Mock signing key generation to succeed
-  EXPECT_CALL(mock_service, GenerateSigningKeySlowlyAsync)
-      .WillOnce(
-          RunOnceCallback<2>(unexportable_keys::UnexportableSigningKeyId()));
+  mock_service.DelegateToService(unexportable_key_service());
 
   // Mock attestation key generation to fail
   EXPECT_CALL(mock_service, GenerateAttestationKeySlowlyAsync)
@@ -2048,15 +2039,7 @@ TEST_F(RegistrationTest, TerminateSessionOnRepeatedFailure_Refresh) {
   ASSERT_TRUE(server_.Start());
 
   unexportable_keys::MockUnexportableKeyService mock_service;
-
-  EXPECT_CALL(mock_service, GetAlgorithm(_))
-      .WillRepeatedly(
-          Invoke(&unexportable_key_service(),
-                 &unexportable_keys::UnexportableKeyService::GetAlgorithm));
-  EXPECT_CALL(mock_service, GetSubjectPublicKeyInfo(_))
-      .WillRepeatedly(Invoke(
-          &unexportable_key_service(),
-          &unexportable_keys::UnexportableKeyService::GetSubjectPublicKeyInfo));
+  mock_service.DelegateToService(unexportable_key_service());
   EXPECT_CALL(mock_service, SignSlowlyAsync)
       .WillRepeatedly(base::test::RunOnceCallbackRepeatedly<3>(
           base::unexpected(unexportable_keys::ServiceError::kCryptoApiFailed)));
@@ -2091,15 +2074,7 @@ TEST_F(RegistrationTest, TerminateSessionOnRepeatedFailure_Registration) {
   ASSERT_TRUE(server_.Start());
 
   unexportable_keys::MockUnexportableKeyService mock_service;
-
-  EXPECT_CALL(mock_service, GetAlgorithm(_))
-      .WillRepeatedly(
-          Invoke(&unexportable_key_service(),
-                 &unexportable_keys::UnexportableKeyService::GetAlgorithm));
-  EXPECT_CALL(mock_service, GetSubjectPublicKeyInfo(_))
-      .WillRepeatedly(Invoke(
-          &unexportable_key_service(),
-          &unexportable_keys::UnexportableKeyService::GetSubjectPublicKeyInfo));
+  mock_service.DelegateToService(unexportable_key_service());
   EXPECT_CALL(mock_service, SignSlowlyAsync)
       .WillRepeatedly(base::test::RunOnceCallbackRepeatedly<3>(
           base::unexpected(unexportable_keys::ServiceError::kCryptoApiFailed)));
@@ -2226,17 +2201,9 @@ TEST_F(RegistrationTest, RefreshCachesSignedChallenge) {
       base::BindRepeating(&ReturnResponse, HTTP_OK, kBasicValidJson));
   ASSERT_TRUE(server_.Start());
 
+  crypto::ScopedFakeUnexportableKeyProvider scoped_fake_key_provider;
   unexportable_keys::MockUnexportableKeyService mock_key_service;
-  auto [spki, jwk] = GetRS256SpkiAndJwkForTesting();
-  std::vector<unsigned char> spki_vector(spki.begin(), spki.end());
-  EXPECT_CALL(mock_key_service, GetAlgorithm(_))
-      .WillOnce(Return(crypto::SignatureVerifier::RSA_PKCS1_SHA256));
-  EXPECT_CALL(mock_key_service, GetSubjectPublicKeyInfo(_))
-      .WillOnce(Return(spki_vector));
-  EXPECT_CALL(mock_key_service, SignSlowlyAsync(_, _, _, _))
-      .WillOnce(WithArg<3>([](auto callback) {
-        std::move(callback).Run(std::vector<uint8_t>{'s', 'i', 'g'});
-      }));
+  mock_key_service.DelegateToService(unexportable_key_service());
 
   // No cached challenge initially.
   EXPECT_CALL(session_service(), GetLatestSignedRefreshChallenge(_))
@@ -2258,12 +2225,12 @@ TEST_F(RegistrationTest, RefreshCachesSignedChallenge) {
       /*authorization=*/std::nullopt);
   std::unique_ptr<RegistrationFetcher> fetcher =
       RegistrationFetcher::CreateFetcher(
-          request_param, session_service(), mock_key_service, context_.get(),
-          isolation_info,
+          request_param, session_service(), unexportable_key_service(),
+          context_.get(), isolation_info,
           /*net_log_source=*/std::nullopt,
           /*original_request_initiator=*/std::nullopt,
           unexportable_keys::BackgroundTaskPriority::kBestEffort);
-  fetcher->StartFetchWithExistingKey(request_param, UnexportableSigningKeyId(),
+  fetcher->StartFetchWithExistingKey(request_param, CreateSigningKey(),
                                      callback.callback());
   callback.WaitForCall();
 
@@ -2276,10 +2243,9 @@ TEST_F(RegistrationTest, RefreshCachedSignedChallengeUsed) {
   ASSERT_TRUE(server_.Start());
 
   // No calls to actual signing.
+  crypto::ScopedFakeUnexportableKeyProvider scoped_fake_key_provider;
   unexportable_keys::MockUnexportableKeyService mock_key_service;
-  EXPECT_CALL(mock_key_service, GetAlgorithm(_)).Times(0);
-  EXPECT_CALL(mock_key_service, GetSubjectPublicKeyInfo(_)).Times(0);
-  EXPECT_CALL(mock_key_service, SignSlowlyAsync(_, _, _, _)).Times(0);
+  mock_key_service.DelegateToService(unexportable_key_service());
 
   // Create a matching cached challenge.
   SessionService::SignedRefreshChallenge cached_challenge;
@@ -2318,17 +2284,9 @@ TEST_F(RegistrationTest, RefreshCachedSignedChallengeDoesNotMatch) {
       base::BindRepeating(&ReturnResponse, HTTP_OK, kBasicValidJson));
   ASSERT_TRUE(server_.Start());
 
+  crypto::ScopedFakeUnexportableKeyProvider scoped_fake_key_provider;
   unexportable_keys::MockUnexportableKeyService mock_key_service;
-  auto [spki, jwk] = GetRS256SpkiAndJwkForTesting();
-  std::vector<unsigned char> spki_vector(spki.begin(), spki.end());
-  EXPECT_CALL(mock_key_service, GetAlgorithm(_))
-      .WillOnce(Return(crypto::SignatureVerifier::RSA_PKCS1_SHA256));
-  EXPECT_CALL(mock_key_service, GetSubjectPublicKeyInfo(_))
-      .WillOnce(Return(spki_vector));
-  EXPECT_CALL(mock_key_service, SignSlowlyAsync(_, _, _, _))
-      .WillOnce(WithArg<3>([](auto callback) {
-        std::move(callback).Run(std::vector<uint8_t>{'s', 'i', 'g'});
-      }));
+  mock_key_service.DelegateToService(unexportable_key_service());
 
   // Add cached signed challenge that doesn't match (the challenge used is
   // different).
@@ -2352,12 +2310,12 @@ TEST_F(RegistrationTest, RefreshCachedSignedChallengeDoesNotMatch) {
       /*authorization=*/std::nullopt);
   std::unique_ptr<RegistrationFetcher> fetcher =
       RegistrationFetcher::CreateFetcher(
-          request_param, session_service(), mock_key_service, context_.get(),
-          isolation_info,
+          request_param, session_service(), unexportable_key_service(),
+          context_.get(), isolation_info,
           /*net_log_source=*/std::nullopt,
           /*original_request_initiator=*/std::nullopt,
           unexportable_keys::BackgroundTaskPriority::kBestEffort);
-  fetcher->StartFetchWithExistingKey(request_param, UnexportableSigningKeyId(),
+  fetcher->StartFetchWithExistingKey(request_param, CreateSigningKey(),
                                      callback.callback());
   callback.WaitForCall();
 
