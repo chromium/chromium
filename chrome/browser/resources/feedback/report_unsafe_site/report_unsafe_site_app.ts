@@ -7,8 +7,10 @@ import '//resources/cr_elements/cr_checkbox/cr_checkbox.js';
 import '//resources/cr_elements/cr_icon/cr_icon.js';
 import '//resources/cr_elements/cr_input/cr_input.js';
 import './icons.html.js';
+import '/strings.m.js';
 
 import type {CrCheckboxElement} from '//resources/cr_elements/cr_checkbox/cr_checkbox.js';
+import {loadTimeData} from '//resources/js/load_time_data.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
 import {getCss} from './report_unsafe_site_app.css.js';
@@ -40,6 +42,7 @@ export class ReportUnsafeSiteAppElement extends CrLitElement {
       includeScreenshot_: {type: Boolean},
       screenshotDataUri_: {type: String},
       isSendingCsdPing_: {type: Boolean},
+      webuiRoundedIconsEnabled_: {type: Boolean},
     };
   }
 
@@ -47,6 +50,8 @@ export class ReportUnsafeSiteAppElement extends CrLitElement {
   protected accessor includeScreenshot_: boolean = false;
   protected accessor screenshotDataUri_: string = '';
   protected accessor isSendingCsdPing_: boolean = false;
+  protected accessor webuiRoundedIconsEnabled_: boolean =
+      loadTimeData.getBoolean('webuiRoundedIconsEnabled');
 
   override async connectedCallback() {
     super.connectedCallback();

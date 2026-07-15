@@ -24,7 +24,10 @@ export function getHtml(this: ReportUnsafeSiteAppElement) {
           alt="$i18n{reportUnsafeSiteA11yImageText}">
     ` : html`
       <div id="screenshot-placeholder">
-        <cr-icon icon="report_unsafe_site:visibility-off"></cr-icon>
+        <cr-icon
+            icon="${this.webuiRoundedIconsEnabled_
+                ? 'report_unsafe_site:visibility-off'
+                : 'report_unsafe_site:visibility-off-old'}"></cr-icon>
       </div>
     `}
     <div>
