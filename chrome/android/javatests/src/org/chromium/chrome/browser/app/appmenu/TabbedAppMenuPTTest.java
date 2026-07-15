@@ -48,7 +48,7 @@ import java.io.IOException;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Batch(Batch.PER_CLASS)
 // TODO: Add new tests when the flag is enabled.
-@EnableFeatures(ChromeFeatureList.ANDROID_THEME_MODULE)
+@DisableFeatures(ChromeFeatureList.ANDROID_THEME_MODULE)
 public class TabbedAppMenuPTTest {
     @Rule
     public AutoResetCtaTransitTestRule mCtaTestRule =
@@ -57,7 +57,7 @@ public class TabbedAppMenuPTTest {
     @Rule
     public final ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
-                    .setRevision(5)
+                    .setRevision(4)
                     .setDescription("App menu")
                     .setBugComponent(ChromeRenderTestRule.Component.UI_BROWSER_MOBILE_APP_MENU)
                     .build();

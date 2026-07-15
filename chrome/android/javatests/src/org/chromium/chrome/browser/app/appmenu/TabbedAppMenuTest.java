@@ -35,7 +35,7 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.chrome.R;
@@ -75,7 +75,7 @@ import java.util.concurrent.Callable;
 // (UserActionableError.NEEDS_UPM_BACKEND_UPGRADE).
 @Restriction(GmsCoreVersionRestriction.RESTRICTION_TYPE_VERSION_GE_24W15)
 public class TabbedAppMenuTest {
-    private static final int RENDER_TEST_REVISION = 3;
+    private static final int RENDER_TEST_REVISION = 2;
 
     private static final String RENDER_TEST_DESCRIPTION =
             "Badge on settings menu item icon on identity and sync errors.";
@@ -200,7 +200,7 @@ public class TabbedAppMenuTest {
     @SmallTest
     @Feature({"Browser", "Main", "Bookmark", "RenderTest"})
     @Restriction(DeviceFormFactor.PHONE)
-    @EnableFeatures({ChromeFeatureList.ANDROID_THEME_MODULE})
+    @DisableFeatures({ChromeFeatureList.ANDROID_THEME_MODULE})
     public void testBookmarkMenuItem() throws IOException {
         PropertyModel bookmarkStarPropertyModel =
                 AppMenuTestSupport.getMenuItemPropertyModel(

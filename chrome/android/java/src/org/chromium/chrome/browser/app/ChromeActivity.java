@@ -209,6 +209,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.task_manager.TaskManager;
 import org.chromium.chrome.browser.task_manager.TaskManagerFactory;
+import org.chromium.chrome.browser.theme.ThemeModuleUtils;
 import org.chromium.chrome.browser.toolbar.ControlContainer;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.chrome.browser.translate.TranslateBridge;
@@ -1286,6 +1287,11 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
 
     @Override
     protected void applyThemeOverlays() {
+        // Apply the theme overlay before applying dynamic colors in the super's call. The order
+        // ensures the color attributes for dynamic colors are not overridden by the overlay.
+        if (ThemeModuleUtils.isEnabled()) {
+            applySingleThemeOverlay(R.style.ThemeOverlay_BrowserUI_ExpressiveUpdate);
+        }
 
         if (!HubUtils.isGtsUpdateEnabled()) {
             applySingleThemeOverlay(R.style.HubToolbarActionButtonStyleOverlay_Baseline);
