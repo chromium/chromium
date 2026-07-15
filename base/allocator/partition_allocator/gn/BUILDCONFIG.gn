@@ -53,7 +53,6 @@ is_linux = current_os == "linux"
 is_mac = current_os == "mac"
 is_win = current_os == "win" || current_os == "winuwp"
 is_cast_android = false
-is_castos = false
 is_cronet_build = false
 enable_expensive_dchecks = false
 dcheck_is_configurable = false

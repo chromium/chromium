@@ -145,7 +145,10 @@ class GrpcServerReactor : public grpc::ServerGenericBidiReactor {
   }
 
   const std::string name_;
-  raw_ptr<grpc::CallbackServerContext> context_;
+  // Dangling in
+  // GrpcUnaryTest.AsyncUnaryCallCancelledByClientAndLeftActiveDuringServerShutdown
+  // on Linux (CastOS).
+  raw_ptr<grpc::CallbackServerContext, DanglingUntriaged> context_;
 
   std::optional<grpc::ByteBuffer> request_byte_buffer_;
   std::optional<grpc::ByteBuffer> response_byte_buffer_;

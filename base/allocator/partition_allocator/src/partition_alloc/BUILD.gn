@@ -181,7 +181,6 @@ pa_buildflag_header("buildflags") {
     "HAS_64_BIT_POINTERS=$has_64_bit_pointers",
     "HAS_MEMORY_TAGGING=$has_memory_tagging",
     "IS_ANDROID=$is_android",
-    "IS_CASTOS=$is_castos",
     "IS_CHROMEOS=$is_chromeos",
     "IS_COMPONENT_BUILD=$is_component_build",
     "IS_DEBUG=$partition_alloc_is_debug",

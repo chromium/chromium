@@ -40,6 +40,7 @@
 #include "content/test/test_render_widget_host_factory.h"
 #include "content/test/test_web_contents.h"
 #include "net/base/mock_network_change_notifier.h"
+#include "services/network/network_service.h"
 #include "third_party/blink/public/common/input/synthetic_web_input_event_builders.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 
@@ -297,6 +298,21 @@ void RenderViewHostTestHarness::TearDown() {
   // properly if the |rph_factory_| reset above enqueued any tasks which
   // depend on |browser_context_|.
   GetUIThreadTaskRunner({})->DeleteSoon(FROM_HERE, browser_context_.release());
+
+  // The in-process NetworkService is a leaked singleton that outlives the
+  // test harness. Its HostResolverManager holds a raw_ptr to the
+  // SystemDnsConfigChangeNotifier owned by |network_change_notifier_|. Clear
+  // that pointer (and remove the observer) before |network_change_notifier_|
+  // is destroyed to avoid a dangling pointer detection under PartitionAlloc.
+  // Found while debugging BRP on Linux (CastOS) which uses
+  // InProcessNetworkService.
+  if (auto* network_service =
+          network::NetworkService::GetNetworkServiceForTesting()) {
+    if (auto* host_resolver_manager =
+            network_service->host_resolver_manager()) {
+      host_resolver_manager->ClearSystemDnsConfigNotifierForTesting();
+    }
+  }
 
   // Although this isn't required by many, some subclasses members require that
   // the task environment is gone by the time that they are destroyed (akin to

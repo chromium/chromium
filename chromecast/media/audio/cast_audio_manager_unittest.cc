@@ -87,7 +87,12 @@ class CastAudioManagerTest : public testing::Test {
   void CreateAudioManagerForTesting() {
     // Only one AudioManager may exist at a time, so destroy the one we're
     // currently holding before creating a new one.
-    // Flush the message loop to run any shutdown tasks posted by AudioManager.
+    // We must reset `device_info_accessor_` first because it holds a raw_ptr
+    // to `audio_manager_` which would otherwise dangle when we reset the
+    // audio manager.
+    // Found while debugging BRP on Linux (CastOS) which uses
+    // InProcessNetworkService.
+    device_info_accessor_.reset();
     if (audio_manager_) {
       audio_manager_->Shutdown();
       audio_manager_.reset();

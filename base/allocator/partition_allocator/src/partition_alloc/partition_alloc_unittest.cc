@@ -5866,8 +5866,7 @@ TEST_P(PartitionAllocDeathTest, CheckTriggered) {
 // Not on chromecast, since gtest considers extra output from itself as a test
 // failure:
 // https://ci.chromium.org/ui/p/chromium/builders/ci/Cast%20Audio%20Linux/98492/overview
-#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && PA_USE_DEATH_TESTS() && \
-    !PA_BUILDFLAG(IS_CASTOS)
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && PA_USE_DEATH_TESTS()
 
 namespace {
 
@@ -5944,7 +5943,7 @@ TEST_P(PartitionAllocTest, DISABLED_PreforkHandler) {
 }
 
 #endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) &&
-        // PA_USE_DEATH_TESTS() && !PA_BUILDFLAG(IS_CASTOS)
+        // PA_USE_DEATH_TESTS()
 
 // Checks the bucket index logic.
 TEST_P(PartitionAllocTest, GetIndex) {

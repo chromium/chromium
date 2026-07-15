@@ -35,7 +35,12 @@ class GrpcCall {
     void Cancel() { grpc_context_->TryCancel(); }
 
    private:
-    raw_ptr<grpc::ClientContext> grpc_context_;
+    // Dangling in
+    // GrpcUnaryTest.AsyncUnaryCallCancelledByClientAndDestroyedBeforeServerShutdown
+    // and
+    // GrpcUnaryTest.AsyncUnaryCallCancelledByClientAndLeftActiveDuringServerShutdown
+    // on Linux (CastOS).
+    raw_ptr<grpc::ClientContext, DanglingUntriaged> grpc_context_;
   };
 
   explicit GrpcCall(SyncInterface* stub) : GrpcCall(stub, Request()) {}

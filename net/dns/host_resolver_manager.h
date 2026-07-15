@@ -269,6 +269,17 @@ class NET_EXPORT HostResolverManager
     last_ipv6_probe_time_ = base::TimeTicks();
   }
 
+  // Removes this manager as an observer of the SystemDnsConfigChangeNotifier
+  // and clears the pointer. This is needed in tests where the
+  // SystemDnsConfigChangeNotifier (owned by MockNetworkChangeNotifier) is
+  // destroyed before the in-process NetworkService (which is leaked).
+  void ClearSystemDnsConfigNotifierForTesting() {
+    if (system_dns_config_notifier_) {
+      system_dns_config_notifier_->RemoveObserver(this);
+      system_dns_config_notifier_ = nullptr;
+    }
+  }
+
   // Allows the tests to catch slots leaking out of the dispatcher.  One
   // HostResolverManager::Job could occupy multiple PrioritizedDispatcher job
   // slots.

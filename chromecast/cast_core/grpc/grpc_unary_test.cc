@@ -4,10 +4,12 @@
 
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
+#include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
@@ -222,6 +224,15 @@ TEST_F(GrpcUnaryTest, AsyncUnaryCallCancelledIfServerIsStopped) {
         response_received_event.Signal();
       }));
   ASSERT_TRUE(response_received_event.TimedWait(kEventTimeout));
+  // Post a task to the current thread and run the loop to ensure that any
+  // pending tasks (such as gRPC reactor cleanup) are fully drained before
+  // the test ends, preventing dangling pointers.
+  // Found while debugging BRP on Linux (CastOS) which uses
+  // InProcessNetworkService.
+  base::RunLoop run_loop;
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, run_loop.QuitClosure());
+  run_loop.Run();
 }
 
 TEST_F(GrpcUnaryTest, SyncUnaryCallSucceedsExtra) {

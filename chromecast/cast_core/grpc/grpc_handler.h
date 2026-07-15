@@ -33,7 +33,8 @@ class GrpcHandler {
       grpc::CallbackServerContext* context) = 0;
 
  private:
-  raw_ptr<ServerReactorTracker> server_reactor_tracker_;
+  // Dangling in GrpcUnaryTest.StartsUdsServer on Linux CastOS.
+  raw_ptr<ServerReactorTracker, DanglingUntriaged> server_reactor_tracker_;
 };
 
 }  // namespace utils
