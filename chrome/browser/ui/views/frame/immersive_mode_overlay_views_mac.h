@@ -7,12 +7,15 @@
 
 #include <set>
 
+#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/views/theme_copying_widget.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/canvas.h"
 
 class BrowserView;
+class BrowserWindowModalDialogDelegate;
 
 // OverlayWidgetMac is a child Widget of BrowserWidget used during immersive
 // fullscreen on macOS that hosts the top container. Its native Window and View
@@ -27,6 +30,10 @@ class OverlayWidgetMac : public ThemeCopyingWidget {
   // Create an overlay widget for `browser_view`.
   static OverlayWidgetMac* Create(BrowserView* browser_view,
                                   views::Widget* parent);
+
+  // views::Widget:
+  void OnNativeWidgetMove() override;
+  void OnNativeWidgetSizeChanged(const gfx::Size& new_size) override;
 
   // ThemeCopyingWidget:
 
@@ -44,7 +51,10 @@ class OverlayWidgetMac : public ThemeCopyingWidget {
   bool ShouldViewsStyleFollowWidgetActivation() const override;
 
  private:
-  explicit OverlayWidgetMac(views::Widget* role_model);
+  OverlayWidgetMac(BrowserWindowModalDialogDelegate& modal_dialog_delegate,
+                   views::Widget* role_model);
+
+  const raw_ref<BrowserWindowModalDialogDelegate> modal_dialog_delegate_;
 };
 
 // TabContainerOverlayView is a view that hosts the HorizontalTabStripRegionView
@@ -59,7 +69,6 @@ class TabContainerOverlayViewMac : public views::View {
   ~TabContainerOverlayViewMac() override;
 
   // views::View:
-
   void OnPaintBackground(gfx::Canvas* canvas) override;
 
   // `BrowserRootView` handles drag and drop for the tab strip. In immersive

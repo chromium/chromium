@@ -35,6 +35,7 @@ class TabModalDialogHost : public web_modal::WebContentsModalDialogHost,
   bool ShouldConstrainDialogBoundsByHost() override;
   void AddObserver(web_modal::ModalDialogHostObserver* observer) override;
   void RemoveObserver(web_modal::ModalDialogHostObserver* observer) override;
+  void NotifyPositionRequiresUpdate() override;
 
   // web_modal::WebContentsModalDialogHost:
   gfx::Size GetMaximumDialogSize() override;
@@ -54,7 +55,6 @@ class TabModalDialogHost : public web_modal::WebContentsModalDialogHost,
   int GetToolbarOverlappingYCoordinate();
 
   int GetDialogYCoordinate(int contents_container_view_y, int dialog_height);
-  void NotifyPositionRequiresUpdate();
 
   bool IsBottomTabInSplit();
 

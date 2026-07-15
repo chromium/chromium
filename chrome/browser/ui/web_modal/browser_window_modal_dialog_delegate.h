@@ -36,6 +36,8 @@ class BrowserWindowModalDialogDelegate
   web_modal::WebContentsModalDialogHost* GetWebContentsModalDialogHost(
       content::WebContents* web_contents) override;
 
+  void NotifyModalDialogsPositionRequiresUpdate();
+
  private:
   const raw_ptr<BrowserWindowInterface> browser_;
   ui::ScopedUnownedUserData<BrowserWindowModalDialogDelegate>

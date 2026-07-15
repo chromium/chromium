@@ -17,4 +17,6 @@ bool ModalDialogHost::ShouldConstrainDialogBoundsByHost() {
   return true;
 }
 
+void ModalDialogHost::NotifyPositionRequiresUpdate() {}
+
 }  // namespace web_modal

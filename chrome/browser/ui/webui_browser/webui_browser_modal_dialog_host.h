@@ -16,7 +16,8 @@ class WebUIBrowserModalDialogHost
   explicit WebUIBrowserModalDialogHost(WebUIBrowserWindow* window);
   ~WebUIBrowserModalDialogHost() override;
 
-  void NotifyPositionRequiresUpdate();
+  // web_modal::WebContentsModalDialogHost:
+  void NotifyPositionRequiresUpdate() override;
 
   gfx::NativeView GetHostView() const override;
   gfx::Point GetDialogPosition(const gfx::Size& size) override;

@@ -19,6 +19,7 @@
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/web_modal/web_contents_modal_dialog_host.h"
 #include "content/public/browser/web_contents.h"
 
 DEFINE_USER_DATA(BrowserWindowModalDialogDelegate);
@@ -96,4 +97,28 @@ BrowserWindowModalDialogDelegate::GetWebContentsModalDialogHost(
   // tab and non-tab WebContents (e.g. DevTools) with correct fallback.
   return BrowserWindow::FromBrowser(browser_)->GetWebContentsModalDialogHostFor(
       web_contents);
+}
+
+void BrowserWindowModalDialogDelegate::
+    NotifyModalDialogsPositionRequiresUpdate() {
+  BrowserWindow* browser_window = BrowserWindow::FromBrowser(browser_);
+  // window is nullptr during browser startup.
+  if (!browser_window) {
+    return;
+  }
+
+  web_modal::WebContentsModalDialogHost* window_modal_host =
+      browser_window->GetWebContentsModalDialogHost();
+  CHECK(window_modal_host);
+  window_modal_host->NotifyPositionRequiresUpdate();
+
+  // Tab Modals.
+  TabStripModel* tab_strip_model = browser_->GetTabStripModel();
+  for (int i = 0; i < tab_strip_model->count(); ++i) {
+    content::WebContents* web_contents = tab_strip_model->GetWebContentsAt(i);
+    web_modal::WebContentsModalDialogHost* tab_modal_host =
+        GetWebContentsModalDialogHost(web_contents);
+    CHECK(tab_modal_host);
+    tab_modal_host->NotifyPositionRequiresUpdate();
+  }
 }

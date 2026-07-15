@@ -51,6 +51,9 @@ class WEB_MODAL_EXPORT ModalDialogHost {
   // destruction. See https://crbug.com/1170577
   virtual void AddObserver(ModalDialogHostObserver* observer) = 0;
   virtual void RemoveObserver(ModalDialogHostObserver* observer) = 0;
+
+  // Notify observers that the dialog position needs to be updated.
+  virtual void NotifyPositionRequiresUpdate();
 };
 
 }  // namespace web_modal

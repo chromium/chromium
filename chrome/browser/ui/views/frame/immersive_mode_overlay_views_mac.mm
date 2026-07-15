@@ -12,6 +12,8 @@
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/views/frame/browser_frame_view_mac.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/web_modal/browser_window_modal_dialog_delegate.h"
+#include "components/web_modal/web_contents_modal_dialog_host.h"
 #include "ui/base/clipboard/clipboard_format_type.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/widget/sublevel_manager.h"
@@ -33,8 +35,11 @@ OverlayWidgetMac* OverlayWidgetMac::Create(BrowserView* browser_view,
   // darker dimming color on macOS.
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
   params.name = "mac-fullscreen-overlay";
+  BrowserWindowModalDialogDelegate* modal_dialog_delegate =
+      BrowserWindowModalDialogDelegate::From(browser_view->browser());
+  CHECK(modal_dialog_delegate);
   OverlayWidgetMac* overlay_widget =
-      new OverlayWidgetMac(browser_view->GetWidget());
+      new OverlayWidgetMac(*modal_dialog_delegate, browser_view->GetWidget());
 
   // When the overlay is used some Views are moved to the overlay_widget. When
   // this happens we want the fullscreen state of the overlay_widget to match
@@ -67,10 +72,23 @@ OverlayWidgetMac* OverlayWidgetMac::Create(BrowserView* browser_view,
   return overlay_widget;
 }
 
-OverlayWidgetMac::OverlayWidgetMac(views::Widget* role_model)
-    : ThemeCopyingWidget(role_model) {}
+OverlayWidgetMac::OverlayWidgetMac(
+    BrowserWindowModalDialogDelegate& modal_dialog_delegate,
+    views::Widget* role_model)
+    : ThemeCopyingWidget(role_model),
+      modal_dialog_delegate_(modal_dialog_delegate) {}
 
 OverlayWidgetMac::~OverlayWidgetMac() = default;
+
+void OverlayWidgetMac::OnNativeWidgetMove() {
+  ThemeCopyingWidget::OnNativeWidgetMove();
+  modal_dialog_delegate_->NotifyModalDialogsPositionRequiresUpdate();
+}
+
+void OverlayWidgetMac::OnNativeWidgetSizeChanged(const gfx::Size& new_size) {
+  ThemeCopyingWidget::OnNativeWidgetSizeChanged(new_size);
+  modal_dialog_delegate_->NotifyModalDialogsPositionRequiresUpdate();
+}
 
 bool OverlayWidgetMac::GetAccelerator(int cmd_id,
                                       ui::Accelerator* accelerator) const {

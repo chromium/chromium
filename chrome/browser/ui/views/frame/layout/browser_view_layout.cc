@@ -65,7 +65,7 @@ class BrowserViewLayout::BrowserModalDialogHostViews
     observer_list_.Notify(&ModalDialogHostObserver::OnHostDestroying);
   }
 
-  void NotifyPositionRequiresUpdate() {
+  void NotifyPositionRequiresUpdate() override {
     observer_list_.Notify(&ModalDialogHostObserver::OnPositionRequiresUpdate);
   }
 
