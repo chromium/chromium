@@ -24,7 +24,7 @@ OnboardingManager::~OnboardingManager() = default;
 
 bool OnboardingManager::ShowOnboardingIfNeeded(
     tabs::TabInterface& tab,
-    const TargetId& target_id,
+    const content::GlobalDOMNodeId& target_id,
     DictationSessionEntryPoint entry_point) {
   if (pref_service_->GetBoolean(prefs::kPrefDictationOnboardingCompleted)) {
     return false;

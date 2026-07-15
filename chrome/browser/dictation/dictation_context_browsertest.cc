@@ -204,7 +204,7 @@ IN_PROC_BROWSER_TEST_F(DictationContextBrowserTest,
   )JS";
   ASSERT_EQ(content::EvalJs(iframe, setup_script), "quick brown");
 
-  StartSession(TargetId{iframe->GetWeakDocumentPtr()});
+  StartSession(content::GlobalDOMNodeId{iframe->GetWeakDocumentPtr()});
 
   ASSERT_NE(session_controller(), nullptr);
 

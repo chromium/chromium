@@ -19,6 +19,7 @@
 #include "chrome/browser/dictation/session_ui.h"
 #include "chrome/browser/dictation/stream_provider.h"
 #include "chrome/browser/dictation/target.h"
+#include "content/public/browser/global_dom_node_id.h"
 
 namespace dictation {
 
@@ -38,7 +39,7 @@ void SessionController::Initialize() {
 }
 
 void SessionController::StartDictationStream(
-    const TargetId& target_id,
+    const content::GlobalDOMNodeId& target_id,
     DictationStreamStartTrigger trigger) {
   // TODO(b/525856380): Add support for "swapping in" a new stream. That is,
   // end the current stream and start a new one without entering the

@@ -23,12 +23,14 @@
 
 namespace dictation {
 
-TargetId EmptyTargetId() {
-  return TargetId();
+content::GlobalDOMNodeId EmptyTargetId() {
+  return content::GlobalDOMNodeId();
 }
 
-TargetId DefaultInPageTargetId(content::WebContents* web_contents) {
-  return TargetId{web_contents->GetPrimaryMainFrame()->GetWeakDocumentPtr()};
+content::GlobalDOMNodeId DefaultInPageTargetId(
+    content::WebContents* web_contents) {
+  return content::GlobalDOMNodeId{
+      web_contents->GetPrimaryMainFrame()->GetWeakDocumentPtr()};
 }
 
 base::test::ScopedFeatureList CreateEnablingFeatureList() {

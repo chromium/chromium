@@ -29,7 +29,8 @@ namespace dictation {
 namespace {
 constexpr int kVoiceTypingSettingsDisabled = 2;
 
-tabs::TabInterface* GetTabFromTargetId(const TargetId& target_id) {
+tabs::TabInterface* GetTabFromTargetId(
+    const content::GlobalDOMNodeId& target_id) {
   content::RenderFrameHost* rfh = target_id.document.AsRenderFrameHostIfValid();
   if (!rfh) {
     return nullptr;
@@ -54,7 +55,7 @@ DictationKeyedService* DictationKeyedService::Get(
 
 DictationKeyedService::SessionState::SessionState(
     SessionControllerDelegate& delegate,
-    const TargetId& target_id)
+    const content::GlobalDOMNodeId& target_id)
     : controller_(delegate), target_id_(target_id) {}
 
 DictationKeyedService::SessionState::~SessionState() = default;
@@ -102,7 +103,7 @@ std::unique_ptr<SessionUi> DictationKeyedService::CreateUi(
 
 void DictationKeyedService::StartSession(
     tabs::TabInterface& tab,
-    const TargetId& target_id,
+    const content::GlobalDOMNodeId& target_id,
     DictationSessionEntryPoint entry_point) {
   CHECK(IsEnabled());
   CHECK(!session_);
@@ -133,14 +134,20 @@ bool DictationKeyedService::ShouldShowContextMenuItem() const {
   return !session_;
 }
 
-void DictationKeyedService::ContextMenuHandler(content::RenderFrameHost& rfh) {
+void DictationKeyedService::ContextMenuHandler(
+    const content::GlobalDOMNodeId& target_id) {
   // Policy could have changed to disabled while the context menu was open.
   if (!IsEnabled()) {
     return;
   }
 
+  content::RenderFrameHost* rfh = target_id.document.AsRenderFrameHostIfValid();
+  if (!rfh) {
+    return;
+  }
+
   content::WebContents* web_contents =
-      content::WebContents::FromRenderFrameHost(&rfh);
+      content::WebContents::FromRenderFrameHost(rfh);
   if (!web_contents) {
     return;
   }
@@ -153,8 +160,7 @@ void DictationKeyedService::ContextMenuHandler(content::RenderFrameHost& rfh) {
 
   // TODO(crbug.com/525856380): Handle changes to the focused element. Identify
   // the targeted element for the dictation Target.
-  StartSession(*tab, TargetId{rfh.GetWeakDocumentPtr()},
-               DictationSessionEntryPoint::kContextMenu);
+  StartSession(*tab, target_id, DictationSessionEntryPoint::kContextMenu);
 }
 
 bool DictationKeyedService::IsEnabled() const {

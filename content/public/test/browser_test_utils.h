@@ -2712,6 +2712,8 @@ void InitAndEnableRenderDocumentForAllFrames(
 // or std::nullopt if no node matches.
 // Note: This method makes multiple renderer IPC calls (via the devtools
 // protocol) and waits for a result (an IPC back from the renderer) each time.
+// TODO(bokan): Update the return value to be a content::DOMNodeId which is a
+// base::IdType32
 std::optional<int> GetDOMNodeId(content::RenderFrameHost& rfh,
                                 std::string_view query_selector);
 

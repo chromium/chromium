@@ -12,7 +12,8 @@ namespace dictation {
 
 Target::Target() = default;
 
-Target::Target(const TargetId& target_id) : target_id_(target_id) {}
+Target::Target(const content::GlobalDOMNodeId& target_id)
+    : target_id_(target_id) {}
 
 Target::~Target() = default;
 

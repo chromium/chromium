@@ -62,7 +62,8 @@ ListenerStreamProvider* DictationBrowserTestBase::attached_stream() {
       session_controller()->attached_stream_provider());
 }
 
-void DictationBrowserTestBase::StartSession(const TargetId& target_id) {
+void DictationBrowserTestBase::StartSession(
+    const content::GlobalDOMNodeId& target_id) {
   tabs::TabInterface* tab = chrome_test_utils::GetActiveTab(this);
   CHECK(tab);
   dictation_service().StartSession(*tab, target_id,

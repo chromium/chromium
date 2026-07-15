@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "content/public/browser/weak_document_ptr.h"
+#include "content/public/browser/global_dom_node_id.h"
 
 namespace content {
 class RenderFrameHost;
@@ -16,20 +16,20 @@ class RenderWidgetHost;
 
 namespace dictation {
 
-struct TargetId {
-  content::WeakDocumentPtr document;
-};
-
 // Represents a dictation target into which transcriptions will be written.
 class Target {
  public:
   Target();
-  explicit Target(const TargetId& target_id);
+  explicit Target(const content::GlobalDOMNodeId& target_id);
   virtual ~Target();
 
   // Returns the RenderFrameHost associated with this target, or nullptr if it
   // no longer exists.
   content::RenderFrameHost* GetRenderFrameHost() const;
+
+  const content::GlobalDOMNodeId& global_dom_node_id() const {
+    return target_id_;
+  }
 
   // Sets the composition text in the target.
   void SetComposition(const std::u16string& text, bool is_final);
@@ -40,7 +40,7 @@ class Target {
  private:
   content::RenderWidgetHost* GetRenderWidgetHost() const;
 
-  TargetId target_id_;
+  content::GlobalDOMNodeId target_id_;
 };
 
 }  // namespace dictation
