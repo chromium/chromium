@@ -330,16 +330,8 @@ bool Canvas2DResourceProvider::WritePixels(const SkImageInfo& orig_info,
           GetSkSurface()->getCanvas(), GetOrCreateSWCanvasImageProvider());
     }
 
-    bool wrote_pixels = GetSkSurface()->getCanvas()->writePixels(
-        orig_info, pixels, row_bytes, x, y);
-
-    if (wrote_pixels) {
-      // WritePixels content is not saved in recording. Calling WritePixels
-      // therefore invalidates `last_recording_` because it's now
-      // missing that information.
-      last_recording_ = std::nullopt;
-    }
-    return wrote_pixels;
+    return GetSkSurface()->getCanvas()->writePixels(orig_info, pixels,
+                                                    row_bytes, x, y);
   }
   if (IsGpuContextLost()) {
     return false;

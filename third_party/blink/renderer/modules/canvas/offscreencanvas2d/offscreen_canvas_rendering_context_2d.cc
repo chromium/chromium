@@ -534,11 +534,23 @@ bool OffscreenCanvasRenderingContext2D::WritePixels(
   if (!IsResourceProviderValid()) {
     return false;
   }
+  // WritePixels content is not saved in the recording. Calling WritePixels
+  // therefore invalidates the last recording because it's now
+  // missing that information.
+  bool result = false;
   if (shared_image_provider_) {
-    return shared_image_provider_->WritePixels(orig_info, pixels, row_bytes, x,
-                                               y);
+    result =
+        shared_image_provider_->WritePixels(orig_info, pixels, row_bytes, x, y);
+    if (result) {
+      shared_image_provider_->ClearLastRecording();
+    }
+  } else {
+    result = bitmap_provider_->WritePixels(orig_info, pixels, row_bytes, x, y);
+    if (result) {
+      bitmap_provider_->ClearLastRecording();
+    }
   }
-  return bitmap_provider_->WritePixels(orig_info, pixels, row_bytes, x, y);
+  return result;
 }
 
 bool OffscreenCanvasRenderingContext2D::ResolveFont(const String& new_font) {

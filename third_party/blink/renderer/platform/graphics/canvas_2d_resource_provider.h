@@ -237,6 +237,7 @@ class PLATFORM_EXPORT Canvas2DResourceProvider
   std::optional<cc::PaintRecord> Flush(FlushReason = FlushReason::kOther);
   void ReleaseImageProviderImages();
   const std::optional<cc::PaintRecord>& LastRecording();
+  void ClearLastRecording() { last_recording_ = std::nullopt; }
 
   void SetAnimatedImageFrameIndexes(
       scoped_refptr<const cc::AnimatedImageFrameIndexMap>);
