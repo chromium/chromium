@@ -11,6 +11,8 @@
 #include "base/barrier_closure.h"
 #include "base/cancelable_callback.h"
 #include "base/check.h"
+#include "base/features.h"
+#include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/functional/concurrent_closures.h"
 #include "base/i18n/char_iterator.h"
@@ -30,6 +32,8 @@
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/media_session.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/render_process_host.h"
+#include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
@@ -44,6 +48,13 @@
 #include "third_party/blink/public/mojom/content_extraction/ai_page_content.mojom.h"
 
 namespace optimization_guide {
+
+namespace features {
+// Controls whether or not we verify the process of a frame reporting a popup
+// matches an authorized popup widget in the browser process.
+BASE_FEATURE(kAnnotatedPageContentVerifyPopupProcess,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+}  // namespace features
 
 namespace {
 
@@ -322,6 +333,28 @@ std::optional<optimization_guide::RenderFrameInfo> GetRenderFrameInfo(
   render_frame_info.source_origin = render_frame_host->GetLastCommittedOrigin();
   render_frame_info.url = render_frame_host->GetLastCommittedURL();
   render_frame_info.media_data = ComputeMediaData(render_frame_host);
+
+  if (base::FeatureList::IsEnabled(
+          features::kAnnotatedPageContentVerifyPopupProcess)) {
+    content::WebContents* web_contents =
+        content::WebContents::FromRenderFrameHost(render_frame_host);
+    if (web_contents) {
+      const content::RenderProcessHost* render_process_host =
+          render_frame_host->GetProcess();
+      for (auto* widget_view : web_contents->GetPopupWidgets()) {
+        if (widget_view && widget_view->GetRenderWidgetHost() &&
+            widget_view->GetRenderWidgetHost()->GetProcess() ==
+                render_process_host) {
+          render_frame_info.has_active_popup = true;
+          break;
+        }
+      }
+    }
+  } else {
+    // If verification is disabled, assume all reported popups are authorized.
+    render_frame_info.has_active_popup = true;
+  }
+
   return render_frame_info;
 }
 

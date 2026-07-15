@@ -41,6 +41,11 @@ struct RenderFrameInfo {
   GURL url;
   std::string serialized_server_token;
   std::optional<optimization_guide::proto::MediaData> media_data;
+
+  // Whether the browser process has verified that this frame (or its process)
+  // has an active popup widget. This is used for defense-in-depth against
+  // compromised renderers spoofing popups.
+  bool has_active_popup = false;
 };
 
 struct TargetNodeInfo {

@@ -1081,6 +1081,7 @@ TEST_F(PageContentProtoUtilTest, ConvertLabel) {
 TEST_F(PageContentProtoUtilTest, ConvertPopup) {
   base::test::ScopedFeatureList feature_list(
       blink::features::kAIPageContentIncludePopupWindows);
+  auto main_frame_token = CreateFrameToken();
   auto mojom_content = CreatePageContent();
 
   blink::mojom::AIPageContentPopupPtr popup =
@@ -1094,10 +1095,30 @@ TEST_F(PageContentProtoUtilTest, ConvertPopup) {
   popup->opener_dom_node_id = 1;
   mojom_content->frame_data->popup = std::move(popup);
 
-  AIPageContentResult page_content;
+  AIPageContentMap page_content_map;
+  page_content_map[main_frame_token] = std::move(mojom_content);
 
-  EXPECT_TRUE(
-      ConvertAIPageContentToProto(mojom_content, page_content).has_value());
+  auto get_render_frame_info = base::BindLambdaForTesting(
+      [&](int, blink::FrameToken token) -> std::optional<RenderFrameInfo> {
+        if (token == main_frame_token.frame_token) {
+          RenderFrameInfo render_frame_info;
+          render_frame_info.global_frame_token = main_frame_token;
+          render_frame_info.serialized_server_token = token.ToString();
+          // MOCK: signal that the browser process verified this popup.
+          render_frame_info.has_active_popup = true;
+          return render_frame_info;
+        }
+        return std::nullopt;
+      });
+
+  AIPageContentResult page_content;
+  FrameTokenSet frame_token_set;
+
+  EXPECT_TRUE(ConvertAIPageContentToProto(
+                  blink::mojom::AIPageContentOptions::New(), main_frame_token,
+                  page_content_map, get_render_frame_info, frame_token_set,
+                  page_content)
+                  .has_value());
 
   EXPECT_EQ(page_content.proto.version(),
             optimization_guide::proto::ANNOTATED_PAGE_CONTENT_VERSION_1_0);
@@ -1109,6 +1130,213 @@ TEST_F(PageContentProtoUtilTest, ConvertPopup) {
   EXPECT_EQ(
       page_content.proto.popup_window().opener_common_ancestor_dom_node_id(),
       1);
+}
+
+TEST_F(PageContentProtoUtilTest, ConvertPopupNotAuthorized) {
+  base::test::ScopedFeatureList feature_list(
+      blink::features::kAIPageContentIncludePopupWindows);
+  auto main_frame_token = CreateFrameToken();
+  auto mojom_content = CreatePageContent();
+
+  blink::mojom::AIPageContentPopupPtr popup =
+      blink::mojom::AIPageContentPopup::New();
+  popup->root_node =
+      CreateContentNode(blink::mojom::AIPageContentAttributeType::kRoot);
+  popup->opener_dom_node_id = 1;
+  mojom_content->frame_data->popup = std::move(popup);
+
+  AIPageContentMap page_content_map;
+  page_content_map[main_frame_token] = std::move(mojom_content);
+
+  auto get_render_frame_info = base::BindLambdaForTesting(
+      [&](int, blink::FrameToken token) -> std::optional<RenderFrameInfo> {
+        if (token == main_frame_token.frame_token) {
+          RenderFrameInfo render_frame_info;
+          render_frame_info.global_frame_token = main_frame_token;
+          render_frame_info.serialized_server_token = token.ToString();
+          // MOCK: Signal that browser process DID NOT find an active popup.
+          render_frame_info.has_active_popup = false;
+          return render_frame_info;
+        }
+        return std::nullopt;
+      });
+
+  AIPageContentResult page_content;
+  FrameTokenSet frame_token_set;
+
+  // Should succeed but with NO popup data because the frame is not authorized.
+  EXPECT_TRUE(ConvertAIPageContentToProto(
+                  blink::mojom::AIPageContentOptions::New(), main_frame_token,
+                  page_content_map, get_render_frame_info, frame_token_set,
+                  page_content)
+                  .has_value());
+
+  EXPECT_FALSE(page_content.proto.has_popup_window());
+}
+
+TEST_F(PageContentProtoUtilTest, ConvertPopupPriority) {
+  base::test::ScopedFeatureList feature_list(
+      blink::features::kAIPageContentIncludePopupWindows);
+
+  auto main_frame_token = CreateFrameToken();
+  auto root_content = CreatePageContent();
+
+  // Main frame popup
+  blink::mojom::AIPageContentPopupPtr main_popup =
+      blink::mojom::AIPageContentPopup::New();
+  main_popup->root_node =
+      CreateContentNode(blink::mojom::AIPageContentAttributeType::kRoot);
+  main_popup->root_node->children_nodes.push_back(CreateTextNode(
+      "main popup text", blink::mojom::AIPageContentTextSize::kM, false, 0));
+  main_popup->opener_dom_node_id = 1;
+  root_content->frame_data->popup = std::move(main_popup);
+
+  // Add an iframe
+  auto iframe_token = CreateFrameToken();
+  auto iframe_node =
+      CreateContentNode(blink::mojom::AIPageContentAttributeType::kIframe);
+  auto iframe_data = blink::mojom::AIPageContentIframeData::New();
+  iframe_data->frame_token = iframe_token.frame_token;
+
+  auto iframe_frame_data = blink::mojom::AIPageContentFrameData::New();
+  iframe_frame_data->frame_interaction_info =
+      blink::mojom::AIPageContentFrameInteractionInfo::New();
+  // Iframe popup
+  blink::mojom::AIPageContentPopupPtr iframe_popup =
+      blink::mojom::AIPageContentPopup::New();
+  iframe_popup->root_node =
+      CreateContentNode(blink::mojom::AIPageContentAttributeType::kRoot);
+  iframe_popup->root_node->children_nodes.push_back(CreateTextNode(
+      "iframe popup text", blink::mojom::AIPageContentTextSize::kM, false, 0));
+  iframe_popup->opener_dom_node_id = 100;
+  iframe_frame_data->popup = std::move(iframe_popup);
+
+  iframe_data->content =
+      blink::mojom::AIPageContentIframeContent::NewLocalFrameData(
+          std::move(iframe_frame_data));
+
+  iframe_node->content_attributes->iframe_data = std::move(iframe_data);
+  root_content->root_node->children_nodes.push_back(std::move(iframe_node));
+
+  AIPageContentMap page_content_map;
+  page_content_map[main_frame_token] = std::move(root_content);
+
+  auto get_render_frame_info = base::BindLambdaForTesting(
+      [&](int, blink::FrameToken token) -> std::optional<RenderFrameInfo> {
+        RenderFrameInfo render_frame_info;
+        if (token == main_frame_token.frame_token) {
+          render_frame_info.global_frame_token = main_frame_token;
+          render_frame_info.has_active_popup = true;
+        } else if (token == iframe_token.frame_token) {
+          render_frame_info.global_frame_token = iframe_token;
+          render_frame_info.has_active_popup = true;
+        } else {
+          return std::nullopt;
+        }
+        render_frame_info.source_origin =
+            url::Origin::Create(GURL("https://example.com"));
+        render_frame_info.url = GURL("https://example.com");
+        render_frame_info.serialized_server_token = token.ToString();
+        return render_frame_info;
+      });
+
+  AIPageContentResult page_content;
+  FrameTokenSet frame_token_set;
+  EXPECT_TRUE(ConvertAIPageContentToProto(
+                  blink::mojom::AIPageContentOptions::New(), main_frame_token,
+                  page_content_map, get_render_frame_info, frame_token_set,
+                  page_content)
+                  .has_value());
+
+  // Verify only main frame's popup is present.
+  ASSERT_TRUE(page_content.proto.has_popup_window());
+  const auto& popup_window = page_content.proto.popup_window();
+  EXPECT_EQ(popup_window.opener_common_ancestor_dom_node_id(), 1);
+  EXPECT_EQ(popup_window.root_node().children_nodes_size(), 1);
+  EXPECT_EQ(popup_window.root_node()
+                .children_nodes(0)
+                .content_attributes()
+                .text_data()
+                .text_content(),
+            "main popup text");
+}
+
+TEST_F(PageContentProtoUtilTest, ConvertPopupIframeOnly) {
+  base::test::ScopedFeatureList feature_list(
+      blink::features::kAIPageContentIncludePopupWindows);
+
+  auto main_frame_token = CreateFrameToken();
+  auto root_content = CreatePageContent();
+  // No main frame popup.
+
+  // Add an iframe
+  auto iframe_token = CreateFrameToken();
+  auto iframe_node =
+      CreateContentNode(blink::mojom::AIPageContentAttributeType::kIframe);
+  auto iframe_data = blink::mojom::AIPageContentIframeData::New();
+  iframe_data->frame_token = iframe_token.frame_token;
+
+  auto iframe_frame_data = blink::mojom::AIPageContentFrameData::New();
+  iframe_frame_data->frame_interaction_info =
+      blink::mojom::AIPageContentFrameInteractionInfo::New();
+  // Iframe popup
+  blink::mojom::AIPageContentPopupPtr iframe_popup =
+      blink::mojom::AIPageContentPopup::New();
+  iframe_popup->root_node =
+      CreateContentNode(blink::mojom::AIPageContentAttributeType::kRoot);
+  iframe_popup->root_node->children_nodes.push_back(CreateTextNode(
+      "iframe popup text", blink::mojom::AIPageContentTextSize::kM, false, 0));
+  iframe_popup->opener_dom_node_id = 100;
+  iframe_frame_data->popup = std::move(iframe_popup);
+
+  iframe_data->content =
+      blink::mojom::AIPageContentIframeContent::NewLocalFrameData(
+          std::move(iframe_frame_data));
+
+  iframe_node->content_attributes->iframe_data = std::move(iframe_data);
+  root_content->root_node->children_nodes.push_back(std::move(iframe_node));
+
+  AIPageContentMap page_content_map;
+  page_content_map[main_frame_token] = std::move(root_content);
+
+  auto get_render_frame_info = base::BindLambdaForTesting(
+      [&](int, blink::FrameToken token) -> std::optional<RenderFrameInfo> {
+        RenderFrameInfo render_frame_info;
+        if (token == main_frame_token.frame_token) {
+          render_frame_info.global_frame_token = main_frame_token;
+          render_frame_info.has_active_popup = false;
+        } else if (token == iframe_token.frame_token) {
+          render_frame_info.global_frame_token = iframe_token;
+          render_frame_info.has_active_popup = true;
+        } else {
+          return std::nullopt;
+        }
+        render_frame_info.source_origin =
+            url::Origin::Create(GURL("https://example.com"));
+        render_frame_info.url = GURL("https://example.com");
+        render_frame_info.serialized_server_token = token.ToString();
+        return render_frame_info;
+      });
+
+  AIPageContentResult page_content;
+  FrameTokenSet frame_token_set;
+  EXPECT_TRUE(ConvertAIPageContentToProto(
+                  blink::mojom::AIPageContentOptions::New(), main_frame_token,
+                  page_content_map, get_render_frame_info, frame_token_set,
+                  page_content)
+                  .has_value());
+
+  // Verify iframe's popup is present since main frame didn't have one.
+  ASSERT_TRUE(page_content.proto.has_popup_window());
+  const auto& popup_window = page_content.proto.popup_window();
+  EXPECT_EQ(popup_window.opener_common_ancestor_dom_node_id(), 100);
+  EXPECT_EQ(popup_window.root_node().children_nodes_size(), 1);
+  EXPECT_EQ(popup_window.root_node()
+                .children_nodes(0)
+                .content_attributes()
+                .text_data()
+                .text_content(),
+            "iframe popup text");
 }
 
 // Test helper to set the geometry of a ContentNode.
