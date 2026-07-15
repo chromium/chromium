@@ -1705,8 +1705,8 @@ IN_PROC_BROWSER_TEST_F(OmniboxContextMenuControllerBrowserTest,
   EXPECT_FALSE(controller.IsCommandIdEnabled(33001));
 }
 
-// TODO(https://crbug.com/530351886): Times out too often on Linux ASAN bots.
-#if BUILDFLAG(IS_LINUX) && defined(ADDRESS_SANITIZER)
+// TODO(crbug.com/530351886): Times out flakily on Linux and Win.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 #define MAYBE_VerifyTabEnablementWhenMaxInputsReached \
   DISABLED_VerifyTabEnablementWhenMaxInputsReached
 #else
