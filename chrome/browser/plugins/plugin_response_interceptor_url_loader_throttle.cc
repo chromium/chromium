@@ -32,7 +32,9 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "mojo/public/cpp/system/data_pipe.h"
+#include "net/http/http_response_headers.h"
 #include "pdf/buildflags.h"
+#include "services/network/public/cpp/cors/cors.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
@@ -95,6 +97,25 @@ void ClearAllButFrameAncestors(network::mojom::URLResponseHead* response_head) {
   }
 
   csp.swap(cleared);
+}
+
+// Restricts `headers` to the CORS-safelisted response header names, so a
+// generic (third-party) MIME handler extension only sees the response headers
+// that fetch() would expose to script cross-origin. Without this, a
+// zero-permission handler could read arbitrary cross-origin response headers
+// (auth tokens, and similar) off the stream it handles.
+// https://fetch.spec.whatwg.org/#cors-safelisted-response-header-name
+void FilterToCorsSafelistedResponseHeaders(net::HttpResponseHeaders* headers) {
+  std::vector<std::string> names_to_remove;
+  size_t iter = 0;
+  std::string name;
+  std::string value;
+  while (headers->EnumerateHeaderLines(&iter, &name, &value)) {
+    if (!network::cors::IsCorsSafelistedResponseHeaderName(name)) {
+      names_to_remove.emplace_back(name);
+    }
+  }
+  headers->RemoveHeaders(names_to_remove);
 }
 
 // A no-op `network::mojom::URLLoader` used on the cached-body fallback
@@ -296,6 +317,17 @@ void PluginResponseInterceptorURLLoaderThrottle::WillProcessResponse(
     deep_copied_response->headers =
         base::MakeRefCounted<net::HttpResponseHeaders>(
             response_head->headers->raw_headers());
+  }
+
+  // These deep-copied headers are the extension-facing view of the response
+  // (read back via getStreamInfo). Restrict a generic (third-party) handler to
+  // the CORS-safelisted response header names so it cannot read cross-origin
+  // response headers it would never see through fetch(). Trusted handlers
+  // (allowlisted plugin extensions) are exempt: their rendering paths
+  // legitimately consume non-safelisted headers, and `response_head` itself is
+  // never filtered.
+  if (is_for_generic_mime_handler && deep_copied_response->headers) {
+    FilterToCorsSafelistedResponseHeaders(deep_copied_response->headers.get());
   }
 
   // Save the original MIME type before any overrides. This is passed to

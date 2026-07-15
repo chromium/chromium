@@ -2,11 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
 #include <string>
 
 #include "base/files/file_path.h"
+#include "base/files/file_util.h"
+#include "base/functional/bind.h"
 #include "base/path_service.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/threading/thread_restrictions.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/plugins/plugin_utils.h"
@@ -36,6 +40,9 @@
 #include "extensions/common/manifest_handlers/mime_types_handler.h"
 #include "extensions/test/result_catcher.h"
 #include "net/dns/mock_host_resolver.h"
+#include "net/http/http_status_code.h"
+#include "net/test/embedded_test_server/http_request.h"
+#include "net/test/embedded_test_server/http_response.h"
 #include "services/network/public/cpp/permissions_policy/permissions_policy_features.h"
 #include "ui/base/page_transition_types.h"
 #include "url/url_constants.h"
@@ -47,6 +54,34 @@ namespace {
 constexpr char kPdfMimeType[] = "application/pdf";
 constexpr char kTestExtensionDir[] = "generic_mime_handler";
 constexpr char kTestPdfPath[] = "/test.pdf";
+constexpr char kHeaderProbePdfPath[] = "/header-probe.pdf";
+constexpr char kAuthTokenHeaderName[] = "X-Auth-Token";
+
+// Serves `pdf_body` at kHeaderProbePdfPath with a mix of response headers:
+// CORS-safelisted ones (Content-Type via set_content_type, plus Cache-Control
+// and Last-Modified) that a generic handler must still see, and a
+// non-safelisted X-Auth-Token that must be filtered out. `pdf_body` is the
+// real test.pdf, so the response body is a valid document rather than an
+// ad-hoc literal (the test inspects only headers, so its exact bytes do not
+// matter, but a valid PDF keeps the fixture honest).
+std::unique_ptr<net::test_server::HttpResponse>
+HandlePdfWithExtraResponseHeaders(
+    const std::string& pdf_body,
+    const net::test_server::HttpRequest& request) {
+  // RegisterRequestHandler invokes every registered handler in turn; returning
+  // nullptr for any other path lets the static-file handlers serve it.
+  if (request.relative_url != kHeaderProbePdfPath) {
+    return nullptr;
+  }
+  auto response = std::make_unique<net::test_server::BasicHttpResponse>();
+  response->set_code(net::HTTP_OK);
+  response->set_content_type(kPdfMimeType);
+  response->AddCustomHeader("Cache-Control", "max-age=0");
+  response->AddCustomHeader("Last-Modified", "Wed, 21 Oct 2026 07:28:00 GMT");
+  response->AddCustomHeader(kAuthTokenHeaderName, "s3cr3t");
+  response->set_content(pdf_body);
+  return response;
+}
 
 }  // namespace
 
@@ -71,6 +106,17 @@ class GenericMimeHandlerBrowserTest : public ExtensionApiTest {
         test_data_dir.AppendASCII("pdf"));
     embedded_test_server()->ServeFilesFromDirectory(
         test_data_dir_.AppendASCII(kTestExtensionDir));
+    // Reuse the shared test PDF as the probe response body, so it is a real,
+    // valid document.
+    std::string pdf_body;
+    {
+      base::ScopedAllowBlockingForTesting allow_blocking;
+      ASSERT_TRUE(base::ReadFileToString(
+          test_data_dir_.AppendASCII(kTestExtensionDir).AppendASCII("test.pdf"),
+          &pdf_body));
+    }
+    embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
+        &HandlePdfWithExtraResponseHeaders, std::move(pdf_body)));
     ASSERT_TRUE(StartEmbeddedTestServer());
   }
 
@@ -148,6 +194,48 @@ IN_PROC_BROWSER_TEST_F(GenericMimeHandlerBrowserTest, GetStreamInfo) {
   // The handler.js in the extension calls chrome.test.succeed() after
   // verifying getStreamInfo fields and fetching the stream data.
   ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
+}
+
+// A generic (third-party) MIME handler sees exactly the CORS-safelisted
+// response headers fetch() would expose cross-origin: the safelisted
+// Content-Type / Cache-Control / Last-Modified stay visible, while the custom
+// X-Auth-Token is filtered out. handler.js already asserts mimeType and the
+// %PDF- body on this same navigation, so this test covers only responseHeaders.
+IN_PROC_BROWSER_TEST_F(GenericMimeHandlerBrowserTest,
+                       GetStreamInfoFiltersNonSafelistedResponseHeaders) {
+  ASSERT_TRUE(LoadExtension(test_data_dir_.AppendASCII(kTestExtensionDir)));
+
+  ResultCatcher catcher;
+  ASSERT_TRUE(
+      NavigateToURL(GetActiveWebContents(),
+                    embedded_test_server()->GetURL(kHeaderProbePdfPath)));
+  ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
+
+  content::RenderFrameHost* extension_frame = FindMimeHandlerExtensionFrame();
+  ASSERT_TRUE(extension_frame);
+
+  // Whether getStreamInfo()'s responseHeaders contains `name`
+  // (case-insensitive).
+  auto has_header = [&](const char* name) {
+    return content::EvalJs(
+        extension_frame,
+        content::JsReplace(
+            "chrome.mimeHandler.getStreamInfo().then(info =>"
+            "  Object.keys(info.responseHeaders)"
+            "    .some(k => k.toLowerCase() === $1.toLowerCase()))",
+            name));
+  };
+
+  // Every CORS-safelisted response header the server sent must stay visible.
+  // These positive checks are also the vacuity guard: were responseHeaders
+  // ever empty or getStreamInfo() to fail, they would fail here instead of
+  // letting the X-Auth-Token check below pass against an empty object.
+  EXPECT_EQ(true, has_header("Content-Type"));
+  EXPECT_EQ(true, has_header("Cache-Control"));
+  EXPECT_EQ(true, has_header("Last-Modified"));
+
+  // The non-safelisted header must be stripped.
+  EXPECT_EQ(false, has_header("X-Auth-Token"));
 }
 
 // Verifies that a generic MIME handler with `can_embed: false` is selected
