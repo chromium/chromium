@@ -26,6 +26,7 @@ public class MaterialDatePickerProviderImpl implements MaterialDatePickerProvide
     @Override
     public boolean showDatePicker(
             Context context,
+            long initialTime,
             long min,
             long max,
             Callback<Long> selectionCallback,
@@ -43,7 +44,10 @@ public class MaterialDatePickerProviderImpl implements MaterialDatePickerProvide
                         .setValidator(DateValidatorPointForward.from(min))
                         .build();
         MaterialDatePicker<Long> picker =
-                MaterialDatePicker.Builder.datePicker().setCalendarConstraints(constraints).build();
+                MaterialDatePicker.Builder.datePicker()
+                        .setCalendarConstraints(constraints)
+                        .setSelection(initialTime)
+                        .build();
         picker.addOnPositiveButtonClickListener(
                 selection -> {
                     selectionCallback.onResult(selection);

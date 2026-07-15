@@ -279,11 +279,15 @@ public class InputDialogContainer {
             MaterialDatePickerProvider datePickerProvider =
                     ServiceLoaderUtil.maybeCreate(MaterialDatePickerProvider.class);
             if (datePickerProvider != null) {
+                Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+                cal.clear();
+                cal.set(year, month, monthDay);
                 mDialogAlreadyDismissed = false;
                 boolean status;
                 status =
                         datePickerProvider.showDatePicker(
                                 mContext,
+                                cal.getTimeInMillis(),
                                 (long) min,
                                 (long) max,
                                 (selection) -> {

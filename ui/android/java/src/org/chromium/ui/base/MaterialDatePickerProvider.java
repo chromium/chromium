@@ -19,6 +19,7 @@ public interface MaterialDatePickerProvider {
      * Shows a Material Date Picker dialog.
      *
      * @param context The Android context to launch the dialog from.
+     * @param initialTime The initially selected date in UTC milliseconds since epoch.
      * @param minTime The minimum selectable date in UTC milliseconds since epoch.
      * @param maxTime The maximum selectable date in UTC milliseconds since epoch.
      * @param selectionCallback The callback invoked when the user selects a date.
@@ -27,6 +28,7 @@ public interface MaterialDatePickerProvider {
      */
     boolean showDatePicker(
             Context context,
+            long initialTime,
             long minTime,
             long maxTime,
             Callback<Long> selectionCallback,
