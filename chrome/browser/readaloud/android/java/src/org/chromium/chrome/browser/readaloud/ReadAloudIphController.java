@@ -9,6 +9,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.view.View;
 
+import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.supplier.MonotonicObservableSupplier;
@@ -22,6 +23,9 @@ import org.chromium.chrome.browser.user_education.IphCommandBuilder;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.chrome.modules.readaloud.PlaybackArgs.PlaybackMode;
 import org.chromium.components.feature_engagement.FeatureConstants;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
 /**
  * Controller to manage when and how we show ReadAloud in-product-help messages to users in the app
@@ -94,14 +98,14 @@ public class ReadAloudIphController {
      * @param url URL the readability check returns
      */
     public void maybeShowReadAloudAppMenuIph() {
-      AppMenuIphAvailability appMenuIphAvailability = shouldShowIph();
-      if (appMenuIphAvailability == AppMenuIphAvailability.NO_IPH) {
-        return;
-      }
-      boolean isHighlightEnabled =
-              mShowAppMenuTextBubble
-                      ? true
-                      : ReadAloudFeatures.isIPHMenuButtonHighlightCctEnabled();
+        @AppMenuIphAvailability int appMenuIphAvailability = shouldShowIph();
+        if (appMenuIphAvailability == AppMenuIphAvailability.NO_IPH) {
+            return;
+        }
+        boolean isHighlightEnabled =
+                mShowAppMenuTextBubble
+                        ? true
+                        : ReadAloudFeatures.isIPHMenuButtonHighlightCctEnabled();
       mUserEducationHelper.requestShowIph(
               new IphCommandBuilder(
                               mToolbarMenuButton.getContext().getResources(),
@@ -126,7 +130,7 @@ public class ReadAloudIphController {
         mAppMenuHandler.clearMenuHighlight();
     }
 
-    private AppMenuIphAvailability shouldShowIph() {
+    private @AppMenuIphAvailability int shouldShowIph() {
         if (mCurrentTabSupplier.get() == null
                 || !mCurrentTabSupplier.get().getUrl().isValid()
                 || mReadAloudControllerSupplier.get() == null) {
@@ -143,14 +147,14 @@ public class ReadAloudIphController {
         }
     }
 
-    private int getIphStringResId(AppMenuIphAvailability appMenuIphAvailability) {
+    private int getIphStringResId(@AppMenuIphAvailability int appMenuIphAvailability) {
         switch (appMenuIphAvailability) {
-          case STANDARD_IPH:
-            return R.string.menu_listen_to_this_page_iph;
-          case AI_IPH:
-            return R.string.menu_listen_to_this_page_with_ai_iph;
-          default:
-            return 0;
+            case AppMenuIphAvailability.STANDARD_IPH:
+                return R.string.menu_listen_to_this_page_iph;
+            case AppMenuIphAvailability.AI_IPH:
+                return R.string.menu_listen_to_this_page_with_ai_iph;
+            default:
+                return 0;
         }
     }
 
@@ -173,9 +177,15 @@ public class ReadAloudIphController {
         mShowAppMenuTextBubble = showAppMenuTextBubble;
     }
 
-    private enum AppMenuIphAvailability {
-      NO_IPH,
-      STANDARD_IPH,
-      AI_IPH;
+    @IntDef({
+        AppMenuIphAvailability.NO_IPH,
+        AppMenuIphAvailability.STANDARD_IPH,
+        AppMenuIphAvailability.AI_IPH
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    private @interface AppMenuIphAvailability {
+        int NO_IPH = 0;
+        int STANDARD_IPH = 1;
+        int AI_IPH = 2;
     }
 }
