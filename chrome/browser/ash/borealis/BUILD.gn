@@ -155,7 +155,6 @@ source_set("unit_tests") {
     "borealis_context_unittest.cc",
     "borealis_features_unittest.cc",
     "borealis_hardware_checker_unittest.cc",
-    "borealis_installer_unittest.cc",
     "borealis_power_controller_unittest.cc",
     "borealis_security_delegate_unittest.cc",
     "borealis_shutdown_monitor_unittest.cc",

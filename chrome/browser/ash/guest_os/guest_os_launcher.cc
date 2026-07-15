@@ -8,7 +8,6 @@
 
 #include "base/logging.h"
 #include "chrome/browser/ash/borealis/borealis_context.h"
-#include "chrome/browser/ash/borealis/borealis_context_manager.h"
 #include "chrome/browser/ash/borealis/borealis_service.h"
 #include "chrome/browser/ash/borealis/borealis_service_factory.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_launcher.h"
@@ -39,24 +38,9 @@ ResponseType Success(std::string vm_name, std::string container_name) {
 }
 
 void LaunchBorealis(Profile* profile, LaunchCallback callback) {
-  borealis::BorealisServiceFactory::GetForProfile(profile)
-      ->ContextManager()
-      .StartBorealis(base::BindOnce(
-          [](LaunchCallback callback,
-             borealis::BorealisContextManager::ContextOrFailure
-                 context_or_failure) {
-            if (!context_or_failure.has_value()) {
-              std::stringstream error_msg;
-              error_msg << "Failed to launch ("
-                        << static_cast<int>(context_or_failure.error().error())
-                        << "): " << context_or_failure.error().description();
-              std::move(callback).Run(base::unexpected(error_msg.str()));
-              return;
-            }
-            std::move(callback).Run(Success(
-                context_or_failure.value()->vm_name(), /*container_name=*/""));
-          },
-          std::move(callback)));
+  // Borealis is being removed and can no longer be launched; notify the caller
+  // of the failure instead of leaving the callback pending.
+  std::move(callback).Run(base::unexpected("Borealis is no longer available"));
 }
 
 void LaunchCrostini(Profile* profile,

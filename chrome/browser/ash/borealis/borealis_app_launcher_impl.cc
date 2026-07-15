@@ -1,41 +1,38 @@
 // Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
 #include "chrome/browser/ash/borealis/borealis_app_launcher_impl.h"
 
-#include "ash/constants/ash_features.h"
-#include "base/functional/bind.h"
+#include "base/logging.h"
 #include "chrome/browser/ash/borealis/borealis_app_launcher.h"
-#include "chrome/browser/ash/borealis/borealis_context.h"
-#include "chrome/browser/ash/borealis/borealis_context_manager.h"
-#include "chrome/browser/ash/borealis/borealis_features.h"
-#include "chrome/browser/ash/borealis/borealis_service.h"
-#include "chrome/browser/ash/borealis/borealis_service_factory.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/profiles/profile.h"
-#include "chromeos/ash/experiences/guest_os/borealis/motd/borealis_motd_dialog.h"
+
+class Profile;
 
 namespace borealis {
-BorealisAppLauncherImpl::~BorealisAppLauncherImpl() = default;
 
 BorealisAppLauncherImpl::BorealisAppLauncherImpl(Profile* profile)
     : profile_(profile) {}
 
+BorealisAppLauncherImpl::~BorealisAppLauncherImpl() = default;
+
 void BorealisAppLauncherImpl::Launch(std::string app_id,
                                      BorealisLaunchSource source,
                                      OnLaunchedCallback callback) {
-  Launch(std::move(app_id), {}, std::move(source), std::move(callback));
+  // Borealis functionality removed. We are keeping only the MOTD dialog
+  // and the implementation needed for uninstalling borealis from the dialog.
+  LOG(WARNING) << "Borealis is no longer available";
+  std::move(callback).Run(LaunchResult::kError);
 }
 
 void BorealisAppLauncherImpl::Launch(std::string app_id,
                                      const std::vector<std::string>& args,
                                      BorealisLaunchSource source,
                                      OnLaunchedCallback callback) {
-  borealis::BorealisMOTDDialog::MaybeShow(
-      profile_,
-      base::BindOnce(&BorealisAppLauncherImpl::LaunchAfterMOTD,
-                     weak_factory_.GetWeakPtr(), std::move(app_id),
-                     std::move(args), std::move(source), std::move(callback)));
+  // Borealis functionality removed. We are keeping only the MOTD dialog
+  // and the implementation needed for uninstalling borealis from the dialog.
+  LOG(WARNING) << "Borealis is no longer available";
+  std::move(callback).Run(LaunchResult::kError);
 }
 
 void BorealisAppLauncherImpl::LaunchAfterMOTD(
@@ -44,38 +41,10 @@ void BorealisAppLauncherImpl::LaunchAfterMOTD(
     BorealisLaunchSource source,
     OnLaunchedCallback callback,
     UserMotdAction motd_user_action) {
-  // If user uninstalled borealis, we don't need to continue.
-  if (motd_user_action == UserMotdAction::kUninstall) {
-    std::move(callback).Run(LaunchResult::kUninstalled);
-    return;
-  }
-
-  if (!borealis::BorealisServiceFactory::GetForProfile(profile_)
-           ->Features()
-           .IsEnabled()) {
-    std::move(callback).Run(LaunchResult::kUnknownApp);
-    return;
-  }
-
-  RecordBorealisLaunchSourceHistogram(source);
-  BorealisServiceFactory::GetForProfile(profile_)
-      ->ContextManager()
-      .StartBorealis(base::BindOnce(
-          [](Profile* profile, std::string app_id,
-             const std::vector<std::string>& args,
-             BorealisAppLauncherImpl::OnLaunchedCallback callback,
-             BorealisContextManager::ContextOrFailure result) {
-            if (!result.has_value()) {
-              LOG(ERROR) << "Failed to launch " << app_id << "(code "
-                         << result.error().error()
-                         << "): " << result.error().description();
-              std::move(callback).Run(LaunchResult::kError);
-              return;
-            }
-            BorealisAppLauncher::Launch(*result.value(), std::move(app_id),
-                                        std::move(args), std::move(callback));
-          },
-          profile_, std::move(app_id), std::move(args), std::move(callback)));
+  // Borealis functionality removed. We are keeping only the MOTD dialog
+  // and the implementation needed for uninstalling borealis from the dialog.
+  LOG(WARNING) << "Borealis is no longer available";
+  std::move(callback).Run(LaunchResult::kError);
 }
 
 }  // namespace borealis

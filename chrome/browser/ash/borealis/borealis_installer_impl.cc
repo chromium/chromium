@@ -13,7 +13,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/task/sequenced_task_runner.h"
-#include "chrome/browser/ash/borealis/borealis_context_manager.h"
 #include "chrome/browser/ash/borealis/borealis_features.h"
 #include "chrome/browser/ash/borealis/borealis_prefs.h"
 #include "chrome/browser/ash/borealis/borealis_service.h"
@@ -168,22 +167,9 @@ class BorealisInstallerImpl::Installation
   // Chrome. See go/borealis-mid-launch for details.
   void StartupBorealis() {
     SetState(InstallingState::kStartingUp);
-    BorealisServiceFactory::GetForProfile(profile_)
-        ->ContextManager()
-        .StartBorealis(base::BindOnce(&Installation::OnBorealisStarted,
-                                      weak_factory_.GetWeakPtr()));
-  }
-
-  void OnBorealisStarted(BorealisContextManager::ContextOrFailure result) {
-    if (result.has_value()) {
-      WaitForMainApp();
-      return;
-    }
-    std::stringstream ss;
-    ss << "Failed to start borealis (code "
-       << static_cast<int>(result.error().error())
-       << "): " << result.error().description();
-    Fail({InstallResult::kStartupFailed, ss.str()});
+    // Borealis is being removed and can no longer be started, so fail the
+    // installation to notify callers instead of leaving it hanging.
+    Fail({InstallResult::kStartupFailed, "Borealis is no longer available"});
   }
 
   void WaitForMainApp() {
@@ -263,21 +249,8 @@ class BorealisInstallerImpl::Uninstallation
   void Start(std::unique_ptr<BorealisInstallerImpl::InstallInfo> start_instance)
       override {
     uninstall_info_ = std::move(start_instance);
-    BorealisServiceFactory::GetForProfile(profile_)
-        ->ContextManager()
-        .ShutDownBorealis(base::BindOnce(&Uninstallation::OnShutdownCompleted,
-                                         weak_factory_.GetWeakPtr()));
-  }
-
- private:
-  void OnShutdownCompleted(BorealisShutdownResult result) {
-    if (result != BorealisShutdownResult::kSuccess) {
-      LOG(ERROR) << "Failed to shut down before uninstall (code="
-                 << static_cast<int>(result) << ")";
-      Fail(BorealisUninstallResult::kShutdownFailed);
-      return;
-    }
-    // Clear the borealis apps.
+    // Borealis no longer runs, so there is nothing to shut down before
+    // uninstalling. Clear the borealis apps and remove the disk directly.
     guest_os::GuestOsRegistryServiceFactory::GetForProfile(profile_)
         ->ClearApplicationList(vm_tools::apps::BOREALIS,
                                uninstall_info_->vm_name,
@@ -292,6 +265,7 @@ class BorealisInstallerImpl::Uninstallation
                                            weak_factory_.GetWeakPtr()));
   }
 
+ private:
   void OnDiskRemoved(
       std::optional<vm_tools::concierge::DestroyDiskImageResponse> response) {
     if (!response) {

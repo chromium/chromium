@@ -8,7 +8,6 @@
 
 #include "base/functional/bind.h"
 #include "chrome/browser/ash/borealis/borealis_context.h"
-#include "chrome/browser/ash/borealis/borealis_context_manager.h"
 #include "chrome/browser/ash/borealis/borealis_features.h"
 #include "chrome/browser/ash/borealis/borealis_service.h"
 #include "chrome/browser/ash/borealis/borealis_util.h"
