@@ -3801,14 +3801,6 @@ void RenderProcessHostImpl::AppendRendererCommandLine(
   command_line->AppendSwitchASCII(switches::kRendererClientId,
                                   base::NumberToString(GetID().value()));
 
-  // Synchronize unix/monotonic clocks across consistent processes.
-  if (base::TimeTicks::IsConsistentAcrossProcesses()) {
-    command_line->AppendSwitchASCII(
-        switches::kTimeTicksAtUnixEpoch,
-        base::NumberToString(
-            base::TimeTicks::UnixEpoch().since_origin().InMicroseconds()));
-  }
-
 #if BUILDFLAG(IS_LINUX)
   // Append `kDisableVideoCaptureUseGpuMemoryBuffer` flag if there is no support
   // for NV12 GPU memory buffer.

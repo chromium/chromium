@@ -21,12 +21,6 @@
 
 namespace base {
 
-namespace {
-
-TimeTicks g_shared_time_ticks_at_unix_epoch;
-
-}  // namespace
-
 namespace internal {
 
 std::atomic<TimeNowFunction> g_time_now_function{
@@ -228,32 +222,11 @@ TimeTicks TimeTicks::LowResolutionNow() {
 }
 
 // static
-// This method should be called once at process start and before
-// TimeTicks::UnixEpoch is accessed. It is intended to make the offset between
-// unix time and monotonic time consistent across processes.
-void TimeTicks::SetSharedUnixEpoch(TimeTicks ticks_at_epoch) {
-  DCHECK(g_shared_time_ticks_at_unix_epoch.is_null());
-  g_shared_time_ticks_at_unix_epoch = ticks_at_epoch;
-}
-
-// static
 TimeTicks TimeTicks::UnixEpoch() {
-  struct StaticUnixEpoch {
-    StaticUnixEpoch()
-        : epoch(
-              g_shared_time_ticks_at_unix_epoch.is_null()
-                  ? subtle::TimeTicksNowIgnoringOverride() -
-                        (subtle::TimeNowIgnoringOverride() - Time::UnixEpoch())
-                  : g_shared_time_ticks_at_unix_epoch) {
-      // Prevent future usage of `g_shared_time_ticks_at_unix_epoch`.
-      g_shared_time_ticks_at_unix_epoch = TimeTicks::Max();
-    }
-
-    const TimeTicks epoch;
-  };
-
-  static StaticUnixEpoch static_epoch;
-  return static_epoch.epoch;
+  static const TimeTicks epoch =
+      subtle::TimeTicksNowIgnoringOverride() -
+      (subtle::TimeNowIgnoringOverride() - Time::UnixEpoch());
+  return epoch;
 }
 
 std::ostream& operator<<(std::ostream& os, TimeTicks time_ticks) {

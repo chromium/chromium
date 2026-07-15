@@ -139,30 +139,6 @@ void CommonSubprocessInit() {
 #endif
 }
 
-void InitTimeTicksAtUnixEpoch() {
-  const auto* command_line = base::CommandLine::ForCurrentProcess();
-  if (!command_line->HasSwitch(switches::kTimeTicksAtUnixEpoch)) {
-    return;
-  }
-
-  std::string time_ticks_at_unix_epoch_as_string =
-      command_line->GetSwitchValueASCII(switches::kTimeTicksAtUnixEpoch);
-
-  int64_t time_ticks_at_unix_epoch_delta_micro;
-  if (!base::StringToInt64(time_ticks_at_unix_epoch_as_string,
-                           &time_ticks_at_unix_epoch_delta_micro)) {
-    return;
-  }
-
-  base::TimeDelta time_ticks_at_unix_epoch_delta =
-      base::Microseconds(time_ticks_at_unix_epoch_delta_micro);
-
-  base::TimeTicks time_ticks_at_unix_epoch =
-      base::TimeTicks() + time_ticks_at_unix_epoch_delta;
-
-  base::TimeTicks::SetSharedUnixEpoch(time_ticks_at_unix_epoch);
-}
-
 // Apply metadata to samples collected by the StackSamplingProfiler when tracing
 // is enabled. This helps distinguish profiles with tracing overhead, e.g. due
 // to background tracing, from those without.
@@ -268,8 +244,6 @@ NO_STACK_PROTECTOR int RunContentProcess(
 
     base::SetProcessTitleFromCommandLine(argv);
 #endif  // !BUILDFLAG(IS_ANDROID)
-
-    InitTimeTicksAtUnixEpoch();
 
 // On Android setlocale() is not supported, and we don't override the signal
 // handlers so we can get a stack trace when crashing.

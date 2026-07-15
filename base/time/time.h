@@ -1304,8 +1304,6 @@ class BASE_EXPORT TimeTicks : public time_internal::TimeBase<TimeTicks> {
   // TODO(crbug.com/355423207): Remove function.
   static TimeTicks UnixEpoch();
 
-  static void SetSharedUnixEpoch(TimeTicks);
-
   // Returns an enum indicating the underlying clock being used to generate
   // TimeTicks timestamps. This function should only be used for debugging and
   // logging purposes.
