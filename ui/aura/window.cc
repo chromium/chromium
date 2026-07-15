@@ -1550,6 +1550,14 @@ void Window::SetOcclusionStateOverride(
 }
 #endif
 
+base::WeakPtr<ui::GestureConsumer> Window::GetWeakPtr() {
+  return weak_factory_.GetWeakPtr();
+}
+
+base::WeakPtr<aura::Window> Window::GetWeakPtrAsWindow() {
+  return weak_factory_.GetWeakPtr();
+}
+
 void Window::NotifyResizeLoopStarted() {
   for (auto& observer : observers_)
     observer.OnResizeLoopStarted(this);

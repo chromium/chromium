@@ -43,6 +43,7 @@ class BackGestureEventHandler : public display::DisplayObserver,
 
   // ui::GestureConsumer:
   const std::string& GetName() const override;
+  base::WeakPtr<ui::GestureConsumer> GetWeakPtr() override;
 
   // ui::GestureProviderAuraClient:
   void OnGestureEvent(GestureConsumer* consumer,
@@ -125,6 +126,8 @@ class BackGestureEventHandler : public display::DisplayObserver,
   // touch start event and we'll need the touch action information to decide
   // whether back gesture should be shown.
   bool should_wait_for_touch_ack_ = false;
+
+  base::WeakPtrFactory<BackGestureEventHandler> weak_ptr_factory_{this};
 };
 
 }  // namespace ash

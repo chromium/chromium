@@ -168,6 +168,7 @@ class ASH_EXPORT FullscreenMagnifierController
 
   // ui::GestureConsumer:
   const std::string& GetName() const override;
+  base::WeakPtr<ui::GestureConsumer> GetWeakPtr() override;
 
   // Redraws the magnification window with the given origin position and the
   // given scale. Returns true if the window is changed; otherwise, false.
@@ -317,6 +318,8 @@ class ASH_EXPORT FullscreenMagnifierController
   // Called every time MoveCursorTo is called, when set in tests.
   base::RepeatingCallback<void(const gfx::Point&)>
       cursor_moved_callback_for_testing_;
+
+  base::WeakPtrFactory<FullscreenMagnifierController> weak_ptr_factory_{this};
 };
 
 }  // namespace ash

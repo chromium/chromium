@@ -13,6 +13,21 @@
 
 namespace ui {
 
+class TestGestureConsumer : public GestureConsumer {
+ public:
+  TestGestureConsumer() = default;
+  TestGestureConsumer(const TestGestureConsumer&) = delete;
+  TestGestureConsumer& operator=(const TestGestureConsumer&) = delete;
+  ~TestGestureConsumer() override = default;
+
+  base::WeakPtr<GestureConsumer> GetWeakPtr() override {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
+ private:
+  base::WeakPtrFactory<TestGestureConsumer> weak_ptr_factory_{this};
+};
+
 class GestureProviderAuraTest : public testing::Test,
                                 public GestureProviderAuraClient {
  public:
@@ -26,7 +41,7 @@ class GestureProviderAuraTest : public testing::Test,
                       GestureEvent* event) override {}
 
   void SetUp() override {
-    consumer_ = std::make_unique<GestureConsumer>();
+    consumer_ = std::make_unique<TestGestureConsumer>();
     provider_ = std::make_unique<GestureProviderAura>(consumer_.get(), this);
   }
 
@@ -35,7 +50,7 @@ class GestureProviderAuraTest : public testing::Test,
   GestureProviderAura* provider() { return provider_.get(); }
 
  private:
-  std::unique_ptr<GestureConsumer> consumer_;
+  std::unique_ptr<TestGestureConsumer> consumer_;
   std::unique_ptr<GestureProviderAura> provider_;
   base::test::SingleThreadTaskEnvironment task_environment_;
 };

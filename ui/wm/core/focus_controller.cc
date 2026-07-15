@@ -12,7 +12,6 @@
 #include "ui/aura/client/capture_client.h"
 #include "ui/aura/client/focus_change_observer.h"
 #include "ui/aura/env.h"
-#include "ui/aura/window_tracker.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/events/event.h"
@@ -244,17 +243,15 @@ void FocusController::FocusAndActivateWindow(
   // we must not adjust the focus below since this will clobber that change.
   aura::Window* last_focused_window = focused_window_;
   if (!pending_activation_.has_value()) {
-    aura::WindowTracker focusable_window_tracker;
-    if (focusable) {
-      focusable_window_tracker.Add(focusable);
-      focusable = nullptr;
-    }
+    base::WeakPtr<aura::Window> focusable_window_weak =
+        focusable ? focusable->GetWeakPtrAsWindow() : nullptr;
 
     if (!SetActiveWindow(reason, window, activatable, no_stacking))
       return;
 
-    if (!focusable_window_tracker.windows().empty())
-      focusable = focusable_window_tracker.Pop();
+    if (!focusable_window_weak) {
+      focusable = nullptr;
+    }
   } else {
     // Only allow the focused window to change, *not* the active window if
     // called reentrantly.
@@ -293,9 +290,9 @@ void FocusController::SetFocusedWindow(aura::Window* window) {
 
   // Allow for the window losing focus to be deleted during dispatch. If it is
   // deleted pass NULL to observers instead of a deleted window.
-  aura::WindowTracker window_tracker;
+  base::WeakPtr<aura::Window> lost_focus_weak;
   if (lost_focus)
-    window_tracker.Add(lost_focus);
+    lost_focus_weak = lost_focus->GetWeakPtrAsWindow();
   if (focused_window_ &&
       observation_manager_.IsObservingSource(focused_window_.get()) &&
       focused_window_ != active_window_) {
@@ -307,11 +304,10 @@ void FocusController::SetFocusedWindow(aura::Window* window) {
     observation_manager_.AddObservation(focused_window_.get());
 
   for (auto& observer : focus_observers_) {
-    observer.OnWindowFocused(
-        focused_window_,
-        window_tracker.Contains(lost_focus) ? lost_focus : nullptr);
+    observer.OnWindowFocused(focused_window_,
+                             lost_focus_weak ? lost_focus : nullptr);
   }
-  if (window_tracker.Contains(lost_focus)) {
+  if (lost_focus_weak) {
     aura::client::FocusChangeObserver* observer =
         aura::client::GetFocusChangeObserver(lost_focus);
     if (observer)
@@ -320,9 +316,8 @@ void FocusController::SetFocusedWindow(aura::Window* window) {
   aura::client::FocusChangeObserver* observer =
       aura::client::GetFocusChangeObserver(focused_window_);
   if (observer) {
-    observer->OnWindowFocused(
-        focused_window_,
-        window_tracker.Contains(lost_focus) ? lost_focus : nullptr);
+    observer->OnWindowFocused(focused_window_,
+                              lost_focus_weak ? lost_focus : nullptr);
   }
 }
 
@@ -361,9 +356,9 @@ bool FocusController::SetActiveWindow(
   aura::Window* lost_activation = active_window_;
   // Allow for the window losing activation to be deleted during dispatch. If
   // it is deleted pass NULL to observers instead of a deleted window.
-  aura::WindowTracker window_tracker;
+  base::WeakPtr<ui::GestureConsumer> lost_activation_weak;
   if (lost_activation)
-    window_tracker.Add(lost_activation);
+    lost_activation_weak = lost_activation->GetWeakPtr();
 
   // Start observing the window gaining activation at this point since it maybe
   // destroyed at an early stage, e.g. the activating phase.
@@ -390,7 +385,7 @@ bool FocusController::SetActiveWindow(
   MAYBE_ACTIVATION_INTERRUPTED();
 
   ActivationChangeObserver* observer = nullptr;
-  if (window_tracker.Contains(lost_activation)) {
+  if (lost_activation_weak) {
     observer = GetActivationChangeObserver(lost_activation);
     if (observer)
       observer->OnWindowActivated(reason, active_window_, lost_activation);
@@ -402,7 +397,7 @@ bool FocusController::SetActiveWindow(
   if (observer) {
     observer->OnWindowActivated(
         reason, active_window_,
-        window_tracker.Contains(lost_activation) ? lost_activation : nullptr);
+        lost_activation_weak ? lost_activation : nullptr);
   }
 
   MAYBE_ACTIVATION_INTERRUPTED();
@@ -410,7 +405,7 @@ bool FocusController::SetActiveWindow(
   for (auto& activation_observer : activation_observers_) {
     activation_observer.OnWindowActivated(
         reason, active_window_,
-        window_tracker.Contains(lost_activation) ? lost_activation : nullptr);
+        lost_activation_weak ? lost_activation : nullptr);
 
     MAYBE_ACTIVATION_INTERRUPTED();
   }

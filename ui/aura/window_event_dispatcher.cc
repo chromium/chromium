@@ -27,7 +27,6 @@
 #include "ui/aura/window_delegate.h"
 #include "ui/aura/window_event_dispatcher_observer.h"
 #include "ui/aura/window_targeter.h"
-#include "ui/aura/window_tracker.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/hit_test.h"
 #include "ui/base/ime/input_method.h"
@@ -395,8 +394,8 @@ void WindowEventDispatcher::OnWindowHidden(Window* invisible,
     old_dispatch_target_ = nullptr;
 
   // Cleaning up gesture state may end up destroying the hidden window. We use a
-  // tracker to detect this.
-  WindowTracker invisible_tracker({invisible});
+  // weak pointer to detect this.
+  base::WeakPtr<aura::Window> invisible_weak = invisible->GetWeakPtrAsWindow();
   invisible->CleanupGestureState();
 
   // Do not clear the capture, and the |event_dispatch_target_| if the
@@ -412,16 +411,15 @@ void WindowEventDispatcher::OnWindowHidden(Window* invisible,
     Window* capture_window =
         capture_client ? capture_client->GetCaptureWindow() : nullptr;
 
-    if (!invisible_tracker.Contains(invisible) ||
-        invisible->Contains(event_dispatch_target_)) {
+    if (!invisible_weak || invisible->Contains(event_dispatch_target_)) {
       event_dispatch_target_ = nullptr;
     }
 
     // If the ancestor of the capture window is hidden, release the capture.
     // Note that this may delete the window so do not use capture_window
     // after this.
-    if (invisible_tracker.Contains(invisible) &&
-        invisible->Contains(capture_window) && invisible != window()) {
+    if (invisible_weak && invisible->Contains(capture_window) &&
+        invisible != window()) {
       capture_window->ReleaseCapture();
     }
   }
@@ -554,8 +552,7 @@ ui::EventDispatchDetails WindowEventDispatcher::PreDispatchEvent(
   Window* target_window = static_cast<Window*>(target);
   CHECK(window()->Contains(target_window));
 
-  WindowTracker target_window_tracker;
-  target_window_tracker.Add(target_window);
+  auto target_window_weak = target_window->GetWeakPtrAsWindow();
   if (!dispatching_held_event_) {
     bool can_be_held = IsEventCandidateForHold(*event);
     if (!move_hold_count_ || !can_be_held) {
@@ -566,7 +563,7 @@ ui::EventDispatchDetails WindowEventDispatcher::PreDispatchEvent(
         return details;
     }
   }
-  if (target_window_tracker.windows().empty()) {
+  if (!target_window_weak) {
     // The event target is destroyed while processing the held event.
     DispatchDetails details;
     details.target_destroyed = true;
@@ -1004,15 +1001,14 @@ DispatchDetails WindowEventDispatcher::PreDispatchMouseEvent(
       // dispatch.
       if (target != mouse_moved_handler_) {
         aura::Window* old_mouse_moved_handler = mouse_moved_handler_;
-        WindowTracker live_window;
-        live_window.Add(target);
+        base::WeakPtr<ui::GestureConsumer> live_window = target->GetWeakPtr();
         DispatchDetails details = DispatchMouseEnterOrExit(
             target, *event, ui::EventType::kMouseExited);
         // |details| contains information about |mouse_moved_handler_| being
         // destroyed which is not our |target|. Return value of this function
         // should be about our |target|.
         DispatchDetails target_details = details;
-        target_details.target_destroyed = !live_window.Contains(target);
+        target_details.target_destroyed = !live_window;
         if (details.dispatcher_destroyed) {
           event->SetHandled();
           return target_details;
@@ -1028,7 +1024,6 @@ DispatchDetails WindowEventDispatcher::PreDispatchMouseEvent(
           event->SetHandled();
           return target_details;
         }
-        live_window.Remove(target);
 
         mouse_moved_handler_ = target;
         details = DispatchMouseEnterOrExit(target, *event,
