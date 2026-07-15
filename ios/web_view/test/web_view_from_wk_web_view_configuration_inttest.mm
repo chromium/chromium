@@ -7,6 +7,7 @@
 
 #import "base/memory/raw_ptr.h"
 #import "base/test/ios/wait_util.h"
+#import "base/time/time.h"
 #import "ios/web/common/uikit_ui_util.h"
 #import "ios/web_view/test/observer.h"
 #import "ios/web_view/test/web_view_inttest_base.h"
@@ -15,6 +16,24 @@
 #import "net/test/embedded_test_server/embedded_test_server.h"
 #import "testing/gtest_mac.h"
 #import "url/gurl.h"
+
+namespace {
+
+// Extended timeout while waiting for page loads. Simulator process
+// initialization under load on newer iOS simulators can exceed the default
+// `kWaitForPageLoadTimeout`.
+constexpr base::TimeDelta kWaitForExtendedPageLoadTimeout = base::Seconds(30);
+
+// TODO(crbug.com/530841942): Remove extended timeout once navigation delays on
+// iOS 27 simulators are resolved.
+base::TimeDelta GetPageLoadTimeout() {
+  if (@available(iOS 27, *)) {
+    return kWaitForExtendedPageLoadTimeout;
+  }
+  return base::test::ios::kWaitForPageLoadTimeout;
+}
+
+}  // namespace
 
 namespace ios_web_view {
 
@@ -143,9 +162,8 @@ TEST_F(WebViewFromWKWebViewConfigurationTest, FromWKWebViewConfiguration) {
   wk_web_view.navigationDelegate = observer;
   [wk_web_view loadRequest:[[NSURLRequest alloc]
                                initWithURL:net::NSURLWithGURL(window1_url_)]];
-  using base::test::ios::kWaitForPageLoadTimeout;
   ASSERT_TRUE(
-      base::test::ios::WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, ^{
+      base::test::ios::WaitUntilConditionOrTimeout(GetPageLoadTimeout(), ^{
         return observer.navigationFinished;
       }));
   wk_web_view.navigationDelegate = nil;
@@ -203,7 +221,7 @@ TEST_F(WebViewFromWKWebViewConfigurationTest, FromWKWebViewConfiguration) {
     observer.navigationFinished = NO;
     web_view_.navigationDelegate = observer;
     ASSERT_TRUE(
-        base::test::ios::WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, ^{
+        base::test::ios::WaitUntilConditionOrTimeout(GetPageLoadTimeout(), ^{
           return observer.navigationFinished;
         }));
     web_view_.navigationDelegate = nil;
