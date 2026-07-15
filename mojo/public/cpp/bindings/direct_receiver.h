@@ -21,6 +21,7 @@
 #include "base/types/pass_key.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/system/handle.h"
 #include "mojo/public/cpp/system/message_pipe.h"
@@ -197,6 +198,18 @@ class DirectReceiver {
     receiver_.Bind(receiver.is_valid() ? PendingReceiver<T>(node_->AdoptPipe(
                                              receiver.PassPipe()))
                                        : std::move(receiver));
+  }
+
+  // Binds this as a DirectReceiver, connecting it to a new PendingRemote which
+  // is returned for transmission elsewhere.
+  //
+  // The DirectReceiver will schedule incoming |impl| method calls and
+  // disconnection notifications on the default SequencedTaskRunner.
+  [[nodiscard]] PendingRemote<T> BindNewPipeAndPassRemote() {
+    DCHECK(!is_bound());
+    PendingRemote<T> remote;
+    Bind(remote.InitWithNewPipeAndPassReceiver());
+    return remote;
   }
 
   void ResetWithReason(uint32_t custom_reason_code,
