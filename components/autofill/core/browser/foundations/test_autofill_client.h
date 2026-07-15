@@ -438,9 +438,24 @@ class TestAutofillClientTemplate : public T {
   void set_is_glic_enabled(bool enabled) { is_glic_enabled_ = enabled; }
 
   bool IsAutofillEnabled() const override {
-    return IsAutofillProfileEnabled() ||
-           AutofillClient::GetPaymentsAutofillClient()
-               ->IsAutofillPaymentMethodsEnabled();
+    if (IsAutofillProfileEnabled() ||
+        AutofillClient::GetPaymentsAutofillClient()
+            ->IsAutofillPaymentMethodsEnabled()) {
+      return true;
+    }
+
+    if (base::FeatureList::IsEnabled(
+            features::kAutofillEnableAutofillSettingsEnterprisePolicy)) {
+      return !IsAutofillTypeBlockedByPolicy(
+                 GURL(),
+                 AutofillClient::AutofillPolicyDataCategory::kIdentityDocs) ||
+             !IsAutofillTypeBlockedByPolicy(
+                 GURL(), AutofillClient::AutofillPolicyDataCategory::kTravel) ||
+             !IsAutofillTypeBlockedByPolicy(
+                 GURL(), AutofillClient::AutofillPolicyDataCategory::kShopping);
+    }
+
+    return false;
   }
 
   bool IsAutofillProfileEnabled() const override {

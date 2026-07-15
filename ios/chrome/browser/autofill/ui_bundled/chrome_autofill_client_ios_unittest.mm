@@ -11,6 +11,7 @@
 #import "base/functional/callback_helpers.h"
 #import "base/memory/raw_ptr.h"
 #import "base/test/scoped_feature_list.h"
+#import "base/test/values_test_util.h"
 #import "base/time/time.h"
 #import "base/values.h"
 #import "components/autofill/core/browser/foundations/autofill_manager_test_api.h"
@@ -38,6 +39,7 @@
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/web/model/chrome_web_client.h"
+#import "ios/chrome/browser/webdata_services/model/web_data_service_factory.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/test/scoped_testing_web_client.h"
@@ -78,7 +80,10 @@ class ChromeAutofillClientIOSTest : public PlatformTest {
   ChromeAutofillClientIOSTest()
       : web_client_(std::make_unique<ChromeWebClient>()) {
     scene_state_ = [[SceneState alloc] initWithAppState:nil];
-    profile_ = TestProfileIOS::Builder().Build();
+    TestProfileIOS::Builder builder;
+    builder.AddTestingFactory(ios::WebDataServiceFactory::GetInstance(),
+                              ios::WebDataServiceFactory::GetDefaultFactory());
+    profile_ = std::move(builder).Build();
 
     browser_ = std::make_unique<TestBrowser>(profile_.get(), scene_state_);
 
@@ -370,6 +375,90 @@ TEST_F(ChromeAutofillClientIOSTest, IsAutofillTypeBlockedByPolicy_Incognito) {
   EXPECT_TRUE(otr_client.IsAutofillTypeBlockedByPolicy(
       GURL("https://www.example.com"),
       AutofillClient::AutofillPolicyDataCategory::kContactInfo));
+}
+
+// Tests that IsAutofillEnabled correctly returns false when all active autofill
+// types (including AI data types) are globally blocked by policy.
+TEST_F(ChromeAutofillClientIOSTest, IsAutofillEnabled_BlockedByPolicy) {
+  base::test::ScopedFeatureList feature_list(
+      features::kAutofillEnableAutofillSettingsEnterprisePolicy);
+
+  // Disable profile and payments so IsAutofillEnabled depends on the AI types.
+  profile()->GetPrefs()->SetBoolean(prefs::kAutofillProfileEnabled, false);
+  profile()->GetPrefs()->SetBoolean(prefs::kAutofillCreditCardEnabled, false);
+
+  // Enable the AI types.
+  profile()->GetPrefs()->SetBoolean(prefs::kAutofillAiIdentityEntitiesEnabled,
+                                    true);
+  profile()->GetPrefs()->SetBoolean(prefs::kAutofillAiTravelEntitiesEnabled,
+                                    true);
+  profile()->GetPrefs()->SetBoolean(prefs::kAutofillAiShoppingEntitiesEnabled,
+                                    true);
+
+  web::test::LoadHtml(@"<body></body>", GURL("https://www.example.com"),
+                      web_state());
+  EXPECT_TRUE(client().IsAutofillEnabled());
+
+  // Block only identity docs.
+  profile()->GetPrefs()->Set(prefs::kAutofillTypesBlocked,
+                             base::test::ParseJson(
+                                 R"([
+            {
+              "url_pattern": "https://[*.]example.com",
+              "blocked_types": ["identity_docs"]
+            }
+          ])"));
+
+  // Still true because travel and shopping are enabled.
+  EXPECT_TRUE(client().IsAutofillEnabled());
+
+  // Block identity docs and travel.
+  profile()->GetPrefs()->Set(prefs::kAutofillTypesBlocked,
+                             base::test::ParseJson(
+                                 R"([
+            {
+              "url_pattern": "https://[*.]example.com",
+              "blocked_types": ["identity_docs", "travel"]
+            }
+          ])"));
+
+  EXPECT_TRUE(client().IsAutofillEnabled());
+
+  // Block all three.
+  profile()->GetPrefs()->Set(prefs::kAutofillTypesBlocked,
+                             base::test::ParseJson(
+                                 R"([
+            {
+              "url_pattern": "https://[*.]example.com",
+              "blocked_types": ["identity_docs", "travel", "shopping"]
+            }
+          ])"));
+
+  EXPECT_FALSE(client().IsAutofillEnabled());
+}
+
+// Tests that IsAutofillEnabled does not consider AI data types when the
+// enterprise policy feature flag is disabled, strictly adhering to the original
+// behavior.
+TEST_F(ChromeAutofillClientIOSTest,
+       IsAutofillEnabled_AiTypesGatedByEnterprisePolicyFeature) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      features::kAutofillEnableAutofillSettingsEnterprisePolicy);
+
+  // Disable profile and payments so IsAutofillEnabled depends on the AI types.
+  profile()->GetPrefs()->SetBoolean(prefs::kAutofillProfileEnabled, false);
+  profile()->GetPrefs()->SetBoolean(prefs::kAutofillCreditCardEnabled, false);
+
+  // Enable the AI types.
+  profile()->GetPrefs()->SetBoolean(prefs::kAutofillAiIdentityEntitiesEnabled,
+                                    true);
+  profile()->GetPrefs()->SetBoolean(prefs::kAutofillAiTravelEntitiesEnabled,
+                                    true);
+  profile()->GetPrefs()->SetBoolean(prefs::kAutofillAiShoppingEntitiesEnabled,
+                                    true);
+
+  EXPECT_FALSE(client().IsAutofillEnabled());
 }
 
 }  // namespace autofill
