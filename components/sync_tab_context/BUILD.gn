@@ -7,6 +7,8 @@ static_library("sync_tab_context") {
     "container_id.h",
     "tab_context_container_sync_bridge.cc",
     "tab_context_container_sync_bridge.h",
+    "tab_context_data_type_controller.cc",
+    "tab_context_data_type_controller.h",
     "tab_context_item_sync_bridge.cc",
     "tab_context_item_sync_bridge.h",
     "tab_context_sync_service.cc",
@@ -21,9 +23,11 @@ static_library("sync_tab_context") {
   ]
 
   deps = [
+    "//components/signin/public/identity_manager",
     "//components/sync/model",
     "//components/sync/model/crypto",
     "//components/sync/protocol",
+    "//components/sync/service",
   ]
 }
 
@@ -32,6 +36,7 @@ source_set("unit_tests") {
 
   sources = [
     "tab_context_container_sync_bridge_unittest.cc",
+    "tab_context_data_type_controller_unittest.cc",
     "tab_context_item_sync_bridge_unittest.cc",
   ]
 
@@ -39,9 +44,11 @@ source_set("unit_tests") {
     ":sync_tab_context",
     "//base",
     "//base/test:test_support",
+    "//components/signin/public/identity_manager",
     "//components/sync:test_support",
     "//components/sync/model",
     "//components/sync/protocol",
+    "//components/sync/service",
     "//testing/gmock",
     "//testing/gtest",
   ]
