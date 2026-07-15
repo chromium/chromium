@@ -135,6 +135,7 @@ class AndroidAutofillClient : public autofill::ContentAutofillClient,
   bool IsWalletPublicPassStorageEnabled() const final;
   bool IsAutocompleteEnabled() const final;
   bool IsPasswordManagerEnabled() const final;
+  bool UsesPlatformAutofill() const final;
   bool IsContextSecure() const final;
   autofill::autofill_metrics::FormInteractionsUkmLogger&
   GetFormInteractionsUkmLogger() final;

@@ -1130,6 +1130,10 @@ bool ChromeAutofillClient::IsPasswordManagerEnabled() const {
              password_manager::PasswordManagerSetting::kOfferToSavePasswords);
 }
 
+bool ChromeAutofillClient::UsesPlatformAutofill() const {
+  return false;
+}
+
 bool ChromeAutofillClient::IsContextSecure() const {
   SecurityStateTabHelper* helper =
       SecurityStateTabHelper::FromWebContents(web_contents());

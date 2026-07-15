@@ -291,6 +291,10 @@ bool WebViewAutofillClientIOS::IsPasswordManagerEnabled() const {
       password_manager::prefs::kCredentialsEnableService);
 }
 
+bool WebViewAutofillClientIOS::UsesPlatformAutofill() const {
+  return false;
+}
+
 bool WebViewAutofillClientIOS::IsContextSecure() const {
   return IsContextSecureForWebState(web_state());
 }

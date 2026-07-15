@@ -150,6 +150,7 @@ class ChromeAutofillClientIOS : public AutofillClientIOS {
   bool IsWalletPublicPassStorageEnabled() const override;
   bool IsAutocompleteEnabled() const override;
   bool IsPasswordManagerEnabled() const override;
+  bool UsesPlatformAutofill() const override;
   bool IsContextSecure() const override;
   LogManager* GetCurrentLogManager() override;
   autofill_metrics::FormInteractionsUkmLogger& GetFormInteractionsUkmLogger()

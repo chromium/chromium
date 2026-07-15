@@ -900,6 +900,10 @@ class AutofillClient {
 
   // Returns the AutofillManager instance for the current frame/tab.
   virtual AutofillManager* GetAutofillManagerForPrimaryMainFrame();
+
+  // Returns whether the client uses platform-native autofill rather than
+  // Chrome's built-in autofill UI/logic.
+  virtual bool UsesPlatformAutofill() const = 0;
 };
 
 }  // namespace autofill

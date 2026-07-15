@@ -134,6 +134,8 @@ class TestAutofillClientTemplate : public T {
 
   bool IsOffTheRecord() const override { return is_off_the_record_; }
 
+  bool UsesPlatformAutofill() const override { return false; }
+
   AutofillCrowdsourcingManager& GetCrowdsourcingManager() override {
     if (!crowdsourcing_manager_) {
       crowdsourcing_manager_ =

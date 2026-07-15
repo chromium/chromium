@@ -538,6 +538,10 @@ bool ChromeAutofillClientIOS::IsPasswordManagerEnabled() const {
       password_manager::prefs::kCredentialsEnableService);
 }
 
+bool ChromeAutofillClientIOS::UsesPlatformAutofill() const {
+  return false;
+}
+
 bool ChromeAutofillClientIOS::IsContextSecure() const {
   return consider_as_secure_for_testing_ ||
          IsContextSecureForWebState(web_state());

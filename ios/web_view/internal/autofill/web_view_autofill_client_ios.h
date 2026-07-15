@@ -141,6 +141,7 @@ class WebViewAutofillClientIOS : public AutofillClientIOS {
   bool IsWalletPublicPassStorageEnabled() const override;
   bool IsAutocompleteEnabled() const override;
   bool IsPasswordManagerEnabled() const override;
+  bool UsesPlatformAutofill() const override;
   bool IsContextSecure() const override;
   bool IsCvcSavingSupported() const override;
   autofill_metrics::FormInteractionsUkmLogger& GetFormInteractionsUkmLogger()

@@ -267,6 +267,10 @@ bool AndroidAutofillClient::IsPasswordManagerEnabled() const {
   NOTREACHED();
 }
 
+bool AndroidAutofillClient::UsesPlatformAutofill() const {
+  return true;
+}
+
 bool AndroidAutofillClient::IsContextSecure() const {
   // Note: As of crbug.com/701018, Chrome relies on ChromeSecurityStateTabHelper
   // to determine whether the page is secure, but WebView can only access a
