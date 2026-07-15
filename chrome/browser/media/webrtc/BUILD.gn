@@ -559,6 +559,54 @@ source_set("unit_tests") {
   }
 }
 
+# Interactive UI tests cannot run on ChromeOS devices; see
+# //docs/testing/chromeos_integration for background.
+if (!is_android && !is_chromeos_device) {
+  source_set("interactive_ui_tests") {
+    testonly = true
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+    sources = [
+      "conditional_focus_interactive_uitest.cc",
+      "display_media_access_handler_interactive_uitest.cc",
+      "media_stream_permission_interactive_uitest.cc",
+      "webrtc_interactive_uitest.cc",
+      "webrtc_mediadevices_interactive_uitest.cc",
+    ]
+    deps = [
+      ":webrtc",
+      ":webrtc_browser_tests_base",
+      "//base",
+      "//chrome/browser/content_settings:content_settings_factory",
+      "//chrome/browser/picture_in_picture",
+      "//chrome/browser/preloading:test_support",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/ui",
+      "//chrome/browser/ui/tabs:tab_strip",
+      "//chrome/common",
+      "//chrome/test:test_support",
+      "//chrome/test:test_support_ui",
+      "//components/content_settings/core/browser",
+      "//components/content_settings/core/common",
+      "//components/media_device_salt",
+      "//components/permissions:test_support",
+      "//components/prefs",
+      "//content/public/browser",
+      "//content/public/common",
+      "//content/test:test_support",
+      "//media",
+      "//services/network/public/cpp",
+      "//services/network/public/mojom",
+      "//testing/gtest",
+      "//ui/gl",
+    ]
+
+    if (use_ozone) {
+      deps += [ "//ui/ozone" ]
+    }
+  }
+}
+
 if (is_android) {
   import("//build/config/android/rules.gni")
 
