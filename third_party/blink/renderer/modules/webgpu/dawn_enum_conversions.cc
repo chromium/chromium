@@ -1127,6 +1127,8 @@ const char* FromDawnEnum(wgpu::WGSLLanguageFeatureName dawn_enum) {
       return "linear_indexing";
     case wgpu::WGSLLanguageFeatureName::ImmediateAddressSpace:
       return "immediate_address_space";
+    case wgpu::WGSLLanguageFeatureName::BufferView:
+      return "buffer_view";
 
     // Non-standard.
     case wgpu::WGSLLanguageFeatureName::ChromiumTestingUnimplemented:
