@@ -2392,9 +2392,9 @@
                     },
                     "enable_features": [
                         "AutofillAtMemory",
+                        "AutofillAtMemoryTriggerShortcut",
+                        "AutofillKeydownEditableElement",
                         "IPH_AutofillAtMemory",
-                        "PersonalContextFirstRun",
-                        "PersonalContextFirstRunNoticePhase2",
                         "PersonalContextForceEnablementState"
                     ]
                 }
