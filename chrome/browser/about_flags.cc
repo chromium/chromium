@@ -3917,10 +3917,17 @@ const FeatureEntry::FeatureParam
     kAndroidBottomBar1AWithNtpAndGlicFilledParam[] = {
         {"disable_on_ntp", "false"},
         {"always_use_filled_glic_icon", "true"}};
+const FeatureEntry::FeatureParam
+    kAndroidBottomBar1AWithNtpGtsAndGlicFilledParam[] = {
+        {"disable_on_ntp", "false"},
+        {"always_use_filled_glic_icon", "true"},
+        {"show_bottom_bar_on_gts", "true"}};
 const FeatureEntry::FeatureVariation kAndroidBottomBarVariations[] = {
     {"- 1A with NTP", kAndroidBottomBarDisableOnNtpParam, nullptr},
     {"- 1A with NTP and GLIC filled",
      kAndroidBottomBar1AWithNtpAndGlicFilledParam, nullptr},
+    {"- 1A with NTP, GTS and GLIC filled",
+     kAndroidBottomBar1AWithNtpGtsAndGlicFilledParam, nullptr},
     {"- 1B", kAndroidBottomBarKeepAppMenuInToolbarParam, nullptr},
     {"- 1B with NTP", kAndroidBottomBarKeepAppMenuInToolbarWithNtpParam,
      nullptr},
