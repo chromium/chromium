@@ -12,10 +12,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
+import android.view.accessibility.AccessibilityEvent;
+import android.view.accessibility.AccessibilityNodeInfo;
 import android.widget.FrameLayout;
 
 import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
+import androidx.core.view.ViewCompat;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.build.BuildConfig;
@@ -30,6 +33,7 @@ import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.AnchorSide;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.SideUiId;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.UiUpdateRequest;
 import org.chromium.components.thinwebview.ThinWebView;
+import org.chromium.ui.accessibility.AccessibilityState;
 import org.chromium.ui.base.ViewUtils;
 
 /** Implementation of {@link SidePanelContainerCoordinator}. */
@@ -202,6 +206,11 @@ final class SidePanelContainerCoordinatorImpl
                             mSidePanelCoordinatorAndroid.onPanelContentReplaced();
                         }
 
+                        notifyAccessibilityStateChanged(
+                                AccessibilityEvent.CONTENT_CHANGE_TYPE_PANE_TITLE,
+                                newContent.mAccessibilityTitle,
+                                /* requestFocus= */ true);
+
                         // If the work is for the current runnable, clear the runnable.
                         if (mPendingReplaceRunnable == this) {
                             mPendingReplaceRunnable = null;
@@ -363,12 +372,56 @@ final class SidePanelContainerCoordinatorImpl
         // The side panel is fully opened.
         if (oldWidth == 0 && newWidth > 0 && mSidePanelCoordinatorAndroid != null) {
             mSidePanelCoordinatorAndroid.onPanelOpened();
+
+            CharSequence paneTitle =
+                    mCurrentContent != null ? mCurrentContent.mAccessibilityTitle : null;
+            notifyAccessibilityStateChanged(
+                    AccessibilityEvent.CONTENT_CHANGE_TYPE_PANE_APPEARED,
+                    paneTitle,
+                    /* requestFocus= */ true);
             return;
         }
 
         // The side panel is fully closed.
         if (oldWidth > 0 && newWidth == 0 && mSidePanelCoordinatorAndroid != null) {
             mSidePanelCoordinatorAndroid.onPanelClosed();
+
+            notifyAccessibilityStateChanged(
+                    AccessibilityEvent.CONTENT_CHANGE_TYPE_PANE_DISAPPEARED,
+                    /* title= */ null,
+                    /* requestFocus= */ false);
+        }
+    }
+
+    @SuppressWarnings("AccessibilityFocus")
+    private void notifyAccessibilityStateChanged(
+            int eventType, @Nullable CharSequence title, boolean requestFocus) {
+        CharSequence oldTitle = ViewCompat.getAccessibilityPaneTitle(mContainerView);
+        ViewCompat.setAccessibilityPaneTitle(mContainerView, title);
+
+        AccessibilityEvent event =
+                AccessibilityEvent.obtain(AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED);
+        event.setContentChangeTypes(eventType);
+
+        CharSequence eventText =
+                eventType == AccessibilityEvent.CONTENT_CHANGE_TYPE_PANE_DISAPPEARED
+                        ? oldTitle
+                        : title;
+        if (eventText != null) {
+            event.getText().add(eventText);
+        }
+        event.setSource(mContainerView);
+        AccessibilityState.sendAccessibilityEvent(event);
+
+        if (requestFocus) {
+            // The focus change needs to happen after the view has measured its bounds per the
+            // a11y contract, or else TalkBack will lose focus or not focus at all. Posting
+            // gives a chance for this to come afterwards.
+            mContainerView.post(
+                    () -> {
+                        mContainerView.performAccessibilityAction(
+                                AccessibilityNodeInfo.ACTION_ACCESSIBILITY_FOCUS, null);
+                    });
         }
     }
 

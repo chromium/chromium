@@ -12,6 +12,7 @@ import static org.junit.Assert.assertTrue;
 import android.view.View;
 import android.widget.FrameLayout;
 
+import androidx.core.view.ViewCompat;
 import androidx.test.filters.MediumTest;
 import androidx.test.runner.lifecycle.Stage;
 
@@ -130,6 +131,77 @@ public class SidePanelContainerCoordinatorIntegrationTest {
         // Assert.
         assertEquals(1, containerView.getChildCount());
         assertEquals(contentView1, containerView.getChildAt(0));
+    }
+
+    @Test
+    @MediumTest
+    public void showPanel_setsAccessibilityPaneTitle() {
+        // Arrange.
+        var coordinator = getSidePanelContainerCoordinator();
+        var tab1 = mResponsivePageStation.getTab();
+
+        // Act.
+        showPanel(tab1);
+        FrameLayout containerView = waitForContainerViewOpen(coordinator);
+
+        // Assert.
+        // We verify that the default dev feature sets a null title correctly.
+        CriteriaHelper.pollUiThread(
+                () -> ViewCompat.getAccessibilityPaneTitle(containerView) == null,
+                "Accessibility pane title was not set correctly on open.");
+    }
+
+    @Test
+    @MediumTest
+    public void replacePanelContent_setsAccessibilityPaneTitle() {
+        // Arrange: Show the side panel for the current active tab.
+        var coordinator = getSidePanelContainerCoordinator();
+        var tab1 = mResponsivePageStation.getTab();
+        showPanel(tab1);
+        FrameLayout containerView = waitForContainerViewOpen(coordinator);
+
+        // Arrange: Show the side panel for a new tab.
+        var newTabPageStation = mResponsivePageStation.openNewTabFast();
+        var tab2 = newTabPageStation.getTab();
+        showPanel(tab2);
+        waitForContainerViewOpen(coordinator);
+
+        // Force set a title on the view so we can test that replacing the panel natively updates it
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> ViewCompat.setAccessibilityPaneTitle(containerView, "Test Custom Title"));
+
+        // Act: Switch back to the first tab, natively replacing the panel content.
+        mResponsivePageStation = newTabPageStation.selectTabFast(tab1, WebPageStation::newBuilder);
+        waitForContainerViewOpen(coordinator);
+
+        // Assert: The accessibility title matches the native testing feature's title (which is
+        // null).
+        CriteriaHelper.pollUiThread(
+                () -> ViewCompat.getAccessibilityPaneTitle(containerView) == null,
+                "Accessibility pane title was not updated correctly on replace.");
+    }
+
+    @Test
+    @MediumTest
+    public void closePanel_clearsAccessibilityPaneTitle() {
+        // Arrange: Open the panel
+        var coordinator = getSidePanelContainerCoordinator();
+        var tab1 = mResponsivePageStation.getTab();
+        showPanel(tab1);
+        FrameLayout containerView = waitForContainerViewOpen(coordinator);
+
+        // Force set a title on the view so we can test that close clears it
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> ViewCompat.setAccessibilityPaneTitle(containerView, "Test Custom Title"));
+
+        // Act: Close the side panel.
+        closePanel(tab1);
+        waitForContainerViewClose(coordinator);
+
+        // Assert: The accessibility title should be cleared.
+        CriteriaHelper.pollUiThread(
+                () -> ViewCompat.getAccessibilityPaneTitle(containerView) == null,
+                "Accessibility pane title was not cleared on close.");
     }
 
     @Test
