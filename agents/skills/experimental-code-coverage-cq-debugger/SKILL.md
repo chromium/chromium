@@ -133,14 +133,26 @@ ______________________________________________________________________
   file language:
   - **Java Files**: Use only the Android try builders:
     - `android-arm64-rel`, `android-x86-rel`, `android-12-x64-rel`,
-      `android-cronet-x64-dbg-14-tests`
+      `android-desktop-x64-rel` (`android-internal-desktop-x64-rel` for internal
+      developers), `android-cronet-x64-dbg-14-tests`
+  - **JavaScript / TypeScript (WebUI) Files**: Use only the JS coverage try
+    builders:
+    - `linux-js-coverage-rel`, `chromeos-js-coverage-rel`
   - **C++ Files**: Use all standard platform builders (none are ruled out):
     - *Linux*: `linux-rel`
     - *Mac/iOS*: `mac-rel`, `ios-simulator`, `ios-simulator-full-configs`
     - *Windows*: `win-rel`
     - *ChromeOS*: `linux-chromeos-rel`
     - *Android*: `android-arm64-rel`, `android-x86-rel`, `android-12-x64-rel`,
-      `android-cronet-x64-dbg-14-tests`
+      `android-desktop-x64-rel` (`android-internal-desktop-x64-rel` for internal
+      developers), `android-cronet-x64-dbg-14-tests`
+- **Note on Android Desktop Configurations**:
+  - The public `android-desktop-x64-rel` CQ bot and its internal equivalent
+    `android-internal-desktop-x64-rel` both inherit their base build configuration
+    from `infra/config/subprojects/chromium/try/tryserver.chromium.android.desktop.star`
+    (via the `equivalent_builder` property).
+  - For specific test suite configurations on internal Clank bots, check the
+    `*.pyl` files inside `https://chrome-internal.googlesource.com/clank/internal/apps/+/HEAD/build/bot`.
 - **Required Outputs**: The initial list of `builders_of_concern`. Update
   `builders_of_concern` in `scratch/triage_state.json`.
 
