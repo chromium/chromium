@@ -641,24 +641,355 @@ function fillPasswordFormAndSubmit(
 }
 
 /**
+ * Checks if the potential ancestor establishes a containing block for the
+ * descendant.
+ *
+ * For detailed rules on what constitutes a containing block, see:
+ * https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/Display/Containing_block
+ *
+ * @param ancestorStyle The computed style of the potential containing block
+ *     ancestor.
+ * @param descendantStyle The computed style of the descendant element.
+ * @return True if the ancestor is a containing block for the descendant.
+ */
+function establishesContainingBlockFor(
+    ancestorStyle: CSSStyleDeclaration,
+    descendantStyle: CSSStyleDeclaration): boolean {
+  // TODO(crbug.com/532608141): Support Shadow DOM by crossing shadow
+  // boundaries.
+
+  // If the ancestor does not generate a box, it cannot be a containing block.
+  if (ancestorStyle.display === 'contents') {
+    return false;
+  }
+
+  const descendantPosition = descendantStyle.position;
+
+  // For static, relative, or sticky elements, the containing block is
+  // normally the immediate ancestor container.
+  if (descendantPosition !== 'fixed' && descendantPosition !== 'absolute') {
+    return true;
+  }
+
+  // For absolute positioned elements, any non-static ancestor traps them.
+  if (descendantPosition === 'absolute' &&
+      ancestorStyle.position !== 'static') {
+    return true;
+  }
+
+  // At this point, the descendant is either `fixed`, OR `absolute` passing
+  // through a `static` ancestor. Both are trapped by the exact same properties
+  // below.
+
+  // Transform, perspective, filter, backdrop-filter, or independent transforms.
+  if (ancestorStyle.transform !== 'none' ||
+      ancestorStyle.perspective !== 'none' || ancestorStyle.filter !== 'none' ||
+      ancestorStyle.translate !== 'none' || ancestorStyle.rotate !== 'none' ||
+      ancestorStyle.scale !== 'none' ||
+      ancestorStyle.backdropFilter !== 'none') {
+    return true;
+  }
+  const webkitBackdropFilter =
+      ancestorStyle.getPropertyValue('-webkit-backdrop-filter');
+  if (webkitBackdropFilter && webkitBackdropFilter !== 'none') {
+    return true;
+  }
+
+  // CSS containment: layout, paint, strict, content, or content-visibility.
+  const containValue = ancestorStyle.contain;
+  const contentVisibility =
+      ancestorStyle.getPropertyValue('content-visibility');
+  if ((containValue &&
+       /\b(layout|paint|strict|content)\b/.test(containValue)) ||
+      contentVisibility === 'auto' || contentVisibility === 'hidden') {
+    return true;
+  }
+
+  // CSS will-change properties that would create a containing block upfront.
+  const willChange = ancestorStyle.willChange;
+  if (willChange &&
+      /\b(transform|perspective|filter|backdrop-filter|contain|translate|rotate|scale)\b/
+          .test(willChange)) {
+    return true;
+  }
+
+  // Ancestors with clip-path or mask also act as containing blocks for our
+  // traversal because they clip all descendants regardless of positioning.
+  const clipPath = ancestorStyle.getPropertyValue('clip-path');
+  const maskImage = ancestorStyle.getPropertyValue('mask-image') ||
+      ancestorStyle.getPropertyValue('-webkit-mask-image');
+  if ((clipPath && clipPath !== 'none') ||
+      (maskImage && maskImage !== 'none')) {
+    return true;
+  }
+
+  return false;
+}
+
+/**
+ * Clips the given rectangle with the clip box bounds.
+ *
+ * @param rect The rectangle to clip.
+ * @param clipBox The clipping boundaries.
+ * @return The clipped rectangle, or null if the result has no area.
+ */
+function clipRect(
+    rect: DOMRectReadOnly,
+    clipBox: {left: number, top: number, right: number, bottom: number}):
+    DOMRectReadOnly|null {
+  const left = Math.max(rect.left, clipBox.left);
+  const right = Math.min(rect.right, clipBox.right);
+  const top = Math.max(rect.top, clipBox.top);
+  const bottom = Math.min(rect.bottom, clipBox.bottom);
+
+  // If the clipped rectangle has no area (width or height is 0 or negative),
+  // it is completely clipped out.
+  if (bottom <= top || right <= left) {
+    return null;
+  }
+  return new DOMRect(left, top, right - left, bottom - top);
+}
+
+/**
+ * Calculates the simulated scroll offset needed to bring a range defined by
+ * start and length coordinates into a clipping boundary range.
+ *
+ * @param start The start coordinate of the element (e.g., rect.top).
+ * @param length The length of the element (e.g., rect.height).
+ * @param clipStart The start of the clipping container (e.g., clipTop).
+ * @param clipEnd The end of the clipping container (e.g., clipBottom).
+ * @param scrollLength The total scrollable content length (e.g., scrollHeight).
+ * @param clientLength The viewport client length (e.g., clientHeight).
+ * @param currentScroll The current scroll position (e.g., scrollTop).
+ * @return The simulated scroll offset adjustment.
+ */
+function calculateSimulatedScrollOffset(
+    start: number, length: number, clipStart: number, clipEnd: number,
+    scrollLength: number, clientLength: number, currentScroll: number): number {
+  const diffBefore = start - clipStart;
+  const diffAfter = (start + length) - clipEnd;
+  let scrollDiff = 0;
+
+  // Checks scroll direction.
+  if (diffBefore < 0) {
+    scrollDiff = diffBefore;
+  } else if (diffAfter > 0) {
+    scrollDiff = diffAfter;
+  }
+
+  if (scrollDiff === 0) {
+    return 0;
+  }
+
+  const maxScroll = scrollLength - clientLength;
+  const targetScroll =
+      Math.max(0, Math.min(maxScroll, currentScroll + scrollDiff));
+  return targetScroll - currentScroll;
+}
+
+/**
+ * Clips the given bounding rectangle against the boundaries of a clipping
+ * element, taking the element's CSS overflow styling into account.
+ *
+ * @param rect The bounding rectangle to clip.
+ * @param clippingElement The element that might clip the rectangle.
+ * @param shouldAdjustRectForScroll Whether to simulate scroll adjustments on
+ *     scrollable ancestors.
+ * @return The clipped bounding rectangle, or null if it is completely
+ *     clipped out.
+ */
+function clipRectWithElement(
+    rect: DOMRectReadOnly, clippingElement: Element,
+    shouldAdjustRectForScroll: boolean): DOMRectReadOnly|null {
+  const isRoot = clippingElement ===
+      (document.scrollingElement || document.documentElement);
+  const style = window.getComputedStyle(clippingElement);
+  const clipPath = style.getPropertyValue('clip-path');
+  const maskImage = style.getPropertyValue('mask-image') ||
+      style.getPropertyValue('-webkit-mask-image');
+
+  const hasClipPath = !!clipPath && clipPath !== 'none';
+  const hasMask = !!maskImage && maskImage !== 'none';
+
+  const overflowX = style.overflowX;
+  const overflowY = style.overflowY;
+
+  // Viewport always clips. Otherwise, clip if overflow is not visible.
+  const clipsX = isRoot || (overflowX !== 'visible' || hasClipPath || hasMask);
+  const clipsY = isRoot || (overflowY !== 'visible' || hasClipPath || hasMask);
+
+  // If the container doesn't clip overflow, and has no clip-path/mask, return
+  // the rect untouched.
+  if (!clipsX && !clipsY) {
+    return rect;
+  }
+
+  // Viewport clipping boundary differs from normal elements:
+  // - For standard DOM elements, clipping occurs at their padding-box boundary,
+  //   which is computed relative to the current viewport using
+  //   `getBoundingClientRect()` and adding the border widths
+  //   (`clientLeft`/`clientTop`).
+  // - For the root element (`document.documentElement`),
+  // `getBoundingClientRect()`
+  //   returns the total layout box of the document, which shifts and grows with
+  //   content and is not aligned with the window viewport.
+  const clipBox = clippingElement.getBoundingClientRect();
+  const clipLeft = isRoot ? 0 : clipBox.left + clippingElement.clientLeft;
+  const clipTop = isRoot ? 0 : clipBox.top + clippingElement.clientTop;
+  const clipRight = isRoot ?
+      (window.innerWidth || clippingElement.clientWidth) :
+      clipLeft + clippingElement.clientWidth;
+  const clipBottom = isRoot ?
+      (window.innerHeight || clippingElement.clientHeight) :
+      clipTop + clippingElement.clientHeight;
+
+  // Adjusts the `rect` along scrollable directions to simulate user scrolling
+  // to reveal the element.
+  if (shouldAdjustRectForScroll) {
+    let adjustedLeft = rect.left;
+    let adjustedTop = rect.top;
+
+    const scrollableMatcher = isRoot ? /^(?!hidden$)/ : /^(?:auto|scroll)$/;
+
+    // Adjust for vertical scroll direction.
+    if (clipsY && scrollableMatcher.test(overflowY)) {
+      adjustedTop -= calculateSimulatedScrollOffset(
+          rect.top, rect.height, clipTop, clipBottom,
+          clippingElement.scrollHeight, clippingElement.clientHeight,
+          clippingElement.scrollTop);
+    }
+
+    // Adjust for horizontal scroll direction.
+    if (clipsX && scrollableMatcher.test(overflowX)) {
+      adjustedLeft -= calculateSimulatedScrollOffset(
+          rect.left, rect.width, clipLeft, clipRight,
+          clippingElement.scrollWidth, clippingElement.clientWidth,
+          clippingElement.scrollLeft);
+    }
+
+    rect = new DOMRect(adjustedLeft, adjustedTop, rect.width, rect.height);
+  }
+
+  // Clips the adjusted box with the clipping element.
+  const targetClipBox = {
+    left: clipsX ? clipLeft : -Infinity,
+    right: clipsX ? clipRight : Infinity,
+    top: clipsY ? clipTop : -Infinity,
+    bottom: clipsY ? clipBottom : Infinity,
+  };
+
+  return clipRect(rect, targetClipBox);
+}
+
+/**
+ * Calculates the bounding rectangle of an element, clipped by all of its
+ * containing block ancestors' boundaries.
+ *
+ * @param element The element to get the clipped bounds for.
+ * @param shouldAdjustRectForScroll Whether to simulate scroll adjustments on
+ *     scrollable ancestors.
+ * @return The clipped bounding rectangle, or null if it is completely
+ *     clipped out.
+ */
+function getVisibleRectRespectingClips(
+    element: Element, shouldAdjustRectForScroll: boolean): DOMRectReadOnly|
+    null {
+  let visibleRect: DOMRectReadOnly|null = element.getBoundingClientRect();
+
+  // Using a two-pointer approach, iterates through all ancestor containing
+  // blocks and clip the element's bounding rectangle with each block's
+  // boundaries.
+  let descendant = element;
+  let descendantStyle = window.getComputedStyle(descendant);
+  let ancestor = descendant.parentElement;
+
+  while (ancestor && visibleRect) {
+    const ancestorStyle = window.getComputedStyle(ancestor);
+
+    if (establishesContainingBlockFor(ancestorStyle, descendantStyle)) {
+      visibleRect =
+          clipRectWithElement(visibleRect, ancestor, shouldAdjustRectForScroll);
+      descendant = ancestor;
+      descendantStyle = ancestorStyle;
+    }
+
+    ancestor = ancestor.parentElement;
+  }
+
+  return visibleRect;
+}
+
+/**
  * Checks if the view area of the field is visible.
  * @param fieldIdentifier The unique ID of the field.
  * @return Whether the field is visible in the viewport.
  */
 function scrollAndCheckViewAreaVisible(fieldIdentifier: number): boolean {
+  // Checks the existence of element.
   const element = getElementByUniqueID(fieldIdentifier) as HTMLElement;
   if (!element) {
     return false;
   }
 
-  if ((element as any).scrollIntoViewIfNeeded) {
-    (element as any).scrollIntoViewIfNeeded();
-  } else {
-    element.scrollIntoView();
+  // Perform a virtual scroll check first to verify if it is scrollable into
+  // view.
+  let visibleRect = getVisibleRectRespectingClips(
+      element, /*shouldAdjustRectForScroll=*/ true);
+  if (!visibleRect) {
+    return false;
   }
-  // TODO(crbug.com/472291829): Fully match the implementation in Blink's
-  // `VisibleBoundsInWidget` by taking into accoung clipping on parent elements.
-  return true;
+
+  const viewportWidth =
+      window.innerWidth || document.documentElement.clientWidth;
+  const viewportHeight =
+      window.innerHeight || document.documentElement.clientHeight;
+  const viewportBox = {
+    left: 0,
+    top: 0,
+    right: viewportWidth,
+    bottom: viewportHeight,
+  };
+  visibleRect = clipRect(visibleRect, viewportBox);
+  if (!visibleRect) {
+    return false;
+  }
+
+  // Actually scroll the element into view.
+  element.scrollIntoView({block: 'nearest', inline: 'nearest'});
+
+  // Re-calculate the visible rect after the scroll to get the actual final
+  // coordinates.
+  let scrolledVisibleRect = getVisibleRectRespectingClips(
+      element, /*shouldAdjustRectForScroll=*/ false);
+  if (!scrolledVisibleRect) {
+    return false;
+  }
+  scrolledVisibleRect = clipRect(scrolledVisibleRect, viewportBox);
+  if (!scrolledVisibleRect) {
+    return false;
+  }
+
+  // Visual occlusion check: Performs a hit-test at the center of the clipped
+  // visible area.
+  //
+  // Handles:
+  // - Direct hits on the element or its descendants (e.g., inner input nodes).
+  // - Hits on an associated <label> or its children (via label.control).
+  // - Occlusion by floating modals, fixed headers, or cookie banners.
+  //
+  // Edge cases not covered:
+  // - Custom non-<label> floating overlays (<div>/<span>) unless they set
+  //   `pointer-events: none`.
+  // - Partial occlusion where the center point is clear but other areas are
+  // covered.
+  const centerX = scrolledVisibleRect.left + scrolledVisibleRect.width / 2;
+  const centerY = scrolledVisibleRect.top + scrolledVisibleRect.height / 2;
+  const hitElement = document.elementFromPoint(centerX, centerY);
+  const label = hitElement?.closest('label');
+  const isNotOccluded = hitElement &&
+      (element.contains(hitElement) || (label && label.control === element));
+
+  return !!isNotOccluded;
 }
 
 /**
