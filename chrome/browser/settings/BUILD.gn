@@ -58,6 +58,7 @@ android_library("java") {
     "android/java/src/org/chromium/chrome/browser/settings/ChromeManagedPreferenceDelegate.java",
     "android/java/src/org/chromium/chrome/browser/settings/FaviconLoader.java",
     "android/java/src/org/chromium/chrome/browser/settings/ProfileDependentSetting.java",
+    "android/java/src/org/chromium/chrome/browser/settings/SettingsInTab.java",
     "android/java/src/org/chromium/chrome/browser/settings/SettingsPage.java",
   ]
   public_deps = [
@@ -87,6 +88,7 @@ android_library("java") {
     "//third_party/androidx:androidx_constraintlayout_constraintlayout_java",
     "//third_party/androidx:androidx_fragment_fragment_java",
     "//third_party/androidx:androidx_preference_preference_java",
+    "//ui/android:ui_no_recycler_view_java",
     "//url:gurl_java",
   ]
   resources_package = "org.chromium.chrome.browser.settings"

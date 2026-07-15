@@ -25,7 +25,6 @@ import androidx.preference.PreferenceFragmentCompat;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 
 import java.lang.ref.WeakReference;
 
@@ -43,7 +42,7 @@ public class SettingsHostFragment extends Fragment
     private int mPendingPopBackCount;
 
     SettingsHostFragment() {
-        assert ChromeFeatureList.sSettingsInTab.isEnabled()
+        assert SettingsInTab.isEnabled()
                 : "SettingsInTab feature must be enabled to use SettingsHostFragment.";
     }
 

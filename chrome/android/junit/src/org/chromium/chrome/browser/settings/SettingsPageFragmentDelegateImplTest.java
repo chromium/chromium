@@ -41,6 +41,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.stubbing.Answer;
+import org.robolectric.annotation.Config;
 
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
@@ -62,6 +63,7 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 /** Unit tests for {@link SettingsPageFragmentDelegateImpl}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @EnableFeatures(ChromeFeatureList.SETTINGS_IN_TAB)
+@Config(qualifiers = "sw600dp")
 public class SettingsPageFragmentDelegateImplTest {
     private static final int CONTAINER_ID = R.id.settings_content;
     private static final String EXPECTED_TAG = "settings_native_page_" + CONTAINER_ID;

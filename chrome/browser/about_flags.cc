@@ -297,6 +297,7 @@
 #include "components/push_messaging/push_messaging_features.h"
 #include "components/translate/content/android/translate_message.h"
 #include "ui/android/ui_android_features.h"
+#include "ui/base/device_form_factor.h"
 #else  // BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/component_updater/iwa_key_distribution_component_installer.h"
 #include "chrome/browser/media/router/discovery/access_code/access_code_cast_sink_service.h"
@@ -3612,6 +3613,7 @@ const FeatureEntry::FeatureVariation kMaliciousApkDownloadCheckChoices[] = {
 #if BUILDFLAG(IS_ANDROID)
 constexpr char kDisableFacilitatedPaymentsMerchantAllowlistInternalName[] =
     "disable-facilitated-payments-merchant-allowlist";
+constexpr char kSettingsInTabInternalName[] = "settings-in-tab";
 #endif  // BUILDFLAG(IS_ANDROID)
 
 const FeatureEntry::FeatureParam
@@ -7537,6 +7539,10 @@ const FeatureEntry kFeatureEntries[] = {
     {"on-startup-window-policy", flag_descriptions::kOnStartupWindowPolicyName,
      flag_descriptions::kOnStartupWindowPolicyDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kOnStartupWindowPolicy)},
+
+    {kSettingsInTabInternalName, flag_descriptions::kSettingsInTabName,
+     flag_descriptions::kSettingsInTabDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kSettingsInTab)},
 
     {"android-settings-containment",
      flag_descriptions::kAndroidSettingsContainmentName,
@@ -13672,6 +13678,12 @@ bool ShouldSkipConditionalFeatureEntry(const flags_ui::FlagsStorage* storage,
            channel != version_info::Channel::DEV &&
            channel != version_info::Channel::CANARY &&
            channel != version_info::Channel::UNKNOWN;
+  }
+  // Only show the settings in tab flag on tablets and desktops.
+  if (std::string_view(kSettingsInTabInternalName) == entry.internal_name) {
+    auto form_factor = ui::GetDeviceFormFactor();
+    return form_factor != ui::DEVICE_FORM_FACTOR_DESKTOP &&
+           form_factor != ui::DEVICE_FORM_FACTOR_TABLET;
   }
 #endif  // BUILDFLAG(IS_ANDROID)
 

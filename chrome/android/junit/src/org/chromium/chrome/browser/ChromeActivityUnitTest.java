@@ -442,6 +442,7 @@ public class ChromeActivityUnitTest {
 
     @Test
     @EnableFeatures(ChromeFeatureList.SETTINGS_IN_TAB)
+    @Config(qualifiers = "sw600dp")
     public void testPreferencesMenuItem_SettingsInTabEnabled() {
         TestChromeActivity chromeActivity = Mockito.spy(new TestChromeActivity());
 

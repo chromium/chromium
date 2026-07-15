@@ -35,7 +35,6 @@ import org.chromium.chrome.browser.browsing_data.ClearBrowsingDataFragment;
 import org.chromium.chrome.browser.commerce.PriceNotificationSettingsFragment;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchSettingsFragment;
 import org.chromium.chrome.browser.download.settings.DownloadSettings;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.glic.GlicActorLoginPermissionsFragment;
 import org.chromium.chrome.browser.glic.GlicSettings;
 import org.chromium.chrome.browser.homepage.settings.HomepageSettings;
@@ -223,7 +222,7 @@ public class SettingsNavigationImpl implements SettingsNavigation {
             @Nullable Bundle fragmentArgs,
             boolean addToBackStack,
             @Nullable String tag) {
-        if (ChromeFeatureList.sSettingsInTab.isEnabled()) {
+        if (SettingsInTab.isEnabled()) {
             Activity activity = ActivityUtil.getActivityFromContext(context);
             // Some components pass a non-Activity context (e.g. AccessibilitySettings).
             if (activity == null) {
@@ -450,7 +449,7 @@ public class SettingsNavigationImpl implements SettingsNavigation {
         if (activity == null) return;
 
         // SettingsInTab does not use SettingsActivity.
-        if (ChromeFeatureList.sSettingsInTab.isEnabled()) {
+        if (SettingsInTab.isEnabled()) {
             SettingsHostFragment settingsHostFragment = SettingsHostFragment.get(activity);
             if (settingsHostFragment != null) {
                 settingsHostFragment.finishCurrentSettings(fragment);
@@ -464,7 +463,7 @@ public class SettingsNavigationImpl implements SettingsNavigation {
     @Override
     public void executePendingNavigations(Activity activity) {
         // SettingsInTab does not use SettingsActivity.
-        if (ChromeFeatureList.sSettingsInTab.isEnabled()) {
+        if (SettingsInTab.isEnabled()) {
             SettingsHostFragment settingsHostFragment = SettingsHostFragment.get(activity);
             if (settingsHostFragment != null) {
                 settingsHostFragment.executePendingNavigations();

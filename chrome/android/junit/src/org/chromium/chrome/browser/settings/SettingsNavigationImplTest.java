@@ -16,6 +16,7 @@ import androidx.fragment.app.Fragment;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
+import org.robolectric.annotation.Config;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
@@ -83,6 +84,7 @@ public class SettingsNavigationImplTest {
 
     @Test
     @EnableFeatures({ChromeFeatureList.SETTINGS_IN_TAB})
+    @Config(qualifiers = "sw600dp")
     public void testStartSettings_SettingsInTab_ShowsInHostFragment() {
         var scenario = Robolectric.buildActivity(TestActivity.class).setup();
         TestActivity activity = scenario.get();
@@ -103,6 +105,7 @@ public class SettingsNavigationImplTest {
 
     @Test
     @EnableFeatures({ChromeFeatureList.SETTINGS_IN_TAB})
+    @Config(qualifiers = "sw600dp")
     public void testStartSettings_SettingsInTab_NonActivityContext_ShowsInHostFragment() {
         var scenario = Robolectric.buildActivity(TestActivity.class).setup();
         TestActivity activity = scenario.get();
@@ -129,6 +132,7 @@ public class SettingsNavigationImplTest {
 
     @Test
     @EnableFeatures({ChromeFeatureList.SETTINGS_IN_TAB})
+    @Config(qualifiers = "sw600dp")
     public void testStartSettings_SettingsInTab_NullFragment_ShowsInitialFragment() {
         var scenario = Robolectric.buildActivity(TestActivity.class).setup();
         TestActivity activity = scenario.get();
@@ -156,6 +160,7 @@ public class SettingsNavigationImplTest {
 
     @Test
     @EnableFeatures({ChromeFeatureList.SETTINGS_IN_TAB})
+    @Config(qualifiers = "sw600dp")
     public void testFinishCurrentSettings_SettingsInTab_DelegatesToHostFragment() {
         var scenario = Robolectric.buildActivity(TestActivity.class).setup();
         TestActivity activity = scenario.get();

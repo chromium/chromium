@@ -72,7 +72,7 @@ public class SettingsIntentUtil {
             @Nullable String tag) {
         // TODO(crbug.com/521895796): Once all settings-in-a-tab subpages are fixed to open inside
         // the page, promote this to an assert that the feature is off.
-        if (ChromeFeatureList.sSettingsInTab.isEnabled()) {
+        if (SettingsInTab.isEnabled()) {
             Log.w(TAG, "SettingsInTab is enabled, but creating a SettingsActivity intent.");
         }
         Intent intent = new Intent();

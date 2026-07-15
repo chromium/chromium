@@ -1172,6 +1172,8 @@ public abstract class ChromeFeatureList {
                     SESSION_RESTORE_AFTER_CRASH,
                     /* defaultValue= */ false,
                     /* defaultValueInTests= */ true);
+    // Do not use this flag directly. Use SettingsInTab.isEnabled(), which takes into account both
+    // the feature flag and device form factor.
     public static final CachedFlag sSettingsInTab =
             newCachedFlag(SETTINGS_IN_TAB, /* defaultValue= */ false);
     public static final CachedFlag sSettingsMultiColumn =
