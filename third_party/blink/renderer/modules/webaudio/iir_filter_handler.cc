@@ -106,7 +106,7 @@ IIRFilterHandler::IIRFilterHandler(AudioNode& node,
     //
     // Thus, the feedback and feedforward coefficients need to be scaled by
     // 1/a[0].
-    const float scale = feedback_coef[0];
+    const double scale = feedback_coef[0];
     for (unsigned k = 1; k < feedback_length; ++k) {
       feedback_[k] /= scale;
     }

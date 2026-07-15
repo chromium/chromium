@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] IIR coefficient normalization stays precise when feedback[0] is not exactly representable as a float
-  assert_approx_equals: Magnitude response normalized by feedback[0]=0.1 should match the response of the equivalent feedback[0]=1 filter sample[0] |374.881103515625 - 374.88232421875| = 0.001220703125 > 0.001 expected 374.88232421875 +/- 0.001 but got 374.881103515625
-Harness: the test ran to completion.
-
