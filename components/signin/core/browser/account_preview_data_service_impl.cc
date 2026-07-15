@@ -90,10 +90,11 @@ void AccountPreviewDataServiceImpl::OnRefreshTokenRemovedForAccount(
 
   cached_data_.erase(gaia_id);
   if (active_fetchers_.contains(gaia_id)) {
-    // `all_accounts_fetched_barrier_` relies on fetcher results, so it should be
-    // called before clearing the active fetcher.
-    CHECK(all_accounts_fetched_barrier_);
-    all_accounts_fetched_barrier_.Run();
+    // `all_accounts_fetched_barrier_` relies on fecher results, so it should be
+    // called before clearing the active fetcher, if available.
+    if (all_accounts_fetched_barrier_) {
+      all_accounts_fetched_barrier_.Run();
+    }
     active_fetchers_.erase(gaia_id);
   }
 
@@ -126,7 +127,7 @@ void AccountPreviewDataServiceImpl::OnSingleFetchCompleted(
   active_fetchers_.erase(gaia_id);
   // `gaia_id` is owned by the fetcher and should not be used beyond this point.
 
-  CHECK(all_accounts_fetched_barrier_);
+  CHECK(!all_accounts_fetched_barrier_.is_null());
   all_accounts_fetched_barrier_.Run();
 
   if (fetch_complete_callback_for_testing_) {
@@ -172,11 +173,8 @@ void AccountPreviewDataServiceImpl::EnsureAllAccountsFetched(
   }
 
   if (gaia_ids_to_fetch.empty()) {
-    // If there are no new accounts to fetch, we can just skip this request.
-    // - if there are on-going fetches, they will be cleared (via
-    // `OnRefreshTokenRemovedForAccount()`) or finalized when the result is
-    // fetched.
-    // - otherwise, there no need to force recomputing the preferred account.
+    all_accounts_fetched_barrier_.Reset();
+    OnAllFetchesCompleted(/*should_reset_periodic_timer=*/false);
     return;
   }
 
