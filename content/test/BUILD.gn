@@ -2261,6 +2261,7 @@ test("content_browsertests") {
       "../browser/android/nfc_host_browsertest.cc",
       "../browser/android/render_widget_host_connector_browsertest.cc",
       "../browser/android/render_widget_host_connector_browsertest.h",
+      "../browser/android/select_popup_browsertest.cc",
       "../browser/android/synchronous_compositor_browsertest.cc",
       "../browser/date_time_chooser/android/date_time_chooser_browsertest.cc",
       "../browser/media/session/audio_focus_delegate_android_browsertest.cc",

@@ -14,6 +14,8 @@
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "content/public/android/content_jni_headers/SelectPopup_jni.h"
+#include "content/public/browser/content_browser_client.h"
+#include "content/public/common/content_client.h"
 
 using base::android::AttachCurrentThread;
 using base::android::JavaRef;
@@ -68,6 +70,11 @@ void SelectPopup::ShowMenu(
   ScopedJavaLocalRef<jobject> j_obj = java_obj_.get(env);
   if (j_obj.is_null())
     return;
+
+  if (!GetContentClient()->browser()->ShouldAllowSystemUiPopups(
+          web_contents_)) {
+    return;
+  }
 
   // Hide the popup menu if the mojo connection is still open.
   if (popup_client_)
