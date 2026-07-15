@@ -637,6 +637,11 @@ class CORE_EXPORT ConstraintSpace final {
   // annotations or text-emphasis marks.
   bool ContainsAnnotations() const { return bitfields_.contains_annotations; }
 
+  LayoutUnit PreviousSiblingBlockEndAnnotationSpace() const {
+    return rare_data_ ? rare_data_->PreviousSiblingBlockEndAnnotationSpace()
+                      : LayoutUnit();
+  }
+
   MarginStrut GetMarginStrut() const {
     return rare_data_ ? rare_data_->GetMarginStrut() : MarginStrut();
   }
@@ -1137,6 +1142,16 @@ class CORE_EXPORT ConstraintSpace final {
       block_start_annotation_space = space;
     }
 
+    LayoutUnit PreviousSiblingBlockEndAnnotationSpace() const {
+      return GetDataUnionType() == DataUnionType::kBlockData
+                 ? block_data_.previous_sibling_block_end_annotation_space
+                 : LayoutUnit();
+    }
+
+    void SetPreviousSiblingBlockEndAnnotationSpace(LayoutUnit space) {
+      EnsureBlockData()->previous_sibling_block_end_annotation_space = space;
+    }
+
     MarginStrut GetMarginStrut() const {
       return GetDataUnionType() == DataUnionType::kBlockData
                  ? block_data_.margin_strut
@@ -1385,11 +1400,14 @@ class CORE_EXPORT ConstraintSpace final {
    private:
     struct BlockData {
       bool MaySkipLayout(const BlockData& other) const {
-        return line_clamp_data == other.line_clamp_data;
+        return line_clamp_data == other.line_clamp_data &&
+               previous_sibling_block_end_annotation_space ==
+                   other.previous_sibling_block_end_annotation_space;
       }
 
       bool IsInitialForMaySkipLayout() const {
-        return line_clamp_data.state == LineClampData::kDisabled;
+        return line_clamp_data.state == LineClampData::kDisabled &&
+               previous_sibling_block_end_annotation_space == LayoutUnit();
       }
 
       MarginStrut margin_strut;
@@ -1397,6 +1415,7 @@ class CORE_EXPORT ConstraintSpace final {
       std::optional<LayoutUnit> forced_bfc_block_offset;
       LayoutUnit clearance_offset = LayoutUnit::Min();
       LineClampData line_clamp_data;
+      LayoutUnit previous_sibling_block_end_annotation_space;
     };
 
     struct TableCellData {
