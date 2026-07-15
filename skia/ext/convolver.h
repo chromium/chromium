@@ -203,44 +203,6 @@ SK_API void BGRAConvolve2D(const unsigned char* source_data,
                            unsigned char* output,
                            bool use_simd_if_possible);
 
-// Does a 1D convolution of the given source image along the X dimension on
-// a single channel of the bitmap.
-//
-// The function uses the same convolution kernel for each pixel. That kernel
-// must be added to |filter| at offset 0. This is a most straightforward
-// implementation of convolution, intended chiefly for development purposes.
-SK_API void SingleChannelConvolveX1D(const unsigned char* source_data,
-                                     int source_byte_row_stride,
-                                     int input_channel_index,
-                                     int input_channel_count,
-                                     const ConvolutionFilter1D& filter,
-                                     const SkISize& image_size,
-                                     unsigned char* output,
-                                     int output_byte_row_stride,
-                                     int output_channel_index,
-                                     int output_channel_count,
-                                     bool absolute_values);
-
-// Does a 1D convolution of the given source image along the Y dimension on
-// a single channel of the bitmap.
-SK_API void SingleChannelConvolveY1D(const unsigned char* source_data,
-                                     int source_byte_row_stride,
-                                     int input_channel_index,
-                                     int input_channel_count,
-                                     const ConvolutionFilter1D& filter,
-                                     const SkISize& image_size,
-                                     unsigned char* output,
-                                     int output_byte_row_stride,
-                                     int output_channel_index,
-                                     int output_channel_count,
-                                     bool absolute_values);
-
-// Set up the |filter| instance with a gaussian kernel. |kernel_sigma| is the
-// parameter of gaussian. If |derivative| is true, the kernel will be that of
-// the first derivative. Intended for use with the two routines above.
-SK_API void SetUpGaussianConvolutionKernel(ConvolutionFilter1D* filter,
-                                           float kernel_sigma,
-                                           bool derivative);
 
 }  // namespace skia
 
