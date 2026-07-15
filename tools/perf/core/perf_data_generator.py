@@ -1378,8 +1378,7 @@ BUILDERS = {
             # that we can be informed if this
             # version ever changes or becomes inconsistent. It is important
             # that bots are homogeneous. See crbug.com/988045 for history.
-            # TODO(b/530232282): Temporary relax 'os' dimension for OS upgrade.
-            'os': 'Windows-11',
+            'os': 'Windows-11-26200',
             'gpu': '102b:0536-4.5.0.5',
             'synthetic_product_name': 'PowerEdge R350 (Dell Inc.)'
         },
@@ -1403,8 +1402,7 @@ BUILDERS = {
             # that we can be informed if this
             # version ever changes or becomes inconsistent. It is important
             # that bots are homogeneous. See crbug.com/988045 for history.
-            # TODO(b/530232282): Temporary relax 'os' dimension for OS upgrade.
-            'os': 'Windows-11',
+            'os': 'Windows-11-26200',
             'gpu': '102b:0536-4.5.0.5',
             'synthetic_product_name': 'PowerEdge R350 (Dell Inc.)'
         },
