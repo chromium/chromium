@@ -191,10 +191,10 @@ class MEDIA_EXPORT CdmAdapter final : public ContentDecryptionModule,
   // otherwise.
   void Initialize(std::unique_ptr<media::SimpleCdmPromise> promise);
 
-  // Create an instance of the CDM for |key_system|.
+  // Create an instance of the CDM.
   // Caller owns the returned pointer. Returns nullptr on error, e.g. does not
-  // support |key_system|, does not support an supported interface, etc.
-  CdmWrapper* CreateCdmInstance(const std::string& key_system);
+  // support the key system, does not support a supported interface, etc.
+  CdmWrapper* CreateCdmInstance();
 
   // Helper for SetTimer().
   void TimerExpired(void* context);
