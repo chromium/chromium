@@ -1,10 +1,18 @@
 # SQL disk cache backend
 
 This directory contains an experimental SQL-based implementation of the disk
-cache (`disk_cache::Backend`). It uses SQLite to store cache entries and is
-designed to be more robust and performant than the default cache backends
-(block file backend on Windows and simple cache backend on other OSes),
-especially in scenarios with a large number of small entries.
+cache (`disk_cache::Backend`). Chromium's Disk Cache (defined in
+`net/disk_cache/disk_cache.h`) provides four backend implementations
+(blockfile, simple, memory, sql), each implementing `disk_cache::Backend` and
+`disk_cache::Entry`.
+
+For detailed design rationale, refer to the
+[SQL Disk Cache Backend Design Doc](https://docs.google.com/document/d/1enmPPNr9aUY-_bBk5hNISsQEplk_Ud492eTkTF_r6u8/edit?usp=sharing).
+
+It uses SQLite to store cache entries and is designed to be more robust and
+performant than the default cache backends (block file backend on Windows and
+simple cache backend on other OSes), especially in scenarios with a large
+number of small entries.
 
 The implementation is sharded to improve concurrency, with each shard managing
 its own SQLite database file.
@@ -24,6 +32,11 @@ its own SQLite database file.
     (header and body) and metadata (`last_used` time, key, etc.) for an entry.
     All I/O operations are passed to the `SqlBackendImpl`, which then delegates
     them to the persistence layer.
+
+*   **`EntryDbHandle`**: A ref-counted object tracking the database resource ID
+    (`ResId`) and state (`kInitial`, `kCreating`, `kCreated`, `kErrorOccurred`,
+    `doomed`) of an entry. Enables speculative entry creation before database
+    operations complete on background sequences.
 
 ### Persistence Layer
 
@@ -58,6 +71,9 @@ its own SQLite database file.
     the cache without needing to perform a slow, asynchronous database query. It
     is highly optimized for memory usage.
 
+*   **`IndexedPairSet`**: A bidirectional container mapping primary key hashes
+    to resource IDs and entry metadata.
+
 *   **`ExclusiveOperationCoordinator`**: A synchronization primitive that
     serializes access to resources. It ensures that "exclusive" operations (like
     cache-wide eviction or cleanup) do not run concurrently with "normal"
@@ -79,6 +95,45 @@ its own SQLite database file.
     as it is read from disk. This ensures that the in-memory representation of
     an entry is always consistent with pending operations, even with fully
     asynchronous database writes.
+
+### Memory Management & Buffering
+
+*   **`EntryWriteBuffer`**: Buffers sequential body writes before flushing to
+    disk.
+
+*   **`SqlWriteBufferMemoryMonitor`**: Limits aggregate memory used by write
+    buffers across open entries.
+
+*   **`SqlReadCacheMemoryMonitor` & `MonitoredVectorIOBuffer`**: Limits
+    memory used by read-ahead cache buffers.
+
+### Asynchronous Task Tracking & Helpers
+
+*   **`SqlAsyncTaskManager` & `SqlAsyncTaskToken`**: Tracks pending background
+    tasks for unit test synchronization.
+
+*   **`SqlTrackedSequenceBound`**: Wraps `base::SequenceBound` to automatically
+    track background tasks via `SqlAsyncTaskManager`.
+
+### Shared Cache & Renderer-Accessible HTTP Cache
+
+*   **`SqlSharedCacheManager`**: Top-level manager for isolated shared cache
+    instances.
+
+*   **`SqlSharedCache`**: Represents an isolated shared cache for a specific
+    Network Isolation Key (NIK).
+
+*   **`SqlSharedCacheHandle`**: Ref-counted handle keeping a `SqlSharedCache`
+    alive.
+
+*   **`SqlSharedCacheIndexDatabase`**: Manages `shared_index` DB mapping NIK
+    strings to database IDs.
+
+*   **`SqlSharedCacheIsolatedDatabase`**: Manages NIK-isolated SQLite databases
+    (`shared_<db_id>`) using `SandboxedVfs`.
+
+*   **`SqlSharedCacheIsolatedDatabaseReader`**: Renderer-side client reading
+    cached responses directly from isolated databases without IPC.
 
 ### How It Works
 
@@ -119,10 +174,9 @@ its own SQLite database file.
 
 ## Database Schema
 
-Each shard of the SQL disk cache uses a SQLite database with the following
-schema:
+### `SqlPersistentStore::BackendShard` Databases (`sqldb0`, `sqldb1`, ...)
 
-### Tables
+#### Tables
 
 *   **`resources`**: Stores the main metadata for each cache entry.
     *   `res_id` (INTEGER, PRIMARY KEY AUTOINCREMENT): Unique ID for the
@@ -136,6 +190,7 @@ schema:
     *   `cache_key_hash` (INTEGER): The hash of `cache_key`.
     *   `cache_key` (TEXT): The full cache key string.
     *   `head` (BLOB): Serialized response headers.
+    *   `hints` (INTEGER): Bitmask for in-memory entry data hints.
 
 *   **`blobs`**: Stores the data chunks of the cached body.
     *   `blob_id` (INTEGER, PRIMARY KEY AUTOINCREMENT): Unique ID for the blob.
@@ -145,22 +200,17 @@ schema:
     *   `check_sum` (INTEGER): The checksum `crc32(blob + cache_key_hash)`.
     *   `blob` (BLOB): The actual data chunk.
 
-### Indexes
+### `SqlSharedCacheIndexDatabase` (`shared_index`)
 
-*   **`index_resources_cache_key_hash_doomed`**:
-    `ON resources(cache_key_hash,doomed)`
-    *   Speeds up lookups for live entries (`doomed=0`) by `cache_key_hash`.
-        Crucial for `OpenEntry` and similar operations.
+*   **`storages`**: Maps Network Isolation Keys to database IDs.
+    *   `db_id` (INTEGER, PRIMARY KEY AUTOINCREMENT): Unique database ID.
+    *   `isolation_key` (TEXT): Network Isolation Key string.
 
-*   **`index_live_resources_last_used_bytes_usage`**:
-    `ON resources(last_used, bytes_usage) WHERE doomed=0`
-    *   A covering index on `last_used` and `bytes_usage` for live entries.
-        Essential for efficient eviction logic, which targets the least recently
-        used entries without needing to access the `resources` table directly.
+### `SqlSharedCacheIsolatedDatabase` (`shared_<db_id>`)
 
-*   **`index_blobs_res_id_start`**: (`UNIQUE`) `ON blobs(res_id, start)`
-    *   A unique index on `(res_id, start)` in the `blobs` table. Ensures quick
-        retrieval of data blobs for a given entry at a specific offset and
-        maintains data integrity by preventing overlapping blobs for the same
-        entry.
-
+*   **`resources`**: Stores cached resources per NIK.
+    *   `hash` (INTEGER): 32-bit hash of resource URL.
+    *   `url` (TEXT): Full resource URL string.
+    *   `headers` (BLOB): Serialized HTTP response headers.
+    *   `body` (BLOB): Body data payload.
+    *   `is_ready` (INTEGER): Flag indicating if resource is fully written.
