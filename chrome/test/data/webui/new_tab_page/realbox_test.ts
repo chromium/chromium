@@ -1027,6 +1027,7 @@ suite('NewTabPageRealboxNextTest', () => {
         // Simulate autocomplete result with a URL suggestion as default match.
         const urlMatch = createSearchMatchForTesting({
           isSearchType: false,
+          allowedToBeDefaultMatch: true,
         });
         realbox.result = createAutocompleteResultForTesting({
           matches: [urlMatch],
@@ -1041,6 +1042,7 @@ suite('NewTabPageRealboxNextTest', () => {
         // Simulate autocomplete result with a Search suggestion as default match.
         const searchMatch = createSearchMatchForTesting({
           isSearchType: true,
+          allowedToBeDefaultMatch: true,
         });
         realbox.result = createAutocompleteResultForTesting({
           matches: [searchMatch],
@@ -1049,6 +1051,33 @@ suite('NewTabPageRealboxNextTest', () => {
 
         // Compose button should be visible again.
         composeButton =
+            realbox.shadowRoot.querySelector('cr-searchbox-compose-button');
+        assertTrue(!!composeButton);
+      });
+
+  test(
+      'compose button does not hide for URL suggestions in ZPS (not default match) when ' +
+          'ntpRealboxDynamicAiModeButton is enabled',
+      async () => {
+        loadTimeData.overrideValues({ntpRealboxDynamicAiModeButton: true});
+
+        realbox = createAndAppendRealbox({
+          composeButtonEnabled: true,
+        });
+        await microtasksFinished();
+
+        // Simulate ZPS result: first match is a URL but not allowed to be default.
+        const urlMatch = createSearchMatchForTesting({
+          isSearchType: false,
+          allowedToBeDefaultMatch: false,
+        });
+        realbox.result = createAutocompleteResultForTesting({
+          matches: [urlMatch],
+        });
+        await microtasksFinished();
+
+        // Compose button should be visible.
+        const composeButton =
             realbox.shadowRoot.querySelector('cr-searchbox-compose-button');
         assertTrue(!!composeButton);
       });

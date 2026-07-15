@@ -851,8 +851,9 @@ export class NtpSearchboxElement extends NtpSearchboxElementBase implements
       return false;
     }
     if (this.ntpRealboxDynamicAiModeButtonEnabled_) {
-      const defaultMatch = this.result?.matches?.[0];
-      if (defaultMatch && !defaultMatch.isSearchType) {
+      const firstMatch = this.result?.matches?.[0];
+      if (firstMatch && firstMatch.allowedToBeDefaultMatch
+          && !firstMatch.isSearchType) {
         return false;
       }
     }
