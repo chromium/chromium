@@ -96,7 +96,6 @@
 #include "content/renderer/effective_connection_type_helper.h"
 #include "content/renderer/frame_owner_properties_converter.h"
 #include "content/renderer/gpu_benchmarking_extension.h"
-#include "content/renderer/lazy_shared_url_loader_factory.h"
 #include "content/renderer/local_resource_url_loader_factory.h"
 #include "content/renderer/media/media_permission_dispatcher.h"
 #include "content/renderer/mhtml_handle_writer.h"
@@ -3052,23 +3051,12 @@ void RenderFrameImpl::CommitNavigationWithParams(
     navigation_params->service_worker_network_provider =
         ServiceWorkerNetworkProviderForFrame::CreateInvalidInstance();
   } else {
-    scoped_refptr<network::SharedURLLoaderFactory> fallback_loader_factory;
-    if (base::FeatureList::IsEnabled(
-            features::kReduceMojoURLLoaderFactoryCloning) &&
-        features::kUseLazyURLLoaderFactoryForServiceWorkerFallback.Get()) {
-      fallback_loader_factory = network::SharedURLLoaderFactory::Create(
-          CreateLazyPendingURLLoaderFactory(
-              new_loader_factories,
-              GetTaskRunner(blink::TaskType::kInternalLoading)));
-    } else {
-      fallback_loader_factory = network::SharedURLLoaderFactory::Create(
-          new_loader_factories->Clone());
-    }
     navigation_params->service_worker_network_provider =
         ServiceWorkerNetworkProviderForFrame::Create(
             this, std::move(container_info),
             std::move(controller_service_worker_info),
-            std::move(fallback_loader_factory));
+            network::SharedURLLoaderFactory::Create(
+                new_loader_factories->Clone()));
   }
 
   DCHECK(!pending_loader_factories_);

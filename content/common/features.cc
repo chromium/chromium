@@ -657,13 +657,6 @@ BASE_FEATURE(kProgressiveAccessibilityPhase2,
 BASE_FEATURE(kReduceMojoURLLoaderFactoryCloning,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Controls whether lazy URLLoaderFactory cloning is used for service worker
-// fallback factory.
-BASE_FEATURE_PARAM(bool,
-                   kUseLazyURLLoaderFactoryForServiceWorkerFallback,
-                   &kReduceMojoURLLoaderFactoryCloning,
-                   false);
-
 // Causes hidden tabs with crashed subframes to be marked for reload, meaning
 // that if a user later switches to that tab, the current page will be
 // reloaded.  This will hide crashed subframes from the user at the cost of

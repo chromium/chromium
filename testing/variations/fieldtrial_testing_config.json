@@ -21260,9 +21260,6 @@
             "experiments": [
                 {
                     "name": "Enabled",
-                    "params": {
-                        "UseLazyURLLoaderFactoryForServiceWorkerFallback": "true"
-                    },
                     "enable_features": [
                         "ReduceMojoURLLoaderFactoryCloning"
                     ]
