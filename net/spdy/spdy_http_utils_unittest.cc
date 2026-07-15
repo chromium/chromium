@@ -387,6 +387,31 @@ TEST_P(SpdyHeadersToHttpResponseHeadersTest,
   EXPECT_EQ(kRawHeaders, ToSimpleString(output));
 }
 
+TEST_P(SpdyHeadersToHttpResponseHeadersTest, MultipleContentDisposition) {
+  quiche::HttpHeaderBlock headers;
+  headers[spdy::kHttp2StatusHeader] = "200";
+  headers["content-disposition"] = "inline";
+  headers.AppendValueOrAddHeader("content-disposition",
+                                 "attachment; filename=foo.html");
+  EXPECT_THAT(
+      PerformConversion(headers),
+      base::test::ErrorIs(ERR_RESPONSE_HEADERS_MULTIPLE_CONTENT_DISPOSITION));
+}
+
+TEST_P(SpdyHeadersToHttpResponseHeadersTest,
+       IdenticalContentDispositionAllowed) {
+  constexpr char kRawHeaders[] =
+      "HTTP/1.1 200\n"
+      "content-disposition: inline\n"
+      "content-disposition: inline\n";
+  quiche::HttpHeaderBlock headers;
+  headers[spdy::kHttp2StatusHeader] = "200";
+  headers.AppendValueOrAddHeader("content-disposition", "inline");
+  headers.AppendValueOrAddHeader("content-disposition", "inline");
+  ASSERT_OK_AND_ASSIGN(const auto output, PerformConversion(headers));
+  EXPECT_EQ(kRawHeaders, ToSimpleString(output));
+}
+
 INSTANTIATE_TEST_SUITE_P(
     SpdyHttpUtils,
     SpdyHeadersToHttpResponseHeadersTest,

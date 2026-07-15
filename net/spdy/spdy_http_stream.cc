@@ -324,7 +324,8 @@ void SpdyHttpStream::OnHeadersReceived(
   const int rv = SpdyHeadersToHttpResponse(response_headers, response_info_);
   DCHECK_NE(rv, ERR_INCOMPLETE_HTTP2_HEADERS);
 
-  if (rv == ERR_RESPONSE_HEADERS_MULTIPLE_LOCATION) {
+  if (rv == ERR_RESPONSE_HEADERS_MULTIPLE_LOCATION ||
+      rv == ERR_RESPONSE_HEADERS_MULTIPLE_CONTENT_DISPOSITION) {
     // Cancel will call OnClose, which might call callbacks and might destroy
     // `this`.
     stream_->Cancel(rv);
