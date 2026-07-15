@@ -108,6 +108,15 @@ TEST(Convolver, Halve) {
 
   // First fill the array with a bunch of random data.
   base::RandBytes(input);
+  // Convolver requires premultiplied alpha input (color channels <= alpha).
+  // Random bytes might violate this, leading to clamping inside the convolver
+  // which would differ from the simple average calculation in this test.
+  for (int i = 0; i < src_byte_count; i += 4) {
+    uint8_t a = input[i + 3];
+    input[i + 0] = std::min(input[i + 0], a);
+    input[i + 1] = std::min(input[i + 1], a);
+    input[i + 2] = std::min(input[i + 2], a);
+  }
 
   // Compute the filters.
   ConvolutionFilter1D filter_x, filter_y;
@@ -115,7 +124,7 @@ TEST(Convolver, Halve) {
   FillBoxFilter(dest_height, &filter_y);
 
   // Do the convolution.
-  BGRAConvolve2D(input.data(), src_width, true, filter_x, filter_y,
+  BGRAConvolve2D(input.data(), src_row_stride, true, filter_x, filter_y,
                  filter_x.num_values() * 4, output.data(), false);
 
   // Compute the expected results and check, allowing for a small difference
@@ -130,7 +139,7 @@ TEST(Convolver, Halve) {
                     input[src_offset + src_row_stride + 4];  // Lower right.
         value /= 4;  // Average.
         int difference = value - output[(y * dest_width + x) * 4 + channel];
-        EXPECT_TRUE(difference >= -1 || difference <= 1);
+        EXPECT_TRUE(difference >= -1 && difference <= 1);
       }
     }
   }
