@@ -8,6 +8,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 
@@ -33,6 +34,9 @@ import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.UserActionTester;
+import org.chromium.chrome.browser.autofill.settings.options.AutofillOptionsFragment;
+import org.chromium.chrome.browser.autofill.settings.options.AutofillOptionsFragment.AutofillOptionsReferrer;
+import org.chromium.chrome.browser.autofill.settings.personal_context.AutofillPersonalContextFragment;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
@@ -127,5 +131,38 @@ public class SettingsNavigationHelperTest {
         assertFalse(SettingsNavigationHelper.showAutofillCreditCardSettings(null));
         assertFalse(mActionTester.getActions().contains("AutofillAddressesViewed"));
         verifyNoInteractions(mMockLauncher);
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID)
+    public void testShowAutofillPersonalContextSettingsLaunchesPersonalContextWhenHoTOn() {
+        assertTrue(
+                SettingsNavigationHelper.showAutofillPersonalContextSettings(
+                        mMockContext, AutofillOptionsReferrer.PRIVATE_INFERENCE_NOTICE));
+        verify(mMockLauncher)
+                .startSettings(
+                        eq(mMockContext),
+                        eq(AutofillPersonalContextFragment.class),
+                        isNull(),
+                        eq(true));
+    }
+
+    @Test
+    @SmallTest
+    @DisableFeatures(ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID)
+    public void testShowAutofillPersonalContextSettingsLaunchesAutofillSettingsWhenHoTOff() {
+        assertTrue(
+                SettingsNavigationHelper.showAutofillPersonalContextSettings(
+                        mMockContext, AutofillOptionsReferrer.PRIVATE_INFERENCE_NOTICE));
+        verify(mMockLauncher)
+                .startSettings(
+                        eq(mMockContext),
+                        eq(AutofillOptionsFragment.class),
+                        mBundleCaptor.capture(),
+                        eq(true));
+        assertEquals(
+                AutofillOptionsFragment.AutofillOptionsReferrer.PRIVATE_INFERENCE_NOTICE,
+                mBundleCaptor.getValue().getInt(AutofillOptionsFragment.AUTOFILL_OPTIONS_REFERRER));
     }
 }

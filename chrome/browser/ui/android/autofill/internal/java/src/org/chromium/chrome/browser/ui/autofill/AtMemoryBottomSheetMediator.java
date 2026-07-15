@@ -8,7 +8,6 @@ import static org.chromium.chrome.browser.ui.autofill.AtMemoryBottomSheetPropert
 import static org.chromium.chrome.browser.ui.autofill.AtMemoryBottomSheetProperties.VISIBLE;
 
 import android.content.Context;
-import android.os.Bundle;
 
 import androidx.annotation.IntDef;
 
@@ -16,13 +15,10 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.autofill.settings.options.AutofillOptionsFragment;
+import org.chromium.chrome.browser.autofill.settings.PersonalContextSettingsLauncher;
 import org.chromium.chrome.browser.autofill.settings.options.AutofillOptionsFragment.AutofillOptionsReferrer;
-import org.chromium.chrome.browser.autofill.settings.personal_context.AutofillPersonalContextFragment;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.personal_context.first_run.PersonalContextFirstRunService;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.ui.autofill.AtMemoryBottomSheetProperties.FlyoutProperties;
 import org.chromium.chrome.browser.ui.autofill.AtMemoryBottomSheetProperties.HomeProperties;
 import org.chromium.chrome.browser.ui.autofill.AtMemoryBottomSheetProperties.ScreenId;
@@ -123,16 +119,8 @@ class AtMemoryBottomSheetMediator implements AtMemorySearchBarView.Delegate {
 
     private void onNoticeSettingsClicked() {
         RecordUserAction.record("PersonalContext.AtMemory.Notice.SettingsLinkClick");
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID)) {
-            SettingsNavigationFactory.createSettingsNavigation()
-                    .startSettings(mContext, AutofillPersonalContextFragment.class);
-        } else {
-            Bundle args =
-                    AutofillOptionsFragment.createRequiredArgs(
-                            AutofillOptionsReferrer.PERSONAL_CONTEXT_ATMEMORY_NOTICE);
-            SettingsNavigationFactory.createSettingsNavigation()
-                    .startSettings(mContext, AutofillOptionsFragment.class, args);
-        }
+        PersonalContextSettingsLauncher.showPersonalContextSettings(
+                mContext, AutofillOptionsReferrer.PERSONAL_CONTEXT_ATMEMORY_NOTICE);
     }
 
     private AtMemoryScreenState getScreenState(List<AutofillSuggestion> suggestions) {

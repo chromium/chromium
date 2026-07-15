@@ -14,7 +14,6 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.autofill.settings.HomeOfTransactionsFragment.AutofillSettingsReferrer;
 import org.chromium.chrome.browser.autofill.settings.options.AutofillOptionsFragment;
-import org.chromium.chrome.browser.autofill.settings.personal_context.AutofillPersonalContextFragment;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.content_public.browser.WebContents;
@@ -89,17 +88,10 @@ public class SettingsNavigationHelper {
      * @param context The {@link Context} required to start the settings page. Noop without it.
      * @return True if the context is valid and `startSettings` was called.
      */
-    public static boolean showAutofillPersonalContextSettings(@Nullable Context context) {
-        if (context == null) {
-            return false;
-        }
-        SettingsNavigationFactory.createSettingsNavigation()
-                .startSettings(
-                        context,
-                        AutofillPersonalContextFragment.class,
-                        /* fragmentArgs= */ null,
-                        /* addToBackStack= */ true);
-        return true;
+    public static boolean showAutofillPersonalContextSettings(
+            @Nullable Context context,
+            @AutofillOptionsFragment.AutofillOptionsReferrer int referrer) {
+        return PersonalContextSettingsLauncher.showPersonalContextSettings(context, referrer);
     }
 
     /**
@@ -242,6 +234,15 @@ public class SettingsNavigationHelper {
         WindowAndroid windowAndroid = webContents.getTopLevelNativeWindow();
         if (windowAndroid == null) return;
         showAutofillShoppingSettings(windowAndroid.getActivity().get());
+    }
+
+    @CalledByNative
+    private static void showAutofillPersonalContextSettings(
+            WebContents webContents,
+            @AutofillOptionsFragment.AutofillOptionsReferrer int referrer) {
+        WindowAndroid windowAndroid = webContents.getTopLevelNativeWindow();
+        if (windowAndroid == null) return;
+        showAutofillPersonalContextSettings(windowAndroid.getActivity().get(), referrer);
     }
 
     @CalledByNative

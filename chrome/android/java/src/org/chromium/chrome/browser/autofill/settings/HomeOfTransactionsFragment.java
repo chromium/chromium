@@ -168,7 +168,10 @@ public class HomeOfTransactionsFragment extends ChromeBaseSettingsFragment {
                     RecordUserAction.record(
                             AutofillPersonalContextFragment
                                     .ACTION_ENTRY_FROM_AUTOFILL_AND_PASSWORDS);
-                    SettingsNavigationHelper.showAutofillPersonalContextSettings(getActivity());
+                    SettingsNavigationHelper.showAutofillPersonalContextSettings(
+                            getActivity(),
+                            AutofillOptionsFragment.AutofillOptionsReferrer
+                                    .AUTOFILL_AND_PASSWORDS_FRAGMENT);
                     return true;
                 });
 
