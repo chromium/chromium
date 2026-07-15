@@ -14945,27 +14945,6 @@
             ]
         }
     ],
-    "ImprovedStartupBestEffortDelay": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "session_restore_delays_best_effort": "true"
-                    },
-                    "enable_features": [
-                        "ImprovedStartupBestEffortDelay"
-                    ]
-                }
-            ]
-        }
-    ],
     "IncognitoScreenshot": [
         {
             "platforms": [
