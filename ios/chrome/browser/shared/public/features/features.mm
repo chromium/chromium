@@ -883,7 +883,7 @@ bool IsAIMEligibilityServiceStartWithProfileEnabled() {
   return base::FeatureList::IsEnabled(kAIMEligibilityServiceStartWithProfile);
 }
 
-BASE_FEATURE(kAIMNTPEntrypointTablet, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kAIMNTPEntrypointTablet, base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsAIMNTPEntrypointTabletEnabled() {
   return base::FeatureList::IsEnabled(kAIMNTPEntrypointTablet);
