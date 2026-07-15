@@ -145,9 +145,6 @@ BASE_DECLARE_FEATURE(kSyncReadingListBatchUploadSelectedItems);
 // If enabled, distinguishes between local and account themes.
 BASE_DECLARE_FEATURE(kSeparateLocalAndAccountThemes);
 
-// If enabled, offers batch upload of local themes upon sign in.
-BASE_DECLARE_FEATURE(kThemesBatchUpload);
-
 // If enabled, the local change nudge delays for single-client users are
 // increased by some factor, specified via the FeatureParam below.
 BASE_DECLARE_FEATURE(kSyncIncreaseNudgeDelayForSingleClient);

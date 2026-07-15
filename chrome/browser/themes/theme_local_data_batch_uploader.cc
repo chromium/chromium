@@ -78,10 +78,6 @@ void ThemeLocalDataBatchUploader::GetLocalDataDescription(
     base::OnceCallback<void(syncer::LocalDataDescription)> callback) {
   syncer::LocalDataDescription desc;
   desc.type = syncer::THEMES;
-  if (!base::FeatureList::IsEnabled(syncer::kThemesBatchUpload)) {
-    std::move(callback).Run(desc);
-    return;
-  }
   // Avoid offering batch upload for local default theme.
   std::optional<sync_pb::ThemeSpecifics> specifics =
       GetNonDefaultSavedLocalTheme();
@@ -97,7 +93,6 @@ void ThemeLocalDataBatchUploader::GetLocalDataDescription(
 }
 
 void ThemeLocalDataBatchUploader::TriggerLocalDataMigration() {
-  CHECK(base::FeatureList::IsEnabled(syncer::kThemesBatchUpload));
   // Avoid migrating local default theme.
   if (GetNonDefaultSavedLocalTheme()) {
     delegate_->ApplySavedLocalThemeIfExistsAndClear();

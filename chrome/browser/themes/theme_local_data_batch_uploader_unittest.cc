@@ -192,61 +192,13 @@ class ThemeLocalDataBatchUploaderTestBase
   std::unique_ptr<ThemeLocalDataBatchUploader> batch_uploader_;
 };
 
-class ThemeLocalDataBatchUploaderTestWithFlagDisabled
-    : public ThemeLocalDataBatchUploaderTestBase {
- public:
-  ThemeLocalDataBatchUploaderTestWithFlagDisabled() {
-    feature_list_.InitWithFeatures(
-        /*enabled_features=*/{syncer::kSeparateLocalAndAccountThemes},
-        /*disabled_features=*/{syncer::kThemesBatchUpload});
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-TEST_F(ThemeLocalDataBatchUploaderTestWithFlagDisabled, ShouldReturnNoItems) {
-  // Local extension theme.
-  ASSERT_TRUE(base::test::RunUntil(
-      [&]() { return theme_service()->UsingExtensionTheme(); }));
-
-  const sync_pb::ThemeSpecifics local_theme_specifics =
-      theme_sync_service()->GetThemeSpecificsFromCurrentThemeForTesting();
-  const sync_pb::ThemeSpecifics remote_theme_specifics =
-      theme_service::test::CreateThemeSpecificsWithColorTheme();
-
-  StartSyncing(remote_theme_specifics);
-
-  EXPECT_THAT(GetLocalDataDescription(), IsEmptyLocalDataDescription());
-}
-
-using ThemeLocalDataBatchUploaderDeathTestWithFlagDisabled =
-    ThemeLocalDataBatchUploaderTestWithFlagDisabled;
-
-TEST_F(ThemeLocalDataBatchUploaderDeathTestWithFlagDisabled,
-       TriggerLocalDataMigration) {
-  // Local extension theme.
-  ASSERT_TRUE(base::test::RunUntil(
-      [&]() { return theme_service()->UsingExtensionTheme(); }));
-
-  const sync_pb::ThemeSpecifics local_theme_specifics =
-      theme_sync_service()->GetThemeSpecificsFromCurrentThemeForTesting();
-  const sync_pb::ThemeSpecifics remote_theme_specifics =
-      theme_service::test::CreateThemeSpecificsWithColorTheme();
-
-  StartSyncing(remote_theme_specifics);
-
-  EXPECT_DEATH(TriggerLocalDataMigration(), "");
-}
-
 class ThemeLocalDataBatchUploaderTest
     : public ThemeLocalDataBatchUploaderTestBase,
       public testing::WithParamInterface<sync_pb::ThemeSpecifics> {
  public:
   ThemeLocalDataBatchUploaderTest() {
     feature_list_.InitWithFeatures(
-        /*enabled_features=*/{syncer::kSeparateLocalAndAccountThemes,
-                              syncer::kThemesBatchUpload},
+        /*enabled_features=*/{syncer::kSeparateLocalAndAccountThemes},
         /*disabled_features=*/{});
   }
 
