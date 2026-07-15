@@ -329,7 +329,7 @@ TEST_P(ImagePaintTimingDetectorTest, LargestImagePaint_OneImage) {
   SimulateRenderingAndPresentationTime();
   ImageRecord* record = LargestImage();
   EXPECT_TRUE(record);
-  EXPECT_EQ(record->RecordedSize(), 25ul);
+  EXPECT_EQ(record->EffectiveVisualSize(), 25ul);
   EXPECT_TRUE(record->HasLoadTime());
   // Simulate some input event to force StopRecordEntries().
   SimulateKeyDown();
@@ -587,7 +587,7 @@ TEST_P(ImagePaintTimingDetectorTest, LargestImagePaint_Largest) {
   ImageRecord* record;
   record = LargestImage();
   EXPECT_TRUE(record);
-  EXPECT_EQ(record->RecordedSize(), 25ul);
+  EXPECT_EQ(record->EffectiveVisualSize(), 25ul);
 
   SetImageAndPaint("larger", 9, 9);
   SimulateRenderingAndPresentationTime();
@@ -842,7 +842,7 @@ TEST_P(ImagePaintTimingDetectorTest,
   SimulatePresentationTime();
   // record1 is the smaller.
   ImageRecord* record1 = LargestPaintedImage();
-  EXPECT_EQ(record1->RecordedSize(), 25ul);
+  EXPECT_EQ(record1->EffectiveVisualSize(), 25ul);
   const base::TimeTicks record1Time = record1->PaintTime();
 
   // Invoke callbacks for the second frame.
@@ -850,7 +850,7 @@ TEST_P(ImagePaintTimingDetectorTest,
   SimulatePresentationTime();
   // record2 is the larger.
   ImageRecord* record2 = LargestPaintedImage();
-  EXPECT_EQ(record2->RecordedSize(), 81ul);
+  EXPECT_EQ(record2->EffectiveVisualSize(), 81ul);
   EXPECT_NE(record1Time, record2->PaintTime());
 }
 
@@ -899,14 +899,14 @@ TEST_P(ImagePaintTimingDetectorTest, OnePresentationPromiseForOneFrame) {
   ImageRecord* record;
   record = LargestImage();
   EXPECT_TRUE(record);
-  EXPECT_EQ(record->RecordedSize(), 81ul);
+  EXPECT_EQ(record->EffectiveVisualSize(), 81ul);
   EXPECT_FALSE(record->HasPaintTime());
 
   // This callback assigns a time to the 9x9 image.
   SimulatePresentationTime();
   record = LargestImage();
   EXPECT_TRUE(record);
-  EXPECT_EQ(record->RecordedSize(), 81ul);
+  EXPECT_EQ(record->EffectiveVisualSize(), 81ul);
   EXPECT_TRUE(record->HasPaintTime());
 }
 
@@ -918,7 +918,7 @@ TEST_P(ImagePaintTimingDetectorTest, VideoImage) {
   SimulateRenderingAndPresentationTime();
   ImageRecord* record = LargestImage();
   EXPECT_TRUE(record);
-  EXPECT_GT(record->RecordedSize(), 0ul);
+  EXPECT_GT(record->EffectiveVisualSize(), 0ul);
   EXPECT_TRUE(record->HasPaintTime());
 }
 
@@ -942,7 +942,7 @@ TEST_P(ImagePaintTimingDetectorTest, SVGImage) {
   SimulateRenderingAndPresentationTime();
   ImageRecord* record = LargestImage();
   EXPECT_TRUE(record);
-  EXPECT_GT(record->RecordedSize(), 0ul);
+  EXPECT_GT(record->EffectiveVisualSize(), 0ul);
   EXPECT_TRUE(record->HasPaintTime());
 }
 
@@ -978,7 +978,7 @@ TEST_P(ImagePaintTimingDetectorTest,
   EXPECT_EQ(CountImageRecords(), 2u);
   ImageRecord* record = LargestImage();
   EXPECT_TRUE(record);
-  EXPECT_EQ(record->RecordedSize(), 1u);
+  EXPECT_EQ(record->EffectiveVisualSize(), 1u);
 }
 
 TEST_P(ImagePaintTimingDetectorTest, BackgroundImage_IgnoreBody) {
@@ -1081,7 +1081,7 @@ TEST_P(ImagePaintTimingDetectorTest, Iframe) {
   ImageRecord* image = ChildFrameLargestImage();
   EXPECT_TRUE(image);
   // Ensure the image size is not clipped (5*5).
-  EXPECT_EQ(image->RecordedSize(), 25ul);
+  EXPECT_EQ(image->EffectiveVisualSize(), 25ul);
 }
 
 TEST_P(ImagePaintTimingDetectorTest, Iframe_ClippedByMainFrameViewport) {
@@ -1120,7 +1120,7 @@ TEST_P(ImagePaintTimingDetectorTest, Iframe_HalfClippedByMainFrameViewport) {
   SimulatePresentationTime();
   ImageRecord* image = ChildFrameLargestImage();
   EXPECT_TRUE(image);
-  EXPECT_LT(image->RecordedSize(), 100ul);
+  EXPECT_LT(image->EffectiveVisualSize(), 100ul);
 }
 
 TEST_P(ImagePaintTimingDetectorTest, SameSizeShouldNotBeIgnored) {
@@ -1146,7 +1146,7 @@ TEST_P(ImagePaintTimingDetectorTest, UseIntrinsicSizeIfSmaller_Image) {
   SimulateRenderingAndPresentationTime();
   ImageRecord* record = LargestImage();
   EXPECT_TRUE(record);
-  EXPECT_EQ(record->RecordedSize(), 25u);
+  EXPECT_EQ(record->EffectiveVisualSize(), 25u);
 }
 
 TEST_P(ImagePaintTimingDetectorTest, NotUseIntrinsicSizeIfLarger_Image) {
@@ -1158,7 +1158,7 @@ TEST_P(ImagePaintTimingDetectorTest, NotUseIntrinsicSizeIfLarger_Image) {
   SimulateRenderingAndPresentationTime();
   ImageRecord* record = LargestImage();
   EXPECT_TRUE(record);
-  EXPECT_EQ(record->RecordedSize(), 1u);
+  EXPECT_EQ(record->EffectiveVisualSize(), 1u);
 }
 
 TEST_P(ImagePaintTimingDetectorTest,
@@ -1176,7 +1176,7 @@ TEST_P(ImagePaintTimingDetectorTest,
   SimulateRendering();
   ImageRecord* record = LargestImage();
   EXPECT_TRUE(record);
-  EXPECT_EQ(record->RecordedSize(), 1u);
+  EXPECT_EQ(record->EffectiveVisualSize(), 1u);
 }
 
 TEST_P(ImagePaintTimingDetectorTest,
@@ -1195,7 +1195,7 @@ TEST_P(ImagePaintTimingDetectorTest,
   SimulateRendering();
   ImageRecord* record = LargestImage();
   EXPECT_TRUE(record);
-  EXPECT_EQ(record->RecordedSize(), 25u);
+  EXPECT_EQ(record->EffectiveVisualSize(), 25u);
 }
 
 TEST_P(ImagePaintTimingDetectorTest, OpacityZeroHTML) {
@@ -1417,7 +1417,7 @@ TEST_P(ImagePaintTimingDetectorTest, LargestPaintedImageSetForFirstVideoFrame) {
   EXPECT_FALSE(LargestPaintedImage());
   ImageRecord* record = LargestImage();
   ASSERT_TRUE(record);
-  EXPECT_GT(record->RecordedSize(), 0ul);
+  EXPECT_GT(record->EffectiveVisualSize(), 0ul);
   EXPECT_TRUE(record->HasPaintTime());
 
   SimulateRenderingAndPresentationTime();

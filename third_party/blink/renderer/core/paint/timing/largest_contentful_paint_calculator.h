@@ -10,6 +10,7 @@
 #include "base/feature_list.h"
 #include "third_party/blink/public/platform/web_url_request.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/paint/timing/effective_visual_size_result.h"
 #include "third_party/blink/renderer/core/paint/timing/lcp_objects.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing_callbacks.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing_record.h"
@@ -17,7 +18,14 @@
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
+namespace gfx {
+class Rect;
+class RectF;
+class Size;
+}  // namespace gfx
+
 namespace blink {
+class PaintTimingDetector;
 
 // Kill switch for Soft Nav/LCP trace events.
 BASE_DECLARE_FEATURE(kSoftNavigationTraceEvents);
@@ -89,6 +97,23 @@ class CORE_EXPORT LargestContentfulPaintCalculator final
     Member<TextRecord> text_candidate_;
   };
 
+  // Computes the effective size of an image, downsizing the size of images with
+  // low intrinsic size. `EffectiveVisualSizeResult` encapsulates extra details
+  // about the computation, such as whether the minimum entropy was met and
+  // whether the viewport was covered, which are used by downstream algorithms
+  // to filter out invalid candidates.
+  //
+  // See also:
+  // https://www.w3.org/TR/largest-contentful-paint/#sec-effective-visual-size
+  static EffectiveVisualSizeResult ComputeEffectiveVisualSize(
+      const LayoutObject&,
+      const MediaTiming&,
+      const gfx::Rect& image_border,
+      const gfx::RectF& mapped_visual_rect,
+      const gfx::Size& intrinsic_size,
+      uint64_t viewport_area,
+      const PaintTimingDetector&);
+
   LargestContentfulPaintCalculator(WindowPerformance*, Delegate*);
 
   LargestContentfulPaintCalculator(const LargestContentfulPaintCalculator&) =
@@ -117,8 +142,21 @@ class CORE_EXPORT LargestContentfulPaintCalculator final
   // needed.
   void MaybeFlushCandidates();
 
-  // Returns true iff an image of `size` should be tracked for computing LCP.
-  bool IsImageNeededForLcp(uint64_t size) const;
+  // Returns true iff the `ImageRecord` is an eligible LCP candidate, which is
+  // true as long as the the image is not covering the viewport and the minimum
+  // entropy requirement has been met. `ImageRecord` is required to have a
+  // non-zero size. Note that this differs from `ShouldTrackForPaintTiming()`
+  // which also takes into account the size of the current LCP candidate.
+  bool IsEligibleForLcp(const ImageRecord&) const;
+
+  // Returns true iff the `TextRecord` is an eligible LCP candidate, which is
+  // true as long as the candidate has non-zero size.
+  bool IsEligibleForLcp(const TextRecord&) const;
+
+  // Returns true iff the given `ImageRecord` should be tracked for paint
+  // timing. This takes into account whether the record is an eligible candidate
+  // and if it's potentially larger than
+  bool ShouldTrackForPaintTiming(const ImageRecord&) const;
 
   // Called when an image is painted for the first time, regardless of whether
   // or not it's sufficiently loaded enough to be considered for paint timing.

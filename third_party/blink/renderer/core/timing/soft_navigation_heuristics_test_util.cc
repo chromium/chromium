@@ -39,10 +39,11 @@ TextRecord* CreateTextRecordForTest(Node* node,
                                     int width,
                                     int height,
                                     SoftNavigationContext* context) {
-  return MakeGarbageCollected<TextRecord>(
+  auto* record = MakeGarbageCollected<TextRecord>(
       node, width * height, gfx::RectF(width, height), gfx::Rect(width, height),
-      gfx::RectF(width, height),
-      /* is_needed_for_timing=*/false, context);
+      gfx::RectF(width, height));
+  record->SetSoftNavigationContext(context);
+  return record;
 }
 
 }  // namespace blink

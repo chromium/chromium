@@ -12,6 +12,8 @@
 #include "base/time/time.h"
 #include "third_party/blink/public/platform/web_url_request.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/paint/timing/effective_visual_size_result.h"
+#include "third_party/blink/renderer/core/paint/timing/lcp_objects.h"
 #include "third_party/blink/renderer/core/paint/timing/media_record_id.h"
 #include "third_party/blink/renderer/core/timing/performance_entry.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -20,7 +22,6 @@
 #include "ui/gfx/geometry/rect_conversions.h"
 
 namespace blink {
-class LCPRectInfo;
 class MediaTiming;
 class Node;
 class SoftNavigationContext;
@@ -30,10 +31,8 @@ class CORE_EXPORT PaintTimingRecord
     : public GarbageCollected<PaintTimingRecord> {
  public:
   PaintTimingRecord(Node*,
-                    uint64_t recorded_size,
                     const gfx::Rect& frame_visual_rect,
-                    const gfx::RectF& root_visual_rect,
-                    SoftNavigationContext*);
+                    const gfx::RectF& root_visual_rect);
 
   PaintTimingRecord(const PaintTimingRecord&) = delete;
   PaintTimingRecord& operator=(const PaintTimingRecord&) = delete;
@@ -43,10 +42,13 @@ class CORE_EXPORT PaintTimingRecord
   virtual bool IsImageRecord() const { return false; }
   virtual bool IsTextRecord() const { return false; }
 
+  // Returns the "effective visual size" of the record, which is defined in
+  // https://w3c.github.io/largest-contentful-paint/#effective-visual-size.
+  virtual uint64_t EffectiveVisualSize() const = 0;
+
   Node* GetNode() const { return node_.Get(); }
   int NodeIdForTracing() const;
 
-  uint64_t RecordedSize() const { return recorded_size_; }
   const gfx::RectF& RootVisualRect() const { return root_visual_rect_; }
 
   bool HasPaintTime() const { return !paint_time_.is_null(); }
@@ -69,6 +71,18 @@ class CORE_EXPORT PaintTimingRecord
   void SetSoftNavigationContext(SoftNavigationContext* context) {
     soft_navigation_context_ = context;
   }
+  // Returns true iff this record is needed to compute Interaction Contentful
+  // Paint (ICP).
+  bool IsNeededForInteractionContentfulPaint() const {
+    return !!soft_navigation_context_;
+  }
+
+  // Returns true iff this record is needed to compute Largest Contentful Paint
+  // (LCP) for hard navigations.
+  bool IsNeededForLargestContentfulPaint() const { return is_needed_for_lcp_; }
+  void SetIsNeededForLargestContentfulPaint(bool value) {
+    is_needed_for_lcp_ = value;
+  }
 
   // Returns whether or not the corresponding image or text was removed from the
   // DOM after the record was created. Used to ensure we get paint timing for
@@ -80,20 +94,20 @@ class CORE_EXPORT PaintTimingRecord
   // otherwise. See also
   // https://www.w3.org/TR/largest-contentful-paint/#sec-effective-visual-size.
   bool IsEffectiveSizeLargerThan(PaintTimingRecord* other) const {
-    return RecordedSize() > (other ? other->RecordedSize() : 0u);
+    return EffectiveVisualSize() > (other ? other->EffectiveVisualSize() : 0u);
   }
 
  private:
   const WeakMember<Node> node_;
   const WeakMember<LayoutObject> layout_object_;
-  const uint64_t recorded_size_;
   const gfx::RectF root_visual_rect_;
   uint32_t frame_index_ = 0;
+  bool is_needed_for_lcp_ = false;
   base::TimeTicks paint_time_;
   DOMPaintTimingInfo paint_timing_info_;
   Member<SoftNavigationContext> soft_navigation_context_;
   // LCP rect information, only populated when tracing is enabled.
-  std::unique_ptr<LCPRectInfo> lcp_rect_info_;
+  std::optional<LCPRectInfo> lcp_rect_info_;
 };
 
 class CORE_EXPORT TextRecord final : public PaintTimingRecord {
@@ -102,41 +116,47 @@ class CORE_EXPORT TextRecord final : public PaintTimingRecord {
              uint64_t new_recorded_size,
              const gfx::RectF& element_timing_rect,
              const gfx::Rect& frame_visual_rect,
-             const gfx::RectF& root_visual_rect,
-             bool is_needed_for_element_timing,
-             SoftNavigationContext* soft_navigation_context);
+             const gfx::RectF& root_visual_rect);
 
   bool IsTextRecord() const override { return true; }
+  uint64_t EffectiveVisualSize() const override {
+    return effective_visual_size_;
+  }
 
-  const gfx::RectF& ElementTimingRect() const { return element_timing_rect_; }
   bool IsNeededForElementTiming() const {
     return is_needed_for_element_timing_;
   }
+  void SetIsNeededForElementTiming(bool value) {
+    is_needed_for_element_timing_ = value;
+  }
+  const gfx::RectF& ElementTimingRect() const { return element_timing_rect_; }
 
  private:
+  const uint64_t effective_visual_size_;
   const gfx::RectF element_timing_rect_;
-  const bool is_needed_for_element_timing_;
+  bool is_needed_for_element_timing_ = false;
 };
 
 // TODO(yoav): Rename all mentions of "image" to "media"
 class CORE_EXPORT ImageRecord final : public PaintTimingRecord {
  public:
-  ImageRecord(Node* node,
-              const MediaTiming* new_media_timing,
-              uint64_t new_recorded_size,
+  ImageRecord(Node*,
+              const MediaTiming*,
               const gfx::Rect& frame_visual_rect,
               const gfx::RectF& root_visual_rect,
-              MediaRecordIdHash hash,
-              double entropy_for_lcp,
-              SoftNavigationContext* soft_navigation_context);
+              MediaRecordIdHash,
+              const EffectiveVisualSizeResult&);
 
   void PopulateTraceValue(TracedValue&) const override;
   void Trace(Visitor* visitor) const override;
   bool IsImageRecord() const override { return true; }
+  uint64_t EffectiveVisualSize() const override {
+    return effective_visual_size_result_.size;
+  }
 
   // Returns the image's entropy, in encoded-bits-per-layout-pixel, as used to
   // determine whether the image is a potential LCP candidate.
-  double EntropyForLCP() const { return entropy_for_lcp_; }
+  double EntropyForLCP() const { return effective_visual_size_result_.entropy; }
 
   // Returns the image's loading priority. Will return `std::nullopt` if there
   // is no `media_timing`.
@@ -169,6 +189,10 @@ class CORE_EXPORT ImageRecord final : public PaintTimingRecord {
   MediaRecordIdHash Hash() const { return hash_; }
   const MediaTiming* GetMediaTiming() const { return media_timing_; }
 
+  const EffectiveVisualSizeResult& GetEffectiveVisualSizeResult() const {
+    return effective_visual_size_result_;
+  }
+
  private:
   const WeakMember<const MediaTiming> media_timing_;
   const MediaRecordIdHash hash_;
@@ -176,7 +200,7 @@ class CORE_EXPORT ImageRecord final : public PaintTimingRecord {
   base::TimeTicks first_animated_frame_time_;
   bool is_first_animated_frame_paint_timing_queued_ = false;
   bool is_loaded_ = false;
-  const double entropy_for_lcp_;
+  const EffectiveVisualSizeResult effective_visual_size_result_;
 };
 
 template <>
@@ -198,6 +222,11 @@ struct DowncastTraits<ImageRecord> {
 template <typename T>
 concept IsDerivedFromPaintTimingRecord =
     std::derived_from<T, PaintTimingRecord>;
+
+static_assert(std::is_trivially_destructible_v<TextRecord>,
+              "Require trivial destruction for faster sweeping");
+static_assert(std::is_trivially_destructible_v<ImageRecord>,
+              "Require trivial destruction for faster sweeping");
 
 }  // namespace blink
 

@@ -16,20 +16,16 @@
 namespace blink {
 
 PaintTimingRecord::PaintTimingRecord(Node* node,
-                                     uint64_t recorded_size,
                                      const gfx::Rect& frame_visual_rect,
-                                     const gfx::RectF& root_visual_rect,
-                                     SoftNavigationContext* context)
+                                     const gfx::RectF& root_visual_rect)
     : node_(node),
       layout_object_(node->GetLayoutObject()),
-      recorded_size_(recorded_size),
       root_visual_rect_(root_visual_rect),
-      soft_navigation_context_(context),
       lcp_rect_info_(PaintTimingVisualizer::IsTracingEnabled()
-                         ? std::make_unique<LCPRectInfo>(
+                         ? std::make_optional<LCPRectInfo>(
                                frame_visual_rect,
                                gfx::ToRoundedRect(root_visual_rect))
-                         : nullptr) {
+                         : std::nullopt) {
   CHECK(node_);
 }
 
@@ -46,7 +42,7 @@ int PaintTimingRecord::NodeIdForTracing() const {
 void PaintTimingRecord::PopulateTraceValue(TracedValue& value) const {
   value.SetString("nodeName", node_ ? node_->DebugName() : "(null)");
   value.SetInteger("DOMNodeId", NodeIdForTracing());
-  value.SetInteger("size", static_cast<int>(RecordedSize()));
+  value.SetInteger("size", static_cast<int>(EffectiveVisualSize()));
   if (lcp_rect_info_) {
     lcp_rect_info_->OutputToTraceValue(value);
   }
@@ -58,37 +54,26 @@ bool PaintTimingRecord::WasNodeRemoved() const {
 }
 
 TextRecord::TextRecord(Node* node,
-                       uint64_t new_recorded_size,
+                       uint64_t effective_visual_size,
                        const gfx::RectF& element_timing_rect,
                        const gfx::Rect& frame_visual_rect,
-                       const gfx::RectF& root_visual_rect,
-                       bool is_needed_for_element_timing,
-                       SoftNavigationContext* soft_navigation_context)
-    : PaintTimingRecord(node,
-                        new_recorded_size,
-                        frame_visual_rect,
-                        root_visual_rect,
-                        soft_navigation_context),
-      element_timing_rect_(element_timing_rect),
-      is_needed_for_element_timing_(is_needed_for_element_timing) {}
+                       const gfx::RectF& root_visual_rect)
+    : PaintTimingRecord(node, frame_visual_rect, root_visual_rect),
+      effective_visual_size_(effective_visual_size),
+      element_timing_rect_(element_timing_rect) {}
 
-ImageRecord::ImageRecord(Node* node,
-                         const MediaTiming* new_media_timing,
-                         uint64_t new_recorded_size,
-                         const gfx::Rect& frame_visual_rect,
-                         const gfx::RectF& root_visual_rect,
-                         MediaRecordIdHash hash,
-                         double entropy_for_lcp,
-                         SoftNavigationContext* soft_navigation_context)
-    : PaintTimingRecord(node,
-                        new_recorded_size,
-                        frame_visual_rect,
-                        root_visual_rect,
-                        soft_navigation_context),
+ImageRecord::ImageRecord(
+    Node* node,
+    const MediaTiming* new_media_timing,
+    const gfx::Rect& frame_visual_rect,
+    const gfx::RectF& root_visual_rect,
+    MediaRecordIdHash hash,
+    const EffectiveVisualSizeResult& effective_visual_size_result)
+    : PaintTimingRecord(node, frame_visual_rect, root_visual_rect),
       media_timing_(new_media_timing),
       hash_(hash),
-      entropy_for_lcp_(entropy_for_lcp) {
-  CHECK_GT(RecordedSize(), 0u);
+      effective_visual_size_result_(effective_visual_size_result) {
+  CHECK_GT(EffectiveVisualSize(), 0u);
 }
 
 std::optional<WebURLRequest::Priority> ImageRecord::RequestPriority() const {

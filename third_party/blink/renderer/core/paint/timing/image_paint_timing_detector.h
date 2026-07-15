@@ -31,16 +31,13 @@
 #include "ui/gfx/geometry/rect_conversions.h"
 
 namespace blink {
-
+struct DOMPaintTimingInfo;
+class Image;
 class LargestContentfulPaintCalculator;
 class LayoutObject;
 class PaintTimingDetector;
 class PropertyTreeStateOrAlias;
-class Image;
 class StyleImage;
-struct DOMPaintTimingInfo;
-
-static constexpr double kMinimumEntropyForLCP = 0.05;
 
 // |ImageRecordsManager| is the manager of all of the images that Largest
 // Image Paint cares about. Note that an image does not necessarily correspond
@@ -50,6 +47,8 @@ static constexpr double kMinimumEntropyForLCP = 0.05;
 // Node, LayoutObject, etc.
 class CORE_EXPORT ImageRecordsManager {
   DISALLOW_NEW();
+
+ public:
   friend class ImagePaintTimingDetector;
   friend class ImagePaintTimingDetectorTest;
 
@@ -113,12 +112,7 @@ class CORE_EXPORT ImageRecordsManager {
   // Receives a candidate image painted under opacity 0 but without nested
   // opacity. May update |largest_ignored_image_| if the new candidate has a
   // larger size.
-  void MaybeUpdateLargestIgnoredImage(const MediaRecordId&,
-                                      uint64_t visual_size,
-                                      const gfx::Rect& frame_visual_rect,
-                                      const gfx::RectF& root_visual_rect,
-                                      double entropy_for_lcp,
-                                      bool is_recording_lcp);
+  void MaybeUpdateLargestIgnoredImage(ImageRecord*);
   // If `largest_ignored_image_` is non-null and the corresponding node is still
   // attached to the DOM, this marks first image paint (always) and reports the
   // image as an LCP candidate (if `is_recording_lcp` is true). Returns the
@@ -254,23 +248,14 @@ class CORE_EXPORT ImagePaintTimingDetector final
   void Trace(Visitor*) const;
 
  private:
-  friend class LargestContentfulPaintCalculatorTest;
   friend class ImagePaintTimingDetectorTest;
-  FRIEND_TEST_ALL_PREFIXES(ImagePaintTimingDetectorTest,
-                           LargestImagePaint_Detached_Frame);
+  friend class LargestContentfulPaintCalculatorTest;
 
-  void RegisterNotifyPresentationTime();
-  // Computes the size of an image for the purpose of LargestContentfulPaint,
-  // downsizing the size of images with low intrinsic size. Images that occupy
-  // the full viewport are special-cased and this method returns 0 for them so
-  // that they are not considered valid candidates.
-  uint64_t ComputeImageRectSize(const gfx::Rect& image_border,
-                                const gfx::RectF& mapped_visual_rect,
-                                const gfx::Size&,
-                                const PropertyTreeStateOrAlias&,
-                                const LayoutObject&,
-                                const MediaTiming&);
   void SendRectsToHud();
+
+  // Returns the viewport size, initializing the cached `viewport_size_` if
+  // needed.
+  uint64_t ViewportSize();
 
   LargestContentfulPaintCalculator* GetLargestContentfulPaintCalculator() const;
 
@@ -292,6 +277,7 @@ class CORE_EXPORT ImagePaintTimingDetector final
   ImageRecordsManager records_manager_;
   Member<PaintTimingDetector> paint_timing_detector_;
 };
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_TIMING_IMAGE_PAINT_TIMING_DETECTOR_H_

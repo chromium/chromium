@@ -725,7 +725,7 @@ TEST_F(TextPaintTimingDetectorTest, ClippedByParentVisibleRect) {
 
   SimulateRenderingAndPresentationTime();
   EXPECT_EQ(TextRecordOfLargestTextPaint()->GetNode(), div1);
-  EXPECT_EQ(TextRecordOfLargestTextPaint()->RecordedSize(), 1u);
+  EXPECT_EQ(TextRecordOfLargestTextPaint()->EffectiveVisualSize(), 1u);
 
   Element* div2 = GetDocument().CreateRawElement(html_names::kDivTag);
   Text* text2 = GetDocument().createTextNode(
@@ -743,7 +743,7 @@ TEST_F(TextPaintTimingDetectorTest, ClippedByParentVisibleRect) {
   // This size is larger than the size of the first object . But the exact size
   // depends on different platforms. We only need to ensure this size is larger
   // than the first size.
-  EXPECT_GT(TextRecordOfLargestTextPaint()->RecordedSize(), 1u);
+  EXPECT_GT(TextRecordOfLargestTextPaint()->EffectiveVisualSize(), 1u);
 }
 
 TEST_F(TextPaintTimingDetectorTest, Iframe) {

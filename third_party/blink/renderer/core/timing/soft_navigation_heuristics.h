@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/paint/timing/lcp_objects.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing.h"
+#include "third_party/blink/renderer/core/paint/timing/paint_timing_record.h"
 #include "third_party/blink/renderer/core/timing/performance_timeline_entry_id_generator.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
@@ -25,14 +26,12 @@
 
 namespace blink {
 class Element;
-class ImageRecord;
 class InteractionEffectsMonitor;
 class HTMLVideoElement;
 class PerformanceEventTiming;
 class QualifiedName;
 class SoftNavigationContext;
 class SoftNavigationPaintAttributionTracker;
-class TextRecord;
 
 // This class contains the logic for calculating Single-Page-App soft navigation
 // heuristics. See https://github.com/WICG/soft-navigations
@@ -94,7 +93,6 @@ class CORE_EXPORT SoftNavigationHeuristics
   bool ModifiedDOM(Node* node);
   uint64_t SoftNavigationCount() { return soft_navigation_count_; }
 
-  SoftNavigationContext* MaybeGetSoftNavigationContextForTiming(Node* node);
   void OnPaintFinished();
   void OnInputOrScroll();
   void UpdateSoftLcpCandidate();
@@ -114,6 +112,14 @@ class CORE_EXPORT SoftNavigationHeuristics
 
   void OnContextDisposed(SoftNavigationContext*);
   void UpdateSoftLcpMetricsForContext(SoftNavigationContext*);
+
+  // Called by PaintTiming on the initial paint for an image. Sets the relevant
+  // `SoftNavigationContext` on the `ImageRecord` if there is one.
+  void InitializePaintTracking(ImageRecord*);
+
+  // Called by PaintTiming when a text aggregation node is painted. Sets the
+  // relevant `SoftNavigationContext` on the `TextRecord` if there is one.
+  void InitializePaintTracking(TextRecord*);
 
   // Called by PaintTiming with the image and text records that were presented
   // in the last presented frame.
@@ -153,6 +159,11 @@ class CORE_EXPORT SoftNavigationHeuristics
   // an associated committed navigation and first contentful paint timestamp
   // when this is called, and it must not have already been emitted.
   void EmitSoftNavigation(SoftNavigationContext*);
+
+  // Sets the `PaintTimingRecord`'s `SoftNavigationContext` if this is an image
+  // or text whose paint should be tracked.
+  template <IsDerivedFromPaintTimingRecord T>
+  void MaybeSetContextOnFirstPaint(T*) const;
 
   uint64_t CalculateRequiredPaintArea() const;
   uint64_t CalculateViewportArea() const;

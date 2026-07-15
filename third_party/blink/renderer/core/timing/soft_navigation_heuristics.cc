@@ -469,14 +469,26 @@ void SoftNavigationHeuristics::EmitSoftNavigation(
   UpdateSoftLcpMetricsForContext(context);
 }
 
-SoftNavigationContext*
-SoftNavigationHeuristics::MaybeGetSoftNavigationContextForTiming(Node* node) {
+void SoftNavigationHeuristics::InitializePaintTracking(ImageRecord* record) {
+  // TODO(crbug.com/454082771): This should also update the underlying LCP
+  // calculator's "largest pending image" like we do for hard navs.
+  MaybeSetContextOnFirstPaint(record);
+}
+
+void SoftNavigationHeuristics::InitializePaintTracking(TextRecord* record) {
+  MaybeSetContextOnFirstPaint(record);
+}
+
+template <IsDerivedFromPaintTimingRecord T>
+void SoftNavigationHeuristics::MaybeSetContextOnFirstPaint(T* record) const {
+  Node* node = record->GetNode();
+  CHECK(node);
   SoftNavigationContext* context =
       paint_attribution_tracker_->GetSoftNavigationContextForNode(node);
-  if (!context || !context->IsRecordingLargestContentfulPaint()) {
-    return nullptr;
+  if (context && context->IsRecordingLargestContentfulPaint() &&
+      context->ShouldTrackForPaintTiming(*record)) {
+    record->SetSoftNavigationContext(context);
   }
-  return context;
 }
 
 void SoftNavigationHeuristics::OnPaintFinished() {

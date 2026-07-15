@@ -173,6 +173,13 @@ class CORE_EXPORT SoftNavigationContext
     return first_input_or_scroll_time_.is_null();
   }
 
+  template <IsDerivedFromPaintTimingRecord T>
+  bool ShouldTrackForPaintTiming(const T& record) const {
+    // We want to know about all painted text and images if they're valid LCP
+    // candidates.
+    return lcp_calculator_->IsEligibleForLcp(record);
+  }
+
   SoftNavigationHeuristics* GetSoftNavigationHeuristics() const;
 
   // Emits the soft navigation performance entry. The context must not have been
