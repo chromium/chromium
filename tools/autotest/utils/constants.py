@@ -23,6 +23,7 @@ DEPOT_TOOLS_DIR: Path = SRC_DIR / 'third_party' / 'depot_tools'
 
 # Some test suites use suffixes that would also match non-test-suite targets.
 # Those test suites should be manually added here.
+# pylint: disable=line-too-long
 TEST_TARGET_ALLOWLIST: list[str] = [
 
     # The tests below this line were output from the ripgrep command just below:
@@ -112,9 +113,11 @@ TEST_TARGET_ALLOWLIST: list[str] = [
     '//third_party/rapidhash:rapidhash_fuzztests',
     '//ui/ozone:ozone_integration_tests',
 ]
+# pylint: disable=line-too-long
+
 r"""
- You can run this command to find test targets that do not match _TEST_TARGET_SUFFIXES,
- and use it to update _TEST_TARGET_ALLOWLIST.
+ You can run this command to find test targets that do not match
+ _TEST_TARGET_SUFFIXES, and use it to update _TEST_TARGET_ALLOWLIST.
 rg '^(instrumentation_test_runner|test)\("([^"]*)' -o -g'BUILD.gn' -r'$2' -N \
   | rg -v '(_browsertests|_perftests|_wpr_tests|_unittests)$' \
   | rg '^(.*)/BUILD.gn(.*)$' -r'\'//$1$2\',' \
@@ -133,7 +136,8 @@ PREF_MAPPING_FILE_PATTERN: str = re.escape(
     r'/') + r'.*\.json'
 
 # `rg` always uses forward slashes for globs, even on Windows.
-PREF_MAPPING_FILE_NAME_GLOB: str = '*components/policy/test/data/pref_mapping/*.json'
+PREF_MAPPING_FILE_NAME_GLOB: str = (
+    '*components/policy/test/data/pref_mapping/*.json')
 GTEST_FILE_NAME_GLOB: str = '*{test,tests}*.{cc,mm,java}'
 
 # Regex version of `(PREF_MAPPING_FILE_GLOB) | (GTEST_FILE_GLOB)`
