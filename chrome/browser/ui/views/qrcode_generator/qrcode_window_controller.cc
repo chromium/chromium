@@ -13,7 +13,6 @@
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/qrcode_generator/qrcode_generator_bubble.h"
 #include "content/public/browser/web_contents.h"
-#include "ui/actions/action_id.h"
 
 namespace qrcode_generator {
 

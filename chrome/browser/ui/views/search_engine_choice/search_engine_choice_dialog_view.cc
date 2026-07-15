@@ -7,7 +7,6 @@
 #include <algorithm>
 
 #include "base/check_is_test.h"
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engine_choice/search_engine_choice_dialog_service.h"

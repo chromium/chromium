@@ -14,7 +14,6 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_util.h"
-#include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/send_tab_to_self/features.h"
@@ -28,7 +27,6 @@
 #include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/layout/flex_layout.h"
-#include "ui/views/layout/flex_layout_types.h"
 
 namespace send_tab_to_self {
 

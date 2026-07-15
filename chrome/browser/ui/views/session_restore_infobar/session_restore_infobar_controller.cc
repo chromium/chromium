@@ -5,21 +5,13 @@
 #include "chrome/browser/ui/views/session_restore_infobar/session_restore_infobar_controller.h"
 
 #include <memory>
-#include <optional>
-#include <utility>
 
-#include "base/check.h"
-#include "base/feature_list.h"
-#include "base/functional/callback_helpers.h"
-#include "base/logging.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sessions/session_restore.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/session_restore_infobar/session_restore_infobar_delegate.h"
 #include "chrome/browser/ui/views/session_restore_infobar/session_restore_infobar_manager.h"
 #include "chrome/browser/ui/views/session_restore_infobar/session_restore_infobar_model.h"
@@ -29,7 +21,6 @@
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/prefs/pref_service.h"
-#include "content/public/browser/web_contents.h"
 
 namespace session_restore_infobar {
 

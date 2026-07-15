@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/views/record_replay/replay_recording_bubble_view.h"
 
-#include <memory>
 #include <string>
 
 #include "base/functional/callback.h"
@@ -14,13 +13,11 @@
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
-#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/views/view.h"
 #include "ui/views/view_tracker.h"
-#include "ui/views/widget/widget.h"
 
 namespace record_replay {
 

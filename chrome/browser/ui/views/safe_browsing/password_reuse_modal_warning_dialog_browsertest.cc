@@ -5,8 +5,6 @@
 #include "chrome/browser/ui/views/safe_browsing/password_reuse_modal_warning_dialog.h"
 
 #include "base/functional/bind.h"
-#include "base/memory/raw_ptr.h"
-#include "base/run_loop.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
@@ -14,9 +12,7 @@
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/constrained_window/constrained_window_views.h"
-#include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/safe_browsing/content/browser/password_protection/password_protection_service.h"
-#include "components/safe_browsing/core/common/features.h"
 #include "content/public/test/browser_test.h"
 #include "ui/views/view_tracker.h"
 

@@ -4,11 +4,9 @@
 
 #include "chrome/browser/ui/views/relaunch_notification/relaunch_recommended_bubble_view.h"
 
-#include <tuple>
 #include <utility>
 
 #include "base/functional/bind.h"
-#include "base/logging.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/time/time.h"
@@ -28,16 +26,11 @@
 #include "ui/base/models/image_model.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/ui_base_features.h"
-#include "ui/gfx/color_palette.h"
-#include "ui/gfx/geometry/point.h"
-#include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/border.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
-#include "ui/views/bubble/bubble_frame_view.h"
-#include "ui/views/controls/button/button.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/style/typography.h"

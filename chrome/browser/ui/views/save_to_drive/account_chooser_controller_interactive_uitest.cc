@@ -8,7 +8,6 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/views/save_to_drive/account_chooser_controller.h"
 #include "chrome/browser/ui/views/save_to_drive/account_chooser_test_util.h"
 #include "chrome/browser/ui/views/save_to_drive/account_chooser_view.h"
@@ -20,9 +19,7 @@
 #include "components/sync/test/test_sync_service.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
-#include "testing/gmock/include/gmock/gmock.h"
 #include "ui/gfx/image/image.h"
-#include "ui/gfx/image/image_unittest_util.h"
 
 namespace save_to_drive {
 namespace {

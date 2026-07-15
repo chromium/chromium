@@ -4,12 +4,10 @@
 
 #include "chrome/browser/ui/views/session_restore_infobar/session_restore_infobar_model.h"
 
-#include "base/command_line.h"
 #include "base/check.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sessions/session_restore.h"
 #include "chrome/browser/ui/startup/startup_browser_creator.h"
-#include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 

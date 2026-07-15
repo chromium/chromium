@@ -17,7 +17,6 @@
 #include "chrome/browser/safe_browsing/application_advanced_protection_status_detector.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
-#include "components/safe_browsing/core/common/features.h"
 
 namespace {
 
