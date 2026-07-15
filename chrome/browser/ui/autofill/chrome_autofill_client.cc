@@ -791,7 +791,9 @@ void ChromeAutofillClient::ShowAutofillSettings(
       ShowAutofillCreditCardSettings(web_contents());
       return;
     default:
-      NOTREACHED();
+      // TODO(crbug.com/523163558): Implement handling for
+      // `kManageEnhancedAutofill`.
+      break;
   }
 #else
   BrowserWindowInterface* browser =
