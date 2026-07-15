@@ -106,10 +106,10 @@
     },
     'android_bookmark_bar': {
       'filepath': 'BookmarkBar' \
-                  'bookmark_bar_scene_layer' \
-                  'AppearanceSettingsFragment' \
-                  'chrome/android/java/res/layout/bookmark_bar.*' \
-                  'chrome/browser/bookmarks/android/java/src/org/chromium/chrome/browser/bookmarks/bar/' \
+                  '|bookmark_bar_scene_layer' \
+                  '|AppearanceSettingsFragment' \
+                  '|chrome/android/java/res/layout/bookmark_bar.*' \
+                  '|chrome/browser/bookmarks/android/java/src/org/chromium/chrome/browser/bookmarks/' \
 
     },
     'android_browser_controls': {
