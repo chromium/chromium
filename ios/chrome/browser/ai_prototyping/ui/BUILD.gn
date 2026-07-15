@@ -23,6 +23,8 @@ source_set("ui") {
     "ai_prototyping_view_controller.h",
     "ai_prototyping_view_controller.mm",
     "ai_prototyping_view_controller_protocol.h",
+    "ai_prototyping_worklog_item_showcase_view_controller.h",
+    "ai_prototyping_worklog_item_showcase_view_controller.mm",
   ]
 
   deps = [
