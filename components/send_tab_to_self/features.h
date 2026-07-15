@@ -75,6 +75,11 @@ BASE_DECLARE_FEATURE(kSendTabToSelfEnhancedBottomsheet);
 // actions in the native iOS Share Sheet.
 BASE_DECLARE_FEATURE(kSendTabToSelfIOSShareSheetDeviceList);
 
+// If this feature is enabled, prevents duplicate SendTabToSelfBrowserAgent
+// instances from logging outcomes for the same entry (e.g. regular vs inactive
+// browser).
+BASE_DECLARE_FEATURE(kSendTabToSelfIOSLimitToRegularBrowsers);
+
 // If this feature is enabled, users can schedule tab reminder iOS push
 // notifications.
 BASE_DECLARE_FEATURE(kIOSTabReminders);

@@ -8,6 +8,7 @@
 #import "base/feature_list.h"
 #import "components/breadcrumbs/core/breadcrumbs_status.h"
 #import "components/data_sharing/public/features.h"
+#import "components/send_tab_to_self/features.h"
 #import "ios/chrome/browser/app_launcher/model/app_launcher_browser_agent.h"
 #import "ios/chrome/browser/autocomplete/model/autocomplete_browser_agent.h"
 #import "ios/chrome/browser/browser_view/model/browser_view_visibility_notifier_browser_agent.h"
@@ -157,7 +158,14 @@ void AttachBrowserAgentsForActiveBrowser(Browser* browser) {
   }
 
   // Send Tab To Self is non-OTR only.
-  if (!browser_is_off_record) {
+  bool should_create_send_tab_to_self = !browser_is_off_record;
+  if (base::FeatureList::IsEnabled(
+          send_tab_to_self::kSendTabToSelfIOSLimitToRegularBrowsers)) {
+    should_create_send_tab_to_self = should_create_send_tab_to_self &&
+                                     !browser_is_inactive &&
+                                     !browser_is_temporary;
+  }
+  if (should_create_send_tab_to_self) {
     SendTabToSelfBrowserAgent::CreateForBrowser(browser);
   }
 
