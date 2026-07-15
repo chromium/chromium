@@ -33,6 +33,8 @@ class SigninQRCodeInfoBar : public InfoBarView,
   SigninQRCodeInfoBar& operator=(const SigninQRCodeInfoBar&) = delete;
   ~SigninQRCodeInfoBar() override;
 
+  bool IsShowingQrCodeForTesting() const;
+
   // InfoBarView:
   void PlatformSpecificShow(bool animate) override;
 

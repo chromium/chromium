@@ -18,6 +18,7 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/throbber.h"
 #include "ui/views/layout/box_layout_view.h"
+#include "ui/views/view_utils.h"
 
 namespace {
 
@@ -103,6 +104,14 @@ SigninQRCodeInfoBar::SigninQRCodeInfoBar(
 }
 
 SigninQRCodeInfoBar::~SigninQRCodeInfoBar() = default;
+
+bool SigninQRCodeInfoBar::IsShowingQrCodeForTesting() const {
+  if (!qr_container_ || qr_container_->children().empty()) {
+    return false;
+  }
+  return views::IsViewClass<AuthenticatorQrCenteredView>(
+      qr_container_->children().front().get());
+}
 
 void SigninQRCodeInfoBar::PlatformSpecificShow(bool animate) {
   InfoBarView::PlatformSpecificShow(animate);
