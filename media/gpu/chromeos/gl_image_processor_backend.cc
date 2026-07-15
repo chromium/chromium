@@ -12,6 +12,7 @@
 #include "base/trace_event/trace_event.h"
 #include "components/viz/common/resources/shared_image_format.h"
 #include "media/base/format_utils.h"
+#include "media/gpu/buffer_validation.h"
 #include "media/gpu/chromeos/frame_resource.h"
 #include "media/gpu/chromeos/platform_video_frame_utils.h"
 #include "media/gpu/macros.h"
@@ -98,6 +99,12 @@ std::unique_ptr<ui::NativePixmapGLBinding> CreateAndBindImage(
   if (gpu_memory_buffer_handle.is_null() ||
       gpu_memory_buffer_handle.type != gfx::NATIVE_PIXMAP) {
     LOG(ERROR) << "Failed to create native GpuMemoryBufferHandle";
+    return nullptr;
+  }
+
+  if (!VerifyGpuMemoryBufferHandle(frame->format(), frame->coded_size(),
+                                   gpu_memory_buffer_handle)) {
+    LOG(ERROR) << "Failed to validate GpuMemoryBufferHandle";
     return nullptr;
   }
 
