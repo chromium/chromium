@@ -1425,7 +1425,7 @@ void BrowserActions::InitializeChromeMenuActions() {
                           page_action_trigger));
                 }
 
-                chrome::ExecuteCommand(bwi, IDC_BOOKMARK_THIS_TAB);
+                chrome::BookmarkCurrentTab(bwi);
               },
               bwi))
           .SetActionId(kActionBookmarkThisTab)
