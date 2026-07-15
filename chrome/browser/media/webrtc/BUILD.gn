@@ -520,8 +520,30 @@ source_set("unit_tests") {
     ]
   }
 
+  # native_desktop_media_list is not built on ChromeOS (it uses the desktop
+  # DesktopMediaList backend), so it is desktop-only excluding ChromeOS.
+  if (!is_android && !is_chromeos) {
+    sources += [ "native_desktop_media_list_unittest.cc" ]
+    deps += [
+      "//chrome/test/views",
+      "//content/public/browser",
+      "//ui/views",
+    ]
+    if (use_aura) {
+      deps += [ "//ui/aura" ]
+    }
+    if (is_mac) {
+      deps += [ "//components/remote_cocoa/browser" ]
+    }
+  }
+
   if (is_mac) {
-    deps += [ "//chrome/browser/permissions/system" ]
+    sources += [ "thumbnail_capturer_mac_unittest.mm" ]
+    deps += [
+      "//chrome/browser/permissions/system",
+      "//media/capture:test_support",
+    ]
+    weak_frameworks = [ "ScreenCaptureKit.framework" ]
   }
 }
 

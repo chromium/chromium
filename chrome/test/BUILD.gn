@@ -6214,7 +6214,6 @@ test("unit_tests") {
       "../browser/app_controller_mac_unittest.mm",
       "../browser/chrome_browser_application_mac_unittest.mm",
       "../browser/global_keyboard_shortcuts_mac_unittest.mm",
-      "../browser/media/webrtc/thumbnail_capturer_mac_unittest.mm",
       "../browser/renderer_host/chrome_render_widget_host_view_mac_history_swiper_unittest.mm",
       "../browser/shell_integration_mac_unittest.mm",
       "../browser/ui/accelerator_table_unittest_mac.mm",
@@ -7987,7 +7986,6 @@ test("unit_tests") {
   }
   if (!is_android && !is_chromeos) {
     sources += [
-      "../browser/media/webrtc/native_desktop_media_list_unittest.cc",
       "../browser/ui/views/download/bubble/download_bubble_contents_view_unittest.cc",
       "../browser/ui/views/download/bubble/download_bubble_row_view_unittest.cc",
       "../browser/ui/views/download/bubble/download_bubble_security_view_unittest.cc",
