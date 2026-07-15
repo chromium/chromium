@@ -18,6 +18,8 @@ namespace extensions {
 
 // Manifest data describing an extension's set of granted content capabilities.
 struct ContentCapabilitiesInfo : public Extension::ManifestData {
+  static const char* kManifestDataKey;
+
   // The set of API permissions to be granted to web content.
   APIPermissionSet permissions;
 

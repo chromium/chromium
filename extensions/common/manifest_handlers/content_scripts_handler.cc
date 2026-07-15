@@ -147,6 +147,10 @@ static base::LazyInstance<EmptyUserScriptList>::DestructorAtExit
 
 }  // namespace
 
+// static
+const char* ContentScriptsInfo::kManifestDataKey =
+    ContentScriptsKeys::kContentScripts;
+
 ContentScriptsInfo::ContentScriptsInfo() = default;
 
 ContentScriptsInfo::~ContentScriptsInfo() = default;
@@ -154,8 +158,8 @@ ContentScriptsInfo::~ContentScriptsInfo() = default;
 // static
 const UserScriptList& ContentScriptsInfo::GetContentScripts(
     const Extension* extension) {
-  const ContentScriptsInfo* info = static_cast<const ContentScriptsInfo*>(
-      extension->GetManifestData(ContentScriptsKeys::kContentScripts));
+  const ContentScriptsInfo* info =
+      extension->GetManifestData<ContentScriptsInfo>();
   return info ? info->content_scripts
               : g_empty_script_list.Get().user_script_list;
 }
@@ -241,7 +245,7 @@ bool ContentScriptsHandler::Parse(Extension* extension, std::u16string* error) {
     content_scripts_info->content_scripts.push_back(std::move(user_script));
   }
 
-  extension->SetManifestData(ContentScriptsKeys::kContentScripts,
+  extension->SetManifestData(ContentScriptsInfo::kManifestDataKey,
                              std::move(content_scripts_info));
   PermissionsParser::SetScriptableHosts(
       extension, ContentScriptsInfo::GetScriptableHosts(extension));

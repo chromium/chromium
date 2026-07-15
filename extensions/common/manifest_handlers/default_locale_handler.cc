@@ -25,9 +25,11 @@ namespace keys = manifest_keys;
 namespace errors = manifest_errors;
 
 // static
+const char* LocaleInfo::kManifestDataKey = keys::kDefaultLocale;
+
+// static
 const std::string& LocaleInfo::GetDefaultLocale(const Extension* extension) {
-  const LocaleInfo* info = static_cast<const LocaleInfo*>(
-      extension->GetManifestData(keys::kDefaultLocale));
+  const LocaleInfo* info = extension->GetManifestData<LocaleInfo>();
   return info ? info->default_locale : base::EmptyString();
 }
 
@@ -46,7 +48,7 @@ bool DefaultLocaleHandler::Parse(Extension* extension, std::u16string* error) {
   }
   info->default_locale = *default_locale;
 
-  extension->SetManifestData(keys::kDefaultLocale, std::move(info));
+  extension->SetManifestData(LocaleInfo::kManifestDataKey, std::move(info));
   return true;
 }
 

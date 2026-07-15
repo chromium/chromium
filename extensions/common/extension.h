@@ -247,6 +247,13 @@ class Extension final : public base::RefCountedThreadSafe<Extension> {
     return static_cast<const T*>(GetManifestData(T::kManifestDataKey));
   }
 
+  template <class T>
+  const T* GetManifestData(std::string_view key) const {
+    static_assert(std::is_base_of_v<ManifestData, T>,
+                  "T must derive from Extension::ManifestData");
+    return static_cast<const T*>(GetManifestData(key));
+  }
+
   // Sets `data` to be associated with the key.
   // Can only be called before Init is finished. Not thread-safe;
   // all SetManifestData calls should be on only one thread.

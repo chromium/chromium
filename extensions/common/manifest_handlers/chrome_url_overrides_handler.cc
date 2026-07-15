@@ -34,6 +34,10 @@ using ChromeUrlOverridesKeys = api::chrome_url_overrides::ManifestKeys;
 
 }  // namespace
 
+// static
+const char* URLOverrides::kManifestDataKey =
+    ChromeUrlOverridesKeys::kChromeUrlOverrides;
+
 URLOverrides::URLOverrides() = default;
 URLOverrides::~URLOverrides() = default;
 
@@ -42,8 +46,8 @@ const URLOverrides::URLOverrideMap& URLOverrides::GetChromeURLOverrides(
     const Extension* extension) {
   static const base::NoDestructor<URLOverrides::URLOverrideMap>
       empty_url_overrides;
-  const URLOverrides* url_overrides = static_cast<const URLOverrides*>(
-      extension->GetManifestData(ChromeUrlOverridesKeys::kChromeUrlOverrides));
+  const URLOverrides* url_overrides =
+      extension->GetManifestData<URLOverrides>();
   return url_overrides ? url_overrides->chrome_url_overrides_
                        : *empty_url_overrides;
 }
@@ -111,7 +115,7 @@ bool URLOverridesHandler::Parse(Extension* extension, std::u16string* error) {
         extension, mojom::APIPermissionID::kNewTabPageOverride);
   }
 
-  extension->SetManifestData(ChromeUrlOverridesKeys::kChromeUrlOverrides,
+  extension->SetManifestData(URLOverrides::kManifestDataKey,
                              std::move(url_overrides));
 
   return true;

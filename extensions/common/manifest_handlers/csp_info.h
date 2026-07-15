@@ -16,6 +16,8 @@ namespace extensions {
 
 // A structure to hold the Content-Security-Policy information.
 struct CSPInfo : public Extension::ManifestData {
+  static const char* kManifestDataKey;
+
   explicit CSPInfo(std::string extension_pages_csp, std::string sandbox_csp);
   ~CSPInfo() override;
 

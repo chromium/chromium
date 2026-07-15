@@ -20,6 +20,8 @@ struct AppDisplayInfo : public Extension::ManifestData {
 
   ~AppDisplayInfo() override;
 
+  static const char* kManifestDataKey;
+
   // Returns true if the extension requires a valid ordinal for sorting, e.g.,
   // for displaying in a launcher or new tab page.
   static bool RequiresSortOrdinal(const Extension& extension);

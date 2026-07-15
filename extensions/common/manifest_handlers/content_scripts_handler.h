@@ -16,6 +16,8 @@ namespace extensions {
 class URLPatternSet;
 
 struct ContentScriptsInfo : public Extension::ManifestData {
+  static const char* kManifestDataKey;
+
   ContentScriptsInfo();
   ~ContentScriptsInfo() override;
 

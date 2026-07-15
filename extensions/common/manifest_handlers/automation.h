@@ -23,6 +23,8 @@ class AutomationManifestPermission;
 // The parsed form of the automation manifest entry.
 struct AutomationInfo : public Extension::ManifestData {
  public:
+  static const char* kManifestDataKey;
+
   static const AutomationInfo* Get(const Extension* extension);
   static std::unique_ptr<AutomationInfo> FromValue(
       const base::Value& value,

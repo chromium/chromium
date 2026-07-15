@@ -162,6 +162,9 @@ const std::string* GetMinimumMV3CSPForExtension(const Extension& extension) {
 
 }  // namespace
 
+// static
+const char* CSPInfo::kManifestDataKey = keys::kContentSecurityPolicy;
+
 CSPInfo::CSPInfo(std::string extension_pages_csp, std::string sandbox_csp)
     : extension_pages_csp(std::move(extension_pages_csp)),
       sandbox_csp(std::move(sandbox_csp)) {}
@@ -170,8 +173,7 @@ CSPInfo::~CSPInfo() = default;
 
 // static
 const std::string& CSPInfo::GetExtensionPagesCSP(const Extension* extension) {
-  const CSPInfo* csp_info = static_cast<const CSPInfo*>(
-      extension->GetManifestData(keys::kContentSecurityPolicy));
+  const CSPInfo* csp_info = extension->GetManifestData<CSPInfo>();
   return csp_info ? csp_info->extension_pages_csp : base::EmptyString();
 }
 
@@ -242,8 +244,7 @@ std::optional<std::string> CSPInfo::GetIsolatedWorldCSP(
 // static
 const std::string& CSPInfo::GetSandboxContentSecurityPolicy(
     const Extension* extension) {
-  const CSPInfo* csp_info = static_cast<const CSPInfo*>(
-      extension->GetManifestData(keys::kContentSecurityPolicy));
+  const CSPInfo* csp_info = extension->GetManifestData<CSPInfo>();
   return csp_info ? csp_info->sandbox_csp : base::EmptyString();
 }
 
@@ -312,7 +313,7 @@ bool CSPHandler::Parse(Extension* extension, std::u16string* error) {
   }
 
   extension->SetManifestData(
-      keys::kContentSecurityPolicy,
+      CSPInfo::kManifestDataKey,
       std::make_unique<CSPInfo>(std::move(extension_pages_csp),
                                 std::move(sandbox_csp)));
   return true;
@@ -350,7 +351,7 @@ bool CSPHandler::ParseCSPDictionary(Extension* extension,
   }
 
   extension->SetManifestData(
-      keys::kContentSecurityPolicy,
+      CSPInfo::kManifestDataKey,
       std::make_unique<CSPInfo>(std::move(extension_pages_csp),
                                 std::move(sandbox_csp)));
   return true;

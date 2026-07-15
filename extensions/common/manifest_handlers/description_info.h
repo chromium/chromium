@@ -14,6 +14,8 @@
 namespace extensions {
 
 struct DescriptionInfo : public Extension::ManifestData {
+  static const char* kManifestDataKey;
+
   explicit DescriptionInfo(const std::string& description);
   ~DescriptionInfo() override;
 

@@ -11,6 +11,9 @@
 
 namespace extensions {
 
+// static
+const char* DescriptionInfo::kManifestDataKey = manifest_keys::kDescription;
+
 DescriptionInfo::DescriptionInfo(const std::string& description)
     : description_(description) {}
 
@@ -19,8 +22,7 @@ DescriptionInfo::~DescriptionInfo() = default;
 // Return the `extension` description.
 // static
 const std::string& DescriptionInfo::GetDescription(const Extension& extension) {
-  const DescriptionInfo* info = static_cast<const DescriptionInfo*>(
-      extension.GetManifestData(manifest_keys::kDescription));
+  const DescriptionInfo* info = extension.GetManifestData<DescriptionInfo>();
   return info ? info->description_ : base::EmptyString();
 }
 
@@ -39,7 +41,7 @@ bool DescriptionHandler::Parse(Extension* extension, std::u16string* error) {
   const std::string& description = desc_value->GetString();
   // If description is empty, we do not need to save it at all.
   if (!description.empty()) {
-    extension->SetManifestData(manifest_keys::kDescription,
+    extension->SetManifestData(DescriptionInfo::kManifestDataKey,
                                std::make_unique<DescriptionInfo>(description));
   }
 

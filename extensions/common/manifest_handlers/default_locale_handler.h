@@ -14,6 +14,8 @@ namespace extensions {
 
 // A structure to hold the locale information for an extension.
 struct LocaleInfo : public Extension::ManifestData {
+  static const char* kManifestDataKey;
+
   // Default locale for fall back. Can be empty if extension is not localized.
   std::string default_locale;
 
