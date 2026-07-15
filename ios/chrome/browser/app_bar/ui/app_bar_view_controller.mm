@@ -425,11 +425,16 @@ UIColor* AssistantHighlightBackgroundColor() {
   // When rotated in landscape, add spacers at the beginning and end of the
   // stack view so that the buttons width match the "height" of the stack view,
   // thus not leaking outside of the stack view's frame during the long press
-  // animation.
+  // animation. Locking spacer widths to zero prevents their default hugging
+  // priority from colliding with equal-spacing constraints when in RTL.
   _leadingSpacer = [[UIView alloc] init];
   _trailingSpacer = [[UIView alloc] init];
   _leadingSpacer.translatesAutoresizingMaskIntoConstraints = NO;
   _trailingSpacer.translatesAutoresizingMaskIntoConstraints = NO;
+  [NSLayoutConstraint activateConstraints:@[
+    [_leadingSpacer.widthAnchor constraintEqualToConstant:0],
+    [_trailingSpacer.widthAnchor constraintEqualToConstant:0],
+  ]];
   _leadingSpacer.hidden = YES;
   _trailingSpacer.hidden = YES;
 
