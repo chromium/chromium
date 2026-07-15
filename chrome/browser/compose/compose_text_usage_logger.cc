@@ -79,35 +79,33 @@ ComposeTextUsageLogger::~ComposeTextUsageLogger() {
 
 void ComposeTextUsageLogger::OnAfterTextFieldValueChanged(
     autofill::AutofillManager& manager,
-    autofill::FormGlobalId form,
-    autofill::FieldGlobalId field) {
+    autofill::FormGlobalId form_id,
+    autofill::FieldGlobalId field_id) {
+  auto [form, field] = manager.FindFormAndField(form_id, field_id);
+
+  autofill::FormSignature form_signature =
+      form ? form->form_signature() : autofill::FormSignature();
+
+  autofill::FieldSignature field_signature;
   autofill::DenseSet<autofill::FormType> form_types;
   int64_t form_control_type = -1;
-  autofill::FieldSignature field_signature;
-  autofill::FormSignature form_signature;
-  const autofill::FormStructure* form_structure =
-      manager.FindCachedFormById(form);
   bool is_long_field = false;
   std::u16string text_value = u"";
-  if (form_structure) {
-    form_signature = form_structure->form_signature();
-    const autofill::AutofillField* field_data =
-        form_structure->GetFieldById(field);
-    if (field_data) {
-      form_types = field_data->Type().GetFormTypes();
-      form_control_type = static_cast<int64_t>(field_data->form_control_type());
-      text_value = field_data->value();
 
-      switch (field_data->form_control_type()) {
-        case autofill::FormControlType::kContentEditable:
-        case autofill::FormControlType::kTextArea:
-          is_long_field = true;
-          break;
-        default:
-          break;
-      }
-      field_signature = field_data->GetFieldSignature();
+  if (field) {
+    form_types = field->Type().GetFormTypes();
+    form_control_type = static_cast<int64_t>(field->form_control_type());
+    text_value = field->value();
+
+    switch (field->form_control_type()) {
+      case autofill::FormControlType::kContentEditable:
+      case autofill::FormControlType::kTextArea:
+        is_long_field = true;
+        break;
+      default:
+        break;
     }
+    field_signature = field->GetFieldSignature();
   }
 
   // The page UKM source ID should not change while this object is alive. Keep
@@ -124,7 +122,7 @@ void ComposeTextUsageLogger::OnAfterTextFieldValueChanged(
     Reset();
   }
 
-  FieldMetrics& metrics = field_metrics_[field];
+  FieldMetrics& metrics = field_metrics_[field_id];
   if (!metrics.initialized) {
     if (text_value.length() > MAX_CHARS_TYPED_AT_ONCE) {
       metrics.initial_text = text_value;

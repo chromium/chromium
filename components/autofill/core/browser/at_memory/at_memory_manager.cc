@@ -520,8 +520,8 @@ std::optional<std::u16string> GetAttributeFillValue(
   if (!attribute) {
     return std::nullopt;
   }
-  const auto [form_structure, autofill_field] =
-      manager.FindFormAndField(form_id, field_id);
+
+  auto [form, autofill_field] = manager.FindFormAndField(form_id, field_id);
   const std::string app_locale = manager.client().GetAppLocale();
   // Using `GetFillingValueAndTypeForEntity` is preferred when the field is
   // known because it handles field-specific requirements such as state/country

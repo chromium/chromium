@@ -18,23 +18,6 @@ PasswordManagerAutofillHelper::PasswordManagerAutofillHelper(
 
 PasswordManagerAutofillHelper::~PasswordManagerAutofillHelper() = default;
 
-namespace {
-
-const AutofillField* GetAutofillField(AutofillManager* manager,
-                                      FormGlobalId form_id,
-                                      FieldGlobalId field_id) {
-  if (!manager) {
-    return nullptr;
-  }
-  const FormStructure* form = manager->FindCachedFormById(form_id);
-  if (!form) {
-    return nullptr;
-  }
-  return form->GetFieldById(field_id);
-}
-
-}  // namespace
-
 // static
 bool PasswordManagerAutofillHelper::IsOtpFilledField(
     const AutofillField& field) {
@@ -45,8 +28,12 @@ bool PasswordManagerAutofillHelper::IsOtpFilledField(
 bool PasswordManagerAutofillHelper::IsFieldFilledWithOtp(
     FormGlobalId form_id,
     FieldGlobalId field_id) {
-  AutofillManager* manager = client_->GetAutofillManagerForPrimaryMainFrame();
-  const AutofillField* field = GetAutofillField(manager, form_id, field_id);
+  const AutofillManager* manager =
+      client_->GetAutofillManagerForPrimaryMainFrame();
+  if (!manager) {
+    return false;
+  }
+  auto [form, field] = manager->FindFormAndField(form_id, field_id);
   return field && IsOtpFilledField(*field);
 }
 

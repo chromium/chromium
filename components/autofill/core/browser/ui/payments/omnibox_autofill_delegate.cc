@@ -299,15 +299,9 @@ void OmniboxAutofillDelegate::OnSuggestionsShown(
     return;
   }
 
-  const FormStructure* form =
-      manager->FindCachedFormById(trigger_form_global_id_);
-  if (!form) {
-    return;
-  }
-
-  const AutofillField* trigger_field =
-      form->GetFieldById(trigger_field_global_id_);
-  if (!trigger_field) {
+  auto [form, trigger_field] = manager->FindFormAndField(
+      trigger_form_global_id_, trigger_field_global_id_);
+  if (!form || !trigger_field) {
     return;
   }
 
@@ -395,15 +389,9 @@ void OmniboxAutofillDelegate::OnGetIntersectionObserverInfo(bool is_visible) {
     return;
   }
 
-  const FormStructure* form =
-      manager->FindCachedFormById(trigger_form_global_id_);
-  if (!form) {
-    return;
-  }
-
-  const AutofillField* trigger_field =
-      form->GetFieldById(trigger_field_global_id_);
-  if (!trigger_field) {
+  auto [form, trigger_field] = manager->FindFormAndField(
+      trigger_form_global_id_, trigger_field_global_id_);
+  if (!form || !trigger_field) {
     return;
   }
 

@@ -148,11 +148,10 @@ TouchToFillPaymentMethodDelegateAndroidImpl::DryRun(FormGlobalId form_id,
   if (!IsTouchToFillPaymentMethodSupported()) {
     return {TriggerOutcome::kUnsupportedFieldType, {}};
   }
-  const FormStructure* form = manager_->FindCachedFormById(form_id);
+  auto [form, field] = manager_->FindFormAndField(form_id, field_id);
   if (!form) {
     return {TriggerOutcome::kUnknownForm, {}};
   }
-  const AutofillField* field = form->GetFieldById(field_id);
   if (!field) {
     return {TriggerOutcome::kUnknownField, {}};
   }
@@ -551,8 +550,7 @@ void TouchToFillPaymentMethodDelegateAndroidImpl::LogTriggerOutcomeMetrics(
   if (outcome == TriggerOutcome::kUnsupportedFieldType) {
     return;
   }
-  const FormStructure* form = manager_->FindCachedFormById(form_id);
-  const AutofillField* field = form ? form->GetFieldById(field_id) : nullptr;
+  auto [form, field] = manager_->FindFormAndField(form_id, field_id);
   const FieldTypeGroupSet groups =
       field ? field->Type().GetGroups() : FieldTypeGroupSet{};
   if (groups.contains(FieldTypeGroup::kIban)) {

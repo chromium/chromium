@@ -373,19 +373,13 @@ void EmailVerifierDelegate::OnFillOrPreviewForm(
 
   const AutofillProfile* const* profile =
       std::get_if<const AutofillProfile*>(&filling_payload);
-  const FormStructure* form = manager.FindCachedFormById(form_id);
-
-  if (action_persistence != mojom::ActionPersistence::kFill || !profile ||
-      !form) {
+  if (action_persistence != mojom::ActionPersistence::kFill || !profile) {
     return;
   }
 
-  // Only trigger verification if the email field itself was the trigger for the
-  // autofill action, rather than as a side-effect of autofilling another field
-  // (e.g. a name field).
-  const AutofillField* triggering_email_field =
-      form->GetFieldById(trigger_field_id);
-  if (!triggering_email_field ||
+  auto [form, triggering_email_field] =
+      manager.FindFormAndField(form_id, trigger_field_id);
+  if (!form || !triggering_email_field ||
       triggering_email_field->autofilled_type() != EMAIL_ADDRESS) {
     return;
   }
@@ -420,13 +414,9 @@ void EmailVerifierDelegate::OnFillOrPreviewField(
     return;
   }
 
-  const FormStructure* form = manager.FindCachedFormById(form_id);
-  if (!form) {
-    return;
-  }
-
-  const AutofillField* triggering_email_field = form->GetFieldById(field_id);
-  if (!triggering_email_field ||
+  auto [form, triggering_email_field] =
+      manager.FindFormAndField(form_id, field_id);
+  if (!form || !triggering_email_field ||
       (field_type_used != EMAIL_ADDRESS &&
        triggering_email_field->Type().GetAddressType() != EMAIL_ADDRESS)) {
     return;

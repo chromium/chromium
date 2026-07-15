@@ -226,11 +226,7 @@ AndroidAutofillManager::GetCreditCardAccessManager() const {
 FieldTypeGroup AndroidAutofillManager::ComputeFieldTypeGroupForField(
     const FormGlobalId& form_id,
     const FieldGlobalId& field_id) {
-  const FormStructure* form = FindCachedFormById(form_id);
-  if (!form) {
-    return FieldTypeGroup::kNoGroup;
-  }
-  const AutofillField* field = form->GetFieldById(field_id);
+  auto [form, field] = FindFormAndField(form_id, field_id);
   if (!field) {
     return FieldTypeGroup::kNoGroup;
   }

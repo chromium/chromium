@@ -1011,18 +1011,14 @@ void AutofillAiManager::GenerateAndUpdateSuggestions(
     FormGlobalId form_id,
     FieldGlobalId field_id,
     UpdateSuggestionsCallback callback) {
-  const FormStructure* form = nullptr;
   for (AutofillDriver* driver :
        client_->GetAutofillDriverFactory().GetExistingDrivers()) {
-    if ((form = driver->GetAutofillManager().FindCachedFormById(form_id))) {
-      break;
+    auto [form, field] =
+        driver->GetAutofillManager().FindFormAndField(form_id, field_id);
+    if (form && field) {
+      callback.Run(GetSuggestions(*form, *field));
+      return;
     }
-  }
-  if (!form) {
-    return;
-  }
-  if (const AutofillField* field = form->GetFieldById(field_id)) {
-    callback.Run(GetSuggestions(*form, *field));
   }
 }
 

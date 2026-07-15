@@ -2415,13 +2415,9 @@ void BrowserAutofillManager::OnSingleFieldSuggestionSelected(
   client().GetSingleFieldFillRouter().OnSingleFieldSuggestionSelected(
       suggestion);
 
-  FormStructure* form_structure = FindCachedFormById(form_id, /*pass_key=*/{});
-  if (!form_structure) {
-    return;
-  }
-  AutofillField* autofill_trigger_field =
-      form_structure->GetFieldById(field_id);
-  if (!autofill_trigger_field) {
+  auto [form_structure, autofill_trigger_field] =
+      FindMutableFormAndField(form_id, field_id);
+  if (!form_structure || !autofill_trigger_field) {
     return;
   }
   if (IsSingleFieldFillerFillingProduct(
@@ -2442,14 +2438,14 @@ bool BrowserAutofillManager::ShouldClearPreviewedForm() {
 void BrowserAutofillManager::OnSelectFieldOptionsDidChangeImpl(
     const FormData& form,
     const FieldGlobalId& field_id) {
-  const FormStructure* form_structure = FindCachedFormById(form.global_id());
+  auto [form_structure, autofill_field] =
+      FindFormAndField(form.global_id(), field_id);
   if (!form_structure) {
     return;
   }
   form_filler_->MaybeScheduleAutomaticRefill(
       *form_structure, RefillTriggerReason::kSelectOptionsChanged,
-      AutofillTriggerSource::kSelectOptionsChanged,
-      form_structure->GetFieldById(field_id));
+      AutofillTriggerSource::kSelectOptionsChanged, autofill_field);
 }
 
 void BrowserAutofillManager::OnJavaScriptChangedAutofilledValueImpl(

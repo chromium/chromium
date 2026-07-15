@@ -391,12 +391,9 @@ const AutofillField* AutofillExternalDelegate::GetQueriedField() const {
 
 std::pair<const FormStructure*, const AutofillField*>
 AutofillExternalDelegate::GetQueriedFormAndField() const {
-  const FormStructure* form_structure =
-      manager_->FindCachedFormById(last_query_.form_id);
-  if (!form_structure) {
-    return {nullptr, nullptr};
-  }
-  return {form_structure, form_structure->GetFieldById(last_query_.field_id)};
+  auto [form, field] =
+      manager_->FindFormAndField(last_query_.form_id, last_query_.field_id);
+  return {form, field};
 }
 
 AutofillTriggerSource AutofillExternalDelegate::GetTriggerSource() const {
