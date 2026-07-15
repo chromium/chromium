@@ -80,7 +80,7 @@ TEST_F(SuggestionsListMetricsTest, AcceptedSuggestionIndex) {
     external_delegate().DidAcceptSuggestion(address_suggestion,
                                             {.multi_index = {1}});
     histogram_tester.ExpectUniqueSample(
-        "Autofill.SuggestionAcceptedIndex.Profile", 1, 1);
+        "Autofill.SuggestionAcceptedIndex.Address", 1, 1);
   }
   {
     Suggestion credit_card_suggestion(SuggestionType::kCreditCardEntry);

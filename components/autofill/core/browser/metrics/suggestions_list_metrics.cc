@@ -12,6 +12,7 @@
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/notreached.h"
+#include "base/strings/strcat.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/field_types.h"
@@ -56,16 +57,12 @@ void LogSuggestionAcceptedIndex(int index,
 
   switch (filling_product) {
     case FillingProduct::kCreditCard:
-      base::UmaHistogramSparse("Autofill.SuggestionAcceptedIndex.CreditCard",
-                               uma_index);
-      break;
     case FillingProduct::kAddress:
-      base::UmaHistogramSparse("Autofill.SuggestionAcceptedIndex.Profile",
-                               uma_index);
-      break;
     case FillingProduct::kAutocomplete:
-      base::UmaHistogramSparse("Autofill.SuggestionAcceptedIndex.Autocomplete",
-                               uma_index);
+      base::UmaHistogramSparse(
+          base::StrCat({"Autofill.SuggestionAcceptedIndex.",
+                        FillingProductToString(filling_product)}),
+          uma_index);
       break;
     case FillingProduct::kIban:
     case FillingProduct::kLoyaltyCard:

@@ -228,7 +228,7 @@ void CheckAddressAutofillSuggestionAcceptedIndexMetricsCount(
           expectUniqueSampleWithCount:1
                             forBucket:suggestion_index
                          forHistogram:
-                             @"Autofill.SuggestionAcceptedIndex.Profile"],
+                             @"Autofill.SuggestionAcceptedIndex.Address"],
       @"Unexpected histogram count for accepted address suggestion index.");
 
   GREYAssertNil(
