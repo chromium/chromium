@@ -164,7 +164,7 @@ using tab_groups::SharingState;
     return;
   }
   _inGroup = inGroup;
-  if (IsFullscreenRefactoringEnabled()) {
+  if (_fullscreenBrowserAgent) {
     _fullscreenBrowserAgent->InvalidateInsetRange();
   }
 }

@@ -1343,6 +1343,7 @@ inline LayoutStateToolbarPassKey PassKey() {
                      actionFactory:actionFactory
                        prefService:profile->GetPrefs()
               fullscreenController:FullscreenController::FromBrowser(browser)
+            fullscreenBrowserAgent:FullscreenBrowserAgent::FromBrowser(browser)
                        topPosition:topPosition
       defaultBrowserBannerAppAgent:agent
              authenticationService:authService

@@ -17,6 +17,7 @@
 #import "ios/chrome/browser/banner_promo/model/default_browser_banner_promo_app_agent.h"
 #import "ios/chrome/browser/bubble/model/tab_based_iph_browser_agent.h"
 #import "ios/chrome/browser/default_browser/model/promo_source.h"
+#import "ios/chrome/browser/fullscreen/model/fullscreen_browser_agent.h"
 #import "ios/chrome/browser/fullscreen/public/fullscreen_metrics.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_browser_agent.h"
@@ -81,6 +82,8 @@
   BOOL _topPosition;
   // The fullscreen controller.
   raw_ptr<FullscreenController> _fullscreenController;
+  // The fullscreen browser agent.
+  raw_ptr<FullscreenBrowserAgent> _fullscreenBrowserAgent;
   // Whether the location bar indicator is active.
   BOOL _locationBarIndicatorActive;
   // The default browser banner app agent.
@@ -95,6 +98,8 @@
                     actionFactory:(BrowserActionFactory*)actionFactory
                       prefService:(PrefService*)prefService
              fullscreenController:(FullscreenController*)fullscreenController
+           fullscreenBrowserAgent:
+               (FullscreenBrowserAgent*)fullscreenBrowserAgent
                       topPosition:(BOOL)topPosition
      defaultBrowserBannerAppAgent:
          (DefaultBrowserBannerPromoAppAgent*)defaultBrowserBannerAppAgent
@@ -130,6 +135,9 @@
         _prefChangeRegistrar.get());
 
     _fullscreenController = fullscreenController;
+    if (IsFullscreenRefactoringEnabled()) {
+      _fullscreenBrowserAgent = fullscreenBrowserAgent;
+    }
     _topPosition = topPosition;
     _locationBarIndicatorActive = NO;
 
@@ -223,6 +231,7 @@
   _webStateList = nullptr;
   _buttonMenuFactory = nil;
   _fullscreenController = nullptr;
+  _fullscreenBrowserAgent = nullptr;
   _geminiObserver.reset();
   _geminiService = nil;
   _geminiBrowserAgent = nil;
@@ -419,10 +428,16 @@
 
 - (void)displayPromoFromAppAgent:(DefaultBrowserBannerPromoAppAgent*)appAgent {
   [self.consumer showBannerPromo];
+  if (_fullscreenBrowserAgent) {
+    _fullscreenBrowserAgent->InvalidateInsetRange();
+  }
 }
 
 - (void)hidePromoFromAppAgent:(DefaultBrowserBannerPromoAppAgent*)appAgent {
   [self.consumer hideBannerPromo];
+  if (_fullscreenBrowserAgent) {
+    _fullscreenBrowserAgent->InvalidateInsetRange();
+  }
 }
 
 #pragma mark - BannerPromoViewDelegate

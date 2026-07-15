@@ -146,6 +146,7 @@ class ToolbarMediatorTest : public PlatformTest,
                          prefService:profile_->GetTestingPrefService()
                 fullscreenController:TestFullscreenController::FromBrowser(
                                          browser_.get())
+              fullscreenBrowserAgent:nil
                          topPosition:GetParam()
         defaultBrowserBannerAppAgent:GetParam() ? mock_app_agent_ : nil
                authenticationService:auth_service_
@@ -535,6 +536,7 @@ TEST_P(ToolbarMediatorTest, TestDisplayPromo) {
                        prefService:profile_->GetTestingPrefService()
               fullscreenController:TestFullscreenController::FromBrowser(
                                        browser_.get())
+            fullscreenBrowserAgent:nil
                        topPosition:GetParam()
       defaultBrowserBannerAppAgent:fake_app_agent
              authenticationService:nil
@@ -572,6 +574,7 @@ TEST_P(ToolbarMediatorTest, TestHidePromo) {
                        prefService:profile_->GetTestingPrefService()
               fullscreenController:TestFullscreenController::FromBrowser(
                                        browser_.get())
+            fullscreenBrowserAgent:nil
                        topPosition:GetParam()
       defaultBrowserBannerAppAgent:fake_app_agent
              authenticationService:nil
@@ -674,6 +677,7 @@ TEST_P(ToolbarMediatorTest, TestTabGridMenu_IncognitoDisabled) {
                        prefService:profile_->GetTestingPrefService()
               fullscreenController:TestFullscreenController::FromBrowser(
                                        browser_.get())
+            fullscreenBrowserAgent:nil
                        topPosition:GetParam()
       defaultBrowserBannerAppAgent:nil
              authenticationService:nil
@@ -734,6 +738,7 @@ TEST_P(ToolbarMediatorTest, TestTabGridMenu_IncognitoEnabled) {
                        prefService:profile_->GetTestingPrefService()
               fullscreenController:TestFullscreenController::FromBrowser(
                                        browser_.get())
+            fullscreenBrowserAgent:nil
                        topPosition:GetParam()
       defaultBrowserBannerAppAgent:nil
              authenticationService:nil
