@@ -926,8 +926,8 @@ IN_PROC_BROWSER_TEST_F(WebUILocationBarInteractiveUiTest, FocusSearch2) {
 }
 
 // Test of Ctrl-L (and others) focus location bar.
-// TODO(crbug.com/532463469): Flaky on Linux.
-#if BUILDFLAG(IS_LINUX)
+// TODO(crbug.com/532463469): Flaky on Linux and ChromeOS.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_FocusLocation DISABLED_FocusLocation
 #else
 #define MAYBE_FocusLocation FocusLocation

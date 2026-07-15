@@ -6619,8 +6619,14 @@ IN_PROC_BROWSER_TEST_P(WebUIToolbarWebViewPermissionBrowserTest,
   EXPECT_FALSE(test_api.manager()->IsRequestInProgress());
 }
 
+// TODO(crbug.com/532463469): Flaky on ChromeOS.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_LocationIconSuppressionE2E DISABLED_LocationIconSuppressionE2E
+#else
+#define MAYBE_LocationIconSuppressionE2E LocationIconSuppressionE2E
+#endif
 IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewPermissionBrowserTest,
-                       LocationIconSuppressionE2E) {
+                       MAYBE_LocationIconSuppressionE2E) {
   WebUIToolbarWebView* webui_toolbar_view = GetWebUIToolbarWebView(browser());
   ASSERT_TRUE(webui_toolbar_view);
   views::WebView* web_view = webui_toolbar_view->GetWebViewForTesting();
