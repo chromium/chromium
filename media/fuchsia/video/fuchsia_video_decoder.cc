@@ -211,10 +211,13 @@ class FuchsiaVideoDecoder::OutputMailbox {
       return;
     }
 
-    raster_context_provider_->ContextSupport()->SignalSyncToken(
-        release_sync_token_,
+    gpu::ClientSharedImage::SignalLatestSyncToken(
+        std::vector<scoped_refptr<gpu::ClientSharedImage>>{shared_image_},
+        std::vector<gpu::SyncToken>{release_sync_token_},
         base::BindPostTaskToCurrentDefault(base::BindOnce(
-            &OutputMailbox::OnSyncTokenSignaled, weak_factory_.GetWeakPtr())));
+            &OutputMailbox::OnSyncTokenSignaled, weak_factory_.GetWeakPtr())),
+        raster_context_provider_->ContextSupport(),
+        /*pending_callback_id=*/0);
   }
 
   void OnSyncTokenSignaled() {

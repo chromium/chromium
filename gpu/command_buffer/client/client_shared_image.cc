@@ -535,6 +535,32 @@ bool ClientSharedImage::AsyncMappingIsNonBlocking() const {
   return mappable_buffer_->AsyncMappingIsNonBlocking();
 }
 
+uint64_t ClientSharedImage::SignalLatestSyncToken(
+    std::vector<scoped_refptr<ClientSharedImage>> shared_images,
+    std::vector<SyncToken> sync_tokens,
+    base::OnceClosure callback,
+    ContextSupport* context_support,
+    uint64_t pending_callback_id) {
+  gpu::SyncToken latest_sync_token;
+  for (auto& sync_token : sync_tokens) {
+    if (sync_token.release_count() > latest_sync_token.release_count()) {
+      latest_sync_token = sync_token;
+    }
+  }
+  uint64_t callback_id = latest_sync_token.release_count();
+  if (callback_id == 0u) {
+    // Run callback immediately if all sync tokens are invalid.
+    std::move(callback).Run();
+  } else if (callback_id != pending_callback_id) {
+    // If the callback is different from the one the caller is already waiting
+    // on, pass the callback through to SignalSyncToken. Otherwise the request
+    // is redundant.
+    context_support->SignalSyncToken(latest_sync_token, std::move(callback));
+  }
+
+  return callback_id;
+}
+
 std::unique_ptr<ClientSharedImage::ScopedMapping> ClientSharedImage::Map() {
   std::unique_ptr<ClientSharedImage::ScopedMapping> scoped_mapping =
       ScopedMapping::Create(metadata_, mappable_buffer_.get(),
