@@ -16,7 +16,6 @@
 #include "base/types/expected_macros.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/waap/waap_ui_metrics_service.h"
-#include "chrome/browser/ui/webui/metrics_reporter/metrics_reporter.h"
 #include "components/browser_apis/browser_controls/browser_controls_api.mojom.h"
 #include "content/public/browser/render_frame_host.h"
 #include "mojo/public/mojom/base/error.mojom.h"
@@ -24,15 +23,6 @@
 #include "ui/events/event_constants.h"
 
 namespace {
-// Measurement marks.
-constexpr char kInputMouseReleaseStartMark[] =
-    "ReloadButton.Input.MouseRelease.Start";
-
-// Histogram names.
-constexpr char kInputToReloadMouseReleaseHistogram[] =
-    "InitialWebUI.ReloadButton.InputToReload.MouseRelease";
-constexpr char kInputToStopMouseReleaseHistogram[] =
-    "InitialWebUI.ReloadButton.InputToStop.MouseRelease";
 
 using Code = mojo_base::mojom::Code;
 using Error = mojo_base::mojom::Error;
@@ -85,12 +75,10 @@ BrowserControlsService::ToUiEventFlags(
 BrowserControlsService::BrowserControlsService(
     mojo::PendingReceiver<mojom::BrowserControlsService> service,
     std::unique_ptr<BrowserControlsAdapter> browser_adapter,
-    MetricsReporter* metrics_reporter,
     BrowserControlsServiceDelegate* delegate,
     content::RenderFrameHost* toolbar_rfh)
     : service_(&bridge_, std::move(service)),
       browser_adapter_(std::move(browser_adapter)),
-      metrics_reporter_(metrics_reporter),
       delegate_(delegate),
       toolbar_rfh_(toolbar_rfh) {
   CHECK(browser_adapter_);
@@ -136,38 +124,15 @@ BrowserControlsService::ReloadFromClick(
   browser_adapter_->Reload(bypass_cache,
                            ui::DispositionFromEventFlags(converted));
 
-  // TODO(crbug.com/524100102): Clean this up in a follow-up CL.
-  // Gets the current time immediately after executing the command.
-  // MouseRelease
-  metrics_reporter_->Measure(
-      kInputMouseReleaseStartMark, now,
-      base::BindOnce(&BrowserControlsService::OnMeasureResultAndClearMark,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     kInputToReloadMouseReleaseHistogram,
-                     kInputMouseReleaseStartMark));
-  // TODO(crbug.com/448794588): Handle KeyPress events.
-
   if (metadata && validation_succeeded) {
     MaybeRecordInteractionToReloadMetric(reconstructed_ticks,
                                          metadata->input_type);
   }
-
   return std::monostate();
 }
 
 BrowserControlsService::StopLoadResult BrowserControlsService::StopLoad() {
   browser_adapter_->Stop();
-
-  // Gets the current time immediately after executing the command.
-  const base::TimeTicks now = base::TimeTicks::Now();
-  // MouseRelease
-  metrics_reporter_->Measure(
-      kInputMouseReleaseStartMark, now,
-      base::BindOnce(&BrowserControlsService::OnMeasureResultAndClearMark,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     kInputToStopMouseReleaseHistogram,
-                     kInputMouseReleaseStartMark));
-  // TODO(crbug.com/448794588): Handle KeyPress events.
   return std::monostate();
 }
 
@@ -226,14 +191,6 @@ void BrowserControlsService::SetDelegate(
   delegate_ = delegate;
 }
 
-void BrowserControlsService::OnMeasureResultAndClearMark(
-    const std::string& histogram_name,
-    const std::string& start_mark,
-    base::TimeDelta duration) {
-  base::UmaHistogramCustomTimes(histogram_name, duration, base::Milliseconds(1),
-                                base::Minutes(3), 100);
-  metrics_reporter_->ClearMark(start_mark);
-}
 
 base::expected<base::TimeTicks, mojo_base::mojom::ErrorPtr>
 BrowserControlsService::ReconstructAndValidateInteractionTime(

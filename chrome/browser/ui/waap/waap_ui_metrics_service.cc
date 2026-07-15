@@ -11,7 +11,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/trace_event/trace_event.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sessions/session_restore.h"
 #include "chrome/browser/ui/waap/waap_ui_metrics_recorder.h"
 #include "chrome/browser/ui/waap/waap_ui_metrics_service_factory.h"
@@ -32,17 +31,6 @@ std::string_view CreationSourceToString(waap::NewWindowCreationSource source) {
       return ".BrowserInitiated";
     case waap::NewWindowCreationSource::kUnknown:
       NOTREACHED();
-  }
-  NOTREACHED();
-}
-
-std::string_view ReloadButtonModeToString(
-    WaapUIMetricsRecorder::ReloadButtonMode mode) {
-  switch (mode) {
-    case WaapUIMetricsRecorder::ReloadButtonMode::kReload:
-      return "Reload";
-    case WaapUIMetricsRecorder::ReloadButtonMode::kStop:
-      return "Stop";
   }
   NOTREACHED();
 }
@@ -93,23 +81,6 @@ void EmitHistogramWithTraceEvent(const char* event_name,
 
   const base::TimeDelta delta = end_ticks - start_ticks;
   base::UmaHistogramLongTimes100(event_name, delta);
-}
-
-// Emits an Initial WebUI trace event and records a UMA histogram with the given
-// event name and duration.
-void EmitReloadButtonHistogramWithTraceEvent(const char* event_name,
-                                             base::TimeTicks start_ticks,
-                                             base::TimeTicks end_ticks) {
-  const base::TimeDelta duration = end_ticks - start_ticks;
-  auto track = perfetto::NamedTrack(perfetto::DynamicString(event_name));
-  if (perfetto::Tracing::IsInitialized()) {
-    base::TrackEvent::SetTrackDescriptor(track, track.Serialize());
-  }
-  TRACE_EVENT_BEGIN("waap", perfetto::DynamicString(event_name), track,
-                    start_ticks);
-  TRACE_EVENT_END("waap", track, end_ticks);
-  base::UmaHistogramCustomTimes(event_name, duration, base::Milliseconds(1),
-                                base::Minutes(3), 100);
 }
 
 // Returns a suffix for the startup temperature of the browser.
@@ -192,8 +163,7 @@ void RecordNewWindowPaintMetric(std::string_view paint_metric_base,
 }  // namespace
 
 WaapUIMetricsService::WaapUIMetricsService(
-    base::PassKey<WaapUIMetricsServiceFactory>,
-    const Profile* profile) {}
+    base::PassKey<WaapUIMetricsServiceFactory>) {}
 
 WaapUIMetricsService::~WaapUIMetricsService() = default;
 
@@ -385,60 +355,11 @@ void WaapUIMetricsService::OnNewWindowBrowserWindowClosedBeforeFirstPaint(
                              with_existing_window, start_time, close_time);
 }
 
-void WaapUIMetricsService::OnReloadButtonMousePressToNextPaint(
-    base::TimeTicks start_ticks,
-    base::TimeTicks end_ticks) {
-  auto name = BuildReloadButtonHistogramName("MousePressToNextPaint");
-  EmitReloadButtonHistogramWithTraceEvent(name.c_str(), start_ticks, end_ticks);
-}
-
-void WaapUIMetricsService::OnReloadButtonMouseHoverToNextPaint(
-    base::TimeTicks start_ticks,
-    base::TimeTicks end_ticks) {
-  auto name = BuildReloadButtonHistogramName("MouseHoverToNextPaint");
-  EmitReloadButtonHistogramWithTraceEvent(name.c_str(), start_ticks, end_ticks);
-}
 
 void WaapUIMetricsService::OnReloadButtonInput(
     WaapUIMetricsRecorder::ReloadButtonInputType input_type) {
   auto name = BuildReloadButtonHistogramName("InputCount");
   base::UmaHistogramEnumeration(name, input_type);
-}
-
-void WaapUIMetricsService::OnReloadButtonInputToReload(
-    base::TimeTicks start_ticks,
-    base::TimeTicks end_ticks,
-    WaapUIMetricsRecorder::ReloadButtonInputType input_type) {
-  auto name = BuildReloadButtonHistogramName(
-      "InputToReload", ReloadButtonInputTypeToString(input_type));
-  EmitReloadButtonHistogramWithTraceEvent(name.c_str(), start_ticks, end_ticks);
-}
-
-void WaapUIMetricsService::OnReloadButtonInputToStop(
-    base::TimeTicks start_ticks,
-    base::TimeTicks end_ticks,
-    WaapUIMetricsRecorder::ReloadButtonInputType input_type) {
-  auto name = BuildReloadButtonHistogramName(
-      "InputToStop", ReloadButtonInputTypeToString(input_type));
-  EmitReloadButtonHistogramWithTraceEvent(name.c_str(), start_ticks, end_ticks);
-}
-
-void WaapUIMetricsService::OnReloadButtonInputToNextPaint(
-    base::TimeTicks start_ticks,
-    base::TimeTicks end_ticks,
-    WaapUIMetricsRecorder::ReloadButtonInputType input_type) {
-  auto name = BuildReloadButtonHistogramName(
-      "InputToNextPaint", ReloadButtonInputTypeToString(input_type));
-  EmitReloadButtonHistogramWithTraceEvent(name.c_str(), start_ticks, end_ticks);
-}
-
-void WaapUIMetricsService::OnReloadButtonChangeVisibleModeToNextPaint(
-    base::TimeTicks start_ticks,
-    base::TimeTicks end_ticks,
-    WaapUIMetricsRecorder::ReloadButtonMode new_mode) {
-  auto name = BuildReloadButtonHistogramName(
-      "ChangeVisibleModeToNextPaintIn", ReloadButtonModeToString(new_mode));
-  EmitReloadButtonHistogramWithTraceEvent(name.c_str(), start_ticks, end_ticks);
 }
 
 void WaapUIMetricsService::RecordReloadButtonInteractionToReload(

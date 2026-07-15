@@ -217,9 +217,6 @@ void WebUIToolbarUI::InitBrowserControlsService(
          "been instantiated.";
 
   auto* web_contents = web_ui()->GetWebContents();
-  MetricsReporterService* metrics_service =
-      MetricsReporterService::GetFromWebContents(web_contents);
-  CHECK(metrics_service) << "Metrics service missing from web contents";
 
   browser_controls_service_ =
       std::make_unique<browser_controls_api::BrowserControlsService>(
@@ -227,7 +224,6 @@ void WebUIToolbarUI::InitBrowserControlsService(
           std::make_unique<browser_controls_api::BrowserControlsAdapterImpl>(
               webui::GetBrowserWindowInterface(web_contents),
               dependency_provider.GetCommandUpdater(), web_contents),
-          metrics_service->metrics_reporter(),
           dependency_provider.GetBrowserControlsDelegate(),
           web_ui()->GetRenderFrameHost());
 }

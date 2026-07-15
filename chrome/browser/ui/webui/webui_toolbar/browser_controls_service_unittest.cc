@@ -19,7 +19,6 @@
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/waap/waap_ui_metrics_service.h"
 #include "chrome/browser/ui/webui/metrics_reporter/metrics_reporter_service.h"
-#include "chrome/browser/ui/webui/metrics_reporter/mock_metrics_reporter.h"
 #include "chrome/browser/ui/webui/webui_toolbar/testing/toy_browser.h"
 #include "chrome/browser/ui/webui/webui_toolbar/webui_toolbar_test_utils.h"
 #include "chrome/common/chrome_features.h"
@@ -39,16 +38,6 @@ using ::testing::_;
 using ::testing::Eq;
 using ::testing::Return;
 using testing::ToyBrowser;
-
-// Measurement marks.
-constexpr char kInputMouseReleaseStartMark[] =
-    "ReloadButton.Input.MouseRelease.Start";
-
-// Histogram names.
-constexpr char kInputToReloadMouseReleaseHistogram[] =
-    "InitialWebUI.ReloadButton.InputToReload.MouseRelease";
-constexpr char kInputToStopMouseReleaseHistogram[] =
-    "InitialWebUI.ReloadButton.InputToStop.MouseRelease";
 
 #if BUILDFLAG(IS_MAC)
 constexpr mojom::EventDispositionFlag control_or_meta_disposition =
@@ -88,7 +77,7 @@ class BrowserControlsServiceTest : public ChromeRenderViewHostTestHarness {
 
     service_ = std::make_unique<BrowserControlsService>(
         mojo::PendingReceiver<mojom::BrowserControlsService>(),
-        toy_browser_.GetAdapter(), &metrics_reporter_, &delegate_, main_rfh());
+        toy_browser_.GetAdapter(), &delegate_, main_rfh());
 
     // Configure the mock delegate to return a stable baseline (10 seconds ago)
     // to reconstruct absolute timestamps during validation tests.
@@ -103,18 +92,6 @@ class BrowserControlsServiceTest : public ChromeRenderViewHostTestHarness {
   }
 
  protected:
-  void ExpectMeasureAndClearMark(const std::string& start_mark,
-                                 base::TimeDelta duration) {
-    EXPECT_CALL(mock_metrics_reporter(),
-                Measure(Eq(start_mark), ::testing::A<base::TimeTicks>(), _))
-        .WillOnce(base::test::RunOnceCallback<2>(duration));
-    EXPECT_CALL(mock_metrics_reporter(), ClearMark(start_mark));
-  }
-
-  ::testing::NiceMock<MockMetricsReporter>& mock_metrics_reporter() {
-    return metrics_reporter_;
-  }
-
   ToyBrowser& toy_browser() { return toy_browser_; }
   BrowserControlsService& service() { return *service_; }
   base::HistogramTester& histogram_tester() { return histogram_tester_; }
@@ -123,7 +100,6 @@ class BrowserControlsServiceTest : public ChromeRenderViewHostTestHarness {
  private:
   base::test::ScopedFeatureList feature_list_;
   testing::ToyBrowser toy_browser_;
-  ::testing::NiceMock<MockMetricsReporter> metrics_reporter_;
   std::unique_ptr<BrowserControlsService> service_;
   base::HistogramTester histogram_tester_;
   MockBrowserControlsServiceDelegate delegate_;
@@ -132,12 +108,8 @@ class BrowserControlsServiceTest : public ChromeRenderViewHostTestHarness {
 // Test suite for Reload-related tests.
 using BrowserControlsServiceReloadTest = BrowserControlsServiceTest;
 
-// Tests that calling Reload(false, {}) executes the IDC_RELOAD command and
-// records metrics.
+// Tests that calling Reload(false, {}) executes the IDC_RELOAD command.
 TEST_F(BrowserControlsServiceReloadTest, ReloadByMouseRelease) {
-  const base::TimeDelta duration = base::Milliseconds(10);
-  ExpectMeasureAndClearMark(kInputMouseReleaseStartMark, duration);
-
   auto metadata = mojom::ReloadInteractionMetadata::New();
   metadata->input_type = mojom::ReloadInputType::kMouseRelease;
 
@@ -145,16 +117,11 @@ TEST_F(BrowserControlsServiceReloadTest, ReloadByMouseRelease) {
       /*bypass_cache=*/false, /*click_flags=*/{}, std::move(metadata));
 
   EXPECT_EQ(IDC_RELOAD, toy_browser().received_commands().back().command_id);
-
-  histogram_tester().ExpectUniqueTimeSample(kInputToReloadMouseReleaseHistogram,
-                                            duration, 1);
 }
 
 // Tests that calling Reload(false, {middle_button}) executes the
 // IDC_RELOAD with new background tab.
 TEST_F(BrowserControlsServiceReloadTest, ReloadWithMiddleMouseButton) {
-  const base::TimeDelta duration = base::Milliseconds(10);
-  ExpectMeasureAndClearMark(kInputMouseReleaseStartMark, duration);
 
   auto metadata = mojom::ReloadInteractionMetadata::New();
   metadata->input_type = mojom::ReloadInputType::kMouseRelease;
@@ -167,9 +134,6 @@ TEST_F(BrowserControlsServiceReloadTest, ReloadWithMiddleMouseButton) {
   EXPECT_EQ(IDC_RELOAD, toy_browser().received_commands().back().command_id);
   EXPECT_EQ(WindowOpenDisposition::NEW_BACKGROUND_TAB,
             toy_browser().received_commands().back().disposition);
-
-  histogram_tester().ExpectUniqueTimeSample(kInputToReloadMouseReleaseHistogram,
-                                            duration, 1);
 }
 
 TEST_F(BrowserControlsServiceReloadTest, ReloadBypassingCache) {
@@ -301,8 +265,7 @@ TEST_F(BrowserControlsServiceReloadTest,
 
   auto temp_service = std::make_unique<BrowserControlsService>(
       mojo::PendingReceiver<mojom::BrowserControlsService>(),
-      toy_browser().GetAdapter(), &mock_metrics_reporter(), &delegate(),
-      new_rfh);
+      toy_browser().GetAdapter(), &delegate(), new_rfh);
 
   EXPECT_CALL(delegate(), GetNavigationStartTicks())
       .WillRepeatedly(::testing::Return(base::TimeTicks()));
@@ -373,26 +336,19 @@ TEST_F(BrowserControlsServiceReloadTest, ReloadNullMetadataDroppedTouch) {
   EXPECT_EQ(IDC_RELOAD, toy_browser().received_commands().back().command_id);
 
   // Assert that no mouse release metrics are recorded.
-  histogram_tester().ExpectTotalCount(kInputToReloadMouseReleaseHistogram, 0);
+  histogram_tester().ExpectTotalCount(
+      "InitialWebUI.ReloadButton.InteractionToReload", 0);
 }
-
 // Test suite for StopLoad-related tests.
 using BrowserControlsServiceStopLoadTest = BrowserControlsServiceTest;
 
-// Tests that calling StopLoad() executes the IDC_STOP command and records
-// metrics.
+// Tests that calling StopLoad() executes the IDC_STOP command.
 TEST_F(BrowserControlsServiceStopLoadTest, StopLoad) {
-  const base::TimeDelta duration = base::Milliseconds(20);
-  ExpectMeasureAndClearMark(kInputMouseReleaseStartMark, duration);
-
   std::ignore = service().StopLoad();
 
   EXPECT_EQ(IDC_STOP, toy_browser().received_commands().back().command_id);
   EXPECT_EQ(WindowOpenDisposition::CURRENT_TAB,
             toy_browser().received_commands().back().disposition);
-
-  histogram_tester().ExpectUniqueTimeSample(kInputToStopMouseReleaseHistogram,
-                                            duration, 1);
 }
 
 // Tests that calling Back() with CURRENT_TAB executes the IDC_BACK command

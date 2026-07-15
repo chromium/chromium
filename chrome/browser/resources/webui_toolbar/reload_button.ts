@@ -17,11 +17,11 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
 import {BrowserProxyImpl, ContextMenuType} from './browser_proxy.js';
 import type {BrowserProxy, ReloadControlState} from './browser_proxy.js';
-import {MetricsRecorder} from './metrics_recorder.js';
+import {ReloadButtonInputType} from './metrics_recorder.js';
 import {getCss} from './reload_button.css.js';
 import {getHtml} from './reload_button.html.js';
 import {TimerHelper} from './timer_helper.js';
-import {BUTTON_LEFT, BUTTON_RIGHT, getContextMenuPosition, getEventDispositionFlags, HelpBubbleAnchorMixin, PressHandler, roundedIconsEnabled} from './toolbar_button.js';
+import {BUTTON_LEFT, getContextMenuPosition, getEventDispositionFlags, HelpBubbleAnchorMixin, PressHandler, roundedIconsEnabled} from './toolbar_button.js';
 
 // go/keep-sorted start
 const RELOAD_BUTTON_ACC_NAME_RELOAD = 'reloadButtonAccNameReload';
@@ -30,6 +30,7 @@ const RELOAD_BUTTON_TOOLTIP_RELOAD_WITH_MENU =
     'reloadButtonTooltipReloadWithMenu';
 const RELOAD_BUTTON_TOOLTIP_STOP = 'reloadButtonTooltipStop';
 // go/keep-sorted end
+const INPUT_COUNT_HISTOGRAM = 'InitialWebUI.ReloadButton.InputCount';
 
 const ReloadButtonElementBase = HelpBubbleAnchorMixin(CrLitElement);
 
@@ -104,12 +105,10 @@ export class ReloadButtonElement extends ReloadButtonElementBase {
   private disableStopIconTimer_: TimerHelper = new TimerHelper();
 
   private browserProxy_: BrowserProxy;
-  private metricsRecorder_: MetricsRecorder;
 
   constructor() {
     super();
     this.browserProxy_ = BrowserProxyImpl.getInstance();
-    this.metricsRecorder_ = new MetricsRecorder(this.browserProxy_);
     this.pressHandler_ = new PressHandler(
         this.onLongPress_.bind(this), this.onShortPress_.bind(this));
     ColorChangeUpdater.forDocument().start();
@@ -130,11 +129,14 @@ export class ReloadButtonElement extends ReloadButtonElementBase {
       if (this.doubleClickReloadIconTimer_.isRunning()) {
         return;
       }
-
-      this.metricsRecorder_.onChangeVisibleMode(
-          MetricsRecorder.getVisibleMode(this.state.isNavigationLoading),
-          MetricsRecorder.getVisibleMode(!this.state.isNavigationLoading));
     }
+
+    const isKeyboard = e.type === 'click';
+    const recordedInputType = isKeyboard ? ReloadButtonInputType.KEY_PRESS :
+                                           ReloadButtonInputType.MOUSE_RELEASE;
+    this.browserProxy_.recordInHistogram(
+        INPUT_COUNT_HISTOGRAM, recordedInputType,
+        ReloadButtonInputType.KEY_PRESS);
 
     if (this.state.isNavigationLoading) {
       this.browserProxy_.browserControlsHandler.stopLoad();
@@ -246,25 +248,6 @@ export class ReloadButtonElement extends ReloadButtonElementBase {
     this.showStopIcon = this.state.isNavigationLoading;
   }
 
-  /**
-   * Sets up event listeners and the PerformanceObserver when the element is
-   * added to the DOM.
-   */
-  override connectedCallback() {
-    super.connectedCallback();
-
-    this.metricsRecorder_.startObserving();
-  }
-
-  /**
-   * Cleans up event listeners and the PerformanceObserver when the element is
-   * removed from the DOM.
-   */
-  override disconnectedCallback() {
-    super.disconnectedCallback();
-
-    this.metricsRecorder_.stopObserving();
-  }
 
   override willUpdate(changedProperties: PropertyValues<this>): void {
     super.willUpdate(changedProperties);
@@ -276,11 +259,6 @@ export class ReloadButtonElement extends ReloadButtonElementBase {
       const previousState =
           changedPrivateProperties.get('state') as ReloadControlState |
           undefined;
-      if (previousState) {
-        this.metricsRecorder_.onChangeVisibleMode(
-            MetricsRecorder.getVisibleMode(previousState.isNavigationLoading),
-            MetricsRecorder.getVisibleMode(this.state.isNavigationLoading));
-      }
       this.updateTooltip_();
       this.updateState_(/*force=*/ !previousState ||
                         this.state.stateToken !== previousState.stateToken);
@@ -334,9 +312,6 @@ export class ReloadButtonElement extends ReloadButtonElementBase {
    * @returns
    */
   protected onPointerup_(e: PointerEvent) {
-    if (e.button !== BUTTON_RIGHT) {
-      this.metricsRecorder_.onButtonPressedStart(e);
-    }
     this.pressHandler_.onPointerup(e);
   }
 }

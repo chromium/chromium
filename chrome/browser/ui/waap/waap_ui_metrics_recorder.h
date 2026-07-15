@@ -45,50 +45,17 @@ class WaapUIMetricsRecorder {
 
   ~WaapUIMetricsRecorder();
 
-  // Called when the mouse enters the ReloadButton.
-  void OnMouseEntered(base::TimeTicks time);
-  // Called when the mouse exits the ReloadButton.
-  void OnMouseExited(base::TimeTicks time);
-  // Called when a mouse button is pressed on the ReloadButton.
-  void OnMousePressed(base::TimeTicks time);
-  // Called when a mouse button is released on the ReloadButton.
-  void OnMouseReleased(base::TimeTicks time);
-
   // Called at the start of ReloadButton::ButtonPressed.
-  void OnButtonPressedStart(const ui::Event& event,
-                            ReloadButtonMode current_mode);
-  // Called after the Stop command has been executed.
-  void DidExecuteStopCommand(base::TimeTicks time);
+  void OnButtonPressedStart(const ui::Event& event);
+
   // Called after the Reload command has been executed.
   void DidExecuteReloadCommand(base::TimeTicks time);
-  // Called when the visible mode of the ReloadButton possibly changes.
-  void OnChangeVisibleMode(ReloadButtonMode current_mode,
-                           ReloadButtonMode intended_mode,
-                           base::TimeTicks time);
-  // Called when a viz frame that contains the ReloadButton is successfully
-  // painted on the screen.
-  //
-  // `visible_mode` is the mode of the ReloadButton at the time of it requesting
-  // to paint.
-  // `button_state` is the state of the ReloadButton at the time of it
-  // requesting to paint.
-  // `now` is the time at which the frame was presented.
-  void OnPaintFramePresented(ReloadButtonMode visible_mode,
-                             int button_state,
-                             base::TimeTicks now);
 
  private:
   // Information about the last input event that triggered ButtonPressed.
   struct LastInputInfo {
     base::TimeTicks time;
     ReloadButtonInputType type;
-    ReloadButtonMode mode_at_input;
-  };
-
-  // Information about a pending mode change visual update.
-  struct PendingModeChange {
-    base::TimeTicks start_time;
-    ReloadButtonMode target_mode = ReloadButtonMode::kReload;
   };
 
   // This may be null if profile is null, e.g. in tests, or if the feature is
@@ -97,16 +64,8 @@ class WaapUIMetricsRecorder {
   // Not owned.
   const raw_ptr<WaapUIMetricsService> waap_service_;
 
-  // The timestamp of the last mouse enter event.
-  base::TimeTicks mouse_entered_time_;
-  // The timestamp of the last mouse press event.
-  // Both left and right clicks are considered.
-  base::TimeTicks mouse_pressed_time_;
-
   // State related to the last ButtonPressed input event.
-  std::optional<const LastInputInfo> last_input_info_;
-  // State related to a pending mode change.
-  std::optional<const PendingModeChange> pending_mode_change_;
+  std::optional<LastInputInfo> last_input_info_;
 };
 
 #endif  // CHROME_BROWSER_UI_WAAP_WAAP_UI_METRICS_RECORDER_H_

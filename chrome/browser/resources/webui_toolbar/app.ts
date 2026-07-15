@@ -29,7 +29,6 @@ import {getCss} from './app.css.js';
 import {getHtml} from './app.html.js';
 import {BrowserProxyImpl, EventDispositionFlag, INVALID_NAVIGATION_CONTROLS_STATE_LISTENER_HANDLE} from './browser_proxy.js';
 import type {BrowserProxy, IconUpdate, NavigationControlsState, NavigationControlsStateListenerHandle} from './browser_proxy.js';
-import {MetricsRecorder} from './metrics_recorder.js';
 import {setHasHelpBubble} from './toolbar_button.js';
 
 // clang-format off
@@ -289,7 +288,6 @@ export class ToolbarAppElement extends AppElementBase {
   };
 
   private browserProxy_: BrowserProxy;
-  private metricsRecorder_: MetricsRecorder;
   private navigationStateListenerHandle_:
       NavigationControlsStateListenerHandle =
           INVALID_NAVIGATION_CONTROLS_STATE_LISTENER_HANDLE;
@@ -311,7 +309,6 @@ export class ToolbarAppElement extends AppElementBase {
       e.preventDefault();
     });
     this.browserProxy_ = BrowserProxyImpl.getInstance();
-    this.metricsRecorder_ = new MetricsRecorder(this.browserProxy_);
     this.iconTable_ = IconTable.getInstance();
     ColorChangeUpdater.forDocument().start();
   }
@@ -358,7 +355,6 @@ export class ToolbarAppElement extends AppElementBase {
               }
             });
 
-    this.metricsRecorder_.startObserving();
     if (this.isInitialized_) {
       this.updateComplete.then(() => {
         this.initializePage_(sessionId);
@@ -425,7 +421,6 @@ export class ToolbarAppElement extends AppElementBase {
         !loadTimeData.getBoolean('initialWebUISurfaceSyncEnabled');
     this.initializeSessionId_++;
 
-    this.metricsRecorder_.stopObserving();
     if (this.isPageInitialized_) {
       for (const {selector, id} of TRACKED_ELEMENTS) {
         const el = this.shadowRoot.querySelector<HTMLElement>(selector);

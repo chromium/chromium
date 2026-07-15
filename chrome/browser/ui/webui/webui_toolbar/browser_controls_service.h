@@ -20,7 +20,7 @@
 #include "ui/events/event_constants.h"
 #include "url/gurl.h"
 
-class MetricsReporter;
+
 
 namespace content {
 class RenderFrameHost;
@@ -45,7 +45,6 @@ class BrowserControlsService
   BrowserControlsService(
       mojo::PendingReceiver<mojom::BrowserControlsService> service,
       std::unique_ptr<BrowserControlsAdapter> browser_adapter,
-      MetricsReporter* metrics_reporter,
       BrowserControlsServiceDelegate* delegate,
       content::RenderFrameHost* toolbar_rfh);
 
@@ -93,18 +92,11 @@ class BrowserControlsService
       base::TimeTicks interaction_ticks,
       mojom::ReloadInputType input_type) const;
 
-  // Callback for `MetricsReporter::Measure()`. Records the resulting
-  // base::TimeDelta to the given UMA histogram and clears the start mark.
-  void OnMeasureResultAndClearMark(const std::string& histogram_name,
-                                   const std::string& start_mark,
-                                   base::TimeDelta duration);
-
   mojom::BrowserControlsServiceBridge bridge_{this};
   mojo::Receiver<browser_controls_api::mojom::BrowserControlsService> service_;
   std::unique_ptr<BrowserControlsAdapter> browser_adapter_;
 
   // Not owned.
-  raw_ptr<MetricsReporter> metrics_reporter_;
   raw_ptr<BrowserControlsServiceDelegate> delegate_;
   const raw_ptr<content::RenderFrameHost> toolbar_rfh_;
 

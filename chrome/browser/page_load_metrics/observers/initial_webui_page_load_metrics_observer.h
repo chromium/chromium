@@ -15,7 +15,6 @@
 #include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
 
-class MetricsReporter;
 class WaapUIMetricsService;
 class InitialWebUIWindowMetricsManager;
 
@@ -59,9 +58,7 @@ class InitialWebUIPageLoadMetricsObserver
       const page_load_metrics::mojom::PageLoadTiming& timing) override;
   void OnFirstContentfulPaintInPage(
       const page_load_metrics::mojom::PageLoadTiming& timing) override;
-  void OnUserInput(
-      const blink::WebInputEvent& event,
-      const page_load_metrics::mojom::PageLoadTiming& timing) override;
+
   ObservePolicy OnFencedFramesStart(
       content::NavigationHandle* navigation_handle,
       const GURL& currently_committed_url) override;
@@ -104,10 +101,7 @@ class InitialWebUIPageLoadMetricsObserver
   // The service is guaranteed to be non-null.
   WaapUIMetricsService* service() const;
 
-  // Returns the MetricsReporter for the current WebContents.
-  // The MetricsReporter is tighted to WebContents, and so is this observer.
-  // Thus the MetricsReporter is guaranteed to be non-null.
-  MetricsReporter& GetMetricsReporter();
+
 
   // Returns the MetricsManager for the current window.
   InitialWebUIWindowMetricsManager* GetMetricsManager() const;

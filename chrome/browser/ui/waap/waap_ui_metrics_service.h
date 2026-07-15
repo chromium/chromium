@@ -21,8 +21,7 @@ class WaapUIMetricsServiceFactory;
 // all kinds of profiles.
 class WaapUIMetricsService : public KeyedService {
  public:
-  WaapUIMetricsService(base::PassKey<WaapUIMetricsServiceFactory>,
-                       const Profile* profile);
+  explicit WaapUIMetricsService(base::PassKey<WaapUIMetricsServiceFactory>);
 
   // Disallow copy and assign.
   WaapUIMetricsService(const WaapUIMetricsService&) = delete;
@@ -90,46 +89,10 @@ class WaapUIMetricsService : public KeyedService {
       base::TimeTicks browser_window_paint_time,
       base::TimeTicks reload_button_paint_time);
 
-  // Records the time duration from a mousedown event on the WaaP UI element to
-  // its visual update, i.e. paint.
-  void OnReloadButtonMousePressToNextPaint(base::TimeTicks start_ticks,
-                                           base::TimeTicks end_ticks);
-
-  // Records the time duration from a mouseenter event on the WaaP UI element to
-  // its visual update, i.e. paint.
-  void OnReloadButtonMouseHoverToNextPaint(base::TimeTicks start_ticks,
-                                           base::TimeTicks end_ticks);
-
   // Records the input type used to activate the ReloadButton.
   void OnReloadButtonInput(
       WaapUIMetricsRecorder::ReloadButtonInputType input_type);
 
-  // Records the latency from an input event to the completion of the browser's
-  // reload command execution.
-  void OnReloadButtonInputToReload(
-      base::TimeTicks start_ticks,
-      base::TimeTicks end_ticks,
-      WaapUIMetricsRecorder::ReloadButtonInputType input_type);
-
-  // Records the latency from an input event to the completion of the browser's
-  // stop command execution.
-  void OnReloadButtonInputToStop(
-      base::TimeTicks start_ticks,
-      base::TimeTicks end_ticks,
-      WaapUIMetricsRecorder::ReloadButtonInputType input_type);
-
-  // Records the latency from an input event to the next paint of the button.
-  void OnReloadButtonInputToNextPaint(
-      base::TimeTicks start_ticks,
-      base::TimeTicks end_ticks,
-      WaapUIMetricsRecorder::ReloadButtonInputType input_type);
-
-  // Records the latency from the initiation of a visible mode change to the
-  // first paint of the button in the new mode.
-  void OnReloadButtonChangeVisibleModeToNextPaint(
-      base::TimeTicks start_ticks,
-      base::TimeTicks end_ticks,
-      WaapUIMetricsRecorder::ReloadButtonMode new_mode);
 
   void RecordReloadButtonInteractionToReload(
       base::TimeTicks interaction_ticks,
