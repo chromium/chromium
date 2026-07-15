@@ -135,7 +135,6 @@ void Host::NotifyActorTaskListRowClicked(int32_t task_id) {
   }
 }
 
-
 void Host::Invoke(mojom::InvokeOptionsPtr options, base::OnceClosure callback) {
   CHECK(!options->auto_submit) << "Use InvokeWithAutoSubmit instead.";
   InvokeInternal(std::move(options), std::move(callback));
@@ -300,8 +299,6 @@ GlicPinCandidateProvider& Host::pin_candidate_provider() {
   return sharing_manager_provider_->pin_candidate_provider();
 }
 
-
-
 Host::InstanceDelegate& Host::instance_delegate() {
   CHECK(instance_delegate_);
   return *instance_delegate_;
@@ -379,7 +376,6 @@ void Host::SetWebClient(GlicWebClientAccess* web_client) {
   CHECK(handler_info_);
   CHECK(web_client);
   handler_info_->web_client = web_client;
-
 
   for (auto& [source, context] : pending_additional_contexts_) {
     web_client->NotifyAdditionalContext(std::move(context));
@@ -475,13 +471,7 @@ InstanceId Host::GetInstanceId() const {
 }
 
 content::WebContents* Host::webui_contents() const {
-  if (contents_) {
-    return contents_->web_contents();
-  }
-  if (page_handler()) {
-    return page_handler()->webui_contents();
-  }
-  return nullptr;
+  return contents_ ? contents_->web_contents() : nullptr;
 }
 
 void Host::SetWebContentsVisibility(content::Visibility visibility) {
