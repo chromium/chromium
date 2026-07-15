@@ -1184,6 +1184,10 @@ bool ContextualTasksUiService::HandleNavigation(
     const std::optional<content::GlobalRenderFrameHostToken>&
         initiator_frame_token,
     const blink::mojom::WindowFeatures& window_features) {
+  if (base::FeatureList::IsEnabled(
+          contextual_tasks::kContextualTasksRearchitecture)) {
+    return false;
+  }
   return HandleNavigationImpl(
       std::move(url_params), source_contents,
       tabs::TabInterface::MaybeGetFromContents(source_contents),
