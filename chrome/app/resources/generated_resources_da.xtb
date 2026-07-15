@@ -1228,6 +1228,7 @@ Du kan til enhver tid tjekke dine adgangskoder i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1933489278505808700">Har tilladelse til at læse og ændre</translation>
 <translation id="1935303383381416800">Har tilladelse til at se din lokation</translation>
 <translation id="193565226207940518">Supportværktøj</translation>
+<translation id="1935995810530254458">Kopiér alligevel</translation>
 <translation id="1936157145127842922">Vis i mappe</translation>
 <translation id="1936344977780165685">{PAGES,plural, =1{Siden er føjet til læselisten}one{Siden er føjet til læselisten}other{Siderne er føjet til læselisten}}</translation>
 <translation id="1936931585862840749">Brug et tal til at angive, hvor mange kopier der skal udskrives (1 til <ph name="MAX_COPIES" />).</translation>
@@ -1548,6 +1549,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2199298570273670671">Fejl</translation>
 <translation id="2200094388063410062">Mail</translation>
 <translation id="2200781749203116929">ChromeOS-systemlogs</translation>
+<translation id="2202391868799679245">Aktivér tastaturgenvej</translation>
 <translation id="2203088913459920044">Navne må indeholde bogstaver, tal og specialtegn</translation>
 <translation id="220321590587754225">Der kunne ikke oprettes forbindelse. Prøv igen.</translation>
 <translation id="2203903197029773650"><ph name="BRAND" /> kan tjekke dine adgangskoder, når du er logget ind med din Google-konto</translation>
@@ -6364,7 +6366,6 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="5932881020239635062">Serienummer</translation>
 <translation id="5933522550144185133"><ph name="APP_NAME" /> bruger dit kamera og din mikrofon</translation>
 <translation id="5935158534896975820">Anmodningen om certifikatsignering forberedes (venter på server)</translation>
-<translation id="5935554994339565449">Tilføj tekst med det nye "Tilføj tekst"-værktøj</translation>
 <translation id="5936065461722368675">Oversæt hele siden</translation>
 <translation id="5937977334791924341"><ph name="APP" />-logo</translation>
 <translation id="5938002010494270685">Der er en tilgængelig sikkerhedsopgradering</translation>

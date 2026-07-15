@@ -1217,6 +1217,7 @@ Jebkurā laikā varat pārbaudīt paroles pakalpojumā <ph name="GOOGLE_PASSWORD
 <translation id="1933489278505808700">Drīkst lasīt un mainīt</translation>
 <translation id="1935303383381416800">Drīkst skatīt jūsu atrašanās vietu</translation>
 <translation id="193565226207940518">Atbalsta rīks</translation>
+<translation id="1935995810530254458">Tik un tā kopēt</translation>
 <translation id="1936157145127842922">Rādīt mapē</translation>
 <translation id="1936344977780165685">{PAGES,plural, =1{Lapa ir pievienota lasīšanas sarakstam.}zero{Lapas ir pievienotas lasīšanas sarakstam.}one{Lapas ir pievienotas lasīšanas sarakstam.}other{Lapas ir pievienotas lasīšanas sarakstam.}}</translation>
 <translation id="1936931585862840749">Izmantojiet skaitli, lai norādītu, cik eksemplāru jādrukā (1–<ph name="MAX_COPIES" />).</translation>
@@ -1537,6 +1538,7 @@ Varat pārvaldīt šī konta iestatījumus, savā ierīcē instalējot lietotni 
 <translation id="2199298570273670671">Kļūda</translation>
 <translation id="2200094388063410062">Nosūtīt e-pastā</translation>
 <translation id="2200781749203116929">ChromeOS sistēmas žurnāli</translation>
+<translation id="2202391868799679245">Ieslēgt īsinājumtaustiņu</translation>
 <translation id="2203088913459920044">Nosaukumā var izmantot burtus, ciparus un speciālās rakstzīmes.</translation>
 <translation id="220321590587754225">Nevarēja izveidot savienojumu. Mēģiniet vēlreiz.</translation>
 <translation id="2203903197029773650"><ph name="BRAND" /> var pārbaudīt jūsu paroles, ja esat pierakstījies savā Google kontā.</translation>
@@ -6345,7 +6347,6 @@ Lai tālinātu, nospiediet Ctrl + Alt + spilgtuma samazināšanas taustiņu.
 <translation id="5932881020239635062">Sērijas numurs</translation>
 <translation id="5933522550144185133">Lietotne <ph name="APP_NAME" /> izmanto jūsu kameru un mikrofonu</translation>
 <translation id="5935158534896975820">Tiek sagatavots sertifikāta parakstīšanas pieprasījums (tiek gaidīta servera atbilde)</translation>
-<translation id="5935554994339565449">Pievienojiet tekstu, izmantojot jauno rīku “Pievienot tekstu”</translation>
 <translation id="5936065461722368675">Tulkot visu lapu</translation>
 <translation id="5937977334791924341"><ph name="APP" /> logotips</translation>
 <translation id="5938002010494270685">Pieejams drošības jauninājums</translation>

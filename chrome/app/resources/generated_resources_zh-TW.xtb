@@ -1217,6 +1217,7 @@
 <translation id="1933489278505808700">可以讀取及變更</translation>
 <translation id="1935303383381416800">允許以下網站查看你的位置資訊</translation>
 <translation id="193565226207940518">Support Tool</translation>
+<translation id="1935995810530254458">仍要複製</translation>
 <translation id="1936157145127842922">在資料夾中顯示</translation>
 <translation id="1936344977780165685">{PAGES,plural, =1{已將頁面加入閱讀清單}other{已將頁面加入閱讀清單}}</translation>
 <translation id="1936931585862840749">使用數字指定列印份數 (1 至 <ph name="MAX_COPIES" />)。</translation>
@@ -1537,6 +1538,7 @@
 <translation id="2199298570273670671">錯誤</translation>
 <translation id="2200094388063410062">電子郵件</translation>
 <translation id="2200781749203116929">ChromeOS 系統記錄</translation>
+<translation id="2202391868799679245">開啟鍵盤快速鍵</translation>
 <translation id="2203088913459920044">名稱可以包含字母、數字和特殊字元</translation>
 <translation id="220321590587754225">無法連線，請再試一次。</translation>
 <translation id="2203903197029773650">你必須登入 Google 帳戶，<ph name="BRAND" />才能檢查你的密碼</translation>
@@ -6339,7 +6341,6 @@
 <translation id="5932881020239635062">序列</translation>
 <translation id="5933522550144185133">「<ph name="APP_NAME" />」正在使用你的攝影機和麥克風</translation>
 <translation id="5935158534896975820">正在準備憑證簽署要求 (在伺服器上等待)</translation>
-<translation id="5935554994339565449">使用全新的「新增文字」工具加入文字</translation>
 <translation id="5936065461722368675">翻譯整頁內容</translation>
 <translation id="5937977334791924341">「<ph name="APP" />」標誌</translation>
 <translation id="5938002010494270685">可進行安全性更新</translation>

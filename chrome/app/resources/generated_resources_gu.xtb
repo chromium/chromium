@@ -1217,6 +1217,7 @@
 <translation id="1933489278505808700">વાંચવા અને ફેરફાર કરવાની મંજૂરી આપી છે</translation>
 <translation id="1935303383381416800">તમારું સ્થાન જોવાની મંજૂરી છે</translation>
 <translation id="193565226207940518">સપોર્ટ ટૂલ</translation>
+<translation id="1935995810530254458">કોઈપણ રીતે કૉપિ કરો</translation>
 <translation id="1936157145127842922">ફોલ્ડરમાં બતાવો</translation>
 <translation id="1936344977780165685">{PAGES,plural, =1{વાંચન સૂચિમાં પેજ ઉમેરવામાં આવ્યું}one{વાંચન સૂચિમાં પેજ ઉમેરવામાં આવ્યું}other{વાંચન સૂચિમાં પેજ ઉમેરવામાં આવ્યા}}</translation>
 <translation id="1936931585862840749">કેટલી કૉપિ પ્રિન્ટ કરવાની છે એ દર્શાવવા માટે સંખ્યાનો ઉપયોગ કરો (1 થી <ph name="MAX_COPIES" /> સુધીની).</translation>
@@ -1537,6 +1538,7 @@
 <translation id="2199298570273670671">ભૂલ</translation>
 <translation id="2200094388063410062">ઇ-મેઇલ</translation>
 <translation id="2200781749203116929">ChromeOS સિસ્ટમના લૉગ</translation>
+<translation id="2202391868799679245">કીબોર્ડ શૉર્ટકટ ચાલુ કરો</translation>
 <translation id="2203088913459920044">નામમાં અક્ષર, સંખ્યા અને વિશેષ વર્ણનો ઉપયોગ થઈ શકે છે</translation>
 <translation id="220321590587754225">કનેક્ટ કરી શકાયું નથી. ફરી પ્રયાસ કરો.</translation>
 <translation id="2203903197029773650">જ્યારે તમે તમારા Google એકાઉન્ટ વડે સાઇન ઇન કરો, ત્યારે <ph name="BRAND" /> તમારા પાસવર્ડ ચેક કરી શકે છે</translation>
@@ -6353,7 +6355,6 @@ USB ડિવાઇસ</translation>
 <translation id="5932881020239635062">શ્રૃંખલા</translation>
 <translation id="5933522550144185133"><ph name="APP_NAME" /> દ્વારા તમારા કૅમેરા અને માઇક્રોફોનનો ઉપયોગ કરવામાં આવી રહ્યો છે</translation>
 <translation id="5935158534896975820">પ્રમાણપત્ર પર સહી કરવાની વિનંતી તૈયાર કરી રહ્યાં છીએ (સર્વર પર રાહ જુએ છે)</translation>
-<translation id="5935554994339565449">નવા "ટેક્સ્ટ ઉમેરો" ટૂલ વડે ટેક્સ્ટ ઉમેરો</translation>
 <translation id="5936065461722368675">આખા પેજનો અનુવાદ કરો</translation>
 <translation id="5937977334791924341"><ph name="APP" /> લોગો</translation>
 <translation id="5938002010494270685">સુરક્ષા અપગ્રેડ ઉપલબ્ધ</translation>

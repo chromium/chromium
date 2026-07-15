@@ -1226,6 +1226,7 @@ Periksa sandi Anda kapan saja di <ph name="GOOGLE_PASSWORD_MANAGER" />.</transla
 <translation id="1933489278505808700">Diizinkan untuk membaca &amp; mengubah</translation>
 <translation id="1935303383381416800">Diizinkan melihat lokasi Anda</translation>
 <translation id="193565226207940518">Alat Dukungan</translation>
+<translation id="1935995810530254458">Tetap salin</translation>
 <translation id="1936157145127842922">Tampilkan dalam Folder</translation>
 <translation id="1936344977780165685">{PAGES,plural, =1{Halaman ditambahkan ke daftar bacaan}other{Halaman ditambahkan ke daftar bacaan}}</translation>
 <translation id="1936931585862840749">Gunakan angka untuk menunjukkan jumlah salinan yang akan dicetak (1 sampai <ph name="MAX_COPIES" />).</translation>
@@ -1546,6 +1547,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2199298570273670671">Error</translation>
 <translation id="2200094388063410062">Email</translation>
 <translation id="2200781749203116929">Log Sistem ChromeOS</translation>
+<translation id="2202391868799679245">Aktifkan pintasan keyboard</translation>
 <translation id="2203088913459920044">Nama dapat menggunakan huruf, angka, dan karakter khusus</translation>
 <translation id="220321590587754225">Tidak dapat terhubung. Coba lagi.</translation>
 <translation id="2203903197029773650"><ph name="BRAND" /> dapat memeriksa sandi saat Anda login dengan Akun Google Anda</translation>
@@ -6362,7 +6364,6 @@ Anda dapat menetapkan beberapa tombol akses untuk tindakan ini.</translation>
 <translation id="5932881020239635062">Nomor Seri</translation>
 <translation id="5933522550144185133"><ph name="APP_NAME" /> menggunakan kamera dan mikrofon Anda</translation>
 <translation id="5935158534896975820">Menyiapkan permintaan penandatanganan sertifikat (menunggu di server)</translation>
-<translation id="5935554994339565449">Tambahkan teks dengan alat "Tambahkan teks" yang baru</translation>
 <translation id="5936065461722368675">Terjemahkan seluruh halaman</translation>
 <translation id="5937977334791924341">Logo <ph name="APP" /></translation>
 <translation id="5938002010494270685">Upgrade keamanan tersedia</translation>

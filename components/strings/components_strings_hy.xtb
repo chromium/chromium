@@ -333,6 +333,7 @@
 <translation id="1486096554574027028">Գաղտնաբառերի որոնում</translation>
 <translation id="1492194039220927094">Կանոնների մղում՝</translation>
 <translation id="1495677929897281669">Վերադառնալ ներդիր</translation>
+<translation id="1496318738909526466">Կառավարել բարելավված ինքնալրացումը</translation>
 <translation id="1500286806237135498">Տեսախցիկներ (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="1504042622576912555">Ֆլեյտա</translation>
 <translation id="1507202001669085618">&lt;p&gt;Այս սխալը կցուցադրվի, եթե դուք օգտագործում եք Wi-Fi պորտալ, որտեղ ցանցին միանալու համար անհրաժեշտ է մտնել հաշիվ։&lt;/p&gt;
@@ -690,7 +691,6 @@
 <translation id="2082238445998314030"><ph name="RESULT_NUMBER" />-ից <ph name="TOTAL_RESULTS" /> արդյունք</translation>
 <translation id="2083256696566019397">Թույլատրել ամեն այցի ժամանակ</translation>
 <translation id="2085876078937250610">Պահել…</translation>
-<translation id="2088913896151127116">Ավելացնել տեքստ</translation>
 <translation id="2090451897496479509">Լրացուցիչ տեղեկությունների համար կապվեք մատակարարի հետ</translation>
 <translation id="2090686487550343086">IBAN համարներ</translation>
 <translation id="2091887806945687916">Ձայն</translation>
@@ -869,6 +869,7 @@
 <translation id="2322254345061973671">{COUNT,plural, =1{1 պատուհան}one{# պատուհան}other{# պատուհան}}</translation>
 <translation id="232390861414237658">Երբ պահեք այս քարտը ձեր սարքում, քարտի տվյալներն ավտոմատ կլրացվեն, երբ Google Pay-ի միջոցով գնումներ կատարեք Chrome-ում</translation>
 <translation id="2326283484705860548">Այժմ կարող եք ավտոմատ լրացնել ձեր տեղեկությունները Google Wallet-ից</translation>
+<translation id="2326747055382936979">Կառավարել բարելավված ինքնալրացումը</translation>
 <translation id="2328651992442742497">Թույլատրված է (կանխադրված)</translation>
 <translation id="2328955282645810595">Շինարարական և էլեկտրական գործիքներ</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, վավեր է մինչև <ph name="EXPIRATION_DATE_ABBR" /></translation>
@@ -2262,6 +2263,7 @@
 <translation id="4464826014807964867">Կայքեր՝ ձեր կազմակերպությունից ստացած տեղեկություններով</translation>
 <translation id="4466576951214254884">Ուսանողական վարկեր և բարձրագույն կրթության ֆինանսավորում</translation>
 <translation id="4467821340016922962">Լիաէկրան ռեժիմից դուրս գալու և ներբեռնումը տեսնելու համար սեղմեք |<ph name="ACCELERATOR" />|</translation>
+<translation id="4472575034687746823">Սկսել</translation>
 <translation id="4473643328224505070"><ph name="BEGIN_ENHANCED_PROTECTION_LINK" />Միացրեք բարելավված պաշտպանությունը<ph name="END_ENHANCED_PROTECTION_LINK" />՝ Chrome-ի լավագույն պաշտպանության համակարգերն օգտագործելու համար</translation>
 <translation id="4475299370877036544">Այս գործողությունը կարող է խախտել ձեր կազմակերպության կանոնները</translation>
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />։ <ph name="LEARN_MORE_TEXT" /></translation>

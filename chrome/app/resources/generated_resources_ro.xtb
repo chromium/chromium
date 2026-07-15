@@ -1217,6 +1217,7 @@ Verifică parolele oricând în <ph name="GOOGLE_PASSWORD_MANAGER" />.</translat
 <translation id="1933489278505808700">Poate să citească și să facă modificări</translation>
 <translation id="1935303383381416800">Au permisiunea de a vedea locația</translation>
 <translation id="193565226207940518">Instrument de asistență</translation>
+<translation id="1935995810530254458">Copiază oricum</translation>
 <translation id="1936157145127842922">Afișați în dosar</translation>
 <translation id="1936344977780165685">{PAGES,plural, =1{Pagina a fost adăugată în lista de lecturi}few{Paginile au fost adăugate în lista de lecturi}other{Paginile au fost adăugate în lista de lecturi}}</translation>
 <translation id="1936931585862840749">Precizează un număr de exemplare pentru printare (de la 1 la <ph name="MAX_COPIES" />).</translation>
@@ -1537,6 +1538,7 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2199298570273670671">Eroare</translation>
 <translation id="2200094388063410062">E-mail</translation>
 <translation id="2200781749203116929">Jurnale de sistem ChromeOS</translation>
+<translation id="2202391868799679245">Activează comanda rapidă de la tastatură</translation>
 <translation id="2203088913459920044">Numele poate să conțină litere, cifre și caractere speciale</translation>
 <translation id="220321590587754225">Nu s-a putut conecta. Încearcă din nou.</translation>
 <translation id="2203903197029773650"><ph name="BRAND" /> poate să îți verifice parolele atunci când te conectezi folosind Contul Google</translation>
@@ -6347,7 +6349,6 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="5932881020239635062">Număr de serie</translation>
 <translation id="5933522550144185133"><ph name="APP_NAME" /> folosește camera și microfonul</translation>
 <translation id="5935158534896975820">Se pregătește solicitarea de semnare a certificatului (se așteaptă serverul)</translation>
-<translation id="5935554994339565449">Adaugă text cu noul instrument Adaugă text</translation>
 <translation id="5936065461722368675">Tradu pagina completă</translation>
 <translation id="5937977334791924341">Sigla <ph name="APP" /></translation>
 <translation id="5938002010494270685">Este disponibilă o actualizare de securitate</translation>

@@ -1225,6 +1225,7 @@ Jelszavait bármikor ellenőrizheti itt: <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="1933489278505808700">Olvashat és módosíthat</translation>
 <translation id="1935303383381416800">Láthatják az Ön tartózkodási helyét</translation>
 <translation id="193565226207940518">Támogatási eszköz</translation>
+<translation id="1935995810530254458">Másolás mindenképpen</translation>
 <translation id="1936157145127842922">Megjelenítés mappában</translation>
 <translation id="1936344977780165685">{PAGES,plural, =1{Oldal felvéve az olvasólistára}other{Oldalak felvéve az olvasólistára}}</translation>
 <translation id="1936931585862840749">Számmal jelezze, hogy hány példányt szeretne nyomtatni (1–<ph name="MAX_COPIES" />).</translation>
@@ -1545,6 +1546,7 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="2199298570273670671">Hiba</translation>
 <translation id="2200094388063410062">E-mail</translation>
 <translation id="2200781749203116929">ChromeOS-rendszernaplók</translation>
+<translation id="2202391868799679245">Billentyűparancs bekapcsolása</translation>
 <translation id="2203088913459920044">A név betűket, számokat és speciális karaktereket tartalmazhat</translation>
 <translation id="220321590587754225">Nem sikerült csatlakozni. Próbálja újra.</translation>
 <translation id="2203903197029773650">A <ph name="BRAND" /> ellenőrizni tudja a mentett jelszavakat, ha Ön bejelentkezik Google-fiókjával.</translation>
@@ -6361,7 +6363,6 @@ Győződjön meg arról, hogy nem ad ki bizalmas adatokat.</translation>
 <translation id="5932881020239635062">Sorozatszám</translation>
 <translation id="5933522550144185133">A(z) <ph name="APP_NAME" /> használja a kamerát és a mikrofont</translation>
 <translation id="5935158534896975820">Tanúsítvány-aláírási kérés előkészítése (várakozás a szerverre)</translation>
-<translation id="5935554994339565449">Szöveg hozzáadása az új „Szöveg hozzáadása” eszközzel</translation>
 <translation id="5936065461722368675">Teljes oldal fordítása</translation>
 <translation id="5937977334791924341"><ph name="APP" />-logó</translation>
 <translation id="5938002010494270685">Rendelkezésre áll egy biztonsági frissítés</translation>

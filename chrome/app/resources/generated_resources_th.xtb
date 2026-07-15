@@ -1217,6 +1217,7 @@
 <translation id="1933489278505808700">ได้รับอนุญาตให้อ่านและเปลี่ยนแปลง</translation>
 <translation id="1935303383381416800">ได้รับอนุญาตให้ดูตำแหน่งของคุณ</translation>
 <translation id="193565226207940518">เครื่องมือการสนับสนุน</translation>
+<translation id="1935995810530254458">คัดลอกเลย</translation>
 <translation id="1936157145127842922">แสดงในโฟลเดอร์</translation>
 <translation id="1936344977780165685">{PAGES,plural, =1{เพิ่มหน้าไปยังเรื่องรออ่านแล้ว}other{เพิ่มหน้าไปยังเรื่องรออ่านแล้ว}}</translation>
 <translation id="1936931585862840749">ใช้ตัวเลขเพื่อระบุจำนวนสำเนาที่ต้องการพิมพ์ (1 ถึง <ph name="MAX_COPIES" />)</translation>
@@ -5082,7 +5083,6 @@
 <translation id="4906490889887219338">ตั้งค่าหรือจัดการพื้นที่แชร์ไฟล์ของเครือข่าย <ph name="LINK_BEGIN" />ดูข้อมูลเพิ่มเติม<ph name="LINK_END" /></translation>
 <translation id="4906679076183257864">รีเซ็ตเป็นค่าเริ่มต้น</translation>
 <translation id="4907129260985716018">เลือกว่าส่วนขยายนี้จะอ่านและเปลี่ยนแปลงข้อมูลเว็บไซต์ของคุณได้เมื่อใดบ้าง</translation>
-<translation id="4908076691331874303">ซ่อนจากเว็บไซต์นี้แล้ว</translation>
 <translation id="4908811072292128752">เปิดแท็บใหม่เพื่อเรียกดูไซต์ 2 ไซต์พร้อมกัน</translation>
 <translation id="4910241725741323970">ติดตั้งแอปแล้ว</translation>
 <translation id="4912643508233590958">ไม่ใช้งานการปลุก</translation>
@@ -6346,7 +6346,6 @@
 <translation id="5932881020239635062">ซีเรียล</translation>
 <translation id="5933522550144185133"><ph name="APP_NAME" /> กำลังใช้กล้องถ่ายรูปและไมโครโฟนของคุณ</translation>
 <translation id="5935158534896975820">กำลังเตรียมคำขอลงนามใบรับรอง (กำลังรอเซิร์ฟเวอร์)</translation>
-<translation id="5935554994339565449">เพิ่มข้อความด้วยเครื่องมือ "เพิ่มข้อความ" ใหม่</translation>
 <translation id="5936065461722368675">แปลทั้งหน้า</translation>
 <translation id="5937977334791924341">โลโก้ <ph name="APP" /></translation>
 <translation id="5938002010494270685">การอัปเกรดความปลอดภัยพร้อมใช้งานแล้ว</translation>

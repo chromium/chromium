@@ -1227,6 +1227,7 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="1933489278505808700">Allowed to read and change</translation>
 <translation id="1935303383381416800">Allowed to see your location</translation>
 <translation id="193565226207940518">Support Tool</translation>
+<translation id="1935995810530254458">Copy anyway</translation>
 <translation id="1936157145127842922">Show in Folder</translation>
 <translation id="1936344977780165685">{PAGES,plural, =1{Page added to reading list}other{Pages added to reading list}}</translation>
 <translation id="1936931585862840749">Use a number to indicate how many copies to print (1 to <ph name="MAX_COPIES" />).</translation>
@@ -1547,6 +1548,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2199298570273670671">Error</translation>
 <translation id="2200094388063410062">Email</translation>
 <translation id="2200781749203116929">ChromeOS System Logs</translation>
+<translation id="2202391868799679245">Turn on keyboard shortcut</translation>
 <translation id="2203088913459920044">Name can use letters, numbers and special characters</translation>
 <translation id="220321590587754225">Couldn't connect. Try again.</translation>
 <translation id="2203903197029773650"><ph name="BRAND" /> can check your passwords when you sign in with your Google Account</translation>
@@ -3103,7 +3105,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3388788256054548012">This file is encrypted. Ask its owner to decrypt it.</translation>
 <translation id="3389326266972418853">More about automated password change</translation>
 <translation id="3390013585654699824">App details</translation>
-<translation id="3390442085511866400">Save video frame as…</translation>
+<translation id="3390442085511866400">Save Video Frame As…</translation>
 <translation id="3390530051434634135">Note: <ph name="NOTE" /></translation>
 <translation id="3390740059150071453">Look left</translation>
 <translation id="3393554941209044235">Chrome document analysis</translation>
@@ -4245,7 +4247,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4254813446494774748">Translation Language:</translation>
 <translation id="4255016471934258618">Open your mouth wide</translation>
 <translation id="4255841059940367080">Real-time, AI-powered protection against dangerous sites, downloads and extensions that's based on your browsing data getting sent to Google</translation>
-<translation id="4256316378292851214">Sa&amp;ve video as...</translation>
+<translation id="4256316378292851214">Sa&amp;ve Video As...</translation>
 <translation id="4257175174234042421">Automated password change</translation>
 <translation id="4258348331913189841">File System</translation>
 <translation id="4258860425202724393">{NUM_GROUPS,plural, =1{Keep group}other{Keep groups}}</translation>
@@ -4281,7 +4283,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4281789858103154731">Create</translation>
 <translation id="4281844954008187215">Terms of Service</translation>
 <translation id="4281849573951338030">Customise pen buttons</translation>
-<translation id="4283635301190260296">Collapse vertical tabs</translation>
+<translation id="4283635301190260296">Collapse Vertical Tabs</translation>
 <translation id="4284903252249997120">ChromeVox screen reader and select-to-speak</translation>
 <translation id="4285418559658561636">Update Password</translation>
 <translation id="4285498937028063278">Unpin</translation>
@@ -4442,7 +4444,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4404843640767531781"><ph name="APP_NAME" /> is blocked by your parent. Ask your parent for permission to use this app.</translation>
 <translation id="4405117686468554883">*.jpeg, *.jpg, *.png</translation>
 <translation id="4405224443901389797">Move to…</translation>
-<translation id="4405580203042711503">New tab below</translation>
+<translation id="4405580203042711503">New Tab Below</translation>
 <translation id="4405781821077215583">Make items on your screen, including text, smaller or larger</translation>
 <translation id="4406308048672435032">You can make this tab inactive or refresh to see the full list again</translation>
 <translation id="4406881185911439342">Focus group</translation>
@@ -4733,7 +4735,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4638568775382459156">Shared tab group activity</translation>
 <translation id="4638930039313743000">Enable ADB debugging</translation>
 <translation id="4639390152280993480">To see a simplified view of this page, go to More Tools &gt; Reading mode</translation>
-<translation id="4643612240819915418">&amp;Open video in new tab</translation>
+<translation id="4643612240819915418">&amp;Open Video in New Tab</translation>
 <translation id="4644205769234414680">Allow in Incognito</translation>
 <translation id="4645322559577140968">{GROUP_COUNT,plural, =1{Delete tab group?}other{Delete tab groups?}}</translation>
 <translation id="4645575059429386691">Managed by your parent</translation>
@@ -5399,7 +5401,7 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="5146896637028965135">System voice</translation>
 <translation id="5147113439721488265">Recommendation</translation>
 <translation id="5148285448107770349">Password must be at least 8 characters</translation>
-<translation id="5149602533174716626">Copy video frame</translation>
+<translation id="5149602533174716626">Copy Video Frame</translation>
 <translation id="5150254825601720210">Netscape Certificate SSL Server Name</translation>
 <translation id="5151354047782775295">Free up disk space or select data may be automatically deleted</translation>
 <translation id="5153074793829217329">Use your keyboard or a numeric keypad to control your mouse cursor</translation>
@@ -5969,7 +5971,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="5609231933459083978">The application appears to be invalid.</translation>
 <translation id="5610867721023328944">Try again or select from one of the available themes below.</translation>
 <translation id="5611398002774823980">Save in account</translation>
-<translation id="5611474372949142946">Close tabs below</translation>
+<translation id="5611474372949142946">Close Tabs Below</translation>
 <translation id="5614553682702429503">Save password?</translation>
 <translation id="5614947000616625327">iCloud Keychain</translation>
 <translation id="561552177910095306">List of recent sites that you visited that can suggest ads to other sites as you keep browsing</translation>
@@ -6363,7 +6365,6 @@ You can assign multiple switches to this action.</translation>
 <translation id="5932881020239635062">Serial</translation>
 <translation id="5933522550144185133"><ph name="APP_NAME" /> is using your camera and microphone</translation>
 <translation id="5935158534896975820">Preparing certificate signing request (waiting on server)</translation>
-<translation id="5935554994339565449">Add text with the new 'Add text' tool</translation>
 <translation id="5936065461722368675">Translate full page</translation>
 <translation id="5937977334791924341"><ph name="APP" /> logo</translation>
 <translation id="5938002010494270685">Security upgrade available</translation>
@@ -8942,7 +8943,7 @@ Press an assigned switch or key to remove assignment.</translation>
 <translation id="7946586320617670168">Origin must be secure</translation>
 <translation id="7946681191253332687">Extended security updates available</translation>
 <translation id="794676567536738329">Confirm Permission</translation>
-<translation id="7947962633355574091">C&amp;opy video address</translation>
+<translation id="7947962633355574091">C&amp;opy Video Address</translation>
 <translation id="7947964080535614577">Sites usually show ads so that they can provide content or services free of charge. But, some sites are known to show intrusive or misleading ads.</translation>
 <translation id="7948407723851303488">All pages of <ph name="DOMAIN_NAME" /></translation>
 <translation id="7948579849190819732">Current tab</translation>
@@ -10542,7 +10543,7 @@ This can include information about installed software, files, your browser, the 
     <ph name="END_LIST" /></translation>
 <translation id="9161172953291434881">Do you trust this site with your data?</translation>
 <translation id="9165856803582999927">Scan this QR code with the camera on the device where you want to create and save your passkey for <ph name="APP_NAME" /></translation>
-<translation id="916607977885256133">Picture-in-picture</translation>
+<translation id="916607977885256133">Picture-in-Picture</translation>
 <translation id="9167063903968449027">Show Reading List</translation>
 <translation id="9167813284871066981"><ph name="NUM_ACCOUNTS" /> accounts</translation>
 <translation id="9169093579080634183">Learn more about tabs</translation>

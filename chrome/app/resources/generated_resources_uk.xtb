@@ -1227,12 +1227,14 @@
 <translation id="1933489278505808700">Дозволено переглядати й редагувати</translation>
 <translation id="1935303383381416800">Дозволено переглядати дані про ваше місцезнаходження</translation>
 <translation id="193565226207940518">Інструмент підтримки</translation>
+<translation id="1935995810530254458">Усе одно скопіювати</translation>
 <translation id="1936157145127842922">Показати в папці</translation>
 <translation id="1936344977780165685">{PAGES,plural, =1{Сторінку додано в список читання}one{Сторінки додано в список читання}few{Сторінки додано в список читання}many{Сторінки додано в список читання}other{Сторінки додано в список читання}}</translation>
 <translation id="1936931585862840749">Введіть число, щоб зазначити кількість копій для друку (від 1 до <ph name="MAX_COPIES" />).</translation>
 <translation id="1938351510777341717">Зовнішня клавіша Command</translation>
 <translation id="1940221956626514677">Налаштувати панель інструментів</translation>
 <translation id="1940546824932169984">Підключені пристрої</translation>
+<translation id="194081218158106711">Підтвердження зміненого пароля…</translation>
 <translation id="1941410638996203291">Час початку: <ph name="TIME" /></translation>
 <translation id="1941553344801134989">Версія: <ph name="APP_VERSION" /></translation>
 <translation id="1941685451584875710">Адміністратор налаштував автоматичне підключення вашого облікового запису до Microsoft OneDrive, але сталася помилка.</translation>
@@ -1547,6 +1549,7 @@
 <translation id="2199298570273670671">Помилка</translation>
 <translation id="2200094388063410062">Електронна пошта</translation>
 <translation id="2200781749203116929">Системні журнали ChromeOS</translation>
+<translation id="2202391868799679245">Увімкнути комбінацію клавіш</translation>
 <translation id="2203088913459920044">Назва може складатися з літер, цифр і спеціальних символів</translation>
 <translation id="220321590587754225">Не вдалося підключитися. Повторіть спробу.</translation>
 <translation id="2203903197029773650"><ph name="BRAND" /> зможе перевірити ваші паролі, коли ви ввійдете у свій обліковий запис Google</translation>
@@ -4755,6 +4758,7 @@
 <translation id="4657914796247705218">Швидкість TrackPoint</translation>
 <translation id="4658648180588730283">Додаток <ph name="APPLICATION_NAME" /> недоступний у режимі офлайн.</translation>
 <translation id="465878909996028221">Для переспрямування у веб-переглядачі підтримуються лише http, https і протоколи файлів.</translation>
+<translation id="4658821552705754298"><ph name="ITEM_NAME" /> (<ph name="CATEGORY_NAME" />)</translation>
 <translation id="4659126640776004816">Ця функція вмикається, коли ви входите в обліковий запис Google.</translation>
 <translation id="4660465405448977105">{COUNT,plural, =1{Зображення}one{# зображення}few{# зображення}many{# зображень}other{# зображення}}</translation>
 <translation id="4660540330091848931">Змінення розміру</translation>
@@ -6359,7 +6363,6 @@
 <translation id="5932881020239635062">Серійний номер</translation>
 <translation id="5933522550144185133">Додаток <ph name="APP_NAME" /> використовує ваші камеру та мікрофон</translation>
 <translation id="5935158534896975820">Підготовка запиту на підпис сертифіката (очікуємо на відповідь сервера)</translation>
-<translation id="5935554994339565449">Додавайте текстові примітки за допомогою нового інструмента "Додати текст"</translation>
 <translation id="5936065461722368675">Перекласти всю сторінку</translation>
 <translation id="5937977334791924341">Логотип <ph name="APP" /></translation>
 <translation id="5938002010494270685">Доступне оновлення системи безпеки</translation>
@@ -8920,6 +8923,7 @@
 <translation id="7933486544522242079">&amp;Зберегти й поділитися</translation>
 <translation id="7933518760693751884">Щоб зберегти цю сторінку на пізніше, натисніть значок закладки</translation>
 <translation id="7933634003144813719">Керувати спільними папками</translation>
+<translation id="7935072572536724392">Не вдалося автоматично змінити пароль</translation>
 <translation id="7936195481975600746">Щоб показувати свій екран, скористайтеся системною програмою вибору екрана</translation>
 <translation id="7937809006412909895">Збирання даних діагностики</translation>
 <translation id="7938881824185772026">Лабораторії</translation>
@@ -9057,6 +9061,7 @@
 <translation id="8029412171914613589">{SELECTED_ITEMS,plural, =0{Список читання}=1{Список читання ({SELECTED_ITEMS})}one{Список читання ({SELECTED_ITEMS})}few{Список читання ({SELECTED_ITEMS})}many{Список читання ({SELECTED_ITEMS})}other{Список читання ({SELECTED_ITEMS})}}</translation>
 <translation id="8029492516535178472"><ph name="WINDOW_TITLE" /> – Потрібен дозвіл. Натисніть клавіші ⌘ + Option + стрілку вгору, щоб відповісти</translation>
 <translation id="8030169304546394654">Роз'єднано</translation>
+<translation id="8030814978699290230">Виконується вхід…</translation>
 <translation id="8030852056903932865">Дозволити</translation>
 <translation id="8033827949643255796">виділено</translation>
 <translation id="8033958968890501070">Час очікування минув</translation>
@@ -9470,6 +9475,7 @@
 <translation id="8343578633847737325">Нещодавні чати й ланцюжки</translation>
 <translation id="8345848587667658367">Тепер ви можете переглядати нещодавні фотографії, медіафайли, сповіщення й додатки з телефона</translation>
 <translation id="8347227221149377169">Завдання друку</translation>
+<translation id="8347728744337089388">Надіслати на &amp;пристрій</translation>
 <translation id="8348430946834215779">За можливості використовуйте HTTPS і отримуйте попередження перед завантаженням сайтів, які не підтримують цей протокол</translation>
 <translation id="8348896480272971199">Перевірте інтернет-з’єднання й повторіть спробу.</translation>
 <translation id="8349305172487531364">Панель закладок</translation>
@@ -9519,6 +9525,7 @@
 <translation id="8382197851871630452">Місцева погода</translation>
 <translation id="8382913212082956454">Копіювати &amp;адресу електронної пошти</translation>
 <translation id="8383614331548401927">З поверненням</translation>
+<translation id="8387157483437834731">Пароль змінено</translation>
 <translation id="8387361103813440603">Заборонено переглядати дані про ваше місцезнаходження</translation>
 <translation id="8389492867173948260">Дозволити розширенню переглядати й змінювати ваші дані на вебсайтах, які ви відвідуєте:</translation>
 <translation id="8390449457866780408">Сервер не доступний.</translation>
@@ -10604,6 +10611,7 @@
 <translation id="9220820413868316583">Підніміть палець, а потім повторіть спробу.</translation>
 <translation id="922152298093051471">Налаштувати Chrome</translation>
 <translation id="9222839391870847423">Тривалість: <ph name="DURATION" /></translation>
+<translation id="923306663772315007">Надіслати на &amp;пристрій</translation>
 <translation id="923467487918828349">Показати всі</translation>
 <translation id="923900195646492191">{NUM_EXTENSIONS,plural, =1{Щоб керувати, відкрийте розширення}one{Щоб керувати ними, відкрийте розширення}few{Щоб керувати ними, відкрийте розширення}many{Щоб керувати ними, відкрийте розширення}other{Щоб керувати ними, відкрийте розширення}}</translation>
 <translation id="924818813611903184">Керувати мовами в налаштуваннях ОС Chrome</translation>

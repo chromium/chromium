@@ -1216,6 +1216,7 @@ Controlla le password in qualsiasi momento in <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="1933489278505808700">Lettura e modifica consentite</translation>
 <translation id="1935303383381416800">Possono accedere alla tua posizione</translation>
 <translation id="193565226207940518">Strumento di assistenza</translation>
+<translation id="1935995810530254458">Copia comunque</translation>
 <translation id="1936157145127842922">Mostra nella cartella</translation>
 <translation id="1936344977780165685">{PAGES,plural, =1{Pagina aggiunta all'elenco di lettura}other{Pagine aggiunte all'elenco di lettura}}</translation>
 <translation id="1936931585862840749">Specifica un numero per indicare la quantità di copie da stampare (da 1 a <ph name="MAX_COPIES" />).</translation>
@@ -1536,6 +1537,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2199298570273670671">Errore</translation>
 <translation id="2200094388063410062">Email</translation>
 <translation id="2200781749203116929">Log di sistema ChromeOS</translation>
+<translation id="2202391868799679245">Attiva scorciatoia da tastiera</translation>
 <translation id="2203088913459920044">Il nome può contenere lettere, numeri e caratteri speciali</translation>
 <translation id="220321590587754225">Impossibile connettersi. Riprova.</translation>
 <translation id="2203903197029773650"><ph name="BRAND" /> può controllare le tue password quando accedi con il tuo Account Google</translation>
@@ -6346,7 +6348,6 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="5932881020239635062">Numero di serie</translation>
 <translation id="5933522550144185133"><ph name="APP_NAME" /> sta usando la videocamera e il microfono</translation>
 <translation id="5935158534896975820">Preparazione della richiesta di firma del certificato (in attesa sul server)</translation>
-<translation id="5935554994339565449">Aggiungi testo con il nuovo strumento "Aggiungi testo"</translation>
 <translation id="5936065461722368675">Traduci pagina intera</translation>
 <translation id="5937977334791924341">Logo <ph name="APP" /></translation>
 <translation id="5938002010494270685">Upgrade di sicurezza disponibile</translation>

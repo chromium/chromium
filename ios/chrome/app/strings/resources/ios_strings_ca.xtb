@@ -285,6 +285,7 @@
 <translation id="188177382966899059">Deep Search</translation>
 <translation id="188237709236611317">Barra de menú d'ordenació intel·ligent</translation>
 <translation id="1883255238294161206">Redueix la llista</translation>
+<translation id="1883898928879467646">Pestanya suprimida</translation>
 <translation id="1888854257756214946">Selecciona una contrasenya…</translation>
 <translation id="1890237935065108104">Aquesta opció de configuració no està disponible.</translation>
 <translation id="1894023287452300670">Fes un seguiment del preu aquí</translation>
@@ -1620,6 +1621,7 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="6406506848690869874">Sincronització</translation>
 <translation id="6410390304316730527">Navegació segura et protegeix contra els atacants que et poden enganyar perquè facis alguna acció perillosa, com ara instal·lar programari maliciós o revelar informació personal (per exemple, contrasenyes, números de telèfon o targetes de crèdit). Si la desactives, ves amb compte quan naveguis per llocs web desconeguts o amb mala reputació.</translation>
 <translation id="6410883413783534063">Obre pestanyes per visitar diverses pàgines al mateix temps</translation>
+<translation id="6412195388778525440">Suprimeix la pestanya</translation>
 <translation id="6418346271604475326">Preparant el PDF</translation>
 <translation id="6420292512900923139">Hi ha hagut un problema en importar les dades</translation>
 <translation id="6421038304268477484">Text traduït</translation>

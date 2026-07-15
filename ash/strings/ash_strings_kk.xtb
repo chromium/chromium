@@ -246,7 +246,7 @@
 <translation id="163032029566320584"><ph name="UNAVAILABLE_DLC" /> қолжетімді емес.</translation>
 <translation id="1632985212731562677">Switch Access функциясын "Параметрлер &gt; Accessibility" бөлімінен өшіруге болады.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> құрылғы</translation>
-<translation id="1639239467298939599">Жүктелуде</translation>
+<translation id="1639239467298939599">Жүктеліп жатыр</translation>
 <translation id="1647986356840967552">Алдыңғы бет</translation>
 <translation id="1651914502370159744">"Тарих" бетін ашу</translation>
 <translation id="1668469839109562275">Ендірілген VPN</translation>
@@ -951,7 +951,7 @@
 <translation id="3702809606464356667">Терезелер қазіргі жұмыс үстелінен көрсетіліп тұр. Терезелерді барлық жұмыс үстелінен көрсету үшін жоғарыға бағыттауыш пернені басыңыз.</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="3706423975342040244">Ойын-сауық</translation>
-<translation id="370665806235115550">Жүктелуде…</translation>
+<translation id="370665806235115550">Жүктеліп жатыр…</translation>
 <translation id="3707093869106077605"><ph name="UNAVAILABLE_DLC_ONE" /> және <ph name="UNAVAILABLE_DLC_TWO" /> қолжетімді емес.</translation>
 <translation id="3708186454126126312">Бұған дейін жалғанғандар</translation>
 <translation id="3712143870407382523">Экранның осы жағына қоятын терезені таңдау</translation>

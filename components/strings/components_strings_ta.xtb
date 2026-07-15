@@ -329,6 +329,7 @@
 <translation id="1486096554574027028">கடவுச்சொற்களைத் தேடு</translation>
 <translation id="1492194039220927094">கொள்கைகள் புஷ்:</translation>
 <translation id="1495677929897281669">தாவலுக்குத் திரும்பு</translation>
+<translation id="1496318738909526466">மேம்பட்ட தானியங்கு நிரப்பல் அம்சத்தை நிர்வகிக்கலாம்</translation>
 <translation id="1500286806237135498">கேமராக்கள் (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="1504042622576912555">ஃப்ளூட்</translation>
 <translation id="1507202001669085618">&lt;p&gt;சில வைஃபை போர்ட்டல்களில், இணையத்தைப் பயன்படுத்தும் முன்பு நீங்கள் உள்நுழைய வேண்டியிருக்கும். அதுபோன்ற போர்ட்டல்களைப் பயன்படுத்தினால், இந்தப் பிழையைப் பார்ப்பீர்கள்.&lt;/p&gt;
@@ -686,7 +687,6 @@
 <translation id="2082238445998314030"><ph name="TOTAL_RESULTS" /> முடிவுகளில் <ph name="RESULT_NUMBER" />வது முடிவு</translation>
 <translation id="2083256696566019397">ஒவ்வொரு முறை பார்க்கும்போதும் அனுமதி</translation>
 <translation id="2085876078937250610">சேமி…</translation>
-<translation id="2088913896151127116">வார்த்தைகளைச் சேர்</translation>
 <translation id="2090451897496479509">கூடுதல் தகவல்களுக்கு வழங்குநரைத் தொடர்புகொள்ளவும்</translation>
 <translation id="2090686487550343086">IBANகள்</translation>
 <translation id="2091887806945687916">ஒலி</translation>
@@ -865,6 +865,7 @@
 <translation id="2322254345061973671">{COUNT,plural, =1{1 சாளரம்}other{# சாளரங்கள்}}</translation>
 <translation id="232390861414237658">இந்தக் கார்டு Google Payவில் பயன்படுத்தச் சேமிக்கப்பட்டிருக்கும் போது Chromeமில் செய்யப்படும் பர்ச்சேஸ்களில் இதைத் தானாக நிரப்பலாம்</translation>
 <translation id="2326283484705860548">Google Walletடில் இருந்து இப்போது கூடுதல் தகவல்களைத் தானாக நிரப்பலாம்</translation>
+<translation id="2326747055382936979">மேம்பட்ட தானியங்கு நிரப்பல் அம்சத்தை நிர்வகிக்கலாம்</translation>
 <translation id="2328651992442742497">அனுமதிக்கப்பட்டுள்ளது (இயல்பு)</translation>
 <translation id="2328955282645810595">கட்டுமானம் &amp; பவர் கருவிகள்</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, காலாவதித் தேதி - <ph name="EXPIRATION_DATE_ABBR" /></translation>
@@ -2252,6 +2253,7 @@
 <translation id="4464826014807964867">உங்கள் நிறுவனம் வழங்கிய தகவல்களைக் கொண்ட இணையதளங்கள்</translation>
 <translation id="4466576951214254884">மாணவர் கல்விக் கடன்கள் மற்றும் கல்லூரி சார்ந்த நிதிச் சேவைகள்</translation>
 <translation id="4467821340016922962">முழுத்திரையில் இருந்து வெளியேறி பதிவிறக்கத்தைப் பார்க்க |<ph name="ACCELERATOR" />| பட்டனை அழுத்தவும்</translation>
+<translation id="4472575034687746823">தொடங்குக</translation>
 <translation id="4473643328224505070">Chromeமின் மிகவும் பாதுகாப்பான சேவையைப் பெற <ph name="BEGIN_ENHANCED_PROTECTION_LINK" />மேம்பட்ட பாதுகாப்பு அம்சத்தை இயக்குங்கள்<ph name="END_ENHANCED_PROTECTION_LINK" /></translation>
 <translation id="4475299370877036544">இந்தச் செயல்பாடு உங்கள் நிறுவனத்தின் கொள்கைகளை மீறக்கூடும்</translation>
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />. <ph name="LEARN_MORE_TEXT" /></translation>

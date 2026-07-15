@@ -233,7 +233,6 @@
 <translation id="200114059308480249">要加入上下文來執行 Google 搜尋嗎？</translation>
 <translation id="2004096469149679223"><ph name="TAB_TITLE" />，已經靜音嘅固定無痕式分頁</translation>
 <translation id="2021896219286479412">全螢幕網站控制</translation>
-<translation id="2022953316617983419">二維條碼</translation>
 <translation id="2024195579772565064">刪除搜尋引擎</translation>
 <translation id="2029669011553795746">選用提示通知的頁底面板目前顯示於畫面下半部</translation>
 <translation id="2038563949887743358">開啟「切換為電腦版網站」</translation>
@@ -825,6 +824,7 @@
 <translation id="442518031075347249">您將無法再透過 Google Pay 使用虛擬卡。<ph name="BEGIN_LINK1" />進一步瞭解虛擬卡<ph name="END_LINK1" /></translation>
 <translation id="442577985493096785">{TAB_COUNT,plural, =1{「<ph name="TAB_TITLE" />」和另外 <ph name="TAB_COUNT_ONE" /> 個分頁將會關閉}other{「<ph name="TAB_TITLE" />」和另外 <ph name="TAB_COUNT_MANY" /> 個分頁將會關閉}}</translation>
 <translation id="4430277756566635951">目前已選取 <ph name="EMAIL" />。請選擇帳戶。</translation>
+<translation id="4430369329743628066">已新增書籤</translation>
 <translation id="4452411734226507615">關閉 <ph name="TAB_TITLE" /> 分頁</translation>
 <translation id="4452548195519783679">已將書籤加入到「<ph name="FOLDER_NAME" />」</translation>
 <translation id="4460822871039013969"><ph name="TAB_TITLE" />，揀咗錄緊媒體嘅固定分頁</translation>
@@ -1130,7 +1130,6 @@
 <translation id="5763514718066511291">輕按即可複製此應用程式的網址</translation>
 <translation id="5765517223145864268">請分享您的使用體驗。您亦可<ph name="BEGIN_LINK" />變更設定<ph name="END_LINK" />。</translation>
 <translation id="5776970333778123608">資料不重要</translation>
-<translation id="5788665823391532892">報告問題…</translation>
 <translation id="5793665092639000975">已使用 <ph name="SPACE_USED" /> (共 <ph name="SPACE_AVAILABLE" />)</translation>
 <translation id="5797949256525811424">已封鎖主題</translation>
 <translation id="580893287573699959">管理感興趣的主題和網站</translation>
@@ -1182,6 +1181,7 @@
 <translation id="5995726099713306770">要再次下載頁面嗎？</translation>
 <translation id="5998675059699164418">您的機構要求您登入才能使用 Chrome。</translation>
 <translation id="6000066717592683814">繼續使用 Google</translation>
+<translation id="6002122790816966947">您的裝置</translation>
 <translation id="6011308810877101166">改善搜尋建議</translation>
 <translation id="6013305291643746595">由舊至新排序</translation>
 <translation id="6022659036123304283">自訂屬於您的 Chrome</translation>
@@ -1923,6 +1923,7 @@
 <translation id="8738163682604285902">要在「閱讀模式」下查看嗎？</translation>
 <translation id="8746155870861185046">分享突顯項目</translation>
 <translation id="8748850008226585750">內容已隱藏</translation>
+<translation id="874918643257405732">將此分頁加入書籤</translation>
 <translation id="8754448020583829686">複製 (不含連結)</translation>
 <translation id="8756969031206844760">要更新密碼嗎？</translation>
 <translation id="8765470054473112089">在網址列或搜尋框中輸入內容時，Chrome 會將輸入的內容傳送至預設搜尋引擎，以便取得更切合需求的建議。此功能不會在無痕模式下啟用。</translation>
@@ -2048,6 +2049,7 @@
 <translation id="9212845824145208577">無法再往下移動。請嘗試從下一頁開始。</translation>
 <translation id="9218430445555521422">設定為預設</translation>
 <translation id="9219103736887031265">圖片</translation>
+<translation id="922152298093051471">自訂 Chrome</translation>
 <translation id="9222198206152536936">如要在你的所有裝置上取用分頁及其他設定，請使用 <ph name="EMAIL" /> 登入</translation>
 <translation id="924447568950697217">將 Chrome 設為預設瀏覽器</translation>
 <translation id="926205370408745186">從「健康數碼生活」中移除您的 Chrome 活動記錄</translation>

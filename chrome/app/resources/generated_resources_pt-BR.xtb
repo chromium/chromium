@@ -1227,6 +1227,7 @@ Verifique suas senhas a qualquer momento no <ph name="GOOGLE_PASSWORD_MANAGER" /
 <translation id="1933489278505808700">Com permissão para ler e mudar</translation>
 <translation id="1935303383381416800">Permitir o acesso à localização</translation>
 <translation id="193565226207940518">Ferramenta de suporte</translation>
+<translation id="1935995810530254458">Copiar mesmo assim</translation>
 <translation id="1936157145127842922">Mostrar na pasta</translation>
 <translation id="1936344977780165685">{PAGES,plural, =1{Página adicionada à Lista de leitura}one{Página adicionada à Lista de leitura}other{Páginas adicionadas à Lista de leitura}}</translation>
 <translation id="1936931585862840749">Use um número para indicar quantas cópias serão impressas (1 a <ph name="MAX_COPIES" />).</translation>
@@ -1547,6 +1548,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2199298570273670671">Erro</translation>
 <translation id="2200094388063410062">E-mail</translation>
 <translation id="2200781749203116929">Registros do sistema ChromeOS</translation>
+<translation id="2202391868799679245">Ativar o atalho do teclado</translation>
 <translation id="2203088913459920044">Os nomes podem usar letras, números e caracteres especiais</translation>
 <translation id="220321590587754225">Não foi possível conectar. Tente de novo.</translation>
 <translation id="2203903197029773650"><ph name="BRAND" /> pode verificar suas senhas quando você faz login com sua Conta do Google.</translation>
@@ -5334,6 +5336,7 @@ Use Ctrl + Alt + Diminuir brilho para diminuir o zoom.</translation>
 <translation id="5096775069898886423">Receba um aviso antes de acessar sites que não têm suporte a conexões seguras</translation>
 <translation id="5097002363526479830">Falha na conexão à rede "<ph name="NAME" />": <ph name="DETAILS" /></translation>
 <translation id="5097349930204431044">Os sites que você visita podem determinar do que você gosta e sugerir anúncios enquanto continua a navegar</translation>
+<translation id="5097472729724586429">Adicione anotações com a nova ferramenta "Adicionar anotações de texto"</translation>
 <translation id="5097649414558628673">Ferramenta: <ph name="PRINT_NAME" /></translation>
 <translation id="5097874180538493929">Clicar automaticamente quando o cursor parar</translation>
 <translation id="5098963855433723436">Abre em um aplicativo separado</translation>
@@ -5398,6 +5401,7 @@ Use Ctrl + Alt + Diminuir brilho para diminuir o zoom.</translation>
 <translation id="5146235736676876345">Escolher o seu</translation>
 <translation id="5146896637028965135">Voz do sistema</translation>
 <translation id="5147113439721488265">Recomendação</translation>
+<translation id="5148020348702787234">Para enviar links, confirme sua identidade. Você pode enviar links ao fazer login mesma Conta do Google nos dois dispositivos.</translation>
 <translation id="5148285448107770349">A senha deve ter pelo menos oito caracteres</translation>
 <translation id="5149602533174716626">Copiar frame do vídeo</translation>
 <translation id="5150254825601720210">Nome do servidor SSL do certificado do Netscape</translation>
@@ -6364,7 +6368,6 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="5932881020239635062">Serial</translation>
 <translation id="5933522550144185133"><ph name="APP_NAME" /> está usando sua câmera e seu microfone</translation>
 <translation id="5935158534896975820">Preparando a solicitação de assinatura de certificado (aguardando o servidor)</translation>
-<translation id="5935554994339565449">Inclua texto com a nova ferramenta "Adicionar texto"</translation>
 <translation id="5936065461722368675">Traduzir a página toda</translation>
 <translation id="5937977334791924341">Logotipo do <ph name="APP" /></translation>
 <translation id="5938002010494270685">Atualização de segurança disponível</translation>
@@ -10264,6 +10267,7 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
 <translation id="8967427617812342790">Adicionar à lista de leitura</translation>
 <translation id="8968527460726243404">Gravador de imagem do sistema ChromeOS</translation>
 <translation id="8968766641738584599">Salvar cartão</translation>
+<translation id="8970232194848546151">Enviar um link para outro dispositivo</translation>
 <translation id="8970887620466824814">Algo deu errado.</translation>
 <translation id="89720367119469899">Escape</translation>
 <translation id="8972513834460200407">Verifique com seu administrador de rede se o firewall não está bloqueando downloads dos servidores do Google.</translation>
@@ -10530,6 +10534,7 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
 <translation id="9151906066336345901">end</translation>
 <translation id="9152503903192861480">Abrir no Modo IA</translation>
 <translation id="9153367754133725216">Confira sugestões de novos apps e conteúdo da Web no acesso rápido e nos resultados da pesquisa. Envia estatísticas para melhorar as sugestões apenas se você tiver optado por enviar relatórios de erros e dados de uso e diagnóstico ao ChromeOS.</translation>
+<translation id="9153451439615847952">Reduzir o áudio de fundo das notificações e alertas</translation>
 <translation id="9154194610265714752">Atualizado</translation>
 <translation id="915485121129452731">Tablet com caneta</translation>
 <translation id="9155344700756733162">Desmarcar cor</translation>

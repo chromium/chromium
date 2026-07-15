@@ -1217,6 +1217,7 @@ Heslá si môžete kedykoľvek skontrolovať v službe <ph name="GOOGLE_PASSWOR
 <translation id="1933489278505808700">Môže čítať a meniť</translation>
 <translation id="1935303383381416800">Môže zobrazovať vašu polohu</translation>
 <translation id="193565226207940518">Nástroj podpory</translation>
+<translation id="1935995810530254458">Aj tak skopírovať</translation>
 <translation id="1936157145127842922">Zobraziť v priečinku</translation>
 <translation id="1936344977780165685">{PAGES,plural, =1{Stránka bola pridaná do čitateľského zoznamu}few{Stránky boli pridané do čitateľského zoznamu}many{Stránky boli pridané do čitateľského zoznamu}other{Stránky boli pridané do čitateľského zoznamu}}</translation>
 <translation id="1936931585862840749">Zadajte číslo označujúce počet kópií, ktoré chcete vytlačiť (od 1 do <ph name="MAX_COPIES" />).</translation>
@@ -1537,6 +1538,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="2199298570273670671">Chyba</translation>
 <translation id="2200094388063410062">E‑mail</translation>
 <translation id="2200781749203116929">Denníky systému ChromeOS</translation>
+<translation id="2202391868799679245">Zapnúť klávesovú skratku</translation>
 <translation id="2203088913459920044">Názov môže obsahovať písmená, čísla a špeciálne znaky</translation>
 <translation id="220321590587754225">Nepodarilo sa pripojiť. Skúste to znova.</translation>
 <translation id="2203903197029773650">Keď sa prihlásite účtom Google, <ph name="BRAND" /> bude môcť skontrolovať vaše heslá</translation>
@@ -6348,7 +6350,6 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="5932881020239635062">Sériové č.</translation>
 <translation id="5933522550144185133"><ph name="APP_NAME" /> používa vašu kameru a mikrofón</translation>
 <translation id="5935158534896975820">Pripravuje sa žiadosť o podpísanie certifikátu (čaká sa na server)</translation>
-<translation id="5935554994339565449">Pridajte text pomocou nového nástroja Pridať text</translation>
 <translation id="5936065461722368675">Preložiť celú stránku</translation>
 <translation id="5937977334791924341">Logo <ph name="APP" /></translation>
 <translation id="5938002010494270685">K dispozícii je bezpečnostná inovácia</translation>

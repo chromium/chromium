@@ -414,7 +414,7 @@
 <translation id="1634828734222219955">Барлығы</translation>
 <translation id="1637407510758033366"><ph name="USER_DISPLAY_NAME" /> топқа қосылды.</translation>
 <translation id="163826442096818926">Қысқарту</translation>
-<translation id="1639239467298939599">Жүктелуде</translation>
+<translation id="1639239467298939599">Жүктеліп жатыр</translation>
 <translation id="1640180200866533862">Пайдаланушы саясаттары</translation>
 <translation id="1640244768702815859"><ph name="BEGIN_LINK" />Сайттың негізгі бетіне кіріп<ph name="END_LINK" /> көріңіз.</translation>
 <translation id="1640283014264083726">RSA шифрлауына ие PKCS #1 MD4</translation>
@@ -687,7 +687,6 @@
 <translation id="2082238445998314030"><ph name="TOTAL_RESULTS" /> ішінен <ph name="RESULT_NUMBER" /> нәтиже</translation>
 <translation id="2083256696566019397">Кірген сайын рұқсат ету</translation>
 <translation id="2085876078937250610">Сақтау…</translation>
-<translation id="2088913896151127116">Мәтін қосу</translation>
 <translation id="2090451897496479509">Толық ақпарат алу үшін провайдерге хабарласыңыз.</translation>
 <translation id="2090686487550343086">IBAN нөмірлері</translation>
 <translation id="2091887806945687916">Дыбыс</translation>
@@ -1749,7 +1748,7 @@
 <translation id="3701900332588705891">Әдетте <ph name="LOW_PRICE" />–<ph name="HIGH_PRICE" /></translation>
 <translation id="3704162925118123524">Пайдаланып жатқан желі өзінің кіру бетіне өтуіңізді талап етуі мүмкін.</translation>
 <translation id="3705189812819839667"><ph name="RESULT_OWNER" /> – <ph name="RESULT_PRODUCT_SOURCE" /></translation>
-<translation id="370665806235115550">Жүктелуде…</translation>
+<translation id="370665806235115550">Жүктеліп жатыр…</translation>
 <translation id="3709599264800900598">Көшірілген мәтін</translation>
 <translation id="3709837451557142236">Тауарлар мен фьючерс саудасы</translation>
 <translation id="3711430313228789376">Chrome құпия сөздерді көрсеткелі жатыр.</translation>
@@ -2257,6 +2256,7 @@
 <translation id="4464826014807964867">Ұйымыңыздан алынған ақпарат қамтылған веб-сайттар</translation>
 <translation id="4466576951214254884">Студенттік несиелер және білім алуды қаржыландыру</translation>
 <translation id="4467821340016922962">Толық экран режимінен шығу және жүктеп салынғандарды көру үшін |<ph name="ACCELERATOR" />| пернесін басыңыз</translation>
+<translation id="4472575034687746823">Іске кірісу</translation>
 <translation id="4473643328224505070">Chrome-ның ең жоғары деңгейлі қауіпсіздігіне ие болу үшін <ph name="BEGIN_ENHANCED_PROTECTION_LINK" />күшейтілген қорғанысты қосыңыз<ph name="END_ENHANCED_PROTECTION_LINK" />.</translation>
 <translation id="4475299370877036544">Қою әрекеті ұйымыңыздың саясаттарына қайшы келуі мүмкін.</translation>
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />. <ph name="LEARN_MORE_TEXT" /></translation>

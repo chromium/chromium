@@ -1225,6 +1225,7 @@
 <translation id="1933489278505808700">ဖတ်ပြီးပြောင်းရန် ခွင့်ပြုထားသည်</translation>
 <translation id="1935303383381416800">သင့်တည်နေရာကို ကြည့်ရန် ခွင့်ပြုထားသည်</translation>
 <translation id="193565226207940518">အကူအညီတူးလ်</translation>
+<translation id="1935995810530254458">မည်သို့ပင်ဖြစ်စေ မိတ္တူကူးရန်</translation>
 <translation id="1936157145127842922">ဖိုလ်ဒါ ထဲမှာ ပြရန်</translation>
 <translation id="1936344977780165685">{PAGES,plural, =1{ဖတ်ရန်စာရင်းသို့ စာမျက်နှာ ထည့်လိုက်သည်}other{ဖတ်ရန်စာရင်းသို့ စာမျက်နှာများ ထည့်လိုက်သည်}}</translation>
 <translation id="1936931585862840749">မိတ္တူမည်မျှ ပုံနှိပ်ထုတ်ယူလိုကြောင်း ဖော်ပြရန် နံပါတ်ကို အသုံးပြုပါ (၁ မှ <ph name="MAX_COPIES" />)။</translation>
@@ -1545,6 +1546,7 @@
 <translation id="2199298570273670671">အမှားအယွင်း</translation>
 <translation id="2200094388063410062">အီးမေးလ်</translation>
 <translation id="2200781749203116929">ChromeOS စနစ်မှတ်တမ်းများ</translation>
+<translation id="2202391868799679245">လက်ကွက်ဖြတ်လမ်း ဖွင့်ရန်</translation>
 <translation id="2203088913459920044">အမည်တွင် အက္ခရာများ၊ ဂဏန်းများနှင့် အထူးစာလုံးများ သုံးနိုင်သည်</translation>
 <translation id="220321590587754225">ချိတ်ဆက်၍မရပါ။ ထပ်စမ်းကြည့်ပါ။</translation>
 <translation id="2203903197029773650">သင်၏ Google Account နှင့် လက်မှတ်ထိုးဝင်သည့်အခါ <ph name="BRAND" /> က သင့်စကားဝှက်များကို စစ်ဆေးနိုင်သည်</translation>
@@ -6362,7 +6364,6 @@
 <translation id="5932881020239635062">အမှတ်စဉ်</translation>
 <translation id="5933522550144185133"><ph name="APP_NAME" /> သည် သင်၏ကင်မရာနှင့် မိုက်ခရိုဖုန်းကို သုံးနေသည်</translation>
 <translation id="5935158534896975820">အသိအမှတ်ပြုလက်မှတ် ရေးထိုးရန် တောင်းဆိုချက်ကို ပြင်ဆင်နေသည် (ဆာဗာကို စောင့်နေသည်)</translation>
-<translation id="5935554994339565449">“စာသားထည့်ရန်” တူးလ်အသစ်ဖြင့် စာသားထည့်ပါ</translation>
 <translation id="5936065461722368675">စာမျက်နှာတစ်ခုလုံး ဘာသာပြန်ရန်</translation>
 <translation id="5937977334791924341"><ph name="APP" /> လိုဂို</translation>
 <translation id="5938002010494270685">လုံခြုံရေး အဆင့်မြှင့်နိုင်ပါသည်</translation>

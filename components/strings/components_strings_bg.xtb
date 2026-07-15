@@ -329,6 +329,7 @@
 <translation id="1486096554574027028">Търсене в паролите</translation>
 <translation id="1492194039220927094">Разпространение на правилата:</translation>
 <translation id="1495677929897281669">Назад към раздела</translation>
+<translation id="1496318738909526466">Управление на подобреното автоматично попълване</translation>
 <translation id="1500286806237135498">Камери (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="1504042622576912555">Вълнообразна текстура</translation>
 <translation id="1507202001669085618">&lt;p&gt;Ще виждате това съобщение за грешка, ако използвате портал за Wi-Fi, където трябва да влезете в профил, преди да можете да преминете онлайн.&lt;/p&gt;
@@ -686,7 +687,6 @@
 <translation id="2082238445998314030">Резултат <ph name="RESULT_NUMBER" /> от <ph name="TOTAL_RESULTS" /></translation>
 <translation id="2083256696566019397">Разрешаване при всяко посещение</translation>
 <translation id="2085876078937250610">Запазване…</translation>
-<translation id="2088913896151127116">Добавяне на текст</translation>
 <translation id="2090451897496479509">За повече информация се обърнете към доставчика</translation>
 <translation id="2090686487550343086">IBAN номера</translation>
 <translation id="2091887806945687916">Звук</translation>
@@ -865,6 +865,7 @@
 <translation id="2322254345061973671">{COUNT,plural, =1{1 прозорец}other{# прозореца}}</translation>
 <translation id="232390861414237658">Автоматично попълване на тази карта за покупки в Chrome, когато данните ѝ са запазени в Google Pay</translation>
 <translation id="2326283484705860548">Вече можете да попълвате автоматично повече информация от Google Wallet</translation>
+<translation id="2326747055382936979">Управление на подобреното автоматично попълване</translation>
 <translation id="2328651992442742497">Разрешено (по подразбиране)</translation>
 <translation id="2328955282645810595">Ръчни и електрически строителни инструменти</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, изтича на <ph name="EXPIRATION_DATE_ABBR" /></translation>
@@ -2256,6 +2257,7 @@
 <translation id="4464826014807964867">Уебсайтове, които разполагат с информация от организацията ви</translation>
 <translation id="4466576951214254884">Студентски заеми и финансиране на обучение в колежи</translation>
 <translation id="4467821340016922962">За да излезете от режима на цял екран и да видите изтеглянето, натиснете |<ph name="ACCELERATOR" />|</translation>
+<translation id="4472575034687746823">Първи стъпки</translation>
 <translation id="4473643328224505070"><ph name="BEGIN_ENHANCED_PROTECTION_LINK" />Включете подобрената защита<ph name="END_ENHANCED_PROTECTION_LINK" />, за да получите най-високото ниво на сигурност на Chrome</translation>
 <translation id="4475299370877036544">Това действие може да нарушава правилата на организацията ви</translation>
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />. <ph name="LEARN_MORE_TEXT" /></translation>

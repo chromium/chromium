@@ -1217,6 +1217,7 @@
 <translation id="1933489278505808700">Okuyup değiştirmesine izin veriliyor</translation>
 <translation id="1935303383381416800">Konumunuzu görmesine izin verilenler</translation>
 <translation id="193565226207940518">Destek Aracı</translation>
+<translation id="1935995810530254458">Yine de kopyala</translation>
 <translation id="1936157145127842922">Klasörde Göster</translation>
 <translation id="1936344977780165685">{PAGES,plural, =1{Sayfa, okuma listesine eklendi}other{Sayfalar, okuma listesine eklendi}}</translation>
 <translation id="1936931585862840749">Yazdırılacak kopya sayısını göstermek için bir sayı (1-<ph name="MAX_COPIES" /> arası) kullanın.</translation>
@@ -1537,6 +1538,7 @@ Cihazınızda Family Link uygulamasını yükleyerek bu hesabın ayarlarını y�
 <translation id="2199298570273670671">Hata</translation>
 <translation id="2200094388063410062">E-posta</translation>
 <translation id="2200781749203116929">ChromeOS Sistem Günlükleri</translation>
+<translation id="2202391868799679245">Klavye kısayolunu aç</translation>
 <translation id="2203088913459920044">Ad harf, sayı ve özel karakter içerebilir</translation>
 <translation id="220321590587754225">Bağlanılamadı. Tekrar deneyin.</translation>
 <translation id="2203903197029773650"><ph name="BRAND" />, Google Hesabınızla oturum açtığınızda şifrelerinizi kontrol edebilir.</translation>
@@ -6348,7 +6350,6 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="5932881020239635062">Seri numarası</translation>
 <translation id="5933522550144185133"><ph name="APP_NAME" />, kameranızı ve mikrofonunuzu kullanıyor</translation>
 <translation id="5935158534896975820">Sertifika imzalama isteği hazırlanıyor (sunucu bekleniyor)</translation>
-<translation id="5935554994339565449">Yeni "Metin ekleme" aracını kullanarak metin ekleyin</translation>
 <translation id="5936065461722368675">Tüm sayfayı çevir</translation>
 <translation id="5937977334791924341"><ph name="APP" /> logosu</translation>
 <translation id="5938002010494270685">Güvenlik yeni sürümü mevcut</translation>

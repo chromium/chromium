@@ -329,6 +329,7 @@
 <translation id="1486096554574027028">Caută parole</translation>
 <translation id="1492194039220927094">Notificări pentru politici:</translation>
 <translation id="1495677929897281669">Înpoi la filă</translation>
+<translation id="1496318738909526466">Gestionează completarea automată îmbunătățită</translation>
 <translation id="1500286806237135498">Camere foto (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="1504042622576912555">Carton corugat</translation>
 <translation id="1507202001669085618">&lt;p&gt;Această eroare se va afișa dacă folosești un portal Wi-Fi la care trebuie să te conectezi înainte de a putea fi online.&lt;/p&gt;
@@ -686,7 +687,6 @@
 <translation id="2082238445998314030">Rezultatul <ph name="RESULT_NUMBER" /> din <ph name="TOTAL_RESULTS" /></translation>
 <translation id="2083256696566019397">Permite la fiecare accesare</translation>
 <translation id="2085876078937250610">Salvează…</translation>
-<translation id="2088913896151127116">Adaugă text</translation>
 <translation id="2090451897496479509">Contactează furnizorul pentru mai multe informații</translation>
 <translation id="2090686487550343086">IBAN-uri</translation>
 <translation id="2091887806945687916">Sunet</translation>
@@ -865,6 +865,7 @@
 <translation id="2322254345061973671">{COUNT,plural, =1{O fereastră}few{# ferestre}other{# de ferestre}}</translation>
 <translation id="232390861414237658">Completează automat acest card pentru achizițiile făcute în Chrome când este salvat pentru a fi folosit cu Google Pay</translation>
 <translation id="2326283484705860548">Acum poți completa automat mai multe informații din Portofelul Google</translation>
+<translation id="2326747055382936979">Gestionează completarea automată îmbunătățită</translation>
 <translation id="2328651992442742497">Permis (prestabilit)</translation>
 <translation id="2328955282645810595">Instrumente pentru construcții și instrumente electrice</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, expiră pe <ph name="EXPIRATION_DATE_ABBR" /></translation>
@@ -2256,6 +2257,7 @@ Pentru a ascunde opțiunile de plată mai târziu, accesează <ph name="BEGIN_LI
 <translation id="4464826014807964867">Site-uri cu informații de la organizația ta</translation>
 <translation id="4466576951214254884">Credite pentru studenți și finanțare pentru studii universitare</translation>
 <translation id="4467821340016922962">Pentru a ieși din ecranul complet și a vedea descărcarea, apasă pe |<ph name="ACCELERATOR" />|</translation>
+<translation id="4472575034687746823">Începeți</translation>
 <translation id="4473643328224505070"><ph name="BEGIN_ENHANCED_PROTECTION_LINK" />Activează Protecția îmbunătățită<ph name="END_ENHANCED_PROTECTION_LINK" /> pentru a beneficia de cel mai înalt nivel de securitate oferit de Chrome</translation>
 <translation id="4475299370877036544">Este posibil ca această acțiune să încalce politicile organizației tale</translation>
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />. <ph name="LEARN_MORE_TEXT" /></translation>

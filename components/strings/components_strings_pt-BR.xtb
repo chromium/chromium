@@ -300,7 +300,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="1445896388055045436">Mostrar os benefícios e recompensas do cartão na finalização da compra. Condições sujeitas aos termos do emissor.</translation>
 <translation id="1447067628680007684">(x86_64)</translation>
 <translation id="1448166547804028941">As chaves "<ph name="DATA_CONTROLS_FIRST_KEY_SET" />" não podem ser definidas no mesmo dicionário que as chaves "<ph name="DATA_CONTROLS_SECOND_KEY_SET" />"</translation>
-<translation id="1449251255954293933">Salvar número de reparação na Carteira do Google</translation>
+<translation id="1449251255954293933">Salvar número de retificação na Carteira do Google</translation>
 <translation id="1455413310270022028">Borracha</translation>
 <translation id="1457992721081300557">{NUM_REVIEWS,plural, =0{Ver 0 avaliação}=1{Ver 1 avaliação}one{Ver # avaliação}other{Ver todas as # avaliações}}</translation>
 <translation id="1458059624921545588">Pessoas e sociedade</translation>
@@ -329,6 +329,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="1486096554574027028">Pesquise senhas</translation>
 <translation id="1492194039220927094">Push de políticas:</translation>
 <translation id="1495677929897281669">Voltar à guia</translation>
+<translation id="1496318738909526466">Gerenciar o Preenchimento Automático Aprimorado</translation>
 <translation id="1500286806237135498">Câmeras (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="1504042622576912555">Onda</translation>
 <translation id="1507202001669085618">&lt;p&gt;Você verá esse erro se estiver usando um portal Wi-Fi em que precise fazer login para poder se conectar.&lt;/p&gt;
@@ -387,7 +388,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="159274626729231974">Festivais de filmes</translation>
 <translation id="1593359183944365958">270 graus</translation>
 <translation id="1594030484168838125">Escolher</translation>
-<translation id="1595731774593926493">Excluir número de reparação</translation>
+<translation id="1595731774593926493">Excluir número de retificação</translation>
 <translation id="1597307423671074806">Vídeo WebM</translation>
 <translation id="159800670740560023">Link da dica do Chrome, pressione Enter para <ph name="IPH_LINK_FOCUSED_LINK_TEXT" /></translation>
 <translation id="1599199147673445968">Novo cartão? <ph name="BEGIN_LINK" />Insira os detalhes dele<ph name="END_LINK" /></translation>
@@ -686,7 +687,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2082238445998314030">Resultado <ph name="RESULT_NUMBER" /> de <ph name="TOTAL_RESULTS" /></translation>
 <translation id="2083256696566019397">Permitir em todos os acessos</translation>
 <translation id="2085876078937250610">Salvar…</translation>
-<translation id="2088913896151127116">Adicionar texto</translation>
 <translation id="2090451897496479509">Entre em contato com o fornecedor para saber mais</translation>
 <translation id="2090686487550343086">IBANs</translation>
 <translation id="2091887806945687916">Som</translation>
@@ -808,7 +808,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2233745931693710080">Disco compacto</translation>
 <translation id="2236949375853147973">Minha atividade</translation>
 <translation id="2239100178324503013">Enviar agora</translation>
-<translation id="224130779555573777">Adicionar número de reparação</translation>
+<translation id="224130779555573777">Adicionar número de retificação</translation>
 <translation id="2241693394036365668">Um arquivo é baixado</translation>
 <translation id="2242389809734574253">A página "Salvar IBAN" foi fechada.</translation>
 <translation id="2246264294482514010">10 x 12 pol.</translation>
@@ -865,6 +865,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2322254345061973671">{COUNT,plural, =1{1 janela}one{# janela}other{# janelas}}</translation>
 <translation id="232390861414237658">Os dados deste cartão serão preenchidos automaticamente para compras feitas no Chrome quando ele for salvo para uso com o Google Pay</translation>
 <translation id="2326283484705860548">Agora você pode preencher automaticamente mais informações da Carteira do Google</translation>
+<translation id="2326747055382936979">Gerenciar o preenchimento automático aprimorado</translation>
 <translation id="2328651992442742497">Com permissão (padrão)</translation>
 <translation id="2328955282645810595">Ferramentas de construção e elétricas</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, expira em <ph name="EXPIRATION_DATE_ABBR" /></translation>
@@ -1375,7 +1376,7 @@ Se quiser ocultar as opções para pagar depois, acesse as <ph name="BEGIN_LINK"
 <translation id="3121994479408824897">Ir para <ph name="DOMAIN" /></translation>
 <translation id="3122696783148405307">Mostrar resultados dos últimos 30 dias</translation>
 <translation id="3126023634486644099">Rótulos (permanentes)</translation>
-<translation id="3132345256151444894">Salvar número de reparação</translation>
+<translation id="3132345256151444894">Salvar número de retificação</translation>
 <translation id="3133565499688974786">Agora <ph name="SEARCH_ENGINE_NAME" /> é seu mecanismo de pesquisa padrão</translation>
 <translation id="3134859781443140237">Rede local</translation>
 <translation id="3137283076021007034"><ph name="KEYWORD" />: pesquisar <ph name="KEYWORD_SHORT_NAME" /></translation>
@@ -2256,6 +2257,7 @@ Se quiser ocultar as opções para pagar depois, acesse as <ph name="BEGIN_LINK"
 <translation id="4464826014807964867">Sites com informações da sua organização</translation>
 <translation id="4466576951214254884">Empréstimos estudantis e financiamento universitário</translation>
 <translation id="4467821340016922962">Para sair do modo tela cheia e conferir o download, pressione |<ph name="ACCELERATOR" />|</translation>
+<translation id="4472575034687746823">Vamos começar</translation>
 <translation id="4473643328224505070"><ph name="BEGIN_ENHANCED_PROTECTION_LINK" />Ative a proteção reforçada<ph name="END_ENHANCED_PROTECTION_LINK" /> para ter o nível mais alto de segurança do Chrome</translation>
 <translation id="4475299370877036544">Esta ação pode violar as políticas da sua organização</translation>
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />. <ph name="LEARN_MORE_TEXT" /></translation>
@@ -3050,6 +3052,7 @@ Se quiser ocultar as opções para pagar depois, acesse as <ph name="BEGIN_LINK"
 <translation id="5715918316982363436"><ph name="TAB_COUNT" /> de <ph name="WINDOW_COUNT" /> neste dispositivo</translation>
 <translation id="5716325061445053985">Toque para abrir a guia no smartphone</translation>
 <translation id="5717509257172454543">Patinação no gelo</translation>
+<translation id="5718326209176373202">Adicionar anotações de texto</translation>
 <translation id="5718601519531438273">Inclui informações como passaportes e carteiras de habilitação</translation>
 <translation id="5720705177508910913">Usuário atual</translation>
 <translation id="5720895412771013401">Computadores desktop</translation>
@@ -4825,7 +4828,7 @@ Mais detalhes:
 <translation id="8456775115498700722">Agora, você pode preencher automaticamente seus cartões do <ph name="CARD_ISSUER_NAME" /> porque sua conta do <ph name="CARD_ISSUER_NAME" /> está vinculada ao Google Pay.</translation>
 <translation id="8457125768502047971">Indefinida</translation>
 <translation id="8458202188076138974">Letter Extra</translation>
-<translation id="8461289985785035071">Editar número de reparação</translation>
+<translation id="8461289985785035071">Editar número de retificação</translation>
 <translation id="8461694314515752532">Criptografar dados sincronizados com sua própria senha longa de sincronização</translation>
 <translation id="8461973047386722744">Nenhuma senha encontrada</translation>
 <translation id="8467494337615822642">Acesse a página de confirmação de segurança do Chrome nas configurações</translation>
@@ -5307,6 +5310,7 @@ incomuns e incorretas. Isso pode acontecer quando um invasor está fingindo ser 
 <translation id="949314938206378263">Você pediu para acessar este site. O familiar responsável pode responder no Family Link.</translation>
 <translation id="950736567201356821">Perfuração tripla na parte superior</translation>
 <translation id="950926967802086924">Chave de acesso • Gerenciador de senhas do Google</translation>
+<translation id="952165179818196872">Adicione o <ph name="PROVIDER" /> para pagar sem trocar de app</translation>
 <translation id="955429569736351433">RV permitida</translation>
 <translation id="955627189349169688">Você pode desativar essa política nas <ph name="BEGIN_LINK" />configurações da Sincronização do Chrome<ph name="END_LINK" />.</translation>
 <translation id="95721182352849470">Amarelo 2</translation>

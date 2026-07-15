@@ -828,7 +828,7 @@
 <translation id="1634783886312010422"><ph name="WEBSITE" /> сайтында құпия сөзіңізді өзгерттіңіз бе?</translation>
 <translation id="1634946671922651819">{MULTI_GROUP_TAB_COUNT,plural, =0{Қойындыны өшіріп, топты жою қажет пе?}=1{Қойындыларды өшіріп, топты жою қажет пе?}other{Қойындыларды өшіріп, топтарды жою қажет пе?}}</translation>
 <translation id="1637765355341780467">Профильді ашу кезінде бірдеңе дұрыс болмады. Кейбір мүмкіндіктер қолжетімді болмауы мүмкін.</translation>
-<translation id="1639239467298939599">Жүктелуде</translation>
+<translation id="1639239467298939599">Жүктеліп жатыр</translation>
 <translation id="1641113438599504367">Safe Browsing</translation>
 <translation id="1641496881756082050"><ph name="NETWORK_NAME" /> желісіне қатысты басқа әрекеттер</translation>
 <translation id="1641884605525735390">{NUM_PASSWORDS,plural, =1{Дұрыс форматталмағандықтан, тағы 1 құпия сөз импортталмады.}other{Дұрыс форматталмағандықтан, тағы {NUM_PASSWORDS} құпия сөз импортталмады.}}</translation>
@@ -1217,6 +1217,7 @@
 <translation id="1933489278505808700">Оқып, өзгерту рұқсаты бар</translation>
 <translation id="1935303383381416800">Геодеректеріңізді көруге рұқсаты барлар</translation>
 <translation id="193565226207940518">Қолдау құралы</translation>
+<translation id="1935995810530254458">Сонда да көшіру</translation>
 <translation id="1936157145127842922">Қалтада көрсету</translation>
 <translation id="1936344977780165685">{PAGES,plural, =1{Бет оқу тізіміне қосылды.}other{Беттер оқу тізіміне қосылды.}}</translation>
 <translation id="1936931585862840749">Басып шығарылатын көшірмелер санын көрсетіңіз (1-<ph name="MAX_COPIES" />).</translation>
@@ -3502,7 +3503,7 @@
 <translation id="3706366828968376544">Экранды <ph name="DEVICE_NAME" /> құрылғысына трансляциялауды жалғастыру</translation>
 <translation id="3706463572498736864">Әр парақтағы бет саны</translation>
 <translation id="370649949373421643">Wi‑Fi желісін қосу</translation>
-<translation id="370665806235115550">Жүктелуде…</translation>
+<translation id="370665806235115550">Жүктеліп жатыр…</translation>
 <translation id="3707034683772193706">Сіз кірген сайт көбінесе бот емес екеніңізді растау үшін Chrome-мен ақпараттың шағын көлемін сақтай алады</translation>
 <translation id="3707163604290651814">Аккаунтқа <ph name="NAME" /> ретінде кірдіңіз.</translation>
 <translation id="3707348585109246684">Сілтемені жаңа <ph name="APP" /> қойындысында ашу</translation>
@@ -5082,7 +5083,6 @@
 <translation id="4906490889887219338">Желінің ортақ каталогтерін реттеу немесе басқару. <ph name="LINK_BEGIN" />Толығырақ<ph name="LINK_END" /></translation>
 <translation id="4906679076183257864">Әдепкі мәнге қалпына келтіру</translation>
 <translation id="4907129260985716018">Бұл кеңейтімнің сайт деректерін қашан оқитынын және өзгертетінін таңдаңыз</translation>
-<translation id="4908076691331874303">Бұл сайттан жасырылған</translation>
 <translation id="4908811072292128752">Екі сайтты бірден шолу үшін жаңа қойындыны ашыңыз</translation>
 <translation id="4910241725741323970">Қолданба әлдеқашан орнатылды</translation>
 <translation id="4912643508233590958">Әрекетсіз режимінен іске қосу</translation>
@@ -6346,7 +6346,6 @@
 <translation id="5932881020239635062">Сериялық</translation>
 <translation id="5933522550144185133"><ph name="APP_NAME" /> қолданбасы камераңыз бен микрофоныңызды пайдалануда.</translation>
 <translation id="5935158534896975820">Сертификатқа қол қою сұрауы дайындалуда (сервер жауабы күтілуде)</translation>
-<translation id="5935554994339565449">Жаңа "Мәтін қосу" құралымен мәтін қосыңыз</translation>
 <translation id="5936065461722368675">Тұтас бетті аудару</translation>
 <translation id="5937977334791924341"><ph name="APP" /> логотипі</translation>
 <translation id="5938002010494270685">Қауіпсіздік бойынша жаңартылған нұсқа бар</translation>

@@ -1217,6 +1217,7 @@ Comproba os teus contrasinais cando queiras no <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1933489278505808700">Permiso concedido para ler o sitio e cambialo</translation>
 <translation id="1935303383381416800">Permiso concedido para ver a túa localización</translation>
 <translation id="193565226207940518">Ferramenta de asistencia</translation>
+<translation id="1935995810530254458">Copiar igualmente</translation>
 <translation id="1936157145127842922">Mostrar no cartafol</translation>
 <translation id="1936344977780165685">{PAGES,plural, =1{Engadiuse a páxina á lista de lectura}other{Engadíronse as páxinas á lista de lectura}}</translation>
 <translation id="1936931585862840749">Utiliza un número para indicar cantas copias se deben imprimir (de 1 a <ph name="MAX_COPIES" />).</translation>
@@ -1537,6 +1538,7 @@ Instala a aplicación Family Link no teu dispositivo e poderás xestionar a conf
 <translation id="2199298570273670671">Erro</translation>
 <translation id="2200094388063410062">Correo electrónico</translation>
 <translation id="2200781749203116929">Rexistros do sistema de ChromeOS</translation>
+<translation id="2202391868799679245">Activar atallo de teclado</translation>
 <translation id="2203088913459920044">O nome pode conter letras, números e caracteres especiais</translation>
 <translation id="220321590587754225">Non se puido conectar. Téntao de novo.</translation>
 <translation id="2203903197029773650"><ph name="BRAND" /> poderá comprobar os teus contrasinais cando inicies sesión coa túa Conta de Google</translation>
@@ -6351,7 +6353,6 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="5932881020239635062">Número de serie</translation>
 <translation id="5933522550144185133"><ph name="APP_NAME" /> está utilizando a cámara e o micrófono</translation>
 <translation id="5935158534896975820">Preparando solicitude de sinatura do certificado (agardando polo servidor)</translation>
-<translation id="5935554994339565449">Engade texto coa nova ferramenta Engadir texto</translation>
 <translation id="5936065461722368675">Traducir páxina completa</translation>
 <translation id="5937977334791924341">Logotipo de <ph name="APP" /></translation>
 <translation id="5938002010494270685">Hai unha actualización de seguranza dispoñible</translation>

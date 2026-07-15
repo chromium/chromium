@@ -1217,6 +1217,7 @@
 <translation id="1933489278505808700">Թույլատրված է դիտել և փոխել</translation>
 <translation id="1935303383381416800">Թույլատրվում է տեսնել ձեր տեղադրությունը</translation>
 <translation id="193565226207940518">Աջակցման գործիք</translation>
+<translation id="1935995810530254458">Պատճենել</translation>
 <translation id="1936157145127842922">Ցուցադրել պանակում</translation>
 <translation id="1936344977780165685">{PAGES,plural, =1{Էջն ավելացվել է ընթերցանության ցանկում}one{Էջերն ավելացվել են ընթերցանության ցանկում}other{Էջերն ավելացվել են ընթերցանության ցանկում}}</translation>
 <translation id="1936931585862840749">Թվերով նշեք՝ քանի օրինակ է անհրաժեշտ տպել (1-ից <ph name="MAX_COPIES" />)։</translation>
@@ -1537,6 +1538,7 @@
 <translation id="2199298570273670671">Սխալ</translation>
 <translation id="2200094388063410062">Էլփոստ</translation>
 <translation id="2200781749203116929">ChromeOS-ի համակարգային մատյաններ</translation>
+<translation id="2202391868799679245">Միացնել ստեղնային դյուրանցումը</translation>
 <translation id="2203088913459920044">Անվանման մեջ կարող են օգտագործվել տառեր, թվեր և հատուկ նշաններ</translation>
 <translation id="220321590587754225">Չհաջողվեց միանալ։ Նորից փորձեք։</translation>
 <translation id="2203903197029773650">«<ph name="BRAND" />» կարող է ստուգել ձեր գաղտնաբառերը, երբ մտնեք Google հաշիվ։</translation>
@@ -6343,7 +6345,6 @@
 <translation id="5932881020239635062">Սերիական համարը</translation>
 <translation id="5933522550144185133"><ph name="APP_NAME" /> հավելվածն օգտագործում է ձեր տեսախցիկն ու խոսափողը</translation>
 <translation id="5935158534896975820">Հավաստագրի ստորագրման հայտի նախապատրաստում (սպասում է սերվերում)</translation>
-<translation id="5935554994339565449">Ավելացրեք տեքստ նոր «Տեքստի ավելացում» գործիքի միջոցով</translation>
 <translation id="5936065461722368675">Թարգմանել ամբողջ էջը</translation>
 <translation id="5937977334791924341"><ph name="APP" /> հավելվածի լոգո</translation>
 <translation id="5938002010494270685">Հասանելի է անվտանգության համակարգի թարմացում</translation>

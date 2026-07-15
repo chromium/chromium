@@ -1217,6 +1217,7 @@ Vérifiez vos mots de passe à tout moment dans le <ph name="GOOGLE_PASSWORD_MAN
 <translation id="1933489278505808700">Autorisée à lire et modifier</translation>
 <translation id="1935303383381416800">Autorisé à connaître votre position</translation>
 <translation id="193565226207940518">Outil d'assistance</translation>
+<translation id="1935995810530254458">Copier quand même</translation>
 <translation id="1936157145127842922">Afficher dans le dossier</translation>
 <translation id="1936344977780165685">{PAGES,plural, =1{Page ajoutée à la liste de lecture}one{Page ajoutée à la liste de lecture}other{Pages ajoutées à la liste de lecture}}</translation>
 <translation id="1936931585862840749">Indiquez le nombre de copies à imprimer (1 à <ph name="MAX_COPIES" />).</translation>
@@ -1537,6 +1538,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2199298570273670671">Erreur</translation>
 <translation id="2200094388063410062">E-mail</translation>
 <translation id="2200781749203116929">Journaux système ChromeOS</translation>
+<translation id="2202391868799679245">Activer le raccourci clavier</translation>
 <translation id="2203088913459920044">Le nom peut contenir des lettres, des chiffres et des caractères spéciaux</translation>
 <translation id="220321590587754225">Impossible de se connecter. Réessayez.</translation>
 <translation id="2203903197029773650">Le <ph name="BRAND" /> peut vérifier vos mots de passe lorsque vous vous connectez à votre compte Google</translation>
@@ -6347,7 +6349,6 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="5932881020239635062">Série</translation>
 <translation id="5933522550144185133"><ph name="APP_NAME" /> utilise votre caméra et votre micro</translation>
 <translation id="5935158534896975820">Préparation de la demande de signature du certificat (en attente du serveur)</translation>
-<translation id="5935554994339565449">Ajoutez du texte avec le nouvel outil "Ajouter du texte"</translation>
 <translation id="5936065461722368675">Traduire toute la page</translation>
 <translation id="5937977334791924341">Logo <ph name="APP" /></translation>
 <translation id="5938002010494270685">Mise à niveau de sécurité disponible</translation>

@@ -687,7 +687,6 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="2082238445998314030">Canlyniad <ph name="RESULT_NUMBER" /> o <ph name="TOTAL_RESULTS" /></translation>
 <translation id="2083256696566019397">Caniatáu ar bob ymweliad</translation>
 <translation id="2085876078937250610">Cadw…</translation>
-<translation id="2088913896151127116">Ychwanegu testun</translation>
 <translation id="2090451897496479509">Cysylltwch â'r darparwr am ragor o wybodaeth</translation>
 <translation id="2090686487550343086">IBANs</translation>
 <translation id="2091887806945687916">Sain</translation>
@@ -2258,6 +2257,7 @@ I guddio opsiynau talu'n ddiweddarach, ewch i'r <ph name="BEGIN_LINK" />gosodiad
 <translation id="4464826014807964867">Gwefannau gyda gwybodaeth o'ch sefydliad</translation>
 <translation id="4466576951214254884">Benthyciadau Myfyrwyr a Chyllid Coleg</translation>
 <translation id="4467821340016922962">I adael y sgrîn lawn a gweld y lawrlwythiad, pwyswch |<ph name="ACCELERATOR" />|</translation>
+<translation id="4472575034687746823">Cychwyn arni</translation>
 <translation id="4473643328224505070"><ph name="BEGIN_ENHANCED_PROTECTION_LINK" />Troi gwell amddiffyniad ymlaen<ph name="END_ENHANCED_PROTECTION_LINK" /> i gael y lefel uchaf o ddiogelwch Chrome</translation>
 <translation id="4475299370877036544">Gallai'r weithred hon dorri polisïau eich sefydliad</translation>
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />. <ph name="LEARN_MORE_TEXT" /></translation>
@@ -4014,6 +4014,7 @@ I guddio opsiynau talu'n ddiweddarach, ewch i'r <ph name="BEGIN_LINK" />gosodiad
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />Dysgu rhagor<ph name="END_LINK" /> am y broblem hon.</translation>
 <translation id="7213191991901907140">Dywedwch wrthym am eich profiad</translation>
 <translation id="7219179957768738017">Mae'r cysylltiad yn defnyddio <ph name="SSL_VERSION" />.</translation>
+<translation id="7219197639442810756">Awgrymwyd gan Gemini</translation>
 <translation id="7220786058474068424">Yn prosesu</translation>
 <translation id="7221855153210829124">Dangos hysbysiadau</translation>
 <translation id="7222232353993864120">Cyfeiriad E-bost</translation>
@@ -4621,6 +4622,7 @@ Manylion ychwanegol:
 <translation id="8134058435519644366">Recriwtio a Staffio</translation>
 <translation id="8135546115396015134">bysell chwith</translation>
 <translation id="8137456439814903304">Ynni a Chyfleustodau</translation>
+<translation id="8138591088112729119">Wedi'i bweru gan Ddeallusrwydd Personol</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{Crëwyd 1 mis yn ôl}zero{Crëwyd {NUM_MONTHS} mis yn ôl}two{Crëwyd {NUM_MONTHS} fis yn ôl}few{Crëwyd {NUM_MONTHS} mis yn ôl}many{Crëwyd {NUM_MONTHS} mis yn ôl}other{Crëwyd {NUM_MONTHS} mis yn ôl}}</translation>
 <translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />, diofyn presennol. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">Fersiwn y PDF:</translation>

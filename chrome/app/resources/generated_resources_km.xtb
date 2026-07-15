@@ -1227,12 +1227,14 @@
 <translation id="1933489278505808700">​អនុញ្ញាត​ឱ្យ​អាន និង​ផ្លាស់ប្ដូរ</translation>
 <translation id="1935303383381416800">អនុញ្ញាតឱ្យមើលទីតាំងរបស់អ្នក</translation>
 <translation id="193565226207940518">ឧបករណ៍​ជំនួយ</translation>
+<translation id="1935995810530254458">មិនអីទេ ចម្លងចុះ</translation>
 <translation id="1936157145127842922">បង្ហាញនៅក្នុងថតឯកសារ</translation>
 <translation id="1936344977780165685">{PAGES,plural, =1{បានបញ្ចូល​ទំព័រ​ទៅក្នុង​បញ្ជីអាន}other{បានបញ្ចូល​ទំព័រ​ទៅក្នុង​បញ្ជីអាន}}</translation>
 <translation id="1936931585862840749">ប្រើលេខ ដើម្បី​បង្ហាញ​អំពីចំនួន​ច្បាប់ចម្លង​ដែលត្រូវ​បោះពុម្ព (1 ដល់ <ph name="MAX_COPIES" />)។</translation>
 <translation id="1938351510777341717">ការបញ្ជា​ខាងក្រៅ</translation>
 <translation id="1940221956626514677">ប្ដូរ​របារឧបករណ៍​តាមបំណង</translation>
 <translation id="1940546824932169984">ឧបករណ៍​ដែល​បានភ្ជាប់</translation>
+<translation id="194081218158106711">កំពុងបញ្ជាក់ពាក្យសម្ងាត់ដែលបានប្ដូរ...</translation>
 <translation id="1941410638996203291">ពេល​ចាប់ផ្ដើមម៉ោង <ph name="TIME" /></translation>
 <translation id="1941553344801134989">កំណែ៖ <ph name="APP_VERSION" /></translation>
 <translation id="1941685451584875710">អ្នកគ្រប់គ្រងរបស់អ្នកបានកំណត់រចនាសម្ព័ន្ធគណនីរបស់អ្នកឱ្យភ្ជាប់ទៅ Microsoft OneDrive ដោយស្វ័យប្រវត្តិ ប៉ុន្តែមានអ្វីមួយខុសប្រក្រតី។</translation>
@@ -1547,6 +1549,7 @@
 <translation id="2199298570273670671">បញ្ហា</translation>
 <translation id="2200094388063410062">អ៊ីមែល</translation>
 <translation id="2200781749203116929">កំណត់ហេតុ​ប្រព័ន្ធ ChromeOS</translation>
+<translation id="2202391868799679245">បើកផ្លូវកាត់​ក្ដារ​ចុច</translation>
 <translation id="2203088913459920044">ឈ្មោះ​អាចប្រើអក្សរ លេខ និង​តួអក្សរ​ពិសេស</translation>
 <translation id="220321590587754225">មិន​អាច​ភ្ជាប់បានទេ។ សូមព្យាយាមម្ដងទៀត។</translation>
 <translation id="2203903197029773650"><ph name="BRAND" /> អាចពិនិត្យមើលពាក្យសម្ងាត់របស់អ្នក នៅពេលអ្នកចូលដោយប្រើគណនី Google របស់អ្នក</translation>
@@ -4753,6 +4756,7 @@
 <translation id="4657914796247705218">ល្បឿន TrackPoint</translation>
 <translation id="4658648180588730283">មិនអាចប្រើកម្មវិធី <ph name="APPLICATION_NAME" /> ដោយ​គ្មាន​អ៊ីនធឺណិត​បាន​ទេ។</translation>
 <translation id="465878909996028221">មានតែ​ប្រូតូកូល http, https និងឯកសារ​ប៉ុណ្ណោះ​ដែលស្គាល់ការបញ្ជូនបន្ត​កម្មវិធីរុករក​តាមអ៊ីនធឺណិត។</translation>
+<translation id="4658821552705754298"><ph name="CATEGORY_NAME" /> <ph name="ITEM_NAME" /></translation>
 <translation id="4659126640776004816">នៅពេលអ្នក​ចូលគណនី Google របស់អ្នក មុខងារនេះ​ត្រូវបានបើក។</translation>
 <translation id="4660465405448977105">{COUNT,plural, =1{រូបភាព}other{រូបភាព #}}</translation>
 <translation id="4660540330091848931">កំពុង​ប្ដូរ​ទំហំ</translation>
@@ -6360,7 +6364,6 @@
 <translation id="5932881020239635062">លេខសេរ៊ី</translation>
 <translation id="5933522550144185133"><ph name="APP_NAME" /> កំពុងប្រើ​កាមេរ៉ា និងមីក្រូហ្វូន​របស់អ្នក</translation>
 <translation id="5935158534896975820">កំពុងរៀបចំ​សំណើសុំ​ចុះហត្ថលេខា​លើវិញ្ញាបនបត្រ (កំពុងរង់ចាំ​ម៉ាស៊ីនមេ)</translation>
-<translation id="5935554994339565449">បញ្ចូលអក្សរដោយប្រើឧបករណ៍ "បញ្ចូលអក្សរ" ថ្មី</translation>
 <translation id="5936065461722368675">បកប្រែ​ទំព័រ​ទាំងមូល</translation>
 <translation id="5937977334791924341">និមិត្តសញ្ញា <ph name="APP" /></translation>
 <translation id="5938002010494270685">អាចដំឡើងកំណែ​សោសុវត្ថិភាព​បានហើយ</translation>
@@ -8916,6 +8919,7 @@
 <translation id="7933486544522242079">&amp;រក្សាទុក និង​ចែក​រំលែក</translation>
 <translation id="7933518760693751884">ដើម្បីរក្សាទុកទំព័រសម្រាប់ពេលក្រោយ សូមចុចរូបចំណាំ</translation>
 <translation id="7933634003144813719">គ្រប់គ្រង​ថត​រួម</translation>
+<translation id="7935072572536724392">ការប្ដូរពាក្យសម្ងាត់ដោយស្វ័យប្រវត្តិមិនបានសម្រេចទេ</translation>
 <translation id="7936195481975600746">ដើម្បី​បង្ហាញ​អេក្រង់​របស់អ្នក សូមប្រើផ្ទាំងជ្រើសរើសអេក្រង់នៃប្រព័ន្ធរបស់អ្នក</translation>
 <translation id="7937809006412909895">កំពុងប្រមូល​ទិន្នន័យ​វិភាគ</translation>
 <translation id="7938881824185772026">Labs</translation>
@@ -9053,6 +9057,7 @@
 <translation id="8029412171914613589">{SELECTED_ITEMS,plural, =0{បញ្ជី​អាន}=1{បញ្ជី​អាន ({SELECTED_ITEMS})}other{បញ្ជី​អាន ({SELECTED_ITEMS})}}</translation>
 <translation id="8029492516535178472"><ph name="WINDOW_TITLE" /> - បានស្នើសុំការអនុញ្ញាត, ចុច ⌘ + ជម្រើស + ព្រួញឡើងលើ ដើម្បីឆ្លើយតប</translation>
 <translation id="8030169304546394654">បានផ្ដាច់</translation>
+<translation id="8030814978699290230">កំពុងព្យាយាមចូលគណនី...</translation>
 <translation id="8030852056903932865">យល់ព្រម</translation>
 <translation id="8033827949643255796">បានជ្រើសរើស</translation>
 <translation id="8033958968890501070">អស់​ម៉ោង</translation>
@@ -9466,6 +9471,7 @@
 <translation id="8343578633847737325">ការជជែក និងកម្រងសារថ្មីៗ</translation>
 <translation id="8345848587667658367">ឥឡូវនេះ អ្នក​អាច​មើល​រូបថត មេឌៀ ការជូនដំណឹង និង​កម្មវិធី​ថ្មីៗ​លើ​ទូរសព្ទ​របស់​អ្នក​បាន​ហើយ</translation>
 <translation id="8347227221149377169">ការងារ​បោះពុម្ព</translation>
+<translation id="8347728744337089388">ផ្ញើទៅ&amp;ឧបករណ៍របស់អ្នក</translation>
 <translation id="8348430946834215779">ប្រើ HTTPS នៅពេលណាដែលអាចធ្វើទៅបាន និងទទួលបានសារប្រុងប្រយ័ត្ន មុនពេលផ្ទុក​គេហទំព័រ​ដែលមិនអាចប្រើ HTTPS បាន</translation>
 <translation id="8348896480272971199">សូមពិនិត្យមើល​អ៊ីនធឺណិតរបស់អ្នក រួចព្យាយាមម្ដងទៀត។</translation>
 <translation id="8349305172487531364">របាចំណាំ</translation>
@@ -9515,6 +9521,7 @@
 <translation id="8382197851871630452">អាកាសធាតុ​ក្នុងតំបន់</translation>
 <translation id="8382913212082956454">ចម្លងអាសយដ្ឋានអ៊ីម៉ែល</translation>
 <translation id="8383614331548401927">សូមស្វាគមន៍មកកាន់ការសង្ខេប</translation>
+<translation id="8387157483437834731">បានប្ដូរពាក្យសម្ងាត់ដោយជោគជ័យ</translation>
 <translation id="8387361103813440603">មិនអនុញ្ញាតឱ្យមើលទីតាំងរបស់អ្នកទេ</translation>
 <translation id="8389492867173948260">អនុញ្ញាត​ឱ្យ​កម្មវិធី​បន្ថែម​នេះ​អាន និង​ប្ដូរទិន្នន័យ​ទាំងអស់​របស់អ្នក​នៅលើ​គេហទំព័រដែល​អ្នកចូលមើល៖</translation>
 <translation id="8390449457866780408">ម៉ាស៊ីនមេមិនមានទេ។</translation>
@@ -10601,6 +10608,7 @@
 <translation id="9220820413868316583">លើកម្រាមដៃ​ រួច​ព្យាយាម​ម្ដងទៀត។</translation>
 <translation id="922152298093051471">ប្ដូរ Chrome តាមបំណង</translation>
 <translation id="9222839391870847423">រយៈពេល៖ <ph name="DURATION" /></translation>
+<translation id="923306663772315007">ផ្ញើទៅ&amp;ឧបករណ៍របស់អ្នក</translation>
 <translation id="923467487918828349">បង្ហាញទាំងអស់</translation>
 <translation id="923900195646492191">{NUM_EXTENSIONS,plural, =1{បើក​កម្មវិធីបន្ថែម ដើម្បី​គ្រប់គ្រងវា}other{បើក​កម្មវិធីបន្ថែម ដើម្បី​គ្រប់គ្រង​ពួកវា}}</translation>
 <translation id="924818813611903184">គ្រប់គ្រង​ភាសា​នៅក្នុងការកំណត់ ChromeOS</translation>

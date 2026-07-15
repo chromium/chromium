@@ -329,6 +329,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="1486096554574027028">Deursoek wagwoorde</translation>
 <translation id="1492194039220927094">Deurstuur van beleide:</translation>
 <translation id="1495677929897281669">Terug na oortjie</translation>
+<translation id="1496318738909526466">Bestuur Gevorderde Outovul</translation>
 <translation id="1500286806237135498">Kameras (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="1504042622576912555">Gleuf</translation>
 <translation id="1507202001669085618">&lt;p&gt;Jy sal hierdie fout sien as jy 'n Wi-Fi-portaal gebruik waar jy moet aanmeld voordat jy aanlyn kan gaan.&lt;/p&gt;
@@ -686,7 +687,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="2082238445998314030">Resultaat <ph name="RESULT_NUMBER" /> van <ph name="TOTAL_RESULTS" /></translation>
 <translation id="2083256696566019397">Laat met elke besoek toe</translation>
 <translation id="2085876078937250610">Stoor …</translation>
-<translation id="2088913896151127116">Voeg teks by</translation>
 <translation id="2090451897496479509">Kontak die verskaffer vir meer inligting</translation>
 <translation id="2090686487550343086">IBAN’s</translation>
 <translation id="2091887806945687916">Klank</translation>
@@ -865,6 +865,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="2322254345061973671">{COUNT,plural, =1{1 venster}other{# vensters}}</translation>
 <translation id="232390861414237658">Outovul hierdie kaart vir aankope wat in Chrome gemaak word wanneer dit gestoor is om met Google Pay te gebruik</translation>
 <translation id="2326283484705860548">Jy kan nou meer inligting uit Google Wallet outovul</translation>
+<translation id="2326747055382936979">Bestuur gevorderde outovul</translation>
 <translation id="2328651992442742497">Toegelaat (verstek)</translation>
 <translation id="2328955282645810595">Konstruksie- en kraggereedskap</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, verval op <ph name="EXPIRATION_DATE_ABBR" /></translation>
@@ -2256,6 +2257,7 @@ Gaan na <ph name="BEGIN_LINK" />betalinginstellings<ph name="END_LINK" /> om Bet
 <translation id="4464826014807964867">Webwerwe met inligting van jou organisasie</translation>
 <translation id="4466576951214254884">Studentelenings en universiteitsfinansiering</translation>
 <translation id="4467821340016922962">Druk |<ph name="ACCELERATOR" />| om uit volskerm te gaan en aflaai te sien</translation>
+<translation id="4472575034687746823">Kom aan die gang</translation>
 <translation id="4473643328224505070"><ph name="BEGIN_ENHANCED_PROTECTION_LINK" />Skakel verbeterde beskerming aan<ph name="END_ENHANCED_PROTECTION_LINK" /> om Chrome se hoogste sekuriteitvlak te kry</translation>
 <translation id="4475299370877036544">Hierdie handeling kan jou organisasie se beleide oortree</translation>
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />. <ph name="LEARN_MORE_TEXT" /></translation>

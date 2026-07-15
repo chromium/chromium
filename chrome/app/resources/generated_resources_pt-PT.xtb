@@ -1217,12 +1217,14 @@ Verifique as suas palavras-passe em qualquer altura no <ph name="GOOGLE_PASSWORD
 <translation id="1933489278505808700">Com autorização para ler e alterar</translation>
 <translation id="1935303383381416800">Com autorização para ver a sua localização</translation>
 <translation id="193565226207940518">Ferramenta de apoio técnico</translation>
+<translation id="1935995810530254458">Copiar mesmo assim</translation>
 <translation id="1936157145127842922">Mostrar na pasta</translation>
 <translation id="1936344977780165685">{PAGES,plural, =1{Página adicionada à Lista de leitura}other{Páginas adicionadas à Lista de leitura}}</translation>
 <translation id="1936931585862840749">Utilize um número para indicar as cópias a imprimir (1 a <ph name="MAX_COPIES" />).</translation>
 <translation id="1938351510777341717">Comando externo</translation>
 <translation id="1940221956626514677">Personalizar barra de ferramentas</translation>
 <translation id="1940546824932169984">Dispositivos ligados</translation>
+<translation id="194081218158106711">A confirmar a palavra-passe alterada…</translation>
 <translation id="1941410638996203291">Hora de início: <ph name="TIME" /></translation>
 <translation id="1941553344801134989">Versão: <ph name="APP_VERSION" /></translation>
 <translation id="1941685451584875710">O seu administrador configurou a sua conta para ser associada automaticamente ao Microsoft OneDrive, mas algo correu mal.</translation>
@@ -4744,6 +4746,7 @@ Quer pará-lo?</translation>
 <translation id="4657914796247705218">Velocidade do TrackPoint</translation>
 <translation id="4658648180588730283">A aplicação <ph name="APPLICATION_NAME" /> não está disponível offline.</translation>
 <translation id="465878909996028221">Apenas são suportados os protocolos HTTP, HTTPS e protocolos de ficheiros para redirecionamento do navegador.</translation>
+<translation id="4658821552705754298"><ph name="ITEM_NAME" /> <ph name="CATEGORY_NAME" /></translation>
 <translation id="4659126640776004816">Quando inicia sessão na sua Conta Google, esta funcionalidade está ativada.</translation>
 <translation id="4660465405448977105">{COUNT,plural, =1{Imagem}other{# imagens}}</translation>
 <translation id="4660540330091848931">A redimensionar…</translation>
@@ -5086,7 +5089,6 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="4906490889887219338">Configure ou efetue a gestão de partilhas de ficheiros na rede. <ph name="LINK_BEGIN" />Saber mais<ph name="LINK_END" /></translation>
 <translation id="4906679076183257864">Repor Predefinição</translation>
 <translation id="4907129260985716018">Escolha quando esta extensão pode ler e alterar os seus dados de sites</translation>
-<translation id="4908076691331874303">Ocultado deste site</translation>
 <translation id="4908811072292128752">Abra um novo separador para navegar em dois sites em simultâneo</translation>
 <translation id="4910241725741323970">A app já está instalada</translation>
 <translation id="4912643508233590958">Reativações após inatividade</translation>
@@ -6354,7 +6356,6 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="5932881020239635062">Série</translation>
 <translation id="5933522550144185133">A app <ph name="APP_NAME" /> está a utilizar a sua câmara e microfone.</translation>
 <translation id="5935158534896975820">A preparar pedido de assinatura de certificado (a aguardar servidor)…</translation>
-<translation id="5935554994339565449">Adicione texto com a nova ferramenta "Adicionar texto"</translation>
 <translation id="5936065461722368675">Traduzir página inteira</translation>
 <translation id="5937977334791924341">Logótipo da app <ph name="APP" /></translation>
 <translation id="5938002010494270685">Atualização de segurança disponível</translation>
@@ -8911,6 +8912,7 @@ Prima uma tecla ou um interruptor atribuído para remover a atribuição.</trans
 <translation id="7933486544522242079">&amp;Guardar e partilhar</translation>
 <translation id="7933518760693751884">Para guardar uma página para mais tarde, clique no ícone de marcador.</translation>
 <translation id="7933634003144813719">Gerir pastas partilhadas</translation>
+<translation id="7935072572536724392">Falha na alteração automática da palavra-passe</translation>
 <translation id="7936195481975600746">Para partilhar o ecrã, use o selecionador de ecrãs do sistema</translation>
 <translation id="7937809006412909895">A recolher dados de diagnóstico</translation>
 <translation id="7938881824185772026">Labs</translation>
@@ -9048,6 +9050,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8029412171914613589">{SELECTED_ITEMS,plural, =0{Lista de leitura}=1{Lista de leitura ({SELECTED_ITEMS})}other{Lista de leitura ({SELECTED_ITEMS})}}</translation>
 <translation id="8029492516535178472"><ph name="WINDOW_TITLE" /> – Autorização solicitada, prima ⌘ + Opção + seta para cima para responder.</translation>
 <translation id="8030169304546394654">Desligado</translation>
+<translation id="8030814978699290230">A tentar iniciar sessão…</translation>
 <translation id="8030852056903932865">Aprovar</translation>
 <translation id="8033827949643255796">selecionado</translation>
 <translation id="8033958968890501070">Limite de tempo</translation>
@@ -9461,6 +9464,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8343578633847737325">Chats e discussões recentes</translation>
 <translation id="8345848587667658367">Agora, pode ver as fotos, o conteúdo multimédia, as notificações e as apps recentes do seu telemóvel</translation>
 <translation id="8347227221149377169">Tarefas de impressão</translation>
+<translation id="8347728744337089388">Enviar para o seu &amp;dispositivo</translation>
 <translation id="8348430946834215779">Use HTTPS sempre que possível e receba um aviso antes de carregar sites que não suportam este protocolo</translation>
 <translation id="8348896480272971199">Verifique a ligação à Internet e tente novamente.</translation>
 <translation id="8349305172487531364">Barra de marcadores</translation>
@@ -9510,6 +9514,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8382197851871630452">Meteorologia local</translation>
 <translation id="8382913212082956454">Copiar &amp;endereço de email</translation>
 <translation id="8383614331548401927">Recapitulação de boas-vindas</translation>
+<translation id="8387157483437834731">Palavra-passe alterada com êxito</translation>
 <translation id="8387361103813440603">Sem autorização para ver a sua localização</translation>
 <translation id="8389492867173948260">Permitir que esta extensão leia e altere todos os dados nos Websites que visita:</translation>
 <translation id="8390449457866780408">O servidor não se encontra disponível.</translation>
@@ -10595,6 +10600,7 @@ Pode incluir informações sobre o software instalado, os ficheiros, o navegador
 <translation id="9220820413868316583">Levante e tente novamente.</translation>
 <translation id="922152298093051471">Personalizar o Chrome</translation>
 <translation id="9222839391870847423">Duração: <ph name="DURATION" /></translation>
+<translation id="923306663772315007">Enviar para o seu &amp;dispositivo</translation>
 <translation id="923467487918828349">Mostrar tudo</translation>
 <translation id="923900195646492191">{NUM_EXTENSIONS,plural, =1{Para a gerir, abra as Extensões}other{Para as gerir, abra as Extensões}}</translation>
 <translation id="924818813611903184">Gerir idiomas nas definições do ChromeOS</translation>

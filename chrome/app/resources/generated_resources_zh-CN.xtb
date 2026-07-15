@@ -1217,6 +1217,7 @@
 <translation id="1933489278505808700">可以读取和更改</translation>
 <translation id="1935303383381416800">允许查看您的位置信息</translation>
 <translation id="193565226207940518">支持工具</translation>
+<translation id="1935995810530254458">仍然复制</translation>
 <translation id="1936157145127842922">在文件夹中显示</translation>
 <translation id="1936344977780165685">{PAGES,plural, =1{页面已添加到阅读清单}other{页面已添加到阅读清单}}</translation>
 <translation id="1936931585862840749">请使用一个介于 1-<ph name="MAX_COPIES" /> 之间的数字来表明要打印多少份。</translation>
@@ -1537,6 +1538,7 @@
 <translation id="2199298570273670671">错误</translation>
 <translation id="2200094388063410062">电子邮件</translation>
 <translation id="2200781749203116929">ChromeOS 系统日志</translation>
+<translation id="2202391868799679245">开启键盘快捷键</translation>
 <translation id="2203088913459920044">名称可以使用字母、数字和特殊字符</translation>
 <translation id="220321590587754225">无法连接。请重试。</translation>
 <translation id="2203903197029773650">您需要先登录 Google 账号，然后才能使用 <ph name="BRAND" />的密码检查功能</translation>
@@ -6343,7 +6345,6 @@
 <translation id="5932881020239635062">序列号</translation>
 <translation id="5933522550144185133"><ph name="APP_NAME" /> 正在使用您的摄像头和麦克风</translation>
 <translation id="5935158534896975820">正在准备证书签名请求（正在等待服务器的帮助）</translation>
-<translation id="5935554994339565449">使用新的“添加文字”工具添加文字</translation>
 <translation id="5936065461722368675">翻译整页内容</translation>
 <translation id="5937977334791924341">“<ph name="APP" />”徽标</translation>
 <translation id="5938002010494270685">可进行安全性升级</translation>

@@ -285,6 +285,7 @@
 <translation id="188177382966899059">Deep Search</translation>
 <translation id="188237709236611317">Barra de menus da ordenação inteligente</translation>
 <translation id="1883255238294161206">Recolher lista</translation>
+<translation id="1883898928879467646">Guia removida</translation>
 <translation id="1888854257756214946">Selecionar senha…</translation>
 <translation id="1890237935065108104">Esta configuração não está disponível.</translation>
 <translation id="1894023287452300670">Monitore o preço aqui</translation>
@@ -635,7 +636,7 @@
 <translation id="3124568093781685165">Compartilhe suas senhas com a família</translation>
 <translation id="3130863904455712965">Histórico e mais</translation>
 <translation id="3130973487775218359">Assista: <ph name="BEGIN_LINK" />5 informações essenciais sobre a IA generativa<ph name="END_LINK" /></translation>
-<translation id="3132345256151444894">Salvar número de reparação</translation>
+<translation id="3132345256151444894">Salvar número de retificação</translation>
 <translation id="3132584647087998639">Importar dados</translation>
 <translation id="313283613037595347">Criar nova guia anônima.</translation>
 <translation id="3138611310073113613">Descartar seleção</translation>
@@ -1620,6 +1621,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="6406506848690869874">Sincronização</translation>
 <translation id="6410390304316730527">O "Navegação segura" protege contra invasores que podem levar você a fazer algo perigoso, como instalar um software malicioso ou revelar informações pessoais como senhas, números de telefone ou cartões de crédito. Se desativá-lo, tenha cuidado ao navegar em sites desconhecidos ou com má reputação.</translation>
 <translation id="6410883413783534063">Abra guias para acessar mais páginas ao mesmo tempo</translation>
+<translation id="6412195388778525440">Remover guia</translation>
 <translation id="6418346271604475326">Preparando PDF</translation>
 <translation id="6420292512900923139">Erro ao importar seus dados</translation>
 <translation id="6421038304268477484">Texto traduzido</translation>

@@ -1217,6 +1217,7 @@ Zaporke uvijek možete provjeriti u odjeljku <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="1933489278505808700">Ima dopuštenje za čitanje i promjenu</translation>
 <translation id="1935303383381416800">Dopušten je pregled vaše lokacije</translation>
 <translation id="193565226207940518">Alat za podršku</translation>
+<translation id="1935995810530254458">Ipak kopiraj</translation>
 <translation id="1936157145127842922">Prikaži u mapi</translation>
 <translation id="1936344977780165685">{PAGES,plural, =1{Stranica je dodana na popis za čitanje}one{Stranice su dodane na popis za čitanje}few{Stranice su dodane na popis za čitanje}other{Stranice su dodane na popis za čitanje}}</translation>
 <translation id="1936931585862840749">Kako biste odredili broj primjeraka za ispis, navedite broj (od 1 do <ph name="MAX_COPIES" />).</translation>
@@ -1537,6 +1538,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="2199298570273670671">Pogreška</translation>
 <translation id="2200094388063410062">E-pošta</translation>
 <translation id="2200781749203116929">Zapisnici sustava ChromeOS</translation>
+<translation id="2202391868799679245">Uključi tipkovni prečac značajke</translation>
 <translation id="2203088913459920044">Za naziv se mogu upotrebljavati slova, brojke i posebni znakovi</translation>
 <translation id="220321590587754225">Povezivanje nije uspjelo. Pokušajte ponovo.</translation>
 <translation id="2203903197029773650"><ph name="BRAND" /> može provjeriti vaše zaporke kad se prijavite Google računom</translation>
@@ -6346,7 +6348,6 @@ Toj radnji možete dodijeliti više prekidača.</translation>
 <translation id="5932881020239635062">Serijski</translation>
 <translation id="5933522550144185133">Aplikacija <ph name="APP_NAME" /> upotrebljava vaš fotoaparat i mikrofon</translation>
 <translation id="5935158534896975820">Priprema zahtjeva za potpisivanje certifikata (čeka se poslužitelj)</translation>
-<translation id="5935554994339565449">Dodajte tekst pomoću novog alata za dodavanje teksta</translation>
 <translation id="5936065461722368675">Prevedi cijelu stranicu</translation>
 <translation id="5937977334791924341">Logotip <ph name="APP" /></translation>
 <translation id="5938002010494270685">Dostupna je sigurnosna nadogradnja</translation>

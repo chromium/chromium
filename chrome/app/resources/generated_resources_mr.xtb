@@ -1227,12 +1227,14 @@
 <translation id="1933489278505808700">रीड करण्याची आणि बदलण्याची अनुमती दिली आहे</translation>
 <translation id="1935303383381416800">तुमचे स्थान पाहण्याची अनुमती आहे</translation>
 <translation id="193565226207940518">सपोर्ट टूल</translation>
+<translation id="1935995810530254458">तरीही कॉपी करा</translation>
 <translation id="1936157145127842922">फोल्डरमध्ये दर्शवा</translation>
 <translation id="1936344977780165685">{PAGES,plural, =1{वाचन सूचीमध्ये पेज जोडले आहे}other{वाचन सूचीमध्ये पेज जोडली आहेत}}</translation>
 <translation id="1936931585862840749">किती प्रती प्रिंट करायच्या ते दर्शवण्यासाठी संख्या वापरा (१ ते <ph name="MAX_COPIES" />).</translation>
 <translation id="1938351510777341717">बाह्य कमांड</translation>
 <translation id="1940221956626514677">टूलबार कस्टमाइझ करा</translation>
 <translation id="1940546824932169984">कनेक्‍ट केलेली डिव्हाइस</translation>
+<translation id="194081218158106711">बदललेला पासवर्ड कन्फर्म करत आहे...</translation>
 <translation id="1941410638996203291">सुरू होण्याची वेळ <ph name="TIME" /></translation>
 <translation id="1941553344801134989">आवृत्ती: <ph name="APP_VERSION" /></translation>
 <translation id="1941685451584875710">तुमच्या अ‍ॅडमिनिस्ट्रेटरने तुमचे खाते Microsoft OneDrive शी आपोआप कनेक्ट होण्यासाठी कॉन्फिगर केले, पण काहीतरी चुकले.</translation>
@@ -4754,6 +4756,7 @@
 <translation id="4657914796247705218">TrackPoint चा वेग</translation>
 <translation id="4658648180588730283"><ph name="APPLICATION_NAME" /> अ‍ॅप्लिकेशन ऑफलाइन उपलब्ध नाही.</translation>
 <translation id="465878909996028221">फक्त http, https आणि फाइल प्रोटोकॉलना ब्राउझर रीडिरेक्‍टला सपोर्ट करते.</translation>
+<translation id="4658821552705754298"><ph name="ITEM_NAME" /> <ph name="CATEGORY_NAME" /></translation>
 <translation id="4659126640776004816">तुम्ही तुमच्या Google खात्यामध्ये साइन इन केल्यावर, हे वैशिष्ट्य सुरू केले जाते.</translation>
 <translation id="4660465405448977105">{COUNT,plural, =1{इमेज}other{# इमेज}}</translation>
 <translation id="4660540330091848931">आकार बदलत आहे</translation>
@@ -5096,7 +5099,6 @@
 <translation id="4906490889887219338">नेटवर्क फाइल शेअर सेट किंवा व्यवस्थापित करा. <ph name="LINK_BEGIN" />अधिक जाणून घ्या<ph name="LINK_END" /></translation>
 <translation id="4906679076183257864">डीफॉल्टवर रीसेट करा</translation>
 <translation id="4907129260985716018">हे एक्स्टेंशन तुमचा साइट डेटा केव्हा वाचू आणि बदलू शकेल ते निवडा</translation>
-<translation id="4908076691331874303">या साइटवरून लपवलेले</translation>
 <translation id="4908811072292128752">एकाच वेळी दोन साइट ब्राउझ करण्यासाठी एक नवीन टॅब उघडा</translation>
 <translation id="4910241725741323970">अ‍ॅप आधीच इंस्टॉल केले आहे</translation>
 <translation id="4912643508233590958">निष्क्रियता समाप्त करणे</translation>
@@ -6363,7 +6365,6 @@
 <translation id="5932881020239635062">अनुक्रमांक</translation>
 <translation id="5933522550144185133"><ph name="APP_NAME" /> हे तुमचा कॅमेरा आणि मायक्रोफोन वापरत आहे</translation>
 <translation id="5935158534896975820">सर्टिफिकेटवर स्वाक्षरी करण्याची विनंती तयार करत आहे (सर्व्हरची प्रतीक्षा करत आहे)</translation>
-<translation id="5935554994339565449">नवीन "मजकूर जोडा" टूल वापरून मजकूर जोडा</translation>
 <translation id="5936065461722368675">पूर्ण पेजचे भाषांतर करा</translation>
 <translation id="5937977334791924341"><ph name="APP" /> चा लोगो</translation>
 <translation id="5938002010494270685">सुरक्षितता अपग्रेड उपलब्ध आहे</translation>
@@ -8922,6 +8923,7 @@ I feel - विटांची इमारत</translation>
 <translation id="7933486544522242079">सेव्ह आणि शेअर करा</translation>
 <translation id="7933518760693751884">पेज नंतर वाचण्यासाठी सेव्ह करण्याकरिता बुकमार्क आयकनवर क्लिक करा</translation>
 <translation id="7933634003144813719">शेअर केलेले फोल्डर व्यवस्थापित करा</translation>
+<translation id="7935072572536724392">ऑटोमॅटिक पासवर्ड बदलता आला नाही</translation>
 <translation id="7936195481975600746">तुमची स्क्रीन शेअर करण्यासाठी, तुमच्या सिस्टीमचा स्क्रीन पिकर वापरा</translation>
 <translation id="7937809006412909895">निदानासंबंधित डेटा गोळा करत आहे</translation>
 <translation id="7938881824185772026">लॅब्ज</translation>
@@ -9059,6 +9061,7 @@ I feel - विटांची इमारत</translation>
 <translation id="8029412171914613589">{SELECTED_ITEMS,plural, =0{वाचन सूची}=1{वाचन सूची ({SELECTED_ITEMS})}other{वाचन सूची ({SELECTED_ITEMS})}}</translation>
 <translation id="8029492516535178472"><ph name="WINDOW_TITLE" /> - परवानगीची विनंती केली आहे, प्रतिसाद देण्यासाठी ⌘ + Option + अप अ‍ॅरो प्रेस करा</translation>
 <translation id="8030169304546394654">डिस्कनेक्ट केलेले</translation>
+<translation id="8030814978699290230">साइन-इन करण्याचा प्रयत्न करत आहे...</translation>
 <translation id="8030852056903932865">मंजूर करा</translation>
 <translation id="8033827949643255796">निवडलेले</translation>
 <translation id="8033958968890501070">वेळ संपली</translation>
@@ -9472,6 +9475,7 @@ I feel - विटांची इमारत</translation>
 <translation id="8343578633847737325">अलीकडील चॅट आणि थ्रेड</translation>
 <translation id="8345848587667658367">तुम्ही आता तुमच्या फोनमधील अलीकडील फोटो, मीडिया, सूचना आणि ॲप्स पाहू शकता</translation>
 <translation id="8347227221149377169">प्रिंट कार्ये</translation>
+<translation id="8347728744337089388">तुमच्या डिव्हाइसवर पाठवा</translation>
 <translation id="8348430946834215779">शक्य असेल, तेव्ह HTTPS वापरा आणि त्याला सपोर्ट न करणारी साइट लोड करण्यापूर्वी चेतावणी मिळवा</translation>
 <translation id="8348896480272971199">तुमचे इंटरनेट तपासा आणि पुन्हा प्रयत्न करा.</translation>
 <translation id="8349305172487531364">बुकमार्क बार</translation>
@@ -9521,6 +9525,7 @@ I feel - विटांची इमारत</translation>
 <translation id="8382197851871630452">स्थानिक हवामान</translation>
 <translation id="8382913212082956454">&amp;ईमेल पत्ता कॉपी करा</translation>
 <translation id="8383614331548401927">स्वागत Recap</translation>
+<translation id="8387157483437834731">पासवर्ड यशस्वीरीत्या बदलला आहे</translation>
 <translation id="8387361103813440603">तुमचे स्थान पाहण्याची अनुमती नाही</translation>
 <translation id="8389492867173948260">तुम्ही भेट देता त्या वेबसाइटवरील तुमचा सर्व डेटा वाचण्यासाठी आणि बदलण्यासाठी या एक्स्टेंशनला अनुमती द्या:</translation>
 <translation id="8390449457866780408">सर्व्हर अनुपलब्ध.</translation>
@@ -10606,6 +10611,7 @@ I feel - विटांची इमारत</translation>
 <translation id="9220820413868316583">उचला आणि नंतर पुन्हा प्रयत्न करा.</translation>
 <translation id="922152298093051471">Chrome कस्टमाइझ करा</translation>
 <translation id="9222839391870847423">कालावधी: <ph name="DURATION" /></translation>
+<translation id="923306663772315007">तुमच्या डिव्हाइसवर पाठवा</translation>
 <translation id="923467487918828349">सर्व दर्शवा</translation>
 <translation id="923900195646492191">{NUM_EXTENSIONS,plural, =1{ते व्यवस्थापित करण्यासाठी, एक्स्टेंशन उघडा}other{ती व्यवस्थापित करण्यासाठी, एक्स्टेंशन उघडा}}</translation>
 <translation id="924818813611903184">ChromeOS सेटिंग्जमध्ये भाषा व्यवस्थापित करा</translation>

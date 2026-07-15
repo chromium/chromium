@@ -1217,6 +1217,7 @@ Parollarınızı istənilən vaxt <ph name="GOOGLE_PASSWORD_MANAGER" /> bölməs
 <translation id="1933489278505808700">Oxumağa və dəyişməyə icazə verilir</translation>
 <translation id="1935303383381416800">Məkanınıza baxmaq icazəsi verilib</translation>
 <translation id="193565226207940518">Dəstək aləti</translation>
+<translation id="1935995810530254458">İstənilən halda kopyalayın</translation>
 <translation id="1936157145127842922">Qovluqda göstərin</translation>
 <translation id="1936344977780165685">{PAGES,plural, =1{Səhifə oxu siyahısına əlavə edildi}other{Səhifələr oxu siyahısına əlavə edildi}}</translation>
 <translation id="1936931585862840749">Neçə nüsxə çap etmək istədiyinizi rəqəm ilə (1-<ph name="MAX_COPIES" /> arasında) göstərin</translation>
@@ -5086,7 +5087,6 @@ Uzaqlaşdırmaq üçün Ctrl + Alt + Parlaqlığı Azalt düymələrindən istif
 <translation id="4906490889887219338">Şəbəkə fayl paylaşımlarını ayarlayın və ya idarə edin. <ph name="LINK_BEGIN" />Ətraflı məlumat<ph name="LINK_END" /></translation>
 <translation id="4906679076183257864">Defolta sıfırlandı</translation>
 <translation id="4907129260985716018">Bu artırmanın sayt datanızı nə vaxt oxuya və dəyişə biləcəyini seçin</translation>
-<translation id="4908076691331874303">Bu saytdan gizlədilib</translation>
 <translation id="4908811072292128752">Eyni anda iki saytı axtarmaq üçün yeni tab açın</translation>
 <translation id="4910241725741323970">Tətbiq artıq quraşdırılıb</translation>
 <translation id="4912643508233590958">İnaktiv oyanışlar</translation>
@@ -6353,7 +6353,6 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 <translation id="5932881020239635062">Seriya</translation>
 <translation id="5933522550144185133"><ph name="APP_NAME" /> kameranızı və mikrofonunuzu istifadə edir</translation>
 <translation id="5935158534896975820">Sertifikat giriş sorğusu hazırlanır (serverdə gözlənilir)</translation>
-<translation id="5935554994339565449">Yeni "Mətn əlavə edin" aləti ilə mətn əlavə edin</translation>
 <translation id="5936065461722368675">Tam səhifəni tərcümə edin</translation>
 <translation id="5937977334791924341"><ph name="APP" /> loqosu</translation>
 <translation id="5938002010494270685">Təhülkəsizlik yeniləməsi əlçatandır</translation>

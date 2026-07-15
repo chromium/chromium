@@ -1227,6 +1227,7 @@ Du kan kontrollera dina lösenord när du vill i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1933489278505808700">Har tillåtelse att läsa och ändra</translation>
 <translation id="1935303383381416800">Får se var du befinner dig</translation>
 <translation id="193565226207940518">Supportverktyg</translation>
+<translation id="1935995810530254458">Kopiera ändå</translation>
 <translation id="1936157145127842922">Visa i mapp</translation>
 <translation id="1936344977780165685">{PAGES,plural, =1{Sidan har lagts till i läslistan}other{Sidor har lagts till i läslistan}}</translation>
 <translation id="1936931585862840749">Använd ett nummer som anger hur många kopior som ska skrivas ut (1 till <ph name="MAX_COPIES" />).</translation>
@@ -1547,6 +1548,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2199298570273670671">Fel</translation>
 <translation id="2200094388063410062">E-post</translation>
 <translation id="2200781749203116929">Systemloggar för ChromeOS</translation>
+<translation id="2202391868799679245">Aktivera kortkommando</translation>
 <translation id="2203088913459920044">Namnet kan innehålla bokstäver, siffror och specialtecken</translation>
 <translation id="220321590587754225">Det gick inte att ansluta. Försök igen.</translation>
 <translation id="2203903197029773650"><ph name="BRAND" /> kan kontrollera dina lösenord när du loggar in med Google-kontot</translation>
@@ -6363,7 +6365,6 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="5932881020239635062">Serienummer</translation>
 <translation id="5933522550144185133"><ph name="APP_NAME" /> använder kameran och mikrofonen</translation>
 <translation id="5935158534896975820">Förbereder begäran om certifikatsignering (väntar på server)</translation>
-<translation id="5935554994339565449">Lägg till text med det nya verktyget Lägg till text</translation>
 <translation id="5936065461722368675">Översätt hela sidan</translation>
 <translation id="5937977334791924341"><ph name="APP" />-logotyp</translation>
 <translation id="5938002010494270685">En säkerhetsuppgradering är tillgänglig</translation>

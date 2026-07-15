@@ -1227,6 +1227,7 @@ Suriin ang iyong mga password anumang oras sa <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="1933489278505808700">Pinapayagang basahin at baguhin</translation>
 <translation id="1935303383381416800">Pinapayagang makita ang iyong lokasyon</translation>
 <translation id="193565226207940518">Tool sa Suporta</translation>
+<translation id="1935995810530254458">Kopyahin pa rin</translation>
 <translation id="1936157145127842922">Ipakita sa Folder</translation>
 <translation id="1936344977780165685">{PAGES,plural, =1{Idinagdag ang page sa listahan ng babasahin}one{Idinagdag ang mga page sa listahan ng babasahin}other{Idinagdag ang mga page sa listahan ng babasahin}}</translation>
 <translation id="1936931585862840749">Gumamit ng numero para isaad kung gaano karaming kopya ang ipi-print (1 hanggang <ph name="MAX_COPIES" />).</translation>
@@ -1547,6 +1548,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2199298570273670671">Nagka-error</translation>
 <translation id="2200094388063410062">I-email</translation>
 <translation id="2200781749203116929">Mga Log ng System ng ChromeOS</translation>
+<translation id="2202391868799679245">I-on ang keyboard shortcut</translation>
 <translation id="2203088913459920044">Puwedeng gumamit ang pangalan ng mga titik, numero, at special character</translation>
 <translation id="220321590587754225">Hindi makakonekta. Subukan ulit.</translation>
 <translation id="2203903197029773650">Magagawang suriin ng <ph name="BRAND" /> ang iyong mga password kapag nag-sign in ka sa Google Account mo</translation>
@@ -6363,7 +6365,6 @@ Puwede kang magtalaga ng maraming switch sa pagkilos na ito.</translation>
 <translation id="5932881020239635062">Serial</translation>
 <translation id="5933522550144185133">Ginagamit ng <ph name="APP_NAME" /> ang iyong camera at mikropono</translation>
 <translation id="5935158534896975820">Inihahanda ang certificate signing request (hinihintay sa server)</translation>
-<translation id="5935554994339565449">Magdagdag ng text gamit ang bagong tool na "Magdagdag ng text"</translation>
 <translation id="5936065461722368675">Isalin ang buong page</translation>
 <translation id="5937977334791924341">Logo ng <ph name="APP" /></translation>
 <translation id="5938002010494270685">May available na upgrade sa seguridad</translation>

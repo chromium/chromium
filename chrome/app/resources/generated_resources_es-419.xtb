@@ -1217,6 +1217,7 @@ Puedes revisar las contraseñas en cualquier momento, en <ph name="GOOGLE_PASSWO
 <translation id="1933489278505808700">Puede leer y modificar</translation>
 <translation id="1935303383381416800">Puede ver tu ubicación</translation>
 <translation id="193565226207940518">Herramienta de asistencia</translation>
+<translation id="1935995810530254458">Copiar de todos modos</translation>
 <translation id="1936157145127842922">Mostrar en carpeta</translation>
 <translation id="1936344977780165685">{PAGES,plural, =1{Se agregó la página a la lista de lectura}other{Se agregaron las páginas a la lista de lectura}}</translation>
 <translation id="1936931585862840749">Usa un número para indicar la cantidad de copias que deseas imprimir (1 a <ph name="MAX_COPIES" />).</translation>
@@ -1537,6 +1538,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2199298570273670671">Error</translation>
 <translation id="2200094388063410062">Correo electrónico</translation>
 <translation id="2200781749203116929">Registros del sistema de ChromeOS</translation>
+<translation id="2202391868799679245">Activar la combinación de teclas</translation>
 <translation id="2203088913459920044">El nombre puede incluir letras, números y caracteres especiales.</translation>
 <translation id="220321590587754225">No se pudo establecer la conexión. Vuelve a intentarlo.</translation>
 <translation id="2203903197029773650"><ph name="BRAND" /> puede revisar las contraseñas cuando accedes con tu Cuenta de Google</translation>
@@ -6350,7 +6352,6 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="5932881020239635062">Número de serie</translation>
 <translation id="5933522550144185133"><ph name="APP_NAME" /> está utilizando tu cámara y micrófono.</translation>
 <translation id="5935158534896975820">Preparando la solicitud de firma del certificado (esperando al servidor)</translation>
-<translation id="5935554994339565449">Agrega texto con la nueva herramienta "Agregar texto"</translation>
 <translation id="5936065461722368675">Traducir la página completa</translation>
 <translation id="5937977334791924341">Logotipo de <ph name="APP" /></translation>
 <translation id="5938002010494270685">Hay una actualización de seguridad disponible</translation>

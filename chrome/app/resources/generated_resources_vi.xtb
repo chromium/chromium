@@ -1227,6 +1227,7 @@ Bạn có thể kiểm tra mật khẩu bất cứ lúc nào trong <ph name="GOO
 <translation id="1933489278505808700">Đã cho phép đọc và thay đổi</translation>
 <translation id="1935303383381416800">Được phép xem vị trí của bạn</translation>
 <translation id="193565226207940518">Công cụ hỗ trợ</translation>
+<translation id="1935995810530254458">Vẫn sao chép</translation>
 <translation id="1936157145127842922">Hiển thị trong Thư mục</translation>
 <translation id="1936344977780165685">{PAGES,plural, =1{Đã thêm trang vào danh sách đọc}other{Đã thêm trang vào danh sách đọc}}</translation>
 <translation id="1936931585862840749">Hãy dùng số để biểu thị số lượng bản cần in (1 đến <ph name="MAX_COPIES" />).</translation>
@@ -1547,6 +1548,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2199298570273670671">Lỗi</translation>
 <translation id="2200094388063410062">Email</translation>
 <translation id="2200781749203116929">Nhật ký hệ thống ChromeOS</translation>
+<translation id="2202391868799679245">Bật phím tắt</translation>
 <translation id="2203088913459920044">Tên có thể bao gồm chữ cái, chữ số và các ký tự đặc biệt</translation>
 <translation id="220321590587754225">Không thể kết nối. Hãy thử lại.</translation>
 <translation id="2203903197029773650"><ph name="BRAND" /> có thể kiểm tra mật khẩu khi bạn đăng nhập bằng Tài khoản Google của mình</translation>
@@ -6363,7 +6365,6 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="5932881020239635062">Sê-ri</translation>
 <translation id="5933522550144185133"><ph name="APP_NAME" /> đang sử dụng máy ảnh và micrô của bạn</translation>
 <translation id="5935158534896975820">Đang chuẩn bị yêu cầu ký chứng chỉ (đang đợi máy chủ)</translation>
-<translation id="5935554994339565449">Thêm văn bản bằng công cụ "Thêm văn bản" mới</translation>
 <translation id="5936065461722368675">Dịch toàn bộ trang</translation>
 <translation id="5937977334791924341">Biểu trưng của <ph name="APP" /></translation>
 <translation id="5938002010494270685">Hiện đã có bản nâng cấp bảo mật</translation>

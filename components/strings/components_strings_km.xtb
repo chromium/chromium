@@ -330,6 +330,7 @@
 <translation id="1486096554574027028">ស្វែងរកពាក្យសម្ងាត់</translation>
 <translation id="1492194039220927094">ការជំរុញ​គោលការណ៍៖</translation>
 <translation id="1495677929897281669">ត្រឡប់ទៅ​ផ្ទាំងវិញ</translation>
+<translation id="1496318738909526466">គ្រប់គ្រងការបំពេញស្វ័យប្រវត្តិរហ័ស</translation>
 <translation id="1500286806237135498">កាមេរ៉ា (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="1504042622576912555">ស្រទាប់អង្កាញ់ៗរបស់កាតុង</translation>
 <translation id="1507202001669085618">&lt;p&gt;អ្នកនឹង​មើលឃើញ​បញ្ហានេះ ប្រសិនបើ​អ្នកកំពុង​ប្រើច្រក​ចូល​ Wi-Fi ដែលអ្នក​ត្រូវតែចុះឈ្មោះចូល មុនពេល​ដែលអ្នកអាច​ភ្ជាប់អ៊ីន​ធឺណិត។&lt;/p&gt;
@@ -688,7 +689,6 @@
 <translation id="2082238445998314030">លទ្ធផល <ph name="RESULT_NUMBER" /> នៃ <ph name="TOTAL_RESULTS" /></translation>
 <translation id="2083256696566019397">អនុញ្ញាត​រាល់ពេល​ចូលមើល</translation>
 <translation id="2085876078937250610">រក្សាទុក…</translation>
-<translation id="2088913896151127116">បញ្ចូល​អក្សរ</translation>
 <translation id="2090451897496479509">ទាក់ទងទៅ​ក្រុមហ៊ុន​ផ្ដល់សេវា ដើម្បី​ទទួលបាន​ព័ត៌មាន​បន្ថែម</translation>
 <translation id="2090686487550343086">IBAN</translation>
 <translation id="2091887806945687916">សំឡេង</translation>
@@ -867,6 +867,7 @@
 <translation id="2322254345061973671">{COUNT,plural, =1{វិនដូ 1}other{វិនដូ #}}</translation>
 <translation id="232390861414237658">បំពេញ​កាតនេះ​ដោយ​ស្វ័យប្រវត្តិ​សម្រាប់​ការទិញ​ដែលបាន​ធ្វើឡើង​នៅក្នុង Chrome នៅពេល​ដែលវា​ត្រូវបាន​រក្សាទុក ដើម្បីប្រើ​ជាមួយ Google Pay</translation>
 <translation id="2326283484705860548">ឥឡូវនេះ អ្នកអាច​បំពេញ​ព័ត៌មាន​កាន់តែច្រើន​ដោយ​ស្វ័យប្រវត្តិ​ពី Google Wallet បានហើយ</translation>
+<translation id="2326747055382936979">គ្រប់គ្រងការបំពេញស្វ័យប្រវត្តិរហ័ស</translation>
 <translation id="2328651992442742497">អនុញ្ញាត (លំនាំដើម)</translation>
 <translation id="2328955282645810595">ឧបករណ៍​ប្រើថាមពល និងសាងសង់</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" /> ផុតកំណត់នៅថ្ងៃទី <ph name="EXPIRATION_DATE_ABBR" /></translation>
@@ -2260,6 +2261,7 @@
 <translation id="4464826014807964867">គេហទំព័រដែលមានព័ត៌មានពីស្ថាប័នរបស់អ្នក</translation>
 <translation id="4466576951214254884">ប្រាក់កម្ចីនិស្សិត និងហិរញ្ញប្បទានមហាវិទ្យាល័យ</translation>
 <translation id="4467821340016922962">ដើម្បី​ចាកចេញពី​អេក្រង់ពេញ និង​មើល​ឃើញការទាញយក សូមចុច |<ph name="ACCELERATOR" />|</translation>
+<translation id="4472575034687746823">ចាប់ផ្ដើម</translation>
 <translation id="4473643328224505070"><ph name="BEGIN_ENHANCED_PROTECTION_LINK" />បើក​ការការពារ​កម្រិតខ្ពស់<ph name="END_ENHANCED_PROTECTION_LINK" /> ដើម្បី​ទទួលបាន​សុវត្ថិភាព​កម្រិតខ្ពស់បំផុត​របស់ Chrome</translation>
 <translation id="4475299370877036544">សកម្មភាពនេះ​អាចបំពាន​គោលការណ៍​របស់​ស្ថាប័នអ្នក</translation>
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />។ <ph name="LEARN_MORE_TEXT" /></translation>
@@ -4016,6 +4018,7 @@
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />ស្វែងយល់បន្ថែម<ph name="END_LINK" /> អំពីបញ្ហានេះ។</translation>
 <translation id="7213191991901907140">ប្រាប់យើងអំពីបទពិសោធន៍របស់អ្នក</translation>
 <translation id="7219179957768738017">ការភ្ជាប់នេះប្រើ <ph name="SSL_VERSION" />។</translation>
+<translation id="7219197639442810756">បានណែនាំដោយ Gemini។</translation>
 <translation id="7220786058474068424">កំពុងដំណើរការ</translation>
 <translation id="7221855153210829124">បង្ហាញការជូនដំណឹង</translation>
 <translation id="7222232353993864120">អាសយដ្ឋានអ៊ីម៉ែល</translation>
@@ -4625,6 +4628,7 @@
 <translation id="8134058435519644366">ការជ្រើសរើស និងរៀបចំបុគ្គលិក</translation>
 <translation id="8135546115396015134">គ្រាប់ចុច​ទៅឆ្វេង</translation>
 <translation id="8137456439814903304">ថាមពល និងក្រុមហ៊ុនផ្គត់ផ្គង់អគ្គិសនី</translation>
+<translation id="8138591088112729119">ដំណើរការដោយបញ្ញាផ្ទាល់ខ្លួន</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{បាន​បង្កើត 1 ខែមុន}other{បានបង្កើត {NUM_MONTHS} ខែមុន}}</translation>
 <translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />, លំនាំដើម​បច្ចុប្បន្ន។ <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">កំណែ PDF៖</translation>

@@ -233,7 +233,6 @@
 <translation id="200114059308480249">Google ရှာဖွေမှုများတွင် ဝန်းကျင်ရှိစာသားကို ထည့်သွင်းမလား။</translation>
 <translation id="2004096469149679223"><ph name="TAB_TITLE" />၊ ပင်ထိုးထားသည့် အသံပိတ်ထားသော ရုပ်ဖျက်တဘ်</translation>
 <translation id="2021896219286479412">မျက်နှာပြင်အပြည့် ထိန်းချုပ်မှု</translation>
-<translation id="2022953316617983419">QR ကုဒ်</translation>
 <translation id="2024195579772565064">ရှာဖွေရေးအင်ဂျင် ဖျက်ခြင်း</translation>
 <translation id="2029669011553795746">အကြံပြုချက်ဆိုင်ရာ အကြောင်းကြားချက်များ ရယူခြင်းကို မြင်ကွင်းတစ်ဝက် ဖွင့်ထားသည်</translation>
 <translation id="2038563949887743358">ဆိုဒ်ကြီး တောင်းဆိုမှု ဖွင့်မည်</translation>
@@ -558,6 +557,7 @@
 <translation id="3331974543021145906">အက်ပ်အင်ဖို</translation>
 <translation id="3334729583274622784">ဖိုင်နောက်ဆက်တွဲ ပြောင်းမလား။</translation>
 <translation id="333863344734218290">မလုံခြုံသော အများသုံးနှင့် သီးသန့် ဝဘ်ဆိုက်များအကြောင်း သတိပေးရန်</translation>
+<translation id="3339788961947270565">အပြီးပိတ်နေသည်</translation>
 <translation id="3340978935015468852">ဆက်တင်များ</translation>
 <translation id="3351959803838327376">ဝဘ်ဆိုက်ကို ကြာကြာနှိပ်ပြီး မီနူးဖွင့်ပါ</translation>
 <translation id="3359667936385849800">သင်၏လက်ရှိ ဝန်ဆောင်မှုပေးသူကို သုံးရန်</translation>
@@ -721,6 +721,7 @@
 <translation id="4044708993631234325">အောက်ခြေအပိုဆောင်း စာမျက်နှာ</translation>
 <translation id="4045441967987592849">ပြန်ဖွင့်ရန်</translation>
 <translation id="4049920046559074950"><ph name="INSTANCE_TITLE" /> အတွက် နောက်ထပ်ရွေးစရာများ</translation>
+<translation id="4051569243832293689">{NUM_BOOKMARKS,plural, =1{ရုပ်ဖျက်ဝင်းဒိုးတွင် ဖွင့်ရန်}other{(#) ခုလုံးကို ရုပ်ဖျက်ဝင်းဒိုးတွင် ဖွင့်ရန်}}</translation>
 <translation id="4052419222954753986">{NUMBER_OF_TABS,plural, =1{မျှဝေထားသော တဘ်အုပ်စုများရှိ လုပ်ဆောင်ချက်အသစ်ပါသည့် ပုံမှန်တဘ် <ph name="TABS_COUNT_ONE" /> ခု}other{မျှဝေထားသော တဘ်အုပ်စုများရှိ လုပ်ဆောင်ချက်အသစ်ပါသည့် ပုံမှန်တဘ် <ph name="TABS_COUNT_MANY" /> ခု}}</translation>
 <translation id="405365679581583349">Google Play ဝန်ဆောင်မှုများကို အပ်ဒိတ်လုပ်ပါ</translation>
 <translation id="405399507749852140">ဝဘ်ဆိုက်တစ်ခုခုတွင် ဈေးကျသွားပါက သတိပေးချက်များ ရယူနိုင်သည်</translation>
@@ -823,6 +824,7 @@
 <translation id="442518031075347249">Google Pay တွင် သင်၏ပကတိအသွင်ကတ်ကို သုံး၍ရတော့မည်မဟုတ်ပါ။ <ph name="BEGIN_LINK1" />ပကတိအသွင်ကတ်များအကြောင်း ပိုမိုလေ့လာရန်<ph name="END_LINK1" /></translation>
 <translation id="442577985493096785">{TAB_COUNT,plural, =1{<ph name="TAB_TITLE" /> နှင့် အခြားတဘ် <ph name="TAB_COUNT_ONE" /> ခုကို ပိတ်ပါမည်}other{<ph name="TAB_TITLE" /> နှင့် အခြားတဘ် <ph name="TAB_COUNT_MANY" /> ခုကို ပိတ်ပါမည်}}</translation>
 <translation id="4430277756566635951"><ph name="EMAIL" /> ကို လောလောဆယ် ရွေးထားသည်။ အကောင့်ရွေးပါ။</translation>
+<translation id="4430369329743628066">ဝဘ်လိပ်စာကို ထည့်ပြီးပါပြီ</translation>
 <translation id="4452411734226507615"><ph name="TAB_TITLE" /> တဘ်ကို ပိတ်ရန်</translation>
 <translation id="4452548195519783679"><ph name="FOLDER_NAME" />သို့ စာညှပ်ကို သိမ်းထားပါသည်</translation>
 <translation id="4460822871039013969"><ph name="TAB_TITLE" />၊ ရွေးထားပြီး ပင်ထိုးထားသည့် ရိုက်ကူးနေသောတဘ်</translation>
@@ -1072,6 +1074,7 @@
 <translation id="5517326820028369152">မကြာသေးမီက လုပ်ဆောင်ချက် အောက်ခြေအပိုဆောင်း စာမျက်နှာ</translation>
 <translation id="5526281268548144413">ဝင်းဒိုးအများအပြားတွင် ပိတ်၍မရပါ</translation>
 <translation id="5532536403031755365">အွန်လိုင်းခြိမ်းခြောက်မှုများကို ကာကွယ်ရန်အတွက် အဆင့်မြင့်ကာကွယ်မှုပါသည့် အကာအကွယ် ထပ်ဆောင်းအလွှာ ထည့်ပါ</translation>
+<translation id="5540127996007641535">{NUM_BOOKMARKS,plural, =1{လိပ်စာဖွင့်ရန်}other{(#) ခုလုံး ဖွင့်ရန်}}</translation>
 <translation id="5548606607480005320">လုံခြုံရေး စစ်ဆေးမှု</translation>
 <translation id="5554520618550346933">သင်စကားဝှက်သုံးသောအခါ ၎င်းကို အွန်လိုင်းတွင် ထုတ်ဝေထားခြင်း ရှိ၊ မရှိ Chrome က သတိပေးပါသည်။ ဤသို့စစ်ဆေးသည့်အခါ သင်၏စကားဝှက်နှင့် အသုံးပြုသူအမည်များကို အသွင်ဝှက်ထားသောကြောင့် Google အပါအဝင် မည်သူမျှ ၎င်းတို့ကို ဖတ်၍မရပါ။</translation>
 <translation id="5555525474779371165">သင်၏ ‘လုံခြုံစွာကြည့်ရှုခြင်း’ အကာအကွယ်ကို ရွေးပါ</translation>
@@ -1127,7 +1130,6 @@
 <translation id="5763514718066511291">ဤအက်ပ်အတွက် URL ကို မိတ္တူကူးရန် တို့ပါ</translation>
 <translation id="5765517223145864268">သင့်အတွေ့အကြုံကို ကျွန်ုပ်တို့အား ပြောပြပါ။ သို့မဟုတ် <ph name="BEGIN_LINK" />သင့်ဆက်တင်များကို ပြောင်းရန်<ph name="END_LINK" />။</translation>
 <translation id="5776970333778123608">အရေးမပါသောဒေတာ</translation>
-<translation id="5788665823391532892">ပြဿနာကို အကြောင်းကြားရန်…</translation>
 <translation id="5793665092639000975"><ph name="SPACE_AVAILABLE" /> အနက် <ph name="SPACE_USED" /> ကို သုံးနေသည်</translation>
 <translation id="5797949256525811424">အကြောင်းအရာကို ပိတ်ပြီးပြီ</translation>
 <translation id="580893287573699959">သင်စိတ်ဝင်စားသော အကြောင်းအရာများ၊ ဝဘ်ဆိုက်များကို စီမံနိုင်သည်</translation>
@@ -1179,6 +1181,7 @@
 <translation id="5995726099713306770">စာမျက်နှာကို ထပ်မံဒေါင်းလုဒ်လုပ်လိုပါသလား။</translation>
 <translation id="5998675059699164418">Chrome သုံးရန်အတွက် လက်မှတ်ထိုးဝင်ရန် သင့်အဖွဲ့အစည်းက သတ်မှတ်ထားသည်။</translation>
 <translation id="6000066717592683814">Google ကို ဆက်သုံးရန်</translation>
+<translation id="6002122790816966947">သင်၏စက်များ</translation>
 <translation id="6011308810877101166">ရှာဖွေမှု အကြံပြုချက်များ မွမ်းမံရန်</translation>
 <translation id="6013305291643746595">အဟောင်းဆုံးဖြင့် စီနေသည်</translation>
 <translation id="6022659036123304283">Chrome ကို သင့်စိတ်ကြိုက်ပြင်ဆင်လိုက်ပါ</translation>
@@ -1244,6 +1247,7 @@
 <translation id="6246073558347462570">ဆက်စပ်အကြောင်းအရာ ပေါ့ပ်အပ်ဝင်းဒိုး</translation>
 <translation id="6247557882553405851">Google စကားဝှက်မန်နေဂျာ</translation>
 <translation id="6248988683584659830">ရှာဖွေမှု ဆက်တင်များ</translation>
+<translation id="6250486830372700930">ဤစက်မှ နောက်ဆက်တွဲများကိုလည်း ဖယ်ရှားနိုင်သည်</translation>
 <translation id="6250847299079540062"><ph name="TAB_TITLE" />၊ တစ်ခုထက်ပိုရွေးထားသည့် ပင်ထိုးထားသော ရုပ်ဖျက်တဘ်</translation>
 <translation id="6251449557817521191">သင့် Chrome မှတ်တမ်းကို ဤနေရာတွင်ကြည့်ပါ</translation>
 <translation id="6254139308321626268">သင်သည် PDF ဖိုင်ကို ကြည့်နေပါသည်</translation>
@@ -1419,7 +1423,9 @@
 <translation id="6850830437481525139">တဘ် <ph name="TAB_COUNT" /> ခု ပိတ်လိုက်သည်</translation>
 <translation id="6852437757508328589">{NUM_RESULTS,plural, =1{ရလဒ် ၁ ခု တွေ့သည်}other{ရလဒ် # ခု တွေ့သည်}}</translation>
 <translation id="685340923442249391">{FILE_COUNT,plural, =1{အသံဖိုင်များ၊ စာရင်းရှိ အသံဖိုင် ၁ ဖိုင်}other{အသံဖိုင်များ၊ စာရင်းရှိ အသံဖိုင် # ဖိုင်}}</translation>
+<translation id="6857043990326114901">ဖိုင်တွဲထည့်ရန်…</translation>
 <translation id="685850645784703949">Discover by Google - ပိတ်ထားသည်</translation>
+<translation id="6858893072923394368">စာမျက်နှာထည့်ရန်…</translation>
 <translation id="6864459304226931083">ပုံကို ဒေါင်းလုဒ်လုပ်ပါ</translation>
 <translation id="686490460830618322">အက်ပ်စစ်ထုတ်မှု စာမျက်နှာ</translation>
 <translation id="6865313869410766144">ဒေတာမှ အလိုအလျောက် ဖြည့်စွက်</translation>
@@ -1596,6 +1602,7 @@
 <translation id="7475688122056506577">SD ကတ် မတွေ့ပါ။ သင့်ဖိုင်အချို့ ပျောက်နေနိုင်ပါသည်။</translation>
 <translation id="7479104141328977413">တဘ် စီမံခန့်ခွဲမှု</translation>
 <translation id="7481312909269577407">ရှေ့သို့</translation>
+<translation id="7481588001304663390">{NUM_BOOKMARKS,plural, =1{တဘ်အုပ်စုအသစ်တွင် ဖွင့်ရန်}other{(#) ခုလုံးကို တဘ်အုပ်စုအသစ်တွင် ဖွင့်ရန်}}</translation>
 <translation id="7482656565088326534">အစမ်းကြည့်ရှုမှု တဘ်</translation>
 <translation id="7484997419527351112">Discover - ပိတ်ထားသည်</translation>
 <translation id="7485033510383818941">ဖိဒ်အကြောင်းအရာကို ပြန်လည် စတင်ရန် စာမျက်နှာကို အောက်သို့ဆွဲချပါ</translation>
@@ -1752,6 +1759,7 @@
 <translation id="8103578431304235997">ကိုယ်ဖျောက်တဘ်</translation>
 <translation id="810433609302852">အကြံပြုချက်ဆိုင်ရာ အကြောင်းကြားချက်တူးလ် ပရိုမိုးရှင်းနှင့် အသုံးပြုမှု အဆင့်များဆိုင်ရာ အောက်ခြေအပိုဆောင်း စာမျက်နှာ</translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
+<translation id="8109802255973641442">နောက်ဆက်တွဲများနှင့် ဤစက်တွင် ၎င်းတို့သိမ်းထားသော ဒေတာကို ဖယ်ရှားရန်</translation>
 <translation id="8110024788458304985">Chrome\u2019s ၏ ဝန်ဆောင်မှုနှင့် စွမ်းဆောင်ရည် ပိုကောင်းလာစေရန် ကူညီခြင်း</translation>
 <translation id="8110087112193408731">'ဒစ်ဂျစ်တယ် အာရောဂျံ' အတွင်း သင်၏ Chrome လုပ်ဆောင်ချက်ကို ပြစေလိုပါသလား။</translation>
 <translation id="8118117428362942925">အကူအညီလိုပါက သင့်မိဘ (<ph name="PARENT_NAME" />) ကိုတောင်းပါ</translation>
@@ -1851,6 +1859,7 @@
 <translation id="8460448946170646641">အဓိကကျသော ကိုယ်ရေးအချက်အလက်နှင့် လုံခြုံရေး ထိန်းချုပ်မှုများကို ကြည့်ရှုရန်</translation>
 <translation id="8460932807646981183">ရှာဖွေရေး အင်ဂျင်များနှင့် Site Search ကို စီမံရန်</translation>
 <translation id="8465252176946159372">မှန်ကန်မှုမရှိပါ</translation>
+<translation id="8472353072135865937">{NUM_BOOKMARKS,plural, =1{ဝင်းဒိုးအသစ်တွင် ဖွင့်ရန်}other{(#) ခုလုံးကို ဝင်းဒိုးအသစ်တွင် ဖွင့်ရန်}}</translation>
 <translation id="8473863474539038330">လိပ်စာများနှင့် အခြားအရာများ</translation>
 <translation id="847433688444405067">စက်အားလုံးတွင် ကြည့်ပါ</translation>
 <translation id="8477178913400731244">ဒေတာဖျက်ရန်</translation>
@@ -1913,6 +1922,7 @@
 <translation id="8738163682604285902">စာဖတ်မုဒ် ကြည့်မလား။</translation>
 <translation id="8746155870861185046">မြင်သာအောင်လုပ်ထားသည်ကို မျှဝေရန်</translation>
 <translation id="8748850008226585750">အကြောင်းအရာများကို ဝှက်ထားသည်</translation>
+<translation id="874918643257405732">ဤတဘ်၏လိပ်စာကို မှတ်ရန်</translation>
 <translation id="8754448020583829686">လင့်ခ်မပါဘဲ မိတ္တူကူးရန်</translation>
 <translation id="8756969031206844760">စကားဝှက်ကို အပ်ဒိတ်လုပ်လိုပါသလား။</translation>
 <translation id="8765470054473112089">လိပ်စာဘား (သို့) ရှာဖွေစာလုံးဖြည့်ကွက်လပ်တွင် စာရိုက်သောအခါ ပိုမိုကောင်းမွန်သော အကြံပြုချက်များ ရယူရန်အတွက် Chrome သည် သင်ရိုက်ထည့်သောအရာကို သင့်မူလရှာဖွေရေးအင်ဂျင်သို့ ပို့သည်။ ၎င်းသည် ‘ရုပ်ဖျက်’ တွင် ပိတ်နေမည်။</translation>
@@ -2038,6 +2048,7 @@
 <translation id="9212845824145208577">အောက်သို့ထပ်နှိမ့်၍ မရပါ။ စာမျက်နှာ၏ အောက်ဘက်ခပ်ဝေးဝေးမှ စကြည့်ပါ။</translation>
 <translation id="9218430445555521422">မူရင်းအဖြစ် သတ်မှတ်ရန်</translation>
 <translation id="9219103736887031265">ပုံများ</translation>
+<translation id="922152298093051471">Chrome ကို စိတ်ကြိုက်ပြင်ရန်</translation>
 <translation id="9222198206152536936">သင့်စက်အားလုံးတွင် တဘ်နှင့် အခြားအရာများ ရယူရန် <ph name="EMAIL" /> အဖြစ် လက်မှတ်ထိုးဝင်ပါ</translation>
 <translation id="924447568950697217">Chrome ကို သင့်မူရင်းဘရောင်ဇာအဖြစ် ပြုလုပ်ပါ</translation>
 <translation id="926205370408745186">'ဒစ်ဂျစ်တယ် အာရောဂျံ' မှနေ၍ သင်၏ Chrome လုပ်ဆောင်ချက်ကို ဖယ်ရှားခြင်း</translation>

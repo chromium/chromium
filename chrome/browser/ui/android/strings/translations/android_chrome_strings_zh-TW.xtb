@@ -233,7 +233,6 @@
 <translation id="200114059308480249">要在使用 Google 搜尋時納入前後文嗎？</translation>
 <translation id="2004096469149679223"><ph name="TAB_TITLE" />，固定的無痕分頁，已設為靜音</translation>
 <translation id="2021896219286479412">全螢幕網站控制</translation>
-<translation id="2022953316617983419">QR code</translation>
 <translation id="2024195579772565064">刪除搜尋引擎</translation>
 <translation id="2029669011553795746">提示通知啟用畫面顯示在畫面下半部</translation>
 <translation id="2038563949887743358">開啟「要求電腦版網站」</translation>
@@ -558,6 +557,7 @@
 <translation id="3331974543021145906">應用程式資訊</translation>
 <translation id="3334729583274622784">是否要變更副檔名？</translation>
 <translation id="333863344734218290">在你造訪不安全的公開和私人網站時發出警告</translation>
+<translation id="3339788961947270565">正在關機</translation>
 <translation id="3340978935015468852">設定</translation>
 <translation id="3351959803838327376">長按網站開啟選單</translation>
 <translation id="3359667936385849800">使用目前的服務供應商</translation>
@@ -721,6 +721,7 @@
 <translation id="4044708993631234325">底部功能表</translation>
 <translation id="4045441967987592849">重新開啟</translation>
 <translation id="4049920046559074950">更多「<ph name="INSTANCE_TITLE" />」的選項</translation>
+<translation id="4051569243832293689">{NUM_BOOKMARKS,plural, =1{在無痕視窗中開啟}other{在無痕視窗中開啟所有書籤 (#)}}</translation>
 <translation id="4052419222954753986">{NUMBER_OF_TABS,plural, =1{共用分頁群組中的 <ph name="TABS_COUNT_ONE" /> 個標準分頁有新活動}other{共用分頁群組中的 <ph name="TABS_COUNT_MANY" /> 個標準分頁有新活動}}</translation>
 <translation id="405365679581583349">更新 Google Play 服務</translation>
 <translation id="405399507749852140">如果產品在任何網站上降價，你會收到通知</translation>
@@ -823,6 +824,7 @@
 <translation id="442518031075347249">你將無法再透過 Google Pay 使用虛擬卡片。<ph name="BEGIN_LINK1" />進一步瞭解虛擬卡片<ph name="END_LINK1" /></translation>
 <translation id="442577985493096785">{TAB_COUNT,plural, =1{即將關閉「<ph name="TAB_TITLE" />」和另外 <ph name="TAB_COUNT_ONE" /> 個分頁}other{即將關閉「<ph name="TAB_TITLE" />」和另外 <ph name="TAB_COUNT_MANY" /> 個分頁}}</translation>
 <translation id="4430277756566635951">目前已選取 <ph name="EMAIL" />。請選擇帳戶。</translation>
+<translation id="4430369329743628066">已新增書籤</translation>
 <translation id="4452411734226507615">關閉 [<ph name="TAB_TITLE" />] 分頁</translation>
 <translation id="4452548195519783679">已將書籤加入「<ph name="FOLDER_NAME" />」</translation>
 <translation id="4460822871039013969"><ph name="TAB_TITLE" />，選取的固定分頁，正在錄製媒體</translation>
@@ -1072,6 +1074,7 @@
 <translation id="5517326820028369152">近期活動底部功能表</translation>
 <translation id="5526281268548144413">無法關閉多個視窗中的分頁</translation>
 <translation id="5532536403031755365">強化防護功能可多添一層安全保障，有效防範線上威脅</translation>
+<translation id="5540127996007641535">{NUM_BOOKMARKS,plural, =1{開啟書籤}other{開啟所有書籤 (#)}}</translation>
 <translation id="5548606607480005320">安全檢查</translation>
 <translation id="5554520618550346933">如果你使用的密碼已公布在網路上，Chrome 就會發出警告。在比對過程中，系統會加密你的密碼和使用者名稱，因此任何人 (包括 Google) 都無法讀取。</translation>
 <translation id="5555525474779371165">選擇安全瀏覽防護設定</translation>
@@ -1127,7 +1130,6 @@
 <translation id="5763514718066511291">輕觸即可複製這個應用程式的網址</translation>
 <translation id="5765517223145864268">請分享你的使用體驗。如果不想提供意見，則可<ph name="BEGIN_LINK" />變更相關設定<ph name="END_LINK" />。</translation>
 <translation id="5776970333778123608">不重要的資料</translation>
-<translation id="5788665823391532892">回報問題...</translation>
 <translation id="5793665092639000975">已使用 <ph name="SPACE_AVAILABLE" /> 中的 <ph name="SPACE_USED" /></translation>
 <translation id="5797949256525811424">已封鎖的主題</translation>
 <translation id="580893287573699959">管理感興趣的主題和網站</translation>
@@ -1179,6 +1181,7 @@
 <translation id="5995726099713306770">要再次下載網頁嗎？</translation>
 <translation id="5998675059699164418">貴機構要求你先登入才能使用 Chrome。</translation>
 <translation id="6000066717592683814">繼續使用 Google</translation>
+<translation id="6002122790816966947">你的裝置</translation>
 <translation id="6011308810877101166">改善搜尋建議</translation>
 <translation id="6013305291643746595">由舊到新排序</translation>
 <translation id="6022659036123304283">打造專屬的 Chrome</translation>
@@ -1245,6 +1248,7 @@
 <translation id="6246073558347462570">內容彈出式視窗</translation>
 <translation id="6247557882553405851">Google 密碼管理工具</translation>
 <translation id="6248988683584659830">搜尋設定</translation>
+<translation id="6250486830372700930">一併移除這部裝置上的擴充功能</translation>
 <translation id="6250847299079540062"><ph name="TAB_TITLE" />，多選的固定無痕分頁</translation>
 <translation id="6251449557817521191">這裡會顯示 Chrome 歷史記錄</translation>
 <translation id="6254139308321626268">目前查看的是 PDF 檔案</translation>
@@ -1420,7 +1424,9 @@
 <translation id="6850830437481525139">關閉了 <ph name="TAB_COUNT" /> 個分頁</translation>
 <translation id="6852437757508328589">{NUM_RESULTS,plural, =1{找到 1 筆結果}other{找到 # 筆結果}}</translation>
 <translation id="685340923442249391">{FILE_COUNT,plural, =1{音訊檔案，清單中有 1 個音訊檔案}other{音訊檔案，清單中有 # 個音訊檔案}}</translation>
+<translation id="6857043990326114901">新增資料夾…</translation>
 <translation id="685850645784703949">Google 探索 - 關閉</translation>
+<translation id="6858893072923394368">新增頁面…</translation>
 <translation id="6864459304226931083">下載圖片</translation>
 <translation id="686490460830618322">應用程式篩選功能表</translation>
 <translation id="6865313869410766144">自動填入表單資料</translation>
@@ -1597,6 +1603,7 @@
 <translation id="7475688122056506577">找不到 SD 卡。部分檔案可能會遺失。</translation>
 <translation id="7479104141328977413">分頁管理</translation>
 <translation id="7481312909269577407">往前</translation>
+<translation id="7481588001304663390">{NUM_BOOKMARKS,plural, =1{在新分頁群組中開啟}other{在新分頁群組中開啟所有書籤 (#)}}</translation>
 <translation id="7482656565088326534">預覽分頁</translation>
 <translation id="7484997419527351112">探索 - 關閉</translation>
 <translation id="7485033510383818941">如要重新整理動態提醒內容，請將頁面往下拉</translation>
@@ -1753,6 +1760,7 @@
 <translation id="8103578431304235997">無痕式分頁</translation>
 <translation id="810433609302852">提示通知功能宣傳內容和使用步驟的底部功能表</translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
+<translation id="8109802255973641442">移除這部裝置上的擴充功能及其儲存的資料</translation>
 <translation id="8110024788458304985">協助改善 Chrome 的功能與效能</translation>
 <translation id="8110087112193408731">要在數位健康中顯示你的 Chrome 活動記錄嗎？</translation>
 <translation id="8118117428362942925">如需協助，請找家長 (<ph name="PARENT_NAME" />) 幫忙</translation>
@@ -1852,6 +1860,7 @@
 <translation id="8460448946170646641">查看最重要的隱私權和安全性控制項</translation>
 <translation id="8460932807646981183">管理搜尋引擎和網站搜尋</translation>
 <translation id="8465252176946159372">無效</translation>
+<translation id="8472353072135865937">{NUM_BOOKMARKS,plural, =1{在新視窗開啟}other{在新視窗開啟所有書籤 (#)}}</translation>
 <translation id="8473863474539038330">地址和其他資訊</translation>
 <translation id="847433688444405067">跨裝置瀏覽</translation>
 <translation id="8477178913400731244">刪除資料</translation>
@@ -1914,6 +1923,7 @@
 <translation id="8738163682604285902">要在閱讀模式下查看嗎？</translation>
 <translation id="8746155870861185046">分享醒目顯示內容</translation>
 <translation id="8748850008226585750">內容已隱藏</translation>
+<translation id="874918643257405732">將此分頁加入書籤</translation>
 <translation id="8754448020583829686">複製 (不含連結)</translation>
 <translation id="8756969031206844760">要更新密碼嗎？</translation>
 <translation id="8765470054473112089">在網址列或搜尋框中輸入時，Chrome 會將你輸入的內容傳送給預設搜尋引擎，提供更符合需求的搜尋建議。這項功能在無痕模式中為關閉狀態。</translation>
@@ -2039,6 +2049,7 @@
 <translation id="9212845824145208577">無法再向下捲動。請嘗試從下一頁開始。</translation>
 <translation id="9218430445555521422">設為預設</translation>
 <translation id="9219103736887031265">圖片</translation>
+<translation id="922152298093051471">自訂 Chrome</translation>
 <translation id="9222198206152536936">以「<ph name="EMAIL" />」身分登入，就能在所有裝置上存取分頁和其他資料</translation>
 <translation id="924447568950697217">將 Chrome 設為預設瀏覽器</translation>
 <translation id="926205370408745186">將你的 Chrome 活動記錄從數位健康中移除</translation>

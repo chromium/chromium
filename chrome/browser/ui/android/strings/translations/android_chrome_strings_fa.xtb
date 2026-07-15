@@ -233,7 +233,6 @@
 <translation id="200114059308480249">‏نوشتار اطراف در جستجوهای Google لحاظ شوند؟</translation>
 <translation id="2004096469149679223">‫<ph name="TAB_TITLE" />، زبانه ناشناس بی‌صدای سنجاق‌شده</translation>
 <translation id="2021896219286479412">کنترل‌های سایت تمام‌صفحه</translation>
-<translation id="2022953316617983419">رمزینه پاسخ‌سریع</translation>
 <translation id="2024195579772565064">حذف موتور جستجو</translation>
 <translation id="2029669011553795746">برگ زیرین موافقت کردن با نکات به‌صورت نیمه باز شده است</translation>
 <translation id="2038563949887743358">روشن کردن درخواست سایت رایانه‌ای</translation>
@@ -558,6 +557,7 @@
 <translation id="3331974543021145906">اطلاعات برنامه</translation>
 <translation id="3334729583274622784">پسوند فایل تغییر کند؟</translation>
 <translation id="333863344734218290">درباره سایت‌های عمومی و خصوصی ناامن به شما هشدار می‌دهد</translation>
+<translation id="3339788961947270565">در‌حال اتمام فرایند خاموش شدن</translation>
 <translation id="3340978935015468852">تنظیمات</translation>
 <translation id="3351959803838327376">وب‌سایت را طولانی فشار دهید و منو را باز کنید</translation>
 <translation id="3359667936385849800">استفاده از ارائه‌دهنده خدمات کنونی</translation>
@@ -721,6 +721,7 @@
 <translation id="4044708993631234325">برگ زیرین</translation>
 <translation id="4045441967987592849">باز کردن مجدد</translation>
 <translation id="4049920046559074950">گزینه‌های بیشتر برای <ph name="INSTANCE_TITLE" /></translation>
+<translation id="4051569243832293689">{NUM_BOOKMARKS,plural, =1{باز کردن در پنجره ناشناس}one{باز کردن همه (#) در پنجره ناشناس}other{باز کردن همه (#) در پنجره ناشناس}}</translation>
 <translation id="4052419222954753986">{NUMBER_OF_TABS,plural, =1{‫<ph name="TABS_COUNT_ONE" /> زبانه استاندارد با فعالیت جدید در گروه‌های زبانه هم‌رسانی‌شده}one{‫<ph name="TABS_COUNT_MANY" /> زبانه استاندارد با فعالیت جدید در گروه‌های زبانه هم‌رسانی‌شده}other{‫<ph name="TABS_COUNT_MANY" /> زبانه استاندارد با فعالیت جدید در گروه‌های زبانه هم‌رسانی‌شده}}</translation>
 <translation id="405365679581583349">‏به‌روزرسانی «خدمات Google Play»</translation>
 <translation id="405399507749852140">اگر قیمت در هر سایتی کاهش پیدا کرد، هشدار دریافت می‌کنید</translation>
@@ -823,6 +824,7 @@
 <translation id="442518031075347249">‏دیگر نمی‌توانید از کارت مجازی‌تان در Google Pay استفاده کنید. <ph name="BEGIN_LINK1" />درباره کارت‌های مجازی بیشتر بدانید<ph name="END_LINK1" /></translation>
 <translation id="442577985493096785">{TAB_COUNT,plural, =1{‫<ph name="TAB_TITLE" /> و <ph name="TAB_COUNT_ONE" /> زبانه دیگر بسته خواهند شد}one{‫<ph name="TAB_TITLE" /> و <ph name="TAB_COUNT_MANY" /> زبانه دیگر بسته خواهند شد}other{‫<ph name="TAB_TITLE" /> و <ph name="TAB_COUNT_MANY" /> زبانه دیگر بسته خواهند شد}}</translation>
 <translation id="4430277756566635951">درحال‌حاضر <ph name="EMAIL" /> انتخاب شده است. حسابی انتخاب کنید.</translation>
+<translation id="4430369329743628066">نشانک اضافه شد</translation>
 <translation id="4452411734226507615">بستن برگه <ph name="TAB_TITLE" /></translation>
 <translation id="4452548195519783679">در <ph name="FOLDER_NAME" /> نشانک گذاشته شد</translation>
 <translation id="4460822871039013969">‫<ph name="TAB_TITLE" />، زبانه ضبط سنجاق‌شده انتخابی</translation>
@@ -1072,6 +1074,7 @@
 <translation id="5517326820028369152">برگ زیرین فعالیت اخیر</translation>
 <translation id="5526281268548144413">بستن در چند پنجره امکان‌پذیر نیست</translation>
 <translation id="5532536403031755365">با محافظت بهبودیافته، لایه محافظتی بیشتری دربرابر تهدیدهای آنلاین اضافه کنید</translation>
+<translation id="5540127996007641535">{NUM_BOOKMARKS,plural, =1{باز کردن نشانک}one{باز کردن همه (#)}other{باز کردن همه (#)}}</translation>
 <translation id="5548606607480005320">بررسی ایمنی</translation>
 <translation id="5554520618550346933">‏وقتی از گذرواژه‌ای استفاده کنید، Chrome به شما هشدار می‌دهد آیا این گذرواژه در فضای آنلاین منتشر شده است یا نه. هنگام انجام این کار، نام‌های کاربری و گذرواژه‌های شما رمزگذاری می‌شود تا اشخاص دیگر، ازجمله Google نتوانند آن‌ها را بخوانند.</translation>
 <translation id="5555525474779371165">انتخاب ویژگی حفاظتی «مرور ایمن»</translation>
@@ -1127,7 +1130,6 @@
 <translation id="5763514718066511291">برای کپی کردن نشانی وب این برنامه تک‌ضرب بزنید</translation>
 <translation id="5765517223145864268">درباره تجربه‌تان به ما بگویید. یا <ph name="BEGIN_LINK" />تنظیماتتان را تغییر دهید<ph name="END_LINK" />.</translation>
 <translation id="5776970333778123608">داده‌های غیرمهم</translation>
-<translation id="5788665823391532892">گزارش کردن مشکل…</translation>
 <translation id="5793665092639000975">درحال استفاده از <ph name="SPACE_USED" /> از <ph name="SPACE_AVAILABLE" /></translation>
 <translation id="5797949256525811424">موضوع مسدود‌شده</translation>
 <translation id="580893287573699959">مدیریت موضوعات و سایت‌های موردعلاقه</translation>
@@ -1179,6 +1181,7 @@
 <translation id="5995726099713306770">صفحه دوباره بارگیری شود؟</translation>
 <translation id="5998675059699164418">‏سازمانتان از شما می‌خواهد برای استفاده از Chrome به سیستم وارد شوید.</translation>
 <translation id="6000066717592683814">‏حفظ Google</translation>
+<translation id="6002122790816966947">دستگاه‌های شما</translation>
 <translation id="6011308810877101166">بهبود پیشنهادهای جستجو</translation>
 <translation id="6013305291643746595">ترتیب براساس قدیمی‌ترین</translation>
 <translation id="6022659036123304283">‏Chrome را برای خود اختصاصی کنید</translation>
@@ -1245,6 +1248,7 @@
 <translation id="6246073558347462570">پنجره بالاپر بافت</translation>
 <translation id="6247557882553405851">‏مدیر گذرواژه Google</translation>
 <translation id="6248988683584659830">تنظیمات جستجو</translation>
+<translation id="6250486830372700930">همچنین می‌توانید افزونه‌ها را از این دستگاه بردارید</translation>
 <translation id="6250847299079540062">‫<ph name="TAB_TITLE" />، زبانه ناشناس سنجاق‌شده چندانتخابی</translation>
 <translation id="6251449557817521191">‏سابقه Chrome را اینجا مشاهده کنید</translation>
 <translation id="6254139308321626268">‏درحال مشاهده فایل PDF هستید</translation>
@@ -1420,7 +1424,9 @@
 <translation id="6850830437481525139"><ph name="TAB_COUNT" /> برگه بسته شد</translation>
 <translation id="6852437757508328589">{NUM_RESULTS,plural, =1{یک نتیجه پیدا شد}one{# نتیجه پیدا شد}other{# نتیجه پیدا شد}}</translation>
 <translation id="685340923442249391">{FILE_COUNT,plural, =1{فایل‌های صوتی، ۱ فایل صوتی در فهرست}one{فایل‌های صوتی، # فایل صوتی در فهرست}other{فایل‌های صوتی، # فایل صوتی در فهرست}}</translation>
+<translation id="6857043990326114901">افزودن پوشه…</translation>
 <translation id="685850645784703949">‏«یافته‌ها» از Google - خاموش</translation>
+<translation id="6858893072923394368">افزودن صفحه…</translation>
 <translation id="6864459304226931083">بارگیری تصویر</translation>
 <translation id="686490460830618322">برگ فیلتر کردن برنامه</translation>
 <translation id="6865313869410766144">داده‌های فرم تکمیل خودکار</translation>
@@ -1597,6 +1603,7 @@
 <translation id="7475688122056506577">‏کارت SD پیدا نشد. ممکن است بعضی از فایل‌هایتان جا بیافتد.</translation>
 <translation id="7479104141328977413">مدیریت برگه</translation>
 <translation id="7481312909269577407">ارسال کردن</translation>
+<translation id="7481588001304663390">{NUM_BOOKMARKS,plural, =1{باز کردن در گروه زبانه جدید}one{باز کردن همه (#) در گروه زبانه جدید}other{باز کردن همه (#) در گروه زبانه جدید}}</translation>
 <translation id="7482656565088326534">برگه پیش‌نمایش</translation>
 <translation id="7484997419527351112">«یافته‌ها» - خاموش</translation>
 <translation id="7485033510383818941">برای بازآوری محتوای جارزن، صفحه را به‌پایین بکشید</translation>
@@ -1753,6 +1760,7 @@
 <translation id="8103578431304235997">برگه ناشناس</translation>
 <translation id="810433609302852">برگ زیرین تبلیغ ویژگی اعلان نکات و مراحل استفاده</translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
+<translation id="8109802255973641442">برداشتن افزونه‌ها و داده‌های ذخیره‌شدهٔ آن‌ها روی این دستگاه</translation>
 <translation id="8110024788458304985">‏کمک به بهبود عملکرد و ویژگی‌های Chrome</translation>
 <translation id="8110087112193408731">‏فعالیت Chrome شما در «آسایش دیجیتالی» نشان داده شود؟</translation>
 <translation id="8118117428362942925">اگر به راهنمایی نیاز داشتید، از ولی خود کمک بگیرید (<ph name="PARENT_NAME" />)</translation>
@@ -1852,6 +1860,7 @@
 <translation id="8460448946170646641">مرور کنترل‌های اصلی امنیت و حریم خصوصی</translation>
 <translation id="8460932807646981183">مدیریت موتورهای جستجو و جستجوی سایت</translation>
 <translation id="8465252176946159372">معتبر نیست</translation>
+<translation id="8472353072135865937">{NUM_BOOKMARKS,plural, =1{باز کردن در پنجره جدید}one{باز کردن همه (#) در پنجره جدید}other{باز کردن همه (#) در پنجره جدید}}</translation>
 <translation id="8473863474539038330">نشانی‌ها و غیره</translation>
 <translation id="847433688444405067">پیمایش بین دستگاه‌ها</translation>
 <translation id="8477178913400731244">حذف داده‌ها</translation>
@@ -1914,6 +1923,7 @@
 <translation id="8738163682604285902">می‌خواهید «حالت خواندن» را مشاهده کنید؟</translation>
 <translation id="8746155870861185046">هم‌رسانی مورد برجسته</translation>
 <translation id="8748850008226585750">محتوا پنهان است</translation>
+<translation id="874918643257405732">نشانک‌گذاری این برگه</translation>
 <translation id="8754448020583829686">کپی کردن بدون پیوند</translation>
 <translation id="8756969031206844760">گذرواژه به‌روز شود؟</translation>
 <translation id="8765470054473112089">‏وقتی در نوار نشانی یا چارگوش جستجو تایپ می‌کنید، Chrome آنچه تایپ می‌کنید را به موتور جستجوی پیش‌فرض شما ارسال می‌کند تا پیشنهادهای بهتری دریافت کند. این ویژگی در «حالت ناشناس» خاموش است.</translation>
@@ -2039,6 +2049,7 @@
 <translation id="9212845824145208577">نمی‌توان پایین‌تر رفت. از بخش پایین‌تری در صفحه شروع کنید.</translation>
 <translation id="9218430445555521422">تنظیم به‌عنوان پیش‌فرض</translation>
 <translation id="9219103736887031265">تصاویر</translation>
+<translation id="922152298093051471">‏سفارشی‌سازی Chrome</translation>
 <translation id="9222198206152536936">برای دسترسی به زبانه‌ها و موارد دیگر در همه دستگاه‌هایتان، با <ph name="EMAIL" /> به سیستم وارد شوید</translation>
 <translation id="924447568950697217">‏‫Chrome را مرورگر پیش‌فرض کردن</translation>
 <translation id="926205370408745186">‏فعالیت Chrome شما از «آسایش دیجیتالی» برداشته شود</translation>

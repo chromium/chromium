@@ -1217,6 +1217,7 @@ Hesla můžete kdykoli zobrazit v nástroji <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="1933489278505808700">Povoleno čtení a změny</translation>
 <translation id="1935303383381416800">Povolení k přístupu k vaší poloze</translation>
 <translation id="193565226207940518">Nástroj podpory</translation>
+<translation id="1935995810530254458">Přesto zkopírovat</translation>
 <translation id="1936157145127842922">Zobrazit ve složce</translation>
 <translation id="1936344977780165685">{PAGES,plural, =1{Stránka byla přidána do seznamu četby}few{Stránky byly přidány do seznamu četby}many{Stránky byly přidány do seznamu četby}other{Stránky byly přidány do seznamu četby}}</translation>
 <translation id="1936931585862840749">Počet kopií, které chcete vytisknout, je třeba zadat jako číslo (od 1 do <ph name="MAX_COPIES" />).</translation>
@@ -1537,6 +1538,7 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2199298570273670671">Chyba</translation>
 <translation id="2200094388063410062">E-mail</translation>
 <translation id="2200781749203116929">Protokoly systému ChromeOS</translation>
+<translation id="2202391868799679245">Zapnout klávesovou zkratku</translation>
 <translation id="2203088913459920044">V názvu lze použít písmena, číslice a zvláštní znaky</translation>
 <translation id="220321590587754225">Nepodařilo se připojit. Zkuste to znovu.</translation>
 <translation id="2203903197029773650">Když se přihlásíte k účtu Google, může vám <ph name="BRAND" /> kontrolovat hesla</translation>
@@ -6343,7 +6345,6 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="5932881020239635062">Sériové číslo</translation>
 <translation id="5933522550144185133"><ph name="APP_NAME" /> používá vaši kameru a mikrofon.</translation>
 <translation id="5935158534896975820">Probíhá příprava žádosti o podepsání certifikátu (čeká se na server)</translation>
-<translation id="5935554994339565449">Přidávejte text pomocí nového nástroje Přidat text</translation>
 <translation id="5936065461722368675">Přeložit celou stránku</translation>
 <translation id="5937977334791924341">Logo <ph name="APP" /></translation>
 <translation id="5938002010494270685">Je k dispozici bezpečnostní upgrade</translation>

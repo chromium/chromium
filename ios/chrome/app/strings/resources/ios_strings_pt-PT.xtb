@@ -245,6 +245,7 @@
 <translation id="1752547299766512813">Guardar Palavras-passe</translation>
 <translation id="1764070164487214210">Direções</translation>
 <translation id="1764511703783285459">O outro gestor de palavras-passe não partilhou palavras-passe nem chaves de acesso</translation>
+<translation id="1765555082983153259">O “Chrome” gostaria de aceder ao seu microfone</translation>
 <translation id="1767766085187034454">Google Tradutor</translation>
 <translation id="1771016937398045251">Menu de ferramentas</translation>
 <translation id="1772468122139624049">Não é possível atualizar os separadores</translation>
@@ -303,6 +304,7 @@
 <translation id="1955773397805078763">Adicionar método de pagamento</translation>
 <translation id="1956138802718275401">Aceda às palavras-passe a partir do ecrã principal</translation>
 <translation id="1959441496380398824">Toque sem soltar numa data.</translation>
+<translation id="1961283111643798191">Faça a gestão das informações de contacto e muito mais…</translation>
 <translation id="1962348300797608157"><ph name="BEGIN_BOLD" /><ph name="FULL_NAME" /><ph name="END_BOLD" /> partilhou uma palavra-passe consigo para o Website <ph name="WEBSITE" /></translation>
 <translation id="1962969542251276847">Bloqueio de Ecrã</translation>
 <translation id="1963976881984600709">Proteção padrão</translation>
@@ -2465,6 +2467,7 @@ Para continuar a partir do computador, mude para <ph name="OTHER_EMAIL" />. Tem 
 <translation id="9149866541089851383">Editar...</translation>
 <translation id="9152637745605628097">Escolha entre temas, cores ou carregue uma imagem</translation>
 <translation id="9159628751968616911">Envie a página Web</translation>
+<translation id="9162412286847966593">Os dados e as gravações da sua organização não são usados para melhorar os modelos de IA generativa. <ph name="BEGIN_LINK" />A sua privacidade e o Gemini<ph name="END_LINK" /></translation>
 <translation id="9162432979321511934">Ative o Preenchimento automático de palavras-passe</translation>
 <translation id="9165320910061267720">Para receber notificações de alertas de descida do preço, tem de ativar as notificações nas definições do iOS.</translation>
 <translation id="9179151630575358778">Oculta este item</translation>

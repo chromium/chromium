@@ -1216,6 +1216,7 @@ Kontrolloji fjalëkalimet e tua në çdo kohë te <ph name="GOOGLE_PASSWORD_MANA
 <translation id="1933489278505808700">Lejohet të lexojë dhe të ndryshojë</translation>
 <translation id="1935303383381416800">Lejohen të shikojnë vendndodhjen tënde</translation>
 <translation id="193565226207940518">Vegla e mbështetjes</translation>
+<translation id="1935995810530254458">Kopjo gjithsesi</translation>
 <translation id="1936157145127842922">Shfaq në dosje</translation>
 <translation id="1936344977780165685">{PAGES,plural, =1{Faqja u shtua te lista e leximit}other{Faqet u shtuan te lista e leximit}}</translation>
 <translation id="1936931585862840749">Përdor një numër për të treguar sa kopje do të printohen (1 deri në <ph name="MAX_COPIES" />).</translation>
@@ -1536,6 +1537,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="2199298570273670671">Gabim</translation>
 <translation id="2200094388063410062">Email-i</translation>
 <translation id="2200781749203116929">Evidencat e sistemit të ChromeOS</translation>
+<translation id="2202391868799679245">Aktivizo shkurtoren e tastierës</translation>
 <translation id="2203088913459920044">Emri mund të përdorë shkronja, numra dhe karaktere të veçanta</translation>
 <translation id="220321590587754225">Nuk mund të lidhej. Provo përsëri.</translation>
 <translation id="2203903197029773650"><ph name="BRAND" /> mund t'i kontrollojë fjalëkalimet e tua kur të identifikohesh me "Llogarinë tënde të Google".</translation>
@@ -6348,7 +6350,6 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="5932881020239635062">Numri i serisë</translation>
 <translation id="5933522550144185133"><ph name="APP_NAME" /> po përdor kamerën dhe mikrofonin tënd.</translation>
 <translation id="5935158534896975820">Kërkesa e identifikimit të certifikatës po përgatitet (në pritje në server)</translation>
-<translation id="5935554994339565449">Shto tekst me veglën e re "Shto tekst"</translation>
 <translation id="5936065461722368675">Përkthe të gjithë faqen</translation>
 <translation id="5937977334791924341">Logoja e "<ph name="APP" />"</translation>
 <translation id="5938002010494270685">Ofrohet një përmirësim i sigurisë</translation>

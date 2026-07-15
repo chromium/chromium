@@ -1216,6 +1216,7 @@ Egiaztatu pasahitzak <ph name="GOOGLE_PASSWORD_MANAGER" /> zerbitzuan.</translat
 <translation id="1933489278505808700">Irakurri eta aldatzeko baimena dauka</translation>
 <translation id="1935303383381416800">Zure kokapena ikus dezakete</translation>
 <translation id="193565226207940518">Laguntza-tresna</translation>
+<translation id="1935995810530254458">Kopiatu halere</translation>
 <translation id="1936157145127842922">Erakutsi karpetan</translation>
 <translation id="1936344977780165685">{PAGES,plural, =1{Gehitu da orria irakurketa-zerrendan}other{Gehitu dira orriak irakurketa-zerrendan}}</translation>
 <translation id="1936931585862840749">Zehaztu kopia kopurua (1-<ph name="MAX_COPIES" />).</translation>
@@ -1536,6 +1537,7 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="2199298570273670671">Errorea</translation>
 <translation id="2200094388063410062">Posta elektronikoa</translation>
 <translation id="2200781749203116929">ChromeOS-en sistemaren erregistroak</translation>
+<translation id="2202391868799679245">Aktibatu lasterbidea</translation>
 <translation id="2203088913459920044">Hizkiak, zenbakiak eta karaktere bereziak izan ditzake izenak</translation>
 <translation id="220321590587754225">Ezin izan da konektatu. Saiatu berriro.</translation>
 <translation id="2203903197029773650">Saioa Google-ko kontu batekin hasten baduzu, pasahitzak egiaztatzeko gai izango da <ph name="BRAND" /></translation>
@@ -6343,7 +6345,6 @@ Erabilerraztasun-etengailu bat baino gehiago eslei diezazkiokezu ekintza horri.<
 <translation id="5932881020239635062">Serie-zenbakia</translation>
 <translation id="5933522550144185133">Kamera eta mikrofonoa erabiltzen ari da <ph name="APP_NAME" /></translation>
 <translation id="5935158534896975820">Ziurtagiria sinatzeko eskaera prestatzen (zerbitzariaren zain)</translation>
-<translation id="5935554994339565449">Erabili "Gehitu testua" tresna berria testua gehitzeko</translation>
 <translation id="5936065461722368675">Itzuli orri osoa</translation>
 <translation id="5937977334791924341"><ph name="APP" /> zerbitzuaren logotipoa</translation>
 <translation id="5938002010494270685">Segurtasun-eguneratze bat dago</translation>

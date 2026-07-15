@@ -1226,6 +1226,7 @@
 <translation id="1933489278505808700">已允許讀取並變更</translation>
 <translation id="1935303383381416800">已允許查看您的位置</translation>
 <translation id="193565226207940518">支援工具</translation>
+<translation id="1935995810530254458">仍要複製</translation>
 <translation id="1936157145127842922">在資料夾中顯示</translation>
 <translation id="1936344977780165685">{PAGES,plural, =1{已將頁面加入閱讀清單}other{已將頁面加入閱讀清單}}</translation>
 <translation id="1936931585862840749">使用數字指定列印份數 (1 至 <ph name="MAX_COPIES" /> 份)。</translation>
@@ -5094,7 +5095,6 @@
 <translation id="4906490889887219338">設定或管理網絡檔案共用功能。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="4906679076183257864">重設為預設值</translation>
 <translation id="4907129260985716018">選擇這個擴充程式何時可讀取並變更網站資料</translation>
-<translation id="4908076691331874303">已從此網站隱藏</translation>
 <translation id="4908811072292128752">開啟新分頁，即可同時瀏覽兩個網站</translation>
 <translation id="4910241725741323970">已安裝應用程式</translation>
 <translation id="4912643508233590958">閒置喚醒</translation>
@@ -6358,7 +6358,6 @@
 <translation id="5932881020239635062">序號</translation>
 <translation id="5933522550144185133">「<ph name="APP_NAME" />」正在使用您的相機和麥克風</translation>
 <translation id="5935158534896975820">正在準備憑證簽署要求 (在伺服器上等待)</translation>
-<translation id="5935554994339565449">使用全新「新增文字」工具加入文字</translation>
 <translation id="5936065461722368675">翻譯完整網頁</translation>
 <translation id="5937977334791924341">「<ph name="APP" />」標誌</translation>
 <translation id="5938002010494270685">有可用的安全性升級</translation>

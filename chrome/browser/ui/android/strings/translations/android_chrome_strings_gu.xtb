@@ -233,7 +233,6 @@
 <translation id="200114059308480249">શું Google Searchમાં શોધવા માટે આજુબાજુની ટેક્સ્ટ શામેલ કરીએ?</translation>
 <translation id="2004096469149679223"><ph name="TAB_TITLE" />, પિન કરેલું મ્યૂટ કરેલું છૂપું ટૅબ</translation>
 <translation id="2021896219286479412">પૂર્ણ સ્ક્રીન સાઇટ નિયંત્રણો</translation>
-<translation id="2022953316617983419">QR કોડ</translation>
 <translation id="2024195579772565064">શોધ એન્જિન ડિલીટ કરો</translation>
 <translation id="2029669011553795746">ટિપ સંબંધિત નોટિફિકેશન પસંદ કરવાનો વિકલ્પ અડધી ઊંચાઈએ ખોલ્યો</translation>
 <translation id="2038563949887743358">વિનંતી ડેસ્કટૉપ સાઇટ ચાલુ કરો</translation>
@@ -558,6 +557,7 @@
 <translation id="3331974543021145906">ઍપની માહિતી</translation>
 <translation id="3334729583274622784">ફાઇલનું એક્સ્ટેંશન બદલવું છે?</translation>
 <translation id="333863344734218290">અસુરક્ષિત સાર્વજનિક અને ખાનગી સાઇટ વિશે તમને ચેતવણી આપે છે</translation>
+<translation id="3339788961947270565">શટ ડાઉન કરવાનું પૂર્ણ થઈ રહ્યું છે</translation>
 <translation id="3340978935015468852">સેટિંગ</translation>
 <translation id="3351959803838327376">વેબસાઇટ પર થોડીવાર દબાવી રાખો અને મેનૂ ખોલો</translation>
 <translation id="3359667936385849800">તમારા વર્તમાન સેવા પ્રદાતાનો ઉપયોગ કરો</translation>
@@ -721,6 +721,7 @@
 <translation id="4044708993631234325">બોટમ શીટ</translation>
 <translation id="4045441967987592849">ફરી ખોલો</translation>
 <translation id="4049920046559074950"><ph name="INSTANCE_TITLE" /> માટે વધુ વિકલ્પો</translation>
+<translation id="4051569243832293689">{NUM_BOOKMARKS,plural, =1{છૂપી વિન્ડોમાં ખોલો}one{તમામ (#)ને છૂપી વિન્ડોમાં ખોલો}other{તમામ (#)ને છૂપી વિન્ડોમાં ખોલો}}</translation>
 <translation id="4052419222954753986">{NUMBER_OF_TABS,plural, =1{શેર કરેલા ટૅબના ગ્રૂપમાં નવી ઍક્ટિવિટી ધરાવતું <ph name="TABS_COUNT_ONE" /> સ્ટૅન્ડર્ડ ટૅબ}one{શેર કરેલા ટૅબના ગ્રૂપમાં નવી ઍક્ટિવિટી ધરાવતું <ph name="TABS_COUNT_MANY" /> સ્ટૅન્ડર્ડ ટૅબ}other{શેર કરેલા ટૅબના ગ્રૂપમાં નવી ઍક્ટિવિટી ધરાવતા <ph name="TABS_COUNT_MANY" /> સ્ટૅન્ડર્ડ ટૅબ}}</translation>
 <translation id="405365679581583349">Google Play સેવાઓ અપડેટ કરો</translation>
 <translation id="405399507749852140">જો કોઈપણ સાઇટ પર કિંમતમાં ઘટાડો થાય, તો અલર્ટ મેળવો</translation>
@@ -823,6 +824,7 @@
 <translation id="442518031075347249">હવેથી તમે Google Pay સાથે તમારા વર્ચ્યુઅલ કાર્ડનો ઉપયોગ કરી શકશો નહીં. <ph name="BEGIN_LINK1" />વર્ચ્યુઅલ કાર્ડ વિશે વધુ જાણો<ph name="END_LINK1" /></translation>
 <translation id="442577985493096785">{TAB_COUNT,plural, =1{<ph name="TAB_TITLE" /> અને <ph name="TAB_COUNT_ONE" /> અન્ય ટૅબ બંધ કરવામાં આવશે}one{<ph name="TAB_TITLE" /> અને <ph name="TAB_COUNT_MANY" /> અન્ય ટૅબ બંધ કરવામાં આવશે}other{<ph name="TAB_TITLE" /> અને <ph name="TAB_COUNT_MANY" /> અન્ય ટૅબ બંધ કરવામાં આવશે}}</translation>
 <translation id="4430277756566635951">હાલમાં <ph name="EMAIL" /> પસંદ કર્યું છે. એકાઉન્ટ પસંદ કરો.</translation>
+<translation id="4430369329743628066">બુકમાર્ક ઉમેરાયો</translation>
 <translation id="4452411734226507615"><ph name="TAB_TITLE" /> ટૅબ બંધ કરો</translation>
 <translation id="4452548195519783679"><ph name="FOLDER_NAME" /> પર બુકમાર્ક કર્યું</translation>
 <translation id="4460822871039013969"><ph name="TAB_TITLE" />, પસંદ કરેલું પિન કરેલું રેકોર્ડ કરતું ટૅબ</translation>
@@ -1072,6 +1074,7 @@
 <translation id="5517326820028369152">તાજેતરની ઍક્ટિવિટી બોટમ શીટ</translation>
 <translation id="5526281268548144413">એકથી વધુ વિન્ડો પર બંધ ન હોઈ શકે</translation>
 <translation id="5532536403031755365">વધારેલા સંરક્ષણ સાથે ઑનલાઇન જોખમો સામે સંરક્ષણનું વધારાનું લેયર ઉમેરો</translation>
+<translation id="5540127996007641535">{NUM_BOOKMARKS,plural, =1{બુકમાર્ક ખોલો}one{બધા ખોલો (#)}other{બધા ખોલો (#)}}</translation>
 <translation id="5548606607480005320">સલામતી માટે તપાસ</translation>
 <translation id="5554520618550346933">તમે પાસવર્ડનો ઉપયોગ કરો છો, ત્યારે જો તે ઑનલાઇન પબ્લિશ કરવામાં આવ્યો હોય તો Chrome તમને ચેતવણી આપે છે. આમ કરતી વખતે તમારા પાસવર્ડ અને વપરાશકર્તાનું નામ એન્ક્રિપ્ટેડ હોય છે, જેથી Google સહિત, કોઈપણ તેને વાંચી શકતું નથી.</translation>
 <translation id="5555525474779371165">તમારું Safe Browsing સંરક્ષણ પસંદ કરો</translation>
@@ -1127,7 +1130,6 @@
 <translation id="5763514718066511291">આ ઍપ માટેની URL કૉપિ કરવા માટે ટૅપ કરો</translation>
 <translation id="5765517223145864268">અમને તમારા અનુભવ વિશે જણાવો. અથવા <ph name="BEGIN_LINK" />તમારા સેટિંગને બદલો<ph name="END_LINK" />.</translation>
 <translation id="5776970333778123608">બિનમહત્ત્વપૂર્ણ ડેટા</translation>
-<translation id="5788665823391532892">સમસ્યાની જાણ કરો...</translation>
 <translation id="5793665092639000975"><ph name="SPACE_AVAILABLE" />માંથી <ph name="SPACE_USED" />નો વપરાશ કરી રહ્યાં છીએ</translation>
 <translation id="5797949256525811424">બ્લૉક કરેલો વિષય</translation>
 <translation id="580893287573699959">તમને જેમાં રુચિ હોય તેવા વિષયો અને સાઇટ મેનેજ કરો</translation>
@@ -1179,6 +1181,7 @@
 <translation id="5995726099713306770">શું આ પેજ ફરીથી ડાઉનલોડ કરીએ?</translation>
 <translation id="5998675059699164418">તમારી સંસ્થા માટે જરૂરી છે કે Chromeનો ઉપયોગ કરવા માટે તમે સાઇન ઇન કરો.</translation>
 <translation id="6000066717592683814">Google રાખો</translation>
+<translation id="6002122790816966947">તમારા ડિવાઇસ</translation>
 <translation id="6011308810877101166">શોધ સંબંધિત સૂચનો બહેતર બનાવો</translation>
 <translation id="6013305291643746595">'સૌથી જૂના પહેલા' અનુસાર સૉર્ટ કરી રહ્યાં છીએ</translation>
 <translation id="6022659036123304283">Chromeને તમારી જરૂરિયાત અનુરૂપ બનાવો</translation>
@@ -1245,6 +1248,7 @@
 <translation id="6246073558347462570">સંદર્ભ સંબંધિત પૉપઅપ વિન્ડો</translation>
 <translation id="6247557882553405851">Google પાસવર્ડ મેનેજર</translation>
 <translation id="6248988683584659830">શોધ સેટિંગ</translation>
+<translation id="6250486830372700930">તમે આ ડિવાઇસમાંથી એક્સ્ટેન્શન કાઢી પણ નાખી શકો છો</translation>
 <translation id="6250847299079540062"><ph name="TAB_TITLE" />, એકથી વધુ પસંદ કરેલા છૂપા ટૅબ જે પિન કરેલા છે</translation>
 <translation id="6251449557817521191">તમારો Chrome ઇતિહાસ અહીં જુઓ</translation>
 <translation id="6254139308321626268">તમે કોઈ PDF ફાઇલ જોઈ રહ્યાં છો</translation>
@@ -1420,7 +1424,9 @@
 <translation id="6850830437481525139"><ph name="TAB_COUNT" /> ટેબ્સ બંધ કર્યા</translation>
 <translation id="6852437757508328589">{NUM_RESULTS,plural, =1{1 પરિણામ મળ્યું}one{# પરિણામ મળ્યું}other{# પરિણામ મળ્યા}}</translation>
 <translation id="685340923442249391">{FILE_COUNT,plural, =1{ઑડિયો ફાઇલો, સૂચિમાં 1 ઑડિયો ફાઇલ છે}one{ઑડિયો ફાઇલો, સૂચિમાં # ઑડિયો ફાઇલ છે}other{ઑડિયો ફાઇલો, સૂચિમાં # ઑડિયો ફાઇલ છે}}</translation>
+<translation id="6857043990326114901">ફોલ્ડર ઉમેરો…</translation>
 <translation id="685850645784703949">Googleનું Discover - બંધ</translation>
+<translation id="6858893072923394368">પેજ ઉમેરો…</translation>
 <translation id="6864459304226931083">છબી ડાઉનલોડ કરો</translation>
 <translation id="686490460830618322">ઍપ ફિલ્ટર શીટ</translation>
 <translation id="6865313869410766144">સ્વતઃભરણ ફોર્મ ડેટા</translation>
@@ -1597,6 +1603,7 @@
 <translation id="7475688122056506577">SD કાર્ડ મળ્યું નથી. તમારી અમુક ફાઇલો ખૂટતી હોઈ શકે છે.</translation>
 <translation id="7479104141328977413">ટૅબ મેનેજમેન્ટ</translation>
 <translation id="7481312909269577407">ફોર્વર્ડ કરો</translation>
+<translation id="7481588001304663390">{NUM_BOOKMARKS,plural, =1{નવા ટૅબના ગ્રૂપમાં ખોલો}one{તમામ (#)ને નવા ટૅબના ગ્રૂપમાં ખોલો}other{તમામ (#)ને નવા ટૅબના ગ્રૂપમાં ખોલો}}</translation>
 <translation id="7482656565088326534">પ્રીવ્યૂ ટૅબ</translation>
 <translation id="7484997419527351112">Discover - બંધ</translation>
 <translation id="7485033510383818941">ફીડનું કન્ટેન્ટ રિફ્રેશ કરવા માટે, પેજ પર નીચેની તરફ સ્વાઇપ કરો</translation>
@@ -1753,6 +1760,7 @@
 <translation id="8103578431304235997">છૂપું ટૅબ</translation>
 <translation id="810433609302852">ટિપ સંબંધિત નોટિફિકેશન સુવિધાનો પ્રોમો અને વપરાશના પગલાંની બોટમ શીટ</translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
+<translation id="8109802255973641442">એક્સટેન્શન અને આ ડિવાઇસ પર તેના દ્વારા સાચવેલો ડેટા કાઢી નાખો</translation>
 <translation id="8110024788458304985">Chromeની સુવિધાઓ અને કાર્યપ્રદર્શનને સુધારવામાં સહાય કરો</translation>
 <translation id="8110087112193408731">શું તમારી Chromeની પ્રવૃત્તિ ડિજિટલ લાઇફસ્ટાઇલમાં બતાવીએ?</translation>
 <translation id="8118117428362942925">જો તમને સહાયની કોઈ જરૂર હોય, તો માતાપિતા (<ph name="PARENT_NAME" />)ને પૂછો</translation>
@@ -1852,6 +1860,7 @@
 <translation id="8460448946170646641">પ્રાઇવસી અને સુરક્ષા સંબંધિત મુખ્ય નિયંત્રણોનો રિવ્યૂ કરો</translation>
 <translation id="8460932807646981183">શોધ એન્જિન અને સાઇટમાં શોધવાની સુવિધા મેનેજ કરો</translation>
 <translation id="8465252176946159372">માન્ય નથી</translation>
+<translation id="8472353072135865937">{NUM_BOOKMARKS,plural, =1{નવી વિન્ડોમાં ખોલો}one{તમામ (#)ને નવી વિન્ડોમાં ખોલો}other{તમામ (#)ને નવી વિન્ડોમાં ખોલો}}</translation>
 <translation id="8473863474539038330">સરનામા અને વધુ</translation>
 <translation id="847433688444405067">સમગ્ર ડિવાઇસ પર બ્રાઉઝ કરો</translation>
 <translation id="8477178913400731244">ડેટા ડિલીટ કરો</translation>
@@ -1914,6 +1923,7 @@
 <translation id="8738163682604285902">વાંચન મોડ જોઈએ છે?</translation>
 <translation id="8746155870861185046">હાઇલાઇટ કરેલી ટેક્સ્ટ શેર કરો</translation>
 <translation id="8748850008226585750">સામગ્રીઓ છુપાવેલ છે</translation>
+<translation id="874918643257405732">આ ટૅબને બુકમાર્ક કરો</translation>
 <translation id="8754448020583829686">લિંક વિના કૉપિ કરો</translation>
 <translation id="8756969031206844760">પાસવર્ડ અપડેટ કરીએ?</translation>
 <translation id="8765470054473112089">જ્યારે તમે ઍડ્રેસ બાર અથવા શોધ બૉક્સમાં ટાઇપ કરો છો, ત્યારે બહેતર સૂચનો મેળવવા માટે Chrome તમે જે ટાઇપ કરો છો તેને તમારા ડિફૉલ્ટ શોધ એન્જિનને મોકલે છે. આ સુવિધા છૂપા મોડમાં કામ કરતી નથી.</translation>
@@ -2039,6 +2049,7 @@
 <translation id="9212845824145208577">વધુ નીચે જઈ શકતા નથી. પેજ પર વધુ નીચેથી શરૂ કરીને જુઓ.</translation>
 <translation id="9218430445555521422">ડિફોલ્ટ તરીકે સેટ કરો</translation>
 <translation id="9219103736887031265">છબીઓ</translation>
+<translation id="922152298093051471">Chrome કસ્ટમાઇઝ કરો</translation>
 <translation id="9222198206152536936">તમારા બધા ડિવાઇસ પર તમારા ટૅબ અને બીજું ઘણું મેળવવા માટે, <ph name="EMAIL" /> તરીકે સાઇન ઇન કરો</translation>
 <translation id="924447568950697217">Chrome ને તમારું ડિફૉલ્ટ બ્રાઉઝર બનાવો</translation>
 <translation id="926205370408745186">ડિજિટલ લાઇફસ્ટાઇલમાંથી તમારી Chromeની પ્રવૃત્તિને કેવી રીતે કાઢવી</translation>

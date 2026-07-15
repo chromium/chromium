@@ -1217,6 +1217,7 @@ Je kunt je wachtwoorden altijd checken in <ph name="GOOGLE_PASSWORD_MANAGER" />.
 <translation id="1933489278505808700">Lezen en wijzigen toegestaan</translation>
 <translation id="1935303383381416800">Toestemming om je locatie te zien</translation>
 <translation id="193565226207940518">Supporttool</translation>
+<translation id="1935995810530254458">Toch kopiëren</translation>
 <translation id="1936157145127842922">Weergeven in map</translation>
 <translation id="1936344977780165685">{PAGES,plural, =1{Pagina toegevoegd aan leeslijst}other{Pagina's toegevoegd aan leeslijst}}</translation>
 <translation id="1936931585862840749">Gebruik een cijfer om aan te geven hoeveel exemplaren er moeten worden afgedrukt (1-<ph name="MAX_COPIES" />).</translation>
@@ -5081,7 +5082,6 @@ Gebruik Ctrl + Alt + Helderheid omlaag om uit te zoomen.</translation>
 <translation id="4906490889887219338">Fileshares via netwerk instellen of beheren. <ph name="LINK_BEGIN" />Meer informatie<ph name="LINK_END" /></translation>
 <translation id="4906679076183257864">Standaardinstelling herstellen</translation>
 <translation id="4907129260985716018">Kiezen wanneer deze extensie je sitegegevens kan lezen en wijzigen</translation>
-<translation id="4908076691331874303">Verborgen voor deze site</translation>
 <translation id="4908811072292128752">Een nieuw tabblad openen om op twee sites tegelijk te browsen</translation>
 <translation id="4910241725741323970">App is al geïnstalleerd</translation>
 <translation id="4912643508233590958">Activeringen vanuit inactief</translation>
@@ -6345,7 +6345,6 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="5932881020239635062">Serienummer</translation>
 <translation id="5933522550144185133"><ph name="APP_NAME" /> gebruikt je camera en microfoon</translation>
 <translation id="5935158534896975820">Verzoek voor certificaatondertekening voorbereiden (wachten op server)</translation>
-<translation id="5935554994339565449">Tekst toevoegen met de nieuwe tool Tekst toevoegen</translation>
 <translation id="5936065461722368675">Hele pagina vertalen</translation>
 <translation id="5937977334791924341">Logo van <ph name="APP" /></translation>
 <translation id="5938002010494270685">Beveiligingsupgrade beschikbaar</translation>

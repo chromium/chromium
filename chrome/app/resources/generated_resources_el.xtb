@@ -1227,12 +1227,14 @@
 <translation id="1933489278505808700">Επιτρέπεται η ανάγνωση και η αλλαγή</translation>
 <translation id="1935303383381416800">Επιτρέπεται να βλέπουν την τοποθεσία σας</translation>
 <translation id="193565226207940518">Εργαλείο υποστήριξης</translation>
+<translation id="1935995810530254458">Αντιγραφή ούτως ή άλλως</translation>
 <translation id="1936157145127842922">Εμφάνιση στο φάκελο</translation>
 <translation id="1936344977780165685">{PAGES,plural, =1{Η σελίδα προστέθηκε στη λίστα ανάγνωσης}other{Οι σελίδες προστέθηκαν στη λίστα ανάγνωσης}}</translation>
 <translation id="1936931585862840749">Χρησιμοποιήστε έναν αριθμό για να υποδείξετε πόσα αντίγραφα θα εκτυπωθούν (1 έως <ph name="MAX_COPIES" />).</translation>
 <translation id="1938351510777341717">Εξωτερικό πλήκτρο Command</translation>
 <translation id="1940221956626514677">Προσαρμογή γραμμής εργαλείων</translation>
 <translation id="1940546824932169984">Συνδεδεμένες συσκευές</translation>
+<translation id="194081218158106711">Επιβεβαίωση αλλαγμένου κωδικού πρόσβασης…</translation>
 <translation id="1941410638996203291">Ώρα έναρξης <ph name="TIME" /></translation>
 <translation id="1941553344801134989">Έκδοση: <ph name="APP_VERSION" /></translation>
 <translation id="1941685451584875710">Ο διαχειριστής έχει διαμορφώσει τον λογαριασμό σας έτσι ώστε να συνδέεται αυτόματα στο Microsoft OneDrive, αλλά προέκυψε πρόβλημα.</translation>
@@ -1547,6 +1549,7 @@
 <translation id="2199298570273670671">Σφάλμα</translation>
 <translation id="2200094388063410062">Ηλεκτρονικό ταχυδρομείο</translation>
 <translation id="2200781749203116929">Αρχεία καταγραφής συστήματος ChromeOS</translation>
+<translation id="2202391868799679245">Ενεργοποίηση συντόμευσης πληκτρολογίου</translation>
 <translation id="2203088913459920044">Στα ονόματα μπορείτε να χρησιμοποιείτε γράμματα, αριθμούς και ειδικούς χαρακτήρες.</translation>
 <translation id="220321590587754225">Δεν ήταν δυνατή η σύνδεση. Δοκιμάστε ξανά.</translation>
 <translation id="2203903197029773650">Η υπηρεσία <ph name="BRAND" /> μπορεί να ελέγξει τους κωδικούς πρόσβασής σας όταν συνδέεστε με τον Λογαριασμό σας Google.</translation>
@@ -4755,6 +4758,7 @@
 <translation id="4657914796247705218">Ταχύτητα TrackPoint</translation>
 <translation id="4658648180588730283">Η εφαρμογή <ph name="APPLICATION_NAME" /> δεν είναι διαθέσιμη εκτός σύνδεσης.</translation>
 <translation id="465878909996028221">Για τις ανακατευθύνσεις προγράμματος περιήγησης υποστηρίζονται μόνο http, https και πρωτόκολλα αρχείων.</translation>
+<translation id="4658821552705754298"><ph name="ITEM_NAME" /> <ph name="CATEGORY_NAME" /></translation>
 <translation id="4659126640776004816">Αυτή η λειτουργία ενεργοποιείται όταν συνδέεστε στον Λογαριασμό σας Google.</translation>
 <translation id="4660465405448977105">{COUNT,plural, =1{Εικόνα}other{# εικόνες}}</translation>
 <translation id="4660540330091848931">Αλλαγή μεγέθους</translation>
@@ -6364,7 +6368,6 @@
 <translation id="5932881020239635062">Σειριακός</translation>
 <translation id="5933522550144185133">Η εφαρμογή <ph name="APP_NAME" /> χρησιμοποιεί την κάμερα και το μικρόφωνό σας.</translation>
 <translation id="5935158534896975820">Προετοιμασία αιτήματος για υπογραφή πιστοποιητικού (αναμονή στον διακομιστή)</translation>
-<translation id="5935554994339565449">Προσθέστε κείμενο με το νέο εργαλείο "Προσθήκη κειμένου"</translation>
 <translation id="5936065461722368675">Μετάφραση πλήρους σελίδας</translation>
 <translation id="5937977334791924341">Λογότυπο της εφαρμογής <ph name="APP" /></translation>
 <translation id="5938002010494270685">Υπάρχει διαθέσιμη αναβάθμιση ασφάλειας</translation>
@@ -8921,6 +8924,7 @@
 <translation id="7933486544522242079">&amp;Αποθήκευση και κοινή χρήση</translation>
 <translation id="7933518760693751884">Για να αποθηκεύσετε μια σελίδα για αργότερα, κάντε κλικ στο εικονίδιο Σελιδοδείκτης</translation>
 <translation id="7933634003144813719">Διαχείριση κοινόχρηστων φακέλων</translation>
+<translation id="7935072572536724392">Η αυτόματη αλλαγή κωδικού πρόσβασης απέτυχε</translation>
 <translation id="7936195481975600746">Για να μοιραστείτε την οθόνη σας, χρησιμοποιήστε το εργαλείο επιλογής οθόνης του συστήματός σας</translation>
 <translation id="7937809006412909895">Συλλογή δεδομένων διαγνωστικών στοιχείων</translation>
 <translation id="7938881824185772026">Labs</translation>
@@ -9058,6 +9062,7 @@
 <translation id="8029412171914613589">{SELECTED_ITEMS,plural, =0{Λίστα ανάγνωσης}=1{Λίστα ανάγνωσης ({SELECTED_ITEMS})}other{Λίστα ανάγνωσης ({SELECTED_ITEMS})}}</translation>
 <translation id="8029492516535178472"><ph name="WINDOW_TITLE" /> - Ζητήθηκε άδεια, πατήστε ⌘ + Option + πάνω βέλος για απάντηση.</translation>
 <translation id="8030169304546394654">Σε αποσύνδεση</translation>
+<translation id="8030814978699290230">Προσπάθεια σύνδεσης…</translation>
 <translation id="8030852056903932865">Έγκριση</translation>
 <translation id="8033827949643255796">επιλεγμένο</translation>
 <translation id="8033958968890501070">Λήξη ορίου χρόνου</translation>
@@ -9471,6 +9476,7 @@
 <translation id="8343578633847737325">Πρόσφατες συνομιλίες και νήματα</translation>
 <translation id="8345848587667658367">Μπορείτε πλέον να βλέπετε τις πρόσφατες φωτογραφίες, τα μέσα, τις ειδοποιήσεις και τις εφαρμογές του τηλεφώνου σας.</translation>
 <translation id="8347227221149377169">Εργασίες εκτύπωσης</translation>
+<translation id="8347728744337089388">Αποστολή στη &amp;συσκευή σας</translation>
 <translation id="8348430946834215779">Χρησιμοποιήστε HTTPS όποτε είναι δυνατόν και λάβετε ειδοποίηση πριν από τη φόρτωση ιστοτόπων που δεν το υποστηρίζουν</translation>
 <translation id="8348896480272971199">Ελέγξτε τη σύνδεση στο διαδίκτυο και δοκιμάστε ξανά.</translation>
 <translation id="8349305172487531364">Γραμμή σελιδοδεικτών</translation>
@@ -9520,6 +9526,7 @@
 <translation id="8382197851871630452">Καιρός περιοχής</translation>
 <translation id="8382913212082956454">Αντιγραφή διεύθυνσης &amp;ηλεκτρονικού ταχυδρομείου</translation>
 <translation id="8383614331548401927">Καλωσόρισμα Recap</translation>
+<translation id="8387157483437834731">Η αλλαγή του κωδικού πρόσβασης ήταν επιτυχής</translation>
 <translation id="8387361103813440603">Δεν επιτρέπεται να βλέπουν την τοποθεσία σας</translation>
 <translation id="8389492867173948260">Να επιτρέπεται σε αυτή την επέκταση να διαβάζει και να αλλάζει όλα τα δεδομένα σας στους ιστοτόπους που επισκέπτεστε:</translation>
 <translation id="8390449457866780408">Ο διακομιστής δεν είναι διαθέσιμος.</translation>
@@ -10603,6 +10610,7 @@
 <translation id="9220820413868316583">Ανασηκώστε το και προσπαθήστε ξανά.</translation>
 <translation id="922152298093051471">Προσαρμογή του Chrome</translation>
 <translation id="9222839391870847423">Διάρκεια: <ph name="DURATION" /></translation>
+<translation id="923306663772315007">Αποστολή στη &amp;συσκευή σας</translation>
 <translation id="923467487918828349">Εμφάνιση όλων</translation>
 <translation id="923900195646492191">{NUM_EXTENSIONS,plural, =1{Για να διαχειριστείτε αυτό το στοιχείο, ανοίξτε τις Επεκτάσεις}other{Για να διαχειριστείτε αυτά τα στοιχεία, ανοίξτε τις Επεκτάσεις}}</translation>
 <translation id="924818813611903184">Διαχείριση γλωσσών στις ρυθμίσεις του Chrome OS</translation>

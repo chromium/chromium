@@ -324,6 +324,7 @@
 <translation id="1486096554574027028">పాస్‌వర్డ్‌లను వెతకండి</translation>
 <translation id="1492194039220927094">విధానాలను పుష్ చేయి:</translation>
 <translation id="1495677929897281669">తిరిగి ట్యాబ్‌కు వెళ్లు</translation>
+<translation id="1496318738909526466">మెరుగైన ఆటోఫిల్‌ను మేనేజ్ చేయండి</translation>
 <translation id="1500286806237135498">(<ph name="CAMERAS_COUNT" />) కెమెరాలు</translation>
 <translation id="1504042622576912555">ఫ్లూట్</translation>
 <translation id="1507202001669085618">&lt;p&gt;ఆన్‌లైన్‌కు వెళ్లడం కంటే ముందు సైన్ ఇన్ చేయాల్సిన అవసరం ఉన్న Wi-Fi పోర్టల్‌ను మీరు ఉపయోగిస్తున్నట్లయితే మీకు ఈ ఎర్రర్ కనిపిస్తుంది.&lt;/p&gt;
@@ -681,7 +682,6 @@
 <translation id="2082238445998314030"><ph name="TOTAL_RESULTS" />లో <ph name="RESULT_NUMBER" />వ ఫలితం</translation>
 <translation id="2083256696566019397">సందర్శించిన ప్రతిసారి అనుమతించండి</translation>
 <translation id="2085876078937250610">సేవ్ చేయండి…</translation>
-<translation id="2088913896151127116">టెక్స్ట్‌ను జోడించండి</translation>
 <translation id="2090451897496479509">మరిన్ని వివరాల కోసం ప్రొవైడర్‌ను సంప్రదించండి</translation>
 <translation id="2090686487550343086">IBANలు</translation>
 <translation id="2091887806945687916">ధ్వని</translation>
@@ -860,6 +860,7 @@
 <translation id="2322254345061973671">{COUNT,plural, =1{1 విండో}other{# విండోలు}}</translation>
 <translation id="232390861414237658">ఈ కార్డ్‌ను Google Payతో ఉపయోగించడానికి సేవ్ చేసినప్పుడు, Chromeలో చేసే కొనుగోళ్ల విషయంలో దీన్ని ఆటోఫిల్ చేయండి</translation>
 <translation id="2326283484705860548">ఇప్పుడు మీరు Google Wallet నుండి మరింత సమాచారాన్ని ఆటోఫిల్ చేయవచ్చు</translation>
+<translation id="2326747055382936979">మెరుగైన ఆటోఫిల్‌ను మేనేజ్ చేయండి</translation>
 <translation id="2328651992442742497">అనుమతించబడుతుంది (ఆటోమేటిక్ సెట్టింగ్)</translation>
 <translation id="2328955282645810595">నిర్మాణం &amp; పవర్ టూల్స్</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, గడువు <ph name="EXPIRATION_DATE_ABBR" />న ముగుస్తుంది</translation>
@@ -2251,6 +2252,7 @@
 <translation id="4464826014807964867">మీ సంస్థకు సంబంధించిన సమాచారం ఉన్న వెబ్‌సైట్‌లు</translation>
 <translation id="4466576951214254884">విద్యార్థి లోన్‌లు &amp; కాలేజ్ ఫైనాన్సింగ్</translation>
 <translation id="4467821340016922962">ఫుల్ స్క్రీన్ నుండి ఎగ్జిట్ అయ్యి, డౌన్‌లోడ్‌ను చూడటానికి, |<ph name="ACCELERATOR" />| నొక్కండి</translation>
+<translation id="4472575034687746823">ప్రారంభించండి</translation>
 <translation id="4473643328224505070">Chrome అత్యధిక స్థాయి సెక్యూరిటీని పొందడానికి,<ph name="BEGIN_ENHANCED_PROTECTION_LINK" />మెరుగైన రక్షణను ఆన్ చేయండి<ph name="END_ENHANCED_PROTECTION_LINK" /></translation>
 <translation id="4475299370877036544">ఈ చర్య మీ సంస్థ పాలసీలను ఉల్లంఘించవచ్చు</translation>
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />. <ph name="LEARN_MORE_TEXT" /></translation>

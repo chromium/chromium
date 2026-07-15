@@ -329,6 +329,7 @@
 <translation id="1486096554574027028">Пошук пароляў</translation>
 <translation id="1492194039220927094">Паказ палітык:</translation>
 <translation id="1495677929897281669">Вярнуцца на ўкладку</translation>
+<translation id="1496318738909526466">Кіраваць палепшаным аўтазапаўненнем</translation>
 <translation id="1500286806237135498">Камеры (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="1504042622576912555">Гофр</translation>
 <translation id="1507202001669085618">&lt;p&gt;Гэта памылка ўзнікае, калі вы карыстаецеся парталам Wi-Fi, на якім перад выхадам у інтэрнэт трэба выканаць уваход.&lt;/p&gt;
@@ -686,7 +687,6 @@
 <translation id="2082238445998314030">Вынік <ph name="RESULT_NUMBER" /> з <ph name="TOTAL_RESULTS" /></translation>
 <translation id="2083256696566019397">Дазваляць пры кожным наведванні</translation>
 <translation id="2085876078937250610">Захаваць…</translation>
-<translation id="2088913896151127116">Дадаць тэкст</translation>
 <translation id="2090451897496479509">Каб даведацца больш, звярніцеся да пастаўшчыка</translation>
 <translation id="2090686487550343086">Нумары IBAN</translation>
 <translation id="2091887806945687916">Гук</translation>
@@ -865,6 +865,7 @@
 <translation id="2322254345061973671">{COUNT,plural, =1{1 акна}one{# акна}few{# вокнаў}many{# вокнаў}other{# акна}}</translation>
 <translation id="232390861414237658">Аўтаматычна запаўняць рэквізіты гэтай карткі для купляў у Chrome, калі яна захавана для выкарыстання ў Google Pay</translation>
 <translation id="2326283484705860548">Цяпер можна запаўняць аўтаматычна больш інфармацыі з Google Кашалька</translation>
+<translation id="2326747055382936979">Кіраваць палепшаным аўтазапаўненнем</translation>
 <translation id="2328651992442742497">Дазволена (стандартна)</translation>
 <translation id="2328955282645810595">Будаўнічы і электраінструмент</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, дзейнічае да <ph name="EXPIRATION_DATE_ABBR" /></translation>
@@ -2256,6 +2257,7 @@
 <translation id="4464826014807964867">Вэб-сайты са звесткамі ад вашай арганізацыі</translation>
 <translation id="4466576951214254884">Студэнцкія крэдыты і пазыкі на адукацыю</translation>
 <translation id="4467821340016922962">Каб выйсці з поўнаэкраннага рэжыму і паглядзець спампоўку, націсніце |<ph name="ACCELERATOR" />|</translation>
+<translation id="4472575034687746823">Пачаць</translation>
 <translation id="4473643328224505070"><ph name="BEGIN_ENHANCED_PROTECTION_LINK" />Уключыце палепшаную абарону<ph name="END_ENHANCED_PROTECTION_LINK" /> – найвышэйшы ўзровень бяспекі Chrome</translation>
 <translation id="4475299370877036544">Гэта дзеянне можа парушаць правілы вашай арганізацыі</translation>
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />. <ph name="LEARN_MORE_TEXT" /></translation>

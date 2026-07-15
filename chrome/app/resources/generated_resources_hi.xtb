@@ -1227,6 +1227,7 @@
 <translation id="1933489278505808700">पढ़ने और बदलाव करने की अनुमति है</translation>
 <translation id="1935303383381416800">आपकी जगह की जानकारी देखने की अनुमति है</translation>
 <translation id="193565226207940518">सहायता टूल</translation>
+<translation id="1935995810530254458">फिर भी कॉपी करें</translation>
 <translation id="1936157145127842922">फ़ोल्डर में दिखाएं</translation>
 <translation id="1936344977780165685">{PAGES,plural, =1{पेज को रीडिंग लिस्ट में जोड़ा गया}one{पेज को रीडिंग लिस्ट में जोड़ा गया}other{पेज, रीडिंग लिस्ट में जोड़े गए}}</translation>
 <translation id="1936931585862840749">बताएं कि आपको कितनी कॉपी प्रिंट करनी है (1 से <ph name="MAX_COPIES" />).</translation>
@@ -5096,7 +5097,6 @@
 <translation id="4906490889887219338">नेटवर्क फ़ाइल शेयर सेट अप या प्रबंधित करें. <ph name="LINK_BEGIN" />ज़्यादा जानें<ph name="LINK_END" /></translation>
 <translation id="4906679076183257864">डिफ़ॉल्ट पर रीसेट करें</translation>
 <translation id="4907129260985716018">चुनें कि यह एक्सटेंशन कब आपके साइट डेटा को पढ़ और बदल सकता है</translation>
-<translation id="4908076691331874303">इस साइट के लिए छिपाया गया है</translation>
 <translation id="4908811072292128752">एक बार में दो साइटें ब्राउज़ करने के लिए नया टैब खोलें</translation>
 <translation id="4910241725741323970">यह ऐप्लिकेशन पहले से इंस्टॉल है</translation>
 <translation id="4912643508233590958">इस्तेमाल नहीं किए जा रहे प्रोसेसर को जगाना</translation>
@@ -6362,7 +6362,6 @@
 <translation id="5932881020239635062">सीरियल</translation>
 <translation id="5933522550144185133"><ph name="APP_NAME" /> आपके कैमरे और माइक्रोफ़ोन का इस्तेमाल कर रहा है</translation>
 <translation id="5935158534896975820">प्रमाणपत्र के लिए अनुरोध किया जा रहा है (सर्वर का इंतज़ार है)</translation>
-<translation id="5935554994339565449">नए "टेक्स्ट जोड़ें" टूल की मदद से टेक्स्ट जोड़ें</translation>
 <translation id="5936065461722368675">पूरे पेज का अनुवाद करें</translation>
 <translation id="5937977334791924341"><ph name="APP" /> का लोगो</translation>
 <translation id="5938002010494270685">सुरक्षा बेहतर बनाने की सुविधा मौजूद है</translation>

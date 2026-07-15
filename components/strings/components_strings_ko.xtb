@@ -329,6 +329,7 @@
 <translation id="1486096554574027028">비밀번호 검색</translation>
 <translation id="1492194039220927094">정책 푸시:</translation>
 <translation id="1495677929897281669">탭으로 돌아가기</translation>
+<translation id="1496318738909526466">향상된 자동 완성 관리</translation>
 <translation id="1500286806237135498">카메라(<ph name="CAMERAS_COUNT" />개)</translation>
 <translation id="1504042622576912555">골판지</translation>
 <translation id="1507202001669085618">&lt;p&gt;온라인에 접속하기 위해 로그인해야 하는 Wi-Fi 포털을 사용하면 이 오류가 표시됩니다.&lt;/p&gt;
@@ -686,7 +687,6 @@
 <translation id="2082238445998314030">전체 결과 <ph name="TOTAL_RESULTS" />개 중 <ph name="RESULT_NUMBER" />개</translation>
 <translation id="2083256696566019397">방문할 때마다 허용</translation>
 <translation id="2085876078937250610">저장…</translation>
-<translation id="2088913896151127116">텍스트 추가</translation>
 <translation id="2090451897496479509">자세한 내용은 제공업체에 문의하세요</translation>
 <translation id="2090686487550343086">IBAN</translation>
 <translation id="2091887806945687916">소리</translation>
@@ -865,6 +865,7 @@
 <translation id="2322254345061973671">{COUNT,plural, =1{창 1개}other{창 #개}}</translation>
 <translation id="232390861414237658">Google Pay에서 사용하도록 저장하면 Chrome에서 구매 시 이 카드를 자동 완성합니다.</translation>
 <translation id="2326283484705860548">이제 Google 월렛에서 더 많은 정보를 자동 완성할 수 있습니다</translation>
+<translation id="2326747055382936979">향상된 자동 완성 관리</translation>
 <translation id="2328651992442742497">허용(기본값)</translation>
 <translation id="2328955282645810595">건축 도구 및 공구</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, 만료일: <ph name="EXPIRATION_DATE_ABBR" /></translation>
@@ -2256,6 +2257,7 @@
 <translation id="4464826014807964867">조직의 정보가 포함된 웹사이트</translation>
 <translation id="4466576951214254884">학자금 대출 및 고등교육 파이낸싱</translation>
 <translation id="4467821340016922962">전체 화면을 종료하고 다운로드를 보려면 |<ph name="ACCELERATOR" />| 키를 누르세요.</translation>
+<translation id="4472575034687746823">시작하기</translation>
 <translation id="4473643328224505070"><ph name="BEGIN_ENHANCED_PROTECTION_LINK" />향상된 보호 모드를 사용 설정<ph name="END_ENHANCED_PROTECTION_LINK" />하여 Chrome의 가장 강력한 보안을 활용하세요.</translation>
 <translation id="4475299370877036544">이 작업은 조직의 정책을 위반할 수 있습니다.</translation>
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />. <ph name="LEARN_MORE_TEXT" /></translation>

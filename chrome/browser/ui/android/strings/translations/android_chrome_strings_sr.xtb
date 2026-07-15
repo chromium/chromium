@@ -233,7 +233,6 @@
 <translation id="200114059308480249">Желите да уврстите околни текст у Google претраге?</translation>
 <translation id="2004096469149679223"><ph name="TAB_TITLE" />, закачена картица без архивирања са искљученим звуком</translation>
 <translation id="2021896219286479412">Контроле сајта на целом екрану</translation>
-<translation id="2022953316617983419">QR кôд</translation>
 <translation id="2024195579772565064">Избришите претраживач</translation>
 <translation id="2029669011553795746">Опција за омогућавање обавештења о саветима је отворена до половине екрана</translation>
 <translation id="2038563949887743358">Укључи захтевање верзије сајта за рачунаре</translation>
@@ -825,6 +824,7 @@
 <translation id="442518031075347249">Више нећете моћи да користите виртуелну картицу уз Google Pay. <ph name="BEGIN_LINK1" />Сазнајте више о виртуелним картицама<ph name="END_LINK1" /></translation>
 <translation id="442577985493096785">{TAB_COUNT,plural, =1{Затвориће се <ph name="TAB_TITLE" /> и још <ph name="TAB_COUNT_ONE" /> картица}one{Затвориће се <ph name="TAB_TITLE" /> и још <ph name="TAB_COUNT_MANY" /> картица}few{Затвориће се <ph name="TAB_TITLE" /> и још <ph name="TAB_COUNT_MANY" /> картице}other{Затвориће се <ph name="TAB_TITLE" /> и још <ph name="TAB_COUNT_MANY" /> картица}}</translation>
 <translation id="4430277756566635951">Тренутно је изабрано <ph name="EMAIL" />. Одаберите налог.</translation>
+<translation id="4430369329743628066">Обележивач је додат</translation>
 <translation id="4452411734226507615">Затвори картицу <ph name="TAB_TITLE" /></translation>
 <translation id="4452548195519783679">Обележивач је додат у <ph name="FOLDER_NAME" /></translation>
 <translation id="4460822871039013969"><ph name="TAB_TITLE" />, изабрана закачена картица за снимање</translation>
@@ -1130,7 +1130,6 @@ Google налог можда има друге облике историје п�
 <translation id="5763514718066511291">Додирните да бисте копирали URL за ову апликацију</translation>
 <translation id="5765517223145864268">Реците нам нешто о свом доживљају. Или <ph name="BEGIN_LINK" />промените подешавања<ph name="END_LINK" />.</translation>
 <translation id="5776970333778123608">Неважни подаци</translation>
-<translation id="5788665823391532892">Пријави проблем...</translation>
 <translation id="5793665092639000975">Користи се <ph name="SPACE_USED" /> од <ph name="SPACE_AVAILABLE" /></translation>
 <translation id="5797949256525811424">Блокирана тема</translation>
 <translation id="580893287573699959">Управљајте темама и претрагама које вас интересују</translation>
@@ -1182,6 +1181,7 @@ Google налог можда има друге облике историје п�
 <translation id="5995726099713306770">Желите да преузмете страницу поново?</translation>
 <translation id="5998675059699164418">Организација захтева да се пријавите да бисте користили Chrome.</translation>
 <translation id="6000066717592683814">Задржи Google</translation>
+<translation id="6002122790816966947">Уређаји</translation>
 <translation id="6011308810877101166">Побољшајте предлоге за претрагу</translation>
 <translation id="6013305291643746595">Сортира се према најстаријем</translation>
 <translation id="6022659036123304283">Прилагодите Chrome себи</translation>
@@ -1923,6 +1923,7 @@ Google налог можда има друге облике историје п�
 <translation id="8738163682604285902">Желите да отворите Режим читања?</translation>
 <translation id="8746155870861185046">Дели истицање</translation>
 <translation id="8748850008226585750">Садржај је сакривен</translation>
+<translation id="874918643257405732">Обележите ову картицу</translation>
 <translation id="8754448020583829686">Копирај без линка</translation>
 <translation id="8756969031206844760">Желите ли да ажурирате лозинку?</translation>
 <translation id="8765470054473112089">Када куцате у траци за адресу или у оквиру за претрагу, Chrome шаље текст који уносите подразумеваном претраживачу да бисте добијали боље предлоге. Ово је искључено у режиму без архивирања.</translation>
@@ -2048,6 +2049,7 @@ Google налог можда има друге облике историје п�
 <translation id="9212845824145208577">Не можете да одете ниже. Пробајте да почнете са мање висине на страници.</translation>
 <translation id="9218430445555521422">Подеси као подразумевано</translation>
 <translation id="9219103736887031265">Слике</translation>
+<translation id="922152298093051471">Прилагодите Chrome</translation>
 <translation id="9222198206152536936">Да би вам картице и други садржај били доступни на свим уређајима, пријавите се као <ph name="EMAIL" /></translation>
 <translation id="924447568950697217">Поставите Chrome за подразумевани прегледач</translation>
 <translation id="926205370408745186">Уклоните Chrome активности из Дигиталног благостања</translation>

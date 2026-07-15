@@ -1227,6 +1227,7 @@
 <translation id="1933489278505808700">পঢ়াৰ আৰু সলনি কৰাৰ অনুমতি দিয়া হৈছে</translation>
 <translation id="1935303383381416800">আপোনাৰ অৱস্থান চোৱাৰ অনুমতি আছে</translation>
 <translation id="193565226207940518">সহায়ক সঁজুলি</translation>
+<translation id="1935995810530254458">যি হ’লেও প্ৰতিলিপি কৰক</translation>
 <translation id="1936157145127842922">ফ’ল্ডাৰত দেখুৱাওক</translation>
 <translation id="1936344977780165685">{PAGES,plural, =1{পৃষ্ঠাখন পঢ়াৰ সূচীত যোগ দিয়া হ’ল}one{পৃষ্ঠাকেইখন পঢ়াৰ সূচীত যোগ দিয়া হ’ল}other{পৃষ্ঠাকেইখন পঢ়াৰ সূচীত যোগ দিয়া হ’ল}}</translation>
 <translation id="1936931585862840749">কিমানটা প্ৰতিলিপি প্ৰিণ্ট কৰিব লাগে সেয়া সূচাবলৈ এটা নম্বৰ ব্যৱহাৰ কৰক (১ৰ পৰা <ph name="MAX_COPIES" />লৈ)।</translation>
@@ -1547,6 +1548,7 @@
 <translation id="2199298570273670671">আসোঁৱাহ</translation>
 <translation id="2200094388063410062">ইমেইল</translation>
 <translation id="2200781749203116929">ChromeOS ছিষ্টেম লগ</translation>
+<translation id="2202391868799679245">কীব’ৰ্ডৰ শ্বৰ্টকাট অন কৰক</translation>
 <translation id="2203088913459920044">নামত আখৰ, সংখ্যা আৰু বিশেষ বৰ্ণ থাকিব পাৰে</translation>
 <translation id="220321590587754225">সংযোগ কৰিব পৰা নগ’ল। পুনৰ চেষ্টা কৰক।</translation>
 <translation id="2203903197029773650">আপুনি নিজৰ Google একাউণ্টটোৰ জৰিয়তে ছাইন ইন কৰিলে <ph name="BRAND" />এ আপোনাৰ পাছৱৰ্ডসমূহ পৰীক্ষা কৰিব পাৰে</translation>
@@ -6362,7 +6364,6 @@
 <translation id="5932881020239635062">ক্ৰমিক নম্বৰ</translation>
 <translation id="5933522550144185133"><ph name="APP_NAME" />এ আপোনাৰ কেমেৰা আৰু মাইক্ৰ’ফ’ন ব্যৱহাৰ কৰি আছে</translation>
 <translation id="5935158534896975820">প্ৰমাণপত্ৰ স্বাক্ষৰ কৰাৰ অনুৰোধ প্ৰস্তুত কৰি থকা হৈছে (ছার্ভাৰত অপেক্ষাৰত)</translation>
-<translation id="5935554994339565449">নতুন "পাঠ যোগ দিয়ক" সঁজুলিৰ জৰিয়তে পাঠ যোগ দিয়ক</translation>
 <translation id="5936065461722368675">সম্পূৰ্ণ পৃষ্ঠাখন অনুবাদ কৰক</translation>
 <translation id="5937977334791924341"><ph name="APP" />ৰ ল’গ’</translation>
 <translation id="5938002010494270685">সুৰক্ষা আপগ্ৰেড উপলব্ধ</translation>

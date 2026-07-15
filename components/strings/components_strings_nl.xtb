@@ -687,7 +687,6 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="2082238445998314030">Resultaat <ph name="RESULT_NUMBER" /> van <ph name="TOTAL_RESULTS" /></translation>
 <translation id="2083256696566019397">Toestaan bij elk bezoek</translation>
 <translation id="2085876078937250610">Opslaan…</translation>
-<translation id="2088913896151127116">Tekst toevoegen</translation>
 <translation id="2090451897496479509">Neem voor meer informatie contact op met de provider</translation>
 <translation id="2090686487550343086">IBAN's</translation>
 <translation id="2091887806945687916">Geluid</translation>
@@ -2252,6 +2251,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="4464826014807964867">Websites met gegevens van je organisatie</translation>
 <translation id="4466576951214254884">Studieleningen en studiefinanciering</translation>
 <translation id="4467821340016922962">Druk op |<ph name="ACCELERATOR" />| om het volledige scherm te sluiten en de download te bekijken</translation>
+<translation id="4472575034687746823">Aan de slag</translation>
 <translation id="4473643328224505070"><ph name="BEGIN_ENHANCED_PROTECTION_LINK" />Zet Geoptimaliseerde beveiliging aan<ph name="END_ENHANCED_PROTECTION_LINK" /> om het hoogste beveiligingsniveau van Chrome te krijgen</translation>
 <translation id="4475299370877036544">Deze actie schendt misschien het beleid van je organisatie</translation>
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />. <ph name="LEARN_MORE_TEXT" />.</translation>

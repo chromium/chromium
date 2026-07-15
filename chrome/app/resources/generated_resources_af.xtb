@@ -1227,6 +1227,7 @@ Gaan jou wagwoorde enige tyd na in <ph name="GOOGLE_PASSWORD_MANAGER" />.</trans
 <translation id="1933489278505808700">Toegelaat om te lees en te verander</translation>
 <translation id="1935303383381416800">Mag jou ligging sien</translation>
 <translation id="193565226207940518">Steundienstenutsding</translation>
+<translation id="1935995810530254458">Kopieer in elk geval</translation>
 <translation id="1936157145127842922">Wys in vouer</translation>
 <translation id="1936344977780165685">{PAGES,plural, =1{Bladsy is by leeslys gevoeg}other{Bladsye is by leeslys gevoeg}}</translation>
 <translation id="1936931585862840749">Gebruik 'n getal om aan te dui hoeveel kopieë gedruk moet word (1 tot <ph name="MAX_COPIES" />).</translation>
@@ -1547,6 +1548,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="2199298570273670671">Fout</translation>
 <translation id="2200094388063410062">E-pos</translation>
 <translation id="2200781749203116929">ChromeOS-stelselloglêers</translation>
+<translation id="2202391868799679245">Skakel kortpadsleutel aan</translation>
 <translation id="2203088913459920044">Naam kan letters, syfers en spesiale karakters gebruik</translation>
 <translation id="220321590587754225">Kon nie koppel nie. Probeer weer.</translation>
 <translation id="2203903197029773650"><ph name="BRAND" /> kan jou wagwoorde nagaan wanneer jy met jou Google-rekening aanmeld</translation>
@@ -6364,7 +6366,6 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="5932881020239635062">Reeksnommer</translation>
 <translation id="5933522550144185133"><ph name="APP_NAME" /> gebruik tans jou kamera en mikrofoon</translation>
 <translation id="5935158534896975820">Berei tans sertifikaatondertekeningversoek voor (wag tans vir bediener)</translation>
-<translation id="5935554994339565449">Voeg teks by met die nuwe “Voeg teks by”-nutsding</translation>
 <translation id="5936065461722368675">Vertaal hele bladsy</translation>
 <translation id="5937977334791924341"><ph name="APP" />-logo</translation>
 <translation id="5938002010494270685">Sekuriteitopgradering is beskikbaar</translation>

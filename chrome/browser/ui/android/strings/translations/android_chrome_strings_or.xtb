@@ -233,7 +233,6 @@
 <translation id="200114059308480249">Google ସନ୍ଧାନଗୁଡ଼ିକରେ ଆଖପାଖର ଟେକ୍ସଟକୁ ଅନ୍ତର୍ଭୁକ୍ତ କରିବେ କି?</translation>
 <translation id="2004096469149679223"><ph name="TAB_TITLE" />, ପିନ କରାଯାଇଥିବା ମ୍ୟୁଟ କରାଯାଇଥିବା ଇନକଗ୍ନିଟୋ ଟାବ</translation>
 <translation id="2021896219286479412">ପୂର୍ଣ୍ଣ-ସ୍କ୍ରିନ୍ ସାଇଟ୍ ନିୟନ୍ତ୍ରଣ</translation>
-<translation id="2022953316617983419">QR କୋଡ୍</translation>
 <translation id="2024195579772565064">ସର୍ଚ୍ଚ ଇଞ୍ଜିନକୁ ଡିଲିଟ କରନ୍ତୁ</translation>
 <translation id="2029669011553795746">ଟିପ୍ସ ବିଜ୍ଞପ୍ତି ଅପ୍ଟ ଇନ ଅଧା ଖୋଲାଯାଇଛି</translation>
 <translation id="2038563949887743358">ଅନୁରୋଧ ଡେକ୍ସଟପ୍ ସାଇଟ୍ ଚାଲୁ କରନ୍ତୁ</translation>
@@ -558,6 +557,7 @@
 <translation id="3331974543021145906">ଆପ୍ ସୂଚନା</translation>
 <translation id="3334729583274622784">ଫାଇଲ୍‍‍ର ଏକ୍ସଟେନ୍‌ସନ୍ ବଦଳାଇବେ କି?</translation>
 <translation id="333863344734218290">ଅସୁରକ୍ଷିତ ପବ୍ଲିକ ଓ ପ୍ରାଇଭେଟ ସାଇଟଗୁଡ଼ିକ ପାଇଁ ଆପଣଙ୍କୁ ଚେତାବନୀ ଦିଏ</translation>
+<translation id="3339788961947270565">ବନ୍ଦ କରିବା ସମ୍ପୂର୍ଣ୍ଣ ହେଉଛି</translation>
 <translation id="3340978935015468852">ସେଟିଂସ୍</translation>
 <translation id="3351959803838327376">ୱେବସାଇଟରେ ଲଙ୍ଗ ପ୍ରେସ କରି ମେନୁ ଖୋଲନ୍ତୁ</translation>
 <translation id="3359667936385849800">ଆପଣଙ୍କ ବର୍ତ୍ତମାନର ସେବା ପ୍ରଦାନକାରୀ ବ୍ୟବହାର କରନ୍ତୁ</translation>
@@ -721,6 +721,7 @@
 <translation id="4044708993631234325">ବଟମ ସିଟ</translation>
 <translation id="4045441967987592849">ପୁଣି ଖୋଲନ୍ତୁ</translation>
 <translation id="4049920046559074950"><ph name="INSTANCE_TITLE" /> ପାଇଁ ଅଧିକ ବିକଳ୍ପ</translation>
+<translation id="4051569243832293689">{NUM_BOOKMARKS,plural, =1{ଇନକଗ୍ନିଟୋ ୱିଣ୍ଡୋରେ ଖୋଲନ୍ତୁ}other{ସବୁ (#) ଇନକଗ୍ନିଟୋ ୱିଣ୍ଡୋରେ ଖୋଲନ୍ତୁ}}</translation>
 <translation id="4052419222954753986">{NUMBER_OF_TABS,plural, =1{ସେୟାର କରାଯାଇଥିବା ଟାବ ଗ୍ରୁପଗୁଡ଼ିକରେ ନୂଆ କାର୍ଯ୍ୟକଳାପ ସହିତ <ph name="TABS_COUNT_ONE" /> ଷ୍ଟାଣ୍ଡାର୍ଡ ଟାବ}other{ସେୟାର କରାଯାଇଥିବା ଟାବ ଗ୍ରୁପଗୁଡ଼ିକରେ ନୂଆ କାର୍ଯ୍ୟକଳାପ ସହିତ <ph name="TABS_COUNT_MANY" /> ଷ୍ଟାଣ୍ଡାର୍ଡ ଟାବ}}</translation>
 <translation id="405365679581583349">Google Play ସେବାଗୁଡ଼ିକୁ ଅପଡେଟ କରନ୍ତୁ</translation>
 <translation id="405399507749852140">ଯଦି କୌଣସି ସାଇଟରେ ମୂଲ୍ୟ ହ୍ରାସ ପାଏ, ତେବେ ଆଲର୍ଟ ପାଆନ୍ତୁ</translation>
@@ -823,6 +824,7 @@
 <translation id="442518031075347249">ଆପଣ Google Pay ମାଧ୍ୟମରେ ଆପଣଙ୍କ ଭର୍ଚୁଆଲ କାର୍ଡ ବ୍ୟବହାର କରିବାକୁ ଆଉ ସକ୍ଷମ ହେବେ ନାହିଁ। <ph name="BEGIN_LINK1" />ଭର୍ଚୁଆଲ କାର୍ଡଗୁଡ଼ିକ ବିଷୟରେ ଅଧିକ ଜାଣନ୍ତୁ<ph name="END_LINK1" /></translation>
 <translation id="442577985493096785">{TAB_COUNT,plural, =1{<ph name="TAB_TITLE" /> ଏବଂ ଅନ୍ୟ <ph name="TAB_COUNT_ONE" /> ଟାବ ବନ୍ଦ ହୋଇଯିବ}other{<ph name="TAB_TITLE" /> ଏବଂ ଅନ୍ୟ <ph name="TAB_COUNT_MANY" /> ଟାବ ବନ୍ଦ ହୋଇଯିବ}}</translation>
 <translation id="4430277756566635951"><ph name="EMAIL" />କୁ ବର୍ତ୍ତମାନ ଚୟନ କରାଯାଇଛି। ଏକ ଆକାଉଣ୍ଟ ବାଛନ୍ତୁ।</translation>
+<translation id="4430369329743628066">ବୁକ୍‌ମାର୍କ ଯୋଡାଗଲା</translation>
 <translation id="4452411734226507615"><ph name="TAB_TITLE" />ଟ୍ୟାବ୍ ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="4452548195519783679"><ph name="FOLDER_NAME" />ରେ ବୁକ୍‍ମାର୍କ କରାଯାଇଛି</translation>
 <translation id="4460822871039013969"><ph name="TAB_TITLE" />, ଚୟନିତ ପିନ କରାଯାଇଥିବା ରେକର୍ଡ କରୁଥିବା ଟାବ</translation>
@@ -1072,6 +1074,7 @@
 <translation id="5517326820028369152">ବର୍ତ୍ତମାନର କାର୍ଯ୍ୟକଳାପ ବଟମ ସିଟ</translation>
 <translation id="5526281268548144413">ଏକାଧିକ ୱିଣ୍ଡୋରେ ବନ୍ଦ କରାଯାଇପାରିବ ନାହିଁ</translation>
 <translation id="5532536403031755365">ଉନ୍ନତ ସୁରକ୍ଷା ସହିତ ଅନଲାଇନ ବିପଦ ବିରୁଦ୍ଧରେ ସୁରକ୍ଷାର ଏକ ଅତିରିକ୍ତ ଲେୟର ଯୋଗ କରନ୍ତୁ</translation>
+<translation id="5540127996007641535">{NUM_BOOKMARKS,plural, =1{ବୁକମାର୍କ ଖୋଲନ୍ତୁ}other{ସବୁ (#) ଖୋଲନ୍ତୁ}}</translation>
 <translation id="5548606607480005320">ସୁରକ୍ଷା ଯାଞ୍ଚ</translation>
 <translation id="5554520618550346933">ଆପଣ ଏକ ପାସୱାର୍ଡ ବ୍ୟବହାର କରିବା ସମୟରେ, ଯଦି ଏହାକୁ ଅନଲାଇନରେ ବ୍ୟବହାର କରାଯାଇଛି ତେବେ Chrome ଆପଣଙ୍କୁ ଚେତାବନୀ ଦିଏ। ଏହା କରିବା ସମୟରେ, ଆପଣଙ୍କ ପାସୱାର୍ଡ ଏବଂ ଉପଯୋଗକର୍ତ୍ତାନାମଗୁଡ଼ିକୁ ଏନକ୍ରିପ୍ଟ କରାଯାଇଥାଏ, ତେଣୁ Google ସମେତ କୌଣସି ବ୍ୟକ୍ତି ସେଗୁଡ଼ିକୁ ପଢ଼ିପାରିବେ ନାହିଁ।</translation>
 <translation id="5555525474779371165">ଆପଣଙ୍କ ସୁରକ୍ଷିତ ବ୍ରାଉଜିଂ ସୁରକ୍ଷା ବାଛନ୍ତୁ</translation>
@@ -1127,7 +1130,6 @@
 <translation id="5763514718066511291">ଏହି ଆପ୍ ପାଇଁ URL କପି କରିବାକୁ ଟାପ୍ କରନ୍ତୁ</translation>
 <translation id="5765517223145864268">ଆପଣଙ୍କ ଅନୁଭୂତି ବିଷୟରେ ଆମକୁ କୁହନ୍ତୁ। କିମ୍ବା <ph name="BEGIN_LINK" />ଆପଣଙ୍କ ସେଟିଂସ ପରିବର୍ତ୍ତନ କରନ୍ତୁ<ph name="END_LINK" />।</translation>
 <translation id="5776970333778123608">ଗୁରୁତ୍ୱହୀନ ଡାଟା</translation>
-<translation id="5788665823391532892">ଏକ ସମସ୍ୟାର ରିପୋର୍ଟ କରନ୍ତୁ...</translation>
 <translation id="5793665092639000975"><ph name="SPACE_AVAILABLE" />ର <ph name="SPACE_USED" /> ବ୍ୟବହାର କରୁଛନ୍ତି</translation>
 <translation id="5797949256525811424">ବ୍ଲକ କରାଯାଇଥିବା ବିଷୟ</translation>
 <translation id="580893287573699959">ଆପଣଙ୍କ ରୁଚି ଥିବା ବିଷୟ ଏବଂ ସାଇଟଗୁଡ଼ିକୁ ପରିଚାଳନା କରନ୍ତୁ</translation>
@@ -1179,6 +1181,7 @@
 <translation id="5995726099713306770">ପୃଷ୍ଠାକୁ ପୁଣି ଡାଉନଲୋଡ୍ କରିବେ କି?</translation>
 <translation id="5998675059699164418">Chrome ବ୍ୟବହାର କରିବାକୁ ଆପଣଙ୍କ ସଂସ୍ଥା ଆପଣ ସାଇନ ଇନ କରିବା ଆବଶ୍ୟକ କରେ।</translation>
 <translation id="6000066717592683814">Googleକୁ ଡିଫଲ୍ଟ ଭାବେ ରଖନ୍ତୁ</translation>
+<translation id="6002122790816966947">ଆପଣଙ୍କ ଡିଭାଇସଗୁଡ଼ିକ</translation>
 <translation id="6011308810877101166">ସର୍ଚ୍ଚ ପରାମର୍ଶଗୁଡ଼ିକୁ ଉନ୍ନତ କରନ୍ତୁ</translation>
 <translation id="6013305291643746595">ସବୁଠାରୁ ପୁରୁଣା ଅନୁସାରେ ସର୍ଟ କରାଯାଉଛି</translation>
 <translation id="6022659036123304283">Chromeକୁ ନିଜ ପସନ୍ଦରେ ତିଆରି କରନ୍ତୁ</translation>
@@ -1245,6 +1248,7 @@
 <translation id="6246073558347462570">ପ୍ରସଙ୍ଗ ପପଅପ ୱିଣ୍ଡୋ</translation>
 <translation id="6247557882553405851">Google Password Manager</translation>
 <translation id="6248988683584659830">ସର୍ଚ୍ଚ ସେଟିଂସ</translation>
+<translation id="6250486830372700930">ଆପଣ ଏହି ଡିଭାଇସରୁ ଏକ୍ସଟେନସନଗୁଡ଼ିକୁ ମଧ୍ୟ କାଢ଼ି ଦେଇପାରିବେ</translation>
 <translation id="6250847299079540062"><ph name="TAB_TITLE" />, ମଲ୍ଟିସିଲେକ୍ଟେଡ ପିନ ହୋଇଥିବା ଇନକଗ୍ନିଟୋ ଟାବ</translation>
 <translation id="6251449557817521191">ଏଠାରେ ଆପଣଙ୍କ Chrome ଇତିହାସ ଭ୍ୟୁ କରନ୍ତୁ</translation>
 <translation id="6254139308321626268">ଆପଣ ଏକ PDF ଫାଇଲକୁ ଭ୍ୟୁ କରୁଛନ୍ତି</translation>
@@ -1420,7 +1424,9 @@
 <translation id="6850830437481525139"><ph name="TAB_COUNT" />ଟି ଟାବ୍ ବନ୍ଦ କରାଯାଇଛି</translation>
 <translation id="6852437757508328589">{NUM_RESULTS,plural, =1{1 ଫଳାଫଳ ମିଳିଲା}other{# ଫଳାଫଳ ମିଳିଲା}}</translation>
 <translation id="685340923442249391">{FILE_COUNT,plural, =1{ଅଡିଓ ଫାଇଲଗୁଡ଼ିକ, ତାଲିକାରେ 1 ଅଡିଓ ଫାଇଲ}other{ଅଡିଓ ଫାଇଲଗୁଡ଼ିକ, ତାଲିକାରେ # ଅଡିଓ ଫାଇଲ}}</translation>
+<translation id="6857043990326114901">ଫୋଲ୍ଡର ଯୋଗ କରନ୍ତୁ…</translation>
 <translation id="685850645784703949">Googleର Discover - ବନ୍ଦ ଅଛି</translation>
+<translation id="6858893072923394368">ପୃଷ୍ଠା ଯୋଗ କରନ୍ତୁ…</translation>
 <translation id="6864459304226931083">ଛବି ଡାଉନ୍‌ଲୋଡ୍ କରନ୍ତୁ</translation>
 <translation id="686490460830618322">ଆପ ଫିଲ୍ଟର ସିଟ</translation>
 <translation id="6865313869410766144">ସ୍ୱତଃପୂରଣ ଫର୍ମ ଡାଟା</translation>
@@ -1597,6 +1603,7 @@
 <translation id="7475688122056506577">SD କାର୍ଡ୍ ମିଳିଲା ନାହିଁ। ଆପଣଙ୍କର ଫାଇଲ୍‌ ମଧ୍ୟରୁ କିଛି ଫାଇଲ୍‌ ନାହିଁ</translation>
 <translation id="7479104141328977413">ଟାବ୍‌ ପରିଚାଳନା</translation>
 <translation id="7481312909269577407">ଅଗ୍ରଗତି</translation>
+<translation id="7481588001304663390">{NUM_BOOKMARKS,plural, =1{ନୂଆ ଟାବ ଗ୍ରୁପରେ ଖୋଲନ୍ତୁ}other{ସବୁ (#) ନୂଆ ଟାବ ଗ୍ରୁପରେ ଖୋଲନ୍ତୁ}}</translation>
 <translation id="7482656565088326534">ପ୍ରିଭ୍ୟୁ ଟାବ୍</translation>
 <translation id="7484997419527351112">Discover - ବନ୍ଦ ଅଛି</translation>
 <translation id="7485033510383818941">ଫିଡ୍ ବିଷୟବସ୍ତୁକୁ ରିଫ୍ରେସ୍ କରିବାକୁ, ପୃଷ୍ଠାକୁ ତଳକୁ ଟାଣନ୍ତୁ</translation>
@@ -1753,6 +1760,7 @@
 <translation id="8103578431304235997">ଇନ୍‌କଗ୍ନିଟୋ ଟାବ୍</translation>
 <translation id="810433609302852">ଟିପ୍ସ ବିଜ୍ଞପ୍ତି ଫିଚର ପ୍ରୋମୋ ଏବଂ ବ୍ୟବହାରର ଷ୍ଟେପର ନିମ୍ନରେ ଦିଆଯାଇଥିବା ସିଟ</translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
+<translation id="8109802255973641442">ଏକ୍ସଟେନସନ ଏବଂ ଏହି ଡିଭାଇସରେ ସେମାନେ ସେଭ କରିଥିବା ଡାଟାକୁ କାଢ଼ି ଦିଅନ୍ତୁ</translation>
 <translation id="8110024788458304985">Chromeର ଫିଚର ଏବଂ ପରଫରମାନ୍ସକୁ ଉନ୍ନତ କରିବାରେ ସାହାଯ୍ୟ କରନ୍ତୁ</translation>
 <translation id="8110087112193408731">ଡିଜିଟାଲ୍ ୱେଲ୍‍ବିଂରେ ଆପଣଙ୍କର Chrome କାର୍ଯ୍ୟକଳାପ ଦେଖାଇବେ?</translation>
 <translation id="8118117428362942925">ଯଦି ତୁମେ ସହାୟତା ଆବଶ୍ୟକ କର, ତେବେ ତୁମ ବାପାମା (<ph name="PARENT_NAME" />)ଙ୍କୁ କୁହ</translation>
@@ -1852,6 +1860,7 @@
 <translation id="8460448946170646641">ମୁଖ୍ୟ ଗୋପନୀୟତା ଏବଂ ସୁରକ୍ଷା ନିୟନ୍ତ୍ରଣଗୁଡ଼ିକର ସମୀକ୍ଷା କରନ୍ତୁ</translation>
 <translation id="8460932807646981183">ସର୍ଚ୍ଚ ଇଞ୍ଜିନ ଏବଂ ସାଇଟ ସର୍ଚ୍ଚକୁ ପରିଚାଳନା କରନ୍ତୁ</translation>
 <translation id="8465252176946159372">ବୈଧ ନୁହେଁ</translation>
+<translation id="8472353072135865937">{NUM_BOOKMARKS,plural, =1{ନୂଆ ୱିଣ୍ଡୋରେ ଖୋଲନ୍ତୁ}other{ସବୁ (#) ନୂଆ ୱିଣ୍ଡୋରେ ଖୋଲନ୍ତୁ}}</translation>
 <translation id="8473863474539038330">ଠିକଣାଗୁଡ଼ିକ ଏବଂ ଅଧିକ</translation>
 <translation id="847433688444405067">ସମଗ୍ର ଡିଭାଇସରେ ବ୍ରାଉଜ କରନ୍ତୁ</translation>
 <translation id="8477178913400731244">ଡାଟାକୁ ଡିଲିଟ କରନ୍ତୁ</translation>
@@ -1914,6 +1923,7 @@
 <translation id="8738163682604285902">ରିଡିଂ ମୋଡକୁ ଭ୍ୟୁ କରିବେ?</translation>
 <translation id="8746155870861185046">ହାଇଲାଇଟ୍ ସେୟାର୍ କରନ୍ତୁ</translation>
 <translation id="8748850008226585750">ଲୁଚାଯାଇଥିବା ବିଷୟବସ୍ତୁ</translation>
+<translation id="874918643257405732">ଏହି ଟାବ୍‌କୁ ବୁକ୍‌ମାର୍କ କରନ୍ତୁ</translation>
 <translation id="8754448020583829686">ଲିଙ୍କ ବିନା କପି କରନ୍ତୁ</translation>
 <translation id="8756969031206844760">ପାସ୍‌ୱାର୍ଡ ଅପ୍‌ଡେଟ୍ କରିବେ?</translation>
 <translation id="8765470054473112089">ଆପଣ ଠିକଣା ବାର କିମ୍ବା ସର୍ଚ୍ଚ ବାକ୍ସରେ ଟାଇପ କଲେ, ଉନ୍ନତ ପରାମର୍ଶ ପାଇବାକୁ Chrome ଆପଣ ଯାହା ଟାଇପ କରନ୍ତି ତାହା ଆପଣଙ୍କ ଡିଫଲ୍ଟ ସର୍ଚ୍ଚ ଇଞ୍ଜିନକୁ ପଠାଏ। ଏହା ଇନକଗ୍ନିଟୋରେ ବନ୍ଦ ଅଛି।</translation>
@@ -2039,6 +2049,7 @@
 <translation id="9212845824145208577">ଏହାଠାରୁ ତଳକୁ ଯାଇପାରିବ ନାହିଁ। ପୃଷ୍ଠାର ଆହୁରି ତଳୁ ଆରମ୍ଭ କରିବାକୁ ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="9218430445555521422">ଡିଫଲ୍ଟ ଭାବେ ସେଟ କରନ୍ତୁ</translation>
 <translation id="9219103736887031265">Images</translation>
+<translation id="922152298093051471">Chromeକୁ କଷ୍ଟମାଇଜ୍ କରନ୍ତୁ</translation>
 <translation id="9222198206152536936">ଆପଣଙ୍କର ସମସ୍ତ ଡିଭାଇସରେ ଆପଣଙ୍କ ଟାବ ଏବଂ ଆହୁରି ଅନେକ କିଛି ପାଇବାକୁ, <ph name="EMAIL" /> ଭାବେ ସାଇନ ଇନ କରନ୍ତୁ</translation>
 <translation id="924447568950697217">Chromeକୁ ନିଜର ଡିଫଲ୍ଟ ବ୍ରାଉଜର୍ କରନ୍ତୁ</translation>
 <translation id="926205370408745186">ଡିଜିଟାଲ୍ ୱେଲ୍‍ବିଂରୁ ଆପଣଙ୍କର Chrome କାର୍ଯ୍ୟକଳାପଗୁଡ଼ିକୁ କାଢ଼ନ୍ତୁ</translation>

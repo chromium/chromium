@@ -233,7 +233,6 @@
 <translation id="200114059308480249">រួមបញ្ចូល​អក្សរដែលនៅជុំវិញ​នៅក្នុង​ការស្វែងរកនៅលើ Google ឬ?</translation>
 <translation id="2004096469149679223"><ph name="TAB_TITLE" />, ផ្ទាំងឯកជន​ដែលបានបិទ​សំឡេង និងបាន​ខ្ទាស់</translation>
 <translation id="2021896219286479412">ការគ្រប់គ្រងទំព័រពេញអេក្រង់</translation>
-<translation id="2022953316617983419">​កូដ QR</translation>
 <translation id="2024195579772565064">លុបម៉ាស៊ីន​ស្វែងរក</translation>
 <translation id="2029669011553795746">បានបើក​ការភ្ជាប់​ការជូនដំណឹង​អំពី​គន្លឹះ​ពាក់កណ្ដាល​អេក្រង់</translation>
 <translation id="2038563949887743358">បើកសំណើគេហទំព័រសម្រាប់កុំព្យូទ័រ</translation>
@@ -558,6 +557,7 @@
 <translation id="3331974543021145906">ព័ត៌មានកម្មវិធី</translation>
 <translation id="3334729583274622784">ប្ដូរកន្ទុយ​ឯកសារឬ?</translation>
 <translation id="333863344734218290">ប្រាប់​ឱ្យអ្នក​ប្រុងប្រយ័ត្ន​ចំពោះ​គេហទំព័រ​សាធារណៈ និងឯកជនដែលគ្មាន​សុវត្ថិភាព</translation>
+<translation id="3339788961947270565">កំពុងបញ្ចប់ការបិទ</translation>
 <translation id="3340978935015468852">ការកំណត់</translation>
 <translation id="3351959803838327376">ចុចឱ្យយូរលើគេហទំព័រ រួចបើកម៉ឺនុយ</translation>
 <translation id="3359667936385849800">ប្រើ​ក្រុមហ៊ុនផ្ដល់សេវាបច្ចុប្បន្ន​របស់អ្នក</translation>
@@ -721,6 +721,7 @@
 <translation id="4044708993631234325">សន្លឹក​ខាងក្រោម</translation>
 <translation id="4045441967987592849">បើកឡើងវិញ</translation>
 <translation id="4049920046559074950">ជម្រើស​ច្រើន​ទៀត​សម្រាប់ <ph name="INSTANCE_TITLE" /></translation>
+<translation id="4051569243832293689">{NUM_BOOKMARKS,plural, =1{បើកនៅក្នុង​ផ្ទាំងឯកជន}other{បើកទាំងអស់ (#) នៅក្នុងផ្ទាំងឯកជន}}</translation>
 <translation id="4052419222954753986">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> ផ្ទាំង​ស្តង់ដារ​ដែលមាន​សកម្មភាពថ្មី​នៅក្នុង​ក្រុមផ្ទាំងរួម}other{<ph name="TABS_COUNT_MANY" /> ផ្ទាំង​ស្តង់ដារ​ដែលមាន​សកម្មភាពថ្មី​នៅក្នុង​ក្រុមផ្ទាំងរួម}}</translation>
 <translation id="405365679581583349">ធ្វើ​បច្ចុប្បន្នភាព​សេវាកម្ម Google Play</translation>
 <translation id="405399507749852140">ទទួលបានការជូនដំណឹង ប្រសិនបើមានការធ្លាក់ថ្លៃនៅលើគេហទំព័រណាមួយ</translation>
@@ -823,6 +824,7 @@
 <translation id="442518031075347249">អ្នកនឹងមិនអាចប្រើកាតនិម្មិតរបស់អ្នកជាមួយ Google Pay បានទៀតទេ។ <ph name="BEGIN_LINK1" />ស្វែងយល់បន្ថែមអំពីកាតនិម្មិត<ph name="END_LINK1" /></translation>
 <translation id="442577985493096785">{TAB_COUNT,plural, =1{<ph name="TAB_TITLE" /> និង <ph name="TAB_COUNT_ONE" /> ផ្ទាំង​ផ្សេងទៀត​នឹងត្រូវ​បានបិទ}other{<ph name="TAB_TITLE" /> និង <ph name="TAB_COUNT_MANY" /> ផ្ទាំង​ផ្សេងទៀត​នឹងត្រូវ​បានបិទ}}</translation>
 <translation id="4430277756566635951">បច្ចុប្បន្ន បានជ្រើសរើស <ph name="EMAIL" />។ ជ្រើសរើស​គណនី។</translation>
+<translation id="4430369329743628066">បានបន្ថែមចំណាំ</translation>
 <translation id="4452411734226507615">បិទ​ផ្ទាំង <ph name="TAB_TITLE" /></translation>
 <translation id="4452548195519783679">បានបន្ថែមចំណាំទៅ <ph name="FOLDER_NAME" /></translation>
 <translation id="4460822871039013969"><ph name="TAB_TITLE" />, ផ្ទាំង​ដែលបាន​ខ្ទាស់ និងបាន​ជ្រើសរើស​ដែល​កំពុងថត</translation>
@@ -1072,6 +1074,7 @@
 <translation id="5517326820028369152">សន្លឹក​ខាងក្រោម​សកម្មភាពថ្មីៗ</translation>
 <translation id="5526281268548144413">មិនអាចបិទ​នៅលើ​វិនដូ​ច្រើន​បានទេ</translation>
 <translation id="5532536403031755365">បញ្ចូល​ស្រទាប់​ការពារបន្ថែម​ប្រឆាំងនឹង​ការគំរាមកំហែង​លើអ៊ីនធឺណិត​តាមរយៈ​ការការពារ​កម្រិត​ខ្ពស់</translation>
+<translation id="5540127996007641535">{NUM_BOOKMARKS,plural, =1{បើកចំណាំ}other{បើកទាំងអស់ (#)}}</translation>
 <translation id="5548606607480005320">ការពិនិត្យ​សុវត្ថិភាព</translation>
 <translation id="5554520618550346933">នៅ​ពេល​អ្នក​ប្រើពាក្យ​សម្ងាត់ Chrome ប្រាប់​អ្នក​ឱ្យ​ប្រុងប្រយ័ត្ន ប្រសិន​បើ​ពាក្យសម្ងាត់នោះ​ត្រូវបានបោះផ្សាយ​លើ​អ៊ីនធឺណិត។ នៅពេល​ធ្វើដូច្នេះ ឈ្មោះអ្នកប្រើប្រាស់ និងពាក្យសម្ងាត់​របស់អ្នក​ត្រូវបាន​អ៊ីនគ្រីប ដើម្បី​កុំឱ្យអ្នកដទៃ រួមទាំង Google អាច​អានបាន​។</translation>
 <translation id="5555525474779371165">ជ្រើសរើសការការពារការរុករក​ដោយសុវត្ថិភាពរបស់អ្នក</translation>
@@ -1127,7 +1130,6 @@
 <translation id="5763514718066511291">ចុច​ដើម្បី​ចម្លង URL សម្រាប់​កម្មវិធី​នេះ</translation>
 <translation id="5765517223145864268">ប្រាប់យើងអំពីបទពិសោធន៍របស់អ្នក។ ឬ<ph name="BEGIN_LINK" />ប្ដូរការកំណត់របស់អ្នក<ph name="END_LINK" />។</translation>
 <translation id="5776970333778123608">ទិន្នន័យ​មិនសំខាន់</translation>
-<translation id="5788665823391532892">រាយការណ៍បញ្ហា…</translation>
 <translation id="5793665092639000975">ប្រើ​អស់ <ph name="SPACE_USED" /> នៃ <ph name="SPACE_AVAILABLE" /></translation>
 <translation id="5797949256525811424">ប្រធានបទ​ដែលបាន​ទប់ស្កាត់</translation>
 <translation id="580893287573699959">គ្រប់គ្រង​ប្រធានបទ និង​គេហទំព័រ​ដែលអ្នក​ចាប់អារម្មណ៍</translation>
@@ -1179,6 +1181,7 @@
 <translation id="5995726099713306770">ទាញយកទំព័រម្ដងទៀត?</translation>
 <translation id="5998675059699164418">ស្ថាប័នរបស់អ្នក​តម្រូវឱ្យអ្នកចូលគណនី ដើម្បីប្រើ Chrome។</translation>
 <translation id="6000066717592683814">រក្សា Google ដដែល</translation>
+<translation id="6002122790816966947">ឧបករណ៍របស់អ្នក</translation>
 <translation id="6011308810877101166">កែលម្អ​ការណែនាំ​ការស្វែងរក</translation>
 <translation id="6013305291643746595">តម្រៀបតាម​ចាស់បំផុត</translation>
 <translation id="6022659036123304283">ធ្វើឱ្យ Chrome ក្លាយជា​របស់អ្នក</translation>
@@ -1245,6 +1248,7 @@
 <translation id="6246073558347462570">វិនដូ​បរិបទ​លោតឡើង</translation>
 <translation id="6247557882553405851">កម្មវិធីគ្រប់គ្រង​ពាក្យសម្ងាត់ Google</translation>
 <translation id="6248988683584659830">ការកំណត់ការស្វែងរក</translation>
+<translation id="6250486830372700930">អ្នក​ក៏អាច​ដកកម្មវិធីបន្ថែម​ចេញពី​ឧបករណ៍នេះ​បាន​ផងដែរ</translation>
 <translation id="6250847299079540062"><ph name="TAB_TITLE" />, ផ្ទាំងឯកជន​ដែលបាន​ខ្ទាស់ និងបាន​ជ្រើសរើស​ច្រើន</translation>
 <translation id="6251449557817521191">មើល​ប្រវត្តិ Chrome របស់អ្នក​នៅទីនេះ</translation>
 <translation id="6254139308321626268">អ្នក​កំពុងមើល​ឯកសារ PDF</translation>
@@ -1420,7 +1424,9 @@
 <translation id="6850830437481525139">បានបិទផ្ទាំង <ph name="TAB_COUNT" /></translation>
 <translation id="6852437757508328589">{NUM_RESULTS,plural, =1{បាន​រកឃើញ​លទ្ធផល 1}other{បាន​រកឃើញ​លទ្ធផល #}}</translation>
 <translation id="685340923442249391">{FILE_COUNT,plural, =1{ឯកសារ​សំឡេង, ឯកសារ​សំឡេង 1 នៅក្នុង​បញ្ជី}other{ឯកសារ​សំឡេង, ឯកសារ​សំឡេង # នៅក្នុង​បញ្ជី}}</translation>
+<translation id="6857043990326114901">បញ្ចូលថត…</translation>
 <translation id="685850645784703949">Discover by Google - បិទ</translation>
+<translation id="6858893072923394368">បញ្ចូលទំព័រ…</translation>
 <translation id="6864459304226931083">ទាញយករូបភាព</translation>
 <translation id="686490460830618322">សន្លឹក​តម្រង​កម្មវិធី</translation>
 <translation id="6865313869410766144">ទិន្នន័យបំពេញទម្រង់បែបបទដោយស្វ័យប្រវត្តិ</translation>
@@ -1597,6 +1603,7 @@
 <translation id="7475688122056506577">រកមិន​ឃើញកាត SD ទេ។ ឯកសារ​មួយចំនួន​របស់អ្នក​អាចកំពុង​បាត់បង់។</translation>
 <translation id="7479104141328977413">ការគ្រប់គ្រង​ផ្ទាំង</translation>
 <translation id="7481312909269577407">ទៅមុខ</translation>
+<translation id="7481588001304663390">{NUM_BOOKMARKS,plural, =1{បើកនៅក្នុងក្រុមផ្ទាំងថ្មី}other{បើកទាំងអស់ (#) នៅក្នុងក្រុមផ្ទាំងថ្មី}}</translation>
 <translation id="7482656565088326534">ផ្ទាំងមើលសាកល្បង</translation>
 <translation id="7484997419527351112">Discover - បានបិទ</translation>
 <translation id="7485033510383818941">ដើម្បីផ្ទុក​ខ្លឹមសារព័ត៌មាន​ឡើងវិញ សូមទាញ​ទំព័រចុះ</translation>
@@ -1753,6 +1760,7 @@
 <translation id="8103578431304235997">ផ្ទាំងអនាមិក</translation>
 <translation id="810433609302852">សន្លឹក​ខាងក្រោម​នៃជំហាន​ក្នុងការប្រើប្រាស់ និង​ការផ្សព្វផ្សាយ​មុខងារ​ជូនដំណឹង​អំពី​គន្លឹះ</translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
+<translation id="8109802255973641442">ដកចេញនូវ​កម្មវិធីបន្ថែម និង​ទិន្នន័យ​ដែល​កម្មវិធីបន្ថែម​ទាំងនេះ​បានរក្សាទុក​នៅលើ​ឧបករណ៍នេះ</translation>
 <translation id="8110024788458304985">ជួយ​កែលម្អ​មុខងារ និង​ប្រតិបត្តិការ​របស់ Chrome</translation>
 <translation id="8110087112193408731">បង្ហាញសកម្មភាព Chrome របស់អ្នក​នៅក្នុងសុខុមាលភាព​ឌីជីថល?</translation>
 <translation id="8118117428362942925">ប្រសិនបើ​អ្នក​ត្រូវការ​ជំនួយ សូម​ស្នើសុំពី​មាតាបិតា​របស់​អ្នក (<ph name="PARENT_NAME" />)</translation>
@@ -1852,6 +1860,7 @@
 <translation id="8460448946170646641">ពិនិត្យមើល​ការគ្រប់គ្រង​សុវត្ថិភាព និងឯកជនភាព​សំខាន់ៗ</translation>
 <translation id="8460932807646981183">គ្រប់គ្រង​ម៉ាស៊ីន​ស្វែងរក និង​ការស្វែងរក​នៅលើគេហទំព័រ</translation>
 <translation id="8465252176946159372">គ្មានសុពលភាពទេ</translation>
+<translation id="8472353072135865937">{NUM_BOOKMARKS,plural, =1{បើក​នៅក្នុង​វិនដូថ្មី}other{បើកទាំងអស់ (#) នៅក្នុងវិនដូថ្មី}}</translation>
 <translation id="8473863474539038330">អាសយដ្ឋាន​ និងច្រើន​ទៀត</translation>
 <translation id="847433688444405067">រុករក​ឆ្លង​ឧបករណ៍</translation>
 <translation id="8477178913400731244">លុប​ទិន្នន័យ</translation>
@@ -1914,6 +1923,7 @@
 <translation id="8738163682604285902">មើល​មុខងារអាន​ឬ?</translation>
 <translation id="8746155870861185046">ចែករំលែករំលេច</translation>
 <translation id="8748850008226585750">បានលាក់មាតិកា</translation>
+<translation id="874918643257405732">ចំណាំ​ផ្ទាំងនេះ</translation>
 <translation id="8754448020583829686">ចម្លងដោយមិនមានតំណ</translation>
 <translation id="8756969031206844760">ធ្វើ​បច្ចុប្បន្នភាព​ពាក្យសម្ងាត់?</translation>
 <translation id="8765470054473112089">នៅ​ពេល​អ្នក​វា​យបញ្ចូល​នៅ​ក្នុង​របារអាសយដ្ឋាន ឬ​ប្រអប់​ស្វែងរក Chrome បញ្ជូន​​អ្វី​ដែល​អ្នក​វាយបញ្ចូល​ទៅកាន់​ម៉ាស៊ីន​ស្វែងរក​លំនាំដើម​របស់​អ្នក ដើម្បី​ទទួលបានការ​ណែនាំ​កាន់តែ​ប្រសើរ។ ជម្រើសនេះត្រូវ​បានបិទ​នៅ​ក្នុង​មុខងារឯកជន។</translation>
@@ -2039,6 +2049,7 @@
 <translation id="9212845824145208577">មិនអាចរំកិលទៅក្រោមជាងនេះទៀតបានទេ។ សូមសាកល្បងចាប់ផ្ដើមពីផ្នែកខាងក្រោមជាងនេះនៅលើទំព័រ។</translation>
 <translation id="9218430445555521422">កំណត់ជាលំនាំដើម</translation>
 <translation id="9219103736887031265">រូបភាព</translation>
+<translation id="922152298093051471">ប្ដូរ Chrome តាមបំណង</translation>
 <translation id="9222198206152536936">ដើម្បី​ទទួលបាន​ផ្ទាំង​របស់អ្នក និង​អ្វីៗជាច្រើនទៀត​នៅលើ​ឧបករណ៍​ទាំងអស់​របស់អ្នក សូម​ចូលគណនីជា <ph name="EMAIL" /></translation>
 <translation id="924447568950697217">កំណត់ឲ្យ Chrome ក្លាយជាកម្មវិធីរុករកលំនាំដើមរបស់អ្នក</translation>
 <translation id="926205370408745186">លុបស​កម្មភាព Chrome របស់អ្នកពី​សុខុមាលភាព​ឌីជីថល</translation>

@@ -132,6 +132,7 @@
 <translation id="1076751984131277498">USB 분리 가능 기기 허용 목록</translation>
 <translation id="1077675271127011209">사용 및 비정상 종료 관련 데이터 보고 사용 안함</translation>
 <translation id="1079498696402787191">TLS 핸드셰이크에서 허용되는 해시에 기본값을 사용합니다.</translation>
+<translation id="1079801999187584280">Developer Tools 사용 금지</translation>
 <translation id="1081263326166769685">정책을 사용 설정하면 <ph name="PRODUCT_OS_NAME" />에서 비정상 종료 보고서 등 사용 측정항목과 진단 데이터를 Google에 보고합니다. 정책을 사용 중지하면 측정항목 및 진단 데이터 보고가 사용 중지됩니다.
 
 관리 기기의 경우 이 정책은 기본적으로 사용 설정되며 측정항목이 Google에 전송됩니다.
@@ -349,6 +350,7 @@ https://chromeenterprise.google/policies/url-patterns/ 페이지를 참고하세
       <ph name="IMAGE_SEARCH_SOURCE" />,
       <ph name="IMAGE_THUMBNAIL" />,
       <ph name="IMAGE_THUMBNAIL_BASE64" /></translation>
+<translation id="1238071290662886238">모든 브라우저 창이 닫힐 때 백그라운드 자동 다시 실행을 제어합니다.</translation>
 <translation id="1238150413700645698">보호된 콘텐츠</translation>
 <translation id="1238868319430505522"><ph name="GOOGLE_DRIVE_NAME" /> 및 <ph name="GOOGLE_WORKSPACE_NAME" />의 <ph name="CLOUD_UPLOAD_NAME" /> 흐름 구성</translation>
 <translation id="1239526922294123540">웹사이트가 안전하지 않은 방식으로 더 높은 수준의 비공개 네트워크 엔드포인트에 요청할 수 있도록 허용할지 제어합니다.
@@ -1285,6 +1287,7 @@ Manifest V2 확장 프로그램 지원이 중단되며 향후 모든 확장 프�
 <translation id="1851034156561932736">충전 소리 켜기</translation>
 <translation id="1851282952069386119">사용자가 Chrome 정리도구 정리 결과를 Google과 공유하도록 선택할 수 있음</translation>
 <translation id="1852294065645015766">미디어 자동 재생 허용</translation>
+<translation id="1853303312483982680">모든 창이 닫힐 때 자동 다시 실행 사용 중지</translation>
 <translation id="1855963029978337744">정책을 설정하면 주어진 공급업체 ID 및 제품 ID로 HID 기기 액세스 권한을 자동으로 부여받는 사이트를 지정하는 URL 목록을 작성할 수 있습니다. 항목이 유효하려면 목록의 각 항목에 <ph name="DEVICES_FIELD_NAME" /> 및 <ph name="URLS_FIELD_NAME" /> 필드가 있어야 하며, 그러지 않으면 항목이 무시됩니다. <ph name="DEVICES_FIELD_NAME" /> 필드에 포함된 각 항목은 <ph name="VENDOR_ID_FIELD_NAME" /> 필드를 가져야 하며 <ph name="PRODUCT_ID_FIELD_NAME" /> 필드를 가질 수 있습니다. <ph name="PRODUCT_ID_FIELD_NAME" /> 필드를 생략하면 지정된 공급업체 ID가 있는 모든 기기와 일치하는 정책이 생성됩니다. <ph name="PRODUCT_ID_FIELD_NAME" /> 필드는 있지만 <ph name="VENDOR_ID_FIELD_NAME" /> 필드가 없는 항목은 유효하지 않으며 무시됩니다.
 
       정책을 설정하지 않으면 <ph name="DEFAULT_WEB_HID_GUARD_SETTING_POLICY_NAME" />이 적용(설정된 경우에 한해)되며 설정되지 않으면 사용자의 개인 설정이 적용됩니다.
@@ -1818,6 +1821,21 @@ URL로 입력된 측정항목 수집이 허용되거나 사용자가 이를 사�
 <translation id="2180958780733364832">헤드리스 모드 사용 제어</translation>
 <translation id="2182291258410176649">사용자가 백업 및 복원을 사용할지 결정</translation>
 <translation id="2183338188392346527">기기 런타임 카운터 보고 안함</translation>
+<translation id="2183838844225082873">정책을 0(기본값)으로 설정하면 개발자 도구와 JavaScript 콘솔에 액세스할 수 있지만 기업 정책으로 설치한 확장 프로그램의 컨텍스트나 버전 114 이상을 사용 중이며 관리 사용자인 경우 브라우저에 내장된 확장 프로그램의 컨텍스트에서는 액세스할 수 없습니다. 정책을 1로 설정하면 기업 정책으로 설치한 확장 프로그램을 비롯한 모든 컨텍스트에서 개발자 도구 및 JavaScript 콘솔에 액세스할 수 있습니다. 정책을 2로 설정하면 개발자 도구에 액세스할 수 없으며 웹사이트 요소를 검사할 수 없습니다.
+
+또한 이 설정은 개발자 도구 또는 JavaScript 콘솔을 여는 키보드 단축키, 메뉴 항목, 컨텍스트 메뉴 항목의 사용을 중지합니다.
+
+<ph name="PRODUCT_NAME" /> 버전 99부터는 '페이지 소스 보기' 기능의 진입점도 제어합니다. 이 정책을 'DeveloperToolsDisallowed'(값 2)로 설정하면 사용자가 키보드 단축키 또는 컨텍스트 메뉴를 통해 소스 보기에 액세스할 수 없습니다. 소스 보기를 완전히 차단하려면 <ph name="URL_BLOCKLIST_POLICY_NAME" /> 정책에 'view-source:*'도 추가해야 합니다.
+
+<ph name="PRODUCT_NAME" /> 버전 119부터 이 설정으로 분리형 웹 앱의 개발자 모드 활성화 및 사용 여부도 제어할 수 있습니다.
+
+<ph name="PRODUCT_NAME" /> 버전 128부터는 <ph name="EXTENSION_DEVELOPER_MODE_SETTINGS_POLICY_NAME" /> 정책이 설정된 경우 이 설정으로 확장 프로그램 페이지의 개발자 모드를 제어할 수 없습니다.
+
+개발자 도구의 사용 가능 여부는 다음 우선순위로 결정됩니다.
+1. URL이 <ph name="DEVELOPER_TOOLS_AVAILABILITY_ALLOWLIST_POLICY_NAME" /> 정책의 패턴과 일치하면 개발자 도구가 허용됩니다.
+2. <ph name="DEVELOPER_TOOLS_AVAILABILITY_ALLOWLIST_POLICY_NAME" />이(가) 설정되고 <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" />이(가) 설정되지 않은 경우 허용 목록에 없는 모든 URL이 차단됩니다.
+3. URL이 <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> 정책의 패턴과 일치하면 개발자 도구가 차단됩니다.
+4. 허용 목록 또는 차단 목록에 포함되지 않은 URL의 경우 이 정책(<ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" />)이 대체 정책으로 사용됩니다.</translation>
 <translation id="2187361040843865450">'Just Works' 블루투스 페어링 요청 수락</translation>
 <translation id="2187372280917024033">원하는 DNS-over-HTTPS 리졸버의 URI 템플릿입니다. 여러 개의 DNS-over-HTTPS 리졸버를 지정하려면 해당하는 URI 템플릿을 공백으로 구분하세요. 지정한 경우 이 정책은 매우 유사한 <ph name="DOH_TEMPLATES_POLICY_NAME" /> 정책을 재정의합니다.
 <ph name="DOH_TEMPLATES_POLICY_NAME" /> 정책과 달리, 이 정책은 신원 정보 지정을 지원합니다.
@@ -2280,7 +2298,6 @@ ServiceWorkerAutoPreload 기능은 ServiceWorker 부트스트랩 프로세스를
 
 정책을 설정하지 않으면 <ph name="POLICY_VALUE_VISIBLE" />이(가) 기본적으로 선택됩니다.</translation>
 <translation id="2488455166114458307">이 사이트에서 Device Attributes API 허용</translation>
-<translation id="2489454942579368665">개발자 도구의 사용 전면 금지</translation>
 <translation id="2489558694350871332">기기에서 가상 머신을 실행하도록 허용</translation>
 <translation id="2492240920793040106">세이프 브라우징 개선을 위한 시스템 정보 및 페이지 콘텐츠 보고 사용</translation>
 <translation id="2496180316473517155">방문 기록</translation>
@@ -2719,7 +2736,6 @@ Chrome에서 퍼스트 파티 세트 관련 통합을 지원하는지 제어합�
 <translation id="2707733461906745082">프로필 분리</translation>
 <translation id="2707873794476722903">세이프 브라우징이 표준 모드에서 활성화됩니다.</translation>
 <translation id="2709516037105925701">자동 완성</translation>
-<translation id="2712089199157322391">표준 웹 탐색에는 개발자 도구를 사용하도록 허용하되, 엔터프라이즈에서 설치한 확장 프로그램 및 관리 사용자의 기본 제공 확장 프로그램에는 제한합니다(M150부터는 기본 제공 PDF 뷰어를 제외하고 이러한 확장 프로그램을 삽입하는 페이지에서 차단됨).</translation>
 <translation id="2713913573196284609">이 값은 M121부터 지원이 중단됩니다. M121 및 이후 버전에서는 값이 EnabledBelowThreshold로 처리됩니다.</translation>
 <translation id="2713977837384407666">측정항목을 Google에 항상 전송</translation>
 <translation id="2714359695399346815">정책을 사용 설정하거나 설정하지 않으면 STUN 서버를 사용할 수 있으므로 방화벽으로 분리되어 있더라도 원격 클라이언트에서 이 컴퓨터를 찾아서 연결할 수 있습니다.
@@ -5545,6 +5561,7 @@ URL 패턴은 <ph name="CONTROLLED_FRAME_BLOCKED_FOR_URLS_POLICY_NAME" /> 정책
 <translation id="4561940244682063697">사이트에서 사용자에게 화면의 동영상 스트림을 공유하라는 메시지를 표시하도록 허용 안함</translation>
 <translation id="4562165737444703281">사용자가 Crostini 포트 전달을 [사용 설정/구성]할 수 있도록 허용</translation>
 <translation id="456450545863578630">엔터프라이즈 관리자의 원격 지원 연결에서 파일 전송 사용 설정</translation>
+<translation id="4567137030726189378">Developer Tools를 사용하도록 허용</translation>
 <translation id="4570859815763368584">M68에서 지원 중단되었습니다. 대신 DefaultPopupsSetting을 사용하세요.
 
       자세한 내용은 https://www.chromestatus.com/feature/5675755719622656 페이지를 참고하시기 바랍니다.
@@ -6832,7 +6849,6 @@ False로 설정하면 <ph name="PRODUCT_NAME" />에서 시스템 알림을 사�
       정책을 설정하지 않으면 빠른 잠금 해제를 이용하는 사용자가 잠금 화면에서 매일 비밀번호를 입력해야 합니다.</translation>
 <translation id="5306186200045823863">Symantec Corporation의 Legacy PKI 인프라에서 트러스트를 사용 설정합니다.</translation>
 <translation id="5307432759655324440">시크릿 모드 사용 가능 여부</translation>
-<translation id="5308289216279695777">엔터프라이즈 정책 확장 프로그램을 포함한 모든 컨텍스트 내에서 개발자 도구 사용 허용</translation>
 <translation id="5308551343115571396"><ph name="LACROS_NAME" />가 사용 중지되면 최대한 많은 사용자 데이터 유지를 시도하는 동시에 모든 브라우저 데이터를 삭제합니다.</translation>
 <translation id="53086358353377307">쿠키 설정이 허용되는 사이트를 지정하는 URL 패턴 목록을 설정할 수 있습니다.
 
@@ -8448,6 +8464,11 @@ Origin-Agent-Cluster: 헤더가 설정되지 않았을 때 M111의 기본값은 
        정책이 사용 중지되거나 설정되지 않은 경우 <ph name="DM_CRYPT" /> 사용자 홈의 기본 저장용량 암호화는 <ph name="AES_NI_NAME" />입니다.</translation>
 <translation id="6316971721180184579">배터리 잔량 낮음 알림음 끄기</translation>
 <translation id="6319198883324703402">첫 번째 사용자 재실행 알림 시간을 설정합니다.</translation>
+<translation id="6319529757992804545">보안 업데이트가 대기 중이고 모든 브라우저 창이 닫힐 때 macOS의 백그라운드 자동 다시 시작 동작을 제어합니다.
+
+정책을 True로 설정하거나 설정하지 않은 상태로 두면, 모든 브라우저 창이 닫힐 때 <ph name="PRODUCT_NAME" /> 제품을 자동으로 다시 실행하여 대기 중인 업데이트를 적용하도록 허용합니다.
+
+이 정책을 False로 설정하면 모든 브라우저 창이 닫힐 때 자동 다시 실행이 사용 중지됩니다.</translation>
 <translation id="6319907968994678054">정책을 사용 설정하면 Google에서 호스팅하는 동기화 서비스를 사용하는 <ph name="PRODUCT_NAME" />의 데이터 동기화가 사용 중지됩니다.
       <ph name="CHROME_SYNC_NAME" /> 서비스를 완전히 사용 중지하려면 <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />에서 서비스를 사용 중지하는 것이 좋습니다.
 
@@ -11734,6 +11755,7 @@ Windows에서는 GPO를 통해 정책을 설정하는 것이 좋습니다. 하�
 
           이 정책을 설정하지 않은 경우 'BlockKeygen'이 사용되며 사용자가 설정을 변경할 수 있습니다.</translation>
 <translation id="8314214821702356835">기기가 잠겨 있어도 사용자가 미디어를 재생할 수 있도록 허용합니다.</translation>
+<translation id="8314308739926578606">기업 정책에 의해 설치된 앱 및 확장 프로그램에서 개발자 도구 사용을 금지하며, 버전 114 이상을 사용 중이며 관리 사용자인 경우 브라우저에 내장된 확장 프로그램에서도 개발자 도구의 사용이 금지됩니다. 다른 컨텍스트에서는 개발자 도구의 사용이 허용됩니다.</translation>
 <translation id="8316940611391250886">subjectAlternativeName 확장이 없는 인증서 허용 안함</translation>
 <translation id="8319678975002906774">특정 웹사이트에 대한 관리형 구성을 특정 원본으로 설정합니다.</translation>
 <translation id="8320149248919453401">배터리 충전 모드</translation>
@@ -12124,6 +12146,7 @@ Windows에서는 GPO를 통해 정책을 설정하는 것이 좋습니다. 하�
       정책을 True로 설정하면 비정상 종료 또는 재부팅 후, 앱 복원 설정에 따라 앱 및 앱 창이 복원되거나 복원되지 않습니다.
       정책을 False로 설정하면 브라우저 창만 자동으로 실행됩니다.</translation>
 <translation id="8579020983849384175">텍스트 편집기(버전 136부터 지원됨)</translation>
+<translation id="8580740891685654239">모든 창이 닫힐 때 자동 다시 실행 사용 설정</translation>
 <translation id="8583509234908413302">WebRTC에서 레거시 TLS/DTLS 다운그레이드 허용</translation>
 <translation id="8584279193368801689">PIN 인쇄 모드를 제한합니다. 정책이 설정되지 않은 경우 제한이 없는 것으로 간주됩니다. 이 모드를 사용할 수 없는 경우 이 정책은 무시됩니다. PIN 인쇄 기능은 IPPS, HTTPS, USB 또는 IPP-over-USB 프로토콜을 사용하는 프린터에서만 지원됩니다.</translation>
 <translation id="858510846828945657">플로팅 SSO 서비스 도메인 차단 목록 예외 목록</translation>
@@ -12618,25 +12641,6 @@ https://chromeenterprise.google/policies/url-patterns 페이지를 참고하세�
 <translation id="8892286064305622118"><ph name="PLUGIN_VM_NAME" />에 필요한 디스크 여유 공간</translation>
 <translation id="8892771980172542172">IWA의 업데이트/출시 채널 이름입니다. 이 값은 임의의 문자열이 될 수 있으며 제한이 없습니다. 값을 제공하지 않으면 'default' 채널이 사용됩니다.</translation>
 <translation id="8892783613915541293">기기가 유휴 상태에서 AC 전원으로 구동되는 경우 취할 지연과 작업입니다.</translation>
-<translation id="8895045875428227171">0(기본값) 설정: 표준 웹 탐색에는 개발자 도구를 사용할 수 있지만 엔터프라이즈에서 설치한 확장 프로그램 및 관리 사용자의 기본 제공 확장 프로그램에는 사용할 수 없습니다. M150 버전부터는 기본 제공 PDF 뷰어를 제외하고 이러한 확장 프로그램을 삽입하는 모든 페이지에서도 차단됩니다.
-
-1 설정: 개발자 도구 및 콘솔의 잠금이 완전히 해제되어 엔터프라이즈 정책 확장 프로그램 내를 비롯한 모든 컨텍스트에서 액세스할 수 있습니다.
-
-2 설정: 브라우저 전반에서 개발자 도구 및 요소 검사가 완전히 사용 중지됩니다.
-
-또한 이 설정은 개발자 도구 또는 JavaScript 콘솔을 여는 키보드 단축키, 메뉴 항목, 컨텍스트 메뉴 항목의 사용을 중지합니다.
-
-<ph name="PRODUCT_NAME" /> 버전 99부터는 '페이지 소스 보기' 기능의 진입점도 제어합니다. 이 정책을 'DeveloperToolsDisallowed'(값 2)로 설정하면 사용자가 키보드 단축키 또는 컨텍스트 메뉴를 통해 소스 보기에 액세스할 수 없습니다. 소스 보기를 완전히 차단하려면 <ph name="URL_BLOCKLIST_POLICY_NAME" /> 정책에 'view-source:*'도 추가해야 합니다.
-
-<ph name="PRODUCT_NAME" /> 버전 119부터 이 설정으로 분리형 웹 앱의 개발자 모드 활성화 및 사용 여부도 제어할 수 있습니다.
-
-<ph name="PRODUCT_NAME" /> 버전 128부터는 <ph name="EXTENSION_DEVELOPER_MODE_SETTINGS_POLICY_NAME" /> 정책이 설정된 경우 이 설정으로 확장 프로그램 페이지의 개발자 모드를 제어할 수 없습니다.
-
-개발자 도구의 사용 가능 여부는 다음 우선순위로 결정됩니다.
-1. URL이 <ph name="DEVELOPER_TOOLS_AVAILABILITY_ALLOWLIST_POLICY_NAME" /> 정책의 패턴과 일치하면 개발자 도구가 허용됩니다.
-2. <ph name="DEVELOPER_TOOLS_AVAILABILITY_ALLOWLIST_POLICY_NAME" />이(가) 설정되고 <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" />이(가) 설정되지 않은 경우 허용 목록에 없는 모든 URL이 차단됩니다.
-3. URL이 <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> 정책의 패턴과 일치하면 개발자 도구가 차단됩니다.
-4. 허용 목록 또는 차단 목록에 포함되지 않은 URL의 경우 이 정책(<ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" />)이 대체 정책으로 사용됩니다.</translation>
 <translation id="8897796778265450949">SAML 없이 GAIA를 통해 인증된 사용자가 오프라인으로 로그인할 수 있는 기간 제한</translation>
 <translation id="889814528399907891">사용자가 <ph name="LACROS_NAME" />를 사용 설정하고 기본 브라우저로 지정하도록 허용</translation>
 <translation id="8900312706328930425">시간 단위 클라우드 보고 실행 빈도</translation>

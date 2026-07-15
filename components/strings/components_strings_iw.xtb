@@ -329,6 +329,7 @@
 <translation id="1486096554574027028">חיפוש בסיסמאות</translation>
 <translation id="1492194039220927094">דחיפת מדיניות:</translation>
 <translation id="1495677929897281669">חזרה לכרטיסייה</translation>
+<translation id="1496318738909526466">ניהול המילוי האוטומטי המשופר</translation>
 <translation id="1500286806237135498">מצלמות (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="1504042622576912555">Flute</translation>
 <translation id="1507202001669085618">‏&lt;p&gt;השגיאה הזו תוצג אם משתמשים בפורטל Wi-Fi שבו צריך להיכנס לחשבון לפני התחברות לרשת.&lt;/p&gt;
@@ -686,11 +687,10 @@
 <translation id="2082238445998314030">תוצאה <ph name="RESULT_NUMBER" /> מתוך <ph name="TOTAL_RESULTS" /></translation>
 <translation id="2083256696566019397">לאפשר בכל ביקור</translation>
 <translation id="2085876078937250610">שמירה…</translation>
-<translation id="2088913896151127116">הוספת טקסט</translation>
 <translation id="2090451897496479509">כדי לקבל מידע נוסף, אפשר לפנות לספק</translation>
 <translation id="2090686487550343086">‏מספרי IBAN</translation>
 <translation id="2091887806945687916">צליל</translation>
-<translation id="2093184051799735948">‏אפשר לחפש ב-<ph name="ENGINE_NAME" /> או להזין כתובת URL</translation>
+<translation id="2093184051799735948">‏חיפוש ב-<ph name="ENGINE_NAME" /> או הוספת כתובת URL</translation>
 <translation id="2093982008204312032">‏Google Chrome מנסה לכבות את Windows Hello כדי למלא סיסמאות.</translation>
 <translation id="2094505752054353250">אי התאמה בדומיינים</translation>
 <translation id="2094704029599359040">פרטי הגרסה</translation>
@@ -865,6 +865,7 @@
 <translation id="2322254345061973671">{COUNT,plural, =1{חלון אחד}one{‫# חלונות}two{‫# חלונות}other{‫# חלונות}}</translation>
 <translation id="232390861414237658">‏אפשר למלא באופן אוטומטי את פרטי הכרטיס הזה לביצוע רכישות ב-Chrome כששומרים אותו לשימוש ב-Google Pay</translation>
 <translation id="2326283484705860548">‏עכשיו אפשר למלא אוטומטית מידע נוסף מ-Google Wallet</translation>
+<translation id="2326747055382936979">ניהול המילוי האוטומטי המשופר</translation>
 <translation id="2328651992442742497">יש הרשאה (ברירת מחדל)</translation>
 <translation id="2328955282645810595">כלי בנייה וכלי עבודה ממונעים</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, בתוקף עד <ph name="EXPIRATION_DATE_ABBR" /></translation>
@@ -2256,6 +2257,7 @@
 <translation id="4464826014807964867">אתרים שקיבלו פרטים מהארגון שלך</translation>
 <translation id="4466576951214254884">הלוואות לסטודנטים ומימון השכלה גבוהה</translation>
 <translation id="4467821340016922962">כדי לצאת מהמסך המלא ולראות את מה שהורדת, צריך ללחוץ על |<ph name="ACCELERATOR" />|</translation>
+<translation id="4472575034687746823">תחילת העבודה</translation>
 <translation id="4473643328224505070">‏כדי ליהנות מאבטחה ברמה הגבוהה ביותר ב-Chrome, צריך <ph name="BEGIN_ENHANCED_PROTECTION_LINK" />להפעיל את ההגנה המשופרת<ph name="END_ENHANCED_PROTECTION_LINK" /></translation>
 <translation id="4475299370877036544">הפעולה הזו עלולה להפר את מדיניות הארגון</translation>
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />. <ph name="LEARN_MORE_TEXT" /></translation>
@@ -3055,6 +3057,7 @@ Del</translation>
 <translation id="5715918316982363436">‫<ph name="TAB_COUNT" /> מתוך <ph name="WINDOW_COUNT" /> במכשיר הזה</translation>
 <translation id="5716325061445053985">צריך ללחוץ כדי לפתוח את הכרטיסייה בטלפון</translation>
 <translation id="5717509257172454543">החלקה על הקרח</translation>
+<translation id="5718326209176373202">הוספת הערות לטקסט.</translation>
 <translation id="5718601519531438273">כולל מידע כמו דרכונים ורישיונות נהיגה</translation>
 <translation id="5720705177508910913">משתמש נוכחי:</translation>
 <translation id="5720895412771013401">מחשבים</translation>
@@ -5310,6 +5313,7 @@ Del</translation>
 <translation id="949314938206378263">‏ביקשת לבקר באתר הזה. להורה שלך יש אפשרות לענות ב-Family Link.</translation>
 <translation id="950736567201356821">3 ניקובים בחלק העליון</translation>
 <translation id="950926967802086924">‏מפתח גישה • מנהל הסיסמאות של Google</translation>
+<translation id="952165179818196872">אפשר להוסיף את <ph name="PROVIDER" /> כדי לשלם בלי לעבור בין אפליקציות</translation>
 <translation id="955429569736351433">‏יש הרשאה לשימוש ב-VR</translation>
 <translation id="955627189349169688">‏אפשר לבטל את ההסכמה למדיניות הזו ב<ph name="BEGIN_LINK" />הגדרות הסנכרון של Chrome<ph name="END_LINK" />.</translation>
 <translation id="95721182352849470">צהוב 2</translation>

@@ -233,7 +233,6 @@
 <translation id="200114059308480249">Google ಹುಡುಕಾಟಗಳಲ್ಲಿ ಸುತ್ತಮುತ್ತಲಿನ ಪಠ್ಯವನ್ನು ಸೇರಿಸಬೇಕೇ?</translation>
 <translation id="2004096469149679223"><ph name="TAB_TITLE" />, ಪಿನ್ ಮಾಡಲಾದ ಮ್ಯೂಟ್ ಆಗಿರುವ ಅಜ್ಞಾತ ಟ್ಯಾಬ್</translation>
 <translation id="2021896219286479412">ಫುಲ್ ಸ್ಕ್ರೀನ್ ಸೈಟ್ ನಿಯಂತ್ರಣಗಳು</translation>
-<translation id="2022953316617983419">QR ಕೋಡ್</translation>
 <translation id="2024195579772565064">ಸರ್ಚ್ ಎಂಜಿನ್ ಅನ್ನು ಅಳಿಸಿ</translation>
 <translation id="2029669011553795746">ಸಲಹೆಗಳ ನೋಟಿಫಿಕೇಶನ್‌ಗಳ ಸಕ್ರಿಯಗೊಳಿಸುವಿಕೆಯನ್ನು ಅರ್ಧ ಎತ್ತರದಲ್ಲಿ ತೆರೆಯಲಾಗಿದೆ</translation>
 <translation id="2038563949887743358">ಡೆಸ್ಕ್‌ಟಾಪ್ ಸೈಟ್ ವಿನಂತಿಯನ್ನು ಆನ್ ಮಾಡಿ</translation>
@@ -558,6 +557,7 @@
 <translation id="3331974543021145906">ಅಪ್ಲಿಕೇಶನ್‌ ಮಾಹಿತಿ</translation>
 <translation id="3334729583274622784">ಫೈಲ್ ವಿಸ್ತರಣೆಯನ್ನು ಬದಲಿಸುವುದೇ?</translation>
 <translation id="333863344734218290">ಅಸುರಕ್ಷಿತವಾದ ಸಾರ್ವಜನಿಕ ಮತ್ತು ಖಾಸಗಿ ಸೈಟ್‌ಗಳ ಕುರಿತು ನಿಮ್ಮನ್ನು ಎಚ್ಚರಿಸುತ್ತದೆ</translation>
+<translation id="3339788961947270565">ಶಟ್ ಡೌನ್ ಪೂರ್ಣಗೊಳಿಸಲಾಗುತ್ತಿದೆ</translation>
 <translation id="3340978935015468852">ಸೆಟ್ಟಿಂಗ್‌ಗಳು</translation>
 <translation id="3351959803838327376">ವೆಬ್‌ಸೈಟ್ ಮೇಲೆ ಲಾಂಗ್ ಪ್ರೆಸ್ ಮಾಡಿ ಮತ್ತು ಮೆನು ತೆರೆಯಿರಿ</translation>
 <translation id="3359667936385849800">ನಿಮ್ಮ ಪ್ರಸ್ತುತ ಸೇವೆ ಒದಗಿಸುವವರನ್ನು ಬಳಸಿ</translation>
@@ -721,6 +721,7 @@
 <translation id="4044708993631234325">ಕೆಳಭಾಗದ ಶೀಟ್</translation>
 <translation id="4045441967987592849">ಪುನಃ ತೆರೆಯಿರಿ</translation>
 <translation id="4049920046559074950"><ph name="INSTANCE_TITLE" /> ಗಾಗಿ ಇನ್ನಷ್ಟು ಆಯ್ಕೆಗಳು</translation>
+<translation id="4051569243832293689">{NUM_BOOKMARKS,plural, =1{ಅಜ್ಞಾತ ವಿಂಡೋದಲ್ಲಿ ತೆರೆಯಿರಿ}one{ಅಜ್ಞಾತ ವಿಂಡೋದಲ್ಲಿ ಎಲ್ಲಾ (#) ತೆರೆಯಿರಿ}other{ಅಜ್ಞಾತ ವಿಂಡೋದಲ್ಲಿ ಎಲ್ಲಾ (#) ತೆರೆಯಿರಿ}}</translation>
 <translation id="4052419222954753986">{NUMBER_OF_TABS,plural, =1{ಹಂಚಿಕೊಂಡ ಟ್ಯಾಬ್ ಗುಂಪುಗಳಲ್ಲಿನ ಹೊಸ ಚಟುವಟಿಕೆಯ <ph name="TABS_COUNT_ONE" /> ಪ್ರಮಾಣಿತ ಟ್ಯಾಬ್}one{ಹಂಚಿಕೊಂಡ ಟ್ಯಾಬ್ ಗುಂಪುಗಳಲ್ಲಿನ ಹೊಸ ಚಟುವಟಿಕೆಯ <ph name="TABS_COUNT_MANY" /> ಪ್ರಮಾಣಿತ ಟ್ಯಾಬ್‌ಗಳು}other{ಹಂಚಿಕೊಂಡ ಟ್ಯಾಬ್ ಗುಂಪುಗಳಲ್ಲಿನ ಹೊಸ ಚಟುವಟಿಕೆಯ <ph name="TABS_COUNT_MANY" /> ಪ್ರಮಾಣಿತ ಟ್ಯಾಬ್‌ಗಳು}}</translation>
 <translation id="405365679581583349">Google Play ಸೇವೆಗಳನ್ನು ಅಪ್‌ಡೇಟ್ ಮಾಡಿ</translation>
 <translation id="405399507749852140">ಯಾವುದೇ ಸೈಟ್‌ನಲ್ಲಿ ಬೆಲೆ ಕಡಿಮೆಯಾದರೆ ಅಲರ್ಟ್‌ಗಳನ್ನು ಪಡೆಯಿರಿ</translation>
@@ -823,6 +824,7 @@
 <translation id="442518031075347249">Google Pay ಜೊತೆಗೆ ನಿಮ್ಮ ವರ್ಚುವಲ್ ಕಾರ್ಡ್ ಅನ್ನು ಇನ್ನು ಮುಂದೆ ಬಳಸಲು ನಿಮಗೆ ಸಾಧ್ಯವಾಗುವುದಿಲ್ಲ. <ph name="BEGIN_LINK1" />ವರ್ಚುವಲ್ ಕಾರ್ಡ್‌ಗಳ ಕುರಿತು ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="END_LINK1" /></translation>
 <translation id="442577985493096785">{TAB_COUNT,plural, =1{<ph name="TAB_TITLE" /> ಮತ್ತು ಇತರ <ph name="TAB_COUNT_ONE" /> ಟ್ಯಾಬ್ ಅನ್ನು ಮುಚ್ಚಲಾಗುತ್ತದೆ}one{<ph name="TAB_TITLE" /> ಮತ್ತು ಇತರ <ph name="TAB_COUNT_MANY" /> ಟ್ಯಾಬ್‌ಗಳನ್ನು ಮುಚ್ಚಲಾಗುತ್ತದೆ}other{<ph name="TAB_TITLE" /> ಮತ್ತು ಇತರ <ph name="TAB_COUNT_MANY" /> ಟ್ಯಾಬ್‌ಗಳನ್ನು ಮುಚ್ಚಲಾಗುತ್ತದೆ}}</translation>
 <translation id="4430277756566635951"><ph name="EMAIL" /> ಅನ್ನು ಪ್ರಸ್ತುತ ಆಯ್ಕೆಮಾಡಲಾಗಿದೆ. ಖಾತೆಯನ್ನು ಆಯ್ಕೆಮಾಡಿ.</translation>
+<translation id="4430369329743628066">ಬುಕ್‌ಮಾರ್ಕ್ ಸೇರಿಸಲಾಗಿದೆ</translation>
 <translation id="4452411734226507615"><ph name="TAB_TITLE" /> ಟ್ಯಾಬ್‌ ಮುಚ್ಚಿ</translation>
 <translation id="4452548195519783679"><ph name="FOLDER_NAME" /> ಗೆ ಬುಕ್‌ಮಾರ್ಕ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="4460822871039013969"><ph name="TAB_TITLE" />, ಪಿನ್ ಮಾಡಲಾದ ಆಯ್ಕೆಮಾಡಿದ ರೆಕಾರ್ಡಿಂಗ್ ಟ್ಯಾಬ್</translation>
@@ -1071,6 +1073,7 @@
 <translation id="5517326820028369152">ಇತ್ತೀಚಿನ ಚಟುವಟಿಕೆಯ ಕೆಳಭಾಗದ ಶೀಟ್‌</translation>
 <translation id="5526281268548144413">ಅನೇಕ ವಿಂಡೋಗಳಾದ್ಯಂತ ಮುಚ್ಚಲಾಗುವುದಿಲ್ಲ</translation>
 <translation id="5532536403031755365">ವರ್ಧಿತ ಸುರಕ್ಷತೆಯ ನೆರವಿನಿಂದ, ಆನ್‌ಲೈನ್ ಬೆದರಿಕೆಗಳ ವಿರುದ್ಧ ಸುರಕ್ಷತೆಯ ಹೆಚ್ಚುವರಿ ಲೇಯರ್ ಅನ್ನು ಸೇರಿಸಿ</translation>
+<translation id="5540127996007641535">{NUM_BOOKMARKS,plural, =1{ಬುಕ್‌ಮಾರ್ಕ್ ತೆರೆಯಿರಿ}one{ಎಲ್ಲಾ (#) ತೆರೆಯಿರಿ}other{ಎಲ್ಲಾ (#) ತೆರೆಯಿರಿ}}</translation>
 <translation id="5548606607480005320">ಸುರಕ್ಷತೆಯ ಪರಿಶೀಲನೆ</translation>
 <translation id="5554520618550346933">ಪಾಸ್‌ವರ್ಡ್ ಆನ್‌ಲೈನ್‌ನಲ್ಲಿ ಪ್ರಕಟವಾಗಿದ್ದರೆ, ನೀವು ಅದನ್ನು ಬಳಸುವಾಗ Chrome ನಿಮಗೆ ಎಚ್ಚರಿಕೆ ನೀಡುತ್ತದೆ. ಪರಿಶೀಲಿಸುವಾಗ, ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಮತ್ತು ಬಳಕೆದಾರರ ಹೆಸರುಗಳನ್ನು ಎನ್‌ಕ್ರಿಪ್ಟ್ ಮಾಡಲಾಗುತ್ತದೆ, ಆದ್ದರಿಂದ ಅವುಗಳನ್ನು Google ಸೇರಿದಂತೆ ಯಾರಿಂದಲೂ ಓದಲು ಸಾಧ್ಯವಾಗುವುದಿಲ್ಲ.</translation>
 <translation id="5555525474779371165">ನಿಮ್ಮ ಸುರಕ್ಷಿತ ಬ್ರೌಸಿಂಗ್ ರಕ್ಷಣೆಯನ್ನು ಆಯ್ಕೆಮಾಡಿ</translation>
@@ -1126,7 +1129,6 @@
 <translation id="5763514718066511291">ಈ ಅಪ್ಲಿಕೇಶನ್‌ಗಾಗಿ URL ನಕಲಿಸಲು ಟ್ಯಾಪ್ ಮಾಡಿ</translation>
 <translation id="5765517223145864268">ನಿಮ್ಮ ಅನುಭವದ ಬಗ್ಗೆ ನಮಗೆ ತಿಳಿಸಿ. ಅಥವಾ <ph name="BEGIN_LINK" />ನಿಮ್ಮ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ಬದಲಿಸಿ<ph name="END_LINK" />.</translation>
 <translation id="5776970333778123608">ಮುಖ್ಯವಲ್ಲದ ಡೇಟಾ</translation>
-<translation id="5788665823391532892">ಸಮಸ್ಯೆಯೊಂದನ್ನು ವರದಿ ಮಾಡಿ...</translation>
 <translation id="5793665092639000975"><ph name="SPACE_AVAILABLE" /> ಯಲ್ಲಿ <ph name="SPACE_USED" /> ಬಳಸಲಾಗುತ್ತಿದೆ</translation>
 <translation id="5797949256525811424">ನಿರ್ಬಂಧಿಸಲಾದ ವಿಷಯ</translation>
 <translation id="580893287573699959">ನೀವು ಆಸಕ್ತಿ ಹೊಂದಿರುವ ವಿಷಯಗಳು ಮತ್ತು ಸೈಟ್‌ಗಳನ್ನು ನಿರ್ವಹಿಸಿ</translation>
@@ -1178,6 +1180,7 @@
 <translation id="5995726099713306770">ಪುಟವನ್ನು ಪುನಃ ಡೌನ್‌ಲೋಡ್ ಮಾಡಬೇಕೆ?</translation>
 <translation id="5998675059699164418">ನಿಮ್ಮ ಸಂಸ್ಥೆಯ ಪ್ರಕಾರ Chrome ಅನ್ನು ಬಳಸಲು ನೀವು ಸೈನ್ ಇನ್ ಮಾಡಬೇಕಾಗುತ್ತದೆ.</translation>
 <translation id="6000066717592683814">Google ಇರಿಸಿಕೊಳ್ಳಿ</translation>
+<translation id="6002122790816966947">ನಿಮ್ಮ ಸಾಧನಗಳು</translation>
 <translation id="6011308810877101166">ಹುಡುಕಾಟ ಸಲಹೆಗಳನ್ನು ಸುಧಾರಿಸಿ</translation>
 <translation id="6013305291643746595">ಹಳೆಯದು ಮೊದಲು ಎಂಬ ಪ್ರಕಾರವಾಗಿ ವಿಂಗಡಿಸುವುದು</translation>
 <translation id="6022659036123304283">Chrome ಅನ್ನು ನಿಮ್ಮದಾಗಿಸಿಕೊಳ್ಳಿ</translation>
@@ -1244,6 +1247,7 @@
 <translation id="6246073558347462570">ಕಾಂಟೆಕ್ಸ್ಟ್ ಪಾಪ್‌ಅಪ್ ವಿಂಡೋ</translation>
 <translation id="6247557882553405851">Google ಪಾಸ್‌ವರ್ಡ್ ನಿರ್ವಾಹಕ</translation>
 <translation id="6248988683584659830">ಸೆಟ್ಟಿಂಗ್‌‌ಗಳಲ್ಲಿ ಹುಡುಕಿ</translation>
+<translation id="6250486830372700930">ನೀವು ಈ ಸಾಧನದಿಂದ ಎಕ್ಸ್‌ಟೆನ್ಶನ್‌ಗಳನ್ನು ಸಹ ತೆಗೆದುಹಾಕಬಹುದು</translation>
 <translation id="6250847299079540062"><ph name="TAB_TITLE" />, ಬಹು ಆಯ್ಕೆ ತೆರೆದ ಅಜ್ಞಾತ ಟ್ಯಾಬ್</translation>
 <translation id="6251449557817521191">ನಿಮ್ಮ Chrome ಇತಿಹಾಸವನ್ನು ಇಲ್ಲಿ ವೀಕ್ಷಿಸಿ</translation>
 <translation id="6254139308321626268">ನೀವು PDF ಫೈಲ್ ಅನ್ನು ವೀಕ್ಷಿಸುತ್ತಿದ್ದೀರಿ</translation>
@@ -1419,7 +1423,9 @@
 <translation id="6850830437481525139"><ph name="TAB_COUNT" /> ಟ್ಯಾಬ್‌ಗಳನ್ನು ಮುಚ್ಚಲಾಗಿದೆ</translation>
 <translation id="6852437757508328589">{NUM_RESULTS,plural, =1{1 ಫಲಿತಾಂಶ ಕಂಡುಬಂದಿದೆ}one{# ಫಲಿತಾಂಶಗಳು ಕಂಡುಬಂದಿವೆ}other{# ಫಲಿತಾಂಶಗಳು ಕಂಡುಬಂದಿವೆ}}</translation>
 <translation id="685340923442249391">{FILE_COUNT,plural, =1{ಆಡಿಯೋ ಫೈಲ್‌ಗಳು, ಪಟ್ಟಿಯಲ್ಲಿರುವ 1 ಆಡಿಯೋ ಫೈಲ್}one{ಆಡಿಯೋ ಫೈಲ್‌ಗಳು, ಪಟ್ಟಿಯಲ್ಲಿರುವ # ಆಡಿಯೋ ಫೈಲ್‌ಗಳು}other{ಆಡಿಯೋ ಫೈಲ್‌ಗಳು, ಪಟ್ಟಿಯಲ್ಲಿರುವ # ಆಡಿಯೋ ಫೈಲ್‌ಗಳು}}</translation>
+<translation id="6857043990326114901">ಫೋಲ್ಡರ್ ಸೇರಿಸಿ…</translation>
 <translation id="685850645784703949">Google ನಿಂದ Discover - ಆಫ್ ಆಗಿದೆ</translation>
+<translation id="6858893072923394368">ಪುಟವನ್ನು ಸೇರಿಸಿ…</translation>
 <translation id="6864459304226931083">ಚಿತ್ರ ಡೌನ್‌ಲೋಡ್ ಮಾಡಿ</translation>
 <translation id="686490460830618322">ಆ್ಯಪ್ ಫಿಲ್ಟರ್ ಶೀಟ್</translation>
 <translation id="6865313869410766144">ಸ್ವಯಂತುಂಬುವಿಕೆ ಫಾರ್ಮ್ ಡೇಟಾ</translation>
@@ -1596,6 +1602,7 @@
 <translation id="7475688122056506577">SD ಕಾರ್ಡ್ ಕಂಡುಬಂದಿಲ್ಲ. ನಿಮ್ಮ ಕೆಲವು ಫೈಲ್‌ಗಳು ಕಾಣೆಯಾಗಿರಬಹುದು.</translation>
 <translation id="7479104141328977413">ಟ್ಯಾಬ್ ನಿರ್ವಹಣೆ</translation>
 <translation id="7481312909269577407">ಫಾರ್ವರ್ಡ್</translation>
+<translation id="7481588001304663390">{NUM_BOOKMARKS,plural, =1{ಹೊಸ ಟ್ಯಾಬ್ ಗುಂಪಿನಲ್ಲಿ ತೆರೆಯಿರಿ}one{ಹೊಸ ಟ್ಯಾಬ್ ಗುಂಪಿನಲ್ಲಿ ಎಲ್ಲಾ (#) ತೆರೆಯಿರಿ}other{ಹೊಸ ಟ್ಯಾಬ್ ಗುಂಪಿನಲ್ಲಿ ಎಲ್ಲಾ (#) ತೆರೆಯಿರಿ}}</translation>
 <translation id="7482656565088326534">ಪೂರ್ವವೀಕ್ಷಣೆ ಟ್ಯಾಬ್</translation>
 <translation id="7484997419527351112">Discover - ಆಫ್ ಆಗಿದೆ</translation>
 <translation id="7485033510383818941">ಫೀಡ್ ವಿಷಯವನ್ನು ರಿಫ್ರೆಶ್ ಮಾಡಲು, ಪುಟವನ್ನು ಪುಲ್ ಡೌನ್ ಮಾಡಿ</translation>
@@ -1752,6 +1759,7 @@
 <translation id="8103578431304235997">ಅದೃಶ್ಯ ಟ್ಯಾಬ್‌</translation>
 <translation id="810433609302852">ಸಲಹೆಗಳ ನೋಟಿಫಿಕೇಶನ್‌ಗಳ ಫೀಚರ್ ಪ್ರೋಮೋ ಮತ್ತು ಬಳಕೆಯ ಹಂತಗಳ ಕೆಳಭಾಗದ ಶೀಟ್</translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
+<translation id="8109802255973641442">ಎಕ್ಸ್‌ಟೆನ್ಶನ್‌ಗಳು ಮತ್ತು ಈ ಸಾಧನದಲ್ಲಿ ಅವು ಸೇವ್ ಮಾಡಿದ ಡೇಟಾವನ್ನು ತೆಗೆದುಹಾಕಿ</translation>
 <translation id="8110024788458304985">Chrome ನ ಫೀಚರ್‌ಗಳು ಹಾಗೂ ಕಾರ್ಯಕ್ಷಮತೆಯನ್ನು ಸುಧಾರಿಸಲು ಸಹಾಯ ಮಾಡಿ</translation>
 <translation id="8110087112193408731">ಡಿಜಿಟಲ್ ಯೋಗಕ್ಷೇಮದಲ್ಲಿ ನಿಮ್ಮ Chrome ಚಟುವಟಿಕೆಯನ್ನು ತೋರಿಸಲು ಬಯಸುವಿರಾ?</translation>
 <translation id="8118117428362942925">ನಿಮಗೆ ಸಹಾಯ ಬೇಕಿದ್ದರೆ, ನಿಮ್ಮ ಪೋಷಕರನ್ನು ಕೇಳಿ (<ph name="PARENT_NAME" />)</translation>
@@ -1851,6 +1859,7 @@
 <translation id="8460448946170646641">ಪ್ರಮುಖ ಗೌಪ್ಯತೆ ಮತ್ತು ಭದ್ರತಾ ನಿಯಂತ್ರಣಗಳನ್ನು ಪರಿಶೀಲಿಸಿ</translation>
 <translation id="8460932807646981183">ಹುಡುಕಾಟ ಎಂಜಿನ್‌ಗಳು ಮತ್ತು ಸೈಟ್ ಹುಡುಕಾಟವನ್ನು ನಿರ್ವಹಿಸಿ</translation>
 <translation id="8465252176946159372">ಮಾನ್ಯವಾಗಿಲ್ಲ</translation>
+<translation id="8472353072135865937">{NUM_BOOKMARKS,plural, =1{ಹೊಸ ವಿಂಡೋದಲ್ಲಿ ತೆರೆಯಿರಿ}one{ಹೊಸ ವಿಂಡೋದಲ್ಲಿ ಎಲ್ಲಾ (#) ತೆರೆಯಿರಿ}other{ಹೊಸ ವಿಂಡೋದಲ್ಲಿ ಎಲ್ಲಾ (#) ತೆರೆಯಿರಿ}}</translation>
 <translation id="8473863474539038330">ವಿಳಾಸಗಳು ಮತ್ತು ಇನ್ನಷ್ಟು</translation>
 <translation id="847433688444405067">ಸಾಧನಗಳಾದ್ಯಂತ ಬ್ರೌಸ್ ಮಾಡಿ</translation>
 <translation id="8477178913400731244">ಡೇಟಾ ಅಳಿಸಿ</translation>
@@ -1913,6 +1922,7 @@
 <translation id="8738163682604285902">ರೀಡಿಂಗ್ ಮೋಡ್ ಅನ್ನು ವೀಕ್ಷಿಸಬೇಕೆ?</translation>
 <translation id="8746155870861185046">ಹೈಲೈಟ್ ಹಂಚಿಕೊಳ್ಳಿ</translation>
 <translation id="8748850008226585750">ವಿಷಯಗಳನ್ನು ಮರೆಮಾಡಲಾಗಿದೆ</translation>
+<translation id="874918643257405732">ಈ ಟ್ಯಾಬ್ ಅನ್ನು ಬುಕ್‌ಮಾರ್ಕ್ ಮಾಡಿ</translation>
 <translation id="8754448020583829686">ಲಿಂಕ್ ಇಲ್ಲದೆ ಕಾಪಿ ಮಾಡಿ</translation>
 <translation id="8756969031206844760">ಪಾಸ್‌ವರ್ಡ್ ಅಪ್‌ಡೇಟ್ ಮಾಡಬೇಕೆ?</translation>
 <translation id="8765470054473112089">ನೀವು ವಿಳಾಸ ಪಟ್ಟಿ ಅಥವಾ ಹುಡುಕಾಟ ಪೆಟ್ಟಿಗೆಯಲ್ಲಿ ಟೈಪ್ ಮಾಡಿದಾಗ, ಉತ್ತಮ ಸಲಹೆಗಳನ್ನು ಪಡೆಯಲು Chrome ನೀವು ಟೈಪ್ ಮಾಡಿದ್ದನ್ನು ನಿಮ್ಮ ಡೀಫಾಲ್ಟ್ ಸರ್ಚ್ ಎಂಜಿನ್‌ಗೆ ಕಳುಹಿಸುತ್ತದೆ. ಅಜ್ಞಾತ ಮೋಡ್‌ನಲ್ಲಿ ಇದು ಆಫ್ ಆಗಿರುತ್ತದೆ.</translation>
@@ -2038,6 +2048,7 @@
 <translation id="9212845824145208577">ಇನ್ನೂ ಕೆಳಗೆ ಹೋಗಲು ಸಾಧ್ಯವಿಲ್ಲ. ಪುಟದ ಇನ್ನು ಕೆಳಗಿನಿಂದ ಪ್ರಾರಂಭಿಸಲು ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="9218430445555521422">ಡೀಫಾಲ್ಟ್ ಆಗಿ ಸೆಟ್ ಮಾಡಿ</translation>
 <translation id="9219103736887031265">Images</translation>
+<translation id="922152298093051471">Chrome ಅನ್ನು ಕಸ್ಟಮೈಸ್ ಮಾಡಿ</translation>
 <translation id="9222198206152536936">ನಿಮ್ಮ ಎಲ್ಲಾ ಸಾಧನಗಳಲ್ಲಿ ನಿಮ್ಮ ಟ್ಯಾಬ್‌ಗಳು ಹಾಗೂ ಮುಂತಾದವುಗಳನ್ನು ಪಡೆಯಲು, <ph name="EMAIL" /> ಆಗಿ ಸೈನ್ ಇನ್ ಮಾಡಿ</translation>
 <translation id="924447568950697217">Chrome ಅನ್ನು ನಿಮ್ಮ ಡಿಫಾಲ್ಟ್ ಬ್ರೌಸರ್ ಆಗಿಸಿ</translation>
 <translation id="926205370408745186">ಡಿಜಿಟಲ್ ಯೋಗಕ್ಷೇಮದಿಂದ ನಿಮ್ಮ Chrome ಚಟುವಟಿಕೆಯನ್ನು ತೆಗೆದುಹಾಕಿ</translation>

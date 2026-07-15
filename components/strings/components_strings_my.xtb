@@ -329,6 +329,7 @@
 <translation id="1486096554574027028">လျှို့ဝှက်စကားလုံးများ ရှာဖွေရန်</translation>
 <translation id="1492194039220927094">မူဝါဒများ ထည့်သွင်းရန်-</translation>
 <translation id="1495677929897281669">တဘ်သို့ ပြန်သွားရန်</translation>
+<translation id="1496318738909526466">အဆင့်မြင့် အော်တိုဖြည့်ခြင်းကို စီမံရန်</translation>
 <translation id="1500286806237135498">ကင်မရာ (<ph name="CAMERAS_COUNT" />) ခု</translation>
 <translation id="1504042622576912555">ပလွေ</translation>
 <translation id="1507202001669085618">&lt;p&gt;အွန်လိုင်း မရရှိမီ လက်မှတ်ထိုးဝင်ရသည့် Wi-Fi ပေါ်တယ်ကို အသုံးပြုသည့်အခါ ဤအမှားကို တွေ့ရပါမည်။&lt;/p&gt;
@@ -687,7 +688,6 @@
 <translation id="2082238445998314030">အဖြေ <ph name="RESULT_NUMBER" /> / <ph name="TOTAL_RESULTS" /></translation>
 <translation id="2083256696566019397">ဝင်ကြည့်တိုင်း ခွင့်ပြုရန်</translation>
 <translation id="2085876078937250610">သိမ်းရန်…</translation>
-<translation id="2088913896151127116">စာသားထည့်ရန်</translation>
 <translation id="2090451897496479509">ပိုမိုသိရှိရန် ဝန်ဆောင်မှုပေးသူကို ဆက်သွယ်နိုင်သည်</translation>
 <translation id="2090686487550343086">IBAN</translation>
 <translation id="2091887806945687916">အသံ</translation>
@@ -866,6 +866,7 @@
 <translation id="2322254345061973671">{COUNT,plural, =1{ဝင်းဒိုး ၁ ခု}other{ဝင်းဒိုး # ခု}}</translation>
 <translation id="232390861414237658">ဤကတ်ကို Google Pay ဖြင့် အသုံးပြုရန် သိမ်းထားသောအခါ Chrome ၌ ပြုလုပ်သော ဝယ်ယူမှုများအတွက် ၎င်းကို အော်တိုဖြည့်သည်</translation>
 <translation id="2326283484705860548">Google Wallet တွင် နောက်ထပ်အချက်အလက်များကို အလိုအလျောက် ဖြည့်နိုင်ပါပြီ</translation>
+<translation id="2326747055382936979">အဆင့်မြင့် အော်တိုဖြည့်ခြင်းကို စီမံရန်</translation>
 <translation id="2328651992442742497">ခွင့်ပြုထားသည် (မူရင်း)</translation>
 <translation id="2328955282645810595">ဆောက်လုပ်ရေးနှင့် စွမ်းအားသုံးတူးလ်</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />၊ <ph name="EXPIRATION_DATE_ABBR" /> တွင် သက်တမ်းကုန်မည်</translation>
@@ -2257,6 +2258,7 @@
 <translation id="4464826014807964867">သင့်အဖွဲ့အစည်းမှ အချက်အလက်ပါဝင်သော ဝဘ်ဆိုက်များ</translation>
 <translation id="4466576951214254884">ကျောင်းသားချေးငွေ၊ ကောလိပ်အတွက်ငွေထောက်ပံ့ခြင်း</translation>
 <translation id="4467821340016922962">ဖန်သားပြင်အပြည့်မှ ထွက်ပြီး ဒေါင်းလုဒ်ကို ကြည့်ရန် |<ph name="ACCELERATOR" />| နှိပ်ပါ</translation>
+<translation id="4472575034687746823">စကြရအောင်</translation>
 <translation id="4473643328224505070">Chrome ၏ အမြင့်ဆုံးလုံခြုံရေးအဆင့်ကို ရယူရန် <ph name="BEGIN_ENHANCED_PROTECTION_LINK" />အဆင့်မြင့်ကာကွယ်မှု ဖွင့်ပါ<ph name="END_ENHANCED_PROTECTION_LINK" /></translation>
 <translation id="4475299370877036544">ဤလုပ်ဆောင်ချက်သည် သင့်အဖွဲ့အစည်း၏ မူဝါဒများကို ချိုးဖောက်နိုင်သည်</translation>
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />။ <ph name="LEARN_MORE_TEXT" /></translation>

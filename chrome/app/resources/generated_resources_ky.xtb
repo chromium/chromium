@@ -1227,6 +1227,7 @@
 <translation id="1933489278505808700">Окуп жана өзгөртүүгө уруксат берилди</translation>
 <translation id="1935303383381416800">Жайгашкан жериңизди көрө алат</translation>
 <translation id="193565226207940518">Колдоо куралы</translation>
+<translation id="1935995810530254458">Баарибир көчүрүү</translation>
 <translation id="1936157145127842922">Куржунда көрсөтүү</translation>
 <translation id="1936344977780165685">{PAGES,plural, =1{Бет окуу тизмесине кошулду}other{Беттер окуу тизмесине кошулду}}</translation>
 <translation id="1936931585862840749">Канча көчүрмө басылып чыга турганын сан менен көрсөтүңүз (1–<ph name="MAX_COPIES" />).</translation>
@@ -1547,6 +1548,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="2199298570273670671">Ката</translation>
 <translation id="2200094388063410062">Электрондук кат жөнөтүү</translation>
 <translation id="2200781749203116929">ChromeOS тутумунун таржымалдары</translation>
+<translation id="2202391868799679245">Ыкчам баскычты күйгүзүү</translation>
 <translation id="2203088913459920044">Аталышта тамгаларды, сандарды жана атайын символдорду колдонууга болот</translation>
 <translation id="220321590587754225">Байланышкан жок. Кайра аракет кылыңыз.</translation>
 <translation id="2203903197029773650">Google аккаунтуңуз менен киргенде <ph name="BRAND" /> сырсөздөрүңүздү текшерет</translation>
@@ -6363,7 +6365,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="5932881020239635062">Сериялык номери</translation>
 <translation id="5933522550144185133"><ph name="APP_NAME" /> сиздин камера менен микрофонуңузду колдонууда</translation>
 <translation id="5935158534896975820">Тастыктамага кол коюу сурамы даярдалууда (серверде күтүлүүдө)</translation>
-<translation id="5935554994339565449">"Текст кошуу" деген жаңы курал менен текст кошуңуз</translation>
 <translation id="5936065461722368675">Толук баракты которуу</translation>
 <translation id="5937977334791924341"><ph name="APP" /> логотиби</translation>
 <translation id="5938002010494270685">Коопсуздук системасынын жаңы версиясы бар</translation>

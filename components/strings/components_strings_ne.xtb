@@ -329,6 +329,7 @@
 <translation id="1486096554574027028">खोज पासवर्डहरू</translation>
 <translation id="1492194039220927094">नीतिहरू लागू गर्ने कार्य:</translation>
 <translation id="1495677929897281669">ट्याबमा फर्कनुहोस्</translation>
+<translation id="1496318738909526466">अटोफिल गर्ने परिष्कृत सुविधा व्यवस्थापन गर्नुहोस्</translation>
 <translation id="1500286806237135498">क्यामेराहरू (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="1504042622576912555">फ्ल्युट</translation>
 <translation id="1507202001669085618">&lt;p&gt;तपाईं अनलाइन हुनु पूर्व साइन इन गर्न पर्नेमा Wi-Fi पोर्टल प्रयोग गर्नुभएको खण्डमा तपाईंले यो त्रुटि देखुहुने छ।&lt;/p&gt;
@@ -686,7 +687,6 @@
 <translation id="2082238445998314030"><ph name="TOTAL_RESULTS" /> को <ph name="RESULT_NUMBER" /> परिणाम</translation>
 <translation id="2083256696566019397">हरेक पटक अनुमति दिनुहोस्</translation>
 <translation id="2085876078937250610">सेभ गर्नुहोस्…</translation>
-<translation id="2088913896151127116">टेक्स्ट हाल्नुहोस्</translation>
 <translation id="2090451897496479509">यस सम्बन्धमा थप जानकारी प्राप्त गर्न सेवा प्रदायकलाई सम्पर्क गर्नुहोस्</translation>
 <translation id="2090686487550343086">IBAN हरू</translation>
 <translation id="2091887806945687916">आवाज</translation>
@@ -865,6 +865,7 @@
 <translation id="2322254345061973671">{COUNT,plural, =1{एउटा विन्डो}other{# वटा विन्डो}}</translation>
 <translation id="232390861414237658">यो कार्डको विवरण Google Pay मा प्रयोग गर्नका निम्ति सेभ गरिएका खण्डमा Chrome बाट गरिने खरिदका हकमा सो विवरण स्वतः भरिन्छ</translation>
 <translation id="2326283484705860548">तपाईं अब Google Wallet का थप विवरणहरू स्वतः भर्न सक्नुहुन्छ</translation>
+<translation id="2326747055382936979">अटोफिल गर्ने परिष्कृत सुविधा व्यवस्थापन गर्नुहोस्</translation>
 <translation id="2328651992442742497">अनुमति दिनुहोस् (डिफल्ट)</translation>
 <translation id="2328955282645810595">कन्स्ट्रक्सन तथा पावर टुलहरू</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, <ph name="EXPIRATION_DATE_ABBR" /> मा म्याद समाप्त हुन्छ</translation>
@@ -2254,6 +2255,7 @@
 <translation id="4464826014807964867">तपाईंको सङ्गठनले प्रदान गरेको जानकारी भएका वेबसाइटहरू</translation>
 <translation id="4466576951214254884">विद्यार्थी तथा शैक्षिक कर्जा</translation>
 <translation id="4467821340016922962">फुल स्क्रिनबाट बाहिरिन र डाउनलोड गरिएका सामग्री हेर्न |<ph name="ACCELERATOR" />| थिच्नुहोस्</translation>
+<translation id="4472575034687746823">सुरु गर्नुहोस्</translation>
 <translation id="4473643328224505070">Chrome को सबैभन्दा उच्च स्तरको सुरक्षा सुविधा प्राप्त गर्न<ph name="BEGIN_ENHANCED_PROTECTION_LINK" />उन्नत सुरक्षा अन गर्नुहोस्<ph name="END_ENHANCED_PROTECTION_LINK" />।</translation>
 <translation id="4475299370877036544">यो कारबाहीले तपाईंको सङ्गठनका नीति उल्लङ्घन गर्न सक्छ</translation>
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />। <ph name="LEARN_MORE_TEXT" /></translation>

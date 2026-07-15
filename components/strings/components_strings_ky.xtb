@@ -329,6 +329,7 @@
 <translation id="1486096554574027028">Сырсөздөрдү издөө</translation>
 <translation id="1492194039220927094">Эрежелерди колдонуу:</translation>
 <translation id="1495677929897281669">Өтмөккө кайтуу</translation>
+<translation id="1496318738909526466">Жакшыртылган автотолтурууну тескөө</translation>
 <translation id="1500286806237135498">Камералар (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="1504042622576912555">Флейта</translation>
 <translation id="1507202001669085618">&lt;p&gt;Бул ката Интернетке туташуудан мурда кирүүнү талап кылган Wi-Fi порталын колдонгондо көрүнөт.&lt;/p&gt;
@@ -686,7 +687,6 @@
 <translation id="2082238445998314030"><ph name="TOTAL_RESULTS" /> ичинен <ph name="RESULT_NUMBER" /> натыйжа</translation>
 <translation id="2083256696566019397">Кирген сайын уруксат берүү</translation>
 <translation id="2085876078937250610">Сактоо…</translation>
-<translation id="2088913896151127116">Текст кошуу</translation>
 <translation id="2090451897496479509">Кеңири маалымат алуу үчүн провайдерге кайрылыңыз</translation>
 <translation id="2090686487550343086">IBAN коддору</translation>
 <translation id="2091887806945687916">Үн</translation>
@@ -865,6 +865,7 @@
 <translation id="2322254345061973671">{COUNT,plural, =1{1 терезе}other{# терезе}}</translation>
 <translation id="232390861414237658">Бул карта Google Pay менен колдонуу үчүн сакталганда, Chrome'до сатып алына турган нерселер үчүн автотолтуруңуз</translation>
 <translation id="2326283484705860548">Эми Google Капчыктан көбүрөөк маалыматтарды автоматтык түрдө киргизе аласыз</translation>
+<translation id="2326747055382936979">Жакшыртылган автотолтурууну тескөө</translation>
 <translation id="2328651992442742497">Уруксат берилген (демейки)</translation>
 <translation id="2328955282645810595">Курулуш жана электр куралдары</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, мөөнөтү <ph name="EXPIRATION_DATE_ABBR" /> бүтөт</translation>
@@ -2255,6 +2256,7 @@
 <translation id="4464826014807964867">Уюмуңуздан маалымат алган вебсайттар</translation>
 <translation id="4466576951214254884">Студенттерге насыялар</translation>
 <translation id="4467821340016922962">Толук экрандан чыгып, жүктөлүп алынган файлды көрүү үчүн |<ph name="ACCELERATOR" />| баскычын басыңыз</translation>
+<translation id="4472575034687746823">Баштоо</translation>
 <translation id="4473643328224505070">Chrome'дун эң жогорку коопсуздук деңгээлин пайдалануу үчүн<ph name="BEGIN_ENHANCED_PROTECTION_LINK" />мыктылап коргоону<ph name="END_ENHANCED_PROTECTION_LINK" /> күйгүзүңүз</translation>
 <translation id="4475299370877036544">Бул аракет уюмуңуздун эрежелерин бузушу мүмкүн</translation>
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />. <ph name="LEARN_MORE_TEXT" /></translation>

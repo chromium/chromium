@@ -1217,6 +1217,7 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="1933489278505808700">Amb permís per llegir i canviar</translation>
 <translation id="1935303383381416800">Amb permís per veure la teva ubicació</translation>
 <translation id="193565226207940518">Eina d'assistència</translation>
+<translation id="1935995810530254458">Copia igualment</translation>
 <translation id="1936157145127842922">Mostra a la carpeta</translation>
 <translation id="1936344977780165685">{PAGES,plural, =1{La pàgina s'ha afegit a la llista de lectura}other{Les pàgines s'han afegit a la llista de lectura}}</translation>
 <translation id="1936931585862840749">Utilitza un número per indicar quantes còpies vols imprimir (entre 1 i <ph name="MAX_COPIES" />).</translation>
@@ -1537,6 +1538,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2199298570273670671">Error</translation>
 <translation id="2200094388063410062">Correu electrònic</translation>
 <translation id="2200781749203116929">Registres del sistema de ChromeOS</translation>
+<translation id="2202391868799679245">Activa les tecles de drecera</translation>
 <translation id="2203088913459920044">El nom pot incloure lletres, números i caràcters especials</translation>
 <translation id="220321590587754225">No s'ha pogut connectar. Torna-ho a provar.</translation>
 <translation id="2203903197029773650"><ph name="BRAND" /> pot comprovar les teves contrasenyes quan inicies la sessió amb el Compte de Google</translation>
@@ -6345,7 +6347,6 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="5932881020239635062">Número de sèrie</translation>
 <translation id="5933522550144185133"><ph name="APP_NAME" /> està utilitzant la càmera i el micròfon</translation>
 <translation id="5935158534896975820">S'està preparant la sol·licitud de signatura del certificat (en espera del servidor)</translation>
-<translation id="5935554994339565449">Afegeix text amb la nova eina Afegeix text</translation>
 <translation id="5936065461722368675">Tradueix la pàgina completa</translation>
 <translation id="5937977334791924341">Logotip de: <ph name="APP" /></translation>
 <translation id="5938002010494270685">Hi ha una actualització de seguretat disponible</translation>

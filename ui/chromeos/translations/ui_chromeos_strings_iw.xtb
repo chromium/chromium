@@ -441,7 +441,7 @@
 <translation id="4432921877815220091">רשת <ph name="NETWORK_INDEX" /> מתוך <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, הפעלה בסיום הגדרת המכשיר, בניהול האדמין</translation>
 <translation id="4439427728133035643">‏רשת <ph name="NETWORK_INDEX" /> מתוך <ph name="NETWORK_COUNT" />,‏ <ph name="NETWORK_NAME" />,‏ עוצמת האות: ‎<ph name="SIGNAL_STRENGTH" />%‎, התחברות</translation>
 <translation id="4442424173763614572">‏חיפוש ה-DNS נכשל</translation>
-<translation id="4445896958353114391">מתבצע סנכרון של קבצים</translation>
+<translation id="4445896958353114391">מסתנכרנים קבצים</translation>
 <translation id="4462159676511157176">שרתי שמות מותאמים אישית</translation>
 <translation id="4465725236958772856">רשת <ph name="NETWORK_INDEX" /> מתוך <ph name="NETWORK_COUNT" />,‏ <ph name="NETWORK_NAME" />, הרשת מנוהלת על ידי מנהל המערכת שלך, התחברות</translation>
 <translation id="4470564870223067757">Hangul 2 Set</translation>

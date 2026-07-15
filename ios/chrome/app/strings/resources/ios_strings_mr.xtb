@@ -245,6 +245,7 @@
 <translation id="1752547299766512813">पासवर्ड सेव्ह करा</translation>
 <translation id="1764070164487214210">दिशानिर्देश</translation>
 <translation id="1764511703783285459">इतर पासवर्ड व्यवस्थापकाने कोणतेही पासवर्ड किंवा पासकी शेअर केल्या नाहीत</translation>
+<translation id="1765555082983153259">“Chrome” ला तुमचा मायक्रोफोन अ‍ॅक्सेस करायचा आहे</translation>
 <translation id="1767766085187034454">Google Translate</translation>
 <translation id="1771016937398045251">टूल मेनू</translation>
 <translation id="1772468122139624049">टॅब रीलोड करू शकत नाही</translation>
@@ -303,6 +304,7 @@
 <translation id="1955773397805078763">पेमेंट पद्धत जोडा</translation>
 <translation id="1956138802718275401">होम स्क्रीनवरून पासवर्ड मिळवा</translation>
 <translation id="1959441496380398824">तारखेला स्पर्श करून धरून ठेवा.</translation>
+<translation id="1961283111643798191">संपर्क माहिती आणि आणखी बरेच काही व्यवस्थापित करा…</translation>
 <translation id="1962348300797608157"><ph name="BEGIN_BOLD" /><ph name="FULL_NAME" /><ph name="END_BOLD" /> यांनी तुमच्यासोबत <ph name="WEBSITE" /> चा पासवर्ड शेअर केला आहे</translation>
 <translation id="1962969542251276847">लॉक स्क्रीन</translation>
 <translation id="1963976881984600709">साधारण संरक्षण</translation>
@@ -2466,6 +2468,7 @@
 <translation id="9149866541089851383">संपादन...</translation>
 <translation id="9152637745605628097">थीम, रंग यांमधून निवडा किंवा इमेज अपलोड करा</translation>
 <translation id="9159628751968616911">वेबपेज पाठवा</translation>
+<translation id="9162412286847966593">जनरेटिव्ह AI मॉडेलमध्ये सुधारणा करण्यासाठी तुमच्या संस्थेचा डेटा आणि रेकॉर्डिंग वापरली जाणार नाहीत. <ph name="BEGIN_LINK" />तुमची गोपनीयता आणि Gemini<ph name="END_LINK" /></translation>
 <translation id="9162432979321511934">ऑटोफिल पासवर्ड सुरू करा</translation>
 <translation id="9165320910061267720">किमती कमी होण्यासंबंधित इशाऱ्यांच्या सूचना मिळवण्यासाठी, तुम्ही तुमच्या iOS सेटिंग्जमध्ये सूचना सुरू करणे आवश्यक आहे.</translation>
 <translation id="9179151630575358778">हा आयटम लपवला जाईल</translation>

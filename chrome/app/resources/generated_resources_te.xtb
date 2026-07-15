@@ -1225,6 +1225,7 @@
 <translation id="1933489278505808700">చదవడానికి, మార్చడానికి అనుమతించబడింది</translation>
 <translation id="1935303383381416800">మీ లొకేషన్‌ను చూడటానికి అనుమతించబడింది</translation>
 <translation id="193565226207940518">సపోర్ట్ టూల్</translation>
+<translation id="1935995810530254458">ఏదైమైనా కాపీ చేయండి</translation>
 <translation id="1936157145127842922">ఫోల్డర్‌లో చూపించు</translation>
 <translation id="1936344977780165685">{PAGES,plural, =1{చదవాల్సిన లిస్ట్‌కు పేజీ జోడించబడింది}other{చదవాల్సిన లిస్ట్‌కు పేజీలు జోడించబడ్డాయి}}</translation>
 <translation id="1936931585862840749">ఎన్ని కాపీలను ప్రింట్ చేయాలో సూచించడానికి సంఖ్యను (1 నుండి <ph name="MAX_COPIES" />) ఉపయోగించండి.</translation>
@@ -1545,6 +1546,7 @@
 <translation id="2199298570273670671">ఎర్రర్</translation>
 <translation id="2200094388063410062">ఈమెయిల్‌</translation>
 <translation id="2200781749203116929">ChromeOS సిస్టమ్ లాగ్‌లు</translation>
+<translation id="2202391868799679245">కీబోర్డ్ షార్ట్‌కట్‌ను ఆన్ చేయాలా?</translation>
 <translation id="2203088913459920044">పేరులో అక్షరాలు, నంబర్‌లు, ప్రత్యేక అక్షరాలను ఉపయోగించవచ్చు</translation>
 <translation id="220321590587754225">కనెక్ట్ చేయడం సాధ్యపడలేదు. మళ్లీ ట్రై చేయండి.</translation>
 <translation id="2203903197029773650">మీరు Google ఖాతాతో సైన్ ఇన్ చేసినప్పుడు <ph name="BRAND" /> మీ పాస్‌వర్డ్‌లను చెక్ చేయగలదు</translation>
@@ -6360,7 +6362,6 @@
 <translation id="5932881020239635062">క్రమసంఖ్య</translation>
 <translation id="5933522550144185133"><ph name="APP_NAME" /> మీ కెమెరా, మైక్రోఫోన్‌ను ఉపయోగిస్తోంది</translation>
 <translation id="5935158534896975820">సర్టిఫికెట్ సైనింగ్ రిక్వెస్ట్‌ను సిద్ధం చేస్తోంది (సర్వర్‌లో వేచి ఉంది)</translation>
-<translation id="5935554994339565449">కొత్త "టెక్స్ట్‌ను జోడించండి" టూల్‌తో టెక్స్ట్‌ను జోడించండి</translation>
 <translation id="5936065461722368675">మొత్తం పేజీని అనువదించండి</translation>
 <translation id="5937977334791924341"><ph name="APP" /> లోగో</translation>
 <translation id="5938002010494270685">భద్రతా అప్‌గ్రేడ్ అందుబాటులో ఉంది</translation>

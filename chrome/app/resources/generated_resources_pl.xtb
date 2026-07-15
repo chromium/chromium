@@ -1216,6 +1216,7 @@ Twoje hasła przechowuje <ph name="GOOGLE_PASSWORD_MANAGER" />. Możesz je spraw
 <translation id="1933489278505808700">Może odczytywać i zmieniać dane</translation>
 <translation id="1935303383381416800">Zezwolono na sprawdzanie lokalizacji</translation>
 <translation id="193565226207940518">Narzędzie pomocy</translation>
+<translation id="1935995810530254458">Skopiuj mimo to</translation>
 <translation id="1936157145127842922">Pokaż w folderze</translation>
 <translation id="1936344977780165685">{PAGES,plural, =1{Strona została dodana do listy Do przeczytania}few{Strony zostały dodane do listy Do przeczytania}many{Strony zostały dodane do listy Do przeczytania}other{Strony zostały dodane do listy Do przeczytania}}</translation>
 <translation id="1936931585862840749">Wpisz wartość numeryczną, by określić liczbę kopii do wydrukowania (od 1 do <ph name="MAX_COPIES" />).</translation>
@@ -5072,7 +5073,6 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="4906490889887219338">Skonfiguruj sieciowe udziały plików i zarządzaj nimi. <ph name="LINK_BEGIN" />Więcej informacji<ph name="LINK_END" /></translation>
 <translation id="4906679076183257864">Przywróć domyślne</translation>
 <translation id="4907129260985716018">Wybierz, kiedy to rozszerzenie może odczytywać i zmieniać dane witryny</translation>
-<translation id="4908076691331874303">Ukryty w tej witrynie</translation>
 <translation id="4908811072292128752">Otwórz nową kartę, by przeglądać dwie strony naraz</translation>
 <translation id="4910241725741323970">Aplikacja jest już zainstalowana</translation>
 <translation id="4912643508233590958">Wyjścia z nieaktywności</translation>
@@ -6337,7 +6337,6 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="5932881020239635062">Numer seryjny</translation>
 <translation id="5933522550144185133"><ph name="APP_NAME" /> używa Twojej kamery i mikrofonu</translation>
 <translation id="5935158534896975820">Przygotowuję żądanie podpisania certyfikatu (czekam na serwer)</translation>
-<translation id="5935554994339565449">Dodaj tekst za pomocą nowego narzędzia „Dodaj tekst”</translation>
 <translation id="5936065461722368675">Przetłumacz całą stronę</translation>
 <translation id="5937977334791924341">Logo <ph name="APP" /></translation>
 <translation id="5938002010494270685">Dostępna aktualizacja zabezpieczeń</translation>
