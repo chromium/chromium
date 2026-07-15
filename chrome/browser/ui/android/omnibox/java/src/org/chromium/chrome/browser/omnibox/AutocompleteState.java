@@ -120,6 +120,11 @@ class AutocompleteState {
         if (prevState.isWholeUserTextSelected() && mUserText.length() > 0) {
             return false;
         }
+        // Be careful, replacing a suffix selection with a previously existing character looks very
+        // similar to a backward delete, need to rule it out first.
+        if (isForwardReplacementFrom(prevState)) {
+            return false;
+        }
         return isCursorAtEndOfUserText()
                 && prevState.isCursorAtEndOfUserText()
                 && isPrefix(mUserText, prevState.mUserText);
@@ -133,6 +138,27 @@ class AutocompleteState {
         return isCursorAtEndOfUserText()
                 && prevState.isCursorAtEndOfUserText()
                 && isPrefix(prevState.mUserText, mUserText);
+    }
+
+    /**
+     * Replacing a selected suffix with a keystroke should be treated as forward as well.
+     *
+     * @param prevState The previous state to compare the current state with.
+     * @return Whether this state is a suffix selection replacement.
+     */
+    public boolean isForwardReplacementFrom(AutocompleteState prevState) {
+        TextSelection prevSel = prevState.getSelection();
+        TextSelection curSel = getSelection();
+        String prevText = prevState.getText();
+        int prevSelLower = prevSel.getLower();
+
+        if (prevSel.isCollapsed() || prevSel.getUpper() != prevText.length()) return false;
+        // Replacing the previous selection should always collapse the selection.
+        if (!curSel.isCollapsed() || !isCursorAtEndOfUserText()) return false;
+        // Needs a new character beyond the selection, may or may not match selection text.
+        if (curSel.from <= prevSelLower) return false;
+
+        return prevText.regionMatches(/* toffset= */ 0, getText(), /* ooffset= */ 0, prevSelLower);
     }
 
     /**

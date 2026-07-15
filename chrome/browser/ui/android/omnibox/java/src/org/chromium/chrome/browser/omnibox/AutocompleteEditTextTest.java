@@ -1553,4 +1553,26 @@ public class AutocompleteEditTextTest {
         // empty.
         assertTexts("w", "ikipedia.org", "");
     }
+
+    @Test
+    public void testTypeCharacter_replacingSuffixSelection_allowsAutocomplete() {
+        mAutocomplete.setText("www.example.com");
+        mAutocomplete.setSelection(4, 15);
+
+        assertTrue(mInputConnection.commitText("e", 1));
+
+        assertEquals("www.e", mAutocomplete.getText().toString());
+        assertTrue(mAutocomplete.shouldAutocomplete());
+    }
+
+    @Test
+    public void testTypeCharacter_replacingReversedSuffixSelection_allowsAutocomplete() {
+        mAutocomplete.setText("www.example.com");
+        mAutocomplete.setSelection(15, 4);
+
+        assertTrue(mInputConnection.commitText("e", 1));
+
+        assertEquals("www.e", mAutocomplete.getText().toString());
+        assertTrue(mAutocomplete.shouldAutocomplete());
+    }
 }
