@@ -30,7 +30,10 @@ import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
 import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
 import type {TestMock} from 'chrome://webui-test/test_mock.js';
 import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
+// <if expr="not is_android">
+import {getTrustedHtml} from 'chrome://webui-test/trusted_html.js';
 
+// </if>
 import {installMock, MockInputState} from './composebox_test_utils.js';
 
 const TestElementBase = ComposeboxEmbedderMixin(I18nMixinLit(CrLitElement));
@@ -1866,4 +1869,70 @@ suite('ComposeboxMixinTest', () => {
     assertFalse(eventFired);
     assertFalse(element.isListening);
   });
+
+  // <if expr="not is_android">
+  test(
+      'connectedCallback calls getSmartTabSharingActive when' +
+          ' smartTabSharingVisible pre-set to true',
+      async () => {
+        searchboxHandler.setResultMapperFor(
+            'getSmartTabSharingActive', () => Promise.resolve({active: true}));
+
+        const newElement = document.createElement('test-composebox-mixin') as
+            TestComposeboxMixinElement;
+        newElement.smartTabSharingVisible = true;
+        document.body.appendChild(newElement);
+        await searchboxHandler.whenCalled('getSmartTabSharingActive');
+        await microtasksFinished();
+        await newElement.updateComplete;
+
+        assertEquals(
+            1, searchboxHandler.getCallCount('getSmartTabSharingActive'));
+        assertTrue(newElement.smartTabSharingActive);
+        document.body.removeChild(newElement);
+      });
+
+  test(
+      'connectedCallback does NOT call getSmartTabSharingActive when' +
+          ' smartTabSharingVisible is false',
+      async () => {
+        const newElement = document.createElement('test-composebox-mixin') as
+            TestComposeboxMixinElement;
+        newElement.smartTabSharingVisible = false;
+        document.body.appendChild(newElement);
+        await newElement.updateComplete;
+
+        assertEquals(
+            0, searchboxHandler.getCallCount('getSmartTabSharingActive'));
+        assertFalse(newElement.smartTabSharingActive);
+        document.body.removeChild(newElement);
+      });
+
+  test(
+      'host template .prop binding triggers getSmartTabSharingActive' +
+          ' at child mount',
+      async () => {
+        searchboxHandler.setResultMapperFor(
+            'getSmartTabSharingActive', () => Promise.resolve({active: true}));
+
+        const host = document.createElement('div');
+        host.innerHTML = getTrustedHtml(`
+          <test-composebox-mixin smart-tab-sharing-visible></test-composebox-mixin>
+        `);
+        document.body.appendChild(host);
+
+        const newElement = host.querySelector<TestComposeboxMixinElement>(
+            'test-composebox-mixin');
+        assertTrue(!!newElement);
+
+        await searchboxHandler.whenCalled('getSmartTabSharingActive');
+        await microtasksFinished();
+        await newElement.updateComplete;
+
+        assertEquals(
+            1, searchboxHandler.getCallCount('getSmartTabSharingActive'));
+        assertTrue(newElement.smartTabSharingActive);
+        document.body.removeChild(host);
+      });
+  // </if>
 });
