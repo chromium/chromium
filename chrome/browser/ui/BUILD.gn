@@ -1082,11 +1082,6 @@ static_library("ui") {
     # //chrome/browser/download:impl sources include headers from
     # //chrome/browser/ui.
     allow_circular_includes_from += [
-      # chrome_browser_interface_binders_webui_parts_desktop.cc (now part of
-      # this target) includes ai_overlay_dialog_untrusted_ui.h; that webui
-      # target depends back on :ui.
-      "//chrome/browser/ui/webui/ai_overlay_dialog",
-
       "//chrome/browser/download:impl",
 
       # bookmarks includes headers from //chrome/browser/ui (e.g. browser.h,

@@ -48,6 +48,7 @@ source_set("ai_overlay_dialog") {
     # target depending on the :ui monolith directly.
     "//chrome/browser/ui:browser_actions",
     "//chrome/browser/ui:ui_features",
+    "//chrome/browser/ui/actions:actions_headers",
     "//chrome/browser/ui/ai_overlay_dialog",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/tabs:tab_strip",
@@ -60,6 +61,7 @@ source_set("ai_overlay_dialog") {
     "//components/sessions",
     "//components/tabs:public",
     "//content/public/browser",
+    "//ui/base",
     "//ui/webui",
     "//url",
   ]
