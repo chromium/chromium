@@ -458,4 +458,17 @@ public class AuthenticatorImplTest {
         verify(mFido2CredentialRequestMock, never())
                 .handleGetCredentialRequest(any(), any(), any(), any());
     }
+
+    @Test
+    public void testClose_destroysBridge() {
+        GmsCoreUtils.setGmsCoreVersionForTesting(GmsCoreUtils.GMSCORE_MIN_VERSION);
+        GetCredentialOptions options = new GetCredentialOptions();
+        options.publicKey = new PublicKeyCredentialRequestOptions();
+        options.publicKey.challenge = new byte[] {1, 2, 3};
+
+        mAuthenticator.getCredential(options, mock(Authenticator.GetCredential_Response.class));
+        mAuthenticator.close();
+
+        verify(mFido2CredentialRequestMock).destroyBridge();
+    }
 }

@@ -126,6 +126,7 @@ public final class AuthenticatorImpl implements Authenticator, AuthenticationCon
     private Fido2CredentialRequest getFido2CredentialRequest() {
         if (sFido2CredentialRequestOverrideForTesting != null) {
             sFido2CredentialRequestOverrideForTesting.setAuthenticationContextProvider(this);
+            mUnclosedFido2CredentialRequests.add(sFido2CredentialRequestOverrideForTesting);
             return sFido2CredentialRequestOverrideForTesting;
         }
         Fido2CredentialRequest request = new Fido2CredentialRequest(this);

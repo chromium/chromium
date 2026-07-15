@@ -1155,7 +1155,8 @@ IN_PROC_BROWSER_TEST_F(WebAuthnConditionalUITest,
   virtual_device_factory_->mutable_state()->simulate_press_callback =
       base::BindLambdaForTesting(
           [&](device::VirtualFidoDevice* device) { return true; });
-  ChromeWebAuthnCredentialsDelegate delegate(web_contents);
+  ChromeWebAuthnCredentialsDelegate delegate(
+      web_contents->GetPrimaryMainFrame());
   delegate.LaunchSecurityKeyOrHybridFlow();
 
   std::string result;

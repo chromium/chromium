@@ -38,30 +38,23 @@ using password_manager::PasskeyCredential;
 using webauthn::WebAuthnCredManDelegate;
 using webauthn::WebAuthnCredManDelegateFactory;
 
+DOCUMENT_USER_DATA_KEY_IMPL(WebAuthnRequestDelegateAndroid);
+
 // static
 WebAuthnRequestDelegateAndroid*
 WebAuthnRequestDelegateAndroid::GetRequestDelegate(
-    content::WebContents* web_contents) {
-  static constexpr char kWebAuthnRequestDelegateKey[] =
-      "ConditionalUiDelegateKey";
-  auto* delegate = static_cast<WebAuthnRequestDelegateAndroid*>(
-      web_contents->GetUserData(kWebAuthnRequestDelegateKey));
-  if (!delegate) {
-    auto new_user_data =
-        std::make_unique<WebAuthnRequestDelegateAndroid>(web_contents);
-    delegate = new_user_data.get();
-    web_contents->SetUserData(kWebAuthnRequestDelegateKey,
-                              std::move(new_user_data));
-  }
-
-  return delegate;
+    content::RenderFrameHost* frame_host) {
+  return GetOrCreateForCurrentDocument(frame_host);
 }
 
 WebAuthnRequestDelegateAndroid::WebAuthnRequestDelegateAndroid(
-    content::WebContents* web_contents)
-    : web_contents_(web_contents) {}
+    content::RenderFrameHost* render_frame_host)
+    : content::DocumentUserData<WebAuthnRequestDelegateAndroid>(
+          render_frame_host) {}
 
-WebAuthnRequestDelegateAndroid::~WebAuthnRequestDelegateAndroid() = default;
+WebAuthnRequestDelegateAndroid::~WebAuthnRequestDelegateAndroid() {
+  CleanupWebAuthnRequest();
+}
 
 // TODO(https://crbug.com/434882145): The logic here has gotten pretty complex
 // and we should add unit tests to cover it.
@@ -129,7 +122,7 @@ void WebAuthnRequestDelegateAndroid::OnWebAuthnRequestPending(
           frame_host->GetLastCommittedURL(),
           base::BindOnce(
               &WebAuthnRequestDelegateAndroid::MaybeShowTouchToFillSheet,
-              weak_ptr_factory_.GetWeakPtr(), frame_host->GetGlobalId(),
+              weak_ptr_factory_.GetWeakPtr(),
               /*is_immediate=*/true, std::move(passkey_credentials)));
       return;
     }
@@ -141,20 +134,15 @@ void WebAuthnRequestDelegateAndroid::OnWebAuthnRequestPending(
       break;
   }
 
-  MaybeShowTouchToFillSheet(frame_host->GetGlobalId(), is_immediate,
-                            std::move(passkey_credentials), {});
+  MaybeShowTouchToFillSheet(is_immediate, std::move(passkey_credentials), {});
 }
 
 void WebAuthnRequestDelegateAndroid::MaybeShowTouchToFillSheet(
-    content::GlobalRenderFrameHostId render_frame_host_id,
     bool is_immediate,
     std::vector<PasskeyCredential> passkey_credentials,
     std::vector<std::unique_ptr<password_manager::PasswordForm>>
         password_credentials) {
-  auto* frame_host = content::RenderFrameHost::FromID(render_frame_host_id);
-  if (!frame_host) {
-    return;
-  }
+  content::RenderFrameHost* frame_host = &render_frame_host();
 
   if (is_immediate && passkey_credentials.empty() &&
       password_credentials.empty()) {
@@ -203,17 +191,19 @@ void WebAuthnRequestDelegateAndroid::MaybeShowTouchToFillSheet(
           ->GetRequestDelegate(frame_host));
 }
 
-void WebAuthnRequestDelegateAndroid::CleanupWebAuthnRequest(
-    content::RenderFrameHost* frame_host) {
+void WebAuthnRequestDelegateAndroid::CleanupWebAuthnRequest() {
   if (conditional_request_in_progress_) {
-    // Prevent autofill from offering WebAuthn credentials in the popup.
-    ChromeWebAuthnCredentialsDelegate* credentials_delegate =
-        ChromeWebAuthnCredentialsDelegateFactory::GetFactory(
-            content::WebContents::FromRenderFrameHost(frame_host))
-            ->GetDelegateForFrame(frame_host);
+    content::WebContents* wc =
+        content::WebContents::FromRenderFrameHost(&render_frame_host());
+    if (wc && !wc->IsBeingDestroyed()) {
+      // Prevent autofill from offering WebAuthn credentials in the popup.
+      ChromeWebAuthnCredentialsDelegate* credentials_delegate =
+          ChromeWebAuthnCredentialsDelegateFactory::GetFactory(wc)
+              ->GetDelegateForFrame(&render_frame_host());
 
-    if (credentials_delegate) {
-      credentials_delegate->NotifyWebAuthnRequestAborted();
+      if (credentials_delegate) {
+        credentials_delegate->NotifyWebAuthnRequestAborted();
+      }
     }
   } else if (touch_to_fill_controller_) {
     touch_to_fill_controller_->Close();
@@ -259,5 +249,5 @@ void WebAuthnRequestDelegateAndroid::OnHybridSignInSelected() {
 }
 
 content::WebContents* WebAuthnRequestDelegateAndroid::web_contents() {
-  return web_contents_;
+  return content::WebContents::FromRenderFrameHost(&render_frame_host());
 }

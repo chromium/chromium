@@ -11,13 +11,12 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/supports_user_data.h"
 #include "chrome/browser/webauthn/shared_types.h"
 #include "chrome/browser/webauthn/touch_to_fill_credential_receiver.h"
 #include "components/password_manager/core/browser/passkey_credential.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/webauthn/android/webauthn_client_android.h"
-#include "content/public/browser/global_routing_id.h"
+#include "content/public/browser/document_user_data.h"
 
 namespace content {
 class RenderFrameHost;
@@ -37,13 +36,12 @@ class TouchToFillPasswordManagerController;
 
 // Helper class for connecting the autofill implementation to the WebAuthn
 // request handling for Conditional UI on Android. This is attached to a
-// WebContents via SetUserData. It caches a callback that will complete the
-// WebAuthn 'get' request when a user selects a credential.
-class WebAuthnRequestDelegateAndroid : public base::SupportsUserData::Data,
-                                       public TouchToFillCredentialReceiver {
+// RenderFrameHost via DocumentUserData. It caches a callback that will
+// complete the WebAuthn 'get' request when a user selects a credential.
+class WebAuthnRequestDelegateAndroid
+    : public content::DocumentUserData<WebAuthnRequestDelegateAndroid>,
+      public TouchToFillCredentialReceiver {
  public:
-  explicit WebAuthnRequestDelegateAndroid(content::WebContents* web_contents);
-
   WebAuthnRequestDelegateAndroid(const WebAuthnRequestDelegateAndroid&) =
       delete;
   WebAuthnRequestDelegateAndroid& operator=(
@@ -73,7 +71,7 @@ class WebAuthnRequestDelegateAndroid : public base::SupportsUserData::Data,
   // Called when an outstanding request is ended, either because it was aborted
   // by the RP, or because it completed successfully. Its main purpose is to
   // clean up conditional UI state.
-  void CleanupWebAuthnRequest(content::RenderFrameHost* frame_host);
+  void CleanupWebAuthnRequest();
 
   // TouchToFillCredentialReceiver:
   void OnWebAuthnAccountSelected(const std::vector<uint8_t>& id) override;
@@ -83,19 +81,19 @@ class WebAuthnRequestDelegateAndroid : public base::SupportsUserData::Data,
   void OnHybridSignInSelected() override;
   content::WebContents* web_contents() override;
 
-  // Returns a delegate associated with the |web_contents|. It creates one if
+  // Returns a delegate associated with the |frame_host|. It creates one if
   // one does not already exist.
-  // The delegate is destroyed along with the WebContents and so should not be
-  // cached.
   static WebAuthnRequestDelegateAndroid* GetRequestDelegate(
-      content::WebContents* web_contents);
+      content::RenderFrameHost* frame_host);
 
  private:
-  // This takes the RenderFrameHost's GlobalID rather than a pointer, so that
-  // it can be called asynchronously without having to worry about lifetimes.
+  friend class content::DocumentUserData<WebAuthnRequestDelegateAndroid>;
+
+  explicit WebAuthnRequestDelegateAndroid(
+      content::RenderFrameHost* render_frame_host);
+
   void MaybeShowTouchToFillSheet(
-      content::GlobalRenderFrameHostId render_frame_host_id,
-      bool isImmediate,
+      bool is_immediate,
       std::vector<password_manager::PasskeyCredential> passkey_credentials,
       std::vector<std::unique_ptr<password_manager::PasswordForm>>
           password_credentials);
@@ -122,10 +120,9 @@ class WebAuthnRequestDelegateAndroid : public base::SupportsUserData::Data,
 
   std::unique_ptr<PasswordCredentialFetcher> password_fetcher_;
 
-  // The WebContents that has this object in its userdata.
-  raw_ptr<content::WebContents> web_contents_;
-
   bool conditional_request_in_progress_ = false;
+
+  DOCUMENT_USER_DATA_KEY_DECL();
 
   base::WeakPtrFactory<WebAuthnRequestDelegateAndroid> weak_ptr_factory_{this};
 };

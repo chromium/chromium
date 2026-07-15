@@ -30,8 +30,7 @@ void ChromeWebAuthnClientAndroid::OnWebAuthnRequestPending(
     base::RepeatingCallback<void(webauthn::NonCredentialReturnReason)>
         non_credential_callback) {
   WebAuthnRequestDelegateAndroid* delegate =
-      WebAuthnRequestDelegateAndroid::GetRequestDelegate(
-          content::WebContents::FromRenderFrameHost(frame_host));
+      WebAuthnRequestDelegateAndroid::GetRequestDelegate(frame_host);
 
   delegate->OnWebAuthnRequestPending(
       frame_host, std::move(credentials), mediation_type,
@@ -41,10 +40,10 @@ void ChromeWebAuthnClientAndroid::OnWebAuthnRequestPending(
 
 void ChromeWebAuthnClientAndroid::CleanupWebAuthnRequest(
     content::RenderFrameHost* frame_host) {
-  WebAuthnRequestDelegateAndroid* webauthn_request_delegate =
-      WebAuthnRequestDelegateAndroid::GetRequestDelegate(
-          content::WebContents::FromRenderFrameHost(frame_host));
-  webauthn_request_delegate->CleanupWebAuthnRequest(frame_host);
+  if (auto* webauthn_request_delegate =
+          WebAuthnRequestDelegateAndroid::GetForCurrentDocument(frame_host)) {
+    webauthn_request_delegate->CleanupWebAuthnRequest();
+  }
 }
 
 bool ChromeWebAuthnClientAndroid::ShouldDisallowCredentialRequest(

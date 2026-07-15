@@ -1913,6 +1913,7 @@ public class Fido2CredentialRequest implements WebauthnBrowserBridge.Provider {
 
     protected void destroyBridge() {
         if (mBrowserBridge == null) return;
+        cleanupRequest();
         mBrowserBridge.destroy();
         mBrowserBridge = null;
     }

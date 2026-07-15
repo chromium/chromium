@@ -115,6 +115,9 @@ class ChromeWebAuthnCredentialsDelegateTest
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
 
+    content::WebContentsTester::For(web_contents())
+        ->NavigateAndCommit(GURL("https://example.com"));
+
 #if !BUILDFLAG(IS_ANDROID)
     authenticator_request_delegate_ =
         AuthenticatorRequestScheduler::CreateRequestDelegate(
@@ -126,12 +129,9 @@ class ChromeWebAuthnCredentialsDelegateTest
         base::DoNothing(), base::DoNothing(), base::DoNothing(),
         base::DoNothing(), base::DoNothing(), base::DoNothing());
 #else
-    delegate_ =
-        WebAuthnRequestDelegateAndroid::GetRequestDelegate(web_contents());
+    delegate_ = WebAuthnRequestDelegateAndroid::GetRequestDelegate(
+        web_contents()->GetPrimaryMainFrame());
 #endif
-
-    content::WebContentsTester::For(web_contents())
-        ->NavigateAndCommit(GURL("https://example.com"));
   }
 
   void TearDown() override {
