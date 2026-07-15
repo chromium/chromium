@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_RENDERER_HOST_INITIATOR_NAVIGATION_STATE_IMPL_H_
 
 #include "base/memory/scoped_refptr.h"
+#include "content/browser/renderer_host/policy_container_host.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/initiator_navigation_state.h"
 #include "content/public/common/child_process_id.h"
@@ -29,10 +30,10 @@ class CONTENT_EXPORT InitiatorNavigationStateImpl
 
   blink::LocalFrameToken frame_token() const { return frame_token_; }
 
-  // The PolicyContainer of the RenderFrameHost. This should never be null.
-  PolicyContainerHost* policy_container_host() const {
-    CHECK(policy_container_host_);
-    return policy_container_host_.get();
+  // The PolicyContainerPolicies of the document at the moment the
+  // InitiatorNavigationState was created.
+  const PolicyContainerPolicies& policy_container_policies() const {
+    return policy_container_policies_;
   }
 
   // The SiteInstance of the RenderFrameHost. This should never be null.
@@ -44,11 +45,12 @@ class CONTENT_EXPORT InitiatorNavigationStateImpl
  private:
   friend class RenderFrameHostImpl;
 
-  InitiatorNavigationStateImpl(
-      const blink::LocalFrameToken& token,
-      ChildProcessId process_id,
-      scoped_refptr<PolicyContainerHost> policy_container_host,
-      scoped_refptr<SiteInstanceImpl> site_instance);
+  // `policy_container_host` is the PolicyContainer of the RenderFrameHost that
+  // creates this InitiatorNavigationStateImpl. It should never be null.
+  InitiatorNavigationStateImpl(const blink::LocalFrameToken& token,
+                               ChildProcessId process_id,
+                               const PolicyContainerHost* policy_container_host,
+                               scoped_refptr<SiteInstanceImpl> site_instance);
 
   ~InitiatorNavigationStateImpl() override;
 
@@ -56,11 +58,11 @@ class CONTENT_EXPORT InitiatorNavigationStateImpl
   const blink::LocalFrameToken frame_token_;
 
   // The process ID of the document this state is associated with.
-  ChildProcessId process_id_;
+  const ChildProcessId process_id_;
 
-  // The PolicyContainerHost of the document at the moment the
+  // A copy of the PolicyContainerPolicies of the document at the moment the
   // InitiatorNavigationState was created.
-  scoped_refptr<PolicyContainerHost> policy_container_host_;
+  const PolicyContainerPolicies policy_container_policies_;
 
   // The SiteInstance of the document that created the navigation.
   scoped_refptr<SiteInstanceImpl> site_instance_;

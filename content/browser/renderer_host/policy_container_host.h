@@ -230,6 +230,8 @@ class CONTENT_EXPORT PolicyContainerHost
 
   const PolicyContainerPolicies& policies() const { return policies_; }
 
+  const PolicyContainerPolicies* policies_ptr() const { return &policies_; }
+
   network::mojom::ReferrerPolicy referrer_policy() const {
     return policies_.referrer_policy;
   }

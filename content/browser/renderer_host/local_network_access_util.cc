@@ -237,6 +237,27 @@ network::mojom::ClientSecurityStatePtr DeriveClientSecurityState(
       policies.document_isolation_policy);
 }
 
+network::mojom::ClientSecurityStatePtr
+DeriveClientSecurityStateForRendererInitiatedNavigation(
+    const PolicyContainerPolicies& initiator_policies,
+    LocalNetworkAccessRequestContext local_network_request_context) {
+  CHECK(local_network_request_context ==
+            LocalNetworkAccessRequestContext::kMainFrameNavigation ||
+        local_network_request_context ==
+            LocalNetworkAccessRequestContext::kSubframeNavigation);
+  // COEP and DocumentIsolationPolicy get default values below because COEP and
+  // DocumentIsolationPolicy are not checked by Fetch during navigations.  COEP
+  // will be checked in NavigationRequest::EnforceCOEP.  DocumentIsolationPolicy
+  // does not apply to navigations.
+  return network::mojom::ClientSecurityState::New(
+      network::CrossOriginEmbedderPolicy(),
+      initiator_policies.is_web_secure_context,
+      initiator_policies.ip_address_space,
+      DeriveLocalNetworkAccessRequestPolicy(initiator_policies,
+                                            local_network_request_context),
+      network::DocumentIsolationPolicy());
+}
+
 // Special chrome schemes cannot directly be categorized in
 // public/private/loopback address spaces using information from the network or
 // the PolicyContainer. We have to classify them manually. In its default state

@@ -37,6 +37,7 @@
 #include "cc/test/pixel_test_utils.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "components/viz/common/frame_sinks/copy_output_result.h"
+#include "content/browser/browser_context_impl.h"
 #include "content/browser/browser_url_handler_impl.h"
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/navigation_state_keep_alive.h"
@@ -100,6 +101,7 @@
 #include "net/base/load_flags.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/controllable_http_response.h"
+#include "net/test/embedded_test_server/default_handlers.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/expectation_handler.h"
 #include "net/test/embedded_test_server/http_response.h"
@@ -4564,8 +4566,8 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
   // Expect at this point that a NavigationStateKeepAlive has been created for
   // the form submission.
   NavigationStateKeepAlive* keep_alive =
-      current_frame_host()->GetStoragePartition()->GetNavigationStateKeepAlive(
-          current_frame_host()->GetFrameToken());
+      BrowserContextImpl::From(current_frame_host()->GetBrowserContext())
+          ->GetNavigationStateKeepAlive(current_frame_host()->GetFrameToken());
   ASSERT_TRUE(keep_alive);
 
   // Disable ref counts on the process, which resets all ref counts to 0. This

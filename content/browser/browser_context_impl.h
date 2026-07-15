@@ -16,6 +16,9 @@
 #include "content/browser/btm/btm_service_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/shared_cors_origin_access_list.h"
+#include "mojo/public/cpp/bindings/unique_receiver_set.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
+#include "third_party/blink/public/mojom/frame/remote_frame.mojom.h"
 
 namespace media {
 class VideoDecodePerfHistory;
@@ -37,6 +40,7 @@ class BrowserContextImpl;
 class BrowsingDataRemoverImpl;
 class DownloadManager;
 class InMemoryFederatedPermissionContext;
+class NavigationStateKeepAlive;
 class PermissionController;
 class PrefetchService;
 class StoragePartitionImplMap;
@@ -120,6 +124,25 @@ class CONTENT_EXPORT BrowserContextImpl {
   // removed.
   void WaitForBtmCleanupForTesting();
 
+  // Store `receiver` and its corresponding `handle`. These will be kept alive
+  // as long as the remote endpoint of `receiver` is still alive on the renderer
+  // side. The receiver will be automatically deleted when the endpoint is
+  // disconnected.
+  void RegisterKeepAliveHandle(
+      mojo::PendingReceiver<blink::mojom::NavigationStateKeepAliveHandle>
+          receiver,
+      std::unique_ptr<NavigationStateKeepAlive> handle);
+
+  // Get the NavigationStateKeepAlive associated with `frame_token`. See
+  // `navigation_state_keep_alive_map_`.
+  NavigationStateKeepAlive* GetNavigationStateKeepAlive(
+      blink::LocalFrameToken frame_token);
+
+  // Removes the NavigationStateKeepAlive associated with `frame_token`. This
+  // should be called when the keep alive is destructed.
+  void RemoveKeepAliveHandleFromMap(blink::LocalFrameToken frame_token,
+                                    NavigationStateKeepAlive* keep_alive);
+
  private:
   // Creates the media service for storing/retrieving WebRTC encoding and
   // decoding performance stats.  Exposed here rather than StoragePartition
@@ -177,6 +200,33 @@ class CONTENT_EXPORT BrowserContextImpl {
 #if BUILDFLAG(IS_CHROMEOS)
   scoped_refptr<storage::ExternalMountPoints> external_mount_points_;
 #endif
+
+  // Maps frame tokens to NavigationStateKeepAlives. There is one
+  // NavigationStateKeepAlive per LocalFrameToken. It's possible to have
+  // multiple keep alives per LocalFrameToken (e.g., multiple in-flight
+  // navigations per RenderFrameHost), but this map will store the most recent
+  // NavigationStateKeepAlive.
+  // In the case of multiple navigations for a RenderFrameHost,
+  // it is assumed that they are handled in order, with the latest navigation's
+  // keep alive storing the state for that RenderFrameHost.
+  // Note: This member must be above `keep_alive_handles_receiver_set_`. During
+  // destruction, when NavigationStateKeepAlives get removed from the receiver
+  // set, they will then remove themselves from
+  // `navigation_state_keep_alive_map_`, so this map must still be alive when
+  // that happens.
+  using TokenNavigationStateKeepAliveMap =
+      absl::flat_hash_map<blink::LocalFrameToken, NavigationStateKeepAlive*>;
+  TokenNavigationStateKeepAliveMap navigation_state_keep_alive_map_;
+
+  // Active keepalive handles for in-flight navigations. They are retained
+  // on `BrowserContextImpl` because, by design, they may need to outlive the
+  // `RenderFrameHostImpl` that initiated the navigation, but shouldn't be used
+  // in a different BrowserContext.
+  // Note that this set may contain in-flight navigations for different
+  // RenderFrameHosts, and furthermore, there may even be multiple in-flight
+  // navigations for a single RenderFrameHost.
+  mojo::UniqueReceiverSet<blink::mojom::NavigationStateKeepAliveHandle>
+      keep_alive_handles_receiver_set_;
 
   // TODO: crbug.com/40169693 - BrowserContext and BrowserContextImpl both have
   // WeakPtrFactories. Remove one once the inheritance is sorted out.

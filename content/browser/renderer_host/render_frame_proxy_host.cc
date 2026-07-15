@@ -846,7 +846,7 @@ void RenderFrameProxyHost::OpenURL(blink::mojom::OpenURLParamsPtr params) {
   scoped_refptr<InitiatorNavigationState> initiator_navigation_state =
       RenderFrameHostImpl::GetInitiatorNavigationStateFromFrameToken(
           initiator_frame_token, GetProcess()->GetDeprecatedID(),
-          current_rfh->GetStoragePartition());
+          current_rfh->GetBrowserContext());
   // TODO(lfg, lukasza): Remove |extra_headers| parameter from
   // RequestTransferURL method once both RenderFrameProxyHost and
   // RenderFrameHostImpl call RequestOpenURL from their OnOpenURL handlers.

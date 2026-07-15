@@ -12,7 +12,7 @@
 namespace content {
 
 class RenderFrameHostImpl;
-class StoragePartitionImpl;
+class BrowserContextImpl;
 
 // A keepalive handle for state that may be referenced during a navigation,
 // since a navigation can outlive its initiating frame. The lifetime of the
@@ -42,16 +42,14 @@ class NavigationStateKeepAlive
   // receiver is bound to `this`, and stored on StoragePartition.
   NavigationStateKeepAlive(
       scoped_refptr<InitiatorNavigationState> initiator_navigation_state,
-      StoragePartitionImpl* storage_partition);
+      BrowserContextImpl* browser_context);
 
-  // The StoragePartition `this` belongs to. This pointer is stored so that
-  // `this` can remove itself from its StoragePartition's frame token map upon
-  // destruction. Looking up the StoragePartition at the time poses a risk of
-  // recreating a StoragePartition map during BrowserContext shutdown.
-  // StoragePartition owns `this`, so the pointer is guaranteed to stay valid.
-  // A SafeRef would be ideal to use here, but `this` gets destructed after
-  // StoragePartition's WeakPtrFactory goes away.
-  raw_ptr<StoragePartitionImpl> storage_partition_;
+  // The BrowserContextImpl `this` belongs to. This pointer is stored so that
+  // `this` can remove itself from its BrowserContextImpl's frame token map upon
+  // destruction. BrowserContextImpl owns `this`, so the pointer is guaranteed
+  // to stay valid. A SafeRef would be ideal to use here, but `this` gets
+  // destructed after BrowserContextImpl's WeakPtrFactory goes away.
+  raw_ptr<BrowserContextImpl> browser_context_;
 
   // Navigation objects kept alive by `this`. All are parts of navigation state
   // from a RenderFrameHost that is potentially needed after the RenderFrameHost

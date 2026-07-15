@@ -23,6 +23,7 @@
 #include "content/browser/in_memory_federated_permission_context.h"
 #include "content/browser/permissions/permission_controller_impl.h"
 #include "content/browser/preloading/prefetch/prefetch_service.h"
+#include "content/browser/renderer_host/navigation_state_keep_alive.h"
 #include "content/browser/renderer_host/navigation_transitions/navigation_entry_screenshot_cache.h"
 #include "content/browser/renderer_host/navigation_transitions/navigation_entry_screenshot_manager.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
@@ -407,6 +408,34 @@ BtmServiceImpl* BrowserContextImpl::GetBtmService() {
   }
 
   return btm_service_.get();
+}
+
+void BrowserContextImpl::RegisterKeepAliveHandle(
+    mojo::PendingReceiver<blink::mojom::NavigationStateKeepAliveHandle>
+        receiver,
+    std::unique_ptr<NavigationStateKeepAlive> handle) {
+  auto frame_token = static_cast<InitiatorNavigationStateImpl*>(
+                         handle->initiator_navigation_state().get())
+                         ->frame_token();
+  navigation_state_keep_alive_map_[frame_token] = handle.get();
+  keep_alive_handles_receiver_set_.Add(std::move(handle), std::move(receiver));
+}
+
+NavigationStateKeepAlive* BrowserContextImpl::GetNavigationStateKeepAlive(
+    blink::LocalFrameToken frame_token) {
+  return base::FindPtrOrNull(navigation_state_keep_alive_map_, frame_token);
+}
+
+void BrowserContextImpl::RemoveKeepAliveHandleFromMap(
+    blink::LocalFrameToken frame_token,
+    NavigationStateKeepAlive* keep_alive) {
+  // The NavigationStateKeepAlive associated with `frame_token` may have
+  // changed. Make sure the specified one is removed from the map.
+  auto it = navigation_state_keep_alive_map_.find(frame_token);
+  if (it != navigation_state_keep_alive_map_.end() &&
+      it->second == keep_alive) {
+    navigation_state_keep_alive_map_.erase(it);
+  }
 }
 
 }  // namespace content

@@ -1829,7 +1829,9 @@ NavigationRequest::NavigationRequest(
       original_url_(common_params_->url),
       prerender_host_id_(
           GetPrerenderHostRegistry().GetPrerenderHostIdForNavigation(this)),
-      initiator_navigation_state_(initiator_navigation_state) {
+      initiator_navigation_state_(initiator_navigation_state),
+      should_ignore_initiator_policies_for_inheritance_(
+          should_ignore_initiator_policies_for_inheritance) {
   TRACE_EVENT("navigation", "NavigationRequest::NavigationRequest",
               perfetto::Flow::FromPointer(this),
               perfetto::protos::pbzero::ChromeTrackEvent::kNavigation, this);
@@ -1965,23 +1967,7 @@ NavigationRequest::NavigationRequest(
   navigation_or_document_handle_ =
       NavigationOrDocumentHandle::CreateForNavigation(*this);
 
-  // Pass the initiator policies to the PolicyContainerBuilder if this
-  // navigation has an initiator in the same storage partition.
-  // TODO(crbug.com/510258191): Move passing inherited policies to when the
-  // response started, which will allow to check whether the initiator and
-  // target StoragePartitions match and only inherit initiator policies in those
-  // cases. The StoragePartition at creation time might be incorrect.
-  std::unique_ptr<PolicyContainerPolicies> initiator_policies;
-  if (initiator_navigation_state_impl() &&
-      !should_ignore_initiator_policies_for_inheritance) {
-    initiator_policies = initiator_navigation_state_impl()
-                             ->policy_container_host()
-                             ->policies()
-                             .ClonePtr();
-  }
-
-  policy_container_builder_.emplace(GetParentFrame(),
-                                    std::move(initiator_policies), frame_entry);
+  policy_container_builder_.emplace(GetParentFrame(), frame_entry);
 
   NavigationControllerImpl* controller = GetNavigationController();
 
@@ -3704,7 +3690,49 @@ network::mojom::ContentSecurityPolicyPtr NavigationRequest::TakeRequiredCSP() {
 
 const PolicyContainerPolicies*
 NavigationRequest::GetInitiatorPolicyContainerPolicies() const {
-  return policy_container_builder_->InitiatorPolicies();
+  return initiator_navigation_state_impl()
+             ? &(initiator_navigation_state_impl()->policy_container_policies())
+             : nullptr;
+}
+
+const PolicyContainerPolicies*
+NavigationRequest::GetInitiatorPolicyContainerPoliciesForInheritance() const {
+  // This function cannot be called before the navigation has started, as the
+  // StoragePartition for the navigation will only be valid after
+  // StartNavigation has properly computed the SiteInfo based on the current
+  // RenderFrameHost and the navigation params. Before that, a default
+  // StoragePartition will be returned by GetStoragePartition() when using
+  // `site_info_`. Using it in the checks below would result in always dropping
+  // the initiator policies in navigations happening in a non-default
+  // StoragePartition, which is wrong.
+  CHECK(state_ >= WILL_START_REQUEST);
+
+  // If there is no navigation initiator, return null.
+  if (!initiator_navigation_state_) {
+    return nullptr;
+  }
+
+  // If there is an initiator, check if its policies can be inherited. If they
+  // cannot, return null.
+
+  // The NavigationRequest creator might have specified that initiator policies
+  // cannot be inherited.
+  if (should_ignore_initiator_policies_for_inheritance_) {
+    return nullptr;
+  }
+
+  // If the StoragePartition of the navigation is different from the
+  // StoragePartition of the initiator, the initiator's policies should not be
+  // inherited.
+  if (site_info_.GetStoragePartitionConfig() !=
+      initiator_navigation_state_impl()
+          ->site_instance()
+          ->GetSiteInfo()
+          .GetStoragePartitionConfig()) {
+    return nullptr;
+  }
+
+  return &(initiator_navigation_state_impl()->policy_container_policies());
 }
 
 const blink::DocumentToken& NavigationRequest::GetDocumentToken() const {
@@ -6182,8 +6210,7 @@ network::mojom::WebSandboxFlags NavigationRequest::SandboxFlagsInitiator() {
     return network::mojom::WebSandboxFlags::kNone;
   }
   return initiator_navigation_state_impl()
-      ->policy_container_host()
-      ->policies()
+      ->policy_container_policies()
       .sandbox_flags;
 }
 
@@ -7843,13 +7870,12 @@ bool NavigationRequest::IsAllowedByConnectionAllowlist(bool is_redirect) {
     return true;
   }
 
-  if (!policy_container_builder_ ||
-      !policy_container_builder_->InitiatorPolicies()) {
-    return true;
-  }
-
+  // Here we are using the initiator's policies, regardless of whether they can
+  // be inherited by navigation. This is because this call is used to enforce
+  // 'connection-allowlist' in the initiator, and so the initiator's policies
+  // should always be respected lest we create a bypass.
   const PolicyContainerPolicies* policies =
-      policy_container_builder_->InitiatorPolicies();
+      GetInitiatorPolicyContainerPolicies();
 
   if (!policies) {
     return true;
@@ -8018,8 +8044,13 @@ net::Error NavigationRequest::CheckContentSecurityPolicy(
     parent_policies = &parent->policy_container_host()->policies();
   }
 
+  // Here we are using the initiator policies regardless of whether they can be
+  // inherited or not. The initiator policies will be used to enforce
+  // 'form-action' in the initiator. This should be enforced even if the
+  // policies are ultimately not inherited, as not doing so might allow to
+  // bypass the policy.
   const PolicyContainerPolicies* initiator_policies =
-      policy_container_builder_->InitiatorPolicies();
+      GetInitiatorPolicyContainerPolicies();
 
   // CSP checking happens in three phases, per steps 3-5 of
   // https://fetch.spec.whatwg.org/#main-fetch:
@@ -10965,7 +10996,11 @@ NavigationRequest::BuildClientSecurityStateForNavigationFetch() {
   switch (GetNavigatingFrameType()) {
     // The client [1] of the navigation fetch request is the navigation
     // initiator, so use the initiator's policies to set the
-    // `ClientSecurityState`.
+    // `ClientSecurityState`. Note that we use the initiator's policies
+    // regardless of whether they are inheritable or not, as the main purpose of
+    // this ClientSecurityState is to enforce LNA. Restricting ourselves to
+    // inheritable policies would create an LNA bypass, so we always pass the
+    // initiator policies.
     //
     // [1] https://fetch.spec.whatwg.org/#concept-request-client
     //
@@ -10976,31 +11011,23 @@ NavigationRequest::BuildClientSecurityStateForNavigationFetch() {
     // TODO(crbug.com/40258826): Determine how to treat guest views.
     case FrameType::kPrimaryMainFrame:
     case FrameType::kGuestMainFrame: {
-      if (!policy_container_builder_->InitiatorPolicies()) {
+      if (!GetInitiatorPolicyContainerPolicies()) {
         return nullptr;
       }
 
-      network::mojom::ClientSecurityStatePtr state = DeriveClientSecurityState(
-          *policy_container_builder_->InitiatorPolicies(),
+      return DeriveClientSecurityStateForRendererInitiatedNavigation(
+          *GetInitiatorPolicyContainerPolicies(),
           LocalNetworkAccessRequestContext::kMainFrameNavigation);
-
-      // Remove the initiator's COEP, it is unused. For iframes, the parent's
-      // COEP should be used: that is checked in `EnforceCOEP()`. The value
-      // in `ClientSecurityState` is used for subresources only, in which case
-      // the network service performs the check on behalf of the client.
-      state->cross_origin_embedder_policy =
-          network::CrossOriginEmbedderPolicy();
-
-      return state;
     }
     case FrameType::kSubframe: {
-      if (!policy_container_builder_->InitiatorPolicies()) {
+      if (!GetInitiatorPolicyContainerPolicies()) {
         return nullptr;
       }
 
-      network::mojom::ClientSecurityStatePtr state = DeriveClientSecurityState(
-          *policy_container_builder_->InitiatorPolicies(),
-          LocalNetworkAccessRequestContext::kSubframeNavigation);
+      network::mojom::ClientSecurityStatePtr state =
+          DeriveClientSecurityStateForRendererInitiatedNavigation(
+              *GetInitiatorPolicyContainerPolicies(),
+              LocalNetworkAccessRequestContext::kSubframeNavigation);
 
       // Check for policy overrides on LNA. For subframe navigations, we apply
       // policy overrides based on the initiator.
@@ -11018,13 +11045,6 @@ NavigationRequest::BuildClientSecurityStateForNavigationFetch() {
             OverrideLocalNetworkAccessPolicy(
                 state->local_network_access_request_policy, policy_override);
       }
-
-      // Remove the initiator's COEP, it is unused. For iframes, the parent's
-      // COEP should be used: that is checked in `EnforceCOEP()`. The value
-      // in `ClientSecurityState` is used for subresources only, in which case
-      // the network service performs the check on behalf of the client.
-      state->cross_origin_embedder_policy =
-          network::CrossOriginEmbedderPolicy();
 
       return state;
     }
@@ -11256,12 +11276,9 @@ void NavigationRequest::RecordAddressSpaceFeature() {
     return;
   }
 
-  // Get the initiator policies. Note that we are checking the policies from the
-  // initiator's InitiatorNavigationState and not the PolicyContainerBuilder, as
-  // the initiator policies may not be inherited by the PolicyContainerBuilder
-  // in case of StoragePartition mismatch. However, the address space of the
-  // initiator should always be taken into account, so we fall back to the
-  // record of the initiator policies stored in NavigationRequest.
+  // Get the initiator policies. Note that we are not checking whether the
+  // policies from the initiator's InitiatorNavigationState may be inherited.
+  // The address space of the initiator should always be taken into account.
   // If we lack an |initiator_navigation_state_|, then get the policies from the
   // initiator RenderFrameHost instead.
   // TODO(crbug.com/510258191): Check that |initiator_navigation_state_| is not
@@ -11269,9 +11286,7 @@ void NavigationRequest::RecordAddressSpaceFeature() {
   // without an |initiator_navigation_state_|.
   const PolicyContainerPolicies& initiator_policies =
       initiator_navigation_state_impl()
-          ? initiator_navigation_state_impl()
-                ->policy_container_host()
-                ->policies()
+          ? initiator_navigation_state_impl()->policy_container_policies()
           : initiator_render_frame_host->policy_container_host()->policies();
 
   std::optional<blink::mojom::WebFeature> optional_feature =
@@ -11379,7 +11394,8 @@ void NavigationRequest::ComputePoliciesToCommit() {
           GetParentFrame(), GetFrameTreeNodeId(), url);
 
   policy_container_builder_->ComputePolicies(
-      this, IsMhtmlOrSubframe(), commit_params_->frame_policy.sandbox_flags,
+      this, GetInitiatorPolicyContainerPoliciesForInheritance(),
+      IsMhtmlOrSubframe(), commit_params_->frame_policy.sandbox_flags,
       is_credentialless(), commit_params_->is_secure_context_root);
 }
 

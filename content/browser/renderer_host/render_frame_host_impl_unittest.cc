@@ -17,6 +17,7 @@
 #include "content/browser/site_instance_impl.h"
 #include "content/common/content_navigation_policy.h"
 #include "content/common/features.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/cors_origin_pattern_setter.h"
 #include "content/public/browser/shared_cors_origin_access_list.h"
 #include "content/public/browser/storage_partition.h"
@@ -26,6 +27,7 @@
 #include "content/public/test/fake_local_frame.h"
 #include "content/public/test/test_utils.h"
 #include "content/test/navigation_simulator_impl.h"
+#include "content/test/storage_partition_test_helpers.h"
 #include "content/test/test_render_frame_host.h"
 #include "content/test/test_render_view_host.h"
 #include "content/test/test_web_contents.h"
@@ -1874,6 +1876,77 @@ TEST_F(RenderFrameHostImplTest, NotificationServiceBlockedForPdf) {
 
   EXPECT_EQ("PDF renderers may not bind blink.mojom.NotificationService",
             bad_message_observer.WaitForBadMessage());
+}
+
+// Ensure that initiator policies are not inherited when the initiator is in a
+// different StoragePartition from the navigation.
+TEST_F(RenderFrameHostImplTest,
+       NoInitiatorPolicyInheritanceWithDifferentStoragePartitions) {
+  const GURL kRegularSite("https://default.com");
+  const GURL kCustomSite("https://custom.com");
+
+  // 1. Set up the custom storage partition client.
+  CustomStoragePartitionForSomeSites client(kCustomSite);
+  ScopedContentBrowserClientSetting setting(&client);
+
+  auto* default_partition =
+      static_cast<StoragePartitionImpl*>(main_rfh()->GetStoragePartition());
+
+  auto* browser_context = main_rfh()->GetBrowserContext();
+  StoragePartitionConfig config =
+      client.GetStoragePartitionConfigForSite(browser_context, kCustomSite);
+  auto* custom_partition = static_cast<StoragePartitionImpl*>(
+      browser_context->GetStoragePartition(config));
+
+  ASSERT_NE(default_partition, custom_partition);
+
+  // 2. Simulate a navigation to a page with the default StoragePartition.
+  NavigationSimulator::NavigateAndCommitFromBrowser(contents(), kRegularSite);
+  EXPECT_EQ(default_partition, main_rfh()->GetStoragePartition());
+  PolicyContainerPolicies kDefaultPolicies =
+      main_test_rfh()->policy_container_host()->policies().Clone();
+
+  // 3. Set some CSP on the page, so that we have non-default
+  // PolicyContainerPolicies.
+  auto csp = network::ParseContentSecurityPolicies(
+      "script-src https://default.com",
+      network::mojom::ContentSecurityPolicyType::kEnforce,
+      network::mojom::ContentSecurityPolicySource::kHTTP, kRegularSite);
+  main_test_rfh()->policy_container_host()->AddContentSecurityPolicies(
+      std::move(csp));
+
+  PolicyContainerPolicies initiator_policies =
+      main_test_rfh()->policy_container_host()->policies().Clone();
+  EXPECT_NE(kDefaultPolicies, initiator_policies);
+
+  // 4. Start a renderer-initiated navigation to the site that uses a
+  // non-default StoragePartition.
+  std::unique_ptr<NavigationSimulator> renderer_navigation =
+      NavigationSimulator::CreateRendererInitiated(kCustomSite,
+                                                   main_test_rfh());
+  renderer_navigation->ReadyToCommit();
+
+  // 5. The initiator policies should be recorded, but they should not be
+  // inheritable.
+  NavigationRequest* navigation_request = static_cast<NavigationRequest*>(
+      renderer_navigation->GetNavigationHandle());
+  EXPECT_NE(nullptr, navigation_request->GetInitiatorPolicyContainerPolicies());
+  EXPECT_EQ(initiator_policies,
+            *(navigation_request->GetInitiatorPolicyContainerPolicies()));
+  EXPECT_EQ(
+      nullptr,
+      navigation_request->GetInitiatorPolicyContainerPoliciesForInheritance());
+
+  // 6. Simulate the navigation commit. The RenderFrameHost committing the
+  // navigation should use a custom StoragePartition and it should not have
+  // inherited its policies from its initiator.
+  renderer_navigation->Commit();
+  EXPECT_EQ(custom_partition, main_test_rfh()->GetStoragePartition());
+
+  PolicyContainerPolicies policies =
+      main_test_rfh()->policy_container_host()->policies().Clone();
+  EXPECT_NE(initiator_policies, policies);
+  EXPECT_EQ(kDefaultPolicies, policies);
 }
 
 }  // namespace content

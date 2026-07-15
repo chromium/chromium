@@ -83,6 +83,7 @@
 #include "content/browser/bluetooth/web_bluetooth_service_impl.h"
 #include "content/browser/broadcast_channel/broadcast_channel_provider.h"
 #include "content/browser/broadcast_channel/broadcast_channel_service.h"
+#include "content/browser/browser_context_impl.h"
 #include "content/browser/browser_main_loop.h"
 #include "content/browser/can_commit_status.h"
 #include "content/browser/closewatcher/close_listener_host.h"
@@ -2520,7 +2521,7 @@ scoped_refptr<InitiatorNavigationState>
 RenderFrameHostImpl::GetInitiatorNavigationStateFromFrameToken(
     const blink::LocalFrameToken* frame_token,
     int initiator_process_id,
-    StoragePartitionImpl* storage_partition) {
+    BrowserContext* browser_context) {
   // TODO(crbug.com/510258191): The initiator state should always be retrieved
   // from a NavigationStateKeepAlive recorded at the moment the navigation was
   // initiated. Update this function once we store NavigationStateKeepAlives
@@ -2542,9 +2543,10 @@ RenderFrameHostImpl::GetInitiatorNavigationStateFromFrameToken(
   }
 
   // Otherwise get it from the NavigationStateKeepAlive stored in
-  // `storage_partition`.
+  // `browser_context`.
   NavigationStateKeepAlive* navigation_state =
-      storage_partition->GetNavigationStateKeepAlive(*frame_token);
+      BrowserContextImpl::From(browser_context)
+          ->GetNavigationStateKeepAlive(*frame_token);
   if (navigation_state) {
     return navigation_state->initiator_navigation_state();
   }
@@ -10181,7 +10183,7 @@ void RenderFrameHostImpl::OpenURL(blink::mojom::OpenURLParamsPtr params) {
     initiator_navigation_state =
         RenderFrameHostImpl::GetInitiatorNavigationStateFromFrameToken(
             base::OptionalToPtr(params->initiator_frame_token),
-            GetProcess()->GetDeprecatedID(), GetStoragePartition());
+            GetProcess()->GetDeprecatedID(), GetBrowserContext());
 
     RenderFrameHostImpl* initiator_frame = RenderFrameHostImpl::FromFrameToken(
         GetProcess()->GetDeprecatedID(), params->initiator_frame_token.value());
@@ -11148,10 +11150,12 @@ void RenderFrameHostImpl::StartDragging(
 void RenderFrameHostImpl::IssueKeepAliveHandle(
     mojo::PendingReceiver<blink::mojom::NavigationStateKeepAliveHandle>
         receiver) {
-  GetStoragePartition()->RegisterKeepAliveHandle(
+  BrowserContextImpl* browser_context =
+      BrowserContextImpl::From(GetBrowserContext());
+  browser_context->RegisterKeepAliveHandle(
       std::move(receiver),
       base::WrapUnique(new NavigationStateKeepAlive(
-          CreateInitiatorStateFromCurrentFrame(), GetStoragePartition())));
+          CreateInitiatorStateFromCurrentFrame(), browser_context)));
 }
 
 scoped_refptr<InitiatorNavigationState>
@@ -11562,7 +11566,7 @@ void RenderFrameHostImpl::BeginNavigation(
   scoped_refptr<InitiatorNavigationState> initiator_navigation_state =
       GetInitiatorNavigationStateFromFrameToken(
           base::OptionalToPtr(begin_params->initiator_frame_token),
-          GetProcess()->GetDeprecatedID(), GetStoragePartition());
+          GetProcess()->GetDeprecatedID(), GetBrowserContext());
 
   if (waiting_for_init_) {
     pending_navigate_ = std::make_unique<PendingNavigation>(

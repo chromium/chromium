@@ -460,7 +460,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   GetInitiatorNavigationStateFromFrameToken(
       const blink::LocalFrameToken* frame_token,
       int initiator_process_id,
-      StoragePartitionImpl* storage_partition);
+      BrowserContext* browser_context);
 
   RenderFrameHostImpl(const RenderFrameHostImpl&) = delete;
   RenderFrameHostImpl& operator=(const RenderFrameHostImpl&) = delete;

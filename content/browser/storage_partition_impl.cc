@@ -1221,20 +1221,6 @@ void StoragePartitionImpl::OnBrowserContextWillBeDestroyed() {
   }
 }
 
-void StoragePartitionImpl::RegisterKeepAliveHandle(
-    mojo::PendingReceiver<blink::mojom::NavigationStateKeepAliveHandle>
-        receiver,
-    std::unique_ptr<NavigationStateKeepAlive> handle) {
-  auto frame_token = static_cast<InitiatorNavigationStateImpl*>(
-                         handle->initiator_navigation_state().get())
-                         ->frame_token();
-  navigation_state_keep_alive_map_.erase(frame_token);
-  navigation_state_keep_alive_map_.insert(
-      std::make_pair(frame_token, handle.get()));
-
-  keep_alive_handles_receiver_set_.Add(std::move(handle), std::move(receiver));
-}
-
 void StoragePartitionImpl::RestrictNetworkForIdsInNetworkContext(
     const std::map<base::UnguessableToken, network::ConnectionAllowlists>&
         ids_to_allowlists,
@@ -1282,27 +1268,6 @@ void StoragePartitionImpl::ClearNetworkRestrictionsAfterDelayCallback(
   }
 
   clear_network_restrictions_callback_for_testing_.Run();  // IN-TEST
-}
-
-void StoragePartitionImpl::RemoveKeepAliveHandleFromMap(
-    blink::LocalFrameToken frame_token,
-    NavigationStateKeepAlive* keep_alive) {
-  // The NavigationStateKeepAlive associated with `frame_token` may have
-  // changed. Make sure the specified one is removed from the map.
-  auto it = navigation_state_keep_alive_map_.find(frame_token);
-  if (it != navigation_state_keep_alive_map_.end() &&
-      it->second == keep_alive) {
-    navigation_state_keep_alive_map_.erase(it);
-  }
-}
-
-NavigationStateKeepAlive* StoragePartitionImpl::GetNavigationStateKeepAlive(
-    blink::LocalFrameToken frame_token) {
-  auto it = navigation_state_keep_alive_map_.find(frame_token);
-  if (it == navigation_state_keep_alive_map_.end()) {
-    return nullptr;
-  }
-  return it->second;
 }
 
 // static

@@ -108,7 +108,6 @@ class FontAccessManager;
 class GeneratedCodeCacheContext;
 class HostZoomLevelContext;
 class InterestGroupManagerImpl;
-class NavigationStateKeepAlive;
 class PaymentAppContextImpl;
 class PrivateAggregationDataModel;
 class PrivateAggregationManager;
@@ -517,15 +516,6 @@ class CONTENT_EXPORT StoragePartitionImpl
   // Called by BrowserContextImpl prior to destruction.
   void OnBrowserContextWillBeDestroyed();
 
-  // Store `receiver` and its corresponding `handle`. These will be kept alive
-  // as long as the remote endpoint of `receiver` is still alive on the renderer
-  // side. The receiver will be automatically deleted when the endpoint is
-  // disconnected.
-  void RegisterKeepAliveHandle(
-      mojo::PendingReceiver<blink::mojom::NavigationStateKeepAliveHandle>
-          receiver,
-      std::unique_ptr<NavigationStateKeepAlive> handle);
-
   // Forward the call to `NetworkContext::RestrictNetworkForIds` and save the
   // IDs in `StoragePartitionImpl`. Clients should restrict network access for
   // IDs using this function instead of calling
@@ -548,16 +538,6 @@ class CONTENT_EXPORT StoragePartitionImpl
   // destroyed.
   void ClearNetworkRestrictionsAfterDelay(
       const std::vector<base::UnguessableToken>& network_restrictions_ids);
-
-  // Get the NavigationStateKeepAlive associated with `frame_token`. See
-  // `navigation_state_keep_alive_map_`.
-  NavigationStateKeepAlive* GetNavigationStateKeepAlive(
-      blink::LocalFrameToken frame_token);
-
-  // Removes the NavigationStateKeepAlive associated with `frame_token`. This
-  // should be called when the keep alive is destructed.
-  void RemoveKeepAliveHandleFromMap(blink::LocalFrameToken frame_token,
-                                    NavigationStateKeepAlive* keep_alive);
 
   void SetClearNetworkRestrictionsParamsForTesting(
       const base::TimeDelta& delay,
@@ -942,36 +922,6 @@ class CONTENT_EXPORT StoragePartitionImpl
       url_loader_network_observers_;
 
   int next_pending_trust_token_issuance_callback_key_ = 0;
-
-  // Maps frame tokens to NavigationStateKeepAlives. There is one
-  // NavigationStateKeepAlive per LocalFrameToken. It's possible to have
-  // multiple keep alives per LocalFrameToken (e.g., multiple in-flight
-  // navigations per RenderFrameHost), but this map will store the most recent
-  // NavigationStateKeepAlive.
-  // In the case of multiple navigations for a RenderFrameHost,
-  // it is assumed that they are handled in order, with the latest navigation's
-  // keep alive storing the state for that RenderFrameHost.
-  // Note: This member must be above `keep_alive_handles_receiver_set_`. During
-  // destruction, when NavigationStateKeepAlives get removed from the receiver
-  // set, they will them remove themselves from
-  // `navigation_state_keep_alive_map_`, so this map must still be alive when
-  // that happens.
-  using TokenNavigationStateKeepAliveMap =
-      absl::flat_hash_map<blink::LocalFrameToken, NavigationStateKeepAlive*>;
-  TokenNavigationStateKeepAliveMap navigation_state_keep_alive_map_;
-
-  // Active keepalive handles for in-flight navigations. They are retained
-  // on `StoragePartition` because, by design, they may need to outlive the
-  // `RenderFrameHostImpl` that initiated the navigation, but shouldn't be used
-  // in a different StoragePartition.
-  // Note that this set may contain in-flight navigations for different
-  // RenderFrameHosts, and furthermore, there may even be multiple in-flight
-  // navigations for a single RenderFrameHost.
-  // Lookups should not be done from this set. Accessing PolicyContainerHosts
-  // kept alive by NavigationStateKeepAlive should be done through
-  // PolicyContainerHost::FromFrameToken.
-  mojo::UniqueReceiverSet<blink::mojom::NavigationStateKeepAliveHandle>
-      keep_alive_handles_receiver_set_;
 
 #if DCHECK_IS_ON()
   bool on_browser_context_will_be_destroyed_called_ = false;

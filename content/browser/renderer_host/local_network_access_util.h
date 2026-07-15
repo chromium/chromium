@@ -56,6 +56,21 @@ network::mojom::ClientSecurityStatePtr CONTENT_EXPORT DeriveClientSecurityState(
     const PolicyContainerPolicies& policies,
     LocalNetworkAccessRequestContext local_network_request_context);
 
+// Used to create a ClientSecurityState for renderer-initiated navigations.
+// Browser initiated navigations do not have a ClientSecurityState as we do not
+// need to check web security policies during them (since they originate from
+// the browser).
+// `initiator_policies` are the policies of the initiator of the navigation,
+// which we will use for enforcement during the navigation Fetch. Note that
+// the initiator policies should always be passed, even if they might not be
+// inherited by the navigation. Passing only inheritable policies might create
+// an LNA bypass, which is why initiator policies should be passed for all
+// renderer-initiated navigations.
+network::mojom::ClientSecurityStatePtr CONTENT_EXPORT
+DeriveClientSecurityStateForRendererInitiatedNavigation(
+    const PolicyContainerPolicies& initiator_policies,
+    LocalNetworkAccessRequestContext local_network_request_context);
+
 // Determines the IP address space that should be associated to execution
 // contexts instantiated from a resource loaded from this `url` and the given
 // response.
