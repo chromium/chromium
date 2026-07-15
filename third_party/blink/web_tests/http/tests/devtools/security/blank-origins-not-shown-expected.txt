@@ -4,22 +4,34 @@ Group: Main origin
 Group: Unknown / canceled
 <SPAN class=highlighted-url >
     <SPAN class=url-scheme-unknown >
+        <#comment >
+        </#comment>
 https
     </SPAN>
     <SPAN class=url-scheme-separator >
+        <#comment >
+        </#comment>
 ://
     </SPAN>
     <SPAN >
+        <#comment >
+        </#comment>
 foo.test
     </SPAN>
 </SPAN>
 <SPAN class=url-scheme-unknown >
+    <#comment >
+    </#comment>
 https
 </SPAN>
 <SPAN class=url-scheme-separator >
+    <#comment >
+    </#comment>
 ://
 </SPAN>
 <SPAN >
+    <#comment >
+    </#comment>
 foo.test
 </SPAN>
 

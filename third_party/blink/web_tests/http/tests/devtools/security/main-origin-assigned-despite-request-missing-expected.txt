@@ -5,63 +5,99 @@ Detected main origin: http://127.0.0.1:8000
 Group: Main origin
 <SPAN class=highlighted-url >
     <SPAN class=url-scheme-unknown >
+        <#comment >
+        </#comment>
 http
     </SPAN>
     <SPAN class=url-scheme-separator >
+        <#comment >
+        </#comment>
 ://
     </SPAN>
     <SPAN >
+        <#comment >
+        </#comment>
 127.0.0.1:8000
     </SPAN>
 </SPAN>
 <SPAN class=url-scheme-unknown >
+    <#comment >
+    </#comment>
 http
 </SPAN>
 <SPAN class=url-scheme-separator >
+    <#comment >
+    </#comment>
 ://
 </SPAN>
 <SPAN >
+    <#comment >
+    </#comment>
 127.0.0.1:8000
 </SPAN>
 Group: Unknown / canceled
 <SPAN class=highlighted-url >
     <SPAN class=url-scheme-unknown >
+        <#comment >
+        </#comment>
 https
     </SPAN>
     <SPAN class=url-scheme-separator >
+        <#comment >
+        </#comment>
 ://
     </SPAN>
     <SPAN >
+        <#comment >
+        </#comment>
 foo.test
     </SPAN>
 </SPAN>
 <SPAN class=url-scheme-unknown >
+    <#comment >
+    </#comment>
 https
 </SPAN>
 <SPAN class=url-scheme-separator >
+    <#comment >
+    </#comment>
 ://
 </SPAN>
 <SPAN >
+    <#comment >
+    </#comment>
 foo.test
 </SPAN>
 <SPAN class=highlighted-url >
     <SPAN class=url-scheme-unknown >
+        <#comment >
+        </#comment>
 https
     </SPAN>
     <SPAN class=url-scheme-separator >
+        <#comment >
+        </#comment>
 ://
     </SPAN>
     <SPAN >
+        <#comment >
+        </#comment>
 bar.test
     </SPAN>
 </SPAN>
 <SPAN class=url-scheme-unknown >
+    <#comment >
+    </#comment>
 https
 </SPAN>
 <SPAN class=url-scheme-separator >
+    <#comment >
+    </#comment>
 ://
 </SPAN>
 <SPAN >
+    <#comment >
+    </#comment>
 bar.test
 </SPAN>
 
