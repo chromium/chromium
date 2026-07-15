@@ -26221,7 +26221,7 @@
             ]
         }
     ],
-    "WebGLDiscardBackBuffer": [
+    "WebGLMemoryExperiments": [
         {
             "platforms": [
                 "android",
@@ -26234,6 +26234,7 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
+                        "OffscreenCanvasPropagateVisibility",
                         "WebGLDiscardBackBuffer"
                     ]
                 }
