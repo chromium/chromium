@@ -668,12 +668,15 @@ void TapDoneButtonOnInfobarModal() {
 
 // Tests that a supervised user account with parental controls enabled does not
 // have access to modify camera or microphone site permissions.
-- (void)testSupervisedUserPermissionsNoCameraOrMicAccess {
-  // TODO(crbug.com/40921852): Failing on iOS17.
-  if (@available(iOS 17.0, *)) {
-    XCTSkip(@"Failing on iOS17");
-  }
-
+// TODO(crbug.com/40921852): Failing on iOS17 on physical devices.
+#if TARGET_OS_SIMULATOR
+#define MAYBE_testSupervisedUserPermissionsNoCameraOrMicAccess \
+  testSupervisedUserPermissionsNoCameraOrMicAccess
+#else
+#define MAYBE_testSupervisedUserPermissionsNoCameraOrMicAccess \
+  DISABLED_testSupervisedUserPermissionsNoCameraOrMicAccess
+#endif
+- (void)MAYBE_testSupervisedUserPermissionsNoCameraOrMicAccess {
   // These settings are controlled in Family Link and would be updated through
   // Sync content settings.
   [ChromeEarlGrey setContentSetting:ContentSetting::CONTENT_SETTING_BLOCK
