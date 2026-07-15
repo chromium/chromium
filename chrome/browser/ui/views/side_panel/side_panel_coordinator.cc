@@ -220,6 +220,16 @@ void SidePanelCoordinator::Close(SidePanelEntryHideReason reason,
     return;
   }
 
+  // If focus is currently inside the side panel (e.g. close button),
+  // shift focus back to the main web contents before closing.
+  views::FocusManager* focus_manager = side_panel->GetFocusManager();
+  if (focus_manager &&
+      side_panel->Contains(focus_manager->GetStoredFocusView())) {
+    tabs::TabInterface* active_tab = browser_->GetActiveTabInterface();
+    if (active_tab && active_tab->GetContents()) {
+      active_tab->GetContents()->Focus();
+    }
+  }
 
   // If we are currently animating the side panel contents so it is parented to
   // the BrowserView, reparent it now so that the entry will be notified it is

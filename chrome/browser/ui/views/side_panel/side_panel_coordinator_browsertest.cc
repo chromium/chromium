@@ -335,6 +335,29 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest, VerifyFocusOrder) {
   EXPECT_LT(header_it, content_it);
 }
 
+IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest, CloseRestoresFocus) {
+  Init();
+  coordinator()->DisableAnimationsForTesting();
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+
+  coordinator()->Show(SidePanelEntry::Key(SidePanelEntry::Id::kReadAnything));
+  SidePanel* side_panel = GetSidePanel();
+  ASSERT_TRUE(side_panel->GetVisible());
+
+  views::View* content_view = side_panel->GetContentParentView();
+  content_view->SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
+  content_view->RequestFocus();
+
+  views::FocusManager* focus_manager = browser_view->GetFocusManager();
+  ASSERT_TRUE(side_panel->Contains(focus_manager->GetFocusedView()));
+
+  coordinator()->Close();
+
+  EXPECT_FALSE(side_panel->GetVisible());
+  EXPECT_NE(focus_manager->GetFocusedView(), nullptr);
+  EXPECT_FALSE(side_panel->Contains(focus_manager->GetFocusedView()));
+}
+
 IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest, OpenWhileClosing) {
   Init();
 
