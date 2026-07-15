@@ -157,6 +157,8 @@ source_set("impl") {
       "//chrome/browser/ui/profiles",
       "//chrome/browser/ui/safety_hub",
       "//chrome/browser/ui/send_tab_to_self",
+      "//chrome/browser/ui/side_panel",
+      "//chrome/browser/ui/side_panel:side_panel_views_dependent",
       "//chrome/browser/ui/tabs:tab_model",
       "//chrome/browser/ui/tabs:tab_strip",
       "//chrome/browser/ui/tabs/back_to_opener",

@@ -33,6 +33,8 @@
 #include "chrome/browser/ui/bookmarks/bookmark_utils_desktop.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_command_controller.h"
+#include "chrome/browser/ui/side_panel/side_panel_action_callback.h"
+#include "chrome/browser/ui/side_panel/side_panel_enums.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_bar_view.h"
 #include "chrome/browser/ui/views/event_utils.h"
@@ -46,6 +48,7 @@
 #include "components/profile_metrics/browser_profile_type.h"
 #include "components/url_formatter/url_formatter.h"
 #include "content/public/browser/page_navigator.h"
+#include "ui/actions/actions.h"
 #include "ui/base/accelerators/menu_label_accelerator_util.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
@@ -433,7 +436,20 @@ bool BookmarkMenuDelegate::IsTriggerableEvent(views::MenuItemView* menu,
 
 void BookmarkMenuDelegate::ExecuteCommand(int id, int mouse_event_flags) {
   if (id == IDC_SHOW_BOOKMARK_SIDE_PANEL) {
-    browser_->command_controller()->ExecuteCommand(id);
+    SidePanelOpenTrigger trigger =
+        (location_ == BookmarkLaunchLocation::kAppMenu ||
+         location_ == BookmarkLaunchLocation::kTopMenu)
+            ? SidePanelOpenTrigger::kAppMenu
+            : SidePanelOpenTrigger::kBookmarkBar;
+    actions::ActionInvocationContext context =
+        actions::ActionInvocationContext::Builder()
+            .SetProperty(
+                kSidePanelOpenTriggerKey,
+                static_cast<std::underlying_type_t<SidePanelOpenTrigger>>(
+                    trigger))
+            .Build();
+    browser_->command_controller()->ExecuteCommandWithContext(
+        id, std::move(context));
     return;
   }
 

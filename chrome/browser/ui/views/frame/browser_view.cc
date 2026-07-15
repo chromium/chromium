@@ -109,6 +109,8 @@
 #include "chrome/browser/ui/sad_tab_helper.h"
 #include "chrome/browser/ui/sharing_hub/sharing_hub_bubble_controller.h"
 #include "chrome/browser/ui/sharing_hub/sharing_hub_bubble_view.h"
+#include "chrome/browser/ui/side_panel/side_panel_action_callback.h"
+#include "chrome/browser/ui/side_panel/side_panel_enums.h"
 #include "chrome/browser/ui/side_panel/side_panel_registry.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/tabs/alert/tab_alert_controller.h"
@@ -5129,6 +5131,19 @@ bool BrowserView::AcceleratorPressed(const ui::Accelerator& accelerator) {
         browsing_data_important_sites_util::
             kOpenClearBrowsingDataDialogViaAcceleratorEventId,
         this);
+  }
+
+  if (command_id == IDC_SHOW_READING_MODE_SIDE_PANEL) {
+    actions::ActionInvocationContext context =
+        actions::ActionInvocationContext::Builder()
+            .SetProperty(
+                kSidePanelOpenTriggerKey,
+                static_cast<std::underlying_type_t<SidePanelOpenTrigger>>(
+                    SidePanelOpenTrigger::kReadAnythingKeyboardShortcut))
+            .Build();
+    return chrome::ExecuteCommandWithContext(browser_.get(), command_id,
+                                             std::move(context),
+                                             accelerator.time_stamp());
   }
 
   return chrome::ExecuteCommand(browser_.get(), command_id,

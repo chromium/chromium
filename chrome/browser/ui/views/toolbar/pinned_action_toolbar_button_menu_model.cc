@@ -14,10 +14,13 @@
 #include "base/strings/strcat.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
+#include "chrome/browser/ui/actions/chrome_action_properties.h"
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/customize_chrome/side_panel_controller.h"
+#include "chrome/browser/ui/side_panel/side_panel_action_callback.h"
+#include "chrome/browser/ui/side_panel/side_panel_enums.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
@@ -27,6 +30,7 @@
 #include "ui/actions/action_id.h"
 #include "ui/actions/actions.h"
 #include "ui/base/interaction/element_identifier.h"
+#include "ui/base/window_open_disposition_utils.h"
 #include "ui/menus/simple_menu_model.h"
 
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kPinnedActionToolbarPinElementId);
@@ -210,7 +214,15 @@ void PinnedActionToolbarButtonMenuModel::ActivatedAt(size_t index,
       action_id == kActionUnpinActionFromToolbar) {
     UpdatePinState(action_id);
   } else {
-    GetActionItemFor(action_id)->InvokeAction();
+    GetActionItemFor(action_id)->InvokeAction(
+        actions::ActionInvocationContext::Builder()
+            .SetProperty(chrome::kDispositionKey,
+                         ui::DispositionFromEventFlags(event_flags))
+            .SetProperty(
+                kSidePanelOpenTriggerKey,
+                static_cast<std::underlying_type_t<SidePanelOpenTrigger>>(
+                    SidePanelOpenTrigger::kPinnedEntryToolbarButton))
+            .Build());
   }
 }
 

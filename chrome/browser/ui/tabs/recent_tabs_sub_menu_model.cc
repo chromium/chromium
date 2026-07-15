@@ -37,6 +37,8 @@
 #include "chrome/browser/ui/browser_live_tab_context.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/side_panel/side_panel_action_callback.h"
+#include "chrome/browser/ui/side_panel/side_panel_enums.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/tabs/tab_group_theme.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -61,6 +63,7 @@
 #include "components/tab_groups/tab_group_id.h"
 #include "components/vector_icons/vector_icons.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
+#include "ui/actions/actions.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
@@ -311,6 +314,22 @@ bool RecentTabsSubMenuModel::ExecuteCustomCommand(int command_id,
   }
   if (command_id == IDC_SHOW_HISTORY) {
     LogWrenchMenuAction(MENU_ACTION_SHOW_HISTORY);
+  }
+
+  if (command_id == IDC_SHOW_HISTORY_CLUSTERS_SIDE_PANEL ||
+      command_id == IDC_SHOW_TABS_FROM_OTHER_DEVICES_SIDE_PANEL ||
+      command_id == IDC_SHOW_HISTORY) {
+    actions::ActionInvocationContext context =
+        actions::ActionInvocationContext::Builder()
+            .SetProperty(
+                kSidePanelOpenTriggerKey,
+                static_cast<std::underlying_type_t<SidePanelOpenTrigger>>(
+                    SidePanelOpenTrigger::kAppMenu))
+            .Build();
+    chrome::ExecuteCommandWithDispositionAndContext(
+        browser_, command_id, ui::DispositionFromEventFlags(event_flags),
+        std::move(context));
+    return true;
   }
 
   chrome::ExecuteCommandWithDisposition(
