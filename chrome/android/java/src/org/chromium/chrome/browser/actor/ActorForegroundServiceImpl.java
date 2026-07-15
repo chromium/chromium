@@ -29,6 +29,9 @@ import org.chromium.components.browser_ui.notifications.NotificationWrapper;
 /** Implementation of ActorForegroundService. */
 @NullMarked
 public class ActorForegroundServiceImpl extends SplitCompatService.Impl {
+    public static final String EXTRA_CONTEXT_ID =
+            "org.chromium.chrome.browser.actor.EXTRA_CONTEXT_ID";
+
     private final IBinder mBinder = new LocalBinder();
     private long mStartTime;
     private boolean mIsForeground;
@@ -44,6 +47,18 @@ public class ActorForegroundServiceImpl extends SplitCompatService.Impl {
     public static void startActorForegroundService(Context context) {
         ForegroundServiceUtils.getInstance()
                 .startForegroundService(new Intent(context, ActorForegroundService.class));
+    }
+
+    /**
+     * Start the foreground service with this given context and context ID.
+     *
+     * @param context The context used to start service.
+     * @param contextId The context ID associated with the request.
+     */
+    public static void startActorForegroundServiceWithContextId(Context context, String contextId) {
+        Intent intent = new Intent(context, ActorForegroundService.class);
+        intent.putExtra(EXTRA_CONTEXT_ID, contextId);
+        ForegroundServiceUtils.getInstance().startForegroundService(intent);
     }
 
     /**

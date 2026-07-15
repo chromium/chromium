@@ -116,8 +116,8 @@ public class ActorKeyedService {
     }
 
     @CalledByNative
-    private void ensureForegroundServiceStarted() {
-        ActorForegroundServiceController.get().startService();
+    private void ensureForegroundServiceStarted(String contextId) {
+        ActorForegroundServiceController.get().startService(contextId);
     }
 
     @CalledByNative

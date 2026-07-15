@@ -182,10 +182,11 @@ class ActorKeyedService : public KeyedService,
   void OnProfileInitializationComplete(Profile* profile) override;
 
 #if BUILDFLAG(IS_ANDROID)
-  using EnsureForegroundServiceStartedCallback = base::RepeatingClosure;
+  using EnsureForegroundServiceStartedCallback =
+      base::RepeatingCallback<void(const std::string&)>;
   base::CallbackListSubscription AddForegroundServiceStartedCallback(
       EnsureForegroundServiceStartedCallback callback);
-  void EnsureForegroundServiceStarted();
+  void EnsureForegroundServiceStarted(const std::string& context_id);
 #endif
 
   base::WeakPtr<ActorKeyedService> GetWeakPtr();
@@ -231,7 +232,8 @@ class ActorKeyedService : public KeyedService,
       task_state_change_callback_list_;
 
 #if BUILDFLAG(IS_ANDROID)
-  base::RepeatingClosureList ensure_foreground_service_started_callbacks_;
+  base::RepeatingCallbackList<void(const std::string&)>
+      ensure_foreground_service_started_callbacks_;
 #endif
 
   // Owns this.

@@ -27,7 +27,7 @@ public class NoOpActorForegroundServiceController implements ActorForegroundServ
     private NoOpActorForegroundServiceController() {}
 
     @Override
-    public void startService() {}
+    public void startService(String contextId) {}
 
     @Override
     public void startAndBindService(Runnable onConnected) {}

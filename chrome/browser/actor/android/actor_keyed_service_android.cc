@@ -124,9 +124,11 @@ void ActorKeyedServiceAndroid::OnTaskStateChanged(ActorTask& task) {
                                             static_cast<int>(task.GetState()));
 }
 
-void ActorKeyedServiceAndroid::EnsureForegroundServiceStarted() {
+void ActorKeyedServiceAndroid::EnsureForegroundServiceStarted(
+    const std::string& context_id) {
   JNIEnv* env = AttachCurrentThread();
-  Java_ActorKeyedService_ensureForegroundServiceStarted(env, java_obj_);
+  Java_ActorKeyedService_ensureForegroundServiceStarted(
+      env, java_obj_, base::android::ConvertUTF8ToJavaString(env, context_id));
 }
 
 }  // namespace actor

@@ -63,9 +63,9 @@ public class ActorForegroundServiceControllerImpl implements ActorForegroundServ
             };
 
     @Override
-    public void startService() {
+    public void startService(String contextId) {
         Context context = ContextUtils.getApplicationContext();
-        ActorForegroundServiceImpl.startActorForegroundService(context);
+        ActorForegroundServiceImpl.startActorForegroundServiceWithContextId(context, contextId);
     }
 
     @Override

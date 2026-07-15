@@ -21,7 +21,16 @@ import java.util.Set;
 @NullMarked
 public interface ActorForegroundServiceController {
     /** Starts the service. */
-    void startService();
+    default void startService() {
+        startService("");
+    }
+
+    /**
+     * Starts the service.
+     *
+     * @param contextId The context ID associated with the request.
+     */
+    void startService(String contextId);
 
     /**
      * Starts the service and binds to it.

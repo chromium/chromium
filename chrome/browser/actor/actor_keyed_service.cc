@@ -719,8 +719,9 @@ ActorKeyedService::AddForegroundServiceStartedCallback(
   return ensure_foreground_service_started_callbacks_.Add(std::move(callback));
 }
 
-void ActorKeyedService::EnsureForegroundServiceStarted() {
-  ensure_foreground_service_started_callbacks_.Notify();
+void ActorKeyedService::EnsureForegroundServiceStarted(
+    const std::string& context_id) {
+  ensure_foreground_service_started_callbacks_.Notify(context_id);
 }
 #endif
 

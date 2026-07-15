@@ -32,7 +32,7 @@ class ActorKeyedServiceAndroid : public base::SupportsUserData::Data {
 
  private:
   void OnTaskStateChanged(ActorTask& task);
-  void EnsureForegroundServiceStarted();
+  void EnsureForegroundServiceStarted(const std::string& context_id);
 
   base::android::ScopedJavaGlobalRef<jobject> java_obj_;
   raw_ptr<ActorKeyedService> service_;
