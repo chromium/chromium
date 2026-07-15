@@ -38,7 +38,7 @@ enterprise_management::RemoteCommand_Type ExtensionUpdateCheckJob::GetType()
 bool ExtensionUpdateCheckJob::ParseCommandPayload(
     const std::string& command_payload) {
   VLOG_POLICY(2, REMOTE_COMMANDS)
-      << "Extension update check command payload: " << command_payload;
+      << "Extension update check command payload: '" << command_payload << "'";
   std::optional<base::DictValue> root = base::JSONReader::ReadDict(
       command_payload, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!root) {
@@ -78,6 +78,7 @@ void ExtensionUpdateCheckJob::RunImpl(CallbackWithResult result_callback) {
       base::BindOnce(std::move(result_callback), policy::ResultType::kSuccess,
                      std::nullopt));
 
+  VLOG_POLICY(1, REMOTE_COMMANDS) << "Running Extension Update remote command.";
   updater->CheckNow(std::move(params));
 }
 
