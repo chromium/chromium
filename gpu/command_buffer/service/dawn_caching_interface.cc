@@ -29,90 +29,72 @@ DawnCachingInterface::DawnCachingInterface(scoped_refptr<MemoryCache> backend,
 DawnCachingInterface::~DawnCachingInterface() = default;
 
 size_t DawnCachingInterface::FindKey(std::span<const std::byte> key) {
-  if (memory_cache() == nullptr) {
-    return 0u;
-  }
   std::string_view key_str(reinterpret_cast<const char*>(key.data()),
                            key.size());
-  auto entry = memory_cache()->Find(key_str);
-  if (!entry) {
-    return 0u;
-  }
-  return entry->DataSize();
+  return FindKey(key_str);
 }
 
 size_t DawnCachingInterface::LoadData(std::span<const std::byte> key,
-                                      std::span<std::byte> dest) {
-  if (memory_cache() == nullptr) {
-    return 0u;
-  }
+                                      std::span<std::byte> dst) {
   std::string_view key_str(reinterpret_cast<const char*>(key.data()),
                            key.size());
-  auto entry = memory_cache()->Find(key_str);
-  if (!entry) {
-    return 0u;
-  }
-
-  // Verify that the size being copied out is identical.
-  DCHECK(dest.size() == entry->DataSize());
-
-  auto src = entry->Data();
-  std::ranges::copy(std::as_bytes(std::span(src)), dest.begin());
-  return entry->DataSize();
+  // SAFETY: `dst` is provided by the caller who is responsible.
+  base::span<uint8_t> dst_span = UNSAFE_BUFFERS(
+      base::span(reinterpret_cast<uint8_t*>(dst.data()), dst.size()));
+  return LoadData(key_str, dst_span);
 }
 
 void DawnCachingInterface::StoreData(std::span<const std::byte> key,
                                      std::span<const std::byte> src) {
-  if (memory_cache() == nullptr || src.empty()) {
-    return;
-  }
   std::string_view key_str(reinterpret_cast<const char*>(key.data()),
                            key.size());
+  // SAFETY: `src` is provided by the caller who is responsible.
   base::span<const uint8_t> src_span = UNSAFE_BUFFERS(
       base::span(reinterpret_cast<const uint8_t*>(src.data()), src.size()));
-  memory_cache()->Store(key_str, src_span);
-
-  // Send the cache entry to be stored on the host-side if applicable.
-  if (cache_blob_callback_) {
-    std::string key_str_copy(key_str);
-    std::string src_str(reinterpret_cast<const char*>(src.data()), src.size());
-    cache_blob_callback_.Run(key_str_copy, src_str);
-  }
+  return StoreData(key_str, src_span);
 }
 
-size_t DawnCachingInterface::LoadData(const void* key,
-                                      size_t key_size,
-                                      void* value_out,
-                                      size_t value_size) {
+size_t DawnCachingInterface::FindKey(std::string_view key) {
   if (memory_cache() == nullptr) {
     return 0u;
   }
-
-  std::string_view key_str(static_cast<const char*>(key), key_size);
-  auto entry = memory_cache()->Find(key_str);
+  auto entry = memory_cache()->Find(key);
   if (!entry) {
     return 0u;
   }
-  return entry->ReadData(value_out, value_size);
+  return entry->DataSize();
 }
 
-void DawnCachingInterface::StoreData(const void* key,
-                                     size_t key_size,
-                                     const void* value,
-                                     size_t value_size) {
-  if (memory_cache() == nullptr || value == nullptr || value_size <= 0) {
-    return;
+size_t DawnCachingInterface::LoadData(std::string_view key,
+                                      base::span<uint8_t> dst) {
+  if (memory_cache() == nullptr) {
+    return 0u;
+  }
+  auto entry = memory_cache()->Find(key);
+  if (!entry) {
+    return 0u;
   }
 
-  std::string key_str(static_cast<const char*>(key), key_size);
-  memory_cache()->Store(
-      key_str, UNSAFE_BUFFERS(
-                   base::span(static_cast<const uint8_t*>(value), value_size)));
+  auto src = entry->Data();
+  if (src.size() <= dst.size()) {
+    dst.copy_prefix_from(src);
+    return entry->DataSize();
+  }
+  return 0u;
+}
+
+void DawnCachingInterface::StoreData(std::string_view key,
+                                     base::span<const uint8_t> src) {
+  if (memory_cache() == nullptr || src.empty()) {
+    return;
+  }
+  memory_cache()->Store(key, src);
 
   // Send the cache entry to be stored on the host-side if applicable.
   if (cache_blob_callback_) {
-    std::string value_str(static_cast<const char*>(value), value_size);
-    cache_blob_callback_.Run(key_str, value_str);
+    std::string key_str_copy(key);
+    std::string src_str(reinterpret_cast<const char*>(src.data()), src.size());
+    cache_blob_callback_.Run(key_str_copy, src_str);
   }
 }
 

@@ -5,6 +5,13 @@
 #ifndef GPU_COMMAND_BUFFER_SERVICE_GPU_PERSISTENT_CACHE_H_
 #define GPU_COMMAND_BUFFER_SERVICE_GPU_PERSISTENT_CACHE_H_
 
+// TODO(503801946): Remove this Clang suppression once we remove the old Dawn
+// caching APIs that are causing the overload conflicts.
+#if defined(__clang__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Woverloaded-virtual"
+#endif
+
 #include <atomic>
 #include <map>
 #include <memory>
@@ -12,6 +19,7 @@
 
 #include "base/containers/flat_set.h"
 #include "base/containers/heap_array.h"
+#include "base/containers/span.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "base/synchronization/atomic_flag.h"
 #include "base/task/sequenced_task_runner.h"
@@ -115,22 +123,9 @@ class GPU_GLES2_EXPORT GpuPersistentCache :
                            use_shader_cache_shm_count = nullptr);
 
 #if BUILDFLAG(USE_DAWN) || BUILDFLAG(SKIA_USE_DAWN)
-  // dawn::platform::CachingInterface implementation.
-  size_t FindKey(std::span<const std::byte> key) override;
-  size_t LoadData(std::span<const std::byte> key,
-                  std::span<std::byte> dest) override;
-  void StoreData(std::span<const std::byte> key,
-                 std::span<const std::byte> src) override;
-  // TODO(503801946): Remove these outdated non-spanified implementations once
-  // we have migrated to use the one's above.
-  size_t LoadData(const void* key,
-                  size_t key_size,
-                  void* value,
-                  size_t value_size) override;
-  void StoreData(const void* key,
-                 size_t key_size,
-                 const void* value,
-                 size_t value_size) override;
+  size_t FindKey(std::string_view key);
+  size_t LoadData(std::string_view key, base::span<uint8_t> dest);
+  void StoreData(std::string_view key, base::span<const uint8_t> src);
 #endif
 
   // GrContextOptions::PersistentCache implementation.
@@ -159,6 +154,15 @@ class GPU_GLES2_EXPORT GpuPersistentCache :
   friend class base::RefCountedThreadSafe<GpuPersistentCache>;
 
   ~GpuPersistentCache() override;
+
+#if BUILDFLAG(USE_DAWN) || BUILDFLAG(SKIA_USE_DAWN)
+  // dawn::platform::CachingInterface implementation.
+  size_t FindKey(std::span<const std::byte> key) override;
+  size_t LoadData(std::span<const std::byte> key,
+                  std::span<std::byte> dest) override;
+  void StoreData(std::span<const std::byte> key,
+                 std::span<const std::byte> src) override;
+#endif
 
   struct DiskCache;
 

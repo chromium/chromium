@@ -479,87 +479,62 @@ void GpuPersistentCache::InitializeCache(
 }
 
 #if BUILDFLAG(USE_DAWN) || BUILDFLAG(SKIA_USE_DAWN)
-size_t GpuPersistentCache::FindKey(std::span<const std::byte> key) {
-  std::string_view key_str(reinterpret_cast<const char*>(key.data()),
-                           key.size());
+size_t GpuPersistentCache::FindKey(std::string_view key) {
   size_t discovered_size = 0;
   auto buffer_provider = [&discovered_size](size_t content_size) {
     discovered_size = content_size;
     return base::span<uint8_t>();
   };
-  LoadImpl(key_str, std::move(buffer_provider));
+  CacheLoadResult result = LoadImpl(key, std::move(buffer_provider));
+  RecordCacheLoadResultHistogram(result);
+  if (IsCacheHitResult(result) && IsVkPipelineCache(key)) {
+    base::UmaHistogramMemoryKB(
+        GetHistogramName(cache_prefix_, "VkPipelineCache.LoadedSize"),
+        base::ByteSize(discovered_size));
+  }
   return discovered_size;
+}
+
+size_t GpuPersistentCache::LoadData(std::string_view key,
+                                    base::span<uint8_t> dest) {
+  if (dest.empty()) {
+    return FindKey(key);
+  }
+
+  size_t discovered_size = 0;
+  auto buffer_provider = [dest, &discovered_size](size_t content_size) {
+    discovered_size = content_size;
+    if (dest.size() >= content_size) {
+      return dest.first(content_size);
+    }
+    return base::span<uint8_t>();
+  };
+
+  CacheLoadResult result = LoadImpl(key, std::move(buffer_provider));
+  if (!IsCacheHitResult(result)) {
+    RecordCacheLoadResultHistogram(result);
+  } else if (dest.size() < discovered_size) {
+    // If the buffer size provided is smaller than the data, return 0.
+    return 0;
+  }
+
+  return discovered_size;
+}
+
+size_t GpuPersistentCache::FindKey(std::span<const std::byte> key) {
+  std::string_view key_str(reinterpret_cast<const char*>(key.data()),
+                           key.size());
+  return FindKey(key_str);
 }
 
 size_t GpuPersistentCache::LoadData(std::span<const std::byte> key,
                                     std::span<std::byte> dest) {
   std::string_view key_str(reinterpret_cast<const char*>(key.data()),
                            key.size());
-  size_t discovered_size = 0;
-
-  auto buffer_provider = [dest, &discovered_size](size_t content_size) {
-    discovered_size = content_size;
-    if (dest.size() >= content_size) {
-      return UNSAFE_BUFFERS(base::span<uint8_t>(
-          reinterpret_cast<uint8_t*>(dest.data()), content_size));
-    }
-    return base::span<uint8_t>();
-  };
-
-  CacheLoadResult result = LoadImpl(key_str, std::move(buffer_provider));
-  if (!IsCacheHitResult(result) || dest.empty()) {
-    RecordCacheLoadResultHistogram(result);
-  }
-
-  return discovered_size;
-}
-
-size_t GpuPersistentCache::LoadData(const void* key,
-                                    size_t key_size,
-                                    void* value,
-                                    size_t value_size) {
-  std::string_view key_str(static_cast<const char*>(key), key_size);
-  size_t discovered_size = 0;
-
-  // A BufferProvider for PersistentCache that puts the size of the content, in
-  // bytes, into `discovered_size` and returns a view into the buffer at
-  // `value_out` if it is big enough or an empty span otherwise.
-  // SAFETY: Caller provides either null `value` or `value` plus `value_size`.
-  auto buffer_provider = [value = UNSAFE_BUFFERS(base::span(
-                              static_cast<uint8_t*>(value), value_size)),
-                          &discovered_size](size_t content_size) {
-    // Cache hit: retain the size.
-    discovered_size = content_size;
-
-    if (value.size() >= content_size) {
-      return value.first(content_size);
-    }
-    return base::span<uint8_t>();
-  };
-
-  CacheLoadResult result = LoadImpl(key_str, std::move(buffer_provider));
-  if (!IsCacheHitResult(result) || value_size == 0) {
-    // This function is called twice in the cache hit case, once to query the
-    // size of the buffer and again with a buffer to write into. To avoid
-    // skewing the metrics by generating two cache hit data points, only record
-    // a cache hit when there is no buffer provided.
-    RecordCacheLoadResultHistogram(result);
-
-    if (IsVkPipelineCache(key_str)) {
-      base::UmaHistogramMemoryKB(
-          GetHistogramName(cache_prefix_, "VkPipelineCache.LoadedSize"),
-          base::ByteSize(discovered_size));
-    }
-  }
-
-  // If the buffer size provided is smaller than the data, return 0.
-  // We exclude value_size == 0 because that is used to query the size of the
-  // cached data without reading it.
-  if (value_size > 0 && value_size < discovered_size) {
-    return 0;
-  }
-
-  return static_cast<GLsizeiptr>(discovered_size);
+  // SAFETY: `dest` is provided by the caller who is responsible.
+  base::span<uint8_t> dest_span = UNSAFE_BUFFERS(
+      base::span(reinterpret_cast<uint8_t*>(dest.data()), dest.size()));
+  return LoadData(key_str, dest_span);
 }
 #endif
 
@@ -756,33 +731,23 @@ GpuPersistentCache::CacheLoadResult GpuPersistentCache::LoadImpl(
 }
 
 #if BUILDFLAG(USE_DAWN) || BUILDFLAG(SKIA_USE_DAWN)
+void GpuPersistentCache::StoreData(std::string_view key,
+                                   base::span<const uint8_t> src) {
+  // Serialized VkPipelineCache entries won't be loaded again until the GPU
+  // process restarts. Storing this entry in the memory cache isn't useful but
+  // does evict otherwise useful data.
+  const bool skip_memory_cache = IsVkPipelineCache(key);
+  StoreImpl(key, src, skip_memory_cache);
+}
+
 void GpuPersistentCache::StoreData(std::span<const std::byte> key,
                                    std::span<const std::byte> src) {
   std::string_view key_str(reinterpret_cast<const char*>(key.data()),
                            key.size());
-  base::span<const uint8_t> value_span = UNSAFE_BUFFERS(
+  // SAFETY: `src` is provided by the caller who is responsible.
+  base::span<const uint8_t> src_span = UNSAFE_BUFFERS(
       base::span(reinterpret_cast<const uint8_t*>(src.data()), src.size()));
-
-  // Serialized VkPipelineCache entries won't be loaded again until the GPU
-  // process restarts. Storing this entry in the memory cache isn't useful but
-  // does evict otherwise useful data.
-  const bool skip_memory_cache = IsVkPipelineCache(key_str);
-  StoreImpl(key_str, value_span, skip_memory_cache);
-}
-
-void GpuPersistentCache::StoreData(const void* key,
-                                   size_t key_size,
-                                   const void* value,
-                                   size_t value_size) {
-  std::string_view key_str(static_cast<const char*>(key), key_size);
-  base::span<const uint8_t> value_span = UNSAFE_BUFFERS(
-      base::span(static_cast<const uint8_t*>(value), value_size));
-
-  // Serialized VkPipelineCache entries won't be loaded again until the GPU
-  // process restarts. Storing this entry in the memory cache isn't useful but
-  // does evict otherwise useful data.
-  const bool skip_memory_cache = IsVkPipelineCache(key_str);
-  StoreImpl(key_str, value_span, skip_memory_cache);
+  return StoreData(key_str, src_span);
 }
 #endif
 

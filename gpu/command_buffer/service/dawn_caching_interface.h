@@ -5,6 +5,13 @@
 #ifndef GPU_COMMAND_BUFFER_SERVICE_DAWN_CACHING_INTERFACE_H_
 #define GPU_COMMAND_BUFFER_SERVICE_DAWN_CACHING_INTERFACE_H_
 
+// TODO(503801946): Remove this Clang suppression once we remove the old Dawn
+// caching APIs that are causing the overload conflicts.
+#if defined(__clang__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Woverloaded-virtual"
+#endif
+
 #include <dawn/platform/DawnPlatform.h>
 
 #include <memory>
@@ -38,25 +45,22 @@ class GPU_GLES2_EXPORT DawnCachingInterface
 
   ~DawnCachingInterface() override;
 
-  size_t FindKey(std::span<const std::byte> key) override;
-  size_t LoadData(std::span<const std::byte> key,
-                  std::span<std::byte> dest) override;
-  void StoreData(std::span<const std::byte> key,
-                 std::span<const std::byte> src) override;
-
-  // TODO(503801946): Remove these outdated non-spanified implementations once
-  // we have migrated to use the one's above.
-  size_t LoadData(const void* key,
-                  size_t key_size,
-                  void* value_out,
-                  size_t value_size) override;
-  void StoreData(const void* key,
-                 size_t key_size,
-                 const void* value,
-                 size_t value_size) override;
+  // Chromium versions using std::string_view and base::span of the Dawn APIs
+  // that should be used in Chromium usages.
+  size_t FindKey(std::string_view key);
+  size_t LoadData(std::string_view key, base::span<uint8_t> dst);
+  void StoreData(std::string_view key, base::span<const uint8_t> src);
 
  private:
   friend class DawnCachingInterfaceFactory;
+
+  // Dawn API implementations. Use the Chromium base::span versions anywhere
+  // else in Chromium.
+  size_t FindKey(std::span<const std::byte> key) override;
+  size_t LoadData(std::span<const std::byte> key,
+                  std::span<std::byte> dst) override;
+  void StoreData(std::span<const std::byte> key,
+                 std::span<const std::byte> src) override;
 
   // Simplified accessor to the backend.
   MemoryCache* memory_cache() { return memory_cache_backend_.get(); }

@@ -8,6 +8,7 @@
 #include <string_view>
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/test/scoped_feature_list.h"
 #include "gpu/command_buffer/service/gpu_persistent_cache.h"
@@ -25,7 +26,6 @@ class DawnCachingInterfaceTest : public testing::Test {
  protected:
   static constexpr std::string_view kKey = "cache key";
   static constexpr std::string_view kData = "some data";
-  static constexpr size_t kKeySize = kKey.size();
   static constexpr size_t kDataSize = kData.size();
   static constexpr gpu::GpuDiskCacheDawnWebGPUHandle kDawnWebGPUHandle =
       gpu::GpuDiskCacheDawnWebGPUHandle(1);
@@ -39,72 +39,65 @@ class DawnCachingInterfaceTest : public testing::Test {
 
 TEST_F(DawnCachingInterfaceTest, LoadNonexistentSize) {
   auto dawn_caching_interface = factory_.CreateInstance(handle_);
-  EXPECT_EQ(
-      0u, dawn_caching_interface->LoadData(kKey.data(), kKeySize, nullptr, 0));
+  EXPECT_EQ(0u, dawn_caching_interface->FindKey(kKey));
 }
 
 TEST_F(DawnCachingInterfaceTest, StoreThenLoadSameInterface) {
   auto dawn_caching_interface = factory_.CreateInstance(handle_);
-  dawn_caching_interface->StoreData(kKey.data(), kKeySize, kData.data(),
-                                    kDataSize);
+  dawn_caching_interface->StoreData(kKey, base::as_byte_span(kData));
 
   char buffer[kDataSize];
-  EXPECT_EQ(kDataSize, dawn_caching_interface->LoadData(kKey.data(), kKeySize,
-                                                        nullptr, 0));
-  EXPECT_EQ(kDataSize, dawn_caching_interface->LoadData(kKey.data(), kKeySize,
-                                                        buffer, kDataSize));
+  EXPECT_EQ(kDataSize, dawn_caching_interface->FindKey(kKey));
+  EXPECT_EQ(kDataSize, dawn_caching_interface->LoadData(
+                           kKey, base::as_writable_byte_span(buffer)));
   UNSAFE_TODO(EXPECT_EQ(0, memcmp(buffer, kData.data(), kDataSize)));
 }
 
 TEST_F(DawnCachingInterfaceTest, LoadPartialData) {
   auto dawn_caching_interface = factory_.CreateInstance(handle_);
-  dawn_caching_interface->StoreData(kKey.data(), kKeySize, kData.data(),
-                                    kDataSize);
+  dawn_caching_interface->StoreData(kKey, base::as_byte_span(kData));
 
   static constexpr size_t kPartialSize = kDataSize / 2;
   char buffer[kPartialSize];
   // Should return 0 because of size mismatch.
-  EXPECT_EQ(0u, dawn_caching_interface->LoadData(kKey.data(), kKeySize, buffer,
-                                                 kPartialSize));
+  EXPECT_EQ(0u, dawn_caching_interface->LoadData(
+                    kKey, base::as_writable_byte_span(buffer)));
 }
 
 TEST_F(DawnCachingInterfaceTest, LoadLargerBuffer) {
   auto dawn_caching_interface = factory_.CreateInstance(handle_);
-  dawn_caching_interface->StoreData(kKey.data(), kKeySize, kData.data(),
-                                    kDataSize);
+  dawn_caching_interface->StoreData(kKey, base::as_byte_span(kData));
 
   static constexpr size_t kLargerSize = kDataSize * 2;
   char buffer[kLargerSize];
   // Should return kDataSize and only copy kDataSize bytes.
-  EXPECT_EQ(kDataSize, dawn_caching_interface->LoadData(kKey.data(), kKeySize,
-                                                        buffer, kLargerSize));
+  EXPECT_EQ(kDataSize, dawn_caching_interface->LoadData(
+                           kKey, base::as_writable_byte_span(buffer)));
   UNSAFE_TODO(EXPECT_EQ(0, memcmp(buffer, kData.data(), kDataSize)));
 }
 
 TEST_F(DawnCachingInterfaceTest, StoreThenLoadSameHandle) {
   auto store_interface = factory_.CreateInstance(handle_);
-  store_interface->StoreData(kKey.data(), kKeySize, kData.data(), kDataSize);
+  store_interface->StoreData(kKey, base::as_byte_span(kData));
 
   auto load_interface = factory_.CreateInstance(handle_);
   char buffer[kDataSize];
-  EXPECT_EQ(kDataSize,
-            load_interface->LoadData(kKey.data(), kKeySize, nullptr, 0));
-  EXPECT_EQ(kDataSize,
-            load_interface->LoadData(kKey.data(), kKeySize, buffer, kDataSize));
+  EXPECT_EQ(kDataSize, load_interface->FindKey(kKey));
+  EXPECT_EQ(kDataSize, load_interface->LoadData(
+                           kKey, base::as_writable_byte_span(buffer)));
   UNSAFE_TODO(EXPECT_EQ(0, memcmp(buffer, kData.data(), kDataSize)));
 }
 
 TEST_F(DawnCachingInterfaceTest, StoreDestroyThenLoadSameHandle) {
   auto store_interface = factory_.CreateInstance(handle_);
-  store_interface->StoreData(kKey.data(), kKeySize, kData.data(), kDataSize);
+  store_interface->StoreData(kKey, base::as_byte_span(kData));
   store_interface.reset();
 
   auto load_interface = factory_.CreateInstance(handle_);
   char buffer[kDataSize];
-  EXPECT_EQ(kDataSize,
-            load_interface->LoadData(kKey.data(), kKeySize, nullptr, 0));
-  EXPECT_EQ(kDataSize,
-            load_interface->LoadData(kKey.data(), kKeySize, buffer, kDataSize));
+  EXPECT_EQ(kDataSize, load_interface->FindKey(kKey));
+  EXPECT_EQ(kDataSize, load_interface->LoadData(
+                           kKey, base::as_writable_byte_span(buffer)));
   UNSAFE_TODO(EXPECT_EQ(0, memcmp(buffer, kData.data(), kDataSize)));
 }
 
@@ -112,20 +105,20 @@ TEST_F(DawnCachingInterfaceTest, StoreDestroyThenLoadSameHandle) {
 // use a new in-memory cache.
 TEST_F(DawnCachingInterfaceTest, StoreReleaseThenLoad) {
   auto store_interface = factory_.CreateInstance(handle_);
-  store_interface->StoreData(kKey.data(), kKeySize, kData.data(), kDataSize);
+  store_interface->StoreData(kKey, base::as_byte_span(kData));
   store_interface.reset();
   factory_.ReleaseHandle(handle_);
 
   auto load_interface = factory_.CreateInstance(handle_);
-  EXPECT_EQ(0u, load_interface->LoadData(kKey.data(), kKeySize, nullptr, 0));
+  EXPECT_EQ(0u, load_interface->FindKey(kKey));
 }
 
 TEST_F(DawnCachingInterfaceTest, IncognitoCachesDoNotShare) {
   auto interface_1 = factory_.CreateInstance();
-  interface_1->StoreData(kKey.data(), kKeySize, kData.data(), kDataSize);
+  interface_1->StoreData(kKey, base::as_byte_span(kData));
 
   auto interface_2 = factory_.CreateInstance();
-  EXPECT_EQ(0u, interface_2->LoadData(kKey.data(), kKeySize, nullptr, 0));
+  EXPECT_EQ(0u, interface_2->FindKey(kKey));
 }
 
 TEST_F(DawnCachingInterfaceTest, UnableToCreateBackend) {
@@ -136,16 +129,13 @@ TEST_F(DawnCachingInterfaceTest, UnableToCreateBackend) {
   // Without an actual backend, all loads and stores should do nothing.
   {
     auto incongnito_interface = factory.CreateInstance();
-    incongnito_interface->StoreData(kKey.data(), kKeySize, kData.data(),
-                                    kDataSize);
-    EXPECT_EQ(
-        0u, incongnito_interface->LoadData(kKey.data(), kKeySize, nullptr, 0));
+    incongnito_interface->StoreData(kKey, base::as_byte_span(kData));
+    EXPECT_EQ(0u, incongnito_interface->FindKey(kKey));
   }
   {
     auto handle_interface = factory.CreateInstance(handle_);
-    handle_interface->StoreData(kKey.data(), kKeySize, kData.data(), kDataSize);
-    EXPECT_EQ(0u,
-              handle_interface->LoadData(kKey.data(), kKeySize, nullptr, 0));
+    handle_interface->StoreData(kKey, base::as_byte_span(kData));
+    EXPECT_EQ(0u, handle_interface->FindKey(kKey));
   }
 }
 
@@ -158,8 +148,7 @@ TEST_F(DawnCachingInterfaceTest, StoreTriggersHostSide) {
   EXPECT_CALL(decoder_client_mock_,
               CacheBlob(gpu::GpuDiskCacheType::kDawnWebGPU, std::string(kKey),
                         std::string(kData)));
-  dawn_caching_interface->StoreData(kKey.data(), kKeySize, kData.data(),
-                                    kDataSize);
+  dawn_caching_interface->StoreData(kKey, base::as_byte_span(kData));
 }
 
 TEST_F(DawnCachingInterfaceTest, TestMaxSizeEviction) {
@@ -179,11 +168,11 @@ TEST_F(DawnCachingInterfaceTest, TestMaxSizeEviction) {
       []() { return base::MakeRefCounted<MemoryCache>(kCacheSize); }));
 
   auto interface = factory.CreateInstance();
-  interface->StoreData(kKey1.data(), kKeySize, kData1.data(), kDataSize);
-  interface->StoreData(kKey2.data(), kKeySize, kData2.data(), kDataSize);
+  interface->StoreData(kKey1, base::as_byte_span(kData1));
+  interface->StoreData(kKey2, base::as_byte_span(kData2));
 
-  EXPECT_EQ(0u, interface->LoadData(kKey1.data(), 1u, nullptr, 0));
-  EXPECT_EQ(kDataSize, interface->LoadData(kKey2.data(), 1u, nullptr, 0));
+  EXPECT_EQ(0u, interface->FindKey(kKey1));
+  EXPECT_EQ(kDataSize, interface->FindKey(kKey2));
 }
 
 TEST_F(DawnCachingInterfaceTest, TestLruEviction) {
@@ -209,14 +198,14 @@ TEST_F(DawnCachingInterfaceTest, TestLruEviction) {
   // Even though Key1 was stored first, because we loaded it once, Key2 should
   // be the one to be evicted when Key3 is added.
   auto interface = factory.CreateInstance();
-  interface->StoreData(kKey1.data(), kKeySize, kData1.data(), kDataSize);
-  interface->StoreData(kKey2.data(), kKeySize, kData2.data(), kDataSize);
-  EXPECT_EQ(kDataSize, interface->LoadData(kKey1.data(), 1u, nullptr, 0));
-  interface->StoreData(kKey3.data(), kKeySize, kData3.data(), kDataSize);
+  interface->StoreData(kKey1, base::as_byte_span(kData1));
+  interface->StoreData(kKey2, base::as_byte_span(kData2));
+  EXPECT_EQ(kDataSize, interface->FindKey(kKey1));
+  interface->StoreData(kKey3, base::as_byte_span(kData3));
 
-  EXPECT_EQ(kDataSize, interface->LoadData(kKey1.data(), 1u, nullptr, 0));
-  EXPECT_EQ(0u, interface->LoadData(kKey2.data(), 1u, nullptr, 0));
-  EXPECT_EQ(kDataSize, interface->LoadData(kKey3.data(), 1u, nullptr, 0));
+  EXPECT_EQ(kDataSize, interface->FindKey(kKey1));
+  EXPECT_EQ(0u, interface->FindKey(kKey2));
+  EXPECT_EQ(kDataSize, interface->FindKey(kKey3));
 }
 
 // Entries that are too large for the size of the cache are not cached and do
@@ -224,7 +213,6 @@ TEST_F(DawnCachingInterfaceTest, TestLruEviction) {
 TEST_F(DawnCachingInterfaceTest, TestVeryLargeEntrySize) {
   static constexpr std::string_view kSmall = "1";
   static constexpr std::string_view kLarge = "11111";
-  static constexpr size_t kSmallSize = kSmall.size();
   static constexpr size_t kLargeSize = kLarge.size();
   static constexpr size_t kCacheSize = kLargeSize - 1u;
 
@@ -235,20 +223,20 @@ TEST_F(DawnCachingInterfaceTest, TestVeryLargeEntrySize) {
   {
     // When the key is larger than the cache size but the value is not, caching
     // fails.
-    interface->StoreData(kLarge.data(), kLargeSize, kSmall.data(), kSmallSize);
-    EXPECT_EQ(0u, interface->LoadData(kLarge.data(), kLargeSize, nullptr, 0));
+    interface->StoreData(kLarge, base::as_byte_span(kSmall));
+    EXPECT_EQ(0u, interface->FindKey(kLarge));
   }
   {
     // When the key is smaller than the cache size, but the value is not,
     // caching fails.
-    interface->StoreData(kSmall.data(), kSmallSize, kLarge.data(), kLargeSize);
-    EXPECT_EQ(0u, interface->LoadData(kSmall.data(), kSmallSize, nullptr, 0));
+    interface->StoreData(kSmall, base::as_byte_span(kLarge));
+    EXPECT_EQ(0u, interface->FindKey(kSmall));
   }
   {
     // When the both the key and the value is larger than the cache size,
     // caching fails.
-    interface->StoreData(kLarge.data(), kLargeSize, kLarge.data(), kLargeSize);
-    EXPECT_EQ(0u, interface->LoadData(kLarge.data(), kLargeSize, nullptr, 0));
+    interface->StoreData(kLarge, base::as_byte_span(kLarge));
+    EXPECT_EQ(0u, interface->FindKey(kLarge));
   }
 }
 
@@ -268,11 +256,11 @@ TEST_F(DawnCachingInterfaceTest, TestMemoryPressureCritical) {
   auto interfaces = {factory.CreateInstance(kDawnGraphiteHandle),
                      factory.CreateInstance(kDawnWebGPUHandle)};
   for (auto& interface : interfaces) {
-    interface->StoreData(kKey1.data(), kKeySize, kData1.data(), kDataSize);
-    EXPECT_EQ(kDataSize, interface->LoadData(kKey1.data(), 1u, nullptr, 0));
+    interface->StoreData(kKey1, base::as_byte_span(kData1));
+    EXPECT_EQ(kDataSize, interface->FindKey(kKey1));
 
     factory.PurgeMemory(base::MEMORY_PRESSURE_LEVEL_CRITICAL);
-    EXPECT_EQ(0u, interface->LoadData(kKey1.data(), 1u, nullptr, 0));
+    EXPECT_EQ(0u, interface->FindKey(kKey1));
   }
 }
 
@@ -293,19 +281,19 @@ TEST_F(DawnCachingInterfaceTest, TestAggressiveCacheAndMemoryPressure) {
   auto interfaces = {factory.CreateInstance(kDawnGraphiteHandle),
                      factory.CreateInstance(kDawnWebGPUHandle)};
   for (auto& interface : interfaces) {
-    interface->StoreData(kKey1.data(), kKeySize, kData1.data(), kDataSize);
-    EXPECT_EQ(kDataSize, interface->LoadData(kKey1.data(), 1u, nullptr, 0));
+    interface->StoreData(kKey1, base::as_byte_span(kData1));
+    EXPECT_EQ(kDataSize, interface->FindKey(kKey1));
 
     // Moderate memory pressure is ignored
     factory.PurgeMemory(base::MEMORY_PRESSURE_LEVEL_MODERATE);
-    EXPECT_EQ(kDataSize, interface->LoadData(kKey1.data(), 1u, nullptr, 0));
+    EXPECT_EQ(kDataSize, interface->FindKey(kKey1));
 
     // But not critical, except on Android
     factory.PurgeMemory(base::MEMORY_PRESSURE_LEVEL_CRITICAL);
 #if BUILDFLAG(IS_ANDROID)
-    EXPECT_EQ(kDataSize, interface->LoadData(kKey1.data(), 1u, nullptr, 0));
+    EXPECT_EQ(kDataSize, interface->FindKey(kKey1));
 #else
-    EXPECT_EQ(0u, interface->LoadData(kKey1.data(), 1u, nullptr, 0));
+    EXPECT_EQ(0u, interface->FindKey(kKey1));
 #endif
   }
 }

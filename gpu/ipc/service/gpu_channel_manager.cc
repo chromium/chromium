@@ -609,8 +609,8 @@ void GpuChannelManager::PopulateCache(const gpu::GpuDiskCacheHandle& handle,
       if (!dawn_caching_interface) {
         return;
       }
-      dawn_caching_interface->StoreData(key.data(), key.size(), data.data(),
-                                        data.size());
+      dawn_caching_interface->StoreData(
+          key, base::as_bytes(base::span<const char>(data)));
 #endif
       break;
     }
