@@ -135,6 +135,73 @@ class NewTabWebContentsObserver : public content::WebContentsObserver {
   base::OnceCallback<void(content::WebContents*)> callback_;
 };
 
+class SigninQRCodeInfoBarLoader
+    : public content::WebContentsObserver,
+      public content::WebContentsUserData<SigninQRCodeInfoBarLoader> {
+ public:
+  ~SigninQRCodeInfoBarLoader() override = default;
+
+  // content::WebContentsObserver:
+  void ReadyToCommitNavigation(
+      content::NavigationHandle* navigation_handle) override {
+    if (!navigation_handle->IsInPrimaryMainFrame()) {
+      return;
+    }
+    ready_to_commit_ = true;
+    MaybeShowInfoBar();
+  }
+
+  void OnHybridTransportSupported(bool can_show) {
+    hybrid_supported_check_done_ = true;
+    can_show_infobar_ = can_show;
+    MaybeShowInfoBar();
+  }
+
+ private:
+  explicit SigninQRCodeInfoBarLoader(content::WebContents* web_contents)
+      : content::WebContentsObserver(web_contents),
+        content::WebContentsUserData<SigninQRCodeInfoBarLoader>(*web_contents) {
+  }
+
+  void MaybeShowInfoBar() {
+    if (hybrid_supported_check_done_ && !can_show_infobar_) {
+      // We already know hybrid transport is not supported; no need to wait for
+      // navigation to commit.
+      web_contents()->RemoveUserData(UserDataKey());
+      return;
+    }
+    if (!ready_to_commit_ || !hybrid_supported_check_done_) {
+      // Wait for both events to complete.
+      return;
+    }
+    // Verify we are still on the sign-in page (e.g. the navigation wasn't
+    // redirected or cancelled).
+    DiceTabHelper* tab_helper = DiceTabHelper::FromWebContents(web_contents());
+    if (tab_helper && tab_helper->IsChromeSigninPage()) {
+      infobars::InfoBarManager* infobar_manager =
+          infobars::ContentInfoBarManager::FromWebContents(web_contents());
+      if (infobar_manager) {
+        auto delegate =
+            std::make_unique<SigninQRCodeInfoBarDelegate>(web_contents());
+        auto* model =
+            SigninQRCodeModel::GetOrCreateForWebContents(web_contents());
+        infobar_manager->AddInfoBar(
+            std::make_unique<SigninQRCodeInfoBar>(std::move(delegate), model));
+      }
+    }
+    web_contents()->RemoveUserData(UserDataKey());
+  }
+
+  bool ready_to_commit_ = false;
+  bool hybrid_supported_check_done_ = false;
+  bool can_show_infobar_ = false;
+
+  friend class content::WebContentsUserData<SigninQRCodeInfoBarLoader>;
+  WEB_CONTENTS_USER_DATA_KEY_DECL();
+};
+
+WEB_CONTENTS_USER_DATA_KEY_IMPL(SigninQRCodeInfoBarLoader);
+
 // Opens a new tab on |url| or reuses the current tab if it is the NTP.
 void ShowTabOverwritingNTP(BrowserWindowInterface* browser,
                            TabStripModel* tab_strip_model,
@@ -683,26 +750,15 @@ void SigninViewController::ShowDiceSigninTab(
       DiceTabHelper::GetShowSigninErrorCallbackForBrowser());
 
   if (switches::IsMagiChromePasskeyBannerEnabled()) {
+    SigninQRCodeInfoBarLoader::CreateForWebContents(active_contents);
     signin::IsHybridTransportSupportedForQrCodeSignin(base::BindOnce(
         [](base::WeakPtr<content::WebContents> web_contents, bool can_start) {
-          if (!can_start || !web_contents) {
+          if (!web_contents) {
             return;
           }
-          DiceTabHelper* tab_helper =
-              DiceTabHelper::FromWebContents(web_contents.get());
-          if (!tab_helper || !tab_helper->IsChromeSigninPage()) {
-            return;
-          }
-          infobars::InfoBarManager* infobar_manager =
-              infobars::ContentInfoBarManager::FromWebContents(
-                  web_contents.get());
-          if (infobar_manager) {
-            auto delegate = std::make_unique<SigninQRCodeInfoBarDelegate>(
-                web_contents.get());
-            auto* model = SigninQRCodeModel::GetOrCreateForWebContents(
-                web_contents.get());
-            infobar_manager->AddInfoBar(std::make_unique<SigninQRCodeInfoBar>(
-                std::move(delegate), model));
+          if (auto* loader = SigninQRCodeInfoBarLoader::FromWebContents(
+                  web_contents.get())) {
+            loader->OnHybridTransportSupported(can_start);
           }
         },
         active_contents->GetWeakPtr()));
