@@ -12,6 +12,7 @@ found in the LICENSE file.
     <org.chromium.chrome.browser.glic.GlicExtraInfoPreference
         android:key="glic_custom_box_preference"
         android:layout="@layout/glic_settings_extra_info"
+        android:selectable="false"
         app:backgroundStyle="none" />
 
     <PreferenceCategory

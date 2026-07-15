@@ -7,8 +7,13 @@ package org.chromium.chrome.browser.glic;
 import android.content.Context;
 import android.text.method.LinkMovementMethod;
 import android.util.AttributeSet;
+import android.view.View;
 import android.widget.TextView;
 
+import androidx.core.view.AccessibilityDelegateCompat;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
+import androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat;
 import androidx.preference.PreferenceViewHolder;
 
 import org.chromium.build.annotations.NullMarked;
@@ -23,6 +28,17 @@ import org.chromium.ui.text.SpanApplier;
  */
 @NullMarked
 public class GlicExtraInfoPreference extends ChromeBasePreference {
+    private static final AccessibilityDelegateCompat sAccessibilityDelegate =
+            new AccessibilityDelegateCompat() {
+                @Override
+                public void onInitializeAccessibilityNodeInfo(
+                        View host, AccessibilityNodeInfoCompat info) {
+                    super.onInitializeAccessibilityNodeInfo(host, info);
+                    info.setClickable(false);
+                    info.removeAction(AccessibilityActionCompat.ACTION_CLICK);
+                }
+            };
+
     private @Nullable Runnable mOnLearnMoreClicked;
     private int mTextResId = R.string.settings_ai_page_main_managed_sublabel_3;
     private boolean mApplySpan = true;
@@ -48,6 +64,9 @@ public class GlicExtraInfoPreference extends ChromeBasePreference {
     @Override
     public void onBindViewHolder(PreferenceViewHolder holder) {
         super.onBindViewHolder(holder);
+        holder.itemView.setClickable(false);
+        holder.itemView.setFocusable(false);
+        ViewCompat.setAccessibilityDelegate(holder.itemView, sAccessibilityDelegate);
 
         TextView textView = (TextView) holder.findViewById(R.id.ai_info_managed_sublabel_3);
         if (textView == null) return;
