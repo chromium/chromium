@@ -144,6 +144,7 @@ export enum SettingsOption {
   APPEARANCE = 'appearance',
   COLOR = 'color',
   FONT = 'font',
+  TEXT = 'text',
   FONT_SIZE = 'font-size',
   IMAGES = 'images',
   LETTER_SPACING = 'letter-spacing',

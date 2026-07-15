@@ -11,6 +11,7 @@ import '../menus/font_menu.js';
 import '../menus/line_focus_menu.js';
 import '../menus/line_spacing_menu.js';
 import '../menus/letter_spacing_menu.js';
+import '../menus/text_menu.js';
 import '../menus/highlight_menu.js';
 import '../menus/rate_menu.js';
 import '../menus/presentation_menu.js';
@@ -47,6 +48,7 @@ import type {ToolbarMenu} from '../menus/menu_util.js';
 import type {PresentationMenuElement} from '../menus/presentation_menu.js';
 import type {RateMenuElement} from '../menus/rate_menu.js';
 import type {SettingsMenuElement} from '../menus/settings_menu.js';
+import type {TextMenuElement} from '../menus/text_menu.js';
 import {getCurrentSpeechRate} from '../read_aloud/speech_presentation_rules.js';
 import type {VoiceSelectionMenuElement} from '../read_aloud/voice_selection_menu.js';
 import {minOverflowLengthToScroll, openMenu, spinnerDebounceTimeout} from '../shared/common.js';
@@ -65,6 +67,7 @@ export interface ReadAnythingToolbarElement {
     lineSpacingMenu: LineSpacingMenuElement,
     letterSpacingMenu: LetterSpacingMenuElement,
     fontMenu: FontMenuElement,
+    textMenu: TextMenuElement,
     fontSizeMenu: CrLazyRenderLitElement<CrActionMenuElement>,
     moreOptionsMenu: CrLazyRenderLitElement<CrActionMenuElement>,
     voiceSelectionMenu: VoiceSelectionMenuElement,
@@ -867,6 +870,7 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
       [SettingsOption.APPEARANCE]: this.$.appearanceMenu,
       [SettingsOption.COLOR]: this.$.colorMenu,
       [SettingsOption.VOICE_HIGHLIGHT]: this.$.highlightMenu,
+      [SettingsOption.TEXT]: this.$.textMenu,
       [SettingsOption.FONT]: this.$.fontMenu,
       [SettingsOption.LETTER_SPACING]: this.$.letterSpacingMenu,
       [SettingsOption.LINE_FOCUS]: this.$.lineFocusMenu,

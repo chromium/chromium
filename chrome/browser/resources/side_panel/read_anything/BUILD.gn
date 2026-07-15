@@ -55,6 +55,8 @@ build_webui("build") {
     "menus/settings_menu.ts",
     "menus/simple_action_menu.html.ts",
     "menus/simple_action_menu.ts",
+    "menus/text_menu.html.ts",
+    "menus/text_menu.ts",
     "read_aloud/highlighter.ts",
     "read_aloud/language_menu.html.ts",
     "read_aloud/language_menu.ts",

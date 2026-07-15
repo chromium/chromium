@@ -121,6 +121,12 @@ const MENU_ITEM_DATA: Record<SettingsOption, SettingsItem> = {
     title: 'viewLabel',
     itemType: SettingsItemType.MENU,
   },
+  [SettingsOption.TEXT]: {
+    id: SettingsOption.TEXT,
+    icon: 'read-anything:font',
+    title: 'textSettingsTitle',
+    itemType: SettingsItemType.MENU,
+  },
   [SettingsOption.TRANSLATION_REQUESTED]: {
     id: SettingsOption.TRANSLATION_REQUESTED,
     icon: 'read-anything:translate',
@@ -261,9 +267,7 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
   private initializeMenuOptionsForImprovedReadAloud_(): SettingsOption[] {
     const optionIDs: SettingsOption[] = [
       SettingsOption.APPEARANCE,
-      SettingsOption.FONT,
-      SettingsOption.LINE_SPACING,
-      SettingsOption.LETTER_SPACING,
+      SettingsOption.TEXT,
       SettingsOption.VOICE_SELECTION,
       SettingsOption.VOICE_HIGHLIGHT,
     ];

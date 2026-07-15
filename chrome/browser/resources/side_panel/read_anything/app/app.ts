@@ -690,16 +690,28 @@ export class AppElement extends AppElementBase implements SpeechListener,
   }
 
   protected onLineSpacingChange_() {
+    this.settingsPrefs_ = {
+      ...this.settingsPrefs_,
+      lineSpacing: chrome.readingMode.lineSpacing,
+    };
     this.styleUpdater_.setLineSpacing();
     this.onTextLocationsChange_();
   }
 
   protected onLetterSpacingChange_() {
+    this.settingsPrefs_ = {
+      ...this.settingsPrefs_,
+      letterSpacing: chrome.readingMode.letterSpacing,
+    };
     this.styleUpdater_.setLetterSpacing();
     this.onTextLocationsChange_();
   }
 
   protected onFontChange_() {
+    this.settingsPrefs_ = {
+      ...this.settingsPrefs_,
+      font: chrome.readingMode.fontName,
+    };
     this.styleUpdater_.setFont();
     this.onTextLocationsChange_();
   }

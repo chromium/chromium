@@ -9623,6 +9623,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_READING_MODE_SPACING_COMBOBOX_VERY_WIDE" desc="Combobox option for setting letter spacing of text in the reading mode feature. Very wide means that letters are spaced very far apart.">
         Very wide
       </message>
+      <message name="IDS_READING_MODE_TEXT_STYLE_LABEL" desc="Accessibility label for the text styling settings menu of the reading mode feature.">
+        Text
+      </message>
       <message name="IDS_READING_MODE_DEFAULT_COLOR_LABEL" desc="Combobox option for setting the color theme for the reading mode feature. This option corresponds to either the light or dark theme depending on the user's operating system theme.">
         Default
       </message>

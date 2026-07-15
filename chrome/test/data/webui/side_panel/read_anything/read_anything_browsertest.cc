@@ -196,6 +196,10 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, FontMenu) {
   RunSidePanelTest("side_panel/read_anything/font_menu_test.js", "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, TextMenu) {
+  RunSidePanelTest("side_panel/read_anything/text_menu_test.js", "mocha.run()");
+}
+
 IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, SimpleActionMenu) {
   RunSidePanelTest("side_panel/read_anything/simple_action_menu_test.js",
                    "mocha.run()");
