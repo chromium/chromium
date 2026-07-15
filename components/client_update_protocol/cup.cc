@@ -1,20 +1,20 @@
-// Copyright 2016 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/client_update_protocol/ecdsa.h"
+#include "components/client_update_protocol/cup.h"
 
 #include <algorithm>
 #include <cstdint>
+#include <iterator>
 #include <string>
 #include <string_view>
 #include <vector>
 
 #include "base/base64url.h"
 #include "base/check.h"
-#include "base/containers/to_vector.h"
-#include "base/logging.h"
-#include "base/memory/ptr_util.h"
+#include "base/check_op.h"
+#include "base/containers/span.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "crypto/hash.h"
@@ -25,11 +25,23 @@
 namespace client_update_protocol {
 namespace {
 
-bool ParseETagHeader(std::string_view etag_header_value_in,
-                     std::vector<uint8_t>* ecdsa_signature_out,
+bool CupKeyOfKindHasValidLength(bool is_mldsa44,
+                                base::span<const uint8_t> signature) {
+  if (is_mldsa44) {
+    // Valid ML-DSA-44 signatures are exactly 2,420 bytes.
+    return signature.size() == 2420;
+  }
+  // Ensure this is a valid ECDSA signature, which must have a length between
+  // 8 and 72 bytes, inclusive.
+  return signature.size() >= 8 && signature.size() <= 72;
+}
+
+bool ParseETagHeader(bool is_mldsa44,
+                     std::string_view etag_header_value_in,
+                     std::vector<uint8_t>* signature_out,
                      std::vector<uint8_t>* request_hash_out) {
   // The ETag value is a UTF-8 string, formatted as "S:H", where:
-  // * S is the ECDSA signature in DER-encoded ASN.1 form, converted to hex.
+  // * S is the signature in DER-encoded ASN.1 or raw format, converted to hex.
   // * H is the SHA-256 hash of the observed request body, standard hex format.
   // A Weak ETag is formatted as W/"S:H". This function treats it the same as a
   // strong ETag.
@@ -56,14 +68,11 @@ bool ParseETagHeader(std::string_view etag_header_value_in,
   const std::string_view sig_hex = etag_header_value.substr(0, delim_pos);
   const std::string_view hash_hex = etag_header_value.substr(delim_pos + 1);
 
-  // Decode the ECDSA signature. Don't bother validating the contents of it;
-  // the SignatureValidator class will handle the actual DER decoding and
-  // ASN.1 parsing. Check for an expected size range only -- valid ECDSA
-  // signatures are between 8 and 72 bytes.
-  if (!base::HexStringToBytes(sig_hex, ecdsa_signature_out)) {
+  if (!base::HexStringToBytes(sig_hex, signature_out)) {
     return false;
   }
-  if (ecdsa_signature_out->size() < 8 || ecdsa_signature_out->size() > 72) {
+  if (!CupKeyOfKindHasValidLength(is_mldsa44,
+                                  base::as_byte_span(*signature_out))) {
     return false;
   }
 
@@ -80,24 +89,34 @@ bool ParseETagHeader(std::string_view etag_header_value_in,
 
 }  // namespace
 
-Ecdsa::Ecdsa(int key_version, base::span<const uint8_t> public_key)
+Cup::Cup(int key_version, base::span<const uint8_t> public_key)
     : pub_key_version_(key_version),
-      // This will fail a CHECK if the public key is malformed. Since the public
-      // key is hardcoded, that's fine.
       public_key_(
           *crypto::keypair::PublicKey::FromSubjectPublicKeyInfo(public_key)) {
   CHECK_GT(key_version, 0);
-  CHECK(public_key_.IsEc());
+  CHECK(public_key_.IsMldsa44() || public_key_.IsEc());
 }
 
-Ecdsa::~Ecdsa() = default;
+Cup::~Cup() = default;
 
-void Ecdsa::OverrideNonceForTesting(int key_version, uint32_t nonce) {
-  DCHECK(!request_query_cup2key_.empty());
-  request_query_cup2key_ = absl::StrFormat("%d:%u", pub_key_version_, nonce);
+std::string Cup::GetKeyId(int key_version) const {
+  int version = key_version < 0 ? pub_key_version_ : key_version;
+  if (public_key_.IsMldsa44()) {
+    return absl::StrFormat("ML-DSA-44-%d", version);
+  }
+  // ECDSA uses the version number and MLDSA uses the `ML-DSA-44-` prefix in
+  // addition to the version number. Starting with version 17, ECDSA keys
+  // will begin using the new string-based `ECDSA-SHA256-` prefix going forward.
+  return base::NumberToString(version);
 }
 
-std::string Ecdsa::PrepareRequestParameters(std::string_view request_body) {
+void Cup::OverrideNonceForTesting(int key_version, uint32_t nonce) {
+  CHECK(!request_query_cup2key_.empty());
+  request_query_cup2key_ =
+      absl::StrFormat("%s:%u", GetKeyId(key_version), nonce);
+}
+
+std::string Cup::PrepareRequestParameters(std::string_view request_body) {
   // Generate a random nonce to use for freshness, build the cup2key query
   // string, and compute the SHA-256 hash of the request body. Set these
   // two pieces of data aside to use during ValidateResponse().
@@ -110,16 +129,15 @@ std::string Ecdsa::PrepareRequestParameters(std::string_view request_body) {
   base::Base64UrlEncode(nonce, base::Base64UrlEncodePolicy::OMIT_PADDING,
                         &nonce_b64);
 
-  request_query_cup2key_ =
-      absl::StrFormat("%d:%s", pub_key_version_, nonce_b64);
+  request_query_cup2key_ = absl::StrFormat("%s:%s", GetKeyId(), nonce_b64);
   request_hash_ = crypto::hash::Sha256(base::as_byte_span(request_body));
 
   return absl::StrFormat("cup2key=%s&cup2hreq=%s", request_query_cup2key_,
                          base::HexEncodeLower(request_hash_));
 }
 
-bool Ecdsa::ValidateResponse(std::string_view response_body,
-                             std::string_view server_etag) {
+bool Cup::ValidateResponse(std::string_view response_body,
+                           std::string_view server_etag) {
   CHECK(!request_hash_.empty());
   CHECK(!request_query_cup2key_.empty());
 
@@ -127,11 +145,12 @@ bool Ecdsa::ValidateResponse(std::string_view response_body,
     return false;
   }
 
-  // Break the ETag into its two components (the ECDSA signature, and the
+  // Break the ETag into its two components (the signature, and the
   // hash of the request that the server observed) and decode to byte buffers.
   std::vector<uint8_t> signature;
   std::vector<uint8_t> observed_request_hash;
-  if (!ParseETagHeader(server_etag, &signature, &observed_request_hash)) {
+  if (!ParseETagHeader(public_key_.IsMldsa44(), server_etag, &signature,
+                       &observed_request_hash)) {
     return false;
   }
 
@@ -160,9 +179,10 @@ bool Ecdsa::ValidateResponse(std::string_view response_body,
   //   client assembled -- implying that either request body or response body
   //   was modified, or a different nonce value was used.
   //
-  // Note that the signature is taken over a hash of inner_hash (hence signature
-  // kind ECDSA_SHA256).
-  return crypto::sign::Verify(crypto::sign::SignatureKind::ECDSA_SHA256,
+  // Note that the signature is taken over a hash of inner_hash.
+  return crypto::sign::Verify(public_key_.IsMldsa44()
+                                  ? crypto::sign::SignatureKind::MLDSA_44
+                                  : crypto::sign::SignatureKind::ECDSA_SHA256,
                               public_key_, inner_hash, signature);
 }
 

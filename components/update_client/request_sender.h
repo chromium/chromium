@@ -16,7 +16,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
-#include "components/client_update_protocol/ecdsa.h"
+#include "components/client_update_protocol/cup.h"
 #include "components/update_client/network.h"
 #include "url/gurl.h"
 
@@ -112,7 +112,7 @@ class RequestSender : public base::RefCountedThreadSafe<RequestSender> {
 
   std::vector<GURL>::const_iterator cur_url_;
   std::unique_ptr<NetworkFetcher> network_fetcher_;
-  client_update_protocol::Ecdsa signer_;
+  client_update_protocol::Cup signer_;
 
   int response_code_ = -1;
 };

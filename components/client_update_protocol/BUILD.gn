@@ -2,12 +2,12 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//testing/libfuzzer/fuzzer_test.gni")
-
 static_library("client_update_protocol") {
   sources = [
-    "ecdsa.cc",
-    "ecdsa.h",
+    "cup.cc",
+    "cup.h",
+    "features.cc",
+    "features.h",
   ]
 
   deps = [
@@ -18,20 +18,14 @@ static_library("client_update_protocol") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "ecdsa_unittest.cc" ]
+  sources = [ "cup_unittest.cc" ]
 
   deps = [
     ":client_update_protocol",
     "//base",
+    "//base/test:test_support",
     "//crypto",
     "//testing/gtest",
-  ]
-}
-
-fuzzer_test("ecdsa_fuzzer") {
-  sources = [ "ecdsa_fuzzer.cc" ]
-  deps = [
-    ":client_update_protocol",
-    "//base",
+    "//third_party/fuzztest",
   ]
 }

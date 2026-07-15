@@ -348,6 +348,7 @@ source_set("unit_tests") {
     ":update_client",
     "//base",
     "//build:branding_buildflags",
+    "//components/client_update_protocol",
     "//components/crx_file",
     "//components/prefs",
     "//components/prefs:test_support",

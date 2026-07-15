@@ -27,7 +27,7 @@
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "components/client_update_protocol/ecdsa.h"
+#include "components/client_update_protocol/cup.h"
 #include "components/network_time/network_time_pref_names.h"
 #include "components/network_time/time_tracker/time_tracker.h"
 #include "components/prefs/pref_registry_simple.h"

@@ -271,8 +271,8 @@ struct CrxComponent {
   CrxComponent& operator=(const CrxComponent& other);
   ~CrxComponent();
 
-  // Optional SHA256 hash of the CRX's public key. If not supplied, the
-  // unpacker can accept any CRX for this app, provided that the CRX meets the
+  // Optional SHA256 hash of the CRX's public key. If not supplied, the unpacker
+  // can accept any CRX for this app, provided that the CRX meets the
   // VerifierFormat requirements specified by the service's configurator.
   // Callers that know or need a specific developer signature on acceptable CRX
   // files must provide this.
