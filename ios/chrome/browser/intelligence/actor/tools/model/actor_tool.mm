@@ -14,4 +14,8 @@ base::WeakPtr<web::WebFrame> ActorTool::GetTargetWebFrame() const {
 
 void ActorTool::Cancel() {}
 
+void ActorTool::Validate(ToolExecutionCallback callback) {
+  std::move(callback).Run(ToolExecutionResult::Ok());
+}
+
 }  // namespace actor

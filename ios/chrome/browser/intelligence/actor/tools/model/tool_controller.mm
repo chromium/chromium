@@ -158,8 +158,8 @@ void ToolController::CreateToolAndValidate(const ActorToolRequest& request,
                         std::move(journal_entry));
 
   SetState(State::kValidating);
-  // TODO(crbug.com/520098751): Call ActorTool::Validate here.
-  PostValidate(ToolExecutionResult::Ok());
+  active_state_->tool->Validate(base::BindOnce(&ToolController::PostValidate,
+                                               weak_ptr_factory_.GetWeakPtr()));
 }
 
 void ToolController::PostValidate(ToolExecutionResult result) {

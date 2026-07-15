@@ -19,7 +19,6 @@ class WebState;
 namespace actor {
 
 class ClickToolJavaScriptFeature;
-
 class ProfileContextResolver;
 
 // Tool to click an element on a page.
@@ -35,6 +34,7 @@ class ClickTool : public WebActorTool {
   void Execute(ToolExecutionCallback callback) override;
   base::WeakPtr<web::WebState> GetTargetWebState() const override;
   ToolType GetToolType() const override;
+  void Validate(ToolExecutionCallback callback) override;
 
  private:
   void OnTargetFrameResolved(
@@ -47,7 +47,7 @@ class ClickTool : public WebActorTool {
             base::WeakPtr<web::WebState> web_state);
 
   optimization_guide::proto::ClickAction action_;
-  base::WeakPtr<web::WebState> web_state_;
+  base::WeakPtr<web::WebState> web_state_ = nullptr;
   raw_ptr<ClickToolJavaScriptFeature> js_feature_ = nullptr;
   base::WeakPtrFactory<ClickTool> weak_ptr_factory_{this};
 };

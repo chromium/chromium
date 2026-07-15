@@ -34,35 +34,45 @@ ClickTool::Create(const optimization_guide::proto::ClickAction& action,
     return base::unexpected(resolution_result.error());
   }
 
-  if (!action.has_click_count() || !action.has_click_type()) {
-    return base::unexpected(
+  return std::unique_ptr<ClickTool>(
+      new ClickTool(action, resolution_result.value().web_state));
+}
+
+void ClickTool::Validate(ToolExecutionCallback callback) {
+  if (!action_.has_click_count() || !action_.has_click_type()) {
+    std::move(callback).Run(
         ToolExecutionResult(mojom::ActionResultCode::kArgumentsInvalid));
+    return;
   }
 
-  if (!action.has_target()) {
-    return base::unexpected(
+  if (!action_.has_target()) {
+    std::move(callback).Run(
         ToolExecutionResult(mojom::ActionResultCode::kArgumentsInvalid));
+    return;
   }
 
-  const optimization_guide::proto::ActionTarget& target = action.target();
+  const optimization_guide::proto::ActionTarget& target = action_.target();
   // Callers must either target by coordinate or (document_identifier, node_id).
   if (target.has_content_node_id() && !target.has_document_identifier()) {
-    return base::unexpected(
+    std::move(callback).Run(
         ToolExecutionResult(mojom::ActionResultCode::kArgumentsInvalid));
+    return;
   }
   bool can_target_by_coordinate = target.has_coordinate();
   bool can_target_by_node_id =
       target.has_content_node_id() && target.has_document_identifier();
   if (!can_target_by_coordinate && !can_target_by_node_id) {
-    return base::unexpected(
+    std::move(callback).Run(
         ToolExecutionResult(mojom::ActionResultCode::kArgumentsInvalid));
+    return;
   }
   if (can_target_by_coordinate && can_target_by_node_id) {
-    return base::unexpected(
+    std::move(callback).Run(
         ToolExecutionResult(mojom::ActionResultCode::kArgumentsInvalid));
+    return;
   }
-  return std::unique_ptr<ClickTool>(
-      new ClickTool(action, resolution_result.value().web_state));
+
+  std::move(callback).Run(ToolExecutionResult::Ok());
 }
 
 void ClickTool::Execute(ToolExecutionCallback callback) {
