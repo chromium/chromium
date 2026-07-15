@@ -1103,9 +1103,10 @@ inline LayoutStateToolbarPassKey PassKey() {
 
   // Only the visible coordinator (normal vs. incognito) is allowed to update
   // the shared LayoutState.
-  if (self.browser !=
-      self.browser->GetSceneState()
-          .browserProviderInterface.currentBrowserProvider.browser) {
+  Browser* activeBrowser = self.browser->GetSceneState()
+                               .browserProviderInterface
+                               .currentBrowserProvider.browser;
+  if (activeBrowser && self.browser != activeBrowser) {
     return;
   }
 
