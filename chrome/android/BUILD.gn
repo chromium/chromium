@@ -1543,6 +1543,7 @@ if (_is_default_toolchain) {
       "//chrome/browser/ui/android/pdf/internal:javatests",
       "//chrome/browser/ui/android/quickactionsearchwidget:javatests",
       "//chrome/browser/ui/android/signin:javatests",
+      "//chrome/browser/webid:javatests",
       "//components/browser_ui/share/android:javatests",
       "//components/browser_ui/site_settings/android:javatests",
       "//components/language/android:javatests",
