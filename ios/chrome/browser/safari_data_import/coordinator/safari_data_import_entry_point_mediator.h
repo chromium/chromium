@@ -12,16 +12,16 @@ class Tracker;
 }
 class PromosManager;
 class PrefService;
-@protocol UIBlockerTarget;
+@class SceneState;
 
 /// A mediator for the safari data import screen entry point.
 @interface SafariDataImportEntryPointMediator : NSObject
 
 /// Initializer.
-- (instancetype)initWithUIBlockerTarget:(id<UIBlockerTarget>)target
-                          promosManager:(PromosManager*)promosManager
-               featureEngagementTracker:(feature_engagement::Tracker*)tracker
-                            prefService:(PrefService*)prefService
+- (instancetype)initWithSceneState:(SceneState*)sceneState
+                     promosManager:(PromosManager*)promosManager
+          featureEngagementTracker:(feature_engagement::Tracker*)tracker
+                       prefService:(PrefService*)prefService
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 

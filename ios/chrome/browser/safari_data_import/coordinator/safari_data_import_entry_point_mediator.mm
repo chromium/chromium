@@ -30,16 +30,15 @@
   BOOL _disconnected;
 }
 
-- (instancetype)initWithUIBlockerTarget:(id<UIBlockerTarget>)target
-                          promosManager:(PromosManager*)promosManager
-               featureEngagementTracker:(feature_engagement::Tracker*)tracker
-                            prefService:(PrefService*)prefService {
+- (instancetype)initWithSceneState:(SceneState*)sceneState
+                     promosManager:(PromosManager*)promosManager
+          featureEngagementTracker:(feature_engagement::Tracker*)tracker
+                       prefService:(PrefService*)prefService {
   self = [super init];
   if (self) {
-    CHECK(target);
+    CHECK(sceneState);
     CHECK(promosManager);
-    _UIBlocker =
-        std::make_unique<ScopedUIBlocker>(target, UIBlockerExtent::kProfile);
+    _UIBlocker = ScopedUIBlocker::ProfileScoped(sceneState);
     _promosManager = promosManager;
     _tracker = tracker;
     _prefService = prefService;

@@ -39,7 +39,7 @@ class SafariDataImportEntryPointMediatorTest : public PlatformTest {
     run_loop_.Run();
 
     mediator_ = [[SafariDataImportEntryPointMediator alloc]
-         initWithUIBlockerTarget:scene_state_
+              initWithSceneState:scene_state_
                    promosManager:promos_manager_.get()
         featureEngagementTracker:tracker_.get()
                      prefService:nil];

@@ -72,7 +72,7 @@
   feature_engagement::Tracker* tracker =
       feature_engagement::TrackerFactory::GetForProfile(self.profile);
   _mediator = [[SafariDataImportEntryPointMediator alloc]
-       initWithUIBlockerTarget:self.browser->GetSceneState()
+            initWithSceneState:self.browser->GetSceneState()
                  promosManager:promosManager
       featureEngagementTracker:tracker
                    prefService:GetApplicationContext()->GetLocalState()];
