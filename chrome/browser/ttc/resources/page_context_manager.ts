@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {debugLog, DebugLogTag, log, warnLog} from './logging.js';
+import type {PageContentNode} from './ai_overlay_dialog.mojom-webui.js';
+import {log, warnLog} from './logging.js';
 
 const FILE = 'PageContextManager';
 
@@ -22,11 +23,10 @@ export interface PageContext {
   title: string|null;
 
   /**
-   * Markdown representation of the current page content, potentially truncated
-   * in PageContextMonitor on the C++ side. Can be null when loading a new page
-   * until content becomes available.
+   * Structured document tree of the current page content from Mojo IPC.
+   * Can be null when loading a new page until content becomes available.
    */
-  content: string|null;
+  content: PageContentNode|null;
 
   /**
    * Tracks whether the PageContext has ever been contentful.
@@ -46,18 +46,6 @@ export interface PageContextChangeEvent {
 }
 
 export type PageContextListener = (event: PageContextChangeEvent) => void;
-
-// Some pages fire load before real content is actually rendered. Try to avoid
-// considering such pages as having content.
-function isNonEmpty(str: string|null): boolean {
-  const kMinimumContentThreshold = 100;
-
-  if (!str) {
-    return false;
-  }
-  // Consider only alphanumeric characters to look for real content.
-  return str.replace(/[^a-zA-Z0-9]/g, '').length > kMinimumContentThreshold;
-}
 
 /**
  * PageContextManager maintains state about the current page context as
@@ -82,11 +70,8 @@ export class PageContextManager {
     this.listeners.push(listener);
   }
 
-  updateCurrentPageContext(title: string, content: string) {
+  updateCurrentPageContext(title: string, rootNode: PageContentNode|string|null = null) {
     log(FILE, 'updateCurrentPageContext', title);
-    debugLog(
-        FILE, DebugLogTag.PAGE_CONTENT, 'PageContextManager: Update', title,
-        content);
     if (!this.context) {
       warnLog(FILE, 'updateCurrentPageContext called without context');
       return;
@@ -94,8 +79,9 @@ export class PageContextManager {
 
     const oldContext = {...this.context};
     this.context.title = title;
-    this.context.content = content;
-    this.context.hasHadContent ||= isNonEmpty(content);
+    const node = typeof rootNode === 'string' ? null : (rootNode ?? null);
+    this.context.content = node;
+    this.context.hasHadContent ||= Boolean(this.context.content);
 
     for (const listener of this.listeners) {
       const event: PageContextChangeEvent = {
@@ -107,12 +93,12 @@ export class PageContextManager {
     }
   }
 
-  createNewPageContext(url: string, title: string|null, content: string|null) {
+  createNewPageContext(url: string, title: string|null, content: PageContentNode|string|null = null) {
     log(FILE, 'CreateNewPageContext', title, url);
-    debugLog(FILE, DebugLogTag.PAGE_CONTENT, 'Content', content);
 
     const oldContext = this.context ? {...this.context} : null;
-    this.context = {url, title, content, hasHadContent: isNonEmpty(content)};
+    const node = typeof content === 'string' ? null : (content ?? null);
+    this.context = {url, title, content: node, hasHadContent: Boolean(node)};
 
     for (const listener of this.listeners) {
       const event: PageContextChangeEvent = {

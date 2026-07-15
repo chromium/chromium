@@ -7,6 +7,7 @@ import '/strings.m.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
+import type {PageContentNode} from './ai_overlay_dialog.mojom-webui.js';
 import {PageCallbackRouter, PageHandlerFactory, PageHandlerRemote} from './ai_overlay_dialog.mojom-webui.js';
 import {getCss} from './app.css.js';
 import {getHtml} from './app.html.js';
@@ -179,14 +180,15 @@ export class AppElement extends CrLitElement {
     // Start listening for page context updates immediately to ensure we catch
     // any initial updates before the Conversation is initialized.
     const didChangePageId = this.pageCallbackRouter.didChangePage.addListener(
-        (url, title, content) => this.initialPageContext =
-            {url, title, content, hasHadContent: (content?.length ?? 0) > 0});
+        (url, title) => this.initialPageContext =
+            {url, title, content: null, hasHadContent: false});
     const updateContextId =
         this.pageCallbackRouter.updateCurrentPageContext.addListener(
-            (title, content) => {
+            (title: string, rootNode: PageContentNode|null) => {
               if (this.initialPageContext) {
                 this.initialPageContext.title = title;
-                this.initialPageContext.content = content;
+                this.initialPageContext.content = rootNode ?? null;
+                this.initialPageContext.hasHadContent ||= Boolean(rootNode);
               }
             });
     this.unregisterPageContextListeners = () => {

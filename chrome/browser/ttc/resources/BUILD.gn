@@ -42,6 +42,7 @@ build_webui("build") {
     ts_files += [
       "internal/api_session.ts",
       "internal/conversation.ts",
+      "internal/page_context_verbalizer.ts",
       "internal/persona.ts",
       "internal/tools/tool_executor.ts",
     ]

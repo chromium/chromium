@@ -22,7 +22,7 @@ export interface Turn {
 export interface PersistedPageContext {
   url: string;
   title: string|null;
-  content: string|null;
+  content: unknown|null;
 }
 
 export interface JournalEntry {

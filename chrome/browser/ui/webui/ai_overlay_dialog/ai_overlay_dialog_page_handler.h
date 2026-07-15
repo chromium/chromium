@@ -41,8 +41,9 @@ class AiOverlayDialogPageHandler
   void DidChangePage(const GURL& url,
                      const std::optional<std::u16string>& title,
                      const std::optional<std::string>& content);
-  void UpdateCurrentPageContext(const std::u16string& title,
-                                const std::string& content);
+  void UpdateCurrentPageContext(
+      const std::u16string& title,
+      ai_overlay_dialog::mojom::PageContentNodePtr root_node = nullptr);
 
   // AiOverlayDialogController::Observer
   void OnCaptionsVisibleChanged(bool visible) override;

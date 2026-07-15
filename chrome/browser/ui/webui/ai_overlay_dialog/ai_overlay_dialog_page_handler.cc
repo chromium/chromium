@@ -182,12 +182,12 @@ void AiOverlayDialogPageHandler::DidChangePage(
 
 void AiOverlayDialogPageHandler::UpdateCurrentPageContext(
     const std::u16string& title,
-    const std::string& content) {
+    ai_overlay_dialog::mojom::PageContentNodePtr root_node) {
   VLOG(1) << "Update Current Page Context";
   VLOG(1) << "\tTitle: " << base::UTF16ToUTF8(title);
-  VLOG(1) << "\tContent: " << content.substr(0, 200) << "...";
 
-  page_->UpdateCurrentPageContext(base::UTF16ToUTF8(title), content);
+  page_->UpdateCurrentPageContext(base::UTF16ToUTF8(title),
+                                  std::move(root_node));
 }
 
 void AiOverlayDialogPageHandler::OnCaptionsVisibleChanged(bool visible) {

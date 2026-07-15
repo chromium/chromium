@@ -5,6 +5,17 @@
 module ai_overlay_dialog.mojom;
 
 import "chrome/browser/ui/webui/ai_overlay_dialog/tools/tools.mojom";
+import "url/mojom/url.mojom";
+
+// Represents a structured node in the document tree for active page context.
+struct PageContentNode {
+  int32 dom_node_id;
+  string tag_name;
+  string text;
+  url.mojom.Url? url;
+  bool is_interactive;
+  array<PageContentNode> children;
+};
 
 // Factory for creating a PageHandler.
 interface PageHandlerFactory {
@@ -35,7 +46,7 @@ interface Page {
   DidChangePage(string url, string? title, string? content);
 
   // Passes context about the current page to the app.
-  UpdateCurrentPageContext(string page_title, string page_content);
+  UpdateCurrentPageContext(string page_title, PageContentNode? root_node);
 
   // Controls whether captions are visible.
   SetCaptionsVisible(bool visible);
