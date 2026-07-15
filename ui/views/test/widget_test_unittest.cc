@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/views/test/mock_activation_controller.h"
 
 #if defined(USE_AURA)
 #include "ui/aura/window.h"
@@ -108,5 +109,73 @@ TEST_F(DesktopWidgetTestTest, GetAllWidgets) {
   ExpectClose(&expected, {native, native_child}, "native");
   ExpectClose(&expected, {frameless}, "frameless");
 }
+#if defined(USE_MOCK_ACTIVATION_CONTROLLER)
+TEST_F(DesktopWidgetTestTest, MockActivationControllerDeactivateDestroy) {
+  Widget* widget1 = CreateTopLevelNativeWidget();
+  Widget* widget2 = CreateTopLevelNativeWidget();
+
+  views::test::MockActivationController controller;
+
+  widget1->Show();
+  controller.MaybeActivate(widget1, true);
+
+  widget2->Show();
+  controller.MaybeActivate(widget2, true);
+
+  // Hide widget1 so it is no longer activatable.
+  widget1->Hide();
+
+  // Deactivate widget2. Since no other activatable widgets exist, widget2
+  // remains in the tracking list, but its activation is cleared.
+  controller.Deactivate(widget2);
+  EXPECT_TRUE(controller.IsTrackedForTesting(widget2));
+
+  // Destroying widget2 should not trigger an observer leak or check failure
+  // because its observer is correctly removed from the tracking list.
+  widget2->CloseNow();
+
+  widget1->CloseNow();
+}
+
+TEST_F(DesktopWidgetTestTest, MockActivationControllerKeepTrackOfDeactivated) {
+  Widget* widget1 = CreateTopLevelNativeWidget();
+  Widget* widget2 = CreateTopLevelNativeWidget();
+
+  views::test::MockActivationController controller;
+
+  widget1->Show();
+  controller.MaybeActivate(widget1, true);
+
+  widget2->Show();
+  controller.MaybeActivate(widget2, true);
+  EXPECT_TRUE(controller.IsActive(widget2));
+  EXPECT_FALSE(controller.IsActive(widget1));
+
+  // Hide widget1 so it is no longer activatable.
+  widget1->Hide();
+
+  // Deactivate widget2. Since no other activatable widgets exist, no widget is
+  // active.
+  controller.Deactivate(widget2);
+  EXPECT_FALSE(controller.IsActive(widget2));
+  EXPECT_FALSE(controller.IsActive(widget1));
+  EXPECT_TRUE(controller.IsTrackedForTesting(widget2));
+
+  // Show widget1 again and activate it.
+  widget1->Show();
+  controller.MaybeActivate(widget1, true);
+  EXPECT_TRUE(controller.IsActive(widget1));
+  EXPECT_FALSE(controller.IsActive(widget2));
+
+  // Deactivate widget1. Since widget2 was kept in the tracking list, it should
+  // be found and activated!
+  controller.Deactivate(widget1);
+  EXPECT_TRUE(controller.IsActive(widget2));
+  EXPECT_FALSE(controller.IsActive(widget1));
+
+  widget1->CloseNow();
+  widget2->CloseNow();
+}
+#endif
 
 }  // namespace views::test

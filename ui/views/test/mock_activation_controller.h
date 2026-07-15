@@ -54,6 +54,7 @@ class MockActivationController : public views::WidgetObserver,
   void MaybeActivate(Widget* widget, bool activate) override;
   void Deactivate(Widget* widget) override;
   bool IsActive(const Widget* widget) override;
+  bool IsTrackedForTesting(const Widget* widget) const;
 
  private:
   // WidgetObserver:
@@ -62,7 +63,7 @@ class MockActivationController : public views::WidgetObserver,
 
   using WidgetList = std::vector<raw_ptr<Widget, VectorExperimental>>;
 
-  WidgetList::reverse_iterator FindActivatableWidget();
+  Widget* FindActivatableWidget(Widget* skip_widget = nullptr);
 
   WidgetList widgets_;
   raw_ptr<Widget> active_widget_ = nullptr;
