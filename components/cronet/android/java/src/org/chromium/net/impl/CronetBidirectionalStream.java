@@ -1181,7 +1181,6 @@ public class CronetBidirectionalStream extends ExperimentalBidirectionalStream {
     private void destroyNativeStreamLocked() {
         try (var traceEvent =
                 ScopedSysTraceEvent.scoped("CronetBidirectionalStream#destroyNativeStreamLocked")) {
-            Log.i(CronetUrlRequestContext.LOG_TAG, "destroyNativeStreamLocked " + this.toString());
             if (mNativeStream == 0) {
                 return;
             }
