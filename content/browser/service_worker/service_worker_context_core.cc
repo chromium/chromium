@@ -1385,9 +1385,9 @@ void ServiceWorkerContextCore::OnReportConsoleMessage(
   DCHECK(browser_context);
   DCHECK_EQ(this, version->context().get());
   const bool is_builtin_component =
-      HasWebUIScheme(source_url) ||
+      HasWebUIScheme(version->script_url()) ||
       GetContentClient()->browser()->IsBuiltinComponent(
-          browser_context, url::Origin::Create(source_url));
+          browser_context, version->key().origin());
 
   LogConsoleMessage(message_level, message, line_number, is_builtin_component,
                     wrapper_->is_incognito(),
