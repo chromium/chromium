@@ -26,6 +26,7 @@
 #include "base/test/mock_callback.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/autofill/content/common/mojom/autofill_driver.mojom.h"
@@ -45,6 +46,8 @@
 #include "content/public/renderer/render_frame.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_utils.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
@@ -59,6 +62,7 @@
 #include "third_party/blink/public/web/web_navigation_type.h"
 #include "third_party/blink/public/web/web_option_element.h"
 #include "third_party/blink/public/web/web_select_element.h"
+#include "third_party/blink/public/web/web_testing_support.h"
 #include "third_party/blink/public/web/web_view.h"
 #include "ui/accessibility/ax_mode.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -2836,6 +2840,145 @@ TEST_F(AutofillAgentBruteForceProbingTest, FeatureDisabled) {
     ShowSuggestion(i % 2 == 0 ? f1 : f2);
   }
   task_environment_.FastForwardBy(base::Milliseconds(0));
+}
+
+class TestAutofillVisibilityObserver
+    : public mojom::AutofillVisibilityObserver {
+ public:
+  explicit TestAutofillVisibilityObserver(
+      mojo::PendingReceiver<mojom::AutofillVisibilityObserver> receiver)
+      : receiver_(this, std::move(receiver)) {
+    receiver_.set_disconnect_handler(base::BindOnce(
+        &TestAutofillVisibilityObserver::OnDisconnect, base::Unretained(this)));
+  }
+
+  void OnFieldBecameVisible() override {
+    became_visible_ = true;
+    if (run_loop_) {
+      run_loop_->Quit();
+    }
+  }
+
+  void OnDisconnect() {
+    disconnected_ = true;
+    if (run_loop_) {
+      run_loop_->Quit();
+    }
+  }
+
+  bool became_visible() const { return became_visible_; }
+  bool disconnected() const { return disconnected_; }
+
+  void WaitForEvent() {
+    if (became_visible_ || disconnected_) {
+      return;
+    }
+    run_loop_ = std::make_unique<base::RunLoop>();
+    run_loop_->Run();
+  }
+
+ private:
+  mojo::Receiver<mojom::AutofillVisibilityObserver> receiver_;
+  bool became_visible_ = false;
+  bool disconnected_ = false;
+  std::unique_ptr<base::RunLoop> run_loop_;
+};
+
+class AutofillAgentTestObserveFieldVisibility : public AutofillAgentTest {};
+
+// Tests that ObserveFieldVisibility triggers OnFieldBecameVisible for a visible
+// element after the minimum visible duration (800ms) has passed.
+TEST_F(AutofillAgentTestObserveFieldVisibility,
+       VisibleElementForMinimumVisibleDuration) {
+  LoadHTML(
+      R"(<body><input id="target" style="width: 10px; height: 10px;"></body>)");
+  WaitForFormsSeen();
+
+  blink::WebTestingSupport::InjectInternalsObject(GetMainFrame());
+
+  mojo::PendingRemote<mojom::AutofillVisibilityObserver> remote;
+  TestAutofillVisibilityObserver observer(
+      remote.InitWithNewPipeAndPassReceiver());
+  autofill_agent().ObserveFieldVisibility(GetFieldRendererIdById("target"),
+                                          std::move(remote));
+
+  ExecuteJavaScriptForTests(
+      "window.internals.forceCompositingUpdate(document);");
+  // Fast forward by the minimum visible duration (800ms) plus some margin.
+  task_environment_.FastForwardBy(base::Milliseconds(900));
+
+  observer.WaitForEvent();
+  EXPECT_TRUE(observer.became_visible());
+}
+
+// Tests that ObserveFieldVisibility does not trigger OnFieldBecameVisible if
+// the element has been visible for less than the minimum visible duration
+// (800ms).
+TEST_F(AutofillAgentTestObserveFieldVisibility,
+       VisibleElementNotForMinimumVisibleDuration) {
+  LoadHTML(
+      R"(<body><input id="target" style="width: 10px; height: 10px;"></body>)");
+  WaitForFormsSeen();
+
+  blink::WebTestingSupport::InjectInternalsObject(GetMainFrame());
+
+  mojo::PendingRemote<mojom::AutofillVisibilityObserver> remote;
+  TestAutofillVisibilityObserver observer(
+      remote.InitWithNewPipeAndPassReceiver());
+  autofill_agent().ObserveFieldVisibility(GetFieldRendererIdById("target"),
+                                          std::move(remote));
+
+  ExecuteJavaScriptForTests(
+      "window.internals.forceCompositingUpdate(document);");
+  // Fast forward by less than the minimum visible duration (800ms).
+  task_environment_.FastForwardBy(base::Milliseconds(500));
+
+  EXPECT_FALSE(observer.became_visible());
+  EXPECT_FALSE(observer.disconnected());
+}
+
+// Tests that ObserveFieldVisibility does not trigger OnFieldBecameVisible for
+// an invisible element (e.g. opacity: 0) even after the minimum visible
+// duration has passed.
+TEST_F(AutofillAgentTestObserveFieldVisibility,
+       InvisibleElementForMinimumVisibleDuration) {
+  LoadHTML(R"(<body>
+    <input id="target" style="width: 10px; height: 10px; opacity: 0;">
+  </body>)");
+  WaitForFormsSeen();
+
+  blink::WebTestingSupport::InjectInternalsObject(GetMainFrame());
+
+  mojo::PendingRemote<mojom::AutofillVisibilityObserver> remote;
+  TestAutofillVisibilityObserver observer(
+      remote.InitWithNewPipeAndPassReceiver());
+  autofill_agent().ObserveFieldVisibility(GetFieldRendererIdById("target"),
+                                          std::move(remote));
+
+  ExecuteJavaScriptForTests(
+      "window.internals.forceCompositingUpdate(document);");
+  // Fast forward by the minimum visible duration (800ms) plus some margin.
+  task_environment_.FastForwardBy(base::Milliseconds(900));
+
+  EXPECT_FALSE(observer.became_visible());
+  EXPECT_FALSE(observer.disconnected());
+}
+
+// Tests that ObserveFieldVisibility disconnects the observer immediately for a
+// non-existent element.
+TEST_F(AutofillAgentTestObserveFieldVisibility, NonExistentElement) {
+  LoadHTML(R"(<body><input></body>)");
+  WaitForFormsSeen();
+
+  mojo::PendingRemote<mojom::AutofillVisibilityObserver> remote;
+  TestAutofillVisibilityObserver observer(
+      remote.InitWithNewPipeAndPassReceiver());
+  autofill_agent().ObserveFieldVisibility(FieldRendererId(123),
+                                          std::move(remote));
+
+  observer.WaitForEvent();
+  EXPECT_TRUE(observer.disconnected());
+  EXPECT_FALSE(observer.became_visible());
 }
 
 }  // namespace

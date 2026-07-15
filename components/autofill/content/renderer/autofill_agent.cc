@@ -66,6 +66,7 @@
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "content/public/renderer/render_frame.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/input/web_keyboard_event.h"
@@ -625,6 +626,9 @@ void AutofillAgent::Reset() {
   input_warnings_.remove_listeners.clear();
   email_verification_observer_.Reset();
   javascript_autofill_tracker_.Reset();
+  // Runs Blink's observer disconnection closure
+  // (`VisibilityObserver::Disconnect()`) before being reset.
+  form_element_intersection_observer_.RunAndReset();
   ResetTokenBucket();
 }
 
@@ -1924,6 +1928,23 @@ void AutofillAgent::UpdateEmailVerificationState(
       break;
   }
   input_element.SetEmailVerificationState(blink_state);
+}
+
+void AutofillAgent::ObserveFieldVisibility(
+    FieldRendererId field_id,
+    mojo::PendingRemote<mojom::AutofillVisibilityObserver> observer) {
+  if (WebFormControlElement element =
+          form_util::GetFormControlByRendererId(field_id)) {
+    mojo::Remote<mojom::AutofillVisibilityObserver> remote(std::move(observer));
+    auto callback = base::BindOnce(
+        [](mojo::Remote<mojom::AutofillVisibilityObserver> remote) {
+          remote->OnFieldBecameVisible();
+        },
+        std::move(remote));
+    form_element_intersection_observer_ = element.MonitorVisibility(
+        /*minimum_visible_duration=*/base::Milliseconds(800),
+        std::move(callback));
+  }
 }
 
 void AutofillAgent::DoFillFieldWithValue(std::u16string_view value,

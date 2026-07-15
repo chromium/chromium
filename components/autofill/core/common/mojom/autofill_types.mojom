@@ -624,3 +624,10 @@ enum EmailVerificationState {
   kFailed,
 };
 // LINT.ThenChange(//third_party/blink/public/common/webid/email_verification_state.h:EmailVerificationState)
+
+// Observer interface to receive visibility notifications for a field.
+interface AutofillVisibilityObserver {
+  // Called when the observed field meets the visibility criteria (e.g., visible
+  // in the viewport for 800ms).
+  OnFieldBecameVisible();
+};

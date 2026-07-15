@@ -92,8 +92,12 @@ class MockAutofillAgent : public mojom::AutofillAgent {
                uint32_t number_of_ancestor_levels_to_search,
                base::OnceCallback<void(const std::string&)>),
               (override));
-
   MOCK_METHOD(void, ScrollFieldIntoView, (FieldRendererId), (override));
+  MOCK_METHOD(void,
+              ObserveFieldVisibility,
+              (FieldRendererId,
+               mojo::PendingRemote<mojom::AutofillVisibilityObserver>),
+              (override));
 
  private:
   mojo::AssociatedReceiverSet<mojom::AutofillAgent> receivers_;

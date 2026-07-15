@@ -6,12 +6,14 @@
 
 #include <vector>
 
+#include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/web/web_autofill_state.h"
 #include "third_party/blink/public/web/web_document.h"
+#include "third_party/blink/public/web/web_element.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/events/native_event_listener.h"
@@ -19,10 +21,12 @@
 #include "third_party/blink/renderer/core/event_type_names.h"
 #include "third_party/blink/renderer/core/events/keyboard_event.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_control_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/input_type_names.h"
+#include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 
 namespace blink {
@@ -592,6 +596,126 @@ TEST_F(WebFormControlElementTest, FormControlTypeForAutofill) {
   EXPECT_EQ(control.FormControlTypeForAutofill(), kInputRadio);
   input->MaybeSetHasBeenPasswordField();
   EXPECT_EQ(control.FormControlTypeForAutofill(), kInputRadio);
+}
+
+class WebFormElementIntersectionObserverTest : public PageTestBase {
+ public:
+  WebFormElementIntersectionObserverTest()
+      : PageTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+
+ protected:
+  void SetUp() override { PageTestBase::SetUp(gfx::Size(400, 300)); }
+
+  static constexpr base::TimeDelta kMinimumVisibleDuration =
+      base::Milliseconds(800);
+};
+
+// Tests that WebFormElementIntersectionObserver returns true for a visible,
+// intersecting element.
+TEST_F(WebFormElementIntersectionObserverTest, VisibleElement) {
+  GetDocument().body()->SetHTMLUnsafeWithoutTrustedTypes(R"(
+    <input id="t1" style="width: 10px; height: 10px;">
+  )");
+  UpdateAllLifecyclePhasesForTest();
+
+  WebFormControlElement element(
+      DynamicTo<HTMLFormControlElement>(GetElementById("t1")));
+  ASSERT_TRUE(element);
+
+  base::MockOnceClosure mock_callback;
+  EXPECT_CALL(mock_callback, Run());
+
+  base::ScopedClosureRunner runner =
+      element.MonitorVisibility(kMinimumVisibleDuration, mock_callback.Get());
+
+  UpdateAllLifecyclePhasesForTest();
+  FastForwardBy(kMinimumVisibleDuration);
+  UpdateAllLifecyclePhasesForTest();
+  FastForwardUntilNoTasksRemain();
+}
+
+// Tests that WebFormElementIntersectionObserver does not trigger the callback
+// if intersecting element is invisible (e.g., due to opacity).
+TEST_F(WebFormElementIntersectionObserverTest, InvisibleElement) {
+  GetDocument().body()->SetHTMLUnsafeWithoutTrustedTypes(R"(
+    <input id="t1" style="width: 10px; height: 10px; opacity: 0;">
+  )");
+  UpdateAllLifecyclePhasesForTest();
+
+  WebFormControlElement element(
+      DynamicTo<HTMLFormControlElement>(GetElementById("t1")));
+  ASSERT_TRUE(element);
+
+  bool callback_called = false;
+  base::ScopedClosureRunner runner = element.MonitorVisibility(
+      kMinimumVisibleDuration,
+      base::BindOnce([](bool* called) { *called = true; }, &callback_called));
+
+  UpdateAllLifecyclePhasesForTest();
+  FastForwardBy(kMinimumVisibleDuration);
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(callback_called);
+  FastForwardUntilNoTasksRemain();
+}
+
+// Tests that WebFormElementIntersectionObserver does not trigger the callback
+// if the element has not intersected the viewport.
+TEST_F(WebFormElementIntersectionObserverTest, OffscreenElement) {
+  GetDocument().body()->SetHTMLUnsafeWithoutTrustedTypes(R"(
+    <div style="height: 2000px;"></div>
+    <input id="t1" style="width: 10px; height: 10px;">
+  )");
+  UpdateAllLifecyclePhasesForTest();
+
+  WebFormControlElement element(
+      DynamicTo<HTMLFormControlElement>(GetElementById("t1")));
+  ASSERT_TRUE(element);
+
+  bool callback_called = false;
+  base::ScopedClosureRunner runner = element.MonitorVisibility(
+      kMinimumVisibleDuration,
+      base::BindOnce([](bool* called) { *called = true; }, &callback_called));
+
+  UpdateAllLifecyclePhasesForTest();
+  FastForwardBy(kMinimumVisibleDuration);
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(callback_called);
+  FastForwardUntilNoTasksRemain();
+}
+
+// Tests that an offscreen element does not trigger the callback initially,
+// but does trigger it with true once it is scrolled into view.
+TEST_F(WebFormElementIntersectionObserverTest, ScrollIntoView) {
+  GetDocument().body()->SetHTMLUnsafeWithoutTrustedTypes(R"(
+    <div style="height: 2000px;"></div>
+    <input id="t1" style="width: 10px; height: 10px;">
+  )");
+  UpdateAllLifecyclePhasesForTest();
+
+  WebFormControlElement element(
+      DynamicTo<HTMLFormControlElement>(GetElementById("t1")));
+  ASSERT_TRUE(element);
+
+  bool callback_called = false;
+  base::ScopedClosureRunner runner = element.MonitorVisibility(
+      kMinimumVisibleDuration,
+      base::BindOnce([](bool* called) { *called = true; }, &callback_called));
+
+  UpdateAllLifecyclePhasesForTest();
+  FastForwardBy(base::Milliseconds(100));
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(callback_called);
+
+  // Scroll into view.
+  GetDocument().View()->LayoutViewport()->SetScrollOffset(
+      ScrollOffset(0, 2000), mojom::blink::ScrollType::kProgrammatic,
+      cc::ScrollSourceType::kNone);
+
+  UpdateAllLifecyclePhasesForTest();
+  FastForwardBy(kMinimumVisibleDuration);
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_TRUE(callback_called);
+  FastForwardUntilNoTasksRemain();
 }
 
 }  // namespace blink

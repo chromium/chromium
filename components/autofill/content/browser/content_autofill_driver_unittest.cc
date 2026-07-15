@@ -217,6 +217,11 @@ class FakeAutofillAgent : public mojom::AutofillAgent {
               (FieldRendererId email_field_id,
                mojom::EmailVerificationState state),
               (override));
+  MOCK_METHOD(void,
+              ObserveFieldVisibility,
+              (FieldRendererId,
+               mojo::PendingRemote<mojom::AutofillVisibilityObserver>),
+              (override));
 
  private:
   void CallDone() {

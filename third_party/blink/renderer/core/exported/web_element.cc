@@ -32,6 +32,7 @@
 
 #include <optional>
 
+#include "base/functional/callback_helpers.h"
 #include "third_party/blink/public/common/metrics/document_update_reason.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom-blink.h"
 #include "third_party/blink/public/mojom/scroll/scroll_into_view_params.mojom-blink.h"
@@ -58,6 +59,7 @@
 #include "third_party/blink/renderer/core/events/text_event.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/frame/local_frame_ukm_aggregator.h"
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
 #include "third_party/blink/renderer/core/geometry/dom_rect_list.h"
 #include "third_party/blink/renderer/core/html/custom/custom_element.h"
@@ -66,6 +68,8 @@
 #include "third_party/blink/renderer/core/html/forms/text_control_element.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
+#include "third_party/blink/renderer/core/intersection_observer/intersection_observer.h"
+#include "third_party/blink/renderer/core/intersection_observer/intersection_observer_entry.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/page/page.h"
@@ -76,7 +80,9 @@
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/graphics/image.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/timer.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/size.h"
@@ -722,6 +728,113 @@ LayoutBox* WebElement::GetScrollingBox() const {
   }
 
   return blink::DynamicTo<LayoutBox>(element->GetLayoutObject());
+}
+
+namespace {
+
+class VisibilityObserver final : public GarbageCollected<VisibilityObserver> {
+ public:
+  VisibilityObserver(Element* element,
+                     base::TimeDelta minimum_visible_duration,
+                     base::OnceClosure callback)
+      : element_(element),
+        minimum_visible_duration_(minimum_visible_duration),
+        callback_(std::move(callback)),
+        visibility_timer_(
+            element->GetDocument().GetTaskRunner(TaskType::kInternalDefault),
+            this,
+            &VisibilityObserver::VisibilityTimerFired) {
+    IntersectionObserver::Params params = {
+        .root = nullptr,
+        // Require 100% of the element to be intersecting the viewport.
+        .thresholds = {1.0f},
+        // Add a delay of 100ms between observer notifications.
+        .delay = base::Milliseconds(100),
+        // Enable visibility tracking; otherwise `isVisible()` in entries will
+        // always be false.
+        .track_visibility = true,
+    };
+    observer_ = IntersectionObserver::Create(
+        element_->GetDocument(),
+        BindRepeating(&VisibilityObserver::Deliver, WrapWeakPersistent(this)),
+        LocalFrameUkmAggregator::kIntersectionObservationInternalCount,
+        std::move(params));
+  }
+
+  void Deliver(const HeapVector<Member<IntersectionObserverEntry>>& entries) {
+    CHECK_EQ(entries.size(), 1u);
+    if (entries[0]->isVisible()) {
+      if (!visibility_timer_.IsActive()) {
+        visibility_timer_.StartOneShot(minimum_visible_duration_, FROM_HERE);
+      }
+    } else {
+      visibility_timer_.Stop();
+    }
+  }
+
+  void Trace(Visitor* visitor) const {
+    visitor->Trace(element_);
+    visitor->Trace(observer_);
+    visitor->Trace(visibility_timer_);
+  }
+
+  void Start() { observer_->observe(element_); }
+
+  void Disconnect() {
+    visibility_timer_.Stop();
+    callback_.Reset();
+    if (observer_) {
+      observer_->disconnect();
+      observer_ = nullptr;
+    }
+  }
+
+ private:
+  // Fired when the visibility timer expires (i.e., the element has been
+  // visible for `minimum_visible_duration_`). It invokes `callback_`.
+  void VisibilityTimerFired(TimerBase*) {
+    DeliverResult();
+    if (observer_) {
+      observer_->disconnect();
+      observer_ = nullptr;
+    }
+  }
+
+  void DeliverResult() {
+    if (callback_) {
+      std::move(callback_).Run();
+    }
+    visibility_timer_.Stop();
+  }
+
+  Member<Element> element_;
+  // The minimum continuous duration a element must remain visible in the
+  // viewport before `callback_` is triggered.
+  base::TimeDelta minimum_visible_duration_;
+  // Callback to be invoked when the monitored element meets the visibility
+  // criteria.
+  base::OnceClosure callback_;
+  // Timer used to track how long an element has been continuously visible.
+  HeapTaskRunnerTimer<VisibilityObserver> visibility_timer_;
+  // `IntersectionObserver` used to monitor the visibility of a form control.
+  Member<IntersectionObserver> observer_;
+};
+
+}  // namespace
+
+base::ScopedClosureRunner WebElement::MonitorVisibility(
+    base::TimeDelta minimum_visible_duration,
+    base::OnceClosure callback) {
+  CHECK(callback);
+  CHECK(!IsNull());
+
+  auto* observer = MakeGarbageCollected<VisibilityObserver>(
+      const_cast<Element*>(ConstUnwrap<Element>()), minimum_visible_duration,
+      std::move(callback));
+  observer->Start();
+
+  return base::ScopedClosureRunner(
+      BindOnce(&VisibilityObserver::Disconnect, WrapPersistent(observer)));
 }
 
 }  // namespace blink

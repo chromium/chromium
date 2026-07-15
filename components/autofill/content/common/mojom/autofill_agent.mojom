@@ -134,6 +134,23 @@ interface AutofillAgent {
   // given email field.
   UpdateEmailVerificationState(FieldRendererId email_field_id,
                                EmailVerificationState state);
+
+  // Starts observing the visibility of the field identified by `field_id`.
+  // The `observer` will be notified when the field becomes visible (e.g.,
+  // meets the 800ms visibility condition). Only one field can be actively
+  // observed at a time. A subsequent call to `ObserveFieldVisibility()` will
+  // cancel the previous observer's subscription. The caller can detect this
+  // cancellation by registering a disconnect handler via
+  // `set_disconnect_handler()`.
+  //
+  // Note: We use a `pending_remote<AutofillVisibilityObserver>` instead of a
+  // standard Mojo response callback (e.g., `=> (bool is_visible)`) because the
+  // visibility condition depends on user interaction (scrolling) and may be
+  // delayed indefinitely. Since standard Mojo response callbacks are expected
+  // to return promptly, we avoid using a response callback here in favor of a
+  // dedicated Mojo observer interface.
+  ObserveFieldVisibility(FieldRendererId field_id,
+                         pending_remote<AutofillVisibilityObserver> observer);
 };
 
 // There is one instance of this interface per render frame in the render

@@ -238,7 +238,7 @@ void OmniboxAutofillDelegate::OnFieldTypesDetermined(
   }
   candidate_form_found_ = true;
 
-  // TODO: crbug.com/490214534 - Initiate GetIntersectionObserverInfo(~).
+  // TODO: crbug.com/490214534 - Initiate ObserveFieldVisibility(~).
 }
 
 void OmniboxAutofillDelegate::OnAutofillManagerStateChanged(
@@ -379,11 +379,7 @@ void OmniboxAutofillDelegate::OnTabSelected(TabbedPaneTabType tab_type) {
   NOTREACHED();
 }
 
-void OmniboxAutofillDelegate::OnGetIntersectionObserverInfo(bool is_visible) {
-  if (!is_visible) {
-    return;
-  }
-
+void OmniboxAutofillDelegate::OnFieldBecameVisible() {
   auto* manager = static_cast<BrowserAutofillManager*>(
       client_->GetAutofillManagerForPrimaryMainFrame());
   if (!manager) {

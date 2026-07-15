@@ -34,6 +34,8 @@
 #include <optional>
 #include <vector>
 
+#include "base/functional/callback_forward.h"
+#include "base/time/time.h"
 #include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/web/web_node.h"
 #include "ui/gfx/geometry/vector2d_f.h"
@@ -252,6 +254,17 @@ class BLINK_EXPORT WebElement : public WebNode {
   // strings directly to WebElement and enable public component usage through
   // /public/web interfaces.
   WebString GetComputedValue(const WebString& property_name);
+
+  // Observes the visibility of this element.
+  //
+  // Invokes `callback` once this element has been visible for at least
+  // `minimum_visible_duration`. If the observer is disconnected via the
+  // returned closure runner before the threshold is met, `callback` is dropped.
+  //
+  // The returned closure runner removes the observer.
+  base::ScopedClosureRunner MonitorVisibility(
+      base::TimeDelta minimum_visible_duration,
+      base::OnceClosure callback);
 
 #if INSIDE_BLINK
   WebElement(Element*);

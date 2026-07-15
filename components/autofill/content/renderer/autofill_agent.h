@@ -255,6 +255,9 @@ class AutofillAgent : public content::RenderFrameObserver,
   void UpdateEmailVerificationState(
       FieldRendererId email_field_id,
       mojom::EmailVerificationState state) override;
+  void ObserveFieldVisibility(
+      FieldRendererId field_id,
+      mojo::PendingRemote<mojom::AutofillVisibilityObserver> observer) override;
 
   // Fires Mojo messages for a given form submission.
   void FireHostSubmitEvents(const FormData& form_data,
@@ -629,6 +632,8 @@ class AutofillAgent : public content::RenderFrameObserver,
   // Tracks when an autofill operation is performed on a form via JavaScript,
   // and not via regular Chrome Autofill.
   JavaScriptAutofillTracker javascript_autofill_tracker_;
+
+  base::ScopedClosureRunner form_element_intersection_observer_;
 
   base::WeakPtrFactory<AutofillAgent> weak_ptr_factory_{this};
 };

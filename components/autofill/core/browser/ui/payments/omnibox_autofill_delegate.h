@@ -13,6 +13,7 @@
 #include "components/autofill/core/browser/foundations/autofill_manager.h"
 #include "components/autofill/core/browser/foundations/scoped_autofill_managers_observation.h"
 #include "components/autofill/core/browser/ui/autofill_suggestion_delegate.h"
+#include "components/autofill/core/common/mojom/autofill_types.mojom.h"
 #include "components/autofill/core/common/unique_ids.h"
 
 namespace autofill {
@@ -21,7 +22,8 @@ class AutofillClient;
 class AutofillDriver;
 
 class OmniboxAutofillDelegate : public AutofillManager::Observer,
-                                public AutofillSuggestionDelegate {
+                                public AutofillSuggestionDelegate,
+                                public mojom::AutofillVisibilityObserver {
  public:
   using AutofillManager::Observer::OnSuggestionsHidden;
   using AutofillManager::Observer::OnSuggestionsShown;
@@ -64,7 +66,8 @@ class OmniboxAutofillDelegate : public AutofillManager::Observer,
   FillingProduct GetMainFillingProduct() const override;
   void OnTabSelected(TabbedPaneTabType tab_type) override;
 
-  void OnGetIntersectionObserverInfo(bool is_visible);
+  // mojom::AutofillVisibilityObserver:
+  void OnFieldBecameVisible() override;
 
  private:
   // Returns `true` if `manager`'s AutofillDriver is active, has no parent, and
