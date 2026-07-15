@@ -232,9 +232,10 @@ public class CronetLibraryLoader {
                 }
                 Log.i(
                         TAG,
-                        "Cronet version: %s, arch: %s",
+                        "Cronet version: %s, arch: %s, source: %s",
                         implVersion,
-                        System.getProperty("os.arch"));
+                        System.getProperty("os.arch"),
+                        NativeCronetEngineBuilderImpl.getCronetSource());
                 setNativeLoggingLevel();
                 TraceEvent.onNativeTracingReady();
                 sWaitForLibLoad.open();

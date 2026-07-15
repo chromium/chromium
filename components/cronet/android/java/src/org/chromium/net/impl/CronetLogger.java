@@ -19,21 +19,32 @@ public abstract class CronetLogger {
     // TODO(b/313418339): align the naming with the atom definition.
     public static enum CronetSource {
         // Safe default, don't use explicitly.
-        CRONET_SOURCE_UNSPECIFIED,
+        CRONET_SOURCE_UNSPECIFIED("Unspecified"),
         // The library is bundled with the application.
-        CRONET_SOURCE_STATICALLY_LINKED,
+        CRONET_SOURCE_STATICALLY_LINKED("Statically Linked"),
         // The library is loaded from GooglePlayServices.
-        CRONET_SOURCE_PLAY_SERVICES,
+        CRONET_SOURCE_PLAY_SERVICES("Play Services"),
         // The application is using the fallback implementation.
-        CRONET_SOURCE_FALLBACK,
+        CRONET_SOURCE_FALLBACK("Fallback"),
         // The library was built from the Android Platform repository.
         // TODO(https://crbug.com/460049393): a more useful and less confusing definition would be
         // "the library was loaded from the Android device bootclasspath through HttpEngine". In
         // production the two definitions are equivalent, but that is not true in test code running
         // against STATICALLY_LINKED in AOSP.
-        CRONET_SOURCE_PLATFORM,
+        CRONET_SOURCE_PLATFORM("HttpEngine"),
         // The application is using the fake implementation.
-        CRONET_SOURCE_FAKE,
+        CRONET_SOURCE_FAKE("Fake");
+
+        private final String mString;
+
+        CronetSource(String string) {
+            mString = string;
+        }
+
+        @Override
+        public String toString() {
+            return mString;
+        }
     }
 
     /** Generates a new unique ID suitable for use as reference for cross-linking log events. */
