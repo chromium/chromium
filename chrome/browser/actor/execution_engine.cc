@@ -45,6 +45,8 @@
 #include "chrome/browser/autofill/actor/one_time_tokens/actor_one_time_token_filling_service.h"
 #include "chrome/browser/autofill/actor/one_time_tokens/actor_one_time_token_filling_service_impl.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
+#include "chrome/browser/lookalikes/lookalike_url_service.h"
+#include "chrome/browser/lookalikes/lookalike_url_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/actor.mojom.h"
 #include "chrome/common/actor/action_result.h"
@@ -58,6 +60,7 @@
 #include "components/actor/public/mojom/actor_types.mojom.h"
 #include "components/affiliations/core/browser/affiliation_service.h"
 #include "components/keyed_service/core/service_access_type.h"
+#include "components/lookalikes/core/lookalike_url_util.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
 #include "components/origin_gating/core/actor_container_config.h"
@@ -97,6 +100,7 @@ namespace {
 
 constexpr char kSafetyListPredicateName[] = "actor_safety_list_check";
 constexpr char kSensitiveUrlPredicateName[] = "actor_sensitive_url_check";
+constexpr char kLookalikeUrlPredicateName[] = "actor_lookalike_url_check";
 
 struct ActorGatingContext : public origin_gating::GatingDecisionContext {
   ActorGatingContext(ukm::SourceId ukm_id,
@@ -156,6 +160,32 @@ void EvaluateSensitiveUrl(
     // no-verdict handler.
     std::move(sensitive_check_result).error().Run(/*not_sensitive=*/true);
   }
+}
+
+origin_gating::Decision EvaluateLookalikeUrl(
+    Profile* profile,
+    const origin_gating::GatingDecisionContext* context,
+    origin_gating::GateableEvent event,
+    const GURL& source,
+    const GURL& destination) {
+  auto* lookalike_service = LookalikeUrlServiceFactory::GetForProfile(profile);
+  LookalikeUrlService::LookalikeUrlCheckResult lookalike_result =
+      lookalike_service->CheckUrlForLookalikes(
+          destination, lookalike_service->GetLatestEngagedSites(),
+          /*stop_checking_on_allowlist_or_ignore=*/true);
+  // Out of caution, do not act on lookalike domains.
+  // For now, we just accept the possibility of false positives.
+  // Note that this is partially redundant in the case where the lookalike
+  // detection shows an interstitial, since we don't act on interstitials.
+  // However, it may be that the navigation is allowed and a safety tip is
+  // shown instead. We consider that sufficient cause for concern for actor
+  // code.
+  if (lookalike_result.action_type != lookalikes::LookalikeActionType::kNone &&
+      lookalike_result.action_type !=
+          lookalikes::LookalikeActionType::kRecordMetrics) {
+    return origin_gating::Decision::kBlocked;
+  }
+  return origin_gating::Decision::kNoDecision;
 }
 
 static constexpr std::string_view kPermissionGrantedHistogram =
@@ -230,6 +260,10 @@ MayActOnUrlBlockResult MapGatingDecisionToBlockResult(
       if (decision.attribution == kSensitiveUrlPredicateName) {
         return {kSensitiveUrlPredicateName,
                 MayActOnUrlBlockReason::kOptimizationGuideBlock};
+      }
+      if (decision.attribution == kLookalikeUrlPredicateName) {
+        return {kLookalikeUrlPredicateName,
+                MayActOnUrlBlockReason::kLookalikeDomain};
       }
       NOTREACHED() << "Unrecognized custom predicate attribution: "
                    << decision.attribution.CustomPredicateName();
@@ -320,6 +354,12 @@ ExecutionEngine::ExecutionEngine(
           *this,
           origin_gating::OriginGatingConfiguration(
               {
+                  {origin_gating::CustomPredicate(
+                       base::BindRepeating(&EvaluateLookalikeUrl,
+                                           task_->GetProfile()),
+                       kLookalikeUrlPredicateName),
+                   {origin_gating::GateableEvent::kNavigationRequest,
+                    origin_gating::GateableEvent::kPageAction}},
                   {CreateSafetyListPredicate(),
                    {origin_gating::GateableEvent::kNavigationResponse}},
                   {origin_gating::DecisionSource::kCacheWithUserConfirmation,
