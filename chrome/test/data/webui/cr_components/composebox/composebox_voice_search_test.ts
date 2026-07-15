@@ -519,6 +519,54 @@ suite('ComposeboxVoiceSearch', () => {
                 VoiceSearchAction.ERROR_CANCELING));
       });
 
+  test(
+      'NO_MATCH error renders Try Again link and hides Details link',
+      async () => {
+        const voiceSearchElement = await openVoiceSearchUI();
+        voiceSearchElement.hasErrorTimer = true;
+
+        // Verify initially both links are not visible.
+        assertFalse(isVisible(voiceSearchElement.shadowRoot.querySelector('#tryAgainLink')));
+        assertFalse(isVisible(voiceSearchElement.shadowRoot.querySelector('#details')));
+
+        // Trigger NO_MATCH error.
+        mockSpeechRecognition.onnomatch!(new Event('nomatch'));
+        await microtasksFinished();
+
+        // Verify `tryAgainLink` is visible and `details` link is hidden.
+        const tryAgainLink =
+            voiceSearchElement.shadowRoot.querySelector<HTMLElement>(
+                '#tryAgainLink');
+        const detailsLink =
+            voiceSearchElement.shadowRoot.querySelector<HTMLElement>(
+                '#details');
+
+        assertTrue(isVisible(tryAgainLink));
+        assertFalse(isVisible(detailsLink));
+
+        assertTrue(!!tryAgainLink);
+        tryAgainLink.click();
+        await microtasksFinished();
+        assertEquals(2, mockSpeechRecognition.startCount);
+        assertEquals(null, voiceSearchElement['error_']);
+        assertEquals('', voiceSearchElement['errorMessage_']);
+
+        // Trigger other error (like `audio-capture`).
+        mockSpeechRecognition.onerror!
+            ({error: 'audio-capture'} as any);
+        await microtasksFinished();
+
+        // Verify `tryAgainLink` is hidden and `details` link is visible.
+        const tryAgainLink2 =
+            voiceSearchElement.shadowRoot.querySelector<HTMLElement>(
+                '#tryAgainLink');
+        const detailsLink2 =
+            voiceSearchElement.shadowRoot.querySelector<HTMLElement>(
+                '#details');
+        assertFalse(isVisible(tryAgainLink2));
+        assertTrue(isVisible(detailsLink2));
+      });
+
   test('voice search button does not show when disabled', async () => {
     await createComposeboxElement(false);
 

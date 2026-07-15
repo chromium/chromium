@@ -19,12 +19,11 @@ export function getHtml(this: ComposeboxVoiceSearchElement) {
                 @click="${this.onTryAgainClick_}"
               >${this.i18n('tryAgain')}
             </a>`
-        : ''}
-        <a id="details" part="voice-details-link" target="_blank"
+        : html`<a id="details" part="voice-details-link" target="_blank"
             href="${this.detailsUrl_}"
             @click="${this.onLinkClick_}"
           >${this.i18n('voiceDetails')}
-        </a>
+        </a>`}
       </div>
       ${this.isPermissionPromptOpen ? html`
           <textarea id="input"
