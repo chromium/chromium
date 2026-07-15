@@ -96,17 +96,17 @@
         <message key="name.invalidPattern" value="Method names should start with a lower case letter (e.g. getWidth())"/>
     </module>
     <module name="ParameterName">
-      <property name="format" value="^(unused_)?[a-z][a-zA-Z0-9]*$"/>
+      <property name="format" value="^((unused_)?[a-z][a-zA-Z0-9]*|_)$"/>
       <property name="severity" value="error"/>
     </module>
     <module name="LocalFinalVariableName">
       <property name="severity" value="warning"/>
-      <property name="format" value="^(m|s|((([ms][a-z0-9])|([a-ln-rt-z]))[a-zA-Z0-9]*))$"/>
+      <property name="format" value="^(m|s|_|((([ms][a-z0-9])|([a-ln-rt-z]))[a-zA-Z0-9]*))$"/>
       <message key="name.invalidPattern" value="Local variables should be camel-cased (e.g. int minWidth = 4)."/>
     </module>
     <module name="LocalVariableName">
       <property name="severity" value="warning"/>
-      <property name="format" value="^(m|s|((([ms][a-z0-9])|([a-ln-rt-z]))[a-zA-Z0-9]*))$"/>
+      <property name="format" value="^(m|s|_|((([ms][a-z0-9])|([a-ln-rt-z]))[a-zA-Z0-9]*))$"/>
       <message key="name.invalidPattern" value="Local variables should be camel-cased (e.g. int minWidth = 4)."/>
     </module>
     <module name="FallThrough">
