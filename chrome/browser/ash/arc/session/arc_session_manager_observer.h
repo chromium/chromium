@@ -63,13 +63,6 @@ class ArcSessionManagerObserver {
   // before the observer is added.
   virtual void OnPropertyFilesExpanded(bool result) {}
 
-  // Called when ARC session is blocked because ARCVM /data migration is in
-  // progress. If |auto_resume_enabled| is true, the migration will be
-  // automatically resumed by restarting the Chrome session. Otherwise the user
-  // needs to manually enter the migration flow by clicking a notification.
-  virtual void OnArcSessionBlockedByArcVmDataMigration(
-      bool auto_resume_enabled) {}
-
   // Called when ARC session manager is initialized.
   virtual void OnInitialized() {}
 

@@ -107,8 +107,6 @@ static_library("session") {
     "arc_session_manager.cc",
     "arc_session_manager.h",
     "arc_session_manager_observer.h",
-    "arc_vm_data_migration_necessity_checker.cc",
-    "arc_vm_data_migration_necessity_checker.h",
   ]
 
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
@@ -187,7 +185,6 @@ source_set("unit_tests") {
     "arc_play_store_enabled_preference_handler_unittest.cc",
     "arc_provisioning_result_unittest.cc",
     "arc_session_manager_unittest.cc",
-    "arc_vm_data_migration_necessity_checker_unittest.cc",
   ]
 
   deps = [

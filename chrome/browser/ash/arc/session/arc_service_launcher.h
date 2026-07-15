@@ -142,7 +142,7 @@ class ArcServiceLauncher {
   std::unique_ptr<ArcIconCacheDelegateProvider>
       arc_icon_cache_delegate_provider_;
   std::unique_ptr<BrowserUrlOpener> arc_net_url_opener_;
-  std::unique_ptr<ArcVmDataMigrationNotifier> arc_vm_data_migration_notifier_;
+
   std::unique_ptr<ArcLockedFullscreenManager> arc_locked_fullscreen_manager_;
 
   std::unique_ptr<apps::WebApkManager> web_apk_manager_;

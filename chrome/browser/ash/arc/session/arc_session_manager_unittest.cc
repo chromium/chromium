@@ -66,6 +66,7 @@
 #include "chromeos/ash/components/dbus/resourced/fake_resourced_client.h"
 #include "chromeos/ash/components/dbus/resourced/resourced_client.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
+#include "chromeos/ash/components/dbus/upstart/fake_upstart_client.h"
 #include "chromeos/ash/components/dbus/upstart/upstart_client.h"
 #include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
 #include "chromeos/ash/components/login/auth/auth_events_recorder.h"
@@ -1210,166 +1211,53 @@ TEST_F(ArcSessionManagerTest, RemoveDataDir_Restart) {
   arc_session_manager()->Shutdown();
 }
 
-TEST_F(ArcSessionManagerTest, ArcVmDataMigrationInProgress_RequestEnable) {
-  int restart_count = 0;
-  // Replace chrome::AttemptRestart() for testing.
-  // TODO(crbug.com/479113713): now we can inject the behavior at
-  // session_manager::SessionManager via its delegate.
-  arc_session_manager()->SetAttemptRestartCallbackForTesting(
-      base::BindLambdaForTesting([&restart_count]() { ++restart_count; }));
+TEST_F(ArcSessionManagerTest, ArcVmDataMigrationInProgress_WipeData) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kEnableArcVmDataMigration);
+
+  ash::FakeUpstartClient::Get()->StartRecordingUpstartOperations();
 
   PrefService* const prefs = profile()->GetPrefs();
   prefs->SetBoolean(prefs::kArcTermsAccepted, true);
   prefs->SetBoolean(prefs::kArcSignedIn, true);
   SetArcVmDataMigrationStatus(prefs, ArcVmDataMigrationStatus::kStarted);
 
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(kEnableArcVmDataMigration);
-
-  EXPECT_EQ(prefs->GetInteger(prefs::kArcVmDataMigrationAutoResumeCount), 0);
-
   arc_session_manager()->SetProfile(profile());
   arc_session_manager()->Initialize();
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(prefs->GetInteger(prefs::kArcVmDataMigrationAutoResumeCount), 1);
-  EXPECT_EQ(restart_count, 1);
 
-  arc_session_manager()->RequestEnable();
-  base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(arc_session_manager()->state(), ArcSessionManager::State::STOPPED);
-  EXPECT_EQ(prefs->GetInteger(prefs::kArcVmDataMigrationAutoResumeCount), 1);
-  EXPECT_EQ(restart_count, 1);
-
-  arc_session_manager()->Shutdown();
-}
-
-TEST_F(ArcSessionManagerTest,
-       ArcVmDataMigrationInProgress_RequestArcDataRemoval) {
-  int restart_count = 0;
-  // Replace chrome::AttemptRestart() for testing.
-  arc_session_manager()->SetAttemptRestartCallbackForTesting(
-      base::BindLambdaForTesting([&restart_count]() { ++restart_count; }));
-
-  PrefService* const prefs = profile()->GetPrefs();
-  prefs->SetBoolean(prefs::kArcTermsAccepted, true);
-  prefs->SetBoolean(prefs::kArcSignedIn, true);
-  SetArcVmDataMigrationStatus(prefs, ArcVmDataMigrationStatus::kStarted);
-
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(kEnableArcVmDataMigration);
-
-  EXPECT_EQ(prefs->GetInteger(prefs::kArcVmDataMigrationAutoResumeCount), 0);
-
-  arc_session_manager()->SetProfile(profile());
-  arc_session_manager()->Initialize();
-  base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(prefs->GetInteger(prefs::kArcVmDataMigrationAutoResumeCount), 1);
-  EXPECT_EQ(restart_count, 1);
-
-  arc_session_manager()->RequestArcDataRemoval();
-  base::RunLoop().RunUntilIdle();
-  // /data removal request should persist, i.e., /data should not be removed.
-  EXPECT_TRUE(prefs->GetBoolean(prefs::kArcDataRemoveRequested));
-  EXPECT_EQ(arc_session_manager()->state(), ArcSessionManager::State::STOPPED);
-  EXPECT_EQ(prefs->GetInteger(prefs::kArcVmDataMigrationAutoResumeCount), 1);
-  EXPECT_EQ(restart_count, 1);
-
-  arc_session_manager()->Shutdown();
-}
-
-TEST_F(ArcSessionManagerTest, ArcVmDataMigration_MaxAutoResumeCountReached) {
-  int restart_count = 0;
-  // Replace chrome::AttemptRestart() for testing.
-  arc_session_manager()->SetAttemptRestartCallbackForTesting(
-      base::BindLambdaForTesting([&restart_count]() { ++restart_count; }));
-
-  PrefService* const prefs = profile()->GetPrefs();
-  prefs->SetBoolean(prefs::kArcTermsAccepted, true);
-  prefs->SetBoolean(prefs::kArcSignedIn, true);
-  SetArcVmDataMigrationStatus(prefs, ArcVmDataMigrationStatus::kStarted);
-  prefs->SetInteger(prefs::kArcVmDataMigrationAutoResumeCount,
-                    kArcVmDataMigrationMaxAutoResumeCount);
-
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(kEnableArcVmDataMigration);
-
-  arc_session_manager()->SetProfile(profile());
-  arc_session_manager()->Initialize();
-  base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(prefs->GetInteger(prefs::kArcVmDataMigrationAutoResumeCount),
-            kArcVmDataMigrationMaxAutoResumeCount + 1);
-
-  arc_session_manager()->RequestEnable();
-  base::RunLoop().RunUntilIdle();
-  // ARC should be blocked and auto-resume should not be triggered.
-  EXPECT_EQ(arc_session_manager()->state(), ArcSessionManager::State::STOPPED);
-  EXPECT_EQ(restart_count, 0);
-  EXPECT_EQ(prefs->GetInteger(prefs::kArcVmDataMigrationAutoResumeCount),
-            kArcVmDataMigrationMaxAutoResumeCount + 1);
-
-  arc_session_manager()->Shutdown();
-}
-
-TEST_F(ArcSessionManagerTest, ArcVmDataMigrationNecessityChecker_Necessary) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(kEnableArcVmDataMigration);
-  SetArcVmDataMigrationStatus(profile()->GetPrefs(),
-                              ArcVmDataMigrationStatus::kUnnotified);
-  ash::FakeArcVmDataMigratorClient::Get()->set_has_data_to_migrate(true);
-
-  arc_session_manager()->SetProfile(profile());
-  arc_session_manager()->Initialize();
-  arc_session_manager()->RequestEnable();
-  base::RunLoop().RunUntilIdle();
-
-  EXPECT_FALSE(arc_session_manager()
-                   ->GetArcSessionRunnerForTesting()
-                   ->use_virtio_blk_data());
-  EXPECT_EQ(GetArcVmDataMigrationStatus(profile()->GetPrefs()),
-            ArcVmDataMigrationStatus::kUnnotified);
-
-  arc_session_manager()->Shutdown();
-}
-
-TEST_F(ArcSessionManagerTest, ArcVmDataMigrationNecessityChecker_Unnecessary) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(kEnableArcVmDataMigration);
-  SetArcVmDataMigrationStatus(profile()->GetPrefs(),
-                              ArcVmDataMigrationStatus::kUnnotified);
-  ash::FakeArcVmDataMigratorClient::Get()->set_has_data_to_migrate(false);
-
-  arc_session_manager()->SetProfile(profile());
-  arc_session_manager()->Initialize();
-  arc_session_manager()->RequestEnable();
-  base::RunLoop().RunUntilIdle();
-
-  EXPECT_TRUE(arc_session_manager()
-                  ->GetArcSessionRunnerForTesting()
-                  ->use_virtio_blk_data());
-  EXPECT_EQ(GetArcVmDataMigrationStatus(profile()->GetPrefs()),
+  // The migration status should be reset to finished and data removal
+  // requested. Because the fake Upstart client handles the removal immediately
+  // in tests, the requested pref will automatically evaluate to false after
+  // completion.
+  EXPECT_EQ(GetArcVmDataMigrationStatus(prefs),
             ArcVmDataMigrationStatus::kFinished);
+  EXPECT_FALSE(prefs->GetBoolean(prefs::kArcDataRemoveRequested));
+
+  const auto ops =
+      ash::FakeUpstartClient::Get()->GetRecordedUpstartOperationsForJob(
+          "arc_2dremove_2ddata");
+  ASSERT_EQ(1u, ops.size());
+  EXPECT_EQ(ash::FakeUpstartClient::UpstartOperationType::START, ops[0].type);
 
   arc_session_manager()->Shutdown();
 }
 
-TEST_F(ArcSessionManagerTest, ArcVmDataMigrationNecessityChecker_Undetermined) {
+TEST_F(ArcSessionManagerTest, ArcVmDataMigration_Unprovisioned_ForcedFinished) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(kEnableArcVmDataMigration);
-  SetArcVmDataMigrationStatus(profile()->GetPrefs(),
-                              ArcVmDataMigrationStatus::kUnnotified);
-  ash::FakeArcVmDataMigratorClient::Get()->set_has_data_to_migrate(
-      std::nullopt);
+
+  PrefService* const prefs = profile()->GetPrefs();
+  EXPECT_FALSE(prefs->GetBoolean(prefs::kArcSignedIn));
+  SetArcVmDataMigrationStatus(prefs, ArcVmDataMigrationStatus::kUnnotified);
 
   arc_session_manager()->SetProfile(profile());
   arc_session_manager()->Initialize();
-  arc_session_manager()->RequestEnable();
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_FALSE(arc_session_manager()
-                   ->GetArcSessionRunnerForTesting()
-                   ->use_virtio_blk_data());
-  EXPECT_EQ(GetArcVmDataMigrationStatus(profile()->GetPrefs()),
-            ArcVmDataMigrationStatus::kUnnotified);
+  // Migration status should be forced to finished for unprovisioned users.
+  EXPECT_EQ(GetArcVmDataMigrationStatus(prefs),
+            ArcVmDataMigrationStatus::kFinished);
 
   arc_session_manager()->Shutdown();
 }

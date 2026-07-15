@@ -12,8 +12,6 @@ static_library("notification") {
     "arc_management_transition_notification.h",
     "arc_provision_notification_service.cc",
     "arc_provision_notification_service.h",
-    "arc_vm_data_migration_notifier.cc",
-    "arc_vm_data_migration_notifier.h",
   ]
 
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
@@ -61,7 +59,6 @@ source_set("unit_tests") {
   sources = [
     "arc_management_transition_notification_unittest.cc",
     "arc_provision_notification_service_unittest.cc",
-    "arc_vm_data_migration_notifier_unittest.cc",
   ]
 
   deps = [

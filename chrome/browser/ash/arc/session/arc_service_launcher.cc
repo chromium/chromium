@@ -51,7 +51,6 @@
 #include "chrome/browser/ash/arc/net/cert_manager_impl.h"
 #include "chrome/browser/ash/arc/notification/arc_boot_error_notification.h"
 #include "chrome/browser/ash/arc/notification/arc_provision_notification_service.h"
-#include "chrome/browser/ash/arc/notification/arc_vm_data_migration_notifier.h"
 #include "chrome/browser/ash/arc/pip/arc_pip_bridge.h"
 #include "chrome/browser/ash/arc/policy/arc_policy_bridge.h"
 #include "chrome/browser/ash/arc/print_spooler/arc_print_spooler_bridge.h"
@@ -390,10 +389,6 @@ void ArcServiceLauncher::OnPrimaryUserProfilePrepared(Profile* profile) {
     ArcSafetyBridge::GetForBrowserContext(profile);
     ArcSystemStateBridge::GetForBrowserContext(profile);
 
-    if (base::FeatureList::IsEnabled(kEnableArcVmDataMigration)) {
-      arc_vm_data_migration_notifier_ =
-          std::make_unique<ArcVmDataMigrationNotifier>(profile);
-    }
     ArcIdleManager::GetForBrowserContext(profile);
     if (ShouldUseArcKeyMint()) {
       auto serial_number = arc_session_manager_->GetSerialNumberForKeyMint();
