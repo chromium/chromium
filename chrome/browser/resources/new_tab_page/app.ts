@@ -892,6 +892,13 @@ export class AppElement extends AppElementBase {
     this.hasVoiceSearchError = true;
   }
 
+  protected onVoiceSearchRestart_() {
+    this.hasVoiceSearchError = false;
+    this.voiceSearchListening_ = true;
+    this.voiceSearchReceivedSpeech_ = false;
+    this.voiceSearchTranscript_ = '';
+  }
+
   // Called to update the OGB of relevant NTP state changes.
   private updateOneGoogleBarAppearance_() {
     if (this.oneGoogleBarLoaded_) {

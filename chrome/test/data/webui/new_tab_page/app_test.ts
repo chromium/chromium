@@ -2812,6 +2812,58 @@ suite('NewTabPageAppTest', () => {
         });
 
     test(
+        'clicking try again link restarts voice search recognition and mic animations',
+        async () => {
+          loadTimeData.overrideValues({
+            googleBaseUrl: 'chrome://new-tab-page/',
+            voiceSearchCoherenceAnySearchboxExperimentEnabled: true,
+            voiceSearchCoherenceSearchboxWithLiveTranscriptionEnabled: true,
+          });
+          await recreateApp();
+          $$(app, '#searchbox')!.dispatchEvent(new Event('open-voice-search'));
+          await microtasksFinished();
+
+          const voiceSearch =
+              app.shadowRoot.querySelector('cr-composebox-voice-search');
+          assertTrue(!!voiceSearch);
+
+          // Simulate speech-received, transcript update, error.
+          voiceSearch.dispatchEvent(new Event('speech-received'));
+          voiceSearch.dispatchEvent(new CustomEvent('transcript-update', {
+            detail: 'partial query',
+          }));
+          voiceSearch.dispatchEvent(new Event('voice-search-error'));
+          await microtasksFinished();
+
+          // Assert error and state are set.
+          assertTrue(app.hasVoiceSearchError);
+          assertTrue(app['voiceSearchListening_']);
+          assertTrue(app['voiceSearchReceivedSpeech_']);
+          assertEquals('partial query', app['voiceSearchTranscript_']);
+
+          const searchbox = app.shadowRoot.querySelector('ntp-searchbox');
+          assertTrue(!!searchbox);
+          assertFalse(searchbox.isListening);
+
+          voiceSearch.hasErrorTimer = true;
+          voiceSearch.detailedError_ = 5; // VoiceSearchError.NO_MATCH
+          voiceSearch['errorMessage_'] = 'Didn\'t get that.';
+          await microtasksFinished();
+          const tryAgainLink =
+              voiceSearch.shadowRoot.querySelector<HTMLElement>('#tryAgainLink');
+          assertTrue(!!tryAgainLink);
+          tryAgainLink.click();
+          await microtasksFinished();
+
+          // Assert error is cleared and states are reset.
+          assertFalse(app.hasVoiceSearchError);
+          assertTrue(app['voiceSearchListening_']);
+          assertFalse(app['voiceSearchReceivedSpeech_']);
+          assertEquals('', app['voiceSearchTranscript_']);
+          assertTrue(searchbox.isListening);
+        });
+
+    test(
         'navigates directly to regular search when voiceSearchCoherenceAnySearchboxExperimentEnabled is true',
         async () => {
           loadTimeData.overrideValues({
