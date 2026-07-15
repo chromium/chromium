@@ -1064,6 +1064,25 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupViewViewsTest, AccessibleControlIds) {
       ax::mojom::IntListAttribute::kControlsIds));
 }
 
+IN_PROC_BROWSER_TEST_F(OmniboxPopupViewViewsTest,
+                       InvalidatesMetricsCallbacksOnHide) {
+  CreatePopupForTestQuery();
+  EXPECT_TRUE(controller()->IsPopupOpen());
+
+  // Get a weak pointer using the metrics factory to simulate a pending
+  // callback.
+  auto weak_ptr = GetMetricsWeakPtr();
+  EXPECT_TRUE(weak_ptr);
+
+  // Close the popup view, which should invalidate the pending metrics callback.
+  controller()->autocomplete_controller()->Stop(
+      AutocompleteStopReason::kClobbered);
+  popup_view()->UpdatePopupAppearance();
+
+  EXPECT_FALSE(controller()->IsPopupOpen());
+  EXPECT_FALSE(weak_ptr);
+}
+
 IN_PROC_BROWSER_TEST_F(OmniboxPopupSuggestionGroupHeadersTest,
                        ShowSuggestionGroupHeadersByPageContext) {
   scoped_refptr<FakeAutocompleteProvider> provider =

@@ -75,7 +75,23 @@ class OmniboxPopupPresenterBaseTest : public views::ViewsTestBase {
                                         bool success) {
     presenter_->OnVisualStateReadyForMetrics(result_ready_time, success);
   }
+
+  base::WeakPtr<OmniboxPopupPresenterBase> GetMetricsWeakPtr() {
+    return presenter_->metrics_weak_factory_.GetWeakPtr();
+  }
 };
+
+TEST_F(OmniboxPopupPresenterBaseTest, InvalidatesMetricsCallbacksOnHide) {
+  presenter_->Show();
+  // Get a weak pointer using the metrics factory to simulate a pending
+  // callback.
+  auto weak_ptr = GetMetricsWeakPtr();
+  EXPECT_TRUE(weak_ptr);
+
+  // Hiding the popup should invalidate the pending metrics callback.
+  presenter_->Hide();
+  EXPECT_FALSE(weak_ptr);
+}
 
 TEST_F(OmniboxPopupPresenterBaseTest, OpenSmallThenGrowLarger) {
   widget_ptr_->SetBounds(gfx::Rect(0, 0, 300, 50));

@@ -226,7 +226,7 @@ class OmniboxPopupViewViews : public views::View,
   // first results that are ready after the popup is opened.
   bool has_logged_content_ready_since_open_ = false;
 
-  base::WeakPtrFactory<OmniboxPopupViewViews> weak_ptr_factory_{this};
+  base::WeakPtrFactory<OmniboxPopupViewViews> metrics_weak_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_OMNIBOX_OMNIBOX_POPUP_VIEW_VIEWS_H_
