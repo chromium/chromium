@@ -1595,4 +1595,49 @@ TEST_F(InputStateModelTest, PrefChangesDynamicallyUpdateInputTypes) {
                   omnibox::INPUT_TYPE_BROWSER_TAB, omnibox::INPUT_TYPE_DRIVE));
 }
 
+TEST_F(InputStateModelTest, CopyConstructorCopiesAllRelevantFields) {
+  omnibox::SearchboxConfig config;
+  config.add_input_type_configs()->set_input_type(
+      omnibox::InputType::INPUT_TYPE_LENS_IMAGE);
+  config.add_input_type_configs()->set_input_type(
+      omnibox::InputType::INPUT_TYPE_BROWSER_TAB);
+
+  auto* tool_config = config.add_tool_configs();
+  tool_config->set_tool(omnibox::ToolMode::TOOL_MODE_IMAGE_GEN);
+  tool_config->mutable_rule()->set_allow_all_input_types(true);
+
+  auto original_model = std::make_unique<InputStateModel>(
+      session_handle_, config, active_url_, /*is_off_the_record=*/false,
+      /*browser_identity_matches_aim_identity=*/true);
+  original_model->Initialize();
+
+  original_model->SetSmartTabSharingActive(true);
+  original_model->SetPermanentlyDisabledTools(
+      {omnibox::ToolMode::TOOL_MODE_IMAGE_GEN});
+  original_model->SetPermanentlyDisabledInputTypes(
+      {omnibox::InputType::INPUT_TYPE_LENS_IMAGE});
+
+  EXPECT_TRUE(original_model->IsSmartTabSharingActive());
+  EXPECT_THAT(original_model->GetInputState().disabled_tools,
+              testing::Contains(omnibox::ToolMode::TOOL_MODE_IMAGE_GEN));
+  EXPECT_THAT(original_model->GetInputState().disabled_input_types,
+              testing::Contains(omnibox::InputType::INPUT_TYPE_LENS_IMAGE));
+
+  InputStateModel copied_model(*original_model, session_handle_);
+
+  EXPECT_TRUE(copied_model.IsSmartTabSharingActive());
+  EXPECT_THAT(copied_model.GetInputState().disabled_tools,
+              testing::Contains(omnibox::ToolMode::TOOL_MODE_IMAGE_GEN));
+  EXPECT_THAT(copied_model.GetInputState().disabled_input_types,
+              testing::Contains(omnibox::InputType::INPUT_TYPE_LENS_IMAGE));
+
+  copied_model.OnContextChanged();
+
+  EXPECT_TRUE(copied_model.IsSmartTabSharingActive());
+  EXPECT_THAT(copied_model.GetInputState().disabled_tools,
+              testing::Contains(omnibox::ToolMode::TOOL_MODE_IMAGE_GEN));
+  EXPECT_THAT(copied_model.GetInputState().disabled_input_types,
+              testing::Contains(omnibox::InputType::INPUT_TYPE_LENS_IMAGE));
+}
+
 }  // namespace contextual_search

@@ -305,6 +305,10 @@ InputStateModel::InputStateModel(
   configured_input_types_ = new_input_state_model.configured_input_types_;
   is_smart_tab_sharing_active_ =
       new_input_state_model.is_smart_tab_sharing_active_;
+  permanently_disabled_tools_ =
+      new_input_state_model.permanently_disabled_tools_;
+  permanently_disabled_input_types_ =
+      new_input_state_model.permanently_disabled_input_types_;
   if (new_input_state_model.pref_service_) {
     SetPrefService(new_input_state_model.pref_service_);
   }
