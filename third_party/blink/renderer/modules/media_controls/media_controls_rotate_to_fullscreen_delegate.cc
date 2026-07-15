@@ -112,7 +112,9 @@ void MediaControlsRotateToFullscreenDelegate::Invoke(
     return;
   }
   if (event->type() == event_type_names::kOrientationchange) {
-    OnScreenOrientationChange();
+    if (event->isTrusted()) {
+      OnScreenOrientationChange();
+    }
     return;
   }
 

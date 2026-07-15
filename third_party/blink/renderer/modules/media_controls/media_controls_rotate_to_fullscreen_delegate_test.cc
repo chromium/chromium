@@ -27,6 +27,7 @@
 #include "third_party/blink/renderer/modules/device_orientation/device_orientation_data.h"
 #include "third_party/blink/renderer/modules/media_controls/media_controls_impl.h"
 #include "third_party/blink/renderer/modules/screen_orientation/screen_orientation_controller.h"
+#include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/testing/empty_web_media_player.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
@@ -155,8 +156,15 @@ class MediaControlsRotateToFullscreenDelegateTest
     GetVideo().removeAttribute(html_names::kControlsAttr);
   }
 
-  void DispatchEvent(EventTarget& target, const AtomicString& type) {
-    target.DispatchEvent(*Event::Create(type));
+  void DispatchEvent(EventTarget& target,
+                     const AtomicString& type,
+                     bool is_trusted = false) {
+    Event* event = Event::Create(type);
+    if (is_trusted) {
+      target.DispatchEvent(*event);
+    } else {
+      target.dispatchEventForBindings(event, IGNORE_EXCEPTION);
+    }
   }
 
   void InitScreenAndVideo(
@@ -231,7 +239,8 @@ void MediaControlsRotateToFullscreenDelegateTest::PlayVideo() {
 void MediaControlsRotateToFullscreenDelegateTest::RotateTo(
     display::mojom::blink::ScreenOrientation new_screen_orientation) {
   GetChromeClient().MockScreenInfo().orientation_type = new_screen_orientation;
-  DispatchEvent(GetWindow(), event_type_names::kOrientationchange);
+  DispatchEvent(GetWindow(), event_type_names::kOrientationchange,
+                true /* is_trusted */);
   test::RunPendingTasks();
 }
 
@@ -801,6 +810,31 @@ TEST_F(MediaControlsRotateToFullscreenDelegateTest,
 
   // Should enter fullscreen when controlsList is not set to nofullscreen.
   EXPECT_TRUE(GetVideo().IsFullscreen());
+}
+
+TEST_F(MediaControlsRotateToFullscreenDelegateTest, UntrustedEventIgnored) {
+  // Portrait screen, landscape video.
+  InitScreenAndVideo(display::mojom::blink::ScreenOrientation::kPortraitPrimary,
+                     gfx::Size(640, 480));
+  EXPECT_EQ(SimpleOrientation::kPortrait, ObservedScreenOrientation());
+  EXPECT_EQ(SimpleOrientation::kLandscape, ComputeVideoOrientation());
+
+  // Play video.
+  PlayVideo();
+  UpdateVisibilityObserver();
+
+  EXPECT_TRUE(ObservedVisibility());
+  EXPECT_FALSE(GetVideo().IsFullscreen());
+
+  // Simulate rotation in ScreenInfo but dispatch an UNTRUSTED event.
+  GetChromeClient().MockScreenInfo().orientation_type =
+      display::mojom::blink::ScreenOrientation::kLandscapePrimary;
+  DispatchEvent(GetWindow(), event_type_names::kOrientationchange,
+                false /* is_trusted */);
+  test::RunPendingTasks();
+
+  // Should NOT enter fullscreen because the event was untrusted.
+  EXPECT_FALSE(GetVideo().IsFullscreen());
 }
 
 }  // namespace blink
