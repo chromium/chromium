@@ -12,9 +12,8 @@ import android.app.Activity;
 
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.Lifecycle.State;
-import androidx.test.core.app.ActivityScenario;
+import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -36,7 +35,10 @@ import org.chromium.ui.base.TestActivity;
 public class TabArchiveSettingsFragmentUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    private ActivityScenario<TestActivity> mActivityScenario;
+    @Rule
+    public final ActivityScenarioRule<TestActivity> mActivityScenarioRule =
+            new ActivityScenarioRule<>(TestActivity.class);
+
     private TestActivity mActivity;
     private TabArchiveSettings mArchiveSettings;
 
@@ -44,13 +46,7 @@ public class TabArchiveSettingsFragmentUnitTest {
     public void setUp() {
         mArchiveSettings = new TabArchiveSettings(ChromeSharedPreferences.getInstance());
 
-        mActivityScenario = ActivityScenario.launch(TestActivity.class);
-        mActivityScenario.onActivity(this::onActivity);
-    }
-
-    @After
-    public void tearDown() {
-        mActivityScenario.close();
+        mActivityScenarioRule.getScenario().onActivity(this::onActivity);
     }
 
     private void onActivity(Activity activity) {
@@ -70,7 +66,7 @@ public class TabArchiveSettingsFragmentUnitTest {
                 .beginTransaction()
                 .replace(android.R.id.content, tabArchiveSettingsFragment)
                 .commit();
-        mActivityScenario.moveToState(State.STARTED);
+        mActivityScenarioRule.getScenario().moveToState(State.STARTED);
 
         assertEquals(
                 mActivity.getString(R.string.archive_settings_title),

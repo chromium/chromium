@@ -27,6 +27,7 @@ import android.app.Activity;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.RectF;
+import android.os.Build;
 import android.view.View;
 import android.widget.FrameLayout;
 
@@ -92,7 +93,7 @@ import java.util.function.Supplier;
 
 /** Unit tests for {@link NewTabAnimationLayout}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(minSdk = 35)
+@Config(sdk = Build.VERSION_CODES.VANILLA_ICE_CREAM)
 @EnableFeatures({
     ChromeFeatureList.SENSITIVE_CONTENT,
     ChromeFeatureList.SENSITIVE_CONTENT_WHILE_SWITCHING_TABS

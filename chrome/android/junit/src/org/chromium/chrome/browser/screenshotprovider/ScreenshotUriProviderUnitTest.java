@@ -21,10 +21,12 @@ import android.net.Uri;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.ContextUtils;
@@ -42,6 +44,8 @@ import java.util.function.Supplier;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class ScreenshotUriProviderUnitTest {
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     private static final String TARGET_PACKAGE = "com.example.app";
 
     @Mock private Tab mTab;
@@ -52,7 +56,6 @@ public class ScreenshotUriProviderUnitTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         mTabSupplier = () -> mTab;
         RenderCoordinatesImpl.setInstanceForTesting(mRenderCoordinates);
 

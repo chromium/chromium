@@ -7,10 +7,9 @@ package org.chromium.chrome.browser.firstrun;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import androidx.test.core.app.ActivityScenario;
+import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.filters.SmallTest;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -60,7 +59,10 @@ public class FirstRunFilterTouchUnitTest {
         return Arrays.asList(true, false);
     }
 
-    private ActivityScenario<FirstRunActivity> mActivityScenario;
+    @Rule
+    public final ActivityScenarioRule<FirstRunActivity> mActivityScenarioRule =
+            new ActivityScenarioRule<>(FirstRunActivity.class);
+
     private FirstRunActivity mActivity;
 
     public FirstRunFilterTouchUnitTest(boolean isIdentityManagerMigrationEnabled) {
@@ -71,15 +73,7 @@ public class FirstRunFilterTouchUnitTest {
 
     @Before
     public void setUp() throws Exception {
-        mActivityScenario = ActivityScenario.launch(FirstRunActivity.class);
-        mActivityScenario.onActivity((activity) -> mActivity = activity);
-    }
-
-    @After
-    public void tearDown() {
-        if (mActivityScenario != null) {
-            mActivityScenario.close();
-        }
+        mActivityScenarioRule.getScenario().onActivity((activity) -> mActivity = activity);
     }
 
     @Test

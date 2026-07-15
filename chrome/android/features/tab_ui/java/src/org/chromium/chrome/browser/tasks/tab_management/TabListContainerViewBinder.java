@@ -38,7 +38,6 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.util.Function;
@@ -248,7 +247,7 @@ class TabListContainerViewBinder {
                         }
 
                         @Override
-                        public void onAnimationEnd(@NonNull Animator animation, boolean isReverse) {
+                        public void onAnimationEnd(Animator animation, boolean isReverse) {
                             if (!metadata.shouldShowSearchBox) {
                                 hubVisibilitySupplier.set(false);
                             }

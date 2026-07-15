@@ -23,9 +23,8 @@ import android.view.View;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.Lifecycle.State;
 import androidx.preference.Preference;
-import androidx.test.core.app.ActivityScenario;
+import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -64,7 +63,10 @@ import java.util.concurrent.TimeUnit;
 public class TabsSettingsUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    private ActivityScenario<TestActivity> mActivityScenario;
+    @Rule
+    public final ActivityScenarioRule<TestActivity> mActivityScenarioRule =
+            new ActivityScenarioRule<>(TestActivity.class);
+
     private TestActivity mActivity;
 
     @Mock private Profile mProfileMock;
@@ -82,13 +84,7 @@ public class TabsSettingsUnitTest {
         doReturn(true).when(mTabGroupSyncFeaturesJniMock).isTabGroupSyncEnabled(mProfileMock);
         doNothing().when(mCustomTabLauncher).openUrlInCct(any(Context.class), anyString());
 
-        mActivityScenario = ActivityScenario.launch(TestActivity.class);
-        mActivityScenario.onActivity(this::onActivity);
-    }
-
-    @After
-    public void tearDown() {
-        mActivityScenario.close();
+        mActivityScenarioRule.getScenario().onActivity(this::onActivity);
     }
 
     private void onActivity(Activity activity) {
@@ -107,7 +103,7 @@ public class TabsSettingsUnitTest {
         tabsSettings.setProfile(mProfileMock);
         tabsSettings.setCustomTabLauncher(mCustomTabLauncher);
         fragmentManager.beginTransaction().replace(android.R.id.content, tabsSettings).commit();
-        mActivityScenario.moveToState(State.STARTED);
+        mActivityScenarioRule.getScenario().moveToState(State.STARTED);
 
         assertEquals(
                 mActivity.getString(R.string.tabs_settings_title),

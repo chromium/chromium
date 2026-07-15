@@ -11,6 +11,7 @@ import static org.junit.Assert.assertEquals;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 
+import androidx.annotation.IntDef;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.SmallTest;
 import androidx.test.platform.app.InstrumentationRegistry;
@@ -46,6 +47,8 @@ import org.chromium.net.test.ServerCertificate;
 import org.chromium.url.GURL;
 import org.chromium.url.Origin;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.Map;
 import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
@@ -167,7 +170,8 @@ public class ChromeSiteSettingsDelegateTest {
         assertEquals(0, result.size());
     }
 
-    private void setCookie(Scheme scheme, String hostname, String data) throws TimeoutException {
+    private void setCookie(@Scheme int scheme, String hostname, String data)
+            throws TimeoutException {
         EmbeddedTestServer server =
                 scheme == Scheme.HTTPS
                         ? EmbeddedTestServer.createAndStartHTTPSServer(
@@ -187,9 +191,11 @@ public class ChromeSiteSettingsDelegateTest {
         server.stopAndDestroyServer();
     }
 
-    private enum Scheme {
-        HTTP,
-        HTTPS
+    @IntDef({Scheme.HTTP, Scheme.HTTPS})
+    @Retention(RetentionPolicy.SOURCE)
+    private @interface Scheme {
+        int HTTP = 0;
+        int HTTPS = 1;
     }
 
     private void clearBrowsingData(int dataType, int timePeriod) throws TimeoutException {
