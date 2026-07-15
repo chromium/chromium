@@ -13,6 +13,7 @@
 #include "cc/input/main_thread_scrolling_reason.h"
 #include "cc/input/overscroll_behavior.h"
 #include "cc/input/scroll_snap_data.h"
+#include "third_party/blink/renderer/platform/geometry/infinite_int_rect.h"
 #include "third_party/blink/renderer/platform/graphics/compositor_element_id.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_property_node.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
@@ -80,6 +81,9 @@ class PLATFORM_EXPORT ScrollPaintPropertyNode final
     cc::OverscrollBehavior overscroll_behavior =
         cc::OverscrollBehavior(cc::OverscrollBehavior::Type::kAuto);
     std::optional<cc::SnapContainerData> snap_container_data;
+    // Used when ScrollingContentsCullRectOnScrollNodeEnabled.
+    // Updated by CullRectUpdater.
+    gfx::Rect scrolling_contents_cull_rect = InfiniteIntRect();
 
     PaintPropertyChangeType ComputeChange(const State& other) const;
 
@@ -188,6 +192,18 @@ class PLATFORM_EXPORT ScrollPaintPropertyNode final
 
   const CompositorElementId& GetCompositorElementId() const {
     return state_.compositor_element_id;
+  }
+
+  void SetScrollingContentsCullRect(const gfx::Rect& rect) {
+    CHECK(
+        RuntimeEnabledFeatures::ScrollingContentsCullRectOnScrollNodeEnabled());
+    AddChanged(PaintPropertyChangeType::kChangedOnlySimpleValues);
+    state_.scrolling_contents_cull_rect = rect;
+  }
+  const gfx::Rect& ScrollingContentsCullRect() const {
+    CHECK(
+        RuntimeEnabledFeatures::ScrollingContentsCullRectOnScrollNodeEnabled());
+    return state_.scrolling_contents_cull_rect;
   }
 
   std::unique_ptr<JSONObject> ToJSON() const final;

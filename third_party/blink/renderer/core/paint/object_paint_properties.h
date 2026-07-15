@@ -313,6 +313,9 @@ class CORE_EXPORT ObjectPaintProperties
   ADD_ALIAS_NODE(Transform, TransformIsolationNode, NodeId::kTransformAlias)
 
   ADD_NODE(Scroll, Scroll, NodeId::kScroll)
+  ScrollPaintPropertyNode* MutableScroll() {
+    return GetNode<ScrollPaintPropertyNode>(NodeId::kScroll);
+  }
 
   // Effect node method declarations.
   //

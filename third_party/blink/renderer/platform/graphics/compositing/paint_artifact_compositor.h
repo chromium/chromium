@@ -197,6 +197,7 @@ class PLATFORM_EXPORT PaintArtifactCompositor final
   bool DirectlyUpdateScrollOffsetTransform(const TransformPaintPropertyNode&);
   bool DirectlyUpdateTransform(const TransformPaintPropertyNode&);
   bool DirectlyUpdatePageScaleTransform(const TransformPaintPropertyNode&);
+  bool DirectlyUpdateScrollingContentsCullRect(const ScrollPaintPropertyNode&);
 
   // Directly sets cc::ScrollTree::current_scroll_offset. This doesn't affect
   // cc::TransformNode::scroll_offset (which will be synched with blink

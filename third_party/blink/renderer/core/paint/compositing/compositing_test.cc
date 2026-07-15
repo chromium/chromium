@@ -1203,7 +1203,7 @@ class ScrollingContentsCullRectTest : public CompositingTest {
       ASSERT_TRUE(actual);
       EXPECT_EQ(*expected, *actual);
     } else {
-      EXPECT_FALSE(actual);
+      EXPECT_FALSE(actual) << actual->ToString();
     }
   }
 };

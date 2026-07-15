@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -28,6 +29,8 @@ struct PLATFORM_EXPORT HitTestData : public GarbageCollected<HitTestData> {
   // scrolling depends whether the scroll_translation is composited.
   gfx::Rect scroll_hit_test_rect;
   Member<const TransformPaintPropertyNode> scroll_translation;
+  // When ScrollingContentsCullRectOnScrollNodeEnabled, this is on
+  // ScrollPaintPropertyNode instead.
   gfx::Rect scrolling_contents_cull_rect = InfiniteIntRect();
 
   void Trace(Visitor* visitor) const { visitor->Trace(scroll_translation); }
@@ -40,7 +43,9 @@ struct PLATFORM_EXPORT HitTestData : public GarbageCollected<HitTestData> {
 #endif
            scroll_hit_test_rect == rhs.scroll_hit_test_rect &&
            scroll_translation == rhs.scroll_translation &&
-           scrolling_contents_cull_rect == rhs.scrolling_contents_cull_rect;
+           (RuntimeEnabledFeatures::
+                ScrollingContentsCullRectOnScrollNodeEnabled() ||
+            scrolling_contents_cull_rect == rhs.scrolling_contents_cull_rect);
   }
 
   String ToString() const;

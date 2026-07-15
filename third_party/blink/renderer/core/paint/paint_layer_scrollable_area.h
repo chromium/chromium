@@ -664,9 +664,8 @@ class CORE_EXPORT PaintLayerScrollableArea final
   // Force scrollbars off for reconstruction.
   void RemoveScrollbarsForReconstruction();
 
-  void DidUpdateCullRect() {
-    last_cull_rect_update_scroll_position_ = ScrollPosition();
-  }
+  void DidUpdateCullRect();
+
   gfx::PointF LastCullRectUpdateScrollPosition() const {
     return last_cull_rect_update_scroll_position_;
   }

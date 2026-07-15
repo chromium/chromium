@@ -227,6 +227,29 @@ bool PropertyTreeManager::DirectlyUpdatePageScaleTransform(
   return true;
 }
 
+namespace {
+void UpdateCcScrollingContentsCullRect(
+    cc::ScrollTree& scroll_tree,
+    const ScrollPaintPropertyNode& scroll_node) {
+  CHECK(RuntimeEnabledFeatures::ScrollingContentsCullRectOnScrollNodeEnabled());
+  gfx::Rect cull_rect = scroll_node.ScrollingContentsCullRect();
+  if (cull_rect.Contains(scroll_node.ContentsRect())) {
+    scroll_tree.ClearScrollingContentsCullRect(
+        scroll_node.GetCompositorElementId());
+  } else {
+    scroll_tree.SetScrollingContentsCullRect(
+        scroll_node.GetCompositorElementId(), cull_rect);
+  }
+}
+}  // namespace
+
+void PropertyTreeManager::DirectlyUpdateScrollingContentsCullRect(
+    cc::LayerTreeHost& host,
+    const ScrollPaintPropertyNode& scroll) {
+  UpdateCcScrollingContentsCullRect(
+      host.property_trees()->scroll_tree_mutable(), scroll);
+}
+
 void PropertyTreeManager::DirectlySetScrollOffset(
     cc::LayerTreeHost& host,
     CompositorElementId element_id,
@@ -575,17 +598,22 @@ int PropertyTreeManager::EnsureCompositorTransformNode(
   // If this transform is a scroll offset translation, create the associated
   // compositor scroll property node and adjust the compositor transform node's
   // scroll offset.
-  if (transform_node.ScrollNode()) {
+  if (const auto* scroll_node = transform_node.ScrollNode()) {
     compositor_node.scrolls = true;
     compositor_node.should_be_snapped = true;
     int scroll_id = EnsureCompositorScrollNode(transform_node);
-    cc::ScrollNode& scroll_node = scroll_tree_.MutableNode(scroll_id);
-    scroll_node.transform_id = id;
-    scroll_node.is_composited =
+    cc::ScrollNode& compositor_scroll_node =
+        scroll_tree_.MutableNode(scroll_id);
+    compositor_scroll_node.transform_id = id;
+    compositor_scroll_node.is_composited =
         client_.NeedsCompositedScrolling(transform_node);
-    if (!scroll_node.is_composited) {
-      scroll_node.main_thread_repaint_reasons |=
+    if (!compositor_scroll_node.is_composited) {
+      compositor_scroll_node.main_thread_repaint_reasons |=
           NonCompositedMainThreadRepaintReasons(transform_node);
+    }
+    if (RuntimeEnabledFeatures::
+            ScrollingContentsCullRectOnScrollNodeEnabled()) {
+      UpdateCcScrollingContentsCullRect(scroll_tree_, *scroll_node);
     }
   }
 

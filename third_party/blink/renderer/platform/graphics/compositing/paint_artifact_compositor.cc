@@ -1471,6 +1471,17 @@ bool PaintArtifactCompositor::DirectlyUpdatePageScaleTransform(
   return false;
 }
 
+bool PaintArtifactCompositor::DirectlyUpdateScrollingContentsCullRect(
+    const ScrollPaintPropertyNode& scroll) {
+  CHECK(RuntimeEnabledFeatures::ScrollingContentsCullRectOnScrollNodeEnabled());
+  if (CanDirectlyUpdateProperties()) {
+    PropertyTreeManager::DirectlyUpdateScrollingContentsCullRect(
+        *root_layer_->layer_tree_host(), scroll);
+    return true;
+  }
+  return false;
+}
+
 bool PaintArtifactCompositor::DirectlySetScrollOffset(
     CompositorElementId element_id,
     const gfx::PointF& scroll_offset) {

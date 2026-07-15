@@ -75,13 +75,17 @@ bool SetFragmentContentsCullRect(PaintLayer& layer,
         g_original_cull_rects->back().fragment != &fragment) {
       g_original_cull_rects->emplace_back(fragment);
     }
-  } else {
-    SetLayerNeedsRepaintOnCullRectChange(layer);
-    if (auto* scrollable_area = layer.GetScrollableArea())
-      scrollable_area->DidUpdateCullRect();
   }
 
   fragment.SetContentsCullRect(contents_cull_rect);
+
+  if (!g_original_cull_rects) {
+    SetLayerNeedsRepaintOnCullRectChange(layer);
+    if (auto* scrollable_area = layer.GetScrollableArea()) {
+      scrollable_area->DidUpdateCullRect();
+    }
+  }
+
   return true;
 }
 
