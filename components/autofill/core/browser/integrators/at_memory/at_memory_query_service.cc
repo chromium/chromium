@@ -706,8 +706,6 @@ void AtMemoryQueryService::OnPersonalContextRetrieved(
       break;
     case AtMemoryQueryResponse::QUERY_CLASSIFICATION_UNSUPPORTED:
     case AtMemoryQueryResponse::QUERY_CLASSIFICATION_SENSITIVE:
-      // TODO(crbug.com/532082682): Clarify what
-      // `QUERY_CLASSIFICATION_SENSITIVE` should result in.
       run_callback(MemorySearchStatus::kUnsupportedQuery);
       return;
     case AtMemoryQueryResponse::QUERY_CLASSIFICATION_UNSPECIFIED:
