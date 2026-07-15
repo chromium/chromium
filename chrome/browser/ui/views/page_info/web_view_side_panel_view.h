@@ -8,6 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/page_info/web_view_side_panel_throttle.h"
+#include "components/web_modal/web_contents_modal_dialog_manager_delegate.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/views/layout/flex_layout_view.h"
@@ -29,7 +30,8 @@ class WebViewSidePanelView final
     : public views::FlexLayoutView,
       public content::WebContentsObserver,
       public content::WebContentsDelegate,
-      public WebViewSidePanelWebContentsUserData::Delegate {
+      public WebViewSidePanelWebContentsUserData::Delegate,
+      public web_modal::WebContentsModalDialogManagerDelegate {
  public:
   explicit WebViewSidePanelView(
       content::WebContents* parent_web_contents,
@@ -76,6 +78,11 @@ class WebViewSidePanelView final
           navigation_handle_callback) override;
   bool HandleKeyboardEvent(content::WebContents* source,
                            const input::NativeWebKeyboardEvent& event) override;
+
+  // web_modal::WebContentsModalDialogManagerDelegate:
+  web_modal::WebContentsModalDialogHost* GetWebContentsModalDialogHost(
+      content::WebContents* web_contents) override;
+  bool IsWebContentsVisible(content::WebContents* web_contents) override;
 
   BrowserView* outer_browser_view();
   content::WebContentsDelegate* outer_delegate();
