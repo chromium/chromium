@@ -113,6 +113,11 @@ export class SettingsAiSuggestionsPageElement extends
   private isDisabledByPolicy_(): boolean {
     return isFeatureDisabledByPolicy(this.enterprisePref_);
   }
+
+  // SettingsViewMixin implementation.
+  override focusBackButton() {
+    this.shadowRoot!.querySelector('settings-subpage')!.focusBackButton();
+  }
 }
 
 declare global {

@@ -14,9 +14,12 @@ import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.m
 import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
 
+import {SettingsViewMixin} from '../settings_page/settings_view_mixin.js';
+
 import {getTemplate} from './skills_page.html.js';
 
-const SettingsSkillsPageElementBase = PrefsMixin(PolymerElement);
+const SettingsSkillsPageElementBase =
+    SettingsViewMixin(PrefsMixin(PolymerElement));
 
 export class SettingsSkillsPageElement extends SettingsSkillsPageElementBase {
   static get is() {
@@ -37,6 +40,11 @@ export class SettingsSkillsPageElement extends SettingsSkillsPageElementBase {
 
   private onSkillsGalleryClick_() {
     OpenWindowProxyImpl.getInstance().openUrl('chrome://skills');
+  }
+
+  // SettingsViewMixin implementation.
+  override focusBackButton() {
+    this.shadowRoot!.querySelector('settings-subpage')!.focusBackButton();
   }
 }
 
