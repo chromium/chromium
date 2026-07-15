@@ -22,6 +22,8 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
+#include "base/types/expected.h"
+#include "base/types/optional_util.h"
 #include "base/values.h"
 #include "components/guest_view/buildflags/buildflags.h"
 #include "components/safe_browsing/core/common/features.h"
@@ -223,6 +225,53 @@ void AddMessageToConsoleForListener(const EventListenerInfo& details,
   }
 }
 
+// The parsed identity of a webRequest listener registration.
+struct ParsedListenerRegistration {
+  WebRequestEventRouter::RequestFilter filter;
+  int extra_info_spec = 0;
+  int web_view_instance_id = 0;
+};
+
+// Parses a listener registration's RequestFilter, `extraInfoSpec`, and
+// `web_view_instance_id` from `details.filter`. Failure + an empty error
+// string means a fatal error.
+base::expected<ParsedListenerRegistration, std::string>
+ParseListenerRegistration(const EventListenerInfo& details) {
+  ParsedListenerRegistration result;
+
+  std::string error;
+  if (!details.filter ||
+      !result.filter.InitFromValue(*details.filter, &error)) {
+    return base::unexpected(std::move(error));
+  }
+
+  if (auto* extra_info = details.filter->FindListByDottedPath(kExtraInfoKey)) {
+    if (!ExtraInfoSpec::InitFromValue(base::Value(extra_info->Clone()),
+                                      &result.extra_info_spec)) {
+      return base::unexpected("Invalid extraInfo spec.");
+    }
+  }
+
+  result.web_view_instance_id =
+      details.filter->FindIntByDottedPath(kWebViewInstanceIdKey).value_or(0);
+  return result;
+}
+
+// Validates that `details.event_name` matches the session's registration
+// protocol: parent event names for per-context dispatch, sub-event names for
+// legacy dispatch. A mismatch can only come from a misbehaving renderer;
+// reports a bad message and returns false.
+bool ValidateListenerProtocol(const EventListenerInfo& details,
+                              bool per_context_dispatch) {
+  if (EventRouter::IsSubEventName(details.event_name) == per_context_dispatch) {
+    bad_message::ReceivedBadMessage(
+        details.render_process_id.GetUnsafeValue(),
+        bad_message::WRA_INVALID_LISTENER_REGISTRATION);
+    return false;
+  }
+  return true;
+}
+
 // Mirrors the histogram enum of the same name. DO NOT REORDER THESE VALUES OR
 // CHANGE THEIR MEANING.
 enum class WebRequestEventListenerFlag {
@@ -415,34 +464,35 @@ WebRequestAPI::TestObserver::~TestObserver() = default;
 void WebRequestAPI::OnListenerAdded(const EventListenerInfo& details) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  WebRequestEventRouter::RequestFilter filter;
-  std::string error;
-  // Failure + an empty error string means a fatal error.
-  bool success =
-      details.filter && filter.InitFromValue(*details.filter, &error);
-  if (!success) {
-    // TODO(crbug.com/477654111): this validation should happen at the
-    // EventRouter layer. Currently, it's possible for an invalid listener to be
-    // added at the EventRouter layer, and for the validation to then fail here.
-    if (!error.empty()) {
-      AddMessageToConsoleForListener(
-          details, blink::mojom::ConsoleMessageLevel::kError, error);
-    }
+  const bool per_context_dispatch = base::FeatureList::IsEnabled(
+      extensions_features::kWebRequestPerContextEventDispatch);
+  if (!ValidateListenerProtocol(details, per_context_dispatch)) {
     return;
   }
 
-  int extra_info_spec = 0;
-  if (auto* extra_info = details.filter->FindListByDottedPath(kExtraInfoKey)) {
-    if (!ExtraInfoSpec::InitFromValue(base::Value(extra_info->Clone()),
-                                      &extra_info_spec)) {
-      AddMessageToConsoleForListener(details,
-                                     blink::mojom::ConsoleMessageLevel::kError,
-                                     "Invalid extraInfo spec.");
+  auto registration = ParseListenerRegistration(details);
+  if (!registration.has_value()) {
+    if (per_context_dispatch) {
+      // Per-context registrations are validated in the renderer before they
+      // are sent, so an unparsable one indicates a misbehaving renderer.
+      bad_message::ReceivedBadMessage(
+          details.render_process_id.GetUnsafeValue(),
+          bad_message::WRA_INVALID_LISTENER_REGISTRATION);
       return;
     }
+    // TODO(crbug.com/477654111): this validation should happen at the
+    // EventRouter layer. Currently, it's possible for an invalid listener to be
+    // added at the EventRouter layer, and for the validation to then fail here.
+    if (!registration.error().empty()) {
+      AddMessageToConsoleForListener(details,
+                                     blink::mojom::ConsoleMessageLevel::kError,
+                                     registration.error());
+    }
+    return;
   }
-  int web_view_instance_id =
-      details.filter->FindIntByDottedPath(kWebViewInstanceIdKey).value_or(0);
+  WebRequestEventRouter::RequestFilter filter = std::move(registration->filter);
+  int extra_info_spec = registration->extra_info_spec;
+  int web_view_instance_id = registration->web_view_instance_id;
 
   const Extension* extension = nullptr;
   if (!details.extension_id.empty()) {
@@ -593,6 +643,34 @@ void WebRequestAPI::OnListenerRemoved(const EventListenerInfo& details) {
   // Note that details.event_name includes the sub-event details (e.g. "/123").
   const std::string& sub_event_name = details.event_name;
 
+  const bool per_context_dispatch = base::FeatureList::IsEnabled(
+      extensions_features::kWebRequestPerContextEventDispatch);
+  if (!ValidateListenerProtocol(details, per_context_dispatch)) {
+    return;
+  }
+
+  // Per-context registrations use the parent event name, shared by all
+  // of the extension's listeners for that event, so the registration's
+  // (filter, extraInfo) pair (and, for webview listeners, the
+  // `web_view_instance_id`) is needed to narrow the removal to the right one.
+  std::optional<WebRequestEventRouter::RequestFilter> filter;
+  std::optional<int> extra_info_spec;
+  std::optional<int> web_view_instance_id;
+  if (per_context_dispatch) {
+    auto registration = ParseListenerRegistration(details);
+    if (!registration.has_value()) {
+      // Per-context registrations are validated in the renderer before they are
+      // sent, so a renderer sending this is misbehaving.
+      bad_message::ReceivedBadMessage(
+          details.render_process_id.GetUnsafeValue(),
+          bad_message::WRA_INVALID_LISTENER_REGISTRATION);
+      return;
+    }
+    filter = std::move(registration->filter);
+    extra_info_spec = registration->extra_info_spec;
+    web_view_instance_id = registration->web_view_instance_id;
+  }
+
   // The way we handle the listener removal depends on whether this was a
   // lazy listener registration (indicated by a null browser context on
   // `details`).
@@ -611,7 +689,8 @@ void WebRequestAPI::OnListenerRemoved(const EventListenerInfo& details) {
     // raw_ptr::get() so we truly have a raw pointer to bind into the callback.
     remove_listener = base::BindOnce(
         &WebRequestAPI::RemoveLazyListener, weak_factory_.GetWeakPtr(),
-        browser_context_.get(), details.extension_id, sub_event_name);
+        browser_context_.get(), details.extension_id, sub_event_name,
+        std::move(filter), extra_info_spec);
   } else {
     // This was an active listener registration.
     auto update_type = WebRequestEventRouter::ListenerUpdateType::kRemove;
@@ -630,12 +709,30 @@ void WebRequestAPI::OnListenerRemoved(const EventListenerInfo& details) {
         base::UnsafeDanglingUntriaged(details.browser_context.get()),
         update_type, details.extension_id, sub_event_name,
         details.render_process_id, details.worker_thread_id,
-        details.service_worker_version_id);
+        details.service_worker_version_id, std::move(filter), extra_info_spec,
+        web_view_instance_id);
   }
 
-  if (ExtensionRegistry::Get(details.browser_context)
-          ->enabled_extensions()
-          .GetByID(details.extension_id)) {
+  if (per_context_dispatch) {
+    // Remove synchronously, not via `PostTask` like the legacy branch below.
+    //
+    // NOTE: Deferring would be wrong here. A parent named registration has no
+    // unique name, so if the extension re-added an identical listener before a
+    // deferred removal task ran, the task could not tell the two apart and
+    // would delete the new listener. A legacy removal names a unique sub-event,
+    // so it can never delete a re-added listener by mistake.
+    //
+    // SUBTLE: Deferring is also not needed here. When a handler removes its own
+    // listener and then returns a blocking response (or settles an async
+    // handler), both individual responses and the final resolution signal
+    // operate directly on the request's per-target state, not on the
+    // EventListener record. Even when those signals arrive after
+    // `removeListener()` has executed synchronously, the EventListener record
+    // does not need to outlive the removal.
+    std::move(remove_listener).Run();
+  } else if (ExtensionRegistry::Get(details.browser_context)
+                 ->enabled_extensions()
+                 .GetByID(details.extension_id)) {
     // The extension is still enabled, so this listener removal was likely
     // initiated by a call from the extension itself. If the listener removal is
     // performed synchronously, the listener will be removed before the
@@ -1104,7 +1201,10 @@ void WebRequestAPI::UpdateActiveListener(
     const std::string& sub_event_name,
     content::ChildProcessId render_process_id,
     int worker_thread_id,
-    int64_t service_worker_version_id) {
+    int64_t service_worker_version_id,
+    const std::optional<WebRequestEventRouter::RequestFilter>& filter,
+    std::optional<int> extra_info_spec,
+    std::optional<int> web_view_instance_id) {
   if (!ExtensionsBrowserClient::Get()->IsValidContext(browser_context_id)) {
     return;
   }
@@ -1112,19 +1212,24 @@ void WebRequestAPI::UpdateActiveListener(
   content::BrowserContext* browser_context =
       reinterpret_cast<content::BrowserContext*>(browser_context_id);
   WebRequestEventRouter::Get(browser_context)
-      ->UpdateActiveListener(browser_context, update_type, extension_id,
-                             sub_event_name, render_process_id,
-                             worker_thread_id, service_worker_version_id);
+      ->UpdateActiveListener(
+          browser_context, update_type, extension_id, sub_event_name,
+          render_process_id, worker_thread_id, service_worker_version_id,
+          base::OptionalToPtr(filter), extra_info_spec, web_view_instance_id);
 }
 
-void WebRequestAPI::RemoveLazyListener(content::BrowserContext* browser_context,
-                                       const ExtensionId& extension_id,
-                                       const std::string& sub_event_name) {
+void WebRequestAPI::RemoveLazyListener(
+    content::BrowserContext* browser_context,
+    const ExtensionId& extension_id,
+    const std::string& sub_event_name,
+    const std::optional<WebRequestEventRouter::RequestFilter>& filter,
+    std::optional<int> extra_info_spec) {
   if (!ExtensionsBrowserClient::Get()->IsValidContext(browser_context)) {
     return;
   }
   WebRequestEventRouter::Get(browser_context)
-      ->RemoveLazyListener(browser_context, extension_id, sub_event_name);
+      ->RemoveLazyListener(browser_context, extension_id, sub_event_name,
+                           base::OptionalToPtr(filter), extra_info_spec);
 }
 
 // Special QuotaLimitHeuristic for WebRequestHandlerBehaviorChangedFunction.

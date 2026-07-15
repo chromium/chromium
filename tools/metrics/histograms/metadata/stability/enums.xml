@@ -580,6 +580,7 @@ Called by update_bad_message_reasons.py.-->
   <int value="37" label="SWH_INVALID_SERVICE_WORKER_SCOPE"/>
   <int value="38" label="EMF_INVALID_MESSAGE_FROM_SANDBOXED_PROCESS"/>
   <int value="39" label="WRA_INVALID_EXTENSION_ID_FOR_PROCESS"/>
+  <int value="40" label="WRA_INVALID_LISTENER_REGISTRATION"/>
 </enum>
 
 <enum name="BadMessageReasonGuestView">

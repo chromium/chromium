@@ -44,6 +44,9 @@ struct WebRequestParsedFilter {
   WebRequestParsedFilter& operator=(WebRequestParsedFilter&&);
   ~WebRequestParsedFilter();
 
+  friend bool operator==(const WebRequestParsedFilter&,
+                         const WebRequestParsedFilter&) = default;
+
   // Returns false if there was an error initializing. If it is a user error,
   // an error message is provided, otherwise the error is internal (and
   // unexpected).

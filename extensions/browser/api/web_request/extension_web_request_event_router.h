@@ -382,17 +382,36 @@ class WebRequestEventRouter : public KeyedService {
   }
 
   // Updates only the active listener in tests whose render process matches
-  // `render_process_id`.
-  void UpdateActiveListenerForTesting(content::BrowserContext* browser_context,
-                                      ListenerUpdateType update_type,
-                                      const ExtensionId& extension_id,
-                                      const std::string& sub_event_name,
-                                      content::ChildProcessId render_process_id,
-                                      int worker_thread_id,
-                                      int64_t service_worker_version_id) {
+  // `render_process_id`. `filter`, `extra_info_spec`, and
+  // `web_view_instance_id` narrow the update for per-context (parent event
+  // named) registrations.
+  void UpdateActiveListenerForTesting(
+      content::BrowserContext* browser_context,
+      ListenerUpdateType update_type,
+      const ExtensionId& extension_id,
+      const std::string& sub_event_name,
+      content::ChildProcessId render_process_id,
+      int worker_thread_id,
+      int64_t service_worker_version_id,
+      const RequestFilter* filter = nullptr,
+      std::optional<int> extra_info_spec = std::nullopt,
+      std::optional<int> web_view_instance_id = std::nullopt) {
     UpdateActiveListener(browser_context, update_type, extension_id,
                          sub_event_name, render_process_id, worker_thread_id,
-                         service_worker_version_id);
+                         service_worker_version_id, filter, extra_info_spec,
+                         web_view_instance_id);
+  }
+
+  // Removes a lazy or worker listener in tests. `filter` and
+  // `extra_info_spec` narrow the removal for per-context registrations.
+  void RemoveLazyListenerForTesting(
+      content::BrowserContext* original_context,
+      const ExtensionId& extension_id,
+      const std::string& sub_event_name,
+      const RequestFilter* filter = nullptr,
+      std::optional<int> extra_info_spec = std::nullopt) {
+    RemoveLazyListener(original_context, extension_id, sub_event_name, filter,
+                       extra_info_spec);
   }
 
  private:
@@ -552,25 +571,45 @@ class WebRequestEventRouter : public KeyedService {
 
   using DataMap = std::map<BrowserContextID, BrowserContextData>;
 
-  // Returns the EventListener with the given `id`, or nullptr.
-  EventListener* FindEventListener(const EventListener::ID& id);
+  // Returns the active EventListener with the given `id`, or nullptr. See
+  // `FindEventListenerInContainer()` for the role of `filter` and
+  // `extra_info_spec`.
+  EventListener* FindEventListener(
+      const EventListener::ID& id,
+      const RequestFilter* filter = nullptr,
+      std::optional<int> extra_info_spec = std::nullopt);
 
   // Returns the active EventListener corresponding to the provided
   // `browser_context_id`, `extension_id`, `event_name`, and `sub_event_name`,
-  // or nullptr if not found.
+  // or nullptr if not found. See `FindEventListenerInContainer()` for the role
+  // of `filter` and `extra_info_spec`.
   EventListener* FindEventListenerBySubEventName(
       BrowserContextID browser_context_id,
       const ExtensionId& extension_id,
       const std::string& event_name,
-      const std::string& sub_event_name);
+      const std::string& sub_event_name,
+      const RequestFilter* filter = nullptr,
+      std::optional<int> extra_info_spec = std::nullopt);
 
-  // Returns the EventListener with the given `id` from `listeners`.
-  EventListener* FindEventListenerInContainer(const EventListener::ID& id,
-                                              const Listeners& listeners);
+  // Returns the EventListener with the given `id` from `listeners`. For
+  // per-context registrations (whose sub-event name equals the event name and
+  // is shared by all of an extension's listeners), `filter` and
+  // `extra_info_spec` narrow the lookup to a single registration.
+  // TODO(crbug.com/494684626): Consider folding the registration identity
+  // (filter, extra_info_spec) into `EventListener::ID` so that an ID alone
+  // uniquely identifies a listener again.
+  EventListener* FindEventListenerInContainer(
+      const EventListener::ID& id,
+      const Listeners& listeners,
+      const RequestFilter* filter = nullptr,
+      std::optional<int> extra_info_spec = std::nullopt);
 
   // Updates the active listener registration indicated by the given criteria.
   // `update_type` indicates whether the listener is fully removed or if it's
-  // a lazy listener that had its context shut down.
+  // a lazy listener that had its context shut down. For per-context
+  // registrations (whose sub-event name equals the event name and is shared
+  // by all of an extension's listeners), `filter`, `extra_info_spec`, and
+  // `web_view_instance_id` narrow the update to a single registration.
   void UpdateActiveListener(
       content::BrowserContext* browser_context,
       ListenerUpdateType update_type,
@@ -578,7 +617,10 @@ class WebRequestEventRouter : public KeyedService {
       const std::string& sub_event_name,
       std::optional<content::ChildProcessId> render_process_id,
       int worker_thread_id,
-      int64_t service_worker_version_id);
+      int64_t service_worker_version_id,
+      const RequestFilter* filter = nullptr,
+      std::optional<int> extra_info_spec = std::nullopt,
+      std::optional<int> web_view_instance_id = std::nullopt);
 
   // Adds `listener` to `listeners` and updates listener counts if needed.
   void AddListenerToList(content::BrowserContext* browser_context,
@@ -587,10 +629,13 @@ class WebRequestEventRouter : public KeyedService {
                          ListenerCountUpdate count_update);
 
   // Removes a lazy listener registration. This affects both the provided
-  // `original_context` and any incognito context associated with it.
+  // `original_context` and any incognito context associated with it. See
+  // `UpdateActiveListener()` for the role of `filter` and `extra_info_spec`.
   void RemoveLazyListener(content::BrowserContext* original_context,
                           const ExtensionId& extension_id,
-                          const std::string& sub_event_name);
+                          const std::string& sub_event_name,
+                          const RequestFilter* filter = nullptr,
+                          std::optional<int> extra_info_spec = std::nullopt);
 
   // Removes all listeners from `listeners` that matches the given criteria.
   // Optional criteria are ignored if not provided. Removes the matching
@@ -603,8 +648,9 @@ class WebRequestEventRouter : public KeyedService {
       std::optional<int> worker_thread_id,
       std::optional<int64_t> service_worker_version_id,
       BrowserContextID browser_context_id,
-      const std::optional<base::DictValue>& filter_value = std::nullopt,
-      std::optional<int> extra_info_spec = std::nullopt);
+      const RequestFilter* filter = nullptr,
+      std::optional<int> extra_info_spec = std::nullopt,
+      std::optional<int> web_view_instance_id = std::nullopt);
 
   // Replaces inactive listeners for the same extension id and sub-event name.
   // Returns the number of exact registration matches preserved.

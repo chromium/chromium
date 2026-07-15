@@ -4,11 +4,24 @@
 
 #include "extensions/browser/api/web_request/extension_web_request_event_router.h"
 
+#include <memory>
+#include <string>
+#include <utility>
+
 #include "base/test/values_test_util.h"
+#include "content/public/test/mock_render_process_host.h"
+#include "extensions/browser/api/extensions_api_client.h"
 #include "extensions/browser/api/web_request/web_request_api_constants.h"
+#include "extensions/browser/extension_registry.h"
+#include "extensions/browser/extensions_test.h"
+#include "extensions/browser/process_map.h"
+#include "extensions/common/api/web_request.h"
 #include "extensions/common/api/web_request/web_request_resource_type.h"
+#include "extensions/common/constants.h"
+#include "extensions/common/extension_builder.h"
 #include "extensions/common/url_pattern.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/mojom/service_worker/service_worker_database.mojom.h"
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
@@ -16,6 +29,7 @@ namespace extensions {
 
 namespace {
 
+using extension_web_request_api_helpers::ExtraInfoSpec;
 using RequestFilter = WebRequestEventRouter::RequestFilter;
 
 ::testing::AssertionResult AreFiltersEqual(
@@ -222,6 +236,212 @@ TEST_F(WebRequestEventRouterTest, RequestFilter_DeserializeMissingUrls) {
       base::test::ParseJsonDict(R"({"types": ["script"]})");
   RequestFilter filter_missing;
   EXPECT_FALSE(filter_missing.InitFromValue(input_missing, &error));
+}
+
+namespace {
+
+class WebRequestEventRouterContextDispatchTest : public ExtensionsTest {
+ public:
+  static constexpr const char* kExtensionName = "Test Extension";
+  static constexpr const char* kEventName =
+      api::web_request::OnBeforeRequest::kEventName;
+  static constexpr int kWorkerThreadId = 12;
+  static constexpr int64_t kServiceWorkerVersionId = 7;
+
+  void SetUp() override {
+    ExtensionsTest::SetUp();
+
+    render_process_host_ =
+        std::make_unique<content::MockRenderProcessHost>(browser_context());
+
+    extension_ = ExtensionBuilder(kExtensionName)
+                     .AddHostPermission("<all_urls>")
+                     .Build();
+    ExtensionRegistry::Get(browser_context())->AddEnabled(extension_);
+    ProcessMap::Get(browser_context())
+        ->Insert(extension_->id(), render_process_host_->GetID());
+  }
+
+  void TearDown() override {
+    render_process_host_.reset();
+    ExtensionsTest::TearDown();
+  }
+
+ protected:
+  WebRequestEventRouter* router() {
+    return WebRequestEventRouter::Get(browser_context());
+  }
+
+  int process_id() { return render_process_host_->GetID().GetUnsafeValue(); }
+
+  const ExtensionId& extension_id() { return extension_->id(); }
+
+  size_t GetListenerCount() {
+    return router()->GetListenerCountForTesting(browser_context(), kEventName);
+  }
+
+  bool AddListener(const std::string& url_pattern,
+                   int extra_info_spec = 0,
+                   bool is_lazy = false) {
+    int render_process_id = is_lazy ? -1 : process_id();
+    int worker_thread_id = is_lazy ? kMainThreadId : kWorkerThreadId;
+    int64_t service_worker_version_id =
+        is_lazy ? blink::mojom::kInvalidServiceWorkerVersionId
+                : kServiceWorkerVersionId;
+    return router()->AddEventListener(
+        browser_context(), extension_id(), kExtensionName, kEventName,
+        /*sub_event_name=*/kEventName, MakeFilter(url_pattern), extra_info_spec,
+        render_process_id, /*web_view_instance_id=*/0, worker_thread_id,
+        service_worker_version_id, is_lazy);
+  }
+
+  void RemoveListener(const std::string& url_pattern, int extra_info_spec = 0) {
+    RequestFilter filter = MakeFilter(url_pattern);
+    router()->RemoveLazyListenerForTesting(browser_context(), extension_id(),
+                                           kEventName, &filter,
+                                           extra_info_spec);
+  }
+
+  bool AddWebViewListener(const std::string& url_pattern,
+                          int web_view_instance_id,
+                          int extra_info_spec = 0) {
+    return router()->AddEventListener(
+        browser_context(), extension_id(), kExtensionName, kEventName,
+        /*sub_event_name=*/kEventName, MakeFilter(url_pattern), extra_info_spec,
+        process_id(), web_view_instance_id, kMainThreadId,
+        blink::mojom::kInvalidServiceWorkerVersionId, /*is_lazy=*/false);
+  }
+
+  void RemoveWebViewListener(const std::string& url_pattern,
+                             int web_view_instance_id,
+                             int extra_info_spec = 0) {
+    RequestFilter filter = MakeFilter(url_pattern);
+    router()->UpdateActiveListenerForTesting(
+        browser_context(), WebRequestEventRouter::ListenerUpdateType::kRemove,
+        extension_id(), kEventName, render_process_host_->GetID(),
+        kMainThreadId, blink::mojom::kInvalidServiceWorkerVersionId, &filter,
+        extra_info_spec, web_view_instance_id);
+  }
+
+ private:
+  RequestFilter MakeFilter(const std::string& url_pattern) {
+    RequestFilter filter;
+    filter.urls.AddPattern(
+        URLPattern(kWebRequestFilterValidSchemes, url_pattern));
+    return filter;
+  }
+
+  ExtensionsAPIClient api_client_;
+  std::unique_ptr<content::MockRenderProcessHost> render_process_host_;
+  scoped_refptr<const Extension> extension_;
+};
+
+}  // namespace
+
+// Multiple parent named listeners from the same context are distinguished by
+// their (filter, extra_info_spec) pair; an exact duplicate is rejected.
+TEST_F(WebRequestEventRouterContextDispatchTest, RegistrationIdentity) {
+  EXPECT_TRUE(AddListener("http://example.com/*"));
+  EXPECT_EQ(1u, GetListenerCount());
+
+  // An exact duplicate (same filter and spec) is rejected.
+  EXPECT_FALSE(AddListener("http://example.com/*"));
+  EXPECT_EQ(1u, GetListenerCount());
+
+  // Same filter with a different spec is a distinct registration.
+  EXPECT_TRUE(AddListener("http://example.com/*", ExtraInfoSpec::BLOCKING));
+  EXPECT_EQ(2u, GetListenerCount());
+
+  // A different filter is a distinct registration.
+  EXPECT_TRUE(AddListener("http://other.example/*"));
+  EXPECT_EQ(3u, GetListenerCount());
+}
+
+// Removing a listener and re-adding an identical one. Parent named removals
+// are processed synchronously (see `WebRequestAPI::OnListenerRemoved()`), so
+// the re-add is processed after the removal and registers fresh.
+TEST_F(WebRequestEventRouterContextDispatchTest, RemoveThenReAddListener) {
+  ASSERT_TRUE(AddListener("http://example.com/*"));
+  ASSERT_EQ(1u, GetListenerCount());
+
+  // The removal runs synchronously at notification time...
+  RemoveListener("http://example.com/*");
+  EXPECT_EQ(0u, GetListenerCount());
+
+  // ...so the re-add of an identical listener registers fresh.
+  ASSERT_TRUE(AddListener("http://example.com/*"));
+  EXPECT_EQ(1u, GetListenerCount());
+}
+
+// Removing a parent-named listener only removes the registration matching the
+// provided (filter, extra_info_spec) pair.
+TEST_F(WebRequestEventRouterContextDispatchTest, RemovalNarrowedByFilter) {
+  ASSERT_TRUE(AddListener("http://example.com/*"));
+  ASSERT_TRUE(AddListener("http://other.example/*", ExtraInfoSpec::BLOCKING));
+  ASSERT_EQ(2u, GetListenerCount());
+
+  // Removing with a non-matching spec is a no-op.
+  RemoveListener("http://example.com/*", ExtraInfoSpec::BLOCKING);
+  EXPECT_EQ(2u, GetListenerCount());
+
+  // Removing with the matching (filter, spec) removes exactly one.
+  RemoveListener("http://example.com/*");
+  EXPECT_EQ(1u, GetListenerCount());
+
+  RemoveListener("http://other.example/*", ExtraInfoSpec::BLOCKING);
+  EXPECT_EQ(0u, GetListenerCount());
+}
+
+// Under the same parent event name, two webviews of one embedder process
+// can hold identical registrations, distinguished only by their
+// `web_view_instance_id`.
+TEST_F(WebRequestEventRouterContextDispatchTest,
+       WebViewRemovalNarrowedByInstanceId) {
+  ASSERT_TRUE(
+      AddWebViewListener("http://example.com/*", /*web_view_instance_id=*/1));
+  ASSERT_TRUE(
+      AddWebViewListener("http://example.com/*", /*web_view_instance_id=*/2));
+  EXPECT_EQ(2u, GetListenerCount());
+
+  // An exact duplicate for the same webview is rejected.
+  EXPECT_FALSE(
+      AddWebViewListener("http://example.com/*", /*web_view_instance_id=*/1));
+  EXPECT_EQ(2u, GetListenerCount());
+
+  // Removing webview 1's registration keeps webview 2's identical one.
+  RemoveWebViewListener("http://example.com/*", /*web_view_instance_id=*/1);
+  EXPECT_EQ(1u, GetListenerCount());
+
+  // Repeating the removal is a no-op.
+  RemoveWebViewListener("http://example.com/*", /*web_view_instance_id=*/1);
+  EXPECT_EQ(1u, GetListenerCount());
+
+  RemoveWebViewListener("http://example.com/*", /*web_view_instance_id=*/2);
+  EXPECT_EQ(0u, GetListenerCount());
+}
+
+// Verifies that when a service worker wakes up and activates one of its lazy
+// listeners, sibling lazy registrations for the same parent event
+// ("onBeforeRequest") are preserved. In legacy sub-event naming, leftover
+// inactive records under the same name were purged as stale; under parent
+// naming, those records represent distinct, valid sibling listeners.
+TEST_F(WebRequestEventRouterContextDispatchTest,
+       LazyActivationKeepsSiblingRegistrations) {
+  // Simulate an extension with two distinct lazy registrations.
+  ASSERT_TRUE(AddListener("http://example.com/*", 0, /*is_lazy=*/true));
+  ASSERT_TRUE(AddListener("http://other.example/*", ExtraInfoSpec::BLOCKING,
+                          /*is_lazy=*/true));
+  EXPECT_EQ(2u,
+            router()->GetInactiveListenerCount(browser_context(), kEventName));
+
+  // Simulate a service worker activating only one of its listeners.
+  ASSERT_TRUE(AddListener("http://example.com/*"));
+
+  // Verify that one listener transitioned to active, while its sibling remains
+  // lazy.
+  EXPECT_EQ(1u, GetListenerCount());
+  EXPECT_EQ(1u,
+            router()->GetInactiveListenerCount(browser_context(), kEventName));
 }
 
 }  // namespace extensions

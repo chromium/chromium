@@ -340,6 +340,9 @@ class WebRequestAPI : public BrowserContextKeyedAPI,
   // when the task is run and forwards to the corresponding member function
   // in ExtensionWebRequestEventRouter, or not, if the owning BrowserContext
   // goes away or the WeakPtr instance bound in the callback is invalidated.
+  // For per-context (parent event named) registrations, `filter`,
+  // `extra_info_spec`, and `web_view_instance_id` narrow the update to a
+  // single registration.
   void UpdateActiveListener(
       void* browser_context_id,
       WebRequestEventRouter::ListenerUpdateType update_type,
@@ -347,15 +350,23 @@ class WebRequestAPI : public BrowserContextKeyedAPI,
       const std::string& sub_event_name,
       content::ChildProcessId render_process_id,
       int worker_thread_id,
-      int64_t service_worker_version_id);
+      int64_t service_worker_version_id,
+      const std::optional<WebRequestEventRouter::RequestFilter>& filter,
+      std::optional<int> extra_info_spec,
+      std::optional<int> web_view_instance_id);
 
   // This a proxy API for the tasks that are posted. It is either called
   // when the task is run and forwards to the corresponding member function
   // in ExtensionWebRequestEventRouter, or not, if the owning BrowserContext
   // goes away or the WeakPtr instance bound in the callback is invalidated.
-  void RemoveLazyListener(content::BrowserContext* browser_context,
-                          const ExtensionId& extension_id,
-                          const std::string& sub_event_name);
+  // For per-context (parent event named) registrations, `filter` and
+  // `extra_info_spec` narrow the removal to a single registration.
+  void RemoveLazyListener(
+      content::BrowserContext* browser_context,
+      const ExtensionId& extension_id,
+      const std::string& sub_event_name,
+      const std::optional<WebRequestEventRouter::RequestFilter>& filter,
+      std::optional<int> extra_info_spec);
 
   // Internal implementation of MaybeProxyURLLoaderFactory that returns a
   // detailed reason, ProxyDecision, to tell why the proxy is used.
