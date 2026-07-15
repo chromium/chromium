@@ -130,7 +130,7 @@
   left: 0;
 }
 
-cr-icon[icon='profiles:add'] {
+cr-icon[icon='profiles:add-custom'] {
   --iron-icon-height: var(--profile-card-avatar-icon-size);
   --iron-icon-width: var(--profile-card-avatar-icon-size);
   --iron-icon-fill-color: var(--google-grey-100);
@@ -181,7 +181,7 @@ cr-checkbox {
     border-color: var(--google-grey-700);
   }
 
-  cr-icon[icon='profiles:add'] {
+  cr-icon[icon='profiles:add-custom'] {
     --iron-icon-fill-color: var(--google-grey-500);
     --iron-icon-stroke-color: rgb(48, 48, 50);
   }

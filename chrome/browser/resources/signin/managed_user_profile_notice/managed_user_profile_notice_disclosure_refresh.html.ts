@@ -9,23 +9,27 @@ export function getHtml(this: ManagedUserProfileNoticeDisclosureRefreshElement) 
   return html`<!--_html_template_start_-->
 <main>
   <div id="headerContainer">
-    ${this.shouldShowAnimations_() ? html`
+    ${
+      this.shouldShowAnimations_() ? html`
       <cr-lottie id="avatarAnimation"
           animation-url="${this.getAnimationUrl_()}"
           single-loop
           ?autoplay="${!this.disableAnimations_}">
       </cr-lottie>
-    ` : ''}
+    ` :
+                                     ''}
     <div id="avatarContainer">
       <img id="avatar" alt="$i18n{avatarAccessibilityLabel}"
           src="${this.pictureUrl}">
-      ${this.showEnterpriseBadge ? html`
+      ${
+      this.showEnterpriseBadge ? html`
         <div class="work-badge">
           <cr-icon class="icon" icon="cr:domain"
               aria-label="$i18n{enterpriseIconAccessibilityLabel}">
           </cr-icon>
         </div>
-      ` : ''}
+      ` :
+                                 ''}
     </div>
   </div>
   <div id="textContainer">
@@ -34,7 +38,10 @@ export function getHtml(this: ManagedUserProfileNoticeDisclosureRefreshElement) 
   </div>
   <div class="disclaimer-container">
     <section class="disclaimer">
-      <cr-icon class="icon" icon="signin:person-outline"></cr-icon>
+      <cr-icon class="icon"
+          icon="${
+      this.webuiRoundedIconsEnabled_ ? 'signin:person' :
+                                       'signin:person-outline-old'}"></cr-icon>
       <h2>$i18n{profileInformationTitle}</h2>
       <p>$i18n{profileInformationDetails}</p>
     </section>

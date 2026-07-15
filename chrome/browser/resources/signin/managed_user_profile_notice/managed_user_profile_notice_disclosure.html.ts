@@ -22,7 +22,10 @@ export function getHtml(this: ManagedUserProfileNoticeDisclosureElement) {
   </div>
   <div class="disclaimer-container">
     <section class="disclaimer">
-      <cr-icon class="icon" icon="signin:person-outline"></cr-icon>
+      <cr-icon class="icon"
+          icon="${
+      this.webuiRoundedIconsEnabled_ ? 'signin:person' :
+                                       'signin:person-outline-old'}"></cr-icon>
       <div>
         <h2>${this.i18n('profileInformationTitle')}</h2>
         <p>${this.i18n('profileInformationDetails')}</p>

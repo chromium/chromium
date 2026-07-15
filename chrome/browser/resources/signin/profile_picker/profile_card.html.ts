@@ -29,7 +29,10 @@ export function getHtml(this: ProfileCardElement) {
     <div id="forceSigninContainer" class="profile-card-info secondary-text"
         ?hidden="${!this.profileState.needsSignin}">
       <div>$i18n{needsSigninPrompt}</div>
-      <cr-icon id="forceSigninIcon" icon="profiles:lock"></cr-icon>
+      <cr-icon id="forceSigninIcon"
+          icon="${
+      this.webuiRoundedIconsEnabled_ ? 'profiles:lock-filled' :
+                                       'profiles:lock-old'}"></cr-icon>
     </div>
   </cr-button>
   <div id="profileNameInputWrapper">

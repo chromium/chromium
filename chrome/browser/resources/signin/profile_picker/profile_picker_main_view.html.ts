@@ -38,7 +38,7 @@ ${isGlicVersion() ? html`
             class="profile-card-info prominent-text">
           $i18n{addSpaceButton}
         </div>
-        <cr-icon icon="profiles:add"></cr-icon>
+        <cr-icon icon="profiles:add-custom"></cr-icon>
       </cr-button>
     </div>
   </div>
@@ -52,7 +52,10 @@ ${isGlicVersion() ? html`
       @click="${this.onLaunchGuestProfileClick_}"
       ?hidden="${!this.guestModeEnabled_}"
       ?disabled="${this.pickerButtonsDisabled_}">
-    <cr-icon icon="profiles:account-box" slot="prefix-icon"></cr-icon>
+    <cr-icon
+        icon="${this.webuiRoundedIconsEnabled_
+            ? 'profiles:account-box'
+            : 'profiles:account-box-old'}" slot="prefix-icon"></cr-icon>
     $i18n{browseAsGuestButton}
   </cr-button>
 

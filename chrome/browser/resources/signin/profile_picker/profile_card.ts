@@ -53,12 +53,15 @@ export class ProfileCardElement extends ProfileCardElementBase {
       profileState: {type: Object},
       pattern_: {type: String},
       disabled: {type: Boolean},
+      webuiRoundedIconsEnabled_: {type: Boolean},
     };
   }
 
   accessor profileState: ProfileState = createDummyProfileState();
   accessor disabled: boolean = false;
   protected accessor pattern_: string = '.*\\S.*';
+  protected accessor webuiRoundedIconsEnabled_: boolean =
+      loadTimeData.getBoolean('webuiRoundedIconsEnabled');
   private manageProfilesBrowserProxy_: ManageProfilesBrowserProxy =
       ManageProfilesBrowserProxyImpl.getInstance();
 

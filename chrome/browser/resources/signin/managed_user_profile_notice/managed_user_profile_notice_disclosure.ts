@@ -9,6 +9,7 @@ import 'chrome://resources/cr_elements/icons.html.js';
 
 import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
 import {assert} from 'chrome://resources/js/assert.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {getCss} from './managed_user_profile_notice_disclosure.css.js';
@@ -38,6 +39,7 @@ export class ManagedUserProfileNoticeDisclosureElement extends
       title: {type: String},
       subtitle: {type: String},
       disclosureTitle_: {type: String},
+      webuiRoundedIconsEnabled_: {type: Boolean},
     };
   }
 
@@ -47,6 +49,8 @@ export class ManagedUserProfileNoticeDisclosureElement extends
   accessor subtitle: string = '';
 
   protected accessor disclosureTitle_: string = '';
+  protected accessor webuiRoundedIconsEnabled_: boolean =
+      loadTimeData.getBoolean('webuiRoundedIconsEnabled');
 
   override firstUpdated() {
     const titleElement = this.shadowRoot.querySelector<HTMLElement>('.title');

@@ -99,7 +99,10 @@ std::string SyncConfirmationUI::GetSyncBenefitsListJSON(
 
     base::DictValue bookmarks;
     bookmarks.Set(kSyncBenefitTitleKey, titleKey);
-    bookmarks.Set(kSyncBenefitIconNameKey, "signin:star-outline");
+    bookmarks.Set(kSyncBenefitIconNameKey,
+                  (base::FeatureList::IsEnabled(features::kWebUIRoundedIcons)
+                       ? "signin:star"
+                       : "signin:star-outline-old"));
     sync_benefits_list.Append(std::move(bookmarks));
   }
 
@@ -107,7 +110,10 @@ std::string SyncConfirmationUI::GetSyncBenefitsListJSON(
                                        UserSelectableType::kPasswords})) {
     base::DictValue autofill;
     autofill.Set(kSyncBenefitTitleKey, kSyncBenefitAutofillStringName);
-    autofill.Set(kSyncBenefitIconNameKey, "signin:assignment-outline");
+    autofill.Set(kSyncBenefitIconNameKey,
+                 (base::FeatureList::IsEnabled(features::kWebUIRoundedIcons)
+                      ? "signin:assignment"
+                      : "signin:assignment-outline-old"));
     sync_benefits_list.Append(std::move(autofill));
   }
 
@@ -115,7 +121,10 @@ std::string SyncConfirmationUI::GetSyncBenefitsListJSON(
                                        UserSelectableType::kApps})) {
     base::DictValue extensions;
     extensions.Set(kSyncBenefitTitleKey, kSyncBenefitExtensionsStringName);
-    extensions.Set(kSyncBenefitIconNameKey, "signin:extension-outline");
+    extensions.Set(kSyncBenefitIconNameKey,
+                   (base::FeatureList::IsEnabled(features::kWebUIRoundedIcons)
+                        ? "signin:chrome-extension"
+                        : "signin:extension-outline-old"));
     sync_benefits_list.Append(std::move(extensions));
   }
 
@@ -124,7 +133,11 @@ std::string SyncConfirmationUI::GetSyncBenefitsListJSON(
   base::DictValue history_and_more;
   history_and_more.Set(kSyncBenefitTitleKey,
                        kSyncBenefitHistoryAndMoreStringName);
-  history_and_more.Set(kSyncBenefitIconNameKey, "signin:devices");
+  history_and_more.Set(
+      kSyncBenefitIconNameKey,
+      (base::FeatureList::IsEnabled(features::kWebUIRoundedIcons)
+           ? "signin:devices"
+           : "signin:devices-old"));
   sync_benefits_list.Append(std::move(history_and_more));
 
   return base::WriteJson(sync_benefits_list).value_or("");
