@@ -721,6 +721,14 @@ void EmbeddedWorkerInstance::OnStarted(
   pause_initializing_global_scope_ = false;
   thread_id_ = thread_id;
   inflight_start_info_.reset();
+
+  // The worker finished starting; re-evaluate whether its process still needs
+  // foreground priority. In particular this drops the startup foreground boost
+  // given to extension service workers in
+  // ServiceWorkerVersion::ShouldRequireForegroundPriority(), unless the worker
+  // still requires foreground priority for another reason.
+  UpdateForegroundPriority();
+
   for (auto& observer : listener_list_) {
     observer.OnStarted(start_status, fetch_handler_type, has_hid_event_handlers,
                        has_usb_event_handlers);
