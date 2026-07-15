@@ -83,8 +83,8 @@ export class PinnedToolbarActionsElement extends CrLitElement {
     // 1. Map new mojo states to KeyedActionState (all active).
     const newKeyedStates: KeyedActionState[] = newMojoStates.map(s => {
       const key = s.action.toString();
-      const animateIn =
-          !isInitial && !this.keyedStates_.some(old => old.key === key);
+      const animateIn = !isInitial &&
+          !this.keyedStates_.some(old => old.key === key && !old.animateIn);
       return {key, state: s, animateIn};
     });
 

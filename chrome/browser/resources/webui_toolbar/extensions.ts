@@ -90,8 +90,8 @@ export class ExtensionsElement extends CrLitElement {
     // 1. Map new mojo states to KeyedExtensionState (all active).
     const newKeyedStates: KeyedExtensionState[] = newMojoStates.map(s => {
       const key = s.id;
-      const animateIn =
-          !isInitial && !this.keyedStates_.some(old => old.key === key);
+      const animateIn = !isInitial &&
+          !this.keyedStates_.some(old => old.key === key && !old.animateIn);
       return {key, state: s, animateIn};
     });
 
