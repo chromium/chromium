@@ -283,7 +283,7 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
 </histogram>
 
 <histogram name="Privacy.DIPS.ClearedSitesCount{DIPSCookieMode}" units="sites"
-    expires_after="2026-07-26">
+    expires_after="2027-07-26">
   <owner>liu@chromium.org</owner>
   <owner>src/content/browser/btm/OWNERS</owner>
   <summary>
@@ -360,7 +360,7 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
 </histogram>
 
 <histogram name="Privacy.DIPS.DatabaseInit" units="attempts"
-    expires_after="2026-07-27">
+    expires_after="2027-07-27">
   <owner>liu@chromium.org</owner>
   <owner>src/content/browser/btm/OWNERS</owner>
   <summary>
@@ -399,7 +399,7 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
 </histogram>
 
 <histogram name="Privacy.DIPS.Deletion{DIPSCookieMode}"
-    enum="DIPSDeletionAction" expires_after="2026-07-26">
+    enum="DIPSDeletionAction" expires_after="2027-07-26">
   <owner>njeunje@chromium.org</owner>
   <owner>src/content/browser/btm/OWNERS</owner>
   <summary>
