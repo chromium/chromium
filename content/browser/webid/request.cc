@@ -2010,6 +2010,10 @@ void Request::CompleteRequestInternal(
 }
 
 void Request::CleanUp() {
+  // Cancel any pending callbacks and fetches from this request. No need to
+  // reset other members since this object is not reused for a new request.
+  // `fedcm_metrics` is reset to force metrics recording right away instead of
+  // waiting for Request destruction, which might be delayed.
   weak_ptr_factory_.InvalidateWeakPtrs();
 
   permission_delegate()->RemoveIdpSigninStatusObserver(this);
@@ -2018,38 +2022,6 @@ void Request::CleanUp() {
   federated_sdjwt_handler_.reset();
   network_manager_.reset();
   fedcm_metrics_.reset();
-  account_id_ = std::string();
-  start_time_ = base::TimeTicks();
-  well_known_and_config_fetched_time_ = base::TimeTicks();
-  accounts_fetched_time_ = base::TimeTicks();
-  client_metadata_fetched_time_ = base::TimeTicks();
-  ready_to_display_accounts_dialog_time_ = base::TimeTicks();
-  accounts_dialog_display_time_ = base::TimeTicks();
-  select_account_time_ = base::TimeTicks();
-  id_assertion_response_time_ = base::TimeTicks();
-  accounts_dialog_shown_time_ = std::nullopt;
-  mismatch_dialog_shown_time_ = std::nullopt;
-  has_shown_mismatch_ = false;
-  in_redirect_to_ = false;
-  idp_accounts_.clear();
-  accounts_.clear();
-  idp_login_infos_.clear();
-  idp_infos_.clear();
-  idp_data_for_display_.clear();
-  account_ids_before_login_.clear();
-  fetch_data_ = FetchData();
-  idps_user_tried_to_signin_to_.clear();
-  idp_order_.clear();
-  token_request_get_infos_.clear();
-  login_url_ = GURL();
-  config_url_ = GURL();
-  token_error_ = std::nullopt;
-  dialog_type_ = DialogType::kNone;
-  identity_selection_type_ = kExplicit;
-  had_transient_user_activation_ = false;
-  rp_mode_ = RpMode::kPassive;
-  intercepted_url_ = GURL();
-  complete_request_delayed_ = false;
 }
 
 void Request::AddDevToolsIssue(FederatedRequestResult result) {
