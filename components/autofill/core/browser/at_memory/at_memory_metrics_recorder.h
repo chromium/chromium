@@ -122,12 +122,31 @@ class AtMemoryMetricsRecorder {
   // first shown to the user and ends when it is hidden. Popup updates (e.g.,
   // due to typing in the search bar) do not change the session.
   const base::Token session_id_token_;
+
+  // The URL of the primary page the user triggered the AtMemory search on.
+  const GURL url_;
+
+  // The title of the primary page the user triggered the AtMemory search on.
+  const std::u16string title_;
+
+  // Identifiers of the field that the user triggered AtMemory on.
+  const FieldGlobalId field_id_;
+  const FormSignature form_signature_;
+  const FieldSignature field_signature_;
+
   // The trigger source of the popup. It is `std::nullopt` until `OnPopupShown`
   // is called, serving as a signal that the popup was shown.
   std::optional<AutofillMetrics::AtMemoryTriggerSource> source_;
-  bool query_submitted_ = false;
-  // The pending log entry to be uploaded to MQLS for the query.
-  std::unique_ptr<optimization_guide::ModelQualityLogEntry> pending_log_entry_;
+
+  // Counts the number of queries submitted during this session.
+  size_t query_count_ = 0;
+
+  // Whether any suggestion has been accepted during the lifetime of `this`.
+  bool suggestion_accepted_in_session_ = false;
+
+  // Whether any suggestion has been filled during the lifetime of `this`.
+  bool suggestion_filled_in_session_ = false;
+
   // The timer that measures the time between the query being submitted and
   // the suggestions being shown to the user. It is `std::nullopt` until
   // `OnQuerySubmitted` is called and will be reset when the query response was
@@ -142,37 +161,26 @@ class AtMemoryMetricsRecorder {
     std::optional<accessibility_annotator::MemoryDataType> accepted_data_type;
   } suggestion_acceptance_;
 
-  // Whether any suggestion has been accepted during the lifetime of `this`
-  // recorder.
-  bool suggestion_accepted_in_session_ = false;
-
-  // Counts the number of queries submitted during this session.
-  size_t query_count_ = 0;
-
-  bool was_filled_ = false;
   // The start time of the asynchronous fetch/unmask process.
   std::optional<base::TimeTicks> fetch_pii_start_time_;
+
   // The duration of the successful asynchronous fetch/unmask process.
   std::optional<base::TimeDelta> fetch_pii_duration_;
 
-  // The URL of the primary page the user triggered the @memory search on.
-  const GURL url_;
-  // The title of the primary page the user triggered the @memory search on.
-  const std::u16string title_;
+  // Members related to UKM:
 
-  // The form and field signature of the form the user triggered the @memory search on, or
-  // 0 if no form was involved.
-  const FormSignature form_signature_;
-  const FieldSignature field_signature_;
+  const raw_ptr<ukm::UkmRecorder> ukm_recorder_;
+  const ukm::SourceId ukm_source_id_;
 
-  // The uploader service used to log metrics to MQLS. Not owned. Guaranteed to
-  // outlive `this`.
-  raw_ptr<optimization_guide::ModelQualityLogsUploaderService>
+  // Members related to MQLS:
+
+  // The uploader service used to log metrics to MQLS. Guaranteed to outlive
+  // `this`.
+  const raw_ptr<optimization_guide::ModelQualityLogsUploaderService>
       uploader_service_;
 
-  raw_ptr<ukm::UkmRecorder> ukm_recorder_;
-  const ukm::SourceId ukm_source_id_;
-  const FieldGlobalId field_id_;
+  // The pending log entry to be uploaded to MQLS for the query.
+  std::unique_ptr<optimization_guide::ModelQualityLogEntry> pending_log_entry_;
 };
 
 }  // namespace autofill

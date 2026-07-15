@@ -61,12 +61,12 @@ AtMemoryMetricsRecorder::AtMemoryMetricsRecorder(
     : session_id_token_(base::Token::CreateRandom()),
       url_(std::move(url)),
       title_(title),
+      field_id_(field_id),
       form_signature_(form_signature),
       field_signature_(field_signature),
-      uploader_service_(uploader_service),
       ukm_recorder_(ukm_recorder),
       ukm_source_id_(ukm_source_id),
-      field_id_(field_id) {}
+      uploader_service_(uploader_service) {}
 
 AtMemoryMetricsRecorder::~AtMemoryMetricsRecorder() {
   // Only log summary metrics if the popup was successfully shown.
@@ -78,13 +78,13 @@ AtMemoryMetricsRecorder::~AtMemoryMetricsRecorder() {
   }
 
   base::UmaHistogramBoolean("Autofill.AtMemory.QuerySubmitted",
-                            query_submitted_);
+                            query_count_ > 0);
   MaybeLogSuggestionAccepted();
   base::UmaHistogramBoolean("Autofill.AtMemory.SuggestionAcceptedInSession",
                             suggestion_accepted_in_session_);
   if (suggestion_acceptance_.accepted_data_type.has_value()) {
     base::UmaHistogramBoolean("Autofill.AtMemory.SuggestionFilled",
-                              was_filled_);
+                              suggestion_filled_in_session_);
     if (fetch_pii_duration_) {
       base::UmaHistogramTimes("Autofill.AtMemory.Funnel.TimeToFetchUnmasked",
                               *fetch_pii_duration_);
@@ -97,10 +97,10 @@ AtMemoryMetricsRecorder::~AtMemoryMetricsRecorder() {
             autofill_metrics::FieldGlobalIdToHash64Bit(field_id_))
         .SetFieldSignature(HashFieldSignature(field_signature_))
         .SetFormSignature(HashFormSignature(form_signature_))
-        .SetQuerySubmitted(query_submitted_)
+        .SetQuerySubmitted(query_count_ > 0)
         .SetSearchBarDisplayed(std::to_underlying(*source_))
         .SetSuggestionAccepted(suggestion_accepted_in_session_)
-        .SetSuggestionFilled(was_filled_)
+        .SetSuggestionFilled(suggestion_filled_in_session_)
         .SetUiSessionId(session_id_token_.low())
         .Record(ukm_recorder_);
   }
@@ -187,8 +187,6 @@ void AtMemoryMetricsRecorder::OnQuerySubmitted(std::u16string_view query) {
     // Rely on log entry destructor to upload the log entry, so this will flush
     // when a new query comes in or the funnel metrics object gets destroyed.
   }
-
-  query_submitted_ = true;
 }
 
 void AtMemoryMetricsRecorder::OnSuggestionAccepted(
@@ -287,7 +285,7 @@ void AtMemoryMetricsRecorder::OnFetchPiiCompleted() {
 }
 
 void AtMemoryMetricsRecorder::MarkFilled() {
-  was_filled_ = true;
+  suggestion_filled_in_session_ = true;
 }
 
 void AtMemoryMetricsRecorder::MaybeLogSuggestionAccepted() {
