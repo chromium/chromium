@@ -30,7 +30,7 @@ import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler.AppMenuItemType;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
@@ -48,7 +48,7 @@ import java.util.List;
 /** Render tests for {@link AppMenuItemViewBinder}. */
 @RunWith(ParameterizedRunner.class)
 // TODO: Add new tests when the flag is enabled.
-@DisableFeatures({ChromeFeatureList.ANDROID_THEME_MODULE})
+@EnableFeatures({ChromeFeatureList.ANDROID_THEME_MODULE})
 @ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 public class AppMenuItemViewBinderRenderTest {
     @ParameterAnnotations.ClassParameter
@@ -67,7 +67,7 @@ public class AppMenuItemViewBinderRenderTest {
     public ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
                     .setBugComponent(ChromeRenderTestRule.Component.UI_BROWSER_MOBILE_APP_MENU)
-                    .setRevision(1)
+                    .setRevision(2)
                     .build();
 
     private static Activity sActivity;

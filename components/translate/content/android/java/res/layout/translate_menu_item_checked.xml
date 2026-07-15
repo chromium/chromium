@@ -15,7 +15,7 @@ found in the LICENSE file.
     tools:ignore="UnusedResources">
 
     <LinearLayout
-        style="@style/AppMenuItem"
+        style="@style/OverflowMenuItem"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         tools:ignore="UseCompoundDrawables">
