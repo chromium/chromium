@@ -116,18 +116,6 @@ try_.builder(
 )
 
 try_.builder(
-    name = "mac-osxbeta-rel",
-    mirrors = [
-        "ci/mac-osxbeta-rel",
-    ],
-    gn_args = "ci/mac-osxbeta-rel",
-    builderless = False,
-    os = os.MAC_BETA,
-    cpu = cpu.ARM64,
-    siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
-)
-
-try_.builder(
     name = "mac-intel-on-arm64-rel",
     mirrors = [
         "ci/mac-intel-on-arm64-rel",

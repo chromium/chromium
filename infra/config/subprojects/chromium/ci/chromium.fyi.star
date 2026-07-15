@@ -1065,59 +1065,6 @@ fyi_ios_builder(
 )
 
 ci.builder(
-    name = "mac-osxbeta-rel",
-    builder_spec = builder_config.builder_spec(
-        gclient_config = builder_config.gclient_config(
-            config = "chromium",
-            apply_configs = [
-                # This is necessary due to this builder running the
-                # telemetry_perf_unittests suite.
-                "chromium_with_telemetry_dependencies",
-            ],
-        ),
-        chromium_config = builder_config.chromium_config(
-            config = "chromium",
-            apply_configs = [
-                "mb",
-            ],
-            build_config = builder_config.build_config.DEBUG,
-            target_bits = 64,
-            target_platform = builder_config.target_platform.MAC,
-        ),
-    ),
-    gn_args = gn_args.config(
-        configs = [
-            "gpu_tests",
-            "debug",
-            "no_symbols",
-            "dcheck_always_on",
-            "static",
-            "remoteexec",
-            "mac",
-            "x64",
-        ],
-    ),
-    targets = targets.bundle(
-        targets = [
-            "mac26_x86_tests",
-        ],
-        mixins = [
-            "limited_capacity_bot",
-            "mac_beta_x64",
-        ],
-    ),
-    builderless = False,
-    cores = None,
-    os = os.MAC_BETA,
-    cpu = cpu.ARM64,
-    console_view_entry = consoles.console_view_entry(
-        category = "mac",
-        short_name = "beta",
-    ),
-    main_console_view = None,
-)
-
-ci.builder(
     name = "linux-headless-shell-rel",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(config = "chromium"),

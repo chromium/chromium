@@ -64,7 +64,6 @@ ci/mac-code-coverage
 ci/mac-fieldtrial-tester
 ci/mac-intel-on-arm64-rel
 ci/mac-lsan-fyi-rel
-ci/mac-osxbeta-rel
 ci/mac-perfetto-rel
 ci/mac-ubsan-fyi-rel
 ci/metadata-exporter
@@ -235,7 +234,6 @@ try/mac-fieldtrial-tester
 try/mac-intel-on-arm64-rel
 try/mac-lsan-fyi-rel
 try/mac-official
-try/mac-osxbeta-rel
 try/mac-perfetto-rel
 try/mac-rel
 try/mac-rel-cft
