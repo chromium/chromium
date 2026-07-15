@@ -82,20 +82,19 @@ class DefaultBrowserController {
   void OnDismissed();
 
  private:
-  void OnSetterExecutionComplete(DefaultBrowserState default_browser_state);
+  void OnSetterExecutionComplete(
+      DefaultBrowserControllerCompletionCallback completion_callback,
+      base::TimeTicks setter_execution_start_time,
+      DefaultBrowserState default_browser_state);
 
   void IncrementShownMetric();
   void RecordInteractionMetric(DefaultBrowserInteractionType interaction);
   void RecordResultMetric(bool success);
 
-  // Stores the callback that gets triggered when setter completes execution.
-  DefaultBrowserControllerCompletionCallback completion_callback_;
   std::unique_ptr<DefaultBrowserSetter> setter_;
 
   // Stores the UI entrypoint type that requested this controller.
   const DefaultBrowserEntrypointType ui_entrypoint_;
-
-  base::TimeTicks setter_execution_start_time_;
 
   base::WeakPtrFactory<DefaultBrowserController> weak_ptr_factory_{this};
 };

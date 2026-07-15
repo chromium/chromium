@@ -35,11 +35,9 @@ class ShellIntegrationDefaultBrowserSetter : public DefaultBrowserSetter {
                const ExecuteParams& params) override;
 
  private:
-  void OnComplete(DefaultBrowserState default_browser_state);
+  void OnComplete(DefaultBrowserSetterCompletionCallback on_complete,
+                  DefaultBrowserState default_browser_state);
 
-  // Stores the callback which will be executed once the worker has finished
-  // executing.
-  DefaultBrowserSetterCompletionCallback on_complete_callback_;
   // Worker instance internally decides which method to use for setting the
   // default browser. Resets upon reporting completion.
   scoped_refptr<shell_integration::DefaultBrowserWorker> worker_;

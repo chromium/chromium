@@ -25,4 +25,26 @@ TEST(ShellIntegrationDefaultBrowserSetterTest, Execute) {
   EXPECT_LT(future.Get(), DefaultBrowserState::NUM_DEFAULT_STATES);
 }
 
+// Checks that there is no crash when Execute is called second time before the
+// first worker have finished.
+TEST(ShellIntegrationDefaultBrowserSetterTest, ConcurrentExecuteCompletesBoth) {
+  content::BrowserTaskEnvironment task_environment_;
+  shell_integration::DefaultBrowserWorker::DisableSetAsDefaultForTesting();
+
+  ShellIntegrationDefaultBrowserSetter setter;
+  base::test::TestFuture<DefaultBrowserState> first_future;
+  base::test::TestFuture<DefaultBrowserState> second_future;
+
+  DefaultBrowserSetter::ExecuteParams params;
+  setter.Execute(first_future.GetCallback(), params);
+  setter.Execute(second_future.GetCallback(), params);
+
+  EXPECT_TRUE(first_future.Wait())
+      << "First operation's callback must be invoked";
+  EXPECT_TRUE(second_future.Wait())
+      << "Second operation's callback must be invoked";
+  EXPECT_LT(first_future.Get(), DefaultBrowserState::NUM_DEFAULT_STATES);
+  EXPECT_LT(second_future.Get(), DefaultBrowserState::NUM_DEFAULT_STATES);
+}
+
 }  // namespace default_browser

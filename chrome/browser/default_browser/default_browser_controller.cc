@@ -98,12 +98,10 @@ void DefaultBrowserController::OnAccepted(
     const DefaultBrowserSetter::ExecuteParams& params) {
   RecordInteractionMetric(DefaultBrowserInteractionType::kAccepted);
 
-  setter_execution_start_time_ = base::TimeTicks::Now();
-
-  completion_callback_ = std::move(completion_callback);
   setter_->Execute(
       base::BindOnce(&DefaultBrowserController::OnSetterExecutionComplete,
-                     weak_ptr_factory_.GetWeakPtr()),
+                     weak_ptr_factory_.GetWeakPtr(),
+                     std::move(completion_callback), base::TimeTicks::Now()),
       std::move(params));
 }
 
@@ -116,6 +114,8 @@ void DefaultBrowserController::OnDismissed() {
 }
 
 void DefaultBrowserController::OnSetterExecutionComplete(
+    DefaultBrowserControllerCompletionCallback completion_callback,
+    base::TimeTicks setter_execution_start_time,
     DefaultBrowserState default_browser_state) {
   bool success = default_browser_state == DefaultBrowserState::IS_DEFAULT;
   RecordResultMetric(success);
@@ -125,7 +125,7 @@ void DefaultBrowserController::OnSetterExecutionComplete(
         GetSetterHistogramName(GetSetterType(), "SuccessDuration");
     base::UmaHistogramLongTimes(
         duration_histogram_name,
-        base::TimeTicks::Now() - setter_execution_start_time_);
+        base::TimeTicks::Now() - setter_execution_start_time);
 
     BrowserWindowInterface* browser =
         GlobalBrowserCollection::GetInstance()->GetLastActiveBrowser();
@@ -157,7 +157,7 @@ void DefaultBrowserController::OnSetterExecutionComplete(
     manager->TrackTimeAfterSetterFailure(ui_entrypoint_, GetSetterType());
   }
 
-  std::move(completion_callback_).Run(default_browser_state);
+  std::move(completion_callback).Run(default_browser_state);
 }
 
 void DefaultBrowserController::IncrementShownMetric() {

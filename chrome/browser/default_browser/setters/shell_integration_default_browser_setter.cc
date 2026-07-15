@@ -24,18 +24,18 @@ DefaultBrowserSetterType ShellIntegrationDefaultBrowserSetter::GetType() const {
 void ShellIntegrationDefaultBrowserSetter::Execute(
     DefaultBrowserSetterCompletionCallback on_complete,
     const ExecuteParams& /*params*/) {
-  on_complete_callback_ = std::move(on_complete);
   worker_ = base::MakeRefCounted<shell_integration::DefaultBrowserWorker>();
 
   worker_->StartSetAsDefault(
       base::BindOnce(&ShellIntegrationDefaultBrowserSetter::OnComplete,
-                     weak_ptr_factory_.GetWeakPtr()));
+                     weak_ptr_factory_.GetWeakPtr(), std::move(on_complete)));
 }
 
 void ShellIntegrationDefaultBrowserSetter::OnComplete(
+    DefaultBrowserSetterCompletionCallback on_complete,
     DefaultBrowserState default_browser_state) {
   worker_.reset();
-  std::move(on_complete_callback_).Run(default_browser_state);
+  std::move(on_complete).Run(default_browser_state);
 }
 
 }  // namespace default_browser

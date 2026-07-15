@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <utility>
+#include <vector>
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
@@ -133,6 +134,32 @@ TEST_F(DefaultBrowserControllerTest, OnAcceptedFailure) {
 
   histogram_tester.ExpectTotalCount(
       "DefaultBrowser.ShellIntegration.SuccessDuration", 0);
+}
+
+// Checks that there is no crash when OnAccepted is called second time before
+// the first execution have finished.
+TEST_F(DefaultBrowserControllerTest, ConcurrentOnAcceptedCompletesBoth) {
+  base::test::TestFuture<DefaultBrowserState> first_future;
+  base::test::TestFuture<DefaultBrowserState> second_future;
+
+  std::vector<DefaultBrowserSetterCompletionCallback> captured_callbacks;
+  EXPECT_CALL(*setter_, Execute(testing::_, testing::_))
+      .Times(2)
+      .WillRepeatedly(
+          [&captured_callbacks](DefaultBrowserSetterCompletionCallback cb,
+                                const DefaultBrowserSetter::ExecuteParams&) {
+            captured_callbacks.push_back(std::move(cb));
+          });
+
+  controller_->OnAccepted(first_future.GetCallback());
+  controller_->OnAccepted(second_future.GetCallback());
+
+  ASSERT_EQ(captured_callbacks.size(), 2u);
+  std::move(captured_callbacks[0]).Run(DefaultBrowserState::IS_DEFAULT);
+  std::move(captured_callbacks[1]).Run(DefaultBrowserState::NOT_DEFAULT);
+
+  EXPECT_EQ(first_future.Get(), DefaultBrowserState::IS_DEFAULT);
+  EXPECT_EQ(second_future.Get(), DefaultBrowserState::NOT_DEFAULT);
 }
 
 }  // namespace default_browser
