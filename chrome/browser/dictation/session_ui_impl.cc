@@ -156,8 +156,14 @@ void SessionUiImpl::OnTabWillDeactivate(tabs::TabInterface* tab) {
             if (self && tab_weak && !tab_weak->IsActivated()) {
               tab_weak->GetTabFeatures()->tab_dialog_manager()->CloseDialog();
               self->controller_->FinalizeAndShutdown();
-              // TODO(b/529137727): Show a toast that the dictation
-              // was ended.
+              BrowserWindowInterface* const window =
+                  tab_weak->GetBrowserWindowInterface();
+              CHECK(window);
+              ToastController* const toast_controller =
+                  window->GetFeatures().toast_controller();
+              CHECK(toast_controller);
+              toast_controller->MaybeShowToast(
+                  ToastParams(ToastId::kDictationStopped));
             }
           },
           weak_ptr_factory_.GetWeakPtr(), tab->GetWeakPtr()));

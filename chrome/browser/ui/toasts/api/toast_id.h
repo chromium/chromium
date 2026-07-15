@@ -67,7 +67,8 @@ enum class ToastId {
   kTabStripSwitchDelayedVertical = 44,
   kAutofillAiPreFetchErrorMessage = 45,
   kDictationError = 48,
-  kMaxValue = kDictationError,
+  kDictationStopped = 49,
+  kMaxValue = kDictationStopped,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/toasts/enums.xml:ToastId)
 
