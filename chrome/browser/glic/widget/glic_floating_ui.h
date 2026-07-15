@@ -10,7 +10,7 @@
 #include "chrome/browser/glic/common/local_hotkey_manager.h"
 #include "chrome/browser/glic/common/panel_focus_dependent_hotkey_manager.h"
 #include "chrome/browser/glic/common/panel_visibility_dependent_hotkey_manager.h"
-#include "chrome/browser/glic/host/context/glic_screenshot_capturer.h"
+#include "chrome/browser/glic/host/context/glic_screenshot_capturer_impl.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/host/host.h"
 #include "chrome/browser/glic/service/glic_ui_embedder.h"
@@ -162,7 +162,7 @@ class GlicFloatingUi : public GlicUiEmbedder,
   raw_ref<GlicUiEmbedder::Delegate> delegate_;
   raw_ref<GlicInstanceMetrics> instance_metrics_;
 
-  std::unique_ptr<GlicScreenshotCapturer> screenshot_capturer_;
+  std::unique_ptr<GlicScreenshotCapturerImpl> screenshot_capturer_;
 
   tabs::TabHandle source_tab_;
   base::CallbackListSubscription source_tab_destruction_subscription_;

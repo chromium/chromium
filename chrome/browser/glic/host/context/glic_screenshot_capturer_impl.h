@@ -1,9 +1,9 @@
-// Copyright 2025 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_GLIC_HOST_CONTEXT_GLIC_SCREENSHOT_CAPTURER_H_
-#define CHROME_BROWSER_GLIC_HOST_CONTEXT_GLIC_SCREENSHOT_CAPTURER_H_
+#ifndef CHROME_BROWSER_GLIC_HOST_CONTEXT_GLIC_SCREENSHOT_CAPTURER_IMPL_H_
+#define CHROME_BROWSER_GLIC_HOST_CONTEXT_GLIC_SCREENSHOT_CAPTURER_IMPL_H_
 
 #include <memory>
 #include <string>
@@ -19,22 +19,18 @@ class DesktopMediaPickerController;
 
 namespace glic {
 
-class GlicScreenshotCapturer : public webrtc::DesktopCapturer::Callback {
+class GlicScreenshotCapturerImpl : public webrtc::DesktopCapturer::Callback {
  public:
-  GlicScreenshotCapturer();
-  GlicScreenshotCapturer(const GlicScreenshotCapturer&) = delete;
-  GlicScreenshotCapturer& operator=(const GlicScreenshotCapturer&) = delete;
-  ~GlicScreenshotCapturer() override;
+  GlicScreenshotCapturerImpl();
+  GlicScreenshotCapturerImpl(const GlicScreenshotCapturerImpl&) = delete;
+  GlicScreenshotCapturerImpl& operator=(const GlicScreenshotCapturerImpl&) =
+      delete;
+  ~GlicScreenshotCapturerImpl() override;
 
-  // Called by GlickKeyedService to initiate a screenshot capture. Displays
-  // Chrome screen picker UI for user to choose from and then runs `callback`
-  // on completion to return the screenshot data. Anchors picker to
-  // `parent_window`.
+  // GlicScreenshotCapturer:
   void CaptureScreenshot(
       gfx::NativeWindow parent_window,
       glic::mojom::WebClientHandler::CaptureScreenshotCallback callback);
-  // Called to synchronously destroy the screen picker dialog. Used when client
-  // panel is closed before the screen picker flow completes.
   void CloseScreenPicker();
 
   // Exposes the internal ConvertFrameToJpeg() function to unit tests.
@@ -61,9 +57,9 @@ class GlicScreenshotCapturer : public webrtc::DesktopCapturer::Callback {
   webrtc::DesktopSize frame_size_;
   std::unique_ptr<DesktopMediaPickerController> picker_controller_;
   std::unique_ptr<webrtc::DesktopCapturer> desktop_capturer_;
-  base::WeakPtrFactory<GlicScreenshotCapturer> weak_ptr_factory_{this};
+  base::WeakPtrFactory<GlicScreenshotCapturerImpl> weak_ptr_factory_{this};
 };
 
 }  // namespace glic
 
-#endif  // CHROME_BROWSER_GLIC_HOST_CONTEXT_GLIC_SCREENSHOT_CAPTURER_H_
+#endif  // CHROME_BROWSER_GLIC_HOST_CONTEXT_GLIC_SCREENSHOT_CAPTURER_IMPL_H_

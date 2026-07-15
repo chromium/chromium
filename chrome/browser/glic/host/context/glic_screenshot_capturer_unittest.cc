@@ -2,13 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/glic/host/context/glic_screenshot_capturer.h"
-
 #include <utility>
 
 #include "base/compiler_specific.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
+#include "chrome/browser/glic/host/context/glic_screenshot_capturer_impl.h"
 #include "chrome/common/chrome_paths.h"
 #include "content/public/browser/desktop_capture.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -35,7 +34,8 @@ TEST(GlicScreenshotCapturerTest, MANUAL_ConvertFrameToJpeg) {
   frame->mutable_updated_region()->SetRect(webrtc::DesktopRect::MakeSize(size));
 
   std::vector<uint8_t> jpeg_data =
-      GlicScreenshotCapturer::ConvertFrameToJpegForTesting(std::move(frame));
+      GlicScreenshotCapturerImpl::ConvertFrameToJpegForTesting(
+          std::move(frame));
   EXPECT_FALSE(jpeg_data.empty());
 }
 

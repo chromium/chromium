@@ -12,7 +12,7 @@
 #include "chrome/browser/glic/common/local_hotkey_manager.h"
 #include "chrome/browser/glic/common/panel_focus_dependent_hotkey_manager.h"
 #include "chrome/browser/glic/common/panel_visibility_dependent_hotkey_manager.h"
-#include "chrome/browser/glic/host/context/glic_screenshot_capturer.h"
+#include "chrome/browser/glic/host/context/glic_screenshot_capturer_impl.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/host/host.h"
 #include "chrome/browser/glic/public/glic_side_panel_coordinator.h"
@@ -116,7 +116,7 @@ class GlicSidePanelUi
   base::CallbackListSubscription activation_subscription_;
   base::CallbackListSubscription deactivation_subscription_;
 
-  std::unique_ptr<GlicScreenshotCapturer> screenshot_capturer_;
+  std::unique_ptr<GlicScreenshotCapturerImpl> screenshot_capturer_;
 
   base::WeakPtrFactory<GlicSidePanelUi> weak_ptr_factory_{this};
 };

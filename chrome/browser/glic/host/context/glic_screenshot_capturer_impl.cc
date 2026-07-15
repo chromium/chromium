@@ -1,8 +1,8 @@
-// Copyright 2025 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/glic/host/context/glic_screenshot_capturer.h"
+#include "chrome/browser/glic/host/context/glic_screenshot_capturer_impl.h"
 
 #include <memory>
 #include <utility>
@@ -63,15 +63,15 @@ std::vector<uint8_t> ConvertFrameToJpeg(
 
 }  // namespace
 
-GlicScreenshotCapturer::GlicScreenshotCapturer() = default;
+GlicScreenshotCapturerImpl::GlicScreenshotCapturerImpl() = default;
 
-GlicScreenshotCapturer::~GlicScreenshotCapturer() {
+GlicScreenshotCapturerImpl::~GlicScreenshotCapturerImpl() {
   if (capture_callback_) {
     SignalError(glic::mojom::CaptureScreenshotErrorReason::kUnknown);
   }
 }
 
-void GlicScreenshotCapturer::CaptureScreenshot(
+void GlicScreenshotCapturerImpl::CaptureScreenshot(
     gfx::NativeWindow parent_window,
     glic::mojom::WebClientHandler::CaptureScreenshotCallback callback) {
   if (capture_callback_) {
@@ -100,13 +100,13 @@ void GlicScreenshotCapturer::CaptureScreenshot(
   picker_params.includable_web_contents_filter =
       base::BindRepeating([](content::WebContents* wc) { return false; });
   DesktopMediaPickerController::DoneCallback source_selected_callback =
-      base::BindOnce(&GlicScreenshotCapturer::OnSourceSelected,
+      base::BindOnce(&GlicScreenshotCapturerImpl::OnSourceSelected,
                      weak_ptr_factory_.GetWeakPtr());
   picker_controller_->Show(picker_params, {DesktopMediaList::Type::kScreen},
                            std::move(source_selected_callback));
 }
 
-void GlicScreenshotCapturer::CloseScreenPicker() {
+void GlicScreenshotCapturerImpl::CloseScreenPicker() {
   picker_controller_.reset();
   if (capture_callback_) {
     SignalError(glic::mojom::CaptureScreenshotErrorReason::
@@ -114,8 +114,8 @@ void GlicScreenshotCapturer::CloseScreenPicker() {
   }
 }
 
-void GlicScreenshotCapturer::OnSourceSelected(const std::string& err,
-                                              content::DesktopMediaID id) {
+void GlicScreenshotCapturerImpl::OnSourceSelected(const std::string& err,
+                                                  content::DesktopMediaID id) {
   picker_controller_ = nullptr;
   if (!err.empty()) {
     DVLOG(1) << "Unknown error while selecting source: " << err;
@@ -132,7 +132,7 @@ void GlicScreenshotCapturer::OnSourceSelected(const std::string& err,
   // the screen picker entirely on Windows.
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
-      base::BindOnce(&GlicScreenshotCapturer::OnCaptureStarted,
+      base::BindOnce(&GlicScreenshotCapturerImpl::OnCaptureStarted,
                      weak_ptr_factory_.GetWeakPtr(), id),
       base::Milliseconds(500));
 #else
@@ -140,7 +140,7 @@ void GlicScreenshotCapturer::OnSourceSelected(const std::string& err,
 #endif
 }
 
-void GlicScreenshotCapturer::OnCaptureStarted(content::DesktopMediaID id) {
+void GlicScreenshotCapturerImpl::OnCaptureStarted(content::DesktopMediaID id) {
   desktop_capturer_ = content::desktop_capture::CreateScreenCapturer(
       content::desktop_capture::CreateDesktopCaptureOptions(),
       /*for_snapshot=*/true);
@@ -152,7 +152,7 @@ void GlicScreenshotCapturer::OnCaptureStarted(content::DesktopMediaID id) {
   desktop_capturer_->CaptureFrame();
 }
 
-void GlicScreenshotCapturer::OnCaptureResult(
+void GlicScreenshotCapturerImpl::OnCaptureResult(
     webrtc::DesktopCapturer::Result result,
     std::unique_ptr<webrtc::DesktopFrame> frame) {
   if (!frame) {
@@ -163,11 +163,11 @@ void GlicScreenshotCapturer::OnCaptureResult(
   // Encode frame to JPEG off thread.
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, base::BindOnce(&ConvertFrameToJpeg, std::move(frame)),
-      base::BindOnce(&GlicScreenshotCapturer::SignalScreenshotResult,
+      base::BindOnce(&GlicScreenshotCapturerImpl::SignalScreenshotResult,
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-void GlicScreenshotCapturer::SignalScreenshotResult(
+void GlicScreenshotCapturerImpl::SignalScreenshotResult(
     std::vector<uint8_t> jpeg_data) {
   if (jpeg_data.empty()) {
     DVLOG(1) << "Could not convert frame to JPEG";
@@ -185,14 +185,14 @@ void GlicScreenshotCapturer::SignalScreenshotResult(
           mojom::CaptureScreenshotResult::NewScreenshot(std::move(screenshot)));
 }
 
-void GlicScreenshotCapturer::SignalError(
+void GlicScreenshotCapturerImpl::SignalError(
     glic::mojom::CaptureScreenshotErrorReason error_reason) {
   std::move(capture_callback_)
       .Run(mojom::CaptureScreenshotResult::NewErrorReason(error_reason));
 }
 
 // static
-std::vector<uint8_t> GlicScreenshotCapturer::ConvertFrameToJpegForTesting(
+std::vector<uint8_t> GlicScreenshotCapturerImpl::ConvertFrameToJpegForTesting(
     std::unique_ptr<webrtc::DesktopFrame> frame) {
   return ConvertFrameToJpeg(std::move(frame));
 }
