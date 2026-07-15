@@ -1265,8 +1265,8 @@ VulkanImageRepresentation::ScopedAccess::ScopedAccess(
     VkSemaphore end_semaphore)
     : ScopedAccessBase(representation, access_mode),
       is_read_only_(access_mode == AccessMode::kRead),
-      begin_semaphores_(begin_semaphores),
-      end_semaphore_(end_semaphore) {}
+      begin_semaphores_(std::move(begin_semaphores)),
+      end_semaphore_(std::move(end_semaphore)) {}
 
 VulkanImageRepresentation::ScopedAccess::~ScopedAccess() {
   representation()->EndAccess(is_read_only_, end_semaphore_);
@@ -1290,17 +1290,26 @@ VulkanImageRepresentation::BeginScopedAccess(
     AccessMode access_mode,
     std::vector<VkSemaphore>& begin_semaphores,
     std::vector<VkSemaphore>& end_semaphores) {
-  if (!BeginAccess(access_mode, begin_semaphores, end_semaphores)) {
+  std::vector<VkSemaphore> local_begin_semaphores;
+  std::vector<VkSemaphore> local_end_semaphores;
+  if (!BeginAccess(access_mode, local_begin_semaphores, local_end_semaphores)) {
     return nullptr;
   }
+  // Append all semaphores from local_* to the passed vectors.
+  begin_semaphores.insert(begin_semaphores.end(),
+                          local_begin_semaphores.begin(),
+                          local_begin_semaphores.end());
+  end_semaphores.insert(end_semaphores.end(), local_end_semaphores.begin(),
+                        local_end_semaphores.end());
 
   VkSemaphore end_semaphore = VK_NULL_HANDLE;
-  if (!end_semaphores.empty()) {
-    end_semaphore = end_semaphores.back();
+  if (!local_end_semaphores.empty()) {
+    end_semaphore = local_end_semaphores.back();
   }
 
-  return std::make_unique<ScopedAccess>(this, access_mode, begin_semaphores,
-                                        end_semaphore);
+  return std::make_unique<ScopedAccess>(this, access_mode,
+                                        std::move(local_begin_semaphores),
+                                        std::move(end_semaphore));
 }
 #endif
 
