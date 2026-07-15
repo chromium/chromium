@@ -1546,13 +1546,6 @@ static_library("ui") {
       "chrome_pages.cc",
       "intent_picker_tab_helper.cc",
       "intent_picker_tab_helper.h",
-      "sad_tab.cc",
-      "sad_tab.h",
-      "sad_tab_controller.cc",
-      "sad_tab_controller.h",
-      "sad_tab_helper.cc",
-      "sad_tab_helper.h",
-      "sad_tab_types.h",
       "scoped_tabbed_browser_displayer.cc",
       "scoped_tabbed_browser_displayer.h",
       "singleton_tabs.cc",
@@ -4360,8 +4353,6 @@ static_library("ui") {
       "views/profiles/avatar_toolbar_button_state_manager.cc",
       "views/profiles/avatar_toolbar_button_state_manager.h",
       "views/profiles/avatar_toolbar_button_types.h",
-      "views/sad_tab_view.cc",
-      "views/sad_tab_view.h",
       "views/session_crashed_bubble_view.cc",
       "views/session_crashed_bubble_view.h",
       "views/simple_web_view_dialog.cc",
@@ -4628,6 +4619,8 @@ static_library("ui") {
       "//chrome/browser/preloading/prerender",
       "//chrome/browser/profiles/keep_alive",
       "//chrome/browser/sharing/click_to_call",
+      "//chrome/browser/ui:sad_tab",
+      "//chrome/browser/ui:sad_tab_impl",
       "//chrome/browser/ui/actions",
       "//chrome/browser/ui/actions:actions_headers",
       "//chrome/browser/ui/actions:actions_util",
@@ -4812,6 +4805,11 @@ static_library("ui") {
 
       # c/b/ui/tab_ui_helper.h
       "//chrome/browser/ui/tabs/tab_strip_api/tab_strip_model_impl/converters",
+
+      # TODO(crbug.com/353332589): Remove this circular dependency when the
+      # following headers get componentized:
+      # c/b/ui/views/frame/browser_view.h, contents_web_view.h
+      "//chrome/browser/ui:sad_tab_impl",
 
       # TODO(crbug.com/353332589): Remove this circular dependency when the
       # following headers get componentized:
@@ -5775,6 +5773,122 @@ static_library("browser_element_identifiers") {
   ]
   deps = [ "//ui/base" ]
   public_deps = [ "//ui/base/interaction" ]
+}
+
+if (toolkit_views) {
+  source_set("sad_tab") {
+    public = [
+      "sad_tab.h",
+      "sad_tab_controller.h",
+      "sad_tab_helper.h",
+      "sad_tab_types.h",
+      "views/sad_tab_view.h",
+    ]
+
+    public_deps = [
+      "//base",
+      "//content/public/browser",
+      "//ui/base/metadata",
+      "//ui/views",
+    ]
+  }
+
+  source_set("sad_tab_impl") {
+    sources = [
+      "sad_tab.cc",
+      "sad_tab_controller.cc",
+      "sad_tab_helper.cc",
+      "views/sad_tab_view.cc",
+    ]
+
+    deps = [
+      ":sad_tab",
+      "//chrome/app:generated_resources",
+      "//chrome/app/vector_icons",
+      "//chrome/browser/feedback",
+      "//chrome/browser/lifetime",
+      "//chrome/browser/memory",
+      "//chrome/browser/net",
+      "//chrome/browser/preloading/prefetch/no_state_prefetch",
+      "//chrome/browser/resource_coordinator",
+      "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/tab_contents",
+      "//chrome/browser/ui/tabs:tab_strip",
+      "//chrome/browser/ui/views:layout_provider",
+      "//chrome/common",
+      "//components/strings:components_strings_grit",
+      "//components/tabs:public",
+      "//components/ui_metrics",
+      "//content/public/browser",
+      "//content/public/common",
+      "//ui/base",
+      "//ui/color",
+      "//ui/compositor",
+      "//ui/gfx",
+      "//ui/views",
+    ]
+
+    # The sad tab feature (base SadTab, its controller, the WebContents helper
+    # and the SadTabView). Public headers are free of ui:ui blockers; the
+    # implementation reaches views/frame (browser_view.h, contents_web_view.h)
+    # through browser_public_dependencies, with an allow_circular_includes_from
+    # entry on //chrome/browser/ui:ui.
+    public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+    if (is_chromeos) {
+      # sad_tab.cc / sad_tab_view.cc check kiosk mode on ChromeOS.
+      deps += [ "//chromeos/components/kiosk" ]
+    }
+  }
+
+  source_set("sad_tab_browser_tests") {
+    testonly = true
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+    sources = [
+      "sad_tab_helper_browsertest.cc",
+      "views/sad_tab_split_view_browsertest.cc",
+    ]
+
+    deps = [
+      ":sad_tab",
+      "//chrome/browser/preloading/prefetch/no_state_prefetch",
+      "//chrome/browser/preloading/prefetch/no_state_prefetch:test_support",
+      "//chrome/browser/ui/tabs:tab_strip",
+      "//chrome/browser/ui/views/frame",
+      "//chrome/common",
+      "//chrome/test:test_support",
+      "//components/no_state_prefetch/browser",
+      "//components/split_tabs",
+      "//content/public/browser",
+      "//content/public/common",
+      "//content/test:test_support",
+      "//ui/views",
+    ]
+  }
+
+  source_set("sad_tab_interactive_ui_tests") {
+    testonly = true
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+    sources = [ "views/sad_tab_view_interactive_uitest.cc" ]
+
+    deps = [
+      ":sad_tab",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/ui/frame",
+      "//chrome/browser/ui/tabs:tab_strip",
+      "//chrome/browser/ui/views/frame",
+      "//chrome/browser/ui/views/toolbar",
+      "//chrome/common",
+      "//chrome/test:test_support",
+      "//components/prefs",
+      "//content/public/browser",
+      "//content/public/common",
+      "//content/test:test_support",
+      "//ui/views",
+    ]
+  }
 }
 
 if (use_aura) {
