@@ -53,7 +53,9 @@ class InputOnVizBrowserTest : public RenderWidgetHostViewAndroidBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(InputOnVizBrowserTest, TransfersStateOnTouchDown) {
+// TODO(crbug.com/535296539): Disabled due to flakiness.
+IN_PROC_BROWSER_TEST_F(InputOnVizBrowserTest,
+                       DISABLED_TransfersStateOnTouchDown) {
   base::test::TestTraceProcessor ttp;
   ttp.StartTrace("input");
   RenderFrameSubmissionObserver render_frame_submission_observer(
