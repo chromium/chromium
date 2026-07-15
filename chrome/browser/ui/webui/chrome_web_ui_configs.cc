@@ -109,6 +109,7 @@
 #include "chrome/browser/ui/webui/tab_strip_internals/tab_strip_internals_ui.h"
 #endif  // BUILDFLAG(ENABLE_SESSION_SERVICE)
 #include "chrome/browser/ui/webui/indigo_internals/indigo_internals_ui.h"
+#include "chrome/browser/ui/webui/iwa_dev/iwa_dev_ui.h"
 #include "chrome/browser/ui/webui/media_router/media_router_internals_ui.h"
 #include "chrome/browser/ui/webui/multistep_filter_internals/multistep_filter_internals_ui.h"
 #if BUILDFLAG(ENABLE_WEBUI_NTP)
@@ -361,6 +362,7 @@ void RegisterChromeWebUIConfigs() {
   map.AddWebUIConfig(std::make_unique<InternalsUIConfig>());
   map.AddWebUIConfig(std::make_unique<TabStripInternalsUIConfig>());
 #endif  // BUILDFLAG(ENABLE_SESSION_SERVICE)
+  map.AddWebUIConfig(std::make_unique<IwaDevUIConfig>());
   map.AddWebUIConfig(
       std::make_unique<media_router::MediaRouterInternalsUIConfig>());
   map.AddWebUIConfig(

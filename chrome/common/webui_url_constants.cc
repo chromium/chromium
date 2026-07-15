@@ -149,6 +149,9 @@ base::span<const base::cstring_view> ChromeURLHosts() {
       kChromeUIHistoryHost,
       history_clusters_internals::kChromeUIHistoryClustersInternalsHost,
       kChromeUIInterstitialHost,
+#if !BUILDFLAG(IS_ANDROID)
+      kChromeUIIwaDevHost,
+#endif
       kChromeUILocalStateHost,
 #if !BUILDFLAG(IS_ANDROID)
       kChromeUIManagementHost,

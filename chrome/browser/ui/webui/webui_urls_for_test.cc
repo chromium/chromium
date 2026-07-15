@@ -98,6 +98,9 @@ base::span<const std::string_view> GetChromeUrlsForTest() {
       "chrome://indigo-internals",
 #endif
       "chrome://inspect",
+#if !BUILDFLAG(IS_ANDROID)
+      "chrome://iwa-dev",
+#endif
       "chrome://internals/session-service",
       "chrome://interstitials",
       "chrome://interstitials/ssl",

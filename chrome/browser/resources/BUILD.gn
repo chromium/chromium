@@ -68,6 +68,7 @@ group("resources") {
       "history:resources",
       "indigo:resources",
       "inspect:resources",
+      "iwa_dev:resources",
       "key_value_pair_viewer_shared:resources",
       "lens/overlay:resources",
       "lens/shared:resources",

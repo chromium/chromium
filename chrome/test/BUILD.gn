@@ -3766,7 +3766,10 @@ if (!is_android) {
         "../browser/ui/webui/webui_urls_for_test.cc",
         "../browser/ui/webui/webui_urls_for_test.h",
       ]
-      deps += [ "//chrome/test/data/webui:browser_tests" ]
+      deps += [
+        "//chrome/browser/ui/webui/iwa_dev",
+        "//chrome/test/data/webui:browser_tests",
+      ]
     }
     if (is_chromeos && include_js2gtest_tests) {
       deps += [

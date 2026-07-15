@@ -569,6 +569,10 @@
     "META": {"sizes": {"includes": [80],}},
     "includes": [4110],
   },
+  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/iwa_dev/resources.grd": {
+    "META": {"sizes": {"includes": [10]}},
+    "includes": [4150],
+  },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/key_value_pair_viewer_shared/resources.grd": {
    "META": {"sizes": {"includes": [10]}},
     "includes": [4160],

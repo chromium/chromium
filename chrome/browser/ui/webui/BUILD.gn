@@ -128,6 +128,7 @@ source_set("configs") {
       "//chrome/browser/ui/webui/history",
       "//chrome/browser/ui/webui/infobar_internals",
       "//chrome/browser/ui/webui/inspect",
+      "//chrome/browser/ui/webui/iwa_dev",
       "//chrome/browser/ui/webui/multistep_filter_internals",
       "//chrome/browser/ui/webui/new_tab_footer",
       "//chrome/browser/ui/webui/new_tab_page_third_party",

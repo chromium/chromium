@@ -197,6 +197,7 @@ inline constexpr char kChromeUIInternalDebugPagesDisabledURL[] =
 inline constexpr char kChromeUIInternalsHost[] = "internals";
 inline constexpr char kChromeUIInterstitialHost[] = "interstitials";
 inline constexpr char kChromeUIInterstitialURL[] = "chrome://interstitials/";
+inline constexpr char kChromeUIIwaDevHost[] = "iwa-dev";
 inline constexpr char kChromeUILocalStateHost[] = "local-state";
 inline constexpr char kChromeUILocalStateURL[] = "chrome://local-state";
 inline constexpr char kChromeUILocationInternalsHost[] = "location-internals";

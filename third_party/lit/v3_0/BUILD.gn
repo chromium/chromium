@@ -66,6 +66,7 @@ ts_library("build_ts") {
     "//chrome/browser/resources/infobar_internals:build_ts",
     "//chrome/browser/resources/inline_login:build_ts",
     "//chrome/browser/resources/intro:build_ts",
+    "//chrome/browser/resources/iwa_dev:build_ts",
     "//chrome/browser/resources/key_value_pair_viewer_shared:build_ts",
     "//chrome/browser/resources/lens/overlay:build_ts",
     "//chrome/browser/resources/lens/shared:build_ts",

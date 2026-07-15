@@ -1,0 +1,9 @@
+buganizer {
+  component_id: 1168200  # Chromium > Web App Installs > Isolated
+}
+
+buganizer_public {
+  component_id: 1457610  # UI > Browser > WebAppInstalls > Isolated
+}
+
+team_email: "iwa-team@google.com"

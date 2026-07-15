@@ -1776,6 +1776,7 @@ static_library("ui") {
       "//chrome/browser/ui/webui/feedback/report_unsafe_site:mojo_bindings",
       "//chrome/browser/ui/webui/history_clusters",
       "//chrome/browser/ui/webui/infobar_internals:mojo_bindings",
+      "//chrome/browser/ui/webui/iwa_dev",
       "//chrome/browser/ui/webui/multistep_filter_internals:mojo_bindings",
       "//chrome/browser/ui/webui/new_tab_footer:mojo_bindings",
       "//chrome/browser/ui/webui/new_tab_page:mojo_bindings",
