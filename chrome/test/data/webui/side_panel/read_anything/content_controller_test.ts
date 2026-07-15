@@ -1594,8 +1594,7 @@ suite('ContentController', () => {
 
       container.textContent = 'text';
       contentController.onRenderedTextBlocksAvailable(container);
-      readingMode.getAxMapping =
-          () => [{axNodeId: axId1, start: 0, end: 4, axNodeOffset: 0}];
+      readingMode.getAxMapping = () => [{axNodeId: axId1, start: 0, end: 4}];
 
       contentController.onRenderedTextMappingReady();
 

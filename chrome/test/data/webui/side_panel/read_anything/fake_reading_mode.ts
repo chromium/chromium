@@ -123,26 +123,6 @@ export class FakeReadingMode {
   // Returns true if the webpage corresponds to a PDF.
   isPdf: boolean = false;
 
-  // Whether Read Anything is pinned to the toolbar.
-  isReadAnythingPinned: boolean = false;
-
-  // Whether the phrase highlighting feature flag is enabled.
-  isPhraseHighlightingEnabled: boolean = false;
-
-  // If the current platform is ChromeOS Ash.
-  isChromeOsAsh: boolean = false;
-
-  // Max number of characters to display in one line of Reading mode.
-  maxLineWidth: number = 0;
-
-  // Distiled title from DOM distiller distillation.
-  htmlTitle: string = '';
-
-  axTreeAnchors: Record<string, AxTreeAnchorMetadata[]> = {};
-
-  // Whether the Google Docs load more button is visible.
-  isDocsLoadMoreButtonVisible: boolean = false;
-
   // Fonts supported by the browser's preferred language.
   supportedFonts: string[] = ['roboto'];
   allFonts: string[] = [];
@@ -270,8 +250,7 @@ export class FakeReadingMode {
 
   // Called when the main frame undergoes a same document navigation (such as
   // a fragment navigation).
-  onMainFrameSameDocumentNavigation:
-      (url: string) => void = (_url: string) => {};
+  onMainFrameSameDocumentNavigation(_url: string) {}
 
   // Called when a user tries to copy text from reading mode with keyboard
   // shortcuts.
@@ -621,6 +600,9 @@ export class FakeReadingMode {
   // Resets the granularity index.
   resetGranularityIndex() {}
 
+  // Logs the extension state.
+  logExtenstionState() {}
+
   // Called by the Read Anything app to request the presentation state.
   sendGetPresentationStateRequest() {}
 
@@ -642,61 +624,8 @@ export class FakeReadingMode {
 
   // Returns the AXTree mapping segments for the distilled block at the given
   // index. A segment links a character range within the block to its AXnode.
-  getAxMapping(_index: number): Array<
-      {axNodeId: number, start: number, end: number, axNodeOffset: number}> {
+  getAxMapping(_index: number):
+      Array<{axNodeId: number, start: number, end: number}> {
     return [];
-  }
-
-  // Called when reading mode is closed.
-  readingModeWillClose() {}
-
-  onAnchorsReadyForReadability() {}
-
-  // Reports a user selection attempt. A metric is logged if text mapping is
-  // still in progress. (One time per-navigation).
-  attemptLogEarlySelection(_fromSidePanel: boolean) {}
-
-  // Called when the Read Anything panel is scrolled all the way down.
-  onScrolledToBottom() {}
-
-  // Called by the ReadAnything app to toggle the pin state.
-  togglePinState() {}
-
-  // Sets the current presentation state.
-  onPresentationStateReceived(_presentationState: number) {}
-
-  onPinStateReceived(_pinState: boolean) {}
-
-  // Redraws links when the enabled state changes.
-  updateLinks() {}
-
-  // Redraws images when the enabled state changes.
-  updateImages() {}
-
-  // Read Aloud state should be updated if the lock screen state changes.
-  onLockScreen() {}
-
-  // Ping that a new tts engine has installed.
-  onTtsEngineInstalled() {}
-
-  // Ping that the given node will be deleted.
-  onNodeWillBeDeleted(_nodeId: number) {}
-
-  // Called to inform the web ui that an image has been downloaded for the
-  // given node id.
-  onImageDownloaded(_nodeId: number) {}
-
-  // Should be called in onImageDownloaded. This function gets the bitmap data
-  // as a byte array along with the height and width of the image so that the
-  // bitmap can be rendered to a canvas. The scale is the factor by which the
-  // width of the bitmap must scale to match the website's desired size.
-  getImageBitmap(_nodeId: number):
-      {data: Uint8ClampedArray, width: number, height: number, scale: number} {
-    return {
-      data: new Uint8ClampedArray(0),
-      width: 0,
-      height: 0,
-      scale: 0,
-    };
   }
 }
