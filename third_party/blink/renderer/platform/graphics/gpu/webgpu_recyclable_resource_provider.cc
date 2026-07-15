@@ -106,7 +106,6 @@ WebGpuRecyclableResourceProvider::WebGpuRecyclableResourceProvider(
       context_provider_wrapper_(std::move(context_provider_wrapper)) {
   CanvasMemoryDumpProvider::Instance()->RegisterClient(this);
   if (context_provider_wrapper_) {
-    context_provider_wrapper_->AddObserver(this);
     // Graphite can handle a large buffer size.
     if (context_provider_wrapper_->ContextProvider()
             .GetGpuFeatureInfo()
@@ -156,14 +155,6 @@ WebGpuRecyclableResourceProvider::WebGpuRecyclableResourceProvider(
 
 WebGpuRecyclableResourceProvider::~WebGpuRecyclableResourceProvider() {
   CanvasMemoryDumpProvider::Instance()->UnregisterClient(this);
-  if (context_provider_wrapper_) {
-    context_provider_wrapper_->RemoveObserver(this);
-  }
-}
-
-
-void WebGpuRecyclableResourceProvider::OnContextDestroyed() {
-  canvas_image_provider_.reset();
 }
 
 void WebGpuRecyclableResourceProvider::WaitSyncToken(
@@ -274,9 +265,22 @@ void WebGpuRecyclableResourceProvider::DoExternalOverdraw(
                             /*hdr_headroom=*/0.f,
                             shared_image_->mailbox().name);
 
-    auto* image_provider = GetOrCreateImageProvider();
+    cc::ImageDecodeCache* cache_f16 = nullptr;
+    if (GetSharedImageFormat() == viz::SinglePlaneFormat::kRGBA_F16) {
+      cache_f16 = context_provider_wrapper_->ContextProvider().ImageDecodeCache(
+          kRGBA_F16_SkColorType);
+    }
+
+    cc::ImageDecodeCache* cache_rgba8 =
+        context_provider_wrapper_->ContextProvider().ImageDecodeCache(
+            kN32_SkColorType);
+
+    CanvasImageProvider image_provider(
+        cache_rgba8, cache_f16, GetColorSpace(), GetSharedImageFormat(),
+        cc::PlaybackImageProvider::RasterMode::kGpu);
+
     ri->RasterCHROMIUM(
-        list.get(), image_provider, size, full_raster_rect, playback_rect,
+        list.get(), &image_provider, size, full_raster_rect, playback_rect,
         post_translate, post_scale, /*requires_clear=*/false,
         /*raster_inducing_scroll_offsets=*/nullptr, &max_op_size_hint,
         base::RepeatingCallback<void(SkCanvas*, uint32_t)>());
@@ -286,10 +290,8 @@ void WebGpuRecyclableResourceProvider::DoExternalOverdraw(
     release_sync_token_ = sync_token;
     shared_image_->UpdateDestructionSyncToken(sync_token);
 
-    if (canvas_image_provider_) {
-      canvas_image_provider_->ReleaseLockedImages();
-      canvas_image_provider_->UnbindTextureBackedImages();
-    }
+    image_provider.ReleaseLockedImages();
+    image_provider.UnbindTextureBackedImages();
   }
 }
 
@@ -387,30 +389,7 @@ gpu::SyncToken WebGpuRecyclableResourceProvider::GetSyncToken() const {
   return shared_image_ ? release_sync_token_ : gpu::SyncToken();
 }
 
-CanvasImageProvider*
-WebGpuRecyclableResourceProvider::GetOrCreateImageProvider() {
-  if (!canvas_image_provider_) {
-    if (!IsGpuContextLost()) {
-      // Create an ImageDecodeCache for half float images only if the canvas
-      // is using half float back storage.
-      cc::ImageDecodeCache* cache_f16 = nullptr;
-      if (GetSharedImageFormat() == viz::SinglePlaneFormat::kRGBA_F16) {
-        cache_f16 =
-            context_provider_wrapper_->ContextProvider().ImageDecodeCache(
-                kRGBA_F16_SkColorType);
-      }
 
-      cc::ImageDecodeCache* cache_rgba8 =
-          context_provider_wrapper_->ContextProvider().ImageDecodeCache(
-              kN32_SkColorType);
-
-      canvas_image_provider_ = std::make_unique<CanvasImageProvider>(
-          cache_rgba8, cache_f16, GetColorSpace(), GetSharedImageFormat(),
-          cc::PlaybackImageProvider::RasterMode::kGpu);
-    }
-  }
-  return canvas_image_provider_.get();
-}
 
 
 

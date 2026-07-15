@@ -49,11 +49,8 @@ class RasterInterface;
 
 namespace blink {
 
-class CanvasImageProvider;
-
-class PLATFORM_EXPORT WebGpuRecyclableResourceProvider
-    : public CanvasMemoryDumpClient,
-      public WebGraphicsContext3DProviderWrapper::DestructionObserver {
+class PLATFORM_EXPORT WebGpuRecyclableResourceProvider final
+    : public CanvasMemoryDumpClient {
  public:
   static std::unique_ptr<WebGpuRecyclableResourceProvider> Create(
       gfx::Size size,
@@ -61,7 +58,7 @@ class PLATFORM_EXPORT WebGpuRecyclableResourceProvider
       SkAlphaType alpha_type,
       const gfx::ColorSpace& color_space,
       const gfx::HDRMetadata& hdr_metadata);
-  ~WebGpuRecyclableResourceProvider() override;
+  ~WebGpuRecyclableResourceProvider();
 
   gfx::Size Size() const { return size_; }
   viz::SharedImageFormat GetSharedImageFormat() const { return format_; }
@@ -125,10 +122,7 @@ class PLATFORM_EXPORT WebGpuRecyclableResourceProvider
       base::WeakPtr<WebGraphicsContext3DProviderWrapper>);
 
   bool IsGpuContextLost() const;
-  CanvasImageProvider* GetOrCreateImageProvider();
 
-  // WebGraphicsContext3DProviderWrapper::DestructionObserver implementation.
-  void OnContextDestroyed() override;
 
   // CanvasMemoryDumpClient implementation.
   base::ByteSize EstimatedSizeInBytes() const;
@@ -154,7 +148,6 @@ class PLATFORM_EXPORT WebGpuRecyclableResourceProvider
   const gfx::ColorSpace color_space_;
   const gfx::HDRMetadata hdr_metadata_;
 
-  std::unique_ptr<CanvasImageProvider> canvas_image_provider_;
   std::unique_ptr<MemoryManagedPaintRecorder> recorder_for_external_draws_;
 
   scoped_refptr<gpu::ClientSharedImage> shared_image_;
