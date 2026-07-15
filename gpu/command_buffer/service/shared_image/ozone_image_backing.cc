@@ -550,6 +550,9 @@ bool OzoneImageBacking::UploadFromMemory(const std::vector<SkPixmap>& pixmaps) {
 
   auto representation = ProduceSkiaGanesh(
       nullptr, context_state_->memory_type_tracker(), context_state_);
+  if (!representation) {
+    return false;
+  }
   DCHECK_EQ(pixmaps.size(), representation->NumPlanesExpected());
 
   std::vector<GrBackendSemaphore> begin_semaphores;
@@ -660,6 +663,9 @@ bool OzoneImageBacking::UploadFromMemoryGraphite(
   DCHECK(context_state_->IsGraphiteDawn());
   auto representation = ProduceSkiaGraphite(
       nullptr, context_state_->memory_type_tracker(), context_state_);
+  if (!representation) {
+    return false;
+  }
   DCHECK_EQ(pixmaps.size(), representation->NumPlanesExpected());
 
   std::vector<GrBackendSemaphore> begin_semaphores;
@@ -686,9 +692,16 @@ bool OzoneImageBacking::UploadFromMemoryGraphite(
   }
 
   auto recording = context_state_->gpu_main_graphite_recorder()->snap();
+  if (!recording) {
+    LOG(ERROR) << "Graphite failed to snap recording from GPU main recorder";
+    return false;
+  }
   skgpu::graphite::InsertRecordingInfo info;
   info.fRecording = recording.get();
-  context_state_->graphite_shared_context()->insertRecording(info);
+  if (!context_state_->graphite_shared_context()->insertRecording(info)) {
+    LOG(ERROR) << "Graphite insertRecording() failed";
+    return false;
+  }
   context_state_->graphite_shared_context()->submit();
 
   if (written && !IsCleared()) {
