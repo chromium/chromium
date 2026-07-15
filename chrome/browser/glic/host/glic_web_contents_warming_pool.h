@@ -90,6 +90,17 @@ class GlicWebContentsWarmingPool {
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicReloadAfterExpiryStatus)
 
+  // LINT.IfChange(GlicWarmedContainerFate)
+  enum class WarmedContainerFate {
+    kUsed = 0,
+    kExpired = 1,
+    kDeletedOnChromeClosed = 2,
+    kCrashed = 3,
+    kDeletedOnMemoryPressure = 4,
+    kMaxValue = kDeletedOnMemoryPressure,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicWarmedContainerFate)
+
   bool HasWarmedContainerForTesting() const;
   base::OneShotTimer& GetDelayTimerForTesting() { return delay_timer_; }
   WebUIContentsContainer* GetWarmedContainerForTesting() const;

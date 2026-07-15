@@ -30,16 +30,7 @@ constexpr base::TimeDelta kDelayTooLong = base::Days(7);
 
 class GlicWebContentsWarmingPool::Metrics {
  public:
-  // LINT.IfChange(GlicWarmedContainerFate)
-  enum class WarmedContainerFate {
-    kUsed = 0,
-    kExpired = 1,
-    kDeletedOnChromeClosed = 2,
-    kCrashed = 3,
-    kDeletedOnMemoryPressure = 4,
-    kMaxValue = kDeletedOnMemoryPressure,
-  };
-  // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicWarmedContainerFate)
+  using WarmedContainerFate = GlicWebContentsWarmingPool::WarmedContainerFate;
 
   void OnContainerExpired() {
     was_expired_ = true;

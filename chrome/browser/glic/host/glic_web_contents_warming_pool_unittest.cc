@@ -75,6 +75,7 @@ class GlicWebContentsWarmingPoolTest : public testing::Test {
   using WarmingPoolStatus = GlicWebContentsWarmingPool::WarmingPoolStatus;
   using ReloadAfterExpiryStatus =
       GlicWebContentsWarmingPool::ReloadAfterExpiryStatus;
+  using WarmedContainerFate = GlicWebContentsWarmingPool::WarmedContainerFate;
 
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
@@ -318,8 +319,9 @@ TEST_F(GlicWebContentsWarmingPoolTest, Clear) {
   warming_pool.Clear(GlicWebContentsWarmingPool::ClearReason::kMemoryPressure);
   EXPECT_FALSE(warming_pool.HasWarmedContainerForTesting());
 
-  histogram_tester.ExpectUniqueSample("Glic.WarmingPool.WarmedContainerFate", 4,
-                                      1);
+  histogram_tester.ExpectUniqueSample(
+      "Glic.WarmingPool.WarmedContainerFate",
+      WarmedContainerFate::kDeletedOnMemoryPressure, 1);
 }
 
 TEST_F(GlicWebContentsWarmingPoolTest, WarmedContainerFate_Used) {
@@ -331,8 +333,8 @@ TEST_F(GlicWebContentsWarmingPoolTest, WarmedContainerFate_Used) {
   std::unique_ptr<WebUIContentsContainer> container =
       warming_pool.TakeContainer();
 
-  histogram_tester.ExpectUniqueSample("Glic.WarmingPool.WarmedContainerFate", 0,
-                                      1);
+  histogram_tester.ExpectUniqueSample("Glic.WarmingPool.WarmedContainerFate",
+                                      WarmedContainerFate::kUsed, 1);
 }
 
 TEST_F(GlicWebContentsWarmingPoolTest, WarmedContainerFate_Expired) {
@@ -355,8 +357,8 @@ TEST_F(GlicWebContentsWarmingPoolTest, WarmedContainerFate_Expired) {
   task_environment_.FastForwardBy(
       features::kGlicWebContentsWarmingPoolExpiryDelay.Get());
 
-  histogram_tester.ExpectUniqueSample("Glic.WarmingPool.WarmedContainerFate", 1,
-                                      1);
+  histogram_tester.ExpectUniqueSample("Glic.WarmingPool.WarmedContainerFate",
+                                      WarmedContainerFate::kExpired, 1);
 }
 
 TEST_F(GlicWebContentsWarmingPoolTest, WarmedContainerFate_Crashed) {
@@ -372,8 +374,8 @@ TEST_F(GlicWebContentsWarmingPoolTest, WarmedContainerFate_Crashed) {
   // Trigger a check that replaces it.
   warming_pool.EnsurePreload();
 
-  histogram_tester.ExpectUniqueSample("Glic.WarmingPool.WarmedContainerFate", 3,
-                                      1);
+  histogram_tester.ExpectUniqueSample("Glic.WarmingPool.WarmedContainerFate",
+                                      WarmedContainerFate::kCrashed, 1);
 }
 
 TEST_F(GlicWebContentsWarmingPoolTest, ShutdownClearsContainer) {
@@ -385,8 +387,9 @@ TEST_F(GlicWebContentsWarmingPoolTest, ShutdownClearsContainer) {
     // warming_pool goes out of scope here and is destroyed.
   }
 
-  histogram_tester.ExpectUniqueSample("Glic.WarmingPool.WarmedContainerFate", 2,
-                                      1);
+  histogram_tester.ExpectUniqueSample(
+      "Glic.WarmingPool.WarmedContainerFate",
+      WarmedContainerFate::kDeletedOnChromeClosed, 1);
 }
 
 TEST_F(GlicWebContentsWarmingPoolTest, OnMemoryPressureStateful) {
@@ -400,8 +403,9 @@ TEST_F(GlicWebContentsWarmingPoolTest, OnMemoryPressureStateful) {
 
   warming_pool.OnMemoryPressure(base::MEMORY_PRESSURE_LEVEL_CRITICAL);
   EXPECT_FALSE(warming_pool.HasWarmedContainerForTesting());
-  histogram_tester.ExpectUniqueSample("Glic.WarmingPool.WarmedContainerFate", 4,
-                                      1);
+  histogram_tester.ExpectUniqueSample(
+      "Glic.WarmingPool.WarmedContainerFate",
+      WarmedContainerFate::kDeletedOnMemoryPressure, 1);
 
   // Background preloading schedules should be ignored while disabled.
   warming_pool.EnsurePreloadDelayed(
@@ -570,8 +574,9 @@ TEST_F(GlicWebContentsWarmingPoolTest, OnMemoryPressureStateless) {
 
   warming_pool.OnMemoryPressure(base::MEMORY_PRESSURE_LEVEL_CRITICAL);
   EXPECT_FALSE(warming_pool.HasWarmedContainerForTesting());
-  histogram_tester.ExpectUniqueSample("Glic.WarmingPool.WarmedContainerFate", 4,
-                                      1);
+  histogram_tester.ExpectUniqueSample(
+      "Glic.WarmingPool.WarmedContainerFate",
+      WarmedContainerFate::kDeletedOnMemoryPressure, 1);
 
   // Calling OnMemoryPressure(NONE) in stateless mode does nothing.
   warming_pool.OnMemoryPressure(base::MEMORY_PRESSURE_LEVEL_NONE);
