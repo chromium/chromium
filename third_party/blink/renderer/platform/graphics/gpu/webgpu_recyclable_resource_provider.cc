@@ -265,18 +265,13 @@ void WebGpuRecyclableResourceProvider::DoExternalOverdraw(
                             /*hdr_headroom=*/0.f,
                             shared_image_->mailbox().name);
 
-    cc::ImageDecodeCache* cache_f16 = nullptr;
-    if (GetSharedImageFormat() == viz::SinglePlaneFormat::kRGBA_F16) {
-      cache_f16 = context_provider_wrapper_->ContextProvider().ImageDecodeCache(
-          kRGBA_F16_SkColorType);
-    }
-
-    cc::ImageDecodeCache* cache_rgba8 =
-        context_provider_wrapper_->ContextProvider().ImageDecodeCache(
-            kN32_SkColorType);
-
+    auto& context_provider = context_provider_wrapper_->ContextProvider();
     CanvasImageProvider image_provider(
-        cache_rgba8, cache_f16, GetColorSpace(), GetSharedImageFormat(),
+        context_provider.ImageDecodeCache(kN32_SkColorType),
+        GetSharedImageFormat() == viz::SinglePlaneFormat::kRGBA_F16
+            ? context_provider.ImageDecodeCache(kRGBA_F16_SkColorType)
+            : nullptr,
+        GetColorSpace(), GetSharedImageFormat(),
         cc::PlaybackImageProvider::RasterMode::kGpu);
 
     ri->RasterCHROMIUM(
