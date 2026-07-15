@@ -9,15 +9,20 @@ import '//resources/cr_components/composebox/composebox_tool_chip.js';
 import '//resources/cr_components/composebox/contextual_entrypoint_button.js';
 import '//resources/cr_components/composebox/contextual_entrypoint_and_menu.js';
 import '//resources/cr_components/composebox/composebox_submit.js';
+import '//resources/cr_components/composebox/file_carousel.js';
 import '//resources/cr_components/search/animated_glow.js';
 
-import type {ComposeboxFile, TabUpload} from '//resources/cr_components/composebox/common.js';
+import {ComposeboxFile, mapUploadErrorToProcessFilesError, ProcessFilesError} from '//resources/cr_components/composebox/common.js';
+import type {TabUpload} from '//resources/cr_components/composebox/common.js';
 import {getLoadTimeBoolean} from '//resources/cr_components/composebox/common.js';
 import type {PageHandlerRemote} from '//resources/cr_components/composebox/composebox.mojom-webui.js';
 import type {ComposeboxDropdownElement} from '//resources/cr_components/composebox/composebox_dropdown.js';
+import type {ComposeboxFileInputsElement} from '//resources/cr_components/composebox/composebox_file_inputs.js';
 import type {ComposeboxInputElement} from '//resources/cr_components/composebox/composebox_input.js';
 import {ComposeboxEmbedderMixin} from '//resources/cr_components/composebox/composebox_mixin.js';
 import {ComposeboxProxyImpl} from '//resources/cr_components/composebox/composebox_proxy.js';
+import type {ContextUploadErrorType} from '//resources/cr_components/composebox/composebox_query.mojom-webui.js';
+import {ContextUploadStatus} from '//resources/cr_components/composebox/composebox_query.mojom-webui.js';
 import type {ContextualEntrypointAndMenuElement} from '//resources/cr_components/composebox/contextual_entrypoint_and_menu.js';
 import type {ContextualEntrypointButtonElement} from '//resources/cr_components/composebox/contextual_entrypoint_button.js';
 import {GlowAnimationState} from '//resources/cr_components/search/constants.js';
@@ -34,6 +39,7 @@ export interface OmniboxEverywhereComposeboxElement {
     composeboxInput: ComposeboxInputElement,
     composebox: HTMLElement,
     matches: ComposeboxDropdownElement,
+    fileInputs: ComposeboxFileInputsElement,
   };
 }
 
@@ -156,10 +162,31 @@ export class OmniboxEverywhereComposeboxElement extends ComposeboxEmbedderMixin
     }
   }
 
-  // Note: Copied from omnibox_composebox.ts. May need implementation when
-  // carousel is added.
   private addFileFromAttachment_(fileAttachment: FileAttachment) {
-    return fileAttachment;
+    const errorType = fileAttachment.errorType ?? null;
+    if (errorType) {
+      const processFilesError = mapUploadErrorToProcessFilesError(
+          errorType as ContextUploadErrorType);
+      if (processFilesError !== ProcessFilesError.NONE) {
+        this.handleProcessFilesError(processFilesError);
+        if (!super.deleteFile(fileAttachment.uuid)) {
+          this.getSearchboxHandler().deleteContext(
+              fileAttachment.uuid, /*fromAutomaticChip=*/ false);
+        }
+        return;
+      }
+    }
+
+    const pendingStatus = this.files.get(fileAttachment.uuid)?.status;
+    const composeboxFile = ComposeboxFile.createFromFile(
+        fileAttachment.uuid,
+        {name: fileAttachment.name, type: fileAttachment.mimeType},
+        pendingStatus ?? ContextUploadStatus.kNotUploaded, {
+          dataUrl: fileAttachment.imageDataUrl ?? null,
+          iconUrl: fileAttachment.iconUrl,
+          supportsUnimodal: true,
+        });
+    this.onFileContextAdded(composeboxFile);
   }
 
   // Note: Copied from omnibox_composebox.ts. May need implementation when

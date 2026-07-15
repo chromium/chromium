@@ -25,12 +25,14 @@ export function getHtml(this: OmniboxEverywhereOmniboxElement) {
           .selectedMatch="${this.selectedMatch}"
           ?input-has-matches="${this.hasMatches()}"
           @focusin="${this.onInputFocusin_}"
+          @searchbox-input-files-pasted="${this.onSearchboxInputFilesPasted_}"
           @searchbox-input-text-updated="${this.onSearchboxInputTextUpdated_}"
           @input-focus-changed="${this.onInputFocusChanged}">
         <div class="contextualEntrypointContainer
                     contextualEntrypointContainerCompact"
              slot="contextual-entrypoint">
-          <cr-composebox-file-inputs>
+          <cr-composebox-file-inputs id="fileInputs" @file-change="${
+      this.onFileChange_}">
             <div class="context-menu-container" id="contextMenuContainer">
               <cr-composebox-contextual-entrypoint-and-menu id="context"
                   exportparts="context-menu-entrypoint-icon"

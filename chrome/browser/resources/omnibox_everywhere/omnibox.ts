@@ -9,8 +9,10 @@ import '//resources/cr_components/search/animated_glow.js';
 import '//resources/cr_components/composebox/composebox_file_inputs.js';
 import '//resources/cr_components/composebox/contextual_entrypoint_and_menu.js';
 
-import {GlifAnimationState, TabSuggestionsState} from '//resources/cr_components/composebox/common.js';
-import {GlowAnimationState} from '//resources/cr_components/search/constants.js';
+import {GlifAnimationState, recordContextAdditionMethod, TabSuggestionsState} from '//resources/cr_components/composebox/common.js';
+import type {ComposeboxState, ContextualUpload} from '//resources/cr_components/composebox/common.js';
+import type {ComposeboxFileInputsElement} from '//resources/cr_components/composebox/composebox_file_inputs.js';
+import {ComposeboxContextAddedMethod, GlowAnimationState} from '//resources/cr_components/search/constants.js';
 import {SearchboxBrowserProxy} from '//resources/cr_components/searchbox/searchbox_browser_proxy.js';
 import type {SearchboxDropdownElement} from '//resources/cr_components/searchbox/searchbox_dropdown.js';
 import type {SearchboxInputElement} from '//resources/cr_components/searchbox/searchbox_input.js';
@@ -21,7 +23,7 @@ import {WebUiListenerMixinLit} from '//resources/cr_elements/web_ui_listener_mix
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
-import type {PageCallbackRouter, PageHandlerInterface, TabInfo} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import type {DriveUploadError, PageCallbackRouter, PageHandlerInterface, TabInfo} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {ModelMode, ToolMode} from '//resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 import type {InputState} from '//resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 
@@ -33,6 +35,7 @@ export interface OmniboxEverywhereOmniboxElement {
     input: SearchboxInputElement,
     inputWrapper: HTMLElement,
     matches: SearchboxDropdownElement,
+    fileInputs: ComposeboxFileInputsElement,
   };
 }
 
@@ -256,19 +259,45 @@ export class OmniboxEverywhereOmniboxElement extends
     this.dispatchEvent(new Event('open-lens-search'));
   }
 
-  protected async openComposeboxWithMode_(
-      mode: ToolMode = ToolMode.kUnspecified,
-      model: ModelMode = ModelMode.kUnspecified) {
+  protected onFileChange_(e: CustomEvent<{files: FileList}>) {
+    this.processFiles_(
+        e.detail.files, ComposeboxContextAddedMethod.CONTEXT_MENU);
+  }
+
+  protected onSearchboxInputFilesPasted_(e: CustomEvent<{files: FileList}>) {
+    this.processFiles_(e.detail.files, ComposeboxContextAddedMethod.COPY_PASTE);
+  }
+
+  protected processFiles_(
+      files: FileList|null,
+      contextAdditionMethod: ComposeboxContextAddedMethod) {
+    if (!files || files.length === 0) {
+      return;
+    }
+    recordContextAdditionMethod(contextAdditionMethod, 'OmniboxEverywhere');
+
+    this.openComposebox_(Array.from(files, (file) => ({file})));
+  }
+
+  protected openComposebox_(
+      uploads: ContextualUpload[] = [], mode: ToolMode = ToolMode.kUnspecified,
+      model: ModelMode = ModelMode.kUnspecified, error?: DriveUploadError) {
+    this.fire<ComposeboxState>('open-composebox', {
+      text: this.$.input.inputElement.value,
+      files: uploads,
+      mode: mode,
+      model: model,
+      error: error,
+      smartTabSharingActive: false,
+    });
+  }
+
+  protected async openComposeboxWithMode_(mode?: ToolMode, model?: ModelMode) {
     this.animationState_ = GlowAnimationState.NONE;
     await this.updateComplete;
     this.animationState_ = GlowAnimationState.LISTENING;
     setTimeout(() => {
-      this.fire('open-composebox', {
-        text: this.$.input.inputElement.value,
-        mode: mode,
-        model: model,
-        smartTabSharingActive: false,
-      });
+      this.openComposebox_([], mode, model);
     }, 300);
   }
 

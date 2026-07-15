@@ -65,8 +65,21 @@ class OmniboxEverywhereService : public KeyedService,
   void ShowUI() override;
   void ResizeDueToAutoResize(content::WebContents* source,
                              const gfx::Size& new_size) override;
+  void RunFileChooser(content::RenderFrameHost* render_frame_host,
+                      scoped_refptr<content::FileSelectListener> listener,
+                      const blink::mojom::FileChooserParams& params) override;
+
+  void OnFileChooserOpened();
+  void OnFileChooserClosed();
+
+  base::WeakPtr<OmniboxEverywhereService> GetWeakPtr() {
+    return weak_factory_.GetWeakPtr();
+  }
 
   views::Widget* GetWidgetForTesting() { return widget_.get(); }
+  bool is_file_chooser_open_for_testing() const {
+    return is_file_chooser_open_;
+  }
 
   void SetIsNavigating(bool is_navigating) { is_navigating_ = is_navigating; }
   void SetWasActiveBeforePopup(bool was_active) {
@@ -82,6 +95,7 @@ class OmniboxEverywhereService : public KeyedService,
 
   bool is_navigating_ = false;
   bool was_active_before_popup_ = false;
+  bool is_file_chooser_open_ = false;
   base::TimeTicks last_key_press_time_;
 
   base::ScopedObservation<views::Widget, views::WidgetObserver>

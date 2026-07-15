@@ -12,6 +12,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/file_select_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser.h"
@@ -224,7 +225,7 @@ void OmniboxEverywhereService::CreateAndShowWidget() {
 
 void OmniboxEverywhereService::OnWidgetActivationChanged(views::Widget* widget,
                                                          bool active) {
-  if (!active) {
+  if (!active && !is_file_chooser_open_) {
     HidePopup();
   }
 }
@@ -268,6 +269,59 @@ void OmniboxEverywhereService::ResizeDueToAutoResize(
     bounds.set_height(std::max(new_size.height() + 96, 56));
     widget_->SetBounds(bounds);
   }
+}
+
+class OmniboxEverywhereFileSelectListener : public content::FileSelectListener {
+ public:
+  OmniboxEverywhereFileSelectListener(
+      base::WeakPtr<OmniboxEverywhereService> service,
+      scoped_refptr<content::FileSelectListener> listener)
+      : service_(service), listener_(std::move(listener)) {
+    if (service_) {
+      service_->OnFileChooserOpened();
+    }
+  }
+
+  void FileSelected(std::vector<blink::mojom::FileChooserFileInfoPtr> files,
+                    const base::FilePath& base_dir,
+                    blink::mojom::FileChooserParams::Mode mode) override {
+    if (service_) {
+      service_->OnFileChooserClosed();
+    }
+    listener_->FileSelected(std::move(files), base_dir, mode);
+  }
+
+  void FileSelectionCanceled() override {
+    if (service_) {
+      service_->OnFileChooserClosed();
+    }
+    listener_->FileSelectionCanceled();
+  }
+
+ private:
+  ~OmniboxEverywhereFileSelectListener() override = default;
+
+  base::WeakPtr<OmniboxEverywhereService> service_;
+  scoped_refptr<content::FileSelectListener> listener_;
+};
+
+void OmniboxEverywhereService::OnFileChooserOpened() {
+  is_file_chooser_open_ = true;
+}
+
+void OmniboxEverywhereService::OnFileChooserClosed() {
+  is_file_chooser_open_ = false;
+}
+
+void OmniboxEverywhereService::RunFileChooser(
+    content::RenderFrameHost* render_frame_host,
+    scoped_refptr<content::FileSelectListener> listener,
+    const blink::mojom::FileChooserParams& params) {
+  auto wrapped_listener =
+      base::MakeRefCounted<OmniboxEverywhereFileSelectListener>(
+          GetWeakPtr(), std::move(listener));
+  FileSelectHelper::RunFileChooser(render_frame_host,
+                                   std::move(wrapped_listener), params);
 }
 
 void OmniboxEverywhereService::OpenUrl(const GURL& url,

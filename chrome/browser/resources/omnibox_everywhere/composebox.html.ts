@@ -50,7 +50,15 @@ export function getHtml(this: OmniboxEverywhereComposeboxElement) {
                shouldDisableFileInputs_ when added to mixin. -->
           <cr-composebox-file-inputs id="fileInputs"
               @file-change="${this.onFileChange}">
-            <!-- Note: May need to add file carousel in a future iteration. -->
+            ${this.showFileCarousel ? html`
+              <cr-composebox-file-carousel
+                  id="carousel"
+                  part="cr-composebox-file-carousel"
+                  exportparts="thumbnail, thumbnail-title"
+                  .files="${this.getFilteredCarouselFiles()}"
+                  @delete-file="${this.onDeleteFile}">
+              </cr-composebox-file-carousel>
+            ` : ''}
                           ${this.shouldShowDivider() ? html`
             <div class="carousel-divider" part="carousel-divider"></div>
             ` : ''}
