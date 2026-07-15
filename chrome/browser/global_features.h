@@ -42,6 +42,10 @@ class GlicProfileManager;
 class GlicSyntheticTrialManager;
 }  // namespace glic
 
+namespace omnibox_everywhere {
+class OmniboxEverywhereController;
+}
+
 class ApplicationLocaleStorage;
 class AudioProcessMlModelForwarder;
 class BrowserProcess;
@@ -161,6 +165,12 @@ class GlobalFeatures {
     return glic_background_mode_manager_.get();
   }
 #endif
+#if !BUILDFLAG(IS_ANDROID)
+  omnibox_everywhere::OmniboxEverywhereController*
+  omnibox_everywhere_controller() {
+    return omnibox_everywhere_controller_.get();
+  }
+#endif
 
   glic::GlicSyntheticTrialManager* glic_synthetic_trial_manager() {
     return synthetic_trial_manager_.get();
@@ -251,6 +261,8 @@ class GlobalFeatures {
 #if !BUILDFLAG(IS_ANDROID)
   std::unique_ptr<glic::GlicBackgroundModeManager>
       glic_background_mode_manager_;
+  std::unique_ptr<omnibox_everywhere::OmniboxEverywhereController>
+      omnibox_everywhere_controller_;
 #endif
   std::unique_ptr<glic::GlicSyntheticTrialManager> synthetic_trial_manager_;
 
