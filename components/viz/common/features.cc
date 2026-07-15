@@ -255,63 +255,6 @@ BASE_FEATURE(kUseAndroidCustomFrameDeadlines,
              base::FEATURE_DISABLED_BY_DEFAULT);
 const base::FeatureParam<int> kAndroidCustomFrameDeadlinePresentationOffset{
     &kUseAndroidCustomFrameDeadlines, "presentation_offset", 0};
-
-// If disabled, `viz::ExternalBeginFrameSourceAndroid::AChoreographerImpl`
-// always forwards the VSync interval (aka VSync period) that the OS provided
-// via the callback registered through
-// `AChoreographer_registerRefreshRateCallback`.
-//
-// If enabled and `kDeriveVSyncIntervalFromFrameTimelinesModeParam` is
-// `kAlwaysDerive`, `AChoreographerImpl` derives the VSync interval from the
-// frame timelines that the OS provided via the callback registered through
-// `AChoreographer_postVsyncCallback` (as long as the OS provided at least two
-// timelines). It uses the difference between the presentation timestamps of the
-// first two timelines as the VSync interval. `AChoreographerImpl` might snap
-// this timeline-derived interval to the closest display-supported interval in
-// `Display.getSupportedRefreshRates()` depending on
-// `kDeriveVSyncIntervalFromFrameTimelinesSnapToleranceParam`.
-//
-// If enabled and `kDeriveVSyncIntervalFromFrameTimelinesModeParam` is
-// `kDeriveIfLonger`, `AChoreographerImpl` uses the maximum of the two values
-// above as the VSync period.
-BASE_FEATURE(kDeriveVSyncIntervalFromFrameTimelines,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-constexpr base::FeatureParam<DeriveVSyncIntervalFromFrameTimelinesMode>::Option
-    kDeriveVSyncIntervalFromFrameTimelinesModeOptions[] = {
-        {DeriveVSyncIntervalFromFrameTimelinesMode::kAlwaysDerive,
-         "always_derive"},
-        {DeriveVSyncIntervalFromFrameTimelinesMode::kDeriveIfLonger,
-         "derive_if_longer"},
-};
-
-const base::FeatureParam<DeriveVSyncIntervalFromFrameTimelinesMode>
-    kDeriveVSyncIntervalFromFrameTimelinesModeParam = {
-        &kDeriveVSyncIntervalFromFrameTimelines,
-        "mode",
-        DeriveVSyncIntervalFromFrameTimelinesMode::kAlwaysDerive,
-        &kDeriveVSyncIntervalFromFrameTimelinesModeOptions,
-};
-
-// Specifies how far `viz::ExternalBeginFrameSourceAndroid::AChoreographerImpl`
-// can snap from the timeline-derived VSync interval to a display-supported
-// VSync interval, as a fraction of the timeline-derived VSync interval (e.g.
-// 0.1 means 10%). Given a timeline-derived interval TDI, display-supported
-// interval DSI and snap tolerance ST, `AChoreographerImpl` will snap TDI to DSI
-// if:
-//
-// `|TDI - DSI| <= ST * TDI`
-//
-// For example, given TDI = 16 ms and ST = 0.1, `AChoreographerImpl` will snap
-// TDI to DSI values between 14.4 ms and 17.6 ms (inclusive).
-//
-// If this parameter is zero (`ST = 0`), `AChoreographerImpl` won't snap at all.
-const base::FeatureParam<double>
-    kDeriveVSyncIntervalFromFrameTimelinesSnapToleranceParam = {
-        &kDeriveVSyncIntervalFromFrameTimelines,
-        "snap_tolerance",
-        0.0,
-};
 #endif
 
 // When enabled, SDR maximum luminance nits of then current display will be used

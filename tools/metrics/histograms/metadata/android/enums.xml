@@ -222,25 +222,6 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//ui/android/java/src/org/chromium/ui/dragdrop/DragAndDropDelegateImpl.java:DragTargetType) -->
 
-<!-- LINT.IfChange(AndroidExternalBeginFrameSourceAChoreographerImplVsyncIntervalSource) -->
-
-<enum
-    name="AndroidExternalBeginFrameSourceAChoreographerImplVsyncIntervalSource">
-  <int value="0" label="OS-provided: timeline-derived not supported"/>
-  <int value="1" label="OS-provided: only one timeline"/>
-  <int value="2" label="OS-provided: always"/>
-  <int value="3" label="OS-provided: timeline-derived too short"/>
-  <int value="4" label="OS-provided: longer than or equal to timeline-derived"/>
-  <int value="5" label="Snapped timeline-derived: longer than OS-provided"/>
-  <int value="6" label="Unsnapped timeline-derived: longer than OS-provided"/>
-  <int value="7" label="Snapped timeline-derived: always"/>
-  <int value="8" label="Unsnapped timeline-derived: always"/>
-</enum>
-
-<!-- LINT.ThenChange(
-  //components/viz/service/frame_sinks/external_begin_frame_source_android.h:VsyncIntervalSource
-) -->
-
 <enum name="AndroidKernelVersion">
   <int value="131078" label="2.6"/>
   <int value="196608" label="3.0"/>

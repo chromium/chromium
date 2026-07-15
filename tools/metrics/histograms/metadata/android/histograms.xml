@@ -2422,36 +2422,6 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="Android.ExternalBeginFrameSourceAChoreographerImpl.VsyncIntervalSource"
-    enum="AndroidExternalBeginFrameSourceAChoreographerImplVsyncIntervalSource"
-    expires_after="2026-10-22">
-  <owner>petrcermak@chromium.org</owner>
-  <owner>woa-performance-team@google.com</owner>
-  <summary>
-    Source of the VSync interval (aka VSync period) that
-    `ExternalBeginFrameSourceAndroid::AChoreographerImpl` provides to
-    `ExternalBeginFrameSourceAndroid`, together with the reason for choosing the
-    particular source.
-
-    It can either FORWARD the VSync interval that the OS provided to
-    `ExternalBeginFrameSourceAndroid::AChoreographerImpl::RefreshRateCallback`
-    (registered via `AChoreographer_registerRefreshRateCallback`), or DERIVE the
-    VSync interval from the frame timelines that the OS provided to
-    `ExternalBeginFrameSourceAndroid::AChoreographerImpl::VsyncCallback` (posted
-    via `AChoreographer_postVsyncCallback`) by taking the difference between the
-    presentation timestamps of the first two timelines. `AChoreographerImpl`
-    might choose to snap the timeline-derived interval to the closest supported
-    interval in `Display.getSupportedRefreshRates()`.
-
-    The advantage of deriving the VSync interval is that it avoids using an
-    incorrect VSync interval immediately before/after a refresh rate change,
-    because frame timelines are synchronized with the Android choreographer.
-
-    Subsampled with probability 1/100 for each VSync.
-  </summary>
-</histogram>
-
-<histogram
     name="Android.FamilyLinkUser.LocalApprovalParentAuthenticationError.{Flow}"
     units="Status error codes raised in GMS Core" expires_after="2026-11-01">
   <owner>anthie@google.com</owner>

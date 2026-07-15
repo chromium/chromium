@@ -9,14 +9,11 @@
 #include <algorithm>
 #include <optional>
 #include <utility>
-#include <vector>
 
 #include "base/android/android_info.h"
 #include "base/android/jni_android.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
-#include "base/metrics/histogram_macros.h"
-#include "base/rand_util.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/typed_macros.h"
@@ -41,8 +38,6 @@ base::TimeTicks ToTimeTicks(int64_t time_nanos) {
   return base::TimeTicks() + base::Nanoseconds(time_nanos);
 }
 
-constexpr base::TimeDelta kMinDerivedVsyncInterval = base::Milliseconds(1);
-
 }  // namespace
 
 namespace viz {
@@ -57,8 +52,6 @@ class ExternalBeginFrameSourceAndroid::AChoreographerImpl {
   ~AChoreographerImpl();
 
   void SetEnabled(bool enabled);
-  void SetSupportedRefreshRates(
-      const base::flat_map<base::TimeDelta, float>& supported_rates);
 
  private:
   static void FrameCallback64(int64_t frame_time_nanos, void* data);
@@ -72,22 +65,12 @@ class ExternalBeginFrameSourceAndroid::AChoreographerImpl {
                base::WeakPtr<AChoreographerImpl>* self);
   void SetVsyncPeriod(int64_t vsync_period_nanos);
   void RequestVsyncIfNeeded();
-  base::TimeDelta GetVsyncInterval(
-      const std::optional<PossibleDeadlines>& possible_deadlines) const;
-  std::optional<base::TimeDelta> SnapToClosestSupportedVsyncInterval(
-      base::TimeDelta derived_interval) const;
 
   const raw_ptr<ExternalBeginFrameSourceAndroid> client_;
   const raw_ptr<AChoreographer> achoreographer_;
 
   base::TimeDelta vsync_period_;
   bool vsync_notification_enabled_ = false;
-
-  // VSync intervals supported by the display, sorted by increasing duration.
-  // For example, if the display supports 60 Hz and 120 Hz, this vector will
-  // contain `base::Milliseconds(8.333)` and `base::Milliseconds(16.666)` (in
-  // that order).
-  std::vector<base::TimeDelta> supported_intervals_;
 
   // This is a heap-allocated WeakPtr to this object. The WeakPtr is either
   // * passed to `postFrameCallback` if there is one (and exactly one) callback
@@ -240,171 +223,6 @@ void ExternalBeginFrameSourceAndroid::AChoreographerImpl::RefreshRateCallback(
     void* data) {
   static_cast<AChoreographerImpl*>(data)->SetVsyncPeriod(vsync_period_nanos);
 }
-
-base::TimeDelta
-ExternalBeginFrameSourceAndroid::AChoreographerImpl::GetVsyncInterval(
-    const std::optional<PossibleDeadlines>& possible_deadlines) const {
-  std::optional<base::TimeDelta> derived_interval;
-  std::optional<base::TimeDelta> snapped_interval;
-
-  const auto maybe_emit_trace_event_and_histogram =
-      [&](VsyncIntervalSource source) {
-        TRACE_EVENT_INSTANT(
-            "viz", "AChoreographerImpl::GetVsyncInterval",
-            [&](perfetto::EventContext context) {
-              auto* decision =
-                  context.event<perfetto::protos::pbzero::ChromeTrackEvent>()
-                      ->set_android_vsync_interval_decision();
-              // The perfetto `VsyncIntervalSource` proto enum values are
-              // incremented by 1 to
-              // leave 0 for the `UNKNOWN` value.
-              decision->set_source(
-                  static_cast<
-                      perfetto::protos::pbzero::AndroidVsyncIntervalDecision::
-                          VsyncIntervalSource>(static_cast<int>(source) + 1));
-              decision->set_os_provided_interval_us(
-                  vsync_period_.InMicroseconds());
-              if (derived_interval.has_value()) {
-                decision->set_timeline_derived_interval_us(
-                    derived_interval->InMicroseconds());
-              }
-              if (snapped_interval.has_value()) {
-                decision->set_snapped_supported_interval_us(
-                    snapped_interval->InMicroseconds());
-              }
-              for (const auto& supported_interval : supported_intervals_) {
-                decision->add_supported_intervals_us(
-                    supported_interval.InMicroseconds());
-              }
-            });
-        if (base::ShouldRecordSubsampledMetric(0.01)) {
-          UMA_HISTOGRAM_ENUMERATION(
-              "Android.ExternalBeginFrameSourceAChoreographerImpl."
-              "VsyncIntervalSource",
-              source);
-        }
-      };
-
-  // The ordering of the checks matter: We intentionally check if there are
-  // enough deadlines BEFORE checking the feature, so we don't unnecessarily
-  // dilute UMA metrics if there aren't enough deadlines.
-  if (!possible_deadlines.has_value()) {
-    maybe_emit_trace_event_and_histogram(
-        VsyncIntervalSource::kOsProvidedTimelineDerivedNotSupported);
-    return vsync_period_;
-  }
-
-  if (possible_deadlines->deadlines.size() < 2u) {
-    CHECK_GE(possible_deadlines->deadlines.size(), 1u);
-    maybe_emit_trace_event_and_histogram(
-        VsyncIntervalSource::kOsProvidedOnlyOneTimeline);
-    return vsync_period_;
-  }
-
-  if (!base::FeatureList::IsEnabled(
-          features::kDeriveVSyncIntervalFromFrameTimelines)) {
-    maybe_emit_trace_event_and_histogram(
-        VsyncIntervalSource::kOsProvidedAlways);
-    return vsync_period_;
-  }
-
-  derived_interval = possible_deadlines->deadlines[1].present_delta -
-                     possible_deadlines->deadlines[0].present_delta;
-  if (*derived_interval < kMinDerivedVsyncInterval) {
-    maybe_emit_trace_event_and_histogram(
-        VsyncIntervalSource::kOsProvidedTimelineDerivedTooShort);
-    return vsync_period_;
-  }
-
-  // Snap to the closest VSync interval supported by the display as long as the
-  // display-supported interval (`snapped_interval`) is within
-  // `features::kDeriveVSyncIntervalFromFrameTimelinesSnapToleranceParam` of the
-  // timeline-derived (`derived_interval`) interval.
-  snapped_interval = SnapToClosestSupportedVsyncInterval(*derived_interval);
-
-  const auto [snapped_or_derived_interval, is_snapped] =
-      snapped_interval.has_value() ? std::make_pair(*snapped_interval, true)
-                                   : std::make_pair(*derived_interval, false);
-
-  switch (features::kDeriveVSyncIntervalFromFrameTimelinesModeParam.Get()) {
-    case features::DeriveVSyncIntervalFromFrameTimelinesMode::kAlwaysDerive:
-      maybe_emit_trace_event_and_histogram(
-          is_snapped ? VsyncIntervalSource::kSnappedTimelineDerivedAlways
-                     : VsyncIntervalSource::kUnsnappedTimelineDerivedAlways);
-      return snapped_or_derived_interval;
-    case features::DeriveVSyncIntervalFromFrameTimelinesMode::kDeriveIfLonger:
-      if (vsync_period_ >= snapped_or_derived_interval) {
-        maybe_emit_trace_event_and_histogram(
-            VsyncIntervalSource::kOsProvidedLongerThanOrEqualToTimelineDerived);
-        return vsync_period_;
-      }
-      maybe_emit_trace_event_and_histogram(
-          is_snapped
-              ? VsyncIntervalSource::kSnappedTimelineDerivedLongerThanOsProvided
-              : VsyncIntervalSource::
-                    kUnsnappedTimelineDerivedLongerThanOsProvided);
-      return snapped_or_derived_interval;
-  }
-}
-
-void ExternalBeginFrameSourceAndroid::AChoreographerImpl::
-    SetSupportedRefreshRates(
-        const base::flat_map<base::TimeDelta, float>& supported_rates) {
-  double tolerance =
-      features::kDeriveVSyncIntervalFromFrameTimelinesSnapToleranceParam.Get();
-  if (tolerance <= 0.0) {
-    // No point storing the supported intervals if we're never going to snap to
-    // them.
-    return;
-  }
-  supported_intervals_.clear();
-  supported_intervals_.reserve(supported_rates.size());
-  for (const auto& [interval, rate] : supported_rates) {
-    supported_intervals_.push_back(interval);
-  }
-}
-
-std::optional<base::TimeDelta> ExternalBeginFrameSourceAndroid::
-    AChoreographerImpl::SnapToClosestSupportedVsyncInterval(
-        base::TimeDelta interval) const {
-  if (supported_intervals_.empty()) {
-    return std::nullopt;
-  }
-
-  base::TimeDelta closest_supported_interval = [&] {
-    auto it = std::lower_bound(supported_intervals_.begin(),
-                               supported_intervals_.end(), interval);
-    if (it == supported_intervals_.end()) {
-      return supported_intervals_.back();
-    }
-    if (it == supported_intervals_.begin()) {
-      return supported_intervals_.front();
-    }
-    const base::TimeDelta prev_supported_interval = *(it - 1);
-    const base::TimeDelta next_supported_interval = *it;
-    return (next_supported_interval - interval <
-            interval - prev_supported_interval)
-               ? next_supported_interval
-               : prev_supported_interval;
-  }();
-
-  double tolerance =
-      features::kDeriveVSyncIntervalFromFrameTimelinesSnapToleranceParam.Get();
-  // If `tolerance` is non-positive, `supported_intervals_` should be empty, so
-  // this code shouldn't be reachable.
-  CHECK_GT(tolerance, 0);
-
-  // Only return `closest_supported_interval` if `closest_supported_interval` is
-  // within `features::kDeriveVSyncIntervalFromFrameTimelinesSnapToleranceParam`
-  // of `interval`.
-  if ((closest_supported_interval - interval).magnitude() <=
-      tolerance * interval) {
-    return closest_supported_interval;
-  }
-
-  return std::nullopt;
-}
-
 void ExternalBeginFrameSourceAndroid::AChoreographerImpl::OnVSync(
     int64_t frame_time_nanos,
     std::optional<PossibleDeadlines> possible_deadlines,
@@ -413,8 +231,7 @@ void ExternalBeginFrameSourceAndroid::AChoreographerImpl::OnVSync(
   DCHECK(self);
   self_for_frame_callback_.reset(self);
   if (vsync_notification_enabled_) {
-    const base::TimeDelta vsync_interval = GetVsyncInterval(possible_deadlines);
-    client_->OnVSyncImpl(frame_time_nanos, vsync_interval,
+    client_->OnVSyncImpl(frame_time_nanos, vsync_period_,
                          std::move(possible_deadlines));
     RequestVsyncIfNeeded();
   }
@@ -504,13 +321,6 @@ void ExternalBeginFrameSourceAndroid::UpdateRefreshRate(float refresh_rate) {
   if (j_object_) {
     Java_ExternalBeginFrameSourceAndroid_updateRefreshRate(
         base::android::AttachCurrentThread(), j_object_, refresh_rate);
-  }
-}
-
-void ExternalBeginFrameSourceAndroid::SetSupportedRefreshRates(
-    const base::flat_map<base::TimeDelta, float>& supported_rates) {
-  if (achoreographer_) {
-    achoreographer_->SetSupportedRefreshRates(supported_rates);
   }
 }
 

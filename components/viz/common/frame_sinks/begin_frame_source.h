@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/check.h"
-#include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "base/rand_util.h"
@@ -489,15 +488,6 @@ class VIZ_COMMON_EXPORT ExternalBeginFrameSource : public BeginFrameSource {
   // Returns the minimium supported frame interval for a given BFS.
   // This gives the maximium refresh rate that can be requested.
   virtual base::TimeDelta GetMinimumFrameInterval();
-
-  // Sets the refresh rates supported by the display.
-  //
-  // `supported_rates` is a map from supported VSync intervals to the equivalent
-  // supported refresh rates. For example, if the display supports 60 Hz and 120
-  // Hz, `supported_rates` will contain two entries: `base::Milliseconds(8.333)`
-  // → `120.0f` and `base::Milliseconds(16.666)` → `60.0f`.
-  virtual void SetSupportedRefreshRates(
-      const base::flat_map<base::TimeDelta, float>& supported_rates) {}
 
   virtual base::flat_set<base::TimeDelta> GetSupportedFrameIntervals(
       base::TimeDelta interval);

@@ -118,17 +118,6 @@ VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kAllowMultipleSwapsPerVsync);
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kUseAndroidCustomFrameDeadlines);
 VIZ_COMMON_EXPORT extern const base::FeatureParam<int>
     kAndroidCustomFrameDeadlinePresentationOffset;
-
-VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kDeriveVSyncIntervalFromFrameTimelines);
-enum class DeriveVSyncIntervalFromFrameTimelinesMode {
-  kAlwaysDerive,
-  kDeriveIfLonger,
-};
-VIZ_COMMON_EXPORT extern const base::FeatureParam<
-    DeriveVSyncIntervalFromFrameTimelinesMode>
-    kDeriveVSyncIntervalFromFrameTimelinesModeParam;
-VIZ_COMMON_EXPORT extern const base::FeatureParam<double>
-    kDeriveVSyncIntervalFromFrameTimelinesSnapToleranceParam;
 #endif
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kUseDisplaySDRMaxLuminanceNits);
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kHideDelegatedFrameHostMac);

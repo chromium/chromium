@@ -527,11 +527,6 @@ void RootCompositorFrameSinkImpl::SetSupportedRefreshRates(
     exact_supported_refresh_rates_[interval] = rate;
   }
 
-  if (external_begin_frame_source_) {
-    external_begin_frame_source_->SetSupportedRefreshRates(
-        exact_supported_refresh_rates_);
-  }
-
   UpdateFrameIntervalDeciderSettings();
 }
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)

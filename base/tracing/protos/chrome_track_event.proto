@@ -3065,10 +3065,7 @@ message AndroidVsyncIntervalDecision {
   // Source of the VSync interval (aka VSync period) that
   // `ExternalBeginFrameSourceAndroid::AChoreographerImpl` provides to
   // `ExternalBeginFrameSourceAndroid`, together with the reason for choosing
-  // the particular source. See `VsyncIntervalSource` in
-  // //components/viz/service/frame_sinks/external_begin_frame_source_android.h
-  // for more details.
-  // LINT.IfChange(VsyncIntervalSource)
+  // the particular source.
   enum VsyncIntervalSource {
     UNKNOWN = 0;
     OS_PROVIDED_TIMELINE_DERIVED_NOT_SUPPORTED = 1;
@@ -3081,34 +3078,31 @@ message AndroidVsyncIntervalDecision {
     SNAPPED_TIMELINE_DERIVED_ALWAYS = 8;
     UNSNAPPED_TIMELINE_DERIVED_ALWAYS = 9;
   }
-  // LINT.ThenChange(
-  //   //components/viz/service/frame_sinks/external_begin_frame_source_android.h:VsyncIntervalSource)
-  // )
-  optional VsyncIntervalSource source = 1;
+  optional VsyncIntervalSource source = 1 [deprecated = true];
 
   // The VSync interval that the OS provided to
   // `ExternalBeginFrameSourceAndroid::AChoreographerImpl::RefreshRateCallback`
   // (registered via `AChoreographer_registerRefreshRateCallback`) in
   // microseconds.
-  optional int64 os_provided_interval_us = 2;
+  optional int64 os_provided_interval_us = 2 [deprecated = true];
 
   // The VSync interval that `AChoreographerImpl` derived from the frame
   // timelines that the OS provided to
   // `ExternalBeginFrameSourceAndroid::AChoreographerImpl::VsyncCallback`
   // (posted via `AChoreographer_postVsyncCallback`) by taking the difference
   // between the presentation timestamps of the first two timelines.
-  optional int64 timeline_derived_interval_us = 3;
+  optional int64 timeline_derived_interval_us = 3 [deprecated = true];
 
   // The supported VSync interval that the OS provided via
   // `Display.getSupportedRefreshRates()` that was the closest to
   // `timeline_derived_interval_us` and was within an implementation-specific
   // threshold.
-  optional int64 snapped_supported_interval_us = 4;
+  optional int64 snapped_supported_interval_us = 4 [deprecated = true];
 
   // VSync intervals supported by the display, sorted by increasing duration.
   // For example, if the display supports 60 Hz and 120 Hz, this vector will
   // contain 8,333 and 16,666 (in that order).
-  repeated int64 supported_intervals_us = 5;
+  repeated int64 supported_intervals_us = 5 [deprecated = true];
 }
 
 message ChromeTrackEvent {
@@ -3296,7 +3290,7 @@ message ChromeTrackEvent {
 
     optional MacVoucherRelease mac_voucher_release = 1083;
 
-    optional AndroidVsyncIntervalDecision android_vsync_interval_decision =
-        1084;
+    optional AndroidVsyncIntervalDecision android_vsync_interval_decision = 1084
+        [deprecated = true];
   }
 }
