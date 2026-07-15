@@ -374,6 +374,11 @@ if (!is_android) {
   source_set("browser_tests") {
     testonly = true
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+    # Some of these tests declare file-scope objects with non-trivial
+    # destructors (e.g. webrtc_getdisplaymedia_browsertest.cc).
+    configs += [ "//build/config/compiler:no_exit_time_destructors" ]
+
     sources = [
       "capture_handle_browsertest.cc",
       "media_stream_devices_controller_browsertest.cc",
@@ -384,6 +389,10 @@ if (!is_android) {
       "webrtc_desktop_capture_browsertest.cc",
       "webrtc_disable_encryption_flag_browsertest.cc",
       "webrtc_pan_tilt_zoom_browsertest.cc",
+      "webrtc_stats_perf_browsertest.cc",
+      "webrtc_video_display_perf_browsertest.cc",
+      "webrtc_video_high_bitrate_browsertest.cc",
+      "webrtc_video_quality_browsertest.cc",
       "webrtc_webcam_browsertest.cc",
     ]
     deps = [
@@ -398,6 +407,7 @@ if (!is_android) {
       "//chrome/browser/ui",
       "//chrome/browser/ui/tab_sharing",
       "//chrome/browser/ui/tabs:tab_strip",
+      "//chrome/test:test_support",
       "//chrome/test:test_support_ui",
       "//components/infobars/content",
       "//components/permissions:test_support",
