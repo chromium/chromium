@@ -14,6 +14,8 @@
 namespace extensions {
 
 struct IncognitoInfo : public Extension::ManifestData {
+  static const char* kManifestDataKey;
+
   explicit IncognitoInfo(api::incognito::IncognitoMode mode);
   ~IncognitoInfo() override;
 

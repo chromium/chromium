@@ -19,6 +19,8 @@ static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 namespace extensions {
 
 struct IconVariantsInfo : public Extension::ManifestData {
+  static const char* kManifestDataKey;
+
   IconVariantsInfo();
   ~IconVariantsInfo() override;
 

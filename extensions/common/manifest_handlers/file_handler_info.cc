@@ -146,14 +146,16 @@ FileHandlers::FileHandlers() = default;
 FileHandlers::~FileHandlers() = default;
 
 // static
+const char* FileHandlers::kManifestDataKey = keys::kFileHandlers;
+
+// static
 const FileHandlersInfo* FileHandlers::GetFileHandlers(
     const Extension* extension) {
   CHECK(extension);
   if (WebFileHandlers::SupportsWebFileHandlers(*extension)) {
     return nullptr;
   }
-  const FileHandlers* info = static_cast<const FileHandlers*>(
-      extension->GetManifestData(keys::kFileHandlers));
+  const auto* info = extension->GetManifestData<FileHandlers>();
   return info ? &info->file_handlers : nullptr;
 }
 
@@ -208,7 +210,7 @@ bool FileHandlersParser::Parse(Extension* extension, std::u16string* error) {
     return false;
   }
 
-  extension->SetManifestData(keys::kFileHandlers, std::move(info));
+  extension->SetManifestData(FileHandlers::kManifestDataKey, std::move(info));
   extension->AddInstallWarnings(std::move(install_warnings));
   return true;
 }

@@ -24,8 +24,11 @@ namespace errors = manifest_errors;
 
 // A wrapper for `OAuth2Info` which inherits from `ManifestData`.
 struct OAuth2ManifestData : Extension::ManifestData {
+  static const char* kManifestDataKey;
   OAuth2Info info;
 };
+
+const char* OAuth2ManifestData::kManifestDataKey = OAuth2ManifestKeys::kOauth2;
 
 }  // namespace
 
@@ -36,8 +39,7 @@ OAuth2ManifestHandler::~OAuth2ManifestHandler() = default;
 const OAuth2Info& OAuth2ManifestHandler::GetOAuth2Info(
     const Extension& extension) {
   static const base::NoDestructor<OAuth2Info> empty_oauth2_info;
-  const OAuth2ManifestData* data = static_cast<const OAuth2ManifestData*>(
-      extension.GetManifestData(OAuth2ManifestKeys::kOauth2));
+  const auto* data = extension.GetManifestData<OAuth2ManifestData>();
   return data ? data->info : *empty_oauth2_info;
 }
 
@@ -67,7 +69,7 @@ bool OAuth2ManifestHandler::Parse(Extension* extension, std::u16string* error) {
 
   auto manifest_data = std::make_unique<OAuth2ManifestData>();
   manifest_data->info = std::move(info);
-  extension->SetManifestData(OAuth2ManifestKeys::kOauth2,
+  extension->SetManifestData(OAuth2ManifestData::kManifestDataKey,
                              std::move(manifest_data));
   return true;
 }

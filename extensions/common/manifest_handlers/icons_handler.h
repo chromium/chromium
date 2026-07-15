@@ -19,6 +19,8 @@ class GURL;
 namespace extensions {
 
 struct IconsInfo : public Extension::ManifestData {
+  static const char* kManifestDataKey;
+
   // The icons for the extension.
   ExtensionIconSet icons;
 

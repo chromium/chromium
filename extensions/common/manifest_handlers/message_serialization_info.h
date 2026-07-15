@@ -15,6 +15,8 @@ namespace extensions {
 
 // A structure to hold the parsed message serialization info.
 struct MessageSerializationInfo : public Extension::ManifestData {
+  static const char* kManifestDataKey;
+
   explicit MessageSerializationInfo(bool opts_in_structured_clone);
   ~MessageSerializationInfo() override;
 

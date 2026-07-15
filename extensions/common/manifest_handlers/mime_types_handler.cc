@@ -114,11 +114,16 @@ bool ParseDictFormat(extensions::Extension* extension,
 
 // Stored on the Extension.
 struct MimeTypesHandlerInfo : public extensions::Extension::ManifestData {
+  static const char* kManifestDataKey;
+
   MimeTypesHandler handler_;
 
   MimeTypesHandlerInfo();
   ~MimeTypesHandlerInfo() override;
 };
+
+// static
+const char* MimeTypesHandlerInfo::kManifestDataKey = keys::kMimeTypesHandler;
 
 MimeTypesHandlerInfo::MimeTypesHandlerInfo() = default;
 MimeTypesHandlerInfo::~MimeTypesHandlerInfo() = default;
@@ -210,8 +215,7 @@ base::FilePath MimeTypesHandler::GetPluginPath() const {
 // static
 const MimeTypesHandler* MimeTypesHandler::Get(
     const extensions::Extension& extension) {
-  const MimeTypesHandlerInfo* info = static_cast<const MimeTypesHandlerInfo*>(
-      extension.GetManifestData(keys::kMimeTypesHandler));
+  const auto* info = extension.GetManifestData<MimeTypesHandlerInfo>();
   if (info) {
     return &info->handler_;
   }
@@ -253,7 +257,8 @@ bool MimeTypesHandlerParser::Parse(extensions::Extension* extension,
       return true;
     }
 
-    extension->SetManifestData(keys::kMimeTypesHandler, std::move(info));
+    extension->SetManifestData(MimeTypesHandlerInfo::kManifestDataKey,
+                               std::move(info));
     return true;
   }
 
@@ -287,7 +292,8 @@ bool MimeTypesHandlerParser::Parse(extensions::Extension* extension,
     info->handler_.AddMIMEType(mime_type, handler_gurl, /*can_embed=*/false);
   }
 
-  extension->SetManifestData(keys::kMimeTypesHandler, std::move(info));
+  extension->SetManifestData(MimeTypesHandlerInfo::kManifestDataKey,
+                             std::move(info));
   return true;
 }
 

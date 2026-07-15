@@ -41,6 +41,8 @@ struct KioskModeInfo : public Extension::ManifestData {
                 bool always_update);
   ~KioskModeInfo() override;
 
+  static const char* kManifestDataKey;
+
   // Gets the KioskModeInfo for `extension`, or NULL if none was
   // specified.
   static const KioskModeInfo* Get(const Extension* extension);

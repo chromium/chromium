@@ -57,6 +57,9 @@ SecondaryKioskAppInfo::SecondaryKioskAppInfo(
 
 SecondaryKioskAppInfo::~SecondaryKioskAppInfo() = default;
 
+// static
+const char* KioskModeInfo::kManifestDataKey = keys::kKioskMode;
+
 KioskModeInfo::KioskModeInfo(
     KioskStatus kiosk_status,
     std::vector<SecondaryKioskAppInfo>&& secondary_apps,
@@ -71,8 +74,7 @@ KioskModeInfo::~KioskModeInfo() = default;
 
 // static
 const KioskModeInfo* KioskModeInfo::Get(const Extension* extension) {
-  return static_cast<const KioskModeInfo*>(
-      extension->GetManifestData(keys::kKioskMode));
+  return extension->GetManifestData<KioskModeInfo>();
 }
 
 // static
@@ -200,7 +202,7 @@ bool KioskModeHandler::Parse(Extension* extension, std::u16string* error) {
     always_update = temp->GetBool();
   }
 
-  extension->SetManifestData(keys::kKioskMode,
+  extension->SetManifestData(KioskModeInfo::kManifestDataKey,
                              std::make_unique<KioskModeInfo>(
                                  kiosk_status, std::move(secondary_apps),
                                  required_platform_version, always_update));

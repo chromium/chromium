@@ -22,6 +22,8 @@ namespace extensions {
 // A class to provide options page configuration settings from the manifest.
 class OptionsPageInfo : public Extension::ManifestData {
  public:
+  static const char* kManifestDataKey;
+
   OptionsPageInfo(const GURL& options_page,
                   bool chrome_styles,
                   bool open_in_tab);

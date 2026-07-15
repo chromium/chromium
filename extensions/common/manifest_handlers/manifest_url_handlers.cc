@@ -28,8 +28,7 @@ namespace errors = manifest_errors;
 // static
 const GURL& ManifestURL::Get(const Extension* extension,
                              const std::string& key) {
-  const ManifestURL* manifest_url =
-      static_cast<const ManifestURL*>(extension->GetManifestData(key));
+  const auto* manifest_url = extension->GetManifestData<ManifestURL>(key);
   return manifest_url ? manifest_url->url_ : GURL::EmptyGURL();
 }
 

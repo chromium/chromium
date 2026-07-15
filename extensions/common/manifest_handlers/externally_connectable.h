@@ -50,6 +50,7 @@ class ExternallyConnectableHandler : public ManifestHandler {
 // The parsed form of the externally_connectable manifest entry.
 struct ExternallyConnectableInfo : public Extension::ManifestData {
  public:
+  static const char* kManifestDataKey;
   // Gets the ExternallyConnectableInfo for `extension`, or NULL if none was
   // specified.
   static const ExternallyConnectableInfo* Get(const Extension* extension);

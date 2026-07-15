@@ -12,6 +12,9 @@ namespace extensions {
 
 using IncognitoManifestKeys = api::incognito::ManifestKeys;
 
+// static
+const char* IncognitoInfo::kManifestDataKey = IncognitoManifestKeys::kIncognito;
+
 IncognitoInfo::IncognitoInfo(api::incognito::IncognitoMode mode) : mode(mode) {
   CHECK_NE(api::incognito::IncognitoMode::kNone, mode);
 }
@@ -20,22 +23,19 @@ IncognitoInfo::~IncognitoInfo() = default;
 
 // static
 bool IncognitoInfo::IsSpanningMode(const Extension* extension) {
-  const IncognitoInfo* info = static_cast<const IncognitoInfo*>(
-      extension->GetManifestData(IncognitoManifestKeys::kIncognito));
+  const IncognitoInfo* info = extension->GetManifestData<IncognitoInfo>();
   return info->mode == api::incognito::IncognitoMode::kSpanning;
 }
 
 // static
 bool IncognitoInfo::IsSplitMode(const Extension* extension) {
-  const IncognitoInfo* info = static_cast<const IncognitoInfo*>(
-      extension->GetManifestData(IncognitoManifestKeys::kIncognito));
+  const IncognitoInfo* info = extension->GetManifestData<IncognitoInfo>();
   return info->mode == api::incognito::IncognitoMode::kSplit;
 }
 
 // static
 bool IncognitoInfo::IsIncognitoAllowed(const Extension* extension) {
-  const IncognitoInfo* info = static_cast<const IncognitoInfo*>(
-      extension->GetManifestData(IncognitoManifestKeys::kIncognito));
+  const IncognitoInfo* info = extension->GetManifestData<IncognitoInfo>();
   return info->mode != api::incognito::IncognitoMode::kNotAllowed;
 }
 
@@ -60,7 +60,7 @@ bool IncognitoHandler::Parse(Extension* extension, std::u16string* error) {
                : api::incognito::IncognitoMode::kSpanning;
   }
 
-  extension->SetManifestData(IncognitoManifestKeys::kIncognito,
+  extension->SetManifestData(IncognitoInfo::kManifestDataKey,
                              std::make_unique<IncognitoInfo>(mode));
   return true;
 }

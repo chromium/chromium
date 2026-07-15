@@ -15,6 +15,8 @@
 namespace extensions {
 
 struct OfflineEnabledInfo : public Extension::ManifestData {
+  static const char* kManifestDataKey;
+
   explicit OfflineEnabledInfo(bool offline_enabled);
   ~OfflineEnabledInfo() override;
 

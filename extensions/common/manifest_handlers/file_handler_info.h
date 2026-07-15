@@ -41,6 +41,8 @@ struct FileHandlerMatch {
 };
 
 struct FileHandlers : public Extension::ManifestData {
+  static const char* kManifestDataKey;
+
   FileHandlers();
   ~FileHandlers() override;
 

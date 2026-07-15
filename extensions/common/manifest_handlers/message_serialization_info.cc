@@ -12,6 +12,10 @@
 
 namespace extensions {
 
+// static
+const char* MessageSerializationInfo::kManifestDataKey =
+    manifest_keys::kMessageSerialization;
+
 MessageSerializationInfo::MessageSerializationInfo(
     bool opts_in_structured_clone)
     : opts_in_structured_clone(opts_in_structured_clone) {}
@@ -20,9 +24,7 @@ MessageSerializationInfo::~MessageSerializationInfo() = default;
 
 // static
 bool MessageSerializationInfo::UsesStructuredClone(const Extension* extension) {
-  const MessageSerializationInfo* info =
-      static_cast<const MessageSerializationInfo*>(
-          extension->GetManifestData(manifest_keys::kMessageSerialization));
+  const auto* info = extension->GetManifestData<MessageSerializationInfo>();
   return info && info->opts_in_structured_clone;
 }
 
@@ -59,7 +61,7 @@ bool MessageSerializationHandler::Parse(Extension* extension,
   }
 
   extension->SetManifestData(
-      manifest_keys::kMessageSerialization,
+      MessageSerializationInfo::kManifestDataKey,
       std::make_unique<MessageSerializationInfo>(opts_in_structured_clone));
   return true;
 }

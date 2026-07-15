@@ -30,6 +30,9 @@ static base::LazyInstance<ExtensionIconSet>::DestructorAtExit g_empty_icon_set =
 
 namespace keys = manifest_keys;
 
+// static
+const char* IconVariantsInfo::kManifestDataKey = keys::kIconVariants;
+
 IconVariantsInfo::IconVariantsInfo() = default;
 IconVariantsInfo::~IconVariantsInfo() = default;
 IconVariantsHandler::IconVariantsHandler() = default;
@@ -98,8 +101,7 @@ const IconVariantsInfo* IconVariantsInfo::GetIconVariants(
   if (!IconVariantsInfo::SupportsIconVariants(extension)) {
     return nullptr;
   }
-  return static_cast<const IconVariantsInfo*>(
-      extension.GetManifestData(keys::kIconVariants));
+  return extension.GetManifestData<IconVariantsInfo>();
 }
 
 // static
@@ -193,7 +195,7 @@ bool IconVariantsHandler::Parse(Extension* extension, std::u16string* error) {
   icon_variants_info->icon_variants = std::move(icon_variants);
   icon_variants_info->InitializeIconSets();
 
-  extension->SetManifestData(keys::kIconVariants,
+  extension->SetManifestData(IconVariantsInfo::kManifestDataKey,
                              std::move(icon_variants_info));
   return true;
 }

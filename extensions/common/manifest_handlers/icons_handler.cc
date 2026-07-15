@@ -29,6 +29,9 @@ namespace extensions {
 
 namespace keys = manifest_keys;
 
+// static
+const char* IconsInfo::kManifestDataKey = keys::kIcons;
+
 static base::LazyInstance<ExtensionIconSet>::DestructorAtExit g_empty_icon_set =
     LAZY_INSTANCE_INITIALIZER;
 
@@ -46,8 +49,7 @@ const ExtensionIconSet& IconsInfo::GetIcons(
     return icon_variants_info->Get(color_scheme);
   }
 
-  const IconsInfo* info =
-      static_cast<const IconsInfo*>(extension.GetManifestData(keys::kIcons));
+  const auto* info = extension.GetManifestData<IconsInfo>();
   return info ? info->icons : g_empty_icon_set.Get();
 }
 
@@ -91,7 +93,8 @@ bool IconsHandler::Parse(Extension* extension, std::u16string* error) {
     extension->AddInstallWarning(InstallWarning(warning, keys::kIcons));
   }
 
-  extension->SetManifestData(keys::kIcons, std::move(icons_info));
+  extension->SetManifestData(IconsInfo::kManifestDataKey,
+                             std::move(icons_info));
   return true;
 }
 

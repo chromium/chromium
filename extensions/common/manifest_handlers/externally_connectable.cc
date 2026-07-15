@@ -49,6 +49,10 @@ std::vector<T> Sorted(const std::vector<T>& in) {
 
 }  // namespace
 
+// static
+const char* ExternallyConnectableInfo::kManifestDataKey =
+    keys::kExternallyConnectable;
+
 ExternallyConnectableHandler::ExternallyConnectableHandler() = default;
 
 ExternallyConnectableHandler::~ExternallyConnectableHandler() = default;
@@ -68,7 +72,8 @@ bool ExternallyConnectableHandler::Parse(Extension* extension,
   }
 
   extension->AddInstallWarnings(std::move(install_warnings));
-  extension->SetManifestData(keys::kExternallyConnectable, std::move(info));
+  extension->SetManifestData(ExternallyConnectableInfo::kManifestDataKey,
+                             std::move(info));
   return true;
 }
 
@@ -80,8 +85,7 @@ base::span<const char* const> ExternallyConnectableHandler::Keys() const {
 // static
 const ExternallyConnectableInfo* ExternallyConnectableInfo::Get(
     const Extension* extension) {
-  return static_cast<const ExternallyConnectableInfo*>(
-      extension->GetManifestData(keys::kExternallyConnectable));
+  return extension->GetManifestData<ExternallyConnectableInfo>();
 }
 
 // static
