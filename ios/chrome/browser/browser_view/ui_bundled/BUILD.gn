@@ -233,6 +233,7 @@ source_set("ui_bundled") {
     "//ios/chrome/browser/policy/model:policy_util",
     "//ios/chrome/browser/popup_menu/coordinator",
     "//ios/chrome/browser/popup_menu/overflow_menu/public:features",
+    "//ios/chrome/browser/popup_menu/public",
     "//ios/chrome/browser/prefs/model",
     "//ios/chrome/browser/prerender/model",
     "//ios/chrome/browser/presenters/ui_bundled",

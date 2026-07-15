@@ -376,6 +376,11 @@
   [self configureContentSuggestionsCoordinator];
   self.feedMetricsRecorder.NTPActionsDelegate = self;
   [self configureNTPViewController];
+
+  id<PopupMenuCommands> popupMenuHandler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), PopupMenuCommands);
+  [self setBlueDotVisible:[popupMenuHandler hasBlueDotForOverflowMenu]];
+
   [self configureTabGroupIndicator];
 
   [self startObservers];
@@ -652,6 +657,10 @@
   [self stopAccountMenuCoordinator];
   [self stopSigninCoordinator];
   [self dismissCustomizationMenu];
+}
+
+- (void)setBlueDotVisible:(BOOL)visible {
+  [self.headerView setOverflowMenuBlueDot:visible];
 }
 
 #pragma mark - Initializers

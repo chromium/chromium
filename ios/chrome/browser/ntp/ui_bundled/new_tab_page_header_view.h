@@ -140,6 +140,9 @@ enum class SearchEngineLogoState;
 // the omnibox to the top of the screen.
 - (CGFloat)pinnedOffsetY;
 
+// Sets the overflow menu blue dot visibility.
+- (void)setOverflowMenuBlueDot:(BOOL)hasBlueDot;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_NTP_UI_BUNDLED_NEW_TAB_PAGE_HEADER_VIEW_H_

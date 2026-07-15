@@ -184,6 +184,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/overscroll_actions/ui_bundled",
     "//ios/chrome/browser/policy/model:policy_util",
     "//ios/chrome/browser/popup_menu/overflow_menu/public:features",
+    "//ios/chrome/browser/popup_menu/public",
     "//ios/chrome/browser/safari_data_import/coordinator:coordinator_delegate",
     "//ios/chrome/browser/safari_data_import/coordinator:export_coordinator",
     "//ios/chrome/browser/search_engines/model:template_url_service_factory",
@@ -254,6 +255,8 @@ source_set("ntp_internal") {
     "new_tab_page_view_controller.mm",
     "ntp_identity_disc_button.h",
     "ntp_identity_disc_button.mm",
+    "ntp_tools_menu_button.h",
+    "ntp_tools_menu_button.mm",
     "scroll_delegate_proxy.h",
     "scroll_delegate_proxy.mm",
   ]

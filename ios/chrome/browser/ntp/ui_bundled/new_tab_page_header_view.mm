@@ -34,6 +34,7 @@
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_trait.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_utils.h"
 #import "ios/chrome/browser/ntp/ui_bundled/ntp_identity_disc_button.h"
+#import "ios/chrome/browser/ntp/ui_bundled/ntp_tools_menu_button.h"
 #import "ios/chrome/browser/omnibox/public/omnibox_constants.h"
 #import "ios/chrome/browser/omnibox/public/omnibox_presentation_context.h"
 #import "ios/chrome/browser/omnibox/public/omnibox_ui_features.h"
@@ -198,7 +199,7 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
 @property(nonatomic, strong) UIView* separator;
 
 // Private properties moved from header.
-@property(nonatomic, strong) UIButton* toolsMenuButton;
+@property(nonatomic, strong) NTPToolsMenuButton* toolsMenuButton;
 @property(nonatomic, strong) UIView* cancelButton;
 @property(nonatomic, strong) OmniboxContainerView* omnibox;
 @property(nonatomic, strong) UIView* fakeOmniboxContainer;
@@ -282,6 +283,9 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
 
   // YES if Google is the default search engine.
   BOOL _isGoogleDefaultSearchEngine;
+
+  // YES if the tools menu button has a blue dot.
+  BOOL _hasToolsMenuBlueDot;
 }
 
 #pragma mark - Public
@@ -1099,7 +1103,7 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
   [self applyBackgroundTheme];
 }
 
-- (void)setToolsMenuButton:(UIButton*)toolsMenuButton {
+- (void)setToolsMenuButton:(NTPToolsMenuButton*)toolsMenuButton {
   CHECK(IsChromeNextIaEnabled());
   if (!toolsMenuButton) {
     [_toolsMenuButton removeFromSuperview];
@@ -1107,36 +1111,7 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
     return;
   }
 
-  UIButtonConfiguration* configuration =
-      [UIButtonConfiguration plainButtonConfiguration];
-  UIImage* icon = DefaultSymbolTemplateWithPointSize(
-      kMenuSymbol, ntp_home::kNTPMenuButtonIconSize);
-  configuration.image = icon;
-  configuration.background.cornerRadius = ntp_home::kNTPMenuButtonCornerRadius;
-  toolsMenuButton.configuration = configuration;
-
-  UIColor* unthemedTintColor = [UIColor colorNamed:kBlue600Color];
-  toolsMenuButton.configurationUpdateHandler =
-      CreateThemedButtonConfigurationUpdateHandler(
-          unthemedTintColor, ^UIColor*(NewTabPageColorPalette* palette) {
-            if (palette) {
-              return palette.headerButtonColor;
-            }
-
-            return [UIColor colorWithDynamicProvider:^UIColor*(
-                                UITraitCollection* traits) {
-              return traits.userInterfaceStyle == UIUserInterfaceStyleDark
-                         ? [UIColor colorNamed:kTabGroupFaviconBackgroundColor]
-                         : [[UIColor colorNamed:kSolidWhiteColor]
-                               colorWithAlphaComponent:
-                                   ntp_home::kNTPMenuButtonLightUnthemedAlpha];
-            }];
-          });
-
   toolsMenuButton.translatesAutoresizingMaskIntoConstraints = NO;
-  toolsMenuButton.pointerInteractionEnabled = YES;
-  toolsMenuButton.clipsToBounds = YES;
-
   [self.toolBarView addSubview:toolsMenuButton];
 
   NSLayoutAnchor* leadingAnchor =
@@ -1160,6 +1135,7 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
   ]];
 
   _toolsMenuButton = toolsMenuButton;
+  _toolsMenuButton.blueDot = _hasToolsMenuBlueDot;
 
   [self applyBackgroundTheme];
 }
@@ -1346,12 +1322,8 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
     return;
   }
 
-  UIButton* toolsMenuButton =
-      [[ExtendedTouchTargetButton alloc] initWithFrame:CGRectZero];
-
-  toolsMenuButton.accessibilityIdentifier = kNTPToolsMenuButtonIdentifier;
-  toolsMenuButton.accessibilityLabel =
-      l10n_util::GetNSString(IDS_IOS_TOOLS_MENU);
+  NTPToolsMenuButton* toolsMenuButton =
+      [[NTPToolsMenuButton alloc] initWithFrame:CGRectZero];
 
   [toolsMenuButton addTarget:self.commandHandler
                       action:@selector(toolsMenuWasTapped:)
@@ -2213,6 +2185,11 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
 - (void)omniboxDidEndEditing {
   [self.omnibox.textInput setText:@""];
   [self updateFakeboxDisplay];
+}
+
+- (void)setOverflowMenuBlueDot:(BOOL)hasBlueDot {
+  _hasToolsMenuBlueDot = hasBlueDot;
+  self.toolsMenuButton.blueDot = hasBlueDot;
 }
 
 @end

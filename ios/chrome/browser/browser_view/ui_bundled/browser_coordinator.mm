@@ -5160,11 +5160,6 @@ const char kChromeAppStoreUrl[] =
   [_NTPCoordinator handleFeedModelDidEndUpdates:updateType];
 }
 
-- (void)customizationMenuWasTapped {
-  CHECK(IsOverflowMenuHomeCustomizationEntrypointEnabled());
-  [_NTPCoordinator customizationMenuWasTapped];
-}
-
 - (void)presentLensIconBubble {
   __weak NewTabPageCoordinator* weakNTPCoordinator = _NTPCoordinator;
   [HandlerForProtocol(self.dispatcher, SceneCommands)
@@ -5181,6 +5176,15 @@ const char kChromeAppStoreUrl[] =
     [HandlerForProtocol(_dispatcher, HelpCommands)
         presentInProductHelpWithType:InProductHelpType::kFeedSwipe];
   }
+}
+
+- (void)customizationMenuWasTapped {
+  CHECK(IsOverflowMenuHomeCustomizationEntrypointEnabled());
+  [_NTPCoordinator customizationMenuWasTapped];
+}
+
+- (void)setNTPBlueDotVisible:(BOOL)visible {
+  [_NTPCoordinator setBlueDotVisible:visible];
 }
 
 #pragma mark - WebNavigationNTPDelegate

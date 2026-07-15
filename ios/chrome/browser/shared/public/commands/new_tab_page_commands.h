@@ -28,6 +28,9 @@ typedef NS_ENUM(NSInteger, FeedLayoutUpdateType);
 // Presents the Home Customization menu.
 - (void)customizationMenuWasTapped;
 
+// Controls the visibility of the blue dot on the NTP.
+- (void)setNTPBlueDotVisible:(BOOL)visible;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_COMMANDS_NEW_TAB_PAGE_COMMANDS_H_

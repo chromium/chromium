@@ -108,6 +108,9 @@ class WebState;
 // Presents the  customization menu.
 - (void)customizationMenuWasTapped;
 
+// Controls the visibility of the blue dot on the NTP.
+- (void)setBlueDotVisible:(BOOL)visible;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_NTP_UI_BUNDLED_NEW_TAB_PAGE_COORDINATOR_H_

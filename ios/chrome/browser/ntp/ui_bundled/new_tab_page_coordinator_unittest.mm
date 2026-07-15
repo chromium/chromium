@@ -58,6 +58,7 @@
 #import "ios/chrome/browser/shared/public/commands/help_commands.h"
 #import "ios/chrome/browser/shared/public/commands/lens_commands.h"
 #import "ios/chrome/browser/shared/public/commands/omnibox_commands.h"
+#import "ios/chrome/browser/shared/public/commands/popup_menu_commands.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -173,6 +174,7 @@ class NewTabPageCoordinatorTest : public PlatformTest {
     EXPECT_OCMOCK_VERIFY(fakebox_focuser_handler_mock_);
     EXPECT_OCMOCK_VERIFY(lens_handler_mock_);
     EXPECT_OCMOCK_VERIFY(browser_coordinator_handler_mock_);
+    EXPECT_OCMOCK_VERIFY(popup_menu_commands_handler_mock_);
     EXPECT_OCMOCK_VERIFY(component_factory_mock_);
   }
 
@@ -303,6 +305,8 @@ class NewTabPageCoordinatorTest : public PlatformTest {
     lens_handler_mock_ = OCMProtocolMock(@protocol(LensCommands));
     browser_coordinator_handler_mock_ =
         OCMProtocolMock(@protocol(BrowserCoordinatorCommands));
+    popup_menu_commands_handler_mock_ =
+        OCMProtocolMock(@protocol(PopupMenuCommands));
     [browser_.get()->GetCommandDispatcher()
         startDispatchingToTarget:application_handler_mock_
                      forProtocol:@protocol(SceneCommands)];
@@ -324,6 +328,9 @@ class NewTabPageCoordinatorTest : public PlatformTest {
     [browser_.get()->GetCommandDispatcher()
         startDispatchingToTarget:browser_coordinator_handler_mock_
                      forProtocol:@protocol(BrowserCoordinatorCommands)];
+    [browser_.get()->GetCommandDispatcher()
+        startDispatchingToTarget:popup_menu_commands_handler_mock_
+                     forProtocol:@protocol(PopupMenuCommands)];
   }
 
   // Dynamically calls a selector on an object.
@@ -394,6 +401,7 @@ class NewTabPageCoordinatorTest : public PlatformTest {
   id fakebox_focuser_handler_mock_;
   id lens_handler_mock_;
   id browser_coordinator_handler_mock_;
+  id popup_menu_commands_handler_mock_;
   std::unique_ptr<base::HistogramTester> histogram_tester_;
 };
 
