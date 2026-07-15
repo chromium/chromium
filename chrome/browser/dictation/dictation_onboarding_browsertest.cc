@@ -180,4 +180,31 @@ IN_PROC_BROWSER_TEST_F(DictationOnboardingInteractiveTest,
   // clang-format on
 }
 
+IN_PROC_BROWSER_TEST_F(DictationOnboardingInteractiveTest,
+                       ResponsiveAfterTabSwitching) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSecondTabElementId);
+  // clang-format off
+  RunTestSequence(
+      CheckHasSession(false),
+      StartSession(),
+      WaitForShow(kDictationOnboardingDialogElementId),
+
+      AddInstrumentedTab(kSecondTabElementId, GURL("about:blank")),
+
+      SelectTab(kTabStripElementId, 0),
+      WaitForShow(kDictationOnboardingDialogElementId),
+
+      // Verify focus is restored
+      CheckViewProperty(kDictationOnboardingOkButtonElementId,
+                        &views::View::HasFocus, true),
+
+      PressButton(kDictationOnboardingOkButtonElementId),
+      WaitForHide(kDictationOnboardingDialogElementId),
+
+      CheckHasCompletedOnboardingPref(true),
+      CheckHasSession(true)
+  );
+  // clang-format on
+}
+
 }  // namespace dictation

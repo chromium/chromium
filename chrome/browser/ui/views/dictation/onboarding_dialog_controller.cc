@@ -31,6 +31,7 @@
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/view_class_properties.h"
+#include "ui/views/widget/widget_delegate.h"
 
 namespace dictation {
 
@@ -144,7 +145,10 @@ std::unique_ptr<views::View> CreateBodyView(
 }  // namespace
 
 OnboardingDialogController::OnboardingDialogController(tabs::TabInterface& tab)
-    : tab_(tab) {}
+    : tab_(tab) {
+  tab_activation_subscription_ = tab_->RegisterDidActivate(base::BindRepeating(
+      &OnboardingDialogController::OnTabActivated, base::Unretained(this)));
+}
 
 OnboardingDialogController::~OnboardingDialogController() {
   if (IsShowing()) {
@@ -236,6 +240,19 @@ void OnboardingDialogController::Close(views::Widget::ClosedReason reason) {
     std::move(close_callback_).Run();
   }
   // WARNING: close_callback_ above deletes `this`.
+}
+
+void OnboardingDialogController::OnTabActivated(tabs::TabInterface* tab) {
+  if (IsShowing()) {
+    widget_->StackAtTop();
+    widget_->Activate();
+    if (widget_->widget_delegate()) {
+      auto* view = widget_->widget_delegate()->GetInitiallyFocusedView();
+      if (view) {
+        view->RequestFocus();
+      }
+    }
+  }
 }
 
 }  // namespace dictation

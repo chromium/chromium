@@ -55,10 +55,12 @@ class OnboardingDialogController {
   void OnDialogAccepted(base::OnceClosure complete_callback);
   void OnLearnMoreLinkClicked();
   void Close(views::Widget::ClosedReason reason);
+  void OnTabActivated(tabs::TabInterface* tab);
 
   const raw_ref<tabs::TabInterface> tab_;
   std::unique_ptr<views::Widget> widget_;
   base::OnceClosure close_callback_;
+  base::CallbackListSubscription tab_activation_subscription_;
 
   base::WeakPtrFactory<OnboardingDialogController> weak_ptr_factory_{this};
 };
