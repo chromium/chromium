@@ -359,7 +359,7 @@ const char kGuidedTourStepDidFinishHistogram[] = "IOS.GuidedTour.DidFinishStep";
   CHECK(profile);
 
   DCHECK(!_firstRunUIBlocker);
-  _firstRunUIBlocker = std::make_unique<ScopedUIBlocker>(_presentingSceneState);
+  _firstRunUIBlocker = ScopedUIBlocker::ProfileScoped(_presentingSceneState);
 
   if (!base::FeatureList::IsEnabled(switches::kBuildExternalPrivacyContext)) {
     // Capabilities prefetching is no longer necessary; all capabilities fetches

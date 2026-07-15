@@ -182,7 +182,7 @@ id<SearchEngineChoiceCommands> GetSearchEngineChoiceHandler(
 
   // Present the screen.
   _searchEngineChoiceSceneStateID = sceneState.sceneSessionID;
-  _searchEngineChoiceUIBlocker = std::make_unique<ScopedUIBlocker>(sceneState);
+  _searchEngineChoiceUIBlocker = ScopedUIBlocker::ProfileScoped(sceneState);
 
   __weak __typeof(self) weakSelf = self;
   __weak SceneState* weakSceneState = sceneState;

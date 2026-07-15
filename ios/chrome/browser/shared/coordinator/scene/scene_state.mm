@@ -278,7 +278,7 @@
   if (_numberOfSigninInProgress == 0) {
     [_observers signinDidStart:self];
     CHECK(!_signinUIBlocker, base::NotFatalUntil::M146);
-    _signinUIBlocker = std::make_unique<ScopedUIBlocker>(self);
+    _signinUIBlocker = ScopedUIBlocker::ProfileScoped(self);
   } else {
     CHECK(_signinUIBlocker, base::NotFatalUntil::M146);
   }

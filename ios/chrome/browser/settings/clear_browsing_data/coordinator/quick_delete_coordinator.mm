@@ -240,7 +240,7 @@ using browsing_data::DeleteBrowsingDataDialogAction;
     // simultaneous taps. See crbug.com/368310663.
     return NO;
   }
-  _windowUIBlocker = std::make_unique<ScopedUIBlocker>(sceneState);
+  _windowUIBlocker = ScopedUIBlocker::ProfileScoped(sceneState);
   return YES;
 }
 

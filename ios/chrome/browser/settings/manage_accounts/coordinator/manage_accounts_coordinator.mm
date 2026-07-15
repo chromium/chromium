@@ -300,7 +300,7 @@ using signin_metrics::PromoAction;
     // simultaneous taps. See crbug.com/368310663.
     return;
   }
-  _UIBlocker = std::make_unique<ScopedUIBlocker>(sceneState);
+  _UIBlocker = ScopedUIBlocker::ProfileScoped(sceneState);
   [_viewController preventUserInteraction];
   __weak __typeof(self) weakSelf = self;
   GetApplicationContext()->GetSystemIdentityManager()->ForgetIdentity(

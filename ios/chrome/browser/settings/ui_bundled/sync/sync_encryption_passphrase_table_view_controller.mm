@@ -163,7 +163,7 @@ const CGFloat kSpinnerButtonPadding = 18;
   [self setLeftNavBarItem];
 
   SceneState* sceneState = self.browser->GetSceneState();
-  _uiBlocker = std::make_unique<ScopedUIBlocker>(sceneState);
+  _uiBlocker = ScopedUIBlocker::ProfileScoped(sceneState);
   self.view.accessibilityIdentifier =
       kSyncEncryptionPassphraseTableViewAccessibilityIdentifier;
 }
