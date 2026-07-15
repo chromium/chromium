@@ -238,4 +238,60 @@ TEST_F(CriticalActionServiceTest, GetCriticalActionsWithOptions) {
   EXPECT_EQ(results2[0].critical_action_id, entry2.critical_action_id);
 }
 
+TEST_F(CriticalActionServiceTest, AddCriticalActionWithNavigationIdInOrder) {
+  int64_t nav_id = 1001;
+  int64_t visit_id = 54321;
+
+  CriticalActionEntry entry;
+  entry.critical_action_id = base::Uuid::GenerateRandomV4().AsLowercaseString();
+  entry.action_type = ActionType::kFormFill;
+  entry.url = GURL("https://example.com/login");
+
+  // Action added before visit_id resolution.
+  service_->AddCriticalActionWithNavigationId(entry, nav_id);
+
+  // History callback arrives.
+  history::URLRow url_row(entry.url);
+  history::VisitRow visit_row;
+  visit_row.visit_id = visit_id;
+  history::VisitedURLInfo visited_info(
+      url_row, visit_row, history::VisitResponseCodeCategory::kNot404, nav_id);
+  service_->OnURLVisitedWithNavigationId(nullptr, visited_info);
+
+  base::test::TestFuture<std::optional<CriticalActionEntry>> get_future;
+  service_->GetCriticalAction(entry.critical_action_id,
+                              get_future.GetCallback());
+  auto retrieved = get_future.Get();
+  ASSERT_TRUE(retrieved.has_value());
+  EXPECT_EQ(retrieved->visit_id, visit_id);
+}
+
+TEST_F(CriticalActionServiceTest,
+       AddCriticalActionWithNavigationIdPreResolved) {
+  int64_t nav_id = 1002;
+  int64_t visit_id = 98765;
+
+  // History callback arrives first.
+  history::URLRow url_row(GURL("https://example.com/register"));
+  history::VisitRow visit_row;
+  visit_row.visit_id = visit_id;
+  history::VisitedURLInfo visited_info(
+      url_row, visit_row, history::VisitResponseCodeCategory::kNot404, nav_id);
+  service_->OnURLVisitedWithNavigationId(nullptr, visited_info);
+
+  // Action added after visit_id resolution.
+  CriticalActionEntry entry;
+  entry.critical_action_id = base::Uuid::GenerateRandomV4().AsLowercaseString();
+  entry.action_type = ActionType::kFormFill;
+  entry.url = GURL("https://example.com/register");
+  service_->AddCriticalActionWithNavigationId(entry, nav_id);
+
+  base::test::TestFuture<std::optional<CriticalActionEntry>> get_future;
+  service_->GetCriticalAction(entry.critical_action_id,
+                              get_future.GetCallback());
+  auto retrieved = get_future.Get();
+  ASSERT_TRUE(retrieved.has_value());
+  EXPECT_EQ(retrieved->visit_id, visit_id);
+}
+
 }  // namespace critical_actions

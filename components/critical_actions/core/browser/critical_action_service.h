@@ -10,6 +10,7 @@
 #include <string_view>
 #include <vector>
 
+#include "base/containers/lru_cache.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/scoped_observation.h"
@@ -45,11 +46,20 @@ class CriticalActionService : public KeyedService,
   void OnHistoryDeletions(history::HistoryService* history_service,
                           const history::DeletionInfo& deletion_info) override;
 
+  void OnURLVisitedWithNavigationId(
+      history::HistoryService* history_service,
+      const history::VisitedURLInfo& visited_url_info) override;
+
   void HistoryServiceBeingDeleted(
       history::HistoryService* history_service) override;
 
   // UI thread entry point to add a new critical action.
   void AddCriticalAction(const CriticalActionEntry& entry);
+
+  // UI thread entry point to log or queue a critical action linked by
+  // navigation ID.
+  void AddCriticalActionWithNavigationId(const CriticalActionEntry& entry,
+                                         int64_t navigation_id);
 
   // UI thread entry point to retrieve a critical action record by ID.
   void GetCriticalAction(
@@ -74,6 +84,11 @@ class CriticalActionService : public KeyedService,
   void DeleteCriticalActionsByVisitIds(const std::vector<int64_t>& visit_ids);
 
  private:
+  struct NavigationState {
+    std::optional<int64_t> visit_id;
+    std::vector<CriticalActionEntry> pending_actions;
+  };
+
   SEQUENCE_CHECKER(sequence_checker_);
   base::SequenceBound<CriticalActionBackend> backend_
       GUARDED_BY_CONTEXT(sequence_checker_);
@@ -81,6 +96,10 @@ class CriticalActionService : public KeyedService,
   base::ScopedObservation<history::HistoryService,
                           history::HistoryServiceObserver>
       history_service_observation_{this};
+
+  // Capacity-limited LRU cache for tracking recent navigation history
+  // resolutions.
+  base::LRUCache<int64_t, NavigationState> navigation_cache_;
 };
 
 }  // namespace critical_actions
