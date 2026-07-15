@@ -9,9 +9,8 @@
 #include "third_party/blink/public/mojom/worker/worklet_global_scope_creation_params.mojom-blink-forward.h"
 #include "third_party/blink/public/web/web_shared_storage_worklet_thread.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
-#include "third_party/blink/renderer/modules/shared_storage/shared_storage_worklet_messaging_proxy.h"
-#include "third_party/blink/renderer/platform/heap/self_keep_alive.h"
-
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/visitor.h"
 namespace blink {
 
 // A thread container for running shared storage worklet operations. This object
@@ -33,13 +32,7 @@ class MODULES_EXPORT WebSharedStorageWorkletThreadImpl final
   void Trace(Visitor*) const;
 
  private:
-  void DeleteSelf();
-
   scoped_refptr<base::SingleThreadTaskRunner> main_thread_runner_;
-
-  Member<SharedStorageWorkletMessagingProxy> messaging_proxy_;
-
-  SelfKeepAlive<WebSharedStorageWorkletThreadImpl> keep_alive_{this};
 };
 
 }  // namespace blink

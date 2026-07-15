@@ -16,18 +16,6 @@ class MODULES_EXPORT SharedStorageModifierMethod : public ScriptWrappable {
 
  public:
   void Trace(Visitor*) const override;
-
-  // Returns std::move(method_with_options_).
-  network::mojom::blink::SharedStorageModifierMethodWithOptionsPtr
-  TakeMojomMethod();
-
-  // Returns method_with_options_.Clone().
-  network::mojom::blink::SharedStorageModifierMethodWithOptionsPtr
-  CloneMojomMethod();
-
- protected:
-  network::mojom::blink::SharedStorageModifierMethodWithOptionsPtr
-      method_with_options_;
 };
 
 }  // namespace blink

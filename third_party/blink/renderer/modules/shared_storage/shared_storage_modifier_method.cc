@@ -10,14 +10,4 @@ void SharedStorageModifierMethod::Trace(Visitor* visitor) const {
   ScriptWrappable::Trace(visitor);
 }
 
-network::mojom::blink::SharedStorageModifierMethodWithOptionsPtr
-SharedStorageModifierMethod::TakeMojomMethod() {
-  return std::move(method_with_options_);
-}
-
-network::mojom::blink::SharedStorageModifierMethodWithOptionsPtr
-SharedStorageModifierMethod::CloneMojomMethod() {
-  return method_with_options_.Clone();
-}
-
 }  // namespace blink

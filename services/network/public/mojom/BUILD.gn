@@ -281,32 +281,6 @@ mojom("mojom_shared_storage") {
           [ "//services/network/public/cpp/shared_storage_mojom_traits.h" ]
     },
   ]
-
-  blink_cpp_typemaps = [
-    {
-      types = [
-        {
-          mojom = "network.mojom.SharedStorageKeyArgument"
-          cpp = "::blink::String"
-        },
-        {
-          mojom = "network.mojom.SharedStorageValueArgument"
-          cpp = "::blink::String"
-        },
-        {
-          mojom = "network.mojom.LockName"
-          cpp = "::blink::String"
-        },
-        {
-          mojom = "network.mojom.SharedStorageBatchUpdateMethodsArgument"
-          cpp = "::blink::Vector<::network::mojom::blink::SharedStorageModifierMethodWithOptionsPtr>"
-          move_only = true
-        },
-      ]
-      traits_headers = [ "//third_party/blink/renderer/modules/shared_storage/shared_storage_blink_mojom_traits.h" ]
-      traits_sources = [ "//third_party/blink/renderer/modules/shared_storage/shared_storage_blink_mojom_traits.cc" ]
-    },
-  ]
 }
 
 mojom("mojom_shared_dictionary") {

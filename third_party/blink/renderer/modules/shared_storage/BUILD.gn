@@ -24,33 +24,19 @@ blink_modules_sources("shared_storage") {
     "shared_storage_delete_method.h",
     "shared_storage_modifier_method.cc",
     "shared_storage_modifier_method.h",
-    "shared_storage_operation_definition.cc",
-    "shared_storage_operation_definition.h",
     "shared_storage_set_method.cc",
     "shared_storage_set_method.h",
-    "shared_storage_window_supplement.cc",
-    "shared_storage_window_supplement.h",
     "shared_storage_worklet.cc",
     "shared_storage_worklet.h",
     "shared_storage_worklet_global_scope.cc",
     "shared_storage_worklet_global_scope.h",
-    "shared_storage_worklet_messaging_proxy.cc",
-    "shared_storage_worklet_messaging_proxy.h",
     "shared_storage_worklet_navigator.cc",
     "shared_storage_worklet_navigator.h",
-    "shared_storage_worklet_thread.cc",
-    "shared_storage_worklet_thread.h",
-    "util.cc",
-    "util.h",
     "window_shared_storage.cc",
     "window_shared_storage.h",
   ]
 
-  deps = [
-    "//components/aggregation_service",
-    "//services/network/public/cpp",
-    "//third_party/blink/renderer/modules/crypto",
-  ]
+  deps = [ "//third_party/blink/renderer/modules/crypto" ]
 
   public_deps = [ "//url" ]
 }
