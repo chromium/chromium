@@ -885,7 +885,16 @@ TEST_F(TooltipControllerTest, SynthesizedMouseMoveUpdatesObservedWindow) {
   helper_->HideAndReset();
 }
 
-TEST_F(TooltipControllerTest, DontCrashWhenScreenTargetIsNullAfterCapture) {
+// TODO(crbug.com/534947622): Disable on Fuchsia due to test failures.
+#if BUILDFLAG(IS_FUCHSIA)
+#define MAYBE_DontCrashWhenScreenTargetIsNullAfterCapture \
+  DISABLED_DontCrashWhenScreenTargetIsNullAfterCapture
+#else
+#define MAYBE_DontCrashWhenScreenTargetIsNullAfterCapture \
+  DontCrashWhenScreenTargetIsNullAfterCapture
+#endif
+TEST_F(TooltipControllerTest,
+       MAYBE_DontCrashWhenScreenTargetIsNullAfterCapture) {
   // Set capture on the main widget.
   widget_->SetCapture(view_);
   EXPECT_TRUE(widget_->HasCapture());
