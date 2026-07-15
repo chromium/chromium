@@ -25,6 +25,8 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.channels.FileLock;
 import java.nio.channels.OverlappingFileLockException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 /**
  * Handles locking the WebView's data directory, to prevent concurrent use from more than one
@@ -71,6 +73,29 @@ public abstract class AwDataDirLock {
     private static void logResult(@LockRetryResult int result) {
         RecordHistogram.recordEnumeratedHistogram(
                 "Android.WebView.Startup.LockRetryResult", result, LockRetryResult.COUNT);
+    }
+
+    @IntDef({
+        ProcessStatus.UNKNOWN,
+        ProcessStatus.NONEXISTENT,
+        ProcessStatus.INACCESSIBLE,
+        ProcessStatus.UNINTERRUPTIBLE,
+        ProcessStatus.ZOMBIE,
+        ProcessStatus.ALIVE,
+    })
+    private @interface ProcessStatus {
+        // We couldn't figure out the state of the process for some reason.
+        int UNKNOWN = 0;
+        // The process doesn't appear to exist (but may just be hidden from us).
+        int NONEXISTENT = 1;
+        // The process appears to exist but is inaccessible to us.
+        int INACCESSIBLE = 2;
+        // The process's main thread is in uninterruptible sleep (D state).
+        int UNINTERRUPTIBLE = 3;
+        // The process's main thread has exited (Z state).
+        int ZOMBIE = 4;
+        // The process is alive.
+        int ALIVE = 5;
     }
 
     public static void lock(final Context appContext) {
@@ -275,6 +300,45 @@ public abstract class AwDataDirLock {
                 Log.w(TAG, "Failed to write info to lock file", e);
             }
         }
+
+        @ProcessStatus
+        int getProcessStatus() {
+            try {
+                // Check the status of the pid holding the lock by sending it a null signal.
+                // This doesn't actually send a signal, just runs the kernel access checks.
+                Os.kill(pid, 0);
+
+                // No exception means the process exists and has the same uid as us, so is
+                // probably an instance of the same app. We should be able to access its
+                // status in /proc to determine a more specific state.
+                Path statPath = new File("/proc/" + pid + "/stat").toPath();
+                byte[] stat = Files.readAllBytes(statPath);
+                // Stick with bytes - there are no guarantees about string encoding here.
+                // The last ASCII ')' in stat is the end of the process name field, followed
+                // by a space and then an ASCII letter for the process status.
+                for (int i = stat.length - 1; i >= 0; i--) {
+                    if (stat[i] == (byte) ')' && i + 2 < stat.length) {
+                        return switch ((char) stat[i + 2]) {
+                            case 'D' -> ProcessStatus.UNINTERRUPTIBLE;
+                            case 'Z' -> ProcessStatus.ZOMBIE;
+                            default -> ProcessStatus.ALIVE;
+                        };
+                    }
+                }
+                return ProcessStatus.UNKNOWN;
+            } catch (ErrnoException e) {
+                if (e.errno == OsConstants.ESRCH) {
+                    return ProcessStatus.NONEXISTENT;
+                } else if (e.errno == OsConstants.EPERM) {
+                    return ProcessStatus.INACCESSIBLE;
+                } else {
+                    return ProcessStatus.UNKNOWN;
+                }
+            } catch (Exception e) {
+                // Reading /proc/pid/stat failed or something else unexpected happened.
+                return ProcessStatus.UNKNOWN;
+            }
+        }
     }
 
     private static String getLockFailureReason(@Nullable ProcessInfo holder) {
@@ -288,28 +352,15 @@ public abstract class AwDataDirLock {
         if (holder != null) {
             error.append(holder.toString());
 
-            // Check the status of the pid holding the lock by sending it a null signal.
-            // This doesn't actually send a signal, just runs the kernel access checks.
-            try {
-                Os.kill(holder.pid, 0);
-
-                // No exception means the process exists and has the same uid as us, so is
-                // probably an instance of the same app. Leave the message alone.
-            } catch (ErrnoException e) {
-                if (e.errno == OsConstants.ESRCH) {
-                    // pid did not exist - the lock should have been released by the kernel,
-                    // so this process info is probably wrong.
-                    error.append(" doesn't exist!");
-                } else if (e.errno == OsConstants.EPERM) {
-                    // pid existed but didn't have the same uid as us.
-                    // Most likely the pid has just been recycled for a new process
-                    error.append(" pid has been reused!");
-                } else {
-                    // EINVAL is the only other documented return value for kill(2) and should never
-                    // happen for signal 0, so just complain generally.
-                    error.append(" status unknown!");
-                }
-            }
+            error.append(
+                    switch (holder.getProcessStatus()) {
+                        case ProcessStatus.NONEXISTENT -> " doesn't exist!";
+                        case ProcessStatus.INACCESSIBLE -> " pid has been reused!";
+                        case ProcessStatus.UNINTERRUPTIBLE -> " is uninterruptible";
+                        case ProcessStatus.ZOMBIE -> " is a zombie";
+                        case ProcessStatus.ALIVE -> " is alive";
+                        default -> " status unknown!";
+                    });
         } else {
             error.append(" unknown");
         }
