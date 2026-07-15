@@ -294,14 +294,14 @@ void ComposeboxHandler::SubmitQuery(
     omnibox::ChromeAimEntryPoint aim_entrypoint,
     std::map<std::string, std::string> additional_params,
     bool is_voice_search) {
+  CHECK(input_state_model());
+
   if (auto* metrics_recorder = GetMetricsRecorder()) {
     // Record AIM tool and model mode on query submission.
     const auto& input_state = GetInputState();
-    std::vector<omnibox::InputType> active_input_types =
-        contextual_search::InputStateModel::GetCurrentInputTypes(
-            GetContextualSessionHandle());
     metrics_recorder->RecordModesOnSubmission(
-        input_state.active_tool, input_state.active_model, active_input_types);
+        input_state.active_tool, input_state.active_model,
+        input_state_model()->GetEffectiveInputTypes());
   }
 
   ContextualizeQueryAndOpenUrl(query_text, disposition, aim_entrypoint,

@@ -303,6 +303,8 @@ InputStateModel::InputStateModel(
   state_ = new_input_state_model.state_;
   rule_set_ = new_input_state_model.rule_set_;
   configured_input_types_ = new_input_state_model.configured_input_types_;
+  is_smart_tab_sharing_active_ =
+      new_input_state_model.is_smart_tab_sharing_active_;
   if (new_input_state_model.pref_service_) {
     SetPrefService(new_input_state_model.pref_service_);
   }
@@ -345,6 +347,48 @@ std::vector<omnibox::InputType> InputStateModel::GetCurrentInputTypes(
 
 void InputStateModel::Initialize() {
   notifySubscribers();
+}
+
+void InputStateModel::SetSmartTabSharingActive(bool active) {
+  if (is_smart_tab_sharing_active_ == active) {
+    return;
+  }
+  is_smart_tab_sharing_active_ = active;
+  updateDisabledState();
+  notifySubscribers();
+}
+
+std::vector<omnibox::InputType> InputStateModel::GetEffectiveInputTypes()
+    const {
+  std::vector<omnibox::InputType> input_types =
+      GetCurrentInputTypes(session_handle_.get());
+  if (is_smart_tab_sharing_active_) {
+    bool is_browser_tab_allowed = true;
+    if (state_.active_tool != omnibox::ToolMode::TOOL_MODE_UNSPECIFIED) {
+      const omnibox::ToolRule* rule = GetToolRule(state_.active_tool);
+      if (!rule || (!rule->allow_all_input_types() &&
+                    !std::ranges::contains(
+                        rule->allowed_input_types(),
+                        omnibox::InputType::INPUT_TYPE_BROWSER_TAB))) {
+        is_browser_tab_allowed = false;
+      }
+    }
+    if (state_.active_model != omnibox::ModelMode::MODEL_MODE_UNSPECIFIED) {
+      const omnibox::ModelRule* rule = GetModelRule(state_.active_model);
+      if (!rule || (!rule->allow_all_input_types() &&
+                    !std::ranges::contains(
+                        rule->allowed_input_types(),
+                        omnibox::InputType::INPUT_TYPE_BROWSER_TAB))) {
+        is_browser_tab_allowed = false;
+      }
+    }
+    if (is_browser_tab_allowed &&
+        !std::ranges::contains(input_types,
+                               omnibox::InputType::INPUT_TYPE_BROWSER_TAB)) {
+      input_types.push_back(omnibox::InputType::INPUT_TYPE_BROWSER_TAB);
+    }
+  }
+  return input_types;
 }
 
 void InputStateModel::SetPrefService(PrefService* pref_service) {
@@ -549,6 +593,7 @@ void InputStateModel::UpdateDisabledTools() {
   state_.disabled_tools.reserve(state_.allowed_tools.size());
   const omnibox::ModelRule* active_model_rule =
       GetModelRule(state_.active_model);
+  const auto effective_inputs = GetEffectiveInputTypes();
   for (const auto& tool : state_.allowed_tools) {
     if (tool == state_.active_tool) {
       state_.disabled_tools.push_back(tool);
@@ -564,8 +609,7 @@ void InputStateModel::UpdateDisabledTools() {
     bool incompatible_with_inputs =
         !tool_rule ||
         (!tool_rule->allow_all_input_types() &&
-         !AreItemsAllowed(GetCurrentInputTypes(session_handle_.get()),
-                          tool_rule->allowed_input_types()));
+         !AreItemsAllowed(effective_inputs, tool_rule->allowed_input_types()));
 
     if (incompatible_with_model || incompatible_with_inputs ||
         std::ranges::contains(permanently_disabled_tools_, tool)) {
@@ -580,7 +624,7 @@ void InputStateModel::UpdateDisabledModels() {
   // - Incompatible with the current inputs.
   state_.disabled_models.clear();
   state_.disabled_models.reserve(state_.allowed_models.size());
-
+  const auto effective_inputs = GetEffectiveInputTypes();
   for (const auto& model : state_.allowed_models) {
     if (model == state_.active_model) {
       continue;
@@ -595,10 +639,9 @@ void InputStateModel::UpdateDisabledModels() {
                                                 state_.active_tool)));
 
     bool incompatible_with_inputs =
-        (!model_rule ||
-         (!model_rule->allow_all_input_types() &&
-          !AreItemsAllowed(GetCurrentInputTypes(session_handle_.get()),
-                           model_rule->allowed_input_types())));
+        (!model_rule || (!model_rule->allow_all_input_types() &&
+                         !AreItemsAllowed(effective_inputs,
+                                          model_rule->allowed_input_types())));
 
     if (incompatible_with_tool || incompatible_with_inputs) {
       state_.disabled_models.push_back(model);
@@ -615,7 +658,7 @@ void InputStateModel::UpdateDisabledInputTypes() {
   state_.disabled_input_types.clear();
   state_.disabled_input_types.reserve(state_.allowed_input_types.size());
 
-  const auto current_inputs = GetCurrentInputTypes(session_handle_.get());
+  const auto current_inputs = GetEffectiveInputTypes();
 
   // Check max inputs reached.
   bool global_limit_reached =

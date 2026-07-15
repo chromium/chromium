@@ -81,6 +81,11 @@ class InputStateModel {
   // Called when an input of type `InputType` is added or deleted.
   void OnContextChanged();
 
+  // Set whether smart tab sharing is active.
+  void SetSmartTabSharingActive(bool active);
+
+  bool IsSmartTabSharingActive() const { return is_smart_tab_sharing_active_; }
+
   // Sets the tools that should be forced to be disabled.
   void SetPermanentlyDisabledTools(const std::vector<ToolMode>& tools);
 
@@ -112,6 +117,11 @@ class InputStateModel {
 
   // Gets the `PrefService`.
   void SetPrefService(PrefService* pref_service);
+
+  // Returns the effective input types. This includes explicitly uploaded
+  // inputs from the session, and the implicit browser tab input if Smart Tab
+  // Sharing is active and allowed by the current tool/model rules.
+  std::vector<InputType> GetEffectiveInputTypes() const;
 
  private:
   // Notify all subscribers of the current `state_`.
@@ -176,6 +186,8 @@ class InputStateModel {
   std::vector<InputType> permanently_disabled_input_types_;
 
   DriveConsentState drive_consent_state_ = DriveConsentState::kNotReady;
+
+  bool is_smart_tab_sharing_active_ = false;
 
   base::WeakPtrFactory<InputStateModel> weak_ptr_factory_{this};
 };
