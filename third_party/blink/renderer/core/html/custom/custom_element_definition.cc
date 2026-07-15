@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/html/custom/custom_element_definition.h"
+
 #include "third_party/blink/renderer/core/dom/attr.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/html/custom/custom_element.h"
@@ -11,6 +12,7 @@
 #include "third_party/blink/renderer/core/html/custom/custom_element_reaction_factory.h"
 #include "third_party/blink/renderer/core/html/custom/custom_element_reaction_stack.h"
 #include "third_party/blink/renderer/core/html/custom/custom_element_registry.h"
+#include "third_party/blink/renderer/core/html/custom/custom_element_registry_assignment.h"
 #include "third_party/blink/renderer/core/html/custom/element_internals.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/html_element_factory.h"
@@ -172,7 +174,8 @@ HTMLElement* CustomElementDefinition::CreateElement(
       Element* element = CreateElementForConstructor(document);
       // Set the registry for the element before running the constructor,
       // to ensure user gets the correct registry in constructor if need.
-      element->SetCustomElementRegistry(registry_);
+      element->SetCustomElementRegistry(
+          CustomElementRegistryAssignment::Explicit(registry_.Get()));
       CustomElementConstructionStackScope construction_stack_scope(*this,
                                                                    *element);
       // Keeping the following creation call here to avoid the construction
@@ -190,7 +193,8 @@ HTMLElement* CustomElementDefinition::CreateElement(
   auto* element = MakeGarbageCollected<HTMLElement>(tag_name, document);
   element->SetCustomElementState(CustomElementState::kUndefined);
   if (RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled()) {
-    element->SetCustomElementRegistry(registry_);
+    element->SetCustomElementRegistry(
+        CustomElementRegistryAssignment::Explicit(registry_.Get()));
   }
   // 5.2.2. Enqueue a custom element upgrade reaction given result and
   // definition.

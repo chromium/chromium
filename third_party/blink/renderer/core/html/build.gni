@@ -79,6 +79,7 @@ blink_core_sources_html = [
   "custom/custom_element_reaction_stack.h",
   "custom/custom_element_registry.cc",
   "custom/custom_element_registry.h",
+  "custom/custom_element_registry_assignment.h",
   "custom/custom_element_upgrade_sorter.cc",
   "custom/custom_element_upgrade_sorter.h",
   "custom/custom_state_set.cc",

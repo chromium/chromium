@@ -37,6 +37,7 @@
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/html/custom/custom_element.h"
 #include "third_party/blink/renderer/core/html/custom/custom_element_registry.h"
+#include "third_party/blink/renderer/core/html/custom/custom_element_registry_assignment.h"
 
 namespace blink {
 
@@ -122,9 +123,13 @@ void TreeScopeAdopter::MoveTreeToNewScope(Node& root) const {
         // document with no browsing context) or global registry should get the
         // new document's effective global registry.
         if (!pre_move_registry || pre_move_registry->IsGlobalRegistry()) {
+          CustomElementRegistry* effective_global =
+              new_document.EffectiveGlobalCustomElementRegistry();
           element->SetCustomElementRegistry(
-              new_document.EffectiveGlobalCustomElementRegistry(),
-              /*explicitly_set=*/true);
+              CustomElementRegistryAssignment::ResolveNullableRegistry(
+                  effective_global,
+                  CustomElementRegistryAssignment::NullRegistryFallback::kWait),
+              /*always_retain_registry=*/true);
         }
       } else {
         // Within-document scope change (e.g., document scope -> shadow root
@@ -137,8 +142,12 @@ void TreeScopeAdopter::MoveTreeToNewScope(Node& root) const {
         if (!rare_data || !rare_data->HasCustomElementRegistrySet()) {
           auto* new_registry = NewScope().customElementRegistry();
           if (pre_move_registry != new_registry) {
-            element->SetCustomElementRegistry(pre_move_registry,
-                                              /*explicitly_set=*/true);
+            element->SetCustomElementRegistry(
+                CustomElementRegistryAssignment::ResolveNullableRegistry(
+                    pre_move_registry,
+                    CustomElementRegistryAssignment::NullRegistryFallback::
+                        kWait),
+                /*always_retain_registry=*/true);
           }
         }
       }
@@ -186,7 +195,10 @@ void TreeScopeAdopter::MoveShadowTreeToNewDocument(
         (shadow_root_registry && shadow_root_registry->IsGlobalRegistry())) {
       shadow_root_registry =
           new_document.EffectiveGlobalCustomElementRegistry();
-      shadow_root.SetCustomElementRegistry(shadow_root_registry);
+      shadow_root.SetCustomElementRegistry(
+          CustomElementRegistryAssignment::ResolveNullableRegistry(
+              shadow_root_registry,
+              CustomElementRegistryAssignment::NullRegistryFallback::kWait));
     }
   }
 
@@ -248,8 +260,9 @@ void TreeScopeAdopter::WillMoveTreeToNewDocument(Node& root) const {
         DCHECK(RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled());
         auto* registry = element->customElementRegistry();
         if (registry && registry == old_document.customElementRegistry()) {
-          element->SetCustomElementRegistry(registry,
-                                            /*explicitly_set=*/true);
+          element->SetCustomElementRegistry(
+              CustomElementRegistryAssignment::Explicit(registry),
+              /*always_retain_registry=*/true);
         }
       }
       if (ShadowRoot* shadow_root = element->GetShadowRoot())

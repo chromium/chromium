@@ -24,11 +24,12 @@
 #include "third_party/blink/renderer/core/html/custom/custom_element_definition_builder.h"
 #include "third_party/blink/renderer/core/html/custom/custom_element_descriptor.h"
 #include "third_party/blink/renderer/core/html/custom/custom_element_reaction_stack.h"
+#include "third_party/blink/renderer/core/html/custom/custom_element_registry_assignment.h"
 #include "third_party/blink/renderer/core/html/custom/custom_element_upgrade_sorter.h"
 #include "third_party/blink/renderer/core/html_element_type_helpers.h"
+#include "third_party/blink/renderer/platform/bindings/dom_wrapper_world.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
-#include "third_party/blink/renderer/platform/bindings/dom_wrapper_world.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/wtf/text/strcat.h"
@@ -456,10 +457,12 @@ void CustomElementRegistry::initialize(Node* root,
   // null, then set root's custom element registry to this.
   if (auto* document = DynamicTo<Document>(root);
       document && !document->customElementRegistry()) {
-    document->SetCustomElementRegistry(this);
+    document->SetCustomElementRegistry(
+        CustomElementRegistryAssignment::Explicit(this));
   } else if (auto* shadow_root = DynamicTo<ShadowRoot>(root);
              shadow_root && !shadow_root->customElementRegistry()) {
-    shadow_root->SetCustomElementRegistry(this);
+    shadow_root->SetCustomElementRegistry(
+        CustomElementRegistryAssignment::Explicit(this));
   }
 
   // 4. For each inclusive descendant inclusiveDescendant of root, in tree
@@ -475,7 +478,8 @@ void CustomElementRegistry::initialize(Node* root,
     // 4-2. If inclusiveDescendant's custom element registry is null, then:
     if (!descendant_element->customElementRegistry()) {
       // 4-2-1. Set inclusiveDescendant's custom element registry to this.
-      descendant_element->SetCustomElementRegistry(this);
+      descendant_element->SetCustomElementRegistry(
+          CustomElementRegistryAssignment::Explicit(this));
       // 4-2-2. If this's "is scoped" is true, then append inclusiveDescendant's
       // node document to this's scoped document set.
       if (!this->IsGlobalRegistry()) {

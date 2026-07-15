@@ -88,8 +88,7 @@ class CORE_EXPORT CustomElement {
       const QualifiedName&,
       const CreateElementFlags,
       const AtomicString& is_value,
-      CustomElementRegistry* registry,
-      const bool wait_for_registry);
+      CustomElementRegistryAssignment registry_assignment);
   static HTMLElement* CreateFailedElement(Document&,
                                           const QualifiedName&,
                                           CustomElementRegistry*);
@@ -134,17 +133,12 @@ class CORE_EXPORT CustomElement {
     kQNameIsValid,
   };
   template <CreateUUCheckLevel>
-  // When a null registry is passed in, we can use wait_for_registry flag to
-  // control if the created element is "explicit null" and wait for a registry
-  // to be set later or "implicit null" and pick up the registry from the tree
-  // scope.
   static Element* CreateUncustomizedOrUndefinedElementTemplate(
       Document&,
       const QualifiedName&,
       const CreateElementFlags,
       const AtomicString& is_value,
-      CustomElementRegistry* registry,
-      const bool wait_for_registry);
+      CustomElementRegistryAssignment registry_assignment);
 };
 
 }  // namespace blink

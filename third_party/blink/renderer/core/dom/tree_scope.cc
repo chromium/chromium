@@ -337,20 +337,36 @@ CustomElementRegistry* TreeScope::customElementRegistry(
 // tree scope is using a global registry and it can be reset during cross
 // document node adoption. Otherwise, setting registry on a tree scope with
 // existing registry will fail.
-bool TreeScope::SetCustomElementRegistry(CustomElementRegistry* registry) {
+bool TreeScope::SetCustomElementRegistry(
+    CustomElementRegistryAssignment assignment) {
   if (!RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled() ||
       (custom_element_registry_ &&
        !custom_element_registry_->IsGlobalRegistry())) {
     return false;
   }
 
-  if (registry) {
-    custom_element_registry_ = registry;
-    waiting_for_registry_ = false;
-    registry->AssociatedWith(GetDocument());
+  if (assignment.IsInherit()) {
+    DCHECK(!custom_element_registry_ && !waiting_for_registry_);
     return true;
-  } else if (!custom_element_registry_ ||
-             custom_element_registry_->IsGlobalRegistry()) {
+  }
+
+  if (assignment.IsExplicit()) {
+    // An explicit registry is only overwritten with another explicit registry
+    // during cross-document adoption, where the global registry from the
+    // previous document is replaced with the current document's registry.
+    DCHECK(!custom_element_registry_ ||
+           (custom_element_registry_->IsGlobalRegistry() &&
+            assignment.Registry()->IsGlobalRegistry()));
+    custom_element_registry_ = assignment.Registry();
+    waiting_for_registry_ = false;
+    custom_element_registry_->AssociatedWith(GetDocument());
+    return true;
+  }
+
+  // Wait for a scoped registry.
+  DCHECK(assignment.IsWait());
+  if (!custom_element_registry_ ||
+      custom_element_registry_->IsGlobalRegistry()) {
     custom_element_registry_ = nullptr;
     waiting_for_registry_ = true;
     return true;

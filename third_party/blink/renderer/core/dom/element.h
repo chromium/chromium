@@ -53,6 +53,7 @@
 #include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/core/dom/node_rare_data_field.h"
 #include "third_party/blink/renderer/core/dom/whitespace_attacher.h"
+#include "third_party/blink/renderer/core/html/custom/custom_element_registry_assignment.h"
 #include "third_party/blink/renderer/core/html/parser/fragment_parser.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
@@ -1083,8 +1084,7 @@ class CORE_EXPORT Element : public ContainerNode {
   ShadowRoot& AttachShadowRootInternal(ShadowRootMode,
                                        FocusDelegation,
                                        SlotAssignmentMode,
-                                       CustomElementRegistry*,
-                                       bool waiting_for_scoped_registry,
+                                       CustomElementRegistryAssignment registry,
                                        bool serializable,
                                        bool clonable,
                                        const AtomicString& reference_target);
@@ -1660,11 +1660,11 @@ class CORE_EXPORT Element : public ContainerNode {
   // optimization where if the registry to be set is the same as element's tree
   // scope's registry, we don't store it in the element itself and rely on tree
   // scope to find the registry to save memory. In the scenario of cross scope
-  // adoption, we can set explicitly_set to true to force the registry storage
-  // so we can retain knowledge of the prior registry even when the scope is
-  // changed.
-  void SetCustomElementRegistry(CustomElementRegistry*,
-                                bool explicitly_set = false);
+  // adoption, we can set `always_retain_registry` to true to force registry
+  // storage so we can retain knowledge of the prior registry even when the
+  // scope is changed.
+  void SetCustomElementRegistry(CustomElementRegistryAssignment,
+                                bool always_retain_registry = false);
 
   // https://dom.spec.whatwg.org/#concept-element-is-value
   void SetIsValue(const AtomicString&);

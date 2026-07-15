@@ -108,6 +108,7 @@
 #include "third_party/blink/renderer/core/frame/viewport_data.h"
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
 #include "third_party/blink/renderer/core/html/custom/custom_element_registry.h"
+#include "third_party/blink/renderer/core/html/custom/custom_element_registry_assignment.h"
 #include "third_party/blink/renderer/core/html/fenced_frame/fence.h"
 #include "third_party/blink/renderer/core/html/forms/form_controller.h"
 #include "third_party/blink/renderer/core/html/html_frame_owner_element.h"
@@ -2237,7 +2238,8 @@ CustomElementRegistry* LocalDOMWindow::customElements() const {
         this, DOMWrapperWorld::kMainWorldId);
     custom_elements_->MarkAsGlobalRegistry();
     custom_elements_->AssociatedWith(*document_);
-    document_->SetCustomElementRegistry(custom_elements_);
+    document_->SetCustomElementRegistry(
+        CustomElementRegistryAssignment::Explicit(custom_elements_.Get()));
   }
   return custom_elements_.Get();
 }

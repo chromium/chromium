@@ -18,6 +18,7 @@
 #include "third_party/blink/renderer/core/editing/serializers/serialization.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/html/custom/custom_element_registry.h"
+#include "third_party/blink/renderer/core/html/custom/custom_element_registry_assignment.h"
 #include "third_party/blink/renderer/core/html/html_body_element.h"
 #include "third_party/blink/renderer/core/html/html_document.h"
 #include "third_party/blink/renderer/core/html/html_head_element.h"
@@ -106,7 +107,10 @@ DocumentFragment* ParseHTMLFragmentInternal(
       if (RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled() &&
           registry != context_element->GetTreeScope().customElementRegistry()) {
         for (Element& element : ElementTraversal::DescendantsOf(*fragment)) {
-          element.SetCustomElementRegistry(registry);
+          element.SetCustomElementRegistry(
+              CustomElementRegistryAssignment::ResolveNullableRegistry(
+                  registry,
+                  CustomElementRegistryAssignment::NullRegistryFallback::kWait));
         }
       }
       LogFastPathParserTotalTime(parse_timer.Elapsed());

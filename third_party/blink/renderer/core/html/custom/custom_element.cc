@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/core/html/custom/custom_element_reaction_factory.h"
 #include "third_party/blink/renderer/core/html/custom/custom_element_reaction_stack.h"
 #include "third_party/blink/renderer/core/html/custom/custom_element_registry.h"
+#include "third_party/blink/renderer/core/html/custom/custom_element_registry_assignment.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/html/html_unknown_element.h"
 #include "third_party/blink/renderer/core/html_element_factory.h"
@@ -133,22 +134,18 @@ HTMLElement* CustomElement::CreateCustomElement(Document& document,
   // 7. Otherwise:
   return To<HTMLElement>(
       CreateUncustomizedOrUndefinedElementTemplate<kQNameIsValid>(
-          document, tag_name, flags, g_null_atom, /*registry*/ nullptr,
-          /*wait_for_registry=*/false));
+          document, tag_name, flags, g_null_atom,
+          CustomElementRegistryAssignment::Inherit()));
 }
 
 // Step 6 of https://dom.spec.whatwg.org/#concept-create-element
-// wait_for_registry flag indicates whether we want to ignore a passed
-// in null registry and let element implicitly pick up the tree scope's
-// registry or keep it null and wait for a registry to be set later.
 template <CustomElement::CreateUUCheckLevel level>
 Element* CustomElement::CreateUncustomizedOrUndefinedElementTemplate(
     Document& document,
     const QualifiedName& tag_name,
     const CreateElementFlags flags,
     const AtomicString& is_value,
-    CustomElementRegistry* registry,
-    const bool wait_for_registry) {
+    CustomElementRegistryAssignment registry_assignment) {
   if (level == kQNameIsValid) {
     DCHECK(is_value.IsNull());
     DCHECK(ShouldCreateCustomElement(tag_name)) << tag_name;
@@ -169,10 +166,8 @@ Element* CustomElement::CreateUncustomizedOrUndefinedElementTemplate(
            (CustomElement::IsValidName(tag_name.LocalName()) ||
             !is_value.IsNull()))
     element->SetCustomElementState(CustomElementState::kUndefined);
-  if (RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled() &&
-      (registry || wait_for_registry)) {
-    DCHECK(!registry || !wait_for_registry);
-    element->SetCustomElementRegistry(registry);
+  if (RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled()) {
+    element->SetCustomElementRegistry(registry_assignment);
   }
 
   return element;
@@ -183,10 +178,9 @@ Element* CustomElement::CreateUncustomizedOrUndefinedElement(
     const QualifiedName& tag_name,
     const CreateElementFlags flags,
     const AtomicString& is_value,
-    CustomElementRegistry* registry,
-    const bool wait_for_registry) {
+    CustomElementRegistryAssignment registry_assignment) {
   return CreateUncustomizedOrUndefinedElementTemplate<kCheckAll>(
-      document, tag_name, flags, is_value, registry, wait_for_registry);
+      document, tag_name, flags, is_value, registry_assignment);
 }
 
 HTMLElement* CustomElement::CreateFailedElement(
@@ -208,7 +202,8 @@ HTMLElement* CustomElement::CreateFailedElement(
   element->SetCustomElementState(CustomElementState::kFailed);
   if (RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled() &&
       registry) {
-    element->SetCustomElementRegistry(registry);
+    element->SetCustomElementRegistry(
+        CustomElementRegistryAssignment::Explicit(registry));
   }
   return element;
 }

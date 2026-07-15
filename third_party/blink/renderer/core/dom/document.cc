@@ -238,6 +238,7 @@
 #include "third_party/blink/renderer/core/html/custom/custom_element_definition.h"
 #include "third_party/blink/renderer/core/html/custom/custom_element_descriptor.h"
 #include "third_party/blink/renderer/core/html/custom/custom_element_registry.h"
+#include "third_party/blink/renderer/core/html/custom/custom_element_registry_assignment.h"
 #include "third_party/blink/renderer/core/html/document_all_name_collection.h"
 #include "third_party/blink/renderer/core/html/document_name_collection.h"
 #include "third_party/blink/renderer/core/html/forms/autofill_event.h"
@@ -1568,7 +1569,10 @@ Element* Document::CreateElement(const QualifiedName& q_name,
   }
 
   return CustomElement::CreateUncustomizedOrUndefinedElement(
-      *this, q_name, flags, is, registry, /*wait_for_registry*/ !registry);
+      *this, q_name, flags, is,
+      CustomElementRegistryAssignment::ResolveNullableRegistry(
+          registry,
+          CustomElementRegistryAssignment::NullRegistryFallback::kWait));
 }
 
 DocumentFragment* Document::createDocumentFragment() {
@@ -3398,7 +3402,8 @@ void Document::Shutdown() {
   if (RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled() &&
       dom_window_) {
     if (CustomElementRegistry* registry = dom_window_->MaybeCustomElements()) {
-      SetCustomElementRegistry(registry);
+      SetCustomElementRegistry(
+          CustomElementRegistryAssignment::Explicit(registry));
     }
   }
 
@@ -5553,7 +5558,8 @@ Node* Document::Clone(Document& factory,
     // 2. If node's custom element registry's "is scoped" is true, then
     // set copy's custom element registry to node's custom element registry.
     if (fallback_registry && !fallback_registry->IsGlobalRegistry()) {
-      clone->SetCustomElementRegistry(fallback_registry);
+      clone->SetCustomElementRegistry(
+          CustomElementRegistryAssignment::Explicit(fallback_registry));
     }
   }
   if (data.Has(CloneOption::kIncludeDescendants)) {

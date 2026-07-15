@@ -645,7 +645,7 @@ void HTMLConstructionSite::InsertHTMLBodyStartTagInBody(
   if (RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled() &&
       token->GetAttributeItem(html_names::kCustomelementregistryAttr)) {
     Element* body = open_elements_.BodyElement();
-    body->SetCustomElementRegistry(nullptr);
+    body->SetCustomElementRegistry(CustomElementRegistryAssignment::Wait());
     if (document_) {
       document_->SetScopedCustomElementRegistryUsed();
     }
@@ -1430,12 +1430,11 @@ Element* HTMLConstructionSite::CreateElement(
       element = definition->CreateElement(document, tag_name,
                                           GetCreateElementFlags());
     } else {
-      // It is possible that we want to set the uncustomized element to null
-      // registry during fragment parsing. Set wait_for_registry flag to true
-      // to control this behavior of explicitly setting null registry.
       element = CustomElement::CreateUncustomizedOrUndefinedElement(
-          document, tag_name, GetCreateElementFlags(), is, registry,
-          /*wait_for_registry=*/!registry);
+          document, tag_name, GetCreateElementFlags(), is,
+          CustomElementRegistryAssignment::ResolveNullableRegistry(
+              registry,
+              CustomElementRegistryAssignment::NullRegistryFallback::kWait));
     }
     // Definition for the created element does not exist here and it cannot be
     // custom, precustomized, or failed.
