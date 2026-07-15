@@ -532,6 +532,7 @@ Called by update_bad_message_reasons.py.-->
   <int value="357"
       label="BIBI_BIND_GAMEPAD_HAPTICS_MANAGER_BLOCKED_BY_PERMISSIONS_POLICY"/>
   <int value="358" label="RFH_CREATE_NEW_WINDOW_INVALID_PIP_OPTIONS"/>
+  <int value="359" label="RFPH_POST_MESSAGE_INVALID_DELEGATED_CAPABILITY"/>
 </enum>
 
 <enum name="BadMessageReasonExtensions">

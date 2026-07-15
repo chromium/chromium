@@ -7667,10 +7667,13 @@ void RenderFrameHostImpl::ClearUserActivation() {
   user_activation_state_.Clear();
   history_user_activation_state_.Clear();
   GetMainFrame()->honor_sticky_activation_for_history_intervention_ = true;
+  last_user_activation_consumed_time_ = base::TimeTicks();
 }
 
 void RenderFrameHostImpl::ConsumeTransientUserActivation() {
-  user_activation_state_.ConsumeIfActive();
+  if (user_activation_state_.ConsumeIfActive()) {
+    last_user_activation_consumed_time_ = base::TimeTicks::Now();
+  }
 }
 
 void RenderFrameHostImpl::ActivateUserActivation(
@@ -11391,6 +11394,9 @@ void RenderFrameHostImpl::DidChangeSrcDoc(
 
 void RenderFrameHostImpl::ReceivedDelegatedCapability(
     blink::mojom::DelegatedCapability delegated_capability) {
+  if (lifecycle_state() != LifecycleStateImpl::kActive) {
+    return;
+  }
   // Every delegated capability that is checked or consumed on the browser side
   // needs to be (a) activated here and (b) consumed when RFH handles the
   // capability.

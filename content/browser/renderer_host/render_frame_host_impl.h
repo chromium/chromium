@@ -3145,6 +3145,9 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // Returns the sticky bit of the User Activation v2 state of this document.
   bool HasStickyUserActivation() const;
   bool IsActiveUserActivation() const;
+  base::TimeTicks last_user_activation_consumed_time() const {
+    return last_user_activation_consumed_time_;
+  }
   void ClearUserActivation();
   void ConsumeTransientUserActivation();
   void ActivateUserActivation(
@@ -5469,6 +5472,9 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // The user activation state of this document.  See |UserActivationState| for
   // details on how this state is maintained.
   blink::UserActivationState user_activation_state_;
+
+  // The timestamp when the transient user activation was last consumed.
+  base::TimeTicks last_user_activation_consumed_time_;
 
   // Similar to `user_activation_state_`, but specifically for use with
   // web-exposed history manipulation (e.g., cancelling a history navigation via

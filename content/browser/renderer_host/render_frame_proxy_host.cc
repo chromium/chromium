@@ -16,6 +16,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/trace_event/typed_macros.h"
 #include "base/types/optional_util.h"
@@ -503,6 +504,12 @@ void RenderFrameProxyHost::RouteMessageEvent(
     blink::TransferableMessage message) {
   RenderFrameHostImpl* target_rfh = frame_tree_node()->current_frame_host();
 
+  RenderFrameHostImpl* source_rfh = nullptr;
+  if (source_frame_token) {
+    source_rfh = RenderFrameHostImpl::FromFrameToken(
+        GetProcess()->GetID(), source_frame_token.value());
+  }
+
   // Give the embedder a chance to override the target for this postMessage.
   RenderFrameHost* override_target =
       GetContentClient()->browser()->GetPostMessageTargetOverride(
@@ -544,6 +551,43 @@ void RenderFrameProxyHost::RouteMessageEvent(
     return;
   }
 
+  if (message.delegated_capability !=
+      blink::mojom::DelegatedCapability::kNone) {
+    if (!source_frame_token) {
+      bad_message::ReceivedBadMessage(
+          GetProcess(),
+          bad_message::RFPH_POST_MESSAGE_INVALID_DELEGATED_CAPABILITY);
+      return;
+    }
+    if (!source_rfh) {
+      // If the source frame was detached while the message was in flight,
+      // silently drop the message. Do not kill the renderer process because
+      // this is a benign race condition.
+      return;
+    }
+
+    // Check if the source frame currently has transient user activation, or if
+    // it consumed transient user activation recently. Legitimate delegation
+    // consumes user activation in the renderer process synchronously, which
+    // asynchronously propagates to the browser via an IPC on the LocalFrameHost
+    // Mojo interface. To prevent race conditions where the consumption IPC is
+    // processed before RouteMessageEvent, we allow delegation if transient user
+    // activation was active or consumed recently.
+    static constexpr base::TimeDelta kMaxDelegationDelay = base::Seconds(1);
+    bool has_activation =
+        source_rfh->IsActiveUserActivation() ||
+        (!source_rfh->last_user_activation_consumed_time().is_null() &&
+         base::TimeTicks::Now() -
+                 source_rfh->last_user_activation_consumed_time() <
+             kMaxDelegationDelay);
+    if (!has_activation) {
+      bad_message::ReceivedBadMessage(
+          GetProcess(),
+          bad_message::RFPH_POST_MESSAGE_INVALID_DELEGATED_CAPABILITY);
+      return;
+    }
+  }
+
   SiteInstanceGroup* target_group = target_rfh->GetSiteInstance()->group();
 
   bool is_embedder_to_guest_communication = false;
@@ -563,21 +607,17 @@ void RenderFrameProxyHost::RouteMessageEvent(
   }
 
   bool is_guest_to_embedder_communication = false;
-  if (source_frame_token) {
-    RenderFrameHostImpl* source_rfh = RenderFrameHostImpl::FromFrameToken(
-        GetProcess()->GetID(), source_frame_token.value());
-    if (source_rfh) {
-      RenderFrameHostImpl* source_outermost_rfh =
-          source_rfh->GetOutermostMainFrame();
-      RenderFrameHostImpl* source_embedder_rfh =
-          source_outermost_rfh->GetParentOrOuterDocumentOrEmbedder();
-      // Note that this is not checking that the source and target are related,
-      // but that the target is related to the embedder.
-      if (source_embedder_rfh &&
-          target_group->IsRelatedSiteInstanceGroup(
-              source_embedder_rfh->GetSiteInstance()->group())) {
-        is_guest_to_embedder_communication = true;
-      }
+  if (source_rfh) {
+    RenderFrameHostImpl* source_outermost_rfh =
+        source_rfh->GetOutermostMainFrame();
+    RenderFrameHostImpl* source_embedder_rfh =
+        source_outermost_rfh->GetParentOrOuterDocumentOrEmbedder();
+    // Note that this is not checking that the source and target are related,
+    // but that the target is related to the embedder.
+    if (source_embedder_rfh &&
+        target_group->IsRelatedSiteInstanceGroup(
+            source_embedder_rfh->GetSiteInstance()->group())) {
+      is_guest_to_embedder_communication = true;
     }
   }
 
@@ -602,116 +642,110 @@ void RenderFrameProxyHost::RouteMessageEvent(
   // If there is a |source_frame_token|, translate it to the frame token of the
   // equivalent RenderFrameProxyHost in the target process.
   std::optional<blink::RemoteFrameToken> translated_source_token;
-  if (source_frame_token) {
-    RenderFrameHostImpl* source_rfh = RenderFrameHostImpl::FromFrameToken(
-        GetProcess()->GetID(), source_frame_token.value());
-    if (source_rfh) {
-      // https://crbug.com/822958: If the postMessage is going to a descendant
-      // frame, ensure that any pending visual properties such as size are sent
-      // to the target frame before the postMessage, as sites might implicitly
-      // be relying on this ordering.
-      bool target_is_descendant_of_source = false;
-      for (RenderFrameHost* rfh = target_rfh; rfh; rfh = rfh->GetParent()) {
-        if (rfh == source_rfh) {
-          target_is_descendant_of_source = true;
-          break;
+  if (source_rfh) {
+    // https://crbug.com/822958: If the postMessage is going to a descendant
+    // frame, ensure that any pending visual properties such as size are sent
+    // to the target frame before the postMessage, as sites might implicitly
+    // be relying on this ordering.
+    bool target_is_descendant_of_source = false;
+    for (RenderFrameHost* rfh = target_rfh; rfh; rfh = rfh->GetParent()) {
+      if (rfh == source_rfh) {
+        target_is_descendant_of_source = true;
+        break;
+      }
+    }
+    if (target_is_descendant_of_source) {
+      target_rfh->GetRenderWidgetHost()
+          ->SynchronizeVisualPropertiesIgnoringPendingAck();
+    }
+
+    if (was_overridden) {
+      // If the target_rfh was overridden, skip creating a
+      // RenderFrameProxyHost because a persistent communication channel
+      // shouldn't be persisted after the message is sent.
+    } else if (is_embedder_to_guest_communication) {
+      // We create a RenderFrameProxyHost for the embedder in the guest's
+      // render process but we intentionally do not expose the embedder's
+      // opener chain to it.
+      // TODO(crbug.com/40261772): Using the main frame will lead to a null
+      // event.source if a subframe posts a message to the guest. See also
+      // https://crbug.com/41172969
+      CHECK(target_rfh->is_main_frame());
+      source_rfh->GetMainFrame()
+          ->frame_tree_node()
+          ->render_manager()
+          ->CreateRenderFrameProxy(
+              target_rfh->GetSiteInstance()->group(),
+              source_rfh->GetMainFrame()->browsing_context_state(),
+              /*navigation_metrics_token=*/std::nullopt);
+    } else if (is_guest_to_embedder_communication) {
+      // A RenderFrameProxyHost was already created when the guest was
+      // attached.
+      // We do not create proxies for the subframes of a guest. Note that the
+      // computation of `is_embedder_to_guest_communication` above assumes
+      // that guest subframes are not targetable.
+    } else {
+      // Ensure that we have a proxy for the source frame in the target
+      // SiteInstance. If it doesn't exist, create it on demand and also
+      // create its opener chain, since that will also be accessible to the
+      // target page. This may be needed in rare cases such as a popup sending
+      // a postMessage to a subframe of its opener, where the subframe has no
+      // prior references to the popup.
+      //
+      // All cases where a proxy might be missing must involve a message being
+      // sent across different FrameTrees, since all frames within the same
+      // FrameTree always have references to one another; therefore, only run
+      // proxy creation code for those cases as an optimization. For inner
+      // frame trees, guests are already handled above, and fenced frames
+      // disallow postMessage to/from their embedder.
+      if (&source_rfh->frame_tree_node()->frame_tree() !=
+          &target_rfh->frame_tree_node()->frame_tree()) {
+        // Subtle: postMessages may be sent between frames after their page
+        // has entered the back-forward cache (e.g., when dispatched from
+        // pagehide events) - see
+        // BackForwardCacheBrowserTest.PostMessageDelivered. (These messages
+        // are subsequently deferred by the target renderer until the cached
+        // page is re-activated.) In that case, it's neither correct nor
+        // possible to create proxies, as that requires going through
+        // FrameTreeNode and RenderFrameHostManager, where the current
+        // RenderFrameHost is no longer `source_rfh` but rather some other RFH
+        // in an unrelated SiteInstance. Fortunately, back-forward cache
+        // restricts GetRelatedActiveContentsCount to 1, and new on-demand
+        // proxies shouldn't ever be needed within a single FrameTree, where
+        // all frames already have references to one another. So, this case
+        // can simply be skipped. The same constraint would also apply to
+        // pending deletion RenderFrameHosts where messages could be sent from
+        // unload handlers, where it's also incorrect to create proxies in a
+        // FrameTreeNode that has moved on to some other unrelated RFH.
+        if (!source_rfh->IsInBackForwardCache() &&
+            !source_rfh->IsPendingDeletion()) {
+          // After skipping back-forward cache and pending deletion cases, we
+          // should only get here when source_rfh is the current RFH in its
+          // FrameTreeNode, since we shouldn't receive messages from
+          // speculative or pending-commit RenderFrameHosts.
+          CHECK_EQ(source_rfh,
+                   source_rfh->frame_tree_node()->current_frame_host());
+          source_rfh->frame_tree_node()->render_manager()->CreateOpenerProxies(
+              target_rfh->GetSiteInstance()->group(), nullptr,
+              source_rfh->browsing_context_state(),
+              /*navigation_metrics_token=*/std::nullopt);
         }
       }
-      if (target_is_descendant_of_source) {
-        target_rfh->GetRenderWidgetHost()
-            ->SynchronizeVisualPropertiesIgnoringPendingAck();
-      }
+    }
 
-      if (was_overridden) {
-        // If the target_rfh was overridden, skip creating a
-        // RenderFrameProxyHost because a persistent communication channel
-        // shouldn't be persisted after the message is sent.
-      } else if (is_embedder_to_guest_communication) {
-        // We create a RenderFrameProxyHost for the embedder in the guest's
-        // render process but we intentionally do not expose the embedder's
-        // opener chain to it.
-        // TODO(crbug.com/40261772): Using the main frame will lead to a null
-        // event.source if a subframe posts a message to the guest. See also
-        // https://crbug.com/41172969
-        CHECK(target_rfh->is_main_frame());
-        source_rfh->GetMainFrame()
-            ->frame_tree_node()
-            ->render_manager()
-            ->CreateRenderFrameProxy(
-                target_rfh->GetSiteInstance()->group(),
-                source_rfh->GetMainFrame()->browsing_context_state(),
-                /*navigation_metrics_token=*/std::nullopt);
-      } else if (is_guest_to_embedder_communication) {
-        // A RenderFrameProxyHost was already created when the guest was
-        // attached.
-        // We do not create proxies for the subframes of a guest. Note that the
-        // computation of `is_embedder_to_guest_communication` above assumes
-        // that guest subframes are not targetable.
-      } else {
-        // Ensure that we have a proxy for the source frame in the target
-        // SiteInstance. If it doesn't exist, create it on demand and also
-        // create its opener chain, since that will also be accessible to the
-        // target page. This may be needed in rare cases such as a popup sending
-        // a postMessage to a subframe of its opener, where the subframe has no
-        // prior references to the popup.
-        //
-        // All cases where a proxy might be missing must involve a message being
-        // sent across different FrameTrees, since all frames within the same
-        // FrameTree always have references to one another; therefore, only run
-        // proxy creation code for those cases as an optimization. For inner
-        // frame trees, guests are already handled above, and fenced frames
-        // disallow postMessage to/from their embedder.
-        if (&source_rfh->frame_tree_node()->frame_tree() !=
-            &target_rfh->frame_tree_node()->frame_tree()) {
-          // Subtle: postMessages may be sent between frames after their page
-          // has entered the back-forward cache (e.g., when dispatched from
-          // pagehide events) - see
-          // BackForwardCacheBrowserTest.PostMessageDelivered. (These messages
-          // are subsequently deferred by the target renderer until the cached
-          // page is re-activated.) In that case, it's neither correct nor
-          // possible to create proxies, as that requires going through
-          // FrameTreeNode and RenderFrameHostManager, where the current
-          // RenderFrameHost is no longer `source_rfh` but rather some other RFH
-          // in an unrelated SiteInstance. Fortunately, back-forward cache
-          // restricts GetRelatedActiveContentsCount to 1, and new on-demand
-          // proxies shouldn't ever be needed within a single FrameTree, where
-          // all frames already have references to one another. So, this case
-          // can simply be skipped. The same constraint would also apply to
-          // pending deletion RenderFrameHosts where messages could be sent from
-          // unload handlers, where it's also incorrect to create proxies in a
-          // FrameTreeNode that has moved on to some other unrelated RFH.
-          if (!source_rfh->IsInBackForwardCache() &&
-              !source_rfh->IsPendingDeletion()) {
-            // After skipping back-forward cache and pending deletion cases, we
-            // should only get here when source_rfh is the current RFH in its
-            // FrameTreeNode, since we shouldn't receive messages from
-            // speculative or pending-commit RenderFrameHosts.
-            CHECK_EQ(source_rfh,
-                     source_rfh->frame_tree_node()->current_frame_host());
-            source_rfh->frame_tree_node()
-                ->render_manager()
-                ->CreateOpenerProxies(
-                    target_rfh->GetSiteInstance()->group(), nullptr,
-                    source_rfh->browsing_context_state(),
-                    /*navigation_metrics_token=*/std::nullopt);
-          }
-        }
-      }
-
-      // If the message source is a cross-process subframe, its proxy will only
-      // be created in --site-per-process mode, which is the case when we set an
-      // actual non-empty value for |translated_source_token|. Otherwise (if the
-      // proxy wasn't created), use an empty |translated_source_token| (see
-      // https://crbug.com/485520 for discussion on why this is ok).
-      // The proxy may be in a different BrowsingContextState in the case of
-      // postMessages exchanged across inner and outer delegates.
-      RenderFrameProxyHost* source_proxy_in_target_group =
-          source_rfh->browsing_context_state()->GetRenderFrameProxyHost(
-              target_group,
-              BrowsingContextState::ProxyAccessMode::kAllowOuterDelegate);
-      if (source_proxy_in_target_group) {
-        translated_source_token = source_proxy_in_target_group->GetFrameToken();
-      }
+    // If the message source is a cross-process subframe, its proxy will only
+    // be created in --site-per-process mode, which is the case when we set an
+    // actual non-empty value for |translated_source_token|. Otherwise (if the
+    // proxy wasn't created), use an empty |translated_source_token| (see
+    // https://crbug.com/485520 for discussion on why this is ok).
+    // The proxy may be in a different BrowsingContextState in the case of
+    // postMessages exchanged across inner and outer delegates.
+    RenderFrameProxyHost* source_proxy_in_target_group =
+        source_rfh->browsing_context_state()->GetRenderFrameProxyHost(
+            target_group,
+            BrowsingContextState::ProxyAccessMode::kAllowOuterDelegate);
+    if (source_proxy_in_target_group) {
+      translated_source_token = source_proxy_in_target_group->GetFrameToken();
     }
   }
 
