@@ -33,4 +33,7 @@ MockMFPMPHostApp::~MockMFPMPHostApp() = default;
 MockMFMediaSource::MockMFMediaSource() = default;
 MockMFMediaSource::~MockMFMediaSource() = default;
 
+MockMediaFoundationCdmProxy::MockMediaFoundationCdmProxy() = default;
+MockMediaFoundationCdmProxy::~MockMediaFoundationCdmProxy() = default;
+
 }  // namespace media

@@ -50,9 +50,11 @@ IFACEMETHODIMP_(ULONG) MediaFoundationSourceWrapper::Release() {
 HRESULT MediaFoundationSourceWrapper::RuntimeClassInitialize(
     MediaResource* media_resource,
     MediaLog* media_log,
-    scoped_refptr<base::SequencedTaskRunner> task_runner) {
+    scoped_refptr<base::SequencedTaskRunner> task_runner,
+    bool has_cdm) {
   DVLOG_FUNC(1);
   task_runner_ = task_runner;
+  has_cdm_ = has_cdm;
 
   auto demuxer_streams = media_resource->GetAllStreams();
 
@@ -377,7 +379,7 @@ HRESULT MediaFoundationSourceWrapper::GetInputTrustAuthority(
     DWORD stream_id,
     REFIID riid,
     IUnknown** object_out) {
-  DVLOG_FUNC(1);
+  DVLOG_FUNC(1) << "stream_id=" << stream_id;
 
   if (state_ == State::kShutdown)
     return MF_E_SHUTDOWN;
@@ -391,9 +393,21 @@ HRESULT MediaFoundationSourceWrapper::GetInputTrustAuthority(
   }
 
   if (!media_streams_[stream_id]->IsEncrypted()) {
-    DVLOG_FUNC(1) << "Unprotected stream; stream_id=" << stream_id;
+    DVLOG_FUNC(1) << "Unprotected stream; stream_id=" << stream_id
+                  << " stream_type=" << media_streams_[stream_id]->StreamType();
 
-    return MF_E_NOT_PROTECTED;
+    if (media_streams_[stream_id]->StreamType() != DemuxerStream::VIDEO) {
+      DVLOG_FUNC(1) << "MF_E_NOT_PROTECTED";
+      return MF_E_NOT_PROTECTED;
+    }
+
+    // For video streams, intentionally do not return MF_E_NOT_PROTECTED here.
+    // During clear video playback (e.g., clear pre-roll ads), the initial
+    // stream config is unencrypted. However, if a CDM is attached, we forced
+    // MF_SD_PROTECTED to 1 in GenerateStreamDescriptor() for video streams to
+    // prepare for an eventual clear-to-encrypted transition. Because we marked
+    // it as protected, MF expects us to provide a trust authority. Returning
+    // MF_E_NOT_PROTECTED would cause topology resolution to fail.
   }
 
   // Use |nullptr| for content init_data and |0| for its size.

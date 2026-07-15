@@ -10,6 +10,7 @@
 #include <wrl/client.h>
 #include <wrl/implements.h>
 
+#include "media/base/win/media_foundation_cdm_proxy.h"
 #include "media/base/win/test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -205,6 +206,31 @@ class MockMFMediaSource
                                REFGUID extended_type,
                                HRESULT status,
                                const PROPVARIANT* value));
+};
+
+class MockMediaFoundationCdmProxy : public MediaFoundationCdmProxy {
+ public:
+  MockMediaFoundationCdmProxy();
+
+  // MediaFoundationCdmProxy.
+  MOCK_METHOD2(GetPMPServer, HRESULT(REFIID riid, void** object_result));
+  MOCK_METHOD6(GetInputTrustAuthority,
+               HRESULT(uint32_t stream_id,
+                       uint32_t stream_count,
+                       const uint8_t* content_init_data,
+                       uint32_t content_init_data_size,
+                       REFIID riid,
+                       IUnknown** object_result));
+  MOCK_METHOD2(SetLastKeyId, HRESULT(uint32_t stream_id, REFGUID key_id));
+  MOCK_METHOD0(RefreshTrustedInput, HRESULT());
+  MOCK_METHOD2(ProcessContentEnabler,
+               HRESULT(IUnknown* request, IMFAsyncResult* result));
+  MOCK_METHOD0(OnHardwareContextReset, void());
+  MOCK_METHOD0(OnSignificantPlayback, void());
+  MOCK_METHOD1(OnPlaybackError, void(HRESULT));
+
+ protected:
+  ~MockMediaFoundationCdmProxy() override;
 };
 
 }  // namespace media

@@ -212,6 +212,7 @@ class MEDIA_EXPORT MediaFoundationStreamWrapper
   bool encryption_type_reported_ = false;
 
   bool is_encrypted_ = false;
+  bool has_cdm_ GUARDED_BY(lock_) = false;
 
   // NOTE: Weak pointers must be invalidated before all other member variables.
   base::WeakPtrFactory<MediaFoundationStreamWrapper> weak_factory_{this};

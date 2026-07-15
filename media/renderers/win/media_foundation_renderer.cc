@@ -14,6 +14,7 @@
 #include <tuple>
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/clamped_math.h"
@@ -666,7 +667,8 @@ void MediaFoundationRenderer::Initialize(MediaResource* media_resource,
 
 HRESULT MediaFoundationRenderer::CreateMediaEngine(
     MediaResource* media_resource) {
-  DVLOG_FUNC(1);
+  bool has_cdm = cdm_context_ != nullptr;
+  DVLOG_FUNC(1) << "has_cdm=" << has_cdm;
 
   if (!InitializeMediaFoundation())
     return kErrorInitializeMediaFoundation;
@@ -769,12 +771,20 @@ HRESULT MediaFoundationRenderer::CreateMediaEngine(
   RETURN_IF_FAILED(mf_media_engine_->SetDefaultPlaybackRate(0.0));
 
   RETURN_IF_FAILED(MakeAndInitialize<MediaFoundationSourceWrapper>(
-      &mf_source_, media_resource, media_log_.get(), task_runner_));
+      &mf_source_, media_resource, media_log_.get(), task_runner_, has_cdm));
 
   std::ignore = SetDCompModeInternal();
 
-  if (!mf_source_->HasEncryptedStream()) {
-    // Supports clear stream for testing.
+  // If we don't have a CDM and there is no encrypted stream, we can early out
+  // and start playback immediately. This is true for pure clear playback when
+  // `kMediaFoundationClearPlayback` is enabled, or during testing. However, if
+  // a CDM is attached, we must bypass this early-out (even if the initial
+  // stream is clear) to ensure the Protection Manager is fully set up.
+  // This correctly prepares the pipeline for clear leads (e.g., a clear
+  // pre-roll ad followed by an encrypted movie) so that the Decryptor MFT is
+  // included in the topology from the start.
+  if (!mf_source_->HasEncryptedStream() && !has_cdm) {
+    DVLOG_FUNC(1) << "Supports clear stream for testing";
     return SetSourceOnMediaEngine();
   }
 

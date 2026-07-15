@@ -728,6 +728,8 @@ bool MP4StreamParser::ParseMoov(BoxReader* reader) {
       audio_config.Initialize(codec, sample_format, channel_layout_config,
                               sample_per_second, extra_data, scheme,
                               seek_preroll, codec_delay_in_frames);
+      DVLOG(3) << __func__ << " audio_track_id=" << audio_track_id
+               << " is_encrypted=" << is_track_encrypted;
 
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
       if (codec == AudioCodec::kAAC) {
@@ -824,6 +826,9 @@ bool MP4StreamParser::ParseMoov(BoxReader* reader) {
                               // No decoder-specific buffer needed for AVC;
                               // SPS/PPS are embedded in the video stream
                               EmptyExtraData(), scheme);
+      DVLOG(3) << __func__ << " video_track_id=" << video_track_id
+               << " is_encrypted=" << is_track_encrypted;
+
       video_config.set_aspect_ratio(aspect_ratio);
       video_config.set_level(video_codec_level);
 

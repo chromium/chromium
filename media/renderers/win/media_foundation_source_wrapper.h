@@ -53,7 +53,8 @@ class MEDIA_EXPORT MediaFoundationSourceWrapper
   HRESULT RuntimeClassInitialize(
       MediaResource* media_resource,
       MediaLog* media_log,
-      scoped_refptr<base::SequencedTaskRunner> task_runner);
+      scoped_refptr<base::SequencedTaskRunner> task_runner,
+      bool has_cdm = false);
 
   // Note: All COM interface (IMFXxx) methods are called on the MF threadpool
   //       threads and the calls are serialized
@@ -124,6 +125,8 @@ class MEDIA_EXPORT MediaFoundationSourceWrapper
   // Flused the queued buffers from each stream of |media_streams_|.
   void FlushStreams();
 
+  bool HasCdm() const { return has_cdm_; }
+
  private:
   // Select first audio stream and first video stream.
   HRESULT SelectDefaultStreams(
@@ -143,6 +146,7 @@ class MEDIA_EXPORT MediaFoundationSourceWrapper
   bool video_stream_enabled_ = true;
   float current_rate_ = 0.0f;
   bool presentation_ended_ = false;
+  bool has_cdm_ = false;
 
   enum class State {
     kInitialized,

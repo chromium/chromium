@@ -90,6 +90,7 @@ source_set("test_support") {
     "test_utils.h",
   ]
   deps = [
+    ":mf_cdm_proxy",
     "//base",
     "//testing/gmock",
     "//testing/gtest",
