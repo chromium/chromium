@@ -366,7 +366,8 @@ public abstract class BaseSuggestionViewProcessor implements SuggestionProcessor
                     url,
                     icon -> {
                         if (icon != null) {
-                            setOmniboxDrawableState(model, OmniboxDrawableState.forFavIcon(icon));
+                            setOmniboxDrawableState(
+                                    model, OmniboxDrawableState.forFavIcon(icon, mContext));
                         }
                     });
         }
@@ -385,7 +386,8 @@ public abstract class BaseSuggestionViewProcessor implements SuggestionProcessor
                     imageUrl,
                     drawable -> {
                         if (drawable != null) {
-                            setOmniboxDrawableState(model, OmniboxDrawableState.forImage(drawable));
+                            setOmniboxDrawableState(
+                                    model, OmniboxDrawableState.forImage(drawable, mContext));
                         }
                     });
         }

@@ -36,7 +36,7 @@ class SuggestionLayout extends ViewGroup {
     @VisibleForTesting public final @Px int mCompactContentHeightPx;
     @VisibleForTesting public final RoundedCornerOutlineProvider mOutlineProvider;
     private final @Px int mActionButtonWidthPx;
-    private final @Px int mContentPaddingPx;
+    private final @Px int mContentVerticalPaddingPx;
     private final @Px int mMinimumContentPadding;
     private final @Px int mSuggestionEndPaddingNoActionButtonPx;
     private boolean mUseLargeDecoration;
@@ -166,10 +166,11 @@ class SuggestionLayout extends ViewGroup {
         mActionButtonWidthPx =
                 res.getDimensionPixelSize(R.dimen.omnibox_suggestion_action_button_width);
         mCompactContentHeightPx =
-                res.getDimensionPixelSize(R.dimen.omnibox_suggestion_compact_content_height);
-        mContentHeightPx = res.getDimensionPixelSize(R.dimen.omnibox_suggestion_content_height);
+                OmniboxResourceProvider.getSuggestionCompactContentHeight(context);
+        mContentHeightPx = OmniboxResourceProvider.getSuggestionContentHeight(context);
 
-        mContentPaddingPx = res.getDimensionPixelSize(R.dimen.omnibox_suggestion_content_padding);
+        mContentVerticalPaddingPx =
+                OmniboxResourceProvider.getSuggestionContentVerticalPadding(context);
         mMinimumContentPadding = res.getDimensionPixelSize(R.dimen.omnibox_simple_card_lead_in);
 
         mSuggestionEndPaddingNoActionButtonPx =
@@ -395,7 +396,7 @@ class SuggestionLayout extends ViewGroup {
         // Pad suggestion around to guarantee appropriate spacing around suggestions.
         // Modernized UI present their content in distinc blocks, and the extra space
         // does not break visually the relationship between the content and footer parts.
-        contentHeightPx += mContentPaddingPx;
+        contentHeightPx += mContentVerticalPaddingPx;
 
         // Guarantee that the suggestion height meets our required minimum tap target size.
         var height =

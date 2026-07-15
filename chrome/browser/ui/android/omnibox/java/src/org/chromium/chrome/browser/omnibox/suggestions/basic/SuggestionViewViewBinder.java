@@ -27,16 +27,15 @@ public class SuggestionViewViewBinder {
      * @see PropertyModelChangeProcessor.ViewBinder#bind(Object, Object, Object)
      */
     public static void bind(PropertyModel model, View view, PropertyKey propertyKey) {
-        if (propertyKey == SuggestionViewProperties.TEXT_LINE_1_TEXT) {
+        if (propertyKey == SuggestionViewProperties.TEXT_LINE_1_TEXT_APPEARANCE) {
+            TextView tv = view.findViewById(R.id.line_1);
+            tv.setTextAppearance(model.get(SuggestionViewProperties.TEXT_LINE_1_TEXT_APPEARANCE));
+        } else if (propertyKey == SuggestionViewProperties.TEXT_LINE_1_TEXT) {
             TextView tv = view.findViewById(R.id.line_1);
             tv.setText(model.get(SuggestionViewProperties.TEXT_LINE_1_TEXT));
             int minHeight =
-                    tv.getResources()
-                            .getDimensionPixelSize(
-                                    tv.getLineCount() > 1
-                                            ? R.dimen
-                                                    .omnibox_suggestion_minimum_content_height_multiline
-                                            : R.dimen.omnibox_suggestion_minimum_content_height);
+                    OmniboxResourceProvider.getSuggestionMinHeight(
+                            tv.getResources(), tv.getLineCount());
             view.setMinimumHeight(minHeight);
         } else if (propertyKey == SuggestionCommonProperties.COLOR_SCHEME) {
             updateSuggestionTextColor(view, model);

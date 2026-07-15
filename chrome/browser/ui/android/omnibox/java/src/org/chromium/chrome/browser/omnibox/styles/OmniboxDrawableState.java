@@ -5,18 +5,23 @@
 package org.chromium.chrome.browser.omnibox.styles;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.DrawableWrapper;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.omnibox.R;
+import org.chromium.components.omnibox.OmniboxCapabilities;
 
 /** Represents graphical decoration for the suggestion components. */
 @NullMarked
 public class OmniboxDrawableState {
+
     /** Embedded drawable object. */
     public final Drawable drawable;
 
@@ -38,9 +43,10 @@ public class OmniboxDrawableState {
      * @param color the color to apply
      * @return newly created OmniboxDrawableState
      */
-    public static OmniboxDrawableState forColor(@ColorInt int color) {
+    public static OmniboxDrawableState forColor(@ColorInt int color, Context context) {
         return new OmniboxDrawableState(
                 new ColorDrawable(color),
+                context,
                 /* useRoundedCorners= */ true,
                 /* isLarge= */ true,
                 /* allowTint= */ false);
@@ -58,6 +64,7 @@ public class OmniboxDrawableState {
             Context context, @DrawableRes int resourceId, boolean allowTint) {
         return new OmniboxDrawableState(
                 OmniboxResourceProvider.getDrawable(context, resourceId),
+                context,
                 /* useRoundedCorners= */ false,
                 /* isLarge= */ false,
                 allowTint);
@@ -80,6 +87,7 @@ public class OmniboxDrawableState {
         return new OmniboxDrawableState(
                 OmniboxResourceProvider.getDrawable(context, resourceId),
                 OmniboxResourceProvider.getDrawable(context, incognitoResourceId),
+                context,
                 /* useRoundedCorners= */ false,
                 /* isLarge= */ false,
                 allowTint);
@@ -97,6 +105,7 @@ public class OmniboxDrawableState {
             Context context, @DrawableRes int resourceId, boolean allowTint) {
         return new OmniboxDrawableState(
                 OmniboxResourceProvider.getDrawable(context, resourceId),
+                context,
                 /* useRoundedCorners= */ false,
                 /* isLarge= */ true,
                 allowTint);
@@ -105,13 +114,14 @@ public class OmniboxDrawableState {
     /**
      * Create OmniboxDrawableState representing a site favicon.
      *
+     * @param drawable Drawable of the favicon
      * @param context current context
-     * @param bitmap bitmap with decoded site favicon
      * @return newly created OmniboxDrawableState
      */
-    public static OmniboxDrawableState forFavIcon(Drawable drawable) {
+    public static OmniboxDrawableState forFavIcon(Drawable drawable, Context context) {
         return new OmniboxDrawableState(
                 drawable,
+                context,
                 /* useRoundedCorners= */ true,
                 /* isLarge= */ false,
                 /* allowTint= */ false);
@@ -120,12 +130,14 @@ public class OmniboxDrawableState {
     /**
      * Create OmniboxDrawableState with dedicated image decoration.
      *
+     * @param context current context
      * @param drawable dedicated drawable
      * @return newly created OmniboxDrawableState
      */
-    public static OmniboxDrawableState forImage(Drawable drawable) {
+    public static OmniboxDrawableState forImage(Drawable drawable, Context context) {
         return new OmniboxDrawableState(
                 drawable,
+                context,
                 /* useRoundedCorners= */ true,
                 /* isLarge= */ true,
                 /* allowTint= */ false);
@@ -144,11 +156,12 @@ public class OmniboxDrawableState {
     public OmniboxDrawableState(
             Drawable drawable,
             Drawable incognitoDrawable,
+            Context context,
             boolean useRoundedCorners,
             boolean isLarge,
             boolean allowTint) {
-        this.drawable = drawable;
-        this.incognitoDrawable = incognitoDrawable;
+        this.drawable = resizeForDesktop(drawable, context, isLarge);
+        this.incognitoDrawable = resizeForDesktop(incognitoDrawable, context, isLarge);
         this.useRoundedCorners = useRoundedCorners;
         this.isLarge = isLarge;
         this.allowTint = allowTint;
@@ -164,7 +177,37 @@ public class OmniboxDrawableState {
      */
     @VisibleForTesting
     public OmniboxDrawableState(
-            Drawable drawable, boolean useRoundedCorners, boolean isLarge, boolean allowTint) {
-        this(drawable, drawable, useRoundedCorners, isLarge, allowTint);
+            Drawable drawable,
+            Context context,
+            boolean useRoundedCorners,
+            boolean isLarge,
+            boolean allowTint) {
+        this(drawable, drawable, context, useRoundedCorners, isLarge, allowTint);
+    }
+
+    /** Inspects the drawable and wraps it to override the size if the platform is Desktop. */
+    private static Drawable resizeForDesktop(Drawable drawable, Context context, boolean isLarge) {
+        if (drawable == null || !OmniboxCapabilities.isDesktopPlatform()) {
+            return drawable;
+        }
+
+        Resources resources = context.getResources();
+        int targetPx =
+                isLarge
+                        ? resources.getDimensionPixelSize(
+                                R.dimen.omnibox_desktop_large_decoration_icon_size)
+                        : resources.getDimensionPixelSize(
+                                R.dimen.omnibox_desktop_small_decoration_icon_size);
+        return new DrawableWrapper(drawable) {
+            @Override
+            public int getIntrinsicWidth() {
+                return targetPx;
+            }
+
+            @Override
+            public int getIntrinsicHeight() {
+                return targetPx;
+            }
+        };
     }
 }

@@ -23,6 +23,7 @@ import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionViewPr
 import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.DocumentType;
+import org.chromium.components.omnibox.OmniboxCapabilities;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.omnibox.OmniboxSuggestionKind;
 import org.chromium.components.omnibox.OmniboxSuggestionType;
@@ -207,6 +208,12 @@ public class BasicSuggestionProcessor extends BaseSuggestionViewProcessor {
         final SuggestionSpannable textLine1 =
                 getSuggestedQuery(
                         suggestion, !isSearchSuggestion && !isDocumentSuggestion, !urlHighlighted);
+
+        if (OmniboxCapabilities.isDesktopPlatform()) {
+            model.set(
+                    SuggestionViewProperties.TEXT_LINE_1_TEXT_APPEARANCE,
+                    R.style.TextAppearance_TextMedium);
+        }
 
         model.set(SuggestionViewProperties.IS_SEARCH_SUGGESTION, isSearchSuggestion);
         model.set(SuggestionViewProperties.ALLOW_WRAP_AROUND, isSearchSuggestion);

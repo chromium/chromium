@@ -42,6 +42,7 @@ import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.styles.IncognitoColors;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.util.DrawableUtils;
+import org.chromium.components.omnibox.OmniboxCapabilities;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.util.ColorUtils;
@@ -575,17 +576,59 @@ public class OmniboxResourceProvider {
         return context.getResources().getDimensionPixelSize(R.dimen.toolbar_edge_padding_ntp);
     }
 
-    /** Return the width of the Omnibox Suggestion decoration icon. */
+    /** Returns the width of the Omnibox Suggestion decoration icon. */
     public static @Px int getSuggestionDecorationIconSizeWidth(Context context) {
         Context wrappedContext = maybeReplaceContextForSmallTabletWindow(context);
+        Resources resources = context.getResources();
         if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(context)
                 && wrappedContext == context) {
-            return context.getResources()
-                    .getDimensionPixelSize(R.dimen.omnibox_suggestion_icon_area_size_modern);
+            return resources.getDimensionPixelSize(
+                    R.dimen.omnibox_suggestion_icon_area_size_modern);
         }
 
+        return resources.getDimensionPixelSize(R.dimen.omnibox_suggestion_icon_area_size);
+    }
+
+    /** Returns the height of the content of an Omnibox Suggestion. */
+    public static @Px int getSuggestionContentHeight(Context context) {
+        Resources resources = context.getResources();
+        if (OmniboxCapabilities.isDesktopPlatform()) {
+            return resources.getDimensionPixelSize(
+                    R.dimen.omnibox_suggestion_content_height_desktop);
+        } else {
+            return resources.getDimensionPixelSize(R.dimen.omnibox_suggestion_content_height);
+        }
+    }
+
+    /** Returns the height of a single line Omnibox Suggestion. */
+    public static @Px int getSuggestionCompactContentHeight(Context context) {
+        Resources resources = context.getResources();
+        if (OmniboxCapabilities.isDesktopPlatform()) {
+            return resources.getDimensionPixelSize(
+                    R.dimen.omnibox_suggestion_content_height_desktop);
+        }
+        return resources.getDimensionPixelSize(R.dimen.omnibox_suggestion_compact_content_height);
+    }
+
+    /** Returns the min height of an Omnibox Suggestion view. */
+    public static int getSuggestionMinHeight(Resources resources, int lineCount) {
+        if (OmniboxCapabilities.isDesktopPlatform()) {
+            return resources.getDimensionPixelSize(
+                    R.dimen.omnibox_suggestion_content_height_desktop);
+        }
+        return resources.getDimensionPixelSize(
+                lineCount > 1
+                        ? R.dimen.omnibox_suggestion_minimum_content_height_multiline
+                        : R.dimen.omnibox_suggestion_minimum_content_height);
+    }
+
+    /** Returns the vertical padding for a suggestion. */
+    public static int getSuggestionContentVerticalPadding(Context context) {
+        if (OmniboxCapabilities.isDesktopPlatform()) {
+            return 0;
+        }
         return context.getResources()
-                .getDimensionPixelSize(R.dimen.omnibox_suggestion_icon_area_size);
+                .getDimensionPixelSize(R.dimen.omnibox_suggestion_content_padding);
     }
 
     /**

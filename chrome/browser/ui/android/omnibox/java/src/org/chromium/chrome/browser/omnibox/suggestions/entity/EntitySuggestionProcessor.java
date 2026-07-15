@@ -75,7 +75,7 @@ public class EntitySuggestionProcessor extends BasicSuggestionProcessor {
 
         try {
             int color = Color.parseColor(colorSpec);
-            return OmniboxDrawableState.forColor(color);
+            return OmniboxDrawableState.forColor(color, mContext);
         } catch (IllegalArgumentException e) {
             return super.getFallbackIcon(match);
         }
