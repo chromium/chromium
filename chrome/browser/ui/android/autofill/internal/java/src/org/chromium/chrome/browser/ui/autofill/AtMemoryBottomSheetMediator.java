@@ -205,6 +205,10 @@ class AtMemoryBottomSheetMediator implements AtMemorySearchBarView.Delegate {
     }
 
     private void onSuggestionClicked(AutofillSuggestion suggestion, int position) {
+        if (!suggestion.isAcceptable()) {
+            return;
+        }
+
         if (suggestion.getSuggestionType() == SuggestionType.AT_MEMORY_SEARCH_AFFORDANCE
                 && mSearchAffordanceModel != null) {
             mSearchDelegate.hideKeyboardAndClearFocus();

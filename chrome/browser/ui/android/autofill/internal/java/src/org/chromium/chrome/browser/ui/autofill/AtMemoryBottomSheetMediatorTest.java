@@ -9,6 +9,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -99,11 +100,13 @@ public class AtMemoryBottomSheetMediatorTest {
                                 .setIconId(R.drawable.flight)
                                 .setLabel("KLM204")
                                 .setSubLabel("Flight ⋅ 15 May ⋅ SEA - MUC")
+                                .setIsAcceptable(true)
                                 .build(),
                         new AutofillSuggestion.Builder()
                                 .setIconId(R.drawable.travel_trip)
                                 .setLabel("Hotel Booking")
                                 .setSubLabel("Hilton ⋅ 16 May")
+                                .setIsAcceptable(true)
                                 .build());
 
         mMediator.show(suggestions);
@@ -118,6 +121,26 @@ public class AtMemoryBottomSheetMediatorTest {
         itemModel1.get(ON_SUGGESTION_CLICKED).run();
 
         verify(mDelegate).onSuggestionClicked(/* position= */ 0);
+    }
+
+    @Test
+    public void testOnSuggestionClicked_unacceptable() {
+        List<AutofillSuggestion> suggestions =
+                List.of(
+                        new AutofillSuggestion.Builder()
+                                .setIconId(R.drawable.sad_tab)
+                                .setLabel("No Connection")
+                                .setSubLabel("No connection")
+                                .setSuggestionType(SuggestionType.AT_MEMORY_NO_CONNECTION)
+                                .setIsAcceptable(false)
+                                .build());
+
+        mMediator.show(suggestions);
+
+        PropertyModel itemModel1 = mModelList.get(0).model;
+        itemModel1.get(ON_SUGGESTION_CLICKED).run();
+
+        verify(mDelegate, never()).onSuggestionClicked(/* position= */ 0);
     }
 
     @Test
@@ -173,6 +196,7 @@ public class AtMemoryBottomSheetMediatorTest {
                         .setLabel("Recent")
                         .setSubLabel("No connection")
                         .setSuggestionType(SuggestionType.AT_MEMORY_NO_CONNECTION)
+                        .setIsAcceptable(false)
                         .build();
         List<AutofillSuggestion> suggestions = List.of(suggestion);
         mMediator.show(suggestions);
@@ -325,6 +349,7 @@ public class AtMemoryBottomSheetMediatorTest {
                 .setSubLabel("test details")
                 .setIconId(R.drawable.flight)
                 .setSuggestionType(SuggestionType.AT_MEMORY_SEARCH_AFFORDANCE)
+                .setIsAcceptable(true)
                 .build();
     }
 
