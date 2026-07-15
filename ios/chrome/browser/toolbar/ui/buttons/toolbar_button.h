@@ -31,9 +31,8 @@ using ToolbarButtonImageLoader = UIImage* (^)(void);
 // visible.
 @property(nonatomic, copy) NSString* blueDotAccessibilityLabel;
 
-// The background visual effect view of the button when ToolbarGlassPrototype is
-// enabled.
-@property(nonatomic, strong, readonly) UIVisualEffectView* backgroundBlurView;
+// The background view of the button.
+@property(nonatomic, strong, readonly) UIView* backgroundView;
 
 // Initializer for this button in `incognito` with an `imageLoader`.
 - (instancetype)initWithImageLoader:(ToolbarButtonImageLoader)imageLoader

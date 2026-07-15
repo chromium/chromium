@@ -101,6 +101,25 @@ constexpr CGFloat kFullscreenProgressThreshold = 0.99;
 const base::TimeDelta kProgressBarEndAnimationDuration =
     base::Milliseconds(250);
 
+// Constants for the toolbar glass prototype appearance and shadows.
+constexpr CGFloat kToolbarGlassUnderlayDarkAlpha = 0.25;
+
+constexpr CGFloat kToolbarGlassTintDarkAlpha = 0.05;
+constexpr CGFloat kToolbarGlassTintLightRed = 0.15294;
+constexpr CGFloat kToolbarGlassTintLightGreen = 0.26275;
+constexpr CGFloat kToolbarGlassTintLightBlue = 0.39608;
+constexpr CGFloat kToolbarGlassTintLightAlpha = 0.07;
+
+constexpr CGFloat kToolbarGlassShadowOpacity = 0.09;
+constexpr CGFloat kToolbarGlassShadowRadius = 7.0;
+constexpr CGFloat kToolbarGlassShadowVerticalOffset = 7.0;
+
+constexpr CGFloat kToolbarGlassBackgroundMargin = 4.0;
+
+constexpr CGFloat kLocationBarBorderStrokeWidth = 0.5;
+constexpr CGFloat kLocationBarBorderClearAlpha = 0.15;
+constexpr CGFloat kLocationBarBorderSolidAlpha = 0.30;
+
 }  // namespace
 
 @interface ToolbarViewController () <TabGroupIndicatorViewDelegate,
@@ -240,11 +259,13 @@ const base::TimeDelta kProgressBarEndAnimationDuration =
 
   // Visual effect view spanning the entire background.
   UIVisualEffectView* _toolbarBackgroundVisualEffectView;
-  // Underlay view below _toolbarBackgroundVisualEffectView with 25% black
-  // background.
+  // Underlay view below _toolbarBackgroundVisualEffectView with dark or light
+  // alpha background.
   UIView* _toolbarBackgroundUnderlayView;
-  // Overlay view positioned on top of the location bar background.
-  UIView* _locationBarOverlayView;
+  // Container view housing the drop shadow for the toolbar glass prototype.
+  UIView* _toolbarGlassShadowContainerView;
+  // Conic gradient border layer positioned around the location bar background.
+  CAGradientLayer* _locationBarBorderGradientLayer;
   // Interactive property animator for scroll progress.
   UIViewPropertyAnimator* _scrollAnimator;
 }
@@ -283,7 +304,12 @@ const base::TimeDelta kProgressBarEndAnimationDuration =
   // ToolbarViewController will show its own _separator, when needed.
   _tabGroupIndicatorView.showSeparator = NO;
   _tabGroupIndicatorView.translatesAutoresizingMaskIntoConstraints = NO;
-  [self.view addSubview:_tabGroupIndicatorView];
+  UIView* parentContainer =
+      IsToolbarGlassPrototypeEnabled() &&
+              _toolbarBackgroundVisualEffectView.contentView
+          ? _toolbarBackgroundVisualEffectView.contentView
+          : self.view;
+  [parentContainer addSubview:_tabGroupIndicatorView];
 
   _tabGroupIndicatorActiveToolbarConstraint =
       [_tabGroupIndicatorView.bottomAnchor
@@ -419,8 +445,10 @@ const base::TimeDelta kProgressBarEndAnimationDuration =
           @[ UITraitVerticalSizeClass.class, UITraitHorizontalSizeClass.class ]
                    withAction:@selector(sizeClassDidChange)];
   if (IsToolbarGlassPrototypeEnabled()) {
-    [self registerForTraitChanges:@[ UITraitUserInterfaceStyle.class ]
-                       withAction:@selector(userInterfaceStyleDidChange)];
+    [_locationBarBackground
+        registerForTraitChanges:@[ UITraitUserInterfaceStyle.class ]
+                     withTarget:self
+                         action:@selector(userInterfaceStyleDidChange)];
   }
 }
 
@@ -432,10 +460,45 @@ const base::TimeDelta kProgressBarEndAnimationDuration =
 - (void)viewDidLayoutSubviews {
   [super viewDidLayoutSubviews];
   if (IsToolbarGlassPrototypeEnabled()) {
-    _toolbarBackgroundVisualEffectView.layer.cornerRadius =
+    CGFloat cornerRadius =
         _toolbarBackgroundVisualEffectView.bounds.size.height / 2.0;
-    _toolbarBackgroundUnderlayView.layer.cornerRadius =
-        _toolbarBackgroundUnderlayView.bounds.size.height / 2.0;
+    _toolbarBackgroundVisualEffectView.layer.cornerRadius = cornerRadius;
+    _toolbarBackgroundUnderlayView.layer.cornerRadius = cornerRadius;
+    _toolbarGlassShadowContainerView.layer.cornerRadius = cornerRadius;
+    if (_toolbarGlassShadowContainerView.bounds.size.height > 0 &&
+        !_toolbarGlassShadowContainerView.isHidden) {
+      _toolbarGlassShadowContainerView.layer.shadowPath =
+          [UIBezierPath
+              bezierPathWithRoundedRect:_toolbarGlassShadowContainerView.bounds
+                           cornerRadius:cornerRadius]
+              .CGPath;
+    } else {
+      _toolbarGlassShadowContainerView.layer.shadowPath = nil;
+    }
+    if (_locationBarBackground && _locationBarBorderGradientLayer &&
+        !CGRectIsEmpty(_locationBarBackground.bounds)) {
+      _locationBarBorderGradientLayer.frame = _locationBarBackground.bounds;
+      CAShapeLayer* borderMask = base::apple::ObjCCast<CAShapeLayer>(
+          _locationBarBorderGradientLayer.mask);
+      if (!borderMask) {
+        borderMask = [CAShapeLayer layer];
+        borderMask.lineWidth = kLocationBarBorderStrokeWidth;
+        borderMask.fillColor = [UIColor clearColor].CGColor;
+        borderMask.strokeColor = [UIColor blackColor].CGColor;
+        _locationBarBorderGradientLayer.mask = borderMask;
+      }
+      CGRect pathRect = CGRectInset(_locationBarBackground.bounds,
+                                    kLocationBarBorderStrokeWidth / 2.0,
+                                    kLocationBarBorderStrokeWidth / 2.0);
+      borderMask.path =
+          [UIBezierPath
+              bezierPathWithRoundedRect:pathRect
+                           cornerRadius:(_locationBarBackground.bounds.size
+                                             .height /
+                                         2.0) -
+                                        (kLocationBarBorderStrokeWidth / 2.0)]
+              .CGPath;
+    }
   }
 }
 
@@ -1132,46 +1195,31 @@ const base::TimeDelta kProgressBarEndAnimationDuration =
 
 // Returns a new background for the location bar.
 - (UIView*)createLocationBarBackground {
-  if (IsToolbarGlassPrototypeEnabled()) {
-    UIBlurEffectStyle blurStyle = _incognito
-                                      ? UIBlurEffectStyleSystemThickMaterialDark
-                                      : UIBlurEffectStyleSystemChromeMaterial;
-    UIBlurEffect* blurEffect = [UIBlurEffect effectWithStyle:blurStyle];
-    UIVisualEffectView* locationBarBackground =
-        [[UIVisualEffectView alloc] initWithEffect:blurEffect];
-    locationBarBackground.translatesAutoresizingMaskIntoConstraints = NO;
-    locationBarBackground.layer.cornerRadius = kLocationBarHeight / 2.0;
-    locationBarBackground.clipsToBounds = YES;
-
-    BOOL incognito = _incognito;
-    _locationBarOverlayView = [[UIView alloc] init];
-    _locationBarOverlayView.translatesAutoresizingMaskIntoConstraints = NO;
-    _locationBarOverlayView.userInteractionEnabled = NO;
-    _locationBarOverlayView.backgroundColor = [UIColor
-        colorWithDynamicProvider:^UIColor*(UITraitCollection* traitCollection) {
-          if (incognito ||
-              traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark) {
-            return [UIColor.whiteColor colorWithAlphaComponent:0.08];
-          }
-          return [UIColor.blackColor colorWithAlphaComponent:0.06];
-        }];
-    [locationBarBackground.contentView addSubview:_locationBarOverlayView];
-    AddSameConstraints(locationBarBackground.contentView,
-                       _locationBarOverlayView);
-
-    ConfigureShadowForToolbarElement(locationBarBackground);
-
-    return locationBarBackground;
-  }
   UIView* locationBarBackground = [[UIView alloc] init];
   locationBarBackground.translatesAutoresizingMaskIntoConstraints = NO;
   locationBarBackground.layer.cornerRadius = kLocationBarHeight / 2.0;
 
+  if (IsToolbarGlassPrototypeEnabled()) {
+    locationBarBackground.backgroundColor =
+        ToolbarGlassPrototypeElementBackgroundColor(_incognito);
+    ConfigureGlassToolbarElementShadow(locationBarBackground, _incognito,
+                                       self.traitCollection);
+    _locationBarBorderGradientLayer = [CAGradientLayer layer];
+    _locationBarBorderGradientLayer.type = kCAGradientLayerConic;
+    _locationBarBorderGradientLayer.startPoint = CGPointMake(0.5, 0.5);
+    _locationBarBorderGradientLayer.endPoint = CGPointMake(1.0, 0.5);
+    [locationBarBackground.layer addSublayer:_locationBarBorderGradientLayer];
+    [locationBarBackground
+        registerForTraitChanges:@[ UITraitUserInterfaceStyle.class ]
+                     withTarget:self
+                         action:@selector(updateLocationBarGlassBorder)];
+    [self updateLocationBarGlassBorder];
+    return locationBarBackground;
+  }
+
   locationBarBackground.backgroundColor =
       ToolbarElementBackgroundColor(_incognito);
-
   ConfigureShadowForToolbarElement(locationBarBackground);
-
   return locationBarBackground;
 }
 
@@ -1255,18 +1303,7 @@ const base::TimeDelta kProgressBarEndAnimationDuration =
 - (void)createView {
   CHECK(self.buttonFactory);
   if (IsToolbarGlassPrototypeEnabled()) {
-    _toolbarBackgroundVisualEffectView = [[UIVisualEffectView alloc]
-        initWithEffect:[self activeToolbarGlassEffect]];
-    _toolbarBackgroundVisualEffectView
-        .translatesAutoresizingMaskIntoConstraints = NO;
-
-    _toolbarBackgroundUnderlayView = [[UIView alloc] init];
-    _toolbarBackgroundUnderlayView.translatesAutoresizingMaskIntoConstraints =
-        NO;
-    _toolbarBackgroundUnderlayView.backgroundColor =
-        [UIColor.blackColor colorWithAlphaComponent:0.25];
-    _toolbarBackgroundUnderlayView.userInteractionEnabled = NO;
-    _toolbarBackgroundUnderlayView.clipsToBounds = YES;
+    [self setupToolbarGlassBackgroundViews];
   }
 
   _locationBarBackground = [self createLocationBarBackground];
@@ -1406,10 +1443,14 @@ const base::TimeDelta kProgressBarEndAnimationDuration =
 
 // Sets up the hierarchy of the buttons.
 - (void)setUpHierarchy {
+  UIView* contentContainer = self.view;
   if (IsToolbarGlassPrototypeEnabled()) {
-    [self.view insertSubview:_toolbarBackgroundUnderlayView atIndex:0];
+    [self.view insertSubview:_toolbarGlassShadowContainerView atIndex:0];
+    [self.view insertSubview:_toolbarBackgroundUnderlayView
+                aboveSubview:_toolbarGlassShadowContainerView];
     [self.view insertSubview:_toolbarBackgroundVisualEffectView
                 aboveSubview:_toolbarBackgroundUnderlayView];
+    contentContainer = _toolbarBackgroundVisualEffectView.contentView;
   }
 
   _leadingStackView = [self makeStackViewWithButtons:@[
@@ -1421,41 +1462,43 @@ const base::TimeDelta kProgressBarEndAnimationDuration =
     _shareButton, _assistantButton, _tabGridButton, _toolsMenuButton
   ]];
 
-  [self.view addSubview:_leadingStackView];
-  [self.view addSubview:_locationBarContainer];
+  [contentContainer addSubview:_leadingStackView];
+  [contentContainer addSubview:_locationBarContainer];
 
   if (IsToolbarGlassPrototypeEnabled()) {
     [NSLayoutConstraint activateConstraints:@[
       [_toolbarBackgroundVisualEffectView.leadingAnchor
           constraintEqualToAnchor:self.view.leadingAnchor
-                         constant:4.0],
+                         constant:kToolbarGlassBackgroundMargin],
       [_toolbarBackgroundVisualEffectView.trailingAnchor
           constraintEqualToAnchor:self.view.trailingAnchor
-                         constant:-4.0],
+                         constant:-kToolbarGlassBackgroundMargin],
       [_toolbarBackgroundVisualEffectView.topAnchor
           constraintEqualToAnchor:_locationBarContainer.topAnchor
-                         constant:-4.0],
+                         constant:-kToolbarGlassBackgroundMargin],
       [_toolbarBackgroundVisualEffectView.bottomAnchor
           constraintEqualToAnchor:_locationBarContainer.bottomAnchor
-                         constant:4.0],
+                         constant:kToolbarGlassBackgroundMargin],
     ]];
     AddSameConstraints(_toolbarBackgroundVisualEffectView,
                        _toolbarBackgroundUnderlayView);
+    AddSameConstraints(_toolbarBackgroundVisualEffectView,
+                       _toolbarGlassShadowContainerView);
     _toolbarBackgroundVisualEffectView.clipsToBounds = YES;
   }
 
   if (_fakeOmniboxTarget) {
-    [self.view addSubview:_fakeOmniboxTarget];
+    [contentContainer addSubview:_fakeOmniboxTarget];
     AddSameConstraints(_locationBarContainer, _fakeOmniboxTarget);
   }
 
-  [self.view addSubview:_trailingStackView];
-  [self.view addSubview:_progressBarContainer];
+  [contentContainer addSubview:_trailingStackView];
+  [contentContainer addSubview:_progressBarContainer];
   if (!IsToolbarGlassPrototypeEnabled()) {
-    [self.view addSubview:_innerSeparator];
+    [contentContainer addSubview:_innerSeparator];
   }
-  [self.view addSubview:_collapsedToolbarButton];
-  AddSameConstraints(self.view, _collapsedToolbarButton);
+  [contentContainer addSubview:_collapsedToolbarButton];
+  AddSameConstraints(contentContainer, _collapsedToolbarButton);
 
   NSLayoutConstraint* progressBarEdgeConstraint =
       _topPosition ? [_progressBarContainer.bottomAnchor
@@ -1543,10 +1586,15 @@ const base::TimeDelta kProgressBarEndAnimationDuration =
       constraintLessThanOrEqualToConstant:kLocationBarMaxWidth]
       .active = YES;
 
+  UIView* horizontalContentContainer =
+      IsToolbarGlassPrototypeEnabled() &&
+              _toolbarBackgroundVisualEffectView.contentView
+          ? _toolbarBackgroundVisualEffectView.contentView
+          : self.view;
   _leadingStackLeadingConstraint = [_leadingStackView.leadingAnchor
-      constraintEqualToAnchor:self.view.leadingAnchor];
+      constraintEqualToAnchor:horizontalContentContainer.leadingAnchor];
   _leadingStackLeadingConstraint.active = YES;
-  _trailingStackTrailingConstraint = [self.view.trailingAnchor
+  _trailingStackTrailingConstraint = [horizontalContentContainer.trailingAnchor
       constraintEqualToAnchor:_trailingStackView.trailingAnchor];
   _trailingStackTrailingConstraint.active = YES;
 
@@ -1872,19 +1920,8 @@ const base::TimeDelta kProgressBarEndAnimationDuration =
 // Called when the user interface style changes.
 - (void)userInterfaceStyleDidChange {
   if (IsToolbarGlassPrototypeEnabled()) {
-    [self updateToolbarBackgroundUnderlayVisibility];
+    _toolbarBackgroundVisualEffectView.effect = [self activeToolbarGlassEffect];
   }
-}
-
-// Updates visibility of the 25% black underlay based on incognito or dark mode.
-- (void)updateToolbarBackgroundUnderlayVisibility {
-  if (!IsToolbarGlassPrototypeEnabled() || !_toolbarBackgroundUnderlayView) {
-    return;
-  }
-  BOOL isDarkStyle =
-      self.traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark;
-  BOOL shouldShowUnderlay = _incognito || isDarkStyle;
-  _toolbarBackgroundUnderlayView.hidden = !shouldShowUnderlay;
 }
 
 // Safely updates a layout guide by either referencing `view` or unreferencing
@@ -1930,76 +1967,105 @@ const base::TimeDelta kProgressBarEndAnimationDuration =
   }
 }
 
-// Returns the toolbar buttons that have their own individual backgrounds (not
-// conjoined).
-- (NSArray<ToolbarButton*>*)individualToolbarButtons {
-  CHECK(IsToolbarGlassPrototypeEnabled());
-  NSMutableArray<ToolbarButton*>* buttons = [[NSMutableArray alloc] init];
-  if (_reloadButton) {
-    [buttons addObject:_reloadButton];
-  }
-  if (_stopButton) {
-    [buttons addObject:_stopButton];
-  }
-  if (_shareButton) {
-    [buttons addObject:_shareButton];
-  }
-  if (_assistantButton) {
-    [buttons addObject:_assistantButton];
-  }
-  if (_tabGridButton) {
-    [buttons addObject:_tabGridButton];
-  }
-  if (_toolsMenuButton) {
-    [buttons addObject:_toolsMenuButton];
-  }
-  return buttons;
-}
-
-// Returns the conjoined buttons background blur view.
-- (UIVisualEffectView*)conjoinedButtonsBackgroundBlurView {
-  CHECK(IsToolbarGlassPrototypeEnabled());
-  for (UIView* subview in _navigationButtonsContainer.subviews) {
-    if ([subview isKindOfClass:[UIVisualEffectView class]]) {
-      return (UIVisualEffectView*)subview;
-    }
-  }
-  return nil;
-}
-
 #pragma mark - Toolbar Glass Prototype Helpers
 
-// Returns the active toolbar glass effect.
+// Sets up the visual effect view, background underlay view, and shadow
+// container for the toolbar glass prototype.
+- (void)setupToolbarGlassBackgroundViews {
+  CHECK(IsToolbarGlassPrototypeEnabled());
+  _toolbarBackgroundVisualEffectView = [[UIVisualEffectView alloc]
+      initWithEffect:[self activeToolbarGlassEffect]];
+  _toolbarBackgroundVisualEffectView.translatesAutoresizingMaskIntoConstraints =
+      NO;
+  _toolbarBackgroundVisualEffectView.clipsToBounds = YES;
+
+  BOOL incognito = _incognito;
+  _toolbarBackgroundUnderlayView = [[UIView alloc] init];
+  _toolbarBackgroundUnderlayView.translatesAutoresizingMaskIntoConstraints = NO;
+  _toolbarBackgroundUnderlayView.backgroundColor = [UIColor
+      colorWithDynamicProvider:^UIColor*(UITraitCollection* traitCollection) {
+        BOOL isDark = incognito || (traitCollection.userInterfaceStyle ==
+                                    UIUserInterfaceStyleDark);
+        return [UIColor.blackColor
+            colorWithAlphaComponent:isDark ? kToolbarGlassUnderlayDarkAlpha
+                                           : 0];
+      }];
+  _toolbarBackgroundUnderlayView.userInteractionEnabled = NO;
+  _toolbarBackgroundUnderlayView.clipsToBounds = YES;
+
+  _toolbarGlassShadowContainerView = [[UIView alloc] init];
+  _toolbarGlassShadowContainerView.translatesAutoresizingMaskIntoConstraints =
+      NO;
+  _toolbarGlassShadowContainerView.backgroundColor = UIColor.clearColor;
+  _toolbarGlassShadowContainerView.userInteractionEnabled = NO;
+  _toolbarGlassShadowContainerView.layer.masksToBounds = NO;
+  _toolbarGlassShadowContainerView.layer.shadowColor =
+      UIColor.blackColor.CGColor;
+  _toolbarGlassShadowContainerView.layer.shadowOpacity =
+      kToolbarGlassShadowOpacity;
+  _toolbarGlassShadowContainerView.layer.shadowRadius =
+      kToolbarGlassShadowRadius;
+  _toolbarGlassShadowContainerView.layer.shadowOffset =
+      CGSizeMake(0, kToolbarGlassShadowVerticalOffset);
+}
+
+// Updates the conic gradient border colors around the location bar background
+// for the glass prototype upon user interface style changes.
+- (void)updateLocationBarGlassBorder {
+  CHECK(IsToolbarGlassPrototypeEnabled());
+  if (!_locationBarBorderGradientLayer || !_locationBarBackground) {
+    return;
+  }
+
+  BOOL isDark = _incognito ||
+                (_locationBarBackground.traitCollection.userInterfaceStyle ==
+                 UIUserInterfaceStyleDark);
+  UIColor* borderColor = isDark ? UIColor.whiteColor : UIColor.blackColor;
+  id clearColor =
+      (id)[borderColor colorWithAlphaComponent:kLocationBarBorderClearAlpha]
+          .CGColor;
+  id solidColor =
+      (id)[borderColor colorWithAlphaComponent:kLocationBarBorderSolidAlpha]
+          .CGColor;
+
+  _locationBarBorderGradientLayer.colors = @[
+    clearColor,  // 0.00: Right middle
+    solidColor,  // 0.08: Bottom-right corner
+    solidColor,  // 0.12: Bottom border 80%
+    clearColor,  // 0.33: Bottom border 33%
+    clearColor,  // 0.44: Left border ~75%
+    solidColor,  // 0.47: Left border 66%
+    solidColor,  // 0.83: Top border 66%
+    clearColor,  // 0.86: Top border ~75%
+    clearColor   // 1.00: Right middle
+  ];
+  _locationBarBorderGradientLayer.locations =
+      @[ @0.00, @0.08, @0.12, @0.33, @0.44, @0.47, @0.83, @0.86, @1.00 ];
+}
+
+// Returns the active toolbar glass effect evaluated directly on the content
+// view trait collection.
 - (UIVisualEffect*)activeToolbarGlassEffect {
   CHECK(IsToolbarGlassPrototypeEnabled());
   if (@available(iOS 26.0, *)) {
     UIGlassEffect* glass =
         [UIGlassEffect effectWithStyle:UIGlassEffectStyleRegular];
-    if (_incognito) {
-      glass.tintColor = [UIColor.blackColor colorWithAlphaComponent:0.28];
+    if (_locationBarBackground.traitCollection.userInterfaceStyle ==
+        UIUserInterfaceStyleDark) {
+      glass.tintColor = [UIColor.whiteColor
+          colorWithAlphaComponent:kToolbarGlassTintDarkAlpha];
     } else {
-      glass.tintColor = [UIColor colorWithDynamicProvider:^UIColor*(
-                                     UITraitCollection* traitCollection) {
-        if (traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark) {
-          return [UIColor.blackColor colorWithAlphaComponent:0.03];
-        } else {
-          return UIColor.clearColor;
-        }
-      }];
+      glass.tintColor = [UIColor colorWithRed:kToolbarGlassTintLightRed
+                                        green:kToolbarGlassTintLightGreen
+                                         blue:kToolbarGlassTintLightBlue
+                                        alpha:kToolbarGlassTintLightAlpha];
     }
+
     return glass;
   }
   return [UIBlurEffect effectWithStyle:_incognito
                                            ? UIBlurEffectStyleSystemMaterialDark
                                            : UIBlurEffectStyleSystemMaterial];
-}
-
-// Returns the active button glass blur effect.
-- (UIBlurEffect*)activeButtonGlassEffect {
-  CHECK(IsToolbarGlassPrototypeEnabled());
-  return [UIBlurEffect
-      effectWithStyle:_incognito ? UIBlurEffectStyleSystemUltraThinMaterialDark
-                                 : UIBlurEffectStyleSystemUltraThinMaterial];
 }
 
 // Updates the glass effects to their fully expanded (uncollapsed) state.
@@ -2009,15 +2075,7 @@ const base::TimeDelta kProgressBarEndAnimationDuration =
   }
   _toolbarBackgroundVisualEffectView.effect = [self activeToolbarGlassEffect];
   _toolbarBackgroundUnderlayView.alpha = 1.0;
-  UIBlurEffect* buttonEffect = [self activeButtonGlassEffect];
-  for (ToolbarButton* button in [self individualToolbarButtons]) {
-    button.backgroundBlurView.effect = buttonEffect;
-  }
-  UIVisualEffectView* conjoinedBgView =
-      [self conjoinedButtonsBackgroundBlurView];
-  if (conjoinedBgView) {
-    conjoinedBgView.effect = buttonEffect;
-  }
+  _toolbarGlassShadowContainerView.alpha = 1.0;
 }
 
 // Updates the glass effects to their fully collapsed (scrolled) state.
@@ -2027,14 +2085,7 @@ const base::TimeDelta kProgressBarEndAnimationDuration =
   }
   _toolbarBackgroundVisualEffectView.effect = nil;
   _toolbarBackgroundUnderlayView.alpha = 0.0;
-  for (ToolbarButton* button in [self individualToolbarButtons]) {
-    button.backgroundBlurView.effect = nil;
-  }
-  UIVisualEffectView* conjoinedBgView =
-      [self conjoinedButtonsBackgroundBlurView];
-  if (conjoinedBgView) {
-    conjoinedBgView.effect = nil;
-  }
+  _toolbarGlassShadowContainerView.alpha = 0.0;
 }
 
 // Creates the scroll animator.
