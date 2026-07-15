@@ -65,6 +65,7 @@ chromium-metrics-reviews@google.com.
   </token>
   <token key="ThreadName">
     <variant name="BrowserIO" summary="the browser IO thread"/>
+    <variant name="Compositor" summary="the compositor thread"/>
     <variant name="CrBrowserMain" summary="the browser main thread"/>
     <variant name="CrGpuMain" summary="the gpu main thread"/>
     <variant name="CrRendererMain" summary="the renderer main thread"/>
