@@ -414,7 +414,30 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
                               Comparator(EQUAL, 0), 360, 360);
     return config;
   }
-#endif
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
+#if BUILDFLAG(IS_ANDROID) && BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+  // This is enabled on both Desktop and Desktop Android. However, this feature
+  // is auto-configured dynamically by the Feature Engagement service on Desktop
+  // (see
+  // components/feature_engagement/browser/user_data/feature_engagement_tracker.h).
+  // Manual configuration is explicitly bypassed on Desktop to prevent test
+  // failures in
+  // BrowserUserEducationServiceTest.PreventNewHardCodedConfigurations. This
+  // block is scoped strictly to Android where auto-configuration is not
+  // supported by the Feature Engagement tracker.
+  if (kIPHExtensionsPinnedByDefaultFeature.name == feature->name) {
+    FeatureConfig config;
+    config.valid = true;
+    config.availability = Comparator(ANY, 0);
+    config.session_rate = Comparator(EQUAL, 0);
+    config.trigger = EventConfig("extensions_pinned_by_default_trigger",
+                                 Comparator(LESS_THAN, 1), 360, 360);
+    config.used = EventConfig("extensions_pinned_by_default_used",
+                              Comparator(EQUAL, 0), 360, 360);
+    return config;
+  }
+#endif  // BUILDFLAG(IS_ANDROID) && BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
   if (kIPHCompanionSidePanelFeature.name == feature->name) {
     FeatureConfig config;

@@ -762,6 +762,28 @@ void MaybeRegisterChromeFeaturePromos(
                        "Triggered when an extension "
                        "requests access permission.")));
 
+  // kIPHExtensionsPinnedByDefaultFeature:
+  registry.RegisterFeature(std::move(
+      FeaturePromoSpecification::CreateForCustomAction(
+          feature_engagement::kIPHExtensionsPinnedByDefaultFeature,
+          kExtensionsPinnedByDefaultElementId,
+          IDS_EXTENSIONS_PINNED_BY_DEFAULT_IPH_BODY,
+          IDS_EXTENSIONS_PINNED_BY_DEFAULT_IPH_GO_TO_EXTENSIONS,
+          base::BindRepeating(
+              [](ContextPtr ctx,
+                 user_education::FeaturePromoHandle promo_handle) {
+                Browser* const browser = GetBrowser(ctx);
+                if (browser) {
+                  chrome::ShowExtensions(browser);
+                }
+              }))
+          .SetBubbleArrow(user_education::HelpBubbleArrow::kTopCenter)
+          .SetInAnyContext(true)
+          .SetMetadata(
+              155, "evasu@google.com",
+              "Triggered when the user installs a new extension and it is "
+              "pinned by default to the toolbar.")));
+
   // kIPHExtensionsZeroStatePromoFeature
   Metadata iph_extensions_zero_state_promo_feature_metaData(
       140, "uwyiming@google.com",

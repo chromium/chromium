@@ -55,6 +55,7 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.ImportantFormFactors;
+import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -1161,5 +1162,81 @@ public class ExtensionsToolbarTest {
         CriteriaHelper.pollInstrumentationThread(
                 () -> ExtensionTestUtils.getRenderFrameHostCount(mProfile, alphaId) == 0,
                 "Alpha popup did not close.");
+    }
+
+    @Test
+    @LargeTest
+    @CommandLineFlags.Add({
+        "in-product-help-demo-mode-choice=IPH_ExtensionsPinnedByDefault",
+        "disable-user-education-rate-limiting"
+    })
+    @org.chromium.base.test.util.Features.EnableFeatures({
+        "ExtensionsPinnedByDefault",
+        "kExtensionsPinnedByDefault",
+        "IPH_ExtensionsPinnedByDefault"
+    })
+    public void testPinnedByDefaultIphShowsOnExtensionInstall() throws IOException {
+        org.chromium.components.feature_engagement.Tracker tracker =
+                org.mockito.Mockito.mock(org.chromium.components.feature_engagement.Tracker.class);
+        org.mockito.Mockito.when(tracker.shouldTriggerHelpUi(org.mockito.Mockito.anyString()))
+                .thenReturn(false);
+        org.mockito.Mockito.when(
+                        tracker.shouldTriggerHelpUi(
+                                org.mockito.Mockito.eq("IPH_ExtensionsPinnedByDefault")))
+                .thenReturn(true);
+        org.mockito.Mockito.when(tracker.wouldTriggerHelpUi(org.mockito.Mockito.anyString()))
+                .thenReturn(false);
+        org.mockito.Mockito.when(
+                        tracker.wouldTriggerHelpUi(
+                                org.mockito.Mockito.eq("IPH_ExtensionsPinnedByDefault")))
+                .thenReturn(true);
+        org.mockito.Mockito.doAnswer(
+                        invocation -> {
+                            invocation
+                                    .<org.chromium.base.Callback<Boolean>>getArgument(0)
+                                    .onResult(true);
+                            return null;
+                        })
+                .when(tracker)
+                .addOnInitializedCallback(org.mockito.Mockito.any());
+        TrackerFactory.setTrackerForTests(tracker);
+        // Enable the pinned by default preference so that the IPH appears.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> UserPrefs.get(mProfile).setBoolean("extensions.pinned_by_default", true));
+
+        String extensionId = loadBasicExtension("extension1", "Test Extension", "Test Action");
+
+        // Ensure the extension's icon is fully laid out by the RecyclerView so the IPH has an
+        // anchor.
+        ViewUtils.onViewWaiting(withContentDescription("Test Action"))
+                .check(matches(isDisplayed()));
+
+        // Trigger the install success UI which should trigger the IPH.
+        ExtensionTestUtils.triggerInstallSuccessForTesting(mProfile, extensionId);
+
+        // The post-install dialog blocks the IPH. Wait for it and click "Got it".
+        ViewUtils.onViewWaiting(withText("Got it")).perform(click());
+
+        // Verify that the IPH bubble is displayed with the correct text in the popup window.
+        CriteriaHelper.pollInstrumentationThread(
+                () -> {
+                    try {
+                        androidx.test.espresso.Espresso.onView(
+                                        withText(R.string.extensions_pinned_by_default_iph_body))
+                                .inRoot(
+                                        androidx.test.espresso.matcher.RootMatchers.withDecorView(
+                                                not(
+                                                        org.hamcrest.Matchers.is(
+                                                                mActivityTestRule
+                                                                        .getActivity()
+                                                                        .getWindow()
+                                                                        .getDecorView()))))
+                                .check(matches(isDisplayed()));
+                        return true;
+                    } catch (Exception | AssertionError e) {
+                        return false;
+                    }
+                },
+                "IPH bubble was not displayed in a popup");
     }
 }

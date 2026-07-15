@@ -396,6 +396,11 @@ void ExtensionsToolbarViewModel::ShowManageExtensionsIPH() {
   delegate_->ShowManageExtensionsIPH();
 }
 
+void ExtensionsToolbarViewModel::ShowPinnedByDefaultIPH(
+    const std::string& extension_id) {
+  delegate_->ShowPinnedByDefaultIPH(extension_id);
+}
+
 bool ExtensionsToolbarViewModel::HasAnyExtensions() const {
   return !GetAllActionIds().empty();
 }

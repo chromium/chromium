@@ -142,6 +142,13 @@ void ExtensionsToolbarAndroid::ShowManageExtensionsIPH() {
                                                        java_object_);
 }
 
+void ExtensionsToolbarAndroid::ShowPinnedByDefaultIPH(
+    const std::string& extension_id) {
+  JNIEnv* env = AttachCurrentThread();
+  Java_ExtensionsToolbarBridge_showPinnedByDefaultIPH(env, java_object_,
+                                                      extension_id);
+}
+
 void ExtensionsToolbarAndroid::OnActionsInitialized() {
   for (const auto& action_id : toolbar_view_model_->GetAllActionIds()) {
     RegisterIconObserverForAction(action_id);

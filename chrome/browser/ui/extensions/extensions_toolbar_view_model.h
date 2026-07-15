@@ -58,6 +58,9 @@ class ExtensionsToolbarViewModel
     // Triggers the manage extensions IPH.
     virtual void ShowManageExtensionsIPH() {}
 
+    // Triggers the pinned by default IPH.
+    virtual void ShowPinnedByDefaultIPH(const std::string& extension_id) {}
+
    protected:
     virtual ~Delegate() = default;
   };
@@ -201,6 +204,7 @@ class ExtensionsToolbarViewModel
                                         ShowPopupCallback callback) override;
   void ToggleExtensionsMenu() override;
   void ShowManageExtensionsIPH() override;
+  void ShowPinnedByDefaultIPH(const std::string& extension_id) override;
   bool HasAnyExtensions() const override;
 
   // ToolbarActionsModel::Observer:

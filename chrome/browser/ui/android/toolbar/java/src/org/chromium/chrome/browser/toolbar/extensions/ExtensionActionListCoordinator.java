@@ -150,8 +150,8 @@ public class ExtensionActionListCoordinator implements Destroyable {
         mMediator.executeUserAction(actionId, source);
     }
 
-    @Nullable
-    private View getButtonViewForId(String actionId) {
+    /** Retrieves the button view representing the icon of a given extension. */
+    public @Nullable View getButtonViewForId(String actionId) {
         for (int i = 0; i < mModels.size(); i++) {
             PropertyModel model = mModels.get(i).model;
             if (actionId.equals(model.get(ExtensionActionButtonProperties.ID))) {

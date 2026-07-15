@@ -28,9 +28,11 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/extensions/extension_install_ui.h"
 #include "chrome/browser/ui/extensions/extension_post_install_dialog.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_model.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_coordinator.h"
 #include "chrome/browser/ui/views/extensions/extensions_request_access_button.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_button.h"
@@ -39,10 +41,13 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/common/chrome_switches.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
+#include "chrome/test/user_education/interactive_feature_promo_test.h"
+#include "components/feature_engagement/public/feature_constants.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -67,6 +72,7 @@
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/bubble/bubble_dialog_model_host.h"
+#include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/layout/animating_layout_manager_test_util.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/views_switches.h"
@@ -1766,4 +1772,60 @@ IN_PROC_BROWSER_TEST_F(ExtensionsToolbarDesktopFeatureInteractiveTest,
       WaitForShow(kExtensionsRequestAccessButtonElementId),
       CheckView(kExtensionsRequestAccessButtonElementId,
                 CheckExtensionsInRequestAccessButton({extensionA->id()})));
+}
+
+class ExtensionsPinnedByDefaultInteractiveTest
+    : public InteractiveFeaturePromoTest {
+ public:
+  ExtensionsPinnedByDefaultInteractiveTest()
+      : InteractiveFeaturePromoTest(UseDefaultTrackerAllowingPromos(
+            {feature_engagement::kIPHExtensionsPinnedByDefaultFeature})) {
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kExtensionsPinnedByDefault);
+  }
+
+  void SetUpOnMainThread() override {
+    InteractiveFeaturePromoTest::SetUpOnMainThread();
+    browser()->profile()->GetPrefs()->SetBoolean(
+        prefs::kExtensionsPinnedByDefault, true);
+  }
+
+  scoped_refptr<const extensions::Extension>
+  InstallExtensionWithHostPermissions(const std::string& name,
+                                      const std::string& host_permission) {
+    extensions::TestExtensionDir extension_dir;
+    extension_dir.WriteManifest(base::StringPrintf(
+        R"({
+              "name": "%s",
+              "manifest_version": 3,
+              "host_permissions": ["%s"],
+              "version": "0.1"
+            })",
+        name.c_str(), host_permission.c_str()));
+    scoped_refptr<const extensions::Extension> extension =
+        extensions::ChromeTestExtensionLoader(browser()->profile())
+            .LoadExtension(extension_dir.UnpackedPath());
+    return extension;
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(ExtensionsPinnedByDefaultInteractiveTest,
+                       PromoShowsOnInstall) {
+  RunTestSequence(
+      Do([this]() {
+        scoped_refptr<const extensions::Extension> extension =
+            InstallExtensionWithHostPermissions("Extension", "<all_urls>");
+        auto install_ui = ExtensionInstallUI::Create(browser()->profile());
+        install_ui->OnInstallSuccess(extension, nullptr);
+      }),
+      // The extension install dialog pops up. Wait for it and close it.
+      WaitForShow(views::BubbleFrameView::kCloseButtonElementId),
+      PressButton(views::BubbleFrameView::kCloseButtonElementId),
+      WaitForHide(views::BubbleFrameView::kCloseButtonElementId),
+      // Once closed, the native IPH is triggered.
+      WaitForPromo(feature_engagement::kIPHExtensionsPinnedByDefaultFeature),
+      PressClosePromoButton());
 }

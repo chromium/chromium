@@ -10883,6 +10883,14 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_EXTENSIONS_MENU_IPH_ENTRY_POINT_BODY" desc="">
         From here, you can see and manage extension permissions for the site you're on
       </message>
+      <if expr="enable_extensions_core">
+        <message name="IDS_EXTENSIONS_PINNED_BY_DEFAULT_IPH_BODY" desc="Body text for the promotional UI anchored to a newly installed extension showing that new extensions are pinned by default." formatter_data="android_java">
+          Newly added extensions are automatically pinned. Change this on the Extensions page.
+        </message>
+        <message name="IDS_EXTENSIONS_PINNED_BY_DEFAULT_IPH_GO_TO_EXTENSIONS" desc="Button text for the promotional UI anchored to a newly installed extension showing that new extensions are pinned by default. Clicking it takes the user to the Extensions settings page.">
+          Go to Extensions
+        </message>
+      </if>
       <message name="IDS_EXTENSIONS_REQUEST_ACCESS_BUTTON_IPH_ENTRY_POINT_TITLE" desc="Title text shown on promotional UI appearing when the request access button in the toolbar is visible.">
         {NUM_EXTENSIONS, plural,
           =1 {Choose if this extension can read or change this site}

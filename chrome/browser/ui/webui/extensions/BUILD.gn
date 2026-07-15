@@ -43,6 +43,7 @@ if (enable_extensions_core) {
       "//chrome/browser:browser_process",
       "//chrome/browser/extensions",
       "//chrome/browser/favicon",
+      "//chrome/browser/feature_engagement",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/resources/extensions:resources",
       "//chrome/browser/ui:ui_features",
@@ -55,6 +56,8 @@ if (enable_extensions_core) {
       "//chrome/common",
       "//chrome/common/extensions",
       "//components/favicon/core",
+      "//components/feature_engagement/public",
+      "//components/feature_engagement/public:feature_constants",
       "//components/google/core/common",
       "//components/pref_registry",
       "//components/prefs",
@@ -67,7 +70,14 @@ if (enable_extensions_core) {
       "//skia",
       "//ui/base",
       "//ui/webui",
+      "//ui/webui/tracked_element",
     ]
+    if (!is_android) {
+      deps += [
+        "//chrome/browser/ui/user_education",
+        "//components/user_education/webui",
+      ]
+    }
   }
 
   source_set("test_support") {

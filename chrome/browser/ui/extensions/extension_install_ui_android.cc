@@ -20,7 +20,10 @@
 #include "chrome/browser/ui/extensions/extension_post_install_dialog.h"
 #include "chrome/browser/ui/extensions/extension_post_install_dialog_model.h"
 #include "chrome/browser/ui/extensions/extensions_container.h"
+#include "chrome/browser/ui/ui_features.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/common/extension.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -57,6 +60,24 @@ void ShowExtensionsMenuManageIph(
     if (container) {
       container->ShowManageExtensionsIPH();
     }
+  }
+}
+
+void ShowPinnedByDefaultIph(Profile* profile,
+                            const extensions::ExtensionId& extension_id,
+                            base::WeakPtr<content::WebContents> web_contents) {
+  if (!web_contents) {
+    return;
+  }
+
+  BrowserWindowInterface* target_bwi =
+      GetActiveBrowserWindowInterfaceForProfile(profile);
+  if (!target_bwi) {
+    return;
+  }
+  ExtensionsContainer* container = ExtensionsContainer::From(*target_bwi);
+  if (container) {
+    container->ShowPinnedByDefaultIPH(extension_id);
   }
 }
 
@@ -113,10 +134,25 @@ void ExtensionInstallUIAndroid::OnInstallSuccess(
   Profile* current_profile = profile()->GetOriginalProfile();
 
   SkBitmap icon_to_use = icon ? *icon : SkBitmap();
+
+  bool feature_enabled =
+      base::FeatureList::IsEnabled(features::kExtensionsPinnedByDefault);
+  bool pref_enabled = current_profile->GetPrefs()->GetBoolean(
+      prefs::kExtensionsPinnedByDefault);
+
+  base::OnceCallback<void(base::WeakPtr<content::WebContents>)>
+      show_iph_callback;
+  if (feature_enabled && pref_enabled) {
+    show_iph_callback = base::BindOnce(&ShowPinnedByDefaultIph, current_profile,
+                                       extension->id());
+  } else {
+    show_iph_callback = base::BindOnce(&ShowExtensionsMenuManageIph);
+  }
+
   extensions::TriggerPostInstallDialog(
       current_profile, extension, icon_to_use,
       base::BindOnce(&GetWebContentsForProfile, current_profile),
-      base::BindOnce(&ShowExtensionsMenuManageIph));
+      std::move(show_iph_callback));
 }
 
 void ExtensionInstallUIAndroid::OnInstallFailure(

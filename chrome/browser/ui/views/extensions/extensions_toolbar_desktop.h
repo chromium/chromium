@@ -247,6 +247,8 @@ class ExtensionsToolbarDesktop : public ToolbarIconContainerView,
   void OnRequestAccessButtonParamsChanged(
       content::WebContents* web_contents) override;
   void OnToolbarControlStateUpdated() override;
+  void ShowPinnedByDefaultIPH(
+      const extensions::ExtensionId& extension_id) override;
 
  private:
   friend class ToolbarActionHoverCardBubbleViewUITest;

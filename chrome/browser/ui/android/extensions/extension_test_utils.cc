@@ -7,11 +7,13 @@
 #include "base/android/callback_android.h"
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
+#include "base/check.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback_helpers.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/extensions/extension_install_ui.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/disable_reason.h"
@@ -67,6 +69,18 @@ static void JNI_ExtensionTestUtils_UninstallExtension(
     const std::string& extension_id) {
   extensions::ExtensionRegistrar::Get(profile)->UninstallExtension(
       extension_id, extensions::UNINSTALL_REASON_FOR_TESTING, nullptr);
+}
+
+static void JNI_ExtensionTestUtils_TriggerInstallSuccessForTesting(
+    JNIEnv* env,
+    Profile* profile,
+    const std::string& extension_id) {
+  const extensions::Extension* extension =
+      extensions::ExtensionRegistry::Get(profile)->GetInstalledExtension(
+          extension_id);
+  CHECK(extension) << "Extension not found: " << extension_id;
+  auto install_ui = ExtensionInstallUI::Create(profile);
+  install_ui->OnInstallSuccess(base::WrapRefCounted(extension), nullptr);
 }
 
 static void JNI_ExtensionTestUtils_SetExtensionActionVisible(

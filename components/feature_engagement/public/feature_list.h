@@ -435,6 +435,10 @@ DEFINE_VARIATION_PARAM(kIPHExtensionsRequestAccessButtonFeature,
 DEFINE_VARIATION_PARAM(kIPHExtensionsZeroStatePromoFeature,
                        "IPH_ExtensionsZeroStatePromo");
 #endif
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+DEFINE_VARIATION_PARAM(kIPHExtensionsPinnedByDefaultFeature,
+                       "IPH_ExtensionsPinnedByDefault");
+#endif
 DEFINE_VARIATION_PARAM(kIPHGMCCastStartStopFeature, "IPH_GMCCastStartStop");
 DEFINE_VARIATION_PARAM(kIPHGMCLocalMediaCastingFeature,
                        "IPH_GMCLocalMediaCasting");
@@ -840,6 +844,9 @@ inline constexpr flags_ui::FeatureEntry::FeatureVariation
 #if BUILDFLAG(ENABLE_EXTENSIONS)
         VARIATION_ENTRY(kIPHExtensionsMenuFeature),
         VARIATION_ENTRY(kIPHExtensionsRequestAccessButtonFeature),
+#endif
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+        VARIATION_ENTRY(kIPHExtensionsPinnedByDefaultFeature),
 #endif
 // keep-sorted start case=no
         VARIATION_ENTRY(kIPHBackNavigationMenuFeature),

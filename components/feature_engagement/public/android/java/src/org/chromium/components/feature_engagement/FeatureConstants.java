@@ -75,6 +75,7 @@ import java.lang.annotation.RetentionPolicy;
     FeatureConstants.INSTANCE_SWITCHER,
     FeatureConstants.IPH_EXTENSIONS_MANAGE_APP_MENU_FEATURE,
     FeatureConstants.IPH_EXTENSIONS_MANAGE_TOOLBAR_FEATURE,
+    FeatureConstants.IPH_EXTENSIONS_PINNED_BY_DEFAULT_FEATURE,
     FeatureConstants.IPH_INCOGNITO_INDICATOR_CLOSE_ALL_WINDOWS,
     FeatureConstants.IPH_MIC_TOOLBAR_FEATURE,
     FeatureConstants.IPH_PDF_PAGE_DOWNLOAD,
@@ -313,6 +314,9 @@ public @interface FeatureConstants {
      * their extensions in the toolbar.
      */
     String IPH_EXTENSIONS_MANAGE_TOOLBAR_FEATURE = "IPH_ExtensionsManageToolbar";
+
+    /** An IPH feature that shows when an extension is pinned by default. */
+    String IPH_EXTENSIONS_PINNED_BY_DEFAULT_FEATURE = "IPH_ExtensionsPinnedByDefault";
 
     /**
      * An IPH feature to inform users that they can close all Incognito windows by tapping the

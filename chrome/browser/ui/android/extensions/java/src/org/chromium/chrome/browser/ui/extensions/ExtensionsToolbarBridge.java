@@ -169,6 +169,13 @@ public class ExtensionsToolbarBridge implements Destroyable {
     }
 
     @CalledByNative
+    public void showPinnedByDefaultIPH(@JniType("std::string") String extensionId) {
+        for (Observer observer : mObservers) {
+            observer.showPinnedByDefaultIPH(extensionId);
+        }
+    }
+
+    @CalledByNative
     public void triggerPopup(@JniType("std::string") String actionId, long nativeHostPtr) {
         // {@link mActionListDelegate} should be set in {@code ExtensionActionListMediator}'s
         // constructor.
@@ -304,6 +311,9 @@ public class ExtensionsToolbarBridge implements Destroyable {
 
         // Called when the manage extensions IPH should be shown.
         default void showManageExtensionsIPH() {}
+
+        // Called when the pinned by default IPH should be shown.
+        default void showPinnedByDefaultIPH(String extensionId) {}
     }
 
     public interface ActionListDelegate {

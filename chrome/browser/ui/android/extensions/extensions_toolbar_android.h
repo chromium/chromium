@@ -48,6 +48,7 @@ class ExtensionsToolbarAndroid : public ExtensionsToolbarViewModel::Delegate,
       const ToolbarActionsModel::ActionId& action_id) override;
   void ToggleExtensionsMenu() override;
   void ShowManageExtensionsIPH() override;
+  void ShowPinnedByDefaultIPH(const std::string& extension_id) override;
 
   // ExtensionsToolbarViewModel::Observer:
   void OnActionsInitialized() override;

@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/extensions/extension_install_ui_desktop.h"
 
 #include "base/functional/bind.h"
+#include "base/scoped_observation.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
@@ -14,6 +15,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/extensions/extension_installed_watcher.h"
 #include "chrome/browser/ui/extensions/extension_post_install_dialog.h"
@@ -25,7 +27,16 @@
 #include "chrome/browser/ui/simple_message_box.h"
 #include "chrome/browser/ui/singleton_tabs.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/user_education/browser_user_education_interface.h"
+#include "chrome/browser/ui/views/extensions/extensions_toolbar_desktop.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/toolbar/toolbar_action_view.h"
+#include "chrome/browser/ui/views/toolbar/toolbar_view.h"
+#include "chrome/common/pref_names.h"
+#include "components/feature_engagement/public/feature_constants.h"
 #include "components/infobars/content/content_infobar_manager.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/install/crx_install_error.h"
@@ -123,7 +134,33 @@ void ExtensionInstallUIDesktop::OnInstallSuccess(
             [](BrowserWindowInterface* bwi) {
               return bwi->GetActiveTabInterface()->GetContents();
             },
-            browser_window));
+            browser_window),
+        base::BindOnce(
+            [](const extensions::ExtensionId& extension_id,
+               base::WeakPtr<content::WebContents> web_contents) {
+              if (!web_contents) {
+                return;
+              }
+              BrowserWindowInterface* browser_interface =
+                  GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
+                      web_contents.get());
+              if (!browser_interface) {
+                return;
+              }
+              Browser* browser =
+                  browser_interface->GetBrowserForMigrationOnly();
+              BrowserView* browser_view =
+                  BrowserView::GetBrowserViewForBrowser(browser);
+              if (!browser_view->toolbar()) {
+                return;
+              }
+              ExtensionsToolbarDesktop* extensions_toolbar =
+                  browser_view->toolbar()->extensions_container();
+              if (extensions_toolbar) {
+                extensions_toolbar->ShowPinnedByDefaultIPH(extension_id);
+              }
+            },
+            extension->id()));
     return;
   }
 

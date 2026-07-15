@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/no_destructor.h"
+#include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/app/vector_icons/vector_icons.h"
@@ -27,6 +28,7 @@
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_hover_card_types.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_model.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/views/extensions/browser_action_drag_data.h"
 #include "chrome/browser/ui/views/extensions/extension_action_delegate_desktop.h"
@@ -39,6 +41,9 @@
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/side_panel/extensions/extension_side_panel_coordinator.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_action_hover_card_controller.h"
+#include "chrome/browser/ui/views/toolbar/toolbar_view.h"
+#include "chrome/browser/user_education/user_education_service.h"
+#include "chrome/browser/user_education/user_education_service_factory.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/feature_engagement/public/feature_constants.h"
@@ -58,8 +63,34 @@
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/flex_layout_types.h"
 #include "ui/views/view_class_properties.h"
+#include "ui/views/view_tracker.h"
+#include "ui/views/widget/widget.h"
+#include "ui/views/widget/widget_observer.h"
 
 namespace {
+
+class IphWidgetActivationObserver : public views::WidgetObserver {
+ public:
+  IphWidgetActivationObserver(views::Widget* widget,
+                              base::OnceClosure show_iph_callback)
+      : show_iph_callback_(std::move(show_iph_callback)) {
+    observation_.Observe(widget);
+  }
+
+  void OnWidgetActivationChanged(views::Widget* widget, bool active) override {
+    if (active) {
+      std::move(show_iph_callback_).Run();
+      delete this;
+    }
+  }
+
+  void OnWidgetDestroying(views::Widget* widget) override { delete this; }
+
+ private:
+  base::OnceClosure show_iph_callback_;
+  base::ScopedObservation<views::Widget, views::WidgetObserver> observation_{
+      this};
+};
 
 using ::ui::mojom::DragOperation;
 
@@ -320,6 +351,91 @@ void ExtensionsToolbarDesktop::UpdateAllIcons() {
   if (close_side_panel_button_) {
     close_side_panel_button_->UpdateIcon();
   }
+}
+
+void ExtensionsToolbarDesktop::ShowPinnedByDefaultIPH(
+    const extensions::ExtensionId& extension_id) {
+  if (!base::FeatureList::IsEnabled(features::kExtensionsPinnedByDefault) ||
+      !browser_->GetProfile()->GetPrefs()->GetBoolean(
+          prefs::kExtensionsPinnedByDefault)) {
+    return;
+  }
+
+  ToolbarActionView* extension_view = GetViewForId(extension_id);
+  if (!extension_view) {
+    return;
+  }
+
+  views::Widget* browser_widget = GetWidget();
+  if (!browser_widget) {
+    return;
+  }
+
+  auto show_iph_closure = base::BindOnce(
+      [](base::WeakPtr<Browser> browser,
+         const extensions::ExtensionId& extension_id) {
+        if (!browser) {
+          return;
+        }
+
+        BrowserView* browser_view =
+            BrowserView::GetBrowserViewForBrowser(browser.get());
+        if (!browser_view->toolbar()) {
+          return;
+        }
+
+        ExtensionsToolbarDesktop* extensions_toolbar =
+            browser_view->toolbar()->extensions_container();
+        if (!extensions_toolbar) {
+          return;
+        }
+
+        ToolbarActionView* extension_view =
+            extensions_toolbar->GetViewForId(extension_id);
+        if (!extension_view) {
+          return;
+        }
+
+        // Temporarily assign the element identifier to the extension view.
+        extension_view->SetProperty(views::kElementIdentifierKey,
+                                    kExtensionsPinnedByDefaultElementId);
+
+        // Trigger the IPH.
+        user_education::FeaturePromoParams params(
+            feature_engagement::kIPHExtensionsPinnedByDefaultFeature);
+        params.close_callback = base::BindOnce(
+            [](std::unique_ptr<views::ViewTracker> tracker) {
+              if (tracker->view()) {
+                tracker->view()->ClearProperty(views::kElementIdentifierKey);
+              }
+            },
+            std::make_unique<views::ViewTracker>(extension_view));
+        bool promo_shown = BrowserUserEducationInterface::From(browser.get())
+                               ->MaybeShowFeaturePromo(std::move(params));
+        if (!promo_shown) {
+          extension_view->ClearProperty(views::kElementIdentifierKey);
+        }
+      },
+      browser_->AsWeakPtr(), extension_id);
+
+  auto run_or_wait_for_active_widget = base::BindOnce(
+      [](views::Widget* browser_widget, base::OnceClosure show_iph_closure) {
+        if (!browser_widget) {
+          return;
+        }
+        if (browser_widget->IsActive()) {
+          std::move(show_iph_closure).Run();
+        } else {
+          // The observer will delete itself when the widget becomes active or
+          // is destroyed.
+          new IphWidgetActivationObserver(browser_widget,
+                                          std::move(show_iph_closure));
+        }
+      },
+      browser_widget, std::move(show_iph_closure));
+
+  GetAnimatingLayoutManager()->PostOrQueueAction(
+      std::move(run_or_wait_for_active_widget));
 }
 
 ToolbarActionView* ExtensionsToolbarDesktop::GetViewForId(

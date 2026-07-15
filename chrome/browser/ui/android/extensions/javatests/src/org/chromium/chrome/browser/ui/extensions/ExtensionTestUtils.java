@@ -115,6 +115,20 @@ public class ExtensionTestUtils {
     }
 
     /**
+     * Triggers the UI indicating an extension install succeeded.
+     *
+     * @param profile The profile the extension belongs to.
+     * @param extensionId The ID of the extension to show UI for.
+     */
+    public static void triggerInstallSuccessForTesting(Profile profile, String extensionId) {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    ExtensionTestUtilsJni.get()
+                            .triggerInstallSuccessForTesting(profile, extensionId);
+                });
+    }
+
+    /**
      * Returns the list of pinned actions.
      *
      * @param profile The profile that the extension belongs to.
@@ -376,6 +390,9 @@ public class ExtensionTestUtils {
                 @JniType("Profile*") Profile profile, @JniType("std::string") String extensionId);
 
         void uninstallExtension(
+                @JniType("Profile*") Profile profile, @JniType("std::string") String extensionId);
+
+        void triggerInstallSuccessForTesting(
                 @JniType("Profile*") Profile profile, @JniType("std::string") String extensionId);
 
         void setExtensionActionVisible(

@@ -12,6 +12,7 @@
 #include "base/metrics/field_trial_params.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
+#include "build/buildflag.h"
 #include "extensions/buildflags/buildflags.h"
 
 namespace feature_engagement {
@@ -158,6 +159,10 @@ FEATURE_CONSTANTS_DECLARE_FEATURE(kIPHBackNavigationMenuFeature);
 FEATURE_CONSTANTS_DECLARE_FEATURE(kIPHBookmarkBarSimplifiedFeature);
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
+
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+FEATURE_CONSTANTS_DECLARE_FEATURE(kIPHExtensionsPinnedByDefaultFeature);
+#endif
 
 // All the features declared for Android below that are also used in Java,
 // should also be declared in:

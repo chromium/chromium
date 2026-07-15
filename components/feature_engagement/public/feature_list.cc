@@ -377,6 +377,10 @@ const base::Feature* const kAllFeatures[] = {
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
         // BUILDFLAG(IS_CHROMEOS)
 
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+    &kIPHExtensionsPinnedByDefaultFeature,
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
     // keep-sorted start case=no
     &kIPHSignInBenefitsFeature,

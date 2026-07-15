@@ -420,6 +420,8 @@ should be able to be added at any place in this file.
   <variant name="_ExtensionsManageToolbarFeature"
       summary="For managing your extension feature in the toolbar."/>
   <variant name="_ExtensionsMenu" summary="For Extensions menu opening."/>
+  <variant name="_ExtensionsPinnedByDefault"
+      summary="For the Extensions pinned by default feature."/>
   <variant name="_ExtensionsRequestAccessButton"
       summary="For Extensions request access button feature."/>
   <variant name="_ExtensionsZeroStatePromo"

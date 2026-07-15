@@ -244,6 +244,9 @@ chromium-metrics-reviews@google.com.
       summary="message shown informing users they can manage their extensions
                in the extensions menu found in the toolbar."/>
   <variant name="IPH_ExtensionsMenu" summary="extensions menu opened"/>
+  <variant name="IPH_ExtensionsPinnedByDefault"
+      summary="message shown informing users that extensions are pinned by
+               default"/>
   <variant name="IPH_ExtensionsRequestAccessButton"
       summary="extensions request access button shown"/>
   <variant name="IPH_ExtensionsZeroStatePromo"
