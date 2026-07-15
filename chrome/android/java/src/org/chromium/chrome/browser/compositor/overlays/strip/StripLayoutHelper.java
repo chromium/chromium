@@ -5179,14 +5179,6 @@ public class StripLayoutHelper
                         endOpacity,
                         ANIM_BUTTONS_FADE_MS)
                 .start();
-        CompositorAnimator.ofFloatProperty(
-                        mUpdateHost.getAnimationHandler(),
-                        mTabSearchButton,
-                        CompositorButton.OPACITY,
-                        mTabSearchButton.getOpacity(),
-                        endOpacity,
-                        ANIM_BUTTONS_FADE_MS)
-                .start();
         if (mModelSelectorButton != null) {
             CompositorAnimator.ofFloatProperty(
                             mUpdateHost.getAnimationHandler(),

@@ -1771,6 +1771,55 @@ public class StripLayoutHelperTest {
     }
 
     @Test
+    @EnableFeatures(ChromeFeatureList.TAB_SEARCH_FOR_AL)
+    public void testSetCompositorButtonsVisible_TabSearchButtonExcluded() {
+        initializeTest(false, false, 0, 1);
+        mStripLayoutHelper.onSizeChanged(
+                STRIP_WIDTH, STRIP_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
+        mStripLayoutHelper.updateLayout(TIMESTAMP);
+
+        // Verify initial state.
+        TintedCompositorButton tabSearchButton = mStripLayoutHelper.getTabSearchButton();
+        CompositorButton newTabButton = mStripLayoutHelper.getNewTabButton();
+        assertEquals(
+                "Initial tab search button opacity should be 1.f",
+                1.f,
+                tabSearchButton.getOpacity(),
+                EPSILON);
+        assertEquals(
+                "Initial new tab button opacity should be 1.f",
+                1.f,
+                newTabButton.getOpacity(),
+                EPSILON);
+
+        // Hide compositor buttons.
+        mStripLayoutHelper.setCompositorButtonsVisible(false);
+
+        // Verify new tab button opacity is animated/set to 0.f.
+        assertEquals(
+                "New tab button opacity should be 0.f", 0.f, newTabButton.getOpacity(), EPSILON);
+        // Verify tab search button is excluded and stays at 1.f.
+        assertEquals(
+                "Tab search button opacity should remain 1.f",
+                1.f,
+                tabSearchButton.getOpacity(),
+                EPSILON);
+
+        // Show compositor buttons.
+        mStripLayoutHelper.setCompositorButtonsVisible(true);
+
+        // Verify new tab button opacity is animated/set to 1.f.
+        assertEquals(
+                "New tab button opacity should be 1.f", 1.f, newTabButton.getOpacity(), EPSILON);
+        // Verify tab search button opacity remains 1.f.
+        assertEquals(
+                "Tab search button opacity should remain 1.f",
+                1.f,
+                tabSearchButton.getOpacity(),
+                EPSILON);
+    }
+
+    @Test
     public void testCloseButtonHoverHighlightProperties() {
         // Setup
         initializeTest(false, false, 2);
