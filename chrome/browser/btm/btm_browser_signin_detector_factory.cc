@@ -65,7 +65,7 @@ BtmBrowserSigninDetectorFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   if (context_runloops_for_testing_.has_value()) {
     // Unblock any calls to `WaitForServiceForTesting()` with `context`.
-    context_runloops_for_testing_.value()[context->UniqueId()].Quit();
+    context_runloops_for_testing_.value()[context->UniqueToken()].Quit();
   }
 
   return std::make_unique<BtmBrowserSigninDetector>(
@@ -77,6 +77,6 @@ BtmBrowserSigninDetectorFactory::BuildServiceInstanceForBrowserContext(
 
 void BtmBrowserSigninDetectorFactory::WaitForServiceForTesting(
     content::BrowserContext* browser_context) {
-  context_runloops_for_testing_.value()[browser_context->UniqueId()].Run();
+  context_runloops_for_testing_.value()[browser_context->UniqueToken()].Run();
   CHECK(GetServiceForBrowserContext(browser_context, /*create=*/false));
 }

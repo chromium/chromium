@@ -10,6 +10,7 @@
 
 #include "base/run_loop.h"
 #include "base/types/pass_key.h"
+#include "base/unguessable_token.h"
 #include "chrome/browser/btm/btm_browser_signin_detector.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
@@ -44,7 +45,7 @@ class BtmBrowserSigninDetectorFactory
       content::BrowserContext* context) const override;
 
   // A RunLoop per BrowserContext, for WaitForServiceForTesting().
-  mutable std::optional<std::map<std::string, base::RunLoop>>
+  mutable std::optional<std::map<base::UnguessableToken, base::RunLoop>>
       context_runloops_for_testing_;
 };
 
