@@ -30,6 +30,7 @@
 #include "chrome/browser/ash/policy/server_backed_state/server_backed_state_keys_broker.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chrome/browser/prefs/browser_prefs.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
 #include "chromeos/ash/components/system/statistics_provider.h"
@@ -203,6 +204,10 @@ AutoEnrollmentState ToState(Error error) {
   return base::unexpected(error);
 }
 
+PrefService* local_state() {
+  return TestingBrowserProcess::GetGlobal()->local_state();
+}
+
 }  // namespace
 
 class EnrollmentStateFetcherTest : public testing::Test {
@@ -220,7 +225,6 @@ class EnrollmentStateFetcherTest : public testing::Test {
     command_line_.GetProcessCommandLine()->AppendSwitchASCII(
         ash::switches::kEnterpriseEnableUnifiedStateDetermination,
         AutoEnrollmentTypeChecker::kUnifiedStateDeterminationAlways);
-    RegisterLocalState(local_state_.registry());
 
     statistics_provider_.SetMachineStatistic(ash::system::kSerialNumberKey,
                                              kTestSerialNumber);
@@ -231,7 +235,7 @@ class EnrollmentStateFetcherTest : public testing::Test {
   AutoEnrollmentState FetchEnrollmentState() {
     base::test::TestFuture<AutoEnrollmentState> future;
     auto fetcher = EnrollmentStateFetcher::Create(
-        future.GetCallback(), &local_state_,
+        future.GetCallback(), local_state(),
         base::BindRepeating(&CreateRlweClientForTesting, psm_test_case_),
         fake_dm_service_.get(), shared_url_loader_factory_, &state_key_broker_,
         &device_settings_service_,
@@ -329,7 +333,6 @@ class EnrollmentStateFetcherTest : public testing::Test {
 
   content::BrowserTaskEnvironment task_environment_;
   base::test::ScopedCommandLine command_line_;
-  TestingPrefServiceSimple local_state_;
   ash::system::ScopedFakeStatisticsProvider statistics_provider_;
   ash::ScopedStubInstallAttributes install_attributes_;
   MockStateKeyBroker state_key_broker_;
@@ -550,7 +553,7 @@ TEST_F(EnrollmentStateFetcherTest, FailToCreateQueryRequest) {
           CreatePsmOprfResponse(psm_test_case_)));
   base::test::TestFuture<AutoEnrollmentState> future;
   auto fetcher = EnrollmentStateFetcher::Create(
-      future.GetCallback(), &local_state_,
+      future.GetCallback(), local_state(),
       base::BindRepeating(
           [](private_membership::rlwe::RlweUseCase use_case,
              const private_membership::rlwe::RlwePlaintextId& plaintext_id) {
@@ -693,7 +696,7 @@ TEST_F(EnrollmentStateFetcherTest, NoEnrollment) {
 
   EXPECT_EQ(state, AutoEnrollmentResult::kNoEnrollment);
   const base::DictValue& device_state =
-      local_state_.GetDict(ash::prefs::kServerBackedDeviceState);
+      local_state()->GetDict(ash::prefs::kServerBackedDeviceState);
   EXPECT_TRUE(device_state.empty());
 }
 
@@ -745,7 +748,7 @@ TEST_F(EnrollmentStateFetcherTest, PackagedLicenseWithoutEnrollment) {
 
   EXPECT_EQ(state, AutoEnrollmentResult::kNoEnrollment);
   const base::DictValue& device_state =
-      local_state_.GetDict(ash::prefs::kServerBackedDeviceState);
+      local_state()->GetDict(ash::prefs::kServerBackedDeviceState);
   EXPECT_FALSE(device_state.FindString(kDeviceStateMode));
   ASSERT_TRUE(device_state.FindBool(kDeviceStatePackagedLicense));
   EXPECT_EQ(*device_state.FindBool(kDeviceStatePackagedLicense), true);
@@ -775,7 +778,7 @@ TEST_F(EnrollmentStateFetcherTest, InitialEnrollmentEnforced) {
 
   EXPECT_EQ(state, AutoEnrollmentResult::kEnrollment);
   const base::DictValue& device_state =
-      local_state_.GetDict(ash::prefs::kServerBackedDeviceState);
+      local_state()->GetDict(ash::prefs::kServerBackedDeviceState);
   ASSERT_TRUE(device_state.FindString(kDeviceStateMode));
   EXPECT_EQ(*device_state.FindString(kDeviceStateMode),
             kDeviceStateInitialModeEnrollmentEnforced);
@@ -812,7 +815,7 @@ TEST_F(EnrollmentStateFetcherTest, InitialEnrollmentDisabled) {
 
   EXPECT_EQ(state, AutoEnrollmentResult::kDisabled);
   const base::DictValue& device_state =
-      local_state_.GetDict(ash::prefs::kServerBackedDeviceState);
+      local_state()->GetDict(ash::prefs::kServerBackedDeviceState);
   ASSERT_TRUE(device_state.FindString(kDeviceStateMode));
   EXPECT_EQ(*device_state.FindString(kDeviceStateMode),
             kDeviceStateModeDisabled);
@@ -848,7 +851,7 @@ TEST_F(EnrollmentStateFetcherTest, ZTEWithPackagedEnterpriseLicense) {
 
   EXPECT_EQ(state, AutoEnrollmentResult::kEnrollment);
   const base::DictValue& device_state =
-      local_state_.GetDict(ash::prefs::kServerBackedDeviceState);
+      local_state()->GetDict(ash::prefs::kServerBackedDeviceState);
   ASSERT_TRUE(device_state.FindString(kDeviceStateMode));
   EXPECT_EQ(*device_state.FindString(kDeviceStateMode),
             kDeviceStateInitialModeEnrollmentZeroTouch);
@@ -883,7 +886,7 @@ TEST_F(EnrollmentStateFetcherTest, ZTEWithEducationLicense) {
 
   EXPECT_EQ(state, AutoEnrollmentResult::kEnrollment);
   const base::DictValue& device_state =
-      local_state_.GetDict(ash::prefs::kServerBackedDeviceState);
+      local_state()->GetDict(ash::prefs::kServerBackedDeviceState);
   ASSERT_TRUE(device_state.FindBool(kDeviceStatePackagedLicense));
   EXPECT_EQ(*device_state.FindBool(kDeviceStatePackagedLicense), false);
   ASSERT_TRUE(device_state.FindString(kDeviceStateLicenseType));
@@ -914,7 +917,7 @@ TEST_F(EnrollmentStateFetcherTest, ZTEWithTerminalLicense) {
 
   EXPECT_EQ(state, AutoEnrollmentResult::kEnrollment);
   const base::DictValue& device_state =
-      local_state_.GetDict(ash::prefs::kServerBackedDeviceState);
+      local_state()->GetDict(ash::prefs::kServerBackedDeviceState);
   ASSERT_TRUE(device_state.FindString(kDeviceStateLicenseType));
   EXPECT_EQ(*device_state.FindString(kDeviceStateLicenseType),
             kDeviceStateLicenseTypeTerminal);
@@ -943,7 +946,7 @@ TEST_F(EnrollmentStateFetcherTest, ZTEWithUnspecifiedUpgrade) {
 
   EXPECT_EQ(state, AutoEnrollmentResult::kEnrollment);
   const base::DictValue& device_state =
-      local_state_.GetDict(ash::prefs::kServerBackedDeviceState);
+      local_state()->GetDict(ash::prefs::kServerBackedDeviceState);
   ASSERT_TRUE(device_state.FindString(kDeviceStateAssignedUpgradeType));
   EXPECT_TRUE(
       device_state.FindString(kDeviceStateAssignedUpgradeType)->empty());
@@ -972,7 +975,7 @@ TEST_F(EnrollmentStateFetcherTest, ZTEWithChromeEnterpriseUpgrade) {
 
   EXPECT_EQ(state, AutoEnrollmentResult::kEnrollment);
   const base::DictValue& device_state =
-      local_state_.GetDict(ash::prefs::kServerBackedDeviceState);
+      local_state()->GetDict(ash::prefs::kServerBackedDeviceState);
   ASSERT_TRUE(device_state.FindString(kDeviceStateAssignedUpgradeType));
   EXPECT_EQ(*device_state.FindString(kDeviceStateAssignedUpgradeType),
             kDeviceStateAssignedUpgradeTypeChromeEnterprise);
@@ -1001,7 +1004,7 @@ TEST_F(EnrollmentStateFetcherTest, ZTEWithKioskAndSignageUpgrade) {
 
   EXPECT_EQ(state, AutoEnrollmentResult::kEnrollment);
   const base::DictValue& device_state =
-      local_state_.GetDict(ash::prefs::kServerBackedDeviceState);
+      local_state()->GetDict(ash::prefs::kServerBackedDeviceState);
   ASSERT_TRUE(device_state.FindString(kDeviceStateAssignedUpgradeType));
   EXPECT_EQ(*device_state.FindString(kDeviceStateAssignedUpgradeType),
             kDeviceStateAssignedUpgradeTypeKiosk);
@@ -1026,7 +1029,7 @@ TEST_F(EnrollmentStateFetcherTest, ReEnrollmentRequested) {
 
   EXPECT_EQ(state, AutoEnrollmentResult::kEnrollment);
   const base::DictValue& device_state =
-      local_state_.GetDict(ash::prefs::kServerBackedDeviceState);
+      local_state()->GetDict(ash::prefs::kServerBackedDeviceState);
   ASSERT_TRUE(device_state.FindString(kDeviceStateMode));
   EXPECT_EQ(*device_state.FindString(kDeviceStateMode),
             kDeviceStateRestoreModeReEnrollmentRequested);
@@ -1058,7 +1061,7 @@ TEST_F(EnrollmentStateFetcherTest, ReEnrollmentEnforced) {
 
   EXPECT_EQ(state, AutoEnrollmentResult::kEnrollment);
   const base::DictValue& device_state =
-      local_state_.GetDict(ash::prefs::kServerBackedDeviceState);
+      local_state()->GetDict(ash::prefs::kServerBackedDeviceState);
   ASSERT_TRUE(device_state.FindString(kDeviceStateMode));
   EXPECT_EQ(*device_state.FindString(kDeviceStateMode),
             kDeviceStateRestoreModeReEnrollmentEnforced);
@@ -1085,7 +1088,7 @@ TEST_F(EnrollmentStateFetcherTest, ReEnrollmentDisabled) {
 
   EXPECT_EQ(state, AutoEnrollmentResult::kDisabled);
   const base::DictValue& device_state =
-      local_state_.GetDict(ash::prefs::kServerBackedDeviceState);
+      local_state()->GetDict(ash::prefs::kServerBackedDeviceState);
   ASSERT_TRUE(device_state.FindString(kDeviceStateMode));
   EXPECT_EQ(*device_state.FindString(kDeviceStateMode),
             kDeviceStateModeDisabled);
@@ -1117,7 +1120,7 @@ TEST_F(EnrollmentStateFetcherTest, AutoREWithPerpetualLicense) {
 
   EXPECT_EQ(state, AutoEnrollmentResult::kEnrollment);
   const base::DictValue& device_state =
-      local_state_.GetDict(ash::prefs::kServerBackedDeviceState);
+      local_state()->GetDict(ash::prefs::kServerBackedDeviceState);
   ASSERT_TRUE(device_state.FindString(kDeviceStateMode));
   EXPECT_EQ(*device_state.FindString(kDeviceStateMode),
             kDeviceStateRestoreModeReEnrollmentZeroTouch);
@@ -1146,7 +1149,7 @@ TEST_F(EnrollmentStateFetcherTest, AutoREWithUndefinedLicense) {
 
   EXPECT_EQ(state, AutoEnrollmentResult::kEnrollment);
   const base::DictValue& device_state =
-      local_state_.GetDict(ash::prefs::kServerBackedDeviceState);
+      local_state()->GetDict(ash::prefs::kServerBackedDeviceState);
   ASSERT_TRUE(device_state.FindString(kDeviceStateLicenseType));
   EXPECT_TRUE(device_state.FindString(kDeviceStateLicenseType)->empty());
 }
@@ -1171,7 +1174,7 @@ TEST_F(EnrollmentStateFetcherTest, AutoREWithAnnualLicense) {
 
   EXPECT_EQ(state, AutoEnrollmentResult::kEnrollment);
   const base::DictValue& device_state =
-      local_state_.GetDict(ash::prefs::kServerBackedDeviceState);
+      local_state()->GetDict(ash::prefs::kServerBackedDeviceState);
   ASSERT_TRUE(device_state.FindString(kDeviceStateLicenseType));
   EXPECT_EQ(*device_state.FindString(kDeviceStateLicenseType),
             kDeviceStateLicenseTypeEnterprise);
@@ -1197,7 +1200,7 @@ TEST_F(EnrollmentStateFetcherTest, AutoREWithKioskLicense) {
 
   EXPECT_EQ(state, AutoEnrollmentResult::kEnrollment);
   const base::DictValue& device_state =
-      local_state_.GetDict(ash::prefs::kServerBackedDeviceState);
+      local_state()->GetDict(ash::prefs::kServerBackedDeviceState);
   ASSERT_TRUE(device_state.FindString(kDeviceStateLicenseType));
   EXPECT_EQ(*device_state.FindString(kDeviceStateLicenseType),
             kDeviceStateLicenseTypeTerminal);
@@ -1223,7 +1226,7 @@ TEST_F(EnrollmentStateFetcherTest, AutoREWithPackagedLicense) {
 
   EXPECT_EQ(state, AutoEnrollmentResult::kEnrollment);
   const base::DictValue& device_state =
-      local_state_.GetDict(ash::prefs::kServerBackedDeviceState);
+      local_state()->GetDict(ash::prefs::kServerBackedDeviceState);
   ASSERT_TRUE(device_state.FindString(kDeviceStateLicenseType));
   EXPECT_EQ(*device_state.FindString(kDeviceStateLicenseType),
             kDeviceStateLicenseTypeEnterprise);
@@ -1267,7 +1270,7 @@ TEST_F(EnrollmentStateFetcherTest,
 
   EXPECT_EQ(state, AutoEnrollmentResult::kEnrollment);
   const base::DictValue& device_state =
-      local_state_.GetDict(ash::prefs::kServerBackedDeviceState);
+      local_state()->GetDict(ash::prefs::kServerBackedDeviceState);
   ASSERT_TRUE(device_state.FindString(kDeviceStateMode));
   ASSERT_EQ(*device_state.FindString(kDeviceStateMode),
             kDeviceStateInitialModeTokenEnrollment);
@@ -1293,7 +1296,7 @@ TEST_F(EnrollmentStateFetcherTest,
 
   EXPECT_EQ(state, AutoEnrollmentResult::kEnrollment);
   const base::DictValue& device_state =
-      local_state_.GetDict(ash::prefs::kServerBackedDeviceState);
+      local_state()->GetDict(ash::prefs::kServerBackedDeviceState);
   ASSERT_TRUE(device_state.FindString(kDeviceStateMode));
   ASSERT_EQ(*device_state.FindString(kDeviceStateMode),
             kDeviceStateInitialModeTokenEnrollment);
@@ -1315,7 +1318,7 @@ TEST_F(EnrollmentStateFetcherTest,
 
   EXPECT_EQ(state, AutoEnrollmentResult::kEnrollment);
   const base::DictValue& device_state =
-      local_state_.GetDict(ash::prefs::kServerBackedDeviceState);
+      local_state()->GetDict(ash::prefs::kServerBackedDeviceState);
   ASSERT_TRUE(device_state.FindString(kDeviceStateMode));
   ASSERT_EQ(*device_state.FindString(kDeviceStateMode),
             kDeviceStateInitialModeTokenEnrollment);
@@ -1368,7 +1371,7 @@ TEST_F(EnrollmentStateFetcherTest,
 
   EXPECT_EQ(state, AutoEnrollmentResult::kEnrollment);
   const base::DictValue& device_state =
-      local_state_.GetDict(ash::prefs::kServerBackedDeviceState);
+      local_state()->GetDict(ash::prefs::kServerBackedDeviceState);
   ASSERT_TRUE(device_state.FindString(kDeviceStateMode));
   ASSERT_EQ(*device_state.FindString(kDeviceStateMode),
             kDeviceStateInitialModeTokenEnrollment);
@@ -1417,7 +1420,7 @@ TEST_P(EnrollmentStateFetcherTestP, ReEnrollmentRequested) {
 
   EXPECT_EQ(state, AutoEnrollmentResult::kEnrollment);
   const base::DictValue& device_state =
-      local_state_.GetDict(ash::prefs::kServerBackedDeviceState);
+      local_state()->GetDict(ash::prefs::kServerBackedDeviceState);
   ASSERT_TRUE(device_state.FindString(kDeviceStateMode));
   EXPECT_EQ(*device_state.FindString(kDeviceStateMode),
             kDeviceStateRestoreModeReEnrollmentRequested);
@@ -1449,7 +1452,7 @@ TEST_P(EnrollmentStateFetcherTestP, ReEnrollmentEnforced) {
 
   EXPECT_EQ(state, AutoEnrollmentResult::kEnrollment);
   const base::DictValue& device_state =
-      local_state_.GetDict(ash::prefs::kServerBackedDeviceState);
+      local_state()->GetDict(ash::prefs::kServerBackedDeviceState);
   ASSERT_TRUE(device_state.FindString(kDeviceStateMode));
   EXPECT_EQ(*device_state.FindString(kDeviceStateMode),
             kDeviceStateRestoreModeReEnrollmentEnforced);
@@ -1476,7 +1479,7 @@ TEST_P(EnrollmentStateFetcherTestP, ReEnrollmentDisabled) {
 
   EXPECT_EQ(state, AutoEnrollmentResult::kDisabled);
   const base::DictValue& device_state =
-      local_state_.GetDict(ash::prefs::kServerBackedDeviceState);
+      local_state()->GetDict(ash::prefs::kServerBackedDeviceState);
   ASSERT_TRUE(device_state.FindString(kDeviceStateMode));
   EXPECT_EQ(*device_state.FindString(kDeviceStateMode),
             kDeviceStateModeDisabled);
