@@ -16,7 +16,7 @@ def main_run(args):
         sys.executable,
         os.path.join(common.SRC_DIR, 'third_party', 'blink', 'tools',
                      'lint_test_expectations.py'), '--json', tempfile_path
-    ])
+    ] + args.args)
 
     with open(tempfile_path) as f:
       failures = json.load(f)
