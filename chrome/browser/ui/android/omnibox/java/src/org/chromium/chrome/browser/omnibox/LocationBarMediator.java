@@ -2381,7 +2381,11 @@ class LocationBarMediator
                             && ToolModeUtils.isConventionalRequest(mCurrentInput.getRequestType());
             // With any AI request, desktop also wants to avoid the early return from focus+user
             // input that's handled in the else if below.
-            if (isConventionalRequest) return false;
+            if (isConventionalRequest
+                    || mFuseboxCoordinator.getFuseboxStateSupplier().get()
+                            != FuseboxState.EXPANDED) {
+                return false;
+            }
         } else if (isUrlBarFocusedWithUserInput()) {
             return false;
         }

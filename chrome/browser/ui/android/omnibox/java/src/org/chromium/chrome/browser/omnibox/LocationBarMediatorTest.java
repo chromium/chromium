@@ -2747,6 +2747,7 @@ public class LocationBarMediatorTest {
         mMediator.onFinishNativeInitialization();
         mMediator.setVoiceRecognitionHandlerForTesting(mVoiceRecognitionHandler);
         mFuseboxLayoutModeSupplier.set(FuseboxLayoutMode.SUGGESTIONS_POPOVER);
+        mFuseboxStateSupplier.set(FuseboxState.EXPANDED);
         doReturn(true).when(mVoiceRecognitionHandler).isVoiceSearchEnabled();
 
         mSessionState.getAutocompleteInput().setRequestType(AutocompleteRequestType.AI_MODE);
@@ -2755,6 +2756,11 @@ public class LocationBarMediatorTest {
         clearInvocations(mLocationBarLayout);
         mMediator.updateButtonVisibility();
         verify(mLocationBarLayout).setMicButtonVisibility(/* shouldShow= */ true);
+
+        mFuseboxStateSupplier.set(FuseboxState.COMPACT);
+        clearInvocations(mLocationBarLayout);
+        mMediator.updateButtonVisibility();
+        verify(mLocationBarLayout).setMicButtonVisibility(/* shouldShow= */ false);
     }
 
     @Test
