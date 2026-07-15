@@ -26,14 +26,12 @@ class PersonalContextService;
 namespace autofill {
 
 class AutofillDataProvider;
-class AtMemoryQueryServiceDelegate;
 
 // Service for querying @memory suggestions. Owned by the Profile, one per
 // profile.
 class AtMemoryQueryService : public KeyedService {
  public:
   AtMemoryQueryService(
-      std::unique_ptr<AtMemoryQueryServiceDelegate> delegate,
       std::unique_ptr<AutofillDataProvider> data_provider,
       personal_context::PersonalContextService* personal_context_service,
       const std::string& locale);
@@ -69,7 +67,6 @@ class AtMemoryQueryService : public KeyedService {
       base::flat_set<std::u16string> filter_words,
       std::string server_request_id,
       std::vector<accessibility_annotator::MemorySearchResult> local_results);
-  std::unique_ptr<AtMemoryQueryServiceDelegate> delegate_;
   std::unique_ptr<AutofillDataProvider> data_provider_;
   raw_ptr<personal_context::PersonalContextService> personal_context_service_ =
       nullptr;

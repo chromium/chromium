@@ -7,13 +7,11 @@
 #include <memory>
 
 #include "components/autofill/core/browser/at_memory/autofill_data_provider.h"
-#include "components/autofill/core/browser/integrators/at_memory/at_memory_query_service_delegate.h"
 
 namespace autofill {
 
 MockAtMemoryQueryService::MockAtMemoryQueryService()
-    : AtMemoryQueryService(std::make_unique<AtMemoryQueryServiceDelegate>(),
-                           /*data_provider=*/nullptr,
+    : AtMemoryQueryService(/*data_provider=*/nullptr,
                            /*personal_context_service=*/nullptr,
                            /*locale=*/"") {}
 
