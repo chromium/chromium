@@ -23,7 +23,6 @@
 #include "base/numerics/safe_math.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions_win.h"
-#include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
@@ -34,6 +33,7 @@
 #include "components/winhttp/proxy_info.h"
 #include "components/winhttp/scoped_hinternet.h"
 #include "components/winhttp/scoped_winttp_proxy_info.h"
+#include "third_party/abseil-cpp/absl/strings/str_format.h"
 #include "url/url_constants.h"
 
 namespace winhttp {
@@ -598,7 +598,7 @@ void __stdcall NetworkFetcher::WinHttpStatusCallback(HINTERNET handle,
       CHECK(info);
       CHECK_EQ(info_len, sizeof(uint32_t));
       info_string = base::ASCIIToWide(
-          base::StringPrintf("%#x", *static_cast<uint32_t*>(info)));
+          absl::StrFormat("%#x", *static_cast<uint32_t*>(info)));
       break;
     default:
       status_string = "unknown callback";
@@ -607,13 +607,12 @@ void __stdcall NetworkFetcher::WinHttpStatusCallback(HINTERNET handle,
 
   std::string msg;
   if (!status_string.empty()) {
-    base::StringAppendF(&msg, "status=%s", status_string.data());
+    absl::StrAppendFormat(&msg, "status=%s", status_string.data());
   } else {
-    base::StringAppendF(&msg, "status=%#lx", status);
+    absl::StrAppendFormat(&msg, "status=%#lx", status);
   }
   if (!info_string.empty()) {
-    base::StringAppendF(&msg, ", info=%s",
-                        base::SysWideToUTF8(info_string).c_str());
+    absl::StrAppendFormat(&msg, ", info=%s", base::SysWideToUTF8(info_string));
   }
   VLOG(3) << "WinHttp status callback:" << " handle=" << handle << ", " << msg;
 

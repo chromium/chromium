@@ -18,7 +18,6 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
-#include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
 #include "base/uuid.h"
 #include "base/values.h"
@@ -29,6 +28,7 @@
 #include "components/update_client/protocol_definition.h"
 #include "components/update_client/update_query_params.h"
 #include "components/update_client/utils.h"
+#include "third_party/abseil-cpp/absl/strings/str_format.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "base/win/windows_version.h"
@@ -51,8 +51,8 @@ int GetPhysicalMemoryGB() {
 std::string GetOSVersion() {
 #if BUILDFLAG(IS_WIN)
   const auto ver = base::win::OSInfo::GetInstance()->version_number();
-  return base::StringPrintf("%u.%u.%u.%u", ver.major, ver.minor, ver.build,
-                            ver.patch);
+  return absl::StrFormat("%u.%u.%u.%u", ver.major, ver.minor, ver.build,
+                         ver.patch);
 #else
   return base::SysInfo().OperatingSystemVersion();
 #endif

@@ -17,10 +17,10 @@
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
-#include "base/strings/stringprintf.h"
 #include "crypto/hash.h"
 #include "crypto/random.h"
 #include "crypto/sign.h"
+#include "third_party/abseil-cpp/absl/strings/str_format.h"
 
 namespace client_update_protocol {
 namespace {
@@ -94,7 +94,7 @@ Ecdsa::~Ecdsa() = default;
 
 void Ecdsa::OverrideNonceForTesting(int key_version, uint32_t nonce) {
   DCHECK(!request_query_cup2key_.empty());
-  request_query_cup2key_ = base::StringPrintf("%d:%u", pub_key_version_, nonce);
+  request_query_cup2key_ = absl::StrFormat("%d:%u", pub_key_version_, nonce);
 }
 
 std::string Ecdsa::PrepareRequestParameters(std::string_view request_body) {
@@ -111,11 +111,11 @@ std::string Ecdsa::PrepareRequestParameters(std::string_view request_body) {
                         &nonce_b64);
 
   request_query_cup2key_ =
-      base::StringPrintf("%d:%s", pub_key_version_, nonce_b64);
+      absl::StrFormat("%d:%s", pub_key_version_, nonce_b64);
   request_hash_ = crypto::hash::Sha256(base::as_byte_span(request_body));
 
-  return base::StringPrintf("cup2key=%s&cup2hreq=%s", request_query_cup2key_,
-                            base::HexEncodeLower(request_hash_));
+  return absl::StrFormat("cup2key=%s&cup2hreq=%s", request_query_cup2key_,
+                         base::HexEncodeLower(request_hash_));
 }
 
 bool Ecdsa::ValidateResponse(std::string_view response_body,

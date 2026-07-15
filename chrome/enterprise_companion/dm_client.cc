@@ -22,7 +22,6 @@
 #include "base/sequence_checker.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
-#include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
@@ -47,6 +46,7 @@
 #include "net/base/net_errors.h"
 #include "net/http/http_util.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "third_party/abseil-cpp/absl/strings/str_format.h"
 
 namespace enterprise_companion {
 
@@ -98,10 +98,9 @@ class DMConfiguration : public policy::DeviceManagementService::Configuration {
     int32_t minor = 0;
     int32_t bugfix = 0;
     base::SysInfo::OperatingSystemVersionNumbers(&major, &minor, &bugfix);
-    return base::StringPrintf(
-        "%s|%s|%d.%d.%d", base::SysInfo::OperatingSystemName().c_str(),
-        base::SysInfo::OperatingSystemArchitecture().c_str(), major, minor,
-        bugfix);
+    return absl::StrFormat(
+        "%s|%s|%d.%d.%d", base::SysInfo::OperatingSystemName(),
+        base::SysInfo::OperatingSystemArchitecture(), major, minor, bugfix);
   }
   std::string GetRealtimeReportingServerUrl() const override {
     return GetGlobalConstants()->DeviceManagementRealtimeReportingURL().spec();

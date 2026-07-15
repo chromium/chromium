@@ -16,7 +16,7 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/strings/stringprintf.h"
+#include "base/strings/strcat.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/update_client/configurator.h"
 #include "components/update_client/network.h"
@@ -237,8 +237,7 @@ void RequestSender::HandleSendError(int error, int retry_after_sec) {
 GURL RequestSender::BuildUpdateUrl(const GURL& url,
                                    const std::string& query_params) {
   const std::string query_string(
-      url.has_query() ? base::StringPrintf("%s&%s", url.GetQuery().c_str(),
-                                           query_params.c_str())
+      url.has_query() ? base::StrCat({url.GetQuery(), "&", query_params})
                       : query_params);
   GURL::Replacements replacements;
   replacements.SetQueryStr(query_string);

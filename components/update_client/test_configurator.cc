@@ -16,7 +16,6 @@
 #include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/path_service.h"
-#include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/time/time.h"
 #include "base/version.h"
@@ -35,14 +34,15 @@
 #include "components/update_client/unzip/unzip_impl.h"
 #include "components/update_client/unzipper.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#include "third_party/abseil-cpp/absl/strings/str_format.h"
 #include "url/gurl.h"
 
 namespace update_client {
 namespace {
 std::vector<GURL> MakeDefaultUrls() {
   return std::vector<GURL>{
-      GURL(base::StringPrintf("%s://%s%s", kPostInterceptScheme,
-                              kPostInterceptHostname, kPostInterceptPath))};
+      GURL(absl::StrFormat("%s://%s%s", kPostInterceptScheme,
+                           kPostInterceptHostname, kPostInterceptPath))};
 }
 }  // namespace
 

@@ -13,8 +13,8 @@
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
-#include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/uuid.h"
@@ -186,7 +186,7 @@ int PersistedDataImpl::GetDateLastActive(const std::string& id) const {
 
 std::string PersistedDataImpl::GetPingFreshness(const std::string& id) const {
   std::string result = GetString(id, "pf");
-  return !result.empty() ? base::StringPrintf("{%s}", result.c_str()) : result;
+  return !result.empty() ? base::StrCat({"{", result, "}"}) : result;
 }
 
 int PersistedDataImpl::GetInstallDate(const std::string& id) const {

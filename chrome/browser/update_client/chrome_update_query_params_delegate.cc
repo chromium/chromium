@@ -46,6 +46,6 @@ std::string ChromeUpdateQueryParamsDelegate::GetExtraParams() {
 }
 
 // static
-const char* ChromeUpdateQueryParamsDelegate::GetLang() {
-  return g_browser_process->GetApplicationLocale().c_str();
+const std::string& ChromeUpdateQueryParamsDelegate::GetLang() {
+  return g_browser_process->GetApplicationLocale();
 }

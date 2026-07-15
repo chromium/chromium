@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_UPDATE_CLIENT_TEST_UTILS_H_
 #define COMPONENTS_UPDATE_CLIENT_TEST_UTILS_H_
 
+#include <string_view>
+
 namespace base {
 class FilePath;
 }
@@ -15,13 +17,13 @@ namespace update_client {
 // These test files exist in the source tree and are available to tests in
 // `//components/test/data/update_client.` `file_name` is the relative name of
 // the file in that directory.
-[[nodiscard]] base::FilePath GetTestFilePath(const char* file_name);
+[[nodiscard]] base::FilePath GetTestFilePath(std::string_view file_name);
 
 // Duplicates a file from path GetTestFilePath(file) into the provided
 // temp_path. This should be provided by a base::ScopedTempDir. Deletion
 // should be handled by the caller.
 [[nodiscard]] base::FilePath DuplicateTestFile(const base::FilePath& temp_path,
-                                               const char* file);
+                                               std::string_view file);
 
 }  // namespace update_client
 

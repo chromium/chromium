@@ -17,7 +17,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
-#include "base/strings/stringprintf.h"
 #include "base/task/thread_pool.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_path_override.h"
@@ -38,6 +37,7 @@
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/strings/str_format.h"
 
 namespace component_updater {
 
@@ -345,8 +345,7 @@ class CrOSComponentInstallerTest : public testing::Test {
         "min_env_version": "%s"
     })";
     const std::string manifest =
-        base::StringPrintf(kManifestTemplate, name.c_str(), version.c_str(),
-                           min_env_version.c_str());
+        absl::StrFormat(kManifestTemplate, name, version, min_env_version);
     if (!base::WriteFile(path.AppendASCII("manifest.json"), manifest)) {
       return std::nullopt;
     }

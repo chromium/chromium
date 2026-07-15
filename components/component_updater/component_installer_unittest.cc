@@ -24,7 +24,6 @@
 #include "base/run_loop.h"
 #include "base/sequence_checker.h"
 #include "base/strings/strcat.h"
-#include "base/strings/stringprintf.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
@@ -49,6 +48,7 @@
 #include "components/update_client/update_client_errors.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/strings/str_format.h"
 
 namespace component_updater {
 namespace {
@@ -308,10 +308,9 @@ std::optional<base::FilePath> CreateComponentDirectory(
     "version": "%s",
     "min_env_version": "%s"
   })";
-  return base::WriteFile(
-             component_dir.AppendASCII("manifest.json"),
-             base::StringPrintf(kManifestData.data(), name.c_str(),
-                                version.c_str(), min_env_version.c_str()))
+  return base::WriteFile(component_dir.AppendASCII("manifest.json"),
+                         absl::StrFormat(kManifestData.data(), name, version,
+                                         min_env_version))
              ? std::make_optional(component_dir)
              : std::nullopt;
 }
@@ -359,7 +358,7 @@ TEST_F(ComponentInstallerTest, RegisterComponent) {
       component.pk_hash);
   EXPECT_EQ(base::Version("0.0.0.0"), component.version);
   EXPECT_TRUE(component.fingerprint.empty());
-  EXPECT_STREQ("fake name", component.name.c_str());
+  EXPECT_EQ("fake name", component.name);
   EXPECT_EQ(expected_attrs, component.installer_attributes);
   EXPECT_TRUE(component.requires_network_encryption);
 

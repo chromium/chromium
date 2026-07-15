@@ -14,7 +14,6 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/path_service.h"
-#include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/repeating_test_future.h"
 #include "base/test/scoped_feature_list.h"
@@ -30,6 +29,7 @@
 #include "components/startup_metric_utils/browser/startup_metric_utils.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/strings/str_format.h"
 
 namespace component_updater {
 
@@ -361,7 +361,7 @@ INSTANTIATE_TEST_SUITE_P(
     PrivacySandboxAttestationsHistogramsTest,
     testing::Combine(testing::Bool(), testing::Bool()),
     [](const testing::TestParamInfo<std::tuple<bool, bool>>& info) {
-      return base::StringPrintf(
+      return absl::StrFormat(
           "%s_%s",
           std::get<0>(info.param) ? "NonBrowserUIDisplayed" : "NormalStart",
           std::get<1>(info.param) ? "BrowserWindowFirstPaintRecorded"

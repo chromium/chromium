@@ -16,7 +16,6 @@
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
-#include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "net/base/net_errors.h"
@@ -31,6 +30,7 @@
 #include "services/network/test/test_url_loader_factory.h"
 #include "services/network/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/strings/str_format.h"
 #include "url/gurl.h"
 
 namespace update_client {
@@ -116,8 +116,7 @@ std::string URLLoaderPostInterceptor::GetRequestBody(size_t n) const {
 std::string URLLoaderPostInterceptor::GetRequestsAsString() const {
   std::string s = "Requests are:";
   for (int i = 0; const InterceptedRequest& request : GetRequests()) {
-    s.append(
-        base::StringPrintf("\n  [%d]: %s", ++i, std::get<0>(request).c_str()));
+    absl::StrAppendFormat(&s, "\n  [%d]: %s", ++i, std::get<0>(request));
   }
   return s;
 }

@@ -27,7 +27,6 @@
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/stringprintf.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
@@ -48,6 +47,7 @@
 #include "net/test/embedded_test_server/http_response.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/multiprocess_func_list.h"
+#include "third_party/abseil-cpp/absl/strings/str_format.h"
 #include "url/gurl.h"
 
 using net::test_server::BasicHttpResponse;
@@ -278,9 +278,8 @@ TEST_F(BackgroundDownloaderTest, DISABLED_ServerHangup) {
               std::make_unique<BasicHttpResponse>();
           response->set_code(net::HTTP_PARTIAL_CONTENT);
           response->AddCustomHeader(
-              "Content-Range",
-              base::StringPrintf("bytes %d-%zu/%zu", lower_range, data.size(),
-                                 data.size()));
+              "Content-Range", absl::StrFormat("bytes %d-%zu/%zu", lower_range,
+                                               data.size(), data.size()));
           response->set_content(data.substr(lower_range));
           return base::WrapUnique<HttpResponse>(response.release());
         } else {
@@ -573,9 +572,8 @@ TEST_F(BackgroundDownloaderCrashingClientTest, DISABLED_ClientCrash) {
               std::make_unique<BasicHttpResponse>();
           response->set_code(net::HTTP_PARTIAL_CONTENT);
           response->AddCustomHeader(
-              "Content-Range",
-              base::StringPrintf("bytes %d-%zu/%zu", lower_range, data.size(),
-                                 data.size()));
+              "Content-Range", absl::StrFormat("bytes %d-%zu/%zu", lower_range,
+                                               data.size(), data.size()));
           response->set_content(data.substr(lower_range));
           return base::WrapUnique<HttpResponse>(response.release());
         } else {

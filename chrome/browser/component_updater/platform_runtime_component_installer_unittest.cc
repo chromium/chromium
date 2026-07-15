@@ -10,7 +10,6 @@
 
 #include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
-#include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
@@ -27,6 +26,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/strings/str_format.h"
 
 namespace component_updater {
 
@@ -398,8 +398,8 @@ TEST_F(PlatformRuntimeComponentInstallerTest,
   base::Time past_time = base::Time::Now() - base::Days(10);
   base::Time::Exploded exploded;
   past_time.UTCExplode(&exploded);
-  base::Version version(base::StringPrintf(
-      "%d.%d.%d.1", exploded.year, exploded.month, exploded.day_of_month));
+  base::Version version(absl::StrFormat("%d.%d.%d.1", exploded.year,
+                                        exploded.month, exploded.day_of_month));
 
   base::Time expected_release_time = past_time.UTCMidnight();
 

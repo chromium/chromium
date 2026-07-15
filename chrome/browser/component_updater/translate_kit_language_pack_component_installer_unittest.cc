@@ -14,7 +14,6 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
 #include "base/run_loop.h"
-#include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
@@ -34,6 +33,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/strings/str_format.h"
 
 namespace component_updater {
 namespace {
@@ -103,10 +103,9 @@ void CreateFakeInstallation(const base::FilePath& base_dir,
        GetPackageInstallSubDirNamesForVerification(lang_pack)) {
     CHECK(base::CreateDirectory(component_dir.AppendASCII(sub_dir)));
   }
-  CHECK(base::WriteFile(
-      component_dir.AppendASCII("manifest.json"),
-      base::StringPrintf(kManifestData.data(), "FakeInstallation", "0.0.1",
-                         "0.0.1")));
+  CHECK(base::WriteFile(component_dir.AppendASCII("manifest.json"),
+                        absl::StrFormat(kManifestData.data(),
+                                        "FakeInstallation", "0.0.1", "0.0.1")));
 }
 
 TEST_F(TranslateKitLanguagePackComponentTest, ComponentRegistration) {

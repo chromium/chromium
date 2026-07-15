@@ -16,7 +16,6 @@
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/notreached.h"
-#include "base/strings/stringprintf.h"
 #include "base/values.h"
 #include "base/version.h"
 #include "build/build_config.h"
@@ -29,6 +28,7 @@
 #include "components/update_client/update_client_errors.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "third_party/abseil-cpp/absl/strings/str_format.h"
 
 namespace component_updater {
 
@@ -151,8 +151,8 @@ void SodaLanguagePackComponentInstallerPolicy::GetHash(
 }
 
 std::string SodaLanguagePackComponentInstallerPolicy::GetName() const {
-  return base::StringPrintf(kLanguagePackManifestName,
-                            language_config_.language_name);
+  return absl::StrFormat(kLanguagePackManifestName,
+                         language_config_.language_name);
 }
 
 update_client::InstallerAttributes

@@ -4,6 +4,8 @@
 
 #include "components/update_client/test_utils.h"
 
+#include <string_view>
+
 #include "base/base_paths.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -12,7 +14,7 @@
 
 namespace update_client {
 
-base::FilePath GetTestFilePath(const char* file_name) {
+base::FilePath GetTestFilePath(std::string_view file_name) {
   base::FilePath test_data_root;
   base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &test_data_root);
   return test_data_root.Append(FILE_PATH_LITERAL("components"))
@@ -23,7 +25,7 @@ base::FilePath GetTestFilePath(const char* file_name) {
 }
 
 base::FilePath DuplicateTestFile(const base::FilePath& temp_path,
-                                 const char* file) {
+                                 std::string_view file) {
   base::FilePath dest_path = temp_path.AppendUTF8(file);
   EXPECT_TRUE(base::CreateDirectory(dest_path.DirName()));
   EXPECT_TRUE(base::PathExists(GetTestFilePath(file)));

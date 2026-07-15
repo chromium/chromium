@@ -419,7 +419,7 @@ TEST(UpdateClientProtocolParserJSONTest, Parse) {
     EXPECT_TRUE(parser->errors().empty()) << parser->errors();
     ASSERT_EQ(1u, parser->results().apps.size());
     const auto* first_result = &parser->results().apps[0];
-    EXPECT_STREQ("ok", first_result->status.c_str());
+    EXPECT_EQ("ok", first_result->status);
     ASSERT_EQ(1u, first_result->pipelines.size());
     EXPECT_EQ(first_result->pipelines[0].pipeline_id, "pipe1");
     ASSERT_EQ(2u, first_result->pipelines[0].operations.size());
@@ -464,7 +464,7 @@ TEST(UpdateClientProtocolParserJSONTest, Parse) {
     EXPECT_TRUE(parser->errors().empty()) << parser->errors();
     EXPECT_FALSE(parser->results().apps.empty());
     const auto* first_result = &parser->results().apps[0];
-    EXPECT_STREQ("noupdate", first_result->status.c_str());
+    EXPECT_EQ("noupdate", first_result->status);
     EXPECT_EQ(first_result->app_id, "12345");
     EXPECT_FALSE(first_result->nextversion.IsValid());
   }
@@ -475,11 +475,11 @@ TEST(UpdateClientProtocolParserJSONTest, Parse) {
     ASSERT_EQ(2u, parser->results().apps.size());
     const auto* first_result = &parser->results().apps[0];
     EXPECT_EQ(first_result->app_id, "aaaaaaaa");
-    EXPECT_STREQ("error-unknownApplication", first_result->status.c_str());
+    EXPECT_EQ("error-unknownApplication", first_result->status);
     EXPECT_FALSE(first_result->nextversion.IsValid());
     const auto* second_result = &parser->results().apps[1];
     EXPECT_EQ(second_result->app_id, "bbbbbbbb");
-    EXPECT_STREQ("ok", second_result->status.c_str());
+    EXPECT_EQ("ok", second_result->status);
     EXPECT_EQ(base::Version("1.2.3.4"), second_result->nextversion);
   }
   {
@@ -503,7 +503,7 @@ TEST(UpdateClientProtocolParserJSONTest, Parse) {
     EXPECT_TRUE(parser->errors().empty()) << parser->errors();
     EXPECT_FALSE(parser->results().apps.empty());
     const auto* first_result = &parser->results().apps[0];
-    EXPECT_STREQ("ok", first_result->status.c_str());
+    EXPECT_EQ("ok", first_result->status);
     EXPECT_EQ(first_result->app_id, "12345");
     EXPECT_EQ(first_result->pipelines[0].operations[2].path, "file.exe");
   }
@@ -534,15 +534,12 @@ TEST(UpdateClientProtocolParserJSONTest, Parse) {
     EXPECT_TRUE(parser->errors().empty()) << parser->errors();
     ASSERT_EQ(1u, parser->results().apps.size());
     const auto& result = parser->results().apps[0];
-    EXPECT_STREQ("UpdaterSetup.exe",
-                 result.pipelines[0].operations[1].path.c_str());
-    EXPECT_STREQ("--arg1 --arg2",
-                 result.pipelines[0].operations[1].arguments.c_str());
+    EXPECT_EQ("UpdaterSetup.exe", result.pipelines[0].operations[1].path);
+    EXPECT_EQ("--arg1 --arg2", result.pipelines[0].operations[1].arguments);
 
     ASSERT_EQ(1u, result.data.size());
-    EXPECT_STREQ("foobar_install_data_index",
-                 result.data[0].install_data_index.c_str());
-    EXPECT_STREQ("sampledata", result.data[0].text.c_str());
+    EXPECT_EQ("foobar_install_data_index", result.data[0].install_data_index);
+    EXPECT_EQ("sampledata", result.data[0].text);
   }
 }
 

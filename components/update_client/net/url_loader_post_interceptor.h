@@ -16,10 +16,10 @@
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
-#include "base/strings/stringprintf.h"
 #include "components/update_client/test_configurator.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_status_code.h"
+#include "third_party/abseil-cpp/absl/strings/str_format.h"
 #include "url/gurl.h"
 
 namespace network {
@@ -166,11 +166,10 @@ class URLLoaderPostInterceptor {
 
   bool is_paused_ = false;
 
-  std::vector<GURL> filtered_urls_{
-      GURL(base::StringPrintf("%s://%s%s",
-                              kPostInterceptScheme,
-                              kPostInterceptHostname,
-                              kPostInterceptPath))};
+  std::vector<GURL> filtered_urls_{GURL(absl::StrFormat("%s://%s%s",
+                                                        kPostInterceptScheme,
+                                                        kPostInterceptHostname,
+                                                        kPostInterceptPath))};
 
   base::OnceClosure url_job_request_ready_callback_;
 };

@@ -41,7 +41,7 @@ class XzOperationTest : public ::testing::TestWithParam<bool> {
 
   base::FilePath CopyToTemp(const std::string& file_name) {
     base::FilePath dest = TempPath(base::FilePath().AppendUTF8(file_name));
-    EXPECT_TRUE(base::CopyFile(GetTestFilePath(file_name.c_str()), dest));
+    EXPECT_TRUE(base::CopyFile(GetTestFilePath(file_name), dest));
     return dest;
   }
 

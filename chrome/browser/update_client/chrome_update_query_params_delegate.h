@@ -29,7 +29,7 @@ class ChromeUpdateQueryParamsDelegate
 
   // Returns the language for the present locale. Possible return values are
   // standard tags for languages, such as "en", "en-US", "de", "fr", "af", etc.
-  static const char* GetLang();
+  static const std::string& GetLang();
 };
 
 #endif  // CHROME_BROWSER_UPDATE_CLIENT_CHROME_UPDATE_QUERY_PARAMS_DELEGATE_H_

@@ -49,7 +49,7 @@ class ZucchiniOperationTest : public ::testing::TestWithParam<bool> {
   base::FilePath CopyToTemp(const std::string& src) {
     base::FilePath dest =
         TempPath(base::FilePath().AppendUTF8(src).BaseName().AsUTF8Unsafe());
-    EXPECT_TRUE(base::CopyFile(GetTestFilePath(src.c_str()), dest));
+    EXPECT_TRUE(base::CopyFile(GetTestFilePath(src), dest));
     return dest;
   }
 
