@@ -1720,7 +1720,8 @@ class OmniboxViewViewsAIMButtonDynamicTest
  public:
   OmniboxViewViewsAIMButtonDynamicTest() {
     scoped_feature_list_.InitWithFeaturesAndParameters(
-        {{omnibox::kWebUIOmniboxDynamicAiModeButton, {}}},
+        {{omnibox::kWebUIOmniboxDynamicAiModeButton,
+          {{"Omnibox_DynamicAnimation", "true"}}}},
         {lens::features::kLensOverlay});
   }
 

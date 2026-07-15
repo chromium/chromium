@@ -10945,6 +10945,7 @@ from previous Chrome versions.
   <int value="-1158929245"
       label="BrowserInitiatedAutomaticPictureInPicture:enabled"/>
   <int value="-1158762291" label="GlicPanelResetTopChromeButton:enabled"/>
+  <int value="-1157133420" label="NtpRealboxDynamicAiModeButton:enabled"/>
   <int value="-1157129504"
       label="AutofillRequireCvcForPossibleCardUpdate:disabled"/>
   <int value="-1156950420"
@@ -17688,6 +17689,7 @@ from previous Chrome versions.
       label="ContentSuggestionsThumbnailDominantColor:disabled"/>
   <int value="1004938507" label="SafetyHubLocalPasswordsModule:enabled"/>
   <int value="1004988656" label="TrackingProtection3pcd:disabled"/>
+  <int value="1004991714" label="WebUIOmniboxDynamicAiModeButton:enabled"/>
   <int value="1005684777" label="PictureInPicture:disabled"/>
   <int value="1006080779" label="ForcePreferredIntervalForVideo:disabled"/>
   <int value="1006186395" label="GlicMultiInstance:disabled"/>
@@ -17837,6 +17839,7 @@ from previous Chrome versions.
   <int value="1055690028"
       label="WebAuthenticationLargeBlobICloudKeychain:disabled"/>
   <int value="1055737615" label="VideoToolboxAv1Decoding:enabled"/>
+  <int value="1055904164" label="WebUIOmniboxDynamicAiModeButton:disabled"/>
   <int value="1055907260" label="ReleaseTrackUi:disabled"/>
   <int value="1057014709" label="EnforceTLS13Downgrade:enabled"/>
   <int value="1057337924" label="RestartToGainAccessToKeychain:disabled"/>
@@ -20296,6 +20299,7 @@ from previous Chrome versions.
   <int value="1821723343" label="disable-saml-signin"/>
   <int value="1822184614" label="DeviceBoundSessions:enabled"/>
   <int value="1822452137" label="ClipboardHistoryLongpress:enabled"/>
+  <int value="1822775887" label="NtpRealboxDynamicAiModeButton:disabled"/>
   <int value="1823102966" label="disable-ipc-flooding-protection"/>
   <int value="1823337908" label="SmartDim20190221:enabled"/>
   <int value="1823457914"

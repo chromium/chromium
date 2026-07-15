@@ -880,14 +880,7 @@ const FeatureEntry::FeatureVariation
 };
 #endif  // BUILDFLAG(IS_ANDROID)
 
-#if !BUILDFLAG(IS_ANDROID)
-const FeatureEntry::Choice kDynamicAiModeButtonChoices[] = {
-    {flags_ui::kGenericExperimentChoiceDefault, "", ""},
-    {flags_ui::kGenericExperimentChoiceEnabled, switches::kEnableFeatures,
-     "WebUIOmniboxDynamicAiModeButton,NtpRealboxDynamicAiModeButton"},
-    {flags_ui::kGenericExperimentChoiceDisabled, switches::kDisableFeatures,
-     "WebUIOmniboxDynamicAiModeButton,NtpRealboxDynamicAiModeButton"}};
-#endif
+
 
 const FeatureEntry::FeatureParam
     kWebIdentityDigitalIdentityCredentialNoDialogParam[] = {
@@ -941,6 +934,23 @@ const FeatureEntry::FeatureParam kAim3pEntrypointDebugEnabled[] = {
 
 const FeatureEntry::FeatureVariation kAim3pEntrypointVariations[] = {
     {"with debug config", kAim3pEntrypointDebugEnabled, nullptr}};
+
+const FeatureEntry::FeatureParam kWebUIOmniboxDynamicAiModeButton_AnimOnly[] = {
+    {"Omnibox_DynamicAnimation", "true"},
+    {"Omnibox_DynamicColorScheme", "false"}};
+
+const FeatureEntry::FeatureParam kWebUIOmniboxDynamicAiModeButton_ColorOnly[] = {
+    {"Omnibox_DynamicAnimation", "false"},
+    {"Omnibox_DynamicColorScheme", "true"}};
+
+const FeatureEntry::FeatureParam kWebUIOmniboxDynamicAiModeButton_Both[] = {
+    {"Omnibox_DynamicAnimation", "true"},
+    {"Omnibox_DynamicColorScheme", "true"}};
+
+const FeatureEntry::FeatureVariation kWebUIOmniboxDynamicAiModeButtonVariations[] = {
+    {"Animation Only", kWebUIOmniboxDynamicAiModeButton_AnimOnly, nullptr},
+    {"Color Scheme Only", kWebUIOmniboxDynamicAiModeButton_ColorOnly, nullptr},
+    {"Animation and Color Scheme", kWebUIOmniboxDynamicAiModeButton_Both, nullptr}};
 
 const FeatureEntry::FeatureParam kOmniboxDynamicAimSubmitRhsHint[] = {
     {"Omnibox_ShowRhsAimHint", "true"},
@@ -9466,9 +9476,16 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(omnibox::kAiModeEntryPointAlwaysNavigates)},
 
 #if !BUILDFLAG(IS_ANDROID)
-    {"dynamic-ai-mode-button", flag_descriptions::kDynamicAiModeButtonName,
+    {"omnibox-dynamic-ai-mode-button", flag_descriptions::kDynamicAiModeButtonName,
      flag_descriptions::kDynamicAiModeButtonDescription, kOsDesktop,
-     MULTI_VALUE_TYPE(kDynamicAiModeButtonChoices)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(omnibox::kWebUIOmniboxDynamicAiModeButton,
+                                    kWebUIOmniboxDynamicAiModeButtonVariations,
+                                    "WebUIOmniboxDynamicAiModeButton")},
+
+    {"ntp-realbox-dynamic-ai-mode-button",
+     flag_descriptions::kNtpRealboxDynamicAiModeButtonName,
+     flag_descriptions::kNtpRealboxDynamicAiModeButtonDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(ntp_realbox::kNtpRealboxDynamicAiModeButton)},
 #endif
 
     {"omnibox-ai-mode-space-does-not-activate",

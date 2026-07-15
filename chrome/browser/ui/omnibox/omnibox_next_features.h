@@ -121,6 +121,10 @@ extern const base::FeatureParam<bool> kWebUIOmniboxFullPopupMultiline;
 extern const base::FeatureParam<bool> kAskGCoBrowse;
 // Whether to open the next panel with cobrowse and visual selection.
 extern const base::FeatureParam<bool> kAskGCoBrowseWithVisualSelection;
+// Whether to enable dynamic animation for the WebUI Omnibox.
+extern const base::FeatureParam<bool> kWebUIOmniboxDynamicAnimation;
+// Whether to enable dynamic color scheme for the WebUI Omnibox.
+extern const base::FeatureParam<bool> kWebUIOmniboxDynamicColorScheme;
 
 // Returns true if `kWebUIOmniboxPopup` is enabled.
 bool IsWebUIOmniboxPopupEnabled();

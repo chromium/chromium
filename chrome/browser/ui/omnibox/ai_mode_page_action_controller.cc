@@ -286,7 +286,7 @@ void AiModePageActionController::UpdatePageActionUi(bool is_visible) {
   page_action_controller->OverrideAccessibleName(kActionAiMode,
                                                  config->a11y_label);
 
-  if (base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxDynamicAiModeButton)) {
+  if (omnibox::kWebUIOmniboxDynamicAnimation.Get()) {
     page_action_controller->SetAnimationStyle(
         kActionAiMode,
         page_actions::PageActionAnimationStyle::kSlideAndCrossfade);
