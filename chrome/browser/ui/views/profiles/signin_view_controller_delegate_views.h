@@ -144,7 +144,8 @@ class SigninViewControllerDelegateViews
       bool animate_on_resize,
       bool delete_profile_on_cancel = false,
       base::ScopedClosureRunner on_closed_callback =
-          base::ScopedClosureRunner());
+          base::ScopedClosureRunner(),
+      bool allow_closing_by_pressing_escape = true);
   ~SigninViewControllerDelegateViews() override;
 
   // Creates a WebView for a dialog with the specified URL.
@@ -176,6 +177,7 @@ class SigninViewControllerDelegateViews
   base::ScopedClosureRunner on_closed_callback_;
   base::ScopedObservation<views::View, views::ViewObserver>
       content_view_observation_{this};
+  bool allow_closing_by_pressing_escape_ = true;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PROFILES_SIGNIN_VIEW_CONTROLLER_DELEGATE_VIEWS_H_

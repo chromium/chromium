@@ -9778,6 +9778,7 @@ if (!is_android && !is_chromeos_device) {
 
     if (is_win || is_mac || is_linux) {
       sources += [
+        "../browser/ui/views/profiles/device_signals_disclaimer_interactive_uitest.cc",
         "../browser/ui/views/profiles/first_run_interactive_uitest.cc",
         "../browser/ui/views/profiles/profile_bubble_interactive_uitest.cc",
       ]

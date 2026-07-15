@@ -39,6 +39,7 @@
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/constrained_window/constrained_window_views.h"
+#include "components/input/native_web_keyboard_event.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/web_modal/web_contents_modal_dialog_host.h"
 #include "content/public/browser/navigation_handle.h"
@@ -337,6 +338,10 @@ bool SigninViewControllerDelegateViews::HandleContextMenu(
 bool SigninViewControllerDelegateViews::HandleKeyboardEvent(
     content::WebContents* source,
     const input::NativeWebKeyboardEvent& event) {
+  if (!allow_closing_by_pressing_escape_ &&
+      event.windows_key_code == ui::VKEY_ESCAPE) {
+    return true;
+  }
   // If this is a ModalType::kChild, then GetFocusManager() will return the
   // focus manager of the parent window, which has registered accelerators, and
   // the accelerators will fire. If this is a ModalType::kWindow, then this will
@@ -393,12 +398,14 @@ SigninViewControllerDelegateViews::SigninViewControllerDelegateViews(
     bool should_show_close_button,
     bool animate_on_resize,
     bool delete_profile_on_cancel,
-    base::ScopedClosureRunner on_closed_callback)
+    base::ScopedClosureRunner on_closed_callback,
+    bool allow_closing_by_pressing_escape)
     : content_view_(content_view.get()),
       web_contents_(content_view->GetWebContents()),
       browser_(browser),
       should_show_close_button_(should_show_close_button),
-      on_closed_callback_(std::move(on_closed_callback)) {
+      on_closed_callback_(std::move(on_closed_callback)),
+      allow_closing_by_pressing_escape_(allow_closing_by_pressing_escape) {
   DCHECK(web_contents_);
   DCHECK(browser_);
   DCHECK(browser_->tab_strip_model()->GetActiveWebContents())
@@ -685,6 +692,9 @@ SigninViewControllerDelegate::CreateManagedUserNoticeDelegate(
     }
   }
 
+  bool allow_closing_by_pressing_escape =
+      !create_param->is_device_signals_disclaimer;
+
   std::u16string email = base::UTF8ToUTF16(create_param->account_info.email);
   auto web_view = SigninViewControllerDelegateViews::
       CreateManagedUserNoticeConfirmationWebView(browser,
@@ -723,6 +733,7 @@ SigninViewControllerDelegate::CreateManagedUserNoticeDelegate(
 
   return new SigninViewControllerDelegateViews(
       std::move(web_view), browser, ui::mojom::ModalType::kWindow, true, false,
-      /*animate_on_resize=*/true, false, std::move(on_closed_callback));
+      /*animate_on_resize=*/true, false, std::move(on_closed_callback),
+      allow_closing_by_pressing_escape);
 }
 #endif
