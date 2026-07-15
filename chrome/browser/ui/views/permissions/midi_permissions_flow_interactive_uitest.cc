@@ -3,21 +3,17 @@
 // found in the LICENSE file.
 
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/views/controls/rich_controls_container_view.h"
 #include "chrome/browser/ui/views/location_bar/content_setting_image_view.h"
 #include "chrome/browser/ui/views/page_info/page_info_main_view.h"
 #include "chrome/browser/ui/views/page_info/permission_toggle_row_view.h"
 #include "chrome/browser/ui/views/permissions/permission_prompt_bubble_base_view.h"
 #include "chrome/grit/generated_resources.h"
-#include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
-#include "components/content_settings/core/common/content_settings_types.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/test/browser_test.h"
@@ -28,8 +24,6 @@
 #include "ui/base/ui_base_features.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/views/interaction/interaction_test_util_views.h"
-#include "ui/views/interaction/interactive_views_test.h"
-#include "ui/views/view_utils.h"
 
 namespace {
 

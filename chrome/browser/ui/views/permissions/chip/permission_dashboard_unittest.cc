@@ -22,8 +22,6 @@
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/animation/animation_test_api.h"
-#include "ui/views/test/ax_event_counter.h"
-#include "ui/views/test/button_test_api.h"
 
 class AnimationObserver : public PermissionChipInterface::Observer {
  public:

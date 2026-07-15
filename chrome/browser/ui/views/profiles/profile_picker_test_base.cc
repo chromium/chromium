@@ -12,7 +12,6 @@
 #include "chrome/browser/ui/views/profiles/profile_picker_sign_in_provider.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_view.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "components/signin/public/base/signin_switches.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/test/browser_test_utils.h"

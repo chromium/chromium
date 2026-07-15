@@ -32,7 +32,6 @@
 #include "ui/gfx/animation/animation.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
-#include "ui/views/mouse_constants.h"
 
 namespace {
 

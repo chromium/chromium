@@ -14,7 +14,6 @@
 #include "chrome/browser/ui/views/profiles/profile_management_step_controller.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_view_test_utils.h"
 #include "chrome/browser/ui/views/profiles/profiles_pixel_test_utils.h"
-#include "chrome/common/chrome_switches.h"
 #include "components/policy/core/common/management/scoped_management_service_override_for_testing.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "content/public/test/browser_test.h"

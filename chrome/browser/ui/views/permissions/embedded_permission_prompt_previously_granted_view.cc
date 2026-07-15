@@ -6,7 +6,6 @@
 
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/url_identity.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 

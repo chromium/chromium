@@ -19,7 +19,6 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/profile_deletion_observer.h"
 #include "components/signin/public/base/signin_metrics.h"
-#include "components/signin/public/base/signin_switches.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/test/browser_test.h"

@@ -5,12 +5,9 @@
 #include "chrome/browser/ui/views/profiles/profile_picker_interactive_uitest_base.h"
 
 #include "base/notreached.h"
-#include "base/test/bind.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_test_base.h"
 #include "chrome/test/base/interactive_test_utils.h"
-#include "chrome/test/interaction/tracked_element_webcontents.h"
-#include "content/public/browser/web_contents.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/events/keycodes/keyboard_codes.h"

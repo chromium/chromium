@@ -22,7 +22,6 @@
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/permissions/features.h"
 #include "components/permissions/permission_request.h"
 #include "components/permissions/permission_uma_util.h"
 #include "components/permissions/permission_util.h"

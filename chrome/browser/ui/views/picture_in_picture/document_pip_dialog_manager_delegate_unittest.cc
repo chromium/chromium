@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/functional/callback_helpers.h"
-#include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "base/test/run_until.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"

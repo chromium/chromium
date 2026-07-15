@@ -5,12 +5,8 @@
 #include "chrome/browser/ui/views/permissions/chip/permission_dashboard_view.h"
 
 #include <algorithm>
-#include <vector>
 
-#include "base/time/time.h"
-#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
-#include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/permissions/chip/permission_chip_view.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkPath.h"
@@ -18,12 +14,10 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/canvas.h"
-#include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/layout/box_layout.h"
-#include "ui/views/style/platform_style.h"
 #include "ui/views/view_class_properties.h"
 
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PermissionDashboardView,

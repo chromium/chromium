@@ -12,7 +12,6 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/views/profiles/profile_management_step_controller.h"
-#include "chrome/browser/ui/views/profiles/profile_management_types.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 

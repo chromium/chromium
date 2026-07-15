@@ -6,7 +6,6 @@
 #include "base/check_deref.h"
 #include "base/functional/callback_helpers.h"
 #include "base/no_destructor.h"
-#include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/profiles/profile.h"
@@ -25,7 +24,6 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/page_transition_types.h"
 #include "ui/views/view_tracker.h"
 #include "url/gurl.h"
 

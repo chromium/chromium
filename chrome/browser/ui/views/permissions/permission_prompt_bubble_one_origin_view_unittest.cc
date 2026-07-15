@@ -4,8 +4,6 @@
 
 #include "chrome/browser/ui/views/permissions/permission_prompt_bubble_one_origin_view.h"
 
-#include <algorithm>
-
 #include "base/containers/to_vector.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
@@ -21,7 +19,6 @@
 #include "url/gurl.h"
 
 #if !BUILDFLAG(IS_CHROMEOS)
-#include "base/run_loop.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/ui/views/frame/test_with_browser_view.h"
 #include "components/media_effects/test/fake_audio_service.h"
@@ -29,7 +26,6 @@
 #include "components/media_effects/test/scoped_media_device_info.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
-#include "third_party/blink/public/common/features.h"
 #endif
 
 using PermissionPromptBubbleOneOriginViewTest = ChromeViewsTestBase;

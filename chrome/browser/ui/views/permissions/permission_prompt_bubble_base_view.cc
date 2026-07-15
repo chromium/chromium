@@ -9,17 +9,14 @@
 #include <string>
 #include <string_view>
 
-#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/views/chrome_widget_sublevel.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/sub_apps_permission_explanation.h"
-#include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/permissions/permission_request.h"
 #include "components/permissions/permission_uma_util.h"

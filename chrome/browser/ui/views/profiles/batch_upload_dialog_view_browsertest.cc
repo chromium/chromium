@@ -4,9 +4,6 @@
 
 #include "chrome/browser/ui/views/profiles/batch_upload_dialog_view.h"
 
-#include "base/functional/callback.h"
-#include "base/functional/callback_helpers.h"
-#include "base/memory/ptr_util.h"
 #include "base/strings/to_string.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
@@ -20,7 +17,6 @@
 #include "components/sync/base/data_type.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host.h"
-#include "content/public/test/browser_task_environment.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "testing/gmock/include/gmock/gmock.h"

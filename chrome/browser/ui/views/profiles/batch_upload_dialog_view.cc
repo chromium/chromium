@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/views/profiles/batch_upload_dialog_view.h"
 
-#include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"

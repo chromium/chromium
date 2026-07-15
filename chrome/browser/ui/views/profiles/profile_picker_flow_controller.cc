@@ -8,7 +8,6 @@
 #include <variant>
 
 #include "base/functional/bind.h"
-#include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/trace_event.h"
@@ -53,11 +52,9 @@
 #include "chrome/browser/ui/webui/signin/signin_ui_error.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/branded_strings.h"
-#include "components/device_signals/core/browser/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_switches.h"
-#include "google_apis/gaia/core_account_id.h"
 #include "net/base/url_util.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "third_party/perfetto/include/perfetto/tracing/track.h"

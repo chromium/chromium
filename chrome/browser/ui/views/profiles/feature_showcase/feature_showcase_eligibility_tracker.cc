@@ -4,8 +4,6 @@
 
 #include "chrome/browser/ui/views/profiles/feature_showcase/feature_showcase_eligibility_tracker.h"
 
-#include <algorithm>
-
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/task/sequenced_task_runner.h"

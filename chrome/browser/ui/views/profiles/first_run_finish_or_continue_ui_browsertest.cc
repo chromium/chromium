@@ -16,15 +16,11 @@
 #include "chrome/browser/ui/views/profiles/profile_management_step_controller.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_view_test_utils.h"
 #include "chrome/browser/ui/views/profiles/profiles_pixel_test_utils.h"
-#include "chrome/common/webui_url_constants.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
-#include "content/public/test/test_navigation_observer.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/page_transition_types.h"
 #include "ui/views/view_tracker.h"
-#include "url/gurl.h"
 
 namespace {
 struct FinishOrContinueTestParam {

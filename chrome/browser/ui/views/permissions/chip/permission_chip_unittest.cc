@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <algorithm>
-
 #include "base/containers/to_vector.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
@@ -14,12 +12,10 @@
 #include "chrome/browser/ui/views/permissions/chip/chip_controller.h"
 #include "chrome/browser/ui/views/permissions/chip/permission_chip_view.h"
 #include "chrome/browser/ui/views/permissions/permission_prompt_chip.h"
-#include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/browser/ui/window_metadata/window_metadata_controller.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar_manager.h"
-#include "components/permissions/features.h"
 #include "components/permissions/permission_prompt.h"
 #include "components/permissions/permission_request_enums.h"
 #include "components/permissions/permission_request_manager.h"
@@ -32,7 +28,6 @@
 #include "ui/events/base_event_utils.h"
 #include "ui/gfx/animation/animation_test_api.h"
 #include "ui/views/interaction/element_tracker_views.h"
-#include "ui/views/test/ax_event_counter.h"
 #include "ui/views/test/button_test_api.h"
 #include "ui/views/view_utils.h"
 

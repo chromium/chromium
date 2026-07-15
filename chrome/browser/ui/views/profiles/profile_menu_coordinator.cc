@@ -20,8 +20,6 @@
 #include "chrome/browser/ui/views/profiles/profile_menu_view_base.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "components/feature_engagement/public/feature_constants.h"
-#include "components/signin/public/identity_manager/identity_manager.h"
-#include "components/user_education/common/feature_promo/feature_promo_controller.h"
 #include "ui/views/bubble/bubble_anchor.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/view_class_properties.h"

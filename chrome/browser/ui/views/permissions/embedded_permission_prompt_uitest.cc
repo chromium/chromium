@@ -12,8 +12,6 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/permissions/features.h"
-#include "components/permissions/request_type.h"
-#include "components/permissions/test/mock_permission_request.h"
 #include "components/permissions/test/permission_request_observer.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"

@@ -19,8 +19,6 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/common/extensions/extension_test_util.h"
 #include "chrome/test/base/test_browser_window.h"
-#include "chrome/test/base/testing_browser_process.h"
-#include "chrome/test/base/testing_profile_manager.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/test/test_sync_service.h"
 #include "content/public/test/browser_task_environment.h"

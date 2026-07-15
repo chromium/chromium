@@ -5,10 +5,8 @@
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/views/location_bar/content_setting_image_view.h"
-#include "chrome/browser/ui/views/location_bar/omnibox_chip_button.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/content_settings/core/common/features.h"
@@ -18,7 +16,6 @@
 #include "net/dns/mock_host_resolver.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/gfx/vector_icon_types.h"
-#include "ui/views/interaction/interaction_test_util_views.h"
 
 namespace {
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebContentsElementId);

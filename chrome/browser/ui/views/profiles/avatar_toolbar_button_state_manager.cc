@@ -15,7 +15,6 @@
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/notreached.h"
 #include "base/scoped_observation.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/supports_user_data.h"
@@ -52,7 +51,6 @@
 #include "chrome/browser/ui/profiles/profile_colors_util.h"
 #include "chrome/browser/ui/profiles/profile_view_utils.h"
 #include "chrome/browser/ui/signin/dice_migration_service.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/views/profiles/avatar_toolbar_button.h"
 #include "chrome/browser/ui/views/profiles/profile_menu_coordinator.h"
@@ -62,7 +60,6 @@
 #include "chrome/browser/user_education/user_education_service_factory.h"
 #include "chrome/browser/webauthn/passkey_unlock_manager.h"
 #include "chrome/browser/webauthn/passkey_unlock_manager_factory.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/feature_engagement/public/feature_constants.h"
@@ -78,10 +75,8 @@
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/primary_account_change_event.h"
-#include "components/subscription_eligibility/subscription_eligibility_prefs.h"
 #include "components/sync/base/features.h"
 #include "components/sync/service/sync_service.h"
-#include "components/sync/service/sync_user_settings.h"
 #include "components/user_education/common/feature_promo/feature_promo_controller.h"
 #include "content/public/common/url_utils.h"
 #include "google_apis/gaia/gaia_id.h"
@@ -92,7 +87,6 @@
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/text_elider.h"
-#include "ui/views/accessibility/view_accessibility.h"
 
 namespace {
 

@@ -5,9 +5,7 @@
 #include "chrome/browser/ui/views/permissions/embedded_permission_prompt_show_system_prompt_view.h"
 
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/ui/url_identity.h"
 #include "chrome/grit/branded_strings.h"
-#include "components/permissions/features.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 

@@ -7,7 +7,6 @@
 #include "base/files/file_path.h"
 #include "base/functional/callback_helpers.h"
 #include "base/test/mock_callback.h"
-#include "base/test/test_future.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/profile.h"

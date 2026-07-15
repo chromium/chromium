@@ -19,7 +19,6 @@
 #include "components/permissions/test/mock_permission_request.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
-#include "ui/base/l10n/l10n_util.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/styled_label.h"
 #include "url/gurl.h"

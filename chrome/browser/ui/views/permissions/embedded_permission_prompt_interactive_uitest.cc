@@ -3,10 +3,8 @@
 // found in the LICENSE file.
 
 #include <memory>
-#include <queue>
 #include <string>
 
-#include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/run_until.h"
@@ -29,7 +27,6 @@
 #include "chrome/browser/ui/views/permissions/embedded_permission_prompt_system_settings_view.h"
 #include "chrome/browser/ui/views/permissions/permission_prompt_bubble_base_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
-#include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
@@ -55,9 +52,7 @@
 #include "ui/base/ozone_buildflags.h"
 #include "ui/compositor/layer.h"
 #include "ui/events/base_event_utils.h"
-#include "ui/views/controls/button/button.h"
 #include "ui/views/controls/label.h"
-#include "ui/views/layout/layout_provider.h"
 #include "ui/views/views_switches.h"
 #include "ui/views/widget/any_widget_observer.h"
 #include "ui/views/widget/widget_deletion_observer.h"

@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <algorithm>
 #include <memory>
 #include <variant>
 
@@ -12,14 +11,12 @@
 #include "base/time/time.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/permissions/quiet_notification_permission_ui_config.h"
-#include "chrome/browser/permissions/quiet_notification_permission_ui_state.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
-#include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/views/content_setting_bubble_contents.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_view_views.h"
@@ -55,16 +52,13 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/permissions_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
-#include "net/dns/mock_host_resolver.h"
 #include "services/device/public/cpp/test/scoped_geolocation_overrider.h"
-#include "ui/accessibility/ax_action_data.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/test/test_event.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/toggle_button.h"
 #include "ui/views/interaction/element_tracker_views.h"
-#include "ui/views/test/ax_event_counter.h"
 #include "ui/views/test/button_test_api.h"
 #include "ui/views/test/views_test_utils.h"
 #include "ui/views/view_utils.h"

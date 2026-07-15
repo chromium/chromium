@@ -6,8 +6,6 @@
 
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
-#include "base/metrics/histogram_functions.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/first_run/first_run.h"
 #include "chrome/browser/profiles/delete_profile_helper.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
@@ -29,14 +27,12 @@
 #include "chrome/browser/ui/views/profiles/profile_picker_web_contents_host.h"
 #include "chrome/browser/ui/webui/search_engine_choice/search_engine_choice_ui.h"
 #include "chrome/browser/ui/webui/signin/managed_user_profile_notice_ui.h"
-#include "chrome/browser/ui/webui/signin/signin_ui_error.h"
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/regional_capabilities/regional_capabilities_metrics.h"
 #include "components/regional_capabilities/regional_capabilities_switches.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_utils.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
-#include "google_apis/gaia/core_account_id.h"
 
 namespace {
 class ProfilePickerAppStepController : public ProfileManagementStepController {

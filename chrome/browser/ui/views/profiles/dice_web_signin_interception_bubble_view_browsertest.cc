@@ -6,10 +6,8 @@
 
 #include <optional>
 
-#include "base/functional/callback_helpers.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/new_tab_page/chrome_colors/selected_colors_info.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
@@ -20,7 +18,6 @@
 #include "chrome/browser/signin/web_signin_interceptor.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/profiles/profile_colors_util.h"
-#include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/profiles/avatar_toolbar_button.h"
@@ -34,7 +31,6 @@
 #include "chrome/test/base/profile_destruction_waiter.h"
 #include "components/google/core/common/google_util.h"
 #include "components/signin/public/base/signin_metrics.h"
-#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/accounts_mutator.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
@@ -45,9 +41,6 @@
 #include "content/public/test/test_navigation_observer.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/base/ui_base_features.h"
-#include "ui/base/ui_base_switches.h"
-#include "ui/events/event_constants.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"

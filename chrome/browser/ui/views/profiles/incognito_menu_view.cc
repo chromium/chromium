@@ -4,29 +4,22 @@
 
 #include "chrome/browser/ui/views/profiles/incognito_menu_view.h"
 
-#include <algorithm>
 #include <string>
 #include <utility>
 
 #include "base/functional/bind.h"
-#include "base/functional/callback_helpers.h"
 #include "base/metrics/user_metrics.h"
-#include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/lifetime/application_lifetime_desktop.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
-#include "chrome/browser/ui/ui_features.h"
-#include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/signin/public/base/signin_switches.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/ui_base_features.h"
-#include "ui/color/color_id.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/bubble/bubble_anchor.h"
 

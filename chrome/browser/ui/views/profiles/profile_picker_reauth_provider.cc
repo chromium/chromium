@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/views/profiles/profile_picker_reauth_provider.h"
 
 #include "base/functional/bind.h"
-#include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"

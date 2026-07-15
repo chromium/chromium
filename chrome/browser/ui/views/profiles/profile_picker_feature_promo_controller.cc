@@ -12,7 +12,6 @@
 #include "components/feature_engagement/public/event_constants.h"
 #include "components/user_education/common/feature_promo/feature_promo_precondition.h"
 #include "components/user_education/common/feature_promo/feature_promo_result.h"
-#include "ui/views/interaction/element_tracker_views.h"
 
 namespace {
 

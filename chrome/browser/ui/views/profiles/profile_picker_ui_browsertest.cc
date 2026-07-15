@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/webui/signin/profile_picker_ui.h"
 
-#include <memory>
 #include <variant>
 
 #include "base/files/file_path.h"
@@ -13,7 +12,6 @@
 #include "base/scoped_observation.h"
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
-#include "base/thread_annotations.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
@@ -22,7 +20,6 @@
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/test/test_browser_ui.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/profiles/profile_management_step_controller.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_test_base.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_view_test_utils.h"
@@ -36,7 +33,6 @@
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
-#include "components/signin/public/identity_manager/signin_constants.h"
 #include "components/supervised_user/test_support/supervised_user_signin_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"

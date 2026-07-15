@@ -8,32 +8,24 @@
 #include <memory>
 #include <utility>
 
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
-#include "chrome/app/chrome_command_ids.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_ui_util.h"
-#include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/profiles/profile_colors_util.h"
 #include "chrome/browser/ui/profiles/profile_view_utils.h"
-#include "chrome/browser/ui/ui_features.h"
-#include "chrome/browser/ui/views/chrome_layout_provider.h"
-#include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/controls/hover_button.h"
-#include "chrome/grit/browser_resources.h"
-#include "components/signin/public/base/signin_switches.h"
 #include "components/supervised_user/core/browser/family_link_user_capabilities.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/interaction/element_tracker.h"
@@ -66,7 +58,6 @@
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/highlight_path_generator.h"
-#include "ui/views/controls/link.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/controls/separator.h"
 #include "ui/views/controls/styled_label.h"
@@ -82,7 +73,6 @@
 #include "ui/views/view_class_properties.h"
 
 #if !BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/ui/views/profiles/badged_profile_photo.h"
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
 namespace {

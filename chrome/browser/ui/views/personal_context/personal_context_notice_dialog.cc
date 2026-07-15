@@ -7,10 +7,8 @@
 #include <utility>
 
 #include "chrome/browser/ui/webui/top_chrome/webui_contents_wrapper.h"
-#include "content/public/browser/browser_context.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
-#include "ui/views/controls/webview/webview.h"
 
 namespace personal_context::notice {
 
