@@ -133,10 +133,10 @@ void HandleModuleEvent(
     return;
   }
 
-  task_runner->PostTask(
-      FROM_HERE,
-      base::BindOnce(on_module_load_callback, process_type, module_path,
-                     module_size, module_time_date_stamp));
+  task_runner->PostTask(FROM_HERE,
+                        base::BindOnce(on_module_load_callback, process_type,
+                                       std::move(module_path), module_size,
+                                       module_time_date_stamp));
 }
 
 }  // namespace
