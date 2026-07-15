@@ -68,6 +68,7 @@ using ::base::BucketsAre;
 using ::base::test::RunOnceCallback;
 using ::testing::_;
 using ::testing::AllOf;
+using ::testing::Contains;
 using ::testing::ElementsAre;
 using ::testing::Eq;
 using ::testing::Field;
@@ -75,6 +76,7 @@ using ::testing::InSequence;
 using ::testing::IsEmpty;
 using ::testing::Matcher;
 using ::testing::NiceMock;
+using ::testing::Not;
 using ::testing::Property;
 using ::testing::ResultOf;
 using ::testing::SaveArg;
@@ -285,7 +287,7 @@ TEST_F(AtMemoryManagerTest, OnFilterChanged_GeneratesSearchAffordance) {
 
   manager().OnFilterChanged(u"query");
 
-  ASSERT_EQ(suggestions.size(), 1u);
+  ASSERT_GE(suggestions.size(), 1u);
   EXPECT_EQ(suggestions[0].type, SuggestionType::kAtMemorySearchAffordance);
   EXPECT_EQ(suggestions[0].main_text.value, u"query");
   EXPECT_EQ(suggestions[0].icon, Suggestion::Icon::kSpark);
@@ -295,6 +297,50 @@ TEST_F(AtMemoryManagerTest, OnFilterChanged_GeneratesSearchAffordance) {
   EXPECT_EQ(suggestions[0].labels[0][0].value,
             l10n_util::GetStringUTF16(
                 IDS_AUTOFILL_AT_MEMORY_SEARCH_AFFORDANCE_SUBTITLE));
+}
+
+// Tests that OnFilterChanged with a non-empty filter generates an AI disclosure
+// on Desktop when personal context has already been shown/acknowledged.
+TEST_F(AtMemoryManagerTest, OnFilterChanged_GeneratesDisclosureWhenEnabled) {
+  auto [form_id, field_id] = SeeForm();
+  manager().OnPopupShown(form_id, field_id,
+                         AutofillSuggestionTriggerSource::kAtMemory,
+                         std::nullopt,
+                         /*is_context_secure=*/true, update_callback_.Get(),
+                         ukm::kInvalidSourceId);
+
+  autofill_client().set_should_show_personal_context_at_memory_notice(false);
+
+  EXPECT_CALL(
+      update_callback_,
+      Run(ElementsAre(
+              EqualsSuggestion(SuggestionType::kAtMemorySearchAffordance),
+              EqualsSuggestion(SuggestionType::kSeparator),
+              EqualsSuggestion(SuggestionType::kAtMemoryAiDisclosure)),
+          AutofillSuggestionTriggerSource::kAtMemory));
+
+  manager().OnFilterChanged(u"query");
+}
+
+// Tests that OnFilterChanged with a non-empty filter does not generate an AI
+// disclosure on Desktop when the personal context notice is pending.
+TEST_F(AtMemoryManagerTest, OnFilterChanged_NoDisclosureWhenNoticePending) {
+  auto [form_id, field_id] = SeeForm();
+  manager().OnPopupShown(form_id, field_id,
+                         AutofillSuggestionTriggerSource::kAtMemory,
+                         std::nullopt,
+                         /*is_context_secure=*/true, update_callback_.Get(),
+                         ukm::kInvalidSourceId);
+
+  autofill_client().set_should_show_personal_context_at_memory_notice(true);
+
+  EXPECT_CALL(
+      update_callback_,
+      Run(Not(Contains(Field("type", &Suggestion::type,
+                             Eq(SuggestionType::kAtMemoryAiDisclosure)))),
+          AutofillSuggestionTriggerSource::kAtMemory));
+
+  manager().OnFilterChanged(u"query");
 }
 
 // Tests that OnFilterChanged with an empty filter clears all suggestions.

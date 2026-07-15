@@ -816,6 +816,12 @@
   <message name="IDS_AUTOFILL_AT_MEMORY_NO_DATA" desc="Message shown when no data is found in @memory search." translateable="false">
     Couldn't find this in your info
   </message>
+  <message name="IDS_AUTOFILL_AT_MEMORY_AI_DISCLOSURE" desc="The text shown at the bottom of the @memory search popup to set user expectations regarding potential incorrect suggestions. $1 is the link text." translateable="false">
+    Gemini is AI and can make mistakes. <ph name="LEARN_MORE">$1</ph>
+  </message>
+  <message name="IDS_AUTOFILL_AT_MEMORY_AI_DISCLOSURE_LINK" desc="Link text for the AI disclosure that points to a settings page." translateable="false">
+    More about relevant data sent to Google
+  </message>
   <message name="IDS_AUTOFILL_AT_MEMORY_NO_CONNECTION" desc="Message shown when @memory search fails to connect to the server." translateable="false">
     No server connection
   </message>

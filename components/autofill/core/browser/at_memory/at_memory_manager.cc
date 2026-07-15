@@ -589,6 +589,14 @@ bool AtMemoryManager::OnFilterChanged(const std::u16string& filter) {
   }
   std::vector<Suggestion> suggestions;
   suggestions.push_back(CreateSearchAffordanceSuggestion(filter));
+
+  if (!owner_->client().ShouldShowPersonalContextAtMemoryNotice()) {
+    suggestions.emplace_back(SuggestionType::kSeparator);
+    suggestions.back().filtration_policy =
+        Suggestion::FiltrationPolicy::kStatic;
+    suggestions.push_back(CreateAiDisclosureSuggestion());
+  }
+
   SendSuggestions(std::move(suggestions));
   return true;
 }
@@ -858,6 +866,14 @@ Suggestion AtMemoryManager::CreateSearchAffordanceSuggestion(
       IDS_AUTOFILL_AT_MEMORY_SEARCH_AFFORDANCE_SUBTITLE))}};
   affordance.icon = Suggestion::Icon::kSpark;
   return affordance;
+}
+
+Suggestion AtMemoryManager::CreateAiDisclosureSuggestion() const {
+  Suggestion suggestion(SuggestionType::kAtMemoryAiDisclosure);
+  suggestion.acceptability =
+      Suggestion::Acceptability::kUnacceptableWithDeactivatedStyle;
+  suggestion.filtration_policy = Suggestion::FiltrationPolicy::kStatic;
+  return suggestion;
 }
 
 void AtMemoryManager::CancelPendingQueries() {

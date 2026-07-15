@@ -24,6 +24,7 @@
 #include "chrome/browser/ui/autofill/autofill_popup_view.h"
 #include "chrome/browser/ui/autofill/mock_autofill_popup_controller.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/views/autofill/popup/popup_at_memory_ai_disclosure_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_bnpl_footnote_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_loading_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_personal_context_notice_view.h"
@@ -1936,6 +1937,53 @@ TEST_F(PopupViewViewsTest, PersonalContextNoticeViewCreated) {
   EXPECT_FALSE(node_data_child_view
                    .GetString16Attribute(ax::mojom::StringAttribute::kName)
                    .empty());
+}
+
+// Tests that `PopupAtMemoryAiDisclosureView` is created when the suggestion
+// type is `SuggestionType::kAtMemoryAiDisclosure` and sets a non-empty
+// accessible name.
+TEST_F(PopupViewViewsTest, AtMemoryAiDisclosureViewCreated) {
+  controller().set_suggestions(
+      {Suggestion(SuggestionType::kAtMemoryAiDisclosure)});
+  CreateAndShowView();
+
+  PopupAtMemoryAiDisclosureView* disclosure_view =
+      static_cast<PopupAtMemoryAiDisclosureView*>(
+          std::get<PopupInteractiveRowView*>(test_api(view()).rows()[0]));
+  ASSERT_TRUE(disclosure_view);
+
+  ui::AXNodeData node_data;
+  disclosure_view->GetViewAccessibility().GetAccessibleNodeData(&node_data);
+  EXPECT_FALSE(node_data.GetString16Attribute(ax::mojom::StringAttribute::kName)
+                   .empty());
+}
+
+// Tests that the AI disclosure footer can be navigated to and selected using
+// Up/Down keyboard arrow keys.
+TEST_F(PopupViewViewsTest, AtMemoryAiDisclosureKeyboardNavigation) {
+  controller().set_suggestions(
+      {Suggestion(SuggestionType::kAddressEntry),
+       Suggestion(SuggestionType::kAtMemoryAiDisclosure)});
+  CreateAndShowView();
+
+  ASSERT_EQ(view().GetSelectedCell(), std::nullopt);
+
+  SimulateKeyPress(ui::VKEY_DOWN);
+  EXPECT_EQ(view().GetSelectedCell(),
+            std::make_optional<PopupViewViews::CellIndex>(
+                0, PopupRowView::CellType::kContent));
+
+  SimulateKeyPress(ui::VKEY_DOWN);
+  EXPECT_EQ(view().GetSelectedCell(),
+            std::make_optional<PopupViewViews::CellIndex>(
+                1, PopupInteractiveRowView::CellType::kContent));
+
+  PopupAtMemoryAiDisclosureView* disclosure_view =
+      static_cast<PopupAtMemoryAiDisclosureView*>(
+          std::get<PopupInteractiveRowView*>(test_api(view()).rows()[1]));
+  ASSERT_TRUE(disclosure_view);
+  EXPECT_EQ(disclosure_view->GetSelectedCell(),
+            PopupInteractiveRowView::CellType::kContent);
 }
 
 TEST_F(PopupViewViewsTest, UpdateSuggestionsNoCrash) {

@@ -118,6 +118,9 @@ class AtMemoryManager {
   // Creates the search affordance suggestion.
   Suggestion CreateSearchAffordanceSuggestion(std::u16string query);
 
+  // Creates the AI disclosure suggestion.
+  Suggestion CreateAiDisclosureSuggestion() const;
+
   // Cancels any pending search queries and resets searching states.
   void CancelPendingQueries();
 
