@@ -1100,10 +1100,6 @@ static_library("ui") {
       # browser_window.h) that can't be split out yet.
       "//chrome/browser/ui/webui/downloads",
 
-      # history_clusters includes headers from //chrome/browser/ui (e.g.
-      # browser_commands.h) that can't be split out yet.
-      "//chrome/browser/ui/webui/history_clusters",
-
       # management includes headers from //chrome/browser/ui (e.g. managed_ui.h)
       # that can't be split out yet.
       "//chrome/browser/ui/webui/management",
