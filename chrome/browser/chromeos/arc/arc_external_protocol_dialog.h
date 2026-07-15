@@ -17,9 +17,6 @@
 #include "ui/base/page_transition_types.h"
 #include "url/origin.h"
 
-class GURL;
-class SharingTargetDeviceInfo;
-
 namespace content {
 class WebContents;
 }  // namespace content
@@ -74,18 +71,6 @@ bool GetAndResetSafeToRedirectToArcWithoutUserConfirmationFlagForTesting(
 bool IsChromeAnAppCandidateForTesting(
     const std::vector<ArcIntentHelperMojoDelegate::IntentHandlerInfo>&
         handlers);
-
-void OnIntentPickerClosedForTesting(
-    base::WeakPtr<content::WebContents> web_contents,
-    const GURL& url,
-    bool safe_to_bypass_ui,
-    std::vector<ArcIntentHelperMojoDelegate::IntentHandlerInfo> handlers,
-    std::unique_ptr<ArcIntentHelperMojoDelegate> mojo_delegate,
-    std::vector<SharingTargetDeviceInfo> devices,
-    const std::string& selected_app_package,
-    apps::PickerEntryType entry_type,
-    apps::IntentPickerCloseReason reason,
-    bool should_persist);
 
 }  // namespace arc
 

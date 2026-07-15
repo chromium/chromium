@@ -30,17 +30,13 @@ static_library("arc") {
   deps = [
     "//chrome/app:command_ids",
     "//chrome/app:generated_resources",
-    "//chrome/app/vector_icons",
     "//chrome/browser/apps/app_service/app_icon",
     "//chrome/browser/ash/arc/intent_helper",
     "//chrome/browser/ash/browser_delegate",
     "//chrome/browser/profiles:profile",
-    "//chrome/browser/sharing/click_to_call",
     "//chromeos/ash/experiences/arc",
     "//chromeos/ash/experiences/arc/intent_helper:arc_intent_helper_constants",
     "//components/services/app_service",
-    "//components/sharing_message",
-    "//components/sync_device_info",
   ]
 }
 
@@ -61,7 +57,6 @@ source_set("unit_tests") {
     "//chrome/browser/ash/browser_delegate:impl",
     "//chrome/browser/renderer_context_menu:mock_test_support",
     "//chrome/browser/sharing",
-    "//chrome/browser/sharing/click_to_call",
     "//chrome/test:test_support",
     "//chromeos/ash/experiences/arc:arc_test_support",
     "//chromeos/ash/experiences/arc/intent_helper",

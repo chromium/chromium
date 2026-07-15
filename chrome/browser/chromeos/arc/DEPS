@@ -12,7 +12,6 @@ include_rules = [
   "+chrome/browser/ash/arc/intent_helper",
   "+chrome/browser/profiles/profile.h",
   "+chrome/browser/renderer_context_menu",
-  "+chrome/browser/sharing/click_to_call",
   "+chrome/browser/sharing/sharing_service_factory.h",
   "+chrome/browser/ui/browser.h",
   "+chrome/browser/ui/browser_window.h",
