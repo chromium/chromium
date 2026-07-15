@@ -4,6 +4,7 @@
 
 #include "components/translate/core/browser/language_state.h"
 
+#include "base/i18n/language_tag.h"
 #include "components/translate/core/browser/mock_translate_driver.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -11,6 +12,8 @@
 using translate::testing::MockTranslateDriver;
 
 namespace translate {
+
+using ::base::i18n::GetKnownLanguageTag;
 
 TEST(LanguageStateTest, IsPageTranslated) {
   MockTranslateDriver driver;
@@ -93,6 +96,42 @@ TEST(LanguageStateTest, Driver) {
   // Translate feature must be enabled after an actual translation.
   EXPECT_TRUE(language_state.translate_enabled());
   EXPECT_TRUE(driver.on_translate_enabled_changed_called());
+}
+
+TEST(LanguageStateTest, PendingTranslation) {
+  MockTranslateDriver driver;
+  LanguageState language_state(&driver);
+
+  // Initial state.
+  EXPECT_FALSE(language_state.translation_pending());
+  EXPECT_FALSE(language_state.pending_source_language().has_value());
+  EXPECT_FALSE(language_state.pending_target_language().has_value());
+
+  // Set pending translation languages.
+  language_state.set_translation_pending(true);
+  language_state.SetPendingTranslationLanguages(GetKnownLanguageTag("fr"),
+                                                GetKnownLanguageTag("en"));
+  EXPECT_TRUE(language_state.translation_pending());
+  EXPECT_EQ(language_state.pending_source_language(), GetKnownLanguageTag("fr"));
+  EXPECT_EQ(language_state.pending_target_language(), GetKnownLanguageTag("en"));
+
+  // Setting translation_pending to false should clear pending languages.
+  language_state.set_translation_pending(false);
+  EXPECT_FALSE(language_state.translation_pending());
+  EXPECT_FALSE(language_state.pending_source_language().has_value());
+  EXPECT_FALSE(language_state.pending_target_language().has_value());
+
+  // Set again, and verify that navigating clears the pending state and languages.
+  language_state.set_translation_pending(true);
+  language_state.SetPendingTranslationLanguages(GetKnownLanguageTag("fr"),
+                                                GetKnownLanguageTag("en"));
+  language_state.DidNavigate(/*is_same_document_navigation=*/false,
+                             /*is_main_frame=*/true, /*reload=*/false,
+                             /*href_translate=*/"",
+                             /*navigation_from_google=*/false);
+  EXPECT_FALSE(language_state.translation_pending());
+  EXPECT_FALSE(language_state.pending_source_language().has_value());
+  EXPECT_FALSE(language_state.pending_target_language().has_value());
 }
 
 }  // namespace translate

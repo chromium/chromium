@@ -49,6 +49,7 @@ void LanguageState::DidNavigate(bool is_same_document_navigation,
   SetIsPageTranslated(false);
 
   translation_pending_ = false;
+  ClearPendingTranslationLanguages();
   translation_error_ = false;
   translation_declined_ = false;
   translation_type_ = TranslationType::kUninitialized;

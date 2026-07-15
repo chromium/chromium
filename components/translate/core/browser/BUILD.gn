@@ -111,6 +111,7 @@ source_set("unit_tests") {
     ":browser",
     ":test_support",
     "//base",
+    "//base:i18n",
     "//components/assist_ranker",
     "//components/assist_ranker/proto",
     "//components/infobars/core",

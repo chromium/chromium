@@ -5,9 +5,11 @@
 #ifndef COMPONENTS_TRANSLATE_CORE_BROWSER_LANGUAGE_STATE_H_
 #define COMPONENTS_TRANSLATE_CORE_BROWSER_LANGUAGE_STATE_H_
 
+#include <optional>
 #include <string>
 #include <string_view>
 
+#include "base/i18n/language_tag.h"
 #include "base/memory/raw_ptr.h"
 #include "components/language/core/common/language_util.h"
 #include "components/translate/core/browser/translate_metrics_logger.h"
@@ -75,7 +77,37 @@ class LanguageState {
 
   // Whether the page is currently in the process of being translated.
   bool translation_pending() const { return translation_pending_; }
-  void set_translation_pending(bool value) { translation_pending_ = value; }
+  void set_translation_pending(bool value) {
+    translation_pending_ = value;
+    if (!translation_pending_) {
+      ClearPendingTranslationLanguages();
+    }
+  }
+
+  // Returns the source language of the pending translation, or std::nullopt if
+  // no translation is pending.
+  const std::optional<base::i18n::LanguageTag>& pending_source_language() const {
+    return pending_source_lang_;
+  }
+
+  // Returns the target language of the pending translation, or std::nullopt if
+  // no translation is pending.
+  const std::optional<base::i18n::LanguageTag>& pending_target_language() const {
+    return pending_target_lang_;
+  }
+
+  // Caches the source and target languages for a pending translation.
+  void SetPendingTranslationLanguages(base::i18n::LanguageTag source,
+                                      base::i18n::LanguageTag target) {
+    pending_source_lang_ = std::move(source);
+    pending_target_lang_ = std::move(target);
+  }
+
+  // Clears the cached source and target languages for the pending translation.
+  void ClearPendingTranslationLanguages() {
+    pending_source_lang_.reset();
+    pending_target_lang_.reset();
+  }
 
   // Whether an error occured during translation.
   bool translation_error() const { return translation_error_; }
@@ -150,6 +182,10 @@ class LanguageState {
   // TODO(jcampan): make the client send the language just once per navigation
   //                then we can get rid of that state.
   bool translation_pending_;
+
+  // Cache source/target languages for pending translations (e.g. for PDFs).
+  std::optional<base::i18n::LanguageTag> pending_source_lang_;
+  std::optional<base::i18n::LanguageTag> pending_target_lang_;
 
   // Whether an error occured during translation.
   bool translation_error_;
