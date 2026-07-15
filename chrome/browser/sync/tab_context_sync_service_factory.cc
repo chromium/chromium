@@ -10,16 +10,20 @@
 #include "base/functional/callback_helpers.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/sync/data_type_store_service_factory.h"
 #include "chrome/common/channel_info.h"
 #include "components/sync/base/report_unrecoverable_error.h"
 #include "components/sync/model/client_tag_based_data_type_processor.h"
+#include "components/sync/model/data_type_store_service.h"
 #include "components/sync_tab_context/tab_context_sync_service_impl.h"
 
 namespace {
 
 std::unique_ptr<KeyedService> BuildServiceInstance(
     content::BrowserContext* context) {
+  Profile* profile = Profile::FromBrowserContext(context);
   return std::make_unique<sync_tab_context::TabContextSyncServiceImpl>(
+      DataTypeStoreServiceFactory::GetForProfile(profile)->GetStoreFactory(),
       base::BindRepeating(&syncer::ReportUnrecoverableError,
                           chrome::GetChannel()));
 }
@@ -52,7 +56,9 @@ TabContextSyncServiceFactory::TabContextSyncServiceFactory()
               .WithRegular(ProfileSelection::kOriginalOnly)
               .WithGuest(ProfileSelection::kNone)
               .WithAshInternals(ProfileSelection::kNone)
-              .Build()) {}
+              .Build()) {
+  DependsOn(DataTypeStoreServiceFactory::GetInstance());
+}
 
 TabContextSyncServiceFactory::~TabContextSyncServiceFactory() = default;
 

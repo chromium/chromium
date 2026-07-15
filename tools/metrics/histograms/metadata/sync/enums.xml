@@ -1684,6 +1684,7 @@ chromium-metrics-reviews@google.com.
   <int value="190" label="kAutofillValuableMetadataFailedToLoadMetadata"/>
   <int value="191" label="kDataTypeControllerInFailedState"/>
   <int value="192" label="kBookmarksLocalCountExceededLimitAfterInitialMerge"/>
+  <int value="193" label="kTabContextContainerFailedToDeserializeSpecifics"/>
 </enum>
 
 <!-- LINT.ThenChange(/components/sync/model/model_error.h:Type) -->

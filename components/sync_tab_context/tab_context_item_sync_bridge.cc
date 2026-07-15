@@ -43,6 +43,8 @@ bool TabContextItemSyncBridge::UploadItem(
     const std::string& item_id,
     sync_pb::EncryptedData encrypted_data) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(container_id.value().is_valid());
+  CHECK(!item_id.empty());
   if (!change_processor()->IsTrackingMetadata()) {
     return false;
   }

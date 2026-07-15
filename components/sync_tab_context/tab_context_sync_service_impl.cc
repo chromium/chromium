@@ -18,8 +18,10 @@
 namespace sync_tab_context {
 
 TabContextSyncServiceImpl::TabContextSyncServiceImpl(
+    syncer::OnceDataTypeStoreFactory store_factory,
     base::RepeatingClosure dump_stack)
     : container_bridge_(std::make_unique<TabContextContainerSyncBridge>(
+          std::move(store_factory),
           std::make_unique<syncer::ClientTagBasedDataTypeProcessor>(
               syncer::ENCRYPTED_TAB_CONTEXT_CONTAINER,
               dump_stack))),

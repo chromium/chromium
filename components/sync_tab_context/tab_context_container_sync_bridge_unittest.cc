@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/uuid.h"
 #include "components/sync/model/crypto/agile_symmetric_key_set.h"
@@ -19,6 +20,7 @@
 #include "components/sync/model/metadata_change_list.h"
 #include "components/sync/protocol/encrypted_tab_context_container_specifics.pb.h"
 #include "components/sync/protocol/entity_data.h"
+#include "components/sync/test/data_type_store_test_util.h"
 #include "components/sync/test/mock_data_type_local_change_processor.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -42,11 +44,24 @@ syncer::EntityData CreateEntityData(
   return entity_data;
 }
 
+void WaitUntilModelReadyToSync(
+    syncer::MockDataTypeLocalChangeProcessor& mock_processor) {
+  base::RunLoop run_loop;
+  ON_CALL(mock_processor, ModelReadyToSync)
+      .WillByDefault([&](std::unique_ptr<syncer::MetadataBatch>) {
+        ON_CALL(mock_processor, IsTrackingMetadata).WillByDefault(Return(true));
+        run_loop.Quit();
+      });
+  run_loop.Run();
+}
+
 class TabContextContainerSyncBridgeTest : public ::testing::Test {
  protected:
   TabContextContainerSyncBridgeTest() {
     bridge_ = std::make_unique<TabContextContainerSyncBridge>(
+        syncer::DataTypeStoreTestUtil::FactoryForInMemoryStoreForTest(),
         mock_processor_.CreateForwardingProcessor());
+    WaitUntilModelReadyToSync(mock_processor_);
   }
 
   base::test::TaskEnvironment task_environment_;
@@ -55,7 +70,6 @@ class TabContextContainerSyncBridgeTest : public ::testing::Test {
 };
 
 TEST_F(TabContextContainerSyncBridgeTest, ShouldCreateContainerAndGenerateKey) {
-  ON_CALL(mock_processor_, IsTrackingMetadata).WillByDefault(Return(true));
   EXPECT_CALL(mock_processor_, Put);
 
   std::optional<ContainerId> container_id = bridge_->CreateContainer();
@@ -121,7 +135,6 @@ TEST_F(TabContextContainerSyncBridgeTest, ShouldRemoveKeySetOnRemoteDelete) {
 }
 
 TEST_F(TabContextContainerSyncBridgeTest, ShouldReturnDataForCommit) {
-  ON_CALL(mock_processor_, IsTrackingMetadata).WillByDefault(Return(true));
   std::optional<ContainerId> container_id = bridge_->CreateContainer();
   ASSERT_TRUE(container_id.has_value());
 
@@ -137,7 +150,6 @@ TEST_F(TabContextContainerSyncBridgeTest, ShouldReturnDataForCommit) {
 }
 
 TEST_F(TabContextContainerSyncBridgeTest, ShouldReturnAllDataForDebugging) {
-  ON_CALL(mock_processor_, IsTrackingMetadata).WillByDefault(Return(true));
   std::optional<ContainerId> container1 = bridge_->CreateContainer();
   std::optional<ContainerId> container2 = bridge_->CreateContainer();
   ASSERT_TRUE(container1.has_value());
@@ -151,6 +163,35 @@ TEST_F(TabContextContainerSyncBridgeTest, ShouldReturnAllDataForDebugging) {
     keys.push_back(batch->Next().first);
   }
   EXPECT_EQ(keys.size(), 2u);
+}
+
+TEST_F(TabContextContainerSyncBridgeTest, ShouldReloadLocalDataFromStore) {
+  std::unique_ptr<syncer::DataTypeStore> store =
+      syncer::DataTypeStoreTestUtil::CreateInMemoryStoreForTest();
+
+  testing::NiceMock<syncer::MockDataTypeLocalChangeProcessor> processor1;
+  auto bridge1 = std::make_unique<TabContextContainerSyncBridge>(
+      syncer::DataTypeStoreTestUtil::FactoryForForwardingStore(store.get()),
+      processor1.CreateForwardingProcessor());
+  WaitUntilModelReadyToSync(processor1);
+
+  std::optional<ContainerId> container_id = bridge1->CreateContainer();
+  ASSERT_TRUE(container_id.has_value());
+  const uint32_t primary_key_id =
+      bridge1->GetEncryptionKeyForContainer(*container_id)->primary_key_id();
+
+  bridge1.reset();
+
+  testing::NiceMock<syncer::MockDataTypeLocalChangeProcessor> processor2;
+  auto bridge2 = std::make_unique<TabContextContainerSyncBridge>(
+      syncer::DataTypeStoreTestUtil::FactoryForForwardingStore(store.get()),
+      processor2.CreateForwardingProcessor());
+  WaitUntilModelReadyToSync(processor2);
+
+  const syncer::AgileSymmetricKeySet* reloaded_key_set =
+      bridge2->GetEncryptionKeyForContainer(*container_id);
+  ASSERT_THAT(reloaded_key_set, NotNull());
+  EXPECT_EQ(reloaded_key_set->primary_key_id(), primary_key_id);
 }
 
 }  // namespace

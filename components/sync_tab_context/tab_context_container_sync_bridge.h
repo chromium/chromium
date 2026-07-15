@@ -9,10 +9,12 @@
 #include <optional>
 #include <string>
 
+#include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/uuid.h"
 #include "components/sync/model/crypto/agile_symmetric_key_set.h"
 #include "components/sync/model/data_type_local_change_processor.h"
+#include "components/sync/model/data_type_store.h"
 #include "components/sync/model/data_type_sync_bridge.h"
 #include "components/sync/protocol/encrypted_tab_context_container_specifics.pb.h"
 #include "components/sync_tab_context/container_id.h"
@@ -28,7 +30,8 @@ namespace sync_tab_context {
 
 class TabContextContainerSyncBridge : public syncer::DataTypeSyncBridge {
  public:
-  explicit TabContextContainerSyncBridge(
+  TabContextContainerSyncBridge(
+      syncer::OnceDataTypeStoreFactory store_factory,
       std::unique_ptr<syncer::DataTypeLocalChangeProcessor> change_processor);
   TabContextContainerSyncBridge(const TabContextContainerSyncBridge&) = delete;
   TabContextContainerSyncBridge& operator=(
@@ -57,6 +60,8 @@ class TabContextContainerSyncBridge : public syncer::DataTypeSyncBridge {
   std::optional<syncer::ModelError> ApplyIncrementalSyncChanges(
       std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
       syncer::EntityChangeList entity_changes) override;
+  void ApplyDisableSyncChanges(std::unique_ptr<syncer::MetadataChangeList>
+                                   delete_metadata_change_list) override;
   std::unique_ptr<syncer::DataBatch> GetDataForCommit(
       StorageKeyList storage_keys) override;
   std::unique_ptr<syncer::DataBatch> GetAllDataForDebugging() override;
@@ -69,12 +74,24 @@ class TabContextContainerSyncBridge : public syncer::DataTypeSyncBridge {
   bool IsEntityDataValid(const syncer::EntityData& entity_data) const override;
 
  private:
+  void OnStoreCreated(const std::optional<syncer::ModelError>& error,
+                      std::unique_ptr<syncer::DataTypeStore> store);
+  void OnReadAllDataAndMetadata(
+      const std::optional<syncer::ModelError>& error,
+      std::unique_ptr<syncer::DataTypeStore::RecordList> data_records,
+      std::unique_ptr<syncer::MetadataBatch> metadata_batch);
+  void OnStoreCommit(const std::optional<syncer::ModelError>& error);
+
   SEQUENCE_CHECKER(sequence_checker_);
+
+  std::unique_ptr<syncer::DataTypeStore> store_;
 
   absl::flat_hash_map<ContainerId,
                       std::unique_ptr<syncer::AgileSymmetricKeySet>,
                       ContainerIdHash>
       entries_;
+
+  base::WeakPtrFactory<TabContextContainerSyncBridge> weak_ptr_factory_{this};
 };
 
 }  // namespace sync_tab_context

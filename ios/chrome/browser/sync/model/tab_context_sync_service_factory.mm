@@ -12,8 +12,10 @@
 #import "base/no_destructor.h"
 #import "components/sync/base/report_unrecoverable_error.h"
 #import "components/sync/model/client_tag_based_data_type_processor.h"
+#import "components/sync/model/data_type_store_service.h"
 #import "components/sync_tab_context/tab_context_sync_service_impl.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/sync/model/data_type_store_service_factory.h"
 #import "ios/chrome/common/channel_info.h"
 
 // static
@@ -32,7 +34,9 @@ TabContextSyncServiceFactory* TabContextSyncServiceFactory::GetInstance() {
 
 TabContextSyncServiceFactory::TabContextSyncServiceFactory()
     : ProfileKeyedServiceFactoryIOS("TabContextSyncService",
-                                    TestingCreation::kNoServiceForTests) {}
+                                    TestingCreation::kNoServiceForTests) {
+  DependsOn(DataTypeStoreServiceFactory::GetInstance());
+}
 
 TabContextSyncServiceFactory::~TabContextSyncServiceFactory() = default;
 
@@ -40,5 +44,6 @@ std::unique_ptr<KeyedService>
 TabContextSyncServiceFactory::BuildServiceInstanceFor(
     ProfileIOS* profile) const {
   return std::make_unique<sync_tab_context::TabContextSyncServiceImpl>(
+      DataTypeStoreServiceFactory::GetForProfile(profile)->GetStoreFactory(),
       base::BindRepeating(&syncer::ReportUnrecoverableError, ::GetChannel()));
 }

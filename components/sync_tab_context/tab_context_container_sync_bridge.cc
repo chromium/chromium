@@ -7,10 +7,11 @@
 #include <utility>
 
 #include "base/containers/map_util.h"
-#include "base/notimplemented.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/uuid.h"
 #include "components/sync/model/crypto/agile_symmetric_key_set.h"
-#include "components/sync/model/in_memory_metadata_change_list.h"
+#include "components/sync/model/data_type_store.h"
 #include "components/sync/model/metadata_batch.h"
 #include "components/sync/model/metadata_change_list.h"
 #include "components/sync/model/model_error.h"
@@ -32,13 +33,27 @@ sync_pb::EncryptedTabContextContainerSpecifics ToSpecifics(
   return specifics;
 }
 
+bool AreSpecificsValid(
+    const sync_pb::EncryptedTabContextContainerSpecifics& specifics) {
+  if (!base::Uuid::ParseCaseInsensitive(specifics.uuid()).is_valid()) {
+    return false;
+  }
+
+  std::unique_ptr<syncer::AgileSymmetricKeySet> encryption_key =
+      syncer::AgileSymmetricKeySet::FromProto(specifics.encryption_key());
+  return encryption_key && encryption_key->size() != 0;
+}
+
 }  // namespace
 
 TabContextContainerSyncBridge::TabContextContainerSyncBridge(
+    syncer::OnceDataTypeStoreFactory store_factory,
     std::unique_ptr<syncer::DataTypeLocalChangeProcessor> change_processor)
     : syncer::DataTypeSyncBridge(std::move(change_processor)) {
-  this->change_processor()->ModelReadyToSync(
-      std::make_unique<syncer::MetadataBatch>());
+  std::move(store_factory)
+      .Run(syncer::ENCRYPTED_TAB_CONTEXT_CONTAINER,
+           base::BindOnce(&TabContextContainerSyncBridge::OnStoreCreated,
+                          weak_ptr_factory_.GetWeakPtr()));
 }
 
 TabContextContainerSyncBridge::~TabContextContainerSyncBridge() {
@@ -51,20 +66,32 @@ std::optional<ContainerId> TabContextContainerSyncBridge::CreateContainer() {
     return std::nullopt;
   }
 
+  CHECK(store_);
+
   const ContainerId container_id(base::Uuid::GenerateRandomV4());
   std::unique_ptr<syncer::AgileSymmetricKeySet> key_set =
       syncer::AgileSymmetricKeySet::CreateEmpty();
   key_set->RotatePrimaryToNewlyGeneratedRandomKey();
 
-  std::unique_ptr<syncer::MetadataChangeList> metadata_change_list =
-      CreateMetadataChangeList();
-  auto entity_data = std::make_unique<syncer::EntityData>();
-  *entity_data->specifics.mutable_encrypted_tab_context_container() =
+  sync_pb::EncryptedTabContextContainerSpecifics specifics =
       ToSpecifics(container_id, *key_set);
   const std::string storage_key = container_id.value().AsLowercaseString();
+
+  std::unique_ptr<syncer::DataTypeStore::WriteBatch> write_batch =
+      store_->CreateWriteBatch();
+  write_batch->WriteData(storage_key, specifics.SerializeAsString());
+
+  auto entity_data = std::make_unique<syncer::EntityData>();
+  *entity_data->specifics.mutable_encrypted_tab_context_container() = specifics;
   entity_data->name = storage_key;
+
   change_processor()->Put(storage_key, std::move(entity_data),
-                          metadata_change_list.get());
+                          write_batch->GetMetadataChangeList());
+
+  store_->CommitWriteBatch(
+      std::move(write_batch),
+      base::BindOnce(&TabContextContainerSyncBridge::OnStoreCommit,
+                     weak_ptr_factory_.GetWeakPtr()));
 
   entries_[container_id] = std::move(key_set);
   return container_id;
@@ -80,7 +107,7 @@ TabContextContainerSyncBridge::GetEncryptionKeyForContainer(
 std::unique_ptr<syncer::MetadataChangeList>
 TabContextContainerSyncBridge::CreateMetadataChangeList() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return std::make_unique<syncer::InMemoryMetadataChangeList>();
+  return syncer::DataTypeStore::WriteBatch::CreateMetadataChangeList();
 }
 
 std::optional<syncer::ModelError>
@@ -97,34 +124,51 @@ TabContextContainerSyncBridge::ApplyIncrementalSyncChanges(
     std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_changes) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(store_);
+  std::unique_ptr<syncer::DataTypeStore::WriteBatch> write_batch =
+      store_->CreateWriteBatch(std::move(metadata_change_list));
+
   for (const std::unique_ptr<syncer::EntityChange>& change : entity_changes) {
     switch (change->type()) {
       case syncer::EntityChange::ACTION_ADD:
       case syncer::EntityChange::ACTION_UPDATE: {
         const sync_pb::EncryptedTabContextContainerSpecifics& specifics =
             change->data().specifics.encrypted_tab_context_container();
+        CHECK(AreSpecificsValid(specifics));
+        CHECK_EQ(specifics.uuid(), change->storage_key());
+
         const ContainerId container_id(
             base::Uuid::ParseCaseInsensitive(specifics.uuid()));
-        CHECK(container_id.value().is_valid());
         std::unique_ptr<syncer::AgileSymmetricKeySet> encryption_key =
             syncer::AgileSymmetricKeySet::FromProto(specifics.encryption_key());
-        CHECK(encryption_key);
-        CHECK_NE(encryption_key->size(), 0U);
+        write_batch->WriteData(specifics.uuid(), specifics.SerializeAsString());
         entries_[container_id] = std::move(encryption_key);
         break;
       }
       case syncer::EntityChange::ACTION_DELETE: {
         const ContainerId container_id(
             base::Uuid::ParseCaseInsensitive(change->storage_key()));
+        write_batch->DeleteData(change->storage_key());
         entries_.erase(container_id);
         break;
       }
     }
   }
-  if (metadata_change_list) {
-    metadata_change_list->DropAllChanges();
-  }
+
+  store_->CommitWriteBatch(
+      std::move(write_batch),
+      base::BindOnce(&TabContextContainerSyncBridge::OnStoreCommit,
+                     weak_ptr_factory_.GetWeakPtr()));
   return std::nullopt;
+}
+
+void TabContextContainerSyncBridge::ApplyDisableSyncChanges(
+    std::unique_ptr<syncer::MetadataChangeList> delete_metadata_change_list) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(store_);
+  entries_.clear();
+  store_->DeleteAllDataAndMetadata(std::move(delete_metadata_change_list),
+                                   base::DoNothing());
 }
 
 std::unique_ptr<syncer::DataBatch>
@@ -182,17 +226,60 @@ TabContextContainerSyncBridge::TrimAllSupportedFieldsFromRemoteSpecifics(
 bool TabContextContainerSyncBridge::IsEntityDataValid(
     const syncer::EntityData& entity_data) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return AreSpecificsValid(
+      entity_data.specifics.encrypted_tab_context_container());
+}
 
-  const sync_pb::EncryptedTabContextContainerSpecifics& specifics =
-      entity_data.specifics.encrypted_tab_context_container();
-
-  if (!base::Uuid::ParseCaseInsensitive(specifics.uuid()).is_valid()) {
-    return false;
+void TabContextContainerSyncBridge::OnStoreCreated(
+    const std::optional<syncer::ModelError>& error,
+    std::unique_ptr<syncer::DataTypeStore> store) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (error) {
+    change_processor()->ReportError(*error);
+    return;
   }
 
-  std::unique_ptr<syncer::AgileSymmetricKeySet> encryption_key =
-      syncer::AgileSymmetricKeySet::FromProto(specifics.encryption_key());
-  return encryption_key && encryption_key->size() != 0;
+  store_ = std::move(store);
+  store_->ReadAllDataAndMetadata(
+      base::BindOnce(&TabContextContainerSyncBridge::OnReadAllDataAndMetadata,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void TabContextContainerSyncBridge::OnReadAllDataAndMetadata(
+    const std::optional<syncer::ModelError>& error,
+    std::unique_ptr<syncer::DataTypeStore::RecordList> data_records,
+    std::unique_ptr<syncer::MetadataBatch> metadata_batch) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (error) {
+    change_processor()->ReportError(*error);
+    return;
+  }
+
+  for (const syncer::DataTypeStore::Record& record : *data_records) {
+    sync_pb::EncryptedTabContextContainerSpecifics specifics;
+    if (!specifics.ParseFromString(record.value) ||
+        !AreSpecificsValid(specifics)) {
+      change_processor()->ReportError(
+          {FROM_HERE, syncer::ModelError::Type::
+                          kTabContextContainerFailedToDeserializeSpecifics});
+      return;
+    }
+    const ContainerId container_id(
+        base::Uuid::ParseCaseInsensitive(specifics.uuid()));
+    std::unique_ptr<syncer::AgileSymmetricKeySet> encryption_key =
+        syncer::AgileSymmetricKeySet::FromProto(specifics.encryption_key());
+    entries_[container_id] = std::move(encryption_key);
+  }
+
+  change_processor()->ModelReadyToSync(std::move(metadata_batch));
+}
+
+void TabContextContainerSyncBridge::OnStoreCommit(
+    const std::optional<syncer::ModelError>& error) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (error) {
+    change_processor()->ReportError(*error);
+  }
 }
 
 }  // namespace sync_tab_context

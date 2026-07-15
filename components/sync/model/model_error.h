@@ -200,7 +200,8 @@ class ModelError {
     kAutofillValuableMetadataFailedToLoadMetadata = 190,
     kDataTypeControllerInFailedState = 191,
     kBookmarksLocalCountExceededLimitAfterInitialMerge = 192,
-    kMaxValue = kBookmarksLocalCountExceededLimitAfterInitialMerge,
+    kTabContextContainerFailedToDeserializeSpecifics = 193,
+    kMaxValue = kTabContextContainerFailedToDeserializeSpecifics,
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/sync/enums.xml:SyncModelError)
 

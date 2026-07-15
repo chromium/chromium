@@ -11,6 +11,7 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
+#include "components/sync/model/data_type_store.h"
 #include "components/sync_tab_context/container_id.h"
 #include "components/sync_tab_context/tab_context_sync_service.h"
 
@@ -25,7 +26,8 @@ class TabContextContainerSyncBridge;
 
 class TabContextSyncServiceImpl : public TabContextSyncService {
  public:
-  explicit TabContextSyncServiceImpl(base::RepeatingClosure dump_stack);
+  TabContextSyncServiceImpl(syncer::OnceDataTypeStoreFactory store_factory,
+                            base::RepeatingClosure dump_stack);
   TabContextSyncServiceImpl(const TabContextSyncServiceImpl&) = delete;
   TabContextSyncServiceImpl& operator=(const TabContextSyncServiceImpl&) =
       delete;
