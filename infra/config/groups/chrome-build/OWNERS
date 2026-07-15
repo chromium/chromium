@@ -1,1 +1,7 @@
-include build:main:/BUILD_OWNERS
+# Build team members who pledged to do code reviews timely and with a high
+# level of technical rigor and domain expertise.
+jwata@google.com
+msta@google.com
+philwo@google.com
+tikuta@chromium.org
+ukai@google.com
