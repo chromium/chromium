@@ -2880,29 +2880,12 @@ _CONFIG = [
     },
     {
         'paths': [
-            'third_party/blink/renderer/core/frame/attribution_src_loader.cc',
-            'third_party/blink/renderer/core/frame/attribution_src_loader.h',
-        ],
-        'allowed': [
-            'attribution_reporting::.*',
-        ]
-    },
-    {
-        'paths': [
             'third_party/blink/renderer/core/frame/web_frame_widget_impl.cc',
         ],
         'allowed': [
             # Temporarily added to generate the value of a crash key.
             'base::NumberToString',
         ],
-    },
-    {
-        'paths': [
-            'third_party/blink/renderer/core/origin_trials/origin_trial_context.cc',
-        ],
-        'allowed': [
-            'attribution_reporting::features::.*',
-        ]
     },
     {
         'paths': [
