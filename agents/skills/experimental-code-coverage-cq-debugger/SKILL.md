@@ -186,12 +186,12 @@ ______________________________________________________________________
   parallel by invoking a specialized sub-agent for each builder.
 - **Invocations**: Launch a `builder_auditor` sub-agent for each builder in
   `builders_of_concern`. Equip each sub-agent with the
-  `experimental-builder-config-validator` skill and the
+  `experimental-code-coverage-config-validator` skill and the
   `experimental-ci-only-validator` skill. When launching each sub-agent,
   instruct it to:
   1. Pass `builders_of_concern` and `language_context` (`"cpp"`, `"objc"`,
      `"rust"`, `"java"`, `"js"`, or `"ts"`, inferred from `target_files`) to
-     `experimental-builder-config-validator` to validate GN arguments.
+     `experimental-code-coverage-config-validator` to validate GN arguments.
   2. Run `experimental-ci-only-validator` to verify if *any* of the mapped
      `test_suites` (from `scratch/triage_state.json`) are barred by
      `ci_only = True` on that builder (checking all mapped test suites, not just
