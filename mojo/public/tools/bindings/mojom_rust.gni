@@ -95,7 +95,7 @@ template("mojom_rust") {
       deps = [
         ":$parser_target_name",
         ":${base_name}_dep_info",
-        "//mojo/public/tools/bindings:precompile_templates",
+        "//mojo/public/tools/bindings:precompile_rust_templates",
       ]
       if (defined(invoker.parser_deps)) {
         deps += invoker.parser_deps

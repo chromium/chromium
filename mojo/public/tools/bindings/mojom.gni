@@ -907,7 +907,7 @@ template("mojom") {
                 [ "$root_gen_dir/mojo/public/tools/bindings/cpp_templates.zip" ]
       deps = [
         ":$parser_target_name",
-        "//mojo/public/tools/bindings:precompile_templates",
+        "//mojo/public/tools/bindings:precompile_cpp_templates",
       ]
       if (defined(invoker.parser_deps)) {
         deps += invoker.parser_deps
@@ -955,7 +955,7 @@ template("mojom") {
                 [ "$root_gen_dir/mojo/public/tools/bindings/cpp_templates.zip" ]
       deps = [
         ":$parser_target_name",
-        "//mojo/public/tools/bindings:precompile_templates",
+        "//mojo/public/tools/bindings:precompile_cpp_templates",
       ]
       if (defined(invoker.parser_deps)) {
         deps += invoker.parser_deps
@@ -1087,13 +1087,11 @@ template("mojom") {
       script = mojom_generator_script
       inputs = mojom_generator_sources + jinja2_sources
       sources =
-          invoker.sources + [
-            "$root_gen_dir/mojo/public/tools/bindings/cpp_templates.zip",
-            "$root_gen_dir/mojo/public/tools/bindings/mojolpm_templates.zip",
-          ]
+          invoker.sources +
+          [ "$root_gen_dir/mojo/public/tools/bindings/mojolpm_templates.zip" ]
       deps = [
         ":$parser_target_name",
-        "//mojo/public/tools/bindings:precompile_templates",
+        "//mojo/public/tools/bindings:precompile_mojolpm_templates",
       ]
 
       outputs = []
@@ -1371,8 +1369,13 @@ template("mojom") {
         deps = [
           ":$parser_target_name",
           ":$type_mappings_target_name",
-          "//mojo/public/tools/bindings:precompile_templates",
+          "//mojo/public/tools/bindings:precompile_cpp_templates",
         ]
+        if (generate_mojolpm_fuzzing &&
+            !defined(bindings_configuration.variant)) {
+          deps +=
+              [ "//mojo/public/tools/bindings:precompile_mojolpm_templates" ]
+        }
 
         if (defined(invoker.parser_deps)) {
           deps += invoker.parser_deps
@@ -1784,7 +1787,7 @@ template("mojom") {
           deps = [
             ":$parser_target_name",
             ":$type_mappings_target_name",
-            "//mojo/public/tools/bindings:precompile_templates",
+            "//mojo/public/tools/bindings:precompile_java_templates",
           ]
           outputs = []
           args = common_generator_args
@@ -1892,7 +1895,7 @@ template("mojom") {
         sources = sources_list
         deps = [
           ":$parser_target_name",
-          "//mojo/public/tools/bindings:precompile_templates",
+          "//mojo/public/tools/bindings:precompile_js_templates",
         ]
         if (defined(invoker.parser_deps)) {
           deps += invoker.parser_deps
@@ -2037,7 +2040,7 @@ template("mojom") {
         deps = [
           ":$parser_target_name",
           ":$type_mappings_target_name",
-          "//mojo/public/tools/bindings:precompile_templates",
+          "//mojo/public/tools/bindings:precompile_ts_templates",
         ]
 
         outputs = []
