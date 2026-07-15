@@ -6,9 +6,14 @@ source_set("ui") {
   sources = [
     "actor_tool_chip_view.h",
     "actor_tool_chip_view.mm",
+    "actuation_worklog_item.h",
+    "actuation_worklog_item.mm",
+    "actuation_worklog_item_view.h",
+    "actuation_worklog_item_view.mm",
   ]
   deps = [
     "//base",
+    "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/util",
   ]
