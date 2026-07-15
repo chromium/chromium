@@ -80,7 +80,6 @@ source_set("impl") {
   deps = [
     ":ai",
     "//chrome/browser:browser_process",
-    "//chrome/browser/component_updater",
     "//chrome/browser/history_embeddings",
     "//chrome/browser/passage_embeddings",
     "//chrome/browser/ui/tabs:tabs_public",
@@ -151,7 +150,6 @@ source_set("unit_tests") {
     ":ai",
     ":test_support",
     "//chrome/browser/optimization_guide:test_support",
-    "//components/component_updater:test_support",
     "//components/on_device_ai",
     "//components/optimization_guide/core:manifest_broker_test_support",
     "//components/optimization_guide/core:test_support",
