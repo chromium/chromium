@@ -23,13 +23,18 @@ namespace chrome_pdf {
 
 // These values are persisted in PDFs as integers. Do not change the assigned
 // integer values to maintain backward compatibility.
+// LINT.IfChange(TextTypeface)
 enum class TextTypeface {
   kSansSerif = 0,
   kSerif = 1,
   kMonospace = 2,
-  kFirst = kSansSerif,
-  kLast = kMonospace,
+  kMinValue = kSansSerif,
+  kMaxValue = kMonospace,
 };
+// LINT.ThenChange(
+//   //chrome/browser/resources/pdf/constants.ts:TextTypeface,
+//   //tools/metrics/histograms/metadata/pdf/enums.xml:PDFInk2TextAnnotationTypeface
+// )
 
 // These values are persisted in PDFs as integers. Do not change the assigned
 // integer values to maintain backward compatibility.

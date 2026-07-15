@@ -81,11 +81,13 @@ export enum TextStyle {
   ITALIC = 'italic',
 }
 
+// LINT.IfChange(TextTypeface)
 export enum TextTypeface {
   SANS_SERIF = 'sans-serif',
   SERIF = 'serif',
   MONOSPACE = 'monospace',
 }
+// LINT.ThenChange(//pdf/pdf_ink_text.h:TextTypeface)
 
 export type TextStyles = {
   [key in TextStyle]: boolean
