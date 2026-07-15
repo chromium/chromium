@@ -252,14 +252,23 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksExtensionMessagingSearchQueryEnabledTest,
 
   EXPECT_CALL(
       *mock_ui_service,
-      StartTaskUiInSidePanel(
+      StartTaskUiInSidePanelImpl(
           testing::_, testing::_,
           testing::Property(&GURL::spec,
                             testing::AllOf(testing::HasSubstr("/aim"),
                                            testing::HasSubstr("q=some_query"),
                                            testing::HasSubstr("mstk=dummy"))),
-          testing::_, /*associate_web_contents=*/false, testing::_, true,
-          /*use_no_animation=*/false))
+          testing::_,
+          testing::AllOf(
+              testing::Field(
+                  &contextual_tasks::StartTaskUiOptions::associate_web_contents,
+                  false),
+              testing::Field(&contextual_tasks::StartTaskUiOptions::
+                                 use_mstk_for_task_association,
+                             true),
+              testing::Field(
+                  &contextual_tasks::StartTaskUiOptions::use_no_animation,
+                  false))))
       .Times(1);
 
   ASSERT_TRUE(
@@ -315,15 +324,24 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksExtensionMessagingSearchQueryDisabledTest,
 
   EXPECT_CALL(
       *mock_ui_service,
-      StartTaskUiInSidePanel(
+      StartTaskUiInSidePanelImpl(
           testing::_, testing::_,
           testing::Property(
               &GURL::spec,
               testing::AllOf(testing::HasSubstr("/aim"),
                              testing::Not(testing::HasSubstr("q=")),
                              testing::HasSubstr("mstk=dummy"))),
-          testing::_, /*associate_web_contents=*/false, testing::_, true,
-          /*use_no_animation=*/false))
+          testing::_,
+          testing::AllOf(
+              testing::Field(
+                  &contextual_tasks::StartTaskUiOptions::associate_web_contents,
+                  false),
+              testing::Field(&contextual_tasks::StartTaskUiOptions::
+                                 use_mstk_for_task_association,
+                             true),
+              testing::Field(
+                  &contextual_tasks::StartTaskUiOptions::use_no_animation,
+                  false))))
       .Times(1);
 
   ASSERT_TRUE(

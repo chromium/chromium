@@ -43,15 +43,12 @@ class MockContextualTasksUiService : public ContextualTasksUiService {
               (override));
   MOCK_METHOD(
       void,
-      StartTaskUiInSidePanel,
+      StartTaskUiInSidePanelImpl,
       (BrowserWindowInterface*,
        tabs::TabInterface*,
        const GURL&,
        std::unique_ptr<contextual_search::ContextualSearchSessionHandle>,
-       bool,
-       omnibox::ChromeAimEntryPoint,
-       bool,
-       bool),
+       StartTaskUiOptions),
       (override));
   MOCK_METHOD(GURL, GetDefaultAiPageUrl, (), (override));
   MOCK_METHOD(GURL,
@@ -99,15 +96,6 @@ class MockContextualTasksUiService : public ContextualTasksUiService {
               OpenFeedbackUi,
               (BrowserWindowInterface*, const GURL&),
               (override));
-  MOCK_METHOD(
-      void,
-      StartTaskUiInSidePanel,
-      (BrowserWindowInterface*,
-       tabs::TabInterface*,
-       const GURL&,
-       std::unique_ptr<contextual_search::ContextualSearchSessionHandle>,
-       omnibox::ChromeAimEntryPoint),
-      (override));
   MOCK_METHOD(ContextualTasksEligibilityManager*,
               GetEligibilityManager,
               (),

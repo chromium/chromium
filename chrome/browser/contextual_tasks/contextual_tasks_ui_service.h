@@ -73,6 +73,14 @@ class ContextualTasksUIInterface;
 class ContextualTasksWindowTracker;
 class ContextualTasksWindowTrackerManager;
 
+struct StartTaskUiOptions {
+  bool associate_web_contents = true;
+  omnibox::ChromeAimEntryPoint entry_point =
+      omnibox::ChromeAimEntryPoint::UNKNOWN_AIM_ENTRY_POINT;
+  bool use_mstk_for_task_association = false;
+  bool use_no_animation = false;
+};
+
 // A service used to coordinate all of the side panel instances showing an AI
 // thread. Events like tab switching and Intercepted navigations from both the
 // sidepanel and omnibox will be routed here.
@@ -253,32 +261,13 @@ class ContextualTasksUiService : public KeyedService {
 
   // Opens the contextual tasks side panel and creates a new task with the given
   // URL as its initial thread URL.
-  virtual void StartTaskUiInSidePanel(
+  void StartTaskUiInSidePanel(
       BrowserWindowInterface* browser_window_interface,
       tabs::TabInterface* tab_interface,
       const GURL& url,
       std::unique_ptr<contextual_search::ContextualSearchSessionHandle>
           session_handle,
-      omnibox::ChromeAimEntryPoint entry_point =
-          omnibox::ChromeAimEntryPoint::UNKNOWN_AIM_ENTRY_POINT);
-
-  // Opens the contextual tasks side panel and creates a new task with the given
-  // URL as its initial thread URL. Allows specifying whether the active tab's
-  // WebContents should be associated with the new task. If
-  // `associate_web_contents` is false, the task is started in the side panel
-  // but remains independent of the active tab. This allows the auto suggested
-  // tab chip/coin to appear immediately on open.
-  virtual void StartTaskUiInSidePanel(
-      BrowserWindowInterface* browser_window_interface,
-      tabs::TabInterface* tab_interface,
-      const GURL& url,
-      std::unique_ptr<contextual_search::ContextualSearchSessionHandle>
-          session_handle,
-      bool associate_web_contents,
-      omnibox::ChromeAimEntryPoint entry_point =
-          omnibox::ChromeAimEntryPoint::UNKNOWN_AIM_ENTRY_POINT,
-      bool use_mstk_for_task_association = false,
-      bool use_no_animation = false);
+      StartTaskUiOptions options = {});
 
   // Opens the contextual tasks side panel showing a ghost loader while waiting
   // for the initial thread URL to be provided for that task. This creates an
@@ -434,6 +423,13 @@ class ContextualTasksUiService : public KeyedService {
           session_handle);
 
  protected:
+  virtual void StartTaskUiInSidePanelImpl(
+      BrowserWindowInterface* browser_window_interface,
+      tabs::TabInterface* tab_interface,
+      const GURL& url,
+      std::unique_ptr<contextual_search::ContextualSearchSessionHandle>
+          session_handle,
+      StartTaskUiOptions options);
   // The actual implementation of `HandleNavigation` that extracts more of the
   // components needed to decide if the navigation should be handled by this
   // service.

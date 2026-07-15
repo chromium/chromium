@@ -437,11 +437,12 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksUiServiceTaskReuseTest,
 
   // 2. Start task on Tab 1 with mstk
   GURL launch_url1("https://google.com/aim?mstk=abc");
-  ui_service->StartTaskUiInSidePanel(
-      browser(), tab1, launch_url1, /*session_handle=*/nullptr,
-      /*associate_web_contents=*/false,
-      omnibox::ChromeAimEntryPoint::UNKNOWN_AIM_ENTRY_POINT,
-      /*use_mstk_for_task_association=*/true);
+  ui_service->StartTaskUiInSidePanel(browser(), tab1, launch_url1,
+                                     /*session_handle=*/nullptr,
+                                     StartTaskUiOptions{
+                                         .associate_web_contents = false,
+                                         .use_mstk_for_task_association = true,
+                                     });
 
   auto* controller = ContextualTasksPanelController::From(browser());
   ASSERT_TRUE(base::test::RunUntil([&]() {
@@ -462,11 +463,12 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksUiServiceTaskReuseTest,
 
   // 4. Start task on Tab 2 with same mstk
   GURL launch_url2("https://google.com/aim?mstk=abc");
-  ui_service->StartTaskUiInSidePanel(
-      browser(), tab2, launch_url2, /*session_handle=*/nullptr,
-      /*associate_web_contents=*/false,
-      omnibox::ChromeAimEntryPoint::UNKNOWN_AIM_ENTRY_POINT,
-      /*use_mstk_for_task_association=*/true);
+  ui_service->StartTaskUiInSidePanel(browser(), tab2, launch_url2,
+                                     /*session_handle=*/nullptr,
+                                     StartTaskUiOptions{
+                                         .associate_web_contents = false,
+                                         .use_mstk_for_task_association = true,
+                                     });
 
   ASSERT_TRUE(base::test::RunUntil([&]() {
     return controller && controller->IsPanelOpenForContextualTask();
@@ -492,11 +494,12 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksUiServiceTaskReuseTest,
 
   // 2. Start task on Tab 1 with mstk, flag=true (so it registers in map)
   GURL launch_url1("https://google.com/aim?mstk=abc");
-  ui_service->StartTaskUiInSidePanel(
-      browser(), tab1, launch_url1, /*session_handle=*/nullptr,
-      /*associate_web_contents=*/false,
-      omnibox::ChromeAimEntryPoint::UNKNOWN_AIM_ENTRY_POINT,
-      /*use_mstk_for_task_association=*/true);
+  ui_service->StartTaskUiInSidePanel(browser(), tab1, launch_url1,
+                                     /*session_handle=*/nullptr,
+                                     StartTaskUiOptions{
+                                         .associate_web_contents = false,
+                                         .use_mstk_for_task_association = true,
+                                     });
 
   auto* controller = ContextualTasksPanelController::From(browser());
   ASSERT_TRUE(base::test::RunUntil([&]() {
@@ -516,11 +519,12 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksUiServiceTaskReuseTest,
 
   // 4. Start task on Tab 2 with same mstk, flag=false
   GURL launch_url2("https://google.com/aim?mstk=abc");
-  ui_service->StartTaskUiInSidePanel(
-      browser(), tab2, launch_url2, /*session_handle=*/nullptr,
-      /*associate_web_contents=*/false,
-      omnibox::ChromeAimEntryPoint::UNKNOWN_AIM_ENTRY_POINT,
-      /*use_mstk_for_task_association=*/false);
+  ui_service->StartTaskUiInSidePanel(browser(), tab2, launch_url2,
+                                     /*session_handle=*/nullptr,
+                                     StartTaskUiOptions{
+                                         .associate_web_contents = false,
+                                         .use_mstk_for_task_association = false,
+                                     });
 
   ASSERT_TRUE(base::test::RunUntil([&]() {
     return controller && controller->IsPanelOpenForContextualTask();

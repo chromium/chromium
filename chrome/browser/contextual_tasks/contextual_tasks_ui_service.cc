@@ -2511,22 +2511,18 @@ void ContextualTasksUiService::StartTaskUiInSidePanel(
     const GURL& url,
     std::unique_ptr<contextual_search::ContextualSearchSessionHandle>
         session_handle,
-    omnibox::ChromeAimEntryPoint entry_point) {
-  StartTaskUiInSidePanel(browser_window_interface, tab_interface, url,
-                         std::move(session_handle),
-                         /*associate_web_contents=*/true, entry_point);
+    StartTaskUiOptions options) {
+  StartTaskUiInSidePanelImpl(browser_window_interface, tab_interface, url,
+                             std::move(session_handle), std::move(options));
 }
 
-void ContextualTasksUiService::StartTaskUiInSidePanel(
+void ContextualTasksUiService::StartTaskUiInSidePanelImpl(
     BrowserWindowInterface* browser_window_interface,
     tabs::TabInterface* tab_interface,
     const GURL& url,
     std::unique_ptr<contextual_search::ContextualSearchSessionHandle>
         session_handle,
-    bool associate_web_contents,
-    omnibox::ChromeAimEntryPoint entry_point,
-    bool use_mstk_for_task_association,
-    bool use_no_animation) {
+    StartTaskUiOptions options) {
   CHECK(!url.is_empty());
   CHECK(contextual_tasks_service_);
 
@@ -2544,7 +2540,7 @@ void ContextualTasksUiService::StartTaskUiInSidePanel(
   // Create a task for the URL if the side panel wasn't already showing a task.
   if (!panel_contents || !controller->IsPanelOpenForContextualTask()) {
     base::Uuid task_id;
-    if (use_mstk_for_task_association) {
+    if (options.use_mstk_for_task_association) {
       std::string mstk;
       if (net::GetValueForKeyInQuery(url, "mstk", &mstk)) {
         for (const auto& [id, initial_mstk] : task_id_to_initial_mstk_) {
@@ -2570,7 +2566,7 @@ void ContextualTasksUiService::StartTaskUiInSidePanel(
       task_id_to_creation_url_[task_id] = url;
     }
 
-    if (associate_web_contents) {
+    if (options.associate_web_contents) {
       AssociateWebContentsToTask(tab_interface->GetContents(), task_id);
     } else {
       // Associating the WebContents is used for two things, 1) to know which
@@ -2582,8 +2578,8 @@ void ContextualTasksUiService::StartTaskUiInSidePanel(
     if (session_handle) {
       pending_session_handles_.emplace(task_id, std::move(session_handle));
     }
-    controller->Show(/*transition_from_tab=*/false, entry_point,
-                     use_no_animation);
+    controller->Show(/*transition_from_tab=*/false, options.entry_point,
+                     options.use_no_animation);
 
     InitializeTaskInSidePanel(controller->GetActiveWebContents(), task_id,
                               nullptr);

@@ -99,13 +99,13 @@ class TestingContextualTasksUiService
     cookie_jar_contains_primary_account_ = contains;
   }
 
-  void StartTaskUiInSidePanel(
+  void StartTaskUiInSidePanelImpl(
       BrowserWindowInterface* browser_window_interface,
       tabs::TabInterface* tab_interface,
       const GURL& url,
       std::unique_ptr<contextual_search::ContextualSearchSessionHandle>
           session_handle,
-      omnibox::ChromeAimEntryPoint entry_point) override {
+      contextual_tasks::StartTaskUiOptions options) override {
     is_panel_open_ = true;
     if (!stub_web_contents_) {
       content::WebContents::CreateParams params(profile_);
