@@ -12,8 +12,10 @@ BASE_FEATURE(kEnterpriseIframeDlpRulesSupport,
 BASE_FEATURE(kEnableResumableUploadOnConsumerScan,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// TODO: crbug.com/535280570 - only clean up after async file hash is validated
+// for smaller min threshold.
 BASE_FEATURE(kContentHashInFileUploadFinalCall,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls the new upload, download and print size limit for content analysis.
 BASE_FEATURE(kEnableNewUploadSizeLimit, base::FEATURE_ENABLED_BY_DEFAULT);
