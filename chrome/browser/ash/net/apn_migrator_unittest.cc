@@ -13,6 +13,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/ash/components/network/device_state.h"
 #include "chromeos/ash/components/network/fake_stub_cellular_networks_provider.h"
 #include "chromeos/ash/components/network/metrics/cellular_network_metrics_logger.h"
@@ -98,11 +99,11 @@ class ApnMigratorTest : public testing::Test {
 
   // testing::Test
   void SetUp() override {
-    user_manager::UserManagerImpl::RegisterPrefs(local_state_.registry());
     const AccountId account_id =
         AccountId::FromUserEmailGaiaId("test@test", GaiaId("fakegaia"));
     test_user_session_manager_ =
-        std::make_unique<ash::test::TestUserSessionManager>(&local_state_);
+        std::make_unique<ash::test::TestUserSessionManager>(
+            TestingBrowserProcess::GetGlobal()->local_state());
     ASSERT_TRUE(test_user_session_manager_->AddRegularUser(account_id));
     test_user_session_manager_->LogIn(account_id);
     user_hash_ =
@@ -198,7 +199,6 @@ class ApnMigratorTest : public testing::Test {
 
  private:
   base::test::SingleThreadTaskEnvironment task_environment_;
-  TestingPrefServiceSimple local_state_;
   std::unique_ptr<ash::test::TestUserSessionManager> test_user_session_manager_;
   std::string user_hash_;
 

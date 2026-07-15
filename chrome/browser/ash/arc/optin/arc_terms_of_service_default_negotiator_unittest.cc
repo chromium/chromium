@@ -103,6 +103,10 @@ class MockErrorDelegate : public ArcSupportHost::ErrorDelegate {
   MOCK_METHOD1(OnErrorPageShown, void(bool network_tests_shown));
 };
 
+PrefService* local_state() {
+  return TestingBrowserProcess::GetGlobal()->local_state();
+}
+
 }  // namespace
 
 namespace arc {
@@ -135,21 +139,19 @@ class ArcTermsOfServiceDefaultNegotiatorTest
     BrowserWithTestWindowTest::SetUp();
 
     ::ash::DeviceSettingsService::Get()->StartProcessing(
-        TestingBrowserProcess::GetGlobal()->local_state(),
-        &session_manager_client_, owner_key_util_);
+        local_state(), &session_manager_client_, owner_key_util_);
 
     // MetricsService.
-    metrics::MetricsService::RegisterPrefs(local_state_.registry());
     test_enabled_state_provider_ =
         std::make_unique<metrics::TestEnabledStateProvider>(true, true);
     test_metrics_state_manager_ = metrics::MetricsStateManager::Create(
-        &local_state_, test_enabled_state_provider_.get(), std::wstring(),
+        local_state(), test_enabled_state_provider_.get(), std::wstring(),
         base::FilePath());
     test_metrics_service_client_ =
         std::make_unique<TestUserMetricsServiceClient>();
     test_metrics_service_ = std::make_unique<metrics::MetricsService>(
         test_metrics_state_manager_.get(), test_metrics_service_client_.get(),
-        &local_state_);
+        local_state());
 
     // Needs to be set for metrics service.
     base::SetRecordActionTaskRunner(
@@ -159,9 +161,7 @@ class ArcTermsOfServiceDefaultNegotiatorTest
         IdentityManagerFactory::GetForProfile(profile()), "testing@account.com",
         signin::ConsentLevel::kSync);
 
-    ash::StatsReportingController::RegisterLocalStatePrefs(
-        local_state_.registry());
-    ash::StatsReportingController::Initialize(&local_state_);
+    ash::StatsReportingController::Initialize(local_state());
 
     support_host_ = std::make_unique<ArcSupportHost>(
         TestingBrowserProcess::GetGlobal()->local_state(),
@@ -232,8 +232,6 @@ class ArcTermsOfServiceDefaultNegotiatorTest
   policy::DevicePolicyBuilder device_policy_;
   scoped_refptr<ownership::MockOwnerKeyUtil> owner_key_util_;
   ::ash::FakeSessionManagerClient session_manager_client_;
-
-  TestingPrefServiceSimple local_state_;
 
   // MetricsService.
   std::unique_ptr<metrics::MetricsStateManager> test_metrics_state_manager_;

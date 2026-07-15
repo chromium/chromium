@@ -149,11 +149,6 @@ static const char kPeapWiFiRecommendedUserPart[] = R"({
   }
 })";
 
-TestingPrefServiceSimple* RegisterPrefs(TestingPrefServiceSimple* local_state) {
-  device_settings_cache::RegisterPrefs(local_state->registry());
-  return local_state;
-}
-
 void PrintErrorAndFail(const std::string& error_name) {
   LOG(ERROR) << error_name;
   FAIL();
@@ -283,11 +278,10 @@ class RollbackNetworkConfigTest : public testing::Test {
 
   void RegisterAndSetUpPrefs() {
     PrefProxyConfigTrackerImpl::RegisterProfilePrefs(user_prefs_.registry());
-    PrefProxyConfigTrackerImpl::RegisterPrefs(local_state_.registry());
-    network_handler_test_helper_.RegisterPrefs(user_prefs_.registry(),
-                                               local_state_.registry());
+    network_handler_test_helper_.RegisterPrefs(user_prefs_.registry(), nullptr);
 
-    network_handler_test_helper_.InitializePrefs(&user_prefs_, &local_state_);
+    network_handler_test_helper_.InitializePrefs(
+        &user_prefs_, TestingBrowserProcess::GetGlobal()->local_state());
   }
 
   void SetUp() override { SetEmptyDevicePolicy(); }
@@ -349,15 +343,15 @@ class RollbackNetworkConfigTest : public testing::Test {
   scoped_refptr<ownership::MockOwnerKeyUtil> owner_keys_{
       base::MakeRefCounted<ownership::MockOwnerKeyUtil>()};
 
-  TestingPrefServiceSimple local_state_;
   sync_preferences::TestingPrefServiceSyncable user_prefs_;
   content::BrowserTaskEnvironment task_environment_{
       content::BrowserTaskEnvironment::IO_MAINLOOP};
   NetworkHandlerTestHelper network_handler_test_helper_;
   ScopedStubInstallAttributes scoped_stub_install_attributes_;
   ScopedTestDeviceSettingsService scoped_device_settings_;
-  CrosSettingsHolder cros_settings_holder_{ash::DeviceSettingsService::Get(),
-                                           RegisterPrefs(&local_state_)};
+  CrosSettingsHolder cros_settings_holder_{
+      ash::DeviceSettingsService::Get(),
+      TestingBrowserProcess::GetGlobal()->local_state()};
   policy::DevicePolicyBuilder device_policy_;
 
   std::unique_ptr<RollbackNetworkConfig> rollback_network_config_;

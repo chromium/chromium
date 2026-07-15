@@ -107,15 +107,15 @@ class LobsterSystemStateProviderImplBaseTest : public testing::Test {
     RegisterSystemStateProviderPrefs();
 
     // Sets up test variations service
-    variations::TestVariationsService::RegisterPrefs(
-        local_state_pref()->registry());
+    PrefService* local_state =
+        TestingBrowserProcess::GetGlobal()->local_state();
     metrics_state_manager_ = metrics::MetricsStateManager::Create(
-        local_state_pref(), &metrics_enabled_state_provider_,
+        local_state, &metrics_enabled_state_provider_,
         /*backup_registry_key=*/std::wstring(),
         /*user_data_dir=*/base::FilePath(),
         metrics::StartupVisibility::kUnknown);
     variations_service_ = std::make_unique<variations::TestVariationsService>(
-        local_state_pref(), metrics_state_manager_.get());
+        local_state, metrics_state_manager_.get());
     TestingBrowserProcess::GetGlobal()->SetVariationsService(
         variations_service_.get());
   }
@@ -206,8 +206,6 @@ class LobsterSystemStateProviderImplBaseTest : public testing::Test {
         /*support_image_insertion=*/true);
   }
 
-  TestingPrefServiceSimple* local_state_pref() { return &local_state_pref_; }
-
   base::test::ScopedFeatureList& scoped_feature_list() { return feature_list_; }
 
  protected:
@@ -216,7 +214,6 @@ class LobsterSystemStateProviderImplBaseTest : public testing::Test {
  private:
   base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<net::test::MockNetworkChangeNotifier> network_notifier_;
-  TestingPrefServiceSimple local_state_pref_;
   TestingPrefServiceSimple pref_;
   signin::IdentityTestEnvironment identity_test_environment_;
   display::test::TestScreen test_screen_;
