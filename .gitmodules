@@ -441,6 +441,10 @@
 	path = third_party/mutter/src
 	url = https://chromium.googlesource.com/external/gitlab.gnome.org/GNOME/mutter
 	gclient-condition = checkout_linux and checkout_mutter
+[submodule "third_party/pipewire/src"]
+	path = third_party/pipewire/src
+	url = https://chromium.googlesource.com/external/gitlab.freedesktop.org/pipewire/pipewire
+	gclient-condition = checkout_linux
 [submodule "third_party/nasm"]
 	path = third_party/nasm
 	url = https://chromium.googlesource.com/chromium/deps/nasm

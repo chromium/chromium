@@ -1,0 +1,500 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Builds PipeWire 1.6.x from source for use in tests.  Only the components
+# needed by webrtc/modules/desktop_capture, video_capture, and portal are
+# included.  All targets are testonly because PipeWire is only used in tests.
+#
+# Runtime environment variables the test runner must set:
+#   PIPEWIRE_MODULE_DIR  → <out_dir>/pipewire-0.3
+#   SPA_PLUGIN_DIR       → <out_dir>/spa-0.2
+#   PIPEWIRE_CONFIG_DIR  → directory containing pipewire.conf
+#
+# See README.chromium for update instructions.
+
+assert(is_linux)
+
+# ---------------------------------------------------------------------------
+# Common configuration
+# ---------------------------------------------------------------------------
+
+config("pipewire_internal_config") {
+  include_dirs = [
+    # Generated config.h and pipewire/version.h.
+    "include",
+
+    # PipeWire public headers (pipewire/*.h) and private impl headers.
+    "src/src",
+
+    # SPA public headers (spa/*.h).
+    "src/spa/include",
+  ]
+
+  # PipeWire requires GNU C extensions (asm keyword, gnu-specific builtins).
+  cflags_c = [ "-std=gnu11" ]
+
+  cflags = [
+    "-D_GNU_SOURCE",
+    "-DFASTPATH",
+    "-DSPA_AUDIO_MAX_CHANNELS=128u",
+    "-fvisibility=hidden",
+    "-fno-strict-aliasing",
+    "-fno-strict-overflow",
+
+    # Warnings present upstream; silence rather than fix them.
+    "-Wno-sign-compare",
+    "-Wno-unused-parameter",
+    "-Wno-missing-field-initializers",
+    "-Wno-pedantic",
+    "-Wno-deprecated-declarations",
+    "-Wno-implicit-fallthrough",
+    "-Wno-gnu-case-range",
+    "-Wno-type-limits",
+    "-Wno-variadic-macros",
+    "-Wno-string-conversion",
+  ]
+
+  # Chromium passes -Wa,--crel (experimental CREL relocations) globally.
+  # LLD's --gdb-index DWARF reader does not yet handle CREL, so it reports
+  # DWARF version 0 and --fatal-warnings turns that into a link error.
+  # Suppress fatal warnings only for our shared libraries so the link proceeds.
+  ldflags = [ "-Wl,--no-fatal-warnings" ]
+}
+
+# Exposed to consumers (WebRTC) that compile against PipeWire headers.
+config("pipewire_public_config") {
+  include_dirs = [
+    "include",
+    "src/src",
+    "src/spa/include",
+  ]
+  cflags = [ "-Wno-gnu-case-range" ]
+}
+
+# ---------------------------------------------------------------------------
+# Core libpipewire shared library
+# ---------------------------------------------------------------------------
+
+shared_library("libpipewire") {
+  testonly = true
+  output_name = "libpipewire-0.3"
+
+  sources = [
+    "src/src/pipewire/buffers.c",
+    "src/src/pipewire/conf.c",
+    "src/src/pipewire/context.c",
+    "src/src/pipewire/control.c",
+    "src/src/pipewire/core.c",
+    "src/src/pipewire/data-loop.c",
+    "src/src/pipewire/filter.c",
+    "src/src/pipewire/global.c",
+    "src/src/pipewire/impl-client.c",
+    "src/src/pipewire/impl-core.c",
+    "src/src/pipewire/impl-device.c",
+    "src/src/pipewire/impl-factory.c",
+    "src/src/pipewire/impl-link.c",
+    "src/src/pipewire/impl-metadata.c",
+    "src/src/pipewire/impl-module.c",
+    "src/src/pipewire/impl-node.c",
+    "src/src/pipewire/impl-port.c",
+    "src/src/pipewire/introspect.c",
+    "src/src/pipewire/log.c",
+    "src/src/pipewire/loop.c",
+    "src/src/pipewire/main-loop.c",
+    "src/src/pipewire/mem.c",
+    "src/src/pipewire/pipewire.c",
+    "src/src/pipewire/properties.c",
+    "src/src/pipewire/protocol.c",
+    "src/src/pipewire/proxy.c",
+    "src/src/pipewire/resource.c",
+    "src/src/pipewire/settings.c",
+    "src/src/pipewire/stream.c",
+    "src/src/pipewire/thread-loop.c",
+    "src/src/pipewire/thread.c",
+    "src/src/pipewire/timer-queue.c",
+    "src/src/pipewire/utils.c",
+    "src/src/pipewire/work-queue.c",
+  ]
+
+  cflags_c = [
+    "-DOLD_MEDIA_SESSION_WORKAROUND=1",
+    "-D_POSIX_C_SOURCE",
+  ]
+
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [
+    "//build/config/compiler:no_chromium_code",
+    ":pipewire_internal_config",
+  ]
+
+  libs = [
+    "dl",
+    "m",
+    "pthread",
+  ]
+}
+
+# ---------------------------------------------------------------------------
+# SPA support plugin  (spa-0.2/support/libspa-support.so)
+# ---------------------------------------------------------------------------
+
+shared_library("spa_support") {
+  testonly = true
+  output_name = "libspa-support"
+  output_dir = "${root_out_dir}/spa-0.2/support"
+
+  sources = [
+    "src/spa/plugins/support/cpu.c",
+    "src/spa/plugins/support/logger.c",
+    "src/spa/plugins/support/loop.c",
+    "src/spa/plugins/support/node-driver.c",
+    "src/spa/plugins/support/null-audio-sink.c",
+    "src/spa/plugins/support/plugin.c",
+    "src/spa/plugins/support/system.c",
+  ]
+
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [
+    "//build/config/compiler:no_chromium_code",
+    ":pipewire_internal_config",
+  ]
+
+  libs = [
+    "m",
+    "pthread",
+  ]
+}
+
+# ---------------------------------------------------------------------------
+# SPA videoconvert plugin  (spa-0.2/videoconvert/libspa-videoconvert.so)
+#
+# Required by module-adapter to wrap video streams with format adaptation.
+# ---------------------------------------------------------------------------
+
+shared_library("spa_videoconvert") {
+  testonly = true
+  output_name = "libspa-videoconvert"
+  output_dir = "${root_out_dir}/spa-0.2/videoconvert"
+
+  sources = [
+    "src/spa/plugins/videoconvert/plugin.c",
+    "src/spa/plugins/videoconvert/videoadapter.c",
+    "src/spa/plugins/videoconvert/videoconvert-dummy.c",
+  ]
+
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [
+    "//build/config/compiler:no_chromium_code",
+    ":pipewire_internal_config",
+  ]
+
+  libs = [ "m" ]
+}
+
+# ---------------------------------------------------------------------------
+# PipeWire modules  (pipewire-0.3/libpipewire-module-*.so)
+# ---------------------------------------------------------------------------
+
+# Modules need access to internal src/src headers (e.g. modules/spa/*.h).
+config("_module_config") {
+  include_dirs = [ "src/src" ]
+}
+
+shared_library("pipewire_module_protocol_native") {
+  testonly = true
+  output_name = "libpipewire-module-protocol-native"
+  output_dir = "${root_out_dir}/pipewire-0.3"
+
+  sources = [
+    "src/src/modules/module-protocol-native.c",
+    "src/src/modules/module-protocol-native/connection.c",
+    "src/src/modules/module-protocol-native/local-socket.c",
+    "src/src/modules/module-protocol-native/portal-screencast.c",
+    "src/src/modules/module-protocol-native/protocol-footer.c",
+    "src/src/modules/module-protocol-native/protocol-native.c",
+    "src/src/modules/module-protocol-native/security-context.c",
+  ]
+
+  deps = [ ":libpipewire" ]
+
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [
+    "//build/config/compiler:no_chromium_code",
+    ":pipewire_internal_config",
+    ":_module_config",
+  ]
+
+  libs = [
+    "dl",
+    "m",
+  ]
+}
+
+shared_library("pipewire_module_client_node") {
+  testonly = true
+  output_name = "libpipewire-module-client-node"
+  output_dir = "${root_out_dir}/pipewire-0.3"
+
+  sources = [
+    "src/src/modules/module-client-node.c",
+    "src/src/modules/module-client-node/client-node.c",
+    "src/src/modules/module-client-node/protocol-native.c",
+    "src/src/modules/module-client-node/remote-node.c",
+    "src/src/modules/spa/spa-node.c",
+  ]
+
+  deps = [
+    ":libpipewire",
+    ":pipewire_module_protocol_native",
+  ]
+
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [
+    "//build/config/compiler:no_chromium_code",
+    ":pipewire_internal_config",
+    ":_module_config",
+  ]
+
+  libs = [
+    "dl",
+    "m",
+  ]
+}
+
+shared_library("pipewire_module_adapter") {
+  testonly = true
+  output_name = "libpipewire-module-adapter"
+  output_dir = "${root_out_dir}/pipewire-0.3"
+
+  sources = [
+    "src/src/modules/module-adapter.c",
+    "src/src/modules/module-adapter/adapter.c",
+    "src/src/modules/spa/spa-node.c",
+  ]
+
+  deps = [ ":libpipewire" ]
+
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [
+    "//build/config/compiler:no_chromium_code",
+    ":pipewire_internal_config",
+    ":_module_config",
+  ]
+
+  libs = [
+    "dl",
+    "m",
+    "rt",
+  ]
+}
+
+shared_library("pipewire_module_metadata") {
+  testonly = true
+  output_name = "libpipewire-module-metadata"
+  output_dir = "${root_out_dir}/pipewire-0.3"
+
+  sources = [
+    "src/src/modules/module-metadata.c",
+    "src/src/modules/module-metadata/metadata.c",
+    "src/src/modules/module-metadata/protocol-native.c",
+    "src/src/modules/module-metadata/proxy-metadata.c",
+  ]
+
+  deps = [
+    ":libpipewire",
+    ":pipewire_module_protocol_native",
+  ]
+
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [
+    "//build/config/compiler:no_chromium_code",
+    ":pipewire_internal_config",
+    ":_module_config",
+  ]
+
+  libs = [
+    "dl",
+    "m",
+  ]
+}
+
+shared_library("pipewire_module_spa_node_factory") {
+  testonly = true
+  output_name = "libpipewire-module-spa-node-factory"
+  output_dir = "${root_out_dir}/pipewire-0.3"
+
+  sources = [
+    "src/src/modules/module-spa-node-factory.c",
+    "src/src/modules/spa/spa-node.c",
+  ]
+
+  deps = [ ":libpipewire" ]
+
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [
+    "//build/config/compiler:no_chromium_code",
+    ":pipewire_internal_config",
+    ":_module_config",
+  ]
+
+  libs = [
+    "dl",
+    "m",
+  ]
+}
+
+shared_library("pipewire_module_spa_device_factory") {
+  testonly = true
+  output_name = "libpipewire-module-spa-device-factory"
+  output_dir = "${root_out_dir}/pipewire-0.3"
+
+  sources = [
+    "src/src/modules/module-spa-device-factory.c",
+    "src/src/modules/spa/spa-device.c",
+  ]
+
+  deps = [ ":libpipewire" ]
+
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [
+    "//build/config/compiler:no_chromium_code",
+    ":pipewire_internal_config",
+    ":_module_config",
+  ]
+
+  libs = [
+    "dl",
+    "m",
+  ]
+}
+
+shared_library("pipewire_module_link_factory") {
+  testonly = true
+  output_name = "libpipewire-module-link-factory"
+  output_dir = "${root_out_dir}/pipewire-0.3"
+
+  sources = [ "src/src/modules/module-link-factory.c" ]
+
+  deps = [ ":libpipewire" ]
+
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [
+    "//build/config/compiler:no_chromium_code",
+    ":pipewire_internal_config",
+    ":_module_config",
+  ]
+
+  libs = [
+    "dl",
+    "m",
+  ]
+}
+
+shared_library("pipewire_module_access") {
+  testonly = true
+  output_name = "libpipewire-module-access"
+  output_dir = "${root_out_dir}/pipewire-0.3"
+
+  sources = [ "src/src/modules/module-access.c" ]
+
+  deps = [ ":libpipewire" ]
+
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [
+    "//build/config/compiler:no_chromium_code",
+    ":pipewire_internal_config",
+    ":_module_config",
+  ]
+
+  libs = [
+    "dl",
+    "m",
+  ]
+}
+
+shared_library("pipewire_module_client_device") {
+  testonly = true
+  output_name = "libpipewire-module-client-device"
+  output_dir = "${root_out_dir}/pipewire-0.3"
+
+  sources = [
+    "src/src/modules/module-client-device.c",
+    "src/src/modules/module-client-device/protocol-native.c",
+    "src/src/modules/module-client-device/proxy-device.c",
+    "src/src/modules/module-client-device/resource-device.c",
+  ]
+
+  deps = [ ":libpipewire" ]
+
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [
+    "//build/config/compiler:no_chromium_code",
+    ":pipewire_internal_config",
+    ":_module_config",
+  ]
+
+  libs = [
+    "dl",
+    "m",
+  ]
+}
+
+# ---------------------------------------------------------------------------
+# pipewire daemon binary
+# ---------------------------------------------------------------------------
+
+executable("pipewire") {
+  testonly = true
+  output_name = "pipewire"
+
+  sources = [ "src/src/daemon/pipewire.c" ]
+
+  deps = [ ":libpipewire" ]
+
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [
+    "//build/config/compiler:no_chromium_code",
+    ":pipewire_internal_config",
+  ]
+}
+
+# ---------------------------------------------------------------------------
+# Convenience group — use as data_deps in tests
+#
+# Tests should use:
+#   data_deps = [ "//third_party/pipewire:all" ]
+# configure_pipewire.py auto-detects the source-built layout via the presence
+# of pipewire binary + pipewire-0.3/ in the output directory.
+# ---------------------------------------------------------------------------
+
+# Copies the pre-generated pipewire.conf into a dedicated subdirectory of the
+# build output so configure_pipewire.py can point PIPEWIRE_CONFIG_DIR at it.
+copy("pipewire_conf") {
+  testonly = true
+  sources = [
+    "conf/client.conf",
+    "conf/pipewire.conf",
+  ]
+  outputs = [ "${root_out_dir}/pipewire-conf/{{source_file_part}}" ]
+}
+
+group("all") {
+  testonly = true
+  deps = [
+    ":libpipewire",
+    ":pipewire",
+    ":pipewire_conf",
+    ":pipewire_module_access",
+    ":pipewire_module_adapter",
+    ":pipewire_module_client_device",
+    ":pipewire_module_client_node",
+    ":pipewire_module_link_factory",
+    ":pipewire_module_metadata",
+    ":pipewire_module_protocol_native",
+    ":pipewire_module_spa_device_factory",
+    ":pipewire_module_spa_node_factory",
+    ":spa_support",
+    ":spa_videoconvert",
+  ]
+}

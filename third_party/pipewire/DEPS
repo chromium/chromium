@@ -1,0 +1,4 @@
+skip_child_includes = [
+  'include',
+  'src',
+]
