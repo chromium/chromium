@@ -835,14 +835,7 @@ IN_PROC_BROWSER_TEST_F(WebUILocationBarInteractiveUiTest, UnelideHome) {
 
 // Tests that if initial interaction just selected-all and didn't unelide
 // that moving the caret will unelide.
-// TODO(cebug.com/468203351): Flaky on Linux debug builders.
-#if BUILDFLAG(IS_LINUX) && !defined(NDEBUG)
-#define MAYBE_UnelideCaretMove DISABLED_UnelideCaretMove
-#else
-#define MAYBE_UnelideCaretMove UnelideCaretMove
-#endif
-IN_PROC_BROWSER_TEST_F(WebUILocationBarInteractiveUiTest,
-                       MAYBE_UnelideCaretMove) {
+IN_PROC_BROWSER_TEST_F(WebUILocationBarInteractiveUiTest, UnelideCaretMove) {
   RunTestSequence(
       InstrumentTab(kTabId), WaitForWebContentsReady(kTabId),
       InstrumentNonTabWebView(kWebUIToolbarId, GetToolbarWebView()),
@@ -853,6 +846,7 @@ IN_PROC_BROWSER_TEST_F(WebUILocationBarInteractiveUiTest,
       // Need a URL that will get trigger elision to test this
       // (about:blank won't).
       NavigateWebContents(kTabId, GURL("https://local.test")),
+      WaitTillOmniboxViewText("local.test"),
       // Click to focus location bar.
       MoveMouseTo(kOmniboxElementId), ClickMouse(), WaitTillOmniboxViewFocus(),
       // Selected, but not unelided yet.
@@ -926,13 +920,7 @@ IN_PROC_BROWSER_TEST_F(WebUILocationBarInteractiveUiTest, FocusSearch2) {
 }
 
 // Test of Ctrl-L (and others) focus location bar.
-// TODO(crbug.com/532463469): Flaky on Linux and ChromeOS.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_FocusLocation DISABLED_FocusLocation
-#else
-#define MAYBE_FocusLocation FocusLocation
-#endif
-IN_PROC_BROWSER_TEST_F(WebUILocationBarInteractiveUiTest, MAYBE_FocusLocation) {
+IN_PROC_BROWSER_TEST_F(WebUILocationBarInteractiveUiTest, FocusLocation) {
   ui::Accelerator accelerator;
   EXPECT_TRUE(
       AcceleratorProviderForBrowser(browser())->GetAcceleratorForCommandId(
@@ -948,6 +936,7 @@ IN_PROC_BROWSER_TEST_F(WebUILocationBarInteractiveUiTest, MAYBE_FocusLocation) {
       // Need a URL that will get trigger elision to test this
       // (about:blank won't).
       NavigateWebContents(kTabId, GURL("https://local.test")),
+      WaitTillOmniboxViewText("local.test"),
       // Press Ctrl-L; it should focus, unelide, and select-all. Also should
       // not add a search chip, since that's a separate accel.
       SendAccelerator(kBrowserViewElementId, accelerator),
