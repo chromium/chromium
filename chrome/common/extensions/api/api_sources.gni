@@ -130,7 +130,7 @@ if (enable_extensions) {
       "file_system_provider_internal.idl",
       "image_loader_private.idl",
       "input_method_private.json",
-      "login.idl",
+      "login.webidl",
       "login_screen_storage.webidl",
       "login_screen_ui.webidl",
       "login_state.idl",
