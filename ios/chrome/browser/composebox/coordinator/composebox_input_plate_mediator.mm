@@ -2034,9 +2034,10 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
   BOOL allowsMultimodalActions =
       dseGoogle && eligibleToAIM && !compactInCobrowse;
   BOOL canSend = hasContent && !compactMode && allowsMultimodalActions;
-  BOOL showShortcuts =
-      !hasContent && !canSend &&
-      !base::FeatureList::IsEnabled(kHideFuseboxVoiceLensActions);
+  BOOL forceDisableShortcuts =
+      base::FeatureList::IsEnabled(kHideFuseboxVoiceLensActions);
+  BOOL hasVisibleContent = compactMode ? _hasText : hasContent;
+  BOOL showShortcuts = !hasVisibleContent && !canSend && !forceDisableShortcuts;
   // Hide the plus button is different from !allowsMultimodalActions. When the
   // plus button is hidden, the user can still use multimodal actions from other
   // sources such as drag and drop.
