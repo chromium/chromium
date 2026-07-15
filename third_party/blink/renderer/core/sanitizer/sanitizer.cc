@@ -462,15 +462,14 @@ bool Sanitizer::AllowElement(const QualifiedName& name,
     // where item[name] equals element[name] and item[namespace] equals
     // element[namespace]. Step 2.8: If element equals current element then
     // return modified.
+    auto it = allow_attrs_per_element_.find(name);
+    bool attr_found = it != allow_attrs_per_element_.end();
     bool allow_attrs_current_equal_new =
-        (allow_attrs == nullptr && !allow_attrs_per_element_.Contains(name)) ||
-        (allow_attrs && allow_attrs_per_element_.Contains(name) &&
-         *allow_attrs == allow_attrs_per_element_.at(name));
+        allow_attrs ? (attr_found && *allow_attrs == it->value) : !attr_found;
+    it = remove_attrs_per_element_.find(name);
+    attr_found = it != remove_attrs_per_element_.end();
     bool remove_attrs_current_equal_new =
-        (remove_attrs == nullptr &&
-         !remove_attrs_per_element_.Contains(name)) ||
-        (remove_attrs && remove_attrs_per_element_.Contains(name) &&
-         *remove_attrs == remove_attrs_per_element_.at(name));
+        remove_attrs ? (attr_found && *remove_attrs == it->value) : !attr_found;
     if (allow_attrs_current_equal_new && remove_attrs_current_equal_new) {
       return modified;
     }
@@ -1351,23 +1350,24 @@ bool Sanitizer::isValid() const {
         //   sets.)
         // Step 7.1.1.2: The intersection of config[attributes] and
         //   element[attributes] [..] is empty.
-        if (allow_attrs_per_element_.Contains(element) &&
-            Intersect(allow_attrs_, allow_attrs_per_element_.at(element))) {
+        auto it_allow = allow_attrs_per_element_.find(element);
+        if (it_allow != allow_attrs_per_element_.end() &&
+            Intersect(allow_attrs_, it_allow->value)) {
           return false;
         }
         // Step 7.1.1.3: element[removeAttributes] [..] is a subset of
         // config[attributes]
-        if (remove_attrs_per_element_.Contains(element) && allow_attrs_ &&
-            !Subset(remove_attrs_per_element_.at(element),
-                    *allow_attrs_.get())) {
+        auto it_remove = remove_attrs_per_element_.find(element);
+        if (it_remove != remove_attrs_per_element_.end() && allow_attrs_ &&
+            !Subset(it_remove->value, *allow_attrs_.get())) {
           return false;
         }
         // Step 7.1.1.4: If dataAttributes exists and dataAttributes is true:
         if (data_attrs_ == SanitizerBoolWithAbsence::kTrue) {
           // Step 7.1.1.5: element[attributes] does not contain a custom data
           // attribute.
-          if (allow_attrs_per_element_.Contains(element)) {
-            for (const auto& attr : allow_attrs_per_element_.at(element)) {
+          if (it_allow != allow_attrs_per_element_.end()) {
+            for (const auto& attr : it_allow->value) {
               if (attr.LocalName().starts_with("data-")) {
                 return false;
               }
@@ -1393,23 +1393,24 @@ bool Sanitizer::isValid() const {
     // config[elements]:
     if (allow_elements_) {
       for (const auto& element : *allow_elements_) {
+        auto it_allow = allow_attrs_per_element_.find(element);
+        auto it_remove = remove_attrs_per_element_.find(element);
+        bool has_allow = it_allow != allow_attrs_per_element_.end();
+        bool has_remove = it_remove != remove_attrs_per_element_.end();
         // Step 8.1.1: Not both element[attributes] and
         // element[removeAttributes] exist.
-        if (allow_attrs_per_element_.Contains(element) &&
-            remove_attrs_per_element_.Contains(element)) {
+        if (has_allow && has_remove) {
           return false;
         }
         // Step 8.1.2: [No dupes.] (Not meaningful, since we're using sets.)
         // Step 8.1.3: The intersection of config[removeAttributes] and
         //   element[attributes] [..] is empty.
-        if (allow_attrs_per_element_.Contains(element) &&
-            Intersect(remove_attrs_, allow_attrs_per_element_.at(element))) {
+        if (has_allow && Intersect(remove_attrs_, it_allow->value)) {
           return false;
         }
         // Step 8.1.4: The intersection of config[removeAttributes] and
         //   element[removeAttributes] [..] is empty.
-        if (remove_attrs_per_element_.Contains(element) &&
-            Intersect(remove_attrs_, remove_attrs_per_element_.at(element))) {
+        if (has_remove && Intersect(remove_attrs_, it_remove->value)) {
           return false;
         }
       }
