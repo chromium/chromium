@@ -34,6 +34,9 @@ DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTab2);
 using DeepQuery = WebContentsInteractionTestUtil::DeepQuery;
 const DeepQuery kWebUIInput = {"omnibox-full-app", "omnibox-popup-searchbox",
                                "cr-searchbox-input", "#input"};
+const DeepQuery kFirstSuggestionMatch = {
+    "omnibox-full-app", "omnibox-popup-searchbox", "cr-searchbox-dropdown",
+    "cr-searchbox-match[match-index='1']"};
 const DeepQuery kFirstSuggestionMatchContents = {
     "omnibox-full-app", "omnibox-popup-searchbox", "cr-searchbox-dropdown",
     "cr-searchbox-match[match-index='1']", "#contents"};
@@ -373,4 +376,19 @@ IN_PROC_BROWSER_TEST_F(FullWebUIOmniboxInteractiveTest, ClearAndSwitchTab) {
       // permanent URL of Tab 1 instead of an empty string.
       WaitForViewProperty(kOmniboxElementId, views::Textfield, Text,
                           u"chrome://version"));
+}
+
+// Verifies that clicking a match navigates to the suggestion.
+IN_PROC_BROWSER_TEST_F(FullWebUIOmniboxInteractiveTest, ClickMatch) {
+  RunTestSequence(
+      // Open Tab 1 and focus Omnibox to open WebUI popup.
+      OpenInitialTabAndFocusOmnibox(kTab1, GURL("chrome://version/")),
+      InputWebUIText("a"),
+      // Wait for the first suggestion to appear.
+      WaitForMatch(kPopupWebView, kFirstSuggestionMatchContents,
+                   "suggestion-1"),
+      // Click the first suggestion.
+      InSameContext(ClickElement(kPopupWebView, kFirstSuggestionMatch)),
+      // Verify navigation occurs.
+      WaitForGoogleSearch(kTab1, {{"q", "suggestion-1"}}));
 }

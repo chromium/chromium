@@ -661,4 +661,50 @@ suite('OmniboxPopupSearchboxTest', function() {
     assertEquals(SelectionLineState.kNormal, selection.state);
     assertEquals(0, selection.actionIndex);
   });
+
+  test('InputWrapperFocusout', async () => {
+    // Set input value to match results.
+    searchbox.getInputElement().inputElement.value = 'hello';
+    searchbox.lastQueriedInput = 'hello';
+    searchbox.activeQueryId = 0;
+
+    // Populate results to make dropdown visible.
+    testProxy.page.autocompleteResultChanged(
+        createAutocompleteResultForTesting({
+          input: 'hello',
+          matches: [
+            createSearchMatchForTesting({
+              allowedToBeDefaultMatch: true,
+              fillIntoEdit: 'hello world',
+            }),
+          ],
+        }));
+    await microtasksFinished();
+    assertTrue(searchbox.dropdownIsVisible);
+
+    // Focus stays inside wrapper.
+    const matchesEl = searchbox.$.matches;
+    searchbox.$.inputWrapper.dispatchEvent(new FocusEvent('focusout', {
+      relatedTarget: matchesEl,
+      bubbles: true,
+      composed: true,
+    }));
+    await microtasksFinished();
+
+    // Verify matches are not cleared and dropdown remains visible.
+    assertTrue(searchbox.dropdownIsVisible);
+    assertEquals(0, handler.getCallCount('revert'));
+
+    // Focus goes outside wrapper.
+    searchbox.$.inputWrapper.dispatchEvent(new FocusEvent('focusout', {
+      relatedTarget: document.body,
+      bubbles: true,
+      composed: true,
+    }));
+    await microtasksFinished();
+
+    // Verify matches are cleared and dropdown is hidden.
+    assertFalse(searchbox.dropdownIsVisible);
+    assertEquals(0, handler.getCallCount('revert'));
+  });
 });

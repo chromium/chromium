@@ -590,11 +590,19 @@ export class OmniboxPopupSearchboxElement extends
     // searchboxPageHandler_.onFocusChanged(false) via our pageHandler()
     // override.
     super.onInputWrapperFocusout(e);
-    this.$.input.blur();
-    // Clear autocomplete results so clicking into omnibox_view_views registers
-    // that the popup is closed. This enables select_all_on_mouse_release_
-    // (in omnibox_view_views) to be set to the correct value.
-    this.clearAutocompleteMatches();
+    const newlyFocusedEl = e.relatedTarget as Element;
+    // Check if the focus has completely left the searchbox wrapper, and not
+    // just moved to another internal child element (e.g., the match).
+    const isOutside = !this.getWrapperElement().contains(newlyFocusedEl);
+
+    if (isOutside) {
+      this.$.input.blur();
+      // Clear autocomplete results so clicking into omnibox_view_views
+      // registers that the popup is closed. This enables
+      // select_all_on_mouse_release_ (in omnibox_view_views) to be set to the
+      // correct value.
+      this.clearAutocompleteMatches();
+    }
   }
 
   protected onVoiceSearchClick_() {
