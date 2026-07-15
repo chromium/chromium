@@ -205,18 +205,10 @@ void AutofillAiPersonalContextAccessManagerImpl::
   }
 
   std::vector<EntityType> prefetched_types;
-  std::vector<SpiiEntityPresenceSignal> presence_signals;
 
   for (const EntityType& type : requested_types) {
     if (!requested_spii_presence || !IsPersonalContextSpiiType(type)) {
       prefetched_types.push_back(type);
-    }
-  }
-
-  for (const ParsedEntity& parsed_entity : *parsed_entities) {
-    if (const SpiiEntityPresenceSignal* signal =
-            std::get_if<SpiiEntityPresenceSignal>(&parsed_entity.instance)) {
-      presence_signals.push_back(*signal);
     }
   }
 
