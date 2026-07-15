@@ -17896,7 +17896,7 @@
             ]
         }
     ],
-    "OnDeviceCategoryClassiferAndroid": [
+    "OnDeviceCategoryClassifierAndroid": [
         {
             "platforms": [
                 "android"
