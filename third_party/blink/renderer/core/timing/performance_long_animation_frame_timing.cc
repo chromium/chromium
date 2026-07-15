@@ -33,9 +33,11 @@ PerformanceLongAnimationFrameTiming::Create(
       DOMWindowPerformance::performance(*source->ToLocalDOMWindow());
   DOMHighResTimeStamp startTime =
       performance->MonotonicTimeToDOMHighResTimeStamp(info->FrameStartTime());
-  double duration = paint_timing_info
-                        ? (paint_timing_info->paint_time - startTime)
-                        : info->Duration().InMillisecondsF();
+  double duration =
+      paint_timing_info
+          ? (paint_timing_info->paint_time - startTime)
+          : Performance::ClampTimeResolution(info->Duration(),
+                                             cross_origin_isolated_capability);
   PerformanceLongAnimationFrameTiming* entry =
       MakeGarbageCollected<PerformanceLongAnimationFrameTiming>(
           duration, startTime, info, time_origin,
