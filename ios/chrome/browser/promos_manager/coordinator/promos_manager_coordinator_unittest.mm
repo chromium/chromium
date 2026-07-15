@@ -302,5 +302,28 @@ TEST_F(PromosManagerCoordinatorTest,
   EXPECT_OCMOCK_VERIFY(mockCoordinator);
 }
 
+// Tests that confirmationAlertPrimaryAction safely handles when the promo
+// coordinator is stopped (clearing self.provider) during
+// standardPromoPrimaryAction.
+TEST_F(PromosManagerCoordinatorTest,
+       ConfirmationAlertPrimaryActionStopsCoordinator) {
+  CreatePromosManagerCoordinator();
+
+  id provider = OCMProtocolMock(@protocol(StandardPromoViewProvider));
+  coordinator_.provider = provider;
+
+  OCMStub([provider standardPromoPrimaryAction])
+      .andDo(^(NSInvocation* invocation) {
+        [coordinator_ stop];
+        // In production, calling `-stop` clears `_viewProviderPromos`, setting
+        // the weak `provider` property on the coordinator to nil.
+        coordinator_.provider = nil;
+      });
+
+  // Calling confirmationAlertPrimaryAction should not crash or DCHECK when
+  // `stop` clears `coordinator_.provider`.
+  [coordinator_ confirmationAlertPrimaryAction];
+}
+
 // TODO(crbug.com/40241101): Add unit tests for promoWasDisplayed being
 // called when promo is displayed.

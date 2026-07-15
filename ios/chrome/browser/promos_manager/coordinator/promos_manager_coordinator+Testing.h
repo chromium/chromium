@@ -22,6 +22,12 @@
 - (void)presentationControllerDidDismiss:
     (UIPresentationController*)presentationController;
 
+// ConfirmationAlertActionHandler.
+- (void)confirmationAlertPrimaryAction;
+
+// PromoStyleViewControllerDelegate.
+- (void)didTapPrimaryActionButton;
+
 // Dismisses the promo.
 - (void)dismissPromo;
 

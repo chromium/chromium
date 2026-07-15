@@ -420,7 +420,9 @@
 
 // Invoked when the primary action button is tapped.
 - (void)didTapPrimaryActionButton {
-  DCHECK(self.banneredProvider);
+  if (!self.banneredProvider) {
+    return;
+  }
 
   if (![self.banneredProvider
           respondsToSelector:@selector(standardPromoPrimaryAction)]) {
@@ -433,7 +435,9 @@
 
 // Invoked when the secondary action button is tapped.
 - (void)didTapSecondaryActionButton {
-  DCHECK(self.banneredProvider);
+  if (!self.banneredProvider) {
+    return;
+  }
 
   // Sometimes the secondary action button for a PromoStyleViewController is
   // used as the dismiss action button.
@@ -450,7 +454,9 @@
 
 // Invoked when the tertiary action button is tapped.
 - (void)didTapTertiaryActionButton {
-  DCHECK(self.banneredProvider);
+  if (!self.banneredProvider) {
+    return;
+  }
 
   if (![self.banneredProvider
           respondsToSelector:@selector(standardPromoTertiaryAction)]) {
@@ -468,7 +474,9 @@
 #pragma mark - ConfirmationAlertActionHandler
 
 - (void)confirmationAlertPrimaryAction {
-  DCHECK(self.provider);
+  if (!self.provider) {
+    return;
+  }
 
   if (![self.provider
           respondsToSelector:@selector(standardPromoPrimaryAction)]) {
@@ -480,7 +488,9 @@
 }
 
 - (void)confirmationAlertSecondaryAction {
-  DCHECK(self.provider);
+  if (!self.provider) {
+    return;
+  }
 
   if (![self.provider
           respondsToSelector:@selector(standardPromoSecondaryAction)]) {
@@ -492,7 +502,9 @@
 }
 
 - (void)confirmationAlertTertiaryAction {
-  DCHECK(self.provider);
+  if (!self.provider) {
+    return;
+  }
 
   if (![self.provider
           respondsToSelector:@selector(standardPromoTertiaryAction)]) {
@@ -506,7 +518,9 @@
 
 - (void)presentationControllerDidDismiss:
     (UIPresentationController*)presentationController {
-  DCHECK(self.provider || self.banneredProvider);
+  if (!self.provider && !self.banneredProvider) {
+    return;
+  }
 
   if ([self.provider respondsToSelector:@selector(standardPromoDismissSwipe)]) {
     [self.provider standardPromoDismissSwipe];
@@ -524,7 +538,9 @@
 
 // Dismisses the promo.
 - (void)dismissPromo {
-  DCHECK(self.provider || self.banneredProvider);
+  if (!self.provider && !self.banneredProvider) {
+    return;
+  }
 
   if ([self.provider
           respondsToSelector:@selector(standardPromoDismissAction)]) {
