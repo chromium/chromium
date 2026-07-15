@@ -1119,7 +1119,11 @@ void CopyTextureResourceManagerImpl::DoCopySubTexture(
         adjusted_internal_format);
     GLenum type =
         TextureManager::ExtractTypeFromStorageFormat(adjusted_internal_format);
-
+    // Allocate from client memory, not from any currently bound unpack
+    // buffer. The binding is restored by the calls below.
+    if (decoder->GetFeatureInfo()->IsES3Capable()) {
+      glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0);
+    }
     glTexImage2D(dest_target, 0, adjusted_internal_format, width, height, 0,
                  format, type, nullptr);
     dest_texture = intermediate_texture;
@@ -1204,6 +1208,11 @@ void CopyTextureResourceManagerImpl::DoCopyTexture(
         adjusted_internal_format);
     GLenum type =
         TextureManager::ExtractTypeFromStorageFormat(adjusted_internal_format);
+    // Allocate from client memory, not from any currently bound unpack
+    // buffer. The binding is restored by the calls below.
+    if (decoder->GetFeatureInfo()->IsES3Capable()) {
+      glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0);
+    }
     glTexImage2D(dest_target, 0, adjusted_internal_format, width, height, 0,
                  format, type, nullptr);
     dest_texture = intermediate_texture;
