@@ -87,10 +87,7 @@ template("mojom_rust") {
       if (defined(rust_typemaps)) {
         inputs += [ "$target_gen_dir/${base_name}_typemap.json" ]
       }
-      sources =
-          sources_list +
-          # Not totally sure if this really belongs here, but better to be safe
-          [ "$root_gen_dir/mojo/public/tools/bindings/rust_templates.zip" ]
+      sources = sources_list
 
       deps = [
         ":$parser_target_name",
