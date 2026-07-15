@@ -21,6 +21,8 @@ import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.content.common.ContentInternalFeatures;
+import org.chromium.content_public.browser.ContentFeatureMap;
 import org.chromium.content_public.browser.InputMethodManagerWrapper;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.display.DisplayAndroid;
@@ -115,14 +117,20 @@ public class InputMethodManagerWrapperImpl implements InputMethodManagerWrapper 
         return DisplayAndroid.getNonMultiDisplay(context).getDisplayId();
     }
 
+    private boolean disableWorkAroundForImeFocus() {
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.BAKLAVA
+                && ContentFeatureMap.isEnabled(
+                        ContentInternalFeatures.ANDROID_REMOVE_SET_LOCAL_FOCUS_WORKAROUND_ON_BAKLAVA);
+    }
+
     @Override
     public void showSoftInput(View view, int flags, ResultReceiver resultReceiver) {
         if (DEBUG_LOGS) Log.i(TAG, "showSoftInput");
         mPendingRunnableOnInputConnection = null;
         Activity activity = getActivityFromWindowAndroid(mWindowAndroid);
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.BAKLAVA
-                && activity != null
-                && !hasCorrectDisplayId(mContext, activity)) {
+        if (activity != null
+                && !hasCorrectDisplayId(mContext, activity)
+                && !disableWorkAroundForImeFocus()) {
             // https://crbug.com/1021403
             // This is a workaround for multi-display case. We need this as long as
             // Chrome uses the application context for creating the content view.

@@ -29,6 +29,9 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.content.common.ContentInternalFeatures;
 import org.chromium.content_public.browser.InputMethodManagerWrapper;
 import org.chromium.ui.base.WindowAndroid;
 import org.robolectric.annotation.Config;
@@ -265,6 +268,7 @@ public class InputMethodManagerWrapperImplTest {
 
     @Test
     @Config(minSdk = Build.VERSION_CODES.BAKLAVA)
+    @EnableFeatures(ContentInternalFeatures.ANDROID_REMOVE_SET_LOCAL_FOCUS_WORKAROUND_ON_BAKLAVA)
     public void testMultiDisplaysOnBaklavaAndAbove() throws Exception {
         when(mWindowAndroid.getActivity()).thenReturn(new WeakReference<Activity>(mActivity));
         setDisplayIds(0, 1); // context and activity have different display IDs
@@ -273,8 +277,25 @@ public class InputMethodManagerWrapperImplTest {
 
         mImmw.showSoftInput(mView, 0, null);
 
-        // On Baklava and above, the multi-display workaround and delay are skipped,
-        // so showSoftInput is called immediately even without an InputConnection.
+        // On Baklava and above, when the feature is enabled, the multi-display workaround and delay
+        // are skipped, so showSoftInput is called immediately even without an InputConnection.
         mInOrder.verify(mInputMethodManager).showSoftInput(mView, 0, null);
+    }
+
+    @Test
+    @Config(minSdk = Build.VERSION_CODES.BAKLAVA)
+    @DisableFeatures(ContentInternalFeatures.ANDROID_REMOVE_SET_LOCAL_FOCUS_WORKAROUND_ON_BAKLAVA)
+    public void testMultiDisplaysOnBaklavaAndAbove_featureDisabled() throws Exception {
+        when(mWindowAndroid.getActivity()).thenReturn(new WeakReference<Activity>(mActivity));
+        setDisplayIds(0, 1); // context and activity have different display IDs
+        when(mDelegate.hasInputConnection()).thenReturn(false);
+        when(mInputMethodManager.isActive(mView)).thenReturn(true);
+
+        mImmw.showSoftInput(mView, 0, null);
+
+        // On Baklava and above, when the feature is disabled, we still run the multi-display
+        // workaround and delay waiting for InputConnection.
+        mInOrder.verify(mWindow).setLocalFocus(true, true);
+        mInOrder.verifyNoMoreInteractions();
     }
 }
