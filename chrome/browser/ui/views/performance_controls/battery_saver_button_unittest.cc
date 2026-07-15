@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/views/performance_controls/battery_saver_button.h"
 
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/performance_manager/test_support/test_user_performance_tuning_manager_environment.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/performance_controls/performance_controls_metrics.h"
@@ -14,9 +13,7 @@
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/testing_browser_process.h"
-#include "components/performance_manager/public/features.h"
 #include "components/performance_manager/public/user_tuning/prefs.h"
-#include "components/prefs/testing_pref_service.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/events/event_utils.h"
 #include "ui/views/bubble/bubble_dialog_model_host.h"

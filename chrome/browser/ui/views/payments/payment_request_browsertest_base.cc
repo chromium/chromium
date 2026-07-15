@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/views/payments/payment_request_browsertest_base.h"
 
-#include <algorithm>
 #include <iostream>
 #include <memory>
 #include <string>
@@ -13,10 +12,8 @@
 
 #include "base/command_line.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_helpers.h"
 #include "base/notimplemented.h"
 #include "base/run_loop.h"
-#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/payments/payment_request_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -40,7 +37,6 @@
 #include "components/network_session_configurator/common/network_switches.h"
 #include "components/payments/content/payment_request.h"
 #include "components/payments/core/payment_prefs.h"
-#include "components/prefs/pref_service.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
@@ -48,7 +44,6 @@
 #include "content/public/test/browser_test_utils.h"
 #include "net/dns/mock_host_resolver.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/test/ui_controls.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event.h"
 #include "ui/gfx/animation/test_animation_delegate.h"

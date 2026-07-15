@@ -16,7 +16,6 @@
 #include "chrome/test/payments/payment_app_install_util.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
-#include "components/network_session_configurator/common/network_switches.h"
 #include "components/payments/content/service_worker_payment_app_finder.h"
 #include "components/payments/content/test_payment_manifest_downloader.h"
 #include "components/payments/core/features.h"

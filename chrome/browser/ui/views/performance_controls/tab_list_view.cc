@@ -10,8 +10,6 @@
 #include "chrome/browser/ui/views/performance_controls/tab_list_row_view.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/performance_manager/public/resource_attribution/page_context.h"
-#include "content/public/browser/web_contents.h"
-#include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/accessibility/view_accessibility.h"

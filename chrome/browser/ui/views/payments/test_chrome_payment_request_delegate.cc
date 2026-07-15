@@ -10,10 +10,8 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/task/single_thread_task_runner.h"
-#include "components/payments/core/error_logger.h"
 #include "components/webauthn/content/browser/internal_authenticator_impl.h"
 #include "content/public/browser/render_frame_host.h"
-#include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace payments {
 namespace {

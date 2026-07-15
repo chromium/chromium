@@ -3,21 +3,15 @@
 // found in the LICENSE file.
 
 #include "base/strings/string_util.h"
-#include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/views/payments/payment_request_browsertest_base.h"
 #include "chrome/browser/ui/views/payments/payment_request_dialog_view_ids.h"
 #include "chrome/test/payments/payment_app_install_util.h"
 #include "components/omnibox/browser/buildflags.h"
 #include "components/payments/content/icon/icon_size.h"
-#include "components/payments/core/features.h"
-#include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/common/features_generated.h"
-#include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.h"
 #include "ui/views/controls/image_view.h"
 
 namespace payments {

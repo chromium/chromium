@@ -9,11 +9,8 @@
 #include <utility>
 
 #include "base/functional/bind.h"
-#include "base/functional/callback_helpers.h"
-#include "base/notreached.h"
 #include "chrome/browser/ui/performance_controls/performance_controls_metrics.h"
 #include "chrome/browser/ui/performance_controls/performance_intervention_bubble_delegate.h"
-#include "chrome/browser/ui/performance_controls/performance_intervention_bubble_observer.h"
 #include "chrome/browser/ui/performance_controls/performance_intervention_button_controller.h"
 #include "chrome/browser/ui/performance_controls/tab_list_model.h"
 #include "chrome/browser/ui/views/performance_controls/performance_intervention_button.h"
@@ -21,7 +18,6 @@
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/performance_manager/public/features.h"
-#include "components/strings/grit/components_strings.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/dialog_model.h"

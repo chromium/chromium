@@ -6,7 +6,6 @@
 
 #include <memory>
 #include <utility>
-#include <vector>
 
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
@@ -14,14 +13,11 @@
 #include "chrome/browser/ui/views/payments/payment_request_sheet_controller.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/theme_resources.h"
-#include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
-#include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "components/autofill/core/browser/data_quality/autofill_data_util.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/geo/phone_number_i18n.h"
 #include "components/payments/content/icon/icon_size.h"
-#include "components/payments/core/payment_options_provider.h"
 #include "components/payments/core/payment_request_data_util.h"
 #include "components/payments/core/payments_profile_comparator.h"
 #include "components/payments/core/strings_util.h"
@@ -38,8 +34,6 @@
 #include "ui/color/color_provider.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/canvas.h"
-#include "ui/gfx/color_utils.h"
-#include "ui/gfx/font_list.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/paint_vector_icon.h"

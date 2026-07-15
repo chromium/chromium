@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/feature_list.h"
 #include "base/strings/string_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/app/vector_icons/vector_icons.h"
@@ -21,7 +20,6 @@
 #include "components/payments/content/secure_payment_confirmation_model.h"
 #include "components/payments/core/sizes.h"
 #include "components/vector_icons/vector_icons.h"
-#include "third_party/blink/public/common/features.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
@@ -39,7 +37,6 @@
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/layout/layout_types.h"
-#include "ui/views/layout/table_layout.h"
 #include "ui/views/metadata/view_factory.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/view_class_properties.h"

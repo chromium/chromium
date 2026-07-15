@@ -7,7 +7,6 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/views/payments/payment_request_dialog_view.h"
 #include "chrome/browser/ui/views/payments/payment_request_dialog_view_ids.h"
 #include "chrome/browser/ui/views/payments/payment_request_row_view.h"
@@ -18,14 +17,7 @@
 #include "components/payments/core/strings_util.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/gfx/geometry/insets.h"
-#include "ui/gfx/paint_vector_icon.h"
-#include "ui/native_theme/native_theme.h"
-#include "ui/views/controls/button/label_button.h"
-#include "ui/views/controls/button/md_text_button.h"
-#include "ui/views/controls/image_view.h"
 #include "ui/views/layout/box_layout.h"
-#include "ui/views/layout/fill_layout.h"
 
 namespace payments {
 

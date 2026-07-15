@@ -8,7 +8,6 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/views/payments/payment_request_browsertest_base.h"
-#include "chrome/browser/ui/views/payments/payment_request_dialog_view.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/payments/core/features.h"
 #include "components/payments/core/journey_logger.h"

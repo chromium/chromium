@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include <string_view>
-#include <vector>
 
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"

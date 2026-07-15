@@ -5,8 +5,6 @@
 #include <string>
 #include <vector>
 
-#include "base/run_loop.h"
-#include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/views/payments/editor_view_controller.h"
@@ -15,22 +13,17 @@
 #include "chrome/browser/ui/views/payments/validating_textfield.h"
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager_test_utils.h"
-#include "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/geo/test_region_data_loader.h"
-#include "components/autofill/core/browser/payments/payments_service_url.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/browser/test_utils/test_autofill_clock.h"
 #include "components/payments/content/payment_request.h"
 #include "components/payments/content/payment_request_spec.h"
-#include "components/payments/core/features.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/test/browser_test.h"
-#include "content/public/test/browser_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/controls/combobox/combobox.h"
-#include "ui/views/controls/styled_label.h"
 
 namespace payments {
 

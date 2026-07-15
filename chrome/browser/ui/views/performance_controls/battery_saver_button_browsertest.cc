@@ -4,10 +4,6 @@
 
 #include "chrome/browser/ui/views/performance_controls/battery_saver_button.h"
 
-#include "base/power_monitor/battery_state_sampler.h"
-#include "base/test/bind.h"
-#include "base/test/power_monitor_test_utils.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/performance_manager/public/user_tuning/battery_saver_mode_manager.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/chrome_pages.h"
@@ -22,19 +18,14 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/user_education/interactive_feature_promo_test.h"
 #include "components/feature_engagement/public/feature_constants.h"
-#include "components/feature_engagement/public/feature_list.h"
 #include "components/feature_engagement/public/tracker.h"
-#include "components/performance_manager/public/features.h"
-#include "components/performance_manager/public/user_tuning/prefs.h"
 #include "components/user_education/views/help_bubble_view.h"
-#include "components/user_education/views/help_bubble_views.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "ui/views/bubble/bubble_dialog_model_host.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/interaction/interaction_test_util_views.h"
 #include "ui/views/test/widget_test.h"
-#include "ui/views/view_utils.h"
 #include "ui/views/widget/any_widget_observer.h"
 
 class BatterySaverHelpPromoTest

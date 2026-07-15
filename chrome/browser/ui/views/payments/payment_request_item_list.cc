@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/views/payments/payment_request_item_list.h"
 
-#include <algorithm>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -17,9 +16,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/ui_base_features.h"
-#include "ui/gfx/color_utils.h"
 #include "ui/gfx/geometry/insets.h"
-#include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/controls/button/button.h"

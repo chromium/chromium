@@ -5,9 +5,7 @@
 #include "chrome/browser/ui/views/performance_controls/performance_intervention_button.h"
 
 #include <memory>
-#include <string>
 
-#include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
