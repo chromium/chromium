@@ -124,6 +124,7 @@ public class BasicListMenu implements ListMenu {
     private final ModelListAdapter mContentAdapter;
 
     private final ContentListOnScrollChangeListener mScrollChangeListener;
+    private final List<View.OnScrollChangeListener> mScrollChangeListeners = new ArrayList<>();
 
     private final List<Runnable> mClickRunnables = new ArrayList<>();
 
@@ -183,7 +184,17 @@ public class BasicListMenu implements ListMenu {
 
         mScrollChangeListener =
                 new ContentListOnScrollChangeListener(hairline, () -> !mHeaderModelList.isEmpty());
-        mContentListView.setOnScrollChangeListener(mScrollChangeListener);
+
+        // Multiplex scroll listeners to allow both internal hairline logic and external
+        // listeners (e.g. scroll-to-dismiss for flyout menus) to co-exist.
+        mContentListView.setOnScrollChangeListener(
+                (v, scrollX, scrollY, oldScrollX, oldScrollY) -> {
+                    mScrollChangeListener.onScrollChange(
+                            v, scrollX, scrollY, oldScrollX, oldScrollY);
+                    for (var listener : mScrollChangeListeners) {
+                        listener.onScrollChange(v, scrollX, scrollY, oldScrollX, oldScrollY);
+                    }
+                });
     }
 
     @Override
@@ -323,5 +334,10 @@ public class BasicListMenu implements ListMenu {
 
     public View.OnScrollChangeListener getScrollChangeListenerForTesting() {
         return mScrollChangeListener;
+    }
+
+    @Override
+    public void addOnScrollListener(View.OnScrollChangeListener listener) {
+        mScrollChangeListeners.add(listener);
     }
 }

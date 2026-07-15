@@ -7,7 +7,9 @@ package org.chromium.ui.hierarchicalmenu;
 import android.graphics.Rect;
 import android.os.Handler;
 import android.view.View;
+import android.widget.ListView;
 
+import org.chromium.base.Callback;
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -95,9 +97,14 @@ public class FlyoutController<T> implements Destroyable {
          * @param modelList The {@link ModelList} to show.
          * @param view The View that got the hover.
          * @param dismissRunnable Runnable to run when the window is dismissed.
+         * @param scrollListener The scroll listener to attach to the flyout popup.
          * @return The created popup of type {@link T}.
          */
-        T createAndShowFlyoutPopup(List<ListItem> modelList, View view, Runnable dismissRunnable);
+        T createAndShowFlyoutPopup(
+                List<ListItem> modelList,
+                View view,
+                Runnable dismissRunnable,
+                View.OnScrollChangeListener scrollListener);
 
         /**
          * Callback triggered after one or more flyout popups are removed.
@@ -115,18 +122,22 @@ public class FlyoutController<T> implements Destroyable {
      * @param mainPopup The main, first level window of type T.
      * @param menuController The {@link HierarchicalMenuController} coordinating the nesting of
      *     windows of type T.
+     * @param scrollListenerAttacher Callback to attach the scroll listener to the main popup.
      */
     public FlyoutController(
             FlyoutHandler<T> flyoutHandler,
             HierarchicalMenuKeyProvider keyProvider,
             T mainPopup,
-            HierarchicalMenuController<T> menuController) {
+            HierarchicalMenuController<T> menuController,
+            Callback<View.OnScrollChangeListener> scrollListenerAttacher) {
         mFlyoutHandler = flyoutHandler;
         mKeyProvider = keyProvider;
         mMenuController = menuController;
 
         mPopups = new ArrayList<>();
         mPopups.add(new FlyoutPopupEntry<>(null, mainPopup));
+
+        scrollListenerAttacher.onResult(new ThresholdScrollListener(0));
     }
 
     /**
@@ -301,7 +312,8 @@ public class FlyoutController<T> implements Destroyable {
                         view,
                         () -> {
                             removeFlyoutWindows(levelOfHoveredItem + 1);
-                        });
+                        },
+                        new ThresholdScrollListener(levelOfHoveredItem + 1));
         mPopups.add(new FlyoutPopupEntry<T>(item, popup));
 
         assert mPopups.size() > 1;
@@ -384,5 +396,39 @@ public class FlyoutController<T> implements Destroyable {
             popups.add(entry.popupWindow);
         }
         return popups;
+    }
+
+    /**
+     * A scroll listener that triggers an action only when the scroll distance exceeds a threshold.
+     */
+    private class ThresholdScrollListener implements View.OnScrollChangeListener {
+        private final int mLevel;
+        private @Nullable Integer mLatestFirstVisiblePosition;
+
+        public ThresholdScrollListener(int level) {
+            mLevel = level;
+        }
+
+        @Override
+        public void onScrollChange(
+                View v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
+            // All menus managed by {@link FlyoutController} currently use {@link ListView}.
+            assert v instanceof ListView;
+            ListView listView = (ListView) v;
+
+            // Android's View.getScrollY() (which populates scrollY) always returns 0 for
+            // ListView. We cannot use the scrollY arguments directly, and must use
+            // getFirstVisiblePosition() to detect scrolling.
+            int firstVisiblePosition = listView.getFirstVisiblePosition();
+            if (mLatestFirstVisiblePosition == null) {
+                mLatestFirstVisiblePosition = firstVisiblePosition;
+                return;
+            }
+
+            if (firstVisiblePosition != mLatestFirstVisiblePosition) {
+                removeFlyoutWindows(mLevel + 1);
+                mLatestFirstVisiblePosition = firstVisiblePosition;
+            }
+        }
     }
 }

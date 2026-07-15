@@ -259,7 +259,10 @@ public class ListMenuHost
         AnchoredPopupWindow popupMenu = builder.build();
         getHierarchicalMenuControllerInternal()
                 .setupFlyoutController(
-                        /* flyoutHandler= */ this, popupMenu, /* drillDownOverrideValue= */ null);
+                        /* flyoutHandler= */ this,
+                        popupMenu,
+                        menu::addOnScrollListener,
+                        /* drillDownOverrideValue= */ null);
 
         if (sPopupMenuHelperForTesting != null) {
             AnchoredPopupWindow spiedPopupMenu =
@@ -289,7 +292,10 @@ public class ListMenuHost
 
     @Override
     public AnchoredPopupWindow createAndShowFlyoutPopup(
-            List<ListItem> items, View view, Runnable dismissRunnable) {
+            List<ListItem> items,
+            View view,
+            Runnable dismissRunnable,
+            View.OnScrollChangeListener scrollListener) {
         if (mDelegate == null) throw new IllegalStateException("Delegate was not set.");
         ListMenu menu = mDelegate.getListMenuFromItems(items);
         assert menu != null;
@@ -325,6 +331,7 @@ public class ListMenuHost
                                 })
                         .build();
 
+        menu.addOnScrollListener(scrollListener);
         popupMenu.show();
         return popupMenu;
     }

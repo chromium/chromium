@@ -501,6 +501,10 @@ class AppMenu implements OnKeyListener {
         mHierarchicalMenuController.setupFlyoutController(
                 /* flyoutHandler= */ flyoutHandler,
                 new AppMenuPopup(popup),
+                (listener) -> {
+                    assert mListView != null;
+                    mListView.setOnScrollChangeListener(listener);
+                },
                 /* drillDownOverrideValue= */ null);
 
         mHierarchicalMenuController.setupBackPressBehaviorForPopupWindow(
@@ -556,9 +560,13 @@ class AppMenu implements OnKeyListener {
      * @param adapter The {@link ListAdapter} containing the items to display in the new flyout.
      * @param view The menu item {@link View} that is triggering this flyout (used as the anchor).
      * @param dismissRunnable The runnable to run after the window is dismissed.
+     * @param scrollListener The scroll listener to attach to the flyout popup.
      */
     public AppMenuPopup createAndShowFlyoutPopup(
-            ListAdapter adapter, View view, Runnable dismissRunnable) {
+            ListAdapter adapter,
+            View view,
+            Runnable dismissRunnable,
+            View.OnScrollChangeListener scrollListener) {
         assert mContext != null;
         View contentView =
                 createAppMenuContentView(mContext, /* addTopPaddingBeforeFirstRow= */ true);
@@ -566,6 +574,7 @@ class AppMenu implements OnKeyListener {
         ListView listView = contentView.findViewById(R.id.app_menu_list);
         listView.setAdapter(adapter);
         listView.setItemsCanFocus(true);
+        listView.setOnScrollChangeListener(scrollListener);
 
         final int lateralPadding = contentView.getPaddingLeft() + contentView.getPaddingRight();
         int maxWidth =

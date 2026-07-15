@@ -56,6 +56,7 @@ public class TabOverflowMenuHolder<T> {
     private final ModelList mModelList;
     private final @Nullable LifetimeAssert mLifetimeAssert = LifetimeAssert.create(this);
     private AnchoredPopupWindow mMenuWindow;
+    private final TouchTrackingListView mListView;
 
     TabOverflowMenuHolder(
             RectProvider anchorViewRectProvider,
@@ -91,8 +92,7 @@ public class TabOverflowMenuHolder<T> {
         mContentView = LayoutInflater.from(mContext).inflate(menuLayout, null);
         ListMenuUtils.clipContentViewOutline(mContentView, R.attr.popupBgCornerRadius);
 
-        TouchTrackingListView touchTrackingListView =
-                mContentView.findViewById(R.id.tab_group_action_menu_list);
+        mListView = mContentView.findViewById(R.id.tab_group_action_menu_list);
         ListMenuItemAdapter adapter =
                 createAdapter(
                         modelList,
@@ -109,11 +109,11 @@ public class TabOverflowMenuHolder<T> {
                                     model.get(MENU_ITEM_ID),
                                     id,
                                     collaborationId,
-                                    /* listViewTouchTracker= */ touchTrackingListView);
+                                    /* listViewTouchTracker= */ mListView);
                             mMenuWindow.dismiss();
                         });
-        touchTrackingListView.setItemsCanFocus(true);
-        touchTrackingListView.setAdapter(adapter);
+        mListView.setItemsCanFocus(true);
+        mListView.setAdapter(adapter);
 
         View decorView = activity.getWindow().getDecorView();
 
@@ -140,7 +140,7 @@ public class TabOverflowMenuHolder<T> {
             builder.setAnimationStyle(R.style.PopupWindowAnimFade);
             builder.setSpecCalculator(new FlyoutPopupSpecCalculator());
             builder.setDesiredContentWidth(
-                    UiUtils.computeListAdapterContentDimensions(adapter, touchTrackingListView)[0]);
+                    UiUtils.computeListAdapterContentDimensions(adapter, mListView)[0]);
         } else {
             // Override animation style or animate from anchor as default.
             if (animStyle == Resources.ID_NULL) {
@@ -201,5 +201,9 @@ public class TabOverflowMenuHolder<T> {
         // If mLifetimeAssert is GC'ed before this is called, it will throw an exception
         // with a stack trace showing the stack during LifetimeAssert.create().
         LifetimeAssert.destroy(mLifetimeAssert);
+    }
+
+    void setOnScrollChangeListener(View.OnScrollChangeListener listener) {
+        mListView.setOnScrollChangeListener(listener);
     }
 }

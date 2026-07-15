@@ -358,6 +358,7 @@ public class ContextMenuCoordinator implements ContextMenuUi, FlyoutHandler<Cont
         mHierarchicalMenuController.setupFlyoutController(
                 /* flyoutHandler= */ this,
                 dialog,
+                listView::setOnScrollChangeListener,
                 /* drillDownOverrideValue= */ mUsePopupWindow ? null : true);
         dialog.setBackPressHandler(
                 new BackPressHandler() {
@@ -391,7 +392,10 @@ public class ContextMenuCoordinator implements ContextMenuUi, FlyoutHandler<Cont
 
     @Override
     public ContextMenuDialog createAndShowFlyoutPopup(
-            List<ListItem> items, View view, Runnable dismissRunnable) {
+            List<ListItem> items,
+            View view,
+            Runnable dismissRunnable,
+            View.OnScrollChangeListener scrollListener) {
         assert view != null;
         assert mUsePopupWindow;
 
@@ -424,6 +428,7 @@ public class ContextMenuCoordinator implements ContextMenuUi, FlyoutHandler<Cont
                             dismissRunnable.run();
                         });
 
+        listView.setOnScrollChangeListener(scrollListener);
         dialog.show();
         return dialog;
     }

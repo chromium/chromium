@@ -170,7 +170,10 @@ public class HierarchicalMenuTest {
 
                     mFlyoutHandler = new FlyoutHandlerImpl();
                     mController.setupFlyoutController(
-                            mFlyoutHandler, mPopupWindow, /* drillDownOverrideValue= */ null);
+                            mFlyoutHandler,
+                            mPopupWindow,
+                            mPopupWindow.getContentView()::setOnScrollChangeListener,
+                            /* drillDownOverrideValue= */ null);
                     mFlyoutController = mController.getFlyoutController();
                 });
 
@@ -425,7 +428,10 @@ public class HierarchicalMenuTest {
 
         @Override
         public AnchoredPopupWindow createAndShowFlyoutPopup(
-                List<ListItem> items, View anchorView, Runnable dismissRunnable) {
+                List<ListItem> items,
+                View anchorView,
+                Runnable dismissRunnable,
+                View.OnScrollChangeListener scrollListener) {
             Rect anchorRect = FlyoutController.calculateFlyoutAnchorRect(anchorView, mRootView);
             anchorRect.offset(0, (int) topContentOffset(mActivity));
 
@@ -449,6 +455,7 @@ public class HierarchicalMenuTest {
                             .addOnDismissListener(dismissRunnable::run)
                             .build();
             window.show();
+            window.getContentView().setOnScrollChangeListener(scrollListener);
 
             return window;
         }

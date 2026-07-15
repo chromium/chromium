@@ -849,7 +849,10 @@ class AppMenuHandlerImpl
 
     @Override
     public AppMenuPopup createAndShowFlyoutPopup(
-            List<ListItem> items, View view, Runnable dismissRunnable) {
+            List<ListItem> items,
+            View view,
+            Runnable dismissRunnable,
+            View.OnScrollChangeListener scrollListener) {
         ModelList modelList = new ModelList();
 
         assert (items.size() > 0);
@@ -861,6 +864,6 @@ class AppMenuHandlerImpl
         registerViewBinders(adapter, customSizingProviders, mDelegate.shouldShowIconBeforeItem());
 
         assert mAppMenu != null;
-        return mAppMenu.createAndShowFlyoutPopup(adapter, view, dismissRunnable);
+        return mAppMenu.createAndShowFlyoutPopup(adapter, view, dismissRunnable, scrollListener);
     }
 }

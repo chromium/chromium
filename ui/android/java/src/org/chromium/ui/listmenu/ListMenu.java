@@ -35,4 +35,11 @@ public interface ListMenu {
      * @return Width of the largest item in the list.
      */
     int getMaxItemWidth();
+
+    /**
+     * Adds a scroll listener to the list menu.
+     *
+     * @param listener The listener to add.
+     */
+    default void addOnScrollListener(View.OnScrollChangeListener listener) {}
 }

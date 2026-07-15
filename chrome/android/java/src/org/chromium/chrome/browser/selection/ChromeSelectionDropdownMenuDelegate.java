@@ -99,7 +99,10 @@ public class ChromeSelectionDropdownMenuDelegate
         popupWindow.show();
 
         mHierarchicalMenuController.setupFlyoutController(
-                /* flyoutHandler= */ this, popupWindow, /* drillDownOverrideValue= */ null);
+                /* flyoutHandler= */ this,
+                popupWindow,
+                menu::addOnScrollListener,
+                /* drillDownOverrideValue= */ null);
         mHierarchicalMenuController.setupBackPressBehaviorForPopupWindow(
                 popupWindow.getContentView(), this::dismiss);
     }
@@ -141,7 +144,10 @@ public class ChromeSelectionDropdownMenuDelegate
 
     @Override
     public AnchoredPopupWindow createAndShowFlyoutPopup(
-            List<ListItem> items, View view, Runnable dismissRunnable) {
+            List<ListItem> items,
+            View view,
+            Runnable dismissRunnable,
+            View.OnScrollChangeListener scrollListener) {
         Context context = view.getContext();
         ModelList modelList = new ModelList();
         modelList.addAll(items);
@@ -187,6 +193,7 @@ public class ChromeSelectionDropdownMenuDelegate
                                 })
                         .build();
 
+        menu.addOnScrollListener(scrollListener);
         popupMenu.show();
         return popupMenu;
     }
