@@ -20,21 +20,16 @@ def CheckForOrphanedFlagMetadata(input_api, output_api):
 
     flag_tools_dir = input_api.os_path.join(input_api.change.RepositoryRoot(),
                                             'tools', 'flags')
-    cmd = [input_api.python3_executable,
-           input_api.os_path.join(flag_tools_dir, 'lint_flags.py')]
-    try:
-      # Run from `//tools/flags/` to give access to the `flags_utils` module.
-      input_api.subprocess.check_call(cmd,
-                                      cwd=flag_tools_dir,
-                                      stdout=input_api.subprocess.PIPE)
-      return []
-    except input_api.subprocess.CalledProcessError as error:
-      result = input_api.json.loads(error.stdout)
-      # Output a hard error to block new orphans from landing.
-      return [
-        output_api.PresubmitError(
-            message=(
-                '`//chrome/browser/flag-metadata.json` appears to contain '
-                'entries not used in `about_flags.cc` or `about_flags.mm`.'),
-            items=result['unused_flags'])
-      ]
+    script_path = input_api.os_path.join(flag_tools_dir, 'lint_flags.py')
+    cmd = [input_api.python3_executable, script_path]
+
+    # Use Command API so that the check can run concurrently when --parallel
+    # is used.
+    return input_api.RunTests([
+        input_api.Command(
+            name='CheckForOrphanedFlagMetadata',
+            cmd=cmd,
+            kwargs={'cwd': flag_tools_dir},
+            message=output_api.PresubmitError
+        )
+    ])
