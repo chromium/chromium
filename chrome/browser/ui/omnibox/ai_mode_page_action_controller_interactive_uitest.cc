@@ -18,7 +18,9 @@
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter_base.h"
+#include "chrome/browser/ui/views/page_action/page_action_view.h"
 #include "chrome/browser/ui/views/page_action/test_support/page_action_interactive_test_mixin.h"
+#include "chrome/browser/ui/views/page_action/test_support/page_action_test_support.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "chrome/test/interaction/interactive_browser_window_test.h"
@@ -255,7 +257,9 @@ class AiModePageActionControllerDynamicAiModeButtonInteractiveUiTest
  protected:
   void InitializeFeatures() override {
     features_.InitWithFeaturesAndParameters(
-        /*enabled_features*/ {{kWebUIOmniboxDynamicAiModeButton, {}},
+        /*enabled_features*/ {{kWebUIOmniboxDynamicAiModeButton,
+                               {{"Omnibox_DynamicAnimation", "true"},
+                                {"Omnibox_DynamicColorScheme", "true"}}},
                               {omnibox::internal::kWebUIOmniboxPopup, {}},
                               {omnibox::internal::kWebUIOmniboxAimPopup, {}}},
         /*disabled_features*/ {});
@@ -270,6 +274,26 @@ IN_PROC_BROWSER_TEST_F(
                   // Type a URL.
                   EnterText(kOmniboxElementId, u"https://google.com"),
                   CheckChipVisible(false));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    AiModePageActionControllerDynamicAiModeButtonInteractiveUiTest,
+    VerifyBackgroundColorOverride) {
+  RunTestSequence(
+      OpenTabWithPageUrlAndFocusOmnibox(/*is_ntp=*/true),
+      CheckChipVisible(true), Do([this]() {
+        auto* provider = BrowserView::GetBrowserViewForBrowser(browser())
+                             ->toolbar_button_provider();
+        auto* view = static_cast<page_actions::PageActionView*>(
+            page_actions::GetIconLabelBubbleViewForTesting(
+                provider->GetPageActionViewInterface(kActionAiMode),
+                kActionAiMode));
+        ASSERT_NE(view, nullptr);
+        SkColor actual_bg_color = view->GetBackgroundColor();
+        SkColor expected_bg_color = view->GetColorProvider()->GetColor(
+            kColorOmniboxResultsBackgroundHovered);
+        EXPECT_EQ(actual_bg_color, expected_bg_color);
+      }));
 }
 
 }  // namespace omnibox

@@ -425,4 +425,19 @@ bool PageActionModel::GetShowTrailingIcon() const {
   return show_trailing_icon_;
 }
 
+void PageActionModel::SetOverrideBackgroundColorId(
+    PageActionPassKey,
+    std::optional<ui::ColorId> override_background_color_id) {
+  if (override_background_color_id_ == override_background_color_id) {
+    return;
+  }
+  override_background_color_id_ = override_background_color_id;
+  NotifyChange(Property::kOverrideBackgroundColor);
+}
+
+std::optional<ui::ColorId> PageActionModel::GetOverrideBackgroundColorId()
+    const {
+  return override_background_color_id_;
+}
+
 }  // namespace page_actions

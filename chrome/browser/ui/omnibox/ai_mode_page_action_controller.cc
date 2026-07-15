@@ -302,6 +302,11 @@ void AiModePageActionController::UpdatePageActionUi(bool is_visible) {
     page_action_controller->SetShowTrailingIcon(kActionAiMode, has_user_input);
   }
 
+  if (omnibox::kWebUIOmniboxDynamicColorScheme.Get()) {
+    page_action_controller->OverrideBackgroundColor(
+        kActionAiMode, kColorOmniboxResultsBackgroundHovered);
+  }
+
   ImageCacheKey key{config->id, GURL(config->favicon_url).spec()};
 
   if (base::FeatureList::IsEnabled(features::kAiModePageActionOptimization) &&

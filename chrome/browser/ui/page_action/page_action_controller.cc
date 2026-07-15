@@ -419,6 +419,13 @@ void PageActionControllerImpl::ClearOverrideTooltip(
       PageActionPassKey(), /*override_tooltip=*/std::nullopt);
 }
 
+void PageActionControllerImpl::OverrideBackgroundColor(
+    actions::ActionId action_id,
+    std::optional<ui::ColorId> override_background_color_id) {
+  FindPageActionModel(action_id).SetOverrideBackgroundColorId(
+      PageActionPassKey(), override_background_color_id);
+}
+
 void PageActionControllerImpl::SetAnchoredMessageText(
     actions::ActionId action_id,
     const std::u16string& anchored_message_text) {

@@ -635,6 +635,16 @@ void PageActionView::MaybeRecordCollapsedMetrics(int label_width) {
   chip_shown_metric_recorded_ = true;
 }
 
+SkColor PageActionView::GetBackgroundColor() const {
+  if (observation_.IsObserving() &&
+      observation_.GetSource()->GetOverrideBackgroundColorId().has_value() &&
+      GetColorProvider()) {
+    return GetColorProvider()->GetColor(
+        *observation_.GetSource()->GetOverrideBackgroundColorId());
+  }
+  return IconLabelBubbleView::GetBackgroundColor();
+}
+
 BEGIN_METADATA(PageActionView)
 END_METADATA
 
