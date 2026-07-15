@@ -120,6 +120,13 @@ class GPU_GLES2_EXPORT Framebuffer : public base::RefCounted<Framebuffer> {
   // Re-attaches all current attachments for recreateFbo workaround.
   void ReattachAttachments(GLenum framebuffer_target);
 
+  // Binds |attachment| at |attachment_point| on the framebuffer currently
+  // bound at |target|, or detaches whatever is at |attachment_point| if
+  // |attachment| is null. Only modifies driver-side state.
+  static void BindAttachmentToPoint(GLenum target,
+                                    GLenum attachment_point,
+                                    const Attachment* attachment);
+
   // Attaches a renderbuffer to a particlar attachment.
   // Pass null to detach.
   void AttachRenderbuffer(

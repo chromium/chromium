@@ -7275,14 +7275,42 @@ bool GLES2DecoderImpl::ClearUnclearedAttachments(GLenum target,
     }
   }
 
-  if (framebuffer->HasUnclearedAttachment(GL_STENCIL_ATTACHMENT)) {
+  const Framebuffer::Attachment* depth_attachment =
+      framebuffer->GetAttachment(GL_DEPTH_ATTACHMENT);
+  const Framebuffer::Attachment* stencil_attachment =
+      framebuffer->GetAttachment(GL_STENCIL_ATTACHMENT);
+  bool clear_depth = depth_attachment && !depth_attachment->cleared();
+  bool clear_stencil = stencil_attachment && !stencil_attachment->cleared();
+
+  // A packed depth-stencil image attached at only one of the depth/stencil
+  // points must be bound and cleared at both points so that both components
+  // are initialized before the image is marked as cleared.
+  GLenum filled_depth_stencil_point = 0;
+  if (clear_depth && !stencil_attachment &&
+      (GLES2Util::GetChannelsForFormat(depth_attachment->internal_format()) &
+       GLES2Util::kStencil) != 0) {
+    filled_depth_stencil_point = GL_STENCIL_ATTACHMENT;
+    Framebuffer::BindAttachmentToPoint(target, GL_STENCIL_ATTACHMENT,
+                                       depth_attachment);
+    clear_stencil = true;
+  } else if (clear_stencil && !depth_attachment &&
+             (GLES2Util::GetChannelsForFormat(
+                  stencil_attachment->internal_format()) &
+              GLES2Util::kDepth) != 0) {
+    filled_depth_stencil_point = GL_DEPTH_ATTACHMENT;
+    Framebuffer::BindAttachmentToPoint(target, GL_DEPTH_ATTACHMENT,
+                                       stencil_attachment);
+    clear_depth = true;
+  }
+
+  if (clear_stencil) {
     api()->glClearStencilFn(0);
     state_.SetDeviceStencilMaskSeparate(GL_FRONT, kDefaultStencilMask);
     state_.SetDeviceStencilMaskSeparate(GL_BACK, kDefaultStencilMask);
     clear_bits |= GL_STENCIL_BUFFER_BIT;
   }
 
-  if (framebuffer->HasUnclearedAttachment(GL_DEPTH_ATTACHMENT)) {
+  if (clear_depth) {
     api()->glClearDepthFn(1.0f);
     state_.SetDeviceDepthMask(GL_TRUE);
     clear_bits |= GL_DEPTH_BUFFER_BIT;
@@ -7302,6 +7330,11 @@ bool GLES2DecoderImpl::ClearUnclearedAttachments(GLenum target,
     } else {
       api()->glClearFn(clear_bits);
     }
+  }
+
+  if (filled_depth_stencil_point) {
+    Framebuffer::BindAttachmentToPoint(target, filled_depth_stencil_point,
+                                       nullptr);
   }
 
   if (cleared_int_renderbuffers || clear_bits) {

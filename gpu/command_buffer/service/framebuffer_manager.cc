@@ -1081,6 +1081,37 @@ void Framebuffer::ReattachAttachments(GLenum framebuffer_target) {
   RestoreDrawBuffers();
 }
 
+// static
+void Framebuffer::BindAttachmentToPoint(GLenum target,
+                                        GLenum attachment_point,
+                                        const Attachment* attachment) {
+  if (!attachment) {
+    glFramebufferRenderbufferEXT(target, attachment_point, GL_RENDERBUFFER, 0);
+    return;
+  }
+  if (attachment->IsRenderbufferAttachment()) {
+    const RenderbufferAttachment* rb =
+        static_cast<const RenderbufferAttachment*>(attachment);
+    glFramebufferRenderbufferEXT(target, attachment_point, GL_RENDERBUFFER,
+                                 rb->renderbuffer()->service_id());
+  } else if (attachment->IsTextureAttachment()) {
+    const TextureAttachment* tex =
+        static_cast<const TextureAttachment*>(attachment);
+    if (tex->Is3D()) {
+      glFramebufferTextureLayer(target, attachment_point,
+                                tex->texture()->service_id(), tex->level(),
+                                tex->layer());
+    } else if (tex->samples() > 0) {
+      glFramebufferTexture2DMultisampleEXT(
+          target, attachment_point, tex->target(), tex->texture()->service_id(),
+          tex->level(), tex->samples());
+    } else {
+      glFramebufferTexture2DEXT(target, attachment_point, tex->target(),
+                                tex->texture()->service_id(), tex->level());
+    }
+  }
+}
+
 void Framebuffer::OnInsertUpdateLastColorAttachmentId(GLenum attachment) {
   if (attachment >= GL_COLOR_ATTACHMENT0 &&
       attachment < GL_COLOR_ATTACHMENT0 + manager_->max_color_attachments_) {
