@@ -41,7 +41,6 @@ class Size;
 }  // namespace gfx
 
 namespace gpu {
-class RasterScopedAccess;
 namespace raster {
 class RasterInterface;
 }  // namespace raster
@@ -132,8 +131,6 @@ class PLATFORM_EXPORT WebGpuRecyclableResourceProvider final
 
 
   gpu::raster::RasterInterface* RasterInterface() const;
-
-  std::unique_ptr<gpu::RasterScopedAccess> WillDrawInternal();
 
   const gfx::Size size_;
   const viz::SharedImageFormat format_;

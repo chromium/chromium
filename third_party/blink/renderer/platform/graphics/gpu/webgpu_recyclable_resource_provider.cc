@@ -187,9 +187,11 @@ WebGpuRecyclableResourceProvider::BeginExternalOverwrite(
     return nullptr;
   }
 
-  // NOTE: Invoking WillDrawInternal() ensures that this invocation of
+  // NOTE: Invoking BeginRasterAccess() ensures that this invocation of
   // EndAccess() will generate a new sync token.
-  auto access = WillDrawInternal();
+  auto access =
+      shared_image_->BeginRasterAccess(RasterInterface(), acquire_sync_token_,
+                                       /*readonly=*/false);
   auto sync_token = gpu::RasterScopedAccess::EndAccess(std::move(access));
   release_sync_token_ = sync_token;
   shared_image_->UpdateDestructionSyncToken(sync_token);
@@ -229,7 +231,9 @@ void WebGpuRecyclableResourceProvider::DoExternalOverdraw(
     cc::PaintRecord last_recording =
         recorder_for_external_draws_->ReleaseMainRecording();
 
-    auto access = WillDrawInternal();
+    auto access =
+        shared_image_->BeginRasterAccess(RasterInterface(), acquire_sync_token_,
+                                         /*readonly=*/false);
 
     const bool needs_clear = !is_cleared_;
     is_cleared_ = true;
@@ -290,14 +294,6 @@ void WebGpuRecyclableResourceProvider::DoExternalOverdraw(
   }
 }
 
-std::unique_ptr<gpu::RasterScopedAccess>
-WebGpuRecyclableResourceProvider::WillDrawInternal() {
-  DCHECK(shared_image_);
-  return shared_image_->BeginRasterAccess(RasterInterface(),
-                                          acquire_sync_token_,
-                                          /*readonly=*/false);
-}
-
 bool WebGpuRecyclableResourceProvider::UploadToBackingSharedImage(
     const SkPixmap& pixmap,
     uint32_t src_x,
@@ -320,7 +316,9 @@ bool WebGpuRecyclableResourceProvider::UploadToBackingSharedImage(
     return false;
   }
 
-  auto access = WillDrawInternal();
+  auto access =
+      shared_image_->BeginRasterAccess(RasterInterface(), acquire_sync_token_,
+                                       /*readonly=*/false);
 
   RasterInterface()->WritePixels(shared_image_->mailbox(), /*dst_x_offset=*/0,
                                  /*dst_y_offset=*/0,
@@ -351,7 +349,9 @@ bool WebGpuRecyclableResourceProvider::CopyToBackingSharedImage(
 
   gfx::Rect copy_rect(src_x, src_y, Size().width(), Size().height());
 
-  auto dst_access = WillDrawInternal();
+  auto dst_access =
+      shared_image_->BeginRasterAccess(RasterInterface(), acquire_sync_token_,
+                                       /*readonly=*/false);
 
   std::unique_ptr<gpu::RasterScopedAccess> src_access =
       shared_image->BeginRasterAccess(raster, ready_sync_token,
