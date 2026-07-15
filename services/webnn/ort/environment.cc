@@ -243,13 +243,12 @@ std::vector<const OrtEpDevice*> SelectEpDevicesForGpu(
   const OrtEpDevice* first_gpu = SelectFirstEpDeviceForDeviceType(
       sorted_devices, OrtHardwareDeviceType_GPU);
 
-  if (!first_gpu) {
-    return SelectEpDevicesForCpu(sorted_devices);
-  } else if (Environment::IsEpDevice(first_gpu, {kDmlExecutionProvider}) &&
-             IsSoftwareGpu(first_gpu)) {
-    // Skip DirectML EP for software GPU adaptor, because it will throw
-    // exception and cause GPU process to crash. See more details in
-    // crbug.com/466848120.
+  // Fall back to CPU when there is no GPU, or when the only GPU is a software
+  // (CPU-emulated) adapter such as the Microsoft Basic Render Driver (WARP).
+  // Software GPUs perform poorly and are not worth targeting. The DirectML EP
+  // in particular throws and crashes the GPU process on them. See
+  // crbug.com/466848120.
+  if (!first_gpu || IsSoftwareGpu(first_gpu)) {
     return SelectEpDevicesForCpu(sorted_devices);
   }
 
