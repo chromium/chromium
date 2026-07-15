@@ -5453,4 +5453,24 @@ IN_PROC_BROWSER_TEST_F(PrefetchActivationBeaconDevToolsProtocolTest,
   EXPECT_TRUE(beacon_seen);
 }
 
+// Regression test for crbug.com/466134219. This test
+// For Browser targets or detached workers, storage_partition_ is null.
+// Ensures that storage commands safely return an error instead of crashing.
+IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
+                       StorageBucketTrackingWithoutPartition) {
+  AttachToBrowserTarget();
+
+  base::DictValue params;
+  params.Set("storageKey", "storageKey");
+  params.Set("enable", true);
+  const base::DictValue* result =
+      SendCommandSync("Storage.setStorageBucketTracking", std::move(params));
+
+  EXPECT_FALSE(result);
+  EXPECT_TRUE(error());
+  const std::string* error_message = error()->FindString("message");
+  ASSERT_TRUE(error_message);
+  EXPECT_EQ("Internal error", *error_message);
+}
+
 }  // namespace content

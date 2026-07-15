@@ -1671,6 +1671,10 @@ void StorageHandler::OnSharedStorageWorkletOperationExecutionFinished(
 DispatchResponse StorageHandler::SetStorageBucketTracking(
     const std::string& serialized_storage_key,
     bool enable) {
+  if (!storage_partition_) {
+    return Response::InternalError();
+  }
+
   auto storage_key = blink::StorageKey::Deserialize(serialized_storage_key);
   if (!storage_key.has_value()) {
     return Response::InvalidParams("Invalid Storage Key given.");
