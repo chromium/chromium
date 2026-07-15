@@ -415,6 +415,7 @@ source_set("unit_tests") {
     ":webrtc",
     "//base",
     "//base/test:test_support",
+    "//chrome/browser/content_settings:content_settings_factory",
     "//chrome/browser/prefs",
     "//chrome/common",
     "//chrome/test:test_support",
@@ -433,15 +434,22 @@ source_set("unit_tests") {
   if (is_chromeos) {
     deps += [
       "//chrome/browser/ash/login/users:test_support",
+      "//chrome/browser/chromeos/policy/dlp/test:test_support",
       "//chromeos/ash/components/system",
       "//components/account_id",
     ]
   }
 
-  # The WebRTC logging / remote-bound event-log tests are desktop-only.
+  # All of the media/webrtc unit tests are desktop-only (!is_android);
+  # test_stats_dictionary additionally lives in the desktop-only browser-test
+  # base.
   if (!is_android) {
     sources += [
+      "capture_policy_utils_unittest.cc",
+      "desktop_capture_access_handler_unittest.cc",
+      "desktop_media_picker_controller_unittest.cc",
       "rtc_diagnostic_logging_unittest.cc",
+      "test_stats_dictionary_unittest.cc",
       "webrtc_event_log_manager_common_unittest.cc",
       "webrtc_event_log_manager_unittest.cc",
       "webrtc_event_log_manager_unittest_helpers.cc",
@@ -453,6 +461,11 @@ source_set("unit_tests") {
       "webrtc_rtp_dump_writer_unittest.cc",
       "webrtc_text_log_handler_unittest.cc",
     ]
+    deps += [ ":webrtc_browser_tests_base" ]
+  }
+
+  if (is_mac) {
+    deps += [ "//chrome/browser/permissions/system" ]
   }
 }
 
