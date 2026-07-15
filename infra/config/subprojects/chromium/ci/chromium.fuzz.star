@@ -486,6 +486,27 @@ browser_asan_builder(
     siso_remote_jobs = 250,
 )
 
+# TODO(516755846): Deprecate this builder once schema v1 archives generated
+# work as intended on ClusterFuzz.
+browser_asan_builder(
+    name = "ASAN Release Schema v1",
+    description_html = "This builder produces ASAN Chromium builds with archive schema v1",
+    gardener_rotations = args.ignore_default(None),
+    build_config = builder_config.build_config.RELEASE,
+    target_bits = 64,
+    target_platform = builder_config.target_platform.LINUX,
+    clusterfuzz_archive_schema_version = 1,
+    clusterfuzz_archive_subdir = "schema-v1",
+    contact_team_email = "chrome-sanitizer-builder-owners@google.com",
+    gn_extra_configs = [
+        "lsan",
+        "fuzzer",
+        "v8_heap",
+    ],
+    max_concurrent_invocations = 1,
+    siso_remote_jobs = 250,
+)
+
 ci.builder(
     name = "ASAN Release V8 Sandbox Testing",
     description_html = "This builder produces an ASan Chromium build in the V8 Sandbox Testing configuration.",
