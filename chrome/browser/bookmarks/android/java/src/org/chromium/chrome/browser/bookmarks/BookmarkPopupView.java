@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.bookmarks;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
+import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.AttributeSet;
 import android.view.View;
@@ -22,7 +23,7 @@ import org.chromium.build.annotations.Nullable;
 @NullMarked
 public class BookmarkPopupView extends ConstraintLayout {
     private ImageView mImageView;
-    private TextView mPopupTitle;
+    private TextView mHeaderTextView;
     private EditText mTitleView;
     private View mFolderPickerRow;
     private TextView mFolderTitle;
@@ -39,7 +40,7 @@ public class BookmarkPopupView extends ConstraintLayout {
     protected void onFinishInflate() {
         super.onFinishInflate();
         mImageView = findViewById(R.id.bookmark_image);
-        mPopupTitle = findViewById(R.id.popup_title);
+        mHeaderTextView = findViewById(R.id.popup_title);
         mTitleView = findViewById(R.id.bookmark_title);
         mFolderPickerRow = findViewById(R.id.folder_picker_row);
         mFolderTitle = findViewById(R.id.folder_title);
@@ -48,14 +49,16 @@ public class BookmarkPopupView extends ConstraintLayout {
         mCloseButton = findViewById(R.id.close_button);
     }
 
-    /** Sets the header title text of the popup (e.g., "Bookmark added"). */
-    public void setPopupTitle(String title) {
-        mPopupTitle.setText(title);
+    /** Sets the header text of the popup (e.g., "Bookmark added"). */
+    public void setHeaderText(String headerText) {
+        mHeaderTextView.setText(headerText);
     }
 
     /** Sets the bookmark title text in the editable title field. */
     public void setTitle(String title) {
-        mTitleView.setText(title);
+        if (!TextUtils.equals(mTitleView.getText(), title)) {
+            mTitleView.setText(title);
+        }
     }
 
     private @Nullable TextWatcher mTitleTextWatcher;

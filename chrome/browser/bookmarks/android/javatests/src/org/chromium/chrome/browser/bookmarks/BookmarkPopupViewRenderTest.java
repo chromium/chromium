@@ -91,7 +91,7 @@ public class BookmarkPopupViewRenderTest {
     public void testBookmarkPopupView() throws IOException {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mView.setPopupTitle("Bookmark added");
+                    mView.setHeaderText("Bookmark added");
                     mView.setTitle("Test Bookmark");
                     mView.setFolderName("Mobile bookmarks");
                 });
