@@ -234,6 +234,10 @@ inline constexpr char kNextSSORecallTime[] = "ios.next_sso_recall_time";
 // Deprecated 07/2026.
 inline constexpr char kObsoleteMetricsReportingLevel[] =
     "user_experience_metrics.reporting_level";
+inline constexpr char kObsoleteManagementPlatformLastLogTime[] =
+    "management.platform.last_log_time";
+inline constexpr char kObsoleteManagementProfileLastLogTime[] =
+    "management.profile.last_log_time";
 
 // Renames a boolean pref within a PrefService.
 void RenameBooleanPref(std::string_view target_pref_name,
@@ -494,6 +498,8 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
 
   // Deprecated 07/2026.
   registry->RegisterIntegerPref(kObsoleteMetricsReportingLevel, 0);
+  registry->RegisterTimePref(kObsoleteManagementPlatformLastLogTime,
+                             base::Time());
 }
 
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
@@ -971,6 +977,10 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterIntegerPref(kPreallocatedAddressesNext, 0);
   registry->RegisterTimePref(kFirstPlusAddressCreationTime, base::Time());
   registry->RegisterTimePref(kLastPlusAddressFillingTime, base::Time());
+
+  // Deprecated 07/2026.
+  registry->RegisterTimePref(kObsoleteManagementProfileLastLogTime,
+                             base::Time());
 }
 
 // This method should be periodically pruned of year+ old migrations.
@@ -997,6 +1007,9 @@ void MigrateObsoleteLocalStatePrefs(PrefService* prefs) {
 
   // Added 07/2026.
   prefs->ClearPref(kObsoleteMetricsReportingLevel);
+
+  // Added 07/2026.
+  prefs->ClearPref(kObsoleteManagementPlatformLastLogTime);
 }
 
 // This method should be periodically pruned of year+ old migrations.
@@ -1070,6 +1083,9 @@ void MigrateObsoleteProfilePrefs(PrefService* prefs) {
   // Added 06/2026.
   syncer::ClearAccountKeyedPrefValue(
       prefs, autofill::prefs::kAutofillAiOptInStatus, {});
+
+  // Added 07/2026.
+  prefs->ClearPref(kObsoleteManagementProfileLastLogTime);
 }
 
 void MigrateObsoleteUserDefault() {

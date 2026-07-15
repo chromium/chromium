@@ -998,7 +998,6 @@ inline constexpr char kObsoleteMetricsReportingLevel[] =
 inline constexpr char kProxyOverrideRulesAffiliation[] =
     "proxy_override_rules_affiliation";
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 // Deprecated 07/2026.
 inline constexpr char kMV2DeprecationWarningAcknowledgedGlobally[] =
@@ -1006,6 +1005,12 @@ inline constexpr char kMV2DeprecationWarningAcknowledgedGlobally[] =
 inline constexpr char kMV2DeprecationDisabledAcknowledgedGlobally[] =
     "mv2_deprecation_disabled_ack_globally";
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+
+// Deprecated 07/2026.
+inline constexpr char kObsoleteManagementPlatformLastLogTime[] =
+    "management.platform.last_log_time";
+inline constexpr char kObsoleteManagementProfileLastLogTime[] =
+    "management.profile.last_log_time";
 
 // Register local state used only for migration (clearing or moving to a new
 // key).
@@ -1109,6 +1114,10 @@ void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
   registry->RegisterBooleanPref(kProxyOverrideRulesAffiliation, true);
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+
+  // Deprecated 07/2026.
+  registry->RegisterTimePref(kObsoleteManagementPlatformLastLogTime,
+                             base::Time());
 }
 
 // Register prefs used only for migration (clearing or moving to a new key).
@@ -1369,6 +1378,10 @@ void RegisterProfilePrefsForMigration(
   registry->RegisterBooleanPref(kMV2DeprecationDisabledAcknowledgedGlobally,
                                 false);
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+
+  // Deprecated 07/2026.
+  registry->RegisterTimePref(kObsoleteManagementProfileLastLogTime,
+                             base::Time());
 }
 
 }  // namespace
@@ -2394,6 +2407,9 @@ void MigrateObsoleteLocalStatePrefs(PrefService* local_state) {
   local_state->ClearPref(kProxyOverrideRulesAffiliation);
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 
+  // Added 07/2026.
+  local_state->ClearPref(kObsoleteManagementPlatformLastLogTime);
+
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_LOCAL_STATE_PREFS
 
@@ -2678,6 +2694,9 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
   // Added 07/2026.
   tabs::MigrateEverythingMenuPinnedToTabstripPref(profile_prefs);
 #endif
+
+  // Added 07/2026.
+  profile_prefs->ClearPref(kObsoleteManagementProfileLastLogTime);
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS
