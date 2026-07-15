@@ -27,6 +27,7 @@
 #include "base/rand_util.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/synchronization/lock_metrics_recorder.h"
 #include "base/system/sys_info.h"
 #include "base/task/current_thread.h"
 #include "base/task/single_thread_task_executor.h"
@@ -347,6 +348,7 @@ int GpuMain(MainFunctionParams parameters) {
   base::PlatformThread::SetName("CrGpuMain");
   mojo::InterfaceEndpointClient::SetThreadNameSuffixForMetrics("GpuMain");
   base::MessagePumpWakeupCounter::InitializeForCurrentThread("GpuMain");
+  base::LockMetricsRecorder::EnableRecordingOnCurrentThread("CrGpuMain");
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   // Thread type delegate of the process should be registered before
