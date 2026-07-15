@@ -28,21 +28,19 @@
                 "name": "title",
                 "type": "string",
                 "description": "Text that is displayed in sidebar caption."
-              },
-              {
-                "name": "callback",
-                "type": "function",
-                "description": "A callback invoked when the sidebar is created.",
-                "optional": true,
-                "parameters": [
-                  {
-                    "name": "result",
-                    "description": "An ExtensionSidebarPane object for created sidebar pane.",
-                    "$ref": "ExtensionSidebarPane"
-                  }
-                ]
               }
-            ]
+            ],
+            "returns_async": {
+              "name": "callback",
+              "description": "A callback invoked when the sidebar is created.",
+              "parameters": [
+                {
+                  "name": "result",
+                  "description": "An ExtensionSidebarPane object for created sidebar pane.",
+                  "$ref": "ExtensionSidebarPane"
+                }
+              ]
+            }
           }
         ]
       },
@@ -66,21 +64,19 @@
                 "name": "title",
                 "type": "string",
                 "description": "Text that is displayed in sidebar caption."
-              },
-              {
-                "name": "callback",
-                "type": "function",
-                "description": "A callback invoked when the sidebar is created.",
-                "optional": true,
-                "parameters": [
-                  {
-                    "name": "result",
-                    "description": "An ExtensionSidebarPane object for created sidebar pane.",
-                    "$ref": "ExtensionSidebarPane"
-                  }
-                ]
               }
-            ]
+            ],
+            "returns_async": {
+              "name": "callback",
+              "description": "A callback invoked when the sidebar is created.",
+              "parameters": [
+                {
+                  "name": "result",
+                  "description": "An ExtensionSidebarPane object for created sidebar pane.",
+                  "$ref": "ExtensionSidebarPane"
+                }
+              ]
+            }
           }
         ]
       },
@@ -188,14 +184,13 @@
                 "type": "string",
                 "optional": true,
                 "description": "An optional title for the root of the expression tree."
-              },
-              {
-                "name": "callback",
-                "type": "function",
-                "optional": true,
-                "description": "A callback invoked after the sidebar pane is updated with the expression evaluation results."
               }
-            ]
+            ],
+            "returns_async": {
+              "name": "callback",
+              "description": "A callback invoked after the sidebar pane is updated with the expression evaluation results.",
+              "parameters": []
+            }
           },
           {
             "name": "setObject",
@@ -212,14 +207,13 @@
                 "type": "string",
                 "optional": true,
                 "description": "An optional title for the root of the expression tree."
-              },
-              {
-                "name": "callback",
-                "type": "function",
-                "optional": true,
-                "description": "A callback invoked after the sidebar is updated with the object."
               }
-            ]
+            ],
+            "returns_async": {
+              "name": "callback",
+              "description": "A callback invoked after the sidebar is updated with the object.",
+              "parameters": []
+            }
           },
           {
             "name": "setPage",
@@ -341,21 +335,19 @@
             "name": "pagePath",
             "type": "string",
             "description": "Path of the panel's HTML page relative to the extension directory."
-          },
-          {
-            "name": "callback",
-            "type": "function",
-            "optional": true,
-            "description": "A function that is called when the panel is created.",
-            "parameters": [
-              {
-                "name": "panel",
-                "description": "An ExtensionPanel object representing the created panel.",
-                "$ref": "ExtensionPanel"
-              }
-            ]
           }
-        ]
+        ],
+        "returns_async": {
+          "name": "callback",
+          "description": "A function that is called when the panel is created.",
+          "parameters": [
+            {
+              "name": "panel",
+              "description": "An ExtensionPanel object representing the created panel.",
+              "$ref": "ExtensionPanel"
+            }
+          ]
+        }
       },
       {
         "name": "setOpenResourceHandler",
@@ -402,14 +394,13 @@
             "type": "integer",
             "optional": true,
             "description": "Specifies the column number to scroll to when the resource is loaded."
-          },
-          {
-            "name": "callback",
-            "type": "function",
-            "optional": true,
-            "description": "A function that is called when the resource has been successfully loaded."
           }
-        ]
+        ],
+        "returns_async": {
+          "name": "callback",
+          "description": "A function that is called when the resource has been successfully loaded.",
+          "parameters": []
+        }
       },
       {
         "name": "setThemeChangeHandler",
