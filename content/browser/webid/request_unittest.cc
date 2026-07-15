@@ -28,6 +28,7 @@
 #include "content/browser/webid/disconnect_request.h"
 #include "content/browser/webid/idp_network_request_manager.h"
 #include "content/browser/webid/metrics.h"
+#include "content/browser/webid/request_page_data.h"
 #include "content/browser/webid/request_service.h"
 #include "content/browser/webid/test/delegated_idp_network_request_manager.h"
 #include "content/browser/webid/test/federated_request_token_callback_helper.h"
@@ -9409,6 +9410,63 @@ TEST_F(RequestTest, DialogControllerResetOnCompletion) {
   EXPECT_EQ(browser_client.create_count(), 2);
 
   SetBrowserClientForTesting(original_client);
+}
+
+TEST_F(RequestTest, ActiveRequestReplacesPassiveRequestNoRace) {
+  // Start a passive request.
+  RequestParameters passive_parameters = kDefaultRequestParameters;
+  passive_parameters.rp_mode = blink::mojom::RpMode::kPassive;
+
+  auto passive_request_helper = std::make_unique<RequestCallbackHelper>();
+  mojo::Remote<FederatedRequest> passive_request_remote;
+
+  RunDontWaitForCallback(passive_parameters, kConfigurationValid,
+                         passive_request_helper.get(), &passive_request_remote);
+
+  // Assert pending request exists.
+  RequestPageData* page_data = GetPageData(main_test_rfh()->GetPage());
+  Request* pending_request = page_data->PendingWebIdentityRequest();
+  EXPECT_TRUE(pending_request);
+
+  // Start an active request.
+  // This will replace the passive request.
+  RequestParameters active_parameters = kDefaultRequestParameters;
+  active_parameters.rp_mode = blink::mojom::RpMode::kActive;
+
+  auto active_request_helper = std::make_unique<RequestCallbackHelper>();
+  mojo::Remote<FederatedRequest> active_request_remote;
+
+  static_cast<TestRenderFrameHost*>(web_contents()->GetPrimaryMainFrame())
+      ->SimulateUserActivation();
+
+  // We must provide a new mock network manager because the passive request
+  // consumed the initial one.
+  RequestService::GetOrCreateForCurrentDocument(main_test_rfh())
+      ->SetNetworkManagerForTests(
+          std::make_unique<DelegatedIdpNetworkRequestManager>(
+              test_network_request_manager_.get()));
+
+  MockConfiguration active_config = kConfigurationValid;
+  active_config.accounts_dialog_action = AccountsDialogAction::kNone;
+
+  RunDontWaitForCallback(active_parameters, active_config,
+                         active_request_helper.get(), &active_request_remote);
+
+  // The active request should now be the pending request.
+  EXPECT_FALSE(active_request_helper->was_callback_called());
+  // The passive request's destructor should not clear the pending request.
+  Request* new_pending_request = page_data->PendingWebIdentityRequest();
+  EXPECT_TRUE(new_pending_request);
+  EXPECT_NE(new_pending_request, pending_request);
+
+  // Clean up the active request to avoid a use-after-free during TearDown.
+  if (new_pending_request) {
+    new_pending_request->CompleteRequestWithError(
+        blink::mojom::FederatedRequestResult::kError,
+        /*token_status=*/std::nullopt,
+        /*should_delay_callback=*/false);
+    active_request_helper->WaitForCallback();
+  }
 }
 
 }  // namespace content::webid

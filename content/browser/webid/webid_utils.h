@@ -110,7 +110,7 @@ bool HasSharingPermissionOrIdpHasThirdPartyCookiesAccess(
     FederatedIdentityPermissionContextDelegate* sharing_permission_delegate,
     FederatedIdentityApiPermissionContextDelegate* api_permission_delegate);
 
-RequestPageData* GetPageData(Page& page);
+CONTENT_EXPORT RequestPageData* GetPageData(Page& page);
 
 // Returns the frame type of the requester.
 RequesterFrameType ComputeRequesterFrameType(const RenderFrameHost& rfh,
