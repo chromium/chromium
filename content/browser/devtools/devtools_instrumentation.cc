@@ -1962,47 +1962,6 @@ void OnAuctionWorkletNetworkRequestComplete(
                    status);
 }
 
-bool NeedInterestGroupAuctionEvents(FrameTreeNodeId frame_tree_node_id) {
-  FrameTreeNode* ftn = FrameTreeNode::GloballyFindByID(frame_tree_node_id);
-  if (!ftn) {
-    return false;
-  }
-  DevToolsAgentHostImpl* agent_host = RenderFrameDevToolsAgentHost::GetFor(ftn);
-  if (!agent_host) {
-    return false;
-  }
-  for (auto* storage : protocol::StorageHandler::ForAgentHost(agent_host)) {
-    if (storage->interest_group_auction_tracking_enabled()) {
-      return true;
-    }
-  }
-  return false;
-}
-
-void OnInterestGroupAuctionEventOccurred(
-    FrameTreeNodeId frame_tree_node_id,
-    base::Time event_time,
-    InterestGroupAuctionEventType type,
-    const std::string& unique_auction_id,
-    base::optional_ref<const std::string> parent_auction_id,
-    const base::DictValue& auction_config) {
-  DispatchToAgents(
-      frame_tree_node_id,
-      &protocol::StorageHandler::NotifyInterestGroupAuctionEventOccurred,
-      event_time, type, unique_auction_id, parent_auction_id, auction_config);
-}
-
-void OnInterestGroupAuctionNetworkRequestCreated(
-    FrameTreeNodeId frame_tree_node_id,
-    InterestGroupAuctionFetchType type,
-    const std::string& request_id,
-    const std::vector<std::string>& devtools_auction_ids) {
-  DispatchToAgents(frame_tree_node_id,
-                   &protocol::StorageHandler::
-                       NotifyInterestGroupAuctionNetworkRequestCreated,
-                   type, request_id, devtools_auction_ids);
-}
-
 void OnNavigationRequestWillBeSent(
     const NavigationRequest& navigation_request) {
   // Note this intentionally deviates from the usual instrumentation signal

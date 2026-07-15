@@ -38,7 +38,6 @@ namespace protocol {
 class StorageHandler
     : public DevToolsDomainHandler,
       public Storage::Backend,
-      public content::InterestGroupManagerImpl::InterestGroupObserver,
       public content::SharedStorageRuntimeManager::
           SharedStorageObserverInterface {
  public:
@@ -57,10 +56,6 @@ class StorageHandler
   void SetRenderer(int process_host_id,
                    RenderFrameHostImpl* frame_host) override;
   Response Disable() override;
-
-  bool interest_group_auction_tracking_enabled() const {
-    return interest_group_auction_tracking_enabled_;
-  }
 
   // content::protocol::storage::Backend
   Response GetStorageKeyForFrame(const std::string& frame_id,
@@ -121,13 +116,6 @@ class StorageHandler
       const std::string& issuerOrigin,
       std::unique_ptr<ClearTrustTokensCallback> callback) override;
 
-  void GetInterestGroupDetails(
-      const std::string& owner_origin_string,
-      const std::string& name,
-      std::unique_ptr<GetInterestGroupDetailsCallback> callback) override;
-  Response SetInterestGroupTracking(bool enable) override;
-  Response SetInterestGroupAuctionTracking(bool enable) override;
-
   void GetSharedStorageMetadata(
       const std::string& owner_origin_string,
       std::unique_ptr<GetSharedStorageMetadataCallback> callback) override;
@@ -159,28 +147,10 @@ class StorageHandler
   DispatchResponse DeleteStorageBucket(
       std::unique_ptr<protocol::Storage::StorageBucket> bucket) override;
 
-  void NotifyInterestGroupAuctionEventOccurred(
-      base::Time event_time,
-      content::InterestGroupAuctionEventType type,
-      const std::string& unique_auction_id,
-      base::optional_ref<const std::string> parent_auction_id,
-      const base::DictValue& auction_config);
-
-  void NotifyInterestGroupAuctionNetworkRequestCreated(
-      content::InterestGroupAuctionFetchType type,
-      const std::string& request_id,
-      const std::vector<std::string>& devtools_auction_ids);
-
-  Response SetProtectedAudienceKAnonymity(
-      const std::string& in_owner_origin,
-      const std::string& in_group_name,
-      std::unique_ptr<std::vector<Binary>> in_hashes) override;
-
  private:
   // See definition for lifetime information.
   class CacheStorageObserver;
   class IndexedDBObserver;
-  class InterestGroupObserver;
   class SharedStorageObserver;
   class QuotaManagerObserver;
 
@@ -192,17 +162,6 @@ class StorageHandler
   std::variant<protocol::Response, storage::SharedStorageManager*>
   GetSharedStorageManager();
   storage::QuotaManagerProxy* GetQuotaManagerProxy();
-
-  // content::InterestGroupManagerImpl::InterestGroupObserver
-  void OnInterestGroupAccessed(
-      base::optional_ref<const std::string> auction_id,
-      base::Time access_time,
-      InterestGroupManagerImpl::InterestGroupObserver::AccessType type,
-      const url::Origin& owner_origin,
-      const std::string& name,
-      base::optional_ref<const url::Origin> component_seller_origin,
-      std::optional<double> bid,
-      base::optional_ref<const std::string> bid_currency) override;
 
   // content::SharedStorageRuntimeManager::SharedStorageObserverInterface
   GlobalRenderFrameHostId AssociatedFrameHostId() const override;
@@ -247,10 +206,6 @@ class StorageHandler
   Response GetStorageKeyForFrameInternal(const std::string& frame_id,
                                          std::string* serialized_storage_key);
 
-  // This doesn't update `interest_group_auction_tracking_enabled_` and does not
-  // have to work on `storage_partition_`, unlike the public version.
-  Response SetInterestGroupTrackingInternal(StoragePartition* storage_partition,
-                                            bool enable);
   void GotAllCookies(
       std::unique_ptr<Storage::Backend::GetCookiesCallback> callback,
       const std::vector<net::CanonicalCookie>& cookies);
@@ -267,9 +222,6 @@ class StorageHandler
   // Exposes the API for managing storage quota overrides.
   std::unique_ptr<storage::QuotaOverrideHandle> quota_override_handle_;
   raw_ptr<DevToolsAgentHostClient> client_;
-
-  bool interest_group_tracking_enabled_ = false;
-  bool interest_group_auction_tracking_enabled_ = false;
 
   base::ScopedObservation<
       content::SharedStorageRuntimeManager,

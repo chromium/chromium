@@ -422,12 +422,7 @@ void StorageHandler::SetRenderer(int process_host_id,
   RenderProcessHost* process = RenderProcessHost::FromID(process_host_id);
   StoragePartition* new_storage_partition =
       process ? process->GetStoragePartition() : nullptr;
-  if (interest_group_tracking_enabled_) {
-    // Transfer observer registration from old frame's StoragePartition to new;
-    // SetInterestGroupTrackingInternal() will handle any nulls.
-    SetInterestGroupTrackingInternal(storage_partition_, false);
-    SetInterestGroupTrackingInternal(new_storage_partition, true);
-  }
+
   storage_partition_ = new_storage_partition;
   frame_host_ = frame_host;
 }
@@ -436,7 +431,7 @@ Response StorageHandler::Disable() {
   cache_storage_observer_.reset();
   indexed_db_observer_.reset();
   quota_override_handle_.reset();
-  SetInterestGroupTracking(false);
+
   SetSharedStorageTracking(false);
   quota_manager_observer_.reset();
   return Response::Success();
@@ -1059,90 +1054,7 @@ void StorageHandler::ClearTrustTokens(
       base::BindOnce(&SendClearTrustTokensStatus, std::move(callback)));
 }
 
-void StorageHandler::OnInterestGroupAccessed(
-    base::optional_ref<const std::string> auction_id,
-    base::Time access_time,
-    InterestGroupManagerImpl::InterestGroupObserver::AccessType type,
-    const url::Origin& owner_origin,
-    const std::string& name,
-    base::optional_ref<const url::Origin> component_seller_origin,
-    std::optional<double> bid,
-    base::optional_ref<const std::string> bid_currency) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  using AccessType =
-      InterestGroupManagerImpl::InterestGroupObserver::AccessType;
-  std::string type_enum;
-  switch (type) {
-    case AccessType::kJoin:
-      type_enum = Storage::InterestGroupAccessTypeEnum::Join;
-      break;
-    case AccessType::kLeave:
-      type_enum = Storage::InterestGroupAccessTypeEnum::Leave;
-      break;
-    case AccessType::kUpdate:
-      type_enum = Storage::InterestGroupAccessTypeEnum::Update;
-      break;
-    case AccessType::kLoaded:
-      type_enum = Storage::InterestGroupAccessTypeEnum::Loaded;
-      break;
-    case AccessType::kBid:
-      type_enum = Storage::InterestGroupAccessTypeEnum::Bid;
-      break;
-    case AccessType::kAdditionalBid:
-      type_enum = Storage::InterestGroupAccessTypeEnum::AdditionalBid;
-      break;
-    case AccessType::kWin:
-      type_enum = Storage::InterestGroupAccessTypeEnum::Win;
-      break;
-    case AccessType::kAdditionalBidWin:
-      type_enum = Storage::InterestGroupAccessTypeEnum::AdditionalBidWin;
-      break;
-    case AccessType::kClear:
-      type_enum = Storage::InterestGroupAccessTypeEnum::Clear;
-      break;
-    case AccessType::kTopLevelBid:
-      type_enum = Storage::InterestGroupAccessTypeEnum::TopLevelBid;
-      break;
-    case AccessType::kTopLevelAdditionalBid:
-      type_enum = Storage::InterestGroupAccessTypeEnum::TopLevelAdditionalBid;
-      break;
-  };
-  frontend_->InterestGroupAccessed(
-      access_time.InSecondsFSinceUnixEpoch(), type_enum,
-      owner_origin.Serialize(), name,
-      component_seller_origin.has_value()
-          ? std::optional<String>(component_seller_origin->Serialize())
-          : std::nullopt,
-      bid, bid_currency.CopyAsOptional(), auction_id.CopyAsOptional());
-}
 
-void StorageHandler::GetInterestGroupDetails(
-    const std::string& owner_origin_string,
-    const std::string& name,
-    std::unique_ptr<GetInterestGroupDetailsCallback> callback) {
-  // TODO(crbug.com/496189510): Remove this completely once the DevTools
-  // frontend usage is gone.
-  callback->sendSuccess(std::make_unique<base::DictValue>());
-}
-
-Response StorageHandler::SetInterestGroupTracking(bool enable) {
-  // TODO(crbug.com/496189510): Remove this completely once the DevTools
-  // frontend usage is gone.
-  return Response::Success();
-}
-
-Response StorageHandler::SetInterestGroupTrackingInternal(
-    StoragePartition* storage_partition,
-    bool enable) {
-  // TODO(crbug.com/496189510): Remove this completely once the DevTools
-  // frontend usage is gone.
-  return Response::Success();
-}
-
-Response StorageHandler::SetInterestGroupAuctionTracking(bool enable) {
-  interest_group_auction_tracking_enabled_ = enable;
-  return Response::Success();
-}
 
 namespace {
 
@@ -1525,9 +1437,7 @@ void StorageHandler::OnSharedStorageAccessed(
       scope_enum = Storage::SharedStorageAccessScopeEnum::SharedStorageWorklet;
       break;
     case AccessScope::kProtectedAudienceWorklet:
-      scope_enum =
-          Storage::SharedStorageAccessScopeEnum::ProtectedAudienceWorklet;
-      break;
+      return;
     case AccessScope::kHeader:
       scope_enum = Storage::SharedStorageAccessScopeEnum::Header;
       break;
@@ -1725,91 +1635,7 @@ void StorageHandler::NotifyDeleteBucket(
       base::NumberToString(bucket_locator.id.value()));
 }
 
-void StorageHandler::NotifyInterestGroupAuctionEventOccurred(
-    base::Time event_time,
-    content::InterestGroupAuctionEventType type,
-    const std::string& unique_auction_id,
-    base::optional_ref<const std::string> parent_auction_id,
-    const base::DictValue& auction_config) {
-  if (!interest_group_auction_tracking_enabled_) {
-    return;
-  }
-  std::string type_enum;
-  switch (type) {
-    case content::InterestGroupAuctionEventType::kStarted:
-      type_enum = Storage::InterestGroupAuctionEventTypeEnum::Started;
-      break;
-    case content::InterestGroupAuctionEventType::kConfigResolved:
-      type_enum = Storage::InterestGroupAuctionEventTypeEnum::ConfigResolved;
-      break;
-  };
-  frontend_->InterestGroupAuctionEventOccurred(
-      event_time.InSecondsFSinceUnixEpoch(), type_enum, unique_auction_id,
-      parent_auction_id.CopyAsOptional(),
-      std::make_unique<base::DictValue>(auction_config.Clone()));
-}
 
-void StorageHandler::NotifyInterestGroupAuctionNetworkRequestCreated(
-    content::InterestGroupAuctionFetchType type,
-    const std::string& request_id,
-    const std::vector<std::string>& devtools_auction_ids) {
-  if (!interest_group_auction_tracking_enabled_) {
-    return;
-  }
-  std::string type_enum;
-  switch (type) {
-    case content::InterestGroupAuctionFetchType::kBidderJs:
-      type_enum = Storage::InterestGroupAuctionFetchTypeEnum::BidderJs;
-      break;
-    case content::InterestGroupAuctionFetchType::kBidderWasm:
-      type_enum = Storage::InterestGroupAuctionFetchTypeEnum::BidderWasm;
-      break;
-    case content::InterestGroupAuctionFetchType::kSellerJs:
-      type_enum = Storage::InterestGroupAuctionFetchTypeEnum::SellerJs;
-      break;
-    case content::InterestGroupAuctionFetchType::kBidderTrustedSignals:
-      type_enum =
-          Storage::InterestGroupAuctionFetchTypeEnum::BidderTrustedSignals;
-      break;
-    case content::InterestGroupAuctionFetchType::kSellerTrustedSignals:
-      type_enum =
-          Storage::InterestGroupAuctionFetchTypeEnum::SellerTrustedSignals;
-      break;
-  };
-  frontend_->InterestGroupAuctionNetworkRequestCreated(
-      type_enum, request_id,
-      std::make_unique<std::vector<std::string>>(devtools_auction_ids));
-}
-
-Response StorageHandler::SetProtectedAudienceKAnonymity(
-    const std::string& in_owner_origin,
-    const std::string& in_group_name,
-    std::unique_ptr<std::vector<Binary>> in_hashes) {
-  url::Origin owner_origin = url::Origin::Create(GURL(in_owner_origin));
-
-  // Ensure we are in "test" mode.
-  // For now we just make sure the interest group owner is a .test domain.
-  if (!base::EndsWith(owner_origin.host(), ".test")) {
-    return Response::ServerError("owner origin must be on a .test domain");
-  }
-
-  std::vector<std::string> hashes;
-  for (const auto& in_hash : *in_hashes) {
-    hashes.emplace_back(base::as_string_view(in_hash));
-  }
-
-  InterestGroupManagerImpl* manager = static_cast<InterestGroupManagerImpl*>(
-      storage_partition_->GetInterestGroupManager());
-  if (!manager) {
-    return Response::ServerError("Protected Audience not enabled");
-  }
-  manager->UpdateKAnonymity(
-      blink::InterestGroupKey(std::move(owner_origin), in_group_name),
-      /*positive_hashed_keys=*/std::move(hashes),
-      /*update_time=*/base::Time::Now(),
-      /*replace_existing_values=*/true);
-  return Response::Success();
-}
 
 }  // namespace protocol
 }  // namespace content

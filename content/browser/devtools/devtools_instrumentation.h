@@ -295,21 +295,6 @@ void OnAuctionWorkletNetworkRequestComplete(
     const std::string& request_id,
     const network::URLLoaderCompletionStatus& status);
 
-bool NeedInterestGroupAuctionEvents(FrameTreeNodeId frame_tree_node_id);
-
-void OnInterestGroupAuctionEventOccurred(
-    FrameTreeNodeId frame_tree_node_id,
-    base::Time event_time,
-    InterestGroupAuctionEventType type,
-    const std::string& unique_auction_id,
-    base::optional_ref<const std::string> parent_auction_id,
-    const base::DictValue& auction_config);
-void OnInterestGroupAuctionNetworkRequestCreated(
-    FrameTreeNodeId frame_tree_node_id,
-    InterestGroupAuctionFetchType type,
-    const std::string& request_id,
-    const std::vector<std::string>& devtools_auction_ids);
-
 bool ShouldBypassCSP(const NavigationRequest& nav_request);
 bool ShouldBypassCertificateErrors();
 

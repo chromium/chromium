@@ -250,16 +250,6 @@ void AuctionURLLoaderFactoryProxy::CreateLoaderAndStart(
     }
   }
 
-  if (event_type.has_value() && new_request.devtools_request_id.has_value() &&
-      devtools_instrumentation::NeedInterestGroupAuctionEvents(
-          owner_frame_tree_node_id_)) {
-    std::vector<std::string> relevant_auction_ids =
-        get_devtools_auction_ids_.Run();
-    devtools_instrumentation::OnInterestGroupAuctionNetworkRequestCreated(
-        owner_frame_tree_node_id_, *event_type,
-        *new_request.devtools_request_id, relevant_auction_ids);
-  }
-
   if (is_trusted_signals_request) {
     // For cross-origin trusted signals request, the principal is the origin
     // of the script.

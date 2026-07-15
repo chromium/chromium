@@ -533,13 +533,6 @@ void TrustedSignalsFetcher::EncryptRequestBodyAndStart(
       AuctionDownloaderDelegate::MaybeCreate(frame_tree_node_id));
   ohttp_context_ = std::make_unique<quiche::ObliviousHttpRequest::Context>(
       std::move(maybe_ciphertext_request_body).value().ReleaseContext());
-  if (frame_tree_node_id &&
-      devtools_instrumentation::NeedInterestGroupAuctionEvents(
-          frame_tree_node_id)) {
-    devtools_instrumentation::OnInterestGroupAuctionNetworkRequestCreated(
-        frame_tree_node_id, fetch_type, auction_downloader_->request_id(),
-        std::move(devtools_auction_ids).extract());
-  }
 }
 
 void TrustedSignalsFetcher::OnRequestComplete(

@@ -2732,19 +2732,6 @@ InterestGroupAuction::InterestGroupAuction(
   // Warm up decoder.
   get_data_decoder_callback_.Run(config->seller);
 
-  FrameTreeNodeId frame_tree_node_id =
-      auction_worklet_manager_->GetFrameTreeNodeID();
-  if (devtools_instrumentation::NeedInterestGroupAuctionEvents(
-          frame_tree_node_id)) {
-    devtools_instrumentation::OnInterestGroupAuctionEventOccurred(
-        frame_tree_node_id, auction_start_time_,
-        InterestGroupAuctionEventType::kStarted, devtools_auction_id_,
-        parent_ ? base::optional_ref<const std::string>(
-                      parent->devtools_auction_id_)
-                : base::optional_ref<const std::string>(),
-        SerializeAuctionConfigForDevtools(*config_));
-  }
-
   uint32_t child_pos = 0;
   for (const auto& component_auction_config :
        config->non_shared_params.component_auctions) {
@@ -3417,19 +3404,6 @@ void InterestGroupAuction::NotifyConfigPromisesResolved() {
   config_promises_resolved_ = true;
 
   auction_metrics_recorder_->OnConfigPromisesResolved();
-
-  FrameTreeNodeId frame_tree_node_id =
-      auction_worklet_manager_->GetFrameTreeNodeID();
-  if (devtools_instrumentation::NeedInterestGroupAuctionEvents(
-          frame_tree_node_id)) {
-    devtools_instrumentation::OnInterestGroupAuctionEventOccurred(
-        frame_tree_node_id, base::Time::Now(),
-        InterestGroupAuctionEventType::kConfigResolved, devtools_auction_id_,
-        parent_ ? base::optional_ref<const std::string>(
-                      parent_->devtools_auction_id_)
-                : base::optional_ref<const std::string>(),
-        SerializeAuctionConfigForDevtools(*config_));
-  }
 
   // If we haven't started the bidding and scoring phase, we will just handle
   // this information at its start; setting `config_promises_resolved_` is
