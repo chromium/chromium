@@ -221,7 +221,6 @@ void FetchUtils::LogFetchKeepAliveRequestMetric(
     case mojom::blink::RequestContextType::IMAGE:
       sample_type = FetchKeepAliveRequestMetricType::kBackgroundFetchIcon;
       break;
-    case mojom::blink::RequestContextType::ATTRIBUTION_SRC:
     case mojom::blink::RequestContextType::AUDIO:
     case mojom::blink::RequestContextType::DOWNLOAD:
     case mojom::blink::RequestContextType::EMBED:
@@ -295,7 +294,7 @@ void FetchUtils::LogFetchKeepAliveRequestSentToServiceMetric(
     case mojom::blink::ResourceType::kXhr:
       sample_type = FetchKeepAliveRequestMetricType::kFetch;
       break;
-    // Includes BEACON/PING/ATTRIBUTION_SRC types
+    // Includes BEACON/PING types
     case mojom::blink::ResourceType::kPing:
       sample_type = FetchKeepAliveRequestMetricType::kPing;
       break;

@@ -1256,9 +1256,6 @@ static const char* InitiatorTypeNameToString(
   if (initiator_type_name == fetch_initiator_type_names::kAudio) {
     return "Audio";
   }
-  if (initiator_type_name == fetch_initiator_type_names::kAttributionsrc) {
-    return "Attribution resource";
-  }
   if (initiator_type_name == fetch_initiator_type_names::kCSS) {
     return "CSS resource";
   }
@@ -1307,7 +1304,7 @@ static const char* InitiatorTypeNameToString(
   }
 
   static_assert(
-      fetch_initiator_type_names::kNamesCount == 20,
+      fetch_initiator_type_names::kNamesCount == 19,
       "New FetchInitiatorTypeNames should be handled correctly here.");
 
   return "Resource";

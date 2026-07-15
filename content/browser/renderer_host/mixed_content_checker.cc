@@ -436,7 +436,6 @@ bool MixedContentChecker::ShouldBlockFetchKeepAlive(
   // A fetch keepalive request's RequestContextType is one of the following:
   // - RequestContextType::FETCH,
   // - RequestContextType::BEACON,
-  // - RequestContextType::ATTRIBUTION_SRC,
   // which all maps to kBlockable.
   // See also `blink::MixedContent::ContextTypeFromRequestContext()`.
   constexpr auto kMixedContentContextType =

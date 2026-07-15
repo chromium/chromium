@@ -289,8 +289,6 @@ protocol::Audits::MixedContentResourceType
 RequestContextToMixedContentResourceType(
     mojom::blink::RequestContextType request_context) {
   switch (request_context) {
-    case mojom::blink::RequestContextType::ATTRIBUTION_SRC:
-      return protocol::Audits::MixedContentResourceTypeEnum::AttributionSrc;
     case mojom::blink::RequestContextType::AUDIO:
       return protocol::Audits::MixedContentResourceTypeEnum::Audio;
     case mojom::blink::RequestContextType::BEACON:

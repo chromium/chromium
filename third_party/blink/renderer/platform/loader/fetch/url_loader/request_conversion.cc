@@ -155,7 +155,6 @@ mojom::ResourceType RequestContextToResourceType(
     case mojom::blink::RequestContextType::LOCATION:
     case mojom::blink::RequestContextType::FRAME:
     case mojom::blink::RequestContextType::IFRAME:
-    case mojom::blink::RequestContextType::ATTRIBUTION_SRC:
       NOTREACHED();
 
     default:

@@ -106,10 +106,6 @@ struct ShadowRealmToken {
 // their own section, in alphabetical order. If adding a new token here, please
 // keep the following list in alphabetic order.
 
-struct AttributionSrcToken {
-  mojo_base.mojom.UnguessableToken value;
-};
-
 union ExecutionContextToken {
   LocalFrameToken local_frame_token;
   DedicatedWorkerToken dedicated_worker_token;
