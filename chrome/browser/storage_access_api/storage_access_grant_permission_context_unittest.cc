@@ -195,6 +195,7 @@ class StorageAccessGrantPermissionContextTest
     metrics::dwa::DwaRecorder::Get()->Purge();
     ASSERT_THAT(metrics::dwa::DwaRecorder::Get()->GetEntriesForTesting(),
                 testing::IsEmpty());
+    StorageAccessGrantPermissionContext::SetImplicitGrantLimitForTesting(0);
     ChromeRenderViewHostTestHarness::TearDown();
   }
 
@@ -985,6 +986,8 @@ class StorageAccessGrantPermissionContextAPIWithFirstPartySetsTest
 
   void SetUp() override {
     StorageAccessGrantPermissionContextTest::SetUp();
+    additional_features_.InitAndEnableFeature(
+        blink::features::kStorageAccessAPIRelatedWebsiteSets);
 
     // Enable Related Website Sets (formerly First Party Sets).
     profile()->GetPrefs()->SetBoolean(
@@ -1005,6 +1008,7 @@ class StorageAccessGrantPermissionContextAPIWithFirstPartySetsTest
   }
 
  private:
+  base::test::ScopedFeatureList additional_features_;
   first_party_sets::ScopedMockFirstPartySetsHandler first_party_sets_handler_;
 };
 
@@ -1057,6 +1061,79 @@ TEST_F(StorageAccessGrantPermissionContextAPIWithFirstPartySetsTest,
   EXPECT_THAT(page_specific_content_settings()->GetTwoSiteRequests(
                   ContentSettingsType::STORAGE_ACCESS),
               IsEmpty());
+}
+
+class
+    StorageAccessGrantPermissionContextAPIWithFirstPartySetsFeatureDisabledTest
+    : public StorageAccessGrantPermissionContextTest {
+ public:
+  StorageAccessGrantPermissionContextAPIWithFirstPartySetsFeatureDisabledTest() =
+      default;
+
+  void SetUp() override {
+    StorageAccessGrantPermissionContextTest::SetUp();
+    StorageAccessGrantPermissionContext::SetImplicitGrantLimitForTesting(
+        kImplicitGrantLimit);
+    additional_features_.InitAndDisableFeature(
+        blink::features::kStorageAccessAPIRelatedWebsiteSets);
+
+    // Enable Related Website Sets (formerly First Party Sets).
+    profile()->GetPrefs()->SetBoolean(
+        prefs::kPrivacySandboxRelatedWebsiteSetsEnabled, true);
+    // Create a FPS with https://requester.example.com as the member and
+    // https://embedder.com as the primary.
+    first_party_sets_handler_.SetGlobalSets(
+        net::GlobalFirstPartySets::CreateForTesting(
+            base::Version("1.2.3"),
+            /*entries=*/
+            {{net::SchemefulSite(GetTopLevelURL()),
+              {net::FirstPartySetEntry(net::SchemefulSite(GetTopLevelURL()),
+                                       net::SiteType::kPrimary)}},
+             {net::SchemefulSite(GetRequesterURL()),
+              {net::FirstPartySetEntry(net::SchemefulSite(GetTopLevelURL()),
+                                       net::SiteType::kAssociated)}}},
+            /*aliases=*/{}));
+  }
+
+ private:
+  base::test::ScopedFeatureList additional_features_;
+  first_party_sets::ScopedMockFirstPartySetsHandler first_party_sets_handler_;
+};
+
+TEST_F(
+    StorageAccessGrantPermissionContextAPIWithFirstPartySetsFeatureDisabledTest,
+    ImplicitGrant_NotAutograntedWithinFPS) {
+  HostContentSettingsMap* settings_map =
+      HostContentSettingsMapFactory::GetForProfile(profile());
+  DCHECK(settings_map);
+
+  // Check no `SessionModel::DURABLE` setting with
+  // `decided_by_related_website_sets` exists yet.
+  ASSERT_THAT(settings_map->GetSettingsForOneType(
+                  ContentSettingsType::STORAGE_ACCESS,
+                  content_settings::mojom::SessionModel::DURABLE),
+              Each(DecidedByRelatedWebsiteSets(false)));
+
+  EXPECT_EQ(DecidePermission(MakePermissionRequestData(/*user_gesture=*/true))
+                .Get()
+                .status,
+            PermissionStatus::GRANTED);
+
+  histogram_tester().ExpectUniqueSample(kRequestOutcomeHistogram,
+                                        RequestOutcome::kGrantedByAllowance, 1);
+  histogram_tester().ExpectUniqueSample(kGrantIsImplicitHistogram,
+                                        /*sample=*/true, 1);
+
+  EXPECT_THAT(metrics::dwa::DwaRecorder::Get()->GetEntriesForTesting(),
+              ElementsAre(Pointee(
+                  DwaEntryMatches(RequestOutcome::kGrantedByAllowance,
+                                  net::SchemefulSite(GetRequesterURL())))));
+
+  // Check that the setting was NOT decided by RWS.
+  EXPECT_THAT(settings_map->GetSettingsForOneType(
+                  ContentSettingsType::STORAGE_ACCESS,
+                  content_settings::mojom::SessionModel::USER_SESSION),
+              Contains(DecidedByRelatedWebsiteSets(false)));
 }
 
 TEST_F(StorageAccessGrantPermissionContextTest, RepeatedDismissalsNotExposed) {

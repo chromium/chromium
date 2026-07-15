@@ -27,6 +27,7 @@ partial interface Document {
     [
         CallWith=ScriptState,
         NewObject,
+        RuntimeEnabled=RequestStorageAccessFor,
         DeprecateAs=StorageAccessAPI_requestStorageAccessFor_Method
     ] Promise<undefined> requestStorageAccessFor(USVString requestedOrigin);
 };

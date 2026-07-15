@@ -68,6 +68,8 @@ class TopLevelStorageAccessPermissionContextTest
   TopLevelStorageAccessPermissionContextTest() = default;
 
   void SetUp() override {
+    features_.InitAndEnableFeature(
+        blink::features::kStorageAccessAPIRelatedWebsiteSets);
     ChromeRenderViewHostTestHarness::SetUp();
 
     // Ensure we are navigated to some page so that the proper views get setup.
@@ -122,6 +124,7 @@ class TopLevelStorageAccessPermissionContextTest
   }
 
  private:
+  base::test::ScopedFeatureList features_;
   base::HistogramTester histogram_tester_;
   first_party_sets::ScopedMockFirstPartySetsHandler first_party_sets_handler_;
   std::unique_ptr<permissions::MockPermissionPromptFactory>
@@ -414,4 +417,99 @@ TEST_F(TopLevelStorageAccessPermissionContextAPIWithFirstPartySetsTest,
               /*render_frame_host=*/nullptr, GetRequesterURL(),
               GetDummyEmbeddingUrl())
           .status);
+}
+
+class TopLevelStorageAccessPermissionContextFeatureDisabledTest
+    : public ChromeRenderViewHostTestHarness {
+ public:
+  TopLevelStorageAccessPermissionContextFeatureDisabledTest() = default;
+
+  void SetUp() override {
+    features_.InitAndDisableFeature(
+        blink::features::kStorageAccessAPIRelatedWebsiteSets);
+    ChromeRenderViewHostTestHarness::SetUp();
+    NavigateAndCommit(GetTopLevelURL());
+    permissions::PermissionRequestManager::CreateForWebContents(web_contents());
+    mock_permission_prompt_factory_ =
+        std::make_unique<permissions::MockPermissionPromptFactory>(
+            permissions::PermissionRequestManager::FromWebContents(
+                web_contents()));
+    first_party_sets_handler_.SetGlobalSets(net::GlobalFirstPartySets());
+  }
+
+  PermissionStatus DecidePermissionSync(
+      TopLevelStorageAccessPermissionContext* permission_context,
+      bool user_gesture,
+      const GURL& requester_url,
+      const GURL& embedding_url,
+      bool simulate_user_gesture = true) {
+    if (user_gesture && simulate_user_gesture) {
+      content::RenderFrameHostTester::For(main_rfh())->SimulateUserActivation();
+    }
+    base::test::TestFuture<content::PermissionResult> future;
+    permission_context->DecidePermissionForTesting(
+        std::make_unique<permissions::PermissionRequestData>(
+            blink::mojom::PermissionDescriptor::New(
+                blink::mojom::PermissionName::TOP_LEVEL_STORAGE_ACCESS,
+                /*extension=*/nullptr),
+            CreateFakeID(), user_gesture, requester_url, embedding_url),
+        future.GetCallback());
+    return future.Get().status;
+  }
+
+  void TearDown() override {
+    mock_permission_prompt_factory_.reset();
+    ChromeRenderViewHostTestHarness::TearDown();
+  }
+
+  permissions::PermissionRequestID CreateFakeID() {
+    return permissions::PermissionRequestID(
+        web_contents()->GetPrimaryMainFrame(),
+        request_id_generator_.GenerateNextId());
+  }
+
+  base::HistogramTester& histogram_tester() { return histogram_tester_; }
+
+  first_party_sets::ScopedMockFirstPartySetsHandler&
+  first_party_sets_handler() {
+    return first_party_sets_handler_;
+  }
+
+ private:
+  base::test::ScopedFeatureList features_;
+  base::HistogramTester histogram_tester_;
+  first_party_sets::ScopedMockFirstPartySetsHandler first_party_sets_handler_;
+  std::unique_ptr<permissions::MockPermissionPromptFactory>
+      mock_permission_prompt_factory_;
+  permissions::PermissionRequestID::RequestLocalId::Generator
+      request_id_generator_;
+};
+
+TEST_F(TopLevelStorageAccessPermissionContextFeatureDisabledTest,
+       PermissionDeniedEvenWithinFPS) {
+  // Create a FPS with https://requester.com as the member and
+  // https://embedder.example.com as the primary.
+  first_party_sets_handler().SetGlobalSets(
+      net::GlobalFirstPartySets::CreateForTesting(
+          base::Version("1.2.3"),
+          /*entries=*/
+          {{net::SchemefulSite(GetTopLevelURL()),
+            {net::FirstPartySetEntry(net::SchemefulSite(GetTopLevelURL()),
+                                     net::SiteType::kPrimary)}},
+           {net::SchemefulSite(GetRequesterURL()),
+            {net::FirstPartySetEntry(net::SchemefulSite(GetTopLevelURL()),
+                                     net::SiteType::kAssociated)}}},
+          /*aliases=*/{}));
+
+  TopLevelStorageAccessPermissionContext permission_context(profile());
+
+  // Even though they are in the same FPS, it should be denied because the
+  // feature is disabled.
+  EXPECT_EQ(DecidePermissionSync(&permission_context, /*user_gesture=*/true,
+                                 GetRequesterURL(), GetTopLevelURL()),
+            PermissionStatus::DENIED);
+  EXPECT_EQ(histogram_tester().GetBucketCount(
+                kRequestOutcomeHistogram,
+                TopLevelStorageAccessRequestOutcome::kDeniedByPrerequisites),
+            1);
 }

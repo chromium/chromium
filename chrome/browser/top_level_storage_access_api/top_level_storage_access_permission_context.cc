@@ -70,6 +70,16 @@ void TopLevelStorageAccessPermissionContext::DecidePermission(
     std::unique_ptr<permissions::PermissionRequestData> request_data,
     permissions::BrowserPermissionCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  if (!base::FeatureList::IsEnabled(
+          blink::features::kStorageAccessAPIRelatedWebsiteSets)) {
+    RecordOutcomeSample(
+        TopLevelStorageAccessRequestOutcome::kDeniedByPrerequisites);
+    std::move(callback).Run(content::PermissionResult(
+        blink::mojom::PermissionStatus::DENIED,
+        content::PermissionStatusSource::UNSPECIFIED));
+    return;
+  }
+
   content::RenderFrameHost* rfh = content::RenderFrameHost::FromID(
       request_data->id.global_render_frame_host_id());
   CHECK(rfh);

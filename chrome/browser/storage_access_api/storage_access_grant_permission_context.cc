@@ -435,6 +435,13 @@ void StorageAccessGrantPermissionContext::DecidePermission(
     return;
   }
 
+  if (!base::FeatureList::IsEnabled(
+          blink::features::kStorageAccessAPIRelatedWebsiteSets)) {
+    CheckForAutoGrantOrAutoDenial(std::move(request_data), std::move(callback),
+                                  net::FirstPartySetMetadata());
+    return;
+  }
+
   first_party_sets::FirstPartySetsPolicyServiceFactory::GetForBrowserContext(
       browser_context())
       ->ComputeFirstPartySetMetadata(

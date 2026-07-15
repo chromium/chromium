@@ -5155,6 +5155,11 @@
       status: "stable",
     },
     {
+      name: "RequestStorageAccessFor",
+      status: "stable",
+      base_feature: "StorageAccessAPIRelatedWebsiteSets",
+    },
+    {
       name: "ResolveVarStylesOnCopy",
       status: "stable",
     },

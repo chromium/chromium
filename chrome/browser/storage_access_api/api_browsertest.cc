@@ -2508,6 +2508,14 @@ INSTANTIATE_TEST_SUITE_P(
 class StorageAccessAPIWithFirstPartySetsBrowserTest
     : public StorageAccessAPIBaseBrowserTest {
  public:
+  std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures() override {
+    std::vector<base::test::FeatureRefAndParams> enabled =
+        StorageAccessAPIBaseBrowserTest::GetEnabledFeatures();
+    enabled.push_back(
+        {blink::features::kStorageAccessAPIRelatedWebsiteSets, {}});
+    return enabled;
+  }
+
   void SetUpOnMainThread() override {
     StorageAccessAPIBaseBrowserTest::SetUpOnMainThread();
     // Explicitly enable Related Website Sets (formerly First Party Sets).
@@ -2793,6 +2801,14 @@ IN_PROC_BROWSER_TEST_F(StorageAccessAPIWithFirstPartySetsBrowserTest,
 class StorageAccessAPIWithFirstPartySetsAndImplicitGrantsBrowserTest
     : public StorageAccessAPIBaseBrowserTest {
  public:
+  std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures() override {
+    std::vector<base::test::FeatureRefAndParams> enabled =
+        StorageAccessAPIBaseBrowserTest::GetEnabledFeatures();
+    enabled.push_back(
+        {blink::features::kStorageAccessAPIRelatedWebsiteSets, {}});
+    return enabled;
+  }
+
   StorageAccessAPIWithFirstPartySetsAndImplicitGrantsBrowserTest() {
     StorageAccessGrantPermissionContext::SetImplicitGrantLimitForTesting(5);
   }

@@ -296,7 +296,11 @@ class InsecureRequestStorageAccessForBaseBrowserTest
   InsecureRequestStorageAccessForBaseBrowserTest()
       : http_server_(net::EmbeddedTestServer::TYPE_HTTP) {}
 
-  void SetUp() override { InProcessBrowserTest::SetUp(); }
+  void SetUp() override {
+    features_.InitAndEnableFeature(
+        blink::features::kStorageAccessAPIRelatedWebsiteSets);
+    InProcessBrowserTest::SetUp();
+  }
 
   void SetUpOnMainThread() override {
     host_resolver()->AddRule("*", "127.0.0.1");
@@ -324,6 +328,9 @@ class InsecureRequestStorageAccessForBaseBrowserTest
   }
 
   net::test_server::EmbeddedTestServer http_server_;
+
+ private:
+  base::test::ScopedFeatureList features_;
 };
 
 IN_PROC_BROWSER_TEST_F(InsecureRequestStorageAccessForBaseBrowserTest,
@@ -446,7 +453,19 @@ class RequestStorageAccessForEnabledBrowserTest
     : public RequestStorageAccessForBaseBrowserTest,
       public testing::WithParamInterface<std::tuple<bool, bool>> {
  public:
+  std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures()
+      const override {
+    return {{blink::features::kStorageAccessAPIRelatedWebsiteSets, {}}};
+  }
 };
+
+IN_PROC_BROWSER_TEST_F(RequestStorageAccessForEnabledBrowserTest,
+                       RsaForOriginEnabled) {
+  NavigateToPageWithFrame(kHostA);
+  EXPECT_EQ(
+      EvalJs(GetPrimaryMainFrame(), "\"requestStorageAccessFor\" in document"),
+      true);
+}
 
 IN_PROC_BROWSER_TEST_F(RequestStorageAccessForEnabledBrowserTest,
                        SameOriginGrantedByDefault) {
@@ -619,6 +638,11 @@ IN_PROC_BROWSER_TEST_F(RequestStorageAccessForEnabledBrowserTest,
 class RequestStorageAccessForWithFirstPartySetsBrowserTest
     : public RequestStorageAccessForBaseBrowserTest {
  public:
+  std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures()
+      const override {
+    return {{blink::features::kStorageAccessAPIRelatedWebsiteSets, {}}};
+  }
+
   RequestStorageAccessForWithFirstPartySetsBrowserTest() {
     // The network service runs in a separate process by default. This is
     // problematic for tests that check histograms, because
