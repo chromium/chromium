@@ -17,8 +17,10 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
 #include "base/task/single_thread_task_runner.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
+#include "components/autofill/core/browser/integrators/autofill_ai/metrics/autofill_ai_metrics.h"
 #include "components/autofill/core/browser/manual_testing_import.h"
 #include "components/autofill/core/browser/network/autofill_ai/personal_context_conversion_util.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -371,6 +373,7 @@ void AutofillAiPersonalContextAccessManagerImpl::ProcessPrefetchedEntities(
     std::vector<ParsedEntity> parsed_entities) {
   // Evict existing entities for the `requested_types`.
   for (const EntityType& type : requested_types) {
+    LogPrefetchTotalLatency(type);
     ResetStateForType(type);
     SetTypeStatus(type, RequestStatus::kSuccess);
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
@@ -569,6 +572,19 @@ void AutofillAiPersonalContextAccessManagerImpl::LogRequestLatency(
       base::UmaHistogramMediumTimes(
           "Autofill.Ai.PersonalContext.RequestLatency.SpiiUnmasking", latency);
       break;
+  }
+}
+
+void AutofillAiPersonalContextAccessManagerImpl::LogPrefetchTotalLatency(
+    EntityType type) {
+  if (const RequestState* state = base::FindOrNull(prefetch_state_, type)) {
+    if (state->status == RequestStatus::kPending &&
+        !state->last_update_time.is_null()) {
+      base::UmaHistogramMediumTimes(
+          base::StrCat({"Autofill.Ai.PersonalContext.Prefetch.TotalLatency.",
+                        EntityTypeToMetricsString(type)}),
+          base::TimeTicks::Now() - state->last_update_time);
+    }
   }
 }
 

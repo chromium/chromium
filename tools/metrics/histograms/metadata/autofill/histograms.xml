@@ -1909,6 +1909,19 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </token>
 </histogram>
 
+<histogram name="Autofill.Ai.PersonalContext.Prefetch.TotalLatency{EntityType}"
+    units="ms" expires_after="2026-12-12">
+  <owner>vidhanj@google.com</owner>
+  <owner>vizcay@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Records the total prefetch latency (in milliseconds) for the Personal
+    Context prefetch request of {EntityType} data. Recorded when the prefetch
+    state for the entity type transitions to success.
+  </summary>
+  <token key="EntityType" variants="Autofill.Ai.EntityType"/>
+</histogram>
+
 <histogram name="Autofill.Ai.PersonalContext.Prefetch.TriggerResult"
     enum="AutofillAiPersonalContextPrefetchTriggerResult"
     expires_after="2026-12-12">

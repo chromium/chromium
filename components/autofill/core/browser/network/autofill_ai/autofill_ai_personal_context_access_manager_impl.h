@@ -202,6 +202,11 @@ class AutofillAiPersonalContextAccessManagerImpl
   // Logs the request latency of a personal context network request.
   void LogRequestLatency(RequestType request_type, base::TimeTicks start_time);
 
+  // Logs the total latency for a prefetch request of a specific `type`.
+  // Latency is only logged if the previous status was `kPending` and the
+  // request start time is valid.
+  void LogPrefetchTotalLatency(EntityType type);
+
   const raw_ref<personal_context::PersonalContextService>
       personal_context_service_;
   const raw_ref<personal_context::PersonalContextEligibilityService>
