@@ -38,6 +38,7 @@ namespace send_tab_to_self {
 namespace {
 
 constexpr char kExampleUrl[] = "https://www.example.com/";
+constexpr char kDeviceId[] = "device_id";
 
 std::unique_ptr<KeyedService> BuildStubSendTabToSelfSyncService(
     content::BrowserContext* context) {
@@ -47,39 +48,41 @@ std::unique_ptr<KeyedService> BuildStubSendTabToSelfSyncService(
 }  // namespace
 
 class AndroidNotificationHandlerBrowserTest : public AndroidBrowserTest {
+ protected:
   void SetUpBrowserContextKeyedServices(
       content::BrowserContext* context) override {
     SendTabToSelfSyncServiceFactory::GetInstance()->SetTestingFactory(
         context, base::BindRepeating(&BuildStubSendTabToSelfSyncService));
   }
 
+  FakeSendTabToSelfModel* model() {
+    return static_cast<StubSendTabToSelfSyncService*>(
+               SendTabToSelfSyncServiceFactory::GetForProfile(GetProfile()))
+        ->GetFakeSendTabToSelfModel();
+  }
+
+ private:
   base::test::ScopedFeatureList feature_list_{kSendTabToSelfAutoOpen};
 };
 
 IN_PROC_BROWSER_TEST_F(AndroidNotificationHandlerBrowserTest,
                        AutoOpenWhenBroughtToForeground) {
-  FakeSendTabToSelfModel* model =
-      static_cast<StubSendTabToSelfSyncService*>(
-          SendTabToSelfSyncServiceFactory::GetForProfile(GetProfile()))
-          ->GetFakeSendTabToSelfModel();
-  ASSERT_TRUE(model);
-
   const int initial_tab_count = GetTabListInterface()->GetTabCount();
-  EntryOpenedWaiter waiter(model);
+  EntryOpenedWaiter waiter(model());
 
   const SendTabToSelfEntry* entry =
-      model->AddEntryRemotely(GURL(kExampleUrl), "Title", "device_id",
-                              PageContext(), NavigationHistory());
+      model()->AddEntryRemotely(GURL(kExampleUrl), "Title", kDeviceId,
+                                PageContext(), NavigationHistory());
   const std::string guid = entry->GetGUID();
 
-  EXPECT_FALSE(model->GetEntryByGUID(guid)->IsOpened());
+  EXPECT_FALSE(model()->GetEntryByGUID(guid)->IsOpened());
 
   base::android::ApplicationStatusListener::NotifyApplicationStateChange(
       base::android::APPLICATION_STATE_HAS_RUNNING_ACTIVITIES);
 
   waiter.Wait();
 
-  EXPECT_TRUE(model->GetEntryByGUID(guid)->IsOpened());
+  EXPECT_TRUE(model()->GetEntryByGUID(guid)->IsOpened());
   EXPECT_EQ(initial_tab_count + 1, GetTabListInterface()->GetTabCount());
   EXPECT_EQ(GURL(kExampleUrl), GetTabListInterface()
                                    ->GetTab(initial_tab_count)
@@ -95,27 +98,72 @@ IN_PROC_BROWSER_TEST_F(AndroidNotificationHandlerBrowserTest,
               ->GetReceivingUiHandler());
   ASSERT_TRUE(handler);
 
-  FakeSendTabToSelfModel* model =
-      static_cast<StubSendTabToSelfSyncService*>(
-          SendTabToSelfSyncServiceFactory::GetForProfile(GetProfile()))
-          ->GetFakeSendTabToSelfModel();
-  ASSERT_TRUE(model);
-
   // Simulating application already running in foreground
   base::android::ApplicationStatusListener::NotifyApplicationStateChange(
       base::android::APPLICATION_STATE_HAS_RUNNING_ACTIVITIES);
 
   const int initial_tab_count = GetTabListInterface()->GetTabCount();
-  EntryOpenedWaiter waiter(model);
+  EntryOpenedWaiter waiter(model());
 
   const SendTabToSelfEntry* entry =
-      model->AddEntryRemotely(GURL(kExampleUrl), "Title", "device_id",
-                              PageContext(), NavigationHistory());
+      model()->AddEntryRemotely(GURL(kExampleUrl), "Title", kDeviceId,
+                                PageContext(), NavigationHistory());
   const std::string guid = entry->GetGUID();
 
   waiter.Wait();
 
-  EXPECT_TRUE(model->GetEntryByGUID(guid)->IsOpened());
+  EXPECT_TRUE(model()->GetEntryByGUID(guid)->IsOpened());
+  EXPECT_EQ(initial_tab_count + 1, GetTabListInterface()->GetTabCount());
+  EXPECT_EQ(GURL(kExampleUrl), GetTabListInterface()
+                                   ->GetTab(initial_tab_count)
+                                   ->GetContents()
+                                   ->GetVisibleURL());
+}
+
+class AndroidNotificationHandlerModelNotReadyBrowserTest
+    : public AndroidNotificationHandlerBrowserTest {
+ public:
+  void SetUpBrowserContextKeyedServices(
+      content::BrowserContext* context) override {
+    SendTabToSelfSyncServiceFactory::GetInstance()->SetTestingFactory(
+        context, base::BindRepeating([](content::BrowserContext* context)
+                                         -> std::unique_ptr<KeyedService> {
+          auto service = std::make_unique<StubSendTabToSelfSyncService>();
+          FakeSendTabToSelfModel* model = service->GetFakeSendTabToSelfModel();
+          model->SetIsReady(false);
+          model->SetLocalCacheGuid(kDeviceId);
+          return service;
+        }));
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(AndroidNotificationHandlerModelNotReadyBrowserTest,
+                       AutoOpenWhenModelReadyLater) {
+  // Simulating application already running in foreground
+  base::android::ApplicationStatusListener::NotifyApplicationStateChange(
+      base::android::APPLICATION_STATE_HAS_RUNNING_ACTIVITIES);
+
+  ASSERT_FALSE(model()->IsReady());
+
+  // Add entry while model is not ready.
+  const SendTabToSelfEntry* entry =
+      model()->AddEntryRemotely(GURL(kExampleUrl), "Title", kDeviceId,
+                                PageContext(), NavigationHistory());
+  const std::string guid = entry->GetGUID();
+
+  const int initial_tab_count = GetTabListInterface()->GetTabCount();
+
+  // Should not open because model is not ready.
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(model()->GetEntryByGUID(guid)->IsOpened());
+  EXPECT_EQ(initial_tab_count, GetTabListInterface()->GetTabCount());
+
+  // Now make model ready. This should trigger auto-open.
+  EntryOpenedWaiter waiter(model());
+  model()->SetIsReady(true);
+  waiter.Wait();
+
+  EXPECT_TRUE(model()->GetEntryByGUID(guid)->IsOpened());
   EXPECT_EQ(initial_tab_count + 1, GetTabListInterface()->GetTabCount());
   EXPECT_EQ(GURL(kExampleUrl), GetTabListInterface()
                                    ->GetTab(initial_tab_count)

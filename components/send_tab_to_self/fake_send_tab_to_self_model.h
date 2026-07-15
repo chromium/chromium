@@ -124,8 +124,9 @@ class FakeSendTabToSelfModel final : public SendTabToSelfModel {
   int activated_call_count_ = 0;
   SendEntryCallback send_entry_callback_;
   SendTabToSelfResult send_result_ = SendTabToSelfResult::kSuccess;
-
   bool is_adding_entries_remotely_ = false;
+  std::vector<std::unique_ptr<SendTabToSelfEntry>>
+      remote_entries_pending_model_ready_;
 };
 
 }  // namespace send_tab_to_self

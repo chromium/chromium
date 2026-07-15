@@ -116,7 +116,13 @@ AndroidNotificationHandler::AndroidNotificationHandler(
           &AndroidNotificationHandler::HandleApplicationStateChange,
           weak_factory_.GetWeakPtr()));
 
-  CheckAndOpenPendingEntries();
+  if (base::FeatureList::IsEnabled(kSendTabToSelfAutoOpen)) {
+    if (send_tab_to_self_model_->IsReady()) {
+      OnModelReady();
+    } else {
+      model_observation_.Observe(send_tab_to_self_model_);
+    }
+  }
 }
 
 AndroidNotificationHandler::~AndroidNotificationHandler() {
@@ -129,20 +135,20 @@ void AndroidNotificationHandler::DisplayNewEntries(
     return;
   }
 
-  std::vector<SendTabToSelfEntry> vector_copy;
-
+  std::vector<std::string> guids;
+  guids.reserve(new_entries.size());
   for (const SendTabToSelfEntry* entry : new_entries) {
-    vector_copy.push_back(*entry);
+    guids.push_back(entry->GetGUID());
   }
 
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(&AndroidNotificationHandler::DisplayNewEntriesOnUIThread,
-                     weak_factory_.GetWeakPtr(), std::move(vector_copy)));
+                     weak_factory_.GetWeakPtr(), std::move(guids)));
 }
 
 void AndroidNotificationHandler::DisplayNewEntriesOnUIThread(
-    const std::vector<SendTabToSelfEntry>& new_entries) {
+    const std::vector<std::string>& guids) {
   // Called when new entries are received from sync.
   content::WebContents* const target_web_contents =
       base::FeatureList::IsEnabled(kSendTabToSelfAutoOpen)
@@ -152,16 +158,33 @@ void AndroidNotificationHandler::DisplayNewEntriesOnUIThread(
   // If Chrome is already open and active in the foreground, entries are
   // opened directly as new background tabs.
   if (target_web_contents) {
-    for (const SendTabToSelfEntry& entry : new_entries) {
-      OpenEntryInBackgroundTab(entry, *target_web_contents);
+    std::optional<std::string> device_name;
+    for (const std::string& guid : guids) {
+      const SendTabToSelfEntry* entry =
+          send_tab_to_self_model_->GetEntryByGUID(guid);
+      if (!entry || entry->IsOpened()) {
+        continue;
+      }
+      OpenEntryInBackgroundTab(*entry, *target_web_contents);
       RecordAutoOpenOutcome(
           AutoOpenOutcome::kTabsOpenedImmediatelyInBackground);
+      // Use the device name of the last entry. There can be multiple devices
+      // sending tabs to the same device but only one of them is displayed in
+      // the message banner.
+      device_name = entry->GetDeviceName();
     }
-    ShowMessageBanner(new_entries.back().GetDeviceName(), target_web_contents);
+    if (device_name.has_value()) {
+      ShowMessageBanner(*device_name, target_web_contents);
+    }
   } else {
     // Otherwise, show a standard system notification.
-    for (const SendTabToSelfEntry& entry : new_entries) {
-      ShowNotification(entry);
+    for (const std::string& guid : guids) {
+      const SendTabToSelfEntry* entry =
+          send_tab_to_self_model_->GetEntryByGUID(guid);
+      if (!entry || entry->IsOpened()) {
+        continue;
+      }
+      ShowNotification(*entry);
       RecordAutoOpenOutcome(AutoOpenOutcome::kUnopenedImmediately);
     }
   }
@@ -206,6 +229,11 @@ void AndroidNotificationHandler::DismissEntries(
   for (const std::string& guid : guids) {
     HideNotification(guid);
   }
+}
+
+void AndroidNotificationHandler::OnModelReady() {
+  CheckAndOpenPendingEntries();
+  model_observation_.Reset();
 }
 
 void AndroidNotificationHandler::OnTabModelAdded(TabModel* tab_model) {

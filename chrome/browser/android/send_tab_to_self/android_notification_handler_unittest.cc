@@ -295,5 +295,56 @@ TEST_F(AndroidNotificationHandlerTest, ShouldEnqueueMessageBannerOnAutoOpen) {
   TabModelList::RemoveTabModel(tab_model_.get());
 }
 
+class AndroidNotificationHandlerModelNotReadyTest
+    : public AndroidNotificationHandlerTest {
+ public:
+  TestingProfile::TestingFactories GetTestingFactories() const override {
+    return {TestingProfile::TestingFactory{
+        SendTabToSelfSyncServiceFactory::GetInstance(),
+        base::BindRepeating([](content::BrowserContext* context)
+                                -> std::unique_ptr<KeyedService> {
+          auto service = std::make_unique<StubSendTabToSelfSyncService>();
+          service->GetFakeSendTabToSelfModel()->SetIsReady(false);
+          return service;
+        })}};
+  }
+};
+
+TEST_F(AndroidNotificationHandlerModelNotReadyTest,
+       ShouldAutoOpenPendingEntriesWhenModelBecomesReady) {
+  base::HistogramTester histogram_tester;
+  // Attach the tab model to simulate an active browser window.
+  TabModelList::AddTabModel(tab_model_.get());
+
+  // Add a remote entry to the model.
+  const SendTabToSelfEntry* entry =
+      model()->AddEntryRemotely(GURL(kExampleUrl), "Title", kDeviceId,
+                                PageContext(), NavigationHistory());
+  const std::string guid = entry->GetGUID();
+  EXPECT_FALSE(model()->GetEntryByGUID(guid)->IsOpened());
+
+  EntryOpenedWaiter waiter(model());
+
+  // Ensure no system notification is shown since Chrome is active.
+  EXPECT_CALL(*handler(), ShowNotification).Times(0);
+  // Expect the message banner to be displayed on the active WebContents.
+  EXPECT_CALL(*handler(), ShowMessageBanner(kRemoteDeviceName, web_contents()));
+
+  // Mark the model as ready. This should trigger the auto-open of the pending
+  // entry.
+  model()->SetIsReady(true);
+
+  waiter.Wait();
+  // Verify that the model was notified to mark the entry as opened.
+  EXPECT_TRUE(model()->GetEntryByGUID(guid)->IsOpened());
+
+  histogram_tester.ExpectUniqueSample(
+      "Sharing.SendTabToSelf.AutoOpenOutcome2",
+      AutoOpenOutcome::kTabsOpenedInBackgroundUponActivation, 1);
+
+  // Clean up the tab model from the global list.
+  TabModelList::RemoveTabModel(tab_model_.get());
+}
+
 }  // namespace
 }  // namespace send_tab_to_self

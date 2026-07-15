@@ -38,7 +38,15 @@ std::vector<std::string> FakeSendTabToSelfModel::GetAllGuids() const {
 const SendTabToSelfEntry* FakeSendTabToSelfModel::GetEntryByGUID(
     std::string_view guid) const {
   auto it = entries_.find(guid);
-  return it != entries_.end() ? it->second.get() : nullptr;
+  if (it != entries_.end()) {
+    return it->second.get();
+  }
+  for (const auto& entry : remote_entries_pending_model_ready_) {
+    if (entry->GetGUID() == guid) {
+      return entry.get();
+    }
+  }
+  return nullptr;
 }
 
 std::vector<const SendTabToSelfEntry*>
@@ -165,6 +173,14 @@ std::optional<TargetDeviceInfo> FakeSendTabToSelfModel::GetTargetDeviceInfo(
 void FakeSendTabToSelfModel::SetIsReady(bool is_ready) {
   is_ready_ = is_ready;
   if (is_ready_) {
+    if (!remote_entries_pending_model_ready_.empty()) {
+      for (auto& entry : remote_entries_pending_model_ready_) {
+        const std::string& guid = entry->GetGUID();
+        entries_[guid] = std::move(entry);
+      }
+      remote_entries_pending_model_ready_.clear();
+    }
+
     for (auto& observer : observers_) {
       observer.OnModelReady();
     }
@@ -232,13 +248,19 @@ FakeSendTabToSelfModel::AddEntriesRemotely(
             params.target_device_cache_guid, params.context,
             std::move(params.navigation_history));
     results.push_back(entry.get());
-    entries_[guid] = std::move(entry);
+    if (is_ready_) {
+      entries_[guid] = std::move(entry);
+    } else {
+      remote_entries_pending_model_ready_.push_back(std::move(entry));
+    }
   }
 
-  base::AutoReset<bool> adding_entries_remotely(&is_adding_entries_remotely_,
-                                                true);
-  for (auto& observer : observers_) {
-    observer.OnEntriesAddedRemotely(results);
+  if (is_ready_) {
+    base::AutoReset<bool> adding_entries_remotely(&is_adding_entries_remotely_,
+                                                  true);
+    for (auto& observer : observers_) {
+      observer.OnEntriesAddedRemotely(results);
+    }
   }
 
   return results;
