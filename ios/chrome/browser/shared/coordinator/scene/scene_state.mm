@@ -67,9 +67,8 @@
   NSInteger _numberOfSigninInProgress;
 }
 
-- (instancetype)initWithAppState:(AppState*)appState {
-  self = [super init];
-  if (self) {
+- (instancetype)init {
+  if ((self = [super init])) {
     _observers = [SceneStateObserverList
         observersWithProtocol:@protocol(SceneStateObserver)];
     _agents = [[NSMutableArray alloc] init];
@@ -81,6 +80,10 @@
     _prefs = nil;
   }
   return self;
+}
+
+- (instancetype)initWithAppState:(AppState*)appState {
+  return [self init];
 }
 
 #pragma mark - public

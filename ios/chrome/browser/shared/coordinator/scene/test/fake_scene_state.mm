@@ -36,7 +36,7 @@
                          profile:(ProfileIOS*)profile
                   sceneSessionID:(std::string)sceneSessionID
                commandDispatcher:(CommandDispatcher*)commandDispatcher {
-  if ((self = [super initWithAppState:appState])) {
+  if ((self = [super init])) {
     DCHECK(profile);
     DCHECK(!profile->IsOffTheRecord());
     self.activationLevel = SceneActivationLevelForegroundInactive;

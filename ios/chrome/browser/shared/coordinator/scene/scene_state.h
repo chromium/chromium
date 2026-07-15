@@ -61,8 +61,11 @@ struct SceneStateOptions;
 // TODO(b/326186137): This class should implement BrowserProviderInterface.
 @interface SceneState : NSObject <UIBlockerTarget>
 
-- (instancetype)initWithAppState:(AppState*)appState NS_DESIGNATED_INITIALIZER;
-- (instancetype)init NS_UNAVAILABLE;
+// Designated initializer.
+- (instancetype)init NS_DESIGNATED_INITIALIZER;
+
+// Deprecated initializer as the `appState` is ignored.
+- (instancetype)initWithAppState:(AppState*)appState;
 
 // The profile state for profile that owns this scene.
 @property(nonatomic, weak) ProfileState* profileState;

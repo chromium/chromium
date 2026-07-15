@@ -35,7 +35,7 @@ class ProfileIOS;
 - (instancetype)initWithAppState:(AppState*)appState
                          profile:(ProfileIOS*)profile;
 
-- (instancetype)initWithAppState:(AppState*)appState NS_UNAVAILABLE;
+- (instancetype)init NS_UNAVAILABLE;
 
 // Redeclares interface provider as readwrite.
 @property(nonatomic, strong, readwrite)
