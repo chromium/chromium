@@ -32,8 +32,6 @@ source_set("model") {
     "configuration_policy_handler_list_factory.mm",
     "device_management_service_configuration_ios.h",
     "device_management_service_configuration_ios.mm",
-    "enterprise_management_metrics_service_factory.h",
-    "enterprise_management_metrics_service_factory.mm",
     "management_state.h",
     "management_state.mm",
     "management_status_providers_ios.h",

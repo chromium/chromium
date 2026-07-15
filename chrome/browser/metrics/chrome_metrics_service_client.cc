@@ -29,9 +29,11 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/glic/glic_metrics_provider.h"
 #include "chrome/browser/google/google_brand.h"
 #include "chrome/browser/history/history_service_factory.h"
+#include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/metrics/accessibility_state_provider.h"
 #include "chrome/browser/metrics/cached_metrics_profile.h"
 #include "chrome/browser/metrics/chrome_browser_main_extra_parts_metrics.h"
@@ -47,6 +49,7 @@
 #include "chrome/browser/metrics/usertype_by_devicetype_metrics_provider.h"
 #include "chrome/browser/performance_manager/metrics/metrics_provider_common.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/profile_selections.h"
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/regional_capabilities/regional_capabilities_metrics_provider.h"
 #include "chrome/browser/regional_capabilities/regional_capabilities_service_factory.h"
@@ -101,6 +104,7 @@
 #include "components/metrics/version_utils.h"
 #include "components/network_time/network_time_tracker.h"
 #include "components/omnibox/browser/omnibox_metrics_provider.h"
+#include "components/policy/core/common/enterprise_management_metrics_provider.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -488,6 +492,28 @@ void UpdateMetricsServicesForPerUser(bool enabled) {
   g_browser_process->GetMetricsServicesManager()->UpdateUploadPermissions();
 }
 #endif
+
+std::vector<policy::EnterpriseManagementMetricsProvider::ProfileState>
+GetEnterpriseManagementProfileStates() {
+  std::vector<policy::EnterpriseManagementMetricsProvider::ProfileState> states;
+  if (g_browser_process && g_browser_process->profile_manager()) {
+    ProfileSelections selections = ProfileSelections::BuildForRegularProfile();
+    for (Profile* profile :
+         g_browser_process->profile_manager()->GetLoadedProfiles()) {
+      Profile* target_profile = selections.ApplyProfileSelection(profile);
+      if (!target_profile) {
+        continue;
+      }
+      policy::ProfilePolicyConnector* connector =
+          target_profile->GetProfilePolicyConnector();
+      states.push_back({
+          policy::ManagementServiceFactory::GetForProfile(target_profile),
+          connector ? connector->policy_service() : nullptr
+      });
+    }
+  }
+  return states;
+}
 
 }  // namespace
 
@@ -1030,6 +1056,11 @@ void ChromeMetricsServiceClient::RegisterMetricsServiceProviders() {
   metrics_service_->RegisterMetricsProvider(
       std::make_unique<
           subscription_eligibility::SubscriptionEligibilityMetricsProvider>());
+
+  metrics_service_->RegisterMetricsProvider(
+      std::make_unique<policy::EnterpriseManagementMetricsProvider>(
+          policy::ManagementServiceFactory::GetForPlatform(),
+          base::BindRepeating(&GetEnterpriseManagementProfileStates)));
 }
 
 void ChromeMetricsServiceClient::RegisterUKMProviders() {

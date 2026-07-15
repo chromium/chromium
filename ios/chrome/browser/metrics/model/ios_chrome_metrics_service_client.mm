@@ -62,6 +62,7 @@
 #import "components/metrics/ui/screen_info_metrics_provider.h"
 #import "components/metrics/version_utils.h"
 #import "components/omnibox/browser/omnibox_metrics_provider.h"
+#import "components/policy/core/common/enterprise_management_metrics_provider.h"
 #import "components/prefs/pref_registry_simple.h"
 #import "components/prefs/pref_service.h"
 #import "components/regional_capabilities/regional_capabilities_country_id.h"
@@ -89,6 +90,9 @@
 #import "ios/chrome/browser/metrics/model/ios_push_notifications_metrics_provider.h"
 #import "ios/chrome/browser/metrics/model/mobile_session_crash_helper_metrics_provider.h"
 #import "ios/chrome/browser/metrics/model/mobile_session_shutdown_metrics_provider.h"
+#import "ios/chrome/browser/policy/model/browser_management_service.h"
+#import "ios/chrome/browser/policy/model/browser_management_service_factory.h"
+#import "ios/chrome/browser/policy/model/profile_policy_connector.h"
 #import "ios/chrome/browser/regional_capabilities/model/ios_regional_capabilities_metrics_provider.h"
 #import "ios/chrome/browser/regional_capabilities/model/regional_capabilities_service_factory.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -143,6 +147,27 @@ std::unique_ptr<metrics::FileMetricsProvider> CreateFileMetricsProvider(
                                           metrics_reporting_enabled);
   }
   return file_metrics_provider;
+}
+
+std::vector<policy::EnterpriseManagementMetricsProvider::ProfileState>
+GetEnterpriseManagementProfileStates() {
+  std::vector<policy::EnterpriseManagementMetricsProvider::ProfileState> states;
+  ApplicationContext* context = GetApplicationContext();
+  if (context && context->GetProfileManager()) {
+    for (ProfileIOS* profile :
+         context->GetProfileManager()->GetLoadedProfiles()) {
+      if (profile->IsOffTheRecord()) {
+        continue;
+      }
+      ProfilePolicyConnector* connector =
+          profile->GetPolicyConnector();
+      states.push_back({
+          policy::BrowserManagementServiceFactory::GetForProfile(profile),
+          connector ? connector->GetPolicyService() : nullptr
+      });
+    }
+  }
+  return states;
 }
 
 }  // namespace
@@ -440,6 +465,11 @@ void IOSChromeMetricsServiceClient::RegisterMetricsServiceProviders() {
   metrics_service_->RegisterMetricsProvider(
       std::make_unique<tracing::IOSChromeBackgroundTracingMetricsProvider>(
           synthetic_trial_registry_));
+
+  metrics_service_->RegisterMetricsProvider(
+      std::make_unique<policy::EnterpriseManagementMetricsProvider>(
+          policy::BrowserManagementServiceFactory::GetForPlatform(),
+          base::BindRepeating(&GetEnterpriseManagementProfileStates)));
 }
 
 void IOSChromeMetricsServiceClient::RegisterUKMProviders() {

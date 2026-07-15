@@ -253,14 +253,6 @@ inline constexpr char kBuiltInAIAPIsEnabled[] =
 inline constexpr char kLocalNetworkAccessPermissionsPolicyDefaultEnabled[] =
     "policy.local_network_access_permissions_policy_default_enabled";
 
-// Time pref storing the last time platform management metrics were logged.
-inline constexpr char kLastPlatformManagementLogTime[] =
-    "management.platform.last_log_time";
-
-// Time pref storing the last time profile management metrics were logged.
-inline constexpr char kLastProfileManagementLogTime[] =
-    "management.profile.last_log_time";
-
 // A boolean pref indicating whether WebSockets are disconnected when a page
 // enters the Back/Forward Cache.
 inline constexpr char kBackForwardCacheForWebSocketsAllowed[] =

@@ -70,7 +70,7 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="Cloud Domain"/>
 </enum>
 
-<!-- LINT.ThenChange(//components/policy/core/common/enterprise_management_metrics_service.h:BrowserManagementStatus) -->
+<!-- LINT.ThenChange(//components/policy/core/common/enterprise_management_status_util.h:BrowserManagementStatus) -->
 
 <enum name="CertificatePrivateKeySource">
   <int value="0" label="Unexportable"/>
@@ -2884,7 +2884,7 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Cloud Domain"/>
 </enum>
 
-<!-- LINT.ThenChange(//components/policy/core/common/enterprise_management_metrics_service.h:PlatformManagementStatus) -->
+<!-- LINT.ThenChange(//components/policy/core/common/enterprise_management_status_util.h:PlatformManagementStatus) -->
 
 <enum name="PromotionBannerAction">
   <int value="0" label="Promotion banner dismissed">

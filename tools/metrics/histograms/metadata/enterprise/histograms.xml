@@ -3325,8 +3325,8 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the management authority of the browser (BrowserManagementService)
     per profile, categorizing local computer management by policy count (&lt;=3
-    vs &gt;3). Logged upon profile initialization. Multiple samples can be
-    logged if multiple authorities are active.
+    vs &gt;3). Logged with every UMA log packet. Multiple samples can be logged
+    if multiple authorities are active.
   </summary>
 </histogram>
 
@@ -3336,7 +3336,7 @@ chromium-metrics-reviews@google.com.
   <owner>enterprise-metrics@google.com</owner>
   <summary>
     Records the active management authority of the underlying OS/device
-    (PlatformManagementService). Logged upon profile initialization. Multiple
+    (PlatformManagementService). Logged with every UMA log packet. Multiple
     samples can be logged if multiple authorities are active.
   </summary>
 </histogram>

@@ -6,6 +6,7 @@ include_rules = [
   "+chromeos/startup",
   "+components/account_id",
   "+components/keyed_service/core",
+  "+components/metrics/metrics_provider.h",
   "+components/reporting",
   "-components/policy/core/browser",
   "+components/signin/public",
