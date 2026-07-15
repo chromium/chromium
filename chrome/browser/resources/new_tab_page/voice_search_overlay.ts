@@ -434,6 +434,8 @@ export class VoiceSearchOverlayElement extends CrLitElement {
 
   private onError_(error: Error) {
     recordEnumeration('NewTabPage.VoiceErrors', error, Error.MAX_VALUE + 1);
+    recordEnumeration(
+        'VoiceSearch.Errors.NTP_REALBOX', error, Error.MAX_VALUE + 1);
     if (error === Error.ABORTED) {
       // We are in the process of closing voice search.
       return;
