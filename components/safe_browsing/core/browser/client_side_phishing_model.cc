@@ -14,6 +14,7 @@
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/shared_memory_mapping.h"
@@ -372,6 +373,8 @@ void ClientSidePhishingModel::OnModelAndVisualTfLiteFileLoaded(
     std::optional<optimization_guide::proto::Any> model_metadata,
     std::pair<std::string, base::File> model_and_tflite) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  base::ScopedClosureRunner closure_runner(
+      std::move(model_updated_callback_for_testing_));
 
   if (visual_tflite_model_) {
     // If the visual tf lite file is already loaded, it should be closed on a
@@ -493,6 +496,8 @@ void ClientSidePhishingModel::OnImageEmbeddingModelFileAndEmbeddingListLoaded(
     std::optional<optimization_guide::proto::Any> model_metadata,
     std::pair<base::File, std::optional<EmbeddingList>> model_and_list) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  base::ScopedClosureRunner closure_runner(
+      std::move(model_updated_callback_for_testing_));
   base::File image_embedding_model = std::move(model_and_list.first);
   bool image_embedding_model_valid = image_embedding_model.IsValid();
   RecordImageEmbeddingModelUpdateSuccess(image_embedding_model_valid);
@@ -786,9 +791,10 @@ void ClientSidePhishingModel::ClearMappedRegionForTesting() {
   mapped_region_.region = base::ReadOnlySharedMemoryRegion();
 }
 
-void* ClientSidePhishingModel::GetFlatBufferMemoryAddressForTesting() {
+base::span<uint8_t>
+ClientSidePhishingModel::GetFlatBufferMemorySpanForTesting() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return mapped_region_.mapping.memory();
+  return mapped_region_.mapping.GetMemoryAsSpan<uint8_t>();
 }
 
 // This function is used for testing in client_side_phishing_model_unittest
@@ -869,6 +875,12 @@ void ClientSidePhishingModel::SetModelAndVisualTfLiteForTesting(
                      additional_files),
       base::BindOnce(&ClientSidePhishingModel::OnModelAndVisualTfLiteFileLoaded,
                      weak_ptr_factory_.GetWeakPtr(), std::nullopt));
+}
+
+void ClientSidePhishingModel::SetModelDoneCallbackForTesting(  // IN-TEST
+    base::OnceClosure callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  model_updated_callback_for_testing_ = std::move(callback);
 }
 
 }  // namespace safe_browsing

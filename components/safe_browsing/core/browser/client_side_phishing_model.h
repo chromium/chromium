@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/callback_list.h"
+#include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
@@ -102,10 +103,13 @@ class ClientSidePhishingModel
   void SetModelTypeForTesting(CSDModelType model_type);
   // Removes mapping.
   void ClearMappedRegionForTesting();
-  // Get flatbuffer memory address.
-  void* GetFlatBufferMemoryAddressForTesting();
+  // Get flatbuffer memory span.
+  base::span<uint8_t> GetFlatBufferMemorySpanForTesting();
   // Notifies all the callbacks of a change in model.
   void NotifyCallbacksOfUpdateForTesting();
+  // Sets a callback to be run when model update is complete (success or
+  // failure).
+  void SetModelDoneCallbackForTesting(base::OnceClosure callback);
 
   const std::vector<TfLiteModelMetadata::Threshold>&
   GetVisualTfLiteModelThresholds() const;
@@ -232,6 +236,9 @@ class ClientSidePhishingModel
 
   // The image embedding targets to evaluate pages against.
   std::vector<TargetEmbedding> target_image_embeddings_;
+
+  base::OnceClosure model_updated_callback_for_testing_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
   base::WeakPtrFactory<ClientSidePhishingModel> weak_ptr_factory_{this};
 };

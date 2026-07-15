@@ -27,7 +27,7 @@ bool VerifyCSDFlatBufferIndicesAndFields(const flat::ClientSideModel* model) {
   if (!rules) {
     return false;
   }
-  for (const flat::ClientSideModel_::Rule* rule : *model->rule()) {
+  for (const flat::ClientSideModel_::Rule* rule : *rules) {
     if (!rule || !rule->feature()) {
       return false;
     }
