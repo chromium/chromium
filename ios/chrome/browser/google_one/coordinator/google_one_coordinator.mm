@@ -7,6 +7,7 @@
 #import "base/check.h"
 #import "base/functional/bind.h"
 #import "base/metrics/histogram_functions.h"
+#import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/browser/google_one/shared/google_one_deep_link_util.h"
 #import "ios/chrome/browser/scoped_ui_blocker/ui_bundled/scoped_ui_blocker.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
@@ -185,8 +186,9 @@ GoogleOneOutcomeMetrics HistogramOutcomeBucket(GoogleOneOutcome outcome,
     [weakSelf openURL:url];
   };
   // There can be only one purchase flow in the application.
-  _UIBlocker = std::make_unique<ScopedUIBlocker>(self.browser->GetSceneState(),
-                                                 UIBlockerExtent::kApplication);
+  SceneState* sceneState = self.browser->GetSceneState();
+  _UIBlocker =
+      ScopedUIBlocker::AppScoped(sceneState, sceneState.profileState.appState);
   _controller = ios::provider::CreateGoogleOneController(configuration);
   if (_inputURL.is_valid()) {
     [_controller launchWithViewController:self.baseViewController

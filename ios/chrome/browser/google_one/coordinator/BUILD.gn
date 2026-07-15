@@ -9,6 +9,7 @@ source_set("coordinator") {
   ]
   deps = [
     "//base",
+    "//ios/chrome/app/profile",
     "//ios/chrome/browser/google_one/shared:deep_link",
     "//ios/chrome/browser/scoped_ui_blocker/ui_bundled",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",

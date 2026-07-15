@@ -257,8 +257,9 @@ void SignOutDoneForSceneState(id<SystemIdentity> identity,
 - (void)blockUIForExternalPrivacyContextBuild {
   CHECK([self isUIAvailableToShowIOSPrompt]);
   CHECK(!_applicationUIBlocker);
-  _applicationUIBlocker = std::make_unique<ScopedUIBlocker>(
-      self.sceneState, UIBlockerExtent::kApplication);
+  SceneState* sceneState = self.sceneState;
+  _applicationUIBlocker =
+      ScopedUIBlocker::AppScoped(sceneState, sceneState.profileState.appState);
 }
 
 - (void)unblockUIOnExternalPrivacyContextBuilt {
@@ -364,8 +365,9 @@ void SignOutDoneForSceneState(id<SystemIdentity> identity,
   if (primaryIdentity && !_isAgeMismatchSignoutInProgress) {
     _isAgeMismatchSignoutInProgress = YES;
 
-    _applicationUIBlocker = std::make_unique<ScopedUIBlocker>(
-        self.sceneState, UIBlockerExtent::kApplication);
+    SceneState* sceneState = self.sceneState;
+    _applicationUIBlocker = ScopedUIBlocker::AppScoped(
+        sceneState, sceneState.profileState.appState);
 
     signin::SignoutCompletion signoutCompletion =
         base::BindOnce(&SignOutDoneForSceneState, primaryIdentity);
@@ -419,8 +421,9 @@ void SignOutDoneForSceneState(id<SystemIdentity> identity,
     // This method is called on the newly created scene agent. This scene agent
     // didn't trigger the sign-out. But it needs to finish the workflow.
     CHECK(!_applicationUIBlocker, base::NotFatalUntil::M155);
-    _applicationUIBlocker = std::make_unique<ScopedUIBlocker>(
-        self.sceneState, UIBlockerExtent::kApplication);
+    SceneState* sceneState = self.sceneState;
+    _applicationUIBlocker = ScopedUIBlocker::AppScoped(
+        sceneState, sceneState.profileState.appState);
   }
   CHECK(!_ageMismatchSignoutCoordinator, base::NotFatalUntil::M155);
   // Show the age mismatch signout screen.

@@ -252,9 +252,10 @@
     // Use the UIBlockerExtent::kApplication extent since the sign-in policies
     // have to be pushed through the platform which concerns the entire app in
     // itself including all profiles.
+    SceneState* sceneState = self.sceneState;
     __block std::unique_ptr<ScopedUIBlocker> uiBlocker =
-        std::make_unique<ScopedUIBlocker>(self.sceneState,
-                                          UIBlockerExtent::kApplication);
+        ScopedUIBlocker::AppScoped(sceneState,
+                                   sceneState.profileState.appState);
 
     __weak __typeof(self) weakSelf = self;
     [self.sceneHandler dismissModalDialogsWithCompletion:^{
