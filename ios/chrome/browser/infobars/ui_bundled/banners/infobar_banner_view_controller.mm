@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/infobars/model/infobar_metrics_recorder.h"
 #import "ios/chrome/browser/infobars/ui_bundled/banners/infobar_banner_constants.h"
 #import "ios/chrome/browser/infobars/ui_bundled/banners/infobar_banner_delegate.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/elements/extended_touch_target_button.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
@@ -355,6 +356,13 @@ constexpr base::TimeDelta kLongPressTimeDuration = base::Milliseconds(400);
   [self registerForTraitChanges:traits withHandler:handler];
 }
 
+- (void)viewDidLayoutSubviews {
+  [super viewDidLayoutSubviews];
+  if (IsInfobarBannerRevampEnabled()) {
+    self.view.layer.cornerRadius = self.view.bounds.size.height / 2;
+  }
+}
+
 - (void)viewDidAppear:(BOOL)animated {
   [super viewDidAppear:animated];
   [self.metricsRecorder recordBannerEvent:MobileMessagesBannerEvent::Presented];
@@ -405,7 +413,20 @@ constexpr base::TimeDelta kLongPressTimeDuration = base::Milliseconds(400);
 
 - (void)setButtonText:(NSString*)buttonText {
   _buttonText = buttonText;
-  [self.infobarButton setTitle:_buttonText forState:UIControlStateNormal];
+  if (self.infobarButton.configuration) {
+    UIButtonConfiguration* configuration = self.infobarButton.configuration;
+    NSDictionary* titleAttributes =
+        configuration.attributedTitle.length
+            ? [configuration.attributedTitle attributesAtIndex:0
+                                                effectiveRange:nil]
+            : nil;
+    configuration.attributedTitle =
+        [[NSAttributedString alloc] initWithString:_buttonText ?: @""
+                                        attributes:titleAttributes];
+    self.infobarButton.configuration = configuration;
+  } else {
+    [self.infobarButton setTitle:_buttonText forState:UIControlStateNormal];
+  }
 }
 
 - (void)setPresentsModal:(BOOL)presentsModal {
@@ -527,6 +548,34 @@ constexpr base::TimeDelta kLongPressTimeDuration = base::Milliseconds(400);
   return iconContainerView;
 }
 
+// Configures and returns the UIView that contains the revamped `iconImage`.
+- (UIView*)configureRevampedIconImageContainer {
+  DCHECK(!self.faviconImage);
+  DCHECK(!self.customView);
+
+  UIImageView* iconImageView =
+      [[UIImageView alloc] initWithImage:self.iconImage];
+  iconImageView.contentMode = UIViewContentModeScaleAspectFit;
+  iconImageView.translatesAutoresizingMaskIntoConstraints = NO;
+  iconImageView.tintColor = self.iconImageTintColor;
+
+  UIView* iconContainerView = [[UIView alloc] init];
+  [iconContainerView addSubview:iconImageView];
+  iconContainerView.translatesAutoresizingMaskIntoConstraints = NO;
+
+  [NSLayoutConstraint activateConstraints:@[
+    [iconImageView.widthAnchor
+        constraintEqualToConstant:kInfobarBannerRevampIconSize],
+    [iconImageView.heightAnchor
+        constraintEqualToConstant:kInfobarBannerRevampIconSize],
+    [iconContainerView.widthAnchor
+        constraintEqualToAnchor:iconImageView.widthAnchor],
+  ]];
+  AddSameCenterConstraints(iconContainerView, iconImageView);
+
+  return iconContainerView;
+}
+
 // Configures and returns the UIView that contains the `customView`.
 - (UIView*)configureCustomViewContainer {
   DCHECK(!self.faviconImage);
@@ -619,7 +668,7 @@ constexpr base::TimeDelta kLongPressTimeDuration = base::Milliseconds(400);
                      [self.view.layer
                          setShadowOffset:CGSizeMake(
                                              0.0,
-                                             kSelectedBannerViewYShadowOffset)];
+                                             [self elevatedShadowYOffset])];
                    }
                    completion:nil];
 }
@@ -631,7 +680,7 @@ constexpr base::TimeDelta kLongPressTimeDuration = base::Milliseconds(400);
       animations:^{
         self.view.superview.transform = CGAffineTransformIdentity;
         [self.view.layer
-            setShadowOffset:CGSizeMake(0.0, kBannerViewYShadowOffset)];
+            setShadowOffset:CGSizeMake(0.0, [self restingShadowYOffset])];
       }
       completion:^(BOOL finished) {
         if (completion) {
@@ -662,7 +711,7 @@ constexpr base::TimeDelta kLongPressTimeDuration = base::Milliseconds(400);
         self.view.superview.transform = CGAffineTransformMakeScale(
             kTappedBannerViewScale, kTappedBannerViewScale);
         [self.view.layer
-            setShadowOffset:CGSizeMake(0.0, kSelectedBannerViewYShadowOffset)];
+            setShadowOffset:CGSizeMake(0.0, [self elevatedShadowYOffset])];
       }
       completion:^(BOOL finished) {
         [self
@@ -672,6 +721,21 @@ constexpr base::TimeDelta kLongPressTimeDuration = base::Milliseconds(400);
                                             [self presentInfobarModalAfterTap];
                                           }];
       }];
+}
+
+// Returns the container's resting shadow Y offset.
+- (CGFloat)restingShadowYOffset {
+  return IsInfobarBannerRevampEnabled()
+             ? kInfobarBannerRevampContainerShadowYOffset
+             : kBannerViewYShadowOffset;
+}
+
+// Returns the container's elevated shadow Y offset.
+- (CGFloat)elevatedShadowYOffset {
+  return IsInfobarBannerRevampEnabled()
+             ? kInfobarBannerRevampContainerShadowYOffset +
+                   (kSelectedBannerViewYShadowOffset - kBannerViewYShadowOffset)
+             : kSelectedBannerViewYShadowOffset;
 }
 
 - (void)presentInfobarModalAfterTap {
@@ -704,6 +768,10 @@ constexpr base::TimeDelta kLongPressTimeDuration = base::Milliseconds(400);
               previousTraitCollection]) {
     [self.view.layer
         setShadowColor:[UIColor colorNamed:kToolbarShadowColor].CGColor];
+    if (IsInfobarBannerRevampEnabled()) {
+      [self.infobarButton.layer
+          setShadowColor:[UIColor colorNamed:kBlueColor].CGColor];
+    }
   }
 }
 
