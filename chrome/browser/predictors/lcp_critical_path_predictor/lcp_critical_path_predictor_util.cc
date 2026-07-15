@@ -1130,7 +1130,7 @@ bool IsValidLcppStat(const LcppStat& lcpp_stat) {
 
 bool IsURLValidForLcpp(const GURL& url) {
   return url.is_valid() && !url.GetHost().empty() && !net::IsLocalhost(url) &&
-         url.SchemeIsHTTPOrHTTPS() &&
+         url.SchemeIs(url::kHttpsScheme) &&
          url.GetHost().size() <=
              ResourcePrefetchPredictorTables::kMaxStringLength;
 }
@@ -1147,7 +1147,7 @@ bool IsValidInitiatorOrigin(const url::Origin& initiator_origin) {
     GURL url = initiator_origin.GetURL();
     return !initiator_origin.opaque() && url.is_valid() &&
            !initiator_origin.host().empty() && !net::IsLocalhost(url) &&
-           url.SchemeIsHTTPOrHTTPS() &&
+           url.SchemeIs(url::kHttpsScheme) &&
            initiator_origin.host().size() <=
                ResourcePrefetchPredictorTables::kMaxStringLength;
   } else {

@@ -1224,16 +1224,19 @@ TEST(PredictUnusedPreloads, Threshold) {
 TEST(LcppKeyTest, InvalidURLs) {
   const std::string invalid_urls[] = {
       // Invalid urls
-      "http://?k=v",
-      "http:://google.com",
-      "http://google.com:12three45",
+      "https://?k=v",
+      "https:://google.com",
+      "https://google.com:12three45",
       "://google.com",
       "path",
-      "",                  // Empty
-      "file://server:0",   // File
-      "ftp://server",      // Ftp
-      "http://localhost",  // Localhost
-      "http://127.0.0.1",  // Localhost
+      "",                   // Empty
+      "file://server:0",    // File
+      "ftp://server",       // Ftp
+      "http://a.test",      // Non-HTTPS scheme
+      "ws://a.test",        // Non-HTTPS scheme
+      "wss://a.test",       // Non-HTTPS scheme (we only support HTTPS)
+      "https://localhost",  // Localhost
+      "https://127.0.0.1",  // Localhost
       "https://example" +
           std::string(ResourcePrefetchPredictorTables::kMaxStringLength, 'a') +
           ".test/",  // Too long
@@ -1258,24 +1261,24 @@ TEST(LcppMultipleKeyTest, GetFirstLevelPath) {
   const std::string too_long_path =
       "/" + std::string(max_path_length + 1, 'c') + "/bar";
   const std::vector<std::pair<std::string, std::string>> url_keys = {
-      {"http://a.test", ""},
-      {"http://user:pass@a.test:99/foo;bar?q=a#ref", "/foo;bar"},
-      {"http://a.test/", ""},
-      {"http://a.test/foo.html", ""},
-      {"http://a.test/foo", "/foo"},
-      {"http://a.test/foo/", "/foo"},
-      {"http://a.test/foo/bar", "/foo"},
-      {"http://a.test/foo/bar/", "/foo"},
-      {"http://a.test/foo/bar/baz.com", "/foo"},
-      {"http://a.test/bar?q=c", "/bar"},
-      {"http://a.test/foo/bar?q=c", "/foo"},
-      {"http://a.test" + long_path, long_path},
-      {"http://a.test" + long_path + "/bar", long_path},
-      {"http://a.test" + long_path + "bar", ""},
+      {"https://a.test", ""},
+      {"https://user:pass@a.test:99/foo;bar?q=a#ref", "/foo;bar"},
+      {"https://a.test/", ""},
+      {"https://a.test/foo.html", ""},
+      {"https://a.test/foo", "/foo"},
+      {"https://a.test/foo/", "/foo"},
+      {"https://a.test/foo/bar", "/foo"},
+      {"https://a.test/foo/bar/", "/foo"},
+      {"https://a.test/foo/bar/baz.com", "/foo"},
+      {"https://a.test/bar?q=c", "/bar"},
+      {"https://a.test/foo/bar?q=c", "/foo"},
+      {"https://a.test" + long_path, long_path},
+      {"https://a.test" + long_path + "/bar", long_path},
+      {"https://a.test" + long_path + "bar", ""},
       // Too long path is ignored.
-      {"http://a.test" + too_long_path, ""},
+      {"https://a.test" + too_long_path, ""},
       // Invalid length path in subdirectory is also ignored.
-      {"http://a.test/bar" + too_long_path, "/bar"}};
+      {"https://a.test/bar" + too_long_path, "/bar"}};
 
   for (const auto& url_key : url_keys) {
     const GURL url(url_key.first);
@@ -1427,7 +1430,7 @@ class LcppDataMapTest : public testing::Test {
       LearnElementLocator(GURL(url), "/#a", {});
       // Confirm 'url' was learned as 'key'.
       auto stat = lcpp_data_map_->GetLcppStat(/*initiator_origin=*/std::nullopt,
-                                              GURL("http://" + key));
+                                              GURL("https://" + key));
       EXPECT_TRUE(stat) << location.ToString() << url;
       LcppData expected;
       InitializeLcpElementLocatorBucket(expected, "/#a", ++frequency[key]);
@@ -1457,7 +1460,8 @@ class LcppDataMapTest : public testing::Test {
   }
 
   static url::Origin CreateOrigin(const std::string& host_name) {
-    const url::Origin origin = url::Origin::Create(GURL("http://" + host_name));
+    const url::Origin origin =
+        url::Origin::Create(GURL("https://" + host_name));
     CHECK_EQ(origin.host(), host_name);
     return origin;
   }
@@ -1626,7 +1630,7 @@ TEST_P(LcppDataMapFeatures, LearnLcpp) {
   };
 
   for (int i = 0; i < 3; ++i) {
-    LearnElementLocator(GURL("http://a.test"), "/#a", {});
+    LearnElementLocator(GURL("https://a.test"), "/#a", {});
   }
   {
     LcppData data = CreateLcppData("a.test", 10);
@@ -1636,7 +1640,7 @@ TEST_P(LcppDataMapFeatures, LearnLcpp) {
   }
 
   for (int i = 0; i < 2; ++i) {
-    LearnElementLocator(GURL("http://a.test"), "/#b", {});
+    LearnElementLocator(GURL("https://a.test"), "/#b", {});
   }
   {
     LcppData data = CreateLcppData("a.test", 10);
@@ -1646,7 +1650,7 @@ TEST_P(LcppDataMapFeatures, LearnLcpp) {
     EXPECT_DOUBLE_EQ(5, SumOfElementLocatorFrequency(data));
   }
 
-  LearnElementLocator(GURL("http://a.test"), "/#c", {});
+  LearnElementLocator(GURL("https://a.test"), "/#c", {});
   {
     LcppData data = CreateLcppData("a.test", 10);
     InitializeLcpElementLocatorBucket(data, "/#a", 2.4);
@@ -1656,7 +1660,7 @@ TEST_P(LcppDataMapFeatures, LearnLcpp) {
     EXPECT_DOUBLE_EQ(5, SumOfElementLocatorFrequency(data));
   }
 
-  LearnElementLocator(GURL("http://a.test"), "/#d", {});
+  LearnElementLocator(GURL("https://a.test"), "/#d", {});
   {
     LcppData data = CreateLcppData("a.test", 10);
     InitializeLcpElementLocatorBucket(data, "/#a", 1.92);
@@ -1667,8 +1671,8 @@ TEST_P(LcppDataMapFeatures, LearnLcpp) {
   }
 
   for (int i = 0; i < 2; ++i) {
-    LearnElementLocator(GURL("http://a.test"), "/#c", {});
-    LearnElementLocator(GURL("http://a.test"), "/#d", {});
+    LearnElementLocator(GURL("https://a.test"), "/#c", {});
+    LearnElementLocator(GURL("https://a.test"), "/#d", {});
   }
   {
     LcppData data = CreateLcppData("a.test", 10);
@@ -1682,7 +1686,7 @@ TEST_P(LcppDataMapFeatures, LearnLcpp) {
   // Test that element locators and influencer scripts are independently learnt.
   for (int i = 0; i < 2; ++i) {
     LearnElementLocator(
-        GURL("http://a.test"), "",
+        GURL("https://a.test"), "",
         {GURL("https://a.test/script1.js"), GURL("https://a.test/script2.js")});
   }
   {
@@ -1702,7 +1706,7 @@ TEST_P(LcppDataMapFeatures, LearnLcpp) {
 
   for (int i = 0; i < 3; ++i) {
     LearnElementLocator(
-        GURL("http://a.test"), "",
+        GURL("https://a.test"), "",
         {GURL("https://a.test/script3.js"), GURL("https://a.test/script4.js")});
   }
   {
@@ -1731,7 +1735,7 @@ TEST_P(LcppDataMapFeatures, LearnFontUrls) {
         data.lcpp_stat().fetched_font_url_stat());
   };
   for (int i = 0; i < 2; ++i) {
-    LearnFontUrls(GURL("http://example.test"),
+    LearnFontUrls(GURL("https://example.test"),
                   {
                       GURL("https://example.test/test.woff"),
                       GURL("https://example.test/test.ttf"),
@@ -1748,7 +1752,7 @@ TEST_P(LcppDataMapFeatures, LearnFontUrls) {
     EXPECT_DOUBLE_EQ(4, SumOfFontUrlFrequency(data));
   }
   for (int i = 0; i < 3; ++i) {
-    LearnFontUrls(GURL("http://example.test"),
+    LearnFontUrls(GURL("https://example.test"),
                   {
                       GURL("https://example.org/test.otf"),
                       GURL("https://example.net/test.svg"),
@@ -1776,7 +1780,7 @@ TEST_P(LcppDataMapFeatures, LearnSubresourceUrls) {
       network::mojom::RequestDestination::kImage;
   const int32_t kImageValue = static_cast<int32_t>(kImage);
   const std::string kUrl = "example.test";
-  const GURL kGURL = GURL("http://" + kUrl);
+  const GURL kGURL = GURL("https://" + kUrl);
   const std::string kJpegA = "https://" + kUrl + "/a.jpeg";
   const std::string kJpegB = "https://" + kUrl + "/b.jpeg";
 
@@ -1864,7 +1868,7 @@ TEST_P(LcppDataMapFeatures, WhenLcppDataIsCorrupted_ResetData) {
   }
 
   // Confirm that new learning process reset the corrupted data.
-  LearnElementLocator(GURL("http://a.test"), "/#a", {});
+  LearnElementLocator(GURL("https://a.test"), "/#a", {});
   {
     LcppData data = CreateLcppData("a.test", 10);
     InitializeLcpElementLocatorBucket(data, "/#a", 1);
@@ -1879,21 +1883,21 @@ TEST_P(LcppDataMapFeatures, LcppMaxHosts) {
   InitializeDB(config);
   EXPECT_TRUE(GetDataMap().empty());
 
-  const GURL url_a("http://a.test");
+  const GURL url_a("https://a.test");
   EXPECT_FALSE(GetLcppStat(url_a));
 
   LearnElementLocator(url_a, "/#a");
   EXPECT_TRUE(GetLcppStat(url_a));
 
-  const GURL url_b("http://b.test");
+  const GURL url_b("https://b.test");
   LearnElementLocator(url_b, "/#a");
-  const GURL url_c("http://c.test");
+  const GURL url_c("https://c.test");
   LearnElementLocator(url_c, "/#a");
   EXPECT_TRUE(GetLcppStat(url_a));
   EXPECT_TRUE(GetLcppStat(url_b));
   EXPECT_TRUE(GetLcppStat(url_c));
 
-  const GURL url_d("http://d.test");
+  const GURL url_d("https://d.test");
   LearnElementLocator(url_d, "/#a");
   EXPECT_TRUE(GetLcppStat(url_d));
   // Confirm first host is dropped.
@@ -1914,11 +1918,11 @@ TEST_P(LcppDataMapFeatures2, LcppLearnURL) {
   InitializeDB(config);
 
   const std::vector<std::pair<std::string, std::string>> url_keys = {
-      {"http://a.test", "a.test"},
-      {"http://a.test/", "a.test"},
-      {"http://a.test/foo", "a.test/foo"},
-      {"http://a.test/bar?q=c", "a.test/bar?q=c"},
-      {"http://user:pass@a.test:99/foo;bar?q=a#ref", "a.test/foo;bar?q=a#ref"},
+      {"https://a.test", "a.test"},
+      {"https://a.test/", "a.test"},
+      {"https://a.test/foo", "a.test/foo"},
+      {"https://a.test/bar?q=c", "a.test/bar?q=c"},
+      {"https://user:pass@a.test:99/foo;bar?q=a#ref", "a.test/foo;bar?q=a#ref"},
   };
 
   TestLearnLcppURL(url_keys);
@@ -1930,9 +1934,9 @@ TEST_P(LcppDataMapFeatures, DeleteUrls) {
   config.max_hosts_to_track_for_lcpp = 10u;
   InitializeDB(config);
 
-  const GURL url_a("http://a.test");
-  const GURL url_b("http://b.test");
-  const GURL url_c("http://c.test");
+  const GURL url_a("https://a.test");
+  const GURL url_b("https://b.test");
+  const GURL url_c("https://c.test");
 
   LearnElementLocator(url_a, "/#a");
   LearnElementLocator(url_b, "/#a");
@@ -2005,33 +2009,33 @@ TEST_P(LcppMultipleKeyTest, LearnURL) {
   const std::string too_long_path =
       "/" + std::string(max_path_length + 1, 'c') + "/bar";
   const std::vector<std::pair<std::string, std::string>> url_keys = {
-      {"http://a.test", "a.test"},
-      {"http://user:pass@a.test:99/foo;bar?q=a#ref", "a.test/foo;bar"},
-      {"http://a.test/", "a.test"},
-      {"http://a.test/foo.html", "a.test"},
-      {"http://a.test/foo", "a.test/foo"},
-      {"http://a.test/foo/", "a.test/foo"},
-      {"http://a.test/foo/bar", "a.test/foo"},
-      {"http://a.test/foo/bar/", "a.test/foo"},
-      {"http://a.test/foo/bar/baz.com", "a.test/foo"},
-      {"http://a.test/bar?q=c", "a.test/bar"},
-      {"http://a.test/foo/bar?q=c", "a.test/foo"},
-      {"http://a.test" + long_path, "a.test" + long_path},
-      {"http://a.test" + long_path + "/bar", "a.test" + long_path},
-      {"http://a.test" + long_path + "bar", "a.test"},
-      {"http://" + long_host + "/bar", long_host + "/bar"},
+      {"https://a.test", "a.test"},
+      {"https://user:pass@a.test:99/foo;bar?q=a#ref", "a.test/foo;bar"},
+      {"https://a.test/", "a.test"},
+      {"https://a.test/foo.html", "a.test"},
+      {"https://a.test/foo", "a.test/foo"},
+      {"https://a.test/foo/", "a.test/foo"},
+      {"https://a.test/foo/bar", "a.test/foo"},
+      {"https://a.test/foo/bar/", "a.test/foo"},
+      {"https://a.test/foo/bar/baz.com", "a.test/foo"},
+      {"https://a.test/bar?q=c", "a.test/bar"},
+      {"https://a.test/foo/bar?q=c", "a.test/foo"},
+      {"https://a.test" + long_path, "a.test" + long_path},
+      {"https://a.test" + long_path + "/bar", "a.test" + long_path},
+      {"https://a.test" + long_path + "bar", "a.test"},
+      {"https://" + long_host + "/bar", long_host + "/bar"},
       // Both valid but if the concated key is too long, take only host.
-      {"http://" + long_host + long_path, long_host},
+      {"https://" + long_host + long_path, long_host},
       // Too long path is ignored.
-      {"http://a.test" + too_long_path, "a.test"},
+      {"https://a.test" + too_long_path, "a.test"},
       // Invalid length path in subdirectory is also ignored.
-      {"http://a.test/bar" + too_long_path, "a.test/bar"}};
+      {"https://a.test/bar" + too_long_path, "a.test/bar"}};
 
   TestLearnLcppURL(url_keys);
 }
 
 TEST_P(LcppMultipleKeyTest, ShouldNotLearnTooLongLocators) {
-  const GURL url("http://a.test/foo1");
+  const GURL url("https://a.test/foo1");
   LearnElementLocator(url, "/#lcp");
   const LcppStat expected = MakeLcppStatWithLCPElementLocator("/#lcp");
   EXPECT_EQ(*GetLcppStat(url), expected);
@@ -2045,11 +2049,11 @@ TEST_P(LcppMultipleKeyTest, ShouldNotLearnTooLongLocators) {
 TEST_P(LcppMultipleKeyTest, DeleteUrls) {
   const bool kIsDefault = std::get<1>(GetParam()) ==
                           blink::features::LcppMultipleKeyTypes::kDefault;
-  const GURL url_a_1("http://a.test");
-  const GURL url_a_2("http://a.test/foo");
-  const GURL url_a_3("http://a.test/bar");
-  const GURL url_b("http://b.test/baz");
-  const GURL url_c("http://c.test");
+  const GURL url_a_1("https://a.test");
+  const GURL url_a_2("https://a.test/foo");
+  const GURL url_a_3("https://a.test/bar");
+  const GURL url_b("https://b.test/baz");
+  const GURL url_c("https://c.test");
 
   const std::vector<GURL> urls = {url_a_1, url_a_2, url_a_3, url_b, url_c};
   for (const GURL& url : urls) {
@@ -2107,7 +2111,7 @@ TEST_P(LcppMultipleKeyTestDefault, MaxHosts) {
   config.max_hosts_to_track_for_lcpp = 2u;
   InitializeDB(config);
 
-  const std::string host = "http://a.test";
+  const std::string host = "https://a.test";
   const GURL url_1(host + "/foo1");
   EXPECT_FALSE(GetLcppStat(url_1));
 
@@ -2182,7 +2186,7 @@ TEST_P(LcppMultipleKeyTestKeyStat, MaxHostsAndKeys) {
   config.lcpp_multiple_key_max_histogram_buckets = 3u;
   InitializeDB(config);
 
-  const std::string host = "http://a.test";
+  const std::string host = "https://a.test";
   const GURL url_base(host);
   const GURL url_1(host + "/foo1");
   EXPECT_FALSE(GetLcppStat(url_base));
@@ -2217,9 +2221,9 @@ TEST_P(LcppMultipleKeyTestKeyStat, MaxHostsAndKeys) {
 
   // Confirm adding other host urls over `max_hosts_to_track_for_lcpp` lets all
   // the first url entries be dropped.
-  const GURL url_b("http://b.test");
+  const GURL url_b("https://b.test");
   LearnElementLocator(url_b, "/#b");
-  const GURL url_c("http://c.test");
+  const GURL url_c("https://c.test");
   LearnElementLocator(url_c, "/#c");
   EXPECT_EQ(*GetLcppStat(url_b), MakeLcppStatWithLCPElementLocator("/#b"));
   EXPECT_EQ(*GetLcppStat(url_c), MakeLcppStatWithLCPElementLocator("/#c"));
@@ -2235,7 +2239,7 @@ TEST_F(LcppDataMapTest, LcppStatShouldBeClearedOverFlagReset) {
   PopulateTestConfig(&config);
   InitializeDB(config);
 
-  const std::string host = "http://a.test";
+  const std::string host = "https://a.test";
   const GURL url_base(host);
   const GURL url_1(host + "/foo1");
 
@@ -2263,7 +2267,7 @@ TEST_P(LcppMultipleKeyTestKeyStat, AddNewEntryToFullBucketKeyStat) {
   config.lcpp_multiple_key_max_histogram_buckets = 2u;
   InitializeDB(config);
 
-  const std::string host = "http://a.test";
+  const std::string host = "https://a.test";
   const GURL url_1(host + "/foo1");
   const GURL url_2(host + "/foo2");
   const GURL url_3(host + "/foo3");
@@ -2344,7 +2348,7 @@ TEST_F(LcppInitiatorOriginTest, Base) {
   EXPECT_TRUE(GetDataMap().empty());
   EXPECT_TRUE(GetOriginMap().empty());
 
-  const GURL url("http://a.test");
+  const GURL url("https://a.test");
   LearnElementLocator(url, "/#lcp0");
   EXPECT_EQ(*GetLcppStat(std::nullopt, url),
             MakeLcppStatWithLCPElementLocator("/#lcp0"));
@@ -2377,7 +2381,7 @@ TEST_F(LcppInitiatorOriginTest, Base) {
 
   // Confirm adding other host urls over `max_hosts_to_track_for_lcpp` lets all
   // the origin-associated entries be dropped.
-  const GURL url_b("http://b.test");
+  const GURL url_b("https://b.test");
   LearnElementLocator(origin1, url_b, "/#b");
   EXPECT_EQ(*GetLcppStat(origin1, url_b),
             MakeLcppStatWithLCPElementLocator("/#b"));
@@ -2406,7 +2410,7 @@ TEST_F(LcppInitiatorOriginTest, OpaqueInitiatorOrigin) {
   predictors::LcppDataInputs inputs;
   inputs.lcp_element_locator = "/#lcp0";
   EXPECT_FALSE(
-      LearnLcpp(opaque_initiator_origin, GURL("http://a.test"), inputs));
+      LearnLcpp(opaque_initiator_origin, GURL("https://a.test"), inputs));
 }
 
 TEST_F(LcppInitiatorOriginTest, AddNewEntryToFullBuckets) {
@@ -2417,7 +2421,7 @@ TEST_F(LcppInitiatorOriginTest, AddNewEntryToFullBuckets) {
   config.lcpp_initiator_origin_max_histogram_buckets = 2u;
   InitializeDB(config);
 
-  const GURL url("http://a.test");
+  const GURL url("https://a.test");
   const url::Origin origin1 = CreateOrigin("origin1.test");
   LearnElementLocator(origin1, url, "/#lcp1");
   LearnElementLocator(origin1, url, "/#lcp1");
@@ -2447,7 +2451,7 @@ TEST_F(LcppInitiatorOriginTest, TooLongHostName) {
   PopulateTestConfig(&config);
   InitializeDB(config);
 
-  const GURL url("http://a.test");
+  const GURL url("https://a.test");
   const url::Origin origin1 = CreateOrigin("origin1.test");
   LearnElementLocator(origin1, url, "/#lcp1");
   CHECK_EQ(*GetLcppStat(origin1, url),
@@ -2467,16 +2471,16 @@ TEST_F(LcppInitiatorOriginTest, DeleteURL) {
   config.lcpp_initiator_origin_max_histogram_buckets = 3u;
   InitializeDB(config);
 
-  const GURL url1("http://a.test");
+  const GURL url1("https://a.test");
   LearnElementLocator(url1, "/#lcp0");
   EXPECT_EQ(*GetLcppStat(std::nullopt, url1),
             MakeLcppStatWithLCPElementLocator("/#lcp0"));
-  const GURL url2("http://b.test");
+  const GURL url2("https://b.test");
   const url::Origin origin2 = url::Origin::Create(url2);
   LearnElementLocator(origin2, url1, "/#lcp2");
   EXPECT_EQ(*GetLcppStat(origin2, url1),
             MakeLcppStatWithLCPElementLocator("/#lcp2"));
-  const GURL url3("http://c.test");
+  const GURL url3("https://c.test");
   const url::Origin origin3 = url::Origin::Create(url3);
   LearnElementLocator(origin3, url1, "/#lcp3");
   EXPECT_EQ(*GetLcppStat(origin3, url1),
@@ -2486,7 +2490,7 @@ TEST_F(LcppInitiatorOriginTest, DeleteURL) {
   EXPECT_EQ(*GetLcppStat(std::nullopt, url2),
             MakeLcppStatWithLCPElementLocator("/#lcp4"));
 
-  lcpp_data_map_->DeleteUrls({url2, GURL("http://d.test")});
+  lcpp_data_map_->DeleteUrls({url2, GURL("https://d.test")});
   // Confirm all `url2` associated entries was removed.
   EXPECT_EQ(*GetLcppStat(std::nullopt, url1),
             MakeLcppStatWithLCPElementLocator("/#lcp0"));
@@ -2507,7 +2511,7 @@ TEST_F(LcppInitiatorOriginTest, CanonicalizeBrokenDataOnStartUp) {
   LoadingPredictorConfig config;
   PopulateTestConfig(&config);
 
-  const GURL url("http://a.test");
+  const GURL url("https://a.test");
   const url::Origin origin1 = CreateOrigin("origin1.test");
   const url::Origin origin2 = CreateOrigin("origin2.test");
   {
@@ -2548,8 +2552,8 @@ TEST_F(LcppDataMapTest, KeepDataBaseOverTearnDown) {
   LoadingPredictorConfig config;
   PopulateTestConfig(&config);
 
-  const GURL url("http://a.test");
-  const GURL url2("http://b.test");
+  const GURL url("https://a.test");
+  const GURL url2("https://b.test");
   const url::Origin origin = CreateOrigin("origin1.test");
   {
     [[maybe_unused]] ScopedInitiatorOriginFeature scoped_feature;
@@ -2667,6 +2671,62 @@ TEST_F(LCPPPrefetchSubresourceTest, BrokenDBShouldNotCrash) {
   EXPECT_THAT(
       histogram_tester.GetAllSamples("Blink.LCPP.PrefetchSubresource.DBBroken"),
       base::BucketsAre(base::Bucket(true, 3), base::Bucket(false, 1)));
+}
+
+TEST_F(LCPPPrefetchSubresourceTest, HttpPageDoesNotAffectHttpsPrefetch) {
+  LoadingPredictorConfig config;
+  PopulateTestConfig(&config);
+  InitializeDB(config);
+  ASSERT_TRUE(GetDataMap().empty());
+
+  const GURL kHttpUrl("http://example.test/");
+  const GURL kHttpsUrl("https://example.test/");
+  const GURL kSubresource("https://example.test/a.js");
+
+  // Subresources observed while loading the http page must not be used as
+  // prefetch candidates for the https page that shares the same host.
+  LearnSubresourceUrls(
+      kHttpUrl,
+      {{kSubresource,
+        std::make_pair(base::Seconds(1),
+                       network::mojom::RequestDestination::kScript)}});
+
+  {
+    PreconnectPrediction prediction;
+    lcpp_data_map_->GetPreconnectAndPrefetchRequest(
+        /*initiator_origin=*/std::nullopt, kHttpsUrl, prediction);
+    EXPECT_TRUE(prediction.prefetch_requests.empty());
+  }
+
+  // The https page learns and reads its own data independently.
+  LearnSubresourceUrls(
+      kHttpsUrl,
+      {{kSubresource,
+        std::make_pair(base::Seconds(1),
+                       network::mojom::RequestDestination::kScript)}});
+  {
+    PreconnectPrediction prediction;
+    lcpp_data_map_->GetPreconnectAndPrefetchRequest(
+        /*initiator_origin=*/std::nullopt, kHttpsUrl, prediction);
+    ASSERT_EQ(1u, prediction.prefetch_requests.size());
+    EXPECT_EQ(kSubresource, prediction.prefetch_requests[0].url);
+  }
+}
+
+TEST_F(LcppInitiatorOriginTest, HttpInitiatorOriginIsNotLearned) {
+  LoadingPredictorConfig config;
+  PopulateTestConfig(&config);
+  InitializeDB(config);
+
+  const GURL url("https://a.test");
+  const url::Origin http_origin =
+      url::Origin::Create(GURL("http://origin.test"));
+  const url::Origin https_origin =
+      url::Origin::Create(GURL("https://origin.test"));
+
+  EXPECT_FALSE(LearnElementLocator(http_origin, url, "/#lcp"));
+  EXPECT_FALSE(GetLcppStat(http_origin, url));
+  EXPECT_FALSE(GetLcppStat(https_origin, url));
 }
 
 }  // namespace predictors

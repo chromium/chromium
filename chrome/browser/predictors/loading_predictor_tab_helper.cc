@@ -208,7 +208,8 @@ void MaybeSetLCPPNavigationHint(content::NavigationHandle& navigation_handle,
     return;
   }
   const GURL& navigation_url = navigation_handle.GetURL();
-  if (!navigation_url.is_valid() || !navigation_url.SchemeIsHTTPOrHTTPS()) {
+  if (!navigation_url.is_valid() ||
+      !navigation_url.SchemeIs(url::kHttpsScheme)) {
     return;
   }
 

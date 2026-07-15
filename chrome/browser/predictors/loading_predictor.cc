@@ -539,7 +539,7 @@ void LoadingPredictor::MaybePrewarmResources(
   TRACE_EVENT("loading", "LoadingPredictor::MaybePrewarmResources");
 
   if (!top_frame_main_resource_url.is_valid() ||
-      !top_frame_main_resource_url.SchemeIsHTTPOrHTTPS()) {
+      !top_frame_main_resource_url.SchemeIs(url::kHttpsScheme)) {
     return;
   }
 
