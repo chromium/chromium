@@ -313,14 +313,10 @@ gpu::SyncToken OneCopyRasterBufferProvider::CopyOnWorkerThread(
     ResourcePool::Backing* backing,
     bool mailbox_texture_is_overlay_candidate,
     const gpu::SyncToken& sync_token) {
-  const gfx::Size& resource_size = backing->size();
-
   DCHECK(sii_);
-
   CHECK(staging_buffer->client_shared_image);
 
   bool needs_clear = false;
-
   if (!backing->shared_image()) {
     // This SharedImage will have the contents of raster operations copied into
     // it via the raster interface before being sent off to the display
@@ -332,7 +328,7 @@ gpu::SyncToken OneCopyRasterBufferProvider::CopyOnWorkerThread(
     backing->CreateSharedImage(sii_.get(), usage, "OneCopyRasterTile");
     // Clear the resource if we're not going to initialize it fully from the
     // copy due to non-exact resource reuse.  See https://crbug.com/1313091
-    needs_clear = rect_to_copy.size() != resource_size;
+    needs_clear = rect_to_copy.size() != backing->shared_image()->size();
   }
 
   gpu::SyncToken src_sync_token =
@@ -380,8 +376,9 @@ gpu::SyncToken OneCopyRasterBufferProvider::CopyOnWorkerThread(
   // Clear to ensure the resource is fully initialized and BeginAccess succeeds.
   if (needs_clear) {
     SkImageInfo dst_info = SkImageInfo::Make(
-        {resource_size.width(), resource_size.height()},
-        ToClosestSkColorType(backing->format()), kPremul_SkAlphaType);
+        gfx::SizeToSkISize(backing->shared_image()->size()),
+        ToClosestSkColorType(backing->shared_image()->format()),
+        kPremul_SkAlphaType);
     SkBitmap bitmap;
     if (bitmap.tryAllocPixels(dst_info)) {
       bitmap.eraseColor(raster_source->background_color());

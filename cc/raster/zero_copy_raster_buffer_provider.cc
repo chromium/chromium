@@ -153,9 +153,10 @@ void ZeroCopyRasterBufferImpl::Playback(
   // TODO(danakj): Implement partial raster with raster_dirty_rect for GPU
   // compositing.
   RasterBufferProvider::PlaybackToMemory(
-      mapping->GetMemoryForPlane(0).data(), backing_->format(),
-      backing_->size(), mapping->Stride(0), raster_source, raster_full_rect,
-      playback_rect, transform, backing_->color_space(), playback_settings);
+      mapping->GetMemoryForPlane(0).data(), backing_->shared_image()->format(),
+      backing_->shared_image()->size(), mapping->Stride(0), raster_source,
+      raster_full_rect, playback_rect, transform,
+      backing_->shared_image()->color_space(), playback_settings);
 }
 
 bool ZeroCopyRasterBufferImpl::SupportsBackgroundThreadPriority() const {
