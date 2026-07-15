@@ -1677,11 +1677,8 @@ void LocalFrameView::ScheduleRelayoutOfSubtree(LayoutObject& relayout_root) {
   if (!frame_->GetDocument()->IsActive())
     return;
 
-  LayoutView* layout_view = GetLayoutView();
-  if (layout_view && layout_view->NeedsLayout()) {
-    relayout_root.MarkContainerChainForLayout(false);
-    return;
-  }
+  // We shouldn't be adding a subtree layout-root if the LayoutView is dirty.
+  DCHECK(!GetLayoutView()->NeedsLayout());
 
   layout_subtree_root_list_.Add(relayout_root);
 

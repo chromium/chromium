@@ -1551,6 +1551,9 @@ void LayoutObject::MarkContainerChainForLayout(bool schedule_relayout) {
   // called while iterating LocalFrameView::layout_subtree_root_list_.
   schedule_relayout &= !GetFrameView()->IsInPerformLayout();
 
+  const bool allow_subtree_layout_root =
+      schedule_relayout && !View()->NeedsLayout();
+
   LayoutObject* object = Container();
   LayoutObject* last = this;
 
@@ -1603,7 +1606,7 @@ void LayoutObject::MarkContainerChainForLayout(bool schedule_relayout) {
     object->MarkSelfPaintingLayerForVisualOverflowRecalc();
 
     last = object;
-    if (schedule_relayout && ObjectIsRelayoutBoundary(last) &&
+    if (allow_subtree_layout_root && ObjectIsRelayoutBoundary(last) &&
         last->IsRooted()) {
       GetFrameView()->ScheduleRelayoutOfSubtree(*last);
       return;
