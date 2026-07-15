@@ -360,9 +360,12 @@ source_set("audio") {
       "fuchsia/audio_output_stream_fuchsia.cc",
       "fuchsia/audio_output_stream_fuchsia.h",
     ]
+    public_deps = [
+      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.media:fuchsia.media_hlcpp",
+      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.settings:fuchsia.settings_hlcpp",
+    ]
     deps += [
       "//media/fuchsia/common",
-      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.media:fuchsia.media_hlcpp",
       "//third_party/fuchsia-sdk/sdk/pkg/sys_cpp",
     ]
   }
@@ -547,7 +550,10 @@ source_set("unit_tests") {
 
   if (is_fuchsia) {
     sources += [ "fuchsia/audio_input_stream_fuchsia_test.cc" ]
-    deps += [ "//media/fuchsia/audio:test_support" ]
+    deps += [
+      "//media/fuchsia/audio:test_support",
+      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.settings:fuchsia.settings_hlcpp",
+    ]
   }
 
   if (use_alsa) {

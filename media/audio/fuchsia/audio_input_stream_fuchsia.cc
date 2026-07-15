@@ -27,6 +27,12 @@ constexpr uint32_t kBufferId = 0;
 // Number of audio packets that should fit in the capture buffer.
 constexpr size_t kBufferPacketCapacity = 10;
 
+bool IsDeviceStateMuted(const fuchsia::settings::DeviceState& state) {
+  return state.has_toggle_flags() &&
+         (state.toggle_flags() & fuchsia::settings::ToggleStateFlags::MUTED) ==
+             fuchsia::settings::ToggleStateFlags::MUTED;
+}
+
 }  // namespace
 
 AudioInputStreamFuchsia::AudioInputStreamFuchsia(
@@ -98,6 +104,16 @@ AudioInputStream::OpenOutcome AudioInputStreamFuchsia::Open() {
   capturer_->AddPayloadBuffer(kBufferId,
                               capture_buffer_.Duplicate(/*writable=*/true));
 
+  if (!is_loopback) {
+    input_service_ = base::ComponentContextForProcess()
+                         ->svc()
+                         ->Connect<fuchsia::settings::Input>();
+    input_service_.set_error_handler([](zx_status_t status) {
+      ZX_LOG(ERROR, status) << "fuchsia.settings.Input disconnected";
+    });
+    WatchInputSettings();
+  }
+
   return OpenOutcome::kSuccess;
 }
 
@@ -150,7 +166,46 @@ bool AudioInputStreamFuchsia::GetAutomaticGainControl() {
 }
 
 bool AudioInputStreamFuchsia::IsMuted() {
-  return false;
+  return is_muted_;
+}
+
+void AudioInputStreamFuchsia::WatchInputSettings() {
+  input_service_->Watch([this](fuchsia::settings::InputSettings settings) {
+    OnInputSettingsReceived(std::move(settings));
+  });
+}
+
+void AudioInputStreamFuchsia::OnInputSettingsReceived(
+    fuchsia::settings::InputSettings settings) {
+  bool mic_found = false;
+  if (settings.has_devices()) {
+    for (const auto& device : settings.devices()) {
+      if (device.has_device_type() &&
+          device.device_type() == fuchsia::settings::DeviceType::MICROPHONE) {
+        // TODO(crbug.com/42050621): Match device_name when we support
+        // selecting non-default devices.
+        mic_found = true;
+        bool is_muted = false;
+        if (device.has_state()) {
+          is_muted = IsDeviceStateMuted(device.state());
+        }
+        if (!is_muted && device.has_source_states()) {
+          for (const auto& source : device.source_states()) {
+            if (source.has_state() && IsDeviceStateMuted(source.state())) {
+              is_muted = true;
+              break;
+            }
+          }
+        }
+        is_muted_ = is_muted;
+        break;
+      }
+    }
+  }
+  if (!mic_found) {
+    LOG(WARNING) << "No microphone found in input settings.";
+  }
+  WatchInputSettings();
 }
 
 void AudioInputStreamFuchsia::SetOutputDeviceForAec(

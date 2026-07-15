@@ -6,6 +6,7 @@
 #define MEDIA_AUDIO_FUCHSIA_AUDIO_INPUT_STREAM_FUCHSIA_H_
 
 #include <fuchsia/media/cpp/fidl.h>
+#include <fuchsia/settings/cpp/fidl.h>
 
 #include "base/memory/raw_ptr.h"
 #include "media/audio/audio_io.h"
@@ -46,11 +47,16 @@ class MEDIA_EXPORT AudioInputStreamFuchsia : public AudioInputStream {
   // Reports an error to |callback_| and disconnects |capturer_|.
   void ReportError(Error error_code);
 
+  void WatchInputSettings();
+  void OnInputSettingsReceived(fuchsia::settings::InputSettings settings);
+
   const raw_ptr<AudioManagerFuchsia> manager_;
   AudioParameters parameters_;
   std::string device_id_;
 
   fuchsia::media::AudioCapturerPtr capturer_;
+  fuchsia::settings::InputPtr input_service_;
+  bool is_muted_ = false;
 
   // VMO with the AudioCapturer in order to pass the captured data.
   VmoBuffer capture_buffer_;

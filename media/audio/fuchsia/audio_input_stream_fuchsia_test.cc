@@ -5,10 +5,13 @@
 #include "media/audio/fuchsia/audio_input_stream_fuchsia.h"
 
 #include <fuchsia/media/cpp/fidl_test_base.h>
+#include <fuchsia/settings/cpp/fidl_test_base.h>
 #include <lib/fidl/cpp/binding.h>
 
 #include "base/fuchsia/fuchsia_logging.h"
+#include "base/fuchsia/scoped_service_binding.h"
 #include "base/fuchsia/test_component_context_for_process.h"
+#include "base/test/run_until.h"
 #include "base/test/task_environment.h"
 #include "media/audio/audio_device_description.h"
 #include "media/base/audio_bus.h"
@@ -57,6 +60,45 @@ class TestCaptureCallback final : public AudioInputStream::AudioInputCallback {
  private:
   std::vector<std::unique_ptr<AudioBus>> packets_;
   bool have_error_ = false;
+};
+
+class FakeInputSettings final
+    : public fuchsia::settings::testing::Input_TestBase {
+ public:
+  explicit FakeInputSettings(sys::OutgoingDirectory* outgoing_directory)
+      : binding_(outgoing_directory, this) {}
+  ~FakeInputSettings() override = default;
+
+  void NotImplemented_(const std::string& name) override {
+    ADD_FAILURE() << "Unexpected FakeInputSettings call: " << name;
+  }
+
+  void Watch(WatchCallback callback) override {
+    watch_callback_ = std::move(callback);
+    MaybeNotify();
+  }
+
+  void SetSettings(fuchsia::settings::InputSettings settings) {
+    settings_ = std::move(settings);
+    has_settings_ = true;
+    MaybeNotify();
+  }
+
+  bool has_watcher() const { return !!watch_callback_; }
+
+ private:
+  void MaybeNotify() {
+    if (watch_callback_ && has_settings_) {
+      watch_callback_(std::move(settings_));
+      has_settings_ = false;
+      watch_callback_ = nullptr;
+    }
+  }
+
+  base::ScopedServiceBinding<fuchsia::settings::Input> binding_;
+  WatchCallback watch_callback_;
+  fuchsia::settings::InputSettings settings_;
+  bool has_settings_ = false;
 };
 
 }  // namespace
@@ -232,6 +274,111 @@ TEST_F(AudioInputStreamFuchsiaTest, CaptureAfterStop) {
 
   // Packets produced after Stop() should not be passed to the callback.
   ASSERT_EQ(callback_.packets().size(), 0U);
+}
+
+TEST_F(AudioInputStreamFuchsiaTest, MuteState) {
+  base::TestComponentContextForProcess test_context;
+  FakeAudioCapturerFactory audio_capturer_factory(
+      test_context.additional_services());
+  FakeInputSettings fake_input_settings(test_context.additional_services());
+
+  input_stream_ = std::make_unique<AudioInputStreamFuchsia>(
+      /*manager=*/nullptr,
+      AudioParameters(AudioParameters::AUDIO_PCM_LOW_LATENCY,
+                      ChannelLayoutConfig::Mono(),
+                      /*sample_rate=*/48000, kFramesPerPacket),
+      AudioDeviceDescription::kDefaultDeviceId);
+
+  AudioInputStream::OpenOutcome result = input_stream_->Open();
+  EXPECT_EQ(result, AudioInputStream::OpenOutcome::kSuccess);
+
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    test_capturer_ = audio_capturer_factory.TakeCapturer();
+    return !!test_capturer_;
+  }));
+
+  // Initially not muted.
+  EXPECT_FALSE(input_stream_->IsMuted());
+
+  // Notify muted via overall state.
+  {
+    fuchsia::settings::InputSettings settings;
+    fuchsia::settings::InputDevice device;
+    device.set_device_type(fuchsia::settings::DeviceType::MICROPHONE);
+    fuchsia::settings::DeviceState state;
+    state.set_toggle_flags(fuchsia::settings::ToggleStateFlags::MUTED);
+    device.set_state(std::move(state));
+    settings.mutable_devices()->push_back(std::move(device));
+
+    fake_input_settings.SetSettings(std::move(settings));
+    ASSERT_TRUE(
+        base::test::RunUntil([&]() { return input_stream_->IsMuted(); }));
+  }
+
+  // Notify unmuted.
+  {
+    fuchsia::settings::InputSettings settings;
+    fuchsia::settings::InputDevice device;
+    device.set_device_type(fuchsia::settings::DeviceType::MICROPHONE);
+    fuchsia::settings::DeviceState state;
+    state.set_toggle_flags(fuchsia::settings::ToggleStateFlags::AVAILABLE);
+    device.set_state(std::move(state));
+    settings.mutable_devices()->push_back(std::move(device));
+
+    fake_input_settings.SetSettings(std::move(settings));
+    ASSERT_TRUE(
+        base::test::RunUntil([&]() { return !input_stream_->IsMuted(); }));
+  }
+
+  // Notify muted via source states.
+  {
+    fuchsia::settings::InputSettings settings;
+    fuchsia::settings::InputDevice device;
+    device.set_device_type(fuchsia::settings::DeviceType::MICROPHONE);
+
+    fuchsia::settings::SourceState source_state;
+    source_state.set_source(fuchsia::settings::DeviceStateSource::HARDWARE);
+    fuchsia::settings::DeviceState state;
+    state.set_toggle_flags(fuchsia::settings::ToggleStateFlags::MUTED);
+    source_state.set_state(std::move(state));
+
+    device.mutable_source_states()->push_back(std::move(source_state));
+    settings.mutable_devices()->push_back(std::move(device));
+
+    fake_input_settings.SetSettings(std::move(settings));
+    ASSERT_TRUE(
+        base::test::RunUntil([&]() { return input_stream_->IsMuted(); }));
+  }
+}
+
+TEST_F(AudioInputStreamFuchsiaTest, LoopbackNotMutedByMicrophone) {
+  base::TestComponentContextForProcess test_context;
+  FakeAudioCapturerFactory audio_capturer_factory(
+      test_context.additional_services());
+  FakeInputSettings fake_input_settings(test_context.additional_services());
+
+  input_stream_ = std::make_unique<AudioInputStreamFuchsia>(
+      /*manager=*/nullptr,
+      AudioParameters(AudioParameters::AUDIO_PCM_LOW_LATENCY,
+                      ChannelLayoutConfig::Mono(),
+                      /*sample_rate=*/48000, kFramesPerPacket),
+      AudioDeviceDescription::kLoopbackInputDeviceId);
+
+  AudioInputStream::OpenOutcome result = input_stream_->Open();
+  EXPECT_EQ(result, AudioInputStream::OpenOutcome::kSuccess);
+
+  // Wait for the capturer to be created to ensure Open() has completed.
+  std::unique_ptr<FakeAudioCapturer> capturer;
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    capturer = audio_capturer_factory.TakeCapturer();
+    return !!capturer;
+  }));
+
+  // FakeInputSettings should NOT have a watcher because loopback shouldn't
+  // connect to it.
+  EXPECT_FALSE(fake_input_settings.has_watcher());
+
+  EXPECT_FALSE(input_stream_->IsMuted());
 }
 
 }  // namespace media
