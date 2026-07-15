@@ -445,9 +445,6 @@ crbug.com/443182226 [ angle-vulkan arm fuchsia ] conformance/uniforms/no-over-op
 ####################
 
 
-# Consistent failures in functions.control_flow.return_in_nested_loop_vertex and functions.control_flow.return_in_nested_loop_fragment
-# Possible HLSL compiler bug.
-crbug.com/478572 [ win angle-d3d9 passthrough ] deqp/data/gles2/shaders/functions.html [ Failure ]
 
 
 ## Win / AMD RX 5500 XT failures ##
