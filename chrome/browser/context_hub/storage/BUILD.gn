@@ -4,6 +4,9 @@
 
 source_set("storage") {
   sources = [
+    "context_hub_backend.h",
+    "context_hub_backend_impl.cc",
+    "context_hub_backend_impl.h",
     "context_hub_database.cc",
     "context_hub_database.h",
     "memory_bank_table.cc",
@@ -14,6 +17,7 @@ source_set("storage") {
     "//base",
     "//chrome/browser/context_hub/memory_bank",
     "//components/database_utils",
+    "//components/keyed_service/core",
     "//sql",
     "//url",
   ]
@@ -22,6 +26,7 @@ source_set("storage") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "context_hub_backend_impl_unittest.cc",
     "context_hub_database_unittest.cc",
     "memory_bank_table_unittest.cc",
   ]

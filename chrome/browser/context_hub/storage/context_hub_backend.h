@@ -1,0 +1,41 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CHROME_BROWSER_CONTEXT_HUB_STORAGE_CONTEXT_HUB_BACKEND_H_
+#define CHROME_BROWSER_CONTEXT_HUB_STORAGE_CONTEXT_HUB_BACKEND_H_
+
+#include <vector>
+
+#include "base/containers/span.h"
+#include "base/functional/callback_forward.h"
+#include "chrome/browser/context_hub/memory_bank/memory_bank_entry.h"
+#include "components/keyed_service/core/keyed_service.h"
+
+namespace context_hub {
+
+// KeyedService interface for ContextHub central database storage.
+// Provides data access for all ContextHub tables/stores.
+class ContextHubBackend : public KeyedService {
+ public:
+  ~ContextHubBackend() override = default;
+
+  // MemoryBankTable operations:
+  using OperationCompleteCallback = base::OnceCallback<void(bool)>;
+  // Adds or updates an entry in the MemoryBankTable.
+  virtual void AddOrUpdateMemoryBankEntry(
+      MemoryBankEntry entry,
+      OperationCompleteCallback callback) = 0;
+  // Deletes entries in the MemoryBankTable with the given ids.
+  virtual void DeleteMemoryBankEntries(base::span<const int64_t> ids,
+                                       OperationCompleteCallback callback) = 0;
+  using GetAllEntriesCallback =
+      base::OnceCallback<void(std::vector<MemoryBankEntry>)>;
+  // Returns all entries in the MemoryBankTable.
+  virtual void GetAllMemoryBankEntries(
+      GetAllEntriesCallback callback) const = 0;
+};
+
+}  // namespace context_hub
+
+#endif  // CHROME_BROWSER_CONTEXT_HUB_STORAGE_CONTEXT_HUB_BACKEND_H_
