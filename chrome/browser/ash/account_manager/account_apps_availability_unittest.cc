@@ -13,15 +13,14 @@
 #include "base/test/run_until.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "components/account_manager_core/account.h"
 #include "components/account_manager_core/chromeos/account_manager.h"
 #include "components/account_manager_core/pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/session_manager/test/test_user_session_manager.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
-#include "components/user_manager/fake_user_manager.h"
-#include "components/user_manager/scoped_user_manager.h"
-#include "components/user_manager/user_manager_impl.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -89,9 +88,9 @@ class AccountAppsAvailabilityTest : public testing::Test {
   ~AccountAppsAvailabilityTest() override = default;
 
   void SetUp() override {
-    user_manager::UserManagerImpl::RegisterPrefs(local_state_.registry());
-    fake_user_manager_.Reset(
-        std::make_unique<user_manager::FakeUserManager>(&local_state_));
+    test_user_session_manager_ =
+        std::make_unique<ash::test::TestUserSessionManager>(
+            TestingBrowserProcess::GetGlobal()->local_state());
 
     pref_service_ = std::make_unique<TestingPrefServiceSimple>();
     AccountAppsAvailability::RegisterPrefs(pref_service_->registry());
@@ -110,6 +109,7 @@ class AccountAppsAvailabilityTest : public testing::Test {
   void TearDown() override {
     account_manager_.reset();
     pref_service_.reset();
+    test_user_session_manager_.reset();
   }
 
   std::unique_ptr<AccountAppsAvailability> CreateAccountAppsAvailability() {
@@ -164,17 +164,12 @@ class AccountAppsAvailabilityTest : public testing::Test {
   void LoginUserSession() {
     auto account_id = AccountId::FromUserEmailGaiaId(primary_account_.email,
                                                      primary_account_.gaia);
-    fake_user_manager_->AddGaiaUser(account_id,
-                                    user_manager::UserType::kRegular);
-    fake_user_manager_->UserLoggedIn(
-        account_id,
-        user_manager::FakeUserManager::GetFakeUsernameHash(account_id));
+    ASSERT_TRUE(test_user_session_manager_->AddRegularUser(account_id));
+    test_user_session_manager_->LogIn(account_id);
   }
 
   base::test::SingleThreadTaskEnvironment task_environment_;
-  TestingPrefServiceSimple local_state_;
-  user_manager::TypedScopedUserManager<user_manager::FakeUserManager>
-      fake_user_manager_;
+  std::unique_ptr<ash::test::TestUserSessionManager> test_user_session_manager_;
   signin::IdentityTestEnvironment identity_test_env_;
   std::unique_ptr<TestingPrefServiceSimple> pref_service_;
   std::unique_ptr<account_manager::AccountManager> account_manager_;
