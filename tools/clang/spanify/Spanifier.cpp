@@ -1476,8 +1476,14 @@ void AdaptBinaryOpInMacro(const MatchFinder::MatchResult& result,
 
   clang::CharSourceRange macro_range =
       source_manager.getExpansionRange(decl_ref->getBeginLoc());
-  EmitReplacement(key, GetReplacementDirective(macro_range.getBegin(),
-                                               "UNSAFE_TODO(", source_manager));
+  std::string macro_replacement =
+      std::string(GetProject()->GetUnsafeTodoMacroName()) + "(";
+  EmitReplacement(
+      key, GetReplacementDirective(macro_range.getBegin(), macro_replacement,
+                                   source_manager));
+  EmitReplacement(
+      key, GetIncludeDirective(decl_ref->getBeginLoc(), source_manager,
+                               GetProject()->GetUnsafeTodoIncludePath()));
   // `macro_range.getEnd()` points to the last character of the macro call,
   // i.e. the closing parenthesis of the macro call, so +1 offset is needed.
   // Note that `macro_range` is a CharSourceRange, not a SourceRange.

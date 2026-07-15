@@ -6,6 +6,7 @@
 #include <cstring>
 #include <tuple>
 
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 
 int UnsafeIndex();  // This function might return an out-of-bound index.

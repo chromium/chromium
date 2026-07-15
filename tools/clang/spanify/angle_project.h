@@ -56,6 +56,12 @@ class AngleProject : public Project {
   std::string_view GetAutoSpanificationHelperIncludePath() const override {
     return "NOT_AVAILABLE base/containers/auto_spanification_helper.h";
   }
+  std::string_view GetUnsafeTodoMacroName() const override {
+    return "ANGLE_UNSAFE_TODO";
+  }
+  std::string_view GetUnsafeTodoIncludePath() const override {
+    return "common/unsafe_buffers.h";
+  }
   const std::vector<FuncMapping>& GetFuncMappingTable() const override {
     static const std::vector<FuncMapping> kFuncMappingTable = {};
     return kFuncMappingTable;

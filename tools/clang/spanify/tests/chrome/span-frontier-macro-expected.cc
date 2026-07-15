@@ -9,6 +9,7 @@
 // that MACRO for example. It is sometimes not possible to spanify correctly.
 // This documents a case where the spanification is aborted.
 
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 
 #define ASSIGN(num) assign(x, num);

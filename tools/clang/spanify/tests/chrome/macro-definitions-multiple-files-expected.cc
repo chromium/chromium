@@ -9,6 +9,7 @@
 #include <unordered_map>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "usr/include/linux/netlink.h"
 

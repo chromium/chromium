@@ -62,6 +62,12 @@ class Project {
   virtual std::string_view GetPostIncrementSpanName() const {
     return "base::PostIncrementSpan";
   }
+  virtual std::string_view GetUnsafeTodoMacroName() const {
+    return "UNSAFE_TODO";
+  }
+  virtual std::string_view GetUnsafeTodoIncludePath() const {
+    return "base/compiler_specific.h";
+  }
   virtual const std::vector<FuncMapping>& GetFuncMappingTable() const = 0;
   virtual bool IsExcludedFromProject(const clang::Decl& Node) const = 0;
   virtual bool SupportsStaticExtent() const { return true; }
