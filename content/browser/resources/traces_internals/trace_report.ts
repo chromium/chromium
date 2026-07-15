@@ -6,6 +6,7 @@ import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import '//resources/cr_elements/icons.html.js';
 import './icons.html.js';
 
+import {loadTimeData} from '//resources/js/load_time_data.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {BigBuffer} from '//resources/mojo/mojo/public/mojom/base/big_buffer.mojom-webui.js';
 import type {Time} from '//resources/mojo/mojo/public/mojom/base/time.mojom-webui.js';
@@ -37,6 +38,7 @@ export class TraceReportElement extends CrLitElement {
       trace: {type: Object},
       isHeader: {type: Boolean},
       isLoading: {type: Boolean},
+      webuiRoundedIconsEnabled_: {type: Boolean},
     };
   }
 
@@ -46,6 +48,8 @@ export class TraceReportElement extends CrLitElement {
   protected accessor trace: ClientTraceReport|null = null;
   protected accessor isHeader: boolean = false;
   protected accessor isLoading: boolean = false;
+  protected accessor webuiRoundedIconsEnabled_: boolean =
+      loadTimeData.getBoolean('webuiRoundedIconsEnabled');
 
   protected onCopyUuidClick_(): void {
     if (!this.trace) {
