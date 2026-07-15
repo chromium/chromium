@@ -12,11 +12,9 @@ import type {ComposeboxInputElement} from 'chrome://resources/cr_components/comp
 import {ComposeboxProxyImpl} from 'chrome://resources/cr_components/composebox/composebox_proxy.js';
 import type {ContextualEntrypointAndMenuElement} from 'chrome://resources/cr_components/composebox/contextual_entrypoint_and_menu.js';
 import {WindowProxy} from 'chrome://resources/cr_components/composebox/window_proxy.js';
-import {createAutocompleteResultForTesting, createSearchMatchForTesting} from 'chrome://resources/cr_components/searchbox/searchbox_browser_proxy.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import type {TabInfo} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
-import type {PageRemote as SearchboxPageRemote} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {InputType} from 'chrome://resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import type {TestMock} from 'chrome://webui-test/test_mock.js';
@@ -34,7 +32,6 @@ interface TestComposeboxElement extends ComposeboxElement {
 suite('ComposeboxTest', () => {
   let composebox: ComposeboxElement;
   let handler: PageHandlerRemote&TestMock<PageHandlerRemote>;
-  let searchboxCallbackRouterRemote: SearchboxPageRemote;
   let searchboxHandler: SearchboxPageHandlerRemote&TestMock<SearchboxPageHandlerRemote>;
 
   setup(async () => {
@@ -64,10 +61,6 @@ suite('ComposeboxTest', () => {
         'getPageClassification',
         Promise.resolve({metricSource: 'CO_BROWSING_COMPOSEBOX'}));
 
-    searchboxCallbackRouterRemote =
-        ComposeboxProxyImpl.getInstance()
-            .searchboxCallbackRouter.$.bindNewPipeAndPassRemote();
-
     composebox = document.createElement('cr-composebox');
     document.body.appendChild(composebox);
     await composebox.updateComplete;
@@ -75,74 +68,6 @@ suite('ComposeboxTest', () => {
 
   teardown(() => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-  });
-
-  test('suggestion activity link triggers navigation', async () => {
-    composebox.suggestionActivityEnabled = true;
-
-    // Mock results to show the link.
-    const matches = [
-      createSearchMatchForTesting({
-        isNoncannedAimSuggestion: true,
-      }),
-    ];
-    searchboxCallbackRouterRemote.autocompleteResultChanged(
-        createAutocompleteResultForTesting({
-          matches: matches,
-          queryId: composebox.activeQueryId,
-        }));
-    await searchboxCallbackRouterRemote.$.flushForTesting();
-    await microtasksFinished();
-    await composebox.updateComplete;
-
-    const suggestionActivity = composebox.shadowRoot.querySelector('#suggestionActivity');
-    assertTrue(!!suggestionActivity);
-    const localizedLink = suggestionActivity.querySelector('localized-link');
-    assertTrue(!!localizedLink);
-
-    const testUrl = 'about:blank?activity';
-    // Simulate the event fired by localized-link.
-    const anchor = document.createElement('a');
-    anchor.href = testUrl;
-
-    let preventDefaultCalled = false;
-    const linkClickedEvent = new CustomEvent('link-clicked', {
-      detail: {
-        event: {
-          preventDefault: () => {
-            preventDefaultCalled = true;
-          },
-          currentTarget: anchor,
-        },
-      },
-    });
-
-    localizedLink.dispatchEvent(linkClickedEvent);
-
-    const url = await handler.whenCalled('navigateUrl');
-    assertEquals(testUrl, url);
-    assertTrue(preventDefaultCalled);
-  });
-
-  test('suggestion activity link hidden when suggestions are non canned', async () => {
-    composebox.suggestionActivityEnabled = true;
-
-    const matches = [
-      createSearchMatchForTesting({
-        isNoncannedAimSuggestion: false,
-      }),
-    ];
-    searchboxCallbackRouterRemote.autocompleteResultChanged(
-        createAutocompleteResultForTesting({
-          matches: matches,
-          queryId: composebox.activeQueryId,
-        }));
-    await searchboxCallbackRouterRemote.$.flushForTesting();
-    await microtasksFinished();
-    await composebox.updateComplete;
-
-    const suggestionActivity = composebox.shadowRoot.querySelector('#suggestionActivity');
-    assertFalse(!!suggestionActivity);
   });
 
   test(

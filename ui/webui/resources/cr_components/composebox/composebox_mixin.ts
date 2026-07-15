@@ -147,6 +147,7 @@ export const ComposeboxEmbedderMixin =
             },
             showTypedSuggestWithContext: {type: Boolean},
             showVoiceSearch: {type: Boolean},
+            suggestionActivityEnabled: {type: Boolean},
             usePecApi: {
               type: Boolean,
               reflect: true,
@@ -277,6 +278,7 @@ export const ComposeboxEmbedderMixin =
         // reset when the context menu is closed, and passed down to keep the
         // child menu's rendering in sync.
         accessor shareTabsFlyoutOpen: boolean = false;
+        accessor suggestionActivityEnabled: boolean = true;
         accessor searchboxLayoutMode: string = '';
         accessor searchboxNextEnabled: boolean = false;
         accessor queryZpsOnLoad: boolean = true;
@@ -2655,6 +2657,7 @@ export interface ComposeboxEmbedderMixinInterface extends
   receivedSpeech: boolean;
   result: AutocompleteResult|null;
   shareTabsFlyoutOpen: boolean;
+  suggestionActivityEnabled: boolean;
   searchboxLayoutMode: string;
   isOblongShape: boolean;
   webuiOmniboxSimplificationEnabled: boolean;
