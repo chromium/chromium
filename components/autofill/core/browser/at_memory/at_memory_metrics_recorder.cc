@@ -338,6 +338,10 @@ void AtMemoryMetricsRecorder::MaybeLogSuggestionAccepted() {
     base::UmaHistogramCounts100("Autofill.AtMemory.QueryCountBeforeAcceptance",
                                 query_count_);
   }
+  if (suggestion_acceptance_.accepted_sources_bitmask.has_value()) {
+    base::UmaHistogramSparse("Autofill.AtMemory.AcceptedSuggestionDataSources",
+                             *suggestion_acceptance_.accepted_sources_bitmask);
+  }
 }
 
 bool AtMemoryMetricsRecorder::CanLogUkm() const {

@@ -2184,6 +2184,18 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </summary>
 </histogram>
 
+<histogram name="Autofill.AtMemory.AcceptedSuggestionDataSources"
+    enum="AutofillAtMemoryAcceptedSuggestionDataSourcesBitmask"
+    expires_after="2027-03-09">
+  <owner>ireneuszszulc@google.com</owner>
+  <owner>rahimis@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Records a bitmask of the data sources that provided the accepted AtMemory
+    suggestion. Emitted every time a user accepts a search result.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.AtMemory.AcceptedSuggestionDataType"
     enum="MemoryDataType" expires_after="2027-03-09">
   <owner>ireneuszszulc@google.com</owner>

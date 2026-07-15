@@ -152,7 +152,12 @@ TEST_F(AtMemoryMetricsRecorderTest, Destructor_SuggestionAccepted_True) {
                          std::nullopt);
     metrics.OnQuerySubmitted(u"query");
     SendResponse(metrics);
-    metrics.OnSuggestionAccepted(MemoryDataType::kAddressFull);
+    metrics.OnSuggestionAccepted(
+        MemoryDataType::kAddressFull,
+        std::to_underlying(
+            accessibility_annotator::MemoryEntrySourceType::kAutofill) |
+            std::to_underlying(
+                accessibility_annotator::MemoryEntrySourceType::kGmail));
   }
 
   histogram_tester_.ExpectUniqueSample("Autofill.AtMemory.SuggestionAccepted",
@@ -160,6 +165,13 @@ TEST_F(AtMemoryMetricsRecorderTest, Destructor_SuggestionAccepted_True) {
   histogram_tester_.ExpectUniqueSample(
       "Autofill.AtMemory.AcceptedSuggestionDataType",
       MemoryDataType::kAddressFull, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "Autofill.AtMemory.AcceptedSuggestionDataSources",
+      std::to_underlying(
+          accessibility_annotator::MemoryEntrySourceType::kAutofill) |
+          std::to_underlying(
+              accessibility_annotator::MemoryEntrySourceType::kGmail),
+      1);
   histogram_tester_.ExpectUniqueSample(
       "Autofill.AtMemory.SuggestionAcceptedInSession", true, 1);
 }
