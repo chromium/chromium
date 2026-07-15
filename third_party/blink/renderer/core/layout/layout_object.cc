@@ -1605,13 +1605,15 @@ void LayoutObject::MarkContainerChainForLayout(bool schedule_relayout) {
     last = object;
     if (schedule_relayout && ObjectIsRelayoutBoundary(last) &&
         last->IsRooted()) {
-      break;
+      GetFrameView()->ScheduleRelayoutOfSubtree(*last);
+      return;
     }
     object = container;
   }
 
-  if (schedule_relayout)
-    last->ScheduleRelayout();
+  if (schedule_relayout && IsA<LayoutView>(last)) {
+    GetFrameView()->ScheduleRelayout();
+  }
 }
 
 // LayoutNG has different OOF-positioned handling compared to the existing
@@ -4316,22 +4318,6 @@ bool LayoutObject::NodeAtPoint(HitTestResult&,
                                HitTestPhase) {
   NOT_DESTROYED();
   return false;
-}
-
-void LayoutObject::ScheduleRelayout() {
-  NOT_DESTROYED();
-  if (auto* layout_view = DynamicTo<LayoutView>(this)) {
-    if (LocalFrameView* view = layout_view->GetFrameView())
-      view->ScheduleRelayout();
-  } else {
-    if (IsRooted()) {
-      layout_view = View();
-      if (layout_view) {
-        if (LocalFrameView* frame_view = layout_view->GetFrameView())
-          frame_view->ScheduleRelayoutOfSubtree(*this);
-      }
-    }
-  }
 }
 
 const ComputedStyle* LayoutObject::FirstLineStyleWithoutFallback() const {
