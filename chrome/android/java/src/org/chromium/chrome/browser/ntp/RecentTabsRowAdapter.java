@@ -178,7 +178,6 @@ public class RecentTabsRowAdapter extends BaseExpandableListAdapter {
          * @param isLastChild Whether this child is the last one.
          * @param convertView The re-usable child view (may be null).
          * @param parent The parent view group.
-         *
          * @return The view corresponding to the child.
          */
         View getChildView(
@@ -199,8 +198,8 @@ public class RecentTabsRowAdapter extends BaseExpandableListAdapter {
         }
 
         /**
-         * Configures a view inflated from recent_tabs_list_item.xml to display information about
-         * a child in this group.
+         * Configures a view inflated from recent_tabs_list_item.xml to display information about a
+         * child in this group.
          *
          * @param childPosition The position of the child within this group.
          * @param viewHolder The ViewHolder with references to pieces of the view.
@@ -213,7 +212,6 @@ public class RecentTabsRowAdapter extends BaseExpandableListAdapter {
          * @param isExpanded Whether the group is expanded.
          * @param convertView The re-usable group view (may be null).
          * @param parent The parent view group.
-         *
          * @return The view corresponding to the group.
          */
         public View getGroupView(boolean isExpanded, View convertView, ViewGroup parent) {
@@ -232,6 +230,7 @@ public class RecentTabsRowAdapter extends BaseExpandableListAdapter {
 
         /**
          * Configures an RecentTabsGroupView to display the header of this group.
+         *
          * @param groupView The RecentTabsGroupView to configure.
          * @param isExpanded Whether the view is currently expanded.
          */
@@ -247,6 +246,7 @@ public class RecentTabsRowAdapter extends BaseExpandableListAdapter {
 
         /**
          * Called when a child item is clicked.
+         *
          * @param childPosition The position of the child in the group.
          * @return Whether the click was handled.
          */
@@ -1127,5 +1127,23 @@ public class RecentTabsRowAdapter extends BaseExpandableListAdapter {
     @Override
     public int getChildTypeCount() {
         return ChildType.NUM_ENTRIES;
+    }
+
+    /**
+     * Finds the group position for a foreign session with the given tag.
+     *
+     * @param sessionTag The tag of the foreign session.
+     * @return The group position, or -1 if not found.
+     */
+    public int getGroupPositionForForeignSession(String sessionTag) {
+        for (int i = 0; i < mGroups.size(); i++) {
+            Group group = mGroups.get(i);
+            if (group instanceof ForeignSessionGroup foreignSessionGroup) {
+                if (sessionTag.equals(foreignSessionGroup.mForeignSession.tag)) {
+                    return i;
+                }
+            }
+        }
+        return -1;
     }
 }

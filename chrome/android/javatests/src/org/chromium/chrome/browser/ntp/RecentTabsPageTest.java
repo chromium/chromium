@@ -714,6 +714,7 @@ public class RecentTabsPageTest {
                 new RecentlyClosedTab(
                         0, 0, "Tab Title", new GURL("https://www.example.com/"), null);
         setRecentlyClosedEntries(Collections.singletonList(tab));
+        waitForView(tab.getTitle());
         final View groupView = mPage.getView().findViewById(R.id.recent_tabs_group_view);
         final View expandCollapseIcon = groupView.findViewById(R.id.expand_collapse_icon);
 

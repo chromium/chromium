@@ -271,10 +271,7 @@ public class NativePageFactory {
                             mEdgeToEdgeControllerSupplier);
             if (tab.isIncognito()) {
                 return new IncognitoNewTabPage(
-                        mActivity,
-                        nativePageHost,
-                        tab.getProfile(),
-                        mEdgeToEdgeControllerSupplier);
+                        mActivity, nativePageHost, tab.getProfile(), mEdgeToEdgeControllerSupplier);
             }
 
             return new NewTabPage(
@@ -356,7 +353,7 @@ public class NativePageFactory {
                     mBackPressManager);
         }
 
-        protected NativePage buildRecentTabsPage(Tab tab) {
+        protected NativePage buildRecentTabsPage(Tab tab, String url) {
             RecentTabsManager recentTabsManager =
                     new RecentTabsManager(
                             tab,
@@ -388,7 +385,8 @@ public class NativePageFactory {
                     navigationDelegate,
                     mBrowserControlsManager,
                     mTabStripHeightSupplier,
-                    mEdgeToEdgeControllerSupplier);
+                    mEdgeToEdgeControllerSupplier,
+                    url);
         }
 
         protected NativePage buildManagementPage(Tab tab) {
@@ -499,7 +497,7 @@ public class NativePageFactory {
                 page = getBuilder().buildHistoryPage(tab, url);
                 break;
             case NativePageType.RECENT_TABS:
-                page = getBuilder().buildRecentTabsPage(tab);
+                page = getBuilder().buildRecentTabsPage(tab, url);
                 break;
             case NativePageType.MANAGEMENT:
                 page = getBuilder().buildManagementPage(tab);

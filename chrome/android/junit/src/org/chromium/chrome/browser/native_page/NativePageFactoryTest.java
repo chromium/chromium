@@ -132,7 +132,7 @@ public class NativePageFactoryTest {
         }
 
         @Override
-        public NativePage buildRecentTabsPage(Tab tab) {
+        public NativePage buildRecentTabsPage(Tab tab, String url) {
             return new MockNativePage(NativePageType.RECENT_TABS);
         }
 

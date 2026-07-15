@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.ntp;
 import android.app.Activity;
 import android.content.res.Resources;
 import android.graphics.Canvas;
+import android.text.TextUtils;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
@@ -35,6 +36,7 @@ import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.edge_to_edge.EdgeToEdgePadAdjuster;
+import org.chromium.url.GURL;
 
 /**
  * The native recent tabs page. Lists recently closed tabs, open windows and tabs from the user's
@@ -55,6 +57,7 @@ public class RecentTabsPage
     private final Activity mActivity;
     private final @Nullable BrowserControlsStateProvider mBrowserControlsStateProvider;
     private final ExpandableListView mListView;
+    private String mUrl;
     private final String mTitle;
     private final ViewGroup mView;
     private final ContextMenuManager mContextMenuManager;
@@ -77,6 +80,8 @@ public class RecentTabsPage
     private EdgeToEdgePadAdjuster mPadAdjuster;
     private boolean mIsTouchEnabled = true;
 
+    private @Nullable String mTargetSessionTag;
+
     /**
      * Constructor returns an instance of RecentTabsPage.
      *
@@ -87,6 +92,7 @@ public class RecentTabsPage
      *     offset values.
      * @param tabStripHeightSupplier Supplier for the tab strip height.
      * @param edgeToEdgeSupplier Supplier for the {@link EdgeToEdgeController} for bottom insets.
+     * @param url The URL the page is being opened with.
      */
     public RecentTabsPage(
             Activity activity,
@@ -94,9 +100,11 @@ public class RecentTabsPage
             NativePageNavigationDelegate navigationDelegate,
             BrowserControlsStateProvider browserControlsStateProvider,
             NonNullObservableSupplier<Integer> tabStripHeightSupplier,
-            MonotonicObservableSupplier<EdgeToEdgeController> edgeToEdgeSupplier) {
+            MonotonicObservableSupplier<EdgeToEdgeController> edgeToEdgeSupplier,
+            String url) {
         mActivity = activity;
         mRecentTabsManager = recentTabsManager;
+        mUrl = url;
         Resources resources = activity.getResources();
 
         mTitle = resources.getString(R.string.recent_tabs);
@@ -144,14 +152,14 @@ public class RecentTabsPage
                 EdgeToEdgeControllerFactory.createForViewAndObserveSupplier(
                         mListView, mEdgeToEdgeSupplier);
 
-        onUpdated();
+        updateForUrl(url);
     }
 
     // NativePage overrides
 
     @Override
     public String getUrl() {
-        return UrlConstants.RECENT_TABS_URL;
+        return mUrl;
     }
 
     @Override
@@ -215,7 +223,35 @@ public class RecentTabsPage
     }
 
     @Override
-    public void updateForUrl(String url) {}
+    public void updateForUrl(String url) {
+        mUrl = url;
+        GURL gurl = new GURL(url);
+        String fragment = gurl.getRef();
+        if (!TextUtils.isEmpty(fragment)) {
+            mTargetSessionTag = fragment;
+            scrollToTargetSession();
+        } else {
+            mTargetSessionTag = null;
+        }
+    }
+
+    private void scrollToTargetSession() {
+        if (mTargetSessionTag == null) return;
+
+        final int groupPosition = mAdapter.getGroupPositionForForeignSession(mTargetSessionTag);
+        if (groupPosition != -1) {
+            mListView.expandGroup(groupPosition);
+            // Post the scroll to selection. This is needed because expandGroup() requests a layout
+            // pass asynchronously. Scrolling immediately would use the old collapsed heights.
+            mListView.post(
+                    () -> {
+                        if (mAdapter != null) {
+                            mListView.setSelectedGroup(groupPosition);
+                        }
+                    });
+            mTargetSessionTag = null;
+        }
+    }
 
     @Override
     public int getHeightOverlappedWithTopControls() {
@@ -277,6 +313,7 @@ public class RecentTabsPage
             }
         }
         mSnapshotContentChanged = true;
+        scrollToTargetSession();
     }
 
     @Override
