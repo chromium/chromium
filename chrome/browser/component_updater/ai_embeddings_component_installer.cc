@@ -8,7 +8,9 @@
 #include <cstdint>
 #include <iterator>
 #include <memory>
+#include <optional>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "base/containers/flat_set.h"
@@ -19,13 +21,16 @@
 #include "base/functional/callback.h"
 #include "base/location.h"
 #include "base/memory/ref_counted.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/values.h"
 #include "base/version.h"
 #include "chrome/browser/ai/ai_semantic_embedder_service_launcher.h"
+#include "chrome/browser/browser_process.h"
 #include "components/component_updater/component_installer.h"
 #include "components/component_updater/component_updater_service.h"
+#include "components/crx_file/id_util.h"
 #include "components/optimization_guide/core/delivery/model_info.h"
 #include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
 #include "components/optimization_guide/core/model_execution/model_execution_util.h"
@@ -65,6 +70,11 @@ class AIEmbeddingsComponentInstallerPolicy
  public:
   AIEmbeddingsComponentInstallerPolicy() = default;
   ~AIEmbeddingsComponentInstallerPolicy() override = default;
+
+  AIEmbeddingsComponentInstallerPolicy(
+      const AIEmbeddingsComponentInstallerPolicy&) = delete;
+  AIEmbeddingsComponentInstallerPolicy& operator=(
+      const AIEmbeddingsComponentInstallerPolicy&) = delete;
 
  private:
   // ComponentInstallerPolicy overrides:
@@ -136,6 +146,11 @@ class AIEmbeddingsComponentInstallerPolicy
 }  // namespace
 
 namespace component_updater {
+
+std::string GetAIEmbeddingsComponentId() {
+  return crx_file::id_util::GenerateIdFromHash(kAIEmbeddingsPublicKeySHA256);
+}
+
 std::unique_ptr<ComponentInstallerPolicy>
 GetAIEmbeddingsComponentInstallerPolicyForTesting() {
   return std::make_unique<AIEmbeddingsComponentInstallerPolicy>();
@@ -167,6 +182,20 @@ void DeleteAIEmbeddingsComponent(const base::FilePath& user_data_dir) {
       FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
       base::BindOnce(base::IgnoreResult(&base::DeletePathRecursively),
                      user_data_dir.Append(FILE_PATH_LITERAL("AIEmbeddings"))));
+}
+
+void UpdateAIEmbeddingsComponentOnDemand(
+    component_updater::OnDemandUpdater::Priority priority,
+    base::OnceClosure callback) {
+  g_browser_process->component_updater()->GetOnDemandUpdater().OnDemandUpdate(
+      GetAIEmbeddingsComponentId(), priority,
+      base::BindOnce(
+          [](base::OnceClosure cb, update_client::Error error) {
+            if (cb) {
+              std::move(cb).Run();
+            }
+          },
+          std::move(callback)));
 }
 
 }  // namespace component_updater
