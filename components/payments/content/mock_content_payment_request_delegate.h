@@ -74,6 +74,7 @@ class MockContentPaymentRequestDelegate : public ContentPaymentRequestDelegate {
   MOCK_METHOD(void, CloseDialog, (), (override));
   MOCK_METHOD(void, ShowErrorMessage, (), (override));
   MOCK_METHOD(void, ShowProcessingSpinner, (), (override));
+  MOCK_METHOD(void, ShowLoadingView, (), (override));
   MOCK_METHOD(bool, IsBrowserWindowActive, (), (override, const));
 
   // PaymentRequestBaseDelegate

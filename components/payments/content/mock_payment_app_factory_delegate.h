@@ -60,6 +60,7 @@ class MockPaymentAppFactoryDelegate : public PaymentAppFactory::Delegate {
   }
   MOCK_METHOD1(GetTwaPackageName, void(GetTwaPackageNameCallback));
   MOCK_METHOD0(ShowProcessingSpinner, void());
+  MOCK_METHOD0(ShowLoadingView, void());
   MOCK_CONST_METHOD0(GetPaymentRequestDelegate,
                      base::WeakPtr<ContentPaymentRequestDelegate>());
   MOCK_METHOD1(OnPaymentAppCreated, void(std::unique_ptr<PaymentApp> app));

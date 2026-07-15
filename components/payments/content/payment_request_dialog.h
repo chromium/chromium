@@ -27,6 +27,9 @@ class PaymentRequestDialog {
   // Shows a "Processing..." spinner.
   virtual void ShowProcessingSpinner() = 0;
 
+  // Shows a mandatory payment app loading view.
+  virtual void ShowLoadingView() = 0;
+
   // Whether a "Processing..." spinner is showing.
   virtual bool IsInteractive() const = 0;
 

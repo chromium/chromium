@@ -44,7 +44,8 @@ class ServiceWorkerPaymentApp : public PaymentApp {
       std::unique_ptr<content::StoredPaymentApp> stored_payment_app_info,
       bool is_incognito,
       bool prefs_can_make_payment,
-      const base::RepeatingClosure& show_processing_spinner);
+      const base::RepeatingClosure& show_processing_spinner,
+      const base::RepeatingClosure& show_loading_view);
 
   // This constructor is used for a payment app that has not been installed in
   // Chrome but can be installed when paying with it. The `spec` parameter
@@ -58,7 +59,8 @@ class ServiceWorkerPaymentApp : public PaymentApp {
       const std::string& enabled_method,
       bool is_incognito,
       bool prefs_can_make_payment,
-      const base::RepeatingClosure& show_processing_spinner);
+      const base::RepeatingClosure& show_processing_spinner,
+      const base::RepeatingClosure& show_loading_view);
 
   ServiceWorkerPaymentApp(const ServiceWorkerPaymentApp&) = delete;
   ServiceWorkerPaymentApp& operator=(const ServiceWorkerPaymentApp&) = delete;
@@ -149,6 +151,7 @@ class ServiceWorkerPaymentApp : public PaymentApp {
   // Disables user interaction by showing a spinner. Used when the app is
   // invoked.
   base::RepeatingClosure show_processing_spinner_;
+  base::RepeatingClosure show_loading_view_;
 
   base::WeakPtr<PaymentHandlerHost> payment_handler_host_;
   mojo::PendingRemote<mojom::PaymentHandlerHost> payment_handler_host_remote_;

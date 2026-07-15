@@ -82,6 +82,7 @@ class PaymentAppServiceBridge : public PaymentAppFactory::Delegate {
   base::WeakPtr<ContentPaymentRequestDelegate> GetPaymentRequestDelegate()
       const override;
   void ShowProcessingSpinner() override;
+  void ShowLoadingView() override;
   base::WeakPtr<PaymentRequestSpec> GetSpec() const override;
   void GetTwaPackageName(GetTwaPackageNameCallback callback) override;
   void OnPaymentAppCreated(std::unique_ptr<PaymentApp> app) override;

@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/views/payments/contact_info_editor_view_controller.h"
 #include "chrome/browser/ui/views/payments/error_message_view_controller.h"
 #include "chrome/browser/ui/views/payments/order_summary_view_controller.h"
+#include "chrome/browser/ui/views/payments/payment_app_loading_view.h"
 #include "chrome/browser/ui/views/payments/payment_handler_web_flow_view_controller.h"
 #include "chrome/browser/ui/views/payments/payment_method_view_controller.h"
 #include "chrome/browser/ui/views/payments/payment_request_views_util.h"
@@ -210,8 +211,23 @@ void PaymentRequestDialogView::ShowProcessingSpinner() {
   }
 }
 
+void PaymentRequestDialogView::ShowLoadingView() {
+  CHECK(request_->state()->selected_app());
+  loading_view_overlay_ = AddChildView(std::make_unique<PaymentAppLoadingView>(
+      request_->state()->selected_app()->icon_bitmap(),
+      GURL(request_->state()->selected_app()->GetId()),
+      request_->state()->GetTopOrigin(),
+      base::BindRepeating(&PaymentRequestDialogView::CloseDialog,
+                          weak_ptr_factory_.GetWeakPtr())));
+
+  if (observer_for_testing_) {
+    observer_for_testing_->OnLoadingViewShown();
+  }
+}
+
 bool PaymentRequestDialogView::IsInteractive() const {
-  return !throbber_overlay_->GetVisible();
+  return !throbber_overlay_->GetVisible() &&
+         (!loading_view_overlay_ || !loading_view_overlay_->GetVisible());
 }
 
 void PaymentRequestDialogView::ShowPaymentHandlerScreen(
@@ -260,7 +276,12 @@ void PaymentRequestDialogView::ShowPaymentHandlerScreen(
       /* animate = */ !is_showing_large_payment_handler_window_ &&
           !request_->skipped_payment_request_ui());
   request_->OnPaymentHandlerOpenWindowCalled();
-  HideProcessingSpinner();
+  if (base::FeatureList::IsEnabled(
+          features::kPaymentRequestMandatoryPaymentAppUi)) {
+    HideLoadingView();
+  } else {
+    HideProcessingSpinner();
+  }
   if (observer_for_testing_) {
     observer_for_testing_->OnPaymentHandlerWindowOpened();
   }
@@ -564,6 +585,15 @@ void PaymentRequestDialogView::HideProcessingSpinner() {
   throbber_overlay_->GetViewAccessibility().SetIsLeaf(true);
   if (observer_for_testing_) {
     observer_for_testing_->OnProcessingSpinnerHidden();
+  }
+}
+
+void PaymentRequestDialogView::HideLoadingView() {
+  if (loading_view_overlay_) {
+    RemoveChildViewT(std::exchange(loading_view_overlay_, nullptr));
+    if (observer_for_testing_) {
+      observer_for_testing_->OnLoadingViewHidden();
+    }
   }
 }
 

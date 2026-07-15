@@ -411,4 +411,8 @@ void PaymentHandlerWebFlowViewController::DidGetUserInteraction(
   }
 }
 
+void PaymentHandlerWebFlowViewController::DidStopLoading() {
+  dialog()->HideLoadingView();
+}
+
 }  // namespace payments

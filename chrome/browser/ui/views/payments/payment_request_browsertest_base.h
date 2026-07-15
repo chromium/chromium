@@ -95,6 +95,8 @@ class PaymentRequestBrowserTestBase
     INTERNAL_ERROR,
     PROCESSING_SPINNER_SHOWN,
     PROCESSING_SPINNER_HIDDEN,
+    LOADING_VIEW_SHOWN,
+    LOADING_VIEW_HIDDEN,
     PAYMENT_HANDLER_WINDOW_OPENED,
     // Note that this is a merchant html title set event, and the signal is
     // provided by WebcontentsObserver::TitleWasSet.
@@ -153,6 +155,8 @@ class PaymentRequestBrowserTestBase
   void OnSpecDoneUpdating() override;
   void OnProcessingSpinnerShown() override;
   void OnProcessingSpinnerHidden() override;
+  void OnLoadingViewShown() override;
+  void OnLoadingViewHidden() override;
   void OnPaymentHandlerWindowOpened() override;
   void OnPaymentHandlerTitleSet() override;
   void OnDialogSizeCheckAfterBrowserResize() override;

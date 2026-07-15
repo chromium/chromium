@@ -122,7 +122,8 @@ class ServiceWorkerPaymentAppTest : public testing::Test,
         GURL("https://testmerchant.com/bobpay"), spec_->AsWeakPtr(),
         std::move(app_info), /*enabled_method=*/"https://bobpay.test",
         /*is_incognito=*/false, /*prefs_can_make_payment=*/true,
-        /*show_processing_spinner=*/base::DoNothing());
+        /*show_processing_spinner=*/base::DoNothing(),
+        /*show_loading_view=*/base::DoNothing());
   }
 
   void CreateInstalledServiceWorkerPaymentApp(bool with_url_method) {
@@ -165,7 +166,8 @@ class ServiceWorkerPaymentAppTest : public testing::Test,
         GURL("https://testmerchant.com/bobpay"), spec_->AsWeakPtr(),
         std::move(stored_app), /*is_incognito=*/false,
         prefs_can_make_payment_enabled,
-        /*show_processing_spinner=*/base::DoNothing());
+        /*show_processing_spinner=*/base::DoNothing(),
+        /*show_loading_view=*/base::DoNothing());
   }
 
   ServiceWorkerPaymentApp* GetApp() { return app_.get(); }

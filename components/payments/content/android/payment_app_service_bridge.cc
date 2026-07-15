@@ -311,6 +311,8 @@ void PaymentAppServiceBridge::ShowProcessingSpinner() {
   // Java UI determines when the show a spinner itself.
 }
 
+void PaymentAppServiceBridge::ShowLoadingView() {}
+
 base::WeakPtr<PaymentRequestSpec> PaymentAppServiceBridge::GetSpec() const {
   return spec_;
 }

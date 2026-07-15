@@ -40,6 +40,9 @@ class PaymentRequestDelegate : public PaymentRequestBaseDelegate {
   // Disables user interaction by showing a spinner.
   virtual void ShowProcessingSpinner() = 0;
 
+  // Shows a mandatory payment app loading view.
+  virtual void ShowLoadingView() = 0;
+
   // Returns whether the browser window is active.
   virtual bool IsBrowserWindowActive() const = 0;
 

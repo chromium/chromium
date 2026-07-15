@@ -296,6 +296,18 @@ void PaymentRequestBrowserTestBase::OnProcessingSpinnerHidden() {
   }
 }
 
+void PaymentRequestBrowserTestBase::OnLoadingViewShown() {
+  if (event_waiter_) {
+    event_waiter_->OnEvent(DialogEvent::LOADING_VIEW_SHOWN);
+  }
+}
+
+void PaymentRequestBrowserTestBase::OnLoadingViewHidden() {
+  if (event_waiter_) {
+    event_waiter_->OnEvent(DialogEvent::LOADING_VIEW_HIDDEN);
+  }
+}
+
 void PaymentRequestBrowserTestBase::OnPaymentHandlerWindowOpened() {
   if (event_waiter_) {
     event_waiter_->OnEvent(DialogEvent::PAYMENT_HANDLER_WINDOW_OPENED);
@@ -983,6 +995,12 @@ std::ostream& operator<<(
       break;
     case DialogEvent::PROCESSING_SPINNER_HIDDEN:
       out << "PROCESSING_SPINNER_HIDDEN";
+      break;
+    case DialogEvent::LOADING_VIEW_SHOWN:
+      out << "LOADING_VIEW_SHOWN";
+      break;
+    case DialogEvent::LOADING_VIEW_HIDDEN:
+      out << "LOADING_VIEW_HIDDEN";
       break;
     case DialogEvent::PAYMENT_HANDLER_WINDOW_OPENED:
       out << "PAYMENT_HANDLER_WINDOW_OPENED";

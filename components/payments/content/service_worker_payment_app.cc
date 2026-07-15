@@ -42,7 +42,8 @@ ServiceWorkerPaymentApp::ServiceWorkerPaymentApp(
     std::unique_ptr<content::StoredPaymentApp> stored_payment_app_info,
     bool is_incognito,
     bool prefs_can_make_payment_,
-    const base::RepeatingClosure& show_processing_spinner)
+    const base::RepeatingClosure& show_processing_spinner,
+    const base::RepeatingClosure& show_loading_view)
     : PaymentApp(0, PaymentApp::Type::SERVICE_WORKER_APP),
       top_origin_(top_origin),
       frame_origin_(frame_origin),
@@ -52,6 +53,7 @@ ServiceWorkerPaymentApp::ServiceWorkerPaymentApp(
       is_incognito_(is_incognito),
       prefs_can_make_payment_(prefs_can_make_payment_),
       show_processing_spinner_(show_processing_spinner),
+      show_loading_view_(show_loading_view),
       can_make_payment_result_(false),
       has_enrolled_instrument_result_(false),
       can_make_payment_event_skipped_(false),
@@ -76,7 +78,8 @@ ServiceWorkerPaymentApp::ServiceWorkerPaymentApp(
     const std::string& enabled_method,
     bool is_incognito,
     bool prefs_can_make_payment_,
-    const base::RepeatingClosure& show_processing_spinner)
+    const base::RepeatingClosure& show_processing_spinner,
+    const base::RepeatingClosure& show_loading_view)
     : PaymentApp(0, PaymentApp::Type::SERVICE_WORKER_APP),
       top_origin_(top_origin),
       frame_origin_(frame_origin),
@@ -85,6 +88,7 @@ ServiceWorkerPaymentApp::ServiceWorkerPaymentApp(
       is_incognito_(is_incognito),
       prefs_can_make_payment_(prefs_can_make_payment_),
       show_processing_spinner_(show_processing_spinner),
+      show_loading_view_(show_loading_view),
       can_make_payment_result_(false),
       has_enrolled_instrument_result_(false),
       can_make_payment_event_skipped_(false),
@@ -272,7 +276,12 @@ void ServiceWorkerPaymentApp::InvokePaymentApp(
                        weak_ptr_factory_.GetWeakPtr()));
   }
 
-  show_processing_spinner_.Run();
+  if (base::FeatureList::IsEnabled(
+          features::kPaymentRequestMandatoryPaymentAppUi)) {
+    show_loading_view_.Run();
+  } else {
+    show_processing_spinner_.Run();
+  }
 }
 
 void ServiceWorkerPaymentApp::OnPaymentAppWindowClosed() {

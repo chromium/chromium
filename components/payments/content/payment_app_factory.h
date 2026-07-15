@@ -95,6 +95,10 @@ class PaymentAppFactory {
     // notification.
     virtual void ShowProcessingSpinner() = 0;
 
+    // Tells the UI to show the payment app loading view. Only desktop service
+    // worker based payment apps need this notification.
+    virtual void ShowLoadingView() = 0;
+
     virtual base::WeakPtr<ContentPaymentRequestDelegate>
     GetPaymentRequestDelegate() const = 0;
 

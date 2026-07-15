@@ -46,6 +46,7 @@ class SecurePaymentConfirmationController
   void CloseDialog() override;
   void ShowErrorMessage() override;
   void ShowProcessingSpinner() override;
+  void ShowLoadingView() override {}
   bool IsInteractive() const override;
   void ShowPaymentHandlerScreen(
       const GURL& url,

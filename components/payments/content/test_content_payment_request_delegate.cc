@@ -64,6 +64,10 @@ void TestContentPaymentRequestDelegate::ShowProcessingSpinner() {
   core_delegate_.ShowProcessingSpinner();
 }
 
+void TestContentPaymentRequestDelegate::ShowLoadingView() {
+  core_delegate_.ShowLoadingView();
+}
+
 bool TestContentPaymentRequestDelegate::IsBrowserWindowActive() const {
   return core_delegate_.IsBrowserWindowActive();
 }

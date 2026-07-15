@@ -99,6 +99,7 @@ class PaymentHandlerWebFlowViewController
   void LoadProgressChanged(double progress) override;
   void TitleWasSet(content::NavigationEntry* entry) override;
   void DidGetUserInteraction(const blink::WebInputEvent& event) override;
+  void DidStopLoading() override;
 
   void AbortPayment();
   void SetHeaderColorsAndOriginLabelText();

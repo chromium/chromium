@@ -92,7 +92,8 @@ class PaymentAppTest : public testing::TestWithParam<RequiredPaymentOptions>,
         GURL("https://testmerchant.com/bobpay"), spec_->AsWeakPtr(),
         std::move(stored_app), /*is_incognito=*/false,
         /*prefs_can_make_payment=*/true,
-        /*show_processing_spinner=*/base::DoNothing());
+        /*show_processing_spinner=*/base::DoNothing(),
+        /*show_loading_view=*/base::DoNothing());
   }
 
   static void PopulateIcon(SkBitmap* icon) {

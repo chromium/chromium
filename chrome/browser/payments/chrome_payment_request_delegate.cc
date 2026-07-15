@@ -139,6 +139,12 @@ void ChromePaymentRequestDelegate::ShowProcessingSpinner() {
     shown_dialog_->ShowProcessingSpinner();
 }
 
+void ChromePaymentRequestDelegate::ShowLoadingView() {
+  if (shown_dialog_) {
+    shown_dialog_->ShowLoadingView();
+  }
+}
+
 autofill::PersonalDataManager*
 ChromePaymentRequestDelegate::GetPersonalDataManager() {
   return autofill::PersonalDataManagerFactory::GetForBrowserContext(

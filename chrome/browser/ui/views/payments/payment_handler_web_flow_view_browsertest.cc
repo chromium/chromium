@@ -318,13 +318,12 @@ IN_PROC_BROWSER_TEST_F(PaymentHandlerWebFlowViewMandatoryUiEnabledTest,
   InstallPaymentApp("a.com", "/payment_handler_sw.js", &method_name);
 
   // Trigger PaymentRequest.
-  ResetEventWaiterForSequence({DialogEvent::PROCESSING_SPINNER_SHOWN,
-                               DialogEvent::PROCESSING_SPINNER_HIDDEN,
-                               DialogEvent::DIALOG_OPENED,
-                               DialogEvent::PROCESSING_SPINNER_SHOWN,
-                               DialogEvent::PROCESSING_SPINNER_HIDDEN,
-                               DialogEvent::PAYMENT_HANDLER_WINDOW_OPENED,
-                               DialogEvent::PAYMENT_HANDLER_TITLE_SET});
+  ResetEventWaiterForSequence(
+      {DialogEvent::PROCESSING_SPINNER_SHOWN,
+       DialogEvent::PROCESSING_SPINNER_HIDDEN, DialogEvent::DIALOG_OPENED,
+       DialogEvent::LOADING_VIEW_SHOWN, DialogEvent::LOADING_VIEW_HIDDEN,
+       DialogEvent::PAYMENT_HANDLER_WINDOW_OPENED,
+       DialogEvent::PAYMENT_HANDLER_TITLE_SET});
   ASSERT_EQ("success",
             content::EvalJs(
                 GetActiveWebContents(),
@@ -370,13 +369,12 @@ IN_PROC_BROWSER_TEST_F(PaymentHandlerWebFlowViewMandatoryUiEnabledTest,
                     &method_name);
 
   // Trigger PaymentRequest.
-  ResetEventWaiterForSequence({DialogEvent::PROCESSING_SPINNER_SHOWN,
-                               DialogEvent::PROCESSING_SPINNER_HIDDEN,
-                               DialogEvent::DIALOG_OPENED,
-                               DialogEvent::PROCESSING_SPINNER_SHOWN,
-                               DialogEvent::PROCESSING_SPINNER_HIDDEN,
-                               DialogEvent::PAYMENT_HANDLER_WINDOW_OPENED,
-                               DialogEvent::PAYMENT_HANDLER_TITLE_SET});
+  ResetEventWaiterForSequence(
+      {DialogEvent::PROCESSING_SPINNER_SHOWN,
+       DialogEvent::PROCESSING_SPINNER_HIDDEN, DialogEvent::DIALOG_OPENED,
+       DialogEvent::LOADING_VIEW_SHOWN, DialogEvent::LOADING_VIEW_HIDDEN,
+       DialogEvent::PAYMENT_HANDLER_WINDOW_OPENED,
+       DialogEvent::PAYMENT_HANDLER_TITLE_SET});
   ASSERT_EQ("success",
             content::EvalJs(GetActiveWebContents(),
                             content::JsReplace("launchAndWaitUntilAppReady($1)",
@@ -415,15 +413,36 @@ IN_PROC_BROWSER_TEST_F(PaymentHandlerWebFlowViewMandatoryUiEnabledTest,
   // Trigger PaymentRequest. We expect the error message sheet to be shown
   // because the app rejects the payment immediately before any user interaction
   // occurs.
-  ResetEventWaiterForSequence({DialogEvent::PROCESSING_SPINNER_SHOWN,
-                               DialogEvent::PROCESSING_SPINNER_HIDDEN,
-                               DialogEvent::DIALOG_OPENED,
-                               DialogEvent::PROCESSING_SPINNER_SHOWN,
-                               DialogEvent::PROCESSING_SPINNER_HIDDEN,
-                               DialogEvent::PAYMENT_HANDLER_WINDOW_OPENED,
-                               DialogEvent::PAYMENT_HANDLER_TITLE_SET,
-                               DialogEvent::PROCESSING_SPINNER_HIDDEN,
-                               DialogEvent::ERROR_MESSAGE_SHOWN});
+  ResetEventWaiterForSequence(
+      {DialogEvent::PROCESSING_SPINNER_SHOWN,
+       DialogEvent::PROCESSING_SPINNER_HIDDEN, DialogEvent::DIALOG_OPENED,
+       DialogEvent::LOADING_VIEW_SHOWN, DialogEvent::LOADING_VIEW_HIDDEN,
+       DialogEvent::PAYMENT_HANDLER_WINDOW_OPENED,
+       DialogEvent::PAYMENT_HANDLER_TITLE_SET,
+       DialogEvent::PROCESSING_SPINNER_HIDDEN,
+       DialogEvent::ERROR_MESSAGE_SHOWN});
+  ASSERT_EQ(
+      "success",
+      content::EvalJs(
+          GetActiveWebContents(),
+          content::JsReplace("launchWithoutWaitForResponse($1)", method_name)));
+  ASSERT_TRUE(WaitForObservedEvent());
+}
+
+IN_PROC_BROWSER_TEST_F(PaymentHandlerWebFlowViewMandatoryUiEnabledTest,
+                       LoadingViewShownAndHiddenEvents) {
+  NavigateTo("/payment_handler.html");
+  std::string method_name;
+  InstallPaymentApp("a.com", "/payment_handler_sw.js", &method_name);
+
+  // Trigger PaymentRequest and verify that the loading view shown and hidden
+  // events are observed when mandatory UI is enabled.
+  ResetEventWaiterForSequence(
+      {DialogEvent::PROCESSING_SPINNER_SHOWN,
+       DialogEvent::PROCESSING_SPINNER_HIDDEN, DialogEvent::DIALOG_OPENED,
+       DialogEvent::LOADING_VIEW_SHOWN, DialogEvent::LOADING_VIEW_HIDDEN,
+       DialogEvent::PAYMENT_HANDLER_WINDOW_OPENED,
+       DialogEvent::PAYMENT_HANDLER_TITLE_SET});
   ASSERT_EQ(
       "success",
       content::EvalJs(

@@ -138,15 +138,14 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestErrorMessageMandatoryUiEnabledTest,
   // Trigger PaymentRequest. We expect the error message sheet to be shown
   // because the app rejects the payment immediately before any user interaction
   // occurs.
-  ResetEventWaiterForSequence({DialogEvent::PROCESSING_SPINNER_SHOWN,
-                               DialogEvent::PROCESSING_SPINNER_HIDDEN,
-                               DialogEvent::DIALOG_OPENED,
-                               DialogEvent::PROCESSING_SPINNER_SHOWN,
-                               DialogEvent::PROCESSING_SPINNER_HIDDEN,
-                               DialogEvent::PAYMENT_HANDLER_WINDOW_OPENED,
-                               DialogEvent::PAYMENT_HANDLER_TITLE_SET,
-                               DialogEvent::PROCESSING_SPINNER_HIDDEN,
-                               DialogEvent::ERROR_MESSAGE_SHOWN});
+  ResetEventWaiterForSequence(
+      {DialogEvent::PROCESSING_SPINNER_SHOWN,
+       DialogEvent::PROCESSING_SPINNER_HIDDEN, DialogEvent::DIALOG_OPENED,
+       DialogEvent::LOADING_VIEW_SHOWN, DialogEvent::LOADING_VIEW_HIDDEN,
+       DialogEvent::PAYMENT_HANDLER_WINDOW_OPENED,
+       DialogEvent::PAYMENT_HANDLER_TITLE_SET,
+       DialogEvent::PROCESSING_SPINNER_HIDDEN,
+       DialogEvent::ERROR_MESSAGE_SHOWN});
   ASSERT_EQ(
       "success",
       content::EvalJs(

@@ -116,6 +116,10 @@ void PaymentRequestState::ShowProcessingSpinner() {
   GetPaymentRequestDelegate()->ShowProcessingSpinner();
 }
 
+void PaymentRequestState::ShowLoadingView() {
+  GetPaymentRequestDelegate()->ShowLoadingView();
+}
+
 base::WeakPtr<PaymentRequestSpec> PaymentRequestState::GetSpec() const {
   return spec_;
 }

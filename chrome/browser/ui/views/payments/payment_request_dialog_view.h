@@ -34,6 +34,7 @@ class Profile;
 
 namespace payments {
 
+class PaymentAppLoadingView;
 class PaymentRequest;
 class PaymentRequestSheetController;
 
@@ -93,6 +94,10 @@ class PaymentRequestDialogView : public views::DialogDelegateView,
     virtual void OnProcessingSpinnerShown() = 0;
 
     virtual void OnProcessingSpinnerHidden() = 0;
+
+    virtual void OnLoadingViewShown() = 0;
+
+    virtual void OnLoadingViewHidden() = 0;
 
     virtual void OnPaymentHandlerWindowOpened() = 0;
 
@@ -180,6 +185,12 @@ class PaymentRequestDialogView : public views::DialogDelegateView,
   // Hides the full dialog spinner with the "processing" label.
   void HideProcessingSpinner();
 
+  // Shows the full dialog overlay with the loading view for the payment app.
+  void ShowLoadingView() override;
+
+  // Hides the full dialog overlay with the loading view for the payment app.
+  void HideLoadingView();
+
   Profile* GetProfile();
 
   // Calculates the actual payment handler dialog height based on the preferred
@@ -197,6 +208,9 @@ class PaymentRequestDialogView : public views::DialogDelegateView,
   ViewStack* view_stack_for_testing() { return view_stack_; }
   ControllerMap* controller_map_for_testing() { return &controller_map_; }
   views::View* throbber_overlay_for_testing() { return throbber_overlay_; }
+  PaymentAppLoadingView* loading_view_overlay_for_testing() {
+    return loading_view_overlay_;
+  }
 
  private:
   // The browsertest validates the calculated dialog size.
@@ -233,6 +247,10 @@ class PaymentRequestDialogView : public views::DialogDelegateView,
   // hidden until ShowProcessingSpinner is called.
   raw_ptr<views::View> throbber_overlay_;
   raw_ptr<views::Throbber> throbber_;
+
+  // A full dialog overlay that shows a loading view for a payment app. It's
+  // hidden until ShowLoadingView is called.
+  raw_ptr<PaymentAppLoadingView> loading_view_overlay_ = nullptr;
 
   base::WeakPtr<ObserverForTest> observer_for_testing_;
 

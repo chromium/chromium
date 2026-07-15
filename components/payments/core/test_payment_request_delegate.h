@@ -40,6 +40,7 @@ class TestPaymentRequestDelegate : public PaymentRequestDelegate {
   void CloseDialog() override {}
   void ShowErrorMessage() override {}
   void ShowProcessingSpinner() override {}
+  void ShowLoadingView() override {}
   autofill::PersonalDataManager* GetPersonalDataManager() override;
   const std::string& GetApplicationLocale() const override;
   bool IsOffTheRecord() const override;
