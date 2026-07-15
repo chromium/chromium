@@ -6,9 +6,14 @@
 
 #include "base/functional/callback_helpers.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "components/strings/grit/components_strings.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/accessibility/ax_enums.mojom.h"
+#include "ui/base/l10n/l10n_util.h"
+#include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/controls/styled_label.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/widget/widget.h"
 
@@ -60,13 +65,23 @@ class DlpDataTransferNotifierBrowserTest : public InProcessBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(DlpDataTransferNotifierBrowserTest, ShowBlockBubble) {
+  const std::u16string text = u"example.com";
   EXPECT_FALSE(notifier_.widget_.get());
-  notifier_.ShowBlockBubble(std::u16string());
+  notifier_.ShowBlockBubble(text);
   ASSERT_TRUE(notifier_.widget_.get());
 
   views::test::WidgetDestroyedWaiter waiter(notifier_.widget_.get());
   EXPECT_TRUE(notifier_.widget_->IsVisible());
   EXPECT_TRUE(notifier_.widget_->IsActive());
+  views::View* label = views::test::AnyViewWithClassName(
+      notifier_.widget_.get(), views::StyledLabel::kViewClassName);
+  ASSERT_TRUE(label);
+  EXPECT_EQ(label->GetViewAccessibility().GetCachedRole(),
+            ax::mojom::Role::kParagraph);
+  EXPECT_EQ(
+      label->GetViewAccessibility().GetCachedName(),
+      l10n_util::GetStringFUTF16(IDS_POLICY_DLP_CLIPBOARD_BUBBLE_MESSAGE, text,
+                                 l10n_util::GetStringUTF16(IDS_LEARN_MORE)));
 
   // By the time OnWidgetDestroying() is called, notifier_.widget_ is already
   // NULL so the assertion would fail if we pass it as expected arg here.

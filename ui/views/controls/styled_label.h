@@ -245,6 +245,8 @@ class VIEWS_EXPORT StyledLabel : public View {
 
   void RecreateChildViews();
 
+  void UpdateAccessibleRole();
+
   // The text to display.
   std::u16string text_;
 
