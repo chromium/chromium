@@ -246,7 +246,7 @@ public class StripLayoutHelperManager
     private @Nullable OmniboxStub mOmniboxStub;
     private final Callback<String> mUrlTextChangeListener =
             (ignored) -> {
-                getActiveStripLayoutHelper().onHoverExit(/* inTabStrip= */ false);
+                getActiveStripLayoutHelper().clearTabHoverState();
             };
     private float mSceneLayerYOffset;
     private float mSceneLayerVisibleHeight; // Used during height transition.
