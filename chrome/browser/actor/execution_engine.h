@@ -309,7 +309,6 @@ class ExecutionEngine : public ToolDelegate,
   void MayActOnTab(const tabs::TabInterface& tab,
                    AggregatedJournal& journal,
                    TaskId task_id,
-                   const EnterprisePolicyChecker& policy_checker,
                    DecisionCallbackWithReason callback);
 
   // Currently, navigations are generally forced to happen in the same tab (see
@@ -328,6 +327,9 @@ class ExecutionEngine : public ToolDelegate,
       const GURL& source,
       const GURL& destination,
       DoesOriginRequireUserConfirmationCallback callback) const override;
+  void EvaluateEnterprisePolicy(
+      const GURL& destination,
+      EvaluateEnterprisePolicyCallback callback) const override;
   void OnNoVerdict(origin_gating::GatingDecisionContext* context,
                    origin_gating::GateableEvent event,
                    const GURL& source,

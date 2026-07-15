@@ -29,6 +29,9 @@ using ::testing::Return;
 namespace origin_gating {
 namespace {
 
+using DecisionWithMetadata =
+    OriginGatingChecker::Delegate::DecisionWithMetadata;
+
 class MockDelegate : public OriginGatingChecker::Delegate {
  public:
   MockDelegate() = default;
@@ -41,6 +44,11 @@ class MockDelegate : public OriginGatingChecker::Delegate {
                const GURL& source,
                const GURL& destination,
                DoesOriginRequireUserConfirmationCallback callback),
+              (const, override));
+  MOCK_METHOD(void,
+              EvaluateEnterprisePolicy,
+              (const GURL& destination,
+               EvaluateEnterprisePolicyCallback callback),
               (const, override));
   MOCK_METHOD(void,
               OnNoVerdict,
@@ -237,6 +245,108 @@ TEST_F(OriginGatingCheckerTest,
   GURL source("https://example.com");
   GURL destination("https://foo.com");
 
+  SetUpDelegateExpectations(source, destination,
+                            /*requires_user_confirmation=*/false,
+                            /*is_allowed=*/true,
+                            /*did_prompt_user=*/false);
+
+  GatingDecision decision = ComputeGatingDecisionAndVerifyAsynchrony(
+      checker, nullptr, source, destination);
+
+  EXPECT_TRUE(decision.is_allowed);
+  EXPECT_EQ(decision.attribution, DecisionSource::kNoVerdict);
+}
+
+TEST_F(OriginGatingCheckerTest, BuiltInPredicate_EnterprisePolicy_Allowed) {
+  OriginGatingChecker checker(
+      delegate_, OriginGatingConfiguration({{DecisionSource::kEnterprisePolicy,
+                                             GateableEventSet::All()}},
+                                           /*use_site_keyed_cache=*/false));
+
+  GURL source("https://example.com");
+  GURL destination("https://foo.com");
+  url::Origin source_origin = url::Origin::Create(source);
+  url::Origin destination_origin = url::Origin::Create(destination);
+
+  EXPECT_CALL(delegate_, EvaluateEnterprisePolicy(destination, _))
+      .WillOnce(base::test::RunOnceCallback<1>(DecisionWithMetadata{
+          .decision = Decision::kAllowed, .bypass_cache = true}));
+  EXPECT_CALL(delegate_, DoesOriginRequireUserConfirmation(_, _, _, _, _))
+      .Times(0);
+  EXPECT_CALL(delegate_, OnNoVerdict(_, _, _, _, _, _)).Times(0);
+
+  GatingDecision decision = ComputeGatingDecisionAndVerifyAsynchrony(
+      checker, nullptr, source, destination);
+
+  EXPECT_TRUE(decision.is_allowed);
+  EXPECT_EQ(decision.attribution, DecisionSource::kEnterprisePolicy);
+  // With bypass_cache set, the allow decision must not be persisted.
+  EXPECT_FALSE(
+      checker.cache().IsNavigationAllowed(source_origin, destination_origin));
+}
+
+TEST_F(OriginGatingCheckerTest,
+       BuiltInPredicate_EnterprisePolicy_Allowed_PersistsCache) {
+  OriginGatingChecker checker(
+      delegate_, OriginGatingConfiguration({{DecisionSource::kEnterprisePolicy,
+                                             GateableEventSet::All()}},
+                                           /*use_site_keyed_cache=*/false));
+
+  GURL source("https://example.com");
+  GURL destination("https://foo.com");
+  url::Origin source_origin = url::Origin::Create(source);
+  url::Origin destination_origin = url::Origin::Create(destination);
+
+  EXPECT_CALL(delegate_, EvaluateEnterprisePolicy(destination, _))
+      .WillOnce(base::test::RunOnceCallback<1>(DecisionWithMetadata{
+          .decision = Decision::kAllowed, .bypass_cache = false}));
+
+  GatingDecision decision = ComputeGatingDecisionAndVerifyAsynchrony(
+      checker, nullptr, source, destination);
+
+  EXPECT_TRUE(decision.is_allowed);
+  EXPECT_EQ(decision.attribution, DecisionSource::kEnterprisePolicy);
+  // Without bypass_cache, the allow decision must be persisted.
+  EXPECT_TRUE(
+      checker.cache().IsNavigationAllowed(source_origin, destination_origin));
+}
+
+TEST_F(OriginGatingCheckerTest, BuiltInPredicate_EnterprisePolicy_Blocked) {
+  OriginGatingChecker checker(
+      delegate_, OriginGatingConfiguration({{DecisionSource::kEnterprisePolicy,
+                                             GateableEventSet::All()}},
+                                           /*use_site_keyed_cache=*/false));
+
+  GURL source("https://example.com");
+  GURL destination("https://foo.com");
+
+  EXPECT_CALL(delegate_, EvaluateEnterprisePolicy(destination, _))
+      .WillOnce(base::test::RunOnceCallback<1>(
+          DecisionWithMetadata{.decision = Decision::kBlocked}));
+  EXPECT_CALL(delegate_, DoesOriginRequireUserConfirmation(_, _, _, _, _))
+      .Times(0);
+  EXPECT_CALL(delegate_, OnNoVerdict(_, _, _, _, _, _)).Times(0);
+
+  GatingDecision decision = ComputeGatingDecisionAndVerifyAsynchrony(
+      checker, nullptr, source, destination);
+
+  EXPECT_FALSE(decision.is_allowed);
+  EXPECT_EQ(decision.attribution, DecisionSource::kEnterprisePolicy);
+}
+
+TEST_F(OriginGatingCheckerTest,
+       BuiltInPredicate_EnterprisePolicy_NoDecision_FallsBack) {
+  OriginGatingChecker checker(
+      delegate_, OriginGatingConfiguration({{DecisionSource::kEnterprisePolicy,
+                                             GateableEventSet::All()}},
+                                           /*use_site_keyed_cache=*/false));
+
+  GURL source("https://example.com");
+  GURL destination("https://foo.com");
+
+  EXPECT_CALL(delegate_, EvaluateEnterprisePolicy(destination, _))
+      .WillOnce(base::test::RunOnceCallback<1>(
+          DecisionWithMetadata{.decision = Decision::kNoDecision}));
   SetUpDelegateExpectations(source, destination,
                             /*requires_user_confirmation=*/false,
                             /*is_allowed=*/true,

@@ -10,7 +10,6 @@
 #include "base/functional/callback_forward.h"
 #include "base/functional/function_ref.h"
 #include "base/types/expected.h"
-#include "chrome/browser/actor/enterprise_policy_checker.h"
 #include "chrome/common/actor.mojom-forward.h"
 #include "components/actor/core/task_id.h"
 #include "components/actor/public/mojom/actor_types.mojom-forward.h"
@@ -69,14 +68,11 @@ using NoVerdictContinuation =
 // Checks whether the actor may perform actions on the given tab based on the
 // last committed document and URL. Invokes the callback with true if it is
 // allowed.
-// `policy_checker` is used to evaluate the URL based on enterprise policy
-// allow/blocklists.
 // If the checks performed here do not reach a verdict, the decision is
 // delegated to `resolve_no_verdict`.
 void MayActOnTab(const tabs::TabInterface& tab,
                  AggregatedJournal& journal,
                  TaskId task_id,
-                 const EnterprisePolicyChecker& policy_checker,
                  NoVerdictContinuation resolve_no_verdict,
                  DecisionCallbackWithReason callback);
 
@@ -91,7 +87,6 @@ void MayActOnUrl(const GURL& url,
                  Profile* profile,
                  AggregatedJournal& journal,
                  TaskId task_id,
-                 const EnterprisePolicyChecker& policy_checker,
                  NoVerdictContinuation resolve_no_verdict,
                  DecisionCallbackWithReason callback);
 

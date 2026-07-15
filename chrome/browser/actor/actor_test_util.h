@@ -429,6 +429,7 @@ class MockPolicyChecker : public EnterprisePolicyChecker {
   ~MockPolicyChecker() override;
 
   UrlBlockReason Evaluate(const GURL& url) const override;
+  void set_reason(UrlBlockReason reason) { reason_ = reason; }
   void ValidateContentSentToRenderer(
       content::RenderFrameHost* frame,
       const std::string& content,

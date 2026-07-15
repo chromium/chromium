@@ -51,6 +51,22 @@ class OriginGatingChecker {
         const GURL& destination,
         DoesOriginRequireUserConfirmationCallback callback) const = 0;
 
+    struct DecisionWithMetadata {
+      Decision decision;
+      // When true, the checker does not persist this decision to the cache.
+      bool bypass_cache = false;
+    };
+
+    using EvaluateEnterprisePolicyCallback =
+        base::OnceCallback<void(DecisionWithMetadata)>;
+    // Evaluates `destination` against an embedder-specific enterprise policy.
+    // Invokes the callback with `kAllowed`/`kBlocked` when the policy
+    // explicitly allows/blocks the destination, or `kNoDecision` otherwise.
+    // Backs `DecisionSource::kEnterprisePolicy`.
+    virtual void EvaluateEnterprisePolicy(
+        const GURL& destination,
+        EvaluateEnterprisePolicyCallback callback) const = 0;
+
     // Defers the final decision from the OriginGatingChecker to the delegate.
     virtual void OnNoVerdict(
         GatingDecisionContext* context,
@@ -114,6 +130,14 @@ class OriginGatingChecker {
       DelegateInputs input,
       GatingDecisionCallback callback,
       Decision decision);
+
+  void OnEnterprisePolicyVerdict(
+      std::unique_ptr<GatingDecisionContext> context,
+      base::span<const PredicateConfiguration> remaining_predicates,
+      DecisionAttribution attribution,
+      DelegateInputs input,
+      GatingDecisionCallback callback,
+      Delegate::DecisionWithMetadata verdict);
 
   void OnUserConfirmationRequiredAnswer(
       std::unique_ptr<GatingDecisionContext> context,

@@ -157,6 +157,17 @@ void OriginGatingChecker::RunNextPredicate(
                 }
                 break;
               }
+              case DecisionSource::kEnterprisePolicy: {
+                GURL destination = input.destination;
+                delegate_->EvaluateEnterprisePolicy(
+                    destination,
+                    base::BindOnce(
+                        &OriginGatingChecker::OnEnterprisePolicyVerdict,
+                        weak_ptr_factory_.GetWeakPtr(), std::move(context),
+                        remaining_predicates, DecisionAttribution(source_enum),
+                        std::move(input), std::move(callback)));
+                break;
+              }
               case DecisionSource::kNoVerdict:
                 // These are internal/fallback decision sources and are not
                 // executable predicates. OriginGatingConfiguration's
@@ -209,6 +220,22 @@ void OriginGatingChecker::OnPredicateVerdict(
       return;
   }
   NOTREACHED();
+}
+
+void OriginGatingChecker::OnEnterprisePolicyVerdict(
+    std::unique_ptr<GatingDecisionContext> context,
+    base::span<const PredicateConfiguration> remaining_predicates,
+    DecisionAttribution attribution,
+    DelegateInputs input,
+    GatingDecisionCallback callback,
+    Delegate::DecisionWithMetadata verdict) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (verdict.decision == Decision::kAllowed && !verdict.bypass_cache) {
+    AllowNavigationTo(input.destination_origin, /*is_user_confirmed=*/false);
+  }
+  OnPredicateVerdict(std::move(context), remaining_predicates,
+                     std::move(attribution), std::move(input),
+                     std::move(callback), verdict.decision);
 }
 
 void OriginGatingChecker::OnUserConfirmationRequiredAnswer(

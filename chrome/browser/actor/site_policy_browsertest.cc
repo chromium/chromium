@@ -107,8 +107,7 @@ class ActorSitePolicyBrowserTest : public InProcessBrowserTest {
     ASSERT_TRUE(task);
     task->GetExecutionEngine().MayActOnTab(
         *browser()->tab_strip_model()->GetActiveTab(),
-        actor_service->GetJournal(), task_id, policy_checker_,
-        allowed.GetCallback());
+        actor_service->GetJournal(), task_id, allowed.GetCallback());
     // The result should not be provided synchronously.
     EXPECT_FALSE(allowed.IsReady());
     EXPECT_EQ(expected_allowed,
@@ -195,8 +194,7 @@ IN_PROC_BROWSER_TEST_F(ActorSitePolicyMissingBlocklistBrowserTest, FailOpen) {
   ASSERT_TRUE(task);
   task->GetExecutionEngine().MayActOnTab(
       *browser()->tab_strip_model()->GetActiveTab(),
-      actor_service->GetJournal(), task_id, policy_checker_,
-      allowed.GetCallback());
+      actor_service->GetJournal(), task_id, allowed.GetCallback());
   EXPECT_TRUE(allowed.Get() == MayActOnUrlBlockReason::kAllowed);
 }
 

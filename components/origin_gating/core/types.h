@@ -54,6 +54,10 @@ enum class DecisionSource {
   // Predicate that allows if the origin is already present in the cache and the
   // delegate does not require user confirmation for that origin.
   kCacheWithoutUserConfirmation,
+  // Evaluates the destination against an enterprise policy allow/blocklist. The
+  // delegate provides the embedder-specific logic via
+  // `Delegate::EvaluateEnterprisePolicy`.
+  kEnterprisePolicy,
   // No decision was reached before the OriginGating framework ran out of
   // predicates to run.
   kNoVerdict,

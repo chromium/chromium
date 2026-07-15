@@ -235,6 +235,8 @@ ExecutionEngine::GatingDecision MapGatingDecisionToEngineDecision(
         case origin_gating::DecisionSource::kCacheWithoutUserConfirmation:
         case origin_gating::DecisionSource::kNoVerdict:
           return ExecutionEngine::GatingDecision::kNeedsAsyncCheck;
+        case origin_gating::DecisionSource::kEnterprisePolicy:
+          NOTREACHED();
       }
     case origin_gating::DecisionAttribution::Type::kCustomPredicate:
       if (decision.attribution == kSafetyListPredicateName) {
@@ -252,6 +254,9 @@ MayActOnUrlBlockResult MapGatingDecisionToBlockResult(
   switch (decision.attribution.type()) {
     case origin_gating::DecisionAttribution::Type::kDecisionSource:
       switch (decision.attribution.Source()) {
+        case origin_gating::DecisionSource::kEnterprisePolicy:
+          return {"Enterprise policy block",
+                  MayActOnUrlBlockReason::kEnterprisePolicy};
         default:
           NOTREACHED() << "Unexpected decision source: "
                        << static_cast<int>(decision.attribution.Source());
@@ -354,6 +359,9 @@ ExecutionEngine::ExecutionEngine(
           *this,
           origin_gating::OriginGatingConfiguration(
               {
+                  {origin_gating::DecisionSource::kEnterprisePolicy,
+                   {origin_gating::GateableEvent::kNavigationRequest,
+                    origin_gating::GateableEvent::kPageAction}},
                   {origin_gating::CustomPredicate(
                        base::BindRepeating(&EvaluateLookalikeUrl,
                                            task_->GetProfile()),
@@ -616,6 +624,24 @@ void ExecutionEngine::DoesOriginRequireUserConfirmation(
   }
 }
 
+void ExecutionEngine::EvaluateEnterprisePolicy(
+    const GURL& destination,
+    EvaluateEnterprisePolicyCallback callback) const {
+  origin_gating::Decision decision;
+  switch (GetEnterprisePolicyChecker().Evaluate(destination)) {
+    case EnterprisePolicyChecker::UrlBlockReason::kNotBlocked:
+      decision = origin_gating::Decision::kNoDecision;
+      break;
+    case EnterprisePolicyChecker::UrlBlockReason::kExplicitlyAllowed:
+      decision = origin_gating::Decision::kAllowed;
+      break;
+    case EnterprisePolicyChecker::UrlBlockReason::kExplicitlyBlocked:
+      decision = origin_gating::Decision::kBlocked;
+      break;
+  }
+  std::move(callback).Run({.decision = decision, .bypass_cache = true});
+}
+
 void ExecutionEngine::OnNoVerdict(
     origin_gating::GatingDecisionContext* context,
     origin_gating::GateableEvent event,
@@ -661,10 +687,9 @@ void ExecutionEngine::OnNoVerdict(
 void ExecutionEngine::MayActOnTab(const tabs::TabInterface& tab,
                                   AggregatedJournal& journal,
                                   TaskId task_id,
-                                  const EnterprisePolicyChecker& policy_checker,
                                   DecisionCallbackWithReason callback) {
   actor::MayActOnTab(
-      tab, journal, task_id, policy_checker,
+      tab, journal, task_id,
       base::BindOnce(&ExecutionEngine::ShouldAllowPageAction, GetWeakPtr()),
       std::move(callback));
 }
@@ -1062,7 +1087,7 @@ void ExecutionEngine::SafetyChecksForNextAction() {
   // added the precursor to `origin_gating_cache()` to ensure the optimization
   // guide sensitive origin check would be skipped as expected.
   actor::MayActOnTab(
-      *tab, *journal_, task_->id(), task_->policy_checker(),
+      *tab, *journal_, task_->id(),
       base::BindOnce(&ExecutionEngine::ShouldAllowPageAction,
                      GetActionSequenceWeakPtr()),
       base::BindOnce(
@@ -1390,7 +1415,7 @@ void ExecutionEngine::IsAcceptableNavigationDestination(
     DecisionCallbackWithReason callback) {
   actor::MayActOnUrl(
       url, /*allow_insecure_http=*/true, task_->GetProfile(), *journal_,
-      task_->id(), task_->policy_checker(),
+      task_->id(),
       base::BindOnce(&ExecutionEngine::ShouldAllowNavigationDestination,
                      GetWeakPtr()),
       std::move(callback));
