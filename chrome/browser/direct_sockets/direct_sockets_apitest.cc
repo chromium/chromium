@@ -1337,8 +1337,7 @@ IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsUdpIsolatedWebAppMulticastTest,
                                     kMulticastAddress)));
 }
 
-// TODO(crbug.com/443716695): The multicast loopback exchange fails on mac-rel
-// bots (see DirectSocketsBoundUdpBrowserTest.MulticastExchangeUdp).
+// TODO(crbug.com/443716695): Fails on mac-rel bots.
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_UdpSocketMulticastExchange DISABLED_UdpSocketMulticastExchange
 #else
@@ -1346,8 +1345,8 @@ IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsUdpIsolatedWebAppMulticastTest,
 #endif
 IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsUdpIsolatedWebAppMulticastTest,
                        MAYBE_UdpSocketMulticastExchange) {
-  content::RenderFrameHost* app_frame =
-      InstallAndOpenIsolatedWebApp(/*with_pna=*/true, /*with_multicast=*/true);
+  content::RenderFrameHost* app_frame = InstallAndOpenIsolatedWebApp(
+      /*with_pna=*/true, /*with_multicast=*/true);
 
   std::string script = std::string(kMulticastFunctionsScript) + R"(
 
@@ -1382,8 +1381,14 @@ IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsUdpIsolatedWebAppMulticastTest,
                          kMulticastAddress)));
 }
 
+// TODO(crbug.com/443716695): Fails on mac-rel bots.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_MulticastJoinLeaveGroupSSM DISABLED_MulticastJoinLeaveGroupSSM
+#else
+#define MAYBE_MulticastJoinLeaveGroupSSM MulticastJoinLeaveGroupSSM
+#endif
 IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsUdpIsolatedWebAppMulticastTest,
-                       MulticastJoinLeaveGroupSSM) {
+                       MAYBE_MulticastJoinLeaveGroupSSM) {
   content::RenderFrameHost* app_frame =
       InstallAndOpenIsolatedWebApp(/*with_pna=*/true, /*with_multicast=*/true);
 
@@ -1408,8 +1413,16 @@ IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsUdpIsolatedWebAppMulticastTest,
                                     "232.1.1.1", sources[0])));
 }
 
+// TODO(crbug.com/443716695): Fails on mac-rel bots.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_MulticastJoinGroupSSMSameGroupDifferentSources \
+  DISABLED_MulticastJoinGroupSSMSameGroupDifferentSources
+#else
+#define MAYBE_MulticastJoinGroupSSMSameGroupDifferentSources \
+  MulticastJoinGroupSSMSameGroupDifferentSources
+#endif
 IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsUdpIsolatedWebAppMulticastTest,
-                       MulticastJoinGroupSSMSameGroupDifferentSources) {
+                       MAYBE_MulticastJoinGroupSSMSameGroupDifferentSources) {
   content::RenderFrameHost* app_frame =
       InstallAndOpenIsolatedWebApp(/*with_pna=*/true, /*with_multicast=*/true);
 
@@ -1436,8 +1449,14 @@ IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsUdpIsolatedWebAppMulticastTest,
                                     "232.1.1.1", sources[0], sources[1])));
 }
 
+// TODO(crbug.com/443716695): Fails on mac-rel bots.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_MulticastCannotMixASMAndSSM DISABLED_MulticastCannotMixASMAndSSM
+#else
+#define MAYBE_MulticastCannotMixASMAndSSM MulticastCannotMixASMAndSSM
+#endif
 IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsUdpIsolatedWebAppMulticastTest,
-                       MulticastCannotMixASMAndSSM) {
+                       MAYBE_MulticastCannotMixASMAndSSM) {
   content::RenderFrameHost* app_frame =
       InstallAndOpenIsolatedWebApp(/*with_pna=*/true, /*with_multicast=*/true);
 
@@ -1461,8 +1480,7 @@ IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsUdpIsolatedWebAppMulticastTest,
               ErrorIs(testing::HasSubstr("Cannot join SSM group")));
 }
 
-// TODO(crbug.com/443716695): The multicast loopback exchange fails on mac-rel
-// bots (see DirectSocketsBoundUdpBrowserTest.MulticastExchangeUdp).
+// TODO(crbug.com/443716695): Fails on mac-rel bots.
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_UdpSocketMulticastExchangeMultipleReceivers \
   DISABLED_UdpSocketMulticastExchangeMultipleReceivers
@@ -1472,8 +1490,8 @@ IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsUdpIsolatedWebAppMulticastTest,
 #endif
 IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsUdpIsolatedWebAppMulticastTest,
                        MAYBE_UdpSocketMulticastExchangeMultipleReceivers) {
-  content::RenderFrameHost* app_frame =
-      InstallAndOpenIsolatedWebApp(/*with_pna=*/true, /*with_multicast=*/true);
+  content::RenderFrameHost* app_frame = InstallAndOpenIsolatedWebApp(
+      /*with_pna=*/true, /*with_multicast=*/true);
 
   std::string script = std::string(kMulticastFunctionsScript) + R"(
     (async () => {

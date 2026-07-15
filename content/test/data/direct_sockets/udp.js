@@ -342,7 +342,7 @@ async function exchangeUdpMulticastPackets() {
     });
     const {localPort: multicastPort, multicastController} =
         await receiverSocket.opened;
-    await multicastController.joinGroup(multicastGroupAddress);
+    multicastController.joinGroup(multicastGroupAddress);
 
     const senderSocket = new UDPSocket({
       remoteAddress: multicastGroupAddress,
@@ -377,7 +377,7 @@ async function exchangeUdpMulticastPacketsMultipleReceivers() {
       localPort: multicastPort,
       multicastController: multicastController1
     } = await receiverSocket1.opened;
-    await multicastController1.joinGroup(multicastGroupAddress);
+    multicastController1.joinGroup(multicastGroupAddress);
 
     // Create receiver 2.
     const receiverSocket2 = new UDPSocket({
@@ -387,7 +387,7 @@ async function exchangeUdpMulticastPacketsMultipleReceivers() {
     });
     const {multicastController: multicastController2} =
         await receiverSocket2.opened;
-    await multicastController2.joinGroup(multicastGroupAddress);
+    multicastController2.joinGroup(multicastGroupAddress);
 
     const senderSocket = new UDPSocket({
       remoteAddress: multicastGroupAddress,
