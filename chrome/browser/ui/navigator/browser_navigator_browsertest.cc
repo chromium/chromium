@@ -711,10 +711,17 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest,
 }
 #endif
 
+// TODO(crbug.com/535063373): Flaky on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_Disposition_NewPopupTabModal DISABLED_Disposition_NewPopupTabModal
+#else
+#define MAYBE_Disposition_NewPopupTabModal Disposition_NewPopupTabModal
+#endif
 // This test verifies that navigating with WindowOpenDisposition = NEW_POPUP
 // and is_tab_modal_popup_deprecated = true results in a new WebContents that is
 // a popup and behaves like a tab modal.
-IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, Disposition_NewPopupTabModal) {
+IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest,
+                       MAYBE_Disposition_NewPopupTabModal) {
   auto handle = BrowserNavigatorTabModal::ShowForTesting(
       GetGoogleURL(), *browser()->GetActiveTabInterface()->GetContents(),
       gfx::Size(200, 200));
