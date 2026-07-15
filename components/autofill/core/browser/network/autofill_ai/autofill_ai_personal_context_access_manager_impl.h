@@ -49,11 +49,6 @@ class AutofillAiPersonalContextAccessManagerImpl
     : public AutofillAiPersonalContextAccessManager,
       public personal_context::PersonalContextEligibilityService::Observer {
  public:
-  // The TTL for prefetched (masked/non-SPII) entities and presence signals.
-  static constexpr base::TimeDelta kPrefetchedEntitiesAndSignalsCacheTTL =
-      base::Minutes(30);
-  // The TTL for unmasked sensitive PII (SPII) entities.
-  static constexpr base::TimeDelta kUnmaskedSpiiCacheTTL = base::Minutes(1);
 
   // LINT.IfChange(AutofillAiPersonalContextPrefetchTriggerResult)
   // Represents the outcome when a prefetch trigger is evaluated for a requested
@@ -178,11 +173,12 @@ class AutofillAiPersonalContextAccessManagerImpl
       std::optional<base::span<const EntityInstance>> entities);
 
   // Caches an unmasked SPII `entity`, so it can be refilled without an
-  // additional network round trip for `kUnmaskedSpiiCacheTTL`.
+  // additional network round trip for the duration of
+  // `kAutofillAmbientAutofillUnmaskedSpiiCacheTTL`.
   void CacheUnmaskedSpiiEntity(EntityInstance entity);
 
   // Caches a presence signal for an SPII `type`. Evicts the signal after
-  // `kPrefetchedEntitiesAndSignalsCacheTTL` time.
+  // `kAutofillAmbientAutofillPrefetchedEntitiesAndSignalsCacheTTL` time.
   void CachePresenceSignal(SpiiEntityPresenceSignal signal);
 
   // Handles a failed network response for a prefetch request targeting
@@ -207,7 +203,8 @@ class AutofillAiPersonalContextAccessManagerImpl
   //
   // **Eviction Mechanism**: Managed **per individual entity** (not per type).
   // When an entity is individually unmasked, it is added here, and a separate
-  // task is scheduled to evict just this entity after `kUnmaskedSpiiCacheTTL`.
+  // task is scheduled to evict just this entity after
+  // `kAutofillAmbientAutofillUnmaskedSpiiCacheTTL`.
   //
   // **Interaction with Prefetched entities**:
   // When a prefetched entity type is evicted, all unmasked entities of the same
@@ -224,7 +221,8 @@ class AutofillAiPersonalContextAccessManagerImpl
   //
   // **Eviction Mechanism**: Managed per type. When a presence signal is
   // received, it is added here, and a separate task is scheduled to evict just
-  // this signal after `kPrefetchedEntitiesAndSignalsCacheTTL`.
+  // this signal after
+  // `kAutofillAmbientAutofillPrefetchedEntitiesAndSignalsCacheTTL`.
   base::flat_set<SpiiEntityPresenceSignal> spii_presence_signal_cache_;
 
   base::ObserverList<AutofillAiPersonalContextAccessManager::Observer>

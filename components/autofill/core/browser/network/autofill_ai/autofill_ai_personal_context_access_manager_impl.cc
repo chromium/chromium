@@ -372,8 +372,10 @@ void AutofillAiPersonalContextAccessManagerImpl::ProcessPrefetchedEntities(
         base::BindOnce(
             &AutofillAiPersonalContextAccessManagerImpl::ResetStateForType,
             weak_factory_.GetWeakPtr(), type),
-        kPrefetchedEntitiesAndSignalsCacheTTL);
+        features::kAutofillAmbientAutofillPrefetchedEntitiesAndSignalsCacheTTL
+            .Get());
   }
+
   // Populates the proto cache and notify observers about the fetched entities.
   // Also cache presence signals.
   std::vector<EntityInstance> entities;
@@ -413,7 +415,7 @@ void AutofillAiPersonalContextAccessManagerImpl::CacheUnmaskedSpiiEntity(
             access_manager->unmasked_spii_cache_.erase(id);
           },
           weak_factory_.GetWeakPtr(), id),
-      kUnmaskedSpiiCacheTTL);
+      features::kAutofillAmbientAutofillUnmaskedSpiiCacheTTL.Get());
 }
 
 void AutofillAiPersonalContextAccessManagerImpl::CachePresenceSignal(
@@ -436,7 +438,8 @@ void AutofillAiPersonalContextAccessManagerImpl::CachePresenceSignal(
             access_manager->spii_presence_signal_cache_.erase(signal_to_remove);
           },
           weak_factory_.GetWeakPtr(), signal),
-      kPrefetchedEntitiesAndSignalsCacheTTL);
+      features::kAutofillAmbientAutofillPrefetchedEntitiesAndSignalsCacheTTL
+          .Get());
 }
 
 void AutofillAiPersonalContextAccessManagerImpl::WipeCache() {
@@ -482,7 +485,8 @@ AutofillAiPersonalContextAccessManagerImpl::DeterminePrefetchTriggerResult(
       return PrefetchTriggerResult::kSkippedInFlight;
     case RequestStatus::kSuccess:
       if (base::TimeTicks::Now() - request_state->last_update_time >
-          kPrefetchedEntitiesAndSignalsCacheTTL) {
+          features::kAutofillAmbientAutofillPrefetchedEntitiesAndSignalsCacheTTL
+              .Get()) {
         return PrefetchTriggerResult::kInitiated;
       }
       return PrefetchTriggerResult::kSkippedFreshCache;

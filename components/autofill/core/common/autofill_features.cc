@@ -394,6 +394,18 @@ BASE_FEATURE_PARAM(std::string,
                    &kAutofillAmbientAutofill,
                    "ambient_autofill_enabled_devices",
                    "");
+// The TTL for prefetched (masked/non-SPII) entities and presence signals.
+BASE_FEATURE_PARAM(base::TimeDelta,
+                   kAutofillAmbientAutofillPrefetchedEntitiesAndSignalsCacheTTL,
+                   &kAutofillAmbientAutofill,
+                   "ambient_autofill_prefetched_entities_cache_ttl",
+                   base::Minutes(30));
+// The TTL for unmasked sensitive PII (SPII) entities.
+BASE_FEATURE_PARAM(base::TimeDelta,
+                   kAutofillAmbientAutofillUnmaskedSpiiCacheTTL,
+                   &kAutofillAmbientAutofill,
+                   "ambient_autofill_unmasked_spii_cache_ttl",
+                   base::Minutes(1));
 
 // If enabled, on Android desktop, the Autofill keyboard accessory will have a
 // new behavior and design.

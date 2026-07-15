@@ -1252,6 +1252,98 @@ TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
   access_manager().PrefetchContext({EntityType(EntityTypeName::kPassport)});
 }
 
+// Tests that unmasked SPII entities are cached with a configurable TTL.
+TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
+       CacheUnmaskedSpiiEntity_TTL_Configurable) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kAutofillAmbientAutofill,
+      {{features::kAutofillAmbientAutofillUnmaskedSpiiCacheTTL.name, "2m"}});
+
+  EntityInstance passport = test::GetPassportEntityInstance(
+      {.record_type = EntityInstance::RecordType::kPersonalContext});
+
+  test_api(access_manager()).CacheUnmaskedSpiiEntity(passport);
+  EXPECT_EQ(GetUnmaskedSpiiEntitySync(passport.guid()), passport);
+
+  // Fast forward 90 seconds (still valid, past the default 1-min TTL).
+  FastForwardBy(base::Seconds(90));
+  EXPECT_EQ(GetUnmaskedSpiiEntitySync(passport.guid()), passport);
+
+  // Fast forward another 31 seconds (expired, Total T = 121s).
+  FastForwardBy(base::Seconds(31));
+  EXPECT_EQ(GetUnmaskedSpiiEntitySync(passport.guid()), std::nullopt);
+}
+
+// Tests that presence signals are cached with a configurable TTL.
+TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
+       CachePresenceSignal_TTL_Configurable) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kAutofillAmbientAutofill,
+      {{features::kAutofillAmbientAutofillPrefetchedEntitiesAndSignalsCacheTTL
+            .name,
+        "10m"}});
+
+  const EntityType passport_type(EntityTypeName::kPassport);
+
+  test_api(access_manager()).CachePresenceSignal(passport_type);
+  EXPECT_TRUE(test_api(access_manager()).IsPresenceSignalCached(passport_type));
+
+  // Fast forward 5 minutes (still valid).
+  FastForwardBy(base::Minutes(5));
+  EXPECT_TRUE(test_api(access_manager()).IsPresenceSignalCached(passport_type));
+
+  // Fast forward another 6 minutes (expired, Total T = 11m, past the 10m TTL).
+  FastForwardBy(base::Minutes(6));
+  EXPECT_FALSE(
+      test_api(access_manager()).IsPresenceSignalCached(passport_type));
+}
+
+// Tests that PrefetchContext uses the configurable TTL for cache freshness.
+TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
+       PrefetchContext_TTL_Configurable) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kAutofillAmbientAutofill,
+      {{features::kAutofillAmbientAutofillPrefetchedEntitiesAndSignalsCacheTTL
+            .name,
+        "10m"}});
+
+  personal_context::proto::ContextMemoryAmbientAutofillResponse
+      presence_response;
+  presence_response.add_entities()->mutable_sensitive_pii_presence()->set_type(
+      SensitivePiiPresence::PASSPORT);
+  personal_context::proto::ContextMemoryAmbientAutofillResponse spii_response;
+  spii_response.add_entities()->mutable_passport()->set_number("P123");
+
+  // 1. Initial prefetch at T = 0.
+  PrefetchContextSync({EntityType(EntityTypeName::kPassport)},
+                      {EntityType(EntityTypeName::kPassport)},
+                      presence_response, spii_response);
+  EXPECT_TRUE(
+      access_manager().IsTypePrefetched(EntityType(EntityTypeName::kPassport)));
+
+  // Fast forward 5 minutes (Passport still valid).
+  FastForwardBy(base::Minutes(5));
+  EXPECT_TRUE(
+      access_manager().IsTypePrefetched(EntityType(EntityTypeName::kPassport)));
+
+  // 2. Trigger a follow-up prefetch request for Passport at T = 5.
+  // Since the cache is still valid, no network request should be made.
+  EXPECT_CALL(mock_personal_context_service(), FetchContext).Times(0);
+  access_manager().PrefetchContext({EntityType(EntityTypeName::kPassport)});
+
+  // Fast forward another 6 minutes (Total T = 11, past the 10-min TTL).
+  // The original eviction task should have fired at T = 10 and cleared the
+  // cache.
+  EXPECT_CALL(mock_observer(), OnMaskedEntityTypeEvicted(
+                                   _, EntityType(EntityTypeName::kPassport)));
+  FastForwardBy(base::Minutes(6));
+  EXPECT_FALSE(
+      access_manager().IsTypePrefetched(EntityType(EntityTypeName::kPassport)));
+}
+
 // Tests that the state is reset when the personal context settings toggle is
 // turned off.
 TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
