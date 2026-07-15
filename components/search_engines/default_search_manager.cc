@@ -177,27 +177,32 @@ void DefaultSearchManager::SetFallbackSearchEnginesDisabledForTesting(
 const TemplateURLData* DefaultSearchManager::GetDefaultSearchEngine(
     Source* source) const {
   if (default_search_mandatory_by_policy_) {
-    if (source)
+    if (source) {
       *source = FROM_POLICY;
+    }
     return prefs_default_search_.Get();
   }
   if (default_search_recommended_by_policy_) {
-    if (source)
+    if (source) {
       *source = FROM_POLICY_RECOMMENDED;
+    }
     return prefs_default_search_.Get();
   }
   if (extension_default_search_) {
-    if (source)
+    if (source) {
       *source = FROM_EXTENSION;
+    }
     return extension_default_search_.get();
   }
   if (prefs_default_search_.Get()) {
-    if (source)
+    if (source) {
       *source = FROM_USER;
+    }
     return prefs_default_search_.Get();
   }
-  if (source)
+  if (source) {
     *source = FROM_FALLBACK;
+  }
   return GetFallbackSearchEngine();
 }
 
@@ -229,8 +234,9 @@ DefaultSearchManager::GetDefaultSearchEngineIgnoringExtensions() const {
   }
 
   const TemplateURLData* fallback = GetFallbackSearchEngine();
-  if (fallback)
+  if (fallback) {
     return std::make_unique<TemplateURLData>(*fallback);
+  }
 
   return nullptr;
 }
@@ -303,8 +309,10 @@ void DefaultSearchManager::OnDefaultSearchPrefChanged() {
 
   // The effective DSE may have changed unless we were using the fallback source
   // both before and after the above load.
-  if (!source_was_fallback || (GetDefaultSearchEngineSource() != FROM_FALLBACK))
+  if (!source_was_fallback ||
+      (GetDefaultSearchEngineSource() != FROM_FALLBACK)) {
     NotifyObserver();
+  }
 }
 
 void DefaultSearchManager::OnOverridesPrefChanged() {
@@ -334,8 +342,9 @@ void DefaultSearchManager::OnSavedGuestSearchChanged() {
 }
 
 void DefaultSearchManager::LoadDefaultSearchEngineFromPrefs() {
-  if (!pref_service_)
+  if (!pref_service_) {
     return;
+  }
 
   prefs_default_search_.SetAndReconcile({});
   extension_default_search_.reset();
@@ -353,13 +362,15 @@ void DefaultSearchManager::LoadDefaultSearchEngineFromPrefs() {
 
   if (default_search_mandatory_by_policy_ ||
       default_search_recommended_by_policy_) {
-    if (url_dict.FindBool(kDisabledByPolicy).value_or(false))
+    if (url_dict.FindBool(kDisabledByPolicy).value_or(false)) {
       return;
+    }
   }
 
   auto turl_data = TemplateURLDataFromDictionary(url_dict);
-  if (!turl_data)
+  if (!turl_data) {
     return;
+  }
 
   // Check if default search preference is overridden by extension.
   if (pref->IsExtensionControlled()) {
@@ -420,15 +431,46 @@ void DefaultSearchManager::HandleDefaultSearchEngineTampering(
     pref_service_->ClearPref(kMirroredDefaultSearchProviderDataPrefName);
   } else {  // Tampering detected.
     if (!default_search_mandatory_by_policy_) {
-      outcome = DefaultSearchEngineMirrorCheckOutcomeType::kMirrorCheckReset;
-      pref_service_->ClearPref(kDefaultSearchProviderDataPrefName);
-      // Clear the mirrored pref to eliminate future mismatch.
-      pref_service_->ClearPref(kMirroredDefaultSearchProviderDataPrefName);
-      pref_service_->SetBoolean(
-          prefs::kUnacknowledgedDefaultSearchEngineResetOccurred, true);
-      pref_service_->SetTime(
-          prefs::kDefaultSearchEngineMirrorCheckResetTimeStamp,
-          base::Time::Now());
+      // A DSE mismatch is only considered tampering if it affects a
+      // user-controlled setting. An attacker (malware) can only write to the
+      // user store, which makes HasUserSetting() true. If the attacker also
+      // tampers with the HMAC signature, PrefHashFilter resets it on startup,
+      // placing the DSE in the tracked_preferences_reset list.
+      // If there is no user setting and no reset has occurred, the mismatch is
+      // due to a policy change or a default search engine change, and it is
+      // safe to silently align the mirror.
+      const PrefService::Preference* pref =
+          pref_service_->FindPreference(kDefaultSearchProviderDataPrefName);
+      bool has_user_setting = pref && pref->HasUserSetting();
+      bool dse_was_reset = false;
+      const base::ListValue& reset_list =
+          pref_service_->GetList("prefs.tracked_preferences_reset");
+      for (const auto& val : reset_list) {
+        if (val.is_string() &&
+            val.GetString() == kDefaultSearchProviderDataPrefName) {
+          dse_was_reset = true;
+          break;
+        }
+      }
+
+      if (has_user_setting || dse_was_reset) {
+        outcome = DefaultSearchEngineMirrorCheckOutcomeType::kMirrorCheckReset;
+        pref_service_->ClearPref(kDefaultSearchProviderDataPrefName);
+        // Clear the mirrored pref to eliminate future mismatch.
+        pref_service_->ClearPref(kMirroredDefaultSearchProviderDataPrefName);
+        pref_service_->SetBoolean(
+            prefs::kUnacknowledgedDefaultSearchEngineResetOccurred, true);
+        pref_service_->SetTime(
+            prefs::kDefaultSearchEngineMirrorCheckResetTimeStamp,
+            base::Time::Now());
+      } else {
+        // Mismatch is likely due to policy changes or GPO sync delay.
+        // Silently update the mirror to match.
+        pref_service_->SetDict(kMirroredDefaultSearchProviderDataPrefName,
+                               url_dict.Clone());
+        outcome = DefaultSearchEngineMirrorCheckOutcomeType::
+            kResetSkippedForManagedDefaultSearch;
+      }
     } else {
       outcome = DefaultSearchEngineMirrorCheckOutcomeType::
           kResetSkippedForManagedDefaultSearch;

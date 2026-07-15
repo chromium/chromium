@@ -119,6 +119,8 @@ class DefaultSearchManager
     kMirrorCheckReset = 2,
     kRecentHmacReset = 3,
     kStaleHmacReset = 4,
+    // Reset skipped when DSE is mandatory by policy, or when no user-controlled
+    // DSE setting or recent HMAC reset is present.
     kResetSkippedForManagedDefaultSearch = 5,
     kMaxValue = kResetSkippedForManagedDefaultSearch,
   };

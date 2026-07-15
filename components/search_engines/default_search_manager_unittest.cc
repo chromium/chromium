@@ -616,6 +616,54 @@ TEST_F(DefaultSearchManagerTest, DefaultSearchNotResetForManagedDefaultSearch) {
   EXPECT_EQ(DefaultSearchManager::FROM_POLICY, source);
 }
 
+TEST_F(DefaultSearchManagerTest,
+       DefaultSearchNotResetOnRecommendedPolicyChangeWithoutUserSetting) {
+  base::test::ScopedFeatureList feature_list{
+      switches::kResetTamperedDefaultSearchEngine};
+  base::HistogramTester histograms;
+
+  // Set the mirrored DSE pref to simulate a roamed/old value (Yahoo).
+  set_mirrored_default_search_provider_data_pref("search_engine_B");
+
+  // No user-set preference exists (kDefaultSearchProviderDataPrefName is
+  // empty). Now set the recommended policy default search to Google (different
+  // from Yahoo).
+  std::unique_ptr<TemplateURLData> policy_data =
+      GenerateDummyTemplateURLData("policy");
+  SetPolicy(pref_service(), true, policy_data.get(), /*is_mandatory=*/false);
+
+  auto manager = create_manager();
+
+  // Reset skipped due to recommended policy without user setting recorded.
+  histograms.ExpectUniqueSample(
+      DefaultSearchManager::kDefaultSearchEngineMirrorCheckOutcomeMetric,
+      static_cast<int>(
+          DefaultSearchManager::DefaultSearchEngineMirrorCheckOutcomeType::
+              kResetSkippedForManagedDefaultSearch),
+      1);
+
+  // The mirrored DSE pref should be updated to the recommended policy value
+  // (policy) to eliminate the mismatch, but kDefaultSearchProviderDataPrefName
+  // should NOT be reset/cleared (since it was already empty, clearing it is
+  // unnecessary, but the warning must not be triggered).
+  EXPECT_FALSE(pref_service()->GetBoolean(
+      prefs::kUnacknowledgedDefaultSearchEngineResetOccurred));
+  EXPECT_TRUE(pref_service()->GetTime(
+                  prefs::kDefaultSearchEngineMirrorCheckResetTimeStamp) ==
+              base::Time());
+
+  // The mirrored pref should now match the recommended policy.
+  const base::DictValue& mirrored_dict = pref_service()->GetDict(
+      DefaultSearchManager::kMirroredDefaultSearchProviderDataPrefName);
+  auto mirrored_data = TemplateURLDataFromDictionary(mirrored_dict);
+  ExpectSimilar(policy_data.get(), mirrored_data.get());
+
+  // The active DSE should be the recommended policy.
+  DefaultSearchManager::Source source;
+  ExpectSimilar(policy_data.get(), manager->GetDefaultSearchEngine(&source));
+  EXPECT_EQ(DefaultSearchManager::FROM_POLICY_RECOMMENDED, source);
+}
+
 TEST_F(DefaultSearchManagerTest, UserDseChangeDisablesResetNotification) {
   base::test::ScopedFeatureList feature_list{
       switches::kResetTamperedDefaultSearchEngine};
