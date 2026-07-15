@@ -161,6 +161,7 @@ void VideoCaptureDeviceFuchsia::AllocateAndStart(
 
   WatchResolution();
   WatchOrientation();
+  WatchMuteState();
 
   // Call SetBufferCollection() with a new buffer collection token to indicate
   // that we are interested in buffer collection negotiation. The collection
@@ -236,6 +237,26 @@ void VideoCaptureDeviceFuchsia::OnWatchOrientationResult(
 
   orientation_ = orientation;
   WatchOrientation();
+}
+
+void VideoCaptureDeviceFuchsia::WatchMuteState() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+
+  device_->WatchMuteState(fit::bind_member(
+      this, &VideoCaptureDeviceFuchsia::OnWatchMuteStateResult));
+}
+
+void VideoCaptureDeviceFuchsia::OnWatchMuteStateResult(bool software_muted,
+                                                       bool hardware_muted) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+
+  client_->OnLog(base::StringPrintf(
+      "Camera mute state updated: software_muted=%s, hardware_muted=%s",
+      software_muted ? "true" : "false", hardware_muted ? "true" : "false"));
+
+  is_muted_ = software_muted || hardware_muted;
+
+  WatchMuteState();
 }
 
 void VideoCaptureDeviceFuchsia::WatchBufferCollection() {

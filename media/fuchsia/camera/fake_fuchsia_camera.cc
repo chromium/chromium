@@ -569,6 +569,30 @@ void FakeCameraDevice::ConnectToStream(
   stream_.Bind(std::move(request));
 }
 
+void FakeCameraDevice::WatchMuteState(WatchMuteStateCallback callback) {
+  watch_mute_state_callback_ = std::move(callback);
+  SendMuteState();
+}
+
+void FakeCameraDevice::SetMuteState(bool sw_muted, bool hw_muted) {
+  if (sw_muted != sw_muted_ || hw_muted != hw_muted_) {
+    sw_muted_ = sw_muted;
+    hw_muted_ = hw_muted;
+    mute_state_changed_ = true;
+    SendMuteState();
+  }
+}
+
+void FakeCameraDevice::SendMuteState() {
+  if (watch_mute_state_callback_ &&
+      (!initial_mute_state_sent_ || mute_state_changed_)) {
+    watch_mute_state_callback_(sw_muted_, hw_muted_);
+    watch_mute_state_callback_ = nullptr;
+    mute_state_changed_ = false;
+    initial_mute_state_sent_ = true;
+  }
+}
+
 void FakeCameraDevice::NotImplemented_(const std::string& name) {
   ADD_FAILURE() << "NotImplemented_: " << name;
 }

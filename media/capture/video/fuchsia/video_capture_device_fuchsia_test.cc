@@ -8,6 +8,7 @@
 #include "base/fuchsia/test_component_context_for_process.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
+#include "base/test/run_until.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "media/capture/video/fuchsia/video_capture_device_factory_fuchsia.h"
@@ -99,6 +100,9 @@ class TestVideoCaptureClient final : public VideoCaptureDevice::Client {
   const std::vector<ReceivedFrame>& received_frames() {
     return received_frames_;
   }
+
+  const std::vector<std::string>& logs() const { return logs_; }
+  void clear_logs() { logs_.clear(); }
 
  private:
   // VideoCaptureDevice::Client implementation.
@@ -196,12 +200,13 @@ class TestVideoCaptureClient final : public VideoCaptureDevice::Client {
   void OnFrameDropped(VideoCaptureFrameDropReason reason) override {
     NOTREACHED();
   }
-  void OnLog(const std::string& message) override { NOTREACHED(); }
+  void OnLog(const std::string& message) override { logs_.push_back(message); }
   double GetBufferPoolUtilization() const override { NOTREACHED(); }
 
   bool started_ = false;
   std::vector<ReceivedFrame> received_frames_;
   std::optional<base::RunLoop> wait_frame_run_loop_;
+  std::vector<std::string> logs_;
 };
 
 }  // namespace
@@ -240,6 +245,11 @@ class VideoCaptureDeviceFuchsiaTest : public testing::Test {
   FakeCameraStream* GetDefaultCameraStream() {
     DCHECK(!fake_device_watcher_.devices().empty());
     return fake_device_watcher_.devices().begin()->second->stream();
+  }
+
+  FakeCameraDevice* GetDefaultCameraDevice() {
+    DCHECK(!fake_device_watcher_.devices().empty());
+    return fake_device_watcher_.devices().begin()->second.get();
   }
 
   void StartCapturer() {
@@ -425,6 +435,50 @@ TEST_F(VideoCaptureDeviceFuchsiaTest,
   client_->WaitFrame();
 
   ASSERT_EQ(client_->received_frames().size(), 1U);
+}
+
+TEST_F(VideoCaptureDeviceFuchsiaTest, MuteState) {
+  StartCapturer();
+
+  // Initially not muted. We expect the initial state to be logged.
+  // WatchMuteState returns immediately on first call.
+  // FakeCameraDevice defaults to sw_muted=false, hw_muted=false.
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return client_->logs().size() == 1U; }));
+  EXPECT_EQ(
+      client_->logs()[0],
+      "Camera mute state updated: software_muted=false, hardware_muted=false");
+
+  client_->clear_logs();
+
+  // Enable software mute.
+  GetDefaultCameraDevice()->SetMuteState(/*sw_muted=*/true, /*hw_muted=*/false);
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return client_->logs().size() == 1U; }));
+  EXPECT_EQ(
+      client_->logs()[0],
+      "Camera mute state updated: software_muted=true, hardware_muted=false");
+
+  client_->clear_logs();
+
+  // Enable hardware mute as well.
+  GetDefaultCameraDevice()->SetMuteState(/*sw_muted=*/true, /*hw_muted=*/true);
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return client_->logs().size() == 1U; }));
+  EXPECT_EQ(
+      client_->logs()[0],
+      "Camera mute state updated: software_muted=true, hardware_muted=true");
+
+  client_->clear_logs();
+
+  // Disable both.
+  GetDefaultCameraDevice()->SetMuteState(/*sw_muted=*/false,
+                                         /*hw_muted=*/false);
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return client_->logs().size() == 1U; }));
+  EXPECT_EQ(
+      client_->logs()[0],
+      "Camera mute state updated: software_muted=false, hardware_muted=false");
 }
 
 }  // namespace media

@@ -69,6 +69,12 @@ class CAPTURE_EXPORT VideoCaptureDeviceFuchsia final
   // Callback for WatchOrientation().
   void OnWatchOrientationResult(fuchsia::camera3::Orientation orientation);
 
+  // Watches for camera mute state updates and notifies the client accordingly.
+  void WatchMuteState();
+
+  // Callback for WatchMuteState().
+  void OnWatchMuteStateResult(bool software_muted, bool hardware_muted);
+
   // Watches for sysmem buffer collection updates from the camera.
   void WatchBufferCollection();
 
@@ -109,6 +115,7 @@ class CAPTURE_EXPORT VideoCaptureDeviceFuchsia final
   base::TimeTicks start_time_;
 
   bool started_ = false;
+  bool is_muted_ = false;
 
   size_t frames_received_ = 0;
 

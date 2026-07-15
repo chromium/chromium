@@ -179,6 +179,8 @@ class FakeCameraDevice final
       base::RepeatingCallback<void(GetIdentifierCallback)>
           get_identifier_handler);
 
+  void SetMuteState(bool sw_muted, bool hw_muted);
+
  private:
   // fuchsia::camera3::Device implementation.
   void GetIdentifier(GetIdentifierCallback callback) override;
@@ -186,15 +188,24 @@ class FakeCameraDevice final
   void ConnectToStream(
       uint32_t index,
       fidl::InterfaceRequest<fuchsia::camera3::Stream> request) override;
+  void WatchMuteState(WatchMuteStateCallback callback) override;
 
   // fuchsia::camera3::testing::Device_TestBase override.
   void NotImplemented_(const std::string& name) override;
+
+  void SendMuteState();
 
   fidl::BindingSet<fuchsia::camera3::Device> bindings_;
 
   FakeCameraStream stream_;
 
   base::RepeatingCallback<void(GetIdentifierCallback)> get_identifier_handler_;
+
+  WatchMuteStateCallback watch_mute_state_callback_;
+  bool sw_muted_ = false;
+  bool hw_muted_ = false;
+  bool initial_mute_state_sent_ = false;
+  bool mute_state_changed_ = false;
 };
 
 class FakeCameraDeviceWatcher {
