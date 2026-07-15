@@ -12,12 +12,17 @@
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/android/send_tab_to_self/android_notification_handler.h"
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_observer.h"
 #include "chrome/browser/send_tab_to_self/send_tab_to_self_client_service.h"
 #include "chrome/browser/send_tab_to_self/send_tab_to_self_client_service_factory.h"
 #include "chrome/browser/send_tab_to_self/send_tab_to_self_page_handler.h"
+#include "chrome/browser/send_tab_to_self/send_tab_to_self_util.h"
+#include "chrome/browser/sync/device_info_sync_service_factory.h"
 #include "chrome/browser/sync/send_tab_to_self_sync_service_factory.h"
 #include "components/send_tab_to_self/entry_point_display_reason.h"
 #include "components/send_tab_to_self/metrics_util.h"
@@ -27,6 +32,8 @@
 #include "components/send_tab_to_self/send_tab_to_self_sync_service.h"
 #include "components/send_tab_to_self/target_device_info.h"
 #include "components/sync/protocol/send_tab_to_self_specifics.pb.h"
+#include "components/sync_device_info/device_info_sync_service.h"
+#include "components/sync_device_info/device_info_tracker.h"
 #include "content/public/browser/web_contents.h"
 #include "url/gurl.h"
 
@@ -38,12 +45,84 @@
 using base::android::ConvertJavaStringToUTF8;
 using base::android::ConvertUTF8ToJavaString;
 using base::android::JavaRef;
+using base::android::ScopedJavaGlobalRef;
 using base::android::ScopedJavaLocalRef;
 
 // The delegate to fetch SendTabToSelf information and persist new
 // SendTabToSelf entries. The functions are called by the SendTabToSelf Java
 // counterpart.
 namespace send_tab_to_self {
+
+class DeviceInfoObserverBridge : public syncer::DeviceInfoTracker::Observer,
+                                 public ProfileObserver {
+ public:
+  DeviceInfoObserverBridge(JNIEnv* env,
+                           const JavaRef<jobject>& j_observer,
+                           Profile* profile,
+                           syncer::DeviceInfoTracker* tracker)
+      : j_observer_(env, j_observer) {
+    observation_.Observe(tracker);
+    profile_observation_.Observe(profile);
+  }
+  ~DeviceInfoObserverBridge() override = default;
+
+  // syncer::DeviceInfoTracker::Observer:
+  void OnDeviceInfoChange() override {
+    JNIEnv* env = base::android::AttachCurrentThread();
+    Java_DeviceInfoObserver_onDeviceInfoChanged(env, j_observer_);
+  }
+
+  // ProfileObserver:
+  void OnProfileWillBeDestroyed(Profile* profile) override {
+    // It's not strictly guaranteed that the Java side (which owns this object)
+    // will destroy it before the Profile and its KeyedServices are shut down.
+    // So to prevent any dangling pointers, handle Profile shutdown here.
+    observation_.Reset();
+    profile_observation_.Reset();
+  }
+
+ private:
+  ScopedJavaGlobalRef<jobject> j_observer_;
+  base::ScopedObservation<syncer::DeviceInfoTracker,
+                          syncer::DeviceInfoTracker::Observer>
+      observation_{this};
+  base::ScopedObservation<Profile, ProfileObserver> profile_observation_{this};
+};
+
+class SendTabToSelfModelObserverBridge : public SendTabToSelfModelObserver,
+                                         public ProfileObserver {
+ public:
+  SendTabToSelfModelObserverBridge(JNIEnv* env,
+                                   const JavaRef<jobject>& j_observer,
+                                   Profile* profile,
+                                   SendTabToSelfModel* model)
+      : j_observer_(env, j_observer) {
+    observation_.Observe(model);
+    profile_observation_.Observe(profile);
+  }
+  ~SendTabToSelfModelObserverBridge() override = default;
+
+  // SendTabToSelfModelObserver:
+  void OnModelReady() override {
+    JNIEnv* env = base::android::AttachCurrentThread();
+    Java_SendTabToSelfModelObserver_onModelReady(env, j_observer_);
+  }
+
+  // ProfileObserver:
+  void OnProfileWillBeDestroyed(Profile* profile) override {
+    // It's not strictly guaranteed that the Java side (which owns this object)
+    // will destroy it before the Profile and its KeyedServices are shut down.
+    // So to prevent any dangling pointers, handle Profile shutdown here.
+    observation_.Reset();
+    profile_observation_.Reset();
+  }
+
+ private:
+  ScopedJavaGlobalRef<jobject> j_observer_;
+  base::ScopedObservation<SendTabToSelfModel, SendTabToSelfModelObserver>
+      observation_{this};
+  base::ScopedObservation<Profile, ProfileObserver> profile_observation_{this};
+};
 
 static std::vector<ScopedJavaLocalRef<jobject>>
 JNI_SendTabToSelfAndroidBridge_GetAllTargetDeviceInfos(JNIEnv* env,
@@ -231,6 +310,40 @@ void ShowMessageBanner(content::WebContents* web_contents,
   Java_SendTabToSelfAndroidBridge_showMessageBanner(
       env, web_contents->GetJavaWebContents(),
       base::android::ConvertUTF8ToJavaString(env, device_name));
+}
+
+static int64_t JNI_SendTabToSelfAndroidBridge_AddDeviceInfoObserver(
+    JNIEnv* env,
+    Profile* profile,
+    const JavaRef<jobject>& j_observer) {
+  syncer::DeviceInfoTracker* tracker =
+      DeviceInfoSyncServiceFactory::GetForProfile(profile)
+          ->GetDeviceInfoTracker();
+  return reinterpret_cast<int64_t>(
+      new DeviceInfoObserverBridge(env, j_observer, profile, tracker));
+}
+
+static void JNI_SendTabToSelfAndroidBridge_RemoveDeviceInfoObserver(
+    JNIEnv* env,
+    int64_t observer_ptr) {
+  delete reinterpret_cast<DeviceInfoObserverBridge*>(observer_ptr);
+}
+
+static int64_t JNI_SendTabToSelfAndroidBridge_AddModelObserver(
+    JNIEnv* env,
+    Profile* profile,
+    const JavaRef<jobject>& j_observer) {
+  SendTabToSelfModel* model =
+      SendTabToSelfSyncServiceFactory::GetForProfile(profile)
+          ->GetSendTabToSelfModel();
+  return reinterpret_cast<int64_t>(
+      new SendTabToSelfModelObserverBridge(env, j_observer, profile, model));
+}
+
+static void JNI_SendTabToSelfAndroidBridge_RemoveModelObserver(
+    JNIEnv* env,
+    int64_t observer_ptr) {
+  delete reinterpret_cast<SendTabToSelfModelObserverBridge*>(observer_ptr);
 }
 
 }  // namespace send_tab_to_self

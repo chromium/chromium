@@ -312,6 +312,59 @@ public class SendTabToSelfAndroidBridge {
         return PrimaryActionClickBehavior.DISMISS_IMMEDIATELY;
     }
 
+    /** Interface to be notified when the list of target devices changes. */
+    public interface DeviceInfoObserver {
+        @CalledByNative
+        void onDeviceInfoChanged();
+    }
+
+    /**
+     * Adds an observer to be notified when the list of target devices changes.
+     *
+     * @param profile Profile of the user.
+     * @param observer The observer to add.
+     * @return A native pointer to the observer bridge.
+     */
+    public static long addDeviceInfoObserver(Profile profile, DeviceInfoObserver observer) {
+        return SendTabToSelfAndroidBridgeJni.get().addDeviceInfoObserver(profile, observer);
+    }
+
+    /**
+     * Removes a DeviceInfoObserver.
+     *
+     * @param observerPtr The native pointer returned by addDeviceInfoObserver.
+     */
+    public static void removeDeviceInfoObserver(long observerPtr) {
+        SendTabToSelfAndroidBridgeJni.get().removeDeviceInfoObserver(observerPtr);
+    }
+
+    /** Interface to be notified when the SendTabToSelfModel becomes ready. */
+    @FunctionalInterface
+    public interface SendTabToSelfModelObserver {
+        @CalledByNative
+        void onModelReady();
+    }
+
+    /**
+     * Adds an observer to be notified when the model becomes ready.
+     *
+     * @param profile Profile of the user.
+     * @param observer The observer to add.
+     * @return A native pointer to the observer bridge.
+     */
+    public static long addModelObserver(Profile profile, SendTabToSelfModelObserver observer) {
+        return SendTabToSelfAndroidBridgeJni.get().addModelObserver(profile, observer);
+    }
+
+    /**
+     * Removes a model observer.
+     *
+     * @param observerPtr The native pointer returned by addModelObserver.
+     */
+    public static void removeModelObserver(long observerPtr) {
+        SendTabToSelfAndroidBridgeJni.get().removeModelObserver(observerPtr);
+    }
+
     @NativeMethods
     public interface Natives {
         void sendTabToDevice(
@@ -343,5 +396,15 @@ public class SendTabToSelfAndroidBridge {
                 @ShareEntryPoint int entryPoint,
                 @EntryPointDisplayReason int displayReason,
                 int deviceCount);
+
+        long addDeviceInfoObserver(
+                @JniType("Profile*") Profile profile, DeviceInfoObserver observer);
+
+        void removeDeviceInfoObserver(long observerPtr);
+
+        long addModelObserver(
+                @JniType("Profile*") Profile profile, SendTabToSelfModelObserver observer);
+
+        void removeModelObserver(long observerPtr);
     }
 }
