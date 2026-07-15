@@ -84,6 +84,7 @@ source_set("browser_agent") {
     ":model",
     ":page_context",
     ":tab_helper",
+    ":utils",
     "//base",
     "//components/favicon/ios",
     "//components/feature_engagement/public",
@@ -144,6 +145,7 @@ source_set("tab_helper") {
     ":gemini_service",
     ":gemini_service_factory",
     ":page_context",
+    ":utils",
     "//components/favicon/ios",
     "//components/feature_engagement/public",
     "//components/google/core/common",
@@ -284,6 +286,22 @@ source_set("page_context") {
   deps = [
     "//base",
     "//components/optimization_guide/proto:optimization_guide_proto",
+    "//ios/chrome/browser/intelligence/features",
+  ]
+}
+
+source_set("utils") {
+  sources = [
+    "gemini_utils.h",
+    "gemini_utils.mm",
+  ]
+  deps = [
+    ":page_context",
+    "//base",
+    "//components/optimization_guide/proto:optimization_guide_proto",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/public/provider/chrome/browser/bwg:gemini_api",
+    "//ios/web/public",
   ]
 }
 

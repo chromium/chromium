@@ -21,8 +21,8 @@ class PageContext;
 
 @interface GeminiPageContext : NSObject
 
-// The PageContext for the current WebState. This is a unique_ptr, so subsequent
-// calls to the getter will return a nullptr.
+// The PageContext for the current WebState. Accessing this property returns
+// a copy of the underlying proto, so the context is preserved for future use.
 @property(nonatomic, assign)
     std::unique_ptr<optimization_guide::proto::PageContext>
         uniquePageContext;

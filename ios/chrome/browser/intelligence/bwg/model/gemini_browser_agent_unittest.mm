@@ -250,7 +250,7 @@ class GeminiBrowserAgentTest : public PlatformTest {
   }
 
   // Getter for raw `attached_tabs_` member.
-  std::set<web::WebStateID> GetRawAttachedTabs() {
+  std::map<web::WebStateID, GeminiPageContext*> GetRawAttachedTabs() {
     return gemini_browser_agent_->attached_tabs_;
   }
 
@@ -1271,6 +1271,8 @@ TEST_F(GeminiBrowserAgentTest, TestSwitchFromLiveToChatIneligible) {
 // selected tabs should be persisted based on whether the active tab is in the
 // selection.
 TEST_F(GeminiBrowserAgentTest, TestPersistSelectedTabsOnUnMinimize) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kGeminiMultiTabContext);
   ios::provider::ResetGemini();
   SetIsFloatyInvoked(true);
 
@@ -1321,9 +1323,13 @@ TEST_F(GeminiBrowserAgentTest, TestPersistSelectedTabsOnUnMinimize) {
 
   // Switch the active tab to the non-selected tab (index 2).
   browser_->GetWebStateList()->ActivateWebStateAt(2);
+  web::WebStateID new_active_id =
+      raw_non_selected_web_state->GetUniqueIdentifier();
 
-  // Verify that the selection is cleared immediately upon active tab change.
-  EXPECT_TRUE(GetRawAttachedTabs().empty());
+  // Verify that attached tabs now contains only the new active tab.
+  auto raw_tabs = GetRawAttachedTabs();
+  EXPECT_EQ(raw_tabs.size(), 1u);
+  EXPECT_TRUE(raw_tabs.count(new_active_id));
 
   // Simulate un-minimizing the floaty.
   gemini_browser_agent_->OnViewStateChanged(
@@ -1331,6 +1337,7 @@ TEST_F(GeminiBrowserAgentTest, TestPersistSelectedTabsOnUnMinimize) {
   gemini_browser_agent_->SetLastShownViewState(
       ios::provider::GeminiViewState::kExpanded);
 
-  // Verify that the selection remains cleared.
-  EXPECT_TRUE(GetRawAttachedTabs().empty());
+  // Verify that attached tabs now remains only the new active tab.
+  EXPECT_EQ(raw_tabs.size(), 1u);
+  EXPECT_TRUE(raw_tabs.count(new_active_id));
 }
