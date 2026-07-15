@@ -2,37 +2,23 @@ static_library("annotation_index") {
   public = [
     "annotation_index_client.h",
     "annotation_index_conversion_util.h",
-    "network_annotation_index_client.h",
     "optimization_guide_annotation_index_client.h",
   ]
 
   sources = [
     "annotation_index_conversion_util.cc",
-    "network_annotation_index_client.cc",
     "optimization_guide_annotation_index_client.cc",
   ]
 
   friend = [ ":*" ]
 
-  deps = [
-    "//components/google/core/common",
-    "//components/multistep_filter/core:features",
-    "//components/multistep_filter/core:switches",
-    "//components/multistep_filter/core:util",
-    "//components/multistep_filter/core/logging",
-    "//components/signin/public/base",
-    "//components/signin/public/identity_manager",
-    "//google_apis",
-    "//google_apis/common:request_util",
-    "//services/network/public/cpp",
-  ]
+  deps = [ "//components/multistep_filter/core/logging" ]
 
   public_deps = [
     "//base",
     "//components/multistep_filter/core/annotation_index/proto",
     "//components/multistep_filter/core/data_models",
     "//components/optimization_guide/core",
-    "//components/version_info:channel",
     "//url",
   ]
 }
@@ -42,11 +28,8 @@ source_set("test_support") {
   sources = [
     "annotation_index_test_utils.cc",
     "annotation_index_test_utils.h",
-    "fake_annotation_index_server.cc",
-    "fake_annotation_index_server.h",
     "mock_annotation_index_client.cc",
     "mock_annotation_index_client.h",
-    "network_annotation_index_client_test_api.h",
   ]
 
   deps = [
@@ -58,9 +41,6 @@ source_set("test_support") {
   public_deps = [
     ":annotation_index",
     "//components/multistep_filter/core/annotation_index/proto",
-    "//net:test_support",
-    "//net/traffic_annotation:test_support",
-    "//services/network/public/cpp",
     "//testing/gmock",
   ]
 }
@@ -69,7 +49,6 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "annotation_index_conversion_util_unittest.cc",
-    "network_annotation_index_client_unittest.cc",
     "optimization_guide_annotation_index_client_unittest.cc",
   ]
 
@@ -78,18 +57,10 @@ source_set("unit_tests") {
     ":test_support",
     "//base",
     "//base/test:test_support",
-    "//components/multistep_filter/core",
-    "//components/multistep_filter/core:features",
-    "//components/multistep_filter/core:switches",
     "//components/multistep_filter/core/annotation_index/proto",
     "//components/multistep_filter/core/data_models",
     "//components/optimization_guide/core",
     "//components/optimization_guide/core:test_support",
-    "//components/signin/public/identity_manager:test_support",
-    "//google_apis/common:test_support",
-    "//net/traffic_annotation:test_support",
-    "//services/network:test_support",
-    "//services/network/public/cpp",
     "//testing/gtest",
     "//url",
   ]

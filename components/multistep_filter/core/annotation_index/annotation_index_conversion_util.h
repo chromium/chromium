@@ -31,21 +31,12 @@ class GetTaskExecutionStrategiesResponse;
 struct FilterSuggestionCandidate;
 struct FilterAnnotation;
 
-// Converts a domain string into a `GetSupportedTasksRequest` proto.
-GetSupportedTasksRequest ToGetSupportedTasksRequest(std::string_view domain);
-
 // Converts a `GetSupportedTasksResponse` proto into a list of supported tasks.
 std::vector<std::string> ToSupportedTasks(
     const GetSupportedTasksResponse& response);
 
 // Converts a `FilterAnnotation` into an `ExecutionCandidate` proto.
 ExecutionCandidate ToExecutionCandidate(const FilterAnnotation& annotation);
-
-// Converts a URL and a list of `FilterAnnotation`s into a
-// `GetTaskExecutionStrategiesRequest` proto.
-GetTaskExecutionStrategiesRequest ToGetTaskExecutionStrategiesRequest(
-    const GURL& url,
-    base::span<const FilterAnnotation> filter_annotations);
 
 // Converts a list of `FilterAnnotation`s into a
 // `RequestContextMetadata` proto.
@@ -56,9 +47,6 @@ optimization_guide::proto::RequestContextMetadata ToRequestContextMetadata(
 // `FilterSuggestionCandidate` data models.
 std::vector<FilterSuggestionCandidate> ToFilterSuggestionCandidates(
     const GetTaskExecutionStrategiesResponse& response);
-
-// Converts a URL into an `ExtractTaskAttributesRequest` proto.
-ExtractTaskAttributesRequest ToExtractTaskAttributesRequest(const GURL& url);
 
 // Converts a URL and an `ExtractTaskAttributesResponse` proto into a
 // `FilterAnnotation` data model.

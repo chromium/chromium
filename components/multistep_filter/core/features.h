@@ -18,10 +18,6 @@ BASE_DECLARE_FEATURE(kMultistepFilter);
 
 BASE_DECLARE_FEATURE_PARAM(size_t, kMultistepFilterSuggestionMaxCandidates);
 
-BASE_DECLARE_FEATURE_PARAM(std::string, kMultistepFilterAllowedDomains);
-
-BASE_DECLARE_FEATURE_PARAM(std::string, kMultistepFilterIndexServerApiBaseUrl);
-
 BASE_DECLARE_FEATURE_PARAM(base::TimeDelta, kMultistepFilterSessionDuration);
 
 BASE_DECLARE_FEATURE_PARAM(base::TimeDelta,

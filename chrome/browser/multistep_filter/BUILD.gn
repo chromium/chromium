@@ -26,7 +26,6 @@ source_set("multistep_filter") {
       "//components/multistep_filter/content",
       "//components/multistep_filter/core",
       "//components/multistep_filter/core:features",
-      "//components/multistep_filter/core:util",
       "//components/tabs:public",
       "//content/public/browser",
       "//url",
@@ -116,7 +115,6 @@ source_set("browser_tests") {
       "//components/unified_consent",
       "//content/test:test_support",
       "//net:test_support",
-      "//services/network:test_support",
       "//testing/gtest",
       "//url",
     ]

@@ -21,8 +21,6 @@ source_set("util") {
     "multistep_filter_util.h",
   ]
   deps = [
-    ":features",
-    "//base",
     "//net",
     "//url",
   ]

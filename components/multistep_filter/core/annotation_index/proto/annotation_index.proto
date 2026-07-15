@@ -17,20 +17,6 @@ option optimize_for = LITE_RUNTIME;
 // to go/chrome_annotation_index_sync (Google-internal link), and then changes
 // will be synced with Chrome automatically.
 
-// Request to extract task attributes from a given source context.
-message ExtractTaskAttributesRequest {
-  // The source payload the server should analyze.
-  ExtractionSource source = 1;
-}
-
-// Defines the context or payload provided by the client for extraction.
-message ExtractionSource {
-  oneof source_type {
-    // The full URL to extract attributes from.
-    string raw_url = 1;
-  }
-}
-
 // Response containing attributes extracted from the provided source.
 // Note: The domain field has been removed. The domain should now be derived
 // from the source URL provided in the request.
@@ -68,13 +54,6 @@ message SupportedTask {
   string task_type = 1;
 }
 
-// Request to retrieve supported tasks for a given domain.
-message GetSupportedTasksRequest {
-  // The normalized domain identifier (eTLD+1) to query (e.g.,
-  // "travel-example.com").
-  string domain = 1;
-}
-
 // A potential target and data combination for the server to evaluate.
 message ExecutionCandidate {
   // The candidate ID provided by the client.
@@ -85,19 +64,6 @@ message ExecutionCandidate {
 
   // The list of task attributes to apply if this candidate is chosen.
   repeated TaskAttribute task_attributes = 3;
-}
-
-// Request to generate an execution strategy, providing multiple options
-// for the server to evaluate and choose the best valid one.
-message GetTaskExecutionStrategiesRequest {
-  // The URL where the attributes could be applied
-  // (e.g., "travel-example.com").
-  string current_url = 1;
-
-  // A list of potential task and attribute combinations.
-  // The server will evaluate these and generate strategies for all valid
-  // candidates.
-  repeated ExecutionCandidate candidates = 2;
 }
 
 // Contains details for a single task execution strategy.

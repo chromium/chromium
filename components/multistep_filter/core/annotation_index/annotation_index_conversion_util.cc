@@ -15,7 +15,6 @@
 #include "components/multistep_filter/core/annotation_index/proto/annotation_index.pb.h"
 #include "components/multistep_filter/core/data_models/filter_annotation.h"
 #include "components/multistep_filter/core/data_models/filter_suggestion_candidate.h"
-#include "components/multistep_filter/core/multistep_filter_util.h"
 #include "components/optimization_guide/proto/filter_execution_metadata.pb.h"
 #include "components/optimization_guide/proto/hints.pb.h"
 #include "url/gurl.h"
@@ -24,12 +23,6 @@ namespace multistep_filter {
 
 using ::optimization_guide::proto::FilterExecutionRequestContextMetadata;
 using ::optimization_guide::proto::RequestContextMetadata;
-
-GetSupportedTasksRequest ToGetSupportedTasksRequest(std::string_view domain) {
-  GetSupportedTasksRequest request;
-  request.set_domain(domain);
-  return request;
-}
 
 std::vector<std::string> ToSupportedTasks(
     const GetSupportedTasksResponse& response) {
@@ -52,17 +45,6 @@ ExecutionCandidate ToExecutionCandidate(const FilterAnnotation& annotation) {
   }
 
   return candidate;
-}
-
-GetTaskExecutionStrategiesRequest ToGetTaskExecutionStrategiesRequest(
-    const GURL& url,
-    base::span<const FilterAnnotation> filter_annotations) {
-  GetTaskExecutionStrategiesRequest request;
-  request.set_current_url(url.spec());
-  for (const FilterAnnotation& annotation : filter_annotations) {
-    *request.add_candidates() = ToExecutionCandidate(annotation);
-  }
-  return request;
 }
 
 RequestContextMetadata ToRequestContextMetadata(
@@ -119,12 +101,6 @@ std::vector<FilterSuggestionCandidate> ToFilterSuggestionCandidates(
   }
 
   return candidates;
-}
-
-ExtractTaskAttributesRequest ToExtractTaskAttributesRequest(const GURL& url) {
-  ExtractTaskAttributesRequest request;
-  request.mutable_source()->set_raw_url(url.spec());
-  return request;
 }
 
 std::optional<FilterAnnotation> ToFilterAnnotation(

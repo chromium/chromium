@@ -15,10 +15,6 @@ namespace multistep_filter {
 // returns the host.
 std::string GetEtldPlusOne(const GURL& url);
 
-// Returns true if `url` is allowed by the `kMultistepFilterAllowedDomains`
-// feature param.
-bool IsUrlAllowed(const GURL& url);
-
 // Returns true if `url` and `other` have the same eTLD+1 or host.
 bool IsSameDomainOrHost(const GURL& url, const GURL& other);
 

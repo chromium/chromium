@@ -22,12 +22,6 @@ using ::optimization_guide::proto::RequestContextMetadata;
 
 constexpr char kTestCandidateId[] = "12345678-1234-4678-a234-567812345678";
 
-TEST(AnnotationIndexConversionUtilTest, ToGetSupportedTasksRequest) {
-  GetSupportedTasksRequest request = ToGetSupportedTasksRequest("example.com");
-
-  EXPECT_EQ(request.domain(), "example.com");
-}
-
 TEST(AnnotationIndexConversionUtilTest, ToSupportedTasks) {
   GetSupportedTasksResponse response;
   response.add_supported_tasks()->set_task_type("TASK1");
@@ -56,31 +50,6 @@ TEST(AnnotationIndexConversionUtilTest, ToExecutionCandidate) {
   EXPECT_EQ(candidate.task_attributes(0).value(), "100");
   EXPECT_EQ(candidate.task_attributes(1).key(), "PRICE_MAX");
   EXPECT_EQ(candidate.task_attributes(1).value(), "500");
-}
-
-TEST(AnnotationIndexConversionUtilTest, ToGetTaskExecutionStrategiesRequest) {
-  FilterAnnotation annotation1(
-      base::Uuid::ParseLowercase("11111111-1111-1111-1111-111111111111"),
-      "TASK1", "sub.example.com", base::Time::Now(),
-      {FilterAttribute("KEY1", "VAL1")});
-  FilterAnnotation annotation2(
-      base::Uuid::ParseLowercase("22222222-2222-2222-2222-222222222222"),
-      "TASK2", "sub.example.com", base::Time::Now(),
-      {FilterAttribute("KEY2", "VAL2")});
-  std::vector<FilterAnnotation> annotations = {annotation1, annotation2};
-
-  GetTaskExecutionStrategiesRequest request =
-      ToGetTaskExecutionStrategiesRequest(GURL("https://example.com/test"),
-                                          annotations);
-
-  EXPECT_EQ(request.current_url(), "https://example.com/test");
-  ASSERT_EQ(request.candidates_size(), 2);
-  EXPECT_EQ(request.candidates(0).candidate_id(),
-            "11111111-1111-1111-1111-111111111111");
-  EXPECT_EQ(request.candidates(0).task_type(), "TASK1");
-  EXPECT_EQ(request.candidates(1).candidate_id(),
-            "22222222-2222-2222-2222-222222222222");
-  EXPECT_EQ(request.candidates(1).task_type(), "TASK2");
 }
 
 TEST(AnnotationIndexConversionUtilTest, ToRequestContextMetadata) {
@@ -156,13 +125,6 @@ TEST(AnnotationIndexConversionUtilTest, ToFilterSuggestionCandidates) {
   EXPECT_EQ(suggestion.attributes[0].label, u"Min Price");
   EXPECT_EQ(suggestion.attributes[1].key, "PRICE_MAX");
   EXPECT_EQ(suggestion.attributes[1].label, u"Max Price");
-}
-
-TEST(AnnotationIndexConversionUtilTest, ToExtractTaskAttributesRequest) {
-  ExtractTaskAttributesRequest request =
-      ToExtractTaskAttributesRequest(GURL("https://example.com/path?q=1"));
-
-  EXPECT_EQ(request.source().raw_url(), "https://example.com/path?q=1");
 }
 
 TEST(AnnotationIndexConversionUtilTest, ToFilterAnnotation) {

@@ -39,7 +39,6 @@
 #include "components/history/core/browser/history_service.h"
 #include "components/multistep_filter/content/content_filter_navigation_observer_test_api.h"
 #include "components/multistep_filter/core/annotation_index/annotation_index_test_utils.h"
-#include "components/multistep_filter/core/annotation_index/fake_annotation_index_server.h"
 #include "components/multistep_filter/core/data_models/url_filter_suggestion.h"
 #include "components/multistep_filter/core/features.h"
 #include "components/multistep_filter/core/filter_tab_controller_test_api.h"
@@ -92,7 +91,6 @@ constexpr char kTestAttributeKey[] = "color";
 constexpr char kTestAttributeValue[] = "red";
 constexpr char kTestAttributeKey2[] = "size";
 constexpr char kTestAttributeValue2[] = "large";
-constexpr char kAllowedDomainsParam[] = "allowed_domains";
 
 FilterTabController* GetTabController(Browser* browser) {
   tabs::TabInterface* active_tab = browser->tab_strip_model()->GetActiveTab();
@@ -118,362 +116,13 @@ class MultistepFilterBrowserTest : public InProcessBrowserTest,
                                    public FilterTabController::ObserverForTest {
  public:
   MultistepFilterBrowserTest() {
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        kMultistepFilter,
-        {{kAllowedDomainsParam,
-          std::string(kTestAllowedDomain) + "," + kTestAllowedDomain2}});
+    scoped_feature_list_.InitAndEnableFeature(kMultistepFilter);
   }
   ~MultistepFilterBrowserTest() override = default;
 
   void SetUp() override {
     embedded_test_server()->RegisterRequestHandler(
         base::BindRepeating(&MultistepFilterBrowserTest::HandleHtmlRequest,
-                            base::Unretained(this)));
-    fake_server_.Initialize(embedded_test_server());
-    ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
-    InProcessBrowserTest::SetUp();
-  }
-
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    InProcessBrowserTest::SetUpCommandLine(command_line);
-    command_line->AppendSwitchASCII(
-        switches::kMultistepFilterIndexServerApiBaseUrl,
-        embedded_test_server()->GetURL("/").spec());
-    command_line->AppendSwitch(switches::kMultistepFilterAllowHttpForTesting);
-  }
-
-  void SetUpInProcessBrowserTestFixture() override {
-    network::TestNetworkConnectionTracker::GetInstance();
-    InProcessBrowserTest::SetUpInProcessBrowserTestFixture();
-  }
-
-  void SetUpOnMainThread() override {
-    InProcessBrowserTest::SetUpOnMainThread();
-    host_resolver()->AddRule("*", "127.0.0.1");
-    embedded_test_server()->StartAcceptingConnections();
-
-    auto* identity_manager =
-        IdentityManagerFactory::GetForProfile(browser()->GetProfile());
-    // TODO(crbug.com/519167729): Remove once kSync becomes unreachable or is
-    // deleted from the codebase.
-    signin::MakePrimaryAccountAvailable(identity_manager, kTestEmail,
-                                        signin::ConsentLevel::kSync);
-
-    browser()->profile()->GetPrefs()->SetBoolean(
-        unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled, true);
-
-    auto* sync_service =
-        SyncServiceFactory::GetForProfile(browser()->GetProfile());
-    std::unique_ptr<syncer::SyncSetupInProgressHandle> sync_blocker =
-        sync_service->GetSetupInProgressHandle();
-    sync_service->GetUserSettings()->SetSelectedTypes(
-        /*sync_everything=*/false, {syncer::UserSelectableType::kHistory});
-
-    service_ =
-        MultistepFilterServiceFactory::GetForProfile(browser()->GetProfile());
-    FilterTabController* controller = GetTabController(browser());
-    if (controller) {
-      test_api(*controller).SetObserverForTest(this);
-    }
-  }
-
-  void TearDownOnMainThread() override {
-    FilterTabController* controller = GetTabController(browser());
-    if (controller) {
-      test_api(*controller).SetObserverForTest(nullptr);
-    }
-    service_ = nullptr;
-    InProcessBrowserTest::TearDownOnMainThread();
-  }
-
-#if !BUILDFLAG(IS_CHROMEOS)
-  void ClearPrimaryAccount() {
-    auto* identity_manager =
-        IdentityManagerFactory::GetForProfile(browser()->GetProfile());
-    signin::ClearPrimaryAccount(identity_manager);
-  }
-#endif
-
-  FakeAnnotationIndexServer& fake_server() { return fake_server_; }
-
-  // MultistepFilterService::ObserverForTest:
-  void OnExtractionFinishedForTest(
-      std::optional<base::Uuid> annotation_id) override {
-    extraction_future_.SetValue(annotation_id);
-  }
-
-  void OnSuggestionGeneratedForTest(
-      std::optional<UrlFilterSuggestion> suggestion) override {
-    suggestion_future_.SetValue(suggestion);
-  }
-
- private:
-  std::unique_ptr<net::test_server::HttpResponse> HandleHtmlRequest(
-      const net::test_server::HttpRequest& request) {
-    if (request.relative_url == kExtractionUrlPath ||
-        request.relative_url == kSuggestionTriggerUrlPath ||
-        request.relative_url == kSuggestionUrlPath) {
-      auto response = std::make_unique<net::test_server::BasicHttpResponse>();
-      response->set_code(net::HTTP_OK);
-      response->set_content("<html><body>hello</body></html>");
-      response->set_content_type("text/html");
-      return response;
-    }
-    return nullptr;
-  }
-
-  FakeAnnotationIndexServer fake_server_;
-
- protected:
-  raw_ptr<MultistepFilterService> service_ = nullptr;
-  base::test::TestFuture<std::optional<base::Uuid>> extraction_future_;
-  base::test::TestFuture<std::optional<UrlFilterSuggestion>> suggestion_future_;
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(MultistepFilterBrowserTest,
-                       ExtractsAnnotationAndGeneratesSuggestionOnNavigation) {
-  GURL extraction_url =
-      embedded_test_server()->GetURL(kTestAllowedDomain, kExtractionUrlPath);
-  GURL suggestion_trigger_url = embedded_test_server()->GetURL(
-      kTestAllowedDomain2, kSuggestionTriggerUrlPath);
-  GURL suggestion_url =
-      embedded_test_server()->GetURL(kTestAllowedDomain2, kSuggestionUrlPath);
-
-  fake_server().SetExtractResponse(CreateExtractTaskAttributesResponse(
-      kTestTaskType, {{kTestAttributeKey, kTestAttributeValue},
-                      {kTestAttributeKey2, kTestAttributeValue2}}));
-  fake_server().SetSupportedTasksResponse(
-      CreateSupportedTasksResponse({kTestTaskType}));
-
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), extraction_url));
-
-  std::optional<base::Uuid> extraction_result = extraction_future_.Take();
-  ASSERT_TRUE(extraction_result.has_value());
-  base::Uuid annotation_id = std::move(extraction_result).value();
-  EXPECT_FALSE(suggestion_future_.Take().has_value());
-
-  GetTaskExecutionStrategiesResponse execution_strategies_response =
-      CreateTaskExecutionStrategiesResponse(
-          suggestion_url, {{kTestAttributeKey, kTestAttributeValue},
-                           {kTestAttributeKey2, kTestAttributeValue2}});
-  execution_strategies_response.mutable_execution_strategies(0)
-      ->set_candidate_id(annotation_id.AsLowercaseString());
-  fake_server().SetExecutionStrategiesResponse(execution_strategies_response);
-  fake_server().SetExtractResponse(ExtractTaskAttributesResponse());
-
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), suggestion_trigger_url));
-  EXPECT_FALSE(extraction_future_.Take().has_value());
-  EXPECT_TRUE(suggestion_future_.Take().has_value());
-
-  const std::optional<GetTaskExecutionStrategiesRequest>& strategies_request =
-      fake_server().GetLastStrategiesRequest();
-  ASSERT_TRUE(strategies_request.has_value());
-  ASSERT_EQ(strategies_request->candidates_size(), 1);
-  EXPECT_EQ(strategies_request->candidates(0).candidate_id(),
-            annotation_id.AsLowercaseString());
-
-  FilterUiController* ui_controller =
-      FilterUiController::From(browser()->tab_strip_model()->GetActiveTab());
-  ASSERT_TRUE(ui_controller);
-  const std::optional<FilterUiController::SuggestionState>& state =
-      test_api(*ui_controller).suggestion_state();
-  ASSERT_TRUE(state.has_value());
-  const UrlFilterSuggestion& suggestion_result = state->suggestion;
-  EXPECT_EQ(suggestion_result.navigation_url, suggestion_url);
-
-  page_actions::PageActionController* page_action_controller =
-      browser()
-          ->tab_strip_model()
-          ->GetActiveTab()
-          ->GetTabFeatures()
-          ->page_action_controller();
-  ASSERT_TRUE(base::test::RunUntil([&]() {
-    return page_action_controller->GetActiveAnchoredMessage() ==
-           kActionMultistepFilter;
-  }));
-
-  content::TestNavigationObserver nav_observer(
-      browser()->tab_strip_model()->GetActiveWebContents());
-
-  actions::ActionItem* action = actions::ActionManager::Get().FindAction(
-      kActionMultistepFilter, browser()
-                                  ->browser_window_features()
-                                  ->browser_actions()
-                                  ->root_action_item());
-  ASSERT_TRUE(action);
-  action->InvokeAction(actions::ActionInvocationContext());
-
-  nav_observer.Wait();
-
-  EXPECT_EQ(suggestion_url, browser()
-                                ->tab_strip_model()
-                                ->GetActiveWebContents()
-                                ->GetLastCommittedURL());
-  EXPECT_TRUE(nav_observer.last_navigation_succeeded());
-}
-
-IN_PROC_BROWSER_TEST_F(MultistepFilterBrowserTest,
-                       ClearHistoryDeletesSuggestions) {
-  GURL extraction_url =
-      embedded_test_server()->GetURL(kTestAllowedDomain, kExtractionUrlPath);
-
-  fake_server().SetExtractResponse(CreateExtractTaskAttributesResponse(
-      kTestTaskType, {{kTestAttributeKey, kTestAttributeValue}}));
-  fake_server().SetSupportedTasksResponse(
-      CreateSupportedTasksResponse({kTestTaskType}));
-
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), extraction_url));
-  EXPECT_TRUE(extraction_future_.Take().has_value());
-
-  // Verify data is actually in the store
-  base::test::TestFuture<std::vector<FilterAnnotation>> get_future1;
-  service_->GetFilterStore()->GetAnnotationsForTasksSortedByCreationTimestamp(
-      {kTestTaskType}, get_future1.GetCallback(), 10, base::Time());
-  EXPECT_THAT(get_future1.Get(), testing::SizeIs(1));
-
-  // Now clear history!
-  base::test::TestFuture<void> history_future;
-  base::CancelableTaskTracker task_tracker;
-  auto* history_service = HistoryServiceFactory::GetForProfile(
-      browser()->GetProfile(), ServiceAccessType::EXPLICIT_ACCESS);
-  history_service->ExpireHistoryBetween(
-      {}, std::nullopt, base::Time(), base::Time::Now(),
-      /*user_initiated=*/true, history_future.GetCallback(), &task_tracker);
-  ASSERT_TRUE(history_future.Wait());
-
-  // Wait for background DB tasks to complete.
-  base::ThreadPoolInstance::Get()->FlushForTesting();
-
-  // Verify data is GONE from the store
-  base::test::TestFuture<std::vector<FilterAnnotation>> get_future2;
-  service_->GetFilterStore()->GetAnnotationsForTasksSortedByCreationTimestamp(
-      {kTestTaskType}, get_future2.GetCallback(), 10, base::Time());
-  EXPECT_THAT(get_future2.Get(), testing::SizeIs(0));
-}
-
-#if !BUILDFLAG(IS_CHROMEOS)
-// Tests that no extraction or suggestion occurs if the user logs out of Chrome.
-IN_PROC_BROWSER_TEST_F(MultistepFilterBrowserTest,
-                       NoExtractionOrSuggestionWhenNotSignedIn) {
-  GURL extraction_url =
-      embedded_test_server()->GetURL(kTestAllowedDomain, kExtractionUrlPath);
-  GURL suggestion_trigger_url = embedded_test_server()->GetURL(
-      kTestAllowedDomain2, kSuggestionTriggerUrlPath);
-  GURL suggestion_url =
-      embedded_test_server()->GetURL(kTestAllowedDomain2, kSuggestionUrlPath);
-
-  fake_server().SetExtractResponse(CreateExtractTaskAttributesResponse(
-      kTestTaskType, {{kTestAttributeKey, kTestAttributeValue},
-                      {kTestAttributeKey2, kTestAttributeValue2}}));
-  fake_server().SetSupportedTasksResponse(
-      CreateSupportedTasksResponse({kTestTaskType}));
-
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), extraction_url));
-  EXPECT_TRUE(extraction_future_.Take().has_value());
-  EXPECT_FALSE(suggestion_future_.Take().has_value());
-
-  fake_server().SetExecutionStrategiesResponse(
-      CreateTaskExecutionStrategiesResponse(
-          suggestion_url, {{kTestAttributeKey, kTestAttributeValue},
-                           {kTestAttributeKey2, kTestAttributeValue2}}));
-  ClearPrimaryAccount();
-
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), suggestion_trigger_url));
-  EXPECT_FALSE(extraction_future_.Take().has_value());
-  EXPECT_FALSE(suggestion_future_.Take().has_value());
-
-  FilterUiController* ui_controller =
-      FilterUiController::From(browser()->tab_strip_model()->GetActiveTab());
-  ASSERT_TRUE(ui_controller);
-  EXPECT_FALSE(test_api(*ui_controller).suggestion_state().has_value());
-
-  ToastController* toast_controller =
-      browser()->browser_window_features()->toast_controller();
-  EXPECT_FALSE(toast_controller->IsShowingToast());
-}
-
-#endif
-
-IN_PROC_BROWSER_TEST_F(MultistepFilterBrowserTest,
-                       ExecuteSettingsCommandOpensAiPage) {
-  tabs::TabInterface* active_tab = browser()->tab_strip_model()->GetActiveTab();
-  auto* ui_controller = multistep_filter::FilterUiController::From(active_tab);
-  ASSERT_TRUE(ui_controller);
-
-  multistep_filter::test_api(*ui_controller)
-      .ExecuteCommand(multistep_filter::internal::kSettingsCommand, 0);
-
-  ASSERT_TRUE(base::test::RunUntil([&]() {
-    return browser()->tab_strip_model()->GetActiveWebContents()->GetURL() ==
-           GURL(base::StrCat({::chrome::kChromeUISettingsURL,
-                              ::chrome::kSuggestionsSubPage}));
-  }));
-}
-
-IN_PROC_BROWSER_TEST_F(MultistepFilterBrowserTest,
-                       CueNotShownWhenPrefDisabled) {
-  browser()->profile()->GetPrefs()->SetInteger(
-      optimization_guide::prefs::GetSettingEnabledPrefName(
-          optimization_guide::UserVisibleFeatureKey::kContextualCueing),
-      static_cast<int>(
-          optimization_guide::prefs::FeatureOptInState::kDisabled));
-
-  GURL extraction_url =
-      embedded_test_server()->GetURL(kTestAllowedDomain, kExtractionUrlPath);
-  GURL suggestion_trigger_url = embedded_test_server()->GetURL(
-      kTestAllowedDomain2, kSuggestionTriggerUrlPath);
-  GURL suggestion_url =
-      embedded_test_server()->GetURL(kTestAllowedDomain2, kSuggestionUrlPath);
-
-  // 1. Setup extraction
-  fake_server().SetSupportedTasksResponse(
-      CreateSupportedTasksResponse({kTestTaskType}));
-  fake_server().SetExtractResponse(CreateExtractTaskAttributesResponse(
-      kTestTaskType, {{kTestAttributeKey, kTestAttributeValue},
-                      {kTestAttributeKey2, kTestAttributeValue2}}));
-
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), extraction_url));
-
-  std::optional<base::Uuid> extraction_result = extraction_future_.Take();
-  ASSERT_TRUE(extraction_result.has_value());
-  base::Uuid annotation_id = std::move(extraction_result).value();
-  EXPECT_FALSE(suggestion_future_.Take().has_value());
-
-  // 2. Setup suggestion
-  GetTaskExecutionStrategiesResponse execution_strategies_response =
-      CreateTaskExecutionStrategiesResponse(
-          suggestion_url, {{kTestAttributeKey, kTestAttributeValue},
-                           {kTestAttributeKey2, kTestAttributeValue2}});
-  execution_strategies_response.mutable_execution_strategies(0)
-      ->set_candidate_id(annotation_id.AsLowercaseString());
-  fake_server().SetExecutionStrategiesResponse(execution_strategies_response);
-  fake_server().SetExtractResponse(ExtractTaskAttributesResponse());
-
-  // 3. Navigate to trigger suggestion
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), suggestion_trigger_url));
-  EXPECT_FALSE(extraction_future_.Take().has_value());
-  EXPECT_TRUE(suggestion_future_.Take().has_value());
-
-  // 4. Verify UI controller suppresses the cue
-  FilterUiController* ui_controller =
-      FilterUiController::From(browser()->tab_strip_model()->GetActiveTab());
-  ASSERT_TRUE(ui_controller);
-  EXPECT_FALSE(test_api(*ui_controller).suggestion_state().has_value());
-}
-
-class MultistepFilterOptimizationGuideBrowserTest
-    : public InProcessBrowserTest,
-      public FilterTabController::ObserverForTest {
- public:
-  MultistepFilterOptimizationGuideBrowserTest() {
-    scoped_feature_list_.InitAndEnableFeature(kMultistepFilter);
-  }
-  ~MultistepFilterOptimizationGuideBrowserTest() override = default;
-
-  void SetUp() override {
-    embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
-        &MultistepFilterOptimizationGuideBrowserTest::HandleHtmlRequest,
         base::Unretained(this)));
     ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
     InProcessBrowserTest::SetUp();
@@ -481,7 +130,6 @@ class MultistepFilterOptimizationGuideBrowserTest
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     InProcessBrowserTest::SetUpCommandLine(command_line);
-    command_line->AppendSwitch(switches::kMultistepFilterOptimizationGuide);
     command_line->AppendSwitch(switches::kMultistepFilterAllowHttpForTesting);
   }
 
@@ -502,7 +150,7 @@ class MultistepFilterOptimizationGuideBrowserTest
     signin::MakePrimaryAccountAvailable(identity_manager, kTestEmail,
                                         signin::ConsentLevel::kSync);
 
-    browser()->profile()->GetPrefs()->SetBoolean(
+    browser()->GetProfile()->GetPrefs()->SetBoolean(
         unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled, true);
 
     auto* sync_service =
@@ -570,7 +218,7 @@ class MultistepFilterOptimizationGuideBrowserTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(MultistepFilterOptimizationGuideBrowserTest,
+IN_PROC_BROWSER_TEST_F(MultistepFilterBrowserTest,
                        ExtractsAnnotationAndGeneratesSuggestionOnNavigation) {
   GURL extraction_url =
       embedded_test_server()->GetURL(kTestAllowedDomain, kExtractionUrlPath);
@@ -662,7 +310,7 @@ IN_PROC_BROWSER_TEST_F(MultistepFilterOptimizationGuideBrowserTest,
   EXPECT_TRUE(nav_observer.last_navigation_succeeded());
 }
 
-IN_PROC_BROWSER_TEST_F(MultistepFilterOptimizationGuideBrowserTest,
+IN_PROC_BROWSER_TEST_F(MultistepFilterBrowserTest,
                        ClearHistoryDeletesSuggestions) {
   GURL extraction_url =
       embedded_test_server()->GetURL(kTestAllowedDomain, kExtractionUrlPath);
@@ -704,7 +352,7 @@ IN_PROC_BROWSER_TEST_F(MultistepFilterOptimizationGuideBrowserTest,
 }
 
 #if !BUILDFLAG(IS_CHROMEOS)
-IN_PROC_BROWSER_TEST_F(MultistepFilterOptimizationGuideBrowserTest,
+IN_PROC_BROWSER_TEST_F(MultistepFilterBrowserTest,
                        NoExtractionOrSuggestionWhenNotSignedIn) {
   GURL extraction_url =
       embedded_test_server()->GetURL(kTestAllowedDomain, kExtractionUrlPath);
@@ -764,7 +412,7 @@ IN_PROC_BROWSER_TEST_F(MultistepFilterOptimizationGuideBrowserTest,
 }
 #endif
 
-IN_PROC_BROWSER_TEST_F(MultistepFilterOptimizationGuideBrowserTest,
+IN_PROC_BROWSER_TEST_F(MultistepFilterBrowserTest,
                        ExecuteSettingsCommandOpensAiPage) {
   tabs::TabInterface* active_tab = browser()->tab_strip_model()->GetActiveTab();
   auto* ui_controller = multistep_filter::FilterUiController::From(active_tab);
@@ -780,9 +428,9 @@ IN_PROC_BROWSER_TEST_F(MultistepFilterOptimizationGuideBrowserTest,
   }));
 }
 
-IN_PROC_BROWSER_TEST_F(MultistepFilterOptimizationGuideBrowserTest,
+IN_PROC_BROWSER_TEST_F(MultistepFilterBrowserTest,
                        CueNotShownWhenPrefDisabled) {
-  browser()->profile()->GetPrefs()->SetInteger(
+  browser()->GetProfile()->GetPrefs()->SetInteger(
       optimization_guide::prefs::GetSettingEnabledPrefName(
           optimization_guide::UserVisibleFeatureKey::kContextualCueing),
       static_cast<int>(
