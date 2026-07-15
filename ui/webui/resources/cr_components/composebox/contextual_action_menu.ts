@@ -260,7 +260,6 @@ export class ContextualActionMenuElement extends
   override willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);
 
-
     if (!this.closeMenuOnSelect && changedProperties.has('disabledTabIds') &&
         this.pendingTabAddId_ !== null) {
       if (this.disabledTabIds.has(this.pendingTabAddId_)) {
@@ -734,6 +733,9 @@ export class ContextualActionMenuElement extends
 
   // Checks if a tab item in the context menu should be disabled.
   protected isTabDisabled_(tab: TabInfo): boolean {
+    if (this.isShareTabsTriggerDisabled_()) {
+      return true;
+    }
     const isRestored = this.contextManagementInComposeboxEnabled &&
         (this.aimThreadRestoredTabs || [])
             .some(
@@ -887,6 +889,9 @@ export class ContextualActionMenuElement extends
   }
 
   protected onShareTabsRowPointerenter_() {
+    if (this.isShareTabsTriggerDisabled_()) {
+      return;
+    }
     if (!this.hasTabSuggestions_) {
       return;
     }
@@ -928,6 +933,9 @@ export class ContextualActionMenuElement extends
   }
 
   protected onShareTabsRowKeydown_(e: KeyboardEvent) {
+    if (this.isShareTabsTriggerDisabled_()) {
+      return;
+    }
     if (e.key === 'ArrowRight' || e.key === 'Enter' || e.key === ' ') {
       if (!this.hasTabSuggestions_) {
         return;

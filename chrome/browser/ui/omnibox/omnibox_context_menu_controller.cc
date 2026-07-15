@@ -758,6 +758,13 @@ bool OmniboxContextMenuController::IsTabContextEnabled() const {
     return false;
   }
 
+  auto* model = omnibox_popup_ui->composebox_handler()->input_state_model();
+  const auto& disabled_types = model->GetInputState().disabled_input_types;
+  if (std::ranges::contains(disabled_types,
+                            omnibox::InputType::INPUT_TYPE_BROWSER_TAB)) {
+    return false;
+  }
+
   return true;
 }
 
@@ -1541,11 +1548,14 @@ bool OmniboxContextMenuController::IsCommandIdEnabled(int command_id) const {
     CHECK(
         base::FeatureList::IsEnabled(omnibox::kContextManagementInOmnibox) &&
         base::FeatureList::IsEnabled(omnibox::kContextManagementInComposebox));
+    if (!IsTabContextEnabled()) {
+      return false;
+    }
     auto* handler = GetSearchboxHandler();
     return !handler || !handler->IsSmartTabSharingActive();
   }
   if (command_id == IDC_OMNIBOX_CONTEXT_SMART_TAB_SHARING) {
-    return true;
+    return IsTabContextEnabled();
   }
   if (command_id == ui::MenuModel::kTitleId) {
     return false;

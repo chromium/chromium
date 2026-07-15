@@ -22,6 +22,7 @@ export function getHtml(this: ContextualActionMenuElement) {
                   id="smartTabSharingItem"
                   role="menuitemcheckbox"
                   aria-checked="true"
+                  ?disabled="${this.isShareTabsTriggerDisabled_()}"
                   @click="${this.onSmartTabSharingItemClick_}">
                 <cr-icon icon="composebox:shareTabs"></cr-icon>
                 <span class="tab-title">
@@ -62,6 +63,7 @@ export function getHtml(this: ContextualActionMenuElement) {
                       role="menuitemcheckbox"
                       aria-checked="false"
                       ?hidden="${!this.shareTabsFlyoutOpen}"
+                      ?disabled="${this.isShareTabsTriggerDisabled_()}"
                       @click="${this.onSmartTabSharingItemClick_}">
                     <cr-icon icon="composebox:screensaverAuto"></cr-icon>
                     <span class="tab-title">

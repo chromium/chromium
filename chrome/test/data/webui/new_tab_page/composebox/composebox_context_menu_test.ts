@@ -130,6 +130,303 @@ suite('NewTabPageComposeboxContextMenuTest', () => {
               '#contextMenuContainer');
           assertEquals(0, contextMenus.length);
         });
+
+    test(
+        'smart tab sharing item is disabled when tab input type is disabled',
+        async () => {
+          loadTimeData.overrideValues({
+            contextManagementInComposeboxEnabled: true,
+            composeboxSmartTabSharingVisible: true,
+          });
+          testProxy.searchboxHandler.setPromiseResolveFor(
+              'getSmartTabSharingActive', {active: true});
+          createComposeboxElement(testProxy);
+          await testProxy.element.updateComplete;
+
+          // Initially enabled (not disabled)
+          const inputStateEnabled = new MockInputState({
+            allowedInputTypes: [InputType.kBrowserTab],
+            disabledInputTypes: [],
+          });
+          testProxy.searchboxCallbackRouterRemote.onInputStateChanged(
+              inputStateEnabled);
+          await testProxy.searchboxCallbackRouterRemote.$.flushForTesting();
+          await testProxy.element.updateComplete;
+
+          // Open menu
+          const entrypointAndMenu = testProxy.element.shadowRoot.querySelector(
+              'cr-composebox-contextual-entrypoint-and-menu');
+          assertTrue(!!entrypointAndMenu);
+          const contextMenuEntrypoint =
+              entrypointAndMenu.shadowRoot.querySelector(
+                  'cr-composebox-contextual-entrypoint-button');
+          assertTrue(!!contextMenuEntrypoint);
+          const entrypointButton =
+              contextMenuEntrypoint.shadowRoot.querySelector<HTMLElement>(
+                  '#entrypoint');
+          assertTrue(!!entrypointButton);
+          entrypointButton.click();
+          await microtasksFinished();
+          await entrypointAndMenu.updateComplete;
+
+          const contextualActionMenu =
+              entrypointAndMenu.shadowRoot.querySelector(
+                  'cr-composebox-contextual-action-menu');
+          assertTrue(!!contextualActionMenu);
+          await contextualActionMenu.updateComplete;
+
+          const smartTabSharingItem =
+              contextualActionMenu.shadowRoot.querySelector<HTMLButtonElement>(
+                  '#smartTabSharingItem');
+          assertTrue(!!smartTabSharingItem);
+          assertFalse(smartTabSharingItem.disabled);
+
+          // Close menu
+          contextualActionMenu.close();
+          await microtasksFinished();
+
+          // Disable tab input
+          const inputStateDisabled = new MockInputState({
+            allowedInputTypes: [InputType.kBrowserTab],
+            disabledInputTypes: [InputType.kBrowserTab],
+          });
+          testProxy.searchboxCallbackRouterRemote.onInputStateChanged(
+              inputStateDisabled);
+          await testProxy.searchboxCallbackRouterRemote.$.flushForTesting();
+          await testProxy.element.updateComplete;
+
+          // Open menu again
+          entrypointButton.click();
+          await microtasksFinished();
+          await entrypointAndMenu.updateComplete;
+          await contextualActionMenu.updateComplete;
+
+          const smartTabSharingItemDisabled =
+              contextualActionMenu.shadowRoot.querySelector<HTMLButtonElement>(
+                  '#smartTabSharingItem');
+          assertTrue(!!smartTabSharingItemDisabled);
+          assertTrue(smartTabSharingItemDisabled.disabled);
+        });
+
+    test(
+        'share tabs trigger is disabled when tab input type is disabled',
+        async () => {
+          loadTimeData.overrideValues({
+            contextManagementInComposeboxEnabled: true,
+            composeboxSmartTabSharingVisible: true,
+          });
+          testProxy.searchboxHandler.setPromiseResolveFor(
+              'getSmartTabSharingActive', {active: false});
+
+          const sampleTabs = [{
+            tabId: 1,
+            title: 'Tab 1',
+            url: 'https://example.com',
+            showInCurrentTabChip: true,
+            showInPreviousTabChip: false,
+            lastActive: {internalValue: BigInt(1)},
+          }];
+          testProxy.searchboxHandler.setResultFor(
+              'getRecentTabs', Promise.resolve({tabs: sampleTabs}));
+
+          createComposeboxElement(testProxy);
+          await testProxy.element.updateComplete;
+
+          const inputStateDisabled = new MockInputState({
+            allowedInputTypes: [InputType.kBrowserTab],
+            disabledInputTypes: [InputType.kBrowserTab],
+          });
+          testProxy.searchboxCallbackRouterRemote.onInputStateChanged(
+              inputStateDisabled);
+          await testProxy.searchboxCallbackRouterRemote.$.flushForTesting();
+          await testProxy.element.updateComplete;
+
+          // Open menu
+          const entrypointAndMenu = testProxy.element.shadowRoot.querySelector(
+              'cr-composebox-contextual-entrypoint-and-menu');
+          assertTrue(!!entrypointAndMenu, 'entrypointAndMenu should exist');
+          const contextMenuEntrypoint =
+              entrypointAndMenu.shadowRoot.querySelector(
+                  'cr-composebox-contextual-entrypoint-button');
+          assertTrue(
+              !!contextMenuEntrypoint, 'contextMenuEntrypoint should exist');
+          const entrypointButton =
+              contextMenuEntrypoint.shadowRoot.querySelector<HTMLElement>(
+                  '#entrypoint');
+          assertTrue(!!entrypointButton, 'entrypointButton should exist');
+          entrypointButton.click();
+          await microtasksFinished();
+          await entrypointAndMenu.updateComplete;
+
+          const contextualActionMenu =
+              entrypointAndMenu.shadowRoot.querySelector(
+                  'cr-composebox-contextual-action-menu');
+          assertTrue(
+              !!contextualActionMenu, 'contextualActionMenu should exist');
+          await contextualActionMenu.updateComplete;
+
+          const shareTabsTrigger =
+              contextualActionMenu.shadowRoot.querySelector<HTMLButtonElement>(
+                  '#shareTabsTrigger');
+          assertTrue(!!shareTabsTrigger, 'shareTabsTrigger should exist');
+          assertTrue(
+              shareTabsTrigger.disabled, 'shareTabsTrigger should be disabled');
+        });
+
+    test(
+        'hovering on disabled share tabs trigger does not open flyout',
+        async () => {
+          loadTimeData.overrideValues({
+            contextManagementInComposeboxEnabled: true,
+            composeboxSmartTabSharingVisible: true,
+          });
+          testProxy.searchboxHandler.setPromiseResolveFor(
+              'getSmartTabSharingActive', {active: false});
+
+          const sampleTabs = [{
+            tabId: 1,
+            title: 'Tab 1',
+            url: 'https://example.com',
+            showInCurrentTabChip: true,
+            showInPreviousTabChip: false,
+            lastActive: {internalValue: BigInt(1)},
+          }];
+          testProxy.searchboxHandler.setResultFor(
+              'getRecentTabs', Promise.resolve({tabs: sampleTabs}));
+
+          createComposeboxElement(testProxy);
+          await testProxy.element.updateComplete;
+
+          const inputStateDisabled = new MockInputState({
+            allowedInputTypes: [InputType.kBrowserTab],
+            disabledInputTypes: [InputType.kBrowserTab],
+          });
+          testProxy.searchboxCallbackRouterRemote.onInputStateChanged(
+              inputStateDisabled);
+          await testProxy.searchboxCallbackRouterRemote.$.flushForTesting();
+          await testProxy.element.updateComplete;
+
+          // Open menu
+          const entrypointAndMenu = testProxy.element.shadowRoot.querySelector(
+              'cr-composebox-contextual-entrypoint-and-menu');
+          assertTrue(!!entrypointAndMenu);
+          const contextMenuEntrypoint =
+              entrypointAndMenu.shadowRoot.querySelector(
+                  'cr-composebox-contextual-entrypoint-button');
+          assertTrue(!!contextMenuEntrypoint);
+          const entrypointButton =
+              contextMenuEntrypoint.shadowRoot.querySelector<HTMLElement>(
+                  '#entrypoint');
+          assertTrue(!!entrypointButton);
+          entrypointButton.click();
+          await microtasksFinished();
+          await entrypointAndMenu.updateComplete;
+
+          const contextualActionMenu =
+              entrypointAndMenu.shadowRoot.querySelector(
+                  'cr-composebox-contextual-action-menu');
+          assertTrue(!!contextualActionMenu);
+          await contextualActionMenu.updateComplete;
+
+          const shareTabsTrigger =
+              contextualActionMenu.shadowRoot.querySelector<HTMLButtonElement>(
+                  '#shareTabsTrigger');
+          assertTrue(!!shareTabsTrigger);
+          assertTrue(shareTabsTrigger.disabled);
+
+          // Simulate pointerenter (hover) on the disabled trigger.
+          shareTabsTrigger.dispatchEvent(new PointerEvent('pointerenter'));
+          await microtasksFinished();
+          await contextualActionMenu.updateComplete;
+
+          // Verify flyout is NOT open.
+          assertFalse(
+              contextualActionMenu.shareTabsFlyoutOpen,
+              'flyout open property should be false');
+          const flyout =
+              contextualActionMenu.shadowRoot.querySelector<HTMLElement>(
+                  '.share-tabs-flyout');
+          assertTrue(!!flyout, 'flyout element should exist');
+          assertTrue(
+              flyout.hidden, 'flyout element should have hidden attribute');
+          assertEquals(
+              'none', window.getComputedStyle(flyout).display,
+              'flyout element should be display:none');
+        });
+
+    test(
+        'smart tab sharing item in flyout is disabled when tab input type is disabled',
+        async () => {
+          loadTimeData.overrideValues({
+            contextManagementInComposeboxEnabled: true,
+            composeboxSmartTabSharingVisible: true,
+          });
+          testProxy.searchboxHandler.setPromiseResolveFor(
+              'getSmartTabSharingActive', {active: false});
+
+          const sampleTabs = [{
+            tabId: 1,
+            title: 'Tab 1',
+            url: 'https://example.com',
+            showInCurrentTabChip: true,
+            showInPreviousTabChip: false,
+            lastActive: {internalValue: BigInt(1)},
+          }];
+          testProxy.searchboxHandler.setResultFor(
+              'getRecentTabs', Promise.resolve({tabs: sampleTabs}));
+
+          createComposeboxElement(testProxy);
+          await testProxy.element.updateComplete;
+
+          const inputStateDisabled = new MockInputState({
+            allowedInputTypes: [InputType.kBrowserTab],
+            disabledInputTypes: [InputType.kBrowserTab],
+          });
+          testProxy.searchboxCallbackRouterRemote.onInputStateChanged(
+              inputStateDisabled);
+          await testProxy.searchboxCallbackRouterRemote.$.flushForTesting();
+          await testProxy.element.updateComplete;
+
+          // Open menu
+          const entrypointAndMenu = testProxy.element.shadowRoot.querySelector(
+              'cr-composebox-contextual-entrypoint-and-menu');
+          assertTrue(!!entrypointAndMenu, 'entrypointAndMenu should exist');
+          const contextMenuEntrypoint =
+              entrypointAndMenu.shadowRoot.querySelector(
+                  'cr-composebox-contextual-entrypoint-button');
+          assertTrue(
+              !!contextMenuEntrypoint, 'contextMenuEntrypoint should exist');
+          const entrypointButton =
+              contextMenuEntrypoint.shadowRoot.querySelector<HTMLElement>(
+                  '#entrypoint');
+          assertTrue(!!entrypointButton, 'entrypointButton should exist');
+          entrypointButton.click();
+          await microtasksFinished();
+          await entrypointAndMenu.updateComplete;
+
+          const contextualActionMenu =
+              entrypointAndMenu.shadowRoot.querySelector(
+                  'cr-composebox-contextual-action-menu');
+          assertTrue(
+              !!contextualActionMenu, 'contextualActionMenu should exist');
+          await contextualActionMenu.updateComplete;
+
+          // Force flyout open
+          testProxy.element.shareTabsFlyoutOpen = true;
+          await testProxy.element.updateComplete;
+          await entrypointAndMenu.updateComplete;
+          await contextualActionMenu.updateComplete;
+
+          const smartTabSharingItemFlyout =
+              contextualActionMenu.shadowRoot.querySelector<HTMLButtonElement>(
+                  '#smartTabSharingItemFlyout');
+          assertTrue(
+              !!smartTabSharingItemFlyout,
+              'smartTabSharingItemFlyout should exist');
+          assertTrue(
+              smartTabSharingItemFlyout.disabled,
+              'smartTabSharingItemFlyout should be disabled');
+        });
   });
 
   suite('Context menu mouse events', () => {

@@ -435,6 +435,8 @@ class ContextualSearchboxHandler
   std::unique_ptr<ContextualSearchboxTabFaviconHelper> tab_favicon_helper_;
 
  protected:
+  std::optional<bool> smart_tab_sharing_active_for_thread_;
+  std::optional<bool> last_sent_smart_tab_sharing_active_;
   bool has_incremented_sts_activation_count_ = false;
 
   // Gets the `ActiveTaskContextProvider` to update tab underlines.

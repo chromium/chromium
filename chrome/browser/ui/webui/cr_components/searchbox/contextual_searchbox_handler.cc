@@ -617,6 +617,16 @@ bool ContextualSearchboxHandler::IsSmartTabSharingActive() const {
   if (!IsContextualSearchTabSharingEligible()) {
     return false;
   }
+  if (input_state_model_) {
+    const auto& state = input_state_model_->GetInputState();
+    if (std::ranges::contains(state.disabled_input_types,
+                              omnibox::InputType::INPUT_TYPE_BROWSER_TAB)) {
+      return false;
+    }
+  }
+  if (smart_tab_sharing_active_for_thread_.has_value()) {
+    return *smart_tab_sharing_active_for_thread_;
+  }
   auto* session_handle =
       get_session_callback_ ? get_session_callback_.Run() : nullptr;
   if (session_handle &&
@@ -639,11 +649,24 @@ void ContextualSearchboxHandler::SetSmartTabSharingActive(bool active) {
           GetIsSmartTabSharingEnabled(profile_)) {
     return;
   }
+  if (smart_tab_sharing_active_for_thread_.has_value() &&
+      *smart_tab_sharing_active_for_thread_ == active) {
+    return;
+  }
+  smart_tab_sharing_active_for_thread_ = active;
   auto* session_handle = GetContextualSessionHandle();
   if (session_handle) {
     session_handle->set_smart_tab_sharing_active(active);
   }
-  page()->UpdateSmartTabSharingActive(active);
+  if (input_state_model_) {
+    input_state_model_->SetSmartTabSharingActive(active);
+  }
+  bool computed_active = IsSmartTabSharingActive();
+  if (!last_sent_smart_tab_sharing_active_.has_value() ||
+      *last_sent_smart_tab_sharing_active_ != computed_active) {
+    last_sent_smart_tab_sharing_active_ = computed_active;
+    page()->UpdateSmartTabSharingActive(computed_active);
+  }
 
   if (active && profile_ && !has_incremented_sts_activation_count_) {
     has_incremented_sts_activation_count_ = true;
@@ -1193,6 +1216,14 @@ void ContextualSearchboxHandler::GetInputState(GetInputStateCallback callback) {
 void ContextualSearchboxHandler::OnInputStateChanged(
     const contextual_search::InputState& state) {
   page_->OnInputStateChanged(state);
+#if !BUILDFLAG(IS_ANDROID)
+  bool active = IsSmartTabSharingActive();
+  if (!last_sent_smart_tab_sharing_active_.has_value() ||
+      *last_sent_smart_tab_sharing_active_ != active) {
+    last_sent_smart_tab_sharing_active_ = active;
+    page_->UpdateSmartTabSharingActive(active);
+  }
+#endif
 }
 
 base::WeakPtr<contextual_search::InputStateModel>
@@ -1230,6 +1261,7 @@ void ContextualSearchboxHandler::InitializeInputStateModel() {
   if (!input_state_model_) {
     return;
   }
+  input_state_model_->SetSmartTabSharingActive(IsSmartTabSharingActive());
 
   if (profile_) {
     input_state_model_->SetPrefService(profile_->GetPrefs());
@@ -1264,10 +1296,14 @@ void ContextualSearchboxHandler::InitializeInputStateModel() {
 }
 
 bool ContextualSearchboxHandler::IsContextualSearchTabSharingEligible() const {
-  // The default implementation returns true. Inheritors (such as the side
-  // panel composebox) can override this to enforce custom or dynamic
+  // The default implementation returns true on non-Android. Inheritors (such as
+  // the side panel composebox) can override this to enforce custom or dynamic
   // eligibility.
+#if BUILDFLAG(IS_ANDROID)
+  return false;
+#else
   return true;
+#endif
 }
 
 void ContextualSearchboxHandler::RecordTabAddedMetric(

@@ -109,6 +109,8 @@ setupComposeboxTest<T extends ComposeboxUnionElement = ComposeboxElement>():
         SearchboxPageHandlerRemote,
         mock => ComposeboxProxyImpl.getInstance().searchboxHandler = mock);
     searchboxHandler.setPromiseResolveFor('getRecentTabs', {tabs: []});
+    searchboxHandler.setPromiseResolveFor(
+        'getSmartTabSharingActive', {active: false});
     searchboxHandler.setPromiseResolveFor('getInputState', {
       state: new MockInputState({
         toolConfigs: [],

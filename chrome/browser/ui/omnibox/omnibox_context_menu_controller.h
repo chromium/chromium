@@ -215,7 +215,7 @@ class OmniboxContextMenuController : public ui::SimpleMenuModel::Delegate {
 
   virtual bool IsContentSharingEnabled() const;
 
-  bool IsTabContextEnabled() const;
+  virtual bool IsTabContextEnabled() const;
 
   omnibox::ContextType CommandIdToEnum(int command_id) const;
 

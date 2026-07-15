@@ -1620,8 +1620,8 @@ IN_PROC_BROWSER_TEST_F(OmniboxContextMenuControllerPecBrowserTest,
 
   OmniboxContextMenuController controller(&file_selector, web_contents);
 
-  // The submenu command ID should still be enabled so that it can be opened.
-  EXPECT_TRUE(
+  // The submenu command ID should be disabled.
+  EXPECT_FALSE(
       controller.IsCommandIdEnabled(IDC_OMNIBOX_CONTEXT_SHARED_TABS_SUBMENU));
 
   // The submenu label and icon should be styled as disabled.
@@ -1637,15 +1637,6 @@ IN_PROC_BROWSER_TEST_F(OmniboxContextMenuControllerPecBrowserTest,
       menu_model->GetIconAt(submenu_index.value()),
       ui::ImageModel::FromVectorIcon(kTabOldIcon, ui::kColorMenuIconDisabled,
                                      ui::SimpleMenuModel::kDefaultIconSize));
-
-  // The individual tabs inside the submenu should be disabled.
-  auto* sub_model = controller.shared_tabs_menu_model();
-  ASSERT_TRUE(sub_model);
-  EXPECT_GT(sub_model->GetItemCount(), 0u);
-  for (size_t i = 0; i < sub_model->GetItemCount(); ++i) {
-    int command_id = sub_model->GetCommandIdAt(i);
-    EXPECT_FALSE(controller.IsCommandIdEnabled(command_id));
-  }
 }
 
 IN_PROC_BROWSER_TEST_F(OmniboxContextMenuControllerBrowserTest,

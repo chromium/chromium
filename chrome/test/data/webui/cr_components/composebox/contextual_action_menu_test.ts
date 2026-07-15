@@ -1717,9 +1717,8 @@ suite('ContextualActionMenu', () => {
     actionMenu.showAt(actionMenu);
     await microtasksFinished();
 
-    const trigger = $$(actionMenu, '#shareTabsTrigger') as HTMLElement;
-    trigger.dispatchEvent(new PointerEvent('pointerenter'));
-    await microtasksFinished();
+    actionMenu.shareTabsFlyoutOpen = true;
+    await actionMenu.updateComplete;
 
     const suffix = $$(actionMenu, '.recent-tabs-suffix');
     assertTrue(isVisible(suffix));
@@ -1753,12 +1752,12 @@ suite('ContextualActionMenu', () => {
     assertTrue(!!trigger);
     assertTrue(trigger.disabled);
 
-    // Hovering should open the flyout.
+    // Hovering should not open the flyout.
     trigger.dispatchEvent(new PointerEvent('pointerenter'));
     await microtasksFinished();
 
     const flyout = $$(actionMenu, '.share-tabs-flyout') as HTMLElement;
-    assertFalse(flyout.hidden);
+    assertTrue(flyout.hidden);
   });
 
   test(

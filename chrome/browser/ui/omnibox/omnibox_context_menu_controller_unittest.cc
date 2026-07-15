@@ -96,10 +96,15 @@ class TestOmniboxContextMenuController : public OmniboxContextMenuController {
     is_content_sharing_enabled_ = enabled;
   }
 
+  bool IsTabContextEnabled() const override { return is_tab_context_enabled_; }
+
+  void SetTabContextEnabled(bool enabled) { is_tab_context_enabled_ = enabled; }
+
  private:
   raw_ptr<ContextualSearchboxHandler> handler_ = nullptr;
   std::vector<OmniboxContextMenuController::TabInfo> mock_tabs_;
   bool is_content_sharing_enabled_ = true;
+  bool is_tab_context_enabled_ = true;
 };
 
 class OmniboxContextMenuControllerTest : public testing::Test {
@@ -569,4 +574,40 @@ TEST_F(OmniboxContextMenuControllerTest,
                    ->shared_tabs_menu_model()
                    ->GetIndexOfCommandId(IDC_OMNIBOX_CONTEXT_SMART_TAB_SHARING)
                    .has_value());
+}
+
+TEST_F(OmniboxContextMenuControllerTest,
+       TabSharingCommandsDisabledWhenTabContextDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures({omnibox::kContextManagementInComposebox,
+                                 omnibox::kContextManagementInOmnibox},
+                                {omnibox::kAimUsePecApi});
+
+  FakeContextualSearchboxHandler fake_handler(profile_.get(),
+                                              web_contents_.get());
+  controller()->SetSearchboxHandler(&fake_handler);
+
+  std::vector<OmniboxContextMenuController::TabInfo> mock_tabs;
+  OmniboxContextMenuController::TabInfo tab1;
+  tab1.tab_id = 1;
+  tab1.title = u"Tab 1";
+  tab1.url = GURL("https://example.com");
+  mock_tabs.push_back(tab1);
+  controller()->SetMockTabs(mock_tabs);
+
+  // Disable tab context.
+  controller()->SetTabContextEnabled(false);
+  controller()->RebuildMenu();
+
+  // Verify submenu is present.
+  EXPECT_NE(std::nullopt, controller()->menu_model()->GetIndexOfCommandId(
+                              IDC_OMNIBOX_CONTEXT_SHARED_TABS_SUBMENU));
+
+  // Verify submenu is disabled.
+  EXPECT_FALSE(controller()->IsCommandIdEnabled(
+      IDC_OMNIBOX_CONTEXT_SHARED_TABS_SUBMENU));
+
+  // Verify smart tab sharing toggle is disabled.
+  EXPECT_FALSE(
+      controller()->IsCommandIdEnabled(IDC_OMNIBOX_CONTEXT_SMART_TAB_SHARING));
 }

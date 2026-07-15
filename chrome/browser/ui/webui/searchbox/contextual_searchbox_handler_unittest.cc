@@ -22,6 +22,7 @@
 #include "base/types/expected.h"
 #include "base/unguessable_token.h"
 #include "base/version_info/channel.h"
+#include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
 #include "chrome/browser/autocomplete/chrome_autocomplete_scheme_classifier.h"
 #include "chrome/browser/contextual_search/contextual_search_service_factory.h"
 #include "chrome/browser/contextual_search/contextual_search_web_contents_helper.h"
@@ -67,6 +68,7 @@
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_result.h"
 #include "components/omnibox/browser/fake_autocomplete_controller.h"
+#include "components/omnibox/browser/mock_aim_eligibility_service.h"
 #include "components/omnibox/browser/searchbox.mojom.h"
 #include "components/omnibox/common/composebox_features.h"
 #include "components/omnibox/common/omnibox_features.h"
@@ -172,6 +174,10 @@ class FakeContextualSearchboxHandler : public ContextualSearchboxHandler {
     smart_tab_sharing_active_override_ = active;
   }
 
+  void clear_smart_tab_sharing_active_for_thread() {
+    smart_tab_sharing_active_for_thread_.reset();
+  }
+
   bool IsSmartTabSharingActive() const override {
     if (smart_tab_sharing_active_override_.has_value()) {
       return *smart_tab_sharing_active_override_;
@@ -199,6 +205,10 @@ class FakeContextualSearchboxHandler : public ContextualSearchboxHandler {
 
   void OnDrivePickerDisconnected() {
     ContextualSearchboxHandler::OnDrivePickerDisconnected();
+  }
+
+  omnibox::InputState GetValidInputStateForTesting() {
+    return GetValidInputState();
   }
 
   bool IsContextualSearchTabSharingEligible() const override {
@@ -273,8 +283,43 @@ class ContextualSearchboxHandlerTest
  public:
   ~ContextualSearchboxHandlerTest() override = default;
 
+  TestingProfile::TestingFactories GetTestingFactories() const override {
+    auto factories =
+        ContextualSearchboxHandlerTestHarness::GetTestingFactories();
+    factories.push_back(TestingProfile::TestingFactory{
+        AimEligibilityServiceFactory::GetInstance(),
+        base::BindRepeating([](content::BrowserContext* context)
+                                -> std::unique_ptr<KeyedService> {
+          Profile* profile = Profile::FromBrowserContext(context);
+          return std::make_unique<MockAimEligibilityService>(
+              *profile->GetPrefs(),
+              /*template_url_service=*/nullptr,
+              /*url_loader_factory=*/nullptr,
+              /*identity_manager=*/nullptr);
+        })});
+    return factories;
+  }
+
   void SetUp() override {
     ContextualSearchboxHandlerTestHarness::SetUp();
+
+    auto* aim_service = static_cast<MockAimEligibilityService*>(
+        AimEligibilityServiceFactory::GetForProfile(profile()));
+    if (aim_service) {
+      aim_service->config().add_input_type_configs()->set_input_type(
+          omnibox::InputType::INPUT_TYPE_LENS_IMAGE);
+      aim_service->config().add_input_type_configs()->set_input_type(
+          omnibox::InputType::INPUT_TYPE_LENS_FILE);
+      aim_service->config().add_input_type_configs()->set_input_type(
+          omnibox::InputType::INPUT_TYPE_BROWSER_TAB);
+
+      auto* canvas_config = aim_service->config().add_tool_configs();
+      canvas_config->set_tool(omnibox::ToolMode::TOOL_MODE_CANVAS);
+      auto* canvas_rule = canvas_config->mutable_rule();
+      canvas_rule->set_tool(omnibox::ToolMode::TOOL_MODE_CANVAS);
+      canvas_rule->add_allowed_input_types(
+          omnibox::InputType::INPUT_TYPE_LENS_IMAGE);
+    }
     // TODO(crbug.com/503732217): Fix tests to support lazy fetching of cluster
     // info and enable this feature by default in tests.
     scoped_feature_list_.InitWithFeatures(
@@ -423,14 +468,14 @@ class ContextualSearchboxHandlerTest
 #if BUILDFLAG(IS_CHROMEOS)
   ash::NetworkHandlerTestHelper network_handler_test_helper_;
 #endif  // BUILDFLAG(IS_CHROMEOS)
+  raw_ptr<MockQueryController> query_controller_;
+  raw_ptr<contextual_search::ContextualSearchService> service_;
+  raw_ptr<MockContextualSearchMetricsRecorder> metrics_recorder_;
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
   TestWebContentsDelegate delegate_;
-  raw_ptr<MockQueryController> query_controller_;
   raw_ptr<MockDrivePickerHostController> mock_drive_picker_controller_;
-  raw_ptr<contextual_search::ContextualSearchService> service_;
-  raw_ptr<MockContextualSearchMetricsRecorder> metrics_recorder_;
 };
 
 TEST_F(ContextualSearchboxHandlerTest,
@@ -3432,6 +3477,100 @@ TEST_F(ContextualSearchboxHandlerTestTabsTest, GetTabPreview_Success) {
   std::optional<std::string> preview = future.Get();
   ASSERT_TRUE(preview.has_value());
   EXPECT_EQ(preview.value(), webui::GetBitmapDataUrl(bitmap));
+}
+
+TEST_F(ContextualSearchboxHandlerTest,
+       IncompatibleToolDisablesSmartTabSharing) {
+  base::test::ScopedFeatureList local_feature_list;
+  local_feature_list.InitWithFeaturesAndParameters(
+      {{contextual_tasks::kContextualTasksContext,
+        {{"ContextualTasksContextSmartTabSharing", "true"}}},
+       {contextual_tasks::kContextualTasksForceEntryPointEligibility, {}}},
+      {});
+
+  // Enable STS.
+  EXPECT_CALL(mock_searchbox_page_, UpdateSmartTabSharingActive(true)).Times(1);
+  handler().SetSmartTabSharingActive(true);
+  mock_searchbox_page_.FlushForTesting();
+  EXPECT_TRUE(handler().IsSmartTabSharingActive());
+
+  // Select Canvas.
+  EXPECT_CALL(mock_searchbox_page_, UpdateSmartTabSharingActive(false))
+      .Times(1);
+  handler().SetActiveToolMode(omnibox::TOOL_MODE_CANVAS);
+  mock_searchbox_page_.FlushForTesting();
+
+  // STS should now be effectively inactive.
+  EXPECT_FALSE(handler().IsSmartTabSharingActive());
+
+  // Select Unspecified again.
+  EXPECT_CALL(mock_searchbox_page_, UpdateSmartTabSharingActive(true)).Times(1);
+  handler().SetActiveToolMode(omnibox::TOOL_MODE_UNSPECIFIED);
+  mock_searchbox_page_.FlushForTesting();
+
+  // STS should be active again.
+  EXPECT_TRUE(handler().IsSmartTabSharingActive());
+}
+
+TEST_F(ContextualSearchboxHandlerTest,
+       NewSessionModelInheritsSmartTabSharingActiveState) {
+  base::test::ScopedFeatureList local_feature_list;
+  local_feature_list.InitWithFeaturesAndParameters(
+      {{contextual_tasks::kContextualTasksContext,
+        {{"ContextualTasksContextSmartTabSharing", "true"}}},
+       {contextual_tasks::kContextualTasksForceEntryPointEligibility, {}}},
+      {});
+
+  // Enable STS on current handler.
+  handler().SetSmartTabSharingActive(true);
+  EXPECT_TRUE(handler().IsSmartTabSharingActive());
+  ASSERT_TRUE(handler().input_state_model());
+  EXPECT_TRUE(handler().input_state_model()->IsSmartTabSharingActive());
+
+  // Simulate starting a new session (new model).
+  query_controller_ = nullptr;
+  metrics_recorder_ = nullptr;
+
+  auto query_controller_config_params = std::make_unique<
+      contextual_search::ContextualSearchContextController::ConfigParams>();
+  auto query_controller_ptr = std::make_unique<MockQueryController>(
+      /*identity_manager=*/nullptr, url_loader_factory(),
+      version_info::Channel::UNKNOWN, "en-US", template_url_service(),
+      fake_variations_client(), std::move(query_controller_config_params));
+  auto metrics_recorder_ptr =
+      std::make_unique<MockContextualSearchMetricsRecorder>();
+
+  query_controller_ = query_controller_ptr.get();
+  metrics_recorder_ = metrics_recorder_ptr.get();
+
+  contextual_session_handle_ = service_->CreateSessionForTesting(
+      std::move(query_controller_ptr), std::move(metrics_recorder_ptr));
+  contextual_session_handle_->CheckSearchContentSharingSettings(
+      profile()->GetPrefs());
+
+  handler().ResetInputStateModel();
+  handler().NotifySessionStarted();
+
+  // Trigger model recreation.
+  handler().GetValidInputStateForTesting();
+
+  // The new model should have inherited the active state (true) from the
+  // handler.
+  ASSERT_TRUE(handler().input_state_model());
+  EXPECT_TRUE(handler().input_state_model()->IsSmartTabSharingActive());
+  EXPECT_TRUE(handler().IsSmartTabSharingActive());
+
+  // Clear thread state to simulate new handler instance.
+  handler().clear_smart_tab_sharing_active_for_thread();
+  handler().ResetInputStateModel();
+
+  // Trigger model recreation.
+  handler().GetValidInputStateForTesting();
+
+  // The new model should now fallback to the pref default (false).
+  ASSERT_TRUE(handler().input_state_model());
+  EXPECT_FALSE(handler().input_state_model()->IsSmartTabSharingActive());
+  EXPECT_FALSE(handler().IsSmartTabSharingActive());
 }
 
 class ContextualSearchboxHandlerContextUploadStatusTest
