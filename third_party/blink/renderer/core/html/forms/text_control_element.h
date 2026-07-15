@@ -163,6 +163,12 @@ class CORE_EXPORT TextControlElement : public HTMLFormControlElementWithState {
   // Returns a selection index value for the specified position.
   unsigned IndexForPosition(const Position& editor_position) const;
 
+  // Resolves a single value-string offset to a (Text*, local_offset) pair by
+  // walking the inner editor's shadow DOM children. Returns {nullptr, 0} when
+  // there is no inner editor or no Text node covers `target` (e.g. an empty
+  // value), meaning callers have no Text node to anchor geometry to.
+  std::pair<Text*, unsigned> ResolveValueOffset(unsigned target) const;
+
   Node* CreatePlaceholderBreakElement() const;
   // Returns true if the specified node was created by
   // CreatePlaceholderBreakElement().

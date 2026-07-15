@@ -33,6 +33,7 @@
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/dom/focus_params.h"
 #include "third_party/blink/renderer/core/dom/opaque_range.h"
+#include "third_party/blink/renderer/core/dom/range.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/dom/text.h"
 #include "third_party/blink/renderer/core/editing/editing_behavior.h"
@@ -951,6 +952,39 @@ bool TextControlElement::LastChangeWasUserEdit() const {
   if (!IsTextControl())
     return false;
   return last_change_was_user_edit_;
+}
+
+std::pair<Text*, unsigned> TextControlElement::ResolveValueOffset(
+    unsigned target) const {
+  Element* inner = InnerEditorElement();
+  if (!inner) {
+    return {nullptr, 0};
+  }
+
+  unsigned offset = 0;
+  Text* last_text = nullptr;
+  for (Node* n = inner->firstChild(); n; n = n->nextSibling()) {
+    if (auto* text = DynamicTo<Text>(n)) {
+      unsigned node_end = offset + text->data().length();
+      if (target <= node_end) {
+        return {text, target - offset};
+      }
+      last_text = text;
+      offset = node_end;
+    } else if (IsA<HTMLBRElement>(n) &&
+               !TextControlElement::IsPlaceholderBreakElement(n)) {
+      if (last_text && target <= offset) {
+        return {last_text, last_text->data().length()};
+      }
+      // A hard line break serializes to a single "\n" code unit in the value
+      // string, so it advances the offset by one.
+      ++offset;
+    }
+  }
+  if (last_text) {
+    return {last_text, last_text->data().length()};
+  }
+  return {nullptr, 0};
 }
 
 Node* TextControlElement::CreatePlaceholderBreakElement() const {
