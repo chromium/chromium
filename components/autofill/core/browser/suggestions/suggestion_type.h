@@ -231,9 +231,12 @@ enum class SuggestionType {
   // Suggestion to display the AI disclosure for AtMemory.
   kAtMemoryAiDisclosure = 94,
 
-  // Next ID: 95
+  // Fallback suggestion to open a subpopup displaying other shipments.
+  kAutofillAiOtherShipments = 95,
 
-  kMaxValue = kAtMemoryAiDisclosure
+  // Next ID: 96
+
+  kMaxValue = kAutofillAiOtherShipments
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/autofill/enums.xml:SuggestionType)
 

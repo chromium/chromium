@@ -753,14 +753,16 @@ std::vector<Suggestion> CreateSuggestionsForEntities(
   return suggestions;
 }
 
-// Returns true if the trigger field can be filled by an order entity.
-// This is determined by checking if the `AttributeTypeAssignment` maps
-// the field to any attribute belonging to the order entity type.
-bool CanFieldBeFilledByOrder(const AttributeTypeAssignment& assignment,
-                             const FieldGlobalId& field_id) {
-  base::span<const AutofillFieldWithAttributeType> order_fields =
-      assignment.Find(EntityType(EntityTypeName::kOrder));
-  return FindField(order_fields, field_id).has_value();
+// Returns true if the trigger field can be filled by an entity of type
+// `entity_type`. This is determined by checking if the
+// `AttributeTypeAssignment` maps the field to any attribute belonging to that
+// entity type.
+bool CanFieldBeFilledByEntityType(const AttributeTypeAssignment& assignment,
+                                  const FieldGlobalId& field_id,
+                                  EntityType entity_type) {
+  base::span<const AutofillFieldWithAttributeType> fields =
+      assignment.Find(entity_type);
+  return FindField(fields, field_id).has_value();
 }
 
 // Returns true if any suggestion in `suggestions` (or recursively in their
@@ -785,25 +787,63 @@ bool HasPersonalContextSuggestion(
   return false;
 }
 
-// Generates the fallback suggestion menu for orders from other domains.
-// This suggestion is marked as unacceptable (non-clickable) but contains
-// children suggestions for all the fallback orders, which are regular
-// acceptable suggestions.
-// Updates `ui_sections` for any fallback orders that produce valid child
+// Returns the parent `Suggestion` for a fallback menu which displays entities
+// that do not match the current domain.
+Suggestion CreateParentFallbackSuggestion(EntityType entity_type,
+                                          std::vector<Suggestion> children) {
+  switch (entity_type.name()) {
+    case EntityTypeName::kOrder: {
+      Suggestion suggestion(
+          l10n_util::GetStringUTF16(IDS_AUTOFILL_AI_OTHER_ORDERS),
+          SuggestionType::kAutofillAiOtherOrders);
+      suggestion.acceptability = Suggestion::Acceptability::kUnacceptable;
+      suggestion.children = std::move(children);
+      return suggestion;
+    }
+    case EntityTypeName::kShipment: {
+      Suggestion suggestion(
+          l10n_util::GetStringUTF16(IDS_AUTOFILL_AI_OTHER_SHIPMENTS),
+          SuggestionType::kAutofillAiOtherShipments);
+      suggestion.acceptability = Suggestion::Acceptability::kUnacceptable;
+      suggestion.children = std::move(children);
+      return suggestion;
+    }
+    case EntityTypeName::kPassport:
+    case EntityTypeName::kDriversLicense:
+    case EntityTypeName::kVehicle:
+    case EntityTypeName::kNationalIdCard:
+    case EntityTypeName::kKnownTravelerNumber:
+    case EntityTypeName::kRedressNumber:
+    case EntityTypeName::kFlightReservation:
+      break;
+  }
+  NOTREACHED();
+}
+
+// Generates the fallback suggestion menu for entities of `entity_type`
+// from other domains. This suggestion is marked as unacceptable
+// (non-clickable) but contains children suggestions for all the fallback
+// entities, which are regular acceptable suggestions.
+// Updates `ui_sections` for any fallback entities that produce valid child
 // suggestions.
 // Returns `std::nullopt` if no valid fallback suggestions could be generated.
-std::optional<Suggestion> CreateOtherOrdersFallbackSuggestion(
+std::optional<Suggestion> CreateDomainFallbackSuggestion(
     const FormStructure& form,
     const AutofillField& trigger_field,
+    EntityType entity_type,
     base::span<const EntityInstance> all_entities,
     const AttributeTypeAssignment& assignment,
     const GURL& page_url,
     AutofillClient& client,
     DenseSet<AutofillAiUiSection>* ui_sections) {
-  std::vector<EntityInstance> fallback_orders;
+  if (!CanFieldBeFilledByEntityType(assignment, trigger_field.global_id(),
+                                    entity_type)) {
+    return std::nullopt;
+  }
+
+  std::vector<EntityInstance> fallback_entities;
   for (const EntityInstance& entity : all_entities) {
-    if (entity.type().name() != EntityTypeName::kOrder ||
-        IsAllowedForPageUrl(entity, page_url)) {
+    if (entity.type() != entity_type || IsAllowedForPageUrl(entity, page_url)) {
       continue;
     }
 
@@ -827,31 +867,25 @@ std::optional<Suggestion> CreateOtherOrdersFallbackSuggestion(
         std::string(client.GetAppLocale()),
         trigger_field_with_type->field->format_string());
     if (!trigger_value.empty()) {
-      fallback_orders.push_back(entity);
+      fallback_entities.push_back(entity);
     }
   }
 
-  if (fallback_orders.empty()) {
+  if (fallback_entities.empty()) {
     return std::nullopt;
   }
 
   std::vector<Suggestion> children = CreateSuggestionsForEntities(
-      form, trigger_field, fallback_orders, all_entities, assignment, client);
+      form, trigger_field, fallback_entities, all_entities, assignment, client);
   if (children.empty()) {
     return std::nullopt;
   }
 
-  for (const EntityInstance& entity : fallback_orders) {
+  for (const EntityInstance& entity : fallback_entities) {
     ui_sections->insert(GetAutofillAiUiSection(entity.type()));
   }
 
-  Suggestion fallback_suggestion(
-      l10n_util::GetStringUTF16(IDS_AUTOFILL_AI_OTHER_ORDERS),
-      SuggestionType::kAutofillAiOtherOrders);
-  fallback_suggestion.acceptability = Suggestion::Acceptability::kUnacceptable;
-  fallback_suggestion.children = std::move(children);
-
-  return fallback_suggestion;
+  return CreateParentFallbackSuggestion(entity_type, std::move(children));
 }
 
 void AppendDomainFallbackSuggestions(
@@ -862,13 +896,26 @@ void AppendDomainFallbackSuggestions(
     const AttributeTypeAssignment& assignment,
     AutofillClient& client,
     DenseSet<AutofillAiUiSection>& ui_sections) {
-  if (CanFieldBeFilledByOrder(assignment, trigger_field.global_id())) {
-    if (std::optional<Suggestion> fallback_suggestion =
-            CreateOtherOrdersFallbackSuggestion(
-                form, trigger_field, all_entities, assignment,
-                client.GetLastCommittedPrimaryMainFrameURL(), client,
-                &ui_sections)) {
-      suggestions.push_back(std::move(*fallback_suggestion));
+  for (EntityType entity_type : DenseSet<EntityType>::all()) {
+    switch (entity_type.name()) {
+      case EntityTypeName::kOrder:
+      case EntityTypeName::kShipment:
+        if (std::optional<Suggestion> fallback_suggestion =
+                CreateDomainFallbackSuggestion(
+                    form, trigger_field, entity_type, all_entities, assignment,
+                    client.GetLastCommittedPrimaryMainFrameURL(), client,
+                    &ui_sections)) {
+          suggestions.push_back(std::move(*fallback_suggestion));
+        }
+        break;
+      case EntityTypeName::kPassport:
+      case EntityTypeName::kDriversLicense:
+      case EntityTypeName::kVehicle:
+      case EntityTypeName::kNationalIdCard:
+      case EntityTypeName::kKnownTravelerNumber:
+      case EntityTypeName::kRedressNumber:
+      case EntityTypeName::kFlightReservation:
+        break;
     }
   }
 }

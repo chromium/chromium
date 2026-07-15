@@ -687,6 +687,7 @@ bool HasGuid(const Suggestion::Payload& payload) {
       case SuggestionType::kAtMemorySearchAffordance:
       case SuggestionType::kAtMemorySearchResult:
       case SuggestionType::kAutofillAiOtherOrders:
+      case SuggestionType::kAutofillAiOtherShipments:
       case SuggestionType::kAutofillAiPrivateInferenceNotice:
       case SuggestionType::kBackupPasswordEntry:
       case SuggestionType::kBnplEntry:

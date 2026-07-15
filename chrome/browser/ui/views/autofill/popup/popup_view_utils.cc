@@ -568,9 +568,10 @@ bool IsExpandableSuggestionType(SuggestionType type) {
     // This opens the submenu where different suggestions related to the same
     // query response are present.
     case SuggestionType::kAtMemorySearchResult:
-    // This opens the submenu with all other Autofill AI orders suggestions
-    // that are not displayed in the first level.
+    // This opens the submenu with all other Autofill AI orders/shipments
+    // suggestions that are not displayed in the first level.
     case SuggestionType::kAutofillAiOtherOrders:
+    case SuggestionType::kAutofillAiOtherShipments:
       return true;
     case SuggestionType::kAccountStoragePasswordEntry:
     case SuggestionType::kAddressEntry:
@@ -658,6 +659,7 @@ bool IsSuggestionTypeAutoselected(SuggestionType type) {
     case SuggestionType::kAutocompleteAtMemoryButton:
     case SuggestionType::kAutocompleteEntry:
     case SuggestionType::kAutofillAiOtherOrders:
+    case SuggestionType::kAutofillAiOtherShipments:
     case SuggestionType::kAutofillAiPrivateInferenceNotice:
     case SuggestionType::kBackupPasswordEntry:
     case SuggestionType::kBnplEntry:

@@ -1083,6 +1083,7 @@ bool IsCreditCardFooterSuggestion(
     case SuggestionType::kAutocompleteAtMemoryButton:
     case SuggestionType::kAutocompleteEntry:
     case SuggestionType::kAutofillAiOtherOrders:
+    case SuggestionType::kAutofillAiOtherShipments:
     case SuggestionType::kAutofillAiPrivateInferenceNotice:
     case SuggestionType::kBackupPasswordEntry:
     case SuggestionType::kBnplEntry:

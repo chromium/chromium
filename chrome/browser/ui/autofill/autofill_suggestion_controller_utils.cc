@@ -84,6 +84,7 @@ SuggestionSection GetSuggestionSection(SuggestionType type) {
     case SuggestionType::kAtMemorySearchResult:
     case SuggestionType::kAutocompleteEntry:
     case SuggestionType::kAutofillAiOtherOrders:
+    case SuggestionType::kAutofillAiOtherShipments:
     case SuggestionType::kAutofillAiPrivateInferenceNotice:
     case SuggestionType::kBackupPasswordEntry:
     case SuggestionType::kBnplEntry:

@@ -958,12 +958,15 @@
   <message name="IDS_AUTOFILL_AI_ORDERS_TITLE" desc="The title of a chip referring to orders (IDS_AUTOFILL_AI_ORDER_ENTITY_NAME) on Your saved info settings page." translateable="false">
     Orders
   </message>
+  <message name="IDS_AUTOFILL_AI_SHIPMENTS_TITLE" desc="The title of a chip referring to shipments (IDS_AUTOFILL_AI_SHIPMENT_ENTITY_NAME) on Your saved info settings page." translateable="false">
+    Shipments
+  </message>
   <!-- TODO(crbug.com/503303085): Make translateable when the strings are finalized. -->
   <message name="IDS_AUTOFILL_AI_OTHER_ORDERS" desc="Main text for a suggestion that when hovered opens a subpopup displaying other orders." translateable="false">
     Other orders
   </message>
-  <message name="IDS_AUTOFILL_AI_SHIPMENTS_TITLE" desc="The title of a chip referring to shipments (IDS_AUTOFILL_AI_SHIPMENT_ENTITY_NAME) on Your saved info settings page." translateable="false">
-    Shipments
+  <message name="IDS_AUTOFILL_AI_OTHER_SHIPMENTS" desc="Main text for a suggestion that when hovered opens a subpopup displaying other shipments." translateable="false">
+    Other shipments
   </message>
 
   <!-- Add entity strings -->

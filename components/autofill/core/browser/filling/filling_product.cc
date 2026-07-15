@@ -121,6 +121,7 @@ FillingProduct GetFillingProductFromSuggestionType(SuggestionType type) {
     case SuggestionType::kUndoOrClear:
       return FillingProduct::kNone;
     case SuggestionType::kAutofillAiOtherOrders:
+    case SuggestionType::kAutofillAiOtherShipments:
     case SuggestionType::kAutofillAiPrivateInferenceNotice:
     case SuggestionType::kFetchingAmbientData:
     case SuggestionType::kFillAutofillAi:
