@@ -717,15 +717,6 @@ public class VerticalTabListRenderTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     ViewGroup container = inflateAndAttachView(R.layout.vertical_tab_layout);
-                    View collapseButton = container.findViewById(R.id.collapse_button);
-                    if (collapseButton != null) {
-                        collapseButton.setVisibility(View.VISIBLE);
-                    }
-                    View headerSpacer = container.findViewById(R.id.header_spacer);
-                    if (headerSpacer != null) {
-                        headerSpacer.setVisibility(View.VISIBLE);
-                    }
-
                     int widthDp = isCollapsed ? 74 : 206;
                     int widthPx = ViewUtils.dpToPx(mActivity, widthDp);
                     container.setLayoutParams(

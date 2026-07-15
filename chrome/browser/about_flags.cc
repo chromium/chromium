@@ -2514,13 +2514,6 @@ const FeatureEntry::FeatureVariation kEphemeralCardRankerCardOverrideOptions[] =
         {"- Force show ntp theme promo", kNtpThemePromoShowArm, nullptr},
         {"- Force hide ntp theme promo", kNtpThemePromoHideArm, nullptr},
 };
-
-const FeatureEntry::FeatureParam kAndroidVerticalTabs_Collapsible[] = {
-    {"enable_collapsible_rail", "false"}};
-
-const FeatureEntry::FeatureVariation kAndroidVerticalTabsVariations[] = {
-    {"with collapsible rail", kAndroidVerticalTabs_Collapsible, nullptr},
-};
 #endif  // BUILDFLAG(IS_ANDROID)
 #if BUILDFLAG(IS_ANDROID)
 const FeatureEntry::FeatureParam
@@ -7558,9 +7551,7 @@ const FeatureEntry kFeatureEntries[] = {
 
     {"android-vertical-tabs", flag_descriptions::kAndroidVerticalTabsName,
      flag_descriptions::kAndroidVerticalTabsDescription, kOsAndroid,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kAndroidVerticalTabs,
-                                    kAndroidVerticalTabsVariations,
-                                    "AndroidVerticalTabs")},
+     FEATURE_VALUE_TYPE(chrome::android::kAndroidVerticalTabs)},
 
     {"price-insights", commerce::flag_descriptions::kPriceInsightsName,
      commerce::flag_descriptions::kPriceInsightsDescription, kOsAndroid,

@@ -30,7 +30,6 @@ import org.chromium.chrome.browser.compositor.overlays.strip.TabContextMenuCoord
 import org.chromium.chrome.browser.compositor.overlays.strip.TabGroupContextMenuCoordinator;
 import org.chromium.chrome.browser.compositor.overlays.strip.TabStripContextMenuCoordinator;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.hub.PaneId;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -250,16 +249,6 @@ public class VerticalTabListCoordinator {
         mContainerView.setLayoutParams(
                 new ViewGroup.LayoutParams(
                         ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-
-        boolean isCollapsibleEnabled =
-                ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                        ChromeFeatureList.ANDROID_VERTICAL_TABS, "enable_collapsible_rail", false);
-        View collapseButton = mContainerView.findViewById(R.id.collapse_button);
-        View headerSpacer = mContainerView.findViewById(R.id.header_spacer);
-        if (collapseButton != null) {
-            collapseButton.setVisibility(isCollapsibleEnabled ? View.VISIBLE : View.GONE);
-            headerSpacer.setVisibility(isCollapsibleEnabled ? View.VISIBLE : View.GONE);
-        }
 
         mSpacerView = mContainerView.findViewById(R.id.desktop_window_spacer);
 

@@ -48,7 +48,6 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.shadows.ShadowLooper;
 
-import org.chromium.base.FeatureOverrides;
 import org.chromium.base.Token;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
@@ -971,11 +970,6 @@ public class VerticalTabListCoordinatorUnitTest {
     @Test
     @SmallTest
     public void testCollapseListenerAndModelToggle() {
-        FeatureOverrides.newBuilder()
-                .enable(ChromeFeatureList.ANDROID_VERTICAL_TABS)
-                .param("enable_collapsible_rail", true)
-                .apply();
-
         createCoordinator();
 
         // Mock listener
