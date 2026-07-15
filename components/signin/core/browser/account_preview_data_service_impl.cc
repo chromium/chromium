@@ -19,6 +19,7 @@
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
+#include "components/sync/base/data_type.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace signin {
@@ -273,10 +274,8 @@ AccountPreviewDataServiceImpl::ReadPreviewPreferenceFromPrefs() const {
   if (data_types_list) {
     for (const base::Value& val : *data_types_list) {
       if (val.is_int()) {
-        // TODO(crbug.com/532419984): Consider using DataTypeForHistograms (or
-        // equivalent) to ensure data type alignment when storing and
-        // retrieving values from pref.
-        auto data_type = static_cast<syncer::DataType>(val.GetInt());
+        syncer::DataType data_type =
+            syncer::GetDataTypeFromStableIdentifier(val.GetInt());
         if (syncer::IsRealDataType(data_type)) {
           preference.preferred_data_types.push_back(data_type);
         }
@@ -292,7 +291,7 @@ void AccountPreviewDataServiceImpl::WritePreviewPreferenceToPrefs(
   dict.Set(kPreferredAccountDictGaiaIdKey, preference.gaia_id.ToString());
   base::ListValue data_types_list;
   for (syncer::DataType data_type : preference.preferred_data_types) {
-    data_types_list.Append(static_cast<int>(data_type));
+    data_types_list.Append(syncer::DataTypeToStableIdentifier(data_type));
   }
   dict.Set(kPreferredAccountDictDataTypesKey, std::move(data_types_list));
   pref_service_->SetDict(prefs::kAccountPreviewPreference, std::move(dict));

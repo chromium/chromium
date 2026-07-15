@@ -720,4 +720,24 @@ TEST_F(AccountPreviewDataServiceTest,
   EXPECT_EQ(kFakeGaiaId, preference.gaia_id);
 }
 
+TEST_F(AccountPreviewDataServiceTest, ReadPreviewPreferenceFromPrefsDataTypes) {
+  base::DictValue dict;
+  dict.Set("gaia_id", "test_gaia_id");
+  base::ListValue data_types_list;
+  data_types_list.Append(syncer::DataTypeToStableIdentifier(syncer::BOOKMARKS));
+  data_types_list.Append(-1);    // Negative invalid value.
+  data_types_list.Append(9999);  // Unknown/invalid stable identifier.
+  data_types_list.Append(syncer::DataTypeToStableIdentifier(syncer::PASSWORDS));
+  dict.Set("data_types", std::move(data_types_list));
+
+  prefs_.SetDict(prefs::kAccountPreviewPreference, std::move(dict));
+
+  AccountPreviewDataService::AccountPreviewPreference preference =
+      service_->GetPreferredAccountForPromo();
+  EXPECT_EQ(GaiaId("test_gaia_id"), preference.gaia_id);
+  std::vector<syncer::DataType> expected_types = {syncer::BOOKMARKS,
+                                                  syncer::PASSWORDS};
+  EXPECT_EQ(expected_types, preference.preferred_data_types);
+}
+
 }  // namespace signin

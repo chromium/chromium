@@ -1771,6 +1771,18 @@ int DataTypeToStableIdentifier(DataType data_type) {
   return static_cast<int>(DataTypeHistogramValue(data_type)) + 1;
 }
 
+DataType GetDataTypeFromStableIdentifier(int stable_identifier) {
+  if (stable_identifier <= 0) {
+    return UNSPECIFIED;
+  }
+  for (DataType data_type : DataTypeSet::All()) {
+    if (DataTypeToStableIdentifier(data_type) == stable_identifier) {
+      return data_type;
+    }
+  }
+  return UNSPECIFIED;
+}
+
 std::string DataTypeSetToDebugString(DataTypeSet data_types) {
   std::string result;
   for (DataType type : data_types) {

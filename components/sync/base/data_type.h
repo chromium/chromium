@@ -462,6 +462,11 @@ DataTypeForHistograms DataTypeHistogramValue(DataType data_type);
 // time and thus can be used when persisting data.
 int DataTypeToStableIdentifier(DataType data_type);
 
+// Returns the DataType corresponding to `stable_identifier` (produced by
+// DataTypeToStableIdentifier()). Returns UNSPECIFIED if `stable_identifier`
+// does not match any known DataType.
+DataType GetDataTypeFromStableIdentifier(int stable_identifier);
+
 // This returns a string that is stable over time and thus can be used for local
 // persistence. It is guaranteed to be lowercase.
 std::string_view DataTypeToStableLowerCaseString(DataType data_type);

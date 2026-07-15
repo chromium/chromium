@@ -56,6 +56,17 @@ TEST(DataTypeTest, DataTypeHistogramMapping) {
   }
 }
 
+TEST(DataTypeTest, GetDataTypeFromStableIdentifier) {
+  for (DataType type : DataTypeSet::All()) {
+    SCOPED_TRACE(DataTypeToDebugString(type));
+    EXPECT_EQ(type, GetDataTypeFromStableIdentifier(
+                        DataTypeToStableIdentifier(type)));
+  }
+  EXPECT_EQ(UNSPECIFIED, GetDataTypeFromStableIdentifier(0));
+  EXPECT_EQ(UNSPECIFIED, GetDataTypeFromStableIdentifier(-1));
+  EXPECT_EQ(UNSPECIFIED, GetDataTypeFromStableIdentifier(9999));
+}
+
 TEST(DataTypeTest, DataTypeToStableIdentifier) {
   std::set<int> identifiers;
   DataTypeSet all_types = DataTypeSet::All();
