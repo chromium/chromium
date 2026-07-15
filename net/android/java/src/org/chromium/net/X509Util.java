@@ -222,7 +222,7 @@ public class X509Util {
     // Supplier interface is only available on Android 24, while Cronet still
     // supports Android 23.
     // TODO: Delete once the minimum supported Android API across Chromium is 24.
-    interface CertificateVerifierSupplier {
+    private interface CertificateVerifierSupplier {
         CertificateVerifier supply();
     }
 

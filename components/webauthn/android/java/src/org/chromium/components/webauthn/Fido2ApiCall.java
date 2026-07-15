@@ -508,7 +508,7 @@ public final class Fido2ApiCall extends GoogleApi<ApiOptions.NoOptions> {
         }
     }
 
-    private interface Callback<Result> {
+    public interface Callback<Result> {
         @Initializer
         void setCompletionSource(TaskCompletionSource<Result> cs);
     }

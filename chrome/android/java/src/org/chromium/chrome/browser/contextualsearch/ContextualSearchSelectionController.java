@@ -186,11 +186,10 @@ public class ContextualSearchSelectionController {
     }
 
     /**
-     * Returns a new {@code GestureStateListener} that will listen for events in the Base Page.
-     * This listener will handle all Contextual Search-related interactions that go through the
-     * listener.
+     * Returns a new {@code GestureStateListener} that will listen for events in the Base Page. This
+     * listener will handle all Contextual Search-related interactions that go through the listener.
      */
-    public ContextualSearchGestureStateListener getGestureStateListener() {
+    public GestureStateListener getGestureStateListener() {
         return new ContextualSearchGestureStateListener();
     }
 

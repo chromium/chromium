@@ -67,6 +67,10 @@ public class MinimizeAppAndCloseTabBackPressHandlerUnitTest {
     @Test
     @SmallTest
     public void testMinimizeAppAndCloseTab() throws ExecutionException {
+        testMinimizeAppAndCloseTabImpl();
+    }
+
+    private void testMinimizeAppAndCloseTabImpl() throws ExecutionException {
         var histogram =
                 HistogramWatcher.newBuilder()
                         .expectIntRecord(
@@ -98,12 +102,16 @@ public class MinimizeAppAndCloseTabBackPressHandlerUnitTest {
     public void testMinimizeAppAndCloseTab_SystemBack() throws ExecutionException {
         createBackPressHandler(true);
         // Expect no change.
-        testMinimizeAppAndCloseTab();
+        testMinimizeAppAndCloseTabImpl();
     }
 
     @Test
     @SmallTest
     public void testCloseTab() throws ExecutionException {
+        testCloseTabImpl();
+    }
+
+    private void testCloseTabImpl() throws ExecutionException {
         var histogram =
                 HistogramWatcher.newBuilder()
                         .expectIntRecord(
@@ -139,7 +147,7 @@ public class MinimizeAppAndCloseTabBackPressHandlerUnitTest {
     public void testCloseTab_SystemBack() throws ExecutionException {
         createBackPressHandler(true);
         // Expect no change.
-        testCloseTab();
+        testCloseTabImpl();
     }
 
     @Test

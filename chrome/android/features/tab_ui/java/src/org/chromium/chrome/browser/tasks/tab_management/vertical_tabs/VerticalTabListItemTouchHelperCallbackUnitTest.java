@@ -794,6 +794,10 @@ public class VerticalTabListItemTouchHelperCallbackUnitTest {
 
     @Test
     public void testOnSelectedChanged_DragGroupHeader_HighlightsChildren() {
+        testOnSelectedChanged_DragGroupHeader_HighlightsChildrenImpl();
+    }
+
+    private void testOnSelectedChanged_DragGroupHeader_HighlightsChildrenImpl() {
         when(mViewHolder.getBindingAdapterPosition()).thenReturn(0);
         when(mViewHolder.getItemViewType()).thenReturn(TabProperties.UiType.TAB_GROUP);
         mPropertyModel.set(TabProperties.TAB_ID, 1);
@@ -855,7 +859,7 @@ public class VerticalTabListItemTouchHelperCallbackUnitTest {
     @Test
     public void testOnSelectedChanged_Idle_ClearsHighlight() {
         // Setup state to DRAG first
-        testOnSelectedChanged_DragGroupHeader_HighlightsChildren();
+        testOnSelectedChanged_DragGroupHeader_HighlightsChildrenImpl();
 
         // Transition to IDLE
         mCallback.onSelectedChanged(null, ItemTouchHelper.ACTION_STATE_IDLE);

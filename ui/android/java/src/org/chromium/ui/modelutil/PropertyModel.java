@@ -33,10 +33,10 @@ import java.util.function.Function;
 @NullMarked
 public class PropertyModel extends PropertyObservable<PropertyKey> {
     /** A PropertyKey implementation that associates a name with the property for easy debugging. */
-    private static class NamedPropertyKey implements PropertyKey {
+    static class NamedPropertyKey implements PropertyKey {
         private final @Nullable String mPropertyName;
 
-        public NamedPropertyKey(@Nullable String propertyName) {
+        protected NamedPropertyKey(@Nullable String propertyName) {
             mPropertyName = propertyName;
         }
 

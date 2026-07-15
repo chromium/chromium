@@ -59,7 +59,7 @@ public class DisplayAgent {
             "org.chromium.chrome.browser.notifications.scheduler.EXTRA_SCHEDULER_CLIENT_TYPE ";
 
     /** Contains icon info on the notification. */
-    private static class IconBundle {
+    static class IconBundle {
         public final @Nullable Bitmap bitmap;
         public final int resourceId;
 
@@ -80,7 +80,7 @@ public class DisplayAgent {
     }
 
     /** Contains button info on the notification. */
-    private static class Button {
+    static class Button {
         public final String text;
         public final @ActionButtonType int type;
         public final String id;

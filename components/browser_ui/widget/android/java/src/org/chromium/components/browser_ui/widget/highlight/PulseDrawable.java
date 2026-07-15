@@ -65,17 +65,17 @@ public class PulseDrawable extends Drawable implements Animatable {
     }
 
     /**
-     * An interface that does the actual drawing work for this {@link Drawable}.  Not meant to be
+     * An interface that does the actual drawing work for this {@link Drawable}. Not meant to be
      * stateful, as this could be shared across multiple instances of this drawable if it gets
      * copied or mutated.
      */
     private interface Painter {
         /**
-         * Called when this drawable updates it's pulse interpolation.  Should mutate the drawable
-         * as necessary.  This is responsible for invalidating this {@link Drawable} if something
-         * needs to be redrawn.
+         * Called when this drawable updates it's pulse interpolation. Should mutate the drawable as
+         * necessary. This is responsible for invalidating this {@link Drawable} if something needs
+         * to be redrawn.
          *
-         * @param drawable      The {@link PulseDrawable} that is updated.
+         * @param drawable The {@link PulseDrawable} that is updated.
          * @param interpolation The current progress of whatever is being pulsed.
          */
         void modifyDrawable(PulseDrawable drawable, float interpolation);
@@ -463,7 +463,7 @@ public class PulseDrawable extends Drawable implements Animatable {
     }
 
     /** The {@link ConstantState} subclass for this {@link PulseDrawable}. */
-    static final class PulseState extends ConstantState {
+    private static final class PulseState extends ConstantState {
         // Current Paint State.
         /** The current color, including alpha, to draw. */
         public int drawColor;
@@ -479,13 +479,13 @@ public class PulseDrawable extends Drawable implements Animatable {
         public float progress;
 
         /** The {@link Interpolator} that makes the pulse and generates the progress. */
-        public Interpolator interpolator;
+        public final Interpolator interpolator;
 
         /**
-         * The {@link Painter} object that is responsible for modifying and drawing this
-         * {@link PulseDrawable}.
+         * The {@link Painter} object that is responsible for modifying and drawing this {@link
+         * PulseDrawable}.
          */
-        public Painter painter;
+        public final Painter painter;
 
         PulseState(Interpolator interpolator, Painter painter) {
             this.interpolator = new PulseInterpolator(interpolator);

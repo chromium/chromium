@@ -281,7 +281,7 @@ public abstract class ChildConnectionAllocator {
                 /* isSandboxedForHistograms= */ false);
     }
 
-    public static Android10WorkaroundAllocatorImpl createWorkaroundForTesting(
+    static Android10WorkaroundAllocatorImpl createWorkaroundForTesting(
             Handler launcherHandler,
             String packageName,
             @Nullable Runnable freeSlotCallback,
@@ -509,13 +509,13 @@ public abstract class ChildConnectionAllocator {
                 Log.w(TAG, "Ran out of services for fallback.");
                 return null;
             }
-            int slot = mFreeConnectionIndices.remove(0);
+            int slot = mFreeConnectionIndices.remove(/* index */ 0);
             assert mChildProcessConnections[slot] == null;
             ComponentName serviceName = new ComponentName(mPackageName, mServiceClassName + slot);
             int fallbackSlot = -1;
             ComponentName fallbackServiceName = null;
             if (mFallbackSlots != null) {
-                fallbackSlot = mFreeConnectionIndices.remove(0);
+                fallbackSlot = mFreeConnectionIndices.remove(/* index */ 0);
                 fallbackServiceName =
                         new ComponentName(mPackageName, mServiceClassName + fallbackSlot);
             }
@@ -725,7 +725,8 @@ public abstract class ChildConnectionAllocator {
      * slightly delay until the device needs to be rebooted is to use up the app zygote pool first
      * before using the non-zygote global pool.
      */
-    private static class Android10WorkaroundAllocatorImpl extends ChildConnectionAllocator {
+    @VisibleForTesting
+    static class Android10WorkaroundAllocatorImpl extends ChildConnectionAllocator {
         private final VariableSizeAllocatorImpl mZygoteAllocator;
         private final VariableSizeAllocatorImpl mNonZygoteAllocator;
 

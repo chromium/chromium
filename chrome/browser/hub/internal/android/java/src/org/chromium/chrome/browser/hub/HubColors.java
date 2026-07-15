@@ -49,15 +49,12 @@ public final class HubColors {
     /** Returns the background color generic surfaces should use per the given color scheme. */
     public static @ColorInt int getBackgroundColor(
             Context context, @HubColorScheme int colorScheme) {
-        switch (colorScheme) {
-            case HubColorScheme.DEFAULT:
-                return SemanticColorUtils.getDefaultBgColor(context);
-            case HubColorScheme.INCOGNITO:
-                return ContextCompat.getColor(context, R.color.default_bg_color_dark);
-            default:
-                assert false;
-                return Color.TRANSPARENT;
-        }
+        return switch (colorScheme) {
+            case HubColorScheme.DEFAULT -> SemanticColorUtils.getDefaultBgColor(context);
+            case HubColorScheme.INCOGNITO ->
+                    ContextCompat.getColor(context, R.color.default_bg_color_dark);
+            default -> assertFalseAndReturn(Color.TRANSPARENT);
+        };
     }
 
     public static @ColorInt int getBackgroundColor(
@@ -69,63 +66,51 @@ public final class HubColors {
     /** Returns the color toolbar action button uses per the given color scheme. */
     public static @ColorInt int getToolbarActionButtonIconColor(
             Context context, @HubColorScheme int colorScheme) {
-        switch (colorScheme) {
-            case HubColorScheme.DEFAULT:
-                return SemanticColorUtils.getDefaultIconColorOnAccent1(context);
-            case HubColorScheme.INCOGNITO:
-                return ContextCompat.getColor(context, R.color.default_icon_color_on_accent1_dark);
-            default:
-                assert false;
-                return Color.TRANSPARENT;
-        }
+        return switch (colorScheme) {
+            case HubColorScheme.DEFAULT -> SemanticColorUtils.getDefaultIconColorOnAccent1(context);
+            case HubColorScheme.INCOGNITO ->
+                    ContextCompat.getColor(context, R.color.default_icon_color_on_accent1_dark);
+            default -> assertFalseAndReturn(Color.TRANSPARENT);
+        };
     }
 
     /** Returns the color most icons should use per the given color scheme. */
     public static @ColorInt int getIconColor(Context context, @HubColorScheme int colorScheme) {
         if (isXrFullSpaceMode()) return SemanticColorUtils.getDefaultIconColor(context);
-        switch (colorScheme) {
-            case HubColorScheme.DEFAULT:
-                return SemanticColorUtils.getDefaultIconColor(context);
-            case HubColorScheme.INCOGNITO:
-                return ContextCompat.getColor(context, R.color.default_icon_color_light);
-            default:
-                assert false;
-                return Color.TRANSPARENT;
-        }
+        return switch (colorScheme) {
+            case HubColorScheme.DEFAULT -> SemanticColorUtils.getDefaultIconColor(context);
+            case HubColorScheme.INCOGNITO ->
+                    ContextCompat.getColor(context, R.color.default_icon_color_light);
+            default -> assertFalseAndReturn(Color.TRANSPARENT);
+        };
     }
 
     /** Returns the color selected icons should use per the given color scheme. */
     public static @ColorInt int getSelectedIconColor(
             Context context, @HubColorScheme int colorScheme, boolean isGtsUpdateEnabled) {
-        switch (colorScheme) {
-            case HubColorScheme.DEFAULT:
-                return isGtsUpdateEnabled
-                        ? SemanticColorUtils.getDefaultIconColor(context)
-                        : SemanticColorUtils.getDefaultIconColorAccent1(context);
-            case HubColorScheme.INCOGNITO:
-                return isGtsUpdateEnabled
-                        ? ContextCompat.getColor(context, R.color.default_icon_color_light)
-                        : ContextCompat.getColor(
-                                context, R.color.default_control_color_active_dark);
-            default:
-                assert false;
-                return Color.TRANSPARENT;
-        }
+        return switch (colorScheme) {
+            case HubColorScheme.DEFAULT ->
+                    isGtsUpdateEnabled
+                            ? SemanticColorUtils.getDefaultIconColor(context)
+                            : SemanticColorUtils.getDefaultIconColorAccent1(context);
+            case HubColorScheme.INCOGNITO ->
+                    isGtsUpdateEnabled
+                            ? ContextCompat.getColor(context, R.color.default_icon_color_light)
+                            : ContextCompat.getColor(
+                                    context, R.color.default_control_color_active_dark);
+            default -> assertFalseAndReturn(Color.TRANSPARENT);
+        };
     }
 
     /** Returns the color selected tab item selector should use per the given color scheme. */
     public static @ColorInt int geTabItemSelectorColor(
             Context context, @HubColorScheme int colorScheme) {
-        switch (colorScheme) {
-            case HubColorScheme.DEFAULT:
-                return SemanticColorUtils.getColorSurfaceBright(context);
-            case HubColorScheme.INCOGNITO:
-                return ContextCompat.getColor(
-                        context, R.color.pane_switcher_selected_tab_incognito);
-            default:
-                assert false;
-                return Color.TRANSPARENT;
-        }
+        return switch (colorScheme) {
+            case HubColorScheme.DEFAULT -> SemanticColorUtils.getColorSurfaceBright(context);
+            case HubColorScheme.INCOGNITO ->
+                    ContextCompat.getColor(context, R.color.pane_switcher_selected_tab_incognito);
+            default -> assertFalseAndReturn(Color.TRANSPARENT);
+        };
     }
 
     /** Convenience method to make a selectable {@link ColorStateList} from two input colors. */
@@ -137,90 +122,69 @@ public final class HubColors {
 
     /** Returns the color of the hairline for a color scheme. */
     public static @ColorInt int getHairlineColor(Context context, @HubColorScheme int colorScheme) {
-        switch (colorScheme) {
-            case HubColorScheme.DEFAULT:
-                return SemanticColorUtils.getDividerColor(context);
-            case HubColorScheme.INCOGNITO:
-                return ContextCompat.getColor(context, R.color.divider_color_light);
-            default:
-                assert false;
-                return Color.TRANSPARENT;
-        }
+        return switch (colorScheme) {
+            case HubColorScheme.DEFAULT -> SemanticColorUtils.getDividerColor(context);
+            case HubColorScheme.INCOGNITO ->
+                    ContextCompat.getColor(context, R.color.divider_color_light);
+            default -> assertFalseAndReturn(Color.TRANSPARENT);
+        };
     }
 
     /** Returns the color of the search box hint text. */
     public static @ColorInt int getSearchBoxHintTextColor(
             Context context, @HubColorScheme int colorScheme) {
-        switch (colorScheme) {
-            case HubColorScheme.DEFAULT:
-                return MaterialColors.getColor(context, R.attr.colorOnSurfaceVariant, TAG);
-            case HubColorScheme.INCOGNITO:
-                return context.getColor(R.color.default_text_color_secondary_light);
-            default:
-                assert false;
-                return Color.TRANSPARENT;
-        }
+        return switch (colorScheme) {
+            case HubColorScheme.DEFAULT ->
+                    MaterialColors.getColor(context, R.attr.colorOnSurfaceVariant, TAG);
+            case HubColorScheme.INCOGNITO ->
+                    context.getColor(R.color.default_text_color_secondary_light);
+            default -> assertFalseAndReturn(Color.TRANSPARENT);
+        };
     }
 
     /** Returns the color of the background for the search box. */
     public static @ColorInt int getSearchBoxBgColor(
             Context context, @HubColorScheme int colorScheme) {
-        switch (colorScheme) {
-            case HubColorScheme.DEFAULT:
-                return ContextCompat.getColor(context, R.color.hub_search_box_bg_color);
-            case HubColorScheme.INCOGNITO:
-                return ContextCompat.getColor(
-                        context, R.color.incognito_hub_search_box_bg_color);
-            default:
-                assert false;
-                return ContextCompat.getColor(context, Resources.ID_NULL);
-        }
+        return switch (colorScheme) {
+            case HubColorScheme.DEFAULT ->
+                    ContextCompat.getColor(context, R.color.hub_search_box_bg_color);
+            case HubColorScheme.INCOGNITO ->
+                    ContextCompat.getColor(context, R.color.incognito_hub_search_box_bg_color);
+            default -> assertFalseAndReturn(ContextCompat.getColor(context, Resources.ID_NULL));
+        };
     }
 
     /** Returns the hub tool bar action button background color as per the given color scheme. */
     public static @ColorInt int getToolbarActionButtonBackgroundColor(
             Context context, @HubColorScheme int colorScheme) {
-        switch (colorScheme) {
-            case HubColorScheme.DEFAULT:
-                return SemanticColorUtils.getFilledButtonBgColor(context);
-            case HubColorScheme.INCOGNITO:
-                return ContextCompat.getColor(context, R.color.filled_button_bg_color_light);
-            default:
-                assert false;
-                return Color.TRANSPARENT;
-        }
+        return switch (colorScheme) {
+            case HubColorScheme.DEFAULT -> SemanticColorUtils.getFilledButtonBgColor(context);
+            case HubColorScheme.INCOGNITO ->
+                    ContextCompat.getColor(context, R.color.filled_button_bg_color_light);
+            default -> assertFalseAndReturn(Color.TRANSPARENT);
+        };
     }
 
     /** Returns the hub pane switcher background color as per the given color scheme. */
     public static @ColorInt int getPaneSwitcherBackgroundColor(
             Context context, @HubColorScheme int colorScheme) {
-        switch (colorScheme) {
-            case HubColorScheme.DEFAULT:
-                return SemanticColorUtils.getColorSurfaceContainer(context);
-            case HubColorScheme.INCOGNITO:
-                return ContextCompat.getColor(context, R.color.pane_switcher_background_incognito);
-            default:
-                assert false;
-                return Color.TRANSPARENT;
-        }
+        return switch (colorScheme) {
+            case HubColorScheme.DEFAULT -> SemanticColorUtils.getColorSurfaceContainer(context);
+            case HubColorScheme.INCOGNITO ->
+                    ContextCompat.getColor(context, R.color.pane_switcher_background_incognito);
+            default -> assertFalseAndReturn(Color.TRANSPARENT);
+        };
     }
 
     /** Returns the hub pane switcher tab item hover color as per the given color scheme. */
     public static @ColorInt int getPaneSwitcherTabItemHoverColor(
             Context context, @HubColorScheme int colorScheme) {
-        switch (colorScheme) {
-            case HubColorScheme.DEFAULT -> {
-                return SemanticColorUtils.getColorOnSurface(context);
-            }
-            case HubColorScheme.INCOGNITO -> {
-                return ContextCompat.getColor(
-                        context, R.color.pane_switcher_tab_item_hover_incognito);
-            }
-            default -> {
-                assert false;
-                return Color.TRANSPARENT;
-            }
-        }
+        return switch (colorScheme) {
+            case HubColorScheme.DEFAULT -> SemanticColorUtils.getColorOnSurface(context);
+            case HubColorScheme.INCOGNITO ->
+                    ContextCompat.getColor(context, R.color.pane_switcher_tab_item_hover_incognito);
+            default -> assertFalseAndReturn(Color.TRANSPARENT);
+        };
     }
 
     /** Returns the hub pane switcher tab item focus color as per the given color scheme. */
@@ -316,6 +280,11 @@ public final class HubColors {
         int alphaScaled = Math.round(alpha * 255);
 
         return ColorUtils.setAlphaComponent(color, alphaScaled);
+    }
+
+    private static @ColorInt int assertFalseAndReturn(@ColorInt int color) {
+        assert false;
+        return color;
     }
 
     /**

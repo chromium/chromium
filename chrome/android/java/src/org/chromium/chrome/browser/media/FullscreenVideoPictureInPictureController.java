@@ -136,7 +136,7 @@ public class FullscreenVideoPictureInPictureController {
     private final List<Runnable> mOnLeavePipCallbacks = new ArrayList<>();
 
     /** Current observers, if any. */
-    @Nullable DismissActivityOnTabChangeObserver mActivityTabObserver;
+    private @Nullable DismissActivityOnTabChangeObserver mActivityTabObserver;
 
     FullscreenManager.@Nullable Observer mFullscreenListener;
 

@@ -195,7 +195,7 @@ public class CronetUrlRequestTest {
             reason = "The output differs depending on the type of Cronet Impl.")
     @RequiresMinAndroidApi(Build.VERSION_CODES.O)
     public void testTrafficInfoAtomSourceStaticallyLinked() throws Exception {
-        testSimpleGet();
+        testSimpleGetImpl();
         mTestLogger.waitForLogCronetTrafficInfo();
         assertThat(mTestLogger.getLastCronetTrafficInfo().getCronetSource())
                 .isEqualTo(
@@ -207,13 +207,17 @@ public class CronetUrlRequestTest {
     @Test
     @SmallTest
     public void testSimpleRequestMustNotCreateDeviceInfo() throws Exception {
-        testBindToDefaultNetworkSucceeds();
+        testBindToDefaultNetworkSucceedsImpl();
         assertThat(DeviceInfo.isInitializedForTesting()).isFalse();
     }
 
     @Test
     @SmallTest
     public void testSimpleGet() throws Exception {
+        testSimpleGetImpl();
+    }
+
+    private void testSimpleGetImpl() throws Exception {
         String url = mNativeTestServer.getEchoMethodURL();
         TestUrlRequestCallback callback = startAndWaitForComplete(url);
         assertThat(callback.getResponseInfoWithChecks()).hasHttpStatusCodeThat().isEqualTo(200);
@@ -355,7 +359,7 @@ public class CronetUrlRequestTest {
 
         // Wait for an unrelated request to finish. The request should not
         // advance until followRedirect is invoked.
-        testSimpleGet();
+        testSimpleGetImpl();
         assertThat(callback.mResponseStep).isEqualTo(ResponseStep.ON_RECEIVED_REDIRECT);
         assertThat(callback.mRedirectResponseInfoList).hasSize(1);
 
@@ -376,7 +380,7 @@ public class CronetUrlRequestTest {
 
         // Wait for an unrelated request to finish. The request should not
         // advance until read is invoked.
-        testSimpleGet();
+        testSimpleGetImpl();
         assertThat(callback.mResponseStep).isEqualTo(ResponseStep.ON_RESPONSE_STARTED);
 
         // One read should get all the characters, but best not to depend on
@@ -391,7 +395,7 @@ public class CronetUrlRequestTest {
             }
             // Should not receive any messages while waiting for another get,
             // as the next read has not been started.
-            testSimpleGet();
+            testSimpleGetImpl();
             assertThat(callback.mResponseAsString).isEqualTo(response);
             assertThat(callback.mResponseStep).isEqualTo(step);
         }
@@ -420,7 +424,7 @@ public class CronetUrlRequestTest {
         mTestRule.assertResponseEquals(urlResponseInfo, callback.getResponseInfoWithChecks());
         // Make sure there are no other pending messages, which would trigger
         // asserts in TestUrlRequestCallback.
-        testSimpleGet();
+        testSimpleGetImpl();
     }
 
     /** Tests redirect without location header doesn't cause a crash. */
@@ -556,7 +560,7 @@ public class CronetUrlRequestTest {
         // Wait for a couple round trips to make sure there are no pending
         // onFailed messages. This test relies on checks in
         // TestUrlRequestCallback catching a second onFailed call.
-        testSimpleGet();
+        testSimpleGetImpl();
     }
 
     @Test
@@ -1164,7 +1168,7 @@ public class CronetUrlRequestTest {
 
         // Make sure there are no other pending messages, which would trigger
         // asserts in TestUrlRequestCallback.
-        testSimpleGet();
+        testSimpleGetImpl();
     }
 
     @Test
@@ -3149,6 +3153,10 @@ public class CronetUrlRequestTest {
 
     @Test
     public void testBindToDefaultNetworkSucceeds() {
+        testBindToDefaultNetworkSucceedsImpl();
+    }
+
+    private void testBindToDefaultNetworkSucceedsImpl() {
         String url = mNativeTestServer.getEchoMethodURL();
         ConnectivityManagerWrapper wrapper =
                 new ConnectivityManagerWrapper(mTestRule.getTestFramework().getContext());

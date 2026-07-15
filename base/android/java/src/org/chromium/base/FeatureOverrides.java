@@ -146,7 +146,7 @@ public class FeatureOverrides {
     }
 
     /** Maps with the actual test value overrides. */
-    private static class TestValues {
+    static class TestValues {
         private final Map<String, Boolean> mFeatureFlags = new HashMap<>();
         private final Map<String, Map<String, String>> mFieldTrialParams = new HashMap<>();
 

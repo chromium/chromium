@@ -1091,8 +1091,7 @@ public class LocationBarMediatorTest {
         verify(mTab, times(0)).loadUrl(any());
     }
 
-    @Test
-    public void testLoadUrl_openInNewTab_base() {
+    private void testLoadUrl_openInNewTab_base() {
         mMediator.onFinishNativeInitialization();
         mProfileSupplier.set(mProfile);
 

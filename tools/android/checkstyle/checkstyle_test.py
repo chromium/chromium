@@ -576,6 +576,51 @@ class A {
             'Parameter comments should use the ErrorProne-aware syntax')
 
     @java("""
+class A {
+    void test() {
+        doSomething(/* value */ 1);
+    }
+}
+""")
+    def test_ParamComments_5(self):
+        self._check(
+            'Parameter comments should use the ErrorProne-aware syntax')
+
+    @java("""
+class A {
+    void test() {
+        doSomething(/* value= */ 1);
+    }
+}
+""")
+    def test_ParamComments_6(self):
+        self._check()
+
+    @java("""
+class A {
+    void test() {
+        doSomething(/* index */ 1);
+    }
+}
+""")
+    def test_ParamComments_7(self):
+        # "index" is special-cased due to this error-prone warning.
+        # https://errorprone.info/bugpattern/ListRemoveAmbiguous
+        self._check()
+
+    @java("""
+class A {
+    void test() {
+        doSomething(/* element */ 1);
+    }
+}
+""")
+    def test_ParamComments_8(self):
+        # "element" is special-cased due to this error-prone warning.
+        # https://errorprone.info/bugpattern/ListRemoveAmbiguous
+        self._check()
+
+    @java("""
 /**
  * comment * */
 class A {}

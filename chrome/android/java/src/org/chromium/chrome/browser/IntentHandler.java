@@ -1025,8 +1025,8 @@ public class IntentHandler {
 
                 for (int i = urls.size() - 1; i >= 0; i--) {
                     if (shouldIgnoreIntentUrl(intent, context, urls.get(i), isCustomTab)) {
-                        urls.remove(i);
-                        tabIds.remove(i);
+                        urls.remove(/* index */ i);
+                        tabIds.remove(/* index */ i);
                     }
                 }
                 setMultiTabMetadata(intent, multiTabMetadata);

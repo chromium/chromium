@@ -337,8 +337,8 @@ class BookmarkBridge {
                     shouldTrim = false;
                     trimThreshold = -1;
                 } else {
-                    folderList.remove(i);
-                    depthList.remove(i);
+                    folderList.remove(/* index */ i);
+                    depthList.remove(/* index */ i);
                     i--;
                 }
             }
@@ -349,8 +349,8 @@ class BookmarkBridge {
                 if (bookmarksToMove.contains(folder)) {
                     shouldTrim = true;
                     trimThreshold = depth;
-                    folderList.remove(i);
-                    depthList.remove(i);
+                    folderList.remove(/* index */ i);
+                    depthList.remove(/* index */ i);
                     i--;
                 }
             }

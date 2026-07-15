@@ -1917,7 +1917,7 @@ public class NotificationPlatformBridgeTest {
 
         // Delete suspicious notification backups stored in the
         // `NotificationContentDetectionManager`.
-        NotificationContentDetectionManager.sWarningNotificationAttributesByOrigin.clear();
+        NotificationContentDetectionManager.clearWarningNotificationAttributesByOriginForTesting();
 
         // Tap "Show notification(s)".
         PendingIntent showOriginalsIntent = warningNotification.actions[1].actionIntent;

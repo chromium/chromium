@@ -326,7 +326,7 @@ public class NfcImpl implements Nfc {
     @Override
     public void cancelWatch(int id) {
         if (mWatchIds.contains(id)) {
-            mWatchIds.remove(mWatchIds.indexOf(id));
+            mWatchIds.remove(/* element */ Integer.valueOf(id));
             disableReaderModeIfNeeded();
         }
     }

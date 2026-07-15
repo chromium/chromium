@@ -300,14 +300,14 @@ public class WebKitHitTestTest extends AwParameterizedTest {
     }
 
     private void srcPhoneTypeTestBody(boolean byTouch) throws Throwable {
-        String phone_num = "%2B1234567890";
-        String expected_phone_num = "+1234567890";
+        String phoneNum = "%2B1234567890";
+        String expectedPhoneNum = "+1234567890";
         String prefix = "tel:";
-        String page = fullPageLink("tel:" + phone_num, ANCHOR_TEXT);
+        String page = fullPageLink("tel:" + phoneNum, ANCHOR_TEXT);
         setServerResponseAndLoad(page);
         simulateInput(byTouch);
-        pollForHitTestDataOnUiThread(HitTestResult.PHONE_TYPE, expected_phone_num);
-        pollForHrefAndImageSrcOnUiThread(prefix + phone_num, ANCHOR_TEXT, null);
+        pollForHitTestDataOnUiThread(HitTestResult.PHONE_TYPE, expectedPhoneNum);
+        pollForHrefAndImageSrcOnUiThread(prefix + phoneNum, ANCHOR_TEXT, null);
     }
 
     @Test
@@ -457,7 +457,7 @@ public class WebKitHitTestTest extends AwParameterizedTest {
     public void testUnknownTypeUnrecognizedNode() throws Throwable {
         // Since UNKNOWN_TYPE is the default, hit test another type first for
         // this test to be valid.
-        testSrcAnchorType();
+        srcAnchorTypeTestBody(true);
 
         final String title = "UNKNOWN_TYPE title";
 

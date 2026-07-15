@@ -1020,17 +1020,18 @@ public class FakeUrlRequestTest {
 
         IllegalStateException e =
                 assertThrows(
-                        IllegalStateException.class,
-                        () -> {
-                            synchronized (request.mLock) {
-                                request.mFakeDataSink.onReadSucceeded(false);
-                            }
-                        });
+                        IllegalStateException.class, () -> simulateNonFinalReadSucceeded(request));
 
         assertThat(e)
                 .hasMessageThat()
                 .isEqualTo("onReadSucceeded() called when not awaiting a read result; in state: 2");
         request.cancel();
+    }
+
+    private static void simulateNonFinalReadSucceeded(FakeUrlRequest request) {
+        synchronized (request.mLock) {
+            request.mFakeDataSink.onReadSucceeded(false);
+        }
     }
 
     @Test
@@ -1059,17 +1060,17 @@ public class FakeUrlRequestTest {
         callback.waitForNextStep();
 
         IllegalStateException e =
-                assertThrows(
-                        IllegalStateException.class,
-                        () -> {
-                            synchronized (request.mLock) {
-                                request.mFakeDataSink.onRewindSucceeded();
-                            }
-                        });
+                assertThrows(IllegalStateException.class, () -> simulateRewindSuccess(request));
         assertThat(e)
                 .hasMessageThat()
                 .isEqualTo("onRewindSucceeded() called when not awaiting a rewind; in state: 2");
         request.cancel();
+    }
+
+    private static void simulateRewindSuccess(FakeUrlRequest request) {
+        synchronized (request.mLock) {
+            request.mFakeDataSink.onRewindSucceeded();
+        }
     }
 
     @Test

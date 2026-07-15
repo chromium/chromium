@@ -63,7 +63,7 @@ public class NotificationContentDetectionManager {
     // origin. If this data is pruned from memory (e.g., Chrome is killed), the user will not be
     // able to restore the original notifications by tapping "Show original notification" on the
     // warning notification.
-    static final Map<String, SuspiciousNotificationWarningDetailsForOrigin>
+    private static final Map<String, SuspiciousNotificationWarningDetailsForOrigin>
             sWarningNotificationAttributesByOrigin = new HashMap<>();
 
     private static @Nullable NotificationContentDetectionManager sInstance;
@@ -921,5 +921,9 @@ public class NotificationContentDetectionManager {
                     channelId);
         }
         NotificationPlatformBridge.displayNotificationSilently(builder, notificationId);
+    }
+
+    static void clearWarningNotificationAttributesByOriginForTesting() {
+        sWarningNotificationAttributesByOrigin.clear();
     }
 }

@@ -123,7 +123,7 @@ public class SerialNotificationManager {
     private void destroyNotification(int notificationId) {
         if (!doesNotificationExist(notificationId)) return;
         mNotificationManager.cancel(NOTIFICATION_NAMESPACE, notificationId);
-        mNotificationIds.remove(mNotificationIds.indexOf(notificationId));
+        mNotificationIds.remove(/* element */ Integer.valueOf(notificationId));
         updateSharedPreferencesEntry(notificationId, true);
     }
 

@@ -431,7 +431,7 @@ public class AnrCollector {
         }
         // Sort the ANR variations files by their last modified time. The files at the beginning of
         // the array have smaller unix time which means they are older.
-        Arrays.sort(variationsFiles, Comparator.comparing(File::lastModified));
+        Arrays.sort(variationsFiles, Comparator.comparingLong(File::lastModified));
         int remainingFilesCount = variationsFiles.length;
         for (File variationsFile : variationsFiles) {
             if (!variationsFile.equals(curAnrVariationsFile)) {

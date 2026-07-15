@@ -1447,7 +1447,10 @@ public class TabListMediatorUnitTest {
         when(mTabModel.getCount()).thenReturn(3);
 
         // Hide dialog to complete and ensure the delayed tab is not added.
-        resetWithNullTabs();
+        mMediator.resetWithListOfTabs(null, null, false);
+        verify(mTabModel).removeObserver(any());
+        verify(mTabModel).removeTabGroupObserver(any());
+
         mMediator.postHiding();
         // Assert tab was not added.
         assertThat(mModelList.size(), equalTo(0));

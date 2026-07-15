@@ -85,6 +85,10 @@ public class PermissionVerticalButtonsDialogCustomViewBinderTest {
     @Test
     @SmallTest
     public void testIcon_WithTint() {
+        testIcon_WithTintImpl();
+    }
+
+    private void testIcon_WithTintImpl() {
         Drawable drawable =
                 ResourcesCompat.getDrawable(
                         mActivity.getResources(),
@@ -104,7 +108,7 @@ public class PermissionVerticalButtonsDialogCustomViewBinderTest {
     @Test
     @SmallTest
     public void testIcon_ResetTint() {
-        testIcon_WithTint();
+        testIcon_WithTintImpl();
         mPropertyModel.set(PermissionDialogCustomViewProperties.ICON_TINT, null);
 
         ImageView iconView = mCustomView.findViewById(R.id.icon);

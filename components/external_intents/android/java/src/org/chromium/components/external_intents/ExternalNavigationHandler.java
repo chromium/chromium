@@ -192,7 +192,7 @@ public class ExternalNavigationHandler implements ExternalNavigationHelper {
         }
     }
 
-    private static class IntentBasedSupplier<T extends @Nullable Object> extends LazySupplier<T> {
+    protected static class IntentBasedSupplier<T extends @Nullable Object> extends LazySupplier<T> {
         protected final Intent mIntent;
         private @Nullable Intent mIntentCopy;
 
@@ -493,7 +493,7 @@ public class ExternalNavigationHandler implements ExternalNavigationHelper {
             }
         }
 
-        final QueryNonDefaultSupplier mNonDefaultSupplier;
+        private final QueryNonDefaultSupplier mNonDefaultSupplier;
 
         public QueryIntentActivitiesSupplier(Intent intent) {
             super(intent, () -> queryIntentActivities(intent));

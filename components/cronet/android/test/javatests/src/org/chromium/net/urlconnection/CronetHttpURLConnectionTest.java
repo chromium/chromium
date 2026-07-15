@@ -708,12 +708,7 @@ public class CronetHttpURLConnectionTest {
         // TODO(crbug.com/40916513): This might be racy
         // Continue reading, and make sure the message loop will not block and the connection is
         // disconnected before EOF, since the response body is big.
-        IOException e =
-                assertThrows(
-                        IOException.class,
-                        () -> {
-                            while (in.read() != -1) {}
-                        });
+        IOException e = assertThrows(IOException.class, () -> readUntilEnd(in));
         assertThat(e).hasMessageThat().isEqualTo("disconnect() called");
         // Read once more, and make sure exception is thrown.
         e = assertThrows(IOException.class, in::read);
@@ -735,12 +730,7 @@ public class CronetHttpURLConnectionTest {
         mNativeTestServer.close();
         // Continue reading, and make sure the message loop will not block and the server closes
         // the connection before EOF is received.
-        IOException e =
-                assertThrows(
-                        IOException.class,
-                        () -> {
-                            while (in.read() != -1) {}
-                        });
+        IOException e = assertThrows(IOException.class, () -> readUntilEnd(in));
         assertThat(e).hasMessageThat().contains("net::ERR_CONTENT_LENGTH_MISMATCH");
 
         // Read once more, and make sure exception is thrown.
@@ -749,6 +739,10 @@ public class CronetHttpURLConnectionTest {
         // Spins up server to avoid crash when shutting it down in tearDown().
         mNativeTestServer =
                 NativeTestServer.createNativeTestServer(mTestRule.getTestFramework().getContext());
+    }
+
+    private static void readUntilEnd(InputStream in) throws IOException {
+        while (in.read() != -1) {}
     }
 
     @Test

@@ -428,7 +428,7 @@ public class ExtensionsToolbarCoordinatorImpl
     }
 
     @Override
-    public PoppedOutActionWidthConsumer getPoppedOutActionWidthConsumer() {
+    public ToolbarWidthConsumer getPoppedOutActionWidthConsumer() {
         return mPoppedOutActionWidthConsumer;
     }
 

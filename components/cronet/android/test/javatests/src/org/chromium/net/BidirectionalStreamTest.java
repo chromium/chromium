@@ -297,7 +297,7 @@ public class BidirectionalStreamTest {
             reason = "The output differs depending on the type of Cronet Impl.")
     @RequiresMinAndroidApi(Build.VERSION_CODES.O)
     public void testTrafficInfoAtomSourceStaticallyLinked() throws Exception {
-        testSimpleGet();
+        testSimpleGetImpl();
         mTestLogger.waitForLogCronetTrafficInfo();
         assertThat(mTestLogger.getLastCronetTrafficInfo().getCronetSource())
                 .isEqualTo(
@@ -309,6 +309,10 @@ public class BidirectionalStreamTest {
     @Test
     @SmallTest
     public void testSimpleGet() throws Exception {
+        testSimpleGetImpl();
+    }
+
+    private void testSimpleGetImpl() throws Exception {
         // Since this is the first request on the connection, the expected received bytes count
         // must account for an HPACK dynamic table size update.
         int expectedReceivedBytes = 31;

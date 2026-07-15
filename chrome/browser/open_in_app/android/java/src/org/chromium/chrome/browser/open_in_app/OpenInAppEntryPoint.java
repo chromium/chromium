@@ -45,6 +45,7 @@ public abstract class OpenInAppEntryPoint implements OpenInAppMenuItemProvider {
 
     sealed interface ResolveResult
             permits ResolveResult.Info, ResolveResult.ResolverActivity, ResolveResult.None {
+        @SuppressWarnings("AvoidCommonTypeNames")
         final class Info implements ResolveResult {
             public final ResolveInfo resolveInfo;
 

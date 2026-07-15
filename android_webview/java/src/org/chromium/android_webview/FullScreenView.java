@@ -51,7 +51,7 @@ public class FullScreenView extends FrameLayout {
                         : null;
     }
 
-    public InternalAccessAdapter getInternalAccessAdapter() {
+    public AwContents.InternalAccessDelegate getInternalAccessAdapter() {
         return mInternalAccessAdapter;
     }
 

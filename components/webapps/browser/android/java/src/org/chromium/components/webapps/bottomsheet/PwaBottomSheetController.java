@@ -110,7 +110,7 @@ public class PwaBottomSheetController implements View.OnClickListener {
     private @Nullable WebContentsObserver mWebContentsObserver;
 
     /** The ViewHolder for the view's Screenshots RecyclerView. */
-    private static class ScreenshotViewHolder extends RecyclerView.ViewHolder {
+    static class ScreenshotViewHolder extends RecyclerView.ViewHolder {
         public ScreenshotViewHolder(View itemView) {
             super(itemView);
         }

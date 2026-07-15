@@ -67,9 +67,9 @@ public class LifetimeAssert {
 
     @VisibleForTesting
     static class WrappedReference extends PhantomReference<Object> {
-        boolean mSafeToGc;
-        final Class<?> mTargetClass;
-        final CreationException mCreationException;
+        private boolean mSafeToGc;
+        private final Class<?> mTargetClass;
+        private final CreationException mCreationException;
 
         private WrappedReference(
                 Object target, CreationException creationException, boolean safeToGc) {

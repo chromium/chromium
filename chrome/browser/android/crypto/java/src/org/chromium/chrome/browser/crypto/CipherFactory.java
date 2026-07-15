@@ -75,7 +75,7 @@ public class CipherFactory {
             "org.chromium.content.browser.crypto.CipherFactory.Persistent.TAB_STATE_STORAGE_KEY";
 
     /** Holds intermediate data for the computation. */
-    private static class CipherData {
+    static class CipherData {
         public final Key key;
         public final byte[] iv;
 

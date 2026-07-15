@@ -250,7 +250,7 @@ public class ActionConfirmationDialog {
             assert barrierId != null;
             assert mBarrier != null;
 
-            boolean removed = mBarrier.remove(barrierId);
+            boolean removed = mBarrier.remove(/* element */ barrierId);
             assert removed : "Repeate call to removeFromBarrier " + barrierId.intValue();
 
             if (mBarrier.isEmpty() && mBarrierDismissRunnable != null) {

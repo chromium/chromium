@@ -272,6 +272,10 @@ public class CronetFixedModeOutputStreamTest {
     @Test
     @SmallTest
     public void testFixedLengthStreamingModeLargeData() throws Exception {
+        testFixedLengthStreamingModeLargeDataImpl();
+    }
+
+    private void testFixedLengthStreamingModeLargeDataImpl() throws Exception {
         URL url = new URL(mNativeTestServer.getEchoBodyURL());
         mConnection = (HttpURLConnection) mCronetEngine.openConnection(url);
         mConnection.setDoOutput(true);
@@ -302,6 +306,10 @@ public class CronetFixedModeOutputStreamTest {
     @Test
     @SmallTest
     public void testFixedLengthStreamingModeLargeDataWriteOneByte() throws Exception {
+        testFixedLengthStreamingModeLargeDataWriteOneByteImpl();
+    }
+
+    private void testFixedLengthStreamingModeLargeDataWriteOneByteImpl() throws Exception {
         URL url = new URL(mNativeTestServer.getEchoBodyURL());
         mConnection = (HttpURLConnection) mCronetEngine.openConnection(url);
         mConnection.setDoOutput(true);
@@ -332,15 +340,19 @@ public class CronetFixedModeOutputStreamTest {
         for (int length : bufferLengths) {
             CronetFixedModeOutputStream.setDefaultBufferLengthForTesting(length);
             // Run the following three tests with this custom buffer size.
-            testFixedLengthStreamingModeLargeDataWriteOneByte();
-            testFixedLengthStreamingModeLargeData();
-            testOneMassiveWrite();
+            testFixedLengthStreamingModeLargeDataWriteOneByteImpl();
+            testFixedLengthStreamingModeLargeDataImpl();
+            testOneMassiveWriteImpl();
         }
     }
 
     @Test
     @SmallTest
     public void testOneMassiveWrite() throws Exception {
+        testOneMassiveWriteImpl();
+    }
+
+    private void testOneMassiveWriteImpl() throws Exception {
         URL url = new URL(mNativeTestServer.getEchoBodyURL());
         mConnection = (HttpURLConnection) mCronetEngine.openConnection(url);
         mConnection.setDoOutput(true);

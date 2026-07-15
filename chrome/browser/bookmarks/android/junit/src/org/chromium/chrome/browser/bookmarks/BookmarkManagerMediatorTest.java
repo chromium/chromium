@@ -795,7 +795,8 @@ public class BookmarkManagerMediatorTest {
 
     @Test
     public void onBackPressed_AndThenModelEvent() {
-        initAndLoadBookmarkModel();
+        finishLoading();
+        assertEquals(BookmarkUiMode.LOADING, mMediator.getCurrentUiMode());
         assertFalse(mMediator.onBackPressed());
 
         verify(mBookmarkModel).addObserver(mBookmarkModelObserverArgumentCaptor.capture());

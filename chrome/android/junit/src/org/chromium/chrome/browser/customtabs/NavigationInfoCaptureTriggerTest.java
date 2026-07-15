@@ -52,6 +52,10 @@ public class NavigationInfoCaptureTriggerTest {
     @Test
     @Feature({"CustomTabs"})
     public void testNormalFlow() {
+        testNormalFlowImpl();
+    }
+
+    private void testNormalFlowImpl() {
         mTrigger.onLoadFinished(mTab);
 
         // If we run everything on the Looper, the backup onload capture will trigger. Therefore
@@ -73,6 +77,10 @@ public class NavigationInfoCaptureTriggerTest {
     @Test
     @Feature({"CustomTabs"})
     public void testDelayedOnload() {
+        testDelayedOnloadImpl();
+    }
+
+    private void testDelayedOnloadImpl() {
         mTrigger.onFirstMeaningfulPaint(mTab);
         verifyCaptured(0);
 
@@ -121,17 +129,17 @@ public class NavigationInfoCaptureTriggerTest {
     @Test
     @Feature({"CustomTabs"})
     public void testResetOnNavigation() {
-        testNormalFlow();
+        testNormalFlowImpl();
 
         mTrigger.onNewNavigation();
 
         clearInvocations(mDelegate); // Clears the mock so the verifies in the original test work.
-        testNormalFlow();
+        testNormalFlowImpl();
 
         mTrigger.onNewNavigation();
 
         clearInvocations(mDelegate);
-        testDelayedOnload();
+        testDelayedOnloadImpl();
     }
 
     /** Tests that we capture only on the first FMP. */

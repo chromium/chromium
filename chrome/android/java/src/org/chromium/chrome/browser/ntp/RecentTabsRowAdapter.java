@@ -273,7 +273,7 @@ public class RecentTabsRowAdapter extends BaseExpandableListAdapter {
     }
 
     /** A group containing all the tabs associated with a foreign session from a synced device. */
-    class ForeignSessionGroup extends Group {
+    private class ForeignSessionGroup extends Group {
         private final ForeignSession mForeignSession;
         private @Nullable ForeignSessionTab mLongPressedRow;
 
@@ -474,7 +474,7 @@ public class RecentTabsRowAdapter extends BaseExpandableListAdapter {
     }
 
     /** A group containing the signin promo. */
-    class SigninPromoGroup extends PromoGroup {
+    private class SigninPromoGroup extends PromoGroup {
         @Override
         public @ChildType int getChildType() {
             return ChildType.SIGNIN_PROMO;
@@ -490,7 +490,7 @@ public class RecentTabsRowAdapter extends BaseExpandableListAdapter {
     /** A group containing the empty state illustration. */
     // TODO(crbug.com/40923516): Consider using this PromoGroup subclass for the empty state
     // implementation of LegacySyncPromoView.
-    class EmptyStatePromoGroup extends PromoGroup {
+    private class EmptyStatePromoGroup extends PromoGroup {
         @Override
         int getChildType() {
             return ChildType.NONE;
@@ -528,9 +528,7 @@ public class RecentTabsRowAdapter extends BaseExpandableListAdapter {
      * A group containing tabs that were recently closed on this device and a link to the history
      * page.
      */
-    class RecentlyClosedTabsGroup extends Group {
-        static final @StringRes int ID_OPEN_IN_NEW_TAB = R.string.contextmenu_open_in_new_tab;
-        static final @StringRes int ID_REMOVE_ALL = R.string.remove_all;
+    private class RecentlyClosedTabsGroup extends Group {
         private @Nullable RecentlyClosedEntry mLongPressedRow;
 
         @Override
@@ -794,7 +792,7 @@ public class RecentTabsRowAdapter extends BaseExpandableListAdapter {
     }
 
     /** A group containing a blank separator. */
-    class SeparatorGroup extends Group {
+    private class SeparatorGroup extends Group {
         private final boolean mIsVisible;
 
         public SeparatorGroup(boolean isVisible) {
@@ -915,7 +913,7 @@ public class RecentTabsRowAdapter extends BaseExpandableListAdapter {
      * row view initialization, and the references are cached here. Also stores a reference to the
      * favicon image callback; so that we can make sure we load the correct favicon.
      */
-    private static class ViewHolder {
+    static class ViewHolder {
         public final ImageView iconView;
         public final TextView textView;
         public final TextView domainView;

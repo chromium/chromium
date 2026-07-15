@@ -44,91 +44,40 @@ public class PageContentProtoViewStructureBuilder implements VirtualStructurePro
     private static final float XS_TEXT_SIZE = PIXELS_PER_EM * 0.67f;
 
     private static String getClassNameForAttributeType(ContentAttributeType attributeType) {
-        switch (attributeType) {
-            case CONTENT_ATTRIBUTE_ORDERED_LIST, CONTENT_ATTRIBUTE_UNORDERED_LIST -> {
-                return "android.widget.ListView";
-            }
-            case CONTENT_ATTRIBUTE_CONTAINER -> {
-                return "android.view.View";
-            }
-            case CONTENT_ATTRIBUTE_TEXT, CONTENT_ATTRIBUTE_PARAGRAPH -> {
-                return "android.widget.TextView";
-            }
-            case CONTENT_ATTRIBUTE_IMAGE -> {
-                return "android.widget.ImageView";
-            }
-            default -> {
-                return "";
-            }
-        }
+        return switch (attributeType) {
+            case CONTENT_ATTRIBUTE_ORDERED_LIST, CONTENT_ATTRIBUTE_UNORDERED_LIST ->
+                    "android.widget.ListView";
+            case CONTENT_ATTRIBUTE_CONTAINER -> "android.view.View";
+            case CONTENT_ATTRIBUTE_TEXT, CONTENT_ATTRIBUTE_PARAGRAPH -> "android.widget.TextView";
+            case CONTENT_ATTRIBUTE_IMAGE -> "android.widget.ImageView";
+            default -> "";
+        };
     }
 
     private static String getTagNameForAttributeType(ContentAttributeType attributeType) {
-        switch (attributeType) {
-            case CONTENT_ATTRIBUTE_UNKNOWN -> {
-                return "UNKNOWN";
-            }
-            case CONTENT_ATTRIBUTE_ROOT -> {
-                return "HTML";
-            }
-            case CONTENT_ATTRIBUTE_CONTAINER -> {
-                return "DIV";
-            }
-            case CONTENT_ATTRIBUTE_IFRAME -> {
-                return "IFRAME";
-            }
-            case CONTENT_ATTRIBUTE_PARAGRAPH -> {
-                return "P";
-            }
-            case CONTENT_ATTRIBUTE_HEADING -> {
-                return "H";
-            }
-            case CONTENT_ATTRIBUTE_TEXT -> {
-                return "TEXTAREA";
-            }
-            case CONTENT_ATTRIBUTE_ANCHOR -> {
-                return "A";
-            }
-            case CONTENT_ATTRIBUTE_IMAGE -> {
-                return "IMG";
-            }
-            case CONTENT_ATTRIBUTE_SVG_ROOT -> {
-                return "SVG";
-            }
-            case CONTENT_ATTRIBUTE_CANVAS -> {
-                return "CANVAS";
-            }
-            case CONTENT_ATTRIBUTE_VIDEO -> {
-                return "VIDEO";
-            }
-            case CONTENT_ATTRIBUTE_ORDERED_LIST -> {
-                return "OL";
-            }
-            case CONTENT_ATTRIBUTE_UNORDERED_LIST -> {
-                return "UL";
-            }
-            case CONTENT_ATTRIBUTE_LIST_ITEM -> {
-                return "LI";
-            }
-            case CONTENT_ATTRIBUTE_FORM -> {
-                return "FORM";
-            }
-            case CONTENT_ATTRIBUTE_FORM_CONTROL -> {
-                return "INPUT";
-            }
-            case CONTENT_ATTRIBUTE_TABLE -> {
-                return "TABLE";
-            }
-            case CONTENT_ATTRIBUTE_TABLE_ROW -> {
-                return "TR";
-            }
-            case CONTENT_ATTRIBUTE_TABLE_CELL -> {
-                return "TD";
-            }
-            default -> {
-                return "";
-            }
-        }
+        return switch (attributeType) {
+            case CONTENT_ATTRIBUTE_UNKNOWN -> "UNKNOWN";
+            case CONTENT_ATTRIBUTE_ROOT -> "HTML";
+            case CONTENT_ATTRIBUTE_CONTAINER -> "DIV";
+            case CONTENT_ATTRIBUTE_IFRAME -> "IFRAME";
+            case CONTENT_ATTRIBUTE_PARAGRAPH -> "P";
+            case CONTENT_ATTRIBUTE_HEADING -> "H";
+            case CONTENT_ATTRIBUTE_TEXT -> "TEXTAREA";
+            case CONTENT_ATTRIBUTE_ANCHOR -> "A";
+            case CONTENT_ATTRIBUTE_IMAGE -> "IMG";
+            case CONTENT_ATTRIBUTE_SVG_ROOT -> "SVG";
+            case CONTENT_ATTRIBUTE_CANVAS -> "CANVAS";
+            case CONTENT_ATTRIBUTE_VIDEO -> "VIDEO";
+            case CONTENT_ATTRIBUTE_ORDERED_LIST -> "OL";
+            case CONTENT_ATTRIBUTE_UNORDERED_LIST -> "UL";
+            case CONTENT_ATTRIBUTE_LIST_ITEM -> "LI";
+            case CONTENT_ATTRIBUTE_FORM -> "FORM";
+            case CONTENT_ATTRIBUTE_FORM_CONTROL -> "INPUT";
+            case CONTENT_ATTRIBUTE_TABLE -> "TABLE";
+            case CONTENT_ATTRIBUTE_TABLE_ROW -> "TR";
+            case CONTENT_ATTRIBUTE_TABLE_CELL -> "TD";
+            default -> "";
+        };
     }
 
     /*
@@ -136,26 +85,14 @@ public class PageContentProtoViewStructureBuilder implements VirtualStructurePro
      * the page content proto doesn't contain exact pixel sizes for text.
      */
     private static float getApproximatePixelSizeForTextSize(TextSize textSize) {
-        switch (textSize) {
-            case TEXT_SIZE_XL -> {
-                return XL_TEXT_SIZE;
-            }
-            case TEXT_SIZE_L -> {
-                return L_TEXT_SIZE;
-            }
-            case TEXT_SIZE_M_DEFAULT -> {
-                return PIXELS_PER_EM;
-            }
-            case TEXT_SIZE_S -> {
-                return S_TEXT_SIZE;
-            }
-            case TEXT_SIZE_XS -> {
-                return XS_TEXT_SIZE;
-            }
-            default -> {
-                return PIXELS_PER_EM;
-            }
-        }
+        return switch (textSize) {
+            case TEXT_SIZE_XL -> XL_TEXT_SIZE;
+            case TEXT_SIZE_L -> L_TEXT_SIZE;
+            case TEXT_SIZE_M_DEFAULT -> PIXELS_PER_EM;
+            case TEXT_SIZE_S -> S_TEXT_SIZE;
+            case TEXT_SIZE_XS -> XS_TEXT_SIZE;
+            default -> PIXELS_PER_EM;
+        };
     }
 
     @Override

@@ -172,6 +172,10 @@ public class CronetUploadTest {
     @Test
     @SmallTest
     public void testReadCompleteTriggerRewind() throws Exception {
+        testReadCompleteTriggerRewindImpl();
+    }
+
+    private void testReadCompleteTriggerRewindImpl() throws Exception {
         // Reset and init before read completes.
         assertThat(mHandler.init()).isTrue();
         mHandler.read();
@@ -206,7 +210,7 @@ public class CronetUploadTest {
     @Test
     @SmallTest
     public void testReadCompleteTriggerRewindOnlyOneRewind() throws Exception {
-        testReadCompleteTriggerRewind();
+        testReadCompleteTriggerRewindImpl();
         // Reset and Init again, no rewind should happen.
         mHandler.reset();
         assertThat(mHandler.init()).isTrue();

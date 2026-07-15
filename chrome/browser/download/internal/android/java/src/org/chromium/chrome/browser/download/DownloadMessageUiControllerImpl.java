@@ -186,7 +186,7 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
     }
 
     /** Represents the data required to show UI elements of the message. */
-    public static class DownloadProgressMessageUiData {
+    static class DownloadProgressMessageUiData {
         public @Nullable ContentId id;
 
         public String message;
@@ -252,7 +252,7 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
     }
 
     /** An utility class to count the number of downloads at different states at any given time. */
-    private static class DownloadCount {
+    static class DownloadCount {
         public int inProgress;
         public int pending;
         public int failed;

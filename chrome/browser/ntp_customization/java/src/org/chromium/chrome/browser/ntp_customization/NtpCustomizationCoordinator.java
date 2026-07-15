@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.ntp_customization;
 
+import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.FEED;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.MAIN;
@@ -326,24 +327,13 @@ public class NtpCustomizationCoordinator {
      */
     @VisibleForTesting
     View.OnClickListener getOptionClickListener(@BottomSheetType int type) {
-        switch (type) {
-            case NTP_CARDS -> {
-                return v -> showNtpCardsBottomSheet();
-            }
-            case FEED -> {
-                return v -> showFeedBottomSheet();
-            }
-            case THEME -> {
-                return v -> showThemeBottomSheet();
-            }
-            case MVT -> {
-                return v -> showMvtSettingCoordinator();
-            }
-            default -> {
-                assert false : "Bottom sheet type not supported!";
-                return assumeNonNull(null);
-            }
-        }
+        return switch (type) {
+            case NTP_CARDS -> v -> showNtpCardsBottomSheet();
+            case FEED -> v -> showFeedBottomSheet();
+            case THEME -> v -> showThemeBottomSheet();
+            case MVT -> v -> showMvtSettingCoordinator();
+            default -> assertNonNull(null);
+        };
     }
 
     /**

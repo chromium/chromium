@@ -88,6 +88,10 @@ public class PermissionDialogCustomViewBinderTest {
     @Test
     @SmallTest
     public void testIcon_WithTint() {
+        testIcon_WithTintImpl();
+    }
+
+    private void testIcon_WithTintImpl() {
         Drawable drawable =
                 ResourcesCompat.getDrawable(
                         mActivity.getResources(),
@@ -115,7 +119,7 @@ public class PermissionDialogCustomViewBinderTest {
     @Test
     @SmallTest
     public void testIcon_ResetTint() {
-        testIcon_WithTint();
+        testIcon_WithTintImpl();
 
         mPropertyModel.set(PermissionDialogCustomViewProperties.ICON_TINT, null);
 

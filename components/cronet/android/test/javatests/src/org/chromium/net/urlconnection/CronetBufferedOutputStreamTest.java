@@ -335,20 +335,19 @@ public class CronetBufferedOutputStreamTest {
         mConnection.setRequestProperty(
                 "Content-Length", Integer.toString(TestUtil.UPLOAD_DATA.length - 1));
         OutputStream out = mConnection.getOutputStream();
-        ProtocolException e =
-                assertThrows(
-                        ProtocolException.class,
-                        () -> {
-                            for (int i = 0; i < TestUtil.UPLOAD_DATA.length; i++) {
-                                out.write(TestUtil.UPLOAD_DATA[i]);
-                            }
-                        });
+        ProtocolException e = assertThrows(ProtocolException.class, () -> writeAll(out));
         assertThat(e)
                 .hasMessageThat()
                 .isEqualTo(
                         "exceeded content-length limit of "
                                 + (TestUtil.UPLOAD_DATA.length - 1)
                                 + " bytes");
+    }
+
+    private static void writeAll(OutputStream out) throws IOException {
+        for (int i = 0; i < TestUtil.UPLOAD_DATA.length; i++) {
+            out.write(TestUtil.UPLOAD_DATA[i]);
+        }
     }
 
     @Test

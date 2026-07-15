@@ -157,8 +157,7 @@ public class RecentTabsPageTest {
         final String title = tab.getTitle();
         final View view = waitForView(title);
 
-        openContextMenuAndInvokeItem(
-                view, RecentTabsRowAdapter.RecentlyClosedTabsGroup.ID_OPEN_IN_NEW_TAB);
+        openContextMenuAndInvokeItem(view, R.string.contextmenu_open_in_new_tab);
         verify(mManager, times(1))
                 .openRecentlyClosedTab(mTabModel, tab, WindowOpenDisposition.NEW_BACKGROUND_TAB);
 
@@ -171,8 +170,7 @@ public class RecentTabsPageTest {
                 .openRecentlyClosedTab(mTabModel, tab, WindowOpenDisposition.CURRENT_TAB);
 
         // Clear the recently closed tabs with the context menu and confirm the view is gone.
-        openContextMenuAndInvokeItem(
-                view, RecentTabsRowAdapter.RecentlyClosedTabsGroup.ID_REMOVE_ALL);
+        openContextMenuAndInvokeItem(view, R.string.remove_all);
         assertEquals(0, mManager.getRecentlyClosedEntries(1).size());
         waitForViewToDisappear(title);
     }
@@ -265,8 +263,7 @@ public class RecentTabsPageTest {
         verify(mManager, times(1)).openRecentlyClosedEntry(mTabModel, group);
 
         // Clear the recently closed tabs with the context menu and confirm the view is gone.
-        openContextMenuAndInvokeItem(
-                view, RecentTabsRowAdapter.RecentlyClosedTabsGroup.ID_REMOVE_ALL);
+        openContextMenuAndInvokeItem(view, R.string.remove_all);
         assertEquals(0, mManager.getRecentlyClosedEntries(1).size());
         waitForViewToDisappear(groupString);
 
@@ -338,8 +335,7 @@ public class RecentTabsPageTest {
         verify(mManager, times(1)).openRecentlyClosedEntry(mTabModel, group);
 
         // Clear the recently closed tabs with the context menu and confirm the view is gone.
-        openContextMenuAndInvokeItem(
-                view, RecentTabsRowAdapter.RecentlyClosedTabsGroup.ID_REMOVE_ALL);
+        openContextMenuAndInvokeItem(view, R.string.remove_all);
         assertEquals(0, mManager.getRecentlyClosedEntries(1).size());
         waitForViewToDisappear(groupString);
     }
@@ -430,8 +426,7 @@ public class RecentTabsPageTest {
         verify(mManager, times(1)).openRecentlyClosedEntry(mTabModel, group);
 
         // Clear the recently closed tabs with the context menu and confirm the view is gone.
-        openContextMenuAndInvokeItem(
-                view, RecentTabsRowAdapter.RecentlyClosedTabsGroup.ID_REMOVE_ALL);
+        openContextMenuAndInvokeItem(view, R.string.remove_all);
         assertEquals(0, mManager.getRecentlyClosedEntries(1).size());
         waitForViewToDisappear(groupString);
     }
@@ -512,8 +507,7 @@ public class RecentTabsPageTest {
         verify(mManager, times(1)).openRecentlyClosedEntry(mTabModel, event);
 
         // Clear the recently closed tabs with the context menu and confirm the view is gone.
-        openContextMenuAndInvokeItem(
-                view, RecentTabsRowAdapter.RecentlyClosedTabsGroup.ID_REMOVE_ALL);
+        openContextMenuAndInvokeItem(view, R.string.remove_all);
         assertEquals(0, mManager.getRecentlyClosedEntries(1).size());
         waitForViewToDisappear(eventString);
     }
@@ -662,8 +656,7 @@ public class RecentTabsPageTest {
         mRenderTestRule.render(mPage.getView(), "recently_closed_entries");
 
         // Confirm the recently closed entries are all gone after "Remove all" is clicked.
-        openContextMenuAndInvokeItem(
-                windowView, RecentTabsRowAdapter.RecentlyClosedTabsGroup.ID_REMOVE_ALL);
+        openContextMenuAndInvokeItem(windowView, R.string.remove_all);
         assertEquals(0, recentlyClosedEntriesManager.getRecentlyClosedEntries().size());
         waitForViewToDisappear(windowDescriptionString);
     }
