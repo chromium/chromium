@@ -2,15 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef CHROME_INSTALLER_MINI_INSTALLER_MINI_STRING_H_
 #define CHROME_INSTALLER_MINI_INSTALLER_MINI_STRING_H_
 
 #include <stddef.h>
+
+#include "base/compiler_specific.h"
 
 #ifndef COMPILE_ASSERT
 // Some bots that build mini_installer don't know static_assert.
@@ -125,7 +122,7 @@ class StackString {
   bool truncate_at(size_t location) {
     if (location >= kCapacity)
       return false;
-    buffer_[location] = L'\0';
+    UNSAFE_TODO(buffer_[location] = L'\0');
     return true;
   }
 

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/installer/mini_installer/write_to_disk.h"
 
 #include <windows.h>
@@ -15,6 +10,7 @@
 
 #include <algorithm>
 
+#include "base/compiler_specific.h"
 #include "chrome/installer/mini_installer/memory_range.h"
 #include "chrome/installer/mini_installer/mini_file.h"
 
@@ -34,7 +30,8 @@ bool WriteToDisk(const MemoryRange& data, const wchar_t* full_path) {
     const size_t write_amount =
         std::min(kMaxWriteAmount, data.size - total_written);
     DWORD written = 0;
-    if (!::WriteFile(file.GetHandleUnsafe(), data.data + total_written,
+    if (!::WriteFile(file.GetHandleUnsafe(),
+                     UNSAFE_TODO(data.data + total_written),
                      static_cast<DWORD>(write_amount), &written, nullptr)) {
       const auto write_error = ::GetLastError();
 

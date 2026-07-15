@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/installer/mini_installer/regkey.h"
 
+#include "base/compiler_specific.h"
 #include "build/branding_buildflags.h"
 #include "chrome/installer/mini_installer/mini_installer_constants.h"
 #include "chrome/installer/mini_installer/mini_string.h"
@@ -32,11 +28,12 @@ LONG RegKey::ReadSZValue(const wchar_t* value_name,
       result = ERROR_NOT_SUPPORTED;
     } else if (byte_length < 2) {
       *value = L'\0';
-    } else if (value[byte_length / sizeof(wchar_t) - 1] != L'\0') {
-      if ((byte_length / sizeof(wchar_t)) < value_size)
-        value[byte_length / sizeof(wchar_t)] = L'\0';
-      else
+    } else if (UNSAFE_TODO(value[byte_length / sizeof(wchar_t) - 1]) != L'\0') {
+      if ((byte_length / sizeof(wchar_t)) < value_size) {
+        UNSAFE_TODO(value[byte_length / sizeof(wchar_t)]) = L'\0';
+      } else {
         result = ERROR_MORE_DATA;
+      }
     }
   }
   return result;

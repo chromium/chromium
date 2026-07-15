@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/installer/mini_installer/decompress.h"
 
 #include <windows.h>
@@ -16,6 +11,7 @@
 #include <stddef.h>
 #include <stdlib.h>
 
+#include "base/compiler_specific.h"
 #include "chrome/installer/mini_installer/mini_file.h"
 
 namespace {
@@ -56,8 +52,9 @@ char* WideToUtf8(const wchar_t* str, int len) {
     ret = reinterpret_cast<char*>(Alloc(size * sizeof(ret[0])));
     if (ret) {
       WideCharToMultiByte(CP_UTF8, 0, str, len, ret, size, nullptr, nullptr);
-      if (len != -1)
-        ret[size - 1] = '\0';  // terminate the string
+      if (len != -1) {
+        UNSAFE_TODO(ret[size - 1] = '\0');  // terminate the string
+      }
     }
   }
   return ret;
@@ -226,8 +223,8 @@ bool InitializeFdi() {
     wchar_t path[MAX_PATH] = {};
     for (size_t i = 0; i < _countof(candidate_paths); ++i) {
       path[0] = L'\0';
-      DWORD result =
-          ::ExpandEnvironmentStringsW(candidate_paths[i], path, _countof(path));
+      DWORD result = ::ExpandEnvironmentStringsW(
+          UNSAFE_TODO(candidate_paths[i]), path, _countof(path));
 
       if (result > 0 && result <= _countof(path))
         g_fdi = ::LoadLibraryExW(path, nullptr, LOAD_WITH_ALTERED_SEARCH_PATH);
@@ -258,17 +255,19 @@ bool Expand(const wchar_t* source, const wchar_t* destination) {
 
   // Start by splitting up the source path and convert to utf8 since the
   // cabinet API doesn't support wide strings.
-  const wchar_t* source_name = source + lstrlenW(source);
-  while (source_name > source && *source_name != L'\\')
-    --source_name;
+  const wchar_t* source_name;
+  UNSAFE_TODO(source_name = source + lstrlenW(source));
+  while (source_name > source && *source_name != L'\\') {
+    UNSAFE_TODO(--source_name);
+  }
   if (source_name == source)
     return false;
 
   // Convert the name to utf8.
-  source_name++;
+  UNSAFE_TODO(source_name++);
   scoped_ptr<char> source_name_utf8(WideToUtf8(source_name, -1));
-  // The directory part is assumed to have a trailing backslash.
-  scoped_ptr<char> source_path_utf8(WideToUtf8(source, source_name - source));
+  scoped_ptr<char> source_path_utf8(
+      WideToUtf8(source, UNSAFE_TODO(source_name - source)));
 
   if (!source_name_utf8 || !source_path_utf8)
     return false;

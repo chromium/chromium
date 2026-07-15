@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/installer/util/additional_parameters.h"
 
 #include <windows.h>
@@ -14,6 +9,7 @@
 #include <string_view>
 
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
@@ -96,9 +92,11 @@ bool HasFullSuffix(const std::optional<std::wstring>& value) {
 bool SwallowArchSufix(std::wstring_view ap, std::wstring_view& channel) {
   DCHECK_LE(channel.size(), ap.size());
   DCHECK_GE(channel.data(), ap.data());
-  DCHECK_LE(channel.data() + channel.size(), ap.data() + ap.size());
+  DCHECK_LE(UNSAFE_TODO(channel.data() + channel.size()),
+            UNSAFE_TODO(ap.data() + ap.size()));
   static constexpr std::wstring_view kArchPrefix = L"-arch_";
-  auto channel_position = channel.empty() ? 0 : channel.data() - ap.data();
+  auto channel_position =
+      channel.empty() ? 0 : UNSAFE_TODO(channel.data() - ap.data());
   auto rest_position = channel_position + channel.size();
   if (!base::StartsWith(ap.substr(rest_position), kArchPrefix))
     return false;

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/install_static/install_util.h"
 
 #include <windows.h>
@@ -87,7 +82,7 @@ void Trace(const wchar_t* format_string, ...) {
   va_list args = {};
 
   va_start(args, format_string);
-  vswprintf(buffer, kMaxLogBufferSize, format_string, args);
+  UNSAFE_TODO(vswprintf(buffer, kMaxLogBufferSize, format_string, args));
   OutputDebugStringW(buffer);
   va_end(args);
 }
@@ -136,17 +131,17 @@ bool GetValueFromVersionResource(const char* version_resource,
   WORD lang_codepage[array_size] = {};
   size_t i = 0;
   // Use the language and codepage
-  lang_codepage[i++] = language;
-  lang_codepage[i++] = code_page;
+  UNSAFE_TODO(lang_codepage[i++]) = language;
+  UNSAFE_TODO(lang_codepage[i++]) = code_page;
   // Use the default language and codepage from the resource.
-  lang_codepage[i++] = ::GetUserDefaultLangID();
-  lang_codepage[i++] = code_page;
+  UNSAFE_TODO(lang_codepage[i++]) = ::GetUserDefaultLangID();
+  UNSAFE_TODO(lang_codepage[i++]) = code_page;
   // Use the language from the resource and Latin codepage (most common).
-  lang_codepage[i++] = language;
-  lang_codepage[i++] = 1252;
+  UNSAFE_TODO(lang_codepage[i++]) = language;
+  UNSAFE_TODO(lang_codepage[i++]) = 1252;
   // Use the default language and Latin codepage (most common).
-  lang_codepage[i++] = ::GetUserDefaultLangID();
-  lang_codepage[i++] = 1252;
+  UNSAFE_TODO(lang_codepage[i++]) = ::GetUserDefaultLangID();
+  UNSAFE_TODO(lang_codepage[i++]) = 1252;
 
   static_assert((array_size % 2) == 0,
                 "Language code page size should be a multiple of 2");
@@ -154,8 +149,8 @@ bool GetValueFromVersionResource(const char* version_resource,
 
   for (i = 0; i < array_size;) {
     wchar_t sub_block[MAX_PATH];
-    language = lang_codepage[i++];
-    code_page = lang_codepage[i++];
+    language = UNSAFE_TODO(lang_codepage[i++]);
+    code_page = UNSAFE_TODO(lang_codepage[i++]);
     _snwprintf_s(sub_block, MAX_PATH, MAX_PATH,
                  L"\\StringFileInfo\\%04hx%04hx\\%ls", language, code_page,
                  name.c_str());
@@ -758,24 +753,25 @@ std::vector<std::wstring> TokenizeCommandLineToArray(
   // on its first character.
   size_t argv0_length = 0;
   if (p[0] == L'"') {
-    const wchar_t* closing = wcschr(++p, L'"');
+    const wchar_t* closing = UNSAFE_TODO(wcschr(++p, L'"'));
     if (!closing)
       argv0_length = command_line.size() - 1;  // Skip the opening quote.
     else
-      argv0_length = closing - (command_line.c_str() + 1);
+      argv0_length = UNSAFE_TODO(closing - (command_line.c_str() + 1));
   } else {
-    argv0_length = wcscspn(p, kSpaceTab);
+    argv0_length = UNSAFE_TODO(wcscspn(p, kSpaceTab));
   }
   result.emplace_back(p, argv0_length);
-  if (p[argv0_length] == 0)
+  if (UNSAFE_TODO(p[argv0_length]) == 0) {
     return result;
-  p += argv0_length + 1;
+  }
+  UNSAFE_TODO(p += argv0_length + 1);
 
   std::wstring token;
   // This loops the entire string, with a subloop for each argument.
   for (;;) {
     // Advance past leading whitespace (only space and tab are handled).
-    p += wcsspn(p, kSpaceTab);
+    UNSAFE_TODO(p += wcsspn(p, kSpaceTab));
 
     // End of arguments.
     if (p[0] == 0)
@@ -787,8 +783,8 @@ std::vector<std::wstring> TokenizeCommandLineToArray(
     for (;;) {
       // Count and advance past collections of backslashes, which have special
       // meaning when followed by a double quote.
-      int num_backslashes = wcsspn(p, L"\\");
-      p += num_backslashes;
+      int num_backslashes = UNSAFE_TODO(wcsspn(p, L"\\"));
+      UNSAFE_TODO(p += num_backslashes);
 
       if (p[0] == L'"') {
         // Emit a backslash for each pair of backslashes found. A non-paired
@@ -799,11 +795,12 @@ std::vector<std::wstring> TokenizeCommandLineToArray(
           // An odd number of backslashes followed by a quote is treated as
           // pairs of protected backslashes, followed by the protected quote.
           token += L'"';
-        } else if (p[1] == L'"' && state == SpecialChars::kIgnore) {
+        } else if (UNSAFE_TODO(p[1]) == L'"' &&
+                   state == SpecialChars::kIgnore) {
           // Special case for consecutive double quotes within a quoted string:
           // emit one for the pair, and switch back to interpreting special
           // characters.
-          ++p;
+          UNSAFE_TODO(++p);
           token += L'"';
           state = SpecialChars::kInterpret;
         } else {
@@ -813,8 +810,8 @@ std::vector<std::wstring> TokenizeCommandLineToArray(
       } else {
         // Emit backslashes that do not precede a quote verbatim.
         token.append(num_backslashes, L'\\');
-        if (p[0] == 0 ||
-            (state == SpecialChars::kInterpret && wcschr(kSpaceTab, p[0]))) {
+        if (p[0] == 0 || (state == SpecialChars::kInterpret &&
+                          UNSAFE_TODO(wcschr(kSpaceTab, p[0])))) {
           result.push_back(token);
           token.clear();
           break;
@@ -823,7 +820,7 @@ std::vector<std::wstring> TokenizeCommandLineToArray(
         token += *p;
       }
 
-      ++p;
+      UNSAFE_TODO(++p);
     }
   }
 

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 // The file contains the implementation of the mini_installer re-versioner.
 // The main function (GenerateNextVersion) does the following in a temp dir:
 // - Extracts and unpacks setup.exe and the Chrome-bin folder from
@@ -41,6 +36,7 @@
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/files/file_enumerator.h"
@@ -152,20 +148,22 @@ class ChromeVersion {
 
 std::wstring ChromeVersion::ToString() const {
   wchar_t buffer[24];
-  int string_len = swprintf_s(&buffer[0], std::size(buffer), L"%hu.%hu.%hu.%hu",
-                              major(), minor(), build(), patch());
+  int string_len =
+      UNSAFE_TODO(swprintf_s(buffer, std::size(buffer), L"%hu.%hu.%hu.%hu",
+                             major(), minor(), build(), patch()));
   DCHECK_NE(-1, string_len);
   DCHECK_GT(static_cast<int>(std::size(buffer)), string_len);
-  return std::wstring(&buffer[0], string_len);
+  return std::wstring(buffer, string_len);
 }
 
 std::string ChromeVersion::ToASCII() const {
   char buffer[24];
-  int string_len = sprintf_s(&buffer[0], std::size(buffer), "%hu.%hu.%hu.%hu",
-                             major(), minor(), build(), patch());
+  int string_len =
+      UNSAFE_TODO(sprintf_s(buffer, std::size(buffer), "%hu.%hu.%hu.%hu",
+                            major(), minor(), build(), patch()));
   DCHECK_NE(-1, string_len);
   DCHECK_GT(static_cast<int>(std::size(buffer)), string_len);
-  return std::string(&buffer[0], string_len);
+  return std::string(buffer, string_len);
 }
 
 // Calls CreateProcess with good default parameters and waits for the process
@@ -252,12 +250,12 @@ bool ReplaceAll(uint8_t* dest_first,
       break;
     }
     changed = true;
-    if (memcpy_s(dest_first, dest_last - dest_first, replacement_first,
-                 src_last - src_first) != 0) {
+    if (memcpy_s(dest_first, UNSAFE_TODO(dest_last - dest_first),
+                 replacement_first, UNSAFE_TODO(src_last - src_first)) != 0) {
       result = false;
       break;
     }
-    dest_first += (src_last - src_first);
+    dest_first = UNSAFE_TODO(dest_first + (src_last - src_first));
   } while (true);
 
   if (replacements_made != nullptr) {
@@ -290,10 +288,11 @@ void VisitResource(const upgrade_test::EntryPath& path,
   // Replace all occurrences of current_version_str with new_version_str
   bool changing_version = false;
   if (ReplaceAll(
-          data, data + size,
+          data, UNSAFE_TODO(data + size),
           reinterpret_cast<const uint8_t*>(ctx.current_version_str.c_str()),
-          reinterpret_cast<const uint8_t*>(ctx.current_version_str.c_str() +
-                                           ctx.current_version_str.size() + 1),
+          reinterpret_cast<const uint8_t*>(
+              UNSAFE_TODO(ctx.current_version_str.c_str() +
+                          ctx.current_version_str.size() + 1)),
           reinterpret_cast<const uint8_t*>(ctx.new_version_str.c_str()),
           &changing_version) &&
       changing_version) {
@@ -305,8 +304,10 @@ void VisitResource(const upgrade_test::EntryPath& path,
     VersionPair cur_ver = {ctx.current_version.high(),
                            ctx.current_version.low()};
     VersionPair new_ver = {ctx.new_version.high(), ctx.new_version.low()};
-    ReplaceAll(data, data + size, reinterpret_cast<const uint8_t*>(&cur_ver),
-               reinterpret_cast<const uint8_t*>(&cur_ver) + sizeof(cur_ver),
+    ReplaceAll(data, UNSAFE_TODO(data + size),
+               reinterpret_cast<const uint8_t*>(&cur_ver),
+               UNSAFE_TODO(reinterpret_cast<const uint8_t*>(&cur_ver) +
+                           sizeof(cur_ver)),
                reinterpret_cast<const uint8_t*>(&new_ver), nullptr);
   }
 
@@ -314,7 +315,8 @@ void VisitResource(const upgrade_test::EntryPath& path,
   std::string current_version(ctx.current_version.ToASCII());
   std::string new_version(ctx.new_version.ToASCII());
   ReplaceAll(
-      data, data + size, reinterpret_cast<uint8_t*>(&current_version[0]),
+      data, UNSAFE_TODO(data + size),
+      reinterpret_cast<uint8_t*>(&current_version[0]),
       reinterpret_cast<uint8_t*>(&current_version[current_version.size()]),
       reinterpret_cast<uint8_t*>(&new_version[0]), nullptr);
 }
@@ -333,14 +335,14 @@ bool UpdateVersionInData(base::win::PEImage* image,
   }
 
   size_t size = rdata_header->SizeOfRawData;
-  uint8_t* data = reinterpret_cast<uint8_t*>(image->module()) +
-                  rdata_header->PointerToRawData;
+  uint8_t* data = UNSAFE_TODO(reinterpret_cast<uint8_t*>(image->module()) +
+                              rdata_header->PointerToRawData);
 
   // Replace all wide string occurrences of |current_version| with
   // |new_version|. No attempt is made to ensure that the modified bytes are
   // truly part of a wide string.
   const std::wstring& current_version_str = context->current_version_str;
-  ReplaceAll(data, data + size,
+  ReplaceAll(data, UNSAFE_TODO(data + size),
              reinterpret_cast<const uint8_t*>(&current_version_str[0]),
              reinterpret_cast<const uint8_t*>(
                  &current_version_str[current_version_str.size()]),
@@ -353,7 +355,8 @@ bool UpdateVersionInData(base::win::PEImage* image,
   std::string current_version(context->current_version.ToASCII());
   std::string new_version(context->new_version.ToASCII());
   ReplaceAll(
-      data, data + size, reinterpret_cast<uint8_t*>(&current_version[0]),
+      data, UNSAFE_TODO(data + size),
+      reinterpret_cast<uint8_t*>(&current_version[0]),
       reinterpret_cast<uint8_t*>(&current_version[current_version.size()]),
       reinterpret_cast<uint8_t*>(&new_version[0]), nullptr);
 
@@ -627,8 +630,9 @@ bool GenerateAlternateVersion(const base::FilePath& original_installer_path,
     DCHECK(archive_resource_name);
     DCHECK(!chrome_packed_7z.empty() || !chrome_7z.empty());
     DCHECK(archive_file);
-    if (!base::WriteFile(*archive_file, base::span(resource_data.first,
-                                                   resource_data.second))) {
+    if (!base::WriteFile(*archive_file,
+                         UNSAFE_TODO(base::span(resource_data.first,
+                                                resource_data.second)))) {
       LOG(DFATAL) << "Failed writing \"" << archive_file->value() << "\"";
       return false;
     }
@@ -638,15 +642,17 @@ bool GenerateAlternateVersion(const base::FilePath& original_installer_path,
     if (resource_loader.Load(&kSetupEx_[0], &kBl[0], &resource_data)) {
       setup_ex_ = work_dir.directory().Append(&kSetupEx_[0]);
       setup_resource_name = &kSetupEx_[0];
-      if (!base::WriteFile(setup_ex_, base::span(resource_data.first,
-                                                 resource_data.second))) {
+      if (!base::WriteFile(setup_ex_,
+                           UNSAFE_TODO(base::span(resource_data.first,
+                                                  resource_data.second)))) {
         LOG(DFATAL) << "Failed writing \"" << setup_ex_.value() << "\"";
         return false;
       }
     } else if (resource_loader.Load(&kSetupExe[0], &kBN[0], &resource_data)) {
       setup_resource_name = &kSetupExe[0];
-      if (!base::WriteFile(setup_exe, base::span(resource_data.first,
-                                                 resource_data.second))) {
+      if (!base::WriteFile(setup_exe,
+                           UNSAFE_TODO(base::span(resource_data.first,
+                                                  resource_data.second)))) {
         LOG(DFATAL) << "Failed writing \"" << setup_exe.value() << "\"";
         return false;
       }

@@ -69,7 +69,10 @@ source_set("lib") {
     "write_to_disk.h",
   ]
 
-  deps = [ "//build:branding_buildflags" ]
+  deps = [
+    "//base:compiler_specific",
+    "//build:branding_buildflags",
+  ]
 
   # Initialization may insert unexpected memset calls.
   configs -= [ "//build/config/compiler:default_init_stack_vars" ]
@@ -256,6 +259,7 @@ source_set("mini_installer_sources") {
   deps = [
     ":lib",
     "//base:clang_profiling_buildflags",
+    "//base:compiler_specific",
   ]
   configs -= [ "//build/config/compiler:default_init_stack_vars" ]
   configs += [ ":mini_installer_compiler_flags" ]

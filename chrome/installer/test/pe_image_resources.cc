@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 // This file contains the implementation for an iterator over a portable
 // executable file's resources.
 
 #include "chrome/installer/test/pe_image_resources.h"
 
+#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/win/pe_image.h"
 
@@ -40,8 +36,8 @@ bool EnumResourcesWorker(const base::win::PEImage& image,
   bool success = true;
   const IMAGE_RESOURCE_DIRECTORY* resource_directory;
 
-  if (!StructureAt(tree_base + directory_offset, tree_size - directory_offset,
-                   &resource_directory) ||
+  if (!StructureAt(UNSAFE_TODO(tree_base + directory_offset),
+                   tree_size - directory_offset, &resource_directory) ||
       directory_offset + sizeof(IMAGE_RESOURCE_DIRECTORY) +
               (resource_directory->NumberOfNamedEntries +
                resource_directory->NumberOfIdEntries) *
@@ -52,16 +48,17 @@ bool EnumResourcesWorker(const base::win::PEImage& image,
   }
 
   const IMAGE_RESOURCE_DIRECTORY_ENTRY* scan =
-      reinterpret_cast<const IMAGE_RESOURCE_DIRECTORY_ENTRY*>(
-          tree_base + directory_offset + sizeof(IMAGE_RESOURCE_DIRECTORY));
+      reinterpret_cast<const IMAGE_RESOURCE_DIRECTORY_ENTRY*>(UNSAFE_TODO(
+          tree_base + directory_offset + sizeof(IMAGE_RESOURCE_DIRECTORY)));
   const IMAGE_RESOURCE_DIRECTORY_ENTRY* end =
-      scan + resource_directory->NumberOfNamedEntries +
-      resource_directory->NumberOfIdEntries;
-  for (; success && scan != end; ++scan) {
+      UNSAFE_TODO(scan + resource_directory->NumberOfNamedEntries +
+                  resource_directory->NumberOfIdEntries);
+  for (; success && scan != end; UNSAFE_TODO(++scan)) {
     if ((scan->NameIsString != 0) !=
-        (scan - reinterpret_cast<const IMAGE_RESOURCE_DIRECTORY_ENTRY*>(
-                    tree_base + directory_offset +
-                    sizeof(IMAGE_RESOURCE_DIRECTORY)) <
+        (UNSAFE_TODO(scan -
+                     reinterpret_cast<const IMAGE_RESOURCE_DIRECTORY_ENTRY*>(
+                         tree_base + directory_offset +
+                         sizeof(IMAGE_RESOURCE_DIRECTORY))) <
          resource_directory->NumberOfNamedEntries)) {
       LOG(DFATAL) << "Inconsistent number of named or numbered entries.";
       success = false;
@@ -69,7 +66,7 @@ bool EnumResourcesWorker(const base::win::PEImage& image,
     }
     if (scan->NameIsString) {
       const IMAGE_RESOURCE_DIR_STRING_U* dir_string;
-      if (!StructureAt(tree_base + scan->NameOffset,
+      if (!StructureAt(UNSAFE_TODO(tree_base + scan->NameOffset),
                        tree_size - scan->NameOffset, &dir_string) ||
           scan->NameOffset + sizeof(WORD) +
                   dir_string->Length * sizeof(wchar_t) >
@@ -89,12 +86,11 @@ bool EnumResourcesWorker(const base::win::PEImage& image,
                               scan->OffsetToDirectory, path, callback, context);
     } else {
       const IMAGE_RESOURCE_DATA_ENTRY* data_entry;
-      if (StructureAt(tree_base + scan->OffsetToData,
+      if (StructureAt(UNSAFE_TODO(tree_base + scan->OffsetToData),
                       tree_size - scan->OffsetToData, &data_entry) &&
-          reinterpret_cast<uint8_t*>(
-              image.RVAToAddr(data_entry->OffsetToData)) +
-                  data_entry->Size <=
-              tree_base + tree_size) {
+          UNSAFE_TODO(reinterpret_cast<uint8_t*>(
+                          image.RVAToAddr(data_entry->OffsetToData)) +
+                      data_entry->Size) <= UNSAFE_TODO(tree_base + tree_size)) {
         // Despite what winnt.h says, OffsetToData is an RVA.
         callback(*path,
                  reinterpret_cast<uint8_t*>(

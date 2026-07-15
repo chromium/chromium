@@ -10,17 +10,13 @@
 // This implementation really is not fast, so do not use it where that will
 // matter.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/installer/util/delete_after_reboot_helper.h"
 
 #include <string>
 #include <string_view>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
@@ -47,11 +43,12 @@ bool IsSafeDirectoryNameForDeletion(const base::FilePath& dir_name) {
   // disallow anything with ".."
   bool ok = false;
   const wchar_t* dir_name_str = dir_name.value().c_str();
-  for (const wchar_t* s = dir_name_str; *s; ++s) {
+  for (const wchar_t* s = dir_name_str; *s; UNSAFE_TODO(++s)) {
     if (*s != L'\\' && *s != L'/' && *s != L':' && *s != L'.')
       ok = true;
-    if (*s == L'.' && s > dir_name_str && *(s - 1) == L'.')
+    if (*s == L'.' && s > dir_name_str && *UNSAFE_TODO(s - 1) == L'.') {
       return false;
+    }
     if (*s == L':')
       ok = false;
   }
@@ -182,10 +179,11 @@ HRESULT MultiSZBytesToStringArray(const char* buffer,
 
   DWORD data_len = byte_count / sizeof(wchar_t);
   const wchar_t* data = reinterpret_cast<const wchar_t*>(buffer);
-  const wchar_t* data_end = data + data_len;
+  const wchar_t* data_end = UNSAFE_TODO(data + data_len);
   if (data_len > 1) {
     // must be terminated by two null characters
-    if (data[data_len - 1] != 0 || data[data_len - 2] != 0) {
+    if (UNSAFE_TODO(data[data_len - 1]) != 0 ||
+        UNSAFE_TODO(data[data_len - 2]) != 0) {
       DLOG(ERROR) << "Invalid MULTI_SZ found.";
       return E_INVALIDARG;
     }
@@ -193,10 +191,10 @@ HRESULT MultiSZBytesToStringArray(const char* buffer,
     // put null-terminated strings into arrays
     while (data < data_end) {
       std::wstring str_from(data);
-      data += str_from.length() + 1;
+      UNSAFE_TODO(data += str_from.length() + 1);
       if (data < data_end) {
         std::wstring str_to(data);
-        data += str_to.length() + 1;
+        UNSAFE_TODO(data += str_to.length() + 1);
         value->push_back(std::make_pair(str_from, str_to));
       }
     }
@@ -230,27 +228,27 @@ void StringArrayToMultiSZBytes(const std::vector<PendingMove>& strings,
   buffer->resize(total_length);
   wchar_t* write_pointer = reinterpret_cast<wchar_t*>(&((*buffer)[0]));
   // Keep an end pointer around for sanity checking.
-  wchar_t* end_pointer = write_pointer + total_wchars;
+  wchar_t* end_pointer = UNSAFE_TODO(write_pointer + total_wchars);
 
   std::vector<PendingMove>::const_iterator copy_iter(strings.begin());
   for (; copy_iter != strings.end() && write_pointer < end_pointer;
        copy_iter++) {
     // First copy the source string.
     size_t string_length = copy_iter->first.length() + 1;
-    memcpy(write_pointer, copy_iter->first.c_str(),
-           string_length * sizeof(wchar_t));
-    write_pointer += string_length;
+    UNSAFE_TODO(memcpy(write_pointer, copy_iter->first.c_str(),
+                       string_length * sizeof(wchar_t)));
+    UNSAFE_TODO(write_pointer += string_length);
     // Now copy the destination string.
     string_length = copy_iter->second.length() + 1;
-    memcpy(write_pointer, copy_iter->second.c_str(),
-           string_length * sizeof(wchar_t));
-    write_pointer += string_length;
+    UNSAFE_TODO(memcpy(write_pointer, copy_iter->second.c_str(),
+                       string_length * sizeof(wchar_t)));
+    UNSAFE_TODO(write_pointer += string_length);
 
     // We should never run off the end while in this loop.
     DCHECK(write_pointer < end_pointer);
   }
   *write_pointer = L'\0';  // Explicitly set the final null char.
-  DCHECK(++write_pointer == end_pointer);
+  DCHECK(UNSAFE_TODO(++write_pointer) == end_pointer);
 }
 
 base::FilePath GetShortPathName(const base::FilePath& path) {

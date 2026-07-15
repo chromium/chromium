@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 // This file provides a command-line interface to
 // upgrade_test::GenerateAlternateVersion().
 
@@ -18,6 +13,7 @@
 #include "base/at_exit.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
@@ -55,7 +51,7 @@ const wchar_t* const Messages[] = {
 const wchar_t* GetErrorMessage(ErrorCode error_code) {
   DCHECK_LE(0, error_code);
   DCHECK_GT(std::size(Messages), static_cast<size_t>(error_code));
-  return Messages[error_code];
+  return UNSAFE_TODO(Messages[error_code]);
 }
 
 }  // namespace errors
@@ -67,15 +63,17 @@ void DumpUsage(const base::CommandLine& cmd_line,
                const std::wstring& detail) {
   const wchar_t* error_message = errors::GetErrorMessage(error_code);
   if (error_message != nullptr) {
-    fwprintf(stderr, L"%s: %s", cmd_line.GetProgram().value().c_str(),
-             errors::GetErrorMessage(error_code));
-    if (!detail.empty())
-      fwprintf(stderr, L" (%s)\n", detail.c_str());
-    else
-      fwprintf(stderr, L"\n");
+    UNSAFE_TODO(fwprintf(stderr, L"%s: %s",
+                         cmd_line.GetProgram().value().c_str(),
+                         errors::GetErrorMessage(error_code)));
+    if (!detail.empty()) {
+      UNSAFE_TODO(fwprintf(stderr, L" (%s)\n", detail.c_str()));
+    } else {
+      UNSAFE_TODO(fwprintf(stderr, L"\n"));
+    }
   }
 
-  fwprintf(
+  UNSAFE_TODO(fwprintf(
       stderr,
       L"Usage: %s [ OPTIONS ]\n"
       L" Where OPTIONS is one or more of:\n"
@@ -98,7 +96,7 @@ void DumpUsage(const base::CommandLine& cmd_line,
       L"                            to "
       L"..\\..\\third_party\\lzma_sdk\\Executable\n"
       L"                            relative to this program's location.\n",
-      cmd_line.GetProgram().value().c_str());
+      cmd_line.GetProgram().value().c_str()));
 }
 
 // Gets the path to the source mini_installer.exe on which to operate, putting
