@@ -429,7 +429,7 @@ CompositorAnimations::CheckCanStartEffectOnCompositor(
             DCHECK(keyframe_value->IsDouble() || keyframe_value->IsColor());
             // If a custom property is not used by CSS Paint, then we should not
             // support that on the compositor thread.
-            if (layout_object && layout_object->Style() &&
+            if (layout_object &&
                 !layout_object->StyleRef().HasCSSPaintImagesUsingCustomProperty(
                     property.CustomPropertyName(),
                     layout_object->GetDocument())) {

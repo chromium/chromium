@@ -56,22 +56,22 @@ TimelineInset ResolveAuto(const TimelineInset& inset,
                           PhysicalAxis axis) {
   const LayoutObject* layout_object =
       resolved_source ? resolved_source->GetLayoutObject() : nullptr;
-  const ComputedStyle* style = layout_object ? layout_object->Style() : nullptr;
-  if (!style) {
+  if (!layout_object) {
     return inset;
   }
 
+  const ComputedStyle& style = layout_object->StyleRef();
   const Length& start = inset.GetStart();
   const Length& end = inset.GetEnd();
 
-  if (IsBlockDirection(axis, style->GetWritingMode())) {
+  if (IsBlockDirection(axis, style.GetWritingMode())) {
     return TimelineInset(
-        start.IsAuto() ? style->ScrollPaddingBlockStart() : start,
-        end.IsAuto() ? style->ScrollPaddingBlockEnd() : end);
+        start.IsAuto() ? style.ScrollPaddingBlockStart() : start,
+        end.IsAuto() ? style.ScrollPaddingBlockEnd() : end);
   }
   return TimelineInset(
-      start.IsAuto() ? style->ScrollPaddingInlineStart() : start,
-      end.IsAuto() ? style->ScrollPaddingInlineEnd() : end);
+      start.IsAuto() ? style.ScrollPaddingInlineStart() : start,
+      end.IsAuto() ? style.ScrollPaddingInlineEnd() : end);
 }
 
 LayoutUnit ComputeInset(const Length& inset, LayoutUnit viewport_size) {

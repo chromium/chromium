@@ -389,12 +389,10 @@ std::optional<WritingDirectionMode>
 ScrollTimeline::ComputeWritingDirectionNoLayout() const {
   const LayoutObject* writing_direction_object =
       ComputeLayoutObjectNoLayout(kPhysicalAxesBoth);
-  const ComputedStyle* style =
-      writing_direction_object ? writing_direction_object->Style() : nullptr;
-  if (!style) {
+  if (!writing_direction_object) {
     return std::nullopt;
   }
-  return style->GetWritingDirection();
+  return writing_direction_object->StyleRef().GetWritingDirection();
 }
 
 // static
