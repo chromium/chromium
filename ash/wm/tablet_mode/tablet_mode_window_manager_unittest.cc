@@ -2044,7 +2044,7 @@ TEST_F(TabletModeWindowManagerTest, StateTypeOnAttachNewDragWindow) {
     WindowState* drag_window_state = WindowState::Get(drag_window.get());
     drag_window->SetProperty(ash::kIsDraggingTabsKey, true);
     drag_window->SetProperty(ash::kTabDraggingSourceWindowKey,
-                             source_window.get());
+                             source_window->GetWeakPtrAsWindow());
 
     EXPECT_EQ(source_window_state->GetStateType(), WindowStateType::kMaximized);
     EXPECT_EQ(drag_window_state->GetStateType(), WindowStateType::kDefault);
@@ -2066,7 +2066,7 @@ TEST_F(TabletModeWindowManagerTest, StateTypeOnAttachNewDragWindow) {
     WindowState* drag_window_state = WindowState::Get(drag_window.get());
     drag_window->SetProperty(ash::kIsDraggingTabsKey, true);
     drag_window->SetProperty(ash::kTabDraggingSourceWindowKey,
-                             source_window.get());
+                             source_window->GetWeakPtrAsWindow());
 
     EXPECT_EQ(source_window_state->GetStateType(),
               WindowStateType::kPrimarySnapped);

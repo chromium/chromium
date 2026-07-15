@@ -5628,6 +5628,39 @@ class DetachToBrowserTabDragControllerTestTouch
   std::unique_ptr<base::SimpleTestTickClock> clock_;
 };
 
+#if BUILDFLAG(IS_CHROMEOS)
+IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTestTouch,
+                       SourceWindowClosedDuringDrag) {
+  AddTabsAndResetBrowser(browser(), 1);
+  DragTabForDetachAndNotify(
+      browser(),
+      base::BindLambdaForTesting([&](BrowserWindowInterface* source_browser,
+                                     BrowserWindowInterface* detached_browser) {
+        // This callback runs inside the nested move loop.
+
+        chrome::CloseWindow(browser());
+
+        // Post a task (to run after the above window closing has completed)
+        // that does something that depends on the drag window's source window
+        // property.
+        base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+            FROM_HERE, base::BindLambdaForTesting([this]() {
+              // Enter tablet mode to trigger TabletModeWindowState creation,
+              // which reads the source window property.
+              ash::TabletMode::Waiter waiter(true);
+              ash::TabletMode::Get()->SetEnabledForTest(true);
+              waiter.Wait();
+              ash::TabletMode::Get()->SetEnabledForTest(false);
+              EXPECT_TRUE(
+                  static_cast<DetachToBrowserTabDragControllerTest*>(this)
+                      ->ReleaseInput(0));
+            }));
+      }),
+      1);  // Drag tab at index 1.
+  EXPECT_FALSE(TabDragController::IsActive());
+}
+#endif
+
 // Detaches a tab and while detached presses a second finger.
 IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTestTouch,
                        PressSecondFingerWhileDetached) {

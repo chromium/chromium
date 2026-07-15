@@ -407,8 +407,9 @@ bool IsDraggingTabs(const aura::Window* window) {
 
 const WindowState* GetTabDraggingSourceWindowState(
     const aura::Window* drag_window) {
-  return WindowState::Get(
-      drag_window->GetProperty(ash::kTabDraggingSourceWindowKey));
+  base::WeakPtr<aura::Window>* weak_ptr =
+      drag_window->GetProperty(ash::kTabDraggingSourceWindowKey);
+  return weak_ptr ? WindowState::Get(weak_ptr->get()) : nullptr;
 }
 
 bool ShouldExcludeForCycleList(const aura::Window* window) {
