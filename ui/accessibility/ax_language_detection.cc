@@ -13,7 +13,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/trace_event.h"
-#include "third_party/cld_3/src/src/nnet_language_identifier.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/accessibility_switches.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -206,30 +205,11 @@ void AXLanguageInfoStats::ClearMetrics() {
 }
 
 AXLanguageDetectionManager::AXLanguageDetectionManager(AXTree* tree)
-    : tree_(tree) {}
+    : short_text_language_identifier_(kShortTextIdentifierMinByteLength,
+                                      kShortTextIdentifierMaxByteLength),
+      tree_(tree) {}
 
 AXLanguageDetectionManager::~AXLanguageDetectionManager() = default;
-
-chrome_lang_id::NNetLanguageIdentifier&
-AXLanguageDetectionManager::GetLanguageIdentifier() {
-  if (!language_identifier_) {
-    language_identifier_ =
-        std::make_unique<chrome_lang_id::NNetLanguageIdentifier>();
-  }
-  return *language_identifier_;
-}
-
-chrome_lang_id::NNetLanguageIdentifier&
-AXLanguageDetectionManager::GetShortTextLanguageIdentifier() {
-  if (!short_text_language_identifier_) {
-    short_text_language_identifier_ =
-        std::make_unique<chrome_lang_id::NNetLanguageIdentifier>(
-            kShortTextIdentifierMinByteLength,
-            kShortTextIdentifierMaxByteLength);
-  }
-  return *short_text_language_identifier_;
-}
-
 
 bool AXLanguageDetectionManager::IsDynamicLanguageDetectionEnabled() {
   // Dynamic language detection can be enabled by the Dynamic specific flag
@@ -269,8 +249,8 @@ void AXLanguageDetectionManager::DetectLanguagesForNode(AXNode* node) {
   // of languages, this means we cannot rely on the results' length and we
   // have to filter the results.
   const std::vector<Result> results =
-      GetLanguageIdentifier().FindTopNMostFreqLangs(
-          text, kMaxDetectedLanguagesPerSpan);
+      language_identifier_.FindTopNMostFreqLangs(text,
+                                                 kMaxDetectedLanguagesPerSpan);
 
   std::vector<std::string> reliable_results;
 
@@ -381,7 +361,7 @@ AXLanguageDetectionManager::GetLanguageAnnotationForStringAttribute(
   // TODO(akihiroota): What's a reasonable number of languages to have
   // cld_3 find? Should vary.
   std::vector<Result> top_languages =
-      GetShortTextLanguageIdentifier().FindTopNMostFreqLangs(
+      short_text_language_identifier_.FindTopNMostFreqLangs(
           attr_value, kMaxDetectedLanguagesPerPage);
   // Create vector of AXLanguageSpans.
   for (const auto& result : top_languages) {
