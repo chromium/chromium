@@ -190,10 +190,12 @@ class ContextualSearchboxHandler
   // Returns true if smart tab sharing is active for the current query.
   virtual bool IsSmartTabSharingActive() const;
 
-  virtual void SetSmartTabSharingActive(bool active);
-  virtual void GetSmartTabSharingActive(
-      composebox::mojom::PageHandler::GetSmartTabSharingActiveCallback
-          callback);
+#if !BUILDFLAG(IS_ANDROID)
+  void SetSmartTabSharingActive(bool active) override;
+  void GetSmartTabSharingActive(
+      searchbox::mojom::PageHandler::GetSmartTabSharingActiveCallback callback)
+      override;
+#endif
 
   // Returns the list of selected tab IDs that should be transferred.
   virtual std::vector<int32_t> GetSelectedTabIds() const;

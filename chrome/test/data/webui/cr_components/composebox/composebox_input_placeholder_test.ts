@@ -42,6 +42,9 @@ suite('ComposeboxInputPlaceholder', () => {
       files: [],
       mode: ToolMode.kUnspecified,
       model: ModelMode.kUnspecified,
+      // <if expr="not is_android">
+      smartTabSharingActive: false,
+      // </if>
     };
 
     document.body.appendChild(composebox);
@@ -56,17 +59,18 @@ suite('ComposeboxInputPlaceholder', () => {
 
     searchboxCallbackRouter = new SearchboxPageCallbackRouter();
     searchboxPageRemote = searchboxCallbackRouter.$.bindNewPipeAndPassRemote();
-    const composeboxHandler = installMock(
+    installMock(
         PageHandlerRemote,
         mock => ComposeboxProxyImpl.setInstance(new ComposeboxProxyImpl(
             mock, new PageCallbackRouter(), new SearchboxPageHandlerRemote(),
             searchboxCallbackRouter)));
-    composeboxHandler.setResultMapperFor(
-        'getSmartTabSharingActive', () => Promise.resolve({active: false}));
-
     searchboxHandler = installMock(
         SearchboxPageHandlerRemote,
         mock => ComposeboxProxyImpl.getInstance().searchboxHandler = mock);
+    // <if expr="not is_android">
+    searchboxHandler.setResultMapperFor(
+        'getSmartTabSharingActive', () => Promise.resolve({active: false}));
+    // </if>
 
     searchboxHandler.setResultFor('getRecentTabs', Promise.resolve({tabs: []}));
     searchboxHandler.setResultFor('getInputState', Promise.resolve({

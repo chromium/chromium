@@ -23,6 +23,9 @@ import type {ComposeboxState, DriveUpload, TabUpload} from './common.js';
 import type {PageHandlerRemote} from './composebox.mojom-webui.js';
 import type {ComposeboxDropdownElement} from './composebox_dropdown.js';
 import type {ComposeboxInputElement} from './composebox_input.js';
+// <if expr="not is_android">
+import {ComposeboxProxyImpl} from './composebox_proxy.js';
+// </if>
 import {ContextUploadStatus, InputType, ModelMode, ToolMode} from './composebox_query.mojom-webui.js';
 import type {ContextUploadErrorType, InputState} from './composebox_query.mojom-webui.js';
 import type {ComposeboxVoiceSearchElement, VoicePermissionPromptState} from './composebox_voice_search.js';
@@ -205,7 +208,8 @@ export const ComposeboxEmbedderMixin =
         accessor smartComposeEnabled: boolean =
             loadTimeData.getBoolean('composeboxSmartComposeEnabled');
         accessor smartTabSharingActive: boolean = false;
-        accessor smartTabSharingVisible: boolean = false;
+        accessor smartTabSharingVisible: boolean =
+            getLoadTimeBoolean('composeboxSmartTabSharingVisible', false);
         accessor contextManagementInComposeboxEnabled: boolean =
             getLoadTimeBoolean('contextManagementInComposeboxEnabled', false);
         contextMenuDescriptionEnabled: boolean =
@@ -354,6 +358,15 @@ export const ComposeboxEmbedderMixin =
                     this.setAimThreadRestoredTabs.bind(this)),
           ];
 
+          // <if expr="not is_android">
+          const listenerId =
+              ComposeboxProxyImpl.getInstance().observeSmartTabSharingActive(
+                  (active: boolean) => {
+                    this.smartTabSharingActive = active;
+                  });
+          this.searchboxListenerIds.push(listenerId);
+          // </if>
+
           this.getSearchboxHandler().notifySessionStarted();
 
           this.initializeInitialState_();
@@ -420,6 +433,19 @@ export const ComposeboxEmbedderMixin =
 
           const changedPrivateProperties =
               changedProperties as Map<PropertyKey, unknown>;
+
+          // <if expr="not is_android">
+          if (changedPrivateProperties.has('smartTabSharingVisible')) {
+            if (this.smartTabSharingVisible) {
+              ComposeboxProxyImpl.getInstance().getSmartTabSharingActive().then(
+                  ({active}) => {
+                    this.smartTabSharingActive = active;
+                  });
+            } else {
+              this.smartTabSharingActive = false;
+            }
+          }
+          // </if>
           // When the result initially gets set check if dropdown should show.
           if (changedPrivateProperties.has('input') ||
               changedPrivateProperties.has('result') ||
@@ -1141,9 +1167,12 @@ export const ComposeboxEmbedderMixin =
           this.addDriveUploads(response.files, response.error ?? undefined);
         }
 
-        onSmartTabSharingActiveChanged(e: CustomEvent<{active: boolean}>) {
-          this.smartTabSharingActive = e.detail.active;
-          this.getPageHandler().setSmartTabSharingActive(e.detail.active);
+        onSmartTabSharingActiveChanged(_e: CustomEvent<{active: boolean}>) {
+          // <if expr="not is_android">
+          this.smartTabSharingActive = _e.detail.active;
+          ComposeboxProxyImpl.getInstance().setSmartTabSharingActive(
+              _e.detail.active);
+          // </if>
         }
 
         onContextMenuContainerMousedown(e: FocusEvent) {

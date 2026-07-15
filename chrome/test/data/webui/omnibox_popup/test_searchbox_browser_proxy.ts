@@ -29,6 +29,8 @@ export class TestSearchboxBrowserProxy {
         disabledInputTypes: [],
       },
     });
+    this.handler.setPromiseResolveFor<'getSmartTabSharingActive'>(
+        'getSmartTabSharingActive', {active: false});
   }
 
   initVisibilityPrefs() {

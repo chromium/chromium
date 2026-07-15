@@ -59,12 +59,14 @@ suite('ComposeboxVoiceSearchFlags', () => {
         mock => ComposeboxProxyImpl.setInstance(new ComposeboxProxyImpl(
             mock, new PageCallbackRouter(), new SearchboxPageHandlerRemote(),
             new SearchboxPageCallbackRouter())));
-    handler.setResultMapperFor(
-        'getSmartTabSharingActive', () => Promise.resolve({active: false}));
     assertTrue(!!handler);
     searchboxHandler = installMock(
         SearchboxPageHandlerRemote,
         mock => ComposeboxProxyImpl.getInstance().searchboxHandler = mock);
+    // <if expr="not is_android">
+    searchboxHandler.setResultMapperFor(
+        'getSmartTabSharingActive', () => Promise.resolve({active: false}));
+    // </if>
     searchboxHandler.setResultFor(
         'getPageClassification',
         Promise.resolve({metricSource: 'NTP_REALBOX'}));

@@ -15,6 +15,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "base/time/time.h"
+#include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
 #include "components/contextual_search/input_state_model.h"
 #include "components/omnibox/browser/searchbox.mojom.h"
 #include "components/omnibox/common/input_state.h"
@@ -34,6 +35,7 @@ class OmniboxPopupFileSelector;
 class OmniboxPopupUI;
 class OmniboxEditModel;
 class OmniboxController;
+class ContextualSearchboxHandler;
 class OmniboxContextMenuControllerPecBrowserTest;
 class OmniboxContextMenuControllerPecBrowserTestWithFlagsDisabled;
 
@@ -133,6 +135,8 @@ class OmniboxContextMenuController : public ui::SimpleMenuModel::Delegate {
 
  private:
   friend class TabSimpleMenuModel;
+  friend class OmniboxContextMenuControllerTest;
+  friend class TestOmniboxContextMenuController;
   FRIEND_TEST_ALL_PREFIXES(OmniboxContextMenuControllerPecBrowserTest,
                            ModelPickerCheckmark);
   FRIEND_TEST_ALL_PREFIXES(
@@ -195,7 +199,8 @@ class OmniboxContextMenuController : public ui::SimpleMenuModel::Delegate {
   // Adds a title with a localized string to the menu.
   void AddTitleWithStringId(int localization_id);
   // Gets the most recent tabs.
-  std::vector<OmniboxContextMenuController::TabInfo> GetRecentTabs() const;
+  virtual std::vector<OmniboxContextMenuController::TabInfo> GetRecentTabs()
+      const;
   // Adds the tabs favicon to the menu.
   void AddTabFavicon(int command_id,
                      const GURL& url,
@@ -208,7 +213,7 @@ class OmniboxContextMenuController : public ui::SimpleMenuModel::Delegate {
 
   void UpdateSearchboxContextToolMode(omnibox::ToolMode tool_mode);
 
-  bool IsContentSharingEnabled() const;
+  virtual bool IsContentSharingEnabled() const;
 
   bool IsTabContextEnabled() const;
 
@@ -238,9 +243,11 @@ class OmniboxContextMenuController : public ui::SimpleMenuModel::Delegate {
   std::u16string GetMenuLabelForModel(omnibox::ModelMode model) const;
   ui::ImageModel GetIconForModel(omnibox::ModelMode model) const;
 
-  raw_ptr<OmniboxController> GetOmniboxController() const;
-  raw_ptr<OmniboxEditModel> GetEditModel();
-  raw_ptr<OmniboxPopupUI> GetOmniboxPopupUI() const;
+  OmniboxController* GetOmniboxController() const;
+  OmniboxEditModel* GetEditModel();
+  void OpenAiMode(OmniboxEditModel::AimActivation activation);
+  virtual OmniboxPopupUI* GetOmniboxPopupUI() const;
+  virtual ContextualSearchboxHandler* GetSearchboxHandler() const;
 
   std::unique_ptr<TabSimpleMenuModel> menu_model_;
   std::unique_ptr<TabSimpleMenuModel> shared_tabs_menu_model_;

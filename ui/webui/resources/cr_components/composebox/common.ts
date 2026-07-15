@@ -194,6 +194,9 @@ export interface ComposeboxState {
   mode: ToolMode;
   model: ModelMode;
   suggestInventory?: SuggestInventory;
+  // <if expr="not is_android">
+  smartTabSharingActive: boolean;
+  // </if>
 }
 
 export interface FileUpload {

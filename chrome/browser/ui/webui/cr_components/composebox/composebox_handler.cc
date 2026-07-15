@@ -220,14 +220,20 @@ void ComposeboxHandler::CloseLensOverlayFromWebUI(
 // Required by composebox::mojom::PageHandler. Delegates to the base class
 // ContextualSearchboxHandler which does not implement that interface.
 void ComposeboxHandler::SetSmartTabSharingActive(bool active) {
+#if !BUILDFLAG(IS_ANDROID)
   ContextualSearchboxHandler::SetSmartTabSharingActive(active);
+#endif
 }
 
 // Required by composebox::mojom::PageHandler. Delegates to the base class
 // ContextualSearchboxHandler which does not implement that interface.
 void ComposeboxHandler::GetSmartTabSharingActive(
     GetSmartTabSharingActiveCallback callback) {
+#if !BUILDFLAG(IS_ANDROID)
   ContextualSearchboxHandler::GetSmartTabSharingActive(std::move(callback));
+#else
+  std::move(callback).Run(false);
+#endif
 }
 
 void ComposeboxHandler::ExecuteAction(uint8_t line,

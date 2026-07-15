@@ -137,7 +137,8 @@ export function getHtml(this: OmniboxComposeboxElement) {
                     ?upload-button-disabled="${this.uploadButtonDisabled}"
                     .sharedTabs="${this.getSharedTabs()}"
                     .restoredTabs="${this.aimThreadRestoredTabs}"
-                    ?show-context-menu-description="${this.showContextMenuDescription}">
+                    ?show-context-menu-description="${this.showContextMenuDescription}"
+                    .smartTabSharingActive="${this.smartTabSharingActive}">
                 </cr-composebox-contextual-entrypoint-button>
               ` : ''}
               ${this.searchboxLayoutMode !== 'Compact' &&

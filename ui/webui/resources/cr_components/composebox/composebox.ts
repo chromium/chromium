@@ -262,7 +262,7 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
     return this.$.composeboxInput;
   }
 
-  override async connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
 
     // Set the initial expanded state based on the inputted property.
@@ -277,15 +277,6 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
 
     this.focusInput();
 
-    // TODO(crbug.com/497887993): Move to contextual tasks composebox when the
-    // lens composebox is removed.
-    if (this.smartTabSharingVisible) {
-      const {active} = await this.pageHandler_.getSmartTabSharingActive();
-      this.smartTabSharingActive = active;
-      if (active) {
-        this.clearContextForSmartTabSharingActive_();
-      }
-    }
     this.syncResizeObservers_();
   }
 
@@ -329,6 +320,10 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
 
   override willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);
+    if (changedProperties.has('smartTabSharingActive') &&
+        this.smartTabSharingActive) {
+      this.clearContextForSmartTabSharingActive_();
+    }
     if (changedProperties.has('entrypointName') ||
         changedProperties.has('searchboxLayoutMode')) {
       this.isOmniboxInCompactMode_ = this.entrypointName === 'Omnibox' &&
@@ -937,13 +932,6 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
     this.updateAutoSuggestedTabContext_(tab);
   }
 
-  // TODO: crbug.com/486707842 - Move to the Contextual Tasks embedder
-  override onSmartTabSharingActiveChanged(e: CustomEvent<{active: boolean}>) {
-    super.onSmartTabSharingActiveChanged(e);
-    if (e.detail.active) {
-      this.clearContextForSmartTabSharingActive_();
-    }
-  }
 
   private clearContextForSmartTabSharingActive_() {
     this.clearManualTabs_();

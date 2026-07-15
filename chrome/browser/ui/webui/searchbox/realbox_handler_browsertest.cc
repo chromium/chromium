@@ -18,6 +18,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "chrome/browser/preloading/chrome_preloading.h"
 #include "chrome/browser/preloading/prefetch/search_prefetch/field_trial_settings.h"
 #include "chrome/browser/preloading/prefetch/search_prefetch/search_prefetch_browser_test_base.h"
@@ -94,6 +95,9 @@ class RealboxSearchBrowserTestPage : public searchbox::mojom::Page {
   MOCK_METHOD(void, UpdateContentSharingPolicy, (bool enabled), (override));
   MOCK_METHOD(void, UpdateLensSearchEligibility, (bool eligible), (override));
   MOCK_METHOD(void, UpdateAimPopupEligibility, (bool eligible), (override));
+#if !BUILDFLAG(IS_ANDROID)
+  MOCK_METHOD(void, UpdateSmartTabSharingActive, (bool active), (override));
+#endif
   MOCK_METHOD(void,
               SetRestoredTabIds,
               (const std::vector<int32_t>& ids),

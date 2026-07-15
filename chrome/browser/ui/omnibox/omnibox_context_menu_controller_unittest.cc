@@ -10,15 +10,24 @@
 #include "build/branding_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/omnibox/omnibox_popup_state_manager.h"
 #include "chrome/browser/ui/omnibox/test_omnibox_popup_file_selector.h"
 #include "chrome/browser/ui/views/location_bar/omnibox_popup_file_selector.h"
+#include "chrome/browser/ui/webui/cr_components/searchbox/contextual_searchbox_handler.h"
 #include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_web_contents_helper.h"
+#include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/contextual_search/contextual_search_types.h"
+#include "components/contextual_tasks/public/features.h"
 #include "components/lens/lens_overlay_mime_type.h"
 #include "components/omnibox/common/composebox_features.h"
+#include "components/policy/core/common/mock_configuration_policy_provider.h"
+#include "components/policy/core/common/policy_service_impl.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
@@ -29,28 +38,117 @@
 #include "third_party/omnibox_proto/tool_mode.pb.h"
 #include "ui/base/models/image_model.h"
 
+class FakeContextualSearchboxHandler : public ContextualSearchboxHandler {
+ public:
+  FakeContextualSearchboxHandler(Profile* profile,
+                                 content::WebContents* web_contents)
+      : ContextualSearchboxHandler(
+            mojo::PendingReceiver<searchbox::mojom::PageHandler>(),
+            mojo::PendingRemote<searchbox::mojom::Page>(),
+            profile,
+            web_contents,
+            nullptr,
+            base::NullCallback()) {}
+  ~FakeContextualSearchboxHandler() override = default;
+
+  bool IsSmartTabSharingActive() const override { return active_; }
+  void SetSmartTabSharingActive(bool active) override { active_ = active; }
+
+  void OnThumbnailRemoved() override {}
+
+  bool active_ = false;
+};
+
+class TestOmniboxContextMenuController : public OmniboxContextMenuController {
+ public:
+  using OmniboxContextMenuController::OmniboxContextMenuController;
+
+  ContextualSearchboxHandler* GetSearchboxHandler() const override {
+    return handler_;
+  }
+
+  void SetSearchboxHandler(ContextualSearchboxHandler* handler) {
+    handler_ = handler;
+  }
+
+  OmniboxPopupUI* GetOmniboxPopupUI() const override { return nullptr; }
+
+  std::vector<OmniboxContextMenuController::TabInfo> GetRecentTabs()
+      const override {
+    return mock_tabs_;
+  }
+
+  void SetMockTabs(std::vector<OmniboxContextMenuController::TabInfo> tabs) {
+    mock_tabs_ = std::move(tabs);
+  }
+
+  void RebuildMenu() {
+    menu_model_ = std::make_unique<TabSimpleMenuModel>(this);
+    shared_tabs_menu_model_.reset();
+    BuildMenu();
+  }
+
+  bool IsContentSharingEnabled() const override {
+    return is_content_sharing_enabled_;
+  }
+
+  void SetContentSharingEnabled(bool enabled) {
+    is_content_sharing_enabled_ = enabled;
+  }
+
+ private:
+  raw_ptr<ContextualSearchboxHandler> handler_ = nullptr;
+  std::vector<OmniboxContextMenuController::TabInfo> mock_tabs_;
+  bool is_content_sharing_enabled_ = true;
+};
+
 class OmniboxContextMenuControllerTest : public testing::Test {
  public:
   OmniboxContextMenuControllerTest() {
+    policy_provider_.Init();
+    policy::PolicyServiceImpl::Providers providers = {&policy_provider_};
+    TestingProfile::Builder builder;
+    builder.SetPolicyService(
+        std::make_unique<policy::PolicyServiceImpl>(std::move(providers)));
+    profile_ = builder.Build();
+
+    OptimizationGuideKeyedServiceFactory::GetInstance()->SetTestingFactory(
+        profile_.get(),
+        base::BindRepeating([](content::BrowserContext* context)
+                                -> std::unique_ptr<KeyedService> {
+          return std::make_unique<
+              testing::NiceMock<MockOptimizationGuideKeyedService>>();
+        }));
     file_selector_ =
         std::make_unique<TestOmniboxPopupFileSelector>(gfx::NativeWindow());
-    web_contents_ =
-        content::WebContentsTester::CreateTestWebContents(&profile_, nullptr);
-    controller_ = std::make_unique<OmniboxContextMenuController>(
+    web_contents_ = content::WebContentsTester::CreateTestWebContents(
+        profile_.get(), nullptr);
+    ON_CALL(browser_window_interface_, GetProfile())
+        .WillByDefault(testing::Return(profile_.get()));
+    ON_CALL(browser_window_interface_, GetFeatures())
+        .WillByDefault(testing::ReturnRef(browser_window_features_));
+    webui::SetBrowserWindowInterface(web_contents_.get(),
+                                     &browser_window_interface_);
+    controller_ = std::make_unique<TestOmniboxContextMenuController>(
         file_selector_.get(), web_contents_.get());
   }
 
-  OmniboxContextMenuController* controller() { return controller_.get(); }
+  void TearDown() override { policy_provider_.Shutdown(); }
+
+  TestOmniboxContextMenuController* controller() { return controller_.get(); }
 
  protected:
   content::BrowserTaskEnvironment task_environment_;
   content::RenderViewHostTestEnabler rvh_test_enabler_;
 
-  TestingProfile profile_;
+  testing::NiceMock<policy::MockConfigurationPolicyProvider> policy_provider_;
+  std::unique_ptr<TestingProfile> profile_;
+  testing::NiceMock<MockBrowserWindowInterface> browser_window_interface_;
+  BrowserWindowFeatures browser_window_features_;
 
   std::unique_ptr<OmniboxPopupFileSelector> file_selector_;
   std::unique_ptr<content::WebContents> web_contents_;
-  std::unique_ptr<OmniboxContextMenuController> controller_;
+  std::unique_ptr<TestOmniboxContextMenuController> controller_;
 };
 
 TEST_F(OmniboxContextMenuControllerTest,
@@ -270,4 +368,205 @@ TEST_F(OmniboxContextMenuControllerTest, IsTabCommandId_HandlesInfinity) {
     EXPECT_FALSE(controller()->IsTabCommandId(32999));
     EXPECT_FALSE(controller()->IsTabCommandId(54010));
   }
+}
+
+TEST_F(OmniboxContextMenuControllerTest, SmartTabSharingTogglesState) {
+  FakeContextualSearchboxHandler fake_handler(profile_.get(),
+                                              web_contents_.get());
+  controller()->SetSearchboxHandler(&fake_handler);
+
+  OmniboxPopupWebContentsHelper::CreateForWebContents(web_contents_.get());
+  fake_handler.active_ = false;
+
+  // Execute toggle command
+  controller()->ExecuteCommand(IDC_OMNIBOX_CONTEXT_SMART_TAB_SHARING, 0);
+
+  // Verification: state is toggled to true
+  EXPECT_TRUE(fake_handler.IsSmartTabSharingActive());
+
+  // Execute toggle command again
+  controller()->ExecuteCommand(IDC_OMNIBOX_CONTEXT_SMART_TAB_SHARING, 0);
+
+  // Verification: state is toggled back to false
+  EXPECT_FALSE(fake_handler.IsSmartTabSharingActive());
+}
+
+TEST_F(OmniboxContextMenuControllerTest,
+       SharedTabsSubmenuDisabledWhenSmartTabSharingActive) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures({omnibox::kContextManagementInComposebox,
+                                 omnibox::kContextManagementInOmnibox},
+                                {});
+
+  FakeContextualSearchboxHandler fake_handler(profile_.get(),
+                                              web_contents_.get());
+  controller()->SetSearchboxHandler(&fake_handler);
+
+  // 1. Smart Tab Sharing NOT active -> submenu is enabled
+  fake_handler.active_ = false;
+  EXPECT_TRUE(controller()->IsCommandIdEnabled(
+      IDC_OMNIBOX_CONTEXT_SHARED_TABS_SUBMENU));
+
+  // 2. Smart Tab Sharing active -> submenu is disabled
+  fake_handler.active_ = true;
+  EXPECT_FALSE(controller()->IsCommandIdEnabled(
+      IDC_OMNIBOX_CONTEXT_SHARED_TABS_SUBMENU));
+}
+
+TEST_F(OmniboxContextMenuControllerTest,
+       SmartTabSharingToggleLayoutWhenActive) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitFromCommandLine(
+      "ContextManagementInComposebox,ContextManagementInOmnibox,"
+      "ContextualTasksForceEntryPointEligibility,"
+      "ContextualTasksContext<ContextualTasksContextStudy."
+      "ContextualTasksContextGroup:ContextualTasksContextSmartTabSharing/true",
+      "AimUsePecApi");
+
+  FakeContextualSearchboxHandler fake_handler(profile_.get(),
+                                              web_contents_.get());
+  controller()->SetSearchboxHandler(&fake_handler);
+
+  // Set up mock tabs so AddRecentTabItems compiles the tab sections
+  std::vector<OmniboxContextMenuController::TabInfo> mock_tabs;
+  OmniboxContextMenuController::TabInfo tab;
+  tab.tab_id = 1;
+  tab.title = u"Tab 1";
+  tab.url = GURL("https://example.com");
+  mock_tabs.push_back(tab);
+  controller()->SetMockTabs(mock_tabs);
+
+  // 1. Set Smart Tab Sharing active
+  fake_handler.active_ = true;
+  controller()->RebuildMenu();
+
+  // 2. Verify: Toggle is in main menu
+  EXPECT_TRUE(controller()
+                  ->menu_model()
+                  ->GetIndexOfCommandId(IDC_OMNIBOX_CONTEXT_SMART_TAB_SHARING)
+                  .has_value());
+
+  // 3. Verify: Submenu is NOT in main menu
+  EXPECT_FALSE(
+      controller()
+          ->menu_model()
+          ->GetIndexOfCommandId(IDC_OMNIBOX_CONTEXT_SHARED_TABS_SUBMENU)
+          .has_value());
+
+  // 4. Verify: Minor icon (checkmark on the right) is present
+  size_t index =
+      controller()
+          ->menu_model()
+          ->GetIndexOfCommandId(IDC_OMNIBOX_CONTEXT_SMART_TAB_SHARING)
+          .value();
+  EXPECT_FALSE(controller()->menu_model()->GetMinorIconAt(index).IsEmpty());
+
+  // 5. Verify: Left icon (tab icon) is present
+  EXPECT_FALSE(controller()->menu_model()->GetIconAt(index).IsEmpty());
+}
+
+TEST_F(OmniboxContextMenuControllerTest,
+       SmartTabSharingToggleLayoutWhenInactive) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitFromCommandLine(
+      "ContextManagementInComposebox,ContextManagementInOmnibox,"
+      "ContextualTasksForceEntryPointEligibility,"
+      "ContextualTasksContext<ContextualTasksContextStudy."
+      "ContextualTasksContextGroup:ContextualTasksContextSmartTabSharing/true",
+      "AimUsePecApi");
+
+  FakeContextualSearchboxHandler fake_handler(profile_.get(),
+                                              web_contents_.get());
+  controller()->SetSearchboxHandler(&fake_handler);
+
+  // Set up mock tabs
+  std::vector<OmniboxContextMenuController::TabInfo> mock_tabs;
+  OmniboxContextMenuController::TabInfo tab;
+  tab.tab_id = 1;
+  tab.title = u"Tab 1";
+  tab.url = GURL("https://example.com");
+  mock_tabs.push_back(tab);
+  controller()->SetMockTabs(mock_tabs);
+
+  // 1. Set Smart Tab Sharing inactive
+  fake_handler.active_ = false;
+  controller()->RebuildMenu();
+
+  // 2. Verify: Toggle is NOT in main menu
+  EXPECT_FALSE(controller()
+                   ->menu_model()
+                   ->GetIndexOfCommandId(IDC_OMNIBOX_CONTEXT_SMART_TAB_SHARING)
+                   .has_value());
+
+  // 3. Verify: Submenu IS in main menu
+  EXPECT_TRUE(controller()
+                  ->menu_model()
+                  ->GetIndexOfCommandId(IDC_OMNIBOX_CONTEXT_SHARED_TABS_SUBMENU)
+                  .has_value());
+
+  // 4. Verify: Toggle IS in submenu at index 0
+  ASSERT_TRUE(controller()->shared_tabs_menu_model());
+  EXPECT_EQ(controller()->shared_tabs_menu_model()->GetIndexOfCommandId(
+                IDC_OMNIBOX_CONTEXT_SMART_TAB_SHARING),
+            0u);
+
+  // 5. Verify: Minor icon is empty (unchecked)
+  size_t index =
+      controller()
+          ->shared_tabs_menu_model()
+          ->GetIndexOfCommandId(IDC_OMNIBOX_CONTEXT_SMART_TAB_SHARING)
+          .value();
+  EXPECT_TRUE(
+      controller()->shared_tabs_menu_model()->GetMinorIconAt(index).IsEmpty());
+
+  // 6. Verify: Left icon has the screensaver auto vector icon
+  ui::ImageModel icon =
+      controller()->shared_tabs_menu_model()->GetIconAt(index);
+  EXPECT_FALSE(icon.IsEmpty());
+  EXPECT_TRUE(icon.IsVectorIcon());
+  EXPECT_EQ(icon.GetVectorIcon().vector_icon(), &kScreensaverAutoIcon);
+}
+
+TEST_F(OmniboxContextMenuControllerTest,
+       SmartTabSharingToggleLayoutWhenDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {omnibox::kContextManagementInComposebox,
+       omnibox::kContextManagementInOmnibox},
+      {contextual_tasks::kContextualTasksContext, omnibox::kAimUsePecApi});
+
+  FakeContextualSearchboxHandler fake_handler(profile_.get(),
+                                              web_contents_.get());
+  controller()->SetSearchboxHandler(&fake_handler);
+
+  // Set up mock tabs
+  std::vector<OmniboxContextMenuController::TabInfo> mock_tabs;
+  OmniboxContextMenuController::TabInfo tab;
+  tab.tab_id = 1;
+  tab.title = u"Tab 1";
+  tab.url = GURL("https://example.com");
+  mock_tabs.push_back(tab);
+  controller()->SetMockTabs(mock_tabs);
+
+  // Rebuild menu
+  controller()->RebuildMenu();
+
+  // 1. Verify: Toggle is NOT in main menu
+  EXPECT_FALSE(controller()
+                   ->menu_model()
+                   ->GetIndexOfCommandId(IDC_OMNIBOX_CONTEXT_SMART_TAB_SHARING)
+                   .has_value());
+
+  // 2. Verify: Submenu IS in main menu
+  EXPECT_TRUE(controller()
+                  ->menu_model()
+                  ->GetIndexOfCommandId(IDC_OMNIBOX_CONTEXT_SHARED_TABS_SUBMENU)
+                  .has_value());
+
+  // 3. Verify: Toggle is NOT in submenu
+  ASSERT_TRUE(controller()->shared_tabs_menu_model());
+  EXPECT_FALSE(controller()
+                   ->shared_tabs_menu_model()
+                   ->GetIndexOfCommandId(IDC_OMNIBOX_CONTEXT_SMART_TAB_SHARING)
+                   .has_value());
 }

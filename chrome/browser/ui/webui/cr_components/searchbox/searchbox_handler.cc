@@ -1689,6 +1689,15 @@ void SearchboxHandler::OnDefaultSearchExtensionDialogDone(
   }
 }
 
+#if !BUILDFLAG(IS_ANDROID)
+void SearchboxHandler::SetSmartTabSharingActive(bool active) {}
+
+void SearchboxHandler::GetSmartTabSharingActive(
+    GetSmartTabSharingActiveCallback callback) {
+  std::move(callback).Run(false);
+}
+#endif
+
 OmniboxController* SearchboxHandler::Delegate::GetOmniboxController() {
   return nullptr;
 }

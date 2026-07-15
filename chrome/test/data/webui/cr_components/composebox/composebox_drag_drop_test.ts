@@ -213,11 +213,13 @@ suite('ComposeboxDragAndDrop', () => {
         mock => ComposeboxProxyImpl.setInstance(new ComposeboxProxyImpl(
             mock, new PageCallbackRouter(), new SearchboxPageHandlerRemote(),
             new SearchboxPageCallbackRouter())));
-    pageHandler.setResultFor(
-        'getSmartTabSharingActive', Promise.resolve({active: false}));
     searchboxHandler = installMock(
         SearchboxPageHandlerRemote,
         mock => ComposeboxProxyImpl.getInstance().searchboxHandler = mock);
+    // <if expr="not is_android">
+    searchboxHandler.setResultFor(
+        'getSmartTabSharingActive', Promise.resolve({active: false}));
+    // </if>
     searchboxHandler.setResultFor('getRecentTabs', Promise.resolve({tabs: []}));
     searchboxHandler.setResultFor('getInputState', Promise.resolve({
       state: new MockInputState({
