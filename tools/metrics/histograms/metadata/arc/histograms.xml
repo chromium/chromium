@@ -779,13 +779,13 @@ chromium-metrics-reviews@google.com.
   <token key="ArcUserTypes" variants="ArcUserTypes"/>
 </histogram>
 
-<histogram name="Arc.Auth.NumAccounts" units="count" expires_after="2026-01-12">
+<histogram name="Arc.Auth.NumAccounts" units="count" expires_after="2027-01-12">
   <owner>sinhak@google.com</owner>
   <owner>arc-core@google.com</owner>
   <summary>
     Tracks the number of accounts in ARC. This is recorded only once per
     session, at login time. Warning: this histogram was expired from 2025-01-12
-    to 2025-07-01; data may be missing.
+    to 2025-07-01, and from 2026-01-12 to 2026-07-14; data may be missing.
   </summary>
 </histogram>
 
@@ -863,13 +863,15 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.CompanionLibraryApisCounter"
-    enum="CompanionLibraryApisList" expires_after="2026-07-13">
+    enum="CompanionLibraryApisList" expires_after="2027-07-13">
   <owner>sstan@google.com</owner>
   <owner>preranap@google.com</owner>
   <owner>arc-commercial@google.com</owner>
   <summary>
     Records the number of times ChromeOS Companion Library API called. Counter
-    adding when its Stub library receive the call from applications.
+    adding when its Stub library receive the call from applications. Warning:
+    this histogram was expired from 2026-07-13 to 2026-07-14; data may be
+    missing.
   </summary>
 </histogram>
 
@@ -992,7 +994,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.DataRemoved.Success" enum="Boolean"
-    expires_after="2026-09-01">
+    expires_after="2027-09-01">
   <owner>khmel@google.com</owner>
   <owner>arc-core@google.com</owner>
   <summary>
@@ -1004,7 +1006,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.DataRestore.Duration" units="ms"
-    expires_after="2026-09-01">
+    expires_after="2027-09-01">
   <owner>khmel@google.com</owner>
   <owner>arc-core@google.com</owner>
   <summary>
@@ -1014,7 +1016,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.DataRestore.Status" enum="ArcDataRestoreStatus"
-    expires_after="2026-09-01">
+    expires_after="2027-09-01">
   <owner>khmel@google.com</owner>
   <owner>arc-core@google.com</owner>
   <summary>
@@ -1697,7 +1699,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.OptInResult" enum="ArcOptInResult"
-    expires_after="2026-08-23">
+    expires_after="2027-08-23">
   <owner>jhorwich@google.com</owner>
   <owner>khmel@google.com</owner>
   <owner>arc-core@google.com</owner>
@@ -1748,7 +1750,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.PlayAutoInstallRequest.State{ArcUserTypes}"
-    enum="ArcPlayAutoInstallRequestState" expires_after="2026-09-01">
+    enum="ArcPlayAutoInstallRequestState" expires_after="2027-09-01">
   <owner>jhorwich@google.com</owner>
   <owner>khmel@google.com</owner>
   <owner>arc-core@google.com</owner>
@@ -1764,7 +1766,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.PlayAutoInstallRequest.TimeDelta{ArcUserTypes}" units="ms"
-    expires_after="2026-09-01">
+    expires_after="2027-09-01">
   <owner>jhorwich@google.com</owner>
   <owner>khmel@google.com</owner>
   <owner>arc-core@google.com</owner>
@@ -1962,13 +1964,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.Provisioning.DeviceAffiliationAction"
-    enum="UnaffiliatedDeviceArcAllowedStatus" expires_after="2026-07-13">
+    enum="UnaffiliatedDeviceArcAllowedStatus" expires_after="2027-07-13">
   <owner>preranap@google.com</owner>
   <owner>arc-commercial@google.com</owner>
   <summary>
     Recorded when ARC is allowed on unaffiliated and affiliated devices and
     disallowed on unaffiliated devices depending on UnaffiliatedDeviceArcAllowed
-    policy.
+    policy. Warning: this histogram was expired from 2026-07-13 to 2026-07-14;
+    data may be missing.
   </summary>
 </histogram>
 
@@ -2054,7 +2057,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.Reauthorization.Result{ArcUserTypes}"
-    enum="ArcProvisioningStatus" expires_after="2026-09-11">
+    enum="ArcProvisioningStatus" expires_after="2027-09-11">
   <owner>jhorwich@google.com</owner>
   <owner>arc-core@gmail.com</owner>
   <summary>
@@ -2786,13 +2789,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.VpnServiceBuilderCompatApisCounter"
-    enum="VpnServiceBuilderCompatApisList" expires_after="2026-07-11">
+    enum="VpnServiceBuilderCompatApisList" expires_after="2027-07-11">
   <owner>preranap@google.com</owner>
   <owner>arc-commercial@google.com</owner>
   <summary>
     Records the number of times an API for adding and excluding route in VPN is
     called from ChromeOS Vpn Service Builder Compat Library. Warning: This
-    histogram was expired from 2024-09-11 to 2025-07-01; data may be missing.
+    histogram was expired from 2024-09-11 to 2025-07-01, and from 2026-07-11 to
+    2026-07-14; data may be missing.
   </summary>
 </histogram>
 
