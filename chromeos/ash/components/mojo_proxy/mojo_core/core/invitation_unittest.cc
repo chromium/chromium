@@ -882,15 +882,8 @@ TEST_F(MAYBE_InvitationTest, SendIsolatedInvitationWithDuplicateName) {
 
 // TODO(crbug.com/504855187): Flaky due to a race condition in isolated
 // self-connections where MergePortEvent bypasses the channel and arrives before
-// OnAcceptPeer updates the expected peer name. Disabled on ChromeOS devices due
-// to high retry cost on cros_test_platform. Preserves coverage on
-// linux-chromeos-chrome, linux-chromeos-rel, and etc.
-#if BUILDFLAG(IS_CHROMEOS_DEVICE)
-#define MAYBE_SendIsolatedInvitationToSelf DISABLED_SendIsolatedInvitationToSelf
-#else
-#define MAYBE_SendIsolatedInvitationToSelf SendIsolatedInvitationToSelf
-#endif
-TEST_F(MAYBE_InvitationTest, MAYBE_SendIsolatedInvitationToSelf) {
+// OnAcceptPeer updates the expected peer name.
+TEST_F(MAYBE_InvitationTest, DISABLED_SendIsolatedInvitationToSelf) {
   if (IsMojoIpczEnabled()) {
     GTEST_SKIP() << "MojoIpcz does not support nodes sending isolated "
                  << "invitations to themselves.";
