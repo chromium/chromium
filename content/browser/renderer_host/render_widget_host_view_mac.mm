@@ -2369,6 +2369,11 @@ bool RenderWidgetHostViewMac::SyncGetFirstRectForRange(
     // which means we have to scale the rect by the device scale factor.
     *rect = gfx::ScaleToEnclosingRect(blink_rect, 1.f / device_scale_factor);
   }
+
+  // Ensure the returned rect is clamped to the viewport to prevent a
+  // compromised renderer from placing IME windows outside the page.
+  // See https://crbug.com/519210950.
+  rect->AdjustToFit(gfx::Rect(GetVisibleViewportSize()));
   return true;
 }
 
