@@ -14,6 +14,35 @@
 #include "partition_alloc/reservation_offset_table.h"
 
 namespace partition_alloc::internal {
+class ReservationOffsetTableAddressInfo {
+ public:
+  enum Type { kNotAllocated, kNormalBuckets, kDirectMap };
+
+  PA_ALWAYS_INLINE static ReservationOffsetTableAddressInfo NotAllocated() {
+    return ReservationOffsetTableAddressInfo(Type::kNotAllocated);
+  }
+  PA_ALWAYS_INLINE static ReservationOffsetTableAddressInfo NormalBucket() {
+    return ReservationOffsetTableAddressInfo(Type::kNormalBuckets);
+  }
+  PA_ALWAYS_INLINE static ReservationOffsetTableAddressInfo DirectMap(
+      uintptr_t reservation_start) {
+    return ReservationOffsetTableAddressInfo(Type::kDirectMap,
+                                             reservation_start);
+  }
+  PA_ALWAYS_INLINE Type GetType() const { return type_; }
+  PA_ALWAYS_INLINE uintptr_t GetDirectMapReservationStart() const {
+    PA_CHECK(type_ == Type::kDirectMap);
+    return reservation_start_;
+  }
+
+ private:
+  explicit ReservationOffsetTableAddressInfo(Type type,
+                                             uintptr_t reservation_start = 0)
+      : type_(type), reservation_start_(reservation_start) {}
+
+  Type type_ = Type::kNotAllocated;
+  uintptr_t reservation_start_ = 0;  // Only set if type is kDirectMap.
+};
 
 PA_ALWAYS_INLINE ReservationOffsetTable
 ReservationOffsetTable::Get(pool_handle handle) {
@@ -100,9 +129,9 @@ PA_ALWAYS_INLINE void ReservationOffsetTable::SetDirectMapReservationStart(
 
 // If the given address doesn't point to direct-map allocated memory,
 // returns 0.
-PA_ALWAYS_INLINE uintptr_t
-ReservationOffsetTable::GetDirectMapReservationStart(uintptr_t address) {
-  uint16_t* offset_ptr = GetOffsetPointer(address);
+PA_ALWAYS_INLINE uintptr_t ReservationOffsetTable::GetDirectMapReservationStart(
+    uintptr_t address,
+    uint16_t* offset_ptr) const {
   PA_DCHECK(*offset_ptr != kOffsetTagNotAllocated);
   if (*offset_ptr == kOffsetTagNormalBuckets) {
     return 0;
@@ -119,6 +148,12 @@ ReservationOffsetTable::GetDirectMapReservationStart(uintptr_t address) {
 #endif  // PA_BUILDFLAG(DCHECKS_ARE_ON)
 
   return reservation_start;
+}
+
+PA_ALWAYS_INLINE uintptr_t
+ReservationOffsetTable::GetDirectMapReservationStart(uintptr_t address) const {
+  uint16_t* offset_ptr = GetOffsetPointer(address);
+  return GetDirectMapReservationStart(address, offset_ptr);
 }
 
 // Returns true if |address| is the beginning of the first super page of a
@@ -154,6 +189,20 @@ ReservationOffsetTable::IsManagedByNormalBucketsOrDirectMap(
     uintptr_t address) const {
   uint16_t* offset_ptr = GetOffsetPointer(address);
   return *offset_ptr != kOffsetTagNotAllocated;
+}
+
+PA_ALWAYS_INLINE ReservationOffsetTableAddressInfo
+ReservationOffsetTable::GetAddressInfo(uintptr_t address) const {
+  uint16_t* offset_ptr = GetOffsetPointer(address);
+  switch (*offset_ptr) {
+    case kOffsetTagNotAllocated:
+      return ReservationOffsetTableAddressInfo::NotAllocated();
+    case kOffsetTagNormalBuckets:
+      return ReservationOffsetTableAddressInfo::NormalBucket();
+    default:
+      return ReservationOffsetTableAddressInfo::DirectMap(
+          GetDirectMapReservationStart(address, offset_ptr));
+  }
 }
 
 PA_ALWAYS_INLINE uint16_t* ReservationOffsetTable::GetOffsetPointerForTesting(

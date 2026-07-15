@@ -21,15 +21,11 @@ namespace partition_alloc {
 namespace {
 
 PA_ALWAYS_INLINE SlotAddressAndSize
-FromDirectMap(const uintptr_t address, const internal::pool_handle pool) {
-  uintptr_t reservation_start =
-      internal::ReservationOffsetTable::Get(pool).GetDirectMapReservationStart(
-          address);
-  if (!reservation_start) {
-    return {};
-  }
-
-  std::ptrdiff_t metadata_offset = internal::GetMetadataOffset(pool);
+FromDirectMap(const uintptr_t address,
+              const internal::pool_handle pool,
+              uintptr_t reservation_start,
+              std::ptrdiff_t metadata_offset) {
+  PA_DCHECK(reservation_start);
   // The direct map allocation may not start exactly from the first page, as
   // there may be padding for alignment. The first page metadata holds an
   // offset to where direct map metadata, and thus direct map start, are
@@ -60,17 +56,21 @@ FromDirectMap(const uintptr_t address, const internal::pool_handle pool) {
 
 }  // namespace
 
-SlotAddressAndSize SlotAddressAndSize::From(uintptr_t address,
-                                            internal::pool_handle pool) {
-  PA_DCHECK(internal::ReservationOffsetTable::Get(address)
-                .IsManagedByNormalBucketsOrDirectMap(address));
-
-  auto directmap_slot_info = FromDirectMap(address, pool);
-  if (directmap_slot_info.slot_start) [[unlikely]] {
+SlotAddressAndSize SlotAddressAndSize::From(
+    uintptr_t address,
+    internal::pool_handle pool,
+    internal::ReservationOffsetTableAddressInfo reservation_info,
+    std::ptrdiff_t metadata_offset) {
+  if (reservation_info.GetType() ==
+      internal::ReservationOffsetTableAddressInfo::Type::kDirectMap)
+      [[unlikely]] {
+    auto directmap_slot_info = FromDirectMap(
+        address, pool, reservation_info.GetDirectMapReservationStart(),
+        metadata_offset);
+    PA_CHECK(directmap_slot_info.slot_start);
     return directmap_slot_info;
   }
 
-  std::ptrdiff_t metadata_offset = internal::GetMetadataOffset(pool);
   auto* slot_span =
       internal::SlotSpanMetadata::FromAddr(address, metadata_offset);
 
@@ -96,6 +96,14 @@ SlotAddressAndSize SlotAddressAndSize::From(uintptr_t address,
           slot_span_start.value() +
           bucket->slot_size * bucket->GetSlotNumber(offset_in_slot_span)),
       .size = bucket->slot_size};
+}
+
+SlotAddressAndSize SlotAddressAndSize::From(uintptr_t address,
+                                            internal::pool_handle pool) {
+  auto reservation_info =
+      internal::ReservationOffsetTable::Get(pool).GetAddressInfo(address);
+  return SlotAddressAndSize::From(address, pool, reservation_info,
+                                  internal::GetMetadataOffset(pool));
 }
 
 }  // namespace partition_alloc

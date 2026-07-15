@@ -24,18 +24,20 @@ namespace partition_alloc {
 
 namespace {
 
-PtrPosWithinAlloc IsPtrWithinSameAlloc(uintptr_t orig_address,
-                                       uintptr_t test_address,
-                                       size_t type_size,
-                                       internal::pool_handle pool) {
-  auto [slot_start, _] = SlotAddressAndSize::From(orig_address, pool);
-
+PtrPosWithinAlloc IsPtrWithinSameAlloc(
+    uintptr_t orig_address,
+    uintptr_t test_address,
+    size_t type_size,
+    internal::pool_handle pool,
+    internal::ReservationOffsetTableAddressInfo offset_info) {
+  const std::ptrdiff_t offset = internal::GetMetadataOffset(pool);
+  const auto [slot_start, _] =
+      SlotAddressAndSize::From(orig_address, pool, offset_info, offset);
   // Don't use |orig_address| beyond this point at all. It was needed to
   // pick the right slot, but now we're dealing with very concrete addresses.
   // Zero it just in case, to catch errors.
   orig_address = 0;
 
-  std::ptrdiff_t offset = internal::GetMetadataOffset(pool);
   auto* slot_span =
       internal::SlotSpanMetadata::FromSlotStart(slot_start, offset);
   auto* root = PartitionRoot::FromSlotSpanMetadata(slot_span);
@@ -65,7 +67,10 @@ PtrPosWithinAlloc IsPtrWithinSameAllocInBRPPool(uintptr_t orig_address,
                 .IsManagedByNormalBucketsOrDirectMap(orig_address));
 
   return IsPtrWithinSameAlloc(orig_address, test_address, type_size,
-                              internal::pool_handle::kBRPPoolHandle);
+                              internal::pool_handle::kBRPPoolHandle,
+                              internal::ReservationOffsetTable::Get(
+                                  internal::pool_handle::kBRPPoolHandle)
+                                  .GetAddressInfo(orig_address));
 }
 
 bool IsExtentOutOfBounds(const void* ptr,
@@ -78,15 +83,18 @@ bool IsExtentOutOfBounds(const void* ptr,
     return false;
   }
   const auto pool = partition_alloc::internal::GetPool(address);
-  if (!partition_alloc::internal::ReservationOffsetTable::Get(pool)
-           .IsManagedByNormalBucketsOrDirectMap(address)) [[unlikely]] {
+  auto reservation_offset_table =
+      partition_alloc::internal::ReservationOffsetTable::Get(pool);
+  auto offset_info = reservation_offset_table.GetAddressInfo(address);
+  if (offset_info.GetType() ==
+      internal::ReservationOffsetTableAddressInfo::kNotAllocated) [[unlikely]] {
     return false;
   }
 
   return IsPtrWithinSameAlloc(
              address,
              internal::base::CheckAdd(address, extent_bytes).ValueOrDie(),
-             type_size, pool) == PtrPosWithinAlloc::kFarOOB;
+             type_size, pool, offset_info) == PtrPosWithinAlloc::kFarOOB;
 #else
   return false;
 #endif  // PA_BUILDFLAG(HAS_64_BIT_POINTERS)
