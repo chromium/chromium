@@ -125,6 +125,10 @@ uint32_t ComputeTextureTargetForSharedImage(
 #endif  // !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_OZONE) && !BUILDFLAG(IS_ANDROID)
 }
 
+void WaitSyncTokenInternal(InterfaceBase* ib, const SyncToken& sync_token) {
+  ib->WaitSyncTokenCHROMIUM(sync_token.GetConstData());
+}
+
 }  // namespace
 
 SharedImageExportResult::SharedImageExportResult() = default;
@@ -674,7 +678,7 @@ void ClientSharedImage::CreateGpuFenceForSyncTokens(
   CHECK(gl && context_support);
 
   for (auto& sync_token : sync_tokens) {
-    gl->WaitSyncTokenCHROMIUM(sync_token.GetConstData());
+    WaitSyncTokenInternal(gl, sync_token);
   }
 
   GLuint id = gl->CreateGpuFenceCHROMIUM();
@@ -997,7 +1001,7 @@ SharedImageTexture::ScopedAccess::ScopedAccess(SharedImageTexture* texture,
                                                const SyncToken& sync_token,
                                                bool readonly)
     : texture_(texture), readonly_(readonly) {
-  texture_->gl_->WaitSyncTokenCHROMIUM(sync_token.GetConstData());
+  WaitSyncTokenInternal(texture_->gl_, sync_token);
   texture_->gl_->BeginSharedImageAccessDirectCHROMIUM(
       texture->id(), (readonly_)
                          ? GL_SHARED_IMAGE_ACCESS_MODE_READ_CHROMIUM
@@ -1029,8 +1033,7 @@ SharedImageTexture::SharedImageTexture(gles2::GLES2Interface* gl,
     : gl_(gl), shared_image_(shared_image) {
   CHECK(gl_);
   CHECK(shared_image_);
-  gl_->WaitSyncTokenCHROMIUM(
-      shared_image_->creation_sync_token().GetConstData());
+  WaitSyncTokenInternal(gl_, shared_image_->creation_sync_token());
   id_ = gl_->CreateAndTexStorage2DSharedImageCHROMIUM(
       shared_image_->mailbox().name);
 }
@@ -1068,7 +1071,7 @@ RasterScopedAccess::RasterScopedAccess(InterfaceBase* raster_interface,
       readonly_(readonly) {
   CHECK(raster_interface_);
   shared_image_->BeginAccess(readonly);
-  raster_interface_->WaitSyncTokenCHROMIUM(sync_token.GetConstData());
+  WaitSyncTokenInternal(raster_interface_, sync_token);
   if (readonly) {
     bool has_read_usage =
         shared_image_->usage().Has(SHARED_IMAGE_USAGE_RASTER_READ) ||
@@ -1101,7 +1104,7 @@ WebGPUTextureScopedAccess::WebGPUTextureScopedAccess(
     webgpu::MailboxFlags mailbox_flags)
     : webgpu_(webgpu), shared_image_(shared_image) {
   // Wait on any work using the image.
-  webgpu_->WaitSyncTokenCHROMIUM(sync_token.GetConstData());
+  WaitSyncTokenInternal(webgpu_, sync_token);
 
   // Produce and inject image to WebGPU texture
   webgpu::ReservedTexture reservation = webgpu_->ReserveTexture(
@@ -1193,7 +1196,7 @@ WebGPUBufferScopedAccess::WebGPUBufferScopedAccess(
     webgpu::MailboxFlags mailbox_flags)
     : webgpu_(webgpu), shared_image_(shared_image) {
   // Wait on any work using the buffer.
-  webgpu_->WaitSyncTokenCHROMIUM(sync_token.GetConstData());
+  WaitSyncTokenInternal(webgpu_, sync_token);
 
   webgpu::ReservedBuffer reservation = webgpu_->ReserveBuffer(
       device.Get(), &static_cast<const WGPUBufferDescriptor&>(desc));
