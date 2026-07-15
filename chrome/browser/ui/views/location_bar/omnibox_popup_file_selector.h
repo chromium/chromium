@@ -32,8 +32,6 @@ struct FileData {
   std::string name;
 };
 
-class OmniboxPopupDeactivationBlocker;
-
 class OmniboxPopupFileSelector : public ui::SelectFileDialog::Listener {
  public:
   // `owning_window` is the window that will be used to show the file selector
@@ -83,12 +81,6 @@ class OmniboxPopupFileSelector : public ui::SelectFileDialog::Listener {
   gfx::NativeWindow owning_window_;
   bool was_ai_mode_open_ = false;
   bool is_image_ = false;
-
-  // Prevents the omnibox popup from closing when focus shifts to the system
-  // file dialog.
-  std::unique_ptr<OmniboxPopupDeactivationBlocker> deactivation_blocker_;
-
-  void NotifyFileSelectionClosed();
 
   base::WeakPtrFactory<OmniboxPopupFileSelector> weak_factory_{this};
 };

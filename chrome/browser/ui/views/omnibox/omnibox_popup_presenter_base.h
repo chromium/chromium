@@ -36,14 +36,6 @@ namespace omnibox {
 extern const void* kOmniboxWebUIPopupWidgetId;
 }  // namespace omnibox
 
-// An interface representing a deactivation blocker. Keeping an instance of this
-// interface alive prevents the omnibox popup widget from closing when it loses
-// focus.
-class OmniboxPopupDeactivationBlocker {
- public:
-  virtual ~OmniboxPopupDeactivationBlocker() = default;
-};
-
 // A base assistant class for OmniboxPopupViewWebUI, this manages "n" WebViews
 // and a Widget to present the WebUI. This class is an implementation detail and
 // is not expected to grow or change much with omnibox changes.  The concern of
@@ -53,21 +45,6 @@ class OmniboxPopupDeactivationBlocker {
 class OmniboxPopupPresenterBase : public content::WebContentsObserver,
                                   public SearchboxHandler::Delegate {
  public:
-  // An RAII-style helper that registers itself as a blocker upon creation and
-  // unregisters itself when destroyed.
-  class ScopedDeactivationBlocker : public OmniboxPopupDeactivationBlocker {
-   public:
-    explicit ScopedDeactivationBlocker(
-        base::WeakPtr<OmniboxPopupPresenterBase> presenter);
-    ScopedDeactivationBlocker(const ScopedDeactivationBlocker&) = delete;
-    ScopedDeactivationBlocker& operator=(const ScopedDeactivationBlocker&) =
-        delete;
-    ~ScopedDeactivationBlocker() override;
-
-   private:
-    base::WeakPtr<OmniboxPopupPresenterBase> presenter_;
-  };
-
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kRoundedResultsFrame);
   // Arguments must outlast this.
   explicit OmniboxPopupPresenterBase(
@@ -78,14 +55,6 @@ class OmniboxPopupPresenterBase : public content::WebContentsObserver,
   OmniboxPopupPresenterBase& operator=(const OmniboxPopupPresenterBase&) =
       delete;
   ~OmniboxPopupPresenterBase() override;
-
-  // Creates and returns a new deactivation blocker. The caller is responsible
-  // for managing the lifecycle of the returned blocker (typically via
-  // std::unique_ptr).
-  virtual std::unique_ptr<OmniboxPopupDeactivationBlocker>
-  CreateDeactivationBlocker();
-  virtual void OnFileSelectionClosed();
-  bool has_active_blockers() const { return deactivation_blockers_count_ > 0; }
 
   // Show or hide the popup widget with web view.
   virtual void Show();
@@ -256,17 +225,8 @@ class OmniboxPopupPresenterBase : public content::WebContentsObserver,
   // Minimum size bounds of omnibox popup.
   gfx::Size minimum_size_;
 
-  friend class ScopedDeactivationBlocker;
-
-  void RegisterBlocker();
-  void UnregisterBlocker();
-
-  // The number of active deactivation blockers currently registered. If this is
-  // greater than zero, out-of-focus widget deactivations will be ignored.
-  int deactivation_blockers_count_ = 0;
-
-  base::WeakPtrFactory<OmniboxPopupPresenterBase> weak_factory_{this};
   base::WeakPtrFactory<OmniboxPopupPresenterBase> metrics_weak_factory_{this};
+  base::WeakPtrFactory<OmniboxPopupPresenterBase> weak_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_OMNIBOX_OMNIBOX_POPUP_PRESENTER_BASE_H_

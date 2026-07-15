@@ -6,7 +6,6 @@
 
 #include <optional>
 
-#include "base/check_op.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
@@ -466,46 +465,3 @@ void OmniboxPopupPresenterBase::OnEmbeddedPermissionDialogChanged(
 OmniboxController* OmniboxPopupPresenterBase::GetOmniboxController() {
   return controller();
 }
-
-OmniboxPopupPresenterBase::ScopedDeactivationBlocker::ScopedDeactivationBlocker(
-    base::WeakPtr<OmniboxPopupPresenterBase> presenter)
-    : presenter_(std::move(presenter)) {
-  if (presenter_) {
-    presenter_->RegisterBlocker();
-  }
-}
-
-OmniboxPopupPresenterBase::ScopedDeactivationBlocker::
-    ~ScopedDeactivationBlocker() {
-  if (presenter_) {
-    presenter_->UnregisterBlocker();
-  }
-}
-
-std::unique_ptr<OmniboxPopupDeactivationBlocker>
-OmniboxPopupPresenterBase::CreateDeactivationBlocker() {
-  if (!base::FeatureList::IsEnabled(omnibox::kOmniboxKeepOpenOnFileSelection)) {
-    return nullptr;
-  }
-  return std::make_unique<ScopedDeactivationBlocker>(
-      weak_factory_.GetWeakPtr());
-}
-
-void OmniboxPopupPresenterBase::RegisterBlocker() {
-  deactivation_blockers_count_++;
-}
-
-void OmniboxPopupPresenterBase::UnregisterBlocker() {
-  deactivation_blockers_count_--;
-
-  DCHECK_GE(deactivation_blockers_count_, 0);
-  if (deactivation_blockers_count_ < 0) {
-    deactivation_blockers_count_ = 0;
-  }
-
-  if (deactivation_blockers_count_ == 0 && location_bar() && IsShown()) {
-    RequestFocus();
-  }
-}
-
-void OmniboxPopupPresenterBase::OnFileSelectionClosed() {}
