@@ -49,7 +49,7 @@ IN_PROC_BROWSER_TEST_F(UITestUtilsBrowserTest, OpenTwoTabsInBackground) {
 IN_PROC_BROWSER_TEST_F(UITestUtilsBrowserTest, FindMatchingBrowsers) {
   BrowserWindowInterface* const regular_browser1 = browser();
   BrowserWindowInterface* const regular_browser2 =
-      CreateBrowser(browser()->profile());
+      CreateBrowser(browser()->GetProfile());
   BrowserWindowInterface* const incognito_browser = CreateIncognitoBrowser();
 
   // All browsers.

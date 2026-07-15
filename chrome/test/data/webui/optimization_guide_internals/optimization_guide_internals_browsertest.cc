@@ -61,7 +61,7 @@ class OptimizationGuideInternalsLoggerBrowserTest
  protected:
   void SetUpOnMainThread() override {
     auto* logger = OptimizationGuideKeyedServiceFactory::GetForProfile(
-                       browser()->profile())
+                       browser()->GetProfile())
                        ->GetOptimizationGuideLogger();
     EXPECT_FALSE(logger->ShouldEnableDebugLogs());
     WebUIMochaBrowserTest::SetUpOnMainThread();
@@ -70,7 +70,7 @@ class OptimizationGuideInternalsLoggerBrowserTest
   void OnWebContentsAvailable(content::WebContents* web_contents) override {
     // Once the internals page is open, debug logs should get enabled.
     auto* logger = OptimizationGuideKeyedServiceFactory::GetForProfile(
-                       browser()->profile())
+                       browser()->GetProfile())
                        ->GetOptimizationGuideLogger();
     EXPECT_TRUE(logger->ShouldEnableDebugLogs());
   }
@@ -86,7 +86,7 @@ class OptimizationGuideInternalsLogMessageBrowserTest
  protected:
   void OnWebContentsAvailable(content::WebContents* web_contents) override {
     auto* service = OptimizationGuideKeyedServiceFactory::GetForProfile(
-        browser()->profile());
+        browser()->GetProfile());
     service->RegisterOptimizationTypes({optimization_guide::proto::NOSCRIPT});
     chrome::AddTabAt(browser(), GURL(url::kAboutBlankURL), -1, true);
 
@@ -158,7 +158,7 @@ class OptimizationGuideInternalsModelsPageBrowserTest
               run_loop.Quit();
             }));
 
-    OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->profile())
+    OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->GetProfile())
         ->AddObserverForOptimizationTargetModel(
             optimization_target,
             /*model_metadata=*/std::nullopt,
@@ -182,7 +182,7 @@ class OptimizationGuideInternalsMqlsLogsBrowserTest
   void SetUpOnMainThread() override {
     auto* model_quality_logs_uploader_service =
         OptimizationGuideKeyedServiceFactory::GetForProfile(
-            browser()->profile())
+            browser()->GetProfile())
             ->GetModelQualityLogsUploaderService();
     std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry =
         std::make_unique<optimization_guide::ModelQualityLogEntry>(

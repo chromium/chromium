@@ -23,7 +23,7 @@ class HistorySupervisedUserTest : public WebUIMochaBrowserTest {
     WebUIMochaBrowserTest::SetUpOnMainThread();
 
     history_ = HistoryServiceFactory::GetForProfile(
-        browser()->profile(), ServiceAccessType::EXPLICIT_ACCESS);
+        browser()->GetProfile(), ServiceAccessType::EXPLICIT_ACCESS);
     ui_test_utils::WaitForHistoryToLoad(history_);
   }
 

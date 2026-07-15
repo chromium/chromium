@@ -62,7 +62,7 @@ class InstallerDownloaderInteractiveUiTest
   // Assumes that actual window have infobar visible. As a result, new window
   // will also get the infobar.
   InteractiveTestApi::MultiStep ShowInfobarInNewWindow() {
-    return Steps(Do([&]() { CreateBrowser(browser()->profile()); }),
+    return Steps(Do([&]() { CreateBrowser(browser()->GetProfile()); }),
                  WaitForShow(ConfirmInfoBar::kInfoBarElementId));
   }
 

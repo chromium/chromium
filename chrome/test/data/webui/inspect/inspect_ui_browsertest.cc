@@ -94,7 +94,7 @@ IN_PROC_BROWSER_TEST_F(InspectUITest, SharedWorker) {
 // Flaky due to failure to bind a hardcoded port. crbug.com/41226327
 IN_PROC_BROWSER_TEST_F(InspectUITest, DISABLED_AndroidTargets) {
   DevToolsAndroidBridge* android_bridge =
-      DevToolsAndroidBridge::Factory::GetForProfile(browser()->profile());
+      DevToolsAndroidBridge::Factory::GetForProfile(browser()->GetProfile());
   AndroidDeviceManager::DeviceProviders providers;
   providers.push_back(new AdbDeviceProvider());
   android_bridge->set_device_providers_for_test(providers);
@@ -152,7 +152,6 @@ IN_PROC_BROWSER_TEST_F(InspectUITest, MAYBE_LaunchUIDevtools) {
   ASSERT_TRUE(ExecJs(inspect_ui_contents->GetPrimaryMainFrame(),
                      "assertNativeUIButtonDisabled(false);"));
 }
-
 
 class InspectUIFencedFrameTest : public InspectUITest {
  public:

@@ -74,7 +74,7 @@ IN_PROC_BROWSER_TEST_F(InteractiveFeaturePromoTestUiTest,
 
 IN_PROC_BROWSER_TEST_F(InteractiveFeaturePromoTestUiTest,
                        CheckPromoRequestedInDifferentContext) {
-  auto* const other = CreateBrowser(browser()->profile());
+  auto* const other = CreateBrowser(browser()->GetProfile());
 
   auto spec = user_education::FeaturePromoSpecification::CreateForTesting(
       kTestIphFeature, kTopContainerElementId, IDS_SETTINGS);
@@ -86,7 +86,7 @@ IN_PROC_BROWSER_TEST_F(InteractiveFeaturePromoTestUiTest,
 
 IN_PROC_BROWSER_TEST_F(InteractiveFeaturePromoTestUiTest,
                        CheckPromoRequestedInDifferentContextFromController) {
-  auto* const other = CreateBrowser(browser()->profile());
+  auto* const other = CreateBrowser(browser()->GetProfile());
 
   auto spec = user_education::FeaturePromoSpecification::CreateForTesting(
       kTestIphFeature, kTopContainerElementId, IDS_SETTINGS);
@@ -111,7 +111,7 @@ IN_PROC_BROWSER_TEST_F(InteractiveFeaturePromoTestUiTest,
 IN_PROC_BROWSER_TEST_F(InteractiveFeaturePromoTestUiTest,
                        CheckPromoRequestedInAnyContextFails) {
   UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::AbortedCallback, aborted);
-  auto* const other = CreateBrowser(browser()->profile());
+  auto* const other = CreateBrowser(browser()->GetProfile());
 
   auto spec = user_education::FeaturePromoSpecification::CreateForTesting(
       kTestIphFeature, kTopContainerElementId, IDS_SETTINGS);
@@ -146,7 +146,7 @@ IN_PROC_BROWSER_TEST_F(InteractiveFeaturePromoTestUiTest, WaitForPromo) {
 
 IN_PROC_BROWSER_TEST_F(InteractiveFeaturePromoTestUiTest,
                        WaitForPromoInDifferentContext) {
-  auto* const other = CreateBrowser(browser()->profile());
+  auto* const other = CreateBrowser(browser()->GetProfile());
 
   auto spec = user_education::FeaturePromoSpecification::CreateForTesting(
       kTestIphFeature, kTopContainerElementId, IDS_SETTINGS);
@@ -158,7 +158,7 @@ IN_PROC_BROWSER_TEST_F(InteractiveFeaturePromoTestUiTest,
 
 IN_PROC_BROWSER_TEST_F(InteractiveFeaturePromoTestUiTest,
                        WaitForPromoInDifferentContextFromController) {
-  auto* const other = CreateBrowser(browser()->profile());
+  auto* const other = CreateBrowser(browser()->GetProfile());
 
   auto spec = user_education::FeaturePromoSpecification::CreateForTesting(
       kTestIphFeature, kTopContainerElementId, IDS_SETTINGS);

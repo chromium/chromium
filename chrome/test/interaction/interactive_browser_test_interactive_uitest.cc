@@ -532,7 +532,7 @@ class WebBubbleView : public views::BubbleDialogDelegateView {
     BrowserView* const browser_view =
         BrowserView::GetBrowserViewForBrowser(browser);
     auto bubble_ptr = base::WrapUnique(
-        new WebBubbleView(browser_view->toolbar(), browser->profile(), url));
+        new WebBubbleView(browser_view->toolbar(), browser->GetProfile(), url));
     auto* const bubble = bubble_ptr.get();
     views::BubbleDialogDelegateView::CreateBubble(bubble_ptr.release())->Show();
     return bubble;

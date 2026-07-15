@@ -191,7 +191,7 @@ using UrlProductIdentifierTupleCallback =
 // To get the MockShoppingService:
 // auto* mock_shopping_service = static_cast<commerce::MockShoppingService*>(
 //     commerce::ShoppingServiceFactory::GetForBrowserContext(
-//         browser()->profile()));
+//         browser()->GetProfile()));
 // clang-format on
 
 class ShoppingService : public KeyedService,

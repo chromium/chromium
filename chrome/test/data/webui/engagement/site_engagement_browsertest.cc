@@ -15,7 +15,7 @@ using SiteEngagementBrowserTest = WebUIMochaBrowserTest;
 IN_PROC_BROWSER_TEST_F(SiteEngagementBrowserTest, All) {
   site_engagement::SiteEngagementService* service =
       site_engagement::SiteEngagementServiceFactory::GetForProfile(
-          browser()->profile());
+          browser()->GetProfile());
   service->ResetBaseScoreForURL(GURL("http://example.com"), 10);
   service->ResetBaseScoreForURL(GURL("http://shmlexample.com/"), 3.14159);
 

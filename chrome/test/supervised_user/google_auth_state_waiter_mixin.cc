@@ -27,7 +27,7 @@ void GoogleAuthStateWaiterMixin::SetUpOnMainThread() {
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
   ChildAccountService* child_account_service =
       ChildAccountServiceFactory::GetForProfile(
-          test_base_->browser()->profile());
+          test_base_->browser()->GetProfile());
 
   // Handle the case where the auth state was already as expected.
   if (child_account_service->GetGoogleAuthState() == expected_auth_state_) {

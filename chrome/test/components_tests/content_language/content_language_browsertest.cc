@@ -183,7 +183,7 @@ class RecordLanguagesMetricsBrowserTest : public InProcessBrowserTest {
       const std::vector<std::string>& accept_languages) {
     std::unique_ptr<language::LanguagePrefs> language_prefs =
         std::make_unique<language::LanguagePrefs>(
-            browser()->profile()->GetPrefs());
+            browser()->GetProfile()->GetPrefs());
     language_prefs->SetUserSelectedLanguagesList(accept_languages);
   }
 

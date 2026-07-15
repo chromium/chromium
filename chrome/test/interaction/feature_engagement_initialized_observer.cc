@@ -16,7 +16,7 @@ DEFINE_STATE_IDENTIFIER_VALUE(FeatureEngagementInitializedObserver,
 FeatureEngagementInitializedObserver::FeatureEngagementInitializedObserver(
     Browser* browser)
     : tracker_(feature_engagement::TrackerFactory::GetForBrowserContext(
-          browser->profile())) {
+          browser->GetProfile())) {
   if (tracker_) {
     tracker_->AddOnInitializedCallback(base::BindOnce(
         &FeatureEngagementInitializedObserver::OnTrackerInitialized,

@@ -138,7 +138,7 @@ void InteractiveFeaturePromoTestPrivate::DoTestTearDown() {
 
 InteractiveFeaturePromoTestPrivate::MockTracker*
 InteractiveFeaturePromoTestPrivate::GetMockTrackerFor(Browser* browser) {
-  auto* const data = base::FindOrNull(profile_data_, browser->profile());
+  auto* const data = base::FindOrNull(profile_data_, browser->GetProfile());
   return data ? data->mock_tracker : nullptr;
 }
 
@@ -180,7 +180,7 @@ void InteractiveFeaturePromoTestPrivate::MaybeWaitForTrackerInitialization(
   if (wait_for_browser) {
     auto* const tracker =
         feature_engagement::TrackerFactory::GetForBrowserContext(
-            browser->profile());
+            browser->GetProfile());
     ASSERT_NE(nullptr, tracker);
     base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
     tracker->AddOnInitializedCallback(

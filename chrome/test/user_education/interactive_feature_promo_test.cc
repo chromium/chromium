@@ -58,7 +58,7 @@ InteractiveFeaturePromoTestApi::GetMockTrackerFor(Browser* browser) {
 void InteractiveFeaturePromoTestApi::RegisterTestFeature(
     Browser* browser,
     user_education::FeaturePromoSpecification spec) {
-  UserEducationServiceFactory::GetForBrowserContext(browser->profile())
+  UserEducationServiceFactory::GetForBrowserContext(browser->GetProfile())
       ->feature_promo_registry()
       .RegisterFeature(std::move(spec));
 }

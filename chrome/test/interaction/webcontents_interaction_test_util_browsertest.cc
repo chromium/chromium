@@ -410,7 +410,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsInteractionTestUtilTest,
   // original chrome://new-tab-page might not have finished loading, the
   // element should not be created until the new URL is loaded.
   BrowserWindowInterface* browser2 = chrome::OpenEmptyWindow(
-      browser()->profile(), /*should_trigger_session_restore=*/false);
+      browser()->GetProfile(), /*should_trigger_session_restore=*/false);
   auto util = WebContentsInteractionTestUtil::ForExistingTabInBrowser(
       browser2, kWebContentsElementId);
   util->LoadPage(url);
@@ -1592,7 +1592,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsInteractionTestUtilTest,
   UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::CompletedCallback, completed);
   UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::AbortedCallback, aborted);
 
-  Browser* const other_browser = CreateBrowser(browser()->profile());
+  Browser* const other_browser = CreateBrowser(browser()->GetProfile());
 
   auto util = WebContentsInteractionTestUtil::ForExistingTabInBrowser(
       browser(), kWebContentsElementId);
@@ -1725,7 +1725,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsInteractionTestUtilTest,
   UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::AbortedCallback, aborted);
 
   const GURL url = embedded_test_server()->GetURL(kEmptyDocumentURL);
-  Browser* const browser2 = CreateBrowser(browser()->profile());
+  Browser* const browser2 = CreateBrowser(browser()->GetProfile());
 
   auto util = WebContentsInteractionTestUtil::ForExistingTabInBrowser(
       browser(), kWebContentsElementId);
@@ -1799,7 +1799,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsInteractionTestUtilTest,
                                ui::TrackedElement* element) {
                              // Open a completely new browser, we'll detect it
                              // opened and capture its first tab.
-                             browser2 = CreateBrowser(browser()->profile());
+                             browser2 = CreateBrowser(browser()->GetProfile());
                            }))
                        .Build())
           .Build();
@@ -1869,7 +1869,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsInteractionTestUtilTest,
   UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::CompletedCallback, completed);
   UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::AbortedCallback, aborted);
 
-  Browser* const other_browser = CreateBrowser(browser()->profile());
+  Browser* const other_browser = CreateBrowser(browser()->GetProfile());
 
   auto util = WebContentsInteractionTestUtil::ForExistingTabInBrowser(
       browser(), kWebContentsElementId);
@@ -1919,7 +1919,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsInteractionTestUtilTest,
   UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::CompletedCallback, completed);
   UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::AbortedCallback, aborted);
 
-  Browser* const other_browser = CreateBrowser(browser()->profile());
+  Browser* const other_browser = CreateBrowser(browser()->GetProfile());
 
   auto util = WebContentsInteractionTestUtil::ForExistingTabInBrowser(
       browser(), kWebContentsElementId);
@@ -2622,7 +2622,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsInteractionTestUtilInteractiveTest,
             browser()->tab_strip_model()->GetWebContentsAt(0);
         std::unique_ptr<content::WebContents> new_contents =
             content::WebContents::Create(
-                content::WebContents::CreateParams(browser()->profile()));
+                content::WebContents::CreateParams(browser()->GetProfile()));
         new_contents->GetController().CopyStateFrom(
             &original_contents->GetController(), true);
         browser()->tab_strip_model()->DiscardWebContentsAt(

@@ -18,7 +18,7 @@ class MediaEngagementWebUIBrowserTest : public WebUIMochaBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(MediaEngagementWebUIBrowserTest, All) {
   MediaEngagementService* service =
-      MediaEngagementServiceFactory::GetForProfile(browser()->profile());
+      MediaEngagementServiceFactory::GetForProfile(browser()->GetProfile());
   MediaEngagementScore score1 = service->CreateEngagementScore(
       url::Origin::Create(GURL("http://example.com")));
   score1.IncrementVisits();

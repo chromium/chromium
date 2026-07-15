@@ -115,7 +115,7 @@ class WebAuthnImmediateGetTest : public Fixture {
 
     scoped_refptr<password_manager::PasswordStoreInterface> password_store =
         ProfilePasswordStoreFactory::GetForProfile(
-            browser()->profile(), ServiceAccessType::IMPLICIT_ACCESS);
+            browser()->GetProfile(), ServiceAccessType::IMPLICIT_ACCESS);
     password_store->AddLogin(password_manager::FromPasswordForm(form));
   }
 

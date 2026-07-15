@@ -70,7 +70,7 @@ class InteractionTestUtilBrowserTest : public InteractiveBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(InteractionTestUtilBrowserTest, GetBrowserFromContext) {
-  Browser* const other_browser = CreateBrowser(browser()->profile());
+  Browser* const other_browser = CreateBrowser(browser()->GetProfile());
   EXPECT_EQ(browser(), InteractionTestUtilBrowser::GetBrowserFromContext(
                            BrowserElements::From(browser())->GetContext()));
   EXPECT_EQ(other_browser,

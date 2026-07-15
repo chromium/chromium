@@ -113,7 +113,7 @@ IN_PROC_BROWSER_TEST_F(SharesheetClientBrowserTest, ShareMultipleFiles) {
   EXPECT_EQ(file_paths.size(), 3U);
 
   const base::FilePath share_cache =
-      file_manager::util::GetShareCacheFilePath(browser()->profile());
+      file_manager::util::GetShareCacheFilePath(browser()->GetProfile());
   EXPECT_EQ(file_paths[0],
             share_cache.AppendASCII(".WebShare/share1/sam.ple.mp3"));
   EXPECT_EQ(file_paths[1],

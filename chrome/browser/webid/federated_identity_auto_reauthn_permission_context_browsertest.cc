@@ -38,11 +38,11 @@ class FederatedIdentityAutoReauthnPermissionContextTest
 IN_PROC_BROWSER_TEST_F(FederatedIdentityAutoReauthnPermissionContextTest,
                        AutoReauthnSettingEnabledByDefault) {
   // Force PasswordManagerSettingsService instantiation.
-  PasswordManagerSettingsServiceFactory::GetForProfile(browser()->profile());
+  PasswordManagerSettingsServiceFactory::GetForProfile(browser()->GetProfile());
 
   EXPECT_TRUE(
       FederatedIdentityAutoReauthnPermissionContextFactory::GetForProfile(
-          browser()->profile())
+          browser()->GetProfile())
           ->IsAutoReauthnSettingEnabled());
 }
 
@@ -54,7 +54,7 @@ IN_PROC_BROWSER_TEST_F(FederatedIdentityAutoReauthnPermissionContextTest,
       browser()->tab_strip_model()->GetActiveWebContents();
 
   // Create actor task and attach it to the current tab.
-  auto* actor_service = actor::ActorKeyedService::Get(browser()->profile());
+  auto* actor_service = actor::ActorKeyedService::Get(browser()->GetProfile());
   actor::TaskId task_id = actor_service->CreateTask(
       actor::TestTaskSourceInfo(), actor::NoEnterprisePolicyChecker());
 
@@ -71,7 +71,7 @@ IN_PROC_BROWSER_TEST_F(FederatedIdentityAutoReauthnPermissionContextTest,
 
   EXPECT_TRUE(
       FederatedIdentityAutoReauthnPermissionContextFactory::GetForProfile(
-          browser()->profile())
+          browser()->GetProfile())
           ->IsAutoReauthnDisabledByEmbedder(web_contents));
 }
 
