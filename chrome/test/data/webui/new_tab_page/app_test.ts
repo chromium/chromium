@@ -5,11 +5,9 @@
 import {ActionChipsApiProxyImpl, VoiceSearchAction} from 'chrome://new-tab-page/lazy_load.js';
 import type {Module} from 'chrome://new-tab-page/lazy_load.js';
 import {ActionChipsRetrievalState, ComposeboxProxyImpl, counterfactualLoad, ModuleDescriptor, ModuleRegistry} from 'chrome://new-tab-page/lazy_load.js';
+import type {NtpComposeboxElement} from 'chrome://new-tab-page/lazy_load.js';
 import {ActionChipsHandlerRemote, ActionChipsPageCallbackRouter, IconType} from 'chrome://new-tab-page/new_tab_page.js';
 import type {ActionChipsPageRemote, CustomizeButtonsDocumentRemote, TabInfo} from 'chrome://new-tab-page/new_tab_page.js';
-import type {ComposeboxElement, NtpComposeboxElement} from 'chrome://new-tab-page/lazy_load.js';
-
-type ComposeboxUnionElement = ComposeboxElement|NtpComposeboxElement;
 import {$$, BackgroundManager, BrowserCommandProxy, CONTEXTUAL_ENTRYPOINT_ELEMENT_ID, CUSTOMIZE_CHROME_BUTTON_ELEMENT_ID, CustomizeButtonsDocumentCallbackRouter, CustomizeButtonsHandlerRemote, CustomizeButtonsProxy, CustomizeChromeSection, CustomizeDialogPage, GlifAnimationState, NewTabPageProxy, NtpCustomizeChromeEntryPoint, NtpElement, SearchboxBrowserProxy, SidePanelOpenTrigger, VoiceAction, WindowProxy} from 'chrome://new-tab-page/new_tab_page.js';
 import type {AppElement, CustomizeButtonsElement, NtpSearchboxElement, PageRemote} from 'chrome://new-tab-page/new_tab_page.js';
 import {NtpBackgroundImageSource, PageCallbackRouter, PageHandlerRemote} from 'chrome://new-tab-page/new_tab_page.js';
@@ -1320,7 +1318,7 @@ suite('NewTabPageAppTest', () => {
 
       // Assert.
       const composebox =
-          app.shadowRoot.querySelector<ComposeboxUnionElement>('#composebox');
+          app.shadowRoot.querySelector<NtpComposeboxElement>('#composebox');
       assertTrue(!!composebox);
       assertStyle($$(app, '#searchbox')!, 'visibility', 'hidden');
     });
@@ -1353,7 +1351,7 @@ suite('NewTabPageAppTest', () => {
 
       // Act: Close composebox.
       const composebox =
-          app.shadowRoot.querySelector<ComposeboxUnionElement>('#composebox')!;
+          app.shadowRoot.querySelector<NtpComposeboxElement>('#composebox')!;
       composebox.dispatchEvent(new CustomEvent('close-composebox', {
         detail: {composeboxText: ''},
         bubbles: true,
@@ -1377,7 +1375,7 @@ suite('NewTabPageAppTest', () => {
       await microtasksFinished();
 
       const composebox =
-          app.shadowRoot.querySelector<ComposeboxUnionElement>('#composebox');
+          app.shadowRoot.querySelector<NtpComposeboxElement>('#composebox');
       assertTrue(!!composebox);
       // 1. Setup: Simulate input content.
       composebox.getInputElement().$.input.value = 'test input';
@@ -1436,8 +1434,7 @@ suite('NewTabPageAppTest', () => {
 
           // Assert.
           const composebox =
-              app.shadowRoot.querySelector<ComposeboxUnionElement>(
-                  '#composebox');
+              app.shadowRoot.querySelector<NtpComposeboxElement>('#composebox');
           assertTrue(!!composebox);
           assertEquals(
               searchboxHandler.getCallCount('notifySessionStarted'), 1);
@@ -1458,8 +1455,7 @@ suite('NewTabPageAppTest', () => {
 
           // Assert.
           const composebox =
-              app.shadowRoot.querySelector<ComposeboxUnionElement>(
-                  '#composebox');
+              app.shadowRoot.querySelector<NtpComposeboxElement>('#composebox');
           assertTrue(!!composebox);
           assertEquals(
               searchboxHandler.getCallCount('notifySessionStarted'), 1);
@@ -1520,7 +1516,7 @@ suite('NewTabPageAppTest', () => {
             }));
             await microtasksFinished();
             const composebox =
-                app.shadowRoot.querySelector<ComposeboxUnionElement>(
+                app.shadowRoot.querySelector<NtpComposeboxElement>(
                     '#composebox');
             composebox!.input = 'hello';
             const composeboxScrim =
@@ -2256,8 +2252,7 @@ suite('NewTabPageAppTest', () => {
           }));
           await microtasksFinished();
           const composebox =
-              app.shadowRoot.querySelector<ComposeboxUnionElement>(
-                  '#composebox');
+              app.shadowRoot.querySelector<NtpComposeboxElement>('#composebox');
           assertTrue(!!composebox);
           composebox.getInputElement().$.input.dispatchEvent(
               new FocusEvent('focus'));
@@ -2272,7 +2267,7 @@ suite('NewTabPageAppTest', () => {
           await microtasksFinished();
           assertTrue(scrim?.hidden);
           // Composebox should have been closed.
-          assertFalse(!!app.shadowRoot.querySelector<ComposeboxUnionElement>(
+          assertFalse(!!app.shadowRoot.querySelector<NtpComposeboxElement>(
               '#composebox'));
         });
 
@@ -2324,7 +2319,7 @@ suite('NewTabPageAppTest', () => {
 
       // 5 & 6. Close composebox and clear modes (the 'x' button clicks).
       const composebox =
-          app.shadowRoot.querySelector<ComposeboxUnionElement>('#composebox')!;
+          app.shadowRoot.querySelector<NtpComposeboxElement>('#composebox')!;
       composebox.dispatchEvent(new CustomEvent('close-composebox', {
         detail: {composeboxText: ''},
         bubbles: true,
@@ -2352,7 +2347,7 @@ suite('NewTabPageAppTest', () => {
 
       // Assert.
       const composebox =
-          app.shadowRoot.querySelector<ComposeboxUnionElement>('#composebox');
+          app.shadowRoot.querySelector<NtpComposeboxElement>('#composebox');
       assertTrue(!!composebox);
 
       assertEquals('text', composebox.getInputElement().$.input.value);
@@ -2616,8 +2611,7 @@ suite('NewTabPageAppTest', () => {
 
           // Assert.
           const composebox =
-              app.shadowRoot.querySelector<ComposeboxUnionElement>(
-                  '#composebox');
+              app.shadowRoot.querySelector<NtpComposeboxElement>('#composebox');
           assertTrue(!!composebox);
           assertEquals(1, searchboxHandler.getCallCount('addTabContext'));
           const [tabId, delayUpload] =
