@@ -239,10 +239,12 @@ class LocalNetworkAccessPermission final
       network::mojom::IPAddressSpace originator_address_space,
       mojo::Remote<mojom::blink::PermissionService> permission_service,
       blink::CrossThreadRepeatingFunction<void(LocalNetworkAccessRequestType)>
-          count_callback)
+          count_callback,
+      bool is_opted_out)
       : originator_address_space_(originator_address_space),
         permission_service_(std::move(permission_service)),
-        count_callback_(std::move(count_callback)) {}
+        count_callback_(std::move(count_callback)),
+        is_opted_out_(is_opted_out) {}
 
   ~LocalNetworkAccessPermission() override {
     DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
@@ -259,7 +261,8 @@ class LocalNetworkAccessPermission final
         "WebRTC.PeerConnection.LocalNetworkAccess.RequestType", request_type);
     count_callback_.Run(request_type);
 
-    if (!RuntimeEnabledFeatures::LocalNetworkAccessWebRTCEnabled()) {
+    if (is_opted_out_ ||
+        !RuntimeEnabledFeatures::LocalNetworkAccessWebRTCEnabled()) {
       return false;
     }
 
@@ -321,6 +324,7 @@ class LocalNetworkAccessPermission final
   mojo::Remote<mojom::blink::PermissionService> permission_service_;
   blink::CrossThreadRepeatingFunction<void(LocalNetworkAccessRequestType)>
       count_callback_;
+  const bool is_opted_out_;
 
   THREAD_CHECKER(thread_checker_);
 
@@ -337,8 +341,17 @@ class LocalNetworkAccessPermissionFactory final
                                       ->GetPolicyContainer()
                                       ->GetPolicies()
                                       .ip_address_space),
+        is_opted_out_(
+            RuntimeEnabledFeatures::LocalNetworkAccessForWebRTCOptOutEnabled(
+                factory->DomWindow())),
         main_thread_task_runner_(
-            factory->DomWindow()->GetTaskRunner(TaskType::kNetworking)) {}
+            factory->DomWindow()->GetTaskRunner(TaskType::kNetworking)) {
+    if (is_opted_out_) {
+      UseCounter::Count(
+          factory->DomWindow(),
+          mojom::blink::WebFeature::kLocalNetworkAccessForWebRTCOptOut);
+    }
+  }
 
   std::unique_ptr<webrtc::LocalNetworkAccessPermissionInterface> Create()
       override {
@@ -356,7 +369,8 @@ class LocalNetworkAccessPermissionFactory final
             main_thread_task_runner_,
             CrossThreadBindRepeating(
                 &PeerConnectionDependencyFactory::CountLocalNetworkAccess,
-                MakeUnwrappingCrossThreadWeakHandle(factory_))));
+                MakeUnwrappingCrossThreadWeakHandle(factory_))),
+        is_opted_out_);
   }
 
  private:
@@ -367,6 +381,7 @@ class LocalNetworkAccessPermissionFactory final
   // we use a CrossThreadWeakHandle instead.
   CrossThreadWeakHandle<PeerConnectionDependencyFactory> factory_;
   network::mojom::IPAddressSpace originator_address_space_;
+  const bool is_opted_out_;
   scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner_;
 };
 

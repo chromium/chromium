@@ -26,6 +26,7 @@
 #include "third_party/blink/renderer/modules/peerconnection/mock_rtc_peer_connection_handler_client.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_peer_connection_handler.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 namespace blink {
@@ -277,6 +278,44 @@ TEST_P(LocalNetworkAccessPeerConnectionDependencyFactoryTest,
   EXPECT_FALSE(lna_permission->ShouldRequestPermission(
       AddressForSpace(candidate_address_space)));
 
+  histogram_tester_.ExpectUniqueSample(
+      "WebRTC.PeerConnection.LocalNetworkAccess.RequestType", request_type, 1);
+  TestUseCounters(scope.GetDocument(), request_type);
+}
+
+// Verifies that when the LocalNetworkAccessForWebRTCOptOut origin trial is
+// enabled, ShouldRequestPermission() returns false for all candidate address
+// spaces (bypassing LNA permission checks for WebRTC).
+TEST_P(LocalNetworkAccessPeerConnectionDependencyFactoryTest,
+       ShouldRequestPermission_OptedOut) {
+  const auto [originator_address_space, candidate_address_space, result,
+              result_with_loopback_only, request_type] =
+      std::get<1>(GetParam());
+
+  WebRuntimeFeatures::EnableLocalNetworkAccessWebRTC(true);
+  ScopedLocalNetworkAccessForWebRTCOptOutForTest scoped_opt_out(true);
+
+  V8TestingScope scope;
+
+  auto& dependency_factory =
+      PeerConnectionDependencyFactory::From(*scope.GetExecutionContext());
+
+  auto policies = mojom::blink::PolicyContainerPolicies::New();
+  policies->ip_address_space = originator_address_space;
+  auto policy_container = std::make_unique<PolicyContainer>(
+      mojo::NullAssociatedRemote(), std::move(policies));
+
+  scope.GetExecutionContext()->SetPolicyContainer(std::move(policy_container));
+
+  auto lna_permission_factory =
+      dependency_factory.CreateLocalNetworkAccessPermissionFactoryForTesting();
+  auto lna_permission = lna_permission_factory->Create();
+
+  EXPECT_FALSE(lna_permission->ShouldRequestPermission(
+      AddressForSpace(candidate_address_space)));
+
+  EXPECT_TRUE(scope.GetDocument().IsUseCounted(
+      mojom::blink::WebFeature::kLocalNetworkAccessForWebRTCOptOut));
   histogram_tester_.ExpectUniqueSample(
       "WebRTC.PeerConnection.LocalNetworkAccess.RequestType", request_type, 1);
   TestUseCounters(scope.GetDocument(), request_type);

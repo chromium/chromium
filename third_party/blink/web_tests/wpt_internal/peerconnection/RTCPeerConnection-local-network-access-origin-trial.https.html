@@ -1,0 +1,59 @@
+<!doctype html>
+<meta charset=utf-8>
+<!--
+  Token generated with:
+  python3 tools/origin_trials/generate_token.py https://127.0.0.1:8444 LocalNetworkAccessForWebRTCOptOut --expire-timestamp=2000000000
+-->
+<meta http-equiv="origin-trial" content="A+4Jxy3/ooPwZ2cmWv4C7sxmpLBEcRfW/jmg1InGVwh0nWrRDHn7vMxgthHYW7dBkRWVeotv+9ix3qxxOAA46AMAAABqeyJvcmlnaW4iOiAiaHR0cHM6Ly8xMjcuMC4wLjE6ODQ0NCIsICJmZWF0dXJlIjogIkxvY2FsTmV0d29ya0FjY2Vzc0ZvcldlYlJUQ09wdE91dCIsICJleHBpcnkiOiAyMDAwMDAwMDAwfQ==">
+<title>Local Network Access With Origin Trial Opt Out</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="resources/RTCPeerConnection-helper.js"></script>
+<script src="resources/test_sdp_data.js"></script>
+<script>
+  "use strict";
+
+  promise_test(async t => {
+    // Permission is explicitly denied, but origin trial is active.
+    await test_driver.set_permission({ name: 'loopback-network' }, "denied");
+
+    const pc = new RTCPeerConnection();
+    const dataChannel = pc.createDataChannel("myWebRTCChannel");
+    t.add_cleanup(() => pc.close());
+
+    const offer = await pc.createOffer();
+    await pc.setLocalDescription(offer);
+    await pc.setRemoteDescription({
+      type: 'answer',
+      sdp: REMOTE_DESCRIPTION_WITH_LOCAL_ADDRESS,
+    });
+
+    // Origin trial allows connection to proceed despite denied permission.
+    await waitForConnectionStateChange(pc, 'connecting');
+  }, 'setRemoteDescription() with local address connects when origin trial is active, even if permission is denied.');
+
+  promise_test(async t => {
+    await test_driver.set_permission({ name: 'loopback-network' }, "denied");
+
+    const pc = new RTCPeerConnection();
+    const dataChannel = pc.createDataChannel("myWebRTCChannel");
+    t.add_cleanup(() => pc.close());
+
+    const offer = await pc.createOffer();
+    await pc.setLocalDescription(offer);
+    await pc.setRemoteDescription({
+      type: 'answer',
+      sdp: REMOTE_DESCRIPTION_WITH_NO_CANDIDATE,
+    });
+
+    await pc.addIceCandidate({
+      candidate: LOCAL_ADDRESS_CANDIDATE,
+      sdpMid: '0',
+      sdpMLineIndex: 0,
+    });
+
+    await waitForConnectionStateChange(pc, 'connecting');
+  }, 'addIceCandidate() with local address connects when origin trial is active, even if permission is denied.');
+</script>

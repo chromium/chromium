@@ -3851,6 +3851,15 @@
       status: "stable",
     },
     {
+      // Reverse origin trial allowing sites to opt out of Local Network Access
+      // restrictions for WebRTC.
+      name: "LocalNetworkAccessForWebRTCOptOut",
+      origin_trial_feature_name: "LocalNetworkAccessForWebRTCOptOut",
+      origin_trial_type: "deprecation",
+      origin_trial_allows_insecure: true,
+      base_feature: "none",
+    },
+    {
       // Reverse origin trial allowing Local Network Access requests on
       // non-secure contexts (but still requiring a permission grant from the
       // user).

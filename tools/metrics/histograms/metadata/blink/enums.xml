@@ -6717,6 +6717,7 @@ Called by update_use_counter_feature_enum.py.-->
       label="WebAuthnCreatePublicKeyCredentialWithAttachmentAndNoHints"/>
   <int value="5966" label="DeclarativePerformanceObserver"/>
   <int value="5967" label="PrefetchAndPrerenderActivationBeacon"/>
+  <int value="5968" label="LocalNetworkAccessForWebRTCOptOut"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->
