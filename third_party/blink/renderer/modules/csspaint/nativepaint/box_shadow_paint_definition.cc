@@ -38,7 +38,7 @@ scoped_refptr<Image> BoxShadowPaintDefinition::Paint() {
 
 Animation* BoxShadowPaintDefinition::GetAnimationIfCompositable(
     const Element* element) {
-  return nullptr;
+  return GetAnimationForProperty(element, GetCSSPropertyBoxShadow());
 }
 
 void GetCompositorKeyframeOffset(const PropertySpecificKeyframe* frame,
