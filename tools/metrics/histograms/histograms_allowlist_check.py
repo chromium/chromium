@@ -7,7 +7,7 @@ import os
 
 import setup_modules  # pylint: disable=unused-import
 
-import chromium_src.tools.metrics.histograms.print_histogram_names as print_histogram_names
+import chromium_src.tools.metrics.histograms.histogram_utils as histogram_utils
 
 
 class WellKnownAllowlistPath(enum.Enum):
@@ -63,7 +63,7 @@ def check_histograms_allowlist(output_api, allowlist_path, histograms_files):
       histograms in.
   """
 
-  all_histograms = print_histogram_names.get_names(histograms_files)
+  all_histograms = histogram_utils.get_names(histograms_files)
 
   histograms_allowlist = get_histograms_allowlist_content(allowlist_path)
 

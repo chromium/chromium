@@ -30,7 +30,7 @@ import chromium_src.tools.metrics.common.path_util as path_util
 import chromium_src.tools.metrics.common.presubmit_util as presubmit_caching_support
 import chromium_src.tools.metrics.histograms.histogram_paths as histogram_paths
 import chromium_src.tools.metrics.histograms.histograms_allowlist_check as histograms_allowlist_check
-import chromium_src.tools.metrics.histograms.print_histogram_names as print_histogram_names
+import chromium_src.tools.metrics.histograms.histogram_utils as histogram_utils
 import chromium_src.tools.metrics.histograms.histogram_validation as histogram_validation
 
 # Cannot be called CheckType because by convention PRESUBMIT will try to call
@@ -350,16 +350,16 @@ def CheckRemovedSegmentationHistograms(input_api, output_api):
     return []
 
   removed_histograms = set()
-  variants_doc = print_histogram_names._parse_default_variants()
+  variants_doc = histogram_utils._parse_default_variants()
   for f in affected_xml_files:
     old_histograms = set()
     if f.Action() != 'A':
-      old_histograms = print_histogram_names.get_names_from_contents(
+      old_histograms = histogram_utils.get_names_from_contents(
           f.OldContents(), variants_doc)
 
     new_histograms = set()
     if f.Action() != 'D':
-      new_histograms = print_histogram_names.get_names_from_contents(
+      new_histograms = histogram_utils.get_names_from_contents(
           f.NewContents(), variants_doc)
 
     removed_histograms.update(old_histograms - new_histograms)

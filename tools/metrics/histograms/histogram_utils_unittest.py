@@ -7,10 +7,10 @@ import xml.dom.minidom
 
 import setup_modules  # pylint: disable=unused-import
 
-import chromium_src.tools.metrics.histograms.print_histogram_names as print_histogram_names
+import chromium_src.tools.metrics.histograms.histogram_utils as histogram_utils
 
 
-class PrintHistogramNamesTest(unittest.TestCase):
+class HistogramUtilsTest(unittest.TestCase):
 
   def testGetModifiedVariantsBlocks_Added(self):
     old_content = """
@@ -30,7 +30,7 @@ class PrintHistogramNamesTest(unittest.TestCase):
 </variants>
 </histogram-configuration>
 """
-    modified = print_histogram_names.get_modified_variants_blocks(
+    modified = histogram_utils.get_modified_variants_blocks(
         old_content, new_content)
     self.assertEqual(modified, {'NewVariants'})
 
@@ -50,7 +50,7 @@ class PrintHistogramNamesTest(unittest.TestCase):
 </variants>
 </histogram-configuration>
 """
-    modified = print_histogram_names.get_modified_variants_blocks(
+    modified = histogram_utils.get_modified_variants_blocks(
         old_content, new_content)
     self.assertEqual(modified, {'MockVariants'})
 
@@ -72,7 +72,7 @@ class PrintHistogramNamesTest(unittest.TestCase):
 </variants>
 </histogram-configuration>
 """
-    modified = print_histogram_names.get_modified_variants_blocks(
+    modified = histogram_utils.get_modified_variants_blocks(
         old_content, new_content)
     self.assertEqual(modified, {'RemovedVariants'})
 
@@ -93,8 +93,8 @@ class PrintHistogramNamesTest(unittest.TestCase):
 </histogram-configuration>
 """
     variants_doc = xml.dom.minidom.parseString(variants_xml)
-    names = print_histogram_names.get_names_from_contents(
-        contents.splitlines(), variants_doc)
+    names = histogram_utils.get_names_from_contents(contents.splitlines(),
+                                                    variants_doc)
     self.assertEqual(names, {'Test.V1', 'Test.V2'})
 
   def testFindFilesUsingVariants(self):
@@ -106,11 +106,10 @@ class PrintHistogramNamesTest(unittest.TestCase):
 </histogram-configuration>
 """
     from unittest.mock import patch
-    with patch.object(print_histogram_names,
-                      '_path_contents',
+    with patch.object(histogram_utils, '_path_contents',
                       return_value=content) as mock_read:
-      files = print_histogram_names.find_files_using_variants(
-          {'MockVariants'}, ['dummy_path.xml'])
+      files = histogram_utils.find_files_using_variants({'MockVariants'},
+                                                        ['dummy_path.xml'])
       self.assertEqual(files, ['dummy_path.xml'])
       mock_read.assert_called_once_with('dummy_path.xml')
 
