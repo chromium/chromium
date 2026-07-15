@@ -7,9 +7,11 @@
 #import <memory>
 
 #import "base/memory/raw_ptr.h"
+#import "components/sessions/core/session_id.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_tab_helper.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/browser/shared/model/web_state_list/test/fake_web_state_list_delegate.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/actor_overlay_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
@@ -132,4 +134,41 @@ TEST_F(ActorBrowserAgentTest, CloseActiveWebState) {
   browser_->GetWebStateList()->CloseWebStateAt(
       0, WebStateList::ClosingReason::kDefault);
   EXPECT_OCMOCK_VERIFY(mock_actor_overlay_handler_);
+}
+
+// Tests that `browser_id()` returns a valid, unique, and stable SessionID.
+TEST_F(ActorBrowserAgentTest, BrowserId) {
+  EXPECT_TRUE(agent_->browser_id().is_valid());
+
+  // Test stability (multiple calls return same ID).
+  SessionID initial_id = agent_->browser_id();
+  EXPECT_EQ(initial_id, agent_->browser_id());
+
+  // Test uniqueness with another regular browser.
+  std::unique_ptr<TestBrowser> other_browser =
+      std::make_unique<TestBrowser>(profile_.get());
+  ActorBrowserAgent::CreateForBrowser(other_browser.get());
+  ActorBrowserAgent* other_agent =
+      ActorBrowserAgent::FromBrowser(other_browser.get());
+  EXPECT_TRUE(other_agent->browser_id().is_valid());
+  EXPECT_NE(agent_->browser_id(), other_agent->browser_id());
+
+  // Test uniqueness with an inactive browser.
+  Browser* inactive_browser = browser_->CreateInactiveBrowser();
+  ActorBrowserAgent::CreateForBrowser(inactive_browser);
+  ActorBrowserAgent* inactive_agent =
+      ActorBrowserAgent::FromBrowser(inactive_browser);
+  EXPECT_TRUE(inactive_agent->browser_id().is_valid());
+  EXPECT_NE(agent_->browser_id(), inactive_agent->browser_id());
+
+  // Test uniqueness with a temporary browser.
+  std::unique_ptr<TestBrowser> temporary_browser =
+      std::make_unique<TestBrowser>(
+          profile_.get(), nil, std::make_unique<FakeWebStateListDelegate>(),
+          Browser::Type::kTemporary);
+  ActorBrowserAgent::CreateForBrowser(temporary_browser.get());
+  ActorBrowserAgent* temporary_agent =
+      ActorBrowserAgent::FromBrowser(temporary_browser.get());
+  EXPECT_TRUE(temporary_agent->browser_id().is_valid());
+  EXPECT_NE(agent_->browser_id(), temporary_agent->browser_id());
 }

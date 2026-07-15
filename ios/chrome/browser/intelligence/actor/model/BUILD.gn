@@ -17,6 +17,7 @@ source_set("model") {
     "snackbar_actor_task_updates_observer.h",
     "snackbar_actor_task_updates_observer.mm",
   ]
+  public_deps = [ "//components/sessions:session_id" ]
   deps = [
     ":tab_helper",
     "//base",
@@ -95,6 +96,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/model/browser/test:test_support",
     "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/shared/model/web_state_list/test:test_support",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/snackbar",
     "//ios/chrome/browser/snapshots/model",

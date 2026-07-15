@@ -13,7 +13,8 @@
 #import "ios/web/public/web_state.h"
 
 ActorBrowserAgent::ActorBrowserAgent(Browser* browser)
-    : BrowserUserData<ActorBrowserAgent>(browser) {
+    : BrowserUserData<ActorBrowserAgent>(browser),
+      browser_id_(SessionID::NewUnique()) {
   CHECK(browser);
   web_state_list_observation_.Observe(browser->GetWebStateList());
   UpdateActiveWebState(nullptr,
@@ -21,6 +22,10 @@ ActorBrowserAgent::ActorBrowserAgent(Browser* browser)
 }
 
 ActorBrowserAgent::~ActorBrowserAgent() = default;
+
+SessionID ActorBrowserAgent::browser_id() const {
+  return browser_id_;
+}
 
 void ActorBrowserAgent::WebStateListDidChange(
     WebStateList* web_state_list,

@@ -6,6 +6,7 @@
 #define IOS_CHROME_BROWSER_INTELLIGENCE_ACTOR_MODEL_ACTOR_BROWSER_AGENT_H_
 
 #import "base/scoped_observation.h"
+#import "components/sessions/core/session_id.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_tab_helper_observer.h"
 #import "ios/chrome/browser/shared/model/browser/browser_user_data.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer.h"
@@ -24,6 +25,9 @@ class ActorBrowserAgent : public BrowserUserData<ActorBrowserAgent>,
   ActorBrowserAgent& operator=(const ActorBrowserAgent&) = delete;
 
   ~ActorBrowserAgent() override;
+
+  // Returns the unique session ID of the `Browser*` that `this` is tied to.
+  SessionID browser_id() const;
 
  private:
   friend class BrowserUserData<ActorBrowserAgent>;
@@ -53,6 +57,9 @@ class ActorBrowserAgent : public BrowserUserData<ActorBrowserAgent>,
   // The `WebStateList` observation.
   base::ScopedObservation<WebStateList, WebStateListObserver>
       web_state_list_observation_{this};
+
+  // A unique session ID of the `Browser*` that `this` is tied to.
+  const SessionID browser_id_;
 };
 
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_ACTOR_MODEL_ACTOR_BROWSER_AGENT_H_
