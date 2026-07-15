@@ -468,6 +468,7 @@ source_set("unit_tests") {
 
   if (is_chromeos) {
     deps += [
+      "//chrome/browser/ash/login/users",
       "//chrome/browser/ash/login/users:test_support",
       "//chrome/browser/chromeos/policy/dlp",
       "//chrome/browser/chromeos/policy/dlp/test:test_support",
@@ -481,8 +482,10 @@ source_set("unit_tests") {
   # base.
   if (!is_android) {
     sources += [
+      "current_tab_desktop_media_list_unittest.cc",
       "desktop_capture_access_handler_unittest.cc",
       "desktop_media_picker_controller_unittest.cc",
+      "display_media_access_handler_unittest.cc",
       "media_capture_devices_dispatcher_unittest.cc",
       "media_stream_capture_indicator_unittest.cc",
       "rtc_diagnostic_logging_unittest.cc",
@@ -499,7 +502,12 @@ source_set("unit_tests") {
       "webrtc_rtp_dump_writer_unittest.cc",
       "webrtc_text_log_handler_unittest.cc",
     ]
-    deps += [ ":webrtc_browser_tests_base" ]
+    deps += [
+      ":test_support",
+      ":webrtc_browser_tests_base",
+      "//chrome/browser/web_applications:web_app_test",
+      "//chrome/browser/web_applications:web_applications_test_support",
+    ]
   }
 
   if (is_mac) {

@@ -6570,8 +6570,6 @@ test("unit_tests") {
     # !is_android
     sources += [
       "../browser/browser_commands_unittest.cc",
-      "../browser/media/webrtc/current_tab_desktop_media_list_unittest.cc",
-      "../browser/media/webrtc/display_media_access_handler_unittest.cc",
       "../browser/safe_browsing/generated_safe_browsing_pref_unittest.cc",
       "../browser/safe_browsing/generated_security_settings_bundle_pref_unittest.cc",
       "../browser/ui/accelerator_table_unittest.cc",
