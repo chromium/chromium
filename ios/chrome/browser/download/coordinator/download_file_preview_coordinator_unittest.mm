@@ -14,6 +14,7 @@
 #import "base/path_service.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
+#import "base/test/test_timeouts.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/test/scoped_key_window.h"
@@ -134,7 +135,7 @@ TEST_F(DownloadFilePreviewCoordinatorTest, Stop) {
   [coordinator_ stop];
 
   // Wait for dismissal.
-  EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForUIElementTimeout, ^{
+  EXPECT_TRUE(WaitUntilConditionOrTimeout(TestTimeouts::action_timeout(), ^{
     return base_view_controller_.presentedViewController == nil;
   }));
 }
