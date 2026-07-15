@@ -80,6 +80,7 @@ import org.chromium.chrome.browser.multiwindow.MultiInstanceOrchestratorFactory;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider.Observer;
 import org.chromium.chrome.browser.omnibox.LocationBarSelectionController.SelectableView;
 import org.chromium.chrome.browser.omnibox.UrlBar.UrlBarDelegate;
+import org.chromium.chrome.browser.omnibox.fusebox.ComposeboxQueryControllerBridge;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxAttachmentModelList;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxAttachmentModelList.FuseboxAttachmentChangeListener;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator;
@@ -1936,23 +1937,24 @@ class LocationBarMediator
         boolean isSuggestionsPopover =
                 mFuseboxCoordinator.getFuseboxLayoutModeSupplier().get()
                         == FuseboxLayoutMode.SUGGESTIONS_POPOVER;
-        boolean isInAiMode =
-                mCurrentInput != null
-                        && mCurrentInput.getRequestType() == AutocompleteRequestType.AI_MODE;
+        boolean isInAimRequest =
+                mCurrentInput != null && ToolModeUtils.isAimRequest(mCurrentInput.getRequestType());
 
-        if (isSuggestionsPopover && !isInAiMode) {
-            boolean currentPrefValue =
-                    UserPrefs.get(profile).getBoolean(Pref.SHOW_AI_MODE_OMNIBOX_BUTTON);
-            mUrlCoordinator.setShowAiMode(currentPrefValue);
-            mUrlCoordinator.setShowAiModeCallback(
-                    (newValue) -> {
-                        UserPrefs.get(profile)
-                                .setBoolean(Pref.SHOW_AI_MODE_OMNIBOX_BUTTON, newValue);
-                        mUrlCoordinator.setShowAiMode(newValue);
-                    });
-        } else {
+        if (!isSuggestionsPopover
+                || isInAimRequest
+                || !ComposeboxQueryControllerBridge.isFuseboxEligibleForProfile(profile)) {
             mUrlCoordinator.setShowAiModeCallback(null);
+            return;
         }
+
+        boolean currentPrefValue =
+                UserPrefs.get(profile).getBoolean(Pref.SHOW_AI_MODE_OMNIBOX_BUTTON);
+        mUrlCoordinator.setShowAiMode(currentPrefValue);
+        mUrlCoordinator.setShowAiModeCallback(
+                (newValue) -> {
+                    UserPrefs.get(profile).setBoolean(Pref.SHOW_AI_MODE_OMNIBOX_BUTTON, newValue);
+                    mUrlCoordinator.setShowAiMode(newValue);
+                });
     }
 
     /**
