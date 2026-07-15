@@ -7,19 +7,12 @@
 #include "base/functional/bind.h"
 #include "chrome/browser/ui/passwords/passwords_model_delegate.h"
 #include "chrome/browser/ui/passwords/ui_utils.h"
-#include "chrome/browser/ui/views/chrome_layout_provider.h"
-#include "chrome/browser/ui/views/chrome_typography.h"
-#include "chrome/browser/ui/views/passwords/manage_passwords_list_view.h"
 #include "chrome/browser/ui/views/passwords/views_utils.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
-#include "ui/base/resource/resource_bundle.h"
-#include "ui/gfx/color_utils.h"
 #include "ui/gfx/text_constants.h"
-#include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/layout/fill_layout.h"
-#include "ui/views/layout/layout_provider.h"
 
 RelaunchChromeView::RelaunchChromeView(content::WebContents* web_contents,
                                        views::BubbleAnchor anchor_view,

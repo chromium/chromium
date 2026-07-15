@@ -9,11 +9,8 @@
 #include <string_view>
 #include <vector>
 
-#include "chrome/app/vector_icons/vector_icons.h"
-#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/passwords/ui_utils.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
-#include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/vector_icons/vector_icons.h"

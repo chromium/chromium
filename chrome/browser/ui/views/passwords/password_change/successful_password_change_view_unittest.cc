@@ -4,13 +4,9 @@
 
 #include "chrome/browser/ui/views/passwords/password_change/successful_password_change_view.h"
 
-#include <memory>
 #include <string>
 
-#include "base/strings/utf_string_conversions.h"
 #include "base/test/gmock_callback_support.h"
-#include "chrome/browser/ui/passwords/bubble_controllers/password_change/successful_password_change_bubble_controller.h"
-#include "chrome/browser/ui/views/passwords/manage_passwords_view_ids.h"
 #include "chrome/browser/ui/views/passwords/password_bubble_view_test_base.h"
 #include "chrome/grit/generated_resources.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -19,7 +15,6 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/test/button_test_api.h"
-#include "url/gurl.h"
 
 namespace {
 

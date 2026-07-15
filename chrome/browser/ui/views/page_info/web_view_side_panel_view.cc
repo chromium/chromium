@@ -29,7 +29,6 @@
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/layout/flex_layout_types.h"
-#include "ui/views/layout/flex_layout_view.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 

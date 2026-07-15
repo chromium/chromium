@@ -8,15 +8,10 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/passwords/password_bubble_view_test_base.h"
 #include "chrome/grit/generated_resources.h"
-#include "chrome/grit/theme_resources.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
-#include "ui/events/event_target.h"
-#include "ui/events/event_target_iterator.h"
-#include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/label.h"
 
 class MoveToAccountStoreBubbleViewTest : public PasswordBubbleViewTestBase {

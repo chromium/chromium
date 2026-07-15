@@ -16,7 +16,6 @@
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/skbitmap_operations.h"
 #include "ui/views/accessibility/view_accessibility.h"
-#include "ui/views/vector_icons.h"
 
 namespace {
 

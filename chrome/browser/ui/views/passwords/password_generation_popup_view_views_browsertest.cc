@@ -7,7 +7,6 @@
 #include <string>
 
 #include "base/memory/weak_ptr.h"
-#include "base/strings/strcat.h"
 #include "chrome/browser/ui/passwords/password_generation_popup_controller.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_pixel_test.h"
 #include "chrome/browser/ui/views/passwords/password_generation_popup_view_views.h"

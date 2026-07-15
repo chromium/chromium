@@ -5,10 +5,8 @@
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
 
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/command_updater_impl.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "third_party/skia/include/core/SkBitmap.h"
-#include "ui/events/test/event_generator.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/views/accessibility/view_accessibility.h"

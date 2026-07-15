@@ -4,11 +4,9 @@
 
 #include "chrome/browser/ui/views/page_action/webui_page_action_control.h"
 
-#include <optional>
 #include <utility>
 #include <variant>
 
-#include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ref.h"
 #include "base/notreached.h"

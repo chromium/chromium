@@ -8,8 +8,6 @@
 #include <string_view>
 
 #include "base/observer_list.h"
-#include "base/strings/string_util.h"
-#include "base/strings/utf_string_conversions.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/file_system_access/file_system_access_features.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
@@ -21,9 +19,7 @@
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/page_info/page_info.h"
-#include "components/permissions/features.h"
 #include "components/permissions/permission_util.h"
-#include "components/strings/grit/components_strings.h"
 #include "components/url_formatter/elide_url.h"
 #include "components/vector_icons/vector_icons.h"
 #include "media/base/media_switches.h"

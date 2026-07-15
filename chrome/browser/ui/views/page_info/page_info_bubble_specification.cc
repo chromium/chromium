@@ -4,14 +4,12 @@
 
 #include "chrome/browser/ui/views/page_info/page_info_bubble_specification.h"
 
-#include <algorithm>
 #include <memory>
 
 #include "base/check.h"
 #include "base/functional/callback_helpers.h"
 #include "chrome/browser/ui/page_info/page_info_dialog.h"
 #include "components/content_settings/core/common/content_settings_types.h"
-#include "ui/views/view.h"
 
 PageInfoBubbleSpecification::Builder::Builder(
     views::BubbleAnchor anchor,

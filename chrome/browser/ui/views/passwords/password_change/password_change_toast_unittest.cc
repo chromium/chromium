@@ -8,24 +8,16 @@
 #include <string>
 
 #include "base/functional/callback_helpers.h"
-#include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/password_manager/password_change_delegate.h"
-#include "chrome/browser/password_manager/password_change_delegate_mock.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "components/vector_icons/vector_icons.h"
-#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/ui_base_features.h"
-#include "ui/events/test/test_event.h"
-#include "ui/gfx/vector_icon_types.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/controls/throbber.h"
-#include "ui/views/test/button_test_api.h"
-#include "url/gurl.h"
 
 class PasswordChangeToastTest : public ChromeViewsTestBase {
  public:

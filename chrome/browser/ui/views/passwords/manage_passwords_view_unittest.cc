@@ -4,8 +4,6 @@
 
 #include "chrome/browser/ui/views/passwords/manage_passwords_view.h"
 
-#include <utility>
-
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/ui/views/passwords/manage_passwords_details_view.h"

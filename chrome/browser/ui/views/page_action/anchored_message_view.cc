@@ -12,7 +12,6 @@
 
 #include "base/check.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/views/page_action/multi_icon_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_ink_drop_util.h"

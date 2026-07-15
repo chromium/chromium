@@ -34,11 +34,8 @@
 #include "ui/base/ui_base_features.h"
 #include "ui/gfx/favicon_size.h"
 #include "ui/views/controls/styled_label.h"
-#include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/flex_layout_view.h"
-#include "ui/views/layout/table_layout.h"
-#include "ui/views/layout/table_layout_view.h"
 #include "ui/views/view_class_properties.h"
 
 using password_manager::metrics_util::PasswordManagementBubbleInteractions;
