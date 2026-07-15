@@ -13,7 +13,6 @@
 #include <vector>
 
 #include "base/byte_size.h"
-#include "base/containers/fixed_flat_set.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/to_string.h"
@@ -22,6 +21,7 @@
 #include "net/http/http_util.h"
 #include "net/url_request/redirect_info.h"
 #include "net/url_request/redirect_util.h"
+#include "services/network/public/cpp/cors/cors.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/resource_request_body.h"
 #include "services/network/public/mojom/fetch_api.mojom-shared.h"
@@ -33,30 +33,18 @@
 namespace blink {
 namespace {
 
-// LINT.IfChange(kCorsSafelistedResponseHeaderNames)
-// https://fetch.spec.whatwg.org/#cors-safelisted-response-header-name
-constexpr auto kCorsSafelistedResponseHeaderNames =
-    base::MakeFixedFlatSet<std::string_view>({
-        "cache-control",
-        "content-language",
-        "content-length",
-        // "content-range" is not a standard CORS-safelisted response header,
-        // but it is required by C++ media loaders (e.g. WebMediaPlayer) to
-        // process "206 Partial Content" range responses. We permit it in
-        // URLResponseHead to avoid breaking media playback, while it remains
-        // filtered out and hidden from JavaScript's view in the renderer.
-        "content-range",
-        "content-type",
-        "expires",
-        "last-modified",
-        "pragma",
-    });
-// LINT.ThenChange(third_party/blink/renderer/platform/loader/cors/cors.cc:allowed_cross_origin_response_headers)
-
 bool IsCorsExposedResponseHeader(
     std::string_view name,
     const std::vector<std::string>& cors_exposed_header_names) {
-  if (kCorsSafelistedResponseHeaderNames.contains(base::ToLowerASCII(name))) {
+  if (network::cors::IsCorsSafelistedResponseHeaderName(name)) {
+    return true;
+  }
+  // "content-range" is not a standard CORS-safelisted response header, but it
+  // is required by C++ media loaders (e.g. WebMediaPlayer) to process "206
+  // Partial Content" range responses. We permit it in URLResponseHead to avoid
+  // breaking media playback, while it remains filtered out and hidden from
+  // JavaScript's view in the renderer.
+  if (base::ToLowerASCII(name) == "content-range") {
     return true;
   }
   for (const auto& exposed : cors_exposed_header_names) {

@@ -547,8 +547,8 @@ _CONFIG = [
         ],
         'allowed': [
             'base::EqualsCaseInsensitiveASCII',
-            'base::MakeFixedFlatSet',
             'base::ToLowerASCII',
+            'network::cors::IsCorsSafelistedResponseHeaderName',
             'network::mojom::FetchResponseType',
         ],
     },

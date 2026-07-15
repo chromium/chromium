@@ -107,6 +107,12 @@ COMPONENT_EXPORT(NETWORK_CPP)
 bool IsNoCorsSafelistedHeader(const std::string& name,
                               const std::string& value);
 
+// Returns true if `name` is a CORS-safelisted response header name.
+// The match is case-insensitive.
+// https://fetch.spec.whatwg.org/#cors-safelisted-response-header-name
+COMPONENT_EXPORT(NETWORK_CPP)
+bool IsCorsSafelistedResponseHeaderName(std::string_view name);
+
 // https://fetch.spec.whatwg.org/#cors-unsafe-request-header-names
 // |headers| must not contain multiple headers for the same name.
 // The returned list is NOT sorted.

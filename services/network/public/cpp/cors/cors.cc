@@ -257,6 +257,21 @@ bool IsCorsSafelistedContentType(const std::string& media_type) {
       /*is_ad_auction_trusted_signals_request=*/false);
 }
 
+bool IsCorsSafelistedResponseHeaderName(std::string_view name) {
+  // https://fetch.spec.whatwg.org/#cors-safelisted-response-header-name
+  static constexpr auto kSafelistedResponseHeaderNames =
+      base::MakeFixedFlatSet<std::string_view>({
+          "cache-control",
+          "content-language",
+          "content-length",
+          "content-type",
+          "expires",
+          "last-modified",
+          "pragma",
+      });
+  return kSafelistedResponseHeaderNames.contains(base::ToLowerASCII(name));
+}
+
 bool IsCorsSafelistedHeader(const std::string& name,
                             const std::string& value,
                             bool is_ad_auction_trusted_signals_request) {
