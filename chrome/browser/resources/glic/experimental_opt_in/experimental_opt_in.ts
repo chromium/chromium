@@ -258,13 +258,21 @@ export class ExperimentalOptInApp {
         'Glic.ExperimentalTriggering.OptIn.ErrorShown', type,
         FailureType.MAX_VALUE + 1);
     if (type === FailureType.OFFLINE) {
-      this.errorIcon_.setAttribute('icon', 'glic:offline');
+      this.errorIcon_.setAttribute(
+          'icon',
+          loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+              'glic:wifi-off' :
+              'glic:offline-old');
       this.errorHeadline_.textContent =
           loadTimeData.getString('offlineNoticeHeader');
       this.errorMessage_.textContent =
           loadTimeData.getString('experimentalOptInOfflineNoticeMessage');
     } else {
-      this.errorIcon_.setAttribute('icon', 'glic:error');
+      this.errorIcon_.setAttribute(
+          'icon',
+          loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+              'glic:error' :
+              'glic:error-old');
       this.errorHeadline_.textContent =
           loadTimeData.getString('errorNoticeHeader');
       this.errorMessage_.textContent =
