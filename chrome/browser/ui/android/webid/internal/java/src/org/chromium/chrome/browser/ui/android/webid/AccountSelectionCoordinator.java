@@ -198,7 +198,7 @@ public class AccountSelectionCoordinator
         adapter.registerType(
                 AccountSelectionProperties.ITEM_TYPE_SEPARATOR,
                 new LayoutViewBuilder<>(R.layout.account_selection_login_buttons_start_separator),
-                (unusedModel, _, unusedKey) -> {});
+                (_, _, _) -> {});
         sheetItemListView.setAdapter(adapter);
 
         return contentView;

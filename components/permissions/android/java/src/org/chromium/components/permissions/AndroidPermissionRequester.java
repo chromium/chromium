@@ -101,7 +101,7 @@ public class AndroidPermissionRequester {
         String[] optionalPermissions =
                 PermissionUtil.getOptionalAndroidPermissionsForContentSetting(contentSettingsType);
         for (String permission : optionalPermissions) {
-            boolean unused_result = permissionDelegate.hasPermission(permission);
+            var _ = permissionDelegate.hasPermission(permission);
         }
 
         return missingPermissions.isEmpty();
