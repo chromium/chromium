@@ -91,7 +91,6 @@ class RealboxSearchBrowserTestPage : public searchbox::mojom::Page {
       searchbox::mojom::TabInfoPtr tab_info) override {}
   void OnPermissionPromptChanged(bool is_showing,
                                  const gfx::Size& prompt_size) override {}
-  MOCK_METHOD(void, SetKeywordSelected, (bool is_keyword_selected), (override));
   MOCK_METHOD(void, UpdateContentSharingPolicy, (bool enabled), (override));
   MOCK_METHOD(void, UpdateLensSearchEligibility, (bool eligible), (override));
   MOCK_METHOD(void, UpdateAimPopupEligibility, (bool eligible), (override));

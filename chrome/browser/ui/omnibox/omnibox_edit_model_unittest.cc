@@ -643,7 +643,6 @@ class OmniboxEditModelPopupTest : public ::testing::Test {
                 (override));
     MOCK_METHOD(void, OnMatchIconUpdated, (size_t), (override));
     MOCK_METHOD(void, OnContentsChanged, (), (override));
-    MOCK_METHOD(void, OnKeywordStateChanged, (bool), (override));
     MOCK_METHOD(void, OnCharTyped, (base::TimeTicks), (override));
   };
 
@@ -1832,34 +1831,6 @@ TEST_F(OmniboxEditModelPopupTest,
                          match_with_bitmap_bitmap->getColor(0, 0));
 }
 
-TEST_F(OmniboxEditModelPopupTest, KeywordStateObserver) {
-  TestObserver observer;
-  model()->AddObserver(&observer);
-
-  auto changed = [this](std::u16string keyword, KeywordState keyword_state) {
-    model()->OnPopupDataChanged(std::u16string(), false, std::u16string(),
-                                keyword, std::u16string(), keyword_state,
-                                std::u16string(), {});
-  };
-
-  // Keyword hint is not fully in keyword mode, so state is false.
-  EXPECT_CALL(observer, OnKeywordStateChanged(false));
-  changed(u"keyword", KeywordState::kHint);
-  testing::Mock::VerifyAndClearExpectations(&observer);
-
-  // Entering keyword mode (not hint) sets state to true.
-  EXPECT_CALL(observer, OnKeywordStateChanged(true));
-  changed(u"keyword", KeywordState::kKeyword);
-  testing::Mock::VerifyAndClearExpectations(&observer);
-
-  // State is false when out of keyword mode.
-  EXPECT_CALL(observer, OnKeywordStateChanged(false));
-  changed(u"", KeywordState::kNone);
-  testing::Mock::VerifyAndClearExpectations(&observer);
-
-  model()->RemoveObserver(&observer);
-}
-
 TEST_F(OmniboxEditModelPopupTest, AimPopupDisabled) {
   base::HistogramTester histogram_tester;
 
@@ -2152,7 +2123,6 @@ class ResultClearingObserver : public OmniboxEditModel::Observer {
     // This invalidates any references to matches in the result.
     result_->Reset();
   }
-  void OnKeywordStateChanged(bool) override {}
   void OnCharTyped(base::TimeTicks timestamp) override {}
 
  private:

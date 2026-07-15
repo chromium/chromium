@@ -117,7 +117,6 @@ export class OmniboxPopupAppElement extends I18nMixinLit
         reflect: true,
       },
 
-      isInKeywordMode_: {type: Boolean},
       result_: {type: Object},
       searchboxLayoutMode_: {reflect: true, type: String},
       showContextEntrypoint_: {
@@ -143,7 +142,6 @@ export class OmniboxPopupAppElement extends I18nMixinLit
       canShowSecondarySideMediaQueryList.matches;
   accessor hasSecondarySide: boolean = false;
   accessor isDebug: boolean = false;
-  protected accessor isInKeywordMode_: boolean = false;
   protected accessor hasVisibleMatches_: boolean = false;
   protected accessor result_: AutocompleteResult|null = null;
   protected accessor searchboxLayoutMode_: string =
@@ -204,10 +202,6 @@ export class OmniboxPopupAppElement extends I18nMixinLit
           .addListener(this.onAutocompleteResultChanged_.bind(this)),
       this.searchboxBrowserProxy_.callbackRouter.updateSelection.addListener(
           this.onUpdateSelection_.bind(this)),
-      this.searchboxBrowserProxy_.callbackRouter.setKeywordSelected.addListener(
-          (isKeywordSelected: boolean) => {
-            this.isInKeywordMode_ = isKeywordSelected;
-          }),
       this.searchboxBrowserProxy_.callbackRouter.updateLensSearchEligibility
           .addListener((eligible: boolean) => {
             this.isLensSearchEligible_ = this.isLensSearchEnabled_ && eligible;
@@ -282,7 +276,6 @@ export class OmniboxPopupAppElement extends I18nMixinLit
 
     if (changedPrivateProperties.has('isAimPopupEligible_') ||
         changedPrivateProperties.has('searchboxLayoutMode_') ||
-        changedPrivateProperties.has('isInKeywordMode_') ||
         changedPrivateProperties.has('result_') ||
         changedPrivateProperties.has('isLensSearchEligible_')) {
       this.showContextEntrypoint_ = this.computeShowContextEntrypoint_();
@@ -309,8 +302,7 @@ export class OmniboxPopupAppElement extends I18nMixinLit
   }
 
   private computeShowContextEntrypoint_(): boolean {
-    if (this.hideContextButton_ || !this.isAimPopupEligible_ ||
-        this.isInKeywordMode_) {
+    if (this.hideContextButton_ || !this.isAimPopupEligible_) {
       return false;
     }
 

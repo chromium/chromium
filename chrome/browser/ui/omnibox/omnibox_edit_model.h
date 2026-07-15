@@ -97,9 +97,6 @@ class OmniboxEditModel {
     // opened, or closed.
     virtual void OnContentsChanged() = 0;
 
-    // The keyword state has changed.
-    virtual void OnKeywordStateChanged(bool is_keyword_selected) = 0;
-
     // Time when a character is inserted into the model.
     virtual void OnCharTyped(base::TimeTicks timestamp) = 0;
 

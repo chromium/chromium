@@ -53,7 +53,6 @@ class AiModePageActionController : public OmniboxEditModel::Observer,
                           OmniboxPopupSelection new_selection) override {}
   void OnMatchIconUpdated(size_t index) override {}
   void OnContentsChanged() override;
-  void OnKeywordStateChanged(bool is_keyword_selected) override {}
   void OnCharTyped(base::TimeTicks timestamp) override {}
 
   // Determines whether the AI mode page action should be shown and updates

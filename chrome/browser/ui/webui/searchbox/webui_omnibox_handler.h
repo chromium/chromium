@@ -88,7 +88,6 @@ class WebuiOmniboxHandler : public ContextualSearchboxHandler,
   // OmniboxEditModel::Observer:
   void OnSelectionChanged(OmniboxPopupSelection old_selection,
                           OmniboxPopupSelection selection) override;
-  void OnKeywordStateChanged(bool is_keyword_selected) override;
   void OnCharTyped(base::TimeTicks timestamp) override;
   void OnMatchIconUpdated(size_t index) override {}
   void OnContentsChanged() override {}

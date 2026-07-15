@@ -58,7 +58,6 @@ class OmniboxPopupViewBrowserView : public OmniboxPopupView,
   void OnSelectionChanged(OmniboxPopupSelection old_selection,
                           OmniboxPopupSelection selection) override {}
   void OnMatchIconUpdated(size_t index) override {}
-  void OnKeywordStateChanged(bool is_keyword_selected) override {}
   void OnCharTyped(base::TimeTicks timestamp) override {}
 
  private:

@@ -551,9 +551,6 @@ interface Page {
   //  OmniboxViewViews and can be eliminated once we have full webui popup.
   SetAimButtonVisible(bool visible);
 
-  // Called when the keyword mode state changes.
-  SetKeywordSelected(bool is_keyword_selected);
-
   // Called to set searchbox input.
   SetInputText(string input);
 

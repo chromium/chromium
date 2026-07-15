@@ -399,10 +399,6 @@ void WebuiOmniboxHandler::OnSelectionChanged(
           selection.action_index));
 }
 
-void WebuiOmniboxHandler::OnKeywordStateChanged(bool is_keyword_selected) {
-  page_->SetKeywordSelected(is_keyword_selected);
-}
-
 void WebuiOmniboxHandler::OnCharTyped(base::TimeTicks timestamp) {
   if (metrics_reporter_ && !metrics_reporter_->HasLocalMark("CharTyped")) {
     metrics_reporter_->Mark("CharTyped", timestamp);

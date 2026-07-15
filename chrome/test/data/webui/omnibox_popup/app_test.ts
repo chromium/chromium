@@ -124,25 +124,6 @@ suite('AppTest', function() {
       assertFalse(!!contextualEntrypoint);
     });
 
-    test('KeywordModeUpdatesContextualEntrypointVisibility', async () => {
-      let contextualEntrypoint = localApp.shadowRoot?.querySelector(
-          'cr-composebox-contextual-entrypoint-button');
-      assertTrue(!!contextualEntrypoint);
-      assertTrue(isVisible(contextualEntrypoint));
-
-      // Enter keyword mode.
-      testProxy.page.setKeywordSelected(true);
-      await microtasksFinished();
-      assertFalse(isVisible(contextualEntrypoint));
-
-      // Exit keyword mode.
-      testProxy.page.setKeywordSelected(false);
-      await microtasksFinished();
-      contextualEntrypoint = localApp.shadowRoot?.querySelector(
-          'cr-composebox-contextual-entrypoint-button');
-      assertTrue(isVisible(contextualEntrypoint));
-    });
-
     test('OnShowCallsBlur', async () => {
       // Arrange: Focus the button and confirm it's focused.
       const contextualEntrypoint = localApp.shadowRoot?.querySelector(

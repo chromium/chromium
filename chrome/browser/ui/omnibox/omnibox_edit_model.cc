@@ -1481,14 +1481,6 @@ void OmniboxEditModel::OnPopupDataChanged(
     }
   }
 
-  // This updates the web UI state and affects presence/absence of the '+'
-  // context menu button. This should reflect whether keyword mode is actually
-  // entered, not simply match selection state (a match with keyword may be
-  // selected but the keyword mode still not entered yet).
-  // Note, this doesn't do edge detection because keyword state can be changed
-  // elsewhere, not only from here.
-  observers_.Notify(&Observer::OnKeywordStateChanged, is_keyword_selected());
-
   // Handle changes to temporary text.
   if (is_temporary_text) {
     const bool save_original_selection = !has_temporary_text_;
