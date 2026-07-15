@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/views/autofill/popup/mock_selection_delegate.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_row_content_view.h"
 #include "chrome/test/views/chrome_views_test_base.h"
+#include "components/autofill/core/browser/filling/filling_product.h"
 #include "components/strings/grit/components_strings.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -82,8 +83,8 @@ class PopupPersonalContextNoticeViewTest : public ChromeViewsTestBase {
   raw_ptr<PopupPersonalContextNoticeView> view_ = nullptr;
 };
 
-// Tests the notice view is correctly created and displays its initial elements.
-TEST_F(PopupPersonalContextNoticeViewTest, InitialState) {
+// Tests the initial notice view elements for Ambient Autofill filling source.
+TEST_F(PopupPersonalContextNoticeViewTest, InitialStateOnAmbientAutofill) {
   ShowView();
 
   std::u16string expected_title = l10n_util::GetStringUTF16(
@@ -94,6 +95,42 @@ TEST_F(PopupPersonalContextNoticeViewTest, InitialState) {
       IDS_AUTOFILL_POPUP_PERSONAL_CONTEXT_NOTICE_LINK_TEXT);
   std::u16string expected_ok = l10n_util::GetStringUTF16(
       IDS_AUTOFILL_POPUP_PERSONAL_CONTEXT_NOTICE_OK_BUTTON);
+
+  // Check that the description is visible and has the correct text.
+  views::StyledLabel* description = view().description_for_testing();
+  ASSERT_NE(description, nullptr);
+  EXPECT_TRUE(description->GetVisible());
+  EXPECT_EQ(
+      base::JoinString({expected_title, expected_context, expected_link}, u" "),
+      description->GetText());
+
+  // Check that the description contains a link with a correct text.
+  views::Link* settings_link = description->GetFirstLinkForTesting();
+  EXPECT_TRUE(settings_link);
+  EXPECT_EQ(expected_link, settings_link->GetText());
+
+  // Check that the "Got it" button is visible and has the correct text.
+  views::MdTextButton* got_it_button = view().got_it_button_for_testing();
+  ASSERT_NE(got_it_button, nullptr);
+  EXPECT_TRUE(got_it_button->GetVisible());
+  EXPECT_EQ(expected_ok, got_it_button->GetText());
+}
+
+// Tests the initial notice view elements for AtMemory filling source.
+TEST_F(PopupPersonalContextNoticeViewTest, InitialStateAtMemorySource) {
+  ON_CALL(controller(), GetMainFillingProduct())
+      .WillByDefault(testing::Return(FillingProduct::kAtMemory));
+
+  ShowView();
+
+  std::u16string expected_title = l10n_util::GetStringUTF16(
+      IDS_AT_MEMORY_POPUP_PERSONAL_CONTEXT_NOTICE_TITLE);
+  std::u16string expected_context = l10n_util::GetStringUTF16(
+      IDS_AT_MEMORY_POPUP_PERSONAL_CONTEXT_NOTICE_CONTEXT);
+  std::u16string expected_link = l10n_util::GetStringUTF16(
+      IDS_AT_MEMORY_POPUP_PERSONAL_CONTEXT_NOTICE_LINK_TEXT);
+  std::u16string expected_ok = l10n_util::GetStringUTF16(
+      IDS_AT_MEMORY_POPUP_PERSONAL_CONTEXT_NOTICE_OK_BUTTON);
 
   // Check that the description is visible and has the correct text.
   views::StyledLabel* description = view().description_for_testing();

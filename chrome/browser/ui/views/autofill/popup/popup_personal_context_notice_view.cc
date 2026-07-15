@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/views/autofill/popup/popup_row_content_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_row_view.h"
 #include "chrome/common/webui_url_constants.h"
+#include "components/autofill/core/browser/filling/filling_product.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
@@ -86,7 +87,25 @@ PopupPersonalContextNoticeView::PopupPersonalContextNoticeView(
       IDS_AUTOFILL_POPUP_PERSONAL_CONTEXT_NOTICE_CONTEXT);
   std::u16string link_text = l10n_util::GetStringUTF16(
       IDS_AUTOFILL_POPUP_PERSONAL_CONTEXT_NOTICE_LINK_TEXT);
+  std::u16string button_text = l10n_util::GetStringUTF16(
+      IDS_AUTOFILL_POPUP_PERSONAL_CONTEXT_NOTICE_OK_BUTTON);
 
+  if (controller_) {
+    FillingProduct product = controller_->GetMainFillingProduct();
+    if (product == FillingProduct::kAtMemory) {
+      title_text = l10n_util::GetStringUTF16(
+          IDS_AT_MEMORY_POPUP_PERSONAL_CONTEXT_NOTICE_TITLE);
+      context_text = l10n_util::GetStringUTF16(
+          IDS_AT_MEMORY_POPUP_PERSONAL_CONTEXT_NOTICE_CONTEXT);
+      link_text = l10n_util::GetStringUTF16(
+          IDS_AT_MEMORY_POPUP_PERSONAL_CONTEXT_NOTICE_LINK_TEXT);
+      button_text = l10n_util::GetStringUTF16(
+          IDS_AT_MEMORY_POPUP_PERSONAL_CONTEXT_NOTICE_OK_BUTTON);
+    }
+  }
+
+  // TODO(crbug.com/534738804): Use offset markers for string assembly to
+  // support embedded links positioned before trailing text or punctuation.
   std::u16string full_text =
       base::JoinString({title_text, context_text, link_text}, u" ");
   const size_t full_text_length = full_text.length();
@@ -123,8 +142,7 @@ PopupPersonalContextNoticeView::PopupPersonalContextNoticeView(
           base::BindRepeating(
               &PopupPersonalContextNoticeView::OnGotItButtonClicked,
               base::Unretained(this)),
-          l10n_util::GetStringUTF16(
-              IDS_AUTOFILL_POPUP_PERSONAL_CONTEXT_NOTICE_OK_BUTTON)));
+          button_text));
   got_it_button_->SetStyle(ui::ButtonStyle::kTonal);
 }
 

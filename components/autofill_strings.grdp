@@ -1634,17 +1634,33 @@
 
   <!-- Personal Context Notice in Autofill Popup -->
   <message name="IDS_AUTOFILL_POPUP_PERSONAL_CONTEXT_NOTICE_TITLE" translateable="false" desc="Title for the personal context notice in Autofill popup.">
-    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor
+    Now autofill info from Gmail and more.
   </message>
   <message name="IDS_AUTOFILL_POPUP_PERSONAL_CONTEXT_NOTICE_CONTEXT" translateable="false" desc="Context text for the personal context notice in Autofill popup.">
-    Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+    Powered by Gemini with Personal Intelligence.
   </message>
   <message name="IDS_AUTOFILL_POPUP_PERSONAL_CONTEXT_NOTICE_LINK_TEXT" translateable="false" desc="Link text for the personal context notice in Autofill popup.">
-    lorem ipsum
+    Manage settings
   </message>
   <message name="IDS_AUTOFILL_POPUP_PERSONAL_CONTEXT_NOTICE_OK_BUTTON" translateable="false" desc="Got it button text in Autofill popup personal context notice.">
     OK
   </message>
+
+  <!-- Personal Context Notice in AtMemory Popup -->
+  <message name="IDS_AT_MEMORY_POPUP_PERSONAL_CONTEXT_NOTICE_TITLE" translateable="false" desc="Title for the personal context notice in AtMemory popup.">
+    Now you can find and fill info from Gmail and more.
+  </message>
+  <message name="IDS_AT_MEMORY_POPUP_PERSONAL_CONTEXT_NOTICE_CONTEXT" translateable="false" desc="Context text for the personal context notice in AtMemory popup.">
+    Powered by Personal Intelligence with Gemini. Page titles and URLs are sent to Google and may be reviewed by humans. More about enhanced autofill in
+  </message>
+  <message name="IDS_AT_MEMORY_POPUP_PERSONAL_CONTEXT_NOTICE_LINK_TEXT" translateable="false" desc="Link text for the personal context notice in AtMemory popup.">
+    settings.
+  </message>
+  <message name="IDS_AT_MEMORY_POPUP_PERSONAL_CONTEXT_NOTICE_OK_BUTTON" translateable="false" desc="Got it button text in AtMemory popup personal context notice.">
+    OK
+  </message>
+
+  <!-- Personal Context Notice in Autofill Bottomsheet -->
   <message name="IDS_AUTOFILL_PERSONAL_CONTEXT_NOTICE_SHEET_CONTENT_DESCRIPTION" desc="Accessibility string read when the autofill personal context notice sheet is opened." formatter_data="android_java" translateable="false">
     Autofill from your Google apps notice opened
   </message>
