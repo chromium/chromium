@@ -139,6 +139,7 @@
 ../../web_tests/external/wpt/fonts/noto/cjk/NotoSansCJKjp-Regular-subset-halt-FF1A.otf
 ../../web_tests/external/wpt/fonts/noto/cjk/NotoSansCJKjp-Regular-subset-halt-min.otf
 ../../web_tests/external/wpt/fonts/noto/cjk/NotoSansCJKjp-Regular-subset-halt.otf
+../../web_tests/external/wpt/fonts/noto/color-emoji/NotoColorEmoji-subset.ttf
 ../../web_tests/external/wpt/fonts/noto/noto-sans-v8-latin-regular.woff
 ../../web_tests/external/wpt/fonts/pass.woff
 ../../web_tests/external/wpt/fonts/sileot-webfont.woff
