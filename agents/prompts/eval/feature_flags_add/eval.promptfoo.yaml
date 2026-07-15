@@ -1,0 +1,84 @@
+description: Add a feature flag to the Chrome binary.
+owner: wenyufu@chromium.org
+prompts:
+  - 'file://eval_prompt.md'
+providers:
+  - id: python:../../../testing/gemini_provider.py
+    config:
+      timeoutSeconds: 1200
+tests:
+  - vars:
+      diff_files: chrome/browser/about_flags.cc,chrome/browser/flag_descriptions.h,chrome/browser/flag_descriptions.cc,chrome/browser/flag-metadata.json,chrome/browser/flags/android/chrome_feature_list.h,chrome/browser/flags/android/chrome_feature_list.cc,hrome/browser/flags/android/java/src/org/chromium/chrome/browser/flags/ChromeFeatureList.java,tools/metrics/histograms/enums.xml
+  - assert:
+    - type: python
+      value: file://../../../testing/asserts/check_changes.py:check_files_changed
+      config:
+        files:
+        - chrome/browser/about_flags.cc
+        - chrome/browser/flag_descriptions.h
+        - chrome/browser/flag_descriptions.cc
+        - chrome/browser/flag-metadata.json
+        - chrome/browser/flags/android/chrome_feature_list.h
+        - chrome/browser/flags/android/chrome_feature_list.cc
+        - chrome/browser/flags/android/java/src/org/chromium/chrome/browser/flags/ChromeFeatureList.java
+        - tools/metrics/histograms/enums.xml
+  - assert:
+    - type: python
+      value: file://../../../testing/asserts/check_build.py:check_build
+      config:
+        files:
+        - chrome/browser/about_flags.cc
+        - chrome/browser/flag_descriptions.h
+        - chrome/browser/flag_descriptions.cc
+        - chrome/browser/flag-metadata.json
+        - chrome/browser/flags/android/chrome_feature_list.h
+        - chrome/browser/flags/android/chrome_feature_list.cc
+        - chrome/browser/flags/android/java/src/org/chromium/chrome/browser/flags/ChromeFeatureList.java
+        - tools/metrics/histograms/enums.xml
+    - type: llm-rubric
+      value: |
+        You are an expert code reviewer and test evaluation system.
+        Your task is to judge the validity of generated code and changes
+        that add a new feature flag (`FeatureFlagAddTest`) to the
+        Chromium codebase.
+
+        You must evaluate the generated output against the given criteria.
+
+        ### Evaluation Criteria
+
+        1. **Feature Flag Definition**:
+          - The feature flag `kFeatureFlagAddTest` must be properly
+            declared and defined in C++
+            (`chrome/browser/flags/android/chrome_feature_list.h` and
+            `chrome/browser/flags/android/chrome_feature_list.cc`).
+          - The feature flag string constant `FeatureFlagAddTest` must
+            be added in Java (`ChromeFeatureList.java`).
+          - The feature must be set to `DISABLED_BY_DEFAULT`.
+          - The Java implementation must NOT use `CachedFlag` or
+            `MutableFlag`.
+
+        2. **UI and Metadata Exposure (`about:flags`)**:
+          - Flag descriptions must be declared in
+            `chrome/browser/flag_descriptions.h` and defined in
+            `chrome/browser/flag_descriptions.cc`.
+          - The flag entry must be added to the `kFeatureEntries` array
+            in `chrome/browser/about_flags.cc`.
+          - A metadata entry must be added to
+            `chrome/browser/flag-metadata.json`.
+
+        3. **Histograms and Metrics**:
+          - Feature flag entries must be added to
+            `tools/metrics/histograms/enums.xml`.
+
+        4. **Code Quality and Conventions**:
+          - Changes must follow existing codebase patterns, including
+            alphabetical ordering where established.
+          - The change set must be minimal and focused strictly on adding
+            the requested feature flag.
+
+        ### Response
+        Using the evaluation criteria above, grade the generated output on a
+        scale of 0.0 to 1.0, where 1.0 is a perfect implementation and 0.0 is
+        a completely broken implementation. Explain the reason for your score.
+      provider: python:agents/testing/gemini_provider.py
+      threshold: 0.7
