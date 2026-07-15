@@ -8944,6 +8944,7 @@ if (!is_android && !is_chromeos_device) {
       "//chrome/browser/gcm",
       "//chrome/browser/glic/browser_ui",
       "//chrome/browser/glic/suggestions",
+      "//chrome/browser/headless:interactive_ui_tests",
       "//chrome/browser/lifetime",
       "//chrome/browser/media/router/discovery/access_code:access_code_cast_feature",
       "//chrome/browser/media/router/discovery/access_code:access_code_sink_service",

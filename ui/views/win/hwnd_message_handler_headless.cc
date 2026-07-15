@@ -69,6 +69,14 @@ void HWNDMessageHandlerHeadless::Init(HWND parent, const gfx::Rect& bounds) {
   BOOL cloak = TRUE;
   ::DwmSetWindowAttribute(hwnd(), DWMWA_CLOAK, &cloak, sizeof(cloak));
 
+  // Disable window transition animations to make the window appear instantly
+  // if it is ever made visible. This is important for tests that verify the
+  // window is correctly cloaked, preventing DWM fade-in transition delays from
+  // hiding the window when screenshots are captured.
+  BOOL disable_transition = TRUE;
+  ::DwmSetWindowAttribute(hwnd(), DWMWA_TRANSITIONS_FORCEDISABLED,
+                          &disable_transition, sizeof(disable_transition));
+
   // In headless mode remember the expected window bounds possibly adjusted
   // according to the scale factor.
   if (initial_bounds_valid_) {
