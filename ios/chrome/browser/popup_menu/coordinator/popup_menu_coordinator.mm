@@ -114,7 +114,6 @@ NSString* const kPreferredContentSizeKey = @"preferredContentSize";
 // Mediator to that alerts the main `mediator` when the web content area
 // is blocked by an overlay.
 @property(nonatomic, strong) BrowserContentMediator* contentBlockerMediator;
-
 // Time when the tools menu opened.
 @property(nonatomic, assign) NSTimeInterval toolsMenuOpenTime;
 // Whether the tools menu was scrolled vertically while it was open.
@@ -164,10 +163,10 @@ NSString* const kPreferredContentSizeKey = @"preferredContentSize";
 #pragma mark - ChromeCoordinator
 
 - (void)start {
-  [self.browser->GetCommandDispatcher()
-      startDispatchingToTarget:self
-                   forProtocol:@protocol(PopupMenuCommands)];
-  [self.browser->GetCommandDispatcher()
+  CommandDispatcher* dispatcher = self.browser->GetCommandDispatcher();
+  [dispatcher startDispatchingToTarget:self
+                           forProtocol:@protocol(PopupMenuCommands)];
+  [dispatcher
       startDispatchingToTarget:self
                    forProtocol:@protocol(OverflowMenuCustomizationCommands)];
   NSNotificationCenter* defaultCenter = [NSNotificationCenter defaultCenter];
@@ -574,6 +573,10 @@ NSString* const kPreferredContentSizeKey = @"preferredContentSize";
   CHECK(send_tab_to_self::AreIOSTabRemindersEnabled());
 
   [self.popupMenuHelpCoordinator displayPopupMenuTabRemindersIPH];
+}
+
+- (void)showLevelUpWalkthroughIPH {
+  [self.popupMenuHelpCoordinator showLevelUpWalkthroughIPH];
 }
 
 #pragma mark - OverflowMenuCustomizationCommands

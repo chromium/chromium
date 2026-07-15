@@ -10,6 +10,9 @@
 // Commands for the popup menu.
 @protocol PopupMenuCommands
 
+// Called to present the Level Up walkthrough IPH step.
+- (void)showLevelUpWalkthroughIPH;
+
 // Shows the tools menu.
 - (void)showToolsMenuPopup;
 // Dismisses the currently presented popup.

@@ -43,6 +43,9 @@ class Browser;
 // in search mode.
 @property(nonatomic, assign) BOOL openViewControllerForPasswordSearch;
 
+// Flag indicating whether the Level Up walkthrough IPH should be shown.
+@property(nonatomic, assign) BOOL shouldShowLevelUpWalkthroughIPH;
+
 // Token received from the OS during the app launch for credential exchange
 // import, needed to interact with the OS library to receive credential data.
 // If present, the credential import flow should be started after successful

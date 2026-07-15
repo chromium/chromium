@@ -31,6 +31,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/image_fetcher/model",
     "//ios/chrome/browser/intelligence/features",
     "//ios/chrome/browser/lens_overlay/public:lens_overlay_availability",
+    "//ios/chrome/browser/level_up/model:task_info",
     "//ios/chrome/browser/ntp/model",
     "//ios/chrome/browser/ntp/model:util",
     "//ios/chrome/browser/overlays/model",

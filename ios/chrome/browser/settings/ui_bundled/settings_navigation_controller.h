@@ -128,6 +128,7 @@ extern NSString* const kSettingsDoneButtonId;
 // and should not be nil. `delegate` may be nil.
 + (instancetype)
     savePasswordsControllerForBrowser:(Browser*)browser
+      shouldShowLevelUpWalkthroughIPH:(BOOL)shouldShowLevelUpWalkthroughIPH
                              delegate:(id<SettingsNavigationControllerDelegate>)
                                           delegate;
 

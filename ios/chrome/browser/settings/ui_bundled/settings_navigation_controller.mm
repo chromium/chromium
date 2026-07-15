@@ -350,6 +350,7 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
 
 + (instancetype)
     savePasswordsControllerForBrowser:(Browser*)browser
+      shouldShowLevelUpWalkthroughIPH:(BOOL)shouldShowLevelUpWalkthroughIPH
                              delegate:(id<SettingsNavigationControllerDelegate>)
                                           delegate {
   SettingsNavigationController* navigationController =
@@ -357,7 +358,8 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
           initWithRootViewController:nil
                              browser:browser
                             delegate:delegate];
-  [navigationController showSavedPasswords];
+  [navigationController showSavedPasswordsWithLevelUpWalkthroughIPH:
+                            shouldShowLevelUpWalkthroughIPH];
 
   return navigationController;
 }
@@ -925,9 +927,15 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
 
 // Shows the saved passwords.
 - (void)showSavedPasswords {
+  [self showSavedPasswordsWithLevelUpWalkthroughIPH:NO];
+}
+
+// Shows the saved passwords with optional Level Up walkthrough IPH.
+- (void)showSavedPasswordsWithLevelUpWalkthroughIPH:(BOOL)levelUpIPH {
   self.savedPasswordsCoordinator = [[PasswordsCoordinator alloc]
       initWithBaseNavigationController:self
                                browser:self.browser];
+  self.savedPasswordsCoordinator.shouldShowLevelUpWalkthroughIPH = levelUpIPH;
   self.savedPasswordsCoordinator.delegate = self;
   [self.savedPasswordsCoordinator start];
 }
@@ -1276,7 +1284,16 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
 
 - (void)showSavedPasswordsSettingsFromViewController:
     (UIViewController*)baseViewController {
-  [self showSavedPasswords];
+  [self showSavedPasswordsSettingsFromViewController:baseViewController
+                     shouldShowLevelUpWalkthroughIPH:NO];
+}
+
+- (void)showSavedPasswordsSettingsFromViewController:
+            (UIViewController*)baseViewController
+                     shouldShowLevelUpWalkthroughIPH:
+                         (BOOL)shouldShowLevelUpWalkthroughIPH {
+  [self showSavedPasswordsWithLevelUpWalkthroughIPH:
+            shouldShowLevelUpWalkthroughIPH];
 }
 
 - (void)showAutofillAndPasswordsSettings {

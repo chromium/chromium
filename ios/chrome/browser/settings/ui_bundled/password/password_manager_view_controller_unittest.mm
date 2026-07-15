@@ -137,6 +137,8 @@ class PasswordManagerViewControllerTest
             @protocol(PasswordManagerViewControllerPresentationDelegate));
     passwords_controller.presentationDelegate =
         password_manager_view_controller_presentation_delegate_mock_;
+    OCMStub([password_manager_view_controller_presentation_delegate_mock_
+        showLevelUpWalkthroughIPH]);
 
     // Show the Password Manager widget promo.
     passwords_controller.shouldShowPasswordManagerWidgetPromo = YES;

@@ -20,6 +20,8 @@
 #import "ios/chrome/browser/authentication/ui_bundled/continuation.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_context_style.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_coordinator.h"
+#import "ios/chrome/browser/bubble/ui_bundled/bubble_constants.h"
+#import "ios/chrome/browser/bubble/ui_bundled/bubble_view_controller_presenter.h"
 #import "ios/chrome/browser/credential_exchange/coordinator/credential_import_coordinator.h"
 #import "ios/chrome/browser/favicon/model/favicon_loader.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
@@ -30,6 +32,7 @@
 #import "ios/chrome/browser/passwords/model/metrics/ios_password_manager_visits_recorder.h"
 #import "ios/chrome/browser/passwords/model/password_checkup_metrics.h"
 #import "ios/chrome/browser/passwords/model/password_checkup_utils.h"
+#import "ios/chrome/browser/settings/ui_bundled/cells/settings_check_item.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_checkup/password_checkup_coordinator.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_details/add_password_coordinator.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_details/add_password_coordinator_delegate.h"
@@ -62,10 +65,10 @@
 @interface PasswordsCoordinator () <
     AddPasswordCoordinatorDelegate,
     CredentialImportCoordinatorDelegate,
-    LocalReauthenticationCoordinatorDelegate,
-    PasswordCheckupCoordinatorDelegate,
-    PasswordDetailsCoordinatorDelegate,
     PasswordManagerViewControllerPresentationDelegate,
+    LocalReauthenticationCoordinatorDelegate,
+    PasswordDetailsCoordinatorDelegate,
+    PasswordCheckupCoordinatorDelegate,
     PasswordSettingsCoordinatorDelegate,
     PasswordsSettingsCommands,
     TrustedVaultReauthenticationCoordinatorDelegate,
@@ -104,6 +107,10 @@
 // Manager widget.
 @property(nonatomic, strong)
     WidgetPromoInstructionsCoordinator* widgetPromoInstructionsCoordinator;
+
+// Presenter for the Level Up walkthrough IPH.
+@property(nonatomic, strong)
+    BubbleViewControllerPresenter* levelUpWalkthroughIPHPresenter;
 
 @end
 
@@ -243,6 +250,9 @@
   self.reauthCoordinator = nil;
   [self dismissActionSheetCoordinator];
   [self dismissTrustedVaultReauthenticationCoordinator];
+
+  [self.levelUpWalkthroughIPHPresenter dismissAnimated:NO];
+  self.levelUpWalkthroughIPHPresenter = nil;
 
   [self.mediator disconnect];
 }
@@ -421,6 +431,59 @@
   [_trustedVaultReauthenticationCoordinator start];
 }
 
+- (void)showLevelUpWalkthroughIPH {
+  if (!self.shouldShowLevelUpWalkthroughIPH) {
+    return;
+  }
+
+  UIView* targetView = self.passwordsViewController.view;
+  if (!targetView || !targetView.window) {
+    return;
+  }
+
+  CGPoint anchorPoint = CGPointZero;
+  BubbleArrowDirection arrowDirection = BubbleArrowDirectionDown;
+
+  NSIndexPath* passwordProblemsItemIndexPath =
+      [self.passwordsViewController indexPathForLevelUpWalkthrough];
+  if (passwordProblemsItemIndexPath) {
+    UITableViewCell* cell = [self.passwordsViewController.tableView
+        cellForRowAtIndexPath:passwordProblemsItemIndexPath];
+    if (cell && cell.window) {
+      CGPoint anchorPointInCell =
+          CGPointMake(CGRectGetMidX(cell.bounds), CGRectGetMaxY(cell.bounds));
+      anchorPoint = [cell convertPoint:anchorPointInCell toView:cell.window];
+      arrowDirection = BubbleArrowDirectionUp;
+    }
+  }
+
+  // TODO(crbug.com/513244362): Add localization strings.
+  NSString* text = @"Open Password Checkup";
+  __weak __typeof(self) weakSelf = self;
+  CallbackWithIPHDismissalReasonType dismissalCallback =
+      ^(IPHDismissalReasonType reason) {
+        [weakSelf levelUpWalkthroughIPHDidDismissWithReasonType:reason];
+      };
+
+  BubbleViewControllerPresenter* presenter =
+      [[BubbleViewControllerPresenter alloc]
+               initWithText:text
+                      title:nil
+             arrowDirection:arrowDirection
+                  alignment:BubbleAlignmentBottomOrTrailing
+                 bubbleType:BubbleViewTypeRichWithNext
+            pageControlPage:BubblePageControlPageThird
+          dismissalCallback:dismissalCallback];
+  presenter.dismissalTimerDisabled = YES;
+
+  if ([presenter canPresentInView:targetView anchorPoint:anchorPoint]) {
+    self.shouldShowLevelUpWalkthroughIPH = NO;
+    self.levelUpWalkthroughIPHPresenter = presenter;
+    [presenter presentInViewController:self.passwordsViewController
+                           anchorPoint:anchorPoint];
+  }
+}
+
 #pragma mark - PasswordCheckupCoordinatorDelegate
 
 - (void)passwordCheckupCoordinatorDidRemove:
@@ -561,6 +624,15 @@
 }
 
 #pragma mark - Private
+
+// Handles next button tap on the Level Up walkthrough IPH.
+- (void)levelUpWalkthroughIPHDidDismissWithReasonType:
+    (IPHDismissalReasonType)reason {
+  self.levelUpWalkthroughIPHPresenter = nil;
+  if (reason == IPHDismissalReasonType::kTappedNext) {
+    [self showPasswordCheckup];
+  }
+}
 
 // Returns a coordinator that displays the Trusted Vault reauthentication
 // dialog. This method is being used for the testing purposes.

@@ -1340,10 +1340,21 @@ inline LayoutStateScenePassKey PassKey() {
 // TODO(crbug.com/41352590) : Do not pass baseViewController through dispatcher.
 - (void)showSavedPasswordsSettingsFromViewController:
     (UIViewController*)baseViewController {
+  [self showSavedPasswordsSettingsFromViewController:baseViewController
+                     shouldShowLevelUpWalkthroughIPH:NO];
+}
+
+- (void)showSavedPasswordsSettingsFromViewController:
+            (UIViewController*)baseViewController
+                     shouldShowLevelUpWalkthroughIPH:
+                         (BOOL)shouldShowLevelUpWalkthroughIPH {
   __weak SceneCoordinator* weakSelf = self;
   [self dismissModalDialogsWithCompletion:^{
-    [weakSelf showSavedPasswordsSettingsAfterModalDismissFromViewController:
-                  baseViewController];
+    [weakSelf
+        showSavedPasswordsSettingsAfterModalDismissFromViewController:
+            baseViewController
+                                      shouldShowLevelUpWalkthroughIPH:
+                                          shouldShowLevelUpWalkthroughIPH];
   }];
 }
 
@@ -1899,7 +1910,10 @@ inline LayoutStateScenePassKey PassKey() {
 
 // Shows the saved passwords settings in the settings UI.
 - (void)showSavedPasswordsSettingsAfterModalDismissFromViewController:
-    (UIViewController*)baseViewController {
+            (UIViewController*)baseViewController
+                                      shouldShowLevelUpWalkthroughIPH:
+                                          (BOOL)
+                                              shouldShowLevelUpWalkthroughIPH {
   if (!baseViewController) {
     // TODO(crbug.com/41352590): Don't pass base view controller through
     // dispatched command.
@@ -1909,11 +1923,14 @@ inline LayoutStateScenePassKey PassKey() {
 
   if (_settingsNavigationController) {
     [_settingsNavigationController
-        showSavedPasswordsSettingsFromViewController:baseViewController];
+        showSavedPasswordsSettingsFromViewController:baseViewController
+                     shouldShowLevelUpWalkthroughIPH:
+                         shouldShowLevelUpWalkthroughIPH];
     return;
   }
   _settingsNavigationController = [SettingsNavigationController
       savePasswordsControllerForBrowser:_regularBrowser.get()
+        shouldShowLevelUpWalkthroughIPH:shouldShowLevelUpWalkthroughIPH
                                delegate:self];
   [baseViewController presentViewController:_settingsNavigationController
                                    animated:YES

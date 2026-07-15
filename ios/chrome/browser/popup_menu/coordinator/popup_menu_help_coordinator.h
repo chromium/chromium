@@ -44,6 +44,9 @@
 // permitted by the Feature Engagement Tracker.
 - (void)displayPopupMenuTabRemindersIPH;
 
+// Displays an IPH bubble on the tools menu button for Level Up walkthrough.
+- (void)showLevelUpWalkthroughIPH;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_POPUP_MENU_COORDINATOR_POPUP_MENU_HELP_COORDINATOR_H_

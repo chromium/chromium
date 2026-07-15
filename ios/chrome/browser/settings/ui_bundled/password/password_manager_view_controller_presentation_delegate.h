@@ -10,6 +10,9 @@
 // Presentation delegate for `PasswordManagerViewController`.
 @protocol PasswordManagerViewControllerPresentationDelegate
 
+// Called to present the Level Up walkthrough IPH step.
+- (void)showLevelUpWalkthroughIPH;
+
 // Called when `PasswordManagerViewController` is dismissed.
 - (void)PasswordManagerViewControllerDismissed;
 

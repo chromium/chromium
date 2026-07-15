@@ -69,6 +69,13 @@ enum class PushNotificationClientId;
 - (void)showSavedPasswordsSettingsFromViewController:
     (UIViewController*)baseViewController;
 
+// Shows the saved passwords settings index. `shouldShowLevelUpWalkthroughIPH`
+// indicates whether the Level Up walkthrough IPH should be shown.
+- (void)showSavedPasswordsSettingsFromViewController:
+            (UIViewController*)baseViewController
+                     shouldShowLevelUpWalkthroughIPH:
+                         (BOOL)shouldShowLevelUpWalkthroughIPH;
+
 // Shows the Autofill and Passwords settings page.
 - (void)showAutofillAndPasswordsSettings;
 

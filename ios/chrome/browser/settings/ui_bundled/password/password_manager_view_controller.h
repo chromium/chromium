@@ -59,6 +59,10 @@ class IdentityManager;
 // Method to delete items at index paths used for testing.
 - (void)deleteItemAtIndexPathsForTesting:(NSArray<NSIndexPath*>*)indexPaths;
 
+// Returns the index path of the item used to anchor the Level Up walkthrough
+// IPH.
+- (NSIndexPath*)indexPathForLevelUpWalkthrough;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_SETTINGS_UI_BUNDLED_PASSWORD_PASSWORD_MANAGER_VIEW_CONTROLLER_H_
