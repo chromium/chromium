@@ -77,9 +77,6 @@ enum class IntentPickerBubbleType {
   kLinkCapturing,
   // Used to select an app to handle external protocol links (e.g. sms:).
   kExternalProtocol,
-  // Special case of kExternalProtocol for tel: links, which can also be handled
-  // by Android devices.
-  kClickToCall,
 };
 
 // These values are persisted to logs. Entries should not be renumbered and

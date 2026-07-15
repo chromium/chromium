@@ -352,8 +352,6 @@
   E(kActionBookmarkBarRemoveFromBookmarksBar, \
     IDC_BOOKMARK_BAR_REMOVE_FROM_BOOKMARKS_BAR) \
   /* Context menu items for Sharing */ \
-  E(kActionContentContextSharingClickToCallSingleDevice, \
-    IDC_CONTENT_CONTEXT_SHARING_CLICK_TO_CALL_SINGLE_DEVICE) \
   E(kActionContentContextSharingSharedClipboardSingleDevice, \
     IDC_CONTENT_CONTEXT_SHARING_SHARED_CLIPBOARD_SINGLE_DEVICE) \
   E(kActionContentContextSharingSharedClipboardMultipleDevices, \

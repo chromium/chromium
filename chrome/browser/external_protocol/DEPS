@@ -5,8 +5,6 @@ include_rules = [
   "+chrome/browser/platform_util.h",
   "+chrome/browser/profiles/profile.h",
   "+chrome/browser/safe_browsing/safe_browsing_service.h",
-  "+chrome/browser/sharing/click_to_call/click_to_call_ui_controller.h",
-  "+chrome/browser/sharing/click_to_call/click_to_call_utils.h",
   "+chrome/browser/shell_integration.h",
   "+chrome/browser/ui/browser.h",
   "+chrome/browser/ui/browser_window/public/browser_window_interface.h",

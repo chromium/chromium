@@ -203,21 +203,6 @@ views::BubbleDialogDelegateView* SharingDialogView::GetAsBubble(
   return static_cast<SharingDialogView*>(dialog);
 }
 
-// static
-views::BubbleDialogDelegateView* SharingDialogView::GetAsBubbleForClickToCall(
-    SharingDialog* dialog) {
-#if BUILDFLAG(IS_CHROMEOS)
-  if (!dialog) {
-    auto* bubble = IntentPickerBubbleView::intent_picker_bubble();
-    if (bubble && bubble->bubble_type() ==
-                      IntentPickerBubbleView::BubbleType::kClickToCall) {
-      return bubble;
-    }
-  }
-#endif
-  return static_cast<SharingDialogView*>(dialog);
-}
-
 void SharingDialogView::Init() {
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));

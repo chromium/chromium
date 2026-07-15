@@ -47,8 +47,6 @@ class SharingDialogView : public SharingDialog,
   void AddedToWidget() override;
 
   static views::BubbleDialogDelegateView* GetAsBubble(SharingDialog* dialog);
-  static views::BubbleDialogDelegateView* GetAsBubbleForClickToCall(
-      SharingDialog* dialog);
 
   SharingDialogType GetDialogType() const;
 

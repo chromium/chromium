@@ -53,7 +53,6 @@ class BrowserWindowInterface;
 #if BUILDFLAG(ENABLE_COMPOSE)
 class ChromeComposeClient;
 #endif
-class ClickToCallContextMenuObserver;
 class LinkToTextMenuObserver;
 class PrintPreviewContextMenuObserver;
 class Profile;
@@ -355,7 +354,6 @@ class RenderViewContextMenu
   void AppendRevisedTextSelectionSection();
   void AppendProtocolHandlerSubMenu();
   void AppendSharingItems();
-  void AppendClickToCallItem();
   void AppendRegionSearchItem();
   void AppendLiveCaptionItem();
   void AppendSendTabToSelfItem(bool add_separator);
@@ -593,10 +591,6 @@ class RenderViewContextMenu
   // embeds the MimeHandlerViewGuest. Otherwise this will be the same as
   // |source_web_contents_|.
   const raw_ptr<content::WebContents, DanglingUntriaged> embedder_web_contents_;
-
-  // Click to call menu observer.
-  std::unique_ptr<ClickToCallContextMenuObserver>
-      click_to_call_context_menu_observer_;
 
 #if BUILDFLAG(IS_CHROMEOS)
   // The system app (if any) associated with the WebContents we're in.

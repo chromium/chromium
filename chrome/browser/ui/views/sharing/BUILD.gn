@@ -9,7 +9,6 @@ assert(toolkit_views)
 source_set("sharing") {
   public = [
     "sharing_dialog_view.h",
-    "sharing_icon_view.h",
     "sharing_window_controller.h",
   ]
 
@@ -30,7 +29,6 @@ source_set("sharing") {
 source_set("impl") {
   sources = [
     "sharing_dialog_view.cc",
-    "sharing_icon_view.cc",
     "sharing_window_controller.cc",
   ]
 
@@ -73,7 +71,6 @@ source_set("unit_tests") {
 
   sources = [
     "sharing_dialog_view_unittest.cc",
-    "sharing_icon_view_unittest.cc",
   ]
 
   deps = [

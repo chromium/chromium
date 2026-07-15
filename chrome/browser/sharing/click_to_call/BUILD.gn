@@ -8,22 +8,6 @@ source_set("click_to_call") {
     "phone_number_regex.h",
   ]
   public_deps = [ "//url" ]
-
-  if (!is_android) {
-    public += [
-      "click_to_call_context_menu_observer.h",
-      "click_to_call_metrics.h",
-      "click_to_call_ui_controller.h",
-    ]
-    public_deps += [
-      "//chrome/browser/sharing",
-      "//chrome/browser/ui/page_action:icon_type",
-      "//components/renderer_context_menu",
-      "//components/sharing_message",
-      "//content/public/browser",
-      "//ui/menus",
-    ]
-  }
 }
 
 source_set("impl") {
@@ -39,53 +23,10 @@ source_set("impl") {
     "//content/public/browser",
     "//third_party/re2",
   ]
-
-  if (!is_android) {
-    sources += [
-      "click_to_call_context_menu_observer.cc",
-      "click_to_call_metrics.cc",
-      "click_to_call_ui_controller.cc",
-    ]
-    deps += [
-      "//chrome/app:command_ids",
-      "//chrome/app:generated_resources",
-      "//chrome/app/vector_icons",
-      "//chrome/browser/external_protocol",
-      "//chrome/browser/renderer_context_menu",
-      "//chrome/browser/ui/browser_window",
-      "//chrome/browser/ui/tabs",
-      "//components/sync_device_info",
-      "//content/public/browser",
-      "//services/metrics/public/cpp:gen_ukm_builders",
-      "//services/metrics/public/cpp:metrics_cpp",
-      "//services/metrics/public/cpp:ukm_builders",
-    ]
-  }
 }
 
 source_set("unit_tests") {
   testonly = true
   sources = []
   deps = [ ":click_to_call" ]
-
-  if (!is_android) {
-    sources += [
-      "click_to_call_context_menu_observer_unittest.cc",
-      "click_to_call_ui_controller_unittest.cc",
-      "click_to_call_utils_unittest.cc",
-    ]
-    deps += [
-      "//base/test:test_support",
-      "//chrome/app:command_ids",
-      "//chrome/browser/renderer_context_menu:mock_test_support",
-      "//chrome/test:test_support",
-      "//components/gcm_driver:test_support",
-      "//components/sharing_message:unit_tests",
-      "//components/sync_device_info:test_support",
-      "//components/sync_preferences:test_support",
-      "//content/test:test_support",
-      "//testing/gmock",
-      "//testing/gtest",
-    ]
-  }
 }

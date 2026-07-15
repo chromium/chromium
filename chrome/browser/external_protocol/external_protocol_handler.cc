@@ -39,11 +39,6 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/sharing/click_to_call/click_to_call_ui_controller.h"  // nogncheck
-#include "chrome/browser/sharing/click_to_call/click_to_call_utils.h"  // nogncheck
-#endif
-
 #if BUILDFLAG(IS_ANDROID)
 #include "components/navigation_interception/intercept_navigation_delegate.h"
 #else
@@ -263,19 +258,6 @@ void OnDefaultSchemeClientWorkerFinished(
   // happen if it is selected (since this is invoked by the external protocol
   // handling flow).
   bool chrome_is_default_handler = state == shell_integration::IS_DEFAULT;
-
-  // On ChromeOS, Click to Call is integrated into the external protocol dialog.
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
-  if (web_contents && ShouldOfferClickToCallForURL(
-                          web_contents->GetBrowserContext(), escaped_url)) {
-    // Handle tel links by opening the Click to Call dialog. This will call back
-    // into LaunchUrlWithoutSecurityCheck if the user selects a system handler.
-    ClickToCallUiController::ShowDialog(
-        web_contents, initiating_origin, std::move(initiator_document),
-        escaped_url, chrome_is_default_handler, program_name);
-    return;
-  }
-#endif
 
   if (chrome_is_default_handler) {
     if (delegate)

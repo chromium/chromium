@@ -332,13 +332,6 @@ TEST_F(IntentPickerBubbleViewListTest, WindowTitle) {
   EXPECT_EQ(l10n_util::GetStringUTF16(IDS_INTENT_PICKER_BUBBLE_VIEW_OPEN_WITH),
             bubble()->GetWindowTitle());
 
-  bubble_widget =
-      CreateBubbleView(/*use_icons=*/false, /*show_stay_in_chrome=*/false,
-                       BubbleType::kClickToCall,
-                       /*initiating_origin=*/std::nullopt);
-  EXPECT_EQ(l10n_util::GetStringUTF16(
-                IDS_BROWSER_SHARING_CLICK_TO_CALL_DIALOG_TITLE_LABEL),
-            bubble()->GetWindowTitle());
 }
 
 // Check that that the correct button labels are used.
@@ -354,16 +347,6 @@ TEST_F(IntentPickerBubbleViewListTest, ButtonLabels) {
       l10n_util::GetStringUTF16(IDS_INTENT_PICKER_BUBBLE_VIEW_STAY_IN_CHROME),
       bubble()->GetDialogButtonLabel(ui::mojom::DialogButton::kCancel));
 
-  bubble_widget =
-      CreateBubbleView(/*use_icons=*/false, /*show_stay_in_chrome=*/false,
-                       BubbleType::kClickToCall,
-                       /*initiating_origin=*/std::nullopt);
-  EXPECT_EQ(l10n_util::GetStringUTF16(
-                IDS_BROWSER_SHARING_CLICK_TO_CALL_DIALOG_CALL_BUTTON_LABEL),
-            bubble()->GetDialogButtonLabel(ui::mojom::DialogButton::kOk));
-  EXPECT_EQ(
-      l10n_util::GetStringUTF16(IDS_INTENT_PICKER_BUBBLE_VIEW_STAY_IN_CHROME),
-      bubble()->GetDialogButtonLabel(ui::mojom::DialogButton::kCancel));
 }
 
 TEST_F(IntentPickerBubbleViewListTest, InitiatingOriginView) {
