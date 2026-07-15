@@ -757,6 +757,13 @@ public class EventForwarder {
                 for (int i = 0; i < itemCount; i++) {
                     // If there are any Uris, set them as files.
                     Uri uri = clipData.getItemAt(i).getUri();
+                    // Reject URIs originating from this app to prevent the browser from opening
+                    // private files on behalf of an untrusted paste request.
+                    if (UiAndroidFeatureMap.isEnabled(
+                                    UiAndroidFeatures.CLIPBOARD_CONFUSED_DEPUTY_DEFENSE_FILES)
+                            && ContentUriUtils.isUriFromThisApp(uri)) {
+                        continue;
+                    }
                     if (uri != null) {
                         String uriString = uri.toString();
                         String displayName = ContentUriUtils.maybeGetDisplayName(uriString);
