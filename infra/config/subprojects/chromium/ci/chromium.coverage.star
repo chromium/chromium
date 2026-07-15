@@ -1493,6 +1493,7 @@ coverage_builder(
             config = "chromium",
             apply_configs = ["mb"],
             build_config = builder_config.build_config.RELEASE,
+            target_arch = builder_config.target_arch.ARM,
             target_bits = 64,
             target_platform = builder_config.target_platform.MAC,
         ),
@@ -1506,7 +1507,7 @@ coverage_builder(
             "no_symbols",
             "chrome_with_codecs",
             "mac",
-            "x64",
+            "arm64",
         ],
     ),
     targets = targets.bundle(
@@ -1518,7 +1519,7 @@ coverage_builder(
         ],
         mixins = [
             "isolate_profile_data",
-            "mac_default_x64",
+            "mac_default_arm64",
         ],
         per_test_modifications = {
             "browser_tests": targets.remove(
