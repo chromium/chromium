@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+</head>
+<body>
+<button id="button">Open eye dropper</button>
+<script type="module">
+import {waitUntilEyeDropperShown} from './resources/mock-eyedropperchooser.js';
+
+const button = document.getElementById('button');
+
+promise_test(async t => {
+  const controller = new AbortController();
+  t.add_cleanup(() => controller.abort());
+
+  let secondOpen;
+  button.onclick = () => {
+    new EyeDropper().open({signal: controller.signal}).catch(() => {});
+    secondOpen = new EyeDropper().open();
+    // Attach a handler now so the synchronous rejection is not reported as
+    // unhandled while test_driver.click()'s promise settles.
+    secondOpen.catch(() => {});
+  };
+
+  await test_driver.click(button);
+
+  await promise_rejects_dom(t, 'InvalidStateError', secondOpen);
+}, 'A second EyeDropper.open() while one is already open rejects with InvalidStateError.');
+
+promise_test(async t => {
+  const firstController = new AbortController();
+  const secondController = new AbortController();
+  t.add_cleanup(() => secondController.abort());
+
+  let firstOpen;
+  button.onclick = () => {
+    firstOpen = new EyeDropper().open({signal: firstController.signal});
+    firstOpen.catch(() => {});
+  };
+  await test_driver.click(button);
+  await waitUntilEyeDropperShown();
+
+  // Abort the first open() and release the eye dropper.
+  firstController.abort();
+  await promise_rejects_dom(t, 'AbortError', firstOpen);
+
+  let secondRejected = false;
+  button.onclick = () => {
+    new EyeDropper()
+        .open({signal: secondController.signal})
+        .catch(() => { secondRejected = true; });
+  };
+  await test_driver.click(button);
+
+  assert_false(
+      secondRejected,
+      'open() after aborting should not reject with InvalidStateError');
+  await waitUntilEyeDropperShown();
+}, 'A second EyeDropper.open() succeeds after the first is aborted.');
+</script>
+</body>
+</html>

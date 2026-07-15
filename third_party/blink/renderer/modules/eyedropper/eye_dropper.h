@@ -20,6 +20,7 @@ class ColorSelectionOptions;
 class ColorSelectionResult;
 enum class DOMExceptionCode;
 class ExceptionState;
+class LocalDOMWindow;
 class ScopedAbortState;
 
 // The EyeDropper API enables developers to use a browser-supplied eyedropper
@@ -57,8 +58,13 @@ class EyeDropper final : public ScriptWrappable {
   void EndChooser(std::unique_ptr<ScopedAbortState>);
   void RejectPromiseHelper(DOMExceptionCode, const String&);
 
+  // Clears the per-window "eye dropper is open" flag if this instance set it.
+  void ClearWindowEyeDropper();
+
   HeapMojoRemote<mojom::blink::EyeDropperChooser> eye_dropper_chooser_;
   Member<ScriptPromiseResolver<ColorSelectionResult>> resolver_;
+  // The window whose "open" flag this instance set, so it can be cleared.
+  WeakMember<LocalDOMWindow> open_window_;
 };
 
 }  // namespace blink
