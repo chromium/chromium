@@ -167,10 +167,10 @@ void WebGpuRecyclableResourceProvider::WaitSyncToken(
 
 gpu::raster::RasterInterface*
 WebGpuRecyclableResourceProvider::RasterInterface() const {
-  if (!ContextProviderWrapper()) {
+  if (!context_provider_wrapper_) {
     return nullptr;
   }
-  return ContextProviderWrapper()->ContextProvider().RasterInterface();
+  return context_provider_wrapper_->ContextProvider().RasterInterface();
 }
 
 bool WebGpuRecyclableResourceProvider::IsGpuContextLost() const {

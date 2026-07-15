@@ -133,13 +133,6 @@ class PLATFORM_EXPORT WebGpuRecyclableResourceProvider final
 
   gpu::raster::RasterInterface* RasterInterface() const;
 
-  base::WeakPtr<WebGraphicsContext3DProviderWrapper> ContextProviderWrapper()
-      const {
-    return context_provider_wrapper_;
-  }
-
-
-
   std::unique_ptr<gpu::RasterScopedAccess> WillDrawInternal();
 
   const gfx::Size size_;
