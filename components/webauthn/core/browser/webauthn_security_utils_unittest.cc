@@ -4,6 +4,8 @@
 
 #include "components/webauthn/core/browser/webauthn_security_utils.h"
 
+#include "base/test/scoped_feature_list.h"
+#include "components/webauthn/features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -51,11 +53,15 @@ TEST(WebAuthnSecurityUtilsTest, OriginAllowedToMakeWebAuthnRequests) {
 }
 
 TEST(WebAuthnSecurityUtilsTest, OriginIsAllowedToClaimRelyingPartyId) {
+  base::test::ScopedFeatureList feature_list(
+      webauthn::features::kRejectRpIdsInsideCallersPublicSuffix);
   struct TestCase {
     const char* origin;
     const char* rp_id;
     bool expected_allowed;
   } kTestCases[] = {
+      // Empty RP ID
+      {"https://example.com", "", false},
       // Exact match
       {"https://example.com", "example.com", true},
       // Registrable suffix
@@ -64,8 +70,6 @@ TEST(WebAuthnSecurityUtilsTest, OriginIsAllowedToClaimRelyingPartyId) {
       // Not a suffix
       {"https://example.com", "google.com", false},
       {"https://notexample.com", "example.com", false},
-      // Empty RP ID
-      {"https://example.com", "", false},
       // Localhost
       {"http://localhost", "localhost", true},
       {"https://localhost", "localhost", true},
@@ -75,6 +79,19 @@ TEST(WebAuthnSecurityUtilsTest, OriginIsAllowedToClaimRelyingPartyId) {
       {"https://127.0.0.1", "127.0.0.1", false},
       // Registry controlled domains
       {"https://example.com", "com", false},
+      {"https://foo.example.co.uk", "co.uk", false},
+      {"https://foo.example.co.uk", "uk", false},
+      // Private registry controlled domains
+      {"https://foo.appspot.com", "appspot.com", false},
+      // The claimed RP ID must extend beyond the caller's public suffix even
+      // when the public suffix is a private-registry entry that is itself a
+      // subdomain of an unrelated registrable domain.
+      {"https://foo.up.railway.app", "railway.app", false},
+      {"https://foo.up.railway.app", "up.railway.app", false},
+      {"https://foo.up.railway.app", "foo.up.railway.app", true},
+      {"https://bar.foo.up.railway.app", "foo.up.railway.app", true},
+      {"https://foo.s3.amazonaws.com", "amazonaws.com", false},
+      {"https://foo.s3.amazonaws.com", "foo.s3.amazonaws.com", true},
       // Disallowed origins
       {"http://example.com", "example.com", false},
       // Internal labels (disallowed by Chromium)

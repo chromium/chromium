@@ -97,6 +97,7 @@ source_set("common_utils") {
   ]
   deps = [
     "//base",
+    "//components/webauthn:features",
     "//net",
     "//services/network/public/cpp",
     "//services/network/public/mojom",
@@ -121,6 +122,7 @@ source_set("unit_tests") {
     ":browser",
     ":common_utils",
     "//base/test:test_support",
+    "//components/webauthn:features",
     "//services/network:test_support",
     "//services/network/public/cpp",
     "//testing/gtest",

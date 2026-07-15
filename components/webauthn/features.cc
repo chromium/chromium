@@ -29,4 +29,8 @@ BASE_FEATURE(kDeleteOldHiddenPasskeys, base::FEATURE_DISABLED_BY_DEFAULT);
 
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+// Enabled by default in M152. Remove in or after M155.
+BASE_FEATURE(kRejectRpIdsInsideCallersPublicSuffix,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 }  // namespace webauthn::features
