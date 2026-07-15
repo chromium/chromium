@@ -138,6 +138,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.readaloud.ReadAloudController;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.share.ShareDelegate;
+import org.chromium.chrome.browser.share.send_tab_to_self.SendTabToSelfAndroidBridge;
 import org.chromium.chrome.browser.share.send_tab_to_self.SendTabToSelfCoordinator;
 import org.chromium.chrome.browser.share.send_tab_to_self.ShareEntryPoint;
 import org.chromium.chrome.browser.signin.SigninAndHistorySyncActivityLauncherImpl;
@@ -1164,6 +1165,7 @@ public class ToolbarManager
                         mWindowAndroid,
                         () -> mLocationBarModel.getUrlBarData().url,
                         () -> getUrlBarViewRectProvider(),
+                        this::isSendTabToSelfAvailable,
                         this::onSendTabToSelfClicked);
         OnLongClickListener onLongClickListener =
                 mToolbarLongPressMenuHandler.getOnLongClickListener();
@@ -3661,6 +3663,15 @@ public class ToolbarManager
 
         layoutParams.topMargin = margin;
         mControlContainer.setLayoutParams(layoutParams);
+    }
+
+    private boolean isSendTabToSelfAvailable(GURL url) {
+        Profile profile = mProfileSupplier.get();
+        if (profile == null) {
+            return false;
+        }
+        return SendTabToSelfAndroidBridge.getEntryPointDisplayReason(profile, url.getSpec())
+                != null;
     }
 
     private void onSendTabToSelfClicked() {

@@ -34,7 +34,6 @@ import org.chromium.chrome.browser.toolbar.ToolbarPositionController.ToolbarPosi
 import org.chromium.chrome.browser.toolbar.settings.AddressBarPreference;
 import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
 import org.chromium.components.browser_ui.widget.ListItemBuilder;
-import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.ui.base.Clipboard;
@@ -50,6 +49,7 @@ import org.chromium.url.GURL;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.function.BooleanSupplier;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 /** The handler for the toolbar long press menu. */
@@ -82,6 +82,7 @@ public class ToolbarLongPressMenuHandler implements ConfigurationChangedObserver
     private final @Nullable OnLongClickListener mOnLongClickListener;
     private final WindowAndroid mWindowAndroid;
     private final ActivityLifecycleDispatcher mLifecycleDispatcher;
+    private final Predicate<GURL> mIsSendTabToSelfAvailable;
     private final Runnable mOnSendTabToSelfClicked;
 
     /**
@@ -95,6 +96,8 @@ public class ToolbarLongPressMenuHandler implements ConfigurationChangedObserver
      * @param windowAndroid window for the activity.
      * @param urlSupplier supplier of the current URL, can be null.
      * @param urlBarViewRectProviderSupplier supplier of the URL bar view rect provider.
+     * @param isSendTabToSelfAvailable predicate checking if Send Tab To Self is available for a
+     *     given URL.
      * @param onSendTabToSelfClicked callback for when Send Tab To Self is clicked.
      */
     public ToolbarLongPressMenuHandler(
@@ -106,6 +109,7 @@ public class ToolbarLongPressMenuHandler implements ConfigurationChangedObserver
             WindowAndroid windowAndroid,
             Supplier<@Nullable GURL> urlSupplier,
             Supplier<ViewRectProvider> urlBarViewRectProviderSupplier,
+            Predicate<GURL> isSendTabToSelfAvailable,
             Runnable onSendTabToSelfClicked) {
         mContext = context;
         mProfileSupplier = profileSupplier;
@@ -115,6 +119,7 @@ public class ToolbarLongPressMenuHandler implements ConfigurationChangedObserver
         mWindowAndroid = windowAndroid;
         mLifecycleDispatcher = lifecycleDispatcher;
         mLifecycleDispatcher.register(this);
+        mIsSendTabToSelfAvailable = isSendTabToSelfAvailable;
         mOnSendTabToSelfClicked = onSendTabToSelfClicked;
 
         mScreenWidthDp = context.getResources().getConfiguration().screenWidthDp;
@@ -257,7 +262,7 @@ public class ToolbarLongPressMenuHandler implements ConfigurationChangedObserver
             return;
         }
         GURL url = mUrlSupplier.get();
-        if (url == null || !url.isValid() || url.isEmpty() || !UrlUtilities.isHttpOrHttps(url)) {
+        if (url == null || !mIsSendTabToSelfAvailable.test(url)) {
             return;
         }
         itemList.add(
