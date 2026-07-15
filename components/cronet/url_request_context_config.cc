@@ -401,7 +401,7 @@ URLRequestContextConfig::ParseExperimentalOptions(
   // underlying code instead expects and empty dictionary. Normalize this.
   if (unparsed_experimental_options.empty())
     unparsed_experimental_options = "{}";
-  DVLOG(1) << "Experimental Options:" << unparsed_experimental_options;
+  VLOG(1) << "Experimental Options:" << unparsed_experimental_options;
   auto parsed_json = base::JSONReader::ReadAndReturnValueWithError(
       unparsed_experimental_options, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!parsed_json.has_value()) {
