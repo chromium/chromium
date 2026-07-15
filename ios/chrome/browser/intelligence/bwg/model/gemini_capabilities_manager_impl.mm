@@ -4,22 +4,17 @@
 
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_capabilities_manager_impl.h"
 
-#import "base/functional/callback_helpers.h"
-#import "components/signin/public/identity_manager/identity_manager.h"
-#import "ios/chrome/browser/intelligence/bwg/model/gemini_service.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/common/app_group/app_group_constants.h"
 
 GeminiCapabilitiesManagerImpl::GeminiCapabilitiesManagerImpl(
-    signin::IdentityManager* identity_manager,
     AuthenticationService* authentication_service,
     GeminiService* gemini_service)
-    : identity_manager_(identity_manager),
-      authentication_service_(authentication_service),
+    : authentication_service_(authentication_service),
       gemini_service_(gemini_service) {
-  if (identity_manager_) {
-    identity_manager_observation_.Observe(identity_manager_);
+  if (gemini_service_) {
+    gemini_service_observation_.Observe(gemini_service_);
   }
   // Update capabilities immediately upon initialization.
   UpdateCapabilities();
@@ -28,10 +23,13 @@ GeminiCapabilitiesManagerImpl::GeminiCapabilitiesManagerImpl(
 GeminiCapabilitiesManagerImpl::~GeminiCapabilitiesManagerImpl() = default;
 
 void GeminiCapabilitiesManagerImpl::Shutdown() {
-  identity_manager_observation_.Reset();
-  identity_manager_ = nullptr;
+  gemini_service_observation_.Reset();
   authentication_service_ = nullptr;
   gemini_service_ = nullptr;
+}
+
+void GeminiCapabilitiesManagerImpl::OnGeminiEligibilityChanged() {
+  UpdateCapabilities();
 }
 
 void GeminiCapabilitiesManagerImpl::UpdateCapabilities() {
@@ -39,7 +37,7 @@ void GeminiCapabilitiesManagerImpl::UpdateCapabilities() {
 
   // If the feature is disabled, clean up all capabilities and return early.
   if (!IsAppSwitcherAISummarizationEnabled()) {
-    [shared_defaults removeObjectForKey:app_group::kAppSwitcherHashedUserID];
+    UpdateHashedUserID(shared_defaults, /*has_primary_identity=*/false);
 
     NSDictionary* existing_capabilities = [shared_defaults
         dictionaryForKey:app_group::kChromeCapabilitiesPreference];
@@ -49,8 +47,10 @@ void GeminiCapabilitiesManagerImpl::UpdateCapabilities() {
                         app_group::kChromeSupportsAISummarizationCapability];
       [capabilities removeObjectForKey:
                         app_group::kChromeUserIsEligibleForGeminiCapability];
-      [shared_defaults setObject:capabilities
-                          forKey:app_group::kChromeCapabilitiesPreference];
+      if (![existing_capabilities isEqualToDictionary:capabilities]) {
+        [shared_defaults setObject:capabilities
+                            forKey:app_group::kChromeCapabilitiesPreference];
+      }
     }
     return;
   }
@@ -63,16 +63,16 @@ void GeminiCapabilitiesManagerImpl::UpdateCapabilities() {
 
   bool has_primary_identity =
       authentication_service_ && authentication_service_->HasPrimaryIdentity();
+  bool user_eligible =
+      gemini_service_ && gemini_service_->IsProfileEligibleForGemini();
   UpdateSupportsAISummarization(capabilities);
   UpdateHashedUserID(shared_defaults, has_primary_identity);
-  UpdateUserEligibility(shared_defaults, capabilities, has_primary_identity);
-}
+  UpdateUserEligibility(capabilities, user_eligible, has_primary_identity);
 
-#pragma mark - signin::IdentityManager::Observer
-
-void GeminiCapabilitiesManagerImpl::OnPrimaryAccountChanged(
-    const signin::PrimaryAccountChangeEvent& event) {
-  UpdateCapabilities();
+  if (![existing_capabilities isEqualToDictionary:capabilities]) {
+    [shared_defaults setObject:capabilities
+                        forKey:app_group::kChromeCapabilitiesPreference];
+  }
 }
 
 #pragma mark - Private
@@ -87,26 +87,26 @@ void GeminiCapabilitiesManagerImpl::UpdateHashedUserID(
     NSUserDefaults* shared_defaults,
     bool has_primary_identity) {
   if (!has_primary_identity) {
-    [shared_defaults removeObjectForKey:app_group::kAppSwitcherHashedUserID];
+    if ([shared_defaults objectForKey:app_group::kAppSwitcherHashedUserID]) {
+      [shared_defaults removeObjectForKey:app_group::kAppSwitcherHashedUserID];
+    }
     return;
   }
   id<SystemIdentity> identity = authentication_service_->GetPrimaryIdentity();
-  [shared_defaults setObject:identity.hashedGaiaID
-                      forKey:app_group::kAppSwitcherHashedUserID];
+  NSString* existing_hashed_uid =
+      [shared_defaults stringForKey:app_group::kAppSwitcherHashedUserID];
+  if (![existing_hashed_uid isEqualToString:identity.hashedGaiaID]) {
+    [shared_defaults setObject:identity.hashedGaiaID
+                        forKey:app_group::kAppSwitcherHashedUserID];
+  }
 }
 
 void GeminiCapabilitiesManagerImpl::UpdateUserEligibility(
-    NSUserDefaults* shared_defaults,
     NSMutableDictionary* capabilities,
+    bool user_eligible,
     bool has_primary_identity) {
-  bool eligible = false;
-  if (has_primary_identity && gemini_service_) {
-    eligible = gemini_service_->IsProfileEligibleForGemini();
-  }
+  bool eligible = has_primary_identity && user_eligible;
 
   capabilities[app_group::kChromeUserIsEligibleForGeminiCapability] =
       @(eligible);
-
-  [shared_defaults setObject:capabilities
-                      forKey:app_group::kChromeCapabilitiesPreference];
 }

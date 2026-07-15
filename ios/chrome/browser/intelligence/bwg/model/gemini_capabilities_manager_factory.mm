@@ -4,19 +4,16 @@
 
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_capabilities_manager_factory.h"
 
-#import "components/signin/public/identity_manager/identity_manager.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_capabilities_manager_impl.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_service_factory.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
-#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 
 namespace {
 
 std::unique_ptr<KeyedService> BuildGeminiCapabilitiesManager(
     ProfileIOS* profile) {
   return std::make_unique<GeminiCapabilitiesManagerImpl>(
-      IdentityManagerFactory::GetForProfile(profile),
       AuthenticationServiceFactory::GetForProfile(profile),
       GeminiServiceFactory::GetForProfile(profile));
 }
@@ -38,9 +35,9 @@ GeminiCapabilitiesManagerFactory::GetInstance() {
 }
 
 GeminiCapabilitiesManagerFactory::GeminiCapabilitiesManagerFactory()
-    : ProfileKeyedServiceFactoryIOS("GeminiCapabilitiesManager") {
+    : ProfileKeyedServiceFactoryIOS("GeminiCapabilitiesManager",
+                                    ProfileSelection::kNoInstanceInIncognito) {
   DependsOn(AuthenticationServiceFactory::GetInstance());
-  DependsOn(IdentityManagerFactory::GetInstance());
   DependsOn(GeminiServiceFactory::GetInstance());
 }
 

@@ -12,7 +12,6 @@
 #import "components/signin/public/identity_manager/identity_test_utils.h"
 #import "ios/chrome/browser/intelligence/bwg/model/fake_gemini_service.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_capabilities_manager_impl.h"
-#import "ios/chrome/browser/intelligence/bwg/model/gemini_service_factory.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
@@ -50,11 +49,6 @@ class GeminiCapabilitiesManagerTest : public PlatformTest {
                                 BuildIdentityManagerForTests));
     builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
                               base::BindRepeating(&CreateTestSyncService));
-    builder.AddTestingFactory(GeminiServiceFactory::GetInstance(),
-                              base::BindOnce([](ProfileIOS* profile) {
-                                return std::unique_ptr<KeyedService>(
-                                    std::make_unique<FakeGeminiService>());
-                              }));
     profile_ = std::move(builder).Build();
 
     auth_service_ = AuthenticationServiceFactory::GetForProfile(profile_.get());
@@ -85,6 +79,7 @@ class GeminiCapabilitiesManagerTest : public PlatformTest {
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<TestProfileIOS> profile_;
   raw_ptr<AuthenticationService> auth_service_;
+  FakeGeminiService fake_gemini_service_;
 };
 
 // Tests that when the feature is disabled, all capabilities are cleared.
@@ -101,14 +96,8 @@ TEST_F(GeminiCapabilitiesManagerTest, FeatureDisabledClearsCapabilities) {
   }
                forKey:app_group::kChromeCapabilitiesPreference];
 
-  signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(profile_.get());
-  GeminiService* gemini_service =
-      GeminiServiceFactory::GetForProfile(profile_.get());
-
   // Constructor automatically calls UpdateCapabilities()!
-  GeminiCapabilitiesManagerImpl manager(identity_manager, auth_service_,
-                                        gemini_service);
+  GeminiCapabilitiesManagerImpl manager(auth_service_, &fake_gemini_service_);
 
   EXPECT_NSEQ(nil, [defaults objectForKey:app_group::kAppSwitcherHashedUserID]);
   NSDictionary* capabilities =
@@ -126,15 +115,9 @@ TEST_F(GeminiCapabilitiesManagerTest, FeatureEnabledNoUser) {
   scoped_feature_list_.InitWithFeatures(
       {kPageActionMenu, kAppSwitcherAISummarization}, {});
 
-  signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(profile_.get());
-  FakeGeminiService* fake_gemini_service = static_cast<FakeGeminiService*>(
-      GeminiServiceFactory::GetForProfile(profile_.get()));
-  fake_gemini_service->SetIsEligible(false);
-
   // Constructor automatically calls UpdateCapabilities()!
-  GeminiCapabilitiesManagerImpl manager(identity_manager, auth_service_,
-                                        fake_gemini_service);
+  GeminiCapabilitiesManagerImpl manager(auth_service_, &fake_gemini_service_);
+  fake_gemini_service_.SetIsEligible(false);
 
   NSUserDefaults* defaults = app_group::GetCommonGroupUserDefaults();
   EXPECT_NSEQ(nil, [defaults objectForKey:app_group::kAppSwitcherHashedUserID]);
@@ -169,13 +152,9 @@ TEST_F(GeminiCapabilitiesManagerTest, FeatureEnabledWithUser) {
 
   auth_service_->SignIn(identity, signin_metrics::AccessPoint::kStartPage);
 
-  FakeGeminiService* fake_gemini_service = static_cast<FakeGeminiService*>(
-      GeminiServiceFactory::GetForProfile(profile_.get()));
-  fake_gemini_service->SetIsEligible(true);
-
   // Constructor automatically calls UpdateCapabilities()!
-  GeminiCapabilitiesManagerImpl manager(identity_manager, auth_service_,
-                                        fake_gemini_service);
+  GeminiCapabilitiesManagerImpl manager(auth_service_, &fake_gemini_service_);
+  fake_gemini_service_.SetIsEligible(true);
 
   NSUserDefaults* defaults = app_group::GetCommonGroupUserDefaults();
   NSString* hashed_uid =

@@ -52,8 +52,11 @@
 #import "ios/chrome/browser/shared/public/commands/contextual_sheet_commands.h"
 #import "ios/chrome/browser/shared/public/commands/gemini_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/fake_authentication_service_delegate.h"
+#import "ios/chrome/browser/signin/model/fake_system_identity.h"
+#import "ios/chrome/browser/signin/model/fake_system_identity_manager.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/signin/model/identity_test_environment_browser_state_adaptor.h"
 #import "ios/chrome/browser/sync/model/mock_sync_service_utils.h"
@@ -169,10 +172,6 @@ class LocationBarBadgeMediatorTest : public PlatformTest {
     builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
                               base::BindRepeating(&CreateMockSyncService));
     builder.AddTestingFactory(
-        IdentityManagerFactory::GetInstance(),
-        base::BindRepeating(IdentityTestEnvironmentBrowserStateAdaptor::
-                                BuildIdentityManagerForTests));
-    builder.AddTestingFactory(
         OptimizationGuideServiceFactory::GetInstance(),
         OptimizationGuideServiceFactory::GetDefaultFactory());
 
@@ -251,14 +250,25 @@ class LocationBarBadgeMediatorTest : public PlatformTest {
 
   // Signs in a user and sets their model execution capability.
   void SignInAndSetCapability(bool capability) {
-    const std::string email = "test@example.com";
+    FakeSystemIdentity* identity = [FakeSystemIdentity fakeIdentity1];
+    FakeSystemIdentityManager* system_identity_manager =
+        FakeSystemIdentityManager::FromSystemIdentityManager(
+            GetApplicationContext()->GetSystemIdentityManager());
+    system_identity_manager->AddIdentity(identity);
+
+    AuthenticationService* auth_service =
+        AuthenticationServiceFactory::GetForProfile(profile_.get());
+    auth_service->SignIn(identity, signin_metrics::AccessPoint::kStartPage);
+
     signin::IdentityManager* identity_manager =
         IdentityManagerFactory::GetForProfile(profile_.get());
-
-    AccountInfo account_info = signin::MakePrimaryAccountAvailable(
-        identity_manager, email, signin::ConsentLevel::kSignin);
+    AccountInfo account_info =
+        identity_manager->FindExtendedAccountInfoByAccountId(
+            identity_manager->GetPrimaryAccountId(
+                signin::ConsentLevel::kSignin));
     AccountCapabilitiesTestMutator mutator(&account_info);
     mutator.set_can_use_model_execution_features(capability);
+    mutator.set_can_use_gemini_in_chrome(capability);
 
     signin::UpdateAccountInfoForAccount(identity_manager, account_info);
   }

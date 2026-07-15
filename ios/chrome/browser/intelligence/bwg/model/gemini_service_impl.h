@@ -10,6 +10,8 @@
 #import "base/memory/raw_ptr.h"
 #import "base/observer_list.h"
 #import "base/scoped_observation.h"
+#import "components/prefs/pref_change_registrar.h"
+#import "components/signin/public/base/signin_metrics.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_service.h"
 
@@ -54,6 +56,12 @@ class GeminiServiceImpl : public GeminiService,
       const signin::PrimaryAccountChangeEvent& event) override;
   void OnRefreshTokenUpdatedForAccount(
       const CoreAccountInfo& account_info) override;
+  void OnExtendedAccountInfoUpdated(const AccountInfo& account_info) override;
+  void OnErrorStateOfRefreshTokenUpdatedForAccount(
+      const CoreAccountInfo& account_info,
+      const GoogleServiceAuthError& error,
+      signin_metrics::SourceForRefreshTokenOperation token_operation_source)
+      override;
   void OnIdentityManagerShutdown(
       signin::IdentityManager* identity_manager) override;
 
@@ -103,6 +111,12 @@ class GeminiServiceImpl : public GeminiService,
 
   // Sets whether the user is disabled by Gemini policy and notifies observers.
   void SetIsDisabledByGeminiPolicy(std::optional<bool> disabled);
+
+  // Invoked when policy prefs change.
+  void OnPolicyPrefChanged();
+
+  // Registrar for pref changes.
+  PrefChangeRegistrar pref_change_registrar_;
 
   base::ScopedObservation<signin::IdentityManager,
                           signin::IdentityManager::Observer>

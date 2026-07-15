@@ -371,3 +371,110 @@ TEST_F(GeminiServiceImplTest, LogUserConsentState_LogsWhenEligible) {
                                       gemini::FirstRunState::kCompleted, 1);
   histogram_tester_.ExpectTotalCount(kGeminiFirstRunStateHistogram, 3);
 }
+
+// Tests that when the user is signed out, the workspace policy check is not
+// pending, and the user is ineligible.
+TEST_F(GeminiServiceImplTest, CheckGeminiEnterpriseEligibility_SignedOut) {
+  // Ensure we are signed out.
+  ASSERT_FALSE(
+      identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+
+  // Call the check (or trigger it).
+  gemini_service_->CheckGeminiEnterpriseEligibilityIfNeeded();
+
+  // The check should not be pending.
+  EXPECT_FALSE(gemini_service_->IsWorkspacePolicyCheckPending());
+  EXPECT_FALSE(gemini_service_->IsProfileEligibleForGemini());
+}
+
+// Tests that when the user signs in, the workspace policy check becomes pending
+// (std::nullopt) synchronously.
+TEST_F(GeminiServiceImplTest, CheckGeminiEnterpriseEligibility_SignInPending) {
+  // Start signed out.
+  gemini_service_->CheckGeminiEnterpriseEligibilityIfNeeded();
+  ASSERT_FALSE(gemini_service_->IsWorkspacePolicyCheckPending());
+
+  // Sign in. This triggers OnPrimaryAccountChanged, which calls
+  // CheckGeminiEnterpriseEligibility.
+  SignInUnmanagedAccountWithCapability(signin::Tribool::kTrue);
+
+  // It should now be pending (std::nullopt) synchronously.
+  EXPECT_TRUE(gemini_service_->IsWorkspacePolicyCheckPending());
+}
+
+// Tests that updating the primary account's extended info (e.g. capabilities)
+// correctly updates the service's eligibility.
+TEST_F(GeminiServiceImplTest, OnExtendedAccountInfoUpdated_UpdatesEligibility) {
+  // Sign in with unknown capability first.
+  SignInUnmanagedAccountWithCapability(signin::Tribool::kUnknown);
+  SetWorkspaceEligibility(/*is_disabled=*/false);
+
+  // User should be ineligible because capabilities are unknown.
+  EXPECT_FALSE(gemini_service_->IsProfileEligibleForGemini());
+
+  // Trigger extended account info update for the primary account, setting
+  // capabilities to true.
+  AccountInfo account_info =
+      identity_manager_->FindExtendedAccountInfoByAccountId(
+          identity_manager_->GetPrimaryAccountId(
+              signin::ConsentLevel::kSignin));
+  AccountCapabilitiesTestMutator mutator(&account_info);
+  mutator.set_can_use_model_execution_features(true);
+  mutator.set_can_use_gemini_in_chrome(true);
+  signin::UpdateAccountInfoForAccount(identity_manager_, account_info);
+
+  // User should now be eligible.
+  EXPECT_TRUE(gemini_service_->IsProfileEligibleForGemini());
+}
+
+// Tests that a refresh token error state update for the primary account
+// correctly updates the service's eligibility.
+TEST_F(GeminiServiceImplTest,
+       OnErrorStateOfRefreshTokenUpdatedForAccount_UpdatesEligibility) {
+  // Sign in as eligible.
+  SignInUnmanagedAccountWithCapability(signin::Tribool::kTrue);
+  SetWorkspaceEligibility(/*is_disabled=*/false);
+  EXPECT_TRUE(gemini_service_->IsProfileEligibleForGemini());
+
+  // Trigger refresh token error state update to make it invalid.
+  CoreAccountId account_id =
+      identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
+  signin::UpdatePersistentErrorOfRefreshTokenForAccount(
+      identity_manager_, account_id,
+      GoogleServiceAuthError(GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS));
+
+  // User should now be ineligible.
+  EXPECT_FALSE(gemini_service_->IsProfileEligibleForGemini());
+}
+
+// Tests that changing the Gemini policy prefs correctly updates the service's
+// eligibility.
+TEST_F(GeminiServiceImplTest, OnPolicyPrefChanged_UpdatesEligibility) {
+  // Sign in as eligible.
+  SignInUnmanagedAccountWithCapability(signin::Tribool::kTrue);
+  SetWorkspaceEligibility(/*is_disabled=*/false);
+  EXPECT_TRUE(gemini_service_->IsProfileEligibleForGemini());
+
+  // Trigger GenAI policy preference change (disallow).
+  pref_service_->SetInteger(
+      prefs::kGenAiEnabledByPolicy,
+      static_cast<int>(gemini::GenAiDefaultSettingsPolicy::kNotAllowed));
+
+  // User should now be ineligible.
+  EXPECT_FALSE(gemini_service_->IsProfileEligibleForGemini());
+
+  // Reset GenAI policy and check that user is eligible again.
+  pref_service_->SetInteger(
+      prefs::kGenAiEnabledByPolicy,
+      static_cast<int>(
+          gemini::GenAiDefaultSettingsPolicy::kAllowedWithoutImprovingModels));
+  EXPECT_TRUE(gemini_service_->IsProfileEligibleForGemini());
+
+  // Trigger Gemini policy preference change (disallow).
+  pref_service_->SetInteger(
+      prefs::kGeminiEnabledByPolicy,
+      static_cast<int>(gemini::SettingsPolicy::kNotAllowed));
+
+  // User should now be ineligible again.
+  EXPECT_FALSE(gemini_service_->IsProfileEligibleForGemini());
+}
