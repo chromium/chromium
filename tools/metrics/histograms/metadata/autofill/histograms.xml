@@ -1923,6 +1923,26 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </summary>
 </histogram>
 
+<histogram name="Autofill.Ai.PersonalContext.RequestLatency.{RequestType}"
+    units="ms" expires_after="2026-12-12">
+  <owner>vidhanj@google.com</owner>
+  <owner>vizcay@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Records the request latency (in milliseconds) for the Personal Context
+    network request for {RequestType}. Recorded when the network request
+    completes.
+  </summary>
+  <token key="RequestType">
+    <variant name="PrefetchNonSpiiAndPresence"
+        summary="prefetching Non-SPII (masked) entities and presence signals"/>
+    <variant name="PrefetchSpiiMasked"
+        summary="prefetching masked sensitive PII (SPII) entities"/>
+    <variant name="SpiiUnmasking"
+        summary="unmasking sensitive PII (SPII) entities"/>
+  </token>
+</histogram>
+
 <histogram name="Autofill.Ai.PromptSuppression.{PromptType}{EntityType}"
     enum="Boolean" expires_after="2026-12-12">
   <owner>jihadghanna@google.com</owner>

@@ -100,6 +100,16 @@ class AutofillAiPersonalContextAccessManagerImpl
   friend class AutofillAiPersonalContextAccessManagerImplTestApi;
   using SpiiEntityPresenceSignal = EntityType;
 
+  // Represents the type of personal context network request sent to the server.
+  enum class RequestType {
+    // Request for non-sensitive data and presence signals for sensitive data.
+    kNonSpiiAndPresence,
+    // Request for masked sensitive data.
+    kSpiiMasked,
+    // Request for unmasking sensitive data.
+    kSpiiUnmasking,
+  };
+
   // Results of parsing the server response during prefetch requests. It bundles
   // the internal `EntityInstance` representation with its original
   // `personal_context::proto::Entity` received from the server. The original
@@ -130,11 +140,10 @@ class AutofillAiPersonalContextAccessManagerImpl
   void ResetStateForType(EntityType type);
 
   // Handles the asynchronous result of the personal context fetch.
-  // `requested_spii_presence` expresses whether SPII types are fetched
-  // or only their presence is indicated
   void OnPrefetchContextRequestComplete(
       std::vector<EntityType> requested_types,
-      bool requested_spii_presence,
+      RequestType request_type,
+      base::TimeTicks request_start_time,
       personal_context::FetchContextResult result);
 
   // Parses the raw protobuf string response and converts it into a vector of
@@ -147,6 +156,7 @@ class AutofillAiPersonalContextAccessManagerImpl
   void OnFetchPiiEntitiesComplete(
       const EntityInstance::EntityId& id,
       GetUnmaskedSpiiEntityCallback callback,
+      base::TimeTicks request_start_time,
       personal_context::FetchPiiEntitiesResult result);
 
   // Processes a batch of prefetched entities, by
@@ -187,7 +197,10 @@ class AutofillAiPersonalContextAccessManagerImpl
   // failure status, as their outcome is governed by the dedicated SPII data
   // request.
   void HandleFailedResponse(base::span<const EntityType> requested_types,
-                            bool requested_spii_presence);
+                            RequestType request_type);
+
+  // Logs the request latency of a personal context network request.
+  void LogRequestLatency(RequestType request_type, base::TimeTicks start_time);
 
   const raw_ref<personal_context::PersonalContextService>
       personal_context_service_;
