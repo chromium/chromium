@@ -8,16 +8,23 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
+#include "chrome/browser/glic/glic_enums.h"
+#include "chrome/browser/glic/glic_pref_names.h"
+#include "chrome/browser/glic/glic_pref_names_internal.h"
+#include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/profiles/batch_upload/batch_upload_service_factory.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
 #include "chrome/browser/ui/hats/mock_hats_service.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/prefs/pref_service.h"
 #include "components/sync/base/command_line_switches.h"
 #include "components/sync/base/features.h"
 #include "content/public/browser/web_contents.h"
@@ -140,4 +147,45 @@ IN_PROC_BROWSER_TEST_F(SettingsUITest, GoogleSearchAiModeWorkspaceUrl) {
           .ExtractString();
 
   EXPECT_EQ(url_val, "https://myactivity.google.com/search-services/apps");
+}
+
+class SettingsUITestGlicDisabledButAnchored : public SettingsUITest {
+ public:
+  SettingsUITestGlicDisabledButAnchored() {
+    scoped_feature_list_.InitWithFeatures(
+        {features::kGlicAnchorEntryPointForOnboardedUsers},  // Enabled
+        {features::kGlic}                                    // Disabled
+    );
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(SettingsUITestGlicDisabledButAnchored, DoesNotCrash) {
+  // Set Glic as completed onboarding.
+  browser()->profile()->GetPrefs()->SetInteger(
+      glic::prefs::kGlicCompletedFre,
+      static_cast<int>(glic::prefs::FreStatus::kCompleted));
+
+  // Navigate to Settings. This should not crash.
+  ASSERT_TRUE(NavigateToURL(browser(), GURL(chrome::kChromeUISettingsURL)));
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  // Wait for settings UI to be loaded.
+  ASSERT_TRUE(content::ExecJs(web_contents,
+                              "customElements.whenDefined('settings-ui');"));
+
+  // Check that the Glic settings section is hidden because the killswitch
+  // (kGlic) is disabled.
+  bool show_glic_settings =
+      content::EvalJs(
+          web_contents,
+          "import('chrome://resources/js/load_time_data.js').then(m => "
+          "m.loadTimeData.getBoolean('showGlicSettings'))")
+          .ExtractBool();
+
+  EXPECT_FALSE(show_glic_settings);
 }

@@ -560,6 +560,7 @@ GlicEnabling::ProfileEnablement GlicEnabling::EnablementForProfile(
   bool global_criteria_met = global_enabling.IsEnabledByGlobalCriteria();
   if (!global_criteria_met) {
     result.anchor_entrypoint_override_active =
+        result.feature_flag_enabled &&
         IsAnchoredButIneligible(global_criteria_met, result.fre_is_consented);
     if (!result.anchor_entrypoint_override_active) {
       result.feature_enabled = false;
