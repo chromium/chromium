@@ -125,19 +125,14 @@ bool IsBrowsingHistoryActorIntegrationM3Enabled() {
 // Enables improved chrome://history de-duplication logic, this includes
 // grouping entries by hostname and title per day.
 BASE_FEATURE(kBrowsingHistorySimilarVisitsGrouping,
-             base::FeatureState::FEATURE_DISABLED_BY_DEFAULT);
+             base::FeatureState::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 // Enables Milestone 3 of History-Actor integration, this includes improvements
 // in history entry grouping and filtering. Enabled by default on Android as
 // actor code are gated by the kGlic feature.
 BASE_FEATURE(kBrowsingHistoryActorIntegrationM3,
-#if BUILDFLAG(IS_ANDROID)
-             base::FEATURE_ENABLED_BY_DEFAULT
-#else
-             base::FEATURE_DISABLED_BY_DEFAULT
-#endif
-);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // !BUILDFLAG(IS_IOS)
 
 

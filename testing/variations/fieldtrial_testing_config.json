@@ -4479,25 +4479,6 @@
             ]
         }
     ],
-    "BrowsingHistoryActorIntegrationM3": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "BrowsingHistoryActorIntegrationM3",
-                        "BrowsingHistorySimilarVisitsGrouping"
-                    ]
-                }
-            ]
-        }
-    ],
     "BubbleMetricsApi": [
         {
             "platforms": [
