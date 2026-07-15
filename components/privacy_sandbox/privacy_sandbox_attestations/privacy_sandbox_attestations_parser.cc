@@ -35,11 +35,6 @@ void InsertAPI(
                               kPrivateAggregation);
       return;
     }
-    case privacy_sandbox::ATTRIBUTION_REPORTING: {
-      allowed_api_set.Put(privacy_sandbox::PrivacySandboxAttestationsGatedAPI::
-                              kAttributionReporting);
-      return;
-    }
     case privacy_sandbox::SHARED_STORAGE: {
       allowed_api_set.Put(
           privacy_sandbox::PrivacySandboxAttestationsGatedAPI::kSharedStorage);

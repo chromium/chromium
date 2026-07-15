@@ -10,11 +10,13 @@ package privacy_sandbox;
 // Protobuf enums use the first value as the default for unexpected values,
 // so we use UNKNOWN to handle forward compatibility.
 enum PrivacySandboxAttestationsGatedAPIProto {
+  reserved 4;
+  reserved "ATTRIBUTION_REPORTING";
+
   UNKNOWN = 0;
   TOPICS = 1;
   PROTECTED_AUDIENCE = 2;
   PRIVATE_AGGREGATION = 3;
-  ATTRIBUTION_REPORTING = 4;
   SHARED_STORAGE = 5;
   RESERVED_FENCED_STORAGE_READ = 6;
 }

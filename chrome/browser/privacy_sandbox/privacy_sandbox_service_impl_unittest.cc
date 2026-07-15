@@ -1899,7 +1899,7 @@ TEST_F(PrivacySandboxServiceTest, DisablePrivacySandboxAdMeasurementPolicy) {
                          url::Origin::Create(GURL("https://top-frame.com"))},
                         {kAdMeasurementReportingOrigin,
                          url::Origin::Create(GURL("https://embedded.com"))}},
-              TestOutput{{kIsAttributionReportingAllowed, false}});
+              TestOutput{{kIsPrivateAggregationAllowed, false}});
 }
 
 class PrivacySandboxNoticeFrameworkResultCallbackUnitTest

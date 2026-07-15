@@ -63,16 +63,12 @@ TEST_F(PrivacySandboxAttestationsParserTest, OneSitePerAPIProto) {
   PrivacySandboxAttestationsProto::PrivacySandboxAttestedAPIsProto attestation3;
   attestation3.add_attested_apis(PRIVATE_AGGREGATION);
 
-  PrivacySandboxAttestationsProto::PrivacySandboxAttestedAPIsProto attestation4;
-  attestation4.add_attested_apis(ATTRIBUTION_REPORTING);
-
   PrivacySandboxAttestationsProto::PrivacySandboxAttestedAPIsProto attestation5;
   attestation5.add_attested_apis(SHARED_STORAGE);
 
   (*proto.mutable_site_attestations())[site1] = attestation1;
   (*proto.mutable_site_attestations())[site2] = attestation2;
   (*proto.mutable_site_attestations())[site3] = attestation3;
-  (*proto.mutable_site_attestations())[site4] = attestation4;
   (*proto.mutable_site_attestations())[site5] = attestation5;
 
   std::string serialized_proto;
@@ -81,7 +77,7 @@ TEST_F(PrivacySandboxAttestationsParserTest, OneSitePerAPIProto) {
   std::optional<PrivacySandboxAttestationsMap> optional_map =
       ParseAttestationsFromString(serialized_proto);
   ASSERT_TRUE(optional_map.has_value());
-  ASSERT_TRUE(optional_map->size() == 5UL);
+  ASSERT_TRUE(optional_map->size() == 4UL);
 
   const PrivacySandboxAttestationsGatedAPISet& site1apis =
       (*optional_map)[net::SchemefulSite(GURL(site1))];
@@ -99,12 +95,6 @@ TEST_F(PrivacySandboxAttestationsParserTest, OneSitePerAPIProto) {
   ASSERT_TRUE(
       site3apis.Has(PrivacySandboxAttestationsGatedAPI::kPrivateAggregation));
   ASSERT_TRUE(site3apis.size() == 1UL);
-
-  const PrivacySandboxAttestationsGatedAPISet& site4apis =
-      (*optional_map)[net::SchemefulSite(GURL(site4))];
-  ASSERT_TRUE(
-      site4apis.Has(PrivacySandboxAttestationsGatedAPI::kAttributionReporting));
-  ASSERT_TRUE(site4apis.size() == 1UL);
 
   const PrivacySandboxAttestationsGatedAPISet& site5apis =
       (*optional_map)[net::SchemefulSite(GURL(site5))];
@@ -128,7 +118,6 @@ TEST_F(PrivacySandboxAttestationsParserTest, MultipleAPIsPerSiteProto) {
   // Add an explicitly out of range value. (This static_cast is undefined...)
   attestation1.add_attested_apis(
       static_cast<PrivacySandboxAttestationsGatedAPIProto>(192));
-  attestation1.add_attested_apis(ATTRIBUTION_REPORTING);
   attestation1.add_attested_apis(SHARED_STORAGE);
 
   (*proto.mutable_site_attestations())[site1] = attestation1;
@@ -149,10 +138,8 @@ TEST_F(PrivacySandboxAttestationsParserTest, MultipleAPIsPerSiteProto) {
   ASSERT_TRUE(
       site1apis.Has(PrivacySandboxAttestationsGatedAPI::kPrivateAggregation));
   ASSERT_TRUE(
-      site1apis.Has(PrivacySandboxAttestationsGatedAPI::kAttributionReporting));
-  ASSERT_TRUE(
       site1apis.Has(PrivacySandboxAttestationsGatedAPI::kSharedStorage));
-  ASSERT_TRUE(site1apis.size() == 5UL);
+  ASSERT_TRUE(site1apis.size() == 4UL);
 }
 
 // Test basic functionality of `all_apis` and `sites_attested_for_all_apis`.
@@ -270,7 +257,6 @@ TEST_F(PrivacySandboxAttestationsParserTest, InvalidAllAPIsProto) {
   proto.add_all_apis(PRIVATE_AGGREGATION);
   // Add an explicitly out of range value. (This static_cast is undefined...)
   proto.add_all_apis(static_cast<PrivacySandboxAttestationsGatedAPIProto>(192));
-  proto.add_all_apis(ATTRIBUTION_REPORTING);
   proto.add_all_apis(SHARED_STORAGE);
 
   std::string site1 = "https://a.com";
@@ -292,10 +278,8 @@ TEST_F(PrivacySandboxAttestationsParserTest, InvalidAllAPIsProto) {
   ASSERT_TRUE(
       site1apis.Has(PrivacySandboxAttestationsGatedAPI::kPrivateAggregation));
   ASSERT_TRUE(
-      site1apis.Has(PrivacySandboxAttestationsGatedAPI::kAttributionReporting));
-  ASSERT_TRUE(
       site1apis.Has(PrivacySandboxAttestationsGatedAPI::kSharedStorage));
-  ASSERT_TRUE(site1apis.size() == 5UL);
+  ASSERT_TRUE(site1apis.size() == 4UL);
 }
 
 void ParseAttestationsFromStringDoesNotCrash(

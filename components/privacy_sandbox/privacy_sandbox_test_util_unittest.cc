@@ -370,45 +370,6 @@ TEST_F(PrivacySandboxBaseTestUtilTest, VerifyIsFledgeAllowedOutputKey) {
               {OutputKey::kIsFledgeJoinAllowed, true});
 }
 
-TEST_F(PrivacySandboxBaseTestUtilTest,
-       VerifyIsAttributionReportingAllowedOutputKey) {
-  url::Origin kAdMeasurementReportingOrigin =
-      url::Origin::Create(GURL("https://measurement.com"));
-
-  EXPECT_CALL(*mock_privacy_sandbox_settings(),
-              IsAttributionReportingAllowed(
-                  TopFrameOrigin(), kAdMeasurementReportingOrigin, nullptr))
-      .WillOnce(testing::Return(true));
-
-  CheckOutput(
-      {{InputKey::kAdMeasurementReportingOrigin, kAdMeasurementReportingOrigin},
-       {InputKey::kTopFrameOrigin, TopFrameOrigin()}},
-      {OutputKey::kIsAttributionReportingAllowed, true});
-}
-
-TEST_F(PrivacySandboxBaseTestUtilTest,
-       VerifyMaySendAttributionReportOutputKey) {
-  url::Origin kAdMeasurementSourceOrigin =
-      url::Origin::Create(GURL("https://source.com"));
-  url::Origin kAdMeasurementDestinationOrigin =
-      url::Origin::Create(GURL("https://dest.com"));
-  url::Origin kAdMeasurementReportingOrigin =
-      url::Origin::Create(GURL("https://reporting.com"));
-  EXPECT_CALL(*mock_privacy_sandbox_settings(),
-              MaySendAttributionReport(kAdMeasurementSourceOrigin,
-                                       kAdMeasurementDestinationOrigin,
-                                       kAdMeasurementReportingOrigin, nullptr))
-      .WillOnce(testing::Return(true));
-
-  CheckOutput(
-      {{InputKey::kAdMeasurementSourceOrigin, kAdMeasurementSourceOrigin},
-       {InputKey::kAdMeasurementDestinationOrigin,
-        kAdMeasurementDestinationOrigin},
-       {InputKey::kAdMeasurementReportingOrigin,
-        kAdMeasurementReportingOrigin}},
-      {OutputKey::kMaySendAttributionReport, true});
-}
-
 TEST_F(PrivacySandboxBaseTestUtilTest, VerifyIsSharedStorageAllowedOutputKey) {
   EXPECT_CALL(
       *mock_privacy_sandbox_settings(),

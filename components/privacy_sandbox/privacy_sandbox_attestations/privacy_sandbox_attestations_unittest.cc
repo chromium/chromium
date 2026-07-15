@@ -721,7 +721,7 @@ TEST_P(PrivacySandboxAttestationsFeatureEnabledTest,
 
   Status attestation_status =
       PrivacySandboxAttestations::GetInstance()->IsSiteAttested(
-          site, PrivacySandboxAttestationsGatedAPI::kAttributionReporting,
+          site, PrivacySandboxAttestationsGatedAPI::kTopics,
           AttestationsDefaultBehavior::kAllow);
   EXPECT_EQ(attestation_status, Status::kAllowed);
   histogram_tester().ExpectTotalCount(kAttestationStatusUMA, 1);
@@ -736,7 +736,7 @@ TEST_P(PrivacySandboxAttestationsFeatureEnabledTest,
 
   Status attestation_status =
       PrivacySandboxAttestations::GetInstance()->IsSiteAttested(
-          site, PrivacySandboxAttestationsGatedAPI::kAttributionReporting,
+          site, PrivacySandboxAttestationsGatedAPI::kTopics,
           AttestationsDefaultBehavior::kDeny);
   EXPECT_EQ(attestation_status, Status::kAttestationsFileNotYetChecked);
   histogram_tester().ExpectTotalCount(kAttestationStatusUMA, 1);

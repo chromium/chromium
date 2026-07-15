@@ -55,19 +55,6 @@ class PrivacySandboxSettingsImpl : public PrivacySandboxSettings {
   bool IsTopicPrioritized(const CanonicalTopic& topic) override;
   void ClearTopicSettings(base::Time start_time, base::Time end_time) override;
   base::Time TopicsDataAccessibleSince() const override;
-  bool IsAttributionReportingEverAllowed() const override;
-  bool IsAttributionReportingAllowed(
-      const url::Origin& top_frame_origin,
-      const url::Origin& reporting_origin,
-      content::RenderFrameHost* console_frame = nullptr) const override;
-  bool MaySendAttributionReport(
-      const url::Origin& source_origin,
-      const url::Origin& destination_origin,
-      const url::Origin& reporting_origin,
-      content::RenderFrameHost* console_frame = nullptr) const override;
-  bool IsAttributionReportingTransitionalDebuggingAllowed(
-      const url::Origin& top_frame_origin,
-      const url::Origin& reporting_origin) const override;
   void SetFledgeJoiningAllowed(const std::string& top_frame_etld_plus1,
                                bool allowed) override;
   void ClearFledgeJoiningAllowedSettings(base::Time start_time,

@@ -33,7 +33,6 @@ enum class PrivacySandboxAttestationsGatedAPI {
   kTopics,
   kProtectedAudience,
   kPrivateAggregation,
-  kAttributionReporting,
   kSharedStorage,
 
   kMaxValue = kSharedStorage,
@@ -130,41 +129,6 @@ class PrivacySandboxSettings : public KeyedService {
   // returned time will have been fuzzed for local privacy, and so may be in the
   // future, in which case no history is eligible.
   virtual base::Time TopicsDataAccessibleSince() const = 0;
-
-  // Returns whether any Attribution Reporting operation would ever be allowed.
-  // If false, no attribution reporting operation is allowed (e.g. because the
-  // user has disabled the setting). If true, the appropriate context specific
-  // check must also be made.
-  virtual bool IsAttributionReportingEverAllowed() const = 0;
-
-  // Determines whether Attribution Reporting is allowable in a particular
-  // context. Should be called at both source and trigger registration. At each
-  // of these points |top_frame_origin| is the same as either the source origin
-  // or the destination origin respectively.
-  // If provided, `console_frame` is used to log errors to the console upon
-  // attestation failure.
-  virtual bool IsAttributionReportingAllowed(
-      const url::Origin& top_frame_origin,
-      const url::Origin& reporting_origin,
-      content::RenderFrameHost* console_frame = nullptr) const = 0;
-
-  // Called before sending the associated attribution report to
-  // |reporting_origin|. Re-checks that |reporting_origin| is allowable as a 3P
-  // on both |source_origin| and |destination_origin|.
-  // If provided, `console_frame` is used to log errors to the console upon
-  // attestation failure.
-  virtual bool MaySendAttributionReport(
-      const url::Origin& source_origin,
-      const url::Origin& destination_origin,
-      const url::Origin& reporting_origin,
-      content::RenderFrameHost* console_frame = nullptr) const = 0;
-
-  // Determines whether Attribution Reporting API's transitional debug reporting
-  // is allowable in a particular context. Note that
-  // `IsAttributionReportingAllowed()` should be called prior to this.
-  virtual bool IsAttributionReportingTransitionalDebuggingAllowed(
-      const url::Origin& top_frame_origin,
-      const url::Origin& reporting_origin) const = 0;
 
   // Sets the ability for |top_frame_etld_plus1| to join the profile to interest
   // groups to |allowed|. This information is stored in preferences, and is made

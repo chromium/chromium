@@ -476,32 +476,6 @@ void CheckOutput(
           histogram_value, 1);
       return;
     }
-    case (OutputKey::kIsAttributionReportingAllowed): {
-      SCOPED_TRACE("Check Output: IsAttributionReportingAllowed()");
-      auto top_frame_origin =
-          GetItemValueForKey<url::Origin>(InputKey::kTopFrameOrigin, input);
-      auto reporting_origin = GetItemValueForKey<url::Origin>(
-          InputKey::kAdMeasurementReportingOrigin, input);
-      auto return_value = GetItemValue<bool>(output_value);
-      ASSERT_EQ(return_value,
-                privacy_sandbox_settings->IsAttributionReportingAllowed(
-                    top_frame_origin, reporting_origin));
-      return;
-    }
-    case (OutputKey::kMaySendAttributionReport): {
-      SCOPED_TRACE("Check Output: MaySendAttributionReport()");
-      auto source_origin = GetItemValueForKey<url::Origin>(
-          InputKey::kAdMeasurementSourceOrigin, input);
-      auto destination_origin = GetItemValueForKey<url::Origin>(
-          InputKey::kAdMeasurementDestinationOrigin, input);
-      auto reporting_origin = GetItemValueForKey<url::Origin>(
-          InputKey::kAdMeasurementReportingOrigin, input);
-      auto return_value = GetItemValue<bool>(output_value);
-      ASSERT_EQ(return_value,
-                privacy_sandbox_settings->MaySendAttributionReport(
-                    source_origin, destination_origin, reporting_origin));
-      return;
-    }
 
     case (OutputKey::kIsSharedStorageAllowed): {
       SCOPED_TRACE("Check Output: kIsSharedStorageAllowed()");
@@ -655,73 +629,6 @@ void CheckOutput(
       auto histogram_value = GetItemValue<int>(output_value);
       histogram_tester.ExpectUniqueSample("PrivacySandbox.IsFledgeBuyAllowed",
                                           histogram_value, 1);
-      return;
-    }
-    case (OutputKey::kIsAttributionReportingAllowedMetric): {
-      SCOPED_TRACE(
-          "Check Output: PrivacySandbox.IsAttributionReportingAllowed");
-      base::HistogramTester histogram_tester;
-      auto top_frame_origin =
-          GetItemValueForKey<url::Origin>(InputKey::kTopFrameOrigin, input);
-      auto reporting_origin = GetItemValueForKey<url::Origin>(
-          InputKey::kAdMeasurementReportingOrigin, input);
-
-      base::test::ScopedFeatureList scoped_feature_list_{
-          metrics::dwa::kDwaFeature};
-
-      // Ensures that metrics are only counted for this call.
-      // TODO(crbug.com/403946431): Consider implementing a scoped object to
-      // improve ergonomics.
-      metrics::dwa::DwaRecorder::Get()->EnableRecording();
-      metrics::dwa::DwaRecorder::Get()->Purge();
-      ASSERT_THAT(metrics::dwa::DwaRecorder::Get()->GetEntriesForTesting(),
-                  testing::IsEmpty());
-
-      std::ignore = privacy_sandbox_settings->IsAttributionReportingAllowed(
-          top_frame_origin, reporting_origin);
-      auto histogram_value = GetItemValue<int>(output_value);
-      histogram_tester.ExpectUniqueSample(
-          "PrivacySandbox.IsAttributionReportingAllowed", histogram_value, 1);
-
-      ASSERT_THAT(metrics::dwa::DwaRecorder::Get()->GetEntriesForTesting(),
-                  testing::SizeIs(1));
-      EXPECT_THAT(
-          metrics::dwa::DwaRecorder::Get()
-              ->GetEntriesForTesting()[0]
-              ->event_hash,
-          base::HashMetricName("PrivacySandbox.IsAttributionReportingAllowed"));
-
-      // DWA content sanitization extracts the eTLD+1 from the provided
-      // reporting origin.
-      EXPECT_THAT(
-          metrics::dwa::DwaRecorder::Get()
-              ->GetEntriesForTesting()[0]
-              ->content_hash,
-          base::HashMetricName(
-              net::registry_controlled_domains::GetDomainAndRegistry(
-                  reporting_origin.GetURL(), net::registry_controlled_domains::
-                                                 INCLUDE_PRIVATE_REGISTRIES)));
-      EXPECT_THAT(
-          metrics::dwa::DwaRecorder::Get()->GetEntriesForTesting()[0]->metrics,
-          testing::UnorderedElementsAre(
-              testing::Pair(base::HashMetricName("Status"), histogram_value)));
-
-      return;
-    }
-    case (OutputKey::kMaySendAttributionReportMetric): {
-      SCOPED_TRACE("Check Output: PrivacySandbox.MaySendAttributionReport");
-      base::HistogramTester histogram_tester;
-      auto source_origin = GetItemValueForKey<url::Origin>(
-          InputKey::kAdMeasurementSourceOrigin, input);
-      auto destination_origin = GetItemValueForKey<url::Origin>(
-          InputKey::kAdMeasurementDestinationOrigin, input);
-      auto reporting_origin = GetItemValueForKey<url::Origin>(
-          InputKey::kAdMeasurementReportingOrigin, input);
-      std::ignore = privacy_sandbox_settings->MaySendAttributionReport(
-          source_origin, destination_origin, reporting_origin);
-      auto histogram_value = GetItemValue<int>(output_value);
-      histogram_tester.ExpectUniqueSample(
-          "PrivacySandbox.MaySendAttributionReport", histogram_value, 1);
       return;
     }
     case (OutputKey::kIsSharedStorageAllowedMetric): {
@@ -935,25 +842,6 @@ void CheckOutput(
       bool expected = GetItemValue<bool>(output_value);
       EXPECT_EQ(expected, testing_pref_service->GetBoolean(
                               prefs::kPrivacySandboxM1AdMeasurementEnabled));
-      return;
-    }
-    case (OutputKey::kIsAttributionReportingEverAllowed): {
-      SCOPED_TRACE("Check Output: Is Attribution Reporting Ever Allowed");
-      bool expected = GetItemValue<bool>(output_value);
-      ASSERT_EQ(expected,
-                privacy_sandbox_settings->IsAttributionReportingEverAllowed());
-      return;
-    }
-    case (OutputKey::kIsAttributionReportingEverAllowedMetric): {
-      SCOPED_TRACE(
-          "Check Output: PrivacySandbox.IsAttributionReportingEverAllowed");
-      base::HistogramTester histogram_tester;
-      std::ignore =
-          privacy_sandbox_settings->IsAttributionReportingEverAllowed();
-      auto histogram_value = GetItemValue<int>(output_value);
-      histogram_tester.ExpectUniqueSample(
-          "PrivacySandbox.IsAttributionReportingEverAllowed", histogram_value,
-          1);
       return;
     }
     case (OutputKey::kIsSharedStorageAllowedDebugMessage): {
