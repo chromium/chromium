@@ -49,6 +49,11 @@ Seams:
   it on reconnect, asynchronous request preparation (OAuth token
   minting), and HTTP-failure retry policy. Delegates compose — an auth
   decorator can wrap a resume-state delegate.
+* `StreamFramer` hides the framing parser behind a mockable interface;
+  clients take a framer *factory* because each connection needs a fresh
+  framer. `RustStreamFramer` (in `proto_stream_client/`) is the
+  production implementation and the only C++ that touches the
+  cxx-generated FFI bridge.
 
 The wire protocol has no built-in resume mechanism: resume state, if any,
 lives inside message payloads and rides back on the next connection

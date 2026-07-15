@@ -10,6 +10,8 @@ source_set("test_support") {
     "mock_message_stream_client.h",
     "mock_stream_connection_delegate.cc",
     "mock_stream_connection_delegate.h",
+    "mock_stream_framer.cc",
+    "mock_stream_framer.h",
   ]
 
   public_deps = [

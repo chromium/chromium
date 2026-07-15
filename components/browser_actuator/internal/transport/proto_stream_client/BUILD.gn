@@ -4,6 +4,23 @@
 
 import("//build/rust/rust_static_library.gni")
 
+# StreamFramer implementation backed by the Rust StreamBody parser: the
+# only production C++ that touches the cxx-generated bridge, so FFI types
+# such as rust::Box do not leak into client code.
+source_set("rust_stream_framer") {
+  sources = [
+    "rust_stream_framer.cc",
+    "rust_stream_framer.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//components/browser_actuator/internal/transport",
+  ]
+
+  deps = [ ":stream_body_bridge" ]
+}
+
 # Pure-Rust StreamBody framing parser: the part that interprets untrusted
 # network input. Keep this crate free of unsafe code and of dependencies.
 rust_static_library("stream_body_parser") {
@@ -24,4 +41,36 @@ rust_static_library("stream_body_parser_unittests") {
     "//testing/rust_gtest_interop",
   ]
   visibility = [ "//components/browser_actuator:unit_tests" ]
+}
+
+# cxx FFI glue between RustStreamFramer and the parser crate. Contains no
+# parsing logic, only type conversion; this is the only Rust target here
+# that may use unsafe code.
+rust_static_library("stream_body_bridge") {
+  crate_root = "rust/stream_body_bridge.rs"
+  sources = [ crate_root ]
+  cxx_bindings = [ crate_root ]
+  allow_unsafe = true  # Needed for FFI that underpins the `cxx` crate.
+  deps = [ ":stream_body_parser" ]
+  visibility = [ ":*" ]
+}
+
+# Includes a FuzzTest (listed in test("components_unittests")'s fuzztests)
+# that fuzzes the Rust framing parser through the production StreamFramer
+# surface.
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "rust_stream_framer_unittest.cc" ]
+
+  deps = [
+    ":rust_stream_framer",
+    "//base",
+    "//components/browser_actuator/internal/transport",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party/fuzztest",
+  ]
+
+  visibility = [ "//components/browser_actuator/internal:unit_tests" ]
 }
