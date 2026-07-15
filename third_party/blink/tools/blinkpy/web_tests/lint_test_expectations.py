@@ -495,6 +495,10 @@ def main(argv, stderr, host=None):
         action='append',
         default=[],
         help='paths to additional expectation files to lint.')
+    parser.add_option(
+        '--remote-branch',
+        default=None,
+        help='remote branch ref to diff against. Defaults to main.')
 
     options, _ = parser.parse_args(argv)
 
@@ -507,6 +511,9 @@ def main(argv, stderr, host=None):
             host = MockHost()
         else:
             host = Host()
+
+    if options.remote_branch:
+        host.remote_branch = options.remote_branch
 
     if options.verbose:
         configure_logging(logging_level=logging.DEBUG, stream=stderr)

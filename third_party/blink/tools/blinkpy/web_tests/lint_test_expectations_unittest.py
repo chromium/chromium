@@ -713,3 +713,14 @@ class MainTest(unittest.TestCase):
                           side_effect=AssertionError):
             res = lint_test_expectations.main([], self.stderr, host=MockHost())
         self.assertEqual(res, exit_codes.EXCEPTIONAL_EXIT_STATUS)
+
+    def test_remote_branch_option(self):
+        host = MockHost()
+        with patch.object(lint_test_expectations,
+                          'lint',
+                          return_value=([], [])):
+            res = lint_test_expectations.main(['--remote-branch', 'security'],
+                                              self.stderr,
+                                              host=host)
+        self.assertEqual(res, 0)
+        self.assertEqual(host.remote_branch, 'security')

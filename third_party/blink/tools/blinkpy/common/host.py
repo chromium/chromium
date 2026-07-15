@@ -58,12 +58,14 @@ class Host(SystemHost):
         self.bb_agent = BBAgent(self)
         self.builders = BuilderList.load_default_builder_list(self.filesystem)
         self.results_fetcher = TestResultsFetcher.from_host(self)
+        self.remote_branch = None
 
     def git(self, path: os.PathLike | None = None) -> Git | None:
         return _cached_git(cwd=path,
                            executive=self.executive,
                            filesystem=self.filesystem,
-                           platform=self.platform)
+                           platform=self.platform,
+                           remote_branch=self.remote_branch)
 
 
 @functools.cache

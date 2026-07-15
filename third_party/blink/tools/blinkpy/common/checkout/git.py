@@ -92,9 +92,11 @@ class Git:
                  cwd=None,
                  executive=None,
                  filesystem=None,
-                 platform=None):
+                 platform=None,
+                 remote_branch=None):
         self._executive = executive or Executive()
         self._filesystem = filesystem or FileSystem()
+        self._remote_branch = remote_branch
         self._executable_name = self.find_executable_name(
             self._executive, platform)
 
@@ -487,7 +489,7 @@ class Git:
 
     def _remote_branch_ref(self):
         # Use references so that we can avoid collisions, e.g. we don't want to operate on refs/heads/trunk if it exists.
-        remote_main_ref = 'refs/remotes/origin/main'
+        remote_main_ref = self._remote_branch or 'refs/remotes/origin/main'
         if self._branch_ref_exists(remote_main_ref):
             return remote_main_ref
         error_msg = "Can't find a branch to diff against. %s does not exist" % remote_main_ref

@@ -278,6 +278,11 @@ class GitTestWithRealFilesystemAndExecutive(unittest.TestCase):
         # This tests a protected method. pylint: disable=protected-access
         self.assertEqual(self.tracking_git._remote_branch_ref(),
                          'refs/remotes/origin/main')
+        custom_git = Git(cwd=self.tracking_git_checkout_path,
+                         filesystem=self.filesystem,
+                         executive=self.executive,
+                         remote_branch='security')
+        self.assertRaises(ScriptError, custom_git._remote_branch_ref)
         self._chdir(self.untracking_checkout_path)
         self.assertRaises(ScriptError, self.untracking_git._remote_branch_ref)
 
