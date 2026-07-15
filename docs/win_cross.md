@@ -113,7 +113,8 @@ Then just build, e.g.
 
 ## RBE
 
-This should be supported by the default RBE (remote execution).
+This should be supported by the default RBE (remote execution) on linux host.
+It would not work on mac host. see crbug.com/446124900.
 
 ## Copying and running chrome
 
