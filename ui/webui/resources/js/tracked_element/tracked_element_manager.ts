@@ -361,13 +361,14 @@ export class TrackedElementManager {
     element.dataset['secondaryId'] = secondaryId;
 
     const parsedOptions = parseOptions(options);
+    const initialVisible = computeIsVisible(element);
     const trackedElement: TrackedElement = {
       element,
       nativeId,
       secondaryId,
       padding: parsedOptions.padding,
       fixed: parsedOptions.fixed,
-      visible: false,
+      visible: initialVisible,
       bounds: {x: 0, y: 0, width: 0, height: 0},
       onVisibilityChanged,
       onHighlightChanged: options?.onHighlightChanged,
@@ -394,7 +395,7 @@ export class TrackedElementManager {
           TrackedElementManager.elementToIdentifier_(trackedElement), true);
     }
 
-    this.onElementVisibilityChanged_(element, computeIsVisible(element));
+    this.onElementVisibilityChanged_(element, initialVisible);
   }
 
   /**
@@ -461,11 +462,21 @@ export class TrackedElementManager {
       trackedElement.onVisibilityChanged(isVisible, bounds);
     }
 
+    const wasVisible = trackedElement.visible;
     trackedElement.visible = isVisible;
     trackedElement.bounds = bounds;
     this.trackedElementHandler_.trackedElementVisibilityChanged(
         TrackedElementManager.elementToIdentifier_(trackedElement), isVisible,
         bounds);
+
+    if (isVisible && !wasVisible && trackedElement.onHighlightChanged) {
+      // The C++ tracker drops its state when it is destroyed and recreated
+      // during a visibility bounce (e.g., from a 0x0 size during a CSS
+      // animation or variable evaluation). We must explicitly restore the
+      // highlight capability on the newly recreated C++ tracking object.
+      this.trackedElementHandler_.trackedElementCanHighlightChanged(
+          TrackedElementManager.elementToIdentifier_(trackedElement), true);
+    }
   }
 
   private updateAllBounds_() {
