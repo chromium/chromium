@@ -278,6 +278,20 @@ TEST_F(CompressedTextureTestES3, ASTCCompressedSubImageWithBaseLevel) {
     return;
   }
 
+#if BUILDFLAG(IS_ANDROID)
+  // TODO(crbug.com/529932631): Skip on Adreno GPUs for the moment
+  // because of apparent driver bugs causing GL_INVALID_OPERATION
+  // during the glCompressedTexSubImage2D calls. Working around this
+  // bug by making the texture levels a multiple of the ASTC block
+  // size causes this test to no longer reproduce the Imagination
+  // driver bug it was intended to catch.
+  std::string renderer =
+      reinterpret_cast<const char*>(glGetString(GL_RENDERER));
+  if (renderer.find("Adreno") != std::string::npos) {
+    return;
+  }
+#endif
+
   // Use shaders that match the proof-of-concept.
   // They don't use vertex attributes, but gl_VertexID to generate a quad.
   const char* kVS =
