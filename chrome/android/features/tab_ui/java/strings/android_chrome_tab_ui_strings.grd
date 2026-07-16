@@ -1165,6 +1165,12 @@
       <message name="IDS_SHOW_TABS_HORIZONTALLY" desc="Context menu item text to show the horizontal tabs.">
         Show tabs horizontally
       </message>
+      <message name="IDS_NEW_TAB_BELOW_MENU_ITEM" desc="Context menu item text to create a new tab below the selected tab.">
+        New tab below
+      </message>
+      <message name="IDS_CLOSE_TABS_BELOW_MENU_ITEM" desc="Context menu item text to close all tabs below the selected tab.">
+        Close tabs below
+      </message>
 
       <!-- Tab Group List Bottom Sheet -->
       <message name="IDS_TAB_GROUP_LIST_BOTTOM_SHEET_TITLE" desc="Title text for a bottom sheet which is used to add a tab to a tab group.">

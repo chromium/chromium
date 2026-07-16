@@ -640,11 +640,8 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
 
     private void buildMenuActionItemsForSingleTab(
             ModelList itemList, AnchorInfo anchorInfo, List<Tab> tabs, boolean isIncognito) {
-        // TODO(crbug.com/521982129): Pass an explicit layout/menu source argument here
-        // instead of relying on global feature/preference state via VerticalTabUtils.
-        boolean isVerticalTabs = VerticalTabUtils.isVerticalTabsEnabled(mActivity);
-        if (ChromeFeatureList.sAndroidContextMenuNewActions.isEnabled() && !isVerticalTabs) {
-            itemList.add(createNewTabToTheRightItem(isIncognito));
+        if (ChromeFeatureList.sAndroidContextMenuNewActions.isEnabled()) {
+            itemList.add(createNewTabDirectionalItem(isIncognito));
         }
         itemList.add(createMoveToTabGroupItem(tabs, isIncognito));
         if (TabGroupUtils.isAnyTabInGroup(tabs)) {
@@ -688,17 +685,16 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
             if (getTabModel().getCount() > 1) {
                 itemList.add(createCloseOtherTabsItem(isIncognito));
             }
-            if (canCloseTabsToTheRight(anchorInfo) && !isVerticalTabs) {
-                itemList.add(createCloseTabsToTheRightItem(isIncognito));
+            if (canCloseTabsToTheRight(anchorInfo)) {
+                itemList.add(createCloseTabsDirectionalItem(isIncognito));
             }
         }
     }
 
     private void buildMenuActionItemsForMultipleTabs(
             ModelList itemList, AnchorInfo anchorInfo, List<Tab> tabs, boolean isIncognito) {
-        boolean isVerticalTabs = VerticalTabUtils.isVerticalTabsEnabled(mActivity);
-        if (ChromeFeatureList.sAndroidContextMenuNewActions.isEnabled() && !isVerticalTabs) {
-            itemList.add(createNewTabToTheRightItem(isIncognito));
+        if (ChromeFeatureList.sAndroidContextMenuNewActions.isEnabled()) {
+            itemList.add(createNewTabDirectionalItem(isIncognito));
         }
         itemList.add(createMoveToTabGroupItem(tabs, isIncognito));
         if (TabGroupUtils.isAnyTabInGroup(tabs)) {
@@ -727,8 +723,8 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
             if (getTabModel().getCount() > anchorInfo.getAllTabIds().size()) {
                 itemList.add(createCloseOtherTabsItem(isIncognito));
             }
-            if (canCloseTabsToTheRight(anchorInfo) && !isVerticalTabs) {
-                itemList.add(createCloseTabsToTheRightItem(isIncognito));
+            if (canCloseTabsToTheRight(anchorInfo)) {
+                itemList.add(createCloseTabsDirectionalItem(isIncognito));
             }
         }
     }
@@ -755,8 +751,13 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
                 .build();
     }
 
-    private ListItem createNewTabToTheRightItem(boolean isIncognito) {
-        String title = mActivity.getResources().getString(R.string.new_tab_to_the_right_menu_item);
+    private ListItem createNewTabDirectionalItem(boolean isIncognito) {
+        boolean isVerticalTabs = VerticalTabUtils.isVerticalTabsEnabled(mActivity);
+        int stringId =
+                isVerticalTabs
+                        ? R.string.new_tab_below_menu_item
+                        : R.string.new_tab_to_the_right_menu_item;
+        String title = mActivity.getResources().getString(stringId);
 
         return new ListItemBuilder()
                 .withTitle(title)
@@ -860,9 +861,13 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
                 .build();
     }
 
-    private ListItem createCloseTabsToTheRightItem(boolean isIncognito) {
-        String title =
-                mActivity.getResources().getString(R.string.close_tabs_to_the_right_menu_item);
+    private ListItem createCloseTabsDirectionalItem(boolean isIncognito) {
+        boolean isVerticalTabs = VerticalTabUtils.isVerticalTabsEnabled(mActivity);
+        int stringId =
+                isVerticalTabs
+                        ? R.string.close_tabs_below_menu_item
+                        : R.string.close_tabs_to_the_right_menu_item;
+        String title = mActivity.getResources().getString(stringId);
         return new ListItemBuilder()
                 .withTitle(title)
                 .withMenuId(R.id.close_tabs_to_the_right_menu_id)

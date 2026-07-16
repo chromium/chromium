@@ -2758,12 +2758,7 @@ public class TabContextMenuCoordinatorUnitTest {
         mTabContextMenuCoordinator.configureMenuItemsForTesting(
                 modelList, new AnchorInfo(TAB_ID, Collections.singletonList(TAB_ID)));
 
-        assertNull(
-                "'New tab to the right' should be filtered out from the Vertical Tabs menu.",
-                findItemByMenuId(modelList, R.id.new_tab_to_the_right_menu_id));
-        assertNull(
-                "'Close tabs to the right' should be filtered out from the Vertical Tabs menu.",
-                findItemByMenuId(modelList, R.id.close_tabs_to_the_right_menu_id));
+        verifyVerticalTabsDirectionalLabels(modelList);
     }
 
     @Test
@@ -2778,17 +2773,32 @@ public class TabContextMenuCoordinatorUnitTest {
         mTabContextMenuCoordinator.configureMenuItemsForTesting(
                 modelList, new AnchorInfo(TAB_ID, List.of(TAB_ID, TAB_ID_2)));
 
-        assertNull(
-                "'New tab to the right' should be filtered out in Multi-Select Mode.",
-                findItemByMenuId(modelList, R.id.new_tab_to_the_right_menu_id));
-        assertNull(
-                "'Close tabs to the right' should be filtered out in Multi-Select Mode.",
-                findItemByMenuId(modelList, R.id.close_tabs_to_the_right_menu_id));
+        verifyVerticalTabsDirectionalLabels(modelList);
     }
 
     // --------------------------------------------------------------//
     // ----------------------  UTILITY METHODS ----------------------//
     // --------------------------------------------------------------//
+
+    private void verifyVerticalTabsDirectionalLabels(ModelList modelList) {
+        ListItem newTabBelowItem = findItemByMenuId(modelList, R.id.new_tab_to_the_right_menu_id);
+        assertNotNull(
+                "'New tab below' should be present in the Vertical Tabs menu.", newTabBelowItem);
+        assertEquals(
+                "Title resource should match 'New tab below'.",
+                mActivity.getResources().getString(R.string.new_tab_below_menu_item),
+                newTabBelowItem.model.get(TITLE));
+
+        ListItem closeTabsBelowItem =
+                findItemByMenuId(modelList, R.id.close_tabs_to_the_right_menu_id);
+        assertNotNull(
+                "'Close tabs below' should be present in the Vertical Tabs menu.",
+                closeTabsBelowItem);
+        assertEquals(
+                "Title resource should match 'Close tabs below'.",
+                mActivity.getResources().getString(R.string.close_tabs_below_menu_item),
+                closeTabsBelowItem.model.get(TITLE));
+    }
 
     private void prepareCoordinatorWithTabs() {
         ChromeSharedPreferences.getInstance()
