@@ -113,11 +113,11 @@ class LensSidePanelUntrustedUI
     // Instantiates the implementor of the composebox::mojom::PageHandler mojo
   // interface passing the pending receiver that will be internally bound.
   void CreatePageHandler(
-    mojo::PendingRemote<composebox::mojom::Page> pending_page,
-    mojo::PendingReceiver<composebox::mojom::PageHandler> pending_page_handler,
-    mojo::PendingRemote<searchbox::mojom::Page> pending_searchbox_page,
-    mojo::PendingReceiver<searchbox::mojom::PageHandler>
-        pending_searchbox_handler) override;
+      mojo::PendingReceiver<composebox::mojom::PageHandler>
+          pending_page_handler,
+      mojo::PendingRemote<searchbox::mojom::Page> pending_searchbox_page,
+      mojo::PendingReceiver<searchbox::mojom::PageHandler>
+          pending_searchbox_handler) override;
 
   mojo::Receiver<lens::mojom::LensSidePanelPageHandlerFactory>
       lens_side_panel_page_factory_receiver_{this};

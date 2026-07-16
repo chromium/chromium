@@ -7,7 +7,7 @@ import 'chrome://contextual-tasks/app.js';
 import type {ContextualTasksAppElement} from 'chrome://contextual-tasks/app.js';
 import {BrowserProxyImpl} from 'chrome://contextual-tasks/contextual_tasks_browser_proxy.js';
 import {GlifAnimationState, TabUploadOrigin} from 'chrome://resources/cr_components/composebox/common.js';
-import {PageCallbackRouter as ComposeboxPageCallbackRouter, PageHandlerRemote as ComposeboxPageHandlerRemote} from 'chrome://resources/cr_components/composebox/composebox.mojom-webui.js';
+import {PageHandlerRemote as ComposeboxPageHandlerRemote} from 'chrome://resources/cr_components/composebox/composebox.mojom-webui.js';
 import {ComposeboxProxyImpl} from 'chrome://resources/cr_components/composebox/composebox_proxy.js';
 import {InputType, ToolMode} from 'chrome://resources/cr_components/composebox/composebox_query.mojom-webui.js';
 import type {ComposeboxToolChipElement} from 'chrome://resources/cr_components/composebox/composebox_tool_chip.js';
@@ -178,8 +178,8 @@ suite('ContextualTasksComposeboxTest', () => {
     searchboxCallbackRouterRemote =
         searchboxCallbackRouter.$.bindNewPipeAndPassRemote();
     ComposeboxProxyImpl.setInstance(new ComposeboxProxyImpl(
-        mockComposeboxPageHandler, new ComposeboxPageCallbackRouter(),
-        mockSearchboxPageHandler, searchboxCallbackRouter));
+        mockComposeboxPageHandler, mockSearchboxPageHandler,
+        searchboxCallbackRouter));
 
     contextualTasksApp = document.createElement('contextual-tasks-app');
     document.body.appendChild(contextualTasksApp);
@@ -1553,8 +1553,8 @@ suite('ContextualTasksComposeboxTest', () => {
           const searchboxCallbackRouter = new SearchboxPageCallbackRouter();
           searchboxCallbackRouter.$.bindNewPipeAndPassRemote();
           ComposeboxProxyImpl.setInstance(new ComposeboxProxyImpl(
-              mockComposeboxPageHandler, new ComposeboxPageCallbackRouter(),
-              mockSearchboxPageHandler, searchboxCallbackRouter));
+              mockComposeboxPageHandler, mockSearchboxPageHandler,
+              searchboxCallbackRouter));
 
           parts = await createCtComposeboxApp(useFork);
         });
@@ -1671,8 +1671,8 @@ suite('ContextualTasksComposeboxTest', () => {
           const searchboxCallbackRouter = new SearchboxPageCallbackRouter();
           searchboxCallbackRouter.$.bindNewPipeAndPassRemote();
           ComposeboxProxyImpl.setInstance(new ComposeboxProxyImpl(
-              mockComposeboxPageHandler, new ComposeboxPageCallbackRouter(),
-              mockSearchboxPageHandler, searchboxCallbackRouter));
+              mockComposeboxPageHandler, mockSearchboxPageHandler,
+              searchboxCallbackRouter));
 
           parts = await createCtComposeboxApp(useFork);
         });
@@ -1968,8 +1968,8 @@ suite('ContextualTasksComposeboxTest', () => {
           searchboxCallbackRouterRemote =
               searchboxCallbackRouter.$.bindNewPipeAndPassRemote();
           ComposeboxProxyImpl.setInstance(new ComposeboxProxyImpl(
-              mockComposeboxPageHandler, new ComposeboxPageCallbackRouter(),
-              mockSearchboxPageHandler, searchboxCallbackRouter));
+              mockComposeboxPageHandler, mockSearchboxPageHandler,
+              searchboxCallbackRouter));
 
           parts = await createCtComposeboxApp(useFork);
           searchboxCallbackRouterRemote.onInputStateChanged(
@@ -2288,8 +2288,8 @@ suite('ContextualTasksComposeboxTest', () => {
           const searchboxCallbackRouter = new SearchboxPageCallbackRouter();
           searchboxCallbackRouter.$.bindNewPipeAndPassRemote();
           ComposeboxProxyImpl.setInstance(new ComposeboxProxyImpl(
-              mockComposeboxPageHandler, new ComposeboxPageCallbackRouter(),
-              mockSearchboxPageHandler, searchboxCallbackRouter));
+              mockComposeboxPageHandler, mockSearchboxPageHandler,
+              searchboxCallbackRouter));
         });
 
         test('renders the contextual entrypoint and exposes it', async () => {
@@ -2613,8 +2613,8 @@ suite(`ContextualTasksComposeboxResizeTest`, () => {
     searchboxCallbackRouterRemote =
         searchboxCallbackRouter.$.bindNewPipeAndPassRemote();
     ComposeboxProxyImpl.setInstance(new ComposeboxProxyImpl(
-        mockComposeboxPageHandler, new ComposeboxPageCallbackRouter(),
-        mockSearchboxPageHandler, searchboxCallbackRouter));
+        mockComposeboxPageHandler, mockSearchboxPageHandler,
+        searchboxCallbackRouter));
 
     parts = await createCtComposeboxApp(/* useFork= */ true);
     searchboxCallbackRouterRemote.onInputStateChanged(new MockInputState());
@@ -2741,8 +2741,8 @@ suite(`ContextualTasksComposeboxResizeTest`, () => {
           const searchboxCallbackRouter = new SearchboxPageCallbackRouter();
           searchboxCallbackRouter.$.bindNewPipeAndPassRemote();
           ComposeboxProxyImpl.setInstance(new ComposeboxProxyImpl(
-              mockComposeboxPageHandler, new ComposeboxPageCallbackRouter(),
-              mockSearchboxPageHandler, searchboxCallbackRouter));
+              mockComposeboxPageHandler, mockSearchboxPageHandler,
+              searchboxCallbackRouter));
 
           parts = await createCtComposeboxApp(useFork);
         });
@@ -2851,8 +2851,8 @@ suite(`ContextualTasksComposeboxResizeTest`, () => {
           searchboxCallbackRouterRemote =
               searchboxCallbackRouter.$.bindNewPipeAndPassRemote();
           ComposeboxProxyImpl.setInstance(new ComposeboxProxyImpl(
-              mockComposeboxPageHandler, new ComposeboxPageCallbackRouter(),
-              mockSearchboxPageHandler, searchboxCallbackRouter));
+              mockComposeboxPageHandler, mockSearchboxPageHandler,
+              searchboxCallbackRouter));
 
           parts = await createCtComposeboxApp(useFork);
           searchboxCallbackRouterRemote.onInputStateChanged(

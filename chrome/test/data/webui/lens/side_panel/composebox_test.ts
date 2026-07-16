@@ -7,7 +7,7 @@ import 'chrome-untrusted://lens/side_panel/side_panel_app.js';
 import type {LensSidePanelAppElement} from 'chrome-untrusted://lens/side_panel/side_panel_app.js';
 import {SidePanelBrowserProxyImpl} from 'chrome-untrusted://lens/side_panel/side_panel_browser_proxy.js';
 import type {ComposeboxElement} from 'chrome-untrusted://resources/cr_components/composebox/composebox.js';
-import {PageCallbackRouter, PageHandlerRemote} from 'chrome-untrusted://resources/cr_components/composebox/composebox.mojom-webui.js';
+import {PageHandlerRemote} from 'chrome-untrusted://resources/cr_components/composebox/composebox.mojom-webui.js';
 import {ComposeboxProxyImpl} from 'chrome-untrusted://resources/cr_components/composebox/composebox_proxy.js';
 import {createAutocompleteResultForTesting, createSearchMatchForTesting} from 'chrome-untrusted://resources/cr_components/searchbox/searchbox_browser_proxy.js';
 import {loadTimeData} from 'chrome-untrusted://resources/js/load_time_data.js';
@@ -69,8 +69,7 @@ suite('Composebox', () => {
     mockSearchboxPageHandler = TestMock.fromClass(SearchboxPageHandlerRemote);
     const searchboxCallbackRouter = new SearchboxPageCallbackRouter();
     ComposeboxProxyImpl.setInstance(new ComposeboxProxyImpl(
-        mockPageHandler, new PageCallbackRouter(), mockSearchboxPageHandler,
-        searchboxCallbackRouter));
+        mockPageHandler, mockSearchboxPageHandler, searchboxCallbackRouter));
 
     searchboxCallbackRouterRemote =
         searchboxCallbackRouter.$.bindNewPipeAndPassRemote();

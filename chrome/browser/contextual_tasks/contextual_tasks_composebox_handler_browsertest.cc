@@ -414,13 +414,9 @@ class ContextualTasksComposeboxHandlerTest
   }
 
   void SetUpHandler() {
-    mojo::PendingRemote<composebox::mojom::Page> page_remote;
-    page_receiver_ = page_remote.InitWithNewPipeAndPassReceiver();
-
     handler_ = std::make_unique<TestContextualTasksComposeboxHandler>(
         mock_ui_.get(), profile(), web_contents(),
         mojo::PendingReceiver<composebox::mojom::PageHandler>(),
-        std::move(page_remote),
         mojo::PendingReceiver<searchbox::mojom::PageHandler>(),
         searchbox_page_receiver_.BindNewPipeAndPassRemote(),
         base::BindRepeating(
@@ -529,7 +525,6 @@ class ContextualTasksComposeboxHandlerTest
 
   base::test::ScopedFeatureList feature_list_;
   ui::UserDataFactory::ScopedOverride lens_controller_override_;
-  mojo::PendingReceiver<composebox::mojom::Page> page_receiver_;
 };
 
 class ContextualTasksComposeboxHandlerTestWithAutoSuggestionDisabled
@@ -3185,9 +3180,6 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksComposeboxHandlerTest,
 IN_PROC_BROWSER_TEST_F(ContextualTasksComposeboxHandlerTest,
                        AddFileContext_NullSessionHandle) {
   // Create a handler with a callback that returns nullptr for session handle.
-  mojo::PendingRemote<composebox::mojom::Page> page_remote;
-  mojo::PendingReceiver<composebox::mojom::Page> page_receiver =
-      page_remote.InitWithNewPipeAndPassReceiver();
   mojo::PendingRemote<searchbox::mojom::Page> searchbox_page_remote;
   mojo::PendingReceiver<searchbox::mojom::Page> searchbox_page_receiver =
       searchbox_page_remote.InitWithNewPipeAndPassReceiver();
@@ -3195,7 +3187,6 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksComposeboxHandlerTest,
   auto handler = std::make_unique<TestContextualTasksComposeboxHandler>(
       mock_ui_.get(), profile(), web_contents(),
       mojo::PendingReceiver<composebox::mojom::PageHandler>(),
-      std::move(page_remote),
       mojo::PendingReceiver<searchbox::mojom::PageHandler>(),
       std::move(searchbox_page_remote),
       base::BindRepeating(
@@ -3259,16 +3250,12 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksComposeboxHandlerTest,
   auto mock_callback = base::BindRepeating(
       &ContextualTasksComposeboxHandlerTest::CreateMockInputStateModel,
       base::Unretained(this));
-  mojo::PendingRemote<composebox::mojom::Page> page_remote;
-  mojo::PendingReceiver<composebox::mojom::Page> page_receiver =
-      page_remote.InitWithNewPipeAndPassReceiver();
   mojo::PendingRemote<searchbox::mojom::Page> searchbox_page_remote;
   mojo::PendingReceiver<searchbox::mojom::Page> searchbox_page_receiver =
       searchbox_page_remote.InitWithNewPipeAndPassReceiver();
   auto custom_handler = std::make_unique<TestContextualTasksComposeboxHandler>(
       mock_ui_.get(), profile(), web_contents(),
       mojo::PendingReceiver<composebox::mojom::PageHandler>(),
-      std::move(page_remote),
       mojo::PendingReceiver<searchbox::mojom::PageHandler>(),
       std::move(searchbox_page_remote),
       base::BindRepeating(
@@ -3307,10 +3294,6 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksComposeboxHandlerTest,
       [](contextual_search::MockContextualSearchSessionHandle* ptr)
           -> contextual_search::ContextualSearchSessionHandle* { return ptr; },
       mock_session_ptr);
-
-  mojo::PendingRemote<composebox::mojom::Page> page_remote;
-  mojo::PendingReceiver<composebox::mojom::Page> page_receiver =
-      page_remote.InitWithNewPipeAndPassReceiver();
   mojo::PendingRemote<searchbox::mojom::Page> searchbox_page_remote;
   mojo::PendingReceiver<searchbox::mojom::Page> searchbox_page_receiver =
       searchbox_page_remote.InitWithNewPipeAndPassReceiver();
@@ -3318,7 +3301,6 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksComposeboxHandlerTest,
   auto custom_handler = std::make_unique<TestContextualTasksComposeboxHandler>(
       mock_ui_.get(), profile(), web_contents(),
       mojo::PendingReceiver<composebox::mojom::PageHandler>(),
-      std::move(page_remote),
       mojo::PendingReceiver<searchbox::mojom::PageHandler>(),
       std::move(searchbox_page_remote), mock_get_session_callback,
       base::BindRepeating(&ContextualTasksUI::ClearContextualSessionHandle,
@@ -3718,17 +3700,12 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksComposeboxHandlerTest,
             /*browser_identity_matches_aim_identity=*/false);
       },
       session_handle_.get(), config);
-
-  mojo::PendingRemote<composebox::mojom::Page> page_remote;
-  mojo::PendingReceiver<composebox::mojom::Page> page_receiver =
-      page_remote.InitWithNewPipeAndPassReceiver();
   mojo::PendingRemote<searchbox::mojom::Page> searchbox_page_remote;
   mojo::PendingReceiver<searchbox::mojom::Page> searchbox_page_receiver =
       searchbox_page_remote.InitWithNewPipeAndPassReceiver();
   auto custom_handler = std::make_unique<TestContextualTasksComposeboxHandler>(
       mock_ui_.get(), profile(), web_contents(),
       mojo::PendingReceiver<composebox::mojom::PageHandler>(),
-      std::move(page_remote),
       mojo::PendingReceiver<searchbox::mojom::PageHandler>(),
       std::move(searchbox_page_remote),
       base::BindRepeating(
@@ -3888,7 +3865,6 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksComposeboxHandlerAutoTriggerTest, AutoTrig
   auto custom_handler = std::make_unique<TestContextualTasksComposeboxHandler>(
       mock_ui_.get(), profile(), web_contents(),
       mojo::PendingReceiver<composebox::mojom::PageHandler>(),
-      mojo::PendingRemote<composebox::mojom::Page>(),
       mojo::PendingReceiver<searchbox::mojom::PageHandler>(),
       searchbox_page_receiver_.BindNewPipeAndPassRemote(),
       base::BindRepeating(

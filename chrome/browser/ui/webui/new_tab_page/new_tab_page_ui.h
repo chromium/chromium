@@ -278,7 +278,6 @@ class NewTabPageUI
 
   // composebox::mojom::PageHandlerFactory:
   void CreatePageHandler(
-      mojo::PendingRemote<composebox::mojom::Page> pending_page,
       mojo::PendingReceiver<composebox::mojom::PageHandler>
           pending_page_handler,
       mojo::PendingRemote<searchbox::mojom::Page> pending_searchbox_page,
@@ -358,7 +357,6 @@ class NewTabPageUI
       composebox_page_factory_receiver_;
   std::unique_ptr<ComposeboxHandler> composebox_handler_;
 #if BUILDFLAG(IS_ANDROID)
-  mojo::PendingRemote<composebox::mojom::Page> android_stub_composebox_page_;
   std::unique_ptr<composebox::mojom::PageHandler>
       android_stub_composebox_handler_;
   mojo::PendingRemote<searchbox::mojom::Page> android_stub_searchbox_page_;

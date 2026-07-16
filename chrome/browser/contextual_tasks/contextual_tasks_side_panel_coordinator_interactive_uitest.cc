@@ -54,7 +54,6 @@ class MockContextualTasksComposeboxHandler
       Profile* profile,
       content::WebContents* web_contents,
       mojo::PendingReceiver<composebox::mojom::PageHandler> pending_handler,
-      mojo::PendingRemote<composebox::mojom::Page> pending_page,
       mojo::PendingReceiver<searchbox::mojom::PageHandler>
           pending_searchbox_handler,
       mojo::PendingRemote<searchbox::mojom::Page> pending_searchbox_page,
@@ -66,7 +65,6 @@ class MockContextualTasksComposeboxHandler
             profile,
             web_contents,
             std::move(pending_handler),
-            std::move(pending_page),
             std::move(pending_searchbox_handler),
             std::move(pending_searchbox_page),
             std::move(get_session_callback),
@@ -690,9 +688,6 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksSidePanelCoordinatorInteractiveUiTest,
   coordinator->Show(false,
                     omnibox::ChromeAimEntryPoint::UNKNOWN_AIM_ENTRY_POINT);
   ContextualTasksUI* ui = GetContextualTasksUI();
-  mojo::PendingRemote<composebox::mojom::Page> composebox_page_remote;
-  mojo::PendingReceiver<composebox::mojom::Page> composebox_page_receiver =
-      composebox_page_remote.InitWithNewPipeAndPassReceiver();
   mojo::PendingRemote<composebox::mojom::PageHandler> composebox_handler_remote;
   mojo::PendingReceiver<composebox::mojom::PageHandler>
       composebox_handler_receiver =
@@ -710,7 +705,6 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksSidePanelCoordinatorInteractiveUiTest,
           ui, browser()->GetProfile(),
           TabListInterface::From(browser())->GetTab(0)->GetContents(),
           std::move(composebox_handler_receiver),
-          std::move(composebox_page_remote),
           std::move(searchbox_handler_receiver),
           std::move(searchbox_page_remote),
           base::BindRepeating(

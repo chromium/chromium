@@ -5,7 +5,7 @@
 import 'chrome://contextual-tasks/strings.m.js';
 import 'chrome://resources/cr_components/composebox/composebox_voice_search.js';
 
-import {PageCallbackRouter, PageHandlerRemote} from 'chrome://resources/cr_components/composebox/composebox.mojom-webui.js';
+import {PageHandlerRemote} from 'chrome://resources/cr_components/composebox/composebox.mojom-webui.js';
 import {ComposeboxProxyImpl} from 'chrome://resources/cr_components/composebox/composebox_proxy.js';
 import type {ComposeboxVoiceSearchElement} from 'chrome://resources/cr_components/composebox/composebox_voice_search.js';
 import {VoiceSearchAction, VoiceSearchError, VoiceSearchMetricType, VoiceSearchQuerySource} from 'chrome://resources/cr_components/composebox/composebox_voice_search.js';
@@ -41,7 +41,7 @@ suite('ComposeboxVoiceSearchMetrics', () => {
         Promise.resolve({metricSource: 'NTP_REALBOX'}));
 
     ComposeboxProxyImpl.setInstance(new ComposeboxProxyImpl(
-        handler as unknown as PageHandlerRemote, new PageCallbackRouter(),
+        handler as unknown as PageHandlerRemote,
         searchboxHandler as unknown as SearchboxPageHandlerRemote,
         new SearchboxPageCallbackRouter()));
 

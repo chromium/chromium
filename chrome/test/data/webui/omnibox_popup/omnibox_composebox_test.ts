@@ -8,7 +8,7 @@ import {SearchboxBrowserProxy} from 'chrome://omnibox-popup.top-chrome/omnibox_p
 import type {OmniboxComposeboxElement} from 'chrome://omnibox-popup.top-chrome/omnibox_popup.js';
 import {ComposeboxProxyImpl} from 'chrome://omnibox-popup.top-chrome/omnibox_popup.js';
 import {ComposeboxFile, TabUploadOrigin} from 'chrome://resources/cr_components/composebox/common.js';
-import {PageCallbackRouter, PageHandlerRemote} from 'chrome://resources/cr_components/composebox/composebox.mojom-webui.js';
+import {PageHandlerRemote} from 'chrome://resources/cr_components/composebox/composebox.mojom-webui.js';
 import type {ComposeboxFaviconGroupElement} from 'chrome://resources/cr_components/composebox/composebox_favicon_group.js';
 import {ContextUploadErrorType, ContextUploadStatus, InputType, ToolMode} from 'chrome://resources/cr_components/composebox/composebox_query.mojom-webui.js';
 import type {InputState} from 'chrome://resources/cr_components/composebox/composebox_query.mojom-webui.js';
@@ -65,7 +65,7 @@ suite('OmniboxComposeboxTest', () => {
     mockPageHandler.setResultMapperFor(
         'getSmartTabSharingActive', () => Promise.resolve({active: false}));
     ComposeboxProxyImpl.setInstance(new ComposeboxProxyImpl(
-        mockPageHandler, new PageCallbackRouter(),
+        mockPageHandler,
         testProxy.handler as unknown as SearchboxPageHandlerRemote,
         testProxy.callbackRouter as unknown as SearchboxPageCallbackRouter));
 

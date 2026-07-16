@@ -1063,22 +1063,7 @@ TEST_F(SearchboxOmniboxClientNavigationTest,
 // OmniboxComposeboxHandler is dedicated to the desktop Omnibox Popup and out of
 // scope for Android WebUI NTP.
 #if !BUILDFLAG(IS_ANDROID)
-namespace {
-class MockPage : public composebox::mojom::Page {
- public:
-  MockPage() = default;
-  ~MockPage() override = default;
 
-  mojo::PendingRemote<composebox::mojom::Page> BindAndGetRemote() {
-    DCHECK(!receiver_.is_bound());
-    return receiver_.BindNewPipeAndPassRemote();
-  }
-
-  void FlushForTesting() { receiver_.FlushForTesting(); }
-
-  mojo::Receiver<composebox::mojom::Page> receiver_{this};
-};
-}  // namespace
 
 class OmniboxComposeboxHandlerTest : public SearchboxHandlerTest {
  public:
@@ -1103,7 +1088,6 @@ class OmniboxComposeboxHandlerTest : public SearchboxHandlerTest {
 
     handler_ = std::make_unique<OmniboxComposeboxHandler>(
         mojo::PendingReceiver<composebox::mojom::PageHandler>(),
-        page_.BindAndGetRemote(),
         mojo::PendingReceiver<searchbox::mojom::PageHandler>(),
         searchbox_page_.BindAndGetRemote(), profile(), web_contents_.get(),
         base::BindLambdaForTesting(
@@ -1125,7 +1109,6 @@ class OmniboxComposeboxHandlerTest : public SearchboxHandlerTest {
  protected:
   content::RenderViewHostTestEnabler test_render_host_factories_;
   std::unique_ptr<content::WebContents> web_contents_;
-  testing::NiceMock<MockPage> page_;
   testing::NiceMock<MockSearchboxPage> searchbox_page_;
   testing::NiceMock<MockSearchboxHandlerDelegate> mock_delegate_;
   std::unique_ptr<contextual_search::ContextualSearchSessionHandle>

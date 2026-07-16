@@ -53,17 +53,10 @@ TEST_F(OmniboxPopupUITest, SafeWithNullContextualSearchService) {
 
   auto omnibox_popup_ui = std::make_unique<OmniboxPopupUI>(&web_ui);
 
-  mojo::PendingRemote<composebox::mojom::Page> pending_page;
   mojo::PendingReceiver<composebox::mojom::PageHandler> pending_page_handler;
   mojo::PendingRemote<searchbox::mojom::Page> pending_searchbox_page;
   mojo::PendingReceiver<searchbox::mojom::PageHandler>
       pending_searchbox_handler;
-
-  {
-    auto pipe_page = mojo::MessagePipe();
-    pending_page = mojo::PendingRemote<composebox::mojom::Page>(
-        std::move(pipe_page.handle0), 0);
-  }
 
   {
     auto pipe_handler = mojo::MessagePipe();
@@ -85,9 +78,9 @@ TEST_F(OmniboxPopupUITest, SafeWithNullContextualSearchService) {
             std::move(pipe_sb_handler.handle0));
   }
 
-  omnibox_popup_ui->CreatePageHandler(
-      std::move(pending_page), std::move(pending_page_handler),
-      std::move(pending_searchbox_page), std::move(pending_searchbox_handler));
+  omnibox_popup_ui->CreatePageHandler(std::move(pending_page_handler),
+                                      std::move(pending_searchbox_page),
+                                      std::move(pending_searchbox_handler));
 
   mojo::PendingRemote<omnibox_popup::mojom::Page> pending_popup_page;
   mojo::PendingReceiver<omnibox_popup::mojom::PageHandler>

@@ -136,7 +136,6 @@ class ContextualTasksUI
 
   // composebox::mojom::PageHandlerFactory:
   void CreatePageHandler(
-      mojo::PendingRemote<composebox::mojom::Page> pending_page,
       mojo::PendingReceiver<composebox::mojom::PageHandler>
           pending_page_handler,
       mojo::PendingRemote<searchbox::mojom::Page> pending_searchbox_page,
@@ -374,8 +373,6 @@ class ContextualTasksUI
 
   mojo::Receiver<composebox::mojom::PageHandlerFactory>
       composebox_page_handler_factory_receiver_{this};
-
-  mojo::Remote<composebox::mojom::Page> page_remote_;
 
   std::unique_ptr<user_education::HelpBubbleHandler> help_bubble_handler_;
 

@@ -198,7 +198,6 @@ ContextualTasksComposeboxHandler::ContextualTasksComposeboxHandler(
     Profile* profile,
     content::WebContents* web_contents,
     mojo::PendingReceiver<composebox::mojom::PageHandler> pending_handler,
-    mojo::PendingRemote<composebox::mojom::Page> pending_page,
     mojo::PendingReceiver<searchbox::mojom::PageHandler>
         pending_searchbox_handler,
     mojo::PendingRemote<searchbox::mojom::Page> pending_searchbox_page,
@@ -207,7 +206,6 @@ ContextualTasksComposeboxHandler::ContextualTasksComposeboxHandler(
     TakeInputStateModelCallback take_input_model_callback)
     : ComposeboxHandler(
           std::move(pending_handler),
-          std::move(pending_page),
           std::move(pending_searchbox_handler),
           std::move(pending_searchbox_page),
           profile,

@@ -311,16 +311,14 @@ void LensSidePanelUntrustedUI::CreatePageHandler(
 }
 
 void LensSidePanelUntrustedUI::CreatePageHandler(
-    mojo::PendingRemote<composebox::mojom::Page> pending_page,
     mojo::PendingReceiver<composebox::mojom::PageHandler> pending_page_handler,
     mojo::PendingRemote<searchbox::mojom::Page> pending_searchbox_page,
     mojo::PendingReceiver<searchbox::mojom::PageHandler>
         pending_searchbox_handler) {
-  DCHECK(pending_page.is_valid());
   auto* controller = GetLensSearchController().lens_composebox_controller();
-  controller->BindComposebox(
-      std::move(pending_page_handler), std::move(pending_page),
-      std::move(pending_searchbox_page), std::move(pending_searchbox_handler));
+  controller->BindComposebox(std::move(pending_page_handler),
+                             std::move(pending_searchbox_page),
+                             std::move(pending_searchbox_handler));
 }
 
 LensSearchController& LensSidePanelUntrustedUI::GetLensSearchController() {

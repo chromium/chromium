@@ -88,7 +88,6 @@ void ComposeboxOmniboxClient::OnAutocompleteAccept(
 
 ComposeboxHandler::ComposeboxHandler(
     mojo::PendingReceiver<composebox::mojom::PageHandler> pending_handler,
-    mojo::PendingRemote<composebox::mojom::Page> pending_page,
     mojo::PendingReceiver<searchbox::mojom::PageHandler>
         pending_searchbox_handler,
     mojo::PendingRemote<searchbox::mojom::Page> pending_searchbox_page,
@@ -97,7 +96,6 @@ ComposeboxHandler::ComposeboxHandler(
     GetSessionHandleCallback get_session_callback,
     ClearSessionHandleCallback clear_session_callback)
     : ComposeboxHandler(std::move(pending_handler),
-                        std::move(pending_page),
                         std::move(pending_searchbox_handler),
                         std::move(pending_searchbox_page),
                         profile,
@@ -110,7 +108,6 @@ ComposeboxHandler::ComposeboxHandler(
 
 ComposeboxHandler::ComposeboxHandler(
     mojo::PendingReceiver<composebox::mojom::PageHandler> pending_handler,
-    mojo::PendingRemote<composebox::mojom::Page> pending_page,
     mojo::PendingReceiver<searchbox::mojom::PageHandler>
         pending_searchbox_handler,
     mojo::PendingRemote<searchbox::mojom::Page> pending_searchbox_page,
@@ -126,7 +123,6 @@ ComposeboxHandler::ComposeboxHandler(
                                  std::move(omnibox_client),
                                  std::move(get_session_callback)),
       clear_session_callback_(std::move(clear_session_callback)),
-      page_{std::move(pending_page)},
       handler_(this, std::move(pending_handler)) {
   // Set the callback for getting suggest inputs from the session.
   // The session is owned by WebUI controller and accessed via callback.

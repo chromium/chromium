@@ -63,7 +63,6 @@ class ComposeboxHandler : public composebox::mojom::PageHandler,
 
   explicit ComposeboxHandler(
       mojo::PendingReceiver<composebox::mojom::PageHandler> pending_handler,
-      mojo::PendingRemote<composebox::mojom::Page> pending_page,
       mojo::PendingReceiver<searchbox::mojom::PageHandler>
           pending_searchbox_handler,
       mojo::PendingRemote<searchbox::mojom::Page> pending_searchbox_page,
@@ -136,7 +135,6 @@ class ComposeboxHandler : public composebox::mojom::PageHandler,
  protected:
   ComposeboxHandler(
       mojo::PendingReceiver<composebox::mojom::PageHandler> pending_handler,
-      mojo::PendingRemote<composebox::mojom::Page> pending_page,
       mojo::PendingReceiver<searchbox::mojom::PageHandler>
           pending_searchbox_handler,
       mojo::PendingRemote<searchbox::mojom::Page> pending_searchbox_page,
@@ -151,7 +149,6 @@ class ComposeboxHandler : public composebox::mojom::PageHandler,
 
   // These are located at the end of the list of member variables to ensure the
   // WebUI page is disconnected before other members are destroyed.
-  mojo::Remote<composebox::mojom::Page> page_;
   mojo::Receiver<composebox::mojom::PageHandler> handler_;
 };
 
