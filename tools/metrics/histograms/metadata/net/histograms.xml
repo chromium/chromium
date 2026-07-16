@@ -2446,6 +2446,24 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Net.DeviceBoundSessions.Refresh.Network.Result{Attempt}"
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2027-07-06">
+  <owner>alexilin@chromium.org</owner>
+  <owner>ahijazi@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    This records the network result of a refresh request for a Device Bound
+    Session (https://github.com/w3c/webappsec-dbsc/blob/main/README.md). This is
+    logged when refresh network response processing finishes for {Attempt}. If a
+    network error occurs at any point while reading the response body, that is
+    logged instead of the HTTP status code.
+  </summary>
+  <token key="Attempt">
+    <variant name=".FirstAttempt" summary="the first attempt"/>
+    <variant name=".SecondAttempt" summary="the second attempt (retry)"/>
+  </token>
+</histogram>
+
 <histogram name="Net.DeviceBoundSessions.RefreshChallengeCount"
     units="challenges" expires_after="2026-11-29">
   <owner>drubery@chromium.org</owner>

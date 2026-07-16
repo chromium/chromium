@@ -436,6 +436,25 @@ MATCHER_P2(EqualsCredential, name, attributes, "") {
       arg, result_listener);
 }
 
+MATCHER(IsErrorRegistrationResult, "") {
+  return arg.Visit(absl::Overload{
+      [result_listener](const SessionError& error) {
+        *result_listener << "is a SessionError of type "
+                         << static_cast<int>(error.type);
+        return true;
+      },
+      [result_listener](const std::unique_ptr<Session>& session) {
+        *result_listener << "is a valid Session"
+                         << (session ? " with ID " + session->id().value()
+                                     : "");
+        return false;
+      },
+      [result_listener](RegistrationResult::NoSessionConfigChange) {
+        *result_listener << "is NoSessionConfigChange";
+        return false;
+      }});
+}
+
 std::optional<std::string> GetRequestChallenge(
     const test_server::HttpRequest& request) {
   auto resp_iter = request.headers.find(kSessionResponseHeaderName);
@@ -3296,6 +3315,143 @@ TEST_F(RegistrationTest, RegisterAuthorizationNoChallenge) {
 
   // Validate the result is a session instead of an error.
   callback.outcome().SessionForTesting();
+}
+
+TEST_F(RegistrationTest, RefreshRetryTransientError) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      features::kDeviceBoundSessionsRetryTransientRefreshErrors);
+  base::HistogramTester histogram_tester;
+  crypto::ScopedFakeUnexportableKeyProvider scoped_fake_key_provider;
+
+  int request_count = 0;
+  server_.RegisterRequestHandler(base::BindLambdaForTesting(
+      [&request_count](const test_server::HttpRequest& request) {
+        request_count++;
+        if (request_count == 1) {
+          // Trigger net error on first attempt (invalid raw response)
+          return ReturnInvalidResponse(request);
+        }
+        // Success on the second attempt (the retry)
+        return ReturnResponse(HTTP_OK, kBasicValidJson, request);
+      }));
+  ASSERT_TRUE(server_.Start());
+
+  TestRegistrationCallback callback;
+  auto param = RegistrationRequestParam::CreateForTesting(
+      server_.GetURL("a.test", "/"), kSessionIdentifier, kChallenge,
+      /*authorization=*/std::nullopt);
+
+  std::unique_ptr<RegistrationFetcher> fetcher =
+      RegistrationFetcher::CreateFetcher(
+          param, session_service(), unexportable_key_service(), context_.get(),
+          IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+          /*net_log_source=*/std::nullopt,
+          /*original_request_initiator=*/std::nullopt,
+          unexportable_keys::BackgroundTaskPriority::kBestEffort);
+
+  fetcher->StartFetchWithExistingKey(param, CreateSigningKey(),
+                                     callback.callback());
+  callback.WaitForCall();
+
+  EXPECT_THAT(callback.outcome(), testing::Not(IsErrorRegistrationResult()));
+  EXPECT_EQ(request_count, 2);
+
+  histogram_tester.ExpectUniqueSample(
+      "Net.DeviceBoundSessions.Refresh.Network.Result.FirstAttempt",
+      net::ERR_INVALID_HTTP_RESPONSE, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Net.DeviceBoundSessions.Refresh.Network.Result.SecondAttempt", 200, 1);
+}
+
+TEST_F(RegistrationTest, RefreshRetryTransientErrorDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      features::kDeviceBoundSessionsRetryTransientRefreshErrors);
+  base::HistogramTester histogram_tester;
+  crypto::ScopedFakeUnexportableKeyProvider scoped_fake_key_provider;
+
+  int request_count = 0;
+  server_.RegisterRequestHandler(base::BindLambdaForTesting(
+      [&request_count](const test_server::HttpRequest& request) {
+        request_count++;
+        if (request_count == 1) {
+          // Trigger net error on first attempt (invalid raw response)
+          return ReturnInvalidResponse(request);
+        }
+        // Success on the second attempt (the retry)
+        return ReturnResponse(HTTP_OK, kBasicValidJson, request);
+      }));
+  ASSERT_TRUE(server_.Start());
+
+  TestRegistrationCallback callback;
+  auto param = RegistrationRequestParam::CreateForTesting(
+      server_.GetURL("a.test", "/"), kSessionIdentifier, kChallenge,
+      /*authorization=*/std::nullopt);
+
+  std::unique_ptr<RegistrationFetcher> fetcher =
+      RegistrationFetcher::CreateFetcher(
+          param, session_service(), unexportable_key_service(), context_.get(),
+          IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+          /*net_log_source=*/std::nullopt,
+          /*original_request_initiator=*/std::nullopt,
+          unexportable_keys::BackgroundTaskPriority::kBestEffort);
+
+  fetcher->StartFetchWithExistingKey(param, CreateSigningKey(),
+                                     callback.callback());
+  callback.WaitForCall();
+
+  EXPECT_THAT(callback.outcome(), IsErrorRegistrationResult());
+  EXPECT_EQ(request_count, 1);
+
+  histogram_tester.ExpectUniqueSample(
+      "Net.DeviceBoundSessions.Refresh.Network.Result.FirstAttempt",
+      net::ERR_INVALID_HTTP_RESPONSE, 1);
+  histogram_tester.ExpectTotalCount(
+      "Net.DeviceBoundSessions.Refresh.Network.Result.SecondAttempt", 0);
+}
+
+TEST_F(RegistrationTest, RegistrationNoRetryTransientError) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      features::kDeviceBoundSessionsRetryTransientRefreshErrors);
+  base::HistogramTester histogram_tester;
+  crypto::ScopedFakeUnexportableKeyProvider scoped_fake_key_provider;
+
+  int request_count = 0;
+  server_.RegisterRequestHandler(base::BindLambdaForTesting(
+      [&request_count](const test_server::HttpRequest& request) {
+        request_count++;
+        if (request_count == 1) {
+          return ReturnInvalidResponse(request);
+        }
+        return ReturnResponse(HTTP_OK, kBasicValidJson, request);
+      }));
+  ASSERT_TRUE(server_.Start());
+
+  TestRegistrationCallback callback;
+  auto param = RegistrationRequestParam::CreateForTesting(
+      server_.GetURL("a.test", "/"), /*session_identifier=*/std::nullopt,
+      kChallenge, /*authorization=*/std::nullopt);
+
+  std::unique_ptr<RegistrationFetcher> fetcher =
+      RegistrationFetcher::CreateFetcher(
+          param, session_service(), unexportable_key_service(), context_.get(),
+          IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+          /*net_log_source=*/std::nullopt,
+          /*original_request_initiator=*/std::nullopt,
+          unexportable_keys::BackgroundTaskPriority::kBestEffort);
+
+  fetcher->StartCreateTokenAndFetch(param, CreateAlgArray(),
+                                    callback.callback());
+  callback.WaitForCall();
+
+  EXPECT_THAT(callback.outcome(), IsErrorRegistrationResult());
+  EXPECT_EQ(request_count, 1);
+
+  histogram_tester.ExpectUniqueSample(
+      "Net.DeviceBoundSessions.Registration.Network.Result",
+      net::ERR_INVALID_HTTP_RESPONSE, 1);
+  histogram_tester.ExpectTotalCount(
+      "Net.DeviceBoundSessions.Refresh.Network.Result.FirstAttempt", 0);
 }
 
 class RegistrationTokenHelperTest : public testing::Test {

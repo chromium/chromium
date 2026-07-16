@@ -6,14 +6,19 @@
 
 #include <algorithm>
 #include <memory>
+#include <string_view>
 #include <utility>
 #include <vector>
 
 #include "base/check_deref.h"
+#include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/functional/concurrent_closures.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/rand_util.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/time/time.h"
 #include "base/types/expected_macros.h"
 #include "components/unexportable_keys/background_task_priority.h"
 #include "components/unexportable_keys/service_error.h"
@@ -43,13 +48,31 @@ namespace {
 constexpr char kSessionIdHeaderName[] = "Sec-Secure-Session-Id";
 constexpr char kJwtSessionHeaderName[] = "Secure-Session-Response";
 
-void RecordHttpResponseOrErrorCode(const char* metric_name,
+void RecordHttpResponseOrErrorCode(std::string_view metric_name,
                                    int net_error,
                                    int http_response_code) {
   // No need to special-case `net::ERR_HTTP_RESPONSE_CODE_FAILURE` to return
   // the HTTP response code, because `UrlRequest` does not use that net error.
   base::UmaHistogramSparse(
       metric_name, net_error == net::OK ? http_response_code : net_error);
+}
+
+void RecordNetworkResultMetrics(bool is_for_refresh,
+                                size_t attempts_made,
+                                int net_error,
+                                int http_response_code) {
+  std::string_view histogram_name =
+      is_for_refresh ? "Net.DeviceBoundSessions.Refresh.Network.Result"
+                     : "Net.DeviceBoundSessions.Registration.Network.Result";
+  RecordHttpResponseOrErrorCode(histogram_name, net_error, http_response_code);
+  if (is_for_refresh) {
+    std::string_view attempt_histogram =
+        (attempts_made == 1)
+            ? "Net.DeviceBoundSessions.Refresh.Network.Result.FirstAttempt"
+            : "Net.DeviceBoundSessions.Refresh.Network.Result.SecondAttempt";
+    RecordHttpResponseOrErrorCode(attempt_histogram, net_error,
+                                  http_response_code);
+  }
 }
 
 void OnDataSigned(
@@ -275,13 +298,7 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
       }
     }
 
-    url_fetcher_ = std::make_unique<URLFetcher>(
-        context_, fetcher_endpoint_, net_log_source_, IsForRefreshRequest());
-    ConfigureRequest(url_fetcher_->request());
-    // `this` owns `url_fetcher_`, so it's safe to use
-    // `base::Unretained`
-    url_fetcher_->Start(base::BindOnce(
-        &RegistrationFetcherImpl::OnRequestComplete, base::Unretained(this)));
+    StartFetcherEndpointRequest();
   }
 
   base::WeakPtr<RegistrationFetcherImpl> GetWeakPtr() {
@@ -390,6 +407,20 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
   }
 
  private:
+  void StartFetcherEndpointRequest() {
+    url_fetcher_ = std::make_unique<URLFetcher>(
+        context_, fetcher_endpoint_, net_log_source_, IsForRefreshRequest());
+    ConfigureRequest(url_fetcher_->request());
+    if (last_registration_token_.has_value()) {
+      url_fetcher_->request().SetExtraRequestHeaderByName(
+          kJwtSessionHeaderName, last_registration_token_.value(),
+          /*overwrite=*/true);
+    }
+    // `this` owns `url_fetcher_`, so it's safe to use `base::Unretained`
+    url_fetcher_->Start(base::BindOnce(
+        &RegistrationFetcherImpl::OnRequestComplete, base::Unretained(this)));
+  }
+
   void OnProviderWellKnownRequestComplete(
       std::optional<std::string> challenge,
       std::optional<std::string> authorization) {
@@ -567,13 +598,7 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
       // `this` may be deleted.
       return;
     }
-
-    url_fetcher_ = std::make_unique<URLFetcher>(
-        context_, fetcher_endpoint_, net_log_source_, IsForRefreshRequest());
-    ConfigureRequest(url_fetcher_->request());
-    url_fetcher_->request().SetExtraRequestHeaderByName(
-        kJwtSessionHeaderName, registration_token.value(),
-        /*overwrite*/ true);
+    last_registration_token_ = std::move(registration_token).value();
 
     // Cache the signed refresh challenge in case the same challenge is
     // attempted next time (e.g. if refresh transiently fails).
@@ -581,7 +606,7 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
       SessionKey session_key{SchemefulSite(fetcher_endpoint_),
                              Session::Id(*session_identifier_)};
       SessionService::SignedRefreshChallenge signed_refresh_challenge = {
-          .signed_challenge = std::move(registration_token.value()),
+          .signed_challenge = last_registration_token_.value(),
           .challenge = std::move(*challenge),
           .key_id = key_id,
       };
@@ -589,10 +614,7 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
           std::move(session_key), std::move(signed_refresh_challenge));
     }
 
-    // `this` owns `url_fetcher_`, so it's safe to use
-    // `base::Unretained`
-    url_fetcher_->Start(base::BindOnce(
-        &RegistrationFetcherImpl::OnRequestComplete, base::Unretained(this)));
+    StartFetcherEndpointRequest();
   }
 
   void ConfigureRequest(URLRequest& request) {
@@ -631,18 +653,33 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
   }
 
   void OnRequestComplete() {
+    attempts_made_++;
     HttpResponseHeaders* headers = url_fetcher_->request().response_headers();
     const int response_code = headers ? headers->response_code() : 0;
-    const char* histogram_name =
-        IsForRefreshRequest()
-            ? "Net.DeviceBoundSessions.Refresh.Network.Result"
-            : "Net.DeviceBoundSessions.Registration.Network.Result";
-    RecordHttpResponseOrErrorCode(histogram_name, url_fetcher_->net_error(),
-                                  response_code);
+    RecordNetworkResultMetrics(IsForRefreshRequest(), attempts_made_,
+                               url_fetcher_->net_error(), response_code);
 
-    if (url_fetcher_->net_error() != OK) {
-      RunCallback(
-          CreateErrorRegistrationResult(SessionError(SessionError::kNetError)));
+    // Proxy errors are treated the same way as network errors.
+    if (url_fetcher_->net_error() != OK || response_code == 407) {
+      if (ShouldRetryOnTransientError()) {
+        // 100ms with 40% jitter. Choosing a relatively small base value
+        // because the fetcher might be blocking the user.
+        constexpr base::TimeDelta kMinDelay = base::Milliseconds(60);
+        constexpr base::TimeDelta kMaxDelay = base::Milliseconds(140);
+        base::TimeDelta delay = base::RandTimeDelta(kMinDelay, kMaxDelay);
+        base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+            FROM_HERE,
+            base::BindOnce(
+                &RegistrationFetcherImpl::StartFetcherEndpointRequest,
+                weak_ptr_factory_.GetWeakPtr()),
+            delay);
+        return;
+      }
+
+      SessionError::ErrorType error_type = (url_fetcher_->net_error() != OK)
+                                               ? SessionError::kNetError
+                                               : SessionError::kProxyError;
+      RunCallback(CreateErrorRegistrationResult(SessionError(error_type)));
       // `this` may be deleted.
       return;
     }
@@ -656,12 +693,6 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
     if (response_code < 200) {
       RunCallback(CreateErrorRegistrationResult(
           SessionError(SessionError::kPersistentHttpError)));
-      // `this` may be deleted.
-      return;
-    } else if (response_code == 407) {
-      // Proxy errors are treated as network errors
-      RunCallback(CreateErrorRegistrationResult(
-          SessionError(SessionError::kProxyError)));
       // `this` may be deleted.
       return;
     } else if (300 <= response_code && response_code < 500) {
@@ -877,7 +908,14 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
 
   // Returns true if we're fetching for a refresh request. False means this is
   // for a registration request.
-  bool IsForRefreshRequest() { return session_identifier_.has_value(); }
+  bool IsForRefreshRequest() const { return session_identifier_.has_value(); }
+
+  // Returns true if the fetcher should retry on transient network error.
+  bool ShouldRetryOnTransientError() const {
+    return IsForRefreshRequest() && attempts_made_ == 1 &&
+           base::FeatureList::IsEnabled(
+               features::kDeviceBoundSessionsRetryTransientRefreshErrors);
+  }
 
   //// This section of fields is state passed into the constructor. ////
   // Refers to the endpoint this class will use when triggering a registration
@@ -906,6 +944,9 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
   std::optional<std::string> current_challenge_;
   std::optional<std::string> current_authorization_;
   size_t number_of_challenges_ = 0;
+
+  size_t attempts_made_ = 0;
+  std::optional<RegistrationToken> last_registration_token_;
 
   base::WeakPtrFactory<RegistrationFetcherImpl> weak_ptr_factory_{this};
 };

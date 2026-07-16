@@ -488,6 +488,10 @@ NET_EXPORT BASE_DECLARE_FEATURE(kDeviceBoundSessions);
 // requests.
 NET_EXPORT BASE_DECLARE_FEATURE(
     kDeviceBoundSessionsBypassDeferralsForRefreshRequests);
+// This feature controls whether DBSC retry mechanism is enabled for transient
+// refresh errors (network and proxy errors).
+NET_EXPORT BASE_DECLARE_FEATURE(
+    kDeviceBoundSessionsRetryTransientRefreshErrors);
 // This feature enables the Device Bound Session Credentials signing quota.
 // This behavior is expected by default; disabling it should only be for
 // testing purposes.
