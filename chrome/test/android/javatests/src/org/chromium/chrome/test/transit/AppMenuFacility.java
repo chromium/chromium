@@ -98,6 +98,7 @@ public abstract class AppMenuFacility<HostStationT extends Station<?>>
     public static final @IdRes int DELETE_BROWSING_DATA_ID = R.id.quick_delete_menu_id;
     public static final @IdRes int DOWNLOADS_ID = R.id.downloads_menu_id;
     public static final @IdRes int BOOKMARKS_ID = R.id.all_bookmarks_menu_id;
+    public static final @IdRes int BOOKMARK_THIS_PAGE_ID = R.id.bookmark_this_page_menu_id;
     public static final @IdRes int RECENT_TABS_ID = R.id.recent_tabs_menu_id;
     public static final @IdRes int SHARE_ID = R.id.share_menu_id;
     public static final @IdRes int FIND_IN_PAGE_ID = R.id.find_in_page_id;
@@ -108,6 +109,11 @@ public abstract class AppMenuFacility<HostStationT extends Station<?>>
     public static final @IdRes int DESKTOP_SITE_ID = R.id.request_desktop_site_id;
     public static final @IdRes int SETTINGS_ID = R.id.preferences_id;
     public static final @IdRes int HELP_AND_FEEDBACK_ID = R.id.help_id;
+    public static final @IdRes int BOOKMARKS_PARENT_ID = R.id.bookmarks_parent_menu_id;
+    public static final @IdRes int HISTORY_PARENT_ID = R.id.history_parent_menu_id;
+    public static final @IdRes int TAB_GROUPS_PARENT_ID = R.id.tab_groups_parent_menu_id;
+    public static final @IdRes int SAVE_AND_SHARE_PARENT_ID = R.id.save_and_share_parent_menu_id;
+    public static final @IdRes int HELP_PARENT_ID = R.id.help_parent_menu_id;
 
     /** Default behavior for "Open new tab". */
     protected RegularNewTabPageStation createNewTabPageStation() {

@@ -60,6 +60,7 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
+import org.chromium.chrome.browser.tabbed_mode.TabbedAppMenuPropertiesDelegate;
 import org.chromium.chrome.browser.ui.extensions.ExtensionTestMessageListener;
 import org.chromium.chrome.browser.ui.extensions.ExtensionTestUtils;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -690,6 +691,9 @@ public class ExtensionsToolbarTest {
 
         // Open the extensions menu via the app menu.
         ViewUtils.onViewWaiting(withId(R.id.menu_button_wrapper)).perform(click());
+        if (TabbedAppMenuPropertiesDelegate.isSubmenusEnabled(mActivityTestRule.getActivity())) {
+            ViewUtils.onViewWaiting(withId(R.id.extensions_parent_menu_id)).perform(click());
+        }
         ViewUtils.onViewWaiting(withId(R.id.extensions_menu_menu_id)).perform(click());
 
         // Pin the menu icon using the toggle.

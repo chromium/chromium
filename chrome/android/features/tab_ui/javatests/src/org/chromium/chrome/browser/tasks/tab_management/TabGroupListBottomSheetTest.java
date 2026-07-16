@@ -153,6 +153,11 @@ public class TabGroupListBottomSheetTest {
         DeviceRestriction.RESTRICTION_TYPE_NON_FOLDABLE
     })
     @EnableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
+    @DisableFeatures({
+        // "Add to tab group" menu item doesn't exist if the submenu is enabled in the app menu.
+        ChromeFeatureList.SUBMENUS_IN_APP_MENU,
+        ChromeFeatureList.SUBMENUS_IN_APP_MENU_LFF
+    })
     public void testNewGroup_IncognitoNewTabPageStation_Tablet() {
         WebPageStation firstPage = mCtaTestRule.startOnBlankPage();
         Pair<WebPageStation, WebPageStation> pageStations =
@@ -221,6 +226,11 @@ public class TabGroupListBottomSheetTest {
         DeviceRestriction.RESTRICTION_TYPE_NON_FOLDABLE
     })
     @EnableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
+    @DisableFeatures({
+        // "Add to tab group" menu item doesn't exist if the submenu is enabled in the app menu.
+        ChromeFeatureList.SUBMENUS_IN_APP_MENU,
+        ChromeFeatureList.SUBMENUS_IN_APP_MENU_LFF
+    })
     public void testNewGroup_IncognitoWebPageStation_Tablet() {
         WebPageStation firstPage = mCtaTestRule.startOnBlankPage();
         Pair<WebPageStation, WebPageStation> pageStations =
