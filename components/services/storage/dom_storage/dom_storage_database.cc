@@ -19,6 +19,7 @@
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
+#include "base/timer/elapsed_timer.h"
 #include "base/trace_event/memory_allocator_dump.h"
 #include "base/trace_event/process_memory_dump.h"
 #include "base/types/expected_macros.h"
@@ -454,6 +455,10 @@ void DomStorageDatabaseFactory::DestroyDatabase(
   const DatabaseMetricsType destroyed_db_metrics_type =
       GetMetricsType(GetSqliteRolloutStage(/*in_memory=*/false), leveldb_state);
 
+  const std::string_view prefix = storage_type == StorageType::kLocalStorage
+                                      ? "Storage.LocalStorage"
+                                      : "Storage.SessionStorage";
+  const base::ElapsedTimer destroy_timer;
   DbStatus destroy_status;
   if (is_sqlite) {
     destroy_status = sqlite::DestroyDatabase(database_path_to_destroy);
@@ -461,6 +466,10 @@ void DomStorageDatabaseFactory::DestroyDatabase(
     destroy_status =
         DomStorageDatabaseLevelDB::Destroy(database_path_to_destroy);
   }
+  base::UmaHistogramTimes(
+      base::StrCat({prefix, ".Duration.DestroyDatabase",
+                    GetHistogramSuffix(destroyed_db_metrics_type)}),
+      destroy_timer.Elapsed());
 
   // TODO(crbug.com/377242771): When possible treat a failed destroy as terminal
   // and run the open callback with the failure status instead of opening.

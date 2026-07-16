@@ -3007,6 +3007,10 @@ chromium-metrics-reviews@google.com.
     <variant name="DeleteStorageKeysFromSession"
         summary="deleting metadata and optionally map data for specific
                  storage keys in a session"/>
+    <variant name="DestroyDatabase"
+        summary="destroying the on-disk database before opening a new one,
+                 during recovery or a clear-on-open backing mode for
+                 SessionStorage"/>
     <variant name="OpenDatabase2"
         summary="opening the database via DomStorageDatabase::Open"/>
     <variant name="PurgeOrigins"

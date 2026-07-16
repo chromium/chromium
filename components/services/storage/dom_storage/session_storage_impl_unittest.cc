@@ -984,6 +984,9 @@ TEST_P(SessionStorageImplTest, CorruptionOnDisk) {
   // Verify DestroyDatabase histogram recorded success during recovery.
   histograms.ExpectUniqueSample("Storage.SessionStorage.DestroyDatabase.OnDisk",
                                 /*sample=*/0, 1);
+  // The destroy duration is recorded for the same call.
+  histograms.ExpectTotalCount(
+      "Storage.SessionStorage.Duration.DestroyDatabase.OnDisk", 1);
 }
 
 TEST_P(SessionStorageImplTest, RecreateOnCommitFailure) {
@@ -2051,9 +2054,12 @@ TEST_P(SessionStorageImplTest, ClearDiskState) {
   data = test::GetAllSync(area.get());
   EXPECT_EQ(0ul, data.size());
 
-  // BackingMode::kClearDiskStateOnOpen should record its Destroy result.
+  // BackingMode::kClearDiskStateOnOpen should record its Destroy result and
+  // its duration.
   histograms.ExpectUniqueSample("Storage.SessionStorage.DestroyDatabase.OnDisk",
                                 /*sample=*/0, 1);
+  histograms.ExpectTotalCount(
+      "Storage.SessionStorage.Duration.DestroyDatabase.OnDisk", 1);
 }
 
 TEST_P(SessionStorageImplTest, ClearDiskStateOnOpenWithEmptyPathUsesInMemory) {

@@ -1448,6 +1448,9 @@ TEST_P(LocalStorageImplTest, CorruptionOnDisk) {
   // Sample 0 = DbStatus::Type::kOk.
   histograms.ExpectUniqueSample("Storage.LocalStorage.DestroyDatabase.OnDisk",
                                 /*sample=*/0, 1);
+  // The destroy duration is recorded for the same call.
+  histograms.ExpectTotalCount(
+      "Storage.LocalStorage.Duration.DestroyDatabase.OnDisk", 1);
 }
 
 TEST_P(LocalStorageImplTest, RecreateOnCommitFailure) {
