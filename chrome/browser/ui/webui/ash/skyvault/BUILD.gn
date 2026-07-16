@@ -34,6 +34,7 @@ static_library("skyvault") {
     "//chrome/browser/ash/policy/skyvault",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/resources/chromeos/skyvault:resources",
+    "//chrome/browser/ui/webui:theme_source",
     "//chrome/common",
     "//chrome/common:chrome_features",
     "//content/public/browser",

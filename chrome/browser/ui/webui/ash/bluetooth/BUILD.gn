@@ -20,6 +20,7 @@ static_library("bluetooth") {
     "//chrome/app:generated_resources",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/resources/chromeos/bluetooth_pairing_dialog:resources",
+    "//chrome/browser/ui/webui:theme_source",
     "//chrome/browser/ui/webui/ash/system_web_dialog",
     "//chromeos/ash/components/network",
     "//chromeos/strings",

@@ -10,6 +10,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/ash/app_install/app_install_dialog.h"
 #include "chrome/browser/ui/webui/sanitized_image/sanitized_image_source.h"
+#include "chrome/browser/ui/webui/theme_source.h"
 #include "chrome/grit/app_install_resources.h"
 #include "chrome/grit/app_install_resources_map.h"
 #include "chrome/grit/generated_resources.h"
@@ -64,6 +65,7 @@ AppInstallDialogUI::AppInstallDialogUI(content::WebUI* web_ui)
   Profile* profile = Profile::FromWebUI(web_ui);
   content::URLDataSource::Add(profile,
                               std::make_unique<SanitizedImageSource>(profile));
+  content::URLDataSource::Add(profile, std::make_unique<ThemeSource>(profile));
 
   ash::EnableTrustedTypesCSP(source);
 }

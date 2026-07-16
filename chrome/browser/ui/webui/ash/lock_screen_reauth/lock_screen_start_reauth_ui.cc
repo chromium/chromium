@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/webui/ash/lock_screen_reauth/lock_screen_reauth_handler.h"
 #include "chrome/browser/ui/webui/ash/login/oobe_ui.h"
 #include "chrome/browser/ui/webui/metrics_handler.h"
+#include "chrome/browser/ui/webui/theme_source.h"
 #include "chrome/grit/gaia_action_buttons_resources.h"
 #include "chrome/grit/gaia_action_buttons_resources_map.h"
 #include "chrome/grit/gaia_auth_host_resources_map.h"
@@ -25,6 +26,7 @@
 #include "chrome/grit/lock_screen_reauth_resources_map.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
 #include "components/prefs/pref_service.h"
+#include "content/public/browser/url_data_source.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/devicetype_utils.h"
@@ -40,6 +42,7 @@ bool LockScreenStartReauthUIConfig::IsWebUIEnabled(
 LockScreenStartReauthUI::LockScreenStartReauthUI(content::WebUI* web_ui)
     : ui::WebDialogUI(web_ui) {
   Profile* profile = Profile::FromWebUI(web_ui);
+  content::URLDataSource::Add(profile, std::make_unique<ThemeSource>(profile));
   const user_manager::User* user =
       user_manager::UserManager::Get()->GetPrimaryUser();
   std::string email;

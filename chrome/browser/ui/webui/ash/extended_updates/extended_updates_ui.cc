@@ -13,10 +13,12 @@
 #include "chrome/browser/ui/webui/ash/extended_updates/extended_updates.mojom.h"
 #include "chrome/browser/ui/webui/ash/extended_updates/extended_updates_page_handler.h"
 #include "chrome/browser/ui/webui/ash/login/oobe_ui.h"
+#include "chrome/browser/ui/webui/theme_source.h"
 #include "chrome/grit/extended_updates_resources.h"
 #include "chrome/grit/extended_updates_resources_map.h"
 #include "chrome/grit/generated_resources.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/url_data_source.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -33,8 +35,10 @@ namespace ash::extended_updates {
 
 ExtendedUpdatesUI::ExtendedUpdatesUI(content::WebUI* web_ui)
     : ui::MojoWebDialogUI(web_ui) {
+  Profile* profile = Profile::FromWebUI(web_ui);
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
-      Profile::FromWebUI(web_ui), ash::kChromeUIExtendedUpdatesDialogHost);
+      profile, ash::kChromeUIExtendedUpdatesDialogHost);
+  content::URLDataSource::Add(profile, std::make_unique<ThemeSource>(profile));
 
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
       {"dialogHeading", IDS_EXTENDED_UPDATES_DIALOG_DIALOG_HEADING},

@@ -18,15 +18,19 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/plural_string_handler.h"
+#include "chrome/browser/ui/webui/theme_source.h"
 #include "components/drive/drive_pref_names.h"
 #include "components/drive/file_errors.h"
 #include "components/prefs/pref_service.h"
+#include "content/public/browser/url_data_source.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_message_handler.h"
 
 ChromeFileManagerUIDelegate::ChromeFileManagerUIDelegate(content::WebUI* web_ui)
     : web_ui_(web_ui) {
   DCHECK(web_ui_);
+  Profile* profile = Profile::FromWebUI(web_ui_);
+  content::URLDataSource::Add(profile, std::make_unique<ThemeSource>(profile));
 }
 
 ChromeFileManagerUIDelegate::~ChromeFileManagerUIDelegate() = default;

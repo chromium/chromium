@@ -10,6 +10,7 @@
 #include "base/json/json_writer.h"
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/webui/theme_source.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/internet_config_dialog_resources.h"
 #include "chrome/grit/internet_config_dialog_resources_map.h"
@@ -20,6 +21,7 @@
 #include "chromeos/services/network_config/public/cpp/cros_network_config_util.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"  // nogncheck
 #include "components/strings/grit/components_strings.h"
+#include "content/public/browser/url_data_source.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/chromeos/strings/grit/ui_chromeos_strings.h"
@@ -187,8 +189,10 @@ std::string InternetConfigDialog::GetDialogArgs() const {
 
 InternetConfigDialogUI::InternetConfigDialogUI(content::WebUI* web_ui)
     : ui::MojoWebDialogUI(web_ui) {
+  Profile* profile = Profile::FromWebUI(web_ui);
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
-      Profile::FromWebUI(web_ui), ash::kChromeUIInternetConfigDialogHost);
+      profile, ash::kChromeUIInternetConfigDialogHost);
+  content::URLDataSource::Add(profile, std::make_unique<ThemeSource>(profile));
 
   AddInternetStrings(source);
   source->AddLocalizedString("title", IDS_SETTINGS_INTERNET_CONFIG);

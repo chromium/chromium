@@ -8,8 +8,10 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/ash/login/oobe_ui.h"
+#include "chrome/browser/ui/webui/theme_source.h"
 #include "chrome/grit/remote_maintenance_curtain_resources.h"
 #include "chrome/grit/remote_maintenance_curtain_resources_map.h"
+#include "content/public/browser/url_data_source.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/webui/mojo_web_ui_controller.h"
 #include "ui/webui/webui_util.h"
@@ -18,8 +20,10 @@ namespace ash {
 
 RemoteMaintenanceCurtainUI::RemoteMaintenanceCurtainUI(content::WebUI* web_ui)
     : ui::MojoWebUIController(web_ui) {
+  Profile* profile = Profile::FromWebUI(web_ui);
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
-      Profile::FromWebUI(web_ui), ash::kChromeUIRemoteManagementCurtainHost);
+      profile, ash::kChromeUIRemoteManagementCurtainHost);
+  content::URLDataSource::Add(profile, std::make_unique<ThemeSource>(profile));
 
   webui::SetupWebUIDataSource(source, kRemoteMaintenanceCurtainResources,
                               IDR_REMOTE_MAINTENANCE_CURTAIN_MAIN_HTML);

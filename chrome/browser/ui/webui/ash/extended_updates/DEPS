@@ -19,3 +19,9 @@ include_rules = [
   "+chrome/grit",
 ]
 
+specific_include_rules = {
+  "extended_updates_ui\\.cc": [
+    "+chrome/browser/ui/webui/theme_source.h",
+  ],
+}
+

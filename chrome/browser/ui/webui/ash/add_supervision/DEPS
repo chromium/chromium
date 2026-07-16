@@ -24,3 +24,9 @@ include_rules = [
   "+chrome/grit",
   "+chrome/test",
 ]
+
+specific_include_rules = {
+  "add_supervision_ui\\.cc": [
+    "+chrome/browser/ui/webui/theme_source.h",
+  ],
+}

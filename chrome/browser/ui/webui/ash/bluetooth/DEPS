@@ -14,3 +14,9 @@ include_rules = [
   "+chrome/browser/ui/webui/ash/system_web_dialog",
   "+chrome/grit",
 ]
+
+specific_include_rules = {
+  "bluetooth_pairing_dialog\\.cc": [
+    "+chrome/browser/ui/webui/theme_source.h",
+  ],
+}

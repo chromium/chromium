@@ -16,12 +16,14 @@
 #include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/ash/bluetooth/bluetooth_shared_load_time_data_provider.h"
+#include "chrome/browser/ui/webui/theme_source.h"
 #include "chrome/grit/bluetooth_pairing_dialog_resources.h"
 #include "chrome/grit/bluetooth_pairing_dialog_resources_map.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/network/network_event_log.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/strings/grit/components_strings.h"
+#include "content/public/browser/url_data_source.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "device/bluetooth/bluetooth_device.h"
@@ -134,8 +136,10 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(BluetoothPairingDialog,
 
 BluetoothPairingDialogUI::BluetoothPairingDialogUI(content::WebUI* web_ui)
     : ui::MojoWebDialogUI(web_ui) {
+  Profile* profile = Profile::FromWebUI(web_ui);
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
-      Profile::FromWebUI(web_ui), ash::kChromeUIBluetoothPairingHost);
+      profile, ash::kChromeUIBluetoothPairingHost);
+  content::URLDataSource::Add(profile, std::make_unique<ThemeSource>(profile));
 
   AddBluetoothStrings(source);
   source->AddLocalizedString("title", IDS_BLUETOOTH_PAIRING_PAIR_NEW_DEVICES);

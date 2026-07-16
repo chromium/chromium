@@ -57,6 +57,7 @@ static_library("parent_access") {
     "//chrome/browser/resources/chromeos/parent_access:resources",
     "//chrome/browser/resources/chromeos/supervision:resources",
     "//chrome/browser/signin",
+    "//chrome/browser/ui/webui:theme_source",
     "//components/google/core/common",
     "//components/signin/public/base",
     "//components/supervised_user/core/browser",

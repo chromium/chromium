@@ -17,11 +17,13 @@
 #include "chrome/browser/ui/webui/ash/parent_access/parent_access_dialog.h"
 #include "chrome/browser/ui/webui/ash/parent_access/parent_access_ui.mojom.h"
 #include "chrome/browser/ui/webui/ash/parent_access/parent_access_ui_handler_impl.h"
+#include "chrome/browser/ui/webui/theme_source.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/parent_access_resources.h"
 #include "chrome/grit/parent_access_resources_map.h"
 #include "chrome/grit/supervision_resources.h"
 #include "chrome/grit/supervision_resources_map.h"
+#include "content/public/browser/url_data_source.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -66,8 +68,10 @@ ParentAccessUI::GetHandlerForTest() {
 }
 
 void ParentAccessUI::SetUpResources() {
+  Profile* profile = Profile::FromWebUI(web_ui());
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
-      Profile::FromWebUI(web_ui()), ash::kChromeUIParentAccessHost);
+      profile, ash::kChromeUIParentAccessHost);
+  content::URLDataSource::Add(profile, std::make_unique<ThemeSource>(profile));
   ash::EnableTrustedTypesCSP(source);
 
   source->EnableReplaceI18nInJS();

@@ -24,6 +24,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/ash/set_time/set_time_dialog.h"
+#include "chrome/browser/ui/webui/theme_source.h"
 #include "chrome/grit/set_time_dialog_resources.h"
 #include "chrome/grit/set_time_dialog_resources_map.h"
 #include "chromeos/ash/components/dbus/system_clock/system_clock_client.h"
@@ -31,6 +32,7 @@
 #include "chromeos/ash/components/settings/timezone_settings.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/user_manager/user_manager.h"
+#include "content/public/browser/url_data_source.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -168,8 +170,10 @@ SetTimeUI::SetTimeUI(content::WebUI* web_ui) : MojoWebDialogUI(web_ui) {
   web_ui->AddMessageHandler(std::make_unique<SetTimeMessageHandler>());
 
   // Set up the chrome://set-time source.
+  Profile* profile = Profile::FromWebUI(web_ui);
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
-      Profile::FromWebUI(web_ui), ash::kChromeUISetTimeHost);
+      profile, ash::kChromeUISetTimeHost);
+  content::URLDataSource::Add(profile, std::make_unique<ThemeSource>(profile));
   webui::SetupWebUIDataSource(source, kSetTimeDialogResources,
                               IDR_SET_TIME_DIALOG_SET_TIME_HTML);
   static constexpr webui::LocalizedString kStrings[] = {

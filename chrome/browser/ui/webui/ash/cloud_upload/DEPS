@@ -45,4 +45,8 @@ specific_include_rules = {
   "drive_upload_handler_browsertest\\.cc": [
     "+chrome/browser/browser_process.h",
   ],
+
+  "cloud_upload_ui\\.cc": [
+    "+chrome/browser/ui/webui/theme_source.h",
+  ],
 }

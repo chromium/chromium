@@ -16,10 +16,12 @@
 #include "chrome/browser/profiles/reporting_util.h"
 #include "chrome/browser/ui/webui/ash/enterprise_reporting/enterprise_reporting.mojom.h"
 #include "chrome/browser/ui/webui/ash/enterprise_reporting/enterprise_reporting_page_handler.h"
+#include "chrome/browser/ui/webui/theme_source.h"
 #include "chrome/grit/enterprise_reporting_resources.h"
 #include "chrome/grit/enterprise_reporting_resources_map.h"
 #include "components/version_info/version_info.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/url_data_source.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -54,10 +56,11 @@ EnterpriseReportingUI::EnterpriseReportingUI(content::WebUI* web_ui)
     : ui::MojoWebUIController(web_ui) {
   DCHECK(base::FeatureList::IsEnabled(ash::features::kEnterpriseReportingUI));
   // Set up the chrome://enterprise-reporting source.
+  Profile* profile = Profile::FromWebUI(web_ui);
   content::WebUIDataSource* html_source =
       content::WebUIDataSource::CreateAndAdd(
-          web_ui->GetWebContents()->GetBrowserContext(),
-          ash::kChromeUIEnterpriseReportingHost);
+          profile, ash::kChromeUIEnterpriseReportingHost);
+  content::URLDataSource::Add(profile, std::make_unique<ThemeSource>(profile));
 
   // Populate device info.
   html_source->AddString("deviceInfo",

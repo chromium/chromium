@@ -16,3 +16,9 @@ include_rules = [
   "+chrome/browser/profiles",
   "+chrome/grit",
 ]
+
+specific_include_rules = {
+  "enterprise_reporting_ui\\.cc": [
+    "+chrome/browser/ui/webui/theme_source.h",
+  ],
+}

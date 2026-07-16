@@ -21,11 +21,13 @@
 #include "chrome/browser/ui/webui/ash/multidevice_setup/multidevice_setup_handler.h"
 #include "chrome/browser/ui/webui/ash/multidevice_setup/multidevice_setup_localized_strings_provider.h"
 #include "chrome/browser/ui/webui/metrics_handler.h"
+#include "chrome/browser/ui/webui/theme_source.h"
 #include "chrome/grit/multidevice_setup_resources.h"
 #include "chrome/grit/multidevice_setup_resources_map.h"
 #include "chromeos/ash/services/multidevice_setup/multidevice_setup_service.h"
 #include "chromeos/ash/services/multidevice_setup/public/cpp/url_provider.h"
 #include "components/strings/grit/components_strings.h"
+#include "content/public/browser/url_data_source.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/aura/window.h"
@@ -113,8 +115,10 @@ void MultiDeviceSetupDialog::AdjustWidgetInitParams(
 
 MultiDeviceSetupDialogUI::MultiDeviceSetupDialogUI(content::WebUI* web_ui)
     : ui::MojoWebDialogUI(web_ui) {
+  Profile* profile = Profile::FromWebUI(web_ui);
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
-      Profile::FromWebUI(web_ui), ash::kChromeUIMultiDeviceSetupHost);
+      profile, ash::kChromeUIMultiDeviceSetupHost);
+  content::URLDataSource::Add(profile, std::make_unique<ThemeSource>(profile));
 
   AddLocalizedStrings(source);
   source->UseStringsJs();

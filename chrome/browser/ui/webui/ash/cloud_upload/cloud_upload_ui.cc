@@ -11,11 +11,13 @@
 #include "chrome/browser/chromeos/upload_office_to_cloud/upload_office_to_cloud.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_dialog.h"
+#include "chrome/browser/ui/webui/theme_source.h"
 #include "chrome/grit/cloud_upload_resources.h"
 #include "chrome/grit/cloud_upload_resources_map.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/strings/grit/components_strings.h"
+#include "content/public/browser/url_data_source.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -31,8 +33,10 @@ bool CloudUploadUIConfig::IsWebUIEnabled(
 
 CloudUploadUI::CloudUploadUI(content::WebUI* web_ui)
     : ui::MojoWebDialogUI{web_ui} {
+  Profile* profile = Profile::FromWebUI(web_ui);
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
-      Profile::FromWebUI(web_ui), ash::kChromeUICloudUploadHost);
+      profile, ash::kChromeUICloudUploadHost);
+  content::URLDataSource::Add(profile, std::make_unique<ThemeSource>(profile));
 
   static constexpr webui::LocalizedString kStrings[] = {
       // Dialog buttons.

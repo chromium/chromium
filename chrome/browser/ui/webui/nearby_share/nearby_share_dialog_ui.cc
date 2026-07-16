@@ -23,6 +23,7 @@
 #include "chrome/browser/ui/webui/nearby_share/shared_resources.h"
 #include "chrome/browser/ui/webui/plural_string_handler.h"
 #include "chrome/browser/ui/webui/sanitized_image/sanitized_image_source.h"
+#include "chrome/browser/ui/webui/theme_source.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/nearby_share_dialog_resources.h"
@@ -78,6 +79,7 @@ NearbyShareDialogUI::NearbyShareDialogUI(content::WebUI* web_ui)
 
   content::URLDataSource::Add(profile,
                               std::make_unique<SanitizedImageSource>(profile));
+  content::URLDataSource::Add(profile, std::make_unique<ThemeSource>(profile));
 
   webui::SetupWebUIDataSource(html_source, kNearbyShareDialogResources,
                               IDR_NEARBY_SHARE_DIALOG_NEARBY_SHARE_DIALOG_HTML);

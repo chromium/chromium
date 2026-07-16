@@ -20,3 +20,9 @@ include_rules = [
   "+chrome/browser/ui/webui/metrics_handler.h",
   "+chrome/grit",
 ]
+
+specific_include_rules = {
+  "multidevice_setup_dialog\\.cc": [
+    "+chrome/browser/ui/webui/theme_source.h",
+  ],
+}

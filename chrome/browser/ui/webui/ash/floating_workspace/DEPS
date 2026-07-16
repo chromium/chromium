@@ -13,3 +13,10 @@ include_rules = [
   "+chrome/grit",
   "+chrome/test/base",
 ]
+
+specific_include_rules = {
+  "floating_workspace_ui\\.cc": [
+    "+chrome/browser/profiles/profile.h",
+    "+chrome/browser/ui/webui/theme_source.h",
+  ],
+}

@@ -139,4 +139,7 @@ specific_include_rules = {
   ".*test.*\\.cc": [
     "+chrome/browser/ui/browser.h",
   ],
+  "chrome_file_manager_ui_delegate\\.cc": [
+    "+chrome/browser/ui/webui/theme_source.h",
+  ],
 }

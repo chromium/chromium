@@ -13,6 +13,7 @@
 #include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/ash/cellular_setup/cellular_setup_localized_strings_provider.h"
+#include "chrome/browser/ui/webui/theme_source.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/internet_detail_dialog_resources.h"
 #include "chrome/grit/internet_detail_dialog_resources_map.h"
@@ -24,6 +25,7 @@
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "components/strings/grit/components_strings.h"
+#include "content/public/browser/url_data_source.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "content/public/browser/web_ui_message_handler.h"
@@ -167,8 +169,10 @@ InternetDetailDialogUI::InternetDetailDialogUI(content::WebUI* web_ui)
     : ui::MojoWebDialogUI(web_ui) {
   web_ui->AddMessageHandler(std::make_unique<PortalNetworkMessageHandler>());
 
+  Profile* profile = Profile::FromWebUI(web_ui);
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
-      Profile::FromWebUI(web_ui), ash::kChromeUIInternetDetailDialogHost);
+      profile, ash::kChromeUIInternetDetailDialogHost);
+  content::URLDataSource::Add(profile, std::make_unique<ThemeSource>(profile));
   source->AddBoolean("showTechnologyBadge",
                      !features::IsSeparateNetworkIconsEnabled());
   source->AddBoolean("apnRevamp", features::IsApnRevampEnabled());

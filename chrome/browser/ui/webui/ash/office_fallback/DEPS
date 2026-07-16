@@ -20,3 +20,9 @@ include_rules = [
   "+chrome/grit",
   "+chrome/test/base",
 ]
+
+specific_include_rules = {
+  "office_fallback_ui\\.cc": [
+    "+chrome/browser/ui/webui/theme_source.h",
+  ],
+}

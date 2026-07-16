@@ -25,6 +25,7 @@ static_library("set_time") {
     "//chrome/browser/profiles:profile",
     "//chrome/browser/resources/chromeos/set_time_dialog:resources",
     "//chrome/browser/resources/chromeos/set_time_dialog:resources_grit",
+    "//chrome/browser/ui/webui:theme_source",
     "//chrome/browser/ui/webui/ash/system_web_dialog",
     "//chromeos/ash/components/dbus/system_clock",
     "//chromeos/ash/components/login/login_state",

@@ -15,10 +15,12 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/ash/skyvault/local_files_migration_dialog.h"
 #include "chrome/browser/ui/webui/ash/skyvault/local_files_migration_page_handler.h"
+#include "chrome/browser/ui/webui/theme_source.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/skyvault_resources.h"
 #include "chrome/grit/skyvault_resources_map.h"
 #include "components/strings/grit/components_strings.h"
+#include "content/public/browser/url_data_source.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/web_dialogs/web_dialog_ui.h"
 #include "ui/webui/webui_util.h"
@@ -33,8 +35,10 @@ bool LocalFilesMigrationUIConfig::IsWebUIEnabled(
 
 LocalFilesMigrationUI::LocalFilesMigrationUI(content::WebUI* web_ui)
     : ui::MojoWebDialogUI(web_ui) {
+  Profile* profile = Profile::FromWebUI(web_ui);
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
-      Profile::FromWebUI(web_ui), ash::kChromeUILocalFilesMigrationHost);
+      profile, ash::kChromeUILocalFilesMigrationHost);
+  content::URLDataSource::Add(profile, std::make_unique<ThemeSource>(profile));
   static constexpr webui::LocalizedString kStrings[] = {
       // Upload case:
       // Cloud providers

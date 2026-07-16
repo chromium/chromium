@@ -67,6 +67,7 @@ static_library("lock_screen_reauth") {
     "//chrome/browser/signin",
     "//chrome/browser/ui:chrome_web_modal_dialog_manager_delegate",
     "//chrome/browser/ui/ash/login",
+    "//chrome/browser/ui/webui:theme_source",
     "//chrome/browser/ui/webui/ash/internet",
     "//chrome/browser/ui/webui/ash/login",
     "//chrome/installer/util:with_no_strings",

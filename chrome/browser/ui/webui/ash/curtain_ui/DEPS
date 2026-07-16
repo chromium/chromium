@@ -14,3 +14,9 @@ include_rules = [
   "+chrome/browser/ui/webui/ash/login",
   "+chrome/grit",
 ]
+
+specific_include_rules = {
+  "remote_maintenance_curtain_ui\\.cc": [
+    "+chrome/browser/ui/webui/theme_source.h",
+  ],
+}

@@ -88,4 +88,7 @@ specific_include_rules = {
   'tts_handler\\.(cc|h)': [
     '+content/public/browser/tts_controller.h',
   ],
+  'os_settings_ui\\.cc': [
+    '+chrome/browser/ui/webui/theme_source.h',
+  ],
 }

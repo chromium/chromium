@@ -12,6 +12,7 @@
 #include "base/functional/bind.h"
 #include "base/system/sys_info.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/views/chrome_web_dialog_view.h"
@@ -19,12 +20,14 @@
 #include "chrome/browser/ui/webui/ash/add_supervision/add_supervision_handler_utils.h"
 #include "chrome/browser/ui/webui/ash/add_supervision/add_supervision_metrics_recorder.h"
 #include "chrome/browser/ui/webui/ash/add_supervision/confirm_signout_dialog.h"
+#include "chrome/browser/ui/webui/theme_source.h"
 #include "chrome/grit/add_supervision_resources.h"
 #include "chrome/grit/add_supervision_resources_map.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/supervision_resources.h"
 #include "chrome/grit/supervision_resources_map.h"
 #include "components/google/core/common/google_util.h"
+#include "content/public/browser/url_data_source.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -198,8 +201,10 @@ void AddSupervisionUI::BindInterface(
 }
 
 void AddSupervisionUI::SetUpResources() {
+  Profile* profile = Profile::FromWebUI(web_ui());
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
-      Profile::FromWebUI(web_ui()), ash::kChromeUIAddSupervisionHost);
+      profile, ash::kChromeUIAddSupervisionHost);
+  content::URLDataSource::Add(profile, std::make_unique<ThemeSource>(profile));
   webui::EnableTrustedTypesCSP(source);
 
   // Initialize supervision URL from the command-line arguments (if provided).

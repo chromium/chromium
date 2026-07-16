@@ -55,6 +55,7 @@
 #include "chrome/browser/ui/webui/ash/settings/services/settings_manager/os_settings_manager_factory.h"
 #include "chrome/browser/ui/webui/managed_ui_handler.h"
 #include "chrome/browser/ui/webui/sanitized_image/sanitized_image_source.h"
+#include "chrome/browser/ui/webui/theme_source.h"
 #include "chrome/grit/os_settings_resources.h"
 #include "chrome/grit/os_settings_resources_map.h"
 #include "chromeos/ash/services/auth_factor_config/in_process_instances.h"
@@ -66,6 +67,7 @@
 #include "chromeos/components/in_session_auth/mojom/in_session_auth.mojom.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
+#include "content/public/browser/url_data_source.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -171,6 +173,7 @@ OSSettingsUI::OSSettingsUI(content::WebUI* web_ui)
   content::WebUIDataSource* html_source =
       content::WebUIDataSource::CreateAndAdd(profile,
                                              ash::kChromeUIOSSettingsHost);
+  content::URLDataSource::Add(profile, std::make_unique<ThemeSource>(profile));
   html_source->SetRequestFilter(
       base::BindRepeating([](const std::string& path) {
         return ExtractJapaneseDictionaryExportIdParam(path).has_value();

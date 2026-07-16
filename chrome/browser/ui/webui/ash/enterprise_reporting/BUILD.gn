@@ -42,6 +42,7 @@ static_library("enterprise_reporting") {
     "//chrome/browser/profiles:profile",
     "//chrome/browser/profiles:profile_util",
     "//chrome/browser/resources/chromeos/enterprise_reporting:resources",
+    "//chrome/browser/ui/webui:theme_source",
     "//components/reporting/util:status",
     "//components/version_info",
     "//content/public/browser",

@@ -15,3 +15,9 @@ include_rules = [
   "+chrome/browser/ui/webui/ash/system_web_dialog",
   "+chrome/grit",
 ]
+
+specific_include_rules = {
+  "(internet_config_dialog|internet_detail_dialog)\\.cc": [
+    "+chrome/browser/ui/webui/theme_source.h",
+  ],
+}

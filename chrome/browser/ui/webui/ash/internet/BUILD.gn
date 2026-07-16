@@ -20,6 +20,7 @@ static_library("internet") {
     "//chrome/browser/profiles:profile",
     "//chrome/browser/resources/chromeos/internet_config_dialog:resources",
     "//chrome/browser/resources/chromeos/internet_detail_dialog:resources",
+    "//chrome/browser/ui/webui:theme_source",
     "//chrome/browser/ui/webui/ash/cellular_setup",
     "//chrome/browser/ui/webui/ash/system_web_dialog",
     "//chromeos/ash/components/network",

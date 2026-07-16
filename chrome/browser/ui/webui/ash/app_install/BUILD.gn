@@ -54,6 +54,7 @@ static_library("app_install") {
     "//chrome/browser/apps/app_service",
     "//chrome/browser/apps/app_service/app_icon",
     "//chrome/browser/resources/chromeos/app_install:resources",
+    "//chrome/browser/ui/webui:theme_source",
 
     # This target includes //chrome/browser/ui:ui's headers, but :ui depends
     # back on this target (it compiles the desktop interface-binders file that

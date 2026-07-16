@@ -30,3 +30,9 @@ include_rules = [
   "+chrome/grit",
   "+chrome/installer/util",
 ]
+
+specific_include_rules = {
+  "lock_screen_start_reauth_ui\\.cc": [
+    "+chrome/browser/ui/webui/theme_source.h",
+  ],
+}

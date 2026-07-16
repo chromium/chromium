@@ -19,3 +19,9 @@ include_rules = [
   "+chrome/grit",
   "+chrome/test/base",
 ]
+
+specific_include_rules = {
+  "local_files_migration_ui\\.cc": [
+    "+chrome/browser/ui/webui/theme_source.h",
+  ],
+}
