@@ -47,12 +47,14 @@ import * as TextUtils from 'devtools/models/text_utils/text_utils.js';
     for (var resourceType of testResourceTypes) {
       var request = createNetworkRequest(mimeType, content, statusCode, resourceType);
       var previewView = new Network.RequestPreviewView.RequestPreviewView(request);
-      previewView.wasShown();
+      previewView.markAsRoot();
+      previewView.show(document.body);
       const contentView = await previewView.contentViewPromise;
       await UIModule.Widget.Widget.allUpdatesComplete;
       TestRunner.addResult(
           'ResourceType(' + resourceType.name() +
           '): ' + getViewName(contentView));
+      previewView.detach();
     }
     TestRunner.addResult('');
   }
