@@ -568,6 +568,8 @@ const AttributeTriggers* HTMLElement::TriggersForAttributeName(
        event_type_names::kGotpointercapture, nullptr},
       {html_names::kOninputAttr, kNoWebFeature, event_type_names::kInput,
        nullptr},
+      {html_names::kOninstallresultAttr, kNoWebFeature,
+       event_type_names::kInstallresult, nullptr},
       {html_names::kOninvalidAttr, kNoWebFeature, event_type_names::kInvalid,
        nullptr},
       {html_names::kOnkeydownAttr, kNoWebFeature, event_type_names::kKeydown,

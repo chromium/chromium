@@ -7,11 +7,12 @@
     <install id="install-app" installurl="" manifestid=""></install>
   </div>
   <script>
-    document.getElementById('parent').addEventListener('promptaction', (event) => {
-      console.log(event.target.id + '-promptaction');
-    });
-    document.getElementById('parent').addEventListener('promptdismiss', (event) => {
-      console.log(event.target.id + '-promptdismiss');
+    // The installresult event has a 'result' property with values:
+    // - "success"
+    // - "aborted"
+    // - "invalid_data"
+    document.getElementById('parent').addEventListener('installresult', (event) => {
+      console.log(event.target.id + '-installresult-' + event.result);
     });
   </script>
 </body>

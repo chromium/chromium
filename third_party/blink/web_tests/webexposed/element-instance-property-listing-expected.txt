@@ -902,6 +902,7 @@ html element install
     property isValid
     property manifest
     property manifestId
+    property oninstallresult
     property onpromptaction
     property onpromptdismiss
     property onvalidationstatuschange

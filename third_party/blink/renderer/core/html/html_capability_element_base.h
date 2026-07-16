@@ -156,10 +156,6 @@ class CORE_EXPORT HTMLCapabilityElementBase
     return pending_request_created_.has_value();
   }
 
-  // Called on activation of an <install> element with attributes that fail
-  // installability checks.
-  void HandleInstallDataError();
-
  private:
   // TODO(crbug.com/1315595): remove this friend class once migration
   // to blink_unittests_v2 completes.
@@ -288,11 +284,6 @@ class CORE_EXPORT HTMLCapabilityElementBase
 
     // The element's attribute changed.
     kAttributeChanged,
-
-    // The <install> element's install attempt failed due to data error.
-    // TODO(crbug.com/481519343): Move DataError out of invalidReason. Revisit
-    // how to best surface this for <install>.
-    kInstallDataError,
   };
 
   // Define the different states of visibility depending on IntersectionObserver

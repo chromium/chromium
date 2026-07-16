@@ -4736,6 +4736,7 @@ interface HTMLInstallElement : HTMLElement
     getter isValid
     getter manifest
     getter manifestId
+    getter oninstallresult
     getter onpromptaction
     getter onpromptdismiss
     getter onvalidationstatuschange
@@ -4744,6 +4745,7 @@ interface HTMLInstallElement : HTMLElement
     setter installURL
     setter manifest
     setter manifestId
+    setter oninstallresult
     setter onpromptaction
     setter onpromptdismiss
     setter onvalidationstatuschange
@@ -5946,6 +5948,10 @@ interface InputEvent : UIEvent
     getter isComposing
     method constructor
     method getTargetRanges
+interface InstallResultEvent : Event
+    attribute @@toStringTag
+    getter result
+    method constructor
 interface IntegrityViolationReportBody : ReportBody
     attribute @@toStringTag
     getter blockedURL

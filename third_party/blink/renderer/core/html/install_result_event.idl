@@ -1,0 +1,23 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+enum InstallResult { "success", "aborted", "invalid_data" };
+
+// `installresult` is dispatched by the user agent at an <install> element to
+// report the outcome of an install triggered by that element. The outcome is
+// exposed on the event (`result`) rather than the element because it is a
+// transient, per-activation signal, not persistent state.
+//
+// When the user agent dispatches this event it sets `bubbles = true` (see
+// `HTMLInstallElement::DispatchInstallResultEvent`) so a page with several
+// <install> elements can listen with one delegated handler on a common
+// ancestor. Events constructed from script keep the standard `bubbles = false`
+// default.
+[
+    RuntimeEnabled=InstallElement,
+    Exposed=Window
+] interface InstallResultEvent : Event {
+    constructor(DOMString type, optional InstallResultEventInit eventInitDict = {});
+    readonly attribute InstallResult result;
+};

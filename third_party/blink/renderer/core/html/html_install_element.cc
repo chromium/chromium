@@ -4,15 +4,20 @@
 
 #include "third_party/blink/renderer/core/html/html_install_element.h"
 
+#include "base/notreached.h"
 #include "third_party/blink/public/mojom/web_install/web_install.mojom-blink.h"
 #include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
+#include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/public/strings/grit/permission_element_strings.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_install_result.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_install_result_event_init.h"
 #include "third_party/blink/renderer/core/dom/attribute.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/html_capability_element_base.h"
 #include "third_party/blink/renderer/core/html/html_permission_icon_element.h"
+#include "third_party/blink/renderer/core/html/install_result_event.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/mojo/mojo_binding_context.h"
@@ -22,6 +27,38 @@
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
+
+namespace {
+
+// TODO(crbug.com/534847491): Narrow kAbortError to user cancellation; the set
+// of result cases handled here may change.
+HTMLInstallElement::InstallResult ToInstallResult(
+    mojom::blink::WebInstallServiceResult result) {
+  switch (result) {
+    case mojom::blink::WebInstallServiceResult::kAbortError:
+      return HTMLInstallElement::InstallResult::kAbortError;
+    case mojom::blink::WebInstallServiceResult::kDataError:
+      return HTMLInstallElement::InstallResult::kDataError;
+    case mojom::blink::WebInstallServiceResult::kSuccess:
+      return HTMLInstallElement::InstallResult::kSuccess;
+  }
+  NOTREACHED();
+}
+
+V8InstallResult::Enum ToV8InstallResult(
+    HTMLInstallElement::InstallResult result) {
+  switch (result) {
+    case HTMLInstallElement::InstallResult::kAbortError:
+      return V8InstallResult::Enum::kAborted;
+    case HTMLInstallElement::InstallResult::kDataError:
+      return V8InstallResult::Enum::kInvalidData;
+    case HTMLInstallElement::InstallResult::kSuccess:
+      return V8InstallResult::Enum::kSuccess;
+  }
+  NOTREACHED();
+}
+
+}  // namespace
 
 HTMLInstallElement::HTMLInstallElement(Document& document)
     : HTMLCapabilityElementBase(document, html_names::kInstallTag),
@@ -179,11 +216,7 @@ void HTMLInstallElement::OnActivated() {
   if (!InstallUrl().empty()) {
     mojom::blink::InstallOptionsPtr options = GetCheckedInstallOptions();
     if (!options) {
-      // TODO(crbug.com/481519343): Revisit how to best surface this for
-      // <install> as a long-term solution
-      HandleInstallDataError();
-      DispatchEvent(
-          *Event::CreateCancelableBubble(event_type_names::kPromptdismiss));
+      DispatchInstallResultEvent(InstallResult::kDataError);
       return;
     }
 
@@ -200,11 +233,7 @@ void HTMLInstallElement::OnActivated() {
     mojom::blink::ManifestInstallOptionsPtr options =
         GetCheckedManifestInstallOptions();
     if (!options) {
-      // TODO(crbug.com/481519343): Revisit how to best surface this for
-      // <install> as a long-term solution
-      HandleInstallDataError();
-      DispatchEvent(
-          *Event::CreateCancelableBubble(event_type_names::kPromptdismiss));
+      DispatchInstallResultEvent(InstallResult::kDataError);
       return;
     }
 
@@ -217,9 +246,7 @@ void HTMLInstallElement::OnActivated() {
 
   // If we get here, only the manifest ID was set, which is considered an error
   // case.
-  HandleInstallDataError();
-  DispatchEvent(
-      *Event::CreateCancelableBubble(event_type_names::kPromptdismiss));
+  DispatchInstallResultEvent(InstallResult::kDataError);
 }
 
 // TODO(crbug.com/520025525): Remove install url code.
@@ -252,26 +279,17 @@ mojom::blink::InstallOptionsPtr HTMLInstallElement::GetCheckedInstallOptions() {
 void HTMLInstallElement::OnInstallResult(
     mojom::blink::WebInstallServiceResult result,
     const KURL& manifest_id) {
-  switch (result) {
-    case mojom::blink::WebInstallServiceResult::kAbortError:
-      DispatchEvent(
-          *Event::CreateCancelableBubble(event_type_names::kPromptdismiss));
-      break;
-    case mojom::blink::WebInstallServiceResult::kDataError:
-      // TODO(crbug.com/481519343): Revisit how to best surface this for
-      // <install> as a long-term solution (a separate error attribute linked to
-      // the install result, etc.).
-      // Disable the element to prevent future activations and inform the
-      // developer.
-      HandleInstallDataError();
-      DispatchEvent(
-          *Event::CreateCancelableBubble(event_type_names::kPromptdismiss));
-      break;
-    case mojom::blink::WebInstallServiceResult::kSuccess:
-      DispatchEvent(
-          *Event::CreateCancelableBubble(event_type_names::kPromptaction));
-      break;
-  }
+  DispatchInstallResultEvent(ToInstallResult(result));
+}
+
+void HTMLInstallElement::DispatchInstallResultEvent(
+    const InstallResult result) {
+  auto* event_init = InstallResultEventInit::Create();
+  event_init->setResult(V8InstallResult(ToV8InstallResult(result)));
+  event_init->setBubbles(true);
+  EnqueueEvent(
+      *InstallResultEvent::Create(event_type_names::kInstallresult, event_init),
+      TaskType::kUserInteraction);
 }
 
 mojom::blink::ManifestInstallOptionsPtr
@@ -297,26 +315,7 @@ HTMLInstallElement::GetCheckedManifestInstallOptions() {
 
 void HTMLInstallElement::OnManifestInstallResult(
     mojom::blink::WebInstallServiceResult result) {
-  switch (result) {
-    case mojom::blink::WebInstallServiceResult::kAbortError:
-      DispatchEvent(
-          *Event::CreateCancelableBubble(event_type_names::kPromptdismiss));
-      break;
-    case mojom::blink::WebInstallServiceResult::kDataError:
-      // TODO(crbug.com/481519343): Revisit how to best surface this for
-      // <install> as a long-term solution (a separate error attribute linked to
-      // the install result, etc.).
-      // Disable the element to prevent future activations and inform the
-      // developer.
-      HandleInstallDataError();
-      DispatchEvent(
-          *Event::CreateCancelableBubble(event_type_names::kPromptdismiss));
-      break;
-    case mojom::blink::WebInstallServiceResult::kSuccess:
-      DispatchEvent(
-          *Event::CreateCancelableBubble(event_type_names::kPromptaction));
-      break;
-  }
+  DispatchInstallResultEvent(ToInstallResult(result));
 }
 
 }  // namespace blink

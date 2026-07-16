@@ -25,7 +25,7 @@ enum class UserInteractionDeniedReason {
   kIntersectionVisibilityOutOfViewPortOrClipped = 7,
   kIntersectionVisibilityOccludedOrDistorted = 8,
   kAttributeChanged = 9,
-  kInstallDataError = 10,
+  kInstallDataError = 10,  // Deprecated, no longer emitted.
   kMaxValue = kInstallDataError,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/blink/enums.xml:PermissionElementUserInteractionDeniedReason)

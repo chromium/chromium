@@ -469,6 +469,8 @@ blink_core_sources_html = [
   "html_wbr_element.h",
   "image_document.cc",
   "image_document.h",
+  "install_result_event.cc",
+  "install_result_event.h",
   "json_document.h",
   "json_document.cc",
   "lazy_load_frame_observer.cc",

@@ -29,6 +29,14 @@ class CORE_EXPORT HTMLInstallElement : public HTMLCapabilityElementBase {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
+  // Result of an install triggered by this element, surfaced to script via the
+  // `installresult` event's `result` attribute.
+  enum class InstallResult {
+    kSuccess,     // The app was installed.
+    kAbortError,  // The user or user agent cancelled the install.
+    kDataError,   // The supplied install data (URL/manifest/id) was invalid.
+  };
+
   explicit HTMLInstallElement(Document&);
 
   ElementType GetElementType() const final {
@@ -41,6 +49,9 @@ class CORE_EXPORT HTMLInstallElement : public HTMLCapabilityElementBase {
   const String& InstallUrl() const;
   const String& ManifestId() const;
   const String& Manifest() const;
+
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(installresult, kInstallresult)
+
   void Trace(Visitor*) const override;
 
   bool show_as_launch() const { return show_as_launch_; }
@@ -69,6 +80,10 @@ class CORE_EXPORT HTMLInstallElement : public HTMLCapabilityElementBase {
   void OnInstallResult(mojom::blink::WebInstallServiceResult,
                        const KURL& manifest_id);
   void OnManifestInstallResult(mojom::blink::WebInstallServiceResult);
+
+  // Enqueues a bubbling `installresult` event carrying `result` for
+  // asynchronous dispatch.
+  void DispatchInstallResultEvent(InstallResult result);
 
   HeapMojoRemote<mojom::blink::WebInstallService> service_;
   // Controls whether the element should render as a launch button.

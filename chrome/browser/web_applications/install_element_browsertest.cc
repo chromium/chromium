@@ -124,12 +124,16 @@ class InstallElementBrowserTestBase : public WebAppBrowserTestBase {
     return content::ExecJs(contents ? contents : web_contents(), script);
   }
 
-  void WaitForPromptActionEvent(const std::string& id) {
-    ExpectConsoleMessage(id + "-promptaction");
+  void WaitForSuccessEvent(const std::string& id) {
+    ExpectConsoleMessage(id + "-installresult-success");
   }
 
-  void WaitForDismissEvent(const std::string& id) {
-    ExpectConsoleMessage(id + "-promptdismiss");
+  void WaitForAbortedEvent(const std::string& id) {
+    ExpectConsoleMessage(id + "-installresult-aborted");
+  }
+
+  void WaitForInvalidDataEvent(const std::string& id) {
+    ExpectConsoleMessage(id + "-installresult-invalid_data");
   }
 
   // The web app test pages log quite a few additional console messages during
@@ -223,8 +227,8 @@ IN_PROC_BROWSER_TEST_P(InstallElementBrowserTest, Install) {
   ASSERT_TRUE(ClickElementWithId(kInstallElementId));
   Browser* web_app_browser = browser_created_observer.Wait();
 
-  // Verify promptaction event was fired.
-  WaitForPromptActionEvent(kInstallElementId);
+  // Verify installresult event was fired with "success".
+  WaitForSuccessEvent(kInstallElementId);
 
   // Verify the app launched.
   ASSERT_TRUE(AppBrowserController::IsWebApp(web_app_browser));
@@ -284,8 +288,8 @@ IN_PROC_BROWSER_TEST_P(InstallElementBrowserTest, InstallWithUrl) {
   ASSERT_TRUE(ClickElementWithId(kInstallElementId));
   Browser* web_app_browser = browser_created_observer.Wait();
 
-  // Verify promptaction event was fired.
-  WaitForPromptActionEvent(kInstallElementId);
+  // Verify installresult event was fired with "success".
+  WaitForSuccessEvent(kInstallElementId);
 
   // Verify the app launched.
   ASSERT_TRUE(AppBrowserController::IsWebApp(web_app_browser));
@@ -363,8 +367,8 @@ IN_PROC_BROWSER_TEST_P(InstallElementBrowserTest, InstallWithUrlAndId) {
   ASSERT_TRUE(ClickElementWithId(kInstallElementId));
   Browser* web_app_browser = browser_created_observer.Wait();
 
-  // Verify promptaction event was fired.
-  WaitForPromptActionEvent(kInstallElementId);
+  // Verify installresult event was fired with "success".
+  WaitForSuccessEvent(kInstallElementId);
 
   // Verify the app launched.
   ASSERT_TRUE(AppBrowserController::IsWebApp(web_app_browser));
@@ -432,8 +436,8 @@ IN_PROC_BROWSER_TEST_P(InstallElementBrowserTest, InstallWithUrl_UserDenies) {
   // Click the install element.
   ASSERT_TRUE(ClickElementWithId(kInstallElementId));
 
-  // Verify promptdismiss event was fired.
-  WaitForDismissEvent(kInstallElementId);
+  // Verify installresult event was fired with "aborted".
+  WaitForAbortedEvent(kInstallElementId);
 
   // Verify the app is not installed.
   webapps::AppId app_id = GenerateAppIdFromManifestId(webapps::ManifestId(
@@ -491,8 +495,8 @@ IN_PROC_BROWSER_TEST_P(InstallElementBrowserTest, Install_DenyPermission) {
   ASSERT_TRUE(ClickElementWithId(kInstallElementId));
   Browser* web_app_browser = browser_created_observer.Wait();
 
-  // Verify promptaction event was fired.
-  WaitForPromptActionEvent(kInstallElementId);
+  // Verify installresult event was fired with "success".
+  WaitForSuccessEvent(kInstallElementId);
 
   // Verify the app launched.
   ASSERT_TRUE(AppBrowserController::IsWebApp(web_app_browser));
@@ -547,8 +551,8 @@ IN_PROC_BROWSER_TEST_P(InstallElementBrowserTest,
   ASSERT_TRUE(ClickElementWithId(kInstallElementId));
   Browser* web_app_browser = browser_created_observer.Wait();
 
-  // Verify promptaction event was fired.
-  WaitForPromptActionEvent(kInstallElementId);
+  // Verify installresult event was fired with "success".
+  WaitForSuccessEvent(kInstallElementId);
 
   // Verify the app launched.
   ASSERT_TRUE(AppBrowserController::IsWebApp(web_app_browser));
@@ -634,8 +638,8 @@ IN_PROC_BROWSER_TEST_P(InstallElementBrowserTest,
   ASSERT_TRUE(ClickElementWithId(kInstallElementId));
   browser_created_observer.Wait();
 
-  // Verify promptaction event was fired.
-  WaitForPromptActionEvent(kInstallElementId);
+  // Verify installresult event was fired with "success".
+  WaitForSuccessEvent(kInstallElementId);
   test::CompletePageLoadForAllWebContents();
 
   // Verify the app is still installed.
@@ -709,9 +713,8 @@ IN_PROC_BROWSER_TEST_P(InstallElementBrowserTest,
 
   AcceptInstallDialog(widget);
 
-  // Step 6: Verify promptaction event was fired.
-  WaitForPromptActionEvent(kInstallElementId);
-
+  // Step 6: Verify installresult event was fired and the app installed.
+  WaitForSuccessEvent(kInstallElementId);
   EXPECT_TRUE(provider().registrar_unsafe().AppMatches(
       app_id, WebAppFilter::LaunchableFromInstallApi()));
 }
@@ -735,10 +738,8 @@ IN_PROC_BROWSER_TEST_P(InstallElementBrowserTest, InvalidInstallUrl) {
 
   // No installation should have occurred due to the invalid URL.
   // We cannot generate a valid app_id from an invalid URL, so we just verify
-  // that the dismiss event was fired as expected.
-  // TODO(crbug.com/462493894): Decide how to surface kDataError. For now,
-  // promptdismiss is used for all error cases.
-  WaitForDismissEvent(kInstallElementId);
+  // that the installresult event was fired with "invalid_data".
+  WaitForInvalidDataEvent(kInstallElementId);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -789,7 +790,7 @@ IN_PROC_BROWSER_TEST_P(InstallElementAndApiInteractionBrowserTest,
     ui_test_utils::BrowserCreatedObserver browser_created_observer;
     ASSERT_TRUE(ClickElementWithId(kInstallElementId));
     Browser* web_app_browser = browser_created_observer.Wait();
-    WaitForPromptActionEvent(kInstallElementId);
+    WaitForSuccessEvent(kInstallElementId);
     ASSERT_TRUE(AppBrowserController::IsWebApp(web_app_browser));
   }
 

@@ -8,6 +8,8 @@
 interface HTMLInstallElement : HTMLElement {
   [HTMLConstructor] constructor();
 
+  attribute EventHandler oninstallresult;
+
   // TODO(crbug.com/520025525): Remove install_url code. Also rename
   // `manifestId` to `id` to match navigator_web_install.idl.
   [CEReactions, Reflect, URL] attribute USVString? installURL;
@@ -15,4 +17,8 @@ interface HTMLInstallElement : HTMLElement {
   [CEReactions, Reflect, URL] attribute USVString? manifest;
 };
 
+// TODO(crbug.com/533049447): <install> reports outcomes via installresult, so
+// the onpromptaction/onpromptdismiss handlers from InPagePermissionMixin are
+// never fired here. Split the mixin so these dead handlers aren't exposed on
+// <install>.
 HTMLInstallElement includes InPagePermissionMixin;
