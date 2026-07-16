@@ -24,6 +24,7 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
@@ -37,6 +38,7 @@ import java.util.concurrent.ExecutionException;
 /** Instrumentation tests for {@link AutofillSnackbar} */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+@DoNotBatch(reason = "AI automated batching attempt was unsuccessful.")
 public class AutofillSnackbarControllerTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
