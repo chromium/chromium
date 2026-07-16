@@ -6,7 +6,9 @@
 
 #include "base/callback_list.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/scoped_multi_source_observation.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
@@ -35,70 +37,116 @@
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_utils.h"
 
-class TabStripView::ActivatedViewTracker : public views::ViewObserver {
+class TabStripView::TargetViewsTracker : public views::ViewObserver {
  public:
-  ActivatedViewTracker() = default;
-  ActivatedViewTracker(const ActivatedViewTracker&) = delete;
-  ActivatedViewTracker& operator=(const ActivatedViewTracker&) = delete;
-  ~ActivatedViewTracker() override = default;
+  TargetViewsTracker() = default;
+  TargetViewsTracker(const TargetViewsTracker&) = delete;
+  TargetViewsTracker& operator=(const TargetViewsTracker&) = delete;
+  ~TargetViewsTracker() override = default;
 
   // ViewObserver:
   void OnViewIsDeleting(views::View* observed_view) override {
-    SetView(nullptr);
+    RemoveView(observed_view);
   }
   void OnViewRemovedFromWidget(views::View* observed_view) override {
-    SetView(nullptr);
+    RemoveView(observed_view);
   }
   void OnViewBoundsChanged(views::View* observed_view) override {
-    CheckTrackedViewHeight();
+    CheckTrackedViewsHeight();
   }
   void OnViewPreferredSizeChanged(views::View* observed_view) override {
-    CheckTrackedViewHeight();
+    CheckTrackedViewsHeight();
   }
 
-  void SetView(views::View* view) {
-    if (view == view_) {
+  void SetViews(views::View* primary_view,
+                const std::vector<views::View*>& secondary_views = {}) {
+    Clear();
+    if (primary_view) {
+      primary_view_ = primary_view;
+      observations_.AddObservation(primary_view);
+    }
+    for (views::View* view : secondary_views) {
+      if (view && view != primary_view &&
+          !observations_.IsObservingSource(view)) {
+        observations_.AddObservation(view);
+      }
+    }
+  }
+
+  void RemoveView(views::View* view) {
+    if (!view || !observations_.IsObservingSource(view)) {
       return;
     }
-    observation_.Reset();
-    on_reached_preferred_height_cb_.Reset();
-    view_ = view;
-
-    if (view_) {
-      observation_.Observe(view_.get());
+    if (view == primary_view_) {
+      primary_view_ = nullptr;
+    }
+    observations_.RemoveObservation(view);
+    if (!observations_.IsObservingAnySource()) {
+      on_reached_preferred_height_cb_.Reset();
     }
   }
-  views::View* view() { return view_; }
 
-  // Returns true if the tracked view height matches its preferred height.
-  bool IsViewAtPreferredHeight() {
-    return view_->size().height() == view_->GetPreferredSize().height();
+  void RemoveViewsInContainer(const views::View* container) {
+    if (!container) {
+      return;
+    }
+    std::vector<views::View*> views_to_remove;
+    for (views::View* v : observations_.sources()) {
+      if (container->Contains(v)) {
+        views_to_remove.push_back(v);
+      }
+    }
+    for (views::View* v : views_to_remove) {
+      RemoveView(v);
+    }
   }
 
-  // Sets a callback that is run when the tracked view's height reaches its
-  // preferred height.
+  void Clear() {
+    primary_view_ = nullptr;
+    observations_.RemoveAllObservations();
+    on_reached_preferred_height_cb_.Reset();
+  }
+
+  views::View* primary_view() { return primary_view_; }
+  const auto& sources() const { return observations_.sources(); }
+  bool empty() const { return !observations_.IsObservingAnySource(); }
+
+  // Returns true if all tracked views are at their preferred height.
+  bool AreViewsAtPreferredHeight() const {
+    if (!observations_.IsObservingAnySource()) {
+      return true;
+    }
+    for (views::View* view : observations_.sources()) {
+      if (view->height() != view->GetPreferredSize().height()) {
+        return false;
+      }
+    }
+    return true;
+  }
+
   void SetOnReachedPreferredHeightCallback(
       base::OnceClosure on_reached_preferred_height_cb) {
     on_reached_preferred_height_cb_ = std::move(on_reached_preferred_height_cb);
-    CheckTrackedViewHeight();
+    CheckTrackedViewsHeight();
   }
 
  private:
-  void CheckTrackedViewHeight() {
-    CHECK(view_);
-    if (IsViewAtPreferredHeight() && on_reached_preferred_height_cb_) {
+  void CheckTrackedViewsHeight() {
+    if (observations_.IsObservingAnySource() && AreViewsAtPreferredHeight() &&
+        on_reached_preferred_height_cb_) {
       std::move(on_reached_preferred_height_cb_).Run();
     }
   }
 
-  raw_ptr<views::View> view_ = nullptr;
+  raw_ptr<views::View> primary_view_ = nullptr;
   base::OnceClosure on_reached_preferred_height_cb_;
-  base::ScopedObservation<View, ViewObserver> observation_{this};
+  base::ScopedMultiSourceObservation<views::View, views::ViewObserver>
+      observations_{this};
 };
 
 TabStripView::TabStripView(TabCollectionNode* collection_node)
     : collection_node_(collection_node),
-      activated_view_tracker_(std::make_unique<ActivatedViewTracker>()) {
+      target_views_tracker_(std::make_unique<TargetViewsTracker>()) {
   // Paint to a layer and mask to bounds to prevent tabs from overflowing and
   // drawing outside the window boundaries on Linux when the window is small.
   // This is configured here rather than a higher-level container so that drop
@@ -264,7 +312,7 @@ void TabStripView::ScrollToView(views::View* view) {
     return;
   }
 
-  activated_view_tracker_->SetView(view);
+  target_views_tracker_->SetViews(view);
 
   // Views must either be in the pinned or unpinned view trees.
   DCHECK_NE(pinned_tabs_container_view_->Contains(view),
@@ -426,10 +474,16 @@ void TabStripView::EnsureVisibleInViewportPostActivationAndLayout(
 
   // Guard against views being removed from the tree between frames. Dragging a
   // view out of the visible bounds will also trigger a scroll naturally.
-  views::View* const activated_view = activated_view_tracker_->view();
-  if (!activated_view || !Contains(activated_view) ||
+  if (!target_views_tracker_ || target_views_tracker_->empty() ||
       (collection_node_ &&
        collection_node_->GetController()->GetDragHandler().IsDragging())) {
+    EnableOverflowVisuals(scroll_view);
+    return;
+  }
+
+  views::View* const activated_view = target_views_tracker_->primary_view();
+  if (!activated_view || !Contains(activated_view) ||
+      !scroll_view->contents()->Contains(activated_view)) {
     EnableOverflowVisuals(scroll_view);
     return;
   }
@@ -442,12 +496,11 @@ void TabStripView::EnsureVisibleInViewportPostActivationAndLayout(
     // (i.e. it was activated as it is being animated in). In such a case
     // disable overflow visuals to prevent jank that can occur if content view
     // bounds are changed in quick succession.
-    if (!activated_view_tracker_->IsViewAtPreferredHeight()) {
+    if (!target_views_tracker_->AreViewsAtPreferredHeight()) {
       DisableOverflowVisuals(scroll_view);
-      activated_view_tracker_->SetOnReachedPreferredHeightCallback(
-          base::BindOnce(
-              &TabStripView::EnsureVisibleInViewportPostActivationAndLayout,
-              base::Unretained(this), scroll_view));
+      target_views_tracker_->SetOnReachedPreferredHeightCallback(base::BindOnce(
+          &TabStripView::EnsureVisibleInViewportPostActivationAndLayout,
+          base::Unretained(this), scroll_view));
     } else {
       // Always exit with overflow visuals enabled.
       EnableOverflowVisuals(scroll_view);
@@ -520,7 +573,9 @@ void TabStripView::EnableOverflowVisuals(views::ScrollView* scroll_view) {
 
   // Reset the active view as it is no longer needed after post-activation
   // adjustment for viewport visibility is complete.
-  activated_view_tracker_->SetView(nullptr);
+  if (target_views_tracker_) {
+    target_views_tracker_->RemoveViewsInContainer(scroll_view->contents());
+  }
   scroll_view->InvalidateLayout();
 }
 

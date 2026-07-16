@@ -68,7 +68,7 @@ class TabStripView final : public views::View,
   bool IsFocusInTabStrip();
 
  private:
-  class ActivatedViewTracker;
+  class TargetViewsTracker;
 
   views::View* AddScrollViewContents(std::unique_ptr<views::View> view);
   void RemoveScrollViewContents(views::View* view);
@@ -110,7 +110,7 @@ class TabStripView final : public views::View,
 
   // Tracks the most recently activated view as reported by
   // `OnActiveTabChanged()`.
-  std::unique_ptr<ActivatedViewTracker> activated_view_tracker_;
+  std::unique_ptr<TargetViewsTracker> target_views_tracker_;
 
   base::CallbackListSubscription node_destroyed_subscription_;
   base::CallbackListSubscription paint_as_active_subscription_;
