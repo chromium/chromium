@@ -806,13 +806,25 @@ void AtMemoryManager::MaybeAppendPersonalContextNotice(
   if (!owner_->client().ShouldShowPersonalContextAtMemoryNotice()) {
     return;
   }
-  if (!suggestions.empty() &&
-      suggestions.back().type == SuggestionType::kPersonalContextNotice) {
+  if (std::ranges::contains(suggestions, SuggestionType::kPersonalContextNotice,
+                            &Suggestion::type)) {
     return;
   }
-  Suggestion& suggestion =
-      suggestions.emplace_back(SuggestionType::kPersonalContextNotice);
-  suggestion.filtration_policy = Suggestion::FiltrationPolicy::kStatic;
+  // Before search results are returned (when only the search affordance to
+  // start the query is present), place the search affordance first and append
+  // the notice card at the end. After actual search results are returned, place
+  // the notice card first on top of the search results.
+  Suggestion notice(SuggestionType::kPersonalContextNotice);
+  notice.filtration_policy = Suggestion::FiltrationPolicy::kStatic;
+
+  if (suggestions.size() == 1u &&
+      suggestions[0].type == SuggestionType::kAtMemorySearchAffordance) {
+    suggestions.push_back(std::move(notice));
+    return;
+  }
+
+  // This handles both empty vectors and vectors containing search results.
+  suggestions.insert(suggestions.begin(), std::move(notice));
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 }
 
