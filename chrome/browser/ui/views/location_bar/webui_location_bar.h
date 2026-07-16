@@ -33,6 +33,10 @@ class WebUIPermissionDashboard;
 class Profile;
 class WebUIToolbarControlDelegate;
 
+namespace content {
+struct ContextMenuParams;
+}  // namespace content
+
 namespace gfx {
 class Point;
 }  // namespace gfx
@@ -62,11 +66,10 @@ class WebUILocationBar : public LocationBar,
       toolbar_ui_api::mojom::OmniboxActionPtr action);
   void SetFocusWithin(bool focused);
 
-  // `edit_flags` use blink::ContextMenuDataEditFlags.
   void HandleContextMenu(views::Widget* widget,
                          const gfx::Point& point,
                          ui::mojom::MenuSourceType source_type,
-                         int edit_flags);
+                         const content::ContextMenuParams& menu_params);
 
   // LocationBar:
   void FocusLocation(bool is_user_initiated,

@@ -540,7 +540,12 @@ class VIEWS_EXPORT Textfield : public View,
 #endif
 
   // Utility function to prepare the contents of the context menu.
-  void UpdateContextMenuContents(ui::SimpleMenuModel* menu_contents);
+  // `controller` may be null. Returns ownership of platform-specific
+  // text services menu.
+  static std::unique_ptr<views::ViewsTextServicesContextMenu>
+  UpdateContextMenuContents(Textfield* textfield,
+                            TextfieldController* controller,
+                            ui::SimpleMenuModel* menu_contents);
 
  protected:
   TextfieldModel* textfield_model() { return model_.get(); }

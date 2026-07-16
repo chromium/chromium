@@ -7,10 +7,14 @@
 
 #include <memory>
 #include <string>
+#include <utility>
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/ui/ui_features.h"
+#include "ui/base/interaction/element_identifier.h"
+#include "ui/views/controls/textfield/textfield.h"
 
 class LocationBar;
 class OmniboxController;
@@ -18,6 +22,11 @@ class OmniboxController;
 namespace ai_mode_button_config {
 struct AiModeButtonConfig;
 }  // namespace ai_mode_button_config
+
+namespace content {
+struct ContextMenuParams;
+class WebContents;
+}  // namespace content
 
 namespace gfx {
 class FontList;
@@ -31,11 +40,23 @@ namespace ui {
 class SimpleMenuModel;
 }  // namespace ui
 
+namespace views {
+class Widget;
+}  // namespace views
+
 class OmniboxContextMenuMixinBase {
  public:
+  // A few context menu items get IDs for interactive UI test use.
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kCopyMenuItem);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kShowFullUrlsMenuItem);
+
   void SetClipboardTextForTesting(const std::u16string& text) {
     clipboard_text_for_menu_ = text;
   }
+
+  // Should return the widget the text services menu should use.
+  // Need to be overridden if `AddTextfieldItems` is in use.
+  virtual views::Widget* GetWidgetForTextServices();
 
  protected:
   // `location_bar` may be null in tests.
@@ -43,16 +64,37 @@ class OmniboxContextMenuMixinBase {
                               OmniboxController* controller);
   ~OmniboxContextMenuMixinBase();
 
+  // Adds standard views textfield menu items to `menu`, using a hidden
+  // Views textfield to help manage that.
+  void AddTextfieldItems(base::WeakPtr<content::WebContents> web_contents,
+                         const content::ContextMenuParams& menu_params,
+                         ui::SimpleMenuModel* menu_contents);
+
   // Adds Omnibox specific items to `menu_contents`, assuming the basic
-  // editing commands (or at least ui::TouchEditable::MenuCommands::kPaste)
-  // have already been added.
+  // editing commands (or at least ui::TouchEditable::MenuCommands::kPaste and
+  // kUndo) have already been added.
   void AddOmniboxSpecificItems(ui::SimpleMenuModel* menu_contents);
 
+  // These are automatically called by the subclass:
   bool HandleIsCommandIdChecked(int id) const;
   bool HandleIsItemForCommandIdDynamic(int command_id) const;
   std::u16string HandleGetLabelForCommandId(int command_id) const;
   bool HandleIsCommandIdEnabled(int command_id) const;
+
+  // These need to be called when appropriate:
+  // Handles omnibox (and text services) commands. Returns true if it
+  // recognized `command_id` as such.
   bool HandleExecuteCommand(int command_id, int event_flags);
+
+  // Handles basic text commands (undo/copy/paste/etc) by asking WebContents.
+  void HandleExecuteTextEditingCommandOnWebContents(
+      content::WebContents* web_contents,
+      int command_id,
+      int event_flags);
+
+  bool HandleIsContextMenuTextEditingCommandEnabled(
+      int command_id,
+      const content::ContextMenuParams& menu_params) const;
 
   // Asynchronously calls `closure` once preparations to show the context
   // menu (examining the clipboard) have been done.
@@ -89,6 +131,26 @@ class OmniboxContextMenuMixinBase {
       send_tab_to_self_submenu_delegate_;
   std::unique_ptr<ui::SimpleMenuModel> send_tab_to_self_submenu_;
 
+  // A helper `Textfield` instance used solely for generating and handling the
+  // native context menu when the user right-clicks inside the full WebUI
+  // popup's "input row" (i.e. this `Textfield` is NOT painted on-screen).
+  //
+  // Although the "input row" is rendered in WebUI, we intercept right-clicks to
+  // show a native context menu that matches the `OmniboxViewViews` context
+  // menu (`HandleContextMenu()`). Without this helper, populating standard text
+  // editing items (Undo, Cut, Select All, Emoji, Look Up, etc.) across all
+  // platforms would require duplicating substantial native context menu
+  // construction logic.
+  //
+  // Thus, by maintaining this proxy `Textfield` instance, we can call
+  // `UpdateContextMenuContents()` to generate the core native context menu
+  // structure and delegate any auxiliary or platform-specific command
+  // execution/enablement to `context_menu_textfield_helper_` when those
+  // commands are not directly handled by the WebUI itself.
+  std::unique_ptr<views::Textfield> context_menu_textfield_helper_;
+  std::unique_ptr<views::ViewsTextServicesContextMenu>
+      text_services_context_menu_;  // refs `context_menu_textfield_helper_`
+
   // Cached clipboard text for menu paste state.
   // Updated by PrepareToShowContextMenu()
   std::u16string clipboard_text_for_menu_;
@@ -96,7 +158,7 @@ class OmniboxContextMenuMixinBase {
   base::WeakPtrFactory<OmniboxContextMenuMixinBase> weak_ptr_factory_{this};
 };
 
-// Base should be ui::SimpleMenuModel::Delegate or a subclass.
+// Base should inherit off ui::SimpleMenuModel::Delegate.
 template <typename Base>
 class OmniboxContextMenuMixin : public Base,
                                 public OmniboxContextMenuMixinBase {
@@ -120,10 +182,6 @@ class OmniboxContextMenuMixin : public Base,
 
   bool IsCommandIdEnabled(int command_id) const override {
     return HandleIsCommandIdEnabled(command_id);
-  }
-
-  void ExecuteCommand(int command_id, int event_flags) override {
-    HandleExecuteCommand(command_id, event_flags);
   }
 };
 

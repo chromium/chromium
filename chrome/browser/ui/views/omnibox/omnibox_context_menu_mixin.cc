@@ -8,6 +8,7 @@
 
 #include "base/check.h"
 #include "base/feature_list.h"
+#include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/app/vector_icons/vector_icons.h"
@@ -37,6 +38,9 @@
 #include "components/search_engines/search_engines_switches.h"
 #include "components/send_tab_to_self/features.h"
 #include "components/url_formatter/elide_url.h"
+#include "content/public/browser/context_menu_params.h"
+#include "content/public/browser/render_widget_host_view.h"
+#include "third_party/blink/public/common/context_menu_data/edit_flags.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_features.h"
@@ -45,6 +49,7 @@
 #include "ui/menus/simple_menu_model.h"
 #include "ui/touch_selection/touch_editing_controller.h"
 #include "ui/views/controls/textfield/textfield.h"
+#include "ui/views/controls/views_text_services_context_menu.h"
 
 #if BUILDFLAG(IS_MAC)
 #include "ui/base/cocoa/appkit_utils.h"
@@ -57,7 +62,61 @@ bool IsClipboardDataMarkedAsConfidential() {
       ->IsMarkedByOriginatorAsConfidential();
 }
 
+class StandinTextfield : public views::Textfield {
+ public:
+  explicit StandinTextfield(OmniboxContextMenuMixinBase* owner,
+                            base::WeakPtr<content::WebContents> web_contents)
+      : owner_(owner), web_contents_(web_contents) {}
+
+  const views::Widget* GetWidget() const override {
+    return owner_->GetWidgetForTextServices();
+  }
+  views::Widget* GetWidget() override {
+    return owner_->GetWidgetForTextServices();
+  }
+
+#if BUILDFLAG(IS_MAC)
+  bool SupportsLookUp() const override {
+    return !features::IsMenuSimplificationEnabled();
+  }
+#endif
+
+  bool SupportsEmoji() const override {
+    return !features::IsMenuSimplificationEnabled();
+  }
+
+#if BUILDFLAG(IS_MAC)
+  bool SupportsEditableContextMenuItems() const override { return false; }
+#endif
+
+  bool GetWordLookupDataFromSelection(gfx::DecoratedText* decorated_text,
+                                      gfx::Rect* rect) override {
+#if BUILDFLAG(IS_MAC)
+    if (web_contents_) {
+      if (content::RenderWidgetHostView* view =
+              web_contents_->GetRenderWidgetHostView()) {
+        view->ShowDefinitionForSelection();
+      }
+    }
+#endif
+    return false;
+  }
+
+ private:
+  raw_ptr<OmniboxContextMenuMixinBase> owner_;
+  base::WeakPtr<content::WebContents> web_contents_;
+};
+
 }  // namespace
+
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(OmniboxContextMenuMixinBase,
+                                      kCopyMenuItem);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(OmniboxContextMenuMixinBase,
+                                      kShowFullUrlsMenuItem);
+
+views::Widget* OmniboxContextMenuMixinBase::GetWidgetForTextServices() {
+  return nullptr;
+}
 
 OmniboxContextMenuMixinBase::OmniboxContextMenuMixinBase(
     LocationBar* location_bar,
@@ -137,6 +196,11 @@ std::u16string OmniboxContextMenuMixinBase::HandleGetLabelForCommandId(
 
 bool OmniboxContextMenuMixinBase::HandleIsCommandIdEnabled(
     int command_id) const {
+  if (text_services_context_menu_ &&
+      text_services_context_menu_->SupportsCommand(command_id)) {
+    return text_services_context_menu_->IsCommandIdEnabled(command_id);
+  }
+
   if (command_id ==
       std::to_underlying(ui::TouchEditable::MenuCommands::kPaste)) {
     return !IsContextMenuForReadOnlyOmnibox() &&
@@ -197,6 +261,12 @@ bool OmniboxContextMenuMixinBase::HandleIsCommandIdEnabled(
 
 bool OmniboxContextMenuMixinBase::HandleExecuteCommand(int command_id,
                                                        int event_flags) {
+  if (text_services_context_menu_ &&
+      text_services_context_menu_->SupportsCommand(command_id)) {
+    text_services_context_menu_->ExecuteCommand(command_id, event_flags);
+    return true;
+  }
+
   switch (command_id) {
     // These commands DO NOT invoke the popup via
     // OnBefore/AfterPossibleChange().
@@ -236,6 +306,54 @@ bool OmniboxContextMenuMixinBase::HandleExecuteCommand(int command_id,
   }
 }
 
+void OmniboxContextMenuMixinBase::HandleExecuteTextEditingCommandOnWebContents(
+    content::WebContents* web_contents,
+    int command_id,
+    int event_flags) {
+  switch (command_id) {
+    case views::Textfield::kUndo:
+      web_contents->Undo();
+      return;
+    case std::to_underlying(ui::TouchEditable::MenuCommands::kCut):
+      web_contents->Cut();
+      return;
+    case std::to_underlying(ui::TouchEditable::MenuCommands::kCopy):
+      web_contents->Copy();
+      return;
+    case std::to_underlying(ui::TouchEditable::MenuCommands::kPaste):
+      web_contents->Paste();
+      return;
+    case views::Textfield::kDelete:
+      web_contents->Delete();
+      return;
+    case std::to_underlying(ui::TouchEditable::MenuCommands::kSelectAll):
+      web_contents->SelectAll();
+      return;
+  }
+}
+
+bool OmniboxContextMenuMixinBase::HandleIsContextMenuTextEditingCommandEnabled(
+    int command_id,
+    const content::ContextMenuParams& menu_params) const {
+  int edit_flags = menu_params.edit_flags;
+  switch (command_id) {
+    case views::Textfield::kUndo:
+      return edit_flags & blink::ContextMenuDataEditFlags::kCanUndo;
+    case std::to_underlying(ui::TouchEditable::MenuCommands::kCut):
+      return edit_flags & blink::ContextMenuDataEditFlags::kCanCut;
+    case std::to_underlying(ui::TouchEditable::MenuCommands::kCopy):
+      return edit_flags & blink::ContextMenuDataEditFlags::kCanCopy;
+    case std::to_underlying(ui::TouchEditable::MenuCommands::kPaste):
+      return edit_flags & blink::ContextMenuDataEditFlags::kCanPaste;
+    case views::Textfield::kDelete:
+      return edit_flags & blink::ContextMenuDataEditFlags::kCanDelete;
+    case std::to_underlying(ui::TouchEditable::MenuCommands::kSelectAll):
+      return edit_flags & blink::ContextMenuDataEditFlags::kCanSelectAll;
+    default:
+      return false;
+  }
+}
+
 void OmniboxContextMenuMixinBase::PrepareToShowContextMenu(
     base::OnceClosure closure) {
   GetClipboardText(
@@ -248,6 +366,33 @@ void OmniboxContextMenuMixinBase::OnGotClipboardText(base::OnceClosure closure,
                                                      std::u16string text) {
   clipboard_text_for_menu_ = std::move(text);
   std::move(closure).Run();
+}
+
+void OmniboxContextMenuMixinBase::AddTextfieldItems(
+    base::WeakPtr<content::WebContents> web_contents,
+    const content::ContextMenuParams& menu_params,
+    ui::SimpleMenuModel* menu_contents) {
+  text_services_context_menu_.reset();
+  context_menu_textfield_helper_.reset();
+
+  context_menu_textfield_helper_ =
+      std::make_unique<StandinTextfield>(this, web_contents);
+  context_menu_textfield_helper_->SetReadOnly(
+      IsContextMenuForReadOnlyOmnibox());
+  // MacOS has a menu entry that speaks the selection; so set our selection
+  // on the fake entry so it knows what to speak.
+  context_menu_textfield_helper_->SetText(menu_params.selection_text);
+  context_menu_textfield_helper_->SelectAll(/*reversed=*/false);
+  text_services_context_menu_ = views::Textfield::UpdateContextMenuContents(
+      context_menu_textfield_helper_.get(), /*controller=*/nullptr,
+      menu_contents);
+
+  menu_contents->SetElementIdentifierAt(
+      menu_contents
+          ->GetIndexOfCommandId(
+              std::to_underlying(ui::TouchEditable::MenuCommands::kCopy))
+          .value(),
+      kCopyMenuItem);
 }
 
 void OmniboxContextMenuMixinBase::AddOmniboxSpecificItems(
@@ -279,6 +424,9 @@ void OmniboxContextMenuMixinBase::AddOmniboxSpecificItems(
   if (!show_full_urls_pref->IsManaged()) {
     menu_contents->AddCheckItemWithStringId(IDC_SHOW_FULL_URLS,
                                             IDS_CONTEXT_MENU_SHOW_FULL_URLS);
+    menu_contents->SetElementIdentifierAt(
+        menu_contents->GetIndexOfCommandId(IDC_SHOW_FULL_URLS).value(),
+        kShowFullUrlsMenuItem);
   }
 
   // Location bar is also used in non-browser UI in production environment.
@@ -313,6 +461,11 @@ void OmniboxContextMenuMixinBase::AddOmniboxSpecificItems(
 }
 
 bool OmniboxContextMenuMixinBase::HandleIsCommandIdChecked(int id) const {
+  if (text_services_context_menu_ &&
+      text_services_context_menu_->SupportsCommand(id)) {
+    return text_services_context_menu_->IsCommandIdChecked(id);
+  }
+
   if (id == IDC_SHOW_FULL_URLS) {
     return location_bar_->GetProfile()->GetPrefs()->GetBoolean(
         omnibox::kPreventUrlElisionsInOmnibox);

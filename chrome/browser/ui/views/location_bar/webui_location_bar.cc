@@ -107,7 +107,7 @@ void WebUILocationBar::Init(WebUIToolbarControlDelegate* delegate) {
       std::make_unique<OmniboxController>(std::make_unique<ChromeOmniboxClient>(
           /*location_bar=*/this, browser_, browser_->GetProfile()));
   omnibox_view_ = std::make_unique<WebUIReadOnlyOmnibox>(
-      /*location_bar=*/this, omnibox_controller_.get(),
+      /*location_bar=*/this, toolbar_delegate_, omnibox_controller_.get(),
       /*update_propagator=*/*this);
 
   omnibox_popup_view_ = std::make_unique<OmniboxPopupViewWebUI>(
@@ -184,11 +184,12 @@ void WebUILocationBar::OnThemeChanged() {
   UpdateLhsChipsState();
 }
 
-void WebUILocationBar::HandleContextMenu(views::Widget* widget,
-                                         const gfx::Point& point,
-                                         ui::mojom::MenuSourceType source_type,
-                                         int edit_flags) {
-  omnibox_view_->HandleContextMenu(widget, point, source_type, edit_flags);
+void WebUILocationBar::HandleContextMenu(
+    views::Widget* widget,
+    const gfx::Point& point,
+    ui::mojom::MenuSourceType source_type,
+    const content::ContextMenuParams& menu_params) {
+  omnibox_view_->HandleContextMenu(widget, point, source_type, menu_params);
 }
 
 base::expected<std::monostate, mojo_base::mojom::ErrorPtr>

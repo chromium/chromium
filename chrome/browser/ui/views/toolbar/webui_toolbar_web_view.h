@@ -53,6 +53,10 @@ namespace browser_controls_api {
 class BrowserControlsAdapterImpl;
 }
 
+namespace content {
+struct ContextMenuParams;
+}  // namespace content
+
 namespace views {
 struct ProposedLayout;
 class WebView;
@@ -67,6 +71,7 @@ class WebUIToolbarControlDelegate {
   virtual BrowserWindowInterface* GetBrowser() = 0;
   virtual chrome::BrowserCommandController* GetCommandController() = 0;
   virtual views::View* GetView() = 0;
+  virtual content::WebContents* GetWebContents() = 0;
 
   // Announces an alert to accessibility screen readers.
   virtual void AnnounceAlert(const std::u16string& announcement) = 0;
@@ -305,10 +310,10 @@ class WebUIToolbarWebView
   // toolbar operation.
   void AdjustForToolbarFocus();
 
-  // Special path for omnibox context menu, since it needs the `edit_flags`.
+  // Special path for omnibox context menu, since it needs the `params`.
   void HandleOmniboxContextMenu(const gfx::Point& point,
                                 ui::mojom::MenuSourceType source_type,
-                                int edit_flags);
+                                content::ContextMenuParams params);
 
   void SetDidFirstNonEmptyPaintCallbackForTesting(base::OnceClosure callback);
   void SetTickClockForTesting(const base::TickClock* clock);
@@ -362,6 +367,7 @@ class WebUIToolbarWebView
   BrowserWindowInterface* GetBrowser() override;
   chrome::BrowserCommandController* GetCommandController() override;
   views::View* GetView() override;
+  content::WebContents* GetWebContents() override;
   void AnnounceAlert(const std::u16string& announcement) override;
   webui_toolbar::IconTable& GetIconTable() override;
   void OnPreferredSizeChanged() override;

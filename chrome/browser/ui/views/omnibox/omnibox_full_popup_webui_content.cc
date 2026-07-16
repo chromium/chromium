@@ -21,55 +21,9 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/menus/simple_menu_model.h"
 #include "ui/touch_selection/touch_editing_controller.h"
-#include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/style/typography_provider.h"
 #include "ui/views/widget/widget.h"
-
-namespace {
-
-class FullPopupTextfield : public views::Textfield {
- public:
-  explicit FullPopupTextfield(OmniboxFullPopupWebUIContent* owner)
-      : owner_(owner) {}
-
-  const views::Widget* GetWidget() const override {
-    return owner_->GetWidget();
-  }
-  views::Widget* GetWidget() override { return owner_->GetWidget(); }
-
-#if BUILDFLAG(IS_MAC)
-  bool SupportsLookUp() const override {
-    return !features::IsMenuSimplificationEnabled();
-  }
-#endif
-
-  bool SupportsEmoji() const override {
-    return !features::IsMenuSimplificationEnabled();
-  }
-
-#if BUILDFLAG(IS_MAC)
-  bool SupportsEditableContextMenuItems() const override { return false; }
-#endif
-
-  bool GetWordLookupDataFromSelection(gfx::DecoratedText* decorated_text,
-                                      gfx::Rect* rect) override {
-#if BUILDFLAG(IS_MAC)
-    if (content::WebContents* web_contents = owner_->GetWebContents()) {
-      if (content::RenderWidgetHostView* view =
-              web_contents->GetRenderWidgetHostView()) {
-        view->ShowDefinitionForSelection();
-      }
-    }
-#endif
-    return false;
-  }
-
- private:
-  raw_ptr<OmniboxFullPopupWebUIContent> owner_;
-};
-
-}  // namespace
 
 OmniboxFullPopupWebUIContent::OmniboxFullPopupWebUIContent(
     OmniboxPopupPresenterBase* presenter,
@@ -137,13 +91,10 @@ void OmniboxFullPopupWebUIContent::ShowContextMenuComplete(
 
   menu_model_ = std::make_unique<ui::SimpleMenuModel>(this);
 
-  context_menu_textfield_helper_ = std::make_unique<FullPopupTextfield>(this);
-  context_menu_textfield_helper_->SetReadOnly(!params_.is_editable);
-  context_menu_textfield_helper_->SetText(params_.selection_text);
-  context_menu_textfield_helper_->SelectAll(false);
-
-  context_menu_textfield_helper_->UpdateContextMenuContents(menu_model_.get());
-
+  content::WebContents* web_contents = GetWebContents();
+  AddTextfieldItems(web_contents ? web_contents->GetWeakPtr()
+                                 : base::WeakPtr<content::WebContents>(),
+                    params, menu_model_.get());
   AddOmniboxSpecificItems(menu_model_.get());
 
   menu_runner_ = std::make_unique<views::MenuRunner>(
@@ -168,27 +119,8 @@ void OmniboxFullPopupWebUIContent::ExecuteCommand(int command_id,
   if (!web_contents) {
     return;
   }
-  switch (command_id) {
-    case views::Textfield::kUndo:
-      web_contents->Undo();
-      return;
-    case std::to_underlying(ui::TouchEditable::MenuCommands::kCut):
-      web_contents->Cut();
-      return;
-    case std::to_underlying(ui::TouchEditable::MenuCommands::kCopy):
-      web_contents->Copy();
-      return;
-    case std::to_underlying(ui::TouchEditable::MenuCommands::kPaste):
-      web_contents->Paste();
-      return;
-    case views::Textfield::kDelete:
-      web_contents->Delete();
-      return;
-    case std::to_underlying(ui::TouchEditable::MenuCommands::kSelectAll):
-      web_contents->SelectAll();
-      return;
-  }
-  context_menu_textfield_helper_->ExecuteCommand(command_id, event_flags);
+  HandleExecuteTextEditingCommandOnWebContents(web_contents, command_id,
+                                               event_flags);
 }
 
 bool OmniboxFullPopupWebUIContent::IsContextMenuForReadOnlyOmnibox() const {
@@ -203,25 +135,11 @@ const gfx::FontList& OmniboxFullPopupWebUIContent::FontListForContextMenu()
 
 bool OmniboxFullPopupWebUIContent::IsContextMenuTextEditingCommandEnabled(
     int command_id) const {
-  switch (command_id) {
-    case views::Textfield::kUndo:
-      return !!(params_.edit_flags & blink::ContextMenuDataEditFlags::kCanUndo);
-    case std::to_underlying(ui::TouchEditable::MenuCommands::kCut):
-      return !!(params_.edit_flags & blink::ContextMenuDataEditFlags::kCanCut);
-    case std::to_underlying(ui::TouchEditable::MenuCommands::kCopy):
-      return !!(params_.edit_flags & blink::ContextMenuDataEditFlags::kCanCopy);
-    case std::to_underlying(ui::TouchEditable::MenuCommands::kPaste):
-      return !!(params_.edit_flags &
-                blink::ContextMenuDataEditFlags::kCanPaste);
-    case views::Textfield::kDelete:
-      return !!(params_.edit_flags &
-                blink::ContextMenuDataEditFlags::kCanDelete);
-    case std::to_underlying(ui::TouchEditable::MenuCommands::kSelectAll):
-      return !!(params_.edit_flags &
-                blink::ContextMenuDataEditFlags::kCanSelectAll);
-    default:
-      return context_menu_textfield_helper_->IsCommandIdEnabled(command_id);
-  }
+  return HandleIsContextMenuTextEditingCommandEnabled(command_id, params_);
+}
+
+views::Widget* OmniboxFullPopupWebUIContent::GetWidgetForTextServices() {
+  return GetWidget();
 }
 
 BEGIN_METADATA(OmniboxFullPopupWebUIContent)

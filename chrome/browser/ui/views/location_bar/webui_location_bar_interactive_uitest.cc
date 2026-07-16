@@ -2,9 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "build/build_config.h"
 #include "chrome/browser/autocomplete/shortcuts_backend_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
@@ -39,6 +41,9 @@
 #include "content/public/test/url_loader_interceptor.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
+#include "ui/base/clipboard/clipboard.h"
+#include "ui/base/clipboard/clipboard_monitor.h"
+#include "ui/base/clipboard/clipboard_observer.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/range/range.h"
@@ -98,6 +103,45 @@ class ViewWidthObserver
 };
 
 DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ViewWidthObserver, kViewWidth);
+
+class ClipboardTextObserver
+    : public ui::test::ObservationStateObserver<std::u16string,
+                                                ui::ClipboardMonitor,
+                                                ui::ClipboardObserver> {
+ public:
+  explicit ClipboardTextObserver(ui::ClipboardMonitor* clipboard_monitor)
+      : ObservationStateObserver<std::u16string,
+                                 ui::ClipboardMonitor,
+                                 ui::ClipboardObserver>(clipboard_monitor) {
+    PollClipboard();
+  }
+  ~ClipboardTextObserver() override = default;
+
+  // ObservationStateObserver:
+  std::u16string GetStateObserverInitialState() const override {
+    return std::u16string();
+  }
+
+  // ClipboardObserver:
+  void OnClipboardDataChanged() override { PollClipboard(); }
+
+ private:
+  void PollClipboard() {
+    ui::Clipboard* clipboard = ui::Clipboard::GetForCurrentThread();
+    clipboard->ReadText(ui::ClipboardBuffer::kCopyPaste,
+                        /*data_dst=*/std::nullopt,
+                        base::BindOnce(&ClipboardTextObserver::GotClipboard,
+                                       weak_ptr_factory_.GetWeakPtr()));
+  }
+
+  void GotClipboard(std::u16string result) {
+    OnStateObserverStateChanged(std::move(result));
+  }
+
+  base::WeakPtrFactory<ClipboardTextObserver> weak_ptr_factory_{this};
+};
+
+DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ClipboardTextObserver, kClipboardText);
 
 class NotifyWhenShortcutsLoadedObserver
     : public ShortcutsBackend::ShortcutsBackendObserver {
@@ -1043,4 +1087,57 @@ IN_PROC_BROWSER_TEST_F(WebUILocationBarInteractiveUiTest, DoubleClick2) {
       SynthesizeDoubleClickInToolbarWebUI(),
       WaitTillOmniboxViewText("https://local.test"),
       WaitTillOmniboxViewSelection("test", gfx::Range(14, 18)));
+}
+
+// The context menu tests don't appear to work on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_ContextMenu DISABLED_ContextMenu
+#define MAYBE_ContextMenu2 DISABLED_ContextMenu2
+#else
+#define MAYBE_ContextMenu ContextMenu
+#define MAYBE_ContextMenu2 ContextMenu2
+#endif
+
+// Test of location bar context menu; uses the 'Copy' item.
+IN_PROC_BROWSER_TEST_F(WebUILocationBarInteractiveUiTest, MAYBE_ContextMenu) {
+  RunTestSequence(
+      InstrumentTab(kTabId), WaitForWebContentsReady(kTabId),
+      InstrumentNonTabWebView(kWebUIToolbarId, GetToolbarWebView()),
+      WaitTillOmniboxViewText("about:blank"),
+      WaitTillOmniboxViewSelection("about:blank", gfx::Range(11, 0)),
+      FocusWebContents(kTabId),
+      NavigateWebContents(kTabId, GURL("https://local.test")),
+      WaitTillOmniboxViewText("local.test"), MoveMouseTo(kOmniboxElementId),
+      // Click to select text, so we have something to copy.
+      ClickMouse(),
+      WaitTillOmniboxViewSelection("local.test", gfx::Range(10, 0)),
+      // Make sure it's actually focused, so the selection ops work
+      WaitTillOmniboxViewFocus(),
+      // Open context menu.
+      ClickMouse(ui_controls::RIGHT),
+      // Copy item should work, and restore the schema.
+      WaitForShow(OmniboxContextMenuMixinBase::kCopyMenuItem),
+      SelectMenuItem(OmniboxContextMenuMixinBase::kCopyMenuItem),
+      ObserveState(kClipboardText,
+                   []() { return ui::ClipboardMonitor::GetInstance(); }),
+      WaitForState(kClipboardText, u"https://local.test/"),
+      StopObservingState(kClipboardText));
+}
+
+// Test of location bar context menu; uses the 'always show full URLs' item.
+IN_PROC_BROWSER_TEST_F(WebUILocationBarInteractiveUiTest, MAYBE_ContextMenu2) {
+  RunTestSequence(
+      InstrumentTab(kTabId), WaitForWebContentsReady(kTabId),
+      InstrumentNonTabWebView(kWebUIToolbarId, GetToolbarWebView()),
+      WaitTillOmniboxViewText("about:blank"),
+      WaitTillOmniboxViewSelection("about:blank", gfx::Range(11, 0)),
+      FocusWebContents(kTabId),
+      NavigateWebContents(kTabId, GURL("https://local.test")),
+      WaitTillOmniboxViewText("local.test"),
+      // Open context menu.
+      MoveMouseTo(kOmniboxElementId), ClickMouse(ui_controls::RIGHT),
+      // Tell it should show full urls.
+      WaitForShow(OmniboxContextMenuMixinBase::kShowFullUrlsMenuItem),
+      SelectMenuItem(OmniboxContextMenuMixinBase::kShowFullUrlsMenuItem),
+      WaitTillOmniboxViewText("https://local.test"));
 }

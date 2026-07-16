@@ -22,10 +22,6 @@ class LocationBar;
 class OmniboxPopupPresenterBase;
 class OmniboxController;
 
-namespace views {
-class Textfield;
-}  // namespace views
-
 // The content WebView for the full popup (input row + suggestions dropdown) of
 // a WebUI Omnibox.
 class OmniboxFullPopupWebUIContent
@@ -54,6 +50,7 @@ class OmniboxFullPopupWebUIContent
   bool IsContextMenuForReadOnlyOmnibox() const override;
   const gfx::FontList& FontListForContextMenu() const override;
   bool IsContextMenuTextEditingCommandEnabled(int command_id) const override;
+  views::Widget* GetWidgetForTextServices() override;
 
  protected:
   std::string_view GetMetricPrefix() const override;
@@ -68,24 +65,6 @@ class OmniboxFullPopupWebUIContent
   content::ContextMenuParams params_;
   std::unique_ptr<ui::SimpleMenuModel> menu_model_;
   std::unique_ptr<views::MenuRunner> menu_runner_;
-
-  // A helper `Textfield` instance used solely for generating and handling the
-  // native context menu when the user right-clicks inside the full WebUI
-  // popup's "input row" (i.e. this `Textfield` is NOT painted on-screen).
-  //
-  // Although the "input row" is rendered in WebUI, we intercept right-clicks to
-  // show a native context menu that matches the `OmniboxViewViews` context
-  // menu (`HandleContextMenu()`). Without this helper, populating standard text
-  // editing items (Undo, Cut, Select All, Emoji, Look Up, etc.) across all
-  // platforms would require duplicating substantial native context menu
-  // construction logic.
-  //
-  // Thus, by maintaining this proxy `Textfield` instance, we can call
-  // `UpdateContextMenuContents()` to generate the core native context menu
-  // structure and delegate any auxiliary or platform-specific command
-  // execution/enablement to `context_menu_textfield_helper_` when those
-  // commands are not directly handled by the WebUI itself.
-  std::unique_ptr<views::Textfield> context_menu_textfield_helper_;
 
   base::WeakPtrFactory<OmniboxFullPopupWebUIContent> weak_ptr_factory_{this};
 };

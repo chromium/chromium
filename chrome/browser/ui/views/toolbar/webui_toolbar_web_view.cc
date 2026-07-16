@@ -231,7 +231,7 @@ class WebUIToolbarInternalWebView : public views::WebView {
     gfx::Point point(params.x, params.y);
     views::View::ConvertPointToScreen(this, &point);
     webui_toolbar_web_view_->HandleOmniboxContextMenu(point, params.source_type,
-                                                      params.edit_flags);
+                                                      params);
     // We handled this.
     return true;
   }
@@ -762,6 +762,10 @@ chrome::BrowserCommandController* WebUIToolbarWebView::GetCommandController() {
 
 views::View* WebUIToolbarWebView::GetView() {
   return this;
+}
+
+content::WebContents* WebUIToolbarWebView::GetWebContents() {
+  return web_view_->web_contents();
 }
 
 void WebUIToolbarWebView::AnnounceAlert(const std::u16string& announcement) {
@@ -1395,10 +1399,9 @@ void WebUIToolbarWebView::OnFocusRequested(
 void WebUIToolbarWebView::HandleOmniboxContextMenu(
     const gfx::Point& point,
     ui::mojom::MenuSourceType source_type,
-    int edit_flags) {
+    content::ContextMenuParams params) {
   if (location_bar_) {
-    location_bar_->HandleContextMenu(GetWidget(), point, source_type,
-                                     edit_flags);
+    location_bar_->HandleContextMenu(GetWidget(), point, source_type, params);
   }
 }
 
