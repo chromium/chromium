@@ -126,7 +126,7 @@ enum class OAuthConsumerId {
   kContextMemoryService = 101,
   kSyncPreview = 102,
   kFpopService = 103,
-  kContextContainersService = 104,
+  kNotebooksService = 104,
   kRemoteActorLoginCredentialsService = 105,
   kMaxValue = kRemoteActorLoginCredentialsService,
 };

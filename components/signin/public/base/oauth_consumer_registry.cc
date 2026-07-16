@@ -335,7 +335,7 @@ constexpr char kDrivePickerHostName[] = "drive_picker_host";
 constexpr char kMultistepFilterName[] = "multistep_filter";
 constexpr char kContextMemoryServiceName[] = "context_memory_service";
 constexpr char kSyncPreviewName[] = "chromesync_preview";
-constexpr char kContextContainersServiceName[] = "context_containers_service";
+constexpr char kNotebooksServiceName[] = "notebooks_service";
 constexpr char kRemoteActorLoginCredentialsServiceName[] =
     "remote_actor_login_credentials_service";
 }  // namespace
@@ -796,9 +796,9 @@ OAuthConsumer OAuthConsumerRegistry::GetOAuthConsumerFromId(
       return OAuthConsumer(
           /*name=*/kFpopServiceName,
           /*scopes=*/{kFpopOAuth2Scope});
-    case OAuthConsumerId::kContextContainersService:
+    case OAuthConsumerId::kNotebooksService:
       return OAuthConsumer(
-          /*name=*/kContextContainersServiceName,
+          /*name=*/kNotebooksServiceName,
           /*scopes=*/{GaiaConstants::kGoogleUserInfoEmail});
     case OAuthConsumerId::kRemoteActorLoginCredentialsService:
       return OAuthConsumer(
