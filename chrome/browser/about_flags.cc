@@ -13205,7 +13205,8 @@ const FeatureEntry kFeatureEntries[] = {
          payments::facilitated::kEnableEwalletNewAccountLinking)},
 #endif
     {"suspicious-site-warnings", flag_descriptions::kSuspiciousSiteWarningsName,
-     flag_descriptions::kSuspiciousSiteWarningsDescription, kOsDesktop,
+     flag_descriptions::kSuspiciousSiteWarningsDescription,
+     kOsDesktop | kOsAndroid,
      FEATURE_VALUE_TYPE(safe_browsing::kSuspiciousSiteWarnings)},
 
 #if BUILDFLAG(IS_ANDROID)
