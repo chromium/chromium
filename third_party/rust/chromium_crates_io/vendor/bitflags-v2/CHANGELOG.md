@@ -1,3 +1,13 @@
+# 2.13.1
+
+## What's Changed
+* Lower the LLVM IR output of the generated output by @bolshoytoster in https://github.com/bitflags/bitflags/pull/492
+
+## New Contributors
+* @bolshoytoster made their first contribution in https://github.com/bitflags/bitflags/pull/492
+
+**Full Changelog**: https://github.com/bitflags/bitflags/compare/2.13.0...2.13.1
+
 # 2.13.0
 
 ## What's Changed
