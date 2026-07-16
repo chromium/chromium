@@ -13,6 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
+#include "base/timer/timer.h"
 #include "components/browser_actuator/internal/transport/message_stream_client.h"
 #include "components/browser_actuator/internal/transport/stream_framer.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -43,10 +44,14 @@ class StreamConnectionDelegate;
 // Complete messages, still serialized protos, are fanned out to observers.
 //
 // Lifecycle: Connect() starts the stream; the endpoint URL should already
-// carry `alt=proto`. HTTP-level rejection (non-200 or wrong content type)
-// and malformed framing (framer hardening limits) stop the client until
-// Connect() is called again — and so does, for now, any other end of the
-// stream: automatic reconnection with backoff is not yet implemented.
+// carry `alt=proto`. When the stream ends or the connection fails at the
+// network level, the client reconnects automatically with exponential
+// backoff, resuming via the StreamConnectionDelegate. HTTP-level
+// rejection (non-200 or wrong content type) and malformed framing
+// (framer hardening limits) stop the client until Connect() is called
+// again — a rejecting or broken server is not something to retry
+// automatically — unless the delegate asks for a retry via
+// ShouldRetryOnHttpFailure (e.g. after invalidating a stale OAuth token).
 //
 // All methods must be called on the owning sequence. Observers may call
 // Disconnect() or Connect() from OnStreamMessage(), but must not destroy
@@ -58,6 +63,10 @@ class StreamConnectionDelegate;
 // A Disconnect() followed by Connect() from the same notification is a
 // restart: the teardown still runs at the notification boundary, and a
 // fresh connection starts right after it.
+//
+// TODO(crbug.com/534574559): Observe NetworkChangeNotifier: reconnect
+// immediately on a network change instead of waiting out the backoff, and
+// suspend reconnect attempts entirely while offline.
 class ProtoStreamClient : public MessageStreamClient,
                           public network::SimpleURLLoaderStreamConsumer {
  public:
@@ -99,8 +108,12 @@ class ProtoStreamClient : public MessageStreamClient,
   void OnRequestPrepared(std::unique_ptr<network::ResourceRequest> request);
   void OnResponseStarted(const GURL& final_url,
                          const network::mojom::URLResponseHead& response_head);
-  // Tears down the connection. Notifies observers if the client was
-  // connected.
+  // Handles an HTTP-level rejection of a connection attempt: retries with
+  // backoff if the delegate asks for it, otherwise fails permanently.
+  void HandleHttpRejection(int response_code);
+  void ScheduleReconnect();
+  // Tears down the connection and any pending reconnect. Notifies
+  // observers if the client was connected.
   void TearDown();
   void SetConnected(bool connected);
   // Runs a teardown that an observer requested (via Disconnect()) from
@@ -142,6 +155,10 @@ class ProtoStreamClient : public MessageStreamClient,
   // True while waiting for the delegate's PrepareRequest callback.
   bool preparing_request_ = false;
 
+  // Number of consecutive connection attempts that failed before producing
+  // a valid stream; drives exponential backoff.
+  int consecutive_failed_attempts_ = 0;
+
   // Live while a request is in flight or streaming.
   std::unique_ptr<network::SimpleURLLoader> loader_;
 
@@ -149,6 +166,8 @@ class ProtoStreamClient : public MessageStreamClient,
   // open. Framing state pending at end-of-stream was never completed and
   // is discarded with the framer.
   std::unique_ptr<StreamFramer> framer_;
+
+  base::OneShotTimer reconnect_timer_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

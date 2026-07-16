@@ -14,8 +14,10 @@
 #include "base/functional/callback.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "components/browser_actuator/internal/features.h"
 #include "components/browser_actuator/internal/transport/stream_connection_delegate.h"
 #include "components/browser_actuator/internal/transport/stream_framer.h"
 #include "components/browser_actuator/internal/transport/test_support/mock_stream_connection_delegate.h"
@@ -430,22 +432,208 @@ TEST_F(ProtoStreamClientTest, ConnectWhileActiveIsNoOp) {
   client->RemoveObserver(&observer);
 }
 
-TEST_F(ProtoStreamClientTest, DelegateAbortsAttempt) {
+TEST_F(ProtoStreamClientTest, DelegateAbortIsFailedAttempt) {
   ServeStream("body");
+  int prepare_calls = 0;
+  auto delegate = std::make_unique<NiceMock<MockStreamConnectionDelegate>>();
+  ON_CALL(*delegate, PrepareRequest)
+      .WillByDefault(
+          [&](std::unique_ptr<network::ResourceRequest> request,
+              StreamConnectionDelegate::PrepareRequestCallback callback) {
+            // The first attempt has no token to offer; the second does.
+            if (++prepare_calls == 1) {
+              std::move(callback).Run(nullptr);
+            } else {
+              std::move(callback).Run(std::move(request));
+            }
+          });
+
+  RecordingObserver observer;
+  auto client = MakeClient(std::move(delegate));
+  client->AddObserver(&observer);
+  client->Connect();
+  EXPECT_TRUE(requests_.empty());
+
+  // The aborted attempt counts as a failure: the retry comes after the
+  // base reconnection time and succeeds.
+  task_environment_.FastForwardBy(base::Seconds(3));
+  ASSERT_TRUE(WaitFor([&] { return !observer.messages.empty(); }));
+  EXPECT_EQ(prepare_calls, 2);
+  EXPECT_EQ(requests_.size(), 1u);
+
+  client->RemoveObserver(&observer);
+}
+
+TEST_F(ProtoStreamClientTest, StreamEndWithoutStatusReconnects) {
+  ServeStream("body");
+
+  auto client = MakeClient();
+  client->Connect();
+  ASSERT_TRUE(WaitFor([&] { return !requests_.empty(); }));
+
+  // An unexpectedly dropped stream (no terminal status) reconnects after
+  // the base reconnection time.
+  task_environment_.FastForwardBy(base::Seconds(3));
+  EXPECT_GE(requests_.size(), 2u);
+}
+
+TEST_F(ProtoStreamClientTest, ObserverDisconnectFromStreamEndStopsReconnect) {
+  ServeStream("body");
+
+  RecordingObserver observer;
+  auto client = MakeClient();
+  client->AddObserver(&observer);
+  observer.on_state_change = base::BindLambdaForTesting([&](bool connected) {
+    if (!connected) {
+      client->Disconnect();
+    }
+  });
+  client->Connect();
+  ASSERT_TRUE(WaitFor([&] { return observer.state_changes.size() >= 2u; }));
+
+  // The ended stream would normally schedule a reconnect, but the
+  // observer answered the stream-end notification with Disconnect():
+  // reconnecting anyway would override that explicit request.
+  task_environment_.FastForwardBy(base::Minutes(30));
+  EXPECT_EQ(requests_.size(), 1u);
+  EXPECT_FALSE(client->IsConnected());
+
+  client->RemoveObserver(&observer);
+}
+
+TEST_F(ProtoStreamClientTest, NetworkErrorReconnectsWithBackoff) {
+  test_url_loader_factory_.AddResponse(
+      GURL(kEndpoint), network::mojom::URLResponseHead::New(), "",
+      network::URLLoaderCompletionStatus(net::ERR_CONNECTION_REFUSED));
+
+  auto client = MakeClient();
+  client->Connect();
+  ASSERT_TRUE(WaitFor([&] { return !requests_.empty(); }));
+
+  task_environment_.FastForwardBy(base::Seconds(3));
+  EXPECT_EQ(requests_.size(), 2u);
+
+  // Second retry backs off to 6s.
+  task_environment_.FastForwardBy(base::Seconds(3));
+  EXPECT_EQ(requests_.size(), 2u);
+  task_environment_.FastForwardBy(base::Seconds(3));
+  EXPECT_EQ(requests_.size(), 3u);
+}
+
+TEST_F(ProtoStreamClientTest, ReconnectDelayHonorsFeatureParams) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      kBrowserActuatorProtoStreamTransport,
+      {{"ProtoStreamBaseReconnectionTime", "10s"}});
+
+  test_url_loader_factory_.AddResponse(
+      GURL(kEndpoint), network::mojom::URLResponseHead::New(), "",
+      network::URLLoaderCompletionStatus(net::ERR_CONNECTION_REFUSED));
+
+  auto client = MakeClient();
+  client->Connect();
+  ASSERT_TRUE(WaitFor([&] { return !requests_.empty(); }));
+
+  // At the configured base delay of 10s, the default 3s must pass without
+  // a retry; the retry fires at 10s.
+  task_environment_.FastForwardBy(base::Seconds(9));
+  EXPECT_EQ(requests_.size(), 1u);
+  task_environment_.FastForwardBy(base::Seconds(1));
+  EXPECT_EQ(requests_.size(), 2u);
+}
+
+TEST_F(ProtoStreamClientTest, BackoffIsCapped) {
+  test_url_loader_factory_.AddResponse(
+      GURL(kEndpoint), network::mojom::URLResponseHead::New(), "",
+      network::URLLoaderCompletionStatus(net::ERR_CONNECTION_REFUSED));
+
+  auto client = MakeClient();
+  client->Connect();
+  // Drain well past the point where the backoff reaches its ceiling.
+  task_environment_.FastForwardBy(base::Minutes(30));
+  const size_t steady_state_requests = requests_.size();
+
+  // In steady state the retry cadence is exactly the 5-minute cap: any
+  // 10-minute window contains exactly two attempts.
+  task_environment_.FastForwardBy(base::Minutes(10));
+  EXPECT_EQ(requests_.size(), steady_state_requests + 2);
+}
+
+TEST_F(ProtoStreamClientTest, DelegateRetriesOnHttpFailure) {
+  test_url_loader_factory_.AddResponse(
+      GURL(kEndpoint),
+      MakeResponseHead("application/x-protobuf", net::HTTP_UNAUTHORIZED), "",
+      network::URLLoaderCompletionStatus(net::OK));
+
+  std::vector<int> rejected_codes;
   auto delegate = std::make_unique<NiceMock<MockStreamConnectionDelegate>>();
   ON_CALL(*delegate, PrepareRequest)
       .WillByDefault(
           [](std::unique_ptr<network::ResourceRequest> request,
              StreamConnectionDelegate::PrepareRequestCallback callback) {
-            std::move(callback).Run(nullptr);
+            std::move(callback).Run(std::move(request));
           });
+  ON_CALL(*delegate, ShouldRetryOnHttpFailure)
+      .WillByDefault([&](int response_code) {
+        rejected_codes.push_back(response_code);
+        // Retry once, e.g. after invalidating a stale OAuth token.
+        return rejected_codes.size() == 1u;
+      });
 
+  RecordingObserver observer;
   auto client = MakeClient(std::move(delegate));
+  client->AddObserver(&observer);
+  client->Connect();
+  ASSERT_TRUE(WaitFor([&] { return !rejected_codes.empty(); }));
+
+  // The endpoint recovers before the retry fires.
+  ServeStream("recovered");
+  task_environment_.FastForwardBy(base::Seconds(3));
+  ASSERT_TRUE(WaitFor([&] { return !observer.messages.empty(); }));
+
+  EXPECT_THAT(rejected_codes, ElementsAre(net::HTTP_UNAUTHORIZED));
+  EXPECT_EQ(requests_.size(), 2u);
+
+  client->RemoveObserver(&observer);
+}
+
+TEST_F(ProtoStreamClientTest, ConnectAfterPermanentFailureStartsOver) {
+  test_url_loader_factory_.AddResponse(
+      GURL(kEndpoint), MakeResponseHead("text/html"), "nope",
+      network::URLLoaderCompletionStatus(net::OK));
+
+  RecordingObserver observer;
+  auto client = MakeClient();
+  client->AddObserver(&observer);
   client->Connect();
   task_environment_.FastForwardBy(base::Minutes(30));
+  ASSERT_EQ(requests_.size(), 1u);
 
-  EXPECT_TRUE(requests_.empty());
-  EXPECT_FALSE(client->IsConnected());
+  // An explicit Connect() after a permanent failure starts over.
+  ServeStream("recovered");
+  client->Connect();
+  ASSERT_TRUE(WaitFor([&] { return !observer.messages.empty(); }));
+  EXPECT_EQ(requests_.size(), 2u);
+
+  client->RemoveObserver(&observer);
+}
+
+TEST_F(ProtoStreamClientTest, DisconnectCancelsPendingReconnect) {
+  ServeStream("body");
+
+  RecordingObserver observer;
+  auto client = MakeClient();
+  client->AddObserver(&observer);
+  client->Connect();
+  // Wait until the stream has ended, so that a reconnect is pending.
+  ASSERT_TRUE(WaitFor([&] { return observer.state_changes.size() >= 2u; }));
+  ASSERT_EQ(requests_.size(), 1u);
+
+  client->Disconnect();
+  task_environment_.FastForwardBy(base::Minutes(30));
+  EXPECT_EQ(requests_.size(), 1u);
+
+  client->RemoveObserver(&observer);
 }
 
 TEST_F(ProtoStreamClientTest, DelegatePreparesAsynchronously) {

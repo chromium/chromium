@@ -2,6 +2,20 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+# Features and params internal to the browser_actuator implementation.
+# A leaf target (only //base) so that anything under internal/ can depend
+# on it without cycles.
+source_set("features") {
+  sources = [
+    "features.cc",
+    "features.h",
+  ]
+
+  public_deps = [ "//base" ]
+
+  visibility = [ "//components/browser_actuator/*" ]
+}
+
 source_set("internal") {
   visibility = [
     ":*",

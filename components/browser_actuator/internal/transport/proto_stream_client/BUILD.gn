@@ -23,7 +23,10 @@ source_set("proto_stream_client") {
     "//url",
   ]
 
-  deps = [ "//services/network/public/mojom" ]
+  deps = [
+    "//components/browser_actuator/internal:features",
+    "//services/network/public/mojom",
+  ]
 }
 
 # StreamFramer implementation backed by the Rust StreamBody parser: the
@@ -93,6 +96,7 @@ source_set("unit_tests") {
     ":rust_stream_framer",
     "//base",
     "//base/test:test_support",
+    "//components/browser_actuator/internal:features",
     "//components/browser_actuator/internal/transport",
     "//components/browser_actuator/internal/transport/test_support",
     "//net",

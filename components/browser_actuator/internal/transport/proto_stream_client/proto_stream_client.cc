@@ -4,13 +4,18 @@
 
 #include "components/browser_actuator/internal/transport/proto_stream_client/proto_stream_client.h"
 
+#include <algorithm>
+#include <cmath>
 #include <string>
 #include <utility>
 
 #include "base/auto_reset.h"
 #include "base/functional/bind.h"
 #include "base/notreached.h"
+#include "base/time/time.h"
+#include "components/browser_actuator/internal/features.h"
 #include "components/browser_actuator/internal/transport/stream_connection_delegate.h"
+#include "net/base/net_errors.h"
 #include "net/http/http_response_headers.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -47,9 +52,10 @@ void ProtoStreamClient::Connect() {
     connect_after_teardown_ = true;
     return;
   }
-  if (preparing_request_ || loader_) {
+  if (preparing_request_ || loader_ || reconnect_timer_.IsRunning()) {
     return;
   }
+  consecutive_failed_attempts_ = 0;
   StartRequest();
 }
 
@@ -114,8 +120,10 @@ void ProtoStreamClient::OnRequestPrepared(
   preparing_request_ = false;
 
   if (!request) {
-    // The delegate aborted the attempt (e.g. no token available). The
-    // client stays disconnected until Connect() is called again.
+    // The delegate aborted the attempt (e.g. no token available). Treat it
+    // like a failed connection: retry with backoff.
+    ++consecutive_failed_attempts_;
+    ScheduleReconnect();
     return;
   }
 
@@ -137,12 +145,11 @@ void ProtoStreamClient::OnResponseStarted(
       response_head.headers ? response_head.headers->response_code() : 0;
   if (response_code != 200 ||
       response_head.mime_type != "application/x-protobuf") {
-    // The endpoint rejected the attempt, or is not a proto stream endpoint
-    // at all; fail permanently.
-    TearDown();
+    HandleHttpRejection(response_code);
     return;
   }
 
+  consecutive_failed_attempts_ = 0;
   framer_ = framer_factory_.Run();
   {
     base::AutoReset<bool> calling(&calling_delegate_, true);
@@ -150,6 +157,22 @@ void ProtoStreamClient::OnResponseStarted(
   }
   SetConnected(true);
   RunDeferredTeardown();
+}
+
+void ProtoStreamClient::HandleHttpRejection(int response_code) {
+  bool should_retry = false;
+  {
+    base::AutoReset<bool> calling(&calling_delegate_, true);
+    should_retry = delegate_->ShouldRetryOnHttpFailure(response_code);
+  }
+  if (should_retry) {
+    loader_.reset();
+    framer_.reset();
+    ++consecutive_failed_attempts_;
+    ScheduleReconnect();
+    return;
+  }
+  TearDown();
 }
 
 void ProtoStreamClient::OnDataReceived(std::string_view chunk,
@@ -206,19 +229,36 @@ void ProtoStreamClient::OnDataReceived(std::string_view chunk,
 void ProtoStreamClient::OnComplete(bool success) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // The stream is over, cleanly or not. Automatic reconnection with
-  // backoff and resume is not implemented yet, so any end of the stream
-  // returns the client to the disconnected state until Connect() is
-  // called again.
+  const bool had_stream = connected_;
+  if (!had_stream) {
+    // The attempt never produced a valid stream. HTTP-level rejection
+    // fails the connection permanently (unless the delegate wants a
+    // retry); network-level errors trigger reconnection with backoff.
+    const network::mojom::URLResponseHead* response_info =
+        loader_->ResponseInfo();
+    const int response_code = response_info && response_info->headers
+                                  ? response_info->headers->response_code()
+                                  : 0;
+    const bool http_rejection =
+        loader_->NetError() == net::ERR_HTTP_RESPONSE_CODE_FAILURE ||
+        (response_info && response_info->headers && response_code != 200);
+    if (http_rejection) {
+      HandleHttpRejection(response_code);
+      return;
+    }
+    ++consecutive_failed_attempts_;
+  }
+
   loader_.reset();
   framer_.reset();
   SetConnected(false);
   // An observer may have called Disconnect() from the state-change
-  // notification; without this a deferred teardown would dangle into
-  // the next connection attempt. Callers of SetConnected() outside
-  // TearDown() must always follow up like this and let the result drive
-  // their control flow (e.g. not scheduling a reconnect).
-  RunDeferredTeardown();
+  // notification; scheduling a reconnect over that teardown would
+  // override the observer's explicit request.
+  if (RunDeferredTeardown()) {
+    return;
+  }
+  ScheduleReconnect();
 }
 
 void ProtoStreamClient::OnRetry(base::OnceClosure start) {
@@ -227,10 +267,24 @@ void ProtoStreamClient::OnRetry(base::OnceClosure start) {
   NOTREACHED();
 }
 
+void ProtoStreamClient::ScheduleReconnect() {
+  // The first reconnect waits the base reconnection time, and each
+  // further consecutive failure doubles the wait, up to the max.
+  // TimeDelta math saturates, so the max param is the only cap needed.
+  const base::TimeDelta delay =
+      std::min(kProtoStreamBaseReconnectionTime.Get() *
+                   std::pow(2.0, std::max(consecutive_failed_attempts_ - 1, 0)),
+               kProtoStreamMaxReconnectionTime.Get());
+  reconnect_timer_.Start(
+      FROM_HERE, delay,
+      base::BindOnce(&ProtoStreamClient::StartRequest, base::Unretained(this)));
+}
+
 void ProtoStreamClient::TearDown() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   weak_ptr_factory_.InvalidateWeakPtrs();
   preparing_request_ = false;
+  reconnect_timer_.Stop();
   loader_.reset();
   framer_.reset();
   SetConnected(false);

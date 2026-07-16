@@ -33,7 +33,8 @@ namespace browser_actuator {
 class StreamConnectionDelegate {
  public:
   // Receives the request for a connection attempt, or nullptr to abort the
-  // attempt.
+  // attempt (the client treats an aborted attempt like a failed connection
+  // and retries with backoff).
   using PrepareRequestCallback =
       base::OnceCallback<void(std::unique_ptr<network::ResourceRequest>)>;
 
