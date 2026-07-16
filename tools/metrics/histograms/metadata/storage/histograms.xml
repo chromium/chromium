@@ -3070,6 +3070,36 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Storage.{DomStorageType}.Sqlite.FreelistBytes" units="KB"
+    expires_after="2027-07-01">
+  <owner>leimy@chromium.org</owner>
+  <owner>fergal@chromium.org</owner>
+  <owner>rahsin@microsoft.com</owner>
+  <owner>chrome-owp-storage@google.com</owner>
+  <summary>
+    Reclaimable space in the on-disk {DomStorageType} SQLite database, computed
+    as the freelist page count times the page size and sampled once when the
+    database is opened. This is the space a vacuum would return to the file
+    system. Only recorded for on-disk databases.
+  </summary>
+  <token key="DomStorageType" variants="DomStorageType"/>
+</histogram>
+
+<histogram name="Storage.{DomStorageType}.Sqlite.FreelistPercentage" units="%"
+    expires_after="2027-07-01">
+  <owner>leimy@chromium.org</owner>
+  <owner>fergal@chromium.org</owner>
+  <owner>rahsin@microsoft.com</owner>
+  <owner>chrome-owp-storage@google.com</owner>
+  <summary>
+    Freelist pages as a percentage of total pages in the on-disk
+    {DomStorageType} SQLite database, sampled once when the database is opened.
+    Indicates how fragmented the database is. Only recorded for on-disk
+    databases.
+  </summary>
+  <token key="DomStorageType" variants="DomStorageType"/>
+</histogram>
+
 <histogram
     name="Storage.{DomStorageType}.{Operation}.{DomStorageBackingStoreLifetime}"
     enum="DomStorageDbStatusType" expires_after="2027-02-10">

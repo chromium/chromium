@@ -9,6 +9,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/types/expected_macros.h"
+#include "components/services/storage/dom_storage/dom_storage_histogram_helper.h"
 #include "components/services/storage/dom_storage/sqlite/map_entries_table.h"
 #include "components/services/storage/dom_storage/sqlite/sqlite_database_macros.h"
 #include "components/services/storage/dom_storage/sqlite/sqlite_database_utils.h"
@@ -105,6 +106,10 @@ DbStatus SessionStorageSqlite::Open(
           this, "SessionStorageSqlite",
           base::SequencedTaskRunner::GetCurrentDefault(),
           base::trace_event::MemoryDumpProvider::Options());
+
+  if (!database_path.empty()) {
+    RecordOnDiskSqliteVacuumMetrics("SessionStorage", *database_);
+  }
 
   return DbStatus::OK();
 }

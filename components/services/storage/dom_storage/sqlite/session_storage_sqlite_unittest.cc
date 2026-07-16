@@ -160,13 +160,32 @@ void SessionStorageSqliteTest::InitializeMetadata(
 }
 
 TEST_F(SessionStorageSqliteTest, OpenInMemory) {
+  base::HistogramTester histograms;
+
   std::unique_ptr<SessionStorageSqlite> database;
   ASSERT_NO_FATAL_FAILURE(OpenInMemory(&database));
+
+  // Vacuum histograms are only recorded for on-disk databases.
+  histograms.ExpectTotalCount("Storage.SessionStorage.Sqlite.FreelistBytes",
+                              /*expected_count=*/0);
+  histograms.ExpectTotalCount(
+      "Storage.SessionStorage.Sqlite.FreelistPercentage",
+      /*expected_count=*/0);
 }
 
 TEST_F(SessionStorageSqliteTest, OpenThenDestroyOnDisk) {
+  base::HistogramTester histograms;
+
   std::unique_ptr<SessionStorageSqlite> database;
   ASSERT_NO_FATAL_FAILURE(OpenOnDisk(&database));
+
+  // Vacuum histograms are recorded once when an on-disk database is opened.
+  histograms.ExpectTotalCount("Storage.SessionStorage.Sqlite.FreelistBytes",
+                              /*expected_count=*/1);
+  histograms.ExpectTotalCount(
+      "Storage.SessionStorage.Sqlite.FreelistPercentage",
+      /*expected_count=*/1);
+
   database.reset();
 
   base::FilePath database_path;

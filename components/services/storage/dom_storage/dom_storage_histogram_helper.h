@@ -8,6 +8,10 @@
 #include <string_view>
 #include <vector>
 
+namespace sql {
+class Database;
+}  // namespace sql
+
 namespace storage {
 
 // These values are persisted to logs. Entries should not be renumbered and
@@ -85,6 +89,9 @@ void LogDomStorageRecoveryOutcome(std::string_view storage_type_prefix,
 // `commit_error_count` > 0.
 void RecordCommitErrorCountAtReset(std::string_view storage_type_prefix,
                                    int commit_error_count);
+
+void RecordOnDiskSqliteVacuumMetrics(std::string_view storage_type_prefix,
+                                     sql::Database& database);
 
 // Classifies the histogram suffix for DomStorage metrics.
 enum class DatabaseMetricsType {

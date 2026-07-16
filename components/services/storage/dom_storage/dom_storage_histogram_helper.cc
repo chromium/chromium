@@ -4,9 +4,15 @@
 
 #include "components/services/storage/dom_storage/dom_storage_histogram_helper.h"
 
+#include "base/byte_size.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/numerics/clamped_math.h"
+#include "base/numerics/safe_conversions.h"
+#include "base/strings/cstring_view.h"
 #include "base/strings/strcat.h"
 #include "components/services/storage/dom_storage/dom_storage_constants.h"
+#include "sql/database.h"
+#include "sql/statement.h"
 
 namespace storage {
 
@@ -22,6 +28,15 @@ namespace {
 // increasing past the expected range. Values above kCommitErrorThreshold + 1
 // are captured in the kCommitErrorThreshold + 2 overflow bucket.
 constexpr int kCommitErrorCountHistogramMax = kCommitErrorThreshold + 2;
+
+uint32_t GetDatabaseProperty(sql::Database& database,
+                             base::cstring_view pragma) {
+  sql::Statement statement(database.GetReadonlyStatement(pragma));
+  if (!statement.Step()) {
+    return 0;
+  }
+  return base::checked_cast<uint32_t>(statement.ColumnInt(0));
+}
 
 // Maps the destroy results from a recovery cycle that started on-disk to the
 // appropriate histogram outcome enum value based on the terminal state.
@@ -132,6 +147,24 @@ void RecordCommitErrorCountAtReset(std::string_view storage_type_prefix,
                                   commit_error_count,
                                   kCommitErrorCountHistogramMax);
   }
+}
+
+void RecordOnDiskSqliteVacuumMetrics(std::string_view storage_type_prefix,
+                                     sql::Database& database) {
+  const std::string histogram_prefix =
+      base::StrCat({"Storage.", storage_type_prefix, ".Sqlite"});
+
+  uint32_t freelist_count =
+      GetDatabaseProperty(database, "PRAGMA freelist_count");
+  uint32_t page_size = GetDatabaseProperty(database, "PRAGMA page_size");
+  uint32_t page_count = GetDatabaseProperty(database, "PRAGMA page_count");
+
+  base::UmaHistogramMemoryKB(
+      base::StrCat({histogram_prefix, ".FreelistBytes"}),
+      base::ByteSize(uint64_t{freelist_count} * page_size));
+  base::UmaHistogramPercentage(
+      base::StrCat({histogram_prefix, ".FreelistPercentage"}),
+      base::ClampDiv(freelist_count * 100, page_count));
 }
 
 std::string_view GetHistogramSuffix(DatabaseMetricsType type) {

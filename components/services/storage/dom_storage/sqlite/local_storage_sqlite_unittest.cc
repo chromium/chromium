@@ -196,13 +196,30 @@ void LocalStorageSqliteTest::UpdateMapWithMetadata(
 }
 
 TEST_F(LocalStorageSqliteTest, OpenInMemory) {
+  base::HistogramTester histograms;
+
   std::unique_ptr<LocalStorageSqlite> database;
   ASSERT_NO_FATAL_FAILURE(OpenInMemory(&database));
+
+  // Vacuum histograms are only recorded for on-disk databases.
+  histograms.ExpectTotalCount("Storage.LocalStorage.Sqlite.FreelistBytes",
+                              /*expected_count=*/0);
+  histograms.ExpectTotalCount("Storage.LocalStorage.Sqlite.FreelistPercentage",
+                              /*expected_count=*/0);
 }
 
 TEST_F(LocalStorageSqliteTest, OpenThenDestroyOnDisk) {
+  base::HistogramTester histograms;
+
   std::unique_ptr<LocalStorageSqlite> database;
   ASSERT_NO_FATAL_FAILURE(OpenOnDisk(&database));
+
+  // Vacuum histograms are recorded once when an on-disk database is opened.
+  histograms.ExpectTotalCount("Storage.LocalStorage.Sqlite.FreelistBytes",
+                              /*expected_count=*/1);
+  histograms.ExpectTotalCount("Storage.LocalStorage.Sqlite.FreelistPercentage",
+                              /*expected_count=*/1);
+
   database.reset();
 
   base::FilePath database_path;
