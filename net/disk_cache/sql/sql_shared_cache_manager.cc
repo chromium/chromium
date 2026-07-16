@@ -10,21 +10,32 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/task/thread_pool.h"
+#include "net/disk_cache/backend_cleanup_tracker.h"
 #include "net/disk_cache/sql/sql_persistent_store.h"
 
 namespace disk_cache {
 
-SqlSharedCacheManager::SqlSharedCacheManager(SqlPersistentStore& store,
-                                             const base::FilePath& path)
+SqlSharedCacheManager::SqlSharedCacheManager(
+    SqlPersistentStore& store,
+    const base::FilePath& path,
+    scoped_refptr<BackendCleanupTracker> cleanup_tracker)
     : store_(store),
       directory_(path),
-      index_database_(base::ThreadPool::CreateSequencedTaskRunner(
-                          {base::MayBlock(), base::TaskPriority::USER_BLOCKING,
-                           base::TaskShutdownBehavior::BLOCK_SHUTDOWN}),
-                      store_->GetAsyncTaskManager(),
-                      path) {}
+      db_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
+          {base::MayBlock(), base::TaskPriority::USER_BLOCKING,
+           base::TaskShutdownBehavior::BLOCK_SHUTDOWN})),
+      index_database_(db_task_runner_, store_->GetAsyncTaskManager(), path),
+      cleanup_tracker_(cleanup_tracker) {}
 
-SqlSharedCacheManager::~SqlSharedCacheManager() = default;
+SqlSharedCacheManager::~SqlSharedCacheManager() {
+  index_database_.Reset();
+  if (cleanup_tracker_) {
+    CHECK(db_task_runner_);
+    db_task_runner_->PostTaskAndReply(
+        FROM_HERE, base::DoNothing(),
+        base::DoNothingWithBoundArgs(std::move(cleanup_tracker_)));
+  }
+}
 
 void SqlSharedCacheManager::Init(InitCallback callback) {
   index_database_.AsyncCall(&SqlSharedCacheIndexDatabase::Initialize)

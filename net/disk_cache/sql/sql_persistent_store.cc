@@ -39,6 +39,7 @@
 #include "net/disk_cache/sql/sql_persistent_store_backend.h"
 #include "net/disk_cache/sql/sql_persistent_store_backend_shard.h"
 #include "net/disk_cache/sql/sql_read_cache_memory_monitor.h"
+#include "net/disk_cache/sql/sql_shared_cache_manager.h"
 
 namespace disk_cache {
 namespace {
@@ -135,6 +136,13 @@ SqlPersistentStore::SqlPersistentStore(
     scoped_refptr<BackendCleanupTracker> cleanup_tracker)
     : background_task_runners_(std::move(background_task_runners)),
       async_task_manager_(async_task_manager),
+      shared_cache_manager_(
+          base::FeatureList::IsEnabled(
+              net::features::kRendererAccessibleHttpCache)
+              ? std::make_unique<SqlSharedCacheManager>(*this,
+                                                        path,
+                                                        cleanup_tracker)
+              : nullptr),
       backend_shards_(CreateBackendShards(path,
                                           type,
                                           background_task_runners_,
@@ -145,18 +153,35 @@ SqlPersistentStore::SqlPersistentStore(
 SqlPersistentStore::~SqlPersistentStore() = default;
 
 void SqlPersistentStore::Initialize(ErrorCallback callback) {
+  // 1 task for backend shards init, plus 1 task for shared_cache_manager_ init.
+  const size_t num_init_tasks = 1 + (shared_cache_manager_ ? 1 : 0);
+  auto barrier_callback =
+      CreateBarrierErrorCallback(std::move(callback), num_init_tasks);
+
   if (net::features::kSqlDiskCacheSerialInitialize.Get()) {
     std::vector<InitResultOrError> results;
     results.reserve(GetSizeOfShards());
-    InitializeNextShard(std::move(callback), std::move(results));
-    return;
+    InitializeNextShard(barrier_callback, std::move(results));
+  } else {
+    auto shard_barrier_callback = base::BarrierCallback<InitResultOrError>(
+        GetSizeOfShards(),
+        base::BindOnce(&SqlPersistentStore::OnInitializeFinished,
+                       weak_factory_.GetWeakPtr(), barrier_callback));
+    for (const auto& backend_shard : backend_shards_) {
+      backend_shard->Initialize(user_max_bytes_, shard_barrier_callback);
+    }
   }
-  auto barrier_callback = base::BarrierCallback<InitResultOrError>(
-      GetSizeOfShards(),
-      base::BindOnce(&SqlPersistentStore::OnInitializeFinished,
-                     weak_factory_.GetWeakPtr(), std::move(callback)));
-  for (const auto& backend_shard : backend_shards_) {
-    backend_shard->Initialize(user_max_bytes_, barrier_callback);
+
+  if (shared_cache_manager_) {
+    shared_cache_manager_->Init(
+        base::BindOnce(
+            [](base::expected<void, SqlSharedCacheIndexDatabase::Error> result)
+                -> Error {
+              return result.has_value()
+                         ? Error::kOk
+                         : Error::kFailedToInitializeSharedCacheIndexDatabase;
+            })
+            .Then(barrier_callback));
   }
 }
 
@@ -754,9 +779,10 @@ void SqlPersistentStore::SetMaxSize(int64_t max_bytes) {
 }
 
 base::RepeatingCallback<void(SqlPersistentStore::Error)>
-SqlPersistentStore::CreateBarrierErrorCallback(ErrorCallback callback) {
+SqlPersistentStore::CreateBarrierErrorCallback(ErrorCallback callback,
+                                               size_t num_tasks) {
   return base::BarrierCallback<Error>(
-      GetSizeOfShards(),
+      num_tasks == 0 ? GetSizeOfShards() : num_tasks,
       base::BindOnce(
           [](ErrorCallback callback, const std::vector<Error>& errors) {
             // Return the first error, or kOk if all succeeded.

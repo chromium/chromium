@@ -27,6 +27,7 @@
 
 namespace disk_cache {
 
+class BackendCleanupTracker;
 class SqlPersistentStore;
 
 // Manages the creation, lookup, and lifecycle of `SqlSharedCache` instances.
@@ -39,7 +40,9 @@ class NET_EXPORT_PRIVATE SqlSharedCacheManager {
   using InitCallback = base::OnceCallback<void(
       base::expected<void, SqlSharedCacheIndexDatabase::Error>)>;
 
-  SqlSharedCacheManager(SqlPersistentStore& store, const base::FilePath& path);
+  SqlSharedCacheManager(SqlPersistentStore& store,
+                        const base::FilePath& path,
+                        scoped_refptr<BackendCleanupTracker> cleanup_tracker);
   ~SqlSharedCacheManager();
 
   // Asynchronously initializes the index database.
@@ -103,7 +106,9 @@ class NET_EXPORT_PRIVATE SqlSharedCacheManager {
 
   const raw_ref<SqlPersistentStore> store_;
   const base::FilePath directory_;
+  scoped_refptr<base::SequencedTaskRunner> db_task_runner_;
   SqlTrackedSequenceBound<SqlSharedCacheIndexDatabase> index_database_;
+  scoped_refptr<BackendCleanupTracker> cleanup_tracker_;
 
   base::queue<base::OnceCallback<void(DbOperationHandle)>>
       pending_db_operations_;

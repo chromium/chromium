@@ -7,13 +7,18 @@
 #include <memory>
 
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/run_loop.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "net/base/features.h"
 #include "net/base/network_isolation_key.h"
 #include "net/base/schemeful_site.h"
+#include "net/disk_cache/backend_cleanup_tracker.h"
 #include "net/disk_cache/sql/sql_persistent_store.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -29,6 +34,9 @@ class SqlSharedCacheManagerTest : public testing::TestWithParam<bool> {
 
   void SetUp() override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
+    cleanup_tracker_ = BackendCleanupTracker::TryCreate(temp_dir_.GetPath(),
+                                                        base::DoNothing());
+    CHECK(cleanup_tracker_);
     if (GetParam()) {
       feature_list_.InitWithFeaturesAndParameters(
           {{net::features::kRendererAccessibleHttpCache,
@@ -45,31 +53,51 @@ class SqlSharedCacheManagerTest : public testing::TestWithParam<bool> {
     task_runners_.push_back(base::ThreadPool::CreateSequencedTaskRunner(
         {base::MayBlock(), base::TaskPriority::USER_BLOCKING,
          base::TaskShutdownBehavior::BLOCK_SHUTDOWN}));
-    store_ = std::make_unique<SqlPersistentStore>(
-        temp_dir_.GetPath(), 1024 * 1024, net::DISK_CACHE, task_runners_,
-        async_task_manager_, /*cleanup_tracker=*/nullptr);
-    manager_ =
-        std::make_unique<SqlSharedCacheManager>(*store_, temp_dir_.GetPath());
+    CreateAndInitStore();
   }
 
   void TearDown() override {
-    manager_.reset();
     store_.reset();
     FlushPendingTask();
-  }
-
-  void InitManager() {
-    bool init_done = false;
-    manager_->Init(base::BindLambdaForTesting(
-        [&](base::expected<void, SqlSharedCacheIndexDatabase::Error> result) {
-          EXPECT_TRUE(result.has_value());
-          init_done = true;
-        }));
-    FlushPendingTask();
-    EXPECT_TRUE(init_done);
+    WaitForCleanup();
   }
 
  protected:
+  void WaitForCleanup() {
+    if (!cleanup_tracker_) {
+      return;
+    }
+    base::RunLoop run_loop;
+    cleanup_tracker_->AddPostCleanupCallback(run_loop.QuitClosure());
+    cleanup_tracker_ = nullptr;
+    run_loop.Run();
+    cleanup_tracker_ = BackendCleanupTracker::TryCreate(temp_dir_.GetPath(),
+                                                        base::DoNothing());
+    CHECK(cleanup_tracker_);
+  }
+
+  void CreateStore(int64_t max_bytes = 0) {
+    CHECK(!store_);
+    store_ = std::make_unique<SqlPersistentStore>(
+        temp_dir_.GetPath(), max_bytes, net::CacheType::DISK_CACHE,
+        task_runners_, async_task_manager_, cleanup_tracker_);
+  }
+
+  SqlPersistentStore::Error Init() {
+    base::test::TestFuture<SqlPersistentStore::Error> future;
+    store_->Initialize(future.GetCallback());
+    return future.Get();
+  }
+
+  void CreateAndInitStore() {
+    CreateStore();
+    ASSERT_EQ(Init(), SqlPersistentStore::Error::kOk);
+  }
+
+  SqlSharedCacheManager* GetManager() {
+    return store_->shared_cache_manager_for_testing();
+  }
+
   void FlushPendingTask() {
     async_task_manager_.RunUntilAllTasksCompleteForTest();
   }
@@ -79,8 +107,8 @@ class SqlSharedCacheManagerTest : public testing::TestWithParam<bool> {
   std::vector<scoped_refptr<base::SequencedTaskRunner>> task_runners_;
   SqlAsyncTaskManager async_task_manager_;
   std::unique_ptr<SqlPersistentStore> store_;
-  std::unique_ptr<SqlSharedCacheManager> manager_;
   base::test::ScopedFeatureList feature_list_;
+  scoped_refptr<BackendCleanupTracker> cleanup_tracker_;
 };
 
 INSTANTIATE_TEST_SUITE_P(All,
@@ -89,15 +117,13 @@ INSTANTIATE_TEST_SUITE_P(All,
                          &SqlSharedCacheManagerTest::DescribeParams);
 
 TEST_P(SqlSharedCacheManagerTest, GetCacheByNikWithoutDbId) {
-  InitManager();
-
   net::NetworkIsolationKey nik(net::SchemefulSite(GURL("https://foo.test")),
                                net::SchemefulSite(GURL("https://bar.test")));
 
   scoped_refptr<SqlSharedCacheHandle> handle;
   bool callback_run = false;
 
-  manager_->GetCacheByNik(
+  GetManager()->GetCacheByNik(
       nik, /*require_shared_cache_db_id=*/false,
       base::BindLambdaForTesting([&](scoped_refptr<SqlSharedCacheHandle> h) {
         handle = std::move(h);
@@ -114,7 +140,7 @@ TEST_P(SqlSharedCacheManagerTest, GetCacheByNikWithoutDbId) {
   scoped_refptr<SqlSharedCacheHandle> handle2;
   bool callback2_run = false;
 
-  manager_->GetCacheByNik(
+  GetManager()->GetCacheByNik(
       nik, /*require_shared_cache_db_id=*/false,
       base::BindLambdaForTesting([&](scoped_refptr<SqlSharedCacheHandle> h) {
         handle2 = std::move(h);
@@ -128,15 +154,13 @@ TEST_P(SqlSharedCacheManagerTest, GetCacheByNikWithoutDbId) {
 }
 
 TEST_P(SqlSharedCacheManagerTest, GetCacheByNikWithDbId) {
-  InitManager();
-
   net::NetworkIsolationKey nik(net::SchemefulSite(GURL("https://foo.test")),
                                net::SchemefulSite(GURL("https://bar.test")));
 
   scoped_refptr<SqlSharedCacheHandle> handle;
   bool callback_run = false;
 
-  manager_->GetCacheByNik(
+  GetManager()->GetCacheByNik(
       nik, /*require_shared_cache_db_id=*/true,
       base::BindLambdaForTesting([&](scoped_refptr<SqlSharedCacheHandle> h) {
         handle = std::move(h);
@@ -155,7 +179,7 @@ TEST_P(SqlSharedCacheManagerTest, GetCacheByNikWithDbId) {
   scoped_refptr<SqlSharedCacheHandle> handle_by_id;
   bool callback_by_id_run = false;
 
-  manager_->GetCacheByDbId(
+  GetManager()->GetCacheByDbId(
       db_id,
       base::BindLambdaForTesting([&](scoped_refptr<SqlSharedCacheHandle> h) {
         handle_by_id = std::move(h);
@@ -169,14 +193,12 @@ TEST_P(SqlSharedCacheManagerTest, GetCacheByNikWithDbId) {
 }
 
 TEST_P(SqlSharedCacheManagerTest, GetCacheByNikUpgradeToDbId) {
-  InitManager();
-
   net::NetworkIsolationKey nik(net::SchemefulSite(GURL("https://foo.test")),
                                net::SchemefulSite(GURL("https://bar.test")));
 
   // First create without DbId requirement
   scoped_refptr<SqlSharedCacheHandle> handle;
-  manager_->GetCacheByNik(
+  GetManager()->GetCacheByNik(
       nik, /*require_shared_cache_db_id=*/false,
       base::BindLambdaForTesting([&](scoped_refptr<SqlSharedCacheHandle> h) {
         handle = std::move(h);
@@ -187,7 +209,7 @@ TEST_P(SqlSharedCacheManagerTest, GetCacheByNikUpgradeToDbId) {
 
   // Request again with require_shared_cache_db_id = true
   scoped_refptr<SqlSharedCacheHandle> handle_with_id;
-  manager_->GetCacheByNik(
+  GetManager()->GetCacheByNik(
       nik, /*require_shared_cache_db_id=*/true,
       base::BindLambdaForTesting([&](scoped_refptr<SqlSharedCacheHandle> h) {
         handle_with_id = std::move(h);
@@ -199,12 +221,10 @@ TEST_P(SqlSharedCacheManagerTest, GetCacheByNikUpgradeToDbId) {
 }
 
 TEST_P(SqlSharedCacheManagerTest, GetCacheByDbIdNonExistent) {
-  InitManager();
-
   scoped_refptr<SqlSharedCacheHandle> handle;
   bool callback_run = false;
 
-  manager_->GetCacheByDbId(
+  GetManager()->GetCacheByDbId(
       SqlSharedCacheDbId(99999),
       base::BindLambdaForTesting([&](scoped_refptr<SqlSharedCacheHandle> h) {
         handle = std::move(h);
@@ -217,14 +237,12 @@ TEST_P(SqlSharedCacheManagerTest, GetCacheByDbIdNonExistent) {
 }
 
 TEST_P(SqlSharedCacheManagerTest, CacheUnreferencedDeletion) {
-  InitManager();
-
   net::NetworkIsolationKey nik(net::SchemefulSite(GURL("https://foo.test")),
                                net::SchemefulSite(GURL("https://bar.test")));
 
   {
     scoped_refptr<SqlSharedCacheHandle> handle;
-    manager_->GetCacheByNik(
+    GetManager()->GetCacheByNik(
         nik, /*require_shared_cache_db_id=*/false,
         base::BindLambdaForTesting([&](scoped_refptr<SqlSharedCacheHandle> h) {
           handle = std::move(h);
@@ -238,7 +256,7 @@ TEST_P(SqlSharedCacheManagerTest, CacheUnreferencedDeletion) {
 
   // Fetching again should create a new cache instance.
   scoped_refptr<SqlSharedCacheHandle> new_handle;
-  manager_->GetCacheByNik(
+  GetManager()->GetCacheByNik(
       nik, /*require_shared_cache_db_id=*/false,
       base::BindLambdaForTesting([&](scoped_refptr<SqlSharedCacheHandle> h) {
         new_handle = std::move(h);
@@ -248,13 +266,11 @@ TEST_P(SqlSharedCacheManagerTest, CacheUnreferencedDeletion) {
 }
 
 TEST_P(SqlSharedCacheManagerTest, DestructionTriggersCleanup) {
-  InitManager();
-
   net::NetworkIsolationKey nik(net::SchemefulSite(GURL("https://foo.test")),
                                net::SchemefulSite(GURL("https://bar.test")));
 
   scoped_refptr<SqlSharedCacheHandle> handle;
-  manager_->GetCacheByNik(
+  GetManager()->GetCacheByNik(
       nik, /*require_shared_cache_db_id=*/true,
       base::BindLambdaForTesting([&](scoped_refptr<SqlSharedCacheHandle> h) {
         handle = std::move(h);
@@ -265,19 +281,18 @@ TEST_P(SqlSharedCacheManagerTest, DestructionTriggersCleanup) {
   handle.reset();
   FlushPendingTask();
 
-  // Destroying `manager_` triggers
-  // `index_database_.AsyncCall(&SqlSharedCacheIndexDatabase::Close)` in its
+  // Destroying store resets `shared_cache_manager_` which triggers Close in
   // destructor.
-  manager_.reset();
+  store_.reset();
 
   // `RunUntilAllTasksCompleteForTest()` waits for the async close task to
   // complete.
-  async_task_manager_.RunUntilAllTasksCompleteForTest();
+  FlushPendingTask();
+  WaitForCleanup();
 
-  // Re-creating and initializing a new `SqlSharedCacheManager` should succeed.
-  manager_ =
-      std::make_unique<SqlSharedCacheManager>(*store_, temp_dir_.GetPath());
-  InitManager();
+  // Re-creating and initializing a new store (and thus SqlSharedCacheManager)
+  // should succeed.
+  CreateAndInitStore();
 }
 
 }  // namespace disk_cache
