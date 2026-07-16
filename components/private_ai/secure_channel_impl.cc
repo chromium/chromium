@@ -53,7 +53,8 @@ std::unique_ptr<SecureChannel> SecureChannelImpl::FactoryImpl::Create(
       std::make_unique<WebSocketClient>(url_, network_context_, logger_);
   auto secure_session =
       std::make_unique<SecureSessionAsyncImpl>(oak_session_driver_);
-  auto attestation_handler = std::make_unique<AttestationHandlerImpl>(logger_);
+  auto attestation_handler =
+      std::make_unique<AttestationHandlerImpl>(url_, logger_);
 
   return std::make_unique<SecureChannelImpl>(
       std::move(on_established), std::move(callback), std::move(transport),

@@ -18,11 +18,8 @@ class ServerVerificationKeyTest : public ::testing::Test {
 };
 
 TEST_F(ServerVerificationKeyTest, GetAutopushKeys) {
-  base::FieldTrialParams params;
-  params["url"] = "autopush-private-ai.corp.google.com";
-  feature_list_.InitAndEnableFeatureWithParameters(kPrivateAi, params);
-
-  auto keys = GetServerVerificationKey();
+  GURL url("https://autopush-private-ai.example.com");
+  auto keys = GetServerVerificationKey(url);
   EXPECT_FALSE(keys.empty());
   EXPECT_EQ(keys, GetAutopushKeysForTesting());
   EXPECT_NE(keys, GetDevKeysForTesting());
@@ -30,11 +27,8 @@ TEST_F(ServerVerificationKeyTest, GetAutopushKeys) {
 }
 
 TEST_F(ServerVerificationKeyTest, GetDevKeys) {
-  base::FieldTrialParams params;
-  params["url"] = "dev-private-ai.corp.google.com";
-  feature_list_.InitAndEnableFeatureWithParameters(kPrivateAi, params);
-
-  auto keys = GetServerVerificationKey();
+  GURL url("https://dev-private-ai.example.com");
+  auto keys = GetServerVerificationKey(url);
   EXPECT_FALSE(keys.empty());
   EXPECT_EQ(keys, GetDevKeysForTesting());
   EXPECT_NE(keys, GetAutopushKeysForTesting());
@@ -42,11 +36,8 @@ TEST_F(ServerVerificationKeyTest, GetDevKeys) {
 }
 
 TEST_F(ServerVerificationKeyTest, GetProdKeys) {
-  base::FieldTrialParams params;
-  params["url"] = "private-ai.corp.google.com";
-  feature_list_.InitAndEnableFeatureWithParameters(kPrivateAi, params);
-
-  auto keys = GetServerVerificationKey();
+  GURL url("https://private-ai.example.com");
+  auto keys = GetServerVerificationKey(url);
   EXPECT_FALSE(keys.empty());
   EXPECT_EQ(keys, GetAutopushKeysForTesting());
   EXPECT_EQ(keys, GetProdKeysForTesting());
@@ -55,11 +46,8 @@ TEST_F(ServerVerificationKeyTest, GetProdKeys) {
 }
 
 TEST_F(ServerVerificationKeyTest, GetStagingKeys) {
-  base::FieldTrialParams params;
-  params["url"] = "staging-private-ai.corp.google.com";
-  feature_list_.InitAndEnableFeatureWithParameters(kPrivateAi, params);
-
-  auto keys = GetServerVerificationKey();
+  GURL url("https://staging-private-ai.example.com");
+  auto keys = GetServerVerificationKey(url);
   EXPECT_FALSE(keys.empty());
   EXPECT_EQ(keys, GetStagingKeysForTesting());
   EXPECT_NE(keys, GetAutopushKeysForTesting());

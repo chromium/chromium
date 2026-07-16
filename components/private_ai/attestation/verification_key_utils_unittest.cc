@@ -62,7 +62,8 @@ TEST(VerificationKeyUtilsTest, ParseTinkSignaturePrefixZero) {
 
 // Tests for LoadVerificationKeys.
 TEST(VerificationKeyUtilsTest, LoadVerificationKeysSuccess) {
-  auto key_map = LoadVerificationKeys(GetServerVerificationKey());
+  auto key_map = LoadVerificationKeys(
+      GetServerVerificationKey(GURL("https://private-ai.example.com")));
   EXPECT_FALSE(key_map.empty());
 }
 

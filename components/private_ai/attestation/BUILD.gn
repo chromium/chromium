@@ -22,6 +22,7 @@ source_set("attestation") {
     "//crypto",
     "//third_party/oak:oak_proto",
     "//third_party/oak:oak_proto_extras",
+    "//url",
   ]
 }
 

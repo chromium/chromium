@@ -19,8 +19,8 @@ class PrivateAiLogger;
 
 class AttestationHandlerImpl : public AttestationHandler {
  public:
-  // Default constructor: Loads verification keys based on the environment.
-  explicit AttestationHandlerImpl(PrivateAiLogger* logger);
+  // Default constructor: Loads verification keys based on the URL.
+  AttestationHandlerImpl(const GURL& url, PrivateAiLogger* logger);
 
   // Constructor for testing purposes, allowing injection of a pre-loaded
   // map of verification keys.

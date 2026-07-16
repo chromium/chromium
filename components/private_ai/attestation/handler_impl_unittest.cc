@@ -20,7 +20,8 @@ namespace {
 
 TEST(AttestationHandlerImplTest, GetAttestationRequest) {
   PrivateAiLogger logger;
-  AttestationHandlerImpl attestation_handler(&logger);
+  AttestationHandlerImpl attestation_handler(GURL("https://example.com"),
+                                             &logger);
   auto request = attestation_handler.GetAttestationRequest();
   ASSERT_TRUE(request.has_value());
   EXPECT_TRUE(request->assertions().empty());

@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include "base/containers/span.h"
+#include "url/gurl.h"
 
 namespace private_ai {
 
@@ -25,9 +26,9 @@ struct ProcessedKey {
   bool operator==(const ProcessedKey& other) const;
 };
 
-// Returns the server verification key based on the current environment. The
-// steps to update this key are in b/469921004.
-base::span<const ProcessedKey> GetServerVerificationKey();
+// Returns the server verification key based on the URL. The steps to update
+// this key are in b/469921004.
+base::span<const ProcessedKey> GetServerVerificationKey(const GURL& url);
 
 // The following functions are for testing only and return the server
 // verification keys for the corresponding environment.

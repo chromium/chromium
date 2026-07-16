@@ -29,15 +29,16 @@ bool ProcessedKey::operator==(const ProcessedKey& other) const {
              std::string_view(other.y, kKeyCoordinateSize);
 }
 
-base::span<const ProcessedKey> GetServerVerificationKey() {
-  const std::string url = kPrivateAiUrl.Get();
-  if (base::StartsWith(url, "autopush")) {
+base::span<const ProcessedKey> GetServerVerificationKey(const GURL& url) {
+  std::string_view host = url.host();
+
+  if (base::StartsWith(host, "autopush")) {
     return kAutopushServerVerificationKeys;
   }
-  if (base::StartsWith(url, "dev")) {
+  if (base::StartsWith(host, "dev")) {
     return kDevServerVerificationKeys;
   }
-  if (base::StartsWith(url, "staging")) {
+  if (base::StartsWith(host, "staging")) {
     return kStagingServerVerificationKeys;
   }
   return kProdServerVerificationKeys;

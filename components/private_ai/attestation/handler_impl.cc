@@ -22,9 +22,10 @@
 
 namespace private_ai {
 
-AttestationHandlerImpl::AttestationHandlerImpl(PrivateAiLogger* logger)
+AttestationHandlerImpl::AttestationHandlerImpl(const GURL& url,
+                                               PrivateAiLogger* logger)
     : logger_(logger),
-      verification_keys_(LoadVerificationKeys(GetServerVerificationKey())) {}
+      verification_keys_(LoadVerificationKeys(GetServerVerificationKey(url))) {}
 
 AttestationHandlerImpl::AttestationHandlerImpl(
     PrivateAiLogger* logger,
