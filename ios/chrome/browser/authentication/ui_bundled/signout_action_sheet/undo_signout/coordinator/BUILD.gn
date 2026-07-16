@@ -1,0 +1,27 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("coordinator") {
+  sources = [
+    "undo_signout_coordinator.h",
+    "undo_signout_coordinator.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/signin/public/base",
+    "//ios/chrome/app:change_profile_continuation",
+    "//ios/chrome/browser/authentication/ui_bundled/authentication_flow",
+    "//ios/chrome/browser/authentication/ui_bundled/authentication_flow:request_helper",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/signin/model:authentication_service",
+    "//ios/chrome/browser/signin/model:authentication_service_factory",
+    "//ios/chrome/browser/signin/model:system_identity",
+  ]
+}

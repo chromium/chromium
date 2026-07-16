@@ -36,6 +36,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/authentication/ui_bundled:continuation",
     "//ios/chrome/browser/authentication/ui_bundled/change_profile",
     "//ios/chrome/browser/authentication/ui_bundled/signin:signin_headers",
+    "//ios/chrome/browser/authentication/ui_bundled/signout_action_sheet/undo_signout/coordinator",
     "//ios/chrome/browser/cobrowse/coordinator",
     "//ios/chrome/browser/cobrowse/model",
     "//ios/chrome/browser/default_browser/model:utils",

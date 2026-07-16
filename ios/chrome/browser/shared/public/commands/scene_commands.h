@@ -17,6 +17,7 @@ class GURL;
 @class OpenNewTabCommand;
 @protocol SafariDataImportUIHandler;
 @class ShowSigninCommand;
+@protocol SystemIdentity;
 @class UIViewController;
 namespace password_manager {
 enum class PasswordCheckReferrer;
@@ -161,6 +162,9 @@ enum class TabGridOpeningMode {
 // Shows a notification with the signed-in user account.
 - (void)showSigninAccountNotificationFromViewController:
     (UIViewController*)baseViewController;
+
+// Shows the undo sign-out flow from snackbar for `identity`.
+- (void)showUndoSignoutFromSnackbarForIdentity:(id<SystemIdentity>)identity;
 
 // Sets whether the UI is displaying incognito content.
 - (void)setIncognitoContentVisible:(BOOL)incognitoContentVisible;

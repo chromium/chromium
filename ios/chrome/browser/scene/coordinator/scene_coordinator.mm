@@ -43,6 +43,7 @@
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_utils.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin_notification_infobar_delegate.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signout_action_sheet/undo_signout/coordinator/undo_signout_coordinator.h"
 #import "ios/chrome/browser/cobrowse/coordinator/assistant_aim_coordinator.h"
 #import "ios/chrome/browser/cobrowse/model/cobrowse_context.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
@@ -107,6 +108,8 @@
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
+#import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/signin/model/system_identity_manager.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
@@ -195,6 +198,7 @@ inline LayoutStateScenePassKey PassKey() {
                                 SafariDataImportMainCoordinatorDelegate,
                                 SceneViewControllerDelegate,
                                 SettingsNavigationControllerDelegate,
+                                UndoSignoutCoordinatorDelegate,
                                 YoutubeIncognitoCoordinatorDelegate>
 
 // The SceneState for this scene.
@@ -270,6 +274,8 @@ inline LayoutStateScenePassKey PassKey() {
   ProceduralBlock _settingsDismissalCompletion;
   // Coordinator for the first step of the guided tour (NTP).
   GuidedTourCoordinator* _guidedTourCoordinator;
+  // Coordinator for the undo sign-out flow.
+  UndoSignoutCoordinator* _undoSignoutCoordinator;
 }
 
 - (instancetype)initWithTabOpener:(id<TabOpening>)tabOpener {
@@ -372,6 +378,7 @@ inline LayoutStateScenePassKey PassKey() {
   _policyWatcherObserverBridge.reset();
   [self stopAccountMenu];
   [self stopSigninCoordinatorWithCompletionAnimated:NO];
+  [self stopUndoSignoutCoordinator];
   [self stopSafariDataImportCoordinator];
   [self stopPasswordCheckupCoordinator];
   [self stopHistoryCoordinator];
@@ -1002,6 +1009,24 @@ inline LayoutStateScenePassKey PassKey() {
       HandlerForProtocol(dispatcher, SettingsCommands);
   SigninNotificationInfoBarDelegate::Create(
       infoBarManager, self.profile, settingsHandler, baseViewController);
+}
+
+- (void)showUndoSignoutFromSnackbarForIdentity:(id<SystemIdentity>)identity {
+  CHECK(IsIdentityAwarenessEnabled());
+  ChromeAccountManagerService* accountManagerService =
+      ChromeAccountManagerServiceFactory::GetForProfile(self.profile);
+  if (!accountManagerService ||
+      !accountManagerService->GetIdentityOnDeviceWithGaiaID(identity.gaiaId)) {
+    // The identity is not available anymore.
+    return;
+  }
+
+  _undoSignoutCoordinator = [[UndoSignoutCoordinator alloc]
+               initWithBrowser:self.currentBrowser
+                      identity:identity
+      presentingViewController:self.activeViewController];
+  _undoSignoutCoordinator.delegate = self;
+  [_undoSignoutCoordinator start];
 }
 
 - (void)setIncognitoContentVisible:(BOOL)incognitoContentVisible {
@@ -1722,6 +1747,13 @@ inline LayoutStateScenePassKey PassKey() {
   }
 }
 
+#pragma mark - UndoSignoutCoordinatorDelegate
+
+- (void)undoSignoutCoordinatorDidFinish:(UndoSignoutCoordinator*)coordinator {
+  CHECK_EQ(_undoSignoutCoordinator, coordinator);
+  [self stopUndoSignoutCoordinator];
+}
+
 #pragma mark - Private
 
 // Presents the Settings UI using the regular browser, base view controller,
@@ -1995,6 +2027,13 @@ inline LayoutStateScenePassKey PassKey() {
 // whether or not child coordinators exist.
 - (void)stopChildCoordinatorsWithCompletion:(ProceduralBlock)completion {
   [_tabGridCoordinator stopChildCoordinatorsWithCompletion:completion];
+}
+
+// Stops `_undoSignoutCoordinator`.
+- (void)stopUndoSignoutCoordinator {
+  _undoSignoutCoordinator.delegate = nil;
+  [_undoSignoutCoordinator stop];
+  _undoSignoutCoordinator = nil;
 }
 
 // Presents the Report an Issue UI.
