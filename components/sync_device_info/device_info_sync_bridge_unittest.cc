@@ -296,7 +296,7 @@ std::string SharingSenderIdAuthSecretForSuffix(int suffix) {
 
 sync_pb::SharingSpecificFields::EnabledFeatures SharingEnabledFeaturesForSuffix(
     int suffix) {
-  return suffix % 2 ? sync_pb::SharingSpecificFields::CLICK_TO_CALL_V2
+  return suffix % 2 ? sync_pb::SharingSpecificFields::REMOTE_COPY
                     : sync_pb::SharingSpecificFields::SHARED_CLIPBOARD_V2;
 }
 

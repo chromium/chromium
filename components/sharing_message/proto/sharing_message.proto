@@ -7,7 +7,6 @@ syntax = "proto3";
 option java_multiple_files = true;
 option java_package = "org.chromium.components.sharing_message.proto";
 
-import "click_to_call_message.proto";
 import "one_time_token_backend_notification.proto";
 import "glic_experimental_triggering.proto";
 import "optimization_guide_push_notification.proto";
@@ -23,6 +22,8 @@ option optimize_for = LITE_RUNTIME;
 // Message for sending between devices in Sharing.
 // Next tag: 19
 message SharingMessage {
+  reserved 4;
+
   // Identifier of sender. required unless any of the following is true:
   // 1. payload is a AckMessage
   // 2. ack_channel_configuration is a ServerChannelConfiguration
@@ -32,7 +33,6 @@ message SharingMessage {
   oneof payload {
     PingMessage ping_message = 2;
     AckMessage ack_message = 3;
-    ClickToCallMessage click_to_call_message = 4;
     SharedClipboardMessage shared_clipboard_message = 5;
     SmsFetchRequest sms_fetch_request = 8;
     RemoteCopyMessage remote_copy_message = 9;
