@@ -11,25 +11,27 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
-import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ntp.RegularNewTabPageStation;
 
 /** Tests for the {@link ChromeNextTabPolicySupplier}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+@Batch(Batch.PER_CLASS)
 public class ChromeNextTabPolicySupplierTest {
     @Rule
-    public FreshCtaTransitTestRule mActivityTestRule =
-            ChromeTransitTestRules.freshChromeTabbedActivityRule();
+    public AutoResetCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.fastAutoResetCtaActivityRule();
 
     @Test
     @SmallTest
     public void verifyOverviewModeBehaviorIsNotNull() {
-        RegularNewTabPageStation ntp = mActivityTestRule.startFromLauncherAtNtp();
+        RegularNewTabPageStation ntp = mActivityTestRule.startOnNtp();
         Assert.assertNotNull(ntp.getActivity().getNextTabPolicySupplier().getLayoutStateProvider());
     }
 }
