@@ -637,7 +637,7 @@ public class StatusMediator
                     toastRes = Resources.ID_NULL;
                     clickListener = null;
                 } else {
-                    toastRes = R.string.menu_page_info;
+                    toastRes = R.string.accessibility_menu_info;
                     clickListener = this::onClickOpenPageInfo;
                 }
             }
