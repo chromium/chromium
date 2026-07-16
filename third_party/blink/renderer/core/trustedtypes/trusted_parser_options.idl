@@ -7,6 +7,6 @@
     RuntimeEnabled=TrustedTypesCreateParserOptions
 ]
 interface TrustedParserOptions {
-  [SameObject] readonly attribute Sanitizer sanitizer;
+  Sanitizer sanitizer();
   readonly attribute boolean runScripts;
 };

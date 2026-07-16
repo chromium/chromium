@@ -17,24 +17,21 @@ class CORE_EXPORT TrustedParserOptions final : public ScriptWrappable {
  public:
   explicit TrustedParserOptions(Sanitizer* sanitizer, bool run_scripts)
       : sanitizer_(sanitizer ? sanitizer->Clone() : nullptr),
-        frozen_sanitizer_(sanitizer ? sanitizer->Clone() : nullptr),
         run_scripts_(run_scripts) {}
   void Trace(Visitor* visitor) const override {
     ScriptWrappable::Trace(visitor);
     visitor->Trace(sanitizer_);
-    visitor->Trace(frozen_sanitizer_);
   }
 
-  Sanitizer* sanitizer() const { return sanitizer_; }
-  // The sanitizer returned to JS is mutable, so we keep a frozen copy of the
-  // provided sanitizer, and use it as the "effective" sanitizer used during
-  // parsing.
-  Sanitizer* EffectiveSanitizer() const { return frozen_sanitizer_; }
+  Sanitizer* sanitizer() const {
+    return sanitizer_ ? sanitizer_->Clone() : Sanitizer::CreateEmpty();
+  }
+
+  Sanitizer* EffectiveSanitizer() const { return sanitizer_; }
   bool runScripts() const { return run_scripts_; }
 
  private:
   Member<Sanitizer> sanitizer_;
-  Member<Sanitizer> frozen_sanitizer_;
   bool run_scripts_;
 };
 }  // namespace blink

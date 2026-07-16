@@ -2095,8 +2095,8 @@ interface TrustedHTML
 interface TrustedParserOptions
     attribute @@toStringTag
     getter runScripts
-    getter sanitizer
     method constructor
+    method sanitizer
 interface TrustedScript
     static method fromLiteral
     attribute @@toStringTag

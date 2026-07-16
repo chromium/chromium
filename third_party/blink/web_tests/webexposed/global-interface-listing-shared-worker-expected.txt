@@ -1996,8 +1996,8 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker] interface TrustedParserOptions
 [Worker]     attribute @@toStringTag
 [Worker]     getter runScripts
-[Worker]     getter sanitizer
 [Worker]     method constructor
+[Worker]     method sanitizer
 [Worker] interface TrustedScript
 [Worker]     static method fromLiteral
 [Worker]     attribute @@toStringTag
