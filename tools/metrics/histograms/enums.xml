@@ -5717,6 +5717,36 @@ shown properly on the user-facing crash UI.
   <int value="10" label="kHwsecFailure"/>
 </enum>
 
+<!-- LINT.IfChange(IamfMixMode) -->
+
+<enum name="IamfMixMode">
+  <int value="0" label="No Mix (Passthrough/Match)"/>
+  <int value="1" label="Downmix"/>
+  <int value="2" label="Upmix"/>
+</enum>
+
+<!-- LINT.ThenChange(//media/filters/iamf_audio_decoder.cc:IamfMixMode) -->
+
+<!-- Corresponds to //third_party/iamf_tools's iamf_tools::api::OutputLayout -->
+
+<enum name="IamfOutputLayout">
+  <int value="0" label="kItu2051_SoundSystemA_0_2_0 (Stereo)"/>
+  <int value="1" label="kItu2051_SoundSystemB_0_5_0 (5.1)"/>
+  <int value="2" label="kItu2051_SoundSystemC_2_5_0 (5.1.2)"/>
+  <int value="3" label="kItu2051_SoundSystemD_4_5_0 (5.1.4)"/>
+  <int value="4" label="kItu2051_SoundSystemE_4_5_1"/>
+  <int value="5" label="kItu2051_SoundSystemF_3_7_0"/>
+  <int value="6" label="kItu2051_SoundSystemG_4_9_0"/>
+  <int value="7" label="kItu2051_SoundSystemH_9_10_3"/>
+  <int value="8" label="kItu2051_SoundSystemI_0_7_0 (7.1)"/>
+  <int value="9" label="kItu2051_SoundSystemJ_4_7_0 (7.1.4)"/>
+  <int value="10" label="kIAMF_SoundSystemExtension_2_7_0 (7.1.2)"/>
+  <int value="11" label="kIAMF_SoundSystemExtension_2_3_0 (3.1.2)"/>
+  <int value="12" label="kIAMF_SoundSystemExtension_0_1_0 (Mono)"/>
+  <int value="13" label="kIAMF_SoundSystemExtension_6_9_0 (9.1.6)"/>
+  <int value="14" label="kIAMF_Binaural (Binaural)"/>
+</enum>
+
 <enum name="IDNA2008DeviationCharacter">
   <int value="0" label="None"/>
   <int value="1" label="Eszett"/>

@@ -1639,6 +1639,68 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Media.Audio.Iamf.InitStatus" enum="DecoderStatus"
+    expires_after="2027-06-30">
+  <owner>lowkey@google.com</owner>
+  <owner>tguilbert@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    Records the outcome of the IamfAudioDecoder initialization, including
+    success or specific failure reasons. It is recorded once per decoder during
+    initialization within IamfAudioDecoder::Initialize().
+  </summary>
+</histogram>
+
+<histogram name="Media.Audio.Iamf.InputChannelCount" units="channels"
+    expires_after="2027-06-30">
+  <owner>lowkey@google.com</owner>
+  <owner>tguilbert@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    Records the number of spatial audio channels in the input IAMF stream. It is
+    recorded once per decoder during successful initialization within
+    IamfAudioDecoder::Initialize().
+  </summary>
+</histogram>
+
+<histogram name="Media.Audio.Iamf.MixMode" enum="IamfMixMode"
+    expires_after="2027-06-30">
+  <owner>lowkey@google.com</owner>
+  <owner>tguilbert@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    Records whether the IAMF decoder upmixed, downmixed, or passed through the
+    input channel layout to the requested output layout. It is recorded once per
+    decoder during successful initialization within
+    IamfAudioDecoder::Initialize().
+  </summary>
+</histogram>
+
+<histogram name="Media.Audio.Iamf.OutputLayout" enum="IamfOutputLayout"
+    expires_after="2027-06-30">
+  <owner>lowkey@google.com</owner>
+  <owner>tguilbert@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    Records the IAMF output layout requested or configured by the decoder. It is
+    recorded once per decoder during successful initialization within
+    IamfAudioDecoder::VerifyStreamParameters().
+  </summary>
+</histogram>
+
+<histogram name="Media.Audio.Iamf.UsageTime" units="ms"
+    expires_after="2027-06-30">
+  <owner>lowkey@google.com</owner>
+  <owner>tguilbert@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    Records the total duration of audio successfully decoded by the
+    IamfAudioDecoder in a single session. It is recorded once per decoder when
+    the decoder is destroyed within IamfAudioDecoder::~IamfAudioDecoder(),
+    provided there was at least one successful temporal unit decoded.
+  </summary>
+</histogram>
+
 <histogram name="Media.Audio.InputController.Delay.{AECType}" units="ms"
     expires_after="2026-09-27">
   <owner>henrika@chromium.org</owner>

@@ -13,6 +13,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/task/sequenced_task_runner.h"
 #include "media/base/audio_buffer.h"
@@ -37,6 +38,18 @@ using ChannelOrdering = iamf_tools::api::ChannelOrdering;
 constexpr SampleFormat kOutputSampleFormat = kSampleFormatS32;
 
 namespace {
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(IamfMixMode)
+enum class IamfMixMode {
+  kNoMix = 0,
+  kDownmix = 1,
+  kUpmix = 2,
+  kMaxValue = kUpmix,
+};
+// LINT.ThenChange(//tools/metrics/histograms/enums.xml:IamfMixMode)
+
 DecoderStatus ToDecoderStatus(const iamf_tools::api::IamfStatus& status) {
   if (status.ok()) {
     return DecoderStatus::Codes::kOk;
@@ -62,6 +75,10 @@ IamfAudioDecoder::IamfAudioDecoder(
 
 IamfAudioDecoder::~IamfAudioDecoder() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (decoded_duration_.has_value()) {
+    base::UmaHistogramLongTimes("Media.Audio.Iamf.UsageTime",
+                                decoded_duration_.value());
+  }
 }
 
 AudioDecoderType IamfAudioDecoder::GetDecoderType() const {
@@ -77,16 +94,25 @@ void IamfAudioDecoder::Initialize(const AudioDecoderConfig& config,
   CHECK(config.IsValidConfig());
 
   InitCB bound_init_cb = BindCallbackIfNeeded(std::move(init_cb));
-  if (config.is_encrypted()) {
-    std::move(bound_init_cb)
-        .Run(DecoderStatus::Codes::kUnsupportedEncryptionMode);
-    return;
-  }
 
   if (config.codec() != AudioCodec::kIAMF) {
     std::move(bound_init_cb)
         .Run(DecoderStatus(DecoderStatus::Codes::kUnsupportedCodec)
                  .WithData("codec", config.codec()));
+    return;
+  }
+
+  bound_init_cb = base::BindOnce(
+      [](InitCB cb, DecoderStatus status) {
+        base::UmaHistogramEnumeration("Media.Audio.Iamf.InitStatus",
+                                      status.code());
+        std::move(cb).Run(std::move(status));
+      },
+      std::move(bound_init_cb));
+
+  if (config.is_encrypted()) {
+    std::move(bound_init_cb)
+        .Run(DecoderStatus::Codes::kUnsupportedEncryptionMode);
     return;
   }
 
@@ -117,6 +143,19 @@ void IamfAudioDecoder::Initialize(const AudioDecoderConfig& config,
   config_ = config;
   output_cb_ = BindCallbackIfNeeded(output_cb);
   state_ = DecoderState::kNormal;
+  base::UmaHistogramCounts100("Media.Audio.Iamf.InputChannelCount",
+                              config_.channels());
+
+  IamfMixMode mix_mode;
+  if (config_.channels() > output_layout_config_.channels()) {
+    mix_mode = IamfMixMode::kDownmix;
+  } else if (config_.channels() < output_layout_config_.channels()) {
+    mix_mode = IamfMixMode::kUpmix;
+  } else {
+    mix_mode = IamfMixMode::kNoMix;
+  }
+  base::UmaHistogramEnumeration("Media.Audio.Iamf.MixMode", mix_mode);
+
   std::move(bound_init_cb).Run(DecoderStatus::Codes::kOk);
   DVLOG(3) << __func__ << ": successfully initialized IAMF audio decoder...";
 }
@@ -274,6 +313,8 @@ DecoderStatus IamfAudioDecoder::DrainTemporalUnits() {
     result->set_timestamp(timestamp_helper_->GetTimestamp());
 
     timestamp_helper_->AddFrames(decoded_frames);
+    decoded_duration_ =
+        decoded_duration_.value_or(base::TimeDelta()) + result->duration();
     output_cb_.Run(result);
   }
 
@@ -355,6 +396,12 @@ bool IamfAudioDecoder::VerifyStreamParameters() {
     MEDIA_LOG(ERROR, media_log_) << "Failed to get output mix.";
     return false;
   }
+
+  constexpr int kMaxIamfOutputLayout =
+      static_cast<int>(iamf_tools::api::OutputLayout::kIAMF_Binaural);
+  base::UmaHistogramExactLinear("Media.Audio.Iamf.OutputLayout",
+                                static_cast<int>(selected_mix.output_layout),
+                                kMaxIamfOutputLayout + 1);
 
   ChannelLayoutConfig layout_config =
       ConvertIamfLayout(selected_mix.output_layout, media_log_.get());

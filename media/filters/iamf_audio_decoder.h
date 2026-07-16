@@ -6,6 +6,7 @@
 #define MEDIA_FILTERS_IAMF_AUDIO_DECODER_H_
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/functional/callback.h"
@@ -147,6 +148,9 @@ class MEDIA_EXPORT IamfAudioDecoder : public AudioDecoder {
   ChannelLayoutConfig output_layout_config_;
   uint32_t output_sample_rate_ = 0;
   uint32_t frame_size_ = 0;
+
+  // Track the total playback duration decoded by this instance.
+  std::optional<base::TimeDelta> decoded_duration_;
 };
 
 }  // namespace media

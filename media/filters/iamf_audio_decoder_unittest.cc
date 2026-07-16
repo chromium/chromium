@@ -4,11 +4,13 @@
 
 #include "media/filters/iamf_audio_decoder.h"
 
+#include <array>
 #include <memory>
 #include <optional>
 
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "media/base/audio_decoder_config.h"
@@ -282,6 +284,75 @@ TEST_F(IamfAudioDecoderTest, DecodeAfterFinishedReturnsOk) {
 
   status = DecodeAndGetStatus(decoder.get(), DecoderBuffer::CreateEOSBuffer());
   EXPECT_EQ(status.code(), DecoderStatus::Codes::kOk);
+}
+
+TEST_F(IamfAudioDecoderTest, UmaMetrics) {
+  base::HistogramTester histogram_tester;
+  constexpr std::array<uint8_t, 3> kDummyData = {1, 2, 3};
+  constexpr int kExpectedDecodes = 13;
+
+  auto decoder = InitializeDecoder(ChannelLayoutConfig::Stereo());
+
+  for (int i = 0; i < kExpectedDecodes; ++i) {
+    scoped_refptr<DecoderBuffer> buffer = DecoderBuffer::CopyFrom(kDummyData);
+    buffer->set_timestamp(base::TimeDelta());
+    DecoderStatus dummy_decode_status =
+        DecodeAndGetStatus(decoder.get(), buffer);
+    EXPECT_TRUE(dummy_decode_status.is_ok());
+
+    base::RunLoop run_loop;
+    decoder->Reset(run_loop.QuitClosure());
+    run_loop.Run();
+  }
+
+  DecoderStatus eos_decode_status =
+      DecodeAndGetStatus(decoder.get(), DecoderBuffer::CreateEOSBuffer());
+
+  EXPECT_TRUE(eos_decode_status.is_ok());
+
+  // Verify that there was exactly 1 initialization that succeeded with kOk.
+  histogram_tester.ExpectUniqueSample(
+      "Media.Audio.Iamf.InitStatus",
+      static_cast<int>(DecoderStatus::Codes::kOk),
+      /*expected_bucket_count=*/1);
+
+  // Verify that the input channel count was recorded exactly once and matched
+  // the config (Stereo = 2 channels).
+  histogram_tester.ExpectUniqueSample("Media.Audio.Iamf.InputChannelCount", 2,
+                                      /*expected_bucket_count=*/1);
+
+  // Verify that the IAMF specific output layout enum was recorded exactly once.
+  histogram_tester.ExpectUniqueSample(
+      "Media.Audio.Iamf.OutputLayout",
+      static_cast<int>(
+          iamf_tools::api::OutputLayout::kItu2051_SoundSystemA_0_2_0),
+      /*expected_bucket_count=*/1);
+
+  // Verify that the MixMode was correctly logged as No mixing (0)
+  // because input config and output layout are both Stereo.
+  histogram_tester.ExpectUniqueSample("Media.Audio.Iamf.MixMode", 0,
+                                      /*expected_bucket_count=*/1);
+}
+
+TEST_F(IamfAudioDecoderTest, UmaMetrics_Downmix) {
+  base::HistogramTester histogram_tester;
+
+  // 5.1 input (6 channels), but target layout is stereo (2 channels) -> Downmix
+  auto decoder =
+      InitializeDecoder(ChannelLayoutConfig::FromLayout<CHANNEL_LAYOUT_5_1>(),
+                        ChannelLayoutConfig::Stereo());
+
+  histogram_tester.ExpectUniqueSample("Media.Audio.Iamf.MixMode", 1, 1);
+}
+
+TEST_F(IamfAudioDecoderTest, UmaMetrics_Upmix) {
+  base::HistogramTester histogram_tester;
+
+  // Mono input (1 channel), but target layout is stereo (2 channels) -> Upmix
+  auto decoder = InitializeDecoder(ChannelLayoutConfig::Mono(),
+                                   ChannelLayoutConfig::Stereo());
+
+  histogram_tester.ExpectUniqueSample("Media.Audio.Iamf.MixMode", 2, 1);
 }
 
 }  // namespace media
