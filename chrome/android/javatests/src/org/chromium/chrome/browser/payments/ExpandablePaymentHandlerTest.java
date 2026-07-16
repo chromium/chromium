@@ -376,9 +376,7 @@ public class ExpandablePaymentHandlerTest {
     @Test
     @SmallTest
     @Feature({"Payments"})
-    @EnableFeatures({
-        PaymentFeatureList.PAYMENT_HANDLER_DIALOG_USE_INITIATOR_IN_URL_LOAD_FOR_ANDROID
-    })
+    @EnableFeatures({PaymentFeatureList.PAYMENT_HANDLER_DIALOG_USE_INITIATOR_IN_URL_LOAD})
     public void testInitiatorOriginSet() throws Throwable {
         startDefaultServer();
         mStartingPage = mStartingPage.loadWebPageProgrammatically(mServer.getURL("/"));

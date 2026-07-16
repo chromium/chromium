@@ -35,11 +35,11 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &features::kGPayAppDynamicUpdate,
     &features::kWebPaymentsExperimentalFeatures,
     &features::kWebPaymentsSingleAppUiSkip,
+    &features::kPaymentHandlerDialogUseInitiatorInUrlLoad,
     &kAndroidPaymentIntentsOmitDeprecatedParameters,
     &kDeduplicateNativePaymentApps,
     &kGooglePayViaAndroidIntents,
     &kOmitParametersInReadyToPay,
-    &kPaymentHandlerDialogUseInitiatorInUrlLoadForAndroid,
     &kReconnectOnLostConnectionToUpdatePaymentDetailsService,
     &kShowReadyToPayDebugInfo,
     &kUpdatePaymentDetailsIntentFilterInPaymentApp,
@@ -64,8 +64,6 @@ BASE_FEATURE(kAndroidPaymentIntentsOmitDeprecatedParameters,
 BASE_FEATURE(kDeduplicateNativePaymentApps, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kGooglePayViaAndroidIntents, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kOmitParametersInReadyToPay, base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE(kPaymentHandlerDialogUseInitiatorInUrlLoadForAndroid,
-             base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kReconnectOnLostConnectionToUpdatePaymentDetailsService,
              base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kShowReadyToPayDebugInfo, base::FEATURE_DISABLED_BY_DEFAULT);
