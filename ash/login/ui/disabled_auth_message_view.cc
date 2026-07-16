@@ -12,6 +12,8 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
+#include "base/i18n/icubridge/date_time_formatter.h"
+#include "base/i18n/icubridge/icu_bridge.h"
 #include "base/i18n/time_formatting.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -29,6 +31,8 @@
 
 namespace ash {
 namespace {
+
+using ::base::i18n::IcuBridge;
 
 constexpr int kVerticalBorderDp = 16;
 constexpr int kHorizontalBorderDp = 16;
@@ -76,7 +80,8 @@ LockScreenMessage GetWindowLimitMessage(const base::Time& unlock_time,
   } else {
     message.content = l10n_util::GetStringFUTF16(
         IDS_ASH_LOGIN_COME_BACK_DAY_OF_WEEK_MESSAGE,
-        base::LocalizedTimeFormatWithPattern(unlock_time, "EEEE"),
+        IcuBridge::GetInstance().date_time_formatter().Format(
+            unlock_time, base::i18n::datetime_options::E::Long()),
         time_to_display);
   }
   message.icon = ui::ImageModel::FromVectorIcon(
