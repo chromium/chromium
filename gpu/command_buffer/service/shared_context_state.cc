@@ -816,13 +816,14 @@ bool SharedContextState::InitializeGLWithFeatureInfo(
   return true;
 }
 
-void SharedContextState::FlushGraphiteRecorder() {
+bool SharedContextState::FlushGraphiteRecorder() {
   auto recording = gpu_main_graphite_recorder()->snap();
   if (recording) {
     skgpu::graphite::InsertRecordingInfo info = {};
     info.fRecording = recording.get();
-    graphite_shared_context()->insertRecording(info);
+    return graphite_shared_context()->insertRecording(info);
   }
+  return true;
 }
 
 void SharedContextState::FlushAndSubmit(bool sync_to_cpu) {
@@ -837,16 +838,17 @@ void SharedContextState::FlushAndSubmit(bool sync_to_cpu) {
   }
 }
 
-void SharedContextState::FlushWriteAccess(
+bool SharedContextState::FlushWriteAccess(
     SkiaImageRepresentation::ScopedWriteAccess* access) {
   static int flush_count = 0;
   const base::TimeTicks start = base::TimeTicks::Now();
+  bool success = true;
   if (graphite_shared_context()) {
     // The only way to flush GPU work with Graphite is to snap and insert a
     // recording here. It's also necessary to submit before dropping the scoped
     // access since we want the Dawn texture to be alive on submit, but that's
     // handled in SubmitIfNecessary.
-    FlushGraphiteRecorder();
+    success = FlushGraphiteRecorder();
   } else {
     if (access->HasBackendSurfaceEndState()) {
       access->ApplyBackendSurfaceEndState();
@@ -867,6 +869,7 @@ void SharedContextState::FlushWriteAccess(
         "GPU.RasterDecoder.TimeToFlush", base::TimeTicks::Now() - start,
         base::Microseconds(1), base::Seconds(1), 100);
   }
+  return success;
 }
 
 void SharedContextState::SubmitIfNecessary(

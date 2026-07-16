@@ -188,12 +188,12 @@ bool CopyPixelsToTexture(
 
   dest_scoped_access->surface()->writePixels(subset, xoffset, yoffset);
 
-  shared_context_state->FlushWriteAccess(dest_scoped_access);
+  bool success = shared_context_state->FlushWriteAccess(dest_scoped_access);
   shared_context_state->SubmitIfNecessary(
       std::move(end_semaphores),
       dest_scoped_access->NeedGraphiteContextSubmit());
 
-  if (!dest_shared_image->IsCleared()) {
+  if (success && !dest_shared_image->IsCleared()) {
     dest_shared_image->SetClearedRect(dest_cleared_rect);
   }
 
@@ -291,14 +291,20 @@ base::expected<void, GLError> CopySharedImageHelper::CopySharedImage(
   }
 
   bool need_graphite_submit = dest_scoped_access->NeedGraphiteContextSubmit();
+  bool update_cleared_rect = false;
+  gfx::Rect new_cleared_rect;
+
   // Flush dest surface and submit if necessary before exiting.
   absl::Cleanup cleanup = [&]() {
-    shared_context_state_->FlushWriteAccess(dest_scoped_access.get());
+    bool success =
+        shared_context_state_->FlushWriteAccess(dest_scoped_access.get());
     shared_context_state_->SubmitIfNecessary(std::move(end_semaphores),
                                              need_graphite_submit);
+    if (success && update_cleared_rect) {
+      dest_shared_image->SetClearedRect(new_cleared_rect);
+    }
   };
 
-  gfx::Rect new_cleared_rect;
   gfx::Rect old_cleared_rect = dest_shared_image->ClearedRect();
   if (!gles2::TextureManager::CombineAdjacentRects(old_cleared_rect, dest_rect,
                                                    &new_cleared_rect)) {
@@ -360,7 +366,7 @@ base::expected<void, GLError> CopySharedImageHelper::CopySharedImage(
     }
 
     if (!dest_shared_image->IsCleared()) {
-      dest_shared_image->SetClearedRect(new_cleared_rect);
+      update_cleared_rect = true;
     }
 
     // Note, that we still generate error for the client to indicate there was
@@ -454,20 +460,26 @@ base::expected<void, GLError> CopySharedImageHelper::CopySharedImage(
       skia::BlitRGBAToYUVA(source_image.get(), yuva_sk_surfaces, yuva_info,
                            gfx::RectToSkRect(dest_rect), false,
                            gfx::RectToSkRect(source_rect));
-      dest_shared_image->SetCleared();
+      new_cleared_rect = gfx::Rect(dest_shared_image->size());
+      update_cleared_rect = true;
     }
 
     if (!dest_shared_image->IsCleared()) {
-      dest_shared_image->SetClearedRect(new_cleared_rect);
+      update_cleared_rect = true;
     }
   }
 
   // Cancel cleanup as the cleanup order is different here.
   std::move(cleanup).Cancel();
-  shared_context_state_->FlushWriteAccess(dest_scoped_access.get());
+  bool success =
+      shared_context_state_->FlushWriteAccess(dest_scoped_access.get());
   source_scoped_access->ApplyBackendSurfaceEndState();
   shared_context_state_->SubmitIfNecessary(std::move(end_semaphores),
                                            need_graphite_submit);
+
+  if (success && update_cleared_rect) {
+    dest_shared_image->SetClearedRect(new_cleared_rect);
+  }
   return result;
 }
 
@@ -818,11 +830,12 @@ base::expected<void, GLError> CopySharedImageHelper::WritePixelsYUV(
     }
   }
 
-  shared_context_state_->FlushWriteAccess(dest_scoped_access.get());
+  bool success =
+      shared_context_state_->FlushWriteAccess(dest_scoped_access.get());
   shared_context_state_->SubmitIfNecessary(std::move(end_semaphores),
                                            need_graphite_submit);
 
-  if (!dest_shared_image->IsCleared()) {
+  if (success && !dest_shared_image->IsCleared()) {
     dest_shared_image->SetClearedRect(gfx::Rect(src_width, src_height));
   }
   return base::ok();

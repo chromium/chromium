@@ -63,18 +63,20 @@ bool GraphiteReadPixelsSyncImpl(GraphiteSharedContext* context,
 
 }  // namespace
 
-void GraphiteFlush(GraphiteSharedContext* context,
+bool GraphiteFlush(GraphiteSharedContext* context,
                    skgpu::graphite::Recorder* recorder) {
   auto recording = recorder->snap();
   if (recording) {
-    context->insertRecording({recording.get()});
+    return context->insertRecording({recording.get()});
   }
+  return true;
 }
 
-void GraphiteFlushAndSubmit(GraphiteSharedContext* context,
+bool GraphiteFlushAndSubmit(GraphiteSharedContext* context,
                             skgpu::graphite::Recorder* recorder) {
-  GraphiteFlush(context, recorder);
+  bool success = GraphiteFlush(context, recorder);
   context->submit();
+  return success;
 }
 
 bool GraphiteReadPixelsSync(GraphiteSharedContext* context,
