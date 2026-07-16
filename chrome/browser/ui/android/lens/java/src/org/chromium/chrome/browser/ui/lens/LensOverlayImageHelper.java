@@ -88,8 +88,9 @@ public class LensOverlayImageHelper {
             canvas.drawColor(Color.BLACK);
 
             // Draw the windowshot into the composited bitmap.
-            // ui::GrabWindowSnapshot captures the full content of the window, so we draw it
-            // at the window's top-left offset.
+            // Direct surface capture (RenderWidgetHostView::CopyFromSurface()) provides the full
+            // content of the renderer, which we draw at the window's top-left offset to composite
+            // into the full-screen image.
             canvas.drawBitmap(
                     windowshot, metrics.windowBounds.left, metrics.windowBounds.top, null);
 

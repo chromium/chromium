@@ -6,19 +6,27 @@
 
 #include "base/android/jni_android.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
+#include "base/time/time.h"
 #include "components/lens/lens_overlay_invocation_source.h"
 #include "components/lens/lens_overlay_metrics.h"
 #include "components/lens/lens_overlay_mime_type.h"
+#include "components/viz/common/frame_sinks/copy_output_result.h"
+#include "content/public/browser/render_widget_host_view.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/android/java_bitmap.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/snapshot/snapshot.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/browser/ui/android/lens/jni_headers/LensOverlayCoordinator_jni.h"
 
 using jni_zero::JavaRef;
+
+namespace {
+// Maximum time to wait for the renderer surface to produce a result.
+constexpr base::TimeDelta kCaptureTimeout = base::Seconds(2);
+}  // namespace
 
 int64_t JNI_LensOverlayCoordinator_Init(JNIEnv* env,
                                         const JavaRef<jobject>& obj,
@@ -44,28 +52,47 @@ bool LensOverlayControllerAndroid::ShowUI(JNIEnv* env,
       static_cast<lens::LensOverlayInvocationSource>(invocation_source),
       lens::MimeType::kHtml);
 
-  gfx::NativeWindow window = web_contents_->GetTopLevelNativeWindow();
-  if (!window) {
+  weak_ptr_factory_.InvalidateWeakPtrs();
+
+  content::RenderWidgetHostView* rwhv =
+      web_contents_->GetRenderWidgetHostView();
+  if (!rwhv || !rwhv->IsSurfaceAvailableForCopy()) {
     return false;
   }
 
-  // Invalidate any in-flight screenshot requests to ensure we only process the
-  // result of the most recent call. (The underlying GPU capture will still run,
-  // but the callback will be dropped).
-  weak_ptr_factory_.InvalidateWeakPtrs();
+  // Increment the capturer count to keep the WebContents active and visible
+  // during the asynchronous capture process.
+  scoped_capturer_ =
+      web_contents_->IncrementCapturerCount(gfx::Size(), /*stay_hidden=*/true,
+                                            /*stay_awake=*/true,
+                                            /*is_activity=*/true);
 
-  ui::GrabWindowSnapshot(
-      window, gfx::Rect(),
-      base::BindOnce(&LensOverlayControllerAndroid::OnScreenshotCaptured,
-                     weak_ptr_factory_.GetWeakPtr()));
+  CaptureWindowSnapshot();
   return true;
 }
 
-void LensOverlayControllerAndroid::OnScreenshotCaptured(gfx::Image snapshot) {
-  if (snapshot.IsEmpty()) {
-    // If the capture fails, we log and return. This silently aborts the flow,
-    // which is the intended behavior for the intent-based flow.
-    LOG(ERROR) << "Failed to capture window snapshot";
+void LensOverlayControllerAndroid::CaptureWindowSnapshot() {
+  content::RenderWidgetHostView* rwhv =
+      web_contents_->GetRenderWidgetHostView();
+  if (!rwhv) {
+    OnCopyFromSurfaceFinished(
+        base::unexpected(content::CopyFromSurfaceError::kUnknown));
+    return;
+  }
+
+  rwhv->CopyFromSurface(
+      gfx::Rect(), gfx::Size(), kCaptureTimeout,
+      base::BindOnce(&LensOverlayControllerAndroid::OnCopyFromSurfaceFinished,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void LensOverlayControllerAndroid::OnCopyFromSurfaceFinished(
+    const content::CopyFromSurfaceResult& result) {
+  // Release the capturer count now that the asynchronous process is complete.
+  scoped_capturer_.RunAndReset();
+
+  if (!result.has_value() || result->bitmap.drawsNothing()) {
+    LOG(ERROR) << "Failed to capture screenshot from renderer surface.";
     if (java_obj_) {
       Java_LensOverlayCoordinator_onCaptureError(
           base::android::AttachCurrentThread(), java_obj_);
@@ -73,10 +100,9 @@ void LensOverlayControllerAndroid::OnScreenshotCaptured(gfx::Image snapshot) {
     return;
   }
 
-  SkBitmap bitmap = snapshot.AsBitmap();
   if (java_obj_) {
     Java_LensOverlayCoordinator_onScreenshotCaptured(
-        base::android::AttachCurrentThread(), java_obj_, bitmap);
+        base::android::AttachCurrentThread(), java_obj_, result->bitmap);
   }
 }
 
