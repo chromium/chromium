@@ -9,6 +9,7 @@
 #include <optional>
 #include <string>
 #include <string_view>
+#include <type_traits>
 #include <utility>
 #include <vector>
 
@@ -122,6 +123,14 @@ class COMPONENT_EXPORT(ACTIONS) ActionInvocationContext
     ContextBuilder&& SetProperty(const ui::ClassProperty<T>* property,
                                  ui::metadata::ArgType<T> value) && {
       context_->SetProperty(property, value);
+      return std::move(*this);
+    }
+
+    template <typename T, typename U>
+      requires std::is_enum_v<U> && std::is_same_v<T, std::underlying_type_t<U>>
+    ContextBuilder&& SetProperty(const ui::ClassProperty<T>* property,
+                                 U value) && {
+      context_->SetProperty(property, static_cast<T>(value));
       return std::move(*this);
     }
 

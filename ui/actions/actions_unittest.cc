@@ -555,4 +555,14 @@ TEST_F(ActionItemTest, TextActionInvocationContext) {
   EXPECT_EQ(action_invoked_count, 1);
 }
 
+TEST_F(ActionItemTest, ActionInvocationContextEnumSetProperty) {
+  ActionInvocationContext context =
+      ActionInvocationContext::Builder()
+          .SetProperty(kActionItemPinnableKey, ActionPinnableState::kPinnable)
+          .Build();
+  EXPECT_EQ(context.GetProperty(kActionItemPinnableKey),
+            static_cast<std::underlying_type_t<ActionPinnableState>>(
+                ActionPinnableState::kPinnable));
+}
+
 }  // namespace actions
