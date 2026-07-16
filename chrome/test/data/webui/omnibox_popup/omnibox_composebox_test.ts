@@ -1102,7 +1102,7 @@ suite('OmniboxComposeboxTest', () => {
 
         assertTrue(
             voiceSearchOverlay.classList.contains('permission-prompt-showing'));
-        assertEquals('none', window.getComputedStyle(bottomActions).display);
+        assertEquals('0', window.getComputedStyle(bottomActions).opacity);
       });
 
   test(

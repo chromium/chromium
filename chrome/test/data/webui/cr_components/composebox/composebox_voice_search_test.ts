@@ -1226,10 +1226,11 @@ suite('ComposeboxVoiceSearch', () => {
         assertEquals(100, permissionEventDetail.width);
         assertEquals(200, permissionEventDetail.height);
 
-        const inputDiv =
-            voiceSearchElement.shadowRoot.querySelector<HTMLElement>('#input');
-        assertTrue(!!inputDiv, 'Input #input should be rendered');
-        assertEquals('Waiting for permission...', inputDiv.textContent?.trim());
+        const textarea =
+            voiceSearchElement.shadowRoot.querySelector<HTMLTextAreaElement>(
+                '#input');
+        assertTrue(!!textarea, 'Textarea #input should be rendered');
+        assertEquals('Waiting for permission...', textarea.placeholder);
 
         // Fire `onPermissionPromptChanged(false, promptSize)`.
         searchboxCallbackRouterRemote.onPermissionPromptChanged(
@@ -1383,8 +1384,6 @@ suite('ComposeboxVoiceSearch', () => {
       async () => {
         // Open voice search via UI.
         const voiceSearchElement = await openVoiceSearchUI();
-        voiceSearchElement.liveTranscriptEnabled = false;
-        await voiceSearchElement.updateComplete;
         const container =
             voiceSearchElement.shadowRoot.querySelector('#container');
         assertTrue(!!container);
@@ -1439,33 +1438,4 @@ suite('ComposeboxVoiceSearch', () => {
         voiceSearchElement.shadowRoot.querySelector<HTMLElement>('#input')!;
     assertEquals('16px', window.getComputedStyle(input).fontSize);
   });
-
-  test(
-      'input ends above bottom action buttons and spans full width',
-      async () => {
-        await createComposeboxElement();
-        const voiceSearchElement = getVoiceSearchElement(composeboxElement);
-        voiceSearchElement.submitStopButtonsEnabled = true;
-        voiceSearchElement.liveTranscriptEnabled = true;
-        await voiceSearchElement.updateComplete;
-
-        const container =
-            voiceSearchElement.shadowRoot.querySelector<HTMLElement>(
-                '#container')!;
-        const input =
-            voiceSearchElement.shadowRoot.querySelector<HTMLElement>('#input')!;
-        const buttonSpacer =
-            voiceSearchElement.shadowRoot.querySelector<HTMLElement>(
-                '#button-spacer');
-        const bottomActions =
-            voiceSearchElement.shadowRoot.querySelector<HTMLElement>(
-                '#bottomActions')!;
-
-        assertFalse(!!buttonSpacer);
-        assertEquals(
-            'column', window.getComputedStyle(container).flexDirection);
-        assertEquals('20px', window.getComputedStyle(input).paddingInlineEnd);
-        assertEquals('0px', window.getComputedStyle(input).paddingBottom);
-        assertEquals('static', window.getComputedStyle(bottomActions).position);
-      });
 });

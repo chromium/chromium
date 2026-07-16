@@ -65,7 +65,7 @@ export function getHtml(this: SearchAnimatedGlowElement) {
       </div>
     `}
 
-    <div id="fullContainerOverlay" part="full-container-overlay">
+    <div id="fullContainerOverlay">
       ${this.requiresVoice && this.coloredTicTacVoiceAnimationEnabled ?
           html`
               ${this.isListening ?

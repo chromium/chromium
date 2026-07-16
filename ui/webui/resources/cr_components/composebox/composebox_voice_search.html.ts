@@ -26,19 +26,17 @@ export function getHtml(this: ComposeboxVoiceSearchElement) {
         </a>`}
       </div>
       ${this.isPermissionPromptOpen ? html`
-          <div id="input"
+          <textarea id="input"
               class="${this.shouldShowErrorScrim_() ? 'hidden' : ''}"
-          >
-            <span>${this.i18n('voiceWaiting')}</span>
-          </div>`
+              placeholder="${this.i18n('voiceWaiting')}" disabled
+          ></textarea>`
       : ''}
       ${this.liveTranscriptEnabled && !this.isPermissionPromptOpen ?
-          html`<div id="input"
-              class="${this.shouldShowErrorScrim_() ? 'hidden' : ''}"
-          >
-            <span id="transcript-text"
-            >${this.transcript_ || this.listeningPlaceholder_}</span>
-          </div>`
+          html`<textarea id="input"
+              .value="${this.transcript_}"
+              placeholder="${this.listeningPlaceholder_}"
+              class="${this.shouldShowErrorScrim_() ? 'hidden' : ''}" disabled
+          ></textarea>`
       : ''}
       ${!this.submitStopButtonsEnabled || this.shouldShowErrorScrim_() ?
           html`<cr-icon-button id="closeButton" class="icon-clear"

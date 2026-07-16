@@ -1181,19 +1181,8 @@ suite('NewTabPageComposeboxTest', () => {
             assertEquals(
                 'absolute', window.getComputedStyle(voiceSearch).position);
             assertEquals(
-                'relative',
-                window.getComputedStyle(voiceSearchContainer).position);
-
-            // Without live transcript:
-            voiceSearch.liveTranscriptEnabled = false;
-            await voiceSearch.updateComplete;
-            assertEquals(
                 'absolute',
                 window.getComputedStyle(voiceSearchContainer).position);
-
-            // Toggle back to true:
-            voiceSearch.liveTranscriptEnabled = true;
-            await voiceSearch.updateComplete;
 
             // Waiting (permission prompt open):
             voiceSearch.isPermissionPromptOpen = true;
