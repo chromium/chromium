@@ -14,6 +14,7 @@
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_theme_provider_impl.h"
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_wallpaper_provider_impl.h"
 #include "chrome/browser/ash/wallpaper_handlers/test_wallpaper_fetcher_delegate.h"
+#include "chrome/browser/browser_process.h"
 #include "content/public/browser/web_ui.h"
 #include "url/gurl.h"
 
@@ -22,6 +23,9 @@ namespace ash::personalization_app {
 std::unique_ptr<content::WebUIController>
 TestPersonalizationAppWebUIProvider::NewWebUI(content::WebUI* web_ui,
                                               const GURL& url) {
+  // TODO(crbug.com/404133902): Avoid using g_browser_process.
+  PrefService* local_state = g_browser_process->local_state();
+
   auto ambient_provider =
       std::make_unique<FakePersonalizationAppAmbientProvider>(web_ui);
   auto keyboard_backlight_provider =
@@ -34,7 +38,7 @@ TestPersonalizationAppWebUIProvider::NewWebUI(content::WebUI* web_ui,
       std::make_unique<PersonalizationAppThemeProviderImpl>(web_ui);
   auto wallpaper_provider =
       std::make_unique<PersonalizationAppWallpaperProviderImpl>(
-          web_ui,
+          local_state, web_ui,
           std::make_unique<wallpaper_handlers::TestWallpaperFetcherDelegate>());
   auto user_provider =
       std::make_unique<FakePersonalizationAppUserProvider>(web_ui);

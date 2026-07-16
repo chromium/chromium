@@ -22,6 +22,7 @@
 #include "ash/webui/personalization_app/personalization_app_wallpaper_provider.h"
 #include "base/files/file.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/wallpaper_handlers/wallpaper_fetcher_delegate.h"
@@ -57,6 +58,7 @@ class GooglePhotosEnabledFetcher;
 class GooglePhotosPhotosFetcher;
 }  // namespace wallpaper_handlers
 
+class PrefService;
 class Profile;
 
 namespace ash::personalization_app {
@@ -67,7 +69,9 @@ class PersonalizationAppWallpaperProviderImpl
     : public PersonalizationAppWallpaperProvider,
       ash::WallpaperControllerObserver {
  public:
+  // `local_state` must be non-null and must outlive `this`.
   PersonalizationAppWallpaperProviderImpl(
+      PrefService* local_state,
       content::WebUI* web_ui,
       std::unique_ptr<wallpaper_handlers::WallpaperFetcherDelegate>
           wallpaper_fetcher_delegate);
@@ -292,6 +296,8 @@ class PersonalizationAppWallpaperProviderImpl
 
   void NotifyWallpaperChanged(
       ash::personalization_app::mojom::CurrentWallpaperPtr current_wallpaper);
+
+  const raw_ref<PrefService> local_state_;
 
   std::unique_ptr<wallpaper_handlers::BackdropCollectionInfoFetcher>
       wallpaper_collection_info_fetcher_;

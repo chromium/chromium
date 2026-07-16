@@ -233,7 +233,7 @@ class PersonalizationAppWallpaperProviderImplTest : public testing::Test {
 
     wallpaper_provider_ = std::make_unique<
         PersonalizationAppWallpaperProviderImpl>(
-        &web_ui_,
+        TestingBrowserProcess::GetGlobal()->local_state(), &web_ui_,
         std::make_unique<wallpaper_handlers::TestWallpaperFetcherDelegate>());
 
     wallpaper_provider_->BindInterface(

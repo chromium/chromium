@@ -16,7 +16,6 @@
 #include "base/task/thread_pool.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/file_manager/trash_common_util.h"
-#include "chrome/browser/browser_process.h"
 
 namespace {
 
@@ -70,6 +69,7 @@ std::vector<base::FilePath> EnumerateAllImages(
 namespace ash {
 
 void EnumerateLocalWallpaperFiles(
+    const PrefService& local_state,
     Profile* profile,
     base::OnceCallback<void(const std::vector<base::FilePath>&)> callback) {
   const base::FilePath search_path =
@@ -78,9 +78,7 @@ void EnumerateLocalWallpaperFiles(
       kPngFilePattern, kJpgFilePattern, kJpegFilePattern};
 
   std::vector<base::FilePath> trash_paths;
-  // TODO(crbug.com/393260137): Avoid using g_browser_process.
-  if (file_manager::trash::IsTrashEnabledForProfile(
-          CHECK_DEREF(g_browser_process->local_state()), profile)) {
+  if (file_manager::trash::IsTrashEnabledForProfile(local_state, profile)) {
     auto enabled_trash_locations =
         file_manager::trash::GenerateEnabledTrashLocationsForProfile(profile);
     for (const auto& it : enabled_trash_locations) {

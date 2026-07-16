@@ -10,6 +10,7 @@
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
 
+class PrefService;
 class Profile;
 
 namespace ash {
@@ -17,6 +18,7 @@ namespace ash {
 // Searches the user's files for jpg and png images. This is used for
 // displaying images that the user could select as a custom wallpaper.
 void EnumerateLocalWallpaperFiles(
+    const PrefService& local_state,
     Profile* profile,
     base::OnceCallback<void(const std::vector<base::FilePath>&)> callback);
 
