@@ -97,7 +97,10 @@ source_set("client_side_detection_service_base") {
     "//components/safe_browsing/core/common/phishing_classifier",
     "//components/safe_browsing/core/common/proto:client_model_proto",
     "//components/safe_browsing/core/common/proto:csd_proto",
+    "//google_apis",
     "//net",
+    "//services/network/public/cpp",
+    "//services/network/public/mojom",
     "//third_party/tflite_support",
     "//third_party/tflite_support:tflite_support_proto",
     "//url",
@@ -125,6 +128,7 @@ source_set("client_side_detection_service_base_unittest") {
     "//components/safe_browsing/core/common/fbs:client_model",
     "//components/safe_browsing/core/common/proto:client_model_proto",
     "//components/safe_browsing/core/common/proto:csd_proto",
+    "//services/network:test_support",
     "//testing/gmock",
     "//testing/gtest",
   ]

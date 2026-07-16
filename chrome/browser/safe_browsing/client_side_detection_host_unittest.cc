@@ -196,11 +196,12 @@ class MockClientSideDetectionService : public ClientSideDetectionService {
   MOCK_CONST_METHOD1(IsPrivateIPAddress, bool(const net::IPAddress&));
   MOCK_METHOD2(GetValidCachedResult, bool(const GURL&, bool*));
   MOCK_METHOD0(AtPhishingReportLimit, bool());
-  MOCK_METHOD0(GetModelSharedMemoryRegion, base::ReadOnlySharedMemoryRegion());
-  MOCK_METHOD0(GetModelType, CSDModelType());
-  MOCK_METHOD0(IsModelAvailable, bool());
-  MOCK_METHOD0(HasImageEmbeddingModel, bool());
-  MOCK_METHOD0(IsModelMetadataImageEmbeddingVersionMatching, bool());
+  MOCK_CONST_METHOD0(GetModelSharedMemoryRegion,
+                     base::ReadOnlySharedMemoryRegion());
+  MOCK_CONST_METHOD0(GetModelType, CSDModelType());
+  MOCK_CONST_METHOD0(IsModelAvailable, bool());
+  MOCK_CONST_METHOD0(HasImageEmbeddingModel, bool());
+  MOCK_CONST_METHOD0(IsModelMetadataImageEmbeddingVersionMatching, bool());
 };
 
 class MockSafeBrowsingUIManager : public SafeBrowsingUIManager {

@@ -43,7 +43,6 @@
 #include "url/gurl.h"
 
 namespace network {
-class SimpleURLLoader;
 class SharedURLLoaderFactory;
 }  // namespace network
 
@@ -58,24 +57,25 @@ class ClientSideDetectionService
       public content::RenderProcessHostCreationObserver,
       public content::RenderProcessHostObserver {
  public:
+  // TODO(crbug.com/502615476): Drop this delegate class entirely. Since
+  // `ClientSideDetectionService` lives in content/browser, it has access to
+  // `content::BrowserContext`. We can pass `content::BrowserContext*` directly
+  // to the constructor and store it as a member variable.
+  //
   // Delegate which allows to provide embedder specific implementations.
-  class Delegate {
+  class Delegate : public ClientSideDetectionServiceBase::Delegate {
    public:
-    virtual ~Delegate() = default;
+    ~Delegate() override = default;
 
-    // Returns the pref service associated with the current profile.
-    virtual PrefService* GetPrefs() = 0;
-    // Returns the main URLLoaderFactory.
-    virtual scoped_refptr<network::SharedURLLoaderFactory>
-    GetURLLoaderFactory() = 0;
-    virtual scoped_refptr<network::SharedURLLoaderFactory>
-    GetSafeBrowsingURLLoaderFactory() = 0;
     virtual bool ShouldSendModelToBrowserContext(
         content::BrowserContext* context) = 0;
   };
 
+  // TODO(crbug.com/502615476): Once `ClientSideDetectionService::Delegate` is
+  // removed, update this to accept `content::BrowserContext*` and
+  // `std::unique_ptr<ClientSideDetectionServiceBase::Delegate>`
   ClientSideDetectionService(
-      std::unique_ptr<Delegate> delegate,
+      std::unique_ptr<Delegate> delegate_ptr,
       optimization_guide::OptimizationGuideModelProvider* opt_guide);
 
   ClientSideDetectionService(const ClientSideDetectionService&) = delete;
@@ -84,64 +84,10 @@ class ClientSideDetectionService
 
   ~ClientSideDetectionService() override;
 
-  // TODO(crbug.com/502615476): Move this to ClientSideDetectionServiceBase.
-  void Shutdown() override;
 
-  // TODO(crbug.com/502615476): Move this to ClientSideDetectionServiceBase.
-  bool enabled() const {
-    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-    return enabled_;
-  }
-
-  // TODO(crbug.com/502615476): Move this to ClientSideDetectionServiceBase.
-  void OnURLLoaderComplete(network::SimpleURLLoader* url_loader,
-                           base::Time start_time,
-                           std::optional<std::string> response_body);
-
-  // ClientSideDetectionServiceBase implementation:
-  void SendClientReportPhishingRequest(
-      std::unique_ptr<ClientPhishingRequest> verdict,
-      ClientReportPhishingRequestCallback callback,
-      const std::string& access_token) override;
-  CSDModelType GetModelType() override;
-  base::ReadOnlySharedMemoryRegion GetModelSharedMemoryRegion() override;
-  base::CallbackListSubscription RegisterCallbackForModelUpdates(
-      base::RepeatingClosure callback) override;
 
   // Sends a model to each renderer.
   virtual void SendModelToRenderers();
-
-  // Returns the TfLite model file. Virtual so that mock implementation can
-  // override it.
-  virtual const base::File& GetVisualTfLiteModel();
-
-  // Returns the Image Embedding model file. Virtual so that mock implementation
-  // can override it.
-  virtual const base::File& GetImageEmbeddingModel();
-
-  virtual int GetClassificationInputWidth();
-  virtual int GetClassificationInputHeight();
-  virtual int GetImageEmbeddingInputWidth();
-  virtual int GetImageEmbeddingInputHeight();
-
-  virtual bool IsModelMetadataImageEmbeddingVersionMatching();
-
-  // Returns the visual TFLite model thresholds from the model class
-  // TODO(crbug.com/502615476): Move this to ClientSideDetectionServiceBase.
-  virtual const std::vector<TfLiteModelMetadata::Threshold>&
-  GetVisualTfLiteModelThresholds();
-
-  // TODO(crbug.com/502615476): Move this to ClientSideDetectionServiceBase.
-  // Compare the scores from classification to TFLite model thresholds
-  virtual void ClassifyPhishingThroughThresholds(
-      ClientPhishingRequest* verdict);
-
-  // TODO(crbug.com/502615476): Move this to ClientSideDetectionServiceBase.
-  virtual void ClassifyThroughEmbeddings(ClientPhishingRequest* verdict);
-
-  // Returns the list of target image embeddings.
-  // TODO(crbug.com/502615476): Move this to ClientSideDetectionServiceBase.
-  virtual const std::vector<TargetEmbedding>& GetTargetImageEmbeddings();
 
   // Overrides the SharedURLLoaderFactory
   void SetURLLoaderFactoryForTesting(
@@ -154,82 +100,14 @@ class ClientSideDetectionService
   // Returns a WeakPtr for this service.
   base::WeakPtr<ClientSideDetectionService> GetWeakPtr();
 
-  // Checks whether the model class has a model available or not. Virtual so
-  // that mock classes can override it.
-  virtual bool IsModelAvailable();
-
-  // Checks whether the model class has an image embedding model available or
-  // not.
-  bool HasImageEmbeddingModel();
-
-  // For testing the model in browser test.
-  void SetModelAndVisualTfLiteForTesting(const base::FilePath& model,
-                                         const base::FilePath& visual_tf_lite);
-  void SetTargetImageEmbeddingsForTesting(
-      std::vector<TargetEmbedding> target_embeddings);
-
-  bool IsSubscribedToImageEmbeddingModelUpdates();
-  bool IsSubscribedToImageClassifierModelUpdates();
-
-
-  // Returns the trigger model version to be used in cache for CSD-Phishing
-  // debugging metadata.
-  int GetTriggerModelVersion();
-
-  // Returns the image embedding model version to be passed onto
-  // |ClientPhishingRequest| when image embedding is called.
-  int GetImageEmbeddingModelVersion();
-
  private:
-  friend class ClientSideDetectionServiceTest;
-  FRIEND_TEST_ALL_PREFIXES(ClientSideDetectionServiceTest,
-                           SetEnabledAndRefreshState);
-  FRIEND_TEST_ALL_PREFIXES(ClientSideDetectionServiceTest,
-                           ServiceObjectDeletedBeforeCallbackDone);
-  FRIEND_TEST_ALL_PREFIXES(ClientSideDetectionServiceTest,
-                           SendClientReportPhishingRequest);
-  FRIEND_TEST_ALL_PREFIXES(ClientSideDetectionServiceTest,
-                           GetNumReportTestWhenPrefsPreloaded);
-  FRIEND_TEST_ALL_PREFIXES(ClientSideDetectionServiceTest, GetNumReportTest);
-  FRIEND_TEST_ALL_PREFIXES(ClientSideDetectionServiceTest, GetNumReportTestESB);
-  FRIEND_TEST_ALL_PREFIXES(ClientSideDetectionServiceTest,
-                           TestModelFollowsPrefs);
-
-  static const char kClientReportPhishingUrl[];
-
-  // Called when the prefs have changed in a way we may need to respond to. May
-  // enable or disable the service and refresh the state of all renderers.
-  // Disabling cancels any pending requests; existing ClientSideDetectionHosts
-  // will have their callbacks called with "false" verdicts.  Enabling starts
-  // downloading the model after a delay.  In all cases, each render process is
-  // updated to match the state
-  void OnPrefsUpdated();
-
-  // Unsubscribes to model subscriptions. Currently we unsubscribe to the image
-  // embedding model as well as the on device model depending on user
-  // preferences.
-  void UnsubscribeToModelSubscription();
-
-  // Starts sending the request to the client-side detection frontends.
-  // This method takes ownership of both pointers.
-  // TODO(crbug.com/502615476): Move this to ClientSideDetectionServiceBase.
-  void StartClientReportPhishingRequest(
+  // ClientSideDetectionServiceBase implementation:
+  void OnModelAndServiceStateChanged() override;
+  void DidSendClientReportPhishingRequest(
       std::unique_ptr<ClientPhishingRequest> request,
-      ClientReportPhishingRequestCallback callback,
-      const std::string& access_token);
-
-  // Called by OnURLFetchComplete to handle the server response from
-  // sending the client-side phishing request.
-  // TODO(crbug.com/502615476): Move this to ClientSideDetectionServiceBase.
-  void HandlePhishingVerdict(network::SimpleURLLoader* source,
-                             const GURL& url,
-                             int net_error,
-                             std::optional<net::HttpStatusCode> response_code,
-                             const std::string& data);
-
-  // Returns the URL that will be used for phishing requests.
-  // TODO(crbug.com/502615476): Move this to ClientSideDetectionServiceBase.
-  static GURL GetClientReportUrl(const std::string& report_url);
+      const std::string& access_token) override;
+  void DidReceiveClientPhishingResponse(
+      const ClientPhishingResponse& response) override;
 
   // content::RenderProcessHostCreationObserver:
   void OnRenderProcessHostCreated(content::RenderProcessHost* rph) override;
@@ -238,13 +116,12 @@ class ClientSideDetectionService
   void RenderProcessHostDestroyed(content::RenderProcessHost* rph) override;
   void RenderProcessReady(content::RenderProcessHost* rph) override;
 
-  // Whether the service is running or not.  When the service is not running,
-  // it won't download the model nor report detected phishing URLs.
-  bool enabled_ = false;
-
-  // Whether the service is in extended reporting mode or not. This affects the
-  // choice of model.
-  bool extended_reporting_ = false;
+  // TODO(crbug.com/502615476): Once `ClientSideDetectionService::Delegate` is
+  // removed, this function should be deleted and we should rely on the
+  // protected `delegate()` in the Base class.
+  Delegate* delegate() const {
+    return static_cast<Delegate*>(ClientSideDetectionServiceBase::delegate());
+  }
 
   // Whether the trigger models have been sent or not. This is used to determine
   // whether an empty model in the model class determines whether the models
@@ -252,33 +129,11 @@ class ClientSideDetectionService
   // have been sent.
   bool sent_trigger_models_ = false;
 
-  // This is to keep track of the trigger model version that was last sent to
-  // the renderer host processes. This is used to determine, when the image
-  // embedding model arrives, whether a new scorer should be made with all
-  // models or the image embedding model can be attached to the current scorer.
-  // This is also used to add to CSD-Phishing debugging metadata to PhishGuard
-  // pings.
+  // The version of the trigger model that was last sent to the renderers.
   int trigger_model_version_ = 0;
-
-  // Map of client report phishing request to the corresponding callback that
-  // has to be invoked when the request is done.
-  struct ClientPhishingReportInfo;
-  std::map<const network::SimpleURLLoader*,
-           std::unique_ptr<ClientPhishingReportInfo>>
-      client_phishing_reports_;
-
-  // The URLLoaderFactory we use to issue network requests.
-  scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
-
-  // PrefChangeRegistrar used to track when the Safe Browsing pref changes.
-  PrefChangeRegistrar pref_change_registrar_;
-
-  // TODO(crbug.com/502615476): Move this to ClientSideDetectionServiceBase.
-  std::unique_ptr<Delegate> delegate_;
 
   base::CallbackListSubscription update_model_subscription_;
 
-  std::unique_ptr<ClientSidePhishingModel> client_side_phishing_model_;
   base::ScopedMultiSourceObservation<content::RenderProcessHost,
                                      content::RenderProcessHostObserver>
       observed_render_process_hosts_{this};

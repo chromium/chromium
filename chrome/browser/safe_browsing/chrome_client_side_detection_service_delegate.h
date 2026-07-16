@@ -32,7 +32,6 @@ class ChromeClientSideDetectionServiceDelegate
 
   // ClientSideDetectionService::Delegate implementation.
   PrefService* GetPrefs() override;
-  scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory() override;
   scoped_refptr<network::SharedURLLoaderFactory>
   GetSafeBrowsingURLLoaderFactory() override;
   bool ShouldSendModelToBrowserContext(

@@ -65,10 +65,6 @@ using ::testing::StrictMock;
 
 class FakeDelegate : public ClientSideDetectionService::Delegate {
   PrefService* GetPrefs() override { return nullptr; }
-  scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory()
-      override {
-    return nullptr;
-  }
   scoped_refptr<network::SharedURLLoaderFactory>
   GetSafeBrowsingURLLoaderFactory() override {
     return nullptr;
@@ -113,21 +109,23 @@ class FakeClientSideDetectionService : public ClientSideDetectionService {
     client_side_model_ = client_side_model;
   }
 
-  CSDModelType GetModelType() override { return CSDModelType::kFlatbuffer; }
+  CSDModelType GetModelType() const override {
+    return CSDModelType::kFlatbuffer;
+  }
 
-  bool IsModelAvailable() override { return true; }
+  bool IsModelAvailable() const override { return true; }
 
   // This is a fake CSD service which will have no TfLite models.
-  const base::File& GetVisualTfLiteModel() override {
+  const base::File& GetVisualTfLiteModel() const override {
     return visual_tflite_model_;
   }
 
-  int GetClassificationInputHeight() override { return 0; }
-  int GetClassificationInputWidth() override { return 0; }
-  int GetImageEmbeddingInputHeight() override { return 0; }
-  int GetImageEmbeddingInputWidth() override { return 0; }
+  int GetClassificationInputHeight() const override { return 0; }
+  int GetClassificationInputWidth() const override { return 0; }
+  int GetImageEmbeddingInputHeight() const override { return 0; }
+  int GetImageEmbeddingInputWidth() const override { return 0; }
 
-  base::ReadOnlySharedMemoryRegion GetModelSharedMemoryRegion() override {
+  base::ReadOnlySharedMemoryRegion GetModelSharedMemoryRegion() const override {
     base::MappedReadOnlyRegion mapped_region =
         base::ReadOnlySharedMemoryRegion::Create(client_side_model_.length());
     mapped_region.mapping.GetMemoryAsSpan<uint8_t>().copy_from(
@@ -138,7 +136,7 @@ class FakeClientSideDetectionService : public ClientSideDetectionService {
   // This is a fake CSD service which will have no thresholds due to no TfLite
   // models.
   const std::vector<TfLiteModelMetadata::Threshold>&
-  GetVisualTfLiteModelThresholds() override {
+  GetVisualTfLiteModelThresholds() const override {
     return thresholds_;
   }
 

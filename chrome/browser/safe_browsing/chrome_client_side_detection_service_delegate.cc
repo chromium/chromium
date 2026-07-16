@@ -31,14 +31,6 @@ PrefService* ChromeClientSideDetectionServiceDelegate::GetPrefs() {
   return nullptr;
 }
 scoped_refptr<network::SharedURLLoaderFactory>
-ChromeClientSideDetectionServiceDelegate::GetURLLoaderFactory() {
-  if (profile_) {
-    return profile_->GetURLLoaderFactory();
-  }
-  return nullptr;
-}
-
-scoped_refptr<network::SharedURLLoaderFactory>
 ChromeClientSideDetectionServiceDelegate::GetSafeBrowsingURLLoaderFactory() {
   if (g_browser_process->safe_browsing_service()) {
     return g_browser_process->safe_browsing_service()->GetURLLoaderFactory(
