@@ -19,11 +19,9 @@
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/context_menu_params.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/common/url_constants.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/events/keycodes/keyboard_codes.h"
-#include "url/url_constants.h"
 
 ReadAnythingImmersiveWebView::ReadAnythingImmersiveWebView(
     base::OnceClosure on_show_ui_callback,
@@ -65,11 +63,9 @@ content::WebContents* ReadAnythingImmersiveWebView::OpenURLFromTab(
     const content::OpenURLParams& params,
     base::OnceCallback<void(content::NavigationHandle&)>
         navigation_handle_callback) {
-  // Block navigation to unsupported URL schemes.
-  if (params.url.SchemeIs(content::kChromeUIScheme) ||
-      params.url.SchemeIs(url::kFileScheme) ||
-      params.url.SchemeIs(content::kChromeUIUntrustedScheme) ||
-      params.url.SchemeIs(url::kJavaScriptScheme)) {
+  // Reading Mode only renders links from distilled web content, so restrict
+  // forwarded navigations to web schemes.
+  if (!params.url.SchemeIsHTTPOrHTTPS()) {
     return nullptr;
   }
   auto* controller =
