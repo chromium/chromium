@@ -1045,9 +1045,12 @@ void PreloadHelper::FetchCompressionDictionaryIfNeeded(
   ResourceRequest resource_request(params.href);
 
   resource_request.SetReferrerString(Referrer::NoReferrer());
-  resource_request.SetCredentialsMode(network::mojom::CredentialsMode::kOmit);
+  if (!RuntimeEnabledFeatures::
+          CompressionDictionaryTransportNewCrossOriginHandlingEnabled()) {
+    resource_request.SetMode(network::mojom::RequestMode::kCors);
+    resource_request.SetCredentialsMode(network::mojom::CredentialsMode::kOmit);
+  }
   resource_request.SetReferrerPolicy(network::mojom::ReferrerPolicy::kNever);
-  resource_request.SetMode(network::mojom::RequestMode::kCors);
   resource_request.SetRequestDestination(
       network::mojom::RequestDestination::kDictionary);
 
@@ -1056,6 +1059,17 @@ void PreloadHelper::FetchCompressionDictionaryIfNeeded(
   options.initiator_info.name = fetch_initiator_type_names::kLink;
 
   FetchParameters link_fetch_params(std::move(resource_request), options);
+  if (RuntimeEnabledFeatures::
+          CompressionDictionaryTransportNewCrossOriginHandlingEnabled()) {
+    CrossOriginAttributeValue cross_origin = params.cross_origin;
+    // Default to anonymous.
+    // https://github.com/whatwg/html/pull/11620
+    if (cross_origin == kCrossOriginAttributeNotSet) {
+      cross_origin = kCrossOriginAttributeAnonymous;
+    }
+    link_fetch_params.SetCrossOriginAccessControl(
+        document.GetExecutionContext()->GetSecurityOrigin(), cross_origin);
+  }
   IdleRequestOptions* idle_options = IdleRequestOptions::Create();
   ScriptedIdleTaskController::From(*document.GetExecutionContext())
       .RegisterCallback(MakeGarbageCollected<LoadDictionaryWhenIdleTask>(

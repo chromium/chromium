@@ -1339,6 +1339,10 @@
       public: true,
     },
     {
+      name: "CompressionDictionaryTransportNewCrossOriginHandling",
+      status: "test",
+    },
+    {
       name: "ComputedAccessibilityInfo",
       status: "experimental",
     },
