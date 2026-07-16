@@ -500,6 +500,9 @@ export class FakeReadingMode {
   // Display a loading screen to tell the user we are distilling the page.
   showLoading() {}
 
+  // Inform that Read Aloud should be played on open.
+  setPlayOnOpen(_playOnOpen: boolean) {}
+
   // Display the empty state page to tell the user we can't distill the page.
   showEmpty() {}
 

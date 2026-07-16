@@ -6069,3 +6069,35 @@ TEST_F(ReadAnythingAppControllerTest,
   controller().UpdateContent("Better title", "Better content");
   page_handler_.FlushForTesting();
 }
+
+TEST_F(ReadAnythingAppControllerTest,
+       OnReadingModeShown_ListenTrigger_ExecutesSetPlayOnOpen) {
+  ExecuteJavaScriptForTests(
+      "var setPlayOnOpenCalledCount = 0;"
+      "chrome.readingMode.setPlayOnOpen = () => { setPlayOnOpenCalledCount++; "
+      "};");
+
+  controller().OnReadingModeShown(
+      read_anything::mojom::ReadAnythingOpenTrigger::
+          kListenToThisPageContextMenu);
+
+  int set_play_on_open_called_count = 0;
+  EXPECT_TRUE(ExecuteJavaScriptAndReturnIntValue(
+      u"setPlayOnOpenCalledCount", &set_play_on_open_called_count));
+  EXPECT_EQ(1, set_play_on_open_called_count);
+}
+
+TEST_F(ReadAnythingAppControllerTest,
+       OnReadingModeShown_OtherTrigger_DoesNotExecutePlayOnOpen) {
+  ExecuteJavaScriptForTests(
+      "var playOnOpenCalledCount = 0;"
+      "chrome.readingMode.playOnOpen = () => { playOnOpenCalledCount++; };");
+
+  controller().OnReadingModeShown(
+      read_anything::mojom::ReadAnythingOpenTrigger::kOmniboxChip);
+
+  int play_on_open_called_count = 0;
+  EXPECT_TRUE(ExecuteJavaScriptAndReturnIntValue(u"playOnOpenCalledCount",
+                                                 &play_on_open_called_count));
+  EXPECT_EQ(0, play_on_open_called_count);
+}

@@ -2770,6 +2770,17 @@ void ReadAnythingAppController::OnReadingModeHidden(bool tab_active) {
   RecordSessionMetricsIfShownOrRecentlyHidden(/*just_hidden=*/true);
 }
 
+void ReadAnythingAppController::OnReadingModeShown(
+    read_anything::mojom::ReadAnythingOpenTrigger open_trigger) {
+  // TODO (crbug.com/494307454): Add test to verify that duplicate calls of
+  // OnReadingModeShown() won't affect Read Aloud's audio playback state (other
+  // than the playOnOpen state).
+  if (open_trigger == read_anything::mojom::ReadAnythingOpenTrigger::
+                          kListenToThisPageContextMenu) {
+    ExecuteJavaScript("chrome.readingMode.setPlayOnOpen(true);");
+  }
+}
+
 void ReadAnythingAppController::OnSpeechEngineFirstStall() {
   DUMP_WILL_BE_CHECK(false) << "Speech engine stalled after 10 seconds";
 }

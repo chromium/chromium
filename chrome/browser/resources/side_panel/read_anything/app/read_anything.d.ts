@@ -611,5 +611,8 @@ declare namespace chrome {
     // Called when the main frame undergoes a same document navigation (such as
     // a fragment navigation).
     let onMainFrameSameDocumentNavigation: (url: string) => void;
+
+    // Called to inform the web ui to play read aloud on open.
+    let setPlayOnOpen: (playOnOpen: boolean) => void;
   }
 }

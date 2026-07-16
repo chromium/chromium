@@ -9,6 +9,8 @@
 
 #include "chrome/browser/ui/side_panel/side_panel_enums.h"
 
+// TODO (crbug.com/533115262): Replace ReadAnythingOpenTrigger type with
+// read_anything::mojom::ReadAnythingOpenTrigger type.
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 // LINT.IfChange(ReadAnythingOpenTrigger)
@@ -23,7 +25,8 @@ enum class ReadAnythingOpenTrigger {
   kReadAnythingTogglePresentationButton = 6,
   kKeyboardShortcut = 7,
   kListenToThisPageContextMenu = 8,
-  kMaxValue = kListenToThisPageContextMenu,
+  kUnknown = 9,
+  kMaxValue = kUnknown,
 };
 // LINT.ThenChange(//tools/metrics/histograms/enums.xml:ReadAnythingOpenTrigger)
 
@@ -79,6 +82,8 @@ inline SidePanelOpenTrigger ReadAnythingToSidePanelOpenTrigger(
       return SidePanelOpenTrigger::kReadAnythingKeyboardShortcut;
     case ReadAnythingOpenTrigger::kListenToThisPageContextMenu:
       return SidePanelOpenTrigger::kReadAnythingListenToThisPageContextMenu;
+    case ReadAnythingOpenTrigger::kUnknown:
+      return SidePanelOpenTrigger::kReadAnythingUnknown;
   }
 }
 

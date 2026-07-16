@@ -181,6 +181,8 @@ class ReadAnythingAppController
   void OnGetVoicePackInfo(
       read_anything::mojom::VoicePackInfoPtr voice_pack_info) override;
   void OnReadingModeHidden(bool tab_active) override;
+  void OnReadingModeShown(
+      read_anything::mojom::ReadAnythingOpenTrigger open_trigger) override;
   void OnTabWillDetach() override;
   void OnTabMuteStateChange(bool muted) override;
   void UpdateContent(const std::string& title,

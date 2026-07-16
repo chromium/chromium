@@ -182,6 +182,22 @@ enum DistillationStatus {
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/accessibility/enums.xml:ReadAnythingDistillationStatus)
 
+// LINT.IfChange(ReadAnythingOpenTrigger)
+// The trigger for opening reading mode.
+enum ReadAnythingOpenTrigger {
+  kAppMenu = 0,
+  kReadAnythingContextMenu = 1,
+  kReadAnythingNavigationThrottle = 2,
+  kPinnedSidePanelEntryToolbarButton = 3,
+  kOmniboxChip = 4,
+  kTabSwitch = 5,
+  kReadAnythingTogglePresentationButton = 6,
+  kKeyboardShortcut = 7,
+  kListenToThisPageContextMenu = 8,
+  kUnknown = 9,
+};
+// LINT.ThenChange(//tools/metrics/histograms/enums.xml:ReadAnythingOpenTrigger)
+
 // Browser-side handler for requests from untrusted WebUI page.
 interface UntrustedPageHandler {
   // Called by the renderer to load the dependency parser model used for
@@ -462,4 +478,8 @@ interface UntrustedPage {
   // Notifies the WebUI that the main frame navigated to a same-document
   // fragment or back to top.
   OnMainFrameSameDocumentNavigation(url.mojom.Url url);
+
+  // Called by the browser to trigger renderer-side actions after the webui is
+  // shown.
+  OnReadingModeShown(read_anything.mojom.ReadAnythingOpenTrigger open_trigger);
 };

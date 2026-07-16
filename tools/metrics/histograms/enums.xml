@@ -24798,6 +24798,7 @@ Called by update_net_error_codes.py.-->
       label="Opened via toggle presentation button in Reading mode settings"/>
   <int value="7" label="Opened via keyboard shortcut"/>
   <int value="8" label="Opened from Listen to this page context menu"/>
+  <int value="9" label="Unknown"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/ui/read_anything/read_anything_enums.h:ReadAnythingOpenTrigger) -->
@@ -25997,6 +25998,7 @@ Called by update_net_error_codes.py.-->
   <int value="28" label="Opened from Glic"/>
   <int value="29" label="Opened from Contextual Tasks"/>
   <int value="30" label="Opened from context menu Listen to this page option"/>
+  <int value="31" label="Opened from an unknown Read Anything trigger"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/ui/side_panel/side_panel_enums.h:SidePanelOpenTrigger) -->

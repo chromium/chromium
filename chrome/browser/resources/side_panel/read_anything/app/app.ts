@@ -14,6 +14,7 @@ import {WebUiListenerMixinLit} from '//resources/cr_elements/web_ui_listener_mix
 import {assert} from '//resources/js/assert.js';
 import {isRTL} from '//resources/js/util.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 
 import {ContentController, ContentType} from '../content/content_controller.js';
 import type {ContentListener, ContentState} from '../content/content_controller.js';
@@ -102,6 +103,7 @@ export class AppElement extends AppElementBase implements SpeechListener,
   protected accessor isDocsLoadMoreButtonVisible_: boolean = false;
   protected accessor hasValidSelection_: boolean = false;
   protected isImmersiveEnabled_: boolean = false;
+  protected isImprovedReadAloudEnabled_: boolean = false;
 
   // If the speech engine is considered "loaded." If it is, we should display
   // the play / pause buttons normally. Otherwise, we should disable the
@@ -134,6 +136,7 @@ export class AppElement extends AppElementBase implements SpeechListener,
   private logger_: ReadAnythingLogger = ReadAnythingLogger.getInstance();
   private styleUpdater_: AppStyleUpdater;
   private nodeStore_: NodeStore = NodeStore.getInstance();
+  private playOnOpen_: boolean = false;
   private voiceLanguageController_: VoiceLanguageController =
       VoiceLanguageController.getInstance();
   private speechController_: SpeechController = SpeechController.getInstance();
@@ -168,6 +171,8 @@ export class AppElement extends AppElementBase implements SpeechListener,
       this.contentController_.configureTrustedTypes();
     }
     this.isImmersiveEnabled_ = chrome.readingMode.isImmersiveEnabled;
+    this.isImprovedReadAloudEnabled_ =
+        chrome.readingMode.isImprovedReadAloudEnabled;
   }
 
   override connectedCallback() {
@@ -341,6 +346,10 @@ export class AppElement extends AppElementBase implements SpeechListener,
       assert(this.shadowRoot);
       this.contentController_.scrollToAnchor(url, this.shadowRoot);
     };
+
+    chrome.readingMode.setPlayOnOpen = (playOnOpen: boolean) => {
+      this.setPlayOnOpen(playOnOpen);
+    };
   }
 
   override disconnectedCallback() {
@@ -349,6 +358,23 @@ export class AppElement extends AppElementBase implements SpeechListener,
     // it is called in tests, and the speech extension timeout can cause
     // flakiness.
     this.voiceLanguageController_.stopWaitingForSpeechExtension();
+  }
+
+  override updated(changedProperties: PropertyValues<this>) {
+    super.updated(changedProperties);
+    if (this.playOnOpen_ && this.computeIsReadAloudPlayable()) {
+      if (!this.speechController_.isSpeechActive()) {
+        this.speechController_.onPlayPauseToggle(this.$.container);
+      }
+      this.playOnOpen_ = false;
+    }
+  }
+
+  setPlayOnOpen(playOnOpen: boolean) {
+    if (this.isImprovedReadAloudEnabled_) {
+      this.playOnOpen_ = playOnOpen;
+      this.requestUpdate();
+    }
   }
 
   private onWindowResize_() {

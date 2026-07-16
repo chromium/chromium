@@ -153,6 +153,9 @@ class MockPage : public read_anything::mojom::UntrustedPage {
               OnMainFrameSameDocumentNavigation,
               (const GURL& url),
               (override));
+  MOCK_METHOD(void,
+              OnReadingModeShown,
+              (read_anything::mojom::ReadAnythingOpenTrigger open_trigger));
 
   mojo::Receiver<read_anything::mojom::UntrustedPage> receiver_{this};
 };
@@ -2297,6 +2300,39 @@ IN_PROC_BROWSER_TEST_P(ReadAnythingUntrustedPageHandlerDistillerTest,
         .Times(2);
   }
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
+}
+
+IN_PROC_BROWSER_TEST_P(
+    ReadAnythingUntrustedPageHandlerTest,
+    Activate_ListenTrigger_CallsReadingModeShownWithListenTrigger) {
+  handler_ = CreateHandler();
+  page_.receiver_.FlushForTesting();
+
+  EXPECT_CALL(page_,
+              OnReadingModeShown(read_anything::mojom::ReadAnythingOpenTrigger::
+                                     kListenToThisPageContextMenu))
+      .Times(1);
+
+  SidePanelOpenTrigger trigger =
+      SidePanelOpenTrigger::kReadAnythingListenToThisPageContextMenu;
+  Activate(true, &trigger);
+  page_.receiver_.FlushForTesting();
+}
+
+IN_PROC_BROWSER_TEST_P(
+    ReadAnythingUntrustedPageHandlerTest,
+    Activate_OtherTrigger_CallsReadingModeShownWithOtherTrigger) {
+  handler_ = CreateHandler();
+  page_.receiver_.FlushForTesting();
+
+  EXPECT_CALL(page_,
+              OnReadingModeShown(
+                  read_anything::mojom::ReadAnythingOpenTrigger::kOmniboxChip))
+      .Times(1);
+
+  SidePanelOpenTrigger trigger = SidePanelOpenTrigger::kReadAnythingOmniboxChip;
+  Activate(true, &trigger);
+  page_.receiver_.FlushForTesting();
 }
 
 IN_PROC_BROWSER_TEST_P(ReadAnythingUntrustedPageHandlerDistillerTest,

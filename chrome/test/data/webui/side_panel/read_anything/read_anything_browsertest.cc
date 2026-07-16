@@ -53,6 +53,11 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, Speech) {
   RunSidePanelTest("side_panel/read_anything/speech_test.js", "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, PlayOnOpen) {
+  RunSidePanelTest("side_panel/read_anything/play_on_open_test.js",
+                   "mocha.run()");
+}
+
 IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, SpeechPresentationRules) {
   RunSidePanelTest("side_panel/read_anything/speech_presentation_rules_test.js",
                    "mocha.run()");
