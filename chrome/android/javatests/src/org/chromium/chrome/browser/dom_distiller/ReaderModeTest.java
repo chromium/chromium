@@ -34,8 +34,8 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
-import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.transit.dom_distiller.ReaderModeBottomSheetExpandedFacility;
 import org.chromium.chrome.test.transit.dom_distiller.ReaderModeBottomSheetPeekFacility;
 import org.chromium.chrome.test.transit.dom_distiller.ReaderModeConditions.TabBackgroundColorCondition;
@@ -61,8 +61,8 @@ import java.util.concurrent.atomic.AtomicReference;
 })
 public class ReaderModeTest {
 
-    public final FreshCtaTransitTestRule mActivityTestRule =
-            ChromeTransitTestRules.freshChromeTabbedActivityRule();
+    public final AutoResetCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.fastAutoResetCtaActivityRule();
     public final DownloadTestRule mDownloadTestRule = new DownloadTestRule();
 
     @Rule
@@ -103,7 +103,7 @@ public class ReaderModeTest {
     @Test
     @MediumTest
     public void testReaderModeInRegularTab() throws TimeoutException {
-        mPage = mActivityTestRule.startOnUrl(mURL).openRegularTabAppMenu().enterReaderMode();
+        mPage = mActivityTestRule.startOnWebPage(mURL).openRegularTabAppMenu().enterReaderMode();
 
         Tab originalTab = mPage.getTab();
         waitForDistillation(PAGE_TITLE, originalTab);
@@ -112,7 +112,7 @@ public class ReaderModeTest {
     @Test
     @MediumTest
     public void testPreferenceInTab() throws TimeoutException {
-        mPage = mActivityTestRule.startOnUrl(mURL).openRegularTabAppMenu().enterReaderMode();
+        mPage = mActivityTestRule.startOnWebPage(mURL).openRegularTabAppMenu().enterReaderMode();
 
         Tab tab = mPage.getTab();
         waitForDistillation(PAGE_TITLE, tab);
