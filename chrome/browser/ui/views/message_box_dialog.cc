@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "base/auto_reset.h"
-#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"

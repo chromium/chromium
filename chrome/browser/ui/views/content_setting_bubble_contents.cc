@@ -10,9 +10,7 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
-#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
-#include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/content_settings/content_setting_bubble_model.h"
@@ -34,7 +32,6 @@
 #include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
-#include "ui/color/color_provider.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/text_utils.h"

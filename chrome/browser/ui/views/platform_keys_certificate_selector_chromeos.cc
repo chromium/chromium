@@ -10,13 +10,11 @@
 #include <string>
 #include <utility>
 
-#include "base/memory/ref_counted.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/grit/generated_resources.h"
 #include "net/ssl/client_cert_identity.h"
 #include "net/ssl/ssl_private_key.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/gfx/font.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/style/typography.h"
 

@@ -6,15 +6,11 @@
 
 #include <stddef.h>
 
-#include <algorithm>
-
 #include "base/functional/callback.h"
 #include "base/strings/pattern.h"
-#include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/task_manager/common/task_manager_features.h"
 #include "chrome/browser/task_manager/task_manager_browsertest_util.h"
 #include "chrome/browser/task_manager/task_manager_tester.h"
 #include "chrome/browser/ui/browser.h"
@@ -26,7 +22,6 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/task_manager/task_manager_columns.h"
 #include "chrome/browser/ui/task_manager/task_manager_table_model.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -45,7 +40,6 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
-#include "ui/events/test/event_generator.h"
 #include "ui/views/controls/table/table_view.h"
 #include "ui/views/test/widget_activation_waiter.h"
 #include "ui/views/test/widget_test.h"

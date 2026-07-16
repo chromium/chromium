@@ -6,18 +6,11 @@
 
 #include <stddef.h>
 
-#include <vector>
-
 #include "base/functional/bind.h"
-#include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
-#include "chrome/browser/platform_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/bubble_anchor_util.h"
 #include "chrome/browser/ui/global_error/global_error.h"
-#include "chrome/browser/ui/global_error/global_error_service.h"
-#include "chrome/browser/ui/global_error/global_error_service_factory.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/elevation_icon_setter.h"
 #include "chrome/browser/ui/views/frame/app_menu_button.h"
@@ -27,12 +20,8 @@
 #include "ui/base/buildflags.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
-#include "ui/base/resource/resource_bundle.h"
-#include "ui/gfx/image/image.h"
-#include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/button/md_text_button.h"
-#include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
 

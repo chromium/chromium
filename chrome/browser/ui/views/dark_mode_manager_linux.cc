@@ -16,7 +16,6 @@
 #include "components/dbus/utils/variant.h"
 #include "components/dbus/xdg/portal.h"
 #include "dbus/bus.h"
-#include "dbus/message.h"
 #include "dbus/object_proxy.h"
 #include "ui/linux/linux_ui.h"
 #include "ui/linux/linux_ui_factory.h"

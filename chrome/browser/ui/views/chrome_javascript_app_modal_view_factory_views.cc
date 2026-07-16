@@ -20,7 +20,6 @@
 #include "ui/views/widget/widget.h"
 
 #if BUILDFLAG(IS_OZONE)
-#include "ui/base/ui_base_features.h"
 #include "ui/ozone/public/ozone_platform.h"
 #endif
 

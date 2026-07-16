@@ -4,14 +4,12 @@
 
 #include "chrome/browser/ui/views/external_protocol_dialog.h"
 
-#include <memory>
 #include <string>
 
 #include "chrome/browser/external_protocol/external_protocol_handler.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/views/external_protocol_dialog_test_harness.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -20,7 +18,6 @@
 #include "content/public/test/browser_test_utils.h"
 #include "ui/events/event.h"
 #include "ui/events/event_utils.h"
-#include "ui/views/controls/button/checkbox.h"
 #include "ui/views/metrics.h"
 #include "ui/views/test/button_test_api.h"
 

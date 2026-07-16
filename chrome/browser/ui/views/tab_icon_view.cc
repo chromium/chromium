@@ -4,12 +4,8 @@
 
 #include "chrome/browser/ui/views/tab_icon_view.h"
 
-#include <memory>
-
-#include "base/logging.h"
 #include "base/no_destructor.h"
 #include "build/build_config.h"
-#include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ui/views/tab_icon_view_model.h"
 #include "chrome/grit/theme_resources.h"
 #include "ui/base/metadata/metadata_impl_macros.h"

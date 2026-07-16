@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <memory>
-
 #include "base/check.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -16,13 +14,11 @@
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/scoped_accessibility_mode_override.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
-#include "net/test/embedded_test_server/request_handler_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/ax_tree.h"
 #include "ui/views/controls/webview/webview.h"
-#include "url/gurl.h"
 
 constexpr base::FilePath::CharType kDocRoot[] =
     FILE_PATH_LITERAL("chrome/test/data/accessibility");

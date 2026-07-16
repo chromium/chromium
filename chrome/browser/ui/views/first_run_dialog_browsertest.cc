@@ -7,7 +7,6 @@
 #include "base/functional/callback_helpers.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "content/public/test/browser_test.h"
-#include "ui/views/controls/button/checkbox.h"
 #include "ui/views/test/dialog_test.h"
 #include "ui/views/widget/any_widget_observer.h"
 #include "ui/views/widget/widget.h"

@@ -4,12 +4,7 @@
 
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 
-#include <algorithm>
 
-#include "base/feature_list.h"
-#include "chrome/browser/ui/ui_features.h"
-#include "chrome/browser/ui/views/chrome_typography.h"
-#include "components/omnibox/common/omnibox_features.h"
 #include "ui/base/pointer/touch_ui_controller.h"
 #include "ui/gfx/shadow_value.h"
 

@@ -16,7 +16,6 @@
 #include "chrome/browser/infobars/browser_infobar_manager.h"
 #include "chrome/browser/infobars/infobar_features.h"
 #include "chrome/browser/infobars/infobar_spec.h"
-#include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/ui/page_info/chrome_page_info_delegate.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_account_storage_move_dialog.h"
 #include "chrome/browser/ui/views/chrome_constrained_window_views_client.h"
@@ -29,7 +28,6 @@
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/infobars/core/infobar_delegate.h"
 #include "components/media_router/browser/media_router_dialog_controller.h"
-#include "components/strings/grit/components_strings.h"
 #include "components/ui_devtools/devtools_server.h"
 #include "components/ui_devtools/switches.h"
 #include "components/ui_devtools/views/server_holder.h"
@@ -43,8 +41,6 @@
 #if defined(USE_AURA)
 #include "base/run_loop.h"
 #include "content/public/browser/browser_context.h"
-#include "content/public/browser/browser_thread.h"
-#include "services/viz/public/cpp/gpu/gpu.h"  // nogncheck
 #if !BUILDFLAG(IS_CHROMEOS)
 #include "ui/display/screen.h"
 #include "ui/views/widget/desktop_aura/desktop_screen.h"
@@ -54,13 +50,11 @@
 
 #if BUILDFLAG(IS_LINUX)
 #include <sys/stat.h>
-#include <sys/types.h>
 #include <unistd.h>
 
 #include "chrome/browser/ui/simple_message_box.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
-#include "content/public/common/content_switches.h"
 #include "ui/base/l10n/l10n_util.h"
 #endif  // BUILDFLAG(IS_LINUX)
 

@@ -8,7 +8,6 @@
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/strings/utf_string_conversions.h"
 #include "base/task/current_thread.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/ui/views/test/view_event_test_base.h"
@@ -23,7 +22,6 @@
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/controls/menu/submenu_view.h"
 #include "ui/views/test/menu_test_utils.h"
-#include "ui/views/widget/root_view.h"
 #include "ui/views/widget/widget.h"
 
 namespace {

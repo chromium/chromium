@@ -11,10 +11,8 @@
 #include "chrome/browser/ui/views/native_widget_factory.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/grit/chrome_unscaled_resources.h"
-#include "components/version_info/channel.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/ui_base_features.h"
-#include "ui/linux/linux_ui.h"
 #include "ui/ozone/public/ozone_platform.h"
 #include "ui/views/widget/widget_delegate.h"
 

@@ -7,14 +7,11 @@
 #include <memory>
 #include <string_view>
 
-#include "base/functional/callback_helpers.h"
-#include "base/test/mock_callback.h"
 #include "base/time/time.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/test/event_generator.h"
-#include "ui/events/types/event_type.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_utils.h"
 

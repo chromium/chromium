@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/views/bluetooth_device_pair_confirm_view.h"
 
 #include "base/functional/bind.h"
-#include "base/functional/callback_helpers.h"
 #include "chrome/browser/ui/bluetooth/bluetooth_dialogs.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/grit/generated_resources.h"

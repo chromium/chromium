@@ -22,7 +22,6 @@
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/url_loader_interceptor.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
-#include "ui/views/widget/unique_widget_ptr.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
 

@@ -6,7 +6,6 @@
 
 #include "base/memory/ptr_util.h"
 #include "chrome/app/vector_icons/vector_icons.h"
-#include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
@@ -18,7 +17,6 @@
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/image_view.h"
-#include "ui/views/layout/fill_layout.h"
 #include "ui/views/window/dialog_delegate.h"
 
 namespace {

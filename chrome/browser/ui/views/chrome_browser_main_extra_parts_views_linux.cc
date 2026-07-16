@@ -8,12 +8,9 @@
 #include "chrome/browser/ui/views/theme_profile_key.h"
 #include "ui/base/buildflags.h"
 #include "ui/base/cursor/cursor_factory.h"
-#include "ui/base/ime/input_method.h"
 #include "ui/linux/linux_ui.h"
-#include "ui/linux/linux_ui_delegate.h"
 #include "ui/linux/linux_ui_factory.h"
 #include "ui/linux/linux_ui_getter.h"
-#include "ui/native_theme/native_theme.h"
 #include "ui/ozone/public/ozone_platform.h"
 
 #if BUILDFLAG(USE_DBUS)

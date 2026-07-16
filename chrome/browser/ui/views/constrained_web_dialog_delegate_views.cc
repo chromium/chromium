@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "base/memory/raw_ptr.h"
-#include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/renderer_preferences_util.h"
@@ -17,7 +16,6 @@
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "components/web_modal/web_contents_modal_dialog_manager_delegate.h"
 #include "components/zoom/zoom_controller.h"
-#include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/metadata/metadata_header_macros.h"

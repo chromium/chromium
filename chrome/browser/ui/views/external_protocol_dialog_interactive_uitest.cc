@@ -2,14 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <memory>
 #include <string>
 
 #include "build/build_config.h"
-#include "chrome/browser/external_protocol/external_protocol_handler.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/views/external_protocol_dialog.h"
 #include "chrome/browser/ui/views/external_protocol_dialog_test_harness.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test.h"

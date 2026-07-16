@@ -8,8 +8,6 @@
 #include <string>
 
 #include "base/functional/bind.h"
-#include "base/numerics/safe_conversions.h"
-#include "base/strings/strcat.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/strings/grit/components_strings.h"
@@ -20,11 +18,7 @@
 #include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/ui_base_features.h"
-#include "ui/gfx/color_palette.h"
-#include "ui/gfx/geometry/point.h"
-#include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/image/image_skia.h"
-#include "ui/gfx/paint_vector_icon.h"
 #include "ui/resources/grit/ui_resources.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/checkbox.h"
@@ -37,7 +31,6 @@
 #include "ui/views/controls/table/table_view.h"
 #include "ui/views/controls/throbber.h"
 #include "ui/views/layout/box_layout.h"
-#include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
