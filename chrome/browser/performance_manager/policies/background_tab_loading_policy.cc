@@ -46,6 +46,11 @@ namespace {
 
 const char kDescriberName[] = "BackgroundTabLoadingPolicy";
 
+constexpr base::MemoryConsumerTraits kBackgroundTabLoadingPolicyTraits(
+    base::MemoryConsumerTraits::ConsumerType::kPassive,
+    // Prevents allocations in renderer processes (out-of-process).
+    base::MemoryConsumerTraits::InProcess::kNo);
+
 }  // namespace
 
 // static
@@ -157,10 +162,9 @@ BackgroundTabLoadingPolicy::BackgroundTabLoadingPolicy(
     : all_restored_tabs_loaded_callback_(
           std::move(all_restored_tabs_loaded_callback)),
       page_loader_(std::make_unique<mechanism::PageLoader>()),
-      memory_consumer_registration_(
-          "BackgroundTabLoadingPolicy",
-          std::nullopt,  // TODO(crbug.com/489671163): Add traits.
-          this) {
+      memory_consumer_registration_("BackgroundTabLoadingPolicy",
+                                    kBackgroundTabLoadingPolicyTraits,
+                                    this) {
   max_simultaneous_tab_loads_ = CalculateMaxSimultaneousTabLoads(
       kMinSimultaneousTabLoads, kMaxSimultaneousTabLoads,
       kCoresPerSimultaneousTabLoad, base::SysInfo::NumberOfProcessors());
@@ -462,8 +466,6 @@ void BackgroundTabLoadingPolicy::OnUpdateMemoryLimit() {
     StopLoadingTabs();
   }
 }
-
-void BackgroundTabLoadingPolicy::OnReleaseMemory() {}
 
 SiteDataReader* BackgroundTabLoadingPolicy::GetSiteDataReader(
     const PageNode* page_node) const {
