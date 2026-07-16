@@ -3121,6 +3121,7 @@ CSSMathExpressionOperation::ToCalculationExpression(
         }
         break;
       case kCalcLength:
+      case kCalcAngle:
         if (!HasPercentage()) {
           if (std::optional<double> value =
                   ComputeValueInCanonicalUnit(length_resolver)) {
