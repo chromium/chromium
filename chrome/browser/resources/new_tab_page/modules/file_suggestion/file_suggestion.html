@@ -17,7 +17,9 @@
   `)}
   ${this.seeMoreUrl ? html`
     <div id="seeMoreButtonContainer">
-      <a href="${this.seeMoreUrl}" @click="${this.onSeeMoreClick_}">
+      <a href="${this.seeMoreUrl}"
+          @click="${this.onSeeMoreClick_}"
+          aria-label="${this.seeMoreAriaLabel}">
         ${this.seeMoreText}
         <div id="hoverContainer"></div>
       </a>

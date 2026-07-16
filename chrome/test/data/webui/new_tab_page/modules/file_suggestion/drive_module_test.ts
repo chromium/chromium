@@ -21,6 +21,7 @@ suite('DriveModuleV2', () => {
     loadTimeData.overrideValues({
       hideDismissModules: false,
       showDriveModuleSeeMoreLink: true,
+      modulesDriveSeeMoreAcc: 'See more in Google Drive',
     });
   });
 
@@ -268,5 +269,33 @@ suite('DriveModuleV2', () => {
     assertEquals('', fileSuggestion.seeMoreUrl);
     assertFalse(
         !!fileSuggestion.shadowRoot.querySelector('#seeMoreButtonContainer'));
+  });
+
+  test('see more link has correct aria-label', async () => {
+    loadTimeData.overrideValues({showDriveModuleSeeMoreLink: true});
+    const data = {
+      files: [
+        {
+          justificationText: 'Edited yesterday',
+          title: 'Abc',
+          id: '012',
+          iconUrl: iconUrl,
+          itemUrl: 'https://abc.com',
+        },
+      ],
+    };
+    handler.setPromiseResolveFor('getFiles', data);
+    const driveModule =
+        await driveModuleDescriptor.initialize(0) as DriveModuleElement;
+    assertTrue(!!driveModule);
+    document.body.append(driveModule);
+    await microtasksFinished();
+
+    const fileSuggestion = driveModule.$.fileSuggestion;
+    const seeMoreButton =
+        fileSuggestion.shadowRoot.querySelector('#seeMoreButtonContainer a');
+    assertTrue(!!seeMoreButton);
+    assertEquals(
+        'See more in Google Drive', seeMoreButton.getAttribute('aria-label'));
   });
 });

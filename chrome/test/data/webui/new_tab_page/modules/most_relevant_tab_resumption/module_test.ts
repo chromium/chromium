@@ -55,6 +55,7 @@ suite('NewTabPageModulesMostRelevantTabResumptionModuleTest', () => {
     loadTimeData.overrideValues({
       modulesRedesignedEnabled: true,
       hideDismissModules: false,
+      modulesMostRelevantTabResumptionSeeMoreAcc: 'See more tabs',
     });
   });
 
@@ -217,6 +218,8 @@ suite('NewTabPageModulesMostRelevantTabResumptionModuleTest', () => {
           ($$(moduleElement,
               '#seeMoreButtonContainer'))!.querySelector<HTMLElement>('a');
       assertTrue(!!seeMoreButtonElement);
+      assertEquals(
+          'See more tabs', seeMoreButtonElement.getAttribute('aria-label'));
       const waitForUsageEvent = eventToPromise('usage', moduleElement);
       seeMoreButtonElement.removeAttribute('href');
       seeMoreButtonElement.click();

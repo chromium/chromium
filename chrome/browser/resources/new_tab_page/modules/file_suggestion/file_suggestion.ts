@@ -41,6 +41,7 @@ export class FileSuggestionElement extends CrLitElement {
       moduleName: {type: String},
       seeMoreUrl: {type: String},
       seeMoreText: {type: String},
+      seeMoreAriaLabel: {type: String},
     };
   }
 
@@ -48,6 +49,7 @@ export class FileSuggestionElement extends CrLitElement {
   accessor moduleName: string = '';
   accessor seeMoreUrl: string = '';
   accessor seeMoreText: string = '';
+  accessor seeMoreAriaLabel: string = '';
 
   protected onFileClick_(e: Event) {
     const clickFileEvent = new Event('usage', {composed: true, bubbles: true});

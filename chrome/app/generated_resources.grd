@@ -8747,6 +8747,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_NTP_MODULES_DRIVE_SEE_MORE" desc="A label for the see more button in the Drive module.">
         See more
       </message>
+      <message name="IDS_NTP_MODULES_DRIVE_SEE_MORE_ACCNAME" is_accessibility_with_no_ui="true" desc="Screen reader announcement when the see more link is focused in the Drive module.">
+        See more in Google Drive
+      </message>
       <message name="IDS_NTP_MODULES_MICROSOFT_FILES_NAME" desc="Name of the Microsoft files module in sentence case shown in various UIs.">
         SharePoint and OneDrive files
       </message>
@@ -8841,7 +8844,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
         See more
       </message>
       <message name="IDS_NTP_MODULES_CALENDAR_SEE_MORE_ACCNAME" is_accessibility_with_no_ui="true" desc="Screen reader announcement when the see more link is focused.">
-        See more meetings on your Calendar
+        See more in Google Calendar
       </message>
       <message name="IDS_NTP_MODULES_KALEIDOSCOPE_TITLE" desc="Title shown in the header of the Kaleidoscope module.">
         Top picks for you
@@ -8950,6 +8953,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
       </message>
       <message name="IDS_NTP_MODULES_MOST_RELEVANT_TAB_RESUMPTION_SEE_MORE" desc="A label for the see more button in the most relevant tab resumption module.">
         See more
+      </message>
+      <message name="IDS_NTP_MODULES_MOST_RELEVANT_TAB_RESUMPTION_SEE_MORE_ACCNAME" is_accessibility_with_no_ui="true" desc="Screen reader announcement when the see more link is focused.">
+        See more tabs
       </message>
       <message name="IDS_NTP_MODULES_MICROSOFT_AUTHENTICATION_NAME" desc="Name of the Microsoft Authentication module as shown in various UIs.">
         Microsoft Authentication
