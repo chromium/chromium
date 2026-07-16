@@ -7328,6 +7328,11 @@ const FeatureEntry kFeatureEntries[] = {
                                     kNtpRealboxCr23ThemingVariations,
                                     "NtpRealboxCr23Theming")},
 
+    {"ntp-scaled-action-chips",
+     flag_descriptions::kNtpScaledActionChipsName,
+     flag_descriptions::kNtpScaledActionChipsDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(ntp_features::kNtpScaledActionChips)},
+
     {"ntp-sharepoint-module", flag_descriptions::kNtpSharepointModuleName,
      flag_descriptions::kNtpSharepointModuleDescription, kOsDesktop,
      FEATURE_WITH_PARAMS_VALUE_TYPE(ntp_features::kNtpSharepointModule,

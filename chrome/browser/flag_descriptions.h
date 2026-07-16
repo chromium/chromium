@@ -6786,6 +6786,12 @@ inline constexpr char kNtpRealboxCr23ThemingName[] =
 inline constexpr char kNtpRealboxCr23ThemingDescription[] =
     "CR23 theming will be applied in Realbox when enabled.";
 
+inline constexpr char kNtpScaledActionChipsName[] =
+    "NTP Scaled Action Chips";
+inline constexpr char kNtpScaledActionChipsDescription[] =
+    "Enables scaled merchandising action chips (e.g., dynamic tool suggestions "
+    "and resource pickers) on the New Tab Page.";
+
 inline constexpr char kNtpSharepointModuleName[] = "NTP Sharepoint Module";
 inline constexpr char kNtpSharepointModuleDescription[] =
     "Shows the Sharepoint module on the New Tab Page.";

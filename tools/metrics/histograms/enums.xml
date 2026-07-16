@@ -8374,6 +8374,7 @@ from previous Chrome versions.
   <int value="-1980124092" label="OmniboxHideSuggestionGroupHeaders:disabled"/>
   <int value="-1978938699" label="PwaNavigationCapturing:disabled"/>
   <int value="-1978625006" label="PcieBillboardNotification:disabled"/>
+  <int value="-1978494041" label="NtpScaledActionChips:enabled"/>
   <int value="-1978116081" label="SeaPen:disabled"/>
   <int value="-1978003156" label="EnableExtensibleEnterpriseSSO:disabled"/>
   <int value="-1977496883" label="ViewPasswords:enabled"/>
@@ -12869,6 +12870,7 @@ from previous Chrome versions.
       label="QuickActionSearchWidgetAndroidDinoVariant:enabled"/>
   <int value="-551334994" label="NotificationPermissionVariant:enabled"/>
   <int value="-550145191" label="AndroidThemeResourceProvider:disabled"/>
+  <int value="-549795607" label="NtpScaledActionChips:disabled"/>
   <int value="-548082154" label="protect-sync-credential:disabled"/>
   <int value="-547763795" label="SystemEmojiPickerExtension:disabled"/>
   <int value="-547301855" label="SyncPseudoUSSSupervisedUsers:enabled"/>

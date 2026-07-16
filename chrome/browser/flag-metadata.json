@@ -7212,6 +7212,11 @@
     "expiry_milestone": 160
   },
   {
+    "name": "ntp-scaled-action-chips",
+    "owners": [ "rtatum@google.com", "chrome-desktop-ntp@google.com" ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "ntp-searchbox-voice-search-coherence",
     "owners": [ "jamesleung@google.com", "chrome-desktop-search@google.com"],
     "expiry_milestone": 160

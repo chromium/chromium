@@ -181,6 +181,10 @@ BASE_FEATURE(kNtpOutlookCalendarModule,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
+// If enabled, scaled merchandising action chips (e.g., dynamic tool
+// suggestions and resource pickers) will be shown on the NTP.
+BASE_FEATURE(kNtpScaledActionChips, base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled, sharepoint module will be shown.
 BASE_FEATURE(kNtpSharepointModule,
 #if BUILDFLAG(IS_ANDROID)
