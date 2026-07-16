@@ -12,8 +12,10 @@ import static org.mockito.Mockito.when;
 
 import android.app.Activity;
 import android.transition.Transition;
+import android.view.InputDevice;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
+import android.view.PointerIcon;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
@@ -757,6 +759,45 @@ public class ActorOverlayCoordinatorTest {
         // Exiting hover completely.
         dispatchHover(mView, MotionEvent.ACTION_HOVER_EXIT, buttonX, buttonY);
         Assert.assertFalse(hasStateHovered(mView.getDrawableState()));
+    }
+
+    @Test
+    public void testInputInterception() {
+        MotionEvent.PointerProperties pp = new MotionEvent.PointerProperties();
+        pp.id = 0;
+        pp.toolType = MotionEvent.TOOL_TYPE_MOUSE;
+
+        MotionEvent.PointerCoords pc = new MotionEvent.PointerCoords();
+        pc.x = 100f;
+        pc.y = 100f;
+
+        MotionEvent mouseEvent =
+                MotionEvent.obtain(
+                        0,
+                        0,
+                        MotionEvent.ACTION_SCROLL,
+                        1,
+                        new MotionEvent.PointerProperties[] {pp},
+                        new MotionEvent.PointerCoords[] {pc},
+                        0,
+                        0,
+                        1.0f,
+                        1.0f,
+                        0,
+                        0,
+                        InputDevice.SOURCE_MOUSE,
+                        0);
+
+        Assert.assertTrue(mView.onGenericMotionEvent(mouseEvent));
+        mouseEvent.recycle();
+
+        PointerIcon expectedIcon =
+                PointerIcon.getSystemIcon(mView.getContext(), PointerIcon.TYPE_NO_DROP);
+        Assert.assertEquals(expectedIcon, mView.getPointerIcon());
+
+        PointerIcon expectedButtonIcon =
+                PointerIcon.getSystemIcon(mView.getContext(), PointerIcon.TYPE_HAND);
+        Assert.assertEquals(expectedButtonIcon, mView.getTakeOverButton().getPointerIcon());
     }
 
     @Test

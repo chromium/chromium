@@ -16,6 +16,7 @@ import android.graphics.drawable.LayerDrawable;
 import android.graphics.drawable.StateListDrawable;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
+import android.view.PointerIcon;
 import android.view.View;
 import android.view.ViewGroup.MarginLayoutParams;
 import android.widget.FrameLayout;
@@ -24,6 +25,7 @@ import androidx.core.content.ContextCompat;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.ui.util.MotionEventUtils;
 
 /**
  * The root view for the Actor Overlay. Displays the overlay content on top of the browser content.
@@ -49,6 +51,7 @@ public class ActorOverlayView extends FrameLayout {
         super(context, attrs);
         setClickable(true);
         setFocusable(true);
+        setPointerIcon(PointerIcon.getSystemIcon(context, PointerIcon.TYPE_NO_DROP));
 
         InnerGlowDrawable normalDrawable = InnerGlowDrawable.createMainWebpageGlow(context);
         InnerGlowDrawable normalDrawableForHover = InnerGlowDrawable.createMainWebpageGlow(context);
@@ -93,6 +96,9 @@ public class ActorOverlayView extends FrameLayout {
     protected void onFinishInflate() {
         super.onFinishInflate();
         mButton = getTakeOverButton();
+        if (mButton != null) {
+            mButton.setPointerIcon(PointerIcon.getSystemIcon(getContext(), PointerIcon.TYPE_HAND));
+        }
     }
 
     /**
@@ -134,6 +140,14 @@ public class ActorOverlayView extends FrameLayout {
             refreshDrawableState();
         }
         return true;
+    }
+
+    @Override
+    public boolean onGenericMotionEvent(MotionEvent event) {
+        if (MotionEventUtils.isPointerEvent(event)) {
+            return true;
+        }
+        return super.onGenericMotionEvent(event);
     }
 
     // Overridden to preserve the overlay's hover state when a child view receives hover focus.
