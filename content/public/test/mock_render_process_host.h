@@ -331,12 +331,7 @@ class MockRenderProcessHost : public RenderProcessHost {
   ChildProcessId id_;
   bool has_connection_;
   raw_ptr<BrowserContext, DanglingUntriaged> browser_context_;
-  // TODO(crbug.com/484371187): Investigate if reentrancy can be removed.
-  base::ObserverList<
-      RenderProcessHostObserver,
-      /*check_empty=*/false,
-      base::ObserverListReentrancyPolicy::kAllowReentrancyUntriaged>
-      observers_;
+  base::ObserverList<RenderProcessHostObserver> observers_;
 
   StoragePartitionConfig storage_partition_config_;
   base::flat_set<raw_ptr<RenderProcessHostPriorityClient, CtnExperimental>>
