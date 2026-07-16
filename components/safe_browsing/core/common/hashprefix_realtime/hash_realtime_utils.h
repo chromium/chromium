@@ -78,6 +78,7 @@ bool CanCheckUrl(const GURL& url);
 
 // Returns whether the full hash detail is relevant for hash-prefix real-time
 // lookups.
+//  - `detail`: The full hash detail to evaluate.
 bool IsHashDetailRelevant(const V5::FullHash::FullHashDetail& detail);
 
 // Specifies whether hash-prefix real-time lookups are possible for the browser

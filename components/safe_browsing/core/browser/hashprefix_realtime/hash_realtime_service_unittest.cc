@@ -722,18 +722,6 @@ class HashRealTimeServiceTest : public PlatformTest {
                           base::SequencedTaskRunner::GetCurrentDefault());
     EXPECT_TRUE(response_future.Wait());
   }
-  bool IsHashDetailMoreSevere(
-      const V5::FullHash::FullHashDetail& candidate_detail,
-      const V5::FullHash::FullHashDetail& baseline_detail) {
-    return HashRealTimeService::IsHashDetailMoreSevere(
-        candidate_detail,
-        HashRealTimeService::GetThreatSeverity(baseline_detail));
-  }
-  bool IsHashDetailMoreSevereThanLeastSeverity(
-      const V5::FullHash::FullHashDetail& detail) {
-    return HashRealTimeService::IsHashDetailMoreSevere(
-        detail, HashRealTimeService::kLeastSeverity);
-  }
 
   base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<MockWebUIDelegate> webui_delegate_;
@@ -1696,107 +1684,6 @@ TEST_F(HashRealTimeServiceTest, TestBackoffModeRespected_NotCached) {
       /*expected_when_entered_backoff_network_result=*/net::ERR_FAILED,
       /*expected_when_entered_backoff_operation_outcome=*/
       HashRealTimeService::OperationOutcome::kNetworkError);
-}
-
-TEST_F(HashRealTimeServiceTest, IsHashDetailMoreSevere) {
-  auto create_hash_detail =
-      [](V5::ThreatType threat_type,
-         std::optional<std::vector<V5::ThreatAttribute>> threat_attributes) {
-        V5::FullHash::FullHashDetail detail;
-        detail.set_threat_type(threat_type);
-        if (threat_attributes.has_value()) {
-          for (const auto& attribute : threat_attributes.value()) {
-            detail.add_attributes(attribute);
-          }
-        }
-        return detail;
-      };
-  struct TestCase {
-    V5::ThreatType candidate_threat_type;
-    std::optional<std::vector<V5::ThreatAttribute>> candidate_threat_attribute;
-    V5::ThreatType baseline_threat_type;
-    std::optional<std::vector<V5::ThreatAttribute>> baseline_threat_attribute;
-    bool expected_result;
-  } test_cases[] = {
-      {V5::ThreatType::MALWARE, std::nullopt, V5::ThreatType::MALWARE,
-       std::nullopt, false},
-      {V5::ThreatType::MALWARE, std::nullopt,
-       V5::ThreatType::SOCIAL_ENGINEERING, std::nullopt, false},
-      {V5::ThreatType::MALWARE, std::nullopt, V5::ThreatType::UNWANTED_SOFTWARE,
-       std::nullopt, true},
-      {V5::ThreatType::MALWARE, std::nullopt, V5::ThreatType::TRICK_TO_BILL,
-       std::nullopt, true},
-      {V5::ThreatType::SOCIAL_ENGINEERING, std::nullopt,
-       V5::ThreatType::MALWARE, std::nullopt, false},
-      {V5::ThreatType::SOCIAL_ENGINEERING, std::nullopt,
-       V5::ThreatType::SOCIAL_ENGINEERING, std::nullopt, false},
-      {V5::ThreatType::SOCIAL_ENGINEERING, std::nullopt,
-       V5::ThreatType::UNWANTED_SOFTWARE, std::nullopt, true},
-      {V5::ThreatType::SOCIAL_ENGINEERING, std::nullopt,
-       V5::ThreatType::SOCIAL_ENGINEERING,
-       std::vector<V5::ThreatAttribute>({V5::ThreatAttribute::CANARY}), true},
-      {V5::ThreatType::SOCIAL_ENGINEERING, std::nullopt,
-       V5::ThreatType::TRICK_TO_BILL, std::nullopt, true},
-      {V5::ThreatType::UNWANTED_SOFTWARE, std::nullopt, V5::ThreatType::MALWARE,
-       std::nullopt, false},
-      {V5::ThreatType::UNWANTED_SOFTWARE, std::nullopt,
-       V5::ThreatType::SOCIAL_ENGINEERING, std::nullopt, false},
-      {V5::ThreatType::UNWANTED_SOFTWARE, std::nullopt,
-       V5::ThreatType::UNWANTED_SOFTWARE, std::nullopt, false},
-      {V5::ThreatType::UNWANTED_SOFTWARE, std::nullopt,
-       V5::ThreatType::TRICK_TO_BILL, std::nullopt, true},
-      {V5::ThreatType::SOCIAL_ENGINEERING,
-       std::vector<V5::ThreatAttribute>({V5::ThreatAttribute::CANARY}),
-       V5::ThreatType::MALWARE, std::nullopt, false},
-      {V5::ThreatType::SOCIAL_ENGINEERING,
-       std::vector<V5::ThreatAttribute>({V5::ThreatAttribute::CANARY}),
-       V5::ThreatType::SOCIAL_ENGINEERING, std::nullopt, false},
-      {V5::ThreatType::SOCIAL_ENGINEERING,
-       std::vector<V5::ThreatAttribute>({V5::ThreatAttribute::CANARY}),
-       V5::ThreatType::UNWANTED_SOFTWARE, std::nullopt, false},
-      {V5::ThreatType::SOCIAL_ENGINEERING,
-       std::vector<V5::ThreatAttribute>({V5::ThreatAttribute::CANARY}),
-       V5::ThreatType::SOCIAL_ENGINEERING,
-       std::vector<V5::ThreatAttribute>({V5::ThreatAttribute::CANARY}), false},
-      {V5::ThreatType::SOCIAL_ENGINEERING,
-       std::vector<V5::ThreatAttribute>({V5::ThreatAttribute::CANARY}),
-       V5::ThreatType::TRICK_TO_BILL, std::nullopt, true},
-      {V5::ThreatType::TRICK_TO_BILL, std::nullopt, V5::ThreatType::MALWARE,
-       std::nullopt, false},
-      {V5::ThreatType::TRICK_TO_BILL, std::nullopt,
-       V5::ThreatType::SOCIAL_ENGINEERING, std::nullopt, false},
-      {V5::ThreatType::TRICK_TO_BILL, std::nullopt,
-       V5::ThreatType::UNWANTED_SOFTWARE, std::nullopt, false},
-      {V5::ThreatType::TRICK_TO_BILL, std::nullopt,
-       V5::ThreatType::SOCIAL_ENGINEERING,
-       std::vector<V5::ThreatAttribute>({V5::ThreatAttribute::CANARY}), false},
-      {V5::ThreatType::TRICK_TO_BILL, std::nullopt,
-       V5::ThreatType::TRICK_TO_BILL, std::nullopt, false}};
-
-  for (const auto& test_case : test_cases) {
-    EXPECT_EQ(IsHashDetailMoreSevere(
-                  create_hash_detail(test_case.candidate_threat_type,
-                                     test_case.candidate_threat_attribute),
-                  create_hash_detail(test_case.baseline_threat_type,
-                                     test_case.baseline_threat_attribute)),
-              test_case.expected_result);
-  }
-
-  struct MinSeverityTestCase {
-    V5::ThreatType threat_type;
-    std::optional<std::vector<V5::ThreatAttribute>> threat_attribute;
-  } min_severity_test_cases[] = {
-      {V5::ThreatType::MALWARE, std::nullopt},
-      {V5::ThreatType::SOCIAL_ENGINEERING, std::nullopt},
-      {V5::ThreatType::UNWANTED_SOFTWARE, std::nullopt},
-      {V5::ThreatType::SOCIAL_ENGINEERING,
-       std::vector<V5::ThreatAttribute>({V5::ThreatAttribute::CANARY})},
-      {V5::ThreatType::TRICK_TO_BILL, std::nullopt},
-  };
-  for (const auto& test_case : min_severity_test_cases) {
-    EXPECT_TRUE(IsHashDetailMoreSevereThanLeastSeverity(
-        create_hash_detail(test_case.threat_type, test_case.threat_attribute)));
-  }
 }
 
 }  // namespace safe_browsing

@@ -6,7 +6,6 @@
 
 #include <algorithm>
 
-#include "base/check.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "build/branding_buildflags.h"
@@ -40,38 +39,71 @@ bool CanCheckUrl(const GURL& url) {
 }
 
 bool IsHashDetailRelevant(const V5::FullHash::FullHashDetail& detail) {
-  if (std::ranges::contains(detail.attributes(), V5::ThreatAttribute::CANARY)) {
+  bool has_canary = false;
+  bool has_frame_only = false;
+
+  for (int attribute_value : detail.attributes()) {
+    // LINT.IfChange(ThreatAttribute)
+    switch (attribute_value) {
+      case V5::ThreatAttribute::CANARY:
+        has_canary = true;
+        break;
+      case V5::ThreatAttribute::FRAME_ONLY:
+        has_frame_only = true;
+        break;
+      case V5::ThreatAttribute::THREAT_ATTRIBUTE_UNSPECIFIED:
+        break;
+        // LINT.ThenChange(//components/safe_browsing/core/common/proto/safebrowsingv5.proto:ThreatAttribute)
+      default:
+        // Using "default" because exhaustive switch statements are not
+        // recommended for proto3 enums.
+        break;
+    }
+  }
+
 #if BUILDFLAG(IS_IOS)
     // iOS doesn't support CANARY threat attribute.
-    return false;
-#else
-    if (detail.threat_type() != V5::ThreatType::SOCIAL_ENGINEERING) {
-      // CANARY should only be attached with SOCIAL_ENGINEERING,
-      // ABUSIVE_EXPERIENCE_VIOLATION, BETTER_ADS_VIOLATION. Only
-      // SOCIAL_ENGINEERING is relevant to hash real time checks (the others
-      // are not frame URLs), so only checking SOCIAL_ENGINEERING here.
-      return false;
-    }
-    if (std::ranges::contains(detail.attributes(),
-                              V5::ThreatAttribute::FRAME_ONLY)) {
-      // CANARY and FRAME_ONLY should not be set at the same time.
+    if (has_canary) {
       return false;
     }
 #endif
-  }
 
-  switch (detail.threat_type()) {
-    case V5::ThreatType::MALWARE:
-    case V5::ThreatType::SOCIAL_ENGINEERING:
-    case V5::ThreatType::UNWANTED_SOFTWARE:
-    case V5::ThreatType::TRICK_TO_BILL:
-      return true;
-    default:
-      // Using "default" because exhaustive switch statements are not
-      // recommended for proto3 enums.
+    // CANARY and FRAME_ONLY should not be set at the same time.
+    if (has_canary && has_frame_only) {
       return false;
-  }
+    }
+
+    // CANARY should only be attached with SOCIAL_ENGINEERING,
+    // ABUSIVE_EXPERIENCE_VIOLATION, BETTER_ADS_VIOLATION. Only
+    // SOCIAL_ENGINEERING is relevant to hash real time checks (the others
+    // are not frame URLs), so only checking SOCIAL_ENGINEERING here.
+    // LINT.IfChange(ThreatType)
+    switch (detail.threat_type()) {
+      case V5::ThreatType::SOCIAL_ENGINEERING:
+        // Social Engineering supports both warning (CANARY) and enforcement.
+        return true;
+      case V5::ThreatType::MALWARE:
+      case V5::ThreatType::UNWANTED_SOFTWARE:
+      case V5::ThreatType::TRICK_TO_BILL:
+        // These types only support enforcement; CANARY is invalid.
+        return !has_canary;
+      case V5::ThreatType::THREAT_TYPE_UNSPECIFIED:
+      case V5::ThreatType::POTENTIALLY_HARMFUL_APPLICATION:
+      case V5::ThreatType::MALICIOUS_BINARY:
+      case V5::ThreatType::SUBRESOURCE_FILTER:
+      case V5::ThreatType::ABUSIVE_EXPERIENCE_VIOLATION:
+      case V5::ThreatType::BETTER_ADS_VIOLATION:
+      case V5::ThreatType::NOTIFICATION_ABUSE:
+        // These types are not supported/relevant for HPRT queries.
+        return false;
+        // LINT.ThenChange(//components/safe_browsing/core/common/proto/safebrowsingv5.proto:ThreatType)
+      default:
+        // Using "default" because exhaustive switch statements are not
+        // recommended for proto3 enums.
+        return false;
+    }
 }
+
 bool IsHashRealTimeLookupEligibleInSession() {
   return HasGoogleChromeBranding() &&
          base::FeatureList::IsEnabled(kHashPrefixRealTimeLookups);

@@ -140,6 +140,27 @@ static_library("v4_get_hash_protocol_manager") {
   ]
 }
 
+source_set("v5_search_hashes_util") {
+  sources = [
+    "v5_search_hashes_util.cc",
+    "v5_search_hashes_util.h",
+  ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
+  public_deps = [
+    ":util",
+    "//components/safe_browsing/core/common/proto:safebrowsingv5_proto",
+  ]
+  deps = [
+    ":v5_search_hashes_cache",
+    "//base",
+    "//components/safe_browsing/core/common",
+    "//google_apis",
+    "//net",
+  ]
+}
+
 static_library("sb_local_database_manager") {
   sources = [
     "sb_local_database_manager.cc",
@@ -381,6 +402,7 @@ source_set("unit_tests_shared") {
     "util_unittest.cc",
     "v4_get_hash_protocol_manager_unittest.cc",
     "v5_search_hashes_cache_unittest.cc",
+    "v5_search_hashes_util_unittest.cc",
   ]
   deps = [
     ":allowlist_checker_client",
@@ -392,6 +414,7 @@ source_set("unit_tests_shared") {
     ":v4_protocol_manager_util",
     ":v4_test_util",
     ":v5_search_hashes_cache",
+    ":v5_search_hashes_util",
     "//base",
     "//base/test:test_support",
     "//components/history/core/browser",

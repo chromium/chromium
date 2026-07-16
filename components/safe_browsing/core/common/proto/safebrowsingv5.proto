@@ -76,6 +76,7 @@ message FullHash {
 }
 
 // Types of threats.
+// LINT.IfChange(ThreatType)
 enum ThreatType {
   // Unknown.
   THREAT_TYPE_UNSPECIFIED = 0;
@@ -114,11 +115,13 @@ enum ThreatType {
 
   NOTIFICATION_ABUSE = 24;
 }
+// LINT.ThenChange(//components/safe_browsing/core/common/hashprefix_realtime/hash_realtime_utils.cc:ThreatType)
 
 // Attributes of threats. These attributes may confer additional meaning to a
 // particular threat but will not affect the threat type. For example, an
 // attribute may specify a lower confidence while a different attribute may
 // specify higher confidence. More attributes may be added in the future.
+// LINT.IfChange(ThreatAttribute)
 enum ThreatAttribute {
   // Unknown.
   THREAT_ATTRIBUTE_UNSPECIFIED = 0;
@@ -130,6 +133,7 @@ enum ThreatAttribute {
   // frames.
   FRAME_ONLY = 2;
 }
+// LINT.ThenChange(//components/safe_browsing/core/common/hashprefix_realtime/hash_realtime_utils.cc:ThreatAttribute)
 
 message Duration {
   // Signed seconds of the span of time. Must be from -315,576,000,000

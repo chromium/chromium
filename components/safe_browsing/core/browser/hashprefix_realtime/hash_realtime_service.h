@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_SAFE_BROWSING_CORE_BROWSER_HASHPREFIX_REALTIME_HASH_REALTIME_SERVICE_H_
 #define COMPONENTS_SAFE_BROWSING_CORE_BROWSER_HASHPREFIX_REALTIME_HASH_REALTIME_SERVICE_H_
 
-#include <limits>
 #include <memory>
 #include <optional>
 #include <set>
@@ -132,8 +131,6 @@ class HashRealTimeService : public KeyedService {
   FRIEND_TEST_ALL_PREFIXES(HashRealTimeServiceTest,
                            TestLookupFailure_OhttpClientDestructedEarly);
 
-  constexpr static int kLeastSeverity = std::numeric_limits<int>::max();
-
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
   enum class OperationOutcome {
@@ -204,9 +201,6 @@ class HashRealTimeService : public KeyedService {
   // Returns the traffic annotation tag that is attached in the Oblivious HTTP
   // request when an OHTTP request is sent.
   net::NetworkTrafficAnnotationTag GetTrafficAnnotationTagForOhttp() const;
-
-  // Get the URL that will return a response containing full hashes.
-  std::string GetResourceUrl(V5::SearchHashesRequest* request) const;
 
   // Callback for getting the OHTTP key. Most parameters are used by
   // |OnURLLoaderComplete|, see the description above |OnURLLoaderComplete| for
@@ -285,18 +279,6 @@ class HashRealTimeService : public KeyedService {
       const GURL& url,
       const std::vector<V5::FullHash>& result_full_hashes);
 
-  // Returns a number representing the severity of the full hash detail. The
-  // lower the number, the more severe it is. Severity is used to narrow down to
-  // a single threat type to report in cases where there are multiple full hash
-  // details.
-  static int GetThreatSeverity(const V5::FullHash::FullHashDetail& detail);
-
-  // Returns true if the |detail| is more severe than the
-  // |baseline_severity|. Returns false if it's less severe or has equal
-  // severity.
-  static bool IsHashDetailMoreSevere(const V5::FullHash::FullHashDetail& detail,
-                                     int baseline_severity);
-
   // In addition to attempting to parse the |response_body| as described in the
   // |ParseResponse| function comments, this updates the backoff state depending
   // on the lookup success.
@@ -317,31 +299,8 @@ class HashRealTimeService : public KeyedService {
                 std::unique_ptr<std::string> response_body,
                 const std::vector<std::string>& requested_hash_prefixes) const;
 
-  // Removes any |FullHash| within the |response| whose hash prefix is not found
-  // within |requested_hash_prefixes|. This is not expected to occur, but is
-  // handled out of caution.
-  void RemoveUnmatchedFullHashes(
-      std::unique_ptr<V5::SearchHashesResponse>& response,
-      const std::vector<std::string>& requested_hash_prefixes) const;
-
-  // Removes any |FullHashDetail| within the |response| that has invalid
-  // |ThreatType| or |ThreatAttribute| enums. This is for forward compatibility,
-  // for when the API starts returning new threat types or attributes that the
-  // client's version of the code does not support.
-  void RemoveFullHashDetailsWithInvalidEnums(
-      std::unique_ptr<V5::SearchHashesResponse>& response) const;
-
   // Returns the hash prefixes for the URL's lookup expressions.
   std::set<std::string> GetHashPrefixesSet(const GURL& url) const;
-
-  // Searches the local cache for the input |hash_prefixes|.
-  //  - |out_missing_hash_prefixes| is an output parameter with a list of which
-  //    hash prefixes were not found in the cache and need to be requested.
-  //  - |out_cached_full_hashes| is an output parameter with a list of unsafe
-  //    full hashes that were found in the cache for any of the |hash_prefixes|.
-  void SearchCache(std::set<std::string> hash_prefixes,
-                   std::vector<std::string>* out_missing_hash_prefixes,
-                   std::vector<V5::FullHash>* out_cached_full_hashes) const;
 
   SEQUENCE_CHECKER(sequence_checker_);
 
