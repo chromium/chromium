@@ -440,7 +440,8 @@ public class NativePageFactory {
                             mActivityResultTracker,
                             mSnackbarManagerSupplier.get(),
                             mBottomSheetController,
-                            mModalDialogManagerSupplier.get()));
+                            mModalDialogManagerSupplier.get(),
+                            tab.getId()));
         }
     }
 

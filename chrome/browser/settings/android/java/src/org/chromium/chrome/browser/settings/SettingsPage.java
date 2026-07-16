@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.settings;
 
 import android.app.Activity;
-import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
@@ -48,7 +47,6 @@ public class SettingsPage extends BasicNativePage {
 
         mTitle = activity.getString(R.string.settings);
         mContentView = new FrameLayout(activity);
-        mContentView.setId(View.generateViewId());
 
         // TODO(crbug.com/521895796): Center the settings widgets in the middle of the tab.
         // TODO(crbug.com/521895796): Add "back" navigation support.

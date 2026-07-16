@@ -22,16 +22,30 @@ import androidx.fragment.app.FragmentManager;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.OneshotSupplierImpl;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.ChromeBaseAppCompatActivity;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
+import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.settings.PreferenceUpdateObserver;
+import org.chromium.ui.base.ActivityResultTracker;
+import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 
 import java.lang.ref.WeakReference;
 
 /** Hosts settings preference fragments inside a native page. See {@link SettingsPage}. */
 @NullMarked
 public class SettingsHostFragment extends Fragment
-        implements PreferenceFragmentCompat.OnPreferenceStartFragmentCallback {
+        implements PreferenceFragmentCompat.OnPreferenceStartFragmentCallback,
+                PreferenceUpdateObserver,
+                ContainmentHelper.Delegate {
 
     public static final String SETTINGS_NATIVE_PAGE_TAG = "settings_native_page";
 
@@ -39,11 +53,57 @@ public class SettingsHostFragment extends Fragment
 
     private @Nullable Context mThemedContext;
     private @Nullable WeakReference<Fragment> mFinishedMainFragment;
+    private @Nullable FragmentDependencyProvider mDependencyProvider;
+    private @Nullable ContainmentHelper mContainmentHelper;
     private int mPendingPopBackCount;
 
-    SettingsHostFragment() {
+    /** Public constructor needed for Fragment re-instantiation. */
+    public SettingsHostFragment() {
         assert SettingsInTab.isEnabled()
                 : "SettingsInTab feature must be enabled to use SettingsHostFragment.";
+    }
+
+    /** Sets the dependency provider for child fragments. */
+    public void setDependencyProvider(FragmentDependencyProvider dependencyProvider) {
+        if (mDependencyProvider != null && isAdded()) {
+            getChildFragmentManager().unregisterFragmentLifecycleCallbacks(mDependencyProvider);
+        }
+        mDependencyProvider = dependencyProvider;
+        if (isAdded()) {
+            getChildFragmentManager()
+                    .registerFragmentLifecycleCallbacks(mDependencyProvider, /* recursive= */ true);
+        }
+    }
+
+    @Override
+    public boolean isTwoColumnSettingsVisible() {
+        Fragment active = getActiveFragment();
+        return active instanceof MultiColumnSettings multiColumnSettings
+                && multiColumnSettings.isTwoColumn();
+    }
+
+    @Override
+    public @Nullable MultiColumnSettings getMultiColumnSettings() {
+        Fragment active = getActiveFragment();
+        return active instanceof MultiColumnSettings multiColumnSettings
+                ? multiColumnSettings
+                : null;
+    }
+
+    @Override
+    public PreferenceUpdateObserver getPreferenceUpdateObserver() {
+        return this;
+    }
+
+    @Override
+    public void onPreferencesUpdated(PreferenceFragmentCompat fragment) {
+        if (mContainmentHelper != null) {
+            mContainmentHelper.postUpdateContainmentOnLayout(fragment);
+        }
+    }
+
+    public @Nullable ContainmentHelper getContainmentHelper() {
+        return mContainmentHelper;
     }
 
     @Override
@@ -78,6 +138,53 @@ public class SettingsHostFragment extends Fragment
         // For example, this ensures the left column category labels are styled correctly.
         mThemedContext = new ContextThemeWrapper(context, R.style.Theme_Chromium_Settings);
         super.onAttach(mThemedContext);
+
+        mContainmentHelper = new ContainmentHelper(mThemedContext, this);
+        mContainmentHelper.registerCallbacks(getChildFragmentManager());
+
+        // Optionally create a temporary dependency provider for the current activity. This is only
+        // called when the fragment is attached to an activity and the dependency provider has not
+        // been set yet, for example during dark/light theme changes.
+        if (mDependencyProvider == null && ProfileManager.isInitialized()) {
+            mDependencyProvider = createOnAttachDependencyProvider();
+        }
+
+        // Either way, ensure fragment lifecycle callbacks are set.
+        if (mDependencyProvider != null) {
+            getChildFragmentManager()
+                    .registerFragmentLifecycleCallbacks(mDependencyProvider, /* recursive= */ true);
+        }
+    }
+
+    /**
+     * Creates a temporary {@link FragmentDependencyProvider} for the current activity.
+     *
+     * <p>This is only called when the fragment is attached to an activity and the dependency
+     * provider has not been set yet.
+     */
+    private FragmentDependencyProvider createOnAttachDependencyProvider() {
+        assert ProfileManager.isInitialized();
+        Profile profile = ProfileManager.getLastUsedRegularProfile();
+        OneshotSupplierImpl<WindowAndroid> windowAndroidSupplier = new OneshotSupplierImpl<>();
+        OneshotSupplierImpl<SnackbarManager> snackbarSupplier = new OneshotSupplierImpl<>();
+        OneshotSupplierImpl<BottomSheetController> bottomSheetSupplier =
+                new OneshotSupplierImpl<>();
+        SettableMonotonicObservableSupplier<ModalDialogManager> modalDialogSupplier =
+                ObservableSuppliers.createMonotonic();
+        Activity activity = requireActivity();
+        assert activity instanceof ChromeBaseAppCompatActivity;
+        ChromeBaseAppCompatActivity chromeActivity = (ChromeBaseAppCompatActivity) activity;
+        ActivityResultTracker activityResultTracker = chromeActivity.getActivityResultTracker();
+
+        return new FragmentDependencyProvider(
+                activity,
+                profile,
+                windowAndroidSupplier,
+                activityResultTracker,
+                snackbarSupplier,
+                bottomSheetSupplier,
+                modalDialogSupplier,
+                () -> null);
     }
 
     @Override

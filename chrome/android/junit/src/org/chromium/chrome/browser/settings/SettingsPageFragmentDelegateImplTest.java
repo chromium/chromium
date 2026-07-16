@@ -65,8 +65,9 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 @EnableFeatures(ChromeFeatureList.SETTINGS_IN_TAB)
 @Config(qualifiers = "sw600dp")
 public class SettingsPageFragmentDelegateImplTest {
+    private static final int TAB_ID = 123;
     private static final int CONTAINER_ID = R.id.settings_content;
-    private static final String EXPECTED_TAG = "settings_native_page_" + CONTAINER_ID;
+    private static final String EXPECTED_TAG = "settings_native_page_" + TAB_ID;
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -128,6 +129,11 @@ public class SettingsPageFragmentDelegateImplTest {
                 .thenReturn(layoutInflater);
         when(mActivity.getResources()).thenReturn(context.getResources());
         when(mActivity.getTheme()).thenReturn(context.getTheme());
+        when(mActivity.getDrawable(anyInt()))
+                .thenAnswer(invocation -> context.getDrawable(invocation.getArgument(0)));
+
+        ContainmentHelper mockContainmentHelper = mock(ContainmentHelper.class);
+        when(mMockSettingsHostFragment.getContainmentHelper()).thenReturn(mockContainmentHelper);
 
         mDelegate =
                 new SettingsPageFragmentDelegateImpl(
@@ -137,7 +143,8 @@ public class SettingsPageFragmentDelegateImplTest {
                         mActivityResultTracker,
                         mSnackbarManager,
                         mBottomSheetController,
-                        mModalDialogManager);
+                        mModalDialogManager,
+                        TAB_ID);
     }
 
     @Test
@@ -260,7 +267,8 @@ public class SettingsPageFragmentDelegateImplTest {
 
     @Test
     public void testInitSettings_createsTitleUpdater() {
-        when(mFragmentManager.findFragmentByTag(EXPECTED_TAG)).thenReturn(null);
+        when(mFragmentManager.findFragmentByTag(EXPECTED_TAG))
+                .thenReturn(mMockSettingsHostFragment);
         mDelegate.initSettings(mContainerView);
 
         // Capture all registered FragmentLifecycleCallbacks.
@@ -365,7 +373,8 @@ public class SettingsPageFragmentDelegateImplTest {
 
     @Test
     public void testInitSettings_createsSearchCoordinator() {
-        when(mFragmentManager.findFragmentByTag(EXPECTED_TAG)).thenReturn(null);
+        when(mFragmentManager.findFragmentByTag(EXPECTED_TAG))
+                .thenReturn(mMockSettingsHostFragment);
         mDelegate.initSettings(mContainerView);
 
         // Capture all registered FragmentLifecycleCallbacks.
@@ -422,5 +431,71 @@ public class SettingsPageFragmentDelegateImplTest {
 
         // Verify that the observer was removed.
         verify(mMultiColumnSettings).removeObserver(searchCoordinator);
+    }
+
+    @Test
+    public void testInitSettings_reusesExistingRestoredSettingsHostFragment() {
+        when(mFragmentManager.findFragmentByTag(EXPECTED_TAG))
+                .thenReturn(mMockSettingsHostFragment);
+
+        mDelegate.initSettings(mContainerView);
+
+        verify(mFragmentTransaction, never()).add(anyInt(), any(), anyString());
+        verify(mMockSettingsHostFragment).setDependencyProvider(any());
+    }
+
+    @Test
+    public void
+            testInitSettings_withExistingMultiColumnSettings_initializesTitleUpdaterAndSearchCoordinator() {
+        when(mFragmentManager.findFragmentByTag(EXPECTED_TAG))
+                .thenReturn(mMockSettingsHostFragment);
+        when(mMockSettingsHostFragment.isAttachedToActivity()).thenReturn(true);
+        when(mMockSettingsHostFragment.getActiveFragment()).thenReturn(mMultiColumnSettings);
+        when(mMultiColumnSettings.getView()).thenReturn(null);
+
+        mDelegate.initSettings(mContainerView);
+
+        ArgumentCaptor<FragmentManager.FragmentLifecycleCallbacks> callbackCaptor =
+                ArgumentCaptor.forClass(FragmentManager.FragmentLifecycleCallbacks.class);
+        verify(mFragmentManager, atLeastOnce())
+                .registerFragmentLifecycleCallbacks(callbackCaptor.capture(), eq(true));
+
+        when(mFragmentView.findViewById(R.id.settings_title_in_detailed_pane))
+                .thenReturn(mTitleContainer);
+
+        for (FragmentManager.FragmentLifecycleCallbacks callback : callbackCaptor.getAllValues()) {
+            callback.onFragmentViewCreated(
+                    mFragmentManager, mMultiColumnSettings, mFragmentView, null);
+        }
+
+        verify(mMultiColumnSettings, atLeastOnce()).addObserver(any(MultiColumnTitleUpdater.class));
+        SettingsSearchCoordinator searchCoordinator = mDelegate.getSearchCoordinator();
+        assertNotNull(searchCoordinator);
+        verify(mMultiColumnSettings, atLeastOnce()).addObserver(searchCoordinator);
+    }
+
+    @Test
+    public void testTitleUpdaterLifecycleCallbacks_unregistersAfterViewCreated() {
+        when(mFragmentManager.findFragmentByTag(EXPECTED_TAG))
+                .thenReturn(mMockSettingsHostFragment);
+        mDelegate.initSettings(mContainerView);
+
+        ArgumentCaptor<FragmentManager.FragmentLifecycleCallbacks> callbackCaptor =
+                ArgumentCaptor.forClass(FragmentManager.FragmentLifecycleCallbacks.class);
+        verify(mFragmentManager, atLeastOnce())
+                .registerFragmentLifecycleCallbacks(callbackCaptor.capture(), eq(true));
+
+        when(mFragmentView.findViewById(R.id.settings_title_in_detailed_pane))
+                .thenReturn(mTitleContainer);
+
+        for (FragmentManager.FragmentLifecycleCallbacks callback : callbackCaptor.getAllValues()) {
+            callback.onFragmentViewCreated(
+                    mFragmentManager, mMultiColumnSettings, mFragmentView, null);
+        }
+
+        // Verify that callbacks unregister themselves upon view creation.
+        verify(mFragmentManager, atLeastOnce())
+                .unregisterFragmentLifecycleCallbacks(
+                        any(FragmentManager.FragmentLifecycleCallbacks.class));
     }
 }

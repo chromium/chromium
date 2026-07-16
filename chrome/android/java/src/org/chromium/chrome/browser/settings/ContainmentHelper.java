@@ -25,7 +25,12 @@ import org.chromium.components.browser_ui.widget.containment.ContainmentItemDeco
 import java.util.HashMap;
 import java.util.Map;
 
-/** Helper class to manage containment styling for settings fragments. */
+/**
+ * Helper class to manage containment styling for settings fragments.
+ *
+ * <p>TODO(crbug.com/521895796): Move this class to
+ * org.chromium.components.browser_ui.widget.containment.
+ */
 @NullMarked
 class ContainmentHelper {
     /**

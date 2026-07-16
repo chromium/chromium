@@ -193,6 +193,23 @@ public class SettingsHostFragmentTest {
         assertTrue(mSettingsHostFragment.getActiveFragment() instanceof FirstFakeSettingsFragment);
     }
 
+    @Test
+    public void testSetDependencyProvider_whenNotAdded_defersRegistrationUntilAttached() {
+        SettingsHostFragment fragment = new TestSettingsHostFragment();
+        FragmentDependencyProvider mockProvider = mock(FragmentDependencyProvider.class);
+
+        // setDependencyProvider should not throw when fragment is unattached
+        fragment.setDependencyProvider(mockProvider);
+
+        mActivity
+                .getSupportFragmentManager()
+                .beginTransaction()
+                .add(android.R.id.content, fragment, SettingsHostFragment.SETTINGS_NATIVE_PAGE_TAG)
+                .commitNow();
+
+        assertNotNull(fragment.getChildFragmentManager());
+    }
+
     /** Fake settings fragment for testing. */
     public static class FirstFakeSettingsFragment extends Fragment {
         public FirstFakeSettingsFragment() {}
