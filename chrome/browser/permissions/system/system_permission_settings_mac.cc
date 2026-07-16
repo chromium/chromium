@@ -15,6 +15,7 @@
 #include "base/scoped_observation.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
+#include "chrome/browser/after_startup_task_utils.h"
 #include "chrome/browser/permissions/system/geolocation_observation.h"
 #include "chrome/browser/permissions/system/platform_handle.h"
 #include "chrome/browser/permissions/system/system_media_capture_permissions_mac.h"
@@ -58,10 +59,14 @@ class PlatformHandleImpl : public PlatformHandle,
                            public BrowserCollectionObserver {
  public:
   PlatformHandleImpl() {
-    browser_collection_observation_.Observe(
-        GlobalBrowserCollection::GetInstance());
     if (base::SequencedTaskRunner::HasCurrentDefault()) {
-      RefreshSystemPermissionSettings();
+      AfterStartupTaskUtils::PostTask(
+          FROM_HERE, base::SequencedTaskRunner::GetCurrentDefault(),
+          base::BindOnce(&PlatformHandleImpl::RefreshSystemPermissionSettings,
+                         weak_factory_.GetWeakPtr(), base::DoNothing()));
+    } else {
+      browser_collection_observation_.Observe(
+          GlobalBrowserCollection::GetInstance());
     }
   }
 
@@ -267,7 +272,7 @@ class PlatformHandleImpl : public PlatformHandle,
   void RefreshSystemPermissionSettings(
       base::OnceClosure callback = base::DoNothing()) {
     base::ThreadPool::PostTaskAndReplyWithResult(
-        FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
+        FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
         base::BindOnce([]() {
           return SystemPermissionState{
               system_permission_settings::CheckSystemVideoCapturePermission(),
@@ -283,6 +288,10 @@ class PlatformHandleImpl : public PlatformHandle,
                                      state.camera);
     UpdateSystemPermissionCacheEntry(ContentSettingsType::MEDIASTREAM_MIC,
                                      state.mic);
+    if (!browser_collection_observation_.IsObserving()) {
+      browser_collection_observation_.Observe(
+          GlobalBrowserCollection::GetInstance());
+    }
   }
 
   void UpdateSystemPermissionCacheEntry(ContentSettingsType type,

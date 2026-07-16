@@ -41,7 +41,10 @@ source_set("system") {
       "system_media_capture_permissions_mac.mm",
       "system_permission_settings_mac.cc",
     ]
-    deps += [ "//chrome//browser/web_applications" ]
+    deps += [
+      "//chrome/browser:after_startup_task_utils",
+      "//chrome/browser/web_applications",
+    ]
   } else if (is_chromeos) {
     sources += [ "system_permission_settings_chromeos.cc" ]
     deps += [

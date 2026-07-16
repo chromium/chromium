@@ -47,8 +47,15 @@ void SetInstanceForTesting(PlatformHandle* instance_for_testing) {
 
 // static
 bool CanPrompt(ContentSettingsType type) {
-  return g_mock_system_prompt_for_testing_ ||
-         GetPlatformHandle()->CanPrompt(type);
+  if (g_mock_system_prompt_for_testing_) {
+    return true;
+  }
+
+  if (GlobalTestingBlockOverrides().contains(type)) {
+    return false;
+  }
+
+  return GetPlatformHandle()->CanPrompt(type);
 }
 
 // static
