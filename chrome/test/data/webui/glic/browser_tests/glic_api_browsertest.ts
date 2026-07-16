@@ -188,28 +188,6 @@ class ApiTests extends ApiTestFixtureBase {
     await observeSequence(this.host.canAttachPanel()).waitForValue(true);
   }
 
-  async testThereCanOnlyBeOneFloaty() {
-    assertDefined(this.host.getPanelState);
-    assertDefined(this.host.detachPanel);
-
-    if (this.testParams === 'first') {
-      this.host.detachPanel();
-      const panelStates = observeSequence(this.host.getPanelState());
-      await panelStates.waitFor(
-          state => state.kind === PanelStateKind.DETACHED);
-      await this.advanceToNextStep();
-
-      observeSequence(this.host.getPanelState())
-          .waitFor(state => state.kind === PanelStateKind.HIDDEN);
-
-    } else if (this.testParams === 'second') {
-      this.host.detachPanel();
-      const panelStates = observeSequence(this.host.getPanelState());
-      await panelStates.waitFor(
-          state => state.kind === PanelStateKind.DETACHED);
-    }
-  }
-
 
   async testErrorShownOnMojoPipeError() {}
 

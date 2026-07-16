@@ -841,6 +841,51 @@ IN_PROC_BROWSER_TEST_P(NewGlicApiTest,
 }
 
 #if defined(NOT_VETTED_ON_ANDROID)
+#define MAYBE_testThereCanOnlyBeOneFloaty DISABLED_testThereCanOnlyBeOneFloaty
+#else
+#define MAYBE_testThereCanOnlyBeOneFloaty testThereCanOnlyBeOneFloaty
+#endif
+IN_PROC_BROWSER_TEST_P(NewGlicApiTest, MAYBE_testThereCanOnlyBeOneFloaty) {
+  // Save first tab (already active and navigated in SetUpOnMainThread).
+  tabs::TabInterface* first_tab = GetTabListInterface()->GetActiveTab();
+
+  // Create a second tab.
+  tabs::TabInterface* second_tab = CreateAndActivateTab(
+      embedded_test_server()->GetURL("/glic/browser_tests/test.html"));
+
+  // Go back to the first tab.
+  ActivateTab(first_tab);
+
+  // Open Glic for the first tab.
+  ASSERT_OK(OpenGlicForActiveTab());
+  GlicInstanceImpl* tab0_instance = GetInstanceForTab(first_tab);
+  ASSERT_TRUE(tab0_instance);
+
+  // Execute test on the first tab instance.
+  ExecuteJsTest({.params = base::Value("first"), .instance = tab0_instance});
+  // Verify that the first tab instance is detached before opening the second
+  // tab.
+  ASSERT_EQ(mojom::PanelStateKind::kDetached,
+            tab0_instance->GetPanelState().kind);
+
+  // Select the second tab, open Floaty, and execute the test on the second
+  // instance.
+  ActivateTab(second_tab);
+  ASSERT_OK(OpenGlicForActiveTab());
+  GlicInstanceImpl* tab1_instance = GetInstanceForTab(second_tab);
+  ASSERT_TRUE(tab1_instance);
+  ExecuteJsTest({.params = base::Value("second"), .instance = tab1_instance});
+
+  // Continue on the first tab. Verify there's only one Floaty.
+  ContinueJsTest({.instance = tab0_instance});
+
+  ASSERT_EQ(mojom::PanelStateKind::kDetached,
+            tab1_instance->GetPanelState().kind);
+  ASSERT_EQ(mojom::PanelStateKind::kHidden,
+            tab0_instance->GetPanelState().kind);
+}
+
+#if defined(NOT_VETTED_ON_ANDROID)
 #define MAYBE_testDetachPanelNoFloatyOrLiveMode \
   DISABLED_testDetachPanelNoFloatyOrLiveMode
 #else
