@@ -108,7 +108,7 @@ impl WritableMessage {
         // The Mojo C API doesn't explicitly promise that it will write all of
         // our bytes at once, so write in a loop until they're all written.
         let mut total_bytes_written = 0;
-        while total_bytes_written < bytes.len() {
+        loop {
             total_bytes_written += message::MojoAppendMessageData(
                 &mut self.message_handle,
                 message::AppendMessageDataFlags::empty(),
@@ -117,6 +117,10 @@ impl WritableMessage {
             )?;
             // Regardless of bytes, the handles should only be written once.
             handles = vec![];
+
+            if total_bytes_written >= bytes.len() {
+                break;
+            }
         }
         Ok(())
     }
