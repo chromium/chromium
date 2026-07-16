@@ -30,12 +30,10 @@
 @synthesize browserProviderInterface = _browserProviderInterface;
 
 @synthesize window = _window;
-@synthesize appState = _appState;
 
-- (instancetype)initWithAppState:(AppState*)appState
-                         profile:(ProfileIOS*)profile
-                  sceneSessionID:(std::string)sceneSessionID
-               commandDispatcher:(CommandDispatcher*)commandDispatcher {
+- (instancetype)initWithProfile:(ProfileIOS*)profile
+                 sceneSessionID:(std::string)sceneSessionID
+              commandDispatcher:(CommandDispatcher*)commandDispatcher {
   if ((self = [super init])) {
     DCHECK(profile);
     DCHECK(!profile->IsOffTheRecord());
@@ -43,7 +41,6 @@
     StubBrowserProviderInterface* browserProviderInterface =
         [[StubBrowserProviderInterface alloc] init];
     self.browserProviderInterface = browserProviderInterface;
-    self.appState = appState;
 
     _browser = std::make_unique<TestBrowser>(profile, self);
     if (commandDispatcher) {
@@ -67,19 +64,35 @@
 
 - (instancetype)initWithAppState:(AppState*)appState
                          profile:(ProfileIOS*)profile
+                  sceneSessionID:(std::string)sceneSessionID
+               commandDispatcher:(CommandDispatcher*)commandDispatcher {
+  return [self initWithProfile:profile
+                sceneSessionID:std::move(sceneSessionID)
+             commandDispatcher:commandDispatcher];
+}
+
+- (instancetype)initWithAppState:(AppState*)appState
+                         profile:(ProfileIOS*)profile
                   sceneSessionID:(std::string)sceneSessionID {
-  return [self initWithAppState:appState
-                        profile:profile
-                 sceneSessionID:std::move(sceneSessionID)
-              commandDispatcher:nil];
+  return [self initWithProfile:profile
+                sceneSessionID:std::move(sceneSessionID)
+             commandDispatcher:nil];
+}
+
+- (instancetype)initWithProfile:(ProfileIOS*)profile
+                 sceneSessionID:(std::string)sceneSessionID {
+  return [self initWithProfile:profile
+                sceneSessionID:std::move(sceneSessionID)
+             commandDispatcher:nil];
 }
 
 - (instancetype)initWithAppState:(AppState*)appState
                          profile:(ProfileIOS*)profile {
-  return [self initWithAppState:appState
-                        profile:profile
-                 sceneSessionID:{}
-              commandDispatcher:nil];
+  return [self initWithProfile:profile sceneSessionID:{} commandDispatcher:nil];
+}
+
+- (instancetype)initWithProfile:(ProfileIOS*)profile {
+  return [self initWithProfile:profile sceneSessionID:{} commandDispatcher:nil];
 }
 
 - (std::string_view)sceneSessionID {
