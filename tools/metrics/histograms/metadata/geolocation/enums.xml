@@ -92,6 +92,11 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Authorized when in-use"/>
 </enum>
 
+<enum name="GmsCoreGranularitySupportState">
+  <int value="0" label="Granularity Unsupported (&lt; Week 44, 2022)"/>
+  <int value="1" label="Granularity Supported (&gt;= Week 44, 2022)"/>
+</enum>
+
 <enum name="LocationProviderManagerMode">
   <int value="0" label="kNetworkOnly"/>
   <int value="1" label="kPlatformOnly"/>

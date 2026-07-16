@@ -27,8 +27,13 @@ public abstract class DeviceFeatureList {
     public static final String BATTERY_STATUS_MANAGER_BROADCAST_RECEIVER_IN_BACKGROUND =
             "BatteryStatusManagerBroadcastReceiverInBackground";
 
+    public static final String GMS_CORE_FAIL_CLOSED_ON_PRECISE_LEAK =
+            "GmsCoreFailClosedOnPreciseLeak";
+
     public static final MutableFlagWithSafeDefault sGmsCoreLocationRequestParamOverride =
             newMutableFlagWithSafeDefault("GmsCoreLocationRequestParamOverride", false);
+    public static final MutableFlagWithSafeDefault sGmsCoreFailClosedOnPreciseLeak =
+            newMutableFlagWithSafeDefault(GMS_CORE_FAIL_CLOSED_ON_PRECISE_LEAK, true);
     public static final MutableIntParamWithSafeDefault sGmsCoreLocationRequestUpdateInterval =
             sGmsCoreLocationRequestParamOverride.newIntParam(
                     "location_request_min_update_interval_millis",

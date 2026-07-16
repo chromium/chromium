@@ -24,7 +24,8 @@ namespace {
 const base::Feature* const kFeaturesExposedToJava[] = {
     &kGenericSensorExtraClasses, &kSensorsAllowAskBlockPermissionModel,
     &kBatteryStatusManagerBroadcastReceiverInBackground,
-    &device::features::kGmsCoreLocationRequestParamOverride};
+    &device::features::kGmsCoreLocationRequestParamOverride,
+    &device::features::kGmsCoreFailClosedOnPreciseLeak};
 
 // static
 base::android::FeatureMap* GetFeatureMap() {

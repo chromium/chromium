@@ -412,7 +412,16 @@ public class LocationProviderTest {
                     .requestLocationUpdates(
                             any(LocationRequest.class), captor2.capture(), any(Looper.class));
             LocationCallback secondCallback = captor2.getValue();
-            secondCallback.onLocationResult(result);
+            Location coarseLocation = new Location("test");
+            coarseLocation.setLatitude(1.23);
+            coarseLocation.setLongitude(4.56);
+            coarseLocation.setTime(System.currentTimeMillis());
+            coarseLocation.setAccuracy(
+                    LocationProviderGmsCore.PRECISE_LOCATION_ACCURACY_THRESHOLD_METERS);
+            com.google.android.gms.location.LocationResult coarseResult =
+                    com.google.android.gms.location.LocationResult.create(
+                            Arrays.asList(coarseLocation));
+            secondCallback.onLocationResult(coarseResult);
 
             // 6. Verify that this callback is processed and correctly identifies the location
             // as not precise.

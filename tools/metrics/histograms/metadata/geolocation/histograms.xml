@@ -116,6 +116,20 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="Geolocation.GMSCoreLocationProvider.CoarseRequest.PreciseLocationReceived"
+    enum="GmsCoreGranularitySupportState" expires_after="2026-11-15">
+  <owner>alvinji@chromium.org</owner>
+  <owner>device-dev@chromium.org</owner>
+  <summary>
+    Recorded when Chrome receives a precise location reading despite having
+    requested an approximate (coarse) location. The value indicates whether the
+    leaked reading occurred on a legacy GMS Core APK that does not support the
+    request-level Granularity parameter, or on a modern GMS Core APK where it is
+    unexpected. Triggers a fail-closed position error.
+  </summary>
+</histogram>
+
+<histogram
     name="Geolocation.GMSCoreLocationProvider.TimeToFirstPosition.Approximate"
     units="ms" expires_after="2026-11-15">
   <owner>alvinji@chromium.org</owner>
