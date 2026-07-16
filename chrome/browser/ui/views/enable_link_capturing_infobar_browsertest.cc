@@ -34,6 +34,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/test/button_test_api.h"
+#include "ui/views/widget/any_widget_observer.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
 

@@ -8,9 +8,11 @@
 
 #include "build/build_config.h"
 #include "chrome/browser/ui/webui/chrome_web_contents_handler.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/controls/webview/web_dialog_view.h"
 #include "ui/views/widget/widget.h"
+#include "ui/views/window/dialog_delegate.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/multi_user/multi_user_window_manager.h"

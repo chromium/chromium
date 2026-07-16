@@ -10,6 +10,7 @@
 
 #include "base/strings/strcat.h"
 #include "base/strings/to_string.h"
+#include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -23,6 +24,7 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/style/typography.h"
+#include "ui/views/test/views_test_base.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget_utils.h"

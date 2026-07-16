@@ -10,6 +10,7 @@
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "ui/base/mojom/window_show_state.mojom.h"
+#include "ui/gfx/geometry/insets.h"
 #include "ui/ozone/public/ozone_platform.h"
 
 // static

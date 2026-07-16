@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "build/build_config.h"
+#include "chrome/browser/ui/confirm_bubble.h"
 #include "chrome/browser/ui/test/test_confirm_bubble_model.h"
 #include "chrome/browser/ui/views/chrome_constrained_window_views_client.h"
 #include "chrome/test/views/chrome_views_test_base.h"

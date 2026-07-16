@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "ui/base/mojom/menu_source_type.mojom.h"

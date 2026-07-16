@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/views/select_audio_output/select_audio_output_views.h"
 #include "chrome/browser/ui/views/task_manager_view.h"
 #include "components/constrained_window/constrained_window_views.h"
+#include "components/permissions/chooser_controller.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/views/bubble/bubble_dialog_model_host.h"
 #include "ui/views/interaction/element_tracker_views.h"

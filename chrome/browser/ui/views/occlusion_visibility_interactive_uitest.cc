@@ -7,6 +7,7 @@
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
+#include "ui/views/test/widget_test.h"
 
 class VisibilityWaiter : public content::WebContentsObserver {
  public:

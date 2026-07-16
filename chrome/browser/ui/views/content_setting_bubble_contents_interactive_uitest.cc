@@ -5,6 +5,7 @@
 #include <algorithm>
 
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/ui/views/content_setting_bubble_contents.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
@@ -16,6 +17,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/prerender_test_util.h"
 #include "ui/events/test/test_event.h"
+#include "ui/views/test/widget_test.h"
 
 class ContentSettingBubbleContentsInteractiveTest
     : public InProcessBrowserTest {

@@ -6,10 +6,12 @@
 
 #include <stddef.h>
 
+#include <string>
 #include <utility>
 #include <vector>
 
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/scoped_observation.h"
@@ -25,10 +27,13 @@
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/bubble_anchor_util.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/views/chrome_layout_provider.h"
+#include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/frame/app_menu_button.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/toolbar/app_menu_control.h"
+#include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/installer/util/google_update_settings.h"
@@ -43,6 +48,13 @@
 #include "ui/base/window_open_disposition.h"
 #include "ui/base/window_open_disposition_utils.h"
 #include "ui/views/bubble/bubble_dialog_model_host.h"
+#include "ui/views/controls/button/checkbox.h"
+#include "ui/views/controls/button/label_button_border.h"
+#include "ui/views/controls/button/menu_button.h"
+#include "ui/views/controls/label.h"
+#include "ui/views/controls/separator.h"
+#include "ui/views/controls/styled_label.h"
+#include "ui/views/layout/box_layout.h"
 #include "ui/views/widget/widget.h"
 
 namespace {

@@ -5,6 +5,8 @@
 #include "chrome/browser/ui/views/chrome_typography.h"
 
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
+#include "components/omnibox/browser/omnibox_field_trial.h"
+#include "ui/base/default_style.h"
 #include "ui/base/pointer/touch_ui_controller.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/font.h"

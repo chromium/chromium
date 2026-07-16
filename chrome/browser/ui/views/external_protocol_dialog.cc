@@ -6,14 +6,17 @@
 
 #include <utility>
 
+#include "base/strings/string_util.h"
 #include "base/types/optional_util.h"
 #include "build/build_config.h"
 #include "chrome/browser/external_protocol/external_protocol_handler.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_occlusion_observer.h"
 #include "chrome/browser/picture_in_picture/scoped_picture_in_picture_occlusion_observation.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/shell_integration.h"
 #include "chrome/browser/tab_contents/tab_util.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
+#include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/constrained_window/constrained_window_views.h"
@@ -26,7 +29,9 @@
 #include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/gfx/text_elider.h"
+#include "ui/views/controls/label.h"
 #include "ui/views/controls/message_box_view.h"
+#include "ui/views/layout/fill_layout.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/dialog_client_view.h"
 

@@ -18,6 +18,7 @@
 #include "components/fullscreen_control/subtle_notification_view.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/accelerators/accelerator.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/views/accessibility/view_accessibility.h"
 
 namespace {

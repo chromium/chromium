@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/idle_bubble.h"
 
+#include <string>
 #include <utility>
 
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -12,8 +13,10 @@
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/interaction/browser_elements_views.h"
 #include "chrome/browser/ui/views/toolbar/app_menu_control.h"
+#include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
+#include "ui/base/interaction/element_tracker.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/l10n/time_format.h"
 #include "ui/base/models/dialog_model.h"

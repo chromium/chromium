@@ -7,8 +7,10 @@
 #include <optional>
 #include <string>
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
@@ -18,6 +20,7 @@
 #include "chrome/browser/ui/views/frame/test_with_browser_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/web_applications/link_capturing_features.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
@@ -36,6 +39,7 @@
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/ink_drop_state.h"
+#include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/checkbox.h"
 #include "ui/views/controls/scroll_view.h"
