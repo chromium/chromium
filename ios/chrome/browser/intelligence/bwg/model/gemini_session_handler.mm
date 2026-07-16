@@ -92,6 +92,8 @@ IOSGeminiFirstPromptSubmissionMethod ConvertInputTypeToHistogramEnum(
           kNanoBananaMakeThisImageLookLikeInstantFilm;
     case gemini::InputType::kEditMenuPrompt:
       return IOSGeminiFirstPromptSubmissionMethod::kEditMenuPrompt;
+    case gemini::InputType::kAppSwitcherSummarize:
+      return IOSGeminiFirstPromptSubmissionMethod::kAppSwitcherSummarize;
   }
 }
 

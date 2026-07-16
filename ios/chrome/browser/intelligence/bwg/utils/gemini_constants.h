@@ -206,7 +206,9 @@ enum class InputType {
   // Input from Helios entry point on the Edit menu when user highlights text
   // Something like: “Explain this to me: <selected text>”
   kEditMenuPrompt = 26,
-  kMaxValue = kEditMenuPrompt,
+  // Summarization query originating from the App Switcher.
+  kAppSwitcherSummarize = 27,
+  kMaxValue = kAppSwitcherSummarize,
 };
 // LINT.ThenChange(
 //   /ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h:IOSGeminiFirstPromptSubmissionMethod,

@@ -899,6 +899,7 @@ chromium-metrics-reviews@google.com.
   <int value="24" label="Edit Menu Prompt"/>
   <int value="25" label="Onboarding: No I Am Done"/>
   <int value="26" label="Onboarding: Keep Learning"/>
+  <int value="27" label="App Switcher Summarize"/>
 </enum>
 
 <!-- LINT.ThenChange(

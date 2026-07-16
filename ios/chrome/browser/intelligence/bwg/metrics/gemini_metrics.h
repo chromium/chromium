@@ -249,7 +249,8 @@ enum class IOSGeminiFirstPromptSubmissionMethod {
   kEditMenuPrompt = 24,
   kOnboardingNoIAmDone = 25,
   kOnboardingKeepLearning = 26,
-  kMaxValue = kOnboardingKeepLearning,
+  kAppSwitcherSummarize = 27,
+  kMaxValue = kAppSwitcherSummarize,
 };
 // LINT.ThenChange(
 //   /tools/metrics/histograms/metadata/ios/enums.xml:IOSGeminiFirstPromptSubmissionMethod,
