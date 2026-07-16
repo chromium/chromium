@@ -28,6 +28,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "extensions/common/switches.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "third_party/blink/public/common/dom/dom_node_id.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
 #include "ui/views/window/dialog_delegate.h"
@@ -156,7 +157,7 @@ IN_PROC_BROWSER_TEST_F(DictationKeyedServiceBrowserTest,
   ASSERT_NE(provider, nullptr);
   ASSERT_NE(provider->GetTarget(), nullptr);
   EXPECT_EQ(provider->GetTarget()->global_dom_node_id().target_element_dom_id,
-            content::DOMNodeId(123));
+            blink::DOMNodeIdType(123));
 }
 
 // TODO(crbug.com/502587072): Add tests which have the test extension simulate
@@ -375,7 +376,7 @@ IN_PROC_BROWSER_TEST_F(DictationKeyedServiceBrowserTest,
 
   StartSession(content::GlobalDOMNodeId{
       web_contents()->GetPrimaryMainFrame()->GetWeakDocumentPtr(),
-      content::DOMNodeId(dom_node_id.value())});
+      blink::DOMNodeIdType(dom_node_id.value())});
 
   SessionController* controller = session_controller();
   ListenerStreamProvider* provider = static_cast<ListenerStreamProvider*>(
@@ -435,7 +436,7 @@ IN_PROC_BROWSER_TEST_F(DictationKeyedServiceBrowserTest,
   {
     StartSession(content::GlobalDOMNodeId{
         web_contents()->GetPrimaryMainFrame()->GetWeakDocumentPtr(),
-        content::DOMNodeId(dom_node_id.value())});
+        blink::DOMNodeIdType(dom_node_id.value())});
 
     ASSERT_TRUE(attached_stream());
     auto stream_id = attached_stream()->stream_id_for_testing();
