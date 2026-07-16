@@ -55,17 +55,6 @@ NSString* GridCellSnapshotAccessibilityIdentifier(NSUInteger index) {
 
 @interface GridCell ()
 
-// The constraints enabled under accessibility font size.
-@property(nonatomic, strong)
-    NSArray<NSLayoutConstraint*>* accessibilityConstraints;
-// The constraints enabled under normal font size.
-@property(nonatomic, strong)
-    NSArray<NSLayoutConstraint*>* nonAccessibilityConstraints;
-// The constraints enabled while showing the close icon.
-@property(nonatomic, strong) NSArray<NSLayoutConstraint*>* closeIconConstraints;
-// The constraints enabled while showing the selection icon.
-@property(nonatomic, strong)
-    NSArray<NSLayoutConstraint*>* selectIconConstraints;
 // Header height of the cell.
 @property(nonatomic, strong) NSLayoutConstraint* topBarHeightConstraint;
 // Visual components of the cell.
@@ -104,6 +93,17 @@ NSString* GridCellSnapshotAccessibilityIdentifier(NSUInteger index) {
 @implementation GridCell {
   // YES if the cell is currently highlighted.
   BOOL _highlighted;
+  // Width and height constraints for `iconView`, updated on accessibility font
+  // size changes.
+  NSLayoutConstraint* _iconViewWidthConstraint;
+  NSLayoutConstraint* _iconViewHeightConstraint;
+  // Leading constraint for `titleLabel`, constant updated to 0 in accessibility
+  // mode.
+  NSLayoutConstraint* _titleLabelLeadingConstraint;
+  // Trailing constraints for `titleLabel` to `closeIconView` and
+  // `selectIconView`, activated/deactivated depending on selection mode.
+  NSLayoutConstraint* _titleLabelToCloseConstraint;
+  NSLayoutConstraint* _titleLabelToSelectConstraint;
 }
 
 + (instancetype)transitionSelectionCellFromCell:(GridCell*)cell {
@@ -578,64 +578,55 @@ NSString* GridCellSnapshotAccessibilityIdentifier(NSUInteger index) {
   _titleLabel = titleLabel;
   _closeIconView = closeIconView;
 
-  _accessibilityConstraints = @[
-    [titleLabel.leadingAnchor
-        constraintEqualToAnchor:topBar.leadingAnchor
-                       constant:kGridCellHeaderLeadingInset],
-    [iconView.widthAnchor constraintEqualToConstant:0],
-    [iconView.heightAnchor constraintEqualToConstant:0],
-  ];
+  _topBarHeightConstraint =
+      [topBar.heightAnchor constraintEqualToConstant:kGridCellHeaderHeight];
 
-  _nonAccessibilityConstraints = @[
+  BOOL isAccessibility = UIContentSizeCategoryIsAccessibilityCategory(
+      self.traitCollection.preferredContentSizeCategory);
+  CGFloat initialIconSize = isAccessibility ? 0 : kGridCellIconDiameter;
+  CGFloat initialTitleLeadingInset =
+      isAccessibility ? 0 : kGridCellHeaderLeadingInset;
+
+  _iconViewWidthConstraint =
+      [iconView.widthAnchor constraintEqualToConstant:initialIconSize];
+  _iconViewHeightConstraint =
+      [iconView.heightAnchor constraintEqualToConstant:initialIconSize];
+
+  _titleLabelLeadingConstraint = [titleLabel.leadingAnchor
+      constraintEqualToAnchor:iconView.trailingAnchor
+                     constant:initialTitleLeadingInset];
+
+  _titleLabelToCloseConstraint = [titleLabel.trailingAnchor
+      constraintEqualToAnchor:closeIconView.leadingAnchor
+                     constant:-kGridCellTitleLabelContentInset];
+  _titleLabelToSelectConstraint = [titleLabel.trailingAnchor
+      constraintEqualToAnchor:selectIconView.leadingAnchor
+                     constant:-kGridCellTitleLabelContentInset];
+
+  NSArray* constraints = @[
+    _topBarHeightConstraint,
     [iconView.leadingAnchor
         constraintEqualToAnchor:topBar.leadingAnchor
                        constant:kGridCellHeaderLeadingInset],
     [iconView.centerYAnchor constraintEqualToAnchor:topBar.centerYAnchor],
-    [iconView.widthAnchor constraintEqualToConstant:kGridCellIconDiameter],
-    [iconView.heightAnchor constraintEqualToConstant:kGridCellIconDiameter],
-    [titleLabel.leadingAnchor
-        constraintEqualToAnchor:iconView.trailingAnchor
-                       constant:kGridCellHeaderLeadingInset],
-  ];
-
-  _topBarHeightConstraint =
-      [topBar.heightAnchor constraintEqualToConstant:kGridCellHeaderHeight];
-
-  _closeIconConstraints = @[
-    [titleLabel.trailingAnchor
-        constraintEqualToAnchor:closeIconView.leadingAnchor
-                       constant:-kGridCellTitleLabelContentInset],
+    _iconViewWidthConstraint,
+    _iconViewHeightConstraint,
+    _titleLabelLeadingConstraint,
+    [titleLabel.centerYAnchor constraintEqualToAnchor:topBar.centerYAnchor],
     [topBar.topAnchor constraintEqualToAnchor:closeIconView.centerYAnchor
                                      constant:-kGridCellCloseButtonTopSpacing],
     [closeIconView.trailingAnchor
         constraintEqualToAnchor:topBar.trailingAnchor
                        constant:-kGridCellCloseButtonContentInset],
-  ];
-
-  if (_selectIconView) {
-    _selectIconConstraints = @[
-      [_selectIconView.heightAnchor
-          constraintEqualToConstant:kGridCellSelectIconSize],
-      [_selectIconView.widthAnchor
-          constraintEqualToConstant:kGridCellSelectIconSize],
-      [titleLabel.trailingAnchor
-          constraintEqualToAnchor:_selectIconView.leadingAnchor
-                         constant:-kGridCellTitleLabelContentInset],
-      [topBar.topAnchor constraintEqualToAnchor:_selectIconView.topAnchor
-                                       constant:-kGridCellSelectIconTopSpacing],
-      [_selectIconView.trailingAnchor
-          constraintEqualToAnchor:topBar.trailingAnchor
-                         constant:-kGridCellSelectIconContentInset],
-
-    ];
-  }
-
-  [self updateTopBarSize];
-  [self configureCloseOrSelectIconConstraints];
-
-  NSArray* constraints = @[
-    _topBarHeightConstraint,
-    [titleLabel.centerYAnchor constraintEqualToAnchor:topBar.centerYAnchor],
+    [selectIconView.heightAnchor
+        constraintEqualToConstant:kGridCellSelectIconSize],
+    [selectIconView.widthAnchor
+        constraintEqualToConstant:kGridCellSelectIconSize],
+    [topBar.topAnchor constraintEqualToAnchor:selectIconView.topAnchor
+                                     constant:-kGridCellSelectIconTopSpacing],
+    [selectIconView.trailingAnchor
+        constraintEqualToAnchor:topBar.trailingAnchor
+                       constant:-kGridCellSelectIconContentInset],
   ];
 
   // Center indicator over favicon.
@@ -643,6 +634,8 @@ NSString* GridCellSnapshotAccessibilityIdentifier(NSUInteger index) {
   AddSameCenterYConstraint(self, iconView, activityIndicator);
 
   [NSLayoutConstraint activateConstraints:constraints];
+  [self configureCloseOrSelectIconConstraints];
+  [self updateTopBarSize];
   [titleLabel
       setContentCompressionResistancePriority:UILayoutPriorityDefaultLow
                                       forAxis:UILayoutConstraintAxisHorizontal];
@@ -651,15 +644,11 @@ NSString* GridCellSnapshotAccessibilityIdentifier(NSUInteger index) {
                                       forAxis:UILayoutConstraintAxisHorizontal];
   [closeIconView setContentHuggingPriority:UILayoutPriorityRequired
                                    forAxis:UILayoutConstraintAxisHorizontal];
-  if (_selectIconView) {
-    [_selectIconView
-        setContentCompressionResistancePriority:UILayoutPriorityRequired
-                                        forAxis:
-                                            UILayoutConstraintAxisHorizontal];
-    [_selectIconView
-        setContentHuggingPriority:UILayoutPriorityRequired
-                          forAxis:UILayoutConstraintAxisHorizontal];
-  }
+  [selectIconView
+      setContentCompressionResistancePriority:UILayoutPriorityRequired
+                                      forAxis:UILayoutConstraintAxisHorizontal];
+  [selectIconView setContentHuggingPriority:UILayoutPriorityRequired
+                                    forAxis:UILayoutConstraintAxisHorizontal];
   return topBar;
 }
 
@@ -672,22 +661,16 @@ NSString* GridCellSnapshotAccessibilityIdentifier(NSUInteger index) {
                                             kIconSymbolPointSize);
 }
 
-// Update constraints of top bar when system font size changes. If accessibility
-// font size is chosen, the favicon will be hidden, and the title text will be
-// shown in two lines.
 - (void)updateTopBarSize {
   self.topBarHeightConstraint.constant = [self topBarHeight];
-
-  if (UIContentSizeCategoryIsAccessibilityCategory(
-          self.traitCollection.preferredContentSizeCategory)) {
-    self.titleLabel.numberOfLines = 2;
-    [NSLayoutConstraint deactivateConstraints:_nonAccessibilityConstraints];
-    [NSLayoutConstraint activateConstraints:_accessibilityConstraints];
-  } else {
-    self.titleLabel.numberOfLines = 1;
-    [NSLayoutConstraint deactivateConstraints:_accessibilityConstraints];
-    [NSLayoutConstraint activateConstraints:_nonAccessibilityConstraints];
-  }
+  BOOL isAccessibility = UIContentSizeCategoryIsAccessibilityCategory(
+      self.traitCollection.preferredContentSizeCategory);
+  CGFloat iconSize = isAccessibility ? 0 : kGridCellIconDiameter;
+  _iconViewWidthConstraint.constant = iconSize;
+  _iconViewHeightConstraint.constant = iconSize;
+  _titleLabelLeadingConstraint.constant =
+      isAccessibility ? 0 : kGridCellHeaderLeadingInset;
+  self.titleLabel.numberOfLines = isAccessibility ? 2 : 1;
 }
 
 - (void)configureCloseOrSelectIconConstraints {
@@ -697,11 +680,11 @@ NSString* GridCellSnapshotAccessibilityIdentifier(NSUInteger index) {
   self.selectIconView.hidden = !showSelectionMode;
 
   if (showSelectionMode) {
-    [NSLayoutConstraint deactivateConstraints:_closeIconConstraints];
-    [NSLayoutConstraint activateConstraints:_selectIconConstraints];
+    _titleLabelToCloseConstraint.active = NO;
+    _titleLabelToSelectConstraint.active = YES;
   } else {
-    [NSLayoutConstraint deactivateConstraints:_selectIconConstraints];
-    [NSLayoutConstraint activateConstraints:_closeIconConstraints];
+    _titleLabelToSelectConstraint.active = NO;
+    _titleLabelToCloseConstraint.active = YES;
   }
 }
 
