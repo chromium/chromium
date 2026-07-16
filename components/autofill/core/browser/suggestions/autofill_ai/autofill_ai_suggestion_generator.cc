@@ -530,6 +530,7 @@ Suggestion GetSuggestionForEntity(
 
   Suggestion suggestion =
       Suggestion(main_text, SuggestionType::kFillAutofillAi);
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   if (entity.record_type() == EntityInstance::RecordType::kPersonalContext) {
     suggestion.labels = {{Suggestion::Text(std::move(label))},
                          {Suggestion::Text(l10n_util::GetStringUTF16(
@@ -537,6 +538,9 @@ Suggestion GetSuggestionForEntity(
   } else {
     suggestion.labels = {{Suggestion::Text(std::move(label))}};
   }
+#else
+  suggestion.labels = {{Suggestion::Text(std::move(label))}};
+#endif
 
   const bool requires_server_fetch = WillRequireServerFetch(
       entity, form, trigger_field.field->section(), app_locale);

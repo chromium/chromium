@@ -523,10 +523,14 @@ TEST_F(
       std::get_if<Suggestion::AutofillAiPayload>(&suggestions[1].payload);
   ASSERT_TRUE(pc_payload);
   EXPECT_EQ(pc_payload->guid, passport_personal_context.guid());
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   ASSERT_EQ(suggestions[1].labels.size(), 2u);
   ASSERT_EQ(suggestions[1].labels[1].size(), 1u);
   EXPECT_EQ(suggestions[1].labels[1][0].value,
             l10n_util::GetStringUTF16(IDS_AUTOFILL_AI_SUGGESTED_BY_GEMINI));
+#else
+  ASSERT_EQ(suggestions[1].labels.size(), 1u);
+#endif
 }
 
 TEST_F(AutofillAiSuggestionGeneratorTest, GetFillingSuggestion_PrefixMatching) {
