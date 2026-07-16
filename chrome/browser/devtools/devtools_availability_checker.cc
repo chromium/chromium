@@ -73,8 +73,6 @@ bool IsRestrictedExtension(const extensions::Extension* extension,
   if (extensions::Manifest::IsPolicyLocation(extension->location())) {
     return true;
   }
-  // We also disallow inspecting component extensions, but only for managed
-  // profiles.
   if (extensions::Manifest::IsComponentLocation(extension->location()) &&
       profile->GetProfilePolicyConnector()->IsManaged()) {
     return true;
@@ -335,10 +333,13 @@ bool IsInspectionAllowed(Profile* profile, const GURL& url) {
           kDisallowed:
         return false;
       case policy::DeveloperToolsPolicyChecker::DevToolsAvailability::kNotSet:
+        // The URL is not covered by the URL-based policies, so we fall back to
+        // the general enum-based policy.
         break;
     }
   }
-
+  // If the URL-based policy doesn't have a rule for this URL, we fall back to
+  // the general enum-based policy.
   using Availability = policy::DeveloperToolsAvailability;
   Availability availability = GetDevToolsAvailability(profile);
   switch (availability) {
