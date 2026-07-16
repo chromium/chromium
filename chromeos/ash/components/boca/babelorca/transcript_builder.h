@@ -48,12 +48,12 @@ class TranscriptBuilder {
   const std::string sender_email_;
 
   int64_t init_timestamp_ms_ = -1;
-  int64_t transcript_id_;
-  int64_t order_;
+  int64_t transcript_id_ = -1;
+  int64_t order_ = -1;
   std::string language_;
   std::string text_;
-  int64_t text_index_;
-  bool is_final_;
+  int64_t text_index_ = 0;
+  bool is_final_ = true;
 };
 
 }  // namespace ash::babelorca

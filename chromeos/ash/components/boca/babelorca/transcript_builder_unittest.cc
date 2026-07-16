@@ -4,6 +4,7 @@
 
 #include "chromeos/ash/components/boca/babelorca/transcript_builder.h"
 
+#include <algorithm>
 #include <string>
 #include <utility>
 #include <vector>
@@ -496,6 +497,34 @@ TEST(TranscriptBuilderTest, TranscriptSplit) {
   EXPECT_THAT(results3[1],
               BuilderResultEq(TranscriptBuilder::Result(
                   kInputText3, /*is_final_param=*/false, kLanguageEn)));
+}
+
+TEST(TranscriptBuilderTest, InitialMessageBehavesDeterministically) {
+  // Placement new over memory filled with garbage (e.g. 0x7F) to ensure
+  // POD members are initialized by the constructor rather than relying on
+  // zeroed heap storage.
+  alignas(TranscriptBuilder) char storage[sizeof(TranscriptBuilder)];
+  std::ranges::fill(storage, 0x7F);
+
+  TranscriptBuilder* builder =
+      new (storage) TranscriptBuilder(kSessionId, kSenderEmail);
+
+  mojom::BabelOrcaMessagePtr message = CreateMessage(
+      {.init_timestamp_ms = -1, .order = 0},
+      /*previous_transcript=*/nullptr,
+      /*current_transcript=*/
+      CreateTranscriptPart(
+          {.id = 1, .index = 0, .text = "first message", .is_final = false}));
+
+  std::vector<TranscriptBuilder::Result> results =
+      builder->GetTranscripts(std::move(message));
+
+  ASSERT_THAT(results, testing::SizeIs(1));
+  EXPECT_THAT(results[0],
+              BuilderResultEq(TranscriptBuilder::Result(
+                  "first message", /*is_final_param=*/false, kLanguageEn)));
+
+  builder->~TranscriptBuilder();
 }
 
 }  // namespace
