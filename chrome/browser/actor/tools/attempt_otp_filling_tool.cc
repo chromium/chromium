@@ -40,6 +40,7 @@
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/frame_tree_node_id.h"
 #include "content/public/browser/render_frame_host.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 
 namespace actor {
 
@@ -406,9 +407,13 @@ void AttemptOtpFillingTool::Invoke(ToolCallback callback) {
                PredictedOtpTypeToString(predicted_otp_type_))
           .Build());
 
-  base::UmaHistogramEnumeration(
-      "OneTimeTokens.Actor.AttemptOtpFilling.PredictedOtpType",
-      predicted_otp_type_);
+  ukm::SourceId source_id = ukm::kInvalidSourceId;
+  if (tabs::TabInterface* tab = GetTargetTab().Get()) {
+    if (content::WebContents* web_contents = tab->GetContents()) {
+      source_id = web_contents->GetPrimaryMainFrame()->GetPageUkmSourceId();
+    }
+  }
+  RecordPredictedOtpTypeMetrics(predicted_otp_type_, source_id);
 
   content::RenderFrameHost* otp_frame =
       GetOtpFrame(GetTargetTab(), trigger_field_ids_);

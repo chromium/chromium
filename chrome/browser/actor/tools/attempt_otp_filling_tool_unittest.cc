@@ -37,10 +37,12 @@
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/prefs/pref_service.h"
 #include "components/tabs/public/mock_tab_interface.h"
+#include "components/ukm/test_ukm_recorder.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_web_contents_factory.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -503,11 +505,13 @@ TEST_F(AttemptOtpFillingToolTest, Invoke_HappyPath) {
   EXPECT_CALL(delegate().mock_otp_service(), FillOtp(_, _, "123456", _))
       .WillOnce(RunOnceCallback<3>(true));
   PageTarget target(gfx::Point(10, 10));
-  AttemptOtpFillingTool tool(TaskId(1), delegate(), mock_tab().GetHandle(),
-                             {target},
-                             /*for_signin=*/true);
+  AttemptOtpFillingTool tool(
+      TaskId(1), delegate(), mock_tab().GetHandle(), {target},
+      /*for_signin=*/true, AttemptOtpFillingToolRequest::OtpType::kEmail);
   SetAutofillGmailOtpFillingEnabled(prefs(), true);
   SetupSuccessfulTimeOfUseValidation(tool, target);
+  base::HistogramTester histogram_tester;
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
 
   TestFuture<ActionResultPtr> future;
   tool.Invoke(future.GetCallback());
@@ -516,6 +520,15 @@ TEST_F(AttemptOtpFillingToolTest, Invoke_HappyPath) {
   histogram_tester_.ExpectBucketCount(
       kAttemptOtpFillingToolHistogram,
       AttemptOtpFillingToolEvent::kFillingOtpSuccess, 1);
+  histogram_tester.ExpectUniqueSample(
+      "OneTimeTokens.Actor.AttemptOtpFilling.PredictedOtpType",
+      AttemptOtpFillingToolRequest::OtpType::kEmail, 1);
+  auto entries = ukm_recorder.GetEntriesByName(
+      ukm::builders::Actor_AttemptOtpFilling::kEntryName);
+  ASSERT_EQ(entries.size(), 1u);
+  ukm_recorder.ExpectEntryMetric(
+      entries[0], ukm::builders::Actor_AttemptOtpFilling::kPredictedOtpTypeName,
+      static_cast<int64_t>(AttemptOtpFillingToolRequest::OtpType::kEmail));
 }
 
 // `Invoke()` fails with `kOtpFillFailure` when the result of

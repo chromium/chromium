@@ -221,6 +221,7 @@ source_set("impl") {
     "//content/public/browser",
     "//net",
     "//pdf:features",
+    "//services/metrics/public/cpp:ukm_builders",
     "//skia",
     "//third_party/abseil-cpp:absl",
     "//third_party/perfetto:libperfetto",
@@ -364,6 +365,7 @@ source_set("unit_tests") {
     "//chrome/test:test_support",
     "//components/actor/core:journal",
     "//components/tabs:test_support",
+    "//components/ukm:test_support",
     "//testing/gtest",
   ]
   if (use_fuzzing_engine) {

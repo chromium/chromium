@@ -5,6 +5,9 @@
 #ifndef CHROME_BROWSER_ACTOR_TOOLS_ATTEMPT_OTP_FILLING_TOOL_METRICS_H_
 #define CHROME_BROWSER_ACTOR_TOOLS_ATTEMPT_OTP_FILLING_TOOL_METRICS_H_
 
+#include "chrome/browser/actor/tools/attempt_otp_filling_tool_request.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
+
 namespace actor {
 
 // LINT.IfChange(AttemptOtpFillingEvent)
@@ -38,6 +41,10 @@ inline constexpr char kAttemptOtpFillingToolHistogram[] =
 
 // Records events during the AttemptOtpFilling tool invocation events.
 void RecordAttemptOtpFillingEvent(AttemptOtpFillingToolEvent event);
+
+void RecordPredictedOtpTypeMetrics(
+    AttemptOtpFillingToolRequest::OtpType predicted_otp_type,
+    ukm::SourceId ukm_source_id);
 
 }  // namespace actor
 

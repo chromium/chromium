@@ -40,8 +40,10 @@
 #include "components/one_time_tokens/core/browser/one_time_token.h"
 #include "components/one_time_tokens/core/browser/one_time_token_service_impl.h"
 #include "components/prefs/pref_service.h"
+#include "components/ukm/test_ukm_recorder.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 using ::base::test::TestFuture;
@@ -275,6 +277,7 @@ std::optional<DomNode> GetDomNodeInIframe(content::RenderFrameHost& main_rfh,
 IN_PROC_BROWSER_TEST_F(AttemptOtpFillingToolBrowserTest,
                        ToolGetsCreatedWithOneFieldAndTaskReturnsOk) {
   base::HistogramTester histogram_tester;
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
 
   const GURL url = embedded_https_test_server().GetURL("example.com",
                                                        "/actor/otp_page.html");
@@ -285,7 +288,7 @@ IN_PROC_BROWSER_TEST_F(AttemptOtpFillingToolBrowserTest,
   std::unique_ptr<ToolRequest> request =
       std::make_unique<AttemptOtpFillingToolRequest>(
           active_tab()->GetHandle(), std::vector<PageTarget>{otp_field},
-          /*for_signin=*/true);
+          /*for_signin=*/true, AttemptOtpFillingToolRequest::OtpType::kEmail);
   actor_task()
       .GetExecutionEngine()
       .GetActorOneTimeTokenFillingService()
@@ -311,7 +314,14 @@ IN_PROC_BROWSER_TEST_F(AttemptOtpFillingToolBrowserTest,
 
   histogram_tester.ExpectUniqueSample(
       "OneTimeTokens.Actor.AttemptOtpFilling.PredictedOtpType",
-      AttemptOtpFillingToolRequest::OtpType::kUnknown, 1);
+      AttemptOtpFillingToolRequest::OtpType::kEmail, 1);
+
+  auto entries = ukm_recorder.GetEntriesByName(
+      ukm::builders::Actor_AttemptOtpFilling::kEntryName);
+  ASSERT_EQ(entries.size(), 1u);
+  ukm_recorder.ExpectEntryMetric(
+      entries[0], ukm::builders::Actor_AttemptOtpFilling::kPredictedOtpTypeName,
+      static_cast<int64_t>(AttemptOtpFillingToolRequest::OtpType::kEmail));
 }
 
 IN_PROC_BROWSER_TEST_F(AttemptOtpFillingToolBrowserTest,

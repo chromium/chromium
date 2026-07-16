@@ -5,11 +5,27 @@
 #include "chrome/browser/actor/tools/attempt_otp_filling_tool_metrics.h"
 
 #include "base/metrics/histogram_functions.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/metrics/public/cpp/ukm_recorder.h"
 
 namespace actor {
 
 void RecordAttemptOtpFillingEvent(AttemptOtpFillingToolEvent event) {
   base::UmaHistogramEnumeration(kAttemptOtpFillingToolHistogram, event);
+}
+
+void RecordPredictedOtpTypeMetrics(
+    AttemptOtpFillingToolRequest::OtpType predicted_otp_type,
+    ukm::SourceId ukm_source_id) {
+  base::UmaHistogramEnumeration(
+      "OneTimeTokens.Actor.AttemptOtpFilling.PredictedOtpType",
+      predicted_otp_type);
+
+  if (ukm_source_id != ukm::kInvalidSourceId) {
+    ukm::builders::Actor_AttemptOtpFilling(ukm_source_id)
+        .SetPredictedOtpType(static_cast<int64_t>(predicted_otp_type))
+        .Record(ukm::UkmRecorder::Get());
+  }
 }
 
 }  // namespace actor
