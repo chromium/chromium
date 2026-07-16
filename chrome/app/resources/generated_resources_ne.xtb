@@ -1224,6 +1224,7 @@
 <translation id="1938351510777341717">बाह्य आदेश</translation>
 <translation id="1940221956626514677">टुलबार कस्टमाइज गर्नुहोस्</translation>
 <translation id="1940546824932169984">कनेक्ट गरिएका डिभाइस</translation>
+<translation id="194081218158106711">परिवर्तन गरिएको पासवर्ड पुष्टि गरिँदै छ...</translation>
 <translation id="1941410638996203291">सुरु हुने समय: <ph name="TIME" /></translation>
 <translation id="1941553344801134989">संस्करण: <ph name="APP_VERSION" /></translation>
 <translation id="1941685451584875710">तपाईंका एड्मिनले तपाईंको खाता Microsoft OneDrive मा स्वतः कनेक्ट हुने गरी कन्फिगर गर्नुभएको छ तर कुनै समस्या आयो।</translation>
@@ -1492,6 +1493,7 @@
 <translation id="2158475082070321257">हाइलाइट गरिएको पाठको लिंक कपी गर्नुहोस्</translation>
 <translation id="2159488579268505102">USB-C</translation>
 <translation id="2161058806218011758"><ph name="EXTENSION_NAME" /> का लागि <ph name="SHORTCUT" /> को स्कोप</translation>
+<translation id="2161656808144014275">पाठ</translation>
 <translation id="216169395504480358">Wi-Fi थप्नुहोस्...</translation>
 <translation id="2162705204091149050">तपाईंका ब्राउजर, OS, डिभाइस, इन्स्टल गरिएका सफ्टवेयर र फाइलहरूसम्बन्धी जानकारी पढ्नुहोस्</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> र थप एउटा स्विच</translation>
@@ -4742,6 +4744,7 @@
 <translation id="4657914796247705218">TrackPoint को गति</translation>
 <translation id="4658648180588730283"><ph name="APPLICATION_NAME" /> एप इन्टरनेट नभएका बेला उपलब्ध हुँदैन।</translation>
 <translation id="465878909996028221">ब्राउजर रिडिरेक्ट गर्न http, https तथा फाइल प्रोटोकललाई मात्र समर्थन गरिन्छ।</translation>
+<translation id="4658821552705754298"><ph name="ITEM_NAME" /> <ph name="CATEGORY_NAME" /></translation>
 <translation id="4659126640776004816">तपाईंले आफ्नो Google खातामा साइन इन गर्दा यो सुविधा सक्रिय गरिन्छ।</translation>
 <translation id="4660465405448977105">{COUNT,plural, =1{फोटो}other{# वटा फोटो}}</translation>
 <translation id="4660540330091848931">आकार बदल्दै</translation>
@@ -8903,6 +8906,7 @@
 <translation id="7933486544522242079">सेभ र सेयर गर्नुहोस्</translation>
 <translation id="7933518760693751884">कुनै पृष्ठ पछि पढ्ने प्रयोजनका लागि सुरक्षित गर्न 'बुकमार्क' जनाउने आइकनमा क्लिक गर्नुहोस्</translation>
 <translation id="7933634003144813719">साझा फोल्डरहरूको व्यवस्थापन गर्नुहोस्</translation>
+<translation id="7935072572536724392">पासवर्ड स्वतः परिवर्तन गर्न सकिएन</translation>
 <translation id="7936195481975600746">आफ्नो स्क्रिन सेयर गर्न आफ्नो सिस्टमको स्क्रिन पिकर प्रयोग गर्नुहोस्</translation>
 <translation id="7937809006412909895">डाइग्नोस्टिक डेटा सङ्कलन गरिँदै छ</translation>
 <translation id="7938881824185772026">Labs</translation>
@@ -9040,6 +9044,7 @@
 <translation id="8029412171914613589">{SELECTED_ITEMS,plural, =0{रिडिङ लिस्ट}=1{रिडिङ लिस्ट ({SELECTED_ITEMS})}other{रिडिङ लिस्ट ({SELECTED_ITEMS})}}</translation>
 <translation id="8029492516535178472"><ph name="WINDOW_TITLE" /> - अनुमति मागियो, यस सम्बन्धमा कारबाही गर्न ⌘ + Option + अप एरो थिच्नुहोस्</translation>
 <translation id="8030169304546394654">जडान विच्छेद भयो</translation>
+<translation id="8030814978699290230">साइन इन गर्न खोजिँदै छ...</translation>
 <translation id="8030852056903932865">अनुमोदन गर्नुहोस्</translation>
 <translation id="8033827949643255796">चयन गरिएको</translation>
 <translation id="8033958968890501070">समयावधि सकियो</translation>
@@ -9453,6 +9458,7 @@
 <translation id="8343578633847737325">हालसालैका च्याट तथा थ्रेडहरू</translation>
 <translation id="8345848587667658367">तपाईं अब आफ्नो फोनका हालसालैका फोटो, मिडिया, सूचना तथा एपहरू हेर्न सक्नुहुन्छ</translation>
 <translation id="8347227221149377169">प्रिन्टसम्बन्धी कार्यहरू</translation>
+<translation id="8347728744337089388">आफ्नो डिभाइसमा पठाउनुहोस्</translation>
 <translation id="8348430946834215779">सम्भव भएसम्म HTTPS प्रयोग गर्नुहोस् र HTTPS नचल्ने साइट लोड गर्नुअघि चेतावनी प्राप्त गर्नुहोस्</translation>
 <translation id="8348896480272971199">आफ्नो इन्टरनेट जाँच्नुहोस् र फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="8349305172487531364">बुकमार्क पट्टी</translation>
@@ -9502,6 +9508,7 @@
 <translation id="8382197851871630452">स्थानीय मौसम</translation>
 <translation id="8382913212082956454">&amp;इमेल ठेगानाको प्रतिलिपी बनाउनुहोस्</translation>
 <translation id="8383614331548401927">स्वागत रिक्याप</translation>
+<translation id="8387157483437834731">पासवर्ड परिवर्तन गरिएको छ</translation>
 <translation id="8387361103813440603">तपाईंको स्थान हेर्ने अनुमति नदिइएका साइटहरू</translation>
 <translation id="8389492867173948260">यो विस्तारलाई तपाईं जाने वेबसाइटहरूको तपाईंका सबै डेटा पढ्न र परिवर्तन गर्न दिनुहोस्।</translation>
 <translation id="8390449457866780408">सर्भर उपलब्ध छैन।</translation>
@@ -10587,6 +10594,7 @@
 <translation id="9220820413868316583">औँला उठाई फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="922152298093051471">Chrome आफूले चाहे जस्तो बनाउनुहोस्</translation>
 <translation id="9222839391870847423">अवधि: <ph name="DURATION" /></translation>
+<translation id="923306663772315007">आफ्नो डिभाइसमा पठाउनुहोस्</translation>
 <translation id="923467487918828349">सबै देखाउनुहोस्</translation>
 <translation id="923900195646492191">{NUM_EXTENSIONS,plural, =1{यो व्यवस्थापन गर्न एक्स्टेन्सनहरू खोल्नुहोस्}other{यी व्यवस्थापन गर्न एक्स्टेन्सनहरू खोल्नुहोस्}}</translation>
 <translation id="924818813611903184">ChromeOS का सेटिङमा गई भाषाहरू व्यवस्थापन गर्नुहोस्</translation>

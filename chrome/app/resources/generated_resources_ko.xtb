@@ -1234,6 +1234,7 @@
 <translation id="1938351510777341717">외부 명령어</translation>
 <translation id="1940221956626514677">툴바 맞춤설정</translation>
 <translation id="1940546824932169984">연결된 기기</translation>
+<translation id="194081218158106711">변경된 비밀번호 확인 중…</translation>
 <translation id="1941410638996203291">시작 시간: <ph name="TIME" /></translation>
 <translation id="1941553344801134989">버전: <ph name="APP_VERSION" /></translation>
 <translation id="1941685451584875710">관리자가 Microsoft OneDrive에 계정이 자동으로 연결되도록 설정했지만, 문제가 발생했습니다.</translation>
@@ -1503,6 +1504,7 @@
 <translation id="2158475082070321257">하이라이트 링크 복사</translation>
 <translation id="2159488579268505102">USB-C</translation>
 <translation id="2161058806218011758"><ph name="EXTENSION_NAME" />의 <ph name="SHORTCUT" /> 범위</translation>
+<translation id="2161656808144014275">텍스트</translation>
 <translation id="216169395504480358">Wi-Fi 추가</translation>
 <translation id="2162705204091149050">브라우저, OS, 기기, 설치된 소프트웨어, 파일에 관한 정보 읽기</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> 외 1개</translation>
@@ -4756,6 +4758,7 @@
 <translation id="4657914796247705218">TrackPoint 속도</translation>
 <translation id="4658648180588730283"><ph name="APPLICATION_NAME" /> 애플리케이션은 오프라인에서 사용할 수 없습니다.</translation>
 <translation id="465878909996028221">http, https 및 파일 프로토콜에만 브라우저 리디렉션이 지원됩니다.</translation>
+<translation id="4658821552705754298"><ph name="ITEM_NAME" /> <ph name="CATEGORY_NAME" /></translation>
 <translation id="4659126640776004816">Google 계정에 로그인하면 이 기능이 사용 설정됩니다.</translation>
 <translation id="4660465405448977105">{COUNT,plural, =1{이미지}other{이미지 #개}}</translation>
 <translation id="4660540330091848931">크기 조정 중</translation>
@@ -5335,6 +5338,7 @@
 <translation id="5096775069898886423">보안 연결을 지원하지 않는 사이트의 경우, 사이트를 방문하기 전에 경고를 표시합니다.</translation>
 <translation id="5097002363526479830">'<ph name="NAME" />' 네트워크에 연결하지 못했습니다: <ph name="DETAILS" /></translation>
 <translation id="5097349930204431044">방문한 사이트에서 내가 좋아하는 콘텐츠가 무엇인지 파악할 수 있으며, 내가 인터넷을 계속 탐색하면 사이트에서 광고를 추천할 수 있습니다.</translation>
+<translation id="5097472729724586429">새로운 '텍스트 주석 추가' 도구로 텍스트 주석을 추가하세요.</translation>
 <translation id="5097649414558628673">도구: <ph name="PRINT_NAME" /></translation>
 <translation id="5097874180538493929">커서가 멈추면 자동 클릭</translation>
 <translation id="5098963855433723436">별도의 애플리케이션에서 열립니다</translation>
@@ -5399,6 +5403,7 @@
 <translation id="5146235736676876345">내 비밀번호 선택</translation>
 <translation id="5146896637028965135">시스템 음성</translation>
 <translation id="5147113439721488265">추천</translation>
+<translation id="5148020348702787234">링크를 보내려면 본인 인증을 진행하세요. 두 기기에서 동일한 Google 계정에 로그인하면 링크를 보낼 수 있습니다.</translation>
 <translation id="5148285448107770349">비밀번호는 8자 이상이어야 합니다.</translation>
 <translation id="5149602533174716626">동영상 프레임 복사(&amp;Y)</translation>
 <translation id="5150254825601720210">Netscape Certificate SSL Server Name</translation>
@@ -8919,6 +8924,7 @@
 <translation id="7933486544522242079">저장 및 공유(&amp;S)</translation>
 <translation id="7933518760693751884">페이지를 저장해 두고 나중에 보려면 북마크 아이콘을 클릭하세요.</translation>
 <translation id="7933634003144813719">공유 폴더 관리</translation>
+<translation id="7935072572536724392">비밀번호 자동 변경 실패</translation>
 <translation id="7936195481975600746">화면을 공유하려면 시스템의 화면 선택 도구를 사용하세요</translation>
 <translation id="7937809006412909895">진단 데이터 수집 중</translation>
 <translation id="7938881824185772026">실험실</translation>
@@ -9056,6 +9062,7 @@
 <translation id="8029412171914613589">{SELECTED_ITEMS,plural, =0{읽기 목록}=1{읽기 목록({SELECTED_ITEMS})}other{읽기 목록({SELECTED_ITEMS})}}</translation>
 <translation id="8029492516535178472"><ph name="WINDOW_TITLE" /> - 권한 요청됨, ⌘ 키와 Option 키와 위쪽 화살표 키를 눌러 응답</translation>
 <translation id="8030169304546394654">연결 끊김</translation>
+<translation id="8030814978699290230">로그인 시도 중…</translation>
 <translation id="8030852056903932865">승인</translation>
 <translation id="8033827949643255796">선택됨</translation>
 <translation id="8033958968890501070">시간 초과</translation>
@@ -9469,6 +9476,7 @@
 <translation id="8343578633847737325">최근 채팅 및 대화목록</translation>
 <translation id="8345848587667658367">이제 휴대전화의 최근 사진, 미디어, 알림, 앱을 확인할 수 있습니다.</translation>
 <translation id="8347227221149377169">인쇄 작업</translation>
+<translation id="8347728744337089388">기기로 보내기(&amp;D)</translation>
 <translation id="8348430946834215779">가능하면 항상 HTTPS를 사용하고 이를 지원하지 않는 사이트를 로드하기 전에 경고를 표시합니다.</translation>
 <translation id="8348896480272971199">인터넷 연결을 확인하고 다시 시도해 보세요.</translation>
 <translation id="8349305172487531364">북마크바</translation>
@@ -9518,6 +9526,7 @@
 <translation id="8382197851871630452">지역 날씨</translation>
 <translation id="8382913212082956454">이메일 주소 복사(&amp;E)</translation>
 <translation id="8383614331548401927">시작 요약</translation>
+<translation id="8387157483437834731">비밀번호가 변경됨</translation>
 <translation id="8387361103813440603">사용자 위치 확인이 허용되지 않음</translation>
 <translation id="8389492867173948260">이 확장 프로그램이 내가 방문하는 다음 웹사이트의 모든 데이터를 읽고 변경하도록 허용합니다.</translation>
 <translation id="8390449457866780408">서버를 사용할 수 없습니다.</translation>
@@ -10260,6 +10269,7 @@
 <translation id="8967427617812342790">읽기 목록에 추가</translation>
 <translation id="8968527460726243404">ChromeOS 시스템 이미지 작성기</translation>
 <translation id="8968766641738584599">카드 저장</translation>
+<translation id="8970232194848546151">다른 기기로 링크 보내기</translation>
 <translation id="8970887620466824814">문제 발생</translation>
 <translation id="89720367119469899">Esc</translation>
 <translation id="8972513834460200407">네트워크 관리자에게 문의하여 방화벽이 Google 서버에서 다운로드를 차단하지 않는지 확인하시기 바랍니다.</translation>
@@ -10526,6 +10536,7 @@
 <translation id="9151906066336345901">End</translation>
 <translation id="9152503903192861480">AI 모드에서 열기</translation>
 <translation id="9153367754133725216">런처 및 검색 결과에서 새로운 앱 및 웹 콘텐츠 추천을 확인하세요. 비정상 종료 보고서, 진단, 사용 데이터를 ChromeOS로 전송하도록 선택한 경우에만 추천 기능 개선을 위해 통계를 전송합니다.</translation>
+<translation id="9153451439615847952">알림 및 경보의 배경 오디오 줄이기</translation>
 <translation id="9154194610265714752">업데이트됨</translation>
 <translation id="915485121129452731">펜 태블릿</translation>
 <translation id="9155344700756733162">색상 선택 해제</translation>
@@ -10603,6 +10614,7 @@
 <translation id="9220820413868316583">손가락을 뗀 뒤 다시 시도하세요.</translation>
 <translation id="922152298093051471">Chrome 맞춤설정</translation>
 <translation id="9222839391870847423">지속 시간: <ph name="DURATION" /></translation>
+<translation id="923306663772315007">기기로 보내기(&amp;D)</translation>
 <translation id="923467487918828349">모두 보기</translation>
 <translation id="923900195646492191">{NUM_EXTENSIONS,plural, =1{관리하려면 확장 프로그램을 여세요.}other{관리하려면 확장 프로그램을 여세요.}}</translation>
 <translation id="924818813611903184">ChromeOS 설정에서 언어 관리</translation>

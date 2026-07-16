@@ -4014,6 +4014,7 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /> acerca deste problema.</translation>
 <translation id="7213191991901907140">Coméntanos a túa experiencia</translation>
 <translation id="7219179957768738017">A conexión utiliza <ph name="SSL_VERSION" />.</translation>
+<translation id="7219197639442810756">Suxestión de Gemini</translation>
 <translation id="7220786058474068424">Procesando</translation>
 <translation id="7221855153210829124">Mostrar notificacións</translation>
 <translation id="7222232353993864120">Enderezo de correo electrónico</translation>
@@ -4621,6 +4622,7 @@ Detalles adicionais:
 <translation id="8134058435519644366">Contratación e persoal</translation>
 <translation id="8135546115396015134">tecla esquerda</translation>
 <translation id="8137456439814903304">Enerxía, empresas e servizos públicos</translation>
+<translation id="8138591088112729119">Con tecnoloxía da Intelixencia personalizada</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{Creouse hai 1 mes}other{Creouse hai {NUM_MONTHS} meses}}</translation>
 <translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />, buscador predeterminado actual. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">Versión do PDF:</translation>

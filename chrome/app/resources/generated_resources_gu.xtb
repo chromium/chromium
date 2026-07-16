@@ -1224,6 +1224,7 @@
 <translation id="1938351510777341717">બાહ્ય આદેશ</translation>
 <translation id="1940221956626514677">ટૂલબાર કસ્ટમાઇઝ કરો</translation>
 <translation id="1940546824932169984">કનેક્ટ થયેલ ઉપકરણો</translation>
+<translation id="194081218158106711">બદલેલા પાસવર્ડને કન્ફર્મ કરી રહ્યાં છીએ...</translation>
 <translation id="1941410638996203291">શરૂ થવાનો સમય <ph name="TIME" /></translation>
 <translation id="1941553344801134989">વર્ઝન: <ph name="APP_VERSION" /></translation>
 <translation id="1941685451584875710">તમારા ઍડમિનિસ્ટ્રેટરે Microsoft OneDrive સાથે તમારું એકાઉન્ટ ઑટોમૅટિક રીતે કનેક્ટ થવા માટે ગોઠવ્યું છે, પરંતુ કંઈક ખોટું થયું.</translation>
@@ -1492,6 +1493,7 @@
 <translation id="2158475082070321257">હાઇલાઇટ કરેલી ટેક્સ્ટની લિંક કૉપિ કરો</translation>
 <translation id="2159488579268505102">USB-C</translation>
 <translation id="2161058806218011758"><ph name="EXTENSION_NAME" /> માટે <ph name="SHORTCUT" />નું કાર્યક્ષેત્ર</translation>
+<translation id="2161656808144014275">ટેક્સ્ટ</translation>
 <translation id="216169395504480358">વાઇ-ફાઇ ઉમેરો...</translation>
 <translation id="2162705204091149050">તમારા બ્રાઉઝર, OS, ડિવાઇસ, ઇન્સ્ટૉલ કરેલા સૉફ્ટવેર અને ફાઇલો વિશેની માહિતી વાંચો</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> અને વધુ 1 સ્વિચ</translation>
@@ -4745,6 +4747,7 @@
 <translation id="4657914796247705218">TrackPointની ઝડપ</translation>
 <translation id="4658648180588730283"><ph name="APPLICATION_NAME" /> ઍપ્લિકેશન ઑફલાઇન ઉપલબ્ધ નથી.</translation>
 <translation id="465878909996028221">બ્રાઉઝર રીડાયરેક્ટ માટે માત્ર http, https અને ફાઇલ પ્રોટોકૉલ સમર્થિત છે.</translation>
+<translation id="4658821552705754298"><ph name="ITEM_NAME" /> <ph name="CATEGORY_NAME" /></translation>
 <translation id="4659126640776004816">જ્યારે તમે તમારા Google એકાઉન્ટમાં સાઇન ઇન કરો છો, ત્યારે આ સુવિધા ચાલુ કરવામાં આવે છે.</translation>
 <translation id="4660465405448977105">{COUNT,plural, =1{છબી}one{# છબી}other{# છબી}}</translation>
 <translation id="4660540330091848931">કદ બદલી રહ્યાં છીએ</translation>
@@ -8913,6 +8916,7 @@ USB ડિવાઇસ</translation>
 <translation id="7933486544522242079">&amp;સાચવો અને શેર કરો</translation>
 <translation id="7933518760693751884">પછીથી વાંચવા માટે પેજ સાચવવા, બુકમાર્ક આઇકન પર ક્લિક કરો</translation>
 <translation id="7933634003144813719">શેર કરેલા ફોલ્ડરોને મેનેજ કરો</translation>
+<translation id="7935072572536724392">ઑટોમૅટિક રીતે પાસવર્ડ બદલવાનું નિષ્ફળ થયું</translation>
 <translation id="7936195481975600746">તમારી સ્ક્રીન શેર કરવા માટે, તમારી સિસ્ટમના સ્ક્રીન પિકરનો ઉપયોગ કરો</translation>
 <translation id="7937809006412909895">ડાયગ્નોસ્ટિક્સ ડેટા એકત્રિત કરી રહ્યાં છીએ</translation>
 <translation id="7938881824185772026">લેબ્સ</translation>
@@ -9045,6 +9049,7 @@ USB ડિવાઇસ</translation>
 <translation id="8029412171914613589">{SELECTED_ITEMS,plural, =0{વાંચન સૂચિ}=1{વાંચન સૂચિ ({SELECTED_ITEMS})}one{વાંચન સૂચિ ({SELECTED_ITEMS})}other{વાંચન સૂચિ ({SELECTED_ITEMS})}}</translation>
 <translation id="8029492516535178472"><ph name="WINDOW_TITLE" /> - પરવાનગીની વિનંતી કરવામાં આવી, જવાબ આપવા માટે ⌘ + Option + ઉપરનો ઍરો દબાવો</translation>
 <translation id="8030169304546394654">ડિસ્કનેક્ટેડ</translation>
+<translation id="8030814978699290230">સાઇન ઇન કરવાનો પ્રયાસ કરી રહ્યાં છીએ...</translation>
 <translation id="8030852056903932865">મંજૂર કરો</translation>
 <translation id="8033827949643255796">પસંદ કરેલ</translation>
 <translation id="8033958968890501070">સમયસમાપ્તિ</translation>
@@ -9458,6 +9463,7 @@ USB ડિવાઇસ</translation>
 <translation id="8343578633847737325">તાજેતરની ચૅટ અને થ્રેડ</translation>
 <translation id="8345848587667658367">હવે તમે તમારા ફોનના તાજેતરના ફોટા, મીડિયા, નોટિફિકેશન અને ઍપ જોઈ શકો છો</translation>
 <translation id="8347227221149377169">પ્રિન્ટ કરવાના કામો</translation>
+<translation id="8347728744337089388">તમારા &amp;ડિવાઇસ પર મોકલો</translation>
 <translation id="8348430946834215779">જ્યારે પણ શક્ય હોય ત્યારે HTTPSનો ઉપયોગ કરો અને તેને સપોર્ટ કરતી ન હોય તેવી સાઇટને લોડ કરતા પહેલાં ચેતવણી મેળવો</translation>
 <translation id="8348896480272971199">તમારું ઇન્ટરનેટ ચેક કરો અને ફરી પ્રયાસ કરો.</translation>
 <translation id="8349305172487531364">બુકમાર્ક બાર</translation>
@@ -9507,6 +9513,7 @@ USB ડિવાઇસ</translation>
 <translation id="8382197851871630452">સ્થાનિક હવામાન</translation>
 <translation id="8382913212082956454">&amp;ઇમેઇલ સરનામું કૉપિ કરો</translation>
 <translation id="8383614331548401927">Recapમાં સ્વાગત છે</translation>
+<translation id="8387157483437834731">પાસવર્ડ સફળતાપૂર્વક બદલવામાં આવ્યો</translation>
 <translation id="8387361103813440603">તમારું સ્થાન જોવાની મંજૂરી નથી</translation>
 <translation id="8389492867173948260">આ એક્સટેંશનને તમે મુલાકાત લો તે વેબસાઇટ પરનો તમારો બધો ડેટા વાંચવાની અને બદલવાની મંજૂરી આપો:</translation>
 <translation id="8390449457866780408">સર્વર અનુપલબ્ધ.</translation>
@@ -10592,6 +10599,7 @@ USB ડિવાઇસ</translation>
 <translation id="9220820413868316583">આંગળી ઉપાડી લો પછી ફરી પ્રયાસ કરો.</translation>
 <translation id="922152298093051471">Chrome કસ્ટમાઇઝ કરો</translation>
 <translation id="9222839391870847423">અવધિ: <ph name="DURATION" /></translation>
+<translation id="923306663772315007">તમારા &amp;ડિવાઇસ પર મોકલો</translation>
 <translation id="923467487918828349">બધું બતાવો</translation>
 <translation id="923900195646492191">{NUM_EXTENSIONS,plural, =1{તેને મેનેજ કરવા માટે, એક્સ્ટેન્શન ખોલો}one{તેમને મેનેજ કરવા માટે, એક્સ્ટેન્શન ખોલો}other{તેમને મેનેજ કરવા માટે, એક્સ્ટેન્શન ખોલો}}</translation>
 <translation id="924818813611903184">ChromeOS સેટિંગમાં ભાષાઓને મેનેજ કરો</translation>

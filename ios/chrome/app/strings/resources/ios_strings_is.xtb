@@ -245,6 +245,7 @@
 <translation id="1752547299766512813">Vista aðgangsorð</translation>
 <translation id="1764070164487214210">Leiðarlýsing</translation>
 <translation id="1764511703783285459">Hin Aðgangsorðastjórnunin deildi engum aðgangsorðum eða aðgangslyklum</translation>
+<translation id="1765555082983153259">„Chrome“ vill fá aðgang að hljóðnemanum þínum</translation>
 <translation id="1767766085187034454">Google Translate</translation>
 <translation id="1771016937398045251">Verkfæravalmynd</translation>
 <translation id="1772468122139624049">Ekki tókst að endurhlaða flipa</translation>
@@ -2465,6 +2466,7 @@ Til að halda áfram í tölvunni skaltu skipta í <ph name="OTHER_EMAIL" />. Þ
 <translation id="9149866541089851383">Breyta...</translation>
 <translation id="9152637745605628097">Veldu úr þemum, litum eða hladdu upp mynd</translation>
 <translation id="9159628751968616911">Senda vefsíðu</translation>
+<translation id="9162412286847966593">Gögn og upptökur fyrirtækisins þíns verða ekki notuð til að bæta skapandi gervigreindarlíkön. <ph name="BEGIN_LINK" />Persónuvernd þín og Gemini<ph name="END_LINK" /></translation>
 <translation id="9162432979321511934">Kveiktu á sjálfvirkri útfyllingu aðgangsorða</translation>
 <translation id="9165320910061267720">Til að fá tilkynningar um verðlækkanir þarftu að kveikja á tilkynningum í stillingum iOS.</translation>
 <translation id="9179151630575358778">Felur þetta atriði</translation>

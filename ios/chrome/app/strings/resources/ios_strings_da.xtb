@@ -245,6 +245,7 @@
 <translation id="1752547299766512813">Gem adgangskoder</translation>
 <translation id="1764070164487214210">Rutevejledning</translation>
 <translation id="1764511703783285459">Den anden adgangskodeadministrator delte ingen adgangskoder eller adgangsnøgler</translation>
+<translation id="1765555082983153259">"Chrome" anmoder om adgang til din mikrofon</translation>
 <translation id="1767766085187034454">Google Oversæt</translation>
 <translation id="1771016937398045251">Menuen Værktøjer</translation>
 <translation id="1772468122139624049">Fanerne kan ikke genindlæses</translation>
@@ -2465,6 +2466,7 @@ Skift til <ph name="OTHER_EMAIL" /> for at fortsætte på din computer. Du får 
 <translation id="9149866541089851383">Rediger...</translation>
 <translation id="9152637745605628097">Vælg mellem temaer og farver, eller upload et billede</translation>
 <translation id="9159628751968616911">Send webside</translation>
+<translation id="9162412286847966593">Din organisations data og optagelser anvendes ikke til at forbedre generativ AI-modeller. <ph name="BEGIN_LINK" />Dit privatliv og Gemini<ph name="END_LINK" /></translation>
 <translation id="9162432979321511934">Aktivér Adgangskoder via Autofyld</translation>
 <translation id="9165320910061267720">Hvis du vil have notifikationer om prisfald, skal du aktivere notifikationer i iOS-indstillingerne.</translation>
 <translation id="9179151630575358778">Skjuler dette element</translation>

@@ -3048,6 +3048,7 @@ Sonra ödəmə seçimlərini gizlətmək üçün <ph name="BEGIN_LINK" />ödəni
 <translation id="5715918316982363436">Bu cihazda <ph name="WINDOW_COUNT" />dən <ph name="TAB_COUNT" /></translation>
 <translation id="5716325061445053985">Telefonda tabı açmaq üçün toxunun</translation>
 <translation id="5717509257172454543">Buzüstü konkisürmə</translation>
+<translation id="5718326209176373202">Mətn annotasiyaları əlavə edin</translation>
 <translation id="5718601519531438273">Pasportlar və sürücülük vəsiqələri kimi məlumatlar daxildir</translation>
 <translation id="5720705177508910913">Cari istifadəçi</translation>
 <translation id="5720895412771013401">Masaüstü Kompüterlər</translation>
@@ -4010,6 +4011,7 @@ Sonra ödəmə seçimlərini gizlətmək üçün <ph name="BEGIN_LINK" />ödəni
 <translation id="721197778055552897">Bu problem haqqında <ph name="BEGIN_LINK" />ətraflı məlumat alın<ph name="END_LINK" />.</translation>
 <translation id="7213191991901907140">Təcrübəniz haqqında məlumat verin</translation>
 <translation id="7219179957768738017">Bağlantı <ph name="SSL_VERSION" /> istifadə edir.</translation>
+<translation id="7219197639442810756">Gemini tərəfindən təklif edildi</translation>
 <translation id="7220786058474068424">Prosesdən keçirilir...</translation>
 <translation id="7221855153210829124">Bildirişləri göstərin</translation>
 <translation id="7222232353993864120">E-poçt Ünvanı</translation>
@@ -4617,6 +4619,7 @@ Sonra ödəmə seçimlərini gizlətmək üçün <ph name="BEGIN_LINK" />ödəni
 <translation id="8134058435519644366">İşə qəbul və iş heyəti</translation>
 <translation id="8135546115396015134">sol düymə</translation>
 <translation id="8137456439814903304">Enerji və Kommunal Xidmət</translation>
+<translation id="8138591088112729119">Şəxsi Zəka tərəfindən dəstəklənir</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{1 ay əvvəl yaradıldı}other{{NUM_MONTHS} ay əvvəl yaradıldı}}</translation>
 <translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />, cari defolt. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">PDF versiyası:</translation>
@@ -5302,6 +5305,7 @@ Sonra ödəmə seçimlərini gizlətmək üçün <ph name="BEGIN_LINK" />ödəni
 <translation id="949314938206378263">Bu saytı ziyarət etməyi istəmisiniz. Valideyniniz Family Link'də cavab verə bilər.</translation>
 <translation id="950736567201356821">Yuxarıdan üçlü deşik açın</translation>
 <translation id="950926967802086924">Giriş açarı • Google Parol Meneceri</translation>
+<translation id="952165179818196872">Tətbiqləri dəyişmədən ödəniş etmək üçün <ph name="PROVIDER" /> əlavə edin</translation>
 <translation id="955429569736351433">VR icazəsi verildi</translation>
 <translation id="955627189349169688"><ph name="BEGIN_LINK" />Chrome sinxronizasiyası ayarlarında<ph name="END_LINK" /> bu siyasətdən imtina edə bilərsiniz.</translation>
 <translation id="95721182352849470">Sarı 2</translation>

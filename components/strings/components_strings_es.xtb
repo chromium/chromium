@@ -4015,6 +4015,7 @@ Para ocultar las opciones de pago aplazado, ve a la <ph name="BEGIN_LINK" />conf
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /> sobre este problema.</translation>
 <translation id="7213191991901907140">Dinos tu opinión</translation>
 <translation id="7219179957768738017">La conexión utiliza <ph name="SSL_VERSION" />.</translation>
+<translation id="7219197639442810756">Sugerido por Gemini</translation>
 <translation id="7220786058474068424">Procesando pago</translation>
 <translation id="7221855153210829124">Mostrar notificaciones</translation>
 <translation id="7222232353993864120">Dirección de correo electrónico</translation>
@@ -4622,6 +4623,7 @@ Más información:
 <translation id="8134058435519644366">Contratación y selección de personal</translation>
 <translation id="8135546115396015134">tecla izquierda</translation>
 <translation id="8137456439814903304">Energía y servicios públicos</translation>
+<translation id="8138591088112729119">Con la tecnología de Inteligencia personalizada</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{Creado hace 1 mes}other{Creado hace {NUM_MONTHS} meses}}</translation>
 <translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />, predeterminado. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">Versión de PDF:</translation>

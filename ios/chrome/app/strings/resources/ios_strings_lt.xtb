@@ -245,6 +245,7 @@
 <translation id="1752547299766512813">Išs. slaptažod.</translation>
 <translation id="1764070164487214210">Nuorodos</translation>
 <translation id="1764511703783285459">Kita slaptažodžių tvarkyklė nebendrino jokių slaptažodžių ar prieigos raktų</translation>
+<translation id="1765555082983153259">„Chrome“ nori pasiekti jūsų mikrofoną</translation>
 <translation id="1767766085187034454">„Google“ vertėjas</translation>
 <translation id="1771016937398045251">Įrankių meniu</translation>
 <translation id="1772468122139624049">Nepavyksta iš naujo įkelti skirtukų</translation>
@@ -2465,6 +2466,7 @@ Jei norite tęsti kompiuteryje, perjunkite į <ph name="OTHER_EMAIL" />. Gausite
 <translation id="9149866541089851383">Redaguoti...</translation>
 <translation id="9152637745605628097">Pasirinkite iš temų, spalvų arba įkelkite vaizdą</translation>
 <translation id="9159628751968616911">Siųsti tinklalapį</translation>
+<translation id="9162412286847966593">Jūsų organizacijos duomenys ir įrašai nebus naudojami generatyviniams DI modeliams tobulinti. <ph name="BEGIN_LINK" />Jūsų privatumas ir „Gemini“<ph name="END_LINK" /></translation>
 <translation id="9162432979321511934">Įjunkite parinktį „Automatinis slaptažodžių pildymas“</translation>
 <translation id="9165320910061267720">Jei norite gauti įspėjimų apie sumažintas kainas pranešimus, turite įjungti pranešimus „iOS“ nustatymuose.</translation>
 <translation id="9179151630575358778">Slepiamas šis elementas</translation>

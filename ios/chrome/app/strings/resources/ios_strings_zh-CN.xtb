@@ -245,6 +245,7 @@
 <translation id="1752547299766512813">保存密码</translation>
 <translation id="1764070164487214210">路线</translation>
 <translation id="1764511703783285459">其他密码管理工具未分享任何密码或通行密钥</translation>
+<translation id="1765555082983153259">Chrome 想要使用麦克风</translation>
 <translation id="1767766085187034454">Google 翻译</translation>
 <translation id="1771016937398045251">“工具”菜单</translation>
 <translation id="1772468122139624049">无法重新加载标签页</translation>
@@ -2465,6 +2466,7 @@
 <translation id="9149866541089851383">编辑...</translation>
 <translation id="9152637745605628097">选择主题、颜色，或上传图片</translation>
 <translation id="9159628751968616911">发送网页</translation>
+<translation id="9162412286847966593">我们不会使用组织的数据和录音来改进生成式 AI 模型。<ph name="BEGIN_LINK" />您的隐私权与 Gemini<ph name="END_LINK" /></translation>
 <translation id="9162432979321511934">开启“自动填充密码”</translation>
 <translation id="9165320910061267720">若要接收降价提醒通知，您需在 iOS 设置中开启通知功能。</translation>
 <translation id="9179151630575358778">隐藏此内容</translation>

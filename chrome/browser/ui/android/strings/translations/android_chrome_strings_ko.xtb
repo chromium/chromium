@@ -71,6 +71,7 @@
 <translation id="1239792311949352652">이 페이지를 빠르게 공유합니다. 바로가기를 수정하려면 설정으로 이동하세요.</translation>
 <translation id="1240288207750131269"><ph name="LANG" /> 로드 중</translation>
 <translation id="124116460088058876">다른 언어</translation>
+<translation id="1241381048229838873">모든 북마크 표시</translation>
 <translation id="124678866338384709">현재 탭 닫기</translation>
 <translation id="1246905108078336582">클립보드에서 추천 항목을 삭제하시겠습니까?</translation>
 <translation id="1258753120186372309">Google 기념일 로고: <ph name="DOODLE_DESCRIPTION" /></translation>
@@ -1049,6 +1050,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="5390367025924544771"><ph name="WEBSITE_ORIGIN" />에서 디지털 지갑의 개인 정보를 사용하려고 합니다. 이 사이트를 신뢰하는 경우에만 계속 진행하세요. 위험한 사이트는 사용자를 속여 법적 이름이나 신분증 번호 등을 공개하도록 유도할 수 있습니다.</translation>
 <translation id="5395376160638294582">Google 계정의 Chrome 데이터를 언제든지 사용할 수 있도록 설정하세요.</translation>
 <translation id="539881862970320163">안전한 비밀번호가 제안되었습니다. 키보드가 숨겨졌습니다.</translation>
+<translation id="5404274604891474619">PDF를 수정할 수 없음</translation>
 <translation id="5409881200985013443"><ph name="CLIENT_NAME" />에 코드(<ph name="ONE_TIME_CODE" />)를 제출하시겠습니까?</translation>
 <translation id="5410300144953132176"><ph name="OWNER_FULL_NAME" />(<ph name="OWNER_EMAIL" />)님이 내가 탭 그룹에 참여하기를 바랍니다. 링크가 있는 사용자는 모든 탭을 수정할 수 있으므로, 신중하게 참여하세요. 링크는 48시간 후에 만료됩니다.</translation>
 <translation id="5414836363063783498">인증 중...</translation>

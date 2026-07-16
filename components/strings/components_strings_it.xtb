@@ -4011,6 +4011,7 @@ Per nascondere le opzioni di pagamento posticipato, vai alle <ph name="BEGIN_LIN
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />Ulteriori informazioni<ph name="END_LINK" /> su questo problema.</translation>
 <translation id="7213191991901907140">Raccontaci tua esperienza</translation>
 <translation id="7219179957768738017">La connessione utilizza <ph name="SSL_VERSION" />.</translation>
+<translation id="7219197639442810756">Suggerito da Gemini</translation>
 <translation id="7220786058474068424">Elaborazione in corso</translation>
 <translation id="7221855153210829124">Mostrare le notifiche</translation>
 <translation id="7222232353993864120">Indirizzo email</translation>
@@ -4618,6 +4619,7 @@ Ulteriori dettagli:
 <translation id="8134058435519644366">Selezione e assunzione di personale</translation>
 <translation id="8135546115396015134">tasto sinistro</translation>
 <translation id="8137456439814903304">Energia e servizi pubblici</translation>
+<translation id="8138591088112729119">Con tecnologia Personal Intelligence</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{Creato 1 mese fa}other{Creato {NUM_MONTHS} mesi fa}}</translation>
 <translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />, valore predefinito corrente. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">Versione PDF:</translation>

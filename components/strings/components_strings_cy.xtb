@@ -3052,6 +3052,7 @@ I guddio opsiynau talu'n ddiweddarach, ewch i'r <ph name="BEGIN_LINK" />gosodiad
 <translation id="5715918316982363436"><ph name="TAB_COUNT" /> o <ph name="WINDOW_COUNT" /> ar y ddyfais hon</translation>
 <translation id="5716325061445053985">Tapiwch i agor y tab ar eich ffôn</translation>
 <translation id="5717509257172454543">Sglefrio Iâ</translation>
+<translation id="5718326209176373202">Ychwanegu anodiadau testun</translation>
 <translation id="5718601519531438273">Yn cynnwys gwybodaeth megis pasbortau a thrwyddedau gyrru</translation>
 <translation id="5720705177508910913">Defnyddiwr presennol</translation>
 <translation id="5720895412771013401">Cyfrifiaduron Bwrdd Gwaith</translation>
@@ -5308,6 +5309,7 @@ Manylion ychwanegol:
 <translation id="949314938206378263">Gofynnaist i ymweld â'r wefan hon. Gall dy riant ateb yn Family Link.</translation>
 <translation id="950736567201356821">Tri thwll ar y brig</translation>
 <translation id="950926967802086924">Cod pas • Rheolwr Cyfrineiriau Google</translation>
+<translation id="952165179818196872">Ychwanegu <ph name="PROVIDER" /> i dalu heb newid apiau</translation>
 <translation id="955429569736351433">Caniateir VR</translation>
 <translation id="955627189349169688">Gallwch optio allan o'r polisi hwn yng <ph name="BEGIN_LINK" />ngosodiadau Chrome Sync<ph name="END_LINK" />.</translation>
 <translation id="95721182352849470">Melyn 2</translation>

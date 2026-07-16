@@ -1233,6 +1233,7 @@ Svoja gesla lahko kadar koli preverite v storitvi <ph name="GOOGLE_PASSWORD_MANA
 <translation id="1938351510777341717">Zunanji ukaz</translation>
 <translation id="1940221956626514677">Prilagodi orodno vrstico</translation>
 <translation id="1940546824932169984">Povezane naprave</translation>
+<translation id="194081218158106711">Potrjevanje spremenjenega gesla …</translation>
 <translation id="1941410638996203291">Začetni čas: <ph name="TIME" /></translation>
 <translation id="1941553344801134989">Različica: <ph name="APP_VERSION" /></translation>
 <translation id="1941685451584875710">Skrbnik je vaš račun konfiguriral tako, da se samodejno poveže s storitvijo Microsoft OneDrive, vendar je prišlo do napake.</translation>
@@ -1501,6 +1502,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="2158475082070321257">Kopiraj povezavo do označitve</translation>
 <translation id="2159488579268505102">USB-C</translation>
 <translation id="2161058806218011758">Obseg bližnjice <ph name="SHORTCUT" /> za razširitev <ph name="EXTENSION_NAME" /></translation>
+<translation id="2161656808144014275">Besedilo</translation>
 <translation id="216169395504480358">Dodaj Wi-Fi ...</translation>
 <translation id="2162705204091149050">Branje podatkov o brskalniku, operacijskem sistemu, napravi, nameščeni programski opremi in datotekah</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> in še 1 stikalo</translation>
@@ -4756,6 +4758,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="4657914796247705218">Hitrost sledilne palčke</translation>
 <translation id="4658648180588730283">Aplikacija <ph name="APPLICATION_NAME" /> ni na voljo brez povezave.</translation>
 <translation id="465878909996028221">Za preusmeritve v brskalnike so podprti samo protokoli http, https in file.</translation>
+<translation id="4658821552705754298"><ph name="ITEM_NAME" /> <ph name="CATEGORY_NAME" /></translation>
 <translation id="4659126640776004816">Ko se prijavite v račun Google, se ta funkcija vklopi.</translation>
 <translation id="4660465405448977105">{COUNT,plural, =1{Slika}one{# slika}two{# sliki}few{# slike}other{# slik}}</translation>
 <translation id="4660540330091848931">Spreminjanje velikosti</translation>
@@ -8927,6 +8930,7 @@ Pritisnite dodeljeno stikalo ali tipko, če želite odstraniti dodelitev.</trans
 <translation id="7933486544522242079">&amp;Shrani in deli</translation>
 <translation id="7933518760693751884">Če želite stran shraniti za pozneje, kliknite ikono za zaznamke.</translation>
 <translation id="7933634003144813719">Upravljanje map v skupni rabi</translation>
+<translation id="7935072572536724392">Samodejna sprememba gesla ni uspela</translation>
 <translation id="7936195481975600746">Če želite deliti zaslon, uporabite sistemski izbirnik zaslona</translation>
 <translation id="7937809006412909895">Zbiranje diagnostičnih podatkov</translation>
 <translation id="7938881824185772026">Labs</translation>
@@ -9064,6 +9068,7 @@ Datoteko s ključem shranite na varnem. Potrebovali jo boste za izdelavo novih r
 <translation id="8029412171914613589">{SELECTED_ITEMS,plural, =0{Bralni seznam}=1{Bralni seznam ({SELECTED_ITEMS})}one{Bralni seznam ({SELECTED_ITEMS})}two{Bralni seznam ({SELECTED_ITEMS})}few{Bralni seznam ({SELECTED_ITEMS})}other{Bralni seznam ({SELECTED_ITEMS})}}</translation>
 <translation id="8029492516535178472"><ph name="WINDOW_TITLE" /> – Zahtevano je dovoljenje; pritisnite ⌘ + Option + puščico gor, če se želite odzvati.</translation>
 <translation id="8030169304546394654">Ni povezave</translation>
+<translation id="8030814978699290230">Poskus prijave …</translation>
 <translation id="8030852056903932865">Odobri</translation>
 <translation id="8033827949643255796">izbrani</translation>
 <translation id="8033958968890501070">Potek časovne omejitve</translation>
@@ -9477,6 +9482,7 @@ Datoteko s ključem shranite na varnem. Potrebovali jo boste za izdelavo novih r
 <translation id="8343578633847737325">Nedavni klepeti in niti</translation>
 <translation id="8345848587667658367">Zdaj si lahko ogledate nedavne fotografije, predstavnost, obvestila in aplikacije telefona</translation>
 <translation id="8347227221149377169">Tiskalna opravila</translation>
+<translation id="8347728744337089388">Pošlji v &amp;napravo</translation>
 <translation id="8348430946834215779">Kadar je le mogoče, uporabite HTTPS, pred nalaganjem spletnih mest, ki ga ne podpirajo, pa prejmete opozorilo.</translation>
 <translation id="8348896480272971199">Preverite internetno povezavo in poskusite znova.</translation>
 <translation id="8349305172487531364">Vrstica z zaznamki</translation>
@@ -9526,6 +9532,7 @@ Datoteko s ključem shranite na varnem. Potrebovali jo boste za izdelavo novih r
 <translation id="8382197851871630452">Lokalno vreme</translation>
 <translation id="8382913212082956454">Kopiraj &amp;e-poštni naslov</translation>
 <translation id="8383614331548401927">Pozdravni povzetek</translation>
+<translation id="8387157483437834731">Geslo je bilo uspešno spremenjeno</translation>
 <translation id="8387361103813440603">Ni dovoljen ogled lokacije</translation>
 <translation id="8389492867173948260">Omogočite to razširitev za branje in spreminjanje vseh podatkov na spletnih mestih, ki jih obiščete:</translation>
 <translation id="8390449457866780408">Strežnik ni na voljo.</translation>
@@ -10611,6 +10618,7 @@ To lahko vključuje podatke o nameščeni programski opremi, datotekah, brskalni
 <translation id="9220820413868316583">Dvignite prst, nato poskusite znova.</translation>
 <translation id="922152298093051471">Prilagajanje Chroma</translation>
 <translation id="9222839391870847423">Trajanje: <ph name="DURATION" /></translation>
+<translation id="923306663772315007">Pošlji v &amp;napravo</translation>
 <translation id="923467487918828349">Pokaži vse</translation>
 <translation id="923900195646492191">{NUM_EXTENSIONS,plural, =1{Če želite upravljati, odprite razširitve}one{Če želite upravljati, odprite razširitve}two{Če želite upravljati, odprite razširitve}few{Če želite upravljati, odprite razširitve}other{Če želite upravljati, odprite razširitve}}</translation>
 <translation id="924818813611903184">Upravljanje jezikov v nastavitvah sistema Chrome OS</translation>

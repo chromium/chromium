@@ -245,6 +245,7 @@
 <translation id="1752547299766512813">Jelszómentés</translation>
 <translation id="1764070164487214210">Útvonalak</translation>
 <translation id="1764511703783285459">A másik jelszókezelő nem osztott meg jelszavakat vagy azonosítókulcsokat.</translation>
+<translation id="1765555082983153259">A „Chrome” szeretne hozzáférni az Ön mikrofonjához</translation>
 <translation id="1767766085187034454">Google Fordító</translation>
 <translation id="1771016937398045251">Eszközök menü</translation>
 <translation id="1772468122139624049">Nem sikerült újratölteni a lapokat</translation>
@@ -2465,6 +2466,7 @@ Ha a számítógépén szeretné folytatni, váltson a következőre: <ph name="
 <translation id="9149866541089851383">Szerkesztés...</translation>
 <translation id="9152637745605628097">Választhat témák és színek közül, vagy feltölthet képet</translation>
 <translation id="9159628751968616911">Weboldal küldése</translation>
+<translation id="9162412286847966593">Szervezete adatait és felvételeit nem használjuk fel generatív AI-modellek továbbfejlesztésére. <ph name="BEGIN_LINK" />Az Ön adatainak védelme és a Gemini.<ph name="END_LINK" /></translation>
 <translation id="9162432979321511934">Kapcsolja be a Jelszavak automatikus kitöltése beállítást</translation>
 <translation id="9165320910061267720">Ha értesítéseket szeretne kapni az árcsökkenésekről, be kell kapcsolnia az értesítéseket az iOS beállításaiban.</translation>
 <translation id="9179151630575358778">Az elem elrejtése</translation>

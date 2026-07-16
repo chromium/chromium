@@ -126,7 +126,6 @@ Bəzi funksiyalar əlçatmaz ola bilər ki, nəticədə tərcihlərə edilən d�
 <translation id="2287771843518581140">{NUM_TABS,plural, =1{Chromium brauzeri yavaşladan tabı durdurmağı tövsiyə edir}other{Chromium brauzeri yavaşladan tabları durdurmağı tövsiyə edir}}</translation>
 <translation id="2307973900865360088">Dokda saxlayın</translation>
 <translation id="2313870531055795960">URL'ləri Chromium'da saxlanılan təhlükəli saytların siyahısı ilə yoxlayır Sayt parolunuzu oğurlamağa çalışdıqda və ya zərərli fayl endirdiyinizdə Chromium səhifə məzmunundan kiçik nümunələr də daxil olmaqla, URL'ləri Təhlükəsiz Baxışa göndərə bilər.</translation>
-<translation id="2343156876103232566">Buradan Android telefonunuza nömrə göndərmək üçün hər iki cihazda Chromium'a daxil olun.</translation>
 <translation id="2356070529366658676">Soruşun</translation>
 <translation id="2359808026110333948">Davam edin</translation>
 <translation id="2361918034042471035">"<ph name="EXTENSION_NAME" />" artırması Chromium-a daxil olmağınızı istəyir</translation>
@@ -246,7 +245,6 @@ Bəzi funksiyalar əlçatmaz ola bilər ki, nəticədə tərcihlərə edilən d�
 <translation id="3600428265489994557">Chromium-a daxil olun</translation>
 <translation id="3639635944603682591">Bu şəxsin axtarış datası bu cihazdan silinəcək. Datanı bərpa etmək üçün Chromium'a <ph name="USER_EMAIL" /> olaraq daxil olun.</translation>
 <translation id="364817392622123556">{COUNT,plural, =0{Chromium üçün yeni güncəlləmə əlçatandır. Chromium yenidən işə başladıqdan sonra tətbiq ediləcək.}=1{Chromium üçün yeni güncəlləmə əlçatandır. Chromium yenidən işə başladıqdan sonra tətbiq ediləcək. Anonim pəncərəniz yenidən açılmayacaq.}other{Chromium üçün yeni güncəlləmə əlçatandır. Chromium yenidən işə başladıqdan sonra tətbiq ediləcək. # Anonim pəncərəniz yenidən açılmayacaq.}}</translation>
-<translation id="3651803019964686660"><ph name="ORIGIN" /> cihazından Android telefonunuza nömrə göndərmək üçün hər iki cihazda Chromium'a daxil olun.</translation>
 <translation id="3667616615096815454">Quraşdırmaq olmur. Tətbiq serverə məlum deyil.</translation>
 <translation id="3675854891107786059">Google Hesabındakı bütün Chromium datasını şifrələmək üçün <ph name="BEGIN_LINK" />öz parol ifadələrinizdən<ph name="END_LINK" /> istifadə edin. Google Pay-dən ödəniş metodu və ünvanlar şifrələnməyəcək. Chromium-dan brauzer tarixçəsi sinxronlaşdırılmayacaq.</translation>
 <translation id="370962675267501463">{COUNT,plural, =0{Administrator bu güncəlləməni tətbiq etmək üçün Chromium'u yenidən başlatmanızı tələb edir}=1{Administrator bu güncəlləməni tətbiq etmək üçün Chromium'u yenidən başlatmanızı tələb edir. Anonim pəncərəniz yenidən açılmayacaq.}other{Administrator bu güncəlləməni tətbiq etmək üçün Chromium'u yenidən başlatmanızı tələb edir. # Anonim pəncərəniz yenidən açılmayacaq.}}</translation>

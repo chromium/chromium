@@ -14,13 +14,6 @@
 <translation id="1002829167638728809">Rapportage van gegevens over domeinbetrouwbaarheid toestaan</translation>
 <translation id="1004590217607585595">Instellingen voor beheer van web-apps</translation>
 <translation id="1006218396155867129">Gebruikers met externe toegang niet toestaan om bestanden over te dragen naar en vanaf de externe host</translation>
-<translation id="1007043180702842391">Hiermee bepaal je of de pdf-viewer in <ph name="PRODUCT_NAME" /> een out-of-process iframe (OOPIF) gebruikt. In de toekomst wordt dit de nieuwe pdf-viewerarchitectuur, omdat dit eenvoudiger is en het makkelijker maakt om nieuwe functies toe te voegen. De bestaande GuestView-pdf-viewer is een verouderde, complexe architectuur die wordt beëindigd.
-
-Als je dit beleid toepast of niet instelt, kan <ph name="PRODUCT_NAME" /> de OOPIF-pdf-viewerarchitectuur gebruiken. Wanneer je dit beleid toepast of niet instelt, wordt het standaardgedrag bepaald door <ph name="PRODUCT_NAME" />.
-
-Als je dit beleid niet toepast, gebruikt <ph name="PRODUCT_NAME" /> uitsluitend de bestaande GuestView-pdf-viewer. Hiermee wordt een webpagina met een afzonderlijke framestructuur ingesloten in een andere webpagina.
-
-Dit beleid wordt in de toekomst verwijderd nadat de functie voor de OOPIF-pdf-viewer helemaal is uitgerold.</translation>
 <translation id="1007149936182752368">Bewerken van bookmarks uitzetten</translation>
 <translation id="1009336698423963085">Automatisch volledig scherm toestaan op deze sites</translation>
 <translation id="1010151305531217567">De rechtermuisknop instellen als de primaire muisknop</translation>
@@ -2096,6 +2089,7 @@ Als je het beleid niet toepast, kunnen gebruikers of <ph name="PRODUCT_NAME" />-
       Ondersteuning voor het instellen van dit beleid op 'tls1' of 'tls1.1' is verwijderd in versie 91. Het onderdrukken van de TLS 1.0/1.1-waarschuwing wordt niet meer ondersteund.</translation>
 <translation id="2364639863953745682">Modus voor introductie van de Assistent</translation>
 <translation id="2366301887862414321">Hosts voor native berichten op zowel gebruikersniveau als systeemniveau toestaan</translation>
+<translation id="2371015218815226913">Actieve WebSocket-verbindingen voorkomen dat pagina's worden opgeslagen in Back-Forward Cache.</translation>
 <translation id="2373014700224092497">Gebruikers toestaan Kerberos-accounts toe te voegen</translation>
 <translation id="2376134474855349829">Schermtoetsenbord op het inlogscherm uitzetten en de gebruiker toestaan dit tijdelijk aan te zetten</translation>
 <translation id="2376151922689284770">Naam die wordt getoond in de installatie-UI, bijvoorbeeld Happy VM. Als je dit beleid niet instelt, wordt een reservenaam getoond. Deze wordt afgeleid van de eerste (op volgorde van weergave) in het beleid BruschettaVMConfiguration, of anders wordt een generieke naam ingevuld.</translation>
@@ -7123,6 +7117,28 @@ Bekijk voor meer informatie het volgende artikel: https://wiki.samba.org/index.p
 
       Dit beleid is beëindigd. Gebruik in plaats daarvan <ph name="PROMOTIONS_ENABLED_POLICY_NAME" />.</translation>
 <translation id="5556607617517096419">Borealis</translation>
+<translation id="5556933299171172140">Als je dit beleid instelt, kun je aangeven welke gegevenstypen voor automatisch invullen worden geblokkeerd voor specifieke URL-patronen.
+
+Het beleid is gestructureerd als een lijst met woordenboeken. Elk woordenboek moet het volgende bevatten:
+* 'url_pattern': Een URL-patroon voor het instellen van content voor het hoofdframe (bijv. 'https://[*.]example.com').
+* 'blocked_types': Een lijst met tekenreeksen die de categorieën van gegevens voor automatisch invullen aangeven die moeten worden geblokkeerd.
+
+De ondersteunde waarden voor 'blocked_types' zijn:
+* 'contact_info': Blokkeert het invullen en opslaan van contactgegevens.
+* 'payments': Blokkeert het invullen en opslaan van creditcards en betaalmethoden.
+* 'identity_docs': Blokkeert het invullen en opslaan van identiteitsdocumenten (bijv. paspoort, rijbewijs, nationale ID).
+* 'travel': Blokkeert het invullen en opslaan van reisinformatie (bijv. vluchtreservering, voertuigregistratie).
+* 'shopping': Blokkeert het invullen en opslaan van winkelinformatie (bijv. online bestellingen, verzendingen).
+* 'all': Blokkeert het invullen en opslaan van alle gegevenstypen voor automatisch invullen.
+
+Als een gegevenstype is geblokkeerd voor een site, wordt zowel het genereren van suggesties als de prompt om nieuwe gegevens van dat type op te slaan/te importeren uitgezet op die site.
+
+Als een URL overeenkomt met meerdere patroonitems in de lijst, worden de geblokkeerde typen van alle overeenkomende items gecombineerd (samengevoegd). Ongeldige URL-patronen in de lijst worden genegeerd.
+
+Als je dit beleid niet instelt, worden er geen gegevenstypen voor automatisch invullen geblokkeerd op domein.
+
+Ga voor gedetailleerde informatie over geldige URL-patronen naar:
+https://chromeenterprise.google/policies/url-patterns. Het jokerteken * wordt ondersteund. Dit patroon komt overeen met elke URL, met elk schema, elke poort en elk pad.</translation>
 <translation id="5557753512027261467">De optie <ph name="GOOGLE_DRIVE_NAME" /> weergeven.</translation>
 <translation id="5558394213067608844">De wilco-controller voor diagnostische gegevens en telemetrie aanzetten</translation>
 <translation id="5559079916187891399">Dit beleid is niet van invloed op Android-apps.</translation>
@@ -7447,6 +7463,13 @@ Als je het beleid toepast, wordt aanpasbare buffering altijd gebruikt.
 
 Als je het beleid niet toepast of niet instelt, kan het startproces van de browserfunctie beslissen of aanpasbare buffering wordt gebruikt.</translation>
 <translation id="5800329278018669527">Prompt voor netwerkconfiguratie uitzetten als je offline bent</translation>
+<translation id="5800627752428920394">Met dit beleid bepaal je of actieve WebSocket-verbindingen worden verbroken als een pagina gebruikmaakt van Back-Forward Cache. Actieve WebSocket-verbindingen voorkwamen eerder dat een pagina werd opgeslagen in Back-Forward Cache, maar <ph name="PRODUCT_NAME" /> heeft dit gedrag gewijzigd om de WebSockets te ontkoppelen. Hierdoor kan de pagina worden opgeslagen in het cachegeheugen en worden hersteld in een ontkoppelde status.
+
+Als je dit beleid instelt op Aangezet of niet instelt, worden WebSockets verbroken als een pagina in Back-Forward Cache komt.
+
+Als je dit beleid instelt op Uitgezet, worden WebSockets niet verbroken als een pagina gebruikmaakt van Back-Forward Cache. Omdat Back-Forward Cache geen actieve WebSockets ondersteunt, worden pagina's met actieve WebSockets niet in het cachegeheugen opgeslagen.
+
+Dit beleid is tijdelijk en wordt in de toekomst verwijderd.</translation>
 <translation id="5802931736499687181">De Encrypted Reporting Pipeline uitzetten</translation>
 <translation id="5803715507113569033">Met dit beleid kunnen beheerders de activering van <ph name="MICROSOFT_ONE_DRIVE_NAME" /> instellen.
 
@@ -9468,6 +9491,7 @@ Als dit beleid niet is ingesteld voor een site, is het beleid van <ph name="DEFA
 <translation id="7025153290982655996">Verouderd gedrag voor cookiebereik herstellen</translation>
 <translation id="7025332601572838001">Het gedrag voor de servicevoorwaarden configureren voor de eerste uitvoering van CCT</translation>
 <translation id="7026351325994257733">Toestaan dat wifi-netwerkconfiguraties worden gesynchroniseerd tussen <ph name="PRODUCT_OS_NAME" />-apparaten en een verbonden Android-telefoon.</translation>
+<translation id="7026488120383693794">Back-Forward Cache voor WebSockets toestaan</translation>
 <translation id="7027057540229843762">Licht thema gebruiken</translation>
 <translation id="7027785306666625591">Energiebeheer in <ph name="PRODUCT_OS_NAME" /> configureren.
 
@@ -10723,6 +10747,7 @@ Ga naar https://docs.microsoft.com/internet-explorer/ie11-deploy-guide/what-is-e
 
       Opmerking: Zie de volgende beleidsregels als je wilt beheren welke websites <ph name="FLASH_PLUGIN_NAME" /> mogen uitvoeren: <ph name="DEFAULT_PLUGINS_SETTING_POLICY_NAME" />, <ph name="PLUGINS_ALLOWED_FOR_URLS_POLICY_NAME" /> en <ph name="PLUGINS_BLOCKED_FOR_URLS_POLICY_NAME" />.</translation>
 <translation id="7801163363326128751">Besparingen in de modus Geheugenbesparing wijzigen</translation>
+<translation id="7802903687499576891">Back-Forward Cache toestaan voor WebSockets (verbinding verbreken als deze in het cachegeheugen worden opgeslagen).</translation>
 <translation id="7804859754080118507">Netwerkverbindings- en signaalsterktegebeurtenissen rapporteren op ingeschreven apparaten.
 
       Als je het beleid instelt op False of niet instelt, worden de gegevens niet gerapporteerd.

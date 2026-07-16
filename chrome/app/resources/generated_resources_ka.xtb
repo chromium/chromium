@@ -1224,6 +1224,7 @@
 <translation id="1938351510777341717">გარე ბრძანება</translation>
 <translation id="1940221956626514677">ხელსაწყოთა ზოლის მორგება</translation>
 <translation id="1940546824932169984">დაკავშირებული მოწყობილობები</translation>
+<translation id="194081218158106711">მიმდინარეობს შეცვლილი პაროლის დადასტურება...</translation>
 <translation id="1941410638996203291">დასაწყისი: <ph name="TIME" /></translation>
 <translation id="1941553344801134989">ვერსია: <ph name="APP_VERSION" /></translation>
 <translation id="1941685451584875710">თქვენი ადმინისტრატორის კონფიგურაციის მიხედვით, თქვენი ანგარიში Microsoft OneDrive-ს ავტომატურად უნდა დაჰკავშირებოდა, თუმცა წარმოიქმნა შეფერხება.</translation>
@@ -1492,6 +1493,7 @@
 <translation id="2158475082070321257">გამოყოფილთან ბმულის კოპირება</translation>
 <translation id="2159488579268505102">USB-C</translation>
 <translation id="2161058806218011758">სფერო <ph name="SHORTCUT" /> გაფართოებისთვის <ph name="EXTENSION_NAME" /></translation>
+<translation id="2161656808144014275">ტექსტი</translation>
 <translation id="216169395504480358">Wi-Fi-ს დამატება…</translation>
 <translation id="2162705204091149050">ინფორმაციის წაკითხვა თქვენი ბრაუზერის, ოპერაციული სისტემის, მოწყობილობის, დაინსტალირებული პროგრამული უზრუნველყოფისა და ფაილების შესახებ</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> და 1 სხვა გადამრთველი</translation>
@@ -4744,6 +4746,7 @@
 <translation id="4657914796247705218">TrackPoint-ის სიჩქარე</translation>
 <translation id="4658648180588730283"><ph name="APPLICATION_NAME" /> აპი მიუწვდომელია ხაზგარეშე რეჟიმში.</translation>
 <translation id="465878909996028221">ბრაუზერის გადამისამართებისთვის მხარდაჭერილია მხოლოდ http, https და ფაილების პროტოკოლები.</translation>
+<translation id="4658821552705754298"><ph name="ITEM_NAME" /> <ph name="CATEGORY_NAME" /></translation>
 <translation id="4659126640776004816">თქვენს Google ანგარიშში შესვლისას ეს ფუნქცია ჩართული იქნება.</translation>
 <translation id="4660465405448977105">{COUNT,plural, =1{სურათი}other{# სურათი}}</translation>
 <translation id="4660540330091848931">მიმდინარეობს ზომის შეცვლა</translation>
@@ -8906,6 +8909,7 @@
 <translation id="7933486544522242079">შენა&amp;ხვა და გაზიარება</translation>
 <translation id="7933518760693751884">გვერდი მოგვიანებით წასაკითხად შესანახავად დააწკაპუნეთ სანიშნეს ხატულაზე</translation>
 <translation id="7933634003144813719">გაზიარებული საქაღალდეების მართვა</translation>
+<translation id="7935072572536724392">პაროლის ავტომატური შეცვლა ვერ მოხერხდა</translation>
 <translation id="7936195481975600746">ეკრანის გაზიარებისთვის გამოიყენეთ სისტემის ეკრანის ამომრჩევი</translation>
 <translation id="7937809006412909895">მიმდინარეობს დიაგნოსტიკური მონაცემების შეგროვება</translation>
 <translation id="7938881824185772026">Labs</translation>
@@ -9043,6 +9047,7 @@
 <translation id="8029412171914613589">{SELECTED_ITEMS,plural, =0{საკითხავი სია}=1{საკითხავი სია ({SELECTED_ITEMS})}other{საკითხავი სია ({SELECTED_ITEMS})}}</translation>
 <translation id="8029492516535178472"><ph name="WINDOW_TITLE" /> — მოთხოვნილია ნებართვა, გამოხმაურებისთვის დააჭირეთ კლავიშთა კომბინაციას ⌘ + Option + ზემოთ მიმართული ისარი</translation>
 <translation id="8030169304546394654">გათიშული</translation>
+<translation id="8030814978699290230">მიმდინარეობს შესვლის მცდელობა...</translation>
 <translation id="8030852056903932865">დადასტურება</translation>
 <translation id="8033827949643255796">არჩეულია</translation>
 <translation id="8033958968890501070">დრო ამოიწურა</translation>
@@ -9456,6 +9461,7 @@
 <translation id="8343578633847737325">ბოლო ჩეთები და თემატური გზავნილები</translation>
 <translation id="8345848587667658367">ამიერიდან შეგიძლიათ ნახოთ თქვენი ტელეფონის ბოლოდროინდელი ფოტოები, მედიაფაილები, შეტყობინებები და აპები</translation>
 <translation id="8347227221149377169">ბეჭდვის დავალებები</translation>
+<translation id="8347728744337089388">თქვენს &amp;მოწყობილობაზე გაგზავნა</translation>
 <translation id="8348430946834215779">შეძლებისდაგვარად HTTPS-ის გამოყენება და გაფრთხილების მიღება, სანამ ჩაიტვირთება ის საიტები, რომელთა მიერაც ის მხარდაუჭერელია</translation>
 <translation id="8348896480272971199">შეამოწმეთ კავშირი ინტერნეტთან და ცადეთ ხელახლა.</translation>
 <translation id="8349305172487531364">სანიშნეების ზოლი</translation>
@@ -9505,6 +9511,7 @@
 <translation id="8382197851871630452">ადგილობრივი ამინდი</translation>
 <translation id="8382913212082956454">&amp;ელფოსტის მისამართის დაკოპირება</translation>
 <translation id="8383614331548401927">მოგესალმებათ Recap</translation>
+<translation id="8387157483437834731">პაროლი წარმატებით შეიცვალა</translation>
 <translation id="8387361103813440603">თქვენი მდებარეობის ნახვა დაუშვებელია</translation>
 <translation id="8389492867173948260">მიეცით საშუალება ამ გაფართოებას, წაიკითხოს და შეცვალოს თქვენი ყველა მონაცემი მონახულებულ ვებსაიტებზე:</translation>
 <translation id="8390449457866780408">სერვერი მიუწვდომელია.</translation>
@@ -10590,6 +10597,7 @@
 <translation id="9220820413868316583">ასწიეთ და ცადეთ ხელახლა.</translation>
 <translation id="922152298093051471">Chrome-ის მორგება</translation>
 <translation id="9222839391870847423">ხანგრძლივობა: <ph name="DURATION" /></translation>
+<translation id="923306663772315007">თქვენს &amp;მოწყობილობაზე გაგზავნა</translation>
 <translation id="923467487918828349">ყველას ჩვენება</translation>
 <translation id="923900195646492191">{NUM_EXTENSIONS,plural, =1{მის სამართავად გახსენით „გაფართოებები“}other{მათ სამართავად გახსენით „გაფართოებები“}}</translation>
 <translation id="924818813611903184">ენების მართვა ChromeOS-ის პარამეტრებიდან</translation>

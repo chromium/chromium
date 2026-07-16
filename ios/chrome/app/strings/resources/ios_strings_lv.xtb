@@ -245,6 +245,7 @@
 <translation id="1752547299766512813">Sagl. paroles</translation>
 <translation id="1764070164487214210">Norādes</translation>
 <translation id="1764511703783285459">No cita paroļu pārvaldnieka netika kopīgota neviena parole vai piekļuves atslēga</translation>
+<translation id="1765555082983153259">“Chrome” vēlas piekļūt jūsu mikrofonam</translation>
 <translation id="1767766085187034454">Google tulkotājs</translation>
 <translation id="1771016937398045251">Izvēlne “Rīki”</translation>
 <translation id="1772468122139624049">Nevar atkārtoti ielādēt cilnes</translation>
@@ -2465,6 +2466,7 @@ Lai turpinātu datorā, pārslēdzieties uz kontu <ph name="OTHER_EMAIL" />. Jū
 <translation id="9149866541089851383">Rediģēt ...</translation>
 <translation id="9152637745605628097">Izvēlieties kādu no motīviem vai krāsām vai augšupielādējiet attēlu.</translation>
 <translation id="9159628751968616911">Tīmekļa lapas nosūtīšana</translation>
+<translation id="9162412286847966593">Jūsu organizācijas dati un ieraksti netiks izmantoti ģeneratīvo MI modeļu uzlabošanai. <ph name="BEGIN_LINK" />Jūsu konfidencialitāte un Gemini<ph name="END_LINK" /></translation>
 <translation id="9162432979321511934">Ieslēdziet paroļu automātisko aizpildi</translation>
 <translation id="9165320910061267720">Lai saņemtu paziņojumus par cenu kritumu, jums jāieslēdz paziņojumi iOS iestatījumos.</translation>
 <translation id="9179151630575358778">Tiks paslēpts šis vienums</translation>

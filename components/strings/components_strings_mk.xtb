@@ -4014,6 +4014,7 @@
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />Дознај повеќе<ph name="END_LINK" /> за овој проблем.</translation>
 <translation id="7213191991901907140">Кажете ни за вашето доживување</translation>
 <translation id="7219179957768738017">Оваа врска користи <ph name="SSL_VERSION" />.</translation>
+<translation id="7219197639442810756">Предложено од Gemini</translation>
 <translation id="7220786058474068424">Се обработува</translation>
 <translation id="7221855153210829124">Прикажи известувања</translation>
 <translation id="7222232353993864120">Адреса на е-пошта</translation>
@@ -4621,6 +4622,7 @@
 <translation id="8134058435519644366">Регрутирање и обезбедување персонал</translation>
 <translation id="8135546115396015134">лево копче</translation>
 <translation id="8137456439814903304">Електрична енергија и комунални претпријатија</translation>
+<translation id="8138591088112729119">Овозможено од „Лична интелигенција“</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{Создадено пред 1 месец}one{Создадено пред {NUM_MONTHS} месец}other{Создадено пред {NUM_MONTHS} месеци}}</translation>
 <translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />, стандарден пребарувач во моментов. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">PDF-верзија:</translation>

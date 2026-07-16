@@ -245,6 +245,7 @@
 <translation id="1752547299766512813">Zapisuj hasła</translation>
 <translation id="1764070164487214210">Trasa</translation>
 <translation id="1764511703783285459">Inny menedżer haseł nie udostępnił żadnych haseł ani kluczy dostępu</translation>
+<translation id="1765555082983153259">„Chrome” chce mieć dostęp do Twojego mikrofonu</translation>
 <translation id="1767766085187034454">Tłumacz Google</translation>
 <translation id="1771016937398045251">Menu Narzędzia</translation>
 <translation id="1772468122139624049">Nie udało się ponownie wczytać kart</translation>
@@ -2465,6 +2466,7 @@ Aby kontynuować na komputerze, przełącz się na <ph name="OTHER_EMAIL" />. B�
 <translation id="9149866541089851383">Edytuj...</translation>
 <translation id="9152637745605628097">Wybierz motyw lub kolor albo prześlij obraz</translation>
 <translation id="9159628751968616911">Wyślij stronę internetową</translation>
+<translation id="9162412286847966593">Nie używamy danych ani nagrań Twojej organizacji do ulepszania modeli generatywnej AI. <ph name="BEGIN_LINK" />Twoja prywatność i Gemini<ph name="END_LINK" /></translation>
 <translation id="9162432979321511934">Włącz autouzupełnianie haseł</translation>
 <translation id="9165320910061267720">Aby otrzymywać alerty o obniżkach cen, musisz włączyć powiadomienia w ustawieniach iOS.</translation>
 <translation id="9179151630575358778">Ukrywa ten element</translation>

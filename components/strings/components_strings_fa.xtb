@@ -436,7 +436,7 @@
 <translation id="1656489000284462475">تحویل گرفتن</translation>
 <translation id="1658111267661135323">تلویزیون و ویدیو</translation>
 <translation id="1658918301167915956">دستگاه‌های بلوتوث</translation>
-<translation id="1662550410081243962">ذخیره و تکمیل روش‌های پرداخت</translation>
+<translation id="1662550410081243962">ذخیره و پر کردن روش‌های پرداخت</translation>
 <translation id="1662980953334786797">ترتیب یکسان</translation>
 <translation id="1663943134801823270">‏کارت‌ها و نشانی‌ها از Chrome‌ هستند. می‌توانید آن‌ها را در <ph name="BEGIN_LINK" />تنظیمات<ph name="END_LINK" /> مدیریت کنید.</translation>
 <translation id="1664389769577564606">فتوپلیمر فلکسو</translation>
@@ -836,7 +836,7 @@
 <translation id="2277753418458118549">نمایش جزئیات اتصال</translation>
 <translation id="2277949605527755300">‫<ph name="URL" /> می‌خواهد دست‌هایتان را ردیابی کند</translation>
 <translation id="22792995594807632">قبل‌از بارگیری باید بررسی شود</translation>
-<translation id="2283340219607151381">ذخیره و تکمیل نشانی‌ها</translation>
+<translation id="2283340219607151381">ذخیره و پر کردن نشانی‌ها</translation>
 <translation id="2283447177162560884">«<ph name="PAGE_TITLE" />» حذف شد</translation>
 <translation id="2283599456633275070">سفر</translation>
 <translation id="2285709459648658719">گذرنامه</translation>
@@ -4016,6 +4016,7 @@
 <translation id="721197778055552897">دربارهٔ این مشکل <ph name="BEGIN_LINK" />بیشتر بدانید<ph name="END_LINK" />.</translation>
 <translation id="7213191991901907140">درباره تجربه‌تان به ما بگویید</translation>
 <translation id="7219179957768738017">اتصال از <ph name="SSL_VERSION" /> استفاده می‌کند.</translation>
+<translation id="7219197639442810756">‏پیشنهادشده توسط Gemini</translation>
 <translation id="7220786058474068424">درحال پردازش</translation>
 <translation id="7221855153210829124">نشان دادن اعلان‌ها</translation>
 <translation id="7222232353993864120">نشانی ایمیل</translation>
@@ -4623,6 +4624,7 @@
 <translation id="8134058435519644366">استخدام و تأمین نیرو</translation>
 <translation id="8135546115396015134">کلید چپ</translation>
 <translation id="8137456439814903304">انرژی و تأسیسات</translation>
+<translation id="8138591088112729119">پشتیبانی شده توسط «هوش شخصی‌سازی‌شده»</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{‫۱ ماه پیش ایجاد شده است}one{‫{NUM_MONTHS} ماه پیش ایجاد شده است}other{‫{NUM_MONTHS} ماه پیش ایجاد شده است}}</translation>
 <translation id="8147389370274164212">‫<ph name="SEARCH_ENGINE_NAME" />، برنامه پیش‌فرض فعلی. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">‏نسخه PDF:</translation>
@@ -4822,7 +4824,7 @@
 <translation id="8449036207308062757">مدیریت فضای ذخیره‌سازی</translation>
 <translation id="8449155699563577224">۲۴ × ۱۷ اینچ</translation>
 <translation id="8449836157089738489">باز کردن همه در گروه زبانه جدید</translation>
-<translation id="8451518040456311377">ذخیره و تکمیل مدارک شناسایی</translation>
+<translation id="8451518040456311377">ذخیره و پر کردن مدارک شناسایی</translation>
 <translation id="84561192812921051">‏سرپرست شما می‌تواند تنظیمات نمایه و مرورگرتان را از دور تغییر دهد، اطلاعات مربوط به مرورگر را ازطریق گزارش گرفتن تجزیه‌وتحلیل کند، و دیگر اقدامات ضروری را انجام دهد. ممکن است فعالیت‌های انجام‌شده در این دستگاه از خارج از Chrome هم مدیریت شود.  <ph name="BEGIN_LINK" />بیشتر بدانید<ph name="END_LINK" /></translation>
 <translation id="8456383681414356368">برگ زیرین بسته شد.</translation>
 <translation id="8456775115498700722">‏اکنون می‌توانید اطلاعات کارت <ph name="CARD_ISSUER_NAME" /> خود را به‌طور خودکار تکمیل کنید، زیرا حساب <ph name="CARD_ISSUER_NAME" /> شما به Google Pay پیوند شده است.</translation>

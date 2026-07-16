@@ -4010,6 +4010,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />Další informace<ph name="END_LINK" /> o tomto problému.</translation>
 <translation id="7213191991901907140">Podělte se s námi o své zkušenosti</translation>
 <translation id="7219179957768738017">Připojení používá protokol <ph name="SSL_VERSION" />.</translation>
+<translation id="7219197639442810756">Návrh od Gemini</translation>
 <translation id="7220786058474068424">Zpracovávání</translation>
 <translation id="7221855153210829124">Zobrazovat oznámení</translation>
 <translation id="7222232353993864120">E-mailová adresa</translation>
@@ -4616,6 +4617,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="8134058435519644366">Personální agentury</translation>
 <translation id="8135546115396015134">šipky vlevo</translation>
 <translation id="8137456439814903304">Energie a technické vybavení</translation>
+<translation id="8138591088112729119">Využívá Osobní inteligenci</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{Vytvořeno před 1 měsícem}few{Vytvořeno před {NUM_MONTHS} měsíci}many{Vytvořeno před {NUM_MONTHS} měsíce}other{Vytvořeno před {NUM_MONTHS} měsíci}}</translation>
 <translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />, aktuálně výchozí. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">Verze PDF:</translation>

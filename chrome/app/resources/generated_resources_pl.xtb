@@ -1223,6 +1223,7 @@ Twoje hasła przechowuje <ph name="GOOGLE_PASSWORD_MANAGER" />. Możesz je spraw
 <translation id="1938351510777341717">Polecenie zewnętrzne</translation>
 <translation id="1940221956626514677">Dostosuj pasek narzędzi</translation>
 <translation id="1940546824932169984">Połączone urządzenia</translation>
+<translation id="194081218158106711">Potwierdzam zmienione hasło…</translation>
 <translation id="1941410638996203291">Czas rozpoczęcia: <ph name="TIME" /></translation>
 <translation id="1941553344801134989">Wersja <ph name="APP_VERSION" /></translation>
 <translation id="1941685451584875710">Administrator skonfigurował automatyczne łączenie Twojego konta z Microsoft OneDrive, ale coś poszło nie tak.</translation>
@@ -1490,6 +1491,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2158475082070321257">Kopiuj link do podświetlenia</translation>
 <translation id="2159488579268505102">USB-C</translation>
 <translation id="2161058806218011758">Zakres <ph name="SHORTCUT" /> dotyczący rozszerzenia <ph name="EXTENSION_NAME" /></translation>
+<translation id="2161656808144014275">Tekstowe</translation>
 <translation id="216169395504480358">Dodaj Wi-Fi...</translation>
 <translation id="2162705204091149050">Odczytywanie informacji o przeglądarce, systemie operacyjnym, urządzeniu, zainstalowanym oprogramowaniu i plikach</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> i jeszcze 1 przełącznik</translation>
@@ -4732,6 +4734,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="4657914796247705218">Szybkość manipulatora punktowego</translation>
 <translation id="4658648180588730283">Aplikacja <ph name="APPLICATION_NAME" /> nie jest dostępna offline.</translation>
 <translation id="465878909996028221">Przekierowania przeglądarki działają tylko z protokołami http, https i file.</translation>
+<translation id="4658821552705754298"><ph name="ITEM_NAME" /> <ph name="CATEGORY_NAME" /></translation>
 <translation id="4659126640776004816">Ta funkcja zostanie włączona, gdy zalogujesz się na swoje konto Google.</translation>
 <translation id="4660465405448977105">{COUNT,plural, =1{Obraz}few{# obrazy}many{# obrazów}other{# obrazu}}</translation>
 <translation id="4660540330091848931">Zmieniam rozmiar</translation>
@@ -5310,6 +5313,7 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="5096775069898886423">Wyświetlaj ostrzeżenia przed odwiedzeniem witryn, które nie obsługują bezpiecznych połączeń</translation>
 <translation id="5097002363526479830">Nie udało się połączyć z siecią „<ph name="NAME" />”: <ph name="DETAILS" /></translation>
 <translation id="5097349930204431044">Odwiedzane witryny mogą określać, czym się interesujesz, a potem sugerować reklamy w trakcie przeglądania</translation>
+<translation id="5097472729724586429">Dodaj adnotacje tekstowe za pomocą nowego narzędzia „Dodaj adnotacje tekstowe”</translation>
 <translation id="5097649414558628673">Narzędzie: <ph name="PRINT_NAME" /></translation>
 <translation id="5097874180538493929">Klikaj automatycznie, kiedy kursor się zatrzymuje</translation>
 <translation id="5098963855433723436">Otwiera się w innej aplikacji</translation>
@@ -5374,6 +5378,7 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="5146235736676876345">Wybierz własne</translation>
 <translation id="5146896637028965135">Głos systemowy</translation>
 <translation id="5147113439721488265">Rekomendacja</translation>
+<translation id="5148020348702787234">Aby wysyłać linki, potwierdź swoją tożsamość. Możesz wysyłać linki, gdy na obu urządzeniach jesteś zalogowany na to samo konto Google.</translation>
 <translation id="5148285448107770349">Hasło musi mieć co najmniej 8 znaków</translation>
 <translation id="5149602533174716626">Kopiu&amp;j klatkę wideo</translation>
 <translation id="5150254825601720210">Nazwa serwera SSL certyfikatu firmy Netscape</translation>
@@ -8894,6 +8899,7 @@ Aby usunąć przypisanie, naciśnij przypisany przełącznik lub klawisz.</trans
 <translation id="7933486544522242079">&amp;Zapisz i udostępnij</translation>
 <translation id="7933518760693751884">Aby zapisać stronę na później, kliknij ikonę zakładki</translation>
 <translation id="7933634003144813719">Zarządzaj folderami udostępnionymi</translation>
+<translation id="7935072572536724392">Nie udało się automatycznie zmienić hasła</translation>
 <translation id="7936195481975600746">Aby udostępnić swój ekran, użyj selektora ekranów w systemie</translation>
 <translation id="7937809006412909895">Zbieranie danych diagnostycznych</translation>
 <translation id="7938881824185772026">Laboratorium</translation>
@@ -9031,6 +9037,7 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8029412171914613589">{SELECTED_ITEMS,plural, =0{Do przeczytania}=1{Do przeczytania ({SELECTED_ITEMS})}few{Do przeczytania ({SELECTED_ITEMS})}many{Do przeczytania ({SELECTED_ITEMS})}other{Do przeczytania ({SELECTED_ITEMS})}}</translation>
 <translation id="8029492516535178472"><ph name="WINDOW_TITLE" /> – zgłoszono prośbę o uprawnienia. Aby odpowiedzieć, naciśnij ⌘ + Option + strzałka w górę.</translation>
 <translation id="8030169304546394654">Rozłączone</translation>
+<translation id="8030814978699290230">Próbuję się zalogować…</translation>
 <translation id="8030852056903932865">Zatwierdź</translation>
 <translation id="8033827949643255796">wybrano</translation>
 <translation id="8033958968890501070">Przekroczono limit czasu</translation>
@@ -9444,6 +9451,7 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8343578633847737325">Ostatnie czaty i wątki</translation>
 <translation id="8345848587667658367">Możesz teraz wyświetlać najnowsze zdjęcia, pliki multimedialne, powiadomienia i aplikacje z telefonu</translation>
 <translation id="8347227221149377169">Zadania drukowania</translation>
+<translation id="8347728744337089388">Wyślij na swoje &amp;urządzenie</translation>
 <translation id="8348430946834215779">Używaj protokołu HTTPS, kiedy to możliwe, i wyświetlaj ostrzeżenia przed wczytaniem stron, które go nie obsługują</translation>
 <translation id="8348896480272971199">Sprawdź połączenie z internetem i spróbuj ponownie.</translation>
 <translation id="8349305172487531364">Pasek zakładek</translation>
@@ -9493,6 +9501,7 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8382197851871630452">Pogoda dla regionu</translation>
 <translation id="8382913212082956454">Kopiuj adres &amp;e-mail</translation>
 <translation id="8383614331548401927">Podsumowanie ostatnich działań</translation>
+<translation id="8387157483437834731">Hasło zostało zmienione</translation>
 <translation id="8387361103813440603">Nie zezwolono na sprawdzanie lokalizacji</translation>
 <translation id="8389492867173948260">Zezwól temu rozszerzeniu na odczytywanie i zmienianie wszystkich Twoich danych w witrynach, które otwierasz:</translation>
 <translation id="8390449457866780408">Serwer jest niedostępny.</translation>
@@ -10231,6 +10240,7 @@ Mogą one obejmować informacje o zainstalowanym oprogramowaniu, plikach, przeg
 <translation id="8967427617812342790">Dodaj do listy Do przeczytania</translation>
 <translation id="8968527460726243404">Program do zapisu obrazu systemu Chrome OS</translation>
 <translation id="8968766641738584599">Zapisz kartę</translation>
+<translation id="8970232194848546151">Wyślij link na inne urządzenie</translation>
 <translation id="8970887620466824814">Coś poszło nie tak.</translation>
 <translation id="89720367119469899">Escape</translation>
 <translation id="8972513834460200407">Skontaktuj się z administratorem sieci, by dowiedzieć się, czy zapora sieciowa nie blokuje pobrań z serwerów Google.</translation>
@@ -10494,6 +10504,7 @@ Mogą one obejmować informacje o zainstalowanym oprogramowaniu, plikach, przeg
 <translation id="9151906066336345901">End</translation>
 <translation id="9152503903192861480">Otwórz w Trybie AI</translation>
 <translation id="9153367754133725216">Wyświetlaj sugestie nowych aplikacji i treści z internetu w Menu z aplikacjami i w wynikach wyszukiwania. Wysyła statystyki, aby ulepszać sugestie, tylko wtedy, gdy masz włączone wysyłanie raportów o awariach, danych diagnostycznych i danych o korzystaniu do ChromeOS.</translation>
+<translation id="9153451439615847952">Zredukuj dźwięk w tle w przypadku powiadomień i alertów</translation>
 <translation id="9154194610265714752">Zaktualizowano</translation>
 <translation id="915485121129452731">Tablet z rysikiem</translation>
 <translation id="9155344700756733162">Odznacz kolor</translation>
@@ -10571,6 +10582,7 @@ Mogą one obejmować informacje o zainstalowanym oprogramowaniu, plikach, przeg
 <translation id="9220820413868316583">Unieś i spróbuj ponownie.</translation>
 <translation id="922152298093051471">Dostosuj Chrome</translation>
 <translation id="9222839391870847423">Czas trwania: <ph name="DURATION" /></translation>
+<translation id="923306663772315007">Wyślij na swoje &amp;urządzenie</translation>
 <translation id="923467487918828349">Pokaż wszystko</translation>
 <translation id="923900195646492191">{NUM_EXTENSIONS,plural, =1{Aby nim zarządzać, otwórz Rozszerzenia}few{Aby nimi zarządzać, otwórz Rozszerzenia}many{Aby nimi zarządzać, otwórz Rozszerzenia}other{Aby nimi zarządzać, otwórz Rozszerzenia}}</translation>
 <translation id="924818813611903184">Zarządzaj językami w ustawieniach Chrome OS</translation>

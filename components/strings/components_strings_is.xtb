@@ -4014,6 +4014,7 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />Frekari upplýsingar<ph name="END_LINK" /> um þetta vandamál.</translation>
 <translation id="7213191991901907140">Segðu okkur frá upplifun þinni</translation>
 <translation id="7219179957768738017">Tengingin notar <ph name="SSL_VERSION" />.</translation>
+<translation id="7219197639442810756">Tillaga frá Gemini</translation>
 <translation id="7220786058474068424">Í vinnslu</translation>
 <translation id="7221855153210829124">Sýna tilkynningar</translation>
 <translation id="7222232353993864120">Netfang</translation>
@@ -4621,6 +4622,7 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="8134058435519644366">Ráðningar og starfsmannamál</translation>
 <translation id="8135546115396015134">vinstri lykill</translation>
 <translation id="8137456439814903304">Orka og orkufyrirtæki</translation>
+<translation id="8138591088112729119">Knúið af persónulegri greind</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{Búinn til fyrir 1 mánuði}one{Búinn til fyrir {NUM_MONTHS} mánuði}other{Búinn til fyrir {NUM_MONTHS} mánuðum}}</translation>
 <translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />, núverandi sjálfgefið forrit. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">PDF-útgáfa:</translation>

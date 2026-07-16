@@ -245,6 +245,7 @@
 <translation id="1752547299766512813">Simpan Sandi</translation>
 <translation id="1764070164487214210">Arah</translation>
 <translation id="1764511703783285459">Pengelola sandi lain tidak membagikan sandi atau kunci sandi apa pun</translation>
+<translation id="1765555082983153259">“Chrome” ingin mengakses mikrofon Anda</translation>
 <translation id="1767766085187034454">Google Terjemahan</translation>
 <translation id="1771016937398045251">Menu alat</translation>
 <translation id="1772468122139624049">Tidak dapat memuat ulang tab</translation>
@@ -2465,6 +2466,7 @@ Untuk melanjutkan dari komputer, beralihlah ke <ph name="OTHER_EMAIL" />. Anda a
 <translation id="9149866541089851383">Edit...</translation>
 <translation id="9152637745605628097">Pilih dari tema, warna, atau upload gambar</translation>
 <translation id="9159628751968616911">Kirim halaman web</translation>
+<translation id="9162412286847966593">Data dan rekaman organisasi Anda tidak akan digunakan untuk meningkatkan kualitas model AI generatif. <ph name="BEGIN_LINK" />Privasi Anda &amp; Gemini<ph name="END_LINK" /></translation>
 <translation id="9162432979321511934">Aktifkan Isi Otomatis Sandi</translation>
 <translation id="9165320910061267720">Untuk mendapatkan notifikasi diskon, Anda harus mengaktifkan notifikasi di setelan iOS.</translation>
 <translation id="9179151630575358778">Menyembunyikan item ini</translation>

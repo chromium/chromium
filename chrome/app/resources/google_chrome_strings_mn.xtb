@@ -761,7 +761,6 @@ Google Chrome таны тохируулгыг дахин сэргээх боло
 <translation id="842852285618875960">Та Google Chrome-н <ph name="BOOKMARK_LIMIT" /> хавчуургын хязгаарт хүрсэн тул таны зарим хавчуургыг Google Бүртгэлд тань хараахан хадгалаагүй байна.
 
 Та зарим хавчуургаа устгах хүртэл бүртгэлдээ шинэ хавчуурга хадгалах боломжгүй. Хэрэв та одоо гарвал хадгалаагүй хавчуургыг устгана.</translation>
-<translation id="8433638294851456451">Та эндээс Android утсандаа дугаар илгээхийн тулд хоёр төхөөрөмжийн аль алинаас нь Chrome-д нэвтэрнэ үү.</translation>
 <translation id="8458117863387545390">Утсан дээрээ Chrome-г аваарай</translation>
 <translation id="8496177819998570653">Google Password Manager</translation>
 <translation id="8498858610309223613">Google Chrome-н аюулгүй байдлын тусгай шинэчлэлтийг хийж дууслаа. Одоо дахин эхлүүлнэ үү. Бид таны табыг сэргээх болно.</translation>
@@ -805,7 +804,6 @@ Google Chrome таны тохируулгыг дахин сэргээх боло
 <translation id="8883862939660515976">Google Lens-с энэ зургийн тухай асуу</translation>
 <translation id="8914504000324227558">Chrome-г дахин эхлүүлэх</translation>
 <translation id="8920304659326707347">iOS дээрх Chrome-р яг орхисон газраасаа үргэлжлүүлээрэй.</translation>
-<translation id="8922193594870374009"><ph name="ORIGIN" />-с Android утсандаа дугаар илгээхийн тулд хоёр төхөөрөмжийнхөө аль алинаас нь Chrome-д нэвтэрнэ үү.</translation>
 <translation id="8922998289262614701">Энэ аппын өгөгдлийг Chrome-с хасах</translation>
 <translation id="8925636929359899517">Бид энэ үйлчилгээг сайжруулахад мэдээллийг ашигладаг. <ph name="BEGIN_LINK1" />Нууцлалын бодлого<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />Үйлчилгээний нөхцөлийг<ph name="END_LINK2" /> харна уу.</translation>
 <translation id="8936233353620149764">Chrome дахь Gemini-г асаах/унтраах</translation>

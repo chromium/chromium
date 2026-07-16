@@ -1234,6 +1234,7 @@
 <translation id="1938351510777341717">Надворешна наредба</translation>
 <translation id="1940221956626514677">Приспособете го алатникот</translation>
 <translation id="1940546824932169984">Поврзани уреди</translation>
+<translation id="194081218158106711">Се потврдува променетата лозинка…</translation>
 <translation id="1941410638996203291">Време на започнување: <ph name="TIME" /></translation>
 <translation id="1941553344801134989">Верзија: <ph name="APP_VERSION" /></translation>
 <translation id="1941685451584875710">Администраторот ја конфигурирал вашата сметка да се поврзува автоматски на Microsoft OneDrive, но нешто тргна наопаку.</translation>
@@ -1502,6 +1503,7 @@
 <translation id="2158475082070321257">Копирај го линкот до нагласената ставка</translation>
 <translation id="2159488579268505102">USB-C</translation>
 <translation id="2161058806218011758">Опсег на <ph name="SHORTCUT" /> за <ph name="EXTENSION_NAME" /></translation>
+<translation id="2161656808144014275">Текст</translation>
 <translation id="216169395504480358">Додај Wi-Fi...</translation>
 <translation id="2162705204091149050">да чита податоци за прелистувачот, оперативниот систем, уредот, инсталираниот софтвер и датотеките</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> и уште 1 копче</translation>
@@ -4757,6 +4759,7 @@
 <translation id="4657914796247705218">Брзина на TrackPoint</translation>
 <translation id="4658648180588730283">Апликацијата <ph name="APPLICATION_NAME" /> не е достапна офлајн.</translation>
 <translation id="465878909996028221">Само http, https и протоколите за датотеки се поддржани за пренасочувања на прелистувачот.</translation>
+<translation id="4658821552705754298"><ph name="ITEM_NAME" /> <ph name="CATEGORY_NAME" /></translation>
 <translation id="4659126640776004816">Функцијава е вклучена кога ќе се најавите на сметката на Google.</translation>
 <translation id="4660465405448977105">{COUNT,plural, =1{Слика}one{# слика}other{# слики}}</translation>
 <translation id="4660540330091848931">Се менува големината</translation>
@@ -8922,6 +8925,7 @@
 <translation id="7933486544522242079">Зачувајте и споделете</translation>
 <translation id="7933518760693751884">За да зачувате страница за подоцна, кликнете на иконата „Обележувач“</translation>
 <translation id="7933634003144813719">Управувајте со споделени папки</translation>
+<translation id="7935072572536724392">Автоматската промена на лозинката не успеа</translation>
 <translation id="7936195481975600746">За да го споделите екранот, користете го системскиот избирач на екрани</translation>
 <translation id="7937809006412909895">Се прибираат дијагностички податоци</translation>
 <translation id="7938881824185772026">Лаборатории</translation>
@@ -9059,6 +9063,7 @@
 <translation id="8029412171914613589">{SELECTED_ITEMS,plural, =0{Список за читање}=1{Список за читање ({SELECTED_ITEMS})}one{Список за читање ({SELECTED_ITEMS})}other{Список за читање ({SELECTED_ITEMS})}}</translation>
 <translation id="8029492516535178472"><ph name="WINDOW_TITLE" /> - Побарана е дозвола. Притиснете ⌘ + „Опција“ + „Стрелка нагоре“ за да одговорите</translation>
 <translation id="8030169304546394654">Не е поврзано</translation>
+<translation id="8030814978699290230">Се обидува да се најави…</translation>
 <translation id="8030852056903932865">Одобри</translation>
 <translation id="8033827949643255796">избрано</translation>
 <translation id="8033958968890501070">Истекување</translation>
@@ -9472,6 +9477,7 @@
 <translation id="8343578633847737325">Неодамнешни разговори и нишки</translation>
 <translation id="8345848587667658367">Сега можете да ги прегледувате неодамнешните фотографии, аудиовизуелни содржини, известувања и апликации од телефонот</translation>
 <translation id="8347227221149377169">Налози за печатење</translation>
+<translation id="8347728744337089388">Испратете на вашиот &amp;уред</translation>
 <translation id="8348430946834215779">Користете HTTPS секогаш кога е возможно и добивајте известувања пред вчитувањето сајтови што не ја поддржуваат</translation>
 <translation id="8348896480272971199">Проверете ја интернет-врската и обидете се повторно.</translation>
 <translation id="8349305172487531364">Лента со обележувачи</translation>
@@ -9521,6 +9527,7 @@
 <translation id="8382197851871630452">Локална временска прогноза</translation>
 <translation id="8382913212082956454">Копирај &amp;адреса на е-пошта</translation>
 <translation id="8383614331548401927">Резиме за добредојде</translation>
+<translation id="8387157483437834731">Лозинката е успешно променета</translation>
 <translation id="8387361103813440603">Не им е дозволено да ја гледаат локацијата</translation>
 <translation id="8389492867173948260">Дозволете екстензијава да ги чита и менува сите ваши податоци на веб-сајтовите што ги посетувате:</translation>
 <translation id="8390449457866780408">Серверот не е достапен.</translation>
@@ -10606,6 +10613,7 @@
 <translation id="9220820413868316583">Подигнете го прстот и обидете се повторно.</translation>
 <translation id="922152298093051471">Приспособете го Chrome</translation>
 <translation id="9222839391870847423">Времетраење: <ph name="DURATION" /></translation>
+<translation id="923306663772315007">Испратете на вашиот &amp;уред</translation>
 <translation id="923467487918828349">Прикажи ги сите</translation>
 <translation id="923900195646492191">{NUM_EXTENSIONS,plural, =1{За управување со неа, отворете „Екстензии“}one{За управување со нив, отворете „Екстензии“}other{За управување со нив, отворете „Екстензии“}}</translation>
 <translation id="924818813611903184">Управувајте со јазиците во поставките за Chrome OS</translation>

@@ -1224,6 +1224,7 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="1938351510777341717">Ordre externa</translation>
 <translation id="1940221956626514677">Personalitza la barra d'eines</translation>
 <translation id="1940546824932169984">Dispositius connectats</translation>
+<translation id="194081218158106711">S'està confirmant la contrasenya canviada...</translation>
 <translation id="1941410638996203291">Hora d'inici: <ph name="TIME" /></translation>
 <translation id="1941553344801134989">Versió: <ph name="APP_VERSION" /></translation>
 <translation id="1941685451584875710">L'administrador ha configurat el teu compte perquè es connecti automàticament a Microsoft OneDrive, però s'ha produït un error.</translation>
@@ -1492,6 +1493,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2158475082070321257">Copia l'enllaç al text marcat</translation>
 <translation id="2159488579268505102">USB-C</translation>
 <translation id="2161058806218011758">Abast de la drecera <ph name="SHORTCUT" /> per a <ph name="EXTENSION_NAME" /></translation>
+<translation id="2161656808144014275">Text</translation>
 <translation id="216169395504480358">Afegeix una Wi-Fi...</translation>
 <translation id="2162705204091149050">Llegir informació sobre el navegador, el sistema operatiu, el dispositiu, el programari instal·lat i els fitxers</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> i 1 interruptor més</translation>
@@ -4741,6 +4743,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="4657914796247705218">Velocitat del TrackPoint</translation>
 <translation id="4658648180588730283">L'aplicació <ph name="APPLICATION_NAME" /> no està disponible sense connexió.</translation>
 <translation id="465878909996028221">Les redireccions del navegador només admeten els protocols http, https i de fitxers.</translation>
+<translation id="4658821552705754298"><ph name="ITEM_NAME" /> <ph name="CATEGORY_NAME" /></translation>
 <translation id="4659126640776004816">En iniciar la sessió al Compte de Google, aquesta funció està sempre activada.</translation>
 <translation id="4660465405448977105">{COUNT,plural, =1{Imatge}other{# imatges}}</translation>
 <translation id="4660540330091848931">S'està canviant la mida</translation>
@@ -8902,6 +8905,7 @@ Prem un interruptor o una tecla assignats per suprimir una assignació.</transla
 <translation id="7933486544522242079">&amp;Desa i comparteix</translation>
 <translation id="7933518760693751884">Per desar una pàgina per a més tard, fes clic a la icona d'adreça d'interès</translation>
 <translation id="7933634003144813719">Gestiona les carpetes compartides</translation>
+<translation id="7935072572536724392">Ha fallat el canvi automàtic de contrasenya</translation>
 <translation id="7936195481975600746">Per compartir la pantalla, utilitza el selector de pantalla del sistema</translation>
 <translation id="7937809006412909895">S'estan recollint les dades de diagnòstic</translation>
 <translation id="7938881824185772026">Labs</translation>
@@ -9039,6 +9043,7 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8029412171914613589">{SELECTED_ITEMS,plural, =0{Llista de lectura}=1{Llista de lectura ({SELECTED_ITEMS})}other{Llista de lectura ({SELECTED_ITEMS})}}</translation>
 <translation id="8029492516535178472"><ph name="WINDOW_TITLE" />. S'ha sol·licitat permís, prem ⌘+Opció+fletxa amunt per respondre</translation>
 <translation id="8030169304546394654">Desconnectat</translation>
+<translation id="8030814978699290230">S'està provant d'iniciar la sessió...</translation>
 <translation id="8030852056903932865">Aprova</translation>
 <translation id="8033827949643255796">seleccionats</translation>
 <translation id="8033958968890501070">Temps d'espera esgotat</translation>
@@ -9452,6 +9457,7 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8343578633847737325">Xats i fils de discussió recents</translation>
 <translation id="8345848587667658367">Ara pots consultar les aplicacions, les notificacions, els fitxers multimèdia i les fotos recents del telèfon</translation>
 <translation id="8347227221149377169">Tasques d'impressió</translation>
+<translation id="8347728744337089388">Envia al teu &amp;dispositiu</translation>
 <translation id="8348430946834215779">Utilitza HTTPS sempre que puguis i rep un advertiment abans de carregar llocs web que no admeten aquest protocol</translation>
 <translation id="8348896480272971199">Comprova la connexió a Internet i torna-ho a provar.</translation>
 <translation id="8349305172487531364">Barra d'adreces d'interès</translation>
@@ -9501,6 +9507,7 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8382197851871630452">Temps local</translation>
 <translation id="8382913212082956454">Copia l'&amp;adreça electrònica</translation>
 <translation id="8383614331548401927">Resum de benvinguda</translation>
+<translation id="8387157483437834731">La contrasenya s'ha canviat correctament</translation>
 <translation id="8387361103813440603">Sense permís per veure la teva ubicació</translation>
 <translation id="8389492867173948260">Permet que aquesta extensió llegeixi i modifiqui totes les dades dels llocs web que visitis.</translation>
 <translation id="8390449457866780408">El servidor no està disponible.</translation>
@@ -10586,6 +10593,7 @@ Obtén informació sobre les dades que Google recull i sobre el motiu pel qual h
 <translation id="9220820413868316583">Aixeca el dit i torna-ho a provar.</translation>
 <translation id="922152298093051471">Personalitza Chrome</translation>
 <translation id="9222839391870847423">Durada: <ph name="DURATION" /></translation>
+<translation id="923306663772315007">Envia al teu &amp;dispositiu</translation>
 <translation id="923467487918828349">Mostra-ho tot</translation>
 <translation id="923900195646492191">{NUM_EXTENSIONS,plural, =1{Per gestionar-la, obre Extensions}other{Per gestionar-les, obre Extensions}}</translation>
 <translation id="924818813611903184">Gestiona els idiomes a la configuració de Chrome OS</translation>

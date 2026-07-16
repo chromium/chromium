@@ -1224,6 +1224,7 @@ Hesla můžete kdykoli zobrazit v nástroji <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="1938351510777341717">Externí příkaz</translation>
 <translation id="1940221956626514677">Přizpůsobit lištu</translation>
 <translation id="1940546824932169984">Připojená zařízení</translation>
+<translation id="194081218158106711">Potvrzování změněného hesla…</translation>
 <translation id="1941410638996203291">Čas zahájení <ph name="TIME" /></translation>
 <translation id="1941553344801134989">Verze: <ph name="APP_VERSION" /></translation>
 <translation id="1941685451584875710">Váš administrátor nakonfigurovat automatické připojení vašeho účtu k Microsoft OneDrive, ale něco se pokazilo.</translation>
@@ -1492,6 +1493,7 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2158475082070321257">Kopírovat odkaz na zvýraznění</translation>
 <translation id="2159488579268505102">USB-C</translation>
 <translation id="2161058806218011758">Rozsah <ph name="SHORTCUT" /> pro rozšíření <ph name="EXTENSION_NAME" /></translation>
+<translation id="2161656808144014275">Text</translation>
 <translation id="216169395504480358">Přidat Wi-Fi...</translation>
 <translation id="2162705204091149050">Čtení informací o prohlížeči, operačním systému, zařízení, nainstalovaném softwaru a souborech</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> a 1 další přepínač</translation>
@@ -4741,6 +4743,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="4657914796247705218">Rychlost TrackPointu</translation>
 <translation id="4658648180588730283">Aplikace <ph name="APPLICATION_NAME" /> není k dispozici offline.</translation>
 <translation id="465878909996028221">U přesměrování prohlížeče jsou podporovány pouze protokoly http, https a file.</translation>
+<translation id="4658821552705754298"><ph name="ITEM_NAME" /> <ph name="CATEGORY_NAME" /></translation>
 <translation id="4659126640776004816">Když se přihlásíte k účtu Google, tato funkce se zapne.</translation>
 <translation id="4660465405448977105">{COUNT,plural, =1{Obrázek}few{# obrázky}many{# obrázku}other{# obrázků}}</translation>
 <translation id="4660540330091848931">Probíhá změna velikosti</translation>
@@ -8903,6 +8906,7 @@ Pokud přiřazení chcete odstranit, stiskněte přiřazený přepínač nebo kl
 <translation id="7933486544522242079">Uložit a sdílet</translation>
 <translation id="7933518760693751884">Stránku si můžete uložit na později kliknutím na ikonu záložky</translation>
 <translation id="7933634003144813719">Spravovat sdílené složky</translation>
+<translation id="7935072572536724392">Automatická změna hesla se nezdařila</translation>
 <translation id="7936195481975600746">Pokud chcete sdílet obrazovku, použijte systémový nástroj pro výběr oken</translation>
 <translation id="7937809006412909895">Shromažďování diagnostických dat</translation>
 <translation id="7938881824185772026">Laboratoř Google</translation>
@@ -9040,6 +9044,7 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8029412171914613589">{SELECTED_ITEMS,plural, =0{Seznam četby}=1{Seznam četby ({SELECTED_ITEMS})}few{Seznam četby ({SELECTED_ITEMS})}many{Seznam četby ({SELECTED_ITEMS})}other{Seznam četby ({SELECTED_ITEMS})}}</translation>
 <translation id="8029492516535178472"><ph name="WINDOW_TITLE" /> – Odpovězte na žádost o oprávnění stisknutím kláves ⌘ + Option + šipka nahoru</translation>
 <translation id="8030169304546394654">Odpojeno</translation>
+<translation id="8030814978699290230">Pokus o přihlášení…</translation>
 <translation id="8030852056903932865">Schválit</translation>
 <translation id="8033827949643255796">vybráno</translation>
 <translation id="8033958968890501070">Vypršel časový limit</translation>
@@ -9453,6 +9458,7 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8343578633847737325">Nedávné chaty a konverzace</translation>
 <translation id="8345848587667658367">Nyní můžete zobrazit nedávné fotky, média, oznámení a aplikace v telefonu</translation>
 <translation id="8347227221149377169">Tiskové úlohy</translation>
+<translation id="8347728744337089388">Odeslat na vaše &amp;zařízení</translation>
 <translation id="8348430946834215779">Používejte HTTPS, kdykoli je to možné, a nechte se upozornit, než načtete web, který tento protokol nepodporuje</translation>
 <translation id="8348896480272971199">Zkontrolujte připojení k internetu a zkuste to znovu.</translation>
 <translation id="8349305172487531364">Lišta záložek</translation>
@@ -9502,6 +9508,7 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8382197851871630452">Místní počasí</translation>
 <translation id="8382913212082956454">Kopírovat &amp;e-mailovou adresu</translation>
 <translation id="8383614331548401927">Shrnutí na přivítanou</translation>
+<translation id="8387157483437834731">Heslo bylo úspěšně změněno</translation>
 <translation id="8387361103813440603">Zákaz přístupu k vaší poloze</translation>
 <translation id="8389492867173948260">Povolit tomuto rozšíření číst a měnit všechna vaše data na navštívených webech:</translation>
 <translation id="8390449457866780408">Server není dostupný.</translation>
@@ -10586,6 +10593,7 @@ Informace o tom, jaká data Google shromažďuje a proč je shromažďuje, naj
 <translation id="9220820413868316583">Zdvihněte prst a zkuste to znovu.</translation>
 <translation id="922152298093051471">Přizpůsobit Chrome</translation>
 <translation id="9222839391870847423">Trvání: <ph name="DURATION" /></translation>
+<translation id="923306663772315007">Odeslat na vaše &amp;zařízení</translation>
 <translation id="923467487918828349">Zobrazovat vše</translation>
 <translation id="923900195646492191">{NUM_EXTENSIONS,plural, =1{Pokud ho chcete spravovat, otevřete stránku Rozšíření}few{Pokud je chcete spravovat, otevřete stránku Rozšíření}many{Pokud je chcete spravovat, otevřete stránku Rozšíření}other{Pokud je chcete spravovat, otevřete stránku Rozšíření}}</translation>
 <translation id="924818813611903184">Spravovat jazyky v nastavení ChromeOS</translation>

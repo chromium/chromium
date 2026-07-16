@@ -14,13 +14,6 @@
 <translation id="1002829167638728809">Berichterstellung zur Domainzuverlässigkeit zulassen</translation>
 <translation id="1004590217607585595">Einstellungen zur Verwaltung der Web-App</translation>
 <translation id="1006218396155867129">Nicht zulassen, dass Nutzer mit Remote-Zugriff Dateien auf den und vom Remote-Host übertragen können</translation>
-<translation id="1007043180702842391">Legt fest, ob der PDF-Viewer in <ph name="PRODUCT_NAME" /> einen Out-of-Process-iFrame (OOPIF) verwendet. Dies wird in Zukunft die neue Architektur für den PDF-Viewer sein, da sie einfacher ist und das Hinzufügen neuer Funktionen erleichtert. Der vorhandene PDF-Viewer von GuestView ist eine veraltete, komplexe Architektur, die eingestellt wird.
-
-Wenn diese Richtlinie aktiviert oder nicht konfiguriert ist, kann <ph name="PRODUCT_NAME" /> die OOPIF-Architektur für den PDF-Viewer verwenden. Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, wird das Standardverhalten von <ph name="PRODUCT_NAME" /> festgelegt.
-
-Ist diese Richtlinie deaktiviert, verwendet <ph name="PRODUCT_NAME" /> ausschließlich den vorhandenen PDF-Viewer von GuestView. Dabei wird eine Webseite mit einer separaten Frame-Struktur in eine andere Webseite eingebettet.
-
-Diese Richtlinie wird entfernt, nachdem die Funktion „OOPIF-PDF-Viewer“ vollständig eingeführt wurde.</translation>
 <translation id="1007149936182752368">Bearbeitung von Lesezeichen deaktivieren</translation>
 <translation id="1009336698423963085">Automatischen Vollbildmodus auf diesen Websites zulassen</translation>
 <translation id="1010151305531217567">Rechte Maustaste als primäre Maustaste festlegen</translation>

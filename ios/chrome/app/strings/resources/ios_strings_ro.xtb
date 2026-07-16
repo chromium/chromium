@@ -245,6 +245,7 @@
 <translation id="1752547299766512813">Salvează parole</translation>
 <translation id="1764070164487214210">Indicații de orientare</translation>
 <translation id="1764511703783285459">Celălalt manager de parole nu a permis accesul la nicio parolă sau cheie de acces.</translation>
+<translation id="1765555082983153259">Chome vrea să îți acceseze microfonul</translation>
 <translation id="1767766085187034454">Google Traducere</translation>
 <translation id="1771016937398045251">Meniul Instrumente</translation>
 <translation id="1772468122139624049">Filele nu pot fi încărcate</translation>
@@ -2300,7 +2301,7 @@ Pentru a continua de pe computer, treci la <ph name="OTHER_EMAIL" />. Vei accesa
 <translation id="8636825310635137004">Pentru a accesa filele de pe alte dispozitive, activează sincronizarea.</translation>
 <translation id="8637431369725868556">Protejează-te împotriva site-urilor periculoase.</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{Nicio parolă compromisă}=1{{COUNT} parolă compromisă}few{{COUNT} parole compromise}other{{COUNT} de parole compromise}}</translation>
-<translation id="8639963783467694461">Setări pentru Completare automată</translation>
+<translation id="8639963783467694461">Setări pentru completarea automată</translation>
 <translation id="8642417828095157370">Se permite accesul la file pentru răspunsuri mai relevante</translation>
 <translation id="8643403533759285912">Șterge grupul</translation>
 <translation id="8647280737650867362">Nu s-a putut anula urmărirea prețului.</translation>
@@ -2465,6 +2466,7 @@ Pentru a continua de pe computer, treci la <ph name="OTHER_EMAIL" />. Vei accesa
 <translation id="9149866541089851383">Editează...</translation>
 <translation id="9152637745605628097">Alege dintre teme și culori sau încarcă o imagine.</translation>
 <translation id="9159628751968616911">Trimite pagina web</translation>
+<translation id="9162412286847966593">Datele și înregistrările organizației tale nu vor fi folosite pentru îmbunătățirea modelelor AI generativ. <ph name="BEGIN_LINK" />Confidențialitatea ta și Gemini<ph name="END_LINK" /></translation>
 <translation id="9162432979321511934">Activează opțiunea Completează automat parolele</translation>
 <translation id="9165320910061267720">Pentru a primi notificări privind alertele de scădere de preț, trebuie să activezi notificările din setările iOS.</translation>
 <translation id="9179151630575358778">Ascunde acest element</translation>

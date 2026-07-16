@@ -4015,6 +4015,7 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />Selengkapnya<ph name="END_LINK" /> tentang masalah ini.</translation>
 <translation id="7213191991901907140">Ceritakan pengalaman Anda</translation>
 <translation id="7219179957768738017">Koneksi menggunakan <ph name="SSL_VERSION" />.</translation>
+<translation id="7219197639442810756">Disarankan oleh Gemini</translation>
 <translation id="7220786058474068424">Dalam proses</translation>
 <translation id="7221855153210829124">Tampilkan notifikasi</translation>
 <translation id="7222232353993864120">Alamat Email</translation>
@@ -4620,6 +4621,7 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="8134058435519644366">Perekrutan &amp; Ketenagakerjaan</translation>
 <translation id="8135546115396015134">tombol kiri</translation>
 <translation id="8137456439814903304">Energi, Gas &amp; Air</translation>
+<translation id="8138591088112729119">Didukung oleh Kecerdasan Personal</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{Dibuat 1 bulan lalu}other{Dibuat {NUM_MONTHS} bulan lalu}}</translation>
 <translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />, default saat ini. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">Versi PDF:</translation>

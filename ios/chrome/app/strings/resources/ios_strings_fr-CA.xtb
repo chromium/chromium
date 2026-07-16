@@ -245,6 +245,7 @@
 <translation id="1752547299766512813">Enr. mots passe</translation>
 <translation id="1764070164487214210">Itinéraire</translation>
 <translation id="1764511703783285459">L'autre gestionnaire de mots de passe n'a partagé aucun mot de passe ni aucune clé d'accès</translation>
+<translation id="1765555082983153259">« Chrome » souhaite accéder à votre microphone</translation>
 <translation id="1767766085187034454">Google Traduction</translation>
 <translation id="1771016937398045251">Menu Outils</translation>
 <translation id="1772468122139624049">Impossible d'actualiser les onglets</translation>
@@ -2465,6 +2466,7 @@ Pour continuer à partir de votre ordinateur, passez à <ph name="OTHER_EMAIL" /
 <translation id="9149866541089851383">Modifier...</translation>
 <translation id="9152637745605628097">Choisissez parmi des thèmes ou des couleurs, ou téléversez une image</translation>
 <translation id="9159628751968616911">Envoyer la page Web</translation>
+<translation id="9162412286847966593">Les données et les enregistrements de votre organisation ne seront pas utilisés pour améliorer les modèles d'IA générative. <ph name="BEGIN_LINK" />Gemini et votre confidentialité<ph name="END_LINK" /></translation>
 <translation id="9162432979321511934">Activer l'option de remplissage automatique des mots de passe</translation>
 <translation id="9165320910061267720">Pour recevoir des notifications d'alertes relatives à une baisse de prix, vous devez activer les notifications dans vos paramètres iOS.</translation>
 <translation id="9179151630575358778">Masque cet élément</translation>

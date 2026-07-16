@@ -1501,6 +1501,7 @@
 <translation id="2158475082070321257">העתקת קישור לטקסט המודגש</translation>
 <translation id="2159488579268505102">USB-C</translation>
 <translation id="2161058806218011758">ההיקף של <ph name="SHORTCUT" /> עבור <ph name="EXTENSION_NAME" /></translation>
+<translation id="2161656808144014275">טקסט</translation>
 <translation id="216169395504480358">‏הוספת רשת Wi-Fi...</translation>
 <translation id="2162705204091149050">קריאת מידע על הדפדפן, מערכת ההפעלה, המכשיר, התוכנות שהותקנו והקבצים</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> ועוד מתג אחד</translation>
@@ -5336,7 +5337,7 @@
 <translation id="5096775069898886423">מקבלים אזהרה לפני שמבקרים באתרים שלא תומכים בחיבורים מאובטחים</translation>
 <translation id="5097002363526479830">ההתחברות לרשת נכשלה '<ph name="NAME" />': <ph name="DETAILS" /></translation>
 <translation id="5097349930204431044">אתרים שביקרת בהם יכולים לזהות מה מעניין אותך ואז להציע מודעות במהלך הגלישה</translation>
-<translation id="5097472729724586429">הוספת הערות לטקסט באמצעות הכלי החדש "הוספת הערות לטקסט"</translation>
+<translation id="5097472729724586429">אפשר להוסיף הערות באמצעות הכלי החדש "הוספת הערות לטקסט"</translation>
 <translation id="5097649414558628673">כלי: <ph name="PRINT_NAME" /></translation>
 <translation id="5097874180538493929">ללחוץ אוטומטית כשהסמן עוצר</translation>
 <translation id="5098963855433723436">פתיחה באפליקציה נפרדת</translation>
@@ -5401,7 +5402,7 @@
 <translation id="5146235736676876345">בחירת סיסמה משלך</translation>
 <translation id="5146896637028965135">קול המערכת</translation>
 <translation id="5147113439721488265">המלצה</translation>
-<translation id="5148020348702787234">‏כדי לשלוח קישורים צריך לאמת את הזהות. אפשר לשלוח קישורים כששני המכשירים מחוברים לאותו חשבון Google.</translation>
+<translation id="5148020348702787234">‏כדי לשלוח קישורים, צריך לאמת את הזהות. יש לך אפשרות לשלוח קישורים אם התחברת לאותו חשבון Google בשני המכשירים.</translation>
 <translation id="5148285448107770349">הסיסמה חייבת להכיל 8 תווים לפחות.</translation>
 <translation id="5149602533174716626">העתקת הפריים</translation>
 <translation id="5150254825601720210">‏שם שרת SSL של אישור Netscape</translation>
@@ -10535,7 +10536,7 @@
 <translation id="9151906066336345901">‏מקש End</translation>
 <translation id="9152503903192861480">‏פתיחה במצב AI</translation>
 <translation id="9153367754133725216">‏אפשר לראות הצעות לאפליקציות חדשות ולתוכן מהאינטרנט במרכז האפליקציות ובתוצאות החיפוש. המערכת שולחת נתונים סטטיסטיים כדי לשפר את ההצעות רק אם בחרת לשלוח דוחות קריסה ונתוני אבחון ושימוש במכשיר אל ChromeOS.</translation>
-<translation id="9153451439615847952">הפחתת עוצמת השמע ברקע בזמן התראות</translation>
+<translation id="9153451439615847952">הפחתת עוצמת האודיו ברקע בזמן התראות</translation>
 <translation id="9154194610265714752">עודכן</translation>
 <translation id="915485121129452731">לוח גרפי</translation>
 <translation id="9155344700756733162">ביטול בחירת הצבע</translation>

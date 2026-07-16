@@ -1224,6 +1224,7 @@ Verifică parolele oricând în <ph name="GOOGLE_PASSWORD_MANAGER" />.</translat
 <translation id="1938351510777341717">Comandă externă</translation>
 <translation id="1940221956626514677">Personalizează bara de instrumente</translation>
 <translation id="1940546824932169984">Dispozitive conectate</translation>
+<translation id="194081218158106711">Se confirmă parola schimbată...</translation>
 <translation id="1941410638996203291">Ora de începere: <ph name="TIME" /></translation>
 <translation id="1941553344801134989">Versiune: <ph name="APP_VERSION" /></translation>
 <translation id="1941685451584875710">Administratorul ți-a configurat contul pentru a se conecta automat la Microsoft OneDrive, dar a apărut o eroare.</translation>
@@ -1492,6 +1493,7 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2158475082070321257">Copiază linkul către textul evidențiat</translation>
 <translation id="2159488579268505102">USB-C</translation>
 <translation id="2161058806218011758">Aria de acoperire <ph name="SHORTCUT" /> pentru <ph name="EXTENSION_NAME" /></translation>
+<translation id="2161656808144014275">Text</translation>
 <translation id="216169395504480358">Adăugați o rețea Wi-Fi...</translation>
 <translation id="2162705204091149050">Citește informații despre browserul, sistemul de operare, dispozitivul, software-ul instalat și fișierele tale</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> și încă un comutator</translation>
@@ -4743,6 +4745,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="4657914796247705218">Viteza TrackPoint</translation>
 <translation id="4658648180588730283">Aplicația <ph name="APPLICATION_NAME" /> nu este disponibilă offline.</translation>
 <translation id="465878909996028221">Numai http, https și protocoalele de fișiere sunt compatibile cu redirecționarea către un browser secundar.</translation>
+<translation id="4658821552705754298"><ph name="ITEM_NAME" /> <ph name="CATEGORY_NAME" /></translation>
 <translation id="4659126640776004816">Când te conectezi la Contul Google, această funcție este activată.</translation>
 <translation id="4660465405448977105">{COUNT,plural, =1{Imagine}few{# imagini}other{# de imagini}}</translation>
 <translation id="4660540330091848931">Se redimensionează</translation>
@@ -8907,6 +8910,7 @@ Apasă un comutator sau o tastă atribuită pentru a elimina atribuirea</transla
 <translation id="7933486544522242079">&amp;Salvează și trimite</translation>
 <translation id="7933518760693751884">Dă clic pe pictograma Marcaj pentru a salva o pagină pentru mai târziu</translation>
 <translation id="7933634003144813719">Gestionează dosarele comune</translation>
+<translation id="7935072572536724392">Parola nu a putut fi salvată automat</translation>
 <translation id="7936195481975600746">Pentru a permite accesul la ecran, folosește selectorul de ecran al sistemului</translation>
 <translation id="7937809006412909895">Se colectează date de diagnosticare</translation>
 <translation id="7938881824185772026">Labs</translation>
@@ -9044,6 +9048,7 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8029412171914613589">{SELECTED_ITEMS,plural, =0{Lista de lecturi}=1{Lista de lecturi ({SELECTED_ITEMS})}few{Lista de lecturi ({SELECTED_ITEMS})}other{Lista de lecturi ({SELECTED_ITEMS})}}</translation>
 <translation id="8029492516535178472"><ph name="WINDOW_TITLE" /> – Permisiune necesară, apasă ⌘ + Option + săgeată în sus pentru a răspunde</translation>
 <translation id="8030169304546394654">Deconectat</translation>
+<translation id="8030814978699290230">Se încearcă conectarea...</translation>
 <translation id="8030852056903932865">Aprobă</translation>
 <translation id="8033827949643255796">selectate</translation>
 <translation id="8033958968890501070">Expirare</translation>
@@ -9457,6 +9462,7 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8343578633847737325">Chaturi și fire recente</translation>
 <translation id="8345848587667658367">Acum poți vedea fotografiile, conținutul media, notificările și aplicațiile recente ale telefonului</translation>
 <translation id="8347227221149377169">Sarcini de printare</translation>
+<translation id="8347728744337089388">Trimite pe &amp;dispozitivul tău</translation>
 <translation id="8348430946834215779">Folosește HTTPS ori de câte ori este posibil și primește un avertisment înainte de a încărca site-uri care nu acceptă acest protocol</translation>
 <translation id="8348896480272971199">Verifică-ți conexiunea la internet și încearcă din nou.</translation>
 <translation id="8349305172487531364">Bara de marcaje</translation>
@@ -9506,6 +9512,7 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8382197851871630452">Condițiile meteo locale</translation>
 <translation id="8382913212082956454">Copiază adresa de &amp;e-mail</translation>
 <translation id="8383614331548401927">Recapitulare de bun venit</translation>
+<translation id="8387157483437834731">Parola a fost schimbată</translation>
 <translation id="8387361103813440603">Nu au permisiunea de a vedea locația</translation>
 <translation id="8389492867173948260">Permite ca această extensie să citească și să modifice toate datele de pe site-urile pe care le accesezi:</translation>
 <translation id="8390449457866780408">Server indisponibil.</translation>
@@ -9812,7 +9819,7 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8636500887554457830">Nu permite site-urilor să afișeze ferestre pop-up sau să folosească redirecționări</translation>
 <translation id="8636514272606969031">Panoul lateral a fost fixat</translation>
 <translation id="8638719155236856752">Starea rețelei ChromeOS</translation>
-<translation id="8639963783467694461">Setări pentru Completare automată</translation>
+<translation id="8639963783467694461">Setări pentru completarea automată</translation>
 <translation id="8640575194957831802">Data ultimei deschideri</translation>
 <translation id="8641946446576357115">Folosește parolele pe dispozitivele iOS</translation>
 <translation id="8642577642520207435">Permisiune pentru camera foto pentru <ph name="APP_NAME" /></translation>
@@ -10591,6 +10598,7 @@ Aici pot fi incluse informații despre software-ul instalat, fișiere, browser, 
 <translation id="9220820413868316583">Ridică, apoi încearcă din nou.</translation>
 <translation id="922152298093051471">Personalizează Chrome</translation>
 <translation id="9222839391870847423">Durată: <ph name="DURATION" /></translation>
+<translation id="923306663772315007">Trimite pe &amp;dispozitivul tău</translation>
 <translation id="923467487918828349">Afișează-le pe toate</translation>
 <translation id="923900195646492191">{NUM_EXTENSIONS,plural, =1{Pentru a gestiona opțiunea, deschide Extensii}few{Pentru a gestiona opțiunile, deschide Extensii}other{Pentru a gestiona opțiunile, deschide Extensii}}</translation>
 <translation id="924818813611903184">Gestionează limbile în setările sistemului de operare Chrome</translation>

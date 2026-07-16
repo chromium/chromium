@@ -4013,6 +4013,7 @@
 <translation id="721197778055552897">Бұл ақау туралы <ph name="BEGIN_LINK" />толығырақ<ph name="END_LINK" />.</translation>
 <translation id="7213191991901907140">Пайдалану кезіндегі әсеріңіз туралы айтып беріңіз</translation>
 <translation id="7219179957768738017">Байланыс <ph name="SSL_VERSION" /> пайдаланады.</translation>
+<translation id="7219197639442810756">Gemini ұсынған</translation>
 <translation id="7220786058474068424">Өңделіп жатыр</translation>
 <translation id="7221855153210829124">Хабарландыруларды көрсету</translation>
 <translation id="7222232353993864120">Электрондық пошта мекенжайы</translation>
@@ -4620,6 +4621,7 @@
 <translation id="8134058435519644366">Жұмысқа қабылдау және жұмысқа тұру</translation>
 <translation id="8135546115396015134">сол жақ перне</translation>
 <translation id="8137456439814903304">Қуат және коммуналдық қызметтер</translation>
+<translation id="8138591088112729119">Personal Intelligence функциясымен істейді.</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{1 ай бұрын жасалды.}other{{NUM_MONTHS} ай бұрын жасалды.}}</translation>
 <translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />, қазіргі әдепкі жүйе. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">PDF нұсқасы:</translation>

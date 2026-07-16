@@ -245,6 +245,7 @@
 <translation id="1752547299766512813">Запазени пароли</translation>
 <translation id="1764070164487214210">Упътвания</translation>
 <translation id="1764511703783285459">Другият мениджър на пароли не сподели пароли или ключове за достъп</translation>
+<translation id="1765555082983153259">Chrome иска достъп до микрофона ви</translation>
 <translation id="1767766085187034454">Google Преводач</translation>
 <translation id="1771016937398045251">Меню „Инструменти“</translation>
 <translation id="1772468122139624049">Разделите не могат да се презаредят</translation>
@@ -2465,6 +2466,7 @@
 <translation id="9149866541089851383">Редактиране...</translation>
 <translation id="9152637745605628097">Изберете от теми, цветове или качете изображение</translation>
 <translation id="9159628751968616911">Изпращане на уеб страницата</translation>
+<translation id="9162412286847966593">Данните и записите на организацията ви няма да се използват за подобряване на моделите на генеративен AI. <ph name="BEGIN_LINK" />Вашата поверителност и Gemini<ph name="END_LINK" /></translation>
 <translation id="9162432979321511934">Включете AutoFill Passwords</translation>
 <translation id="9165320910061267720">За да получавате известия за сигнали за понижение на цената, трябва да включите известията от настройките на iOS.</translation>
 <translation id="9179151630575358778">Този елемент ще бъде скрит</translation>

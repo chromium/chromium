@@ -4013,6 +4013,7 @@
 <translation id="721197778055552897">ಈ ತೊಂದರೆಯ ಬಗ್ಗೆ <ph name="BEGIN_LINK" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="END_LINK" />.</translation>
 <translation id="7213191991901907140">ನಿಮ್ಮ ಅನುಭವದ ಕುರಿತು ನಮಗೆ ತಿಳಿಸಿ</translation>
 <translation id="7219179957768738017">ಸಂಪರ್ಕವು <ph name="SSL_VERSION" /> ಅನ್ನು ಬಳಸುತ್ತದೆ.</translation>
+<translation id="7219197639442810756">Gemini ಮೂಲಕ ಸೂಚಿಸಲಾಗಿದೆ</translation>
 <translation id="7220786058474068424">ಪ್ರಕ್ರಿಯೆಗೊಳಿಸಲಾಗುತ್ತಿದೆ</translation>
 <translation id="7221855153210829124">ಅಧಿಸೂಚನೆಗಳನ್ನು ತೋರಿಸಿ</translation>
 <translation id="7222232353993864120">ಇಮೇಲ್ ವಿಳಾಸ</translation>
@@ -4619,6 +4620,7 @@
 <translation id="8134058435519644366">ನೇಮಕಾತಿ ಮತ್ತು ಸಿಬ್ಬಂದಿ ವ್ಯವಸ್ಥೆ</translation>
 <translation id="8135546115396015134">ಎಡ ಕೀ</translation>
 <translation id="8137456439814903304">ಇಂಧನ ಮತ್ತು ಯುಟಿಲಿಟಿಗಳು</translation>
+<translation id="8138591088112729119">ಪರ್ಸನಲ್ ಇಂಟೆಲಿಜೆನ್ಸ್‌ನಿಂದ ಚಾಲಿತವಾಗಿದೆ</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{1 ತಿಂಗಳ ಹಿಂದೆ ರಚಿಸಲಾಗಿದೆ}one{{NUM_MONTHS} ತಿಂಗಳುಗಳ ಹಿಂದೆ}other{{NUM_MONTHS} ತಿಂಗಳುಗಳ ಹಿಂದೆ}}</translation>
 <translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />, ಪ್ರಸ್ತುತ ಡೀಫಾಲ್ಟ್. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">PDF ಆವೃತ್ತಿ:</translation>

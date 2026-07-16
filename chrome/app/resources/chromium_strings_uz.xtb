@@ -123,7 +123,6 @@
 <translation id="2287771843518581140">{NUM_TABS,plural, =1{Chromium brauzerni sekinlashtiruvchi varaqni pauza qilishni tavsiya qiladi}other{Chromium brauzerni sekinlashtiruvchi varaqlarni pauza qilishni tavsiya qiladi}}</translation>
 <translation id="2307973900865360088">Dokda qoldirish</translation>
 <translation id="2313870531055795960">URL manzillar Chromium bilgan zararli saytlar roʻyxati orqali tekshiriladi. Agar sayt parolingizni oʻgirlashga urinsa yoki zararli fayl yuklab olsangiz, Chromium ham URL manzillar kabi sahifa elementlarini Saytlarni xavfsiz kezish tizimiga yuborishi mumkin.</translation>
-<translation id="2343156876103232566">Bu yerdan Android telefoningizga raqam yuborish uchun ikkala qurilmada Chromium hisobingizga kiring.</translation>
 <translation id="2356070529366658676">So‘ralsin</translation>
 <translation id="2359808026110333948">Davom etish</translation>
 <translation id="2361918034042471035">"<ph name="EXTENSION_NAME" />" kengaytmasi Chromium hisobiga kirishni soʻramoqda</translation>
@@ -243,7 +242,6 @@
 <translation id="3600428265489994557">Chromiumga kirish</translation>
 <translation id="3639635944603682591">Bu foydalanuvchi brauzerining tarixi ushbu qurilmadan butunlay tozalanadi. Axborotlarni tiklash uchun brauzerga <ph name="USER_EMAIL" /> sifatida kiring.</translation>
 <translation id="364817392622123556">{COUNT,plural, =0{Chromium uchun yangilanish mavjud va brauzer qayta ishga tushirilganda oʻrnatiladi.}=1{Chromium uchun yangilanish mavjud va brauzer qayta ishga tushirilganda oʻrnatiladi. Inkognito oynalar qayta ochilmaydi.}other{Chromium uchun yangilanish mavjud va brauzer qayta ishga tushirilganda oʻrnatiladi. # ta inkognito oyna qayta ochilmaydi.}}</translation>
-<translation id="3651803019964686660"><ph name="ORIGIN" /> orqali Android telefoningizga raqam yuborish uchun ikkala qurilmada Chromium hisobingizga kiring.</translation>
 <translation id="3667616615096815454">Oʻrnatilmadi, ilova serverga nomaʼlum.</translation>
 <translation id="3675854891107786059">Google hisobingizdagi barcha Chromium maʼlumotlarini <ph name="BEGIN_LINK" />shaxsiy kodli ibora<ph name="END_LINK" /> yordamida shifrlang. Google Pay xizmatidagi toʻlov usullari va manzillar shifrlanmaydi. Chromium brauzer tarixi sinxronlanmaydi.</translation>
 <translation id="370962675267501463">{COUNT,plural, =0{Administrator yangilishlarni oʻrnatish uchun Chromium brauzerini qayta ishga tushirishni soʻramoqda}=1{Administrator yangilishlarni oʻrnatish uchun Chromium brauzerini qayta ishga tushirishni soʻramoqda Inkognito oynalar qayta ochilmaydi.}other{Administrator yangilishlarni oʻrnatish uchun Chromium brauzerini qayta ishga tushirishni soʻramoqda # ta inkognito oyna qayta ochilmaydi.}}</translation>

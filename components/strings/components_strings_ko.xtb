@@ -3052,6 +3052,7 @@
 <translation id="5715918316982363436">이 기기의 창 <ph name="WINDOW_COUNT" />개에 탭 <ph name="TAB_COUNT" />개</translation>
 <translation id="5716325061445053985">휴대전화에서 탭을 열려면 탭하세요.</translation>
 <translation id="5717509257172454543">아이스 스케이팅</translation>
+<translation id="5718326209176373202">텍스트 주석 추가</translation>
 <translation id="5718601519531438273">여권, 운전면허증 등의 정보가 포함됩니다.</translation>
 <translation id="5720705177508910913">현재 사용자</translation>
 <translation id="5720895412771013401">데스크톱 컴퓨터</translation>
@@ -4015,6 +4016,7 @@
 <translation id="721197778055552897">이 문제에 대해 <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="7213191991901907140">경험을 공유해 주세요</translation>
 <translation id="7219179957768738017"><ph name="SSL_VERSION" /> 연결입니다.</translation>
+<translation id="7219197639442810756">Gemini 추천</translation>
 <translation id="7220786058474068424">처리 중</translation>
 <translation id="7221855153210829124">알림 표시</translation>
 <translation id="7222232353993864120">이메일 주소</translation>
@@ -4621,6 +4623,7 @@
 <translation id="8134058435519644366">신규모집 및 채용</translation>
 <translation id="8135546115396015134">왼쪽 키</translation>
 <translation id="8137456439814903304">에너지 및 공공사업</translation>
+<translation id="8138591088112729119">개인 인텔리전스 기반</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{1개월 전 생성됨}other{{NUM_MONTHS}개월 전 생성됨}}</translation>
 <translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />, 현재 기본값. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">PDF 버전:</translation>
@@ -5305,6 +5308,7 @@
 <translation id="949314938206378263">이 사이트의 방문을 요청했습니다. 부모님은 Family Link에서 답장을 보낼 수 있습니다.</translation>
 <translation id="950736567201356821">상단 3공 펀칭</translation>
 <translation id="950926967802086924">패스키 • Google 비밀번호 관리자</translation>
+<translation id="952165179818196872">앱을 전환하지 않고 결제하려면 <ph name="PROVIDER" /> 추가</translation>
 <translation id="955429569736351433">VR 허용됨</translation>
 <translation id="955627189349169688"><ph name="BEGIN_LINK" />Chrome 동기화 설정<ph name="END_LINK" />에서 이 정책을 선택 해제할 수 있습니다.</translation>
 <translation id="95721182352849470">노란색 2</translation>

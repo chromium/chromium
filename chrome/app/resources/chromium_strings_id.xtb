@@ -124,7 +124,6 @@
 <translation id="2287771843518581140">{NUM_TABS,plural, =1{Chromium merekomendasikan untuk menjeda tab yang memperlambat browser Anda}other{Chromium merekomendasikan untuk menjeda tab yang memperlambat browser Anda}}</translation>
 <translation id="2307973900865360088">Simpan di Dok</translation>
 <translation id="2313870531055795960">Memeriksa kesesuaian URL dengan daftar situs tidak aman yang disimpan di Chromium. Jika situs berusaha mencuri sandi Anda, atau jika Anda mendownload file berbahaya, Chromium mungkin juga mengirim URL, termasuk bit konten halaman, ke Safe Browsing.</translation>
-<translation id="2343156876103232566">Untuk mengirimkan nomor dari sini ke ponsel Android Anda, login ke Chromium di kedua perangkat.</translation>
 <translation id="2356070529366658676">Tanya</translation>
 <translation id="2359808026110333948">Lanjutkan</translation>
 <translation id="2361918034042471035">Ekstensi "<ph name="EXTENSION_NAME" />" ingin Anda login ke Chromium</translation>
@@ -246,7 +245,6 @@
 <translation id="3600428265489994557">Login ke Chromium</translation>
 <translation id="3639635944603682591">Data browsing pengguna ini akan dihapus dari perangkat ini. Untuk memulihkan data, login ke Chromium sebagai <ph name="USER_EMAIL" />.</translation>
 <translation id="364817392622123556">{COUNT,plural, =0{Update baru untuk Chromium telah tersedia dan akan diterapkan segera setelah diluncurkan kembali.}=1{Update baru untuk Chromium telah tersedia dan akan diterapkan segera setelah diluncurkan kembali. Jendela Samaran Anda tidak akan dibuka kembali.}other{Update baru untuk Chromium telah tersedia dan akan diterapkan segera setelah diluncurkan kembali. # jendela Samaran Anda tidak akan dibuka kembali.}}</translation>
-<translation id="3651803019964686660">Untuk mengirimkan nomor dari <ph name="ORIGIN" /> ke ponsel Android Anda, login ke Chromium di kedua perangkat.</translation>
 <translation id="3667616615096815454">Tidak dapat menginstal, aplikasi tidak dikenali oleh server.</translation>
 <translation id="3675854891107786059">Gunakan <ph name="BEGIN_LINK" />frasa sandi Anda sendiri<ph name="END_LINK" /> untuk mengenkripsi semua data Chromium di Akun Google Anda. Metode pembayaran dan alamat dari Google Pay tidak akan dienkripsi. Histori penjelajahan dari Chromium tidak akan disinkronkan.</translation>
 <translation id="370962675267501463">{COUNT,plural, =0{Administrator meminta Anda meluncurkan kembali Chromium untuk menerapkan update ini}=1{Administrator meminta Anda meluncurkan kembali Chromium untuk menerapkan update ini. Jendela Samaran Anda tidak akan dibuka kembali.}other{Administrator meminta Anda meluncurkan kembali Chromium untuk menerapkan update ini. # jendela Samaran Anda tidak akan dibuka kembali.}}</translation>

@@ -1234,6 +1234,7 @@
 <translation id="1938351510777341717">বাহ্যিক নির্দেশনা</translation>
 <translation id="1940221956626514677">টুলবাৰ কাষ্টমাইজ কৰক</translation>
 <translation id="1940546824932169984">সংযোজিত ডিভাইচসমূহ</translation>
+<translation id="194081218158106711">সলনি কৰা পাছৱৰ্ড নিশ্চিত কৰি থকা হৈছে...</translation>
 <translation id="1941410638996203291">আৰম্ভণিৰ সময় <ph name="TIME" /></translation>
 <translation id="1941553344801134989">সংস্কৰণ: <ph name="APP_VERSION" /></translation>
 <translation id="1941685451584875710">Microsoft OneDriveৰ সৈতে স্বয়ংক্ৰিয়ভাৱে সংযুক্ত হ’বলৈ আপোনাৰ প্ৰশাসকে আপোনাৰ একাউণ্টটো কনফিগাৰ কৰিছিল, কিন্তু কিবা ভুল হ’ল।</translation>
@@ -1502,6 +1503,7 @@
 <translation id="2158475082070321257">হাইলাইটৰ লিংকৰ প্ৰতিলিপি কৰক</translation>
 <translation id="2159488579268505102">ইউএছবি-চি</translation>
 <translation id="2161058806218011758"><ph name="EXTENSION_NAME" />ৰ বাবে <ph name="SHORTCUT" />ৰ পৰিসৰ</translation>
+<translation id="2161656808144014275">পাঠ</translation>
 <translation id="216169395504480358">ৱাই-ফাই যোগ কৰক…</translation>
 <translation id="2162705204091149050">আপোনাৰ ব্ৰাউজাৰ, OS, ডিভাইচ, ইনষ্টল কৰি থোৱা ছফ্টৱেৰ আৰু ফাইলৰ বিষয়ে তথ্য পঢ়ক</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> আৰু অন্য ১ টা ছুইচ</translation>
@@ -4756,6 +4758,7 @@
 <translation id="4657914796247705218">TrackPointৰ গতিবেগ</translation>
 <translation id="4658648180588730283"><ph name="APPLICATION_NAME" /> এপ্লিকেশ্বনটো অফলাইনত উপলব্ধ নহয়।</translation>
 <translation id="465878909996028221">ব্ৰাউজাৰ পুনৰ্নিৰ্দেশৰ বাবে কেৱল http, https আৰু ফাইলৰ প্ৰট'কলসমূহহে সমৰ্থিত।</translation>
+<translation id="4658821552705754298"><ph name="ITEM_NAME" /> <ph name="CATEGORY_NAME" /></translation>
 <translation id="4659126640776004816">আপুনি Google একাউণ্টত ছাইন ইন কৰিলে এই সুবিধাটো অন কৰা হয়।</translation>
 <translation id="4660465405448977105">{COUNT,plural, =1{প্ৰতিচ্ছবি}one{# খন প্ৰতিচ্ছবি}other{# খন প্ৰতিচ্ছবি}}</translation>
 <translation id="4660540330091848931">আকাৰ সলনি কৰি থকা হৈছে</translation>
@@ -8921,6 +8924,7 @@
 <translation id="7933486544522242079">ছেভ কৰক আৰু শ্বেয়াৰ কৰক</translation>
 <translation id="7933518760693751884">পৰৱৰ্তী সময়ৰ কাৰণে কোনো পৃষ্ঠা ছেভ কৰিবলৈ বুকমাৰ্কৰ চিহ্নটোত ক্লিক কৰক</translation>
 <translation id="7933634003144813719">শ্বেয়াৰ কৰা ফ'ল্ডাৰসমূহ পৰিচালনা কৰক</translation>
+<translation id="7935072572536724392">পাছৱৰ্ড স্বয়ংক্ৰিয়ভাৱে সলনি কৰিব পৰা নগ’ল</translation>
 <translation id="7936195481975600746">আপোনাৰ স্ক্ৰীন শ্বেয়াৰ কৰিবলৈ, আপোনাৰ ছিষ্টেমৰ স্ক্ৰীন বাছনিকৰ্তা ব্যৱহাৰ কৰক</translation>
 <translation id="7937809006412909895">ডায়েগন’ষ্টিক ডেটা সংগ্ৰহ কৰি থকা হৈছে</translation>
 <translation id="7938881824185772026">লেব</translation>
@@ -9058,6 +9062,7 @@
 <translation id="8029412171914613589">{SELECTED_ITEMS,plural, =0{পঢ়াৰ সূচী}=1{পঢ়াৰ সূচী({SELECTED_ITEMS})}one{পঢ়াৰ সূচী({SELECTED_ITEMS})}other{পঢ়াৰ সূচী({SELECTED_ITEMS})}}</translation>
 <translation id="8029492516535178472"><ph name="WINDOW_TITLE" /> - অনুমতিৰ বাবে অনুৰোধ জনোৱা হৈছে, সঁহাৰি জনাবলৈ ⌘ + অপশ্বন + আপ এৰ’ত টিপক</translation>
 <translation id="8030169304546394654">সংযোগ বিচ্ছিন্ন কৰা হ'ল</translation>
+<translation id="8030814978699290230">ছাইন ইন কৰিবলৈ চেষ্টা কৰি থকা হৈছে...</translation>
 <translation id="8030852056903932865">অনুমোদন জনাওক</translation>
 <translation id="8033827949643255796">বাছনি কৰা হৈছে</translation>
 <translation id="8033958968890501070">সময় উকলিছে</translation>
@@ -9471,6 +9476,7 @@
 <translation id="8343578633847737325">শেহতীয়া চাট আৰু থ্ৰেড</translation>
 <translation id="8345848587667658367">এতিয়া আপুনি আপোনাৰ ফ’নৰ শেহতীয়া ফট’, মিডিয়া, জাননী আৰু এপ্‌সমূহ চাব পাৰে</translation>
 <translation id="8347227221149377169">প্ৰিণ্টিঙৰ কামসমূহ</translation>
+<translation id="8347728744337089388">আপোনাৰ &amp;ডিভাইচলৈ পঠিয়াওক</translation>
 <translation id="8348430946834215779">সম্ভৱ হ’লে HTTPS ব্যৱহাৰ কৰক আৰু এইটো সমৰ্থন নকৰা ছাইটসমূহ ল’ড কৰাৰ পূৰ্বে সকীয়নি লাভ কৰক</translation>
 <translation id="8348896480272971199">আপোনাৰ ইণ্টাৰনেট পৰীক্ষা কৰক আৰু পুনৰ চেষ্টা কৰক।</translation>
 <translation id="8349305172487531364">বুকমাৰ্কৰ বাৰ</translation>
@@ -9520,6 +9526,7 @@
 <translation id="8382197851871630452">স্থানীয় বতৰ</translation>
 <translation id="8382913212082956454">&amp;ইমেইল ঠিকনা প্ৰতিলিপি কৰক</translation>
 <translation id="8383614331548401927">স্বাগতম ৰিকেপ</translation>
+<translation id="8387157483437834731">পাছৱৰ্ড সফলতাৰে সলনি কৰা হৈছে</translation>
 <translation id="8387361103813440603">আপোনাৰ অৱস্থান চোৱাৰ অনুমতি নাই</translation>
 <translation id="8389492867173948260">এই এক্সটেনশ্বনটোক আপুনি খোলা প্রতিটো ৱেবছাইটৰ সকলো ডেটা পঢ়িবলৈ আৰু সালসলনি কৰিবলৈ দিয়ক:</translation>
 <translation id="8390449457866780408">ছার্ভাৰ নাই।</translation>
@@ -10605,6 +10612,7 @@
 <translation id="9220820413868316583">আঙুলিটো উঠাই আকৌ চেষ্টা কৰক।</translation>
 <translation id="922152298093051471">Chrome কাষ্টমাইজ কৰক</translation>
 <translation id="9222839391870847423">সময় অৱধি: <ph name="DURATION" /></translation>
+<translation id="923306663772315007">আপোনাৰ &amp;ডিভাইচলৈ পঠিয়াওক</translation>
 <translation id="923467487918828349">সকলো দেখুৱাওক</translation>
 <translation id="923900195646492191">{NUM_EXTENSIONS,plural, =1{এইটো পৰিচালনা কৰিবলৈ, এক্সটেনশ্বন খোলক}one{এইবোৰ পৰিচালনা কৰিবলৈ, এক্সটেনশ্বন খোলক}other{এইবোৰ পৰিচালনা কৰিবলৈ, এক্সটেনশ্বন খোলক}}</translation>
 <translation id="924818813611903184">ChromeOSৰ ছেটিঙত ভাষা পৰিচালনা কৰক</translation>

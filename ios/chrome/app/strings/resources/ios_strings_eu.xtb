@@ -245,6 +245,7 @@
 <translation id="1752547299766512813">Gorde pasahitzak</translation>
 <translation id="1764070164487214210">Jarraibideak</translation>
 <translation id="1764511703783285459">Beste pasahitz-kudeatzaileak ez du pasahitzik edo sarbide-gakorik partekatu</translation>
+<translation id="1765555082983153259">"Chrome" arakatzaileak mikrofonoa erabili nahi du</translation>
 <translation id="1767766085187034454">Google Translate</translation>
 <translation id="1771016937398045251">Tresnen menua</translation>
 <translation id="1772468122139624049">Ezin dira kargatu fitxak berriro</translation>
@@ -2465,6 +2466,7 @@ Ordenagailuan jarraitzeko, aldatu <ph name="OTHER_EMAIL" /> helbide elektronikor
 <translation id="9149866541089851383">Editatu…</translation>
 <translation id="9152637745605628097">Aukeratu gaien edo koloreen artean, edo kargatu irudi bat</translation>
 <translation id="9159628751968616911">Bidali web-orria</translation>
+<translation id="9162412286847966593">Zure erakundearen datuak eta grabaketak ez dira erabiliko AA generatiboko ereduak hobetzeko. <ph name="BEGIN_LINK" />Zure pribatutasuna eta Gemini<ph name="END_LINK" /></translation>
 <translation id="9162432979321511934">Aktibatu pasahitzen betetze automatikoa</translation>
 <translation id="9165320910061267720">Prezio-jaitsierei buruzko alerten jakinarazpenak jasotzeko, iOS-eko ezarpenetan jakinarazpenak aktibatu beharko dituzu.</translation>
 <translation id="9179151630575358778">Elementu hau ezkutatzen du</translation>

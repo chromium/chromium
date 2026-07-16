@@ -14,13 +14,6 @@
 <translation id="1002829167638728809">Consenti la segnalazione di dati relativi all'attendibilità dei domini</translation>
 <translation id="1004590217607585595">Impostazioni di gestione delle app web</translation>
 <translation id="1006218396155867129">Non consente agli utenti che accedono da remoto di trasferire i file da e verso l'host remoto</translation>
-<translation id="1007043180702842391">Consente di stabilire se il visualizzatore PDF in <ph name="PRODUCT_NAME" /> utilizza un iframe out-of-process (OOPIF). In futuro, questa sarà la nuova architettura di visualizzazione di PDF, in quanto è più semplice e semplificherà l'aggiunta di nuove funzionalità. Il visualizzatore PDF GuestView esistente è un'architettura obsoleta e complessa che verrà ritirata.
-
-Se questa policy viene attivata o se non viene configurata, <ph name="PRODUCT_NAME" /> potrà usare l'architettura del visualizzatore PDF OOPIF. Se la policy viene attivata o se non viene configurata, il comportamento predefinito verrà deciso da <ph name="PRODUCT_NAME" />.
-
-Se questa policy viene disattivata, <ph name="PRODUCT_NAME" /> userà rigorosamente il visualizzatore PDF GuestView esistente. Incorpora una pagina web con un albero di frame separato in un'altra pagina web.
-
-Questa policy verrà rimossa in futuro, una volta completata l'implementazione della funzionalità del visualizzatore PDF OOPIF.</translation>
 <translation id="1007149936182752368">Disabilita la modifica dei preferiti</translation>
 <translation id="1009336698423963085">Consenti schermo intero automatico su questi siti</translation>
 <translation id="1010151305531217567">Imposta il tasto destro come tasto principale del mouse</translation>
@@ -2139,6 +2132,7 @@ Se la policy viene impostata su disabled, gli utenti o le varianti <ph name="PRO
       Il supporto dell'impostazione dei valori "tls1" o "tls1.1" per questa policy è stato rimosso nella versione 91. L'eliminazione dell'avviso relativo a TLS 1.0/1.1 non è più supportata.</translation>
 <translation id="2364639863953745682">Modalità dell'esperienza di onboarding dell'assistente</translation>
 <translation id="2366301887862414321">Consenti gli host di messaggi nativi a livello di sistema e a livello di utente</translation>
+<translation id="2371015218815226913">Le connessioni WebSocket attive impediranno l'inserimento delle pagine nella cache back-forward.</translation>
 <translation id="2373014700224092497">Consenti agli utenti di aggiungere account Kerberos</translation>
 <translation id="2376134474855349829">Disattiva la tastiera sullo schermo nella schermata di accesso e consenti all'utente di attivarla temporaneamente</translation>
 <translation id="2376151922689284770">Nome da mostrare nell'interfaccia utente del programma di installazione, ad esempio Happy VM. Se lo schema non viene configurato, verrà mostrato un nome di riserva, recuperato dalla prima voce (in ordine di visualizzazione) nella policy BruschettaVMConfiguration, oppure un nome generico se non esiste un nome di riserva.</translation>
@@ -7253,6 +7247,28 @@ Consulta anche https://wiki.samba.org/index.php/Samba_4.6_Features_added/changed
 
       Questa policy è deprecata. Utilizza <ph name="PROMOTIONS_ENABLED_POLICY_NAME" />.</translation>
 <translation id="5556607617517096419">Borealis</translation>
+<translation id="5556933299171172140">Configurando questa policy, puoi specificare quali tipi di dati della Compilazione automatica bloccare per determinati pattern URL.
+
+La policy è strutturata come un elenco di dizionari. Ogni dizionario deve contenere:
+* "url_pattern": un pattern URL delle impostazioni dei contenuti per il frame principale (ad es. "https://[*.]example.com").
+* "blocked_types": un elenco di stringhe che rappresentano le categorie di dati della Compilazione automatica da bloccare.
+
+I valori supportati per "blocked_types" sono:
+* "contact_info": impedisce la compilazione e il salvataggio dei dati di contatto.
+* "payments": impedisce la compilazione e il salvataggio di carte di credito e metodi di pagamento.
+* "identity_docs": impedisce la compilazione e il salvataggio di documenti di identità (ad es. passaporto, patente di guida, documento di identità nazionale).
+* "travel": impedisce la compilazione e il salvataggio di informazioni di viaggio (ad es. prenotazioni di voli, immatricolazioni di veicoli).
+* "shopping": impedisce la compilazione e il salvataggio di informazioni sugli acquisti (ad es. ordini online, spedizioni).
+* "all": impedisce la compilazione e il salvataggio di tutti i tipi di dati della compilazione automatica.
+
+Se un tipo di dati è bloccato per un sito, su quel sito vengono disattivate sia la generazione di suggerimenti sia il prompt di salvataggio o importazione di nuovi dati di quel tipo.
+
+Se un URL corrisponde a più voci di pattern nell'elenco, i tipi bloccati di tutte le voci corrispondenti vengono combinati (unione tramite merge). I pattern URL non validi nell'elenco verranno ignorati.
+
+Se questa policy non viene configurata, nessun tipo di dati della Compilazione automatica verrà bloccato per dominio.
+
+Per informazioni dettagliate sui pattern URL validi, consulta la pagina:
+https://chromeenterprise.google/policies/url-patterns. È supportato il carattere jolly *, questo pattern corrisponde a qualsiasi URL, con qualsiasi schema, porta e percorso.</translation>
 <translation id="5557753512027261467">Mostra l'opzione <ph name="GOOGLE_DRIVE_NAME" />.</translation>
 <translation id="5558394213067608844">Attiva il controller DTC (Diagnostics and Telemetry Controller) wilco</translation>
 <translation id="5559079916187891399">Questa norma non influisce sulle app Android.</translation>
@@ -7579,6 +7595,13 @@ Se la policy viene attivata, verrà sempre utilizzato il buffering adattivo.
 
 Se la policy viene disattivata o se non viene configurata, il processo di lancio della funzionalità del browser deciderà se utilizzare il buffering adattivo.</translation>
 <translation id="5800329278018669527">Disattiva la richiesta di configurazione di rete in modalità offline</translation>
+<translation id="5800627752428920394">Questa policy determina se le connessioni WebSocket attive debbano essere interrotte quando una pagina viene inserita nella cache back-forward. In precedenza, le connessioni WebSocket attive impedivano l'archiviazione di una pagina nella cache back-forward, ma <ph name="PRODUCT_NAME" /> ha modificato questo comportamento per disconnettere i WebSocket, consentendo di memorizzare la pagina nella cache e di ripristinarla in uno stato disconnesso.
+
+Se questa policy viene impostata su Attivata o non viene configurata, i WebSocket vengono disconnessi quando una pagina entra nella cache back-forward.
+
+Se questa policy viene impostata su Disattivata, i WebSocket non verranno disconnessi quando una pagina entra nella cache back-forward. Dato che la cache back-forward non supporta i WebSocket attivi, le pagine che ne fanno uso non potranno essere memorizzate nella cache.
+
+Questa policy è stata pensata per essere temporanea e verrà rimossa in futuro.</translation>
 <translation id="5802931736499687181">Disabilita la Pipeline di reporting criptato</translation>
 <translation id="5803715507113569033">Questa policy consente agli amministratori di configurare il montaggio di <ph name="MICROSOFT_ONE_DRIVE_NAME" />.
 
@@ -9669,6 +9692,7 @@ l'ottimizzazione di JavaScript viene attivata per il sito.</translation>
 <translation id="7025153290982655996">Ripristina il comportamento precedente per l'ambito dei cookie</translation>
 <translation id="7025332601572838001">Configurazione del comportamento dei TdS alla prima esecuzione di CCT</translation>
 <translation id="7026351325994257733">Consenti la sincronizzazione delle configurazioni di reti Wi-Fi tra i dispositivi <ph name="PRODUCT_OS_NAME" /> e un telefono Android collegato</translation>
+<translation id="7026488120383693794">Consenti la cache back-forward per WebSocket</translation>
 <translation id="7027057540229843762">Usa il tema chiaro</translation>
 <translation id="7027785306666625591">Configura la gestione dell'alimentazione in <ph name="PRODUCT_OS_NAME" />.
 
@@ -10937,6 +10961,7 @@ Per maggiori informazioni sulla policy <ph name="IEEM_SITELIST_POLICY" /> di Int
 
       Nota: per stabilire quali siti web possono eseguire <ph name="FLASH_PLUGIN_NAME" />, controlla queste policy: <ph name="DEFAULT_PLUGINS_SETTING_POLICY_NAME" />, <ph name="PLUGINS_ALLOWED_FOR_URLS_POLICY_NAME" /> e <ph name="PLUGINS_BLOCKED_FOR_URLS_POLICY_NAME" />.</translation>
 <translation id="7801163363326128751">Modifica il risparmio della modalità Risparmio memoria</translation>
+<translation id="7802903687499576891">Consenti la cache back-forward per i WebSocket (disconnettili durante la memorizzazione nella cache).</translation>
 <translation id="7804859754080118507">Segnala gli eventi di intensità del segnale e di connessione di rete sui dispositivi registrati.
 
       Se la policy viene impostata su False o se non viene configurata, le informazioni non vengono segnalate.

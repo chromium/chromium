@@ -1231,6 +1231,7 @@
 <translation id="1938351510777341717">ውጫዊ ትዕዛዝ</translation>
 <translation id="1940221956626514677">የመሣሪያ አሞሌን ያብጁ</translation>
 <translation id="1940546824932169984">የተገናኙ መሣሪያዎች</translation>
+<translation id="194081218158106711">የተለወጠውን የይለፍ ቃል በማረጋገጥ ላይ...</translation>
 <translation id="1941410638996203291">መነሻ ሰዓት <ph name="TIME" /></translation>
 <translation id="1941553344801134989">ስሪት፦ <ph name="APP_VERSION" /></translation>
 <translation id="1941685451584875710">አስተዳዳሪዎ መለያዎን ከMicrosoft OneDrive ጋር በራስ-ሰር እንዲገናኝ አዋቅሯል፣ ነገር ግን የሆነ ስህተት ተከስቷል።</translation>
@@ -1499,6 +1500,7 @@
 <translation id="2158475082070321257">ወደ ድምቀቱ የሚወስድ አገናኝን ቅዳ</translation>
 <translation id="2159488579268505102">USB-C</translation>
 <translation id="2161058806218011758">የ<ph name="SHORTCUT" /> ወሰን ለ<ph name="EXTENSION_NAME" /></translation>
+<translation id="2161656808144014275">ጽሁፍ</translation>
 <translation id="216169395504480358">Wi-Fi ያክሉ...</translation>
 <translation id="2162705204091149050">ስለ የእርስዎ አሳሽ፣ ስርዓተ ክወና፣ መሣሪያ፣ የተጫነ ሶፍትዌር እና ፋይሎች መረጃ ያንብቡ</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />፣ <ph name="SECOND_SWITCH" />፣ <ph name="THIRD_SWITCH" /> እና 1 ተጨማሪ ማብሪያና ማጥፊያ</translation>
@@ -4750,6 +4752,7 @@
 <translation id="4657914796247705218">የTrackPoint ፍጥነት</translation>
 <translation id="4658648180588730283">የ<ph name="APPLICATION_NAME" /> መተግበሪያው ከመስመር ውጭ አይገኝም።</translation>
 <translation id="465878909996028221">http፣ https እና ፋይል ፕሮቶኮሎች ብቻ ለአሳሽ አቅጣጫ መቀየሮች ይደገፋሉ።</translation>
+<translation id="4658821552705754298"><ph name="ITEM_NAME" /> <ph name="CATEGORY_NAME" /></translation>
 <translation id="4659126640776004816">ወደ የእርስዎ የ Google መለያ ሲገቡ፣ ይህ ባህሪ ይበራል።</translation>
 <translation id="4660465405448977105">{COUNT,plural, =1{ምስል}one{# ምስሎች}other{# ምስሎች}}</translation>
 <translation id="4660540330091848931">መጠንን በመቀየር ላይ</translation>
@@ -8916,6 +8919,7 @@
 <translation id="7933486544522242079">ያስቀምጡ እና ያጋሩ</translation>
 <translation id="7933518760693751884">አንድ ገፅ ለኋላ ለማስቀመጥ፣ የዕልባት አዶን ጠቅ ያድርጉ</translation>
 <translation id="7933634003144813719">የተጋሩ አቃፊዎችን ያቀናብሩ</translation>
+<translation id="7935072572536724392">የራስ-ሰር የይለፍ ቃል ለውጥ አልተሳካም</translation>
 <translation id="7936195481975600746">ማያ ገፅዎን ለማጋራት የሥርዓትዎን የማያ ገፅ መራጭ ይጠቀሙ</translation>
 <translation id="7937809006412909895">የምርመራ ውሂብን በመሰብሰብ ላይ</translation>
 <translation id="7938881824185772026">ቤተ ሙከራዎች</translation>
@@ -9058,6 +9062,7 @@ nil</translation>
 <translation id="8029412171914613589">{SELECTED_ITEMS,plural, =0{የንባብ ዝርዝር}=1{የንባብ ዝርዝር ({SELECTED_ITEMS})}one{የንባብ ዝርዝር ({SELECTED_ITEMS})}other{የንባብ ዝርዝር ({SELECTED_ITEMS})}}</translation>
 <translation id="8029492516535178472"><ph name="WINDOW_TITLE" /> - ፍቃድ ተጠይቋል፣ መልስ ለመስጠት ⌘ + አማራጭ + የላይ ቀስት ይጫኑ</translation>
 <translation id="8030169304546394654">አልተያያዘም</translation>
+<translation id="8030814978699290230">በመለያ ለመግባት በመሞከር ላይ...</translation>
 <translation id="8030852056903932865">አጽድቅ</translation>
 <translation id="8033827949643255796">ተመርጧል</translation>
 <translation id="8033958968890501070">ጊዜው አልቋል</translation>
@@ -9471,6 +9476,7 @@ nil</translation>
 <translation id="8343578633847737325">የቅርብ ጊዜ ውይይቶች እና ተከታታዮች</translation>
 <translation id="8345848587667658367">አሁን የስልክዎን የቅርብ ጊዜ ፎቶዎች፣ ሚዲያ፣ ማሳወቂያዎች እና መተግበሪያዎች መመልከት ይችላሉ</translation>
 <translation id="8347227221149377169">የኅትመት ሥራዎች</translation>
+<translation id="8347728744337089388">ወደ መሣሪያዎ ይላኩ</translation>
 <translation id="8348430946834215779">በተቻለ መጠን ኤችቲቲፒኤስ ይጠቀሙ እና እሱን የማይደግፉትን ጣቢያዎች ከመጫንዎ በፊት ማስጠንቀቂያ ያግኙ</translation>
 <translation id="8348896480272971199">በይነመረብዎን ይፈትሹ እና እንደገና ይሞክሩ።</translation>
 <translation id="8349305172487531364">የዕልባቶች አሞሌ</translation>
@@ -9520,6 +9526,7 @@ nil</translation>
 <translation id="8382197851871630452">የአካባቢ የአየር ሁኔታ</translation>
 <translation id="8382913212082956454">&amp;ኢሜይል አድራሻ ቅዳ</translation>
 <translation id="8383614331548401927">እንኳን ወደ Recap በደህና መጡ</translation>
+<translation id="8387157483437834731">የይለፍ ቃል በተሳካ ሁኔታ ተለውጧል</translation>
 <translation id="8387361103813440603">አካባቢዎን ለማየት አልተፈቀደም</translation>
 <translation id="8389492867173948260">ይህ ቅጥያ በሚጎበኟቸው ድር ጣቢያዎች ላይ ያለው ሁሉም ውሂብዎን እንዲያነብብ እና እንዲቀይር ይፍቀዱ፦</translation>
 <translation id="8390449457866780408">አገልጋይ አይገኝም።</translation>
@@ -10605,6 +10612,7 @@ nil</translation>
 <translation id="9220820413868316583">ያንሱ እና ከዚያ እንደገና ይሞክሩ።</translation>
 <translation id="922152298093051471">Chromeን አብጅ</translation>
 <translation id="9222839391870847423">የቆይታ ጊዜ፦ <ph name="DURATION" /></translation>
+<translation id="923306663772315007">ወደ መሣሪያዎ ይላኩ</translation>
 <translation id="923467487918828349">ሁሉንም አሳይ</translation>
 <translation id="923900195646492191">{NUM_EXTENSIONS,plural, =1{እሱን ለማስተዳደር ቅጥያ ይክፈቱ}one{እሱን ለማስተዳደር ቅጥያ ይክፈቱ}other{እነሱን ለማስተዳደር ቅጥያዎች ይክፈቱ}}</translation>
 <translation id="924818813611903184">ቋንቋዎችን በChromeO ቅንብሮች ውስጥ ያቀናብሩ</translation>

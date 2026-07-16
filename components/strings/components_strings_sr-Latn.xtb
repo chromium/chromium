@@ -3052,6 +3052,7 @@ Da biste sakrili opcije za kasnije plaćanje, idite u <ph name="BEGIN_LINK" />p
 <translation id="5715918316982363436"><ph name="TAB_COUNT" /> iz <ph name="WINDOW_COUNT" /> na ovom uređaju</translation>
 <translation id="5716325061445053985">Dodirnite da biste otvorili karticu na telefonu</translation>
 <translation id="5717509257172454543">Klizanje na ledu</translation>
+<translation id="5718326209176373202">Dodaj tekstualne napomene</translation>
 <translation id="5718601519531438273">Obuhvata informacije kao što su pasoši i vozačke dozvole</translation>
 <translation id="5720705177508910913">Trenutni korisnik</translation>
 <translation id="5720895412771013401">Računari</translation>
@@ -4014,6 +4015,7 @@ Da biste sakrili opcije za kasnije plaćanje, idite u <ph name="BEGIN_LINK" />p
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /> o ovom problemu.</translation>
 <translation id="7213191991901907140">Recite nam nešto o svom doživljaju</translation>
 <translation id="7219179957768738017">Veza koristi <ph name="SSL_VERSION" />.</translation>
+<translation id="7219197639442810756">Predlaže Gemini</translation>
 <translation id="7220786058474068424">Obrada</translation>
 <translation id="7221855153210829124">prikazuje obaveštenja</translation>
 <translation id="7222232353993864120">Imejl adresa</translation>
@@ -4621,6 +4623,7 @@ Dodatni detalji:
 <translation id="8134058435519644366">Zapošljavanje i izbor kadrova</translation>
 <translation id="8135546115396015134">levi taster</translation>
 <translation id="8137456439814903304">Proizvodnja i distribucija energije</translation>
+<translation id="8138591088112729119">Omogućava Personalizovana inteligencija</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{Napravljeno je pre 1 mesec}one{Napravljeno je pre {NUM_MONTHS} mesec}few{Napravljeno je pre {NUM_MONTHS} meseca}other{Napravljeno je pre {NUM_MONTHS} meseci}}</translation>
 <translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />, trenutno podrazumevani. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">PDF verzija:</translation>
@@ -5307,6 +5310,7 @@ Dodatni detalji:
 <translation id="949314938206378263">Zatražili ste da posetite ovaj sajt. Roditelj može da odgovori u Family Link-u.</translation>
 <translation id="950736567201356821">Trostruko bušenje na vrhu</translation>
 <translation id="950926967802086924">Pristupni ključ • Google menadžer lozinki</translation>
+<translation id="952165179818196872">Dodajte <ph name="PROVIDER" /> da biste plaćali bez menjanja aplikacije</translation>
 <translation id="955429569736351433">VR je dozvoljen</translation>
 <translation id="955627189349169688">Ove smernice možete da onemogućite u <ph name="BEGIN_LINK" />podešavanjima Chrome sinhronizacije<ph name="END_LINK" />.</translation>
 <translation id="95721182352849470">Žuta 2</translation>

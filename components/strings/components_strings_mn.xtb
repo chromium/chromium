@@ -4014,6 +4014,7 @@
 <translation id="721197778055552897">Үүссэн асуудлын талаарх <ph name="BEGIN_LINK" />дэлгэрэнгүй<ph name="END_LINK" /> мэдээллийг эндээс авна уу.</translation>
 <translation id="7213191991901907140">Бидэнд хэрэглээнийхээ талаар хэлнэ үү</translation>
 <translation id="7219179957768738017">Холболт нь <ph name="SSL_VERSION" />-ыг ашигладаг.</translation>
+<translation id="7219197639442810756">Gemini-с санал болгосон</translation>
 <translation id="7220786058474068424">Боловсруулж байна</translation>
 <translation id="7221855153210829124">Мэдэгдэл харуулах</translation>
 <translation id="7222232353993864120">И-мэйл хаяг</translation>
@@ -4621,6 +4622,7 @@
 <translation id="8134058435519644366">Ажилд авах болон боловсон хүчин</translation>
 <translation id="8135546115396015134">зүүн суман товч</translation>
 <translation id="8137456439814903304">Эрчим хүч, эрчим хүч нийлүүлэгчид</translation>
+<translation id="8138591088112729119">Personal Intelligence-р дэмжсэн</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{1 сарын өмнө үүсгэсэн}other{{NUM_MONTHS} сарын өмнө үүсгэсэн}}</translation>
 <translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />, одоогийн өгөгдмөл. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">PDF хувилбар:</translation>

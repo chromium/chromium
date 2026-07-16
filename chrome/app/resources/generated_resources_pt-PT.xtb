@@ -1493,6 +1493,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2158475082070321257">Copiar link para realçar</translation>
 <translation id="2159488579268505102">USB-C</translation>
 <translation id="2161058806218011758">Âmbito de <ph name="SHORTCUT" /> para <ph name="EXTENSION_NAME" /></translation>
+<translation id="2161656808144014275">Texto</translation>
 <translation id="216169395504480358">Adicionar Wi-Fi...</translation>
 <translation id="2162705204091149050">Ler informações sobre o seu navegador, SO, dispositivo, software instalado e ficheiros</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> e mais 1 interruptor.</translation>
@@ -5326,6 +5327,7 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="5096775069898886423">Relativamente aos sites que não suportam ligações seguras, receba um aviso antes de visitar o site</translation>
 <translation id="5097002363526479830">Falha ao ligar à rede "<ph name="NAME" />": <ph name="DETAILS" /></translation>
 <translation id="5097349930204431044">Os sites que visita podem determinar aquilo de que gosta e, de seguida, sugerir anúncios enquanto navega</translation>
+<translation id="5097472729724586429">Adicione anotações de texto com a nova ferramenta "Adicionar anotações de texto"</translation>
 <translation id="5097649414558628673">Ferramenta: <ph name="PRINT_NAME" /></translation>
 <translation id="5097874180538493929">Clicar automaticamente quando o cursor para</translation>
 <translation id="5098963855433723436">Abre numa aplicação separada</translation>
@@ -5390,6 +5392,7 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="5146235736676876345">Escolher a sua</translation>
 <translation id="5146896637028965135">Voz do sistema</translation>
 <translation id="5147113439721488265">Recomendação</translation>
+<translation id="5148020348702787234">Para enviar links, valide a sua identidade. Pode enviar links quando tem sessão iniciada na mesma Conta Google em ambos os dispositivos.</translation>
 <translation id="5148285448107770349">A palavra-passe tem de ter, no mínimo, 8 carateres</translation>
 <translation id="5149602533174716626">Cop&amp;iar frame do vídeo</translation>
 <translation id="5150254825601720210">Nome do servidor SSL do certificado Netscape</translation>
@@ -10257,6 +10260,7 @@ Pode incluir informações sobre o software instalado, os ficheiros, o navegador
 <translation id="8967427617812342790">Adicionar à lista de leitura</translation>
 <translation id="8968527460726243404">Criador de imagem do sistema do Chrome OS</translation>
 <translation id="8968766641738584599">Guardar cartão</translation>
+<translation id="8970232194848546151">Envie um link para outro dispositivo</translation>
 <translation id="8970887620466824814">Ocorreu um erro.</translation>
 <translation id="89720367119469899">Escape</translation>
 <translation id="8972513834460200407">Consulte o seu gestor de rede para ter a certeza de que a firewall não está a bloquear as transferências dos servidores da Google.</translation>
@@ -10523,6 +10527,7 @@ Pode incluir informações sobre o software instalado, os ficheiros, o navegador
 <translation id="9151906066336345901">fim</translation>
 <translation id="9152503903192861480">Abrir no Modo IA</translation>
 <translation id="9153367754133725216">Veja sugestões de novas apps e conteúdo da Web no Launcher e nos resultados da pesquisa. Apenas envia estatísticas para melhorar as sugestões se tiver optado por enviar relatórios de falhas e dados de diagnóstico e utilização para o ChromeOS.</translation>
+<translation id="9153451439615847952">Reduzir o áudio de fundo para notificações e alertas</translation>
 <translation id="9154194610265714752">Atualizado</translation>
 <translation id="915485121129452731">Tablet com caneta</translation>
 <translation id="9155344700756733162">Desmarcar cor</translation>

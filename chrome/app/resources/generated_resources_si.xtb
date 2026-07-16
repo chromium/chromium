@@ -1224,6 +1224,7 @@
 <translation id="1938351510777341717">බාහිර විධානය</translation>
 <translation id="1940221956626514677">මෙවලම් තීරුව අභිරුචිකරණය කරන්න</translation>
 <translation id="1940546824932169984">සම්බන්ධ කළ උපාංග</translation>
+<translation id="194081218158106711">වෙනස් කළ මුරපදය තහවුරු කරමින්...</translation>
 <translation id="1941410638996203291">ආරම්භක වේලාව <ph name="TIME" /></translation>
 <translation id="1941553344801134989">අනුවාදය: <ph name="APP_VERSION" /></translation>
 <translation id="1941685451584875710">ඔබේ පරිපාලකයා ඔබේ ගිණුම Microsoft OneDrive වෙත ස්වයංක්‍රීයව සම්බන්ධ වීමට වින්‍යාස කර ඇති නමුත්, යමක් වැරදී ඇත.</translation>
@@ -1492,6 +1493,7 @@
 <translation id="2158475082070321257">උද්දීපනයට සබැඳිය පිටපත් කරන්න</translation>
 <translation id="2159488579268505102">USB-C</translation>
 <translation id="2161058806218011758"><ph name="EXTENSION_NAME" /> සඳහා අවකාශය <ph name="SHORTCUT" /></translation>
+<translation id="2161656808144014275">පාඨය</translation>
 <translation id="216169395504480358">Wi-Fi එක් කරන්න...</translation>
 <translation id="2162705204091149050">ඔබේ බ්‍රවුසරය, OS, උපාංගය, ස්ථාපිත මෘදුකාංග සහ ගොනු පිළිබඳ තොරතුරු කියවන්න</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" />, සහ තවත් ස්විච 1</translation>
@@ -4745,6 +4747,7 @@
 <translation id="4657914796247705218">TrackPoint වේගය</translation>
 <translation id="4658648180588730283"><ph name="APPLICATION_NAME" /> යෙදුම නොබැඳිව නොමැත.</translation>
 <translation id="465878909996028221">බ්‍රවුසර ප්‍රතියොමු කිරීම් සඳහා http, https සහ ගොනු ප්‍රොටොකෝලවලට පමණක් සහය දැක්වේ.</translation>
+<translation id="4658821552705754298"><ph name="ITEM_NAME" /> <ph name="CATEGORY_NAME" /></translation>
 <translation id="4659126640776004816">ඔබ ඔබේ Google ගිණුමට පුරන විට, මෙම විශේෂාංගය සක්‍රීය කෙරේ.</translation>
 <translation id="4660465405448977105">{COUNT,plural, =1{රූපය}one{රූප #}other{රූප #}}</translation>
 <translation id="4660540330091848931">ප්‍රතිප්‍රමාණ කිරීම</translation>
@@ -8908,6 +8911,7 @@
 <translation id="7933486544522242079">&amp;සුරකින්න සහ බෙදා ගන්න</translation>
 <translation id="7933518760693751884">පසුව භාවිතයට පිටුවක් සුරැකීමට, පිටුසන් නිරූපකය ක්ලික් කරන්න</translation>
 <translation id="7933634003144813719">බෙදාගත් ෆෝල්ඩර කළමනා කරන්න</translation>
+<translation id="7935072572536724392">ස්වයංක්‍රීය මුරපද වෙනස් කිරීම අසමත් විය</translation>
 <translation id="7936195481975600746">ඔබේ තිරය බෙදා ගැනීමට, ඔබේ පද්ධතියේ තිර තෝරකය භාවිත කරන්න</translation>
 <translation id="7937809006412909895">නිර්ණය කිරීම් දත්ත රැස් කිරීම</translation>
 <translation id="7938881824185772026">පරීක්ෂණාගාර</translation>
@@ -9045,6 +9049,7 @@
 <translation id="8029412171914613589">{SELECTED_ITEMS,plural, =0{කියවීම් ලැයිස්තුව}=1{කියවීම් ලැයිස්තුව ({SELECTED_ITEMS})}one{කියවීම් ලැයිස්තුව ({SELECTED_ITEMS})}other{කියවීම් ලැයිස්තුව ({SELECTED_ITEMS})}}</translation>
 <translation id="8029492516535178472"><ph name="WINDOW_TITLE" /> - අවසරය ඉල්ලන ලදි, ප්‍රතිචාර දැක්වීමට ⌘ + විකල්පය + ඉහළට ඊතලය ඔබන්න</translation>
 <translation id="8030169304546394654">විසන්ධි විය</translation>
+<translation id="8030814978699290230">පුරනය වීමට උත්සාහ කරමින්...</translation>
 <translation id="8030852056903932865">අනුමත කරන්න</translation>
 <translation id="8033827949643255796">තෝරන ලදි</translation>
 <translation id="8033958968890501070">කාල නිමාව</translation>
@@ -9458,6 +9463,7 @@
 <translation id="8343578633847737325">මෑත කථාබස් සහ පොටවල්</translation>
 <translation id="8345848587667658367">ඔබට දැන් ඔබගේ දුරකථනයේ මෑත ඡායාරූප, මාධ්‍ය, දැනුම්දීම් සහ යෙදුම් බැලිය හැකිය</translation>
 <translation id="8347227221149377169">මුද්‍රණ වැඩ</translation>
+<translation id="8347728744337089388">ඔබේ &amp;උපාංගය වෙත යවන්න</translation>
 <translation id="8348430946834215779">හැකි සෑම විට ම HTTPS භාවිතා කර එයට සහාය නොදක්වන අඩවි පූරණය කිරීමට පෙර අනතුරු අඟවන්න</translation>
 <translation id="8348896480272971199">ඔබේ අන්තර්ජාලය පරීක්ෂා කර නැවත උත්සාහ කරන්න.</translation>
 <translation id="8349305172487531364">පිටු සලකුණු බාර් එක</translation>
@@ -9507,6 +9513,7 @@
 <translation id="8382197851871630452">ස්ථානික කාලගුණය</translation>
 <translation id="8382913212082956454">ඊමේල් ලිපිනය පිටපත් කරන්න (&amp;E)</translation>
 <translation id="8383614331548401927">Recap සාදරයෙන් පිළිගනිමු</translation>
+<translation id="8387157483437834731">මුරපදය සාර්ථකව වෙනස් කරන ලදි</translation>
 <translation id="8387361103813440603">ඔබගේ ස්ථානය බැලීමට ඉඩ නොදේ</translation>
 <translation id="8389492867173948260">මෙම දිගුවට ඔබ පිවිසෙන වෙබ් අඩවිවල ඔබගේ සියලු දත්ත කියවීමට සහ වෙනස් කිරීමට ඉඩ දෙන්න:</translation>
 <translation id="8390449457866780408">සේවාදායකය නොපවතී</translation>
@@ -10592,6 +10599,7 @@
 <translation id="9220820413868316583">ඔසවා යළි උත්සාහ කරන්න.</translation>
 <translation id="922152298093051471">Chrome අභිරුචිකරණය කරන්න</translation>
 <translation id="9222839391870847423">කාල සීමාව: <ph name="DURATION" /></translation>
+<translation id="923306663772315007">ඔබේ &amp;උපාංගය වෙත යවන්න</translation>
 <translation id="923467487918828349">සියල්ල පෙන්වන්න</translation>
 <translation id="923900195646492191">{NUM_EXTENSIONS,plural, =1{එය කළමනාකරණය සඳහා, දිගු විවෘත කරන්න}one{ඒවා කළමනාකරණය සඳහා, දිගු විවෘත කරන්න}other{ඒවා කළමනාකරණය සඳහා, දිගු විවෘත කරන්න}}</translation>
 <translation id="924818813611903184">ChromeOS සැකසීම් තුළ භාෂා කළමනාකරණය කරන්න</translation>

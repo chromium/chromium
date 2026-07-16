@@ -124,7 +124,6 @@
 <translation id="2287771843518581140">{NUM_TABS,plural, =1{A Chromium a böngészőt lassító lap szüneteltetését javasolja}other{A Chromium a böngészőt lassító lapok szüneteltetését javasolja}}</translation>
 <translation id="2307973900865360088">Megtartás a Dockban</translation>
 <translation id="2313870531055795960">Ellenőrzi az URL-eket a Chromiumban a nem biztonságos webhelyekről tárolt lista alapján. Ha valamelyik webhely megpróbálja ellopni az Ön jelszavát, illetve ha Ön kártékony fájlt tölt le, akkor a Chromium elküldheti az URL-eket is (az oldal tartalmának részeivel együtt) a Biztonságos Böngészésnek.</translation>
-<translation id="2343156876103232566">Ha innen szeretne számot küldeni Android-telefonjára, jelentkezzen be a Chromiumba mindkét eszközén.</translation>
 <translation id="2356070529366658676">Kérés</translation>
 <translation id="2359808026110333948">Tovább</translation>
 <translation id="2361918034042471035">A(z) „<ph name="EXTENSION_NAME" />” bővítmény arra kéri, hogy jelentkezzen be a Chromiumba</translation>
@@ -246,7 +245,6 @@
 <translation id="3600428265489994557">Bejelentkezés a Chromiumba</translation>
 <translation id="3639635944603682591">A személy böngészési adatai törlődnek az eszközről. Az adatok visszaállításához jelentkezzen be a Chromiumba a következő felhasználóként: <ph name="USER_EMAIL" />.</translation>
 <translation id="364817392622123556">{COUNT,plural, =0{Új Chromium-frissítés jelent meg, amely az újraindítás után azonnal érvénybe lép.}=1{Új Chromium-frissítés jelent meg, amely az újraindítás után azonnal érvénybe lép. Az inkognitó ablak nem fog újra megnyílni.}other{Új Chromium-frissítés jelent meg, amely az újraindítás után azonnal érvénybe lép. A(z) # inkognitó ablak nem fog újra megnyílni.}}</translation>
-<translation id="3651803019964686660">Ha innen: <ph name="ORIGIN" /> szeretne számot küldeni Android-telefonjára, jelentkezzen be a Chromiumba mindkét eszközén.</translation>
 <translation id="3667616615096815454">A telepítés sikertelen volt, mert az alkalmazás ismeretlen a szerver számára.</translation>
 <translation id="3675854891107786059"><ph name="BEGIN_LINK" />Saját összetett jelszó<ph name="END_LINK" /> használata a Google-fiókjában tárolt Chrome-adatok mindegyikének titkosításához. A Google Payből származó fizetési módok és címek nem lesznek titkosítva. A Chromium böngészési előzményei nem lesznek szinkronizálva.</translation>
 <translation id="370962675267501463">{COUNT,plural, =0{Rendszergazdája arra kéri, hogy indítsa újra a Chromiumot a frissítés alkalmazásához.}=1{Rendszergazdája arra kéri, hogy indítsa újra a Chromiumot a frissítés alkalmazásához. Az inkognitó ablak nem fog újra megnyílni.}other{Rendszergazdája arra kéri, hogy indítsa újra a Chromiumot a frissítés alkalmazásához. A(z) # inkognitó ablak nem fog újra megnyílni.}}</translation>

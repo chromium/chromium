@@ -4014,6 +4014,7 @@ Da biste sakrili opcije plaćanja kasnije, otvorite <ph name="BEGIN_LINK" />post
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /> o ovom problemu.</translation>
 <translation id="7213191991901907140">Podijelite s nama svoje iskustvo</translation>
 <translation id="7219179957768738017">Veza upotrebljava <ph name="SSL_VERSION" />.</translation>
+<translation id="7219197639442810756">Predlaže Gemini</translation>
 <translation id="7220786058474068424">Obrada</translation>
 <translation id="7221855153210829124">Prikazati obavijesti</translation>
 <translation id="7222232353993864120">Adresa e-pošte</translation>
@@ -4621,6 +4622,7 @@ Dodatne pojedinosti:
 <translation id="8134058435519644366">Zapošljavanje i radna snaga</translation>
 <translation id="8135546115396015134">lijevu tipku</translation>
 <translation id="8137456439814903304">Energija i komunalne usluge</translation>
+<translation id="8138591088112729119">Omogućuje osobna inteligencija</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{Izrađeno prije mjesec dana}one{Izrađeno prije {NUM_MONTHS} mjesec}few{Izrađeno prije {NUM_MONTHS} mjeseca}other{Izrađeno prije {NUM_MONTHS} mjeseci}}</translation>
 <translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />, trenutačno zadana. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">Verzija PDF-a:</translation>

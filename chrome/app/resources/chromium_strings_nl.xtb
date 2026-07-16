@@ -125,7 +125,6 @@ Sommige functies zijn wellicht niet beschikbaar en wijzigingen in voorkeuren wor
 <translation id="2287771843518581140">{NUM_TABS,plural, =1{Chromium raadt aan het tabblad dat je browser vertraagt te onderbreken}other{Chromium raadt aan de tabbladen die je browser vertragen te onderbreken}}</translation>
 <translation id="2307973900865360088">In Dock houden</translation>
 <translation id="2313870531055795960">Checkt URL's aan de hand van een lijst met onveilige sites die is opgeslagen in Chromium. Als een site je wachtwoord probeert te stelen of als je een schadelijk bestand downloadt, kan Chromium ook URL's, inclusief delen van de paginacontent, naar Safe Browsing sturen.</translation>
-<translation id="2343156876103232566">Als je een nummer hier vandaan naar je Android-telefoon wilt sturen, log je in bij Chromium op beide apparaten.</translation>
 <translation id="2356070529366658676">Vragen</translation>
 <translation id="2359808026110333948">Doorgaan</translation>
 <translation id="2361918034042471035">De extensie <ph name="EXTENSION_NAME" /> wil dat je inlogt bij Chromium</translation>
@@ -247,7 +246,6 @@ Sommige functies zijn wellicht niet beschikbaar en wijzigingen in voorkeuren wor
 <translation id="3600428265489994557">Inloggen bij Chromium</translation>
 <translation id="3639635944603682591">De browsegegevens van deze persoon worden verwijderd van dit apparaat. Als je de gegevens wilt herstellen, log je in bij Chromium als <ph name="USER_EMAIL" />.</translation>
 <translation id="364817392622123556">{COUNT,plural, =0{Er is een nieuwe update voor Chromium beschikbaar die wordt uitgevoerd zodra je het programma opnieuw start.}=1{Er is een nieuwe update voor Chromium beschikbaar die wordt uitgevoerd zodra je het programma opnieuw start. Je incognitovenster kan niet opnieuw worden geopend.}other{Er is een nieuwe update voor Chromium beschikbaar die wordt uitgevoerd zodra je het programma opnieuw start. Je # incognitovensters kunnen niet opnieuw worden geopend.}}</translation>
-<translation id="3651803019964686660">Als je een nummer vanaf <ph name="ORIGIN" /> naar je Android-telefoon wilt sturen, log je in bij Chromium op beide apparaten.</translation>
 <translation id="3667616615096815454">Kan niet installeren. De app is niet bekend bij de server.</translation>
 <translation id="3675854891107786059">Gebruik je <ph name="BEGIN_LINK" />eigen wachtwoordzin<ph name="END_LINK" /> om alle Chromium-gegevens in je Google-account te versleutelen. Betaalmethoden en adressen van Google Pay worden niet versleuteld. De browsegeschiedenis in Chromium wordt niet gesynchroniseerd.</translation>
 <translation id="370962675267501463">{COUNT,plural, =0{Je beheerder vraagt je Chromium opnieuw te starten om deze update uit te voeren.}=1{Je beheerder vraagt je Chromium opnieuw te starten om deze update uit te voeren. Je incognitovenster kan niet opnieuw worden geopend.}other{Je beheerder vraagt je Chromium opnieuw te starten om deze update uit te voeren. Je # incognitovensters kunnen niet opnieuw worden geopend.}}</translation>

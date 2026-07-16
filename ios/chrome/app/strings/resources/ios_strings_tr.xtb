@@ -245,6 +245,7 @@
 <translation id="1752547299766512813">Şifreleri Kaydet</translation>
 <translation id="1764070164487214210">Yol tarifi</translation>
 <translation id="1764511703783285459">Diğer şifre yöneticisi herhangi bir şifre veya geçiş anahtarı paylaşmadı</translation>
+<translation id="1765555082983153259">"Chrome", mikrofonunuza erişmek istiyor</translation>
 <translation id="1767766085187034454">Google Çeviri</translation>
 <translation id="1771016937398045251">Araçlar menüsü</translation>
 <translation id="1772468122139624049">Sekmeler yeniden yüklenemiyor</translation>
@@ -2465,6 +2466,7 @@ Bilgisayarınızdan devam etmek için <ph name="OTHER_EMAIL" /> hesabına geçin
 <translation id="9149866541089851383">Düzenle...</translation>
 <translation id="9152637745605628097">Temalar veya renkler arasından seçim yapın ya da resim yükleyin</translation>
 <translation id="9159628751968616911">Web sayfasını gönder</translation>
+<translation id="9162412286847966593">Kuruluşunuzun verileri ve kayıtları, üretken yapay zeka modellerini daha iyi hale getirmek için kullanılmaz. <ph name="BEGIN_LINK" />Gizliliğiniz ve Gemini<ph name="END_LINK" /></translation>
 <translation id="9162432979321511934">Parolaları Otomatik Doldur'u etkinleştirin</translation>
 <translation id="9165320910061267720">Fiyat düşüşü uyarılarıyla ilgili bildirim almak için iOS ayarlarınızdan bildirimleri etkinleştirmeniz gerekir.</translation>
 <translation id="9179151630575358778">Bu öğeyi gizler</translation>

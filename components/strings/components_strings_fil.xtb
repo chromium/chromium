@@ -4015,6 +4015,7 @@ Para i-hide ang mga opsyon sa pay later, pumunta sa <ph name="BEGIN_LINK" />mga 
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />Dagdagan ang nalalaman<ph name="END_LINK" /> tungkol sa problemang ito.</translation>
 <translation id="7213191991901907140">Sabihin sa amin ang tungkol sa iyong experience</translation>
 <translation id="7219179957768738017">Gumagamit ng <ph name="SSL_VERSION" /> ang koneksyon.</translation>
+<translation id="7219197639442810756">Iminumungkahi ng Gemini</translation>
 <translation id="7220786058474068424">Pinoproseso</translation>
 <translation id="7221855153210829124">Ipakita ang mga notification</translation>
 <translation id="7222232353993864120">Email Address</translation>
@@ -4622,6 +4623,7 @@ Mga karagdagang detalye:
 <translation id="8134058435519644366">Pag-recruit at Pagpapasok ng Tauhan</translation>
 <translation id="8135546115396015134">pakaliwang key</translation>
 <translation id="8137456439814903304">Enerhiya at Mga Utility</translation>
+<translation id="8138591088112729119">Pinapagana ng Personal Intelligence</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{Ginawa 1 buwan ang nakalipas}one{Ginawa {NUM_MONTHS} buwan ang nakalipas}other{Ginawa {NUM_MONTHS} na buwan ang nakalipas}}</translation>
 <translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />, kasalukuyang default. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">Bersyon ng PDF:</translation>

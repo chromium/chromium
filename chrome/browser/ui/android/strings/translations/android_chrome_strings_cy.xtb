@@ -71,6 +71,7 @@
 <translation id="1239792311949352652">Rhannu'r dudalen hon yn gyflym. I olygu'r llwybr byr hwn, ewch i'r Gosodiadau.</translation>
 <translation id="1240288207750131269">Wrthi'n llwytho <ph name="LANG" /></translation>
 <translation id="124116460088058876">Rhagor o ieithoedd</translation>
+<translation id="1241381048229838873">Dangos pob nod tudalen</translation>
 <translation id="124678866338384709">Cau'r tab presennol</translation>
 <translation id="1246905108078336582">Tynnu'r awgrym o'r clipfwrdd?</translation>
 <translation id="1258753120186372309">Google doodle: <ph name="DOODLE_DESCRIPTION" /></translation>
@@ -1050,6 +1051,7 @@ Mae'n bosib y bydd gan eich cyfrif Google fathau eraill o hanes pori megis chwil
 <translation id="5390367025924544771">Mae <ph name="WEBSITE_ORIGIN" /> eisiau defnyddio gwybodaeth bersonol o'ch waled ddigidol. Dim ond os ydych yn ymddiried yn y wefan hon y dylech barhau. Gallai gwefannau peryglus eich twyllo i ddatgelu pethau megis eich enw cyfreithiol neu rif adnabod.</translation>
 <translation id="5395376160638294582">Gwnewch yn siŵr y gallwch bob amser ddefnyddio'r data Chrome yn eich Cyfrif Google</translation>
 <translation id="539881862970320163">Cyfrinair cryf wedi'i awgrymu. Mae'r bysellfwrdd wedi'i guddio.</translation>
+<translation id="5404274604891474619">Methu â golygu PDF</translation>
 <translation id="5409881200985013443">Cyflwyno <ph name="ONE_TIME_CODE" /> ar <ph name="CLIENT_NAME" />?</translation>
 <translation id="5410300144953132176">Mae <ph name="OWNER_FULL_NAME" /> (<ph name="OWNER_EMAIL" />) eisiau i chi ymuno â grŵp tabiau. Gall unrhyw un sydd â'r ddolen olygu'r holl dabiau, felly ymunwch â gofal. Dolen yn dod i ben mewn 48 awr.</translation>
 <translation id="5414836363063783498">Wrthi'n gwirio…</translation>

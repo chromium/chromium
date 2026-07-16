@@ -1233,6 +1233,7 @@ Hlola amaphasiwedi wakho noma kunini ku-<ph name="GOOGLE_PASSWORD_MANAGER" />.</
 <translation id="1938351510777341717">Umyalo wangaphandle</translation>
 <translation id="1940221956626514677">Enza ngokwezifiso ibha yamathuluzi</translation>
 <translation id="1940546824932169984">Amadivayisi axhunyiwe</translation>
+<translation id="194081218158106711">Iqinisekisa iphasiwedi eshintshiwe...</translation>
 <translation id="1941410638996203291">Isikhathi sokuqala: <ph name="TIME" /></translation>
 <translation id="1941553344801134989">Uhlobo: <ph name="APP_VERSION" /></translation>
 <translation id="1941685451584875710">Umlawuli wakho ulungiselele i-akhawunti yakho ukuthi ixhumeke ku-Microsoft OneDrive ngokuzenzekelayo, kodwa kukhona okungahambanga kahle.</translation>
@@ -1501,6 +1502,7 @@ Ungaphatha izilungiselelo zale akhawunti ngokufaka uhlelo lokusebenza lwe-Family
 <translation id="2158475082070321257">Kopisha isixhumanisi kokokugqamisa</translation>
 <translation id="2159488579268505102">USB-C</translation>
 <translation id="2161058806218011758">Uhlelo lwe-<ph name="SHORTCUT" /> ye-<ph name="EXTENSION_NAME" /></translation>
+<translation id="2161656808144014275">Umbhalo</translation>
 <translation id="216169395504480358">Engeza i-Wi-Fi...</translation>
 <translation id="2162705204091149050">Funda ulwazi mayelana nebhrawuza yakho, i-OS, idivayisi, isofthiwe efakiwe namafayela</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" />, kanye neswishi e-1 ngaphezulu</translation>
@@ -4755,6 +4757,7 @@ Ungaphatha izilungiselelo zale akhawunti ngokufaka uhlelo lokusebenza lwe-Family
 <translation id="4657914796247705218">Ijubane le-TrackPoint</translation>
 <translation id="4658648180588730283">I-app ye-<ph name="APPLICATION_NAME" /> ayitholakali ungaxhunyiwe ku-inthanethi.</translation>
 <translation id="465878909996028221">Kuphela i-http, https namaphrothokholi efayela asekelwayo ekuqondiseni kabusha kwesiphequluli.</translation>
+<translation id="4658821552705754298"><ph name="ITEM_NAME" /> <ph name="CATEGORY_NAME" /></translation>
 <translation id="4659126640776004816">Uma ungena ngemvume ku-akhawunti yakho ye-Google, lesi sici sivuliwe.</translation>
 <translation id="4660465405448977105">{COUNT,plural, =1{Isithombe}one{izithombe ezingu-#}other{izithombe ezingu-#}}</translation>
 <translation id="4660540330091848931">Ishintsha usayizi</translation>
@@ -8921,6 +8924,7 @@ Cindezela iswishi enikeziwe noma ukhiye ukuze ususe umsebenzi ozokwenziwa</trans
 <translation id="7933486544522242079">&amp;Londoloza futhi wabelane</translation>
 <translation id="7933518760693751884">Ukuze ulondoloze ikhasi ngemuva kwesikhathi, chofoza isithonjana Sebhukhimakhi</translation>
 <translation id="7933634003144813719">Phatha amafolda abiwe</translation>
+<translation id="7935072572536724392">Ukushintsha iphasiwedi okuzenzekelayo kuhlulekile</translation>
 <translation id="7936195481975600746">Ukuze wabelane ngesikrini sakho, sebenzisa isikhethi sesikrini sesistimu yakho</translation>
 <translation id="7937809006412909895">Iqoqa idatha yokuxilonga</translation>
 <translation id="7938881824185772026">Amalebhu</translation>
@@ -9058,6 +9062,7 @@ Gcina ifayela lakho elingukhiye endaweni evikelekile. Uzolidinga ukuze udale izi
 <translation id="8029412171914613589">{SELECTED_ITEMS,plural, =0{Uhlu lokufunda}=1{Uhlu lokufunda ({SELECTED_ITEMS})}one{Uhlu lokufunda ({SELECTED_ITEMS})}other{Uhlu lokufunda ({SELECTED_ITEMS})}}</translation>
 <translation id="8029492516535178472"><ph name="WINDOW_TITLE" /> - Imvume iceliwe, cindezela u-⌘ + Option + Umcibisholo waphezulu ukuze uphendule</translation>
 <translation id="8030169304546394654">Inqanyuliwe</translation>
+<translation id="8030814978699290230">Izama ukungena ngemvume...</translation>
 <translation id="8030852056903932865">Gunyaza</translation>
 <translation id="8033827949643255796">ikhethiwe</translation>
 <translation id="8033958968890501070">Ukuphela kwesikhathi</translation>
@@ -9471,6 +9476,7 @@ Gcina ifayela lakho elingukhiye endaweni evikelekile. Uzolidinga ukuze udale izi
 <translation id="8343578633847737325">Izingxoxo Zakamuva Nochungechunge</translation>
 <translation id="8345848587667658367">Manje usungabuka izithombe zefoni yakho zakamuva, imidiya, izaziso, nama-app</translation>
 <translation id="8347227221149377169">Imisebenzi yokuphrinta</translation>
+<translation id="8347728744337089388">Thumela Kudivayisi Yakho</translation>
 <translation id="8348430946834215779">Sebenzisa i-HTTPS noma inini uma kungenzeka uthole isexwayiso ngaphambi kokulayisha amasayithi angayisekeli</translation>
 <translation id="8348896480272971199">Hlola i-inthanethi yakho bese uzama futhi.</translation>
 <translation id="8349305172487531364">Ibha yamabhukhimakhi</translation>
@@ -9520,6 +9526,7 @@ Gcina ifayela lakho elingukhiye endaweni evikelekile. Uzolidinga ukuze udale izi
 <translation id="8382197851871630452">Isimo sezulu sendawo</translation>
 <translation id="8382913212082956454">Kopisha ikheli le-&amp;imeyili</translation>
 <translation id="8383614331548401927">Yamukela Ukubuyekeza</translation>
+<translation id="8387157483437834731">Iphasiwedi ishintshwe ngempumelelo</translation>
 <translation id="8387361103813440603">Ayivumelekile ukubona indawo yakho</translation>
 <translation id="8389492867173948260">Vumela lesi sandiso ukuthi sifunde siphinde siguqule yonke idatha yakho kumawebhusayithi owavakashelayo:</translation>
 <translation id="8390449457866780408">Iseva ayitholakali.</translation>
@@ -10605,6 +10612,7 @@ Lokhu kungabandakanya ulwazi mayelana nesofthiwe efakiwe, amafayela, ibhrawuza y
 <translation id="9220820413868316583">Phakamisa bese uyazama futhi.</translation>
 <translation id="922152298093051471">Yenza i-Chrome ngokwezifiso</translation>
 <translation id="9222839391870847423">Ubude besikhathi: <ph name="DURATION" /></translation>
+<translation id="923306663772315007">Thumela &amp;edivayisini yakho</translation>
 <translation id="923467487918828349">Bonisa konke</translation>
 <translation id="923900195646492191">{NUM_EXTENSIONS,plural, =1{Ukuze uyiphate, vula Izandiso}one{Ukuze uziphate, vula Izandiso}other{Ukuze uziphate, vula Izandiso}}</translation>
 <translation id="924818813611903184">Phatha izilimi kumasethingi e-ChromeOS</translation>

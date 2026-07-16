@@ -4014,6 +4014,7 @@
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />გაიგეთ მეტი<ph name="END_LINK" /> ამ პრობლემის შესახებ.</translation>
 <translation id="7213191991901907140">გვიამბეთ თქვენი გამოცდილების შესახებ</translation>
 <translation id="7219179957768738017">კავშირი იყენებს <ph name="SSL_VERSION" />-ს.</translation>
+<translation id="7219197639442810756">გთავაზობთ Gemini</translation>
 <translation id="7220786058474068424">მუშავდება</translation>
 <translation id="7221855153210829124">შეტყობინებების ჩვენება</translation>
 <translation id="7222232353993864120">ელფოსტის მისამართი</translation>
@@ -4621,6 +4622,7 @@
 <translation id="8134058435519644366">დასაქმება და პერსონალი</translation>
 <translation id="8135546115396015134">მარცხენა კლავიში</translation>
 <translation id="8137456439814903304">ენერგომომარაგება და კომუნალური მომსახურებები</translation>
+<translation id="8138591088112729119">უზრუნველყოფს პერსონალური ინტელექტი</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{შეიქმნა 1 თვის წინ}other{შეიქმნა {NUM_MONTHS} თვის წინ}}</translation>
 <translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />, მიმდინარე ნაგულისხმევი პარამეტრები. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">PDF ვერსია:</translation>

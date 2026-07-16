@@ -3052,6 +3052,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="5715918316982363436"><ph name="TAB_COUNT" /> de <ph name="WINDOW_COUNT" /> sur cet appareil</translation>
 <translation id="5716325061445053985">Toucher pour ouvrir l'onglet sur votre téléphone</translation>
 <translation id="5717509257172454543">Patinage sur glace</translation>
+<translation id="5718326209176373202">Ajouter des annotations de texte</translation>
 <translation id="5718601519531438273">Comprend des informations comme les passeports et les permis de conduire</translation>
 <translation id="5720705177508910913">Utilisateur actuel</translation>
 <translation id="5720895412771013401">Ordinateurs de bureau</translation>
@@ -4014,6 +4015,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />En apprendre davantage<ph name="END_LINK" /> au sujet de ce problème.</translation>
 <translation id="7213191991901907140">Parlez-nous de votre expérience</translation>
 <translation id="7219179957768738017">La connexion utilise <ph name="SSL_VERSION" />.</translation>
+<translation id="7219197639442810756">Suggéré par Gemini</translation>
 <translation id="7220786058474068424">Traitement en cours</translation>
 <translation id="7221855153210829124">Afficher les notifications</translation>
 <translation id="7222232353993864120">Adresse de courrier électronique</translation>
@@ -4621,6 +4623,7 @@ Détails supplémentaires :
 <translation id="8134058435519644366">Dotation en personnel</translation>
 <translation id="8135546115396015134">touche de gauche</translation>
 <translation id="8137456439814903304">Énergie et services publics</translation>
+<translation id="8138591088112729119">Propulsé par l'Intelligence personnalisée</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{Créé il y a 1 mois}one{Créé il y a {NUM_MONTHS} mois}other{Créé il y a {NUM_MONTHS} mois}}</translation>
 <translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />, Appli par défaut actuelle. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">Version PDF :</translation>
@@ -5305,6 +5308,7 @@ Détails supplémentaires :
 <translation id="949314938206378263">Tu as demandé à consulter ce site. Ton parent peut répondre dans Family Link.</translation>
 <translation id="950736567201356821">Triple perforation en haut</translation>
 <translation id="950926967802086924">Clé d'accès • Gestionnaire de mots de passe Google</translation>
+<translation id="952165179818196872">Ajoutez <ph name="PROVIDER" /> pour payer sans changer d'appli</translation>
 <translation id="955429569736351433">RV autorisée</translation>
 <translation id="955627189349169688">Vous pouvez désactiver cette politique dans les <ph name="BEGIN_LINK" />paramètres Synchronisation Chrome<ph name="END_LINK" />.</translation>
 <translation id="95721182352849470">Jaune 2</translation>

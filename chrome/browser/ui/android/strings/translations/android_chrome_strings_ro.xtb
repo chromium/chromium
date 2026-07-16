@@ -71,6 +71,7 @@
 <translation id="1239792311949352652">Distribuie rapid pagina. Pentru a edita comanda rapidă, accesează setările.</translation>
 <translation id="1240288207750131269">Se încarcă <ph name="LANG" /></translation>
 <translation id="124116460088058876">Mai multe limbi</translation>
+<translation id="1241381048229838873">Afișează toate marcajele</translation>
 <translation id="124678866338384709">Închide fila actuală</translation>
 <translation id="1246905108078336582">Elimini sugestia din clipboard?</translation>
 <translation id="1258753120186372309">Doodle Google: <ph name="DOODLE_DESCRIPTION" /></translation>
@@ -1901,7 +1902,7 @@ Pentru a modifica această setare, <ph name="BEGIN_LINK" />șterge datele Chrome
 <translation id="8634050254805484913">Ascuns pe ecrane înguste</translation>
 <translation id="8635399646025169806">Păstrezi grupul de file?</translation>
 <translation id="8636825310635137004">Pentru a accesa filele de pe alte dispozitive, activează sincronizarea.</translation>
-<translation id="8639963783467694461">Setări pentru Completare automată</translation>
+<translation id="8639963783467694461">Setări pentru completarea automată</translation>
 <translation id="8662474268934425487">Conectează-te la <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="8664979001105139458">Numele fișierului există deja</translation>
 <translation id="8676276370198826499">Înscrie-te la <ph name="SITE_ETLD_PLUS_ONE" /> cu <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>

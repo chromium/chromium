@@ -245,6 +245,7 @@
 <translation id="1752547299766512813">Desa les contrasenyes</translation>
 <translation id="1764070164487214210">Indicacions</translation>
 <translation id="1764511703783285459">L'altre gestor de contrasenyes no ha compartit cap contrasenya o clau d'accés</translation>
+<translation id="1765555082983153259">"Chrome" vol accedir al micròfon</translation>
 <translation id="1767766085187034454">Traductor de Google</translation>
 <translation id="1771016937398045251">Menú Eines</translation>
 <translation id="1772468122139624049">No es poden tornar a carregar les pestanyes</translation>
@@ -2465,6 +2466,7 @@ Per continuar des de l'ordinador, canvia a <ph name="OTHER_EMAIL" />. Obtindràs
 <translation id="9149866541089851383">Edita...</translation>
 <translation id="9152637745605628097">Tria entre temes i colors, o penja una imatge</translation>
 <translation id="9159628751968616911">Envia la pàgina web</translation>
+<translation id="9162412286847966593">Les dades i les gravacions de la teva organització no s'utilitzaran per millorar els models d'IA generativa. <ph name="BEGIN_LINK" />La teva privadesa i Gemini<ph name="END_LINK" /></translation>
 <translation id="9162432979321511934">Activa l'opció Emplena automàticament les contrasenyes</translation>
 <translation id="9165320910061267720">Per rebre notificacions d'alertes de baixada de preu, cal que activis les notificacions a la configuració d'iOS.</translation>
 <translation id="9179151630575358778">Amaga aquest element</translation>

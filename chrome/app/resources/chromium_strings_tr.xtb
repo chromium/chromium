@@ -123,7 +123,6 @@
 <translation id="2287771843518581140">{NUM_TABS,plural, =1{Chromium, tarayıcınızı yavaşlatan sekmeyi duraklatmanızı öneriyor}other{Chromium, tarayıcınızı yavaşlatan sekmeleri duraklatmanızı öneriyor}}</translation>
 <translation id="2307973900865360088">Dock'ta tut</translation>
 <translation id="2313870531055795960">URL'leri, Chromium'da kayıtlı güvenli olmayan siteler listesine göre kontrol eder. Chromium, bir sitenin şifrenizi çalmaya çalışması veya zararlı bir dosya indirmeniz halinde de Güvenli Tarama'ya sayfa içeriğinden parçalarla birlikte URL'ler gönderebilir.</translation>
-<translation id="2343156876103232566">Buradan Android telefonunuza numara göndermek için iki cihazdan da Chromium'da oturum açın.</translation>
 <translation id="2356070529366658676">Sor</translation>
 <translation id="2359808026110333948">Devam</translation>
 <translation id="2361918034042471035">"<ph name="EXTENSION_NAME" />" uzantısı, Chromium'da oturum açmanızı istiyor</translation>
@@ -243,7 +242,6 @@
 <translation id="3600428265489994557">Chromium'da oturum aç</translation>
 <translation id="3639635944603682591">Bu kullanıcının tarama verileri bu cihazdan silinecektir. Verileri kurtarmak için Chromium'da <ph name="USER_EMAIL" /> olarak oturum açın.</translation>
 <translation id="364817392622123556">{COUNT,plural, =0{Chromium için yeni bir güncelleme var. Yeniden başlattığınızda güncelleme hemen uygulanacaktır.}=1{Chromium için yeni bir güncelleme var. Yeniden başlattığınızda güncelleme hemen uygulanacaktır. Gizli pencereniz yeniden açılmayacak.}other{Chromium için yeni bir güncelleme var. Yeniden başlattığınızda güncelleme hemen uygulanacaktır. # Gizli pencereniz yeniden açılmayacak.}}</translation>
-<translation id="3651803019964686660"><ph name="ORIGIN" /> sitesinden Android telefonunuza numara göndermek için iki cihazdan da Chromium'da oturum açın.</translation>
 <translation id="3667616615096815454">Uygulama, sunucu tarafından bilinmediği için yüklenemedi.</translation>
 <translation id="3675854891107786059">Google Hesabınızdaki tüm Chrome verilerini şifrelemek için <ph name="BEGIN_LINK" />kendi parolanızı<ph name="END_LINK" /> kullanın. Google Pay'deki ödeme yöntemleri ve adresler şifrelenmez. Chromium'daki tarama geçmişi senkronize edilmez.</translation>
 <translation id="370962675267501463">{COUNT,plural, =0{Yöneticiniz bu güncellemeyi uygulamak için Chromium'u yeniden başlatmanızı istiyor}=1{Yöneticiniz bu güncellemeyi uygulamak için Chromium'u yeniden başlatmanızı istiyor. Gizli pencereniz yeniden açılmayacak.}other{Yöneticiniz bu güncellemeyi uygulamak için Chromium'u yeniden başlatmanızı istiyor. # Gizli pencereniz yeniden açılmayacak.}}</translation>

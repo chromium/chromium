@@ -752,7 +752,6 @@
 <translation id="842852285618875960">Google Chrome のブックマーク数の上限（<ph name="BOOKMARK_LIMIT" /> 個）に達したため、Google アカウントにまだ保存されていないブックマークがあります。
 
 新しいブックマークをアカウントに保存するには、既存のブックマークを削除してください。今すぐログアウトすると、保存されていないブックマークは削除されます。</translation>
-<translation id="8433638294851456451">Android スマートフォンに番号を送信するには、両方のデバイスで Chrome にログインしてください。</translation>
 <translation id="8458117863387545390">スマートフォンで Chrome を活用</translation>
 <translation id="8496177819998570653">Google パスワード マネージャー(&amp;A)</translation>
 <translation id="8498858610309223613">Google Chrome の特別なセキュリティ アップデートが適用されました。今すぐ再起動してください。タブは復元されます。</translation>
@@ -796,7 +795,6 @@
 <translation id="8883862939660515976">Google レンズでこの画像について質問する</translation>
 <translation id="8914504000324227558">Chrome の再起動</translation>
 <translation id="8920304659326707347">iOS 版 Chrome で、中断したところから再開できます。</translation>
-<translation id="8922193594870374009"><ph name="ORIGIN" /> から Android スマートフォンに番号を送信するには、両方のデバイスで Chrome にログインしてください。</translation>
 <translation id="8922998289262614701">Chrome からこのアプリのデータを削除する</translation>
 <translation id="8925636929359899517">情報はこのサービスの改善に役立てられます。<ph name="BEGIN_LINK1" />プライバシー ポリシー<ph name="END_LINK1" />と<ph name="BEGIN_LINK2" />利用規約<ph name="END_LINK2" />をご確認ください。</translation>
 <translation id="8936233353620149764">Gemini in Chrome を切り替える</translation>

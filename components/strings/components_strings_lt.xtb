@@ -3053,6 +3053,7 @@ Jei norite paslėpti mokėjimo vėliau parinktis, eikite į <ph name="BEGIN_LINK
 <translation id="5715918316982363436"><ph name="TAB_COUNT" /> iš <ph name="WINDOW_COUNT" /> šiame įrenginyje</translation>
 <translation id="5716325061445053985">Palieskite, kad atidarytumėte skirtuką telefone</translation>
 <translation id="5717509257172454543">Čiuožimas</translation>
+<translation id="5718326209176373202">Pridėti teksto komentarų</translation>
 <translation id="5718601519531438273">Apima tokią informaciją kaip pasai ir vairuotojų pažymėjimai</translation>
 <translation id="5720705177508910913">Dabartinis naudotojas</translation>
 <translation id="5720895412771013401">Staliniai kompiuteriai</translation>
@@ -4016,6 +4017,7 @@ Jei norite paslėpti mokėjimo vėliau parinktis, eikite į <ph name="BEGIN_LINK
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />Sužinokite daugiau<ph name="END_LINK" /> apie šią problemą.</translation>
 <translation id="7213191991901907140">Papasakokite savo įspūdžius</translation>
 <translation id="7219179957768738017">Ryšiui naudojama <ph name="SSL_VERSION" />.</translation>
+<translation id="7219197639442810756">Siūlo „Gemini“</translation>
 <translation id="7220786058474068424">Apdorojama</translation>
 <translation id="7221855153210829124">Rodyti pranešimus</translation>
 <translation id="7222232353993864120">El. pašto adresas</translation>
@@ -4623,6 +4625,7 @@ Papildoma išsami informacija:
 <translation id="8134058435519644366">Komplektavimas ir personalo poreikiai</translation>
 <translation id="8135546115396015134">kairįjį klavišą</translation>
 <translation id="8137456439814903304">Energija ir komunalinės paslaugos</translation>
+<translation id="8138591088112729119">Teikia Asmeninis intelektas</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{Sukurta prieš 1 mėnesį}one{Sukurta prieš {NUM_MONTHS} mėnesį}few{Sukurta prieš {NUM_MONTHS} mėnesius}many{Sukurta prieš {NUM_MONTHS} mėnesio}other{Sukurta prieš {NUM_MONTHS} mėnesių}}</translation>
 <translation id="8147389370274164212">„<ph name="SEARCH_ENGINE_NAME" />“, dabartinis numatytasis. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">PDF versija:</translation>
@@ -5309,6 +5312,7 @@ Papildoma išsami informacija:
 <translation id="949314938206378263">Prašėte leidimo apsilankyti šioje svetainėje. Vienas iš tėvų gali atsakyti programoje „Family Link“.</translation>
 <translation id="950736567201356821">Trys skylės viršuje</translation>
 <translation id="950926967802086924">Prieigos raktas • „Google“ slaptažodžių tvarkyklė</translation>
+<translation id="952165179818196872">Pridėkite „<ph name="PROVIDER" />“, kad galėtumėte mokėti neperjungę programų</translation>
 <translation id="955429569736351433">VR leidžiama</translation>
 <translation id="955627189349169688">Šios politikos galite atsisakyti <ph name="BEGIN_LINK" />„Chrome“ sinchronizavimo funkcijos nustatymuose<ph name="END_LINK" />.</translation>
 <translation id="95721182352849470">2 geltona</translation>

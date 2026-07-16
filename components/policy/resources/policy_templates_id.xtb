@@ -14,13 +14,6 @@
 <translation id="1002829167638728809">Mengizinkan pelaporan data terkait keandalan domain</translation>
 <translation id="1004590217607585595">Setelan pengelolaan Aplikasi Web</translation>
 <translation id="1006218396155867129">Cegah pengguna akses jarak jauh mentransfer file ke dan dari host jarak jauh</translation>
-<translation id="1007043180702842391">Mengontrol apakah penampil PDF di <ph name="PRODUCT_NAME" /> menggunakan iframe di luar proses (OOPIF). Perilaku ini akan menjadi arsitektur penampil PDF baru pada masa mendatang, karena lebih sederhana dan mempermudah penambahan fitur baru. Penampil PDF GuestView yang ada adalah arsitektur kompleks dan usang yang tidak akan digunakan lagi.
-
-Jika kebijakan ini disetel ke Aktif atau tidak disetel, <ph name="PRODUCT_NAME" /> akan dapat menggunakan arsitektur penampil PDF OOPIF. Ketika disetel ke Aktif atau tidak disetel, perilaku default akan ditentukan oleh <ph name="PRODUCT_NAME" />.
-
-Jika kebijakan ini disetel ke Nonaktif, <ph name="PRODUCT_NAME" /> hanya akan menggunakan penampil PDF GuestView yang ada. Fitur ini menyematkan halaman web dengan hierarki frame yang terpisah ke halaman web lain.
-
-Kebijakan ini akan dihapus pada masa mendatang, setelah fitur penampil PDF OOPIF diluncurkan sepenuhnya.</translation>
 <translation id="1007149936182752368">Nonaktifkan pengeditan bookmark</translation>
 <translation id="1009336698423963085">Mengizinkan mode layar penuh otomatis di situs ini</translation>
 <translation id="1010151305531217567">Mengalihkan tombol mouse utama ke tombol kanan</translation>
@@ -2174,6 +2167,7 @@ Jika disetel ke nonaktif, kebijakan ini akan mencegah pengguna atau variasi <ph 
       Dukungan untuk penyetelan kebijakan ini ke "tls1" atau "tls1.1" dihapus di versi 91. Menyembunyikan peringatan TLS 1.0/1.1 tidak lagi didukung.</translation>
 <translation id="2364639863953745682">Mode pengalaman aktivasi Asisten</translation>
 <translation id="2366301887862414321">Izinkan host pesan native tingkat pengguna dan tingkat sistem</translation>
+<translation id="2371015218815226913">Koneksi WebSocket aktif akan mencegah halaman masuk ke Back/Forward Cache.</translation>
 <translation id="2373014700224092497">Izinkan pengguna menambahkan akun Kerberos</translation>
 <translation id="2376134474855349829">Nonaktifkan keyboard virtual di layar login dan izinkan pengguna mengaktifkannya untuk sementara</translation>
 <translation id="2376151922689284770">Nama yang akan ditampilkan di UI penginstal, misalnya Happy VM. Jika kebijakan tidak disetel, nama penggantian akan ditampilkan
@@ -7421,6 +7415,28 @@ Lihat juga https://wiki.samba.org/index.php/Samba_4.6_Features_added/changed#Ker
 
       Kebijakan ini tidak digunakan lagi - sebagai gantinya, gunakan <ph name="PROMOTIONS_ENABLED_POLICY_NAME" />.</translation>
 <translation id="5556607617517096419">Borealis</translation>
+<translation id="5556933299171172140">Jika kebijakan ini disetel, Anda dapat menentukan jenis data Isi Otomatis yang diblokir pada pola URL tertentu.
+
+Kebijakan ini disusun dalam bentuk daftar kamus. Setiap kamus harus berisi:
+* "url_pattern": Pola URL setelan konten untuk bingkai utama (mis., "https://[*.]example.com").
+* "blocked_types": Daftar string yang mewakili kategori data Isi Otomatis yang akan diblokir.
+
+Nilai yang didukung untuk "blocked_types" adalah:
+* "contact_info": Memblokir pengisian dan penyimpanan informasi kontak.
+* "payments": Memblokir pengisian dan penyimpanan kartu kredit serta metode pembayaran.
+* "identity_docs": Memblokir pengisian dan penyimpanan dokumen identitas (mis., paspor, surat izin mengemudi, kartu identitas nasional).
+* "travel": Memblokir pengisian dan penyimpanan informasi perjalanan (mis., reservasi penerbangan, pendaftaran kendaraan).
+* "shopping": Memblokir pengisian dan penyimpanan informasi belanja (mis., pesanan online, pengiriman).
+* "all": Memblokir pengisian dan penyimpanan semua jenis data Isi Otomatis.
+
+Jika jenis data diblokir untuk suatu situs, pembuatan saran maupun perintah untuk menyimpan/mengimpor data baru dari jenis tersebut akan dinonaktifkan di situs tersebut.
+
+Jika URL cocok dengan beberapa entri pola dalam daftar, jenis data yang diblokir dari semua entri yang cocok akan digabungkan (union-merged). Pola URL yang tidak valid dalam daftar akan diabaikan.
+
+Jika kebijakan ini tidak disetel, tidak ada jenis data Isi Otomatis yang diblokir berdasarkan domain.
+
+Untuk mengetahui informasi selengkapnya tentang pola URL yang valid, buka:
+https://chromeenterprise.google/policies/url-patterns. Karakter pengganti * didukung. Pola ini cocok dengan URL apa pun, dengan skema, port, dan jalur apa pun.</translation>
 <translation id="5557753512027261467">Tampilkan opsi <ph name="GOOGLE_DRIVE_NAME" />.</translation>
 <translation id="5558394213067608844">Aktifkan diagnostik dan pengontrol telemetri wilco</translation>
 <translation id="5559079916187891399">Kebijakan ini tidak memengaruhi aplikasi Android.</translation>
@@ -7760,6 +7776,13 @@ Jika kebijakan ini disetel ke Aktif, buffering adaptif akan selalu digunakan.
 Jika kebijakan ini disetel ke Nonaktif atau tidak disetel, browser
 akan menggunakan proses peluncuran fitur untuk menentukan apakah buffering adaptif akan digunakan.</translation>
 <translation id="5800329278018669527">Nonaktifkan perintah konfigurasi jaringan saat offline</translation>
+<translation id="5800627752428920394">Kebijakan ini mengatur apakah koneksi WebSocket yang aktif akan diputus saat halaman masuk ke back-forward cache. Sebelumnya, koneksi WebSocket yang aktif mencegah halaman disimpan dalam back-forward cache, tetapi <ph name="PRODUCT_NAME" /> kini mengubah perilaku ini dengan memutuskan koneksi WebSocket, sehingga memungkinkan halaman untuk tetap di-cache dan dipulihkan dalam kondisi terputus.
+
+Jika kebijakan ini disetel ke Aktif atau tidak dikonfigurasi, koneksi WebSocket akan diputus saat halaman masuk ke back-forward cache.
+
+Jika kebijakan ini disetel ke Nonaktif, WebSocket tidak akan diputus saat halaman masuk ke back-forward cache. Karena back-forward cache tidak mendukung WebSocket aktif, halaman dengan WebSocket aktif tidak akan di-cache.
+
+Kebijakan ini bersifat sementara dan akan dihapus pada masa mendatang.</translation>
 <translation id="5802931736499687181">Nonaktifkan Pipeline Pelaporan Terenkripsi</translation>
 <translation id="5803715507113569033">Kebijakan ini memungkinkan admin mengonfigurasi pemasangan <ph name="MICROSOFT_ONE_DRIVE_NAME" />.
 
@@ -9919,6 +9942,7 @@ pengoptimalan JavaScript akan diaktifkan untuk situs tersebut.</translation>
 <translation id="7025153290982655996">Kembalikan ke perilaku cakupan cookie versi lama</translation>
 <translation id="7025332601572838001">Mengonfigurasi perilaku ToS saat CCT pertama kali dijalankan</translation>
 <translation id="7026351325994257733">Mengizinkan konfigurasi jaringan Wi-Fi disinkronkan di seluruh perangkat <ph name="PRODUCT_OS_NAME" /> dan ponsel Android yang terhubung.</translation>
+<translation id="7026488120383693794">Izinkan Back/Forward Cache untuk WebSocket</translation>
 <translation id="7027057540229843762">Gunakan Tema terang</translation>
 <translation id="7027785306666625591">Mengonfigurasi pengelolaan daya di <ph name="PRODUCT_OS_NAME" />.
 
@@ -11226,6 +11250,7 @@ Untuk informasi selengkapnya terkait kebijakan <ph name="IEEM_SITELIST_POLICY" /
 
       Catatan: untuk mengontrol situs mana yang dapat menjalankan <ph name="FLASH_PLUGIN_NAME" />, lihat kebijakan ini: <ph name="DEFAULT_PLUGINS_SETTING_POLICY_NAME" />, <ph name="PLUGINS_ALLOWED_FOR_URLS_POLICY_NAME" />, dan <ph name="PLUGINS_BLOCKED_FOR_URLS_POLICY_NAME" />.</translation>
 <translation id="7801163363326128751">Ubah Penghematan Mode Penghemat Memori</translation>
+<translation id="7802903687499576891">Izinkan Back/Forward Cache untuk WebSocket (putuskan koneksinya saat masuk ke cache).</translation>
 <translation id="7804859754080118507">Melaporkan peristiwa koneksi jaringan dan kekuatan sinyal pada perangkat terdaftar.
 
       Jika kebijakan disetel ke salah (false) atau tidak disetel, informasi tidak akan dilaporkan.

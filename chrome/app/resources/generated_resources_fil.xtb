@@ -1234,6 +1234,7 @@ Suriin ang iyong mga password anumang oras sa <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="1938351510777341717">External na Command</translation>
 <translation id="1940221956626514677">I-customize ang toolbar</translation>
 <translation id="1940546824932169984">Mga nakakonektang device</translation>
+<translation id="194081218158106711">Kinukumpirma ang pinalitang password...</translation>
 <translation id="1941410638996203291">Oras ng pagsisimula <ph name="TIME" /></translation>
 <translation id="1941553344801134989">Bersyon: <ph name="APP_VERSION" /></translation>
 <translation id="1941685451584875710">Na-configure ng iyong administrator ang account mo para awtomatikong kumonekta sa Microsoft OneDrive, pero nagkaproblema ito.</translation>
@@ -1502,6 +1503,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2158475082070321257">Kopyahin ang link sa highlight</translation>
 <translation id="2159488579268505102">USB-C</translation>
 <translation id="2161058806218011758">Saklaw ng <ph name="SHORTCUT" /> para sa <ph name="EXTENSION_NAME" /></translation>
+<translation id="2161656808144014275">Text</translation>
 <translation id="216169395504480358">Magdagdag ng Wi-Fi...</translation>
 <translation id="2162705204091149050">Basahin ang impormasyon tungkol sa iyong browser, OS, device, naka-install na software, at mga file</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" />, at 1 pang switch</translation>
@@ -4757,6 +4759,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="4657914796247705218">Bilis ng TrackPoint</translation>
 <translation id="4658648180588730283">Hindi available offline ang application na <ph name="APPLICATION_NAME" />.</translation>
 <translation id="465878909996028221">Tanging http, https at file protocol ang sinusuportahan para sa mga pag-redirect ng browser.</translation>
+<translation id="4658821552705754298"><ph name="ITEM_NAME" /> <ph name="CATEGORY_NAME" /></translation>
 <translation id="4659126640776004816">Kapag nag-sign in ka sa iyong Google Account, mao-on ang feature na ito.</translation>
 <translation id="4660465405448977105">{COUNT,plural, =1{Larawan}one{# larawan}other{# na larawan}}</translation>
 <translation id="4660540330091848931">Nire-resize</translation>
@@ -8923,6 +8926,7 @@ Pumindot ng nakatalagang switch o key para alisin ang pagtatalaga.</translation>
 <translation id="7933486544522242079">&amp;I-save at i-share</translation>
 <translation id="7933518760693751884">Para mag-save ng page para sa ibang pagkakataon, i-click ang icon na I-bookmark</translation>
 <translation id="7933634003144813719">Pamahalaan ang mga nakabahaging folder</translation>
+<translation id="7935072572536724392">Hindi nagtagumpay ang awtomatikong pagpapalit ng password</translation>
 <translation id="7936195481975600746">Para i-share ang iyong screen, gamitin ang screen picker ng system mo</translation>
 <translation id="7937809006412909895">Kinokolekta ang diagnostic na data</translation>
 <translation id="7938881824185772026">Labs</translation>
@@ -9060,6 +9064,7 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="8029412171914613589">{SELECTED_ITEMS,plural, =0{Listahan ng babasahin}=1{Listahan ng babasahin ({SELECTED_ITEMS})}one{Listahan ng babasahin ({SELECTED_ITEMS})}other{Listahan ng babasahin ({SELECTED_ITEMS})}}</translation>
 <translation id="8029492516535178472"><ph name="WINDOW_TITLE" /> - Humiling ng pahintulot, pindutin ang ⌘ + Option + Pataas na arrow para tumugon</translation>
 <translation id="8030169304546394654">Naalis sa pagkakakonekta</translation>
+<translation id="8030814978699290230">Tinatangkang mag-sign in...</translation>
 <translation id="8030852056903932865">Aprubahan</translation>
 <translation id="8033827949643255796">pinili</translation>
 <translation id="8033958968890501070">Time out</translation>
@@ -9473,6 +9478,7 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="8343578633847737325">Mga Kamakailang Chat at Thread</translation>
 <translation id="8345848587667658367">Puwede mo nang tingnan ang mga pinakabagong larawan, media, notification, at app ng iyong telepono</translation>
 <translation id="8347227221149377169">Mga pag-print</translation>
+<translation id="8347728744337089388">Ipadala sa Iyong &amp;Device</translation>
 <translation id="8348430946834215779">Gamitin ang HTTPS sa tuwing posible at makatanggap ng babala bago mag-load ng mga site na hindi sumusuporta rito</translation>
 <translation id="8348896480272971199">Tingnan kung may internet ka at subukan ulit.</translation>
 <translation id="8349305172487531364">Bookmarks bar</translation>
@@ -9522,6 +9528,7 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="8382197851871630452">Lokal na lagay ng panahon</translation>
 <translation id="8382913212082956454">Kopyahin ang &amp;email address</translation>
 <translation id="8383614331548401927">Welcome Recap</translation>
+<translation id="8387157483437834731">Matagumpay na napalitan ang password</translation>
 <translation id="8387361103813440603">Hindi pinapayagang makita ang iyong lokasyon</translation>
 <translation id="8389492867173948260">Pahintulutan ang extension na ito na i-read at baguhin ang lahat ng iyong data sa mga website na binibisita mo:</translation>
 <translation id="8390449457866780408">Hindi available ang server.</translation>
@@ -10609,6 +10616,7 @@ Puwedeng kasama rito ang impormasyon tungkol sa naka-install na software, mga fi
 <translation id="9220820413868316583">Iangat at pagkatapos ay subukan ulit.</translation>
 <translation id="922152298093051471">I-customize ang Chrome</translation>
 <translation id="9222839391870847423">Tagal: <ph name="DURATION" /></translation>
+<translation id="923306663772315007">Ipadala sa iyong &amp;device</translation>
 <translation id="923467487918828349">Ipakita Lahat</translation>
 <translation id="923900195646492191">{NUM_EXTENSIONS,plural, =1{Para pamahalaan ito, buksan ang Mga Extension}one{Para pamahalaan ang mga ito, buksan ang Mga Extension}other{Para pamahalaan ang mga ito, buksan ang Mga Extension}}</translation>
 <translation id="924818813611903184">Pamahalaan ang mga wika sa mga setting ng ChromeOS</translation>

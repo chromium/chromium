@@ -245,6 +245,7 @@
 <translation id="1752547299766512813">Сачуване лозинке</translation>
 <translation id="1764070164487214210">Путања</translation>
 <translation id="1764511703783285459">Други менаџер лозинки не дели лозинке ни приступне кључеве</translation>
+<translation id="1765555082983153259">Chrome жели да приступи микрофону</translation>
 <translation id="1767766085187034454">Google преводилац</translation>
 <translation id="1771016937398045251">Мени Алатке</translation>
 <translation id="1772468122139624049">Поновно учитавање картица није успело</translation>
@@ -2465,6 +2466,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="9149866541089851383">Измени...</translation>
 <translation id="9152637745605628097">Одаберите тему, боју или отпремите слику</translation>
 <translation id="9159628751968616911">Пошаљите веб-страницу</translation>
+<translation id="9162412286847966593">Подаци и снимци организације не користе се за побољшавање модела генеративне вештачке интелигенције. <ph name="BEGIN_LINK" />Ваша приватност и Gemini<ph name="END_LINK" /></translation>
 <translation id="9162432979321511934">Укључите Аутоматско попуњавање лозинки</translation>
 <translation id="9165320910061267720">Да бисте добијали обавештења о снижењима, треба да укључите обавештења у iOS подешавањима.</translation>
 <translation id="9179151630575358778">Сакрива ову ставку</translation>

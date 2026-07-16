@@ -4015,6 +4015,7 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /> about this problem.</translation>
 <translation id="7213191991901907140">Tell us about your experience</translation>
 <translation id="7219179957768738017">The connection uses <ph name="SSL_VERSION" />.</translation>
+<translation id="7219197639442810756">Suggested by Gemini</translation>
 <translation id="7220786058474068424">Processing</translation>
 <translation id="7221855153210829124">Show notifications</translation>
 <translation id="7222232353993864120">Email Address</translation>
@@ -4622,6 +4623,7 @@ Additional details:
 <translation id="8134058435519644366">Recruitment and Staffing</translation>
 <translation id="8135546115396015134">left key</translation>
 <translation id="8137456439814903304">Energy and utilities</translation>
+<translation id="8138591088112729119">Powered by Personal Intelligence</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{Created 1 month ago}other{Created {NUM_MONTHS} months ago}}</translation>
 <translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />, current default. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">PDF version:</translation>

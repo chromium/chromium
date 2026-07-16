@@ -245,6 +245,7 @@
 <translation id="1752547299766512813">Spara lösenord</translation>
 <translation id="1764070164487214210">Vägbeskrivningar</translation>
 <translation id="1764511703783285459">Den andra lösenordshanteraren delade inga lösenord eller nycklar</translation>
+<translation id="1765555082983153259">Chrome vill ha åtkomst till mikrofonen</translation>
 <translation id="1767766085187034454">Google Översätt</translation>
 <translation id="1771016937398045251">Verktygsmeny</translation>
 <translation id="1772468122139624049">Det går inte att läsa in flikarna på nytt</translation>
@@ -2465,6 +2466,7 @@ Byt till <ph name="OTHER_EMAIL" /> om du vill fortsätta på datorn. Du får lö
 <translation id="9149866541089851383">Redigera...</translation>
 <translation id="9152637745605628097">Välj bland teman och färger eller ladda upp en bild</translation>
 <translation id="9159628751968616911">Skicka webbsida</translation>
+<translation id="9162412286847966593">Din organisations data och inspelningar används inte för att förbättra generativa AI-modeller. <ph name="BEGIN_LINK" />Din integritet och Gemini<ph name="END_LINK" />.</translation>
 <translation id="9162432979321511934">Aktivera Autofyll lösenord</translation>
 <translation id="9165320910061267720">Om du vill få aviseringar om sänkta priser måste du aktivera aviseringar i iOS-inställningarna.</translation>
 <translation id="9179151630575358778">Döljer det här objektet</translation>

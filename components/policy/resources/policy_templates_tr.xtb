@@ -14,13 +14,6 @@
 <translation id="1002829167638728809">Alan güvenilirliğiyle ilgili verilerin raporlanmasına izin ver</translation>
 <translation id="1004590217607585595">Web Uygulaması yönetimi ayarları</translation>
 <translation id="1006218396155867129">Uzaktan erişim kullanıcılarının uzak ana makineye ve uzak ana makineden dosya aktarımını devre dışı bırak</translation>
-<translation id="1007043180702842391"><ph name="PRODUCT_NAME" /> ürünündeki PDF görüntüleyicinin işlem dışı iFrame (OOPIF) kullanıp kullanmayacağını kontrol eder. Bu mimari, daha basit olduğu ve yeni özelliklerin eklenmesini kolaylaştırdığı için gelecekte yeni PDF görüntüleyici mimarisi olarak kullanılacaktır. Mevcut GuestView PDF görüntüleyici, desteği sonlandırılmakta olan eski ve karmaşık bir mimaridir.
-
-Bu politika, Etkin değerine ayarlanır veya ayarlanmadan bırakılırsa <ph name="PRODUCT_NAME" />, OOPIF PDF görüntüleyici mimarisini kullanabilir. Politika, Etkin değerine ayarlandıktan veya ayarlanmadan bırakıldıktan sonra varsayılan davranış, <ph name="PRODUCT_NAME" /> tarafından belirlenir.
-
-Bu politika, Devre Dışı değerine ayarlanırsa <ph name="PRODUCT_NAME" /> yalnızca mevcut GuestView PDF görüntüleyiciyi kullanır. Ayrı bir çerçeve ağacına sahip bir web sayfasını başka web sayfasına yerleştirir.
-
-Bu politika, gelecekte OOPIF PDF görüntüleyici özelliği tam olarak kullanıma sunulduktan sonra kaldırılacaktır.</translation>
 <translation id="1007149936182752368">Yer işareti düzenlemeyi devre dışı bırak</translation>
 <translation id="1009336698423963085">Bu sitelerde otomatik olarak tam ekrana geçilmesine izin ver</translation>
 <translation id="1010151305531217567">Birincil fare düğmesini sağ düğme yap</translation>
@@ -2135,6 +2128,7 @@ Politika, devre dışı değerine ayarlanırsa uyumluluk sorunları bulunması d
       Bu politikanın "tls1" veya "tls1.1" değerlerine ayarlanması 91. sürüm itibarıyla desteklenmemektedir. TLS 1.0/1.1 uyarısının engellenmesi artık desteklenmemektedir.</translation>
 <translation id="2364639863953745682">Asistan ilk katılım deneyimi modu</translation>
 <translation id="2366301887862414321">Hem kullanıcı düzeyinde hem de sistem düzeyinde yerel mesajlaşma ana makinelerine izin ver</translation>
+<translation id="2371015218815226913">Etkin WebSocket bağlantıları, sayfaların geri-ileri önbelleğe girmesini engeller.</translation>
 <translation id="2373014700224092497">Kullanıcıların Kerberos hesapları eklemesine izin ver</translation>
 <translation id="2376134474855349829">Giriş ekranında dokunmatik klavyeyi devre dışı bırak ve kullanıcının bunu geçici olarak etkinleştirmesine izin ver</translation>
 <translation id="2376151922689284770">Yükleyicinin kullanıcı arayüzünde gösterilecek ad (ör. Mutlu Sanal Makine). Ayarlanmadan bırakılırsa
@@ -7281,6 +7275,27 @@ Ayrıca https://wiki.samba.org/index.php/Samba_4.6_Features_added/changed#Kerber
 
       Bu politikanın desteği sonlandırıldı. Lütfen bunun yerine <ph name="PROMOTIONS_ENABLED_POLICY_NAME" /> politikasını kullanın.</translation>
 <translation id="5556607617517096419">Borealis</translation>
+<translation id="5556933299171172140">Bu politika ayarlandığında belirli URL kalıplarında hangi otomatik doldurma veri türlerinin engelleneceğini belirleyebilirsiniz.
+
+Politika, sözlük listesi olarak yapılandırılmıştır. Her sözlük şu öğeleri içermelidir:
+* "url_pattern": Ana çerçeve için içerik ayarı URL kalıbı (ör. "https://[*.]example.com").
+* "blocked_types": Engellenecek otomatik doldurma verisi kategorilerini temsil eden dize listesi.
+
+"blocked_types" için desteklenen değerler:
+* "contact_info": İletişim bilgilerinin doldurulmasını ve kaydedilmesini engeller.
+* "payments": Kredi kartlarının ve ödeme yöntemlerinin doldurulmasını ve kaydedilmesini engeller.
+* "identity_docs": Kimlik belgelerinin (ör. pasaport, sürücü belgesi, nüfus cüzdanı) doldurulmasını ve kaydedilmesini engeller.
+* "travel": Seyahat bilgilerinin (ör. uçuş rezervasyonu, araç kaydı) doldurulmasını ve kaydedilmesini engeller.
+* "shopping": Alışveriş bilgilerinin (ör. online siparişler, kargolar) doldurulmasını ve kaydedilmesini engeller.
+* "all": Tüm otomatik doldurma veri türlerinin doldurulmasını ve kaydedilmesini engeller.
+
+Bir veri türü belirli bir site için engellenirse bu sitede hem önerilerin oluşturulması hem de bu türdeki yeni verilerin kaydedilmesi/içe aktarılması istemi devre dışı bırakılır.
+
+Bir URL, listedeki birden fazla kalıp girişiyle eşleşirse, eşleşen tüm girişlerdeki engellenen türler birleştirilir (birleştirme-tekilleştirme). Listedeki geçersiz URL kalıpları yoksayılır.
+
+Bu politika ayarlanmazsa hiçbir otomatik doldurma veri türü alan adına göre engellenmez.
+
+Geçerli URL kalıpları hakkında ayrıntılı bilgi için https://chromeenterprise.google/policies/url-patterns adresine bakabilirsiniz. Joker karakter * desteklenir. Bu kalıp; şeması, bağlantı noktası ve yolu ne olursa olsun tüm URL'lerle eşleşir.</translation>
 <translation id="5557753512027261467"><ph name="GOOGLE_DRIVE_NAME" /> seçeneğini göster.</translation>
 <translation id="5558394213067608844">Wilco teşhis ve telemetri denetleyicisini etkinleştir</translation>
 <translation id="5559079916187891399">Bu politikanın Android uygulamaları üzerinde hiçbir etkisi yoktur.</translation>
@@ -7610,6 +7625,13 @@ Politika, Etkin değerine ayarlanırsa uyarlanabilir arabelleğe alma her zaman 
 Politika, Devre Dışı değerine ayarlanır veya ayarlanmadan bırakılırsa uyarlanabilir
 arabelleğe alma özelliğinin kullanılıp kullanılmayacağına, özelliğin tarayıcıda kullanıma sunulma süreci karar verir.</translation>
 <translation id="5800329278018669527">Çevrimdışıyken ağ yapılandırması istemini devre dışı bırak</translation>
+<translation id="5800627752428920394">Bu politika, bir sayfa geri-ileri önbelleğe girdiğinde etkin WebSocket bağlantılarının kesilip kesilmeyeceğini kontrol eder. Etkin WebSocket bağlantıları eskiden bir sayfanın geri-ileri önbellekte saklanmasını engelliyordu. Ancak <ph name="PRODUCT_NAME" />, bu davranışı değiştirerek bunun yerine WebSocket bağlantılarını kesmeye başladı. Böylece sayfa önbelleğe alınabiliyor ve bağlantısı kesilmiş durumda geri yüklenebiliyor.
+
+Bu politika, Etkin değerine ayarlanır veya ayarlanmadan bırakılırsa bir sayfa geri-ileri önbelleğe girdiğinde WebSocket bağlantıları kesilir.
+
+Bu politika, Devre Dışı değerine ayarlanırsa bir sayfa geri-ileri önbelleğe girdiğinde WebSocket bağlantıları kesilmez. Geri-ileri önbellek etkin WebSocket'ları desteklemediğinden etkin WebSocket'ları olan sayfalar önbelleğe alınmaz.
+
+Bu politika, geçici olarak tasarlanmıştır ve gelecekte kaldırılacaktır.</translation>
 <translation id="5802931736499687181">Şifrelenmiş Raporlama Ardışık Düzeni'ni devre dışı bırak</translation>
 <translation id="5803715507113569033">Bu politika ile yöneticiler, <ph name="MICROSOFT_ONE_DRIVE_NAME" /> ekleme işlemini yapılandırabilir.
 
@@ -9688,6 +9710,7 @@ Bu politikanın ayarlanmadığı bir site için mevcutsa <ph name="DEFAULT_JAVA_
 <translation id="7025153290982655996">Eski çerez kapsamı davranışına geri dön</translation>
 <translation id="7025332601572838001">CCT için ilk çalıştırma sırasında Hizmet Şartları davranışını yapılandırma</translation>
 <translation id="7026351325994257733"><ph name="PRODUCT_OS_NAME" /> cihazlar ve bağlı Android telefon arasında kablosuz ağ yapılandırmalarının senkronize edilmesine izin ver.</translation>
+<translation id="7026488120383693794">WebSocket'lar için Geri-İleri Önbelleğe İzin Ver</translation>
 <translation id="7027057540229843762">Açık temayı kullan</translation>
 <translation id="7027785306666625591"><ph name="PRODUCT_OS_NAME" /> sisteminde güç yönetimini yapılandırın.
 
@@ -10972,6 +10995,7 @@ Internet Explorer'ın <ph name="IEEM_SITELIST_POLICY" /> politikası hakkında d
 
       Not: <ph name="FLASH_PLUGIN_NAME" /> eklentisini çalıştırabilen web sitelerini kontrol etmek için şu politikalara bakın: <ph name="DEFAULT_PLUGINS_SETTING_POLICY_NAME" />, <ph name="PLUGINS_ALLOWED_FOR_URLS_POLICY_NAME" /> ve <ph name="PLUGINS_BLOCKED_FOR_URLS_POLICY_NAME" />.</translation>
 <translation id="7801163363326128751">Bellek Tasarrufu modunun tasarruf düzeyini değiştir</translation>
+<translation id="7802903687499576891">WebSocket'lar için Geri-İleri Önbelleğe İzin Ver (önbelleğe girerken bağlantılarını kes).</translation>
 <translation id="7804859754080118507">Kayıtlı cihazlarda ağ bağlantısı ve sinyal gücü etkinliklerini raporla.
 
       Bu politika yanlış değerine ayarlanırsa veya ayarlanmadan bırakılırsa bilgi raporlanmaz.

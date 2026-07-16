@@ -4015,6 +4015,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />Tìm hiểu thêm<ph name="END_LINK" /> về sự cố này.</translation>
 <translation id="7213191991901907140">Hãy cho chúng tôi biết trải nghiệm của bạn</translation>
 <translation id="7219179957768738017">Kết nối sử dụng <ph name="SSL_VERSION" />.</translation>
+<translation id="7219197639442810756">Do Gemini đề xuất</translation>
 <translation id="7220786058474068424">Đang xử lý</translation>
 <translation id="7221855153210829124">Hiện thông báo</translation>
 <translation id="7222232353993864120">Địa chỉ Email</translation>
@@ -4622,6 +4623,7 @@ Thông tin chi tiết bổ sung:
 <translation id="8134058435519644366">Tuyển dụng và bố trí cán bộ</translation>
 <translation id="8135546115396015134">phím mũi tên trái</translation>
 <translation id="8137456439814903304">Tiện ích và năng lượng</translation>
+<translation id="8138591088112729119">Sử dụng Trí thông minh cá nhân</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{Tạo 1 tháng trước}other{Tạo {NUM_MONTHS} tháng trước}}</translation>
 <translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />, chế độ mặc định hiện tại. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">Phiên bản PDF:</translation>

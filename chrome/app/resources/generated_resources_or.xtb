@@ -1225,6 +1225,7 @@
 <translation id="1938351510777341717">ଏକ୍ସଟର୍ନଲ୍ କମାଣ୍ଡ</translation>
 <translation id="1940221956626514677">ଟୁଲବାରକୁ କଷ୍ଟମାଇଜ କରନ୍ତୁ</translation>
 <translation id="1940546824932169984">ସଂଯୋଗ ହୋଇଥିବା ଡିଭାଇସ୍‌ଗୁଡ଼ିକ</translation>
+<translation id="194081218158106711">ପରିବର୍ତ୍ତିତ ପାସୱାର୍ଡକୁ ସୁନିଶ୍ଚିତ କରାଯାଉଛି...</translation>
 <translation id="1941410638996203291">ଆରମ୍ଭ ସମୟ <ph name="TIME" /></translation>
 <translation id="1941553344801134989">ସଂସ୍କରଣ: <ph name="APP_VERSION" /></translation>
 <translation id="1941685451584875710">Microsoft OneDrive ସହ ସ୍ୱତଃ କନେକ୍ଟ ହେବା ପାଇଁ ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟର ଆପଣଙ୍କ ଆକାଉଣ୍ଟକୁ କନଫିଗର କରିଛନ୍ତି, କିନ୍ତୁ କିଛି ତ୍ରୁଟି ହୋଇଛି।</translation>
@@ -1493,6 +1494,7 @@
 <translation id="2158475082070321257">ହାଇଲାଇଟ୍ କରାଯାଇଥିବା ଟେକ୍ସଟର ଲିଙ୍କକୁ କପି କରନ୍ତୁ</translation>
 <translation id="2159488579268505102">USB-C</translation>
 <translation id="2161058806218011758"><ph name="EXTENSION_NAME" /> ପାଇଁ <ph name="SHORTCUT" />ର ପରିସର</translation>
+<translation id="2161656808144014275">ଟେକ୍ସଟ୍</translation>
 <translation id="216169395504480358">Wi-Fi ଯୋଗ କରନ୍ତୁ...</translation>
 <translation id="2162705204091149050">ଆପଣଙ୍କ ବ୍ରାଉଜର, OS, ଡିଭାଇସ, ଇନଷ୍ଟଲ କରାଯାଇଥିବା ସଫ୍ଟୱେର ଏବଂ ଫାଇଲଗୁଡ଼ିକ ବିଷୟରେ ସୂଚନା ପଢ଼ନ୍ତୁ</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" />, ଏବଂ ଅଧିକ 1ଟି ସ୍ୱିଚ୍</translation>
@@ -4745,6 +4747,7 @@
 <translation id="4657914796247705218">TrackPoint ସ୍ପିଡ୍</translation>
 <translation id="4658648180588730283"><ph name="APPLICATION_NAME" /> ଆପ୍ଲିକେସନ ଅଫଲାଇନରେ ଉପଲବ୍ଧ ନାହିଁ।</translation>
 <translation id="465878909996028221">କେବଳ http, ବ୍ରାଉଜର୍ ରିଡାଇରେକ୍ଟ ପାଇଁ https ଏବଂ ଫାଇଲ୍ ପ୍ରୋଟୋକଲ୍‍ଗୁଡ଼ିକ ସମର୍ଥିତ ଅଟେ।</translation>
+<translation id="4658821552705754298"><ph name="ITEM_NAME" /> <ph name="CATEGORY_NAME" /></translation>
 <translation id="4659126640776004816">ଆପଣ ଆପଣଙ୍କର Google ଆକାଉଣ୍ଟରେ ସାଇନ୍ ଇନ୍ କଲେ ଏହି ଫିଚର୍ ଚାଲୁ ହୁଏ।</translation>
 <translation id="4660465405448977105">{COUNT,plural, =1{ଛବି}other{#ଟି ଛବି}}</translation>
 <translation id="4660540330091848931">ଆକାର ପରିବର୍ତ୍ତନ କରାଯାଉଛି</translation>
@@ -8906,6 +8909,7 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="7933486544522242079">&amp;ସେଭ କରି ସେୟାର କରନ୍ତୁ</translation>
 <translation id="7933518760693751884">ଗୋଟିଏ ପୃଷ୍ଠାକୁ ପରବର୍ତ୍ତୀ ସମୟ ପାଇଁ ସେଭ୍ କରିବାକୁ ବୁକମାର୍କ ଆଇକନରେ କ୍ଲିକ୍ କରନ୍ତୁ</translation>
 <translation id="7933634003144813719">ସେୟାର୍ କରାଯାଇଥିବା ଫୋଲ୍ଡର୍‍ଗୁଡ଼ିକ ପରିଚାଳନା କରନ୍ତୁ</translation>
+<translation id="7935072572536724392">ସ୍ୱତଃ ପାସୱାର୍ଡ ପରିବର୍ତ୍ତନ ବିଫଳ ହୋଇଛି</translation>
 <translation id="7936195481975600746">ଆପଣଙ୍କ ସ୍କ୍ରିନ ସେୟାର କରିବାକୁ ଆପଣଙ୍କ ସିଷ୍ଟମର ସ୍କ୍ରିନ ପିକରକୁ ବ୍ୟବହାର କରନ୍ତୁ</translation>
 <translation id="7937809006412909895">ଡାଏଗ୍ନୋଷ୍ଟିକ ଡାଟା ସଂଗ୍ରହ କରାଯାଉଛି</translation>
 <translation id="7938881824185772026">ଲ୍ୟାବ୍ସ</translation>
@@ -9042,6 +9046,7 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="8029412171914613589">{SELECTED_ITEMS,plural, =0{ପଢ଼ିବା ତାଲିକା}=1{ପଢ଼ିବା ତାଲିକା ({SELECTED_ITEMS})}other{ପଢ଼ିବା ତାଲିକା ({SELECTED_ITEMS})}}</translation>
 <translation id="8029492516535178472"><ph name="WINDOW_TITLE" /> - ଅନୁମତି ପାଇଁ ଅନୁରୋଧ କରାଯାଇଛି, ଉତ୍ତର ଦେବାକୁ ⌘ + Option + ଅପ୍ ତୀର କୀ ଦବାନ୍ତୁ</translation>
 <translation id="8030169304546394654">ବିଚ୍ଛିନ୍ନ କରାଯାଇଛି</translation>
+<translation id="8030814978699290230">ସାଇନ-ଇନ କରିବାକୁ ଚେଷ୍ଟା କରାଯାଉଛି...</translation>
 <translation id="8030852056903932865">ଅନୁମୋଦନ କରନ୍ତୁ</translation>
 <translation id="8033827949643255796">ଚୟନ କରାଯାଇଛି</translation>
 <translation id="8033958968890501070">ସମୟ ସମାପ୍ତି</translation>
@@ -9455,6 +9460,7 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="8343578633847737325">ବର୍ତ୍ତମାନର ଚାଟ ଏବଂ ଥ୍ରେଡ</translation>
 <translation id="8345848587667658367">ଆପଣ ବର୍ତ୍ତମାନ ଆପଣଙ୍କ ଫୋନରେ ଥିବା ବର୍ତ୍ତମାନର ଫଟୋ, ମିଡିଆ, ବିଜ୍ଞପ୍ତି ଏବଂ ଆପ୍ସକୁ ଦେଖିପାରିବେ</translation>
 <translation id="8347227221149377169">ପ୍ରିଣ୍ଟ ଜବ୍</translation>
+<translation id="8347728744337089388">ଆପଣଙ୍କ &amp;ଡିଭାଇସକୁ ପଠାନ୍ତୁ</translation>
 <translation id="8348430946834215779">ଯେତେବେଳେ ସମ୍ଭବ HTTPS ବ୍ୟବହାର କରନ୍ତୁ ଏବଂ ଏହାକୁ ସମର୍ଥନ କରୁନଥିବା ସାଇଟଗୁଡ଼ିକ ଲୋଡ କରିବା ପୂର୍ବରୁ ଚେତାବନୀ ପାଆନ୍ତୁ</translation>
 <translation id="8348896480272971199">ଆପଣଙ୍କ ଇଣ୍ଟରନେଟ ଯାଞ୍ଚ କରି ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="8349305172487531364">ବୁକମାର୍କସ୍ ଦଣ୍ଡିକା</translation>
@@ -9504,6 +9510,7 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="8382197851871630452">ସ୍ଥାନୀୟ ପାଣିପାଗ</translation>
 <translation id="8382913212082956454">ଇମେଲ୍ ଠିକଣା କପି କରନ୍ତୁ</translation>
 <translation id="8383614331548401927">Recapକୁ ସ୍ୱାଗତ</translation>
+<translation id="8387157483437834731">ସଫଳତାର ସହିତ ପାସୱାର୍ଡ ପରିବର୍ତ୍ତନ ହୋଇଛି</translation>
 <translation id="8387361103813440603">ଆପଣଙ୍କ ଲୋକେସନ୍ ଦେଖିବାକୁ ଅନୁମତି ଦିଆଯାଇନାହିଁ</translation>
 <translation id="8389492867173948260">ୱେବ୍‌ସାଇଟ୍‌ରେ ଆପଣ ଦେଖିଥିବା ସମସ୍ତ ଡାଟାକୁ ପଢିବା ଏବଂ ପରିବର୍ତ୍ତନ କରିବା ପାଇଁ ଏହି ଏକ୍ସଟେନ୍‌ସନ୍‌କୁ ଅନୁମତି ଦିଅନ୍ତୁ:</translation>
 <translation id="8390449457866780408">ସର୍ଭର୍‌ ଉପଲବ୍ଧ ନାହିଁ</translation>
@@ -10589,6 +10596,7 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="9220820413868316583">ଆଙ୍ଗୁଠି ଉଠାନ୍ତୁ ଏହାପରେ ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="922152298093051471">Chromeକୁ କଷ୍ଟମାଇଜ୍ କରନ୍ତୁ</translation>
 <translation id="9222839391870847423">ଅବଧି: <ph name="DURATION" /></translation>
+<translation id="923306663772315007">ଆପଣଙ୍କ &amp;ଡିଭାଇସକୁ ପଠାନ୍ତୁ</translation>
 <translation id="923467487918828349">ସବୁ ଦେଖାନ୍ତୁ</translation>
 <translation id="923900195646492191">{NUM_EXTENSIONS,plural, =1{ଏହାକୁ ପରିଚାଳନା କରିବା ପାଇଁ ଏକ୍ସଟେନସନ ଖୋଲନ୍ତୁ}other{ଏହାକୁ ପରିଚାଳନା କରିବା ପାଇଁ ଏକ୍ସଟେନସନ ଖୋଲନ୍ତୁ}}</translation>
 <translation id="924818813611903184">ChromeOS ସେଟିଂସରେ ଭାଷାଗୁଡ଼ିକୁ ପରିଚାଳନା କରନ୍ତୁ</translation>

@@ -245,6 +245,7 @@
 <translation id="1752547299766512813">Lagre passord</translation>
 <translation id="1764070164487214210">Veibeskrivelser</translation>
 <translation id="1764511703783285459">Den andre løsningen for passordlagring delte ingen passord eller passnøkler</translation>
+<translation id="1765555082983153259">«Chrome» vil bruke mikrofonen din</translation>
 <translation id="1767766085187034454">Google Oversetter</translation>
 <translation id="1771016937398045251">Verktøy-menyen</translation>
 <translation id="1772468122139624049">Kan ikke laste inn faner på nytt</translation>
@@ -2465,6 +2466,7 @@ Bytt til <ph name="OTHER_EMAIL" /> for å fortsette fra datamaskinen. Du får pa
 <translation id="9149866541089851383">Endre</translation>
 <translation id="9152637745605628097">Velg blant temaer og farger, eller last opp et bilde</translation>
 <translation id="9159628751968616911">Send nettside</translation>
+<translation id="9162412286847966593">Dataene og opptakene til organisasjonen din brukes ikke til å forbedre generative AI-modeller. <ph name="BEGIN_LINK" />Personvernet ditt og Gemini<ph name="END_LINK" /></translation>
 <translation id="9162432979321511934">Slå på Autofyll-passord.</translation>
 <translation id="9165320910061267720">For å få varsler om avslag må du slå på varsler i iOS-innstillingene.</translation>
 <translation id="9179151630575358778">Skjuler dette elementet</translation>

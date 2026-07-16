@@ -2264,7 +2264,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="4480760608050410381">MP4 video</translation>
 <translation id="448363931695049633">Picērijas</translation>
 <translation id="4489023393592172404">Aploksne Kaku 4</translation>
-<translation id="4489977488133295402">Verificēt identitāti, lai automātiski aizpildītu maksājuma veidus</translation>
+<translation id="4489977488133295402">Verificēt identitāti, lai automātiski aizpildītu maksājumu veidus</translation>
 <translation id="4490717597759821841">A7</translation>
 <translation id="449126573531210296">Šifrēt sinhronizētās paroles, izmantojot jūsu Google konta datus</translation>
 <translation id="4493480324863638523">Nederīgs URL. Vietrādim URL ir jābūt ar standarta shēmu, piemēram, “http://example.com” vai “https://example.com”.</translation>
@@ -4013,6 +4013,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />Uzziniet vairāk<ph name="END_LINK" /> par šo problēmu.</translation>
 <translation id="7213191991901907140">Pastāstiet mums par savu pieredzi!</translation>
 <translation id="7219179957768738017">Savienojums izmanto <ph name="SSL_VERSION" />.</translation>
+<translation id="7219197639442810756">Gemini ieteikums</translation>
 <translation id="7220786058474068424">Notiek apstrāde</translation>
 <translation id="7221855153210829124">Rādīt paziņojumus</translation>
 <translation id="7222232353993864120">E-pasta adrese</translation>
@@ -4620,6 +4621,7 @@ Papildu informācija:
 <translation id="8134058435519644366">Pieņemšana darbā un personāla komplektēšana</translation>
 <translation id="8135546115396015134">kreisais taustiņš</translation>
 <translation id="8137456439814903304">Enerģija un komunālie pakalpojumi</translation>
+<translation id="8138591088112729119">Nodrošina funkcija “Personīgais intelekts”</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{Izveidota pirms 1 mēneša}zero{Izveidota pirms {NUM_MONTHS} mēnešiem}one{Izveidota pirms {NUM_MONTHS} mēneša}other{Izveidota pirms {NUM_MONTHS} mēnešiem}}</translation>
 <translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />, pašreizējais noklusējums. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">PDF versija:</translation>

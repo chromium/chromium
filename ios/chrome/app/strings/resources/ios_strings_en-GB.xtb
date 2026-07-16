@@ -245,6 +245,7 @@
 <translation id="1752547299766512813">Save Passwords</translation>
 <translation id="1764070164487214210">Directions</translation>
 <translation id="1764511703783285459">The other password manager didn't share any passwords or passkeys</translation>
+<translation id="1765555082983153259">'Chrome' would like to access your microphone</translation>
 <translation id="1767766085187034454">Google Translate</translation>
 <translation id="1771016937398045251">Tools menu</translation>
 <translation id="1772468122139624049">Can't reload tabs</translation>
@@ -2465,6 +2466,7 @@ To continue from your computer, switch to <ph name="OTHER_EMAIL" />. You'll get 
 <translation id="9149866541089851383">Edit...</translation>
 <translation id="9152637745605628097">Choose from themes, colours or upload an image</translation>
 <translation id="9159628751968616911">Send web page</translation>
+<translation id="9162412286847966593">Your organisation's data and recordings won't be used to improve generative AI models. <ph name="BEGIN_LINK" />Your privacy and Gemini<ph name="END_LINK" /></translation>
 <translation id="9162432979321511934">Turn on Auto-fill passwords</translation>
 <translation id="9165320910061267720">To get notifications of price drop alerts, you'll need to turn on notifications in your iOS settings.</translation>
 <translation id="9179151630575358778">Hides this item</translation>

@@ -4014,6 +4014,7 @@
 <translation id="721197778055552897">ဒီပြဿနာ အကြောင်းကို <ph name="BEGIN_LINK" />ပိုမို လေ့လာရန်<ph name="END_LINK" />။</translation>
 <translation id="7213191991901907140">သင့်အတွေ့အကြုံကို ပြောပြပါ</translation>
 <translation id="7219179957768738017">ချိတ်ဆက်မှုက <ph name="SSL_VERSION" />ကို သုံးသည်။</translation>
+<translation id="7219197639442810756">Gemini က အကြံပြုထားသည်</translation>
 <translation id="7220786058474068424">ဆောင်ရွက်နေသည်</translation>
 <translation id="7221855153210829124">သတိပေးချက်များ ပြရန်</translation>
 <translation id="7222232353993864120">အီးမေးလ် လိပ်စာ</translation>
@@ -4623,6 +4624,7 @@
 <translation id="8134058435519644366">လူသစ်စုဆောင်းမှုနှင့် ဝန်ထမ်းခန့်အပ်မှု</translation>
 <translation id="8135546115396015134">ဘယ်ခလုတ်</translation>
 <translation id="8137456439814903304">စွမ်းအင်၊ လျှပ်စစ်မီး ဝန်ဆောင်မှု</translation>
+<translation id="8138591088112729119">‘ပုဂ္ဂိုလ်ရေးသီးသန့် ဉာဏ်ရည်တု’ က ပံ့ပိုးထားသည်</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{ပြီးခဲ့သော ၁ လက ပြုလုပ်ထားသည်}other{ပြီးခဲ့သော {NUM_MONTHS} လက ပြုလုပ်ထားသည်}}</translation>
 <translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />၊ လက်ရှိမူရင်း။ <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">PDF ဗားရှင်း-</translation>

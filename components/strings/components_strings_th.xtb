@@ -3051,6 +3051,7 @@
 <translation id="5715918316982363436"><ph name="TAB_COUNT" /> จาก <ph name="WINDOW_COUNT" /> ในอุปกรณ์นี้</translation>
 <translation id="5716325061445053985">แตะเพื่อเปิดแท็บในโทรศัพท์</translation>
 <translation id="5717509257172454543">สเก็ตน้ำแข็ง</translation>
+<translation id="5718326209176373202">ใส่คำอธิบายประกอบข้อความ</translation>
 <translation id="5718601519531438273">รวมถึงข้อมูล เช่น หนังสือเดินทางและใบขับขี่</translation>
 <translation id="5720705177508910913">ผู้ใช้ปัจจุบัน</translation>
 <translation id="5720895412771013401">คอมพิวเตอร์เดสก์ท็อป</translation>
@@ -4014,6 +4015,7 @@
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /> เกี่ยวกับปัญหานี้</translation>
 <translation id="7213191991901907140">โปรดแชร์ประสบการณ์การใช้งานของคุณให้เราทราบ</translation>
 <translation id="7219179957768738017">การเชื่อมต่อใช้ <ph name="SSL_VERSION" /></translation>
+<translation id="7219197639442810756">แนะนำโดย Gemini</translation>
 <translation id="7220786058474068424">กำลังดำเนินการ</translation>
 <translation id="7221855153210829124">แสดงการแจ้งเตือน</translation>
 <translation id="7222232353993864120">ที่อยู่อีเมล</translation>
@@ -4621,6 +4623,7 @@
 <translation id="8134058435519644366">การรับสมัครงาน</translation>
 <translation id="8135546115396015134">ปุ่มซ้าย</translation>
 <translation id="8137456439814903304">พลังงานและสาธารณูปโภค</translation>
+<translation id="8138591088112729119">ขับเคลื่อนโดย Personal Intelligence</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{สร้างเมื่อ 1 เดือนที่ผ่านมา}other{สร้างเมื่อ {NUM_MONTHS} เดือนที่ผ่านมา}}</translation>
 <translation id="8147389370274164212">เครื่องมือค้นหาเริ่มต้นปัจจุบันคือ <ph name="SEARCH_ENGINE_NAME" /> <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">เวอร์ชัน PDF:</translation>
@@ -5306,6 +5309,7 @@
 <translation id="949314938206378263">คุณขอเข้าชมเว็บไซต์นี้ ผู้ปกครองจะตอบกลับได้ใน Family Link</translation>
 <translation id="950736567201356821">เจาะรูด้านบน 3 รู</translation>
 <translation id="950926967802086924">พาสคีย์ • เครื่องมือจัดการรหัสผ่านบน Google</translation>
+<translation id="952165179818196872">เพิ่ม <ph name="PROVIDER" /> เพื่อชำระเงินโดยไม่ต้องเปลี่ยนแอป</translation>
 <translation id="955429569736351433">อนุญาต VR</translation>
 <translation id="955627189349169688">คุณเลือกไม่รับนโยบายนี้ได้ใน<ph name="BEGIN_LINK" />การตั้งค่าการซิงค์ของ Chrome<ph name="END_LINK" /></translation>
 <translation id="95721182352849470">เหลือง 2</translation>

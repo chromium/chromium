@@ -245,6 +245,7 @@
 <translation id="1752547299766512813">Salva password</translation>
 <translation id="1764070164487214210">Indicazioni</translation>
 <translation id="1764511703783285459">L'altro gestore delle password non ha condiviso password o passkey</translation>
+<translation id="1765555082983153259">“Chrome” vorrebbe accedere al tuo microfono</translation>
 <translation id="1767766085187034454">Google Traduttore</translation>
 <translation id="1771016937398045251">Menu Strumenti</translation>
 <translation id="1772468122139624049">Impossibile ricaricare le schede</translation>
@@ -2465,6 +2466,7 @@ Per continuare dal computer, passa a <ph name="OTHER_EMAIL" />. Potrai usare le 
 <translation id="9149866541089851383">Modifica...</translation>
 <translation id="9152637745605628097">Scegli tra i temi, i colori oppure carica un'immagine</translation>
 <translation id="9159628751968616911">Invia pagina web</translation>
+<translation id="9162412286847966593">I dati e le registrazioni della tua organizzazione non verranno usati per migliorare i modelli di AI generativa. <ph name="BEGIN_LINK" />La tua privacy e Gemini<ph name="END_LINK" /></translation>
 <translation id="9162432979321511934">Attiva l'opzione Compila automaticamente le password.</translation>
 <translation id="9165320910061267720">Per ricevere notifiche relative agli avvisi sui cali di prezzo, devi attivare le notifiche nelle impostazioni di iOS.</translation>
 <translation id="9179151630575358778">Nasconde questo elemento</translation>

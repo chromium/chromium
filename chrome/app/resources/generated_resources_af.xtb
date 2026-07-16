@@ -1234,6 +1234,7 @@ Gaan jou wagwoorde enige tyd na in <ph name="GOOGLE_PASSWORD_MANAGER" />.</trans
 <translation id="1938351510777341717">Eksterne bevel</translation>
 <translation id="1940221956626514677">Pasmaak nutsbalk</translation>
 <translation id="1940546824932169984">Gekoppelde toestelle</translation>
+<translation id="194081218158106711">Bevestig tans veranderde wagwoord …</translation>
 <translation id="1941410638996203291">Begintyd <ph name="TIME" /></translation>
 <translation id="1941553344801134989">Weergawe: <ph name="APP_VERSION" /></translation>
 <translation id="1941685451584875710">Jou admin het jou rekening opgestel om outomaties aan Microsoft OneDrive gekoppel te word, maar iets het skeefgeloop.</translation>
@@ -1502,6 +1503,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="2158475082070321257">Kopieer skakel na hoogtepunt</translation>
 <translation id="2159488579268505102">USB-C</translation>
 <translation id="2161058806218011758">Omvang van <ph name="SHORTCUT" /> vir <ph name="EXTENSION_NAME" /></translation>
+<translation id="2161656808144014275">Teks</translation>
 <translation id="216169395504480358">Voeg Wi-Fi by …</translation>
 <translation id="2162705204091149050">Lees inligting oor jou blaaier, bedryfstelsel, toestel, geïnstalleerde sagteware en lêers</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> en nog 1 skakelaar</translation>
@@ -4757,6 +4759,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="4657914796247705218">TrackPoint-spoed</translation>
 <translation id="4658648180588730283">Die app <ph name="APPLICATION_NAME" /> is nie vanlyn beskikbaar nie.</translation>
 <translation id="465878909996028221">Slegs http-, https- en lêerprotokolle word gesteun om blaaiers te herlei.</translation>
+<translation id="4658821552705754298"><ph name="ITEM_NAME" /> <ph name="CATEGORY_NAME" /></translation>
 <translation id="4659126640776004816">Hierdie kenmerk word aangeskakel wanneer jy by jou Google-rekening aanmeld.</translation>
 <translation id="4660465405448977105">{COUNT,plural, =1{Prent}other{# prente}}</translation>
 <translation id="4660540330091848931">Verander tans grootte</translation>
@@ -8921,6 +8924,7 @@ Druk 'n toegewese skakelaar of sleutel om toewysing te verwyder.</translation>
 <translation id="7933486544522242079">&amp;Stoor en deel</translation>
 <translation id="7933518760693751884">Klik die Boekmerk-ikoon om 'n bladsy te stoor vir later</translation>
 <translation id="7933634003144813719">Bestuur gedeelde vouers</translation>
+<translation id="7935072572536724392">Outomatiese wagwoordverandering het misluk</translation>
 <translation id="7936195481975600746">Gebruik jou stelsel se skermkieser om jou skerm te deel</translation>
 <translation id="7937809006412909895">Versamel tans diagnostiese data</translation>
 <translation id="7938881824185772026">Labs</translation>
@@ -9058,6 +9062,7 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8029412171914613589">{SELECTED_ITEMS,plural, =0{Leeslys}=1{Leeslys ({SELECTED_ITEMS})}other{Leeslys ({SELECTED_ITEMS})}}</translation>
 <translation id="8029492516535178472"><ph name="WINDOW_TITLE" /> – toestemming is versoek; druk ⌘ + Option + oppyl om te antwoord</translation>
 <translation id="8030169304546394654">Ontkoppel</translation>
+<translation id="8030814978699290230">Probeer tans aanmeld …</translation>
 <translation id="8030852056903932865">Keur goed</translation>
 <translation id="8033827949643255796">gekies</translation>
 <translation id="8033958968890501070">Uittelling</translation>
@@ -9471,6 +9476,7 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8343578633847737325">Onlangse kletse en gespreksdrade</translation>
 <translation id="8345848587667658367">Jy kan nou jou foon se onlangse foto's, media, kennisgewings en programme bekyk</translation>
 <translation id="8347227221149377169">Druktake</translation>
+<translation id="8347728744337089388">Stuur na jou toestel</translation>
 <translation id="8348430946834215779">Gebruik HTTPS waar moontlik en word gewaarsku voordat werwe laai wat dit nie steun nie</translation>
 <translation id="8348896480272971199">Gaan jou internet na en probeer weer.</translation>
 <translation id="8349305172487531364">Boekmerkebalk</translation>
@@ -9520,6 +9526,7 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8382197851871630452">Plaaslike weer</translation>
 <translation id="8382913212082956454">Kopieer e-posadres</translation>
 <translation id="8383614331548401927">Opsomming van verwelkoming</translation>
+<translation id="8387157483437834731">Wagwoord is suksesvol verander</translation>
 <translation id="8387361103813440603">Mag nie jou ligging sien nie</translation>
 <translation id="8389492867173948260">Laat hierdie uitbreiding toe om al jou data op webwerwe wat jy besoek te lees en te verander:</translation>
 <translation id="8390449457866780408">Bediener is nie beskikbaar nie.</translation>
@@ -10605,6 +10612,7 @@ Dit kan inligting oor geïnstalleerde sagteware, lêers, jou blaaier, die toeste
 <translation id="9220820413868316583">Lig en probeer dan weer.</translation>
 <translation id="922152298093051471">Pasmaak Chrome</translation>
 <translation id="9222839391870847423">Tydsduur: <ph name="DURATION" /></translation>
+<translation id="923306663772315007">Stuur na jou toestel</translation>
 <translation id="923467487918828349">Wys almal</translation>
 <translation id="923900195646492191">{NUM_EXTENSIONS,plural, =1{Maak Uitbreidings oop om dit te bestuur}other{Maak Uitbreidings oop om hulle te bestuur}}</translation>
 <translation id="924818813611903184">Bestuur tale in Chrome-bedryfstelselinstellings</translation>

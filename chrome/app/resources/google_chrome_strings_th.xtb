@@ -754,7 +754,6 @@
 <translation id="842852285618875960">คุณมีบุ๊กมาร์กถึงขีดจำกัด <ph name="BOOKMARK_LIMIT" /> รายการของ Google Chrome แล้ว ระบบจึงยังไม่ได้บันทึกบุ๊กมาร์กบางรายการลงในบัญชี Google
 
 บันทึกบุ๊กมาร์กใหม่ในบัญชีไม่ได้จนกว่าคุณจะลบบุ๊กมาร์กบางรายการ หากคุณออกจากระบบตอนนี้ ระบบจะลบบุ๊กมาร์กที่ยังไม่ได้บันทึก</translation>
-<translation id="8433638294851456451">หากต้องการส่งหมายเลขจากที่นี่ไปยังโทรศัพท์ Android ให้ลงชื่อเข้าใช้ Chrome ในอุปกรณ์ทั้งสองเครื่อง</translation>
 <translation id="8458117863387545390">ดาวน์โหลด Chrome ในโทรศัพท์</translation>
 <translation id="8496177819998570653">เครื่องมือจัดการรหัสผ่านบน Google</translation>
 <translation id="8498858610309223613">ระบบเพิ่งนำการอัปเดตความปลอดภัยพิเศษไปใช้กับ Google Chrome รีสตาร์ทเลย แล้วเราจะคืนค่าแท็บให้คุณ</translation>
@@ -798,7 +797,6 @@
 <translation id="8883862939660515976">ถาม Google Lens เกี่ยวกับรูปภาพนี้</translation>
 <translation id="8914504000324227558">เปิด Chrome ขึ้นใหม่</translation>
 <translation id="8920304659326707347">ดำเนินการต่อจากที่ค้างไว้ด้วย Chrome บน iOS</translation>
-<translation id="8922193594870374009">หากต้องการส่งหมายเลขจาก <ph name="ORIGIN" /> ไปยังโทรศัพท์ Android ให้ลงชื่อเข้าใช้ Chrome ในอุปกรณ์ทั้งสองเครื่อง</translation>
 <translation id="8922998289262614701">นําข้อมูลแอปนี้ออกจาก Chrome</translation>
 <translation id="8925636929359899517">เราใช้ข้อมูลเพื่อปรับปรุงบริการนี้ ดู<ph name="BEGIN_LINK1" />นโยบายความเป็นส่วนตัว<ph name="END_LINK1" />และ<ph name="BEGIN_LINK2" />ข้อกำหนดในการให้บริการ<ph name="END_LINK2" /></translation>
 <translation id="8936233353620149764">เปิด/ปิด Gemini ใน Chrome</translation>

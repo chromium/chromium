@@ -1224,6 +1224,7 @@
 <translation id="1938351510777341717">外部 Command 鍵</translation>
 <translation id="1940221956626514677">自訂工具列</translation>
 <translation id="1940546824932169984">已連結的裝置</translation>
+<translation id="194081218158106711">正在確認變更後的密碼...</translation>
 <translation id="1941410638996203291">開始時間 <ph name="TIME" /></translation>
 <translation id="1941553344801134989">版本：<ph name="APP_VERSION" /></translation>
 <translation id="1941685451584875710">系統管理員已將你的帳戶設為自動連線至 Microsoft OneDrive，但發生錯誤。</translation>
@@ -1492,6 +1493,7 @@
 <translation id="2158475082070321257">複製醒目顯示文字的連結</translation>
 <translation id="2159488579268505102">USB-C</translation>
 <translation id="2161058806218011758">「<ph name="EXTENSION_NAME" />」的<ph name="SHORTCUT" />範圍</translation>
+<translation id="2161656808144014275">文字</translation>
 <translation id="216169395504480358">新增 Wi-Fi...</translation>
 <translation id="2162705204091149050">讀取瀏覽器、OS、裝置、已安裝的軟體和檔案的相關資訊</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />、<ph name="SECOND_SWITCH" />、<ph name="THIRD_SWITCH" />，以及另外 1 個按鍵</translation>
@@ -4737,6 +4739,7 @@
 <translation id="4657914796247705218">TrackPoint 速度</translation>
 <translation id="4658648180588730283">離線時無法使用「<ph name="APPLICATION_NAME" />」應用程式。</translation>
 <translation id="465878909996028221">瀏覽器重新導向僅支援 http、https 和 file 通訊協定。</translation>
+<translation id="4658821552705754298"><ph name="ITEM_NAME" /><ph name="CATEGORY_NAME" /></translation>
 <translation id="4659126640776004816">當你登入 Google 帳戶時，系統會啟用這項功能。</translation>
 <translation id="4660465405448977105">{COUNT,plural, =1{圖片}other{# 張圖片}}</translation>
 <translation id="4660540330091848931">正在調整大小</translation>
@@ -8895,6 +8898,7 @@
 <translation id="7933486544522242079">儲存並分享(&amp;S)</translation>
 <translation id="7933518760693751884">如要儲存頁面以便稍後閱讀，請按一下「書籤」圖示</translation>
 <translation id="7933634003144813719">管理共用資料夾</translation>
+<translation id="7935072572536724392">無法自動變更密碼</translation>
 <translation id="7936195481975600746">如要分享畫面，請使用系統的畫面選擇器</translation>
 <translation id="7937809006412909895">正在收集診斷資料</translation>
 <translation id="7938881824185772026">Google 研究室</translation>
@@ -9032,6 +9036,7 @@
 <translation id="8029412171914613589">{SELECTED_ITEMS,plural, =0{閱讀清單}=1{閱讀清單 ({SELECTED_ITEMS})}other{閱讀清單 ({SELECTED_ITEMS})}}</translation>
 <translation id="8029492516535178472"><ph name="WINDOW_TITLE" /> - 已要求權限，按下 ⌘ + Option + 向上鍵即可回覆</translation>
 <translation id="8030169304546394654">已中斷連線</translation>
+<translation id="8030814978699290230">正在嘗試登入...</translation>
 <translation id="8030852056903932865">核准</translation>
 <translation id="8033827949643255796">已選取</translation>
 <translation id="8033958968890501070">逾時</translation>
@@ -9445,6 +9450,7 @@
 <translation id="8343578633847737325">近期對話和討論串</translation>
 <translation id="8345848587667658367">你現在可以查看手機最近的相片、媒體、通知和應用程式</translation>
 <translation id="8347227221149377169">列印工作</translation>
+<translation id="8347728744337089388">傳送到你的裝置(&amp;D)</translation>
 <translation id="8348430946834215779">盡可能使用 HTTPS，並在載入不支援該通訊協定的網站前發出警告</translation>
 <translation id="8348896480272971199">請檢查網際網路連線，然後再試一次。</translation>
 <translation id="8349305172487531364">書籤列</translation>
@@ -9494,6 +9500,7 @@
 <translation id="8382197851871630452">當地天氣</translation>
 <translation id="8382913212082956454">複製電子郵件地址(&amp;E)</translation>
 <translation id="8383614331548401927">歡迎頁面要事回顧</translation>
+<translation id="8387157483437834731">密碼已成功變更</translation>
 <translation id="8387361103813440603">禁止以下網站查看你的位置資訊</translation>
 <translation id="8389492867173948260">允許這個擴充功能讀取及變更已造訪網站的所有相關資料：</translation>
 <translation id="8390449457866780408">無法與伺服器連線。</translation>
@@ -10579,6 +10586,7 @@
 <translation id="9220820413868316583">請移開手指，然後再試一次。</translation>
 <translation id="922152298093051471">自訂 Chrome</translation>
 <translation id="9222839391870847423">時間長度：<ph name="DURATION" /></translation>
+<translation id="923306663772315007">傳送到你的裝置(&amp;D)</translation>
 <translation id="923467487918828349">全部顯示</translation>
 <translation id="923900195646492191">{NUM_EXTENSIONS,plural, =1{如要管理這個項目，請開啟「擴充功能」}other{如要管理這些項目，請開啟「擴充功能」}}</translation>
 <translation id="924818813611903184">在 Chrome OS 設定中管理語言</translation>

@@ -1224,6 +1224,7 @@
 <translation id="1938351510777341717">แป้น Command ภายนอก</translation>
 <translation id="1940221956626514677">ปรับแต่งแถบเครื่องมือ</translation>
 <translation id="1940546824932169984">อุปกรณ์ที่เชื่อมต่อ</translation>
+<translation id="194081218158106711">กำลังยืนยันรหัสผ่านที่เปลี่ยน...</translation>
 <translation id="1941410638996203291">เวลาเริ่มต้น <ph name="TIME" /></translation>
 <translation id="1941553344801134989">เวอร์ชัน: <ph name="APP_VERSION" /></translation>
 <translation id="1941685451584875710">ผู้ดูแลระบบได้กำหนดค่าบัญชีของคุณให้เชื่อมต่อกับ Microsoft OneDrive โดยอัตโนมัติ แต่เกิดข้อผิดพลาดขึ้น</translation>
@@ -1492,6 +1493,7 @@
 <translation id="2158475082070321257">คัดลอกลิงก์ไปยังไฮไลต์</translation>
 <translation id="2159488579268505102">USB-C</translation>
 <translation id="2161058806218011758">ขอบเขตของ <ph name="SHORTCUT" /> สำหรับ <ph name="EXTENSION_NAME" /></translation>
+<translation id="2161656808144014275">ข้อความ</translation>
 <translation id="216169395504480358">เพิ่ม WiFi...</translation>
 <translation id="2162705204091149050">อ่านข้อมูลเกี่ยวกับเบราว์เซอร์ ระบบปฏิบัติการ อุปกรณ์ ซอฟต์แวร์ที่ติดตั้ง และไฟล์</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> และสวิตช์อีก 1 รายการ</translation>
@@ -4742,6 +4744,7 @@
 <translation id="4657914796247705218">ความเร็วของ TrackPoint</translation>
 <translation id="4658648180588730283">แอปพลิเคชัน <ph name="APPLICATION_NAME" /> ใช้งานแบบออฟไลน์ไม่ได้</translation>
 <translation id="465878909996028221">การเปลี่ยนเส้นทางเบราว์เซอร์รองรับเฉพาะ http, https และโปรโตคอลไฟล์เท่านั้น</translation>
+<translation id="4658821552705754298"><ph name="ITEM_NAME" /> <ph name="CATEGORY_NAME" /></translation>
 <translation id="4659126640776004816">ฟีเจอร์นี้จะเปิดเมื่อคุณลงชื่อเข้าใช้บัญชี Google</translation>
 <translation id="4660465405448977105">{COUNT,plural, =1{ภาพ}other{# ภาพ}}</translation>
 <translation id="4660540330091848931">กำลังปรับขนาด</translation>
@@ -5320,6 +5323,7 @@
 <translation id="5096775069898886423">สำหรับเว็บไซต์ที่ไม่รองรับการเชื่อมต่อที่ปลอดภัย โปรดรับคำเตือนก่อนเข้าชมเว็บไซต์</translation>
 <translation id="5097002363526479830">ไม่สามารถเชื่อมต่อเครือข่าย "<ph name="NAME" />": <ph name="DETAILS" /></translation>
 <translation id="5097349930204431044">เว็บไซต์ที่คุณเข้าชมจะสามารถระบุสิ่งที่คุณชอบ จากนั้นจะแนะนำโฆษณาในขณะที่คุณท่องเว็บต่อไป</translation>
+<translation id="5097472729724586429">เพิ่มคำอธิบายประกอบแบบข้อความด้วยเครื่องมือ "เพิ่มคำอธิบายประกอบแบบข้อความ" ใหม่</translation>
 <translation id="5097649414558628673">เครื่องมือ: <ph name="PRINT_NAME" /></translation>
 <translation id="5097874180538493929">คลิกอัตโนมัติเมื่อเคอร์เซอร์หยุด</translation>
 <translation id="5098963855433723436">เปิดในแอปพลิเคชันแยกต่างหาก</translation>
@@ -5384,6 +5388,7 @@
 <translation id="5146235736676876345">เลือกเอง</translation>
 <translation id="5146896637028965135">เสียงของระบบ</translation>
 <translation id="5147113439721488265">คำแนะนำ</translation>
+<translation id="5148020348702787234">หากต้องการส่งลิงก์ โปรดยืนยันว่าเป็นคุณ คุณสามารถส่งลิงก์ได้เมื่อลงชื่อเข้าใช้บัญชี Google เดียวกันในอุปกรณ์ทั้ง 2 เครื่อง</translation>
 <translation id="5148285448107770349">รหัสผ่านต้องมีอักขระอย่างน้อย 8 ตัว</translation>
 <translation id="5149602533174716626">คัดลอกเฟรมวิดีโอ</translation>
 <translation id="5150254825601720210">ใบรับรองชื่อเซิร์ฟเวอร์ SSL ของ Netscape</translation>
@@ -8900,6 +8905,7 @@
 <translation id="7933486544522242079">บันทึกและแชร์</translation>
 <translation id="7933518760693751884">หากต้องการบันทึกหน้าเว็บไว้อ่านภายหลัง ให้คลิกไอคอนบุ๊กมาร์ก</translation>
 <translation id="7933634003144813719">จัดการโฟลเดอร์ที่แชร์</translation>
+<translation id="7935072572536724392">การเปลี่ยนรหัสผ่านอัตโนมัติไม่สำเร็จ</translation>
 <translation id="7936195481975600746">หากต้องการแชร์หน้าจอ ให้ใช้เครื่องมือเลือกหน้าจอของระบบ</translation>
 <translation id="7937809006412909895">กำลังรวบรวมข้อมูลการวินิจฉัย</translation>
 <translation id="7938881824185772026">Labs</translation>
@@ -9037,6 +9043,7 @@
 <translation id="8029412171914613589">{SELECTED_ITEMS,plural, =0{เรื่องรออ่าน}=1{เรื่องรออ่าน ({SELECTED_ITEMS})}other{เรื่องรออ่าน ({SELECTED_ITEMS})}}</translation>
 <translation id="8029492516535178472"><ph name="WINDOW_TITLE" /> - ขอสิทธิ์ กด ⌘ + Option + ลูกศรขึ้นเพื่อตอบกลับ</translation>
 <translation id="8030169304546394654">ยกเลิกการเชื่อมต่อแล้ว</translation>
+<translation id="8030814978699290230">กำลังพยายามลงชื่อเข้าใช้...</translation>
 <translation id="8030852056903932865">อนุมัติ</translation>
 <translation id="8033827949643255796">เลือกแล้ว</translation>
 <translation id="8033958968890501070">หมดเวลา</translation>
@@ -9450,6 +9457,7 @@
 <translation id="8343578633847737325">แชทและชุดข้อความล่าสุด</translation>
 <translation id="8345848587667658367">ตอนนี้คุณดูรูปภาพ สื่อ การแจ้งเตือน และแอปล่าสุดของโทรศัพท์ได้แล้ว</translation>
 <translation id="8347227221149377169">งานพิมพ์</translation>
+<translation id="8347728744337089388">ส่งไปยังอุปกรณ์ของคุณ</translation>
 <translation id="8348430946834215779">ใช้ HTTPS ทุกครั้งที่ทำได้และรับการแจ้งเตือนก่อนโหลดเว็บไซต์ที่ไม่รองรับ HTTPS</translation>
 <translation id="8348896480272971199">โปรดตรวจสอบอินเทอร์เน็ตแล้วลองอีกครั้ง</translation>
 <translation id="8349305172487531364">แถบบุ๊กมาร์ก</translation>
@@ -9499,6 +9507,7 @@
 <translation id="8382197851871630452">สภาพอากาศในพื้นที่</translation>
 <translation id="8382913212082956454">คัดลอก&amp;ที่อยู่อีเมล</translation>
 <translation id="8383614331548401927">สรุปจากการใช้ครั้งล่าสุด</translation>
+<translation id="8387157483437834731">เปลี่ยนรหัสผ่านเรียบร้อยแล้ว</translation>
 <translation id="8387361103813440603">ไม่ได้รับอนุญาตให้ดูตำแหน่งของคุณ</translation>
 <translation id="8389492867173948260">อนุญาตให้ส่วนขยายนี้อ่านและเปลี่ยนแปลงข้อมูลทั้งหมดในเว็บไซต์ที่คุณเข้าชม</translation>
 <translation id="8390449457866780408">เซิร์ฟเวอร์ไม่พร้อมใช้งาน</translation>
@@ -10241,6 +10250,7 @@
 <translation id="8967427617812342790">เพิ่มไปยังเรื่องรออ่าน</translation>
 <translation id="8968527460726243404">ตัวเขียนอิมเมจระบบ ChromeOS</translation>
 <translation id="8968766641738584599">บันทึกบัตร</translation>
+<translation id="8970232194848546151">ส่งลิงก์ไปยังอุปกรณ์อื่น</translation>
 <translation id="8970887620466824814">เกิดข้อผิดพลาด</translation>
 <translation id="89720367119469899">Escape</translation>
 <translation id="8972513834460200407">โปรดตรวจสอบกับผู้ดูแลระบบเครือข่ายของคุณเพื่อให้แน่ใจว่าไฟร์วอลล์ไม่ได้บล็อกการดาวน์โหลดจากเซิร์ฟเวอร์ของ Google</translation>
@@ -10507,6 +10517,7 @@
 <translation id="9151906066336345901">End</translation>
 <translation id="9152503903192861480">เปิดในโหมด AI</translation>
 <translation id="9153367754133725216">ดูคำแนะนำเกี่ยวกับแอปและเนื้อหาเว็บใหม่ใน Launcher และผลการค้นหา ส่งสถิติเพื่อปรับปรุงคำแนะนำก็ต่อเมื่อคุณเลือกที่จะส่งรายงานข้อขัดข้อง รวมถึงข้อมูลการวินิจฉัยและการใช้งานไปยัง ChromeOS</translation>
+<translation id="9153451439615847952">ลดเสียงพื้นหลังสำหรับการแจ้งเตือน</translation>
 <translation id="9154194610265714752">อัปเดตแล้ว</translation>
 <translation id="915485121129452731">แท็บเล็ตสำหรับวาดรูป</translation>
 <translation id="9155344700756733162">ยกเลิกการเลือกสี</translation>
@@ -10584,6 +10595,7 @@
 <translation id="9220820413868316583">ยกนิ้วขึ้นแล้วลองอีกครั้ง</translation>
 <translation id="922152298093051471">ปรับแต่ง Chrome</translation>
 <translation id="9222839391870847423">ระยะเวลา: <ph name="DURATION" /></translation>
+<translation id="923306663772315007">ส่งไปยังอุปกรณ์ของคุณ</translation>
 <translation id="923467487918828349">แสดงทั้งหมด</translation>
 <translation id="923900195646492191">{NUM_EXTENSIONS,plural, =1{เปิดส่วนขยายเพื่อจัดการ}other{เปิดส่วนขยายเพื่อจัดการ}}</translation>
 <translation id="924818813611903184">จัดการภาษาในการตั้งค่า Chrome OS</translation>

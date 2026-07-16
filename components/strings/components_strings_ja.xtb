@@ -4015,6 +4015,7 @@
 <translation id="721197778055552897">この問題の詳細については、<ph name="BEGIN_LINK" />こちら<ph name="END_LINK" />をご覧ください。</translation>
 <translation id="7213191991901907140">ご意見をお寄せください</translation>
 <translation id="7219179957768738017">この接続には <ph name="SSL_VERSION" /> を使用しています。</translation>
+<translation id="7219197639442810756">Gemini による提案</translation>
 <translation id="7220786058474068424">処理しています</translation>
 <translation id="7221855153210829124">通知を表示</translation>
 <translation id="7222232353993864120">メール アドレス</translation>
@@ -4622,6 +4623,7 @@
 <translation id="8134058435519644366">採用、人事</translation>
 <translation id="8135546115396015134">左矢印キー</translation>
 <translation id="8137456439814903304">エネルギー、公共事業</translation>
+<translation id="8138591088112729119">パーソナル インテリジェンスを活用</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{1 か月前に作成}other{{NUM_MONTHS} か月前に作成}}</translation>
 <translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />、現在のデフォルト設定。<ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">PDF バージョン:</translation>

@@ -125,7 +125,6 @@
 <translation id="2287771843518581140">{NUM_TABS,plural, =1{Chromium 建議暫停拖慢瀏覽器速度的分頁}other{Chromium 建議暫停拖慢瀏覽器速度的分頁}}</translation>
 <translation id="2307973900865360088">保留在 Dock</translation>
 <translation id="2313870531055795960">使用儲存在 Chromium 中的不安全網站清單來檢查網址。如果有網站試圖盜取您的密碼，或當您下載有害檔案時，Chromium 亦可能將網址 (包括部分網頁內容) 傳送至「安全瀏覽」功能。</translation>
-<translation id="2343156876103232566">如要將號碼從此處傳送至 Android 手機，請在這兩部裝置上登入 Chromium。</translation>
 <translation id="2356070529366658676">詢問</translation>
 <translation id="2359808026110333948">繼續</translation>
 <translation id="2361918034042471035">擴充程式「<ph name="EXTENSION_NAME" />」需要你登入 Chromium</translation>
@@ -247,7 +246,6 @@
 <translation id="3600428265489994557">登入 Chromium</translation>
 <translation id="3639635944603682591">此使用者的瀏覽資料將從裝置上刪除。如要復原資料，請以「<ph name="USER_EMAIL" />」身分登入 Chromium。</translation>
 <translation id="364817392622123556">{COUNT,plural, =0{Chromium 有可用的更新，重新啟動後即可套用。}=1{Chromium 有可用的更新，重新啟動後即可套用。您的無痕式視窗不會重新開啟。}other{Chromium 有可用的更新，重新啟動後即可套用。您的 # 個無痕式視窗不會重新開啟。}}</translation>
-<translation id="3651803019964686660">如要將號碼從 <ph name="ORIGIN" /> 傳送至 Android 手機，請在這兩部裝置上登入 Chromium。</translation>
 <translation id="3667616615096815454">伺服器無法識別應用程式，因此無法安裝。</translation>
 <translation id="3675854891107786059">使用<ph name="BEGIN_LINK" />密碼短語<ph name="END_LINK" />加密 Google 帳戶中的所有 Chromium 資料。系統將不會加密你在 Google Pay 中的付款方法和地址，Chromium 上的瀏覽記錄將不會同步。</translation>
 <translation id="370962675267501463">{COUNT,plural, =0{管理員要求您重新啟動 Chromium，以套用此更新}=1{管理員要求您重新啟動 Chromium，以套用此更新。您的無痕式視窗不會重新開啟。}other{管理員要求您重新啟動 Chromium，以套用此更新。您的 # 個無痕式視窗不會重新開啟。}}</translation>

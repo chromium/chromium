@@ -126,7 +126,6 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="2287771843518581140">{NUM_TABS,plural, =1{Chromium mælir með því að gera hlé á flipanum sem er að hægja á vafranum þínum}one{Chromium mælir með því að gera hlé á flipunum sem eru að hægja á vafranum þínum}other{Chromium mælir með því að gera hlé á flipunum sem eru að hægja á vafranum þínum}}</translation>
 <translation id="2307973900865360088">Hafa í dokku</translation>
 <translation id="2313870531055795960">Ber vefslóðir saman við lista yfir óörugg vefsvæði sem er vistaður í Chromium. Ef vefsvæði reynir að stela aðgangsorðinu þínu, eða ef þú sækir skaðlega skrá, gæti Chromium einnig sent vefslóðir í Örugga vefskoðun, þar á meðal hluta af innihaldi síðna.</translation>
-<translation id="2343156876103232566">Til að senda númer héðan í Android símann þinn skaltu skrá þig inn á Chromium í báðum tækjunum.</translation>
 <translation id="2356070529366658676">Spyrja</translation>
 <translation id="2359808026110333948">Halda áfram</translation>
 <translation id="2361918034042471035">Viðbótin „<ph name="EXTENSION_NAME" />“ vill að þú skráir þig inn á Chromium</translation>
@@ -248,7 +247,6 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="3600428265489994557">Skráðu þig inn á Chromium</translation>
 <translation id="3639635944603682591">Vefskoðunargögnum þessa aðila verður eytt úr þessu tæki. Skráðu þig inn í Chromium sem <ph name="USER_EMAIL" /> til að endurheimta gögn.</translation>
 <translation id="364817392622123556">{COUNT,plural, =0{Ný útgáfa af Chromium er í boði og hún verður notuð um leið og þú endurræsir.}=1{Ný útgáfa af Chromium er í boði og hún verður notuð um leið og þú endurræsir. Huliðsglugginn enduropnast ekki.}one{Ný útgáfa af Chromium er í boði og hún verður notuð um leið og þú endurræsir. # huliðsgluggi enduropnast ekki.}other{Ný útgáfa af Chromium er í boði og hún verður notuð um leið og þú endurræsir. # huliðsgluggar enduropnast ekki.}}</translation>
-<translation id="3651803019964686660">Til að senda númer úr <ph name="ORIGIN" /> í Android símann þinn skaltu skrá þig inn á Chromium í báðum tækjunum.</translation>
 <translation id="3667616615096815454">Ekki tókst að setja upp, þjónninn þekkir ekki forritið.</translation>
 <translation id="3675854891107786059">Notaðu <ph name="BEGIN_LINK" />eigið aðgangsorð<ph name="END_LINK" /> til að dulkóða öll Chromium-gögn á Google-reikningnum þínum. Upplýsingar um greiðslumáta og heimilisföng úr Google Pay verða ekki dulkóðaðar. Vafraferill Chromium samstillist ekki.</translation>
 <translation id="370962675267501463">{COUNT,plural, =0{Kerfisstjórinn þinn vill að þú endurræsir Chromium til að setja upp þessa uppfærslu}=1{Kerfisstjórinn þinn vill að þú endurræsir Chromium til að setja upp þessa uppfærslu. Huliðsglugginn enduropnast ekki.}one{Kerfisstjórinn þinn vill að þú endurræsir Chromium til að setja upp þessa uppfærslu. # huliðsgluggi enduropnast ekki.}other{Kerfisstjórinn þinn vill að þú endurræsir Chromium til að setja upp þessa uppfærslu. # huliðsgluggar enduropnast ekki.}}</translation>

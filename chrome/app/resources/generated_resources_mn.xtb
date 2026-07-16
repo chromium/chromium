@@ -1233,6 +1233,7 @@
 <translation id="1938351510777341717">Гадаад тушаал</translation>
 <translation id="1940221956626514677">Өөрчлөх самбар</translation>
 <translation id="1940546824932169984">Холбогдсон төхөөрөмж</translation>
+<translation id="194081218158106711">Өөрчилсөн нууц үгийг баталгаажуулж байна...</translation>
 <translation id="1941410638996203291">Эхлэх цаг <ph name="TIME" /></translation>
 <translation id="1941553344801134989">Хувилбар: <ph name="APP_VERSION" /></translation>
 <translation id="1941685451584875710">Танай администратор бүртгэлийг тань Microsoft OneDrive-т автоматаар холбогдохоор тохируулсан хэдий ч ямар нэг алдаа гарлаа.</translation>
@@ -1501,6 +1502,7 @@
 <translation id="2158475082070321257">Тодруулсан текстийн холбоосыг хуулах</translation>
 <translation id="2159488579268505102">USB-C</translation>
 <translation id="2161058806218011758"><ph name="EXTENSION_NAME" />-д зориулсан <ph name="SHORTCUT" />-н хамрах хүрээ</translation>
+<translation id="2161656808144014275">Текст</translation>
 <translation id="216169395504480358">Wi-Fi нэмэх...</translation>
 <translation id="2162705204091149050">Таны хөтөч, OS, төхөөрөмж, суулгасан программ хангамж болон файлуудын талаарх мэдээллийг унших</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> болон өөр 1 сэлгүүр</translation>
@@ -4755,6 +4757,7 @@
 <translation id="4657914796247705218">TrackPoint-н хурд</translation>
 <translation id="4658648180588730283"><ph name="APPLICATION_NAME" /> аппликэйшн офлайн үед боломжгүй.</translation>
 <translation id="465878909996028221">Хөтчийн дахин чиглүүлэлтэд зөвхөн http, https болон файлын протоколыг дэмждэг.</translation>
+<translation id="4658821552705754298"><ph name="ITEM_NAME" /> <ph name="CATEGORY_NAME" /></translation>
 <translation id="4659126640776004816">Таныг Google Бүртгэлдээ нэвтрэхэд энэ онцлог асна.</translation>
 <translation id="4660465405448977105">{COUNT,plural, =1{Зураг}other{# зураг}}</translation>
 <translation id="4660540330091848931">Хэмжээг өөрчилж байна</translation>
@@ -8918,6 +8921,7 @@
 <translation id="7933486544522242079">&amp;Хадгалах болон хуваалцах</translation>
 <translation id="7933518760693751884">Хуудсыг дараа уншихаар хадгалахын тулд Хавчуурганы дүрс тэмдгийг товшино уу</translation>
 <translation id="7933634003144813719">Хуваалцсан фолдерыг удирдах</translation>
+<translation id="7935072572536724392">Нууц үгийг автоматаар өөрчилж чадсангүй</translation>
 <translation id="7936195481975600746">Дэлгэцээ хуваалцахын тулд системийнхээ дэлгэц сонгогчийг ашиглана уу</translation>
 <translation id="7937809006412909895">Оношилгооны өгөгдөл цуглуулж байна</translation>
 <translation id="7938881824185772026">Лаб</translation>
@@ -9054,6 +9058,7 @@
 <translation id="8029412171914613589">{SELECTED_ITEMS,plural, =0{Унших жагсаалт}=1{Унших жагсаалт ({SELECTED_ITEMS})}other{Унших жагсаалт ({SELECTED_ITEMS})}}</translation>
 <translation id="8029492516535178472"><ph name="WINDOW_TITLE" /> - Зөвшөөрлийн хүсэлт тавьсан. Хариу өгөхийн тулд ⌘ + Сонголт + Дээш сумыг дарна уу</translation>
 <translation id="8030169304546394654">Салгасан</translation>
+<translation id="8030814978699290230">Нэвтрэхээр оролдож байна...</translation>
 <translation id="8030852056903932865">Зөвшөөрөх</translation>
 <translation id="8033827949643255796">Сонгогдсон</translation>
 <translation id="8033958968890501070">Хугацаа хэтэрсэн</translation>
@@ -9467,6 +9472,7 @@
 <translation id="8343578633847737325">Саяхны чат, уялдаат харилцан яриа</translation>
 <translation id="8345848587667658367">Та одоо утасныхаа саяхны зургууд, медиа, мэдэгдлүүд болон аппуудыг харах боломжтой</translation>
 <translation id="8347227221149377169">Хэвлэх ажлууд</translation>
+<translation id="8347728744337089388">&amp;Төхөөрөмж рүүгээ илгээх</translation>
 <translation id="8348430946834215779">Боломжтой үед HTTPS-г ашиглаж, түүнийг дэмждэггүй сайтуудыг ачаалахаас өмнө сануулга аваарай</translation>
 <translation id="8348896480272971199">Интернэтээ шалгаад, дахин оролдоно уу.</translation>
 <translation id="8349305172487531364">Хайлтын жагсаалтын цонх</translation>
@@ -9516,6 +9522,7 @@
 <translation id="8382197851871630452">Орон нутгийн цаг агаар</translation>
 <translation id="8382913212082956454">И-мэйл хаягийг хуулбарлах</translation>
 <translation id="8383614331548401927">Угтах тойм</translation>
+<translation id="8387157483437834731">Нууц үгийг амжилттай өөрчилсөн</translation>
 <translation id="8387361103813440603">Таны байршлыг харахыг зөвшөөрөөгүй</translation>
 <translation id="8389492867173948260">Энэ өргөтгөлд таны зочилдог веб сайтын бүх өгөгдлийг унших болон өөрчлөхийг зөвшөөрнө үү:</translation>
 <translation id="8390449457866780408">Серверүүд ажиллах боломжгүй байна.</translation>
@@ -10599,6 +10606,7 @@
 <translation id="9220820413868316583">Дээшлүүлээд дахин оролдоно уу.</translation>
 <translation id="922152298093051471">Chrome-г өөрчлөх</translation>
 <translation id="9222839391870847423">Үргэлжлэх хугацаа: <ph name="DURATION" /></translation>
+<translation id="923306663772315007">&amp;Төхөөрөмж рүүгээ илгээх</translation>
 <translation id="923467487918828349">Бүгдийг харуул</translation>
 <translation id="923900195646492191">{NUM_EXTENSIONS,plural, =1{Үүнийг удирдахын тулд Өргөтгөлүүдийг нээнэ үү}other{Эдгээрийг удирдахын тулд Өргөтгөлүүдийг нээнэ үү}}</translation>
 <translation id="924818813611903184">Хэлнүүдийг ChromeOS-н тохиргоонд удирдах</translation>

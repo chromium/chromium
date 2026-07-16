@@ -1235,6 +1235,7 @@ Du kan til enhver tid tjekke dine adgangskoder i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1938351510777341717">Ekstern kommando</translation>
 <translation id="1940221956626514677">Tilpas værktøjslinjen</translation>
 <translation id="1940546824932169984">Forbundne enheder</translation>
+<translation id="194081218158106711">Bekræfter den ændrede adgangskode…</translation>
 <translation id="1941410638996203291">Starttidspunkt: <ph name="TIME" /></translation>
 <translation id="1941553344801134989">Version: <ph name="APP_VERSION" /></translation>
 <translation id="1941685451584875710">Din administrator har konfigureret din konto til automatisk at oprette forbindelse til Microsoft OneDrive, men noget gik galt.</translation>
@@ -1503,6 +1504,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2158475082070321257">Kopiér link til fremhævning</translation>
 <translation id="2159488579268505102">USB-C</translation>
 <translation id="2161058806218011758">Omfang af <ph name="SHORTCUT" /> for <ph name="EXTENSION_NAME" /></translation>
+<translation id="2161656808144014275">Tekst</translation>
 <translation id="216169395504480358">Tilføj Wi-Fi...</translation>
 <translation id="2162705204091149050">Læs oplysninger om browseren, operativsystemet, enheden, installeret software og filer</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> og 1 anden kontakt</translation>
@@ -4758,6 +4760,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4657914796247705218">TrackPoint-hastighed</translation>
 <translation id="4658648180588730283">Appen <ph name="APPLICATION_NAME" /> er ikke tilgængelig offline.</translation>
 <translation id="465878909996028221">Det er kun http, https og filprotokoller, der kan omdirigeres til en alternativ browser.</translation>
+<translation id="4658821552705754298"><ph name="ITEM_NAME" /> <ph name="CATEGORY_NAME" /></translation>
 <translation id="4659126640776004816">Når du logger ind på din Google-konto, er denne funktion aktiveret.</translation>
 <translation id="4660465405448977105">{COUNT,plural, =1{Billede}one{# billede}other{# billeder}}</translation>
 <translation id="4660540330091848931">Justerer størrelsen</translation>
@@ -8924,6 +8927,7 @@ Tryk på en kontakt eller tast, der er tildelt en handling, for at fjerne tildel
 <translation id="7933486544522242079">&amp;Gem og del</translation>
 <translation id="7933518760693751884">Klik på bogmærkeikonet, hvis du vil gemme en side til senere.</translation>
 <translation id="7933634003144813719">Administrer delte mapper</translation>
+<translation id="7935072572536724392">Automatisk ændring af adgangskode mislykkedes</translation>
 <translation id="7936195481975600746">Brug dit systems skærmvælger til at dele din skærm</translation>
 <translation id="7937809006412909895">Indsamler diagnosticeringsdata</translation>
 <translation id="7938881824185772026">Labs</translation>
@@ -9061,6 +9065,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8029412171914613589">{SELECTED_ITEMS,plural, =0{Læseliste}=1{Læseliste ({SELECTED_ITEMS})}one{Reading list ({SELECTED_ITEMS})}other{Læseliste ({SELECTED_ITEMS})}}</translation>
 <translation id="8029492516535178472"><ph name="WINDOW_TITLE" /> – Der er anmodet om tilladelse. Tryk på ⌘ + Option + pil op for at svare</translation>
 <translation id="8030169304546394654">Afbrudt</translation>
+<translation id="8030814978699290230">Forsøger at logge ind…</translation>
 <translation id="8030852056903932865">Godkend</translation>
 <translation id="8033827949643255796">valgt</translation>
 <translation id="8033958968890501070">Timeout</translation>
@@ -9474,6 +9479,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8343578633847737325">Seneste chatsamtaler og tråde</translation>
 <translation id="8345848587667658367">Du kan nu se din telefons seneste billeder, medier, notifikationer og apps</translation>
 <translation id="8347227221149377169">Udskriftsjobs</translation>
+<translation id="8347728744337089388">Send til din &amp;enhed</translation>
 <translation id="8348430946834215779">Brug HTTPS, når det er muligt, og bliv advaret før indlæsning af websites, der ikke understøtter HTTPS</translation>
 <translation id="8348896480272971199">Tjek din internetforbindelse, og prøv igen.</translation>
 <translation id="8349305172487531364">Bogmærkelinje</translation>
@@ -9523,6 +9529,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8382197851871630452">Lokalt vejr</translation>
 <translation id="8382913212082956454">Kopier mailadress&amp;e</translation>
 <translation id="8383614331548401927">Velkomstoversigt</translation>
+<translation id="8387157483437834731">Adgangskoden blev ændret</translation>
 <translation id="8387361103813440603">Har ikke tilladelse til at se din lokation</translation>
 <translation id="8389492867173948260">Tillad, at denne udvidelse læser og ændrer alle dine data på websites, du besøger:</translation>
 <translation id="8390449457866780408">Serveren er utilgængelig.</translation>
@@ -10609,6 +10616,7 @@ Dette kan omfatte oplysninger om installeret software, filer, din browser, enhed
 <translation id="9220820413868316583">Løft fingeren, og prøv igen.</translation>
 <translation id="922152298093051471">Tilpas Chrome</translation>
 <translation id="9222839391870847423">Varighed: <ph name="DURATION" /></translation>
+<translation id="923306663772315007">Send til din &amp;enhed</translation>
 <translation id="923467487918828349">Vis alle</translation>
 <translation id="923900195646492191">{NUM_EXTENSIONS,plural, =1{Du kan administrere den ved at åbne Udvidelser}one{Du kan administrere den ved at åbne Udvidelser}other{Du kan administrere dem ved at åbne Udvidelser}}</translation>
 <translation id="924818813611903184">Administrer sprog i indstillingerne for ChromeOS</translation>

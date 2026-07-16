@@ -1224,6 +1224,7 @@ Puedes revisar las contraseñas en cualquier momento, en <ph name="GOOGLE_PASSWO
 <translation id="1938351510777341717">Tecla externa Comando</translation>
 <translation id="1940221956626514677">Personalizar la barra de herramientas</translation>
 <translation id="1940546824932169984">Dispositivos conectados</translation>
+<translation id="194081218158106711">Confirmando el cambio de contraseña…</translation>
 <translation id="1941410638996203291">Hora de inicio <ph name="TIME" /></translation>
 <translation id="1941553344801134989">Versión: <ph name="APP_VERSION" /></translation>
 <translation id="1941685451584875710">El administrador configuró tu cuenta para que se conecte automáticamente a Microsoft OneDrive, pero se produjo un error.</translation>
@@ -1492,6 +1493,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2158475082070321257">Copiar el vínculo al texto destacado</translation>
 <translation id="2159488579268505102">USB-C</translation>
 <translation id="2161058806218011758">Alcance de <ph name="SHORTCUT" /> para <ph name="EXTENSION_NAME" /></translation>
+<translation id="2161656808144014275">Texto</translation>
 <translation id="216169395504480358">Agregar Wi-Fi</translation>
 <translation id="2162705204091149050">Leer información sobre tu navegador, SO, dispositivo, software y archivos instalados</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> y 1 interruptor más</translation>
@@ -4744,6 +4746,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="4657914796247705218">Velocidad de TrackPoint</translation>
 <translation id="4658648180588730283">La aplicación <ph name="APPLICATION_NAME" /> no está disponible sin conexión.</translation>
 <translation id="465878909996028221">Solo se admiten los protocolos http, https y de archivo para las redirecciones a navegadores.</translation>
+<translation id="4658821552705754298"><ph name="ITEM_NAME" /> <ph name="CATEGORY_NAME" /></translation>
 <translation id="4659126640776004816">Esta función se activa cuando accedes a tu Cuenta de Google.</translation>
 <translation id="4660465405448977105">{COUNT,plural, =1{Imagen}other{# imágenes}}</translation>
 <translation id="4660540330091848931">Cambiando el tamaño</translation>
@@ -8908,6 +8911,7 @@ Presiona un interruptor o tecla que ya esté asignado para quitar la asignación
 <translation id="7933486544522242079">&amp;Guardar y compartir</translation>
 <translation id="7933518760693751884">Si quieres guardar una página para verla más tarde, haz clic en el ícono de favoritos.</translation>
 <translation id="7933634003144813719">Administrar carpetas compartidas</translation>
+<translation id="7935072572536724392">No se pudo cambiar la contraseña automáticamente</translation>
 <translation id="7936195481975600746">Para compartir tu pantalla, usa el selector de pantalla del sistema</translation>
 <translation id="7937809006412909895">Se están recopilando los datos de diagnóstico</translation>
 <translation id="7938881824185772026">Labs</translation>
@@ -9045,6 +9049,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8029412171914613589">{SELECTED_ITEMS,plural, =0{Lista de lectura}=1{Lista de lectura ({SELECTED_ITEMS})}other{Lista de lectura ({SELECTED_ITEMS})}}</translation>
 <translation id="8029492516535178472"><ph name="WINDOW_TITLE" /> - Se solicitó un permiso; para responder, presiona ⌘ + Opción + flecha hacia arriba</translation>
 <translation id="8030169304546394654">Desconectado</translation>
+<translation id="8030814978699290230">Intentando acceder…</translation>
 <translation id="8030852056903932865">Aprobar</translation>
 <translation id="8033827949643255796">seleccionados</translation>
 <translation id="8033958968890501070">Se agotó el tiempo de espera</translation>
@@ -9458,6 +9463,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8343578633847737325">Chats y conversaciones recientes</translation>
 <translation id="8345848587667658367">Ahora puedes ver las apps, las notificaciones, el contenido multimedia y las fotos recientes de tu teléfono</translation>
 <translation id="8347227221149377169">Trabajos de impresión</translation>
+<translation id="8347728744337089388">Enviar a tu &amp;dispositivo</translation>
 <translation id="8348430946834215779">Usa HTTPS siempre que sea posible y recibe advertencias antes de cargar sitios que no lo admitan</translation>
 <translation id="8348896480272971199">Revisa tu conexión a Internet y vuelve a intentarlo.</translation>
 <translation id="8349305172487531364">Barra de favoritos</translation>
@@ -9507,6 +9513,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8382197851871630452">Clima local</translation>
 <translation id="8382913212082956454">Copiar dir&amp;ección de correo electrónico</translation>
 <translation id="8383614331548401927">Inicio inteligente</translation>
+<translation id="8387157483437834731">Se cambió la contraseña correctamente</translation>
 <translation id="8387361103813440603">No puede ver tu ubicación</translation>
 <translation id="8389492867173948260">Permitir que esta extensión lea y cambie todos tus datos en los sitios web que visitas:</translation>
 <translation id="8390449457866780408">El servidor no está disponible.</translation>
@@ -10592,6 +10599,7 @@ Esto puede incluir información sobre el software instalado, los archivos, el na
 <translation id="9220820413868316583">Levanta el dedo y vuelve a intentarlo.</translation>
 <translation id="922152298093051471">Personalizar Chrome</translation>
 <translation id="9222839391870847423">Duración: <ph name="DURATION" /></translation>
+<translation id="923306663772315007">Enviar a tu &amp;dispositivo</translation>
 <translation id="923467487918828349">Mostrar todos</translation>
 <translation id="923900195646492191">{NUM_EXTENSIONS,plural, =1{Para administrarla, abre Extensiones}other{Para administrarlas, abre Extensiones}}</translation>
 <translation id="924818813611903184">Administra los idiomas en la configuración de ChromeOS</translation>

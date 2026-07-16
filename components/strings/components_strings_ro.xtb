@@ -4015,6 +4015,7 @@ Pentru a ascunde opțiunile de plată mai târziu, accesează <ph name="BEGIN_LI
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /> despre această problemă.</translation>
 <translation id="7213191991901907140">Descrie-ne experiența ta</translation>
 <translation id="7219179957768738017">Conexiunea utilizează <ph name="SSL_VERSION" />.</translation>
+<translation id="7219197639442810756">Sugestie de la Gemini</translation>
 <translation id="7220786058474068424">Se procesează</translation>
 <translation id="7221855153210829124">Afișeze notificări</translation>
 <translation id="7222232353993864120">Adresa de e-mail</translation>
@@ -4622,6 +4623,7 @@ Detalii suplimentare:
 <translation id="8134058435519644366">Recrutare și personal</translation>
 <translation id="8135546115396015134">tasta săgeată spre stânga</translation>
 <translation id="8137456439814903304">Energie și utilități</translation>
+<translation id="8138591088112729119">Cu Inteligență personalizată</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{Creat acum o lună}few{Creat acum {NUM_MONTHS} luni}other{Creat acum {NUM_MONTHS} de luni}}</translation>
 <translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />, prestabilit actual. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">Versiune PDF:</translation>

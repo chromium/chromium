@@ -763,7 +763,6 @@ Google Chrome kan inte återställa dina inställningar.</translation>
 <translation id="842852285618875960">Du har nått gränsen på <ph name="BOOKMARK_LIMIT" /> bokmärken i Google Chrome, så vissa av dina bokmärken har inte sparats i Google-kontot ännu.
 
 Nya bokmärken kan inte sparas i ditt konto förrän du har raderat några. Om du loggar ut nu raderas bokmärken som inte har sparats.</translation>
-<translation id="8433638294851456451">Logga in på Chrome på båda enheterna om du vill skicka ett nummer från Android-telefonen.</translation>
 <translation id="8458117863387545390">Skaffa Chrome på telefonen</translation>
 <translation id="8496177819998570653">Googles Lösenordshantering</translation>
 <translation id="8498858610309223613">En särskild säkerhetsuppdatering för Google Chrome installerades precis. Starta om webbläsaren nu. Flikarna återställs efteråt.</translation>
@@ -807,7 +806,6 @@ Nya bokmärken kan inte sparas i ditt konto förrän du har raderat några. Om d
 <translation id="8883862939660515976">Fråga Google Lens om den här bilden</translation>
 <translation id="8914504000324227558">Starta om Chrome</translation>
 <translation id="8920304659326707347">Fortsätt precis där du slutade med Chrome på iOS.</translation>
-<translation id="8922193594870374009">Logga in på Chrome på båda enheterna om du vill skicka ett nummer från <ph name="ORIGIN" /> till Android-telefonen.</translation>
 <translation id="8922998289262614701">Ta bort datan för den här appen från Chrome</translation>
 <translation id="8925636929359899517">Vi använder informationen för att förbättra tjänsten. Läs <ph name="BEGIN_LINK1" />integritetspolicyn<ph name="END_LINK1" /> och <ph name="BEGIN_LINK2" />användarvillkoren<ph name="END_LINK2" />.</translation>
 <translation id="8936233353620149764">Aktivera/inaktivera Gemini i Chrome</translation>

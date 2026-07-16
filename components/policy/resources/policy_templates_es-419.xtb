@@ -14,13 +14,6 @@
 <translation id="1002829167638728809">Permitir la generación de informes sobre los datos relacionados con la confiabilidad de dominios</translation>
 <translation id="1004590217607585595">Configuración de la administración de aplicaciones web</translation>
 <translation id="1006218396155867129">Impedir que los usuarios de acceso remoto transfieran archivos desde y hacia el host remoto</translation>
-<translation id="1007043180702842391">Controla si el lector de PDF de <ph name="PRODUCT_NAME" /> usa un iframe fuera del proceso (OOPIF). Esta será la nueva arquitectura del lector de PDF en el futuro, ya que es más simple y facilita la incorporación de nuevas funciones. El lector de PDF GuestView existente es una arquitectura desactualizada y compleja que dejará de estar disponible.
-
-Si habilitas esta política o no la estableces, <ph name="PRODUCT_NAME" /> podrá usar la arquitectura del lector de PDF de OOPIF. Una vez que la habilites o no la establezcas, <ph name="PRODUCT_NAME" /> decidirá el comportamiento predeterminado.
-
-Si la inhabilitas, <ph name="PRODUCT_NAME" /> usará de forma estricta el lector de PDF GuestView existente. Incorpora una página web con un árbol de marcos independiente en otra página web.
-
-Esta política se quitará en el futuro, cuando se lance por completo la función de lector de PDF de OOPIF.</translation>
 <translation id="1007149936182752368">Inhabilitar la edición de favoritos</translation>
 <translation id="1009336698423963085">Permitir el modo de pantalla completa automático en estos sitios</translation>
 <translation id="1010151305531217567">Cambia el botón principal del mouse al botón derecho</translation>
@@ -2172,6 +2165,7 @@ Si inhabilitas la política, no se permitirá que los usuarios ni las variacione
       En la versión 91, se quitó la compatibilidad para establecer esta política como "tls1" o "tls1.1". Ya no es posible quitar la advertencia de TLS 1.0/1.1.</translation>
 <translation id="2364639863953745682">Modo de la experiencia de integración del Asistente</translation>
 <translation id="2366301887862414321">Permitir hosts de mensajería nativa a nivel del sistema y del usuario</translation>
+<translation id="2371015218815226913">Las conexiones de WebSocket activas impedirán que las páginas ingresen a la memoria caché atrás/adelante.</translation>
 <translation id="2373014700224092497">Permitir que los usuarios agreguen cuentas de Kerberos</translation>
 <translation id="2376134474855349829">Inhabilitar el teclado en pantalla en la pantalla de acceso y permitir que el usuario lo habilite temporalmente</translation>
 <translation id="2376151922689284770">Nombre que se mostrará en la IU del instalador, p. ej., Happy VM. Si no se configura, se mostrará un
@@ -7408,6 +7402,28 @@ También consulta https://wiki.samba.org/index.php/Samba_4.6_Features_added/chan
 
       Esta política dejó de estar disponible. Usa <ph name="PROMOTIONS_ENABLED_POLICY_NAME" /> en su lugar.</translation>
 <translation id="5556607617517096419">Borealis</translation>
+<translation id="5556933299171172140">Si estableces esta política, podrás especificar qué tipos de datos de Autocompletar se bloquean en patrones de URL específicos.
+
+La política se estructura como una lista de diccionarios. Cada diccionario debe contener lo siguiente:
+* "url_pattern": Un patrón de URL de configuración de contenido para el marco principal (p. ej., "https://[*.]example.com").
+* "blocked_types": Una lista de cadenas que representan las categorías de datos de Autocompletar que se bloquearán.
+
+Los valores admitidos para "blocked_types" son los siguientes:
+* "contact_info": Bloquea el guardado y el completado de la información de contacto.
+* "payments": Bloquea el guardado y el completado de tarjetas de crédito y formas de pago.
+* "identity_docs": Bloquea el guardado y el completado de documentos de identidad (p. ej., pasaporte, licencia de conducir, documento nacional de identidad).
+* "travel": Bloquea el guardado y el completado de información de viajes (p. ej., reservas de vuelos, registro de vehículos).
+* "shopping": Bloquea el guardado y el completado de información de compras (p. ej., pedidos en línea, envíos).
+* "all": Bloquea el guardado y el completado de todos los tipos de datos de Autocompletar.
+
+Si se bloquea un tipo de datos para un sitio, se inhabilitan tanto la generación de sugerencias como la instrucción para guardar o importar datos nuevos de ese tipo en el sitio.
+
+Si una URL coincide con varias entradas de patrones en la lista, se combinan los tipos bloqueados de todas las entradas coincidentes (unión combinada). Se ignorarán los patrones de URL no válidos de la lista.
+
+Si no estableces esta política, no se bloqueará ningún tipo de datos de Autocompletar por dominio.
+
+Para obtener información detallada sobre los patrones de URL válidos, consulta:
+https://chromeenterprise.google/policies/url-patterns. Se admite el comodín *, este patrón busca coincidencias entre una URL y cualquier esquema, puerto y ruta de acceso.</translation>
 <translation id="5557753512027261467">Mostrar la opción <ph name="GOOGLE_DRIVE_NAME" />.</translation>
 <translation id="5558394213067608844">Habilitar el controlador de telemetría y diagnósticos wilco</translation>
 <translation id="5559079916187891399">Esta política no tiene efecto en las apps de Android.</translation>
@@ -7749,6 +7765,13 @@ Si habilitas la política, siempre se usará la función de almacenamiento en b�
 Si inhabilitas la política o no la estableces, el proceso de lanzamiento
 de funciones del navegador decidirá si se usa el almacenamiento en búfer adaptable.</translation>
 <translation id="5800329278018669527">Inhabilitar el mensaje de configuración de red cuando no haya conexión</translation>
+<translation id="5800627752428920394">Esta política controla si las conexiones de WebSocket activas se desconectan cuando una página ingresa a la memoria caché atrás/adelante. Las conexiones de WebSocket activas impedían que una página se almacenara en la memoria caché atrás/adelante, pero <ph name="PRODUCT_NAME" /> cambió este comportamiento para desconectar los WebSockets en su lugar, lo que permite que la página se almacene en la memoria caché y se restablezca en un estado desconectado.
+
+Si habilitas esta política o no la estableces, se desconectarán los WebSockets cuando una página ingrese a la memoria caché atrás/adelante.
+
+Si inhabilitas esta política, no se desconectarán los WebSockets cuando una página ingrese a la memoria caché atrás/adelante. Dado que la memoria caché atrás/adelante no admite WebSockets activos, las páginas con WebSockets activos no se almacenarán en la memoria caché.
+
+Esta política es temporal y se quitará en el futuro.</translation>
 <translation id="5802931736499687181">Inhabilitar la canalización de informes encriptados</translation>
 <translation id="5803715507113569033">Esta política permite a los administradores configurar la activación de <ph name="MICROSOFT_ONE_DRIVE_NAME" />.
 
@@ -9909,6 +9932,7 @@ la optimización de JavaScript para el sitio.</translation>
 <translation id="7025153290982655996">Volver al comportamiento heredado del alcance de las cookies</translation>
 <translation id="7025332601572838001">Configura el comportamiento de las Condiciones del Servicio en la primera ejecución para CCT</translation>
 <translation id="7026351325994257733">Permite sincronizar los ajustes de la red Wi-Fi entre dispositivos con <ph name="PRODUCT_OS_NAME" /> y un teléfono Android conectado</translation>
+<translation id="7026488120383693794">Permitir la memoria caché atrás/adelante para WebSockets</translation>
 <translation id="7027057540229843762">Usar el Tema claro</translation>
 <translation id="7027785306666625591">Configura la administración de energía en <ph name="PRODUCT_OS_NAME" />.
 
@@ -11216,6 +11240,7 @@ Para obtener más información sobre la política <ph name="IEEM_SITELIST_POLICY
 
       Nota: Para controlar qué sitios web pueden ejecutar <ph name="FLASH_PLUGIN_NAME" />, consulta las siguientes políticas: <ph name="DEFAULT_PLUGINS_SETTING_POLICY_NAME" />, <ph name="PLUGINS_ALLOWED_FOR_URLS_POLICY_NAME" /> y <ph name="PLUGINS_BLOCKED_FOR_URLS_POLICY_NAME" />.</translation>
 <translation id="7801163363326128751">Cambiar el ahorro del modo de Ahorro de memoria</translation>
+<translation id="7802903687499576891">Permitir la memoria caché atrás/adelante para WebSockets (se desconectan cuando ingresan a la memoria caché).</translation>
 <translation id="7804859754080118507">Informa eventos de conexión de red y de intensidad de la señal en dispositivos inscriptos.
 
       Si estableces la política como falsa o no la estableces, no se informarán los eventos.

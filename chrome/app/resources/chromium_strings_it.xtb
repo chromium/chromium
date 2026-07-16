@@ -123,7 +123,6 @@
 <translation id="2287771843518581140">{NUM_TABS,plural, =1{Chromium consiglia di mettere in pausa la scheda che rallenta il browser}other{Chromium consiglia di mettere in pausa le schede che rallentano il browser}}</translation>
 <translation id="2307973900865360088">Mantieni nel dock</translation>
 <translation id="2313870531055795960">Controlla gli URL confrontandoli con un elenco di siti non sicuri memorizzato in Chromium. Se un sito cerca di rubare la tua password o se scarichi un file dannoso, Chromium potrebbe anche inviare gli URL, inclusi frammenti dei contenuti delle pagine, a Navigazione sicura.</translation>
-<translation id="2343156876103232566">Per inviare un numero da questo dispositivo al tuo telefono Android, accedi a Chromium su entrambi i dispositivi.</translation>
 <translation id="2356070529366658676">Chiedi</translation>
 <translation id="2359808026110333948">Continua</translation>
 <translation id="2361918034042471035">L'estensione "<ph name="EXTENSION_NAME" />" richiede l'accesso a Chromium</translation>
@@ -245,7 +244,6 @@
 <translation id="3600428265489994557">Accedi a Chromium</translation>
 <translation id="3639635944603682591">I dati di navigazione di questa persona verranno eliminati dal dispositivo. Per recuperare i dati, accedi a Chromium con il nome utente <ph name="USER_EMAIL" />.</translation>
 <translation id="364817392622123556">{COUNT,plural, =0{È disponibile un nuovo aggiornamento di Chromium che verrà installato appena eseguirai il riavvio.}=1{È disponibile un nuovo aggiornamento di Chromium che verrà installato appena eseguirai il riavvio. La finestra Incognito non verrà riaperta.}other{È disponibile un nuovo aggiornamento di Chromium che verrà installato appena eseguirai il riavvio. Le # finestre Incognito non verranno riaperte.}}</translation>
-<translation id="3651803019964686660">Per inviare un numero da <ph name="ORIGIN" /> al tuo telefono Android, accedi a Chromium su entrambi i dispositivi.</translation>
 <translation id="3667616615096815454">Impossibile installare l'applicazione. Applicazione sconosciuta al server.</translation>
 <translation id="3675854891107786059">Usa la <ph name="BEGIN_LINK" />tua passphrase<ph name="END_LINK" /> per criptare tutti i dati di Chromium nel tuo Account Google. I metodi di pagamento e gli indirizzi memorizzati su Google Pay non verranno criptati. La cronologia di navigazione di Chromium non verrà sincronizzata.</translation>
 <translation id="370962675267501463">{COUNT,plural, =0{L'amministratore richiede il riavvio di Chromium per installare questo aggiornamento}=1{L'amministratore richiede il riavvio di Chromium per installare questo aggiornamento. La finestra Incognito non verrà riaperta.}other{L'amministratore richiede il riavvio di Chromium per installare questo aggiornamento. Le # finestre Incognito non verranno riaperte.}}</translation>

@@ -245,6 +245,7 @@
 <translation id="1752547299766512813">Sačuvane lozinke</translation>
 <translation id="1764070164487214210">Putanja</translation>
 <translation id="1764511703783285459">Drugi menadžer lozinki ne deli lozinke ni pristupne ključeve</translation>
+<translation id="1765555082983153259">Chrome želi da pristupi mikrofonu</translation>
 <translation id="1767766085187034454">Google prevodilac</translation>
 <translation id="1771016937398045251">Meni Alatke</translation>
 <translation id="1772468122139624049">Ponovno učitavanje kartica nije uspelo</translation>
@@ -2465,6 +2466,7 @@ Da biste nastavili sa računara, pređite na <ph name="OTHER_EMAIL" />. Dobiće
 <translation id="9149866541089851383">Izmeni...</translation>
 <translation id="9152637745605628097">Odaberite temu, boju ili otpremite sliku</translation>
 <translation id="9159628751968616911">Pošaljite veb-stranicu</translation>
+<translation id="9162412286847966593">Podaci i snimci organizacije ne koriste se za poboljšavanje modela generativne veštačke inteligencije. <ph name="BEGIN_LINK" />Vaša privatnost i Gemini<ph name="END_LINK" /></translation>
 <translation id="9162432979321511934">Uključite Automatsko popunjavanje lozinki</translation>
 <translation id="9165320910061267720">Da biste dobijali obaveštenja o sniženjima, treba da uključite obaveštenja u iOS podešavanjima.</translation>
 <translation id="9179151630575358778">Sakriva ovu stavku</translation>

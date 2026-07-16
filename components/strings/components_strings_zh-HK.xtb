@@ -3051,6 +3051,7 @@
 <translation id="5715918316982363436">此裝置上的 <ph name="TAB_COUNT" /> (<ph name="WINDOW_COUNT" />)</translation>
 <translation id="5716325061445053985">輕按即可在手機開啟分頁</translation>
 <translation id="5717509257172454543">溜冰</translation>
+<translation id="5718326209176373202">新增文字註解</translation>
 <translation id="5718601519531438273">包括護照和駕駛執照等資料</translation>
 <translation id="5720705177508910913">目前使用者</translation>
 <translation id="5720895412771013401">桌面電腦</translation>
@@ -4014,6 +4015,7 @@
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />進一步瞭解<ph name="END_LINK" />這個問題。</translation>
 <translation id="7213191991901907140">請分享您的使用體驗</translation>
 <translation id="7219179957768738017">這個連線使用 <ph name="SSL_VERSION" />。</translation>
+<translation id="7219197639442810756">由 Gemini 建議</translation>
 <translation id="7220786058474068424">正在處理</translation>
 <translation id="7221855153210829124">顯示通知</translation>
 <translation id="7222232353993864120">電郵地址</translation>
@@ -4621,6 +4623,7 @@
 <translation id="8134058435519644366">人才招募和人力配備</translation>
 <translation id="8135546115396015134">左鍵</translation>
 <translation id="8137456439814903304">能源和公用事業</translation>
+<translation id="8138591088112729119">由「個人化智能」提供技術</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{1 個月前建立}other{{NUM_MONTHS} 個月前建立}}</translation>
 <translation id="8147389370274164212">目前預設為 <ph name="SEARCH_ENGINE_NAME" />。<ph name="MARKETING_SNIPPET" /> ·</translation>
 <translation id="8148608574971654810">PDF 版本：</translation>
@@ -5305,6 +5308,7 @@
 <translation id="949314938206378263">您已要求瀏覽此網站。家長可透過 Family Link 回覆要求。</translation>
 <translation id="950736567201356821">三孔 (頂端)</translation>
 <translation id="950926967802086924">密鑰 • Google 密碼管理工具</translation>
+<translation id="952165179818196872">新增 <ph name="PROVIDER" />，無需切換應用程式即可付款</translation>
 <translation id="955429569736351433">批准用 VR</translation>
 <translation id="955627189349169688">你可於 <ph name="BEGIN_LINK" />Chrome 同步設定<ph name="END_LINK" />中選擇停用此政策。</translation>
 <translation id="95721182352849470">黃色 2</translation>

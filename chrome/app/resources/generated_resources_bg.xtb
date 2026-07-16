@@ -1233,6 +1233,7 @@
 <translation id="1938351510777341717">Външен клавиш Command</translation>
 <translation id="1940221956626514677">Персонализиране на лентата с инструменти</translation>
 <translation id="1940546824932169984">Свързани устройства</translation>
+<translation id="194081218158106711">Променената парола се потвърждава…</translation>
 <translation id="1941410638996203291">Начален час: <ph name="TIME" /></translation>
 <translation id="1941553344801134989">Версия: <ph name="APP_VERSION" /></translation>
 <translation id="1941685451584875710">Администраторът е конфигурирал профила ви така, че автоматично да се свърже с Microsoft OneDrive, но нещо се обърка.</translation>
@@ -1501,6 +1502,7 @@
 <translation id="2158475082070321257">Копиране на връзката към откроения текст</translation>
 <translation id="2159488579268505102">USB-C</translation>
 <translation id="2161058806218011758">Обхват на <ph name="SHORTCUT" /> за <ph name="EXTENSION_NAME" /></translation>
+<translation id="2161656808144014275">Текст</translation>
 <translation id="216169395504480358">Добавяне на Wi-Fi...</translation>
 <translation id="2162705204091149050">Четене на информация за вашите браузър, операционна система, устройство, инсталиран софтуер и файлове</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> и още 1 превключвател</translation>
@@ -4756,6 +4758,7 @@
 <translation id="4657914796247705218">Скорост на TrackPoint</translation>
 <translation id="4658648180588730283">Приложението <ph name="APPLICATION_NAME" /> не е налице офлайн.</translation>
 <translation id="465878909996028221">Само протоколите http, https и file се поддържат за пренасочвания на браузъра.</translation>
+<translation id="4658821552705754298"><ph name="ITEM_NAME" /> <ph name="CATEGORY_NAME" /></translation>
 <translation id="4659126640776004816">Когато влезете в профила си в Google, тази функция се включва.</translation>
 <translation id="4660465405448977105">{COUNT,plural, =1{Изображение}other{# изображения}}</translation>
 <translation id="4660540330091848931">Преоразмерява се</translation>
@@ -5335,6 +5338,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="5096775069898886423">Получавайте предупреждения за сайтове, които не поддържат защитени връзки, преди да ги посетите</translation>
 <translation id="5097002363526479830">Свързването с мрежата „<ph name="NAME" />“ не бе успешно: <ph name="DETAILS" /></translation>
 <translation id="5097349930204431044">Посещаваните от вас сайтове могат да определят какво харесвате и след това да предлагат реклами, докато продължавате да сърфирате</translation>
+<translation id="5097472729724586429">Добавяйте текстови пояснения с новия инструмент „Добавяне на текстови пояснения“</translation>
 <translation id="5097649414558628673">Инструмент: <ph name="PRINT_NAME" /></translation>
 <translation id="5097874180538493929">Автоматично кликване при спиране на курсора</translation>
 <translation id="5098963855433723436">Отваря се в отделно приложение</translation>
@@ -5399,6 +5403,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="5146235736676876345">Изберете сами</translation>
 <translation id="5146896637028965135">Системен глас</translation>
 <translation id="5147113439721488265">Препоръка</translation>
+<translation id="5148020348702787234">За да изпращате връзки, потвърдете, че това сте вие. Можете да изпращате връзки, когато сте влезли в един и същ профил в Google и на двете устройства.</translation>
 <translation id="5148285448107770349">Паролата трябва да е поне 8 знака</translation>
 <translation id="5149602533174716626">Копиран&amp;е на кадъра от видеоклипа</translation>
 <translation id="5150254825601720210">Име на SSL сървър за сертификат на Netscape</translation>
@@ -8921,6 +8926,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="7933486544522242079">&amp;Запазване и споделяне</translation>
 <translation id="7933518760693751884">За да запазите страница за по-късно, кликнете върху иконата за добавяне на отметка</translation>
 <translation id="7933634003144813719">Управление на споделените папки</translation>
+<translation id="7935072572536724392">Автоматичната промяна на паролата не бе успешна</translation>
 <translation id="7936195481975600746">За да споделите екрана си, използвайте системния инструмент за избор на екран</translation>
 <translation id="7937809006412909895">Събират се диагностични данни</translation>
 <translation id="7938881824185772026">Лаборатория</translation>
@@ -9058,6 +9064,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="8029412171914613589">{SELECTED_ITEMS,plural, =0{Списък за четене}=1{Списък за четене ({SELECTED_ITEMS})}other{Списък за четене ({SELECTED_ITEMS})}}</translation>
 <translation id="8029492516535178472"><ph name="WINDOW_TITLE" /> иска разрешение. Натиснете ⌘ + Option + стрелката за нагоре, за да отговорите</translation>
 <translation id="8030169304546394654">Няма връзка</translation>
+<translation id="8030814978699290230">Извършва се опит за вход в профила…</translation>
 <translation id="8030852056903932865">Одобряване</translation>
 <translation id="8033827949643255796">откроени</translation>
 <translation id="8033958968890501070">Времето за изчакване изтече</translation>
@@ -9471,6 +9478,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="8343578633847737325">Скорошни разговори и нишки</translation>
 <translation id="8345848587667658367">Вече можете да преглеждате скорошните снимки, мултимедийни файлове, известия и приложения, които имате на телефона си</translation>
 <translation id="8347227221149377169">Задания за отпечатване</translation>
+<translation id="8347728744337089388">Изпращане до &amp;устройството ви</translation>
 <translation id="8348430946834215779">Използвайте HTTPS, когато е възможно, и получавайте предупреждения, преди да бъдат заредени сайтове, които не поддържат този протокол</translation>
 <translation id="8348896480272971199">Проверете връзката си с интернет и опитайте отново.</translation>
 <translation id="8349305172487531364">Лента на отметките</translation>
@@ -9520,6 +9528,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="8382197851871630452">Времето в района</translation>
 <translation id="8382913212082956454">Копиране на име&amp;йл адреса</translation>
 <translation id="8383614331548401927">Приветствен обзор</translation>
+<translation id="8387157483437834731">Паролата е променена успешно</translation>
 <translation id="8387361103813440603">Сайтове без разрешение за преглед на местоположението ви</translation>
 <translation id="8389492867173948260">Разрешаване на това разширение да чете и променя всичките ви данни в посещаваните от вас уебсайтове:</translation>
 <translation id="8390449457866780408">Няма достъп до сървъра.</translation>
@@ -10262,6 +10271,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="8967427617812342790">Добавяне към списъка за четене</translation>
 <translation id="8968527460726243404">Запис на системни образи на ChromeOS</translation>
 <translation id="8968766641738584599">Запазване на картата</translation>
+<translation id="8970232194848546151">Изпращане на връзка до друго устройство</translation>
 <translation id="8970887620466824814">Нещо се обърка.</translation>
 <translation id="89720367119469899">Escape</translation>
 <translation id="8972513834460200407">Моля, обърнете се към системния си администратор, за да се уверите, че защитната стена не блокира изтеглянията от сървърите на Google.</translation>
@@ -10528,6 +10538,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="9151906066336345901">end</translation>
 <translation id="9152503903192861480">Отваряне в режим с AI</translation>
 <translation id="9153367754133725216">Показване на предложения за нови приложения и уеб съдържание в стартовия панел и резултатите от търсенето. Изпраща статистически данни, за да подобри предложенията само ако сте избрали да изпращате до ChromeOS сигнали за сривове, диагностична информация и данни за употребата.</translation>
+<translation id="9153451439615847952">Намаляване на фоновия звук за известията и сигналите</translation>
 <translation id="9154194610265714752">Актуализирано</translation>
 <translation id="915485121129452731">Графичен таблет</translation>
 <translation id="9155344700756733162">Отмяна на избрания цвят</translation>
@@ -10605,6 +10616,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="9220820413868316583">Вдигнете пръст и след това опитайте отново.</translation>
 <translation id="922152298093051471">Персонализиране на Chrome</translation>
 <translation id="9222839391870847423">Продължителност: <ph name="DURATION" /></translation>
+<translation id="923306663772315007">Изпращане до &amp;устройството ви</translation>
 <translation id="923467487918828349">Показване на всички</translation>
 <translation id="923900195646492191">{NUM_EXTENSIONS,plural, =1{За да го управлявате, отворете „Разширения“}other{За да ги управлявате, отворете „Разширения“}}</translation>
 <translation id="924818813611903184">Управление на езиците в настройките на Chrome OS</translation>

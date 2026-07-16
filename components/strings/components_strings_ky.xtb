@@ -4013,6 +4013,7 @@
 <translation id="721197778055552897">Бул көйгөй жөнүндө <ph name="BEGIN_LINK" />Көбүрөөк билүү<ph name="END_LINK" />.</translation>
 <translation id="7213191991901907140">Тажрыйбаңыз тууралуу айтып бериңиз</translation>
 <translation id="7219179957768738017">Туташуу <ph name="SSL_VERSION" /> колдонот.</translation>
+<translation id="7219197639442810756">Gemini сунуштады</translation>
 <translation id="7220786058474068424">Иштелүүдө</translation>
 <translation id="7221855153210829124">Билдирмелерди көрсөтүү</translation>
 <translation id="7222232353993864120">Электрондук почта дареги</translation>
@@ -4620,6 +4621,7 @@
 <translation id="8134058435519644366">Жумушка алуу жана кадрлар менен камсыз кылуу</translation>
 <translation id="8135546115396015134">сол баскычты</translation>
 <translation id="8137456439814903304">Энергетика жана коммуналдык кызматтар</translation>
+<translation id="8138591088112729119">Personal Intelligence негизинде иштейт</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{1 ай мурун түзүлдү}other{{NUM_MONTHS} ай мурун түзүлдү}}</translation>
 <translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />, демейки шартта колдонулат. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">PDF версиясы:</translation>

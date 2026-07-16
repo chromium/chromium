@@ -245,6 +245,7 @@
 <translation id="1752547299766512813">Shranjena gesla</translation>
 <translation id="1764070164487214210">Navodila za pot</translation>
 <translation id="1764511703783285459">Drugi upravitelj gesel ni delil nobenih gesel ali ključev za dostop</translation>
+<translation id="1765555082983153259">»Chrome« želi dostopati do mikrofona</translation>
 <translation id="1767766085187034454">Google Prevajalnik</translation>
 <translation id="1771016937398045251">Meni »Orodja«</translation>
 <translation id="1772468122139624049">Zavihkov ni mogoče znova naložiti</translation>
@@ -2465,6 +2466,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="9149866541089851383">Uredi ...</translation>
 <translation id="9152637745605628097">Izbirate lahko med temami in barvami ali naložite sliko</translation>
 <translation id="9159628751968616911">Pošlji spletno stran</translation>
+<translation id="9162412286847966593">Podatki in posnetki vaše organizacije se ne bodo uporabljali za izboljšanje modelov generativne umetne inteligence. <ph name="BEGIN_LINK" />Vaša zasebnost in Gemini<ph name="END_LINK" /></translation>
 <translation id="9162432979321511934">Vklopite AutoFill Passwords (Samodejno izpolnjevanje gesel).</translation>
 <translation id="9165320910061267720">Če želite prejemati obvestila z opozorili o znižanju cen, morate vklopiti obvestila v nastavitvah sistema iOS.</translation>
 <translation id="9179151630575358778">Skrije ta element</translation>

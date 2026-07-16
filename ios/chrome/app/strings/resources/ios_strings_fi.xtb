@@ -245,6 +245,7 @@
 <translation id="1752547299766512813">Tall. salasanat</translation>
 <translation id="1764070164487214210">Reittiohjeet</translation>
 <translation id="1764511703783285459">Toinen salasanojen ylläpitotyökalu ei jakanut salasanoja tai avainkoodeja</translation>
+<translation id="1765555082983153259">"Chrome" pyytää pääsyä mikrofoniin</translation>
 <translation id="1767766085187034454">Google Kääntäjä</translation>
 <translation id="1771016937398045251">Työkalut-valikko</translation>
 <translation id="1772468122139624049">Välilehtien päivittäminen epäonnistui</translation>
@@ -2465,6 +2466,7 @@ Jos haluat jatkaa tietokoneella, vaihda tiliksi <ph name="OTHER_EMAIL" />. Saat 
 <translation id="9149866541089851383">Muokkaa...</translation>
 <translation id="9152637745605628097">Valitse teema tai väri tai lataa kuva</translation>
 <translation id="9159628751968616911">Lähetä verkkosivu</translation>
+<translation id="9162412286847966593">Organisaatiosi dataa ja tallenteita ei käytetä generatiivisten tekoälymallien kehittämiseen. <ph name="BEGIN_LINK" />Yksityisyys ja Gemini<ph name="END_LINK" /></translation>
 <translation id="9162432979321511934">Laita Täytä salasanat automaattisesti päälle.</translation>
 <translation id="9165320910061267720">Jos haluat saada ilmoituksia hinnan laskusta, sinun on laitettava ilmoitukset päälle iOS-asetuksista.</translation>
 <translation id="9179151630575358778">Piilottaa tämän kohteen</translation>

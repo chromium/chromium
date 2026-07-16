@@ -4011,6 +4011,7 @@ Ukuze ufihle okungakhethwa kukho kokukhokha kamuva, iya <ph name="BEGIN_LINK" />
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />Funda kabanzi<ph name="END_LINK" /> mayelana nale nkinga.</translation>
 <translation id="7213191991901907140">Sitshele ngomuzwa wakho</translation>
 <translation id="7219179957768738017">Ukuxhumeka kusebenzisa i-<ph name="SSL_VERSION" />.</translation>
+<translation id="7219197639442810756">Iphakanyiswe yiGemini</translation>
 <translation id="7220786058474068424">Iyacubungula</translation>
 <translation id="7221855153210829124">Bonisa izaziso</translation>
 <translation id="7222232353993864120">Ikheli le-imeyili</translation>
@@ -4618,6 +4619,7 @@ Imininingwane engeziwe:
 <translation id="8134058435519644366">Ezokuqasha Nabasebenzi</translation>
 <translation id="8135546115396015134">ukhiye okwesobunxele</translation>
 <translation id="8137456439814903304">Amandla Nezinsiza</translation>
+<translation id="8138591088112729119">Inikwe amandla Imisebenzi Yobuhlakani Bomuntu Siqu</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{Kusungulwe enyangeni e-1 edlule}one{Kusungulwe ezinyangeni ezingu-{NUM_MONTHS} ezedlule}other{Kusungulwe ezinyangeni ezingu-{NUM_MONTHS} ezedlule}}</translation>
 <translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />, okuzenzakalelayo kwamanje<ph name="MARKETING_SNIPPET" />.</translation>
 <translation id="8148608574971654810">Uhlobo lwe-PDF:</translation>

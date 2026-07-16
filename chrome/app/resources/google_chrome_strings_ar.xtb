@@ -759,7 +759,6 @@
 <translation id="842852285618875960">‏لقد بلغت الحدّ الأقصى لعدد الإشارات المرجعية في Google Chrome، وهو <ph name="BOOKMARK_LIMIT" />، لذا لم يتم حفظ بعض إشاراتك المرجعية في حسابك على Google حتى الآن.
 
 ولا يمكن حفظ إشارات مرجعية جديدة في حسابك إلا بعد حذف بعض الإشارات. وفي حال سجّلت الخروج الآن، سيتم حذف الإشارات المرجعية غير المحفوظة.</translation>
-<translation id="8433638294851456451">‏لإرسال رقم من هذا الجهاز إلى جهازك الذي يعمل بنظام التشغيل Android، يُرجى تسجيل الدخول إلى متصفِّح Chrome على الجهازَين.</translation>
 <translation id="8458117863387545390">‏تثبيت Chrome على هاتفك</translation>
 <translation id="8496177819998570653">‏مدير كلمات المرور في Google</translation>
 <translation id="8498858610309223613">‏تم للتو تطبيق تحديث أمان خاص لمتصفِّح Google Chrome. ويمكنك الآن إعادة التشغيل وستتم استعادة علامات التبويب.</translation>
@@ -803,7 +802,6 @@
 <translation id="8883862939660515976">‏طرح أسئلة حول هذه الصورة باستخدام "عدسة Google"</translation>
 <translation id="8914504000324227558">‏إعادة تشغيل Chrome</translation>
 <translation id="8920304659326707347">‏يمكنك المتابعة من حيث توقفت باستخدام Chrome على iOS.</translation>
-<translation id="8922193594870374009">‏لإرسال رقم من <ph name="ORIGIN" /> إلى هاتفك الذي يعمل بنظام التشغيل Android، يُرجى تسجيل الدخول إلى متصفِّح Chrome على الجهازَين.</translation>
 <translation id="8922998289262614701">‏إزالة بيانات هذا التطبيق من Chrome</translation>
 <translation id="8925636929359899517">نستخدم المعلومات لتحسين هذه الخدمة. يُرجى مراجعة <ph name="BEGIN_LINK1" />سياسة الخصوصية<ph name="END_LINK1" /> و<ph name="BEGIN_LINK2" />بنود الخدمة<ph name="END_LINK2" />.</translation>
 <translation id="8936233353620149764">‏تفعيل "Gemini في Chrome" أو إيقافه</translation>

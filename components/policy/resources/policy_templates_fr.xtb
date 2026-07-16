@@ -14,13 +14,6 @@
 <translation id="1002829167638728809">Autoriser la création de rapports sur les données liées à la fiabilité du domaine</translation>
 <translation id="1004590217607585595">Paramètres de gestion de l'application Web</translation>
 <translation id="1006218396155867129">Désactiver le transfert de fichiers vers et depuis l'hôte à distance pour les utilisateurs connectés à distance</translation>
-<translation id="1007043180702842391">Détermine si la visionneuse de PDF de <ph name="PRODUCT_NAME" /> utilise un iFrame hors processus. Cette architecture sera utilisée à l'avenir pour la visionneuse de PDF, car elle est plus simple et permet d'ajouter plus facilement de nouvelles fonctionnalités. L'architecture GuestView complexe et obsolète de la visionneuse de PDF est en cours d'abandon.
-
-Si cette règle est activée ou n'est pas configurée, <ph name="PRODUCT_NAME" /> peut utiliser l'architecture iFrame hors processus de la visionneuse de PDF. Si cette règle est activée ou n'est pas configurée, le comportement par défaut est défini par <ph name="PRODUCT_NAME" />.
-
-Si cette règle est désactivée, <ph name="PRODUCT_NAME" /> utilise uniquement la visionneuse de PDF GuestView existante. Elle intègre une page Web avec une arborescence de frames distincte dans une autre page Web.
-
-Cette règle sera supprimée une fois que la fonctionnalité iFrame hors processus de la visionneuse de PDF sera entièrement déployée.</translation>
 <translation id="1007149936182752368">Désactiver la modification des favoris</translation>
 <translation id="1009336698423963085">Autoriser le plein écran automatique sur ces sites</translation>
 <translation id="1010151305531217567">Définir le bouton droit de la souris comme bouton principal</translation>
@@ -2098,6 +2091,7 @@ Si la règle est désactivée, elle empêche les utilisateurs ou les variantes d
       La compatibilité de cette règle avec "tls1" ou "tls1.1" a été supprimée dans la version 91. La suppression de l'avertissement TLS 1.0/1.1 n'est plus disponible.</translation>
 <translation id="2364639863953745682">Mode du processus de prise en main de l'Assistant</translation>
 <translation id="2366301887862414321">Autoriser les hôtes de messagerie natifs au niveau de l'utilisateur et du système</translation>
+<translation id="2371015218815226913">Les connexions WebSocket actives empêcheront les pages d'être stockées dans le cache back/forward.</translation>
 <translation id="2373014700224092497">Autoriser les utilisateurs à ajouter des comptes Kerberos</translation>
 <translation id="2376134474855349829">Désactiver le clavier à l'écran sur l'écran de connexion et autoriser l'utilisateur à l'activer temporairement</translation>
 <translation id="2376151922689284770">Nom à afficher dans l'interface utilisateur du programme d'installation (par exemple, VM Happy). Si cette règle n'est pas configurée, un nom de remplacement s'affiche, lequel peut être dérivé de la première entrée (par ordre d'affichage) dans la règle BruschettaVMConfiguration ou être, à défaut, un nom générique.</translation>
@@ -7153,6 +7147,28 @@ Consultez également https://wiki.samba.org/index.php/Samba_4.6_Features_added/c
 
       Obsolète. Utilisez plutôt <ph name="PROMOTIONS_ENABLED_POLICY_NAME" />.</translation>
 <translation id="5556607617517096419">Borealis</translation>
+<translation id="5556933299171172140">Cette règle vous permet de spécifier les types de données utilisés par la saisie automatique qui sont bloqués sur des formats d'URL spécifiques.
+
+La règle prend la forme d'une liste de dictionnaires. Chaque dictionnaire doit contenir :
+* "url_pattern" : format d'URL de paramètre de contenu pour le frame principal (par exemple, "https://[*.]example.com").
+* "blocked_types" : liste de chaînes représentant les catégories de données utilisées par la saisie automatique à bloquer.
+
+Les valeurs acceptées pour "blocked_types" sont les suivantes :
+* "contact_info" : bloque la saisie et l'enregistrement des coordonnées.
+* "payments" : bloque la saisie et l'enregistrement des cartes de crédit et des modes de paiement.
+* "identity_docs" : bloque la saisie et l'enregistrement des pièces d'identité (par exemple, passeport, permis de conduire, pièce d'identité nationale).
+* "travel" : bloque la saisie et l'enregistrement des informations de voyage (par exemple, réservation de vol, numéro d'immatriculation de véhicule).
+* "shopping" : bloque la saisie et l'enregistrement des informations d'achat (par exemple, commandes en ligne et livraisons).
+* "all" : bloque la saisie et l'enregistrement de tous les types de données utilisés par la saisie automatique.
+
+Si un type de données est bloqué pour un site, la génération de suggestions et l'invite d'enregistrement/d'importation de nouvelles données de ce type sont désactivées sur ce site.
+
+Si une URL correspond à plusieurs entrées de format dans la liste, les types bloqués de toutes les entrées correspondantes sont combinés (fusion par union). Les formats d'URL non valides de la liste sont ignorés.
+
+Si cette règle n'est pas configurée, aucun type de données utilisé par la saisie automatique n'est bloqué par domaine.
+
+Pour en savoir plus sur les formats d'URL valides, veuillez consulter :
+https://chromeenterprise.google/policies/url-patterns. Le caractère générique * est pris en charge. Ce format correspond à n'importe quelle URL, avec n'importe quel schéma, port ou chemin.</translation>
 <translation id="5557753512027261467">Afficher l'option <ph name="GOOGLE_DRIVE_NAME" />.</translation>
 <translation id="5558394213067608844">Activer le dispositif de contrôle de diagnostic et de télémétrie de Wilco</translation>
 <translation id="5559079916187891399">Cette règle n'a aucun effet sur les applications Android.</translation>
@@ -7487,6 +7503,13 @@ Si cette règle est activée, la mise en mémoire tampon adaptative est toujours
 
 Si cette règle est désactivée ou qu'elle n'est pas configurée, le processus de lancement de fonctionnalités du navigateur détermine si la mise en mémoire tampon adaptative est utilisée.</translation>
 <translation id="5800329278018669527">Désactiver l'invite de configuration réseau lorsque l'utilisateur n'est pas connecté</translation>
+<translation id="5800627752428920394">Cette règle détermine si les connexions WebSocket actives sont déconnectées lorsqu'une page est stockée dans le cache back/forward. Auparavant, les connexions WebSocket actives empêchaient une page d'être stockée dans le cache back/forward. Toutefois, <ph name="PRODUCT_NAME" /> se comporte différemment et déconnecte les connexions WebSocket à la place, ce qui permet de mettre la page en cache et de la restaurer dans un état déconnecté.
+
+Si cette règle est activée ou n'est pas configurée, les connexions WebSocket sont déconnectées lorsqu'une page est stockée dans le cache back/forward.
+
+Si cette règle est désactivée, les connexions WebSocket ne sont pas déconnectées lorsqu'une page est stockée dans le cache back/forward. Comme le cache back/forward n'est pas compatible avec les connexions WebSocket actives, les pages contenant des connexions de ce type actives ne seront pas mises en cache.
+
+Cette règle est provisoire et sera supprimée prochainement.</translation>
 <translation id="5802931736499687181">Désactiver le pipeline de rapports chiffrés</translation>
 <translation id="5803715507113569033">Cette règle permet aux administrateurs de configurer l'installation de <ph name="MICROSOFT_ONE_DRIVE_NAME" />.
 
@@ -9513,6 +9536,7 @@ Si cette règle n'est pas configurée pour un site, alors la règle <ph name="DE
 <translation id="7025153290982655996">Revenir à l'ancien comportement du champ d'application des cookies</translation>
 <translation id="7025332601572838001">Configurer le comportement de la boîte de dialogue des conditions d'utilisation la première fois que des onglets personnalisés Chrome sont exécutés</translation>
 <translation id="7026351325994257733">Autoriser la synchronisation des configurations du réseau Wi-Fi entre les appareils <ph name="PRODUCT_OS_NAME" /> et un téléphone Android connecté.</translation>
+<translation id="7026488120383693794">Autoriser le cache back/forward pour les connexions WebSocket</translation>
 <translation id="7027057540229843762">Utiliser le thème clair</translation>
 <translation id="7027785306666625591">Configurer la gestion de l'alimentation dans <ph name="PRODUCT_OS_NAME" />
 
@@ -10768,6 +10792,7 @@ Pour en savoir plus sur la règle <ph name="IEEM_SITELIST_POLICY" /> d'Internet�
 
       Remarque : pour contrôler les sites autorisés à exécuter <ph name="FLASH_PLUGIN_NAME" />, reportez-vous aux règles <ph name="DEFAULT_PLUGINS_SETTING_POLICY_NAME" />, <ph name="PLUGINS_ALLOWED_FOR_URLS_POLICY_NAME" /> et <ph name="PLUGINS_BLOCKED_FOR_URLS_POLICY_NAME" />.</translation>
 <translation id="7801163363326128751">Modifier le niveau d'économies de l'économiseur de mémoire</translation>
+<translation id="7802903687499576891">Autoriser le cache back/forward pour les connexions WebSocket (les déconnecter lors du stockage dans le cache).</translation>
 <translation id="7804859754080118507">Signalez les événements liés à la connexion réseau et la puissance du signal sur les appareils enregistrés.
 
       Si la règle est définie sur "False" ou si elle n'est pas configurée, ces informations ne seront pas transmises.

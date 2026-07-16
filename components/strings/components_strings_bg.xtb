@@ -3052,6 +3052,7 @@
 <translation id="5715918316982363436"><ph name="TAB_COUNT" /> от <ph name="WINDOW_COUNT" /> на това устройство</translation>
 <translation id="5716325061445053985">Докоснете, за да отворите раздела на телефона си</translation>
 <translation id="5717509257172454543">Фигурно пързаляне</translation>
+<translation id="5718326209176373202">Добавяне на текстови пояснения</translation>
 <translation id="5718601519531438273">Включва различна информация, като например паспорти и шофьорски книжки</translation>
 <translation id="5720705177508910913">Текущият потребител</translation>
 <translation id="5720895412771013401">Настолни компютри</translation>
@@ -4015,6 +4016,7 @@
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /> за този проблем.</translation>
 <translation id="7213191991901907140">Разкажете ни за впечатленията си</translation>
 <translation id="7219179957768738017">Връзката използва <ph name="SSL_VERSION" />.</translation>
+<translation id="7219197639442810756">Предложено от Gemini</translation>
 <translation id="7220786058474068424">Обработва се</translation>
 <translation id="7221855153210829124">Показва известия</translation>
 <translation id="7222232353993864120">Имейл адрес</translation>
@@ -4622,6 +4624,7 @@
 <translation id="8134058435519644366">Подбор на персонал и кадрово обезпечение</translation>
 <translation id="8135546115396015134">клавиш със стрелка за наляво</translation>
 <translation id="8137456439814903304">Електроенергия и комунални услуги</translation>
+<translation id="8138591088112729119">Предоставено от Personal Intelligence</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{Създадено преди 1 месец}other{Създадено преди {NUM_MONTHS} месеца}}</translation>
 <translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />, текуща основна търсеща машина. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">PDF версия:</translation>
@@ -5307,6 +5310,7 @@
 <translation id="949314938206378263">Поискахте да посетите този сайт. Родителят ви може да отговори във Family Link.</translation>
 <translation id="950736567201356821">Тройно перфориране в горната част</translation>
 <translation id="950926967802086924">Ключ за достъп • Google Мениджър на пароли</translation>
+<translation id="952165179818196872">Добавете <ph name="PROVIDER" />, за да плащате, без да превключвате между приложения</translation>
 <translation id="955429569736351433">Разрешено е използването на VR</translation>
 <translation id="955627189349169688">Можете да се откажете от това правило от <ph name="BEGIN_LINK" />настройките за синхронизиране на Chrome<ph name="END_LINK" />.</translation>
 <translation id="95721182352849470">жълто 2</translation>

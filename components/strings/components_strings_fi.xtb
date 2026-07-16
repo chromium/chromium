@@ -4016,6 +4016,7 @@ Jos haluat piilottaa maksa myöhemmin ‑vaihtoehdot, siirry <ph name="BEGIN_LIN
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />Lisätietoja<ph name="END_LINK" /> ongelmasta.</translation>
 <translation id="7213191991901907140">Kerro meille kokemuksestasi</translation>
 <translation id="7219179957768738017">Yhteys käyttää protokollaa <ph name="SSL_VERSION" />.</translation>
+<translation id="7219197639442810756">Geminin ehdotus</translation>
 <translation id="7220786058474068424">Käsitellään.</translation>
 <translation id="7221855153210829124">Näytä ilmoitukset</translation>
 <translation id="7222232353993864120">Sähköpostiosoite</translation>
@@ -4623,6 +4624,7 @@ Lisätietoja:
 <translation id="8134058435519644366">Rekrytointi ja henkilöstön hankinta</translation>
 <translation id="8135546115396015134">vasenta näppäintä</translation>
 <translation id="8137456439814903304">Energia ja energianjakelu</translation>
+<translation id="8138591088112729119">Henkilökohtaisen älyn tarjoama</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{Luotu 1 kuukausi sitten}other{Luotu {NUM_MONTHS} kuukautta sitten}}</translation>
 <translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />, nykyinen oletus. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">PDF-versio:</translation>

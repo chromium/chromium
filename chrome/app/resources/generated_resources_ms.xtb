@@ -1503,6 +1503,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2158475082070321257">Salin pautan kepada serlahan</translation>
 <translation id="2159488579268505102">USB-C</translation>
 <translation id="2161058806218011758">Skop <ph name="SHORTCUT" /> untuk <ph name="EXTENSION_NAME" /></translation>
+<translation id="2161656808144014275">Teks</translation>
 <translation id="216169395504480358">Tambah Wi-Fi...</translation>
 <translation id="2162705204091149050">Baca maklumat tentang penyemak imbas, OS, peranti, perisian dan fail yang dipasang</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> dan 1 lagi suis</translation>
@@ -5338,6 +5339,7 @@ Gunakan Ctrl + Alt + Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="5096775069898886423">Untuk laman yang tidak menyokong sambungan selamat, dapatkan amaran sebelum melawat laman tersebut</translation>
 <translation id="5097002363526479830">Gagal untuk bersambung ke rangkaian '<ph name="NAME" />': <ph name="DETAILS" /></translation>
 <translation id="5097349930204431044">Laman yang anda lawati boleh menentukan perkara yang anda sukai dan mencadangkan iklan sambil anda meneruskan penyemakan imbas</translation>
+<translation id="5097472729724586429">Tambahkan anotasi teks dengan alat "Tambahkan anotasi teks" baharu</translation>
 <translation id="5097649414558628673">Alat: <ph name="PRINT_NAME" /></translation>
 <translation id="5097874180538493929">Klik secara automatik apabila kursor berhenti</translation>
 <translation id="5098963855433723436">Dibuka dalam aplikasi berasingan</translation>
@@ -5402,6 +5404,7 @@ Gunakan Ctrl + Alt + Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="5146235736676876345">Pilih milik sendiri</translation>
 <translation id="5146896637028965135">Suara sistem</translation>
 <translation id="5147113439721488265">Syor</translation>
+<translation id="5148020348702787234">Untuk menghantar pautan, sahkan identiti anda. Anda boleh menghantar pautan apabila anda log masuk ke Google Account yang sama pada kedua-dua peranti.</translation>
 <translation id="5148285448107770349">Kata laluan perlu sekurang-kurangnya 8 aksara</translation>
 <translation id="5149602533174716626">Salin Bingkai Video</translation>
 <translation id="5150254825601720210">Nama Pelayan SSL Sijil Netscape</translation>
@@ -10269,6 +10272,7 @@ Maklumat ini termasuk maklumat tentang perisian yang dipasang, fail, penyemak im
 <translation id="8967427617812342790">Tambahkan pada senarai bacaan</translation>
 <translation id="8968527460726243404">Penulis Imej Sistem ChromeOS</translation>
 <translation id="8968766641738584599">Simpan kad</translation>
+<translation id="8970232194848546151">Hantar pautan kepada peranti lain</translation>
 <translation id="8970887620466824814">Kesilapan telah berlaku.</translation>
 <translation id="89720367119469899">Escape</translation>
 <translation id="8972513834460200407">Sila semak dengan pentadbir rangkaian anda bagi memastikan bahawa tembok api tidak menyekat muat turun dari pelayan Google.</translation>
@@ -10535,6 +10539,7 @@ Maklumat ini termasuk maklumat tentang perisian yang dipasang, fail, penyemak im
 <translation id="9151906066336345901">end</translation>
 <translation id="9152503903192861480">Buka dalam AI Mode</translation>
 <translation id="9153367754133725216">Lihat cadangan untuk apl dan kandungan laman baharu pada Pelancar dan hasil carian. Hantar statistik untuk meningkatkan cadangan hanya jika anda memilih untuk menghantar laporan dan diagnostik ranap serta penggunaan data untuk ChromeOS.</translation>
+<translation id="9153451439615847952">Kurangkan audio latar untuk pemberitahuan dan makluman</translation>
 <translation id="9154194610265714752">Dikemas kini</translation>
 <translation id="915485121129452731">Tablet pen</translation>
 <translation id="9155344700756733162">Nyahpilih warna</translation>

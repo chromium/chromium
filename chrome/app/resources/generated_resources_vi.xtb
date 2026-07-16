@@ -1234,6 +1234,7 @@ Bạn có thể kiểm tra mật khẩu bất cứ lúc nào trong <ph name="GOO
 <translation id="1938351510777341717">Lệnh bên ngoài</translation>
 <translation id="1940221956626514677">Tuỳ chỉnh thanh công cụ</translation>
 <translation id="1940546824932169984">Thiết bị đã kết nối</translation>
+<translation id="194081218158106711">Đang xác nhận mật khẩu đã thay đổi...</translation>
 <translation id="1941410638996203291">Thời gian bắt đầu <ph name="TIME" /></translation>
 <translation id="1941553344801134989">Phiên bản: <ph name="APP_VERSION" /></translation>
 <translation id="1941685451584875710">Quản trị viên đã định cấu hình để tài khoản của bạn tự động kết nối với Microsoft OneDrive, nhưng đã có lỗi xảy ra.</translation>
@@ -1502,6 +1503,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2158475082070321257">Sao chép đường liên kết đến văn bản được làm nổi bật</translation>
 <translation id="2159488579268505102">USB-C</translation>
 <translation id="2161058806218011758">Phạm vi của <ph name="SHORTCUT" /> cho <ph name="EXTENSION_NAME" /></translation>
+<translation id="2161656808144014275">Văn bản</translation>
 <translation id="216169395504480358">Thêm Wi-Fi...</translation>
 <translation id="2162705204091149050">Đọc thông tin về trình duyệt, hệ điều hành, thiết bị, phần mềm đã cài đặt và tệp</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> và 1 công tắc khác</translation>
@@ -4757,6 +4759,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="4657914796247705218">Tốc độ TrackPoint</translation>
 <translation id="4658648180588730283">Ứng dụng <ph name="APPLICATION_NAME" /> không dùng được khi không có mạng.</translation>
 <translation id="465878909996028221">Chỉ hỗ trợ chuyển hướng trình duyệt cho các giao thức http, https và tệp.</translation>
+<translation id="4658821552705754298"><ph name="ITEM_NAME" /> <ph name="CATEGORY_NAME" /></translation>
 <translation id="4659126640776004816">Khi bạn đăng nhập vào Tài khoản Google của mình, tính năng này sẽ được bật.</translation>
 <translation id="4660465405448977105">{COUNT,plural, =1{Hình ảnh}other{# hình ảnh}}</translation>
 <translation id="4660540330091848931">Đang thay đổi dung lượng</translation>
@@ -8923,6 +8926,7 @@ Nhấn một công tắc hoặc phím đã gán để xóa.</translation>
 <translation id="7933486544522242079">&amp;Lưu và chia sẻ</translation>
 <translation id="7933518760693751884">Để lưu một trang nếu bạn muốn xem sau này, hãy nhấp vào biểu tượng Đánh dấu trang</translation>
 <translation id="7933634003144813719">Quản lý các thư mục dùng chung</translation>
+<translation id="7935072572536724392">Không thay đổi được mật khẩu tự động</translation>
 <translation id="7936195481975600746">Để chia sẻ màn hình, hãy dùng bộ chọn màn hình của hệ thống</translation>
 <translation id="7937809006412909895">Đang thu thập dữ liệu chẩn đoán</translation>
 <translation id="7938881824185772026">Labs</translation>
@@ -9060,6 +9064,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8029412171914613589">{SELECTED_ITEMS,plural, =0{Danh sách đọc}=1{Danh sách đọc ({SELECTED_ITEMS})}other{Danh sách đọc ({SELECTED_ITEMS})}}</translation>
 <translation id="8029492516535178472"><ph name="WINDOW_TITLE" /> – Đã yêu cầu quyền. Hãy nhấn tổ hợp phím ⌘ + Option + Mũi tên lên để phản hồi</translation>
 <translation id="8030169304546394654">Đã ngắt kết nối</translation>
+<translation id="8030814978699290230">Đang đăng nhập...</translation>
 <translation id="8030852056903932865">Phê duyệt</translation>
 <translation id="8033827949643255796">đã chọn</translation>
 <translation id="8033958968890501070">Hết giờ</translation>
@@ -9473,6 +9478,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8343578633847737325">Cuộc trò chuyện và chuỗi trò chuyện gần đây</translation>
 <translation id="8345848587667658367">Giờ đây, bạn có thể xem ứng dụng, thông báo, nội dung nghe nhìn và ảnh gần đây có trên điện thoại của mình.</translation>
 <translation id="8347227221149377169">Lệnh in</translation>
+<translation id="8347728744337089388">Gửi đến thiết bị của bạn</translation>
 <translation id="8348430946834215779">Sử dụng HTTPS bất cứ khi nào có thể và nhận thông tin cảnh báo trước khi tải những trang web không hỗ trợ HTTPS</translation>
 <translation id="8348896480272971199">Hãy kiểm tra kết nối Internet của bạn rồi thử lại.</translation>
 <translation id="8349305172487531364">Thanh dấu trang</translation>
@@ -9522,6 +9528,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8382197851871630452">Thời tiết địa phương</translation>
 <translation id="8382913212082956454">Sao chép địa chỉ &amp;email</translation>
 <translation id="8383614331548401927">Chào mừng bạn đến với Recap</translation>
+<translation id="8387157483437834731">Đã đổi mật khẩu thành công</translation>
 <translation id="8387361103813440603">Không được phép xem vị trí của bạn</translation>
 <translation id="8389492867173948260">Cho phép tiện ích này đọc và thay đổi tất cả dữ liệu trên các trang web bạn truy cập:</translation>
 <translation id="8390449457866780408">Máy chủ không khả dụng.</translation>
@@ -10607,6 +10614,7 @@ Thông tin này có thể bao gồm thông tin về phần mềm đã cài đặ
 <translation id="9220820413868316583">Nhấc ngón tay lên rồi thử lại.</translation>
 <translation id="922152298093051471">Tuỳ chỉnh Chrome</translation>
 <translation id="9222839391870847423">Thời lượng: <ph name="DURATION" /></translation>
+<translation id="923306663772315007">Gửi đến thiết bị của bạn</translation>
 <translation id="923467487918828349">Hiển thị tất cả</translation>
 <translation id="923900195646492191">{NUM_EXTENSIONS,plural, =1{Để quản lý tiện ích, hãy mở Tiện ích}other{Để quản lý các tiện ích này, hãy mở Tiện ích}}</translation>
 <translation id="924818813611903184">Quản lý ngôn ngữ trong phần cài đặt ChromeOS</translation>

@@ -754,7 +754,6 @@
 <translation id="842852285618875960">Вы достигли лимита закладок в Chrome (<ph name="BOOKMARK_LIMIT" />), поэтому некоторые из них ещё не сохранены в аккаунте Google.
 
 Чтобы добавить закладки в аккаунт, удалите некоторые из сохраненных. Если вы выйдете прямо сейчас, несохраненные закладки будут удалены.</translation>
-<translation id="8433638294851456451">Чтобы отправить номер на телефон Android, войдите в Chrome на обоих устройствах.</translation>
 <translation id="8458117863387545390">Установите Chrome на телефон</translation>
 <translation id="8496177819998570653">Google Менеджер &amp;паролей</translation>
 <translation id="8498858610309223613">Установлено специальное обновление системы безопасности. Перезапустите Google Chrome (все вкладки будут восстановлены).</translation>
@@ -798,7 +797,6 @@
 <translation id="8883862939660515976">Спросить об этом изображении у Google Объектива</translation>
 <translation id="8914504000324227558">Перезапустить Chrome</translation>
 <translation id="8920304659326707347">Продолжайте с того же места, где остановились, в Chrome на iOS.</translation>
-<translation id="8922193594870374009">Чтобы отправить номер с сайта <ph name="ORIGIN" /> на свой телефон Android, войдите в Chrome на обоих устройствах.</translation>
 <translation id="8922998289262614701">Удалить данные этого приложения из Chrome</translation>
 <translation id="8925636929359899517">Мы используем данные, чтобы улучшать сервис. Прочитайте <ph name="BEGIN_LINK1" />Политику конфиденциальности<ph name="END_LINK1" /> и <ph name="BEGIN_LINK2" />Условия использования<ph name="END_LINK2" />.</translation>
 <translation id="8936233353620149764">Включить или отключить Gemini в Chrome</translation>

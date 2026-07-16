@@ -1232,6 +1232,7 @@
 <translation id="1938351510777341717">బాహ్య ఆదేశం</translation>
 <translation id="1940221956626514677">టూల్‌బార్‌ను అనుకూలంగా మార్చండి</translation>
 <translation id="1940546824932169984">కనెక్ట్ చేయబడిన డివైజ్‌లు</translation>
+<translation id="194081218158106711">మార్చిన పాస్‌వర్డ్‌ను నిర్ధారిస్తోంది...</translation>
 <translation id="1941410638996203291">ప్రారంభ సమయం <ph name="TIME" /></translation>
 <translation id="1941553344801134989">వెర్షన్: <ph name="APP_VERSION" /></translation>
 <translation id="1941685451584875710">Microsoft OneDriveకు ఆటోమేటిక్‌గా కనెక్ట్ అయ్యేలా మీ ఖాతాను మీ అడ్మినిస్ట్రేటర్ కాన్ఫిగర్ చేశారు, కానీ ఏదో పొరపాటు జరిగింది.</translation>
@@ -1500,6 +1501,7 @@
 <translation id="2158475082070321257">హైలైట్ చేసిన టెక్స్ట్‌కు లింక్‌ను కాపీ చేయండి</translation>
 <translation id="2159488579268505102">USB-C</translation>
 <translation id="2161058806218011758"><ph name="EXTENSION_NAME" /> కోసం <ph name="SHORTCUT" />కు సంబంధించిన పరిధి</translation>
+<translation id="2161656808144014275">వచనం</translation>
 <translation id="216169395504480358">Wi-Fiని జోడించండి...</translation>
 <translation id="2162705204091149050">మీ బ్రౌజర్, OS, పరికరం, ఇన్‌స్టాల్ చేసిన సాఫ్ట్‌వేర్, ఫైళ్ల గురించి సమాచారాన్ని చదవండి</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" />, మరో 1 స్విచ్</translation>
@@ -4755,6 +4757,7 @@
 <translation id="4657914796247705218">TrackPoint వేగం</translation>
 <translation id="4658648180588730283"><ph name="APPLICATION_NAME" /> అప్లికేషన్‌ను ఆఫ్‌లైన్‌లో ఉపయోగించలేరు.</translation>
 <translation id="465878909996028221">కేవలం http, https, ఫైల్ ప్రోటోకాల్‌లు మాత్రమే బ్రౌజర్ మళ్లింపులకు మద్దతిస్తాయి.</translation>
+<translation id="4658821552705754298"><ph name="ITEM_NAME" /> <ph name="CATEGORY_NAME" /></translation>
 <translation id="4659126640776004816">మీ Google ఖాతాకు మీరు సైన్ ఇన్ చేసినప్పుడు, ఈ ఫీచర్ ఆన్ చేయబడుతుంది.</translation>
 <translation id="4660465405448977105">{COUNT,plural, =1{ఇమేజ్}other{# ఇమేజ్‌లు}}</translation>
 <translation id="4660540330091848931">పరిమాణాన్ని మారుస్తోంది</translation>
@@ -8918,6 +8921,7 @@
 <translation id="7933486544522242079">సేవ్ చేసి, షేర్ చేయండి</translation>
 <translation id="7933518760693751884">తర్వాతి అవసరాల కోసం పేజీని సేవ్ చేయడానికి, బుక్‌మార్క్ చిహ్నాన్ని క్లిక్ చేయండి</translation>
 <translation id="7933634003144813719">షేర్ చేసిన ఫోల్డర్‌లను నిర్వహించండి</translation>
+<translation id="7935072572536724392">ఆటోమేటిక్ పాస్‌వర్డ్ మార్పు విఫలమైంది</translation>
 <translation id="7936195481975600746">మీ స్క్రీన్‌ను షేర్ చేయడానికి, మీ సిస్టమ్ సెలెక్టర్‌ను ఉపయోగించండి</translation>
 <translation id="7937809006412909895">సమస్య విశ్లేషణలకు సంబంధించిన డేటాను కలెక్ట్ చేస్తోంది</translation>
 <translation id="7938881824185772026">లాబ్స్</translation>
@@ -9052,6 +9056,7 @@
 <translation id="8029412171914613589">{SELECTED_ITEMS,plural, =0{చదవాల్సిన లిస్ట్}=1{చదవాల్సిన లిస్ట్ ({SELECTED_ITEMS})}other{చదవాల్సిన లిస్ట్ ({SELECTED_ITEMS})}}</translation>
 <translation id="8029492516535178472"><ph name="WINDOW_TITLE" /> - అనుమతి కోసం రిక్వెస్ట్ చేశారు, ప్రతిస్పందించడానికి ⌘ + ఆప్షన్ + పై వైపు బాణం గుర్తును నొక్కండి</translation>
 <translation id="8030169304546394654">డిస్‌కనెక్ట్ చేయబడింది</translation>
+<translation id="8030814978699290230">సైన్ ఇన్ చేయడానికి ట్రై చేస్తోంది...</translation>
 <translation id="8030852056903932865">ఆమోదించు</translation>
 <translation id="8033827949643255796">ఎంచుకోబడ్డాయి</translation>
 <translation id="8033958968890501070">సమయం ముగిసింది</translation>
@@ -9465,6 +9470,7 @@
 <translation id="8343578633847737325">ఇటీవలి చాట్‌లు &amp; థ్రెడ్‌లు</translation>
 <translation id="8345848587667658367">మీరు ఇప్పుడు మీ ఫోన్‌లోని ఇటీవలి ఫోటోలు, మీడియా, నోటిఫికేషన్‌లు, ఇంకా యాప్‌లను చూడవచ్చు</translation>
 <translation id="8347227221149377169">ప్రింట్ టాస్క్‌లు</translation>
+<translation id="8347728744337089388">మీ డివైజ్‌కు పంపండి</translation>
 <translation id="8348430946834215779">సాధ్యమైనప్పుడల్లా HTTPSని ఉపయోగించండి, దానికి సపోర్ట్ చేయని సైట్‌లను లోడ్ చేసే ముందు హెచ్చరికను పొందండి</translation>
 <translation id="8348896480272971199">మీ ఇంటర్నెట్‌ను చెక్ చేసి, మళ్లీ ట్రై చేయండి.</translation>
 <translation id="8349305172487531364">బుక్‌మార్క్‌ల బార్‌</translation>
@@ -9514,6 +9520,7 @@
 <translation id="8382197851871630452">స్ధానిక వాతావరణం</translation>
 <translation id="8382913212082956454">&amp;ఇమెయిల్ అడ్రస్‌ను కాపీ చేయండి</translation>
 <translation id="8383614331548401927">Recapకు స్వాగతం</translation>
+<translation id="8387157483437834731">పాస్‌వర్డ్ విజయవంతంగా మారింది</translation>
 <translation id="8387361103813440603">మీ లొకేషన్‌ను చూడటానికి అనుమతించబడలేదు</translation>
 <translation id="8389492867173948260">మీరు సందర్శించే వెబ్‌సైట్‌లలో ఉన్న మీ డేటా మొత్తాన్ని చదవడం లేదా మార్చడం కోసం ఈ ఎక్స్‌టెన్షన్‌ను అనుమతించండి:</translation>
 <translation id="8390449457866780408">సర్వర్ అందుబాటులో లేదు.</translation>
@@ -10599,6 +10606,7 @@
 <translation id="9220820413868316583">వేలిని తీసివేసి, మళ్లీ పెట్టండి.</translation>
 <translation id="922152298093051471">Chromeను అనుకూలంగా మార్చండి</translation>
 <translation id="9222839391870847423">వ్యవధి: <ph name="DURATION" /></translation>
+<translation id="923306663772315007">మీ డివైజ్‌కు పంపండి</translation>
 <translation id="923467487918828349">అన్నీ చూపు</translation>
 <translation id="923900195646492191">{NUM_EXTENSIONS,plural, =1{దీన్ని మేనేజ్ చేయడానికి, ఎక్స్‌టెన్షన్‌లను తెరవండి}other{వీటిని మేనేజ్ చేయడానికి, ఎక్స్‌టెన్షన్‌లను తెరవండి}}</translation>
 <translation id="924818813611903184">ChromeOS సెట్టింగ్‌లలో భాషలను మేనేజ్ చేయండి</translation>

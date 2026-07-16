@@ -245,6 +245,7 @@
 <translation id="1752547299766512813">儲存密碼</translation>
 <translation id="1764070164487214210">路線</translation>
 <translation id="1764511703783285459">其他密碼管理工具並未分享任何密碼或密鑰</translation>
+<translation id="1765555082983153259">「Chrome」想存取你的麥克風</translation>
 <translation id="1767766085187034454">Google 翻譯</translation>
 <translation id="1771016937398045251">工具選單</translation>
 <translation id="1772468122139624049">無法重新載入分頁</translation>
@@ -2463,6 +2464,7 @@
 <translation id="9149866541089851383">編輯…</translation>
 <translation id="9152637745605628097">選擇主題、顏色或上載圖片</translation>
 <translation id="9159628751968616911">傳送網頁</translation>
+<translation id="9162412286847966593">你機構的資料和錄音不會用於改善生成式 AI 模型。<ph name="BEGIN_LINK" />個人私隱權與 Gemini<ph name="END_LINK" /></translation>
 <translation id="9162432979321511934">開啟「自動填入密碼」功能</translation>
 <translation id="9165320910061267720">如要接收減價通知，請在 iOS 設定中開啟通知功能。</translation>
 <translation id="9179151630575358778">隱藏此項目</translation>

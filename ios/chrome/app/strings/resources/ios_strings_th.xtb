@@ -245,6 +245,7 @@
 <translation id="1752547299766512813">บันทึกรหัสผ่าน</translation>
 <translation id="1764070164487214210">เส้นทาง</translation>
 <translation id="1764511703783285459">เครื่องมือจัดการรหัสผ่านอื่นไม่ได้แชร์รหัสผ่านหรือพาสคีย์</translation>
+<translation id="1765555082983153259">"Chrome" ต้องการเข้าถึงไมโครโฟนของคุณ</translation>
 <translation id="1767766085187034454">Google แปลภาษา</translation>
 <translation id="1771016937398045251">เมนูเครื่องมือ</translation>
 <translation id="1772468122139624049">โหลดแท็บซ้ำไม่ได้</translation>
@@ -2465,6 +2466,7 @@
 <translation id="9149866541089851383">แก้ไข...</translation>
 <translation id="9152637745605628097">เลือกจากธีม สี หรืออัปโหลดรูปภาพ</translation>
 <translation id="9159628751968616911">ส่งหน้าเว็บ</translation>
+<translation id="9162412286847966593">ระบบจะไม่ใช้ข้อมูลและไฟล์บันทึกขององค์กรคุณในการปรับปรุงโมเดล Generative AI <ph name="BEGIN_LINK" />ความเป็นส่วนตัวของคุณกับ Gemini<ph name="END_LINK" /></translation>
 <translation id="9162432979321511934">เปิดการป้อนรหัสผ่านอัตโนมัติ</translation>
 <translation id="9165320910061267720">หากต้องการรับการแจ้งเตือนราคาลดลง คุณจะต้องเปิดการแจ้งเตือนในการตั้งค่า iOS</translation>
 <translation id="9179151630575358778">ซ่อนรายการนี้</translation>

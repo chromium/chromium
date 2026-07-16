@@ -3052,6 +3052,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="5715918316982363436"><ph name="TAB_COUNT" /> z <ph name="WINDOW_COUNT" /> na tym urządzeniu</translation>
 <translation id="5716325061445053985">Kliknij, aby otworzyć kartę na telefonie</translation>
 <translation id="5717509257172454543">Łyżwiarstwo</translation>
+<translation id="5718326209176373202">Dodaj adnotacje tekstowe</translation>
 <translation id="5718601519531438273">Obejmuje informacje takie jak paszporty i prawa jazdy</translation>
 <translation id="5720705177508910913">Bieżący użytkownik</translation>
 <translation id="5720895412771013401">Komputery stacjonarne</translation>
@@ -4015,6 +4016,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /> na temat tego problemu.</translation>
 <translation id="7213191991901907140">Podziel się wrażeniami</translation>
 <translation id="7219179957768738017">Połączenie z szyfrowaniem <ph name="SSL_VERSION" />.</translation>
+<translation id="7219197639442810756">Sugerowane przez Gemini</translation>
 <translation id="7220786058474068424">Przetwarzanie</translation>
 <translation id="7221855153210829124">Pokazywanie powiadomień</translation>
 <translation id="7222232353993864120">Adres e-mail</translation>
@@ -4622,6 +4624,7 @@ Dodatkowe informacje:
 <translation id="8134058435519644366">Rekrutacja i zatrudnianie</translation>
 <translation id="8135546115396015134">lewy klawisz</translation>
 <translation id="8137456439814903304">Energetyka i usługi komunalne</translation>
+<translation id="8138591088112729119">Wykorzystuje spersonalizowaną inteligencję</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{Utworzono miesiąc temu}few{Utworzono {NUM_MONTHS} miesiące temu}many{Utworzono {NUM_MONTHS} miesięcy temu}other{Utworzono {NUM_MONTHS} miesiąca temu}}</translation>
 <translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />, bieżąca przeglądarka domyślna. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">Wersja pliku PDF:</translation>
@@ -5306,6 +5309,7 @@ Dodatkowe informacje:
 <translation id="949314938206378263">Prosisz o zgodę na odwiedzenie tej strony. Twój rodzic może odpowiedzieć w Family Link.</translation>
 <translation id="950736567201356821">Trzy otwory u góry</translation>
 <translation id="950926967802086924">Klucz dostępu • Menedżer haseł Google</translation>
+<translation id="952165179818196872">Dodaj <ph name="PROVIDER" />, aby płacić bez przełączania aplikacji</translation>
 <translation id="955429569736351433">Przyznano dostęp do rzeczywistości wirtualnej</translation>
 <translation id="955627189349169688">Możesz zrezygnować z tej zasady w <ph name="BEGIN_LINK" />ustawieniach Synchronizacji Chrome<ph name="END_LINK" />.</translation>
 <translation id="95721182352849470">Żółty 2</translation>

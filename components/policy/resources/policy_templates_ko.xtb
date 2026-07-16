@@ -14,13 +14,6 @@
 <translation id="1002829167638728809">도메인 안정성 관련 데이터 보고 허용</translation>
 <translation id="1004590217607585595">웹 앱 관리 설정</translation>
 <translation id="1006218396155867129">원격 액세스 사용자가 원격 호스트와 파일을 주고받지 못하도록 차단</translation>
-<translation id="1007043180702842391"><ph name="PRODUCT_NAME" />의 PDF 뷰어에서 프로세스 외부 iframe(OOPIF)을 사용할지 여부를 제어합니다. 더 간단해지고 새로운 기능을 더 쉽게 추가할 수 있으므로 향후 새로운 PDF 뷰어 아키텍처가 될 것입니다. 기존 GuestView PDF 뷰어는 오래되고 복잡한 아키텍처로서 지원이 중단됩니다.
-
-정책을 '사용'으로 설정하거나 설정하지 않으면 <ph name="PRODUCT_NAME" />에서 OOPIF PDF 뷰어 아키텍처를 사용할 수 있습니다. 사용 설정하거나 설정하지 않으면 <ph name="PRODUCT_NAME" />에서 기본 동작을 결정합니다.
-
-정책을 '사용 안함'으로 설정하면 <ph name="PRODUCT_NAME" />에서 기존 GuestView PDF 뷰어를 엄격하게 사용합니다. 별도의 프레임 트리가 있는 웹페이지를 다른 웹페이지에 삽입합니다.
-
-이 정책은 OOPIF PDF 뷰어 기능이 완전히 출시되면 향후 삭제될 예정입니다.</translation>
 <translation id="1007149936182752368">북마크 수정 사용 중지</translation>
 <translation id="1009336698423963085">다음 사이트에서 자동 전체 화면 허용</translation>
 <translation id="1010151305531217567">기본 마우스 버튼을 오른쪽 버튼으로 전환</translation>
@@ -2119,6 +2112,7 @@ Chrome 앱은 ID(예: pjkljhegncpnkpknbcohdijeoejaedia)로, Android 앱은 패�
       "tls1" 또는 "tls1.1" 설정 지원은 버전 91부터 삭제되었습니다. TLS 1.0/1.1 경고 숨김은 더 이상 지원되지 않습니다.</translation>
 <translation id="2364639863953745682">어시스턴트 온보딩 환경 모드</translation>
 <translation id="2366301887862414321">사용자 수준과 시스템 수준의 기본 메시지 호스트 둘 다 허용</translation>
+<translation id="2371015218815226913">활성 WebSocket 연결이 있으면 페이지가 뒤로-앞으로 캐시에 저장되지 않습니다.</translation>
 <translation id="2373014700224092497">사용자가 Kerberos 계정을 추가하도록 허용</translation>
 <translation id="2376134474855349829">로그인 화면에서 터치 키보드를 사용 중지하고 사용자가 일시적으로 사용 설정할 수 있도록 허용</translation>
 <translation id="2376151922689284770">설치 프로그램 UI에 표시할 이름입니다(예: Happy VM). 설정하지 않으면 BruschettaVMConfiguration 정책의 첫 번째(표시순) 항목에서 파생된 이름이나 일반적인 이름(파생되지 않은 경우)으로 대체되어 표시됩니다.</translation>
@@ -7261,6 +7255,28 @@ Microsoft SharePoint 및 OneDrive 카드에는 추가 관리자 구성이 필요
 
       이 정책은 지원 중단되었습니다. 대신 <ph name="PROMOTIONS_ENABLED_POLICY_NAME" /> 정책을 사용하세요.</translation>
 <translation id="5556607617517096419">Borealis</translation>
+<translation id="5556933299171172140">이 정책을 설정하면 특정 URL 패턴에서 차단되는 자동 완성 데이터 유형을 지정할 수 있습니다.
+
+정책은 사전 목록으로 구성됩니다. 각 사전에는 다음이 포함되어야 합니다.
+* 'url_pattern': 기본 프레임의 콘텐츠 설정 URL 패턴(예: 'https://[*.]example.com')입니다.
+* 'blocked_types': 차단할 자동 완성 데이터의 카테고리를 나타내는 문자열 목록입니다.
+
+'blocked_types'에 지원되는 값은 다음과 같습니다.
+* 'contact_info': 연락처 정보 입력 및 저장을 차단합니다.
+* 'payments': 신용카드 및 결제 수단의 자동 입력 및 저장을 차단합니다.
+* 'identity_docs': 신분증(예: 여권, 운전면허증, 국가 신분증)의 자동 입력 및 저장을 차단합니다.
+* 'travel': 여행 정보(예: 항공편 예약, 차량 등록)의 자동 입력 및 저장을 차단합니다.
+* 'shopping': 쇼핑 정보(예: 온라인 주문, 배송)의 자동 입력 및 저장을 차단합니다.
+* 'all': 모든 자동 완성 데이터 유형의 자동 입력 및 저장을 차단합니다.
+
+사이트에서 데이터 유형이 차단되면 해당 사이트에서 추천 생성과 해당 유형의 새 데이터를 저장하고 가져오라는 프롬프트가 모두 사용 중지됩니다.
+
+URL이 목록의 여러 패턴 항목과 일치하면 일치하는 모든 항목의 차단된 유형이 결합(합집합 병합)됩니다. 목록의 잘못된 URL 패턴은 무시됩니다.
+
+이 정책을 설정하지 않으면 도메인별로 자동 완성 데이터 유형이 차단되지 않습니다.
+
+유효한 URL 패턴에 관한 자세한 내용은
+https://chromeenterprise.google/policies/url-patterns 페이지를 참고하세요. 와일드 카드*가 지원되며, 이 패턴은 스킴, 포트, 경로와 관계없이 모든 URL과 일치합니다.</translation>
 <translation id="5557753512027261467"><ph name="GOOGLE_DRIVE_NAME" /> 옵션 표시.</translation>
 <translation id="5558394213067608844">Wilco 진단 및 텔레메트리 컨트롤러 사용 설정</translation>
 <translation id="5559079916187891399">이 정책은 Android 앱에 아무런 영향을 미치지 않습니다.</translation>
@@ -7600,6 +7616,13 @@ Microsoft SharePoint 및 OneDrive 카드에는 추가 관리자 구성이 필요
 정책을 사용 중지하거나 설정하지 않으면 브라우저 기능 실행 프로세스에서
 적응형 버퍼링 사용 여부를 결정합니다.</translation>
 <translation id="5800329278018669527">오프라인일 때 네트워크 구성 프롬프트 사용 중지</translation>
+<translation id="5800627752428920394">이 정책은 페이지가 뒤로-앞으로 캐시에 저장될 때 활성 WebSocket 연결을 해제할지 제어합니다. 이전에는 활성 WebSocket 연결로 인해 페이지가 뒤로-앞으로 캐시에 저장되지 않았지만 <ph name="PRODUCT_NAME" />에서 이 동작을 변경하여 대신 WebSocket 연결을 해제하므로, 페이지를 캐시하고 연결이 해제된 상태로 복원할 수 있습니다.
+
+이 정책을 사용 설정됨으로 설정하거나 미설정 상태로 남겨 두면 페이지가 뒤로-앞으로 캐시에 저장될 때 WebSocket이 연결 해제됩니다.
+
+이 정책을 사용 안함으로 설정하면 페이지가 뒤로-앞으로 캐시에 저장될 때 WebSocket 연결이 해제되지 않습니다. 뒤로-앞으로 캐시는 활성 WebSocket을 지원하지 않으므로 활성 WebSocket이 있는 페이지는 캐시되지 않습니다.
+
+이 정책은 일시적이며 향후 삭제될 예정입니다.</translation>
 <translation id="5802931736499687181">암호화된 보고 파이프라인을 사용 중지합니다.</translation>
 <translation id="5803715507113569033">이 정책을 통해 관리자는 <ph name="MICROSOFT_ONE_DRIVE_NAME" />의 마운트를 구성할 수 있습니다.
 
@@ -9662,6 +9685,7 @@ JavaScript 최적화 정책 예외는 사이트 세부사항에서만 시행됩�
 <translation id="7025153290982655996">기존 쿠키 범위 동작으로 되돌리기</translation>
 <translation id="7025332601572838001">CCT 첫 실행 시 서비스 약관 동작 구성</translation>
 <translation id="7026351325994257733"><ph name="PRODUCT_OS_NAME" /> 기기 및 연결된 Android 휴대전화 전체에서 Wi-Fi 네트워크 구성을 동기화하도록 허용합니다.</translation>
+<translation id="7026488120383693794">WebSocket에 뒤로-앞으로 캐시 허용</translation>
 <translation id="7027057540229843762">밝은 테마 사용</translation>
 <translation id="7027785306666625591"><ph name="PRODUCT_OS_NAME" />에서 전원 관리를 설정합니다.
 
@@ -10951,6 +10975,7 @@ Internet Explorer의 <ph name="IEEM_SITELIST_POLICY" /> 정책(https://docs.micr
 
       참고: <ph name="FLASH_PLUGIN_NAME" /> 플러그인을 실행할 수 있는 웹사이트를 제어하려면 <ph name="DEFAULT_PLUGINS_SETTING_POLICY_NAME" />, <ph name="PLUGINS_ALLOWED_FOR_URLS_POLICY_NAME" />, <ph name="PLUGINS_BLOCKED_FOR_URLS_POLICY_NAME" /> 정책을 참고하세요.</translation>
 <translation id="7801163363326128751">메모리 절약 모드의 절약 수준 변경</translation>
+<translation id="7802903687499576891">WebSocket에 뒤로-앞으로 캐시를 허용합니다(캐시에 저장될 때는 WebSocket 연결 해제).</translation>
 <translation id="7804859754080118507">등록된 기기에서 네트워크 연결 및 신호 강도 이벤트를 보고합니다.
 
       정책을 false로 설정하거나 정책이 설정되어 있지 않으면 정보가 보고되지 않습니다.

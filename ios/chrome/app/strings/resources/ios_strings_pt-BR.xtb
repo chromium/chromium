@@ -245,6 +245,7 @@
 <translation id="1752547299766512813">Salvar senhas</translation>
 <translation id="1764070164487214210">Rotas</translation>
 <translation id="1764511703783285459">O outro gerenciador de senhas não compartilhou nenhuma senha ou chave de acesso</translation>
+<translation id="1765555082983153259">O Chrome quer acessar seu microfone</translation>
 <translation id="1767766085187034454">Google Tradutor</translation>
 <translation id="1771016937398045251">Menu Ferramentas</translation>
 <translation id="1772468122139624049">Não foi possível recarregar as guias</translation>
@@ -2465,6 +2466,7 @@ Para continuar pelo computador, mude para <ph name="OTHER_EMAIL" />. Você vai r
 <translation id="9149866541089851383">Editar...</translation>
 <translation id="9152637745605628097">Escolha entre temas e cores ou faça upload de uma imagem</translation>
 <translation id="9159628751968616911">Enviar página da Web</translation>
+<translation id="9162412286847966593">Os dados e gravações da sua organização não serão usados para aprimorar os modelos de IA generativa. <ph name="BEGIN_LINK" />Sua privacidade e o Gemini<ph name="END_LINK" /></translation>
 <translation id="9162432979321511934">Ative a opção "Preenchimento automático de senhas"</translation>
 <translation id="9165320910061267720">Para receber notificações de alertas de redução no preço, ative as notificações nas configurações do iOS.</translation>
 <translation id="9179151630575358778">Oculta este item</translation>

@@ -755,7 +755,6 @@ Google Chrome потрібен доступ до Bluetooth. <ph name="IDS_SERIAL
 <translation id="842852285618875960">Ви додали максимальну кількість закладок у Google Chrome (<ph name="BOOKMARK_LIMIT" />), тому деякі з них іще не збережено у вашому обліковому записі Google.
 
 Щоб зберегти нові закладки в обліковому записі, видаліть деякі з наявних. Якщо вийти зараз, незбережені закладки буде видалено.</translation>
-<translation id="8433638294851456451">Щоб надіслати номер на телефон Android, увійдіть у Chrome на обох пристроях.</translation>
 <translation id="8458117863387545390">Установіть Chrome на телефон</translation>
 <translation id="8496177819998570653">Google М&amp;енеджер паролів</translation>
 <translation id="8498858610309223613">Щойно було застосовано спеціальне оновлення для захисту Google Chrome. Перезапустіть веб-переглядач, і ваші вкладки буде відновлено.</translation>
@@ -799,7 +798,6 @@ Google Chrome потрібен доступ до Bluetooth. <ph name="IDS_SERIAL
 <translation id="8883862939660515976">Запитати Google Об’єктив про це зображення</translation>
 <translation id="8914504000324227558">Перезапустити Chrome</translation>
 <translation id="8920304659326707347">Продовжуйте роботу з місця, де зупинилися, у Chrome на пристроях iOS.</translation>
-<translation id="8922193594870374009">Щоб надіслати номер із сайту <ph name="ORIGIN" /> на телефон Android, увійдіть у Chrome на обох пристроях.</translation>
 <translation id="8922998289262614701">Видалити дані цього додатка з Chrome</translation>
 <translation id="8925636929359899517">Ми використовуємо цю інформацію, щоб покращувати сервіс. Перегляньте <ph name="BEGIN_LINK1" />Політику конфіденційності<ph name="END_LINK1" /> й <ph name="BEGIN_LINK2" />Умови використання<ph name="END_LINK2" />.</translation>
 <translation id="8936233353620149764">Увімкнути або вимкнути Gemini у Chrome</translation>

@@ -1224,6 +1224,7 @@ Jebkurā laikā varat pārbaudīt paroles pakalpojumā <ph name="GOOGLE_PASSWORD
 <translation id="1938351510777341717">Ārējais komandtaustiņš</translation>
 <translation id="1940221956626514677">Pielāgot rīkjoslu</translation>
 <translation id="1940546824932169984">Pievienotās ierīces</translation>
+<translation id="194081218158106711">Notiek mainītās paroles apstiprināšana…</translation>
 <translation id="1941410638996203291">Sākuma laiks: <ph name="TIME" /></translation>
 <translation id="1941553344801134989">Versija: <ph name="APP_VERSION" /></translation>
 <translation id="1941685451584875710">Jūsu administrators konfigurēja jūsu kontu, lai tas tiktu automātiski saistīts ar pakalpojumu Microsoft OneDrive, taču radās problēma.</translation>
@@ -1492,6 +1493,7 @@ Varat pārvaldīt šī konta iestatījumus, savā ierīcē instalējot lietotni 
 <translation id="2158475082070321257">Kopēt saiti uz atzīmēto tekstu</translation>
 <translation id="2159488579268505102">USB-C</translation>
 <translation id="2161058806218011758">Paplašinājuma <ph name="EXTENSION_NAME" /> saīsnes <ph name="SHORTCUT" /> tvērums</translation>
+<translation id="2161656808144014275">Teksts</translation>
 <translation id="216169395504480358">Pievienot Wi-Fi...</translation>
 <translation id="2162705204091149050">Lasīt informāciju par jūsu pārlūku, OS, ierīci, instalēto programmatūru un failiem</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> un vēl 1 slēdža taustiņš</translation>
@@ -4742,6 +4744,7 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="4657914796247705218">TrackPoint ātrums</translation>
 <translation id="4658648180588730283">Lietojumprogramma <ph name="APPLICATION_NAME" /> bezsaistē nav pieejama.</translation>
 <translation id="465878909996028221">Pārlūkprogrammas novirzīšanai tiek atbalstīti tikai http, https un failu protokoli.</translation>
+<translation id="4658821552705754298"><ph name="ITEM_NAME" />, <ph name="CATEGORY_NAME" /></translation>
 <translation id="4659126640776004816">Kad pierakstāties savā Google kontā, šī funkcija ir ieslēgta.</translation>
 <translation id="4660465405448977105">{COUNT,plural, =1{Attēls}zero{# attēlu}one{# attēls}other{# attēli}}</translation>
 <translation id="4660540330091848931">Notiek lieluma mainīšana</translation>
@@ -8906,6 +8909,7 @@ Lai noņemtu piešķīrumu, nospiediet piešķirto slēdzi vai taustiņu.</trans
 <translation id="7933486544522242079">&amp;Saglabāt un kopīgot</translation>
 <translation id="7933518760693751884">Lai saglabātu lapu lasīšanai vēlāk, noklikšķiniet uz grāmatzīmes ikonas</translation>
 <translation id="7933634003144813719">Pārvaldīt kopīgotās mapes</translation>
+<translation id="7935072572536724392">Neizdevās automātiski nomainīt paroli</translation>
 <translation id="7936195481975600746">Lai kopīgotu ekrānu, izmantojiet sistēmas ekrānu atlasītāju.</translation>
 <translation id="7937809006412909895">Notiek diagnostikas datu vākšana</translation>
 <translation id="7938881824185772026">Labs</translation>
@@ -9043,6 +9047,7 @@ Glabājiet atslēgas failu drošā vietā. Tas būs vajadzīgs, lai izveidotu ja
 <translation id="8029412171914613589">{SELECTED_ITEMS,plural, =0{Lasīšanas saraksts}=1{Lasīšanas saraksts ({SELECTED_ITEMS})}zero{Lasīšanas saraksts ({SELECTED_ITEMS})}one{Lasīšanas saraksts ({SELECTED_ITEMS})}other{Lasīšanas saraksts ({SELECTED_ITEMS})}}</translation>
 <translation id="8029492516535178472"><ph name="WINDOW_TITLE" /> — pieprasīta atļauja. Lai atbildētu, nospiediet taustiņu ⌘, taustiņu Option un augšupvērsto bultiņu.</translation>
 <translation id="8030169304546394654">atvienots</translation>
+<translation id="8030814978699290230">Notiek mēģinājums pierakstīties…</translation>
 <translation id="8030852056903932865">Apstiprināt</translation>
 <translation id="8033827949643255796">atlasīti</translation>
 <translation id="8033958968890501070">Noildze</translation>
@@ -9456,6 +9461,7 @@ Glabājiet atslēgas failu drošā vietā. Tas būs vajadzīgs, lai izveidotu ja
 <translation id="8343578633847737325">Nesenās tērzēšanas sarunas un pavedieni</translation>
 <translation id="8345848587667658367">Tagad varat skatīt tālruņa jaunākos fotoattēlus, multivides saturu, paziņojumus un lietotnes.</translation>
 <translation id="8347227221149377169">Drukas uzdevumi</translation>
+<translation id="8347728744337089388">Sūtīt uz jūsu &amp;ierīci</translation>
 <translation id="8348430946834215779">Kad vien iespējams, izmantojiet protokolu HTTPS un saņemiet brīdinājumus pirms tādu vietņu ielādes, kas šo protokolu neatbalsta.</translation>
 <translation id="8348896480272971199">Pārbaudiet interneta savienojumu un mēģiniet vēlreiz.</translation>
 <translation id="8349305172487531364">Grāmatzīmju josla</translation>
@@ -9505,6 +9511,7 @@ Glabājiet atslēgas failu drošā vietā. Tas būs vajadzīgs, lai izveidotu ja
 <translation id="8382197851871630452">Vietējie laikapstākļi</translation>
 <translation id="8382913212082956454">Kopēt un nosūtīt adresi pa e-pastu</translation>
 <translation id="8383614331548401927">Kopsavilkums sākumam</translation>
+<translation id="8387157483437834731">Parole ir sekmīgi nomainīta</translation>
 <translation id="8387361103813440603">Nedrīkst skatīt jūsu atrašanās vietu</translation>
 <translation id="8389492867173948260">Ļaut šim paplašinājumam lasīt un mainīt visus jūsu datus jūsu apmeklētajās vietnēs:</translation>
 <translation id="8390449457866780408">Serveris nav pieejams.</translation>
@@ -10590,6 +10597,7 @@ Tā var ietvert informāciju par ierīcē instalēto programmatūru, failiem, p�
 <translation id="9220820413868316583">Paceliet pirkstu un pēc tam mēģiniet vēlreiz.</translation>
 <translation id="922152298093051471">Pielāgot pārlūkprogrammu Chrome</translation>
 <translation id="9222839391870847423">Ilgums: <ph name="DURATION" /></translation>
+<translation id="923306663772315007">Sūtīt uz jūsu &amp;ierīci</translation>
 <translation id="923467487918828349">Rādīt visus</translation>
 <translation id="923900195646492191">{NUM_EXTENSIONS,plural, =1{Lai to pārvaldītu, atveriet sadaļu “Paplašinājumi”.}zero{Lai tos pārvaldītu, atveriet sadaļu “Paplašinājumi”.}one{Lai tos pārvaldītu, atveriet sadaļu “Paplašinājumi”.}other{Lai tos pārvaldītu, atveriet sadaļu “Paplašinājumi”.}}</translation>
 <translation id="924818813611903184">Valodu pārvaldība Chrome OS iestatījumos</translation>

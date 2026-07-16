@@ -1234,6 +1234,7 @@
 <translation id="1938351510777341717">बाहरी निर्देश</translation>
 <translation id="1940221956626514677">टूलबार को पसंद के मुताबिक बनाएं</translation>
 <translation id="1940546824932169984">कनेक्ट किए गए डिवाइस</translation>
+<translation id="194081218158106711">बदले गए पासवर्ड की पुष्टि की जा रही है...</translation>
 <translation id="1941410638996203291">शुरुआत का समय <ph name="TIME" /></translation>
 <translation id="1941553344801134989">वर्शन: <ph name="APP_VERSION" /></translation>
 <translation id="1941685451584875710">एडमिन ने आपके खाते को कॉन्फ़िगर किया, ताकि वह Microsoft OneDrive से अपने-आप कनेक्ट हो जाए. हालांकि, इस दौरान कोई गड़बड़ी हुई.</translation>
@@ -1502,6 +1503,7 @@
 <translation id="2158475082070321257">हाइलाइट किए गए टेक्स्ट का लिंक कॉपी करें</translation>
 <translation id="2159488579268505102">USB-C</translation>
 <translation id="2161058806218011758"><ph name="EXTENSION_NAME" /> के लिए <ph name="SHORTCUT" /> का दायरा</translation>
+<translation id="2161656808144014275">लेख संदेश</translation>
 <translation id="216169395504480358">वाई-फ़ाई  जोड़ें...</translation>
 <translation id="2162705204091149050">अपने ब्राउज़र, ओएस, डिवाइस, इंस्टॉल किए गए सॉफ़्टवेयर, और फ़ाइलों के बारे में जानें</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" />, और 1 और स्विच ऐक्सेस बटन</translation>
@@ -4756,6 +4758,7 @@
 <translation id="4657914796247705218">TrackPoint की रफ़्तार</translation>
 <translation id="4658648180588730283"><ph name="APPLICATION_NAME" /> ऐप्लिकेशन को ऑफ़लाइन इस्तेमाल नहीं किया जा सकता.</translation>
 <translation id="465878909996028221">ब्राउज़र रीडायरेक्ट के लिए सिर्फ़ एचटीटीपी, एचटीटीपीएस और फ़ाइल प्रोटोकॉल काम करते हैं.</translation>
+<translation id="4658821552705754298"><ph name="ITEM_NAME" /> <ph name="CATEGORY_NAME" /></translation>
 <translation id="4659126640776004816">जब आप अपने Google खाते में लॉग इन करते हैं, तो यह सुविधा चालू हो जाती है.</translation>
 <translation id="4660465405448977105">{COUNT,plural, =1{इमेज}one{# इमेज}other{# इमेज}}</translation>
 <translation id="4660540330091848931">साइज़ बदला जा रहा है</translation>
@@ -8919,6 +8922,7 @@
 <translation id="7933486544522242079">&amp;सेव और शेयर करें</translation>
 <translation id="7933518760693751884">बुकमार्क आइकॉन पर क्लिक करके, किसी पेज को बाद में पढ़ने के लिए सेव करें</translation>
 <translation id="7933634003144813719">शेयर किए गए फ़ोल्डर प्रबंधित करें</translation>
+<translation id="7935072572536724392">ऑटोमैटिक तरीके से पासवर्ड बदलने की सुविधा काम नहीं कर रही है</translation>
 <translation id="7936195481975600746">स्क्रीन शेयर करने के लिए, अपने सिस्टम के स्क्रीन पिकर का इस्तेमाल करें</translation>
 <translation id="7937809006412909895">गड़बड़ी की जानकारी का डेटा इकट्ठा किया जा रहा है</translation>
 <translation id="7938881824185772026">Labs</translation>
@@ -9056,6 +9060,7 @@
 <translation id="8029412171914613589">{SELECTED_ITEMS,plural, =0{रीडिंग लिस्ट}=1{रीडिंग लिस्ट ({SELECTED_ITEMS})}one{रीडिंग लिस्ट ({SELECTED_ITEMS})}other{रीडिंग लिस्ट ({SELECTED_ITEMS})}}</translation>
 <translation id="8029492516535178472"><ph name="WINDOW_TITLE" /> - अनुमति मांगी गई है, जवाब देने के लिए ⌘ + Option + अप ऐरो बटन दबाएं</translation>
 <translation id="8030169304546394654">डिसकनेक्ट किया गया</translation>
+<translation id="8030814978699290230">साइन इन करने की कोशिश की जा रही है...</translation>
 <translation id="8030852056903932865">अनुमति दें</translation>
 <translation id="8033827949643255796">चयनित</translation>
 <translation id="8033958968890501070">समय खत्म</translation>
@@ -9469,6 +9474,7 @@
 <translation id="8343578633847737325">हाल ही की चैट और थ्रेड</translation>
 <translation id="8345848587667658367">अब आपके पास अपने फ़ोन में मौजूद हाल ही की फ़ोटो, मीडिया, सूचनाएं, और ऐप्लिकेशन देखने का विकल्प है</translation>
 <translation id="8347227221149377169">प्रिंट जॉब</translation>
+<translation id="8347728744337089388">अपने डिवाइस पर भेजें</translation>
 <translation id="8348430946834215779">जब भी हो सके एचटीटीपीएस का इस्तेमाल करें. ऐसा करने से, आपको उन साइटों के लोड होने से पहले चेतावनी मिलेगी जो एचटीटीपीएस पर काम नहीं करतीं</translation>
 <translation id="8348896480272971199">अपने इंटरनेट कनेक्शन की जांच करें और फिर से कोशिश करें.</translation>
 <translation id="8349305172487531364">बुकमार्क बार</translation>
@@ -9518,6 +9524,7 @@
 <translation id="8382197851871630452">मौजूदा जगह का मौसम</translation>
 <translation id="8382913212082956454">ईमेल पते की कॉपी बनाएं</translation>
 <translation id="8383614331548401927">वेलकम रीकैप</translation>
+<translation id="8387157483437834731">पासवर्ड बदल दिया गया है</translation>
 <translation id="8387361103813440603">आपकी जगह की जानकारी देखने की अनुमति नहीं है</translation>
 <translation id="8389492867173948260">इस एक्सटेंशन को आपकी विज़िट की जाने वाली वेबसाइटों पर मौजूद आपका डेटा पढ़ने और बदलने की अनुमति दें</translation>
 <translation id="8390449457866780408">सर्वर अनुपलब्‍ध है.</translation>
@@ -10603,6 +10610,7 @@
 <translation id="9220820413868316583">उंगली उठाएं और फिर से कोशिश करें.</translation>
 <translation id="922152298093051471">Chrome को पसंद के मुताबिक बनाएं</translation>
 <translation id="9222839391870847423">अवधि: <ph name="DURATION" /></translation>
+<translation id="923306663772315007">अपने डिवाइस पर भेजें</translation>
 <translation id="923467487918828349">सभी दिखाएं</translation>
 <translation id="923900195646492191">{NUM_EXTENSIONS,plural, =1{इसे मैनेज करने के लिए एक्सटेंशन खोलें}one{इसे मैनेज करने के लिए एक्सटेंशन खोलें}other{उन्हें मैनेज करने के लिए एक्सटेंशन खोलें}}</translation>
 <translation id="924818813611903184">ChromeOS की सेटिंग में भाषाएं मैनेज करें</translation>

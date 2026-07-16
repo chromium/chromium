@@ -245,6 +245,7 @@
 <translation id="1752547299766512813">Ruaj fjalëkalimet</translation>
 <translation id="1764070164487214210">Udhëzimet</translation>
 <translation id="1764511703783285459">Menaxheri tjetër i fjalëkalimeve nuk ndau asnjë fjalëkalim apo çelës kalimi</translation>
+<translation id="1765555082983153259">"Chrome" dëshiron të ketë qasje te mikrofoni yt</translation>
 <translation id="1767766085187034454">Përkthe me Google</translation>
 <translation id="1771016937398045251">Menyja e veglave</translation>
 <translation id="1772468122139624049">Skedat nuk mund të ringarkohen</translation>
@@ -2465,6 +2466,7 @@ Për të vazhduar nga kompjuteri, kalo te <ph name="OTHER_EMAIL" />. Do të marr
 <translation id="9149866541089851383">Redakto...</translation>
 <translation id="9152637745605628097">Zgjidh nga temat, ngjyrat ose ngarko një imazh</translation>
 <translation id="9159628751968616911">Dërgo faqen e uebit</translation>
+<translation id="9162412286847966593">Të dhënat dhe regjistrimet e organizatës sate nuk do të përdoren për të përmirësuar modelet e IA-së gjeneruese. <ph name="BEGIN_LINK" />Privatësia jote dhe Gemini<ph name="END_LINK" /></translation>
 <translation id="9162432979321511934">Aktivizo "Plotëso automatikisht fjalëkalimet"</translation>
 <translation id="9165320910061267720">Për të marrë njoftime me sinjalizime për ulje çmimi, do të duhet të aktivizosh njoftimet në cilësimet e iOS.</translation>
 <translation id="9179151630575358778">E fsheh këtë artikull</translation>

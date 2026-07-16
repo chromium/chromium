@@ -14,13 +14,6 @@
 <translation id="1002829167638728809">ドメインの信頼性に関するデータのレポートを許可する</translation>
 <translation id="1004590217607585595">ウェブアプリ管理設定</translation>
 <translation id="1006218396155867129">リモート アクセス ユーザーとリモートホストとの間のファイル転送を無効にする</translation>
-<translation id="1007043180702842391"><ph name="PRODUCT_NAME" /> の PDF ビューアでプロセス外の iframe（OOPIF）を使用するかどうかを制御します。よりシンプルで新機能の追加が容易なため、将来的にはこれが新しい PDF ビューア アーキテクチャになります。既存の GuestView PDF ビューアは、古い複雑なアーキテクチャであり、非推奨となります。
-
-このポリシーを有効に設定するか未設定のままにした場合、<ph name="PRODUCT_NAME" /> で OOPIF PDF ビューア アーキテクチャを使用できるようになります。有効にするか未設定のままにした場合、デフォルトの動作は <ph name="PRODUCT_NAME" /> によって決定されます。
-
-このポリシーを無効に設定した場合、<ph name="PRODUCT_NAME" /> では既存の GuestView PDF ビューアのみが使用されます。個別のフレームツリーを持つウェブページは別のウェブページに埋め込まれます。
-
-このポリシーは、OOPIF PDF ビューア機能が完全にリリースされた後に削除される予定です。</translation>
 <translation id="1007149936182752368">ブックマークの編集を無効にする</translation>
 <translation id="1009336698423963085">自動全画面表示を許可するサイトを指定する</translation>
 <translation id="1010151305531217567">マウスのメインボタンを右に切り替える</translation>
@@ -2021,6 +2014,7 @@ Android アプリの場合はパッケージ名（「com.google.android.gm」な
       バージョン 91 以降、このポリシーを「tls1」または「tls1.1」に設定することはできなくなり、TLS 1.0 / 1.1 の警告の抑制はサポートされなくなりました。</translation>
 <translation id="2364639863953745682">アシスタントのオンボーディング エクスペリエンスのモード</translation>
 <translation id="2366301887862414321">ユーザーレベルとシステムレベルの両方のネイティブ メッセージング ホストを許可</translation>
+<translation id="2371015218815226913">アクティブな WebSocket 接続がある場合にページをバックフォワード キャッシュに保存しない。</translation>
 <translation id="2373014700224092497">ユーザーが Kerberos アカウントを追加できるようにする</translation>
 <translation id="2376134474855349829">ログイン画面で画面キーボードを無効にし、ユーザーが一時的に有効にすることを許可する</translation>
 <translation id="2376151922689284770">インストーラ UI に表示される名前（Happy VM など）。未設定のままにすると、BruschettaVMConfiguration ポリシーの最初の（表示順）エントリから派生したフォールバック名が表示されるか、またはこれに失敗した場合は汎用名が表示されます。</translation>
@@ -6921,6 +6915,27 @@ https://wiki.samba.org/index.php/Samba_4.6_Features_added/changed#Kerberos_clien
 
       これは非推奨です。代わりに <ph name="PROMOTIONS_ENABLED_POLICY_NAME" /> を使用してください。</translation>
 <translation id="5556607617517096419">Borealis</translation>
+<translation id="5556933299171172140">このポリシーを設定すると、特定の URL パターンでブロックする自動入力データのタイプを指定できます。
+
+ポリシーは、辞書のリストとして構成されます。各辞書には次の要素を含める必要があります。
+* 「url_pattern」: メインフレームのコンテンツ設定の URL パターン（例: 「https://[*.]example.com」）。
+* 「blocked_types」: ブロックする自動入力データのカテゴリを表す文字列のリスト。
+
+「blocked_types」に使用できる値は次のとおりです。
+* 「contact_info」: 連絡先情報の入力と保存をブロックします。
+* 「payments」: クレジット カードと支払い方法の入力と保存をブロックします。
+* 「identity_docs」: 身分証明書（パスポート、運転免許証、マイナンバー カードなど）の入力と保存をブロックします。
+* 「travel」: 旅行情報（フライトの予約、車両登録など）の入力と保存をブロックします。
+* 「shopping」: ショッピング情報（オンライン注文、配送など）の入力と保存をブロックします。
+* 「all」: すべてのタイプの自動入力データの入力と保存をブロックします。
+
+サイトに対しデータタイプをブロックすると、そのサイトでは候補の生成と、そのタイプの新しいデータの保存またはインポートを促すメッセージが無効になります。
+
+URL がリスト内の複数のパターンに一致する場合は、一致するパターンのブロック対象となっているタイプがすべて統合されます（和集合としてマージ）。リスト内の無効な URL パターンは無視されます。
+
+このポリシーを未設定のままにした場合は、自動入力データのどのタイプもドメインによってブロックされません。
+
+有効な URL パターンについて詳しくは、https://chromeenterprise.google/policies/url-patterns をご覧ください。ワイルドカード（*）を使用できます。このパターンは、スキーム、ポート、パスを問わず、あらゆる URL に一致します。</translation>
 <translation id="5557753512027261467"><ph name="GOOGLE_DRIVE_NAME" /> オプションを表示する。</translation>
 <translation id="5558394213067608844">Wilco の診断とテレメトリー用コントローラを有効にする</translation>
 <translation id="5559079916187891399">このポリシーは Android アプリには適用されません。</translation>
@@ -7246,6 +7261,13 @@ https://wiki.samba.org/index.php/Samba_4.6_Features_added/changed#Kerberos_clien
 
 このポリシーを無効に設定するか未設定のままにした場合、ブラウザ機能の起動プロセスで、アダプティブ バッファリングを使用するかどうかが決められます。</translation>
 <translation id="5800329278018669527">オフライン時のネットワーク設定メッセージの表示を無効にする</translation>
+<translation id="5800627752428920394">このポリシーでは、ページがバックフォワード キャッシュに保存されたときにアクティブな WebSocket 接続を切断するかどうかを制御します。以前は、アクティブな WebSocket 接続があるとページをバックフォワード キャッシュに保存できませんでしたが、<ph name="PRODUCT_NAME" /> では代わりに WebSocket を切断するように動作が変更されました。これにより、ページをキャッシュに保存して、切断された状態で復元することが可能になります。
+
+このポリシーを有効に設定するか未設定のままにした場合、ページがバックフォワード キャッシュに保存されると WebSocket が切断されます。
+
+このポリシーを無効に設定した場合、ページがバックフォワード キャッシュに保存されても WebSocket は切断されません。バックフォワード キャッシュはアクティブな WebSocket をサポートしていないため、アクティブな WebSocket を使用するページはキャッシュに保存されません。
+
+このポリシーは一時的なもので、将来的には削除されます。</translation>
 <translation id="5802931736499687181">暗号化されたレポート パイプラインを無効にする</translation>
 <translation id="5803715507113569033">このポリシーでは、管理者が <ph name="MICROSOFT_ONE_DRIVE_NAME" /> のマウントを設定できます。
 
@@ -9200,6 +9222,7 @@ JavaScript の最適化ポリシーの例外は、サイトの詳細レベル（
 <translation id="7025153290982655996">従来の Cookie スコープの動作に戻す</translation>
 <translation id="7025332601572838001">CCT の初回実行時の利用規約処理を設定します</translation>
 <translation id="7026351325994257733">Wi-Fi ネットワーク設定を <ph name="PRODUCT_OS_NAME" /> デバイスと接続された Android スマートフォンとの間で同期できるようにします。</translation>
+<translation id="7026488120383693794">WebSocket に対するバックフォワード キャッシュを許可する</translation>
 <translation id="7027057540229843762">ライトモードを使用する</translation>
 <translation id="7027785306666625591"><ph name="PRODUCT_OS_NAME" /> の電源管理を設定します。
 
@@ -10395,6 +10418,7 @@ Internet Explorer の <ph name="IEEM_SITELIST_POLICY" /> ポリシーについ�
 
       注: <ph name="FLASH_PLUGIN_NAME" /> を実行できるウェブサイトを管理するには、<ph name="DEFAULT_PLUGINS_SETTING_POLICY_NAME" />、<ph name="PLUGINS_ALLOWED_FOR_URLS_POLICY_NAME" />、<ph name="PLUGINS_BLOCKED_FOR_URLS_POLICY_NAME" /> のポリシーをご覧ください。</translation>
 <translation id="7801163363326128751">メモリセーバー モードの節約設定を変更する</translation>
+<translation id="7802903687499576891">WebSocket に対するバックフォワード キャッシュを許可する（キャッシュ保存時に切断する）。</translation>
 <translation id="7804859754080118507">登録済みデバイスのネットワーク接続と電波強度のイベントを報告します。
 
       このポリシーを false に設定するか未設定のままにした場合、この情報は報告されません。

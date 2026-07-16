@@ -71,6 +71,7 @@
 <translation id="1239792311949352652">يتيح لك هذا الزر مشاركة هذه الصفحة بسرعة. ولتعديل هذا الاختصار، انتقِل إلى "الإعدادات".</translation>
 <translation id="1240288207750131269">جارٍ تحميل <ph name="LANG" /></translation>
 <translation id="124116460088058876">مزيد من اللغات</translation>
+<translation id="1241381048229838873">عرض كل الإشارات المرجعية</translation>
 <translation id="124678866338384709">إغلاق علامة التبويب الحالية</translation>
 <translation id="1246905108078336582">هل تريد إزالة اقتراح من الحافظة؟</translation>
 <translation id="1258753120186372309">‏ رسم شعار Google: <ph name="DOODLE_DESCRIPTION" /></translation>
@@ -1050,6 +1051,7 @@
 <translation id="5390367025924544771">يريد <ph name="WEBSITE_ORIGIN" /> استخدام معلومات شخصية من محفظتك الرقمية. يُرجى المتابعة فقط إذا كنت تثق في هذا الموقع الإلكتروني، فقد تحاول المواقع الإلكترونية الخطيرة خداعك لكي تكشف عن معلومات مثل اسمك القانوني أو رقم بطاقتك الشخصية.</translation>
 <translation id="5395376160638294582">‏يُرجى التأكُّد من أنّه يمكنك استخدام بيانات Chrome في حسابك على Google في أي وقت.</translation>
 <translation id="539881862970320163">تم اقتراح كلمة مرور قوية. لوحة المفاتيح مخفية.</translation>
+<translation id="5404274604891474619">‏يتعذّر تعديل ملف PDF</translation>
 <translation id="5409881200985013443">هل المطلوب إرسال <ph name="ONE_TIME_CODE" /> إلى <ph name="CLIENT_NAME" />؟</translation>
 <translation id="5410300144953132176">تلقّيت دعوة من "<ph name="OWNER_FULL_NAME" />" ‏(<ph name="OWNER_EMAIL" />) للانضمام إلى مجموعة علامات تبويب. يمكن لأيّ مستخدم لديه الرابط تعديل جميع علامات التبويب، لذا يُرجى توخّي الحذر عند الانضمام. وتنتهي صلاحية الرابط بعد 48 ساعة.</translation>
 <translation id="5414836363063783498">جارٍ التحقق...</translation>

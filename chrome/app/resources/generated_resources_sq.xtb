@@ -1223,6 +1223,7 @@ Kontrolloji fjalëkalimet e tua në çdo kohë te <ph name="GOOGLE_PASSWORD_MANA
 <translation id="1938351510777341717">Komandë e jashtme</translation>
 <translation id="1940221956626514677">Personalizo shiritin e veglave</translation>
 <translation id="1940546824932169984">Pajisjet e lidhura</translation>
+<translation id="194081218158106711">Fjalëkalimi i ndryshuar po konfirmohet...</translation>
 <translation id="1941410638996203291">Koha e nisjes: <ph name="TIME" /></translation>
 <translation id="1941553344801134989">Versioni: <ph name="APP_VERSION" /></translation>
 <translation id="1941685451584875710">Administratori yt e ka konfiguruar llogarinë tënde që të lidhet automatikisht me Microsoft OneDrive, por ndodhi një gabim.</translation>
@@ -1491,6 +1492,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="2158475082070321257">Kopjo lidhjen për te teksti i theksuar</translation>
 <translation id="2159488579268505102">USB-C</translation>
 <translation id="2161058806218011758">Fushëveprimi i <ph name="SHORTCUT" /> për <ph name="EXTENSION_NAME" /></translation>
+<translation id="2161656808144014275">Teksti</translation>
 <translation id="216169395504480358">Shto Wi-Fi...</translation>
 <translation id="2162705204091149050">Të lexojë informacionet për shfletuesin, sistemin operativ, pajisjen, softuerët e instaluar dhe skedarët</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> dhe 1 çelës tjetër</translation>
@@ -4744,6 +4746,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="4657914796247705218">Shpejtësia e TrackPoint</translation>
 <translation id="4658648180588730283">Aplikacioni "<ph name="APPLICATION_NAME" />" nuk është i disponueshëm offline.</translation>
 <translation id="465878909996028221">Për ridrejtimet e shfletuesve mbështeten vetëm protokollet http, https dhe të skedarëve.</translation>
+<translation id="4658821552705754298"><ph name="ITEM_NAME" /> <ph name="CATEGORY_NAME" /></translation>
 <translation id="4659126640776004816">Kur identifikohesh në "Llogarinë tënde të Google", kjo veçori është e aktivizuar.</translation>
 <translation id="4660465405448977105">{COUNT,plural, =1{Imazh}other{# imazhe}}</translation>
 <translation id="4660540330091848931">Po ndryshon madhësinë</translation>
@@ -8905,6 +8908,7 @@ Shtyp një çelës ose tast të caktuar për të hequr detyrën.</translation>
 <translation id="7933486544522242079">&amp;Ruaj dhe ndaj</translation>
 <translation id="7933518760693751884">Për ta ruajtur një faqe për më vonë, kliko tek ikona e faqeshënuesit</translation>
 <translation id="7933634003144813719">Menaxho dosjet e ndara</translation>
+<translation id="7935072572536724392">Ndryshimi automatik i fjalëkalimit dështoi</translation>
 <translation id="7936195481975600746">Për të ndarë ekranin tënd, përdor zgjedhësin e ekranit të sistemit tënd</translation>
 <translation id="7937809006412909895">Të dhënat diagnostikuese po mblidhen</translation>
 <translation id="7938881824185772026">Laboratorët</translation>
@@ -9042,6 +9046,7 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8029412171914613589">{SELECTED_ITEMS,plural, =0{Lista e leximit}=1{Lista e leximit ({SELECTED_ITEMS})}other{Lista e leximit ({SELECTED_ITEMS})}}</translation>
 <translation id="8029492516535178472"><ph name="WINDOW_TITLE" /> - Kërkohet leje, shtyp ⌘ + Option + Shigjetën lart për t'u përgjigjur</translation>
 <translation id="8030169304546394654">I shkëputur</translation>
+<translation id="8030814978699290230">Po provohet identifikimi...</translation>
 <translation id="8030852056903932865">Mirato</translation>
 <translation id="8033827949643255796">u zgjodh</translation>
 <translation id="8033958968890501070">Skadimi</translation>
@@ -9455,6 +9460,7 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8343578633847737325">Bisedat dhe bashkëbisedimet e fundit</translation>
 <translation id="8345848587667658367">Tani mund të shikosh aplikacionet, njoftimet, mediat dhe fotografitë më të fundit të telefonit</translation>
 <translation id="8347227221149377169">Printimet</translation>
+<translation id="8347728744337089388">Dërgo te &amp;pajisja jote</translation>
 <translation id="8348430946834215779">Përdor HTTPS kur është e mundur dhe merr paralajmërime para ngarkimit të sajteve që nuk e mbështesin atë</translation>
 <translation id="8348896480272971199">Kontrollo internetin dhe provo përsëri.</translation>
 <translation id="8349305172487531364">Shiriti i faqeshënuesve</translation>
@@ -9504,6 +9510,7 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8382197851871630452">Moti lokal</translation>
 <translation id="8382913212082956454">Kopjo &amp;adresën e mail-it</translation>
 <translation id="8383614331548401927">Përmbledhja e mirëseardhjes</translation>
+<translation id="8387157483437834731">Fjalëkalimi u ndryshua me sukses</translation>
 <translation id="8387361103813440603">Nuk lejohen të shikojnë vendndodhjen tënde</translation>
 <translation id="8389492867173948260">Lejo që kjo shtesë të lexojë dhe të ndryshojë të gjitha të dhënat në faqet që viziton:</translation>
 <translation id="8390449457866780408">Serveri është jashtë shërbimit.</translation>
@@ -10589,6 +10596,7 @@ Kjo mund të përfshijë informacione për softuerët e instaluar, skedarët, sh
 <translation id="9220820413868316583">Ngrije dhe më pas provo përsëri.</translation>
 <translation id="922152298093051471">Personalizo Chrome</translation>
 <translation id="9222839391870847423">Kohëzgjatja: <ph name="DURATION" /></translation>
+<translation id="923306663772315007">Dërgo te &amp;pajisja jote</translation>
 <translation id="923467487918828349">Shfaqi të gjitha</translation>
 <translation id="923900195646492191">{NUM_EXTENSIONS,plural, =1{Për ta menaxhuar atë, hap "Shtesat"}other{Për t'i menaxhuar ato, hap "Shtesat"}}</translation>
 <translation id="924818813611903184">Menaxho gjuhët te cilësimet e ChromeOS</translation>

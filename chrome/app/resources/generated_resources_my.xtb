@@ -1232,6 +1232,7 @@
 <translation id="1938351510777341717">ပြင်ပကွန်မန်း</translation>
 <translation id="1940221956626514677">ကိရိယာဘား စိတ်ကြိုက်လုပ်ရန်</translation>
 <translation id="1940546824932169984">ချိတ်ဆက်ထားသော စက်ပစ္စည်းများ</translation>
+<translation id="194081218158106711">ပြောင်းထားသော စကားဝှက်ကို အတည်ပြုနေသည်…</translation>
 <translation id="1941410638996203291">စတင်ချိန်- <ph name="TIME" /></translation>
 <translation id="1941553344801134989">ဗားရှင်း- <ph name="APP_VERSION" /></translation>
 <translation id="1941685451584875710">သင်၏ စီမံခန့်ခွဲသူက Microsoft OneDrive နှင့် အလိုအလျောက် ချိတ်ဆက်ရန် သင့်အကောင့်ကို စီစဉ်သတ်မှတ်ထားသော်လည်း တစ်ခုခု မှားသွားသည်။</translation>
@@ -1500,6 +1501,7 @@
 <translation id="2158475082070321257">မြင်သာအောင်လုပ်ထားသော စာသားသို့ လင့်ခ်ကို မိတ္တူကူးရန်</translation>
 <translation id="2159488579268505102">USB-C</translation>
 <translation id="2161058806218011758"><ph name="EXTENSION_NAME" /> အတွက် <ph name="SHORTCUT" /> အတိုင်းအတာ</translation>
+<translation id="2161656808144014275">စာသား</translation>
 <translation id="216169395504480358">ကြိုးမဲ့ကို ထည့်ပေးရန်...</translation>
 <translation id="2162705204091149050">သင့်ဘရောင်ဇာ၊ OS၊ စက်၊ ထည့်သွင်းထားသောဆော့ဖ်ဝဲနှင့် ဖိုင်များအကြောင်း အချက်အလက်များ ဖတ်ခြင်း</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />၊ <ph name="SECOND_SWITCH" />၊ <ph name="THIRD_SWITCH" /> နှင့် နောက်ထပ် အသွင်တူခလုတ် 1 ခု</translation>
@@ -4755,6 +4757,7 @@
 <translation id="4657914796247705218">TrackPoint မြန်နှုန်း</translation>
 <translation id="4658648180588730283"><ph name="APPLICATION_NAME" /> အပလီကေးရှင်းက အော့ဖ်လိုင်းမရနိုင်ပါ။</translation>
 <translation id="465878909996028221">ဘရောင်ဇာ တစ်ဆင့်ပြန်ညွှန်ပြခြင်းများအတွက် http၊ https နှင့် ဖိုင်ပရိုတိုကောများကိုသာ ပံ့ပိုးထားပါသည်။</translation>
+<translation id="4658821552705754298"><ph name="ITEM_NAME" /> <ph name="CATEGORY_NAME" /></translation>
 <translation id="4659126640776004816">သင့် Google Account သို့ လက်မှတ်ထိုးဝင်သည့်အခါ ဤဝန်ဆောင်မှုကို ဖွင့်ထားသည်။</translation>
 <translation id="4660465405448977105">{COUNT,plural, =1{ပုံ}other{# ပုံ}}</translation>
 <translation id="4660540330091848931">အရွယ်အစား ပြန်ပြင်နေသည်</translation>
@@ -8918,6 +8921,7 @@
 <translation id="7933486544522242079">&amp;သိမ်းပြီး မျှဝေရန်</translation>
 <translation id="7933518760693751884">စာမျက်နှာကို နောင်အတွက်သိမ်းရန် 'လိပ်စာ' သင်္ကေတကိုနှိပ်ပါ</translation>
 <translation id="7933634003144813719">မျှဝေထားသော ဖိုင်တွဲများ စီမံခန့်ခွဲရန်</translation>
+<translation id="7935072572536724392">အလိုအလျောက် စကားဝှက်ပြောင်း၍ မရလိုက်ပါ</translation>
 <translation id="7936195481975600746">သင့်ဖန်သားပြင် မျှဝေရန် စနစ်၏ ဖန်သားပြင်ရွေးချယ်စနစ်ကို သုံးပါ</translation>
 <translation id="7937809006412909895">အမှားရှာဖွေမှုဒေတာ စုဆောင်းနေသည်</translation>
 <translation id="7938881824185772026">Labs</translation>
@@ -9055,6 +9059,7 @@
 <translation id="8029412171914613589">{SELECTED_ITEMS,plural, =0{ဖတ်ရန်စာရင်း}=1{ဖတ်ရန်စာရင်း ({SELECTED_ITEMS} ခု)}other{ဖတ်ရန်စာရင်း ({SELECTED_ITEMS} ခု)}}</translation>
 <translation id="8029492516535178472"><ph name="WINDOW_TITLE" /> - ခွင့်ပြုချက်တောင်းထားသည်၊ တုံ့ပြန်ရန် ⌘ + Option + 'အပေါ်ညွှန်မြား' နှိပ်ပါ</translation>
 <translation id="8030169304546394654">ချိတ်ဆက်မှု ဖြုတ်ထား</translation>
+<translation id="8030814978699290230">လက်မှတ်ထိုးဝင်ရန် ကြိုးစားနေသည်…</translation>
 <translation id="8030852056903932865">အတည်ပြုရန်</translation>
 <translation id="8033827949643255796">ရွေးထား</translation>
 <translation id="8033958968890501070">အချိန်ကုန်သွားသည်</translation>
@@ -9468,6 +9473,7 @@
 <translation id="8343578633847737325">လတ်တလော ချတ်နှင့် စာတွဲများ</translation>
 <translation id="8345848587667658367">သင့်ဖုန်း၏ လတ်တလော ဓာတ်ပုံ၊ မီဒီယာ၊ အကြောင်းကြားချက်နှင့် အက်ပ်များကို ယခု ကြည့်နိုင်ပြီ</translation>
 <translation id="8347227221149377169">ပရင့်ထုတ်ရန် ဖိုင်များ</translation>
+<translation id="8347728744337089388">သင်၏ &amp;စက်သို့ ပို့ရန်</translation>
 <translation id="8348430946834215779">ရနိုင်ချိန်တိုင်း HTTPS ကိုသုံးပြီး ၎င်းက ပံ့ပိုးမထားသော ဝဘ်ဆိုက်များကို မဖွင့်မီ သတိပေးချက်ရယူပါ</translation>
 <translation id="8348896480272971199">အင်တာနက်ကို စစ်ဆေးပြီး ထပ်စမ်းကြည့်ပါ။</translation>
 <translation id="8349305172487531364">စာညှပ် ဘား</translation>
@@ -9517,6 +9523,7 @@
 <translation id="8382197851871630452">ဒေသတွင်း မိုးလေဝသအခြေအနေ</translation>
 <translation id="8382913212082956454">အီးမေးလ် လိပ်စာ &amp;ကူးယူရန်</translation>
 <translation id="8383614331548401927">‘အကျဉ်းချုပ်’ က ကြိုဆိုပါသည်</translation>
+<translation id="8387157483437834731">စကားဝှက် ပြောင်းလိုက်ပါပြီ</translation>
 <translation id="8387361103813440603">သင့်တည်နေရာကို ကြည့်ရန် ခွင့်ပြုမထားပါ</translation>
 <translation id="8389492867173948260">သင်ကြည့်ရှုသည့် ဝဘ်ဆိုက်များရှိ ဒေတာများအားလုံးကို ကြည့်ရှုခြင်းနှင့် ပြောင်းလဲခြင်းတို့ ပြုလုပ်ရန် ဤနောက်ဆက်တွဲအား ခွင့်ပြုရန်−</translation>
 <translation id="8390449457866780408">ဆာဗာ မရရှိနိုင်ပါ။</translation>
@@ -10602,6 +10609,7 @@
 <translation id="9220820413868316583">မ လိုက်ပြီး ထပ်လုပ်ကြည့်ပါ။</translation>
 <translation id="922152298093051471">Chrome ကို စိတ်ကြိုက်ပြင်ရန်</translation>
 <translation id="9222839391870847423">ကြာချိန်- <ph name="DURATION" /></translation>
+<translation id="923306663772315007">သင်၏ &amp;စက်သို့ ပို့ရန်</translation>
 <translation id="923467487918828349">အားလုံးပြ</translation>
 <translation id="923900195646492191">{NUM_EXTENSIONS,plural, =1{၎င်းကို စီမံရန် ‘နောက်ဆက်တွဲများ’ ဖွင့်ပါ}other{၎င်းတို့ကို စီမံရန် ‘နောက်ဆက်တွဲများ’ ဖွင့်ပါ}}</translation>
 <translation id="924818813611903184">ChromeOS ဆက်တင်များတွင် ဘာသာစကားများကို စီမံရန်</translation>

@@ -1223,6 +1223,7 @@
 <translation id="1938351510777341717">Знешняя клавіша Command</translation>
 <translation id="1940221956626514677">Наладзіць панэль інструментаў</translation>
 <translation id="1940546824932169984">Падключаныя прылады</translation>
+<translation id="194081218158106711">Ідзе пацвярджэнне змененага пароля…</translation>
 <translation id="1941410638996203291">Час пачатку: <ph name="TIME" /></translation>
 <translation id="1941553344801134989">Версія: <ph name="APP_VERSION" /></translation>
 <translation id="1941685451584875710">Адміністратар наладзіў аўтаматычнае падключэнне вашага ўліковага запісу да Microsoft OneDrive, але адбылася памылка.</translation>
@@ -1489,6 +1490,7 @@
 <translation id="2158475082070321257">Скапіраваць спасылку на вылучаны тэкст</translation>
 <translation id="2159488579268505102">USB-C</translation>
 <translation id="2161058806218011758">Вобласць дзеяння спалучэння клавіш <ph name="SHORTCUT" /> для пашырэння "<ph name="EXTENSION_NAME" />"</translation>
+<translation id="2161656808144014275">Тэкст</translation>
 <translation id="216169395504480358">Дадаць сетку Wi-Fi...</translation>
 <translation id="2162705204091149050">Доступ да інфармацыі пра браўзер, АС, прыладу, усталяванае праграмнае забеспячэнне і файлы</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> і яшчэ 1 пераключальнік</translation>
@@ -4741,6 +4743,7 @@
 <translation id="4657914796247705218">Хуткасць TrackPoint</translation>
 <translation id="4658648180588730283">Праграма "<ph name="APPLICATION_NAME" />" недаступная па-за сеткай.</translation>
 <translation id="465878909996028221">Для перанакіравання з браўзера падтрымліваюцца толькі пратаколы "http", "https" і "file".</translation>
+<translation id="4658821552705754298"><ph name="ITEM_NAME" /> <ph name="CATEGORY_NAME" /></translation>
 <translation id="4659126640776004816">Гэта функцыя будзе ўключацца пры ўваходзе ва Уліковы запіс Google.</translation>
 <translation id="4660465405448977105">{COUNT,plural, =1{Відарыс}one{# відарыс}few{# відарысы}many{# відарысаў}other{# відарыса}}</translation>
 <translation id="4660540330091848931">Змяненне памеру</translation>
@@ -8909,6 +8912,7 @@
 <translation id="7933486544522242079">&amp;Захаваць і абагуліць</translation>
 <translation id="7933518760693751884">Каб захаваць старонку для прагляду пазней, націсніце на значок закладкі</translation>
 <translation id="7933634003144813719">Кіраваць абагуленымі папкамі</translation>
+<translation id="7935072572536724392">Не атрымалася аўтаматычна змяніць пароль</translation>
 <translation id="7936195481975600746">Каб абагуліць экран, скарыстайце сістэмны сродак выбару экранаў</translation>
 <translation id="7937809006412909895">Ідзе збор даных дыягностыкі</translation>
 <translation id="7938881824185772026">Эксперыментальныя функцыі</translation>
@@ -9046,6 +9050,7 @@
 <translation id="8029412171914613589">{SELECTED_ITEMS,plural, =0{Спіс на прагляд}=1{Спіс на прагляд ({SELECTED_ITEMS})}one{Спіс на прагляд ({SELECTED_ITEMS})}few{Спіс на прагляд ({SELECTED_ITEMS})}many{Спіс на прагляд ({SELECTED_ITEMS})}other{Спіс на прагляд ({SELECTED_ITEMS})}}</translation>
 <translation id="8029492516535178472"><ph name="WINDOW_TITLE" /> – Запытаны дазвол. Каб адказаць, націсніце ⌘ + Option + стрэлка ўніз</translation>
 <translation id="8030169304546394654">Адключана</translation>
+<translation id="8030814978699290230">Выконваецца спроба ўваходу…</translation>
 <translation id="8030852056903932865">Ухваліць</translation>
 <translation id="8033827949643255796">вылучана</translation>
 <translation id="8033958968890501070">Час скончыўся</translation>
@@ -9459,6 +9464,7 @@
 <translation id="8343578633847737325">Нядаўнія чаты і ланцужкі</translation>
 <translation id="8345848587667658367">Цяпер вы можаце праглядаць нядаўнія апавяшчэнні, медыяфайлы, фота і праграмы з тэлефона</translation>
 <translation id="8347227221149377169">Заданні друку</translation>
+<translation id="8347728744337089388">Адправіць на &amp;прыладу</translation>
 <translation id="8348430946834215779">Выкарыстоўваць HTTPS калі магчыма і паказваць папярэджанне перад загрузкай сайтаў, якія не падтрымліваюць гэты пратакол</translation>
 <translation id="8348896480272971199">Праверце падключэнне да інтэрнэту і паўтарыце спробу.</translation>
 <translation id="8349305172487531364">Панэль закладак</translation>
@@ -9508,6 +9514,7 @@
 <translation id="8382197851871630452">Мясцовае надвор’е</translation>
 <translation id="8382913212082956454">Скапіраваць &amp;адрас электроннай пошты</translation>
 <translation id="8383614331548401927">Кароткі агляд</translation>
+<translation id="8387157483437834731">Пароль зменены</translation>
 <translation id="8387361103813440603">Не дазволена атрымліваць звесткі пра ваша месцазнаходжанне</translation>
 <translation id="8389492867173948260">Дазволіць гэтаму пашырэнню чытаць і змяняць любыя вашы даныя на вэб-сайтах, якія вы наведваеце:</translation>
 <translation id="8390449457866780408">Сервер недаступны.</translation>
@@ -10590,6 +10597,7 @@
 <translation id="9220820413868316583">Адніміце палец і паўтарыце спробу.</translation>
 <translation id="922152298093051471">Наладзіць Chrome</translation>
 <translation id="9222839391870847423">Працягласць: <ph name="DURATION" /></translation>
+<translation id="923306663772315007">Адправіць на &amp;прыладу</translation>
 <translation id="923467487918828349">Паказаць усё</translation>
 <translation id="923900195646492191">{NUM_EXTENSIONS,plural, =1{Кіраваць ім можна ў раздзеле "Пашырэнні"}one{Кіраваць імі можна ў раздзеле "Пашырэнні"}few{Кіраваць імі можна ў раздзеле "Пашырэнні"}many{Кіраваць імі можна ў раздзеле "Пашырэнні"}other{Кіраваць імі можна ў раздзеле "Пашырэнні"}}</translation>
 <translation id="924818813611903184">Кіраванне моўнымі параметрамі ў наладах Chrome OS</translation>

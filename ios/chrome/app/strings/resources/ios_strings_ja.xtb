@@ -245,6 +245,7 @@
 <translation id="1752547299766512813">パスワードの保存</translation>
 <translation id="1764070164487214210">ルート</translation>
 <translation id="1764511703783285459">他のパスワード マネージャーから共有されたパスワードまたはパスキーはありません</translation>
+<translation id="1765555082983153259">「Chrome」がマイクへのアクセス許可を求めています</translation>
 <translation id="1767766085187034454">Google 翻訳</translation>
 <translation id="1771016937398045251">ツールメニュー</translation>
 <translation id="1772468122139624049">タブを再読み込みできません</translation>
@@ -2465,6 +2466,7 @@
 <translation id="9149866541089851383">編集...</translation>
 <translation id="9152637745605628097">テーマや色を選択したり、画像をアップロードしたりできます</translation>
 <translation id="9159628751968616911">ウェブページの送信</translation>
+<translation id="9162412286847966593">組織のデータや録音内容が、生成 AI モデルの改善に使用されることはありません。<ph name="BEGIN_LINK" />お客様のプライバシーと Gemini について<ph name="END_LINK" /></translation>
 <translation id="9162432979321511934">[パスワードを自動入力] をオンにする</translation>
 <translation id="9165320910061267720">値下げアラートの通知を受け取るには、iOS の設定で通知をオンにする必要があります。</translation>
 <translation id="9179151630575358778">このアイテムを非表示にします</translation>

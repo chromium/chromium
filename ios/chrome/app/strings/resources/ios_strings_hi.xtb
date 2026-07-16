@@ -245,6 +245,7 @@
 <translation id="1752547299766512813">पासवर्ड सेव करें</translation>
 <translation id="1764070164487214210">रास्ते</translation>
 <translation id="1764511703783285459">दूसरे पासवर्ड मैनेजर ने कोई पासवर्ड या पासकी शेयर नहीं की</translation>
+<translation id="1765555082983153259">“Chrome” को आपके माइक्रोफ़ोन का ऐक्सेस चाहिए</translation>
 <translation id="1767766085187034454">Google Translate</translation>
 <translation id="1771016937398045251">टूल मेन्यू</translation>
 <translation id="1772468122139624049">टैब फिर से लोड नहीं किए जा सके</translation>
@@ -2465,6 +2466,7 @@ Handoff को Settings के General अनुभाग में भी स�
 <translation id="9149866541089851383">बदलाव करें...</translation>
 <translation id="9152637745605628097">थीम और रंग चुनें या कोई इमेज अपलोड करें</translation>
 <translation id="9159628751968616911">वेबपेज भेजें</translation>
+<translation id="9162412286847966593">आपके संगठन के डेटा और रिकॉर्डिंग का इस्तेमाल, जनरेटिव एआई मॉडल को बेहतर बनाने के लिए नहीं किया जाएगा. <ph name="BEGIN_LINK" />आपकी निजता और Gemini<ph name="END_LINK" /></translation>
 <translation id="9162432979321511934">ऑटोमैटिक पासवर्ड भरने की सुविधा को चालू करें</translation>
 <translation id="9165320910061267720">कीमत में कमी की सूचनाएं पाने के लिए, आपको iOS सेटिंग में जाकर सूचनाएं पाने की सुविधा चालू करनी होगी.</translation>
 <translation id="9179151630575358778">इससे यह आइटम छिप जाता है</translation>

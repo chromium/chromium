@@ -14,13 +14,6 @@
 <translation id="1002829167638728809">允許回報網域可靠性相關資料</translation>
 <translation id="1004590217607585595">網頁應用程式管理設定</translation>
 <translation id="1006218396155867129">禁止遠端存取使用者向遠端主機傳輸檔案，或從遠端主機接收檔案</translation>
-<translation id="1007043180702842391">控制 <ph name="PRODUCT_NAME" /> 中的 PDF 檢視器是否使用獨立處理程序 iframe (OOPIF)。這個架構更為簡潔，且更易於新增功能，因此將成為未來的 PDF 檢視器架構。現有的 GuestView PDF 檢視器是過時且複雜的架構，即將遭到淘汰。
-
-如果將這項政策設為啟用或不設定，<ph name="PRODUCT_NAME" /> 可以採用 OOPIF PDF 檢視器架構。在啟用或未設定的狀態下，預設行為將由 <ph name="PRODUCT_NAME" /> 決定。
-
-如果將這項政策設為停用，<ph name="PRODUCT_NAME" /> 會一律使用現有的 GuestView PDF 檢視器。這個檢視器會將具有獨立頁框樹狀結構的網頁嵌入至其他網頁。
-
-未來在 OOPIF PDF 檢視器功能全面推出後，我們將移除這項政策。</translation>
 <translation id="1007149936182752368">不允許編輯書籤</translation>
 <translation id="1009336698423963085">允許這些網站自動進入全螢幕模式</translation>
 <translation id="1010151305531217567">將滑鼠的主要按鈕切換為右鍵</translation>
@@ -2040,6 +2033,7 @@ Chrome 政策的優先順序高於這項政策，例如擴充功能是否列在 
       Chrome 已在第 91 版停止支援將本政策設為「tls1」或「tls1.1」，目前則不再支援隱藏 TLS 1.0/1.1 警告。</translation>
 <translation id="2364639863953745682">Google 助理入門使用體驗的模式</translation>
 <translation id="2366301887862414321">允許使用者層級和系統層級的原生訊息傳遞主機</translation>
+<translation id="2371015218815226913">如果網頁含有運作中的 WebSocket 連線，就無法進入往返快取。</translation>
 <translation id="2373014700224092497">允許使用者新增 Kerberos 帳戶</translation>
 <translation id="2376134474855349829">在登入畫面上停用螢幕小鍵盤，並允許使用者暫時啟用</translation>
 <translation id="2376151922689284770">安裝程式 UI 中顯示的名稱，例如 Happy VM。如未設定，系統會顯示備用名稱，可能是沿用 BruschettaVMConfiguration 政策的第一個 (依顯示順序) 項目，或使用一般名稱。</translation>
@@ -6992,6 +6986,26 @@ Microsoft SharePoint 和 OneDrive 資訊卡需要額外的管理員設定。想�
 
       這項政策已淘汰，請改用 <ph name="PROMOTIONS_ENABLED_POLICY_NAME" />。</translation>
 <translation id="5556607617517096419">Borealis</translation>
+<translation id="5556933299171172140">你可以透過這項政策，根據網址模式指定要封鎖的自動填入資料類型。
+
+這項政策採字典清單格式，每個字典都必須包含：
+* "url_pattern"：主要頁框的內容設定網址模式 (例如「https://[*.]example.com」)。
+* "blocked_types"：這個字串清單用於指定要禁止自動填入哪些類別的資料。
+
+"blocked_types" 支援的值如下：
+* "contact_info"：禁止填入及儲存聯絡資訊。
+* "payments"：禁止填入及儲存信用卡和付款方式。
+* "identity_docs"：禁止填入及儲存身分證件 (例如護照、駕照、國民身分證)。
+* "travel"：禁止填入及儲存旅遊資訊 (例如航班預訂、車輛登記)。
+* "shopping"：禁止填入及儲存購物資訊 (例如線上訂單、物流資訊)。
+* "all"：禁止填入及儲存所有類型的自動填入資料。
+
+如果禁止某個網站使用特定類型的資料，系統就不會在該網站提供建議，也不會提示使用者儲存或匯入該類型的新資料。如果網址符合清單中的多個模式項目，系統會合併所有相符項目中禁止自動填入的資料類別 (採聯集方式合併)。系統會忽略清單中的無效網址模式。
+
+如果未設定這項政策，系統就不會依網域禁止自動填入任何類型的資料。
+
+如要進一步瞭解有效的網址模式，請參閱：
+https://chromeenterprise.google/policies/url-patterns。系統支援萬用字元 *，這個模式可比對任何通訊協定、通訊埠及路徑的網址。</translation>
 <translation id="5557753512027261467">顯示 <ph name="GOOGLE_DRIVE_NAME" />選項。</translation>
 <translation id="5558394213067608844">啟用 wilco 診斷與遙測控制器</translation>
 <translation id="5559079916187891399">這項政策對 Android 應用程式沒有影響。</translation>
@@ -7303,6 +7317,13 @@ Microsoft SharePoint 和 OneDrive 資訊卡需要額外的管理員設定。想�
 
 如果設為停用或不設定，系統將根據瀏覽器功能推出程序，決定是否要使用自動調節緩衝功能。</translation>
 <translation id="5800329278018669527">停用離線時的網路設定提示</translation>
+<translation id="5800627752428920394">這項政策控管網頁進入往返快取時，是否要中斷運作中的 WebSocket 連線。在以往，運作中的 WebSocket 連線會導致網頁無法存入往返快取。不過，<ph name="PRODUCT_NAME" /> 調整了這項機制，改為直接中斷 WebSocket 連線，讓網頁能順利快取，並在使用者回到該頁時維持斷線狀態。
+
+如果將這項政策設為啟用或未設定，網頁進入往返快取時，系統會中斷 WebSocket 連線。
+
+如果設為停用，網頁進入往返快取時，WebSocket 連線就不會中斷。往返快取不支援運作中的 WebSocket，因此含有運作中 WebSocket 的網頁無法存入快取。
+
+這項政策僅是暫時性措施，日後將會移除。</translation>
 <translation id="5802931736499687181">停用加密報告管道</translation>
 <translation id="5803715507113569033">這項政策可允許管理員設定 <ph name="MICROSOFT_ONE_DRIVE_NAME" /> 的掛接程序。
 
@@ -9281,6 +9302,7 @@ Origin-Agent-Cluster HTTP 標頭會控制文件要在 origin-keyed 代理程式�
 <translation id="7025153290982655996">回到舊的 Cookie 範圍行為</translation>
 <translation id="7025332601572838001">設定第一次執行 CCT 時的《服務條款》相關行為</translation>
 <translation id="7026351325994257733">允許在搭載 <ph name="PRODUCT_OS_NAME" />的裝置和已連結的 Android 手機上，將 Wi-Fi 網路設定保持同步。</translation>
+<translation id="7026488120383693794">允許含有 WebSocket 的網頁使用往返快取</translation>
 <translation id="7027057540229843762">使用淺色主題</translation>
 <translation id="7027785306666625591">設定 <ph name="PRODUCT_OS_NAME" /> 的電源管理。
 
@@ -10493,6 +10515,7 @@ Gemini 啟動功能僅支援部分國家/地區和語言。設定這項政策無
 
       注意：如要控管哪些網站可執行 <ph name="FLASH_PLUGIN_NAME" />，請參閱這些政策：<ph name="DEFAULT_PLUGINS_SETTING_POLICY_NAME" />、<ph name="PLUGINS_ALLOWED_FOR_URLS_POLICY_NAME" /> 和 <ph name="PLUGINS_BLOCKED_FOR_URLS_POLICY_NAME" />。</translation>
 <translation id="7801163363326128751">變更記憶體節省模式的節省量</translation>
+<translation id="7802903687499576891">允許含有 WebSocket 的網頁使用往返快取 (進入快取時中斷連線)。</translation>
 <translation id="7804859754080118507">回報已註冊裝置上的網路連線和訊號強度事件。
 
       如果將這項政策設為 False 或未設定，系統不會回報這項資訊。

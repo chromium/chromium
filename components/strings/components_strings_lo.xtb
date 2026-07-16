@@ -4014,6 +4014,7 @@
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />ຮຽນ​ຮູ້​ເພີ່ມ​ເຕີມ<ph name="END_LINK" /> ກ່ຽວ​ກັບ​ບັນ​ຫາ​ນີ້​.</translation>
 <translation id="7213191991901907140">ບອກພວກເຮົາວ່າປະສົບການຂອງທ່ານເປັນແນວໃດ</translation>
 <translation id="7219179957768738017">ການເຊື່ອມຕໍ່ໃຊ້ <ph name="SSL_VERSION" />.</translation>
+<translation id="7219197639442810756">ແນະນຳໂດຍ Gemini</translation>
 <translation id="7220786058474068424">ກຳລັງດຳເນີນການ</translation>
 <translation id="7221855153210829124">ສະ​ແດງ​ການ​ແຈ້ງ​ເຕືອນ</translation>
 <translation id="7222232353993864120">ທີ່​ຢູ່​ອີ​ເມວ</translation>
@@ -4621,6 +4622,7 @@
 <translation id="8134058435519644366">ການຈັດຫາ ແລະ ຮັບພະນັກງານ</translation>
 <translation id="8135546115396015134">ປຸ່ມຊ້າຍ</translation>
 <translation id="8137456439814903304">ພະລັງງານ ແລະ ສາທາລະນຸປະໂພກ</translation>
+<translation id="8138591088112729119">ຂັບເຄື່ອນໂດຍ Personal Intelligence</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{ສ້າງເມື່ອ 1 ເດືອນກ່ອນ}other{ສ້າງເມື່ອ {NUM_MONTHS} ເດືອນກ່ອນ}}</translation>
 <translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />, ຄ່າເລີ່ມຕົ້ນປັດຈຸບັນ. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">ເວີຊັນ PDF:</translation>

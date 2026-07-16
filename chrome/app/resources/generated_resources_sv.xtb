@@ -1234,6 +1234,7 @@ Du kan kontrollera dina lösenord när du vill i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1938351510777341717">Extern kommandotangent</translation>
 <translation id="1940221956626514677">Anpassa verktygsfältet</translation>
 <translation id="1940546824932169984">Anslutna enheter</translation>
+<translation id="194081218158106711">Bekräftar det ändrade lösenordet …</translation>
 <translation id="1941410638996203291">Starttid <ph name="TIME" /></translation>
 <translation id="1941553344801134989">Version <ph name="APP_VERSION" /></translation>
 <translation id="1941685451584875710">Administratören har konfigurerat kontot så att det ansluts automatiskt till Microsoft OneDrive, men något gick fel.</translation>
@@ -1502,6 +1503,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2158475082070321257">Kopiera länk till markering</translation>
 <translation id="2159488579268505102">USB-C</translation>
 <translation id="2161058806218011758">Omfattning av <ph name="SHORTCUT" /> för <ph name="EXTENSION_NAME" /></translation>
+<translation id="2161656808144014275">Text</translation>
 <translation id="216169395504480358">Lägg till wifi ...</translation>
 <translation id="2162705204091149050">Läsa information om webbläsaren, operativsystemet, enheten, installerad mjukvara och filer</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> och 1 till brytare</translation>
@@ -4757,6 +4759,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="4657914796247705218">Hastighet för TrackPoint</translation>
 <translation id="4658648180588730283">Appen <ph name="APPLICATION_NAME" /> är inte tillgänglig offline.</translation>
 <translation id="465878909996028221">Endast protokollen http, https och file stöds för omdirigeringar till en annan webbläsare.</translation>
+<translation id="4658821552705754298"><ph name="ITEM_NAME" /> <ph name="CATEGORY_NAME" /></translation>
 <translation id="4659126640776004816">Den här funktionen är aktiverad när du loggar in på Google-kontot.</translation>
 <translation id="4660465405448977105">{COUNT,plural, =1{Bild}other{# bilder}}</translation>
 <translation id="4660540330091848931">Ändrar storlek</translation>
@@ -8921,6 +8924,7 @@ Tryck på en brytare eller tangent som redan tilldelats en åtgärd om du vill t
 <translation id="7933486544522242079">&amp;Spara och dela</translation>
 <translation id="7933518760693751884">Klicka på bokmärkesikonen om du vill spara en sida till senare</translation>
 <translation id="7933634003144813719">Hantera delade mappar</translation>
+<translation id="7935072572536724392">Det gick inte att ändra lösenordet automatiskt</translation>
 <translation id="7936195481975600746">Använd systemets skärmväljare för att dela skärmen</translation>
 <translation id="7937809006412909895">Samla in diagnostikdata</translation>
 <translation id="7938881824185772026">Labs</translation>
@@ -9058,6 +9062,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8029412171914613589">{SELECTED_ITEMS,plural, =0{Läslista}=1{Läslista ({SELECTED_ITEMS})}other{Läslista ({SELECTED_ITEMS})}}</translation>
 <translation id="8029492516535178472"><ph name="WINDOW_TITLE" /> – Behörighet har begärts, tryck på ⌘ + Alt + uppåtpil för att svara</translation>
 <translation id="8030169304546394654">Frånkopplad</translation>
+<translation id="8030814978699290230">Försöker logga in …</translation>
 <translation id="8030852056903932865">Godkänn</translation>
 <translation id="8033827949643255796">markerat</translation>
 <translation id="8033958968890501070">Tidsgränsen överskreds</translation>
@@ -9471,6 +9476,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8343578633847737325">Senaste chattar och diskussioner</translation>
 <translation id="8345848587667658367">Nu kan du se de senaste bilderna, mediefilerna, aviseringarna och apparna från telefonen</translation>
 <translation id="8347227221149377169">Utskriftsjobb</translation>
+<translation id="8347728744337089388">Skicka till din &amp;enhet</translation>
 <translation id="8348430946834215779">Använd HTTPS när det är möjligt och få en varning innan webbplatser som saknar stöd för HTTPS läses in</translation>
 <translation id="8348896480272971199">Kontrollera internet och försök igen.</translation>
 <translation id="8349305172487531364">Bokmärkesfältet</translation>
@@ -9520,6 +9526,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8382197851871630452">Lokalt väder</translation>
 <translation id="8382913212082956454">Kopiera &amp;e-postadress</translation>
 <translation id="8383614331548401927">Välkommen tillbaka</translation>
+<translation id="8387157483437834731">Lösenordet har ändrats</translation>
 <translation id="8387361103813440603">Får inte se var du befinner dig</translation>
 <translation id="8389492867173948260">Tillåt det här tillägget att läsa och ändra all din data på webbplatser du besöker</translation>
 <translation id="8390449457866780408">Servern är inte tillgänglig.</translation>
@@ -10605,6 +10612,7 @@ Detta kan omfatta information om installerad mjukvara, filer, webbläsaren, enhe
 <translation id="9220820413868316583">Lyft fingret och testa igen.</translation>
 <translation id="922152298093051471">Anpassa Chrome</translation>
 <translation id="9222839391870847423">Längd: <ph name="DURATION" /></translation>
+<translation id="923306663772315007">Skicka till din &amp;enhet</translation>
 <translation id="923467487918828349">Visa alla</translation>
 <translation id="923900195646492191">{NUM_EXTENSIONS,plural, =1{Öppna Tillägg för att hantera den}other{Öppna Tillägg för att hantera dem}}</translation>
 <translation id="924818813611903184">Hantera språk i inställningarna för ChromeOS</translation>

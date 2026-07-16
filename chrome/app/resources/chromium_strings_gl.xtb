@@ -126,7 +126,6 @@
 <translation id="2287771843518581140">{NUM_TABS,plural, =1{Chromium recomenda pór en pausa a pestana que fai que o navegador vaia máis lento}other{Chromium recomenda pór en pausa as pestanas que fan que o navegador vaia máis lento}}</translation>
 <translation id="2307973900865360088">Manter na barra de aplicacións</translation>
 <translation id="2313870531055795960">Comproba enderezos URL cunha lista de sitios non seguros almacenada en Chromium. Se un sitio tenta roubarche o contrasinal ou se descargas un ficheiro daniño, Chromium tamén pode comprobar os enderezos URL, entre os que se inclúen fragmentos de contido das páxinas, a través da función Navegación segura.</translation>
-<translation id="2343156876103232566">Para enviar un número desde aquí ao teu teléfono Android, inicia sesión en Chromium nos dous dispositivos.</translation>
 <translation id="2356070529366658676">Preguntar</translation>
 <translation id="2359808026110333948">Continuar</translation>
 <translation id="2361918034042471035">A extensión \"<ph name="EXTENSION_NAME" />\" quere que inicies sesión en Chromium</translation>
@@ -248,7 +247,6 @@
 <translation id="3600428265489994557">Inicia sesión en Chromium</translation>
 <translation id="3639635944603682591">Os datos de navegación desta persoa eliminaranse deste dispositivo. Para recuperalos, inicia sesión en Chromium como <ph name="USER_EMAIL" />.</translation>
 <translation id="364817392622123556">{COUNT,plural, =0{Hai dispoñible unha actualización nova para Chromium e aplicarase en canto o reinicies.}=1{Hai dispoñible unha actualización nova para Chromium e aplicarase en canto o reinicies. A ventá do modo de incógnito non se volverá abrir.}other{Hai dispoñible unha actualización nova para Chromium e aplicarase en canto o reinicies. As # ventás do modo de incógnito non se volverán abrir.}}</translation>
-<translation id="3651803019964686660">Para enviar un número desde <ph name="ORIGIN" /> ao teu teléfono Android, inicia sesión en Chromium nos dous dispositivos.</translation>
 <translation id="3667616615096815454">Non se puido levar a cabo a instalación. O servidor non recoñece a aplicación.</translation>
 <translation id="3675854891107786059">Usa a túa <ph name="BEGIN_LINK" />propia frase de acceso<ph name="END_LINK" /> para encriptar todos os datos de Chromium na túa Conta de Google. Non se encriptarán os métodos de pago nin os enderezos de Google Pay. Tampouco se sincronizará o historial de navegación de Chromium.</translation>
 <translation id="370962675267501463">{COUNT,plural, =0{O teu administrador pídeche que reinicies Chromium para aplicar esta actualización}=1{O teu administrador pídeche que reinicies Chromium para aplicar esta actualización. A ventá do modo de incógnito non se volverá abrir.}other{O teu administrador pídeche que reinicies Chromium para aplicar esta actualización. As # ventás do modo de incógnito non se volverán abrir.}}</translation>

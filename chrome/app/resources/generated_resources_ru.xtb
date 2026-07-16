@@ -1224,6 +1224,7 @@
 <translation id="1938351510777341717">Внешняя клавиша Command</translation>
 <translation id="1940221956626514677">Настроить панель инструментов</translation>
 <translation id="1940546824932169984">Подключенные устройства</translation>
+<translation id="194081218158106711">Подтверждение измененного пароля…</translation>
 <translation id="1941410638996203291">Время начала: <ph name="TIME" /></translation>
 <translation id="1941553344801134989">Версия: <ph name="APP_VERSION" /></translation>
 <translation id="1941685451584875710">Администратор настроил автоматическое подключение вашего аккаунта к Microsoft OneDrive, но что-то пошло не так.</translation>
@@ -1492,6 +1493,7 @@
 <translation id="2158475082070321257">Скопировать ссылку на выделенный текст</translation>
 <translation id="2159488579268505102">USB-C</translation>
 <translation id="2161058806218011758">Область действия сочетания клавиш <ph name="SHORTCUT" /> для расширения "<ph name="EXTENSION_NAME" />"</translation>
+<translation id="2161656808144014275">Текст</translation>
 <translation id="216169395504480358">Добавить подключение по Wi-Fi...</translation>
 <translation id="2162705204091149050">Доступ к информации о вашем устройстве, браузере, ОС, установленном ПО и файлах.</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> и ещё 1 переключатель</translation>
@@ -4744,6 +4746,7 @@
 <translation id="4657914796247705218">Скорость TrackPoint</translation>
 <translation id="4658648180588730283">Приложение "<ph name="APPLICATION_NAME" />" недоступно в офлайн-режиме.</translation>
 <translation id="465878909996028221">Для переадресации в браузере поддерживаются только протоколы HTTP, HTTPS и файловые протоколы.</translation>
+<translation id="4658821552705754298"><ph name="ITEM_NAME" /> <ph name="CATEGORY_NAME" /></translation>
 <translation id="4659126640776004816">Эта функция включается, когда вы входите в аккаунт Google.</translation>
 <translation id="4660465405448977105">{COUNT,plural, =1{Изображение}one{# изображение}few{# изображения}many{# изображений}other{# изображения}}</translation>
 <translation id="4660540330091848931">Изменение размера…</translation>
@@ -8912,6 +8915,7 @@
 <translation id="7933486544522242079">&amp;Сохранить и поделиться</translation>
 <translation id="7933518760693751884">Чтобы сохранить страницу, нажмите на значок закладки.</translation>
 <translation id="7933634003144813719">Настроить общие папки</translation>
+<translation id="7935072572536724392">Не удалось автоматически сменить пароль</translation>
 <translation id="7936195481975600746">Для демонстрации экрана воспользуйтесь системной программой выбора экрана.</translation>
 <translation id="7937809006412909895">Сбор данных диагностики…</translation>
 <translation id="7938881824185772026">Лаборатория Google</translation>
@@ -9049,6 +9053,7 @@
 <translation id="8029412171914613589">{SELECTED_ITEMS,plural, =0{Список для чтения}=1{Список для чтения ({SELECTED_ITEMS})}one{Список для чтения ({SELECTED_ITEMS})}few{Список для чтения ({SELECTED_ITEMS})}many{Список для чтения ({SELECTED_ITEMS})}other{Список для чтения ({SELECTED_ITEMS})}}</translation>
 <translation id="8029492516535178472"><ph name="WINDOW_TITLE" /> – требуется разрешение. Нажмите ⌘ + Option + Стрелка вверх, чтобы ответить.</translation>
 <translation id="8030169304546394654">Отключено</translation>
+<translation id="8030814978699290230">Попытка входа…</translation>
 <translation id="8030852056903932865">Разрешить</translation>
 <translation id="8033827949643255796">Выделено.</translation>
 <translation id="8033958968890501070">Время истекло</translation>
@@ -9462,6 +9467,7 @@
 <translation id="8343578633847737325">Недавние чаты и цепочки</translation>
 <translation id="8345848587667658367">Теперь вы можете просматривать недавние фотографии, медиафайлы, уведомления и приложения с телефона</translation>
 <translation id="8347227221149377169">Задания печати</translation>
+<translation id="8347728744337089388">Отправить на &amp;устройство</translation>
 <translation id="8348430946834215779">Использовать протокол HTTPS всегда, когда это возможно, и предупреждать перед загрузкой сайтов, которые его не поддерживают</translation>
 <translation id="8348896480272971199">Проверьте подключение к интернету и повторите попытку.</translation>
 <translation id="8349305172487531364">Панель закладок</translation>
@@ -9511,6 +9517,7 @@
 <translation id="8382197851871630452">Местный прогноз погоды</translation>
 <translation id="8382913212082956454">Копировать &amp;адрес электронной почты</translation>
 <translation id="8383614331548401927">Двигаемся дальше?</translation>
+<translation id="8387157483437834731">Пароль изменен</translation>
 <translation id="8387361103813440603">Запретить сайтам определять ваше местоположение</translation>
 <translation id="8389492867173948260">Разрешить расширению просмотр и изменение ваших данных на посещаемых сайтах</translation>
 <translation id="8390449457866780408">Сервер недоступен.</translation>
@@ -10596,6 +10603,7 @@
 <translation id="9220820413868316583">Поднимите палец и попробуйте ещё раз.</translation>
 <translation id="922152298093051471">Настроить Chrome</translation>
 <translation id="9222839391870847423">Продолжительность: <ph name="DURATION" /></translation>
+<translation id="923306663772315007">Отправить на &amp;устройство</translation>
 <translation id="923467487918828349">Показать все</translation>
 <translation id="923900195646492191">{NUM_EXTENSIONS,plural, =1{Чтобы управлять расширением, перейдите на страницу "Расширения".}one{Чтобы управлять ими, перейдите на страницу "Расширения".}few{Чтобы управлять ими, перейдите на страницу "Расширения".}many{Чтобы управлять ими, перейдите на страницу "Расширения".}other{Чтобы управлять ими, перейдите на страницу "Расширения".}}</translation>
 <translation id="924818813611903184">Управление языковыми параметрами в настройках Chrome OS</translation>

@@ -71,6 +71,7 @@
 <translation id="1239792311949352652">Partagez rapidement cette page. Pour modifier ce raccourci, accédez à Paramètres.</translation>
 <translation id="1240288207750131269"><ph name="LANG" /> en cours de chargement…</translation>
 <translation id="124116460088058876">Plus de langues</translation>
+<translation id="1241381048229838873">Afficher tous les favoris</translation>
 <translation id="124678866338384709">Fermer l'onglet actuel</translation>
 <translation id="1246905108078336582">Supprimer la suggestion du presse-papiers?</translation>
 <translation id="1258753120186372309">Logo commémoratif de Google : <ph name="DOODLE_DESCRIPTION" /></translation>
@@ -1049,6 +1050,7 @@ D'autres formes d'historique de navigation, telles que les recherches et l'activ
 <translation id="5390367025924544771"><ph name="WEBSITE_ORIGIN" /> souhaite utiliser des renseignements personnels à partir de votre portefeuille numérique. Continuez seulement si vous faites confiance à ce site. Les sites dangereux peuvent vous inciter à divulguer des renseignements tels que votre nom légal ou votre numéro d'identification.</translation>
 <translation id="5395376160638294582">S'assurer de toujours pouvoir utiliser les données Chrome dans votre compte Google</translation>
 <translation id="539881862970320163">Mot de passe fort suggéré. Clavier masqué.</translation>
+<translation id="5404274604891474619">Impossible de modifier le PDF</translation>
 <translation id="5409881200985013443">Envoyez <ph name="ONE_TIME_CODE" /> à <ph name="CLIENT_NAME" />?</translation>
 <translation id="5410300144953132176"><ph name="OWNER_FULL_NAME" /> (<ph name="OWNER_EMAIL" />) souhaite que vous vous joigniez à un groupe d'onglets. Toute personne disposant du lien peut modifier l'ensemble des onglets, alors joignez-vous au groupe avec prudence. Le lien expire dans 48 heures.</translation>
 <translation id="5414836363063783498">Vérification...</translation>

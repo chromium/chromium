@@ -245,6 +245,7 @@
 <translation id="1752547299766512813">비밀번호 저장</translation>
 <translation id="1764070164487214210">경로</translation>
 <translation id="1764511703783285459">다른 비밀번호 관리자가 비밀번호 또는 패스키를 공유하지 않았습니다.</translation>
+<translation id="1765555082983153259">'Chrome'에서 마이크에 액세스하려고 합니다</translation>
 <translation id="1767766085187034454">Google 번역</translation>
 <translation id="1771016937398045251">도구 메뉴</translation>
 <translation id="1772468122139624049">탭을 새로고침할 수 없습니다.</translation>
@@ -2465,6 +2466,7 @@ Handoff는 설정의 일반 섹션에서도 사용 설정할 수 있으며, 이�
 <translation id="9149866541089851383">수정...</translation>
 <translation id="9152637745605628097">테마, 색상 중에서 선택하거나 이미지를 업로드하세요.</translation>
 <translation id="9159628751968616911">웹페이지 보내기</translation>
+<translation id="9162412286847966593">사용자 조직의 데이터 및 녹음 파일은 생성형 AI 모델을 개선하는 데 사용되지 않습니다. <ph name="BEGIN_LINK" />개인 정보 보호 및 Gemini<ph name="END_LINK" /></translation>
 <translation id="9162432979321511934">AutoFill Passwords(비밀번호 자동 완성)를 사용 설정합니다.</translation>
 <translation id="9165320910061267720">가격 인하 알림을 받으려면 iOS 설정에서 알림을 사용 설정해야 합니다.</translation>
 <translation id="9179151630575358778">이 항목 숨기기</translation>

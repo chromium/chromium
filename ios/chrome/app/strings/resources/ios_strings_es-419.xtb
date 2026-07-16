@@ -245,6 +245,7 @@
 <translation id="1752547299766512813">Guardar contraseñas</translation>
 <translation id="1764070164487214210">Cómo llegar</translation>
 <translation id="1764511703783285459">El otro administrador de contraseñas no compartió ninguna contraseña ni llave de acceso</translation>
+<translation id="1765555082983153259">"Chrome" quiere acceder a tu micrófono</translation>
 <translation id="1767766085187034454">Google Traductor</translation>
 <translation id="1771016937398045251">Menú Herramientas</translation>
 <translation id="1772468122139624049">No se pueden volver a cargar las pestañas</translation>
@@ -2465,6 +2466,7 @@ Para continuar desde tu computadora, cambia a <ph name="OTHER_EMAIL" />. Obtendr
 <translation id="9149866541089851383">Editar...</translation>
 <translation id="9152637745605628097">Elige entre temas y colores, o sube una imagen</translation>
 <translation id="9159628751968616911">Envía la página web</translation>
+<translation id="9162412286847966593">Los datos y las grabaciones de tu organización no se usarán para mejorar modelos de IA generativa. <ph name="BEGIN_LINK" />Tu privacidad y Gemini<ph name="END_LINK" /></translation>
 <translation id="9162432979321511934">Activa la función Autocompletar contraseñas.</translation>
 <translation id="9165320910061267720">Para recibir notificaciones sobre alertas de descuentos, debes activarlas en la configuración de iOS.</translation>
 <translation id="9179151630575358778">Ocultar este elemento</translation>

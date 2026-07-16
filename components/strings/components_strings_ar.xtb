@@ -20,7 +20,7 @@
 <translation id="1035509598913574970">الأزرق السماوي 3</translation>
 <translation id="1035709686865413354">فلاتر مياه ومطهّرات</translation>
 <translation id="1036348656032585052">إيقاف</translation>
-<translation id="1036436692654972538">يتم الحفظ على جهازك</translation>
+<translation id="1036436692654972538">يتم حفظها على جهازك</translation>
 <translation id="1036881361735705143">‏ظرف C4</translation>
 <translation id="1038106730571050514">عرض الاقتراحات</translation>
 <translation id="1038168778161626396">التشفير فقط</translation>
@@ -3052,6 +3052,7 @@
 <translation id="5715918316982363436">‫<ph name="TAB_COUNT" /> من <ph name="WINDOW_COUNT" /> على هذا الجهاز</translation>
 <translation id="5716325061445053985">انقر لفتح علامة التبويب على هاتفك</translation>
 <translation id="5717509257172454543">تزلُّج على الجليد</translation>
+<translation id="5718326209176373202">إضافة تعليقات توضيحية نصية</translation>
 <translation id="5718601519531438273">يمكن تضمين معلومات مثل جوازات السفر ورخص القيادة</translation>
 <translation id="5720705177508910913">المستخدم الحالي</translation>
 <translation id="5720895412771013401">أجهزة كمبيوتر مكتبي</translation>
@@ -4015,6 +4016,7 @@
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /> حول هذه المشكلة.</translation>
 <translation id="7213191991901907140">أخبِرنا عن تجربتك</translation>
 <translation id="7219179957768738017">الاتصال يستخدم <ph name="SSL_VERSION" />.</translation>
+<translation id="7219197639442810756">‏من اقتراح Gemini</translation>
 <translation id="7220786058474068424">جارٍ المعالجة</translation>
 <translation id="7221855153210829124">عرض الإشعارات</translation>
 <translation id="7222232353993864120">عنوان البريد الإلكتروني</translation>
@@ -4622,6 +4624,7 @@
 <translation id="8134058435519644366">توظيف وعمالة</translation>
 <translation id="8135546115396015134">السهم المتجّه لليسار</translation>
 <translation id="8137456439814903304">طاقة وشركات طاقة</translation>
+<translation id="8138591088112729119">مستنِد إلى ميزة "الذكاء المخصّص"</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{تم إنشاء المجموعة قبل شهر واحد}zero{تم إنشاء المجموعة قبل {NUM_MONTHS} شهر}two{تم إنشاء المجموعة قبل شهرَين ({NUM_MONTHS})}few{تم إنشاء المجموعة قبل {NUM_MONTHS} أشهر}many{تم إنشاء المجموعة قبل {NUM_MONTHS} شهرًا}other{تم إنشاء المجموعة قبل {NUM_MONTHS} شهر}}</translation>
 <translation id="8147389370274164212">‫<ph name="SEARCH_ENGINE_NAME" />، محرك البحث التلقائي. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">‏نسخة PDF:</translation>
@@ -5035,7 +5038,7 @@
 <translation id="8814707942599948500">‏ظرف C8</translation>
 <translation id="881559332211266856">تعديل رقم التعويض</translation>
 <translation id="8816395686387277279">‏<ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />، اضغط على مفتاح التبويب (Tab) ثم مفتاح Enter لتحديث Chrome من إعدادات Chrome.</translation>
-<translation id="8819155700324279105">يمكنك إضافة طبقة حماية إضافية من التهديدات على الإنترنت.</translation>
+<translation id="8819155700324279105">يمكنك إضافة طبقة حماية إضافية من التهديدات الإلكترونية.</translation>
 <translation id="8819855907485254989">‏حفظ تذكرة وسيلة النقل في "محفظة Google"</translation>
 <translation id="8820817407110198400">الإشارات المرجعية</translation>
 <translation id="882338992931677877">الفتحة اليدوية</translation>
@@ -5310,6 +5313,7 @@
 <translation id="949314938206378263">‏لقد طلبت زيارة هذا الموقع الإلكتروني. يمكن لأحد والدَيك الرد على هذا الطلب في تطبيق Family Link.</translation>
 <translation id="950736567201356821">عمل ثلاثة ثقوب من الأعلى</translation>
 <translation id="950926967802086924">‏مفتاح المرور • مدير كلمات المرور في Google</translation>
+<translation id="952165179818196872">يُرجى إضافة بطاقة "<ph name="PROVIDER" />" للدفع بدون التبديل بين التطبيقات</translation>
 <translation id="955429569736351433">تم السماح باستخدام الواقع الافتراضي</translation>
 <translation id="955627189349169688">‏يمكنك إيقاف هذه السياسة من خلال <ph name="BEGIN_LINK" />إعدادات مزامنة Chrome<ph name="END_LINK" />.</translation>
 <translation id="95721182352849470">أصفر 2</translation>

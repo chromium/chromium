@@ -1224,6 +1224,7 @@ Heslá si môžete kedykoľvek skontrolovať v službe <ph name="GOOGLE_PASSWOR
 <translation id="1938351510777341717">Externý príkaz</translation>
 <translation id="1940221956626514677">Prispôsobiť panel s nástrojmi</translation>
 <translation id="1940546824932169984">Pripojené zariadenia</translation>
+<translation id="194081218158106711">Potvrdzuje sa zmenené heslo…</translation>
 <translation id="1941410638996203291">Čas začatia: <ph name="TIME" /></translation>
 <translation id="1941553344801134989">Verzia: <ph name="APP_VERSION" /></translation>
 <translation id="1941685451584875710">Správca nakonfiguroval váš účet tak, aby sa automaticky pripájal k službe Microsoft OneDrive, ale niečo sa pokazilo.</translation>
@@ -1492,6 +1493,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="2158475082070321257">Kopírovať odkaz na zvýraznenie</translation>
 <translation id="2159488579268505102">USB‑C</translation>
 <translation id="2161058806218011758">Rozsah odkazu <ph name="SHORTCUT" /> na rozšírenie <ph name="EXTENSION_NAME" /></translation>
+<translation id="2161656808144014275">Text</translation>
 <translation id="216169395504480358">Pridať Wi‑Fi…</translation>
 <translation id="2162705204091149050">Čítanie informácií o prehliadači, operačnom systéme, zariadení, nainštalovanom softvéri a súboroch</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> a 1 ďalší prepínač</translation>
@@ -4744,6 +4746,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="4657914796247705218">Rýchlosť TrackPointu</translation>
 <translation id="4658648180588730283">Aplikácia <ph name="APPLICATION_NAME" /> nie je k dispozícii offline.</translation>
 <translation id="465878909996028221">Presmerovania prehliadača podporujú iba protokoly http, https a file.</translation>
+<translation id="4658821552705754298"><ph name="ITEM_NAME" /> <ph name="CATEGORY_NAME" /></translation>
 <translation id="4659126640776004816">Keď sa prihlásite do svojho účtu Google, táto funkcia je zapnutá.</translation>
 <translation id="4660465405448977105">{COUNT,plural, =1{Obrázok}few{# obrázky}many{# images}other{# obrázkov}}</translation>
 <translation id="4660540330091848931">Mení sa veľkosť</translation>
@@ -8909,6 +8912,7 @@ Odstráňte ju stlačením prideleného prepínača alebo klávesa.</translation
 <translation id="7933486544522242079">&amp;Uložiť a zdieľať</translation>
 <translation id="7933518760693751884">Ak si chcete uložiť stránku na neskôr, klinite na ikonu záložky</translation>
 <translation id="7933634003144813719">Spravovať zdieľané priečinky</translation>
+<translation id="7935072572536724392">Automatická zmena hesla sa nepodarila</translation>
 <translation id="7936195481975600746">Ak chcete zdieľať obrazovku, použite systémový nástroj na výber obrazovky</translation>
 <translation id="7937809006412909895">Zhromažďujú sa diagnostické údaje</translation>
 <translation id="7938881824185772026">Labs</translation>
@@ -9046,6 +9050,7 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="8029412171914613589">{SELECTED_ITEMS,plural, =0{Čitateľský zoznam}=1{Čitateľský zoznam ({SELECTED_ITEMS})}few{Čitateľský zoznam ({SELECTED_ITEMS})}many{Reading list ({SELECTED_ITEMS})}other{Čitateľský zoznam ({SELECTED_ITEMS})}}</translation>
 <translation id="8029492516535178472"><ph name="WINDOW_TITLE" /> – Vyžaduje sa povolenie, reagujte stlačením klávesov ⌘ + Option + šípka nahor</translation>
 <translation id="8030169304546394654">Odpojené</translation>
+<translation id="8030814978699290230">Prebieha pokus o prihlásenie…</translation>
 <translation id="8030852056903932865">Schváliť</translation>
 <translation id="8033827949643255796">vybrané</translation>
 <translation id="8033958968890501070">Časový limit vypršal</translation>
@@ -9459,6 +9464,7 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="8343578633847737325">Nedávne čety a vlákna</translation>
 <translation id="8345848587667658367">Teraz si môžete zobraziť najnovšie fotky, médiá, upozornenia a aplikácie svojho telefónu</translation>
 <translation id="8347227221149377169">Tlačové úlohy</translation>
+<translation id="8347728744337089388">Odoslať do &amp;zariadenia</translation>
 <translation id="8348430946834215779">Používajte protokol HTTPS vždy, keď je to možné, a dostávajte upozornenia pred načítaním webov, ktoré ho nepodporujú</translation>
 <translation id="8348896480272971199">Skontrolujte pripojenie k internetu a skúste to znova.</translation>
 <translation id="8349305172487531364">Panel so záložkami</translation>
@@ -9508,6 +9514,7 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="8382197851871630452">Miestne počasie</translation>
 <translation id="8382913212082956454">Kopírovať &amp;e-mailovú adresu</translation>
 <translation id="8383614331548401927">Zhrnutie na privítanie</translation>
+<translation id="8387157483437834731">Heslo bolo úspešne zmenené</translation>
 <translation id="8387361103813440603">Nemôže zobrazovať vašu polohu</translation>
 <translation id="8389492867173948260">Umožniť tomuto rozšíreniu čítať a meniť všetky dáta na navštevovaných weboch:</translation>
 <translation id="8390449457866780408">Server je nedostupný.</translation>
@@ -10593,6 +10600,7 @@ Môže to zahŕňať informácie o nainštalovanom softvéri, súboroch, prehli
 <translation id="9220820413868316583">Zodvihnite a zopakujte.</translation>
 <translation id="922152298093051471">Prispôsobiť Chrome</translation>
 <translation id="9222839391870847423">Trvanie: <ph name="DURATION" /></translation>
+<translation id="923306663772315007">Odoslať do &amp;zariadenia</translation>
 <translation id="923467487918828349">Zobraziť všetky</translation>
 <translation id="923900195646492191">{NUM_EXTENSIONS,plural, =1{Ak ho chcete spravovať, otvorte Rozšírenia}few{Ak ich chcete spravovať, otvorte Rozšírenia}many{To manage them, open Extensions}other{Ak ich chcete spravovať, otvorte Rozšírenia}}</translation>
 <translation id="924818813611903184">Správa jazykov v nastaveniach systému Chrome OS</translation>

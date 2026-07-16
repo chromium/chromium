@@ -71,6 +71,7 @@
 <translation id="1239792311949352652">Brzo delite ovu stranicu. Da biste izmenili ovu prečicu, idite u Podešavanja.</translation>
 <translation id="1240288207750131269"><ph name="LANG" /> se učitava</translation>
 <translation id="124116460088058876">Još jezika</translation>
+<translation id="1241381048229838873">Prikaži sve obeleživače</translation>
 <translation id="124678866338384709">Zatvaranje aktuelne kartice</translation>
 <translation id="1246905108078336582">Želite li da uklonite predlog iz privremene memorije?</translation>
 <translation id="1258753120186372309">Google dudl logotip: <ph name="DOODLE_DESCRIPTION" /></translation>
@@ -1049,6 +1050,7 @@ Google nalog možda ima druge oblike istorije pregledanja, poput pretraga i akti
 <translation id="5390367025924544771"><ph name="WEBSITE_ORIGIN" /> želi da koristi lične podatke iz digitalnog novčanika. Nastavite samo ukoliko smatrate da je ovaj sajt pouzdan. Opasni sajtovi mogu da vas prevare da otkrijete stvari poput punog imena i prezimena ili broja lične karte.</translation>
 <translation id="5395376160638294582">Uverite se da uvek možete da koristite Chrome podatke na Google nalogu</translation>
 <translation id="539881862970320163">Predložena je jaka lozinka. Tastatura je sakrivena.</translation>
+<translation id="5404274604891474619">Izmena PDF-a nije uspela</translation>
 <translation id="5409881200985013443">Želite li da pošaljete <ph name="ONE_TIME_CODE" /> na <ph name="CLIENT_NAME" />?</translation>
 <translation id="5410300144953132176"><ph name="OWNER_FULL_NAME" /> (<ph name="OWNER_EMAIL" />) želi da se pridružite grupi kartica. Svako sa linkom može da menja sve kartice, pa budite pažljivi kada se pridružujete. Link ističe za 48 sati.</translation>
 <translation id="5414836363063783498">Verifikuju se...</translation>

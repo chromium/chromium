@@ -756,7 +756,6 @@ Bazı özellikler kullanılamayabilir. Lütfen farklı bir profil dizini belirti
 <translation id="842852285618875960">Google Chrome'un <ph name="BOOKMARK_LIMIT" /> yer işareti sınırına ulaştınız. Bu nedenle, yer işaretlerinizden bazıları henüz Google Hesabınıza kaydedilmedi.
 
 Bazı yer işaretlerini silene kadar hesabınıza yeni yer işaretleri kaydedilemez. Oturumu şimdi kapatırsanız kaydedilmemiş yer işaretleri silinir.</translation>
-<translation id="8433638294851456451">Buradan Android telefonunuza numara göndermek için iki cihazdan da Chrome'da oturum açın.</translation>
 <translation id="8458117863387545390">Telefonunuza Chrome'u yükleyin</translation>
 <translation id="8496177819998570653">Google Ş&amp;ifre Yöneticisi</translation>
 <translation id="8498858610309223613">Google Chrome için özel bir güvenlik güncellemesi uygulandı. Uygulamayı hemen yeniden başlatın; açık sekmeleriniz geri yüklenir.</translation>
@@ -800,7 +799,6 @@ Bazı yer işaretlerini silene kadar hesabınıza yeni yer işaretleri kaydedile
 <translation id="8883862939660515976">Google Lens'e bu görsel hakkında soru sorun</translation>
 <translation id="8914504000324227558">Chrome'u Yeniden Başlat</translation>
 <translation id="8920304659326707347">iOS'te Chrome ile kaldığınız yerden devam edin.</translation>
-<translation id="8922193594870374009"><ph name="ORIGIN" /> sitesinden Android telefonunuza numara göndermek için iki cihazdan da Chrome'da oturum açın.</translation>
 <translation id="8922998289262614701">Bu uygulamanın verilerini Chrome'dan kaldır</translation>
 <translation id="8925636929359899517">Bilgileri bu hizmeti geliştirmek için kullanırız. <ph name="BEGIN_LINK1" />Gizlilik Politikası<ph name="END_LINK1" /> ve <ph name="BEGIN_LINK2" />Hizmet Şartları<ph name="END_LINK2" />'na göz atın.</translation>
 <translation id="8936233353620149764">Chrome'da Gemini'ı aç/kapat</translation>

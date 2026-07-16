@@ -4015,6 +4015,7 @@ Sonra ödeme seçeneklerini gizlemek için <ph name="BEGIN_LINK" />ödeme ayarla
 <translation id="721197778055552897">Bu sorun hakkında <ph name="BEGIN_LINK" />daha fazla<ph name="END_LINK" /> bilgi edinin.</translation>
 <translation id="7213191991901907140">Bize deneyiminizden bahsedin</translation>
 <translation id="7219179957768738017">Bağlantı <ph name="SSL_VERSION" /> kullanıyor.</translation>
+<translation id="7219197639442810756">Gemini tarafından önerildi</translation>
 <translation id="7220786058474068424">İşleme koyuluyor</translation>
 <translation id="7221855153210829124">Bildirimleri göstermek</translation>
 <translation id="7222232353993864120">E-posta Adresi</translation>
@@ -4622,6 +4623,7 @@ Ek ayrıntılar:
 <translation id="8134058435519644366">İşe Alım ve Kadrolar</translation>
 <translation id="8135546115396015134">sol tuş</translation>
 <translation id="8137456439814903304">Enerji ve Kamu Hizmetleri</translation>
+<translation id="8138591088112729119">Kişisel Zeka destekli</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{1 ay önce oluşturuldu}other{{NUM_MONTHS} ay önce oluşturuldu}}</translation>
 <translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />, mevcut varsayılan. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">PDF sürümü:</translation>

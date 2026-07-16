@@ -4013,6 +4013,7 @@
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />Даведацца больш<ph name="END_LINK" /> пра гэту праблему.</translation>
 <translation id="7213191991901907140">Падзяліцеся з намі сваімі ўражаннямі</translation>
 <translation id="7219179957768738017">На падключэнні выкарыстоўваецца <ph name="SSL_VERSION" />.</translation>
+<translation id="7219197639442810756">Прапанавана Gemini</translation>
 <translation id="7220786058474068424">Ідзе апрацоўка</translation>
 <translation id="7221855153210829124">Паказваць апавяшчэнні</translation>
 <translation id="7222232353993864120">Адрас электроннай пошты</translation>
@@ -4621,6 +4622,7 @@
 <translation id="8134058435519644366">Рэкрутынг і працаўладкаванне</translation>
 <translation id="8135546115396015134">стрэлку ўлева</translation>
 <translation id="8137456439814903304">Энергетыка і камунальныя арганізацыі</translation>
+<translation id="8138591088112729119">На аснове персаналізаванага інтэлекту</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{Створана месяц таму}one{Створана {NUM_MONTHS} месяц таму}few{Створана {NUM_MONTHS} месяцы таму}many{Створана {NUM_MONTHS} месяцаў таму}other{Створана {NUM_MONTHS} месяца таму}}</translation>
 <translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />, цяперашняя стандартная сістэма пошуку. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">Версія PDF:</translation>

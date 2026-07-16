@@ -4015,6 +4015,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />Mer informasjon<ph name="END_LINK" /> om dette problemet.</translation>
 <translation id="7213191991901907140">Fortell oss om opplevelsen din</translation>
 <translation id="7219179957768738017">Tilkoblingen bruker <ph name="SSL_VERSION" />.</translation>
+<translation id="7219197639442810756">Foreslått av Gemini.</translation>
 <translation id="7220786058474068424">Behandler</translation>
 <translation id="7221855153210829124">Vis varsler</translation>
 <translation id="7222232353993864120">E-postadresse</translation>
@@ -4621,6 +4622,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="8134058435519644366">Rekruttering og bemanning</translation>
 <translation id="8135546115396015134">venstretast</translation>
 <translation id="8137456439814903304">Energi og infrastruktur</translation>
+<translation id="8138591088112729119">Basert på personlig tilpasset intelligens</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{Opprettet for én måned siden}other{Opprettet for {NUM_MONTHS} måneder siden}}</translation>
 <translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />, gjeldende standard. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">PDF-versjon:</translation>

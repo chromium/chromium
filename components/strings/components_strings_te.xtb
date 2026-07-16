@@ -4010,6 +4010,7 @@
 <translation id="721197778055552897">ఈ సమస్య గురించి <ph name="BEGIN_LINK" />మరింత తెలుసుకోండి <ph name="END_LINK" />.</translation>
 <translation id="7213191991901907140">మీ అనుభూతి గురించి మాకు తెలియజేయండి</translation>
 <translation id="7219179957768738017">కనెక్షన్ <ph name="SSL_VERSION" />ని ఉపయోగిస్తుంది.</translation>
+<translation id="7219197639442810756">Gemini ద్వారా సూచించినది</translation>
 <translation id="7220786058474068424">ప్రాసెస్ చేస్తోంది</translation>
 <translation id="7221855153210829124">నోటిఫికేషన్‌లను చూపాలనుకుంటోంది</translation>
 <translation id="7222232353993864120">ఈమెయిల్‌ అడ్రస్‌</translation>
@@ -4617,6 +4618,7 @@
 <translation id="8134058435519644366">నియామకాలు &amp; స్టాఫింగ్</translation>
 <translation id="8135546115396015134">ఎడమవైపు కీ</translation>
 <translation id="8137456439814903304">ఎనర్జీ &amp; యుటిలిటీస్</translation>
+<translation id="8138591088112729119">పర్సనల్ ఇంటెలిజెన్స్ అందించినది</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{1 నెల క్రితం క్రియేట్ చేయడం జరిగింది}other{{NUM_MONTHS} నెలల క్రితం క్రియేట్ చేయడం జరిగింది}}</translation>
 <translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />, ప్రస్తుతం ఆటోమేటిక్ సెట్టింగ్‌గా ఉంది. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">PDF వెర్షన్:</translation>

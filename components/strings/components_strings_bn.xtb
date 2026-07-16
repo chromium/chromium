@@ -4015,6 +4015,7 @@
 <translation id="721197778055552897">এই সমস্যাটি সম্পর্কে <ph name="BEGIN_LINK" />আরও জানুন<ph name="END_LINK" />৷</translation>
 <translation id="7213191991901907140">আপনার অভিজ্ঞতা সম্পর্কে আমাদের বলুন</translation>
 <translation id="7219179957768738017">এই সংযোগটি <ph name="SSL_VERSION" />টি ব্যবহার করে</translation>
+<translation id="7219197639442810756">Gemini-র সাজেশন</translation>
 <translation id="7220786058474068424">প্রক্রিয়ায় রয়েছে</translation>
 <translation id="7221855153210829124">বিজ্ঞপ্তিগুলি দেখান</translation>
 <translation id="7222232353993864120">ইমেল আইডি</translation>
@@ -4622,6 +4623,7 @@
 <translation id="8134058435519644366">রিক্রুটমেন্ট ও স্টাফিং</translation>
 <translation id="8135546115396015134">বাঁদিকের তীরচিহ্নযুক্ত 'কী'</translation>
 <translation id="8137456439814903304">শক্তি ও উপযোগিতা</translation>
+<translation id="8138591088112729119">পার্সোনাল ইন্টেলিজেন্স দ্বারা পরিচালিত</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{১ মাস আগে তৈরি করা হয়েছে}one{{NUM_MONTHS} মাস আগে তৈরি করা হয়েছে}other{{NUM_MONTHS} মাস আগে তৈরি করা হয়েছে}}</translation>
 <translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />, বর্তমানে ডিফল্ট হিসেবে রয়েছে। <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">PDF ভার্সন:</translation>

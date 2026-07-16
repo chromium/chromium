@@ -71,6 +71,7 @@
 <translation id="1239792311949352652">快速分享此頁面。如要編輯此捷徑，請前往「設定」。</translation>
 <translation id="1240288207750131269">正在載入<ph name="LANG" /></translation>
 <translation id="124116460088058876">更多語言</translation>
+<translation id="1241381048229838873">顯示所有書籤</translation>
 <translation id="124678866338384709">關閉目前分頁</translation>
 <translation id="1246905108078336582">要從剪貼簿中移除建議嗎？</translation>
 <translation id="1258753120186372309">Google Doodle：<ph name="DOODLE_DESCRIPTION" /></translation>
@@ -1049,6 +1050,7 @@
 <translation id="5390367025924544771"><ph name="WEBSITE_ORIGIN" /> 想使用你電子錢包中的個人資料。除非你信任此網站，否則請勿繼續操作。危險網站可能會誘騙你提供法定名稱或身分證號碼等資料。</translation>
 <translation id="5395376160638294582">請確保您可隨時使用 Google 帳戶中的 Chrome 資料</translation>
 <translation id="539881862970320163">建議用安全度高嘅密碼。隱藏咗鍵盤。</translation>
+<translation id="5404274604891474619">無法編輯 PDF</translation>
 <translation id="5409881200985013443">要在「<ph name="CLIENT_NAME" />」上提交 <ph name="ONE_TIME_CODE" /> 嗎？</translation>
 <translation id="5410300144953132176"><ph name="OWNER_FULL_NAME" /> (<ph name="OWNER_EMAIL" />) 希望你加入分頁群組。任何擁有連結的人均可編輯所有分頁，因此加入時請小心。連結會於 48 小時後到期。</translation>
 <translation id="5414836363063783498">正在驗證…</translation>

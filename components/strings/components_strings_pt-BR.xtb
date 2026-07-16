@@ -4016,6 +4016,7 @@ Se quiser ocultar as opções para pagar depois, acesse as <ph name="BEGIN_LINK"
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /> sobre este problema.</translation>
 <translation id="7213191991901907140">Fale sobre sua experiência</translation>
 <translation id="7219179957768738017">A conexão usa a <ph name="SSL_VERSION" />.</translation>
+<translation id="7219197639442810756">Sugerido pelo Gemini</translation>
 <translation id="7220786058474068424">Processando</translation>
 <translation id="7221855153210829124">Mostrar notificações</translation>
 <translation id="7222232353993864120">Endereço de e-mail</translation>
@@ -4623,6 +4624,7 @@ Mais detalhes:
 <translation id="8134058435519644366">Recrutamento e contratação</translation>
 <translation id="8135546115396015134">tecla esquerda</translation>
 <translation id="8137456439814903304">Energia e serviços públicos</translation>
+<translation id="8138591088112729119">Com tecnologia da Inteligência Personalizada</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{Criado há 1 mês}one{Criado há {NUM_MONTHS} mês}other{Criado há {NUM_MONTHS} meses}}</translation>
 <translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />, padrão atual. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">Versão do PDF:</translation>

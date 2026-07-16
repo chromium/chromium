@@ -245,6 +245,7 @@
 <translation id="1752547299766512813">Ukladať heslá</translation>
 <translation id="1764070164487214210">Trasa</translation>
 <translation id="1764511703783285459">Druhý správca hesiel nezdieľal žiadne heslá ani prístupové kľúče</translation>
+<translation id="1765555082983153259">Chrome chce mať prístup k vášmu mikrofónu</translation>
 <translation id="1767766085187034454">Prekladač Google</translation>
 <translation id="1771016937398045251">Ponuka Nástroje</translation>
 <translation id="1772468122139624049">Karty sa nedajú znova načítať</translation>
@@ -2465,6 +2466,7 @@ Ak chcete pokračovať v počítači, prepnite na účet <ph name="OTHER_EMAIL"
 <translation id="9149866541089851383">Upraviť...</translation>
 <translation id="9152637745605628097">Vyberte si z motívov, farieb alebo nahrajte obrázok</translation>
 <translation id="9159628751968616911">Odoslanie webovej stránky</translation>
+<translation id="9162412286847966593">Údaje a nahrávky vašej organizácie sa nebudú používať na zlepšovanie modelov generatívnej umelej inteligencie. <ph name="BEGIN_LINK" />Ochrana vášho súkromia a Gemini<ph name="END_LINK" /></translation>
 <translation id="9162432979321511934">Zapnite automatické dopĺňanie hesiel</translation>
 <translation id="9165320910061267720">Ak chcete dostávať upozornenia na poklesy cien, musíte ich zapnúť v nastaveniach systému iOS.</translation>
 <translation id="9179151630575358778">Skryje túto položku</translation>

@@ -4009,6 +4009,7 @@
 <translation id="721197778055552897">এই সমস্যাটোৰ বিষয়ে <ph name="BEGIN_LINK" />অধিক জানক<ph name="END_LINK" />।</translation>
 <translation id="7213191991901907140">আমাক আপোনাৰ অভিজ্ঞতাৰ বিষয়ে কওক</translation>
 <translation id="7219179957768738017">সংযোগটোৱে <ph name="SSL_VERSION" /> ব্যৱহাৰ কৰে।</translation>
+<translation id="7219197639442810756">Geminiএ দিয়া পৰামৰ্শ</translation>
 <translation id="7220786058474068424">প্ৰক্ৰিয়া চলি আছে</translation>
 <translation id="7221855153210829124">জাননী দেখুৱাওক</translation>
 <translation id="7222232353993864120">ইমেইল ঠিকনা</translation>
@@ -4616,6 +4617,7 @@
 <translation id="8134058435519644366">নিযুক্তি আৰু কৰ্মচাৰীৰ ভৰ্তিকৰণ</translation>
 <translation id="8135546115396015134">বাওঁফালৰ কী</translation>
 <translation id="8137456439814903304">শক্তি আৰু উপযোগিতা</translation>
+<translation id="8138591088112729119">পাৰ্ছনেল ইণ্টেলিজেন্সে পৰিচালনা কৰা</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{১ মাহ পূৰ্বে সৃষ্টি কৰা হৈছে}one{{NUM_MONTHS} মাহ পূৰ্বে সৃষ্টি কৰা হৈছে}other{{NUM_MONTHS} মাহ পূৰ্বে সৃষ্টি কৰা হৈছে}}</translation>
 <translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />, বৰ্তমানৰ ডিফ’ল্ট। <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">PDFৰ সংস্কৰণ:</translation>

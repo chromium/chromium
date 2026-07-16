@@ -762,7 +762,6 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="842852285618875960">Google Chrome의 북마크 한도인 <ph name="BOOKMARK_LIMIT" />개에 도달하여 북마크 중 일부가 아직 Google 계정에 저장되지 않았습니다.
 
 일부 북마크를 삭제할 때까지 계정에 새 북마크를 저장할 수 없습니다. 지금 로그아웃하면 저장되지 않은 북마크가 삭제됩니다.</translation>
-<translation id="8433638294851456451">여기에서 Android 휴대전화로 번호를 전송하려면 두 기기 모두에서 Chrome에 로그인하세요.</translation>
 <translation id="8458117863387545390">휴대전화에 Chrome을 다운로드하세요</translation>
 <translation id="8496177819998570653">Google 비밀번호 관리자(&amp;A)</translation>
 <translation id="8498858610309223613">Chrome 특별 보안 업데이트를 방금 적용했습니다. 다시 시작하면 탭이 복원됩니다.</translation>
@@ -806,7 +805,6 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="8883862939660515976">Google 렌즈에 이 이미지에 관해 질문하기</translation>
 <translation id="8914504000324227558">Chrome 다시 시작</translation>
 <translation id="8920304659326707347">iOS에서 Chrome을 사용해 중단한 부분부터 이어서 시작하세요.</translation>
-<translation id="8922193594870374009"><ph name="ORIGIN" />에서 Android 휴대전화로 번호를 전송하려면 두 기기 모두에서 Chrome에 로그인하세요.</translation>
 <translation id="8922998289262614701">Chrome에서 이 앱 데이터 삭제</translation>
 <translation id="8925636929359899517">이 정보는 서비스 개선에 사용됩니다. <ph name="BEGIN_LINK1" />개인정보처리방침<ph name="END_LINK1" /> 및 <ph name="BEGIN_LINK2" />서비스 약관<ph name="END_LINK2" />을 확인하세요.</translation>
 <translation id="8936233353620149764">Chrome의 Gemini 전환</translation>

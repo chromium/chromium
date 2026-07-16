@@ -4010,6 +4010,7 @@ Ak chcete skryť možnosti zaplatenia neskôr, prejdite do sekcie <ph name="BEGI
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />Ďalšie informácie<ph name="END_LINK" /> o tomto probléme.</translation>
 <translation id="7213191991901907140">Povedzte nám o svojej skúsenosti</translation>
 <translation id="7219179957768738017">Spojenie používa protokol <ph name="SSL_VERSION" />.</translation>
+<translation id="7219197639442810756">Navrhol Gemini</translation>
 <translation id="7220786058474068424">Spracováva sa</translation>
 <translation id="7221855153210829124">Zobrazovať upozornenia</translation>
 <translation id="7222232353993864120">E-mailová adresa</translation>
@@ -4617,6 +4618,7 @@ Ak chcete skryť možnosti zaplatenia neskôr, prejdite do sekcie <ph name="BEGI
 <translation id="8134058435519644366">Nábor a personalistika</translation>
 <translation id="8135546115396015134">ľavý kláves</translation>
 <translation id="8137456439814903304">Energia a služby</translation>
+<translation id="8138591088112729119">Využíva inteligenciu na mieru</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{Vytvorená pred 1 mesiacom}few{Vytvorená pred {NUM_MONTHS} mesiacmi}many{Vytvorená pred {NUM_MONTHS} mesiaca}other{Vytvorená pred {NUM_MONTHS} mesiacmi}}</translation>
 <translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />, aktuálne predvolený. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">Verzia PDF:</translation>

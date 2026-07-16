@@ -245,6 +245,7 @@
 <translation id="1752547299766512813">Gardar contras.</translation>
 <translation id="1764070164487214210">Indicacións</translation>
 <translation id="1764511703783285459">O outro xestor de contrasinais non compartiu ningún contrasinal nin clave de acceso</translation>
+<translation id="1765555082983153259">Chrome quere acceder ao teu micrófono</translation>
 <translation id="1767766085187034454">Tradutor de Google</translation>
 <translation id="1771016937398045251">Menú de ferramentas</translation>
 <translation id="1772468122139624049">Non se puideron volver cargar as pestanas</translation>
@@ -2465,6 +2466,7 @@ Para continuar desde o ordenador, cambia a <ph name="OTHER_EMAIL" />. Obterás o
 <translation id="9149866541089851383">Editar...</translation>
 <translation id="9152637745605628097">Escolle entre temas e cores, ou carga unha imaxe</translation>
 <translation id="9159628751968616911">Enviar a páxina web</translation>
+<translation id="9162412286847966593">Os datos e as gravacións da túa organización non se usarán para mellorar os modelos de IA xenerativa. <ph name="BEGIN_LINK" />A túa privacidade e Gemini<ph name="END_LINK" /></translation>
 <translation id="9162432979321511934">Activa a opción Autofill Passwords (Autocompletar contrasinais)</translation>
 <translation id="9165320910061267720">Para recibir notificacións de alertas sobre baixadas de prezos, tes que activalas na configuración de iOS.</translation>
 <translation id="9179151630575358778">Oculta este elemento</translation>
