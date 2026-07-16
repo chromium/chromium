@@ -580,4 +580,81 @@ public class PdfToolbarCoordinatorUnitTest {
         mPdfToolbarCoordinator.setEditModeActive(false);
         assertEquals(View.GONE, doneButton.getVisibility());
     }
+
+    @Test
+    public void testPrintButtonClick_recordsMetric() {
+        var histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.Pdf.ToolbarAction", PdfToolbarAction.PRINT);
+        View printButton = mPdfPageView.findViewById(R.id.print_button);
+        printButton.performClick();
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
+    public void testTwoPagesPerRowToggle_viaMenu_recordsMetric() {
+        // Initial state is single page view (two page view inactive)
+        View moreMenuButton = mPdfPageView.findViewById(R.id.more_menu_button);
+        moreMenuButton.performClick();
+
+        View contentView = mSpyPopupWindow.getContentView();
+        android.widget.ListView listView = contentView.findViewById(R.id.menu_list);
+        View itemView = listView.getAdapter().getView(0, null, listView); // Two-page view item
+
+        // Click "Two-page view" -> toggles to true, should record TWO_PAGE_VIEW
+        var histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.Pdf.ToolbarAction", PdfToolbarAction.TWO_PAGE_VIEW);
+        itemView.performClick();
+        histogramWatcher.assertExpected();
+
+        // Reset the spy for the next popup window creation
+        mSpyPopupWindow = spy(new ChromePopupWindow(mActivity));
+        when(mMockUiWidgetFactory.createPopupWindow(any())).thenReturn(mSpyPopupWindow);
+        doNothing()
+                .when(mSpyPopupWindow)
+                .showAtLocation(any(View.class), anyInt(), anyInt(), anyInt());
+
+        // Click more menu button again
+        moreMenuButton.performClick();
+
+        contentView = mSpyPopupWindow.getContentView();
+        listView = contentView.findViewById(R.id.menu_list);
+        itemView = listView.getAdapter().getView(0, null, listView); // Single page view item
+
+        // Click "Single page view" -> toggles to false, should record SINGLE_PAGE_VIEW
+        histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.Pdf.ToolbarAction", PdfToolbarAction.SINGLE_PAGE_VIEW);
+        itemView.performClick();
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
+    public void testDocumentPropertiesClick_recordsMetric() {
+        View moreMenuButton = mPdfPageView.findViewById(R.id.more_menu_button);
+        moreMenuButton.performClick();
+
+        View contentView = mSpyPopupWindow.getContentView();
+        android.widget.ListView listView = contentView.findViewById(R.id.menu_list);
+        View propertiesItemView = null;
+        for (int i = 0; i < listView.getAdapter().getCount(); i++) {
+            View itemView = listView.getAdapter().getView(i, null, listView);
+            TextView textView = itemView.findViewById(R.id.menu_item_text);
+            if (textView.getText()
+                    .toString()
+                    .equals(mActivity.getString(R.string.pdf_document_properties))) {
+                propertiesItemView = itemView;
+                break;
+            }
+        }
+        org.junit.Assert.assertNotNull(
+                "Document properties menu item should be found", propertiesItemView);
+
+        var histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.Pdf.ToolbarAction", PdfToolbarAction.DOCUMENT_PROPERTIES);
+        propertiesItemView.performClick();
+        histogramWatcher.assertExpected();
+    }
 }

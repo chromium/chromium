@@ -287,6 +287,10 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Fit To Page Vertical"/>
   <int value="4" label="Fit To Page Horizontal"/>
   <int value="5" label="Page Navigation"/>
+  <int value="6" label="Print"/>
+  <int value="7" label="Two-page view"/>
+  <int value="8" label="Single page view"/>
+  <int value="9" label="Document properties"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/ui/android/pdf/java/src/org/chromium/chrome/browser/pdf/PdfUtils.java:PdfToolbarAction) -->

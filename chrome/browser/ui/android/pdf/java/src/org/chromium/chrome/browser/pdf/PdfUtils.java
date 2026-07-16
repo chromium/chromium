@@ -83,6 +83,10 @@ public class PdfUtils {
         PdfToolbarAction.FIT_TO_PAGE_VERTICAL,
         PdfToolbarAction.FIT_TO_PAGE_HORIZONTAL,
         PdfToolbarAction.PAGE_NAVIGATION,
+        PdfToolbarAction.PRINT,
+        PdfToolbarAction.TWO_PAGE_VIEW,
+        PdfToolbarAction.SINGLE_PAGE_VIEW,
+        PdfToolbarAction.DOCUMENT_PROPERTIES,
         PdfToolbarAction.NUM_ENTRIES
     })
     @Retention(RetentionPolicy.SOURCE)
@@ -93,8 +97,12 @@ public class PdfUtils {
         int FIT_TO_PAGE_VERTICAL = 3;
         int FIT_TO_PAGE_HORIZONTAL = 4;
         int PAGE_NAVIGATION = 5;
+        int PRINT = 6;
+        int TWO_PAGE_VIEW = 7;
+        int SINGLE_PAGE_VIEW = 8;
+        int DOCUMENT_PROPERTIES = 9;
 
-        int NUM_ENTRIES = 6;
+        int NUM_ENTRIES = 10;
     }
     // LINT.ThenChange(//tools/metrics/histograms/metadata/android/enums.xml:AndroidPdfToolbarAction)
 
