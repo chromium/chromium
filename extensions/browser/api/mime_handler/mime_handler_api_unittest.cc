@@ -268,7 +268,7 @@ TEST_F(MimeHandlerApiTest, AbortAndFallbackSuccess) {
   stream_info->SetDidExtensionFinishNavigation();
 
   const content::FrameTreeNodeId embedder_ftn = embedder->GetFrameTreeNodeId();
-  ASSERT_FALSE(manager->IsPendingNativeFallback(embedder_ftn));
+  ASSERT_FALSE(manager->IsPendingNativeFallback(embedder_ftn, kOriginalUrl));
 
   auto function = base::MakeRefCounted<
       MimeHandlerAbortAndFallbackToNativeHandlerFunction>();
@@ -277,7 +277,7 @@ TEST_F(MimeHandlerApiTest, AbortAndFallbackSuccess) {
   EXPECT_TRUE(
       api_test_utils::RunFunction(function.get(), "[]", browser_context()));
   EXPECT_TRUE(function->GetError().empty()) << function->GetError();
-  EXPECT_TRUE(manager->IsPendingNativeFallback(embedder_ftn));
+  EXPECT_TRUE(manager->IsPendingNativeFallback(embedder_ftn, kOriginalUrl));
 }
 
 // Built-in MIME handler extensions (e.g. the PDF viewer) are blocked
