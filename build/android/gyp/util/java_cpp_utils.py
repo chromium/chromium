@@ -272,6 +272,7 @@ def _SplitArgs(args_str):
   current = []
   in_quotes = False
   escaped = False
+  paren_depth = 0
   for char in args_str:
     if escaped:
       current.append(char)
@@ -282,7 +283,13 @@ def _SplitArgs(args_str):
     elif char == '\\' and in_quotes:
       current.append(char)
       escaped = True
-    elif char == ',' and not in_quotes:
+    elif char == '(' and not in_quotes:
+      paren_depth += 1
+      current.append(char)
+    elif char == ')' and not in_quotes:
+      paren_depth -= 1
+      current.append(char)
+    elif char == ',' and not in_quotes and paren_depth == 0:
       args.append(''.join(current).strip())
       current = []
     else:

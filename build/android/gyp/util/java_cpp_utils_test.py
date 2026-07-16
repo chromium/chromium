@@ -174,6 +174,26 @@ class JavaCppUtilsTest(unittest.TestCase):
     ]
     self.assertEqual(expected, java_cpp_utils.ProcessListMacros(lines))
 
+  def testProcessListMacros_nestedParentheses(self):
+    lines = [
+        '#define STRINGS(V) \\\n',
+        '  V(kMyString, Bar(1, 2)) \\\n',
+        '  V(kAnother, "value2")\n',
+        '#define DEFINE_STRING(name, val) const char name[] = val;\n',
+        'STRINGS(DEFINE_STRING)\n',
+    ]
+    expected = [
+        '#define STRINGS(V) \\\n',
+        '  V(kMyString, Bar(1, 2)) \\\n',
+        '  V(kAnother, "value2")\n',
+        '#define DEFINE_STRING(name, val) const char name[] = val;\n',
+        '\n',
+        'const char kMyString[] = Bar(1, 2);\n',
+        'const char kAnother[] = "value2";\n',
+        '\n',
+    ]
+    self.assertEqual(expected, java_cpp_utils.ProcessListMacros(lines))
+
   def testProcessListMacros_missingVisitorError(self):
     lines = [
         '#define ENUM_MACRO(V) \\\n',
