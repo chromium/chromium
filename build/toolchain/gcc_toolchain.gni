@@ -152,9 +152,13 @@ template("single_gcc_toolchain") {
       host_toolchain_is_msan = _host_toolchain_is_msan
       host_toolchain_msan_track_origins = _host_toolchain_msan_track_origins
 
+      # Toolchains can only read GN arg values from the default toolchain, but
+      # use_mold_separate_debug_file needs to know the value of use_mold, so
+      # re-derive it here.
       use_mold = use_mold && (invoker_toolchain_args.current_cpu == "x64" ||
                               invoker_toolchain_args.current_cpu == "x86" ||
-                              invoker_toolchain_args.current_cpu == "arm64")
+                              invoker_toolchain_args.current_cpu == "arm64" ||
+                              invoker_toolchain_args.current_cpu == "arm")
     }
 
     # When the invoker has explicitly overridden use_remoteexec or
