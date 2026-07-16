@@ -482,6 +482,9 @@ class GPU_COMMAND_BUFFER_CLIENT_EXPORT ClientSharedImage
       base::UnsafeSharedMemoryRegion memory_region,
       base::OnceCallback<void(bool)> callback);
 
+  SyncToken StoreSyncTokenInternal(const SyncToken& sync_token);
+  SyncToken GenSyncTokenInternal(InterfaceBase* ib);
+
   void RunOnTaskRunner(MappableBuffer::CopyNativeBufferToShMemCallback callback,
                        gfx::GpuMemoryBufferHandle buffer_handle,
                        base::UnsafeSharedMemoryRegion memory_region,

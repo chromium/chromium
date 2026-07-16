@@ -695,7 +695,7 @@ gpu::SyncToken ClientSharedImage::BackingWasExternallyUpdated(
   }
 
   sii->UpdateSharedImage(sync_token, mailbox());
-  return sii->GenUnverifiedSyncToken();
+  return StoreSyncTokenInternal(sii->GenUnverifiedSyncToken());
 }
 
 gpu::SyncToken ClientSharedImage::BackingWasExternallyUpdated(
@@ -707,7 +707,7 @@ gpu::SyncToken ClientSharedImage::BackingWasExternallyUpdated(
   }
 
   sii->UpdateSharedImage(SyncToken(), std::move(acquire_fence), mailbox());
-  return sii->GenUnverifiedSyncToken();
+  return StoreSyncTokenInternal(sii->GenUnverifiedSyncToken());
 }
 
 void ClientSharedImage::OnMemoryDump(
@@ -948,6 +948,17 @@ void ClientSharedImage::RunOnTaskRunner(
                std::move(result_cb));
 }
 
+SyncToken ClientSharedImage::StoreSyncTokenInternal(
+    const SyncToken& sync_token) {
+  return sync_token;
+}
+
+SyncToken ClientSharedImage::GenSyncTokenInternal(InterfaceBase* ib) {
+  SyncToken sync_token;
+  ib->GenUnverifiedSyncTokenCHROMIUM(sync_token.GetData());
+  return StoreSyncTokenInternal(sync_token);
+}
+
 std::unique_ptr<WebGPUTextureScopedAccess>
 ClientSharedImage::BeginWebGPUTextureAccess(
     webgpu::WebGPUInterface* webgpu,
@@ -1023,9 +1034,7 @@ SyncToken SharedImageTexture::ScopedAccess::EndAccess(
   gles2::GLES2Interface* gl = scoped_shared_image->texture_->gl_;
   gl->EndSharedImageAccessDirectCHROMIUM(scoped_shared_image->texture_->id());
   scoped_shared_image->DidEndAccess();
-  SyncToken sync_token;
-  gl->GenUnverifiedSyncTokenCHROMIUM(sync_token.GetData());
-  return sync_token;
+  return scoped_shared_image->texture_->shared_image_->GenSyncTokenInternal(gl);
 }
 
 SharedImageTexture::SharedImageTexture(gles2::GLES2Interface* gl,
@@ -1088,10 +1097,8 @@ RasterScopedAccess::RasterScopedAccess(InterfaceBase* raster_interface,
 SyncToken RasterScopedAccess::EndAccess(
     std::unique_ptr<RasterScopedAccess> scoped_access) {
   InterfaceBase* raster_interface = scoped_access->raster_interface_;
-  SyncToken sync_token;
   scoped_access->shared_image_->EndAccess(scoped_access->readonly_);
-  raster_interface->GenUnverifiedSyncTokenCHROMIUM(sync_token.GetData());
-  return sync_token;
+  return scoped_access->shared_image_->GenSyncTokenInternal(raster_interface);
 }
 
 WebGPUTextureScopedAccess::WebGPUTextureScopedAccess(
@@ -1146,7 +1153,6 @@ WebGPUTextureScopedAccess::~WebGPUTextureScopedAccess() = default;
 SyncToken WebGPUTextureScopedAccess::EndAccess(
     std::unique_ptr<WebGPUTextureScopedAccess> scoped_access) {
   webgpu::WebGPUInterface* webgpu = scoped_access->webgpu_;
-  SyncToken finished_access_token;
   if (scoped_access->needs_present_) {
     webgpu->DissociateMailboxForPresent(
         scoped_access->device_id_, scoped_access->device_generation_,
@@ -1157,8 +1163,7 @@ SyncToken WebGPUTextureScopedAccess::EndAccess(
   }
 
   scoped_access->shared_image_->EndAccess(scoped_access->readonly_);
-  webgpu->GenUnverifiedSyncTokenCHROMIUM(finished_access_token.GetData());
-  return finished_access_token;
+  return scoped_access->shared_image_->GenSyncTokenInternal(webgpu);
 }
 
 const wgpu::dawn::wire::client::Texture& WebGPUTextureScopedAccess::texture() {
