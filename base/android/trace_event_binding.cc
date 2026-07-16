@@ -420,6 +420,19 @@ static void JNI_TraceEvent_StartupTimeToFirstVisibleContent2(
                   TimeTicks() + Milliseconds(start_time_ms + duration_ms));
 }
 
+static void JNI_TraceEvent_StartupTimeToFirstFrame2(JNIEnv* env,
+                                                    int64_t start_time_ms,
+                                                    int64_t duration_ms) {
+  [[maybe_unused]] const perfetto::Track track(
+      base::trace_event::GetNextGlobalTraceId(),
+      perfetto::ProcessTrack::Current());
+  TRACE_EVENT_BEGIN("startup", "Startup.Android.Cold.TimeToFirstFrame2", track,
+                    TimeTicks() + Milliseconds(start_time_ms));
+
+  TRACE_EVENT_END("startup", track,
+                  TimeTicks() + Milliseconds(start_time_ms + duration_ms));
+}
+
 static void JNI_TraceEvent_Begin(JNIEnv* env,
                                  const base::android::JavaRef<jstring>& jname,
                                  const base::android::JavaRef<jstring>& jarg) {

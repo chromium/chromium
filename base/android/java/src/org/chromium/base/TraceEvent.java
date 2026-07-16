@@ -517,6 +517,12 @@ public class TraceEvent implements AutoCloseable {
         TraceEventJni.get().startupTimeToFirstVisibleContent2(activityId, startTimeMs, durationMs);
     }
 
+    /** Records 'Startup.Android.Cold.TimeToFirstFrame2' event with the 'startup' category. */
+    public static void startupTimeToFirstFrame2(long startTimeMs, long durationMs) {
+        if (!sEnabled) return;
+        TraceEventJni.get().startupTimeToFirstFrame2(startTimeMs, durationMs);
+    }
+
     /**
      * Snapshots the view hierarchy state on the main thread and then finishes emitting a trace
      * event on the threadpool.
@@ -712,6 +718,8 @@ public class TraceEvent implements AutoCloseable {
         void startupLaunchCause(long activityId, long startTimeMs, int launchCause);
 
         void startupTimeToFirstVisibleContent2(long activityId, long startTimeMs, long durationMs);
+
+        void startupTimeToFirstFrame2(long startTimeMs, long durationMs);
     }
 
     /**
