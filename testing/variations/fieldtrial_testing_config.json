@@ -25046,6 +25046,23 @@
             ]
         }
     ],
+    "UploadReportOnProfileOpenStudy": [
+        {
+            "platforms": [
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "UploadReportOnProfileOpen"
+                    ]
+                }
+            ]
+        }
+    ],
     "UseAndroidCustomFrameDeadlines": [
         {
             "platforms": [

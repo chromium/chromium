@@ -2955,6 +2955,8 @@ chromium-metrics-reviews@google.com.
 </enum>
 
 <enum name="ReportSchedulerReportTrigger">
+<!-- LINT.IfChange(ReportTrigger) -->
+
   <int value="0" label="kTriggerNone"/>
   <int value="1" label="kTriggerTimer">
     The scheduler's periodic timer expired
@@ -2971,6 +2973,11 @@ chromium-metrics-reviews@google.com.
   <int value="7" label="kTriggerSecurity">
     Triggered by a security reporting trigger
   </int>
+  <int value="8" label="kTriggerProfileOpened">
+    Triggered when a profile is opened
+  </int>
+<!-- LINT.ThenChange(//components/enterprise/browser/reporting/report_generation_config.h) -->
+
 </enum>
 
 <enum name="SecondaryGoogleAccountUsagePolicyFetchStatus">
@@ -2985,9 +2992,13 @@ chromium-metrics-reviews@google.com.
 </enum>
 
 <enum name="SecurityReportTrigger">
+<!-- LINT.IfChange(SecurityReportTrigger) -->
+
   <int value="0" label="Signals-only report triggered by timer"/>
   <int value="1" label="Signals-only report triggered by cookie change"/>
   <int value="2" label="Signals-only report triggered by policy change"/>
+<!-- LINT.ThenChange(//components/enterprise/browser/reporting/security_signals_service.h:SecurityReportTrigger) -->
+
 </enum>
 
 <enum name="SecuritySignalsMode">

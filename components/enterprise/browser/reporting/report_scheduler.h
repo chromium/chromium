@@ -129,6 +129,10 @@ class ReportScheduler {
   // during startup.
   void OnReportEnabledPrefChanged();
 
+  // Returns the security signals mode for the given report type and trigger.
+  SecuritySignalsMode GetSecurityMode(ReportType report_type,
+                                      ReportTrigger trigger) const;
+
   // Stops the periodic timer and the update observer.
   void Stop();
 
@@ -163,6 +167,7 @@ class ReportScheduler {
   void RecordUploadTrigger();
 
   ReportType TriggerToReportType(ReportTrigger trigger);
+  bool IsTriggerEnabled(ReportTrigger trigger) const;
 
   policy::DMToken GetDMToken();
 

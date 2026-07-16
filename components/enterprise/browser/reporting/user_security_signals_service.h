@@ -79,7 +79,7 @@ class UserSecuritySignalsService : public SecuritySignalsService,
 
   // Called when the state value of the policy changes. This will affect whether
   // the timed reporting loop is running or not.
-  void OnStatePolicyValueChanged();
+  void OnStatePolicyValueChanged(bool is_initialization);
 
   // Called when the authentication policy value changes.
   void OnCookiePolicyValueChanged();

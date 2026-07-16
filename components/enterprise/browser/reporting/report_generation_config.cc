@@ -12,23 +12,6 @@ constexpr char kReportGenerationConfigTemplate[] =
     R"(Trigger: %s, Report Type: %s, Security Signals Mode: %s,"
     " Using Cookies: %s)";
 
-std::string_view ReportTriggerToString(
-    enterprise_reporting::ReportTrigger report_trigger) {
-  switch (report_trigger) {
-    case enterprise_reporting::ReportTrigger::kTriggerNone:
-      return "No trigger";
-    case enterprise_reporting::ReportTrigger::kTriggerTimer:
-      return "Periodic timer expired";
-    case enterprise_reporting::ReportTrigger::kTriggerUpdate:
-      return "An update was detected";
-    case enterprise_reporting::ReportTrigger::kTriggerNewVersion:
-      return "A new version is running";
-    case enterprise_reporting::ReportTrigger::kTriggerManual:
-      return "Trigger manually";
-    case enterprise_reporting::ReportTrigger::kTriggerSecurity:
-      return "Trigger for security signals";
-  }
-}
 
 std::string_view TranslateReportType(
     enterprise_reporting::ReportType report_type) {
@@ -57,6 +40,25 @@ std::string_view TranslateSecuritySignalsMode(
 }  // namespace
 
 namespace enterprise_reporting {
+
+std::string_view ReportTriggerToString(ReportTrigger report_trigger) {
+  switch (report_trigger) {
+    case ReportTrigger::kTriggerNone:
+      return "No trigger";
+    case ReportTrigger::kTriggerTimer:
+      return "Periodic timer expired";
+    case ReportTrigger::kTriggerUpdate:
+      return "An update was detected";
+    case ReportTrigger::kTriggerNewVersion:
+      return "A new version is running";
+    case ReportTrigger::kTriggerManual:
+      return "Trigger manually";
+    case ReportTrigger::kTriggerSecurity:
+      return "Trigger for security signals";
+    case ReportTrigger::kTriggerProfileOpened:
+      return "Profile opened";
+  }
+}
 
 ReportGenerationConfig::ReportGenerationConfig(
     ReportTrigger report_trigger,

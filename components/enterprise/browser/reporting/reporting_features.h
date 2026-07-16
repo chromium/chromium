@@ -32,6 +32,9 @@ BASE_DECLARE_FEATURE(kCbcmAndroidPackageNameIdentifier);
 BASE_DECLARE_FEATURE(kIOSSignalSharingEnabled);
 #endif  // BUILDFLAG(IS_IOS)
 
+// Controls whether a report is uploaded when a profile is opened.
+BASE_DECLARE_FEATURE(kUploadReportOnProfileOpen);
+
 }  // namespace enterprise_reporting
 
 #endif  // COMPONENTS_ENTERPRISE_BROWSER_REPORTING_REPORTING_FEATURES_H_
