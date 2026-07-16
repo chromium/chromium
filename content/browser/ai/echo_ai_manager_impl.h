@@ -81,13 +81,6 @@ class EchoAIManagerImpl : public blink::mojom::AIManager {
       blink::mojom::AIProofreaderCreateOptionsPtr options,
       mojo::PendingRemote<on_device_model::mojom::DownloadObserver> monitor)
       override;
-  void CanCreateClassifier(blink::mojom::AIClassifierCreateOptionsPtr options,
-                           CanCreateClassifierCallback callback) override;
-  void CreateClassifier(
-      mojo::PendingRemote<blink::mojom::AIManagerCreateClassifierClient> client,
-      blink::mojom::AIClassifierCreateOptionsPtr options,
-      mojo::PendingRemote<on_device_model::mojom::DownloadObserver> monitor)
-      override;
   void CanCreateSemanticEmbedder(
       CanCreateSemanticEmbedderCallback callback) override;
   void CreateSemanticEmbedder(

@@ -26,7 +26,7 @@ class MODULES_EXPORT AIMetrics {
     kTranslator = 4,
     kLanguageDetector = 5,
     kProofreader = 6,
-    kClassifier = 7,
+    // kClassifier = 7,  // Classifier API is deprecated.
     kSemanticEmbedder = 8,
     kMaxValue = kSemanticEmbedder,
   };

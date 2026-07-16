@@ -23,7 +23,6 @@
 #include "components/optimization_guide/core/model_execution/test/mock_on_device_capability.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
-#include "components/optimization_guide/proto/features/classify_api.pb.h"
 #include "components/optimization_guide/proto/string_value.pb.h"
 #include "components/optimization_guide/public/mojom/model_broker.mojom-shared.h"
 #include "components/passage_embeddings/core/passage_embeddings_test_util.h"
@@ -34,7 +33,6 @@
 #include "mojo/public/mojom/base/work_in_progress.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features_generated.h"
-#include "third_party/blink/public/mojom/ai/ai_classifier.mojom.h"
 #include "third_party/blink/public/mojom/ai/ai_common.mojom.h"
 #include "third_party/blink/public/mojom/ai/ai_language_model.mojom.h"
 #include "third_party/blink/public/mojom/ai/ai_manager.mojom.h"
@@ -65,7 +63,7 @@ class AIManagerTest : public AITestUtils::AITestBase {
     scoped_feature_list_.InitWithFeatures(
         {blink::features::kAIPromptAPI, blink::features::kAIWriterAPI,
          blink::features::kAISummarizationAPI, blink::features::kAIRewriterAPI,
-         blink::features::kAIProofreadingAPI, blink::features::kAIClassifierAPI,
+         blink::features::kAIProofreadingAPI,
          blink::features::kAIEmbeddingsAPI},
         {});
   }
@@ -131,12 +129,6 @@ TEST_F(AIManagerTest, CanCreate) {
   {
     base::test::TestFuture<blink::mojom::ModelAvailabilityCheckResult> future;
     ai_manager_->CanCreateRewriter(/*options=*/{}, future.GetCallback());
-    EXPECT_EQ(future.Get(),
-              blink::mojom::ModelAvailabilityCheckResult::kDownloadable);
-  }
-  {
-    base::test::TestFuture<blink::mojom::ModelAvailabilityCheckResult> future;
-    ai_manager_->CanCreateClassifier(/*options=*/{}, future.GetCallback());
     EXPECT_EQ(future.Get(),
               blink::mojom::ModelAvailabilityCheckResult::kDownloadable);
   }
@@ -216,12 +208,6 @@ TEST_F(AIManagerTest, CanCreateNotEnabled) {
   }
   {
     base::test::TestFuture<blink::mojom::ModelAvailabilityCheckResult> future;
-    ai_manager_->CanCreateClassifier(/*options=*/{}, future.GetCallback());
-    EXPECT_EQ(future.Get(), blink::mojom::ModelAvailabilityCheckResult::
-                                kUnavailableFeatureNotEnabled);
-  }
-  {
-    base::test::TestFuture<blink::mojom::ModelAvailabilityCheckResult> future;
     ai_manager_->CanCreateSemanticEmbedder(future.GetCallback());
     EXPECT_EQ(future.Get(), blink::mojom::ModelAvailabilityCheckResult::
                                 kUnavailableFeatureNotEnabled);
@@ -231,12 +217,64 @@ TEST_F(AIManagerTest, CanCreateNotEnabled) {
 TEST_F(AIManagerTest, CanCreateFeatureDisabled) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
-      {}, {blink::features::kAIPromptAPI,
-           blink::features::kAIPromptAPIMultimodalInput,
-           blink::features::kAIWriterAPI, blink::features::kAISummarizationAPI,
-           blink::features::kAIRewriterAPI, blink::features::kAIProofreadingAPI,
-           blink::features::kAIClassifierAPI});
+      {},
+      {blink::features::kAIPromptAPI,
+       blink::features::kAIPromptAPIMultimodalInput,
+       blink::features::kAIWriterAPI, blink::features::kAISummarizationAPI,
+       blink::features::kAIRewriterAPI, blink::features::kAIProofreadingAPI});
 
+  base::MockCallback<
+      base::OnceCallback<void(blink::mojom::ModelAvailabilityCheckResult)>>
+      callback;
+  EXPECT_CALL(callback, Run(blink::mojom::ModelAvailabilityCheckResult::
+                                kUnavailableFeatureNotEnabled))
+      .Times(5);
+
+  ai_manager_->CanCreateLanguageModel(/*options=*/{}, callback.Get());
+  ai_manager_->CanCreateWriter(/*options=*/{}, callback.Get());
+  ai_manager_->CanCreateSummarizer(/*options=*/{}, callback.Get());
+  ai_manager_->CanCreateRewriter(/*options=*/{}, callback.Get());
+  ai_manager_->CanCreateProofreader(/*options=*/{}, callback.Get());
+}
+
+TEST_F(AIManagerTest, CanCreateEnterprisePolicyDisabled) {
+  SetBuiltInAIAPIsEnterprisePolicy(false);
+  base::MockCallback<
+      base::OnceCallback<void(blink::mojom::ModelAvailabilityCheckResult)>>
+      callback;
+  EXPECT_CALL(callback, Run(blink::mojom::ModelAvailabilityCheckResult::
+                                kUnavailableEnterprisePolicyDisabled))
+      .Times(6);
+
+  ai_manager_->CanCreateLanguageModel(/*options=*/{}, callback.Get());
+  ai_manager_->CanCreateWriter(/*options=*/{}, callback.Get());
+  ai_manager_->CanCreateSummarizer(/*options=*/{}, callback.Get());
+  ai_manager_->CanCreateRewriter(/*options=*/{}, callback.Get());
+  ai_manager_->CanCreateProofreader(/*options=*/{}, callback.Get());
+  ai_manager_->CanCreateSemanticEmbedder(callback.Get());
+  SetBuiltInAIAPIsEnterprisePolicy(true);
+}
+
+TEST_F(AIManagerTest, CanCreateLocalStateEnterprisePolicyDisabled) {
+  SetGenAILocalEnterprisePolicy(false);
+  base::MockCallback<
+      base::OnceCallback<void(blink::mojom::ModelAvailabilityCheckResult)>>
+      callback;
+  EXPECT_CALL(callback, Run(blink::mojom::ModelAvailabilityCheckResult::
+                                kUnavailableEnterprisePolicyDisabled))
+      .Times(6);
+
+  ai_manager_->CanCreateLanguageModel(/*options=*/{}, callback.Get());
+  ai_manager_->CanCreateWriter(/*options=*/{}, callback.Get());
+  ai_manager_->CanCreateSummarizer(/*options=*/{}, callback.Get());
+  ai_manager_->CanCreateRewriter(/*options=*/{}, callback.Get());
+  ai_manager_->CanCreateProofreader(/*options=*/{}, callback.Get());
+  ai_manager_->CanCreateSemanticEmbedder(callback.Get());
+  SetGenAILocalEnterprisePolicy(true);
+}
+
+TEST_F(AIManagerTest, CanCreateLocalStateUserSettingsDisabled) {
+  SetOnDeviceAiUserSetting(false);
   base::MockCallback<
       base::OnceCallback<void(blink::mojom::ModelAvailabilityCheckResult)>>
       callback;
@@ -249,62 +287,6 @@ TEST_F(AIManagerTest, CanCreateFeatureDisabled) {
   ai_manager_->CanCreateSummarizer(/*options=*/{}, callback.Get());
   ai_manager_->CanCreateRewriter(/*options=*/{}, callback.Get());
   ai_manager_->CanCreateProofreader(/*options=*/{}, callback.Get());
-  ai_manager_->CanCreateClassifier(/*options=*/{}, callback.Get());
-}
-
-TEST_F(AIManagerTest, CanCreateEnterprisePolicyDisabled) {
-  SetBuiltInAIAPIsEnterprisePolicy(false);
-  base::MockCallback<
-      base::OnceCallback<void(blink::mojom::ModelAvailabilityCheckResult)>>
-      callback;
-  EXPECT_CALL(callback, Run(blink::mojom::ModelAvailabilityCheckResult::
-                                kUnavailableEnterprisePolicyDisabled))
-      .Times(7);
-
-  ai_manager_->CanCreateLanguageModel(/*options=*/{}, callback.Get());
-  ai_manager_->CanCreateWriter(/*options=*/{}, callback.Get());
-  ai_manager_->CanCreateSummarizer(/*options=*/{}, callback.Get());
-  ai_manager_->CanCreateRewriter(/*options=*/{}, callback.Get());
-  ai_manager_->CanCreateProofreader(/*options=*/{}, callback.Get());
-  ai_manager_->CanCreateClassifier(/*options=*/{}, callback.Get());
-  ai_manager_->CanCreateSemanticEmbedder(callback.Get());
-  SetBuiltInAIAPIsEnterprisePolicy(true);
-}
-
-TEST_F(AIManagerTest, CanCreateLocalStateEnterprisePolicyDisabled) {
-  SetGenAILocalEnterprisePolicy(false);
-  base::MockCallback<
-      base::OnceCallback<void(blink::mojom::ModelAvailabilityCheckResult)>>
-      callback;
-  EXPECT_CALL(callback, Run(blink::mojom::ModelAvailabilityCheckResult::
-                                kUnavailableEnterprisePolicyDisabled))
-      .Times(7);
-
-  ai_manager_->CanCreateLanguageModel(/*options=*/{}, callback.Get());
-  ai_manager_->CanCreateWriter(/*options=*/{}, callback.Get());
-  ai_manager_->CanCreateSummarizer(/*options=*/{}, callback.Get());
-  ai_manager_->CanCreateRewriter(/*options=*/{}, callback.Get());
-  ai_manager_->CanCreateProofreader(/*options=*/{}, callback.Get());
-  ai_manager_->CanCreateClassifier(/*options=*/{}, callback.Get());
-  ai_manager_->CanCreateSemanticEmbedder(callback.Get());
-  SetGenAILocalEnterprisePolicy(true);
-}
-
-TEST_F(AIManagerTest, CanCreateLocalStateUserSettingsDisabled) {
-  SetOnDeviceAiUserSetting(false);
-  base::MockCallback<
-      base::OnceCallback<void(blink::mojom::ModelAvailabilityCheckResult)>>
-      callback;
-  EXPECT_CALL(callback, Run(blink::mojom::ModelAvailabilityCheckResult::
-                                kUnavailableFeatureNotEnabled))
-      .Times(7);
-
-  ai_manager_->CanCreateLanguageModel(/*options=*/{}, callback.Get());
-  ai_manager_->CanCreateWriter(/*options=*/{}, callback.Get());
-  ai_manager_->CanCreateSummarizer(/*options=*/{}, callback.Get());
-  ai_manager_->CanCreateRewriter(/*options=*/{}, callback.Get());
-  ai_manager_->CanCreateProofreader(/*options=*/{}, callback.Get());
-  ai_manager_->CanCreateClassifier(/*options=*/{}, callback.Get());
   ai_manager_->CanCreateSemanticEmbedder(callback.Get());
   SetOnDeviceAiUserSetting(true);
 }
