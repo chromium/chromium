@@ -32,10 +32,18 @@ And now some long text in root element. The quick brown fox jumps over the lazy 
                  jumps over the lazy dog.
      -->
 <tag-with-short-cdata>
-<![CDATA[ some short text ]]>
+<![CDATA[  some short text  ]]>
 </tag-with-short-cdata>
 <tag-with-long-cdata>
-<![CDATA[ The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. ]]>
+<![CDATA[  
+                The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy
+                dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps
+                over the lazy dog. The quick brown fox jumps over the lazy dog.  The quick brown fox jumps over the lazy dog. The quick brown fox
+                jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick
+                brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog.
+                The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy
+                dog. The quick brown fox jumps over the lazy dog.
+         ]]>
 </tag-with-long-cdata>
 <ns:tag-with-some-namespace xmlns:ns="www.example.org/namespace"/>
 </root-tag-with-mixed-content>
