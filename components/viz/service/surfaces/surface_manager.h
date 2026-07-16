@@ -227,7 +227,11 @@ class VIZ_SERVICE_EXPORT SurfaceManager {
   // surface processed calls `predicate` for each uncommitted frame from oldest
   // to newest. If predicate returns true, surface is committed. If not the
   // surface processing stops and we go to the next surface.
-  void CommitFramesInRangeRecursively(const SurfaceRange& range,
+  // |range| is passed by value because CommitFramesRecursively can
+  // synchronously activate a caller's pending frame, replacing
+  // active_frame_data_ and freeing the referenced_surfaces vector that the
+  // caller passed |range| out of.
+  void CommitFramesInRangeRecursively(SurfaceRange range,
                                       const CommitPredicate& predicate);
 
  private:
