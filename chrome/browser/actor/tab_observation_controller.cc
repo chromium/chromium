@@ -23,14 +23,15 @@
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/web_contents.h"
 
-#if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
+#if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #else
+#include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
-#endif  // !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
+#endif
 
 namespace actor {
 
@@ -149,7 +150,15 @@ void TabObservationController::PerformObservation() {
   // Reset the result object if this is a retry.
   result_ = std::make_unique<ObservationResult>();
 
-#if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
+  PopulateWindowObservations(task);
+  std::vector<tabs::TabInterface*> tabs_to_fetch =
+      PopulateTabObservations(task);
+
+  StartFetchingObservations(tabs_to_fetch);
+}
+
+void TabObservationController::PopulateWindowObservations(ActorTask* task) {
+#if !BUILDFLAG(IS_ANDROID)
   ProfileBrowserCollection::GetForProfile(profile_)->ForEach(
       [this](BrowserWindowInterface* browser) {
         optimization_guide::proto::WindowObservation window_observation;
@@ -195,8 +204,59 @@ void TabObservationController::PerformObservation() {
         return true;
       },
       BrowserCollection::Order::kActivation);
+
+  // TODO(crbug.com/535626765): Consider adding off screen
+  // BrowserWindowInterface to GlobalBrowserCollection instead of special case
+  // here.
+  PopulateAndroidOffscreenWindowObservations(task);
+#endif
+}
+
+#if BUILDFLAG(IS_ANDROID)
+void TabObservationController::PopulateAndroidOffscreenWindowObservations(
+    ActorTask* task) {
+  ActorTask::TabHandleSet last_acted_tabs = task->GetLastActedTabs();
+  for (const tabs::TabHandle& handle : last_acted_tabs) {
+    tabs::TabInterface* tab = handle.Get();
+    if (!tab) {
+      continue;
+    }
+    TabAndroid* tab_android = TabAndroid::FromTabHandle(handle);
+    if (tab_android && tab_android->IsOffscreenRendering()) {
+      SessionID virtual_window_id = tab_android->GetWindowId();
+
+      // Check if we already have a window observation for this virtual window.
+      optimization_guide::proto::WindowObservation* existing_observer = nullptr;
+      for (auto& observer : result_->window_observations) {
+        if (observer.id() == virtual_window_id.id()) {
+          existing_observer = &observer;
+          break;
+        }
+      }
+
+      if (existing_observer) {
+        // If the window already exists in observations, append this tab to it.
+        existing_observer->add_tab_ids(handle.raw_value());
+      } else {
+        // Create a new window observation for the virtual window.
+        optimization_guide::proto::WindowObservation window_observation;
+        window_observation.set_id(virtual_window_id.id());
+        // Offscreen tabs are only kept around for running the actor tasks.
+        // Any acted tabs should be marked active for the actuation to continue.
+        window_observation.set_active(true);
+        // TODO: This code assumes single tab actuation. Track active tab ID in
+        // offscreen manager for multi tab support.
+        window_observation.set_activated_tab_id(handle.raw_value());
+        window_observation.add_tab_ids(handle.raw_value());
+        result_->window_observations.push_back(std::move(window_observation));
+      }
+    }
+  }
+}
 #endif
 
+std::vector<tabs::TabInterface*>
+TabObservationController::PopulateTabObservations(ActorTask* task) {
   std::vector<tabs::TabInterface*> tabs_to_fetch;
   ActorTask::TabHandleSet last_acted_tabs = task->GetLastActedTabs();
   for (const tabs::TabHandle& handle : last_acted_tabs) {
@@ -244,6 +304,11 @@ void TabObservationController::PerformObservation() {
     result_->tab_observations.push_back(additional_obs);
   }
 
+  return tabs_to_fetch;
+}
+
+void TabObservationController::StartFetchingObservations(
+    const std::vector<tabs::TabInterface*>& tabs_to_fetch) {
   actor::RecordPageContextTabCount(tabs_to_fetch.size());
 
   if (tabs_to_fetch.empty()) {

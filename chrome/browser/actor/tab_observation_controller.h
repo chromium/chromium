@@ -88,6 +88,13 @@ class TabObservationController {
   void StartImpl();
   // Internal phases of the observation flow.
   void PerformObservation();
+  void PopulateWindowObservations(ActorTask* task);
+#if BUILDFLAG(IS_ANDROID)
+  void PopulateAndroidOffscreenWindowObservations(ActorTask* task);
+#endif
+  std::vector<tabs::TabInterface*> PopulateTabObservations(ActorTask* task);
+  void StartFetchingObservations(
+      const std::vector<tabs::TabInterface*>& tabs_to_fetch);
   void FetchObservation(tabs::TabInterface* tab,
                         optimization_guide::proto::TabObservation* observation,
                         base::RepeatingClosure barrier);
