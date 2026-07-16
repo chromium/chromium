@@ -209,8 +209,12 @@ void EventForwarder::OnMouseEvent(
       /*action_index=*/0, android_action_button,
       /*android_gesture_classification=*/0,
       JNI_MotionEvent::Java_MotionEvent_getButtonState(env, motion_event),
-      /*raw_offset_x_pixels=*/0,
-      /*raw_offset_y_pixels=*/0,
+      /*raw_offset_x_pixels=*/
+      JNI_MotionEvent::Java_MotionEvent_getRawX(env, motion_event) -
+          source->GetXPix(0),
+      /*raw_offset_y_pixels=*/
+      JNI_MotionEvent::Java_MotionEvent_getRawY(env, motion_event) -
+          source->GetYPix(0),
       /*for_touch_handle=*/false,
       /*pointer0=*/&pointer,
       /*pointer1=*/nullptr);
