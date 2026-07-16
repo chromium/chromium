@@ -158,6 +158,8 @@ chromium-metrics-reviews@google.com.
   <int value="1409" label="OtpServiceUnavailable"/>
   <int value="1410" label="OtpSigninContextMismatch"/>
   <int value="1411" label="OtpInsecureContext"/>
+  <int value="1412" label="OtpUnableToFill"/>
+  <int value="1413" label="OtpUserDeclinedOptingIntoFilling"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/actor/public/mojom/actor_types.mojom:ActionResultCode) -->

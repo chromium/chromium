@@ -519,6 +519,13 @@ enum ActionResultCode {
   // OTP filling is not allowed on insecure (non-HTTPS) pages.
   kOtpInsecureContext = 1411,
 
+  // OTP filling could not be performed (e.g., within cool-off period or opt-in
+  // dialog error).
+  kOtpUnableToFill = 1412,
+
+  // The user declined opting into Gmail OTP filling in the opt-in dialog.
+  kOtpUserDeclinedOptingIntoFilling = 1413,
+
   // Please see the comment above about adding new values.
 };
 

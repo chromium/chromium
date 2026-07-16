@@ -256,14 +256,14 @@ using autofill::prefs::SetAutofillGmailOtpFillingEnabled;
 using base::test::RunOnceCallback;
 using base::test::TestFuture;
 using mojom::ActionResultPtr;
-using mojom::ActionResultCode::kFormFillingAutofillUnavailable;
-using mojom::ActionResultCode::kFormFillingDialogError;
 using mojom::ActionResultCode::kFormFillingFieldNotFound;
 using mojom::ActionResultCode::kFormFillingNoLastTabObservation;
 using mojom::ActionResultCode::kFormFillingUnknownAutofillError;
 using mojom::ActionResultCode::kOk;
 using mojom::ActionResultCode::kOtpFillFailure;
 using mojom::ActionResultCode::kOtpRetrievalError;
+using mojom::ActionResultCode::kOtpUnableToFill;
+using mojom::ActionResultCode::kOtpUserDeclinedOptingIntoFilling;
 using mojom::ActionResultCode::kTabWentAway;
 using mojom::ActionResultCode::kToolTimeout;
 using optimization_guide::DocumentIdentifierUserData;
@@ -312,7 +312,7 @@ TEST_F(AttemptOtpFillingToolTest, Validate_OptInPermissionDenied) {
   TestFuture<ActionResultPtr> future;
   tool.Validate(future.GetCallback());
 
-  EXPECT_EQ(kFormFillingAutofillUnavailable, future.Take()->code);
+  EXPECT_EQ(kOtpUserDeclinedOptingIntoFilling, future.Take()->code);
   EXPECT_FALSE(IsAutofillGmailOtpFillingEnabled(prefs()));
   EXPECT_EQ(base::Time::Now(),
             GetAutofillGmailOtpFillingActivationDismissalTimestamp(prefs()));
@@ -337,7 +337,7 @@ TEST_F(AttemptOtpFillingToolTest, Validate_OptInPermissionCallbackError) {
   TestFuture<ActionResultPtr> future;
   tool.Validate(future.GetCallback());
 
-  EXPECT_EQ(kFormFillingDialogError, future.Take()->code);
+  EXPECT_EQ(kOtpUnableToFill, future.Take()->code);
   EXPECT_FALSE(IsAutofillGmailOtpFillingEnabled(prefs()));
   EXPECT_EQ(base::Time::Now() - base::Days(90),
             GetAutofillGmailOtpFillingActivationDismissalTimestamp(prefs()));
@@ -363,7 +363,7 @@ TEST_F(AttemptOtpFillingToolTest,
   TestFuture<ActionResultPtr> future;
   tool.Validate(future.GetCallback());
 
-  EXPECT_EQ(kFormFillingAutofillUnavailable, future.Take()->code);
+  EXPECT_EQ(kOtpUnableToFill, future.Take()->code);
   EXPECT_FALSE(IsAutofillGmailOtpFillingEnabled(prefs()));
   EXPECT_EQ(base::Time::Now() - base::Days(89),
             GetAutofillGmailOtpFillingActivationDismissalTimestamp(prefs()));
@@ -584,7 +584,7 @@ TEST_F(AttemptOtpFillingToolTest,
   TestFuture<ActionResultPtr> future;
   tool.Validate(future.GetCallback());
 
-  EXPECT_EQ(kFormFillingDialogError, future.Take()->code);
+  EXPECT_EQ(kOtpUnableToFill, future.Take()->code);
   histogram_tester_.ExpectBucketCount(
       kAttemptOtpFillingToolHistogram,
       AttemptOtpFillingToolEvent::kOptInNullResponse, 1);

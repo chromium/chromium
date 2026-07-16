@@ -279,7 +279,7 @@ void AttemptOtpFillingTool::Validate(ToolCallback callback) {
     RecordAttemptOtpFillingEvent(
         AttemptOtpFillingToolEvent::kWithinOptInCoolOffPeriod);
     std::move(callback).Run(
-        MakeResult(mojom::ActionResultCode::kFormFillingAutofillUnavailable,
+        MakeResult(mojom::ActionResultCode::kOtpUnableToFill,
                    /*requires_page_stabilization=*/false,
                    "Gmail OTP disabled and within cool-off period for Gmail "
                    "OTP opt-in dialog."));
@@ -297,7 +297,7 @@ void AttemptOtpFillingTool::OnGmailOtpOptInResponse(
     RecordAttemptOtpFillingEvent(
         AttemptOtpFillingToolEvent::kOptInNullResponse);
     std::move(callback).Run(
-        MakeResult(mojom::ActionResultCode::kFormFillingDialogError,
+        MakeResult(mojom::ActionResultCode::kOtpUnableToFill,
                    /*requires_page_stabilization=*/false,
                    "Gmail OTP opt-in dialog response is null"));
     return;
@@ -311,7 +311,7 @@ void AttemptOtpFillingTool::OnGmailOtpOptInResponse(
                         .Add("error_reason", response->get_error_reason())
                         .Build());
     std::move(callback).Run(
-        MakeResult(mojom::ActionResultCode::kFormFillingDialogError,
+        MakeResult(mojom::ActionResultCode::kOtpUnableToFill,
                    /*requires_page_stabilization=*/false,
                    "Error in Gmail OTP opt-in dialog response"));
     return;
@@ -326,7 +326,7 @@ void AttemptOtpFillingTool::OnGmailOtpOptInResponse(
     autofill::prefs::SetAutofillGmailOtpFillingActivationDismissalTimestamp(
         prefs, base::Time::Now());
     std::move(callback).Run(
-        MakeResult(mojom::ActionResultCode::kFormFillingAutofillUnavailable,
+        MakeResult(mojom::ActionResultCode::kOtpUserDeclinedOptingIntoFilling,
                    /*requires_page_stabilization=*/false,
                    "User declined Gmail OTP opt-in."));
     return;
