@@ -487,6 +487,13 @@ void PasswordStore::NotifyLoginsChangedOnMainSequence(
     error = BackendErrorToActionableError(backend_error.type);
   } else {
     changes = std::move(std::get<PasswordChanges>(changes_or_error));
+    // On Android the `nullopt` value of `PasswordChangesOrError` is interpreted
+    // as not knowing the actual error state yet. On other platforms the
+    // `nullopt` value of `PasswordChangesOrError` means that there no
+    // actionable errors.
+    // TODO(crbug.com/535288574): Interpret the `nullopt` value consistently
+    // across platforms (or avoid using `nullopt`).
+#if BUILDFLAG(IS_ANDROID)
     // If `changes` is std::nullopt, a refresh is starting (e.g. when Chrome
     // comes to foreground). We don't know the actual error state yet, so we
     // leave `error` as std::nullopt to defer propagation. The error state
@@ -495,6 +502,11 @@ void PasswordStore::NotifyLoginsChangedOnMainSequence(
     if (changes.has_value()) {
       error = ActionableError::kNoError;
     }
+#else
+    // On platforms other than Android we know that in this case there are no
+    // errors.
+    error = ActionableError::kNoError;
+#endif
   }
   if (error.has_value() &&
       base::FeatureList::IsEnabled(

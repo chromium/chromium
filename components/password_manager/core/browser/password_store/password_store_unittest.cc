@@ -1057,6 +1057,40 @@ TEST_F(PasswordStoreTest,
   store->RemoveObserver(&mock_observer);
   store->ShutdownOnUIThread();
 }
+#else
+// Tests that on non-Android platforms, when remote changes callback is called
+// with std::nullopt (no changelist provided), the store propagates
+// ActionableError::kNoError to observers via OnErrorStateChanged.
+TEST_F(PasswordStoreTest,
+       OnErrorStateChangedFlowOnNonAndroidRemoteChangesNullopt) {
+  base::test::ScopedFeatureList feature_list(
+      features::kPasswordStorePropagatesActionableErrors);
+
+  MockPasswordStoreObserver mock_observer;
+  auto [store, mock_backend] = CreateUnownedStoreWithOwnedMockBackend();
+
+  PasswordStoreBackend::RemoteChangesReceived remote_form_changes_received;
+  EXPECT_CALL(*mock_backend, InitBackend)
+      .WillOnce(testing::WithArgs<0, 2>(
+          [&](PasswordStoreBackend::RemoteChangesReceived remote_changes,
+              base::OnceCallback<void(bool)> completion) {
+            remote_form_changes_received = std::move(remote_changes);
+            std::move(completion).Run(true);
+          }));
+
+  store->Init();
+  store->AddObserver(&mock_observer);
+
+  EXPECT_CALL(mock_observer,
+              OnErrorStateChanged(store.get(), ActionableError::kNoError));
+
+  remote_form_changes_received.Run(std::nullopt);
+
+  WaitForPasswordStore();
+
+  store->RemoveObserver(&mock_observer);
+  store->ShutdownOnUIThread();
+}
 #endif
 
 // Collection of origin-related testcases common to all platform-specific
