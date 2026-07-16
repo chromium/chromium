@@ -129,7 +129,6 @@ repack("repack_unscaled_resources") {
       "$root_gen_dir/content/browser/resources/media/media_internals_resources.pak",
       "$root_gen_dir/content/browser/webrtc/resources/webrtc_internals_resources.pak",
       "$root_gen_dir/content/content_resources.pak",
-      "$root_gen_dir/content/private_aggregation_internals_resources.pak",
       "$root_gen_dir/content/quota_internals_resources.pak",
       "$root_gen_dir/third_party/blink/public/resources/blink_resources.pak",
       "$root_gen_dir/third_party/blink/public/resources/blink_scaled_resources_100_percent.pak",

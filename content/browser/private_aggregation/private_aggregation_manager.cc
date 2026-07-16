@@ -11,17 +11,9 @@
 
 #include "base/numerics/safe_conversions.h"
 #include "content/browser/private_aggregation/private_aggregation_manager_impl.h"
-#include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/browser_context.h"
 
 namespace content {
-
-PrivateAggregationManager* PrivateAggregationManager::GetManager(
-    BrowserContext& browser_context) {
-  return static_cast<StoragePartitionImpl*>(
-             browser_context.GetDefaultStoragePartition())
-      ->GetPrivateAggregationManager();
-}
 
 bool PrivateAggregationManager::ShouldSendReportDeterministically(
     PrivateAggregationCallerApi caller_api,

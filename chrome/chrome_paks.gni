@@ -148,7 +148,6 @@ template("chrome_extra_paks") {
       "$root_gen_dir/content/content_resources.pak",
       "$root_gen_dir/content/histograms_resources.pak",
       "$root_gen_dir/content/indexed_db_resources.pak",
-      "$root_gen_dir/content/private_aggregation_internals_resources.pak",
       "$root_gen_dir/content/quota_internals_resources.pak",
       "$root_gen_dir/mojo/public/js/mojo_bindings_resources.pak",
       "$root_gen_dir/net/net_resources.pak",

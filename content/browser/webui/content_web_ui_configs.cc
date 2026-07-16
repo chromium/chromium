@@ -11,7 +11,6 @@
 #include "content/browser/media/media_internals_ui.h"
 #include "content/browser/metrics/histograms_internals_ui.h"
 #include "content/browser/network/network_errors_listing_ui.h"
-#include "content/browser/private_aggregation/private_aggregation_internals_ui.h"
 #include "content/browser/process_internals/process_internals_ui.h"
 #include "content/browser/quota/quota_internals_ui.h"
 #include "content/browser/service_worker/service_worker_internals_ui.h"
@@ -38,7 +37,6 @@ void RegisterContentWebUIConfigs() {
   map.AddWebUIConfig(std::make_unique<MediaInternalsUIConfig>());
   map.AddWebUIConfig(std::make_unique<HistogramsInternalsUIConfig>());
   map.AddWebUIConfig(std::make_unique<NetworkErrorsListingUIConfig>());
-  map.AddWebUIConfig(std::make_unique<PrivateAggregationInternalsUIConfig>());
   map.AddWebUIConfig(std::make_unique<ProcessInternalsUIConfig>());
   map.AddWebUIConfig(std::make_unique<QuotaInternalsUIConfig>());
   map.AddWebUIConfig(std::make_unique<ServiceWorkerInternalsUIConfig>());

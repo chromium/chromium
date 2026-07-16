@@ -1518,10 +1518,6 @@
   },
 
   # These files are generated during the build.
-  "<(SHARED_INTERMEDIATE_DIR)/content/browser/resources/private_aggregation/resources.grd": {
-    "META": {"sizes": {"includes": [20]}},
-    "includes": [8060],
-  },
   "<(SHARED_INTERMEDIATE_DIR)/content/browser/resources/gpu/resources.grd": {
     "META": {"sizes": {"includes": [20]}},
     "includes": [8080],

@@ -142,7 +142,6 @@ base::span<const std::string_view> GetChromeUrlsForTest() {
       "chrome://prefs-internals",
 #endif
 
-      "chrome://private-aggregation-internals",
       "chrome://private-ai-internals",
       "chrome://process-internals",
       "chrome://profile-internals",

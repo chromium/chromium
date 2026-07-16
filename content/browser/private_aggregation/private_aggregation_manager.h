@@ -26,15 +26,11 @@ class Origin;
 
 namespace content {
 
-class BrowserContext;
-
 // Interface that mediates data flow between the Private Aggregation API
 // component and other APIs using it.
 class CONTENT_EXPORT PrivateAggregationManager {
  public:
   virtual ~PrivateAggregationManager() = default;
-
-  static PrivateAggregationManager* GetManager(BrowserContext& browser_context);
 
   // Attempts to bind a new pending receiver for a worklet, allowing messages to
   // be sent and processed. The return value indicates whether the receiver was

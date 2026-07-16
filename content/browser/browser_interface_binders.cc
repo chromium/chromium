@@ -48,8 +48,6 @@
 #include "content/browser/picture_in_picture/picture_in_picture_service_impl.h"
 #include "content/browser/preloading/anchor_element_interaction_host_impl.h"
 #include "content/browser/preloading/speculation_rules/speculation_host_impl.h"
-#include "content/browser/private_aggregation/private_aggregation_internals.mojom.h"
-#include "content/browser/private_aggregation/private_aggregation_internals_ui.h"
 #include "content/browser/process_internals/process_internals.mojom.h"
 #include "content/browser/process_internals/process_internals_ui.h"
 #include "content/browser/quota/quota_context.h"
@@ -1401,9 +1399,6 @@ void PopulateBinderMapWithContext(
   map->Add<device::mojom::VRService>(
       &EmptyBinderForFrame<device::mojom::VRService>);
 #endif
-  RegisterWebUIControllerInterfaceBinder<
-      private_aggregation_internals::mojom::Factory,
-      PrivateAggregationInternalsUI>(map);
   RegisterWebUIControllerInterfaceBinder<storage::mojom::IdbInternalsHandler,
                                          indexed_db::IndexedDBInternalsUI>(map);
   RegisterWebUIControllerInterfaceBinder<::mojom::ProcessInternalsHandler,
