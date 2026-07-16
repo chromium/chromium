@@ -498,7 +498,6 @@ public class UrlBar extends AutocompleteEditText {
                                 return mManageSearchEnginesCallback;
                             }
                         });
-        setOnCreateContextMenuListener(mContextMenuHelper);
         enforceMaxTextHeight();
         setPrivateImeOptions(IME_OPTION_RESTRICT_STYLUS_WRITING_AREA);
     }
@@ -1021,6 +1020,11 @@ public class UrlBar extends AutocompleteEditText {
                         }
                         return true;
                     });
+        }
+
+        if (OmniboxFeatures.sOmniboxListMenuContextMenu.isEnabled() && mContextMenuHelper != null) {
+            mContextMenuHelper.showListMenu(menu);
+            menu.clear();
         }
     }
 

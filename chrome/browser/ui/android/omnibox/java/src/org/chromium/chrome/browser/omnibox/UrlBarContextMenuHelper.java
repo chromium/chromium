@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.omnibox;
 import android.view.ContextMenu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.View.OnCreateContextMenuListener;
 
 import androidx.annotation.VisibleForTesting;
 
@@ -29,7 +28,7 @@ import java.util.Set;
 
 /** Helper for the UrlBar context menu. */
 @NullMarked
-class UrlBarContextMenuHelper implements OnCreateContextMenuListener {
+class UrlBarContextMenuHelper {
     /** Interface providing the callback dependencies for the context menu. */
     public interface Delegate {
         /** See {@link android.widget.TextView#onTextContextMenuItem(int)} */
@@ -74,7 +73,6 @@ class UrlBarContextMenuHelper implements OnCreateContextMenuListener {
     }
 
     void destroy() {
-        mAnchorView.setOnCreateContextMenuListener(null);
         mListMenuHost.dismiss();
     }
 
@@ -92,9 +90,7 @@ class UrlBarContextMenuHelper implements OnCreateContextMenuListener {
         mTouchY = INVALID_TOUCH_COORDINATE;
     }
 
-    @Override
-    public void onCreateContextMenu(
-            ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+    public void showListMenu(ContextMenu menu) {
         if (!OmniboxFeatures.sOmniboxListMenuContextMenu.isEnabled()) {
             return;
         }
@@ -131,12 +127,10 @@ class UrlBarContextMenuHelper implements OnCreateContextMenuListener {
         }
 
         if (mListItems.isEmpty()) {
-            menu.clear();
             return;
         }
 
         mListMenuHost.showMenu();
-        menu.clear();
     }
 
     private ListMenuDelegate createListMenuDelegate() {

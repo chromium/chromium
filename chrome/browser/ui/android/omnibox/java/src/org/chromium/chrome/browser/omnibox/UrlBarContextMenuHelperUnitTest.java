@@ -61,10 +61,10 @@ public class UrlBarContextMenuHelperUnitTest {
     }
 
     @Test
-    public void testOnCreateContextMenu_addsMenuItems() {
+    public void testShowListMenu_addsMenuItems() {
         setupMockContextMenu();
 
-        mHelper.onCreateContextMenu(mContextMenu, mUrlBar, null);
+        mHelper.showListMenu(mContextMenu);
         assertTrue(mHelper.getModelListForTesting().size() > 0);
     }
 
@@ -72,7 +72,7 @@ public class UrlBarContextMenuHelperUnitTest {
     public void testDestroy_dismissesListMenuHost() {
         setupMockContextMenu();
 
-        mHelper.onCreateContextMenu(mContextMenu, mUrlBar, null);
+        mHelper.showListMenu(mContextMenu);
         assertTrue(mHelper.getModelListForTesting().size() > 0);
 
         mHelper.destroy();
@@ -94,21 +94,20 @@ public class UrlBarContextMenuHelperUnitTest {
     }
 
     @Test
-    public void testOnCreateContextMenu_filtersOutNonAllowedItems() {
+    public void testShowListMenu_filtersOutNonAllowedItems() {
         setupMockContextMenu();
         doReturn(android.R.id.button1).when(mCopyMenuItem).getItemId();
 
-        mHelper.onCreateContextMenu(mContextMenu, mUrlBar, null);
+        mHelper.showListMenu(mContextMenu);
         assertEquals(0, mHelper.getModelListForTesting().size());
-        verify(mContextMenu).clear();
     }
 
     @Test
-    public void testOnCreateContextMenu_allowsShareText() {
+    public void testShowListMenu_allowsShareText() {
         setupMockContextMenu();
         doReturn(android.R.id.shareText).when(mCopyMenuItem).getItemId();
 
-        mHelper.onCreateContextMenu(mContextMenu, mUrlBar, null);
+        mHelper.showListMenu(mContextMenu);
         assertTrue(mHelper.getModelListForTesting().size() > 0);
     }
 
@@ -122,12 +121,12 @@ public class UrlBarContextMenuHelperUnitTest {
     }
 
     @Test
-    public void testOnCreateContextMenu_allowsAlwaysShowAiMode_checked() {
+    public void testShowListMenu_allowsAlwaysShowAiMode_checked() {
         verifyAlwaysShowAiMode(true);
     }
 
     @Test
-    public void testOnCreateContextMenu_allowsAlwaysShowAiMode_unchecked() {
+    public void testShowListMenu_allowsAlwaysShowAiMode_unchecked() {
         verifyAlwaysShowAiMode(false);
     }
 
@@ -138,7 +137,7 @@ public class UrlBarContextMenuHelperUnitTest {
         doReturn(true).when(mCopyMenuItem).isCheckable();
         doReturn(isChecked).when(mCopyMenuItem).isChecked();
 
-        mHelper.onCreateContextMenu(mContextMenu, mUrlBar, null);
+        mHelper.showListMenu(mContextMenu);
         assertEquals(1, mHelper.getModelListForTesting().size());
 
         ListItem item = mHelper.getModelListForTesting().get(0);
