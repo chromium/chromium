@@ -2,9 +2,12 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import dataclasses
+import itertools
 import os
 import re
 import sys
+from typing import List, Optional
 
 
 def CreateDefaultTemplate(java_class, placeholder):
@@ -247,3 +250,175 @@ class CppConstantParser:
     for line in self._lines:
       self._ParseLine(line)
     return self._constants
+
+
+@dataclasses.dataclass
+class _Macro:
+  params: List[str]
+  body_lines: List[str]
+  is_multiline: bool
+  param_re: Optional[re.Pattern] = None
+
+  def IsListMacro(self) -> bool:
+    if not self.is_multiline or len(self.params) != 1:
+      return False
+    param_name = self.params[0]
+    call_pattern = re.compile(r'\b' + re.escape(param_name) + r'\s*\(')
+    return any(call_pattern.search(line) for line in self.body_lines)
+
+
+def _SplitArgs(args_str):
+  args = []
+  current = []
+  in_quotes = False
+  escaped = False
+  for char in args_str:
+    if escaped:
+      current.append(char)
+      escaped = False
+    elif char == '"':
+      in_quotes = not in_quotes
+      current.append(char)
+    elif char == '\\' and in_quotes:
+      current.append(char)
+      escaped = True
+    elif char == ',' and not in_quotes:
+      args.append(''.join(current).strip())
+      current = []
+    else:
+      current.append(char)
+  args.append(''.join(current).strip())
+  return args
+
+
+def _ExpandVisitor(visitor_def, args):
+  if not visitor_def.params:
+    return visitor_def.body_lines
+
+  if visitor_def.param_re is None:
+    visitor_def.param_re = re.compile(r'\b(' + '|'.join(
+        re.escape(p) for p in visitor_def.params) + r')\b')
+
+  mapping = dict(itertools.zip_longest(visitor_def.params, args, fillvalue=''))
+  replace = lambda m: mapping[m.group(1)]
+  return [visitor_def.param_re.sub(replace, l) for l in visitor_def.body_lines]
+
+
+def _ParseMacros(lines):
+  macros = {}
+
+  # Regex for start of multi-line macro
+  # #define NAME(PARAMS) \
+  multiline_start_re = re.compile(
+      r'^#\s*define\s+(\w+)\s*\(\s*([^)]*)\s*\)\s*\\')
+
+  # Regex for single-line macro
+  # #define NAME(PARAMS) BODY
+  single_line_re = re.compile(
+      r'^#\s*define\s+(\w+)\s*\(\s*([^)]*)\s*\)\s*(.*)$')
+
+  in_macro = False
+  current_name = None
+  current_params = []
+  current_lines = []
+
+  for line in lines:
+    if in_macro:
+      stripped = line.strip()
+      if stripped.endswith('\\'):
+        current_lines.append(stripped[:-1].strip())
+      else:
+        current_lines.append(stripped)
+        macros[current_name] = _Macro(params=current_params,
+                                      body_lines=current_lines,
+                                      is_multiline=True)
+        in_macro = False
+        current_name = None
+        current_params = []
+        current_lines = []
+    else:
+      if m := multiline_start_re.match(line):
+        current_name, params_str = m.groups()
+        current_params = [p.strip() for p in params_str.split(',') if p.strip()]
+        in_macro = True
+        continue
+
+      if m := single_line_re.match(line):
+        name, params_str, body = m.groups()
+        params = [p.strip() for p in params_str.split(',') if p.strip()]
+        if params:
+          macros[name] = _Macro(params=params,
+                                body_lines=[body.strip()],
+                                is_multiline=False)
+  return macros
+
+
+def ProcessListMacros(lines):
+  """Evaluates list macros that are defined & used within |lines|.
+
+  A "list macro" is a multiline C++ macro that takes a single parameter
+  (traditionally named 'V' or similar) and invokes it as a function call
+  on each line of its body to define a list of entries.
+  Example:
+    #define MY_LIST(V) \
+      V(ENTRY_A, "value_a") \
+      V(ENTRY_B, "value_b")
+
+  We care about list macros because they are a common C++ pattern used to
+  define groups of enums, features, or string constants in a single place.
+  This preprocessor expands calls to these list macros using a "visitor"
+  macro (e.g., `MY_LIST(MY_VISITOR)`) so that subsequent parsing scripts
+  can see the fully expanded constants (e.g. enum entries or variable
+  declarations) as if they were written directly in the file, making it
+  easy to parse and generate corresponding Java constants.
+
+  Args:
+    lines: List of strings representing the C++ header file lines.
+
+  Returns:
+    List of strings with list macro calls expanded.
+  """
+  macros = _ParseMacros(lines)
+  if not macros:
+    return lines
+
+  # Filter to only include list macros.
+  list_macros = {name: d for name, d in macros.items() if d.IsListMacro()}
+
+  if not list_macros:
+    return lines
+
+  macro_call_re = re.compile(r'\b(' +
+                             '|'.join(re.escape(n) for n in list_macros) +
+                             r')\s*\(\s*(\w+)\s*\)')
+
+  def replace_macro(match):
+    macro_name, visitor_name = match.groups()
+
+    visitor_def = macros.get(visitor_name)
+    if visitor_def is None:
+      raise Exception(
+          f"Visitor macro '{visitor_name}' used in '{macro_name}' call is "
+          "not defined in the file.")
+
+    macro_def = list_macros[macro_name]
+    param_name = macro_def.params[0]
+    macro_lines = macro_def.body_lines
+
+    sb = []
+    entry_re = re.compile(r'\b' + re.escape(param_name) + r'\s*\((.*)\)')
+
+    for macro_line in macro_lines:
+      if m2 := entry_re.match(macro_line):
+        args = _SplitArgs(m2.group(1).strip())
+        sb.extend(_ExpandVisitor(visitor_def, args))
+
+    return '\n' + '\n'.join(sb) + '\n'
+
+  new_lines = []
+  for line in lines:
+    if not line.startswith('#'):
+      line = macro_call_re.sub(replace_macro, line)
+    new_lines.extend(line.splitlines(keepends=True))
+
+  return new_lines

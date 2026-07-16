@@ -384,7 +384,9 @@ def DoGenerate(source_paths):
 
 def DoParseHeaderFile(path):
   with open(path, encoding='utf-8') as f:
-    return HeaderParser(f.readlines(), path).ParseDefinitions()
+    lines = f.readlines()
+    preprocessed_lines = java_cpp_utils.ProcessListMacros(lines)
+    return HeaderParser(preprocessed_lines, path).ParseDefinitions()
 
 
 def GenerateOutput(source_path, enum_definition):

@@ -53,8 +53,10 @@ def _GenerateOutput(template, source_paths, strings):
 
 def _ParseStringFile(path):
   with open(path, encoding='utf-8') as f:
+    lines = f.readlines()
+    lines = java_cpp_utils.ProcessListMacros(lines)
     string_file_parser = java_cpp_utils.CppConstantParser(
-        StringParserDelegate(), f.readlines())
+        StringParserDelegate(), lines)
   return string_file_parser.Parse()
 
 

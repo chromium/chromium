@@ -150,6 +150,7 @@ PYTHON_UNIT_TEST_SUITES = {
             'java_cpp_enum_tests',
             'java_cpp_strings_tests',
             'java_google_api_keys_tests',
+            'util.java_cpp_utils_test',
         ]
     },
 }
