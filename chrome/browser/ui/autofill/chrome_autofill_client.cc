@@ -785,14 +785,21 @@ void ChromeAutofillClient::ShowAutofillSettings(
       ShowAutofillProfileSettings(web_contents());
       return;
     case SuggestionType::kManageCreditCard:
+    case SuggestionType::kManageIban:
       base::UmaHistogramEnumeration(
           "Autofill.PaymentMethodsSettingsPage.VisitReferrer",
           autofill_metrics::AutofillSettingsReferrer::kFillingFlowDropdown);
       ShowAutofillCreditCardSettings(web_contents());
       return;
+    case SuggestionType::kManageAutofillAi:
+    case SuggestionType::kManageEnhancedAutofill:
+      if (base::FeatureList::IsEnabled(features::kYourSavedInfoSettingsPage)) {
+        ShowAutofillPersonalContextSettings(web_contents());
+      } else {
+        autofill::ShowAutofillSettings(web_contents());
+      }
+      return;
     default:
-      // TODO(crbug.com/523163558): Implement handling for
-      // `kManageEnhancedAutofill`.
       break;
   }
 #else
