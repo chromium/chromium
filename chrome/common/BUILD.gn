@@ -352,6 +352,8 @@ static_library("common_lib") {
     public_deps += [ "//chrome/common/importer" ]
     sources += [
       "media_galleries/metadata_types.h",
+      "password_manager/remote_actor_credential_sharing_policy.cc",
+      "password_manager/remote_actor_credential_sharing_policy.h",
       "read_anything/read_anything_util.cc",
       "read_anything/read_anything_util.h",
     ]
@@ -748,7 +750,10 @@ mojom("mojo_bindings") {
   }
 
   if (!is_android) {
-    sources += [ "indigo/indigo.mojom" ]
+    sources += [
+      "indigo/indigo.mojom",
+      "password_manager/remote_actor_credential_sharing.mojom",
+    ]
   }
 
   if (safe_browsing_mode == 1) {

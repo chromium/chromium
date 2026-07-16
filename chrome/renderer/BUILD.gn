@@ -359,6 +359,8 @@ static_library("renderer") {
       "accessibility/read_anything/read_anything_node_utils.h",
       "media/chrome_speech_recognition_client.cc",
       "media/chrome_speech_recognition_client.h",
+      "password_manager/remote_actor_credential_sharing_extension.cc",
+      "password_manager/remote_actor_credential_sharing_extension.h",
       "searchbox/searchbox.cc",
       "searchbox/searchbox.h",
       "searchbox/searchbox_extension.cc",

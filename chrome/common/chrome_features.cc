@@ -141,6 +141,23 @@ BASE_FEATURE(kPreinstalledWebAppAlwaysMigrateForTesting,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
+#if !BUILDFLAG(IS_ANDROID)
+BASE_FEATURE(kRemoteActorCredentialSharing, base::FEATURE_DISABLED_BY_DEFAULT);
+// This parameter is for testing purposes only and must not be used in
+// production. It overrides the whitelisted origins with the specified host.
+const base::FeatureParam<std::string>
+    kRemoteActorCredentialSharingAllowedHostForTesting{
+        &kRemoteActorCredentialSharing, "allowed_host_for_testing", ""};
+#endif
+
+bool RemoteActorCredentialSharingEnabled() {
+#if !BUILDFLAG(IS_ANDROID)
+  return base::FeatureList::IsEnabled(features::kRemoteActorCredentialSharing);
+#else
+  return false;
+#endif
+}
+
 // Controls the enablement of structured metrics on Windows, Linux, and Mac.
 BASE_FEATURE(kChromeStructuredMetrics, base::FEATURE_ENABLED_BY_DEFAULT);
 
@@ -189,7 +206,6 @@ BASE_FEATURE(kDisplayEdgeToEdgeFullscreen, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kEnableFullscreenToAnyScreenAndroid,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
-
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 // Controls whether Chrome Apps are supported. See https://crbug.com/40186761.

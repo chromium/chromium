@@ -132,6 +132,17 @@ BASE_DECLARE_FEATURE(kDesktopPWAsWindowControlsOverlayWithNoToggle);
 COMPONENT_EXPORT(CHROME_FEATURES)
 BASE_DECLARE_FEATURE(kDocumentPipStandaloneWindow);
 
+#if !BUILDFLAG(IS_ANDROID)
+COMPONENT_EXPORT(CHROME_FEATURES)
+BASE_DECLARE_FEATURE(kRemoteActorCredentialSharing);
+
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::FeatureParam<std::string>
+    kRemoteActorCredentialSharingAllowedHostForTesting;
+#endif
+
+COMPONENT_EXPORT(CHROME_FEATURES)
+bool RemoteActorCredentialSharingEnabled();
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 COMPONENT_EXPORT(CHROME_FEATURES) BASE_DECLARE_FEATURE(kChromeAppsDeprecation);
@@ -151,8 +162,6 @@ BASE_DECLARE_FEATURE(kEnableFullscreenToAnyScreenAndroid);
 COMPONENT_EXPORT(CHROME_FEATURES)
 BASE_DECLARE_FEATURE(kForcedAppRelaunchOnPlaceholderUpdate);
 #endif  // BUILDFLAG(IS_CHROMEOS)
-
-
 
 COMPONENT_EXPORT(CHROME_FEATURES) BASE_DECLARE_FEATURE(kGlicActor);
 

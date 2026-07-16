@@ -199,6 +199,7 @@
 #else
 #include "chrome/renderer/indigo/indigo_agent.h"
 #include "chrome/renderer/indigo/onboarding_agent.h"
+#include "chrome/renderer/password_manager/remote_actor_credential_sharing_extension.h"
 #include "chrome/renderer/searchbox/searchbox.h"
 #include "chrome/renderer/searchbox/searchbox_extension.h"
 #include "components/record_replay/content/renderer/record_replay_agent.h"
@@ -649,6 +650,12 @@ void ChromeContentRendererClient::RenderFrameCreated(
 #endif
 
   TrustedVaultEncryptionKeysExtension::Create(render_frame);
+#if !BUILDFLAG(IS_ANDROID)
+  if (features::RemoteActorCredentialSharingEnabled() &&
+      render_frame->IsMainFrame()) {
+    RemoteActorCredentialSharingExtension::Create(render_frame);
+  }
+#endif
   GoogleAccountsPrivateApiExtension::Create(render_frame);
 
   if (render_frame->IsMainFrame())
