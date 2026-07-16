@@ -742,6 +742,13 @@ chromium-metrics-reviews@google.com.
   <token key="ErrorType">
     <variant name="AbortedError"/>
     <variant name="BrowserProcessingError"/>
+    <variant name="BrowserProcessingFileEmptyError"/>
+    <variant name="BrowserProcessingFileTooLargeError"/>
+    <variant name="BrowserProcessingFileUploadNotAllowedError"/>
+    <variant name="BrowserProcessingMaxFilesExceededError"/>
+    <variant name="BrowserProcessingMaxImagesExceededError"/>
+    <variant name="BrowserProcessingMaxPdfsExceededError"/>
+    <variant name="BrowserProcessingUnsupportedFileTypeError"/>
     <variant name="ImageProcessingError"/>
     <variant name="NetworkError"/>
     <variant name="ServerError"/>
@@ -765,6 +772,13 @@ chromium-metrics-reviews@google.com.
   <token key="ErrorType">
     <variant name="AbortedError"/>
     <variant name="BrowserProcessingError"/>
+    <variant name="BrowserProcessingFileEmptyError"/>
+    <variant name="BrowserProcessingFileTooLargeError"/>
+    <variant name="BrowserProcessingFileUploadNotAllowedError"/>
+    <variant name="BrowserProcessingMaxFilesExceededError"/>
+    <variant name="BrowserProcessingMaxImagesExceededError"/>
+    <variant name="BrowserProcessingMaxPdfsExceededError"/>
+    <variant name="BrowserProcessingUnsupportedFileTypeError"/>
     <variant name="ImageProcessingError"/>
     <variant name="NetworkError"/>
     <variant name="ServerError"/>
