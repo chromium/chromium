@@ -218,6 +218,10 @@ class OmniboxEditModelActionClient : public OmniboxActionClientDelegator {
         edit_model_(&edit_model) {}
   ~OmniboxEditModelActionClient() override = default;
 
+  void OpenComposeboxForAskG() override {
+    edit_model_->OpenComposeboxForAskG();
+  }
+
  private:
   const raw_ptr<OmniboxEditModel> edit_model_;
 };
@@ -803,6 +807,12 @@ void OmniboxEditModel::EnterKeywordModeForDefaultSearchProvider(
                        ->GetTemplateURLService()
                        ->GetDefaultSearchProvider(),
                    u"");
+}
+
+void OmniboxEditModel::OpenComposeboxForAskG() {
+  // TODO (crbug.com/532597302): Potential wiring to get autotab and suggestions
+  // to work.
+  controller_->popup_state_manager()->SetPopupState(OmniboxPopupState::kAim);
 }
 
 void OmniboxEditModel::OpenAiMode(AimActivation activation) {

@@ -112,10 +112,16 @@ class OmniboxAction : public base::RefCountedThreadSafe<OmniboxAction> {
 
     // Returns true if the client should open the Cobrowse panel (bypassing
     // Lens).
-    virtual bool ShouldOpenCoBrowsePanel() const;
+    virtual bool ShouldOpenCoBrowsePanel() const = 0;
 
     // Opens the CoBrowse side panel.
-    virtual void OpenCoBrowsePanel();
+    virtual void OpenCoBrowsePanel() = 0;
+
+    // Returns true if the client should open the Composebox for AskG.
+    virtual bool ShouldOpenComposeboxForAskG() const = 0;
+
+    // Opens the Composebox for AskG.
+    virtual void OpenComposeboxForAskG() = 0;
 
     // Passes the contextual search request to Lens to handle fulfillment. Lens
     // uses the destination URL to grab the query and keep any additional

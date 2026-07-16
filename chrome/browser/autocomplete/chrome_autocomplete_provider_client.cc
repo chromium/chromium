@@ -881,3 +881,14 @@ void ChromeAutocompleteProviderClient::PromptPageTranslation() {
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
 }
+
+bool ChromeAutocompleteProviderClient::ShouldOpenComposeboxForAskG() const {
+#if !BUILDFLAG(IS_ANDROID)
+  return omnibox::IsAimPopupFeatureEnabled() && omnibox::kAskGComposeBox.Get();
+#else
+  return false;
+#endif
+}
+
+// This is implemented in OmniboxEditModelActionClient.
+void ChromeAutocompleteProviderClient::OpenComposeboxForAskG() {}

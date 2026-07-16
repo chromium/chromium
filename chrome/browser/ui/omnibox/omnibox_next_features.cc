@@ -378,6 +378,8 @@ const base::FeatureParam<bool> kAskGCoBrowse{
 const base::FeatureParam<bool> kAskGCoBrowseWithVisualSelection{
     &kWebUIOmniboxAskGAboutThisPage,
     "Omnibox_AskGCoBrowseWithVisualSelection", false};
+const base::FeatureParam<bool> kAskGComposeBox{&kWebUIOmniboxAskGAboutThisPage,
+                                               "Omnibox_AskGComposeBox", false};
 
 const base::FeatureParam<bool> kWebUIOmniboxDynamicAnimation{
     &kWebUIOmniboxDynamicAiModeButton, "Omnibox_DynamicAnimation", false};

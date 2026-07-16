@@ -2367,3 +2367,13 @@ TEST_F(OmniboxEditModelContextualSearchTest,
       ->NavigateToAiModeWithContextualizerOnContextualizationCompleteForTesting(
           u"test query", WindowOpenDisposition::CURRENT_TAB, nullptr);
 }
+
+TEST_F(OmniboxEditModelTest, OpenComposeboxForAskG) {
+  EXPECT_NE(controller()->popup_state_manager()->popup_state(),
+            OmniboxPopupState::kAim);
+
+  model()->OpenComposeboxForAskG();
+
+  EXPECT_EQ(controller()->popup_state_manager()->popup_state(),
+            OmniboxPopupState::kAim);
+}

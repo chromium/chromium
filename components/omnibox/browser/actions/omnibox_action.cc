@@ -60,13 +60,6 @@ size_t EstimateMemoryUsage(const OmniboxAction::LabelStrings& self) {
 bool OmniboxAction::Client::OpenJourneys(const std::string& query) {
   return false;
 }
-
-bool OmniboxAction::Client::ShouldOpenCoBrowsePanel() const {
-  return false;
-}
-
-void OmniboxAction::Client::OpenCoBrowsePanel() {}
-
 // =============================================================================
 
 OmniboxAction::ExecutionContext::ExecutionContext(

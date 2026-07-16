@@ -53,3 +53,11 @@ void OmniboxActionClientDelegator::IssueContextualSearchRequest(
   delegate_->IssueContextualSearchRequest(destination_url, match_type,
                                           is_zero_prefix_suggestion);
 }
+
+bool OmniboxActionClientDelegator::ShouldOpenComposeboxForAskG() const {
+  return delegate_->ShouldOpenComposeboxForAskG();
+}
+
+void OmniboxActionClientDelegator::OpenComposeboxForAskG() {
+  delegate_->OpenComposeboxForAskG();
+}

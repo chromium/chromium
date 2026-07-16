@@ -275,6 +275,9 @@ class OmniboxEditModel {
   // Virtual for testing.
   virtual void OpenAiMode(AimActivation activation);
 
+  // Opens the composebox for the AskG flow by setting the popup state.
+  virtual void OpenComposeboxForAskG();
+
   // Returns true if the popup is open and is in in AI-Mode.
   bool PopupInAiMode() const;
 

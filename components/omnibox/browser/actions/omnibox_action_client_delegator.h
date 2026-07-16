@@ -35,6 +35,8 @@ class OmniboxActionClientDelegator : public OmniboxAction::Client {
   void IssueContextualSearchRequest(const GURL& destination_url,
                                     AutocompleteMatchType::Type match_type,
                                     bool is_zero_prefix_suggestion) override;
+  bool ShouldOpenComposeboxForAskG() const override;
+  void OpenComposeboxForAskG() override;
 
  protected:
   const raw_ptr<OmniboxAction::Client> delegate_;

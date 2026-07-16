@@ -57,6 +57,8 @@ TEST_F(ContextualSearchActionTest, Execute_RoutesToCoBrowse) {
   auto action = base::MakeRefCounted<ContextualSearchOpenLensAction>();
 
   // Case 1: ShouldOpenCoBrowsePanel is true -> Opens CoBrowse, bypasses Lens
+  EXPECT_CALL(client, ShouldOpenComposeboxForAskG())
+      .WillRepeatedly(Return(false));
   EXPECT_CALL(client, ShouldOpenCoBrowsePanel()).WillOnce(Return(true));
   EXPECT_CALL(client, OpenCoBrowsePanel()).Times(1);
   EXPECT_CALL(client, OpenLensOverlay(_)).Times(0);
@@ -66,8 +68,35 @@ TEST_F(ContextualSearchActionTest, Execute_RoutesToCoBrowse) {
 
   // Case 2: ShouldOpenCoBrowsePanel is false -> Opens Lens Overlay, bypasses
   // CoBrowse
+  EXPECT_CALL(client, ShouldOpenComposeboxForAskG())
+      .WillRepeatedly(Return(false));
   EXPECT_CALL(client, ShouldOpenCoBrowsePanel()).WillOnce(Return(false));
   EXPECT_CALL(client, OpenCoBrowsePanel()).Times(0);
   EXPECT_CALL(client, OpenLensOverlay(true)).Times(1);
   action->Execute(context);
+}
+
+TEST_F(ContextualSearchActionTest, Execute_RoutesToComposeBoxForAskG) {
+  using ::testing::_;
+  using ::testing::Return;
+
+  MockAutocompleteProviderClient client;
+  OmniboxAction::ExecutionContext context(
+      client, OmniboxAction::ExecutionContext::OpenUrlCallback(),
+      base::TimeTicks(), WindowOpenDisposition::IGNORE_ACTION);
+
+  auto action = base::MakeRefCounted<ContextualSearchOpenLensAction>();
+
+  // Case 1: ShouldOpenComposeboxForAskG is true -> Opens Composebox, bypasses
+  // CoBrowse and Lens
+  EXPECT_CALL(client, ShouldOpenComposeboxForAskG()).WillOnce(Return(true));
+  EXPECT_CALL(client, OpenComposeboxForAskG()).Times(1);
+  EXPECT_CALL(client, OpenCoBrowsePanel()).Times(0);
+  EXPECT_CALL(client, OpenLensOverlay(_)).Times(0);
+  action->Execute(context);
+
+  testing::Mock::VerifyAndClearExpectations(&client);
+
+  // Case 2: ShouldOpenComposeboxForAskG is false -> falls back to checking
+  // CoBrowse/Lens (handled by existing test)
 }

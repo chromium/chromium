@@ -123,6 +123,7 @@ extern const base::FeatureParam<bool> kAskGCoBrowseWithVisualSelection;
 extern const base::FeatureParam<bool> kWebUIOmniboxDynamicAnimation;
 // Whether to enable dynamic color scheme for the WebUI Omnibox.
 extern const base::FeatureParam<bool> kWebUIOmniboxDynamicColorScheme;
+extern const base::FeatureParam<bool> kAskGComposeBox;
 
 // Returns true if `kWebUIOmniboxPopup` is enabled.
 bool IsWebUIOmniboxPopupEnabled();
