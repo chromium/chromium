@@ -40,6 +40,7 @@
 #include "chrome/browser/ui/webui/print_preview/print_preview_ui.h"
 #include "chrome/common/chrome_content_client.h"
 #include "chrome/common/url_constants.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/dialog_test_browser_window.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -87,9 +88,18 @@ std::u16string GetExpectedPrefix() {
                                     std::u16string());
 }
 
-const std::vector<raw_ptr<task_manager::WebContentsTag, VectorExperimental>>&
+std::vector<raw_ptr<task_manager::WebContentsTag, VectorExperimental>>
 GetTrackedTags() {
-  return task_manager::WebContentsTagsManager::GetInstance()->tracked_tags();
+  std::vector<raw_ptr<task_manager::WebContentsTag, VectorExperimental>> tags;
+  // Filter WebUI Omnibox out from the tracked tags so that the tests don't
+  // fail when WebUI Omnibox is in the background.
+  std::ranges::copy_if(
+      task_manager::WebContentsTagsManager::GetInstance()->tracked_tags(),
+      std::back_inserter(tags), [](const auto& tag) {
+        return tag->web_contents()->GetVisibleURL().host() !=
+               chrome::kChromeUIOmniboxPopupHost;
+      });
+  return tags;
 }
 
 // content::WebContentsDelegate destructor is protected: subclass for testing.
@@ -405,8 +415,9 @@ IN_PROC_BROWSER_TEST_F(PrintPreviewDialogControllerBrowserTest,
   task_manager::MockWebContentsTaskManager task_manager;
   EXPECT_TRUE(task_manager.tasks().empty());
   task_manager.StartObserving();
-  ASSERT_EQ(3U, task_manager.tasks().size());
-  const task_manager::Task* pre_existing_task = task_manager.tasks().back();
+  auto non_tool_tasks = task_manager.NonToolTasks();
+  ASSERT_EQ(3U, non_tool_tasks.size());
+  const task_manager::Task* pre_existing_task = non_tool_tasks.back();
   EXPECT_EQ(task_manager::Task::RENDERER, pre_existing_task->GetType());
   const std::u16string pre_existing_title = pre_existing_task->title();
   const std::u16string expected_prefix = GetExpectedPrefix();
@@ -420,14 +431,15 @@ IN_PROC_BROWSER_TEST_F(PrintPreviewDialogControllerBrowserTest,
   // manager shouldn't show a printing task.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
   EXPECT_EQ(2U, GetTrackedTags().size());
-  EXPECT_EQ(2U, task_manager.tasks().size());
+  EXPECT_EQ(2U, task_manager.NonToolTasks().size());
 
   // Now start another print preview after the had already been created and
   // validated that a corresponding task is reported.
   PrintPreview();
   EXPECT_EQ(3U, GetTrackedTags().size());
-  ASSERT_EQ(3U, task_manager.tasks().size());
-  const task_manager::Task* task = task_manager.tasks().back();
+  non_tool_tasks = task_manager.NonToolTasks();
+  ASSERT_EQ(3U, non_tool_tasks.size());
+  const task_manager::Task* task = non_tool_tasks.back();
   EXPECT_EQ(task_manager::Task::RENDERER, task->GetType());
   const std::u16string title = task->title();
   EXPECT_TRUE(base::StartsWith(title, expected_prefix,
