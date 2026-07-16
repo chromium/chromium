@@ -4,6 +4,8 @@
 
 #include "content/browser/renderer_host/input/touch_selection_controller_client_child_frame.h"
 
+#include <algorithm>
+
 #include "base/check.h"
 #include "base/notreached.h"
 #include "content/browser/renderer_host/render_widget_host_delegate.h"
@@ -16,10 +18,32 @@
 #include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/gfx/geometry/point_conversions.h"
+#include "ui/gfx/geometry/rect_f.h"
+#include "ui/gfx/geometry/size_f.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/touch_selection/touch_editing_controller.h"
 
 namespace content {
+
+namespace {
+
+gfx::PointF ClampPointToRect(const gfx::PointF& point, const gfx::RectF& rect) {
+  return gfx::PointF(std::clamp(point.x(), rect.x(), rect.right()),
+                     std::clamp(point.y(), rect.y(), rect.bottom()));
+}
+
+gfx::SelectionBound ClampSelectionBoundToRect(const gfx::SelectionBound& bound,
+                                              const gfx::RectF& rect) {
+  gfx::SelectionBound clamped_bound(bound);
+  clamped_bound.SetEdge(ClampPointToRect(bound.edge_start(), rect),
+                        ClampPointToRect(bound.edge_end(), rect));
+  clamped_bound.SetVisibleEdge(
+      ClampPointToRect(bound.visible_edge_start(), rect),
+      ClampPointToRect(bound.visible_edge_end(), rect));
+  return clamped_bound;
+}
+
+}  // namespace
 
 TouchSelectionControllerClientChildFrame::
     TouchSelectionControllerClientChildFrame(
@@ -54,27 +78,34 @@ void TouchSelectionControllerClientChildFrame::OnHitTestRegionUpdated() {
 
 void TouchSelectionControllerClientChildFrame::
     TransformSelectionBoundsAndUpdate() {
-  gfx::SelectionBound transformed_selection_start(selection_start_);
-  gfx::SelectionBound transformed_selection_end(selection_end_);
+  gfx::RectF local_bounds(gfx::SizeF(rwhv_->GetViewBounds().size()));
+  gfx::SelectionBound clamped_selection_start =
+      ClampSelectionBoundToRect(selection_start_, local_bounds);
+  gfx::SelectionBound clamped_selection_end =
+      ClampSelectionBoundToRect(selection_end_, local_bounds);
+  gfx::SelectionBound transformed_selection_start(clamped_selection_start);
+  gfx::SelectionBound transformed_selection_end(clamped_selection_end);
 
   // TODO(wjmaclean): Get the transform between the views to lower the
   // overhead here, instead of calling the transform functions four times.
-  transformed_selection_start.SetEdge(
-      rwhv_->TransformPointToRootCoordSpaceF(selection_start_.edge_start()),
-      rwhv_->TransformPointToRootCoordSpaceF(selection_start_.edge_end()));
+  transformed_selection_start.SetEdge(rwhv_->TransformPointToRootCoordSpaceF(
+                                          clamped_selection_start.edge_start()),
+                                      rwhv_->TransformPointToRootCoordSpaceF(
+                                          clamped_selection_start.edge_end()));
   transformed_selection_start.SetVisibleEdge(
       rwhv_->TransformPointToRootCoordSpaceF(
-          selection_start_.visible_edge_start()),
+          clamped_selection_start.visible_edge_start()),
       rwhv_->TransformPointToRootCoordSpaceF(
-          selection_start_.visible_edge_end()));
+          clamped_selection_start.visible_edge_end()));
   transformed_selection_end.SetEdge(
-      rwhv_->TransformPointToRootCoordSpaceF(selection_end_.edge_start()),
-      rwhv_->TransformPointToRootCoordSpaceF(selection_end_.edge_end()));
+      rwhv_->TransformPointToRootCoordSpaceF(
+          clamped_selection_end.edge_start()),
+      rwhv_->TransformPointToRootCoordSpaceF(clamped_selection_end.edge_end()));
   transformed_selection_end.SetVisibleEdge(
       rwhv_->TransformPointToRootCoordSpaceF(
-          selection_end_.visible_edge_start()),
+          clamped_selection_end.visible_edge_start()),
       rwhv_->TransformPointToRootCoordSpaceF(
-          selection_end_.visible_edge_end()));
+          clamped_selection_end.visible_edge_end()));
 
   manager_->UpdateClientSelectionBounds(transformed_selection_start,
                                         transformed_selection_end, this, this);

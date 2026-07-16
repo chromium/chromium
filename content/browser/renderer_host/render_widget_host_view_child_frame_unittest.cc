@@ -15,6 +15,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
+#include "cc/trees/render_frame_metadata.h"
 #include "components/input/child_frame_input_helper.h"
 #include "components/viz/common/surfaces/parent_local_surface_id_allocator.h"
 #include "components/viz/test/begin_frame_args_test.h"
@@ -49,6 +50,7 @@
 #include "third_party/blink/public/common/input/synthetic_web_input_event_builders.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/compositor/compositor.h"
+#include "ui/gfx/selection_bound.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "components/stylus_handwriting/win/features.h"
@@ -132,11 +134,70 @@ class MockFrameConnector : public CrossProcessFrameConnector {
   raw_ptr<RenderWidgetHostViewBase> root_host_view_ = nullptr;
 };
 
+class TestTouchSelectionControllerClientManager
+    : public TouchSelectionControllerClientManager {
+ public:
+  TestTouchSelectionControllerClientManager() = default;
+  ~TestTouchSelectionControllerClientManager() override = default;
+
+  void DidStopFlinging() override {}
+  void OnSwipeToMoveCursorBegin() override {}
+  void OnSwipeToMoveCursorEnd() override {}
+  void OnClientHitTestRegionUpdated(
+      ui::TouchSelectionControllerClient* client) override {}
+  void UpdateClientSelectionBounds(
+      const gfx::SelectionBound& start,
+      const gfx::SelectionBound& end,
+      ui::TouchSelectionControllerClient* client,
+      ui::TouchSelectionMenuClient* menu_client) override {
+    last_selection_start_ = start;
+    last_selection_end_ = end;
+  }
+  void InvalidateClient(ui::TouchSelectionControllerClient* client) override {}
+  ui::TouchSelectionController* GetTouchSelectionController() override {
+    return nullptr;
+  }
+  void AddObserver(Observer* observer) override {}
+  void RemoveObserver(Observer* observer) override {}
+
+  const gfx::SelectionBound& last_selection_start() const {
+    return last_selection_start_;
+  }
+  const gfx::SelectionBound& last_selection_end() const {
+    return last_selection_end_;
+  }
+
+ private:
+  gfx::SelectionBound last_selection_start_;
+  gfx::SelectionBound last_selection_end_;
+};
+
 class MockRenderWidgetHostView : public TestRenderWidgetHostView {
  public:
   explicit MockRenderWidgetHostView(RenderWidgetHost* rwh)
       : TestRenderWidgetHostView(rwh) {}
   ~MockRenderWidgetHostView() override = default;
+
+  TouchSelectionControllerClientManager*
+  GetTouchSelectionControllerClientManager() override {
+    return &selection_manager_;
+  }
+
+  bool TransformPointToCoordSpaceForView(
+      const gfx::PointF& point,
+      input::RenderWidgetHostViewInput* target_view,
+      gfx::PointF* transformed_point) override {
+    *transformed_point = point;
+    return true;
+  }
+
+  bool TransformPointToLocalCoordSpace(
+      const gfx::PointF& point,
+      const viz::FrameSinkId& original_frame_sink_id,
+      gfx::PointF* transformed_point) override {
+    *transformed_point = point;
+    return true;
+  }
 
 #if BUILDFLAG(IS_MAC)
   MOCK_METHOD(void,
@@ -148,6 +209,13 @@ class MockRenderWidgetHostView : public TestRenderWidgetHostView {
                blink::mojom::ShareService::ShareCallback callback),
               (override));
 #endif
+
+  TestTouchSelectionControllerClientManager* selection_manager() {
+    return &selection_manager_;
+  }
+
+ private:
+  TestTouchSelectionControllerClientManager selection_manager_;
 };
 
 class RenderWidgetHostViewChildFrameTest
@@ -703,5 +771,59 @@ TEST_F(StylusHandwritingOnFocusFailedChildFrameTest, NoRootView) {
       StylusHandwritingControllerWin::GetInstance()->IsWaitingForFocusResult());
 }
 #endif  // BUILDFLAG(IS_WIN)
+
+TEST_F(RenderWidgetHostViewChildFrameTest, SelectionBoundsClampedToViewBounds) {
+  auto root_view =
+      std::make_unique<testing::NiceMock<MockRenderWidgetHostView>>(
+          widget_host_.get());
+  RenderWidgetHostViewChildFrame* child_view =
+      RenderWidgetHostViewChildFrame::Create(widget_host_.get(),
+                                             display::ScreenInfos());
+  std::unique_ptr<MockFrameConnector> connector =
+      std::make_unique<MockFrameConnector>();
+  connector->SetRootRenderWidgetHostView(root_view.get());
+  connector->SetView(child_view, false);
+
+  // Set local frame bounds and size DIP to 100x100.
+  connector->SetRectInParentView(gfx::Rect(0, 0, 100, 100));
+  connector->SetLocalFrameSize(gfx::Size(100, 100));
+  child_view->SetSize(gfx::Size(100, 100));
+
+  // Report selection bounds with spoofed coordinates far outside [0, 0, 100,
+  // 100].
+  cc::RenderFrameMetadata metadata;
+  metadata.selection.start.set_type(gfx::SelectionBound::LEFT);
+  metadata.selection.start.set_visible(true);
+  metadata.selection.start.SetEdge(gfx::PointF(-50.0f, -50.0f),
+                                   gfx::PointF(-50.0f, -10.0f));
+  metadata.selection.start.SetVisibleEdge(gfx::PointF(-50.0f, -50.0f),
+                                          gfx::PointF(-50.0f, -10.0f));
+
+  metadata.selection.end.set_type(gfx::SelectionBound::RIGHT);
+  metadata.selection.end.set_visible(true);
+  metadata.selection.end.SetEdge(gfx::PointF(200.0f, 200.0f),
+                                 gfx::PointF(200.0f, 250.0f));
+  metadata.selection.end.SetVisibleEdge(gfx::PointF(200.0f, 200.0f),
+                                        gfx::PointF(200.0f, 250.0f));
+
+  widget_host_->render_frame_metadata_provider()
+      ->SetLastRenderFrameMetadataForTest(metadata);
+  child_view->OnRenderFrameMetadataChangedAfterActivation(base::TimeTicks());
+
+  // Verify that start and end bounds sent to the manager were clamped to [0,
+  // 100].
+  gfx::SelectionBound start =
+      root_view->selection_manager()->last_selection_start();
+  gfx::SelectionBound end =
+      root_view->selection_manager()->last_selection_end();
+
+  EXPECT_EQ(gfx::PointF(0.0f, 0.0f), start.edge_start());
+  EXPECT_EQ(gfx::PointF(0.0f, 0.0f), start.edge_end());
+  EXPECT_EQ(gfx::PointF(100.0f, 100.0f), end.edge_start());
+  EXPECT_EQ(gfx::PointF(100.0f, 100.0f), end.edge_end());
+
+  child_view->Destroy();
+  connector->SetRootRenderWidgetHostView(nullptr);
+}
 
 }  // namespace content
