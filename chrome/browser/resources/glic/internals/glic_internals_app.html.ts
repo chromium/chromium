@@ -212,6 +212,11 @@ export function getHtml(this: GlicInternalsAppElement) {
           <input id="invokePromptInput" .value="${this.invokePrompt_}"
               @input="${this.onInvokePromptInput_}">
           </input>
+          <label for="invokeTimeoutInput">Timeout Override (ms)</label>
+          <input id="invokeTimeoutInput" type="number"
+              .value="${this.invokeTimeoutMs_}"
+              @input="${this.onInvokeTimeoutMsInput_}">
+          </input>
           <div style="display: flex; gap: 16px; align-items: center;">
             <label style="flex: 1;">
               <input type="checkbox" .checked="${this.invokeAutoSubmit_}"

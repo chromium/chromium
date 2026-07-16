@@ -39,6 +39,7 @@ export class GlicInternalsAppElement extends CrLitElement {
       invokeInvocationSource_: {type: Number},
       invokeWaitForPanelOpen_: {type: Boolean},
       invokeFocusOnShow_: {type: Boolean},
+      invokeTimeoutMs_: {type: String},
       invokeLogs_: {type: Array},
       invokeSurfaceType_: {type: String},
       invokeZssOverride_: {type: Boolean},
@@ -68,6 +69,7 @@ export class GlicInternalsAppElement extends CrLitElement {
       InvocationSource.kOsButton;
   protected accessor invokeWaitForPanelOpen_: boolean = false;
   protected accessor invokeFocusOnShow_: boolean = true;
+  protected accessor invokeTimeoutMs_: string = '';
   protected accessor invokeLogs_: string[] = [];
   protected accessor invokeSurfaceType_: string = 'default';
   protected accessor invokeZssOverride_: boolean = false;
@@ -299,6 +301,9 @@ export class GlicInternalsAppElement extends CrLitElement {
   protected onInvokeFocusOnShowChange_(e: Event) {
     this.invokeFocusOnShow_ = (e.target as HTMLInputElement).checked;
   }
+  protected onInvokeTimeoutMsInput_(e: Event) {
+    this.invokeTimeoutMs_ = (e.target as HTMLInputElement).value;
+  }
 
   protected onInvokeConversationTypeChange_(e: Event) {
     this.invokeConversationType_ = (e.target as HTMLSelectElement).value;
@@ -381,7 +386,9 @@ export class GlicInternalsAppElement extends CrLitElement {
           null,
       skillId: null,
       errorMessage: null,
-      timeout: null,
+      timeout: this.invokeTimeoutMs_ ?
+          {microseconds: BigInt(Number(this.invokeTimeoutMs_) * 1000)} :
+          null,
       autoSubmit: this.invokeAutoSubmit_,
       freOverride: this.invokeFreOverride_,
       waitForPanelOpen: this.invokeWaitForPanelOpen_,
@@ -403,6 +410,9 @@ export class GlicInternalsAppElement extends CrLitElement {
         ActuationTarget as unknown as Record<number, string>;
 
     const optionsString = JSON.stringify(options, (key, value) => {
+      if (typeof value === 'bigint') {
+        value = value.toString();
+      }
       if (value === null || value === undefined) {
         return undefined;
       }
