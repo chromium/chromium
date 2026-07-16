@@ -89,6 +89,15 @@ bool BypassOutputBuffer() {
 
 }  // namespace
 
+void AudioDestinationTraits::Destruct(const AudioDestination* destination) {
+  if (destination->main_thread_task_runner_ &&
+      !destination->main_thread_task_runner_->BelongsToCurrentThread()) {
+    destination->main_thread_task_runner_->DeleteSoon(FROM_HERE, destination);
+  } else {
+    delete destination;
+  }
+}
+
 scoped_refptr<AudioDestination> AudioDestination::Create(
     AudioIOCallback& callback,
     const WebAudioSinkDescriptor& sink_descriptor,
@@ -498,7 +507,11 @@ AudioDestination::AudioDestination(
           AudioDestinationUmaReporter(latency_hint,
                                       callback_buffer_size_,
                                       web_audio_device_->SampleRate())),
-      is_output_buffer_bypassed_(BypassOutputBuffer()) {
+      is_output_buffer_bypassed_(BypassOutputBuffer()),
+      main_thread_task_runner_(
+          base::SingleThreadTaskRunner::HasCurrentDefault()
+              ? base::SingleThreadTaskRunner::GetCurrentDefault()
+              : nullptr) {
   CHECK(web_audio_device_);
 
   // If any of the critical audio buses or FIFOs failed to allocate, exit early.
