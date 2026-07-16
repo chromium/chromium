@@ -32,7 +32,7 @@
             ]
         }
     ],
-    "AIFuseboxIOSModelPicker": [
+    "AIFuseboxIOSModelPicker_ROW": [
         {
             "platforms": [
                 "ios"
