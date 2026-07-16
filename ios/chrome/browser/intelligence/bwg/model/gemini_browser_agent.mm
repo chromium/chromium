@@ -2106,6 +2106,11 @@ void GeminiBrowserAgent::SetSessionCommandHandlers() {
 }
 
 void GeminiBrowserAgent::OnPageContentPrefChanged() {
+  if (!browser_->GetProfile()->GetPrefs()->GetBoolean(
+          prefs::kIOSBWGPageContentSetting)) {
+    attached_tabs_.clear();
+  }
+
   if (IsInGeminiLiveMode() &&
       processing_status_ == ios::provider::GeminiClientMode::kTranscribing) {
     return;
