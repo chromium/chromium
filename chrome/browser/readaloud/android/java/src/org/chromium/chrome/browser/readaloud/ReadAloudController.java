@@ -2390,7 +2390,9 @@ public class ReadAloudController
         void clearController(long readAloudServicePtr);
 
         // Starts or resumes audio playback.
-        void play(long readAloudServicePtr);
+        void play(
+                long readAloudServicePtr,
+                @JniType("content::WebContents*") WebContents webContents);
 
         // Pauses the current audio playback.
         void pause(long readAloudServicePtr);

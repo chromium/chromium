@@ -11,6 +11,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/dom_distiller/dom_distiller_service_factory.h"
+#include "chrome/browser/media/router/chrome_media_router_factory.h"
 #include "chrome/browser/readaloud/read_aloud_service_factory.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/dom_distiller/core/distiller_page.h"
@@ -18,6 +19,7 @@
 #include "components/dom_distiller/core/fake_distiller_page.h"
 #include "components/dom_distiller/core/proto/distilled_article.pb.h"
 #include "components/dom_distiller/core/proto/distilled_page.pb.h"
+#include "components/media_router/browser/test/mock_media_router.h"
 #include "content/public/browser/web_contents.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -97,6 +99,11 @@ std::unique_ptr<KeyedService> BuildMockDomDistillerService(
   return std::make_unique<testing::NiceMock<MockDomDistillerService>>();
 }
 
+std::unique_ptr<KeyedService> BuildMockMediaRouter(
+    content::BrowserContext* context) {
+  return std::make_unique<testing::NiceMock<media_router::MockMediaRouter>>();
+}
+
 }  // namespace
 
 class ReadAloudServiceTest : public ChromeRenderViewHostTestHarness {
@@ -107,6 +114,9 @@ class ReadAloudServiceTest : public ChromeRenderViewHostTestHarness {
 
     dom_distiller::DomDistillerServiceFactory::GetInstance()->SetTestingFactory(
         profile(), base::BindRepeating(&BuildMockDomDistillerService));
+
+    media_router::ChromeMediaRouterFactory::GetInstance()->SetTestingFactory(
+        profile(), base::BindRepeating(&BuildMockMediaRouter));
   }
 
   MockDomDistillerService* mock_distiller_service() {
@@ -223,11 +233,27 @@ TEST_F(ReadAloudServiceTest, ShutdownClearsHandle) {
       .WillOnce(testing::Return(testing::ByMove(
           std::make_unique<dom_distiller::ViewerHandle>(base::DoNothing()))));
 
+  service()->Play(web_contents());
   service()->DistillPage(web_contents());
   EXPECT_NE(nullptr, service()->GetViewerHandleForTesting());
 
   service()->Shutdown();
   EXPECT_EQ(nullptr, service()->GetViewerHandleForTesting());
+  EXPECT_EQ(nullptr, service()->web_contents());
+}
+
+TEST_F(ReadAloudServiceTest, StopDetachesWebContentsObserver) {
+  service()->Play(web_contents());
+  EXPECT_EQ(web_contents(), service()->web_contents());
+
+  service()->Stop();
+  EXPECT_EQ(nullptr, service()->web_contents());
+}
+
+TEST_F(ReadAloudServiceTest, PlayNullWebContents) {
+  // Should safely return early without crashing or modifying web_contents.
+  service()->Play(nullptr);
+  EXPECT_EQ(nullptr, service()->web_contents());
 }
 
 TEST_F(ReadAloudServiceTest, SetDelegateAndShutdownLifecycle) {
@@ -246,6 +272,65 @@ TEST_F(ReadAloudServiceTest, SetDelegateAndShutdownLifecycle) {
   EXPECT_CALL(*delegate_ptr, OnNativeDestroyed()).Times(1);
   service()->Shutdown();
   EXPECT_EQ(nullptr, service()->delegate());
+}
+
+TEST_F(ReadAloudServiceTest, PrimaryPageChangedStopsAndDetachesObserver) {
+  NavigateAndCommit(GURL("https://www.example.com/article"));
+
+  EXPECT_CALL(*mock_distiller_service(),
+              CreateDefaultDistillerPageWithHandle(testing::_))
+      .WillOnce(testing::Return(testing::ByMove(
+          std::make_unique<dom_distiller::test::MockDistillerPage>())));
+
+  EXPECT_CALL(*mock_distiller_service(),
+              ViewUrlIgnoreCache(service(), testing::_,
+                                 GURL("https://www.example.com/article")))
+      .WillOnce(testing::Return(testing::ByMove(
+          std::make_unique<dom_distiller::ViewerHandle>(base::DoNothing()))));
+
+  service()->Play(web_contents());
+  service()->DistillPage(web_contents());
+  EXPECT_NE(nullptr, service()->GetViewerHandleForTesting());
+
+  auto delegate = std::make_unique<testing::StrictMock<MockDelegate>>();
+  MockDelegate* delegate_ptr = delegate.get();
+  service()->SetDelegate(std::move(delegate));
+
+  EXPECT_CALL(*delegate_ptr,
+              OnPlaybackStateChanged(ReadAloudService::PlaybackState::kStopped))
+      .Times(1);
+
+  // Navigating to a new URL triggers PrimaryPageChanged().
+  NavigateAndCommit(GURL("https://www.example.com/other"));
+
+  EXPECT_EQ(nullptr, service()->GetViewerHandleForTesting());
+  EXPECT_EQ(nullptr, service()->web_contents());
+
+  EXPECT_CALL(*delegate_ptr, OnNativeDestroyed()).Times(1);
+}
+
+TEST_F(ReadAloudServiceTest,
+       WebContentsDestroyedStopsAndDetachesObserver) {
+  std::unique_ptr<content::WebContents> test_contents =
+      CreateTestWebContents();
+  service()->Play(test_contents.get());
+  EXPECT_EQ(test_contents.get(), service()->web_contents());
+
+  auto delegate = std::make_unique<testing::StrictMock<MockDelegate>>();
+  MockDelegate* delegate_ptr = delegate.get();
+  service()->SetDelegate(std::move(delegate));
+
+  EXPECT_CALL(*delegate_ptr,
+              OnPlaybackStateChanged(ReadAloudService::PlaybackState::kStopped))
+      .Times(1);
+
+  // Deleting the observed WebContents triggers WebContentsDestroyed().
+  test_contents.reset();
+
+  EXPECT_EQ(nullptr, service()->GetViewerHandleForTesting());
+  EXPECT_EQ(nullptr, service()->web_contents());
+
+  EXPECT_CALL(*delegate_ptr, OnNativeDestroyed()).Times(1);
 }
 
 }  // namespace readaloud

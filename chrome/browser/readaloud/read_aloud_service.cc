@@ -27,15 +27,27 @@ void ReadAloudService::SetDelegate(std::unique_ptr<Delegate> delegate) {
   delegate_ = std::move(delegate);
 }
 
-void ReadAloudService::Play() {
-  PlaybackState previous_state = GetCurrentPlaybackState();
-  if (!active_session_ && web_contents_) {
+void ReadAloudService::Play(content::WebContents* new_web_contents) {
+  if (!new_web_contents) {
+    return;
+  }
+
+  // If a new WebContents is available, stop active playback, start
+  // observing the new WebContents, and create a new playback session.
+  if (new_web_contents != web_contents()) {
+    Stop();
+    Observe(new_web_contents);
     active_session_ =
-        std::make_unique<ReadAloudPlaybackSession>(web_contents_.get(), this);
+        std::make_unique<ReadAloudPlaybackSession>(new_web_contents, this);
   }
-  if (active_session_) {
-    active_session_->NotifyPlaybackStarted();
-  }
+
+  PlaybackState previous_state = GetCurrentPlaybackState();
+
+  // Start or resume audio playback.
+  CHECK(active_session_);
+  active_session_->NotifyPlaybackStarted();
+
+  // Notify the UI/client delegate if the playback state transitioned.
   PlaybackState current_state = GetCurrentPlaybackState();
   if (current_state != previous_state && delegate_) {
     delegate_->OnPlaybackStateChanged(current_state);
@@ -54,10 +66,21 @@ void ReadAloudService::Pause() {
 }
 
 void ReadAloudService::Stop() {
+  // Detach observer since tracking is only needed during active playback.
+  Observe(nullptr);
+
+  // Stop active audio playback and release media session resources.
   PlaybackState previous_state = GetCurrentPlaybackState();
   if (active_session_) {
     active_session_->NotifyPlaybackStopped();
+    active_session_.reset();
   }
+
+  // Cancel any ongoing page distillation request and reset timing metrics.
+  viewer_handle_.reset();
+  distillation_start_time_ = base::TimeTicks();
+
+  // Notify the UI/client delegate if the playback state transitioned.
   PlaybackState current_state = GetCurrentPlaybackState();
   if (current_state != previous_state && delegate_) {
     delegate_->OnPlaybackStateChanged(current_state);
@@ -75,12 +98,23 @@ void ReadAloudService::SetHighlightingEnabled(bool enabled) {}
 void ReadAloudService::SendFeedback(FeedbackType feedback_type) {}
 void ReadAloudService::CheckReadability(const GURL& url) {}
 
+void ReadAloudService::WebContentsDestroyed() {
+  // Stop active playback and detach observer when the tab is destroyed.
+  Stop();
+}
+
+void ReadAloudService::PrimaryPageChanged(content::Page& page) {
+  // Stop playback, reset distillation, and detach observer when the primary
+  // page navigates to a new URL.
+  Stop();
+}
+
 void ReadAloudService::OnSessionSuspended() {
   Pause();
 }
 
 void ReadAloudService::OnSessionResumed() {
-  Play();
+  Play(web_contents());
 }
 
 bool ReadAloudService::IsPlaybackPaused() const {
@@ -100,8 +134,8 @@ ReadAloudService::PlaybackState ReadAloudService::GetCurrentPlaybackState()
 }
 
 void ReadAloudService::Shutdown() {
+  Stop();
   weak_factory_.InvalidateWeakPtrs();
-  active_session_.reset();
   if (delegate_) {
     delegate_->OnNativeDestroyed();
     delegate_.reset();
@@ -109,7 +143,6 @@ void ReadAloudService::Shutdown() {
   utility_observer_receiver_.reset();
   utility_player_.reset();
   player_factory_.reset();
-  viewer_handle_.reset();
 }
 
 void ReadAloudService::DistillPage(content::WebContents* web_contents) {

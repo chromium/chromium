@@ -11,6 +11,7 @@
 #include "base/android/jni_string.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/readaloud/read_aloud_service_factory.h"
+#include "content/public/browser/web_contents.h"
 #include "url/android/gurl_android.h"
 
 // JNI header generated automatically by JNI Zero.
@@ -195,12 +196,13 @@ static void JNI_ReadAloudController_ClearController(
 }
 
 static void JNI_ReadAloudController_Play(JNIEnv* env,
-                                         jlong read_aloud_service_ptr) {
+                                         jlong read_aloud_service_ptr,
+                                         content::WebContents* web_contents) {
   auto* service = reinterpret_cast<ReadAloudService*>(read_aloud_service_ptr);
   if (!service) {
     return;
   }
-  service->Play();
+  service->Play(web_contents);
 }
 
 static void JNI_ReadAloudController_Pause(JNIEnv* env,

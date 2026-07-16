@@ -16,6 +16,7 @@
 #include "chrome/common/readaloud/read_aloud.mojom.h"
 #include "components/dom_distiller/core/task_tracker.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "url/gurl.h"
@@ -30,11 +31,24 @@ namespace readaloud {
 
 class ReadAloudPlaybackSession;
 
-// Central lifecycle and state orchestrator for Read Aloud.
+// Central lifecycle and state orchestrator for the Read Aloud feature in
+// Chrome, which allows users to listen to web page content.
+//
+// Manages Read Aloud audio playback of distilled web page content by
+// coordinating page distillation (via `DomDistillerService`), audio synthesis
+// in the utility process, and UI state synchronization via `Delegate`.
+//
+// Instantiated per-Profile by `ReadAloudServiceFactory`. Observes the target
+// `content::WebContents` during active playback, starting when the user
+// requests playback (e.g., tapping "Listen to this page" or the Play button in
+// the UI) until playback is `Stop()`ped or the tab is closed. It continues
+// tracking the specific `WebContents` on which `Play()` was called even if the
+// user switches focus to a different tab.
 class ReadAloudService
     : public KeyedService,
       public dom_distiller::ViewRequestDelegate,
-      public read_aloud::mojom::ReadAloudPlaybackControllerClient {
+      public read_aloud::mojom::ReadAloudPlaybackControllerClient,
+      public content::WebContentsObserver {
  public:
   // TODO(b/522830940): Share this enum with Java using java_cpp_enum.
   enum class PlaybackState {
@@ -136,7 +150,7 @@ class ReadAloudService
 
   // Playback control commands called by the UI (via the JNI bridge).
   // Starts or resumes audio playback.
-  void Play();
+  void Play(content::WebContents* new_web_contents);
 
   // Pauses the current audio playback.
   void Pause();
@@ -182,6 +196,10 @@ class ReadAloudService
   void OnSessionResumed();
 
   bool IsPlaybackPaused() const;
+
+  // content::WebContentsObserver:
+  void WebContentsDestroyed() override;
+  void PrimaryPageChanged(content::Page& page) override;
 
   // KeyedService:
   void Shutdown() override;
@@ -236,7 +254,6 @@ class ReadAloudService
       utility_observer_receiver_{this};
 
   std::unique_ptr<ReadAloudPlaybackSession> active_session_;
-  base::WeakPtr<content::WebContents> web_contents_;
 
   base::WeakPtrFactory<ReadAloudService> weak_factory_{this};
 };
