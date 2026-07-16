@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/i18n/language_tag.h"
 #include "base/json/json_reader.h"
 #include "base/test/test_timeouts.h"
 #include "base/values.h"
@@ -154,9 +155,11 @@ TEST_F(LanguagePrefsTest, ResetLanguagePrefs) {
   content_languages_tester.ExpectSelectedLanguagePrefs("en,es,fr");
   content_languages_tester.ExpectAcceptLanguagePrefs("en,es,fr");
 #if BUILDFLAG(IS_ANDROID)
-  language_prefs_->SetULPLanguages({"a", "b", "c"});
+  language_prefs_->SetULPLanguages({base::i18n::GetKnownLanguageTag("en"),
+                                    base::i18n::GetKnownLanguageTag("es"),
+                                    base::i18n::GetKnownLanguageTag("fr")});
   EXPECT_THAT(language_prefs_->GetULPLanguages(),
-              testing::ElementsAre("a", "b", "c"));
+              testing::ElementsAre("en", "es", "fr"));
 #endif
 
   ResetLanguagePrefs(prefs_.get());
@@ -182,14 +185,18 @@ TEST_F(LanguagePrefsTest, ULPLanguagesPref) {
   EXPECT_THAT(language_prefs_->GetULPLanguages(), testing::IsEmpty());
 
   // Set ULP Language Preference.
-  language_prefs_->SetULPLanguages({"a", "b", "c"});
+  language_prefs_->SetULPLanguages({base::i18n::GetKnownLanguageTag("en"),
+                                    base::i18n::GetKnownLanguageTag("es"),
+                                    base::i18n::GetKnownLanguageTag("fr")});
   EXPECT_THAT(language_prefs_->GetULPLanguages(),
-              testing::ElementsAre("a", "b", "c"));
+              testing::ElementsAre("en", "es", "fr"));
 
   // Setting ULP languages to a new list clears the old list.
-  language_prefs_->SetULPLanguages({"d", "e", "f"});
+  language_prefs_->SetULPLanguages({base::i18n::GetKnownLanguageTag("de"),
+                                    base::i18n::GetKnownLanguageTag("pt"),
+                                    base::i18n::GetKnownLanguageTag("zh")});
   EXPECT_THAT(language_prefs_->GetULPLanguages(),
-              testing::ElementsAre("d", "e", "f"));
+              testing::ElementsAre("de", "pt", "zh"));
 
   // Setting ULP languages to a an empty list clears it.
   language_prefs_->SetULPLanguages({});

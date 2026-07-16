@@ -5,6 +5,8 @@
 #include "chrome/browser/language/android/language_bridge.h"
 
 #include "base/android/jni_string.h"
+#include "base/i18n/language_tag.h"
+#include "base/i18n/tag_converters.h"
 #include "chrome/browser/language/language_model_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/language/core/browser/language_model.h"
@@ -15,10 +17,21 @@
 #include "chrome/browser/language/android/jni_headers/LanguageBridge_jni.h"
 
 namespace language {
-std::vector<std::string> LanguageBridge::GetULPLanguagesFromDevice(
+std::vector<base::i18n::LanguageTag> LanguageBridge::GetULPLanguagesFromDevice(
     std::string account_name) {
   JNIEnv* env = jni_zero::AttachCurrentThread();
-  return Java_LanguageBridge_getULPLanguagesFromDevice(env, account_name);
+  std::vector<std::string> locales =
+      Java_LanguageBridge_getULPLanguagesFromDevice(env, account_name);
+  std::vector<base::i18n::LanguageTag> tags;
+  tags.reserve(locales.size());
+  for (const std::string& locale : locales) {
+    std::optional<base::i18n::LanguageTag> tag =
+        base::i18n::LanguageTagConverter::GetInstance().FromString(locale);
+    if (tag) {
+      tags.push_back(*tag);
+    }
+  }
+  return tags;
 }
 }  // namespace language
 

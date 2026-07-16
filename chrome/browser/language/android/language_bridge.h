@@ -8,11 +8,13 @@
 #include <string>
 #include <vector>
 
+#include "base/i18n/language_tag.h"
+
 namespace language {
 class LanguageBridge {
  public:
   // Makes a blocking call to get ULP languages for |account_name| from device.
-  static std::vector<std::string> GetULPLanguagesFromDevice(
+  static std::vector<base::i18n::LanguageTag> GetULPLanguagesFromDevice(
       std::string account_name);
 };
 

@@ -8,6 +8,8 @@
 #include <string>
 #include <vector>
 
+#include "base/i18n/language_tag.h"
+
 namespace language {
 
 const char kInitiationLanguageCountHistogram[] =
@@ -89,19 +91,19 @@ class ULPMetricsLogger {
   // `ulp_languages` and, if so, whether it was the first entry.
   static ULPLanguageStatus DetermineLanguageStatus(
       const std::string& language,
-      const std::vector<std::string>& ulp_languages);
+      const std::vector<base::i18n::LanguageTag>& ulp_languages);
 
   // Returns a number from 0-100 that indicates the ratio of ulp_languages that
   // are present in accept_languages. Only language bases are compared (e.g
   // pt-BR == pt-MZ).
   static int LanguagesOverlapRatio(
       const std::vector<std::string>& accept_languages,
-      const std::vector<std::string>& ulp_languages);
+      const std::vector<base::i18n::LanguageTag>& ulp_languages);
 
   // Returns a vector with languages that do not have a ULP base language match.
   static std::vector<std::string> RemoveULPLanguages(
       const std::vector<std::string>& languages,
-      const std::vector<std::string>& ulp_languages);
+      const std::vector<base::i18n::LanguageTag>& ulp_languages);
 };
 
 }  // namespace language

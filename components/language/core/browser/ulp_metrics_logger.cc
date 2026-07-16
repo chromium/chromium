@@ -6,6 +6,8 @@
 
 #include <algorithm>
 
+#include "base/i18n/language_tag.h"
+#include "base/i18n/tag_converters.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/metrics_hashes.h"
@@ -71,14 +73,19 @@ void ULPMetricsLogger::RecordInitiationPageLanguagesMissingFromULPCount(
 
 ULPLanguageStatus ULPMetricsLogger::DetermineLanguageStatus(
     const std::string& language,
-    const std::vector<std::string>& ulp_languages) {
+    const std::vector<base::i18n::LanguageTag>& ulp_languages) {
   if (language.empty() || language == "und") {
     return ULPLanguageStatus::kLanguageEmpty;
   }
 
+  std::optional<base::i18n::LanguageTag> lang_tag =
+      base::i18n::LanguageTagConverter::GetInstance().FromString(language);
+  if (!lang_tag) {
+    return ULPLanguageStatus::kLanguageNotInULP;
+  }
+
   // Search for exact match of language in ulp_languages (e.g. pt-BR != pt-MZ).
-  std::vector<std::string>::const_iterator exact_match =
-      std::ranges::find(ulp_languages, language);
+  auto exact_match = std::ranges::find(ulp_languages, *lang_tag);
   if (exact_match == ulp_languages.begin()) {
     return ULPLanguageStatus::kTopULPLanguageExactMatch;
   } else if (exact_match != ulp_languages.end()) {
@@ -86,10 +93,11 @@ ULPLanguageStatus ULPMetricsLogger::DetermineLanguageStatus(
   }
 
   // Now search for a base language match (e.g pt-BR == pt-MZ).
-  const auto base_language = l10n_util::GetLanguage(language);
-  std::vector<std::string>::const_iterator base_match = std::ranges::find_if(
-      ulp_languages, [&base_language](const std::string& ulp_language) {
-        return base_language == l10n_util::GetLanguage(ulp_language);
+  const auto base_language = lang_tag->language_subtag();
+  auto base_match = std::ranges::find_if(
+      ulp_languages,
+      [&base_language](const base::i18n::LanguageTag& ulp_language) {
+        return base_language == ulp_language.language_subtag();
       });
   if (base_match == ulp_languages.begin()) {
     return ULPLanguageStatus::kTopULPLanguageBaseMatch;
@@ -101,19 +109,24 @@ ULPLanguageStatus ULPMetricsLogger::DetermineLanguageStatus(
 
 int ULPMetricsLogger::LanguagesOverlapRatio(
     const std::vector<std::string>& languages,
-    const std::vector<std::string>& compare_languages) {
+    const std::vector<base::i18n::LanguageTag>& compare_languages) {
   if (languages.size() <= 0) {
     return 0;
   }
 
   int num_overlap_languages = 0;
   for (const std::string& language : languages) {
+    std::optional<base::i18n::LanguageTag> lang_tag =
+        base::i18n::LanguageTagConverter::GetInstance().FromString(language);
+    if (!lang_tag) {
+      continue;
+    }
     // Search for base matches of language (e.g. pt-BR == pt-MZ).
-    const auto base_language = l10n_util::GetLanguage(language);
+    const auto base_language = lang_tag->language_subtag();
     if (std::ranges::any_of(
             compare_languages,
-            [&base_language](const std::string& compare_language) {
-              return base_language == l10n_util::GetLanguage(compare_language);
+            [&base_language](const base::i18n::LanguageTag& compare_language) {
+              return base_language == compare_language.language_subtag();
             })) {
       ++num_overlap_languages;
     }
@@ -123,15 +136,22 @@ int ULPMetricsLogger::LanguagesOverlapRatio(
 
 std::vector<std::string> ULPMetricsLogger::RemoveULPLanguages(
     const std::vector<std::string>& languages,
-    const std::vector<std::string>& ulp_languages) {
+    const std::vector<base::i18n::LanguageTag>& ulp_languages) {
   std::vector<std::string> filtered_languages;
 
   for (const auto& language : languages) {
-    // Only add languages that do not have a base match in ulp_languages.
-    const auto base_language = l10n_util::GetLanguage(language);
+    std::optional<base::i18n::LanguageTag> lang_tag =
+        base::i18n::LanguageTagConverter::GetInstance().FromString(language);
+    if (!lang_tag) {
+      filtered_languages.push_back(language);
+      continue;
+    }
+    // Only add languages that do not have a ULP base language match.
+    const auto base_language = lang_tag->language_subtag();
     if (std::ranges::none_of(
-            ulp_languages, [&base_language](const std::string& ulp_language) {
-              return base_language == l10n_util::GetLanguage(ulp_language);
+            ulp_languages,
+            [&base_language](const base::i18n::LanguageTag& ulp_language) {
+              return base_language == ulp_language.language_subtag();
             })) {
       filtered_languages.push_back(language);
     }

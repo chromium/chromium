@@ -4,6 +4,8 @@
 
 #include "components/language/core/browser/ulp_metrics_logger.h"
 
+#include "base/i18n/language_tag.h"
+#include "base/i18n/tag_converters.h"
 #include "base/metrics/metrics_hashes.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -121,8 +123,12 @@ TEST(ULPMetricsLoggerTest, TestPageLanguagesMissingFromULPCount) {
 }
 
 TEST(ULPMetricsLoggerTest, TestDetermineLanguageStatus) {
-  std::vector<std::string> ulp_languages = {"en-US", "es-419", "pt-BR", "de",
-                                            "fr-CA"};
+  std::vector<base::i18n::LanguageTag> ulp_languages = {
+      base::i18n::GetKnownLanguageTag("en-US"),
+      base::i18n::GetKnownLanguageTag("es-419"),
+      base::i18n::GetKnownLanguageTag("pt-BR"),
+      base::i18n::GetKnownLanguageTag("de"),
+      base::i18n::GetKnownLanguageTag("fr-CA")};
 
   EXPECT_EQ(ULPLanguageStatus::kTopULPLanguageExactMatch,
             ULPMetricsLogger::DetermineLanguageStatus("en-US", ulp_languages));
@@ -149,36 +155,67 @@ TEST(ULPMetricsLoggerTest, TestDetermineLanguageStatus) {
 TEST(ULPMetricsLoggerTest, TestULPLanguagesOverlapRatio) {
   std::vector<std::string> languages = {"en-US", "es", "pt-BR", "de", "fr-CA"};
 
-  EXPECT_EQ(0, ULPMetricsLogger::LanguagesOverlapRatio(languages,
-                                                       {"fi-FI", "af", "zu"}));
+  EXPECT_EQ(0, ULPMetricsLogger::LanguagesOverlapRatio(
+                   languages, {base::i18n::GetKnownLanguageTag("fi-FI"),
+                               base::i18n::GetKnownLanguageTag("af"),
+                               base::i18n::GetKnownLanguageTag("zu")}));
 
-  EXPECT_EQ(20, ULPMetricsLogger::LanguagesOverlapRatio(languages,
-                                                        {"en-GB", "af", "zu"}));
+  EXPECT_EQ(20, ULPMetricsLogger::LanguagesOverlapRatio(
+                    languages, {base::i18n::GetKnownLanguageTag("en-GB"),
+                                base::i18n::GetKnownLanguageTag("af"),
+                                base::i18n::GetKnownLanguageTag("zu")}));
 
-  EXPECT_EQ(20, ULPMetricsLogger::LanguagesOverlapRatio(languages,
-                                                        {"en", "af", "zu"}));
+  EXPECT_EQ(20, ULPMetricsLogger::LanguagesOverlapRatio(
+                    languages, {base::i18n::GetKnownLanguageTag("en"),
+                                base::i18n::GetKnownLanguageTag("af"),
+                                base::i18n::GetKnownLanguageTag("zu")}));
 
   EXPECT_EQ(40, ULPMetricsLogger::LanguagesOverlapRatio(
-                    languages, {"en-US", "af", "zu", "es"}));
+                    languages, {base::i18n::GetKnownLanguageTag("en-US"),
+                                base::i18n::GetKnownLanguageTag("af"),
+                                base::i18n::GetKnownLanguageTag("zu"),
+                                base::i18n::GetKnownLanguageTag("es")}));
 
   EXPECT_EQ(60, ULPMetricsLogger::LanguagesOverlapRatio(
-                    languages, {"en-US", "af", "pt-BR", "es"}));
+                    languages, {base::i18n::GetKnownLanguageTag("en-US"),
+                                base::i18n::GetKnownLanguageTag("af"),
+                                base::i18n::GetKnownLanguageTag("pt-BR"),
+                                base::i18n::GetKnownLanguageTag("es")}));
 
   EXPECT_EQ(60, ULPMetricsLogger::LanguagesOverlapRatio(
-                    languages, {"en", "af", "pt", "es"}));
+                    languages, {base::i18n::GetKnownLanguageTag("en"),
+                                base::i18n::GetKnownLanguageTag("af"),
+                                base::i18n::GetKnownLanguageTag("pt"),
+                                base::i18n::GetKnownLanguageTag("es")}));
 
   EXPECT_EQ(60, ULPMetricsLogger::LanguagesOverlapRatio(
-                    languages, {"en", "af", "pt-PT", "es"}));
+                    languages, {base::i18n::GetKnownLanguageTag("en"),
+                                base::i18n::GetKnownLanguageTag("af"),
+                                base::i18n::GetKnownLanguageTag("pt-PT"),
+                                base::i18n::GetKnownLanguageTag("es")}));
 
   EXPECT_EQ(80, ULPMetricsLogger::LanguagesOverlapRatio(
-                    languages, {"en-US", "af", "pt-BR", "es", "de"}));
+                    languages, {base::i18n::GetKnownLanguageTag("en-US"),
+                                base::i18n::GetKnownLanguageTag("af"),
+                                base::i18n::GetKnownLanguageTag("pt-BR"),
+                                base::i18n::GetKnownLanguageTag("es"),
+                                base::i18n::GetKnownLanguageTag("de")}));
 
   EXPECT_EQ(100, ULPMetricsLogger::LanguagesOverlapRatio(
-                     languages, {"en-US", "af", "pt-BR", "es", "de", "fr-CA"}));
+                     languages, {base::i18n::GetKnownLanguageTag("en-US"),
+                                 base::i18n::GetKnownLanguageTag("af"),
+                                 base::i18n::GetKnownLanguageTag("pt-BR"),
+                                 base::i18n::GetKnownLanguageTag("es"),
+                                 base::i18n::GetKnownLanguageTag("de"),
+                                 base::i18n::GetKnownLanguageTag("fr-CA")}));
 }
 
 TEST(ULPMetricsLoggerTest, TestRemoveULPLanguages) {
-  std::vector<std::string> ulp_languages = {"en-US", "es", "pt-BR", "de"};
+  std::vector<base::i18n::LanguageTag> ulp_languages = {
+      base::i18n::GetKnownLanguageTag("en-US"),
+      base::i18n::GetKnownLanguageTag("es"),
+      base::i18n::GetKnownLanguageTag("pt-BR"),
+      base::i18n::GetKnownLanguageTag("de")};
 
   EXPECT_THAT(ULPMetricsLogger::RemoveULPLanguages({"af", "en", "am", "as"},
                                                    ulp_languages),

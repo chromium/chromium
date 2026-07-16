@@ -10,6 +10,7 @@
 #include <string_view>
 #include <vector>
 
+#include "base/i18n/language_tag.h"
 #include "base/memory/raw_ptr.h"
 #include "components/prefs/pref_change_registrar.h"
 
@@ -59,7 +60,7 @@ class LanguagePrefs {
   // need specific locals always compare base languages from the list.
   std::vector<std::string> GetULPLanguages();
   // Clear the previous ULP language pref and set to the new list of languages.
-  void SetULPLanguages(std::vector<std::string> ulp_languages);
+  void SetULPLanguages(std::vector<base::i18n::LanguageTag> ulp_languages);
 #endif
 
  private:
