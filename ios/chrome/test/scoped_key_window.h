@@ -14,8 +14,10 @@ class ScopedKeyWindow {
   explicit ScopedKeyWindow();
   ~ScopedKeyWindow();
   UIWindow* Get();
+  UIWindowScene* GetScene();
 
  private:
+  __strong UIWindowScene* scene_;
   __strong UIWindow* current_key_window_;
   __strong UIWindow* original_key_window_;
 };

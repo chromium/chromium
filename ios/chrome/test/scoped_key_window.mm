@@ -6,6 +6,7 @@
 
 #import "base/check_op.h"
 #import "base/ios/ios_util.h"
+#import "ios/chrome/browser/shared/ui/chrome_overlay_window/chrome_overlay_window.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/test/app/uikit_test_util.h"
 
@@ -15,11 +16,12 @@ ScopedKeyWindow::ScopedKeyWindow() {
   // Only one scene is supported in unittests at the moment.
   DCHECK_EQ([scenes count], 1u);
 
-  UIWindowScene* window_scene = chrome_test_util::GetAnyWindowScene();
-  original_key_window_ = window_scene.keyWindow;
+  scene_ = chrome_test_util::GetAnyWindowScene();
+  original_key_window_ = scene_.keyWindow;
   DCHECK(original_key_window_);
 
-  current_key_window_ = [[UIWindow alloc] initWithWindowScene:window_scene];
+  current_key_window_ =
+      [[ChromeOverlayWindow alloc] initWithWindowScene:scene_];
   DCHECK(current_key_window_);
 
   [current_key_window_ makeKeyAndVisible];
@@ -31,4 +33,8 @@ ScopedKeyWindow::~ScopedKeyWindow() {
 
 UIWindow* ScopedKeyWindow::Get() {
   return current_key_window_;
+}
+
+UIWindowScene* ScopedKeyWindow::GetScene() {
+  return scene_;
 }
