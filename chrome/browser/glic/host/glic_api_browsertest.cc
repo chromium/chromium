@@ -1018,23 +1018,6 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest,
   ContinueJsTest();
 }
 
-IN_PROC_BROWSER_TEST_P(GlicApiTest, testDetachDoesNotLogActivationMetric) {
-  // Open Glic in side panel.
-  RunTestSequence(InstrumentTab(kFirstTab),
-                  NavigateWebContents(kFirstTab, page_url()),
-                  DeprecatedOpenGlicWindow(GlicWindowMode::kAttached,
-                                           GlicInstrumentMode::kHostAndContents,
-                                           /*conversation_id=*/std::nullopt));
-  ExecuteJsTest({.params = base::Value("registerAndDetach")});
-
-  TrackFloatingGlicInstance();
-  // Verify conversation ID.
-  ASSERT_EQ("A", GetGlicInstanceImpl()->conversation_id());
-
-  // Verify no spurious activation metric.
-  histogram_tester->ExpectTotalCount("Glic.Instance.TimeSinceLastActive", 0);
-}
-
 class GlicApiTestRuntimeFeatureOff : public GlicApiTestWithOneTab {
  public:
   GlicApiTestRuntimeFeatureOff() {

@@ -1177,6 +1177,24 @@ class ApiTests extends ApiTestFixtureBase {
       });
     }
   }
+
+  async testDetachDoesNotLogActivationMetric() {
+    assertDefined(this.host.registerConversation);
+    assertDefined(this.host.detachPanel);
+    assertDefined(this.host.getPanelState);
+
+    if (this.testParams === 'registerAndDetach') {
+      await this.host.registerConversation(
+          {conversationId: 'A', conversationTitle: 'Title A'});
+      const panelStates = observeSequence(this.host.getPanelState());
+      await panelStates.waitFor(
+          state => state.kind === PanelStateKind.ATTACHED);
+
+      this.host.detachPanel();
+      await panelStates.waitFor(
+          state => state.kind === PanelStateKind.DETACHED);
+    }
+  }
 }
 
 class FaviconTest extends ApiTests {

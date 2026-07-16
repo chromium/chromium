@@ -978,6 +978,26 @@ IN_PROC_BROWSER_TEST_P(NewGlicApiTest,
 }
 
 #if defined(NOT_VETTED_ON_ANDROID)
+#define MAYBE_testDetachDoesNotLogActivationMetric \
+  DISABLED_testDetachDoesNotLogActivationMetric
+#else
+#define MAYBE_testDetachDoesNotLogActivationMetric \
+  testDetachDoesNotLogActivationMetric
+#endif
+IN_PROC_BROWSER_TEST_P(NewGlicApiTest,
+                       MAYBE_testDetachDoesNotLogActivationMetric) {
+  glic::GlicHistogramTester histogram_tester;
+  ASSERT_OK(OpenGlicForActiveTab());
+  ExecuteJsTest({.params = base::Value("registerAndDetach")});
+
+  // Verify conversation ID.
+  ASSERT_EQ("A", GetOnlyGlicInstance()->conversation_id());
+
+  // Verify no spurious activation metric.
+  histogram_tester.ExpectTotalCount("Glic.Instance.TimeSinceLastActive", 0);
+}
+
+#if defined(NOT_VETTED_ON_ANDROID)
 #define MAYBE_testDetachPanelNoFloatyOrLiveMode \
   DISABLED_testDetachPanelNoFloatyOrLiveMode
 #else
