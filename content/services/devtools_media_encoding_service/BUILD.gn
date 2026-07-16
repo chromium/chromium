@@ -1,0 +1,65 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("devtools_media_encoding_service") {
+  sources = [
+    "devtools_media_encoding_service_impl.cc",
+    "devtools_media_encoding_service_impl.h",
+  ]
+
+  configs += [ "//content:content_implementation" ]
+
+  deps = [
+    "//base",
+    "//content:export",
+    "//media",
+    "//media:media_buildflags",
+    "//media/mojo/common",
+    "//media/mojo/mojom",
+    "//mojo/public/cpp/bindings",
+    "//ui/gfx/geometry",
+  ]
+
+  public_deps = [ "public/mojom" ]
+}
+
+# See comment at the top of //content/BUILD.gn for how this works.
+group("for_content_tests") {
+  visibility = [
+    ":tests",
+    "//content/test:test_support",
+  ]
+  if (!is_component_build) {
+    public_deps = [ ":devtools_media_encoding_service" ]
+  } else {
+    # Ensure //content/common:mojo_bindings is built without depending on
+    # internals.
+    public_deps = [ "//content/public/common" ]
+  }
+}
+
+source_set("tests") {
+  testonly = true
+
+  # See comment at the top of //content/BUILD.gn for why this is disabled in
+  # component builds.
+  if (is_component_build) {
+    check_includes = false
+  }
+
+  sources = [ "devtools_media_encoding_service_impl_unittest.cc" ]
+
+  deps = [
+    "//base",
+    "//base/test:test_support",
+    "//content/services/devtools_media_encoding_service/public/mojom",
+    "//content/test:test_support",
+    "//media:media_buildflags",
+    "//mojo/public/cpp/bindings",
+    "//mojo/public/cpp/test_support:test_utils",
+    "//testing/gtest",
+  ]
+
+  public_deps = [ ":for_content_tests" ]
+}

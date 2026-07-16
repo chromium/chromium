@@ -1,0 +1,49 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module devtools_media_encoding_service.mojom;
+
+import "media/mojo/mojom/media_types.mojom";
+import "sandbox/policy/mojom/sandbox.mojom";
+
+// Client interface to receive encoded and multiplexed media chunks from the
+// encoding server, as well as a lifecycle notification when the recording stops.
+interface DevToolsMediaEncodingServiceClient {
+  // Receives a chunk of encoded and multiplexed media stream data (e.g., MP4).
+  OnData(array<uint8> data);
+
+  // Invoked when recording has stopped, all active encoders have flushed, and
+  // the final container data has been delivered via OnData.
+  OnClosed();
+};
+
+// A utility-process service used by DevTools to encode raw video frames and
+// audio buffers into compressed formats (e.g., AV1, Opus) and multiplex them
+// into a media container (e.g., MP4).
+//
+// Trust boundary: This interface is implemented in the utility process and
+// called by the browser process. DevToolsMediaEncodingServiceClient is
+// implemented in the browser process.
+[ServiceSandbox=sandbox.mojom.Sandbox.kUtility]
+interface DevToolsMediaEncodingService {
+  // Initializes the recording session and binds the client for receiving data.
+  // `max_width` and `max_height` define maximum dimensions for encoded video frames.
+  // `frame_rate` specifies the expected frames per second.
+  // `has_audio` indicates whether audio buffers will be recorded and multiplexed.
+  StartRecording(pending_remote<DevToolsMediaEncodingServiceClient> client,
+                 uint32 max_width,
+                 uint32 max_height,
+                 uint32 frame_rate,
+                 bool has_audio);
+
+  // Submits a raw video frame to be encoded and multiplexed into the stream.
+  RecordVideoFrame(media.mojom.VideoFrame frame);
+
+  // Submits a raw audio buffer to be encoded and multiplexed into the stream.
+  RecordAudioBuffer(media.mojom.AudioBuffer buffer);
+
+  // Flushes active encoders, completes multiplexing, delivers final data chunks
+  // to the client, and invokes OnClosed() on the client.
+  StopRecording();
+};
