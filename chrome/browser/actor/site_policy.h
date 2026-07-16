@@ -84,7 +84,6 @@ void MayActOnTab(const tabs::TabInterface& tab,
 // delegated to `resolve_no_verdict`.
 void MayActOnUrl(const GURL& url,
                  bool allow_insecure_http,
-                 Profile* profile,
                  AggregatedJournal& journal,
                  TaskId task_id,
                  NoVerdictContinuation resolve_no_verdict,

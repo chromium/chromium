@@ -34,7 +34,6 @@
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 #include "chrome/browser/safe_browsing/user_interaction_observer.h"
-#include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #endif
 
 namespace actor {
@@ -92,7 +91,6 @@ bool ShouldContinueFromOptimizationGuideDecision(
 
 void MayActOnUrlInternal(const GURL& url,
                          bool allow_insecure_http,
-                         Profile* profile,
                          NoVerdictContinuation resolve_no_verdict,
                          std::unique_ptr<DecisionWrapper> decision_wrapper) {
   CHECK(resolve_no_verdict);
@@ -119,19 +117,6 @@ void MayActOnUrlInternal(const GURL& url,
 
   if (IsActorSafetyCheckDisabled()) {
     decision_wrapper->Accept();
-    return;
-  }
-
-  bool is_safe_browsing_enabled = false;
-#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
-  is_safe_browsing_enabled =
-      safe_browsing::IsSafeBrowsingEnabled(*profile->GetPrefs());
-#endif
-  if (!is_safe_browsing_enabled) {
-    // We don't want to risk acting on dangerous sites, so we require
-    // SafeBrowsing.
-    decision_wrapper->Reject("Safebrowsing unavailable",
-                             MayActOnUrlBlockReason::kSafeBrowsing);
     return;
   }
 
@@ -195,15 +180,13 @@ void MayActOnTab(const tabs::TabInterface& tab,
   }
 #endif
 
-  MayActOnUrlInternal(
-      url, /*allow_insecure_http=*/false,
-      Profile::FromBrowserContext(web_contents.GetBrowserContext()),
-      std::move(resolve_no_verdict), std::move(decision_wrapper));
+  MayActOnUrlInternal(url, /*allow_insecure_http=*/false,
+                      std::move(resolve_no_verdict),
+                      std::move(decision_wrapper));
 }
 
 void MayActOnUrl(const GURL& url,
                  bool allow_insecure_http,
-                 Profile* profile,
                  AggregatedJournal& journal,
                  TaskId task_id,
                  NoVerdictContinuation resolve_no_verdict,
@@ -211,8 +194,7 @@ void MayActOnUrl(const GURL& url,
   std::unique_ptr<DecisionWrapper> decision_wrapper =
       std::make_unique<DecisionWrapper>(journal, url, task_id, "MayActOnUrl",
                                         std::move(callback));
-  MayActOnUrlInternal(url, allow_insecure_http, profile,
-                      std::move(resolve_no_verdict),
+  MayActOnUrlInternal(url, allow_insecure_http, std::move(resolve_no_verdict),
                       std::move(decision_wrapper));
 }
 

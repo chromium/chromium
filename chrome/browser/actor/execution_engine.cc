@@ -77,6 +77,7 @@
 #include "components/password_manager/core/browser/actor_login/actor_login_service_impl.h"
 #include "components/password_manager/core/browser/actor_login/actor_login_types.h"
 #include "components/password_manager/core/browser/features/password_features.h"
+#include "components/safe_browsing/buildflags.h"
 #include "components/tabs/public/tab_interface.h"
 #include "components/variations/service/variations_service.h"
 #include "content/public/browser/navigation_handle.h"
@@ -92,6 +93,10 @@
 #include "third_party/abseil-cpp/absl/strings/str_format.h"
 #include "ui/event_dispatcher.h"
 #include "url/origin.h"
+
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
+#include "components/safe_browsing/core/common/safe_browsing_prefs.h"
+#endif
 
 using content::RenderFrameHost;
 using content::WebContents;
@@ -110,6 +115,8 @@ constexpr char kSafetyListPredicateName[] = "actor_safety_list_check";
 constexpr char kSensitiveUrlPredicateName[] = "actor_sensitive_url_check";
 constexpr char kLookalikeUrlPredicateName[] = "actor_lookalike_url_check";
 constexpr char kActionAllowlistPredicateName[] = "actor_action_allowlist_check";
+constexpr char kSafeBrowsingPredicateName[] =
+    "actor_safe_browsing_enabled_check";
 
 struct ActorGatingContext : public origin_gating::GatingDecisionContext {
   ActorGatingContext(ukm::SourceId ukm_id,
@@ -195,6 +202,23 @@ origin_gating::Decision EvaluateLookalikeUrl(
     return origin_gating::Decision::kBlocked;
   }
   return origin_gating::Decision::kNoDecision;
+}
+
+origin_gating::Decision EvaluateSafeBrowsingEnabled(
+    Profile* profile,
+    const origin_gating::GatingDecisionContext* context,
+    origin_gating::GateableEvent event,
+    const GURL& source,
+    const GURL& destination) {
+  bool is_safe_browsing_enabled = false;
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
+  is_safe_browsing_enabled =
+      safe_browsing::IsSafeBrowsingEnabled(*profile->GetPrefs());
+#endif
+  // We don't want to risk acting on dangerous sites, so we require
+  // SafeBrowsing.
+  return is_safe_browsing_enabled ? origin_gating::Decision::kNoDecision
+                                  : origin_gating::Decision::kBlocked;
 }
 
 // Returns true if `url`'s host is in the `allowlist`. If `include_subdomains`
@@ -347,6 +371,10 @@ MayActOnUrlBlockResult MapGatingDecisionToBlockResult(
         return {kActionAllowlistPredicateName,
                 MayActOnUrlBlockReason::kUrlNotInAllowlist};
       }
+      if (decision.attribution == kSafeBrowsingPredicateName) {
+        return {"Safebrowsing unavailable",
+                MayActOnUrlBlockReason::kSafeBrowsing};
+      }
       NOTREACHED() << "Unrecognized custom predicate attribution: "
                    << decision.attribution.CustomPredicateName();
   }
@@ -436,6 +464,12 @@ ExecutionEngine::ExecutionEngine(
           *this,
           origin_gating::OriginGatingConfiguration(
               {
+                  {origin_gating::CustomPredicate(
+                       base::BindRepeating(&EvaluateSafeBrowsingEnabled,
+                                           task_->GetProfile()),
+                       kSafeBrowsingPredicateName),
+                   {origin_gating::GateableEvent::kNavigationRequest,
+                    origin_gating::GateableEvent::kPageAction}},
                   {origin_gating::CustomPredicate(
                        base::BindRepeating(&EvaluateActionAllowlist),
                        kActionAllowlistPredicateName),
@@ -1496,8 +1530,7 @@ void ExecutionEngine::IsAcceptableNavigationDestination(
     const GURL& url,
     DecisionCallbackWithReason callback) {
   actor::MayActOnUrl(
-      url, /*allow_insecure_http=*/true, task_->GetProfile(), *journal_,
-      task_->id(),
+      url, /*allow_insecure_http=*/true, *journal_, task_->id(),
       base::BindOnce(&ExecutionEngine::ShouldAllowNavigationDestination,
                      GetWeakPtr()),
       std::move(callback));
