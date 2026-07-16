@@ -23,7 +23,6 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.ProfileManager;
@@ -39,6 +38,7 @@ import org.chromium.components.messages.MessageIdentifier;
 import org.chromium.components.messages.MessageStateHandler;
 import org.chromium.components.messages.MessagesTestHelper;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.content_public.common.ContentSwitches;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -57,7 +57,10 @@ import java.util.concurrent.TimeoutException;
 
 /** Tests for the permission update message. */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+@CommandLineFlags.Add({
+    ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
+    ContentSwitches.USE_FAKE_DEVICE_FOR_MEDIA_STREAM
+})
 public class PermissionUpdateMessageTest {
     private static final String GEOLOCATION_PAGE =
             "/chrome/test/data/geolocation/geolocation_on_load.html";
@@ -300,7 +303,6 @@ public class PermissionUpdateMessageTest {
     @Test
     @MediumTest
     @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO}) // No camera device on auto.
-    @DisabledTest(message = "https://crbug.com/378557957")
     public void testMessageForMediaStreamCamera()
             throws IllegalArgumentException, TimeoutException, ExecutionException {
         runTest(
