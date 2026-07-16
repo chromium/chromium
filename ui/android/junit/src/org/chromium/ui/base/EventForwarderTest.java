@@ -643,11 +643,16 @@ public class EventForwarderTest {
                 .startFling(
                         eq(NATIVE_EVENT_FORWARDER_ID),
                         eq(eventTime3),
+                        eq(10f),
+                        eq(20f),
+                        eq(10f),
+                        eq(20f),
                         velocityXCaptor.capture(),
                         anyFloat(),
                         eq(false),
                         eq(false),
-                        eq(true));
+                        eq(true),
+                        eq(false));
         Assert.assertTrue(
                 "VelocityX should be positive for swipe right", velocityXCaptor.getValue() > 0);
 

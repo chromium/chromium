@@ -3416,7 +3416,18 @@ public class AwContents implements SmartClipProvider {
         if (isDestroyed(WARN)) return;
         mWebContents
                 .getEventForwarder()
-                .startFling(SystemClock.uptimeMillis(), -velocityX, -velocityY, false, true, false);
+                .startFling(
+                        SystemClock.uptimeMillis(),
+                        /* x= */ 0f,
+                        /* y= */ 0f,
+                        /* rawX= */ 0f,
+                        /* rawY= */ 0f,
+                        -velocityX,
+                        -velocityY,
+                        /* syntheticScroll= */ false,
+                        /* preventBoosting= */ true,
+                        /* isTouchpadEvent= */ false,
+                        /* targetViewport= */ true);
     }
 
     /**

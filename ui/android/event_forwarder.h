@@ -110,11 +110,16 @@ class UI_ANDROID_EXPORT EventForwarder {
 
   void StartFling(JNIEnv* env,
                   int64_t time_ms,
+                  float x,
+                  float y,
+                  float raw_x,
+                  float raw_y,
                   float velocity_x,
                   float velocity_y,
                   bool synthetic_scroll,
                   bool prevent_boosting,
-                  bool is_touchpad_event);
+                  bool is_touchpad_event,
+                  bool target_viewport);
 
   void CancelFling(JNIEnv* env,
                    int64_t time_ms,

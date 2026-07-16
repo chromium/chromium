@@ -374,11 +374,16 @@ void EventForwarder::DoubleTap(JNIEnv* env,
 
 void EventForwarder::StartFling(JNIEnv* env,
                                 int64_t time_ms,
+                                float x,
+                                float y,
+                                float raw_x,
+                                float raw_y,
                                 float velocity_x,
                                 float velocity_y,
                                 bool synthetic_scroll,
                                 bool prevent_boosting,
-                                bool is_touchpad_event) {
+                                bool is_touchpad_event,
+                                bool target_viewport) {
   CancelFling(env, time_ms, prevent_boosting, is_touchpad_event);
 
   if (velocity_x == 0 && velocity_y == 0)
@@ -387,6 +392,9 @@ void EventForwarder::StartFling(JNIEnv* env,
   ui::GestureDeviceType source =
       is_touchpad_event ? ui::GestureDeviceType::DEVICE_TOUCHPAD
                         : ui::GestureDeviceType::DEVICE_TOUCHSCREEN;
+  gfx::PointF location(x / dip_scale, y / dip_scale);
+  gfx::PointF screen_location(raw_x / dip_scale, raw_y / dip_scale);
+
   // Fling start event is expected to always be following a scroll start event.
   // Flings from e.g. joystick start from stopped state; send a synthetic scroll
   // start first. This is not required by touchpad flings which happen at the
@@ -394,15 +402,15 @@ void EventForwarder::StartFling(JNIEnv* env,
   if (!is_touchpad_event) {
     // Use velocity as delta in scroll event.
     view_->OnGestureEvent(GestureEventAndroid(
-        GESTURE_EVENT_TYPE_SCROLL_START, gfx::PointF(), gfx::PointF(), time_ms,
+        GESTURE_EVENT_TYPE_SCROLL_START, location, screen_location, time_ms,
         source, 0, velocity_x / dip_scale, velocity_y / dip_scale, 0, 0,
-        /*target_viewport*/ true, synthetic_scroll,
+        target_viewport, synthetic_scroll,
         /*prevent_boosting*/ false));
   }
   view_->OnGestureEvent(GestureEventAndroid(
-      GESTURE_EVENT_TYPE_FLING_START, gfx::PointF(), gfx::PointF(), time_ms,
+      GESTURE_EVENT_TYPE_FLING_START, location, screen_location, time_ms,
       source, 0, 0, 0, velocity_x / dip_scale, velocity_y / dip_scale,
-      /*target_viewport*/ true, synthetic_scroll,
+      target_viewport, synthetic_scroll,
       /*prevent_boosting*/ false));
 }
 

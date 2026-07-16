@@ -150,11 +150,16 @@ public class ContentViewScrollingTest {
                                         .getEventForwarder()
                                         .startFling(
                                                 SystemClock.uptimeMillis(),
+                                                /* x= */ 0f,
+                                                /* y= */ 0f,
+                                                /* rawX= */ 0f,
+                                                /* rawY= */ 0f,
                                                 vx,
                                                 vy,
-                                                false,
-                                                true,
-                                                false);
+                                                /* syntheticScroll= */ false,
+                                                /* preventBoosting= */ true,
+                                                /* isTouchpadEvent= */ false,
+                                                /* targetViewport= */ true);
                             }
                         });
     }
@@ -378,8 +383,8 @@ public class ContentViewScrollingTest {
     }
 
     /**
-     * To ensure the device properly responds to bounds-exceeding scrolls, e.g., overscroll
-     * effects are properly initialized.
+     * To ensure the device properly responds to bounds-exceeding scrolls, e.g., overscroll effects
+     * are properly initialized.
      */
     @Test
     @SmallTest

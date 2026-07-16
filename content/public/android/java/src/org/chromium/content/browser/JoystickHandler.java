@@ -64,6 +64,7 @@ public class JoystickHandler implements ImeEventObserver, UserData {
 
     /**
      * Handles joystick input events.
+     *
      * @param event {@link MotionEvent} object.
      */
     public boolean onGenericMotionEvent(MotionEvent event) {
@@ -73,7 +74,18 @@ public class JoystickHandler implements ImeEventObserver, UserData {
         float velocityX = getVelocityFromJoystickAxis(event, MotionEvent.AXIS_X);
         float velocityY = getVelocityFromJoystickAxis(event, MotionEvent.AXIS_Y);
         if (velocityX == 0.f && velocityY == 0.f) return false;
-        mEventForwarder.startFling(event.getEventTime(), velocityX, velocityY, true, true, false);
+        mEventForwarder.startFling(
+                event.getEventTime(),
+                /* x= */ 0f,
+                /* y= */ 0f,
+                /* rawX= */ 0f,
+                /* rawY= */ 0f,
+                velocityX,
+                velocityY,
+                /* syntheticScroll= */ true,
+                /* preventBoosting= */ true,
+                /* isTouchpadEvent= */ false,
+                /* targetViewport= */ true);
         return true;
     }
 

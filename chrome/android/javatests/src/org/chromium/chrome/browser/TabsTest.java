@@ -492,11 +492,16 @@ public class TabsTest {
                                     .getEventForwarder()
                                     .startFling(
                                             SystemClock.uptimeMillis(),
+                                            /* x= */ 0f,
+                                            /* y= */ 0f,
+                                            /* rawX= */ 0f,
+                                            /* rawY= */ 0f,
                                             0,
                                             -2000,
-                                            false,
-                                            true,
-                                            false);
+                                            /* syntheticScroll= */ false,
+                                            /* preventBoosting= */ true,
+                                            /* isTouchpadEvent= */ false,
+                                            /* targetViewport= */ true);
                         });
         ChromeTabUtils.closeCurrentTab(
                 InstrumentationRegistry.getInstrumentation(), mActivityTestRule.getActivity());

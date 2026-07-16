@@ -198,11 +198,16 @@ public class FullscreenManagerTestUtils {
                             .getEventForwarder()
                             .startFling(
                                     SystemClock.uptimeMillis(),
+                                    /* x= */ 0f,
+                                    /* y= */ 0f,
+                                    /* rawX= */ 0f,
+                                    /* rawY= */ 0f,
                                     vx,
                                     vy,
                                     /* syntheticScroll= */ false,
                                     /* preventBoosting= */ false,
-                                    /* isTouchpadEvent= */ false);
+                                    /* isTouchpadEvent= */ false,
+                                    /* targetViewport= */ true);
                 });
     }
 }
