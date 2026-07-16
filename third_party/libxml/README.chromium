@@ -23,6 +23,8 @@ Modifications:
 - fix-xmlEscapeText-integer-overflow.patch: Fixes a 32-bit signed integer
   truncation in xmlEscapeText that can lead to an undersized allocation and
   heap-buffer-overflow.
+- parser-check-eof-trailing-whitespace.patch: Allow trailing whitespace in
+  xmlParserCheckEOF instead of treating it as a fatal error.
 - Add helper classes in the chromium/ subdirectory.
 - Delete various unused files, see chromium/roll.py
 - Disable various unused libxml features:

@@ -4,6 +4,14 @@
 
 #include "third_party/blink/renderer/core/xml/parser/xml_document_parser.h"
 
+#include <libxml/encoding.h>
+#include <libxml/parser.h>
+
+#include <fstream>
+#include <iterator>
+#include <string_view>
+
+#include "base/compiler_specific.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/document_fragment.h"
@@ -15,7 +23,6 @@
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
-#include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 
 namespace blink {
 
@@ -154,6 +161,64 @@ TEST_P(XMLDocumentParserParameterizedTest, NestedNamespaceReset) {
   // ensuring that the inner <b> declaration didn't clobber the reset state.
   EXPECT_EQ(iframe->namespaceURI(), g_null_atom)
       << "iframe should be in null namespace due to outer <a> reset";
+}
+
+static xmlCharEncError flushCrashConvert(void* vctxt,
+                                         unsigned char* out,
+                                         int* outlen,
+                                         const unsigned char* in,
+                                         int* inlen,
+                                         int flush) {
+  int toCopy = *inlen;
+  if (!flush && toCopy > 0) {
+    toCopy--;
+  }
+  if (toCopy > *outlen) {
+    toCopy = *outlen;
+  }
+  // SAFETY: This implements a libxml2 callback interface using raw pointer
+  // arguments, where safe spans are not possible. toCopy is bounded by the
+  // buffer sizes of both in and out.
+  UNSAFE_BUFFERS(memcpy(out, in, toCopy));
+  *inlen = toCopy;
+  *outlen = toCopy;
+  return XML_ENC_ERR_SUCCESS;
+}
+
+static xmlParserErrors flushCrashConvImpl(void* vctxt,
+                                          const char* name,
+                                          xmlCharEncFlags flags,
+                                          xmlCharEncodingHandler** out) {
+  if (std::string_view(name) != "flush-crash") {
+    return XML_ERR_UNSUPPORTED_ENCODING;
+  }
+
+  return xmlCharEncNewCustomHandler(name, flushCrashConvert, nullptr, nullptr,
+                                    nullptr, nullptr, out);
+}
+
+TEST(XMLDocumentParserTest, ReproICUFlushCrash) {
+  test::TaskEnvironment task_environment;
+  ScopedNullExecutionContext execution_context;
+  execution_context.GetExecutionContext().SetUpSecurityContextForTesting();
+
+  xmlParserCtxtPtr ctxt = xmlNewParserCtxt();
+  xmlCtxtSetCharEncConvImpl(ctxt, flushCrashConvImpl, nullptr);
+
+  // XML document with a trailing space that decodes only on flush.
+  std::string xml = "<?xml version=\"1.0\" encoding=\"flush-crash\"?><root/> ";
+
+  xmlDocPtr xml_doc = xmlCtxtReadMemory(
+      ctxt, xml.data(), static_cast<int>(xml.size()), "http://example.com",
+      nullptr,
+      XML_PARSE_NOENT | XML_PARSE_DTDLOAD | XML_PARSE_DTDATTR |
+          XML_PARSE_NOCDATA | XML_PARSE_HUGE);
+
+  if (xml_doc) {
+    xmlFreeDoc(xml_doc);
+  }
+  EXPECT_EQ(ctxt->errNo, XML_ERR_OK);
+  xmlFreeParserCtxt(ctxt);
 }
 
 }  // namespace blink

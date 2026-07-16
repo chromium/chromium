@@ -1,0 +1,24 @@
+diff --git a/parserInternals.c b/parserInternals.c
+index c3eec132d8993..109f8b7efbf4c 100644
+--- a/parserInternals.c
++++ b/parserInternals.c
+@@ -690,8 +690,18 @@ xmlParserCheckEOF(xmlParserCtxt *ctxt, xmlParserErrors code) {
+         }
+ 
+         /* Shouldn't happen */
+-        if (in->cur < in->end)
+-            xmlFatalErr(ctxt, XML_ERR_INTERNAL_ERROR, "expected EOF");
++        if (in->cur < in->end) {
++            /* Trailing whitespace is allowed, but non-whitespace is an error */
++            const xmlChar *cur = in->cur;
++            while (cur < in->end) {
++                if ((*cur != 0x20) && (*cur != 0x9) && (*cur != 0xa) && (*cur != 0xd)) {
++                    xmlFatalErr(ctxt, XML_ERR_INTERNAL_ERROR, "expected EOF");
++                    return;
++                }
++                cur++;
++            }
++            in->cur = in->end;
++        }
+     }
+ }
