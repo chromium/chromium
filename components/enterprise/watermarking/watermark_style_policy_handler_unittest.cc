@@ -28,15 +28,18 @@ constexpr char kSchema[] = R"(
             "type": "integer",
             "minimum": 0,
             "maximum": 100
-            },
+          },
           "outline_opacity": {
-          "type": "integer",
-          "minimum": 0,
-          "maximum": 100
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100
           },
           "font_size": {
-          "type": "integer",
-          "minimum": 1
+            "type": "integer",
+            "minimum": 1
+          },
+          "timestamp_timezone": {
+            "type": "string"
           }
         }
       }
@@ -47,7 +50,8 @@ constexpr char kValidPolicy[] = R"(
   {
     "fill_opacity": 10,
     "outline_opacity": 20,
-    "font_size": 30
+    "font_size": 30,
+    "timestamp_timezone": "America/Toronto"
   }
 )";
 
@@ -88,6 +92,15 @@ constexpr char kInvalidFontSizeTooLowPolicy[] = R"(
     "fill_opacity": 10,
     "outline_opacity": 20,
     "font_size": 0
+  }
+)";
+
+constexpr char kInvalidTimestampTimezoneTypePolicy[] = R"(
+  {
+    "fill_opacity": 10,
+    "outline_opacity": 20,
+    "font_size": 30,
+    "timestamp_timezone": 12345
   }
 )";
 
@@ -154,6 +167,10 @@ TEST_F(WatermarkStylePolicyHandlerTest, TestValidPolicy) {
   ASSERT_TRUE(prefs.GetValue(enterprise_connectors::kWatermarkStyleFontSizePref,
                              &value_in_pref));
   int font_size = value_in_pref->GetInt();
+  ASSERT_TRUE(prefs.GetValue(
+      enterprise_connectors::kWatermarkStyleTimestampTimezonePref,
+      &value_in_pref));
+  std::string timestamp_timezone = value_in_pref->GetString();
 
   base::DictValue pref_dict;
   pref_dict.Set(enterprise_connectors::kWatermarkStyleFillOpacityFieldName,
@@ -162,6 +179,9 @@ TEST_F(WatermarkStylePolicyHandlerTest, TestValidPolicy) {
                 outline_opacity);
   pref_dict.Set(enterprise_connectors::kWatermarkStyleFontSizeFieldName,
                 font_size);
+  pref_dict.Set(
+      enterprise_connectors::kWatermarkStyleTimestampTimezoneFieldName,
+      timestamp_timezone);
 
   const base::Value* value_in_map =
       policy_map.GetValue(kPolicyName, base::Value::Type::DICT);
@@ -200,6 +220,7 @@ INSTANTIATE_TEST_SUITE_P(
          {"InvalidOutlineOpacityTooLow", kInvalidOutlineOpacityTooLowPolicy},
          {"InvalidOutlineOpacityTooHigh", kInvalidOutlineOpacityTooHighPolicy},
          {"InvalidFontSizeTooLow", kInvalidFontSizeTooLowPolicy},
+         {"InvalidTimestampTimezoneType", kInvalidTimestampTimezoneTypePolicy},
          {"InvalidFieldType", kInvalidFieldTypePolicy},
          {"InvalidTypeString", kInvalidTypeStringPolicy},
          {"InvalidTypeInt", kInvalidTypeIntPolicy}}),

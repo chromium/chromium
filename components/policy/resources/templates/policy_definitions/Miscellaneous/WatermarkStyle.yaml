@@ -1,12 +1,13 @@
 caption: Configure Custom Watermark Settings
 desc: |-
-  Allows administrators to customize the appearance of watermarks applied by Data Loss Prevention (DLP) rules. This includes setting its filling/oultine opacity, and defining its font size.
+  Allows administrators to customize the appearance of watermarks applied by Data Loss Prevention (DLP) rules. This includes setting its fill/outline opacity, defining its font size, and setting its timestamp time zone.
   If this policy or some values is not set, Chrome will use its default watermark behavior.
-  The default values are: fill opacity at 4, outline opacity at 6, and font size at 24.
+  The default values are: fill opacity at 4, outline opacity at 6, font size at 24, and timestamp time zone set to 'user_device' (user's local device time zone).
 
   The 'Fill Opacity' is a percentage from 0 (fully transparent) to 100 (fully opaque).
   The 'Outline Opacity' is a percentage from 0 (fully transparent) to 100 (fully opaque).
-  The 'FontSize' is specified in points .
+  The 'Font Size' is specified in points.
+  The 'Timestamp Timezone' specifies the IANA time zone identifier (e.g. 'America/Toronto') used for formatting watermark timestamps (supported starting in Chrome 152+), which follows the names in the IANA Time Zone Database ( https://www.iana.org/time-zones ).
 owners:
 - adamkl@google.com
 - cbe-cep-eng@google.com
@@ -39,9 +40,13 @@ schema:
       type: integer
       minimum: 1
       description: "Font size of the watermark text in points."
+    timestamp_timezone:
+      type: string
+      description: "IANA time zone identifier (e.g. 'America/Toronto') used for formatting watermark timestamps (supported starting in Chrome 152+). Defaults to 'user_device'."
 example_value:
   fill_opacity: 4
   outline_opacity: 6
   font_size: 24
+  timestamp_timezone: 'America/Toronto'
 tags: []
 label: Custom Watermark Configuration

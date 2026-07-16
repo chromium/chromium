@@ -71,14 +71,20 @@ inline constexpr const char kWatermarkStyleOutlineOpacityPref[] =
     "policy.watermark_style.outline_opacity";
 inline constexpr const char kWatermarkStyleFontSizePref[] =
     "policy.watermark_style.font_size";
+inline constexpr const char kWatermarkStyleTimestampTimezonePref[] =
+    "policy.watermark_style.timestamp_timezone";
 inline constexpr const char kWatermarkStyleFillOpacityFieldName[] =
     "fill_opacity";
 inline constexpr const char kWatermarkStyleOutlineOpacityFieldName[] =
     "outline_opacity";
 inline constexpr const char kWatermarkStyleFontSizeFieldName[] = "font_size";
+inline constexpr const char kWatermarkStyleTimestampTimezoneFieldName[] =
+    "timestamp_timezone";
 inline constexpr int kWatermarkStyleFillOpacityDefault = 4;
 inline constexpr int kWatermarkStyleOutlineOpacityDefault = 6;
 inline constexpr int kWatermarkStyleFontSizeDefault = 24;
+inline constexpr const char kWatermarkStyleTimestampTimezoneDefault[] =
+    "user_device";
 
 inline constexpr char kEnterpriseRealTimeUrlCheckScope[] =
     "safebrowsing.enterprise_real_time_url_check_scope";

@@ -12,7 +12,8 @@
             "WatermarkStyle": {
               "fill_opacity": 10,
               "outline_opacity": 10,
-              "font_size": 10
+              "font_size": 10,
+              "timestamp_timezone": "America/Toronto"
             }
           },
           "prefs": {
@@ -24,6 +25,9 @@
             },
             "policy.watermark_style.font_size": {
               "value": 10
+            },
+            "policy.watermark_style.timestamp_timezone": {
+              "value": "America/Toronto"
             }
           }
         },
@@ -38,6 +42,9 @@
             },
             "policy.watermark_style.font_size": {
               "default_value": 24
+            },
+            "policy.watermark_style.timestamp_timezone": {
+              "default_value": "user_device"
             }
           }
         },
@@ -56,6 +63,9 @@
             },
             "policy.watermark_style.font_size": {
               "default_value": 24
+            },
+            "policy.watermark_style.timestamp_timezone": {
+              "default_value": "user_device"
             }
           }
         },
@@ -75,10 +85,33 @@
             },
             "policy.watermark_style.font_size": {
               "default_value": 24
+            },
+            "policy.watermark_style.timestamp_timezone": {
+              "default_value": "user_device"
+            }
+          }
+        },
+        {
+          "policies": {
+            "WatermarkStyle": {
+              "timestamp_timezone": "Asia/Tokyo"
+            }
+          },
+          "prefs": {
+            "policy.watermark_style.fill_opacity": {
+              "default_value": 4
+            },
+            "policy.watermark_style.outline_opacity": {
+              "default_value": 6
+            },
+            "policy.watermark_style.font_size": {
+              "default_value": 24
+            },
+            "policy.watermark_style.timestamp_timezone": {
+              "value": "Asia/Tokyo"
             }
           }
         }
-
       ]
     }
   ]

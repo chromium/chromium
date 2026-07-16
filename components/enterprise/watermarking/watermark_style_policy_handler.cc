@@ -48,4 +48,12 @@ void WatermarkStylePolicyHandler::ApplyPolicySettings(
     prefs->SetInteger(enterprise_connectors::kWatermarkStyleFontSizePref,
                       font_size.value());
   }
+
+  const std::string* timestamp_timezone = value->GetDict().FindString(
+      enterprise_connectors::kWatermarkStyleTimestampTimezoneFieldName);
+  if (timestamp_timezone) {
+    prefs->SetString(
+        enterprise_connectors::kWatermarkStyleTimestampTimezonePref,
+        *timestamp_timezone);
+  }
 }

@@ -87,6 +87,8 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
                                 kWatermarkStyleOutlineOpacityDefault);
   registry->RegisterIntegerPref(kWatermarkStyleFontSizePref,
                                 kWatermarkStyleFontSizeDefault);
+  registry->RegisterStringPref(kWatermarkStyleTimestampTimezonePref,
+                               kWatermarkStyleTimestampTimezoneDefault);
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   registry->RegisterListPref(kOnFileAttachedPref);
