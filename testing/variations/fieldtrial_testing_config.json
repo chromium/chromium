@@ -7979,30 +7979,6 @@
             ]
         }
     ],
-    "CrossDevicePrefTracker": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "EnabledAll",
-                    "enable_features": [
-                        "EnableCrossDevicePrefTracker",
-                        "HomeModulePrefRefactor",
-                        "XplatSyncedSetup"
-                    ]
-                },
-                {
-                    "name": "EnabledInfraOnly",
-                    "enable_features": [
-                        "EnableCrossDevicePrefTracker",
-                        "HomeModulePrefRefactor"
-                    ]
-                }
-            ]
-        }
-    ],
     "CrossDeviceSigninFromDesktop": [
         {
             "platforms": [
