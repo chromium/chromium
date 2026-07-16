@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/strings/string_number_conversions.h"
@@ -23,6 +24,7 @@
 #include "components/browser_actuator/internal/transport/test_support/mock_stream_connection_delegate.h"
 #include "components/browser_actuator/internal/transport/test_support/mock_stream_framer.h"
 #include "components/browser_actuator/internal/transport/test_support/wait_for.h"
+#include "mojo/public/cpp/system/data_pipe.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_status_code.h"
 #include "net/http/http_util.h"
@@ -616,6 +618,107 @@ TEST_F(ProtoStreamClientTest, ConnectAfterPermanentFailureStartsOver) {
   EXPECT_EQ(requests_.size(), 2u);
 
   client->RemoveObserver(&observer);
+}
+
+TEST_F(ProtoStreamClientTest, TerminalStatusStopsReconnecting) {
+  ServeStream("body");
+  feed_handler_ = base::BindRepeating([](const std::string& chunk) {
+    StreamFramer::FeedResult result;
+    result.messages = {"last message"};
+    result.status = "serialized rpc status";
+    return result;
+  });
+
+  RecordingObserver observer;
+  auto client = MakeClient();
+  client->AddObserver(&observer);
+  client->Connect();
+  // The status is delivered before the server closes the stream; wait for
+  // the disconnect so the whole shutdown sequence has run.
+  ASSERT_TRUE(WaitFor([&] { return observer.state_changes.size() >= 2u; }));
+
+  EXPECT_THAT(observer.statuses, ElementsAre("serialized rpc status"));
+  EXPECT_FALSE(client->IsConnected());
+
+  // A completed RPC is not retried automatically.
+  task_environment_.FastForwardBy(base::Minutes(30));
+  EXPECT_EQ(requests_.size(), 1u);
+
+  // But an explicit Connect() starts over.
+  client->Connect();
+  ASSERT_TRUE(WaitFor([&] { return requests_.size() >= 2u; }));
+
+  client->RemoveObserver(&observer);
+}
+
+TEST_F(ProtoStreamClientTest, StallWatchdogReconnectsSilentStream) {
+  const base::TimeDelta stall_timeout = kProtoStreamStallTimeout.Get();
+  RecordingObserver observer;
+  auto client = MakeClient();
+  client->AddObserver(&observer);
+  client->Connect();
+  ASSERT_EQ(test_url_loader_factory_.NumPending(), 1);
+
+  // Open a valid proto stream by hand and keep it open without
+  // completing: AddResponse() would deliver and finish the response, but
+  // the watchdog needs a live-but-silent stream.
+  network::TestURLLoaderFactory::PendingRequest* pending =
+      test_url_loader_factory_.GetPendingRequest(0);
+  mojo::ScopedDataPipeProducerHandle producer;
+  mojo::ScopedDataPipeConsumerHandle consumer;
+  ASSERT_EQ(mojo::CreateDataPipe(nullptr, producer, consumer), MOJO_RESULT_OK);
+  pending->client->OnReceiveResponse(MakeResponseHead("application/x-protobuf"),
+                                     std::move(consumer), std::nullopt);
+  ASSERT_TRUE(WaitFor([&] { return client->IsConnected(); }));
+
+  // Any bytes push the watchdog out; a framed message makes the delivery
+  // observable.
+  task_environment_.FastForwardBy(stall_timeout / 2);
+  std::string_view bytes = "still alive";
+  size_t written = 0;
+  ASSERT_EQ(producer->WriteData(base::as_byte_span(bytes),
+                                MOJO_WRITE_DATA_FLAG_NONE, written),
+            MOJO_RESULT_OK);
+  ASSERT_TRUE(WaitFor([&] { return observer.messages.size() >= 1u; }));
+  task_environment_.FastForwardBy(stall_timeout / 2);
+  EXPECT_TRUE(client->IsConnected());
+
+  // Full silence for the stall timeout: the stream is declared dead and
+  // a reconnect is scheduled.
+  task_environment_.FastForwardBy(stall_timeout);
+  EXPECT_FALSE(client->IsConnected());
+  ServeStream("back");
+  task_environment_.FastForwardBy(base::Seconds(3));
+  EXPECT_GE(requests_.size(), 2u);
+
+  client->RemoveObserver(&observer);
+}
+
+TEST_F(ProtoStreamClientTest, StallWatchdogDisabledByZeroTimeout) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      kBrowserActuatorProtoStreamTransport,
+      {{"ProtoStreamStallTimeout", "0s"}});
+
+  auto client = MakeClient();
+  client->Connect();
+  ASSERT_EQ(test_url_loader_factory_.NumPending(), 1);
+
+  // A live-but-silent stream, as in StallWatchdogReconnectsSilentStream.
+  network::TestURLLoaderFactory::PendingRequest* pending =
+      test_url_loader_factory_.GetPendingRequest(0);
+  mojo::ScopedDataPipeProducerHandle producer;
+  mojo::ScopedDataPipeConsumerHandle consumer;
+  ASSERT_EQ(mojo::CreateDataPipe(nullptr, producer, consumer), MOJO_RESULT_OK);
+  pending->client->OnReceiveResponse(MakeResponseHead("application/x-protobuf"),
+                                     std::move(consumer), std::nullopt);
+  ASSERT_TRUE(WaitFor([&] { return client->IsConnected(); }));
+
+  // With a zero stall timeout the watchdog never arms: total silence far
+  // beyond the default timeout tears nothing down.
+  task_environment_.FastForwardBy(base::Minutes(30));
+  EXPECT_TRUE(client->IsConnected());
+  EXPECT_EQ(requests_.size(), 1u);
 }
 
 TEST_F(ProtoStreamClientTest, DisconnectCancelsPendingReconnect) {

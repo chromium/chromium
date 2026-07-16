@@ -13,6 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "components/browser_actuator/internal/transport/message_stream_client.h"
 #include "components/browser_actuator/internal/transport/stream_framer.h"
@@ -52,6 +53,12 @@ class StreamConnectionDelegate;
 // again — a rejecting or broken server is not something to retry
 // automatically — unless the delegate asks for a retry via
 // ShouldRetryOnHttpFailure (e.g. after invalidating a stale OAuth token).
+// A received terminal `status` also stops the client: a completed RPC is
+// not something to retry automatically either.
+//
+// A stall watchdog tears down and reconnects streams that go silent for
+// the kProtoStreamStallTimeout feature param; the server is expected to
+// emit periodic `noop` fields. A zero timeout disables the watchdog.
 //
 // All methods must be called on the owning sequence. Observers may call
 // Disconnect() or Connect() from OnStreamMessage(), but must not destroy
@@ -111,6 +118,9 @@ class ProtoStreamClient : public MessageStreamClient,
   // Handles an HTTP-level rejection of a connection attempt: retries with
   // backoff if the delegate asks for it, otherwise fails permanently.
   void HandleHttpRejection(int response_code);
+  // The stream produced no bytes for the stall timeout; assume it is
+  // dead.
+  void OnStallTimeout();
   void ScheduleReconnect();
   // Tears down the connection and any pending reconnect. Notifies
   // observers if the client was connected.
@@ -155,6 +165,10 @@ class ProtoStreamClient : public MessageStreamClient,
   // True while waiting for the delegate's PrepareRequest callback.
   bool preparing_request_ = false;
 
+  // A terminal `status` field arrived: the RPC completed, so the stream's
+  // end must not trigger a reconnect.
+  bool status_received_ = false;
+
   // Number of consecutive connection attempts that failed before producing
   // a valid stream; drives exponential backoff.
   int consecutive_failed_attempts_ = 0;
@@ -168,6 +182,7 @@ class ProtoStreamClient : public MessageStreamClient,
   std::unique_ptr<StreamFramer> framer_;
 
   base::OneShotTimer reconnect_timer_;
+  base::OneShotTimer stall_timer_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

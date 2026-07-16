@@ -18,4 +18,11 @@ BASE_FEATURE_PARAM(base::TimeDelta,
                    &kBrowserActuatorProtoStreamTransport,
                    base::Minutes(5));
 
+// TODO(crbug.com/534573786): Align the default with the production
+// server's noop cadence once that is known.
+BASE_FEATURE_PARAM(base::TimeDelta,
+                   kProtoStreamStallTimeout,
+                   &kBrowserActuatorProtoStreamTransport,
+                   base::Minutes(2));
+
 }  // namespace browser_actuator

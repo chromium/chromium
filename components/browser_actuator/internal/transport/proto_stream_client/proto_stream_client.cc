@@ -56,6 +56,7 @@ void ProtoStreamClient::Connect() {
     return;
   }
   consecutive_failed_attempts_ = 0;
+  status_received_ = false;
   StartRequest();
 }
 
@@ -155,6 +156,12 @@ void ProtoStreamClient::OnResponseStarted(
     base::AutoReset<bool> calling(&calling_delegate_, true);
     delegate_->OnConnectionEstablished();
   }
+  const base::TimeDelta stall_timeout = kProtoStreamStallTimeout.Get();
+  if (stall_timeout.is_positive()) {
+    stall_timer_.Start(FROM_HERE, stall_timeout,
+                       base::BindOnce(&ProtoStreamClient::OnStallTimeout,
+                                      base::Unretained(this)));
+  }
   SetConnected(true);
   RunDeferredTeardown();
 }
@@ -166,6 +173,7 @@ void ProtoStreamClient::HandleHttpRejection(int response_code) {
     should_retry = delegate_->ShouldRetryOnHttpFailure(response_code);
   }
   if (should_retry) {
+    stall_timer_.Stop();
     loader_.reset();
     framer_.reset();
     ++consecutive_failed_attempts_;
@@ -179,6 +187,13 @@ void ProtoStreamClient::OnDataReceived(std::string_view chunk,
                                        base::OnceClosure resume) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(framer_);
+
+  // Any bytes — including framing the consumer never sees, like noop
+  // keep-alives — prove the stream is alive. (Not running means the
+  // watchdog is disabled by a zero stall timeout.)
+  if (stall_timer_.IsRunning()) {
+    stall_timer_.Reset();
+  }
 
   // Hand the untrusted bytes to the framer; C++ never interprets them.
   StreamFramer::FeedResult result = framer_->Feed(chunk);
@@ -204,7 +219,9 @@ void ProtoStreamClient::OnDataReceived(std::string_view chunk,
   }
 
   if (result.status.has_value()) {
-    // The RPC completed; the server will close the connection.
+    // The RPC completed; the server will close the connection. Deliver the
+    // status and make sure the close does not trigger a reconnect.
+    status_received_ = true;
     {
       base::AutoReset<bool> notifying(&notifying_observers_, true);
       for (Observer& observer : observers_) {
@@ -228,6 +245,14 @@ void ProtoStreamClient::OnDataReceived(std::string_view chunk,
 
 void ProtoStreamClient::OnComplete(bool success) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  stall_timer_.Stop();
+
+  if (status_received_) {
+    // Clean RPC completion; not something to retry automatically.
+    TearDown();
+    return;
+  }
 
   const bool had_stream = connected_;
   if (!had_stream) {
@@ -267,6 +292,17 @@ void ProtoStreamClient::OnRetry(base::OnceClosure start) {
   NOTREACHED();
 }
 
+void ProtoStreamClient::OnStallTimeout() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // No bytes — not even noop keep-alives — for kStallTimeout. The
+  // connection is likely half-open (e.g. a NAT timeout); it would never
+  // report an error on its own, so tear it down and resume.
+  loader_.reset();
+  framer_.reset();
+  SetConnected(false);
+  ScheduleReconnect();
+}
+
 void ProtoStreamClient::ScheduleReconnect() {
   // The first reconnect waits the base reconnection time, and each
   // further consecutive failure doubles the wait, up to the max.
@@ -285,6 +321,7 @@ void ProtoStreamClient::TearDown() {
   weak_ptr_factory_.InvalidateWeakPtrs();
   preparing_request_ = false;
   reconnect_timer_.Stop();
+  stall_timer_.Stop();
   loader_.reset();
   framer_.reset();
   SetConnected(false);

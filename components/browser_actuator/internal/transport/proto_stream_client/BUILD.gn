@@ -99,6 +99,7 @@ source_set("unit_tests") {
     "//components/browser_actuator/internal:features",
     "//components/browser_actuator/internal/transport",
     "//components/browser_actuator/internal/transport/test_support",
+    "//mojo/public/cpp/system",
     "//net",
     "//net/traffic_annotation:test_support",
     "//services/network:test_support",
