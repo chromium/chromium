@@ -48,7 +48,8 @@ class CoBrowseViewsBridge {
 
   // Creates the CoBrowseViews instance using the factory.
   // Returns true if successful.
-  bool CreateCoBrowseViews(content::WebContents* web_contents);
+  bool CreateCoBrowseViews(content::WebContents* web_contents,
+                           bool request_focus);
 
   // Sets the web contents for the view.
   void SetWebContents(content::WebContents* web_contents, bool request_focus);

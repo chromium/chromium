@@ -125,6 +125,7 @@ public class CoBrowseViewFactory {
      * @param backgroundColor The background color for the content.
      * @param clientType The client using coBrowseViews.
      * @param containerType The type of container hosting the views.
+     * @param requestFocus Whether focus should be requested for the web contents.
      * @return The {@link CoBrowseViews} instance.
      */
     CoBrowseViews buildCoBrowseViews(
@@ -132,6 +133,7 @@ public class CoBrowseViewFactory {
             @ColorInt int backgroundColor,
             @TabBottomSheetClientType int clientType,
             @CoBrowseContainerType int containerType,
+            boolean requestFocus,
             @Nullable CoBrowseComponentProvider bottomSheetContentProvider) {
         View containerView =
                 LayoutInflater.from(mActivity).inflate(R.layout.tab_bottom_sheet, null);
@@ -219,7 +221,7 @@ public class CoBrowseViewFactory {
             }
         }
 
-        webUi.setWebContents(webContents, false);
+        webUi.setWebContents(webContents, requestFocus);
 
         PeekViewManager peekViewManager = null;
         TabBottomSheetManager manager = TabBottomSheetUtils.getManagerFromWindow(mWindowAndroid);
@@ -256,6 +258,7 @@ public class CoBrowseViewFactory {
             @Nullable @JniType("content::WebContents*") WebContents webContents,
             @TabBottomSheetClientType int clientType,
             @CoBrowseContainerType int containerType,
+            boolean requestFocus,
             @Nullable CoBrowseComponentProvider bottomSheetContentProvider) {
         CoBrowseViewFactory factory = TabBottomSheetUtils.getFactoryFromWindow(windowAndroid);
         if (factory == null) {
@@ -272,6 +275,7 @@ public class CoBrowseViewFactory {
                 backgroundColor,
                 clientType,
                 containerType,
+                requestFocus,
                 bottomSheetContentProvider);
     }
 }

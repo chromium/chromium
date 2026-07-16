@@ -222,7 +222,8 @@ SidePanelNativeView ContextualTasksPanelHostDesktopAndroid::CreateView(
     if (!MaybeCreateBridge()) {
       return nullptr;
     }
-    co_browse_views_bridge_->CreateCoBrowseViews(web_contents_);
+    co_browse_views_bridge_->CreateCoBrowseViews(web_contents_,
+                                                 /*request_focus=*/true);
   }
 
   auto view = context_sharing::CoBrowseViewsBridge::GetViewFromCoBrowseViews(

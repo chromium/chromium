@@ -296,6 +296,7 @@ public class TabBottomSheetManagerTest {
                                         webContents,
                                         TabBottomSheetClientType.UNKNOWN,
                                         CoBrowseContainerType.BOTTOM_SHEET,
+                                        /* requestFocus= */ false,
                                         new TestCoBrowseComponentProvider()));
 
         ThreadUtils.runOnUiThreadBlocking(
@@ -349,6 +350,7 @@ public class TabBottomSheetManagerTest {
                                         webContents,
                                         TabBottomSheetClientType.UNKNOWN,
                                         CoBrowseContainerType.BOTTOM_SHEET,
+                                        /* requestFocus= */ false,
                                         new TestCoBrowseComponentProvider()));
 
         ThreadUtils.runOnUiThreadBlocking(

@@ -61,7 +61,8 @@ CoBrowseViewsBridge::~CoBrowseViewsBridge() {
 }
 
 bool CoBrowseViewsBridge::CreateCoBrowseViews(
-    content::WebContents* web_contents) {
+    content::WebContents* web_contents,
+    bool request_focus) {
   TabAndroid* tab_android = GetTabAndroid();
   if (!tab_android) {
     LOG(WARNING) << "Cannot create CoBrowseViews: TabAndroid is null.";
@@ -88,7 +89,8 @@ bool CoBrowseViewsBridge::CreateCoBrowseViews(
   JNIEnv* env = AttachCurrentThread();
   java_co_browse_views_.Reset(Java_CoBrowseViewFactory_buildCoBrowseViews(
       env, window_android, web_contents, static_cast<int>(client_type_),
-      static_cast<int>(container_type_), bottom_sheet_content_provider_));
+      static_cast<int>(container_type_), request_focus,
+      bottom_sheet_content_provider_));
 
   return !java_co_browse_views_.is_null();
 }
@@ -118,7 +120,7 @@ void CoBrowseViewsBridge::SetWebContents(content::WebContents* web_contents,
 
   if (!java_co_browse_views_ || (current_window != window_android_ &&
                                  !tab_android->IsOffscreenRendering())) {
-    CreateCoBrowseViews(web_contents);
+    CreateCoBrowseViews(web_contents, request_focus);
     return;
   }
 
@@ -167,7 +169,7 @@ void CoBrowseViewsBridge::OnTabInserted(tabs::TabInterface* tab) {
           : nullptr;
 
   if (current_window && current_window != window_android_) {
-    CreateCoBrowseViews(guest_web_contents_);
+    CreateCoBrowseViews(guest_web_contents_, /*request_focus=*/false);
   }
 }
 
