@@ -6,6 +6,7 @@
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_STORE_PASSWORD_STORE_H_
 
 #include <memory>
+#include <optional>
 #include <ostream>
 #include <string>
 #include <vector>
@@ -140,6 +141,10 @@ class PasswordStore : public PasswordStoreInterface {
   // Called when the backend reports that sync has been enabled or disabled.
   void NotifySyncEnabledOrDisabledOnMainSequence();
 
+  // Helper to notify observers via OnErrorStateChanged if the actionable error
+  // differs from `last_reported_actionable_error_`.
+  void NotifyObserversIfErrorStateChanged(ActionableError error);
+
   // The following methods notify observers that the password store may have
   // been modified via NotifyLoginsChangedOnMainSequence(). Note that there is
   // no guarantee that the called method will actually modify the password store
@@ -170,6 +175,10 @@ class PasswordStore : public PasswordStoreInterface {
   // here to be executed afterwards by chaining in FIFO order. Callback is
   // invoked inside OnInitCompleted().
   base::OnceClosure post_init_callback_ = base::DoNothing();
+
+  // Caches the most recent reported actionable error so duplicate reports
+  // with the exact same error are skipped.
+  std::optional<ActionableError> last_reported_actionable_error_;
 };
 
 }  // namespace password_manager

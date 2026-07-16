@@ -193,6 +193,8 @@ auto EqUpdate(const StoredCredential& cred) {
 
 }  // namespace
 
+// TODO(crbug.com/535284793): Refactor tests to use the fake backend instead of
+// mocks.
 class PasswordStoreTest : public testing::Test {
  public:
   PasswordStoreTest(const PasswordStoreTest&) = delete;
@@ -748,6 +750,39 @@ TEST_F(PasswordStoreTest,
   EXPECT_CALL(mock_observer, OnLoginsRetained).Times(0);
   EXPECT_CALL(mock_observer, OnLoginsChanged).Times(0);
   EXPECT_CALL(mock_observer, OnErrorStateChanged).Times(0);
+  store->AddLogin(CloneStoredCredential(kTestForm));
+  WaitForPasswordStore();
+
+  store->RemoveObserver(&mock_observer);
+  store->ShutdownOnUIThread();
+}
+
+TEST_F(PasswordStoreTest, DoNotCallOnErrorStateChangedIfErrorStateIsIdentical) {
+  const StoredCredential kTestForm = MakeStoredCredential(kTestWebRealm1);
+  MockPasswordStoreObserver mock_observer;
+  auto [store, mock_backend] = CreateUnownedStoreWithOwnedMockBackend();
+  EXPECT_CALL(*mock_backend, InitBackend)
+      .WillOnce(WithArg<2>([](base::OnceCallback<void(bool)> completion) {
+        std::move(completion).Run(true);
+      }));
+  store->Init();
+  store->AddObserver(&mock_observer);
+
+  EXPECT_CALL(*mock_backend,
+              AddLoginAsync(MatchesCredential(CopyableStoredCredential(
+                                CloneStoredCredential(kTestForm))),
+                            _))
+      .WillOnce(WithArg<1>([&](PasswordChangesOrErrorReply reply) -> void {
+        std::move(reply).Run(PasswordChangesOrError(kBackendError));
+      }))
+      .WillOnce(WithArg<1>([&](PasswordChangesOrErrorReply reply) -> void {
+        std::move(reply).Run(PasswordChangesOrError(kBackendError));
+      }));
+
+  EXPECT_CALL(mock_observer,
+              OnErrorStateChanged(store.get(), ActionableError::kInactionable))
+      .Times(1);
+  store->AddLogin(CloneStoredCredential(kTestForm));
   store->AddLogin(CloneStoredCredential(kTestForm));
   WaitForPasswordStore();
 

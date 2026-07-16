@@ -511,9 +511,7 @@ void PasswordStore::NotifyLoginsChangedOnMainSequence(
   if (error.has_value() &&
       base::FeatureList::IsEnabled(
           features::kPasswordStorePropagatesActionableErrors)) {
-    for (auto& observer : observers_) {
-      observer.OnErrorStateChanged(this, error.value());
-    }
+    NotifyObserversIfErrorStateChanged(error.value());
   }
 
 #if BUILDFLAG(IS_ANDROID)
@@ -568,9 +566,7 @@ void PasswordStore::NotifyLoginsRetainedOnMainSequence(
 
   if (base::FeatureList::IsEnabled(
           features::kPasswordStorePropagatesActionableErrors)) {
-    for (auto& observer : observers_) {
-      observer.OnErrorStateChanged(this, error);
-    }
+    NotifyObserversIfErrorStateChanged(error);
   }
 
   // Clients don't expect errors yet, so just wait for the next notification.
@@ -595,6 +591,17 @@ void PasswordStore::NotifySyncEnabledOrDisabledOnMainSequence() {
   DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
   if (sync_enabled_or_disabled_cbs_) {
     sync_enabled_or_disabled_cbs_->Notify();
+  }
+}
+
+void PasswordStore::NotifyObserversIfErrorStateChanged(ActionableError error) {
+  DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
+  if (last_reported_actionable_error_ == error) {
+    return;
+  }
+  last_reported_actionable_error_ = error;
+  for (auto& observer : observers_) {
+    observer.OnErrorStateChanged(this, error);
   }
 }
 
