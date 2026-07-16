@@ -285,7 +285,7 @@ void LocalFilesMigrationManager::InitializeFromPrefs() {
     SetState(State::kFailure);
   }
 
-  local_user_files_allowed_ = LocalUserFilesAllowed();
+  local_user_files_allowed_ = LocalUserFilesAllowed(local_state_.get());
   migration_destination_ = GetMigrationDestination();
 
   // For kDelete, retry cleanup even after kMaxRetryCount failures to ensure
@@ -350,7 +350,7 @@ void LocalFilesMigrationManager::InitializeFromPrefs() {
 
 void LocalFilesMigrationManager::OnLocalUserFilesPolicyChanged() {
   bool local_user_files_allowed_old = local_user_files_allowed_;
-  local_user_files_allowed_ = LocalUserFilesAllowed();
+  local_user_files_allowed_ = LocalUserFilesAllowed(local_state_.get());
   MigrationDestination migration_destination_old = migration_destination_;
   migration_destination_ = GetMigrationDestination();
 

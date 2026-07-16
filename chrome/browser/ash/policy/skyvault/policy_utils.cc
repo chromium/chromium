@@ -9,7 +9,6 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/chrome_pref_names.h"
-#include "base/check_is_test.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
@@ -56,18 +55,12 @@ constexpr char kMigrationDestinationGoogleDrive[] = "google_drive";
 constexpr char kMigrationDestinationOneDrive[] = "microsoft_onedrive";
 constexpr char kMigrationDestinationDelete[] = "delete";
 
-bool LocalUserFilesAllowed() {
+bool LocalUserFilesAllowed(const PrefService& local_state) {
   // If the flag is disabled, ignore the policy value and allow local storage.
   if (!base::FeatureList::IsEnabled(features::kSkyVault)) {
     return true;
   }
-  // In tests, `g_browser_process` is null.
-  if (!g_browser_process || !g_browser_process->local_state()) {
-    CHECK_IS_TEST();
-    return true;
-  }
-  return g_browser_process->local_state()->GetBoolean(
-      ash::prefs::kLocalUserFilesAllowed);
+  return local_state.GetBoolean(ash::prefs::kLocalUserFilesAllowed);
 }
 
 MigrationDestination GetMigrationDestination() {

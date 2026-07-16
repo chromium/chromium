@@ -11,6 +11,7 @@
 #include <utility>
 
 #include "ash/constants/ash_features.h"
+#include "base/check_deref.h"
 #include "base/files/file_error_or.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
@@ -38,6 +39,7 @@
 #include "chrome/browser/ash/guest_os/public/guest_os_service_factory.h"
 #include "chrome/browser/ash/guest_os/public/types.h"
 #include "chrome/browser/ash/policy/skyvault/policy_utils.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/api/file_manager_private.h"
 #include "chromeos/ash/components/drivefs/drivefs_pinning_manager.h"
@@ -779,8 +781,10 @@ std::vector<fmp::MountableGuest> CreateMountableGuestList(Profile* profile) {
     return {};
   }
 
+  // TODO(crbug.com/404131876): Avoid using g_browser_process.
   bool local_user_files_allowed =
-      policy::local_user_files::LocalUserFilesAllowed();
+      policy::local_user_files::LocalUserFilesAllowed(
+          CHECK_DEREF(g_browser_process->local_state()));
 
   auto* registry = service->MountProviderRegistry();
   std::vector<fmp::MountableGuest> guests;

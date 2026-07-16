@@ -10,6 +10,7 @@
 #include "base/files/file_path.h"
 #include "base/time/time.h"
 
+class PrefService;
 class Profile;
 
 namespace policy::local_user_files {
@@ -118,7 +119,7 @@ enum class DialogAction {
 
 // Returns whether local user files are enabled on the device by the flag and
 // policy.
-bool LocalUserFilesAllowed();
+bool LocalUserFilesAllowed(const PrefService& local_state);
 
 // Returns the `MigrationDestination` indicating where local files should be
 // moved, or that they should be deleted. Returns `kNotSpecified` if the

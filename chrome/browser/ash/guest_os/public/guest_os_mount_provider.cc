@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "ash/constants/ash_features.h"
+#include "base/check_deref.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -20,6 +21,7 @@
 #include "chrome/browser/ash/guest_os/infra/cached_callback.h"
 #include "chrome/browser/ash/guest_os/public/types.h"
 #include "chrome/browser/ash/policy/skyvault/policy_utils.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/disks/disk_mount_manager.h"
 #include "storage/browser/file_system/external_mount_points.h"
@@ -172,8 +174,10 @@ class GuestOsMountProviderInner : public CachedCallback<ScopedVolume, bool> {
 };
 
 void GuestOsMountProvider::Mount(base::OnceCallback<void(bool)> callback) {
+  // TODO(crbug.com/404132059): Avoid using g_browser_process.
   const bool local_files_allowed =
-      policy::local_user_files::LocalUserFilesAllowed();
+      policy::local_user_files::LocalUserFilesAllowed(
+          CHECK_DEREF(g_browser_process->local_state()));
 
   // If SkyVaultV2 is enabled (GA version), block all VMs regardless of the
   // type.

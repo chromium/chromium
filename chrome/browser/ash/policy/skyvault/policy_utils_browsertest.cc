@@ -6,7 +6,9 @@
 
 #include <tuple>
 
+#include "base/check_deref.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/chrome_features.h"
@@ -58,7 +60,8 @@ class LocalUserFilesPolicyUtilsBrowserTest
 
 IN_PROC_BROWSER_TEST_P(LocalUserFilesPolicyUtilsBrowserTest, CheckPolicyValue) {
   // Before setting the policy, local files should always be allowed.
-  ASSERT_TRUE(LocalUserFilesAllowed());
+  ASSERT_TRUE(
+      LocalUserFilesAllowed(CHECK_DEREF(g_browser_process->local_state())));
 
   // Set the policy.
   bool allowed = PolicyValue();
@@ -66,9 +69,12 @@ IN_PROC_BROWSER_TEST_P(LocalUserFilesPolicyUtilsBrowserTest, CheckPolicyValue) {
 
   if (!EnableSkyvault()) {
     // Policy value doesn't matter.
-    ASSERT_TRUE(LocalUserFilesAllowed());
+    ASSERT_TRUE(
+        LocalUserFilesAllowed(CHECK_DEREF(g_browser_process->local_state())));
   } else {
-    ASSERT_EQ(LocalUserFilesAllowed(), allowed);
+    ASSERT_EQ(
+        LocalUserFilesAllowed(CHECK_DEREF(g_browser_process->local_state())),
+        allowed);
   }
 }
 

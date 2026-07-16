@@ -290,7 +290,8 @@ void VolumeManager::Initialize() {
     fusebox_daemon_ = file_manager::FuseBoxDaemon::GetInstance();
   }
 
-  local_user_files_allowed_ = policy::local_user_files::LocalUserFilesAllowed();
+  local_user_files_allowed_ =
+      policy::local_user_files::LocalUserFilesAllowed(local_state_.get());
   if (local_user_files_allowed_) {
     // Add local folders - MyFiles and ARC if enabled.
     OnLocalUserFilesEnabled();
@@ -994,7 +995,8 @@ void VolumeManager::OnLocalUserFilesPolicyChanged() {
     return;
   }
 
-  bool allowed = policy::local_user_files::LocalUserFilesAllowed();
+  bool allowed =
+      policy::local_user_files::LocalUserFilesAllowed(local_state_.get());
   if (allowed == local_user_files_allowed_) {
     return;
   }
@@ -1770,13 +1772,13 @@ void VolumeManager::UnsubscribeAndUnmountArc() {
 }
 
 void VolumeManager::OnLocalUserFilesEnabled() {
-  CHECK(policy::local_user_files::LocalUserFilesAllowed());
+  CHECK(policy::local_user_files::LocalUserFilesAllowed(local_state_.get()));
   MountDownloadsVolume();
   SubscribeAndMountArc();
 }
 
 void VolumeManager::OnLocalUserFilesDisabled() {
-  CHECK(!policy::local_user_files::LocalUserFilesAllowed());
+  CHECK(!policy::local_user_files::LocalUserFilesAllowed(local_state_.get()));
   UnsubscribeAndUnmountArc();
   UnmountDownloadsVolume();
   if (IsSkyVaultV2Enabled() && read_only_local_folders_) {
@@ -1786,7 +1788,7 @@ void VolumeManager::OnLocalUserFilesDisabled() {
 }
 
 void VolumeManager::OnMigrationSucceeded() {
-  if (policy::local_user_files::LocalUserFilesAllowed()) {
+  if (policy::local_user_files::LocalUserFilesAllowed(local_state_.get())) {
     LOG(ERROR)
         << "OnMigrationSucceeded() called but local files allowed, ignoring.";
     return;

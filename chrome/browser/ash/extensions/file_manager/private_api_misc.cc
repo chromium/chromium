@@ -237,7 +237,9 @@ std::string Redact(const base::FilePath& path) {
 // disabled but the download policy isn't set correctly defaults to MyFiles.
 api::file_manager_private::DefaultLocation GetDefaultLocation(
     const std::string& pref) {
-  if (policy::local_user_files::LocalUserFilesAllowed()) {
+  // TODO(crbug.com/404131876): Avoid using g_browser_process.
+  if (policy::local_user_files::LocalUserFilesAllowed(
+          CHECK_DEREF(g_browser_process->local_state()))) {
     // If local files are allowed, always default to MyFiles.
     return api::file_manager_private::DefaultLocation::kMyFiles;
   }
@@ -261,7 +263,9 @@ api::file_manager_private::DefaultLocation GetDefaultLocation(
 // of the policy value.
 api::file_manager_private::MigrationDestination
 GetSkyVaultMigrationDestination() {
-  if (policy::local_user_files::LocalUserFilesAllowed()) {
+  // TODO(crbug.com/404131876): Avoid using g_browser_process.
+  if (policy::local_user_files::LocalUserFilesAllowed(
+          CHECK_DEREF(g_browser_process->local_state()))) {
     // If local files are allowed, just return kNotSpecified.
     return api::file_manager_private::MigrationDestination::kNotSpecified;
   }
@@ -283,7 +287,9 @@ GetSkyVaultMigrationDestination() {
 // Returns the SkyVault migration start time as a formatted string if the
 // policies are set to disable local storage and delete existing local files.
 std::optional<std::string> GetSkyVaultMigrationStartTime(Profile* profile) {
-  if (policy::local_user_files::LocalUserFilesAllowed()) {
+  // TODO(crbug.com/404131876): Avoid using g_browser_process.
+  if (policy::local_user_files::LocalUserFilesAllowed(
+          CHECK_DEREF(g_browser_process->local_state()))) {
     return std::nullopt;
   }
 
@@ -343,8 +349,10 @@ FileManagerPrivateGetPreferencesFunction::Run() {
   result.office_file_moved_google_drive =
       prefs->GetTime(ash::prefs::kOfficeFileMovedToGoogleDrive)
           .InMillisecondsFSinceUnixEpoch();
+  // TODO(crbug.com/404131876): Avoid using g_browser_process.
   result.local_user_files_allowed =
-      policy::local_user_files::LocalUserFilesAllowed();
+      policy::local_user_files::LocalUserFilesAllowed(
+          CHECK_DEREF(g_browser_process->local_state()));
   result.default_location = GetDefaultLocation(
       prefs->GetString(ash::prefs::kFilesAppDefaultLocation));
   result.sky_vault_migration_destination = GetSkyVaultMigrationDestination();
