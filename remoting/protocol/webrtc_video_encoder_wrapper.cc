@@ -287,10 +287,12 @@ int32_t WebrtcVideoEncoderWrapper::Encode(
   auto* video_frame_adapter =
       static_cast<WebrtcVideoFrameAdapter*>(frame.video_frame_buffer().get());
 
-  // Store RTP timestamp and FrameStats so they can be added to the
-  // EncodedImage and EncodedFrame when encoding is complete, and used for
-  // top-off extrapolation.
+  // Store RTP timestamp, capture timestamps, and FrameStats so they can be
+  // added to the EncodedImage and EncodedFrame when encoding is complete, and
+  // used for top-off extrapolation.
   rtp_timestamp_ = frame.rtp_timestamp();
+  capture_time_ms_ = frame.render_time_ms();
+  ntp_time_ms_ = frame.ntp_time_ms();
   frame_stats_ = video_frame_adapter->TakeFrameStats();
   if (!frame_stats_) {
     // This could happen if WebRTC tried to encode the same frame twice.
@@ -406,6 +408,8 @@ WebrtcVideoEncoderWrapper::ReturnEncodedFrame(
                                  ? webrtc::VideoFrameType::kVideoFrameKey
                                  : webrtc::VideoFrameType::kVideoFrameDelta;
   encoded_image.SetRtpTimestamp(frame.rtp_timestamp);
+  encoded_image.capture_time_ms_ = frame.capture_time_ms;
+  encoded_image.ntp_time_ms_ = frame.ntp_time_ms;
   encoded_image.SetPlayoutDelay(webrtc::VideoPlayoutDelay::Minimal());
   encoded_image.content_type_ = webrtc::VideoContentType::SCREENSHARE;
 
@@ -481,6 +485,8 @@ void WebrtcVideoEncoderWrapper::OnFrameEncoded(
     frame->stats = frame_stats_->Clone();
 
     frame->rtp_timestamp = rtp_timestamp_;
+    frame->capture_time_ms = capture_time_ms_;
+    frame->ntp_time_ms = ntp_time_ms_;
   }
 
   if (encode_result != WebrtcVideoEncoder::EncodeResult::SUCCEEDED) {
@@ -651,10 +657,30 @@ void WebrtcVideoEncoderWrapper::ExtrapolateFrame() {
     LOG(ERROR) << "No top-off frame is available.";
     return;
   }
-  latest_frame_encode_start_time_ = base::TimeTicks::Now();
+  base::TimeTicks now = base::TimeTicks::Now();
+  base::TimeDelta time_since_last_frame;
+  if (!latest_frame_encode_start_time_.is_null()) {
+    time_since_last_frame = now - latest_frame_encode_start_time_;
+  }
+  latest_frame_encode_start_time_ = now;
   frame_stats_->ResetTimestamps(latest_frame_encode_start_time_);
-  // WebRTC requires the RTP timestamp be increasing, so we just add 1.
-  rtp_timestamp_++;
+
+  // Advance RTP and capture timestamps based on elapsed time.
+  // Video RTP timestamp uses a 90 kHz clock (90 ticks per millisecond).
+  // Note: The intermediate diff is calculated in 64-bit space to prevent
+  // overflow, then assigned to uint32_t so that adding to rtp_timestamp_
+  // relies on guaranteed C++ unsigned 32-bit wrapping arithmetic.
+  uint32_t rtp_time_diff = static_cast<uint32_t>(
+      std::max<int64_t>(1, (time_since_last_frame.InMicroseconds() * 90) /
+                               base::Time::kMicrosecondsPerMillisecond));
+  rtp_timestamp_ += rtp_time_diff;
+  if (capture_time_ms_ > 0) {
+    capture_time_ms_ += time_since_last_frame.InMilliseconds();
+  }
+  if (ntp_time_ms_ > 0) {
+    ntp_time_ms_ += time_since_last_frame.InMilliseconds();
+  }
+
   EncodeDesktopFrame(last_capturer_fed_frame_->Share());
 }
 

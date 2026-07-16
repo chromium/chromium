@@ -97,7 +97,9 @@ class WebrtcVideoEncoder {
     webrtc::VideoCodecType codec;
     int32_t profile = 0;
 
-    uint32_t rtp_timestamp;
+    uint32_t rtp_timestamp = 0;
+    int64_t capture_time_ms = 0;
+    int64_t ntp_time_ms = 0;
     std::unique_ptr<FrameStats> stats;
     // This rectangle in the input frame will be encoded by the encoder.
     int32_t encoded_rect_width = 0;

@@ -108,10 +108,12 @@ class WebrtcVideoEncoderWrapper : public webrtc::VideoEncoder {
   raw_ptr<webrtc::EncodedImageCallback> encoded_callback_
       GUARDED_BY_CONTEXT(sequence_checker_) = nullptr;
 
-  // Timestamp to be added to the EncodedImage when sending it to
-  // |encoded_callback_|. This value comes from the frame that WebRTC
-  // passes to Encode().
+  // Timestamps to be added to the EncodedImage when sending it to
+  // |encoded_callback_|. These values come from the frame that WebRTC
+  // passes to Encode(), and are advanced during extrapolation.
   uint32_t rtp_timestamp_ GUARDED_BY_CONTEXT(sequence_checker_);
+  int64_t capture_time_ms_ GUARDED_BY_CONTEXT(sequence_checker_) = 0;
+  int64_t ntp_time_ms_ GUARDED_BY_CONTEXT(sequence_checker_) = 0;
 
   // FrameStats taken from the input VideoFrameAdapter, then added to the
   // EncodedFrame when encoding is complete. This is also used for top-off and

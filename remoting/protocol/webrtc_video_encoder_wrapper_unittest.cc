@@ -684,4 +684,47 @@ TEST_F(WebrtcVideoEncoderWrapperTest,
   PostQuitAndRun();
 }
 
+TEST_F(WebrtcVideoEncoderWrapperTest, ExtrapolatedFramesAdvanceTimestamps) {
+  constexpr uint32_t kInitialRtpTimestamp = 100000;
+  constexpr int64_t kInitialCaptureTimeMs = 500;
+  constexpr int64_t kInitialNtpTimeMs = 1600000000000;
+
+  base::TimeDelta interval =
+      WebrtcVideoEncoderWrapper::GetKeepAliveIntervalForTesting();
+
+  EXPECT_CALL(callback_, OnEncodedImage(_, _))
+      .WillOnce([&](const EncodedImage& encoded_image,
+                    const CodecSpecificInfo* codec_specific_info) {
+        EXPECT_EQ(encoded_image.RtpTimestamp(), kInitialRtpTimestamp);
+        EXPECT_EQ(encoded_image.capture_time_ms_, kInitialCaptureTimeMs);
+        EXPECT_EQ(encoded_image.ntp_time_ms_, kInitialNtpTimeMs);
+        return kResultOk;
+      })
+      .WillOnce([&](const EncodedImage& encoded_image,
+                    const CodecSpecificInfo* codec_specific_info) {
+        EXPECT_EQ(encoded_image.RtpTimestamp(),
+                  kInitialRtpTimestamp + interval.InMilliseconds() * 90);
+        EXPECT_EQ(encoded_image.capture_time_ms_,
+                  kInitialCaptureTimeMs + interval.InMilliseconds());
+        EXPECT_EQ(encoded_image.ntp_time_ms_,
+                  kInitialNtpTimeMs + interval.InMilliseconds());
+        return kResultOk;
+      });
+
+  auto encoder = InitEncoder(GetVp9Format(), GetVp9Codec());
+  encoder->SetEncoderForTest(std::move(mock_video_encoder_));
+
+  std::vector<VideoFrameType> frame_types{VideoFrameType::kVideoFrameKey};
+  VideoFrame input_frame = MakeVideoFrame();
+  input_frame.set_rtp_timestamp(kInitialRtpTimestamp);
+  input_frame.set_timestamp_us(kInitialCaptureTimeMs *
+                               base::Time::kMicrosecondsPerMillisecond);
+  input_frame.set_ntp_time_ms(kInitialNtpTimeMs);
+
+  encoder->Encode(input_frame, &frame_types);
+  task_environment_.FastForwardBy(interval);
+
+  PostQuitAndRun();
+}
+
 }  // namespace remoting::protocol
