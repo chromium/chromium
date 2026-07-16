@@ -2,11 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/autofill/edit_address_profile_dialog_controller_impl.h"
 #include "chrome/browser/ui/views/autofill/address_editor_view.h"
 #include "chrome/browser/ui/views/autofill/edit_address_profile_view.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
+#include "components/autofill/core/browser/geo/autofill_country.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "content/public/browser/web_contents.h"
@@ -15,6 +17,9 @@
 
 namespace autofill {
 namespace {
+
+using ::testing::IsNull;
+using ::testing::NotNull;
 
 constexpr char kSuppressedScreenshotError[] =
     "Screenshot can only run in pixel_tests on Windows.";
@@ -30,14 +35,16 @@ class EditAddressProfileDialogControllerImplTest
         {features::kAutofillSupportSplitZipCode},
         /*disabled_features=*/{});
     local_profile_ =
-        CreateTestProfile(AutofillProfile::RecordType::kLocalOrSyncable);
-    account_profile_ = CreateTestProfile(AutofillProfile::RecordType::kAccount);
+        CreateTestProfile(AutofillProfile::RecordType::kLocalOrSyncable, "US");
+    account_profile_ =
+        CreateTestProfile(AutofillProfile::RecordType::kAccount, "US");
   }
 
   static std::unique_ptr<AutofillProfile> CreateTestProfile(
-      AutofillProfile::RecordType record_type) {
-    auto profile = std::make_unique<AutofillProfile>(record_type,
-                                                     AddressCountryCode("US"));
+      AutofillProfile::RecordType record_type,
+      const std::string& country_code) {
+    auto profile = std::make_unique<AutofillProfile>(
+        record_type, AddressCountryCode(country_code));
     profile->SetRawInfoWithVerificationStatus(
         NAME_FULL, u"Mona J. Liza", VerificationStatus::kUserVerified);
     test::SetProfileInfo(profile.get(),
@@ -49,7 +56,7 @@ class EditAddressProfileDialogControllerImplTest
                              .with_city("Playa Vista")
                              .with_state("LA")
                              .with_zipcode("12345")
-                             .with_country("US")
+                             .with_country(country_code)
                              .with_phone("13105551234")
                              .with_status(VerificationStatus::kUserVerified)
                              .Build(),
@@ -102,7 +109,7 @@ class EditAddressProfileDialogControllerImplTest
       EditAddressProfileDialogControllerImpl* const controller =
           EditAddressProfileDialogControllerImpl::FromWebContents(
               web_contents());
-      ASSERT_THAT(controller, ::testing::NotNull());
+      ASSERT_THAT(controller, NotNull());
       controller->OfferEdit(
           profile, /*title_override=*/u"", footer_message,
           /*is_editing_existing_address=*/original_profile != nullptr,
@@ -238,6 +245,103 @@ IN_PROC_BROWSER_TEST_F(EditAddressProfileDialogControllerImplTest,
       EnsureClosedWithDecisionAndProfile(
           AutofillClient::AddressPromptUserDecision::kEditAccepted,
           expected_profile));
+}
+
+// Tests that initial address editor field layout rendering correctly respects
+// country-specific i18n rules (e.g. displaying City/ZIP for US vs Emirate for UAE).
+IN_PROC_BROWSER_TEST_F(EditAddressProfileDialogControllerImplTest,
+                       CountrySpecificLayoutInitialization) {
+  AutofillProfile us_profile = local_profile();
+  AutofillProfile ae_profile =
+      *CreateTestProfile(AutofillProfile::RecordType::kLocalOrSyncable, "AE");
+
+  RunTestSequence(
+      // First initialization: US profile (City, ZIP present)
+      ShowEditor(us_profile, /*original_profile=*/nullptr, u"",
+                 /*is_migration_to_account=*/false),
+      InAnyContext(
+          WaitForShow(EditAddressProfileView::kTopViewId),
+          WithView(EditAddressProfileView::kTopViewId,
+                   [](views::View* view) {
+                     AddressEditorView* editor_view =
+                         static_cast<EditAddressProfileView*>(view)
+                             ->GetAddressEditorViewForTesting();
+                     ASSERT_THAT(editor_view, NotNull());
+                     EXPECT_THAT(editor_view->GetViewByID(
+                                     static_cast<int>(ADDRESS_HOME_CITY)),
+                                 NotNull());
+                     EXPECT_THAT(editor_view->GetViewByID(
+                                     static_cast<int>(ADDRESS_HOME_ZIP)),
+                                 NotNull());
+                   }),
+          PressButton(views::DialogClientView::kCancelButtonElementId),
+          WaitForHide(EditAddressProfileView::kTopViewId)),
+
+      // Second initialization: UAE profile (Emirate present; City & ZIP absent)
+      ShowEditor(ae_profile, /*original_profile=*/nullptr, u"",
+                 /*is_migration_to_account=*/false),
+      InAnyContext(
+          WaitForShow(EditAddressProfileView::kTopViewId),
+          WithView(EditAddressProfileView::kTopViewId,
+                   [](views::View* view) {
+                     AddressEditorView* editor_view =
+                         static_cast<EditAddressProfileView*>(view)
+                             ->GetAddressEditorViewForTesting();
+                     ASSERT_THAT(editor_view, NotNull());
+                     EXPECT_THAT(editor_view->GetViewByID(
+                                     static_cast<int>(ADDRESS_HOME_STATE)),
+                                 NotNull());
+                     EXPECT_THAT(editor_view->GetViewByID(
+                                     static_cast<int>(ADDRESS_HOME_CITY)),
+                                 IsNull());
+                     EXPECT_THAT(editor_view->GetViewByID(
+                                     static_cast<int>(ADDRESS_HOME_ZIP)),
+                                 IsNull());
+                   }),
+          PressButton(views::DialogClientView::kCancelButtonElementId),
+          WaitForHide(EditAddressProfileView::kTopViewId)));
+}
+
+// Tests that dynamically selecting a different country in the address editor
+// dynamically re-renders fields according to the selected country's i18n layout.
+IN_PROC_BROWSER_TEST_F(EditAddressProfileDialogControllerImplTest,
+                       DynamicI18nLayoutUpdates) {
+  AutofillProfile profile = local_profile();
+
+  RunTestSequence(
+      ShowEditor(profile, /*original_profile=*/nullptr, u"",
+                 /*is_migration_to_account=*/false),
+      InAnyContext(
+          WaitForShow(EditAddressProfileView::kTopViewId),
+          WithView(EditAddressProfileView::kTopViewId,
+                   [](views::View* view) {
+                     AddressEditorView* editor_view =
+                         static_cast<EditAddressProfileView*>(view)
+                             ->GetAddressEditorViewForTesting();
+                     ASSERT_THAT(editor_view, NotNull());
+                     EXPECT_THAT(editor_view->GetViewByID(
+                                     static_cast<int>(ADDRESS_HOME_CITY)),
+                                 NotNull());
+                     EXPECT_THAT(editor_view->GetViewByID(
+                                     static_cast<int>(ADDRESS_HOME_ZIP)),
+                                 NotNull());
+
+                     editor_view->SelectCountryForTesting(
+                         AutofillCountry(
+                             "AE", g_browser_process->GetApplicationLocale())
+                             .name());
+                     EXPECT_THAT(editor_view->GetViewByID(
+                                     static_cast<int>(ADDRESS_HOME_STATE)),
+                                 NotNull());
+                     EXPECT_THAT(editor_view->GetViewByID(
+                                     static_cast<int>(ADDRESS_HOME_CITY)),
+                                 IsNull());
+                     EXPECT_THAT(editor_view->GetViewByID(
+                                     static_cast<int>(ADDRESS_HOME_ZIP)),
+                                 IsNull());
+                   }),
+          PressButton(views::DialogClientView::kCancelButtonElementId),
+          WaitForHide(EditAddressProfileView::kTopViewId)));
 }
 
 }  // namespace
