@@ -71,6 +71,8 @@ impl SizeInfo {
     /// Attempts to create a `SizeInfo` from `Self` in which `elem_size` is a
     /// `NonZeroUsize`. If `elem_size` is 0, returns `None`.
     #[allow(unused)]
+    #[cfg_attr(not(zerocopy_inline_always), inline)]
+    #[cfg_attr(zerocopy_inline_always, inline(always))]
     const fn try_to_nonzero_elem_size(&self) -> Option<SizeInfo<NonZeroUsize>> {
         Some(match *self {
             SizeInfo::Sized { size } => SizeInfo::Sized { size },

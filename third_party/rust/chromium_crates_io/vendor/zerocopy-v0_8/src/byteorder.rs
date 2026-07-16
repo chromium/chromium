@@ -100,6 +100,7 @@ mod private {
 
 #[allow(missing_copy_implementations, missing_debug_implementations)]
 #[doc(hidden)]
+#[derive(PartialEq)]
 pub enum Order {
     BigEndian,
     LittleEndian,
