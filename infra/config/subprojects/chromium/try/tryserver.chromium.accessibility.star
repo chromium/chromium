@@ -48,7 +48,7 @@ try_.builder(
         ],
     ),
     experiments = {
-        "luci.buildbucket.run_in_turboci": 25,
+        "luci.buildbucket.run_in_turboci": 100,
     },
 )
 
@@ -72,6 +72,6 @@ try_.builder(
         ],
     ),
     experiments = {
-        "luci.buildbucket.run_in_turboci": 25,
+        "luci.buildbucket.run_in_turboci": 100,
     },
 )

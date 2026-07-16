@@ -285,6 +285,9 @@ try_.builder(
         cancel_stale = False,
         on_default_cq = True,
     ),
+    experiments = {
+        "luci.buildbucket.run_in_turboci": 2,
+    },
     main_list_view = "try",
     siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CQ,
 )
@@ -380,6 +383,9 @@ try_.builder(
             "sandbox/policy/win/.+",
         ],
     ),
+    experiments = {
+        "luci.buildbucket.run_in_turboci": 25,
+    },
     # The size of the testing pool is limited.
     max_concurrent_builds = 3,
     use_clang_coverage = True,
@@ -415,6 +421,9 @@ try_.builder(
             "sandbox/policy/win/.+",
         ],
     ),
+    experiments = {
+        "luci.buildbucket.run_in_turboci": 25,
+    },
     main_list_view = "try",
     # The size of the testing pool is limited.
     max_concurrent_builds = 4,
@@ -448,6 +457,9 @@ try_.builder(
         cancel_stale = False,
         on_default_cq = True,
     ),
+    experiments = {
+        "luci.buildbucket.run_in_turboci": 2,
+    },
     main_list_view = "try",
     siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CQ,
 )
@@ -617,6 +629,9 @@ gpu.try_.optional_tests_builder(
     ),
     # default is 6 in _gpu_optional_tests_builder()
     execution_timeout = 5 * time.hour,
+    experiments = {
+        "luci.buildbucket.run_in_turboci": 25,
+    },
     main_list_view = "try",
     # This is higher than the default of 7 for optional GPU builders
     # because Windows builds take longer than other platforms even
