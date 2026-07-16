@@ -67,6 +67,7 @@
 #include "chrome/browser/ui/views/contextual_tasks/contextual_tasks_button.h"
 #include "chrome/browser/ui/views/contextual_tasks/contextual_tasks_close_tab_button.h"
 #include "chrome/browser/ui/views/extensions/extension_popup.h"
+#include "chrome/browser/ui/views/extensions/extensions_container_views.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_button.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_coordinator.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_desktop.h"
@@ -1658,7 +1659,10 @@ void ToolbarView::UpdateTypeAndSeverity(
   }
 }
 
-ExtensionsToolbarDesktop* ToolbarView::GetExtensionsToolbarDesktop() {
+ExtensionsContainerViews* ToolbarView::GetExtensionsContainerViews() {
+  if (features::IsWebUIExtensionsContainerEnabled()) {
+    return toolbar_webview_->extensions_container_views();
+  }
   return extensions_container_;
 }
 
@@ -1678,8 +1682,10 @@ gfx::Size ToolbarView::GetToolbarButtonSize() const {
 }
 
 views::BubbleAnchor ToolbarView::GetDefaultExtensionDialogAnchor() {
-  if (extensions_container_ && extensions_container_->GetVisible()) {
-    return views::BubbleAnchor(extensions_container_->GetExtensionsButton());
+  ExtensionsContainerViews* extensions_container =
+      GetExtensionsContainerViews();
+  if (extensions_container && extensions_container->IsVisible()) {
+    return extensions_container->GetExtensionsButtonAnchor();
   }
   auto* control = GetAppMenuControl();
   return control ? control->GetAnchor() : views::BubbleAnchor();

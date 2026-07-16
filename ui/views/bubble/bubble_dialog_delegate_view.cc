@@ -1177,6 +1177,7 @@ void BubbleDialogDelegate::SetAnchor(BubbleAnchor anchor) {
     }
   } else {
     CHECK(anchor.IsNull());
+    anchor_tracked_element_ = nullptr;
     SetAnchorView(nullptr);
     SetAnchorRect(gfx::Rect());
   }

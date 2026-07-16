@@ -263,8 +263,8 @@ void WebAppFrameToolbarView::LayoutForWindowControlsOverlay(
   SetBounds(x, available_space.y(), width, available_space.height());
 }
 
-ExtensionsToolbarDesktop*
-WebAppFrameToolbarView::GetExtensionsToolbarDesktop() {
+ExtensionsContainerViews*
+WebAppFrameToolbarView::GetExtensionsContainerViews() {
   return right_container_->extensions_container();
 }
 
@@ -278,10 +278,10 @@ gfx::Size WebAppFrameToolbarView::GetToolbarButtonSize() const {
 }
 
 views::BubbleAnchor WebAppFrameToolbarView::GetDefaultExtensionDialogAnchor() {
-  ExtensionsToolbarDesktop* extensions_container =
-      GetExtensionsToolbarDesktop();
-  if (extensions_container && extensions_container->GetVisible()) {
-    return views::BubbleAnchor(extensions_container->GetExtensionsButton());
+  ExtensionsContainerViews* extensions_container =
+      GetExtensionsContainerViews();
+  if (extensions_container && extensions_container->IsVisible()) {
+    return extensions_container->GetExtensionsButtonAnchor();
   }
   auto* control = GetAppMenuControl();
   return control ? control->GetAnchor() : views::BubbleAnchor();

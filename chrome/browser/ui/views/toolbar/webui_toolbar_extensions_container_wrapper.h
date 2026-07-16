@@ -50,6 +50,10 @@ class WebUIToolbarExtensionsContainerWrapper
   void Init(content::WebContents* web_contents);
   void OnThemeChanged();
 
+  WebUIToolbarExtensionsContainer* extensions_container() {
+    return extensions_container_.get();
+  }
+
   void ExecuteUserAction(const std::string& extension_id);
   void ShowContextMenu(ui::mojom::MenuSourceType source,
                        const std::string& extension_id);

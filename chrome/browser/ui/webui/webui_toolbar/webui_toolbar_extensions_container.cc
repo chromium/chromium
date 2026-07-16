@@ -159,6 +159,20 @@ class WebUIToolbarExtensionsContainer::ContextMenu {
   base::WeakPtrFactory<ContextMenu> weak_ptr_factory_{this};
 };
 
+WebUIToolbarExtensionsContainer::AnchoredWidget::AnchoredWidget(
+    views::Widget* w,
+    std::string id)
+    : widget(w), extension_id(std::move(id)) {}
+
+WebUIToolbarExtensionsContainer::AnchoredWidget::~AnchoredWidget() = default;
+
+WebUIToolbarExtensionsContainer::AnchoredWidget::AnchoredWidget(
+    AnchoredWidget&&) = default;
+
+WebUIToolbarExtensionsContainer::AnchoredWidget&
+WebUIToolbarExtensionsContainer::AnchoredWidget::operator=(AnchoredWidget&&) =
+    default;
+
 WebUIToolbarExtensionsContainer::WebUIToolbarExtensionsContainer(
     BrowserWindowInterface& browser,
     views::Widget* widget,
@@ -181,6 +195,21 @@ WebUIToolbarExtensionsContainer::~WebUIToolbarExtensionsContainer() {
   for (const auto& [_, action] : actions_) {
     action->model()->UnregisterCommand();
   }
+
+  // Create a copy of the anchored widgets, since |anchored_widgets_| will
+  // be modified by closing them.
+  std::vector<views::Widget*> widgets;
+  widgets.reserve(anchored_widgets_.size());
+  for (const auto& anchored_widget : anchored_widgets_) {
+    widgets.push_back(anchored_widget.widget);
+  }
+  for (auto* widget : widgets) {
+    widget->CloseNow();
+  }
+  // The widgets should close synchronously (resulting in OnWidgetClosing()),
+  // so |anchored_widgets_| should now be empty.
+  DCHECK(anchored_widgets_.empty());
+  CHECK(!views::WidgetObserver::IsInObserverList());
 }
 
 void WebUIToolbarExtensionsContainer::SetObserver(
@@ -233,6 +262,10 @@ WebUIToolbarExtensionsContainer::GetPoppedOutActionId() const {
   return popped_out_action_;
 }
 
+bool WebUIToolbarExtensionsContainer::IsVisible() const {
+  return GetWidget() && GetWidget()->IsVisible() && !actions_.empty();
+}
+
 void WebUIToolbarExtensionsContainer::OnContextMenuShownFromToolbar(
     const std::string& action_id) {
   DCHECK_EQ(action_id, context_menu_->action_id());
@@ -247,8 +280,18 @@ void WebUIToolbarExtensionsContainer::OnContextMenuClosedFromToolbar() {
 
 bool WebUIToolbarExtensionsContainer::IsActionVisibleOnToolbar(
     const std::string& action_id) const {
-  return model_->IsActionPinned(action_id) || popped_out_action_ == action_id ||
-         (context_menu_ && context_menu_->action_id() == action_id);
+  if (model_->IsActionPinned(action_id) || popped_out_action_ == action_id ||
+      (context_menu_ && context_menu_->action_id() == action_id)) {
+    return true;
+  }
+
+  for (const auto& anchored_widget : anchored_widgets_) {
+    if (anchored_widget.extension_id == action_id) {
+      return true;
+    }
+  }
+
+  return false;
 }
 
 void WebUIToolbarExtensionsContainer::UndoPopOut() {
@@ -293,9 +336,18 @@ WebUIToolbarExtensionsContainer::GetFocusManagerForAccelerator() {
 
 views::BubbleAnchor WebUIToolbarExtensionsContainer::GetReferenceButtonForPopup(
     const extensions::ExtensionId& action_id) {
-  auto it = actions_.find(action_id);
-  CHECK(it != actions_.end());
-  return views::BubbleAnchor(it->second->GetAnchor());
+  if (ui::TrackedElement* anchor = GetExtensionAnchor(action_id)) {
+    return views::BubbleAnchor(anchor);
+  }
+  return GetExtensionsButtonAnchor();
+}
+
+views::BubbleAnchor
+WebUIToolbarExtensionsContainer::GetExtensionsButtonAnchor() {
+  if (ui::TrackedElement* anchor = GetExtensionsMenuButtonAnchor()) {
+    return views::BubbleAnchor(anchor);
+  }
+  return views::BubbleAnchor(GetWidget()->GetRootView());
 }
 
 void WebUIToolbarExtensionsContainer::CollapseConfirmation() {
@@ -501,4 +553,82 @@ void WebUIToolbarExtensionsContainer::CreateActionForId(
                                                            this, this)));
   action_info->model()->RegisterCommand();
   actions_[action_id] = std::move(action_info);
+}
+
+void WebUIToolbarExtensionsContainer::ShowWidgetForExtension(
+    views::Widget* widget,
+    const std::string& extension_id) {
+  ui::TrackedElement* anchor = GetExtensionAnchor(extension_id);
+  if (anchor) {
+    anchored_widgets_.emplace_back(widget, extension_id);
+    widget->AddObserver(this);
+    NotifyOfOneAction(extension_id);
+    AnchorAndShowWidgetImmediately(widget, anchor);
+  } else {
+    // If the particular extension button isn't anchorable, it's likely not yet
+    // visible. Adding it to anchored_widgets_ will make it visible, but we'll
+    // have to wait for it to animate in for it to be anchorable. Delay calling
+    // AnchorAndShowWidgetImmediately until it has finished animating in.
+
+    // Clear the bubble's anchor to avoid dangling pointers if the
+    // TrackedElement goes away while we're delaying.
+    if (views::BubbleDialogDelegate* bubble_delegate =
+            widget->widget_delegate()->AsBubbleDialogDelegate()) {
+      bubble_delegate->SetAnchor(views::BubbleAnchor());
+    }
+
+    auto subscription =
+        ui::ElementTracker::GetElementTracker()->AddElementShownCallback(
+            GetElementId(extension_id),
+            views::ElementTrackerViews::GetContextForWidget(GetWidget()),
+            base::BindRepeating(&WebUIToolbarExtensionsContainer::
+                                    AnchorAndShowWidgetImmediately,
+                                base::Unretained(this),
+                                base::Unretained(widget)));
+
+    AnchoredWidget anchored_widget(widget, extension_id);
+    anchored_widget.subscription = std::move(subscription);
+    anchored_widgets_.push_back(std::move(anchored_widget));
+    widget->AddObserver(this);
+    NotifyOfOneAction(extension_id);
+  }
+}
+
+void WebUIToolbarExtensionsContainer::OnWidgetDestroying(
+    views::Widget* widget) {
+  auto iter =
+      std::ranges::find(anchored_widgets_, widget, &AnchoredWidget::widget);
+  CHECK(iter != anchored_widgets_.end());
+  iter->widget->RemoveObserver(this);
+  const std::string extension_id = std::move(iter->extension_id);
+  anchored_widgets_.erase(iter);
+  if (actions_.find(extension_id) != actions_.end()) {
+    NotifyOfOneAction(extension_id);
+  }
+}
+
+void WebUIToolbarExtensionsContainer::AnchorAndShowWidgetImmediately(
+    views::Widget* widget,
+    ui::TrackedElement* unused_anchor) {
+  auto iter =
+      std::ranges::find(anchored_widgets_, widget, &AnchoredWidget::widget);
+
+  if (iter == anchored_widgets_.end()) {
+    return;
+  }
+
+  ui::TrackedElement* anchor = GetExtensionAnchor(iter->extension_id);
+  if (!anchor) {
+    // This shown notification was about another extension button.
+    // Keep waiting for `iter->extension_id`'s button.
+    return;
+  }
+
+  iter->subscription = {};
+
+  if (views::BubbleDialogDelegate* bubble_delegate =
+          widget->widget_delegate()->AsBubbleDialogDelegate()) {
+    bubble_delegate->SetAnchor(views::BubbleAnchor(anchor));
+  }
+  widget->Show();
 }

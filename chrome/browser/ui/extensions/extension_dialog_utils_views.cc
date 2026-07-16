@@ -5,8 +5,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/extensions/extension_dialog_utils.h"
 #include "chrome/browser/ui/views/extensions/extension_view_utils.h"
-#include "chrome/browser/ui/views/extensions/extensions_toolbar_button.h"
-#include "chrome/browser/ui/views/extensions/extensions_toolbar_desktop.h"
+#include "chrome/browser/ui/views/extensions/extensions_container_views.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "components/constrained_window/constrained_window_views.h"
@@ -16,19 +15,18 @@
 namespace {
 
 // Returns the action view corresponding to the extension if a single
-// extension is specified in  extension_ids ; otherwise, returns the
+// extension is specified in `extension_ids`; otherwise, returns the
 // extensions button.
-views::View* GetDialogAnchorView(
-    ExtensionsToolbarDesktop* container,
+views::BubbleAnchor GetDialogAnchor(
+    ExtensionsContainerViews* container,
     const std::vector<extensions::ExtensionId>& extension_ids) {
   DCHECK(container);
 
   if (extension_ids.size() == 1) {
-    views::View* const action_view = container->GetViewForId(extension_ids[0]);
-    return action_view ? action_view : container->GetExtensionsButton();
+    return container->GetReferenceButtonForPopup(extension_ids[0]);
   }
 
-  return container->GetExtensionsButton();
+  return container->GetExtensionsButtonAnchor();
 }
 
 }  // namespace
@@ -52,9 +50,9 @@ void ShowWebModalDialog(content::WebContents* web_contents,
 void ShowDialog(gfx::NativeWindow parent,
                 const std::vector<extensions::ExtensionId>& extension_ids,
                 std::unique_ptr<ui::DialogModel> dialog_model) {
-  ExtensionsToolbarDesktop* const container =
-      parent ? GetExtensionsToolbarDesktop(parent) : nullptr;
-  if (container && container->GetVisible()) {
+  ExtensionsContainerViews* const container =
+      parent ? GetExtensionsContainerViews(parent) : nullptr;
+  if (container && container->IsVisible()) {
     ShowDialog(container, extension_ids, std::move(dialog_model));
   } else {
     // If the container is not available, show a modal dialog.
@@ -62,13 +60,13 @@ void ShowDialog(gfx::NativeWindow parent,
   }
 }
 
-void ShowDialog(ExtensionsToolbarDesktop* container,
+void ShowDialog(ExtensionsContainerViews* container,
                 const std::vector<extensions::ExtensionId>& extension_ids,
                 std::unique_ptr<ui::DialogModel> dialog_model) {
   DCHECK(container);
 
   auto bubble = std::make_unique<views::BubbleDialogModelHost>(
-      std::move(dialog_model), GetDialogAnchorView(container, extension_ids),
+      std::move(dialog_model), GetDialogAnchor(container, extension_ids),
       views::BubbleBorder::TOP_RIGHT);
   views::Widget* widget = views::BubbleDialogDelegate::CreateBubbleDeprecated(
       std::move(bubble), views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET);

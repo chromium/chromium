@@ -24,7 +24,7 @@ class DialogModel;
 }  // namespace ui
 
 class BrowserWindowInterface;
-class ExtensionsToolbarDesktop;
+class ExtensionsContainerViews;
 
 // Shows the dialog constructed from `dialog_model` for a single extension. This
 // may be anchored to the extension's UI in the browser if available or
@@ -52,7 +52,7 @@ void ShowWebModalDialog(content::WebContents* web_contents,
 #if defined(TOOLKIT_VIEWS)
 // Shows the dialog constructed from `dialog_model` for `extension_ids` and
 // is anchored to `container`.
-void ShowDialog(ExtensionsToolbarDesktop* container,
+void ShowDialog(ExtensionsContainerViews* container,
                 const std::vector<extensions::ExtensionId>& extension_ids,
                 std::unique_ptr<ui::DialogModel> dialog_model);
 

@@ -748,6 +748,10 @@ WebUIToolbarWebView::GetAvatarToolbarButtonInterface() {
   return &avatar_control_;
 }
 
+ExtensionsContainerViews* WebUIToolbarWebView::extensions_container_views() {
+  return extensions_container_.extensions_container();
+}
+
 BrowserWindowInterface* WebUIToolbarWebView::GetBrowser() {
   return browser_;
 }

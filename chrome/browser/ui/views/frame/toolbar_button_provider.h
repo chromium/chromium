@@ -16,7 +16,7 @@ class AppMenuControl;
 class AvatarToolbarButtonInterface;
 class BrowserWindowInterface;
 class PinnedToolbarActions;
-class ExtensionsToolbarDesktop;
+class ExtensionsContainerViews;
 class IntentChipButton;
 class PageActionIconView;
 class ReloadButton;
@@ -45,8 +45,8 @@ class ToolbarButtonProvider {
 
   static ToolbarButtonProvider* From(BrowserWindowInterface* browser);
 
-  // Gets the ExtensionsToolbarDesktop.
-  virtual ExtensionsToolbarDesktop* GetExtensionsToolbarDesktop() = 0;
+  // Gets the ExtensionsContainerViews.
+  virtual ExtensionsContainerViews* GetExtensionsContainerViews() = 0;
 
   // Gets the PinnedToolbarActions.
   virtual PinnedToolbarActions* GetPinnedToolbarActions() = 0;

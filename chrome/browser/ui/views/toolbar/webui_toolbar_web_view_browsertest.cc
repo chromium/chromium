@@ -146,6 +146,7 @@
 #include "ui/accessibility/platform/inspect/ax_event_recorder.h"
 #include "ui/actions/actions.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/models/dialog_model.h"
 #include "ui/base/pointer/touch_ui_controller.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/base/ui_base_switches.h"
@@ -155,6 +156,7 @@
 #include "ui/snapshot/snapshot.h"
 #include "ui/views/accessibility/ax_update_notifier.h"
 #include "ui/views/accessibility/ax_update_observer.h"
+#include "ui/views/bubble/bubble_dialog_model_host.h"
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/controls/menu/menu_runner_handler.h"
 #include "ui/views/controls/styled_label.h"
@@ -2315,6 +2317,28 @@ class WebUIToolbarWebViewBrowserTest : public InProcessBrowserTest {
       base::ScopedTempDir& temp_dir,
       bool has_background_script = false,
       bool has_popup = false) {
+    scoped_refptr<const extensions::Extension> extension =
+        LoadExtension(temp_dir, has_background_script, has_popup);
+    if (!extension) {
+      return nullptr;
+    }
+
+    // Pin the extension so it becomes visible.
+    ToolbarActionsModel::Get(browser()->GetProfile())
+        ->SetActionVisibility(extension->id(), true);
+
+    base::RunLoop run_loop;
+    webui_toolbar_view->extensions_container_.OnActionPoppedOut(
+        run_loop.QuitClosure());
+    run_loop.Run();
+
+    return extension;
+  }
+
+  scoped_refptr<const extensions::Extension> LoadExtension(
+      base::ScopedTempDir& temp_dir,
+      bool has_background_script = false,
+      bool has_popup = false) {
     base::FilePath manifest_path =
         temp_dir.GetPath().AppendASCII("manifest.json");
 
@@ -2360,15 +2384,6 @@ class WebUIToolbarWebViewBrowserTest : public InProcessBrowserTest {
     scoped_refptr<const extensions::Extension> extension =
         loader.LoadExtension(temp_dir.GetPath());
     EXPECT_TRUE(extension);
-
-    // Pin the extension so it becomes visible.
-    ToolbarActionsModel::Get(browser()->GetProfile())
-        ->SetActionVisibility(extension->id(), true);
-
-    base::RunLoop run_loop;
-    webui_toolbar_view->extensions_container_.OnActionPoppedOut(
-        run_loop.QuitClosure());
-    run_loop.Run();
 
     return extension;
   }
@@ -4184,6 +4199,86 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewBrowserTest, ExtensionAnchoring) {
     EXPECT_TRUE(
         base::test::RunUntil([&]() { return !coordinator->IsShowing(); }));
   }
+}
+
+IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewBrowserTest, ShowWidgetForExtension) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  GURL allowed_url =
+      embedded_test_server()->GetURL("allowed.com", "/title1.html");
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), allowed_url));
+
+  ui::TrackedElement* element = nullptr;
+  WebUIToolbarWebView* webui_toolbar_view = nullptr;
+  views::WebView* web_view = nullptr;
+  ASSERT_NO_FATAL_FAILURE(SetUpWebUI(kWebUIToolbarElementIdentifier, &element,
+                                     &webui_toolbar_view, &web_view,
+                                     browser()));
+
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+
+  // Load a test extension, but do NOT pin it.
+  scoped_refptr<const extensions::Extension> extension = LoadExtension(
+      temp_dir, /*has_background_script=*/false, /*has_popup=*/true);
+  ASSERT_TRUE(extension);
+  std::string extension_id = extension->id();
+
+  auto* container = static_cast<WebUIToolbarExtensionsContainer*>(
+      ExtensionsContainer::From(*browser()));
+  ASSERT_TRUE(container);
+
+  // Since it's not pinned, it should not be visible.
+  EXPECT_FALSE(container->IsActionVisibleOnToolbar(extension_id));
+
+  // Create a dummy widget to show.
+  std::unique_ptr<ui::DialogModel> dialog_model =
+      ui::DialogModel::Builder().SetTitle(u"Title").Build();
+  views::View* default_anchor = BrowserView::GetBrowserViewForBrowser(browser())
+                                    ->GetWidget()
+                                    ->GetRootView();
+  auto bubble = std::make_unique<views::BubbleDialogModelHost>(
+      std::move(dialog_model), default_anchor, views::BubbleBorder::TOP_RIGHT);
+  std::unique_ptr<views::Widget> widget =
+      views::BubbleDialogDelegate::CreateBubble(bubble.release());
+
+  // Show widget for extension.
+  container->ShowWidgetForExtension(widget.get(), extension_id);
+
+  // It should force visibility.
+  EXPECT_TRUE(container->IsActionVisibleOnToolbar(extension_id));
+
+  auto iter = std::ranges::find(
+      container->anchored_widgets_, extension_id,
+      &WebUIToolbarExtensionsContainer::AnchoredWidget::extension_id);
+  ASSERT_NE(iter, container->anchored_widgets_.end());
+  views::Widget* const bubble_widget = iter->widget.get();
+  ASSERT_TRUE(bubble_widget);
+  EXPECT_EQ(widget.get(), bubble_widget);
+  views::test::WidgetVisibleWaiter(bubble_widget).Wait();
+
+  views::BubbleDialogDelegate* bubble_delegate =
+      bubble_widget->widget_delegate()->AsBubbleDialogDelegate();
+  ASSERT_TRUE(bubble_delegate);
+
+  ui::TrackedElement* expected_anchor =
+      container->GetExtensionAnchor(extension_id);
+  ASSERT_TRUE(expected_anchor);
+  EXPECT_TRUE(
+      bubble_delegate->IsSameAnchor(views::BubbleAnchor(expected_anchor)));
+
+  EXPECT_TRUE(container->IsActionVisibleOnToolbar(extension_id));
+
+  // Close the widget.
+  views::test::WidgetDestroyedWaiter destroyed_waiter(bubble_widget);
+  bubble_widget->CloseWithReason(
+      views::Widget::ClosedReason::kCloseButtonClicked);
+  destroyed_waiter.Wait();
+
+  // It should not be visible anymore.
+  EXPECT_FALSE(container->IsActionVisibleOnToolbar(extension_id));
 }
 
 IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewBrowserTest,

@@ -42,6 +42,7 @@
 #include "ui/views/view.h"
 
 class BrowserWindowInterface;
+class ExtensionsContainerViews;
 class WebUILocationBar;
 class WebUIToolbarUI;
 class WebUIToolbarInternalWebView;
@@ -151,6 +152,7 @@ class WebUIToolbarWebView
   }
   AvatarToolbarButtonInterface* GetAvatarToolbarButtonInterface();
   WebUIAppMenuControl* GetAppMenuControl() { return &app_menu_control_; }
+  ExtensionsContainerViews* extensions_container_views();
   const WebUIAppMenuControl* GetAppMenuControl() const {
     return &app_menu_control_;
   }

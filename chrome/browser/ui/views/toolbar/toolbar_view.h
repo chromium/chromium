@@ -279,7 +279,7 @@ class ToolbarView : public views::AccessiblePaneView,
       AppMenuIconController::TypeAndSeverity type_and_severity) override;
 
   // ToolbarButtonProvider:
-  ExtensionsToolbarDesktop* GetExtensionsToolbarDesktop() override;
+  ExtensionsContainerViews* GetExtensionsContainerViews() override;
   PinnedToolbarActions* GetPinnedToolbarActions() override;
   gfx::Size GetToolbarButtonSize() const override;
   views::BubbleAnchor GetDefaultExtensionDialogAnchor() override;

@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/interaction/browser_elements.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_desktop.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_test_helper.h"
@@ -49,8 +50,10 @@ class WebAppFrameToolbarInteractiveUITest
 
   auto SetUpExtensionsContainer() {
     return Do([this]() {
+      CHECK(!features::IsWebUIExtensionsContainerEnabled());
       ExtensionsToolbarDesktop* const extensions_container =
-          helper()->web_app_frame_toolbar()->GetExtensionsToolbarDesktop();
+          static_cast<ExtensionsToolbarDesktop*>(
+              helper()->web_app_frame_toolbar()->GetExtensionsContainerViews());
       views::test::ReduceAnimationDuration(extensions_container);
       views::test::WaitForAnimatingLayoutManager(extensions_container);
     });

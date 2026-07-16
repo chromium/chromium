@@ -139,12 +139,6 @@ class ExtensionsToolbarDesktop : public ToolbarIconContainerView,
   // Get the view corresponding to the extension |id|, if any.
   ToolbarActionView* GetViewForId(const std::string& id);
 
-  // Pop out and show the extension corresponding to |extension_id|, then show
-  // the Widget when the icon is visible. If the icon is already visible the
-  // action will be posted immediately (not run synchronously).
-  void ShowWidgetForExtension(views::Widget* widget,
-                              const std::string& extension_id);
-
   // Check if the extensions menu is showing.
   // TODO(crbug.com/40811196): This method will be removed once extensions menu
   // under kExtensionsMenuAccessControl feature is fully rolled out and we can
@@ -193,11 +187,14 @@ class ExtensionsToolbarDesktop : public ToolbarIconContainerView,
 
   // ExtensionsContainerViews:
   std::optional<extensions::ExtensionId> GetPoppedOutActionId() const override;
+  bool IsVisible() const override;
   bool IsActionVisibleOnToolbar(const std::string& action_id) const override;
   void UndoPopOut() override;
   void SetPopupOwner(ToolbarActionViewModel* popup_owner) override;
   void PopOutAction(const extensions::ExtensionId& action_id,
                     base::OnceClosure closure) override;
+  void ShowWidgetForExtension(views::Widget* widget,
+                              const std::string& extension_id) override;
   void CollapseConfirmation() override;
   void ShowContextMenuAsFallback(
       const extensions::ExtensionId& action_id) override;
@@ -207,6 +204,7 @@ class ExtensionsToolbarDesktop : public ToolbarIconContainerView,
   views::FocusManager* GetFocusManagerForAccelerator() override;
   views::BubbleAnchor GetReferenceButtonForPopup(
       const extensions::ExtensionId& action_id) override;
+  views::BubbleAnchor GetExtensionsButtonAnchor() override;
 
   // ToolbarActionView::Delegate:
   content::WebContents* GetCurrentWebContents() override;

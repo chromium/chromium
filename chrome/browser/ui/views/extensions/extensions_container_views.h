@@ -19,6 +19,7 @@ class ToolbarActionViewModel;
 
 namespace views {
 class FocusManager;
+class Widget;
 }  // namespace views
 
 // An interface with views-specific methods for the toolbar.
@@ -28,6 +29,9 @@ class FocusManager;
 // to interact with the extension toolbar.
 class ExtensionsContainerViews {
  public:
+  // Returns true if the container itself is visible.
+  virtual bool IsVisible() const = 0;
+
   // Get the currently popped out action id, if any.
   // TODO(pbos): Consider supporting multiple popped out actions for bubbles
   // that relate to more than one extension.
@@ -49,6 +53,12 @@ class ExtensionsContainerViews {
   // any animation is complete.
   virtual void PopOutAction(const extensions::ExtensionId& action_id,
                             base::OnceClosure closure) = 0;
+
+  // Pop out and show the extension button corresponding to `extension_id`, then
+  // anchor `widget` to it and show `widget`. If the extension button is already
+  // visible, the anchoring and showing may happen immediately/synchronously.
+  virtual void ShowWidgetForExtension(views::Widget* widget,
+                                      const std::string& extension_id) = 0;
 
   // Collapses the confirmation on the request access button, effectively
   // hiding the button. Does nothing if the confirmation is not showing
@@ -76,9 +86,16 @@ class ExtensionsContainerViews {
   // MenuButtonController. This is part of the ongoing work from
   // http://crbug.com/41423998 to simplify the button hierarchy by migrating
   // controller logic into a separate class leaving MenuButton as an empty class
-  // to be deprecated.
+  // to be deprecated. Can fall back to GetExtensionsButtonAnchor().
   virtual views::BubbleAnchor GetReferenceButtonForPopup(
       const extensions::ExtensionId& action_id) = 0;
+
+  // Returns an anchor to the extensions button (puzzle piece). It can fall back
+  // to an anchor to the parent window; this allows a Widget to be created with
+  // this anchor and later re-anchored (e.g. via ShowWidgetForExtension()) to
+  // this extensions container, as a Widget's parent window is set from its
+  // anchor at creation time and cannot be changed during re-anchoring.
+  virtual views::BubbleAnchor GetExtensionsButtonAnchor() = 0;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSIONS_CONTAINER_VIEWS_H_
