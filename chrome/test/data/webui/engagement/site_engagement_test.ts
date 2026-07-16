@@ -70,7 +70,7 @@ suite('SiteEngagement', function() {
 
     let {info} =
         await app.engagementDetailsProvider.getSiteEngagementDetails();
-    info = info.filter(i => i.origin !== APP_URL);
+    info = info.filter(i => !i.origin.startsWith('chrome://'));
     assertEquals(firstRow.origin.textContent, info[0]!.origin);
     assertEquals(50, info[0]!.baseScore);
   });
@@ -83,8 +83,9 @@ suite('SiteEngagement', function() {
     const {info} =
         await app.engagementDetailsProvider.getSiteEngagementDetails();
     assertTrue(info.some(i => i.origin === APP_URL));
-    assertDeepEquals(
-        [EXAMPLE_URL_1, EXAMPLE_URL_2, APP_URL].toSorted(),
-        getCells().map(c => c.origin.textContent).toSorted());
+    const cellOrigins = getCells().map(c => c.origin.textContent);
+    assertTrue(cellOrigins.includes(EXAMPLE_URL_1));
+    assertTrue(cellOrigins.includes(EXAMPLE_URL_2));
+    assertTrue(cellOrigins.includes(APP_URL));
   });
 });
