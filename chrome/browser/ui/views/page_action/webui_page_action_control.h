@@ -74,6 +74,10 @@ class WebUIPageActionControl {
   // by the internal WebUIPageActionDelegate.
   void NotifyPageActionStateChanged();
 
+  // Plumbing method that calls AnnounceAlert on `webui_delegate_`. Called by
+  // the internal WebUIPageActionDelegate.
+  void AnnounceAlert(const std::u16string& announcement);
+
   void OnControllerDestroying(page_actions::PageActionController& controller);
 
   // Safe because the Browser window (which owns the ActionItem tree) owns

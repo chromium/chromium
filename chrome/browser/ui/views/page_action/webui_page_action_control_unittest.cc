@@ -256,6 +256,44 @@ TEST_F(WebUIPageActionControlTest, ChipShowingChangedForwarding) {
   run_loop.Run();
 }
 
+TEST_F(WebUIPageActionControlTest, AccessibilityAnnouncement) {
+  control_->UpdateController(web_contents());
+
+  tabs::TabInterface* tab =
+      tabs::TabInterface::MaybeGetFromContents(web_contents());
+  page_actions::PageActionController* controller =
+      page_actions::PageActionController::From(tab);
+
+  actions::ActionId target_action_id = kActionAiMode;
+
+  controller->OverrideText(target_action_id, u"Test Announcement");
+  controller->Show(target_action_id);
+
+  // Showing chip with should_announce_chip = true should trigger AnnounceAlert.
+  EXPECT_CALL(webui_delegate_,
+              AnnounceAlert(std::u16string(u"Test Announcement")))
+      .Times(1);
+  controller->ShowSuggestionChip(
+      target_action_id,
+      page_actions::SuggestionChipConfig{.should_announce_chip = true});
+
+  // Calling ShowSuggestionChip again while already showing shouldn't trigger
+  // AnnounceAlert again.
+  EXPECT_CALL(webui_delegate_, AnnounceAlert(_)).Times(0);
+  controller->ShowSuggestionChip(
+      target_action_id,
+      page_actions::SuggestionChipConfig{.should_announce_chip = true});
+
+  // Hiding chip and showing again should trigger AnnounceAlert again.
+  controller->HideSuggestionChip(target_action_id);
+  EXPECT_CALL(webui_delegate_,
+              AnnounceAlert(std::u16string(u"Test Announcement")))
+      .Times(1);
+  controller->ShowSuggestionChip(
+      target_action_id,
+      page_actions::SuggestionChipConfig{.should_announce_chip = true});
+}
+
 TEST_F(WebUIPageActionControlTest, TabDestroyedBeforeControl) {
   control_->UpdateController(web_contents());
   tab_features_.reset();

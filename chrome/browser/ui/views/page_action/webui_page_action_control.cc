@@ -279,6 +279,7 @@ class WebUIPageActionControl::WebUIPageActionDelegate
 
   // The last state sent to the WebUI. Null if the action was not visible.
   toolbar_ui_api::mojom::PageActionStatePtr old_state_;
+  bool was_chip_visible_ = false;
 };
 
 void WebUIPageActionControl::WebUIPageActionDelegate::SetController(
@@ -286,6 +287,7 @@ void WebUIPageActionControl::WebUIPageActionDelegate::SetController(
   observation_.Reset();
   action_item_subscription_ = {};
   controller_ = controller;
+  was_chip_visible_ = false;
 
   if (controller_) {
     controller_->RegisterCallbacks(page_actions::PageActionPassKey(),
@@ -304,6 +306,14 @@ void WebUIPageActionControl::WebUIPageActionDelegate::SetController(
 
 void WebUIPageActionControl::WebUIPageActionDelegate::OnPageActionModelChanged(
     const page_actions::PageActionModelInterface& model) {
+  const bool is_chip_visible =
+      model.GetVisible() && model.ShouldShowSuggestionChip();
+
+  if (model.GetShouldAnnounceChip() && !was_chip_visible_ && is_chip_visible) {
+    owner_->AnnounceAlert(model.GetText());
+  }
+  was_chip_visible_ = is_chip_visible;
+
   toolbar_ui_api::mojom::PageActionStatePtr new_state = GetState();
 
   if (!old_state_.Equals(new_state)) {
@@ -318,6 +328,7 @@ void WebUIPageActionControl::WebUIPageActionDelegate::
   observation_.Reset();
   action_item_subscription_ = {};
   controller_ = nullptr;
+  was_chip_visible_ = false;
   if (old_state_) {
     old_state_ = nullptr;
     owner_->NotifyPageActionStateChanged();
@@ -476,6 +487,12 @@ void WebUIPageActionControl::OnPageActionChipShowingChanged(
 void WebUIPageActionControl::NotifyPageActionStateChanged() {
   if (webui_delegate_) {
     webui_delegate_->OnPageActionChanged(GetPageActionStates());
+  }
+}
+
+void WebUIPageActionControl::AnnounceAlert(const std::u16string& announcement) {
+  if (webui_delegate_) {
+    webui_delegate_->AnnounceAlert(announcement);
   }
 }
 
