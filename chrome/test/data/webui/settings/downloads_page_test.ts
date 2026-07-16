@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // clang-format off
-import type {DownloadsBrowserProxy, SettingsDownloadsPageElement} from 'chrome://settings/lazy_load.js';
+import type {ControlledButtonElement, DownloadsBrowserProxy, SettingsDownloadsPageElement} from 'chrome://settings/lazy_load.js';
 import {DownloadsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
 import {loadTimeData, PrefService, PrefsBrowserProxy} from 'chrome://settings/settings.js';
 import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -77,6 +77,7 @@ function getInitialPrefs(): chrome.settingsPrivate.PrefObject[] {
 suite('DownloadsHandler', function() {
   let downloadsBrowserProxy: TestDownloadsBrowserProxy;
   let downloadsPage: SettingsDownloadsPageElement;
+  let prefsBrowserProxy: TestPrefsBrowserProxy;
   let prefService: PrefService;
 
   setup(async function() {
@@ -89,7 +90,7 @@ suite('DownloadsHandler', function() {
     downloadsBrowserProxy = new TestDownloadsBrowserProxy();
     DownloadsBrowserProxyImpl.setInstance(downloadsBrowserProxy);
 
-    const prefsBrowserProxy = new TestPrefsBrowserProxy(getInitialPrefs());
+    prefsBrowserProxy = new TestPrefsBrowserProxy(getInitialPrefs());
     PrefsBrowserProxy.setInstance(prefsBrowserProxy);
     PrefService.resetInstanceForTesting();
     prefService = PrefService.getInstance();
@@ -108,6 +109,30 @@ suite('DownloadsHandler', function() {
     assertTrue(!!button);
     button.click();
     return downloadsBrowserProxy.whenCalled('selectDownloadLocation');
+  });
+
+  test('controlled button pref enforcement', async function() {
+    const button =
+        downloadsPage.shadowRoot.querySelector<ControlledButtonElement>(
+            '#changeDownloadsPath');
+    assertTrue(!!button);
+    const crButton = button.shadowRoot!.querySelector('cr-button');
+    assertTrue(!!crButton);
+
+    assertFalse(crButton.disabled);
+    assertFalse(!!button.shadowRoot!.querySelector('cr-policy-pref-indicator'));
+
+    prefsBrowserProxy.fakeApi.sendPrefChanges([{
+      key: 'download.default_directory',
+      type: chrome.settingsPrivate.PrefType.STRING,
+      value: '/path/to/downloads',
+      enforcement: chrome.settingsPrivate.Enforcement.ENFORCED,
+      controlledBy: chrome.settingsPrivate.ControlledBy.USER_POLICY,
+    }]);
+    await microtasksFinished();
+
+    assertTrue(crButton.disabled);
+    assertTrue(!!button.shadowRoot!.querySelector('cr-policy-pref-indicator'));
   });
 
   test('openAdvancedDownloadsettings', async function() {

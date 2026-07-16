@@ -7,8 +7,11 @@ import 'chrome://settings/lazy_load.js';
 
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {ControlledButtonElement} from 'chrome://settings/lazy_load.js';
+import {PrefService, PrefsBrowserProxy} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertGT, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
+import {TestPrefsBrowserProxy} from './test_prefs_browser_proxy.js';
 // clang-format on
 
 suite('controlled button', function() {
@@ -100,5 +103,52 @@ suite('controlled button', function() {
         'action-button',
         controlledActionButton.shadowRoot!.querySelector(
                                               'cr-button')!.className);
+  });
+});
+
+suite('ControlledButtonPrefKey', () => {
+  let controlledButton: ControlledButtonElement;
+  let prefsBrowserProxy: TestPrefsBrowserProxy;
+
+  const initialPrefs = [
+    {
+      key: 'test_boolean',
+      type: chrome.settingsPrivate.PrefType.BOOLEAN,
+      value: true,
+    },
+  ];
+
+  setup(async () => {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+
+    prefsBrowserProxy = new TestPrefsBrowserProxy(initialPrefs);
+    PrefsBrowserProxy.setInstance(prefsBrowserProxy);
+    PrefService.resetInstanceForTesting();
+    await PrefService.getInstance().whenInitialized();
+
+    controlledButton = document.createElement('controlled-button');
+    controlledButton.prefKey = 'test_boolean';
+    document.body.appendChild(controlledButton);
+  });
+
+  test('disablesWhenPrefIsManaged', async () => {
+    assertFalse(
+        controlledButton.shadowRoot!.querySelector('cr-button')!.disabled);
+    assertFalse(!!controlledButton.shadowRoot!.querySelector(
+        'cr-policy-pref-indicator'));
+
+    prefsBrowserProxy.fakeApi.sendPrefChanges([{
+      key: 'test_boolean',
+      value: true,
+      enforcement: chrome.settingsPrivate.Enforcement.ENFORCED,
+      controlledBy: chrome.settingsPrivate.ControlledBy.USER_POLICY,
+    }]);
+    await microtasksFinished();
+
+    const button = controlledButton.shadowRoot!.querySelector('cr-button');
+    assertTrue(!!button);
+    assertTrue(button.disabled);
+    assertTrue(!!controlledButton.shadowRoot!.querySelector(
+        'cr-policy-pref-indicator'));
   });
 });

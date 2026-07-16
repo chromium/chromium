@@ -82,13 +82,13 @@ suite('ControlledRadioButtonPrefKey', () => {
   ];
 
   setup(async () => {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+
     prefsBrowserProxy = new TestPrefsBrowserProxy(initialPrefs);
     PrefsBrowserProxy.setInstance(prefsBrowserProxy);
-
     PrefService.resetInstanceForTesting();
     await PrefService.getInstance().whenInitialized();
 
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     radioButton = document.createElement('controlled-radio-button');
     radioButton.prefKey = 'test_boolean';
     document.body.appendChild(radioButton);
@@ -98,10 +98,11 @@ suite('ControlledRadioButtonPrefKey', () => {
     assertFalse(radioButton.disabled);
 
     // Make it managed.
-    const pref = prefsBrowserProxy.fakeApi.prefs['test_boolean']!;
-    pref.enforcement = chrome.settingsPrivate.Enforcement.ENFORCED;
-    prefsBrowserProxy.fakeApi.sendPrefChanges(
-        [{key: 'test_boolean', value: true}]);
+    prefsBrowserProxy.fakeApi.sendPrefChanges([{
+      key: 'test_boolean',
+      value: true,
+      enforcement: chrome.settingsPrivate.Enforcement.ENFORCED,
+    }]);
     await microtasksFinished();
 
     // Verify that policy indicator is shown only when the radio button
