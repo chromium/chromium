@@ -103,7 +103,9 @@ export class HistoryClustersAppElement extends CrLitElement {
         this.$.historyClusters;
 
     if (this.enableHistoryEmbeddings_) {
-      this.searchIcon_ = 'history-embeddings:search';
+      this.searchIcon_ = loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+          'history-embeddings:search-spark' :
+          'history-embeddings:search-old';
     }
 
     // Populate the initial query from the URL parameter. Other methods are

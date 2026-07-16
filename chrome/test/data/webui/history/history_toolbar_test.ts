@@ -132,11 +132,17 @@ suite('history-toolbar', function() {
     toolbar.selectedPage = 'history';
     await microtasksFinished();
     assertEquals(
-        'history-embeddings:search', toolbar.$.mainToolbar.searchIconOverride);
+        loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+            'history-embeddings:search-spark' :
+            'history-embeddings:search-old',
+        toolbar.$.mainToolbar.searchIconOverride);
     toolbar.selectedPage = 'grouped';
     await microtasksFinished();
     assertEquals(
-        'history-embeddings:search', toolbar.$.mainToolbar.searchIconOverride);
+        loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+            'history-embeddings:search-spark' :
+            'history-embeddings:search-old',
+        toolbar.$.mainToolbar.searchIconOverride);
 
     // Synced tabs page should have the default icon.
     toolbar.selectedPage = 'syncedTabs';

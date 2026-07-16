@@ -54,7 +54,11 @@ suite('HistoryClustersAppWithEmbeddingsTest', () => {
   }
 
   test('SwitchesSearchIcon', async () => {
-    assertEquals('history-embeddings:search', app.$.searchbox.iconOverride);
+    assertEquals(
+        loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+            'history-embeddings:search-spark' :
+            'history-embeddings:search-old',
+        app.$.searchbox.iconOverride);
 
     // Disable history embeddings and verify icon has switched.
     loadTimeData.overrideValues({enableHistoryEmbeddings: false});

@@ -124,6 +124,7 @@ export class HistoryEmbeddingsElement extends HistoryEmbeddingsElementBase {
         type: Boolean,
         reflect: true,
       },
+      webuiRoundedIconsEnabled_: {type: Boolean},
     };
   }
 
@@ -144,6 +145,8 @@ export class HistoryEmbeddingsElement extends HistoryEmbeddingsElementBase {
   private queryResultMinAge_ = QUERY_RESULT_MINIMUM_AGE;
   protected accessor searchResult_: SearchResult|null = null;
   protected accessor searchResultDirty_: boolean = false;
+  protected accessor webuiRoundedIconsEnabled_: boolean =
+      loadTimeData.getBoolean('webuiRoundedIconsEnabled');
   private searchTimestamp_: number = 0;
   /**
    * When this is non-null, that means there's a SearchResult that's pending

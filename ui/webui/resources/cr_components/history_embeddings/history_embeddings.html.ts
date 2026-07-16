@@ -12,7 +12,10 @@ export function getHtml(this: HistoryEmbeddingsElement) {
 ${!this.enableAnswers_ ? html`
   <div id="cardWithoutAnswers" class="card">
     <h2 class="heading results-heading">
-      <cr-icon icon="history-embeddings:heading"></cr-icon>
+      <cr-icon
+          icon="${this.webuiRoundedIconsEnabled_
+              ? 'history-embeddings:astrophotography-mode'
+              : 'history-embeddings:heading-old'}"></cr-icon>
       ${this.getHeadingText_()}
     </h2>
 

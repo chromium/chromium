@@ -169,7 +169,9 @@ export class HistoryToolbarElement extends CrLitElement {
   protected computeSearchIconOverride_(): string|undefined {
     if (loadTimeData.getBoolean('enableHistoryEmbeddings') &&
         TABBED_PAGES.includes(this.selectedPage)) {
-      return 'history-embeddings:search';
+      return loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+          'history-embeddings:search-spark' :
+          'history-embeddings:search-old';
     }
 
     return undefined;
