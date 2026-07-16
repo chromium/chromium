@@ -48,9 +48,6 @@ std::string PrivacySandboxAdsPageLoadMetricsObserver::GetHistogramName(
     PrivacySandboxAdsApi api) {
   const char* suffix;
   switch (api) {
-    case PrivacySandboxAdsApi::kAttributionReporting:
-      suffix = "AttributionReporting";
-      break;
     case PrivacySandboxAdsApi::kFencedFrames:
       suffix = "FencedFrames";
       break;
@@ -148,9 +145,6 @@ void PrivacySandboxAdsPageLoadMetricsObserver::OnFeaturesUsageObserved(
 
     std::optional<PrivacySandboxAdsApi> api;
     switch (static_cast<WebFeature>(feature.value())) {
-      case WebFeature::kAttributionReportingAPIAll:
-        api = PrivacySandboxAdsApi::kAttributionReporting;
-        break;
       case WebFeature::kHTMLFencedFrameElement:
         api = PrivacySandboxAdsApi::kFencedFrames;
         break;

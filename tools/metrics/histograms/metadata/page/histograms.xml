@@ -302,7 +302,6 @@ chromium-metrics-reviews@google.com.
 <!-- LINT.ThenChange(//tools/metrics/histograms/metadata/navigation/histograms.xml:PagePreloadingTriggerType) -->
 
 <variants name="PrivacySandboxAdsApi">
-  <variant name="AttributionReporting"/>
   <variant name="FencedFrames"/>
   <variant name="PrivateAggregation"/>
   <variant name="ProtectedAudienceJoinAdInterestGroup"/>
@@ -388,7 +387,6 @@ chromium-metrics-reviews@google.com.
   <variant name=".apps"/>
   <variant name=".arc-overview-tracing"/>
   <variant name=".arc-power-control"/>
-  <variant name=".attribution-internals"/>
   <variant name=".audio"/>
   <variant name=".autofill-internals"/>
   <variant name=".batch-upload"/>
