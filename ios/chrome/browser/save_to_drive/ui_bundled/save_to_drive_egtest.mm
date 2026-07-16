@@ -36,6 +36,7 @@
 #import "ios/public/provider/chrome/browser/google_one/google_one_api.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ios/testing/embedded_test_server_handlers.h"
+#import "net/base/url_util.h"
 #import "net/test/embedded_test_server/embedded_test_server.h"
 #import "net/test/embedded_test_server/request_handler_util.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -161,8 +162,11 @@ std::unique_ptr<net::test_server::HttpResponse> GetResponse(
     const net::test_server::HttpRequest& request) {
   auto result = std::make_unique<net::test_server::BasicHttpResponse>();
   result->set_code(net::HTTP_OK);
-  result->set_content(
-      "<a id='download' href='/download-example?50000'>Download</a>");
+  std::string size = "50000";
+  net::GetValueForKeyInQuery(request.GetURL(), "size", &size);
+  result->set_content(base::StringPrintf(
+      "<a id='download' href='/download-example?%s'>Download</a>",
+      size.c_str()));
   return result;
 }
 
@@ -735,8 +739,10 @@ std::unique_ptr<net::test_server::HttpResponse> GetResponse(
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
 
-  // Load a page with a download button and tap the download button.
-  [ChromeEarlGrey loadURL:self.testServer->GetURL("/")];
+  // Load a page with a download button and tap the download button. Use a
+  // larger size so the download is still in progress when the identity is
+  // removed.
+  [ChromeEarlGrey loadURL:self.testServer->GetURL("/?size=100000")];
   [ChromeEarlGrey waitForWebStateContainingText:"Download"];
   [ChromeEarlGrey tapWebStateElementWithID:@"download"];
 
@@ -768,6 +774,14 @@ std::unique_ptr<net::test_server::HttpResponse> GetResponse(
 
   // While download is in progress, remove account.
   [SigninEarlGrey forgetFakeIdentity:fakeIdentity];
+
+  // Wait for the identity to be fully removed from the system.
+  ConditionBlock condition = ^bool {
+    return ![SigninEarlGrey isIdentityAdded:fakeIdentity];
+  };
+  GREYAssert(base::test::ios::WaitUntilConditionOrTimeout(
+                 base::test::ios::kWaitForActionTimeout, condition),
+             @"Identity was not removed.");
 
   // Verify that the user is signed out.
   [SigninEarlGrey verifySignedOut];
