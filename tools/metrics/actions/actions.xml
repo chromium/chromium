@@ -26681,6 +26681,16 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Mobile.Signout.SnackbarUndoTapped">
+  <owner>jlebel@chromium.org</owner>
+  <owner>chrome-signin-mobile-team@google.com</owner>
+  <description>
+    User tapped on 'Undo' button on a snackbar shown right after sign-out. This
+    undo button is available only when signing out from the account menu. (iOS
+    only).
+  </description>
+</action>
+
 <action name="Mobile.SystemNotification.Content.Click.Downloads_Files">
   <owner>chrome-analysis-team@google.com</owner>
   <description>

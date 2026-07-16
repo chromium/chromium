@@ -5,37 +5,69 @@
 #import "ios/chrome/browser/authentication/ui_bundled/signout_action_sheet/signout_action_sheet_coordinator.h"
 
 #import "base/check.h"
-#import "base/format_macros.h"
 #import "base/metrics/histogram_functions.h"
-#import "base/metrics/histogram_macros.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
-#import "base/strings/sys_string_conversions.h"
-#import "base/strings/utf_string_conversions.h"
 #import "components/signin/public/base/signin_metrics.h"
-#import "components/strings/grit/components_strings.h"
 #import "components/sync/service/sync_service.h"
-#import "components/sync/service/sync_user_settings.h"
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_ui_util.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_utils.h"
-#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
-#import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/public/snackbar/snackbar_message.h"
+#import "ios/chrome/browser/shared/public/snackbar/snackbar_message_action.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
+#import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/signin/model/system_identity.h"
 #import "ios/chrome/browser/sync/model/enterprise_utils.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
-#import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
 using signin_metrics::SignoutDataLossAlertReason;
+
+namespace {
+
+// Creates and returns the sign-out snackbar message.
+SnackbarMessage* CreateSignoutSnackbarMessage(
+    Browser* browser,
+    int message_id,
+    bool show_undo_button,
+    id<SystemIdentity> signed_out_identity) {
+  CHECK(browser);
+  SnackbarMessage* message = [[SnackbarMessage alloc]
+      initWithTitle:l10n_util::GetNSString(message_id)];
+  ProfileIOS* profile = browser->GetProfile();
+  ChromeAccountManagerService* account_manager_service =
+      ChromeAccountManagerServiceFactory::GetForProfile(profile);
+  if (show_undo_button && signed_out_identity && account_manager_service &&
+      account_manager_service->GetIdentityOnDeviceWithGaiaID(
+          signed_out_identity.gaiaId)) {
+    CHECK(IsIdentityAwarenessEnabled());
+    SnackbarMessageAction* action = [[SnackbarMessageAction alloc] init];
+    action.title = l10n_util::GetNSString(IDS_IOS_SIGNIN_SNACKBAR_UNDO);
+    __weak id<SceneCommands> scene_commands_handler =
+        HandlerForProtocol(browser->GetCommandDispatcher(), SceneCommands);
+    action.handler = ^{
+      base::RecordAction(
+          base::UserMetricsAction("Mobile.Signout.SnackbarUndoTapped"));
+      [scene_commands_handler
+          showUndoSignoutFromSnackbarForIdentity:signed_out_identity];
+    };
+    message.action = action;
+  }
+
+  return message;
+}
+
+}  // namespace
 
 // Wrapper around the SignoutActionSheetCoordinator completion taking care
 // of properly handling cancellation and profile change.
@@ -334,10 +366,14 @@ using signin_metrics::SignoutDataLossAlertReason;
   // (e.g. when the sign-out operation needs to change profile).
   SignoutActionSheetCompletionWrapper* completionWrapper = _completionWrapper;
 
+  id<SystemIdentity> signedOutIdentity =
+      self.authenticationService->GetPrimaryIdentity();
   __weak __typeof(self) weakSelf = self;
   signin::ProfileSignoutRequest(_signoutSourceMetric)
-      .SetSnackbarMessageBuilder([self signoutSnackbarMessageBuilder],
-                                 _forceSnackbarOverToolbar)
+      .SetSnackbarMessageBuilder(
+          [self signoutSnackbarMessageBuilderWithSignedOutIdentity:
+                    signedOutIdentity],
+          _forceSnackbarOverToolbar)
       .SetPrepareCallback(base::BindOnce(^(bool will_change_profile) {
         completionWrapper.willChangeProfile = will_change_profile;
       }))
@@ -349,7 +385,9 @@ using signin_metrics::SignoutDataLossAlertReason;
 }
 
 // Returns snackbar builder.
-- (signin::SnackbarMessageBuilder)signoutSnackbarMessageBuilder {
+- (signin::SnackbarMessageBuilder)
+    signoutSnackbarMessageBuilderWithSignedOutIdentity:
+        (id<SystemIdentity>)signedOutIdentity {
   if (self.isForceSigninEnabled) {
     // Snackbar should be skipped since force sign-in dialog will be shown right
     // after.
@@ -365,12 +403,10 @@ using signin_metrics::SignoutDataLossAlertReason;
           ? IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_SIGN_OUT_SNACKBAR_MESSAGE_ENTERPRISE
           : IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_SIGN_OUT_SNACKBAR_MESSAGE;
 
-  // TODO(crbug.com/529328687): Create an undo button based on
-  // `_showUndoButton`.
+  BOOL showUndoButton = _showUndoButton;
   return base::BindOnce(^(Browser* post_signout_browser) {
-    SnackbarMessage* message = [[SnackbarMessage alloc]
-        initWithTitle:l10n_util::GetNSString(message_id)];
-    return message;
+    return CreateSignoutSnackbarMessage(post_signout_browser, message_id,
+                                        showUndoButton, signedOutIdentity);
   });
 }
 
