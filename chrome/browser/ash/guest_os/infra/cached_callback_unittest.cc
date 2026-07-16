@@ -10,8 +10,8 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/task/thread_pool.h"
-#include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/ash/borealis/testing/callback_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -126,17 +126,21 @@ MATCHER(ExpectedTrue, "") {
 
 TEST(CachedCallbackTest, CanEnqueueCallbacks) {
   base::test::TaskEnvironment task_environment_;
-  borealis::StrictCallbackFactory<void(DelayedCache::Result)> callbacks;
+  base::test::TestFuture<DelayedCache::Result> first_callback;
+  base::test::TestFuture<DelayedCache::Result> second_callback;
+  base::test::TestFuture<DelayedCache::Result> third_callback;
   DelayedCache dc;
 
-  dc.Get(callbacks.BindOnce());
-  dc.Get(callbacks.BindOnce());
-  dc.Get(callbacks.BindOnce());
-  // We use a strict mock to show that the below expectation hasn't fired yet
-  // and therefore must be queued.
-  EXPECT_CALL(callbacks, Call(ExpectedTrue())).Times(3);
+  dc.Get(first_callback.GetSequenceBoundCallback());
+  dc.Get(second_callback.GetSequenceBoundCallback());
+  dc.Get(third_callback.GetSequenceBoundCallback());
+  EXPECT_FALSE(first_callback.IsReady());
+  EXPECT_FALSE(second_callback.IsReady());
+  EXPECT_FALSE(third_callback.IsReady());
   dc.delay = false;
-  task_environment_.RunUntilIdle();
+  EXPECT_THAT(first_callback.Take(), ExpectedTrue());
+  EXPECT_THAT(second_callback.Take(), ExpectedTrue());
+  EXPECT_THAT(third_callback.Take(), ExpectedTrue());
 }
 
 class NonCompletingCache : public SuccessfulCache {
