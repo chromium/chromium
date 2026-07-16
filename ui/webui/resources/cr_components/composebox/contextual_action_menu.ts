@@ -1019,14 +1019,13 @@ export class ContextualActionMenuElement extends
       if (flyoutWidth + SHARE_TABS_FLYOUT_GAP_PX <=
           viewportWidth - triggerRect.right) {
         this.shareTabsFlyoutPosition_ = 'right';
-        flyout.setAttribute('data-position', 'right');
       } else if (triggerRect.left >= flyoutWidth + SHARE_TABS_FLYOUT_GAP_PX) {
         this.shareTabsFlyoutPosition_ = 'left';
-        flyout.setAttribute('data-position', 'left');
       } else {
         this.shareTabsFlyoutPosition_ = 'bottom';
-        flyout.setAttribute('data-position', 'bottom');
       }
+
+      flyout.setAttribute('data-position', this.shareTabsFlyoutPosition_);
 
       let flyoutTop = triggerRect.top;
       if (this.shareTabsFlyoutPosition_ === 'bottom') {
