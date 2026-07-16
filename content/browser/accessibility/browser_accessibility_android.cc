@@ -665,7 +665,29 @@ bool BrowserAccessibilityAndroid::IsInterestingOnAndroid() const {
     return false;
   }
 
-  // Otherwise, the interesting nodes are leaf or link nodes with non-whitespace
+  // If this node is a label (`Role::kLabelText`), or inside a label, that
+  // labels a focusable radio button, mark it as uninteresting because the radio
+  // button control will read the label text.
+  const BrowserAccessibility* node_to_check = this;
+  while (node_to_check && !node_to_check->IsFocusable()) {
+    if (node_to_check->GetRole() == ax::mojom::Role::kLabelText) {
+      std::set<ui::AXNodeID> labelled_nodes =
+          manager()->ax_tree()->GetReverseRelations(
+              ax::mojom::IntListAttribute::kLabelledbyIds,
+              node_to_check->node()->id());
+      for (ui::AXNodeID target_id : labelled_nodes) {
+        BrowserAccessibilityAndroid* target =
+            static_cast<BrowserAccessibilityAndroid*>(
+                manager()->GetFromID(target_id));
+        if (target && target->GetRole() == ax::mojom::Role::kRadioButton) {
+          return false;
+        }
+      }
+    }
+    node_to_check = node_to_check->InternalGetParent();
+  }
+
+  // Otherwise, the interesting nodes are leaf nodes with non-whitespace
   // accessible name or text content.
 
   // First, we determine whether we have a nonempty, nonwhitespace name.

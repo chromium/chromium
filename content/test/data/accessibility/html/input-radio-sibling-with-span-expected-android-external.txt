@@ -1,0 +1,7 @@
+WebView focusable focused actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
+++View actions:[AX_FOCUS] bundle:[chromeRole="genericContainer"]
+++++RadioButton viewIdResName:"apple" stateDescription:"Not checked. In group, option 1 of 2" supplementalDescription:"Apple" checkable clickable focusable actions:[FOCUS, CLICK, AX_FOCUS] bundle:[chromeRole="radioButton", clickableScore="300"]
+++++View text:"\n" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="lineBreak"]
+++++View text:"\n" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="lineBreak"]
+++++RadioButton viewIdResName:"banana" stateDescription:"Not checked. In group, option 2 of 2" supplementalDescription:"Banana" checkable clickable focusable actions:[FOCUS, CLICK, AX_FOCUS] bundle:[chromeRole="radioButton", clickableScore="300"]
+++++View text:"Banana" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="labelText"]

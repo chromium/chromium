@@ -2247,6 +2247,12 @@ public class WebContentsAccessibilityTreeTest {
 
     @Test
     @SmallTest
+    public void test_inputRadioSiblingWithSpan() {
+        performHtmlTest("input-radio-sibling-with-span.html");
+    }
+
+    @Test
+    @SmallTest
     public void test_inputRadio() {
         performHtmlTest("input-radio.html");
     }

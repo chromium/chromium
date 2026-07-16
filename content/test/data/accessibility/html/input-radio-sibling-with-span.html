@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+<body>
+  <!-- Good Case: Plain label without span -->
+  <input type="radio" id="apple" name="fruit" value="apple">
+  <label for="apple">Apple</label>
+
+  <br><br>
+
+  <!-- Bad Case (Bug Repro): Label containing a span -->
+  <input type="radio" id="banana" name="fruit" value="banana">
+  <label for="banana"><span>Banana</span></label>
+</body>
+</html>

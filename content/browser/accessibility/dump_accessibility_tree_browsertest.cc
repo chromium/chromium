@@ -3120,6 +3120,13 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
   RunHtmlTest(FILE_PATH_LITERAL("input-radio-checkbox-label.html"));
 }
 
+#if BUILDFLAG(IS_ANDROID)
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilityInputRadioSiblingWithSpan) {
+  RunHtmlTest(FILE_PATH_LITERAL("input-radio-sibling-with-span.html"));
+}
+#endif  // BUILDFLAG(IS_ANDROID)
+
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
                        AccessibilityInputRadioChunked) {
   RunHtmlTest(FILE_PATH_LITERAL("input-radio-chunked.html"));
