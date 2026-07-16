@@ -5,14 +5,12 @@
 #include "chrome/browser/ash/policy/skyvault/skyvault_rename_handler.h"
 
 #include "ash/constants/chrome_pref_names.h"
-#include "base/check_deref.h"
 #include "base/files/file_util.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/drive/drive_integration_service_factory.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/policy/skyvault/drive_upload_observer.h"
 #include "chrome/browser/ash/policy/skyvault/odfs_skyvault_uploader.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_features.h"
 #include "components/download/public/common/download_item.h"
@@ -45,6 +43,7 @@ bool ShouldUploadFile(Profile* profile,
 
 // static
 std::unique_ptr<SkyvaultRenameHandler> SkyvaultRenameHandler::CreateIfNeeded(
+    const PrefService& local_state,
     download::DownloadItem* download_item) {
   if (!base::FeatureList::IsEnabled(features::kSkyVault)) {
     return nullptr;
@@ -68,10 +67,8 @@ std::unique_ptr<SkyvaultRenameHandler> SkyvaultRenameHandler::CreateIfNeeded(
 
   position = downloads_path.value().find(
       local_user_files::kGoogleDrivePolicyVariableName);
-  // TODO(crbug.com/404133022): Avoid using g_browser_process.
   if (position != base::FilePath::StringType::npos &&
-      !local_user_files::LocalUserFilesAllowed(
-          CHECK_DEREF(g_browser_process->local_state()))) {
+      !local_user_files::LocalUserFilesAllowed(local_state)) {
     return std::make_unique<SkyvaultRenameHandler>(
         profile, CloudProvider::kGoogleDrive, download_item);
   }

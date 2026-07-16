@@ -12,6 +12,7 @@
 #include "components/download/public/common/download_item_rename_handler.h"
 #include "storage/browser/file_system/file_system_url.h"
 
+class PrefService;
 class Profile;
 
 namespace policy {
@@ -30,6 +31,7 @@ class SkyvaultRenameHandler : public download::DownloadItemRenameHandler {
   };
 
   static std::unique_ptr<policy::SkyvaultRenameHandler> CreateIfNeeded(
+      const PrefService& local_state,
       download::DownloadItem* download_item);
 
   SkyvaultRenameHandler(Profile* profile,

@@ -10,6 +10,7 @@
 #include <string>
 #include <utility>
 
+#include "base/check_deref.h"
 #include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -2324,7 +2325,8 @@ std::unique_ptr<download::DownloadItemRenameHandler>
 ChromeDownloadManagerDelegate::GetRenameHandlerForDownload(
     download::DownloadItem* download_item) {
 #if BUILDFLAG(IS_CHROMEOS)
-  return policy::SkyvaultRenameHandler::CreateIfNeeded(download_item);
+  return policy::SkyvaultRenameHandler::CreateIfNeeded(
+      CHECK_DEREF(g_browser_process->local_state()), download_item);
 #else
   return nullptr;
 #endif  // BUILDFLAG(IS_CHROMEOS)
