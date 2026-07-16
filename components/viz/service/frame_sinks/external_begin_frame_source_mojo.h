@@ -53,7 +53,6 @@ class VIZ_SERVICE_EXPORT ExternalBeginFrameSourceMojo
   // mojom::ExternalBeginFrameController implementation.
   void IssueExternalBeginFrame(
       const BeginFrameArgs& args,
-      bool force,
       base::OnceCallback<void(const BeginFrameAck&)> callback) override;
 
 #if BUILDFLAG(IS_MAC)

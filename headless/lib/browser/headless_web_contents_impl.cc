@@ -550,8 +550,7 @@ void HeadlessWebContentsImpl::BeginFrame(
   ui::Compositor* compositor = browser()->GetCompositor(this);
   CHECK(compositor);
   compositor->IssueExternalBeginFrame(
-      args, /*force=*/true,
-      base::BindOnce(&PendingFrame::OnFrameComplete, pending_frame));
+      args, base::BindOnce(&PendingFrame::OnFrameComplete, pending_frame));
 }
 
 void HeadlessWebContentsImpl::OnVisibilityChanged() {

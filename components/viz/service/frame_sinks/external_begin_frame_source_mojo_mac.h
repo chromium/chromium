@@ -39,7 +39,6 @@ class VIZ_SERVICE_EXPORT ExternalBeginFrameSourceMojoMac
   // For headless only. This should not be called.
   void IssueExternalBeginFrame(
       const BeginFrameArgs& args,
-      bool force,
       IssueExternalBeginFrameCallback callback) override;
 
   // This function forwards NeedsBeginFrame on/off from DisplayLinkMac in the

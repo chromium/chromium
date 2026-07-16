@@ -256,7 +256,6 @@ class StubCompositorFrameSink
   // mojom::ExternalBeginFrameController implementation.
   void IssueExternalBeginFrame(
       const viz::BeginFrameArgs& args,
-      bool force,
       base::OnceCallback<void(const viz::BeginFrameAck&)> callback) override {
     std::move(callback).Run({args, false});
   }

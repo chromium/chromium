@@ -45,7 +45,7 @@ void ExternalBeginFrameAdapter::OnBeginFrame(
                frame_time, "sequence_number", args.frame_id.sequence_number);
 
   compositor_->IssueExternalBeginFrame(
-      args, /*force=*/true,
+      args,
       base::BindOnce(&ExternalBeginFrameAdapter::OnBeginFrameAck,
                      weak_factory_.GetWeakPtr(), std::move(ack_callback)));
 }

@@ -64,8 +64,7 @@ TEST_F(ExternalBeginFrameSourceMojoTest,
   auto source = CreateSource();
   const BeginFrameArgs external_args =
       CreateBeginFrameArgsWithSourceId(/*source_id=*/123);
-  source->IssueExternalBeginFrame(external_args, /*force=*/false,
-                                  base::DoNothing());
+  source->IssueExternalBeginFrame(external_args, base::DoNothing());
 
   DidBeginFrame(
       CreateBeginFrameArgsWithSourceId(BeginFrameArgs::kStartingSourceId));

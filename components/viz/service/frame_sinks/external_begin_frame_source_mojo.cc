@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/check_is_test.h"
 #include "base/notreached.h"
 #include "components/viz/service/frame_sinks/frame_sink_manager_impl.h"
 #include "mojo/public/cpp/bindings/message.h"
@@ -35,7 +36,6 @@ ExternalBeginFrameSourceMojo::~ExternalBeginFrameSourceMojo() {
 
 void ExternalBeginFrameSourceMojo::IssueExternalBeginFrame(
     const BeginFrameArgs& args,
-    bool force,
     base::OnceCallback<void(const BeginFrameAck&)> callback) {
   if (pending_frame_callback_ ||
       (wait_for_all_frame_sinks_ && !pending_frame_sinks_.empty())) {
@@ -48,13 +48,14 @@ void ExternalBeginFrameSourceMojo::IssueExternalBeginFrame(
 
   pending_frame_callback_ = std::move(callback);
 
-  // When not forcing a frame, wait for it to occur when sinks needs a frame.
-  if (!force)
+  if (!display_) {
+    CHECK_IS_TEST();
     return;
-  // Ensure that Display will receive the BeginFrame (as a missed one), even
-  // if it doesn't currently need it. This way, we ensure that
-  // OnDisplayDidFinishFrame will be called for this BeginFrame.
-  CHECK(display_);
+  }
+
+  // Ensure that Display will receive the BeginFrame (as a missed one), even if
+  // it doesn't currently need it. This way, we ensure that
+  // `OnDisplayDidFinishFrame()` will be called for this BeginFrame.
   display_->SetNeedsOneBeginFrame(args);
   MaybeProduceFrameCallback();
 }

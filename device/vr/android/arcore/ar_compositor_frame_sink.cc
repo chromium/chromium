@@ -221,7 +221,6 @@ void ArCompositorFrameSink::RequestBeginFrame(base::TimeDelta interval,
                                   next_begin_frame_id_++,
                                   base::TimeTicks::Now(), deadline, interval,
                                   viz::BeginFrameArgs::NORMAL),
-      true,
       base::BindOnce(&ArCompositorFrameSink::OnFrameSubmitAck,
                      base::Unretained(this)));
   can_issue_new_begin_frame_ = false;

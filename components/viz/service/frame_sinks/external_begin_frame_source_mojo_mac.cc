@@ -83,7 +83,6 @@ void ExternalBeginFrameSourceMojoMac::SetSupportedDisplayLinkId(
 
 void ExternalBeginFrameSourceMojoMac::IssueExternalBeginFrame(
     const BeginFrameArgs& args,
-    bool force,
     IssueExternalBeginFrameCallback callback) {
   // IssueExternalBeginFrame on Mac is for headless only.
   NOTREACHED();
