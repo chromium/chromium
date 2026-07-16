@@ -730,8 +730,9 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
 
     std::optional<int32_t> win_id =
         options ? options->fallback_window_id : std::nullopt;
-    CreateTab(exact_url, /*open_in_background=*/false, win_id,
-              std::move(callback));
+    host().instance_delegate().CreateTab(
+        exact_url, /*open_in_background=*/false, win_id, std::move(callback),
+        /*show_side_panel=*/false);
   }
 
   void OpenGlicSettingsPage(mojom::OpenSettingsOptionsPtr options) override {

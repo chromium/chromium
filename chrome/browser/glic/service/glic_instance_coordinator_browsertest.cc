@@ -500,6 +500,26 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
+                       CreateTabWithoutShowingSidePanel) {
+  ASSERT_OK_AND_ASSIGN(auto* instance, OpenGlicForActiveTab());
+  tabs::TabInterface* original_tab = GetTabListInterface()->GetActiveTab();
+  EXPECT_TRUE(GetInstanceForTab(original_tab));
+
+  GlicTestTabAddedWaiter waiter(GetProfile());
+  instance->CreateTab(GetSimpleTestUrl(),
+                      /*open_in_background=*/false, std::nullopt,
+                      base::DoNothing(), /*show_side_panel=*/false);
+  tabs::TabInterface* new_tab = waiter.Wait();
+  ASSERT_TRUE(new_tab);
+
+  EXPECT_NE(original_tab, new_tab);
+  // With show_side_panel = false, the new tab is bound to the instance,
+  // but the side panel is not shown on the newly created tab.
+  EXPECT_EQ(GetInstanceForTab(new_tab), instance);
+  EXPECT_NE(instance->GetActiveEmbedderTabForTesting(), new_tab);
+}
+
+IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
                        ShowInstanceForTabs) {
   tabs::TabInterface* tab1 = GetTabListInterface()->GetActiveTab();
   ASSERT_OK_AND_ASSIGN(auto* instance1, OpenGlicForActiveTab());
