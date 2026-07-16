@@ -710,6 +710,7 @@ void AtMemoryQueryService::OnPersonalContextRetrieved(
       break;
     case AtMemoryQueryResponse::QUERY_CLASSIFICATION_UNSUPPORTED:
     case AtMemoryQueryResponse::QUERY_CLASSIFICATION_SENSITIVE:
+    case AtMemoryQueryResponse::QUERY_CLASSIFICATION_RECITATION:
       run_callback(MemorySearchStatus::kUnsupportedQuery);
       return;
     case AtMemoryQueryResponse::QUERY_CLASSIFICATION_UNSPECIFIED:

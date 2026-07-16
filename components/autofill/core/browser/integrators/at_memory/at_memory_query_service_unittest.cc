@@ -1200,6 +1200,9 @@ INSTANTIATE_TEST_SUITE_P(
          MemorySearchStatus::kUnsupportedQuery},
         {personal_context::proto::AtMemoryQueryResponse::
              QUERY_CLASSIFICATION_SENSITIVE,
+         MemorySearchStatus::kUnsupportedQuery},
+        {personal_context::proto::AtMemoryQueryResponse::
+             QUERY_CLASSIFICATION_RECITATION,
          MemorySearchStatus::kUnsupportedQuery}}));
 
 // Tests that the query service uses the timeout specified by the feature
