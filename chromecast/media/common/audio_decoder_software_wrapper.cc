@@ -70,7 +70,7 @@ MediaPipelineBackend::BufferStatus AudioDecoderSoftwareWrapper::PushBuffer(
   software_decoder_->Decode(
       base::WrapRefCounted(buffer_base),
       base::BindOnce(&AudioDecoderSoftwareWrapper::OnDecodedBuffer,
-                     base::Unretained(this)));
+                     weak_factory_.GetWeakPtr()));
   return MediaPipelineBackend::kBufferPending;
 }
 
