@@ -5515,10 +5515,6 @@ crbug.com/1042877 external/wpt/upgrade-insecure-requests/gen/top.meta/unset/img-
 
 crbug.com/333787229 http/tests/devtools/sources/debugger/anonymous-script-with-source-map-breakpoint.js [ Failure Pass ]
 
-# Mixed content autoupgrades cause test to fail because test relied on http subresources to test a different origin, needs to be changed to not rely on HTTP URLs.
-crbug.com/1042877 http/tests/security/img-crossorigin-redirect-credentials.https.html [ Failure ]
-
-
 crbug.com/1137228 [ Mac ] external/wpt/infrastructure/testdriver/click_iframe_crossorigin.sub.html [ Failure Pass ]
 crbug.com/1137228 [ Win ] external/wpt/infrastructure/testdriver/click_iframe_crossorigin.sub.html [ Failure Pass ]
 
