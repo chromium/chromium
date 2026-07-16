@@ -6,7 +6,7 @@ import 'chrome://webui-toolbar.top-chrome/app.js';
 
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
-import {TrackedElementManager} from 'chrome://webui-toolbar.top-chrome/app.js';
+import {BrowserProxyImpl, TrackedElementManager} from 'chrome://webui-toolbar.top-chrome/app.js';
 
 suite('PinnedToolbarAction', function() {
   let action: any;
@@ -105,5 +105,51 @@ suite('PinnedToolbarAction', function() {
     action.remove();
     assertEquals(1, stopTrackingCalls.length);
     assertEquals(action, stopTrackingCalls[0]!);
+  });
+
+  test('Sets draggable attribute based on enabled state', async () => {
+    const button = action.shadowRoot!.querySelector('cr-icon-button');
+    assertEquals('true', button.getAttribute('draggable'));
+
+    action.state = {
+      ...action.state,
+      enabled: false,
+    };
+    await microtasksFinished();
+    assertEquals('false', button.getAttribute('draggable'));
+  });
+
+  test('Keyboard left/right arrows move pinned action', () => {
+    const movedByCalls: Array<[number, number]> = [];
+
+    const mockHandler = {
+
+      movePinnedToolbarActionBy: (actionId: number, delta: number) => {
+        movedByCalls.push([actionId, delta]);
+      },
+      invokePinnedToolbarAction: () => {},
+    };
+    BrowserProxyImpl.setInstance({toolbarUIHandler: mockHandler} as any);
+
+    const button = action.shadowRoot!.querySelector('cr-icon-button');
+    button.dispatchEvent(new KeyboardEvent('keydown', {
+      key: 'ArrowLeft',
+      ctrlKey: true,
+      bubbles: true,
+      composed: true,
+    }));
+    assertEquals(1, movedByCalls.length);
+    assertEquals(1, movedByCalls[0]![0]);
+    assertEquals(-1, movedByCalls[0]![1]);
+
+    button.dispatchEvent(new KeyboardEvent('keydown', {
+      key: 'ArrowRight',
+      ctrlKey: true,
+      bubbles: true,
+      composed: true,
+    }));
+    assertEquals(2, movedByCalls.length);
+    assertEquals(1, movedByCalls[1]![0]);
+    assertEquals(1, movedByCalls[1]![1]);
   });
 });

@@ -63,6 +63,8 @@ import {LocationBarElement} from './location_bar.js';
 import {LocationIconElement} from './location_icon.js';
 import {PageActionIconElement} from './page_action_icon.js';
 import {PageActionIconsElement} from './page_action_icons.js';
+import type {PinnedToolbarActionElement} from './pinned_toolbar_action.js';
+import type {PinnedToolbarActionsElement} from './pinned_toolbar_actions.js';
 import {PointerProxyImpl} from './pointer_proxy.js';
 import type {PointerProxy} from './pointer_proxy.js';
 import {PermissionChipElement} from './permission_chip.js';
@@ -114,6 +116,8 @@ export type {
   PermissionChipState,
   PermissionDashboardElement,
   PermissionDashboardState,
+  PinnedToolbarActionElement,
+  PinnedToolbarActionsElement,
   PointerProxy,
 };
 // clang-format on

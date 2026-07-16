@@ -48,6 +48,11 @@ toolbar-divider:last-child {
   opacity: 0 !important;
 }
 
+pinned-toolbar-action.drag-placeholder {
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
 @keyframes slide-in {
   from {
     width: 0;
