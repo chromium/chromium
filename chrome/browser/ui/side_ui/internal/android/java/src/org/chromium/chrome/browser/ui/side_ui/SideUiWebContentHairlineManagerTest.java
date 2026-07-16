@@ -128,6 +128,17 @@ public class SideUiWebContentHairlineManagerTest {
     }
 
     @Test
+    public void testUpdate() {
+        View topHairline = mHairlineContainer.getTopHairline();
+
+        when(mBrowserControlsStateProvider.getTopVisibleContentOffset()).thenReturn(100f);
+        mManager.update();
+
+        assertEquals("Top margin should be updated.", 100, mLayoutParams.topMargin);
+        assertEquals(View.VISIBLE, topHairline.getVisibility());
+    }
+
+    @Test
     public void testHairlineVisibilityChangesDuringTransitions() {
         ArgumentCaptor<SideUiObserver> observerCaptor =
                 ArgumentCaptor.forClass(SideUiObserver.class);

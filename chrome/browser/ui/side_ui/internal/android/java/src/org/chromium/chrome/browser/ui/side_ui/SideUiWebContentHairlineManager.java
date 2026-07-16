@@ -61,6 +61,11 @@ import java.util.Set;
         mSideUiStateProvider.removeObserver(mWebContentHairlineAdjuster);
     }
 
+    /** Updates the WebContent hairline container. */
+    /* package */ void update() {
+        mWebContentHairlineControlsObserver.updateWebContentHairlineContainer();
+    }
+
     /**
      * Implementation of {@link BrowserControlsStateProvider.Observer} that updates the height of
      * the side hairlines and the visibility of the top hairline based on top controls changes.
@@ -96,7 +101,7 @@ import java.util.Set;
             updateWebContentHairlineContainer();
         }
 
-        private void updateWebContentHairlineContainer() {
+        /* package */ void updateWebContentHairlineContainer() {
             // Hides the top hairline, if needed.
             int topVisibleContentOffset =
                     (int) mBrowserControlsStateProvider.getTopVisibleContentOffset();

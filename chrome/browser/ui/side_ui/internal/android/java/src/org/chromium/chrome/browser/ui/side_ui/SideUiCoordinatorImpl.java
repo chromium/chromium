@@ -334,6 +334,7 @@ final class SideUiCoordinatorImpl implements SideUiCoordinator, ConfigurationCha
             @Nullable TransitionSet transitionSet =
                     suppressAnimations ? null : collectTransitions(uiUpdateSpecs);
             commitNewSideUiSpecs(uiUpdateSpecs, transitionSet);
+            mWebContentsHairlineManager.update();
         }
 
         mIsUpdatingUi = false;

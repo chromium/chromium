@@ -771,4 +771,19 @@ public class SideUiCoordinatorImplTest {
         verify(mSideUiObserver).onTransitionBegun(expectedSideUiSpecs);
         verify(mSideUiObserver).onTransitionEnded(expectedSideUiSpecs);
     }
+
+    @Test
+    public void testUpdateUi_UpdatesWebContentHairline() {
+        doReturn(50f).when(mBrowserControlsStateProvider).getTopVisibleContentOffset();
+
+        var sideUiContainer =
+                new TestSideUiContainer(
+                        mCoordinator, mSideUiContainerView, SideUiId.SIDE_PANEL, AnchorSide.RIGHT);
+        mCoordinator.registerSideUiContainer(sideUiContainer);
+
+        mCoordinator.updateUi(
+                new UiUpdateRequest(sideUiContainer.getSideUiId(), /* suppressAnimations= */ true));
+
+        verify(mBrowserControlsStateProvider).getTopVisibleContentOffset();
+    }
 }
