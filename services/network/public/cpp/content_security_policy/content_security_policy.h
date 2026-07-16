@@ -96,6 +96,15 @@ bool ParseSource(mojom::CSPDirectiveName directive_name,
                  mojom::CSPSource* csp_source,
                  std::vector<std::string>& parsing_errors);
 
+// Parse source-list grammar.
+// https://www.w3.org/TR/CSP3/#grammardef-serialized-source-list
+// Append parsing errors to |parsing_errors|.
+COMPONENT_EXPORT(NETWORK_CPP_WEB_PLATFORM)
+mojom::CSPSourceListPtr ParseSourceList(
+    mojom::CSPDirectiveName directive_name,
+    std::string_view directive_value,
+    std::vector<std::string>& parsing_errors);
+
 // Return a CSPCheckResult that allows when the |policy| allows a request to the
 // |url| in relation to the |directive| for a given |context|.
 // Note: Any policy violation are reported to the |context|.

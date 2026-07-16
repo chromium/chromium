@@ -663,225 +663,6 @@ bool ParseEvalHash(std::string_view expression,
   return ParsePrefixedHash("'eval-", expression, hash);
 }
 
-// Parse source-list grammar.
-// https://www.w3.org/TR/CSP3/#grammardef-serialized-source-list
-// Append parsing errors to |parsing_errors|.
-mojom::CSPSourceListPtr ParseSourceList(
-    CSPDirectiveName directive_name,
-    std::string_view directive_value,
-    std::vector<std::string>& parsing_errors) {
-  std::string_view value =
-      base::TrimString(directive_value, kCspWhitespace, base::TRIM_ALL);
-
-  auto directive = mojom::CSPSourceList::New();
-
-  if (base::EqualsCaseInsensitiveASCII(value, "'none'"))
-    return directive;
-
-  std::vector<std::string_view> tokens = base::SplitStringPiece(
-      value, kCspWhitespace, base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-
-  bool contains_none = false;
-
-  for (const auto& expression : tokens) {
-    if (base::EqualsCaseInsensitiveASCII(expression, "'none'")) {
-      contains_none = true;
-      continue;
-    }
-
-    if (base::EqualsCaseInsensitiveASCII(expression, "'self'")) {
-      directive->allow_self = true;
-      continue;
-    }
-
-    if (base::EqualsCaseInsensitiveASCII(expression, "*")) {
-      directive->allow_star = true;
-      continue;
-    }
-
-    if (ToCSPDirectiveName(expression) != CSPDirectiveName::Unknown) {
-      parsing_errors.emplace_back(base::StringPrintf(
-          "The Content-Security-Policy directive '%s' contains '%s' as a "
-          "source expression. Did you want to add it as a directive and forget "
-          "a semicolon?",
-          ToString(directive_name).c_str(), std::string(expression).c_str()));
-    }
-
-    auto csp_source = mojom::CSPSource::New();
-    if (ParseSource(directive_name, expression, csp_source.get(),
-                    parsing_errors)) {
-      if (directive_name != CSPDirectiveName::ScriptSrcV2) {
-        directive->sources.push_back(std::move(csp_source));
-      } else {
-        parsing_errors.emplace_back(base::StringPrintf(
-            "The Content-Security-Policy directive 'script-src-v2' doesn't "
-            "permit source expression %s. It will be ignored.",
-            std::string(expression).c_str()));
-      }
-      continue;
-    }
-
-    if (directive_name == CSPDirectiveName::FrameAncestors) {
-      // The frame-ancestors directive does not support anything else
-      // https://w3c.github.io/webappsec-csp/#directive-frame-ancestors
-      parsing_errors.emplace_back(base::StringPrintf(
-          "The Content-Security-Policy directive 'frame-ancestors' does not "
-          "support the source expression '%s'",
-          std::string(expression).c_str()));
-      continue;
-    }
-
-    if (base::EqualsCaseInsensitiveASCII(expression, "'unsafe-inline'")) {
-      directive->allow_inline = true;
-      continue;
-    }
-
-    // https://wicg.github.io/nav-speculation/speculation-rules.html#content-security-policy
-    if (base::EqualsCaseInsensitiveASCII(expression,
-                                         "'inline-speculation-rules'")) {
-      if (directive_name == CSPDirectiveName::ScriptSrc ||
-          directive_name == CSPDirectiveName::ScriptSrcElem) {
-        directive->allow_inline_speculation_rules = true;
-        continue;
-      } else {
-        parsing_errors.emplace_back(base::StringPrintf(
-            "The Content-Security-Policy directive '%s' contains '%s' as a "
-            "source expression that is permitted only for 'script-src' and "
-            "'script-src-elem' directives. It will be ignored.",
-            ToString(directive_name).c_str(), std::string(expression).c_str()));
-        continue;
-      }
-    }
-
-    if (base::EqualsCaseInsensitiveASCII(expression, "'unsafe-eval'")) {
-      directive->allow_eval = true;
-      continue;
-    }
-
-    if (base::EqualsCaseInsensitiveASCII(expression, "'wasm-eval'")) {
-      directive->allow_wasm_eval = true;
-      continue;
-    }
-
-    if (base::EqualsCaseInsensitiveASCII(expression, "'wasm-unsafe-eval'")) {
-      directive->allow_wasm_unsafe_eval = true;
-      continue;
-    }
-
-    if (base::EqualsCaseInsensitiveASCII(expression, "'strict-dynamic'")) {
-      directive->allow_dynamic = true;
-      continue;
-    }
-
-    if (base::EqualsCaseInsensitiveASCII(expression, "'unsafe-hashes'")) {
-      directive->allow_unsafe_hashes = true;
-      continue;
-    }
-
-    if (base::EqualsCaseInsensitiveASCII(expression, "'report-sha256'")) {
-      directive->report_hash_algorithm = StrongestHashAlgorithm(
-          directive->report_hash_algorithm, mojom::IntegrityAlgorithm::kSha256);
-      continue;
-    }
-
-    if (base::EqualsCaseInsensitiveASCII(expression, "'report-sha384'")) {
-      directive->report_hash_algorithm = StrongestHashAlgorithm(
-          directive->report_hash_algorithm, mojom::IntegrityAlgorithm::kSha384);
-      continue;
-    }
-
-    if (base::EqualsCaseInsensitiveASCII(expression, "'report-sha512'")) {
-      directive->report_hash_algorithm = mojom::IntegrityAlgorithm::kSha512;
-      continue;
-    }
-
-    if (base::EqualsCaseInsensitiveASCII(expression, "'report-sample'")) {
-      directive->report_sample = true;
-      continue;
-    }
-
-    if (base::EqualsCaseInsensitiveASCII(expression, "'trusted-types-eval'")) {
-      directive->allow_trusted_types_eval = true;
-      continue;
-    }
-
-    std::string nonce;
-    if (ParseNonce(expression, &nonce)) {
-      directive->nonces.push_back(std::move(nonce));
-      continue;
-    }
-
-    network::IntegrityMetadata hash;
-    if (ParseHash(expression, &hash)) {
-      directive->hashes.push_back(std::move(hash));
-      continue;
-    }
-
-    network::IntegrityMetadata url_hash;
-    if (ParseURLHash(expression, &url_hash)) {
-      if (base::FeatureList::IsEnabled(
-              network::features::kCSPScriptSrcHashesInV1) ||
-          directive_name == CSPDirectiveName::ScriptSrcV2) {
-        directive->url_hashes.push_back(std::move(url_hash));
-      } else if (base::FeatureList::IsEnabled(
-                     network::features::kCSPScriptSrcV2)) {
-        parsing_errors.emplace_back(base::StringPrintf(
-            "The Content-Security-Policy directive '%s' contains %s as a "
-            "source expression that is permitted only for 'script-src-v2' "
-            "directive. It will be ignored.",
-            ToString(directive_name).c_str(), std::string(expression).c_str()));
-      }
-      continue;
-    }
-
-    if (base::FeatureList::IsEnabled(
-            network::features::kCSPScriptSrcHashesInV1) &&
-        base::EqualsCaseInsensitiveASCII(expression, "'strict-dynamic-url'")) {
-      directive->allow_dynamic_url = true;
-      continue;
-    }
-
-    network::IntegrityMetadata eval_hash;
-    if (ParseEvalHash(expression, &eval_hash)) {
-      if (base::FeatureList::IsEnabled(
-              network::features::kCSPScriptSrcHashesInV1) ||
-          directive_name == CSPDirectiveName::ScriptSrcV2) {
-        directive->eval_hashes.push_back(std::move(eval_hash));
-      } else if (base::FeatureList::IsEnabled(
-                     network::features::kCSPScriptSrcV2)) {
-        parsing_errors.emplace_back(base::StringPrintf(
-            "The Content-Security-Policy directive '%s' contains %s as a "
-            "source expression that is permitted only for 'script-src-v2' "
-            "directive. It will be ignored.",
-            ToString(directive_name).c_str(), std::string(expression).c_str()));
-      }
-      continue;
-    }
-
-    // Parsing error.
-    // Ignore this source-expression.
-    parsing_errors.emplace_back(base::StringPrintf(
-        "The source list for the Content Security Policy directive '%s' "
-        "contains an invalid source: '%s'. It will be ignored.",
-        ToString(directive_name).c_str(), std::string(expression).c_str()));
-  }
-
-  if (contains_none &&
-      std::ranges::any_of(tokens, [](const auto& token) -> bool {
-        return !base::EqualsCaseInsensitiveASCII(token, "'report-sample'") &&
-               !base::EqualsCaseInsensitiveASCII(token, "'none'");
-      })) {
-    parsing_errors.emplace_back(base::StringPrintf(
-        "The Content-Security-Policy directive '%s' contains the keyword "
-        "'none' alongside with other source expressions. The keyword 'none' "
-        "must be the only source expression in the directive value, "
-        "otherwise it is ignored.",
-        ToString(directive_name).c_str()));
-  }
-
-  return directive;
-}
-
 // Parse the 'required-trusted-types-for' directive.
 // https://w3c.github.io/trusted-types/dist/spec/#require-trusted-types-for-csp-directive
 network::mojom::CSPRequireTrustedTypesFor ParseRequireTrustedTypesFor(
@@ -1243,6 +1024,223 @@ std::pair<CSPDirectiveName, const mojom::CSPSourceList*> GetSourceList(
 }
 
 }  // namespace
+
+mojom::CSPSourceListPtr ParseSourceList(
+    mojom::CSPDirectiveName directive_name,
+    std::string_view directive_value,
+    std::vector<std::string>& parsing_errors) {
+  std::string_view value =
+      base::TrimString(directive_value, kCspWhitespace, base::TRIM_ALL);
+
+  auto directive = mojom::CSPSourceList::New();
+
+  if (base::EqualsCaseInsensitiveASCII(value, "'none'")) {
+    return directive;
+  }
+
+  std::vector<std::string_view> tokens = base::SplitStringPiece(
+      value, kCspWhitespace, base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+
+  bool contains_none = false;
+
+  for (const auto& expression : tokens) {
+    if (base::EqualsCaseInsensitiveASCII(expression, "'none'")) {
+      contains_none = true;
+      continue;
+    }
+
+    if (base::EqualsCaseInsensitiveASCII(expression, "'self'")) {
+      directive->allow_self = true;
+      continue;
+    }
+
+    if (base::EqualsCaseInsensitiveASCII(expression, "*")) {
+      directive->allow_star = true;
+      continue;
+    }
+
+    if (ToCSPDirectiveName(expression) != mojom::CSPDirectiveName::Unknown) {
+      parsing_errors.emplace_back(base::StringPrintf(
+          "The Content-Security-Policy directive '%s' contains '%s' as a "
+          "source expression. Did you want to add it as a directive and forget "
+          "a semicolon?",
+          ToString(directive_name).c_str(), std::string(expression).c_str()));
+    }
+
+    auto csp_source = mojom::CSPSource::New();
+    if (ParseSource(directive_name, expression, csp_source.get(),
+                    parsing_errors)) {
+      if (directive_name != mojom::CSPDirectiveName::ScriptSrcV2) {
+        directive->sources.push_back(std::move(csp_source));
+      } else {
+        parsing_errors.emplace_back(base::StringPrintf(
+            "The Content-Security-Policy directive 'script-src-v2' doesn't "
+            "permit source expression %s. It will be ignored.",
+            std::string(expression).c_str()));
+      }
+      continue;
+    }
+
+    if (directive_name == mojom::CSPDirectiveName::FrameAncestors) {
+      // The frame-ancestors directive does not support anything else
+      // https://w3c.github.io/webappsec-csp/#directive-frame-ancestors
+      parsing_errors.emplace_back(base::StringPrintf(
+          "The Content-Security-Policy directive 'frame-ancestors' does not "
+          "support the source expression '%s'",
+          std::string(expression).c_str()));
+      continue;
+    }
+
+    if (base::EqualsCaseInsensitiveASCII(expression, "'unsafe-inline'")) {
+      directive->allow_inline = true;
+      continue;
+    }
+
+    // https://wicg.github.io/nav-speculation/speculation-rules.html#content-security-policy
+    if (base::EqualsCaseInsensitiveASCII(expression,
+                                         "'inline-speculation-rules'")) {
+      if (directive_name == mojom::CSPDirectiveName::ScriptSrc ||
+          directive_name == mojom::CSPDirectiveName::ScriptSrcElem) {
+        directive->allow_inline_speculation_rules = true;
+        continue;
+      } else {
+        parsing_errors.emplace_back(base::StringPrintf(
+            "The Content-Security-Policy directive '%s' contains '%s' as a "
+            "source expression that is permitted only for 'script-src' and "
+            "'script-src-elem' directives. It will be ignored.",
+            ToString(directive_name).c_str(), std::string(expression).c_str()));
+        continue;
+      }
+    }
+
+    if (base::EqualsCaseInsensitiveASCII(expression, "'unsafe-eval'")) {
+      directive->allow_eval = true;
+      continue;
+    }
+
+    if (base::EqualsCaseInsensitiveASCII(expression, "'wasm-eval'")) {
+      directive->allow_wasm_eval = true;
+      continue;
+    }
+
+    if (base::EqualsCaseInsensitiveASCII(expression, "'wasm-unsafe-eval'")) {
+      directive->allow_wasm_unsafe_eval = true;
+      continue;
+    }
+
+    if (base::EqualsCaseInsensitiveASCII(expression, "'strict-dynamic'")) {
+      directive->allow_dynamic = true;
+      continue;
+    }
+
+    if (base::EqualsCaseInsensitiveASCII(expression, "'unsafe-hashes'")) {
+      directive->allow_unsafe_hashes = true;
+      continue;
+    }
+
+    if (base::EqualsCaseInsensitiveASCII(expression, "'report-sha256'")) {
+      directive->report_hash_algorithm = StrongestHashAlgorithm(
+          directive->report_hash_algorithm, mojom::IntegrityAlgorithm::kSha256);
+      continue;
+    }
+
+    if (base::EqualsCaseInsensitiveASCII(expression, "'report-sha384'")) {
+      directive->report_hash_algorithm = StrongestHashAlgorithm(
+          directive->report_hash_algorithm, mojom::IntegrityAlgorithm::kSha384);
+      continue;
+    }
+
+    if (base::EqualsCaseInsensitiveASCII(expression, "'report-sha512'")) {
+      directive->report_hash_algorithm = mojom::IntegrityAlgorithm::kSha512;
+      continue;
+    }
+
+    if (base::EqualsCaseInsensitiveASCII(expression, "'report-sample'")) {
+      directive->report_sample = true;
+      continue;
+    }
+
+    if (base::EqualsCaseInsensitiveASCII(expression, "'trusted-types-eval'")) {
+      directive->allow_trusted_types_eval = true;
+      continue;
+    }
+
+    std::string nonce;
+    if (ParseNonce(expression, &nonce)) {
+      directive->nonces.push_back(std::move(nonce));
+      continue;
+    }
+
+    network::IntegrityMetadata hash;
+    if (ParseHash(expression, &hash)) {
+      directive->hashes.push_back(std::move(hash));
+      continue;
+    }
+
+    network::IntegrityMetadata url_hash;
+    if (ParseURLHash(expression, &url_hash)) {
+      if (base::FeatureList::IsEnabled(
+              network::features::kCSPScriptSrcHashesInV1) ||
+          directive_name == mojom::CSPDirectiveName::ScriptSrcV2) {
+        directive->url_hashes.push_back(std::move(url_hash));
+      } else if (base::FeatureList::IsEnabled(
+                     network::features::kCSPScriptSrcV2)) {
+        parsing_errors.emplace_back(base::StringPrintf(
+            "The Content-Security-Policy directive '%s' contains %s as a "
+            "source expression that is permitted only for 'script-src-v2' "
+            "directive. It will be ignored.",
+            ToString(directive_name).c_str(), std::string(expression).c_str()));
+      }
+      continue;
+    }
+
+    if (base::FeatureList::IsEnabled(
+            network::features::kCSPScriptSrcHashesInV1) &&
+        base::EqualsCaseInsensitiveASCII(expression, "'strict-dynamic-url'")) {
+      directive->allow_dynamic_url = true;
+      continue;
+    }
+
+    network::IntegrityMetadata eval_hash;
+    if (ParseEvalHash(expression, &eval_hash)) {
+      if (base::FeatureList::IsEnabled(
+              network::features::kCSPScriptSrcHashesInV1) ||
+          directive_name == mojom::CSPDirectiveName::ScriptSrcV2) {
+        directive->eval_hashes.push_back(std::move(eval_hash));
+      } else if (base::FeatureList::IsEnabled(
+                     network::features::kCSPScriptSrcV2)) {
+        parsing_errors.emplace_back(base::StringPrintf(
+            "The Content-Security-Policy directive '%s' contains %s as a "
+            "source expression that is permitted only for 'script-src-v2' "
+            "directive. It will be ignored.",
+            ToString(directive_name).c_str(), std::string(expression).c_str()));
+      }
+      continue;
+    }
+
+    // Parsing error.
+    // Ignore this source-expression.
+    parsing_errors.emplace_back(base::StringPrintf(
+        "The source list for the Content Security Policy directive '%s' "
+        "contains an invalid source: '%s'. It will be ignored.",
+        ToString(directive_name).c_str(), std::string(expression).c_str()));
+  }
+
+  if (contains_none &&
+      std::ranges::any_of(tokens, [](const auto& token) -> bool {
+        return !base::EqualsCaseInsensitiveASCII(token, "'report-sample'") &&
+               !base::EqualsCaseInsensitiveASCII(token, "'none'");
+      })) {
+    parsing_errors.emplace_back(base::StringPrintf(
+        "The Content-Security-Policy directive '%s' contains the keyword "
+        "'none' alongside with other source expressions. The keyword 'none' "
+        "must be the only source expression in the directive value, "
+        "otherwise it is ignored.",
+        ToString(directive_name).c_str()));
+  }
+
+  return directive;
+}
 
 CSPCheckResult::CSPCheckResult(bool allowed)
     : CSPCheckResult(allowed, allowed) {}
