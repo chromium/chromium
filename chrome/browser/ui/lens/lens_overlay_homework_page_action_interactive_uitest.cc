@@ -140,137 +140,6 @@ class LensOverlayHomeworkPageActionTest
             lens::features::kLensOverlayOmniboxEntryPoint, {}),
         base::test::FeatureRefAndParams(
             lens::features::kLensOverlayEduActionChip,
-            {{"url-allow-filters", "[\"*\"]"},
-             {"url-path-match-allow-filters", "[\"select\"]"},
-             {"max-shown-count", "3"}})};
-
-    scoped_feature_list_.InitWithFeaturesAndParameters(
-        enabled_features, {lens::features::kLensOverlayKeyboardSelection,
-                           lens::features::kLensOverlayOptimizationFilter});
-  }
-};
-
-IN_PROC_BROWSER_TEST_F(LensOverlayHomeworkPageActionTest, ShowsOnMatchingPage) {
-  SetLensOverlayEduActionChipShownCount(browser()->GetProfile(), 0);
-  // Navigate to a matching page.
-  const GURL url = embedded_test_server()->GetURL(kDocumentWithNamedElement);
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(url)));
-
-  IconLabelBubbleView* icon_view = lens_overlay_homework_icon_view();
-  views::FocusManager* focus_manager = icon_view->GetFocusManager();
-  focus_manager->ClearFocus();
-  EXPECT_FALSE(focus_manager->GetFocusedView());
-  EXPECT_TRUE(icon_view->GetVisible());
-
-  // Focus in the location bar should hide the icon.
-  location_bar_view()->FocusLocation(/*is_user_initiated=*/false,
-                                     /*clear_focus_if_failed=*/false);
-  ViewVisibilityWaiter(icon_view, false).Wait();
-
-  EXPECT_TRUE(focus_manager->GetFocusedView());
-  EXPECT_FALSE(icon_view->GetVisible());
-  EXPECT_EQ(GetLensOverlayEduActionChipShownCount(browser()->GetProfile()), 1);
-}
-
-IN_PROC_BROWSER_TEST_F(LensOverlayHomeworkPageActionTest,
-                       HidesOnNonMatchingPage) {
-  SetLensOverlayEduActionChipShownCount(browser()->GetProfile(), 0);
-  // Navigate to a non-matching page.
-  const GURL url = embedded_test_server()->GetURL(kDocument2);
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(url)));
-
-  IconLabelBubbleView* icon_view = lens_overlay_homework_icon_view();
-  views::FocusManager* focus_manager = icon_view->GetFocusManager();
-  focus_manager->ClearFocus();
-  EXPECT_FALSE(focus_manager->GetFocusedView());
-  EXPECT_FALSE(icon_view->GetVisible());
-
-  // Focus in the location bar should not show the icon.
-  location_bar_view()->FocusLocation(/*is_user_initiated=*/false,
-                                     /*clear_focus_if_failed=*/false);
-  ViewVisibilityWaiter(icon_view, false).Wait();
-
-  EXPECT_TRUE(focus_manager->GetFocusedView());
-  EXPECT_FALSE(icon_view->GetVisible());
-  EXPECT_EQ(GetLensOverlayEduActionChipShownCount(browser()->GetProfile()), 0);
-}
-
-IN_PROC_BROWSER_TEST_F(LensOverlayHomeworkPageActionTest,
-                       HidesAfterMaxShownCountReached) {
-  SetLensOverlayEduActionChipShownCount(browser()->GetProfile(), 4);
-  // Navigate to a matching page.
-  const GURL url = embedded_test_server()->GetURL(kDocumentWithNamedElement);
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(url)));
-
-  IconLabelBubbleView* icon_view = lens_overlay_homework_icon_view();
-  views::FocusManager* focus_manager = icon_view->GetFocusManager();
-  focus_manager->ClearFocus();
-  EXPECT_FALSE(focus_manager->GetFocusedView());
-  EXPECT_FALSE(icon_view->GetVisible());
-
-  // Focus in the location bar should not show the icon.
-  location_bar_view()->FocusLocation(/*is_user_initiated=*/false,
-                                     /*clear_focus_if_failed=*/false);
-  ViewVisibilityWaiter(icon_view, false).Wait();
-
-  EXPECT_TRUE(focus_manager->GetFocusedView());
-  EXPECT_FALSE(icon_view->GetVisible());
-  EXPECT_EQ(GetLensOverlayEduActionChipShownCount(browser()->GetProfile()), 4);
-}
-
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_OpensNewTabWhenEnteredThroughKeyboard \
-  DISABLED_OpensNewTabWhenEnteredThroughKeyboard
-#else
-#define MAYBE_OpensNewTabWhenEnteredThroughKeyboard \
-  OpensNewTabWhenEnteredThroughKeyboard
-#endif
-// Flaky failures on Windows; see https://crbug.com/419308044.
-IN_PROC_BROWSER_TEST_F(LensOverlayHomeworkPageActionTest,
-                       MAYBE_OpensNewTabWhenEnteredThroughKeyboard) {
-  SetLensOverlayEduActionChipShownCount(browser()->GetProfile(), 0);
-  const GURL url = embedded_test_server()->GetURL(kDocumentWithNamedElement);
-  // Navigate to a matching page.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(url)));
-  // We need to wait for paint in order to take a screenshot of the page.
-  ASSERT_TRUE(base::test::RunUntil([&]() {
-    return browser()
-        ->tab_strip_model()
-        ->GetActiveTab()
-        ->GetContents()
-        ->CompletedFirstVisuallyNonEmptyPaint();
-  }));
-
-  IconLabelBubbleView* icon_view = lens_overlay_homework_icon_view();
-  views::FocusManager* focus_manager = icon_view->GetFocusManager();
-  focus_manager->ClearFocus();
-  EXPECT_FALSE(focus_manager->GetFocusedView());
-  EXPECT_TRUE(icon_view->GetVisible());
-
-  // Executing the lens overlay icon view with keyboard source should open a new
-  // tab.
-  ui_test_utils::TabAddedWaiter tab_add(browser());
-  PressOnView();
-  auto* new_tab_contents = tab_add.Wait();
-
-  EXPECT_TRUE(new_tab_contents);
-  content::WaitForLoadStop(new_tab_contents);
-  EXPECT_THAT(new_tab_contents->GetLastCommittedURL().GetQuery(),
-              MatchesRegex("ep=crmntob&re=df&s=4&st=\\d+&lm=.+"));
-}
-
-class LensOverlayHomeworkPageActionTest_OptimizationFilter
-    : public LensOverlayHomeworkPageActionTestBase {
- public:
-  LensOverlayHomeworkPageActionTest_OptimizationFilter() {
-    std::vector<base::test::FeatureRefAndParams> enabled_features = {
-        base::test::FeatureRefAndParams(lens::features::kLensOverlay, {}),
-        base::test::FeatureRefAndParams(
-            lens::features::kLensOverlayOmniboxEntryPoint, {}),
-        base::test::FeatureRefAndParams(
-            lens::features::kLensOverlayOptimizationFilter, {}),
-        base::test::FeatureRefAndParams(
-            lens::features::kLensOverlayEduActionChip,
             {{"max-shown-count", "3"}})};
 
     scoped_feature_list_.InitWithFeaturesAndParameters(
@@ -289,8 +158,7 @@ class LensOverlayHomeworkPageActionTest_OptimizationFilter
   }
 };
 
-IN_PROC_BROWSER_TEST_F(LensOverlayHomeworkPageActionTest_OptimizationFilter,
-                       ShowsOnMatchingPage) {
+IN_PROC_BROWSER_TEST_F(LensOverlayHomeworkPageActionTest, ShowsOnMatchingPage) {
   SetupOptimizationFilter();
   SetLensOverlayEduActionChipShownCount(browser()->GetProfile(), 0);
   // Navigate to a matching page.
@@ -313,7 +181,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayHomeworkPageActionTest_OptimizationFilter,
   EXPECT_EQ(GetLensOverlayEduActionChipShownCount(browser()->GetProfile()), 1);
 }
 
-IN_PROC_BROWSER_TEST_F(LensOverlayHomeworkPageActionTest_OptimizationFilter,
+IN_PROC_BROWSER_TEST_F(LensOverlayHomeworkPageActionTest,
                        HidesOnNonMatchingPage) {
   SetupOptimizationFilter();
   SetLensOverlayEduActionChipShownCount(browser()->GetProfile(), 0);
@@ -337,7 +205,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayHomeworkPageActionTest_OptimizationFilter,
   EXPECT_EQ(GetLensOverlayEduActionChipShownCount(browser()->GetProfile()), 0);
 }
 
-IN_PROC_BROWSER_TEST_F(LensOverlayHomeworkPageActionTest_OptimizationFilter,
+IN_PROC_BROWSER_TEST_F(LensOverlayHomeworkPageActionTest,
                        HidesAfterMaxShownCountReached) {
   SetupOptimizationFilter();
   SetLensOverlayEduActionChipShownCount(browser()->GetProfile(), 4);
@@ -370,7 +238,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayHomeworkPageActionTest_OptimizationFilter,
   OpensNewTabWhenEnteredThroughKeyboard
 #endif
 // Flaky failures on Windows; see https://crbug.com/419308044.
-IN_PROC_BROWSER_TEST_F(LensOverlayHomeworkPageActionTest_OptimizationFilter,
+IN_PROC_BROWSER_TEST_F(LensOverlayHomeworkPageActionTest,
                        MAYBE_OpensNewTabWhenEnteredThroughKeyboard) {
   SetupOptimizationFilter();
   SetLensOverlayEduActionChipShownCount(browser()->GetProfile(), 0);

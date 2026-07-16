@@ -173,10 +173,6 @@ BASE_DECLARE_FEATURE(kLensUpdatedFeedbackEntrypoint);
 COMPONENT_EXPORT(LENS_FEATURES)
 BASE_DECLARE_FEATURE(kLensSidePanelUnification);
 
-// Enables using the optimization filter for triggering the action chip.
-COMPONENT_EXPORT(LENS_FEATURES)
-BASE_DECLARE_FEATURE(kLensOverlayOptimizationFilter);
-
 // Enables using the non-blocking privacy notice for the Lens overlay.
 COMPONENT_EXPORT(LENS_FEATURES)
 BASE_DECLARE_FEATURE(kLensOverlayNonBlockingPrivacyNotice);
@@ -1005,30 +1001,6 @@ bool IsLensSearchProtectedPageEnabled();
 COMPONENT_EXPORT(LENS_FEATURES)
 bool IsLensOverlayEduActionChipEnabled();
 
-// URL allow filters for the EDU action chip.
-COMPONENT_EXPORT(LENS_FEATURES)
-extern std::string GetLensOverlayEduUrlAllowFilters();
-
-// URL block filters for the EDU action chip.
-COMPONENT_EXPORT(LENS_FEATURES)
-extern std::string GetLensOverlayEduUrlBlockFilters();
-
-// URL path match allow filters for the EDU action chip.
-COMPONENT_EXPORT(LENS_FEATURES)
-extern std::string GetLensOverlayEduUrlPathMatchAllowFilters();
-
-// URL path match block filters for the EDU action chip.
-COMPONENT_EXPORT(LENS_FEATURES)
-extern std::string GetLensOverlayEduUrlPathMatchBlockFilters();
-
-// URL force-allowed match patterns for the EDU action chip.
-COMPONENT_EXPORT(LENS_FEATURES)
-extern std::string GetLensOverlayEduUrlForceAllowedMatchPatterns();
-
-// Hashed domain block filters for the EDU action chip.
-COMPONENT_EXPORT(LENS_FEATURES)
-extern std::string GetLensOverlayEduHashedDomainBlockFilters();
-
 // Whether EDU action chip should be disabled by glic.
 COMPONENT_EXPORT(LENS_FEATURES)
 bool IsLensOverlayEduActionChipDisabledByGlic();
@@ -1093,12 +1065,6 @@ extern bool IsLensUpdatedFeedbackEnabled();
 // The timeout for showing the feedback toast in the Lens side panel.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern int GetLensUpdatedFeedbackToastTimeoutMs();
-
-// Whether to enable using the optimization filter for triggering the action
-// chip.
-COMPONENT_EXPORT(LENS_FEATURES)
-extern bool IsLensOverlayOptimizationFilterEnabled();
-
 // Flag to control the type of suggestions for Lens Aim.
 // Access this value using: kLensAimSuggestionsType.Get()
 COMPONENT_EXPORT(LENS_FEATURES)

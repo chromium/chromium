@@ -5809,13 +5809,7 @@
                 {
                     "name": "TestConfig",
                     "params": {
-                        "disabled-by-glic": "true",
-                        "hashed-domain-block-filters": "1525650667",
-                        "url-allow-filters": "[\"*\"]",
-                        "url-block-filters": "[]",
-                        "url-path-forced-allowed-match-patterns": "[]",
-                        "url-path-match-allow-filters": "[\"(?i)allowedword\"]",
-                        "url-path-match-block-filters": "[\"(?i)blockedword\"]"
+                        "disabled-by-glic": "true"
                     },
                     "enable_features": [
                         "LensOverlayEduActionChip"

@@ -27,7 +27,6 @@
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
 #include "chrome/browser/ui/lens/lens_overlay_side_panel_coordinator.h"
 #include "chrome/browser/ui/lens/lens_search_controller.h"
-#include "chrome/browser/ui/lens/lens_url_matcher.h"
 #include "chrome/browser/ui/page_action/page_action_controller.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "chrome/browser/ui/page_action/page_action_triggers.h"
@@ -164,25 +163,15 @@ void LensOverlayEntryPointController::Initialize(
   // Update all entry points.
   UpdateEntryPointsState(/*hide_if_needed=*/true);
 
-  edu_url_matcher_ = std::make_unique<lens::LensUrlMatcher>(
-      lens::features::GetLensOverlayEduUrlAllowFilters(),
-      lens::features::GetLensOverlayEduUrlBlockFilters(),
-      lens::features::GetLensOverlayEduUrlPathMatchAllowFilters(),
-      lens::features::GetLensOverlayEduUrlPathMatchBlockFilters(),
-      lens::features::GetLensOverlayEduUrlForceAllowedMatchPatterns(),
-      lens::features::GetLensOverlayEduHashedDomainBlockFilters());
-
-  if (lens::features::IsLensOverlayOptimizationFilterEnabled()) {
-    optimization_guide_decider_ =
-        OptimizationGuideKeyedServiceFactory::GetForProfile(
-            browser_window_interface_->GetProfile());
-    if (optimization_guide_decider_) {
-      optimization_guide_decider_->RegisterOptimizationTypes(
-          {optimization_guide::proto::OptimizationType::
-               LENS_OVERLAY_EDU_ACTION_CHIP_BLOCKLIST,
-           optimization_guide::proto::OptimizationType::
-               LENS_OVERLAY_EDU_ACTION_CHIP_ALLOWLIST});
-    }
+  optimization_guide_decider_ =
+      OptimizationGuideKeyedServiceFactory::GetForProfile(
+          browser_window_interface_->GetProfile());
+  if (optimization_guide_decider_) {
+    optimization_guide_decider_->RegisterOptimizationTypes(
+        {optimization_guide::proto::OptimizationType::
+             LENS_OVERLAY_EDU_ACTION_CHIP_BLOCKLIST,
+         optimization_guide::proto::OptimizationType::
+             LENS_OVERLAY_EDU_ACTION_CHIP_ALLOWLIST});
   }
 }
 
@@ -255,23 +244,23 @@ bool LensOverlayEntryPointController::IsUrlEduEligible(const GURL& url) const {
     return false;
   }
 
-  if (optimization_guide_decider_) {
-    bool allowed_by_allowlist =
-        optimization_guide_decider_->CanApplyOptimization(
-            url,
-            optimization_guide::proto::LENS_OVERLAY_EDU_ACTION_CHIP_BLOCKLIST,
-            /*optimization_metadata=*/nullptr) ==
-        optimization_guide::OptimizationGuideDecision::kTrue;
-    bool allowed_by_blocklist =
-        optimization_guide_decider_->CanApplyOptimization(
-            url,
-            optimization_guide::proto::LENS_OVERLAY_EDU_ACTION_CHIP_ALLOWLIST,
-            /*optimization_metadata=*/nullptr) ==
-        optimization_guide::OptimizationGuideDecision::kTrue;
-    return allowed_by_allowlist && allowed_by_blocklist;
+  if (!optimization_guide_decider_) {
+    return false;
   }
 
-  return edu_url_matcher_->IsMatch(url);
+  bool allowed_by_allowlist =
+      optimization_guide_decider_->CanApplyOptimization(
+          url,
+          optimization_guide::proto::LENS_OVERLAY_EDU_ACTION_CHIP_BLOCKLIST,
+          /*optimization_metadata=*/nullptr) ==
+      optimization_guide::OptimizationGuideDecision::kTrue;
+  bool allowed_by_blocklist =
+      optimization_guide_decider_->CanApplyOptimization(
+          url,
+          optimization_guide::proto::LENS_OVERLAY_EDU_ACTION_CHIP_ALLOWLIST,
+          /*optimization_metadata=*/nullptr) ==
+      optimization_guide::OptimizationGuideDecision::kTrue;
+  return allowed_by_allowlist && allowed_by_blocklist;
 }
 
 // static

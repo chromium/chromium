@@ -3768,22 +3768,6 @@ const FeatureEntry::FeatureVariation kTouchToSearchCalloutVariations[] = {
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if !BUILDFLAG(IS_ANDROID)
-const FeatureEntry::FeatureParam kLensOverlayEduActionChipAllPages[] = {
-    {"url-allow-filters", "[\"*\"]"},
-    {"url-path-forced-allowed-match-patterns", "[\".\"]"},
-    {"disabled-by-glic", "false"},
-};
-
-const FeatureEntry::FeatureParam kLensOverlayEduActionChipHomework[] = {
-    {"url-allow-filters", "[\"*\"]"},
-    {"url-path-match-allow-filters", "[\"(?i)homework\"]"},
-    {"disabled-by-glic", "false"},
-};
-
-const FeatureEntry::FeatureVariation kLensOverlayEduActionChipVariations[] = {
-    {"trigger on \"homework\"", kLensOverlayEduActionChipHomework, nullptr},
-    {"force trigger all pages", kLensOverlayEduActionChipAllPages, nullptr},
-};
 
 
 const FeatureEntry::FeatureParam kEnableNtpBrowserPromosVariationSimple[] = {
@@ -7306,8 +7290,7 @@ const FeatureEntry kFeatureEntries[] = {
                                     kNtpRealboxCr23ThemingVariations,
                                     "NtpRealboxCr23Theming")},
 
-    {"ntp-scaled-action-chips",
-     flag_descriptions::kNtpScaledActionChipsName,
+    {"ntp-scaled-action-chips", flag_descriptions::kNtpScaledActionChipsName,
      flag_descriptions::kNtpScaledActionChipsDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(ntp_features::kNtpScaledActionChips)},
 
@@ -11680,9 +11663,7 @@ const FeatureEntry kFeatureEntries[] = {
     {"enable-lens-overlay-edu-action-chip",
      flag_descriptions::kLensOverlayEduActionChipName,
      flag_descriptions::kLensOverlayEduActionChipDescription, kOsDesktop,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(lens::features::kLensOverlayEduActionChip,
-                                    kLensOverlayEduActionChipVariations,
-                                    "LensOverlayEduActionChip")},
+     FEATURE_VALUE_TYPE(lens::features::kLensOverlayEduActionChip)},
 
 #endif
 
@@ -12310,14 +12291,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(features::kAndroidDesktopZoomScaling,
                                     kAndroidDesktopZoomScalingVariations,
                                     "AndroidDesktopZoomScaling")},
-#endif
-
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_CHROMEOS)
-    {"lens-overlay-optimization-filter",
-     flag_descriptions::kLensOverlayOptimizationFilterName,
-     flag_descriptions::kLensOverlayOptimizationFilterDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(lens::features::kLensOverlayOptimizationFilter)},
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)

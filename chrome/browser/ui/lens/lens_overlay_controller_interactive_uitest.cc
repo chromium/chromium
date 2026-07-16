@@ -1091,10 +1091,8 @@ class LensOverlayControllerEduActionChipTest
   void SetUpFeatureList() override {
     feature_list_.InitWithFeaturesAndParameters(
         {base::test::FeatureRefAndParams(
-             lens::features::kLensOverlayEduActionChip,
-             {{"max-shown-count", "5"}}),
-         base::test::FeatureRefAndParams(
-             lens::features::kLensOverlayOptimizationFilter, {})},
+            lens::features::kLensOverlayEduActionChip,
+            {{"max-shown-count", "5"}})},
         {features::kNonBlockingOsClipboardReads});
   }
 

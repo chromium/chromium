@@ -8,7 +8,6 @@
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
-#include "chrome/browser/ui/lens/lens_url_matcher.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/search_engines/template_url_service_observer.h"
@@ -134,9 +133,6 @@ class LensOverlayEntryPointController : public TemplateURLServiceObserver,
   PrefChangeRegistrar pref_change_registrar_;
 
   raw_ptr<views::View> location_bar_;
-
-  // URL matcher for entrypoints with EDU promos.
-  std::unique_ptr<LensUrlMatcher> edu_url_matcher_;
 
   // Optimization guide decider used for determining EDU action chip
   // eligibility.

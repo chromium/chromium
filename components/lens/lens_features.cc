@@ -118,8 +118,6 @@ BASE_FEATURE(kLensUpdatedFeedbackEntrypoint, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kLensSidePanelUnification, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kLensOverlayOptimizationFilter, base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kLensOverlayNonBlockingPrivacyNotice,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
@@ -525,26 +523,6 @@ constexpr base::FeatureParam<int> kLensOverlayUploadChunkRetries{
 
 constexpr base::FeatureParam<int> kLensOverlaySliderChangedTimeout{
     &kLensOverlayCornerSliders, "slider-changed-timeout", 1000};
-
-const base::FeatureParam<std::string> kLensOverlayEduUrlAllowFilters{
-    &kLensOverlayEduActionChip, "url-allow-filters", "[]"};
-
-const base::FeatureParam<std::string> kLensOverlayEduUrlBlockFilters{
-    &kLensOverlayEduActionChip, "url-block-filters", "[]"};
-
-const base::FeatureParam<std::string> kLensOverlayEduUrlPathMatchAllowFilters{
-    &kLensOverlayEduActionChip, "url-path-match-allow-filters", "[]"};
-
-const base::FeatureParam<std::string> kLensOverlayEduUrlPathMatchBlockFilters{
-    &kLensOverlayEduActionChip, "url-path-match-block-filters", "[]"};
-
-const base::FeatureParam<std::string> kLensOverlayEduHashedDomainBlockFilters{
-    &kLensOverlayEduActionChip, "hashed-domain-block-filters", ""};
-
-const base::FeatureParam<std::string>
-    kLensOverlayEduUrlForceAllowedMatchPatterns{
-        &kLensOverlayEduActionChip, "url-path-forced-allowed-match-patterns",
-        "[]"};
 
 const base::FeatureParam<bool> kLensOverlayEduActionChipDisabledByGlic{
     &kLensOverlayEduActionChip, "disabled-by-glic", true};
@@ -1227,30 +1205,6 @@ bool IsLensOverlayEduActionChipEnabled() {
   return base::FeatureList::IsEnabled(kLensOverlayEduActionChip);
 }
 
-std::string GetLensOverlayEduUrlAllowFilters() {
-  return kLensOverlayEduUrlAllowFilters.Get();
-}
-
-std::string GetLensOverlayEduUrlBlockFilters() {
-  return kLensOverlayEduUrlBlockFilters.Get();
-}
-
-std::string GetLensOverlayEduUrlPathMatchAllowFilters() {
-  return kLensOverlayEduUrlPathMatchAllowFilters.Get();
-}
-
-std::string GetLensOverlayEduUrlPathMatchBlockFilters() {
-  return kLensOverlayEduUrlPathMatchBlockFilters.Get();
-}
-
-std::string GetLensOverlayEduUrlForceAllowedMatchPatterns() {
-  return kLensOverlayEduUrlForceAllowedMatchPatterns.Get();
-}
-
-std::string GetLensOverlayEduHashedDomainBlockFilters() {
-  return kLensOverlayEduHashedDomainBlockFilters.Get();
-}
-
 bool IsLensOverlayEduActionChipDisabledByGlic() {
   return kLensOverlayEduActionChipDisabledByGlic.Get();
 }
@@ -1312,10 +1266,6 @@ int GetLensUpdatedFeedbackToastTimeoutMs() {
   }
 
   return kLensUpdatedFeedbackToastTimeoutMs.Get();
-}
-
-bool IsLensOverlayOptimizationFilterEnabled() {
-  return base::FeatureList::IsEnabled(kLensOverlayOptimizationFilter);
 }
 
 bool IsLensOverlayNonBlockingPrivacyNoticeEnabled() {
