@@ -96,7 +96,8 @@ in
       xorg.libXfixes # libXfixes.so.3
       xorg.libXrandr # libXrandr.so.2
       xorg.libXtst # libXtst.so.6
-      mesa # libgbm.so.1
+      mesa
+      libgbm # libgbm.so.1
       libdrm # libdrm.so.2
       alsa-lib # libasound.so.2
       libxkbcommon # libxkbcommon.so.0
