@@ -428,6 +428,7 @@ std::optional<ui::ImageModel> GetIconImageModelFromIcon(Suggestion::Icon icon) {
                                           : vector_icons::kHomeOldIcon,
                                       kIconSize);
     case Suggestion::Icon::kSpark:
+      return ImageModelFromVectorIcon(omnibox::kSparkIcon, kIconSize);
     case Suggestion::Icon::kTextSpark:
       return ImageModelFromVectorIcon(kTextAnalysisIcon, kIconSize);
     case Suggestion::Icon::kWork:
