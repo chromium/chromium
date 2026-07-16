@@ -41,19 +41,19 @@ class WebUITestWebUIControllerFactory : public content::WebUIControllerFactory {
   std::unique_ptr<content::WebUIController> CreateWebUIControllerForURL(
       content::WebUI* web_ui,
       const GURL& url) override {
-    return content::HasWebUIScheme(url)
+    return url.host() == "test-initial"
                ? std::make_unique<content::WebUIController>(web_ui)
                : nullptr;
   }
   content::WebUI::TypeID GetWebUIType(content::BrowserContext* browser_context,
                                       const GURL& url) override {
-    return content::HasWebUIScheme(url)
+    return url.host() == "test-initial"
                ? reinterpret_cast<content::WebUI::TypeID>(1)
                : nullptr;
   }
   bool UseWebUIForURL(content::BrowserContext* browser_context,
                       const GURL& url) override {
-    return content::HasWebUIScheme(url);
+    return url.host() == "test-initial";
   }
 };
 
