@@ -37,5 +37,8 @@ generate_jni("bookmarks_jni_headers") {
 }
 
 java_cpp_enum("bookmark_type_javagen") {
-  sources = [ "bookmark_type.h" ]
+  sources = [
+    "../bookmark_bar_visibility_state.h",
+    "bookmark_type.h",
+  ]
 }

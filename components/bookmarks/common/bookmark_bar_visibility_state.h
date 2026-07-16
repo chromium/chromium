@@ -7,6 +7,7 @@
 
 namespace bookmarks {
 
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.bookmarks
 // Enum which specifies the visibility state of the bookmark bar.
 // Used for the `kNtpSimplificationBookmarkBar` feature.
 // These values are persisted to a syncable pref. Values should not be
