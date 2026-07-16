@@ -2300,9 +2300,6 @@ tot_mac_builder(
         additional_compile_targets = [
             "all",
         ],
-        mixins = [
-            "mac_default_x64",
-        ],
     ),
     console_view_entry = consoles.console_view_entry(
         category = "Rust ToT",
