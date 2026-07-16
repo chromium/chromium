@@ -2560,11 +2560,6 @@ crbug.com/433565190 external/wpt/css/css-counter-styles/korean-hanja-informal/co
 crbug.com/433687466 external/wpt/webrtc/RTCDataChannel-worker-GC.html [ Failure ]
 
 crbug.com/434975373 external/wpt/svg/styling/image-sizing-min-content.tentative.svg [ Failure ]
-crbug.com/434975373 external/wpt/svg/styling/nested-svg-sizing-calc-size.tentative.svg [ Failure ]
-crbug.com/434975373 external/wpt/svg/styling/nested-svg-sizing-fit-content.tentative.svg [ Failure ]
-crbug.com/434975373 external/wpt/svg/styling/nested-svg-sizing-max-content.tentative.svg [ Failure ]
-crbug.com/434975373 external/wpt/svg/styling/nested-svg-sizing-min-content.tentative.svg [ Failure ]
-crbug.com/434975373 external/wpt/svg/styling/nested-svg-sizing-stretch.tentative.svg [ Failure ]
 crbug.com/434975373 external/wpt/svg/styling/nested-svg-sizing-viewport-units-with-ICB.tentative.html [ Failure ]
 crbug.com/434975373 external/wpt/svg/styling/nested-svg-sizing-viewport-units.tentative.svg [ Failure ]
 
