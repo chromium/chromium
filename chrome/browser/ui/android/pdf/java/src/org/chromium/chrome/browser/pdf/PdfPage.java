@@ -11,8 +11,6 @@ import android.text.TextUtils;
 
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.task.PostTask;
-import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -20,9 +18,6 @@ import org.chromium.chrome.browser.ui.native_page.BasicNativePage;
 import org.chromium.chrome.browser.ui.native_page.NativePageHost;
 import org.chromium.chrome.modules.on_demand.OnDemandModule;
 import org.chromium.components.embedder_support.util.UrlConstants;
-import org.chromium.content_public.browser.LoadUrlParams;
-
-import java.io.File;
 
 /** Native page that displays pdf file. */
 @NullMarked
@@ -30,7 +25,6 @@ public class PdfPage extends BasicNativePage {
     @VisibleForTesting public final PdfCoordinatorInterface mPdfCoordinator;
     private String mTitle;
     private String mUrl;
-    private final NativePageHost mHost;
     private final boolean mIsIncognito;
     private boolean mIsDownloadSafe;
     private long mTransientDownloadStartTimestamp;
@@ -59,7 +53,6 @@ public class PdfPage extends BasicNativePage {
             PdfFragmentViewTracker pdfFragmentViewTracker) {
         super(host);
 
-        mHost = host;
         mIsDownloadSafe = pdfInfo.isDownloadSafe;
         String decodedUrl = PdfUtils.decodePdfPageUrl(url);
         String filepath =
@@ -106,17 +99,11 @@ public class PdfPage extends BasicNativePage {
         super.updateForUrl(url);
         if (!PdfUtils.isReuseFragmentEnabled()) return;
 
-        boolean localPdf = PdfUtils.isDownloadedPdf(url);
-        boolean isReload = TextUtils.equals(mUrl, url);
+        mPdfCoordinator.resetLoadState();
         mUrl = url;
-
-        // Do not reset the load state for reloading which is handled in
-        // PdfCoordinator#onDownloadComplete
-        if (localPdf || !isReload) mPdfCoordinator.resetLoadState();
-
         // Note that only local PDF loading is handled here. Non-local ones are taken care of
         // by DownloadController#onDownloadCompleted.
-        if (!localPdf) return;
+        if (!PdfUtils.isDownloadedPdf(url)) return;
 
         // Use the URL encoded in |mUrl| if available i.e. chrome-native://pdf/link?url=...
         String pageUrl = PdfUtils.decodePdfPageUrl(url);
@@ -148,59 +135,16 @@ public class PdfPage extends BasicNativePage {
     public void destroy() {
         super.destroy();
         // TODO(b/348701300): check if pdf should be opened inline.
-        String filepath = mPdfCoordinator.getFilepath();
         if (mIsIncognito) {
-            PdfContentProvider.removeContentUri(filepath);
+            PdfContentProvider.removeContentUri(mPdfCoordinator.getFilepath());
         }
-        maybeDeleteTransientFile(filepath);
         mPdfCoordinator.destroy();
     }
 
     @Override
     public void reload() {
         if (PdfUtils.isInlinePdfV2Enabled()) {
-            String redownloadUrl = PdfUtils.getPdfReDownloadUrl(mUrl);
-            // `redownloadUrl` can be null if the PDF is loaded from a local source (e.g., file://
-            // or content://) instead of a web URL. If so, we call the existing flow to reload the
-            // document by re-creating the fragment using the existing local file.
-            if (redownloadUrl != null) {
-                String filepath = mPdfCoordinator.getFilepath();
-                maybeDeleteTransientFile(filepath);
-                LoadUrlParams params = new LoadUrlParams(redownloadUrl);
-                params.setShouldReplaceCurrentEntry(true);
-                mHost.loadUrl(params, mIsIncognito);
-            } else {
-                mPdfCoordinator.reload();
-            }
-        }
-    }
-
-    private void maybeDeleteTransientFile(@Nullable String filepath) {
-        // Content URIs (e.g. incognito PDFs wrapped by PdfContentProvider) cannot be deleted
-        // directly as files; their lifecycle is managed separately (see destroy()).
-        // We don't check for "file://" because:
-        // 1. Transient files we download always use raw file paths.
-        // 2. Local files (which may use "file://" or "content://") have a null redownloadUrl
-        //    and are skipped below.
-        if (filepath != null && !filepath.startsWith(UrlConstants.CONTENT_URL_PREFIX)) {
-            String redownloadUrl = PdfUtils.getPdfReDownloadUrl(mUrl);
-            // redownloadUrl is null if the PDF is from a local source (e.g., file:// or content://)
-            // instead of a web URL. We check this instead of mUrl because mUrl is the native page
-            // URL (chrome-native://pdf/...) and we must ensure the source is a redownloadable web
-            // URL (HTTP/HTTPS) before deleting the transient file.
-            if (redownloadUrl != null) {
-                PostTask.postTask(
-                        TaskTraits.BEST_EFFORT_MAY_BLOCK,
-                        () -> {
-                            try {
-                                File file = new File(filepath);
-                                if (file.exists()) {
-                                    file.delete();
-                                }
-                            } catch (SecurityException e) {
-                            }
-                        });
-            }
+            mPdfCoordinator.reload();
         }
     }
 
@@ -253,6 +197,7 @@ public class PdfPage extends BasicNativePage {
         mIsDownloadSafe = isDownloadSafe;
         PdfUtils.recordPdfTransientDownloadTime(
             SystemClock.elapsedRealtime() - mTransientDownloadStartTimestamp);
+        // TODO(b/348701300): check if pdf should be opened inline.
         if (mIsIncognito) {
             Uri uri = PdfContentProvider.createContentUri(pdfFilePath, pdfFileName);
             if (uri == null) {
