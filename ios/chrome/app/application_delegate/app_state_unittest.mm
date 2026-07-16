@@ -29,8 +29,6 @@
 #import "ios/chrome/browser/settings/ui_bundled/settings_navigation_controller.h"
 #import "ios/chrome/browser/shared/coordinator/scene/connection_information.h"
 #import "ios/chrome/browser/shared/coordinator/scene/test/fake_scene_state.h"
-#import "ios/chrome/browser/shared/coordinator/scene/test/stub_browser_provider.h"
-#import "ios/chrome/browser/shared/coordinator/scene/test/stub_browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
@@ -133,8 +131,6 @@ namespace {
 
 // A block that takes self as argument and return a BOOL.
 typedef BOOL (^DecisionBlock)(id self);
-// A block ths returns values of AppState connectedScenes.
-typedef NSArray<SceneState*>* (^ScenesBlock)(id self);
 
 }  // namespace
 
@@ -191,8 +187,6 @@ class AppStateTest : public BlockCleanupTest {
     app_state_observer_mock_ =
         [OCMockObject mockForProtocol:@protocol(AppStateObserver)];
 
-    provider_interface_ = [[StubBrowserProviderInterface alloc] init];
-
     app_state_observer_to_mock_main_controller_ =
         [AppStateObserverToMockMainController alloc];
   }
@@ -211,15 +205,6 @@ class AppStateTest : public BlockCleanupTest {
     [main_scene_state_ shutdown];
     main_scene_state_ = nil;
     BlockCleanupTest::TearDown();
-  }
-
-  void SwizzleConnectedScenes(NSArray<SceneState*>* connectedScenes) {
-    connected_scenes_swizzle_block_ = ^NSArray<SceneState*>*(id self) {
-      return connectedScenes;
-    };
-    connected_scenes_swizzler_.reset(
-        new ScopedBlockSwizzler([AppState class], @selector(connectedScenes),
-                                connected_scenes_swizzle_block_));
   }
 
   void SwizzleSafeModeShouldStart(BOOL shouldStart) {
@@ -247,19 +232,12 @@ class AppStateTest : public BlockCleanupTest {
 
   AppState* GetAppStateWithMock(bool with_safe_mode_agent) {
     if (!app_state_) {
-      // The swizzle block needs the scene state before app_state is create, but
-      // the scene state needs the app state. So this alloc before swizzling
-      // and initiate after app state is created.
-      main_scene_state_ = [FakeSceneState alloc];
-      SwizzleConnectedScenes(@[ main_scene_state_ ]);
+      main_scene_state_ = [[FakeSceneState alloc] initWithProfile:GetProfile()];
+      main_scene_state_.window = GetWindowMock();
 
       app_state_ = [[TestAppState alloc]
           initWithStartupInformation:startup_information_mock_
                      connectedScenes:@[ main_scene_state_ ]];
-
-      main_scene_state_ = [main_scene_state_ initWithAppState:app_state_
-                                                      profile:GetProfile()];
-      main_scene_state_.window = GetWindowMock();
 
       if (with_safe_mode_agent) {
         [app_state_ addAgent:GetSafeModeAppAgent()];
@@ -286,20 +264,13 @@ class AppStateTest : public BlockCleanupTest {
 
   AppState* GetAppStateWithRealWindow(UIWindow* window) {
     if (!app_state_) {
-      // The swizzle block needs the scene state before app_state is create, but
-      // the scene state needs the app state. So this alloc before swizzling
-      // and initiate after app state is created.
-      main_scene_state_ = [FakeSceneState alloc];
-      SwizzleConnectedScenes(@[ main_scene_state_ ]);
+      main_scene_state_ = [[FakeSceneState alloc] initWithProfile:GetProfile()];
+      main_scene_state_.window = window;
+      [window makeKeyAndVisible];
 
       app_state_ = [[TestAppState alloc]
           initWithStartupInformation:startup_information_mock_
                      connectedScenes:@[ main_scene_state_ ]];
-
-      main_scene_state_ = [main_scene_state_ initWithAppState:app_state_
-                                                      profile:GetProfile()];
-      main_scene_state_.window = window;
-      [window makeKeyAndVisible];
 
       [app_state_ addAgent:GetSafeModeAppAgent()];
 
@@ -339,11 +310,8 @@ class AppStateTest : public BlockCleanupTest {
   id startup_information_mock_;
   id window_;
   id app_state_observer_mock_;
-  StubBrowserProviderInterface* provider_interface_;
-  ScenesBlock connected_scenes_swizzle_block_;
   DecisionBlock safe_mode_swizzle_block_;
   std::unique_ptr<ScopedBlockSwizzler> safe_mode_swizzler_;
-  std::unique_ptr<ScopedBlockSwizzler> connected_scenes_swizzler_;
   raw_ptr<ProfileIOS> profile_;
 };
 
