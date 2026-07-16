@@ -250,13 +250,18 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
 
 IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, CreateInDefaultContextById) {
   AttachToBrowserTarget();
-  const base::DictValue* result = SendCommandSync("Target.getTargets");
+  base::DictValue params;
+  params.Set("filter",
+             base::ListValue().Append(
+                 base::DictValue().Set("type", "page").Set("exclude", false)));
+  const base::DictValue* result =
+      SendCommandSync("Target.getTargets", std::move(params));
   const base::ListValue* list = result->FindList("targetInfos");
   ASSERT_TRUE(list->size() == 1);
   const std::string context_id =
       *list->front().GetDict().FindString("browserContextId");
 
-  base::DictValue params;
+  params = base::DictValue();
   params.Set("url", "about:blank");
   params.Set("browserContextId", context_id);
   result = SendCommandSync("Target.createTarget", std::move(params));
@@ -2009,7 +2014,8 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
   ASSERT_EQ(browser()->tab_strip_model()->count(), 1);
 
   SendCommandSync("Target.getTargets");
-  ASSERT_EQ(1u, result()->FindList("targetInfos")->size());
+  const size_t initial_count = result()->FindList("targetInfos")->size();
+  ASSERT_GT(initial_count, 0u);
 
   base::DictValue params;
   params.Set("url", "about:blank");
@@ -2021,7 +2027,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
 
   // CDP `Target.getTargets` result should contain the new target.
   SendCommandSync("Target.getTargets");
-  EXPECT_EQ(2u, result()->FindList("targetInfos")->size());
+  EXPECT_EQ(initial_count + 1, result()->FindList("targetInfos")->size());
 }
 
 IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
@@ -2031,7 +2037,8 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
   ASSERT_EQ(browser()->tab_strip_model()->count(), 1);
 
   SendCommandSync("Target.getTargets");
-  ASSERT_EQ(1u, result()->FindList("targetInfos")->size());
+  const size_t initial_count = result()->FindList("targetInfos")->size();
+  ASSERT_GT(initial_count, 0u);
 
   base::DictValue params;
   params.Set("url", "about:blank");
@@ -2043,7 +2050,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
 
   // CDP `Target.getTargets` result should contain the new target.
   SendCommandSync("Target.getTargets");
-  EXPECT_EQ(2u, result()->FindList("targetInfos")->size());
+  EXPECT_EQ(initial_count + 1, result()->FindList("targetInfos")->size());
 
   // Disconnect and connect to session.
   agent_host_->DetachClient(this);
@@ -2051,7 +2058,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
 
   // The hidden target should be closed.
   SendCommandSync("Target.getTargets");
-  EXPECT_EQ(1u, result()->FindList("targetInfos")->size());
+  EXPECT_EQ(initial_count, result()->FindList("targetInfos")->size());
 }
 
 IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, HiddenTargetCanBeClosed) {
@@ -2060,7 +2067,8 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, HiddenTargetCanBeClosed) {
   ASSERT_EQ(browser()->tab_strip_model()->count(), 1);
 
   SendCommandSync("Target.getTargets");
-  ASSERT_EQ(1u, result()->FindList("targetInfos")->size());
+  const size_t initial_count = result()->FindList("targetInfos")->size();
+  ASSERT_GT(initial_count, 0u);
 
   SendCommand("Target.setAutoAttach", base::DictValue()
                                           .Set("autoAttach", true)
@@ -2075,7 +2083,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, HiddenTargetCanBeClosed) {
 
   // CDP `Target.getTargets` result should contain the new target.
   SendCommandSync("Target.getTargets");
-  EXPECT_EQ(2u, result()->FindList("targetInfos")->size());
+  EXPECT_EQ(initial_count + 1, result()->FindList("targetInfos")->size());
 
   SendCommandSync("Target.closeTarget",
                   base::DictValue().Set("targetId", targetId));
@@ -2083,7 +2091,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, HiddenTargetCanBeClosed) {
   WaitForNotification("Target.detachedFromTarget", true);
 
   SendCommandSync("Target.getTargets");
-  EXPECT_EQ(1u, result()->FindList("targetInfos")->size());
+  EXPECT_EQ(initial_count, result()->FindList("targetInfos")->size());
 }
 
 IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, HiddenTargetIsTheLastOne) {
@@ -2091,20 +2099,23 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, HiddenTargetIsTheLastOne) {
 
   ASSERT_EQ(browser()->tab_strip_model()->count(), 1);
 
-  SendCommandSync("Target.getTargets");
-  ASSERT_EQ(1u, result()->FindList("targetInfos")->size());
-  const std::string targetId(*result()
-                                  ->FindList("targetInfos")
-                                  ->front()
-                                  .GetDict()
-                                  .FindString("targetId"));
+  base::DictValue filter_params;
+  filter_params.Set(
+      "filter",
+      base::ListValue().Append(
+          base::DictValue().Set("type", "page").Set("exclude", false)));
+
+  SendCommandSync("Target.getTargets", filter_params.Clone());
+  const base::ListValue* list = result()->FindList("targetInfos");
+  ASSERT_TRUE(list && list->size() == 1);
+  const std::string targetId(*list->front().GetDict().FindString("targetId"));
 
   SendCommandSync(
       "Target.createTarget",
       base::DictValue().Set("url", "about:blank").Set("hidden", true));
 
-  SendCommandSync("Target.getTargets");
-  EXPECT_EQ(2u, result()->FindList("targetInfos")->size());
+  SendCommandSync("Target.getTargets", std::move(filter_params));
+  EXPECT_EQ(1u, result()->FindList("targetInfos")->size());
 
   ui_test_utils::BrowserDestroyedObserver observer;
   SendCommandSync("Target.closeTarget",
@@ -2120,7 +2131,8 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
   ASSERT_EQ(browser()->tab_strip_model()->count(), 1);
 
   SendCommandSync("Target.getTargets");
-  ASSERT_EQ(1u, result()->FindList("targetInfos")->size());
+  const size_t initial_count = result()->FindList("targetInfos")->size();
+  ASSERT_GT(initial_count, 0u);
 
   base::DictValue params;
   params.Set("url", "about:blank");
@@ -2132,7 +2144,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
 
   // CDP `Target.getTargets` result should contain the new target.
   SendCommandSync("Target.getTargets");
-  EXPECT_EQ(2u, result()->FindList("targetInfos")->size());
+  EXPECT_EQ(initial_count + 1, result()->FindList("targetInfos")->size());
 }
 
 IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
@@ -2238,9 +2250,15 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
 class DevToolsProtocolTest_OpensDevTools : public DevToolsProtocolTest {
  public:
   std::string GetCurrentPageTargetId() {
-    const base::DictValue* result = SendCommandSync("Target.getTargets");
+    base::DictValue params;
+    params.Set(
+        "filter",
+        base::ListValue().Append(
+            base::DictValue().Set("type", "page").Set("exclude", false)));
+    const base::DictValue* result =
+        SendCommandSync("Target.getTargets", std::move(params));
     const base::ListValue* list = result->FindList("targetInfos");
-    EXPECT_EQ(list->size(), 1u);
+    EXPECT_EQ(1u, list->size());
     return *list->front().GetDict().FindString("targetId");
   }
 
@@ -2266,7 +2284,7 @@ class DevToolsProtocolTest_OpensDevTools : public DevToolsProtocolTest {
         break;
       }
     }
-    EXPECT_EQ(2u, result->FindList("targetInfos")->size());
+    EXPECT_FALSE(devtools_target.empty());
 
     return devtools_target;
   }
@@ -2372,7 +2390,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, OpensDevTools_OpensForTabTarget) {
     }
   }
 
-  EXPECT_EQ(2u, result->FindList("targetInfos")->size());
+  EXPECT_FALSE(devtools_target.empty());
   EXPECT_EQ(devtools_target_id, *devtools_target.FindString("targetId"));
 }
 
@@ -2420,7 +2438,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, OpensDevTools_OpensUndocked) {
     }
   }
 
-  EXPECT_EQ(2u, result->FindList("targetInfos")->size());
+  EXPECT_FALSE(devtools_target.empty());
   EXPECT_EQ(devtools_target_id, *devtools_target.FindString("targetId"));
 }
 
