@@ -199,6 +199,7 @@ source_set("ui") {
     sources += [
       "android/contextual_tasks_panel_host_android.h",
       "android/contextual_tasks_panel_host_desktop_android.h",
+      "android/contextual_tasks_toast.h",
     ]
   }
 
@@ -328,6 +329,7 @@ source_set("ui_impl") {
       "android/contextual_tasks_control_coordinator_android.h",
       "android/contextual_tasks_panel_host_android.cc",
       "android/contextual_tasks_panel_host_desktop_android.cc",
+      "android/contextual_tasks_toast.cc",
     ]
   }
 
@@ -412,6 +414,7 @@ source_set("ui_impl") {
       "//chrome/browser/context_sharing/tab_bottom_sheet/android",
       "//chrome/browser/ui/side_panel:side_panel_ui_provider",
       "//chrome/browser/ui/side_panel/android",
+      "//components/messages/android",
     ]
   }
 

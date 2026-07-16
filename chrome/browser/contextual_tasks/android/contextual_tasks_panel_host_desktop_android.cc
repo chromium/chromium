@@ -11,6 +11,7 @@
 #include "chrome/browser/context_sharing/tab_bottom_sheet/android/co_browse_container_type.h"
 #include "chrome/browser/context_sharing/tab_bottom_sheet/android/co_browse_views_bridge.h"
 #include "chrome/browser/context_sharing/tab_bottom_sheet/android/tab_bottom_sheet_client_type.h"
+#include "chrome/browser/contextual_tasks/android/contextual_tasks_toast.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/side_panel/android/side_panel_native_view_android.h"
@@ -21,6 +22,7 @@
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui_provider.h"
 #include "components/input/native_web_keyboard_event.h"
+#include "components/strings/grit/components_strings.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/android/window_android.h"
@@ -77,6 +79,7 @@ void ContextualTasksPanelHostDesktopAndroid::Show(AnimationStyle animation) {
 }
 
 void ContextualTasksPanelHostDesktopAndroid::Close(AnimationStyle animation) {
+  resize_toast_.reset();
   auto* side_panel_ui = GetSidePanelUI();
   if (!side_panel_ui || !side_panel_ui->IsSidePanelShowing()) {
     return;
@@ -178,12 +181,23 @@ void ContextualTasksPanelHostDesktopAndroid::OnEntryHiddenWithReason(
       reason == SidePanelEntryHideReason::kReplaced
           ? ContextualTasksPanelHost::StateChangeReason::kSystemAction
           : ContextualTasksPanelHost::StateChangeReason::kUserAction);
+
+  if (reason == SidePanelEntryHideReason::kWindowResized) {
+    tabs::TabInterface* active_tab =
+        TabListInterface::From(browser_window_)->GetActiveTab();
+    if (active_tab && active_tab->GetContents()) {
+      resize_toast_ = ContextualTasksToast::Show(
+          active_tab->GetContents(), IDS_CONTEXTUAL_TASKS_CHAT_HIDDEN_TITLE,
+          IDS_CONTEXTUAL_TASKS_CHAT_HIDDEN_DESCRIPTION);
+    }
+  }
 }
 
 void ContextualTasksPanelHostDesktopAndroid::OnEntryShown(
     SidePanelEntry* entry) {
   CHECK_EQ(entry->key().id(), SidePanelEntry::Id::kContextualTasks);
   is_open_ = true;
+  resize_toast_.reset();
   NotifySurfaceStateChanged(
       ContextualTasksPanelHost::SurfaceState::kVisible,
       ContextualTasksPanelHost::StateChangeReason::kUserAction);

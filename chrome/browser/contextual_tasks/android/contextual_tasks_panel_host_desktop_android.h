@@ -27,6 +27,8 @@ class WebContents;
 
 namespace contextual_tasks {
 
+class ContextualTasksToast;
+
 // Host class for the Contextual Tasks side panel on Android Desktop.
 // This class manages the lifecycle of the side panel entry, creates the
 // CoBrowse view, and handles communication between the side panel and the
@@ -96,6 +98,7 @@ class ContextualTasksPanelHostDesktopAndroid
 
   bool suppressed_for_testing_ = false;
   bool is_open_ = false;
+  std::unique_ptr<ContextualTasksToast> resize_toast_;
 
   base::WeakPtrFactory<ContextualTasksPanelHostDesktopAndroid> weak_factory_{
       this};

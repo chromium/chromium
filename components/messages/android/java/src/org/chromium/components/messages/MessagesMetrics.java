@@ -230,6 +230,8 @@ public class MessagesMetrics {
                 return "PersonalContextFetchingFailure";
             case MessageIdentifier.PRIVATE_INFERENCE_NOTICE:
                 return "PrivateInferenceNotice";
+            case MessageIdentifier.CONTEXTUAL_TASKS_WINDOW_RESIZED:
+                return "ContextualTasksWindowResized";
             default:
                 return "Unknown";
         }

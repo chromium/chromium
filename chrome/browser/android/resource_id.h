@@ -92,6 +92,8 @@ DECLARE_RESOURCE_ID(IDR_ANDROID_IC_HELP_24DP, R.drawable.ic_help_24dp)
 
 DECLARE_RESOURCE_ID(IDR_ANDROID_IC_SPARK_24DP, R.drawable.ic_spark_24dp)
 DECLARE_RESOURCE_ID(IDR_ANDROID_IC_SPARK_BLUE, R.drawable.ic_spark_blue_24dp)
+DECLARE_RESOURCE_ID(IDR_ANDROID_IC_GOOGLE_SERVICES,
+                    R.drawable.ic_google_services_24dp)
 
 // About this site resources
 // Page insights logo is used for Google branded builds only.

@@ -153,6 +153,7 @@ chromium-metrics-reviews@google.com.
   <variant name=".ChromeSurvey"/>
   <variant name=".CollaborationMemberAdded"/>
   <variant name=".CollaborationRemoved"/>
+  <variant name=".ContextualTasksWindowResized"/>
   <variant name=".CvcSave"/>
   <variant name=".DefaultBrowserPromo"/>
   <variant name=".DesktopSiteGlobalDefaultOptOut"/>

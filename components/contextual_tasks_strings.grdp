@@ -96,4 +96,10 @@
   <message name="IDS_CONTEXTUAL_TASKS_THREAD_CLOSED" desc="Text shown on the snackbar after closing the contextual tasks sheet." formatter_data="android_java">
     Thread closed
   </message>
+  <message name="IDS_CONTEXTUAL_TASKS_CHAT_HIDDEN_TITLE" desc="Title of the message shown when the contextual tasks panel is hidden due to window resizing.">
+    Chat hidden
+  </message>
+  <message name="IDS_CONTEXTUAL_TASKS_CHAT_HIDDEN_DESCRIPTION" desc="Subtitle description of the message shown when the contextual tasks panel is hidden due to window resizing.">
+    Resize window to continue chatting
+  </message>
 </grit-part>
