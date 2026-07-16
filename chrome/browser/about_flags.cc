@@ -8911,6 +8911,11 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
+    {"api-contextual-tasks-private",
+     flag_descriptions::kApiContextualTasksPrivateName,
+     flag_descriptions::kApiContextualTasksPrivateDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(extensions_features::kApiContextualTasksPrivate)},
+
     {"api-mime-handler", flag_descriptions::kApiMimeHandlerName,
      flag_descriptions::kApiMimeHandlerDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(extensions_features::kApiMimeHandler)},
