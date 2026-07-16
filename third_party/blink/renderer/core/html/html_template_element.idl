@@ -45,6 +45,7 @@
     [CEReactions,Reflect] attribute boolean shadowRootDelegatesFocus;
     [CEReactions,Reflect] attribute boolean shadowRootClonable;
     [Reflect] attribute boolean shadowRootSerializable;
+    [CEReactions, Reflect, RuntimeEnabled=ShadowRootReferenceTarget] attribute DOMString? shadowRootReferenceTarget;
     [CEReactions, Reflect, ReflectOnly=("named","manual"), ReflectMissing="named", ReflectInvalid="named", RuntimeEnabled=ShadowRootSlotAssignment] attribute DOMString shadowRootSlotAssignment;
     [CEReactions, Reflect, RuntimeEnabled=ShadowRootAdoptedStyleSheet] attribute DOMString shadowRootAdoptedStyleSheets;
 

@@ -5419,6 +5419,7 @@ interface HTMLTemplateElement : HTMLElement
     getter shadowRootCustomElementRegistry
     getter shadowRootDelegatesFocus
     getter shadowRootMode
+    getter shadowRootReferenceTarget
     getter shadowRootSerializable
     getter shadowRootSlotAssignment
     method constructor
@@ -5428,6 +5429,7 @@ interface HTMLTemplateElement : HTMLElement
     setter shadowRootCustomElementRegistry
     setter shadowRootDelegatesFocus
     setter shadowRootMode
+    setter shadowRootReferenceTarget
     setter shadowRootSerializable
     setter shadowRootSlotAssignment
 interface HTMLTextAreaElement : HTMLElement
