@@ -187,36 +187,6 @@ void PopulateTraceDetails(const base::expected<ResultType, Error>& result,
   PopulateTraceDetails(store_status, dict);
 }
 
-// A helper function to record the time delay from posting a task to its
-// execution.
-void RecordPostingDelay(std::string_view method_name,
-                        base::TimeDelta posting_delay) {
-  base::UmaHistogramMicrosecondsTimes(
-      base::StrCat(
-          {kSqlDiskCacheBackendHistogramPrefix, method_name, ".PostingDelay"}),
-      posting_delay);
-}
-
-// Records timing and result histograms for a backend method. This logs the
-// method's duration to ".SuccessTime" or ".FailureTime" histograms and the
-// `Error` code to a ".Result" histogram.
-void RecordTimeAndErrorResultHistogram(std::string_view method_name,
-                                       base::TimeDelta posting_delay,
-                                       base::TimeDelta time_delta,
-                                       Error error,
-                                       bool corruption_detected) {
-  RecordPostingDelay(method_name, posting_delay);
-  base::UmaHistogramMicrosecondsTimes(
-      base::StrCat({kSqlDiskCacheBackendHistogramPrefix, method_name,
-                    error == Error::kOk ? ".SuccessTime" : ".FailureTime",
-                    corruption_detected ? "WithCorruption" : ""}),
-      time_delta);
-  base::UmaHistogramEnumeration(
-      base::StrCat({kSqlDiskCacheBackendHistogramPrefix, method_name,
-                    corruption_detected ? ".ResultWithCorruption" : ".Result"}),
-      error);
-}
-
 int32_t CalculateCheckSum(base::span<const uint8_t> data,
                           CacheEntryKey::Hash key_hash) {
   // Add key_hash in network order to the CRC calculation to ensure it can be
@@ -294,6 +264,39 @@ void SortAndFilterCandidates(
 
 }  // namespace
 
+void SqlPersistentStore::Backend::RecordPostingDelay(
+    std::string_view method_name,
+    base::TimeDelta posting_delay) {
+  if (reduce_uma_) {
+    return;
+  }
+  base::UmaHistogramMicrosecondsTimes(
+      base::StrCat(
+          {kSqlDiskCacheBackendHistogramPrefix, method_name, ".PostingDelay"}),
+      posting_delay);
+}
+
+void SqlPersistentStore::Backend::RecordTimeAndErrorResultHistogram(
+    std::string_view method_name,
+    base::TimeDelta posting_delay,
+    base::TimeDelta time_delta,
+    Error error,
+    bool corruption_detected) {
+  if (reduce_uma_) {
+    return;
+  }
+  RecordPostingDelay(method_name, posting_delay);
+  base::UmaHistogramMicrosecondsTimes(
+      base::StrCat({kSqlDiskCacheBackendHistogramPrefix, method_name,
+                    error == Error::kOk ? ".SuccessTime" : ".FailureTime",
+                    corruption_detected ? "WithCorruption" : ""}),
+      time_delta);
+  base::UmaHistogramEnumeration(
+      base::StrCat({kSqlDiskCacheBackendHistogramPrefix, method_name,
+                    corruption_detected ? ".ResultWithCorruption" : ".Result"}),
+      error);
+}
+
 SqlPersistentStore::Backend::Backend(
     ShardId shard_id,
     const base::FilePath& path,
@@ -303,6 +306,7 @@ SqlPersistentStore::Backend::Backend(
       path_(path),
       type_(type),
       read_cache_memory_monitor_(std::move(read_cache_memory_monitor)),
+      reduce_uma_(net::features::kSqlDiskCacheReduceUma.Get()),
       db_(sql::DatabaseOptions()
 #if BUILDFLAG(IS_WIN)
               .set_exclusive_database_file_lock(true)
@@ -487,9 +491,11 @@ void SqlPersistentStore::Backend::DatabaseErrorCallback(
     int error,
     sql::Statement* statement) {
   TRACE_EVENT("disk_cache", "SqlBackend.Error", "error", error);
-  sql::UmaHistogramSqliteResult(
-      base::StrCat({kSqlDiskCacheBackendHistogramPrefix, "SqliteError"}),
-      error);
+  if (!reduce_uma_) {
+    sql::UmaHistogramSqliteResult(
+        base::StrCat({kSqlDiskCacheBackendHistogramPrefix, "SqliteError"}),
+        error);
+  }
   // For the HTTP Cache, a kFullDisk error is not recoverable and freeing up
   // disk space is the best course of action. So, we treat it as a catastrophic
   // error to raze the database.
@@ -864,8 +870,10 @@ Error SqlPersistentStore::Backend::DeleteDoomedEntries(
   RecordTimeAndErrorResultHistogram("DeleteDoomedEntries", posting_delay,
                                     timer.Elapsed(), result,
                                     corruption_detected);
-  base::UmaHistogramCounts100("Net.SqlDiskCache.DeleteDoomedEntriesCount",
-                              res_ids_to_delete.size());
+  if (!reduce_uma_) {
+    base::UmaHistogramCounts100("Net.SqlDiskCache.DeleteDoomedEntriesCount",
+                                res_ids_to_delete.size());
+  }
   TRACE_EVENT_END("disk_cache", "result",
                   [&](perfetto::TracedValue trace_context) {
                     auto dict = std::move(trace_context).WriteDictionary();
@@ -2493,14 +2501,16 @@ void SqlPersistentStore::Backend::StartEviction(
           : (result.error() == Error::kAborted ? "Abort" : "Failure");
   const std::string_view lookup_type =
       used_in_memory_index ? "InMemory." : "Database.";
-  base::UmaHistogramMicrosecondsTimes(
-      base::StrCat({kSqlDiskCacheBackendHistogramPrefix, eviction_type,
-                    ".TimeToSelectEntries.", lookup_type, result_type}),
-      timer.Elapsed());
-  base::UmaHistogramCounts1M(
-      base::StrCat({kSqlDiskCacheBackendHistogramPrefix, eviction_type,
-                    ".ScannedEntriesCount.", lookup_type, result_type}),
-      scanned_count);
+  if (!reduce_uma_) {
+    base::UmaHistogramMicrosecondsTimes(
+        base::StrCat({kSqlDiskCacheBackendHistogramPrefix, eviction_type,
+                      ".TimeToSelectEntries.", lookup_type, result_type}),
+        timer.Elapsed());
+    base::UmaHistogramCounts1M(
+        base::StrCat({kSqlDiskCacheBackendHistogramPrefix, eviction_type,
+                      ".ScannedEntriesCount.", lookup_type, result_type}),
+        scanned_count);
+  }
 
   TRACE_EVENT_END("disk_cache", "result",
                   [&](perfetto::TracedValue trace_context) {
@@ -2658,10 +2668,12 @@ SqlPersistentStore::Backend::SelectEvictionCandidates(
     }
     const int sqlite_error = db_.GetErrorCode();
     if (sqlite_error != static_cast<int>(sql::SqliteResultCode::kDone)) {
-      base::UmaHistogramSparse(
-          base::StrCat({kSqlDiskCacheBackendHistogramPrefix, eviction_type,
-                        ".SelectEntriesSqlError"}),
-          sqlite_error);
+      if (!reduce_uma_) {
+        base::UmaHistogramSparse(
+            base::StrCat({kSqlDiskCacheBackendHistogramPrefix, eviction_type,
+                          ".SelectEntriesSqlError"}),
+            sqlite_error);
+      }
       return base::unexpected(Error::kFailedToExecute);
     }
   }
@@ -3030,18 +3042,20 @@ SqlPersistentStore::Backend::LoadInMemoryIndexInternal() {
     }
   }
 
-  if (index.size() > 0) {
-    base::UmaHistogramPercentage(
-        "Net.SqlDiskCache.EntriesWithHintsPercentage",
-        static_cast<int>(hints_map.size() * 100 / index.size()));
-    base::UmaHistogramBoolean("Net.SqlDiskCache.MemoryEntryDataHintsValid",
-                              all_hints_valid);
-  }
+  if (!reduce_uma_) {
+    if (index.size() > 0) {
+      base::UmaHistogramPercentage(
+          "Net.SqlDiskCache.EntriesWithHintsPercentage",
+          static_cast<int>(hints_map.size() * 100 / index.size()));
+      base::UmaHistogramBoolean("Net.SqlDiskCache.MemoryEntryDataHintsValid",
+                                all_hints_valid);
+    }
 
-  base::UmaHistogramMicrosecondsTimes(
-      base::StrCat(
-          {kSqlDiskCacheBackendHistogramPrefix, "LoadInMemoryIndexTime"}),
-      timer.Elapsed());
+    base::UmaHistogramMicrosecondsTimes(
+        base::StrCat(
+            {kSqlDiskCacheBackendHistogramPrefix, "LoadInMemoryIndexTime"}),
+        timer.Elapsed());
+  }
   return InMemoryIndexAndDoomedResIds(std::move(index),
                                       std::move(doomed_entry_res_ids));
 }
@@ -3065,14 +3079,18 @@ bool SqlPersistentStore::Backend::MaybeRunCheckpoint() {
               wal_pages_);
   base::ElapsedTimer timer;
   bool checkpoint_result = db_.CheckpointDatabase();
-  base::UmaHistogramMicrosecondsTimes(
-      base::StrCat({kSqlDiskCacheBackendHistogramPrefix, "IdleEventCheckpoint.",
-                    checkpoint_result ? "Success" : "Failure", "Time"}),
-      timer.Elapsed());
-  base::UmaHistogramCounts100000(
-      base::StrCat({kSqlDiskCacheBackendHistogramPrefix, "IdleEventCheckpoint.",
-                    checkpoint_result ? "Success" : "Failure", "Pages"}),
-      wal_pages_);
+  if (!reduce_uma_) {
+    base::UmaHistogramMicrosecondsTimes(
+        base::StrCat({kSqlDiskCacheBackendHistogramPrefix,
+                      "IdleEventCheckpoint.",
+                      checkpoint_result ? "Success" : "Failure", "Time"}),
+        timer.Elapsed());
+    base::UmaHistogramCounts100000(
+        base::StrCat({kSqlDiskCacheBackendHistogramPrefix,
+                      "IdleEventCheckpoint.",
+                      checkpoint_result ? "Success" : "Failure", "Pages"}),
+        wal_pages_);
+  }
   wal_pages_ = 0;
   return checkpoint_result;
 }
@@ -3091,16 +3109,18 @@ void SqlPersistentStore::Backend::OnCommitCallback(int pages) {
     TRACE_EVENT("disk_cache", "SqlBackend.CheckpointDatabase", "pages", pages);
     base::ElapsedTimer timer;
     bool checkpoint_result = db_.CheckpointDatabase();
-    base::UmaHistogramMicrosecondsTimes(
-        base::StrCat({kSqlDiskCacheBackendHistogramPrefix,
-                      is_idle ? "Idle" : "Force", "Checkpoint.",
-                      checkpoint_result ? "Success" : "Failure", "Time"}),
-        timer.Elapsed());
-    base::UmaHistogramCounts100000(
-        base::StrCat({kSqlDiskCacheBackendHistogramPrefix,
-                      is_idle ? "Idle" : "Force", "Checkpoint.",
-                      checkpoint_result ? "Success" : "Failure", "Pages"}),
-        pages);
+    if (!reduce_uma_) {
+      base::UmaHistogramMicrosecondsTimes(
+          base::StrCat({kSqlDiskCacheBackendHistogramPrefix,
+                        is_idle ? "Idle" : "Force", "Checkpoint.",
+                        checkpoint_result ? "Success" : "Failure", "Time"}),
+          timer.Elapsed());
+      base::UmaHistogramCounts100000(
+          base::StrCat({kSqlDiskCacheBackendHistogramPrefix,
+                        is_idle ? "Idle" : "Force", "Checkpoint.",
+                        checkpoint_result ? "Success" : "Failure", "Pages"}),
+          pages);
+    }
     wal_pages_ = 0;
     return;
   }
@@ -3127,18 +3147,20 @@ bool SqlPersistentStore::Backend::MaybeRunIncrementalVacuum(
   const std::string_view result_type =
       error == Error::kOk ? "Success"
                           : (error == Error::kAborted ? "Abort" : "Failure");
-  base::UmaHistogramMicrosecondsTimes(
-      base::StrCat({kSqlDiskCacheBackendHistogramPrefix,
-                    "IdleEventIncrementalVacuum.", result_type, "Time"}),
-      timer.Elapsed());
-  base::UmaHistogramEnumeration(
-      base::StrCat({kSqlDiskCacheBackendHistogramPrefix,
-                    "IdleEventIncrementalVacuum.Result"}),
-      error);
-  base::UmaHistogramCounts100000(
-      base::StrCat({kSqlDiskCacheBackendHistogramPrefix,
-                    "IdleEventIncrementalVacuum.", result_type, "Pages"}),
-      pages_vacuumed);
+  if (!reduce_uma_) {
+    base::UmaHistogramMicrosecondsTimes(
+        base::StrCat({kSqlDiskCacheBackendHistogramPrefix,
+                      "IdleEventIncrementalVacuum.", result_type, "Time"}),
+        timer.Elapsed());
+    base::UmaHistogramEnumeration(
+        base::StrCat({kSqlDiskCacheBackendHistogramPrefix,
+                      "IdleEventIncrementalVacuum.Result"}),
+        error);
+    base::UmaHistogramCounts100000(
+        base::StrCat({kSqlDiskCacheBackendHistogramPrefix,
+                      "IdleEventIncrementalVacuum.", result_type, "Pages"}),
+        pages_vacuumed);
+  }
   TRACE_EVENT_END("disk_cache", "result",
                   [&](perfetto::TracedValue trace_context) {
                     auto dict = std::move(trace_context).WriteDictionary();

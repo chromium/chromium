@@ -780,6 +780,22 @@ TEST_P(SqlPersistentStoreTest, InitExisting) {
   EXPECT_EQ(Init(), SqlPersistentStore::Error::kOk);
 }
 
+TEST_P(SqlPersistentStoreTest, ReduceUma) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      net::features::kDiskCacheBackendExperiment,
+      {{"SqlDiskCacheReduceUma", "true"}});
+
+  base::HistogramTester histogram_tester;
+  CreateStore(10 * 1024 * 1024);
+  EXPECT_EQ(Init(), SqlPersistentStore::Error::kOk);
+
+  histogram_tester.ExpectTotalCount(
+      "Net.SqlDiskCache.Backend.Initialize.SuccessTime", 0);
+  histogram_tester.ExpectTotalCount(
+      "Net.SqlDiskCache.Backend.Initialize.Result", 0);
+}
+
 TEST_P(SqlPersistentStoreTest, SerialInitialize) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(

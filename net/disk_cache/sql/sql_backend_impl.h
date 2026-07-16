@@ -579,6 +579,9 @@ class NET_EXPORT_PRIVATE SqlBackendImpl final : public Backend {
   // `optimistic_write_buffer_monitor_`.
   SqlWriteBufferMemoryMonitor write_buffer_monitor_;
 
+  // Cached value of `net::features::kSqlDiskCacheReduceUma`.
+  const bool reduce_uma_;
+
   // Weak pointer factory for this class.
   base::WeakPtrFactory<SqlBackendImpl> weak_factory_{this};
 };

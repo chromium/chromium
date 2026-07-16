@@ -11,6 +11,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/timer/elapsed_timer.h"
+#include "net/base/features.h"
 #include "net/disk_cache/sql/cache_entry_key.h"
 
 namespace disk_cache {
@@ -26,21 +27,25 @@ WrapOperation(
         void(std::unique_ptr<ExclusiveOperationCoordinator::OperationHandle>)>
         operation,
     base::ScopedClosureRunner maybe_decrement_pending_task_count,
-    const std::string_view histogram_name) {
+    const std::string_view histogram_name,
+    bool reduce_uma) {
   return base::BindOnce(
       [](base::OnceCallback<void(
              std::unique_ptr<ExclusiveOperationCoordinator::OperationHandle>)>
              operation,
          base::ScopedClosureRunner maybe_decrement_pending_task_count,
-         const std::string_view histogram_name, base::ElapsedTimer timer,
+         const std::string_view histogram_name, bool reduce_uma,
+         base::ElapsedTimer timer,
          std::unique_ptr<ExclusiveOperationCoordinator::OperationHandle>
              handle) {
-        base::UmaHistogramMicrosecondsTimes(histogram_name, timer.Elapsed());
+        if (!reduce_uma) {
+          base::UmaHistogramMicrosecondsTimes(histogram_name, timer.Elapsed());
+        }
         maybe_decrement_pending_task_count.RunAndReset();
         std::move(operation).Run(std::move(handle));
       },
       std::move(operation), std::move(maybe_decrement_pending_task_count),
-      histogram_name, base::ElapsedTimer());
+      histogram_name, reduce_uma, base::ElapsedTimer());
 }
 
 }  // namespace
@@ -61,16 +66,17 @@ ExclusiveOperationCoordinator::ExclusiveOperationCoordinator()
     : has_pending_task_(
           base::MakeRefCounted<base::RefCountedData<std::atomic_bool>>(
               std::in_place,
-              false)) {}
+              false)),
+      reduce_uma_(net::features::kSqlDiskCacheReduceUma.Get()) {}
 ExclusiveOperationCoordinator::~ExclusiveOperationCoordinator() = default;
 
 void ExclusiveOperationCoordinator::PostOrRunExclusiveOperation(
     OperationCallback operation,
     bool low_priority) {
   CHECK(operation);
-  operation = WrapOperation(std::move(operation),
-                            MaybeIncrementPendingTaskCount(low_priority),
-                            "Net.SqlDiskCache.ExclusiveOperationDelay");
+  operation = WrapOperation(
+      std::move(operation), MaybeIncrementPendingTaskCount(low_priority),
+      "Net.SqlDiskCache.ExclusiveOperationDelay", reduce_uma_);
   queue_.emplace(std::move(operation));
   TryToRunNextOperation(std::nullopt);
 }
@@ -80,9 +86,9 @@ void ExclusiveOperationCoordinator::PostOrRunNormalOperation(
     OperationCallback operation,
     bool low_priority) {
   CHECK(operation);
-  operation = WrapOperation(std::move(operation),
-                            MaybeIncrementPendingTaskCount(low_priority),
-                            "Net.SqlDiskCache.NormalOperationDelay");
+  operation = WrapOperation(
+      std::move(operation), MaybeIncrementPendingTaskCount(low_priority),
+      "Net.SqlDiskCache.NormalOperationDelay", reduce_uma_);
   // If there is no queue, or the back of the queue is an exclusive operation,
   // add a new `NormalOperationsQueueMap` to the back of the queue.
   if (queue_.empty() ||

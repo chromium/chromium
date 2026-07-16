@@ -77,7 +77,11 @@ std::vector<bool> AppendResult(std::vector<bool> results, bool result) {
 void RecordEvictionHistograms(std::string_view method_name,
                               SqlPersistentStore::Error error,
                               base::TimeTicks start_time,
-                              size_t entry_count) {
+                              size_t entry_count,
+                              bool reduce_uma) {
+  if (reduce_uma) {
+    return;
+  }
   base::UmaHistogramMicrosecondsTimes(
       base::StrCat({kSqlDiskCacheBackendHistogramPrefix, method_name,
                     error == SqlPersistentStore::Error::kOk ? ".SuccessTime"
@@ -136,7 +140,8 @@ SqlPersistentStore::SqlPersistentStore(
                                           background_task_runners_,
                                           async_task_manager,
                                           std::move(cleanup_tracker))),
-      user_max_bytes_(max_bytes) {}
+      user_max_bytes_(max_bytes),
+      reduce_uma_(net::features::kSqlDiskCacheReduceUma.Get()) {}
 SqlPersistentStore::~SqlPersistentStore() = default;
 
 void SqlPersistentStore::Initialize(ErrorCallback callback) {
@@ -462,7 +467,7 @@ void SqlPersistentStore::OnPendingEvictionFinished(
   }
   RecordEvictionHistograms(
       is_idle_time_eviction ? "ResumeEvictionOnIdleTime" : "ResumeEviction",
-      error, start_time, count);
+      error, start_time, count, reduce_uma_);
 
   if (error != Error::kOk || HasPendingEviction()) {
     std::move(callback).Run(error);
@@ -523,7 +528,7 @@ void SqlPersistentStore::OnEvictionFinished(
 
   RecordEvictionHistograms(
       is_idle_time_eviction ? "RunNewEvictionOnIdleTime" : "RunNewEviction",
-      error, start_time, count);
+      error, start_time, count, reduce_uma_);
 
   CHECK(eviction_result_callback_);
   auto callback = std::move(eviction_result_callback_);

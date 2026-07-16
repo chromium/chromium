@@ -165,6 +165,9 @@ class NET_EXPORT_PRIVATE ExclusiveOperationCoordinator {
   // or tasks posted with `low_priority=true`.
   int64_t pending_task_count_ = 0;
 
+  // Cached value of `net::features::kSqlDiskCacheReduceUma`.
+  const bool reduce_uma_;
+
   base::WeakPtrFactory<ExclusiveOperationCoordinator> weak_factory_{this};
 };
 

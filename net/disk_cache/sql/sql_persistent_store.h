@@ -752,6 +752,8 @@ class NET_EXPORT_PRIVATE SqlPersistentStore {
   const raw_ref<SqlAsyncTaskManager> async_task_manager_;
   const std::vector<std::unique_ptr<BackendShard>> backend_shards_;
   const int64_t user_max_bytes_;
+  // Cached value of `net::features::kSqlDiskCacheReduceUma`.
+  const bool reduce_uma_;
 
   int64_t max_bytes_ = 0;
 
