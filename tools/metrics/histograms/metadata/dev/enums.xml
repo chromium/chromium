@@ -1012,6 +1012,11 @@ Called by update_protocol_commands_enum.py.-->
   <int value="2" label="Other Extension"/>
 </enum>
 
+<enum name="DevToolsFrontendLocation">
+  <int value="0" label="Local"/>
+  <int value="1" label="Remote"/>
+</enum>
+
 <enum name="DevToolsIssueCreated">
   <int value="0" label="MixedContentIssue"/>
   <int value="1" label="ContentSecurityPolicyIssue::kInlineViolation"/>
