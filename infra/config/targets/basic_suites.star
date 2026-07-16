@@ -598,6 +598,9 @@ targets.legacy_basic_suite(
         "blink_heap_unittests": targets.legacy_test_config(),
         "blink_platform_unittests": targets.legacy_test_config(),
         "blink_unittests": targets.legacy_test_config(
+            swarming = targets.swarming(
+                shards = 2,
+            ),
             android_swarming = targets.swarming(
                 shards = 6,
             ),
@@ -684,7 +687,7 @@ targets.legacy_basic_suite(
         "display_unittests": targets.legacy_test_config(),
         "gfx_unittests": targets.legacy_test_config(),
         "unit_tests": targets.legacy_test_config(
-            android_swarming = targets.swarming(
+            swarming = targets.swarming(
                 shards = 2,
             ),
         ),

@@ -1005,6 +1005,9 @@
         },
       },
       'blink_unittests': {
+        'swarming': {
+          'shards': 2,
+        },
         'android_swarming': {
           'shards': 6,
         },
@@ -1092,7 +1095,7 @@
       'display_unittests': {},
       'gfx_unittests': {},
       'unit_tests': {
-        'android_swarming': {
+        'swarming': {
           'shards': 2,
         },
       },
