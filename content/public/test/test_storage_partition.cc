@@ -34,10 +34,6 @@ TestStoragePartition::GetCertVerifierServiceUpdater() {
   return nullptr;
 }
 
-storage::SharedStorageManager* TestStoragePartition::GetSharedStorageManager() {
-  return nullptr;
-}
-
 scoped_refptr<network::SharedURLLoaderFactory>
 TestStoragePartition::GetURLLoaderFactoryForBrowserProcess() {
   return test_url_loader_factory_->GetSafeWeakWrapper();

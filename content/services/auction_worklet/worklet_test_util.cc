@@ -13,7 +13,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/to_string.h"
 #include "base/synchronization/waitable_event.h"
-#include "content/public/test/shared_storage_test_utils.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
 #include "content/services/auction_worklet/public/cpp/auction_downloader.h"
 #include "content/services/auction_worklet/public/cpp/creative_info.h"
@@ -174,8 +173,7 @@ TestAuctionSharedStorageHost::BatchRequest::~BatchRequest() = default;
 
 TestAuctionSharedStorageHost::BatchRequest::BatchRequest(
     const BatchRequest& other)
-    : methods_with_options(
-          content::CloneSharedStorageMethods(other.methods_with_options)),
+    : methods_with_options(mojo::Clone(other.methods_with_options)),
       with_lock(other.with_lock),
       source_auction_worklet_function(other.source_auction_worklet_function) {}
 

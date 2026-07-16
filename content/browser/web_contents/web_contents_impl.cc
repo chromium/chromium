@@ -127,7 +127,6 @@
 #include "content/browser/screen_details/screen_change_monitor.h"
 #include "content/browser/screen_orientation/screen_orientation_provider.h"
 #include "content/browser/security/cpsp/child_process_security_policy_impl.h"
-#include "content/browser/shared_storage/shared_storage_budget_charger.h"
 #include "content/browser/site_instance_impl.h"
 #include "content/browser/surface_embed/surface_embed_connector_impl.h"
 #include "content/browser/wake_lock/wake_lock_context_host.h"
@@ -1381,10 +1380,6 @@ WebContentsImpl::WebContentsImpl(BrowserContext* browser_context)
   screen_change_monitor_ =
       std::make_unique<ScreenChangeMonitor>(base::BindRepeating(
           &WebContentsImpl::OnScreensChange, base::Unretained(this)));
-
-  if (base::FeatureList::IsEnabled(network::features::kSharedStorageAPI)) {
-    SharedStorageBudgetCharger::CreateForWebContents(this);
-  }
 }
 
 WebContentsImpl::~WebContentsImpl() {

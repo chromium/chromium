@@ -12,7 +12,6 @@
 #include "base/unguessable_token.h"
 #include "base/values.h"
 #include "content/browser/service_worker/service_worker_host.h"
-#include "content/browser/shared_storage/shared_storage_worklet_host.h"
 #include "content/browser/worker_host/dedicated_worker_host.h"
 #include "content/browser/worker_host/shared_worker_host.h"
 #include "content/public/browser/browser_thread.h"
@@ -332,26 +331,6 @@ void CreateReportingServiceProxyForDedicatedWorker(
           dedicated_worker_host->GetProcessHost()->GetID(),
           dedicated_worker_host->GetReportingSource(),
           dedicated_worker_host->GetNetworkAnonymizationKey()),
-      std::move(receiver));
-}
-
-void CreateReportingServiceProxyForSharedStorageWorklet(
-    SharedStorageWorkletHost* shared_storage_worklet_host,
-    mojo::PendingReceiver<blink::mojom::ReportingServiceProxy> receiver) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  CHECK(shared_storage_worklet_host->GetProcessHost());
-  // The worklet may outlive its document, leaving no valid NetworkIsolationKey.
-  const net::NetworkIsolationKey& network_isolation_key =
-      shared_storage_worklet_host->MaybeGetNetworkIsolationKey();
-  if (network_isolation_key.IsEmpty()) {
-    return;
-  }
-  mojo::MakeSelfOwnedReceiver(
-      std::make_unique<ReportingServiceProxyImpl>(
-          shared_storage_worklet_host->GetProcessHost()->GetID(),
-          shared_storage_worklet_host->GetWorkletToken(),
-          net::NetworkAnonymizationKey::CreateFromNetworkIsolationKey(
-              network_isolation_key)),
       std::move(receiver));
 }
 

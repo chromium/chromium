@@ -55,7 +55,6 @@ class DeviceBoundSessionManager;
 namespace storage {
 class QuotaManager;
 struct QuotaSettings;
-class SharedStorageManager;
 class SpecialStoragePolicy;
 }  // namespace storage
 
@@ -108,10 +107,6 @@ class CONTENT_EXPORT StoragePartition {
 
   virtual cert_verifier::mojom::CertVerifierServiceUpdater*
   GetCertVerifierServiceUpdater() = 0;
-
-  // Returns the SharedStorageManager for the StoragePartition, or nullptr if it
-  // doesn't exist because the feature is disabled.
-  virtual storage::SharedStorageManager* GetSharedStorageManager() = 0;
 
   // Returns a pointer/info to a URLLoaderFactory/CookieManager owned by
   // the storage partition. Prefer to use this instead of creating a new

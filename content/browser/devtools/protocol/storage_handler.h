@@ -13,15 +13,14 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/types/optional_ref.h"
-#include "components/services/storage/shared_storage/shared_storage_manager.h"
 #include "content/browser/devtools/protocol/devtools_domain_handler.h"
 #include "content/browser/devtools/protocol/storage.h"
-#include "content/browser/interest_group/devtools_enums.h"
-#include "content/browser/interest_group/interest_group_manager_impl.h"
-#include "content/browser/shared_storage/shared_storage_runtime_manager.h"
 #include "content/public/browser/global_routing_id.h"
 #include "storage/browser/quota/quota_manager.h"
-#include "third_party/blink/public/common/shared_storage/shared_storage_utils.h"
+
+namespace net {
+class CanonicalCookie;
+}
 
 namespace storage {
 class QuotaOverrideHandle;
@@ -35,11 +34,7 @@ class StoragePartition;
 
 namespace protocol {
 
-class StorageHandler
-    : public DevToolsDomainHandler,
-      public Storage::Backend,
-      public content::SharedStorageRuntimeManager::
-          SharedStorageObserverInterface {
+class StorageHandler : public DevToolsDomainHandler, public Storage::Backend {
  public:
   explicit StorageHandler(DevToolsAgentHostImpl* host,
                           DevToolsAgentHostClient* client);
@@ -151,41 +146,13 @@ class StorageHandler
   // See definition for lifetime information.
   class CacheStorageObserver;
   class IndexedDBObserver;
-  class SharedStorageObserver;
   class QuotaManagerObserver;
 
   // Not thread safe.
   CacheStorageObserver* GetCacheStorageObserver();
   IndexedDBObserver* GetIndexedDBObserver();
 
-  SharedStorageRuntimeManager* GetSharedStorageRuntimeManager();
-  std::variant<protocol::Response, storage::SharedStorageManager*>
-  GetSharedStorageManager();
   storage::QuotaManagerProxy* GetQuotaManagerProxy();
-
-  // content::SharedStorageRuntimeManager::SharedStorageObserverInterface
-  GlobalRenderFrameHostId AssociatedFrameHostId() const override;
-  bool ShouldReceiveAllSharedStorageReports() const override;
-  void OnSharedStorageAccessed(
-      base::Time access_time,
-      blink::SharedStorageAccessScope scope,
-      SharedStorageRuntimeManager::SharedStorageObserverInterface::AccessMethod
-          method,
-      GlobalRenderFrameHostId main_frame_id,
-      const std::string& owner_origin,
-      const SharedStorageEventParams& params) override;
-  void OnSharedStorageSelectUrlUrnUuidGenerated(const GURL& urn_uuid) override;
-  void OnSharedStorageSelectUrlConfigPopulated(
-      const std::optional<FencedFrameConfig>& config) override;
-  void OnSharedStorageWorkletOperationExecutionFinished(
-      base::Time finished_time,
-      base::TimeDelta execution_time,
-      SharedStorageRuntimeManager::SharedStorageObserverInterface::AccessMethod
-          method,
-      int operation_id,
-      const base::UnguessableToken& worklet_devtools_token,
-      GlobalRenderFrameHostId main_frame_id,
-      const std::string& owner_origin) override;
 
   void NotifyCacheStorageListChanged(
       const storage::BucketLocator& bucket_locator);
@@ -222,11 +189,6 @@ class StorageHandler
   // Exposes the API for managing storage quota overrides.
   std::unique_ptr<storage::QuotaOverrideHandle> quota_override_handle_;
   raw_ptr<DevToolsAgentHostClient> client_;
-
-  base::ScopedObservation<
-      content::SharedStorageRuntimeManager,
-      content::SharedStorageRuntimeManager::SharedStorageObserverInterface>
-      shared_storage_observation_{this};
 
   base::WeakPtrFactory<StorageHandler> weak_ptr_factory_{this};
 };

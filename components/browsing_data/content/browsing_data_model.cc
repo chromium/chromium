@@ -20,7 +20,6 @@
 #include "components/browsing_data/content/shared_worker_info.h"
 #include "components/browsing_data/core/browsing_data_utils.h"
 #include "components/services/storage/public/mojom/storage_usage_info.mojom.h"
-#include "components/services/storage/shared_storage/shared_storage_manager.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/dom_storage_context.h"
@@ -249,18 +248,6 @@ void StorageRemoverHelper::Visitor::operator()<url::Origin>(
 template <>
 void StorageRemoverHelper::Visitor::operator()<blink::StorageKey>(
     const blink::StorageKey& storage_key) {
-  if (types.Has(BrowsingDataModel::StorageType::kSharedStorage)) {
-    helper->storage_partition_->GetSharedStorageManager()->Clear(
-        storage_key.origin(),
-        base::BindOnce(
-            [](base::OnceClosure complete_callback,
-               storage::SharedStorageDatabase::OperationResult result) {
-              std::move(complete_callback).Run();
-            },
-            helper->GetCompleteCallback()),
-        storage::SharedStorageDatabase::DataClearSource::kUI);
-  }
-
   if (types.Has(BrowsingDataModel::StorageType::kQuotaStorage)) {
     helper->quota_helper_->DeleteStorageKeyData(storage_key,
                                                 helper->GetCompleteCallback());
@@ -439,18 +426,6 @@ void OnTrustTokenIssuanceInfoLoaded(
   std::move(loaded_callback).Run();
 }
 
-void OnSharedStorageLoaded(
-    BrowsingDataModel* model,
-    base::OnceClosure loaded_callback,
-    std::vector<::storage::mojom::StorageUsageInfoPtr> storage_usage_info) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  for (const auto& info : storage_usage_info) {
-    model->AddBrowsingData(info->storage_key,
-                           BrowsingDataModel::StorageType::kSharedStorage,
-                           info->total_size_bytes);
-  }
-  std::move(loaded_callback).Run();
-}
 
 void OnInterestGroupsLoaded(
     BrowsingDataModel* model,
@@ -954,8 +929,6 @@ bool BrowsingDataModel::IsBlockedByThirdPartyCookieBlocking(
 
 void BrowsingDataModel::PopulateFromDisk(base::OnceClosure finished_callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  bool is_shared_storage_enabled =
-      base::FeatureList::IsEnabled(network::features::kSharedStorageAPI);
   bool is_shared_dictionary_enabled = base::FeatureList::IsEnabled(
       network::features::kCompressionDictionaryTransport);
   bool is_interest_group_enabled =
@@ -986,11 +959,6 @@ void BrowsingDataModel::PopulateFromDisk(base::OnceClosure finished_callback) {
   storage_partition_->GetCookieManagerForBrowserProcess()->GetAllCookies(
       base::BindOnce(&OnCookiesLoaded, this, completion));
 
-  // Shared storage origins
-  if (is_shared_storage_enabled) {
-    storage_partition_->GetSharedStorageManager()->FetchOrigins(
-        base::BindOnce(&OnSharedStorageLoaded, this, completion));
-  }
 
   // Shared Dictionaries
   if (is_shared_dictionary_enabled) {

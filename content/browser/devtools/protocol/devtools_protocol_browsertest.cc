@@ -36,7 +36,6 @@
 #include "components/download/public/common/download_file_factory.h"
 #include "components/download/public/common/download_file_impl.h"
 #include "components/download/public/common/download_task_runner.h"
-#include "components/services/storage/shared_storage/shared_storage_manager.h"
 #include "content/browser/devtools/devtools_agent_host_impl.h"
 #include "content/browser/devtools/devtools_session.h"
 #include "content/browser/devtools/protocol/browser_handler.h"
@@ -136,8 +135,6 @@ using testing::Pointee;
 namespace content {
 
 namespace {
-
-const int kBudgetAllowed = 12;
 
 class TestJavaScriptDialogManager : public JavaScriptDialogManager,
                                     public WebContentsDelegate {
@@ -4940,101 +4937,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, ResponseAfterReload) {
   SendCommandSync("Network.enable");
 }
 
-class SharedStorageDevToolsProtocolTest : public DevToolsProtocolTest {
- public:
-  SharedStorageDevToolsProtocolTest() {
-    feature_list_
-        .InitWithFeaturesAndParameters(/*enabled_features=*/
-                                       {{network::features::kSharedStorageAPI,
-                                         {{"SharedStorageBitBudget",
-                                           base::NumberToString(
-                                               kBudgetAllowed)}}},
-                                        {features::
-                                             kPrivacySandboxAdsAPIsOverride,
-                                         {}}},
-                                       /*disabled_features=*/{});
-  }
 
-  void MakeBudgetWithdrawal(const GURL& url, double bits) {
-    auto* manager = shell()
-                        ->web_contents()
-                        ->GetBrowserContext()
-                        ->GetDefaultStoragePartition()
-                        ->GetSharedStorageManager();
-    ASSERT_TRUE(manager);
-    base::test::TestFuture<storage::SharedStorageManager::OperationResult>
-        future;
-    manager->MakeBudgetWithdrawal(net::SchemefulSite(url), bits,
-                                  future.GetCallback());
-    EXPECT_EQ(storage::SharedStorageManager::OperationResult::kSuccess,
-              future.Get());
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(SharedStorageDevToolsProtocolTest,
-                       ResetSharedStorageBudget) {
-  ASSERT_TRUE(embedded_test_server()->Start());
-  GURL url = embedded_test_server()->GetURL("a.test", "/title1.html");
-  NavigateToURLBlockUntilNavigationsComplete(shell(), url, 1);
-  Attach();
-
-  base::DictValue command_params;
-  command_params.Set("enable", true);
-  SendCommandSync("Storage.setSharedStorageTracking",
-                  std::move(command_params));
-  ASSERT_FALSE(error());
-
-  // Set an entry in order to initialize shared storage database for
-  // `origin_str`.
-  command_params = base::DictValue();
-  std::string origin_str = url.GetWithEmptyPath().spec();
-  command_params.Set("ownerOrigin", origin_str);
-  command_params.Set("key", "key1");
-  command_params.Set("value", "value1");
-  SendCommandSync("Storage.setSharedStorageEntry", std::move(command_params));
-  ASSERT_FALSE(error());
-
-  // "remainingBudget" should currently be at its max, `kBudgetAllowed`.
-  command_params = base::DictValue();
-  command_params.Set("ownerOrigin", origin_str);
-  SendCommandSync("Storage.getSharedStorageMetadata",
-                  std::move(command_params));
-  ASSERT_TRUE(result());
-  EXPECT_THAT(result()->FindDoubleByDottedPath("metadata.remainingBudget"),
-              testing::Optional(kBudgetAllowed));
-
-  // Make some withdrawals.
-  MakeBudgetWithdrawal(url, 1.0);
-  MakeBudgetWithdrawal(url, 2.5);
-
-  // "remainingBudget" should have decreased the appropriate amount.
-  command_params = base::DictValue();
-  command_params.Set("ownerOrigin", origin_str);
-  SendCommandSync("Storage.getSharedStorageMetadata",
-                  std::move(command_params));
-  ASSERT_TRUE(result());
-  EXPECT_THAT(result()->FindDoubleByDottedPath("metadata.remainingBudget"),
-              testing::Optional(kBudgetAllowed - 1.0 - 2.5));
-
-  // Reset the budget.
-  command_params = base::DictValue();
-  command_params.Set("ownerOrigin", origin_str);
-  SendCommandSync("Storage.resetSharedStorageBudget",
-                  std::move(command_params));
-  ASSERT_FALSE(error());
-
-  // "remainingBudget" should be back at its max, `kBudgetAllowed`.
-  command_params = base::DictValue();
-  command_params.Set("ownerOrigin", origin_str);
-  SendCommandSync("Storage.getSharedStorageMetadata",
-                  std::move(command_params));
-  ASSERT_TRUE(result());
-  EXPECT_THAT(result()->FindDoubleByDottedPath("metadata.remainingBudget"),
-              testing::Optional(kBudgetAllowed));
-}
 
 IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, TestRawHeadersWithRedirects) {
   net::EmbeddedTestServer& https_test_server = embedded_https_test_server();

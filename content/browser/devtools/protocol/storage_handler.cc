@@ -894,27 +894,6 @@ StorageHandler::IndexedDBObserver* StorageHandler::GetIndexedDBObserver() {
   return indexed_db_observer_.get();
 }
 
-SharedStorageRuntimeManager* StorageHandler::GetSharedStorageRuntimeManager() {
-  if (!storage_partition_) {
-    return nullptr;
-  }
-  return static_cast<StoragePartitionImpl*>(storage_partition_)
-      ->GetSharedStorageRuntimeManager();
-}
-
-std::variant<protocol::Response, storage::SharedStorageManager*>
-StorageHandler::GetSharedStorageManager() {
-  if (!storage_partition_) {
-    return Response::InternalError();
-  }
-
-  if (auto* manager = static_cast<StoragePartitionImpl*>(storage_partition_)
-                          ->GetSharedStorageManager()) {
-    return manager;
-  }
-  return Response::ServerError("Shared storage is disabled");
-}
-
 storage::QuotaManagerProxy* StorageHandler::GetQuotaManagerProxy() {
   DCHECK(storage_partition_);
 
@@ -1056,149 +1035,17 @@ void StorageHandler::ClearTrustTokens(
 
 
 
-namespace {
-
-void SendSharedStorageMetadata(
-    std::unique_ptr<StorageHandler::GetSharedStorageMetadataCallback> callback,
-    storage::SharedStorageManager::MetadataResult metadata) {
-  if (metadata.time_result ==
-      storage::SharedStorageManager::OperationResult::kNotFound) {
-    callback->sendFailure(Response::ServerError("Origin not found."));
-    return;
-  }
-
-  std::string error_message;
-
-  if (metadata.length == -1) {
-    error_message += "Unable to retrieve `length`. ";
-  }
-
-  if (metadata.time_result !=
-      storage::SharedStorageManager::OperationResult::kSuccess) {
-    error_message += "Unable to retrieve `creationTime`. ";
-  }
-
-  if (metadata.budget_result !=
-      storage::SharedStorageManager::OperationResult::kSuccess) {
-    error_message += "Unable to retrieve `remainingBudget`. ";
-  }
-
-  if (metadata.bytes_used == -1) {
-    error_message += "Unable to retrieve `bytes_used`. ";
-  }
-
-  if (!error_message.empty()) {
-    callback->sendFailure(Response::ServerError(error_message));
-    return;
-  }
-
-  auto protocol_metadata =
-      protocol::Storage::SharedStorageMetadata::Create()
-          .SetLength(metadata.length)
-          .SetCreationTime(metadata.creation_time.InSecondsFSinceUnixEpoch())
-          .SetRemainingBudget(metadata.remaining_budget)
-          .SetBytesUsed(metadata.bytes_used)
-          .Build();
-
-  callback->sendSuccess(std::move(protocol_metadata));
-}
-
-}  // namespace
-
 void StorageHandler::GetSharedStorageMetadata(
     const std::string& owner_origin_string,
     std::unique_ptr<GetSharedStorageMetadataCallback> callback) {
-  auto manager_or_response = GetSharedStorageManager();
-  if (std::holds_alternative<protocol::Response>(manager_or_response)) {
-    callback->sendFailure(std::get<protocol::Response>(manager_or_response));
-    return;
-  }
-
-  storage::SharedStorageManager* manager =
-      std::get<storage::SharedStorageManager*>(manager_or_response);
-  DCHECK(manager);
-
-  GURL owner_origin_url(owner_origin_string);
-  if (!owner_origin_url.is_valid()) {
-    callback->sendFailure(Response::InvalidParams("Invalid owner origin"));
-    return;
-  }
-  url::Origin owner_origin = url::Origin::Create(owner_origin_url);
-  DCHECK(!owner_origin.opaque());
-
-  manager->GetMetadata(
-      std::move(owner_origin),
-      base::BindOnce(&SendSharedStorageMetadata, std::move(callback)));
+  callback->sendFailure(Response::ServerError("Shared storage is disabled."));
 }
-
-namespace {
-
-void RetrieveSharedStorageEntries(
-    std::unique_ptr<StorageHandler::GetSharedStorageEntriesCallback> callback,
-    storage::SharedStorageManager::EntriesResult entries_result) {
-  if (entries_result.result !=
-      storage::SharedStorageManager::OperationResult::kSuccess) {
-    callback->sendFailure(Response::ServerError("Database error"));
-    return;
-  }
-
-  auto entries = std::make_unique<
-      protocol::Array<protocol::Storage::SharedStorageEntry>>();
-
-  for (const auto& entry : entries_result.entries) {
-    auto protocol_entry = protocol::Storage::SharedStorageEntry::Create()
-                              .SetKey(entry.first)
-                              .SetValue(entry.second)
-                              .Build();
-    entries->push_back(std::move(protocol_entry));
-  }
-
-  callback->sendSuccess(std::move(entries));
-}
-
-}  // namespace
 
 void StorageHandler::GetSharedStorageEntries(
     const std::string& owner_origin_string,
     std::unique_ptr<GetSharedStorageEntriesCallback> callback) {
-  auto manager_or_response = GetSharedStorageManager();
-  if (std::holds_alternative<protocol::Response>(manager_or_response)) {
-    callback->sendFailure(std::get<protocol::Response>(manager_or_response));
-    return;
-  }
-
-  storage::SharedStorageManager* manager =
-      std::get<storage::SharedStorageManager*>(manager_or_response);
-  DCHECK(manager);
-
-  GURL owner_origin_url(owner_origin_string);
-  if (!owner_origin_url.is_valid()) {
-    callback->sendFailure(Response::InvalidParams("Invalid owner origin"));
-    return;
-  }
-  url::Origin owner_origin = url::Origin::Create(owner_origin_url);
-  DCHECK(!owner_origin.opaque());
-
-  manager->GetEntriesForDevTools(
-      owner_origin,
-      base::BindOnce(&RetrieveSharedStorageEntries, std::move(callback)));
+  callback->sendFailure(Response::ServerError("Shared storage is disabled."));
 }
-
-namespace {
-
-void DispatchSharedStorageSetCallback(
-    std::unique_ptr<Storage::Backend::SetSharedStorageEntryCallback> callback,
-    storage::SharedStorageManager::OperationResult result) {
-  if (result != storage::SharedStorageManager::OperationResult::kSet &&
-      result != storage::SharedStorageManager::OperationResult::kIgnored) {
-    callback->sendFailure(Response::ServerError("Database error"));
-    return;
-  }
-
-  callback->sendSuccess();
-}
-
-}  // namespace
 
 void StorageHandler::SetSharedStorageEntry(
     const std::string& owner_origin_string,
@@ -1206,377 +1053,33 @@ void StorageHandler::SetSharedStorageEntry(
     const std::string& value,
     std::optional<bool> ignore_if_present,
     std::unique_ptr<SetSharedStorageEntryCallback> callback) {
-  auto manager_or_response = GetSharedStorageManager();
-  if (std::holds_alternative<protocol::Response>(manager_or_response)) {
-    callback->sendFailure(std::get<protocol::Response>(manager_or_response));
-    return;
-  }
-
-  storage::SharedStorageManager* manager =
-      std::get<storage::SharedStorageManager*>(manager_or_response);
-  DCHECK(manager);
-
-  GURL owner_origin_url(owner_origin_string);
-  if (!owner_origin_url.is_valid()) {
-    callback->sendFailure(Response::InvalidParams("Invalid owner origin"));
-    return;
-  }
-  url::Origin owner_origin = url::Origin::Create(owner_origin_url);
-  DCHECK(!owner_origin.opaque());
-
-  auto set_behavior =
-      ignore_if_present.value_or(false)
-          ? storage::SharedStorageManager::SetBehavior::kIgnoreIfPresent
-          : storage::SharedStorageManager::SetBehavior::kDefault;
-
-  manager->Set(
-      owner_origin, base::UTF8ToUTF16(key), base::UTF8ToUTF16(value),
-      base::BindOnce(&DispatchSharedStorageSetCallback, std::move(callback)),
-      set_behavior);
+  callback->sendFailure(Response::ServerError("Shared storage is disabled."));
 }
-
-namespace {
-
-template <typename CallbackType>
-void DispatchSharedStorageCallback(
-    std::unique_ptr<CallbackType> callback,
-    storage::SharedStorageManager::OperationResult result) {
-  if (result != storage::SharedStorageManager::OperationResult::kSuccess) {
-    callback->sendFailure(Response::ServerError("Database error"));
-    return;
-  }
-
-  callback->sendSuccess();
-}
-
-}  // namespace
 
 void StorageHandler::DeleteSharedStorageEntry(
     const std::string& owner_origin_string,
     const std::string& key,
     std::unique_ptr<DeleteSharedStorageEntryCallback> callback) {
-  auto manager_or_response = GetSharedStorageManager();
-  if (std::holds_alternative<protocol::Response>(manager_or_response)) {
-    callback->sendFailure(std::get<protocol::Response>(manager_or_response));
-    return;
-  }
-
-  storage::SharedStorageManager* manager =
-      std::get<storage::SharedStorageManager*>(manager_or_response);
-  DCHECK(manager);
-
-  GURL owner_origin_url(owner_origin_string);
-  if (!owner_origin_url.is_valid()) {
-    callback->sendFailure(Response::InvalidParams("Invalid owner origin"));
-    return;
-  }
-  url::Origin owner_origin = url::Origin::Create(owner_origin_url);
-  DCHECK(!owner_origin.opaque());
-
-  manager->Delete(
-      owner_origin, base::UTF8ToUTF16(key),
-      base::BindOnce(
-          &DispatchSharedStorageCallback<DeleteSharedStorageEntryCallback>,
-          std::move(callback)));
+  callback->sendFailure(Response::ServerError("Shared storage is disabled."));
 }
 
 void StorageHandler::ClearSharedStorageEntries(
     const std::string& owner_origin_string,
     std::unique_ptr<ClearSharedStorageEntriesCallback> callback) {
-  auto manager_or_response = GetSharedStorageManager();
-  if (std::holds_alternative<protocol::Response>(manager_or_response)) {
-    callback->sendFailure(std::get<protocol::Response>(manager_or_response));
-    return;
-  }
-
-  storage::SharedStorageManager* manager =
-      std::get<storage::SharedStorageManager*>(manager_or_response);
-  DCHECK(manager);
-
-  GURL owner_origin_url(owner_origin_string);
-  if (!owner_origin_url.is_valid()) {
-    callback->sendFailure(Response::InvalidParams("Invalid owner origin"));
-    return;
-  }
-  url::Origin owner_origin = url::Origin::Create(owner_origin_url);
-  DCHECK(!owner_origin.opaque());
-
-  manager->Clear(
-      owner_origin,
-      base::BindOnce(
-          &DispatchSharedStorageCallback<ClearSharedStorageEntriesCallback>,
-          std::move(callback)));
+  callback->sendFailure(Response::ServerError("Shared storage is disabled."));
 }
 
 Response StorageHandler::SetSharedStorageTracking(bool enable) {
-  // FIXME: this should remember the state and restore it
-  // once the StorageRunTimeManager or the storage partition is available.
-  if (enable) {
-    auto* manager = GetSharedStorageRuntimeManager();
-    if (!manager) {
-      return Response::ServerError("Shared storage is disabled.");
-    }
-    // Only enable tracking if this handler is associated with a main render
-    // frame host, and if tracking isn't already enabled.
-    if (frame_host_ && frame_host_->IsOutermostMainFrame() &&
-        !shared_storage_observation_.IsObserving()) {
-      shared_storage_observation_.Observe(manager);
-    }
-  } else {
-    shared_storage_observation_.Reset();
-  }
-  return Response::Success();
+  return Response::ServerError("Shared storage is disabled.");
 }
 
 void StorageHandler::ResetSharedStorageBudget(
     const std::string& owner_origin_string,
     std::unique_ptr<ResetSharedStorageBudgetCallback> callback) {
-  auto manager_or_response = GetSharedStorageManager();
-  if (std::holds_alternative<protocol::Response>(manager_or_response)) {
-    callback->sendFailure(std::get<protocol::Response>(manager_or_response));
-    return;
-  }
-
-  storage::SharedStorageManager* manager =
-      std::get<storage::SharedStorageManager*>(manager_or_response);
-  DCHECK(manager);
-
-  GURL owner_origin_url(owner_origin_string);
-  if (!owner_origin_url.is_valid()) {
-    callback->sendFailure(Response::InvalidParams("Invalid owner origin"));
-    return;
-  }
-  url::Origin owner_origin = url::Origin::Create(owner_origin_url);
-  DCHECK(!owner_origin.opaque());
-
-  manager->ResetBudgetForDevTools(
-      owner_origin,
-      base::BindOnce(
-          &DispatchSharedStorageCallback<ResetSharedStorageBudgetCallback>,
-          std::move(callback)));
+  callback->sendFailure(Response::ServerError("Shared storage is disabled."));
 }
 
-GlobalRenderFrameHostId StorageHandler::AssociatedFrameHostId() const {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  return frame_host_ ? frame_host_->GetGlobalId() : GlobalRenderFrameHostId();
-}
 
-bool StorageHandler::ShouldReceiveAllSharedStorageReports() const {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  return false;
-}
-
-namespace {
-
-std::string GetFrameTokenFromGlobalRenderFrameHostId(
-    GlobalRenderFrameHostId frame_id) {
-  auto* rfh = frame_id ? RenderFrameHostImpl::FromID(frame_id) : nullptr;
-  return rfh ? rfh->devtools_frame_token().ToString() : std::string();
-}
-
-const char* GetSharedStorageAccessMethodEnum(
-    SharedStorageRuntimeManager::SharedStorageObserverInterface::AccessMethod
-        method) {
-  using AccessMethod =
-      SharedStorageRuntimeManager::SharedStorageObserverInterface::AccessMethod;
-  switch (method) {
-    case AccessMethod::kAddModule:
-      return Storage::SharedStorageAccessMethodEnum::AddModule;
-    case AccessMethod::kCreateWorklet:
-      return Storage::SharedStorageAccessMethodEnum::CreateWorklet;
-    case AccessMethod::kSelectURL:
-      return Storage::SharedStorageAccessMethodEnum::SelectURL;
-    case AccessMethod::kRun:
-      return Storage::SharedStorageAccessMethodEnum::Run;
-    case AccessMethod::kBatchUpdate:
-      return Storage::SharedStorageAccessMethodEnum::BatchUpdate;
-    case AccessMethod::kSet:
-      return Storage::SharedStorageAccessMethodEnum::Set;
-    case AccessMethod::kAppend:
-      return Storage::SharedStorageAccessMethodEnum::Append;
-    case AccessMethod::kDelete:
-      return Storage::SharedStorageAccessMethodEnum::Delete;
-    case AccessMethod::kClear:
-      return Storage::SharedStorageAccessMethodEnum::Clear;
-    case AccessMethod::kGet:
-      return Storage::SharedStorageAccessMethodEnum::Get;
-    case AccessMethod::kKeys:
-      return Storage::SharedStorageAccessMethodEnum::Keys;
-    case AccessMethod::kValues:
-      return Storage::SharedStorageAccessMethodEnum::Values;
-    case AccessMethod::kEntries:
-      return Storage::SharedStorageAccessMethodEnum::Entries;
-    case AccessMethod::kLength:
-      return Storage::SharedStorageAccessMethodEnum::Length;
-    case AccessMethod::kRemainingBudget:
-      return Storage::SharedStorageAccessMethodEnum::RemainingBudget;
-  };
-  NOTREACHED();
-}
-
-}  // namespace
-
-void StorageHandler::OnSharedStorageAccessed(
-    base::Time access_time,
-    blink::SharedStorageAccessScope scope,
-    SharedStorageRuntimeManager::SharedStorageObserverInterface::AccessMethod
-        method,
-    GlobalRenderFrameHostId main_frame_id,
-    const std::string& owner_origin,
-    const SharedStorageEventParams& params) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
-  using AccessScope = blink::SharedStorageAccessScope;
-
-  std::string scope_enum;
-  switch (scope) {
-    case AccessScope::kWindow:
-      scope_enum = Storage::SharedStorageAccessScopeEnum::Window;
-      break;
-    case AccessScope::kSharedStorageWorklet:
-      scope_enum = Storage::SharedStorageAccessScopeEnum::SharedStorageWorklet;
-      break;
-    case AccessScope::kProtectedAudienceWorklet:
-      return;
-    case AccessScope::kHeader:
-      scope_enum = Storage::SharedStorageAccessScopeEnum::Header;
-      break;
-  };
-
-  auto protocol_params =
-      protocol::Storage::SharedStorageAccessParams::Create().Build();
-
-  if (params.script_source_url) {
-    protocol_params->SetScriptSourceUrl(*params.script_source_url);
-  }
-  if (params.data_origin) {
-    protocol_params->SetDataOrigin(*params.data_origin);
-  }
-  if (params.operation_name) {
-    protocol_params->SetOperationName(*params.operation_name);
-  }
-  if (params.operation_id) {
-    protocol_params->SetOperationId(base::NumberToString(*params.operation_id));
-  }
-  if (params.keep_alive) {
-    protocol_params->SetKeepAlive(*params.keep_alive);
-  }
-  if (params.serialized_data) {
-    protocol_params->SetSerializedData(*params.serialized_data);
-  }
-  if (params.urn_uuid) {
-    protocol_params->SetUrnUuid(*params.urn_uuid);
-  }
-  if (params.key) {
-    protocol_params->SetKey(*params.key);
-  }
-  if (params.value) {
-    protocol_params->SetValue(*params.value);
-  }
-  if (params.ignore_if_present) {
-    protocol_params->SetIgnoreIfPresent(*params.ignore_if_present);
-  }
-  if (params.worklet_ordinal) {
-    protocol_params->SetWorkletOrdinal(*params.worklet_ordinal);
-  }
-  if (!params.worklet_devtools_token.is_empty()) {
-    protocol_params->SetWorkletTargetId(
-        params.worklet_devtools_token.ToString());
-  }
-  if (params.with_lock) {
-    protocol_params->SetWithLock(*params.with_lock);
-  }
-  if (params.batch_update_id) {
-    protocol_params->SetBatchUpdateId(
-        base::NumberToString(*params.batch_update_id));
-  }
-  if (params.batch_size) {
-    protocol_params->SetBatchSize(*params.batch_size);
-  }
-
-  if (params.private_aggregation_config) {
-    auto protocol_private_aggregation_config =
-        protocol::Storage::SharedStoragePrivateAggregationConfig::Create()
-            .SetFilteringIdMaxBytes(params.private_aggregation_config->config
-                                        ->filtering_id_max_bytes)
-            .Build();
-    if (params.private_aggregation_config->config
-            ->aggregation_coordinator_origin) {
-      protocol_private_aggregation_config->SetAggregationCoordinatorOrigin(
-          params.private_aggregation_config->config
-              ->aggregation_coordinator_origin->Serialize());
-    }
-    if (params.private_aggregation_config->config->context_id) {
-      protocol_private_aggregation_config->SetContextId(
-          params.private_aggregation_config->config->context_id.value());
-    }
-    if (params.private_aggregation_config->config->max_contributions) {
-      protocol_private_aggregation_config->SetMaxContributions(
-          params.private_aggregation_config->config->max_contributions.value());
-    }
-
-    protocol_params->SetPrivateAggregationConfig(
-        std::move(protocol_private_aggregation_config));
-  }
-
-  if (params.urls_with_metadata) {
-    auto protocol_urls = std::make_unique<
-        protocol::Array<protocol::Storage::SharedStorageUrlWithMetadata>>();
-
-    for (const auto& url_with_metadata : *params.urls_with_metadata) {
-      auto reporting_metadata = std::make_unique<
-          protocol::Array<protocol::Storage::SharedStorageReportingMetadata>>();
-
-      for (const auto& metadata_pair : url_with_metadata.reporting_metadata) {
-        auto reporting_pair =
-            protocol::Storage::SharedStorageReportingMetadata::Create()
-                .SetEventType(metadata_pair.first)
-                .SetReportingUrl(metadata_pair.second)
-                .Build();
-        reporting_metadata->push_back(std::move(reporting_pair));
-      }
-
-      auto protocol_url =
-          protocol::Storage::SharedStorageUrlWithMetadata::Create()
-              .SetUrl(url_with_metadata.url)
-              .SetReportingMetadata(std::move(reporting_metadata))
-              .Build();
-      protocol_urls->push_back(std::move(protocol_url));
-    }
-
-    protocol_params->SetUrlsWithMetadata(std::move(protocol_urls));
-  }
-
-  frontend_->SharedStorageAccessed(
-      access_time.InSecondsFSinceUnixEpoch(), scope_enum,
-      GetSharedStorageAccessMethodEnum(method),
-      GetFrameTokenFromGlobalRenderFrameHostId(main_frame_id), owner_origin,
-      net::SchemefulSite(GURL(owner_origin)).Serialize(),
-      std::move(protocol_params));
-}
-
-void StorageHandler::OnSharedStorageSelectUrlUrnUuidGenerated(
-    const GURL& urn_uuid) {}
-void StorageHandler::OnSharedStorageSelectUrlConfigPopulated(
-    const std::optional<FencedFrameConfig>& config) {}
-
-void StorageHandler::OnSharedStorageWorkletOperationExecutionFinished(
-    base::Time finished_time,
-    base::TimeDelta execution_time,
-    SharedStorageRuntimeManager::SharedStorageObserverInterface::AccessMethod
-        method,
-    int operation_id,
-    const base::UnguessableToken& worklet_devtools_token,
-    GlobalRenderFrameHostId main_frame_id,
-    const std::string& owner_origin) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
-  frontend_->SharedStorageWorkletOperationExecutionFinished(
-      finished_time.InSecondsFSinceUnixEpoch(), execution_time.InMicroseconds(),
-      GetSharedStorageAccessMethodEnum(method),
-      base::NumberToString(operation_id), worklet_devtools_token.ToString(),
-      GetFrameTokenFromGlobalRenderFrameHostId(main_frame_id), owner_origin);
-}
 
 DispatchResponse StorageHandler::SetStorageBucketTracking(
     const std::string& serialized_storage_key,

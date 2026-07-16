@@ -16,7 +16,6 @@
 #include "cc/input/browser_controls_state.h"
 #include "content/browser/fenced_frame/fenced_frame_url_mapping.h"
 #include "content/browser/renderer_host/stored_page.h"
-#include "content/browser/shared_storage/shared_storage_saved_query_data.h"
 #include "content/common/content_export.h"
 #include "content/common/navigation_client.mojom.h"
 #include "content/public/browser/page.h"
@@ -228,51 +227,6 @@ class CONTENT_EXPORT PageImpl : public Page {
   // Returns the keyboard layout mapping.
   base::flat_map<std::string, std::string> GetKeyboardLayoutMap();
 
-  // Retrieves the index from `select_url_saved_query_index_results_` for the
-  // given key, or a special value indicating the status of the query. The key
-  // is a tuple of (`context_origin`, `data_origin`, `script_url`,
-  // `operation_name`, `query_name`).
-  //
-  // - New Query: If no entry exists for the key, initializes a new entry with
-  //   an index of -1 (indicating pending) and returns -2.
-  // - Pending Query: If an entry exists but the index is -1, adds the provided
-  //   `callback` to the list of callbacks for this query and returns -1.
-  // - Completed Query: If an entry exists and the index is nonnegative, returns
-  //   the index.
-  int32_t GetSavedQueryResultIndexOrStoreCallback(
-      const url::Origin& context_origin,
-      const url::Origin& data_origin,
-      const GURL& script_url,
-      const std::string& operation_name,
-      const std::u16string& query_name,
-      base::OnceCallback<void(uint32_t)> callback);
-
-  // Updates `select_url_saved_query_index_results_` for the given key as
-  // follows. The key is a tuple of (`context_origin`, `data_origin`,
-  // `script_url`, `operation_name`, `query_name`).
-  //  - The index is of the entry is set to `index`.
-  //  - If the entry has any callbacks, runs them in order.
-  //
-  // Precondition: The entry exists and its index has value -1.
-  void SetSavedQueryResultIndexAndRunCallbacks(
-      const url::Origin& context_origin,
-      const url::Origin& data_origin,
-      const GURL& script_url,
-      const std::string& operation_name,
-      const std::u16string& query_name,
-      uint32_t index);
-
-  // Returns whether a pending call to `sharedStorage.selectURL()` has
-  // sufficient budget for `site`, debiting `select_url_overall_budget_` and
-  // `select_url_per_site_budget_[site]` if so and if
-  // `blink::features::kSharedStorageSelectURLLimit` is enabled. If
-  // `blink::features::kSharedStorageSelectURLLimit` is disabled, always returns
-  // `blink::SharedStorageSelectUrlBudgetStatus::kSufficientBudget`. If there is
-  // insufficient budget, the returned enum value specifies which budget was
-  // insufficient.
-  blink::SharedStorageSelectUrlBudgetStatus CheckAndMaybeDebitSelectURLBudgets(
-      const net::SchemefulSite& site,
-      double bits_to_charge);
 
   // See documentation for |credentialless_iframes_nonce_|.
   const base::UnguessableToken& credentialless_iframes_nonce() const {
@@ -387,33 +341,6 @@ class CONTENT_EXPORT PageImpl : public Page {
   // Any fenced frames created within this page will access this map.
   FencedFrameURLMapping fenced_frame_urls_map_;
 
-  // If `blink::features::kSharedStorageSelectURLLimit` is enabled, the number
-  // of bits of entropy remaining in this pageload's overall budget for calls to
-  // `sharedStorage.selectURL()`. Calls from all sites on this page are
-  // charged to this budget. `select_url_overall_budget_` is not renewed until
-  // `this` is destroyed, and it does not rely on any assumptions about when
-  // specifically `this` is destroyed (e.g. during navigation or not).
-  std::optional<double> select_url_overall_budget_;
-
-  // If `blink::features::kSharedStorageSelectURLLimit` is enabled, the maximum
-  // number of bits of entropy in a single site's budget.
-  std::optional<double> select_url_max_bits_per_site_;
-
-  // A map of sites to the number bits of entropy remaining in the site's
-  // budget for calls to `sharedStorage.selectURL()` during this pageload.
-  // `select_url_per_site_budget_` is not cleared until `this` is destroyed,
-  // and it does not rely on any assumptions about when specifically `this` is
-  // destroyed (e.g. during navigation or not). Used only if
-  // `blink::features::kSharedStorageSelectURLLimit` is enabled.
-  base::flat_map<net::SchemefulSite, double> select_url_per_site_budget_;
-
-  // A map of tuples (context origin, data origin, worklet script URL, operation
-  // name, query name) to the index returned for the corresponding
-  // `sharedStorage.selectURL()` query.
-  base::flat_map<
-      std::tuple<url::Origin, url::Origin, GURL, std::string, std::u16string>,
-      SharedStorageSavedQueryData>
-      select_url_saved_query_index_results_;
 
   // This class is owned by the main RenderFrameHostImpl and it's safe to keep a
   // reference to it.

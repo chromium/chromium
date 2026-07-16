@@ -64,7 +64,6 @@
 #include "content/browser/security/cpsp/child_process_security_policy_impl.h"
 #include "content/browser/service_worker/service_worker_context_core.h"
 #include "content/browser/service_worker/service_worker_host.h"
-#include "content/browser/shared_storage/shared_storage_worklet_host.h"
 #include "content/browser/speech/speech_recognition_dispatcher_host.h"
 #include "content/browser/storage_access/storage_access_handle.h"
 #include "content/browser/tracing/traces_internals/traces_internals.mojom.h"
@@ -1812,36 +1811,6 @@ void PopulateBinderMap(SharedWorkerHost* host, mojo::BinderMap* map) {
   PopulateSharedWorkerBinders(host, map);
 }
 
-// Shared storage worklets
-SharedStorageWorkletHost* GetContextForHost(SharedStorageWorkletHost* host) {
-  return host;
-}
-
-void PopulateSharedStorageWorkletBinders(SharedStorageWorkletHost* host,
-                                         mojo::BinderMap* map) {
-  // Ignore requests to bind UkmRecorderFactory and FeatureObserver, since there
-  // is no current plan to support them for worklets and the renderer always
-  // tries to bind them. TODO(crbug.com/366293454).
-  map->Add<ukm::mojom::UkmRecorderFactory>(base::DoNothing());
-  map->Add<blink::mojom::FeatureObserver>(base::DoNothing());
-
-  // SharedStorageWorkletHost binders
-  // base::Unretained(host) is safe because the map is owned by
-  // |SharedStorageWorkletHost::broker_|.
-  map->Add<blink::mojom::LockManager>(base::BindRepeating(
-      &SharedStorageWorkletHost::GetLockManager, base::Unretained(host)));
-  map->Add<blink::mojom::ReportingServiceProxy>(
-      base::BindRepeating(&CreateReportingServiceProxyForSharedStorageWorklet,
-                          base::Unretained(host)));
-}
-
-void PopulateBinderMapWithContext(
-    SharedStorageWorkletHost* host,
-    mojo::BinderMapWithContext<SharedStorageWorkletHost*>* map) {}
-
-void PopulateBinderMap(SharedStorageWorkletHost* host, mojo::BinderMap* map) {
-  PopulateSharedStorageWorkletBinders(host, map);
-}
 
 // Service workers
 ServiceWorkerVersionInfo GetContextForHost(ServiceWorkerHost* host) {

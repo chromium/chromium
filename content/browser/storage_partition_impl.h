@@ -78,7 +78,6 @@ class DeviceBoundSessionAccessObserver;
 namespace storage {
 class BlobUrlRegistry;
 struct BucketClientInfo;
-class SharedStorageManager;
 }
 
 namespace content {
@@ -115,8 +114,6 @@ class PrivateAggregationManagerImpl;
 class PushMessagingContext;
 class QuotaContext;
 class ReconnectableURLLoaderFactoryForIOThreadWrapper;
-class SharedStorageHeaderObserver;
-class SharedStorageRuntimeManager;
 class SharedWorkerServiceImpl;
 class SubresourceProxyingURLLoaderService;
 class NavigationOrDocumentHandle;
@@ -156,12 +153,6 @@ class CONTENT_EXPORT StoragePartitionImpl
       BackgroundSyncContextImpl* background_sync_context);
   void OverrideSharedWorkerServiceForTesting(
       std::unique_ptr<SharedWorkerServiceImpl> shared_worker_service);
-  void OverrideSharedStorageRuntimeManagerForTesting(
-      std::unique_ptr<SharedStorageRuntimeManager>
-          shared_storage_runtime_manager);
-  void OverrideSharedStorageHeaderObserverForTesting(
-      std::unique_ptr<SharedStorageHeaderObserver>
-          shared_storage_header_observer);
   void OverrideAggregationServiceForTesting(
       std::unique_ptr<AggregationService> aggregation_service);
   void OverridePrivateAggregationManagerForTesting(
@@ -199,10 +190,7 @@ class CONTENT_EXPORT StoragePartitionImpl
   storage::mojom::LocalStorageControl* GetLocalStorageControl() override;
   LockManager<storage::BucketId>*
   GetLockManager();  // override; TODO: Add to interface
-  // TODO(crbug.com/40185706): Add this method to the StoragePartition
-  // interface, which would also require making SharedStorageRuntimeManager
-  // an interface accessible in //content/public/.
-  SharedStorageRuntimeManager* GetSharedStorageRuntimeManager();  // override;
+
   storage::mojom::IndexedDBControl& GetIndexedDBControl() override;
   FileSystemAccessEntryFactory* GetFileSystemAccessEntryFactory() override;
   storage::mojom::CacheStorageControl* GetCacheStorageControl() override;
@@ -297,7 +285,6 @@ class CONTENT_EXPORT StoragePartitionImpl
   AggregationService* GetAggregationService();
   FontAccessManager* GetFontAccessManager();
 
-  storage::SharedStorageManager* GetSharedStorageManager() override;
   PrivateAggregationManager* GetPrivateAggregationManager();
 
   // blink::mojom::DomStorage interface.
@@ -404,9 +391,6 @@ class CONTENT_EXPORT StoragePartitionImpl
   void OnScenarioMatchChanged(performance_scenarios::ScenarioScope scope,
                               bool matches_pattern) override;
 
-  SharedStorageHeaderObserver* shared_storage_header_observer() {
-    return shared_storage_header_observer_.get();
-  }
 
   // Can return nullptr while `this` is being destroyed.
   BrowserContext* browser_context() const;
@@ -832,17 +816,6 @@ class CONTENT_EXPORT StoragePartitionImpl
   mojo::Remote<network::mojom::DeviceBoundSessionManager>
       device_bound_session_manager_;
 
-  // Owning pointer to the SharedStorageManager for this partition.
-  std::unique_ptr<storage::SharedStorageManager> shared_storage_manager_;
-
-  // This needs to be declared after `shared_storage_manager_` because
-  // `shared_storage_worklet_host` (managed by
-  // `shared_storage_runtime_manager_`) ultimately stores a raw pointer on
-  // it.
-  std::unique_ptr<SharedStorageRuntimeManager> shared_storage_runtime_manager_;
-
-  // Owning pointer to the `SharedStorageHeaderObserver` for this partition.
-  std::unique_ptr<SharedStorageHeaderObserver> shared_storage_header_observer_;
 
   std::unique_ptr<PrivateAggregationManagerImpl> private_aggregation_manager_;
 

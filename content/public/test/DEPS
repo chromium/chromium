@@ -95,9 +95,6 @@ specific_include_rules = {
   "test_image_transport_factory.h": [
     "+content/browser/compositor/image_transport_factory.h"
   ],
-  "test_shared_storage_header_observer.h": [
-    "+content/browser/shared_storage/shared_storage_header_observer.h"
-  ],
   "browser_fuzztest_support.h": [
     "+third_party/fuzztest/src/fuzztest/fuzztest.h"
   ],

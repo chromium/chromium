@@ -18,7 +18,6 @@
 #include "base/threading/thread_restrictions.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/browser/back_forward_cache_test_util.h"
-#include "content/browser/browsing_data/shared_storage_clear_site_data_tester.h"
 #include "content/browser/gpu/gpu_disk_cache_factory.h"
 #include "content/browser/preloading/prefetch/prefetch_document_manager.h"
 #include "content/browser/preloading/prefetch/prefetch_features.h"
@@ -893,120 +892,6 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverImplTrustTokenTest,
   EXPECT_FALSE(tester.HasOrigin(another_origin));
 }
 
-class BrowsingDataRemoverImplSharedStorageBrowserTest
-    : public BrowsingDataRemoverImplBrowserTest {
- public:
-  BrowsingDataRemoverImplSharedStorageBrowserTest() {
-    feature_list_.InitAndEnableFeature(network::features::kSharedStorageAPI);
-  }
-
-  StoragePartition* storage_partition() {
-    return shell()
-        ->web_contents()
-        ->GetBrowserContext()
-        ->GetDefaultStoragePartition();
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverImplSharedStorageBrowserTest,
-                       Remove) {
-  SharedStorageClearSiteDataTester tester(storage_partition());
-
-  auto origin = url::Origin::Create(GURL("https://topframe.example"));
-
-  tester.AddConsecutiveSharedStorageEntries(origin, u"key", u"value", 10);
-  EXPECT_THAT(tester.GetSharedStorageOrigins(),
-              testing::UnorderedElementsAre(origin));
-
-  // Note that u"key" concatenated with a single digit has 4 char16_t's and
-  // hence 8 bytes. Similarly, u"value" concatenated with one digit has
-  // 6 char16_t's and hence 12 bytes. A pair of these together thus has
-  // 20 bytes.
-  const int kNumBytesPerEntry = 20;
-  EXPECT_EQ(10 * kNumBytesPerEntry, tester.GetSharedStorageTotalBytes());
-
-  RemoveAndWait(BrowsingDataRemover::DATA_TYPE_SHARED_STORAGE);
-
-  EXPECT_TRUE(tester.GetSharedStorageOrigins().empty());
-  EXPECT_EQ(0, tester.GetSharedStorageTotalBytes());
-}
-
-IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverImplSharedStorageBrowserTest,
-                       RemoveByDomain) {
-  SharedStorageClearSiteDataTester tester(storage_partition());
-
-  auto origin = url::Origin::Create(GURL("https://topframe.example"));
-  auto sub_origin = url::Origin::Create(GURL("https://sub.topframe.example"));
-  auto another_origin =
-      url::Origin::Create(GURL("https://another-topframe.example"));
-
-  tester.AddConsecutiveSharedStorageEntries(origin, u"key", u"value", 5);
-  tester.AddConsecutiveSharedStorageEntries(sub_origin, u"key", u"value", 10);
-  tester.AddConsecutiveSharedStorageEntries(another_origin, u"key", u"value",
-                                            1);
-  EXPECT_THAT(
-      tester.GetSharedStorageOrigins(),
-      testing::UnorderedElementsAre(origin, sub_origin, another_origin));
-
-  // Note that u"key" concatenated with a single digit has 4 char16_t's and
-  // hence 8 bytes. Similarly, u"value" concatenated with one digit has
-  // 6 char16_t's and hence 12 bytes. A pair of these together thus has
-  // 20 bytes.
-  const int kNumBytesPerEntry = 20;
-  EXPECT_EQ(16 * kNumBytesPerEntry, tester.GetSharedStorageTotalBytes());
-
-  std::unique_ptr<BrowsingDataFilterBuilder> builder(
-      BrowsingDataFilterBuilder::Create(
-          BrowsingDataFilterBuilder::Mode::kDelete));
-  builder->AddRegisterableDomain("topframe.example");
-  RemoveWithFilterAndWait(BrowsingDataRemover::DATA_TYPE_SHARED_STORAGE,
-                          std::move(builder));
-
-  EXPECT_THAT(tester.GetSharedStorageOrigins(),
-              testing::UnorderedElementsAre(another_origin));
-
-  EXPECT_EQ(1 * kNumBytesPerEntry, tester.GetSharedStorageTotalBytes());
-}
-
-IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverImplSharedStorageBrowserTest,
-                       PreserveByDomain) {
-  SharedStorageClearSiteDataTester tester(storage_partition());
-
-  auto origin = url::Origin::Create(GURL("https://topframe.example"));
-  auto sub_origin = url::Origin::Create(GURL("https://sub.topframe.example"));
-  auto another_origin =
-      url::Origin::Create(GURL("https://another-topframe.example"));
-
-  tester.AddConsecutiveSharedStorageEntries(origin, u"key", u"value", 5);
-  tester.AddConsecutiveSharedStorageEntries(sub_origin, u"key", u"value", 10);
-  tester.AddConsecutiveSharedStorageEntries(another_origin, u"key", u"value",
-                                            1);
-  EXPECT_THAT(
-      tester.GetSharedStorageOrigins(),
-      testing::UnorderedElementsAre(origin, sub_origin, another_origin));
-
-  // Note that u"key" concatenated with a single digit has 4 char16_t's and
-  // hence 8 bytes. Similarly, u"value" concatenated with one digit has
-  // 6 char16_t's and hence 12 bytes. A pair of these together thus has
-  // 20 bytes.
-  const int kNumBytesPerEntry = 20;
-  EXPECT_EQ(16 * kNumBytesPerEntry, tester.GetSharedStorageTotalBytes());
-
-  // Delete all data *except* that specified by the filter.
-  std::unique_ptr<BrowsingDataFilterBuilder> builder(
-      BrowsingDataFilterBuilder::Create(
-          BrowsingDataFilterBuilder::Mode::kPreserve));
-  builder->AddRegisterableDomain("topframe.example");
-  RemoveWithFilterAndWait(BrowsingDataRemover::DATA_TYPE_SHARED_STORAGE,
-                          std::move(builder));
-
-  EXPECT_THAT(tester.GetSharedStorageOrigins(),
-              testing::UnorderedElementsAre(origin, sub_origin));
-  EXPECT_EQ(15 * kNumBytesPerEntry, tester.GetSharedStorageTotalBytes());
-}
 
 class BrowsingDataRemoverImplPrerenderingBrowserTest
     : public BrowsingDataRemoverImplBrowserTest {

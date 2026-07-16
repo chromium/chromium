@@ -20,7 +20,6 @@
 #include "content/browser/renderer_host/render_frame_proxy_host.h"
 #include "content/browser/renderer_host/render_view_host_delegate.h"
 #include "content/browser/renderer_host/render_view_host_impl.h"
-#include "content/browser/shared_storage/shared_storage_features.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/peak_gpu_memory_tracker_factory.h"
 #include "content/public/browser/render_view_host.h"
@@ -37,12 +36,6 @@ namespace content {
 
 PageImpl::PageImpl(RenderFrameHostImpl& rfh, PageDelegate& delegate)
     : main_document_(rfh), delegate_(delegate) {
-  if (base::FeatureList::IsEnabled(features::kSharedStorageSelectURLLimit)) {
-    select_url_overall_budget_ =
-        features::kSharedStorageSelectURLBitBudgetPerPageLoad.Get();
-    select_url_max_bits_per_site_ =
-        features::kSharedStorageSelectURLBitBudgetPerSitePerPageLoad.Get();
-  }
 
 #if BUILDFLAG(IS_ANDROID)
   page_proxy_ = std::make_unique<PageProxy>(this);
@@ -369,97 +362,6 @@ base::flat_map<std::string, std::string> PageImpl::GetKeyboardLayoutMap() {
   return GetMainDocument().GetRenderWidgetHost()->GetKeyboardLayoutMap();
 }
 
-int32_t PageImpl::GetSavedQueryResultIndexOrStoreCallback(
-    const url::Origin& context_origin,
-    const url::Origin& data_origin,
-    const GURL& script_url,
-    const std::string& operation_name,
-    const std::u16string& query_name,
-    base::OnceCallback<void(uint32_t)> callback) {
-  auto key = std::make_tuple(context_origin, data_origin, script_url,
-                             operation_name, query_name);
-  auto it = select_url_saved_query_index_results_.find(key);
-  if (it == select_url_saved_query_index_results_.end()) {
-    select_url_saved_query_index_results_[key] = SharedStorageSavedQueryData();
-    // The result index will be determined by running the registered worklet
-    // operation upon return to the SHaredStorageWorkletHost.
-    return -2;
-  }
-  if (it->second.index == -1) {
-    // The result index will be determined when a previously initiated worklet
-    // operation finishes running. We save a callback that will notify us of the
-    // result.
-    it->second.callbacks.push(std::move(callback));
-    return -1;
-  }
-  // The result index has been stored from a previously resolved worklet
-  // operation.
-  return it->second.index;
-}
-
-void PageImpl::SetSavedQueryResultIndexAndRunCallbacks(
-    const url::Origin& context_origin,
-    const url::Origin& data_origin,
-    const GURL& script_url,
-    const std::string& operation_name,
-    const std::u16string& query_name,
-    uint32_t index) {
-  auto key = std::make_tuple(context_origin, data_origin, script_url,
-                             operation_name, query_name);
-  auto it = select_url_saved_query_index_results_.find(key);
-  CHECK(it != select_url_saved_query_index_results_.end());
-  CHECK_EQ(it->second.index, -1L);
-  it->second.index = index;
-  while (!it->second.callbacks.empty()) {
-    std::move(it->second.callbacks.front()).Run(index);
-    it->second.callbacks.pop();
-  }
-}
-
-blink::SharedStorageSelectUrlBudgetStatus
-PageImpl::CheckAndMaybeDebitSelectURLBudgets(const net::SchemefulSite& site,
-                                             double bits_to_charge) {
-  if (!select_url_overall_budget_) {
-    // The limits are not enabled.
-    return blink::SharedStorageSelectUrlBudgetStatus::kSufficientBudget;
-  }
-
-  // Return insufficient if there is insufficient overall budget.
-  if (bits_to_charge > select_url_overall_budget_.value()) {
-    GetContentClient()->browser()->LogWebFeatureForCurrentPage(
-        &GetMainDocument(),
-        blink::mojom::WebFeature::
-            kSharedStorageAPI_SelectURLOverallPageloadBudgetInsufficient);
-    return blink::SharedStorageSelectUrlBudgetStatus::
-        kInsufficientOverallPageloadBudget;
-  }
-
-  DCHECK(select_url_max_bits_per_site_);
-
-  // Return false if the max bits per site is set to a value smaller than the
-  // current bits to charge.
-  if (bits_to_charge > select_url_max_bits_per_site_.value()) {
-    return blink::SharedStorageSelectUrlBudgetStatus::
-        kInsufficientSitePageloadBudget;
-  }
-
-  // Charge the per-site budget or return insufficient if there is not enough.
-  auto it = select_url_per_site_budget_.find(site);
-  if (it == select_url_per_site_budget_.end()) {
-    select_url_per_site_budget_[site] =
-        select_url_max_bits_per_site_.value() - bits_to_charge;
-  } else if (bits_to_charge > it->second) {
-    // There is insufficient per-site budget remaining.
-    return blink::SharedStorageSelectUrlBudgetStatus::
-        kInsufficientSitePageloadBudget;
-  } else {
-    it->second -= bits_to_charge;
-  }
-
-  // Charge the overall budget.
-  select_url_overall_budget_.value() -= bits_to_charge;
-  return blink::SharedStorageSelectUrlBudgetStatus::kSufficientBudget;
-}
 
 void PageImpl::TakeLoadingMemoryTracker(NavigationRequest* request) {
   CHECK(IsPrimary());

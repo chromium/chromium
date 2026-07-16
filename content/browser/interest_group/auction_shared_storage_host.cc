@@ -5,8 +5,6 @@
 #include "content/browser/interest_group/auction_shared_storage_host.h"
 
 #include "content/browser/renderer_host/render_frame_host_impl.h"
-#include "content/browser/shared_storage/shared_storage_lock_manager.h"
-#include "content/browser/shared_storage/shared_storage_runtime_manager.h"
 #include "content/browser/storage_partition_impl.h"
 #include "services/network/public/mojom/shared_storage.mojom.h"
 #include "third_party/blink/public/common/shared_storage/shared_storage_utils.h"
@@ -64,19 +62,6 @@ void AuctionSharedStorageHost::SharedStorageUpdate(
         method_with_options,
     auction_worklet::mojom::AuctionWorkletFunction
         source_auction_worklet_function) {
-  GlobalRenderFrameHostId main_frame_id =
-      receiver_set_.current_context()
-          .auction_runner_rfh->GetOutermostMainFrame()
-          ->GetGlobalId();
-
-  storage_partition_->GetSharedStorageRuntimeManager()
-      ->lock_manager()
-      .SharedStorageUpdate(
-          std::move(method_with_options),
-          receiver_set_.current_context().worklet_origin,
-          AccessScope::kProtectedAudienceWorklet, main_frame_id,
-          /*worklet_devtools_token=*/base::UnguessableToken::Null(),
-          base::DoNothing());
 
   GetContentClient()->browser()->LogWebFeatureForCurrentPage(
       receiver_set_.current_context().auction_runner_rfh,
@@ -89,19 +74,6 @@ void AuctionSharedStorageHost::SharedStorageBatchUpdate(
     const std::optional<std::string>& with_lock,
     auction_worklet::mojom::AuctionWorkletFunction
         source_auction_worklet_function) {
-  GlobalRenderFrameHostId main_frame_id =
-      receiver_set_.current_context()
-          .auction_runner_rfh->GetOutermostMainFrame()
-          ->GetGlobalId();
-
-  storage_partition_->GetSharedStorageRuntimeManager()
-      ->lock_manager()
-      .SharedStorageBatchUpdate(
-          std::move(methods_with_options), with_lock,
-          receiver_set_.current_context().worklet_origin,
-          AccessScope::kProtectedAudienceWorklet, main_frame_id,
-          /*worklet_devtools_token=*/base::UnguessableToken::Null(),
-          base::DoNothing());
 
   GetContentClient()->browser()->LogWebFeatureForCurrentPage(
       receiver_set_.current_context().auction_runner_rfh,

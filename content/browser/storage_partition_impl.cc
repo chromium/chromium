@@ -46,7 +46,6 @@
 #include "components/services/storage/public/cpp/filesystem/filesystem_impl.h"
 #include "components/services/storage/public/mojom/filesystem/directory.mojom.h"
 #include "components/services/storage/public/mojom/storage_service.mojom.h"
-#include "components/services/storage/shared_storage/shared_storage_manager.h"
 #include "components/services/storage/storage_service_impl.h"
 #include "components/variations/net/variations_http_headers.h"
 #include "content/browser/aggregation_service/aggregation_service.h"
@@ -98,8 +97,6 @@
 #include "content/browser/service_worker/service_worker_client.h"
 #include "content/browser/service_worker/service_worker_context_core.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
-#include "content/browser/shared_storage/shared_storage_header_observer.h"
-#include "content/browser/shared_storage/shared_storage_runtime_manager.h"
 #include "content/browser/ssl/ssl_client_auth_handler.h"
 #include "content/browser/ssl/ssl_error_handler.h"
 #include "content/browser/ssl_private_key_impl.h"
@@ -895,7 +892,6 @@ class StoragePartitionImpl::DataDeletionHelper {
       InterestGroupManagerImpl* interest_group_manager,
       AggregationService* aggregation_service,
       PrivateAggregationManagerImpl* private_aggregation_manager,
-      storage::SharedStorageManager* shared_storage_manager,
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
       CdmStorageManager* cdm_storage_manager,
 #endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
@@ -1341,8 +1337,6 @@ void StoragePartitionImpl::Initialize(
 
   lock_manager_ = std::make_unique<LockManager<storage::BucketId>>();
 
-  shared_storage_runtime_manager_ =
-      std::make_unique<SharedStorageRuntimeManager>(*this);
 
   scoped_refptr<ChromeBlobStorageContext> blob_context =
       ChromeBlobStorageContext::GetFor(browser_context_);
@@ -1513,15 +1507,6 @@ void StoragePartitionImpl::Initialize(
   }
 #endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
 
-  if (base::FeatureList::IsEnabled(network::features::kSharedStorageAPI)) {
-    base::FilePath shared_storage_path =
-        is_in_memory() ? base::FilePath()
-                       : path.Append(storage::kSharedStoragePath);
-    shared_storage_manager_ = std::make_unique<storage::SharedStorageManager>(
-        shared_storage_path, special_storage_policy_);
-    shared_storage_header_observer_ =
-        std::make_unique<SharedStorageHeaderObserver>(this);
-  }
 
   if (base::FeatureList::IsEnabled(blink::features::kPrivateAggregationApi)) {
     private_aggregation_manager_ =
@@ -1671,11 +1656,6 @@ LockManager<storage::BucketId>* StoragePartitionImpl::GetLockManager() {
   return lock_manager_.get();
 }
 
-SharedStorageRuntimeManager*
-StoragePartitionImpl::GetSharedStorageRuntimeManager() {
-  DCHECK(initialized_);
-  return shared_storage_runtime_manager_.get();
-}
 
 storage::mojom::IndexedDBControl& StoragePartitionImpl::GetIndexedDBControl() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -1887,9 +1867,6 @@ StoragePartitionImpl::GetProtoDatabaseProviderForTesting() {
   return proto_database_provider_.get();
 }
 
-storage::SharedStorageManager* StoragePartitionImpl::GetSharedStorageManager() {
-  return shared_storage_manager_.get();
-}
 
 PrivateAggregationManager*
 StoragePartitionImpl::GetPrivateAggregationManager() {
@@ -2510,26 +2487,7 @@ void StoragePartitionImpl::OnSharedStorageHeaderReceived(
         methods_with_options,
     const std::optional<std::string>& with_lock,
     OnSharedStorageHeaderReceivedCallback callback) {
-  if (!shared_storage_header_observer_) {
-    std::move(callback).Run();
-    return;
-  }
-
-  // Currently, shared-storage-writable headers aren't available for requests
-  // initiated by service workers, so `navigation_or_document` should be
-  // non-null.
-  //
-  // TODO(cammie): If we handle the service worker case by allowing service
-  // workers to initiate shared-storage-writable requests, the assumption that
-  // `navigation_or_document` must be non-null may become incorrect.
-  auto* navigation_or_document =
-      url_loader_network_observers_.current_context().navigation_or_document();
-  DCHECK(navigation_or_document);
-
-  shared_storage_header_observer_->HeaderReceived(
-      request_origin, url_loader_network_observers_.current_context().type(),
-      navigation_or_document, std::move(methods_with_options), with_lock,
-      std::move(callback), mojo::GetBadMessageCallback(), /*can_defer=*/true);
+  std::move(callback).Run();
 }
 
 void StoragePartitionImpl::OnAdAuctionEventRecordHeaderReceived(
@@ -2827,7 +2785,7 @@ void StoragePartitionImpl::ClearDataImpl(
       quota_manager_.get(), special_storage_policy_.get(),
       filesystem_context_.get(), GetCookieManagerForBrowserProcess(),
       interest_group_manager_.get(), aggregation_service_.get(),
-      private_aggregation_manager_.get(), shared_storage_manager_.get(),
+      private_aggregation_manager_.get(),
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
       cdm_storage_manager_.get(),
 #endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
@@ -2931,7 +2889,6 @@ void StoragePartitionImpl::DataDeletionHelper::ClearData(
     InterestGroupManagerImpl* interest_group_manager,
     AggregationService* aggregation_service,
     PrivateAggregationManagerImpl* private_aggregation_manager,
-    storage::SharedStorageManager* shared_storage_manager,
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
     CdmStorageManager* cdm_storage_manager,
 #endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
@@ -3156,25 +3113,6 @@ void StoragePartitionImpl::DataDeletionHelper::ClearData(
             CreateTaskCompletionClosure(TracingDataType::kPrivateAggregation)));
   }
 
-  if (base::FeatureList::IsEnabled(network::features::kSharedStorageAPI) &&
-      shared_storage_manager &&
-      (remove_mask_ & REMOVE_DATA_MASK_SHARED_STORAGE)) {
-    auto shared_storage_purge_callback = base::BindOnce(
-        [](base::WeakPtr<storage::SharedStorageManager> manager,
-           base::OnceClosure callback,
-           storage::SharedStorageDatabase::OperationResult result) {
-          if (manager) {
-            manager->OnOperationResult(result);
-          }
-          std::move(callback).Run();
-        },
-        shared_storage_manager->GetWeakPtr(),
-        CreateTaskCompletionClosure(TracingDataType::kSharedStorage));
-
-    shared_storage_manager->PurgeMatchingOrigins(
-        combined_storage_key_matcher, begin, end,
-        std::move(shared_storage_purge_callback), perform_storage_cleanup);
-  }
 
   if (remove_mask_ & REMOVE_DATA_MASK_DEVICE_BOUND_SESSIONS &&
       device_bound_session_manager) {
@@ -3497,19 +3435,6 @@ void StoragePartitionImpl::OverrideSharedWorkerServiceForTesting(
   shared_worker_service_ = std::move(shared_worker_service);
 }
 
-void StoragePartitionImpl::OverrideSharedStorageRuntimeManagerForTesting(
-    std::unique_ptr<SharedStorageRuntimeManager>
-        shared_storage_runtime_manager) {
-  DCHECK(initialized_);
-  shared_storage_runtime_manager_ = std::move(shared_storage_runtime_manager);
-}
-
-void StoragePartitionImpl::OverrideSharedStorageHeaderObserverForTesting(
-    std::unique_ptr<SharedStorageHeaderObserver>
-        shared_storage_header_observer) {
-  DCHECK(initialized_);
-  shared_storage_header_observer_ = std::move(shared_storage_header_observer);
-}
 
 void StoragePartitionImpl::OverrideAggregationServiceForTesting(
     std::unique_ptr<AggregationService> aggregation_service) {

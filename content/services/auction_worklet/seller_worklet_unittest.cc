@@ -29,7 +29,6 @@
 #include "base/test/with_feature_override.h"
 #include "base/time/time.h"
 #include "components/cbor/writer.h"
-#include "content/public/test/shared_storage_test_utils.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
 #include "content/services/auction_worklet/public/cpp/auction_downloader.h"
 #include "content/services/auction_worklet/public/cpp/auction_worklet_features.h"
@@ -77,10 +76,6 @@ using PrivateAggregationRequests = SellerWorklet::PrivateAggregationRequests;
 using RealTimeReportingContributions =
     SellerWorklet::RealTimeReportingContributions;
 
-using content::MojomAppendMethod;
-using content::MojomClearMethod;
-using content::MojomDeleteMethod;
-using content::MojomSetMethod;
 
 // Very short time used by some tests that want to wait until just before a
 // timer triggers.
@@ -6728,163 +6723,6 @@ class SellerWorkletSharedStorageAPIEnabledTest : public SellerWorkletTest {
   base::test::ScopedFeatureList feature_list_;
 };
 
-TEST_F(SellerWorkletSharedStorageAPIEnabledTest, SharedStorageWriteInScoreAd) {
-  auction_worklet::TestAuctionSharedStorageHost test_shared_storage_host;
-
-  {
-    mojo::Receiver<auction_worklet::mojom::AuctionSharedStorageHost> receiver(
-        &test_shared_storage_host);
-    shared_storage_hosts_[0] = receiver.BindNewPipeAndPassRemote();
-
-    RunScoreAdWithJavascriptExpectingResult(
-        CreateScoreAdScript("5", /*extra_code=*/R"(
-          sharedStorage.set('a', 'b');
-          sharedStorage.set('a', 'b', {ignoreIfPresent: true});
-          sharedStorage.append('a', 'b');
-          sharedStorage.delete('a');
-          sharedStorage.clear();
-          sharedStorage.clear({withLock: 'lock1'});
-        )"),
-        5, /*expected_errors=*/
-        {}, mojom::ComponentAuctionModifiedBidParamsPtr(),
-        /*expected_data_version=*/std::nullopt,
-        /*expected_debug_loss_report_url=*/std::nullopt,
-        /*expected_debug_win_report_url=*/std::nullopt,
-        /*expected_reject_reason=*/mojom::RejectReason::kNotAvailable,
-        /*expected_pa_requests=*/{});
-
-    // Make sure the shared storage mojom methods are invoked as they use a
-    // dedicated pipe.
-    task_environment_.RunUntilIdle();
-
-    using Request = auction_worklet::TestAuctionSharedStorageHost::Request;
-
-    EXPECT_THAT(test_shared_storage_host.observed_requests(),
-                testing::ElementsAre(
-                    Request(MojomSetMethod(/*key=*/u"a", /*value=*/u"b",
-                                           /*ignore_if_present=*/false),
-                            mojom::AuctionWorkletFunction::kSellerScoreAd),
-                    Request(MojomSetMethod(/*key=*/u"a", /*value=*/u"b",
-                                           /*ignore_if_present=*/true),
-                            mojom::AuctionWorkletFunction::kSellerScoreAd),
-                    Request(MojomAppendMethod(/*key=*/u"a", /*value=*/u"b"),
-                            mojom::AuctionWorkletFunction::kSellerScoreAd),
-                    Request(MojomDeleteMethod(/*key=*/u"a"),
-                            mojom::AuctionWorkletFunction::kSellerScoreAd),
-                    Request(MojomClearMethod(),
-                            mojom::AuctionWorkletFunction::kSellerScoreAd),
-                    Request(MojomClearMethod(/*with_lock=*/"lock1"),
-                            mojom::AuctionWorkletFunction::kSellerScoreAd)));
-  }
-
-  {
-    shared_storage_hosts_[0] =
-        mojo::PendingRemote<mojom::AuctionSharedStorageHost>();
-
-    // Set the shared-storage permissions policy to disallowed.
-    permissions_policy_state_ =
-        mojom::AuctionWorkletPermissionsPolicyState::New(
-            /*private_aggregation_allowed=*/true,
-            /*shared_storage_allowed=*/false);
-
-    RunScoreAdWithJavascriptExpectingResult(
-        CreateScoreAdScript("5", /*extra_code=*/R"(
-          sharedStorage.clear();
-        )"),
-        /*expected_score=*/0, /*expected_errors=*/
-        {"https://url.test/:5 Uncaught TypeError: The \"shared-storage\" "
-         "Permissions Policy denied the method on sharedStorage."},
-        mojom::ComponentAuctionModifiedBidParamsPtr(),
-        /*expected_data_version=*/std::nullopt,
-        /*expected_debug_loss_report_url=*/std::nullopt,
-        /*expected_debug_win_report_url=*/std::nullopt,
-        /*expected_reject_reason=*/mojom::RejectReason::kNotAvailable,
-        /*expected_pa_requests=*/{});
-
-    permissions_policy_state_ =
-        mojom::AuctionWorkletPermissionsPolicyState::New(
-            /*private_aggregation_allowed=*/true,
-            /*shared_storage_allowed=*/true);
-  }
-}
-
-TEST_F(SellerWorkletSharedStorageAPIEnabledTest,
-       SharedStorageWriteInReportResult) {
-  auction_worklet::TestAuctionSharedStorageHost test_shared_storage_host;
-
-  {
-    mojo::Receiver<auction_worklet::mojom::AuctionSharedStorageHost> receiver(
-        &test_shared_storage_host);
-    shared_storage_hosts_[0] = receiver.BindNewPipeAndPassRemote();
-
-    RunReportResultCreatedScriptExpectingResult(
-        R"(5)",
-        R"(
-          sharedStorage.set('a', 'b');
-          sharedStorage.set('a', 'b', {ignoreIfPresent: true});
-          sharedStorage.append('a', 'b');
-          sharedStorage.delete('a');
-          sharedStorage.clear();
-          sharedStorage.clear({withLock: 'lock1'});
-        )",
-        /*expected_signals_for_winner=*/"5",
-        /*expected_report_url=*/std::nullopt, /*expected_ad_beacon_map=*/{},
-        /*expected_pa_requests=*/{},
-        /*expected_errors=*/{});
-
-    // Make sure the shared storage mojom methods are invoked as they use a
-    // dedicated pipe.
-    task_environment_.RunUntilIdle();
-
-    using Request = auction_worklet::TestAuctionSharedStorageHost::Request;
-
-    EXPECT_THAT(
-        test_shared_storage_host.observed_requests(),
-        testing::ElementsAre(
-            Request(MojomSetMethod(/*key=*/u"a", /*value=*/u"b",
-                                   /*ignore_if_present=*/false),
-                    mojom::AuctionWorkletFunction::kSellerReportResult),
-            Request(MojomSetMethod(/*key=*/u"a", /*value=*/u"b",
-                                   /*ignore_if_present=*/true),
-                    mojom::AuctionWorkletFunction::kSellerReportResult),
-            Request(MojomAppendMethod(/*key=*/u"a", /*value=*/u"b"),
-                    mojom::AuctionWorkletFunction::kSellerReportResult),
-            Request(MojomDeleteMethod(/*key=*/u"a"),
-                    mojom::AuctionWorkletFunction::kSellerReportResult),
-            Request(MojomClearMethod(),
-                    mojom::AuctionWorkletFunction::kSellerReportResult),
-            Request(MojomClearMethod(/*with_lock=*/"lock1"),
-                    mojom::AuctionWorkletFunction::kSellerReportResult)));
-  }
-
-  {
-    shared_storage_hosts_[0] =
-        mojo::PendingRemote<mojom::AuctionSharedStorageHost>();
-
-    // Set the shared-storage permissions policy to disallowed.
-    permissions_policy_state_ =
-        mojom::AuctionWorkletPermissionsPolicyState::New(
-            /*private_aggregation_allowed=*/true,
-            /*shared_storage_allowed=*/false);
-
-    RunReportResultCreatedScriptExpectingResult(
-        R"(5)",
-        R"(
-          sharedStorage.clear();
-        )",
-        /*expected_signals_for_winner=*/std::nullopt,
-        /*expected_report_url=*/std::nullopt, /*expected_ad_beacon_map=*/{},
-        /*expected_pa_requests=*/{},
-        /*expected_errors=*/
-        {"https://url.test/:11 Uncaught TypeError: The \"shared-storage\" "
-         "Permissions Policy denied the method on sharedStorage."});
-
-    permissions_policy_state_ =
-        mojom::AuctionWorkletPermissionsPolicyState::New(
-            /*private_aggregation_allowed=*/true,
-            /*shared_storage_allowed=*/true);
-  }
-}
 
 // Test fixture that can test both KVv2 paths - the path where requests are made
 // from the worklet process, and the path that uses a TrustedSignalsCache to
@@ -7544,51 +7382,6 @@ TEST_F(SellerWorkletKVv2Test,
   run_loop.Run();
 }
 
-class SellerWorkletTwoThreadsSharedStorageAPIEnabledTest
-    : public SellerWorkletSharedStorageAPIEnabledTest {
- public:
-  size_t NumThreads() override { return 2u; }
-};
-
-TEST_F(SellerWorkletTwoThreadsSharedStorageAPIEnabledTest,
-       SharedStorageWriteInScoreAd) {
-  auction_worklet::TestAuctionSharedStorageHost test_shared_storage_host0;
-  auction_worklet::TestAuctionSharedStorageHost test_shared_storage_host1;
-
-  mojo::Receiver<auction_worklet::mojom::AuctionSharedStorageHost> receiver0(
-      &test_shared_storage_host0);
-  shared_storage_hosts_[0] = receiver0.BindNewPipeAndPassRemote();
-
-  mojo::Receiver<auction_worklet::mojom::AuctionSharedStorageHost> receiver1(
-      &test_shared_storage_host0);
-  shared_storage_hosts_[1] = receiver1.BindNewPipeAndPassRemote();
-
-  AddJavascriptResponse(
-      &url_loader_factory_, decision_logic_url_,
-      /*javascript=*/CreateScoreAdScript("5", /*extra_code=*/R"(
-        sharedStorage.set('a', 'b');
-      )"));
-
-  auto seller_worklet = CreateWorklet();
-
-  RunScoreAdExpectingResultOnWorklet(seller_worklet.get(), 5);
-
-  // Make sure the shared storage mojom methods are invoked as they use a
-  // dedicated pipe.
-  task_environment_.RunUntilIdle();
-
-  // Expect that only the shared storage host corresponding to the thread
-  // handling the ScoreAd has observed the requests.
-  EXPECT_TRUE(test_shared_storage_host1.observed_requests().empty());
-
-  using Request = auction_worklet::TestAuctionSharedStorageHost::Request;
-
-  EXPECT_THAT(test_shared_storage_host0.observed_requests(),
-              testing::ElementsAre(
-                  Request(MojomSetMethod(/*key=*/u"a", /*value=*/u"b",
-                                         /*ignore_if_present=*/false),
-                          mojom::AuctionWorkletFunction::kSellerScoreAd)));
-}
 
 class SellerWorkletRealTimeTest : public SellerWorkletTest {
  public:

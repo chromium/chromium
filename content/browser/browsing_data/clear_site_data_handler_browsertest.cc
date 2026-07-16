@@ -25,7 +25,6 @@
 #include "build/build_config.h"
 #include "content/browser/browsing_data/browsing_data_browsertest_utils.h"
 #include "content/browser/browsing_data/browsing_data_filter_builder_impl.h"
-#include "content/browser/browsing_data/shared_storage_clear_site_data_tester.h"
 #include "content/browser/browsing_data/storage_bucket_clear_site_data_tester.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -1145,61 +1144,5 @@ IN_PROC_BROWSER_TEST_P(ClearSiteDataHandlerStorageBucketsBrowserTest,
   delegate()->VerifyAndClearExpectations();
 }
 
-class ClearSiteDataHandlerSharedStorageBrowserTest
-    : public ClearSiteDataHandlerBrowserTest {
- public:
-  ClearSiteDataHandlerSharedStorageBrowserTest() {
-    feature_list_.InitAndEnableFeature(network::features::kSharedStorageAPI);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-// Integration test for the deletion of shared storage.
-IN_PROC_BROWSER_TEST_F(ClearSiteDataHandlerSharedStorageBrowserTest,
-                       SharedStorageIntegrationTest) {
-  SharedStorageClearSiteDataTester tester(storage_partition());
-
-  GURL url1 = https_server()->GetURL("origin1.com", "/");
-  const url::Origin kOrigin1 = url::Origin::Create(url1);
-  tester.AddConsecutiveSharedStorageEntries(kOrigin1, u"key", u"value", 10);
-
-  GURL url2 = https_server()->GetURL("origin2.com", "/");
-  const url::Origin kOrigin2 = url::Origin::Create(url2);
-  tester.AddConsecutiveSharedStorageEntries(kOrigin2, u"key", u"value", 5);
-
-  // There are 15 entries for two origins.
-  EXPECT_THAT(tester.GetSharedStorageOrigins(),
-              testing::UnorderedElementsAre(kOrigin1, kOrigin2));
-
-  // Note that u"key" concatenated with a single digit has 4 char16_t's and
-  // hence 8 bytes. Similarly, u"value" concatenated with one digit has
-  // 6 char16_t's and hence 12 bytes. A pair of these together thus has
-  // 20 bytes.
-  const int kNumBytesPerEntry = 20;
-  EXPECT_EQ(10 * kNumBytesPerEntry,
-            tester.GetSharedStorageNumBytesForOrigin(kOrigin1));
-  EXPECT_EQ(5 * kNumBytesPerEntry,
-            tester.GetSharedStorageNumBytesForOrigin(kOrigin2));
-  EXPECT_EQ(15 * kNumBytesPerEntry, tester.GetSharedStorageTotalBytes());
-
-  // Let Clear-Site-Data delete the shared storage of "origin1.com".
-  delegate()->ExpectClearSiteDataCall(storage_partition_config(), kOrigin1,
-                                      net::SchemefulSite(kOrigin1),
-                                      /*cookies=*/false,
-                                      /*storage=*/true, /*cache=*/false);
-  AddQuery(&url1, "header", "\"storage\"");
-  EXPECT_TRUE(NavigateToURL(shell(), url1));
-  delegate()->VerifyAndClearExpectations();
-
-  // There are now only 5 entries for one origin.
-  EXPECT_THAT(tester.GetSharedStorageOrigins(),
-              testing::UnorderedElementsAre(kOrigin2));
-  EXPECT_EQ(0, tester.GetSharedStorageNumBytesForOrigin(kOrigin1));
-  EXPECT_EQ(5 * kNumBytesPerEntry,
-            tester.GetSharedStorageNumBytesForOrigin(kOrigin2));
-  EXPECT_EQ(5 * kNumBytesPerEntry, tester.GetSharedStorageTotalBytes());
-}
 
 }  // namespace content

@@ -149,7 +149,6 @@ test("components_unittests") {
       "test/data/service_worker/",
       "test/data/sessions/",
       "test/data/shared_highlighting/",
-      "test/data/storage/",
       "test/data/subresource_filter/",
       "test/data/translate/",
       "test/data/ui_devtools/",

@@ -70,8 +70,6 @@ class TestStoragePartition : public StoragePartition {
   cert_verifier::mojom::CertVerifierServiceUpdater*
   GetCertVerifierServiceUpdater() override;
 
-  storage::SharedStorageManager* GetSharedStorageManager() override;
-
   void set_url_loader_factory_for_browser_process(
       network::TestURLLoaderFactory* factory) {
     test_url_loader_factory_ = factory;
