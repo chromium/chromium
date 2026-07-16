@@ -125,31 +125,38 @@ AudioScheduledSourceHandler::UpdateSchedulingInfo(size_t quantum_frame_size,
   }
 
   // Handle silence after we're done playing.
-  // If the end time is somewhere in the middle of this time quantum, then zero
-  // out the frames from the end time to the very end of the quantum.
+  // We use `<=` to allow Finish() to be called immediately in the quantum
+  // where the source stops if it aligns exactly with the quantum boundary,
+  // avoiding a 1-quantum delay in finishing and disconnecting downstream.
   if (end_time_ != kUnknownTime && end_frame >= quantum_start_frame &&
-      end_frame < quantum_end_frame) {
-    size_t zero_start_frame = end_frame - quantum_start_frame;
-    size_t frames_to_zero = quantum_frame_size - zero_start_frame;
+      end_frame <= quantum_end_frame) {
+    // Only zero out frames if the source stops strictly before the end of the
+    // quantum. If it stops exactly on the boundary, no zeroing is needed
+    // for this quantum, and we avoid triggering a DCHECK crash due to
+    // zero_start_frame == quantum_frame_size.
+    if (end_frame < quantum_end_frame) {
+      size_t zero_start_frame = end_frame - quantum_start_frame;
+      size_t frames_to_zero = quantum_frame_size - zero_start_frame;
 
-    DCHECK_LT(zero_start_frame, quantum_frame_size);
-    DCHECK_LE(frames_to_zero, quantum_frame_size);
-    DCHECK_LE(zero_start_frame + frames_to_zero, quantum_frame_size);
+      DCHECK_LT(zero_start_frame, quantum_frame_size);
+      DCHECK_LE(frames_to_zero, quantum_frame_size);
+      DCHECK_LE(zero_start_frame + frames_to_zero, quantum_frame_size);
 
-    bool is_safe = zero_start_frame < quantum_frame_size &&
-                   frames_to_zero <= quantum_frame_size &&
-                   zero_start_frame + frames_to_zero <= quantum_frame_size;
-    if (is_safe) {
-      if (frames_to_zero > non_silent_frames_to_process) {
-        non_silent_frames_to_process = 0;
-      } else {
-        non_silent_frames_to_process -= frames_to_zero;
-      }
+      bool is_safe = zero_start_frame < quantum_frame_size &&
+                     frames_to_zero <= quantum_frame_size &&
+                     zero_start_frame + frames_to_zero <= quantum_frame_size;
+      if (is_safe) {
+        if (frames_to_zero > non_silent_frames_to_process) {
+          non_silent_frames_to_process = 0;
+        } else {
+          non_silent_frames_to_process -= frames_to_zero;
+        }
 
-      for (unsigned i = 0; i < output_bus->NumberOfChannels(); ++i) {
-        std::ranges::fill(output_bus->Channel(i)->MutableSpan().subspan(
-                              zero_start_frame, frames_to_zero),
-                          0);
+        for (unsigned i = 0; i < output_bus->NumberOfChannels(); ++i) {
+          std::ranges::fill(output_bus->Channel(i)->MutableSpan().subspan(
+                                zero_start_frame, frames_to_zero),
+                            0);
+        }
       }
     }
 

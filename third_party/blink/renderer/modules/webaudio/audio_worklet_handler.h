@@ -66,6 +66,9 @@ class AudioWorkletHandler final : public AudioHandler {
 
   void MarkProcessorInactiveOnMainThread();
 
+  bool HasActiveInputs();
+  void FinishProcessorOnRenderThread();
+
   const String name_;
 
   double tail_time_ = std::numeric_limits<double>::infinity();
@@ -94,6 +97,16 @@ class AudioWorkletHandler final : public AudioHandler {
   // lifecycle of an AudioWorkletNode and its handler. This flag becomes false
   // when a processor stops invoking the user-defined `process()` callback.
   bool is_processor_active_ = true;
+
+  // The active source flag of the AudioWorkletProcessor, which is updated by
+  // the return value of the user-defined `process()` callback.
+  bool is_active_source_ = true;
+
+  // Pre-bound WeakPtr to this handler. Storing it on the main thread avoids
+  // calling GetWeakPtr() on the WeakPtrFactory from the audio thread (which is
+  // not thread-safe). The audio thread can then safely copy this pre-bound
+  // WeakPtr to post tasks back to the main thread.
+  base::WeakPtr<AudioWorkletHandler> weak_this_;
 
   base::WeakPtrFactory<AudioWorkletHandler> weak_ptr_factory_{this};
 };
