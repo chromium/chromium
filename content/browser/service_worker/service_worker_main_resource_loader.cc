@@ -479,6 +479,13 @@ void ServiceWorkerMainResourceLoader::MaybeDispatchPreload(
 bool ServiceWorkerMainResourceLoader::MaybeStartAutoPreload(
     scoped_refptr<ServiceWorkerContextWrapper> context,
     scoped_refptr<ServiceWorkerVersion> version) {
+  // AutoPreload is triggered only if the scheme is HTTP or HTTPS.
+  // Bail out early without recording UMA for other schemes (e.g.
+  // chrome-extension://) to avoid polluting the metrics.
+  if (!resource_request_.url.SchemeIsHTTPOrHTTPS()) {
+    return false;
+  }
+
   if (!base::FeatureList::IsEnabled(features::kServiceWorkerAutoPreload)) {
     RecordAutoPreloadDispatchResult(
         ServiceWorkerAutoPreloadDispatchResult::kFeatureDisabled);
