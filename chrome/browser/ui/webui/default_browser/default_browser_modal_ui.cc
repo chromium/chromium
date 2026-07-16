@@ -7,13 +7,16 @@
 #include <string>
 #include <utility>
 
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/default_browser/default_browser_modal_handler.h"
+#include "chrome/browser/ui/webui/theme_source.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/chrome_unscaled_resources.h"
 #include "chrome/grit/default_browser_modal_resources.h"
 #include "chrome/grit/default_browser_modal_resources_map.h"
 #include "chrome/grit/generated_resources.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/url_data_source.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -50,9 +53,10 @@ DefaultBrowserModalUI::DefaultBrowserModalUI(content::WebUI* web_ui)
     is_modal = value == "true";
   }
 
+  Profile* profile = Profile::FromWebUI(web_ui);
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
-      web_ui->GetWebContents()->GetBrowserContext(),
-      chrome::kChromeUIDefaultBrowserModalHost);
+      profile, chrome::kChromeUIDefaultBrowserModalHost);
+  content::URLDataSource::Add(profile, std::make_unique<ThemeSource>(profile));
 
   webui::SetupWebUIDataSource(
       source, kDefaultBrowserModalResources,

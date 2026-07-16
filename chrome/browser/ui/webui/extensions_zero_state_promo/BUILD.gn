@@ -32,6 +32,7 @@ source_set("extensions_zero_state_promo") {
     "//chrome/browser/profiles:profile",
     "//chrome/browser/resources/extensions_zero_state_promo:resources",
     "//chrome/browser/ui/navigator",
+    "//chrome/browser/ui/webui:theme_source",
     "//chrome/browser/ui/webui/top_chrome",
     "//chrome/common",
     "//components/feature_engagement/public",

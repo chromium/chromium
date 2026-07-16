@@ -13,6 +13,7 @@ source_set("color_pipeline_internals") {
   deps = [
     "//chrome/browser/profiles:profile",
     "//chrome/browser/resources/color_pipeline_internals:resources_grit",
+    "//chrome/browser/ui/webui:theme_source",
     "//chrome/common",
     "//content/public/browser",
     "//ui/webui",

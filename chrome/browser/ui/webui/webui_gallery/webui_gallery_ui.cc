@@ -6,6 +6,7 @@
 
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/favicon_source.h"
+#include "chrome/browser/ui/webui/theme_source.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/side_panel_shared_resources.h"
 #include "chrome/grit/side_panel_shared_resources_map.h"
@@ -13,6 +14,7 @@
 #include "chrome/grit/webui_gallery_resources_map.h"
 #include "components/favicon_base/favicon_url_parser.h"
 #include "components/strings/grit/components_strings.h"
+#include "content/public/browser/url_data_source.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
@@ -47,6 +49,7 @@ void CreateAndAddWebuiGalleryUIHtmlSource(Profile* profile) {
   content::URLDataSource::Add(
       profile, std::make_unique<FaviconSource>(
                    profile, chrome::FaviconUrlFormat::kFavicon2));
+  content::URLDataSource::Add(profile, std::make_unique<ThemeSource>(profile));
 }
 
 }  // namespace

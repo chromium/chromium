@@ -38,6 +38,7 @@ source_set("impl") {
     "//chrome/browser/resources/app_settings:resources",
     "//chrome/browser/resources/app_settings:resources_grit",
     "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/webui:theme_source",
     "//chrome/browser/web_applications",
     "//chrome/browser/web_applications:features",
     "//chrome/browser/web_applications/proto",

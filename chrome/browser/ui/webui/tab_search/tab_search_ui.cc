@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/webui/plural_string_handler.h"
 #include "chrome/browser/ui/webui/tab_search/tab_search_page_handler.h"
 #include "chrome/browser/ui/webui/tab_search/tab_search_sync_handler.h"
+#include "chrome/browser/ui/webui/theme_source.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/tab_search_resources.h"
@@ -131,6 +132,7 @@ TabSearchUI::TabSearchUI(content::WebUI* web_ui)
   content::URLDataSource::Add(
       profile, std::make_unique<FaviconSource>(
                    profile, chrome::FaviconUrlFormat::kFavicon2));
+  content::URLDataSource::Add(profile, std::make_unique<ThemeSource>(profile));
 
   auto plural_string_handler = std::make_unique<PluralStringHandler>();
   web_ui->AddMessageHandler(std::move(plural_string_handler));

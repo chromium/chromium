@@ -8,9 +8,11 @@
 
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/webui/theme_source.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/color_pipeline_internals_resources.h"
 #include "chrome/grit/color_pipeline_internals_resources_map.h"
+#include "content/public/browser/url_data_source.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_controller.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -21,8 +23,10 @@ ColorPipelineInternalsUIConfig::ColorPipelineInternalsUIConfig()
 
 ColorPipelineInternalsUI::ColorPipelineInternalsUI(content::WebUI* web_ui)
     : ui::MojoWebUIController(web_ui, /*enable_chrome_send=*/true) {
+  Profile* profile = Profile::FromWebUI(web_ui);
   auto* source = content::WebUIDataSource::CreateAndAdd(
-      Profile::FromWebUI(web_ui), chrome::kChromeUIColorPipelineInternalsHost);
+      profile, chrome::kChromeUIColorPipelineInternalsHost);
+  content::URLDataSource::Add(profile, std::make_unique<ThemeSource>(profile));
 
   webui::SetupWebUIDataSource(source, kColorPipelineInternalsResources,
                               IDR_COLOR_PIPELINE_INTERNALS_INDEX_HTML);

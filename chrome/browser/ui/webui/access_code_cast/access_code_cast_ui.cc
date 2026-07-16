@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/webui/access_code_cast/access_code_cast_handler.h"
 #include "chrome/browser/ui/webui/metrics_handler.h"
 #include "chrome/browser/ui/webui/plural_string_handler.h"
+#include "chrome/browser/ui/webui/theme_source.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/access_code_cast_resources.h"
@@ -19,6 +20,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/url_data_source.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/base/webui/web_ui_util.h"
@@ -34,11 +36,12 @@ bool AccessCodeCastUIConfig::IsWebUIEnabled(
 
 AccessCodeCastUI::AccessCodeCastUI(content::WebUI* web_ui)
     : MojoWebDialogUI(web_ui) {
+  Profile* profile = Profile::FromWebUI(web_ui);
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
-      web_ui->GetWebContents()->GetBrowserContext(),
-      chrome::kChromeUIAccessCodeCastHost);
+      profile, chrome::kChromeUIAccessCodeCastHost);
   webui::SetupWebUIDataSource(source, kAccessCodeCastResources,
                               IDR_ACCESS_CODE_CAST_INDEX_HTML);
+  content::URLDataSource::Add(profile, std::make_unique<ThemeSource>(profile));
 
   static constexpr webui::LocalizedString kStrings[] = {
       {"accessCodeMessage", IDS_ACCESS_CODE_CAST_ACCESS_CODE_MESSAGE},
@@ -66,8 +69,6 @@ AccessCodeCastUI::AccessCodeCastUI(content::WebUI* web_ui)
   source->AddLocalizedStrings(kStrings);
   source->AddBoolean("qrScannerEnabled", false);
   source->AddString("learnMoreUrl", chrome::kAccessCodeCastLearnMoreURL);
-
-  Profile* const profile = Profile::FromWebUI(web_ui);
   source->AddInteger("rememberedDeviceDuration",
                      GetAccessCodeDeviceDurationPref(profile).InSeconds());
 

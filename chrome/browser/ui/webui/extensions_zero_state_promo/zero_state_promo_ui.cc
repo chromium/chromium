@@ -12,11 +12,13 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/ui/webui/extensions_zero_state_promo/zero_state_promo_page_handler.h"
+#include "chrome/browser/ui/webui/theme_source.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/extensions_zero_state_promo_resources.h"
 #include "chrome/grit/extensions_zero_state_promo_resources_map.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/feature_engagement/public/feature_constants.h"
+#include "content/public/browser/url_data_source.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -33,6 +35,7 @@ ZeroStatePromoController::ZeroStatePromoController(content::WebUI* web_ui)
   Profile* const profile = Profile::FromWebUI(web_ui);
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       profile, chrome::kChromeUIExtensionsZeroStatePromoHost);
+  content::URLDataSource::Add(profile, std::make_unique<ThemeSource>(profile));
 
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
       {"extensionsZeroStateIphHeader", IDS_EXTENSIONS_ZERO_STATE_IPH_HEADER},

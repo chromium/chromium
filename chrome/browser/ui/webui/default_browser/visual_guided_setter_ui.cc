@@ -8,6 +8,8 @@
 #include <utility>
 
 #include "base/containers/span.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/webui/theme_source.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/chrome_unscaled_resources.h"
@@ -15,6 +17,7 @@
 #include "chrome/grit/visual_guided_setter_resources.h"
 #include "chrome/grit/visual_guided_setter_resources_map.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/url_data_source.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -30,9 +33,10 @@ VisualGuidedSetterUI::VisualGuidedSetterUI(content::WebUI* web_ui)
     can_pin_to_taskbar = value == "true";
   }
 
+  Profile* profile = Profile::FromWebUI(web_ui);
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
-      web_ui->GetWebContents()->GetBrowserContext(),
-      chrome::kChromeUIDefaultBrowserVisualGuidedSetterHost);
+      profile, chrome::kChromeUIDefaultBrowserVisualGuidedSetterHost);
+  content::URLDataSource::Add(profile, std::make_unique<ThemeSource>(profile));
 
   source->AddLocalizedString(
       "title", IDS_DEFAULT_BROWSER_VISUAL_GUIDED_SETTER_PAGE_TITLE);

@@ -19,6 +19,7 @@ source_set("webui_gallery") {
     "//chrome/browser/resources/side_panel/shared:resources",
     "//chrome/browser/resources/webui_gallery:resources",
     "//chrome/browser/ui/webui:favicon_source",
+    "//chrome/browser/ui/webui:theme_source",
     "//chrome/common",
     "//components/favicon_base",
     "//components/strings:components_strings_grit",

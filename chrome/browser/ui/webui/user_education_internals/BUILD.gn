@@ -31,6 +31,7 @@ if (!is_android) {
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/interaction",
       "//chrome/browser/ui/user_education",
+      "//chrome/browser/ui/webui:theme_source",
       "//chrome/browser/user_education",
       "//chrome/common",
       "//chrome/common:version_header",
