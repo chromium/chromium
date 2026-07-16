@@ -17,6 +17,7 @@
 #import "ios/chrome/browser/shared/public/commands/google_one_commands.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
+#import "ios/chrome/browser/shared/ui/util/identity_snackbar/identity_snackbar_utils.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/public/provider/chrome/browser/google_one/google_one_api.h"
@@ -191,6 +192,7 @@ GoogleOneOutcomeMetrics HistogramOutcomeBucket(GoogleOneOutcome outcome,
       ScopedUIBlocker::AppScoped(sceneState, sceneState.profileState.appState);
   _controller = ios::provider::CreateGoogleOneController(configuration);
   if (_inputURL.is_valid()) {
+    TriggerAccountSwitchSnackbarWithIdentity(identityToUse, self.browser);
     [_controller launchWithViewController:self.baseViewController
                                       URL:net::NSURLWithGURL(_inputURL)
                                completion:nil];
