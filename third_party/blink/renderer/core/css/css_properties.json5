@@ -6875,7 +6875,7 @@
       // appearance needs to be computed before
       // -internal-auto-base() can be resolved.
       priority: 1,
-      invalidate: ["layout", "paint"],
+      // we invalidate for EffectiveAppearance rather than appearance
       keywords: ["auto", "none", "checkbox", "radio", "button", "listbox",
                 "menulist", "menulist-button", "meter", "progress-bar",
                 "searchfield", "textfield", "textarea", "base-select"]

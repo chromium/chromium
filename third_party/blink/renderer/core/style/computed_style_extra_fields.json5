@@ -501,6 +501,7 @@
       field_template: "primitive",
       default_value: "AppearanceValue::kNone",
       type_name: "AppearanceValue",
+      invalidate: ["layout", "paint"],
     },
     {
       name: "TextEmphasisCustomMark",
