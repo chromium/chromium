@@ -1563,29 +1563,26 @@ ci.thin_tester(
         # should have the same test_suites as 'Dawn Mac arm64 Release (Apple
         # M2)'.
         targets = [
-            "dawn_chromium_isolated_scripts",
-            "gpu_common_gtests_passthrough",
-            "gpu_dawn_telemetry_tests",
-            "gpu_dawn_webgpu_cts_default_features",
+            "gpu_noop_sleep_telemetry_test",
         ],
         mixins = [
             "mac_arm64_apple_m2_retina_gpu_experimental",
         ],
-        per_test_modifications = {
-            "webgpu_cts_default_features_tests": targets.mixin(
-                ci_only = True,
-            ),
-        },
+        # per_test_modifications = {
+        #     "webgpu_cts_default_features_tests": targets.mixin(
+        #         ci_only = True,
+        #     ),
+        # },
     ),
     targets_settings = targets.settings(
         browser_config = targets.browser_config.RELEASE,
         os_type = targets.os_type.MAC,
     ),
     # Uncomment this entry when this experimental tester is actually in use.
-    console_view_entry = consoles.console_view_entry(
-        category = "ToT|Mac",
-        short_name = "exp",
-    ),
+    # console_view_entry = consoles.console_view_entry(
+    #     category = "ToT|Mac",
+    #     short_name = "exp",
+    # ),
     list_view = "chromium.gpu.experimental",
 )
 
