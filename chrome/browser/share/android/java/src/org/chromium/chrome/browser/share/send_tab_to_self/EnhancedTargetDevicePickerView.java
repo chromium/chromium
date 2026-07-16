@@ -154,6 +154,11 @@ class EnhancedTargetDevicePickerView extends BottomSheetListViewBase {
         return SemanticColorUtils.getColorSurface(getContentView().getContext());
     }
 
+    @Override
+    public boolean coversBottomControls() {
+        return true;
+    }
+
     private static class ClipLayoutHelper implements View.OnAttachStateChangeListener {
         private boolean mOriginalClipChildren;
         private boolean mOriginalClipToPadding;

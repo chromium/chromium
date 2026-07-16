@@ -809,9 +809,14 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController {
     private void adjustBottomSheetZAxis(boolean scrimVisible) {
         if (mBottomSheet == null) return;
         assumeNonNull(mBottomSheetContainer);
-        if (scrimVisible && mBottomSheet.isSheetOpen()) {
-            // Scrimmed bottom sheet. Draw the bottom sheet container on top of all sibling views,
-            // originating from the bottom of the screen.
+        BottomSheetContent content = mBottomSheet.getCurrentSheetContent();
+        boolean shouldCover =
+                (scrimVisible || (content != null && content.coversBottomControls()))
+                        && mBottomSheet.isSheetOpen();
+        if (shouldCover) {
+            // Scrimmed bottom sheet or sheet requesting to cover bottom controls. Draw the bottom
+            // sheet container on top of all sibling views, originating from the bottom of the
+            // screen.
             mIsAnchoredToBottomControls = false;
             mBottomSheetContainer.setZ(1.0f);
             mBottomSheet.setBottomMargin(0);

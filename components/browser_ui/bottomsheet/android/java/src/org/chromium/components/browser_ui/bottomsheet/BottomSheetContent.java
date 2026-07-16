@@ -189,6 +189,14 @@ public interface BottomSheetContent {
     }
 
     /**
+     * @return Whether this content covers the bottom controls (e.g. bottom navigation bar)
+     *         from the bottom of the screen with zero bottom margin, even when unscrimmed.
+     */
+    default boolean coversBottomControls() {
+        return false;
+    }
+
+    /**
      * Returns whether this sheet content has a solid background color. Return false when the sheet
      * is showing complex content like tab content / a page preview.
      */
