@@ -20,6 +20,9 @@ class Tracker;
 @protocol GeminiCommands;
 @protocol SettingsCommands;
 
+// Callback type invoked when a request to detach a tab is made.
+typedef void (^GeminiTabDetachRequestCallback)(NSString* tabID);
+
 // Handler for the Gemini sessions.
 @interface GeminiSessionHandler : NSObject <GeminiSessionDelegate>
 
@@ -41,6 +44,10 @@ class Tracker;
 
 // Whether the current session is the first session.
 @property(nonatomic, assign) BOOL isFirstSession;
+
+// Callback invoked when the user requests to detach a tab from the floaty.
+@property(nonatomic, copy)
+    GeminiTabDetachRequestCallback tabDetachRequestCallback;
 
 @end
 
