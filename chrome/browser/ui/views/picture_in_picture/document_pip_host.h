@@ -9,13 +9,20 @@
 #include <string>
 
 #include "base/memory/weak_ptr.h"
+#include "base/observer_list.h"
+#include "base/scoped_observation.h"
 #include "base/timer/elapsed_timer.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_window.h"
+#include "components/web_modal/modal_dialog_host.h"
+#include "components/web_modal/web_contents_modal_dialog_host.h"
+#include "components/web_modal/web_contents_modal_dialog_manager_delegate.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "third_party/blink/public/mojom/picture_in_picture_window_options/picture_in_picture_window_options.mojom.h"
+#include "ui/views/view_observer.h"
 #include "ui/views/widget/widget.h"
+#include "ui/views/widget/widget_observer.h"
 
 class DocumentPipWidgetDelegate;
 class PictureInPictureTucker;
@@ -36,7 +43,11 @@ class WebContents;
 class DocumentPipHost : public content::WebContentsUserData<DocumentPipHost>,
                         public content::WebContentsObserver,
                         public content::WebContentsDelegate,
-                        public PictureInPictureWindow {
+                        public PictureInPictureWindow,
+                        public web_modal::WebContentsModalDialogManagerDelegate,
+                        public web_modal::WebContentsModalDialogHost,
+                        public views::WidgetObserver,
+                        public views::ViewObserver {
  public:
   DocumentPipHost(const DocumentPipHost&) = delete;
   DocumentPipHost& operator=(const DocumentPipHost&) = delete;
@@ -193,6 +204,30 @@ class DocumentPipHost : public content::WebContentsUserData<DocumentPipHost>,
   void OnAnyBrowserEnteredFullscreen() override;
 #endif
 
+  // web_modal::WebContentsModalDialogManagerDelegate:
+  void SetWebContentsBlocked(content::WebContents* web_contents,
+                             bool blocked) override;
+  web_modal::WebContentsModalDialogHost* GetWebContentsModalDialogHost(
+      content::WebContents* web_contents) override;
+  bool IsWebContentsVisible(content::WebContents* web_contents) override;
+
+  // web_modal::WebContentsModalDialogHost:
+  gfx::NativeView GetHostView() const override;
+  gfx::Point GetDialogPosition(const gfx::Size& size) override;
+  gfx::Size GetMaximumDialogSize() override;
+  void AddObserver(web_modal::ModalDialogHostObserver* observer) override;
+  void RemoveObserver(web_modal::ModalDialogHostObserver* observer) override;
+  void NotifyPositionRequiresUpdate() override;
+
+  // views::WidgetObserver:
+  void OnWidgetBoundsChanged(views::Widget* widget,
+                             const gfx::Rect& new_bounds) override;
+  void OnWidgetDestroying(views::Widget* widget) override;
+
+  // views::ViewObserver:
+  void OnViewBoundsChanged(views::View* observed_view) override;
+  void OnViewIsDeleting(views::View* observed_view) override;
+
  private:
   friend class content::WebContentsUserData<DocumentPipHost>;
 
@@ -239,6 +274,13 @@ class DocumentPipHost : public content::WebContentsUserData<DocumentPipHost>,
   // SetForcedTucking() call.
   std::unique_ptr<PictureInPictureTucker> tucker_;
   bool is_tucking_forced_ = false;
+
+  base::ScopedObservation<views::Widget, views::WidgetObserver>
+      widget_observation_{this};
+  base::ScopedObservation<views::View, views::ViewObserver>
+      contents_view_observation_{this};
+  base::ObserverList<web_modal::ModalDialogHostObserver>
+      modal_dialog_host_observer_list_;
 
   base::WeakPtrFactory<DocumentPipHost> weak_factory_{this};
 

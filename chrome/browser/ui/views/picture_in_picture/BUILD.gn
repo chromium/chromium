@@ -31,6 +31,7 @@ source_set("picture_in_picture") {
 
   public_deps = [
     "//base",
+    "//components/web_modal",
     "//content/public/browser",
     "//third_party/blink/public/common:headers",
     "//ui/gfx",
@@ -108,6 +109,7 @@ source_set("unit_tests") {
     "//components/input",
     "//components/javascript_dialogs",
     "//components/permissions",
+    "//components/web_modal",
     "//content/public/browser",
     "//content/test:test_support",
     "//testing/gtest",

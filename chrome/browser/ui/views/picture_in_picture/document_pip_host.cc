@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/picture_in_picture/document_pip_host.h"
 
+#include <algorithm>
 #include <vector>
 
 #include "base/functional/bind.h"
@@ -22,6 +23,7 @@
 #include "components/page_load_metrics/browser/metrics_web_contents_observer.h"
 #include "components/permissions/permission_recovery_success_rate_tracker.h"
 #include "components/permissions/permission_request_manager.h"
+#include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "content/public/browser/keyboard_event_processing_result.h"
 #include "content/public/browser/media_stream_request.h"
 #include "content/public/browser/render_frame_host.h"
@@ -157,6 +159,12 @@ void DocumentPipHost::CreateAndShowPipWindow(
   params.native_widget = new DocumentPipNativeWidgetMac(widget_.get());
 #endif
   widget_->Init(std::move(params));
+
+  widget_observation_.Observe(widget_.get());
+  if (auto* contents_view = widget_delegate_->GetDocumentPipContentsView()) {
+    contents_view_observation_.Observe(contents_view);
+  }
+
   // Now that the Widget (and its native window) exist and Init has applied the
   // InitParams bounds, recompute the outer bounds to honor a requested inner
   // (web-contents) size. This must run *after* Init: Init applies the
@@ -609,13 +617,34 @@ void DocumentPipHost::CreateChildWebContentsHelpers(
   javascript_dialogs::TabModalDialogManager::CreateForWebContents(
       child_web_contents,
       std::make_unique<DocumentPipDialogManagerDelegate>(widget_.get()));
+
+  // Create and wire WebContentsModalDialogManager so non-JavaScript web-modal
+  // dialogs (FIDO/WebAuthn prompts, permissions, HTTP Basic Auth) function
+  // properly.
+  web_modal::WebContentsModalDialogManager::CreateForWebContents(
+      child_web_contents);
+  web_modal::WebContentsModalDialogManager::FromWebContents(child_web_contents)
+      ->SetDelegate(this);
 }
 
 void DocumentPipHost::ClosePipWindow() {
+  if (!widget_) {
+    return;
+  }
+
+  modal_dialog_host_observer_list_.Notify(
+      &web_modal::ModalDialogHostObserver::OnHostDestroying);
+  widget_observation_.Reset();
+  contents_view_observation_.Reset();
+
   // Clear the child's delegate before tearing down, since the host set itself
   // as delegate in CreateAndShowPipWindow().
   content::WebContents* child = GetChildWebContents();
   if (child) {
+    if (auto* dialog_manager =
+            web_modal::WebContentsModalDialogManager::FromWebContents(child)) {
+      dialog_manager->SetDelegate(nullptr);
+    }
     child->SetDelegate(nullptr);
   }
 
@@ -665,3 +694,106 @@ void DocumentPipHost::OnAnyBrowserEnteredFullscreen() {
   }
 }
 #endif
+
+// =============================================================================
+// web_modal::WebContentsModalDialogManagerDelegate
+// =============================================================================
+
+void DocumentPipHost::SetWebContentsBlocked(content::WebContents* web_contents,
+                                            bool blocked) {
+  DCHECK_EQ(GetChildWebContents(), web_contents);
+  if (!blocked && widget_ && widget_->IsActive()) {
+    if (widget_delegate_) {
+      if (auto* contents_view =
+              widget_delegate_->GetDocumentPipContentsView()) {
+        contents_view->RequestFocus();
+      }
+    }
+    web_contents->Focus();
+  }
+}
+
+web_modal::WebContentsModalDialogHost*
+DocumentPipHost::GetWebContentsModalDialogHost(
+    content::WebContents* web_contents) {
+  DCHECK_EQ(GetChildWebContents(), web_contents);
+  return this;
+}
+
+bool DocumentPipHost::IsWebContentsVisible(content::WebContents* web_contents) {
+  DCHECK_EQ(GetChildWebContents(), web_contents);
+  return widget_ && !widget_->IsClosed() && widget_->IsVisible() &&
+         !widget_->IsMinimized();
+}
+
+// =============================================================================
+// web_modal::WebContentsModalDialogHost
+// =============================================================================
+
+gfx::NativeView DocumentPipHost::GetHostView() const {
+  return widget_ ? widget_->GetNativeView() : gfx::NativeView();
+}
+
+gfx::Point DocumentPipHost::GetDialogPosition(const gfx::Size& size) {
+  if (!widget_ || !widget_delegate_) {
+    return gfx::Point();
+  }
+  auto* contents_view = widget_delegate_->GetDocumentPipContentsView();
+  if (!contents_view) {
+    return gfx::Point();
+  }
+  gfx::Rect contents_area =
+      contents_view->ConvertRectToWidget(contents_view->GetLocalBounds());
+  int middle_x = contents_area.x() + contents_area.width() / 2;
+  int dialog_x = middle_x - size.width() / 2;
+  int max_x = contents_area.right() - size.width();
+  dialog_x = std::max(std::min(dialog_x, max_x), contents_area.x());
+  return gfx::Point(dialog_x, contents_area.y());
+}
+
+gfx::Size DocumentPipHost::GetMaximumDialogSize() {
+  if (!widget_ || !widget_delegate_) {
+    return gfx::Size();
+  }
+  if (auto* contents_view = widget_delegate_->GetDocumentPipContentsView()) {
+    return contents_view->size();
+  }
+  return widget_->GetContentsView() ? widget_->GetContentsView()->size()
+                                    : gfx::Size();
+}
+
+void DocumentPipHost::AddObserver(
+    web_modal::ModalDialogHostObserver* observer) {
+  modal_dialog_host_observer_list_.AddObserver(observer);
+}
+
+void DocumentPipHost::RemoveObserver(
+    web_modal::ModalDialogHostObserver* observer) {
+  modal_dialog_host_observer_list_.RemoveObserver(observer);
+}
+
+// =============================================================================
+// views::WidgetObserver & views::ViewObserver
+// =============================================================================
+
+void DocumentPipHost::OnWidgetBoundsChanged(views::Widget* widget,
+                                            const gfx::Rect& new_bounds) {
+  NotifyPositionRequiresUpdate();
+}
+
+void DocumentPipHost::OnWidgetDestroying(views::Widget* widget) {
+  ClosePipWindow();
+}
+
+void DocumentPipHost::OnViewBoundsChanged(views::View* observed_view) {
+  NotifyPositionRequiresUpdate();
+}
+
+void DocumentPipHost::OnViewIsDeleting(views::View* observed_view) {
+  contents_view_observation_.Reset();
+}
+
+void DocumentPipHost::NotifyPositionRequiresUpdate() {
+  modal_dialog_host_observer_list_.Notify(
+      &web_modal::ModalDialogHostObserver::OnPositionRequiresUpdate);
+}
