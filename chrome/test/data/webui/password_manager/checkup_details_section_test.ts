@@ -944,4 +944,68 @@ suite('CheckupDetailsSectionTest', function() {
     // Verify listener ID is cleared.
     assertEquals(null, section['listenerId_']);
   });
+
+  [CheckupSubpage.COMPROMISED, CheckupSubpage.REUSED, CheckupSubpage.WEAK]
+      .forEach(
+          type => test(
+              `Automated change password cancel button visibility and click for
+                   ${type}`,
+              async function() {
+                Router.getInstance().navigateTo(Page.CHECKUP_DETAILS, type);
+
+                const insecureCredential = makeInsecureCredential({
+                  id: 42,
+                  url: 'test.com',
+                  username: 'viking',
+                  types: [
+                    CompromiseType.LEAKED,
+                    CompromiseType.WEAK,
+                    CompromiseType.REUSED,
+                  ],
+                  isAutomaticPasswordChangeSupported: true,
+                });
+                passwordManager.data.insecureCredentials = [insecureCredential];
+                passwordManager.data.credentialWithReusedPassword =
+                    [{entries: [insecureCredential]}];
+
+                const section =
+                    document.createElement('checkup-details-section');
+                document.body.appendChild(section);
+                await passwordManager.whenCalled('getInsecureCredentials');
+                if (type === CheckupSubpage.REUSED) {
+                  await passwordManager.whenCalled(
+                      'getCredentialsWithReusedPassword');
+                }
+                await flushTasks();
+
+                const listItemElements =
+                    section.shadowRoot!.querySelectorAll('checkup-list-item');
+                assertEquals(1, listItemElements.length);
+                const listItem = listItemElements[0]!;
+
+                // Initially idle, cancel button should not exist.
+                assertFalse(!!listItem.shadowRoot!.querySelector(
+                    '#cancelAutoChangeButton'));
+
+                // Set state to active.
+                listItem.passwordChangeState =
+                    PasswordAutomaticChangeState.kChangingPassword;
+                await flushTasks();
+
+                const cancelButton =
+                    listItem.shadowRoot!.querySelector<HTMLElement>(
+                        '#cancelAutoChangeButton');
+                assertTrue(!!cancelButton);
+                assertTrue(isVisible(cancelButton));
+
+                // Click cancel.
+                cancelButton.click();
+                await passwordManager.whenCalled('stopPasswordChange');
+                listItem.passwordChangeState =
+                    PasswordAutomaticChangeState.kInactive;
+                await flushTasks();
+
+                // Cancel button should be hidden.
+                assertFalse(isVisible(cancelButton));
+              }));
 });

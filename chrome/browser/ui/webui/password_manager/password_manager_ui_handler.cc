@@ -270,6 +270,18 @@ void PasswordManagerUIHandler::StartPasswordChange(int credential_id) {
   }
 }
 
+void PasswordManagerUIHandler::StopPasswordChange() {
+  CHECK(base::FeatureList::IsEnabled(
+      password_manager::features::kPasswordCheckupPrototype));
+  CHECK(web_contents_);
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents_->GetBrowserContext());
+  auto* service = PasswordChangeServiceFactory::GetForProfile(profile);
+  if (service) {
+    service->StopPasswordChangeFromCheckup();
+  }
+}
+
 void PasswordManagerUIHandler::OnPasswordAutomaticChangeStateUpdated(
     int credential_id,
     PasswordChangeFromCheckupDelegate::PasswordAutomaticChangeState state) {

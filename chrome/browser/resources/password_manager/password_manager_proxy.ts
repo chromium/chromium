@@ -481,6 +481,11 @@ export interface PasswordManagerProxy {
   requestChangePassword(credential_id: number): void;
 
   /**
+   * Stops an ongoing password change flow started from Password Checkup.
+   */
+  stopPasswordChange(): void;
+
+  /**
    * Returns the current actionable error.
    */
   getPasswordManagerActionableError(): Promise<PasswordManagerActionableError>;
@@ -889,6 +894,10 @@ export class PasswordManagerImpl implements PasswordManagerProxy {
 
   requestChangePassword(credentialId: number): void {
     this.handler.startPasswordChange(credentialId);
+  }
+
+  stopPasswordChange(): void {
+    this.handler.stopPasswordChange();
   }
 
   getPasswordManagerActionableError(): Promise<PasswordManagerActionableError> {

@@ -110,6 +110,9 @@ class ChromePasswordChangeService
       content::WebContents* web_contents,
       PasswordChangeFromCheckupDelegate::StateChangeCallback callback =
           base::DoNothing());
+
+  // Stops the password change flow from the Password Checkup page.
+  virtual void StopPasswordChangeFromCheckup();
 #endif
 
   // PasswordChangeServiceInterface implementation.

@@ -97,6 +97,8 @@ class PasswordManagerUIHandler
 
   void StartPasswordChange(int credential_id) override;
 
+  void StopPasswordChange() override;
+
   void GetPasswordManagerActionableError(
       GetPasswordManagerActionableErrorCallback callback) override;
 

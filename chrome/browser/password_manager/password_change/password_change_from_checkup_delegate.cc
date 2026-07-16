@@ -180,7 +180,7 @@ PasswordChangeFromCheckupDelegate::PasswordChangeFromCheckupDelegate(
     : client_(client) {}
 
 PasswordChangeFromCheckupDelegate::~PasswordChangeFromCheckupDelegate() {
-  StopDummyTask();
+  Stop(actor::ActorTask::StoppedReason::kShutdown);
 }
 
 void PasswordChangeFromCheckupDelegate::StartPasswordChangeFlow(
@@ -259,6 +259,55 @@ void PasswordChangeFromCheckupDelegate::StartPasswordChangeFlow(
       state_change_callback_.Run(
           PasswordAutomaticChangeState::kAttemptingSignIn);
     }
+  }
+}
+
+void PasswordChangeFromCheckupDelegate::Stop(
+    actor::ActorTask::StoppedReason stop_reason) {
+  glic::GlicKeyedService* glic_service = GetGlicService();
+  if (actuation_web_contents_) {
+    if (glic_service) {
+      glic_service->CloseAndShutdown(
+          actuation_web_contents_->GetPrimaryMainFrame());
+    }
+    actor::ActorKeyedService* actor_service =
+        actor::ActorKeyedService::Get(Profile::FromBrowserContext(
+            actuation_web_contents_->GetBrowserContext()));
+    if (actor_service) {
+      if (find_form_task_id_.has_value() &&
+          actor_service->GetTask(*find_form_task_id_)) {
+        actor_service->StopTask(*find_form_task_id_, stop_reason);
+      }
+      if (verification_task_id_.has_value() &&
+          actor_service->GetTask(*verification_task_id_)) {
+        actor_service->StopTask(*verification_task_id_, stop_reason);
+      }
+    }
+  }
+
+  StopDummyTask();
+
+  form_filler_.reset();
+  form_waiter_.reset();
+  saved_form_manager_.reset();
+  verification_timer_.Stop();
+  actor_task_state_subscription_ = {};
+
+  if (find_form_task_id_.has_value()) {
+    find_form_task_state_ = actor::ActorTask::State::kCancelled;
+  }
+  find_form_task_id_ = std::nullopt;
+  verification_task_id_ = std::nullopt;
+  dummy_task_id_ = std::nullopt;
+
+  if (actuation_web_contents_) {
+    actuation_web_contents_->Close();
+    actuation_web_contents_ = nullptr;
+  }
+
+  if (state_change_callback_) {
+    state_change_callback_.Run(PasswordAutomaticChangeState::kInactive);
+    state_change_callback_.Reset();
   }
 }
 

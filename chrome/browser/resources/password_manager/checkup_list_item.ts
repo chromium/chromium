@@ -57,6 +57,11 @@ export class CheckupListItemElement extends CheckupListItemElementBase {
       passwordChangeState: {
         type: Number,
         value: PasswordAutomaticChangeState.kInactive,
+        observer: 'onPasswordChangeStateChanged_',
+      },
+      isCancelDisabled_: {
+        type: Boolean,
+        value: false,
       },
     };
   }
@@ -67,6 +72,7 @@ export class CheckupListItemElement extends CheckupListItemElementBase {
   declare showDetails: boolean;
   declare showAlreadyChanged: boolean;
   declare passwordChangeState: PasswordAutomaticChangeState;
+  declare private isCancelDisabled_: boolean;
   declare private showEditPasswordDialog_: boolean;
   declare private showEditPasswordDisclaimer_: boolean;
   declare private showDeletePasswordDialog_: boolean;
@@ -158,6 +164,15 @@ export class CheckupListItemElement extends CheckupListItemElementBase {
     }
   }
 
+  private onPasswordChangeStateChanged_() {
+    this.isCancelDisabled_ = false;
+  }
+
+  private onCancelAutoChangeClick_() {
+    this.isCancelDisabled_ = true;
+    PasswordManagerImpl.getInstance().stopPasswordChange();
+  }
+
   private onAlreadyChangedClick_(e: Event) {
     this.showEditPasswordDisclaimer_ = true;
     e.preventDefault();
@@ -218,6 +233,12 @@ export class CheckupListItemElement extends CheckupListItemElementBase {
   private isAutoChangePasswordIdle_(state: PasswordAutomaticChangeState):
       boolean {
     return state === PasswordAutomaticChangeState.kInactive;
+  }
+
+  private hideCancelButton_(state: PasswordAutomaticChangeState): boolean {
+    return state !== PasswordAutomaticChangeState.kAttemptingSignIn &&
+      state !== PasswordAutomaticChangeState.kChangingPassword &&
+      state !== PasswordAutomaticChangeState.kConfirmingChangedPassword;
   }
 
   private getAutoChangePasswordIcon_(state: PasswordAutomaticChangeState):

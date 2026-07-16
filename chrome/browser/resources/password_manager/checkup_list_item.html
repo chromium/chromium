@@ -53,6 +53,17 @@
     --iron-icon-width: 16px;
   }
 
+  .status-container {
+    align-items: center;
+    display: flex;
+  }
+
+  #cancelAutoChangeButton {
+    --cr-icon-button-fill-color:  var(--cr-secondary-text-color);
+    color:  var(--cr-secondary-text-color);
+    margin-inline-start: 8px;
+  }
+
   #separator {
     margin-inline-start: 56px;
   }
@@ -122,12 +133,23 @@
         </template>
         <template is="dom-if"
           if="[[!isAutoChangePasswordIdle_(passwordChangeState)]]">
-          <span class="cr-secondary-text label">
-            <cr-icon icon="[[getAutoChangePasswordIcon_(passwordChangeState)]]"
-            id="auto-change-password-link-icon">
-            </cr-icon>
-            [[getAutoChangePasswordButtonText_(passwordChangeState)]]
-          </span>
+          <div class="status-container">
+            <span class="cr-secondary-text label">
+              <cr-icon
+                icon="[[getAutoChangePasswordIcon_(passwordChangeState)]]"
+                id="auto-change-password-link-icon">
+              </cr-icon>
+              [[getAutoChangePasswordButtonText_(passwordChangeState)]]
+            </span>
+            <cr-icon-button id="cancelAutoChangeButton"
+                iron-icon="passwords-icon:stop-circle"
+                on-click="onCancelAutoChangeClick_"
+                hidden="[[hideCancelButton_(passwordChangeState)]]"
+                disabled="[[isCancelDisabled_]]"
+                aria-label="$i18n{cancel}"
+                title="$i18n{cancel}">
+            </cr-icon-button>
+          </div>
         </template>
       </template>
       <a

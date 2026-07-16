@@ -33,7 +33,7 @@ class PasswordManagerClient;
 namespace glic {
 class GlicInstance;
 class GlicKeyedService;
-}
+}  // namespace glic
 
 // Handles a password change flow leveraging Gemini in Chrome.
 // This flow is initiated for a specific credential from the Password Checkup
@@ -61,6 +61,8 @@ class PasswordChangeFromCheckupDelegate {
       const password_manager::CredentialUIEntry& credential,
       base::WeakPtr<content::WebContents> web_contents,
       StateChangeCallback callback = base::NullCallback());
+
+  void Stop(actor::ActorTask::StoppedReason stop_reason);
 
 #if defined(UNIT_TEST)
   std::optional<actor::ActorTask::State> GetFindFormTaskState() const {

@@ -220,6 +220,14 @@ void ChromePasswordChangeService::StartPasswordChangeFromCheckup(
   password_change_from_checkup_delegate_->StartPasswordChangeFlow(
       credential, web_contents->GetWeakPtr(), std::move(callback));
 }
+
+void ChromePasswordChangeService::StopPasswordChangeFromCheckup() {
+  if (password_change_from_checkup_delegate_) {
+    password_change_from_checkup_delegate_->Stop(
+        actor::ActorTask::StoppedReason::kStoppedByUser);
+    password_change_from_checkup_delegate_.reset();
+  }
+}
 #endif  // BUILDFLAG(IS_ANDROID)
 
 PasswordChangeDelegate* ChromePasswordChangeService::GetPasswordChangeDelegate(
@@ -251,6 +259,13 @@ void ChromePasswordChangeService::Shutdown() {
     delegate->RemoveObserver(this);
   }
   password_change_delegates_.clear();
+#if !BUILDFLAG(IS_ANDROID)
+  if (password_change_from_checkup_delegate_) {
+    password_change_from_checkup_delegate_->Stop(
+        actor::ActorTask::StoppedReason::kShutdown);
+    password_change_from_checkup_delegate_.reset();
+  }
+#endif
 }
 
 #if !BUILDFLAG(IS_ANDROID)
