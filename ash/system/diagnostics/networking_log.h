@@ -31,6 +31,9 @@ class ASH_EXPORT NetworkingLog {
   // Returns the networking events section as a string.
   std::string GetNetworkEvents() const;
 
+  // Returns the absolute path to the network events log file.
+  base::FilePath GetLogFilePath() const;
+
   // Updates the list of valid networks and which is active.
   void UpdateNetworkList(const std::vector<std::string>& observer_guids,
                          std::string active_guid);
@@ -76,6 +79,7 @@ class ASH_EXPORT NetworkingLog {
   void LogWiFiRoamedAccessPoint(const mojom::NetworkPtr& network,
                                 const std::string& old_bssid);
 
+  base::FilePath event_log_path_;
   AsyncLog event_log_;
   std::string active_guid_;
   base::flat_map<std::string, mojom::NetworkPtr> latest_network_states_;

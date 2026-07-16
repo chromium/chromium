@@ -1026,15 +1026,14 @@ void ShimlessRmaService::GetLog(GetLogCallback callback) {
 
 void ShimlessRmaService::SaveLog(SaveLogCallback callback) {
   if (diagnostics::DiagnosticsLogController::IsInitialized()) {
+    auto log_data =
+        diagnostics::DiagnosticsLogController::Get()->GetSessionLogData();
+
     task_runner_->PostTaskAndReplyWithResult(
         FROM_HERE,
-        base::BindOnce(
-            &diagnostics::DiagnosticsLogController::
-                GenerateSessionStringOnBlockingPool,
-            // base::Unretained safe here because ~DiagnosticsLogController is
-            // called during shutdown of ash::Shell and will out-live
-            // ShimlessRmaService.
-            base::Unretained(diagnostics::DiagnosticsLogController::Get())),
+        base::BindOnce(&diagnostics::DiagnosticsLogController::
+                           GenerateSessionStringOnBlockingPool,
+                       std::move(log_data)),
         base::BindOnce(&ShimlessRmaService::OnDiagnosticsLogReady,
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
     return;

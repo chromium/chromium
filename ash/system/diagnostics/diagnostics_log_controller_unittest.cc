@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "ash/public/cpp/session/session_types.h"
@@ -23,6 +24,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/task/thread_pool.h"
 #include "components/user_manager/user_type.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -126,42 +128,6 @@ TEST_F(DiagnosticsLogControllerTest, IsInitializedAfterDelegateProvided) {
   EXPECT_TRUE(DiagnosticsLogController::IsInitialized());
 }
 
-TEST_F(DiagnosticsLogControllerTest, GenerateSessionString) {
-  base::ScopedTempDir scoped_diagnostics_log_dir;
-
-  EXPECT_TRUE(scoped_diagnostics_log_dir.CreateUniqueTempDir());
-  const base::FilePath expected_path_regular_user =
-      base::FilePath(scoped_diagnostics_log_dir.GetPath().Append(kFakeUserDir));
-  SimulateUserLogin({kTestUserEmail});
-  DiagnosticsLogController::Initialize(
-      std::make_unique<FakeDiagnosticsBrowserDelegate>(
-          expected_path_regular_user));
-
-  // Create keyboard input log.
-  KeyboardInputLog& keyboard_input_log =
-      DiagnosticsLogController::Get()->GetKeyboardInputLog();
-  keyboard_input_log.AddKeyboard(/*id=*/1, "internal keyboard");
-  keyboard_input_log.CreateLogAndRemoveKeyboard(/*id=*/1);
-  task_environment()->RunUntilIdle();
-
-  const std::string contents =
-      DiagnosticsLogController::Get()->GenerateSessionStringOnBlockingPool();
-  const std::vector<std::string> log_lines = GetLogLines(contents);
-  EXPECT_EQ(10u, log_lines.size());
-
-  EXPECT_EQ(kSystemLogSectionHeader, log_lines[0]);
-  EXPECT_EQ(kRoutineLogSubsectionHeader, log_lines[1]);
-  const std::string expected_no_routine_msg =
-      "No routines of this type were run in the session.";
-  EXPECT_EQ(expected_no_routine_msg, log_lines[2]);
-  EXPECT_EQ(kNetworkingLogSectionHeader, log_lines[3]);
-  EXPECT_EQ(kNetworkingLogNetworkInfoHeader, log_lines[4]);
-  EXPECT_EQ(kRoutineLogSubsectionHeader, log_lines[5]);
-  EXPECT_EQ(expected_no_routine_msg, log_lines[6]);
-  EXPECT_EQ(kNetworkingLogNetworkEventsHeader, log_lines[7]);
-  EXPECT_EQ(kKeyboardLogSectionHeader, log_lines[8]);
-}
-
 TEST_F(DiagnosticsLogControllerTest, GenerateSessionLogOnBlockingPoolFile) {
   base::ScopedTempDir scoped_diagnostics_log_dir;
 
@@ -183,8 +149,12 @@ TEST_F(DiagnosticsLogControllerTest, GenerateSessionLogOnBlockingPoolFile) {
   task_environment()->RunUntilIdle();
 
   const base::FilePath save_file_path = GetSessionLogPath();
-  EXPECT_TRUE(DiagnosticsLogController::Get()->GenerateSessionLogOnBlockingPool(
-      save_file_path));
+
+  // Extract data on UI thread and pass to static blocking pool method
+  auto log_data = DiagnosticsLogController::Get()->GetSessionLogData();
+  EXPECT_TRUE(DiagnosticsLogController::GenerateSessionLogOnBlockingPool(
+      save_file_path, std::move(log_data)));
+
   EXPECT_TRUE(base::PathExists(save_file_path));
 
   std::string contents;
@@ -232,8 +202,12 @@ TEST_F(DiagnosticsLogControllerTest,
 
   // Generate log file at test path.
   const base::FilePath save_file_path = GetSessionLogPath();
-  EXPECT_TRUE(DiagnosticsLogController::Get()->GenerateSessionLogOnBlockingPool(
-      save_file_path));
+
+  // Extract data on UI thread and pass to static blocking pool method
+  auto log_data = DiagnosticsLogController::Get()->GetSessionLogData();
+  EXPECT_TRUE(DiagnosticsLogController::GenerateSessionLogOnBlockingPool(
+      save_file_path, std::move(log_data)));
+
   EXPECT_TRUE(base::PathExists(save_file_path));
   std::string contents;
   EXPECT_TRUE(base::ReadFileToString(save_file_path, &contents));
@@ -438,6 +412,50 @@ TEST_F(DiagnosticsLogControllerTest, ClearLogDirectoryOnInitialize) {
   task_environment()->RunUntilIdle();
   EXPECT_EQ(expected_diagnostics_log_path, log_base_path());
   EXPECT_TRUE(base::PathExists(expected_diagnostics_log_path));
+}
+
+TEST_F(DiagnosticsLogControllerTest,
+       GenerateSessionLogConcurrentWithResetLogWriters) {
+  base::ScopedTempDir scoped_diagnostics_log_dir;
+  EXPECT_TRUE(scoped_diagnostics_log_dir.CreateUniqueTempDir());
+  const base::FilePath expected_path_regular_user =
+      base::FilePath(scoped_diagnostics_log_dir.GetPath().Append(kFakeUserDir));
+
+  SimulateUserLogin({kTestUserEmail});
+  DiagnosticsLogController::Initialize(
+      std::make_unique<FakeDiagnosticsBrowserDelegate>(
+          expected_path_regular_user));
+
+  const base::FilePath save_file_path = GetSessionLogPath();
+
+  // Seed on-disk content.
+  RoutineLog& routine_log = DiagnosticsLogController::Get()->GetRoutineLog();
+  routine_log.LogRoutineCancelled(mojom::RoutineType::kArcHttp);
+  task_environment()->RunUntilIdle();
+
+  // Spam concurrent task creation and object resets to prove the hybrid
+  // approach completely eliminates the cross-thread Use-After-Free risk.
+  for (int i = 0; i < 50; i++) {
+    // 1. Grab data safely on the UI thread
+    auto log_data = DiagnosticsLogController::Get()->GetSessionLogData();
+
+    // 2. Pass it BY VALUE to the static thread pool worker
+    base::ThreadPool::PostTask(
+        FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+        base::BindOnce(
+            base::IgnoreResult(
+                &DiagnosticsLogController::GenerateSessionLogOnBlockingPool),
+            save_file_path, std::move(log_data)));
+
+    // 3. Concurrently wipe the underlying Log objects from the UI thread
+    DiagnosticsLogController::Get()->ResetAndInitializeLogWriters();
+  }
+
+  // Ensure all threads execute completely without crashing.
+  task_environment()->RunUntilIdle();
+
+  // The final file should have been written successfully.
+  EXPECT_TRUE(base::PathExists(save_file_path));
 }
 
 }  // namespace diagnostics

@@ -150,7 +150,7 @@ void RoutineLog::Append(mojom::RoutineType type, const std::string& text) {
   RoutineCategory category = GetRoutineCategory(type);
 
   // Insert a new log if it doesn't exist then append to it.
-  base::FilePath log_path = GetCategoryLogFilePath(category);
+  base::FilePath log_path = GetLogFilePath(category);
   auto iter = logs_.find(category);
   if (iter == logs_.end()) {
     iter = logs_.emplace(category, std::make_unique<AsyncLog>(log_path)).first;
@@ -159,8 +159,8 @@ void RoutineLog::Append(mojom::RoutineType type, const std::string& text) {
   iter->second->Append(text);
 }
 
-base::FilePath RoutineLog::GetCategoryLogFilePath(
-    const RoutineCategory category) {
+base::FilePath RoutineLog::GetLogFilePath(
+    const RoutineCategory category) const {
   std::string name =
       "diagnostics_routines_" + GetRoutineLogCategoryString(category) + ".log";
   return log_base_path_.Append(name);

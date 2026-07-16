@@ -47,7 +47,8 @@ KeyboardLogData& KeyboardLogData::operator=(KeyboardLogData&&) = default;
 KeyboardLogData::~KeyboardLogData() = default;
 
 KeyboardInputLog::KeyboardInputLog(const base::FilePath& log_base_path)
-    : log_(log_base_path.Append(kKeyboardInputLogFilename)) {}
+    : log_path_(log_base_path.Append(kKeyboardInputLogFilename)),
+      log_(log_path_) {}
 
 KeyboardInputLog::~KeyboardInputLog() = default;
 
@@ -94,6 +95,10 @@ bool KeyboardInputLog::KeyboardHasBeenAdded(uint32_t id) const {
 
 std::string KeyboardInputLog::GetLogContents() const {
   return log_.GetContents();
+}
+
+base::FilePath KeyboardInputLog::GetLogFilePath() const {
+  return log_path_;
 }
 
 void KeyboardInputLog::Append(const std::string& text) {

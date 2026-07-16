@@ -29,6 +29,25 @@ class TelemetryLog;
 // for the current user. See go/cros-shared-diagnostics-session-log-dd.
 class ASH_EXPORT DiagnosticsLogController : SessionObserver {
  public:
+  // Holds the in-memory contents and file paths for the logs. This data is
+  // extracted on the UI thread and passed to the blocking pool to generate
+  // the final session log without causing cross-thread data races.
+  struct SessionLogData {
+    SessionLogData();
+    ~SessionLogData();
+    SessionLogData(const SessionLogData&) = delete;
+    SessionLogData& operator=(const SessionLogData&) = delete;
+    SessionLogData(SessionLogData&&);
+    SessionLogData& operator=(SessionLogData&&);
+
+    std::string telemetry_contents;
+    std::string network_info;
+    base::FilePath system_routine_log_path;
+    base::FilePath network_routine_log_path;
+    base::FilePath network_events_path;
+    base::FilePath keyboard_input_path;
+  };
+
   DiagnosticsLogController();
   DiagnosticsLogController(const DiagnosticsLogController&) = delete;
   DiagnosticsLogController& operator=(const DiagnosticsLogController&) = delete;
@@ -46,12 +65,19 @@ class ASH_EXPORT DiagnosticsLogController : SessionObserver {
 
   // GenerateSessionStringOnBlockingPool needs to be run on blocking thread.
   // Generates a string of the combined Diagnostics logs.
-  std::string GenerateSessionStringOnBlockingPool() const;
+  static std::string GenerateSessionStringOnBlockingPool(
+      SessionLogData log_data);
 
   // GenerateSessionLogOnBlockingPool needs to be run on blocking
   // thread. Stores combined log at |save_file_path| and returns
   // whether file creation is successful.
-  bool GenerateSessionLogOnBlockingPool(const base::FilePath& save_file_path);
+  static bool GenerateSessionLogOnBlockingPool(
+      const base::FilePath& save_file_path,
+      SessionLogData log_data);
+
+  // Call this on the UI thread to safely grab the in-memory data and paths
+  // without any data races.
+  SessionLogData GetSessionLogData() const;
 
   // Ensures DiagnosticsLogController is configured to match the current
   // environment. To be called from DiagnosticsDialog::ShowDialog prior to the

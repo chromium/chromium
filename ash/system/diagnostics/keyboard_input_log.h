@@ -74,9 +74,13 @@ class ASH_EXPORT KeyboardInputLog {
   // Returns stored log contents as a string.
   std::string GetLogContents() const;
 
+  // Returns the absolute path to the keyboard input log file.
+  base::FilePath GetLogFilePath() const;
+
  private:
   void Append(const std::string& text);
 
+  base::FilePath log_path_;
   AsyncLog log_;
   // Maps a keyboard id to a struct containing the keyboard name and info
   // about the keys that were pressed during testing.

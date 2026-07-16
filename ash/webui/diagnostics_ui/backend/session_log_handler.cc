@@ -89,14 +89,14 @@ void SessionLogHandler::RegisterMessages() {
 void SessionLogHandler::FileSelected(const ui::SelectedFileInfo& file,
                                      int index) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(session_log_handler_sequence_checker_);
+
+  auto log_data = DiagnosticsLogController::Get()->GetSessionLogData();
+
   task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(
           &DiagnosticsLogController::GenerateSessionLogOnBlockingPool,
-          // base::Unretained safe here because ~DiagnosticsLogController is
-          // called during shutdown of ash::Shell and will out-live
-          // SessionLogHandler.
-          base::Unretained(DiagnosticsLogController::Get()), file.path()),
+          file.path(), std::move(log_data)),
       base::BindOnce(&SessionLogHandler::OnSessionLogCreated, weak_ptr_,
                      file.path()));
   select_file_dialog_.reset();

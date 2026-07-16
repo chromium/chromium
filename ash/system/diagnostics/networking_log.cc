@@ -272,7 +272,8 @@ std::string GetNetworkType(mojom::NetworkType type) {
 }  // namespace
 
 NetworkingLog::NetworkingLog(const base::FilePath& log_base_path)
-    : event_log_(log_base_path.Append(kEventLogFilename)) {}
+    : event_log_path_(log_base_path.Append(kEventLogFilename)),
+      event_log_(event_log_path_) {}
 
 NetworkingLog::~NetworkingLog() = default;
 
@@ -306,6 +307,10 @@ std::string NetworkingLog::GetNetworkInfo() const {
 std::string NetworkingLog::GetNetworkEvents() const {
   return std::string(kNetworkEventsSectionName) + kNewline + kNewline +
          event_log_.GetContents();
+}
+
+base::FilePath NetworkingLog::GetLogFilePath() const {
+  return event_log_path_;
 }
 
 void NetworkingLog::UpdateNetworkList(
