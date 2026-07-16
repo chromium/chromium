@@ -251,6 +251,14 @@ void ContentAnalysisDelegate::Cancel(bool warning) {
   RunCallback();
 }
 
+void ContentAnalysisDelegate::Delete() {
+  // This is only called for COPY trigger operations.
+  CHECK(access_point_ == DeepScanAccessPoint::COPY);
+  // Make sure the callbacks are run before the delegate is deleted.
+  RunCallback();
+  delete this;
+}
+
 std::optional<std::u16string> ContentAnalysisDelegate::GetCustomMessage()
     const {
   // Rule-based custom messages take precedence over policy-based.
@@ -342,6 +350,10 @@ ContentAnalysisDelegate::OverrideCancelButtonText() const {
 
 std::optional<std::u16string> ContentAnalysisDelegate::GetFilename() const {
   return std::nullopt;
+}
+
+base::WeakPtr<ContentAnalysisDelegate> ContentAnalysisDelegate::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
 }
 
 // static

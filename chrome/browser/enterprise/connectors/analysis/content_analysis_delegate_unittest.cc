@@ -23,6 +23,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/gtest_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
@@ -1830,5 +1831,54 @@ TEST_F(ContentAnalysisDelegateWithLocalClient, FailClosed) {
   EXPECT_TRUE(called);
 }
 #endif
+
+using ContentAnalysisDelegateDeleteTest = BaseTest;
+
+TEST_F(ContentAnalysisDelegateDeleteTest, RunsCallbackAndDeletes) {
+  bool callback_ran = false;
+  ContentAnalysisDelegate::Data data;
+  auto delegate = test::FakeContentAnalysisDelegate::Create(
+      run_loop_.QuitClosure(),
+      base::BindRepeating([](const std::string&, const base::FilePath&) {
+        return test::FakeContentAnalysisDelegate::SuccessfulResponse({"dlp"});
+      }),
+      kDmToken, contents(), std::move(data),
+      base::BindLambdaForTesting([&](const ContentAnalysisDelegate::Data& data,
+                                     ContentAnalysisDelegate::Result& result) {
+        callback_ran = true;
+      }),
+      DeepScanAccessPoint::COPY);
+
+  auto* delegate_ptr = delegate.release();
+  delegate_ptr->Delete();
+  RunUntilDone();
+
+  EXPECT_TRUE(callback_ran);
+}
+
+TEST_F(ContentAnalysisDelegateDeleteTest, DoesNotRunCallbackIfAlreadyRun) {
+  int callback_count = 0;
+  ContentAnalysisDelegate::Data data;
+  auto delegate = test::FakeContentAnalysisDelegate::Create(
+      run_loop_.QuitClosure(),
+      base::BindRepeating([](const std::string&, const base::FilePath&) {
+        return test::FakeContentAnalysisDelegate::SuccessfulResponse({"dlp"});
+      }),
+      kDmToken, contents(), std::move(data),
+      base::BindLambdaForTesting(
+          [&](const ContentAnalysisDelegate::Data& data,
+              ContentAnalysisDelegate::Result& result) { callback_count++; }),
+      DeepScanAccessPoint::COPY);
+
+  auto* delegate_ptr = delegate.release();
+  delegate_ptr->BypassWarnings(std::nullopt);
+
+  EXPECT_EQ(1, callback_count);
+
+  delegate_ptr->Delete();
+  RunUntilDone();
+
+  EXPECT_EQ(1, callback_count);
+}
 
 }  // namespace enterprise_connectors

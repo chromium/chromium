@@ -145,6 +145,13 @@ class ContentAnalysisDelegate : public ContentAnalysisDelegateBase,
 
   // ContentAnalysisDelegateBase:
 
+  // Deletes the content analysis delegate.
+  // This is used for the copy access point since it has a different flow than
+  // the other access points. It utilises a combination of Toast and Dialog for
+  // warning case. This should only be called for warning bypass and cancel
+  // cases of the copy trigger.
+  void Delete();
+
   // Called when the user decides to bypass the verdict they obtained from DLP.
   // This will allow the upload of files marked as DLP warnings.
   void BypassWarnings(
@@ -172,6 +179,8 @@ class ContentAnalysisDelegate : public ContentAnalysisDelegateBase,
 
   std::optional<std::u16string> GetFilename() const override;
 
+  base::WeakPtr<ContentAnalysisDelegate> GetWeakPtr();
+
   // Returns true if the deep scanning feature is enabled in the upload
   // direction via enterprise policies.  If the appropriate enterprise policies
   // are not set this feature is not enabled.
@@ -187,7 +196,7 @@ class ContentAnalysisDelegate : public ContentAnalysisDelegateBase,
   // Entry point for starting a deep scan, with the callback being called once
   // all results are available.  When the UI is enabled, a tab-modal dialog
   // is shown while the scans proceed in the background.  When the UI is
-  // disabled, the callback will immedaitely inform the callers that all data
+  // disabled, the callback will immediately inform the callers that all data
   // has successfully passed the checks, even though the checks will proceed
   // in the background.
   //

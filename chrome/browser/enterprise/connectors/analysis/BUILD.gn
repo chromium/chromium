@@ -43,6 +43,7 @@ source_set("unit_tests") {
       "clipboard_request_handler_unittest.cc",
       "content_analysis_delegate_unittest.cc",
       "content_analysis_downloads_delegate_unittest.cc",
+      "copy_warning_delegate_tracker_unittest.cc",
       "files_request_handler_unittest.cc",
       "page_print_analysis_request_unittest.cc",
       "page_print_request_handler_unittest.cc",
