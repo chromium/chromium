@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "build/build_config.h"
+#include "components/glic/glic_pref_names.h"
 
 class PrefRegistrySimple;
 class PrefService;
@@ -56,18 +57,6 @@ inline constexpr char kGlicWebContinuityOriginatingHostUrlPreset[] =
 
 // ************* PROFILE PREFS ***************
 // Prefs below are tied to a user profile.
-
-
-// Values for the glic.completed_fre pref.
-enum class FreStatus {
-  kMinValue = 0,
-
-  kNotStarted = kMinValue,
-  kCompleted = 1,
-  kIncomplete = 2,
-
-  kMaxValue = kIncomplete
-};
 
 // Values for the "glic.actuation_on_web" pref.
 enum class GlicActuationOnWebPolicyState {
