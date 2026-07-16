@@ -105,6 +105,8 @@ constexpr std::string ApplicationErrorToString(ApplicationError error) {
       return "Cloud Policy Client timed out";
     case ApplicationError::kInvalidEnrollmentToken:
       return "The enrollment token is invalid";
+    case ApplicationError::kEnrollmentBlocked:
+      return "Enrollment is blocked as the token was previously rejected.";
   }
 }
 

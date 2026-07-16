@@ -547,6 +547,45 @@ TEST_F(IntegrationTests, InvalidDMTokenDeleted) {
   EXPECT_EQ(dm_storage->GetDmToken(), "");
 }
 
+// The application should not attempt registration if the enrollment token has
+// been previously rejected by DMServer.
+TEST_F(IntegrationTests, BlockEnrollmentWithRejectedToken) {
+  SetDefaultPolicyFetchResponses();
+  ASSERT_NO_FATAL_FAILURE(GetTestMethods().Install());
+  ASSERT_NO_FATAL_FAILURE(LaunchApp());
+  ASSERT_NO_FATAL_FAILURE(WaitForServerStart());
+
+  test_server_.ExpectOnce(
+      {CreateEventLogMatcher(
+          test_server_,
+          {{proto::EnterpriseCompanionEvent::kBrowserEnrollmentEvent,
+            EnterpriseCompanionStatus::FromDeviceManagementStatus(
+                policy::DM_STATUS_SERVICE_MANAGEMENT_TOKEN_INVALID)}})},
+      CreateLogResponse());
+
+  // Attempt a registration with the invalid enrollment token, it should fail.
+  // The client should store the failed token.
+  ASSERT_NO_FATAL_FAILURE(
+      StoreEnrollmentToken(policy::kInvalidEnrollmentToken));
+  EXPECT_TRUE(CreateAppFetchPolicies()->Run().EqualsDeviceManagementStatus(
+      policy::DM_STATUS_SERVICE_MANAGEMENT_TOKEN_INVALID));
+
+  // Try to register again with the same invalid token. The client should
+  // immediately block the attempt locally. It should not send a request to the
+  // server, and as such, there should be no event log entry.
+  EXPECT_TRUE(CreateAppFetchPolicies()->Run().EqualsApplicationError(
+      ApplicationError::kEnrollmentBlocked));
+
+  ShutdownServerAndWaitForExit();
+
+  scoped_refptr<device_management_storage::DMStorage> dm_storage =
+      device_management_storage::GetDefaultDMStorage();
+  ASSERT_TRUE(dm_storage);
+  EXPECT_EQ(dm_storage->GetDmToken(), "");
+  EXPECT_FALSE(base::PathExists(
+      policy_cache_root_.Append(FILE_PATH_LITERAL("CachedPolicyInfo"))));
+}
+
 // The application should reload the enrollment token from storage on every
 // registration attempt.
 TEST_F(IntegrationTests, ReloadsTokens) {

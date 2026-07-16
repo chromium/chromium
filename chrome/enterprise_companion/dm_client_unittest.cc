@@ -61,6 +61,27 @@ using ::policy::PolicyFetchReason;
 using ::testing::_;
 using ::testing::ElementsAre;
 
+class TestFailedEnrollmentTokenService : public FailedEnrollmentTokenService {
+ public:
+  TestFailedEnrollmentTokenService() = default;
+  ~TestFailedEnrollmentTokenService() override = default;
+
+  bool StoreFailedEnrollmentToken(const std::string& token) override {
+    token_ = token;
+    return true;
+  }
+
+  bool DeleteFailedEnrollmentToken() override {
+    token_.clear();
+    return true;
+  }
+
+  std::string GetFailedEnrollmentToken() const override { return token_; }
+
+ private:
+  std::string token_;
+};
+
 // Wraps a real DM storage instance allowing behavior to be augmented by tests.
 class TestDMStorage final : public device_management_storage::DMStorage {
  public:
@@ -239,6 +260,11 @@ class DMClientTest : public ::testing::Test {
     std::unique_ptr<TestTokenService> test_token_service =
         std::make_unique<TestTokenService>();
     test_token_service_ = test_token_service.get();
+    std::unique_ptr<TestFailedEnrollmentTokenService>
+        test_failed_enrollment_token_service =
+            std::make_unique<TestFailedEnrollmentTokenService>();
+    test_failed_enrollment_token_service_ =
+        test_failed_enrollment_token_service.get();
     mock_cloud_policy_client_ =
         new MockCloudPolicyClient(&fake_device_management_service_);
     dm_storage_ = base::MakeRefCounted<TestDMStorage>(
@@ -250,7 +276,8 @@ class DMClientTest : public ::testing::Test {
         }),
         dm_storage_, mock_policy_fetch_response_validator_.Get(),
         CreateDeviceManagementServiceConfig(),
-        /*task_timeout=*/base::Milliseconds(250));
+        /*task_timeout=*/base::Milliseconds(250),
+        std::move(test_failed_enrollment_token_service));
   }
 
   base::test::TaskEnvironment environment_;
@@ -259,12 +286,15 @@ class DMClientTest : public ::testing::Test {
   policy::FakeDeviceManagementService fake_device_management_service_ =
       policy::FakeDeviceManagementService(&mock_job_creation_handler_);
   scoped_refptr<TestDMStorage> dm_storage_;
-  // |test_token_service_| and |mock_cloud_policy_client_| are pointers to
-  // objects owned by |dm_client_|. They must be destructed before the client to
-  // avoid raw_ptr from complaining about dangling pointers.
+  // `test_token_service_`, `mock_cloud_policy_client_`, and
+  // `test_failed_enrollment_token_service_` are pointers to objects owned by
+  // `dm_client_`. They must be destructed before the client to avoid raw_ptr
+  // from complaining about dangling pointers.
   std::unique_ptr<DMClient> dm_client_;
   raw_ptr<TestTokenService> test_token_service_ = nullptr;
   raw_ptr<MockCloudPolicyClient> mock_cloud_policy_client_ = nullptr;
+  raw_ptr<TestFailedEnrollmentTokenService>
+      test_failed_enrollment_token_service_ = nullptr;
   base::MockCallback<PolicyFetchResponseValidator>
       mock_policy_fetch_response_validator_;
   scoped_refptr<TestEventLogger> test_event_logger_ =
@@ -513,6 +543,90 @@ TEST_F(DMClientTest, RegisterDeviceMalformedEnrollmentToken) {
   EXPECT_TRUE(test_event_logger_->policy_fetch_events().empty());
 }
 
+TEST_F(DMClientTest, RegisterDeviceFailureInvalidEnrollmentToken) {
+  test_token_service_->StoreEnrollmentToken(kFakeEnrollmentToken);
+  EXPECT_CALL(*mock_cloud_policy_client_,
+              RegisterPolicyAgentWithEnrollmentToken(kFakeEnrollmentToken,
+                                                     kFakeDeviceId, _))
+      .WillOnce([&] {
+        mock_cloud_policy_client_->SetStatus(
+            policy::DM_STATUS_SERVICE_MANAGEMENT_TOKEN_INVALID);
+        mock_cloud_policy_client_->NotifyClientError();
+      });
+
+  base::RunLoop run_loop;
+  dm_client_->RegisterPolicyAgent(
+      test_event_logger_,
+      base::BindLambdaForTesting([&](const EnterpriseCompanionStatus& status) {
+        EXPECT_TRUE(status.EqualsDeviceManagementStatus(
+            policy::DM_STATUS_SERVICE_MANAGEMENT_TOKEN_INVALID));
+        test_event_logger_->Flush(run_loop.QuitClosure());
+      }));
+  run_loop.Run();
+
+  EXPECT_TRUE(test_token_service_->GetDmToken().empty());
+  EXPECT_EQ(test_failed_enrollment_token_service_->GetFailedEnrollmentToken(),
+            kFakeEnrollmentToken);
+  EXPECT_THAT(test_event_logger_->registration_events(),
+              ElementsAre(EnterpriseCompanionStatus::FromDeviceManagementStatus(
+                  policy::DM_STATUS_SERVICE_MANAGEMENT_TOKEN_INVALID)));
+  EXPECT_TRUE(test_event_logger_->policy_fetch_events().empty());
+}
+
+TEST_F(DMClientTest, RegisterDeviceEnrollmentBlocked) {
+  test_token_service_->StoreEnrollmentToken(kFakeEnrollmentToken);
+  test_failed_enrollment_token_service_->StoreFailedEnrollmentToken(
+      kFakeEnrollmentToken);
+  EXPECT_CALL(*mock_cloud_policy_client_,
+              RegisterPolicyAgentWithEnrollmentToken)
+      .Times(0);
+
+  base::RunLoop run_loop;
+  dm_client_->RegisterPolicyAgent(
+      test_event_logger_,
+      base::BindLambdaForTesting([&](const EnterpriseCompanionStatus& status) {
+        EXPECT_TRUE(status.EqualsApplicationError(
+            ApplicationError::kEnrollmentBlocked));
+        test_event_logger_->Flush(run_loop.QuitClosure());
+      }));
+  run_loop.Run();
+
+  EXPECT_TRUE(test_token_service_->GetDmToken().empty());
+  EXPECT_TRUE(test_event_logger_->registration_events().empty());
+  EXPECT_TRUE(test_event_logger_->policy_fetch_events().empty());
+}
+
+TEST_F(DMClientTest, RegisterDeviceRecoverFromFailedEnrollmentToken) {
+  constexpr char kDifferentEnrollmentToken[] = "DifferentFakeEnrollmentToken";
+  test_token_service_->StoreEnrollmentToken(kDifferentEnrollmentToken);
+  test_failed_enrollment_token_service_->StoreFailedEnrollmentToken(
+      kFakeEnrollmentToken);
+  EXPECT_CALL(*mock_cloud_policy_client_,
+              RegisterPolicyAgentWithEnrollmentToken(kDifferentEnrollmentToken,
+                                                     kFakeDeviceId, _))
+      .WillOnce([&] {
+        mock_cloud_policy_client_->SetDMToken(kFakeDMToken);
+        mock_cloud_policy_client_->NotifyRegistrationStateChanged();
+      });
+
+  base::RunLoop run_loop;
+  dm_client_->RegisterPolicyAgent(
+      test_event_logger_,
+      base::BindLambdaForTesting([&](const EnterpriseCompanionStatus& status) {
+        EXPECT_TRUE(status.ok());
+        test_event_logger_->Flush(run_loop.QuitClosure());
+      }));
+  run_loop.Run();
+
+  EXPECT_EQ(test_token_service_->GetDmToken(), kFakeDMToken);
+  // Verify that the successful enrollment deletes the failed token.
+  EXPECT_TRUE(test_failed_enrollment_token_service_->GetFailedEnrollmentToken()
+                  .empty());
+  EXPECT_THAT(test_event_logger_->registration_events(),
+              ElementsAre(EnterpriseCompanionStatus::Success()));
+  EXPECT_TRUE(test_event_logger_->policy_fetch_events().empty());
+}
+
 TEST_F(DMClientTest, PoliciesPersistedThroughSkippedRegistration) {
   EnsureRegistered();
 
@@ -622,6 +736,8 @@ TEST_F(DMClientTest, FetchPoliciesFailsIfCloudPolicyClientFails) {
   EXPECT_THAT(test_event_logger_->policy_fetch_events(),
               ElementsAre(EnterpriseCompanionStatus::FromDeviceManagementStatus(
                   policy::DM_STATUS_SERVICE_MANAGEMENT_TOKEN_INVALID)));
+  EXPECT_TRUE(test_failed_enrollment_token_service_->GetFailedEnrollmentToken()
+                  .empty());
 }
 
 TEST_F(DMClientTest, FetchPoliciesFailsIfFetchResultInvalid) {

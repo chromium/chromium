@@ -13,6 +13,8 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
@@ -33,6 +35,7 @@
 #include "chrome/enterprise_companion/enterprise_companion_version.h"
 #include "chrome/enterprise_companion/event_logger.h"
 #include "chrome/enterprise_companion/global_constants.h"
+#include "chrome/enterprise_companion/installer_paths.h"
 #include "chrome/enterprise_companion/proto/enterprise_companion_event.pb.h"
 #include "components/policy/core/common/cloud/client_data_delegate.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
@@ -51,6 +54,43 @@
 namespace enterprise_companion {
 
 namespace {
+
+class FailedEnrollmentTokenServiceImpl : public FailedEnrollmentTokenService {
+ public:
+  FailedEnrollmentTokenServiceImpl()
+      : failed_enrollment_token_path_(GetFailedEnrollmentTokenPath()) {}
+  ~FailedEnrollmentTokenServiceImpl() override = default;
+
+  bool StoreFailedEnrollmentToken(const std::string& token) override {
+    return !failed_enrollment_token_path_.empty() &&
+           device_management_storage::WriteContentToGlobalReadableFile(
+               failed_enrollment_token_path_, token);
+  }
+
+  bool DeleteFailedEnrollmentToken() override {
+    return !failed_enrollment_token_path_.empty() &&
+           base::DeleteFile(failed_enrollment_token_path_);
+  }
+
+  std::string GetFailedEnrollmentToken() const override {
+    std::string token;
+    if (failed_enrollment_token_path_.empty() ||
+        !base::ReadFileToString(failed_enrollment_token_path_, &token)) {
+      return {};
+    }
+    return std::string(base::TrimWhitespaceASCII(token, base::TRIM_ALL));
+  }
+
+ private:
+  static base::FilePath GetFailedEnrollmentTokenPath() {
+    std::optional<base::FilePath> install_dir = GetInstallDirectory();
+    return install_dir ? install_dir->Append(FILE_PATH_LITERAL(
+                             "CloudManagementFailedEnrollmentToken"))
+                       : base::FilePath();
+  }
+
+  const base::FilePath failed_enrollment_token_path_;
+};
 
 std::ostream& operator<<(std::ostream& os,
                          const policy::CloudPolicyClient::Result& result) {
@@ -249,13 +289,17 @@ class DMClientImpl : public DMClient, policy::CloudPolicyClient::Observer {
       CloudPolicyClientProvider cloud_policy_client_provider,
       scoped_refptr<device_management_storage::DMStorage> dm_storage,
       PolicyFetchResponseValidator policy_fetch_response_validator,
-      base::TimeDelta task_timeout)
+      base::TimeDelta task_timeout,
+      std::unique_ptr<FailedEnrollmentTokenService>
+          failed_enrollment_token_service)
       : task_timeout_(task_timeout),
         dm_service_(std::move(config)),
         cloud_policy_client_(
             std::move(cloud_policy_client_provider).Run(&dm_service_)),
         dm_storage_(dm_storage),
-        policy_fetch_response_validator_(policy_fetch_response_validator) {
+        policy_fetch_response_validator_(policy_fetch_response_validator),
+        failed_enrollment_token_service_(
+            std::move(failed_enrollment_token_service)) {
     dm_service_.ScheduleInitialization(0);
     cloud_policy_client_->AddObserver(this);
     cloud_policy_client_->AddPolicyTypeToFetch(
@@ -290,6 +334,12 @@ class DMClientImpl : public DMClient, policy::CloudPolicyClient::Observer {
 
     if (ShouldSkipRegistration()) {
       std::move(callback).Run(EnterpriseCompanionStatus::Success());
+      return;
+    }
+
+    if (IsEnrollmentBlocked()) {
+      std::move(callback).Run(
+          EnterpriseCompanionStatus(ApplicationError::kEnrollmentBlocked));
       return;
     }
 
@@ -398,6 +448,10 @@ class DMClientImpl : public DMClient, policy::CloudPolicyClient::Observer {
     VLOG(1) << __func__;
     if (cloud_policy_client_->is_registered()) {
       dm_storage_->StoreDmToken(cloud_policy_client_->dm_token());
+      const bool failed_enrollment_token_deleted =
+          failed_enrollment_token_service_->DeleteFailedEnrollmentToken();
+      LOG_IF(ERROR, !failed_enrollment_token_deleted)
+          << "Failed to delete the rejected enrollment token.";
     }
     if (pending_callback_) {
       std::move(pending_callback_)
@@ -419,6 +473,19 @@ class DMClientImpl : public DMClient, policy::CloudPolicyClient::Observer {
       VLOG(1) << "DMServer requests deregister via DMToken invalidation.";
       LOG_IF(ERROR, !dm_storage_->InvalidateDMToken())
           << "Could not deregister: Failed to invalidate the DMToken.";
+    } else if (!dm_storage_->IsValidDMToken() &&
+               cloud_policy_client_->last_dm_status() ==
+                   policy::DM_STATUS_SERVICE_MANAGEMENT_TOKEN_INVALID) {
+      VLOG(1) << "DMServer rejected the enrollment token as invalid. "
+                 "Blocking future registration attempts that reuse this token.";
+      std::string failed_token = dm_storage_->GetEnrollmentToken();
+      if (!failed_token.empty()) {
+        const bool failed_enrollment_token_stored =
+            failed_enrollment_token_service_->StoreFailedEnrollmentToken(
+                failed_token);
+        LOG_IF(ERROR, !failed_enrollment_token_stored)
+            << "Failed to store the rejected enrollment token.";
+      }
     }
     if (pending_callback_) {
       std::move(pending_callback_)
@@ -438,6 +505,22 @@ class DMClientImpl : public DMClient, policy::CloudPolicyClient::Observer {
       return true;
     }
     return false;
+  }
+
+  bool IsEnrollmentBlocked() const {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    std::string failed_token =
+        failed_enrollment_token_service_->GetFailedEnrollmentToken();
+    if (failed_token.empty()) {
+      return false;
+    }
+    std::string current_token = dm_storage_->GetEnrollmentToken();
+    if (current_token.empty() || current_token != failed_token) {
+      return false;
+    }
+    VLOG(1) << "Registration attempt blocked. The active enrollment token has "
+               "previously failed verification.";
+    return true;
   }
 
   // Validates all of the fetched policies.
@@ -501,6 +584,8 @@ class DMClientImpl : public DMClient, policy::CloudPolicyClient::Observer {
   base::OneShotTimer task_timer_;
   std::unique_ptr<device_management_storage::CachedPolicyInfo>
       cached_policy_info_;
+  std::unique_ptr<FailedEnrollmentTokenService>
+      failed_enrollment_token_service_;
 };
 
 }  // namespace
@@ -551,15 +636,23 @@ CreateDeviceManagementServiceConfig() {
   return std::make_unique<DMConfiguration>();
 }
 
+std::unique_ptr<FailedEnrollmentTokenService>
+GetDefaultFailedEnrollmentTokenService() {
+  return std::make_unique<FailedEnrollmentTokenServiceImpl>();
+}
+
 std::unique_ptr<DMClient> CreateDMClient(
     CloudPolicyClientProvider cloud_policy_client_provider,
     scoped_refptr<device_management_storage::DMStorage> dm_storage,
     PolicyFetchResponseValidator policy_fetch_response_validator,
     std::unique_ptr<policy::DeviceManagementService::Configuration> config,
-    base::TimeDelta task_timeout) {
+    base::TimeDelta task_timeout,
+    std::unique_ptr<FailedEnrollmentTokenService>
+        failed_enrollment_token_service) {
   return std::make_unique<BufferedDMClient>(std::make_unique<DMClientImpl>(
       std::move(config), std::move(cloud_policy_client_provider), dm_storage,
-      policy_fetch_response_validator, task_timeout));
+      policy_fetch_response_validator, task_timeout,
+      std::move(failed_enrollment_token_service)));
 }
 
 }  // namespace enterprise_companion

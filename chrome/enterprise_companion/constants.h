@@ -30,6 +30,8 @@ enum class ApplicationError {
   kCloudPolicyClientTimeout,
   // The enrollment token is malformed.
   kInvalidEnrollmentToken,
+  // Enrollment is blocked as the token was previously rejected by DMServer.
+  kEnrollmentBlocked,
 };
 
 inline constexpr int kStatusOk = 0;
