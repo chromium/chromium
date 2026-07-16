@@ -913,8 +913,6 @@ void AddGlicStrings(content::WebUIDataSource* html_source, Profile* profile) {
        IDS_SETTINGS_GLIC_PERMISSIONS_DEFAULT_TAB_ACCESS_TOGGLE_SUBLABEL_DATA_PROTECTED},
       {"glicWebActuationToggle",
        IDS_SETTINGS_GLIC_PERMISSIONS_CHROME_WEB_ACTUATION_TOGGLE},
-      {"glicWebActuationToggleSublabel",
-       IDS_SETTINGS_GLIC_PERMISSIONS_CHROME_WEB_ACTUATION_TOGGLE_SUBLABEL},
       {"glicActorLoginPermissionsSectionTitle",
        IDS_SETTINGS_GLIC_ACTOR_LOGIN_PERMISSIONS_SECTION_TITLE},
       {"glicActorLoginPermissionsSectionSublabel",
@@ -1037,6 +1035,13 @@ void AddGlicStrings(content::WebUIDataSource* html_source, Profile* profile) {
   add_localized_url("glicExperimentalTriggeringLearnMoreUrl",
                     features::kGlicExperimentalTriggeringLearnMoreURL.Get());
   html_source->AddString(
+      "glicWebActuationToggleSublabel",
+      l10n_util::GetStringFUTF16(
+          IDS_SETTINGS_GLIC_PERMISSIONS_CHROME_WEB_ACTUATION_TOGGLE_SUBLABEL,
+          l10n_util::GetStringUTF16(
+              IDS_SETTINGS_GLIC_PERMISSIONS_CHROME_WEB_ACTUATION_TOGGLE_SUBLABEL_LEARN_MORE_LINK_LABEL),
+          l10n_util::GetStringUTF16(IDS_SETTINGS_OPENS_IN_NEW_TAB)));
+  html_source->AddString(
       "glicWebActuationToggleConsider2",
       l10n_util::GetStringFUTF16(
           IDS_SETTINGS_GLIC_PERMISSIONS_WEB_ACTUATION_TOGGLE_CONSIDER_2,
@@ -1044,7 +1049,12 @@ void AddGlicStrings(content::WebUIDataSource* html_source, Profile* profile) {
               features::kGlicWebActuationToggleConsiderSafelyURL.Get()),
           base::UTF8ToUTF16(
               features::kGlicWebActuationToggleConsiderUnexpectedResultsURL
-                  .Get())));
+                  .Get()),
+          l10n_util::GetStringUTF16(
+              IDS_SETTINGS_GLIC_PERMISSIONS_WEB_ACTUATION_TOGGLE_CONSIDER_SAFELY_LINK_LABEL),
+          l10n_util::GetStringUTF16(
+              IDS_SETTINGS_GLIC_PERMISSIONS_WEB_ACTUATION_TOGGLE_CONSIDER_UNEXPECTED_RESULTS_LINK_LABEL),
+          l10n_util::GetStringUTF16(IDS_SETTINGS_OPENS_IN_NEW_TAB)));
   html_source->AddString(
       "glicExperimentalTriggeringConsider3",
       l10n_util::GetStringFUTF16(

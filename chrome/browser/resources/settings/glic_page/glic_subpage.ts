@@ -777,7 +777,11 @@ export class SettingsGlicSubpageElement extends SettingsGlicSubpageElementBase {
   }
 
   private computeWebActuationSubLabel_(): string {
-    return this.i18nAdvanced('glicWebActuationToggleSublabel').toString();
+    return this
+        .i18nAdvanced('glicWebActuationToggleSublabel', {
+          attrs: ['aria-label', 'aria-description', 'target'],
+        })
+        .toString();
   }
 
   private computeWebActuationLearnMoreUrl_(): string {

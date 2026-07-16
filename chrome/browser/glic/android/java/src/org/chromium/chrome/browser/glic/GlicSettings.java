@@ -318,7 +318,8 @@ public class GlicSettings extends ChromeBaseSettingsFragment {
         autoBrowsePref.setSummary(
                 SpanApplier.applySpans(
                         autoBrowseSummary,
-                        getLearnMoreSpanInfo(AUTO_BROWSE_LEARN_MORE_URL, autoBrowsePref)));
+                        getAutoBrowseLearnMoreSpanInfo(
+                                AUTO_BROWSE_LEARN_MORE_URL, autoBrowsePref)));
         autoBrowsePref.setOnBindExpandedAreaListener(this::setupAutoBrowseExpandedArea);
 
         Preference actorLoginPref = findPreference(PERMISSION_ACTOR_LOGIN);
@@ -388,14 +389,14 @@ public class GlicSettings extends ChromeBaseSettingsFragment {
                         tabAccessPref,
                         R.string
                                 .settings_glic_permissions_default_tab_access_toggle_sublabel_data_protected,
-                        LEARN_MORE_AI_URL);
+                        getLearnMoreSpanInfo(LEARN_MORE_AI_URL, tabAccessPref));
             }
 
             if (autoBrowsePref != null) {
                 setupDisabledPreference(
                         autoBrowsePref,
                         R.string.settings_glic_permissions_chrome_web_actuation_toggle_sublabel,
-                        AUTO_BROWSE_LEARN_MORE_URL);
+                        getAutoBrowseLearnMoreSpanInfo(AUTO_BROWSE_LEARN_MORE_URL, autoBrowsePref));
             }
         }
     }
@@ -550,15 +551,16 @@ public class GlicSettings extends ChromeBaseSettingsFragment {
     }
 
     private void setupDisabledPreference(
-            ChromeExpandableSwitchPreference pref, int summaryResId, String url) {
+            ChromeExpandableSwitchPreference pref,
+            int summaryResId,
+            SpanApplier.SpanInfo spanInfo) {
         pref.setChecked(false);
         pref.setEnabled(false);
         pref.setSelectable(false);
         pref.setExpanded(true);
 
         String summary = getString(summaryResId);
-        SpannableString spannable =
-                SpanApplier.applySpans(summary, getLearnMoreSpanInfo(url, pref));
+        SpannableString spannable = SpanApplier.applySpans(summary, spanInfo);
         spannable.setSpan(
                 new ForegroundColorSpan(pref.getDisabledColor()),
                 0,
@@ -579,10 +581,16 @@ public class GlicSettings extends ChromeBaseSettingsFragment {
             consider2.setText(
                     SpanApplier.applySpans(
                             text,
-                            createLinkSpanInfo(
-                                    "$1", AUTO_BROWSE_CONSIDER_SAFELY_URL, autoBrowsePref),
-                            createLinkSpanInfo(
+                            createAutoBrowseConsiderLinkSpanInfo(
+                                    "$1",
+                                    "$3",
+                                    "$5",
+                                    AUTO_BROWSE_CONSIDER_SAFELY_URL,
+                                    autoBrowsePref),
+                            createAutoBrowseConsiderLinkSpanInfo(
                                     "$2",
+                                    "$4",
+                                    "$5",
                                     AUTO_BROWSE_CONSIDER_UNEXPECTED_RESULTS_URL,
                                     autoBrowsePref)));
             consider2.setMovementMethod(LinkMovementMethod.getInstance());
@@ -617,14 +625,35 @@ public class GlicSettings extends ChromeBaseSettingsFragment {
                         }));
     }
 
-    private SpanApplier.SpanInfo createLinkSpanInfo(
-            String placeholderIndex, String url, ChromeExpandableSwitchPreference pref) {
-        return createSpanInfo("<a href=\"" + placeholderIndex + "\" target=\"_blank\">", url, pref);
-    }
-
     private SpanApplier.SpanInfo getLearnMoreSpanInfo(
             String url, ChromeExpandableSwitchPreference pref) {
         return createSpanInfo("<a href=\"#\">", url, pref);
+    }
+
+    private SpanApplier.SpanInfo getAutoBrowseLearnMoreSpanInfo(
+            String url, ChromeExpandableSwitchPreference pref) {
+        return createSpanInfo(
+                "<a href=\"#\" target=\"_blank\" aria-label=\"$1\" aria-description=\"$2\">",
+                url,
+                pref);
+    }
+
+    private SpanApplier.SpanInfo createAutoBrowseConsiderLinkSpanInfo(
+            String placeholderIndex,
+            String ariaLabelIndex,
+            String ariaDescriptionIndex,
+            String url,
+            ChromeExpandableSwitchPreference pref) {
+        return createSpanInfo(
+                "<a href=\""
+                        + placeholderIndex
+                        + "\" target=\"_blank\" aria-label=\""
+                        + ariaLabelIndex
+                        + "\" aria-description=\""
+                        + ariaDescriptionIndex
+                        + "\">",
+                url,
+                pref);
     }
 
     private void updateHotkeyVisibility(boolean enabled) {
