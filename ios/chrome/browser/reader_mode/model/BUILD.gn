@@ -187,7 +187,6 @@ source_set("test_support") {
     "//ios/chrome/browser/sync/model:test_support",
     "//ios/chrome/test:test_support",
     "//ios/components/security_interstitials/safe_browsing:test_support",
-    "//ios/web/js_messaging:java_script_feature_manager_header",
     "//ios/web/public/js_messaging",
     "//ios/web/public/test",
   ]
