@@ -477,6 +477,14 @@ void ContextualSearchSessionHandle::CreateSearchUrl(
                                       std::move(callback));
 }
 
+void ContextualSearchSessionHandle::set_smart_tab_sharing_active(
+    std::optional<bool> active) {
+  if (smart_tab_sharing_active_.value_or(true) && active == false) {
+    smart_tab_sharing_toggled_off_in_thread_ = true;
+  }
+  smart_tab_sharing_active_ = active;
+}
+
 lens::ClientToAimMessage
 ContextualSearchSessionHandle::CreateClientToAimRequest(
     std::unique_ptr<contextual_search::ContextualSearchContextController::
@@ -488,6 +496,51 @@ ContextualSearchSessionHandle::CreateClientToAimRequest(
   }
 
   auto* tab_validator = GetTabValidator();
+
+  if (smart_tab_sharing_toggled_off_in_thread_) {
+    std::vector<lens::LensOverlayRequestId> expired_contexts;
+
+    // Collect request IDs from submitted tabs.
+    for (const auto& [session_id, token_and_req] : submitted_tabs_) {
+      expired_contexts.push_back(token_and_req.second);
+    }
+
+    // Collect request IDs from uploaded context tokens.
+    for (const auto& token : uploaded_context_tokens_) {
+      const auto* file_info = context_controller->GetFileInfo(token);
+      if (file_info && file_info->request_id.has_value()) {
+        expired_contexts.push_back(file_info->request_id.value());
+      }
+    }
+
+    // Collect request IDs from submitted context tokens.
+    for (const auto& token : submitted_context_tokens_) {
+      const auto* file_info = context_controller->GetFileInfo(token);
+      if (file_info && file_info->request_id.has_value()) {
+        expired_contexts.push_back(file_info->request_id.value());
+      }
+    }
+
+    for (const auto& req_id : expired_contexts) {
+      bool already_present = false;
+      std::string req_id_str = req_id.SerializeAsString();
+      for (const auto& existing :
+           create_client_to_aim_request_info->removed_contexts) {
+        if (existing.SerializeAsString() == req_id_str) {
+          already_present = true;
+          break;
+        }
+      }
+      if (!already_present) {
+        create_client_to_aim_request_info->removed_contexts.push_back(req_id);
+      }
+    }
+
+    submitted_tabs_.clear();
+    uploaded_context_tokens_.clear();
+    submitted_context_tokens_.clear();
+    smart_tab_sharing_toggled_off_in_thread_ = false;
+  }
 
   // Check for closed/navigated/removed tabs.
   std::vector<SessionID> deleted_tabs;
