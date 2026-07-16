@@ -47,7 +47,7 @@ struct UrlFilterSuggestion {
     std::u16string source_host;
     base::Time extraction_timestamp;
     std::vector<FilterAttributeUiLabel> attribute_ui_labels;
-    int64_t triggering_navigation_id;
+    int64_t triggering_navigation_id = 0;
     std::string triggering_host;
     std::string task_type;
     std::u16string suggestion_message;
@@ -79,7 +79,7 @@ struct UrlFilterSuggestion {
   // order follows that of the filter suggestion candidate's attributes.
   std::vector<FilterAttributeUiLabel> attribute_ui_labels;
   // The ID of the navigation that triggered this suggestion.
-  int64_t triggering_navigation_id;
+  int64_t triggering_navigation_id = 0;
   // The host of the original triggering navigation. Used only for
   // logging.
   std::string triggering_host;
