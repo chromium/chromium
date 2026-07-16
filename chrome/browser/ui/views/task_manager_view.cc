@@ -377,10 +377,7 @@ TaskManagerView::TaskManagerView(StartAction start_action)
   task_manager::RecordNewOpenEvent(start_action);
   set_use_custom_frame(false);
   SetHasWindowSizeControls(true);
-#if !BUILDFLAG(IS_CHROMEOS)
-  // On Chrome OS, the widget's frame should not show the window title.
   SetTitle(IDS_TASK_MANAGER_TITLE);
-#endif
 
   Init();
 }
