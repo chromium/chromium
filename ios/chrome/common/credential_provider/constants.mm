@@ -78,12 +78,6 @@ NSString* const kUserDefaultsCredentialProviderPasskeyLargeBlobSetting =
     @"kUserDefaultsCredentialProviderPasskeyLargeBlobSetting";
 
 
-// Used to generate the key for the app group user defaults containing whether
-// the button order in the confirmation alerts should be swapped.
-NSString* const
-    kUserDefaultsCredentialProviderConfirmationButtonSwapOrderSetting =
-        @"ConfirmationButtonSwapOrderKey";
-
 // Used to generate a unique AppGroupPrefix to differentiate between different
 // versions of Chrome running in the same device.
 NSString* AppGroupPrefix() {
@@ -185,12 +179,4 @@ NSString* AppGroupUserDefaulsCredentialProviderPasskeyLargeBlobEnabled() {
   return [AppGroupPrefix()
       stringByAppendingString:
           kUserDefaultsCredentialProviderPasskeyLargeBlobSetting];
-}
-
-
-NSString*
-AppGroupUserDefaulsCredentialProviderConfirmationButtonSwapOrderEnabled() {
-  return [AppGroupPrefix()
-      stringByAppendingString:
-          kUserDefaultsCredentialProviderConfirmationButtonSwapOrderSetting];
 }

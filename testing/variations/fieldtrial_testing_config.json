@@ -13917,21 +13917,6 @@
             ]
         }
     ],
-    "IOSConfirmationButtonSwapOrder": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "ConfirmationButtonSwapOrder"
-                    ]
-                }
-            ]
-        }
-    ],
     "IOSCustomFileUploadMenu": [
         {
             "platforms": [

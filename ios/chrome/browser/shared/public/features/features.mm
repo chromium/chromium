@@ -468,12 +468,6 @@ bool FRESignInSecondaryActionLabelUpdate() {
   return base::FeatureList::IsEnabled(kFRESignInSecondaryActionLabelUpdate);
 }
 
-BASE_FEATURE(kConfirmationButtonSwapOrder, base::FEATURE_DISABLED_BY_DEFAULT);
-
-bool IsConfirmationButtonSwapOrderEnabled() {
-  return base::FeatureList::IsEnabled(kConfirmationButtonSwapOrder);
-}
-
 BASE_FEATURE(kIOSPushNotificationMultiProfile,
              base::FEATURE_ENABLED_BY_DEFAULT);
 

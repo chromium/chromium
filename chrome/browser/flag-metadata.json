@@ -1954,14 +1954,6 @@
     "expiry_milestone": 155
   },
   {
-  "name": "confirmation-button-swap-order",
-  "owners": [
-    "pabouchard@google.com",
-    "bling-mony-pod@google.com"
-  ],
-  "expiry_milestone": 155
-  },
-  {
     "name": "connection-allowlists",
     "owners": [ "mkwst@chromium.org" ],
     "expiry_milestone": 154

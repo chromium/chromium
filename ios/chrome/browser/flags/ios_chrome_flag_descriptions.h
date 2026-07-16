@@ -462,12 +462,6 @@ inline constexpr char kComposeboxServerSideStateName[] =
 inline constexpr char kComposeboxServerSideStateDescription[] =
     "When enabled, the server side state will be used in the composebox";
 
-inline constexpr char kConfirmationButtonSwapOrderName[] =
-    "Swap Button Order in confirmation alerts";
-inline constexpr char kConfirmationButtonSwapOrderDescription[] =
-    "Swaps the positions of the primary and secondary buttons in the "
-    "confirmation alerts, so that the primary button is placed at the bottom.";
-
 inline constexpr char kConsistentLogoDoodleHeightName[] =
     "Consistent NTP Logo and Doodle Height";
 inline constexpr char kConsistentLogoDoodleHeightDescription[] =

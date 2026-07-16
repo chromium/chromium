@@ -4,7 +4,6 @@
 
 #import "ios/chrome/common/ui/button_stack/button_stack_view_controller.h"
 
-#import "ios/chrome/common/app_group/app_group_utils.h"
 #import "ios/chrome/common/ui/button_stack/button_stack_action_delegate.h"
 #import "ios/chrome/common/ui/button_stack/button_stack_configuration.h"
 #import "ios/chrome/common/ui/button_stack/button_stack_constants.h"
@@ -379,17 +378,9 @@ typedef NS_ENUM(NSInteger, ButtonStackButtonPosition) {
                                  action:@selector(handleSecondaryAction)
                        forControlEvents:UIControlEventTouchUpInside];
 
-  // The order of the primary and secondary buttons can be swapped based on this
-  // feature flag.
-  if (app_group::IsConfirmationButtonSwapOrderEnabled()) {
-    [_actionStackView addArrangedSubview:self.tertiaryActionButton];
-    [_actionStackView addArrangedSubview:self.secondaryActionButton];
-    [_actionStackView addArrangedSubview:self.primaryActionButton];
-  } else {
-    [_actionStackView addArrangedSubview:self.tertiaryActionButton];
-    [_actionStackView addArrangedSubview:self.primaryActionButton];
-    [_actionStackView addArrangedSubview:self.secondaryActionButton];
-  }
+  [_actionStackView addArrangedSubview:self.tertiaryActionButton];
+  [_actionStackView addArrangedSubview:self.primaryActionButton];
+  [_actionStackView addArrangedSubview:self.secondaryActionButton];
 
   [self.view addSubview:_actionStackView];
 }
@@ -410,12 +401,8 @@ typedef NS_ENUM(NSInteger, ButtonStackButtonPosition) {
 
   BOOL useLegacyBottomMargin = NO;
   if (@available(iOS 26, *)) {
-  } else {
-    if (!app_group::IsConfirmationButtonSwapOrderEnabled()) {
-      if (!_secondaryActionButton.hidden) {
-        useLegacyBottomMargin = YES;
-      }
-    }
+  } else if (!_secondaryActionButton.hidden) {
+    useLegacyBottomMargin = YES;
   }
   self.actionStackBottomMargin = useLegacyBottomMargin
                                      ? kLegacyButtonStackBottomMargin
