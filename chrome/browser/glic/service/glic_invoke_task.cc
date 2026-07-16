@@ -162,7 +162,10 @@ ShowInstanceTask::ShowInstanceTask(GlicInstanceImpl& instance,
 ShowInstanceTask::~ShowInstanceTask() = default;
 
 void ShowInstanceTask::Start(base::OnceClosure done_callback) {
-  instance_->Show(options_);
+  if (options_) {
+    instance_->Show(*options_);
+    options_.reset();
+  }
   std::move(done_callback).Run();
 }
 
@@ -350,12 +353,10 @@ void SendToClientTask::OnAck() {
 WaitForActuationTask::WaitForActuationTask(
     GlicInstanceImpl* instance,
     base::TimeDelta start_timeout,
-    base::OnceCallback<void(GlicInvokeError)> error_callback,
-    base::OnceClosure on_actuation_started)
+    base::OnceCallback<void(GlicInvokeError)> error_callback)
     : instance_(instance),
       start_timeout_(start_timeout),
-      error_callback_(std::move(error_callback)),
-      on_actuation_started_(std::move(on_actuation_started)) {
+      error_callback_(std::move(error_callback)) {
   GlicActorTaskManager* task_manager = instance_->GetActorTaskManager();
   if (task_manager) {
     if (task_manager->IsActuating()) {
@@ -393,9 +394,6 @@ void WaitForActuationTask::Update() {
     return;
   }
 
-  if (did_start_ && on_actuation_started_) {
-    std::move(on_actuation_started_).Run();
-  }
 
   if (did_finish_ && done_callback_) {
     timer_.Stop();

@@ -303,25 +303,37 @@ void GlicInvokeHandler::Invoke() {
       &*instance_, CreateMojoOptions(), auto_submit_passkey_));
 
   if (IsActuatingFeatureMode()) {
-    auto on_actuation_started = base::BindOnce(
-        [](base::WeakPtr<GlicInvokeHandler> handler) {
-          if (handler) {
-            handler->timeout_timer_.Stop();
-          }
-        },
-        weak_ptr_factory_.GetWeakPtr());
+    if (auto* task_manager = instance_->GetActorTaskManager()) {
+      if (task_manager->IsActuating()) {
+        OnActuatingChanged(true);
+      } else {
+        actuating_subscription_ = task_manager->AddActuatingChangedCallback(
+            base::BindRepeating(&GlicInvokeHandler::OnActuatingChanged,
+                                weak_ptr_factory_.GetWeakPtr()));
+      }
+    }
 
     tasks.push_back(std::make_unique<WaitForActuationTask>(
         &*instance_, options_.timeout.value_or(kDefaultTimeout),
         base::BindOnce(&GlicInvokeHandler::OnError,
-                       weak_ptr_factory_.GetWeakPtr()),
-        std::move(on_actuation_started)));
+                       weak_ptr_factory_.GetWeakPtr())));
   }
 
   main_task_ = std::make_unique<SequentialTaskGroup>(std::move(tasks));
 
   main_task_->Start(base::BindOnce(&GlicInvokeHandler::OnSuccess,
                                    weak_ptr_factory_.GetWeakPtr()));
+}
+
+void GlicInvokeHandler::OnActuatingChanged(bool actuating) {
+  if (actuating) {
+    actuating_subscription_ = {};
+    tab_destruction_subscription_ = {};
+    if (auto* tab_surface = std::get_if<TabSurface>(&resolved_target_)) {
+      tab_surface->tab = nullptr;
+    }
+    timeout_timer_.Stop();
+  }
 }
 
 void GlicInvokeHandler::Cancel(GlicInvokeError error) {

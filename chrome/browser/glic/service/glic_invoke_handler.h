@@ -85,6 +85,7 @@ class GlicInvokeHandler {
                        tabs::TabInterface::DetachReason reason);
   void OnInstanceWillBeDestroyed(GlicInstance* instance);
   void OnConversationInfoChanged(const mojom::ConversationInfo& info);
+  void OnActuatingChanged(bool actuating);
   const base::raw_ref<GlicInstanceImpl> instance_;
   ResolvedTarget resolved_target_;
   GlicInvokeOptions options_;
@@ -97,6 +98,7 @@ class GlicInvokeHandler {
   base::CallbackListSubscription instance_destruction_subscription_;
   base::CallbackListSubscription tab_destruction_subscription_;
   base::CallbackListSubscription conversation_subscription_;
+  base::CallbackListSubscription actuating_subscription_;
   base::OneShotTimer timeout_timer_;
 
   std::unique_ptr<SequentialTaskGroup> main_task_;

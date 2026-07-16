@@ -108,7 +108,7 @@ class ShowInstanceTask : public GlicInvokeTask {
   // Safe because GlicInvokeHandler (which owns this task) is owned by
   // GlicInstanceCoordinatorImpl and its lifetime is tied to the instance.
   const base::raw_ref<GlicInstanceImpl> instance_;
-  ShowOptions options_;
+  std::optional<ShowOptions> options_;
 };
 
 // Task that sets up the instance for a hidden panel.
@@ -224,10 +224,10 @@ class SendToClientTask : public GlicInvokeTask {
 // Task that waits for actuation (both start and complete).
 class WaitForActuationTask : public GlicInvokeTask {
  public:
-  WaitForActuationTask(GlicInstanceImpl* instance,
-                       base::TimeDelta start_timeout,
-                       base::OnceCallback<void(GlicInvokeError)> error_callback,
-                       base::OnceClosure on_actuation_started);
+  WaitForActuationTask(
+      GlicInstanceImpl* instance,
+      base::TimeDelta start_timeout,
+      base::OnceCallback<void(GlicInvokeError)> error_callback);
   ~WaitForActuationTask() override;
   void Start(base::OnceClosure done_callback) override;
 
@@ -240,7 +240,6 @@ class WaitForActuationTask : public GlicInvokeTask {
   base::TimeDelta start_timeout_;
   base::OnceCallback<void(GlicInvokeError)> error_callback_;
   base::OnceClosure done_callback_;
-  base::OnceClosure on_actuation_started_;
 
   base::OneShotTimer timer_;
 
