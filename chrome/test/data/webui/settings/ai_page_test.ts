@@ -31,6 +31,7 @@ suite('AiPage', function() {
     loadTimeData.overrideValues({
       showAiPage: true,
       showAiPageAiFeatureSection: true,
+      showGoogleSearchAiModeWorkspaceControl: true,
     });
     settingsPrefs = document.createElement('settings-prefs');
     return CrSettingsPrefs.initialized;
@@ -83,6 +84,7 @@ suite('AiPage', function() {
       showAiSuggestionsControl: false,
       showSkillsSettingPage: true,
       showIndigoControl: false,
+      showGoogleSearchAiModeWorkspaceControl: true,
     });
     resetRouterForTesting();
     await createPage();
@@ -106,6 +108,7 @@ suite('AiPage', function() {
         'Settings.AiPage.ElementVisibility.AiSuggestions', false);
 
     assertTrue(isChildVisible(page, '#skillsRow'));
+    assertTrue(isChildVisible(page, '#googleSearchAiModeWorkspaceRow'));
 
     assertFalse(isChildVisible(page, '#indigoRow'));
     await verifyFeatureVisibilityMetrics(
@@ -125,6 +128,7 @@ suite('AiPage', function() {
       showAiSuggestionsControl: true,
       showSkillsSettingPage: false,
       showIndigoControl: true,
+      showGoogleSearchAiModeWorkspaceControl: false,
     });
     resetRouterForTesting();
     await createPage();
@@ -147,6 +151,7 @@ suite('AiPage', function() {
         'Settings.AiPage.ElementVisibility.AiSuggestions', true);
 
     assertFalse(isChildVisible(page, '#skillsRow'));
+    assertFalse(isChildVisible(page, '#googleSearchAiModeWorkspaceRow'));
 
     assertTrue(isChildVisible(page, '#indigoRow'));
     await verifyFeatureVisibilityMetrics(
@@ -325,5 +330,34 @@ suite('AiPage', function() {
     const currentRoute = Router.getInstance().getCurrentRoute();
     assertEquals(routes.SKILLS, currentRoute);
     assertEquals(routes.AI, currentRoute.parent);
+  });
+
+  test('GoogleSearchAiModeRow', async () => {
+    loadTimeData.overrideValues({
+      showGoogleSearchAiModeWorkspaceControl: true,
+    });
+    await createPage();
+
+    const row = page.shadowRoot!.querySelector<HTMLElement>(
+        '#googleSearchAiModeWorkspaceRow');
+    assertTrue(!!row);
+    assertTrue(isVisible(row));
+
+    row.click();
+
+    const url = await openWindowProxy.whenCalled('openUrl');
+    assertEquals(loadTimeData.getString('googleSearchAiModeWorkspaceUrl'), url);
+  });
+
+  test('NoGoogleSearchAiModeRowWhenFeatureDisabled', async () => {
+    loadTimeData.overrideValues({
+      showGoogleSearchAiModeWorkspaceControl: false,
+    });
+    await createPage();
+
+    const row = page.shadowRoot!.querySelector<HTMLElement>(
+        '#googleSearchAiModeWorkspaceRow');
+    assertTrue(!!row);
+    assertFalse(isVisible(row));
   });
 });
