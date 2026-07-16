@@ -6467,6 +6467,7 @@ test("unit_tests") {
       "//chrome/browser/wallet/android:unit_tests",
       "//chrome/browser/webauthn:webauthn_request_delegate_android",
       "//chrome/services/media_gallery_util:unit_tests",
+      "//chrome/services/readaloud:unit_tests",
       "//components/back_forward_cache",
       "//components/bookmarks/common/android",
       "//components/browser_ui/device_lock/android",

@@ -4,6 +4,8 @@
 
 source_set("readaloud") {
   sources = [
+    "decoded_audio_segment.cc",
+    "decoded_audio_segment.h",
     "read_aloud_playback_controller.cc",
     "read_aloud_playback_controller.h",
   ]
@@ -11,7 +13,25 @@ source_set("readaloud") {
   deps = [
     "//base",
     "//chrome/common:mojo_bindings",
+    "//media",
     "//media/mojo/mojom",
     "//mojo/public/cpp/bindings",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "decoded_audio_segment_unittest.cc",
+  ]
+
+  deps = [
+    ":readaloud",
+    "//base",
+    "//base/test:test_support",
+    "//media",
+    "//testing/gmock",
+    "//testing/gtest",
   ]
 }
