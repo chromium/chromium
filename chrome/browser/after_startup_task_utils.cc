@@ -13,11 +13,13 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/process/process.h"
 #include "base/synchronization/atomic_flag.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
@@ -36,6 +38,8 @@
 using content::BrowserThread;
 
 namespace {
+
+static constexpr base::TimeDelta kFailsafeTimeout = base::Minutes(3);
 
 struct AfterStartupTask {
   AfterStartupTask(const base::Location& from_here,
@@ -105,7 +109,7 @@ void QueueTask(std::unique_ptr<AfterStartupTask> queued_task) {
   GetAfterStartupTasks().push_back(queued_task.release());
 }
 
-void SetBrowserStartupIsComplete() {
+void SetBrowserStartupIsComplete(StartupIsCompleteReason reason) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   if (IsBrowserStartupComplete())
@@ -118,6 +122,7 @@ void SetBrowserStartupIsComplete() {
   TRACE_EVENT_INSTANT1("startup", "Startup.StartupComplete",
                        TRACE_EVENT_SCOPE_GLOBAL, "BrowserCount", browser_count);
   GetStartupCompleteFlag().Set();
+  base::UmaHistogramEnumeration("Startup.BrowserStartupCompleteReason", reason);
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)
   // Process::Current().CreationTime() is not available on all platforms.
@@ -151,7 +156,7 @@ bool g_is_monitoring_started = false;
 // registered.
 int g_ref_count = 1;
 
-void MaybeSignalStartupComplete() {
+void MaybeSignalStartupComplete(StartupIsCompleteReason reason) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (g_ref_count > 0) {
     return;
@@ -160,14 +165,14 @@ void MaybeSignalStartupComplete() {
   // task is a convenient way to ensure this: if the UI thread is no longer
   // accepting tasks, this won't run.
   content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(&SetBrowserStartupIsComplete));
+      FROM_HERE, base::BindOnce(&SetBrowserStartupIsComplete, reason));
 }
 
-void ReleaseRef() {
+void ReleaseRef(StartupIsCompleteReason reason) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   CHECK_GT(g_ref_count, 0);
   g_ref_count--;
-  MaybeSignalStartupComplete();
+  MaybeSignalStartupComplete(reason);
 }
 
 // Observes the first visible page load and releases the page load reference.
@@ -196,7 +201,8 @@ class StartupObserver : public performance_manager::GraphOwned,
   using LoadingState = performance_manager::PageNode::LoadingState;
 
   StartupObserver() {
-    startup_ref_ = AfterStartupTaskUtils::RegisterStartupInProgressRef();
+    startup_ref_ = AfterStartupTaskUtils::RegisterStartupInProgressRef(
+        StartupIsCompleteReason::kVisiblePageLoadingFinished);
   }
 
   void OnFirstVisiblePageLoadComplete() {
@@ -219,15 +225,22 @@ class StartupObserver : public performance_manager::GraphOwned,
                              LoadingState previous_state) override {
     // Only interested in visible tabs when feature is enabled, or any visible
     // page node when disabled.
-    if (page_node->IsVisible() &&
-        (page_node->GetType() == performance_manager::PageType::kTab ||
-         !base::FeatureList::IsEnabled(
-             features::kImprovedStartupBestEffortDelay))) {
-      LoadingState state = page_node->GetLoadingState();
-      if (state == LoadingState::kLoadedIdle ||
-          state == LoadingState::kLoadingTimedOut) {
-        OnFirstVisiblePageLoadComplete();
-      }
+    if (!page_node->IsVisible()) {
+      return;
+    }
+    if (page_node->GetType() != performance_manager::PageType::kTab &&
+        base::FeatureList::IsEnabled(
+            features::kImprovedStartupBestEffortDelay)) {
+      return;
+    }
+
+    LoadingState state = page_node->GetLoadingState();
+    if (state == LoadingState::kLoadedIdle) {
+      OnFirstVisiblePageLoadComplete();
+    } else if (state == LoadingState::kLoadingTimedOut) {
+      startup_ref_->SetStartupIsCompleteReason(
+          StartupIsCompleteReason::kVisiblePageLoadingTimedOut);
+      OnFirstVisiblePageLoadComplete();
     }
   }
 
@@ -281,7 +294,9 @@ void AfterStartupTaskUtils::FinishStartupRegistration(
   if (ash::LoginDisplayHost::default_host() &&
       !ash::LoginDisplayHost::default_host()->IsWebUIStarted()) {
     content::GetUIThreadTaskRunner({})->PostTask(
-        FROM_HERE, base::BindOnce(&SetBrowserStartupIsComplete));
+        FROM_HERE,
+        base::BindOnce(&SetBrowserStartupIsComplete,
+                       StartupIsCompleteReason::kChromeOSLoginScreen));
     return;
   }
 #endif
@@ -294,32 +309,36 @@ void AfterStartupTaskUtils::FinishStartupRegistration(
   // Release the implicit reference representing the startup sequence. This
   // enables considering startup complete once all other registered references
   // (e.g., paint, idle, restore) are released.
-  ReleaseRef();
+  ReleaseRef(StartupIsCompleteReason::kStartupRegistrationDone);
 #endif  // !BUILDFLAG(IS_ANDROID)
 
   // Add failsafe timeout
   content::GetUIThreadTaskRunner({})->PostDelayedTask(
-      FROM_HERE, base::BindOnce(&SetBrowserStartupIsComplete),
-      base::Minutes(3));
+      FROM_HERE,
+      base::BindOnce(&SetBrowserStartupIsComplete,
+                     StartupIsCompleteReason::kFailsafeTimeout),
+      kFailsafeTimeout);
 }
 
 #if !BUILDFLAG(IS_ANDROID)
 AfterStartupTaskUtils::StartupInProgressRef::StartupInProgressRef(
-    base::OnceClosure release_callback)
-    : release_runner_(std::move(release_callback)) {}
+    StartupIsCompleteReason reason)
+    : reason_(reason) {}
 
-AfterStartupTaskUtils::StartupInProgressRef::~StartupInProgressRef() = default;
+AfterStartupTaskUtils::StartupInProgressRef::~StartupInProgressRef() {
+  ReleaseRef(reason_);
+}
 
 // static
 std::unique_ptr<AfterStartupTaskUtils::StartupInProgressRef>
-AfterStartupTaskUtils::RegisterStartupInProgressRef() {
+AfterStartupTaskUtils::RegisterStartupInProgressRef(
+    StartupIsCompleteReason reason) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (IsBrowserStartupComplete()) {
     return nullptr;
   }
   g_ref_count++;
-  return std::make_unique<AfterStartupTaskUtils::StartupInProgressRef>(
-      base::BindOnce(&ReleaseRef));
+  return std::make_unique<AfterStartupTaskUtils::StartupInProgressRef>(reason);
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
@@ -337,12 +356,14 @@ void AfterStartupTaskUtils::PostTask(
   QueueTask(std::move(queued_task));
 }
 
-void AfterStartupTaskUtils::SetBrowserStartupIsCompleteForTesting() {
-  ::SetBrowserStartupIsComplete();
+void AfterStartupTaskUtils::SetBrowserStartupIsCompleteForTesting(
+    StartupIsCompleteReason reason) {
+  ::SetBrowserStartupIsComplete(reason);
 }
 
-void AfterStartupTaskUtils::SetBrowserStartupIsComplete() {
-  ::SetBrowserStartupIsComplete();
+void AfterStartupTaskUtils::SetBrowserStartupIsComplete(
+    StartupIsCompleteReason reason) {
+  ::SetBrowserStartupIsComplete(reason);
 }
 
 bool AfterStartupTaskUtils::IsBrowserStartupComplete() {
@@ -360,4 +381,9 @@ void AfterStartupTaskUtils::UnsafeResetForTesting() {
 #endif
   g_is_monitoring_started = false;
   DCHECK(!IsBrowserStartupComplete());
+}
+
+// static
+base::TimeDelta AfterStartupTaskUtils::GetFailsafeTimeout() {
+  return kFailsafeTimeout;
 }

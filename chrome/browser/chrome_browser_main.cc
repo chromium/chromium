@@ -1685,7 +1685,8 @@ void ChromeBrowserMainParts::PostBrowserStart() {
 
 #if !BUILDFLAG(IS_ANDROID)
   if (base::FeatureList::IsEnabled(features::kImprovedStartupBestEffortDelay)) {
-    first_idle_ref_ = AfterStartupTaskUtils::RegisterStartupInProgressRef();
+    first_idle_ref_ = AfterStartupTaskUtils::RegisterStartupInProgressRef(
+        StartupIsCompleteReason::kFirstIdle);
   }
 #endif
   AfterStartupTaskUtils::BeginMonitoringStartupCompletion();

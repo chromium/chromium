@@ -828,6 +828,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Startup.BrowserStartupCompleteReason"
+    enum="StartupIsCompleteReason" expires_after="2026-11-16">
+  <owner>joenotcharles@google.com</owner>
+  <owner>gab@chromium.org</owner>
+  <summary>
+    Recorded when SetBrowserStartupIsComplete() is called, indicating the reason
+    browser startup has been marked complete.
+  </summary>
+</histogram>
+
 <histogram name="Startup.BrowserWindow.FirstPaint{StartupTemperature}"
     units="ms" expires_after="2026-11-29">
   <owner>gab@chromium.org</owner>

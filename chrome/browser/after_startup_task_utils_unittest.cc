@@ -14,7 +14,10 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -137,7 +140,8 @@ class AfterStartupTaskTest : public testing::Test {
  protected:
   scoped_refptr<WrappedTaskRunner> ui_thread_;
   scoped_refptr<WrappedTaskRunner> background_sequence_;
-  content::BrowserTaskEnvironment task_environment_;
+  content::BrowserTaskEnvironment task_environment_{
+      content::BrowserTaskEnvironment::TimeSource::MOCK_TIME};
 
  private:
   static void GotIsOnBrowserStartupComplete(base::RunLoop* loop,
@@ -218,17 +222,24 @@ TEST_F(AfterStartupTaskTest, PostTask) {
 #if !BUILDFLAG(IS_ANDROID)
 
 TEST_F(AfterStartupTaskTest, StartupInProgressRef_NoRefs) {
+  base::HistogramTester histogram_tester;
   EXPECT_FALSE(AfterStartupTaskUtils::IsBrowserStartupComplete());
   AfterStartupTaskUtils::BeginMonitoringStartupCompletionForTesting(
       /*include_default_refs=*/false);
   FlushUIThread();
   EXPECT_TRUE(AfterStartupTaskUtils::IsBrowserStartupComplete());
+  histogram_tester.ExpectUniqueSample(
+      "Startup.BrowserStartupCompleteReason",
+      StartupIsCompleteReason::kStartupRegistrationDone, 1);
 }
 
 TEST_F(AfterStartupTaskTest, StartupInProgressRef_MultipleRefs) {
+  base::HistogramTester histogram_tester;
   EXPECT_FALSE(AfterStartupTaskUtils::IsBrowserStartupComplete());
-  auto ref1 = AfterStartupTaskUtils::RegisterStartupInProgressRef();
-  auto ref2 = AfterStartupTaskUtils::RegisterStartupInProgressRef();
+  auto ref1 = AfterStartupTaskUtils::RegisterStartupInProgressRef(
+      StartupIsCompleteReason::kFirstIdle);
+  auto ref2 = AfterStartupTaskUtils::RegisterStartupInProgressRef(
+      StartupIsCompleteReason::kSessionRestore);
   AfterStartupTaskUtils::BeginMonitoringStartupCompletionForTesting(
       /*include_default_refs=*/false);
   FlushUIThread();
@@ -239,11 +250,33 @@ TEST_F(AfterStartupTaskTest, StartupInProgressRef_MultipleRefs) {
   ref1.reset();
   FlushUIThread();
   EXPECT_TRUE(AfterStartupTaskUtils::IsBrowserStartupComplete());
+  histogram_tester.ExpectUniqueSample("Startup.BrowserStartupCompleteReason",
+                                      StartupIsCompleteReason::kFirstIdle, 1);
+}
+
+TEST_F(AfterStartupTaskTest, StartupInProgressRef_FailsafeTimeout) {
+  base::HistogramTester histogram_tester;
+  EXPECT_FALSE(AfterStartupTaskUtils::IsBrowserStartupComplete());
+  auto ref = AfterStartupTaskUtils::RegisterStartupInProgressRef(
+      StartupIsCompleteReason::kFirstIdle);
+
+  AfterStartupTaskUtils::BeginMonitoringStartupCompletionForTesting(
+      /*include_default_refs=*/false);
+  FlushUIThread();
+  EXPECT_FALSE(AfterStartupTaskUtils::IsBrowserStartupComplete());
+  task_environment_.FastForwardBy(AfterStartupTaskUtils::GetFailsafeTimeout());
+  FlushUIThread();
+  EXPECT_TRUE(AfterStartupTaskUtils::IsBrowserStartupComplete());
+  histogram_tester.ExpectUniqueSample("Startup.BrowserStartupCompleteReason",
+                                      StartupIsCompleteReason::kFailsafeTimeout,
+                                      1);
 }
 
 TEST_F(AfterStartupTaskTest, StartupInProgressRef_ShutdownWithRef) {
+  base::HistogramTester histogram_tester;
   EXPECT_FALSE(AfterStartupTaskUtils::IsBrowserStartupComplete());
-  auto ref = AfterStartupTaskUtils::RegisterStartupInProgressRef();
+  auto ref = AfterStartupTaskUtils::RegisterStartupInProgressRef(
+      StartupIsCompleteReason::kFirstIdle);
   AfterStartupTaskUtils::BeginMonitoringStartupCompletionForTesting(
       /*include_default_refs=*/false);
   FlushUIThread();
@@ -257,8 +290,12 @@ TEST_F(AfterStartupTaskTest, StartupInProgressRef_ShutdownWithRef) {
 
   ref.reset();
 
-  // FlushUIThread() will time out because tasks aren't being pumped.
+  // FlushUIThread() will time out because tasks aren't being pumped. Instead
+  // advance long enough that the timeout would fire. Anything that calls
+  // SetBrowserStartupIsComplete() would execute before this.
+  task_environment_.FastForwardBy(AfterStartupTaskUtils::GetFailsafeTimeout());
   EXPECT_FALSE(AfterStartupTaskUtils::IsBrowserStartupComplete());
+  histogram_tester.ExpectTotalCount("Startup.BrowserStartupCompleteReason", 0);
 }
 
 #endif  // !BUILDFLAG(IS_ANDROID)

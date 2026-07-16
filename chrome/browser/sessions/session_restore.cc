@@ -1653,7 +1653,8 @@ void SessionRestore::NotifySessionRestoreStartedLoadingTabs() {
   if (base::FeatureList::IsEnabled(features::kImprovedStartupBestEffortDelay) &&
       features::kSessionRestoreDelaysBestEffort.Get()) {
     GetSessionRestoreStartupRef() =
-        AfterStartupTaskUtils::RegisterStartupInProgressRef();
+        AfterStartupTaskUtils::RegisterStartupInProgressRef(
+            StartupIsCompleteReason::kSessionRestore);
   }
 
   session_restore_started_ = true;

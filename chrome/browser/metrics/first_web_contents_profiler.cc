@@ -76,7 +76,8 @@ FirstWebContentsProfiler::FirstWebContentsProfiler(
     : FirstWebContentsProfilerBase(web_contents) {
   if (base::FeatureList::IsEnabled(features::kImprovedStartupBestEffortDelay)) {
     startup_in_progress_ref_ =
-        AfterStartupTaskUtils::RegisterStartupInProgressRef();
+        AfterStartupTaskUtils::RegisterStartupInProgressRef(
+            StartupIsCompleteReason::kFirstWebContentsProfiler);
   }
 }
 

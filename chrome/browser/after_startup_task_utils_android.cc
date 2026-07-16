@@ -14,11 +14,12 @@ namespace android {
 class AfterStartupTaskUtilsJNI {
  public:
   static void SetBrowserStartupIsComplete() {
-    AfterStartupTaskUtils::SetBrowserStartupIsComplete();
+    AfterStartupTaskUtils::SetBrowserStartupIsComplete(
+        StartupIsCompleteReason::kAndroidStartup);
   }
 };
 
-}  // android
+}  // namespace android
 
 static void JNI_AfterStartupTaskUtils_SetStartupComplete(JNIEnv* env) {
   android::AfterStartupTaskUtilsJNI::SetBrowserStartupIsComplete();

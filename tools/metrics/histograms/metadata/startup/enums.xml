@@ -139,6 +139,22 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Other"/>
 </enum>
 
+<!-- LINT.IfChange(StartupIsCompleteReason) -->
+
+<enum name="StartupIsCompleteReason">
+  <int value="0" label="FailsafeTimeout"/>
+  <int value="1" label="StartupRegistrationDone"/>
+  <int value="2" label="FirstWebContentsProfiler"/>
+  <int value="3" label="SessionRestore"/>
+  <int value="4" label="FirstIdle"/>
+  <int value="5" label="ChromeOSLoginScreen"/>
+  <int value="6" label="AndroidStartup"/>
+  <int value="7" label="VisiblePageLoaded"/>
+  <int value="8" label="VisiblePageLoadingTimedOut"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/after_startup_task_utils.h:StartupIsCompleteReason) -->
+
 <!-- LINT.IfChange(StartupLaunchInfoBarInteraction) -->
 
 <enum name="StartupLaunchInfoBarInteraction">

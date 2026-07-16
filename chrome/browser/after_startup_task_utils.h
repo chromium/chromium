@@ -7,10 +7,11 @@
 
 #include <memory>
 
-#include "base/functional/callback.h"
-#include "base/functional/callback_helpers.h"
+#include "base/functional/callback_forward.h"
 #include "base/location.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 
 namespace android {
@@ -21,6 +22,23 @@ namespace base {
 class SequencedTaskRunner;
 }
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(StartupIsCompleteReason)
+enum class StartupIsCompleteReason {
+  kFailsafeTimeout = 0,
+  kStartupRegistrationDone = 1,
+  kFirstWebContentsProfiler = 2,
+  kSessionRestore = 3,
+  kFirstIdle = 4,
+  kChromeOSLoginScreen = 5,
+  kAndroidStartup = 6,
+  kVisiblePageLoadingFinished = 7,
+  kVisiblePageLoadingTimedOut = 8,
+  kMaxValue = kVisiblePageLoadingTimedOut,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/startup/enums.xml:StartupIsCompleteReason)
+
 class AfterStartupTaskUtils {
  public:
 #if !BUILDFLAG(IS_ANDROID)
@@ -29,13 +47,21 @@ class AfterStartupTaskUtils {
   // SetBrowserStartupIsComplete() directly, enabling startup refs on Android.
   class StartupInProgressRef {
    public:
-    explicit StartupInProgressRef(base::OnceClosure release_callback);
+    explicit StartupInProgressRef(StartupIsCompleteReason reason);
     ~StartupInProgressRef();
+
     StartupInProgressRef(const StartupInProgressRef&) = delete;
     StartupInProgressRef& operator=(const StartupInProgressRef&) = delete;
 
+    // Changes the reason that will be logged when this ref is dropped. For
+    // example if a ref could be dropped when an operation completes, or on
+    // timeout, this could be set to the appropriate reason before deleting it.
+    void SetStartupIsCompleteReason(StartupIsCompleteReason reason) {
+      reason_ = reason;
+    }
+
    private:
-    base::ScopedClosureRunner release_runner_;
+    StartupIsCompleteReason reason_;
   };
 #endif  // !BUILDFLAG(IS_ANDROID)
 
@@ -46,7 +72,8 @@ class AfterStartupTaskUtils {
 #if !BUILDFLAG(IS_ANDROID)
   // Register a reference that delays startup completion. Startup is considered
   // complete only when all registered references are released.
-  static std::unique_ptr<StartupInProgressRef> RegisterStartupInProgressRef();
+  static std::unique_ptr<StartupInProgressRef> RegisterStartupInProgressRef(
+      StartupIsCompleteReason reason);
 #endif  // !BUILDFLAG(IS_ANDROID)
 
   // Signals the end of the startup registration phase, allowing startup to be
@@ -79,9 +106,15 @@ class AfterStartupTaskUtils {
 
   // For use by unit tests where we don't have normal content loading
   // infrastructure and thus BeginMonitoringStartupCompletion() is unsuitable.
-  static void SetBrowserStartupIsCompleteForTesting();
+  static void SetBrowserStartupIsCompleteForTesting(
+      StartupIsCompleteReason reason =
+          StartupIsCompleteReason::kFailsafeTimeout);
 
   static void UnsafeResetForTesting();
+
+  // Returns the timeout until startup is declared "finished" even if not all
+  // StartupInProgressRefs have been dropped.
+  static base::TimeDelta GetFailsafeTimeout();
 
  private:
   // TODO(wkorman): Look into why Android calls SetBrowserStartupIsComplete()
@@ -90,7 +123,7 @@ class AfterStartupTaskUtils {
   friend class android::AfterStartupTaskUtilsJNI;
 
   static void FinishStartupRegistration(bool include_default_refs);
-  static void SetBrowserStartupIsComplete();
+  static void SetBrowserStartupIsComplete(StartupIsCompleteReason reason);
 };
 
 #endif  // CHROME_BROWSER_AFTER_STARTUP_TASK_UTILS_H_
