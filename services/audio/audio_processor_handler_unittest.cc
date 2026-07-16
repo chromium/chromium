@@ -89,7 +89,8 @@ class MockMlModelManager : public MlModelManager {
 std::unique_ptr<VoiceIsolationHandler> GetVoiceIsolationHandler(
     const media::AudioParameters& output_params,
     VoiceIsolationHandler::DeliverProcessedAudioCallback callback) {
-  auto voice_isolation = std::make_unique<media::VoiceIsolation>();
+  std::unique_ptr<media::VoiceIsolation> voice_isolation =
+      media::VoiceIsolation::CreateForTesting(output_params);
 
   MockMlModelManager model_manager;
 

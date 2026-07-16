@@ -24,13 +24,6 @@ component("webrtc") {
     "webrtc_features.h",
   ]
 
-  if (chrome_wide_echo_cancellation_supported) {
-    sources += [
-      "voice_isolation/voice_isolation.cc",
-      "voice_isolation/voice_isolation.h",
-    ]
-  }
-
   defines = [ "IS_MEDIA_WEBRTC_IMPL" ]
 
   deps = [
@@ -45,6 +38,10 @@ component("webrtc") {
   }
 
   public_deps = [ "//third_party/tflite" ]
+
+  if (chrome_wide_echo_cancellation_supported) {
+    public_deps += [ "//media/webrtc/voice_isolation" ]
+  }
 }
 
 source_set("unit_tests") {
@@ -59,6 +56,9 @@ source_set("unit_tests") {
     "//testing/gtest",
     "//third_party/webrtc_overrides:webrtc_component",
   ]
+  if (chrome_wide_echo_cancellation_supported) {
+    deps += [ "//media/webrtc/voice_isolation:unit_tests" ]
+  }
   sources = [
     "audio_processor_test.cc",
     "helpers_unittest.cc",

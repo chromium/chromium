@@ -4,7 +4,6 @@
 
 #include "services/audio/voice_isolation_handler.h"
 
-#include <memory>
 #include <utility>
 
 #include "base/logging.h"
@@ -22,11 +21,11 @@ VoiceIsolationHandler::VoiceIsolationHandler(
     : model_handle_(std::move(model_handle)),
       // TODO(b/512016773): Pass the model to VoiceIsolation once it is
       // supported.
-      voice_isolation_(std::make_unique<media::VoiceIsolation>()),
+      voice_isolation_(
+          media::VoiceIsolation::Create(model_handle_->Get(), output_params)),
       deliver_processed_audio_callback_(
           std::move(deliver_processed_audio_callback)),
       output_bus_(media::AudioBus::Create(output_params)) {
-  CHECK(voice_isolation_);
   CHECK(!deliver_processed_audio_callback_.is_null());
   CHECK(output_bus_);
 }
