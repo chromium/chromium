@@ -184,10 +184,10 @@ public class PreWarmingRecycledViewPool extends RecycledViewPool {
         mStopCreatingViews = true;
         if (mHandler != null) {
             mHandler.removeCallbacksAndMessages(null);
-            OmniboxMetrics.recordPreWarmingViewsThreadTime(mCumulativePrewarmThreadTimeMs);
-            OmniboxMetrics.recordPreWarmingViewsWallTime(mCumulativePrewarmWallTimeMs);
-            OmniboxMetrics.recordPreWarmedViewsCount(mPrewarmedViews.size());
         }
+        OmniboxMetrics.recordPreWarmingViewsThreadTime(mCumulativePrewarmThreadTimeMs);
+        OmniboxMetrics.recordPreWarmingViewsWallTime(mCumulativePrewarmWallTimeMs);
+        OmniboxMetrics.recordPreWarmedViewsCount(mPrewarmedViews.size());
 
         putViewsIntoPool();
     }
@@ -203,9 +203,9 @@ public class PreWarmingRecycledViewPool extends RecycledViewPool {
                     mViewHolderFactory.createViewHolderForPool(mPlaceholderParent, viewType));
         }
 
+        mCumulativePrewarmWallTimeMs += wallTimer.getElapsedMillis();
+        mCumulativePrewarmThreadTimeMs += threadTimer.getElapsedMillis();
         if (mHandler != null) {
-            mCumulativePrewarmWallTimeMs += wallTimer.getElapsedMillis();
-            mCumulativePrewarmThreadTimeMs += threadTimer.getElapsedMillis();
             if (mPrewarmedViews.size() == mExpectedViewCount) {
                 stopCreatingViews();
             }
