@@ -123,6 +123,20 @@ class COMPOSITOR_EXPORT Layer : public LayerAnimationDelegate,
   // TODO(crbug.com/522627357): Make it a virtual method.
   std::unique_ptr<Layer> Clone() const;
 
+  // Settings that determine which properties from the source layer are
+  // synchronized to the destination mirror layer.
+  struct LayerMirrorSettings {
+    // If true, changes to the bounds of the source layer are propagated to the
+    // mirror layer.
+    bool sync_bounds = false;
+    // If true, changes to the visibility of the source layer are propagated to
+    // the mirror layer.
+    bool sync_visibility = true;
+    // If true, changes to the rounded corners of the source layer are
+    // propagated to the mirror layer.
+    bool sync_rounded_corners = true;
+  };
+
   // Returns a new layer that mirrors this layer and is optionally synchronized
   // with the bounds thereof. Note that children are not mirrored, and that the
   // content is only mirrored if painted by a delegate or backed by a surface.
@@ -130,27 +144,7 @@ class COMPOSITOR_EXPORT Layer : public LayerAnimationDelegate,
   // some negative impact on performance.
   // TODO(crbug.com/522627357): Make it a virtual method.
   std::unique_ptr<Layer> Mirror();
-
-  // This method is relevant only if this layer is a mirror destination layer.
-  // Sets whether this mirror layer's bounds are synchronized with the source
-  // layer's bounds.
-  void set_sync_bounds_with_source(bool sync_bounds) {
-    sync_bounds_with_source_ = sync_bounds;
-  }
-
-  // This method is relevant only if this layer is a mirror destination layer.
-  // Sets whether this mirror layer's visibility is synchronized with the source
-  // layer's visibility.
-  void set_sync_visibility_with_source(bool sync_visibility) {
-    sync_visibility_with_source_ = sync_visibility;
-  }
-
-  // This method is relevant only if this layer is a mirror destination layer.
-  // Sets whether this mirror layer's rounded corners are synchronized with the
-  // source layer's rounded corners.
-  void set_sync_rounded_corners_with_source(bool sync_rounded_corners) {
-    sync_rounded_corners_with_source_ = sync_rounded_corners;
-  }
+  std::unique_ptr<Layer> Mirror(const LayerMirrorSettings& settings);
 
  protected:
   // TODO(crbug.com/522627357): Move to LayerSolidColor.
@@ -829,17 +823,9 @@ class COMPOSITOR_EXPORT Layer : public LayerAnimationDelegate,
   // List of layers reflecting this layer and its subtree, if any.
   base::flat_set<raw_ptr<Layer, CtnExperimental>> subtree_reflecting_layers_;
 
-  // If true, and this is a destination mirror layer, changes to the bounds of
-  // the source layer are propagated to this mirror layer.
-  bool sync_bounds_with_source_ = false;
-
-  // If true, and this is a destination mirror layer, changes in the source
-  // layer's visibility are propagated to this mirror layer.
-  bool sync_visibility_with_source_ = true;
-
-  // If true, and this is a destination mirror layer, changes in the rounded
-  // corners of the source layer are propagated to this mirror layer.
-  bool sync_rounded_corners_with_source_ = true;
+  // Settings indicating which properties from the source layer should be
+  // propagated to this mirror layer.
+  LayerMirrorSettings mirror_settings_;
 
   gfx::Rect bounds_;
 

@@ -373,7 +373,12 @@ std::unique_ptr<Layer> Layer::Clone() const {
 }
 
 std::unique_ptr<Layer> Layer::Mirror() {
+  return Mirror(LayerMirrorSettings());
+}
+
+std::unique_ptr<Layer> Layer::Mirror(const LayerMirrorSettings& settings) {
   auto mirror = Clone();
+  mirror->mirror_settings_ = settings;
   mirrors_.emplace_back(std::make_unique<LayerMirror>(this, mirror.get()));
 
   if (!transfer_resource_.is_empty()) {
@@ -1782,8 +1787,9 @@ void Layer::SetBoundsFromAnimation(const gfx::Rect& bounds,
 
   for (const auto& mirror : mirrors_) {
     Layer* mirror_dest = mirror->dest();
-    if (mirror_dest->sync_bounds_with_source_)
+    if (mirror_dest->mirror_settings_.sync_bounds) {
       mirror_dest->SetBounds(bounds);
+    }
   }
 
   for (Layer* reflecting_layer : subtree_reflecting_layers_) {
@@ -1819,8 +1825,9 @@ void Layer::SetVisibilityFromAnimation(bool visible,
   // Sync changes with the mirror layers only if they want so.
   for (const auto& mirror : mirrors_) {
     Layer* mirror_dest = mirror->dest();
-    if (mirror_dest->sync_visibility_with_source_)
+    if (mirror_dest->mirror_settings_.sync_visibility) {
       mirror_dest->SetVisible(visible);
+    }
   }
 
   if (visible_ == visible)
@@ -1873,7 +1880,7 @@ void Layer::SetRoundedCornersFromAnimation(
 
   for (const auto& mirror : mirrors_) {
     Layer* mirror_dest = mirror->dest();
-    if (mirror_dest->sync_rounded_corners_with_source_) {
+    if (mirror_dest->mirror_settings_.sync_rounded_corners) {
       mirror_dest->SetRoundedCornersFromAnimation(rounded_corners, reason);
     }
   }

@@ -1063,10 +1063,12 @@ TEST_P(LayerWithDelegateTest, Mirroring) {
   child->SetBounds(bounds);
 
   // Bounds should be synchronized only for the mirror layer that requested it.
-  mirror1->set_sync_bounds_with_source(true);
+  auto mirror3 = child->Mirror({.sync_bounds = true});
+  root->Add(mirror3.get());
   child->SetBounds(new_bounds);
-  EXPECT_EQ(new_bounds, mirror1->bounds());
+  EXPECT_EQ(bounds, mirror1->bounds());
   EXPECT_EQ(bounds, mirror2->bounds());
+  EXPECT_EQ(new_bounds, mirror3->bounds());
 
   // Check for rounded corner mirror behavior
   EXPECT_TRUE(mirror1->rounded_corner_radii().IsEmpty());
@@ -1475,13 +1477,17 @@ TEST_P(LayerWithNullDelegateTest, MirroringVisibility) {
   EXPECT_FALSE(l2_mirror->cc_layer_for_testing()->hide_layer_and_subtree());
 
   // Disable visibility sync on the mirrored layer. Changes in |l2|'s visibility
-  // shouldn't affect the visibility of |l2_mirror|.
-  l2_mirror->set_sync_visibility_with_source(false);
+  // shouldn't affect the visibility of |l2_mirror_no_sync|.
+  auto l2_mirror_no_sync =
+      l2->Mirror({.sync_visibility = false, .sync_rounded_corners = false});
+  l1->Add(l2_mirror_no_sync.get());
+  l2_mirror_no_sync->SetVisible(true);
   l2->SetVisible(false);
   EXPECT_FALSE(l2->IsVisible());
   EXPECT_TRUE(l2->cc_layer_for_testing()->hide_layer_and_subtree());
-  EXPECT_TRUE(l2_mirror->IsVisible());
-  EXPECT_FALSE(l2_mirror->cc_layer_for_testing()->hide_layer_and_subtree());
+  EXPECT_TRUE(l2_mirror_no_sync->IsVisible());
+  EXPECT_FALSE(
+      l2_mirror_no_sync->cc_layer_for_testing()->hide_layer_and_subtree());
 }
 
 TEST_P(LayerWithDelegateTest, RoundedCorner) {
