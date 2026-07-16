@@ -537,16 +537,6 @@ class COMPOSITOR_EXPORT Layer : public LayerAnimationDelegate,
   SkColor GetTargetColor() const;
   SkColor background_color() const;
 
-  // TODO(crbug.com/522627357): Move to LayerNinePatch.
-  // Updates the nine patch layer's image, aperture and border. May only be
-  // called for LAYER_NINE_PATCH.
-  void UpdateNinePatchLayerImage(const gfx::ImageSkia& image);
-  void UpdateNinePatchLayerAperture(const gfx::Rect& aperture_in_dip);
-  void UpdateNinePatchLayerBorder(const gfx::Rect& border);
-  // Updates the area completely occluded by another layer, this can be an
-  // empty rectangle if nothing is occluded.
-  void UpdateNinePatchOcclusion(const gfx::Rect& occlusion);
-
  public:
   // Adds |invalid_rect| to the Layer's pending invalid rect and calls
   // ScheduleDraw(). Returns false if the paint request is ignored.
@@ -665,8 +655,16 @@ class COMPOSITOR_EXPORT Layer : public LayerAnimationDelegate,
  protected:
   explicit Layer(LayerType type);
 
+  virtual void HandleDeviceScaleFactorChange();
+
+  void Destroy();
+
  private:
   friend class LayerOwner;
+  friend class LayerNotDrawn;
+  friend class LayerTextured;
+  friend class LayerSolidColor;
+  friend class LayerNinePatch;
   friend class ScopedLayerRequest<LayerRequestType::kPaint>;
   friend class ScopedLayerRequest<LayerRequestType::kTrilinearFiltering>;
   friend class ScopedLayerRequest<LayerRequestType::kCacheRenderSurface>;
@@ -747,6 +745,7 @@ class COMPOSITOR_EXPORT Layer : public LayerAnimationDelegate,
   float GetRefreshRate() const override;
 
   // Creates a corresponding composited layer for |type_|.
+  // TODO(crbug.com/522627357): Rename this method to InitializeCcLayer.
   void CreateCcLayer();
 
   // Recomputes and sets to |cc_layer_|.
@@ -902,19 +901,15 @@ class COMPOSITOR_EXPORT Layer : public LayerAnimationDelegate,
   // TODO(crbug.com/522627357): Move to subclasses.
   scoped_refptr<cc::PictureLayer> content_layer_;
   scoped_refptr<cc::MirrorLayer> mirror_layer_;
-  scoped_refptr<cc::NinePatchLayer> nine_patch_layer_;
   scoped_refptr<cc::TextureLayer> texture_layer_;
   scoped_refptr<cc::SolidColorLayer> solid_color_layer_;
   scoped_refptr<cc::SurfaceLayer> surface_layer_;
+  // TODO(crbug.com/522627357): Move it subclasses and expose via a virtual
+  // getter.
   raw_ptr<cc::Layer> cc_layer_;
 
   // A cached copy of |Compositor::device_scale_factor()|.
   float device_scale_factor_;
-
-  // A cached copy of the nine patch layer's image and aperture.
-  // These are required for device scale factor change.
-  gfx::ImageSkia nine_patch_layer_image_;
-  gfx::Rect nine_patch_layer_aperture_;
 
   // The external resource used by texture_layer_.
   viz::TransferableResource transfer_resource_;
@@ -1026,6 +1021,17 @@ class COMPOSITOR_EXPORT LayerNinePatch : public Layer {
   // Updates the area completely occluded by another layer, this can be an
   // empty rectangle if nothing is occluded.
   void UpdateNinePatchOcclusion(const gfx::Rect& occlusion);
+
+ private:
+  // Layer:
+  void HandleDeviceScaleFactorChange() override;
+
+  // A cached copy of the nine patch layer's image and aperture.
+  // These are required for device scale factor change.
+  gfx::ImageSkia nine_patch_layer_image_;
+  gfx::Rect nine_patch_layer_aperture_;
+
+  scoped_refptr<cc::NinePatchLayer> nine_patch_layer_;
 };
 
 }  // namespace ui

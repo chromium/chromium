@@ -159,12 +159,11 @@ gfx::Insets GetShadowInsets() {
 
 // ArrowContainer is not a regular shadow container, so it needs to draw the
 // special shape of the shadow in the ShadowLayer.
-class ArrowContainer::ShadowLayer : public ui::Layer,
+class ArrowContainer::ShadowLayer : public ui::LayerTextured,
                                     public ui::LayerDelegate,
                                     public views::ViewObserver {
  public:
-  explicit ShadowLayer(ArrowContainer* owner)
-      : ui::Layer(ui::LAYER_TEXTURED), owner_(owner) {
+  explicit ShadowLayer(ArrowContainer* owner) : owner_(owner) {
     // TODO(b/331837116): Check the shadow distance and blur again after the
     // system shadow is adjusted to keep them consistent.
     SetFillsBoundsOpaquely(false);

@@ -11,6 +11,7 @@
 #include <sstream>
 #include <utility>
 
+#include "base/check.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
@@ -263,15 +264,13 @@ Layer::Layer(LayerType type)
       deferred_paint_requests_(0),
       backdrop_filter_quality_(1.0f),
       trilinear_filtering_request_(0) {
-  CreateCcLayer();
-
-  // For LAYER_SOLID_COLOR, the background color dictates content opaqueness.
-  if (type_ == LAYER_SOLID_COLOR) {
-    fills_bounds_opaquely_ = cc_layer_->background_color().isOpaque();
-  }
 }
 
 Layer::~Layer() {
+  CHECK(!cc_layer_);
+}
+
+void Layer::Destroy() {
   observer_list_.Notify(&LayerObserver::LayerDestroyed, this);
 
   // Destroying the animator may cause observers to use the layer. Destroy the
@@ -292,6 +291,7 @@ Layer::~Layer() {
   if (content_layer_)
     content_layer_->ClearClient();
   cc_layer_->RemoveFromParent();
+  cc_layer_ = nullptr;
   if (transfer_release_callback_)
     std::move(transfer_release_callback_).Run(gpu::SyncToken(), false);
 
@@ -1383,38 +1383,6 @@ void Layer::SetShowSolidColorContent() {
     mirror->dest()->SetShowSolidColorContent();
 }
 
-void Layer::UpdateNinePatchLayerImage(const gfx::ImageSkia& image) {
-  DCHECK_EQ(type_, LAYER_NINE_PATCH);
-  DCHECK(nine_patch_layer_.get());
-
-  nine_patch_layer_image_ = image;
-  nine_patch_layer_->SetBitmap(
-      image.GetRepresentation(device_scale_factor_).GetBitmap());
-}
-
-void Layer::UpdateNinePatchLayerAperture(const gfx::Rect& aperture_in_dip) {
-  DCHECK_EQ(type_, LAYER_NINE_PATCH);
-  DCHECK(nine_patch_layer_.get());
-  nine_patch_layer_aperture_ = aperture_in_dip;
-  // TODO(danakj): Specifying the aperture in DIPs as integers is not sufficient
-  // and means the resulting aperture in pixels will not be exact.
-  gfx::Rect aperture_in_pixel = gfx::ToEnclosingRect(
-      gfx::ConvertRectToPixels(aperture_in_dip, device_scale_factor()));
-  nine_patch_layer_->SetAperture(aperture_in_pixel);
-}
-
-void Layer::UpdateNinePatchLayerBorder(const gfx::Rect& border) {
-  DCHECK_EQ(type_, LAYER_NINE_PATCH);
-  DCHECK(nine_patch_layer_.get());
-  nine_patch_layer_->SetBorder(border);
-}
-
-void Layer::UpdateNinePatchOcclusion(const gfx::Rect& occlusion) {
-  DCHECK_EQ(type_, LAYER_NINE_PATCH);
-  DCHECK(nine_patch_layer_.get());
-  nine_patch_layer_->SetLayerOcclusion(occlusion);
-}
-
 void Layer::SetColor(SkColor color) {
   GetAnimator()->SetColor(SkColor4f::FromColor(color));
 }
@@ -1571,16 +1539,8 @@ void Layer::OnDeviceScaleFactorChanged(float device_scale_factor) {
 
   const float old_device_scale_factor = device_scale_factor_;
   device_scale_factor_ = device_scale_factor;
-  RecomputeDrawsContentAndUVRect();
-  RecomputePosition();
 
-  // TODO(crbug.com/522627357): Move to LayerNinePatch.
-  if (nine_patch_layer_) {
-    if (!nine_patch_layer_image_.isNull())
-      UpdateNinePatchLayerImage(nine_patch_layer_image_);
-    UpdateNinePatchLayerAperture(nine_patch_layer_aperture_);
-  }
-  SchedulePaint(gfx::Rect(bounds_.size()));
+  HandleDeviceScaleFactorChange();
   if (delegate_) {
     delegate_->OnDeviceScaleFactorChanged(old_device_scale_factor,
                                           device_scale_factor);
@@ -1604,6 +1564,12 @@ void Layer::OnDeviceScaleFactorChanged(float device_scale_factor) {
   }
   if (layer_mask_)
     layer_mask_->OnDeviceScaleFactorChanged(device_scale_factor);
+}
+
+void Layer::HandleDeviceScaleFactorChange() {
+  RecomputeDrawsContentAndUVRect();
+  RecomputePosition();
+  SchedulePaint(gfx::Rect(bounds_.size()));
 }
 
 void Layer::SetDidScrollCallback(
@@ -1975,13 +1941,12 @@ void Layer::CreateCcLayer() {
   if (type_ == LAYER_SOLID_COLOR) {
     solid_color_layer_ = cc::SolidColorLayer::Create();
     cc_layer_ = solid_color_layer_.get();
-  } else if (type_ == LAYER_NINE_PATCH) {
-    nine_patch_layer_ = cc::NinePatchLayer::Create();
-    cc_layer_ = nine_patch_layer_.get();
-  } else {
+  } else if (type_ == LAYER_TEXTURED || type_ == LAYER_NOT_DRAWN) {
     content_layer_ = cc::PictureLayer::Create(this);
     cc_layer_ = content_layer_.get();
   }
+
+  CHECK(cc_layer_) << "No cc layer for type " << type_;
   cc_layer_->SetTransformOrigin(gfx::Point3F());
   cc_layer_->SetIsDrawable(type_ != LAYER_NOT_DRAWN);
   cc_layer_->SetHitTestable(IsHitTestableForCC());
@@ -2137,20 +2102,38 @@ bool Layer::GetTransformRelativeToImpl(const Layer* ancestor,
 ////////////////////////////////////////////////////////////////////////////////
 // LayerNotDrawn, public:
 
-LayerNotDrawn::LayerNotDrawn() : Layer(LAYER_NOT_DRAWN) {}
-LayerNotDrawn::~LayerNotDrawn() = default;
+LayerNotDrawn::LayerNotDrawn() : Layer(LAYER_NOT_DRAWN) {
+  CreateCcLayer();
+}
+
+LayerNotDrawn::~LayerNotDrawn() {
+  Destroy();
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 // LayerTextured, public:
 
-LayerTextured::LayerTextured() : Layer(LAYER_TEXTURED) {}
-LayerTextured::~LayerTextured() = default;
+LayerTextured::LayerTextured() : Layer(LAYER_TEXTURED) {
+  CreateCcLayer();
+}
+
+LayerTextured::~LayerTextured() {
+  Destroy();
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 // LayerSolidColor, public:
 
-LayerSolidColor::LayerSolidColor() : Layer(LAYER_SOLID_COLOR) {}
-LayerSolidColor::~LayerSolidColor() = default;
+LayerSolidColor::LayerSolidColor() : Layer(LAYER_SOLID_COLOR) {
+  CreateCcLayer();
+
+  // For LAYER_SOLID_COLOR, the background color dictates content opaqueness.
+  fills_bounds_opaquely_ = cc_layer_->background_color().isOpaque();
+}
+
+LayerSolidColor::~LayerSolidColor() {
+  Destroy();
+}
 
 void LayerSolidColor::SetShowReflectedLayerSubtree(
     Layer* subtree_reflected_layer) {
@@ -2176,24 +2159,49 @@ SkColor LayerSolidColor::background_color() const {
 ////////////////////////////////////////////////////////////////////////////////
 // LayerNinePatch, public:
 
-LayerNinePatch::LayerNinePatch() : Layer(LAYER_NINE_PATCH) {}
-LayerNinePatch::~LayerNinePatch() = default;
+LayerNinePatch::LayerNinePatch() : Layer(LAYER_NINE_PATCH) {
+  nine_patch_layer_ = cc::NinePatchLayer::Create();
+  cc_layer_ = nine_patch_layer_.get();
+  CreateCcLayer();
+}
+
+LayerNinePatch::~LayerNinePatch() {
+  Destroy();
+}
 
 void LayerNinePatch::UpdateNinePatchLayerImage(const gfx::ImageSkia& image) {
-  Layer::UpdateNinePatchLayerImage(image);
+  nine_patch_layer_image_ = image;
+  nine_patch_layer_->SetBitmap(
+      image.GetRepresentation(device_scale_factor()).GetBitmap());
 }
 
 void LayerNinePatch::UpdateNinePatchLayerAperture(
     const gfx::Rect& aperture_in_dip) {
-  Layer::UpdateNinePatchLayerAperture(aperture_in_dip);
+  nine_patch_layer_aperture_ = aperture_in_dip;
+
+  // TODO(danakj): Specifying the aperture in DIPs as integers is not sufficient
+  // and means the resulting aperture in pixels will not be exact.
+  gfx::Rect aperture_in_pixel = gfx::ToEnclosingRect(
+      gfx::ConvertRectToPixels(aperture_in_dip, device_scale_factor()));
+  nine_patch_layer_->SetAperture(aperture_in_pixel);
 }
 
 void LayerNinePatch::UpdateNinePatchLayerBorder(const gfx::Rect& border) {
-  Layer::UpdateNinePatchLayerBorder(border);
+  nine_patch_layer_->SetBorder(border);
 }
 
 void LayerNinePatch::UpdateNinePatchOcclusion(const gfx::Rect& occlusion) {
-  Layer::UpdateNinePatchOcclusion(occlusion);
+  nine_patch_layer_->SetLayerOcclusion(occlusion);
+}
+
+void LayerNinePatch::HandleDeviceScaleFactorChange() {
+  Layer::HandleDeviceScaleFactorChange();
+
+  if (!nine_patch_layer_image_.isNull()) {
+    UpdateNinePatchLayerImage(nine_patch_layer_image_);
+  }
+
+  UpdateNinePatchLayerAperture(nine_patch_layer_aperture_);
 }
 
 }  // namespace ui
