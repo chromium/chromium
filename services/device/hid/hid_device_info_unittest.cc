@@ -204,6 +204,90 @@ TEST(HidDeviceInfoTest, FindCollectionWithReport_NoReportIds) {
   }
 }
 
+TEST(HidDeviceInfoTest, ReportInNestedKeyboardCollectionIsAlwaysProtected) {
+  // The device has a vendor-defined top-level collection containing a nested
+  // keyboard collection that defines an input report.
+  auto device =
+      CreateHidDeviceInfo(TestReportDescriptors::VendorWithNestedKeyboard());
+  EXPECT_TRUE(device->has_report_id());
+  ASSERT_EQ(1u, device->collections().size());
+  const auto* collection = device->collections()[0].get();
+  EXPECT_EQ(mojom::kPageVendor, collection->usage->usage_page);
+  ASSERT_EQ(1u, collection->children.size());
+  EXPECT_EQ(mojom::kPageGenericDesktop,
+            collection->children[0]->usage->usage_page);
+
+  // The input report is in the nested keyboard collection and is always
+  // protected even though the top-level collection has a vendor-defined usage.
+  EXPECT_TRUE(HasReportInAlwaysProtectedCollection(
+      *collection, /*report_id=*/0x01, HidReportType::kInput));
+  EXPECT_FALSE(HasReportInAlwaysProtectedCollection(
+      *collection, /*report_id=*/0x01, HidReportType::kOutput));
+}
+
+TEST(HidDeviceInfoTest, ReportInNestedFidoCollectionHasUsagePage) {
+  // The device has a vendor-defined top-level collection containing a nested
+  // FIDO collection that defines input and output reports.
+  auto device =
+      CreateHidDeviceInfo(TestReportDescriptors::VendorWithNestedFido());
+  EXPECT_TRUE(device->has_report_id());
+  ASSERT_EQ(1u, device->collections().size());
+  const auto* collection = device->collections()[0].get();
+  EXPECT_EQ(mojom::kPageVendor, collection->usage->usage_page);
+  ASSERT_EQ(1u, collection->children.size());
+  EXPECT_EQ(mojom::kPageFido, collection->children[0]->usage->usage_page);
+
+  // The reports are in the nested FIDO collection.
+  EXPECT_TRUE(HasReportInCollectionWithUsagePage(
+      *collection, /*report_id=*/0x01, HidReportType::kInput,
+      mojom::kPageFido));
+  EXPECT_TRUE(HasReportInCollectionWithUsagePage(
+      *collection, /*report_id=*/0x01, HidReportType::kOutput,
+      mojom::kPageFido));
+
+  // The reports are not in a keyboard collection.
+  EXPECT_FALSE(HasReportInCollectionWithUsagePage(
+      *collection, /*report_id=*/0x01, HidReportType::kInput,
+      mojom::kPageKeyboard));
+
+  // The reports are not always protected.
+  EXPECT_FALSE(HasReportInAlwaysProtectedCollection(
+      *collection, /*report_id=*/0x01, HidReportType::kInput));
+}
+
+TEST(HidDeviceInfoTest, ReportInNestedPhysicalPointerCollectionNotProtected) {
+  // The device has a top-level joystick collection containing nested logical
+  // and physical collections with the Generic Desktop Pointer usage.
+  auto device = CreateHidDeviceInfo(TestReportDescriptors::SonyDualshock3Usb());
+  ASSERT_EQ(1u, device->collections().size());
+  const auto* collection = device->collections()[0].get();
+
+  // The nested pointer collections are not application collections so the
+  // input and output reports are not always protected.
+  EXPECT_FALSE(HasReportInAlwaysProtectedCollection(
+      *collection, /*report_id=*/0x01, HidReportType::kInput));
+  EXPECT_FALSE(HasReportInAlwaysProtectedCollection(
+      *collection, /*report_id=*/0x01, HidReportType::kOutput));
+  EXPECT_FALSE(HasReportInAlwaysProtectedCollection(
+      *collection, /*report_id=*/0x01, HidReportType::kFeature));
+}
+
+TEST(HidDeviceInfoTest, ReportInTopLevelFidoCollection) {
+  // The device has a single top-level FIDO collection without report IDs.
+  auto device = CreateHidDeviceInfo(TestReportDescriptors::FidoU2fHid());
+  ASSERT_EQ(1u, device->collections().size());
+  const auto* collection = device->collections()[0].get();
+
+  EXPECT_TRUE(HasReportInCollectionWithUsagePage(
+      *collection, /*report_id=*/0, HidReportType::kInput, mojom::kPageFido));
+  EXPECT_TRUE(HasReportInCollectionWithUsagePage(
+      *collection, /*report_id=*/0, HidReportType::kOutput, mojom::kPageFido));
+  EXPECT_FALSE(HasReportInCollectionWithUsagePage(
+      *collection, /*report_id=*/0, HidReportType::kFeature, mojom::kPageFido));
+  EXPECT_FALSE(HasReportInAlwaysProtectedCollection(
+      *collection, /*report_id=*/0, HidReportType::kInput));
+}
+
 }  // namespace
 
 }  // namespace device

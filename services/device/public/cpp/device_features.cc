@@ -127,6 +127,10 @@ BASE_FEATURE(kSecurityKeyHidInterfacesAreFido,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+// Enables recursive filtering of nested HID collections to prevent WebHID
+// security bypasses (e.g., nested keyboards or FIDO keys).
+BASE_FEATURE(kWebHidRecursiveFiltering, base::FEATURE_ENABLED_BY_DEFAULT);
+
 const base::FeatureParam<device::mojom::LocationProviderManagerMode>::Option
     location_provider_manager_mode_options[] = {
         {device::mojom::LocationProviderManagerMode::kNetworkOnly,

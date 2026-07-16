@@ -23,6 +23,14 @@ const std::vector<mojom::HidReportDescriptionPtr>& ReportsForType(
   }
 }
 
+bool CollectionContainsReport(const mojom::HidCollectionInfo& collection,
+                              uint8_t report_id,
+                              HidReportType report_type) {
+  return std::ranges::contains(ReportsForType(collection, report_type),
+                               report_id,
+                               &mojom::HidReportDescription::report_id);
+}
+
 }  // namespace
 
 bool IsAlwaysProtected(const mojom::HidUsageAndPage& hid_usage_and_page,
@@ -111,6 +119,43 @@ const mojom::HidCollectionInfo* FindCollectionWithReport(
 
   CHECK(find_it->get());
   return find_it->get();
+}
+
+bool HasReportInAlwaysProtectedCollection(
+    const mojom::HidCollectionInfo& collection,
+    uint8_t report_id,
+    HidReportType report_type) {
+  if (!CollectionContainsReport(collection, report_id, report_type)) {
+    return false;
+  }
+  if (collection.collection_type == mojom::kHIDCollectionTypeApplication &&
+      IsAlwaysProtected(*collection.usage, report_type)) {
+    return true;
+  }
+  return std::ranges::any_of(collection.children, [report_id, report_type](
+                                                      const auto& child) {
+    return HasReportInAlwaysProtectedCollection(*child, report_id, report_type);
+  });
+}
+
+bool HasReportInCollectionWithUsagePage(
+    const mojom::HidCollectionInfo& collection,
+    uint8_t report_id,
+    HidReportType report_type,
+    uint16_t usage_page) {
+  if (!CollectionContainsReport(collection, report_id, report_type)) {
+    return false;
+  }
+  if (collection.collection_type == mojom::kHIDCollectionTypeApplication &&
+      collection.usage->usage_page == usage_page) {
+    return true;
+  }
+  return std::ranges::any_of(
+      collection.children,
+      [report_id, report_type, usage_page](const auto& child) {
+        return HasReportInCollectionWithUsagePage(*child, report_id,
+                                                  report_type, usage_page);
+      });
 }
 
 }  // namespace device

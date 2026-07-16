@@ -140,6 +140,20 @@ const std::vector<mojom::HidReportDescriptionPtr>& GetReportsForType(
   }
 }
 
+bool MatchesUsage(const HidBlocklist::Entry& entry,
+                  const mojom::HidCollectionInfo& collection) {
+  if (!entry.has_usage_page) {
+    return true;
+  }
+  if (entry.usage_page != collection.usage->usage_page) {
+    return false;
+  }
+  if (!entry.has_usage) {
+    return true;
+  }
+  return entry.usage == collection.usage->usage;
+}
+
 // Iterates over |collections| to find reports of type |report_type| that should
 // be protected according to the blocklist rule |entry|. |vendor_id| and
 // |product_id| are the vendor and product IDs of the device with these reports.
@@ -166,18 +180,21 @@ void CheckBlocklistEntry(
   }
 
   for (const auto& collection : collections) {
-    if (entry.has_usage_page) {
-      if (entry.usage_page != collection->usage->usage_page)
-        continue;
-
-      if (entry.has_usage && entry.usage != collection->usage->usage)
-        continue;
+    if (MatchesUsage(entry, *collection)) {
+      const auto& reports = GetReportsForType(report_type, *collection);
+      for (const auto& report : reports) {
+        if (!entry.has_report_id || entry.report_id == report->report_id) {
+          protected_ids.insert(report->report_id);
+        }
+      }
     }
-
-    const auto& reports = GetReportsForType(report_type, *collection);
-    for (const auto& report : reports) {
-      if (!entry.has_report_id || entry.report_id == report->report_id)
-        protected_ids.insert(report->report_id);
+    // A report defined in a child collection is also part of the enclosing
+    // top-level collection. Evaluate usage-based rules against child
+    // collections as well so reports defined in protected child collections
+    // are not missed.
+    if (base::FeatureList::IsEnabled(features::kWebHidRecursiveFiltering)) {
+      CheckBlocklistEntry(entry, report_type, vendor_id, product_id,
+                          collection->children, protected_ids);
     }
   }
 }

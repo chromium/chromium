@@ -435,6 +435,55 @@ TEST_F(HidBlocklistTest, DeviceWithAllProtectedReportsIsNotExcluded) {
   EXPECT_THAT(*device->protected_feature_report_ids, ElementsAre(0x03, 0x06));
 }
 
+TEST_F(HidBlocklistTest, UsagePageRuleAppliesToNestedCollection) {
+  // Protect reports by usage page.
+  SetDynamicBlocklist("::ff01:::");
+
+  // Create a device with a vendor-defined top-level collection containing a
+  // child collection with the protected usage page. The child defines an input
+  // report which is also propagated to the parent.
+  auto child = mojom::HidCollectionInfo::New();
+  child->usage = mojom::HidUsageAndPage::New(kTestUsage, 0xff01);
+  child->collection_type = mojom::kHIDCollectionTypeApplication;
+  child->report_ids.push_back(kTestReportId);
+  auto child_report = mojom::HidReportDescription::New();
+  child_report->report_id = kTestReportId;
+  child->input_reports.push_back(std::move(child_report));
+
+  auto collection = mojom::HidCollectionInfo::New();
+  collection->usage = mojom::HidUsageAndPage::New(kTestUsage, kTestUsagePage);
+  collection->collection_type = mojom::kHIDCollectionTypeApplication;
+  collection->report_ids.push_back(kTestReportId);
+  auto report = mojom::HidReportDescription::New();
+  report->report_id = kTestReportId;
+  collection->input_reports.push_back(std::move(report));
+  collection->children.push_back(std::move(child));
+
+  std::vector<mojom::HidCollectionInfoPtr> collections;
+  collections.push_back(std::move(collection));
+
+  // The report defined in the child collection is protected by the usage page
+  // rule.
+  EXPECT_THAT(HidBlocklist::Get().GetProtectedReportIds(
+                  HidBlocklist::kReportTypeInput, kTestVendorId, kTestProductId,
+                  collections),
+              ElementsAre(kTestReportId));
+}
+
+TEST_F(HidBlocklistTest, FidoReportsInNestedCollectionAreProtected) {
+  // Create a device with a vendor-defined top-level collection containing a
+  // nested FIDO collection with input and output reports.
+  auto device = CreateDeviceFromReportDescriptor(
+      kTestVendorId, kTestProductId,
+      TestReportDescriptors::VendorWithNestedFido());
+
+  // The nested FIDO reports are protected by the static blocklist.
+  EXPECT_FALSE(device->is_excluded_by_blocklist);
+  EXPECT_THAT(*device->protected_input_report_ids, ElementsAre(0x01));
+  EXPECT_THAT(*device->protected_output_report_ids, ElementsAre(0x01));
+  EXPECT_TRUE(device->protected_feature_report_ids->empty());
+}
+
 TEST_F(HidBlocklistTest, SpecificOutputReportIsProtected) {
   // Block report 0x05 from usage page 0xff00 on devices from vendor 0x0b0e.
   SetDynamicBlocklist("0b0e::ff00::05:O");

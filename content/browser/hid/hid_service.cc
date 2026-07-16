@@ -25,6 +25,7 @@
 #include "mojo/public/cpp/bindings/message.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "services/device/public/cpp/device_features.h"
+#include "services/device/public/cpp/hid/hid_report_utils.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
 
 namespace content {
@@ -206,6 +207,100 @@ void HidService::Create(
       std::move(receiver));
 }
 
+namespace {
+
+// Recursively filters reports from the collection tree. Returns true if the
+// collection is now empty (has no reports and no active children) and should
+// be pruned by its parent.
+bool FilterCollectionReports(
+    device::mojom::HidCollectionInfo& collection,
+    const device::mojom::HidCollectionInfo& original_collection,
+    const std::optional<std::vector<uint8_t>>& protected_input_report_ids,
+    const std::optional<std::vector<uint8_t>>& protected_output_report_ids,
+    const std::optional<std::vector<uint8_t>>& protected_feature_report_ids,
+    bool is_fido_allowed) {
+  // Recursively filter children first.
+  std::vector<device::mojom::HidCollectionInfoPtr> children;
+  CHECK_EQ(collection.children.size(), original_collection.children.size());
+  for (size_t i = 0; i < collection.children.size(); ++i) {
+    if (!FilterCollectionReports(
+            *collection.children[i], *original_collection.children[i],
+            protected_input_report_ids, protected_output_report_ids,
+            protected_feature_report_ids, is_fido_allowed)) {
+      children.push_back(std::move(collection.children[i]));
+    }
+  }
+  collection.children = std::move(children);
+
+  // Filter input reports.
+  std::vector<device::mojom::HidReportDescriptionPtr> input_reports;
+  for (auto& report : collection.input_reports) {
+    const bool is_fido = device::HasReportInCollectionWithUsagePage(
+        original_collection, report->report_id, device::HidReportType::kInput,
+        device::mojom::kPageFido);
+    const bool is_always_protected =
+        device::HasReportInAlwaysProtectedCollection(
+            original_collection, report->report_id,
+            device::HidReportType::kInput);
+    if ((is_fido && is_fido_allowed) ||
+        (!is_always_protected &&
+         (!protected_input_report_ids.has_value() ||
+          !std::ranges::contains(*protected_input_report_ids,
+                                 report->report_id)))) {
+      input_reports.push_back(std::move(report));
+    }
+  }
+  collection.input_reports = std::move(input_reports);
+
+  // Filter output reports.
+  std::vector<device::mojom::HidReportDescriptionPtr> output_reports;
+  for (auto& report : collection.output_reports) {
+    const bool is_fido = device::HasReportInCollectionWithUsagePage(
+        original_collection, report->report_id, device::HidReportType::kOutput,
+        device::mojom::kPageFido);
+    const bool is_always_protected =
+        device::HasReportInAlwaysProtectedCollection(
+            original_collection, report->report_id,
+            device::HidReportType::kOutput);
+    if ((is_fido && is_fido_allowed) ||
+        (!is_always_protected &&
+         (!protected_output_report_ids.has_value() ||
+          !std::ranges::contains(*protected_output_report_ids,
+                                 report->report_id)))) {
+      output_reports.push_back(std::move(report));
+    }
+  }
+  collection.output_reports = std::move(output_reports);
+
+  // Filter feature reports.
+  std::vector<device::mojom::HidReportDescriptionPtr> feature_reports;
+  for (auto& report : collection.feature_reports) {
+    const bool is_fido = device::HasReportInCollectionWithUsagePage(
+        original_collection, report->report_id, device::HidReportType::kFeature,
+        device::mojom::kPageFido);
+    const bool is_always_protected =
+        device::HasReportInAlwaysProtectedCollection(
+            original_collection, report->report_id,
+            device::HidReportType::kFeature);
+    if ((is_fido && is_fido_allowed) ||
+        (!is_always_protected &&
+         (!protected_feature_report_ids.has_value() ||
+          !std::ranges::contains(*protected_feature_report_ids,
+                                 report->report_id)))) {
+      feature_reports.push_back(std::move(report));
+    }
+  }
+  collection.feature_reports = std::move(feature_reports);
+
+  // Return true if this collection is now empty and should be pruned by its
+  // parent.
+  return collection.input_reports.empty() &&
+         collection.output_reports.empty() &&
+         collection.feature_reports.empty() && collection.children.empty();
+}
+
+}  // namespace
+
 // static
 void HidService::RemoveProtectedReports(device::mojom::HidDeviceInfo& device,
                                         bool is_known_security_key,
@@ -219,44 +314,60 @@ void HidService::RemoveProtectedReports(device::mojom::HidDeviceInfo& device,
     return;
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
+
   std::vector<device::mojom::HidCollectionInfoPtr> collections;
-  for (auto& collection : device.collections) {
-    const bool is_fido =
-        collection->usage->usage_page == device::mojom::kPageFido;
-    std::vector<device::mojom::HidReportDescriptionPtr> input_reports;
-    for (auto& report : collection->input_reports) {
-      if ((is_fido && is_fido_allowed) ||
-          !device.protected_input_report_ids.has_value() ||
-          !std::ranges::contains(*device.protected_input_report_ids,
-                                 report->report_id)) {
-        input_reports.push_back(std::move(report));
+  if (base::FeatureList::IsEnabled(features::kWebHidRecursiveFiltering)) {
+    // Clone to preserve original state for queries.
+    auto original_device = device.Clone();
+    for (size_t i = 0; i < device.collections.size(); ++i) {
+      if (!FilterCollectionReports(
+              *device.collections[i], *original_device->collections[i],
+              original_device->protected_input_report_ids,
+              original_device->protected_output_report_ids,
+              original_device->protected_feature_report_ids, is_fido_allowed)) {
+        collections.push_back(std::move(device.collections[i]));
       }
     }
-    std::vector<device::mojom::HidReportDescriptionPtr> output_reports;
-    for (auto& report : collection->output_reports) {
-      if ((is_fido && is_fido_allowed) ||
-          !device.protected_output_report_ids.has_value() ||
-          !std::ranges::contains(*device.protected_output_report_ids,
-                                 report->report_id)) {
-        output_reports.push_back(std::move(report));
+  } else {
+    // Fall back to old flat filtering.
+    for (auto& collection : device.collections) {
+      const bool is_fido =
+          collection->usage->usage_page == device::mojom::kPageFido;
+      std::vector<device::mojom::HidReportDescriptionPtr> input_reports;
+      for (auto& report : collection->input_reports) {
+        if ((is_fido && is_fido_allowed) ||
+            !device.protected_input_report_ids.has_value() ||
+            !std::ranges::contains(*device.protected_input_report_ids,
+                                   report->report_id)) {
+          input_reports.push_back(std::move(report));
+        }
       }
-    }
-    std::vector<device::mojom::HidReportDescriptionPtr> feature_reports;
-    for (auto& report : collection->feature_reports) {
-      if ((is_fido && is_fido_allowed) ||
-          !device.protected_feature_report_ids.has_value() ||
-          !std::ranges::contains(*device.protected_feature_report_ids,
-                                 report->report_id)) {
-        feature_reports.push_back(std::move(report));
+      std::vector<device::mojom::HidReportDescriptionPtr> output_reports;
+      for (auto& report : collection->output_reports) {
+        if ((is_fido && is_fido_allowed) ||
+            !device.protected_output_report_ids.has_value() ||
+            !std::ranges::contains(*device.protected_output_report_ids,
+                                   report->report_id)) {
+          output_reports.push_back(std::move(report));
+        }
       }
-    }
-    // Only keep the collection if it has at least one report.
-    if (!input_reports.empty() || !output_reports.empty() ||
-        !feature_reports.empty()) {
-      collection->input_reports = std::move(input_reports);
-      collection->output_reports = std::move(output_reports);
-      collection->feature_reports = std::move(feature_reports);
-      collections.push_back(std::move(collection));
+      std::vector<device::mojom::HidReportDescriptionPtr> feature_reports;
+      for (auto& report : collection->feature_reports) {
+        if ((is_fido && is_fido_allowed) ||
+            !device.protected_feature_report_ids.has_value() ||
+            !std::ranges::contains(*device.protected_feature_report_ids,
+                                   report->report_id)) {
+          feature_reports.push_back(std::move(report));
+        }
+      }
+      // Only keep the collection if it has at least one report.
+      if (!input_reports.empty() || !output_reports.empty() ||
+          !feature_reports.empty()) {
+        collection->input_reports = std::move(input_reports);
+        collection->output_reports = std::move(output_reports);
+        collection->feature_reports = std::move(feature_reports);
+        collections.push_back(std::move(collection));
+      }
     }
   }
   device.collections = std::move(collections);
@@ -577,7 +688,25 @@ void HidService::FinishGetDevices(
 void HidService::FinishRequestDevice(
     RequestDeviceCallback callback,
     std::vector<device::mojom::HidDeviceInfoPtr> devices) {
-  std::move(callback).Run(std::move(devices));
+  auto* browser_context = GetBrowserContext();
+  auto* delegate = GetContentClient()->browser()->GetHidDelegate();
+  if (!browser_context || !delegate) {
+    std::move(callback).Run(std::vector<device::mojom::HidDeviceInfoPtr>());
+    return;
+  }
+
+  bool is_fido_allowed =
+      delegate->IsFidoAllowedForOrigin(browser_context, origin_);
+  std::vector<device::mojom::HidDeviceInfoPtr> result;
+  for (auto& device : devices) {
+    RemoveProtectedReports(
+        *device, delegate->IsKnownSecurityKey(browser_context, *device),
+        is_fido_allowed);
+    if (!device->collections.empty()) {
+      result.push_back(std::move(device));
+    }
+  }
+  std::move(callback).Run(std::move(result));
 }
 
 void HidService::FinishConnect(

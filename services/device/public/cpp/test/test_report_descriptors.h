@@ -71,6 +71,15 @@ class TestReportDescriptors {
   // A report descriptor with a vendor-defined top-level collection, one input
   // report, and one output report.
   static base::span<const uint8_t> VendorDefinedInputOutput();
+
+  // A report descriptor with a vendor-defined top-level collection containing
+  // a nested FIDO collection that defines an input report and an output
+  // report.
+  static base::span<const uint8_t> VendorWithNestedFido();
+
+  // A report descriptor with a vendor-defined top-level collection containing
+  // a nested keyboard collection that defines an input report.
+  static base::span<const uint8_t> VendorWithNestedKeyboard();
 };
 
 }  // namespace device

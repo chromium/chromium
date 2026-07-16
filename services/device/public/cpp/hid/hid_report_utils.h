@@ -27,6 +27,23 @@ const mojom::HidCollectionInfo* FindCollectionWithReport(
     uint8_t report_id,
     HidReportType report_type);
 
+// Returns true if `collection` or any of its nested application collections
+// contains a report with ID `report_id` of `report_type` and has a usage that
+// is always protected for that report type.
+bool HasReportInAlwaysProtectedCollection(
+    const mojom::HidCollectionInfo& collection,
+    uint8_t report_id,
+    HidReportType report_type);
+
+// Returns true if `collection` or any of its nested application collections
+// contains a report with ID `report_id` of `report_type` and has the given
+// `usage_page`.
+bool HasReportInCollectionWithUsagePage(
+    const mojom::HidCollectionInfo& collection,
+    uint8_t report_id,
+    HidReportType report_type,
+    uint16_t usage_page);
+
 }  // namespace device
 
 #endif  // SERVICES_DEVICE_PUBLIC_CPP_HID_HID_REPORT_UTILS_H_
