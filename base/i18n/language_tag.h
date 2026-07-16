@@ -136,7 +136,8 @@ class BASE_I18N_EXPORT LanguageTag {
   //   if (ext) {
   //     std::string_view val = ext->subtags_string(); // "ca-gregory"
   //   }
-  template <bcp47_extensions::ExtensionTrait T>
+  template <typename T>
+    requires(bcp47_extensions::ExtensionTrait<T>)
   std::optional<typename T::type> GetExtension(T traits) const {
     std::string_view extension = GetExtensionStringInternal(traits.key);
     if (extension.empty()) {
