@@ -28,6 +28,12 @@ arc::mojom::WebAppInfoPtr GetWebAppInfo() {
                                      "https://www.google.com/", 0xFFAABBCC);
 }
 
+arc::mojom::WebAppInfoPtr GetWebAppInfo(const std::string& start_url,
+                                        const std::string& scope_url) {
+  return arc::mojom::WebAppInfo::New("Fake App Title", start_url, scope_url,
+                                     0xFFAABBCC);
+}
+
 constexpr int kGeneratedIconSize = 128;
 
 arc::mojom::RawIconPngDataPtr GetIconBytes() {
@@ -183,6 +189,45 @@ TEST_F(ApkWebAppInstallerTest, NullIconCallsCompleteInstallation) {
       profile(), weak_ptr_factory_.GetWeakPtr(), run_loop.QuitClosure());
 
   apk_web_app_installer.Start("package", GetWebAppInfo(), {});
+  run_loop.Run();
+
+  EXPECT_EQ("", apk_web_app_installer.id());
+  EXPECT_TRUE(apk_web_app_installer.complete_installation_called());
+  EXPECT_FALSE(apk_web_app_installer.do_install_called());
+
+  EXPECT_FALSE(apk_web_app_installer.has_web_app_install_info());
+}
+
+TEST_F(ApkWebAppInstallerTest, NonHttpStartUrlCallsCompleteInstallation) {
+  const std::string kUrls[] = {"chrome://flags/", "file:///home/chronos/user/",
+                               "not a url"};
+  for (const auto& url : kUrls) {
+    base::RunLoop run_loop;
+    FakeApkWebAppInstaller apk_web_app_installer(
+        profile(), weak_ptr_factory_.GetWeakPtr(), run_loop.QuitClosure());
+
+    apk_web_app_installer.Start(
+        "package", GetWebAppInfo(url, "https://www.google.com/"),
+        GetIconBytes());
+    run_loop.Run();
+
+    EXPECT_EQ("", apk_web_app_installer.id());
+    EXPECT_TRUE(apk_web_app_installer.complete_installation_called());
+    EXPECT_FALSE(apk_web_app_installer.do_install_called());
+
+    EXPECT_FALSE(apk_web_app_installer.has_web_app_install_info());
+  }
+}
+
+TEST_F(ApkWebAppInstallerTest, NonHttpScopeUrlCallsCompleteInstallation) {
+  base::RunLoop run_loop;
+  FakeApkWebAppInstaller apk_web_app_installer(
+      profile(), weak_ptr_factory_.GetWeakPtr(), run_loop.QuitClosure());
+
+  apk_web_app_installer.Start(
+      "package",
+      GetWebAppInfo("https://www.google.com/index.html", "chrome://flags/"),
+      GetIconBytes());
   run_loop.Run();
 
   EXPECT_EQ("", apk_web_app_installer.id());

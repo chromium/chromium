@@ -83,8 +83,16 @@ void ApkWebAppInstaller::Start(const std::string& package_name,
     return;
   }
 
+  const GURL start_url(arc_web_app_info->start_url);
+  const GURL scope_url(arc_web_app_info->scope_url);
+  if (!start_url.SchemeIsHTTPOrHTTPS() || !scope_url.SchemeIsHTTPOrHTTPS()) {
+    LOG(ERROR) << "Web app start or scope URL is not HTTP(S)";
+    CompleteInstallation(webapps::AppId(),
+                         webapps::InstallResultCode::kApkWebAppInstallFailed);
+    return;
+  }
+
   DCHECK(!web_app_install_info_);
-  auto start_url = GURL(arc_web_app_info->start_url);
   // TODO(b:340994232): ARC-installed web apps should pass through a manifest ID
   // and use it here instead of assuming it is not set and generating it from
   // the start URL.
@@ -94,17 +102,14 @@ void ApkWebAppInstaller::Start(const std::string& package_name,
       std::make_unique<web_app::WebAppInstallInfo>(manifest_id, start_url);
 
   web_app_install_info_->title = base::UTF8ToUTF16(arc_web_app_info->title);
-
-  web_app_install_info_->scope = GURL(arc_web_app_info->scope_url);
-  DCHECK(web_app_install_info_->scope.is_valid());
+  web_app_install_info_->scope = scope_url;
 
   web_app_install_info_->additional_policy_ids.push_back(package_name);
 
   // The install_url and the start_url seem to be same in this case.
   // This is because inside OnWebAppCreated(), the start_url is
   // passed to the external prefs to be stored as the install_url.
-  web_app_install_info_->install_url = GURL(arc_web_app_info->start_url);
-  DCHECK(web_app_install_info_->install_url.is_valid());
+  web_app_install_info_->install_url = start_url;
 
   if (arc_web_app_info->theme_color != kInvalidColor) {
     web_app_install_info_->theme_color = SkColorSetA(
