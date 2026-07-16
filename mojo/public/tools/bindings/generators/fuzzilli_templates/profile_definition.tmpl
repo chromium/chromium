@@ -4,10 +4,9 @@ private let mojoBuiltins: [String: ILType] = [
     /// is only called once, and (2) the remote is saved to a global variable so it
     /// can be closed at the end of the program.
     "getOrCreatePrimaryRemote": .function([] => .{{primary|format_il_type}}),
-    "{{primary|name_with_namespace}}": .js{{primary.name}},
 {%- for receiver in interface_receivers %}
-    "{{receiver|name_with_namespace}}CallbackRouter":
-       .constructor([] => .js{{receiver.name}}CallbackRouter),
+    "{{receiver|fully_qualified_name}}CallbackRouter":
+       .constructor([] => .js{{receiver|format_unique_name}}CallbackRouter),
 {%- endfor %}
 ]
 
@@ -34,7 +33,7 @@ let mojo{{primary.name}}Profile = Profile(
         let globalRemote = null;
         function getOrCreatePrimaryRemote() {
             if (!globalRemote) {
-                globalRemote = {{primary|name_with_namespace}}.getRemote();
+                globalRemote = {{primary|fully_qualified_name}}.getRemote();
             }
             return globalRemote;
         }
@@ -57,7 +56,7 @@ let mojo{{primary.name}}Profile = Profile(
         (MojoPropertyRetrievalGenerator, 10000),
 {%- for receiver in interface_receivers %}
     {%- if receiver.methods %}
-        (Mojo{{receiver.name}}RouterListenerGenerator, 5000),
+        (Mojo{{receiver|format_unique_name}}RouterListenerGenerator, 5000),
     {%- endif %}
 {%- endfor %}
     ] + commonMojoCodeGenerators,
@@ -67,16 +66,16 @@ let mojo{{primary.name}}Profile = Profile(
     additionalBuiltins: mojoBuiltins.merging(commonMojoBuiltins) { (existing, _) in existing },
     additionalObjectGroups: [
 {%- for remote in interface_remotes %}
-        .{{remote.name|to_camel(True)}}Remote,
-        .{{remote.name|to_camel(True)}}RemoteWrapper,
-        .{{remote.name|to_camel(True)}}PendingReceiver,
+        .{{remote|format_unique_name|to_camel(True)}}Remote,
+        .{{remote|format_unique_name|to_camel(True)}}RemoteWrapper,
+        .{{remote|format_unique_name|to_camel(True)}}PendingReceiver,
 {%- endfor %}
 {%- for receiver in interface_receivers %}
-        .{{receiver.name|to_camel(True)}}CallbackRouter,
-        .{{receiver.name|to_camel(True)}}CallbackRouterReceiverHelper,
-        .{{receiver.name|to_camel(True)}}Remote,
-        .{{receiver.name|to_camel(True)}}RemoteWrapper,
-        .{{receiver.name|to_camel(True)}}PendingReceiver,
+        .{{receiver|format_unique_name|to_camel(True)}}CallbackRouter,
+        .{{receiver|format_unique_name|to_camel(True)}}CallbackRouterReceiverHelper,
+        .{{receiver|format_unique_name|to_camel(True)}}Remote,
+        .{{receiver|format_unique_name|to_camel(True)}}RemoteWrapper,
+        .{{receiver|format_unique_name|to_camel(True)}}PendingReceiver,
         {%- for method in receiver.methods %}
         .{{(method|callback_receiver_name)|to_camel(True)}},
         {%- endfor %}

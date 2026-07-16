@@ -17,50 +17,50 @@ private static let mojoPrefix = "golden."
 ///
 extension ILType {
     // Primary
-    fileprivate static let jsPrimaryRemote: ILType = .object(
+    fileprivate static let jsGoldenPrimaryRemote: ILType = .object(
         ofGroup: "golden.PrimaryRemote",
         withProperties: ["$"],
         withMethods: [
             "getEnum",
             "enumForEnum",
         ])
-    fileprivate static let jsPrimaryRemoteWrapper: ILType = .object(
+    fileprivate static let jsGoldenPrimaryRemoteWrapper: ILType = .object(
         ofGroup: "golden.PrimaryRemoteWrapper",
         withMethods: ["close", "isBound", "associateAndPassReceiver"])
-    fileprivate static let jsPrimaryPendingReceiver: ILType = .object(
+    fileprivate static let jsGoldenPrimaryPendingReceiver: ILType = .object(
         ofGroup: "golden.PrimaryPendingReceiver")
 }
 
 extension ObjectGroup {
     // Primary
-    fileprivate static let primaryRemote = ObjectGroup(
+    fileprivate static let goldenPrimaryRemote = ObjectGroup(
         name: "golden.PrimaryRemote",
-        instanceType: .jsPrimaryRemote,
-        properties: ["$": .jsPrimaryRemoteWrapper],
+        instanceType: .jsGoldenPrimaryRemote,
+        properties: ["$": .jsGoldenPrimaryRemoteWrapper],
         methods: [
             "getEnum": [
                 .plain(.string),
             ] => .jsPromise,
             "enumForEnum": [
-                .plain(.jsPrimaryNestedEnum),
+                .plain(.jsGoldenPrimary_NestedEnum),
             ] => .jsPromise,
         ]
     )
 
-    fileprivate static let primaryRemoteWrapper = ObjectGroup(
+    fileprivate static let goldenPrimaryRemoteWrapper = ObjectGroup(
         name: "golden.PrimaryRemoteWrapper",
-        instanceType: .jsPrimaryRemoteWrapper,
+        instanceType: .jsGoldenPrimaryRemoteWrapper,
         properties: [:],
         methods: [
             "close": [] => .undefined,
             "isBound": [] => .boolean,
-            "associateAndPassReceiver": [] => .jsPrimaryPendingReceiver,
+            "associateAndPassReceiver": [] => .jsGoldenPrimaryPendingReceiver,
         ]
     )
 
-    fileprivate static let primaryPendingReceiver = ObjectGroup(
+    fileprivate static let goldenPrimaryPendingReceiver = ObjectGroup(
         name: "golden.PrimaryPendingReceiver",
-        instanceType: .jsPrimaryPendingReceiver,
+        instanceType: .jsGoldenPrimaryPendingReceiver,
         properties: [:],
         methods: [:]
     )
@@ -121,8 +121,7 @@ private let mojoBuiltins: [String: ILType] = [
     /// the Singleton pattern, in `codePrefix`. This method ensures: (1) `getRemote`
     /// is only called once, and (2) the remote is saved to a global variable so it
     /// can be closed at the end of the program.
-    "getOrCreatePrimaryRemote": .function([] => .jsPrimaryRemote),
-    "golden.Primary": .jsPrimary,
+    "getOrCreatePrimaryRemote": .function([] => .jsGoldenPrimaryRemote),
 ]
 
 private let keepGenerators = [
@@ -175,9 +174,9 @@ let mojoPrimaryProfile = Profile(
     disabledMutators: v8Profile.disabledMutators,
     additionalBuiltins: mojoBuiltins.merging(commonMojoBuiltins) { (existing, _) in existing },
     additionalObjectGroups: [
-        .primaryRemote,
-        .primaryRemoteWrapper,
-        .primaryPendingReceiver,
+        .goldenPrimaryRemote,
+        .goldenPrimaryRemoteWrapper,
+        .goldenPrimaryPendingReceiver,
     ] + commonMojoObjectGroups,
     additionalEnumerations: [
     ] + commonMojoEnumerations,

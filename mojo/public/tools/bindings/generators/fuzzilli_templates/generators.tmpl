@@ -57,7 +57,7 @@ private let Mojo{{receiver.name}}RouterListenerGenerator = CodeGenerator(
     inputs: .required(.js{{receiver.name}}CallbackRouter)
 ) { b, router in
     guard
-        let eventName = ILType.js{{receiver.name}}CallbackRouter.properties
+        let eventName = ILType.js{{receiver|format_unique_name}}CallbackRouter.properties
             .subtracting(["$"])
             .randomElement()
     else {

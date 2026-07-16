@@ -25,7 +25,22 @@ PRIMITIVES_MAPPING = {
     mojom.DOUBLE: "float",  # no dedicated `.double` type
     mojom.STRING: "string",
 }
-
+# List of types skipped during profile generation.
+# These types should be hand-defined in MojoCommonProfile.swift; its definitions
+# are always used in every generated profile.
+IGNORED_TYPES = {
+    "mojoBase.mojom.BigBuffer",
+    "mojoBase.mojom.BigBufferSharedMemoryRegion",
+    "mojoBase.mojom.String16",
+    "mojoBase.mojom.BigString16",
+    "mojoBase.mojom.BigString",
+    "mojoBase.mojom.Uint128",
+    "skia.mojom.BitmapN32",
+    "skia.mojom.BitmapN32ImageInfo",
+    "skia.mojom.AlphaType",
+    "url.mojom.Url",
+    "url.mojom.SchemeHostPort",
+}
 
 class Generator(generator.Generator):
 
@@ -43,7 +58,8 @@ class Generator(generator.Generator):
     return {
         "callback_receiver_name": self._FormatCallbackReceiverName,
         "format_il_type": self._ILTypeName,
-        "name_with_namespace": self._NameWithNamespace,
+        "format_unique_name": self._FormatUniqueName,
+        "fully_qualified_name": self._FullyQualifiedName,
         "namespace_as_array": self._NamespaceAsArray,
         "to_camel": generator.ToCamel,
     }
@@ -65,7 +81,15 @@ class Generator(generator.Generator):
         "interface_receivers": list(self.interface_receivers.values()),
     }
 
+  def _IsIgnoredType(self, kind):
+    if not self._IsUserType(kind):
+      return False
+    return self._FullyQualifiedName(kind) in IGNORED_TYPES
+
   def _CollectInterfaceAndTypes(self, kind, is_in_js):
+    if self._IsIgnoredType(kind):
+      return
+
     if mojom.IsAnyInterfaceKind(kind):
       self._CollectInterface(kind, is_in_js)
 
@@ -86,7 +110,7 @@ class Generator(generator.Generator):
     else:
       interface = kind
 
-    name = self._FuzzilliName(interface)
+    name = self._FormatUniqueName(interface)
     if name in self.interface_remotes or name in self.interface_receivers:
       return
 
@@ -114,35 +138,80 @@ class Generator(generator.Generator):
       for param in method.response_parameters:
         self._CollectInterfaceAndTypes(param.kind, not is_in_js)
 
-  def _FuzzilliName(self, kind):
-    name = []
-    if kind.parent_kind:
-      name.append(kind.parent_kind.name)
-    name.append(kind.name)
-    return "".join(name)
+  # Returns the "flattened" name of a Mojom kind, recursing into parent_kind
+  # for nested definitions (e.g., "ParentStruct_NestedEnum").
+  def _FlattenKind(self, named_kind):
+    if named_kind.parent_kind:
+      return f"{self._FlattenKind(named_kind.parent_kind)}_{named_kind.name}"
+    return named_kind.name
 
-  # TODO(crbug.com/522372048): Handle nullable types explicitly. Currently, we
-  # silently generate non-nullables for nullable types.
-  def _ILTypeName(self, kind):
+  # Formats a unique type identifier string across namespaces for a Mojom type
+  # by combining the CamelCase namespace prefix with the type's local name.
+  # The `primitive_with_suffix` argument determines whether the name returned
+  # for primitives represents the primitive itself or a proxy `IL.object`
+  # type. These proxy types are identified by their `Element` suffix.
+  def _FormatUniqueName(self, kind, primitive_with_suffix=False):
     if kind in PRIMITIVES_MAPPING:
-      return PRIMITIVES_MAPPING[kind]
+      name = generator.ToCamel(PRIMITIVES_MAPPING[kind])
+      return name if primitive_with_suffix else name + "Element"
 
-    if mojom.IsStructKind(kind) or mojom.IsEnumKind(kind):
-      return f"js{self._FuzzilliName(kind)}"
-
-    if mojom.IsInterfaceKind(kind):
-      return f"js{self._FuzzilliName(kind)}Remote"
-
-    if self._IsAnyPendingRemoteKind(kind):
-      return f"js{self._FuzzilliName(kind.kind)}Remote"
-
-    if self._IsAnyPendingReceiverKind(kind):
-      return f"js{self._FuzzilliName(kind.kind)}PendingReceiver"
+    prefix = "".join(
+        generator.ToCamel(part) for part in kind.module.namespace.split("."))
 
     if mojom.IsArrayKind(kind):
-      return f"js{self._FuzzilliName(kind.kind)}Array"
+      return f"{self._FormatUniqueName(kind.kind)}Array"
+
+    if self._IsAnyPendingRemoteKind(kind) or self._IsAnyPendingReceiverKind(
+        kind):
+      return f"{prefix}{self._FlattenKind(kind.kind)}"
+
+    if mojom.IsStructKind(kind) or mojom.IsEnumKind(kind):
+      return f"{prefix}{self._FlattenKind(kind)}"
+
+    if mojom.IsInterfaceKind(kind):
+      return f"{prefix}{kind.name}"
 
     assert False, f"Unsupported type: {kind}."
+
+  # Maps a Mojom kind to its corresponding Fuzzilli Intermediate Language (IL)
+  # type name representation (e.g., "boolean", "jsFooStruct").
+  # The `primitive_with_suffix` argument determines whether the name returned
+  # for primitives represents the primitive itself or a proxy `IL.object`
+  # type. These proxy types are identified by their `Element` suffix.
+  # TODO(crbug.com/522372048): Handle nullable types explicitly. Currently, we
+  # silently generate non-nullables for nullable types.
+  def _ILTypeName(self, kind, primitive_with_suffix=False):
+    if kind in PRIMITIVES_MAPPING:
+      name = PRIMITIVES_MAPPING[kind]
+      if primitive_with_suffix:
+        return f"js{generator.ToCamel(name)}Element"
+      return name
+
+    if mojom.IsStructKind(kind) or mojom.IsEnumKind(kind):
+      return f"js{self._FormatUniqueName(kind)}"
+
+    if mojom.IsArrayKind(kind):
+      return f"js{self._FormatUniqueName(kind.kind)}Array"
+
+    if mojom.IsInterfaceKind(kind):
+      return f"js{self._FormatUniqueName(kind)}Remote"
+
+    if self._IsAnyPendingRemoteKind(kind):
+      return f"js{self._FormatUniqueName(kind.kind)}Remote"
+
+    if self._IsAnyPendingReceiverKind(kind):
+      return f"js{self._FormatUniqueName(kind.kind)}PendingReceiver"
+
+    assert False, f"Unsupported type: {kind}."
+
+  # Returns the complete dot-separated path of a Mojom type, combining its
+  # module namespace with its local name (e.g., "mojoBase.mojom.String16").
+  # Used for group names.
+  def _FullyQualifiedName(self, kind):
+    suffix = self._FlattenKind(kind)
+    if not kind.module:
+      return suffix
+    return f"{kind.module.namespace}.{suffix}"
 
   @UseJinja("fuzzilli_profile.tmpl")
   def _GenerateFuzzilliModule(self):
@@ -176,13 +245,13 @@ class Generator(generator.Generator):
     return mojom.IsPendingReceiverKind(
         kind) or mojom.IsPendingAssociatedReceiverKind(kind)
 
-  def _FormatCallbackReceiverName(self, method):
-    return (f"{method.interface.name}"
-            f"{generator.ToCamel(method.name)}CallbackReceiver")
+  def _IsUserType(self, kind):
+    return mojom.IsStructKind(kind) or mojom.IsEnumKind(
+        kind) or mojom.IsUnionKind(kind)
 
-  def _NameWithNamespace(self, kind):
-    parent_suffix = kind.parent_kind.name if kind.parent_kind else ""
-    return f"{kind.module.namespace}.{parent_suffix}{kind.name}"
+  def _FormatCallbackReceiverName(self, method):
+    return (f"{self._FormatUniqueName(method.interface)}"
+            f"{generator.ToCamel(method.name)}CallbackReceiver")
 
   def _NamespaceAsArray(self, namespace):
     return namespace.split(".")
