@@ -75,6 +75,8 @@ class COMPONENT_EXPORT(PRINTING) PrintingContextAndroid
 
   // File descriptor for the PDF file and owned by this layer.
   base::ScopedFD scoped_fd_;
+
+  bool print_selection_only_ = false;
 };
 
 }  // namespace printing

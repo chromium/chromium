@@ -53,10 +53,10 @@
 #include "printing/metafile_skia.h"
 #include "printing/mojom/print.mojom.h"
 #include "printing/print_settings.h"
+#include "printing/print_settings_conversion.h"
 #include "printing/printed_document.h"
 #include "printing/printing_utils.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "printing/print_settings_conversion.h"
 
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
 #include "chrome/browser/printing/oop_features.h"
@@ -150,7 +150,19 @@ PrintViewManagerBase::~PrintViewManagerBase() {
 }
 
 bool PrintViewManagerBase::PrintNow(content::RenderFrameHost* rfh) {
-  if (!StartPrintCommon(rfh)) {
+  return PrintNowImpl(rfh, /*print_selection_only=*/false);
+}
+
+#if BUILDFLAG(IS_ANDROID)
+bool PrintViewManagerBase::PrintNow(content::RenderFrameHost* rfh,
+                                    bool print_selection_only) {
+  return PrintNowImpl(rfh, print_selection_only);
+}
+#endif
+
+bool PrintViewManagerBase::PrintNowImpl(content::RenderFrameHost* rfh,
+                                        bool print_selection_only) {
+  if (!StartPrintCommon(rfh, print_selection_only)) {
     return false;
   }
 
@@ -164,7 +176,7 @@ bool PrintViewManagerBase::PrintNow(content::RenderFrameHost* rfh) {
 
 void PrintViewManagerBase::PrintNodeUnderContextMenu(
     content::RenderFrameHost* rfh) {
-  if (!StartPrintCommon(rfh)) {
+  if (!StartPrintCommon(rfh, /*print_selection_only=*/false)) {
     return;
   }
 
@@ -653,8 +665,9 @@ void PrintViewManagerBase::PrintingFailed(int32_t cookie,
                                           mojom::PrintFailureReason reason) {
   // Note: Not redundant with cookie checks in the same method in other parts of
   // the class hierarchy.
-  if (!IsValidCookie(cookie))
+  if (!IsValidCookie(cookie)) {
     return;
+  }
 
   PrintManager::PrintingFailed(cookie, reason);
 
@@ -758,8 +771,9 @@ void PrintViewManagerBase::OnCanceling() {
 }
 
 void PrintViewManagerBase::OnFailed() {
-  if (!canceling_job_)
+  if (!canceling_job_) {
     ShowPrintErrorDialogForGenericError();
+  }
 
   TerminatePrintJob(true);
 }
@@ -911,8 +925,9 @@ void PrintViewManagerBase::ReleasePrintJob() {
   }
 #endif
 
-  if (!print_job_)
+  if (!print_job_) {
     return;
+  }
 
   if (rfh) {
     // printing_rfh_ should only ever point to a RenderFrameHost with a live
@@ -1023,7 +1038,8 @@ void PrintViewManagerBase::SetPrintingRFH(content::RenderFrameHost* rfh) {
   printing_rfh_ = rfh;
 }
 
-bool PrintViewManagerBase::StartPrintCommon(content::RenderFrameHost* rfh) {
+bool PrintViewManagerBase::StartPrintCommon(content::RenderFrameHost* rfh,
+                                            bool print_selection_only) {
   // Remember the ID for `rfh`, to enable checking that the `RenderFrameHost`
   // is still valid after a possible inner message loop runs in
   // `DisconnectFromCurrentPrintJob()`.
@@ -1055,6 +1071,9 @@ bool PrintViewManagerBase::StartPrintCommon(content::RenderFrameHost* rfh) {
 #endif
 
   SetPrintingRFH(rfh);
+#if BUILDFLAG(IS_ANDROID)
+  print_selection_only_ = print_selection_only;
+#endif
   return true;
 }
 
@@ -1119,9 +1138,17 @@ void PrintViewManagerBase::CompleteScriptedPrint(
   if (!printer_query)
     printer_query = queue()->CreatePrinterQuery(rfh->GetGlobalId());
 
+  bool has_selection = params->has_selection;
+#if BUILDFLAG(IS_ANDROID)
+  // Android does not support choosing "selection only" in the system print
+  // dialog. Selection is printed only if the print job was explicitly started
+  // for selection.
+  has_selection = print_selection_only_;
+#endif
+
   auto* printer_query_ptr = printer_query.get();
   printer_query_ptr->GetSettingsFromUser(
-      params->expected_pages_count, params->has_selection, params->margin_type,
+      params->expected_pages_count, has_selection, params->margin_type,
       params->is_scripted, !render_process_host->IsPdf(),
       base::BindOnce(&OnDidScriptedPrint, queue_, std::move(printer_query),
                      std::move(callback_wrapper)));

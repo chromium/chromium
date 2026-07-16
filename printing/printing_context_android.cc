@@ -103,6 +103,7 @@ void PrintingContextAndroid::AskUserForSettings(
     PrintSettingsCallback callback) {
   // This method is always run in the UI thread.
   callback_ = std::move(callback);
+  print_selection_only_ = has_selection;
 
   JNIEnv* env = base::android::AttachCurrentThread();
   if (j_printing_context_.is_null()) {
@@ -160,6 +161,8 @@ void PrintingContextAndroid::AskUserForSettingsReply(JNIEnv* env,
   width = ConvertUnit(width, kMilsPerInch, dpi);
   height = ConvertUnit(height, kMilsPerInch, dpi);
   SetSizes(settings_.get(), dpi, width, height);
+
+  settings_->set_selection_only(print_selection_only_);
 
   std::move(callback_).Run(mojom::ResultCode::kSuccess);
 }
