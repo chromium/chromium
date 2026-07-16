@@ -12,6 +12,8 @@ component("host") {
     "weights_file_creator_impl.h",
     "weights_file_provider.cc",
     "weights_file_provider.h",
+    "weights_file_session_impl.cc",
+    "weights_file_session_impl.h",
   ]
 
   defines = [ "IS_WEBNN_HOST_IMPL" ]
@@ -20,6 +22,7 @@ component("host") {
     "//base",
     "//mojo/public/cpp/bindings",
     "//services/webnn/public/mojom",
+    "//url",
   ]
 
   if (is_win) {

@@ -123,5 +123,8 @@ interface GpuHost {
   // weights in the WebNN graph. Returns the open file handle if the file was
   // successfully created, otherwise return invalid file handle that will be
   // caught and prevent the graph from being built.
+  //
+  // TODO(crbug.com/364445586): Once the LiteRT MLDrift delegate moves from GPU
+  // to the renderer process, this interface can be removed entirely.
   CreateWebNNWeightsFile() => (mojo_base.mojom.File? file);
 };

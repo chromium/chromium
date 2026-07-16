@@ -285,21 +285,33 @@ void WebNNContextImpl::AddGraphImpl(scoped_refptr<WebNNGraphImpl> graph_impl) {
   graph_impls_.emplace(std::move(graph_impl));
 }
 
+void WebNNContextImpl::OpenWeightsFile(
+    base::OnceCallback<void(base::File,
+                            mojo::PendingRemote<mojom::WeightsFileSession>)>
+        callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(is_context_provider_in_renderer_);
+
+  base::OnceClosure task =
+      base::BindOnce(&WebNNContextProviderInRenderer::OpenWeightsFile,
+                     context_provider_in_renderer_,
+                     base::BindPostTaskToCurrentDefault(std::move(callback)));
+  if (!main_task_runner_->RunsTasksInCurrentSequence()) {
+    main_task_runner_->PostTask(FROM_HERE, std::move(task));
+  } else {
+    std::move(task).Run();
+  }
+}
+
 void WebNNContextImpl::CreateWeightsFile(
     base::OnceCallback<void(base::File)> callback) {
-  base::OnceClosure create_task;
-  if (is_context_provider_in_renderer_) {
-    create_task =
-        base::BindOnce(&WebNNContextProviderInRenderer::CreateWeightsFile,
-                       context_provider_in_renderer_,
-                       base::BindPostTaskToCurrentDefault(std::move(callback)));
-  }
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // CreateWeightsFile is only used by the GPU-process path.
+  DCHECK(!is_context_provider_in_renderer_);
 
-  if (!create_task) {
-    create_task = base::BindOnce(
-        &WebNNContextProviderImpl::CreateWeightsFile, context_provider_,
-        base::BindPostTaskToCurrentDefault(std::move(callback)));
-  }
+  base::OnceClosure create_task = base::BindOnce(
+      &WebNNContextProviderImpl::CreateWeightsFile, context_provider_,
+      base::BindPostTaskToCurrentDefault(std::move(callback)));
 
   if (!main_task_runner_->RunsTasksInCurrentSequence()) {
     main_task_runner_->PostTask(FROM_HERE, std::move(create_task));

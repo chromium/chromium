@@ -118,13 +118,16 @@ void WebNNContextProviderInRenderer::OnCreateWebNNContextImpl(
       mojom::CreateContextResult::NewSuccess(std::move(success)));
 }
 
-void WebNNContextProviderInRenderer::CreateWeightsFile(
-    base::OnceCallback<void(base::File)> callback) {
+void WebNNContextProviderInRenderer::OpenWeightsFile(
+    base::OnceCallback<void(base::File,
+                            mojo::PendingRemote<mojom::WeightsFileSession>)>
+        callback) {
   if (!shared_weights_file_creator_.is_bound()) {
-    std::move(callback).Run(base::File());
+    std::move(callback).Run(base::File(),
+                            mojo::PendingRemote<mojom::WeightsFileSession>());
     return;
   }
-  shared_weights_file_creator_->CreateWeightsFile(std::move(callback));
+  shared_weights_file_creator_->OpenWeightsFile(std::move(callback));
 }
 
 void WebNNContextProviderInRenderer::RemoveWebNNContextImpl(

@@ -20,12 +20,13 @@
 #include "base/types/expected.h"
 #include "base/types/fixed_array.h"
 #include "mojo/public/cpp/base/big_buffer.h"
+#include "mojo/public/cpp/bindings/shared_remote.h"
 #include "services/webnn/buildflags.h"
 #include "services/webnn/public/cpp/context_properties.h"
 #include "services/webnn/public/cpp/operand_descriptor.h"
 #include "services/webnn/public/cpp/supported_data_types.h"
 #include "services/webnn/public/cpp/webnn_types.h"
-#include "services/webnn/public/mojom/webnn_context_provider.mojom-forward.h"
+#include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "third_party/flatbuffers/src/include/flatbuffers/flatbuffers.h"
@@ -130,6 +131,7 @@ class GraphBuilderTflite final {
       const base::flat_map<OperandId, OperationId>
           operand_to_producing_operation,
       base::File weights_file,
+      mojo::SharedRemote<mojom::WeightsFileSession> session,
       bool use_external_buffer);
 
   static ContextProperties GetContextProperties();
@@ -157,6 +159,7 @@ class GraphBuilderTflite final {
       const base::flat_map<OperandId, OperationId>&
           operand_to_producing_operation,
       base::File weights_file,
+      mojo::SharedRemote<mojom::WeightsFileSession> session,
       bool use_external_buffer);
   ~GraphBuilderTflite();
 
@@ -1054,6 +1057,10 @@ class GraphBuilderTflite final {
 
   // A temporary file created in browser process to hold all weights.
   base::File weights_file_;
+
+  // Capacity host for incremental budget enforcement (in-renderer path only).
+  // Null on the GPU-process path and in incognito mode.
+  mojo::SharedRemote<mojom::WeightsFileSession> session_;
 
   // If true, tensors are serialized using `external_buffer`. If false, tensors
   // are serialized using the standard `buffer`.

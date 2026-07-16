@@ -380,7 +380,27 @@ void BindWebNNWeightsFileCreatorForRenderFrame(
   }
 
   const bool is_incognito = host->GetBrowserContext()->IsOffTheRecord();
-  webnn::WeightsFileCreatorImpl::Create(std::move(receiver), is_incognito);
+  webnn::WeightsFileCreatorImpl::Create(
+      std::move(receiver), host->GetLastCommittedOrigin(), is_incognito);
+}
+
+template <typename WorkerHost>
+url::Origin GetWebNNWorkerOrigin(WorkerHost* host);
+
+template <>
+url::Origin GetWebNNWorkerOrigin<DedicatedWorkerHost>(
+    DedicatedWorkerHost* host) {
+  return host->GetWorkerStorageKey().origin();
+}
+
+template <>
+url::Origin GetWebNNWorkerOrigin<SharedWorkerHost>(SharedWorkerHost* host) {
+  return host->GetWorkerStorageKey().origin();
+}
+
+template <>
+url::Origin GetWebNNWorkerOrigin<ServiceWorkerHost>(ServiceWorkerHost* host) {
+  return host->GetBucketStorageKey().origin();
 }
 
 template <typename WorkerHost>
@@ -397,7 +417,8 @@ void BindWebNNWeightsFileCreatorForWorker(
 
   const bool is_incognito =
       host->GetProcessHost()->GetBrowserContext()->IsOffTheRecord();
-  webnn::WeightsFileCreatorImpl::Create(std::move(receiver), is_incognito);
+  webnn::WeightsFileCreatorImpl::Create(
+      std::move(receiver), GetWebNNWorkerOrigin(host), is_incognito);
 }
 
 #if BUILDFLAG(IS_MAC)

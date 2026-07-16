@@ -122,13 +122,22 @@ void ContextImplLiteRt::CreateGraphImpl(
         std::move(graph_info), std::move(compute_resource_info),
         std::move(constant_operands), *this,
         /*weights_file=*/base::File(base::File::FILE_ERROR_NOT_FOUND),
-        std::move(callback));
-  } else {
-    CreateWeightsFile(base::BindOnce(
-        &ContextImplLiteRt::DidCreateWeightsFile, weak_factory_.GetWeakPtr(),
+        /*session=*/mojo::NullRemote(), std::move(callback));
+    return;
+  }
+
+  if (is_context_provider_in_renderer_) {
+    OpenWeightsFile(base::BindOnce(
+        &ContextImplLiteRt::DidOpenWeightsFile, weak_factory_.GetWeakPtr(),
         std::move(graph_info), std::move(compute_resource_info),
         std::move(constant_operands), std::move(callback)));
+    return;
   }
+
+  CreateWeightsFile(base::BindOnce(
+      &ContextImplLiteRt::DidCreateWeightsFile, weak_factory_.GetWeakPtr(),
+      std::move(graph_info), std::move(compute_resource_info),
+      std::move(constant_operands), std::move(callback)));
 }
 
 void ContextImplLiteRt::DidCreateWeightsFile(
@@ -142,10 +151,24 @@ void ContextImplLiteRt::DidCreateWeightsFile(
   // temporary file (for example, because the profile is incognito) or the
   // creation failed. In either case, fall back to keeping the weights
   // embedded in the in-memory Flatbuffer model.
-  GraphImplLiteRt::CreateAndBuild(std::move(graph_info),
-                                  std::move(compute_resource_info),
-                                  std::move(constant_operands), *this,
-                                  std::move(weights_file), std::move(callback));
+  DidOpenWeightsFile(std::move(graph_info), std::move(compute_resource_info),
+                     std::move(constant_operands), std::move(callback),
+                     std::move(weights_file),
+                     /*session=*/mojo::NullRemote());
+}
+
+void ContextImplLiteRt::DidOpenWeightsFile(
+    mojom::GraphInfoPtr graph_info,
+    WebNNGraphImpl::ComputeResourceInfo compute_resource_info,
+    base::flat_map<OperandId, std::unique_ptr<WebNNConstantOperand>>
+        constant_operands,
+    CreateGraphImplCallback callback,
+    base::File weights_file,
+    mojo::PendingRemote<mojom::WeightsFileSession> session) {
+  GraphImplLiteRt::CreateAndBuild(
+      std::move(graph_info), std::move(compute_resource_info),
+      std::move(constant_operands), *this, std::move(weights_file),
+      std::move(session), std::move(callback));
 }
 
 base::expected<scoped_refptr<WebNNTensorImpl>, mojom::ErrorPtr>

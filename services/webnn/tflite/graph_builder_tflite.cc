@@ -704,12 +704,30 @@ auto GraphBuilderTflite::CreateAndBuild(
         operand_to_dependent_operations,
     const base::flat_map<OperandId, OperationId> operand_to_producing_operation,
     base::File weights_file,
+    mojo::SharedRemote<mojom::WeightsFileSession> session,
     bool use_external_buffer) -> base::expected<Result, std::string> {
-  GraphBuilderTflite builder(std::move(context_properties), graph_info,
-                             constant_operands,
-                             std::move(operand_to_dependent_operations),
-                             std::move(operand_to_producing_operation),
-                             std::move(weights_file), use_external_buffer);
+  GraphBuilderTflite builder(
+      std::move(context_properties), graph_info, constant_operands,
+      std::move(operand_to_dependent_operations),
+      std::move(operand_to_producing_operation), std::move(weights_file),
+      std::move(session), use_external_buffer);
+
+  if (builder.weights_file_.IsValid()) {
+    if (builder.session_.is_bound()) {
+      bool granted = false;
+      if (!builder.session_->RequestCapacityChange(kWeightsAlignment,
+                                                   &granted) ||
+          !granted) {
+        return base::unexpected(
+            "Weights file capacity request denied by browser.");
+      }
+    }
+    if (!builder.weights_file_.Seek(base::File::FROM_CURRENT,
+                                    kWeightsAlignment)) {
+      return base::unexpected("Failed to seek weights file.");
+    }
+    builder.weights_file_.SetLength(kWeightsAlignment);
+  }
 
   bool graph_requires_fp32_precision = false;
   for (size_t i = 0; i < graph_info.operations.size(); ++i) {
@@ -1145,6 +1163,7 @@ GraphBuilderTflite::GraphBuilderTflite(
     const base::flat_map<OperandId, OperationId>&
         operand_to_producing_operation,
     base::File weights_file,
+    mojo::SharedRemote<mojom::WeightsFileSession> session,
     bool use_external_buffer)
     : context_properties_(std::move(context_properties)),
       graph_info_(graph_info),
@@ -1152,16 +1171,11 @@ GraphBuilderTflite::GraphBuilderTflite(
       operand_to_dependent_operations_(operand_to_dependent_operations),
       operand_to_producing_operation_(operand_to_producing_operation),
       weights_file_(std::move(weights_file)),
+      session_(std::move(session)),
       use_external_buffer_(use_external_buffer) {
   // TFLite requires the first entry in FlatBuffer to be an empty buffer.
   buffers_.push_back(
       ::tflite::CreateBuffer(builder_, builder_.CreateVector({})));
-  if (weights_file_.IsValid()) {
-    // TFLite requires that offsets into the weights file are greater than 1 and
-    // we need anything we add to be aligned.
-    CHECK(weights_file_.Seek(base::File::FROM_CURRENT, kWeightsAlignment));
-    weights_file_.SetLength(kWeightsAlignment);
-  }
 }
 
 GraphBuilderTflite::~GraphBuilderTflite() = default;
@@ -3267,6 +3281,24 @@ auto GraphBuilderTflite::FinishAndTakeResult(
   // sufficient readable memory after it.
 #if BUILDFLAG(BUILD_TFLITE_WITH_XNNPACK)
   if (weights_file_.IsValid()) {
+    if (session_.is_bound()) {
+      const int64_t current_length = weights_file_.GetLength();
+      if (current_length < 0) {
+        return base::unexpected("Failed to query weights file length.");
+      }
+      base::CheckedNumeric<uint64_t> padded =
+          base::checked_cast<uint64_t>(current_length);
+      padded += XNN_EXTRA_BYTES;
+      uint64_t new_size = 0;
+      if (!padded.AssignIfValid(&new_size)) {
+        return base::unexpected("Weights file size overflow.");
+      }
+      bool granted = false;
+      if (!session_->RequestCapacityChange(new_size, &granted) || !granted) {
+        return base::unexpected(
+            "Weights file capacity request denied by browser.");
+      }
+    }
     const uint8_t zeros[XNN_EXTRA_BYTES] = {};
     if (!weights_file_.WriteAtCurrentPosAndCheck(zeros)) {
       return base::unexpected("Failed to write weights file padding.");
@@ -3314,6 +3346,24 @@ auto GraphBuilderTflite::SerializeBuffer(base::span<const uint8_t> buffer)
         base::checked_cast<size_t>(weights_file_.GetLength());
     size_t offset = base::bits::AlignUp(buffer_size, kWeightsAlignment);
     CHECK_GT(offset, 1u);
+
+    // Request capacity for the final size BEFORE extending the file. The
+    // browser-side anti-tamper check rejects requests when the file is already
+    // longer than what was previously granted.
+    if (session_.is_bound()) {
+      base::CheckedNumeric<uint64_t> new_size_checked = offset;
+      new_size_checked += buffer.size();
+      uint64_t new_size = 0;
+      if (!new_size_checked.AssignIfValid(&new_size)) {
+        return base::unexpected("Weights file size overflow.");
+      }
+      bool granted = false;
+      if (!session_->RequestCapacityChange(new_size, &granted) || !granted) {
+        return base::unexpected(
+            "Weights file capacity request denied by browser.");
+      }
+    }
+
     size_t padding = offset - buffer_size;
     if (padding > 0) {
       if (!weights_file_.Seek(base::File::FROM_BEGIN, offset)) {

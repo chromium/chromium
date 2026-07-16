@@ -37,8 +37,14 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextProviderInRenderer
   void CreateWebNNContext(mojom::CreateContextOptionsPtr options,
                           CreateWebNNContextCallback callback) override;
 
-  // Creates a weights file via the browser process.
-  void CreateWeightsFile(base::OnceCallback<void(base::File)> callback);
+  // Opens a writable tempfile in the browser and returns a per-file session
+  // pipe. The renderer writes weights incrementally (calling
+  // `RequestCapacityChange` before each extending write) and seals the file
+  // with `Finalize` when done.
+  void OpenWeightsFile(
+      base::OnceCallback<void(base::File,
+                              mojo::PendingRemote<mojom::WeightsFileSession>)>
+          callback);
 
   base::WeakPtr<WebNNContextProviderInRenderer> GetWeakPtr() {
     return weak_factory_.GetWeakPtr();

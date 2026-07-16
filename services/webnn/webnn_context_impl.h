@@ -241,6 +241,13 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
   virtual std::vector<mojom::WebNNExecutionProviderDetailsPtr>
   GetExecutionProvidersInfo() const = 0;
 
+  // Opens a writable tempfile in the browser and returns a per-file session
+  // pipe for capacity accounting and finalization.
+  void OpenWeightsFile(
+      base::OnceCallback<void(base::File,
+                              mojo::PendingRemote<mojom::WeightsFileSession>)>
+          callback);
+
  protected:
   friend struct OnTaskRunnerDeleter;
 

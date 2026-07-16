@@ -119,13 +119,39 @@ void ContextImplTflite::CreateGraphImpl(
     GraphImplTflite::CreateAndBuild(
         std::move(graph_info), std::move(compute_resource_info),
         std::move(constant_operands), *this,
-        /*weights_file=*/base::File(), std::move(callback));
-  } else {
-    CreateWeightsFile(base::BindOnce(
-        &ContextImplTflite::DidCreateWeightsFile, weak_factory_.GetWeakPtr(),
+        /*weights_file=*/base::File(),
+        /*session=*/mojo::NullRemote(), std::move(callback));
+    return;
+  }
+
+  if (is_context_provider_in_renderer_) {
+    OpenWeightsFile(base::BindOnce(
+        &ContextImplTflite::DidOpenWeightsFile, weak_factory_.GetWeakPtr(),
         std::move(graph_info), std::move(compute_resource_info),
         std::move(constant_operands), std::move(callback)));
+    return;
   }
+
+  CreateWeightsFile(base::BindOnce(
+      &ContextImplTflite::DidCreateWeightsFile, weak_factory_.GetWeakPtr(),
+      std::move(graph_info), std::move(compute_resource_info),
+      std::move(constant_operands), std::move(callback)));
+}
+
+void ContextImplTflite::DidOpenWeightsFile(
+    mojom::GraphInfoPtr graph_info,
+    WebNNGraphImpl::ComputeResourceInfo compute_resource_info,
+    base::flat_map<OperandId, std::unique_ptr<WebNNConstantOperand>>
+        constant_operands,
+    CreateGraphImplCallback callback,
+    base::File weights_file,
+    mojo::PendingRemote<mojom::WeightsFileSession> session) {
+  // An invalid weights_file means the browser declined (e.g. disk full).
+  // Fall back to in-memory model.
+  GraphImplTflite::CreateAndBuild(
+      std::move(graph_info), std::move(compute_resource_info),
+      std::move(constant_operands), *this, std::move(weights_file),
+      std::move(session), std::move(callback));
 }
 
 void ContextImplTflite::DidCreateWeightsFile(
@@ -139,10 +165,10 @@ void ContextImplTflite::DidCreateWeightsFile(
   // temporary file (for example, because the profile is incognito) or the
   // creation failed. In either case, fall back to keeping the weights
   // embedded in the in-memory Flatbuffer model.
-  GraphImplTflite::CreateAndBuild(std::move(graph_info),
-                                  std::move(compute_resource_info),
-                                  std::move(constant_operands), *this,
-                                  std::move(weights_file), std::move(callback));
+  GraphImplTflite::CreateAndBuild(
+      std::move(graph_info), std::move(compute_resource_info),
+      std::move(constant_operands), *this, std::move(weights_file),
+      /*session=*/mojo::NullRemote(), std::move(callback));
 }
 
 base::expected<scoped_refptr<WebNNTensorImpl>, mojom::ErrorPtr>

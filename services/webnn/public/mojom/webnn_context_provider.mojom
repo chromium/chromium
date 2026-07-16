@@ -74,13 +74,46 @@ interface WebNNContextProvider {
       => (CreateContextResult result);
 };
 
+// Per-file session for an in-renderer weights file. One instance is created
+// by `WebNNWeightsFileCreator::OpenWeightsFile` for each file; the session
+// owns the on-disk tempfile in the browser process for its entire lifetime.
+//
+// The renderer calls `RequestCapacityChange` (sync) before each write that
+// would extend the file (the browser enforces per-context and per-origin
+// budgets), then calls `Finalize` once after all weights have been written
+// to receive a sealed read-only fd back. Dropping the session pipe before
+// `Finalize` releases the reserved budgets.
+//
+// TODO(crbug.com/507502295): Use file manager for TFLite weights files.
+[RuntimeFeature=webnn.mojom.features.kWebMachineLearningNeuralNetwork]
+interface WeightsFileSession {
+  // Returns false if any budget check fails or the file has already grown
+  // beyond what was previously granted (anti-tamper). The renderer must abort
+  // the graph build when false is returned.
+  [Sync]
+  RequestCapacityChange(uint64 new_size) => (bool granted);
+
+  // Called after all weights are written. The browser fstat-validates the
+  // final file size (ReportBadMessage on violation), reopens the file
+  // read-only and unlinks the path, then returns the sealed fd for mmap.
+  // Returns null on error. The session pipe is implicitly closed after this
+  // reply.
+  Finalize() => (mojo_base.mojom.ReadOnlyFile? sealed_file);
+};
+
 // Interface for creating temporary weights files in the browser process.
 // Used by the in-renderer TFLite backend which cannot create files directly
-// due to the renderer process sandbox.
+// due to the renderer process sandbox. One creator instance is bound per
+// `navigator.ml`; the creator is a thin factory and may be used to spawn
+// multiple concurrent `WeightsFileSession`s (one per graph build).
 // TODO(crbug.com/507502295): Use file manager for TFLite weights files.
 [RuntimeFeature=webnn.mojom.features.kWebMachineLearningNeuralNetwork]
 interface WebNNWeightsFileCreator {
-  // Creates a temporary file for storing model weights. Returns null on
-  // failure.
-  CreateWeightsFile() => (mojo_base.mojom.File? file);
+  // Opens a temporary weights file. The browser creates a deferred-unlink
+  // tempfile, dups a writable fd to the renderer, and self-owns a paired
+  // `WeightsFileSession` whose `PendingRemote` is returned. Returns null
+  // fds on failure (e.g. disk full).
+  OpenWeightsFile()
+      => (mojo_base.mojom.File? writable_fd,
+          pending_remote<WeightsFileSession>? session);
 };

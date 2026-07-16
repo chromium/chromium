@@ -481,12 +481,41 @@ void GraphImplLiteRt::CreateAndBuild(
         constant_operands,
     ContextImplLiteRt& context,
     base::File weights_file,
+    mojo::PendingRemote<mojom::WeightsFileSession> session,
     WebNNContextImpl::CreateGraphImplCallback callback) {
   base::flat_map<OperandId, base::flat_set<OperationId>>
       operand_to_dependent_operations =
           std::move(compute_resource_info.operand_to_dependent_operations);
   base::flat_map<OperandId, OperationId> operand_to_producing_operation =
       std::move(compute_resource_info.operand_to_producing_operation);
+
+  if (session.is_valid()) {
+    // Bind on the context sequence: `SharedRemote::Bind` needs a sequenced
+    // task runner. Once bound it can be sync-called from any thread.
+    mojo::SharedRemote<mojom::WeightsFileSession> shared_session(
+        std::move(session));
+    // Keep a ref for `DidBuildGraph` to call `Finalize` after the build.
+    mojo::SharedRemote<mojom::WeightsFileSession> session_for_finalize =
+        shared_session;
+    base::ThreadPool::PostTaskAndReplyWithResult(
+        FROM_HERE,
+        {base::TaskPriority::USER_BLOCKING,
+         base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN, base::MayBlock(),
+         base::WithBaseSyncPrimitives()},
+        base::BindOnce(&GraphImplLiteRt::BuildGraphOnBackgroundThread,
+                       context.properties(), std::move(graph_info),
+                       std::move(constant_operands),
+                       std::move(operand_to_dependent_operations),
+                       std::move(operand_to_producing_operation),
+                       std::move(weights_file), std::move(shared_session)),
+        base::BindOnce(&GraphImplLiteRt::DidBuildGraph, context.AsWeakPtr(),
+                       std::move(compute_resource_info),
+                       context.options().device, context.IsXNNPackInitialized(),
+                       std::move(session_for_finalize), std::move(callback)));
+    return;
+  }
+
+  // Create and build the graph in incognito mode on a background thread.
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE,
       {base::TaskPriority::USER_BLOCKING,
@@ -522,12 +551,111 @@ GraphImplLiteRt::CreateAndBuildOnBackgroundThread(
           context_properties, *graph_info, std::move(constant_operands),
           std::move(operand_to_dependent_operations),
           std::move(operand_to_producing_operation), std::move(weights_file),
+          /*session=*/
+          mojo::SharedRemote<mojom::WeightsFileSession>(),
           /*use_external_buffer=*/true),
       [](std::string error) {
         return mojom::Error::New(mojom::Error::Code::kNotSupportedError,
                                  std::move(error));
       });
 
+  ASSIGN_OR_RETURN(std::unique_ptr<ComputeResources> compute_resources,
+                   ComputeResources::Create(context_device, is_xnnpack_enabled,
+                                            std::move(result)));
+  return compute_resources;
+}
+
+// static
+base::expected<tflite::GraphBuilderTflite::Result, mojom::ErrorPtr>
+GraphImplLiteRt::BuildGraphOnBackgroundThread(
+    ContextProperties context_properties,
+    mojom::GraphInfoPtr graph_info,
+    base::flat_map<OperandId, std::unique_ptr<WebNNConstantOperand>>
+        constant_operands,
+    base::flat_map<OperandId, base::flat_set<OperationId>>
+        operand_to_dependent_operations,
+    base::flat_map<OperandId, OperationId> operand_to_producing_operation,
+    base::File weights_file,
+    mojo::SharedRemote<mojom::WeightsFileSession> shared_session) {
+  ASSIGN_OR_RETURN(
+      tflite::GraphBuilderTflite::Result result,
+      tflite::GraphBuilderTflite::CreateAndBuild(
+          context_properties, *graph_info, std::move(constant_operands),
+          std::move(operand_to_dependent_operations),
+          std::move(operand_to_producing_operation), std::move(weights_file),
+          std::move(shared_session),
+          /*use_external_buffer=*/true),
+      [](std::string error) {
+        return mojom::Error::New(mojom::Error::Code::kNotSupportedError,
+                                 std::move(error));
+      });
+  return result;
+}
+
+// static
+void GraphImplLiteRt::DidBuildGraph(
+    base::WeakPtr<WebNNContextImpl> context,
+    ComputeResourceInfo compute_resource_info,
+    mojom::Device context_device,
+    bool is_xnnpack_enabled,
+    mojo::SharedRemote<mojom::WeightsFileSession> session,
+    WebNNContextImpl::CreateGraphImplCallback callback,
+    base::expected<tflite::GraphBuilderTflite::Result, mojom::ErrorPtr>
+        result) {
+  if (!context) {
+    return;
+  }
+  if (!result.has_value()) {
+    std::move(callback).Run(base::unexpected(std::move(result.error())));
+    return;
+  }
+
+  // Call `Finalize` on the session; move `session` into the reply closure so
+  // the pipe stays open until the browser replies, then drops on closure exit.
+  mojom::WeightsFileSession* session_ptr = session.get();
+  session_ptr->Finalize(base::BindOnce(
+      [](mojo::SharedRemote<mojom::WeightsFileSession> /*session_keepalive*/,
+         base::WeakPtr<WebNNContextImpl> context,
+         ComputeResourceInfo compute_resource_info,
+         mojom::Device context_device, bool is_xnnpack_enabled,
+         WebNNContextImpl::CreateGraphImplCallback callback,
+         tflite::GraphBuilderTflite::Result build_result,
+         base::File sealed_file) {
+        if (!context) {
+          return;
+        }
+        if (!sealed_file.IsValid()) {
+          std::move(callback).Run(base::unexpected(
+              mojom::Error::New(mojom::Error::Code::kUnknownError,
+                                "Failed to finalize weights file.")));
+          return;
+        }
+        build_result.weights_file = std::move(sealed_file);
+
+        base::ThreadPool::PostTaskAndReplyWithResult(
+            FROM_HERE,
+            {base::TaskPriority::USER_BLOCKING,
+             base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN,
+             base::MayBlock()},
+            base::BindOnce(
+                &GraphImplLiteRt::CreateComputeResourcesOnBackgroundThread,
+                context_device, is_xnnpack_enabled, std::move(build_result)),
+            base::BindOnce(&GraphImplLiteRt::DidCreateAndBuild,
+                           std::move(context), std::move(compute_resource_info),
+                           std::move(callback)));
+      },
+      std::move(session), std::move(context), std::move(compute_resource_info),
+      context_device, is_xnnpack_enabled, std::move(callback),
+      std::move(*result)));
+}
+
+// static
+base::expected<std::unique_ptr<GraphImplLiteRt::ComputeResources>,
+               mojom::ErrorPtr>
+GraphImplLiteRt::CreateComputeResourcesOnBackgroundThread(
+    mojom::Device context_device,
+    bool is_xnnpack_enabled,
+    tflite::GraphBuilderTflite::Result result) {
   ASSIGN_OR_RETURN(std::unique_ptr<ComputeResources> compute_resources,
                    ComputeResources::Create(context_device, is_xnnpack_enabled,
                                             std::move(result)));

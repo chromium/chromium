@@ -14,7 +14,9 @@
 #include "base/memory/weak_ptr.h"
 #include "base/types/expected.h"
 #include "mojo/public/cpp/base/big_buffer.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/webnn/public/cpp/webnn_types.h"
+#include "services/webnn/public/mojom/webnn_context_provider.mojom-forward.h"
 #include "services/webnn/public/mojom/webnn_error.mojom-forward.h"
 #include "services/webnn/queueable_resource_state.h"
 #include "services/webnn/tflite/graph_builder_tflite.h"
@@ -42,6 +44,7 @@ class GraphImplLiteRt final : public WebNNGraphImpl {
           constant_operands,
       ContextImplLiteRt& context,
       base::File weights_file,
+      mojo::PendingRemote<mojom::WeightsFileSession> session,
       WebNNContextImpl::CreateGraphImplCallback callback);
 
   class ComputeResources;
@@ -61,6 +64,9 @@ class GraphImplLiteRt final : public WebNNGraphImpl {
  private:
   ~GraphImplLiteRt() override;
 
+  // TODO(crbug.com/454732289): Once the MLDrift delegate moves to the renderer
+  // process, this path will only be exercised for incognito mode. At that point
+  // `CreateWebNNWeightsFile` on GpuHost can be removed.
   static base::expected<std::unique_ptr<ComputeResources>, mojom::ErrorPtr>
   CreateAndBuildOnBackgroundThread(
       ContextProperties context_properties,
@@ -73,6 +79,39 @@ class GraphImplLiteRt final : public WebNNGraphImpl {
           operand_to_dependent_operations,
       base::flat_map<OperandId, OperationId> operand_to_producing_operation,
       base::File weights_file);
+
+  // Builds the graph only (writes weights via session sync IPC). Returns
+  // the builder `Result`.
+  static base::expected<tflite::GraphBuilderTflite::Result, mojom::ErrorPtr>
+  BuildGraphOnBackgroundThread(
+      ContextProperties context_properties,
+      mojom::GraphInfoPtr graph_info,
+      base::flat_map<OperandId, std::unique_ptr<WebNNConstantOperand>>
+          constant_operands,
+      base::flat_map<OperandId, base::flat_set<OperationId>>
+          operand_to_dependent_operations,
+      base::flat_map<OperandId, OperationId> operand_to_producing_operation,
+      base::File weights_file,
+      mojo::SharedRemote<mojom::WeightsFileSession> session);
+
+  // Called on context sequence after the graph is built. Calls
+  // `session->Finalize` to seal the weights file.
+  static void DidBuildGraph(
+      base::WeakPtr<WebNNContextImpl> context,
+      ComputeResourceInfo compute_resource_info,
+      mojom::Device context_device,
+      bool is_xnnpack_enabled,
+      mojo::SharedRemote<mojom::WeightsFileSession> session,
+      WebNNContextImpl::CreateGraphImplCallback callback,
+      base::expected<tflite::GraphBuilderTflite::Result, mojom::ErrorPtr>
+          result);
+
+  // Creates ComputeResources on background thread from finalized `Result`.
+  static base::expected<std::unique_ptr<ComputeResources>, mojom::ErrorPtr>
+  CreateComputeResourcesOnBackgroundThread(
+      mojom::Device context_device,
+      bool is_xnnpack_enabled,
+      tflite::GraphBuilderTflite::Result result);
 
   static void DidCreateAndBuild(
       base::WeakPtr<WebNNContextImpl> context,

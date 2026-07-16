@@ -86,6 +86,15 @@ class ContextImplLiteRt final : public WebNNContextImpl {
           constant_operands,
       CreateGraphImplCallback callback) override;
 
+  void DidOpenWeightsFile(
+      mojom::GraphInfoPtr graph_info,
+      WebNNGraphImpl::ComputeResourceInfo compute_resource_info,
+      base::flat_map<OperandId, std::unique_ptr<WebNNConstantOperand>>
+          constant_operands,
+      CreateGraphImplCallback callback,
+      base::File weights_file,
+      mojo::PendingRemote<mojom::WeightsFileSession> session);
+
   void DidCreateWeightsFile(
       mojom::GraphInfoPtr graph_info,
       WebNNGraphImpl::ComputeResourceInfo compute_resource_info,
