@@ -9,6 +9,7 @@
 #include <optional>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory_coordinator/memory_consumer.h"
 #include "base/scoped_observation.h"
 #include "components/performance_manager/public/graph/graph_registered.h"
 #include "components/performance_manager/public/graph/page_node.h"
@@ -24,7 +25,8 @@ namespace performance_manager::policies {
 class KeepAliveDSEPolicy : public PageNodeObserver,
                            public ProcessNodeObserver,
                            public GraphOwnedAndRegistered<KeepAliveDSEPolicy>,
-                           public TemplateURLServiceObserver {
+                           public TemplateURLServiceObserver,
+                           public base::MemoryConsumer {
  public:
   KeepAliveDSEPolicy();
   ~KeepAliveDSEPolicy() override;
@@ -44,6 +46,10 @@ class KeepAliveDSEPolicy : public PageNodeObserver,
   // TemplateURLServiceObserver:
   void OnTemplateURLServiceChanged() override;
   void OnTemplateURLServiceShuttingDown() override;
+
+  // base::MemoryConsumer:
+  void OnUpdateMemoryLimit() override;
+  void OnReleaseMemory() override;
 
  private:
   // Iterates through all existing pages and attempts to find a renderer
@@ -88,6 +94,8 @@ class KeepAliveDSEPolicy : public PageNodeObserver,
   // Observes the TemplateURLService for changes to the default search engine.
   base::ScopedObservation<TemplateURLService, TemplateURLServiceObserver>
       template_url_service_observation_{this};
+
+  base::MemoryConsumerRegistration memory_consumer_registration_;
 };
 
 }  // namespace performance_manager::policies

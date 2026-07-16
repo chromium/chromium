@@ -4,6 +4,7 @@
 
 #include "chrome/browser/performance_manager/policies/keep_alive_dse_policy.h"
 
+#include "base/memory_coordinator/utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "components/performance_manager/public/graph/frame_node.h"
@@ -34,7 +35,25 @@ TemplateURLService* GetTemplateURLService(const PageNode* page_node) {
 
 }  // namespace
 
-KeepAliveDSEPolicy::KeepAliveDSEPolicy() = default;
+KeepAliveDSEPolicy::KeepAliveDSEPolicy()
+    : memory_consumer_registration_(
+          "KeepAliveDSEPolicy",
+          base::MemoryConsumerTraits(
+              // The renderer process kept alive is typically tens of MBs.
+              base::MemoryConsumerTraits::EstimatedMemoryUsage::kMedium,
+              // Releasing the keep-alive may terminate the renderer process,
+              // freeing pages directly via the OS.
+              base::MemoryConsumerTraits::ReleaseMemoryCost::
+                  kFreesPagesWithoutTraversal,
+              // Releasing the keep-alive does not discard user state.
+              base::MemoryConsumerTraits::InformationRetention::kLossless,
+              // Releasing the keep-alive is performed synchronously.
+              base::MemoryConsumerTraits::ExecutionType::kSynchronous,
+              // The memory is reclaimed in a separate renderer process.
+              base::MemoryConsumerTraits::InProcess::kNo,
+              // Re-launching/pre-warming a renderer process is expensive.
+              base::MemoryConsumerTraits::RecreateMemoryCost::kExpensive),
+          this) {}
 
 KeepAliveDSEPolicy::~KeepAliveDSEPolicy() = default;
 
@@ -188,6 +207,10 @@ void KeepAliveDSEPolicy::SetDSEKeepAlive(
   CHECK(!dse_renderer_kept_alive_);
   CHECK(template_url_service);
 
+  if (memory_limit() <= base::kModerateMemoryPressureThreshold) {
+    return;
+  }
+
   dse_renderer_kept_alive_ = process_node;
 
   const TemplateURL* default_search_provider =
@@ -243,6 +266,22 @@ bool KeepAliveDSEPolicy::IsSuitableDSEPage(const PageNode* page_node) const {
 
   return template_url_service->IsSearchResultsPageFromDefaultSearchProvider(
       page_node->GetMainFrameUrl());
+}
+
+void KeepAliveDSEPolicy::OnUpdateMemoryLimit() {
+  if (memory_limit() > base::kModerateMemoryPressureThreshold) {
+    if (!dse_renderer_kept_alive_) {
+      FindAndKeepAliveDSERenderer();
+    }
+  }
+}
+
+void KeepAliveDSEPolicy::OnReleaseMemory() {
+  if (memory_limit() <= base::kModerateMemoryPressureThreshold) {
+    if (dse_renderer_kept_alive_) {
+      ReleaseDSEKeepAlive();
+    }
+  }
 }
 
 }  // namespace performance_manager::policies

@@ -4,6 +4,8 @@
 
 #include "chrome/browser/performance_manager/policies/keep_alive_dse_policy.h"
 
+#include "base/memory_coordinator/test_memory_consumer_registry.h"
+#include "base/memory_coordinator/utils.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
@@ -86,6 +88,8 @@ class KeepAliveDSEPolicyTest : public ChromeRenderViewHostTestHarness {
             base::ASCIIToUTF16(keyword)));
   }
 
+  base::TestMemoryConsumerRegistry test_memory_consumer_registry_;
+
  private:
   PerformanceManagerTestHarnessHelper pm_harness_;
   raw_ptr<TemplateURLService> template_url_service_;
@@ -135,6 +139,53 @@ TEST_F(KeepAliveDSEPolicyTest, KeepAliveAfterNavigationAway) {
   // The original DSE process *should still* be kept alive.
   EXPECT_EQ(0, process()->GetPendingReuseRefCountForTesting());
   EXPECT_EQ(1, initial_rph->GetPendingReuseRefCountForTesting());
+}
+
+// Test that triggering memory pressure releases the keep-alive on the DSE.
+TEST_F(KeepAliveDSEPolicyTest, MemoryPressureReleasesKeepAlive) {
+  NavigateAndCommit(GURL(kDSEUrl));
+  EXPECT_EQ(1, process()->GetPendingReuseRefCountForTesting());
+
+  // Simulate memory pressure.
+  test_memory_consumer_registry_.NotifyUpdateMemoryLimit(
+      base::kModerateMemoryPressureThreshold);
+  test_memory_consumer_registry_.NotifyReleaseMemory();
+
+  // The process should no longer be kept alive.
+  EXPECT_EQ(0, process()->GetPendingReuseRefCountForTesting());
+}
+
+// Test that when memory pressure is active, navigating to the DSE does *not*
+// increment the refcount.
+TEST_F(KeepAliveDSEPolicyTest, NoKeepAliveUnderMemoryPressure) {
+  // Simulate memory pressure first.
+  test_memory_consumer_registry_.NotifyUpdateMemoryLimit(
+      base::kModerateMemoryPressureThreshold);
+  test_memory_consumer_registry_.NotifyReleaseMemory();
+
+  NavigateAndCommit(GURL(kDSEUrl));
+  EXPECT_EQ(0, process()->GetPendingReuseRefCountForTesting());
+}
+
+// Test that when memory pressure is relieved, the keep-alive on the DSE is
+// reacquired.
+TEST_F(KeepAliveDSEPolicyTest, ReacquireKeepAliveWhenMemoryPressureRelieved) {
+  NavigateAndCommit(GURL(kDSEUrl));
+  auto* rph = process();
+  EXPECT_EQ(1, rph->GetPendingReuseRefCountForTesting());
+
+  // Simulate memory pressure.
+  test_memory_consumer_registry_.NotifyUpdateMemoryLimit(
+      base::kModerateMemoryPressureThreshold);
+  test_memory_consumer_registry_.NotifyReleaseMemory();
+  EXPECT_EQ(0, rph->GetPendingReuseRefCountForTesting());
+
+  // Relieve memory pressure.
+  test_memory_consumer_registry_.NotifyUpdateMemoryLimit(
+      base::MemoryConsumer::kDefaultMemoryLimit);
+
+  // The process should be kept alive again.
+  EXPECT_EQ(1, rph->GetPendingReuseRefCountForTesting());
 }
 
 }  // namespace performance_manager::policies
