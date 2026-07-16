@@ -295,7 +295,6 @@ IN_PROC_BROWSER_TEST_F(LockScreenLocalPasswordTest, UnlockWithWrongPassword) {
   // Unlock with a bad password.
   locker_tester.UnlockWithPassword(test_account_id,
                                    LoginManagerTest::kPassword);
-  base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(locker_tester.IsLocked());
 }
 

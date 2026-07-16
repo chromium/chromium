@@ -17,10 +17,6 @@
 #include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "chromeos/ash/components/login/auth/stub_authenticator.h"
 #include "components/session_manager/session_manager_types.h"
-#include "content/public/browser/render_frame_host.h"
-#include "content/public/browser/web_contents.h"
-#include "content/public/browser/web_ui.h"
-#include "content/public/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {
@@ -52,7 +48,7 @@ class LoginAttemptObserver : public AuthStatusConsumer {
     if (!login_attempted_) {
       run_loop_ = std::make_unique<base::RunLoop>();
       run_loop_->Run();
-      run_loop_.release();
+      run_loop_.reset();
     }
     ASSERT_TRUE(login_attempted_);
   }
@@ -60,17 +56,21 @@ class LoginAttemptObserver : public AuthStatusConsumer {
   // AuthStatusConsumer:
   void OnAuthFailure(const AuthFailure& error) override { LoginAttempted(); }
   void OnAuthSuccess(const UserContext& credentials) override {
+    auth_succeeded_ = true;
     LoginAttempted();
   }
+
+  bool auth_succeeded() const { return auth_succeeded_; }
 
  private:
   void LoginAttempted() {
     login_attempted_ = true;
     if (run_loop_)
-      run_loop_->QuitWhenIdle();
+      run_loop_->Quit();
   }
 
   bool login_attempted_ = false;
+  bool auth_succeeded_ = false;
   std::unique_ptr<base::RunLoop> run_loop_;
 };
 
@@ -145,16 +145,24 @@ bool ScreenLockerTester::IsLockShutdownButtonShown() {
 
 void ScreenLockerTester::UnlockWithPassword(const AccountId& account_id,
                                             const std::string& password) {
+  LoginAttemptObserver login_observer;
   LoginScreenTestApi::SubmitPassword(account_id, password,
                                      true /*check_if_submittable*/);
-  base::RunLoop().RunUntilIdle();
+  login_observer.WaitForAttempt();
+  if (login_observer.auth_succeeded()) {
+    WaitForUnlock();
+  }
 }
 
 void ScreenLockerTester::ForceSubmitPassword(const AccountId& account_id,
                                              const std::string& password) {
+  LoginAttemptObserver login_observer;
   LoginScreenTestApi::SubmitPassword(account_id, password,
                                      false /*check_if_submittable*/);
-  base::RunLoop().RunUntilIdle();
+  login_observer.WaitForAttempt();
+  if (login_observer.auth_succeeded()) {
+    WaitForUnlock();
+  }
 }
 
 }  // namespace ash
