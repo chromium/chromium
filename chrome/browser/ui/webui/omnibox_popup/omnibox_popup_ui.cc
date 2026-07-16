@@ -92,7 +92,7 @@ OmniboxPopupUI::OmniboxPopupUI(content::WebUI* web_ui)
 
   source->AddLocalizedStrings(SearchboxHandler::GetWebUIDataSourceDict(
       Profile::FromWebUI(web_ui),
-      {.enable_voice_search = true,
+      {.enable_voice_search = false,
        .enable_lens_search = false,
        .session_allows_drag_and_drop = session_allows_drag_and_drop}));
 
