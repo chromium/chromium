@@ -5,9 +5,9 @@
 # Primary
 bashi@chromium.org
 ricea@chromium.org
+horo@chromium.org
 
 # Secondary
-horo@chromium.org
 dschinazi@chromium.org
 ericorth@chromium.org
 kinuko@chromium.org
@@ -23,7 +23,6 @@ per-file network_sandbox_hook_linux.*=set noparent
 per-file network_sandbox_hook_linux.*=file://sandbox/linux/OWNERS
 
 per-file BUILD.gn=file://services/network/resource_scheduler/OWNERS
-per-file BUILD.gn=file://services/network/scheduler/OWNERS
 per-file BUILD.gn=file://services/network/sct_auditing/OWNERS
 
 # Cookies
