@@ -170,34 +170,41 @@ TEST_F(GeminiMetricsTest, RecordGeminiCameraFlowGoToOSSettingsAlertResult) {
 }
 
 // Tests that response latency is recorded to the correct histograms based on
-// page context and generated image presence.
+// page context, generated image presence, and multi-tab usage.
 TEST_F(GeminiMetricsTest, TestResponseLatencyMetrics) {
   base::TimeDelta latency = base::Milliseconds(100);
 
-  // Case 1: Page context present & generated image present.
-  RecordResponseLatency(latency, true, true);
+  // Case 1: Page context present & generated image present & multi-tab not
+  // used.
+  RecordResponseLatency(latency, true, true, false);
   histogram_tester_.ExpectTimeBucketCount(kResponseLatencyWithContextHistogram,
                                           latency, 1);
   histogram_tester_.ExpectTimeBucketCount(
       kResponseLatencyWithGeneratedImageHistogram, latency, 1);
+  histogram_tester_.ExpectTimeBucketCount(
+      kResponseLatencyMultiTabNotUsedHistogram, latency, 1);
+  histogram_tester_.ExpectTotalCount(kResponseLatencyMultiTabUsedHistogram, 0);
   histogram_tester_.ExpectTotalCount(kResponseLatencyWithoutContextHistogram,
                                      0);
   histogram_tester_.ExpectTotalCount(
       kResponseLatencyWithoutGeneratedImageHistogram, 0);
 
-  // Case 2: Page context present & generated image absent.
-  RecordResponseLatency(latency, true, false);
+  // Case 2: Page context present & generated image absent & multi-tab not used.
+  RecordResponseLatency(latency, true, false, false);
   histogram_tester_.ExpectTimeBucketCount(kResponseLatencyWithContextHistogram,
                                           latency, 2);
   histogram_tester_.ExpectTimeBucketCount(
       kResponseLatencyWithoutGeneratedImageHistogram, latency, 1);
+  histogram_tester_.ExpectTimeBucketCount(
+      kResponseLatencyMultiTabNotUsedHistogram, latency, 2);
+  histogram_tester_.ExpectTotalCount(kResponseLatencyMultiTabUsedHistogram, 0);
   histogram_tester_.ExpectTotalCount(kResponseLatencyWithoutContextHistogram,
                                      0);
   histogram_tester_.ExpectTimeBucketCount(
       kResponseLatencyWithGeneratedImageHistogram, latency, 1);
 
-  // Case 3: Page context absent, generated image present.
-  RecordResponseLatency(latency, false, true);
+  // Case 3: Page context absent, generated image present & multi-tab not used.
+  RecordResponseLatency(latency, false, true, false);
   histogram_tester_.ExpectTimeBucketCount(kResponseLatencyWithContextHistogram,
                                           latency, 2);
   histogram_tester_.ExpectTimeBucketCount(
@@ -206,9 +213,12 @@ TEST_F(GeminiMetricsTest, TestResponseLatencyMetrics) {
       kResponseLatencyWithGeneratedImageHistogram, latency, 2);
   histogram_tester_.ExpectTimeBucketCount(
       kResponseLatencyWithoutGeneratedImageHistogram, latency, 1);
+  histogram_tester_.ExpectTimeBucketCount(
+      kResponseLatencyMultiTabNotUsedHistogram, latency, 3);
+  histogram_tester_.ExpectTotalCount(kResponseLatencyMultiTabUsedHistogram, 0);
 
-  // Case 4: Page context absent, generated image absent.
-  RecordResponseLatency(latency, false, false);
+  // Case 4: Page context absent, generated image absent & multi-tab used.
+  RecordResponseLatency(latency, false, false, true);
   histogram_tester_.ExpectTimeBucketCount(kResponseLatencyWithContextHistogram,
                                           latency, 2);
   histogram_tester_.ExpectTimeBucketCount(
@@ -217,6 +227,10 @@ TEST_F(GeminiMetricsTest, TestResponseLatencyMetrics) {
       kResponseLatencyWithGeneratedImageHistogram, latency, 2);
   histogram_tester_.ExpectTimeBucketCount(
       kResponseLatencyWithoutGeneratedImageHistogram, latency, 2);
+  histogram_tester_.ExpectTimeBucketCount(
+      kResponseLatencyMultiTabNotUsedHistogram, latency, 3);
+  histogram_tester_.ExpectTimeBucketCount(kResponseLatencyMultiTabUsedHistogram,
+                                          latency, 1);
 }
 
 TEST_F(GeminiMetricsTest, RecordGeminiCameraFlowBegan) {

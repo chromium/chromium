@@ -25,6 +25,7 @@
 #import "ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_configuration.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_page_context.h"
+#import "ios/chrome/browser/intelligence/bwg/model/gemini_session_handler.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_tab_helper.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/intelligence/proto_wrappers/page_context_extractor_java_script_feature.h"
@@ -256,6 +257,21 @@ class GeminiBrowserAgentTest : public PlatformTest {
   // Setter for raw `attached_tabs_` member.
   void SetRawAttachedTab(web::WebStateID id, GeminiPageContext* context) {
     gemini_browser_agent_->attached_tabs_[id] = context;
+  }
+
+  // Wrapper for `AttachedTabsCount`.
+  NSUInteger AttachedTabsCount() {
+    return gemini_browser_agent_->AttachedTabsCount();
+  }
+
+  // Wrapper for `GetSharedTabs`.
+  NSUInteger GetSharedTabsCount() {
+    return gemini_browser_agent_->GetSharedTabs().count;
+  }
+
+  // Getter for `bwg_session_handler_`.
+  GeminiSessionHandler* GetSessionHandler() {
+    return gemini_browser_agent_->bwg_session_handler_;
   }
 
   // Wrapper for `DetachTabWithID`.
@@ -1400,6 +1416,38 @@ TEST_F(GeminiBrowserAgentTest, TestClearAttachedTabsOnPageContentPrefDisabled) {
 
   // Verify that `attached_tabs_` was cleared.
   EXPECT_EQ(0u, GetRawAttachedTabs().size());
+}
+
+// Tests the logic backing the metrics block providers.
+TEST_F(GeminiBrowserAgentTest, TestMetricsBlockProviders) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures({kGeminiMultiTabContext, kPageActionMenu}, {});
+
+  // Add the active tab.
+  web::WebStateID active_id = web_state_->GetUniqueIdentifier();
+  GeminiPageContext* active_context = [[GeminiPageContext alloc] init];
+  active_context.geminiPageContextAttachmentState =
+      ios::provider::GeminiPageContextAttachmentState::kAttached;
+  SetRawAttachedTab(active_id, active_context);
+
+  EXPECT_EQ(1u, AttachedTabsCount());
+  EXPECT_FALSE(GetSharedTabsCount() > 0);
+
+  // Add a shared tab.
+  web::WebStateID other_id = web::WebStateID::NewUnique();
+  GeminiPageContext* other_context = [[GeminiPageContext alloc] init];
+  other_context.geminiPageContextAttachmentState =
+      ios::provider::GeminiPageContextAttachmentState::kAttached;
+  SetRawAttachedTab(other_id, other_context);
+
+  EXPECT_EQ(2u, AttachedTabsCount());
+  EXPECT_TRUE(GetSharedTabsCount() > 0);
+
+  // Set active tab to detached.
+  active_context.geminiPageContextAttachmentState =
+      ios::provider::GeminiPageContextAttachmentState::kDetached;
+  EXPECT_EQ(1u, AttachedTabsCount());
+  EXPECT_TRUE(GetSharedTabsCount() > 0);
 }
 
 // Tests that ShowGeminiLiveMicrophoneAlert presents the OS settings alert when

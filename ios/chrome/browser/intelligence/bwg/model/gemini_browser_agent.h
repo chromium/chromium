@@ -143,6 +143,9 @@ class GeminiBrowserAgent : public BrowserUserData<GeminiBrowserAgent>,
   void OnTabPickerSelectionChanged(std::set<web::WebStateID> selected_tabs,
                                    std::set<web::WebStateID> cached_tabs);
 
+  // Returns the number of currently attached tabs.
+  NSUInteger AttachedTabsCount() const;
+
   // Hide Gemini floaty with `animated` flag. When in a hidden state, the floaty
   // view is dismissed but still persists in memory and needs to be properly
   // cleaned up. Properly cleaning up the floaty can be done by resetting the

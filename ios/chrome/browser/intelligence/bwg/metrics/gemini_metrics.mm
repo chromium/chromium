@@ -147,11 +147,24 @@ const char kPromptLongPressImageIncludedHistogram[] =
 const char kPromptContextAttachmentHistogram[] =
     "IOS.Gemini.Prompt.ContextAttachment";
 
+const char kPromptTabsAttachedCountHistogram[] =
+    "IOS.Gemini.Prompt.TabsAttachedCount";
+
+const char kPromptMultiTabUsedHistogram[] = "IOS.Gemini.Prompt.MultiTabUsed";
+
 const char kResponseGeneratedImageIncluded[] =
     "IOS.Gemini.Response.GeneratedImage.Included";
 
 const char kRegenerateButtonTappedHistogram[] =
     "IOS.Gemini.RegenerateButton.Tapped";
+
+const char kResponseLatencyHistogram[] = "IOS.Gemini.Response.Latency";
+
+const char kResponseLatencyMultiTabUsedHistogram[] =
+    "IOS.Gemini.Response.Latency.MultiTabUsed";
+
+const char kResponseLatencyMultiTabNotUsedHistogram[] =
+    "IOS.Gemini.Response.Latency.MultiTabNotUsed";
 
 const char kResponseLatencyWithContextHistogram[] =
     "IOS.Gemini.Response.Latency.WithContext";
@@ -401,9 +414,28 @@ void RecordFirstRunConsentLinkClick() {
       base::UserMetricsAction("MobileGeminiFREConsentLinkClick"));
 }
 
+void RecordGeminiTabPickerOpened() {
+  base::RecordAction(base::UserMetricsAction("MobileGeminiTabPickerOpened"));
+}
+
+void RecordGeminiTabPickerDismissed() {
+  base::RecordAction(base::UserMetricsAction("MobileGeminiTabPickerDismissed"));
+}
+
 void RecordResponseLatency(base::TimeDelta latency,
                            bool had_page_context,
-                           bool had_generated_image) {
+                           bool had_generated_image,
+                           bool was_multi_tab_used) {
+  base::UmaHistogramMediumTimes(kResponseLatencyHistogram, latency);
+
+  if (was_multi_tab_used) {
+    base::UmaHistogramMediumTimes(kResponseLatencyMultiTabUsedHistogram,
+                                  latency);
+  } else {
+    base::UmaHistogramMediumTimes(kResponseLatencyMultiTabNotUsedHistogram,
+                                  latency);
+  }
+
   if (had_page_context) {
     base::UmaHistogramMediumTimes(kResponseLatencyWithContextHistogram,
                                   latency);
@@ -539,7 +571,9 @@ void RecordAIHubIconTapped() {
 void RecordGeminiPromptSent(bool is_nano_banana_enabled,
                             int images_attached_count,
                             bool long_press_image_included,
-                            bool has_page_context) {
+                            bool has_page_context,
+                            int tabs_attached_count,
+                            bool was_multi_tab_used) {
   base::RecordAction(base::UserMetricsAction("MobileGeminiPromptSent"));
   base::UmaHistogramBoolean(kPromptImageRemixEnabledHistogram,
                             is_nano_banana_enabled);
@@ -549,6 +583,9 @@ void RecordGeminiPromptSent(bool is_nano_banana_enabled,
                             long_press_image_included);
   base::UmaHistogramBoolean(kPromptContextAttachmentHistogram,
                             has_page_context);
+  base::UmaHistogramCounts100(kPromptTabsAttachedCountHistogram,
+                              tabs_attached_count);
+  base::UmaHistogramBoolean(kPromptMultiTabUsedHistogram, was_multi_tab_used);
 }
 
 void RecordGeminiFeedback(IOSGeminiFeedback feedback) {

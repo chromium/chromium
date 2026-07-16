@@ -132,6 +132,7 @@ IOSGeminiSessionCancellationReason HistogramEnumFromGeminiCancelType(
   BOOL _hasSubmittedFirstPrompt;
   base::TimeTicks _lastPromptSentTime;
   BOOL _lastPromptHadPageContext;
+  BOOL _lastPromptUsedMultiTab;
   BOOL _waitingForResponse;
   // Track prompts per session.
   int _totalPromptsInSession;
@@ -241,7 +242,8 @@ IOSGeminiSessionCancellationReason HistogramEnumFromGeminiCancelType(
   // Calculate and record response latency.
   if (_waitingForResponse && !_lastPromptSentTime.is_null()) {
     base::TimeDelta latency = base::TimeTicks::Now() - _lastPromptSentTime;
-    RecordResponseLatency(latency, _lastPromptHadPageContext, isImageGenerated);
+    RecordResponseLatency(latency, _lastPromptHadPageContext, isImageGenerated,
+                          _lastPromptUsedMultiTab);
 
     // Reset latency tracking.
     _waitingForResponse = NO;
@@ -265,12 +267,18 @@ IOSGeminiSessionCancellationReason HistogramEnumFromGeminiCancelType(
               imagesAttachedCount:(NSUInteger)imagesAttachedCount
                    longPressImage:(BOOL)longPressImage
               pageContextAttached:(BOOL)pageContextAttached {
+  NSUInteger tabsAttachedCount =
+      self.attachedTabsCountProvider ? self.attachedTabsCountProvider() : 0;
+  BOOL usedMultiTab =
+      self.isMultiTabUsedProvider ? self.isMultiTabUsedProvider() : NO;
+
   _totalPromptsInSession++;
 
   // Record that a prompt was sent with arguments.
   RecordGeminiPromptSent(isNanoBananaToolSelected,
                          static_cast<int>(imagesAttachedCount), longPressImage,
-                         pageContextAttached);
+                         pageContextAttached,
+                         static_cast<int>(tabsAttachedCount), usedMultiTab);
 
   // Check if this is the user's first prompt.
   IOSGeminiFirstPromptSubmissionMethod method =
@@ -286,6 +294,7 @@ IOSGeminiSessionCancellationReason HistogramEnumFromGeminiCancelType(
   // Start latency tracking.
   _lastPromptSentTime = base::TimeTicks::Now();
   _lastPromptHadPageContext = pageContextAttached;
+  _lastPromptUsedMultiTab = usedMultiTab;
   _waitingForResponse = YES;
 
   if (_tracker && inputType == gemini::InputType::kWhatCanGeminiDo &&

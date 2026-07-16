@@ -28467,6 +28467,22 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobileGeminiTabPickerDismissed">
+  <owner>joepeplowski@google.com</owner>
+  <owner>bling-alchemy@google.com</owner>
+  <description>
+    Reported when the Tab Picker UI is dismissed in a Gemini session. iOS only.
+  </description>
+</action>
+
+<action name="MobileGeminiTabPickerOpened">
+  <owner>joepeplowski@google.com</owner>
+  <owner>bling-alchemy@google.com</owner>
+  <description>
+    Reported when the Tab Picker UI is opened in a Gemini session. iOS only.
+  </description>
+</action>
+
 <action name="MobileGeminiURLOpened">
   <owner>kanouche@google.com</owner>
   <owner>bling-alchemy@google.com</owner>

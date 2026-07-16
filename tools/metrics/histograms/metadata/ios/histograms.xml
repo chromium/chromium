@@ -3013,6 +3013,25 @@ chromium-metrics-reviews@google.com.
   <summary>Records how the user submitted any prompt to Gemini on iOS.</summary>
 </histogram>
 
+<histogram name="IOS.Gemini.Prompt.TabsAttachedCount" units="count"
+    expires_after="2027-01-14">
+  <owner>joepeplowski@google.com</owner>
+  <owner>bling-alchemy-eng@google.com</owner>
+  <summary>
+    Records the number of tabs attached to a Gemini prompt on iOS.
+  </summary>
+</histogram>
+
+<histogram name="IOS.Gemini.Prompt.UsedMultiTab" enum="Boolean"
+    expires_after="2027-01-14">
+  <owner>joepeplowski@google.com</owner>
+  <owner>bling-alchemy-eng@google.com</owner>
+  <summary>
+    Records whether a prompt sent to Gemini used multi-tab. This is defined as
+    having at least one attached tab that is not the active tab.
+  </summary>
+</histogram>
+
 <histogram name="IOS.Gemini.RegenerateButton.Tapped"
     enum="IOSGeminiRegenerateOptionType" expires_after="2027-04-01">
   <owner>fbeauchamp@google.com</owner>
@@ -3029,6 +3048,41 @@ chromium-metrics-reviews@google.com.
   <owner>bling-alchemy-eng@google.com</owner>
   <summary>
     Records whether or not a Gemini response included a generated image.
+  </summary>
+</histogram>
+
+<histogram name="IOS.Gemini.Response.Latency" units="ms"
+    expires_after="2027-01-14">
+  <owner>joepeplowski@google.com</owner>
+  <owner>bling-alchemy-eng@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
+  <summary>
+    Records the latency from prompt submission to response received for Gemini
+    on iOS.
+  </summary>
+</histogram>
+
+<histogram name="IOS.Gemini.Response.Latency.MultiTabNotUsed" units="ms"
+    expires_after="2027-01-14">
+  <owner>joepeplowski@google.com</owner>
+  <owner>bling-alchemy-eng@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
+  <summary>
+    Records the latency from prompt submission to response received for Gemini
+    on iOS when multi-tab context was not used with the prompt. Multi-tab use is
+    defined as having at least one attached tab that is not the active tab.
+  </summary>
+</histogram>
+
+<histogram name="IOS.Gemini.Response.Latency.MultiTabUsed" units="ms"
+    expires_after="2027-01-14">
+  <owner>joepeplowski@google.com</owner>
+  <owner>bling-alchemy-eng@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
+  <summary>
+    Records the latency from prompt submission to response received for Gemini
+    on iOS when multi-tab context was used with the prompt. Multi-tab use is
+    defined as having at least one attached tab that is not the active tab.
   </summary>
 </histogram>
 

@@ -362,6 +362,18 @@ GeminiBrowserAgent::GeminiBrowserAgent(Browser* browser)
         weak_this->DetachTabWithID(tabID);
       }
     };
+    bwg_session_handler_.attachedTabsCountProvider = ^{
+      if (weak_this) {
+        return weak_this->AttachedTabsCount();
+      }
+      return (NSUInteger)0;
+    };
+    bwg_session_handler_.isMultiTabUsedProvider = ^{
+      if (weak_this) {
+        return weak_this->GetSharedTabs().count > 0;
+      }
+      return NO;
+    };
 
     gemini_view_state_handler_ =
         [[GeminiViewStateChangeHandler alloc] initWithTarget:this];
@@ -1416,6 +1428,17 @@ void GeminiBrowserAgent::DismissFloaty() {
 void GeminiBrowserAgent::ForceDismissFloaty() {
   is_floaty_temporarily_hidden_ = false;
   DismissFloaty();
+}
+
+NSUInteger GeminiBrowserAgent::AttachedTabsCount() const {
+  NSUInteger count = 0;
+  for (const auto& [tab_id, context] : attached_tabs_) {
+    if (context.geminiPageContextAttachmentState ==
+        ios::provider::GeminiPageContextAttachmentState::kAttached) {
+      count++;
+    }
+  }
+  return count;
 }
 
 void GeminiBrowserAgent::OnTabPickerSelectionChanged(
