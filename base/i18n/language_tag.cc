@@ -5,6 +5,7 @@
 #include "base/i18n/language_tag.h"
 
 #include <algorithm>
+#include <ostream>
 #include <utility>
 
 #include "base/check_op.h"
@@ -98,6 +99,15 @@ LanguageTag::LanguageTag(ImmutableStringType tag) : tag_(std::move(tag)) {
 
 std::string_view LanguageTag::GetExtensionStringInternal(char key) const {
   return GetExtensionString(tag_.AsString(), key);
+}
+
+std::ostream& operator<<(std::ostream& os, const LanguageTag& lt) {
+  return os << lt.tag_string();
+}
+
+std::ostream& operator<<(std::ostream& os,
+                         const std::optional<LanguageTag>& opt) {
+  return opt ? os << *opt : os << "nullopt";
 }
 
 }  // namespace base::i18n

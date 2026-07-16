@@ -5,16 +5,12 @@
 #ifndef BASE_I18N_LANGUAGE_TAG_H_
 #define BASE_I18N_LANGUAGE_TAG_H_
 
-#include <algorithm>
-#include <array>
 #include <compare>
-#include <cstdint>
-#include <limits>
+#include <cstddef>
+#include <iosfwd>
 #include <optional>
-#include <ostream>
 #include <string_view>
 
-#include "base/check.h"
 #include "base/containers/span.h"
 #include "base/i18n/base_i18n_export.h"
 #include "base/i18n/bcp47_extensions.h"
@@ -66,15 +62,6 @@ class BASE_I18N_EXPORT LanguageTag {
   constexpr friend std::strong_ordering operator<=>(const LanguageTag& lhs,
                                                     const LanguageTag& rhs) {
     return lhs.tag_string() <=> rhs.tag_string();
-  }
-  constexpr friend std::ostream& operator<<(std::ostream& os,
-                                            const LanguageTag& lt) {
-    return os << lt.tag_string();
-  }
-  constexpr friend std::ostream& operator<<(
-      std::ostream& os,
-      const std::optional<LanguageTag>& opt) {
-    return opt ? os << *opt : os << "nullopt";
   }
 
   // Returns the BCP47 language tag (e.g., "en-US", "zh-CN").
@@ -174,6 +161,13 @@ class BASE_I18N_EXPORT LanguageTag {
   // Supports language, script, region, variants and extensions.
   ImmutableStringType tag_;
 };
+
+BASE_I18N_EXPORT std::ostream& operator<<(std::ostream& os,
+                                          const LanguageTag& lt);
+
+BASE_I18N_EXPORT std::ostream& operator<<(
+    std::ostream& os,
+    const std::optional<LanguageTag>& opt);
 
 }  // namespace base::i18n
 
