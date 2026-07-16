@@ -54,8 +54,10 @@
 #include "content/browser/devtools/protocol/webmcp_handler.h"
 #include "content/browser/devtools/web_contents_devtools_agent_host.h"
 #include "content/browser/fenced_frame/fenced_frame.h"
+#include "content/browser/preloading/prerender/prerender_host_registry.h"
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
+#include "content/browser/renderer_host/render_frame_host_manager.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
 #include "content/browser/renderer_host/render_view_host_impl.h"
 #include "content/browser/site_instance_impl.h"
@@ -119,6 +121,46 @@ bool ShouldCreateDevToolsForNode(FrameTreeNode* ftn) {
          (ftn->current_frame_host() &&
           RenderFrameDevToolsAgentHost::ShouldCreateDevToolsForHost(
               ftn->current_frame_host()));
+}
+
+bool IsPrerenderPrimaryMainFramePlaceholder(WebContentsImpl* web_contents,
+                                            RenderFrameHostImpl* frame_host) {
+  return web_contents->GetVisibility() == Visibility::HIDDEN &&
+         frame_host->is_initial_empty_document() &&
+         !web_contents->GetPrerenderHostRegistry()
+              ->GetPrerenderFrameTrees()
+              .empty();
+}
+
+bool MaybeInitializePrerenderPrimaryMainFrame(RenderFrameHostImpl* frame_host,
+                                              bool* did_try_to_initialize) {
+  DCHECK(did_try_to_initialize);
+  *did_try_to_initialize = false;
+
+  if (!frame_host || frame_host->IsRenderFrameLive()) {
+    return false;
+  }
+
+  FrameTreeNode* frame_tree_node = frame_host->frame_tree_node();
+  if (!frame_tree_node || frame_tree_node->current_frame_host() != frame_host ||
+      frame_tree_node->GetFrameType() != FrameType::kPrimaryMainFrame) {
+    return false;
+  }
+
+  WebContentsImpl* web_contents =
+      WebContentsImpl::FromRenderFrameHostImpl(frame_host);
+  if (!web_contents || web_contents->IsBeingDestroyed() ||
+      web_contents->IsCrashed() ||
+      web_contents->GetPrimaryMainFrame() != frame_host ||
+      !IsPrerenderPrimaryMainFramePlaceholder(web_contents, frame_host)) {
+    return false;
+  }
+
+  frame_tree_node->render_manager()->InitRenderView(
+      frame_host->GetSiteInstance()->group(), web_contents->GetRenderViewHost(),
+      /*proxy=*/nullptr, /*navigation_metrics_token=*/std::nullopt);
+  *did_try_to_initialize = true;
+  return frame_host->IsRenderFrameLive();
 }
 
 }  // namespace
@@ -676,6 +718,9 @@ device::mojom::WakeLock* RenderFrameDevToolsAgentHost::GetWakeLock() {
 
 void RenderFrameDevToolsAgentHost::ChangeFrameHostAndObservedProcess(
     RenderFrameHostImpl* frame_host) {
+  if (frame_host_ != frame_host) {
+    did_try_to_initialize_prerender_primary_main_frame_ = false;
+  }
   if (frame_host_)
     frame_host_->GetProcess()->RemoveObserver(this);
   frame_host_ = frame_host;
@@ -969,6 +1014,16 @@ base::TimeTicks RenderFrameDevToolsAgentHost::GetLastActivityTime() {
 void RenderFrameDevToolsAgentHost::UpdateRendererChannel(bool force) {
   is_debugger_paused_ = false;
   is_debugger_pause_situation_recorded_ = false;
+
+  if (force && frame_host_ && !render_frame_alive_ &&
+      !did_try_to_initialize_prerender_primary_main_frame_) {
+    bool did_try_to_initialize = false;
+    if (MaybeInitializePrerenderPrimaryMainFrame(frame_host_,
+                                                 &did_try_to_initialize)) {
+      render_frame_alive_ = true;
+    }
+    did_try_to_initialize_prerender_primary_main_frame_ = did_try_to_initialize;
+  }
 
   mojo::PendingAssociatedRemote<blink::mojom::DevToolsAgent> agent_remote;
   mojo::PendingAssociatedReceiver<blink::mojom::DevToolsAgentHost>

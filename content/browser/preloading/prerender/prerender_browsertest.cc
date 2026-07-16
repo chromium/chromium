@@ -105,6 +105,7 @@
 #include "content/public/test/preloading_test_util.h"
 #include "content/public/test/prerender_test_util.h"
 #include "content/public/test/scoped_accessibility_mode_override.h"
+#include "content/public/test/test_devtools_protocol_client.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_navigation_throttle.h"
 #include "content/public/test/test_utils.h"
@@ -3381,6 +3382,44 @@ class PrerenderTargetHintBrowserTest : public PrerenderBrowserTest {
         {id, target_hint, url.spec(), action}, nullptr);
   }
 };
+
+IN_PROC_BROWSER_TEST_F(PrerenderTargetHintBrowserTest,
+                       DevToolsCanAttachToNewTabPrerenderPrimaryMainFrame) {
+  // Scenario:
+  // 1. Open a regular page and start a Chromium new-tab prerender.
+  // 2. Verify the hidden prerender WebContents keeps an initial empty primary
+  //    main frame as a browser-side placeholder.
+  // 3. Attach DevTools to this frame target, as an external CDP client would.
+  // 4. Verify attach initializes the renderer-side frame and commands work.
+  const GURL initial_url = GetUrl("/simple_links.html");
+  const GURL prerendering_url = GetUrl("/title2.html");
+
+  ASSERT_TRUE(NavigateToURL(shell(), initial_url));
+
+  PrerenderHostId host_id = prerender_helper()->AddPrerender(
+      prerendering_url, /*eagerness=*/std::nullopt, "_blank");
+  WebContents* prerender_web_contents =
+      test::PrerenderTestHelper::GetPrerenderWebContents(host_id);
+  ASSERT_TRUE(prerender_web_contents);
+  ASSERT_NE(prerender_web_contents, web_contents_impl());
+  ExpectWebContentsIsForNewTabPrerendering(*prerender_web_contents);
+
+  auto* prerender_web_contents_impl =
+      static_cast<WebContentsImpl*>(prerender_web_contents);
+  RenderFrameHostImpl* primary_main_frame =
+      prerender_web_contents_impl->GetPrimaryMainFrame();
+  ASSERT_TRUE(primary_main_frame);
+  ASSERT_TRUE(primary_main_frame->is_initial_empty_document());
+  ASSERT_FALSE(primary_main_frame->IsRenderFrameLive());
+
+  TestDevToolsProtocolClient devtools_client;
+  devtools_client.AttachToFrameTreeHost(primary_main_frame);
+
+  ASSERT_TRUE(primary_main_frame->IsRenderFrameLive());
+  ASSERT_TRUE(devtools_client.SendCommandSync("Page.enable"));
+  ASSERT_TRUE(devtools_client.SendCommandSync("Runtime.enable"));
+  devtools_client.DetachProtocolClient();
+}
 
 // Tests that clicking a link annotated with "target=_blank" can activate a
 // prerender whose target_hint is "_blank".
