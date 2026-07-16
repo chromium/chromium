@@ -67,6 +67,10 @@ public class TabGroupListBottomSheetTest {
     @MediumTest
     @EnableFeatures(
             ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2 + ":show_tip_bottom_sheet/false")
+    @DisableFeatures({
+        ChromeFeatureList.SUBMENUS_IN_APP_MENU,
+        ChromeFeatureList.SUBMENUS_IN_APP_MENU_LFF
+    })
     public void testNewGroup_RegularNewTabPageStation() {
         WebPageStation firstPage = mCtaTestRule.startOnBlankPage();
         WebPageStation pageStation =
@@ -92,6 +96,10 @@ public class TabGroupListBottomSheetTest {
 
     @Test
     @MediumTest
+    @DisableFeatures({
+        ChromeFeatureList.SUBMENUS_IN_APP_MENU,
+        ChromeFeatureList.SUBMENUS_IN_APP_MENU_LFF
+    })
     public void testNewGroup_RegularWebPageStation() {
         WebPageStation firstPage = mCtaTestRule.startOnBlankPage();
         WebPageStation pageStation =
