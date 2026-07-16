@@ -27,6 +27,7 @@ build/android/pylib/utils
 build/config
 build/config/android
 build/config/fuchsia
+build/fuchsia/starview
 build/fuchsia/test
 build/rust/std/rules
 build/skia_gold_common
@@ -39,7 +40,6 @@ chrome/android/junit/src/org/chromium/chrome/browser/payments
 chrome/browser
 chrome/browser/ash/arc/file_system_watcher
 chrome/browser/ash/arc/policy
-chrome/browser/ash/crosapi
 chrome/browser/ash/extensions
 chrome/browser/ash/ownership
 chrome/browser/ash/scanning
@@ -148,7 +148,7 @@ components/soda
 components/strictmode/android/java/src/org/chromium/components/strictmode
 components/supervised_user/core/browser/proto
 components/surface_embed
-components/sync/nigori
+components/sync/model/crypto
 components/test/data/autofill/heuristics/input
 components/test/data/browsing_topics
 components/test/data/optimization_guide
@@ -335,7 +335,6 @@ third_party/blink/renderer/core/permissions_policy
 third_party/blink/renderer/core/resize_observer
 third_party/blink/renderer/core/scheduler
 third_party/blink/renderer/modules/accessibility
-third_party/blink/renderer/modules/ad_auction
 third_party/blink/renderer/modules/badging
 third_party/blink/renderer/modules/credentialmanagement
 third_party/blink/renderer/modules/csspaint
@@ -402,6 +401,7 @@ third_party/blink/web_tests/external/wpt/resources
 third_party/blink/web_tests/external/wpt/resources/chromium
 third_party/blink/web_tests/external/wpt/resource-timing
 third_party/blink/web_tests/external/wpt/sanitizer-api/support
+third_party/blink/web_tests/external/wpt/svg/text/reftests
 third_party/blink/web_tests/external/wpt/wai-aria/scripts
 third_party/blink/web_tests/external/wpt/webaudio/js
 third_party/blink/web_tests/external/wpt/webrtc
@@ -424,7 +424,6 @@ third_party/blink/web_tests/third_party/ChromaCheck
 third_party/blink/web_tests/third_party/Tinos
 third_party/blink/web_tests/webaudio/resources
 third_party/blink/web_tests/wpt_internal
-third_party/blink/web_tests/wpt_internal/attribution-reporting
 third_party/blink/web_tests/wpt_internal/fenced_frame/resources
 third_party/blink/web_tests/wpt_internal/hid
 third_party/blink/web_tests/wpt_internal/html/semantics/parser-blocking-stylesheets
@@ -796,6 +795,7 @@ third_party/rust/chromium_crates_io/vendor/windows-link-v0_2
 third_party/rust/chromium_crates_io/vendor/windows-sys-v0_52
 third_party/rust/chromium_crates_io/vendor/windows-sys-v0_52/src/Windows/Wdk/System/SystemServices
 third_party/rust/chromium_crates_io/vendor/windows-sys-v0_52/src/Windows/Win32/Networking/Clustering
+third_party/rust/chromium_crates_io/vendor/write-fonts-v0_50/src/tables/variations
 third_party/rust/chromium_crates_io/vendor/zerocopy-v0_8
 third_party/rust/chromium_crates_io/vendor/zerocopy-v0_8/src
 third_party/rust/chromium_crates_io/vendor/zip-v8
@@ -803,6 +803,7 @@ third_party/rust/chromium_crates_io/vendor/zip-v8/src
 third_party/rust/chromium_crates_io/vendor/zmij-v1
 third_party/rust/chromium_crates_io/vendor/zmij-v1/.github/workflows
 third_party/rust/chromium_crates_io/vendor/zmij-v1/src
+third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5
 third_party/rust/miniz_oxide/v0_8
 third_party/screen-ai
 third_party/sentencepiece/src
