@@ -684,6 +684,9 @@ DedicatedWorkerHost::CreateNetworkFactoryForSubresources(
           ancestor_render_frame_host->GetCookieSettingOverrides(),
           network_restrictions_id_,
           "DedicatedWorkerHost::CreateNetworkFactoryForSubresources");
+  // Worker subresources are not outermost-main-frame requests even when their
+  // creator frame is outermost.
+  factory_params->is_outermost_main_frame = false;
 
   RenderFrameHost* frame = nullptr;
   if (base::FeatureList::IsEnabled(

@@ -195,6 +195,7 @@ TEST_F(NavigationEarlyHintsManagerTest, SimpleResponse) {
 
   loader_factory().SetInterceptor(base::BindLambdaForTesting(
       [&](const network::ResourceRequest& resource_request) {
+        EXPECT_TRUE(resource_request.is_outermost_main_frame);
         EXPECT_THAT(
             resource_request.headers.GetHeader(
                 net::HttpRequestHeaders::kAccept),

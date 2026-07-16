@@ -9063,6 +9063,7 @@ class NetworkContextSplitCacheEnabledTest : public NetworkContextTest {
       // TODO(crbug.com/40745575): Unify these to avoid inconsistencies.
       if (isolation_info.request_type() ==
           net::IsolationInfo::RequestType::kMainFrame) {
+        params->is_outermost_main_frame = true;
         request.is_outermost_main_frame = true;
         request.update_first_party_url_on_redirect = true;
       }
@@ -12176,6 +12177,49 @@ TEST_F(StorageAccessHeaderNetworkContextTest, RequestHeader_Active) {
       /*sample=*/
       net::cookie_util::StorageAccessStatusOutcome::kValueActive,
       /*expected_bucket_count=*/1);
+}
+
+TEST_F(StorageAccessHeaderNetworkContextTest,
+       RequestHeader_Active_TopLevelStorageAccess) {
+  StartTestServerWithRequestHeaderMonitorAndRetryHandler();
+
+  ResourceRequest request;
+  request.url = test_server_.GetURL("/defaultresponse");
+  request.mode = mojom::RequestMode::kCors;
+  request.is_outermost_main_frame = true;
+  request.permissions_policy =
+      *CreateStorageAccessPermissionsPolicy(request.url);
+  const url::Origin kTopFrameOrigin =
+      url::Origin::Create(GURL("https://b.test"));
+  request.request_initiator = url::Origin::Create(request.url);
+
+  mojom::URLLoaderFactoryParamsPtr params =
+      mojom::URLLoaderFactoryParams::New();
+  params->isolation_info = net::IsolationInfo::Create(
+      net::IsolationInfo::RequestType::kOther, kTopFrameOrigin,
+      url::Origin::Create(request.url), request.site_for_cookies);
+  params->is_outermost_main_frame = true;  // Main frame factory context
+
+  std::unique_ptr<NetworkContext> network_context =
+      CreateContextWithParams(CreateNetworkContextParamsForTesting());
+
+  ASSERT_TRUE(
+      SetCookieHelper(network_context.get(), request.url, "3PCookie", "1"));
+  network_context->cookie_manager()->BlockThirdPartyCookies(true);
+
+  SetNonCookieContentSetting(
+      ContentSettingsPattern::FromURLToSchemefulSitePattern(request.url),
+      ContentSettingsPattern::FromURLToSchemefulSitePattern(
+          kTopFrameOrigin.GetURL()),
+      ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS,
+      ContentSetting::CONTENT_SETTING_ALLOW, network_context.get());
+
+  RunRequestToCompletion(std::move(network_context), std::move(params),
+                         std::move(request));
+
+  EXPECT_THAT(most_recent_request_headers(),
+              ElementsAre(Contains(Pair(kSecFetchStorageAccess, "active"))));
+  EXPECT_THAT(cookie_headers(), ElementsAre("3PCookie=1"));
 }
 
 // This test recreates the case of StorageAccessHeaderRetry, with the

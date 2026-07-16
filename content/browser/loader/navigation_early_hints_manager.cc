@@ -584,6 +584,8 @@ void NavigationEarlyHintsManager::MaybePreloadHintedResource(
       static_cast<int>(blink::mojom::ResourceType::kSubResource);
   request.mode = CalculateRequestMode(link);
   request.credentials_mode = CalculateCredentialsMode(link);
+  request.is_outermost_main_frame =
+      request_for_navigation.is_outermost_main_frame;
 
   blink::network_utils::SetAcceptHeader(request.headers, request.destination);
 

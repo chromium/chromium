@@ -142,7 +142,7 @@ class DevtoolsNetworkResourceLoaderTest : public ContentBrowserTest {
         current_frame_host()->GetLastCommittedOrigin(),
         current_frame_host()->ComputeSiteForCookies(), caching,
         protocol::DevToolsNetworkResourceLoader::Credentials::kInclude,
-        std::move(callback));
+        std::move(callback), current_frame_host()->IsOutermostMainFrame());
   }
 
  protected:

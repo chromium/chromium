@@ -209,6 +209,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoaderFactory final
   const net::CookieSettingOverrides factory_cookie_setting_overrides_;
   const net::CookieSettingOverrides devtools_cookie_setting_overrides_;
   const bool is_main_frame_origin_recently_accessed_;
+  const bool is_outermost_main_frame_;
 
   // Relative order of `network_loader_factory_` and `loaders_` matters -
   // URLLoaderFactory needs to live longer than URLLoaders created using the

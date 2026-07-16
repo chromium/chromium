@@ -82,7 +82,8 @@ network::mojom::URLLoaderFactoryParamsPtr CreateParams(
     bool require_cross_site_request_for_cookies,
     bool is_for_service_worker,
     const base::UnguessableToken& network_restrictions_id,
-    bool has_effective_top_frame_for_storage_partitioning) {
+    bool has_effective_top_frame_for_storage_partitioning,
+    bool is_outermost_main_frame = false) {
   DCHECK(process);
 
   network::mojom::URLLoaderFactoryParamsPtr params =
@@ -92,6 +93,7 @@ network::mojom::URLLoaderFactoryParamsPtr CreateParams(
   params->request_initiator_origin_lock = request_initiator_origin_lock;
 
   params->is_trusted = is_trusted;
+  params->is_outermost_main_frame = is_outermost_main_frame;
   if (top_frame_token)
     params->top_frame_id = top_frame_token.value().value();
 
@@ -205,7 +207,8 @@ URLLoaderFactoryParamsHelper::CreateForFrame(
       trust_token_redemption_policy, cookie_setting_overrides, debug_tag,
       /*require_cross_site_request_for_cookies=*/false,
       /*is_for_service_worker=*/false, network_restrictions_id,
-      has_effective_top_frame_for_storage_partitioning);
+      has_effective_top_frame_for_storage_partitioning,
+      frame->IsOutermostMainFrame());
 }
 
 // static
@@ -249,7 +252,8 @@ URLLoaderFactoryParamsHelper::CreateForIsolatedWorld(
       // Extensions and isolated worlds are out of scope for
       // Connection-Allowlists.
       network::GetNoOpNetworkRestrictionsId(),
-      has_effective_top_frame_for_storage_partitioning);
+      has_effective_top_frame_for_storage_partitioning,
+      frame->IsOutermostMainFrame());
 }
 
 network::mojom::URLLoaderFactoryParamsPtr
@@ -289,7 +293,8 @@ URLLoaderFactoryParamsHelper::CreateForPrefetch(
       // TODO(crbug.com/495538206): Revisit if prefetch from a frame with
       // an effective top frame for storage partitioning needs the same
       // browser-side `site_for_cookies` override.
-      /*has_effective_top_frame_for_storage_partitioning=*/false);
+      /*has_effective_top_frame_for_storage_partitioning=*/false,
+      frame->IsOutermostMainFrame());
 }
 
 // static
@@ -345,7 +350,8 @@ URLLoaderFactoryParamsHelper::CreateForWorker(
       // TODO(crbug.com/495538206): Revisit if workers attached to a
       // frame with an effective top frame for storage partitioning need
       // the same browser-side `site_for_cookies` override.
-      /*has_effective_top_frame_for_storage_partitioning=*/false);
+      /*has_effective_top_frame_for_storage_partitioning=*/false,
+      /*is_outermost_main_frame=*/false);
 }
 
 // static
@@ -421,7 +427,8 @@ URLLoaderFactoryParamsHelper::CreateForEarlyHintsPreload(
       // initiated from a frame with an effective top frame for storage
       // partitioning need the same browser-side `site_for_cookies`
       // override.
-      /*has_effective_top_frame_for_storage_partitioning=*/false);
+      /*has_effective_top_frame_for_storage_partitioning=*/false,
+      navigation_request.frame_tree_node()->IsOutermostMainFrame());
 }
 
 // static

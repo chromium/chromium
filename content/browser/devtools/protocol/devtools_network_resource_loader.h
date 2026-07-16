@@ -47,7 +47,8 @@ class CONTENT_EXPORT DevToolsNetworkResourceLoader
       net::SiteForCookies site_for_cookies,
       Caching caching,
       Credentials include_credentials,
-      CompletionCallback complete_callback);
+      CompletionCallback complete_callback,
+      bool is_outermost_main_frame = false);
 
   ~DevToolsNetworkResourceLoader() override;
 

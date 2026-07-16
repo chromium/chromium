@@ -248,6 +248,7 @@ CorsURLLoaderFactory::CorsURLLoaderFactory(
           params->devtools_cookie_setting_overrides),
       is_main_frame_origin_recently_accessed_(
           params->is_main_frame_origin_recently_accessed),
+      is_outermost_main_frame_(params->is_outermost_main_frame),
       origin_access_list_(origin_access_list),
       owner_(owner),
       network_restrictions_id_(params->network_restrictions_id) {
@@ -626,6 +627,14 @@ bool CorsURLLoaderFactory::IsValidRequest(
           "CorsURLLoaderFactory: Internal load flag received");
       return false;
     }
+  }
+
+  if (!process_id_.is_browser() && request.is_outermost_main_frame &&
+      !is_outermost_main_frame_ &&
+      request.mode != mojom::RequestMode::kNavigate) {
+    mojo::ReportBadMessage(
+        "CorsURLLoaderFactory: is_outermost_main_frame does not match factory");
+    return false;
   }
 
   // Check if this is an untrusted factory being provided parameters that should

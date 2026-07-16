@@ -5611,6 +5611,8 @@ class URLLoaderCookieSettingOverridesTest
     request.is_outermost_main_frame = IsOuterMostFrame();
     request.storage_access_api_status = StorageAccessApiStatus();
     request.request_initiator = Initiator();
+    context().mutable_factory_params().is_outermost_main_frame =
+        IsOuterMostFrame();
   }
 
   net::CookieSettingOverrides ExpectedCookieSettingOverrides(

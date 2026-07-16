@@ -46,11 +46,13 @@ DevToolsNetworkResourceLoader::Create(
     net::SiteForCookies site_for_cookies,
     Caching caching,
     Credentials include_credentials,
-    CompletionCallback completion_callback) {
+    CompletionCallback completion_callback,
+    bool is_outermost_main_frame) {
   network::ResourceRequest resource_request;
   resource_request.url = std::move(gurl);
   resource_request.request_initiator = origin;
   resource_request.site_for_cookies = site_for_cookies;
+  resource_request.is_outermost_main_frame = is_outermost_main_frame;
   if (caching == Caching::kBypass) {
     resource_request.load_flags |= net::LOAD_BYPASS_CACHE;
   }

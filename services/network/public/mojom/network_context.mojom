@@ -885,6 +885,9 @@ struct URLLoaderFactoryParams {
   // populated.
   bool is_trusted = false;
 
+  // True if this is for exclusive use by an outermost main frame.
+  bool is_outermost_main_frame = false;
+
   // If true, a cookie-less IsolationInfo is automatically assigned to
   // URLLoaders based on the URL being requested. The IsolaitonInfo will
   // have an empty SiteForCookies. If this is true, |isolation_info| must be

@@ -605,4 +605,19 @@ TEST_F(TrustedURLLoaderFactoryTest, DisallowedLoadFlagToTrustedLoader) {
             bad_message_observer.WaitForBadMessage());
 }
 
+TEST_F(CorsURLLoaderFactoryTest, DisallowedOutermostMainFrameFromRenderer) {
+  ResourceRequest request;
+  request.mode = mojom::RequestMode::kCors;
+  request.credentials_mode = mojom::CredentialsMode::kInclude;
+  request.method = net::HttpRequestHeaders::kGetMethod;
+  request.url = test_server()->GetURL("/echoall");
+  request.is_outermost_main_frame = true;
+  request.request_initiator = url::Origin::Create(request.url);
+  mojo::test::BadMessageObserver bad_message_observer;
+  CreateLoaderAndStart(request);
+  EXPECT_EQ(
+      "CorsURLLoaderFactory: is_outermost_main_frame does not match factory",
+      bad_message_observer.WaitForBadMessage());
+}
+
 }  // namespace network::cors

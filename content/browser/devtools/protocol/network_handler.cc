@@ -4716,7 +4716,8 @@ void NetworkHandler::LoadNetworkResource(
     auto loader = DevToolsNetworkResourceLoader::Create(
         std::move(url_loader_factory), std::move(gurl),
         frame->GetLastCommittedOrigin(), frame->ComputeSiteForCookies(),
-        caching, include_credentials, std::move(complete_callback));
+        caching, include_credentials, std::move(complete_callback),
+        frame->IsOutermostMainFrame());
     loaders_.emplace(std::move(loader), std::move(callback));
     return;
   }
