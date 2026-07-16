@@ -778,6 +778,7 @@ should be able to be added at any place in this file.
       summary="For ReadLaterBottomSheet feature."/>
   <variant name="_ReadLaterContextMenu"
       summary="For ReadLaterContextMenu feature."/>
+  <variant name="_RecentTabs" summary="For Recent tabs feature."/>
   <variant name="_ReopenTab" summary="For ReopenTab feature."/>
   <variant name="_RequestDesktopSiteAppMenu"
       summary="For the RequestDesktopSiteAppMenu feature. (obsolete)"/>

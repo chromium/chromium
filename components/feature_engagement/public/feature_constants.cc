@@ -525,6 +525,9 @@ BASE_FEATURE(kIPHIncognitoIndicatorCloseAllWindows,
 BASE_FEATURE(kIPHInstanceSwitcherFeature,
              "IPH_InstanceSwitcher",
              base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kIPHRecentTabsFeature,
+             "IPH_RecentTabs",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHKeyboardAccessoryAddressFillingFeature,
              "IPH_KeyboardAccessoryAddressFilling",
              base::FEATURE_DISABLED_BY_DEFAULT);

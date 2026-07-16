@@ -124,9 +124,25 @@ public interface AppMenuHandler {
      *
      * @param highlightItemId The id of a menu item to highlight or {@code null} to turn off the
      *     highlight.
-     * @param shouldHighlightMenuButton whether the triple dot app menu button should be highlighted
+     * @param shouldHighlightMenuButton Whether the triple dot app menu button should be
+     *     highlighted.
      */
     void setMenuHighlight(Integer highlightItemId, boolean shouldHighlightMenuButton);
+
+    /**
+     * Overloaded setMenuHighlight method to control whether the menu is highlighted, and whether
+     * the menu list should automatically scroll the item into view when shown.
+     *
+     * @param highlightItemId The id of a menu item to highlight or {@code null} to turn off the
+     *     highlight.
+     * @param shouldHighlightMenuButton Whether the triple dot app menu button should be
+     *     highlighted.
+     * @param shouldScroll Whether the list should automatically scroll the item into view.
+     */
+    default void setMenuHighlight(
+            Integer highlightItemId, boolean shouldHighlightMenuButton, boolean shouldScroll) {
+        setMenuHighlight(highlightItemId, shouldHighlightMenuButton);
+    }
 
     /** Clears the menu highlight. */
     void clearMenuHighlight();

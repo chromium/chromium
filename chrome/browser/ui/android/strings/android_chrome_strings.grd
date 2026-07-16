@@ -6157,6 +6157,9 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_IPH_INSTANCE_SWITCHER_TEXT" desc="The in-product-help text prompting the user that app menu has a menu for managing multiple Chrome windows with instance switcher.">
         You can manage your windows in Chrome's Window Manager
       </message>
+      <message name="IDS_IPH_RECENT_TABS_TEXT" desc="The in-product-help text prompting the user that they can find their recently closed tabs and windows in the 'Recent tabs' surface.">
+        Find your recently closed tabs and windows here
+      </message>
       <message name="IDS_IPH_IDENTITY_DISC_ACCESSIBILITY_TEXT" desc="The in-product-help accessibility text prompting the user that tapping identity disc will navigate to 'Sync and Google services' settings page.">
         To manage your Google account, tap the "Manage account" button
       </message>

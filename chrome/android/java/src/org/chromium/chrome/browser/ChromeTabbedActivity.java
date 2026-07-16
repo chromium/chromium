@@ -4366,6 +4366,10 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                 NewTabPageUma.recordAction(NewTabPageUma.ACTION_OPENED_RECENT_TABS_MANAGER);
             }
             RecordUserAction.record("MobileMenuRecentTabs");
+            if (MultiWindowUtils.getInstanceCount(PersistedInstanceType.INACTIVE) > 0) {
+                TrackerFactory.getTrackerForProfile(getCurrentTabModel().getProfile())
+                        .notifyEvent(EventConstants.RECENT_TABS_USED_WITH_CLOSED_WINDOWS);
+            }
         } else if (id == R.id.recent_entry_tab_menu_item) {
             assert menuItemData != null;
             assert menuItemData.get(

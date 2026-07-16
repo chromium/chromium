@@ -1590,14 +1590,31 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         } else {
             mToolbarButtonInProductHelpController.showColdStartIph();
             mReadLaterIphController.showColdStartIph();
+            String featureName = null;
+            int stringId = 0;
+            int menuId = 0;
+
             if (MultiWindowUtils.shouldShowInstanceSwitcherIph()) {
+                featureName = FeatureConstants.INSTANCE_SWITCHER;
+                stringId = R.string.iph_instance_switcher_text;
+                menuId = R.id.manage_all_windows_menu_id;
+            } else if (MultiWindowUtils.shouldShowRecentTabsIph()) {
+                featureName = FeatureConstants.RECENT_TABS;
+                stringId = R.string.iph_recent_tabs_text;
+                menuId = R.id.recent_tabs_menu_id;
+            }
+
+            if (featureName != null) {
                 MultiInstanceIphController.maybeShowInProductHelp(
                         mActivity,
                         profile,
                         menuButtonView,
                         mAppMenuCoordinator.getAppMenuHandler(),
-                        R.id.manage_all_windows_menu_id);
+                        featureName,
+                        stringId,
+                        menuId);
             }
+
             mDesktopSiteSettingsIphController =
                     DesktopSiteSettingsIphController.create(
                             mActivity,

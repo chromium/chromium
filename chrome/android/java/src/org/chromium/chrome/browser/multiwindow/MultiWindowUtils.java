@@ -660,9 +660,25 @@ public class MultiWindowUtils implements ActivityStateListener {
      * @return Whether the IPH for Chrome's window manager should be shown.
      */
     public static boolean shouldShowInstanceSwitcherIph() {
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.IN_APP_WINDOW_MANAGER_DEPRECATION)) {
+            return false;
+        }
         int instanceCount = getInstanceCount(PersistedInstanceType.ANY);
         int threshold = DeviceInfo.isDesktop() ? 10 : 1;
         return instanceCount > threshold;
+    }
+
+    /**
+     * Determines whether the IPH for the Recent Tabs UI that lists closed windows, should be shown.
+     *
+     * @return Whether the IPH for Recent Tabs should be shown.
+     */
+    public static boolean shouldShowRecentTabsIph() {
+        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.IN_APP_WINDOW_MANAGER_DEPRECATION)) {
+            return false;
+        }
+        int inactiveInstanceCount = getInstanceCount(PersistedInstanceType.INACTIVE);
+        return inactiveInstanceCount > 0;
     }
 
     static boolean isRestorableInstance(Set<Integer> appTaskIds, int index) {

@@ -1919,6 +1919,23 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
     return config;
   }
 
+  if (kIPHRecentTabsFeature.name == feature->name) {
+    // A config that allows the 'Recent tabs' text bubble IPH to be shown
+    // only once to inform users about the recently closed tabs/windows.
+
+    FeatureConfig config;
+    config.valid = true;
+    config.availability = Comparator(ANY, 0);
+    config.session_rate = Comparator(ANY, 0);
+    config.trigger =
+        EventConfig("recent_tabs_iph_trigger", Comparator(LESS_THAN, 1),
+                    k10YearsInDays, k10YearsInDays);
+    config.used =
+        EventConfig("recent_tabs_used_with_closed_windows",
+                    Comparator(EQUAL, 0), k10YearsInDays, k10YearsInDays);
+    return config;
+  }
+
   if (kIPHReadLaterAppMenuBookmarkThisPageFeature.name == feature->name) {
     // A config that allows the reading list IPH bubble to prompt the user to
     // bookmark this page.

@@ -237,6 +237,13 @@ public final class EventConstants {
 
     public static final String READ_LATER_CONTEXT_MENU_TAPPED = "read_later_context_menu_tapped";
 
+    /**
+     * The user selected the 'Recent tabs' app menu option, with at least one closed window in
+     * persistence.
+     */
+    public static final String RECENT_TABS_USED_WITH_CLOSED_WINDOWS =
+            "recent_tabs_used_with_closed_windows";
+
     /** The request desktop site window setting IPH was shown. */
     public static final String REQUEST_DESKTOP_SITE_WINDOW_SETTING_IPH_SHOWN =
             "request_desktop_site_window_setting_iph_shown";

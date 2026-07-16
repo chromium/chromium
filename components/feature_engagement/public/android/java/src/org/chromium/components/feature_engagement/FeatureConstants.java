@@ -301,6 +301,10 @@ public @interface FeatureConstants {
      */
     String IDENTITY_DISC_FEATURE = "IPH_IdentityDisc";
 
+    /**
+     * An IPH feature prompting user that app menu has a menu for managing multiple Chrome windows
+     * with instance switcher.
+     */
     String INSTANCE_SWITCHER = "IPH_InstanceSwitcher";
 
     /**
@@ -419,6 +423,12 @@ public @interface FeatureConstants {
     String READ_LATER_BOTTOM_SHEET_FEATURE = "IPH_ReadLaterBottomSheet";
 
     String READ_LATER_CONTEXT_MENU_FEATURE = "IPH_ReadLaterContextMenu";
+
+    /**
+     * An IPH feature prompting user that they can find their recently closed tabs and windows in
+     * the 'Recent tabs' surface.
+     */
+    String RECENT_TABS = "IPH_RecentTabs";
 
     String REQUEST_DESKTOP_SITE_DEFAULT_ON_FEATURE = "IPH_RequestDesktopSiteDefaultOn";
 

@@ -145,6 +145,7 @@ DEFINE_VARIATION_PARAM(kIPHIdentityDiscFeature, "IPH_IdentityDisc");
 DEFINE_VARIATION_PARAM(kIPHIncognitoIndicatorCloseAllWindows,
                        "IPH_IncognitoIndicatorCloseAllWindows");
 DEFINE_VARIATION_PARAM(kIPHInstanceSwitcherFeature, "IPH_InstanceSwitcher");
+DEFINE_VARIATION_PARAM(kIPHRecentTabsFeature, "IPH_RecentTabs");
 DEFINE_VARIATION_PARAM(kIPHKeyboardAccessoryAddressFillingFeature,
                        "IPH_KeyboardAccessoryAddressFilling");
 DEFINE_VARIATION_PARAM(kIPHKeyboardAccessoryBarSwipingFeature,
@@ -722,6 +723,7 @@ inline constexpr flags_ui::FeatureEntry::FeatureVariation
         VARIATION_ENTRY(kIPHReadLaterAppMenuBookmarkThisPageFeature),
         VARIATION_ENTRY(kIPHReadLaterBottomSheetFeature),
         VARIATION_ENTRY(kIPHReadLaterContextMenuFeature),
+        VARIATION_ENTRY(kIPHRecentTabsFeature),
         VARIATION_ENTRY(kIPHRequestDesktopSiteDefaultOnFeature),
         VARIATION_ENTRY(kIPHRequestDesktopSiteExceptionsGenericFeature),
         VARIATION_ENTRY(kIPHRequestDesktopSiteWindowSettingFeature),

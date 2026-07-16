@@ -1109,6 +1109,7 @@ public class MultiWindowUtilsUnitTest {
     }
 
     @Test
+    @DisableFeatures(ChromeFeatureList.IN_APP_WINDOW_MANAGER_DEPRECATION)
     public void testShouldShowInstanceSwitcherIph_NonDesktop() {
         DeviceInfo.setIsDesktopForTesting(false);
         MultiWindowTestUtils.enableMultiInstance();
@@ -1128,6 +1129,7 @@ public class MultiWindowUtilsUnitTest {
     }
 
     @Test
+    @DisableFeatures(ChromeFeatureList.IN_APP_WINDOW_MANAGER_DEPRECATION)
     public void testShouldShowInstanceSwitcherIph_Desktop() {
         DeviceInfo.setIsDesktopForTesting(true);
         MultiWindowTestUtils.enableMultiInstance();
@@ -1149,6 +1151,62 @@ public class MultiWindowUtilsUnitTest {
 
         // Reset DeviceInfo setting
         DeviceInfo.setIsDesktopForTesting(false);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.IN_APP_WINDOW_MANAGER_DEPRECATION)
+    public void testShouldShowInstanceSwitcherIph_DeprecationEnabled() {
+        MultiWindowTestUtils.enableMultiInstance();
+
+        // 2 instances, flag enabled -> should return false.
+        writeInstanceInfo(
+                INSTANCE_ID_0, URL_1, /* tabCount= */ 3, /* incognitoTabCount= */ 2, TASK_ID_5);
+        writeInstanceInfo(
+                INSTANCE_ID_1, URL_2, /* tabCount= */ 1, /* incognitoTabCount= */ 0, TASK_ID_6);
+        assertFalse(MultiWindowUtils.shouldShowInstanceSwitcherIph());
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.IN_APP_WINDOW_MANAGER_DEPRECATION)
+    public void testShouldShowRecentTabsIph_DeprecationDisabled() {
+        MultiWindowTestUtils.enableMultiInstance();
+
+        // Inactive instances present, but flag disabled -> should return false.
+        writeInstanceInfo(
+                INSTANCE_ID_0,
+                URL_1,
+                /* tabCount= */ 3,
+                /* incognitoTabCount= */ 2,
+                INVALID_TASK_ID);
+        assertFalse(MultiWindowUtils.shouldShowRecentTabsIph());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.IN_APP_WINDOW_MANAGER_DEPRECATION)
+    public void testShouldShowRecentTabsIph_DeprecationEnabled() {
+        MultiWindowUtils.setAppTaskIdsForTesting(new HashSet<>());
+        MultiWindowTestUtils.enableMultiInstance();
+
+        // 0 inactive instances -> should return false
+        assertFalse(MultiWindowUtils.shouldShowRecentTabsIph());
+
+        // 1 active instance (TASK_ID_5 is in appTaskIds, so active) -> should return false
+        Set<Integer> appTaskIds = new HashSet<>();
+        appTaskIds.add(TASK_ID_5);
+        MultiWindowUtils.setAppTaskIdsForTesting(appTaskIds);
+        writeInstanceInfo(
+                INSTANCE_ID_0, URL_1, /* tabCount= */ 3, /* incognitoTabCount= */ 2, TASK_ID_5);
+        assertFalse(MultiWindowUtils.shouldShowRecentTabsIph());
+
+        // 1 active instance + 1 inactive instance (INVALID_TASK_ID is NOT in appTaskIds, so
+        // inactive) -> should return true
+        writeInstanceInfo(
+                INSTANCE_ID_1,
+                URL_2,
+                /* tabCount= */ 1,
+                /* incognitoTabCount= */ 0,
+                INVALID_TASK_ID);
+        assertTrue(MultiWindowUtils.shouldShowRecentTabsIph());
     }
 
     @Test
