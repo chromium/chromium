@@ -54,6 +54,8 @@ import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.collaboration.CollaborationServiceFactory;
 import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
 import org.chromium.chrome.browser.commerce.ShoppingServiceFactoryJni;
@@ -837,12 +839,24 @@ public class VerticalTabListCoordinatorUnitTest {
 
     @Test
     @SmallTest
-    public void testTabSearchButtonClick() {
+    @EnableFeatures(ChromeFeatureList.TAB_SEARCH_FOR_AL)
+    public void testTabSearchButtonClick_TabSearchForALEnabled() {
         createCoordinator();
         ImageButton tabSearchButton = mCoordinator.getView().findViewById(R.id.tab_search_button);
         assertNotNull(tabSearchButton);
         tabSearchButton.performClick();
         verify(mVerticalTabsActionDelegate).openTabSearch();
+    }
+
+    @Test
+    @SmallTest
+    @DisableFeatures(ChromeFeatureList.TAB_SEARCH_FOR_AL)
+    public void testTabSearchButtonClick_TabSearchForALDisabled() {
+        createCoordinator();
+        ImageButton tabSearchButton = mCoordinator.getView().findViewById(R.id.tab_search_button);
+        assertNotNull(tabSearchButton);
+        tabSearchButton.performClick();
+        verify(mVerticalTabsActionDelegate).openHubPane(PaneId.TAB_SWITCHER);
     }
 
     @Test

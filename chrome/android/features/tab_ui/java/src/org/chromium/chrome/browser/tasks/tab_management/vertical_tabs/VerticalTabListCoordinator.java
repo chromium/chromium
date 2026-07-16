@@ -33,6 +33,7 @@ import org.chromium.chrome.browser.compositor.overlays.strip.TabGroupContextMenu
 import org.chromium.chrome.browser.compositor.overlays.strip.TabStripContextMenuCoordinator;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
 import org.chromium.chrome.browser.dragdrop.ChromeDragAndDropBrowserDelegate;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.hub.PaneId;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -397,7 +398,13 @@ public class VerticalTabListCoordinator {
                                 v -> verticalTabsActionDelegate.openHubPane(PaneId.TAB_GROUPS))
                         .with(
                                 VerticalTabListProperties.ON_SEARCH_CLICK_LISTENER,
-                                v -> verticalTabsActionDelegate.openTabSearch())
+                                v -> {
+                                    if (ChromeFeatureList.sTabSearchForAL.isEnabled()) {
+                                        verticalTabsActionDelegate.openTabSearch();
+                                    } else {
+                                        verticalTabsActionDelegate.openHubPane(PaneId.TAB_SWITCHER);
+                                    }
+                                })
                         .with(
                                 VerticalTabListProperties.ON_NEW_TAB_CLICK_LISTENER,
                                 v -> handleNewTabButtonClick())
