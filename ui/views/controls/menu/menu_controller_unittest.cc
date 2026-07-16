@@ -16,11 +16,13 @@
 #include "base/functional/callback_helpers.h"
 #include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/to_string.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/current_thread.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/bind.h"
 #include "build/build_config.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_mode.h"
@@ -42,6 +44,8 @@
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/views/accessibility/ax_update_notifier.h"
+#include "ui/views/accessibility/ax_update_observer.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/menu/menu_controller_delegate.h"
@@ -299,6 +303,32 @@ gfx::Size CancelMenuOnMousePressView::CalculatePreferredSize(
 
 BEGIN_METADATA(CancelMenuOnMousePressView)
 END_METADATA
+
+// Runs a callback the first time an accessibility event of `event_type` is
+// observed on any view.
+class CallbackOnAXEventObserver : public AXUpdateObserver {
+ public:
+  CallbackOnAXEventObserver(ax::mojom::Event event_type,
+                            base::OnceClosure callback)
+      : event_type_(event_type), callback_(std::move(callback)) {
+    observation_.Observe(AXUpdateNotifier::Get());
+  }
+
+  bool fired() const { return !callback_; }
+
+  // AXUpdateObserver:
+  void OnViewEvent(View* view, ax::mojom::Event event_type) override {
+    if (event_type == event_type_ && callback_) {
+      std::move(callback_).Run();
+    }
+  }
+
+ private:
+  const ax::mojom::Event event_type_;
+  base::OnceClosure callback_;
+  base::ScopedObservation<AXUpdateNotifier, AXUpdateObserver> observation_{
+      this};
+};
 
 }  // namespace
 
@@ -3060,6 +3090,28 @@ TEST_F(MenuControllerTest, NoUseAfterFreeWhenMenuCanceledOnMousePress) {
 
   // Close to remove observers before test TearDown.
   submenu->Close();
+}
+
+// Tests that having the MenuController deleted from an accessibility observer
+// while handling a mouse move does not cause a crash. ASAN bots should not
+// detect use-after-free in MenuController.
+TEST_F(MenuControllerTest, MenuControllerDestroyedDuringMouseMove) {
+  ShowSubmenu();
+  SubmenuView* const submenu = menu_item()->GetSubmenu();
+  SetPendingStateItem(submenu->GetMenuItemAt(0));
+
+  CallbackOnAXEventObserver observer(
+      ax::mojom::Event::kActiveDescendantChanged,
+      base::BindLambdaForTesting([this] { DestroyMenuController(); }));
+
+  // Moving the mouse over a different item changes the selection, which fires
+  // accessibility events. The observer above synchronously deletes the
+  // controller while the move is being handled.
+  const gfx::Point location = submenu->GetMenuItemAt(1)->bounds().CenterPoint();
+  ProcessMouseMoved(
+      submenu, ui::MouseEvent(ui::EventType::kMouseMoved, location, location,
+                              ui::EventTimeForNow(), 0, 0));
+  EXPECT_TRUE(observer.fired());
 }
 
 TEST_F(MenuControllerTest, SetSelectionIndices_MenuItemsOnly) {

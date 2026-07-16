@@ -964,6 +964,9 @@ bool MenuController::OnMouseDragged(SubmenuView* source,
     }
     return true;
   }
+  // Changing the selection or showing a sibling menu can cause `this` to be
+  // deleted as a side effect of accessibility notifications.
+  auto this_ref = AsWeakPtr();
   MenuItemView* mouse_menu = nullptr;
   if (part.type == MenuPartType::kMenuItem) {
     // If there is no menu target, but a submenu target, then we are interacting
@@ -990,6 +993,9 @@ bool MenuController::OnMouseDragged(SubmenuView* source,
                      SELECTION_OPEN_SUBMENU);
       }
     }
+  }
+  if (!this_ref) {
+    return false;
   }
   UpdateActiveMouseView(source, event, mouse_menu);
 
@@ -1121,7 +1127,13 @@ void MenuController::OnMouseMoved(SubmenuView* source,
     new_hot_tracked_button = Button::AsButton(view);
   }
 
+  // `HandleMouseLocation()` may change the selection, which can cause `this` to
+  // be deleted as a side effect of accessibility notifications.
+  auto this_ref = AsWeakPtr();
   HandleMouseLocation(source, event.location());
+  if (!this_ref) {
+    return;
+  }
 
   // Updating the hot tracked button should be after `HandleMouseLocation()`
   // which may reset the current hot tracked button.
