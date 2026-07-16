@@ -37,6 +37,15 @@
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_utils.h"
 
+namespace {
+
+bool IsVerticalOrientation(const TabCollectionNode* collection_node) {
+  return collection_node &&
+         collection_node->orientation() == TabStripOrientation::kVertical;
+}
+
+}  // namespace
+
 class TabStripView::TargetViewsTracker : public views::ViewObserver {
  public:
   TargetViewsTracker() = default;
@@ -361,7 +370,9 @@ void TabStripView::SetCollapsedState(bool is_collapsed) {
 void TabStripView::SetIsAnimatingSize(bool is_animating) {
   for (views::ScrollView* scroll_view :
        {pinned_tabs_scroll_view_, unpinned_tabs_scroll_view_}) {
-    if (scroll_view) {
+    // Scrollbars are not visible in the horizontal orientation so only update
+    // for the vertical orientation.
+    if (scroll_view && IsVerticalOrientation(collection_node_)) {
       static_cast<VerticalTabStripScrollBar*>(
           scroll_view->vertical_scroll_bar())
           ->SetIsAnimatingSize(is_animating);
@@ -444,12 +455,7 @@ void TabStripView::SetScrollViewProperties(views::ScrollView* scroll_view) {
   scroll_view->SetUseContentsPreferredSize(true);
   scroll_view->SetBackgroundColor(std::nullopt);
   CHECK(collection_node_);
-  if (collection_node_->orientation() == TabStripOrientation::kHorizontal) {
-    scroll_view->SetHorizontalScrollBarMode(
-        views::ScrollView::ScrollBarMode::kHiddenButEnabled);
-    scroll_view->SetVerticalScrollBarMode(
-        views::ScrollView::ScrollBarMode::kDisabled);
-  } else {
+  if (IsVerticalOrientation(collection_node_)) {
     scroll_view->SetHorizontalScrollBarMode(
         views::ScrollView::ScrollBarMode::kDisabled);
     scroll_view->SetOverflowGradientMask(
@@ -457,6 +463,12 @@ void TabStripView::SetScrollViewProperties(views::ScrollView* scroll_view) {
     scroll_view->SetVerticalScrollBar(
         std::make_unique<VerticalTabStripScrollBar>(
             collection_node_->GetController()->GetStateController()));
+  } else {
+    scroll_view->SetHorizontalScrollBarMode(
+        views::ScrollView::ScrollBarMode::kHiddenButEnabled);
+    scroll_view->SetVerticalScrollBarMode(
+        views::ScrollView::ScrollBarMode::kDisabled);
+    scroll_view->SetTreatAllScrollEventsAsHorizontal(true);
   }
   callback_subscriptions_.emplace_back(
       scroll_view->AddContentsScrolledCallback(base::BindRepeating(
@@ -488,10 +500,15 @@ void TabStripView::EnsureVisibleInViewportPostActivationAndLayout(
     return;
   }
 
+  const bool is_vertical = IsVerticalOrientation(collection_node_);
+
   // Handle the case where the scroll view is currently not in an overflow
   // state. In such a case the activated view will be visible in the scroll
   // view's viewport without scrolling.
-  if (!scroll_view->IsVerticalContentOverflowing()) {
+  const bool is_overflowing =
+      is_vertical ? scroll_view->IsVerticalContentOverflowing()
+                  : scroll_view->IsHorizontalContentOverflowing();
+  if (!is_overflowing) {
     // It may be the case that the activated view is not at its target height
     // (i.e. it was activated as it is being animated in). In such a case
     // disable overflow visuals to prevent jank that can occur if content view
@@ -527,7 +544,9 @@ void TabStripView::EnsureVisibleInViewportPostActivationAndLayout(
   // Calculate the required scroll offset for the visible content bounds (the
   // reverse of the activated view adjustment).
   const int diff =
-      activated_view_bounds.y() - adjusted_activated_view_bounds.y();
+      is_vertical
+          ? activated_view_bounds.y() - adjusted_activated_view_bounds.y()
+          : activated_view_bounds.x() - adjusted_activated_view_bounds.x();
 
   // Calculate the required scroll offset for the visible content bounds taking
   // into account configured overflow gradients. This is deliberately more than
@@ -536,14 +555,21 @@ void TabStripView::EnsureVisibleInViewportPostActivationAndLayout(
   overflow_adjusted_activated_view_bounds.AdjustToFit(
       scroll_view->GetOpaqueVisibleRect());
   const int diff_avoid_overflow_gradient =
-      activated_view_bounds.y() - overflow_adjusted_activated_view_bounds.y();
+      is_vertical ? activated_view_bounds.y() -
+                        overflow_adjusted_activated_view_bounds.y()
+                  : activated_view_bounds.x() -
+                        overflow_adjusted_activated_view_bounds.x();
+
+  const gfx::PointF scroll_offset =
+      is_vertical
+          ? gfx::PointF(0, static_cast<float>(diff_avoid_overflow_gradient))
+          : gfx::PointF(static_cast<float>(diff_avoid_overflow_gradient), 0);
 
   if (diff != 0) {
     // Disable overflow visuals to avoid visual artifacts while scrolling,
-    // particularly for views towards the bottom of the scroll view.
+    // particularly for views towards the end of the scroll view.
     DisableOverflowVisuals(scroll_view);
-    scroll_view->ScrollByOffset(
-        {0, static_cast<float>(diff_avoid_overflow_gradient)});
+    scroll_view->ScrollByOffset(scroll_offset);
     scroll_view->RegisterPostLayoutCallback(base::BindRepeating(
         &TabStripView::EnsureVisibleInViewportPostActivationAndLayout,
         base::Unretained(this)));
@@ -551,8 +577,7 @@ void TabStripView::EnsureVisibleInViewportPostActivationAndLayout(
   } else {
     // Request a final scroll to ensure the activated view is moved beyond the
     // overflow gradient if necessary.
-    scroll_view->ScrollByOffset(
-        {0, static_cast<float>(diff_avoid_overflow_gradient)});
+    scroll_view->ScrollByOffset(scroll_offset);
     EnableOverflowVisuals(scroll_view);
   }
 }
@@ -562,13 +587,15 @@ void TabStripView::EnableOverflowVisuals(views::ScrollView* scroll_view) {
   // from running.
   scroll_view->RegisterPostLayoutCallback(base::DoNothing());
   scroll_view->SetDrawOverflowIndicator(true);
-  scroll_view->SetVerticalScrollBarMode(
-      views::ScrollView::ScrollBarMode::kEnabled);
+  if (IsVerticalOrientation(collection_node_)) {
+    scroll_view->SetVerticalScrollBarMode(
+        views::ScrollView::ScrollBarMode::kEnabled);
 
-  // Restore normal VerticalTabStripScrollBar scrollbar behavior.
-  if (auto* scroll_bar = views::AsViewClass<VerticalTabStripScrollBar>(
-          scroll_view->vertical_scroll_bar())) {
-    scroll_bar->SetIsAnimatingSize(false);
+    // Restore normal VerticalTabStripScrollBar scrollbar behavior.
+    if (auto* scroll_bar = views::AsViewClass<VerticalTabStripScrollBar>(
+            scroll_view->vertical_scroll_bar())) {
+      scroll_bar->SetIsAnimatingSize(false);
+    }
   }
 
   // Reset the active view as it is no longer needed after post-activation
@@ -581,14 +608,19 @@ void TabStripView::EnableOverflowVisuals(views::ScrollView* scroll_view) {
 
 void TabStripView::DisableOverflowVisuals(views::ScrollView* scroll_view) {
   scroll_view->SetDrawOverflowIndicator(false);
-  scroll_view->SetVerticalScrollBarMode(
-      views::ScrollView::ScrollBarMode::kHiddenButEnabled);
 
-  // Suppress scrollbar visuals to avoid artifacts as views are resized to
-  // target bounds whilst simultaneously scrolling to target.
-  if (auto* scroll_bar = views::AsViewClass<VerticalTabStripScrollBar>(
-          scroll_view->vertical_scroll_bar())) {
-    scroll_bar->SetIsAnimatingSize(true);
+  // If in the vertical orientation also hide scrollbar visuals. This is not
+  // needed for horizontal since the scrollbar is not shown.
+  if (IsVerticalOrientation(collection_node_)) {
+    scroll_view->SetVerticalScrollBarMode(
+        views::ScrollView::ScrollBarMode::kHiddenButEnabled);
+
+    // Suppress scrollbar visuals to avoid artifacts as views are resized to
+    // target bounds whilst simultaneously scrolling to target.
+    if (auto* scroll_bar = views::AsViewClass<VerticalTabStripScrollBar>(
+            scroll_view->vertical_scroll_bar())) {
+      scroll_bar->SetIsAnimatingSize(true);
+    }
   }
 }
 
