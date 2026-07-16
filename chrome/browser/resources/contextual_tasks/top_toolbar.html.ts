@@ -14,14 +14,20 @@ export function getHtml(this: TopToolbarElement) {
 <div id="top-row" data-element-id="kContextualTasksWebUIToolbarElementId">
 <if expr="_google_chrome">
     <img src="chrome://resources/cr_components/searchbox/icons/google_g_gradient.svg"
-        class="top-toolbar-logo">
+        class="top-toolbar-logo ${
+            this.isSidePanelRearchitectureEnabled_ ? 'clickable' : ''}"
+        @click="${this.onLogoClick_}">
 </if>
 <if expr="not _google_chrome">
-    <img class="top-toolbar-logo chrome-logo-light"
+    <img class="top-toolbar-logo chrome-logo-light ${
+        this.isSidePanelRearchitectureEnabled_ ? 'clickable' : ''}"
         src="chrome://resources/cr_components/searchbox/icons/chrome_product.svg"
+        @click="${this.onLogoClick_}"
         alt="Chrome Logo">
-    <img class="top-toolbar-logo chrome-logo-dark"
-        src="chrome://resources/images/chrome_logo_dark.svg" alt="Chrome Logo">
+    <img class="top-toolbar-logo chrome-logo-dark ${
+        this.isSidePanelRearchitectureEnabled_ ? 'clickable' : ''}"
+        src="chrome://resources/images/chrome_logo_dark.svg" alt="Chrome Logo"
+        @click="${this.onLogoClick_}">
 </if>
   <div class="top-toolbar-title">
     ${this.title}

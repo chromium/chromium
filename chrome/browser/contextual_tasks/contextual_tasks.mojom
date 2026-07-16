@@ -212,6 +212,9 @@ interface PageHandler {
 
   // Triggers the pinning promo IPH if eligible.
   MaybeTriggerPinningPromo();
+
+  // Triggers the display of the native PageInfo bubble.
+  ShowPageInfoBubble();
 };
 
 // WebUI-side handler for requests from the browser.

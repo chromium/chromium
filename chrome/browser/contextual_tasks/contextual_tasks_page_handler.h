@@ -91,6 +91,7 @@ class ContextualTasksPageHandler
   void CloseWindow(
       const contextual_tasks::ContextualWindowId& window_id) override;
   void MaybeTriggerPinningPromo() override;
+  void ShowPageInfoBubble() override;
   void PostMessageToWebview(const lens::ClientToAimMessage& message);
 
   // contextual_tasks::ContextualTasksService::Observer:

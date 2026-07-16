@@ -593,6 +593,10 @@ ContextualTasksUI::ContextualTasksUI(content::WebUI* web_ui)
       contextual_tasks::
           GetContextualTasksLensSearchTooltipSessionImpressionCap());
   source->AddBoolean("askGCoBrowseEnabled", omnibox::kAskGCoBrowse.Get());
+  source->AddBoolean(
+      "contextualTasksSidePanelRearchitectureEnabled",
+      base::FeatureList::IsEnabled(
+          contextual_tasks::kContextualTasksSidePanelRearchitecture));
 
   source->AddBoolean("isLensSearchbox", true);
   source->AddBoolean(

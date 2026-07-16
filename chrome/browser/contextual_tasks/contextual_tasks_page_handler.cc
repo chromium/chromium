@@ -972,3 +972,10 @@ void ContextualTasksPageHandler::MaybeTriggerPinningPromo() {
               feature_engagement::kIPHSidePanelContextualTasksPinnableFeature);
 #endif
 }
+
+void ContextualTasksPageHandler::ShowPageInfoBubble() {
+  if (!base::FeatureList::IsEnabled(
+          contextual_tasks::kContextualTasksSidePanelRearchitecture)) {
+    return;
+  }
+}

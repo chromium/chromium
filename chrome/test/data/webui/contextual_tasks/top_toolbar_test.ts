@@ -29,6 +29,7 @@ suite('TopToolbarTest', () => {
       contextManagementInComposeboxEnabled: false,
       contextualTasksEnableSpatialModelToolbarLayout: false,
       contextualTasksUnboundedMenuEnabled: true,
+      contextualTasksSidePanelRearchitectureEnabled: false,
     });
   });
 
@@ -328,6 +329,34 @@ suite('TopToolbarTest', () => {
       const moreItems =
           sourcesButton.shadowRoot.querySelector<HTMLElement>('#more-items');
       assertTrue(!!moreItems);
+    });
+
+    test('logo click does not trigger page info when flag disabled', () => {
+      const logo = topToolbar.shadowRoot.querySelector<HTMLImageElement>(
+          '.top-toolbar-logo');
+      assertHTMLElement(logo);
+      assertFalse(logo.classList.contains('clickable'));
+
+      logo.click();
+      assertEquals(0, proxy.handler.getCallCount('showPageInfoBubble'));
+    });
+
+    test('logo click triggers page info when flag enabled', async () => {
+      document.body.innerHTML = window.trustedTypes!.emptyHTML;
+      loadTimeData.overrideValues({
+        contextualTasksSidePanelRearchitectureEnabled: true,
+      });
+      topToolbar = document.createElement('top-toolbar');
+      document.body.appendChild(topToolbar);
+      await microtasksFinished();
+
+      const logo = topToolbar.shadowRoot.querySelector<HTMLImageElement>(
+          '.top-toolbar-logo');
+      assertHTMLElement(logo);
+      assertTrue(logo.classList.contains('clickable'));
+
+      logo.click();
+      await proxy.handler.whenCalled('showPageInfoBubble');
     });
   });
 

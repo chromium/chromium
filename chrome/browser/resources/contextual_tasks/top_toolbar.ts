@@ -94,6 +94,7 @@ export class TopToolbarElement extends TopToolbarElementBase {
       contextualTasksEnableSpatialModelToolbarLayoutNewThreadInOverflow_:
           {type: Boolean},
       overflowMenuOpen_: {type: Boolean},
+      isSidePanelRearchitectureEnabled_: {type: Boolean},
     };
   }
 
@@ -102,6 +103,8 @@ export class TopToolbarElement extends TopToolbarElementBase {
   accessor darkMode: boolean = false;
   accessor isAiPage: boolean = loadTimeData.getBoolean('isAiPage');
   accessor isAimEligible: boolean = loadTimeData.getBoolean('isAimEligible');
+  protected accessor isSidePanelRearchitectureEnabled_: boolean =
+      loadTimeData.getBoolean('contextualTasksSidePanelRearchitectureEnabled');
   accessor isUserSignedIn: boolean = true;
   accessor enableOpenInNewTabButton: boolean = false;
   accessor showReopenTabs_: boolean = false;
@@ -240,6 +243,13 @@ export class TopToolbarElement extends TopToolbarElementBase {
 
   protected onReopenTabsDismissClick_() {
     this.showReopenTabs_ = false;
+  }
+
+  protected onLogoClick_() {
+    if (!this.isSidePanelRearchitectureEnabled_) {
+      return;
+    }
+    this.browserProxy_.handler.showPageInfoBubble();
   }
 }
 
