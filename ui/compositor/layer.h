@@ -146,17 +146,6 @@ class COMPOSITOR_EXPORT Layer : public LayerAnimationDelegate,
   std::unique_ptr<Layer> Mirror();
   std::unique_ptr<Layer> Mirror(const LayerMirrorSettings& settings);
 
- protected:
-  // TODO(crbug.com/522627357): Move to LayerSolidColor.
-  // Sets up this layer to mirror output of |subtree_reflected_layer|, including
-  // its entire hierarchy. |this| should be of type LAYER_SOLID_COLOR and should
-  // not be a descendant of |subtree_reflected_layer|. This is achieved by using
-  // cc::MirrorLayer which forces a render surface for |subtree_reflected_layer|
-  // to be able to embed it. This might cause extra GPU memory bandwidth and/or
-  // read/writes which can impact performance negatively.
-  void SetShowReflectedLayerSubtree(Layer* subtree_reflected_layer);
-
- public:
   // Retrieves the Layer's compositor. The Layer will walk up its parent chain
   // to locate it. Returns NULL if the Layer is not attached to a compositor.
   Compositor* GetCompositor() {
@@ -527,17 +516,6 @@ class COMPOSITOR_EXPORT Layer : public LayerAnimationDelegate,
   // inside |new_leading_children|.
   void StackChildrenAtBottom(const std::vector<Layer*>& new_leading_children);
 
-  // TODO(crbug.com/522627357): Move to LayerSolidColor.
- protected:
-  // Show a solid color instead of delegated or surface contents.
-  void SetShowSolidColorContent();
-
-  // Sets the layer's fill color.  May only be called for LAYER_SOLID_COLOR.
-  void SetColor(SkColor color);
-  SkColor GetTargetColor() const;
-  SkColor background_color() const;
-
- public:
   // Adds |invalid_rect| to the Layer's pending invalid rect and calls
   // ScheduleDraw(). Returns false if the paint request is ignored.
   bool SchedulePaint(const gfx::Rect& invalid_rect);
@@ -596,7 +574,6 @@ class COMPOSITOR_EXPORT Layer : public LayerAnimationDelegate,
   scoped_refptr<cc::DisplayItemList> PaintContentsToDisplayList() override;
   bool FillsBoundsCompletely() const override;
 
-  cc::MirrorLayer* mirror_layer_for_testing() { return mirror_layer_.get(); }
   cc::Layer* cc_layer_for_testing() { return cc_layer_; }
   const cc::Layer* cc_layer_for_testing() const { return cc_layer_; }
 
@@ -658,6 +635,7 @@ class COMPOSITOR_EXPORT Layer : public LayerAnimationDelegate,
   virtual void HandleDeviceScaleFactorChange();
 
   void Destroy();
+  virtual void Reset() {}
 
  private:
   friend class LayerOwner;
@@ -782,10 +760,6 @@ class COMPOSITOR_EXPORT Layer : public LayerAnimationDelegate,
   // Changes the size of |this| to match that of |layer|.
   void MatchLayerSize(const Layer* layer);
 
-  // Resets |subtree_reflected_layer_| and updates the reflected layer's
-  // |subtree_reflecting_layers_| list accordingly.
-  void ResetSubtreeReflectedLayer();
-
   bool IsHitTestableForCC() const { return visible_ && accept_events_; }
 
   // Gets a flattened WeakPtr list of all layers and layer masks in the tree
@@ -815,9 +789,6 @@ class COMPOSITOR_EXPORT Layer : public LayerAnimationDelegate,
   std::vector<raw_ptr<Layer, VectorExperimental>> children_;
 
   std::vector<std::unique_ptr<LayerMirror>> mirrors_;
-
-  // The layer being reflected with its subtree by this one, if any.
-  raw_ptr<Layer> subtree_reflected_layer_ = nullptr;
 
   // List of layers reflecting this layer and its subtree, if any.
   base::flat_set<raw_ptr<Layer, CtnExperimental>> subtree_reflecting_layers_;
@@ -900,9 +871,7 @@ class COMPOSITOR_EXPORT Layer : public LayerAnimationDelegate,
   // pointers, depending on which sort of layer this is.
   // TODO(crbug.com/522627357): Move to subclasses.
   scoped_refptr<cc::PictureLayer> content_layer_;
-  scoped_refptr<cc::MirrorLayer> mirror_layer_;
   scoped_refptr<cc::TextureLayer> texture_layer_;
-  scoped_refptr<cc::SolidColorLayer> solid_color_layer_;
   scoped_refptr<cc::SurfaceLayer> surface_layer_;
   // TODO(crbug.com/522627357): Move it subclasses and expose via a virtual
   // getter.
@@ -1001,6 +970,27 @@ class COMPOSITOR_EXPORT LayerSolidColor : public Layer {
   void SetColor(SkColor color);
   SkColor GetTargetColor() const;
   SkColor background_color() const;
+
+  cc::MirrorLayer* mirror_layer_for_testing() { return mirror_layer_.get(); }
+
+ private:
+  // Layer:
+  void Reset() override;
+
+  // LayerAnimatorDelegate:
+  void SetColorFromAnimation(SkColor4f color,
+                             PropertyChangeReason reason) override;
+  SkColor4f GetColorForAnimation() const override;
+
+  // Resets |subtree_reflected_layer_| and updates the reflected layer's
+  // |subtree_reflecting_layers_| list accordingly.
+  void ResetSubtreeReflectedLayer();
+
+  // The layer being reflected with its subtree by this one, if any.
+  raw_ptr<Layer> subtree_reflected_layer_ = nullptr;
+
+  scoped_refptr<cc::SolidColorLayer> solid_color_layer_;
+  scoped_refptr<cc::MirrorLayer> mirror_layer_;
 };
 
 class COMPOSITOR_EXPORT LayerNinePatch : public Layer {
@@ -1025,6 +1015,7 @@ class COMPOSITOR_EXPORT LayerNinePatch : public Layer {
  private:
   // Layer:
   void HandleDeviceScaleFactorChange() override;
+  void Reset() override;
 
   // A cached copy of the nine patch layer's image and aperture.
   // These are required for device scale factor change.

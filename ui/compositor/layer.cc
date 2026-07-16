@@ -19,6 +19,7 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/notreached.h"
 #include "base/observer_list.h"
 #include "base/trace_event/trace_event.h"
 #include "cc/layers/mirror_layer.h"
@@ -295,7 +296,7 @@ void Layer::Destroy() {
   if (transfer_release_callback_)
     std::move(transfer_release_callback_).Run(gpu::SyncToken(), false);
 
-  ResetSubtreeReflectedLayer();
+  Reset();
 }
 
 std::unique_ptr<Layer> Layer::Clone() const {
@@ -391,35 +392,6 @@ std::unique_ptr<Layer> Layer::Mirror(const LayerMirrorSettings& settings) {
   }
 
   return mirror;
-}
-
-void Layer::SetShowReflectedLayerSubtree(Layer* subtree_reflected_layer) {
-  DCHECK(subtree_reflected_layer);
-  DCHECK_EQ(type_, LAYER_SOLID_COLOR);
-
-  if (subtree_reflected_layer_ == subtree_reflected_layer)
-    return;
-
-  // If `FinishAnimationsBeforeSwitchToLayer` returns false, `this` Layer was
-  // destroyed.
-  if (!FinishAnimationsBeforeSwitchToLayer()) {
-    return;
-  }
-
-  scoped_refptr<cc::MirrorLayer> new_layer =
-      cc::MirrorLayer::Create(subtree_reflected_layer->cc_layer_.get());
-  SwitchToLayer(new_layer);
-
-  mirror_layer_ = std::move(new_layer);
-
-  subtree_reflected_layer_ = subtree_reflected_layer;
-  auto insert_pair =
-      subtree_reflected_layer_->subtree_reflecting_layers_.insert(this);
-  DCHECK(insert_pair.second);
-
-  MatchLayerSize(subtree_reflected_layer_);
-
-  RecomputeDrawsContentAndUVRect();
 }
 
 const Compositor* Layer::GetCompositor() const {
@@ -1046,8 +1018,7 @@ void Layer::SwitchToLayer(scoped_refptr<cc::Layer> new_layer) {
     animator_->SwitchToLayer(new_layer);
   }
 
-  ResetSubtreeReflectedLayer();
-
+  // TODO(crbug.com/522627357): Move to Reset().
   if (texture_layer_.get())
     texture_layer_->ClearClient();
 
@@ -1072,14 +1043,15 @@ void Layer::SwitchToLayer(scoped_refptr<cc::Layer> new_layer) {
   new_layer->SetGradientMask(cc_layer_->gradient_mask());
 
   cc_layer_ = new_layer.get();
+
+  Reset();
+  // TODO(crbug.com/522627357): Move to Reset().
   if (content_layer_) {
     content_layer_->ClearClient();
     content_layer_ = nullptr;
   }
-  solid_color_layer_ = nullptr;
   texture_layer_ = nullptr;
   surface_layer_ = nullptr;
-  mirror_layer_ = nullptr;
 
   for (ui::Layer* child : children_) {
     DCHECK(child->cc_layer_);
@@ -1353,51 +1325,6 @@ const viz::SurfaceId* Layer::GetOldestAcceptableFallback() const {
   if (surface_layer_ && surface_layer_->oldest_acceptable_fallback())
     return &surface_layer_->oldest_acceptable_fallback().value();
   return nullptr;
-}
-
-void Layer::SetShowSolidColorContent() {
-  DCHECK_EQ(type_, LAYER_SOLID_COLOR);
-
-  if (solid_color_layer_.get())
-    return;
-
-  // If `FinishAnimationsBeforeSwitchToLayer` returns false, `this` Layer was
-  // destroyed.
-  if (!FinishAnimationsBeforeSwitchToLayer()) {
-    return;
-  }
-
-  scoped_refptr<cc::SolidColorLayer> new_layer = cc::SolidColorLayer::Create();
-  SwitchToLayer(new_layer);
-
-  solid_color_layer_ = new_layer;
-  fills_bounds_opaquely_ = cc_layer_->background_color().isOpaque();
-
-  transfer_resource_ = viz::TransferableResource();
-  if (transfer_release_callback_) {
-    std::move(transfer_release_callback_).Run(gpu::SyncToken(), false);
-  }
-  RecomputeDrawsContentAndUVRect();
-
-  for (const auto& mirror : mirrors_)
-    mirror->dest()->SetShowSolidColorContent();
-}
-
-void Layer::SetColor(SkColor color) {
-  GetAnimator()->SetColor(SkColor4f::FromColor(color));
-}
-
-SkColor Layer::GetTargetColor() const {
-  if (animator_ && animator_->IsAnimatingProperty(
-      LayerAnimationElement::COLOR))
-    return animator_->GetTargetColor().toSkColor();
-  // TODO(crbug.com/40219248): Remove toSkColor and make all SkColor4f.
-  return cc_layer_->background_color().toSkColor();
-}
-
-SkColor Layer::background_color() const {
-  // TODO(crbug.com/40219248): Remove toSkColor and make all SkColor4f.
-  return cc_layer_->background_color().toSkColor();
 }
 
 bool Layer::SchedulePaint(const gfx::Rect& invalid_rect) {
@@ -1818,14 +1745,7 @@ void Layer::SetGrayscaleFromAnimation(float grayscale,
 
 void Layer::SetColorFromAnimation(SkColor4f color,
                                   PropertyChangeReason reason) {
-  DCHECK_EQ(type_, LAYER_SOLID_COLOR);
-
-  // For LAYER_SOLID_COLOR, the background color dictates content opaqueness.
-  // And `SetContentOpaque()` is called in
-  // `SolidColorLayer::SetBackgroundColor()`.
-  cc_layer_->SetBackgroundColor(color);
-  cc_layer_->SetSafeOpaqueBackgroundColor(color);
-  SetFillsBoundsOpaquelyWithReason(color.isOpaque(), reason);
+  NOTREACHED();
 }
 
 void Layer::SetClipRectFromAnimation(const gfx::Rect& clip_rect,
@@ -1890,10 +1810,7 @@ float Layer::GetGrayscaleForAnimation() const {
 }
 
 SkColor4f Layer::GetColorForAnimation() const {
-  // The NULL check is here since this is invoked regardless of whether we have
-  // been configured as LAYER_SOLID_COLOR.
-  return solid_color_layer_.get() ? solid_color_layer_->background_color()
-                                  : SkColors::kBlack;
+  return SkColors::kBlack;
 }
 
 gfx::Rect Layer::GetClipRectForAnimation() const {
@@ -1938,10 +1855,7 @@ LayerThreadedAnimationDelegate* Layer::GetThreadedAnimationDelegate() {
 }
 
 void Layer::CreateCcLayer() {
-  if (type_ == LAYER_SOLID_COLOR) {
-    solid_color_layer_ = cc::SolidColorLayer::Create();
-    cc_layer_ = solid_color_layer_.get();
-  } else if (type_ == LAYER_TEXTURED || type_ == LAYER_NOT_DRAWN) {
+  if (type_ == LAYER_NOT_DRAWN || type_ == LAYER_TEXTURED) {
     content_layer_ = cc::PictureLayer::Create(this);
     cc_layer_ = content_layer_.get();
   }
@@ -1952,15 +1866,8 @@ void Layer::CreateCcLayer() {
   cc_layer_->SetHitTestable(IsHitTestableForCC());
   cc_layer_->SetElementId(cc::ElementId(cc_layer_->id()));
   cc_layer_->SetBackgroundColor(SkColors::kTransparent);
-  cc_layer_->SetSafeOpaqueBackgroundColor(
-      type_ == LAYER_SOLID_COLOR ? SkColors::kBlack : SkColors::kWhite);
-
-  // For LAYER_SOLID_COLOR, the background color dictates content opaqueness.
-  // And `SetContentOpaque()` is called in
-  // `cc::SolidColorLayer::SetBackgroundColor()`.
-  if (type_ != LAYER_SOLID_COLOR) {
-    cc_layer_->SetContentsOpaque(true);
-  }
+  cc_layer_->SetSafeOpaqueBackgroundColor(SkColors::kWhite);
+  cc_layer_->SetContentsOpaque(true);
 
   RecomputePosition();
 }
@@ -2048,16 +1955,6 @@ void Layer::MatchLayerSize(const Layer* layer) {
   SetBounds(new_bounds);
 }
 
-void Layer::ResetSubtreeReflectedLayer() {
-  if (!subtree_reflected_layer_)
-    return;
-
-  size_t result =
-      subtree_reflected_layer_->subtree_reflecting_layers_.erase(this);
-  DCHECK_EQ(1u, result);
-  subtree_reflected_layer_ = nullptr;
-}
-
 void Layer::GetFlattenedWeakList(
     std::vector<base::WeakPtr<Layer>>* flattened_list) {
   flattened_list->emplace_back(weak_ptr_factory_.GetWeakPtr());
@@ -2125,10 +2022,16 @@ LayerTextured::~LayerTextured() {
 // LayerSolidColor, public:
 
 LayerSolidColor::LayerSolidColor() : Layer(LAYER_SOLID_COLOR) {
+  solid_color_layer_ = cc::SolidColorLayer::Create();
+  cc_layer_ = solid_color_layer_.get();
   CreateCcLayer();
 
-  // For LAYER_SOLID_COLOR, the background color dictates content opaqueness.
-  fills_bounds_opaquely_ = cc_layer_->background_color().isOpaque();
+  cc_layer_->SetSafeOpaqueBackgroundColor(SkColors::kBlack);
+  cc_layer_->SetBackgroundColor(SkColors::kTransparent);
+
+  // For LayerSolidColor, the background color dictates content opaqueness.
+  cc_layer_->SetContentsOpaque(false);
+  fills_bounds_opaquely_ = false;
 }
 
 LayerSolidColor::~LayerSolidColor() {
@@ -2137,23 +2040,114 @@ LayerSolidColor::~LayerSolidColor() {
 
 void LayerSolidColor::SetShowReflectedLayerSubtree(
     Layer* subtree_reflected_layer) {
-  Layer::SetShowReflectedLayerSubtree(subtree_reflected_layer);
+  DCHECK(subtree_reflected_layer);
+  if (subtree_reflected_layer_ == subtree_reflected_layer) {
+    return;
+  }
+
+  // If `FinishAnimationsBeforeSwitchToLayer` returns false, `this` Layer was
+  // destroyed.
+  if (!FinishAnimationsBeforeSwitchToLayer()) {
+    return;
+  }
+
+  scoped_refptr<cc::MirrorLayer> new_layer =
+      cc::MirrorLayer::Create(subtree_reflected_layer->cc_layer_.get());
+  SwitchToLayer(new_layer);
+
+  mirror_layer_ = std::move(new_layer);
+
+  subtree_reflected_layer_ = subtree_reflected_layer;
+  auto insert_pair =
+      subtree_reflected_layer_->subtree_reflecting_layers_.insert(this);
+  DCHECK(insert_pair.second);
+
+  MatchLayerSize(subtree_reflected_layer_);
+
+  RecomputeDrawsContentAndUVRect();
 }
 
 void LayerSolidColor::SetShowSolidColorContent() {
-  Layer::SetShowSolidColorContent();
+  if (solid_color_layer_.get()) {
+    return;
+  }
+
+  // If `FinishAnimationsBeforeSwitchToLayer` returns false, `this` Layer was
+  // destroyed.
+  if (!FinishAnimationsBeforeSwitchToLayer()) {
+    return;
+  }
+
+  scoped_refptr<cc::SolidColorLayer> new_layer = cc::SolidColorLayer::Create();
+  SwitchToLayer(new_layer);
+
+  solid_color_layer_ = new_layer;
+  fills_bounds_opaquely_ = cc_layer_->background_color().isOpaque();
+
+  transfer_resource_ = viz::TransferableResource();
+  if (transfer_release_callback_) {
+    std::move(transfer_release_callback_).Run(gpu::SyncToken(), false);
+  }
+
+  RecomputeDrawsContentAndUVRect();
+  for (const auto& mirror : mirrors_) {
+    if (auto* layer = mirror->dest()->AsSolidColor()) {
+      layer->SetShowSolidColorContent();
+    }
+  }
 }
 
 void LayerSolidColor::SetColor(SkColor color) {
-  Layer::SetColor(color);
+  GetAnimator()->SetColor(SkColor4f::FromColor(color));
 }
 
 SkColor LayerSolidColor::GetTargetColor() const {
-  return Layer::GetTargetColor();
+  if (animator_ &&
+      animator_->IsAnimatingProperty(LayerAnimationElement::COLOR)) {
+    return animator_->GetTargetColor().toSkColor();
+  }
+  // TODO(crbug.com/40219248): Remove toSkColor and make all SkColor4f.
+  return cc_layer_->background_color().toSkColor();
 }
 
 SkColor LayerSolidColor::background_color() const {
-  return Layer::background_color();
+  // TODO(crbug.com/40219248): Remove toSkColor and make all SkColor4f.
+  return cc_layer_->background_color().toSkColor();
+}
+
+void LayerSolidColor::Reset() {
+  ResetSubtreeReflectedLayer();
+  solid_color_layer_ = nullptr;
+  mirror_layer_ = nullptr;
+}
+
+void LayerSolidColor::SetColorFromAnimation(SkColor4f color,
+                                            PropertyChangeReason reason) {
+  // For LayerSolidColor, the background color dictates content opaqueness.
+  // And `SetContentOpaque()` is called in
+  // `SolidColorLayer::SetBackgroundColor()`.
+  cc_layer_->SetBackgroundColor(color);
+  cc_layer_->SetSafeOpaqueBackgroundColor(color);
+  SetFillsBoundsOpaquelyWithReason(color.isOpaque(), reason);
+}
+
+SkColor4f LayerSolidColor::GetColorForAnimation() const {
+  // The NULL check is here since the underlying solid_color_layer can be
+  // swapped with mirror_layer or textured_layer. See calls to
+  // `SwitchToLayer()`
+  return solid_color_layer_.get() ? solid_color_layer_->background_color()
+                                  : SkColors::kBlack;
+}
+
+void LayerSolidColor::ResetSubtreeReflectedLayer() {
+  if (!subtree_reflected_layer_) {
+    return;
+  }
+
+  size_t result =
+      subtree_reflected_layer_->subtree_reflecting_layers_.erase(this);
+  DCHECK_EQ(1u, result);
+  subtree_reflected_layer_ = nullptr;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -2202,6 +2196,10 @@ void LayerNinePatch::HandleDeviceScaleFactorChange() {
   }
 
   UpdateNinePatchLayerAperture(nine_patch_layer_aperture_);
+}
+
+void LayerNinePatch::Reset() {
+  nine_patch_layer_ = nullptr;
 }
 
 }  // namespace ui
