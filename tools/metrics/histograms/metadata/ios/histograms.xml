@@ -3156,6 +3156,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.Gemini.Session.TabSwitchCount" units="count"
+    expires_after="2027-07-15">
+  <owner>hamzamoh@google.com</owner>
+  <owner>bling-alchemy-eng@google.com</owner>
+  <summary>
+    Records the total number of times the active tab was switched during a
+    Gemini (Floaty) session on iOS. Recorded when the Floaty session is
+    dismissed.
+  </summary>
+</histogram>
+
 <histogram name="IOS.Gemini.Session.Time" units="ms" expires_after="2026-11-22">
   <owner>kanouche@google.com</owner>
   <owner>bling-alchemy-eng@google.com</owner>

@@ -28308,6 +28308,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobileGeminiFloatyTabSwitched">
+  <owner>hamzamoh@google.com</owner>
+  <owner>bling-alchemy-eng@google.com</owner>
+  <description>
+    The user switched active tabs while the Gemini floaty session was active.
+    iOS only.
+  </description>
+</action>
+
 <action name="MobileGeminiFREConsentAccept">
   <owner>kanouche@google.com</owner>
   <owner>bling-alchemy@google.com</owner>

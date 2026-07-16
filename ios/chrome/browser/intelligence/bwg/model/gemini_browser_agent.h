@@ -448,6 +448,10 @@ class GeminiBrowserAgent : public BrowserUserData<GeminiBrowserAgent>,
   // Whether the floaty is currently invoked.
   bool is_floaty_invoked_ = false;
 
+  // Tracks the number of times the active tab was switched while the floaty
+  // was invoked.
+  int floaty_tab_switch_count_ = 0;
+
   // Whether the floaty is temporarily hidden. Used to hide the floaty without
   // triggering logic related to ending floaty persistence.
   bool is_floaty_temporarily_hidden_ = false;

@@ -182,6 +182,9 @@ const char kSessionPromptCountHistogram[] = "IOS.Gemini.Session.PromptCount";
 
 const char kSessionFirstPromptHistogram[] = "IOS.Gemini.Session.FirstPrompt";
 
+const char kSessionTabSwitchCountHistogram[] =
+    "IOS.Gemini.Session.TabSwitchCount";
+
 const char kGeminiLiveDormantReasonHistogram[] =
     "IOS.Gemini.Live.DormantReason";
 const char kGeminiLiveResponseLatencyHistogram[] =
@@ -459,6 +462,11 @@ void RecordSessionPromptCount(int prompt_count) {
 
 void RecordSessionFirstPrompt(bool had_first_prompt) {
   base::UmaHistogramBoolean(kSessionFirstPromptHistogram, had_first_prompt);
+}
+
+void RecordSessionTabSwitchCount(int tab_switch_count) {
+  base::UmaHistogramCounts100(kSessionTabSwitchCountHistogram,
+                              tab_switch_count);
 }
 
 void RecordFloatyExpandedToCollapsed() {

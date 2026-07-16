@@ -76,6 +76,9 @@ extern const char kSessionPromptCountHistogram[];
 // UMA histogram key for IOS.Gemini.Session.FirstPrompt.
 extern const char kSessionFirstPromptHistogram[];
 
+// UMA histogram key for IOS.Gemini.Session.TabSwitchCount.
+extern const char kSessionTabSwitchCountHistogram[];
+
 // UMA histogram key for IOS.Gemini.Floaty.TimeMinimized.
 extern const char kFloatyTimeMinimizedHistogram[];
 
@@ -539,6 +542,9 @@ void RecordSessionPromptCount(int prompt_count);
 
 // Records if a first prompt was sent in a Gemini session.
 void RecordSessionFirstPrompt(bool had_first_prompt);
+
+// Records the total number of tab switches during a floaty session.
+void RecordSessionTabSwitchCount(int tab_switch_count);
 
 // Enum for the IOS.Gemini.ViewStateTransition histogram.
 // LINT.IfChange(IOSGeminiViewStateTransition)
