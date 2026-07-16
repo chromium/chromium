@@ -48,11 +48,16 @@ ProxyConfigServiceWin::ProxyConfigServiceWin(
           base::Seconds(kPollIntervalSec),
           base::BindRepeating(&ProxyConfigServiceWin::GetCurrentProxyConfig),
           traffic_annotation) {
-  NetworkChangeNotifier::AddNetworkChangeObserver(this);
+  DETACH_FROM_SEQUENCE(sequence_checker_);
 }
 
 ProxyConfigServiceWin::~ProxyConfigServiceWin() {
-  NetworkChangeNotifier::RemoveNetworkChangeObserver(this);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (registered_as_network_change_observer_) {
+    NetworkChangeNotifier::RemoveNetworkChangeObserver(this);
+  }
+
   // The registry functions below will end up going to disk.  TODO: Do this on
   // another thread to avoid slowing the current thread.  http://crbug.com/61453
   base::ScopedAllowBlocking scoped_allow_blocking;
@@ -60,8 +65,16 @@ ProxyConfigServiceWin::~ProxyConfigServiceWin() {
 }
 
 void ProxyConfigServiceWin::AddObserver(Observer* observer) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   // Lazily-initialize our registry watcher.
   StartWatchingRegistryForChanges();
+
+  // Lazily-register as network change observer on the correct thread.
+  if (!registered_as_network_change_observer_) {
+    NetworkChangeNotifier::AddNetworkChangeObserver(this);
+    registered_as_network_change_observer_ = true;
+  }
 
   // Let the super-class do its work now.
   PollingProxyConfigService::AddObserver(observer);
@@ -69,6 +82,8 @@ void ProxyConfigServiceWin::AddObserver(Observer* observer) {
 
 void ProxyConfigServiceWin::OnNetworkChanged(
     NetworkChangeNotifier::ConnectionType type) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   // Proxy settings on Windows may change when the active connection changes.
   // For instance, after connecting to a VPN, the proxy settings for the active
   // connection will be that for the VPN. (And ProxyConfigService only reports
@@ -83,6 +98,8 @@ void ProxyConfigServiceWin::OnNetworkChanged(
 }
 
 void ProxyConfigServiceWin::StartWatchingRegistryForChanges() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   if (!keys_to_watch_.empty()) {
     return;  // Already initialized.
   }
@@ -135,6 +152,8 @@ bool ProxyConfigServiceWin::AddKeyToWatchList(HKEY rootkey,
 }
 
 void ProxyConfigServiceWin::OnObjectSignaled(base::win::RegKey* key) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   // Figure out which registry key signalled this change.
   auto it = std::ranges::find(keys_to_watch_, key,
                               &std::unique_ptr<base::win::RegKey>::get);

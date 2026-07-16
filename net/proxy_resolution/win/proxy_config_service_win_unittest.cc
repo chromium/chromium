@@ -6,9 +6,15 @@
 
 #include <array>
 
+#include "base/run_loop.h"
+#include "base/test/task_environment.h"
+#include "base/threading/platform_thread.h"
+#include "base/threading/thread.h"
 #include "net/base/net_errors.h"
+#include "net/base/network_change_notifier.h"
 #include "net/proxy_resolution/proxy_config.h"
 #include "net/proxy_resolution/proxy_config_service_common_unittest.h"
+#include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace net {
@@ -222,6 +228,85 @@ TEST(ProxyConfigServiceWinTest, SetFromIEConfig) {
     EXPECT_EQ(tests[i].pac_url, config.pac_url());
     EXPECT_TRUE(tests[i].proxy_rules.Matches(config.proxy_rules()));
   }
+}
+
+// An observer that quits a RunLoop when notified of a config change.
+class TestProxyConfigObserver : public ProxyConfigService::Observer {
+ public:
+  TestProxyConfigObserver(base::OnceClosure quit_closure,
+                          base::PlatformThreadId expected_thread_id)
+      : quit_closure_(std::move(quit_closure)),
+        expected_thread_id_(expected_thread_id) {}
+  void OnProxyConfigChanged(
+      const ProxyConfigWithAnnotation& config,
+      ProxyConfigService::ConfigAvailability availability) override {
+    EXPECT_EQ(base::PlatformThread::CurrentId(), expected_thread_id_);
+    if (quit_closure_) {
+      std::move(quit_closure_).Run();
+    }
+  }
+
+ private:
+  base::OnceClosure quit_closure_;
+  base::PlatformThreadId expected_thread_id_;
+};
+
+TEST(ProxyConfigServiceWinTest, ThreadMismatchRegistration) {
+  base::test::TaskEnvironment task_environment(
+      base::test::TaskEnvironment::MainThreadType::UI);
+
+  // Initialize a mock NetworkChangeNotifier so we can dispatch test events.
+  std::unique_ptr<NetworkChangeNotifier> ncn(
+      NetworkChangeNotifier::CreateMockIfNeeded());
+
+  // Simulating Thread A (UI/Constructor thread) and Thread B (Network thread).
+  base::Thread network_thread("NetworkThread");
+  ASSERT_TRUE(network_thread.Start());
+  std::unique_ptr<ProxyConfigServiceWin> service;
+
+  // 1. Construct the ProxyConfigServiceWin on the UI thread (Thread A).
+  service =
+      std::make_unique<ProxyConfigServiceWin>(TRAFFIC_ANNOTATION_FOR_TESTS);
+
+  // Create a run loop to wait for the network change notification.
+  base::RunLoop network_change_run_loop;
+  TestProxyConfigObserver observer(network_change_run_loop.QuitClosure(),
+                                   network_thread.GetThreadId());
+
+  // 2. Add the observer on the Network thread (Thread B).
+  base::RunLoop init_run_loop;
+  network_thread.task_runner()->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          [](ProxyConfigServiceWin* service, TestProxyConfigObserver* observer,
+             base::OnceClosure quit_closure) {
+            service->AddObserver(observer);
+            std::move(quit_closure).Run();
+          },
+          base::Unretained(service.get()), base::Unretained(&observer),
+          init_run_loop.QuitClosure()));
+  init_run_loop.Run();
+
+  // 3. Trigger a network change event (CONNECTION_NONE) on the UI thread.
+  NetworkChangeNotifier::NotifyObserversOfNetworkChangeForTests(
+      NetworkChangeNotifier::CONNECTION_NONE);
+
+  // 4. Wait for the observer to be notified on the Network thread (Thread B).
+  // The quit closure is thread-safe and will wake up this loop on the UI
+  // thread.
+  network_change_run_loop.Run();
+
+  // 5. Cleanup the service on the Network thread.
+  base::RunLoop destruct_run_loop;
+  network_thread.task_runner()->PostTask(
+      FROM_HERE, base::BindOnce(
+                     [](std::unique_ptr<ProxyConfigServiceWin> service,
+                        base::OnceClosure quit_closure) {
+                       service.reset();
+                       std::move(quit_closure).Run();
+                     },
+                     std::move(service), destruct_run_loop.QuitClosure()));
+  destruct_run_loop.Run();
 }
 
 }  // namespace net

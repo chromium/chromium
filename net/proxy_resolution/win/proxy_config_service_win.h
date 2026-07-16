@@ -14,6 +14,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
+#include "base/sequence_checker.h"
 #include "net/base/net_export.h"
 #include "net/base/network_change_notifier.h"
 #include "net/proxy_resolution/polling_proxy_config_service.h"
@@ -83,6 +84,10 @@ class NET_EXPORT_PRIVATE ProxyConfigServiceWin
       const WINHTTP_CURRENT_USER_IE_PROXY_CONFIG& ie_config);
 
   std::vector<std::unique_ptr<base::win::RegKey>> keys_to_watch_;
+
+  bool registered_as_network_change_observer_ = false;
+
+  SEQUENCE_CHECKER(sequence_checker_);
 };
 
 }  // namespace net
