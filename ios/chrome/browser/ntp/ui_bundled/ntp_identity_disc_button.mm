@@ -70,7 +70,6 @@ UIColor* AccountParticleDiscBadgeBackgroundColor(UIUserInterfaceStyle style) {
     self.accessibilityIdentifier = kNTPFeedHeaderIdentityDisc;
     self.pointerInteractionEnabled = YES;
 
-    __weak __typeof(self) weakSelf = self;
     self.pointerStyleProvider = ^UIPointerStyle*(
         UIButton* button, UIPointerEffect* proposedEffect,
         UIPointerShape* proposedShape) {
@@ -86,11 +85,11 @@ UIColor* AccountParticleDiscBadgeBackgroundColor(UIUserInterfaceStyle style) {
     // Initialize with signed out state by default.
     [self setSignedOutAccountImage];
 
-    [self registerForTraitChanges:@[ UITraitUserInterfaceStyle.class ]
-                      withHandler:^(id<UITraitEnvironment> traitEnvironment,
-                                    UITraitCollection* previousCollection) {
-                        [weakSelf updateBadgeBackgroundColor];
-                      }];
+    [self registerForTraitChanges:@[
+      NewTabPageTrait.class, NewTabPageImageBackgroundTrait.class,
+      UITraitUserInterfaceStyle.class
+    ]
+                       withAction:@selector(updateIdentityDiscState)];
   }
   return self;
 }
@@ -160,15 +159,6 @@ UIColor* AccountParticleDiscBadgeBackgroundColor(UIUserInterfaceStyle style) {
   }
 }
 
-- (void)updateConfigurationWithPalette:(NewTabPageColorPalette*)colorPalette {
-  if (_isSignedIn) {
-    [self updateIdentityDiscState];
-    return;
-  }
-
-  [self updateIdentityDiscStateWithPalette:colorPalette];
-}
-
 - (void)updateIdentityDiscConstraints {
   BOOL showSignInButtonWithoutAvatar = !_isSignedIn;
 
@@ -216,6 +206,7 @@ UIColor* AccountParticleDiscBadgeBackgroundColor(UIUserInterfaceStyle style) {
     self.imageView.layer.cornerRadius = image.size.width / 2;
     self.imageView.layer.masksToBounds = YES;
     self.layer.cornerRadius = image.size.width;
+    [self updateBadgeBackgroundColor];
     return;
   }
 

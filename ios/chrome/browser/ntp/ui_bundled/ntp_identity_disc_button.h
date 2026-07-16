@@ -24,9 +24,6 @@
                                 name:(NSString*)name
                                email:(NSString*)email;
 
-// Updates the button's visual configuration (fonts, insets, colors).
-- (void)updateConfigurationWithPalette:(NewTabPageColorPalette*)colorPalette;
-
 @end
 
 #endif  // IOS_CHROME_BROWSER_NTP_UI_BUNDLED_NTP_IDENTITY_DISC_BUTTON_H_

@@ -1367,10 +1367,6 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
 // Sets the background based on the current NTP background, current color
 // palette, or defaults if neither are set.
 - (void)applyBackgroundTheme {
-  [self.identityDiscButton
-      updateConfigurationWithPalette:[self.traitCollection
-                                             objectForNewTabPageTrait]];
-
   // Fakebox coloring looks at image/color/default to determine correct colors.
   [self setFakeboxColorsWithProgress:_lastAnimationPercent];
 }
