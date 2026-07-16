@@ -25,7 +25,9 @@ import org.robolectric.Robolectric;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.AnchorSide;
+import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.HeightType;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.SideUiSpecs;
+import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.SideUiSpecs.SideUiSize;
 import org.chromium.ui.base.TestActivity;
 
 import java.util.Collections;
@@ -143,7 +145,8 @@ public class SideUiWebContentHairlineManagerTest {
         assertEquals(View.INVISIBLE, rightRoundedCorner.getVisibility());
 
         // 2. Show left SideUI.
-        SideUiSpecs showLeftSpecs = new SideUiSpecs(Map.of(AnchorSide.LEFT, 100));
+        SideUiSpecs showLeftSpecs =
+                new SideUiSpecs(Map.of(AnchorSide.LEFT, new SideUiSize(100, HeightType.TOOLBAR)));
         observer.onSideUiSpecsChanged(showLeftSpecs);
         assertEquals(View.VISIBLE, leftHairline.getVisibility());
         assertEquals(View.VISIBLE, leftRoundedCorner.getVisibility());
@@ -151,7 +154,8 @@ public class SideUiWebContentHairlineManagerTest {
         assertEquals(View.INVISIBLE, rightRoundedCorner.getVisibility());
 
         // 3. Hide left SideUI and show right SideUI.
-        SideUiSpecs showRightSpecs = new SideUiSpecs(Map.of(AnchorSide.RIGHT, 50));
+        SideUiSpecs showRightSpecs =
+                new SideUiSpecs(Map.of(AnchorSide.RIGHT, new SideUiSize(50, HeightType.TOOLBAR)));
         observer.onSideUiSpecsChanged(showRightSpecs);
         assertEquals(View.INVISIBLE, leftHairline.getVisibility());
         assertEquals(View.INVISIBLE, leftRoundedCorner.getVisibility());

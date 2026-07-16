@@ -20,8 +20,10 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ui.side_ui.SideUiContainer;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.AnchorSide;
+import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.HeightType;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.SideUiId;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.SideUiSpecs;
+import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.SideUiSpecs.SideUiSize;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.UiUpdateRequest;
 import org.chromium.chrome.browser.ui.side_ui.SideUiObserver;
 import org.chromium.chrome.browser.ui.vertical_tabs.VerticalTabUtils;
@@ -108,10 +110,13 @@ public class VerticalTabsSideUiCoordinator implements SideUiContainer, SideUiObs
     }
 
     @Override
-    public int determineShowableWidth(int availableWidth, int windowWidth) {
+    public SideUiSize determineShowableSize(@Px int availableWidth, @Px int windowWidth) {
         // TODO(crbug.com/509226293): Implement layout threshold negotiation to auto-hide rail.
         int targetWidth = mIsCollapsed ? mCollapsedViewWidth : mExpandedViewWidth;
-        return availableWidth < targetWidth ? 0 : targetWidth;
+        boolean shouldHide = availableWidth < targetWidth;
+        return shouldHide
+                ? new SideUiSize(0, HeightType.NOT_APPLICABLE)
+                : new SideUiSize(targetWidth, HeightType.TOOLBAR);
     }
 
     @Override
@@ -143,7 +148,11 @@ public class VerticalTabsSideUiCoordinator implements SideUiContainer, SideUiObs
     }
 
     @Override
-    public void onUiUpdateCompleted(@Px int oldWidth, @Px int newWidth) {
+    public void onUiUpdateCompleted(
+            @Px int oldWidth,
+            @Px int newWidth,
+            @HeightType int oldHeightType,
+            @HeightType int newHeightType) {
         mIsVerticalTabsActiveSupplier.set(newWidth > 0);
     }
 

@@ -21,7 +21,6 @@ import static org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.MIN_WEB_C
 
 import android.app.Activity;
 import android.content.res.Configuration;
-import android.util.ArrayMap;
 import android.util.Size;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -60,7 +59,6 @@ import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.base.ViewUtils;
 
 import java.util.List;
-import java.util.Map;
 
 /** Unit tests for {@link SideUiCoordinatorImpl}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -196,10 +194,7 @@ public class SideUiCoordinatorImplTest {
         // Verify observers notified.
         @Px
         int expectedLeftSideUiWidth = ViewUtils.dpToPx(mTestActivity, sideUiContainer.mMaxWidthDp);
-        Map<@AnchorSide Integer, Integer> sideUiWidths = new ArrayMap<>();
-        sideUiWidths.put(AnchorSide.LEFT, expectedLeftSideUiWidth);
-        sideUiWidths.put(AnchorSide.RIGHT, 0);
-        SideUiSpecs expectedSideUiSpecs = new SideUiSpecs(sideUiWidths);
+        SideUiSpecs expectedSideUiSpecs = new SideUiSpecs(expectedLeftSideUiWidth, 0);
         verify(mSideUiObserver).onSideUiSpecsChanged(eq(expectedSideUiSpecs));
 
         // Verify view attached to left container.
@@ -222,10 +217,7 @@ public class SideUiCoordinatorImplTest {
         // Verify observers notified.
         @Px
         int expectedRightSideUiWidth = ViewUtils.dpToPx(mTestActivity, sideUiContainer.mMaxWidthDp);
-        Map<@AnchorSide Integer, Integer> sideUiWidths = new ArrayMap<>();
-        sideUiWidths.put(AnchorSide.LEFT, 0);
-        sideUiWidths.put(AnchorSide.RIGHT, expectedRightSideUiWidth);
-        SideUiSpecs expectedSideUiSpecs = new SideUiSpecs(sideUiWidths);
+        SideUiSpecs expectedSideUiSpecs = new SideUiSpecs(0, expectedRightSideUiWidth);
         verify(mSideUiObserver).onSideUiSpecsChanged(eq(expectedSideUiSpecs));
 
         // Verify view attached to right container.
@@ -651,10 +643,7 @@ public class SideUiCoordinatorImplTest {
         // Verify that observers are notified with the updated specs.
         @Px
         int expectedRightSideUiWidth = ViewUtils.dpToPx(mTestActivity, sideUiContainer.mMinWidthDp);
-        Map<@AnchorSide Integer, Integer> sideUiWidths = new ArrayMap<>();
-        sideUiWidths.put(AnchorSide.LEFT, 0);
-        sideUiWidths.put(AnchorSide.RIGHT, expectedRightSideUiWidth);
-        SideUiSpecs expectedSideUiSpecs = new SideUiSpecs(sideUiWidths);
+        SideUiSpecs expectedSideUiSpecs = new SideUiSpecs(0, expectedRightSideUiWidth);
         verify(mSideUiObserver).onSideUiSpecsChanged(eq(expectedSideUiSpecs));
 
         // Verify the container view's width is updated.
@@ -778,10 +767,7 @@ public class SideUiCoordinatorImplTest {
         assertEquals(Integer.valueOf(expectedWidth), sideUiContainer.mLastNewWidth);
 
         // Assert: SideUiObserver received onTransitionBegun() and onTransitionEnded().
-        Map<@AnchorSide Integer, Integer> sideUiWidths = new ArrayMap<>();
-        sideUiWidths.put(AnchorSide.LEFT, 0);
-        sideUiWidths.put(AnchorSide.RIGHT, expectedWidth);
-        SideUiSpecs expectedSideUiSpecs = new SideUiSpecs(sideUiWidths);
+        SideUiSpecs expectedSideUiSpecs = new SideUiSpecs(0, expectedWidth);
         verify(mSideUiObserver).onTransitionBegun(expectedSideUiSpecs);
         verify(mSideUiObserver).onTransitionEnded(expectedSideUiSpecs);
     }

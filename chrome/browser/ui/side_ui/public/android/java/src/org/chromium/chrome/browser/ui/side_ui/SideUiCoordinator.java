@@ -8,6 +8,7 @@ import android.util.ArrayMap;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.Px;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -63,6 +64,19 @@ public interface SideUiCoordinator extends SideUiStateProvider {
         int LEFT = 0;
         int RIGHT = 1;
         int NUM_ENTRIES = 2;
+    }
+
+    /**
+     * The height type for a {@link SideUiContainer}. {@code NOT_APPLICABLE} is used for
+     * invisible/detached SideUiContainer.
+     */
+    @IntDef({HeightType.NOT_APPLICABLE, HeightType.TOOLBAR, HeightType.WEB_CONTENTS})
+    @Target(ElementType.TYPE_USE)
+    @interface HeightType {
+        int NOT_APPLICABLE = 0;
+        int TOOLBAR = 1;
+        int WEB_CONTENTS = 2;
+        int NUM_ENTRIES = 3;
     }
 
     /**
@@ -133,49 +147,95 @@ public interface SideUiCoordinator extends SideUiStateProvider {
     }
 
     /**
-     * POD-type that holds the info about the Side UI specs to be used by a {@link SideUiObserver}.
-     * Specifically, this holds the widths (in px) for the parent ViewGroups (one for left-anchored
-     * UI and one for right-anchored UI for now ) that hold a {@link SideUiContainer}'s View, based
-     * on the SideUiContainer's specified {@link AnchorSide}.
+     * POD-type that holds the info about the Side UI specs.
      *
      * <p><strong>Note:</strong> This is a passive data spec and does not guarantee that these specs
      * are currently applied to the active UI. To query the actual active UI state, use {@link
      * SideUiStateProvider} instead.
      */
     final class SideUiSpecs {
-        /** Maps @AnchorSide to ContainerWidth. */
-        private final Map<@AnchorSide Integer, Integer> mSideUiWidths = new ArrayMap<>();
+        public static final class SideUiSize {
+            public final @Px int width;
+            public final @HeightType int heightType;
 
-        public SideUiSpecs(Map<@AnchorSide Integer, Integer> sideUiWidths) {
-            mSideUiWidths.putAll(sideUiWidths);
+            public SideUiSize(@Px int width, @HeightType int heightType) {
+                this.width = width;
+                this.heightType = heightType;
+            }
+
+            @Override
+            public boolean equals(@Nullable Object obj) {
+                if (!(obj instanceof SideUiSize that)) return false;
+                return this.width == that.width && this.heightType == that.heightType;
+            }
+
+            @Override
+            public int hashCode() {
+                return Objects.hash(width, heightType);
+            }
+
+            @Override
+            public String toString() {
+                return String.format(
+                        Locale.ENGLISH, "[width: %d, heightType: %d]", width, heightType);
+            }
         }
 
+        /** Maps @AnchorSide to SideUiSize. */
+        private final Map<@AnchorSide Integer, SideUiSize> mSideUiSpecs = new ArrayMap<>();
+
+        public SideUiSpecs(Map<@AnchorSide Integer, SideUiSize> sideUiSpecs) {
+            mSideUiSpecs.putAll(sideUiSpecs);
+        }
+
+        @VisibleForTesting
+        @Deprecated
         public SideUiSpecs(@Px int leftContainerWidth, @Px int rightContainerWidth) {
             assert leftContainerWidth >= 0;
             assert rightContainerWidth >= 0;
-            mSideUiWidths.put(AnchorSide.LEFT, leftContainerWidth);
-            mSideUiWidths.put(AnchorSide.RIGHT, rightContainerWidth);
+            var specs = new ArrayMap<@AnchorSide Integer, SideUiSize>();
+            specs.put(
+                    AnchorSide.LEFT,
+                    new SideUiSize(
+                            leftContainerWidth,
+                            leftContainerWidth == 0
+                                    ? HeightType.NOT_APPLICABLE
+                                    : HeightType.TOOLBAR));
+            specs.put(
+                    AnchorSide.RIGHT,
+                    new SideUiSize(
+                            rightContainerWidth,
+                            rightContainerWidth == 0
+                                    ? HeightType.NOT_APPLICABLE
+                                    : HeightType.TOOLBAR));
+            mSideUiSpecs.putAll(specs);
         }
 
         public int getWidth(@AnchorSide int side) {
-            return mSideUiWidths.getOrDefault(side, 0);
+            SideUiSize spec = mSideUiSpecs.get(side);
+            return spec != null ? spec.width : 0;
+        }
+
+        public @HeightType int getHeightType(@AnchorSide int side) {
+            SideUiSize spec = mSideUiSpecs.get(side);
+            return spec != null ? spec.heightType : HeightType.NOT_APPLICABLE;
         }
 
         /**
          * Returns all the entries in the SideUiSpecs. Each entry has a mapping from
-         * {@link @AnchorSide} to width.
+         * {@link @AnchorSide} to {@link SideUiSize}.
          */
-        public Set<Map.Entry<@AnchorSide Integer, Integer>> entrySet() {
-            return mSideUiWidths.entrySet();
+        public Set<Map.Entry<@AnchorSide Integer, SideUiSize>> entrySet() {
+            return mSideUiSpecs.entrySet();
         }
 
         /**
          * Calculates the difference between this {@link SideUiSpecs} and the given {@link
          * SideUiSpecs}.
          *
-         * <p>For each {@link AnchorSide}, if the widths are different, the returned {@link
-         * SideUiSpecs} retains the width of this {@link SideUiSpecs}. Otherwise, the width is set
-         * to 0.
+         * <p>For each {@link AnchorSide}, if the specs are different, the returned {@link
+         * SideUiSpecs} retains the spec of this {@link SideUiSpecs}. If this spec does not exist,
+         * the width is set to 0, and the height type to NOT_APPLICABLE.
          *
          * <p>The returned {@link SideUiSpecs} is useful for only updating the parts in the UI that
          * are changed.
@@ -184,44 +244,45 @@ public interface SideUiCoordinator extends SideUiStateProvider {
          * @return A {@link SideUiSpecs} representing the diff.
          */
         public SideUiSpecs diffAgainst(SideUiSpecs sideUiSpecs) {
-            Map<@AnchorSide Integer, Integer> diffWidths = new ArrayMap<>();
+            Map<@AnchorSide Integer, SideUiSize> diffSpecs = new ArrayMap<>();
 
             for (@AnchorSide int side = 0; side < AnchorSide.NUM_ENTRIES; side++) {
-                Integer thisWidth = mSideUiWidths.get(side);
-                Integer otherWidth = sideUiSpecs.mSideUiWidths.get(side);
+                SideUiSize thisSpec = mSideUiSpecs.get(side);
+                SideUiSize otherSpec = sideUiSpecs.mSideUiSpecs.get(side);
 
-                if (thisWidth == null && otherWidth == null) {
+                if (thisSpec == null && otherSpec == null) {
                     continue;
                 }
 
-                if (thisWidth == null) {
-                    diffWidths.put(side, 0);
-                } else if (!thisWidth.equals(otherWidth)) {
-                    diffWidths.put(side, thisWidth);
+                if (thisSpec == null) {
+                    assert otherSpec != null;
+                    diffSpecs.put(side, new SideUiSize(0, HeightType.NOT_APPLICABLE));
+                } else if (!thisSpec.equals(otherSpec)) {
+                    diffSpecs.put(side, thisSpec);
                 }
             }
 
-            return new SideUiSpecs(diffWidths);
+            return new SideUiSpecs(diffSpecs);
         }
 
-        /** Returns true if the width for any {@link AnchorSide} doesn't exist. */
+        /** Returns true if the spec for any {@link AnchorSide} doesn't exist. */
         public boolean isEmpty() {
-            return mSideUiWidths.isEmpty();
+            return mSideUiSpecs.isEmpty();
         }
 
         @Override
         public boolean equals(@Nullable Object obj) {
             if (!(obj instanceof SideUiSpecs that)) return false;
-            return this.mSideUiWidths.equals(that.mSideUiWidths);
+            return this.mSideUiSpecs.equals(that.mSideUiSpecs);
         }
 
         @Override
         public String toString() {
             return String.format(
                     Locale.ENGLISH,
-                    "[LeftContainerWidth: %d, RightContainerWidth: %d]",
-                    mSideUiWidths.get(AnchorSide.LEFT),
-                    mSideUiWidths.get(AnchorSide.RIGHT));
+                    "[LeftContainerSpec: %s, RightContainerSpec: %s]",
+                    mSideUiSpecs.get(AnchorSide.LEFT),
+                    mSideUiSpecs.get(AnchorSide.RIGHT));
         }
     }
 

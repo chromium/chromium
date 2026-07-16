@@ -11,8 +11,10 @@ import androidx.annotation.Px;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.AnchorSide;
+import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.HeightType;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.SideUiId;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.SideUiSpecs;
+import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.SideUiSpecs.SideUiSize;
 
 /**
  * Container for a side UI view that will be anchored to either the left or right side of the main
@@ -48,22 +50,21 @@ public interface SideUiContainer {
     int getAnchorSide();
 
     /**
-     * Called by {@link SideUiCoordinator} for this container to determine its <i>showable</i>
-     * width, given the constraints of {@code availableWidth} and {@code windowWidth}.
+     * Called by {@link SideUiCoordinator} for this container to determine its <i>showable</i> size,
+     * given the constraints of {@code availableWidth} and {@code windowWidth}.
      *
      * <p>"Showable width" is the width for <i>when</i> this {@link SideUiContainer} is shown. A
      * non-zero showable width means there is enough space for this {@link SideUiContainer}, but it
      * does <i>not</i> mean the {@link SideUiContainer} will actually be shown.
      *
-     * <p>Therefore, the return value of this method should depend on {@code availableWidth} and
+     * <p>Therefore, the width in {@link SideUiSize} should depend on {@code availableWidth} and
      * {@code windowWidth}, but it should <i>not</i> depend on states like whether there is content
      * to show.
      *
      * @param availableWidth The available width that this container can consume in px.
      * @param windowWidth The new window width in px.
      */
-    @Px
-    int determineShowableWidth(@Px int availableWidth, @Px int windowWidth);
+    SideUiSize determineShowableSize(@Px int availableWidth, @Px int windowWidth);
 
     /**
      * Returns whether the container has content to show.
@@ -98,8 +99,16 @@ public interface SideUiContainer {
      *
      * @param oldWidth The stable width of this {@link SideUiContainer} before the UI update.
      * @param newWidth The stable width of this {@link SideUiContainer} after the UI update.
+     * @param oldHeightType The stable {@link HeightType} of this {@link SideUiContainer} before the
+     *     UI update.
+     * @param newHeightType The stable {@link HeightType} of this {@link SideUiContainer} after the
+     *     UI update.
      */
-    default void onUiUpdateCompleted(@Px int oldWidth, @Px int newWidth) {}
+    default void onUiUpdateCompleted(
+            @Px int oldWidth,
+            @Px int newWidth,
+            @HeightType int oldHeightType,
+            @HeightType int newHeightType) {}
 
     /**
      * Called when this container <i>will</i> be auto-closed due to space constraints.

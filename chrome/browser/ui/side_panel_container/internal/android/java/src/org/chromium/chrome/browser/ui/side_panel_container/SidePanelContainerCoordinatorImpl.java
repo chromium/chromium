@@ -31,7 +31,9 @@ import org.chromium.chrome.browser.ui.side_panel_container.dev.SidePanelDevFeatu
 import org.chromium.chrome.browser.ui.side_ui.SideUiContainer;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.AnchorSide;
+import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.HeightType;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.SideUiId;
+import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.SideUiSpecs.SideUiSize;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.UiUpdateRequest;
 import org.chromium.components.thinwebview.ThinWebView;
 import org.chromium.ui.accessibility.AccessibilityState;
@@ -310,9 +312,8 @@ final class SidePanelContainerCoordinatorImpl
     }
 
     @Override
-    @Px
-    public int determineShowableWidth(@Px int availableWidth, @Px int windowWidth) {
-        log(TAG, "determineShowableWidth", availableWidth, windowWidth);
+    public SideUiSize determineShowableSize(@Px int availableWidth, @Px int windowWidth) {
+        log(TAG, "determineShowableSize", availableWidth, windowWidth);
         ThreadUtils.assertOnUiThread();
 
         int availableWidthDp = ViewUtils.pxToDp(mParentActivity, availableWidth);
@@ -327,7 +328,8 @@ final class SidePanelContainerCoordinatorImpl
         int showableWidthDp =
                 determineShowableWidthDp(
                         availableWidthDp, windowWidthDp, minSidePanelContainerWidthDp);
-        return ViewUtils.dpToPx(mParentActivity, showableWidthDp);
+        return new SideUiSize(
+                ViewUtils.dpToPx(mParentActivity, showableWidthDp), HeightType.TOOLBAR);
     }
 
     @Override
@@ -373,7 +375,11 @@ final class SidePanelContainerCoordinatorImpl
     }
 
     @Override
-    public void onUiUpdateCompleted(@Px int oldWidth, @Px int newWidth) {
+    public void onUiUpdateCompleted(
+            @Px int oldWidth,
+            @Px int newWidth,
+            @HeightType int oldHeightType,
+            @HeightType int newHeightType) {
         // The side panel is fully opened.
         if (oldWidth == 0 && newWidth > 0 && mSidePanelCoordinatorAndroid != null) {
             mSidePanelCoordinatorAndroid.onPanelOpened();

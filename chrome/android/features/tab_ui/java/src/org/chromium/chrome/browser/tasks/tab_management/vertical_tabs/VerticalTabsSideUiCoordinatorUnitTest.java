@@ -45,7 +45,9 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalTabListCoordinator.RailCollapseListener;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.AnchorSide;
+import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.HeightType;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.SideUiSpecs;
+import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.SideUiSpecs.SideUiSize;
 import org.chromium.ui.base.ViewUtils;
 
 import java.util.List;
@@ -118,16 +120,16 @@ public class VerticalTabsSideUiCoordinatorUnitTest {
 
     @Test
     @SmallTest
-    public void testDetermineShowableWidth() {
+    public void testDetermineShowableSize() {
         @Px int viewWidth = ViewUtils.dpToPx(mActivity, VIEW_WIDTH_DP);
 
         assertEquals(
-                0,
-                mCoordinator.determineShowableWidth(
+                new SideUiSize(0, HeightType.NOT_APPLICABLE),
+                mCoordinator.determineShowableSize(
                         /* availableWidth= */ viewWidth - 1, /* windowWidth= */ viewWidth + 100));
         assertEquals(
-                viewWidth,
-                mCoordinator.determineShowableWidth(
+                new SideUiSize(viewWidth, HeightType.TOOLBAR),
+                mCoordinator.determineShowableSize(
                         /* availableWidth= */ viewWidth, /* windowWidth= */ viewWidth + 100));
     }
 
@@ -153,10 +155,18 @@ public class VerticalTabsSideUiCoordinatorUnitTest {
     @Test
     @SmallTest
     public void testOnUiUpdateCompleted() {
-        mCoordinator.onUiUpdateCompleted(/* oldWidth= */ 0, /* newWidth= */ 100);
+        mCoordinator.onUiUpdateCompleted(
+                /* oldWidth= */ 0,
+                /* newWidth= */ 100,
+                HeightType.NOT_APPLICABLE,
+                HeightType.TOOLBAR);
         assertTrue(mIsVerticalTabsActiveSupplier.get());
 
-        mCoordinator.onUiUpdateCompleted(/* oldWidth= */ 100, /* newWidth= */ 0);
+        mCoordinator.onUiUpdateCompleted(
+                /* oldWidth= */ 100,
+                /* newWidth= */ 0,
+                HeightType.TOOLBAR,
+                HeightType.NOT_APPLICABLE);
         assertFalse(mIsVerticalTabsActiveSupplier.get());
     }
 
@@ -171,9 +181,10 @@ public class VerticalTabsSideUiCoordinatorUnitTest {
         @Px int expandedWidth = ViewUtils.dpToPx(mActivity, VIEW_WIDTH_DP);
         assertEquals(
                 expandedWidth,
-                mCoordinator.determineShowableWidth(
-                        /* availableWidth= */ expandedWidth,
-                        /* windowWidth= */ expandedWidth + 100));
+                mCoordinator.determineShowableSize(
+                                /* availableWidth= */ expandedWidth,
+                                /* windowWidth= */ expandedWidth + 100)
+                        .width);
 
         // Collapse requested
         listener.onRailCollapseRequested(true);
@@ -182,18 +193,20 @@ public class VerticalTabsSideUiCoordinatorUnitTest {
                 ViewUtils.dpToPx(mActivity, VerticalTabsSideUiCoordinator.COLLAPSED_WIDTH_DP);
         assertEquals(
                 collapsedWidth,
-                mCoordinator.determineShowableWidth(
-                        /* availableWidth= */ collapsedWidth,
-                        /* windowWidth= */ collapsedWidth + 100));
+                mCoordinator.determineShowableSize(
+                                /* availableWidth= */ collapsedWidth,
+                                /* windowWidth= */ collapsedWidth + 100)
+                        .width);
         verify(mMockSideUiCoordinator).updateUi(any(SideUiCoordinator.UiUpdateRequest.class));
 
         // Expand again
         listener.onRailCollapseRequested(false);
         assertEquals(
                 expandedWidth,
-                mCoordinator.determineShowableWidth(
-                        /* availableWidth= */ expandedWidth,
-                        /* windowWidth= */ expandedWidth + 100));
+                mCoordinator.determineShowableSize(
+                                /* availableWidth= */ expandedWidth,
+                                /* windowWidth= */ expandedWidth + 100)
+                        .width);
     }
 
     @Test
