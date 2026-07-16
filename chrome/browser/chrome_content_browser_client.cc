@@ -549,7 +549,6 @@
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_keyed_service_factory.h"
 #include "chrome/browser/devtools/chrome_devtools_manager_delegate.h"
-#include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/digital_credentials/digital_identity_provider_desktop.h"
 #include "chrome/browser/direct_sockets/chrome_direct_sockets_delegate.h"
 #include "chrome/browser/indigo/onboarding/indigo_onboarding_dialog.h"
@@ -638,6 +637,10 @@
 #if BUILDFLAG(ENABLE_CAPTIVE_PORTAL_DETECTION)
 #include "components/captive_portal/content/captive_portal_tab_helper.h"
 #include "components/captive_portal/content/captive_portal_url_loader_throttle.h"
+#endif
+
+#if BUILDFLAG(ENABLE_DEVTOOLS_FRONTEND)
+#include "chrome/browser/devtools/devtools_window.h"
 #endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
@@ -7790,7 +7793,7 @@ bool ChromeContentBrowserClient::ShouldBlockRendererDebugURL(
     const GURL& url,
     content::BrowserContext* context,
     content::RenderFrameHost* render_frame_host) {
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(ENABLE_DEVTOOLS_FRONTEND)
   // If devtools access is blocked for the page, debug URLs should also be
   // blocked for the page.
   Profile* profile = Profile::FromBrowserContext(context);
