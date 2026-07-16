@@ -1428,6 +1428,22 @@ TEST_F(NavigationURLLoaderImplTest, MAYBE_NavigationTimeoutRedirectTest) {
   EXPECT_EQ(net::ERR_TIMED_OUT, delegate.net_error());
 }
 
+TEST_F(NavigationURLLoaderImplTest, NavigationTimeoutAfterResponseStartedTest) {
+  ASSERT_TRUE(http_test_server_.Start());
+  const GURL url = http_test_server_.GetURL("/echo");
+  TestNavigationURLLoaderDelegate delegate;
+  auto loader = CreateTestLoader(url, std::string(), "GET", &delegate);
+  loader->Start();
+  loader->SetNavigationTimeout(base::Seconds(30));
+  delegate.WaitForResponseStarted();
+
+  // Once response has started, OnReceiveResponse() cancels the navigation
+  // timeout timer. Advancing time past the timeout should not trigger the
+  // timer or cause any request failure.
+  task_environment_->FastForwardBy(base::Seconds(35));
+  EXPECT_EQ(net::OK, delegate.net_error());
+}
+
 // Verify that UKMs are recorded when OnAcceptCHFrameReceived is called.
 TEST_F(NavigationURLLoaderImplTest, OnAcceptCHFrameReceivedUKM) {
   ASSERT_TRUE(http_test_server_.Start());
