@@ -4,11 +4,12 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/devtools/devtools_window_testing.h"
+#include "chrome/browser/preloading/scoped_prewarm_feature_list.h"
 #include "chrome/browser/task_manager/mock_web_contents_task_manager.h"
 #include "chrome/browser/task_manager/providers/web_contents/web_contents_tags_manager.h"
-#include "chrome/browser/preloading/scoped_prewarm_feature_list.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/back_forward_cache.h"
@@ -54,8 +55,16 @@ class DevToolsTagTest : public InProcessBrowserTest {
     DevToolsWindowTesting::CloseDevToolsWindowSync(devtools_window_);
   }
 
-  WebContentsTagsManager* tags_manager() const {
-    return WebContentsTagsManager::GetInstance();
+  size_t tracked_tags_count() const {
+    size_t count = 0;
+    for (const auto& tag :
+         WebContentsTagsManager::GetInstance()->tracked_tags()) {
+      if (tag->web_contents()->GetVisibleURL().host() !=
+          chrome::kChromeUIOmniboxPopupHost) {
+        count++;
+      }
+    }
+    return count;
   }
 
  private:
@@ -70,82 +79,83 @@ class DevToolsTagTest : public InProcessBrowserTest {
 // WebContents and that tag will be recorded by the TagsManager.
 IN_PROC_BROWSER_TEST_F(DevToolsTagTest, DISABLED_TagsManagerRecordsATag) {
   // Browser tests start with a single tab.
-  EXPECT_EQ(1U, tags_manager()->tracked_tags().size());
+  EXPECT_EQ(1U, tracked_tags_count());
 
   // Navigating the same tab to the test page won't change the number of tracked
   // tags. No devtools yet.
   LoadTestPage(kTestPage1);
-  EXPECT_EQ(1U, tags_manager()->tracked_tags().size());
+  EXPECT_EQ(1U, tracked_tags_count());
 
   // Test both docked and undocked devtools.
   OpenDevToolsWindow(true);
-  EXPECT_EQ(2U, tags_manager()->tracked_tags().size());
+  EXPECT_EQ(2U, tracked_tags_count());
   CloseDevToolsWindow();
-  EXPECT_EQ(1U, tags_manager()->tracked_tags().size());
+  EXPECT_EQ(1U, tracked_tags_count());
 
   // For the undocked devtools there will be two tags one for the main contents
   // and one for the toolbox contents
   OpenDevToolsWindow(false);
-  EXPECT_EQ(3U, tags_manager()->tracked_tags().size());
+  EXPECT_EQ(3U, tracked_tags_count());
   CloseDevToolsWindow();
-  EXPECT_EQ(1U, tags_manager()->tracked_tags().size());
+  EXPECT_EQ(1U, tracked_tags_count());
 }
 
 IN_PROC_BROWSER_TEST_F(DevToolsTagTest, DevToolsTaskIsProvided) {
   MockWebContentsTaskManager task_manager;
-  EXPECT_TRUE(task_manager.tasks().empty());
+  EXPECT_TRUE(task_manager.NonToolTasks().empty());
   // Browser tests start with a single tab.
-  EXPECT_EQ(1U, tags_manager()->tracked_tags().size());
+  EXPECT_EQ(1U, tracked_tags_count());
 
   task_manager.StartObserving();
 
   // The pre-existing tab is provided.
-  EXPECT_EQ(1U, task_manager.tasks().size());
+  EXPECT_EQ(1U, task_manager.NonToolTasks().size());
 
   LoadTestPage(kTestPage1);
-  EXPECT_EQ(1U, tags_manager()->tracked_tags().size());
-  EXPECT_EQ(1U, task_manager.tasks().size());
+  EXPECT_EQ(1U, tracked_tags_count());
+  EXPECT_EQ(1U, task_manager.NonToolTasks().size());
 
   OpenDevToolsWindow(true);
-  EXPECT_EQ(2U, tags_manager()->tracked_tags().size());
-  ASSERT_EQ(2U, task_manager.tasks().size());
+  EXPECT_EQ(2U, tracked_tags_count());
+  auto tasks = task_manager.NonToolTasks();
+  ASSERT_EQ(2U, tasks.size());
 
-  const Task* task = task_manager.tasks().back();
+  const Task* task = tasks.back();
   EXPECT_EQ(Task::RENDERER, task->GetType());
 
   // Navigating to a new page will not change the id of the devtools main
   // WebContents (its js may update its title).
   const int64_t task_id = task->task_id();
   LoadTestPage(kTestPage2);
-  EXPECT_EQ(2U, tags_manager()->tracked_tags().size());
+  EXPECT_EQ(2U, tracked_tags_count());
+  tasks = task_manager.NonToolTasks();
   if (content::CanSameSiteMainFrameNavigationsChangeRenderFrameHosts()) {
     // When ProactivelySwapBrowsingInstance or RenderDocument is enabled on
     // same-site main frame navigations, the navigation above will result in a
     // new RenderFrameHost, so the DevTools task will move (but still exist
     // in the tasks list).
-    EXPECT_NE(task_id, task_manager.tasks().back()->task_id());
-    EXPECT_NE(task, task_manager.tasks().back());
-    EXPECT_EQ(task_id, task_manager.tasks()[0]->task_id());
-    EXPECT_EQ(task, task_manager.tasks()[0]);
+    EXPECT_NE(task_id, tasks.back()->task_id());
+    EXPECT_NE(task, tasks.back());
+    EXPECT_EQ(task_id, tasks[0]->task_id());
+    EXPECT_EQ(task, tasks[0]);
   } else {
-    EXPECT_EQ(task_id, task_manager.tasks().back()->task_id());
-    EXPECT_EQ(task, task_manager.tasks().back());
+    EXPECT_EQ(task_id, tasks.back()->task_id());
+    EXPECT_EQ(task, tasks.back());
   }
-  EXPECT_NE(task_manager.tasks()[0]->title(),
-            task_manager.tasks()[1]->title());
+  EXPECT_NE(tasks[0]->title(), tasks[1]->title());
   // If back/forward cache is enabled, the task for the previous page
   // will still be around.
   EXPECT_EQ(
       content::BackForwardCache::IsBackForwardCacheFeatureEnabled() ? 3U : 2U,
-      task_manager.tasks().size());
+      tasks.size());
 
   // Close the DevTools window.
   CloseDevToolsWindow();
-  EXPECT_EQ(1U, tags_manager()->tracked_tags().size());
+  EXPECT_EQ(1U, tracked_tags_count());
 
   EXPECT_EQ(
       content::BackForwardCache::IsBackForwardCacheFeatureEnabled() ? 2U : 1U,
-      task_manager.tasks().size());
+      task_manager.NonToolTasks().size());
 }
 
 }  // namespace task_manager
