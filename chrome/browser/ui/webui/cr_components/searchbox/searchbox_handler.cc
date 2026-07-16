@@ -963,19 +963,21 @@ SearchboxHandler::CreateAutocompleteMatch(
       match.answer_type != omnibox::ANSWER_TYPE_UNSPECIFIED ||
       match.enterprise_search_aggregator_type ==
           AutocompleteMatch::EnterpriseSearchAggregatorType::PEOPLE;
-  for (const auto& action : match.actions) {
-    std::string icon_path;
-    if (action->GetIconImage().IsEmpty()) {
-      icon_path = AutocompleteIconToResourceName(action->GetVectorIcon());
-    } else {
-      icon_path = webui::GetBitmapDataUrl(action->GetIconImage().AsBitmap());
+  if (!match.from_keyword) {
+    for (const auto& action : match.actions) {
+      std::string icon_path;
+      if (action->GetIconImage().IsEmpty()) {
+        icon_path = AutocompleteIconToResourceName(action->GetVectorIcon());
+      } else {
+        icon_path = webui::GetBitmapDataUrl(action->GetIconImage().AsBitmap());
+      }
+      const OmniboxAction::LabelStrings& label_strings =
+          action->GetLabelStrings();
+      mojom_match->actions.emplace_back(searchbox::mojom::Action::New(
+          base::UTF16ToUTF8(label_strings.hint),
+          base::UTF16ToUTF8(label_strings.suggestion_contents), icon_path,
+          base::UTF16ToUTF8(label_strings.accessibility_hint)));
     }
-    const OmniboxAction::LabelStrings& label_strings =
-        action->GetLabelStrings();
-    mojom_match->actions.emplace_back(searchbox::mojom::Action::New(
-        base::UTF16ToUTF8(label_strings.hint),
-        base::UTF16ToUTF8(label_strings.suggestion_contents), icon_path,
-        base::UTF16ToUTF8(label_strings.accessibility_hint)));
   }
   std::u16string header_text;
   if (base::FeatureList::IsEnabled(
