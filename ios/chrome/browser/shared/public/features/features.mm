@@ -1261,6 +1261,14 @@ bool IsAppBarHiddenInFullscreen() {
   return base::FeatureList::IsEnabled(kAppBarHideInFullscreen);
 }
 
+// Feature flag for SearchEngineChoiceScreenSnackbar.
+BASE_FEATURE(kSearchEngineChoiceScreenSnackbar,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsSearchEngineChoiceScreenSnackbarEnabled() {
+  return base::FeatureList::IsEnabled(kSearchEngineChoiceScreenSnackbar);
+}
+
 BASE_FEATURE(kToolbarGlassPrototype, base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsToolbarGlassPrototypeEnabled() {

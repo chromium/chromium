@@ -8704,6 +8704,11 @@
     "expiry_milestone": -1
   },
   {
+    "name": "search-engine-choice-screen-snackbar",
+    "owners": [ "jlebel@google.com", "chrome-regionalcapabilities@google.com" ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "search-engine-explicit-choice-dialog",
     "owners": [
       "cjgrant@chromium.org",

@@ -1768,6 +1768,11 @@ inline constexpr char kSafeBrowsingTrustedURLName[] =
 inline constexpr char kSafeBrowsingTrustedURLDescription[] =
     "When enabled, chrome://safe-browsing will be accessible.";
 
+inline constexpr char kSearchEngineChoiceScreenSnackbarName[] =
+    "Search Engine Choice Screen Snackbar";
+inline constexpr char kSearchEngineChoiceScreenSnackbarDescription[] =
+    "Enables a snackbar after the search engine choice screen.";
+
 inline constexpr char kSegmentationPlatformEphemeralCardRankerName[] =
     "Enable Segmentation Ranking for Ephemeral Cards";
 inline constexpr char kSegmentationPlatformEphemeralCardRankerDescription[] =
