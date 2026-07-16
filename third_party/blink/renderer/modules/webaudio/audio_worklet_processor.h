@@ -80,6 +80,8 @@ class MODULES_EXPORT AudioWorkletProcessor : public ScriptWrappable {
       output_array_buffers_;
 
   AudioWorkletProcessorErrorDetails error_details_;
+
+  const bool is_denormal_enabler_enabled_;
 };
 
 }  // namespace blink
