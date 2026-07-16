@@ -25,6 +25,7 @@
 #include "storage/browser/file_system/file_system_url.h"
 
 class GURL;
+class PrefService;
 class Profile;
 
 namespace base {
@@ -153,7 +154,7 @@ void GetSelectedFileInfo(Profile* profile,
 drive::EventLogger* GetLogger(Profile* profile);
 
 std::vector<extensions::api::file_manager_private::MountableGuest>
-CreateMountableGuestList(Profile* profile);
+CreateMountableGuestList(const PrefService& local_state, Profile* profile);
 
 // Converts file manager private FileCategory enum to RecentSource::FileType
 // enum. Returns true if the conversion was successful, and false otherwise.

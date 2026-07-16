@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/extensions/file_manager/private_api_guest_os.h"
 
+#include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
@@ -11,6 +12,7 @@
 #include "chrome/browser/ash/guest_os/public/guest_os_mount_provider.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_service.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_service_factory.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/api/file_manager_private.h"
 #include "extensions/browser/extension_function.h"
@@ -29,7 +31,9 @@ namespace extensions {
 ExtensionFunction::ResponseAction
 FileManagerPrivateListMountableGuestsFunction::Run() {
   Profile* profile = Profile::FromBrowserContext(browser_context());
-  auto guests = file_manager::util::CreateMountableGuestList(profile);
+  // TODO(crbug.com/404131876): Avoid using g_browser_process.
+  auto guests = file_manager::util::CreateMountableGuestList(
+      CHECK_DEREF(g_browser_process->local_state()), profile);
   auto response = extensions::api::file_manager_private::ListMountableGuests::
       Results::Create(guests);
   return RespondNow(ArgumentList(std::move(response)));

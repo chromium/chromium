@@ -1533,7 +1533,7 @@ void EventRouter::BroadcastOnAppsUpdatedEvent() {
 }
 
 void EventRouter::OnMountableGuestsChanged() {
-  auto guests = util::CreateMountableGuestList(profile_);
+  auto guests = util::CreateMountableGuestList(local_state_.get(), profile_);
   BroadcastEvent(
       profile_,
       extensions::events::FILE_MANAGER_PRIVATE_ON_IO_TASK_PROGRESS_STATUS,
