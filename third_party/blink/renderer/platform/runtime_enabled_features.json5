@@ -5719,7 +5719,7 @@
       // Lets declarative shadow roots opt into manual slot assignment.
       // crbug.com/493315747
       name: "ShadowRootSlotAssignment",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "SharedArrayBuffer",
