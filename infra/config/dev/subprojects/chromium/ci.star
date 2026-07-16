@@ -276,7 +276,7 @@ ci_builder(
             "chromium_dev_mac_gtests",
         ],
         mixins = [
-            "mac_default_x64",
+            "mac_15_x64",
         ],
     ),
     os = os.MAC_DEFAULT,
