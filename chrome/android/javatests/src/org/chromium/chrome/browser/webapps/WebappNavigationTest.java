@@ -449,7 +449,6 @@ public class WebappNavigationTest {
     @Test
     @LargeTest
     @Feature({"Webapps"})
-    @DisabledTest(message = "crbug.com/529449577")
     public void testCloseButtonReturnsToUrlBeforeRedirects() throws Exception {
         Intent launchIntent = mActivityTestRule.createIntent();
         mActivityTestRule.addTwaExtrasToIntent(launchIntent);
@@ -567,7 +566,7 @@ public class WebappNavigationTest {
     }
 
     private void clickNodeWithId(String id) throws Exception {
-        DOMUtils.clickNode(
+        DOMUtils.clickNodeWithJavaScript(
                 ThreadUtils.runOnUiThreadBlocking(
                                 () -> mActivityTestRule.getActivity().getActivityTab())
                         .getWebContents(),
