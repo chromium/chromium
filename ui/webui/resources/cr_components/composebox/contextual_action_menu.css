@@ -14,6 +14,7 @@
   --cr-menu-background-color: var(--color-composebox-background,
       var(--search-background-color));
   --cr-menu-border-radius: 16px;
+  --cr-menu-shadow: var(--cr-elevation-3);
   --cr-primary-text-color: var(--color-composebox-file-chip-text);
   --cr-hover-background-color:
       var(--color-composebox-context-entrypoint-hover-background);
@@ -224,7 +225,7 @@ composebox-favicon-group {
 .share-tabs-flyout {
   background-color: var(--cr-menu-background-color);
   border-radius: 16px;
-  box-shadow: 0 4px 12px 0 rgba(0, 0, 0, 0.15);
+  box-shadow: var(--cr-elevation-3);
   box-sizing: border-box;
   max-height: var(--share-tabs-flyout-max-height, 344px);
   overflow-y: auto;
