@@ -1,0 +1,48 @@
+<!DOCTYPE HTML>
+<html>
+<body>
+<script src="../resources/js-test.js"></script>
+
+<div id="container" role="group"></div>
+
+<div id="console"></div>
+<script>
+description("Tests that parentElement() does not crash when an accessibility " +
+           "object is detached during the update it triggers. " +
+           "crbug.com/398049426");
+
+if (window.testRunner && window.accessibilityController) {
+    testRunner.dumpAsText();
+
+    // Create an inline <img>, a whitespace text node, and another inline box.
+    // Blink exposes the whitespace between the two inline boxes as a static
+    // text object.
+    var container = document.getElementById("container");
+    var img = document.createElement("img");
+    img.alt = "";
+    container.appendChild(img);
+    container.appendChild(document.createTextNode(" "));
+    var span = document.createElement("span");
+    span.textContent = "x";
+    container.appendChild(span);
+
+    var axObject =
+        accessibilityController.accessibleElementById("container").childAtIndex(0);
+
+    // axObject is that whitespace static text object, still attached.
+    shouldBe("axObject.role", "'AXRole: AXStaticText'");
+    shouldBe("axObject.name", "' '");
+    shouldBeTrue("axObject.isValid");
+
+    // Removing the <img> collapses that whitespace; its static text object is
+    // detached on the next accessibility update.
+    img.remove();
+
+    // parentElement() runs that pending update, which detaches axObject
+    // mid-call. The call must not crash.
+    var parent = axObject.parentElement();
+    shouldBeTrue("parent == null || parent.isValid");
+}
+</script>
+</body>
+</html>
