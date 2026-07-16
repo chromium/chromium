@@ -122,6 +122,7 @@ class SignoutActionSheetCoordinatorTest : public PlatformTest {
                               rect:view_controller_.view.frame
                               view:view_controller_.view
           forceSnackbarOverToolbar:NO
+                    showUndoButton:NO
                         withSource:metricSignOut
                         completion:^(BOOL success, SceneState* scene_state) {
                           signout_coordinator_ = nil;

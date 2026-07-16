@@ -466,6 +466,7 @@ enum class ActionAfterReauth {
                             rect:targetRect
                             view:self.viewController.view
         forceSnackbarOverToolbar:NO
+                  showUndoButton:NO
                       withSource:metricSignOut
                       completion:^(BOOL success, SceneState* scene_state) {
                         [weakSelf handleSignOutCompleted:success];

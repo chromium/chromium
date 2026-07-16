@@ -250,6 +250,7 @@ using signin_metrics::PromoAction;
                             rect:itemView.bounds
                             view:itemView
         forceSnackbarOverToolbar:NO
+                  showUndoButton:NO
                       withSource:metricSignOut
                       completion:^(BOOL success, SceneState* scene_state) {
                         [weakSelf handleSignOutCompleted:success];

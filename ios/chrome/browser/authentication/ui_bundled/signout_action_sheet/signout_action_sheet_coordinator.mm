@@ -108,6 +108,8 @@ using signin_metrics::SignoutDataLossAlertReason;
   signin_metrics::ProfileSignout _signoutSourceMetric;
   // Show the snackbar above the snackbar.
   BOOL _forceSnackbarOverToolbar;
+  // Show undo button on the sign-out snackbar.
+  BOOL _showUndoButton;
   // Signin and syncing state.
   SignedInUserState _signedInUserState;
   // Wrapper around the completion callback.
@@ -132,6 +134,7 @@ using signin_metrics::SignoutDataLossAlertReason;
                           rect:(CGRect)rect
                           view:(UIView*)view
       forceSnackbarOverToolbar:(BOOL)forceSnackbarOverToolbar
+                showUndoButton:(BOOL)showUndoButton
                     withSource:(signin_metrics::ProfileSignout)source
                     completion:(signin_ui::SignoutCompletionCallback)block {
   self = [super initWithBaseViewController:viewController browser:browser];
@@ -140,6 +143,7 @@ using signin_metrics::SignoutDataLossAlertReason;
     _view = view;
     _signoutSourceMetric = source;
     _forceSnackbarOverToolbar = forceSnackbarOverToolbar;
+    _showUndoButton = showUndoButton;
     _completionWrapper =
         [[SignoutActionSheetCompletionWrapper alloc] initWithCompletion:block];
   }
@@ -361,6 +365,8 @@ using signin_metrics::SignoutDataLossAlertReason;
           ? IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_SIGN_OUT_SNACKBAR_MESSAGE_ENTERPRISE
           : IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_SIGN_OUT_SNACKBAR_MESSAGE;
 
+  // TODO(crbug.com/529328687): Create an undo button based on
+  // `_showUndoButton`.
   return base::BindOnce(^(Browser* post_signout_browser) {
     SnackbarMessage* message = [[SnackbarMessage alloc]
         initWithTitle:l10n_util::GetNSString(message_id)];

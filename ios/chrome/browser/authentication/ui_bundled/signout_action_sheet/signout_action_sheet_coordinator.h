@@ -46,6 +46,7 @@ class Browser;
                           rect:(CGRect)rect
                           view:(UIView*)view
       forceSnackbarOverToolbar:(BOOL)forceSnackbarOverToolbar
+                showUndoButton:(BOOL)showUndoButton
                     withSource:(signin_metrics::ProfileSignout)source
                     completion:(signin_ui::SignoutCompletionCallback)completion
     NS_DESIGNATED_INITIALIZER;
