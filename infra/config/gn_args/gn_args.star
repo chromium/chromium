@@ -410,6 +410,7 @@ gn_args.config(
     },
     configs = [
         "clang",
+        "enable_rust_clippy",
     ],
 )
 
