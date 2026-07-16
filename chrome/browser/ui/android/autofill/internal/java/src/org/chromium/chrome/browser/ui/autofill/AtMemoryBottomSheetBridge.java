@@ -119,10 +119,8 @@ public class AtMemoryBottomSheetBridge implements AtMemoryBottomSheetCoordinator
     }
 
     @Override
-    public void onSearchFocus(boolean hasFocus) {
-        if (hasFocus) {
-            mCoordinator.expandSheet();
-        }
+    public void requestExpandSheet() {
+        mCoordinator.expand(/* expandInHalfHeight= */ false);
     }
 
     @Override

@@ -218,10 +218,12 @@ class AtMemoryBottomSheetMediator implements AtMemorySearchBarView.Delegate {
 
         mModel.set(CURRENT_SCREEN, ScreenId.FLYOUT_SCREEN);
         mDelegate.onChildSuggestionsShown(position);
+        mDelegate.requestExpandSheet();
     }
 
     private void onFlyoutBackClicked() {
         mModel.set(CURRENT_SCREEN, ScreenId.HOME_SCREEN);
+        mDelegate.requestExpandSheet();
     }
 
     private void onFlyoutSuggestionClicked(int parentPosition, int childPosition) {
@@ -242,7 +244,9 @@ class AtMemoryBottomSheetMediator implements AtMemorySearchBarView.Delegate {
 
     @Override
     public void onSearchFocus(boolean hasFocus) {
-        mDelegate.onSearchFocus(hasFocus);
+        if (hasFocus) {
+            mDelegate.requestExpandSheet();
+        }
     }
 
     private boolean isSearchAffordance(List<AutofillSuggestion> suggestions) {

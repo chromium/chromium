@@ -8,6 +8,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -108,5 +109,35 @@ public class AtMemoryBottomSheetCoordinatorTest {
         // the at.memory search. The list of suggestions are shown and the user clicks
         // the detail page button, then the flyout screen is shown. In that case, the
         // bottom sheet should be updated to show the flyout.
+    }
+
+    @Test
+    public void testExpand_WhenSheetStateFull_AndNotExpandInHalfHeight() {
+        when(mBottomSheetController.getSheetState())
+                .thenReturn(BottomSheetController.SheetState.FULL);
+
+        mCoordinator.expand(/* expandInHalfHeight= */ false);
+
+        verify(mBottomSheetController, never()).expandSheet(eq(true));
+    }
+
+    @Test
+    public void testExpand_WhenSheetStateHalf_AndNotExpandInHalfHeight() {
+        when(mBottomSheetController.getSheetState())
+                .thenReturn(BottomSheetController.SheetState.HALF);
+
+        mCoordinator.expand(/* expandInHalfHeight= */ false);
+
+        verify(mBottomSheetController).expandSheet(eq(true));
+    }
+
+    @Test
+    public void testExpand_WhenSheetStateFull_AndExpandInHalfHeight() {
+        when(mBottomSheetController.getSheetState())
+                .thenReturn(BottomSheetController.SheetState.FULL);
+
+        mCoordinator.expand(/* expandInHalfHeight= */ true);
+
+        verify(mBottomSheetController).expandSheet(eq(true));
     }
 }

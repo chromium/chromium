@@ -284,8 +284,8 @@ public class AtMemoryBottomSheetViewTest {
         AtMemoryBottomSheetContent content =
                 new AtMemoryBottomSheetContent(mView, mBottomSheetController);
 
-        assertEquals(HeightMode.DISABLED, content.getHalfHeightRatio(), 0.01f);
-        assertTrue(content.getFullHeightRatio() <= 0.5f);
+        assertTrue(content.getHalfHeightRatio() > 0.0f && content.getHalfHeightRatio() <= 0.5f);
+        assertEquals(1.0f, content.getFullHeightRatio(), 0.01f);
 
         EditText searchView = mView.getContentView().findViewById(R.id.search_query_input);
         searchView.requestFocus();
@@ -304,8 +304,8 @@ public class AtMemoryBottomSheetViewTest {
 
         mView.setCurrentScreen(ScreenId.FLYOUT_SCREEN);
 
-        assertEquals(HeightMode.DISABLED, content.getHalfHeightRatio(), 0.01f);
-        assertEquals(HeightMode.WRAP_CONTENT, content.getFullHeightRatio(), 0.01f);
+        assertTrue(content.getHalfHeightRatio() > 0.0f && content.getHalfHeightRatio() <= 0.5f);
+        assertEquals(1.0f, content.getFullHeightRatio(), 0.01f);
     }
 
     @Test

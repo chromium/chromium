@@ -66,20 +66,17 @@ class AtMemoryBottomSheetContent implements BottomSheetContent {
 
     @Override
     public float getHalfHeightRatio() {
-        return HeightMode.DISABLED;
-    }
-
-    @Override
-    public float getFullHeightRatio() {
         if (mView.searchHasFocus()) {
-            return 1.0f;
-        }
-        if (mView.getCurrentScreen() == AtMemoryBottomSheetProperties.ScreenId.FLYOUT_SCREEN) {
-            return HeightMode.WRAP_CONTENT;
+            return HeightMode.DISABLED;
         }
         return Math.min(
                 getSheetContentHeight() / (float) mBottomSheetController.getContainerHeight(),
                 0.5f);
+    }
+
+    @Override
+    public float getFullHeightRatio() {
+        return 1.0f;
     }
 
     @Override
@@ -112,8 +109,6 @@ class AtMemoryBottomSheetContent implements BottomSheetContent {
     }
 
     // Measures the content height to achieve a wrap-content effect for the bottom sheet.
-    // Using HeightMode.WRAP_CONTENT for getFullHeightRatio() disables the view from being
-    // expandable.
     private float getSheetContentHeight() {
         mView.getContentView()
                 .measure(

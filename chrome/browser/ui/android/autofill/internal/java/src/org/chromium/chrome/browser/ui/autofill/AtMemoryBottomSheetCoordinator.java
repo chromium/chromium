@@ -47,7 +47,7 @@ public class AtMemoryBottomSheetCoordinator {
 
         void onQueryTextChanged(String query);
 
-        void onSearchFocus(boolean hasFocus);
+        void requestExpandSheet();
 
         void onSuggestionClicked(int position);
 
@@ -78,6 +78,7 @@ public class AtMemoryBottomSheetCoordinator {
         mBottomSheetController.addObserver(mBottomSheetObserver);
         if (mBottomSheetController.requestShowContent(mContent, /* animate= */ true)) {
             mMediator.show(suggestions);
+            expand(/* expandInHalfHeight= */ true);
         } else {
             onDismissed();
         }
@@ -87,8 +88,17 @@ public class AtMemoryBottomSheetCoordinator {
         mBottomSheetController.hideContent(mContent, /* animate= */ true);
     }
 
-    public void expandSheet() {
-        mBottomSheetController.expandSheet(/* animate= */ true);
+    /**
+     * Requests the sheet to recompute its height or expand when not already in full-height mode.
+     *
+     * @param expandInHalfHeight Whether to re-expand regardless of sheet state.
+     */
+    public void expand(boolean expandInHalfHeight) {
+        if (expandInHalfHeight
+                || mBottomSheetController.getSheetState()
+                        != BottomSheetController.SheetState.FULL) {
+            mBottomSheetController.expandSheet(/* animate= */ true);
+        }
     }
 
     private void onDismissed() {
