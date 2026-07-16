@@ -62,7 +62,7 @@ class SurveyClientBridge implements SurveyClient {
                 SurveyClientFactory.getInstance()
                         .createClient(config, uiDelegate, profile, tabModelSelector);
         if (client == null) {
-            Log.d(TAG, "SurveyClient is null. config: " + SurveyConfig.toString(config));
+            Log.d(TAG, "SurveyClient is null. config: %s", SurveyConfig.toString(config));
             return null;
         }
         return new SurveyClientBridge(client);

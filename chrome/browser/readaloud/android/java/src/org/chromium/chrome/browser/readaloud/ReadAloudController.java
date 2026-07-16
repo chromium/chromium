@@ -2275,7 +2275,7 @@ public class ReadAloudController
     private void onMetadataAvailable(
             @JniType("std::string") String title, @JniType("std::string") String publisher) {
         // TODO: Update property model with title and publisher.
-        Log.d(TAG, "onMetadataAvailable: title = " + title + ", publisher = " + publisher);
+        Log.d(TAG, "onMetadataAvailable: title = %s, publisher = %s", title, publisher);
     }
 
     // Called periodically to report the current playback progress and total duration.
@@ -2284,17 +2284,16 @@ public class ReadAloudController
         // TODO: Update property model with playback progress.
         Log.d(
                 TAG,
-                "onPlaybackProgressUpdated: elapsedNanos = "
-                        + elapsedNanos
-                        + ", durationNanos = "
-                        + durationNanos);
+                "onPlaybackProgressUpdated: elapsedNanos = %d, durationNanos = %d",
+                elapsedNanos,
+                durationNanos);
     }
 
     // Called when the audio playback state transitions (e.g., playing, paused, stopped).
     @CalledByNative
     private void onPlaybackStateChanged(int playbackState) {
         // TODO: Update property model with playback state.
-        Log.d(TAG, "onPlaybackStateChanged: playbackState = " + playbackState);
+        Log.d(TAG, "onPlaybackStateChanged: playbackState = %d", playbackState);
     }
 
     // Called when the list of available synthesis voices is loaded or changed.
@@ -2306,12 +2305,11 @@ public class ReadAloudController
         // TODO: Update property model with available voices.
         Log.d(
                 TAG,
-                "onVoicesAvailable: voiceIds count = "
-                        + voiceIds.length
-                        + ", voiceDisplayNames count = "
-                        + voiceDisplayNames.length
-                        + ", selectedVoiceId = "
-                        + selectedVoiceId);
+                "onVoicesAvailable: voiceIds count = %d, voiceDisplayNames count = %d,"
+                        + " selectedVoiceId = %s",
+                voiceIds.length,
+                voiceDisplayNames.length,
+                selectedVoiceId);
     }
 
     // Called when the active word highlight boundary shifts in the text.
@@ -2320,17 +2318,16 @@ public class ReadAloudController
         // TODO: Update property model with word highlight boundaries.
         Log.d(
                 TAG,
-                "onWordHighlightUpdated: absoluteStartIndex = "
-                        + absoluteStartIndex
-                        + ", absoluteEndIndex = "
-                        + absoluteEndIndex);
+                "onWordHighlightUpdated: absoluteStartIndex = %d, absoluteEndIndex = %d",
+                absoluteStartIndex,
+                absoluteEndIndex);
     }
 
     // Called to notify if synchronized word highlighting is supported for the current content.
     @CalledByNative
     private void onHighlightingSupported(boolean supported) {
         // TODO: Update property to toggle highlight visibility.
-        Log.d(TAG, "onHighlightingSupported: supported = " + supported);
+        Log.d(TAG, "onHighlightingSupported: supported = %b", supported);
     }
 
     // Called when playback switches to the on-device system TTS engine.
@@ -2344,7 +2341,7 @@ public class ReadAloudController
     @CalledByNative
     private void onPlaybackError(@JniType("std::string") String errorMessage) {
         // TODO: Handle playback error.
-        Log.d(TAG, "onPlaybackError: errorMessage = " + errorMessage);
+        Log.d(TAG, "onPlaybackError: errorMessage = %s", errorMessage);
     }
 
     // Called when the playback state of a voice preview changes in settings.
@@ -2354,17 +2351,16 @@ public class ReadAloudController
         // TODO: Update property model with voice preview playback state.
         Log.d(
                 TAG,
-                "onVoicePreviewPlaybackStateChanged: voiceId = "
-                        + voiceId
-                        + ", playbackState = "
-                        + playbackState);
+                "onVoicePreviewPlaybackStateChanged: voiceId = %s, playbackState = %d",
+                voiceId,
+                playbackState);
     }
 
     // Called with the result of an asynchronous page readability check.
     @CalledByNative
     private void onReadabilityResult(@JniType("GURL") GURL url, boolean isReadable) {
         // TODO: Update property model with readability result.
-        Log.d(TAG, "onReadabilityResult: url = " + url.getSpec() + ", isReadable = " + isReadable);
+        Log.d(TAG, "onReadabilityResult: url = %s, isReadable = %b", url.getSpec(), isReadable);
     }
 
     // Called immediately before the native service is destroyed.

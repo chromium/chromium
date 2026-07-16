@@ -182,7 +182,7 @@ public class LensOverlayCoordinator implements UserData {
         }
 
         boolean isRunning = false;
-        Log.d(TAG, "Lens Overlay " + implType + " implementation started");
+        Log.d(TAG, "Lens Overlay %s implementation started", implType);
         if (LensSupportStatusHelper.LENS_OVERLAY_IMPL_INTENT.equals(implType)) {
             isRunning = startIntentFlow(bitmap);
         } else if (LensSupportStatusHelper.LENS_OVERLAY_IMPL_WEBUI.equals(implType)) {

@@ -827,12 +827,10 @@ public class BottomControlsStacker implements BrowserControlsStateProvider.Obser
     private static void dumpStatsForLayerForTesting(BottomControlsLayer layer, int layerYOffset) {
         Log.d(
                 TAG,
-                "Layer: "
-                        + layer.getType()
-                        + " Height "
-                        + layer.getHeight()
-                        + " YOffset "
-                        + layerYOffset);
+                "Layer: %d Height: %d YOffset: %d",
+                layer.getType(),
+                layer.getHeight(),
+                layerYOffset);
     }
 
     @Override

@@ -21,7 +21,7 @@ public class FallbackHelpAndFeedbackLauncherDelegate implements HelpAndFeedbackL
 
     @Override
     public void show(Activity activity, String helpContext, FeedbackCollector collector) {
-        Log.d(TAG, "Feedback data: " + collector.getBundle());
+        Log.d(TAG, "Feedback data: %s", collector.getBundle());
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.USE_P_LINK_IN_HELP)) {
             HelpAndFeedbackLauncherDelegate.launchFallbackSupportUri(
                     activity, HelpAndFeedbackLauncherDelegate.getPLinkHelpUrl(helpContext));
@@ -32,7 +32,7 @@ public class FallbackHelpAndFeedbackLauncherDelegate implements HelpAndFeedbackL
 
     @Override
     public void showFeedback(Activity activity, FeedbackCollector collector) {
-        Log.d(TAG, "Feedback data: " + collector.getBundle());
+        Log.d(TAG, "Feedback data: %s", collector.getBundle());
         HelpAndFeedbackLauncherDelegate.launchFallbackSupportUri(activity, /* url= */ null);
     }
 }
