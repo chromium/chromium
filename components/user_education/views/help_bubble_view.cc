@@ -715,7 +715,7 @@ void HelpBubbleView::InitializeAndShow(bool visible_arrow, bool show_active) {
   // If the primary window widget is not the anchor widget, do not use the
   // window anchor bounds.
   if (anchor_widget()->GetPrimaryWindowWidget() != anchor_widget()) {
-    frame_view->set_use_anchor_window_bounds(false);
+    SetUseAnchorWindowBounds(false);
   }
 
   // Bubbles get a 1-dip border that's either light or dark depending on system

@@ -640,6 +640,7 @@ HelpBubbleViewAsh::HelpBubbleViewAsh(
   SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   set_close_on_deactivate(false);
   set_focus_traversable_from_anchor_view(false);
+  SetUseAnchorWindowBounds(false);
   set_parent_window(
       anchor_widget()->GetNativeWindow()->GetRootWindow()->GetChildById(
           kShellWindowId_HelpBubbleContainer));
@@ -729,7 +730,6 @@ std::unique_ptr<views::FrameView> HelpBubbleViewAsh::CreateFrameView(
   auto frame = BubbleDialogDelegateView::CreateFrameView(widget);
   auto* frame_ptr = static_cast<views::BubbleFrameView*>(frame.get());
   frame_ptr->bubble_border()->set_md_shadow_elevation(kBubbleShadowElevation);
-  frame_ptr->set_use_anchor_window_bounds(false);
   return frame;
 }
 

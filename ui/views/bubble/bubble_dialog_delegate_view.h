@@ -305,6 +305,11 @@ class VIEWS_EXPORT BubbleDialogDelegate : public DialogDelegate {
   const std::optional<gfx::Rect>& anchor_rect() const { return anchor_rect_; }
   void SetAnchorRect(const gfx::Rect& rect);
 
+  // Whether the bubble will try to stay inside the bounds of its anchor
+  // view/rect.
+  bool use_anchor_window_bounds() const { return use_anchor_window_bounds_; }
+  void SetUseAnchorWindowBounds(bool use_anchor_bounds);
+
   //////////////////////////////////////////////////////////////////////////////
   // The generic anchor:
   //
@@ -681,6 +686,7 @@ class VIEWS_EXPORT BubbleDialogDelegate : public DialogDelegate {
   std::unique_ptr<BubbleWidgetObserver> bubble_widget_observer_;
   bool adjust_if_offscreen_ = true;
   bool focus_traversable_from_anchor_view_ = true;
+  bool use_anchor_window_bounds_ = true;
   std::optional<ui::ElementTracker::Subscription>
       highlighted_element_shown_subscription_;
   ui::SafeElementReference highlighted_element_tracker_;

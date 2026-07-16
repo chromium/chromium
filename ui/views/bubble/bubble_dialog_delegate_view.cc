@@ -620,6 +620,7 @@ std::unique_ptr<FrameView> BubbleDialogDelegate::CreateFrameView(
 
   frame->SetFootnoteMargins(margin.footnote);
   frame->SetFootnoteView(DisownFootnoteView());
+  frame->set_use_anchor_window_bounds(use_anchor_window_bounds_);
 
   std::unique_ptr<BubbleBorder> border =
       std::make_unique<BubbleBorder>(arrow(), GetShadow());
@@ -1210,6 +1211,13 @@ bool BubbleDialogDelegate::IsSameAnchor(BubbleAnchor anchor) const {
   } else {
     DCHECK(anchor.IsNull());
     return lhs.IsNull();
+  }
+}
+
+void BubbleDialogDelegate::SetUseAnchorWindowBounds(bool use_anchor_bounds) {
+  use_anchor_window_bounds_ = use_anchor_bounds;
+  if (auto* frame_view = GetBubbleFrameView()) {
+    frame_view->set_use_anchor_window_bounds(use_anchor_bounds);
   }
 }
 

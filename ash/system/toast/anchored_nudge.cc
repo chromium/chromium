@@ -139,6 +139,9 @@ AnchoredNudge::AnchoredNudge(
   if (!nudge_data.announce_chromevox) {
     SetAccessibleWindowRole(ax::mojom::Role::kNone);
   }
+
+  // Do not attempt fitting the bubble inside the anchor view window.
+  SetUseAnchorWindowBounds(false);
 }
 
 AnchoredNudge::~AnchoredNudge() {
@@ -216,9 +219,6 @@ std::unique_ptr<views::FrameView> AnchoredNudge::CreateFrameView(
 }
 
 void AnchoredNudge::AddedToWidget() {
-  // Do not attempt fitting the bubble inside the anchor view window.
-  GetBubbleFrameView()->set_use_anchor_window_bounds(false);
-
   // Remove accelerator so the nudge won't be closed when pressing the Esc key.
   GetDialogClientView()->RemoveAccelerator(
       ui::Accelerator(ui::VKEY_ESCAPE, ui::EF_NONE));
