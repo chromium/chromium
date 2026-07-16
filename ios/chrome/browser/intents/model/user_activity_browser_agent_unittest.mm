@@ -113,8 +113,7 @@ class UserActivityBrowserAgentTest : public PlatformTest {
 
     profile_ = TestProfileIOS::Builder().Build();
 
-    scene_state_ = [[FakeSceneState alloc] initWithAppState:nil
-                                                    profile:profile_.get()];
+    scene_state_ = [[FakeSceneState alloc] initWithProfile:profile_.get()];
     InstallMockProfileState(ProfileInitStage::kFinal);
 
     scene_state_.activationLevel = SceneActivationLevelForegroundActive;

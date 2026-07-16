@@ -76,8 +76,7 @@ class PushNotificationDelegateTest : public PlatformTest {
     app_state_ = [[AppState alloc] initWithStartupInformation:nil];
     [app_state_ startInitialization];
     profile_ = BuildProfile();
-    scene_state_ = [[FakeSceneState alloc] initWithAppState:app_state_
-                                                    profile:profile_];
+    scene_state_ = [[FakeSceneState alloc] initWithProfile:profile_];
     profile_state_ = [[ProfileState alloc] initWithAppState:app_state_];
     profile_state_.profile = profile_;
     [app_state_ profileStateCreated:profile_state_];

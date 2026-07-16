@@ -158,12 +158,9 @@ class AppStoreRatingSceneAgentTest : public PlatformTest {
 
   // Create a FakeSceneState.
   void CreateFakeSceneState() {
-    id mockAppState = OCMClassMock([AppState class]);
     TestProfileIOS::Builder builder;
     profile_ = std::move(builder).Build();
-    fake_scene_state_ =
-        [[FakeSceneState alloc] initWithAppState:mockAppState
-                                         profile:profile_.get()];
+    fake_scene_state_ = [[FakeSceneState alloc] initWithProfile:profile_.get()];
   }
 
   // Create an AppStoreRatingSceneAgent to test.

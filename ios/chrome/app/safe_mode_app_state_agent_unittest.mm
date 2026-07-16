@@ -33,9 +33,7 @@ class SafeModeAppStateAgentTest : public BlockCleanupTest {
     AppState* app_state = [[AppState alloc] initWithStartupInformation:nil];
     app_state_mock_ = OCMPartialMock(app_state);
 
-    main_scene_state_ =
-        [[FakeSceneState alloc] initWithAppState:app_state
-                                         profile:profile_.get()];
+    main_scene_state_ = [[FakeSceneState alloc] initWithProfile:profile_.get()];
     main_scene_state_.window = window_;
 
     agent_ = [[SafeModeAppAgent alloc] init];

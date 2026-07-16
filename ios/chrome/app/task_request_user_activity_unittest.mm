@@ -89,8 +89,7 @@ class TaskRequestForUserActivityTest : public PlatformTest {
     SaveEnableNewStartupFlowForNextStart();
 
     profile_ = TestProfileIOS::Builder().Build();
-    scene_state_ = [[FakeSceneState alloc] initWithAppState:nil
-                                                    profile:profile_.get()];
+    scene_state_ = [[FakeSceneState alloc] initWithProfile:profile_.get()];
 
     mock_profile_state_ = OCMClassMock([ProfileState class]);
     OCMStub([mock_profile_state_ profile]).andReturn(profile_.get());

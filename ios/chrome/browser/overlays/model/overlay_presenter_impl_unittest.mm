@@ -59,8 +59,7 @@ class OverlayPresenterImplTest : public PlatformTest {
     app_state_ =
         [[AppState alloc] initWithStartupInformation:startup_information_];
     profile_state_ = [[ProfileState alloc] initWithAppState:app_state_];
-    scene_state_ = [[FakeSceneState alloc] initWithAppState:app_state_
-                                                    profile:profile_.get()];
+    scene_state_ = [[FakeSceneState alloc] initWithProfile:profile_.get()];
     scene_state_.profileState = profile_state_;
     profile_state_.profile = profile_.get();
     browser_ = std::make_unique<TestBrowser>(profile_.get(), scene_state_);

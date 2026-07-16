@@ -70,8 +70,7 @@ class SceneCoordinatorTest : public PlatformTest {
     SetProfileStateInitStage(profile_state_, ProfileInitStage::kFinal);
     profile_state_.profile = profile_.get();
 
-    scene_state_ = [[FakeSceneState alloc] initWithAppState:nil
-                                                    profile:profile_.get()];
+    scene_state_ = [[FakeSceneState alloc] initWithProfile:profile_.get()];
     [scene_state_ connectWithOptions:{.profile_state = profile_state_,
                                       .identifier = "scene"}];
 

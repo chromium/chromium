@@ -137,8 +137,7 @@ class MetricsMediatorLogLaunchTest : public PlatformTest {
     NSMutableArray<SceneState*>* scenes = [NSMutableArray array];
     for (int i = 0; i < count; i++) {
       [scenes
-          addObject:[[FakeSceneState alloc] initWithAppState:nil
-                                                     profile:profile_.get()]];
+          addObject:[[FakeSceneState alloc] initWithProfile:profile_.get()]];
     }
     return [scenes copy];
   }

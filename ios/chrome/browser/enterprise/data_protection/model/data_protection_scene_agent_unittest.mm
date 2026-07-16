@@ -55,8 +55,7 @@ class DataProtectionSceneAgentTestBase : public PlatformTest {
     profile_state_.profile = profile_.get();
 
     UIWindowScene* window_scene = chrome_test_util::GetAnyWindowScene();
-    scene_state_ = [[FakeSceneState alloc] initWithAppState:nil
-                                                    profile:profile_.get()];
+    scene_state_ = [[FakeSceneState alloc] initWithProfile:profile_.get()];
     scene_state_.profileState = profile_state_;
     scene_state_.scene = window_scene;
     scene_state_.window = [[UIWindow alloc] initWithWindowScene:window_scene];

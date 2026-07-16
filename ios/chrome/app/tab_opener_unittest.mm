@@ -82,8 +82,7 @@ class TabOpenerTest : public PlatformTest {
       profile_state_ = OCMClassMock([ProfileState class]);
       OCMStub([profile_state_ initStage]).andReturn(ProfileInitStage::kFinal);
 
-      scene_state_ = [[FakeSceneState alloc] initWithAppState:nil
-                                                      profile:profile_.get()];
+      scene_state_ = [[FakeSceneState alloc] initWithProfile:profile_.get()];
       scene_state_.profileState = profile_state_;
 
       SceneController* controller =

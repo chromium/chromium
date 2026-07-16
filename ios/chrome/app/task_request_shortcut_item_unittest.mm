@@ -52,8 +52,7 @@ class TaskRequestForShortcutItemTest : public PlatformTest {
     profile_ = TestProfileIOS::Builder().Build();
 
     tab_opener_ = [[FakeTabOpener alloc] init];
-    fake_scene_state_ =
-        [[FakeSceneState alloc] initWithAppState:nil profile:profile_.get()];
+    fake_scene_state_ = [[FakeSceneState alloc] initWithProfile:profile_.get()];
     fake_scene_state_.controller = (SceneController*)tab_opener_;
   }
 

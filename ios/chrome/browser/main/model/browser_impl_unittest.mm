@@ -23,8 +23,7 @@ class BrowserImplTest : public PlatformTest {
         tab_groups::TabGroupSyncServiceFactory::GetInstance(),
         tab_groups::TabGroupSyncServiceFactory::GetDefaultFactory());
     profile_ = std::move(test_profile_builder).Build();
-    scene_state_ = [[FakeSceneState alloc] initWithAppState:nil
-                                                    profile:profile_.get()];
+    scene_state_ = [[FakeSceneState alloc] initWithProfile:profile_.get()];
   }
 
   ~BrowserImplTest() override {

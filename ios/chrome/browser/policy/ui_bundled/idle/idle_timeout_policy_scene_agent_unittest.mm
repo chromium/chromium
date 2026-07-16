@@ -105,8 +105,7 @@ class IdleTimeoutPolicySceneAgentTest : public PlatformTest {
 
   void InitSceneWithAgent() {
     CHECK(!scene_state_);
-    scene_state_ = [[FakeSceneState alloc] initWithAppState:app_state_
-                                                    profile:profile_.get()];
+    scene_state_ = [[FakeSceneState alloc] initWithProfile:profile_.get()];
     scene_state_.scene = static_cast<UIWindowScene*>(
         [[[UIApplication sharedApplication] connectedScenes] anyObject]);
     scene_state_.profileState = profile_state_;

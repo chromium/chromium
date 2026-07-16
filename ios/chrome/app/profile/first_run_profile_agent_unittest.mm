@@ -119,8 +119,7 @@ class FirstRunProfileAgentTest : public PlatformTest {
         is_off_the_record ? browser_provider_interface.incognitoBrowserProvider
                           : browser_provider_interface.mainBrowserProvider;
 
-    scene_state_ = [[FakeSceneState alloc] initWithAppState:nil
-                                                    profile:profile_.get()];
+    scene_state_ = [[FakeSceneState alloc] initWithProfile:profile_.get()];
     scene_state_.activationLevel = SceneActivationLevelForegroundActive;
     scene_state_.browserProviderInterface = browser_provider_interface;
   }

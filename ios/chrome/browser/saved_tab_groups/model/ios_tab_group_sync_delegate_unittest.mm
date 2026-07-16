@@ -82,8 +82,6 @@ void FakeUpdateLocalTabId(web::WebState* web_state,
 class IOSTabGroupSyncDelegateTest : public PlatformTest {
  public:
   IOSTabGroupSyncDelegateTest() {
-    app_state_ = OCMClassMock([AppState class]);
-
     TestProfileIOS::Builder builder;
     builder.AddTestingFactory(TabGroupSyncServiceFactory::GetInstance(),
                               base::BindRepeating(&CreateMockSyncService));
@@ -95,23 +93,20 @@ class IOSTabGroupSyncDelegateTest : public PlatformTest {
     mock_service_ = static_cast<MockTabGroupSyncService*>(
         TabGroupSyncServiceFactory::GetForProfile(profile_.get()));
 
-    scene_state_ = [[FakeSceneState alloc] initWithAppState:app_state_
-                                                    profile:profile_.get()];
+    scene_state_ = [[FakeSceneState alloc] initWithProfile:profile_.get()];
     browser_ =
         scene_state_.browserProviderInterface.mainBrowserProvider.browser;
     TabInsertionBrowserAgent::CreateForBrowser(browser_);
 
     scene_state_same_profile_ =
-        [[FakeSceneState alloc] initWithAppState:app_state_
-                                         profile:profile_.get()];
+        [[FakeSceneState alloc] initWithProfile:profile_.get()];
     browser_same_profile_ = scene_state_same_profile_.browserProviderInterface
                                 .mainBrowserProvider.browser;
     TabInsertionBrowserAgent::CreateForBrowser(browser_same_profile_);
 
     other_profile_ = TestProfileIOS::Builder().Build();
     other_scene_state_ =
-        [[FakeSceneState alloc] initWithAppState:app_state_
-                                         profile:other_profile_.get()];
+        [[FakeSceneState alloc] initWithProfile:other_profile_.get()];
     other_browser_ =
         other_scene_state_.browserProviderInterface.mainBrowserProvider.browser;
     TabInsertionBrowserAgent::CreateForBrowser(other_browser_);
@@ -224,7 +219,6 @@ class IOSTabGroupSyncDelegateTest : public PlatformTest {
 
  protected:
   web::WebTaskEnvironment task_environment_;
-  id app_state_;
   FakeSceneState* scene_state_;
   FakeSceneState* scene_state_same_profile_;
   FakeSceneState* other_scene_state_;

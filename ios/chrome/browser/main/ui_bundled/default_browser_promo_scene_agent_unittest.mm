@@ -108,8 +108,7 @@ class DefaultBrowserPromoSceneAgentTest : public PlatformTest {
     OCMStub([profile_state_ initStage]).andReturn(ProfileInitStage::kFinal);
     OCMStub([profile_state_ profile]).andReturn(profile_.get());
 
-    scene_state_ = [[FakeSceneState alloc] initWithAppState:nil
-                                                    profile:profile_.get()];
+    scene_state_ = [[FakeSceneState alloc] initWithProfile:profile_.get()];
     scene_state_.scene = static_cast<UIWindowScene*>(
         [[[UIApplication sharedApplication] connectedScenes] anyObject]);
     scene_state_.profileState = profile_state_;

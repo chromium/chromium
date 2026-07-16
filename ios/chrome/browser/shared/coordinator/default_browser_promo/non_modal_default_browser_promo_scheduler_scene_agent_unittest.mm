@@ -75,12 +75,7 @@ class NonModalDefaultBrowserPromoSchedulerSceneAgentTest : public PlatformTest {
     mock_tracker_ = static_cast<feature_engagement::test::MockTracker*>(
         feature_engagement::TrackerFactory::GetForProfile(profile_.get()));
 
-    FakeStartupInformation* startup_information =
-        [[FakeStartupInformation alloc] init];
-    app_state_ =
-        [[AppState alloc] initWithStartupInformation:startup_information];
-    scene_state_ = [[FakeSceneState alloc] initWithAppState:app_state_
-                                                    profile:profile_.get()];
+    scene_state_ = [[FakeSceneState alloc] initWithProfile:profile_.get()];
     scene_state_.scene = static_cast<UIWindowScene*>(
         [[[UIApplication sharedApplication] connectedScenes] anyObject]);
 
@@ -158,7 +153,6 @@ class NonModalDefaultBrowserPromoSchedulerSceneAgentTest : public PlatformTest {
   NonModalDefaultBrowserPromoSchedulerSceneAgent* scheduler_;
   id application_ = nil;
   base::RunLoop run_loop_;
-  AppState* app_state_;
   FakeSceneState* scene_state_;
 };
 

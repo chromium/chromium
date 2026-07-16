@@ -108,8 +108,7 @@ class DefaultBrowserBannerPromoAppAgentTest : public PlatformTest {
   // Creates, adds, activates, and returns a new scene state with one web state.
   FakeSceneState* SetUpAndAddSceneState() {
     FakeSceneState* scene_state =
-        [[FakeSceneState alloc] initWithAppState:app_state_
-                                         profile:profile_.get()];
+        [[FakeSceneState alloc] initWithProfile:profile_.get()];
     scene_state.activationLevel = SceneActivationLevelForegroundActive;
 
     [scene_state appendWebStateWithURL:url_];
@@ -482,8 +481,7 @@ TEST_F(DefaultBrowserBannerPromoAppAgentTest,
 
   // Add a second scene, which counts as a promo show.
   FakeSceneState* scene_state_2 =
-      [[FakeSceneState alloc] initWithAppState:app_state_
-                                       profile:profile_.get()];
+      [[FakeSceneState alloc] initWithProfile:profile_.get()];
   scene_state_2.UIEnabled = YES;
   scene_state_2.activationLevel = SceneActivationLevelBackground;
 
