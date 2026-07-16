@@ -232,8 +232,29 @@ public class ModalDialogView extends BoundedLinearLayout implements View.OnClick
         return shortEventAfterLastEvent;
     }
 
+    @Override
+    protected void onAttachedToWindow() {
+        super.onAttachedToWindow();
+        // If the dialog is shown without animation, onEnterAnimationStarted will not be called.
+        // We start the tap protection period here when the view is attached to ensure buttons
+        // are not permanently blocked. If there is an animation, onEnterAnimationStarted will
+        // be called later and will override this timestamp.
+        if (mStartProtectingButtonTimestamp < 0) {
+            mStartProtectingButtonTimestamp = TimeUtils.elapsedRealtimeMillis();
+        }
+    }
+
+    @Override
+    protected void onDetachedFromWindow() {
+        super.onDetachedFromWindow();
+        // Reset the timestamp when detached so that it can be correctly re-initialized
+        // when the view is attached again.
+        mStartProtectingButtonTimestamp = -1;
+    }
+
     /**
      * Callback when view is starting to appear on screen.
+     *
      * @param animationDuration Duration of enter animation.
      */
     void onEnterAnimationStarted(long animationDuration) {

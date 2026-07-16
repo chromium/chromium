@@ -22,6 +22,7 @@ import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
+import org.robolectric.shadows.ShadowSystemClock;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -29,6 +30,8 @@ import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
+
+import java.time.Duration;
 
 /** Unit tests for {@link ModalDialogView}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -386,5 +389,48 @@ public class ModalDialogViewUnitTest {
                 "Spacer should be VISIBLE when checkbox is below a custom view.",
                 android.view.View.VISIBLE,
                 spacer.getVisibility());
+    }
+
+    @Test
+    public void testButtonTapProtection_AttachedWithoutAnimation() {
+        class TestController implements ModalDialogProperties.Controller {
+            int mClickedButton = -1;
+
+            @Override
+            public void onClick(PropertyModel model, int buttonType) {
+                mClickedButton = buttonType;
+            }
+
+            @Override
+            public void onDismiss(PropertyModel model, int dismissalCause) {}
+        }
+        var controller = new TestController();
+
+        var model =
+                mModelBuilder
+                        .with(ModalDialogProperties.CONTROLLER, controller)
+                        .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT, "OK")
+                        .with(ModalDialogProperties.BUTTON_TAP_PROTECTION_PERIOD_MS, 1000L)
+                        .build();
+        PropertyModelChangeProcessor.create(model, mDialogView, new ModalDialogViewBinder());
+
+        // Attach to window.
+        mActivity.setContentView(mDialogView);
+
+        var positiveButton = mDialogView.findViewById(R.id.positive_button);
+
+        // Click immediately - should be blocked.
+        positiveButton.performClick();
+        assertEquals(-1, controller.mClickedButton);
+
+        // Advance time by 500ms (less than 1000ms).
+        ShadowSystemClock.advanceBy(Duration.ofMillis(500));
+        positiveButton.performClick();
+        assertEquals(-1, controller.mClickedButton);
+
+        // Advance time by 1100ms (more than 1000ms since last click).
+        ShadowSystemClock.advanceBy(Duration.ofMillis(1100));
+        positiveButton.performClick();
+        assertEquals(ModalDialogProperties.ButtonType.POSITIVE, controller.mClickedButton);
     }
 }
