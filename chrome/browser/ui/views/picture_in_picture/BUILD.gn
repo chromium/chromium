@@ -15,6 +15,7 @@ source_set("picture_in_picture") {
     "document_pip_widget_delegate.h",
     "picture_in_picture_bounds_change_animation.h",
     "picture_in_picture_tucker.h",
+    "pip_child_dialog_observer_helper.h",
   ]
 
   sources = [
@@ -25,6 +26,7 @@ source_set("picture_in_picture") {
     "document_pip_widget_delegate.cc",
     "picture_in_picture_bounds_change_animation.cc",
     "picture_in_picture_tucker.cc",
+    "pip_child_dialog_observer_helper.cc",
   ]
 
   public_deps = [
@@ -63,6 +65,7 @@ source_set("picture_in_picture") {
     "//media",
     "//ui/base",
     "//ui/base/metadata",
+    "//ui/compositor",
     "//ui/display",
     "//ui/strings",
     "//ui/views/controls/webview",
