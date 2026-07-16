@@ -23,11 +23,13 @@ SkAlpha PercentageToSkAlpha(int percent_value);
 SkColor GetDefaultFillColor();
 SkColor GetDefaultOutlineColor();
 int GetDefaultFontSize();
+std::string GetDefaultTimestampTimezone();
 SkColor GetFillColor(const PrefService* prefs);
 SkColor GetOutlineColor(const PrefService* prefs);
 // Returns the font size for the watermark.
 // This function always returns a positive integer (>= 1).
 int GetFontSize(const PrefService* prefs);
+std::string GetTimestampTimezone(const PrefService* prefs);
 
 }  // namespace enterprise_watermark
 

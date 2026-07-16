@@ -7,12 +7,15 @@
 #include <algorithm>
 
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/enterprise/watermark/watermark_features.h"
 #include "chrome/common/channel_info.h"
 #include "components/enterprise/connectors/core/connectors_prefs.h"
+#include "components/enterprise/data_protection/features.h"
 #include "components/prefs/pref_service.h"
 #include "components/version_info/version_info.h"
+#include "third_party/icu/source/i18n/unicode/timezone.h"
 
 namespace {
 
@@ -54,6 +57,20 @@ int GetOpacity(const PrefService* prefs,
 
   return enterprise_watermark::PercentageToSkAlpha(default_percent_value);
 }
+
+// Helper function that verifies that the timezone string is valid.
+// Returns the default value if the string is invalid.
+// Validity is defined by the IANA timezone database.
+std::string ResolveTimestampTimezone(const std::string& timezone) {
+  std::unique_ptr<icu::TimeZone> icu_timezone(
+      icu::TimeZone::createTimeZone(icu::UnicodeString::fromUTF8(timezone)));
+
+  if (!icu_timezone || *icu_timezone == icu::TimeZone::getUnknown()) {
+    return enterprise_watermark::GetDefaultTimestampTimezone();
+  }
+
+  return timezone;
+}
 }  // namespace
 
 namespace enterprise_watermark {
@@ -80,6 +97,10 @@ int GetDefaultFontSize() {
   return enterprise_connectors::kWatermarkStyleFontSizeDefault;
 }
 
+std::string GetDefaultTimestampTimezone() {
+  return enterprise_connectors::kWatermarkStyleTimestampTimezoneDefault;
+}
+
 SkColor GetFillColor(const PrefService* prefs) {
   int alpha =
       GetOpacity(prefs, enterprise_connectors::kWatermarkStyleFillOpacityPref,
@@ -104,6 +125,16 @@ int GetFontSize(const PrefService* prefs) {
   int font_size_from_pref =
       prefs->GetInteger(enterprise_connectors::kWatermarkStyleFontSizePref);
   return std::max(font_size_from_pref, kMinFontSize);
+}
+
+std::string GetTimestampTimezone(const PrefService* prefs) {
+  if (!base::FeatureList::IsEnabled(
+          enterprise_data_protection::kEnableWatermarkTimestampTimezone)) {
+    return GetDefaultTimestampTimezone();
+  }
+
+  return ResolveTimestampTimezone(prefs->GetString(
+      enterprise_connectors::kWatermarkStyleTimestampTimezonePref));
 }
 
 }  // namespace enterprise_watermark
