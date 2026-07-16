@@ -104,6 +104,16 @@ void LogProvisioningContext(const std::string& logging_context,
       base::TimeTicks::Now() - context.start_time);
 }
 
+void LogManagedIdentityDeletion(const std::string& logging_context,
+                                bool success) {
+  static constexpr char kManagedIdentityDeletionHistogram[] =
+      "Enterprise.ClientCertificate.%s.Provisioning.Cleanup.Success";
+  base::UmaHistogramBoolean(
+      base::StringPrintf(kManagedIdentityDeletionHistogram,
+                         logging_context.c_str()),
+      success);
+}
+
 void LogPrivateKeyCreationSource(const std::string& logging_context,
                                  PrivateKeySource source) {
   static constexpr char kCreatePrivateKeySourceHistogram[] =

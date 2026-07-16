@@ -57,6 +57,12 @@ void LogProvisioningContext(const std::string& logging_context,
                             ProvisioningContext context,
                             bool success);
 
+// Logs the outcome of the best-effort managed identity cleanup that runs when
+// the provisioning policy is disabled. `success` is false when the store failed
+// to delete the persisted identities.
+void LogManagedIdentityDeletion(const std::string& logging_context,
+                                bool success);
+
 void LogPrivateKeyCreationSource(const std::string& logging_context,
                                  PrivateKeySource source);
 

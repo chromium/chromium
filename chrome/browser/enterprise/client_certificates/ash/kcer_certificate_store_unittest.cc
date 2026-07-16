@@ -17,6 +17,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/test/test_future.h"
+#include "base/types/expected.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -105,6 +106,28 @@ class KcerCertificateStoreTest : public testing::Test {
     std::unique_ptr<net::CertBuilder> cert_builder =
         kcer::MakeCertBuilder(issuer.get(), key.GetSubjectPublicKeyInfo());
     return cert_builder->GetX509Certificate();
+  }
+
+  // Returns true if a private key with `spki` is present on the user token.
+  bool KeyExistsInKcer(const std::vector<uint8_t>& spki) {
+    TestFuture<base::expected<bool, kcer::Error>> future;
+    kcer_holder_.GetKcer()->DoesPrivateKeyExist(
+        kcer::PrivateKeyHandle(kcer::Token::kUser, kcer::PublicKeySpki(spki)),
+        future.GetCallback());
+    base::expected<bool, kcer::Error> result = future.Take();
+    return result.has_value() && result.value();
+  }
+
+  // Generates an EC key directly via Kcer (so it is NOT tagged as a browser
+  // enterprise client certificate key) and returns its SPKI.
+  std::vector<uint8_t> GenerateUntaggedKeyInKcer() {
+    TestFuture<base::expected<kcer::PublicKey, kcer::Error>> future;
+    kcer_holder_.GetKcer()->GenerateEcKey(
+        kcer::Token::kUser, kcer::EllipticCurve::kP256,
+        /*hardware_backed=*/true, future.GetCallback());
+    base::expected<kcer::PublicKey, kcer::Error> result = future.Take();
+    CHECK(result.has_value());
+    return result.value().GetSpki().value();
   }
 
   content::BrowserTaskEnvironment task_environment_{
@@ -418,6 +441,41 @@ TEST_F(KcerCertificateStoreCreateForProfileTest, UnmappedProfileGetsNoStore) {
   ASSERT_FALSE(ash::ProfileHelper::Get()->GetUserByProfile(profile));
 
   EXPECT_FALSE(KcerCertificateStore::CreateForProfile(profile));
+}
+
+// Deleting a non-permanent (e.g. temporary) identity removes only the named key
+// by SPKI and does NOT trigger the browser enterprise client certificate key
+// sweep, so unrelated keys on the same token are left intact.
+TEST_F(KcerCertificateStoreTest, DeleteIdentities_LeavesUnrelatedKey) {
+  scoped_refptr<PrivateKey> named = CreateKey(kTestIdentityName);
+  const std::vector<uint8_t> unrelated_spki = GenerateUntaggedKeyInKcer();
+  ASSERT_TRUE(KeyExistsInKcer(named->GetSubjectPublicKeyInfo()));
+  ASSERT_TRUE(KeyExistsInKcer(unrelated_spki));
+
+  TestFuture<std::optional<StoreError>> future;
+  store_->DeleteIdentities({kTestIdentityName}, future.GetCallback());
+  EXPECT_FALSE(future.Take().has_value());
+
+  EXPECT_FALSE(KeyExistsInKcer(named->GetSubjectPublicKeyInfo()));
+  EXPECT_TRUE(KeyExistsInKcer(unrelated_spki));
+}
+
+// Deleting a permanent managed identity removes the named key and runs the
+// browser enterprise client certificate key sweep to completion. The softoken
+// test slot can't write the browser enterprise tag, so the sweep finds nothing
+// extra to reap here; the positive reap path is covered against a fake chaps
+// client in kcer_token_impl_unittest.cc.
+TEST_F(KcerCertificateStoreTest, DeleteIdentities_PermanentNameRemovesKey) {
+  scoped_refptr<PrivateKey> key = CreateKey(kManagedProfileIdentityName);
+  const std::vector<uint8_t> spki = key->GetSubjectPublicKeyInfo();
+  ASSERT_TRUE(KeyExistsInKcer(spki));
+
+  TestFuture<std::optional<StoreError>> future;
+  store_->DeleteIdentities({kManagedProfileIdentityName}, future.GetCallback());
+  EXPECT_FALSE(future.Take().has_value());
+
+  EXPECT_FALSE(KeyExistsInKcer(spki));
+  EXPECT_TRUE(pref_service_.GetDict(kManagedProfileIdentityName).empty());
 }
 
 }  // namespace

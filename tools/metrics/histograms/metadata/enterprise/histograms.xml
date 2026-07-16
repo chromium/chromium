@@ -802,6 +802,19 @@ chromium-metrics-reviews@google.com.
   <token key="Level" variants="ClientCertLevel"/>
 </histogram>
 
+<histogram
+    name="Enterprise.ClientCertificate.{Level}.Provisioning.Cleanup.Success"
+    enum="BooleanSuccess" expires_after="2027-01-02">
+  <owner>seblalancette@chromium.org</owner>
+  <owner>cbe-device-trust-eng@google.com</owner>
+  <summary>
+    Captures whether the best-effort cleanup of managed key material, performed
+    when the client certificate provisioning policy is disabled, succeeded for a
+    {Level}. Recorded on ChromeOS each time the policy is observed disabled.
+  </summary>
+  <token key="Level" variants="ClientCertLevel"/>
+</histogram>
+
 <histogram name="Enterprise.ClientCertificate.{Level}.Provisioning.Error"
     enum="CertificateProvisioningError" expires_after="2027-01-02">
   <owner>seblalancette@chromium.org</owner>

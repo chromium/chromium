@@ -15,6 +15,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "components/enterprise/client_certificates/core/certificate_store.h"
 #include "components/enterprise/client_certificates/core/constants.h"
 #include "components/enterprise/client_certificates/core/context_delegate.h"
@@ -133,6 +134,12 @@ class CertificateProvisioningServiceImpl
   std::optional<HttpCodeOrClientError> last_upload_code_;
 
   base::WeakPtrFactory<CertificateProvisioningServiceImpl> weak_factory_{this};
+
+  // Weak pointers for in-flight provisioning operations only. Invalidating this
+  // cancels the provisioning flow (e.g. when the policy is disabled
+  // mid-provisioning) without tearing down the whole service.
+  base::WeakPtrFactory<CertificateProvisioningServiceImpl>
+      provisioning_weak_factory_{this};
 };
 
 // static
@@ -234,7 +241,35 @@ bool CertificateProvisioningServiceImpl::IsProvisioning() const {
 }
 
 void CertificateProvisioningServiceImpl::OnPolicyUpdated() {
-  if (IsPolicyEnabled() && !IsProvisioning()) {
+  if (!IsPolicyEnabled()) {
+#if BUILDFLAG(IS_CHROMEOS)
+    // The policy is disabled, so delete any leftover managed key material.
+    // Whether anything was actually provisioned is the store's concern: it
+    // exits early when nothing is persisted, so we always delegate to it. This
+    // also catches a policy that was removed while Chrome was not running.
+    //
+    // Abort any in-flight provisioning first, as DeleteManagedIdentities is a
+    // no-op while provisioning. Invalidating the provisioning weak pointers
+    // cancels the in-flight async callbacks so they can neither resurrect the
+    // identity in the store nor access the reset provisioning_context_.
+    if (IsProvisioning()) {
+      provisioning_weak_factory_.InvalidateWeakPtrs();
+      provisioning_context_.reset();
+      for (auto& pending_callback : std::exchange(pending_callbacks_, {})) {
+        std::move(pending_callback).Run(std::nullopt);
+      }
+    }
+    // Log the cleanup outcome so a persistently failing deletion is visible.
+    DeleteManagedIdentities(base::BindOnce(
+        [](std::string logging_context, bool success) {
+          LogManagedIdentityDeletion(logging_context, success);
+        },
+        GetLoggingContext()));
+#endif  // BUILDFLAG(IS_CHROMEOS)
+    return;
+  }
+
+  if (!IsProvisioning()) {
     // Start by trying to load the current identity.
     LOG_POLICY(INFO, DEVICE_TRUST)
         << "Managed identity provisioning started for: " << identity_name();
@@ -243,7 +278,7 @@ void CertificateProvisioningServiceImpl::OnPolicyUpdated() {
         identity_name(),
         base::BindOnce(
             &CertificateProvisioningServiceImpl::OnPermanentIdentityLoaded,
-            weak_factory_.GetWeakPtr()));
+            provisioning_weak_factory_.GetWeakPtr()));
   }
 }
 
@@ -306,7 +341,8 @@ void CertificateProvisioningServiceImpl::OnPermanentIdentityLoaded(
           permanent_identity_optional->private_key,
           base::BindOnce(
               &CertificateProvisioningServiceImpl::OnCertificateCreatedResponse,
-              weak_factory_.GetWeakPtr(), /*is_permanent_identity=*/true,
+              provisioning_weak_factory_.GetWeakPtr(),
+              /*is_permanent_identity=*/true,
               permanent_identity_optional->private_key));
       return;
     }
@@ -329,7 +365,7 @@ void CertificateProvisioningServiceImpl::OnPermanentIdentityLoaded(
   certificate_store_->CreatePrivateKey(
       temporary_identity_name(),
       base::BindOnce(&CertificateProvisioningServiceImpl::OnPrivateKeyCreated,
-                     weak_factory_.GetWeakPtr()));
+                     provisioning_weak_factory_.GetWeakPtr()));
 }
 
 void CertificateProvisioningServiceImpl::OnTemporaryIdentityLoaded(
@@ -375,7 +411,7 @@ void CertificateProvisioningServiceImpl::OnPrivateKeyCreated(
           temporary_identity_name(),
           base::BindOnce(
               &CertificateProvisioningServiceImpl::OnTemporaryIdentityLoaded,
-              weak_factory_.GetWeakPtr()));
+              provisioning_weak_factory_.GetWeakPtr()));
       return;
     }
 
@@ -398,8 +434,8 @@ void CertificateProvisioningServiceImpl::OnPrivateKeyCreated(
       private_key,
       base::BindOnce(
           &CertificateProvisioningServiceImpl::OnCertificateCreatedResponse,
-          weak_factory_.GetWeakPtr(), /*is_permanent_identity=*/false,
-          private_key));
+          provisioning_weak_factory_.GetWeakPtr(),
+          /*is_permanent_identity=*/false, private_key));
 }
 
 void CertificateProvisioningServiceImpl::OnCertificateCreatedResponse(
@@ -446,7 +482,8 @@ void CertificateProvisioningServiceImpl::OnCertificateCreatedResponse(
         identity_name(), certificate,
         base::BindOnce(
             &CertificateProvisioningServiceImpl::OnCertificateCommitted,
-            weak_factory_.GetWeakPtr(), std::move(private_key), certificate));
+            provisioning_weak_factory_.GetWeakPtr(), std::move(private_key),
+            certificate));
   } else {
     // Typical flow where the private key was created in the temporary location,
     // and will be moved to the permanent location along with its newly created
@@ -457,7 +494,8 @@ void CertificateProvisioningServiceImpl::OnCertificateCreatedResponse(
         temporary_identity_name(), identity_name(), certificate,
         base::BindOnce(
             &CertificateProvisioningServiceImpl::OnCertificateCommitted,
-            weak_factory_.GetWeakPtr(), std::move(private_key), certificate));
+            provisioning_weak_factory_.GetWeakPtr(), std::move(private_key),
+            certificate));
   }
 }
 
@@ -517,6 +555,10 @@ void CertificateProvisioningServiceImpl::OnProvisioningError(
     std::optional<StoreError> store_error) {
   LogProvisioningError(GetLoggingContext(), provisioning_error,
                        std::move(store_error));
+  // The temporary key left behind by a failed attempt is intentionally kept:
+  // provisioning is eventually consistent and a subsequent attempt resumes from
+  // it (see OnPrivateKeyCreated's kConflictingIdentity handling), avoiding an
+  // unnecessary key regeneration. It is cleaned up if the policy is disabled.
   OnFinishedProvisioning(/*success=*/false);
 }
 

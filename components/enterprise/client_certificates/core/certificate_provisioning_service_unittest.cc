@@ -18,6 +18,7 @@
 #include "base/test/test_future.h"
 #include "base/types/expected.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "components/enterprise/client_certificates/core/certificate_store.h"
 #include "components/enterprise/client_certificates/core/client_identity.h"
 #include "components/enterprise/client_certificates/core/constants.h"
@@ -31,6 +32,7 @@
 #include "components/enterprise/client_certificates/core/prefs.h"
 #include "components/enterprise/client_certificates/core/private_key.h"
 #include "components/enterprise/client_certificates/core/store_error.h"
+#include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "net/cert/x509_certificate.h"
 #include "net/test/cert_test_util.h"
@@ -40,6 +42,8 @@
 
 using base::test::RunOnceCallback;
 using testing::_;
+using testing::AnyNumber;
+using testing::ElementsAre;
 using testing::Return;
 using testing::StrictMock;
 
@@ -71,6 +75,17 @@ class CertificateProvisioningServiceTest : public testing::Test {
   CertificateProvisioningServiceTest() {
     RegisterProfilePrefs(pref_service_.registry());
     RegisterLocalStatePrefs(pref_service_.registry());
+    pref_service_.registry()->RegisterDictionaryPref(kIdentityName);
+    pref_service_.registry()->RegisterDictionaryPref(kTempIdentityName);
+#if BUILDFLAG(IS_CHROMEOS)
+    // On ChromeOS, when the policy is disabled the service always delegates
+    // cleanup of the managed identities to the store. Tolerate that call across
+    // tests; tests that assert on it set their own (more specific) expectation.
+    EXPECT_CALL(
+        mock_store_,
+        DeleteIdentities(ElementsAre(kIdentityName, kTempIdentityName), _))
+        .Times(AnyNumber());
+#endif  // BUILDFLAG(IS_CHROMEOS)
   }
 
   const std::string pref() {
@@ -255,20 +270,138 @@ TEST_F(CertificateProvisioningServiceTest,
 }
 
 // When the policy pref is disabled, the service's creation doesn't trigger
-// certificate provisioning.
+// certificate provisioning. On ChromeOS it delegates a best-effort cleanup to
+// the store, which no-ops when nothing was ever provisioned.
 TEST_F(CertificateProvisioningServiceTest,
-       Created_PolicyDisabled_NothingHappens) {
+       Created_PolicyDisabled_NoProvisioning) {
   auto mock_client = std::make_unique<StrictMock<MockKeyUploadClient>>();
   auto mock_context_delegate =
       std::make_unique<StrictMock<MockContextDelegate>>();
   EXPECT_CALL(*mock_context_delegate, GetPolicyPref())
       .Times(3)
       .WillRepeatedly(Return(pref()));
+#if BUILDFLAG(IS_CHROMEOS)
+  EXPECT_CALL(*mock_context_delegate, GetIdentityName())
+      .WillRepeatedly(Return(kIdentityName));
+  EXPECT_CALL(*mock_context_delegate, GetTemporaryIdentityName())
+      .WillRepeatedly(Return(kTempIdentityName));
+  EXPECT_CALL(*mock_context_delegate, GetLoggingContext())
+      .WillRepeatedly(Return(kLoggingContext));
+  // The cleanup is delegated to the store even with nothing persisted.
+  EXPECT_CALL(
+      mock_store_,
+      DeleteIdentities(ElementsAre(kIdentityName, kTempIdentityName), _))
+      .WillOnce(RunOnceCallback<1>(std::nullopt));
+#endif  // BUILDFLAG(IS_CHROMEOS)
   CreateProvisioningService(std::move(mock_context_delegate),
                             std::move(mock_client));
 
   VerifyDisabled();
 }
+
+#if BUILDFLAG(IS_CHROMEOS)
+// On ChromeOS, if a managed identity was provisioned in a previous session
+// (persisted in prefs) but the policy is now disabled, creating the service
+// deletes the leftover managed identities.
+TEST_F(CertificateProvisioningServiceTest,
+       Created_PolicyDisabled_DeletesLeftoverManagedIdentity) {
+  // Simulate an identity persisted by a previous session.
+  base::DictValue identity_metadata;
+  identity_metadata.Set("spki", "dummy-spki");
+  pref_service_.SetDict(kIdentityName, std::move(identity_metadata));
+
+  EXPECT_CALL(mock_store_,
+              DeleteIdentities(
+                  testing::ElementsAre(kIdentityName, kTempIdentityName), _))
+      .WillOnce(RunOnceCallback<1>(std::nullopt));
+
+  CreateProvisioningService(
+      CreateContextDelegate(),
+      std::make_unique<StrictMock<MockKeyUploadClient>>());
+
+  VerifyDisabled();
+}
+
+// On ChromeOS, a failed provisioning attempt keeps the temporary identity so
+// that a subsequent attempt can resume from it (provisioning is eventually
+// consistent). Nothing is deleted from the store on error.
+TEST_F(CertificateProvisioningServiceTest,
+       ProvisioningError_KeepsTemporaryIdentity) {
+  SetPolicyPref(true);
+  EXPECT_CALL(mock_store_, GetIdentity(kIdentityName, _))
+      .WillOnce(RunOnceCallback<1>(std::nullopt));
+  EXPECT_CALL(mock_store_, CreatePrivateKey(kTempIdentityName, _))
+      .WillOnce(
+          RunOnceCallback<1>(base::unexpected(StoreError::kCreateKeyFailed)));
+  // The failed attempt must not delete the temporary identity.
+  EXPECT_CALL(mock_store_, DeleteIdentities(ElementsAre(kTempIdentityName), _))
+      .Times(0);
+
+  CreateProvisioningService(
+      CreateContextDelegate(),
+      std::make_unique<StrictMock<MockKeyUploadClient>>());
+
+  VerifyIdledWithoutCache();
+}
+
+// On ChromeOS, disabling the policy while a provisioning flow is in-flight must
+// (a) invoke every pending GetManagedIdentity callback with no identity, and
+// (b) cancel the in-flight provisioning so a late store/network callback can
+// neither crash nor resurrect an identity in the store. This guards the
+// provisioning weak-pointer invalidation logic against regressions.
+TEST_F(CertificateProvisioningServiceTest,
+       PolicyDisabledMidProvisioning_CancelsAndRunsPendingCallbacks) {
+  SetPolicyPref(true);
+  EXPECT_CALL(mock_store_, GetIdentity(kIdentityName, _))
+      .WillOnce(RunOnceCallback<1>(std::nullopt));
+
+  // Hold the key-creation callback so provisioning stays in-flight.
+  base::OnceCallback<void(StoreErrorOr<scoped_refptr<PrivateKey>>)>
+      create_key_callback;
+  EXPECT_CALL(mock_store_, CreatePrivateKey(kTempIdentityName, _))
+      .WillOnce(MoveArg<1>(&create_key_callback));
+
+  CreateProvisioningService(
+      CreateContextDelegate(),
+      std::make_unique<StrictMock<MockKeyUploadClient>>());
+  ASSERT_TRUE(service_);
+  ASSERT_TRUE(service_->GetCurrentStatus().is_provisioning);
+
+  // Queue a caller waiting on the in-flight provisioning.
+  base::test::TestFuture<std::optional<ClientIdentity>> pending_future;
+  service_->GetManagedIdentity(pending_future.GetCallback());
+  ASSERT_FALSE(pending_future.IsReady());
+
+  // The store cleanup that follows the disable.
+  EXPECT_CALL(
+      mock_store_,
+      DeleteIdentities(ElementsAre(kIdentityName, kTempIdentityName), _))
+      .WillOnce(RunOnceCallback<1>(std::nullopt));
+
+  // Disable the policy mid-provisioning.
+  SetPolicyPref(false);
+
+  // (a) The pending callback is invoked with no identity, and provisioning is
+  // no longer in-flight.
+  ASSERT_TRUE(pending_future.IsReady());
+  EXPECT_FALSE(pending_future.Get().has_value());
+  EXPECT_FALSE(service_->GetCurrentStatus().is_provisioning);
+
+  // (b) A late key-creation response is dropped: the invalidated weak pointer
+  // means OnPrivateKeyCreated never runs, so no
+  // CreateCertificate/CommitIdentity is issued (the StrictMock upload client
+  // and store would fail on any unexpected call), no identity is resurrected,
+  // and it must not crash.
+  ASSERT_TRUE(create_key_callback);
+  auto mocked_private_key = base::MakeRefCounted<StrictMock<MockPrivateKey>>();
+  std::move(create_key_callback).Run(mocked_private_key);
+
+  EXPECT_FALSE(service_->GetCurrentStatus().identity.has_value());
+  histogram_tester_.ExpectUniqueSample(
+      "Enterprise.ClientCertificate.Profile.Provisioning.Cleanup.Success",
+      /*sample=*/true, /*expected_bucket_count=*/1);
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 // When the service is created, the policy is enabled and the store has an
 // existing identity, the service will simply load it up.

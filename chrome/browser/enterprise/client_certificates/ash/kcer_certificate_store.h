@@ -92,6 +92,20 @@ class KcerCertificateStore : public CertificateStore {
           callback,
       scoped_refptr<PrivateKey> private_key);
 
+  // Checks the browser enterprise client certificate tag of each key returned
+  // by ListKeys; `done_closure` runs once all checks complete.
+  void OnBrowserEnterpriseKeysListedForDeletion(
+      base::OnceClosure done_closure,
+      std::vector<kcer::PublicKey> keys,
+      base::flat_map<kcer::Token, kcer::Error> errors);
+
+  // Removes the key for `spki` if it is tagged as a browser enterprise client
+  // certificate key, then runs `done_closure`.
+  void OnBrowserEnterpriseTagCheckedForDeletion(
+      kcer::PublicKeySpki spki,
+      base::RepeatingClosure done_closure,
+      base::expected<bool, kcer::Error> tag_present);
+
   raw_ptr<PrefService> pref_service_;
   base::WeakPtr<kcer::Kcer> kcer_;
   scoped_refptr<base::SequencedTaskRunner> kcer_task_runner_;
