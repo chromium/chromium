@@ -15,7 +15,6 @@
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/signin/signin_view_controller.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
-#include "chrome/browser/ui/views/send_tab_to_self/manage_account_devices_link_view.h"
 #include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_bubble_controller.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/browser_resources.h"
@@ -41,52 +40,6 @@
 #endif
 
 namespace send_tab_to_self {
-
-SendTabToSelfNoTargetDeviceBubbleView::SendTabToSelfNoTargetDeviceBubbleView(
-    views::BubbleAnchor anchor,
-    content::WebContents* web_contents)
-    : SendTabToSelfBubbleView(anchor, web_contents) {
-  auto* provider = ChromeLayoutProvider::Get();
-  set_margins(
-      gfx::Insets::TLBR(provider->GetDistanceMetric(
-                            views::DISTANCE_DIALOG_CONTENT_MARGIN_TOP_CONTROL),
-                        0, 0, 0));
-
-  SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kVertical));
-
-  InitLayout();
-}
-
-SendTabToSelfNoTargetDeviceBubbleView::
-    ~SendTabToSelfNoTargetDeviceBubbleView() = default;
-
-void SendTabToSelfNoTargetDeviceBubbleView::InitLayout() {
-  auto* provider = ChromeLayoutProvider::Get();
-
-  // Configure body text label.
-  auto* label = AddChildView(std::make_unique<views::Label>(
-      l10n_util::GetStringUTF16(IDS_SEND_TAB_TO_SELF_NO_TARGET_DEVICE_LABEL),
-      views::style::CONTEXT_LABEL, views::style::STYLE_SECONDARY));
-  label->SetMultiLine(true);
-  label->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
-
-  const int horizontal_padding =
-      provider->GetInsetsMetric(views::INSETS_DIALOG).left();
-  label->SetProperty(
-      views::kMarginsKey,
-      gfx::Insets::TLBR(0, horizontal_padding, /*bottom=*/0,
-                        horizontal_padding));
-
-  SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
-  auto* link_view = AddChildView(
-      BuildManageAccountDevicesLinkView(/*show_link=*/false, controller_));
-  link_view->SetProperty(
-      views::kMarginsKey,
-      gfx::Insets::VH(provider->GetDistanceMetric(
-                          views::DISTANCE_CONTROL_VERTICAL_TEXT_PADDING),
-                      0));
-}
 
 SendTabToSelfSignInPromoBubbleView::SendTabToSelfSignInPromoBubbleView(
     views::BubbleAnchor anchor,
@@ -207,9 +160,6 @@ void SendTabToSelfSignInPromoBubbleView::HandleSignInButtonClicked() {
   NOTREACHED() << "The promo bubble shouldn't show if dice-support is disabled";
 #endif
 }
-
-BEGIN_METADATA(SendTabToSelfNoTargetDeviceBubbleView)
-END_METADATA
 
 BEGIN_METADATA(SendTabToSelfSignInPromoBubbleView)
 END_METADATA

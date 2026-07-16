@@ -111,14 +111,6 @@ class SendTabToSelfPromoBubbleViewTest : public ChromeViewsTestBase {
     bubble_ = bubble;
   }
 
-  void CreateNoTargetDeviceBubble() {
-    auto* bubble = new SendTabToSelfNoTargetDeviceBubbleView(
-        views::BubbleAnchor(anchor_widget_->GetContentsView()),
-        web_contents_.get());
-    bubble_widget_ = views::BubbleDialogDelegateView::CreateBubble(bubble);
-    bubble_ = bubble;
-  }
-
   void TearDown() override {
     bubble_ = nullptr;
     views::Widget* widget = bubble_widget_;
@@ -214,27 +206,6 @@ TEST_F(SendTabToSelfPromoBubbleViewBasicTest, LoadsBasicDesign) {
   EXPECT_NE(nullptr, FindLabelWithText(l10n_util::GetStringUTF16(
                          IDS_SEND_TAB_TO_SELF_SIGN_IN_PROMO_LABEL)));
 
-  // Frame view should not have a header view (legacy design has no header).
-  EXPECT_EQ(nullptr, bubble_->GetBubbleFrameView()->GetHeaderViewForTesting());
-}
-
-// Verifies that the "no target devices" layout is loaded when the user is
-// signed in but has no other active devices.
-// This test is independent of the enhanced UI feature flag.
-TEST_F(SendTabToSelfPromoBubbleViewTest, LoadsDeviceActivityDesign) {
-  identity_test_env()->MakePrimaryAccountAvailable(
-      "user@host.com", signin::ConsentLevel::kSignin);
-
-  CreateNoTargetDeviceBubble();
-
-  // Ok button should not be visible.
-  EXPECT_FALSE(bubble_->GetOkButton());
-
-  // Verify label contains the correct "no devices" notice.
-  EXPECT_NE(nullptr, FindLabelWithText(l10n_util::GetStringUTF16(
-                         IDS_SEND_TAB_TO_SELF_NO_TARGET_DEVICE_LABEL)));
-
-  // Frame view should not have a header view.
   EXPECT_EQ(nullptr, bubble_->GetBubbleFrameView()->GetHeaderViewForTesting());
 }
 
