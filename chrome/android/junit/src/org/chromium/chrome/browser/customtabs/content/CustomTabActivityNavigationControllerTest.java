@@ -22,6 +22,7 @@ import static org.mockito.Mockito.when;
 
 import android.content.Context;
 import android.content.ContextWrapper;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.os.Build;
@@ -248,7 +249,10 @@ public class CustomTabActivityNavigationControllerTest {
         ExternalNavigationDelegateImpl.setWillChromeHandleIntentHookForTesting(intent -> true);
         mNavigationController.openCurrentUrlInBrowser();
         verify(env.activity, never()).startActivity(any());
-        verify(mTabController).detachAndStartReparenting(any(), any(), any());
+        ArgumentCaptor<Intent> intentCaptor = ArgumentCaptor.forClass(Intent.class);
+        verify(mTabController).detachAndStartReparenting(intentCaptor.capture(), any(), any());
+        Intent intent = intentCaptor.getValue();
+        assertTrue(intent.hasCategory(Intent.CATEGORY_BROWSABLE));
     }
 
     @Test
@@ -284,7 +288,10 @@ public class CustomTabActivityNavigationControllerTest {
         ExternalNavigationDelegateImpl.setWillChromeHandleIntentHookForTesting(intent -> false);
         mNavigationController.openCurrentUrlInBrowser();
         verify(mTabController, never()).detachAndStartReparenting(any(), any(), any());
-        verify(env.activity).startActivity(any(), any());
+        ArgumentCaptor<Intent> intentCaptor = ArgumentCaptor.forClass(Intent.class);
+        verify(env.activity).startActivity(intentCaptor.capture(), any());
+        Intent intent = intentCaptor.getValue();
+        assertTrue(intent.hasCategory(Intent.CATEGORY_BROWSABLE));
         verify(mFinishHandler).onFinish(FinishReason.OPEN_IN_BROWSER, true);
     }
 
