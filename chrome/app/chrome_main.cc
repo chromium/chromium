@@ -18,7 +18,9 @@
 #include "base/sampling_heap_profiler/poisson_allocation_sampler.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#if !defined(BUILDING_CHROME_RENDERER)
 #include "chrome/app/chrome_main_delegate.h"
+#endif
 #include "chrome/app/startup_timestamps.h"
 #include "chrome/browser/headless/headless_mode_init.h"
 #include "chrome/common/buildflags.h"
@@ -56,6 +58,41 @@
 
 #define DLLEXPORT __declspec(dllexport)
 #endif  // BUILDFLAG(IS_WIN)
+
+// TODO(crbug.com/534570563): Implement separate renderer binary entry point.
+// Currently this is a fake implementation to set up the build workflow.
+#if defined(BUILDING_CHROME_RENDERER)
+
+extern "C" {
+
+#if BUILDFLAG(IS_WIN)
+#include <windows.h>
+#define DLLEXPORT __declspec(dllexport)
+DLLEXPORT int __cdecl ChromeRendererMain(HINSTANCE instance,
+                                         void* sandbox_info,
+                                         int64_t exe_entry_point_ticks,
+                                         int64_t preread_begin_ticks,
+                                         int64_t preread_end_ticks) {
+  return 0;
+}
+#elif BUILDFLAG(IS_POSIX)
+[[gnu::visibility("default")]] int ChromeRendererMain(int argc,
+                                                      const char** argv) {
+  return 0;
+}
+#endif
+
+}  // extern "C"
+
+#if BUILDFLAG(IS_POSIX)
+// TODO(crbug.com/534570563): Do not define `main` once this becomes a
+// shared_library on macOS.
+int main(int argc, const char** argv) {
+  return ChromeRendererMain(argc, argv);
+}
+#endif
+
+#else  // defined(BUILDING_CHROME_RENDERER)
 
 namespace {
 
@@ -225,3 +262,5 @@ int ChromeMain(int argc, const char** argv) {
   }
   return rv;
 }
+
+#endif  // defined(BUILDING_CHROME_RENDERER)
