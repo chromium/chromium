@@ -8,6 +8,7 @@
 #include <cmath>
 #include <utility>
 
+#include "base/check_deref.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/span.h"
 #include "base/files/file_enumerator.h"
@@ -26,6 +27,7 @@
 #include "chrome/browser/ash/app_list/search/types.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/file_manager/trash_common_util.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 
 namespace app_list {
@@ -186,11 +188,14 @@ void FileSearchProvider::Start(const std::u16string& query) {
   }
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_BLOCKING},
-      base::BindOnce(SearchFilesByPattern, root_path_, query, query_start_time_,
-                     (file_manager::trash::IsTrashEnabledForProfile(profile_)
-                          ? trash_paths_
-                          : std::vector<base::FilePath>()),
-                     file_type_, allowed_extensions_),
+      base::BindOnce(
+          SearchFilesByPattern, root_path_, query, query_start_time_,
+          // TODO(crbug.com/404129453): Avoid using g_browser_process.
+          (file_manager::trash::IsTrashEnabledForProfile(
+               CHECK_DEREF(g_browser_process->local_state()), profile_)
+               ? trash_paths_
+               : std::vector<base::FilePath>()),
+          file_type_, allowed_extensions_),
       base::BindOnce(&FileSearchProvider::OnSearchComplete,
                      weak_factory_.GetWeakPtr()));
 }

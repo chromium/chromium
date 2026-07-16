@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/file_manager/trash_auto_cleanup.h"
 
 #include "base/barrier_callback.h"
+#include "base/check_deref.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "base/metrics/histogram_functions.h"
@@ -12,6 +13,7 @@
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/file_manager/trash_common_util.h"
+#include "chrome/browser/browser_process.h"
 
 namespace file_manager::trash {
 
@@ -110,8 +112,11 @@ TrashAutoCleanup::~TrashAutoCleanup() = default;
 
 std::unique_ptr<TrashAutoCleanup> TrashAutoCleanup::Create(Profile* profile) {
   // Only run the auto cleanup process for regular profiles on ChromeOS.
-  if (!file_manager::trash::IsTrashEnabledForProfile(profile) || !profile ||
-      !profile->IsRegularProfile() || !base::SysInfo::IsRunningOnChromeOS()) {
+  // TODO(crbug.com/404132053): Avoid using g_browser_process.
+  if (!file_manager::trash::IsTrashEnabledForProfile(
+          CHECK_DEREF(g_browser_process->local_state()), profile) ||
+      !profile || !profile->IsRegularProfile() ||
+      !base::SysInfo::IsRunningOnChromeOS()) {
     return nullptr;
   }
 
@@ -129,7 +134,9 @@ void TrashAutoCleanup::Init() {
 
 void TrashAutoCleanup::StartCleanup() {
   // "TrashEnabled" can be dynamically refreshed, make sure that it's enabled.
-  if (!file_manager::trash::IsTrashEnabledForProfile(profile_)) {
+  // TODO(crbug.com/404132053): Avoid using g_browser_process.
+  if (!file_manager::trash::IsTrashEnabledForProfile(
+          CHECK_DEREF(g_browser_process->local_state()), profile_)) {
     return;
   }
 

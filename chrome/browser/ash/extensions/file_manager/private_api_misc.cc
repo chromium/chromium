@@ -236,10 +236,9 @@ std::string Redact(const base::FilePath& path) {
 // Google Drive and OneDrive. If SkyVault is misconfigured, e.g. local files are
 // disabled but the download policy isn't set correctly defaults to MyFiles.
 api::file_manager_private::DefaultLocation GetDefaultLocation(
+    const PrefService& local_state,
     const std::string& pref) {
-  // TODO(crbug.com/404131876): Avoid using g_browser_process.
-  if (policy::local_user_files::LocalUserFilesAllowed(
-          CHECK_DEREF(g_browser_process->local_state()))) {
+  if (policy::local_user_files::LocalUserFilesAllowed(local_state)) {
     // If local files are allowed, always default to MyFiles.
     return api::file_manager_private::DefaultLocation::kMyFiles;
   }
@@ -261,11 +260,9 @@ api::file_manager_private::DefaultLocation GetDefaultLocation(
 // api::file_manager_private::MigrationDestination. If SkyVault is
 // misconfigured, e.g. local files are enabled returns kNotSpecified, regardless
 // of the policy value.
-api::file_manager_private::MigrationDestination
-GetSkyVaultMigrationDestination() {
-  // TODO(crbug.com/404131876): Avoid using g_browser_process.
-  if (policy::local_user_files::LocalUserFilesAllowed(
-          CHECK_DEREF(g_browser_process->local_state()))) {
+api::file_manager_private::MigrationDestination GetSkyVaultMigrationDestination(
+    const PrefService& local_state) {
+  if (policy::local_user_files::LocalUserFilesAllowed(local_state)) {
     // If local files are allowed, just return kNotSpecified.
     return api::file_manager_private::MigrationDestination::kNotSpecified;
   }
@@ -286,10 +283,10 @@ GetSkyVaultMigrationDestination() {
 
 // Returns the SkyVault migration start time as a formatted string if the
 // policies are set to disable local storage and delete existing local files.
-std::optional<std::string> GetSkyVaultMigrationStartTime(Profile* profile) {
-  // TODO(crbug.com/404131876): Avoid using g_browser_process.
-  if (policy::local_user_files::LocalUserFilesAllowed(
-          CHECK_DEREF(g_browser_process->local_state()))) {
+std::optional<std::string> GetSkyVaultMigrationStartTime(
+    const PrefService& local_state,
+    Profile* profile) {
+  if (policy::local_user_files::LocalUserFilesAllowed(local_state)) {
     return std::nullopt;
   }
 
@@ -314,6 +311,10 @@ std::optional<std::string> GetSkyVaultMigrationStartTime(Profile* profile) {
 
 ExtensionFunction::ResponseAction
 FileManagerPrivateGetPreferencesFunction::Run() {
+  // TODO(crbug.com/404131876): Avoid using g_browser_process.
+  const PrefService& local_state =
+      CHECK_DEREF(g_browser_process->local_state());
+
   fmp::Preferences result;
   Profile* const profile = Profile::FromBrowserContext(browser_context());
   DCHECK(profile);
@@ -336,7 +337,8 @@ FileManagerPrivateGetPreferencesFunction::Run() {
   result.arc_enabled = prefs->GetBoolean(arc::prefs::kArcEnabled);
   result.arc_removable_media_access_enabled =
       prefs->GetBoolean(arc::prefs::kArcHasAccessToRemovableMedia);
-  result.trash_enabled = file_manager::trash::IsTrashEnabledForProfile(profile);
+  result.trash_enabled =
+      file_manager::trash::IsTrashEnabledForProfile(local_state, profile);
   std::vector<std::string> folder_shortcuts;
   const auto& value_list = prefs->GetList(ash::prefs::kFilesAppFolderShortcuts);
   for (const base::Value& value : value_list) {
@@ -349,15 +351,14 @@ FileManagerPrivateGetPreferencesFunction::Run() {
   result.office_file_moved_google_drive =
       prefs->GetTime(ash::prefs::kOfficeFileMovedToGoogleDrive)
           .InMillisecondsFSinceUnixEpoch();
-  // TODO(crbug.com/404131876): Avoid using g_browser_process.
   result.local_user_files_allowed =
-      policy::local_user_files::LocalUserFilesAllowed(
-          CHECK_DEREF(g_browser_process->local_state()));
+      policy::local_user_files::LocalUserFilesAllowed(local_state);
   result.default_location = GetDefaultLocation(
-      prefs->GetString(ash::prefs::kFilesAppDefaultLocation));
-  result.sky_vault_migration_destination = GetSkyVaultMigrationDestination();
+      local_state, prefs->GetString(ash::prefs::kFilesAppDefaultLocation));
+  result.sky_vault_migration_destination =
+      GetSkyVaultMigrationDestination(local_state);
   result.sky_vault_migration_start_time =
-      GetSkyVaultMigrationStartTime(profile);
+      GetSkyVaultMigrationStartTime(local_state, profile);
 
   return RespondNow(WithArguments(result.ToValue()));
 }

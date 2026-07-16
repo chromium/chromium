@@ -6,14 +6,12 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
-#include "base/check_deref.h"
 #include "chrome/browser/ash/crostini/crostini_manager.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/drive/drive_integration_service_factory.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
 #include "chrome/browser/ash/policy/skyvault/policy_utils.h"
-#include "chrome/browser/browser_process.h"
 #include "components/prefs/pref_service.h"
 
 namespace file_manager::trash {
@@ -44,14 +42,13 @@ TrashLocation::~TrashLocation() = default;
 TrashLocation::TrashLocation(TrashLocation&& other) = default;
 TrashLocation& TrashLocation::operator=(TrashLocation&& other) = default;
 
-bool IsTrashEnabledForProfile(Profile* profile) {
+bool IsTrashEnabledForProfile(const PrefService& local_state,
+                              Profile* profile) {
   if (!profile || !profile->GetPrefs()) {
     return false;
   }
-  // TODO(crbug.com/404132053): Avoid using g_browser_process.
   return profile->GetPrefs()->GetBoolean(ash::prefs::kFilesAppTrashEnabled) &&
-         policy::local_user_files::LocalUserFilesAllowed(
-             CHECK_DEREF(g_browser_process->local_state()));
+         policy::local_user_files::LocalUserFilesAllowed(local_state);
 }
 
 const base::FilePath GenerateTrashPath(const base::FilePath& trash_path,

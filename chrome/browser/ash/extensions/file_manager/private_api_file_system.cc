@@ -20,6 +20,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "base/barrier_callback.h"
+#include "base/check_deref.h"
 #include "base/files/file.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
@@ -1323,7 +1324,9 @@ void FileManagerPrivateInternalSearchFilesFunction::RunFileSearchByName(
   // generate all trash paths that are to be excluded when searching for
   // matching files.
   std::vector<base::FilePath> excluded_paths;
-  if (file_manager::trash::IsTrashEnabledForProfile(profile)) {
+  // TODO(crbug.com/404131876): Avoid using g_browser_process.
+  if (file_manager::trash::IsTrashEnabledForProfile(
+          CHECK_DEREF(g_browser_process->local_state()), profile)) {
     auto enabled_trash_locations =
         file_manager::trash::GenerateEnabledTrashLocationsForProfile(profile);
     for (const auto& it : enabled_trash_locations) {

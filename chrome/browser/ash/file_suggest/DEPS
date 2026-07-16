@@ -26,3 +26,9 @@ include_rules = [
   "+chrome/browser/ui/browser.h",
   "+chrome/test/base",
 ]
+
+specific_include_rules = {
+  "local_file_suggestion_provider\\.cc": [
+    "+chrome/browser/browser_process.h",
+  ],
+}

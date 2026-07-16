@@ -8,6 +8,7 @@
 #include <optional>
 #include <vector>
 
+#include "base/check_deref.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -21,6 +22,7 @@
 #include "chrome/browser/ash/file_manager/trash_common_util.h"
 #include "chrome/browser/ash/file_suggest/file_suggest_util.h"
 #include "chrome/browser/ash/file_suggest/file_suggestion_provider.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 
 namespace ash {
@@ -148,11 +150,13 @@ void LocalFileSuggestionProvider::GetSuggestFileData(
 
   task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
-      base::BindOnce(&ValidateFiles, files_ranker_->GetAll(),
-                     max_last_modified_time_,
-                     (file_manager::trash::IsTrashEnabledForProfile(profile_)
-                          ? trash_paths_
-                          : std::vector<base::FilePath>())),
+      base::BindOnce(
+          &ValidateFiles, files_ranker_->GetAll(), max_last_modified_time_,
+          // TODO(crbug.com/404131915): Avoid using g_browser_process.
+          (file_manager::trash::IsTrashEnabledForProfile(
+               CHECK_DEREF(g_browser_process->local_state()), profile_)
+               ? trash_paths_
+               : std::vector<base::FilePath>())),
       base::BindOnce(&LocalFileSuggestionProvider::OnValidationComplete,
                      weak_factory_.GetWeakPtr()));
 }

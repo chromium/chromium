@@ -71,4 +71,10 @@ specific_include_rules = {
     "+chrome/browser/browser_process.h",
     "+chrome/browser/ui/browser_window/public/global_browser_collection.h",
   ],
+  "file_search_provider\\.cc": [
+    "+chrome/browser/browser_process.h",
+  ],
+  "file_util\\.cc": [
+    "+chrome/browser/browser_process.h",
+  ],
 }

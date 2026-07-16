@@ -10,6 +10,7 @@
 #include "base/files/file_path.h"
 #include "storage/browser/file_system/file_system_url.h"
 
+class PrefService;
 class Profile;
 
 namespace file_manager::trash {
@@ -84,10 +85,10 @@ struct TrashLocation {
 };
 
 // Verify whether trash is enabled by feature flag and whether the enterprise
-// policies are not disabling the feature. The policies have dynamic refresh, so
-// so this should be checked every time the operation this is guarding is
-// executed.
-bool IsTrashEnabledForProfile(Profile* profile);
+// policies in `local_state` are not disabling the feature. The policies have
+// dynamic refresh, so this should be checked every time the operation this is
+// guarding is executed.
+bool IsTrashEnabledForProfile(const PrefService& local_state, Profile* profile);
 
 // Helper to create a destination path for a file in one of the .Trash folders.
 const base::FilePath GenerateTrashPath(const base::FilePath& trash_path,

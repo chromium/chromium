@@ -20,3 +20,9 @@ include_rules = [
   "+chrome/browser/profiles",
   "+chrome/browser/ui/browser.h",
 ]
+
+specific_include_rules = {
+  "wallpaper_enumerator\\.cc": [
+    "+chrome/browser/browser_process.h",
+  ],
+}
