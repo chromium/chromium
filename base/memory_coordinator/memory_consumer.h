@@ -139,12 +139,14 @@ class BASE_EXPORT MemoryConsumer : public CheckedObserver {
 
 // A PassiveMemoryConsumer is a MemoryConsumer that does not react to memory
 // pressure. It is intended for consumers that only need to query the current
-// memory limit.
+// memory limit. Passive consumers can optionally override
+// OnUpdateMemoryLimit(), but are not allowed to override and use
+// OnReleaseMemory().
 class BASE_EXPORT PassiveMemoryConsumer : public MemoryConsumer {
  public:
   // MemoryConsumer:
   void OnReleaseMemory() final {}
-  void OnUpdateMemoryLimit() final {}
+  void OnUpdateMemoryLimit() override {}
   bool IsPassive() const final;
 };
 
