@@ -115,6 +115,14 @@
   return ios_web_view::IsAutofillVCNUsageEnabled(_prefService);
 }
 
+- (void)setAutofillSafeLifecycleEnabled:(BOOL)enabled {
+  ios_web_view::SetAutofillSafeLifecycleEnabled(_prefService, enabled);
+}
+
+- (BOOL)isAutofillSafeLifecycleEnabled {
+  return ios_web_view::IsAutofillSafeLifecycleEnabled(_prefService);
+}
+
 - (void)setTriggerNonFatalCheck:(BOOL)enabled {
   // TODO(crbug.com/503005390): Remove after release integration testing in
   // stable.

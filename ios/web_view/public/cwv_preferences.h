@@ -67,6 +67,11 @@ CWV_EXPORT
 @property(nonatomic, assign, getter=isAutofillVCNUsageEnabled)
     BOOL autofillVCNUsageEnabled;
 
+// Controls whether or not CWVAutofillController is hardened against WebState
+// destruction.
+@property(nonatomic, assign, getter=isAutofillSafeLifecycleEnabled)
+    BOOL autofillSafeLifecycleEnabled;
+
 // Whether or not to trigger a non-fatal check during initialization.
 // This is for integration testing purposes of non-fatal checks on clients.
 // Defaults to NO. In-memory only i.e. doesn't persist through startups.

@@ -60,6 +60,8 @@ class CWVPreferencesTest : public PlatformTest {
     pref_registry->RegisterBooleanPref(
         ios_web_view::kCWVPasswordAffiliationEnabled, false);
     pref_registry->RegisterBooleanPref(
+        ios_web_view::kCWVAutofillSafeLifecycleEnabled, false);
+    pref_registry->RegisterBooleanPref(
         ios_web_view::kCWVAutofillVCNUsageEnabled, false);
 
     base::FilePath temp_dir_path;
@@ -149,6 +151,16 @@ TEST_F(CWVPreferencesTest, PasswordAffiliationEnabled) {
   EXPECT_FALSE(preferences.passwordAffiliationEnabled);
   preferences.passwordAffiliationEnabled = YES;
   EXPECT_TRUE(preferences.passwordAffiliationEnabled);
+}
+
+// Tests CWVPreferences `autofillSafeLifecycleEnabled`.
+TEST_F(CWVPreferencesTest, AutofillSafeLifecycleEnabled) {
+  std::unique_ptr<PrefService> pref_service = CreateTestPrefService();
+  CWVPreferences* preferences =
+      [[CWVPreferences alloc] initWithPrefService:pref_service.get()];
+  EXPECT_FALSE(preferences.autofillSafeLifecycleEnabled);
+  preferences.autofillSafeLifecycleEnabled = YES;
+  EXPECT_TRUE(preferences.autofillSafeLifecycleEnabled);
 }
 
 // Tests safe browsing setting.

@@ -51,6 +51,31 @@ class WebState;
                    passwordManagerClient
               passwordController:(SharedPasswordController*)passwordController;
 
+- (instancetype)
+         initWithWebState:(web::WebState*)webState
+    autofillClientForTest:(std::unique_ptr<autofill::WebViewAutofillClientIOS>)
+                              autofillClientForTest
+            autofillAgent:(AutofillAgent*)autofillAgent
+          passwordManager:(std::unique_ptr<password_manager::PasswordManager>)
+                              passwordManager
+    passwordManagerClient:
+        (std::unique_ptr<ios_web_view::WebViewPasswordManagerClient>)
+            passwordManagerClient
+       passwordController:(SharedPasswordController*)passwordController;
+
+- (instancetype)
+         initWithWebState:(web::WebState*)webState
+              prefService:(PrefService*)prefService
+    autofillClientForTest:(std::unique_ptr<autofill::WebViewAutofillClientIOS>)
+                              autofillClientForTest
+            autofillAgent:(AutofillAgent*)autofillAgent
+          passwordManager:(std::unique_ptr<password_manager::PasswordManager>)
+                              passwordManager
+    passwordManagerClient:
+        (std::unique_ptr<ios_web_view::WebViewPasswordManagerClient>)
+            passwordManagerClient
+       passwordController:(SharedPasswordController*)passwordController;
+
 @property(nonatomic, readonly)
     autofill::WebViewAutofillClientIOS* autofillClient;
 
