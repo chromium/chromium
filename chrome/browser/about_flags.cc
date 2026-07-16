@@ -673,6 +673,13 @@ const FeatureEntry::Choice KWebXrHandAnonymizationChoices[] = {
 #endif  // ENABLE_VR
 
 #if BUILDFLAG(IS_ANDROID)
+const FeatureEntry::FeatureParam kAndroidWindowOcclusionOptimizations[] = {
+    {"occlusion_optimizations", "true"}};
+
+const FeatureEntry::FeatureVariation kAndroidWindowOcclusionVariations[] = {
+    {"with optimizations", kAndroidWindowOcclusionOptimizations, nullptr},
+};
+
 const FeatureEntry::FeatureParam kCCTAdaptiveButton_CPA[] = {
     {"default_variant", "15"},  // 15 == Open In Browser
     {"contextual_only", "true"}};
@@ -11207,7 +11214,9 @@ const FeatureEntry kFeatureEntries[] = {
     {"enable-android-window-occlusion",
      flag_descriptions::kAndroidWindowOcclusionName,
      flag_descriptions::kAndroidWindowOcclusionDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(ui::kAndroidWindowOcclusion)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(ui::kAndroidWindowOcclusion,
+                                    kAndroidWindowOcclusionVariations,
+                                    "AndroidWindowOcclusion")},
 #endif  // BUILDFLAG(IS_ANDROID)
 
     {"iph-autofill-credit-card-benefit-feature",
