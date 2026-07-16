@@ -102,12 +102,26 @@ public class KeyboardFocusRowManagerTest {
     @SmallTest
     @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
     @Feature("KeyboardShortcuts")
+    public void testSwitchKeyboardFocusRow_onOmnibox() {
+        // Put something in the content view so we can focus on it.
+        openNewTabAndFocusContent();
+
+        // Switch the first time.
+        switchRow();
+        assertOnOmnibox();
+    }
+
+    @Test
+    @SmallTest
+    @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
+    @Feature("KeyboardShortcuts")
     public void testSwitchKeyboardFocusRow_withTabletTabStrip() {
         // Put something in the content view so we can focus on it.
         openNewTabAndFocusContent();
+
         // Switch the first time.
         switchRow();
-        assertOnToolbar();
+        assertOnOmnibox();
 
         // Switch a 2nd time.
         switchRow();
@@ -128,7 +142,7 @@ public class KeyboardFocusRowManagerTest {
 
         // Switch the first time.
         switchRow();
-        assertOnToolbar();
+        assertOnOmnibox();
 
         // Switch a 2nd time.
         switchRow();
@@ -147,7 +161,7 @@ public class KeyboardFocusRowManagerTest {
 
         // Switch the first time.
         switchRow();
-        assertOnToolbar();
+        assertOnOmnibox();
 
         // Switch a 2nd time.
         switchRow();
@@ -179,7 +193,7 @@ public class KeyboardFocusRowManagerTest {
 
         // Switch the first time.
         switchRow();
-        assertOnToolbar();
+        assertOnOmnibox();
 
         // Switch a 2nd time.
         switchRow();
@@ -217,7 +231,7 @@ public class KeyboardFocusRowManagerTest {
 
         // Switch the first time.
         switchRow();
-        assertOnToolbar();
+        assertOnOmnibox();
 
         // Switch a 2nd time.
         switchRow();
@@ -256,7 +270,7 @@ public class KeyboardFocusRowManagerTest {
 
         // Switch the first time.
         switchRow();
-        assertOnToolbar();
+        assertOnOmnibox();
 
         // Switch a 2nd time.
         switchRow();
@@ -314,7 +328,7 @@ public class KeyboardFocusRowManagerTest {
 
         // Switch the first time.
         switchRow();
-        assertOnToolbar();
+        assertOnOmnibox();
 
         // Switch a 2nd time.
         switchRow();
@@ -412,13 +426,13 @@ public class KeyboardFocusRowManagerTest {
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
     }
 
-    private void assertOnToolbar() {
+    private void assertOnOmnibox() {
         ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         assertEquals(
-                                "Expected focus to be on toolbar after invocation of keyboard"
+                                "Expected focus to be on omnibox after invocation of keyboard"
                                         + " focus row switch",
-                                KeyboardFocusRow.TOOLBAR,
+                                KeyboardFocusRow.OMNIBOX,
                                 mKeyboardFocusRowManager.getKeyboardFocusRowForTesting()));
     }
 

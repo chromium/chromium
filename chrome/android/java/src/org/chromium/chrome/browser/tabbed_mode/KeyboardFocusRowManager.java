@@ -21,6 +21,8 @@ import org.chromium.chrome.browser.ui.side_panel.AndroidSidePanelEnabledFn;
 import org.chromium.chrome.browser.ui.side_panel_container.SidePanelContainerCoordinator;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.SideUiId;
 import org.chromium.chrome.browser.ui.side_ui.SideUiStateProvider;
+import org.chromium.components.omnibox.AutocompleteInput;
+import org.chromium.components.omnibox.OmniboxFocusReason;
 import org.chromium.ui.accessibility.KeyboardFocusRow;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
@@ -45,10 +47,11 @@ import java.util.function.Supplier;
     private final Supplier<@Nullable StripLayoutHelperManager> mStripLayoutHelperManagerSupplier;
     private final TabObscuringHandler mTabObscuringHandler;
     private final Supplier<@Nullable ToolbarManager> mToolbarManagerSupplier;
+    private final Supplier<Boolean> mUrlBarVisibleSupplier;
 
     /**
      * Constructs a {@link KeyboardFocusRowManager}, which controls the keyboard focus location for
-     * tab strip, toolbar, bookmarks bar on Chrome for Android.
+     * tab strip, omnibox, bookmarks bar on Chrome for Android.
      *
      * <p>See {@link org.chromium.chrome.browser.KeyboardShortcuts.KeyboardShortcutsSemanticMeaning}
      *
@@ -69,9 +72,11 @@ import java.util.function.Supplier;
      *     null, if the tab strip is not visible) that will be used to get/set keyboard focus on the
      *     tab strip.
      * @param tabObscuringHandler The {@link TabObscuringHandler} that will be used to determine if
-     *     the toolbar is obscured (in which case the keyboard shortcuts should not do anything).
+     *     the tab is obscured (in which case the keyboard shortcuts should not do anything).
      * @param toolbarManagerSupplier Supplies the {@link ToolbarManager} (or null, if the toolbar is
-     *     not visible) that will be used to get/set keyboard focus on the toolbar.
+     *     not visible) that will be used to get/set keyboard focus on the omnibox.
+     * @param urlBarVisibleSupplier Supplies a boolean indicating whether the URL bar is currently
+     *     visible, used to determine if it can receive keyboard focus.
      */
     KeyboardFocusRowManager(
             Supplier<@Nullable BookmarkBarCoordinator> bookmarkBarCoordinatorSupplier,
@@ -81,7 +86,8 @@ import java.util.function.Supplier;
             OneshotSupplierImpl<SideUiStateProvider> sideUiStateProviderSupplier,
             Supplier<@Nullable StripLayoutHelperManager> stripLayoutHelperManagerSupplier,
             TabObscuringHandler tabObscuringHandler,
-            Supplier<@Nullable ToolbarManager> toolbarManagerSupplier) {
+            Supplier<@Nullable ToolbarManager> toolbarManagerSupplier,
+            Supplier<Boolean> urlBarVisibleSupplier) {
         mBookmarkBarCoordinatorSupplier = bookmarkBarCoordinatorSupplier;
         mCompositorViewHolderSupplier = compositorViewHolderSupplier;
         mModalDialogManagerSupplier = modalDialogManagerSupplier;
@@ -90,6 +96,7 @@ import java.util.function.Supplier;
         mStripLayoutHelperManagerSupplier = stripLayoutHelperManagerSupplier;
         mTabObscuringHandler = tabObscuringHandler;
         mToolbarManagerSupplier = toolbarManagerSupplier;
+        mUrlBarVisibleSupplier = urlBarVisibleSupplier;
     }
 
     /** Called when the user switches which row of the top controls should have keyboard focus. */
@@ -105,6 +112,12 @@ import java.util.function.Supplier;
 
         @KeyboardFocusRow int oldKeyboardFocusRow = getKeyboardFocusRow();
         @KeyboardFocusRow int newKeyboardFocusRow = getNewKeyboardFocusRow(oldKeyboardFocusRow);
+        if (oldKeyboardFocusRow == KeyboardFocusRow.OMNIBOX) {
+            var toolbarManager = mToolbarManagerSupplier.get();
+            if (toolbarManager != null) {
+                toolbarManager.endFuseboxInput();
+            }
+        }
         switch (newKeyboardFocusRow) {
             case KeyboardFocusRow.NONE -> {
                 var compositorViewHolder = mCompositorViewHolderSupplier.get();
@@ -112,15 +125,18 @@ import java.util.function.Supplier;
                     compositorViewHolder.setFocusOnFirstContentViewItem();
                 }
             }
+            case KeyboardFocusRow.OMNIBOX -> {
+                var toolbarManager = mToolbarManagerSupplier.get();
+                if (toolbarManager != null) {
+                    toolbarManager.beginFuseboxInput(
+                            new AutocompleteInput(OmniboxFocusReason.MENU_OR_KEYBOARD_ACTION));
+                }
+            }
             case KeyboardFocusRow.TAB_STRIP -> {
                 var stripLayoutHelperManager = mStripLayoutHelperManagerSupplier.get();
                 if (stripLayoutHelperManager != null) {
                     stripLayoutHelperManager.requestKeyboardFocus();
                 }
-            }
-            case KeyboardFocusRow.TOOLBAR -> {
-                var toolbarManager = mToolbarManagerSupplier.get();
-                if (toolbarManager != null) toolbarManager.requestFocus();
             }
             case KeyboardFocusRow.BOOKMARKS_BAR -> {
                 var bookmarkBarCoordinator = mBookmarkBarCoordinatorSupplier.get();
@@ -140,14 +156,14 @@ import java.util.function.Supplier;
     }
 
     private @KeyboardFocusRow int getKeyboardFocusRow() {
+        var toolbarManager = mToolbarManagerSupplier.get();
+        if (toolbarManager != null && toolbarManager.isUrlBarFocused()) {
+            return KeyboardFocusRow.OMNIBOX;
+        }
+
         var stripLayoutHelperManager = mStripLayoutHelperManagerSupplier.get();
         if (stripLayoutHelperManager != null && stripLayoutHelperManager.containsKeyboardFocus()) {
             return KeyboardFocusRow.TAB_STRIP;
-        }
-
-        var toolbarManager = mToolbarManagerSupplier.get();
-        if (toolbarManager != null && toolbarManager.containsKeyboardFocus()) {
-            return KeyboardFocusRow.TOOLBAR;
         }
 
         var bookmarkBarCoordinator = mBookmarkBarCoordinatorSupplier.get();
@@ -175,9 +191,16 @@ import java.util.function.Supplier;
      */
     private @KeyboardFocusRow int getNewKeyboardFocusRow(
             @KeyboardFocusRow int oldKeyboardFocusRow) {
-        // NONE and TOOLBAR are always options.
-        List<Integer> keyboardFocusRows =
-                new ArrayList<>(List.of(KeyboardFocusRow.NONE, KeyboardFocusRow.TOOLBAR));
+        // NONE is always an option.
+        List<Integer> keyboardFocusRows = new ArrayList<>(List.of(KeyboardFocusRow.NONE));
+
+        var toolbarManager = mToolbarManagerSupplier.get();
+        if (toolbarManager != null) {
+            boolean isUrlBarVisible = mUrlBarVisibleSupplier.get();
+            if (isUrlBarVisible) {
+                keyboardFocusRows.add(KeyboardFocusRow.OMNIBOX);
+            }
+        }
 
         // The next item in the focus cycle order is TAB_STRIP, if it is present.
         var stripLayoutHelperManager = mStripLayoutHelperManagerSupplier.get();
