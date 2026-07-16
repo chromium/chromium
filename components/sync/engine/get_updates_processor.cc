@@ -257,8 +257,8 @@ SyncerError GetUpdatesProcessor::ExecuteDownloadUpdates(
   }
 
   if (result.type() != SyncerError::Type::kSuccess) {
-    GetUpdatesResponseEvent response_event(base::Time::Now(), update_response,
-                                           result);
+    GetUpdatesResponseEvent response_event(base::Time::Now(),
+                                           std::move(update_response), result);
     cycle->SendProtocolEvent(response_event);
 
     // Sync authorization expires every 60 mintues, so SYNC_AUTH_ERROR will
@@ -293,8 +293,8 @@ SyncerError GetUpdatesProcessor::ExecuteDownloadUpdates(
   SyncerError process_result =
       ProcessResponse(update_response.get_updates(), *request_types, status);
 
-  GetUpdatesResponseEvent response_event(base::Time::Now(), update_response,
-                                         process_result);
+  GetUpdatesResponseEvent response_event(
+      base::Time::Now(), std::move(update_response), process_result);
   cycle->SendProtocolEvent(response_event);
 
   DVLOG(1) << "GetUpdates result: " << process_result.ToString();

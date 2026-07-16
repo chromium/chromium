@@ -4,6 +4,8 @@
 
 #include "components/sync/engine/events/get_updates_response_event.h"
 
+#include <utility>
+
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
 #include "components/sync/protocol/proto_value_conversions.h"
@@ -12,9 +14,9 @@ namespace syncer {
 
 GetUpdatesResponseEvent::GetUpdatesResponseEvent(
     base::Time timestamp,
-    const sync_pb::ClientToServerResponse& response,
+    sync_pb::ClientToServerResponse response,
     SyncerError error)
-    : timestamp_(timestamp), response_(response), error_(error) {}
+    : timestamp_(timestamp), response_(std::move(response)), error_(error) {}
 
 GetUpdatesResponseEvent::~GetUpdatesResponseEvent() = default;
 

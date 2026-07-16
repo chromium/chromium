@@ -23,7 +23,7 @@ namespace syncer {
 class GetUpdatesResponseEvent : public ProtocolEvent {
  public:
   GetUpdatesResponseEvent(base::Time timestamp,
-                          const sync_pb::ClientToServerResponse& response,
+                          sync_pb::ClientToServerResponse response,
                           SyncerError error);
 
   GetUpdatesResponseEvent(const GetUpdatesResponseEvent&) = delete;
