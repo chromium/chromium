@@ -893,6 +893,9 @@ source_set("unit_tests") {
       "cloud_content_scanning/cloud_binary_upload_service_unittest.cc",
       "cloud_content_scanning/deep_scanning_utils_unittest.cc",
       "cloud_content_scanning/file_analysis_request_unittest.cc",
+      "download_protection/download_feedback_service_unittest.cc",
+      "download_protection/download_feedback_unittest.cc",
+      "download_protection/path_sanitizer_unittest.cc",
     ]
     deps += [
       "//chrome/browser/enterprise",
@@ -925,6 +928,22 @@ source_set("unit_tests") {
         "//chrome/browser/safe_browsing/incident_reporting/verifier_test:verifier_test_dll_2",
       ]
     }
+  }
+
+  if (enterprise_cloud_content_analysis || is_android) {
+    sources += [ "download_protection/deep_scanning_request_unittest.cc" ]
+    deps += [
+      "//chrome/browser/enterprise",
+      "//components/enterprise/connectors/core",
+    ]
+
+    if (is_chromeos) {
+      deps += [ "//chromeos/ash/components/system" ]
+    }
+  }
+
+  if (safe_browsing_mode == 2 && is_android) {
+    sources += [ "download_protection/rate_limiting_key_manager_unittest.cc" ]
   }
 
   if (is_android) {
