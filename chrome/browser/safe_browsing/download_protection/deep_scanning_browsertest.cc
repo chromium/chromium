@@ -676,6 +676,63 @@ IN_PROC_BROWSER_TEST_P(DownloadDeepScanningBrowserTest,
   EXPECT_EQ(item->GetState(), download::DownloadItem::COMPLETE);
 }
 
+IN_PROC_BROWSER_TEST_P(DownloadDeepScanningBrowserTest, DataURLDownloadIsTruncated) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+
+  ClientDownloadResponse metadata_response;
+  metadata_response.set_verdict(ClientDownloadResponse::SAFE);
+  ExpectMetadataResponse(metadata_response);
+
+  enterprise_connectors::ContentAnalysisResponse sync_response;
+  auto* dlp_result = sync_response.add_results();
+  dlp_result->set_tag("dlp");
+  dlp_result->set_status(
+      enterprise_connectors::ContentAnalysisResponse::Result::SUCCESS);
+
+  auto* malware_result = sync_response.add_results();
+  malware_result->set_tag("malware");
+  malware_result->set_status(
+      enterprise_connectors::ContentAnalysisResponse::Result::SUCCESS);
+
+  ExpectContentAnalysisResumableMetadataResponse({"dlp", "malware"});
+  ExpectContentAnalysisResumableContentResponse(sync_response);
+
+  // Needs to be an octet-stream to trigger download
+  std::string data_url_string = "data:application/octet-stream;base64,";
+  data_url_string.append(3000, 'A');
+  GURL url(data_url_string);
+
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), url, WindowOpenDisposition::CURRENT_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+
+  WaitForDeepScanRequest();
+
+  EXPECT_EQ(last_request().reason(),
+            enterprise_connectors::ContentAnalysisRequest::NORMAL_DOWNLOAD);
+
+  // The truncate limit is 1024 characters, but may be less to ensure a valid
+  // base64 encoding.
+  EXPECT_LE(last_request().request_data().url().size(), 1024u);
+  EXPECT_GT(last_request().request_data().referrer_chain_size(), 0);
+  EXPECT_LE(last_request().request_data().referrer_chain(0).url().size(), 1024u);
+
+  ASSERT_TRUE(last_request().request_data().has_csd());
+  ASSERT_GT(last_request().request_data().csd().referrer_chain_size(), 0);
+  ASSERT_GT(last_request().request_data().csd().resources_size(), 0);
+  EXPECT_LE(last_request().request_data().csd().resources(0).url().size(), 1024u);
+  EXPECT_LE(last_request().request_data().csd().url().size(), 1024u);
+
+  WaitForDownloadToFinish();
+
+  ASSERT_EQ(download_items().size(), 1u);
+  download::DownloadItem* item = *download_items().begin();
+  EXPECT_EQ(
+      item->GetDangerType(),
+      download::DownloadDangerType::DOWNLOAD_DANGER_TYPE_DEEP_SCANNED_SAFE);
+  EXPECT_EQ(item->GetState(), download::DownloadItem::COMPLETE);
+}
+
 IN_PROC_BROWSER_TEST_P(DownloadDeepScanningBrowserTest, FailedScanFailsOpen) {
   // This allows the blocking DM token reads happening on profile-Connector
   // triggers.

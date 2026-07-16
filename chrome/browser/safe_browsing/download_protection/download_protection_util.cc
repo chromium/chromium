@@ -24,6 +24,7 @@
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "content/public/browser/download_item_utils.h"
+#include "components/safe_browsing/core/common/utils.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION)
@@ -120,15 +121,16 @@ void AddEventUrlToReferrerChain(const download::DownloadItem& item,
                                 content::RenderFrameHost* render_frame_host,
                                 ReferrerChain* out_referrer_chain) {
   ReferrerChainEntry* event_url_entry = out_referrer_chain->Add();
-  event_url_entry->set_url(item.GetURL().spec());
+  event_url_entry->set_url(safe_browsing::ShortURLForReporting(item.GetURL()));
   event_url_entry->set_type(ReferrerChainEntry::EVENT_URL);
-  event_url_entry->set_referrer_url(
-      render_frame_host->GetLastCommittedURL().spec());
+  event_url_entry->set_referrer_url(safe_browsing::ShortURLForReporting(
+      render_frame_host->GetLastCommittedURL()));
   event_url_entry->set_is_retargeting(false);
   event_url_entry->set_navigation_time_msec(
       base::Time::Now().InMillisecondsSinceUnixEpoch());
   for (const GURL& url : item.GetUrlChain()) {
-    event_url_entry->add_server_redirect_chain()->set_url(url.spec());
+    event_url_entry->add_server_redirect_chain()->set_url(
+        safe_browsing::ShortURLForReporting(url));
   }
 }
 

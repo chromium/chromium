@@ -10,6 +10,7 @@
 #include "build/build_config.h"
 #include "components/crash/core/common/crash_key.h"
 #include "components/enterprise/connectors/core/cloud_content_scanning/binary_upload_request.h"
+#include "components/download/public/common/download_utils.h"
 #include "components/enterprise/connectors/core/common.h"
 #include "components/enterprise/connectors/core/features.h"
 #include "components/safe_browsing/core/common/features.h"
@@ -325,7 +326,20 @@ void InitializeBinaryUploadRequest(BinaryUploadRequest* request,
     }
 
     if (base::FeatureList::IsEnabled(safe_browsing::kEnhancedFieldsForSecOps)) {
-      request->set_referrer_chain(info.referrer_chain());
+      // Only trim the referrer_chain for reporting.
+      auto referrer_chain_copy(info.referrer_chain());
+      GURL mutable_url;
+      for (auto& entry : referrer_chain_copy) {
+        mutable_url = GURL(entry.url());
+        download::TruncateDataUrlAtTheEndIfNeeded(mutable_url);
+        entry.set_url(mutable_url.spec());
+        for (auto& server_redirect : *entry.mutable_server_redirect_chain()) {
+          mutable_url = GURL(server_redirect.url());
+          download::TruncateDataUrlAtTheEndIfNeeded(mutable_url);
+          server_redirect.set_url(mutable_url.spec());
+        }
+      }
+      request->set_referrer_chain(referrer_chain_copy);
     }
 
     std::string email = info.GetContentAreaAccountEmail();
@@ -341,7 +355,9 @@ void InitializeBinaryUploadRequest(BinaryUploadRequest* request,
   request->set_user_action_requests_count(info.user_action_requests_count());
   request->set_user_action_id(info.user_action_id());
   request->set_email(info.email());
-  request->set_url(info.url());
+  GURL mutable_url(info.url());
+  download::TruncateDataUrlAtTheEndIfNeeded(mutable_url);
+  request->set_url(mutable_url);
   request->set_tab_url(info.tab_url());
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)

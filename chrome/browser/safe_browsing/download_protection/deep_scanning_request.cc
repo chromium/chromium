@@ -956,7 +956,6 @@ const GURL& DeepScanningRequest::url() const {
     return metadata_->GetURL();
   }
   return GURL::EmptyGURL();
-  ;
 }
 
 const GURL& DeepScanningRequest::tab_url() const {
