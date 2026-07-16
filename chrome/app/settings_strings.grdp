@@ -3978,6 +3978,14 @@
       Use everyday language to search your browsing history and find sites you visited. You can also ask questions and get answers based on your browsing history. The setting is off.
     </message>
 
+    <!-- Google Search AI Mode and connected apps (AIM Workspace) -->
+    <message name="IDS_SETTINGS_GOOGLE_SEARCH_AI_MODE_WORKSPACE_LABEL" desc="Label of the setting row that opens connection settings for Google Search AI Mode and Workspace connected apps.">
+      Google Search AI Mode and connected apps
+    </message>
+    <message name="IDS_SETTINGS_GOOGLE_SEARCH_AI_MODE_WORKSPACE_SUBLABEL" desc="Sublabel of the setting row that opens connection settings for Google Search AI Mode and Workspace connected apps. This sublabel explains that the user can manage the connection between search personalization services and their Google Workspace apps (like Google Drive).">
+      Manage the connection between Search services and Google Workspace apps, like Google Drive
+    </message>
+
     <!-- Web Content -->
     <message name="IDS_SETTINGS_PAGE_ZOOM_LABEL" desc="Label for the page zoom dropdown menu in settings.">
       Page zoom
