@@ -69,13 +69,13 @@ std::string CryptohomeRecoveryScreen::GetResultString(Result result) {
 }
 
 CryptohomeRecoveryScreen::CryptohomeRecoveryScreen(
-    PrefService* local_state,
+    PrefService& local_state,
     scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
     base::WeakPtr<CryptohomeRecoveryScreenView> view,
     const ScreenExitCallback& exit_callback)
     : BaseScreen(CryptohomeRecoveryScreenView::kScreenId,
                  OobeScreenPriority::DEFAULT),
-      local_state_(CHECK_DEREF(local_state)),
+      local_state_(local_state),
       shared_url_loader_factory_(std::move(shared_url_loader_factory)),
       auth_factor_editor_(UserDataAuthClient::Get()),
       view_(std::move(view)),
@@ -91,8 +91,7 @@ void CryptohomeRecoveryScreen::ShowImpl() {
 
   CHECK(context()->user_context);
 
-  if (local_state_->GetInteger(prefs::kDeviceOnlinePasswordMismatchBehavior) ==
-      static_cast<int>(DeviceOnlinePasswordMismatchBehavior::kAutoWipe)) {
+  if (context()->ShouldTriggerAutoWipe(local_state_.get())) {
     LOGIN_LOG(EVENT)
         << "AutoWipe behavior active: skipping cryptohome recovery";
     SYSLOG(INFO)

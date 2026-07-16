@@ -45,10 +45,10 @@ class CryptohomeRecoveryScreen : public BaseScreen {
   static std::string GetResultString(Result result);
   using ScreenExitCallback = base::RepeatingCallback<void(Result result)>;
 
-  // `local_state` must be non-null and must outlive `this`.
+  // `local_state` must outlive `this`.
   // `shared_url_loader_factory` must be non-null.
   CryptohomeRecoveryScreen(
-      PrefService* local_state,
+      PrefService& local_state,
       scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
       base::WeakPtr<CryptohomeRecoveryScreenView> view,
       const ScreenExitCallback& exit_callback);

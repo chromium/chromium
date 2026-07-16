@@ -351,6 +351,10 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeTest,
       ash::prefs::kDeviceOnlinePasswordMismatchBehavior,
       static_cast<int>(DeviceOnlinePasswordMismatchBehavior::kAutoWipe));
 
+  // Mark the test user as enterprise managed so the AutoWipe policy triggers.
+  user_manager::KnownUser known_user(g_browser_process->local_state());
+  known_user.SetIsEnterpriseManaged(test_account_id_, true);
+
   // Skip post-login screens to reach ACTIVE session state immediately after
   // wipe.
   login_mixin_.SkipPostLoginScreens();
@@ -400,6 +404,32 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeTest,
   SetGaiaScreenCredentials(test_account_id_, test::kNewPassword);
 
   // Verify that we land on the Enter Old Password screen.
+  test::CreateOldPasswordEnterPageWaiter()->Wait();
+
+  // Verify that the cryptohome was NOT removed.
+  EXPECT_FALSE(FakeUserDataAuthClient::Get()->WasCalled<AuthOp::kRemove>());
+  EXPECT_TRUE(TestingFileExists());
+}
+
+// Verifies that AutoWipe is NOT triggered when the user is a consumer,
+// even if the `kDeviceOnlinePasswordMismatchBehavior` pref is set to 1.
+IN_PROC_BROWSER_TEST_F(PasswordChangeTest,
+                       DeviceOnlinePasswordMismatchBehavior_AutoWipe_Consumer) {
+  CreateTestingFile();
+  OpenGaiaDialog(test_account_id_);
+
+  // Set the AutoWipe behavior in Local State.
+  g_browser_process->local_state()->SetInteger(
+      ash::prefs::kDeviceOnlinePasswordMismatchBehavior,
+      static_cast<int>(DeviceOnlinePasswordMismatchBehavior::kAutoWipe));
+
+  // Explicitly ensure the test user is marked as a consumer.
+  user_manager::KnownUser known_user(g_browser_process->local_state());
+  known_user.SetIsEnterpriseManaged(test_account_id_, false);
+
+  SetGaiaScreenCredentials(test_account_id_, test::kNewPassword);
+
+  // Verify that we land on the Enter Old Password screen instead of wiping.
   test::CreateOldPasswordEnterPageWaiter()->Wait();
 
   // Verify that the cryptohome was NOT removed.

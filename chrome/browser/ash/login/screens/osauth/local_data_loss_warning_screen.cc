@@ -69,7 +69,7 @@ std::string LocalDataLossWarningScreen::GetResultString(Result result) {
 }
 
 LocalDataLossWarningScreen::LocalDataLossWarningScreen(
-    PrefService* local_state,
+    PrefService& local_state,
     base::WeakPtr<LocalDataLossWarningScreenView> view,
     const ScreenExitCallback& exit_callback)
     : BaseOSAuthSetupScreen(LocalDataLossWarningScreenView::kScreenId,
@@ -83,8 +83,7 @@ LocalDataLossWarningScreen::LocalDataLossWarningScreen(
 LocalDataLossWarningScreen::~LocalDataLossWarningScreen() = default;
 
 void LocalDataLossWarningScreen::ShowImpl() {
-  if (local_state_->GetInteger(prefs::kDeviceOnlinePasswordMismatchBehavior) ==
-      static_cast<int>(DeviceOnlinePasswordMismatchBehavior::kAutoWipe)) {
+  if (context()->ShouldTriggerAutoWipe(local_state_.get())) {
     LOGIN_LOG(EVENT)
         << "AutoWipe behavior active: removing user directory directly";
     SYSLOG(INFO)
@@ -92,7 +91,7 @@ void LocalDataLossWarningScreen::ShowImpl() {
     mount_performer_->RemoveUserDirectory(
         std::move(context()->user_context),
         base::BindOnce(&LocalDataLossWarningScreen::OnRemovedUserDirectory,
-                       weak_factory_.GetWeakPtr()));
+                       weak_factory_.GetWeakPtr(), Result::kAutoWipe));
     return;
   }
   bool can_go_back = context()->knowledge_factor_setup.data_loss_back_option !=
@@ -120,7 +119,7 @@ void LocalDataLossWarningScreen::OnRecreateUser() {
   mount_performer_->RemoveUserDirectory(
       std::move(context()->user_context),
       base::BindOnce(&LocalDataLossWarningScreen::OnRemovedUserDirectory,
-                     weak_factory_.GetWeakPtr()));
+                     weak_factory_.GetWeakPtr(), Result::kRemoveUser));
 }
 
 void LocalDataLossWarningScreen::OnCancel() {
@@ -147,6 +146,7 @@ void LocalDataLossWarningScreen::OnBack() {
 }
 
 void LocalDataLossWarningScreen::OnRemovedUserDirectory(
+    Result exit_result,
     std::unique_ptr<UserContext> user_context,
     std::optional<AuthenticationError> error) {
   context()->user_context = std::move(user_context);
@@ -180,15 +180,7 @@ void LocalDataLossWarningScreen::OnRemovedUserDirectory(
   if (context()->user_context->HasReplacementKey()) {
     context()->user_context->ReuseReplacementKey();
   }
-
-  // Choose the appropriate screen exit result based on the AutoWipe policy
-  // behavior
-  if (local_state_->GetInteger(prefs::kDeviceOnlinePasswordMismatchBehavior) ==
-      static_cast<int>(DeviceOnlinePasswordMismatchBehavior::kAutoWipe)) {
-    exit_callback_.Run(Result::kAutoWipe);
-  } else {
-    exit_callback_.Run(Result::kRemoveUser);
-  }
+  exit_callback_.Run(exit_result);
 }
 
 }  // namespace ash

@@ -16,6 +16,8 @@
 #include "chromeos/ash/components/osauth/public/common_types.h"
 #include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder_types.mojom.h"
 
+class PrefService;
+
 namespace ash {
 
 class UserContext;
@@ -29,6 +31,11 @@ class WizardContext {
 
   WizardContext(const WizardContext&) = delete;
   WizardContext& operator=(const WizardContext&) = delete;
+
+  // Returns true if the device is configured to automatically wipe the
+  // cryptohome on password mismatch, and the current user is an
+  // enterprise-managed account.
+  bool ShouldTriggerAutoWipe(PrefService& local_state) const;
 
   // Should be tweaked by the tests only in case we need this early in the init
   // process. Otherwise tweak context from `GetWizardContextForTesting`.

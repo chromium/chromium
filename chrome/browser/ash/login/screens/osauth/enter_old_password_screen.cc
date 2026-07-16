@@ -54,7 +54,7 @@ std::string EnterOldPasswordScreen::GetResultString(Result result) {
 }
 
 EnterOldPasswordScreen::EnterOldPasswordScreen(
-    PrefService* local_state,
+    PrefService& local_state,
     base::WeakPtr<EnterOldPasswordScreenView> view,
     const ScreenExitCallback& exit_callback)
     : BaseOSAuthSetupScreen(EnterOldPasswordScreenView::kScreenId,
@@ -68,8 +68,7 @@ EnterOldPasswordScreen::EnterOldPasswordScreen(
 EnterOldPasswordScreen::~EnterOldPasswordScreen() = default;
 
 void EnterOldPasswordScreen::ShowImpl() {
-  if (local_state_->GetInteger(prefs::kDeviceOnlinePasswordMismatchBehavior) ==
-      static_cast<int>(DeviceOnlinePasswordMismatchBehavior::kAutoWipe)) {
+  if (context()->ShouldTriggerAutoWipe(local_state_.get())) {
     LOGIN_LOG(EVENT)
         << "AutoWipe behavior active: skipping entering old password";
     SYSLOG(INFO)
