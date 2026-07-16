@@ -313,6 +313,97 @@ found in the LICENSE file.
   <token key="TaskType" variants="MultistepFilterTaskType"/>
 </histogram>
 
+<histogram name="MultistepFilter.SuggestionAge.Accepted" units="minutes"
+    expires_after="2026-12-15">
+  <owner>adigupt@google.com</owner>
+  <owner>chrome-multistep-filter-eng@google.com</owner>
+  <summary>
+    Measures the time elapsed (in minutes) from when a possible Multistep Filter
+    suggestion is extracted from a page to when the user accepts it. Recorded at
+    the moment the user selects the &quot;Accept&quot; action on the suggestion.
+  </summary>
+</histogram>
+
+<histogram name="MultistepFilter.SuggestionAge.AcceptedOnSameDomain"
+    units="minutes" expires_after="2026-12-15">
+  <owner>adigupt@google.com</owner>
+  <owner>chrome-multistep-filter-eng@google.com</owner>
+  <summary>
+    Measures the time elapsed (in minutes) from when a possible Multistep Filter
+    suggestion is extracted from a page to when the user accepts it on the same
+    domain where it was extracted. Recorded at the moment the user selects the
+    &quot;Accept&quot; action on the suggestion.
+  </summary>
+</histogram>
+
+<histogram name="MultistepFilter.SuggestionAge.Shown" units="minutes"
+    expires_after="2026-12-15">
+  <owner>adigupt@google.com</owner>
+  <owner>chrome-multistep-filter-eng@google.com</owner>
+  <summary>
+    Measures the time elapsed (in minutes) from when a possible Multistep Filter
+    suggestion is extracted from a page to when it is first shown to the user.
+    Recorded at the moment the suggestion UI cue is shown.
+  </summary>
+</histogram>
+
+<histogram name="MultistepFilter.SuggestionAge.ShownOnSameDomain"
+    units="minutes" expires_after="2026-12-15">
+  <owner>adigupt@google.com</owner>
+  <owner>chrome-multistep-filter-eng@google.com</owner>
+  <summary>
+    Measures the time elapsed (in minutes) from when a possible Multistep Filter
+    suggestion is extracted from a page to when it is first shown to the user on
+    the same domain where it was extracted. Recorded at the moment the
+    suggestion UI cue is shown.
+  </summary>
+</histogram>
+
+<histogram name="MultistepFilter.Time.NavigationToSuggestionAccepted"
+    units="ms" expires_after="2026-12-15">
+  <owner>adigupt@google.com</owner>
+  <owner>chrome-multistep-filter-eng@google.com</owner>
+  <summary>
+    Measures the time elapsed (in milliseconds) from the end of the navigation
+    that triggered the Multistep Filter suggestion to when the user accepts the
+    suggestion. Recorded when the user selects the &quot;Accept&quot; action.
+  </summary>
+</histogram>
+
+<histogram name="MultistepFilter.Time.NavigationToSuggestionShown" units="ms"
+    expires_after="2026-12-15">
+  <owner>adigupt@google.com</owner>
+  <owner>chrome-multistep-filter-eng@google.com</owner>
+  <summary>
+    Measures the time elapsed (in milliseconds) from the end of the navigation
+    that triggered the Multistep Filter suggestion to when the suggestion UI cue
+    is first shown to the user. Recorded when the suggestion UI is shown.
+  </summary>
+</histogram>
+
+<histogram name="MultistepFilter.Time.SuggestionAcceptanceToApplied" units="ms"
+    expires_after="2026-12-15">
+  <owner>adigupt@google.com</owner>
+  <owner>chrome-multistep-filter-eng@google.com</owner>
+  <summary>
+    Measures the time elapsed (in milliseconds) from when the user accepts a
+    Multistep Filter suggestion to when the landing navigation finishes. It is
+    only recorded when the filters are successfully verified as applied, and
+    does not include the verification time itself.
+  </summary>
+</histogram>
+
+<histogram name="MultistepFilter.Time.SuggestionShownToAccepted" units="ms"
+    expires_after="2026-12-15">
+  <owner>adigupt@google.com</owner>
+  <owner>chrome-multistep-filter-eng@google.com</owner>
+  <summary>
+    Measures the time elapsed (in milliseconds) from when the Multistep Filter
+    suggestion UI cue is shown to when the user accepts it. Recorded when the
+    user selects the &quot;Accept&quot; action.
+  </summary>
+</histogram>
+
 </histograms>
 
 </histogram-configuration>

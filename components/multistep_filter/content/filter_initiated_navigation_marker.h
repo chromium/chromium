@@ -35,21 +35,16 @@ class FilterInitiatedNavigationMarker
   const std::optional<UrlFilterSuggestion>& suggestion() const {
     return suggestion_;
   }
-  base::TimeTicks navigation_start_time() const {
-    return navigation_start_time_;
-  }
 
  private:
   explicit FilterInitiatedNavigationMarker(
       content::NavigationHandle& navigation_handle,
-      std::optional<UrlFilterSuggestion> suggestion = std::nullopt,
-      base::TimeTicks navigation_start_time = base::TimeTicks());
+      std::optional<UrlFilterSuggestion> suggestion = std::nullopt);
 
   friend class content::NavigationHandleUserData<
       FilterInitiatedNavigationMarker>;
 
   std::optional<UrlFilterSuggestion> suggestion_;
-  base::TimeTicks navigation_start_time_;
 
   NAVIGATION_HANDLE_USER_DATA_KEY_DECL();
 };

@@ -59,6 +59,31 @@ inline constexpr char kMultistepFilterNumberOfFacetsShownHistogram[] =
 inline constexpr char
     kMultistepFilterNumberOfFacetsSuccessfullyAppliedHistogram[] =
         "MultistepFilter.NumberOfFacetsSuccessfullyApplied";
+
+// Age metrics.
+inline constexpr char kMultistepFilterSuggestionAgeAcceptedHistogram[] =
+    "MultistepFilter.SuggestionAge.Accepted";
+inline constexpr char
+    kMultistepFilterSuggestionAgeAcceptedOnSameDomainHistogram[] =
+        "MultistepFilter.SuggestionAge.AcceptedOnSameDomain";
+inline constexpr char kMultistepFilterSuggestionAgeShownHistogram[] =
+    "MultistepFilter.SuggestionAge.Shown";
+inline constexpr char
+    kMultistepFilterSuggestionAgeShownOnSameDomainHistogram[] =
+        "MultistepFilter.SuggestionAge.ShownOnSameDomain";
+
+// Latency metrics.
+inline constexpr char
+    kMultistepFilterTimeSuggestionAcceptanceToAppliedHistogram[] =
+        "MultistepFilter.Time.SuggestionAcceptanceToApplied";
+inline constexpr char
+    kMultistepFilterTimeNavigationToSuggestionShownHistogram[] =
+        "MultistepFilter.Time.NavigationToSuggestionShown";
+inline constexpr char
+    kMultistepFilterTimeNavigationToSuggestionAcceptedHistogram[] =
+        "MultistepFilter.Time.NavigationToSuggestionAccepted";
+inline constexpr char kMultistepFilterTimeSuggestionShownToAcceptedHistogram[] =
+    "MultistepFilter.Time.SuggestionShownToAccepted";
 }  // namespace multistep_filter
 
 #endif  // COMPONENTS_MULTISTEP_FILTER_CORE_LOGGING_MULTISTEP_FILTER_METRICS_H_

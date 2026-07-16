@@ -19,6 +19,8 @@ source_set("logging") {
   deps = [
     "//base",
     "//components/keyed_service/core",
+    "//components/multistep_filter/core:features",
+    "//components/multistep_filter/core:util",
     "//components/multistep_filter/core/prefs",
   ]
 }

@@ -15,13 +15,17 @@
 
 namespace multistep_filter {
 
-std::string GetEtldPlusOne(const GURL& url) {
+std::string GetEtldPlusOneForHost(std::string_view host) {
   std::string domain = net::registry_controlled_domains::GetDomainAndRegistry(
-      url, net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
+      host, net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
   if (domain.empty()) {
-    return std::string(url.host());
+    return std::string(host);
   }
   return domain;
+}
+
+std::string GetEtldPlusOne(const GURL& url) {
+  return GetEtldPlusOneForHost(url.host());
 }
 
 bool IsSameDomainOrHost(const GURL& url, const GURL& other) {

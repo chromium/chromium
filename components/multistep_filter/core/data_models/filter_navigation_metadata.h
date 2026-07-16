@@ -7,6 +7,7 @@
 
 #include <optional>
 
+#include "base/time/time.h"
 #include "components/multistep_filter/core/data_models/url_filter_suggestion.h"
 #include "url/gurl.h"
 
@@ -16,6 +17,8 @@ namespace multistep_filter {
 // gestures). Populated by the content layer and dispatched into the Core layer.
 struct FilterNavigationMetadata {
   int64_t navigation_id = 0;
+  base::TimeTicks navigation_start_time;
+  base::TimeTicks navigation_finish_time;
   GURL url;
   GURL prev_url;
   bool is_cryptographic_scheme = false;

@@ -307,12 +307,32 @@ class FilterTabControllerTest : public testing::Test {
       std::optional<UrlFilterSuggestion> applied_suggestion = std::nullopt) {
     FilterNavigationMetadata metadata;
     metadata.navigation_id = navigation_id;
+    metadata.navigation_start_time = base::TimeTicks::Now();
+    metadata.navigation_finish_time = base::TimeTicks::Now();
     metadata.url = url;
     metadata.is_cryptographic_scheme = is_cryptographic;
     metadata.is_error_page_navigation = is_error_page;
     metadata.net_error_code = net_error_code;
     metadata.applied_suggestion = std::move(applied_suggestion);
     return metadata;
+  }
+
+  void InitializeTrackerWithNavigation() {
+    FilterNavigationMetadata metadata =
+        CreateMetadata(1, GURL("https://example.com"));
+    metadata.has_user_gesture = true;
+    EXPECT_CALL(*mock_delegate_, ClearSuggestion());
+    EXPECT_CALL(*mock_service_, HasUserProvidedConsent(metadata.navigation_id,
+                                                       metadata.url.GetHost()))
+        .WillOnce(Return(true));
+    EXPECT_CALL(*mock_annotation_client(),
+                GetSupportedTasks(metadata.url, _, metadata.navigation_id))
+        .WillOnce(base::test::RunOnceCallback<1>(std::vector<std::string>()));
+    EXPECT_CALL(*mock_delegate_, OnSuggestionGenerated(Eq(std::nullopt), _));
+    EXPECT_CALL(observer_, OnExtractionFinishedForTest(Eq(std::nullopt)));
+    EXPECT_CALL(observer_, OnSuggestionGeneratedForTest(Eq(std::nullopt)));
+
+    controller_->OnNavigationFinished(metadata);
   }
 
   UrlFilterSuggestion CreateDefaultSuggestion(
@@ -652,10 +672,8 @@ TEST_F(FilterTabControllerTest, HttpNavigationWithTestingSwitch) {
 // gesture on a new navigation.
 TEST_F(FilterTabControllerTest,
        SuppressExtractionAndGenerationOnNoUserGesture) {
-  FilterNavigationMetadata metadata;
-  metadata.navigation_id = 11;
-  metadata.url = GURL("https://example.com/");
-  metadata.is_cryptographic_scheme = true;
+  FilterNavigationMetadata metadata =
+      CreateMetadata(11, GURL("https://example.com/"));
   metadata.has_user_gesture = false;
 
   EXPECT_CALL(*mock_delegate_, ClearSuggestion());
@@ -673,6 +691,7 @@ TEST_F(FilterTabControllerTest,
 // Tests that FilterTabController notifies the service when a suggestion is
 // shown.
 TEST_F(FilterTabControllerTest, OnSuggestionShownNotifiesService) {
+  InitializeTrackerWithNavigation();
   UrlFilterSuggestion suggestion(
       UrlFilterSuggestion::Params{.triggering_navigation_id = 42,
                                   .triggering_host = "example.com",
@@ -692,6 +711,7 @@ TEST_F(FilterTabControllerTest, OnSuggestionShownNotifiesService) {
 // Tests that FilterTabController notifies the service when the user makes a
 // decision on a suggestion.
 TEST_F(FilterTabControllerTest, OnUserDecisionNotifiesService) {
+  InitializeTrackerWithNavigation();
   UrlFilterSuggestion suggestion(
       UrlFilterSuggestion::Params{.navigation_url = GURL("https://example.com"),
                                   .triggering_navigation_id = 42,

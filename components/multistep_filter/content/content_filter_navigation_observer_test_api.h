@@ -36,6 +36,10 @@ class ContentFilterNavigationObserverTestApi {
     return observer_->tab_controller_.get();
   }
 
+  void SetTabController(std::unique_ptr<FilterTabController> controller) {
+    observer_->tab_controller_ = std::move(controller);
+  }
+
  private:
   const raw_ref<ContentFilterNavigationObserver> observer_;
 };

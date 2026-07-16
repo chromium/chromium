@@ -31,6 +31,9 @@ FilterNavigationMetadata CreateFilterNavigationMetadata(
     NavigationHandle* handle) {
   FilterNavigationMetadata metadata;
   metadata.navigation_id = handle->GetNavigationId();
+  metadata.navigation_start_time = handle->NavigationStart();
+  metadata.navigation_finish_time =
+      handle->GetNavigationHandleTiming().navigation_did_commit_time;
   metadata.url = handle->GetURL();
   metadata.prev_url = handle->GetPreviousPrimaryMainFrameURL();
   metadata.is_cryptographic_scheme = metadata.url.SchemeIsCryptographic();
@@ -48,14 +51,10 @@ FilterNavigationMetadata CreateFilterNavigationMetadata(
                                       (metadata.http_response_code >= 400 &&
                                        metadata.http_response_code <= 599);
   metadata.has_user_gesture = handle->HasUserGesture();
-  metadata.was_filter_initiated_navigation =
-      FilterInitiatedNavigationMarker::GetForNavigationHandle(*handle) !=
-      nullptr;
-  metadata.applied_suggestion =
-      metadata.was_filter_initiated_navigation
-          ? FilterInitiatedNavigationMarker::GetForNavigationHandle(*handle)
-                ->suggestion()
-          : std::nullopt;
+  const FilterInitiatedNavigationMarker* marker =
+      FilterInitiatedNavigationMarker::GetForNavigationHandle(*handle);
+  metadata.was_filter_initiated_navigation = (marker != nullptr);
+  metadata.applied_suggestion = marker ? marker->suggestion() : std::nullopt;
   metadata.is_same_document_navigation = handle->IsSameDocument();
   return metadata;
 }

@@ -7,10 +7,13 @@
 #include "base/functional/function_ref.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "components/multistep_filter/core/data_models/filter_navigation_metadata.h"
 #include "components/multistep_filter/core/data_models/suggestion_user_decision.h"
+#include "components/multistep_filter/core/features.h"
 #include "components/multistep_filter/core/logging/multistep_filter_metrics.h"
+#include "components/multistep_filter/core/multistep_filter_util.h"
 #include "components/multistep_filter/core/prefs/multistep_filter_retention_prefs.h"
 
 namespace multistep_filter {
@@ -96,9 +99,11 @@ void LogAcceptanceHistogram(std::string_view base_histogram,
 // - The number of extracted attributes did not match the suggested count.
 // - There was a mismatch in the keys or values of the filters (e.g. a
 //   different brand or price range was applied than what was suggested).
-void LogApplicationOutcome(const UrlFilterSuggestion& suggestion,
-                           const RetentionStateSnapshot& retention_snapshot,
-                           bool is_success) {
+void LogApplicationOutcome(
+    const MultistepFilterMetricsTracker::SuggestionApplicationSession&
+        application_session,
+    const MultistepFilterMetricsTracker::NavigationSession& navigation_session,
+    bool is_success) {
   MultistepFilterApplicationOutcome outcome =
       is_success ? MultistepFilterApplicationOutcome::kAllFiltersApplied
                  : MultistepFilterApplicationOutcome::kNotAllFiltersApplied;
@@ -107,11 +112,11 @@ void LogApplicationOutcome(const UrlFilterSuggestion& suggestion,
   base::UmaHistogramEnumeration(
       base::StrCat({kMultistepFilterApplicationOutcomeHistogram,
                     kMultistepFilterByTaskHistogramPrefix,
-                    suggestion.task_type}),
+                    application_session.suggestion.task_type}),
       outcome);
 
   // Log by retention state:
-  GetRetentionSlices(retention_snapshot)
+  GetRetentionSlices(application_session.retention_snapshot)
       .ForEachActive([&](std::string_view slice) {
         base::UmaHistogramEnumeration(
             base::StrCat({kMultistepFilterApplicationOutcomeHistogram,
@@ -120,37 +125,92 @@ void LogApplicationOutcome(const UrlFilterSuggestion& suggestion,
       });
 
   if (is_success) {
-    size_t count = suggestion.attribute_ui_labels.size();
+    size_t count = application_session.suggestion.attribute_ui_labels.size();
     base::UmaHistogramCounts100(
         kMultistepFilterNumberOfFacetsSuccessfullyAppliedHistogram, count);
     base::UmaHistogramCounts100(
         base::StrCat(
             {kMultistepFilterNumberOfFacetsSuccessfullyAppliedHistogram,
-             kMultistepFilterByTaskHistogramPrefix, suggestion.task_type}),
+             kMultistepFilterByTaskHistogramPrefix,
+             application_session.suggestion.task_type}),
         count);
+    base::UmaHistogramMediumTimes(
+        kMultistepFilterTimeSuggestionAcceptanceToAppliedHistogram,
+        navigation_session.navigation_finish_time -
+            application_session.suggestion_accepted_time);
   }
 
   for (const FilterAttributeUiLabel& suggested_label :
-       suggestion.attribute_ui_labels) {
+       application_session.suggestion.attribute_ui_labels) {
     base::UmaHistogramBoolean(
-        base::StrCat(
-            {kMultistepFilterApplicationOutcomeHistogram,
-             kMultistepFilterByTaskHistogramPrefix, suggestion.task_type,
-             kMultistepFilterByFacetHistogramPrefix, suggested_label.key}),
+        base::StrCat({kMultistepFilterApplicationOutcomeHistogram,
+                      kMultistepFilterByTaskHistogramPrefix,
+                      application_session.suggestion.task_type,
+                      kMultistepFilterByFacetHistogramPrefix,
+                      suggested_label.key}),
         is_success);
   }
 }
 
-void LogFacetsShown(std::string_view task_type, size_t count) {
-  if (count == 0) {
-    return;
+void LogSuggestionUiShown(
+    const MultistepFilterMetricsTracker::SuggestionUiSession& ui_session,
+    const MultistepFilterMetricsTracker::NavigationSession& nav_session) {
+  size_t count = ui_session.suggestion.attribute_ui_labels.size();
+  std::string_view task_type = ui_session.suggestion.task_type;
+  if (count > 0) {
+    base::UmaHistogramCounts100(kMultistepFilterNumberOfFacetsShownHistogram,
+                                count);
+    base::UmaHistogramCounts100(
+        base::StrCat({kMultistepFilterNumberOfFacetsShownHistogram,
+                      kMultistepFilterByTaskHistogramPrefix, task_type}),
+        count);
   }
-  base::UmaHistogramCounts100(kMultistepFilterNumberOfFacetsShownHistogram,
-                              count);
-  base::UmaHistogramCounts100(
-      base::StrCat({kMultistepFilterNumberOfFacetsShownHistogram,
-                    kMultistepFilterByTaskHistogramPrefix, task_type}),
-      count);
+
+  CHECK(!nav_session.navigation_finish_time.is_null());
+  base::UmaHistogramTimes(
+      kMultistepFilterTimeNavigationToSuggestionShownHistogram,
+      ui_session.suggestion_shown_time - nav_session.navigation_finish_time);
+
+  base::TimeDelta suggestion_age =
+      base::Time::Now() - ui_session.suggestion.extraction_timestamp;
+  int suggestion_age_minutes = suggestion_age.InMinutes();
+  int max_age_bucket = kMultistepFilterSessionDuration.Get().InMinutes() + 1;
+  base::UmaHistogramExactLinear(kMultistepFilterSuggestionAgeShownHistogram,
+                                suggestion_age_minutes, max_age_bucket);
+  if (GetEtldPlusOneForHost(
+          base::UTF16ToUTF8(ui_session.suggestion.source_host)) ==
+      GetEtldPlusOneForHost(ui_session.suggestion.triggering_host)) {
+    base::UmaHistogramExactLinear(
+        kMultistepFilterSuggestionAgeShownOnSameDomainHistogram,
+        suggestion_age_minutes, max_age_bucket);
+  }
+}
+
+void LogSuggestionAcceptanceLatencyAndAgeMetrics(
+    const MultistepFilterMetricsTracker::SuggestionUiSession& ui_session,
+    const MultistepFilterMetricsTracker::NavigationSession& nav_session) {
+  CHECK(!nav_session.navigation_finish_time.is_null());
+  base::UmaHistogramMediumTimes(
+      kMultistepFilterTimeNavigationToSuggestionAcceptedHistogram,
+      ui_session.suggestion_accepted_time - nav_session.navigation_finish_time);
+
+  base::UmaHistogramMediumTimes(
+      kMultistepFilterTimeSuggestionShownToAcceptedHistogram,
+      ui_session.suggestion_accepted_time - ui_session.suggestion_shown_time);
+
+  base::TimeDelta suggestion_age =
+      base::Time::Now() - ui_session.suggestion.extraction_timestamp;
+  int suggestion_age_minutes = suggestion_age.InMinutes();
+  int max_age_bucket = kMultistepFilterSessionDuration.Get().InMinutes() + 1;
+  base::UmaHistogramExactLinear(kMultistepFilterSuggestionAgeAcceptedHistogram,
+                                suggestion_age_minutes, max_age_bucket);
+  if (GetEtldPlusOneForHost(
+          base::UTF16ToUTF8(ui_session.suggestion.source_host)) ==
+      GetEtldPlusOneForHost(ui_session.suggestion.triggering_host)) {
+    base::UmaHistogramExactLinear(
+        kMultistepFilterSuggestionAgeAcceptedOnSameDomainHistogram,
+        suggestion_age_minutes, max_age_bucket);
+  }
 }
 
 }  // namespace
@@ -168,9 +228,10 @@ MultistepFilterMetricsTracker::~MultistepFilterMetricsTracker() {
 
 void MultistepFilterMetricsTracker::OnNavigationFinished(
     const FilterNavigationMetadata& metadata) {
-  // TODO(crbug.com/531717350): Use these fields to track navigation metrics.
+  CHECK(!metadata.navigation_start_time.is_null());
+  CHECK(!metadata.navigation_finish_time.is_null());
   current_navigation_ = NavigationSession();
-  current_navigation_.navigation_finish_time = base::TimeTicks::Now();
+  current_navigation_.navigation_finish_time = metadata.navigation_finish_time;
 
   // If a new navigation finished while we were still waiting for extraction
   // of a previously applied suggestion, that application session is considered
@@ -185,6 +246,7 @@ void MultistepFilterMetricsTracker::OnNavigationFinished(
     current_suggestion_application_session_ = SuggestionApplicationSession{
         .suggestion = metadata.applied_suggestion.value(),
         .is_error_page = metadata.is_error_page_navigation,
+        .suggestion_accepted_time = metadata.navigation_start_time,
         .retention_snapshot =
             last_accepted_suggestion_retention_snapshot_.value_or(
                 RetentionStateSnapshot()),
@@ -208,7 +270,7 @@ void MultistepFilterMetricsTracker::OnSuggestionShown(
       .suggestion_shown_time = base::TimeTicks::Now(),
       .retention_snapshot = retention_snapshot,
   };
-  LogFacetsShown(suggestion.task_type, suggestion.attribute_ui_labels.size());
+  LogSuggestionUiShown(*current_ui_session_, current_navigation_);
 }
 
 void MultistepFilterMetricsTracker::OnSuggestionReopened() {
@@ -266,17 +328,20 @@ void MultistepFilterMetricsTracker::FlushSuggestionUiSession(
 
   LogAcceptanceHistogram(kMultistepFilterAcceptanceHistogram, task_type,
                          final_decision, snapshot);
-
+  if (final_decision == SuggestionUserDecision::kAccepted) {
+    LogSuggestionAcceptanceLatencyAndAgeMetrics(*current_ui_session_,
+                                                current_navigation_);
+  }
   current_ui_session_ = std::nullopt;
 }
 
 void MultistepFilterMetricsTracker::FlushSuggestionApplicationSession(
     bool was_applied_successfully) {
   CHECK(current_suggestion_application_session_.has_value());
-  LogApplicationOutcome(
-      current_suggestion_application_session_->suggestion,
-      current_suggestion_application_session_->retention_snapshot,
-      was_applied_successfully);
+  bool is_success = was_applied_successfully &&
+                    !current_suggestion_application_session_->is_error_page;
+  LogApplicationOutcome(*current_suggestion_application_session_,
+                        current_navigation_, is_success);
   current_suggestion_application_session_ = std::nullopt;
 }
 

@@ -258,7 +258,7 @@ void FilterUiController::NavigateTo(const UrlFilterSuggestion& suggestion) {
                   [](UrlFilterSuggestion suggestion,
                      content::NavigationHandle& handle) {
                     FilterInitiatedNavigationMarker::CreateForNavigationHandle(
-                        handle, std::move(suggestion), base::TimeTicks::Now());
+                        handle, std::move(suggestion));
                   },
                   suggestion));
 }

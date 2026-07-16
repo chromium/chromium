@@ -10,10 +10,8 @@ namespace multistep_filter {
 
 FilterInitiatedNavigationMarker::FilterInitiatedNavigationMarker(
     content::NavigationHandle& navigation_handle,
-    std::optional<UrlFilterSuggestion> suggestion,
-    base::TimeTicks navigation_start_time)
-    : suggestion_(std::move(suggestion)),
-      navigation_start_time_(navigation_start_time) {}
+    std::optional<UrlFilterSuggestion> suggestion)
+    : suggestion_(std::move(suggestion)) {}
 
 FilterInitiatedNavigationMarker::~FilterInitiatedNavigationMarker() = default;
 
