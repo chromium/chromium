@@ -273,19 +273,27 @@ AutofillAiImportDataControllerImpl::GetWeakPtr() {
 
 int AutofillAiImportDataControllerImpl::
     GetSaveUpdateDialogTitleImagesResourceId() const {
+  const bool use_wallet_branding =
+      IsWalletableEntity() &&
+      base::FeatureList::IsEnabled(features::kAutofillAiWalletPassBranding2026);
   switch (GetSaveUpdateState().new_entity.type().name()) {
     case EntityTypeName::kDriversLicense:
-      return IDR_AUTOFILL_SAVE_DRIVERS_LICENSE_LOTTIE;
+      return use_wallet_branding
+                 ? IDR_AUTOFILL_SAVE_DRIVERS_LICENSE_WALLET_LOTTIE
+                 : IDR_AUTOFILL_SAVE_DRIVERS_LICENSE_LOTTIE;
     case EntityTypeName::kKnownTravelerNumber:
-      return IDR_AUTOFILL_SAVE_KNOWN_TRAVELER_NUMBER_AND_REDRESS_NUMBER_LOTTIE;
-    case EntityTypeName::kNationalIdCard:
-      return IDR_AUTOFILL_SAVE_PASSPORT_AND_NATIONAL_ID_CARD_LOTTIE;
-    case EntityTypeName::kPassport:
-      return IDR_AUTOFILL_SAVE_PASSPORT_AND_NATIONAL_ID_CARD_LOTTIE;
     case EntityTypeName::kRedressNumber:
-      return IDR_AUTOFILL_SAVE_KNOWN_TRAVELER_NUMBER_AND_REDRESS_NUMBER_LOTTIE;
+      return use_wallet_branding
+                 ? IDR_AUTOFILL_SAVE_KNOWN_TRAVELER_NUMBER_AND_REDRESS_NUMBER_WALLET_LOTTIE
+                 : IDR_AUTOFILL_SAVE_KNOWN_TRAVELER_NUMBER_AND_REDRESS_NUMBER_LOTTIE;
+    case EntityTypeName::kNationalIdCard:
+    case EntityTypeName::kPassport:
+      return use_wallet_branding
+                 ? IDR_AUTOFILL_SAVE_PASSPORT_AND_NATIONAL_ID_CARD_WALLET_LOTTIE
+                 : IDR_AUTOFILL_SAVE_PASSPORT_AND_NATIONAL_ID_CARD_LOTTIE;
     case EntityTypeName::kVehicle:
-      return IDR_AUTOFILL_SAVE_VEHICLE_LOTTIE;
+      return use_wallet_branding ? IDR_AUTOFILL_SAVE_VEHICLE_WALLET_LOTTIE
+                                 : IDR_AUTOFILL_SAVE_VEHICLE_LOTTIE;
     case EntityTypeName::kFlightReservation:
       NOTREACHED()
           << "Entity is read only and doesn't support saving/updating.";
