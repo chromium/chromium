@@ -2773,6 +2773,7 @@ const FeatureEntry::Choice kSendTabToSelfEnhancedHandoffChoices[] = {
      "SendTabToSelfEnhancedDesktopUI,"
      "SendTabToSelfPostSendToast,"
      "SendTabToSelfEnhancedBottomsheet,"
+     "SendTabToSelfDynamicShortcuts,"
      "SyncSimplifyDeviceNaming,"
      "SyncUseServerDeterminedDeviceName,"
      "SyncSessionsUsePreferredDisplayName"},
@@ -2786,6 +2787,7 @@ const FeatureEntry::Choice kSendTabToSelfEnhancedHandoffChoices[] = {
      "SendTabToSelfEnhancedDesktopUI,"
      "SendTabToSelfPostSendToast,"
      "SendTabToSelfEnhancedBottomsheet,"
+     "SendTabToSelfDynamicShortcuts,"
      "SyncSimplifyDeviceNaming,"
      "SyncUseServerDeterminedDeviceName,"
      "SyncSessionsUsePreferredDisplayName"},

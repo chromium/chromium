@@ -639,6 +639,7 @@ public abstract class ChromeFeatureList {
     public static final String SEGMENTATION_PLATFORM_EPHEMERAL_CARD_RANKER =
             "SegmentationPlatformEphemeralCardRanker";
     public static final String SEND_TAB_TO_SELF_AUTO_OPEN = "SendTabToSelfAutoOpen";
+    public static final String SEND_TAB_TO_SELF_DYNAMIC_SHORTCUTS = "SendTabToSelfDynamicShortcuts";
     public static final String SEND_TAB_TO_SELF_ENHANCED_BOTTOMSHEET =
             "SendTabToSelfEnhancedBottomsheet";
     public static final String SEND_TAB_TO_SELF_EXTRA_ENTRY_POINTS =
@@ -1546,6 +1547,8 @@ public abstract class ChromeFeatureList {
             newMutableFlagWithSafeDefault(SAFETY_FRE_PROMO, false);
     public static final MutableFlagWithSafeDefault sScheduleWindowCleaning =
             newMutableFlagWithSafeDefault(SCHEDULE_WINDOW_CLEANING, false);
+    public static final MutableFlagWithSafeDefault sSendTabToSelfDynamicShortcuts =
+            newMutableFlagWithSafeDefault(SEND_TAB_TO_SELF_DYNAMIC_SHORTCUTS, false);
     public static final MutableFlagWithSafeDefault sShowTabListAnimations =
             newMutableFlagWithSafeDefault(SHOW_TAB_LIST_ANIMATIONS, false);
     public static final MutableFlagWithSafeDefault sTabAndroidGracefulShutdown =

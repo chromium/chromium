@@ -101,6 +101,7 @@ import org.chromium.chrome.browser.profiles.ProfileManagerUtils;
 import org.chromium.chrome.browser.quickactionsearchwidget.QuickActionSearchWidgetProvider;
 import org.chromium.chrome.browser.rlz.RevenueStats;
 import org.chromium.chrome.browser.searchwidget.SearchWidgetProvider;
+import org.chromium.chrome.browser.share.send_tab_to_self.OtherDevicesShortcutControllerFactory;
 import org.chromium.chrome.browser.signin.SigninCheckerProvider;
 import org.chromium.chrome.browser.tab.state.PersistedTabData;
 import org.chromium.chrome.browser.tab.state.ShoppingPersistedTabData;
@@ -749,6 +750,9 @@ public class ProcessInitializationHandler {
 
         // Initialize the SigninChecker.
         tasks.add(() -> SigninCheckerProvider.get(profile));
+
+        // Initialize the OtherDevicesShortcutController.
+        tasks.add(() -> OtherDevicesShortcutControllerFactory.getForProfile(profile));
 
         tasks.add(
                 () -> {

@@ -1137,6 +1137,7 @@ if (is_android) {
       "//chrome/browser/share/android/javatests/src/org/chromium/chrome/browser/share/send_tab_to_self/EnhancedTargetDevicePickerMediatorTest.java",
       "//chrome/browser/share/android/javatests/src/org/chromium/chrome/browser/share/send_tab_to_self/NotificationManagerTest.java",
       "//chrome/browser/share/android/javatests/src/org/chromium/chrome/browser/share/send_tab_to_self/NotificationSharedPrefManagerTest.java",
+      "//chrome/browser/share/android/javatests/src/org/chromium/chrome/browser/share/send_tab_to_self/OtherDevicesShortcutControllerTest.java",
       "//chrome/browser/share/android/javatests/src/org/chromium/chrome/browser/share/send_tab_to_self/SendTabToSelfAndroidBridgeTest.java",
       "//chrome/browser/share/android/javatests/src/org/chromium/chrome/browser/share/send_tab_to_self/SendTabToSelfGestureDetectorTest.java",
       "//chrome/browser/share/android/javatests/src/org/chromium/chrome/browser/share/share_sheet/ChromeProvidedSharingOptionsProviderTest.java",
