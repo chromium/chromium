@@ -257,13 +257,22 @@ void MultistepFilterMetricsTracker::OnNavigationFinished(
   // If a UI session has been started but not concluded yet, the finishing
   // of the navigation indicates that the user ignored the UI.
   if (current_ui_session_.has_value()) {
-    FlushSuggestionUiSession(SuggestionUserDecision::kIgnored);
+    bool is_same_page = metadata.is_same_document_navigation ||
+                        metadata.url == metadata.prev_url;
+    if (!is_same_page) {
+      FlushSuggestionUiSession(SuggestionUserDecision::kIgnored);
+    } else {
+      current_ui_session_->is_preserved_same_page = true;
+    }
   }
 }
 
 void MultistepFilterMetricsTracker::OnSuggestionShown(
     const UrlFilterSuggestion& suggestion,
     const RetentionStateSnapshot& retention_snapshot) {
+  if (current_ui_session_.has_value()) {
+    FlushSuggestionUiSession(SuggestionUserDecision::kIgnored);
+  }
   current_ui_session_ = SuggestionUiSession{
       .suggestion = suggestion,
       .user_decision = SuggestionUserDecision::kIgnored,
@@ -280,7 +289,11 @@ void MultistepFilterMetricsTracker::OnSuggestionReopened() {
 
 void MultistepFilterMetricsTracker::OnSuggestionUserInteraction(
     SuggestionUserDecision decision) {
-  CHECK(current_ui_session_.has_value());
+  if (!current_ui_session_.has_value()) {
+    // This can happen due to race conditions (e.g. user clicks action just as
+    // navigation clears the suggestion) or system-initiated clears.
+    return;
+  }
   switch (decision) {
     case SuggestionUserDecision::kAccepted:
       current_ui_session_->suggestion_accepted_time = base::TimeTicks::Now();
@@ -294,6 +307,13 @@ void MultistepFilterMetricsTracker::OnSuggestionUserInteraction(
   }
   current_ui_session_->user_decision = decision;
   FlushSuggestionUiSession(decision);
+}
+
+void MultistepFilterMetricsTracker::OnPreservedSuggestionCleared() {
+  if (current_ui_session_.has_value() &&
+      current_ui_session_->is_preserved_same_page) {
+    FlushSuggestionUiSession(SuggestionUserDecision::kIgnored);
+  }
 }
 
 void MultistepFilterMetricsTracker::

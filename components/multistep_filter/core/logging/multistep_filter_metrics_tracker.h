@@ -43,6 +43,7 @@ class MultistepFilterMetricsTracker {
     base::TimeTicks suggestion_shown_time;
     base::TimeTicks suggestion_accepted_time;
     RetentionStateSnapshot retention_snapshot;
+    bool is_preserved_same_page = false;
   };
 
   // Tracks the lifecycle of a suggestion application.
@@ -84,6 +85,11 @@ class MultistepFilterMetricsTracker {
   // Triggered when the user interacts with the suggestion UI or a
   // navigation/tab close discards the suggestion.
   void OnSuggestionUserInteraction(SuggestionUserDecision decision);
+
+  // --- 2.3. PRESERVED SUGGESTION CLEARED ---
+  // Triggered when a preserved suggestion for same page navigation is cleared
+  // (e.g. because new suggestion generation failed).
+  void OnPreservedSuggestionCleared();
 
   // --- 3. SUGGESTION APPLICATION LIFE-CYCLE ---
   // Triggered when the suggestion application extraction is finished.

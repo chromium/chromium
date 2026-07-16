@@ -176,7 +176,7 @@ class FilterTabControllerTest : public testing::Test {
     EXPECT_CALL(*mock_delegate_, ClearSuggestion());
     EXPECT_CALL(*mock_service_, HasUserProvidedConsent(metadata.navigation_id,
                                                        metadata.url.GetHost()))
-        .WillOnce(testing::Return(true));
+        .WillOnce(Return(true));
 
     std::vector<std::string> supported_tasks = {suggestion.task_type};
     EXPECT_CALL(*mock_annotation_client(),
@@ -208,10 +208,10 @@ class FilterTabControllerTest : public testing::Test {
     // Trigger OnSuggestionShown
     EXPECT_CALL(*mock_service_, GetRetentionState()).WillOnce(Return(snapshot));
     EXPECT_CALL(*mock_service_, RecordSuggestionImpression()).Times(1);
-    EXPECT_CALL(*mock_service_,
-                DeleteAnnotationsForTask(testing::Eq(suggestion.task_type),
-                                         testing::Eq(metadata.navigation_id),
-                                         testing::Eq(metadata.url.GetHost())))
+    EXPECT_CALL(
+        *mock_service_,
+        DeleteAnnotationsForTask(suggestion.task_type, metadata.navigation_id,
+                                 metadata.url.GetHost()))
         .Times(1);
     ASSERT_FALSE(out_callbacks.on_suggestion_shown.is_null());
     std::move(out_callbacks.on_suggestion_shown).Run();
@@ -364,12 +364,9 @@ class FilterTabControllerTest : public testing::Test {
 
   void ExpectNoExtractionOrSuggestion() {
     EXPECT_CALL(*mock_delegate_, ClearSuggestion());
-    EXPECT_CALL(*mock_delegate_,
-                OnSuggestionGenerated(testing::Eq(std::nullopt), _));
-    EXPECT_CALL(observer_,
-                OnExtractionFinishedForTest(testing::Eq(std::nullopt)));
-    EXPECT_CALL(observer_,
-                OnSuggestionGeneratedForTest(testing::Eq(std::nullopt)));
+    EXPECT_CALL(*mock_delegate_, OnSuggestionGenerated(Eq(std::nullopt), _));
+    EXPECT_CALL(observer_, OnExtractionFinishedForTest(Eq(std::nullopt)));
+    EXPECT_CALL(observer_, OnSuggestionGeneratedForTest(Eq(std::nullopt)));
   }
 
  protected:
@@ -677,13 +674,10 @@ TEST_F(FilterTabControllerTest,
   metadata.has_user_gesture = false;
 
   EXPECT_CALL(*mock_delegate_, ClearSuggestion());
-  EXPECT_CALL(*mock_delegate_,
-              OnSuggestionGenerated(testing::Eq(std::nullopt), _));
+  EXPECT_CALL(*mock_delegate_, OnSuggestionGenerated(Eq(std::nullopt), _));
 
-  EXPECT_CALL(observer_,
-              OnExtractionFinishedForTest(testing::Eq(std::nullopt)));
-  EXPECT_CALL(observer_,
-              OnSuggestionGeneratedForTest(testing::Eq(std::nullopt)));
+  EXPECT_CALL(observer_, OnExtractionFinishedForTest(Eq(std::nullopt)));
+  EXPECT_CALL(observer_, OnSuggestionGeneratedForTest(Eq(std::nullopt)));
 
   controller_->OnNavigationFinished(metadata);
 }
@@ -700,9 +694,8 @@ TEST_F(FilterTabControllerTest, OnSuggestionShownNotifiesService) {
   EXPECT_CALL(*mock_service_, GetRetentionState())
       .WillOnce(Return(RetentionStateSnapshot()));
   EXPECT_CALL(*mock_service_, RecordSuggestionImpression()).Times(1);
-  EXPECT_CALL(*mock_service_, DeleteAnnotationsForTask(
-                                  testing::Eq("task_type_1"), testing::Eq(42),
-                                  testing::Eq("example.com")))
+  EXPECT_CALL(*mock_service_,
+              DeleteAnnotationsForTask("task_type_1", 42, "example.com"))
       .Times(1);
 
   controller_->OnSuggestionShown(suggestion);
@@ -783,10 +776,9 @@ TEST_F(FilterTabControllerTest, SuggestionCallbacksWiredCorrectly) {
   EXPECT_CALL(*mock_service_, GetRetentionState())
       .WillOnce(Return(RetentionStateSnapshot()));
   EXPECT_CALL(*mock_service_, RecordSuggestionImpression()).Times(1);
-  EXPECT_CALL(*mock_service_,
-              DeleteAnnotationsForTask(testing::Eq("Task1"),
-                                       testing::Eq(metadata.navigation_id),
-                                       testing::Eq("example.com")))
+  EXPECT_CALL(
+      *mock_service_,
+      DeleteAnnotationsForTask("Task1", metadata.navigation_id, "example.com"))
       .Times(1);
   ASSERT_FALSE(captured_callbacks.on_suggestion_shown.is_null());
   std::move(captured_callbacks.on_suggestion_shown).Run();
@@ -874,18 +866,15 @@ TEST_F(FilterTabControllerTest,
   new_metadata.has_user_gesture = true;
 
   EXPECT_CALL(*mock_delegate_, ClearSuggestion()).Times(1);
-  EXPECT_CALL(*mock_delegate_,
-              OnSuggestionGenerated(testing::Eq(std::nullopt), _))
+  EXPECT_CALL(*mock_delegate_, OnSuggestionGenerated(Eq(std::nullopt), _))
       .Times(1);
   EXPECT_CALL(*mock_service_,
               HasUserProvidedConsent(new_metadata.navigation_id,
                                      new_metadata.url.GetHost()))
-      .WillOnce(testing::Return(false));
+      .WillOnce(Return(false));
 
-  EXPECT_CALL(observer_,
-              OnExtractionFinishedForTest(testing::Eq(std::nullopt)));
-  EXPECT_CALL(observer_,
-              OnSuggestionGeneratedForTest(testing::Eq(std::nullopt)));
+  EXPECT_CALL(observer_, OnExtractionFinishedForTest(Eq(std::nullopt)));
+  EXPECT_CALL(observer_, OnSuggestionGeneratedForTest(Eq(std::nullopt)));
 
   controller_->OnNavigationFinished(new_metadata);
 
@@ -934,6 +923,118 @@ TEST_F(FilterTabControllerTest,
   histogram_tester.ExpectUniqueSample(
       kMultistepFilterAcceptanceReopenedCueHistogram,
       SuggestionUserDecision::kIgnored, 1);
+}
+
+// Tests that same-document navigations do not prematurely log the active UI
+// suggestion as ignored.
+TEST_F(FilterTabControllerTest, SameDocumentNavigationDoesNotLogIgnored) {
+  base::HistogramTester histogram_tester;
+
+  FilterNavigationMetadata metadata =
+      CreateMetadata(1, GURL("https://example.com"));
+  metadata.has_user_gesture = true;
+
+  base::Uuid expected_id = base::Uuid::GenerateRandomV4();
+  UrlFilterSuggestion expected_suggestion =
+      CreateDefaultSuggestion(metadata.navigation_id, metadata.url);
+
+  MultistepFilterUiDelegate::SuggestionUiCallbacks captured_callbacks;
+  RunNavigationAndShowSuggestion(metadata, expected_suggestion, expected_id,
+                                 RetentionStateSnapshot(), captured_callbacks);
+
+  // Trigger same-document navigation
+  FilterNavigationMetadata same_doc_metadata =
+      CreateMetadata(2, GURL("https://example.com/#section1"));
+  same_doc_metadata.prev_url = GURL("https://example.com/");
+  same_doc_metadata.is_same_document_navigation = true;
+  same_doc_metadata.has_user_gesture = true;
+
+  EXPECT_CALL(*mock_delegate_, ClearSuggestion()).Times(0);
+  EXPECT_CALL(*mock_service_,
+              HasUserProvidedConsent(same_doc_metadata.navigation_id,
+                                     same_doc_metadata.url.GetHost()))
+      .WillOnce(Return(true));
+
+  std::vector<std::string> supported_tasks = {"Task1"};
+  EXPECT_CALL(*mock_annotation_client(),
+              GetSupportedTasks(same_doc_metadata.url, _,
+                                same_doc_metadata.navigation_id))
+      .WillOnce(base::test::RunOnceCallback<1>(supported_tasks));
+
+  // Mock extractor to do nothing.
+  EXPECT_CALL(*mock_extractor_,
+              ExtractAnnotationFromUrl(same_doc_metadata.url, _,
+                                       same_doc_metadata.navigation_id))
+      .Times(1);
+
+  // Mock generator to do nothing (simulating async delay).
+  EXPECT_CALL(*mock_generator_,
+              GenerateSuggestion(same_doc_metadata.url, supported_tasks, _,
+                                 same_doc_metadata.navigation_id))
+      .Times(1);
+
+  controller_->OnNavigationFinished(same_doc_metadata);
+
+  // Verify that NO acceptance histograms were logged yet.
+  histogram_tester.ExpectTotalCount(kMultistepFilterAcceptanceHistogram, 0);
+}
+
+// Tests that same-document navigations log the active UI suggestion as ignored
+// if the new suggestion generation fails.
+TEST_F(FilterTabControllerTest, SameDocumentNavigationFailureLogsIgnored) {
+  base::HistogramTester histogram_tester;
+
+  FilterNavigationMetadata metadata =
+      CreateMetadata(1, GURL("https://example.com"));
+  metadata.has_user_gesture = true;
+
+  base::Uuid expected_id = base::Uuid::GenerateRandomV4();
+  UrlFilterSuggestion expected_suggestion =
+      CreateDefaultSuggestion(metadata.navigation_id, metadata.url);
+
+  MultistepFilterUiDelegate::SuggestionUiCallbacks captured_callbacks;
+  RunNavigationAndShowSuggestion(metadata, expected_suggestion, expected_id,
+                                 RetentionStateSnapshot(), captured_callbacks);
+
+  // Trigger same-document navigation
+  FilterNavigationMetadata same_doc_metadata =
+      CreateMetadata(2, GURL("https://example.com/#section1"));
+  same_doc_metadata.prev_url = GURL("https://example.com/");
+  same_doc_metadata.is_same_document_navigation = true;
+  same_doc_metadata.has_user_gesture = true;
+
+  EXPECT_CALL(*mock_delegate_, ClearSuggestion()).Times(0);
+  EXPECT_CALL(*mock_service_,
+              HasUserProvidedConsent(same_doc_metadata.navigation_id,
+                                     same_doc_metadata.url.GetHost()))
+      .WillOnce(Return(true));
+
+  std::vector<std::string> supported_tasks = {"Task1"};
+  EXPECT_CALL(*mock_annotation_client(),
+              GetSupportedTasks(same_doc_metadata.url, _,
+                                same_doc_metadata.navigation_id))
+      .WillOnce(base::test::RunOnceCallback<1>(supported_tasks));
+
+  // Mock extractor to do nothing.
+  EXPECT_CALL(*mock_extractor_,
+              ExtractAnnotationFromUrl(same_doc_metadata.url, _,
+                                       same_doc_metadata.navigation_id))
+      .Times(1);
+
+  // Mock generator to return nullopt.
+  EXPECT_CALL(*mock_generator_,
+              GenerateSuggestion(same_doc_metadata.url, supported_tasks, _,
+                                 same_doc_metadata.navigation_id))
+      .WillOnce(base::test::RunOnceCallback<2>(std::nullopt));
+
+  EXPECT_CALL(*mock_delegate_, OnSuggestionGenerated(Eq(std::nullopt), _));
+  EXPECT_CALL(observer_, OnSuggestionGeneratedForTest(Eq(std::nullopt)));
+
+  controller_->OnNavigationFinished(same_doc_metadata);
+
+  // Verify that kIgnored was logged because the suggestion was cleared.
+  histogram_tester.ExpectUniqueSample(kMultistepFilterAcceptanceHistogram,
+                                      SuggestionUserDecision::kIgnored, 1);
 }
 
 // Tests that when navigation finishes with an error page, and there was an
@@ -1284,6 +1385,88 @@ TEST_F(FilterTabControllerTest,
       histogram_tester,
       {kRetentionSliceAcceptedLastTime, kRetentionSliceAcceptedAtLeastOnce},
       MultistepFilterApplicationOutcome::kAllFiltersApplied);
+}
+
+// Tests that if a new navigation finishes while the controller is waiting for
+// extraction of a previously applied suggestion, the application session is
+// aborted and logged as a failure.
+TEST_F(FilterTabControllerTest, ApplicationInterruptedByNewNavigation) {
+  base::HistogramTester histogram_tester;
+
+  // 1. Suggestion accepted, starting landing navigation.
+  UrlFilterSuggestion suggestion = CreateSuggestionWithFacet(
+      "key1", u"Label1", "value1", /*triggering_navigation_id=*/10);
+
+  FilterNavigationMetadata landing_metadata = CreateMetadata(
+      /*navigation_id=*/11, GURL("https://example.com/applied"),
+      /*is_cryptographic=*/true, /*is_error_page=*/false,
+      /*net_error_code=*/0, std::move(suggestion));
+  landing_metadata.has_user_gesture = true;
+
+  EXPECT_CALL(*mock_delegate_, ClearSuggestion());
+  EXPECT_CALL(*mock_service_,
+              HasUserProvidedConsent(landing_metadata.navigation_id,
+                                     landing_metadata.url.GetHost()))
+      .WillOnce(Return(true));
+
+  std::vector<std::string> supported_tasks = {"Task1"};
+  EXPECT_CALL(*mock_annotation_client(),
+              GetSupportedTasks(landing_metadata.url, _,
+                                landing_metadata.navigation_id))
+      .WillOnce(base::test::RunOnceCallback<1>(supported_tasks));
+
+  // Mock extractor to do nothing (simulate async delay).
+  base::OnceCallback<void(std::optional<FilterAnnotation>)> extraction_callback;
+  EXPECT_CALL(*mock_extractor_,
+              ExtractAnnotationFromUrl(landing_metadata.url, _,
+                                       landing_metadata.navigation_id))
+      .WillOnce(testing::WithArg<1>(
+          [&extraction_callback](
+              base::OnceCallback<void(std::optional<FilterAnnotation>)> cb) {
+            extraction_callback = std::move(cb);
+          }));
+
+  // Mock generator to do nothing.
+  EXPECT_CALL(*mock_generator_, GenerateSuggestion).WillOnce(Return());
+
+  // Trigger landing navigation finish.
+  controller_->OnNavigationFinished(landing_metadata);
+
+  // No application outcome should be logged yet.
+  histogram_tester.ExpectTotalCount(kMultistepFilterApplicationOutcomeHistogram,
+                                    0);
+
+  // 2. A new navigation finishes before extraction completes.
+  FilterNavigationMetadata interrupt_metadata = CreateMetadata(
+      /*navigation_id=*/12, GURL("https://example.com/different"),
+      /*is_cryptographic=*/true, /*is_error_page=*/false,
+      /*net_error_code=*/0);
+  interrupt_metadata.has_user_gesture = true;
+
+  // Mock for the new navigation.
+  EXPECT_CALL(*mock_delegate_, ClearSuggestion());
+  EXPECT_CALL(*mock_service_,
+              HasUserProvidedConsent(interrupt_metadata.navigation_id,
+                                     interrupt_metadata.url.GetHost()))
+      .WillOnce(Return(true));
+  EXPECT_CALL(*mock_annotation_client(),
+              GetSupportedTasks(interrupt_metadata.url, _,
+                                interrupt_metadata.navigation_id))
+      .WillOnce(base::test::RunOnceCallback<1>(supported_tasks));
+  // Extraction and generation for new navigation will be triggered.
+  EXPECT_CALL(*mock_extractor_,
+              ExtractAnnotationFromUrl(interrupt_metadata.url, _,
+                                       interrupt_metadata.navigation_id))
+      .Times(1);
+  EXPECT_CALL(*mock_generator_, GenerateSuggestion).Times(1);
+
+  // Trigger interrupt navigation finish.
+  controller_->OnNavigationFinished(interrupt_metadata);
+
+  // Verify that the application outcome was logged as failure (interrupted).
+  histogram_tester.ExpectUniqueSample(
+      kMultistepFilterApplicationOutcomeHistogram,
+      MultistepFilterApplicationOutcome::kNotAllFiltersApplied, 1);
 }
 
 }  // namespace

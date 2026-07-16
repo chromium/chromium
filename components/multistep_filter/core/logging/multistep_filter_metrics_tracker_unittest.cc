@@ -155,6 +155,34 @@ TEST_F(MultistepFilterMetricsTrackerTest,
       kMultistepFilterSuggestionAgeShownOnSameDomainHistogram, 0);
 }
 
+// Verifies that showing the initial cue without explicit user interaction
+// records kIgnored to both initial cue and overall histograms upon navigation.
+TEST_F(MultistepFilterMetricsTrackerTest,
+       InitialCueIgnoredOnNavigationRecordsSample) {
+  base::HistogramTester histogram_tester;
+  UrlFilterSuggestion suggestion = CreateSuggestion("SEARCH_ACCOMMODATIONS");
+
+  MultistepFilterMetricsTracker tracker;
+  TriggerInitialNavigation(tracker);
+
+  // Show suggestion.
+  tracker.OnSuggestionShown(suggestion, RetentionStateSnapshot());
+
+  // Trigger navigation to a different page.
+  FilterNavigationMetadata metadata = CreateDefaultMetadata();
+  metadata.url = GURL("https://different.com");
+  metadata.prev_url = GURL("https://example.com");
+  metadata.is_same_document_navigation = false;
+
+  tracker.OnNavigationFinished(metadata);
+
+  histogram_tester.ExpectUniqueSample(
+      kMultistepFilterAcceptanceInitialCueHistogram,
+      SuggestionUserDecision::kIgnored, 1);
+  histogram_tester.ExpectUniqueSample(kMultistepFilterAcceptanceHistogram,
+                                      SuggestionUserDecision::kIgnored, 1);
+}
+
 // Verifies that interacting with the initial cue (e.g., dismissing it) records
 // the explicit decision to both the initial cue and overall histograms.
 TEST_F(MultistepFilterMetricsTrackerTest,
@@ -719,6 +747,48 @@ TEST_F(MultistepFilterMetricsTrackerTest,
   VerifyApplicationOutcomeRetentionHistograms(
       histogram_tester, {kRetentionSliceFirstImpression},
       MultistepFilterApplicationOutcome::kAllFiltersApplied);
+}
+
+// Tests that showing a suggestion while another is already cached flushes the
+// previous suggestion as ignored.
+TEST_F(MultistepFilterMetricsTrackerTest,
+       SuggestionReplacementFlushesPreviousAsIgnored) {
+  base::HistogramTester histogram_tester;
+  UrlFilterSuggestion suggestion1 = CreateSuggestion("SEARCH_ACCOMMODATIONS");
+  UrlFilterSuggestion suggestion2 = CreateSuggestion("SEARCH_FLIGHTS");
+
+  MultistepFilterMetricsTracker tracker;
+  TriggerInitialNavigation(tracker);
+  tracker.OnSuggestionShown(suggestion1, RetentionStateSnapshot());
+  histogram_tester.ExpectTotalCount(kMultistepFilterAcceptanceHistogram, 0);
+  tracker.OnSuggestionShown(suggestion2, RetentionStateSnapshot());
+  histogram_tester.ExpectUniqueSample(kMultistepFilterAcceptanceHistogram,
+                                      SuggestionUserDecision::kIgnored, 1);
+  histogram_tester.ExpectUniqueSample(
+      kMultistepFilterAcceptanceInitialCueHistogram,
+      SuggestionUserDecision::kIgnored, 1);
+}
+
+// Tests that preserving a suggestion cleared flushes the active session as
+// ignored.
+TEST_F(MultistepFilterMetricsTrackerTest,
+       PreservedSuggestionClearedFlushesActiveSession) {
+  base::HistogramTester histogram_tester;
+  UrlFilterSuggestion suggestion = CreateSuggestion("SEARCH_ACCOMMODATIONS");
+
+  MultistepFilterMetricsTracker tracker;
+  FilterNavigationMetadata metadata = CreateDefaultMetadata();
+  metadata.url = GURL("https://example.com");
+  tracker.OnNavigationFinished(metadata);
+  tracker.OnSuggestionShown(suggestion, RetentionStateSnapshot());
+  FilterNavigationMetadata same_page_metadata = CreateDefaultMetadata();
+  same_page_metadata.url = GURL("https://example.com/#hash");
+  same_page_metadata.prev_url = GURL("https://example.com");
+  same_page_metadata.is_same_document_navigation = true;
+  tracker.OnNavigationFinished(same_page_metadata);
+  tracker.OnPreservedSuggestionCleared();
+  histogram_tester.ExpectUniqueSample(kMultistepFilterAcceptanceHistogram,
+                                      SuggestionUserDecision::kIgnored, 1);
 }
 
 }  // namespace

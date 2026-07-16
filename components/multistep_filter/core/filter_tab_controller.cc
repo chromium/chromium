@@ -308,6 +308,7 @@ void FilterTabController::OnSuggestionGenerated(
         });
   } else {
     delegate_->OnSuggestionGenerated(std::nullopt, {});
+    metrics_tracker_.OnPreservedSuggestionCleared();
   }
   if (observer_for_test_) {
     observer_for_test_->OnSuggestionGeneratedForTest(suggestion);  // IN-TEST
