@@ -11,8 +11,10 @@
 #include "base/base64url.h"
 #include "base/functional/callback.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_command_line.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "components/one_time_tokens/core/common/one_time_token_switches.h"
 #include "components/one_time_tokens/core/browser/fetch_email_one_time_token_error_details.pb.h"
 #include "components/one_time_tokens/core/browser/fetch_email_one_time_token_request.pb.h"
 #include "components/one_time_tokens/core/browser/fetch_email_one_time_token_response.pb.h"
@@ -488,6 +490,37 @@ TEST_F(EmailOneTimeTokenFetcherTest, NoResponseCodeWithValidBody) {
   EXPECT_EQ(result.error(),
             OneTimeTokenRetrievalError::
                 kGmailOtpBackendSmartFeaturesInGmailConsentRequired);
+}
+
+// Tests that the fetcher uses a custom endpoint URL when set via the command
+// line switch.
+TEST_F(EmailOneTimeTokenFetcherTest, FetchEmailOneTimeToken_CustomEndpointUrl) {
+  constexpr char kCustomUrl[] = "https://example.com/custom_endpoint";
+  base::test::ScopedCommandLine scoped_command_line;
+  scoped_command_line.GetProcessCommandLine()->AppendSwitchASCII(
+      one_time_tokens::switches::kOneTimeTokenFetchEmailEndpointUrl, kCustomUrl);
+
+  std::unique_ptr<EmailOneTimeTokenFetcher> fetcher = CreateFetcher();
+  base::test::TestFuture<
+      base::expected<OneTimeToken, OneTimeTokenRetrievalError>>
+      future;
+
+  fetcher->Start(future.GetCallback());
+  WaitForAccessTokenRequestAndRespondWithSuccess();
+
+  // Helper to construct expected custom URL.
+  auto get_expected_custom_url = [](const std::string& custom_endpoint) {
+    std::string encoded_reference;
+    base::Base64UrlEncode(kEncryptedMessageReference,
+                          base::Base64UrlEncodePolicy::INCLUDE_PADDING,
+                          &encoded_reference);
+    GURL url = net::AppendQueryParameter(
+        GURL(custom_endpoint), "encryptedMessageReference", encoded_reference);
+    return net::AppendQueryParameter(url, "alt", "proto").spec();
+  };
+
+  EXPECT_TRUE(test_url_loader_factory_->IsPending(
+      get_expected_custom_url(kCustomUrl)));
 }
 
 }  // namespace one_time_tokens

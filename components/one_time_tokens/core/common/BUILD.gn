@@ -7,6 +7,8 @@ component("features") {
   sources = [
     "one_time_token_features.cc",
     "one_time_token_features.h",
+    "one_time_token_switches.cc",
+    "one_time_token_switches.h",
   ]
   public_deps = [ "//base" ]
 }

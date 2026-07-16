@@ -12,7 +12,7 @@
 #include "base/functional/callback.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/gmock_expected_support.h"
-#include "base/test/scoped_feature_list.h"
+#include "base/test/scoped_command_line.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
@@ -20,6 +20,7 @@
 #include "chrome/browser/autofill/actor/one_time_tokens/actor_login_context.h"
 #include "chrome/browser/autofill/one_time_token_service_factory.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/actor/core/actor_switches.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/foundations/test_browser_autofill_manager.h"
 #include "components/autofill/core/browser/integrators/one_time_tokens/otp_suggestion.h"
@@ -29,7 +30,6 @@
 #include "components/one_time_tokens/core/browser/one_time_token.h"
 #include "components/one_time_tokens/core/browser/one_time_token_retrieval_error.h"
 #include "components/one_time_tokens/core/browser/one_time_token_service.h"
-#include "components/one_time_tokens/core/common/one_time_token_features.h"
 #include "components/security_state/content/security_state_tab_helper.h"
 #include "components/security_state/core/security_state.h"
 #include "content/public/browser/navigation_controller.h"
@@ -108,14 +108,13 @@ class ActorOneTimeTokenFillingServiceImplTest : public ActorTestBase {
   std::unique_ptr<ActorOneTimeTokenFillingServiceImpl> service_;
 };
 
-// Tests that `RetrieveOtp` returns the mock OTP immediately from the feature
-// parameter when the parameter is set.
-TEST_F(ActorOneTimeTokenFillingServiceImplTest, RetrieveOtp_MockOtpFeatureSet) {
+// Tests that `RetrieveOtp` returns the mock OTP immediately from the command line
+// switch when the switch is set.
+TEST_F(ActorOneTimeTokenFillingServiceImplTest, RetrieveOtp_MockOtpSwitchSet) {
   const std::string kMockOtp = "987654";
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      one_time_tokens::features::kGmailOtpRetrievalService,
-      {{"mock-gmail-otp-value", kMockOtp}});
+  base::test::ScopedCommandLine scoped_command_line;
+  scoped_command_line.GetProcessCommandLine()->AppendSwitchASCII(
+      ::actor::switches::kAttemptOtpFillingMockGmailOtpValue, kMockOtp);
 
   // The OTP service is not expected to be queried for cached tokens or
   // subscription since RetrieveOtp returns early.

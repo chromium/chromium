@@ -25,5 +25,7 @@ const char kAttemptOtpFillingBypassLoginCheck[] =
 // Forces logging of the actor aggregated journal events in VLOG(1). Useful on
 // Android as VLOGs are removed on official builds.
 const char kEnableActorJournalVLog[] = "enable-actor-journal-vlog";
+const char kAttemptOtpFillingMockGmailOtpValue[] =
+    "attempt-otp-filling-mock-gmail-otp-value";
 
 }  // namespace actor::switches

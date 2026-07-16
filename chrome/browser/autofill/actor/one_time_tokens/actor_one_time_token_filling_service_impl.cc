@@ -30,10 +30,11 @@
 #include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
 #include "components/autofill/core/browser/integrators/actor/actor_form_filling_types.h"
 #include "components/autofill/core/browser/integrators/one_time_tokens/otp_suggestion.h"
+#include "base/command_line.h"
+#include "components/actor/core/actor_switches.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/one_time_tokens/core/browser/one_time_token.h"
 #include "components/one_time_tokens/core/browser/one_time_token_service.h"
-#include "components/one_time_tokens/core/common/one_time_token_features.h"
 #include "components/security_state/content/security_state_tab_helper.h"
 #include "components/security_state/core/security_state.h"
 #include "components/tabs/public/tab_interface.h"
@@ -154,9 +155,10 @@ void ActorOneTimeTokenFillingServiceImpl::RetrieveOtp(
     return;
   }
 
-  if (std::string mock_otp =
-          one_time_tokens::features::kMockGmailOtpValue.Get();
-      !mock_otp.empty()) {
+  std::string mock_otp =
+      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+          ::actor::switches::kAttemptOtpFillingMockGmailOtpValue);
+  if (!mock_otp.empty()) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), std::move(mock_otp)));
     return;
