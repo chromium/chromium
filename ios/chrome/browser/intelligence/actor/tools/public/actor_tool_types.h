@@ -42,6 +42,8 @@ enum class ToolType {
   kAttemptLogin,
   // Tool to close a tab.
   kCloseTab,
+  // Tool to fill form fields.
+  kAttemptFormFilling,
 };
 
 // iOS-specific error codes for tool execution failures.

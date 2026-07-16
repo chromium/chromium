@@ -6,6 +6,7 @@
 
 #import "components/optimization_guide/proto/features/actions_data.pb.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool.h"
+#import "ios/chrome/browser/intelligence/actor/tools/model/attempt_form_filling_tool.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/attempt_login_tool.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/click_tool.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/history_tool.h"
@@ -57,6 +58,10 @@ ActorToolFactory::CreateTool(const optimization_guide::proto::Action& action,
     case optimization_guide::proto::Action::kAttemptLogin:
       return AttemptLoginTool::Create(action.attempt_login(), tool_delegate,
                                       profile_context_resolver_);
+    case optimization_guide::proto::Action::kAttemptFormFilling:
+      return AttemptFormFillingTool::Create(action.attempt_form_filling(),
+                                            tool_delegate,
+                                            profile_context_resolver_);
     case optimization_guide::proto::Action::kCloseTab:
       return TabManagementTool::CreateCloseTabTool(action.close_tab(),
                                                    profile_context_resolver_);
@@ -86,6 +91,7 @@ ActorToolFactory::GetSupportedCapabilities() const {
       optimization_guide::proto::Action::kScrollTo,
       optimization_guide::proto::Action::kSelect,
       optimization_guide::proto::Action::kAttemptLogin,
+      optimization_guide::proto::Action::kAttemptFormFilling,
       optimization_guide::proto::Action::kCloseTab,
   };
   // LINT.ThenChange(//ios/chrome/browser/intelligence/actor/tools/model/actor_tool_factory.mm:CreateTool)

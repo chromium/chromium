@@ -13,6 +13,7 @@ source_set("actor_tool_factory") {
   public_deps = [ "//ios/chrome/browser/intelligence/actor/tools/utils:profile_context_resolver" ]
   deps = [
     ":actor_tool_interface",
+    ":attempt_form_filling_tool",
     ":attempt_login_tool",
     ":click_tool",
     ":history_tool",
@@ -147,6 +148,22 @@ source_set("attempt_login_tool") {
     "//ios/chrome/browser/optimization_guide/model",
     "//ios/chrome/browser/passwords/model/actor_login",
     "//ios/chrome/browser/shared/model/application_context",
+    "//ios/web/public",
+  ]
+}
+
+source_set("attempt_form_filling_tool") {
+  sources = [
+    "attempt_form_filling_tool.h",
+    "attempt_form_filling_tool.mm",
+  ]
+
+  deps = [
+    ":actor_tool_interface",
+    "//base",
+    "//components/optimization_guide/proto:optimization_guide_proto",
+    "//ios/chrome/browser/intelligence/actor/tools/public",
+    "//ios/chrome/browser/intelligence/actor/tools/utils:profile_context_resolver",
     "//ios/web/public",
   ]
 }

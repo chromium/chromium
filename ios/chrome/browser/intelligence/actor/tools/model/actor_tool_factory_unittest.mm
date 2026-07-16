@@ -53,6 +53,7 @@ TEST_F(ActorToolFactoryTest, GetSupportedCapabilities) {
                   optimization_guide::proto::Action::kScrollTo,
                   optimization_guide::proto::Action::kSelect,
                   optimization_guide::proto::Action::kAttemptLogin,
+                  optimization_guide::proto::Action::kAttemptFormFilling,
                   optimization_guide::proto::Action::kCloseTab));
 }
 
