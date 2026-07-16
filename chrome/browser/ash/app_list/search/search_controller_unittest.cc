@@ -90,6 +90,7 @@ class SearchControllerTest : public testing::Test {
 
   void SetUp() override {
     search_controller_ = std::make_unique<SearchController>(
+        TestingBrowserProcess::GetGlobal()->local_state(),
         /*model_updater=*/&model_updater_,
         /*list_controller=*/&list_controller_,
         /*notifier=*/nullptr, &profile_);

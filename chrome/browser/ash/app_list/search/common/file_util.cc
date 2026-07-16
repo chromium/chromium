@@ -4,19 +4,16 @@
 
 #include "chrome/browser/ash/app_list/search/common/file_util.h"
 
-#include "base/check_deref.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/file_manager/trash_common_util.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 
 namespace app_list {
 
-std::vector<base::FilePath> GetTrashPaths(Profile* profile) {
+std::vector<base::FilePath> GetTrashPaths(const PrefService& local_state,
+                                          Profile* profile) {
   std::vector<base::FilePath> excluded_paths;
-  // TODO(crbug.com/404129453): Avoid using g_browser_process.
-  if (file_manager::trash::IsTrashEnabledForProfile(
-          CHECK_DEREF(g_browser_process->local_state()), profile)) {
+  if (file_manager::trash::IsTrashEnabledForProfile(local_state, profile)) {
     const auto trash_locations =
         file_manager::trash::GenerateEnabledTrashLocationsForProfile(profile);
     for (const auto& location : trash_locations) {

@@ -29,7 +29,8 @@ bool IsQueryTooShort(const std::u16string& query) {
   return query.size() < kMinQueryLength;
 }
 
-LocalImageSearchService::LocalImageSearchService(Profile* profile)
+LocalImageSearchService::LocalImageSearchService(const PrefService& local_state,
+                                                 Profile* profile)
     : annotation_storage_(
           base::ThreadPool::CreateSequencedTaskRunner(
               {base::MayBlock(), base::TaskPriority::USER_BLOCKING,
@@ -37,7 +38,7 @@ LocalImageSearchService::LocalImageSearchService(Profile* profile)
           ConstructPathToAnnotationDb(profile),
           std::make_unique<ImageAnnotationWorker>(
               file_manager::util::GetMyFilesFolderForProfile(profile),
-              GetTrashPaths(profile),
+              GetTrashPaths(local_state, profile),
               profile,
               /*use_file_watchers=*/true,
               search_features::IsLauncherImageSearchOcrEnabled(),

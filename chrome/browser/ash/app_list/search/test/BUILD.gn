@@ -36,6 +36,7 @@ static_library("test_support") {
     "//chrome/browser/ash/app_list/search/omnibox",
     "//chrome/browser/ash/app_list/search/ranking",
     "//chrome/browser/ui",
+    "//chrome/test:test_support",
     "//testing/gmock",
     "//testing/gtest",
   ]

@@ -34,6 +34,7 @@
 #include "chrome/browser/ash/app_list/search/system_info/system_info_card_provider.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_utils.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "components/omnibox/browser/autocomplete_classifier.h"
@@ -54,7 +55,8 @@ std::unique_ptr<SearchController> CreateSearchController(
     AppListControllerDelegate* list_controller,
     ash::AppListNotifier* notifier) {
   auto controller = std::make_unique<SearchController>(
-      model_updater, list_controller, notifier, profile);
+      g_browser_process->local_state(), model_updater, list_controller,
+      notifier, profile);
   controller->Initialize();
 
   // Add search providers.

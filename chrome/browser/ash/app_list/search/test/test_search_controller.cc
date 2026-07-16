@@ -7,11 +7,16 @@
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "base/functional/bind.h"
 #include "chrome/browser/ash/app_list/search/search_provider.h"
+#include "chrome/test/base/testing_browser_process.h"
 
 namespace app_list {
 
 TestSearchController::TestSearchController()
-    : SearchController(nullptr, nullptr, nullptr, nullptr) {}
+    : SearchController(TestingBrowserProcess::GetGlobal()->local_state(),
+                       nullptr,
+                       nullptr,
+                       nullptr,
+                       nullptr) {}
 
 TestSearchController::~TestSearchController() = default;
 

@@ -4,8 +4,10 @@
 
 #include "chrome/browser/ash/app_list/search/local_image_search/local_image_search_service_factory.h"
 
+#include "base/check_deref.h"
 #include "chrome/browser/ash/app_list/search/local_image_search/local_image_search_service.h"
 #include "chrome/browser/ash/app_list/search/search_features.h"
+#include "chrome/browser/browser_process.h"
 
 namespace app_list {
 namespace {
@@ -56,7 +58,8 @@ LocalImageSearchServiceFactory::BuildServiceInstanceForBrowserContext(
     return nullptr;
   }
 
-  return std::make_unique<LocalImageSearchService>(profile);
+  return std::make_unique<LocalImageSearchService>(
+      CHECK_DEREF(g_browser_process->local_state()), profile);
 }
 
 bool LocalImageSearchServiceFactory::ServiceIsCreatedWithBrowserContext()

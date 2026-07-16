@@ -14,6 +14,7 @@
 
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/time/time.h"
@@ -29,6 +30,7 @@
 class AppListControllerDelegate;
 class AppListModelUpdater;
 class ChromeSearchResult;
+class PrefService;
 class Profile;
 
 namespace ash {
@@ -53,7 +55,9 @@ class SearchController {
  public:
   using ResultsChangedCallback = base::RepeatingCallback<void(ResultType)>;
 
-  SearchController(AppListModelUpdater* model_updater,
+  // `local_state` must be non-null and must outlive `this`.
+  SearchController(PrefService* local_state,
+                   AppListModelUpdater* model_updater,
                    AppListControllerDelegate* list_controller,
                    ash::AppListNotifier* notifier,
                    Profile* profile);
@@ -207,6 +211,7 @@ class SearchController {
   // If set, called when results set by a provider change. Only set by tests.
   ResultsChangedCallback results_changed_callback_for_test_;
 
+  const raw_ref<const PrefService> local_state_;
   const raw_ptr<Profile> profile_;
 
   std::unique_ptr<BurnInController> burn_in_controller_;

@@ -12,6 +12,7 @@
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/app_list/app_list_metrics.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
+#include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/metrics_hashes.h"
@@ -58,11 +59,13 @@ void ClearNonZeroStateResults(ResultsMap& results) {
 
 }  // namespace
 
-SearchController::SearchController(AppListModelUpdater* model_updater,
+SearchController::SearchController(PrefService* local_state,
+                                   AppListModelUpdater* model_updater,
                                    AppListControllerDelegate* list_controller,
                                    ash::AppListNotifier* notifier,
                                    Profile* profile)
-    : profile_(profile),
+    : local_state_(CHECK_DEREF(local_state)),
+      profile_(profile),
       model_updater_(model_updater),
       list_controller_(list_controller),
       notifier_(notifier) {}
@@ -86,7 +89,7 @@ void SearchController::Initialize() {
   if (search_features::IsLauncherSearchFileScanEnabled()) {
     search_file_scanner_ = std::make_unique<SearchFileScanner>(
         profile_, file_manager::util::GetMyFilesFolderForProfile(profile_),
-        GetTrashPaths(profile_));
+        GetTrashPaths(local_state_.get(), profile_));
   }
 }
 

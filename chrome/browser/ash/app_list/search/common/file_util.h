@@ -9,13 +9,15 @@
 
 #include "base/files/file_path.h"
 
+class PrefService;
 class Profile;
 
 namespace app_list {
 
 // Gets the list of paths for trashing as we need to exclude them from launcher
 // search.
-std::vector<base::FilePath> GetTrashPaths(Profile* profile);
+std::vector<base::FilePath> GetTrashPaths(const PrefService& local_state,
+                                          Profile* profile);
 
 }  // namespace app_list
 

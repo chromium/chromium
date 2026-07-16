@@ -26,6 +26,7 @@
 #include "chrome/browser/ash/app_list/search/search_controller.h"
 #include "chrome/browser/ash/app_list/search/search_provider.h"
 #include "chrome/browser/ash/app_list/test/chrome_app_list_test_support.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -374,6 +375,7 @@ class SpokenFeedbackAppListSearchTest : public SpokenFeedbackAppListBaseTest {
     // set of results shown in the search result UI.
     std::unique_ptr<app_list::SearchController> search_controller =
         std::make_unique<app_list::SearchController>(
+            g_browser_process->local_state(),
             app_list_client->GetModelUpdaterForTest(), app_list_client, nullptr,
             browser()->profile());
     search_controller->Initialize();

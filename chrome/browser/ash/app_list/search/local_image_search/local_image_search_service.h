@@ -12,6 +12,8 @@
 #include "chrome/browser/profiles/profile.h"
 #include "components/keyed_service/core/keyed_service.h"
 
+class PrefService;
+
 namespace app_list {
 
 // Ignore short queries, which are too noisy to be meaningful.
@@ -21,7 +23,7 @@ bool IsQueryTooShort(const std::u16string& query);
 // There can only be one AnnotationStorage instance per Profile.
 class LocalImageSearchService : public KeyedService {
  public:
-  explicit LocalImageSearchService(Profile* profile);
+  LocalImageSearchService(const PrefService& local_state, Profile* profile);
   ~LocalImageSearchService() override;
 
   LocalImageSearchService(const LocalImageSearchService&) = delete;
