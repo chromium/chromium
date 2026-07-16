@@ -265,6 +265,9 @@ crbug.com/508672616 wpt_internal/html/rendering/unbounded-element/* [ Failure ]
 # Enabled virtual suite tests should pass:
 crbug.com/508672616 virtual/unbounded-element/wpt_internal/html/rendering/unbounded-element/* [ Pass ]
 
+# This is flaky on some bots - this will be fixed in a followup patch:
+crbug.com/508672616 wpt_internal/html/rendering/unbounded-element/sandboxed-iframe-appearance.html [ Failure ]
+crbug.com/508672616 virtual/unbounded-element/wpt_internal/html/rendering/unbounded-element/sandboxed-iframe-appearance.html [ Pass Failure ]
 
 # ====== END Unbounded Element tests ======
 
