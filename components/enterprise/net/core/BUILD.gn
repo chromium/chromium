@@ -20,11 +20,13 @@ static_library("core") {
 
   if (is_android) {
     public += [
+      "enterprise_network_auth_service.h",
       "enterprise_proxy_service.h",
       "types.h",
       "utils.h",
     ]
     sources += [
+      "enterprise_network_auth_service.cc",
       "enterprise_proxy_service.cc",
       "types.cc",
       "utils.cc",
@@ -45,6 +47,7 @@ source_set("unit_tests") {
 
   if (is_android) {
     sources += [
+      "enterprise_network_auth_service_unittest.cc",
       "enterprise_proxy_service_unittest.cc",
       "utils_unittest.cc",
     ]

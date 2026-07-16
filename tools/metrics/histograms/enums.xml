@@ -3796,6 +3796,21 @@ shown properly on the user-facing crash UI.
   <int value="11" label="Server returned error"/>
 </enum>
 
+<!-- LINT.IfChange(EnterpriseNetworkTokenFetchError) -->
+
+<enum name="EnterpriseNetworkTokenFetchError">
+  <int value="0" label="Success"/>
+  <int value="1" label="No Primary Account"/>
+  <int value="2" label="Unmanaged User"/>
+  <int value="3" label="Unsupported Scope"/>
+  <int value="4" label="Invalid Credentials"/>
+  <int value="5" label="Transient Error"/>
+  <int value="6" label="Auth Error"/>
+  <int value="7" label="Canceled"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/enterprise/net/core/enterprise_network_auth_service.h:TokenFetchError) -->
+
 <enum name="ExtensionInProgressRequestState">
   <int value="0" label="In progress"/>
   <int value="1" label="In progress, but the final response has arrived"/>
