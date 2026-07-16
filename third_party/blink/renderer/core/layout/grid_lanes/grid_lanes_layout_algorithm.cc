@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/layout/grid_lanes/grid_lanes_layout_algorithm.h"
 
 #include "base/notreached.h"
+#include "third_party/blink/renderer/core/layout/fragmentation_utils.h"
 #include "third_party/blink/renderer/core/layout/grid/grid_baseline_accumulator.h"
 #include "third_party/blink/renderer/core/layout/grid/grid_data.h"
 #include "third_party/blink/renderer/core/layout/grid/grid_item.h"
@@ -186,9 +187,16 @@ const LayoutResult* GridLanesLayoutAlgorithm::Layout() {
   intrinsic_block_size_ =
       ClampIntrinsicBlockSize(GetConstraintSpace(), node, GetBreakToken(),
                               BorderScrollbarPadding(), intrinsic_block_size_);
+
+  LayoutUnit previously_consumed_block_size;
+  if (GetBreakToken()) [[unlikely]] {
+    previously_consumed_block_size = GetBreakToken()->ConsumedBlockSize();
+  }
+
   auto block_size = ComputeBlockSizeForFragment(
       GetConstraintSpace(), Node(), BorderPadding(),
-      contain_intrinsic_block_size_.value_or(intrinsic_block_size_),
+      previously_consumed_block_size +
+          contain_intrinsic_block_size_.value_or(intrinsic_block_size_),
       container_builder_.InlineSize());
   container_builder_.SetFragmentsTotalBlockSize(block_size);
   container_builder_.SetIntrinsicBlockSize(intrinsic_block_size_);
@@ -216,6 +224,16 @@ const LayoutResult* GridLanesLayoutAlgorithm::Layout() {
     container_builder_.SetInflowBounds(LogicalRect(offset, size));
   }
   container_builder_.SetMayHaveDescendantAboveBlockStart(false);
+
+  if (InvolvedInBlockFragmentation(container_builder_)) [[unlikely]] {
+    FinishFragmentation(&container_builder_);
+  } else {
+#if DCHECK_IS_ON()
+    // If we're not participating in a fragmentation context, no block
+    // fragmentation related fields should have been set.
+    container_builder_.CheckNoBlockFragmentation();
+#endif
+  }
 
   // Place out-of-flow items after setting the intrinsic block size, since
   // out-of-flow items don't contribute to the intrinsic size of the container.
