@@ -373,12 +373,6 @@ BASE_FEATURE_PARAM(bool,
                    true);
 
 BASE_FEATURE_PARAM(bool,
-                   kPageActionsMigrationReadingMode,
-                   &kPageActionsMigration,
-                   "reading_mode",
-                   true);
-
-BASE_FEATURE_PARAM(bool,
                    kPageActionsMigrationSavePayments,
                    &kPageActionsMigration,
                    "save_payments",

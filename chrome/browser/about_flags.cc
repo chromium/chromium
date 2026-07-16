@@ -1220,7 +1220,6 @@ const FeatureEntry::FeatureParam kPageActionsMigrationParams[] = {
     {"filled_card_information", "true"},
     {"intent_picker", "true"},
     {"mandatory_reauth", "true"},
-    {"reading_mode", "true"},
     {"save_payments", "true"},
     {"sharing_hub", "true"},
     {"virtual_card", "true"},
