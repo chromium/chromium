@@ -75,6 +75,11 @@ BASE_FEATURE(kAndroidPkAutocorrectUnderline, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kAndroidPkAutocorrectUnderlineV2,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Removes the setLocalFocus workaround and delay for multi-display setups on
+// Baklava and above.
+BASE_FEATURE(kAndroidRemoveSetLocalFocusWorkaroundOnBaklava,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Blocks the misspelling suggestion span in composition mode.
 BASE_FEATURE(kAndroidBlockMisspellingSuggestionSpanInCompositionMode,
              base::FEATURE_DISABLED_BY_DEFAULT);
