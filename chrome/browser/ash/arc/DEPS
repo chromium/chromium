@@ -97,6 +97,7 @@ specific_include_rules = {
     "+chrome/grit",
     "+chrome/browser/ui/extensions/app_launch_params.h",
     "+chrome/browser/ui/extensions/application_launch.h",
+    "+chrome/browser/ui/webui/theme_source.h",
   ],
 
   "icon_decode_request\\.cc": [
