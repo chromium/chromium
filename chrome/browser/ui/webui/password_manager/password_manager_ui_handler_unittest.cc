@@ -475,6 +475,87 @@ TEST_F(PasswordManagerUIHandlerUnitTest, ResetImporter_CallsDelegate) {
   EXPECT_TRUE(future.Wait());
 }
 
+TEST_F(PasswordManagerUIHandlerUnitTest, ImportPasswords_CallsDelegate) {
+  base::test::TestFuture<mojom::ImportResultsPtr> future;
+
+  extensions::api::passwords_private::ImportResults results;
+  results.status =
+      extensions::api::passwords_private::ImportResultsStatus::kSuccess;
+  results.number_imported = 1;
+  results.file_name = "passwords.csv";
+
+  extensions::api::passwords_private::ImportEntry entry;
+  entry.status = extensions::api::passwords_private::ImportEntryStatus::kValid;
+  entry.id = 0;
+  entry.url = "http://google.com";
+  entry.username = "user";
+  entry.password = "pass";
+  results.displayed_entries.push_back(std::move(entry));
+
+  EXPECT_CALL(mock_delegate(), ImportPasswords)
+      .WillOnce(
+          [&](extensions::api::passwords_private::PasswordStoreSet store,
+              base::OnceCallback<void(
+                  const extensions::api::passwords_private::ImportResults&)>
+                  callback,
+              content::WebContents* web_contents) {
+            std::move(callback).Run(results);
+          });
+
+  handler().ImportPasswords(mojom::PasswordStoreSet::kDevice,
+                            future.GetCallback());
+
+  auto mojo_results = future.Take();
+  EXPECT_EQ(mojom::ImportResultsStatus::kSuccess, mojo_results->status);
+  EXPECT_EQ(1, mojo_results->number_imported);
+  EXPECT_EQ("passwords.csv", mojo_results->file_name);
+  ASSERT_EQ(1u, mojo_results->displayed_entries.size());
+  EXPECT_EQ(mojom::ImportEntryStatus::kValid,
+            mojo_results->displayed_entries[0]->status);
+  EXPECT_EQ("http://google.com", mojo_results->displayed_entries[0]->url);
+  EXPECT_EQ("user", mojo_results->displayed_entries[0]->username);
+  EXPECT_EQ("pass", mojo_results->displayed_entries[0]->password);
+}
+
+TEST_F(PasswordManagerUIHandlerUnitTest, ContinueImport_CallsDelegate) {
+  base::test::TestFuture<mojom::ImportResultsPtr> future;
+
+  extensions::api::passwords_private::ImportResults results;
+  results.status =
+      extensions::api::passwords_private::ImportResultsStatus::kConflicts;
+  results.number_imported = 0;
+  results.file_name = "conflicts.csv";
+
+  extensions::api::passwords_private::ImportEntry entry;
+  entry.status =
+      extensions::api::passwords_private::ImportEntryStatus::kConflictProfile;
+  entry.id = 1;
+  entry.url = "http://google.com";
+  entry.username = "user";
+  entry.password = "pass";
+  results.displayed_entries.push_back(std::move(entry));
+
+  EXPECT_CALL(mock_delegate(), ContinueImport)
+      .WillOnce(
+          [&](const std::vector<int32_t>& selected_ids,
+              base::OnceCallback<void(
+                  const extensions::api::passwords_private::ImportResults&)>
+                  callback) { std::move(callback).Run(results); });
+
+  handler().ContinueImport({0, 1}, future.GetCallback());
+
+  auto mojo_results = future.Take();
+  EXPECT_EQ(mojom::ImportResultsStatus::kConflicts, mojo_results->status);
+  EXPECT_EQ(0, mojo_results->number_imported);
+  EXPECT_EQ("conflicts.csv", mojo_results->file_name);
+  ASSERT_EQ(1u, mojo_results->displayed_entries.size());
+  EXPECT_EQ(mojom::ImportEntryStatus::kConflictProfile,
+            mojo_results->displayed_entries[0]->status);
+  EXPECT_EQ("http://google.com", mojo_results->displayed_entries[0]->url);
+  EXPECT_EQ("user", mojo_results->displayed_entries[0]->username);
+  EXPECT_EQ("pass", mojo_results->displayed_entries[0]->password);
+}
+
 TEST_F(PasswordManagerUIHandlerUnitTest,
        StartPasswordChange_CallsServiceAndUpdatesState) {
   base::test::ScopedFeatureList feature_list;

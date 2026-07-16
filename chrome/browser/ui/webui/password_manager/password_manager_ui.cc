@@ -687,6 +687,11 @@ content::WebUIDataSource* CreateAndAddPasswordsUIHTMLSource(
       base::FeatureList::IsEnabled(
           password_manager::features::kEnablePasswordManagerMojoApi));
 
+  source->AddBoolean(
+      "enablePasswordManagerMojoApiPhase2",
+      base::FeatureList::IsEnabled(
+          password_manager::features::kEnablePasswordManagerMojoApiPhase2));
+
   source->AddString("webuiRefresh2026", features::IsWebuiRefresh2026Enabled()
                                             ? "webui-refresh-2026"
                                             : "");

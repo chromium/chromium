@@ -4,8 +4,8 @@
 
 /** @fileoverview Test implementation of PasswordManagerProxy. */
 
-import {ExportPasswordsResult, ExportProgressStatus, PageCallbackRouter, PasswordManagerActionableError} from 'chrome://password-manager/password_manager.js';
-import type {AccountStorageActiveStateChangedListener, BlockedSite, BlockedSitesListChangedListener, CredentialsChangedListener, PasswordCheckInteraction, PasswordCheckStatusChangedListener, PasswordManagerActionableErrorChangedListener, PasswordManagerAuthTimeoutListener, PasswordManagerProxy, PasswordsFileExportProgressListener, PasswordViewPageInteractions, ShouldShowAccountStorageToggleChangedListener} from 'chrome://password-manager/password_manager.js';
+import {ExportPasswordsResult, ExportProgressStatus, ImportResultsStatus, PageCallbackRouter, PasswordManagerActionableError} from 'chrome://password-manager/password_manager.js';
+import type {AccountStorageActiveStateChangedListener, BlockedSite, BlockedSitesListChangedListener, CredentialsChangedListener, ImportResults, PasswordCheckInteraction, PasswordCheckStatusChangedListener, PasswordManagerActionableErrorChangedListener, PasswordManagerAuthTimeoutListener, PasswordManagerProxy, PasswordsFileExportProgressListener, PasswordViewPageInteractions, ShouldShowAccountStorageToggleChangedListener} from 'chrome://password-manager/password_manager.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 import type {ActorLoginPermission} from './password_manager.mojom-webui.js';
@@ -59,8 +59,8 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
 
   private switchBiometricAuthBeforeFillingStateResult_: boolean = false;
 
-  private importResults_: chrome.passwordsPrivate.ImportResults = {
-    status: chrome.passwordsPrivate.ImportResultsStatus.SUCCESS,
+  private importResults_: ImportResults = {
+    status: ImportResultsStatus.kSuccess,
     numberImported: 0,
     displayedEntries: [],
     fileName: '',
@@ -409,7 +409,7 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
   /**
    * Sets the value to be returned by importPasswords.
    */
-  setImportResults(results: chrome.passwordsPrivate.ImportResults) {
+  setImportResults(results: ImportResults) {
     this.importResults_ = results;
   }
 

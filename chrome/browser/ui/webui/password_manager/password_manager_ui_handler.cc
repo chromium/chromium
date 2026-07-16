@@ -7,6 +7,7 @@
 #include <optional>
 #include <utility>
 
+#include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/strings/utf_string_conversions.h"
@@ -124,6 +125,107 @@ ToPasswordAutomaticChangeMojomState(
         kError:
       return PasswordAutomaticChangeState::kError;
   }
+}
+
+password_manager::mojom::ImportResultsStatus ToMojomImportResultsStatus(
+    extensions::api::passwords_private::ImportResultsStatus status) {
+  switch (status) {
+    case extensions::api::passwords_private::ImportResultsStatus::kNone:
+    case extensions::api::passwords_private::ImportResultsStatus::kUnknownError:
+      return password_manager::mojom::ImportResultsStatus::kUnknownError;
+    case extensions::api::passwords_private::ImportResultsStatus::kSuccess:
+      return password_manager::mojom::ImportResultsStatus::kSuccess;
+    case extensions::api::passwords_private::ImportResultsStatus::kIoError:
+      return password_manager::mojom::ImportResultsStatus::kIoError;
+    case extensions::api::passwords_private::ImportResultsStatus::kBadFormat:
+      return password_manager::mojom::ImportResultsStatus::kBadFormat;
+    case extensions::api::passwords_private::ImportResultsStatus::kDismissed:
+      return password_manager::mojom::ImportResultsStatus::kDismissed;
+    case extensions::api::passwords_private::ImportResultsStatus::kMaxFileSize:
+      return password_manager::mojom::ImportResultsStatus::kMaxFileSize;
+    case extensions::api::passwords_private::ImportResultsStatus::
+        kImportAlreadyActive:
+      return password_manager::mojom::ImportResultsStatus::kImportAlreadyActive;
+    case extensions::api::passwords_private::ImportResultsStatus::
+        kNumPasswordsExceeded:
+      return password_manager::mojom::ImportResultsStatus::
+          kNumPasswordsExceeded;
+    case extensions::api::passwords_private::ImportResultsStatus::kConflicts:
+      return password_manager::mojom::ImportResultsStatus::kConflicts;
+  }
+  NOTREACHED();
+}
+
+password_manager::mojom::ImportEntryStatus ToMojomImportEntryStatus(
+    extensions::api::passwords_private::ImportEntryStatus status) {
+  switch (status) {
+    case extensions::api::passwords_private::ImportEntryStatus::kNone:
+    case extensions::api::passwords_private::ImportEntryStatus::kUnknownError:
+      return password_manager::mojom::ImportEntryStatus::kUnknownError;
+    case extensions::api::passwords_private::ImportEntryStatus::
+        kMissingPassword:
+      return password_manager::mojom::ImportEntryStatus::kMissingPassword;
+    case extensions::api::passwords_private::ImportEntryStatus::kMissingUrl:
+      return password_manager::mojom::ImportEntryStatus::kMissingUrl;
+    case extensions::api::passwords_private::ImportEntryStatus::kInvalidUrl:
+      return password_manager::mojom::ImportEntryStatus::kInvalidUrl;
+    case extensions::api::passwords_private::ImportEntryStatus::kNonAsciiUrl:
+      return password_manager::mojom::ImportEntryStatus::kNonAsciiUrl;
+    case extensions::api::passwords_private::ImportEntryStatus::kLongUrl:
+      return password_manager::mojom::ImportEntryStatus::kLongUrl;
+    case extensions::api::passwords_private::ImportEntryStatus::kLongPassword:
+      return password_manager::mojom::ImportEntryStatus::kLongPassword;
+    case extensions::api::passwords_private::ImportEntryStatus::kLongUsername:
+      return password_manager::mojom::ImportEntryStatus::kLongUsername;
+    case extensions::api::passwords_private::ImportEntryStatus::
+        kConflictProfile:
+      return password_manager::mojom::ImportEntryStatus::kConflictProfile;
+    case extensions::api::passwords_private::ImportEntryStatus::
+        kConflictAccount:
+      return password_manager::mojom::ImportEntryStatus::kConflictAccount;
+    case extensions::api::passwords_private::ImportEntryStatus::kLongNote:
+      return password_manager::mojom::ImportEntryStatus::kLongNote;
+    case extensions::api::passwords_private::ImportEntryStatus::
+        kLongConcatenatedNote:
+      return password_manager::mojom::ImportEntryStatus::kLongConcatenatedNote;
+    case extensions::api::passwords_private::ImportEntryStatus::kValid:
+      return password_manager::mojom::ImportEntryStatus::kValid;
+  }
+  NOTREACHED();
+}
+
+password_manager::mojom::ImportEntryPtr ToMojomImportEntry(
+    const extensions::api::passwords_private::ImportEntry& entry) {
+  return password_manager::mojom::ImportEntry::New(
+      /*status=*/ToMojomImportEntryStatus(entry.status),
+      /*url=*/entry.url,
+      /*username=*/entry.username,
+      /*password=*/entry.password,
+      /*id=*/entry.id);
+}
+
+password_manager::mojom::ImportResultsPtr ToMojomImportResults(
+    const extensions::api::passwords_private::ImportResults& results) {
+  return password_manager::mojom::ImportResults::New(
+      /*status=*/ToMojomImportResultsStatus(results.status),
+      /*number_imported=*/results.number_imported,
+      /*displayed_entries=*/
+      base::ToVector(results.displayed_entries, &ToMojomImportEntry),
+      /*file_name=*/results.file_name);
+}
+
+extensions::api::passwords_private::PasswordStoreSet ConvertPasswordStoreSet(
+    password_manager::mojom::PasswordStoreSet to_store) {
+  switch (to_store) {
+    case password_manager::mojom::PasswordStoreSet::kDevice:
+      return extensions::api::passwords_private::PasswordStoreSet::kDevice;
+    case password_manager::mojom::PasswordStoreSet::kAccount:
+      return extensions::api::passwords_private::PasswordStoreSet::kAccount;
+    case password_manager::mojom::PasswordStoreSet::kDeviceAndAccount:
+      return extensions::api::passwords_private::PasswordStoreSet::
+          kDeviceAndAccount;
+  }
+  NOTREACHED();
 }
 
 }  // namespace
@@ -340,4 +442,21 @@ void PasswordManagerUIHandler::OnPasswordsExportProgress(
   page_->OnPasswordsExportProgress(
       ToExportProgressMojomStatus(status),
       folder_name.empty() ? std::nullopt : std::make_optional(folder_name));
+}
+
+void PasswordManagerUIHandler::ImportPasswords(
+    password_manager::mojom::PasswordStoreSet to_store,
+    ImportPasswordsCallback callback) {
+  passwords_private_delegate_->ImportPasswords(
+      ConvertPasswordStoreSet(to_store),
+      base::BindOnce(&ToMojomImportResults).Then(std::move(callback)),
+      web_contents_);
+}
+
+void PasswordManagerUIHandler::ContinueImport(
+    const std::vector<int32_t>& selected_ids,
+    ContinueImportCallback callback) {
+  passwords_private_delegate_->ContinueImport(
+      selected_ids,
+      base::BindOnce(&ToMojomImportResults).Then(std::move(callback)));
 }

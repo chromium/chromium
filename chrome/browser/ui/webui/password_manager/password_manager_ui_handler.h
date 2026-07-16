@@ -117,6 +117,12 @@ class PasswordManagerUIHandler
   void GetPasswordsExportProgress(
       GetPasswordsExportProgressCallback callback) override;
 
+  void ImportPasswords(password_manager::mojom::PasswordStoreSet to_store,
+                       ImportPasswordsCallback callback) override;
+
+  void ContinueImport(const std::vector<int32_t>& selected_ids,
+                      ContinueImportCallback callback) override;
+
   // extensions::PasswordsPrivateDelegate::Observer:
   void OnPasswordsExportProgress(password_manager::ExportProgressStatus status,
                                  const std::string& folder_name) override;
