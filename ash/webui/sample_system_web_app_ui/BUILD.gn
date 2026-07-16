@@ -2,8 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//chrome/test/base/ash/js2gtest.gni")
-import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/typescript/ts_library.gni")
 
 assert(is_chromeos, "Sample System Web App is ChromeOS only")
 assert(!is_official_build,
@@ -26,15 +25,52 @@ static_library("sample_system_web_app_ui") {
     "//ash/webui/sample_system_web_app_ui/resources/trusted:resources",
     "//ash/webui/sample_system_web_app_ui/resources/untrusted:resources",
     "//ash/webui/system_apps/public:system_web_app_config",
+    "//ash/webui/web_applications",
     "//content/public/browser",
     "//ui/webui",
   ]
 }
 
-js2gtest("browser_tests_js") {
-  test_type = "mojo_lite_webui"
+ts_library("test_build_ts") {
+  testonly = true
+  tsconfig_base = "//chrome/test/data/webui/tsconfig_base.json"
+  root_dir = "test"
+  out_dir = "$target_gen_dir/test"
+  in_files = [ "sample_system_web_app_ui_browsertest.ts" ]
 
-  sources = [ "test/sample_system_web_app_ui_browsertest.js" ]
+  path_mappings = [
+    "chrome://webui-test/*|" +
+        rebase_path("$root_gen_dir/chrome/test/data/webui/tsc/*",
+                    target_gen_dir),
+    "chrome://sample-system-web-app/*|" + rebase_path(
+            "$root_gen_dir/ash/webui/sample_system_web_app_ui/resources/trusted/tsc/*",
+            target_gen_dir),
+  ]
+
+  deps = [
+    "//ash/webui/sample_system_web_app_ui/resources/trusted:build_ts",
+    "//ash/webui/sample_system_web_app_ui/resources/untrusted:build_ts",
+    "//chrome/test/data/webui:build_ts",
+    "//ui/webui/resources/mojo:build_ts",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  sources = [ "test/sample_system_web_app_ui_browsertest.cc" ]
 
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  deps = [
+    ":sample_system_web_app_ui",
+    ":test_build_ts",
+    "//ash/webui/web_applications/test:test_support",
+    "//build/config/coverage:buildflags",
+    "//chrome/test:test_support",
+    "//chrome/test:test_support_ui",
+    "//content/test:test_support",
+  ]
+
+  data = [ "$target_gen_dir/test/sample_system_web_app_ui_browsertest.js" ]
 }
