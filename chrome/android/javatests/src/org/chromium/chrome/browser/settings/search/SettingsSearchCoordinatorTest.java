@@ -271,4 +271,22 @@ public class SettingsSearchCoordinatorTest {
                     assertNull(searchCoordinator.findViewById(View.NO_ID));
                 });
     }
+
+    @Test
+    @SmallTest
+    public void testEnterSearchStateDoesNotCrash() {
+        mSettingsActivityTestRule.startSettingsActivity();
+        SettingsActivity activity = waitForSettingsActivity();
+        SettingsSearchCoordinator searchCoordinator = activity.getSearchCoordinatorForTesting();
+        assertNotNull(searchCoordinator);
+
+        // Search UI creation is asynchronous, so wait for the search box to be inflated.
+        CriteriaHelper.pollUiThread(() -> searchCoordinator.findViewById(R.id.search_box) != null);
+
+        // Verify enterSearchState completes without throwing IllegalStateException.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    searchCoordinator.enterSearchState(/* isRestored= */ false);
+                });
+    }
 }

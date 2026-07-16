@@ -133,10 +133,6 @@ public class SettingsSearchCoordinator
     private @Nullable Runnable mTurnOffHighlight;
     private @Nullable ContainmentItemController mContainmentController;
 
-    // Whether the back action handler for MultiColumnSettings was set. This is set lazily when
-    // search UI gets focus for the first time.
-    private boolean mMultiColumnSettingsBackActionHandlerSet;
-
     // States for search operation. These states are managed to go back and forth between viewing
     // the search results and browsing result fragments. We perform some UI tasks such as
     // initializing search widget UI, creating/restoring fragments as the state changes.
@@ -159,7 +155,7 @@ public class SettingsSearchCoordinator
     // width and the feature flag condition should be met.
     private boolean mUseMultiColumn;
 
-    private OnBackPressedCallback mBackActionCallback;
+    private @Nullable OnBackPressedCallback mBackActionCallback;
 
     // Set to {@code true} after queries are entered. Used to conditionally clear up the screen.
     private boolean mQueryEntered;
@@ -772,15 +768,10 @@ public class SettingsSearchCoordinator
         return providerMap;
     }
 
-    void enterSearchState(boolean isRestored) {
+    @VisibleForTesting
+    public void enterSearchState(boolean isRestored) {
         initIndex();
 
-        if (mMultiColumnSettings != null && !mMultiColumnSettingsBackActionHandlerSet) {
-            mActivity
-                    .getOnBackPressedDispatcher()
-                    .addCallback(mMultiColumnSettings, mBackActionCallback);
-            mMultiColumnSettingsBackActionHandlerSet = true;
-        }
         View searchBox = requireViewById(R.id.search_box);
         View queryContainer = requireViewById(R.id.search_query_container);
         searchBox.setVisibility(View.GONE);
@@ -810,6 +801,7 @@ public class SettingsSearchCoordinator
         }
         KeyboardUtils.showKeyboard(queryEdit);
         setFragmentState(FS_SEARCH);
+        assumeNonNull(mBackActionCallback);
         mBackActionCallback.setEnabled(true);
         // When being restored, MultiColumnTitleUpdater restores the first-visible title index
         // from the saved bundle. Do not override it.
@@ -868,6 +860,7 @@ public class SettingsSearchCoordinator
         }
 
         setFragmentState(FS_SETTINGS);
+        assumeNonNull(mBackActionCallback);
         mBackActionCallback.setEnabled(false);
         mUpdateFirstVisibleTitle.onResult(0);
 
@@ -1713,6 +1706,10 @@ public class SettingsSearchCoordinator
     }
 
     public void destroy() {
+        if (mBackActionCallback != null) {
+            mBackActionCallback.remove();
+            mBackActionCallback = null;
+        }
         // Title supplier should be nulled out as we step out of Settings for cleanup.
         SearchResultsPreferenceFragment.reset();
         if (mIndexData != null) {
