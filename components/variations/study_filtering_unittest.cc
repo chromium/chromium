@@ -424,6 +424,8 @@ TEST(VariationsStudyFilteringTest, CheckStudyOSVersion) {
       {"0.3.4", "1.2.3", true},
       // Wildcards.
       {"1.*", "1.2.3", true},
+      {"1.2.*", "1.1", false},
+      {"1.2.*", "1.2", true},
       {"1.2.*", "1.2.3", true},
       {"1.2.3.*", "1.2.3", true},
       {"1.2.4.*", "1.2.3", false},
