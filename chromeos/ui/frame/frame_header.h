@@ -182,6 +182,8 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) FrameHeader
     return caption_button_container_;
   }
 
+  gfx::Rect GetTitleBoundsForTesting() const { return GetTitleBounds(); }
+
   // ui::LayerOwner::Observer overrides:
   void OnLayerRecreated(ui::Layer* old_layer) override;
 

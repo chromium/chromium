@@ -952,7 +952,10 @@ BrowserFrameViewChromeOS::CreateFrameHeader() {
         browser_widget(), this, caption_button_container_);
   }
 
-  header->SetLeftHeaderView(window_icon_);
+  header->SetLeftHeaderView(
+      GetShowProfileIndicatorIcon() && profile_indicator_icon_
+          ? static_cast<views::View*>(profile_indicator_icon_.get())
+          : static_cast<views::View*>(window_icon_.get()));
   return header;
 }
 
@@ -998,7 +1001,13 @@ void BrowserFrameViewChromeOS::UpdateProfileIcons() {
     gfx::Image image(
         GetAvatarImageForContext(GetBrowserView()->browser()->profile()));
     profile_indicator_icon_->SetSize(image.Size());
+    profile_indicator_icon_->SetPreferredSize(image.Size());
     profile_indicator_icon_->SetIcon(image);
+
+    frame_header_->SetLeftHeaderView(profile_indicator_icon_);
+    if (window_icon_) {
+      window_icon_->SetVisible(false);
+    }
 
     if (needs_layout && root_view) {
       // Adding a child does not invalidate the layout.
@@ -1013,6 +1022,11 @@ void BrowserFrameViewChromeOS::UpdateProfileIcons() {
     }
   } else if (profile_indicator_icon_) {
     RemoveChildViewT(std::exchange(profile_indicator_icon_, nullptr));
+
+    frame_header_->SetLeftHeaderView(window_icon_);
+    if (window_icon_) {
+      window_icon_->SetVisible(true);
+    }
     InvalidateLayout();
     if (GetBrowserView()->GetIsWebAppType()) {
       GetBrowserView()->InvalidateLayout();

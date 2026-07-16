@@ -1959,6 +1959,62 @@ IN_PROC_BROWSER_TEST_P(BrowserFrameViewAshAvatarTest,
             browser_view->web_app_frame_toolbar_for_testing()->x());
 }
 
+IN_PROC_BROWSER_TEST_P(BrowserFrameViewAshAvatarTest,
+                       ProfileIconPositionUpdatesTitleForNonTabbedWindow) {
+  LogIn(kPrimaryAccountId);
+  Profile* primary_user_profile = Profile::FromBrowserContext(
+      ash::BrowserContextHelper::Get()->GetBrowserContextByAccountId(
+          kPrimaryAccountId));
+
+  // We use a DevTools window here as a representative example of a non-tabbed
+  // browser window that renders a native title in its frame.
+  Browser* non_tabbed_browser = Browser::Create(
+      Browser::CreateParams::CreateForDevTools(primary_user_profile));
+  non_tabbed_browser->GetWindow()->Show();
+
+  BrowserView* browser_view =
+      BrowserView::GetBrowserViewForBrowser(non_tabbed_browser);
+  BrowserFrameViewChromeOS* frame_view = GetFrameViewChromeOS(browser_view);
+  BrowserFrameViewChromeOSTestApi test_api(frame_view);
+  aura::Window* window = non_tabbed_browser->GetWindow()->GetNativeWindow();
+  auto* frame_header = test_api.GetFrameHeader();
+
+  // Force initial layout.
+  browser_view->GetWidget()->LayoutRootViewIfNecessary();
+
+  // The title is drawn natively by FrameHeader for non-tabbed windows.
+  const int title_x_without_icon = frame_header->GetTitleBoundsForTesting().x();
+
+  // Log in with the secondary user.
+  LogIn(kSecondaryAccountId);
+
+  // Move back to the primary user's desktop.
+  SessionControllerClientImpl::Get()->SwitchActiveUser(kPrimaryAccountId);
+
+  // Teleport the window to secondary user's desktop. This adds the avatar icon.
+  auto* window_manager = ash::Shell::Get()->multi_user_window_manager();
+  browser_view->Activate();
+  window_manager->ShowWindowForUser(window, kSecondaryAccountId);
+  auto* icon = test_api.GetProfileIndicatorIcon();
+  ASSERT_TRUE(icon);
+
+  // Force layout to apply the teleportation changes.
+  browser_view->GetWidget()->LayoutRootViewIfNecessary();
+  const int title_x_with_icon = frame_header->GetTitleBoundsForTesting().x();
+
+  // The title should be pushed to the right by the icon.
+  EXPECT_GT(title_x_with_icon, title_x_without_icon);
+
+  // Teleport back to remove the icon.
+  window_manager->ShowWindowForUser(window, kPrimaryAccountId);
+  browser_view->Activate();
+  EXPECT_FALSE(test_api.GetProfileIndicatorIcon());
+
+  // Force layout again.
+  browser_view->GetWidget()->LayoutRootViewIfNecessary();
+  EXPECT_EQ(title_x_without_icon, frame_header->GetTitleBoundsForTesting().x());
+}
+
 using BrowserFrameViewAshTest = BrowserFrameViewChromeOSTest;
 
 IN_PROC_BROWSER_TEST_P(BrowserFrameViewAshTest,
