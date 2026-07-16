@@ -52,6 +52,7 @@ class TextControlElement;
 class V8UnionStringLegacyNullToEmptyStringOrTrustedScript;
 class V8UnionBooleanOrTogglePopoverOptions;
 class ShowPopoverOptions;
+class UnboundedEventData;
 
 enum TranslateAttributeMode {
   kTranslateAttributeYes,
@@ -108,6 +109,11 @@ enum class TopLayerElementType {
 enum class PopoverHideResult {
   kHidden,
   kForcedOpenByInspector,
+};
+
+enum class UnboundedEvents {
+  kFire,
+  kSuppress,
 };
 
 class CORE_EXPORT HTMLElement : public Element {
@@ -410,7 +416,8 @@ class CORE_EXPORT HTMLElement : public Element {
   ScriptPromise<IDLUndefined> showUnboundedElement(ScriptState*);
   ScriptPromise<IDLUndefined> hideUnboundedElement(ScriptState*);
   bool IsUnboundedElementActive() const;
-  void SetUnboundedElementActive(bool active);
+  void SetUnboundedElementActive(bool active,
+                                 UnboundedEvents = UnboundedEvents::kFire);
   gfx::Rect LastSentUnboundedBounds() const;
   void SetLastSentUnboundedBounds(const gfx::Rect& bounds);
 
@@ -470,6 +477,8 @@ class CORE_EXPORT HTMLElement : public Element {
 
  private:
   bool IsAutocapitalizeOrAutocorrectInheriting() const;
+  UnboundedEventData* GetUnboundedEventData() const;
+  UnboundedEventData& EnsureUnboundedEventData();
 
   String nodeName() const final;
 

@@ -120,6 +120,7 @@
 #include "third_party/blink/renderer/core/html/html_template_element.h"
 #include "third_party/blink/renderer/core/html/menu_safe_triangle.h"
 #include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
+#include "third_party/blink/renderer/core/html/unbounded_event_data.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/input/keyboard_event_manager.h"
 #include "third_party/blink/renderer/core/input_type_names.h"
@@ -1714,7 +1715,8 @@ bool HTMLElement::IsUnboundedElementActive() const {
          !HasElementFlag(ElementFlags::kIsUnboundedElementActive));
   return HasElementFlag(ElementFlags::kIsUnboundedElementActive);
 }
-void HTMLElement::SetUnboundedElementActive(bool active) {
+void HTMLElement::SetUnboundedElementActive(bool active,
+                                            UnboundedEvents fire_events) {
   DCHECK(RuntimeEnabledFeatures::UnboundedElementEnabled());
   DCHECK(!active || FastHasAttribute(html_names::kUnboundedAttr));
   if (HasElementFlag(ElementFlags::kIsUnboundedElementActive) == active) {
@@ -1750,6 +1752,49 @@ void HTMLElement::SetUnboundedElementActive(bool active) {
     layout_object->AddSubtreePaintPropertyUpdateReason(
         SubtreePaintPropertyUpdateReason::kContainerChainMayChange);
   }
+  if (fire_events == UnboundedEvents::kFire) {
+    auto& event_data = EnsureUnboundedEventData();
+    String old_state = active ? keywords::kClosed : keywords::kOpen;
+    if (event_data.hasPendingEventTask()) {
+      old_state = event_data.pendingEventStartedClosed() ? keywords::kClosed
+                                                         : keywords::kOpen;
+      event_data.cancelPendingEventTask();
+    } else {
+      event_data.setPendingEventStartedClosed(active);
+    }
+    ToggleEvent* event = ToggleEvent::Create(
+        event_type_names::kUnbounded, Event::Cancelable::kNo, old_state,
+        active ? keywords::kOpen : keywords::kClosed, nullptr);
+    event->SetTarget(this);
+
+    event_data.setPendingEventTask(PostCancellableTask(
+        *GetDocument().GetTaskRunner(TaskType::kDOMManipulation), FROM_HERE,
+        BindOnce(
+            [](HTMLElement* element, ToggleEvent* event) {
+              if (element) {
+                element->DispatchEvent(*event);
+              }
+            },
+            WrapPersistent(this), WrapPersistent(event))));
+  } else {
+    DCHECK_EQ(fire_events, UnboundedEvents::kSuppress);
+    if (auto* event_data = GetUnboundedEventData()) {
+      event_data->cancelPendingEventTask();
+    }
+  }
+}
+
+UnboundedEventData* HTMLElement::GetUnboundedEventData() const {
+  if (const NodeRareData* data = RareData()) {
+    return data->GetUnboundedEventData();
+  }
+  return nullptr;
+}
+
+UnboundedEventData& HTMLElement::EnsureUnboundedEventData() {
+  auto pair = EnsureRareData().EnsureUnboundedEventData();
+  data_ = pair.second;
+  return pair.first.get();
 }
 
 gfx::Rect HTMLElement::LastSentUnboundedBounds() const {
@@ -3805,7 +3850,7 @@ void HTMLElement::RemovedFrom(ContainerNode& insertion_point) {
   if (RuntimeEnabledFeatures::UnboundedElementEnabled() &&
       IsUnboundedElementActive() &&
       !GetDocument().StatePreservingAtomicMoveInProgress()) {
-    SetUnboundedElementActive(false);
+    SetUnboundedElementActive(false, UnboundedEvents::kSuppress);
   }
 
   Element::RemovedFrom(insertion_point);

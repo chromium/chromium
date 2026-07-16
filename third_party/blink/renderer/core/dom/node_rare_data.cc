@@ -37,6 +37,7 @@
 #include "third_party/blink/renderer/core/html/custom/element_internals.h"
 #include "third_party/blink/renderer/core/html/display_ad_element_monitor.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
+#include "third_party/blink/renderer/core/html/unbounded_event_data.h"
 #include "third_party/blink/renderer/core/intersection_observer/element_intersection_observer_data.h"
 #include "third_party/blink/renderer/core/layout/anchor_position_scroll_data.h"
 #include "third_party/blink/renderer/core/layout/anchor_position_visibility_observer.h"
@@ -554,6 +555,15 @@ gfx::Rect NodeRareData::LastSentUnboundedBounds() const {
 NodeRareData* NodeRareData::SetLastSentUnboundedBounds(
     const gfx::Rect& bounds) {
   return SetWrappedField<gfx::Rect>(FieldId::kLastSentUnboundedBounds, bounds);
+}
+
+UnboundedEventData* NodeRareData::GetUnboundedEventData() const {
+  return static_cast<UnboundedEventData*>(
+      GetField(FieldId::kUnboundedEventTask));
+}
+std::pair<std::reference_wrapper<UnboundedEventData>, NodeRareData*>
+NodeRareData::EnsureUnboundedEventData() {
+  return EnsureField<UnboundedEventData>(FieldId::kUnboundedEventTask);
 }
 
 PopoverData* NodeRareData::GetPopoverData() const {

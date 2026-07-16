@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Verify hideUnboundedElement() behavior when the element is not active.
-  assert_true: The hideUnboundedElement IDL attribute should be exposed on HTMLElement. expected true got false
-[FAIL] Verify hideUnboundedElement() successfully closes an active unbounded element.
-  promise_test: Unhandled rejection with value: object "SyntaxError: Failed to execute 'matches' on 'Element': ':unbounded' is not a valid selector."
-Harness: the test ran to completion.
-

@@ -2772,7 +2772,10 @@ void WebFrameWidgetImpl::UnboundedContextDestroyed() {
     return;
   }
   if (unbounded_surface_state_->active_element_) {
-    unbounded_surface_state_->active_element_->SetUnboundedElementActive(false);
+    // The context is being destroyed, so we should suppress event dispatch
+    // to avoid executing script during teardown.
+    unbounded_surface_state_->active_element_->SetUnboundedElementActive(
+        false, UnboundedEvents::kSuppress);
   }
   unbounded_surface_state_ = nullptr;
   if (auto* host = LayerTreeHost()) {

@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<link rel="author" href="mailto:masonf@chromium.org">
+<link rel="help" href="https://crbug.com/508672616">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+
+<style>
+  #target {
+    width: 100px;
+    height: 100px;
+  }
+</style>
+
+<div id="container">
+  <div id="target" unbounded></div>
+</div>
+
+<script>
+promise_test(async t => {
+  const element = document.getElementById('target');
+  let toggleEvents = [];
+  element.addEventListener('unbounded', e => {
+    assert_true(e instanceof ToggleEvent, 'Event should be a ToggleEvent');
+    assert_equals(e.type, 'unbounded');
+    assert_equals(e.bubbles, false);
+    assert_equals(e.cancelable, false);
+    assert_equals(e.target, element);
+    toggleEvents.push({oldState: e.oldState, newState: e.newState});
+  });
+
+  // 1. Test basic show
+  await test_driver.bless("show");
+  let showPromise = element.showUnboundedElement();
+  assert_equals(toggleEvents.length, 0, 'Should not fire synchronously on show call');
+  await showPromise;
+  assert_equals(toggleEvents.length, 0, 'Should not fire synchronously when show promise resolves');
+  await new Promise(resolve => t.step_timeout(resolve, 0));
+  assert_equals(toggleEvents.length, 1, 'Should have fired one event');
+  assert_equals(toggleEvents[0].oldState, 'closed');
+  assert_equals(toggleEvents[0].newState, 'open');
+
+  // 2. Test basic hide
+  toggleEvents = [];
+  let hidePromise = element.hideUnboundedElement();
+  assert_equals(toggleEvents.length, 0, 'Should not fire synchronously on hide call');
+  await hidePromise;
+  assert_equals(toggleEvents.length, 0, 'Should not fire synchronously when hide promise resolves');
+  await new Promise(resolve => t.step_timeout(resolve, 0));
+  assert_equals(toggleEvents.length, 1, 'Should have fired one event');
+  assert_equals(toggleEvents[0].oldState, 'open');
+  assert_equals(toggleEvents[0].newState, 'closed');
+
+  // 3. Test immediate show/hide coalescing (closed -> open -> closed)
+  toggleEvents = [];
+  await test_driver.bless("show/hide immediate");
+  showPromise = element.showUnboundedElement();
+  hidePromise = element.hideUnboundedElement();
+  assert_equals(toggleEvents.length, 0, 'Should not fire synchronously on show/hide');
+  await showPromise;
+  await hidePromise;
+  await new Promise(resolve => t.step_timeout(resolve, 0));
+  assert_equals(toggleEvents.length, 1, 'Should have fired one coalesced event');
+  assert_equals(toggleEvents[0].oldState, 'closed');
+  assert_equals(toggleEvents[0].newState, 'closed');
+
+  // 4. Test immediate hide/show coalescing (open -> closed -> open)
+  // First, get it open again:
+  await test_driver.bless("get open");
+  await element.showUnboundedElement();
+  await new Promise(resolve => t.step_timeout(resolve, 0));
+
+  toggleEvents = [];
+  await test_driver.click(element);
+  hidePromise = element.hideUnboundedElement();
+  showPromise = element.showUnboundedElement();
+  await hidePromise;
+  await showPromise;
+  await new Promise(resolve => t.step_timeout(resolve, 0));
+  assert_equals(toggleEvents.length, 1, 'Should have fired one coalesced event');
+  assert_equals(toggleEvents[0].oldState, 'open');
+  assert_equals(toggleEvents[0].newState, 'open');
+
+  // 5. Test attribute removal (open -> closed)
+  toggleEvents = [];
+  element.removeAttribute('unbounded');
+  assert_equals(toggleEvents.length, 0, 'Should not fire synchronously on attribute removal');
+  await new Promise(resolve => t.step_timeout(resolve, 0));
+  assert_equals(toggleEvents.length, 1, 'Should have fired one event on attribute removal');
+  assert_equals(toggleEvents[0].oldState, 'open');
+  assert_equals(toggleEvents[0].newState, 'closed');
+}, 'Verify unbounded event behavior.');
+</script>
