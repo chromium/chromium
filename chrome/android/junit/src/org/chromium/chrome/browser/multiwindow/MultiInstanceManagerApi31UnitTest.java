@@ -41,6 +41,7 @@ import android.content.res.Resources;
 import android.text.TextUtils;
 import android.util.Pair;
 import android.util.SparseBooleanArray;
+import android.view.LayoutInflater;
 
 import androidx.test.core.app.ApplicationProvider;
 
@@ -61,6 +62,7 @@ import org.mockito.stubbing.Answer;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowDialog;
+import org.robolectric.shadows.ShadowToast;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
@@ -120,6 +122,7 @@ import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.test.util.MockitoHelper;
+import org.chromium.ui.widget.ToastManager;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
@@ -134,7 +137,9 @@ import java.util.stream.Collectors;
 
 /** Unit tests for {@link MultiInstanceManagerApi31}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
+@Config(
+        manifest = Config.NONE,
+        shadows = {ShadowToast.class})
 @EnableFeatures({
     ChromeFeatureList.SESSION_RESTORE_AFTER_CRASH,
     ChromeFeatureList.INCOGNITO_AS_WINDOW_FULL_SCREEN
@@ -410,6 +415,8 @@ public class MultiInstanceManagerApi31UnitTest {
         TabWindowManagerSingleton.resetTabModelSelectorFactoryForTesting();
         ApplicationStatus.destroyForJUnitTests();
         mMultiInstanceManager.mTestBuildInstancesList = false;
+        ShadowToast.reset();
+        ToastManager.resetForTesting();
     }
 
     private void setupActivityForCreateNewWindowIntent(Activity activity) {
@@ -2125,6 +2132,7 @@ public class MultiInstanceManagerApi31UnitTest {
     }
 
     @Test
+    @DisableFeatures(ChromeFeatureList.IN_APP_WINDOW_MANAGER_DEPRECATION)
     public void showInstanceCreationLimitMessage() {
         when(mCurrentActivity.getResources()).thenReturn(mock(Resources.class));
 
@@ -2139,6 +2147,7 @@ public class MultiInstanceManagerApi31UnitTest {
     }
 
     @Test
+    @DisableFeatures(ChromeFeatureList.IN_APP_WINDOW_MANAGER_DEPRECATION)
     public void testShowInstanceCreationLimitMessage_SuppressesDuplicates() {
         when(mCurrentActivity.getResources()).thenReturn(mock(Resources.class));
 
@@ -2160,6 +2169,23 @@ public class MultiInstanceManagerApi31UnitTest {
         // Third invocation now enqueues again because the first one was dismissed.
         mMultiInstanceManager.showInstanceCreationLimitMessage();
         verify(mMessageDispatcher).enqueueWindowScopedMessage(any(), eq(false));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.IN_APP_WINDOW_MANAGER_DEPRECATION)
+    public void testInstanceCreationLimitWarning_WindowManagerDeprecated() {
+        when(mCurrentActivity.getResources())
+                .thenReturn(ApplicationProvider.getApplicationContext().getResources());
+        when(mCurrentActivity.getSystemService(Context.LAYOUT_INFLATER_SERVICE))
+                .thenReturn(LayoutInflater.from(ApplicationProvider.getApplicationContext()));
+
+        mMultiInstanceManager.showInstanceCreationLimitMessage();
+
+        // Verify that the message is NOT enqueued via message dispatcher.
+        verify(mMessageDispatcher, never()).enqueueWindowScopedMessage(any(), anyBoolean());
+
+        // Verify that the toast is shown.
+        assertNotNull("Toast should have been shown.", ShadowToast.getLatestToast());
     }
 
     @Test

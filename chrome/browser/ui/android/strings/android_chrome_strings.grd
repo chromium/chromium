@@ -6119,6 +6119,9 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_MULTI_INSTANCE_CREATION_LIMIT_MESSAGE_DESCRIPTION" desc="Description of the message shown when max instances exist during an attempt to create a new instance.">
         Close a window or manage windows
       </message>
+      <message name="IDS_MULTI_INSTANCE_CREATION_LIMIT_MESSAGE_TOAST" desc="Toast message shown when max windows limit is reached, prompting user to close a window to continue.">
+        You can have up to <ph name="MAX_INSTANCE_COUNT">%1$s<ex>20</ex></ph> windows. Close a window to continue.
+      </message>
 
       <!-- In-Product Help strings -->
       <message name="IDS_IPH_ANDROID_VERTICAL_TABS_PROMO_TOUCH" desc="The in-product-help promotion message to try Vertical Tabs, displayed to touch users.">

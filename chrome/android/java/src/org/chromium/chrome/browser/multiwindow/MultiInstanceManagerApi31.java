@@ -77,6 +77,7 @@ import org.chromium.components.messages.MessageDispatcher;
 import org.chromium.components.messages.MessageDispatcherProvider;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.ui.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -1263,6 +1264,19 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
 
     @Override
     public void showInstanceCreationLimitMessage() {
+        // TODO(crbug.com/535331238): Move this to MultiWindowUtils.java and merge with the
+        //  duplicated toast.
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.IN_APP_WINDOW_MANAGER_DEPRECATION)) {
+            Toast.makeText(
+                            mActivity,
+                            mActivity.getString(
+                                    R.string.multi_instance_creation_limit_message_toast,
+                                    getMaxInstances()),
+                            Toast.LENGTH_LONG)
+                    .show();
+            return;
+        }
+
         if (mIsCreationLimitMessageEnqueued) return;
 
         MessageDispatcher messageDispatcher = getMessageDispatcher();
