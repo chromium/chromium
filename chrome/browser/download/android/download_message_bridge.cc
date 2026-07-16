@@ -16,12 +16,14 @@ DownloadMessageBridge::DownloadMessageBridge() = default;
 DownloadMessageBridge::~DownloadMessageBridge() = default;
 
 void DownloadMessageBridge::ShowIncognitoDownloadMessage(
+    ui::WindowAndroid* window_android,
     DownloadMessageRequestCallback callback) {
   JNIEnv* env = base::android::AttachCurrentThread();
   CHECK(!callback.is_null());
   // Convert the C++ callback to a JNI callback using ToJniCallback.
   Java_DownloadMessageBridge_showIncognitoDownloadMessage(
-      env, base::android::ToJniCallback(env, std::move(callback)));
+      env, window_android ? window_android->GetJavaObject() : nullptr,
+      base::android::ToJniCallback(env, std::move(callback)));
 }
 
 void DownloadMessageBridge::ShowUnsupportedDownloadMessage(

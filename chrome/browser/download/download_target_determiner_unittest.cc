@@ -241,6 +241,7 @@ class MockDownloadTargetDeterminerDelegate
                     ConfirmationCallback&));
 #if BUILDFLAG(IS_ANDROID)
   void RequestIncognitoWarningConfirmation(
+      content::WebContents* web_contents,
       IncognitoWarningConfirmationCallback cb) override {
     RequestIncognitoWarningConfirmation_(std::move(cb));
   }

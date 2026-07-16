@@ -15,6 +15,7 @@ import org.chromium.components.offline_items_collection.ContentId;
 import org.chromium.components.offline_items_collection.OfflineContentProvider;
 import org.chromium.components.offline_items_collection.OfflineItem;
 import org.chromium.components.offline_items_collection.UpdateDelta;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.url.GURL;
 
@@ -86,6 +87,15 @@ public interface DownloadMessageUiController extends OfflineContentProvider.Obse
 
     /** Shows a message that asks for the user confirmation before the actual download starts. */
     void showIncognitoDownloadMessage(Callback<Boolean> callback);
+
+    /**
+     * Shows a message that asks for the user confirmation on a specific window before download
+     * starts.
+     */
+    default void showIncognitoDownloadMessage(
+            @Nullable WindowAndroid window, Callback<Boolean> callback) {
+        showIncognitoDownloadMessage(callback);
+    }
 
     /** OfflineContentProvider.Observer methods. */
     @Override

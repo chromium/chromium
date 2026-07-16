@@ -12,6 +12,7 @@ import org.jni_zero.CalledByNative;
 
 import org.chromium.base.JniOnceCallback;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
@@ -21,11 +22,12 @@ import org.chromium.ui.base.WindowAndroid;
 @NullMarked
 public class DownloadMessageBridge {
     @CalledByNative
-    public static void showIncognitoDownloadMessage(JniOnceCallback<Boolean> callback) {
+    public static void showIncognitoDownloadMessage(
+            @Nullable WindowAndroid window, JniOnceCallback<Boolean> callback) {
         DownloadMessageUiController messageUiController =
                 DownloadManagerService.getDownloadManagerService()
                         .getMessageUiController(/* otrProfileId= */ null);
-        messageUiController.showIncognitoDownloadMessage(callback);
+        messageUiController.showIncognitoDownloadMessage(window, callback);
     }
 
     @CalledByNative

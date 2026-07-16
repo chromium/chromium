@@ -267,6 +267,7 @@ class ChromeDownloadManagerDelegate
       ReservedPathCallback callback) override;
 #if BUILDFLAG(IS_ANDROID)
   void RequestIncognitoWarningConfirmation(
+      content::WebContents* web_contents,
       IncognitoWarningConfirmationCallback) override;
 #endif
   void RequestConfirmation(download::DownloadItem* download,

@@ -678,9 +678,11 @@ DownloadTargetDeterminer::DoRequestConfirmation() {
           Profile::FromBrowserContext(browser_context)->IsOffTheRecord();
       if (isOffTheRecord && (!download_->IsTransient() ||
                              !download_->AllowAutoOpenAfterCompletion())) {
-        delegate_->RequestIncognitoWarningConfirmation(base::BindOnce(
-            &DownloadTargetDeterminer::RequestIncognitoWarningConfirmationDone,
-            weak_ptr_factory_.GetWeakPtr()));
+        delegate_->RequestIncognitoWarningConfirmation(
+            content::DownloadItemUtils::GetWebContents(download_),
+            base::BindOnce(&DownloadTargetDeterminer::
+                               RequestIncognitoWarningConfirmationDone,
+                           weak_ptr_factory_.GetWeakPtr()));
         return QUIT_DOLOOP;
       }
 #endif

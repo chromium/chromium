@@ -21,6 +21,10 @@ namespace base {
 class FilePath;
 }
 
+namespace content {
+class WebContents;
+}
+
 // Delegate for DownloadTargetDeterminer. The delegate isn't owned by
 // DownloadTargetDeterminer and is expected to outlive it.
 class DownloadTargetDeterminerDelegate {
@@ -117,6 +121,7 @@ class DownloadTargetDeterminerDelegate {
   // Display a message prompt to the user containing an incognito warning.
   // Should invoke |callback| upon completion.
   virtual void RequestIncognitoWarningConfirmation(
+      content::WebContents* web_contents,
       IncognitoWarningConfirmationCallback callback) = 0;
 #endif
   // If |virtual_path| is not a local path, should return a possibly temporary

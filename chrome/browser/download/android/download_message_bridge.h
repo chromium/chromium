@@ -12,6 +12,10 @@ namespace content {
 class WebContents;
 }  // namespace content
 
+namespace ui {
+class WindowAndroid;
+}  // namespace ui
+
 // Class for showing message to warn the user about incognito download.
 class DownloadMessageBridge : public download::DownloadItem::Observer {
  public:
@@ -24,7 +28,8 @@ class DownloadMessageBridge : public download::DownloadItem::Observer {
 
   ~DownloadMessageBridge() override;
 
-  void ShowIncognitoDownloadMessage(DownloadMessageRequestCallback callback);
+  void ShowIncognitoDownloadMessage(ui::WindowAndroid* window_android,
+                                    DownloadMessageRequestCallback callback);
   virtual void ShowUnsupportedDownloadMessage(
       content::WebContents* web_contents);
 };

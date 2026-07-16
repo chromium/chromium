@@ -1260,7 +1260,8 @@ void ChromeDownloadManagerDelegate::ChooseSavePath(
                      weak_ptr_factory_.GetWeakPtr(), web_contents->GetURL(),
                      suggested_path, std::move(callback));
   if (profile_->IsOffTheRecord()) {
-    RequestIncognitoWarningConfirmation(std::move(confirm_callback));
+    RequestIncognitoWarningConfirmation(web_contents,
+                                        std::move(confirm_callback));
   } else {
     std::move(confirm_callback).Run(/*accepted=*/true);
   }
@@ -1483,8 +1484,16 @@ void ChromeDownloadManagerDelegate::ReserveVirtualPath(
 
 #if BUILDFLAG(IS_ANDROID)
 void ChromeDownloadManagerDelegate::RequestIncognitoWarningConfirmation(
+    content::WebContents* web_contents,
     IncognitoWarningConfirmationCallback callback) {
-  download_message_bridge_->ShowIncognitoDownloadMessage(std::move(callback));
+  ui::WindowAndroid* window_android =
+      web_contents ? web_contents->GetTopLevelNativeWindow() : nullptr;
+  if (!window_android) {
+    std::move(callback).Run(/*accepted=*/false);
+    return;
+  }
+  download_message_bridge_->ShowIncognitoDownloadMessage(window_android,
+                                                         std::move(callback));
 }
 #endif
 
