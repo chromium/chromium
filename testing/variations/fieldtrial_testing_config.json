@@ -23756,6 +23756,21 @@
             ]
         }
     ],
+    "SubmenusInAppMenuLff": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20260714",
+                    "enable_features": [
+                        "SubmenusInAppMenuLff"
+                    ]
+                }
+            ]
+        }
+    ],
     "SubresourceFilterPrewarm": [
         {
             "platforms": [
