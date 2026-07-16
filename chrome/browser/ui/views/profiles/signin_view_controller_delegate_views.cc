@@ -39,6 +39,7 @@
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/input/native_web_keyboard_event.h"
 #include "components/web_modal/web_contents_modal_dialog_host.h"
+#include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
@@ -311,15 +312,15 @@ void SigninViewControllerDelegateViews::ResizeNativeView(int height) {
 }
 
 content::WebContents* SigninViewControllerDelegateViews::GetWebContents() {
-  return web_contents_;
+  return web_contents();
 }
 
 void SigninViewControllerDelegateViews::SetWebContents(
     content::WebContents* web_contents) {
   DCHECK(web_contents);
+  DetachFromWebContents();
   content_view_->SetWebContents(web_contents);
-  web_contents_ = web_contents;
-  web_contents_->SetDelegate(this);
+  AttachToWebContents(web_contents);
 }
 
 bool SigninViewControllerDelegateViews::HandleContextMenu(
@@ -395,12 +396,11 @@ SigninViewControllerDelegateViews::SigninViewControllerDelegateViews(
     base::ScopedClosureRunner on_closed_callback,
     bool allow_closing_by_pressing_escape)
     : content_view_(content_view.get()),
-      web_contents_(content_view->GetWebContents()),
       browser_(browser),
       should_show_close_button_(should_show_close_button),
       on_closed_callback_(std::move(on_closed_callback)),
       allow_closing_by_pressing_escape_(allow_closing_by_pressing_escape) {
-  DCHECK(web_contents_);
+  DCHECK(content_view_->GetWebContents());
   DCHECK(browser_);
   DCHECK(browser_->tab_strip_model()->GetActiveWebContents())
       << "A tab must be active to present the sign-in modal dialog.";
@@ -444,7 +444,7 @@ SigninViewControllerDelegateViews::SigninViewControllerDelegateViews(
   }
 #endif
 
-  web_contents_->SetDelegate(this);
+  AttachToWebContents(content_view_->GetWebContents());
 
   DCHECK(dialog_modal_type == ui::mojom::ModalType::kChild ||
          dialog_modal_type == ui::mojom::ModalType::kWindow)
@@ -462,8 +462,9 @@ SigninViewControllerDelegateViews::SigninViewControllerDelegateViews(
   }
 }
 
-SigninViewControllerDelegateViews::~SigninViewControllerDelegateViews() =
-    default;
+SigninViewControllerDelegateViews::~SigninViewControllerDelegateViews() {
+  DetachFromWebContents();
+}
 
 std::unique_ptr<views::WebView>
 SigninViewControllerDelegateViews::CreateDialogWebView(
@@ -524,6 +525,32 @@ void SigninViewControllerDelegateViews::DisplayModal() {
 
   DCHECK(modal_signin_widget_);
   content_view_->RequestFocus();
+}
+
+void SigninViewControllerDelegateViews::AttachToWebContents(
+    content::WebContents* web_contents) {
+  DCHECK(web_contents);
+  content::WebContentsObserver::Observe(web_contents);
+  web_contents->SetDelegate(this);
+  web_modal::WebContentsModalDialogManager::CreateForWebContents(web_contents);
+  web_modal::WebContentsModalDialogManager::FromWebContents(web_contents)
+      ->SetDelegate(this);
+}
+
+void SigninViewControllerDelegateViews::DetachFromWebContents() {
+  if (web_contents()) {
+    if (web_contents()->GetDelegate() == this) {
+      web_contents()->SetDelegate(nullptr);
+    }
+    if (auto* manager =
+            web_modal::WebContentsModalDialogManager::FromWebContents(
+                web_contents())) {
+      if (manager->delegate() == this) {
+        manager->SetDelegate(nullptr);
+      }
+    }
+    content::WebContentsObserver::Observe(nullptr);
+  }
 }
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
