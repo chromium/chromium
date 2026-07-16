@@ -908,8 +908,12 @@ void SimpleBackendImpl::DoomEntriesComplete(
     std::unique_ptr<std::vector<uint64_t>> entry_hashes,
     CompletionOnceCallback callback,
     int result) {
+  // Save `post_doom_waiting_` locally in case something invoked from us
+  // deletes `this`.
+  scoped_refptr<SimplePostOperationWaiterTable> post_doom_waiting =
+      post_doom_waiting_;
   for (const uint64_t& entry_hash : *entry_hashes)
-    post_doom_waiting_->OnOperationComplete(entry_hash);
+    post_doom_waiting->OnOperationComplete(entry_hash);
   std::move(callback).Run(result);
 }
 
