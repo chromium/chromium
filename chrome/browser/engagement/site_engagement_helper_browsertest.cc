@@ -71,6 +71,10 @@ class SiteEngagementHelperBrowserTest : public InProcessBrowserTest {
     host_resolver()->AddRule("*", "127.0.0.1");
     ASSERT_TRUE(test_server_handle_ =
                     embedded_test_server()->StartAndReturnHandle());
+    // Initialize histogram_tester_ on main thread setup rather than member
+    // field construction so that background WebUI page navigations during
+    // browser startup do not contribute extra to histogram measurements.
+    histogram_tester_ = std::make_unique<base::HistogramTester>();
   }
 
   // Set a pause timer on the input tracker for test purposes.
@@ -99,12 +103,12 @@ class SiteEngagementHelperBrowserTest : public InProcessBrowserTest {
     return browser()->tab_strip_model()->GetActiveWebContents();
   }
 
-  base::HistogramTester* histogram_tester() { return &histogram_tester_; }
+  base::HistogramTester* histogram_tester() { return histogram_tester_.get(); }
 
  private:
   content::test::PrerenderTestHelper prerender_helper_;
   net::test_server::EmbeddedTestServerHandle test_server_handle_;
-  base::HistogramTester histogram_tester_;
+  std::unique_ptr<base::HistogramTester> histogram_tester_;
   raw_ptr<TestOneShotTimer, AcrossTasksDanglingUntriaged> input_tracker_timer_;
   raw_ptr<TestOneShotTimer, AcrossTasksDanglingUntriaged> media_tracker_timer_;
 };
