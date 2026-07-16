@@ -453,6 +453,10 @@ class MODULES_EXPORT AudioContext final
   // asynchronously to the audio thread making rendering progress.
   void PerformCleanupPendingResumePromises();
 
+  void AddPendingResumeResolver(ScriptPromiseResolver<IDLUndefined>*);
+  void ResolvePendingResumeResolvers();
+  void RejectPendingResumeResolversWithException(const String& message);
+
   // https://webaudio.github.io/web-audio-api/#dom-audiocontext-suspended-by-user-slot
   bool suspended_by_user_ = false;
 
@@ -629,11 +633,6 @@ class MODULES_EXPORT AudioContext final
   // https://webaudio.github.io/web-audio-api/#dom-audiocontext-pending-resume-promises-slot
   HeapVector<Member<ScriptPromiseResolver<IDLUndefined>>>
       pending_resume_resolvers_;
-
-  // True if we're in the process of resolving promises for resume().  Resolving
-  // can take some time and the audio context process loop is very fast, so we
-  // don't want to call resolve an excessive number of times.
-  bool is_resolving_resume_promises_ = false;
 
   // Set to `true` by the audio thread when it posts a main-thread task to
   // perform delayed resume state sync'ing updates that needs to be done on

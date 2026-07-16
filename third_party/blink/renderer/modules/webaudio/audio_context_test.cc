@@ -24,6 +24,7 @@
 #include "third_party/blink/public/platform/web_audio_sink_descriptor.h"
 #include "third_party/blink/public/platform/web_runtime_features.h"
 #include "third_party/blink/public/web/web_heap.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_tester.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_worklet_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_audio_sink_options.h"
@@ -2741,6 +2742,103 @@ TEST_F(AudioContextTest, AsyncStateUseCountersResumeAfterSuspend) {
           EXPECT_FALSE(GetDocument().IsUseCounted(
               WebFeature::kAudioContextAsyncTransitionToSuspendedStateRead));
           ClearAudioContextAsyncStateUseCounters();
+        }
+      }
+    }
+  }
+}
+
+// Verifies the suspend() and resume() promises settle correctly when both are
+// pending.
+TEST_F(AudioContextTest, TestPromiseWhenSuspendAndResume) {
+  enum SuspendTiming {
+    kSuspendBeforeInitialTransition,
+    kSuspendAfterInitialTransition
+  };
+  enum ResumeTiming {
+    kResumeBeforeSuspendTransition,
+    kResumeAfterSuspendTransition,
+  };
+  for (bool feature_enabled : {true, false}) {
+    for (SuspendTiming suspend_timing :
+         {kSuspendBeforeInitialTransition, kSuspendAfterInitialTransition}) {
+      for (ResumeTiming resume_timing :
+           {kResumeBeforeSuspendTransition, kResumeAfterSuspendTransition}) {
+        for (bool close_before_resumed : {true, false}) {
+          SCOPED_TRACE(testing::Message()
+                       << "feature_enabled: " << feature_enabled
+                       << ", suspend_timing: " << suspend_timing
+                       << ", resume_timing: " << resume_timing
+                       << ", close_before_resumed: " << close_before_resumed);
+          ScopedAudioContextAsyncStateTransitionsForTest scoped_feature(
+              feature_enabled);
+
+          ScriptState* script_state = ToScriptStateForMainWorld(&GetFrame());
+          ScriptState::Scope scope(script_state);
+          AudioContextOptions* options = AudioContextOptions::Create();
+
+          AudioContext* audio_context = AudioContext::Create(
+              GetFrame().DomWindow(), options, ASSERT_NO_EXCEPTION);
+
+          if (suspend_timing == kSuspendAfterInitialTransition) {
+            // Wait until "running".
+            ExpectContextBecomesRunningAsync(audio_context);
+          }
+
+          auto suspend_promise =
+              audio_context->suspendContext(script_state, ASSERT_NO_EXCEPTION);
+          ScriptPromiseTester suspend_tester(script_state, suspend_promise);
+
+          if (resume_timing == kResumeAfterSuspendTransition) {
+            // Wait until "suspended".
+            ExpectContextBecomesSuspendedAsync(audio_context);
+          }
+
+          auto resume_promise =
+              audio_context->resumeContext(script_state, ASSERT_NO_EXCEPTION);
+          ScriptPromiseTester resume_tester(script_state, resume_promise);
+          // Resuming the context should make everything start playing again.
+          ContextRenderer* renderer =
+              MakeGarbageCollected<ContextRenderer>(audio_context);
+          renderer->Init();
+          renderer->Render(128, base::Milliseconds(0), {});
+
+          if (close_before_resumed) {
+            auto close_promise =
+                audio_context->closeContext(script_state, ASSERT_NO_EXCEPTION);
+            ScriptPromiseTester close_tester(script_state, close_promise);
+
+            close_tester.WaitUntilSettled();
+            EXPECT_TRUE(close_tester.IsFulfilled());
+
+            suspend_tester.WaitUntilSettled();
+            if (resume_timing == kResumeAfterSuspendTransition) {
+              EXPECT_TRUE(suspend_tester.IsFulfilled());
+            } else {
+              // With the feature disabled, suspend() is synchronous, so its
+              // promise is already fulfilled before close() is called.
+              EXPECT_TRUE(feature_enabled ? suspend_tester.IsRejected()
+                                          : suspend_tester.IsFulfilled());
+            }
+
+            resume_tester.WaitUntilSettled();
+            if (feature_enabled &&
+                suspend_timing == kSuspendAfterInitialTransition &&
+                resume_timing == kResumeBeforeSuspendTransition) {
+              EXPECT_TRUE(resume_tester.IsFulfilled());
+            } else {
+              EXPECT_TRUE(resume_tester.IsRejected());
+            }
+          } else {
+            // Wait until "running".
+            ExpectContextBecomesRunningAsync(audio_context);
+
+            suspend_tester.WaitUntilSettled();
+            EXPECT_TRUE(suspend_tester.IsFulfilled());
+
+            resume_tester.WaitUntilSettled();
+            EXPECT_TRUE(resume_tester.IsFulfilled());
+          }
         }
       }
     }
