@@ -101,7 +101,6 @@ import org.chromium.components.embedder_support.util.WebResourceResponseInfo;
 import org.chromium.components.navigation_interception.InterceptNavigationDelegate;
 import org.chromium.components.origin_matcher.OriginMatcher;
 import org.chromium.components.sensitive_content.SensitiveContentFeatures;
-import org.chromium.components.stylus_handwriting.StylusHandwritingFeatureMap;
 import org.chromium.components.stylus_handwriting.StylusWritingController;
 import org.chromium.components.stylus_handwriting.StylusWritingSettingsState;
 import org.chromium.components.url_formatter.UrlFormatter;
@@ -4844,10 +4843,7 @@ public class AwContents implements SmartClipProvider {
             if (mComponentCallbacks != null) return;
             mComponentCallbacks = new AwComponentCallbacks();
             mContext.registerComponentCallbacks(mComponentCallbacks);
-            if (StylusHandwritingFeatureMap.isEnabled(
-                    StylusHandwritingFeatureMap.CACHE_STYLUS_SETTINGS)) {
-                StylusWritingSettingsState.getInstance().registerObserver(mStylusWritingController);
-            }
+            StylusWritingSettingsState.getInstance().registerObserver(mStylusWritingController);
 
             if (mDisplayCutoutController != null) mDisplayCutoutController.onAttachedToWindow();
 
@@ -4888,11 +4884,7 @@ public class AwContents implements SmartClipProvider {
                 mComponentCallbacks = null;
             }
 
-            if (StylusHandwritingFeatureMap.isEnabled(
-                    StylusHandwritingFeatureMap.CACHE_STYLUS_SETTINGS)) {
-                StylusWritingSettingsState.getInstance()
-                        .unregisterObserver(mStylusWritingController);
-            }
+            StylusWritingSettingsState.getInstance().unregisterObserver(mStylusWritingController);
 
             mScrollAccessibilityHelper.removePostedCallbacks();
             mZoomControls.dismissZoomPicker();

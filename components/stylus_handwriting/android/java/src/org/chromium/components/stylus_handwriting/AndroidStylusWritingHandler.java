@@ -11,7 +11,6 @@ import android.content.Context;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.os.Build;
-import android.provider.Settings;
 import android.view.View;
 import android.view.inputmethod.InputMethodInfo;
 import android.view.inputmethod.InputMethodManager;
@@ -36,21 +35,7 @@ public class AndroidStylusWritingHandler implements StylusWritingHandler, Stylus
     public static boolean isEnabled(Context context) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) return false;
 
-        int value = -1;
-        if (StylusHandwritingFeatureMap.isEnabledOrDefault(
-                StylusHandwritingFeatureMap.CACHE_STYLUS_SETTINGS, false)) {
-            value = StylusWritingSettingsState.getInstance().getStylusHandWritingSetting();
-        } else {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-                value =
-                        Settings.Secure.getInt(
-                                context.getContentResolver(), "stylus_handwriting_enabled", 1);
-            } else {
-                value =
-                        Settings.Global.getInt(
-                                context.getContentResolver(), "stylus_handwriting_enabled", -1);
-            }
-        }
+        int value = StylusWritingSettingsState.getInstance().getStylusHandWritingSetting();
 
         if (value != 1) {
             Log.d(TAG, "Stylus feature disabled.", value);
@@ -59,15 +44,7 @@ public class AndroidStylusWritingHandler implements StylusWritingHandler, Stylus
 
         InputMethodManager inputMethodManager = context.getSystemService(InputMethodManager.class);
         List<InputMethodInfo> inputMethods = inputMethodManager.getInputMethodList();
-        String defaultIme;
-        if (StylusHandwritingFeatureMap.isEnabledOrDefault(
-                StylusHandwritingFeatureMap.CACHE_STYLUS_SETTINGS, false)) {
-            defaultIme = StylusWritingSettingsState.getInstance().getDefaultInputMethod();
-        } else {
-            defaultIme =
-                    Settings.Secure.getString(
-                            context.getContentResolver(), Settings.Secure.DEFAULT_INPUT_METHOD);
-        }
+        String defaultIme = StylusWritingSettingsState.getInstance().getDefaultInputMethod();
 
         if (defaultIme == null) {
             Log.d(

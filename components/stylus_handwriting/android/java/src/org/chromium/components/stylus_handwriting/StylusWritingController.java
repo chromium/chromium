@@ -114,7 +114,7 @@ public class StylusWritingController {
     @AnyThread
     private static @HandlerType int computeHandlerType(Context context) {
         try (TraceEvent e = TraceEvent.scoped("StylusWritingController.computeHandlerType")) {
-            if (DirectWritingSettingsHelper.isEnabled(context)) {
+            if (DirectWritingSettingsHelper.isEnabled()) {
                 // Lazily initialize the various handlers since a lot of the time only one will be
                 // used.
                 return HandlerType.DIRECT_WRITING_TRIGGER;
@@ -138,11 +138,6 @@ public class StylusWritingController {
      */
     @AnyThread
     private @HandlerType int getHandlerType(boolean refresh) {
-        if (!StylusHandwritingFeatureMap.isEnabledOrDefault(
-                StylusHandwritingFeatureMap.CACHE_STYLUS_SETTINGS, false)) {
-            return computeHandlerType(mContext);
-        }
-
         synchronized (mLock) {
             if (mHandlerType == HandlerType.UNSET || refresh) {
                 mHandlerType = computeHandlerType(mContext);
@@ -189,17 +184,12 @@ public class StylusWritingController {
      */
     @MainThread
     private StylusApiOption getHandler() {
-        // If the feature is enabled, we listen to settings changes and re-run the handler selection
-        // logic if stylus related settings changed. If the feature is disabled, we re-run the
-        // handler selection logic every time.
-        if (StylusHandwritingFeatureMap.isEnabledOrDefault(
-                StylusHandwritingFeatureMap.CACHE_STYLUS_SETTINGS, false)) {
-            if (mStylusHandler == null) {
-                mStylusHandler = chooseHandler();
-            }
-            return mStylusHandler;
+        // We listen to settings changes and re-run the handler selection logic if stylus related
+        // settings changed.
+        if (mStylusHandler == null) {
+            mStylusHandler = chooseHandler();
         }
-        return chooseHandler();
+        return mStylusHandler;
     }
 
     /**
@@ -213,33 +203,22 @@ public class StylusWritingController {
      * <p>Must be called from the UI thread.
      */
     @MainThread
-    private void probeSupportThenRunOrPost(boolean refresh, Runnable task) {
-        boolean cache =
-                StylusHandwritingFeatureMap.isEnabledOrDefault(
-                        StylusHandwritingFeatureMap.CACHE_STYLUS_SETTINGS, false);
-        if (cache) {
-            // Note that multiple precache tasks could be posted in a race, but the underlying work
-            // is guarded by locks and the caching will avoid any expensive duplicate work.
-            PostTask.postTask(
-                    TaskTraits.USER_VISIBLE_MAY_BLOCK,
-                    () -> {
-                        getHandlerType(refresh);
-                        PostTask.postTask(
-                                TaskTraits.UI_USER_VISIBLE,
-                                () -> {
-                                    if (refresh) {
-                                        mStylusHandler = null;
-                                    }
-                                    task.run();
-                                });
-                    });
-        } else {
-            getHandlerType(refresh);
-            if (refresh) {
-                mStylusHandler = null;
-            }
-            task.run();
-        }
+    private void probeSupportThenPost(boolean refresh, Runnable task) {
+        // Note that multiple precache tasks could be posted in a race, but the underlying work
+        // is guarded by locks and the caching will avoid any expensive duplicate work.
+        PostTask.postTask(
+                TaskTraits.USER_VISIBLE_MAY_BLOCK,
+                () -> {
+                    getHandlerType(refresh);
+                    PostTask.postTask(
+                            TaskTraits.UI_USER_VISIBLE,
+                            () -> {
+                                if (refresh) {
+                                    mStylusHandler = null;
+                                }
+                                task.run();
+                            });
+                });
     }
 
     /**
@@ -254,7 +233,7 @@ public class StylusWritingController {
 
         mCurrentWebContents = webContents;
 
-        probeSupportThenRunOrPost(
+        probeSupportThenPost(
                 /* refresh= */ false,
                 () -> {
                     if (mCurrentWebContents == null) return;
@@ -282,7 +261,7 @@ public class StylusWritingController {
         // stylus settings is enabled, we need to store the current focus state and send it when
         // settings change is observed.
         mIsWindowFocused = hasFocus;
-        probeSupportThenRunOrPost(
+        probeSupportThenPost(
                 /* refresh= */ false,
                 () -> {
                     updateStylusState();
@@ -292,11 +271,7 @@ public class StylusWritingController {
     /** Notify stylus related settings changed. */
     @MainThread
     public void onSettingsChange() {
-        probeSupportThenRunOrPost(
-                /* refresh= */ true,
-                () -> {
-                    updateStylusState();
-                });
+        probeSupportThenPost(/* refresh= */ true, this::updateStylusState);
     }
 
     @MainThread

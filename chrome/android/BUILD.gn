@@ -746,7 +746,6 @@ if (_is_default_toolchain) {
       "//components/site_engagement/content/android:java",
       "//components/spellcheck/browser/android:java",
       "//components/strictmode/android:java",
-      "//components/stylus_handwriting/android:feature_list_java",
       "//components/stylus_handwriting/android:java",
       "//components/subresource_filter/android:java",
       "//components/supervised_user/android:content_filters_observer_bridge_java",

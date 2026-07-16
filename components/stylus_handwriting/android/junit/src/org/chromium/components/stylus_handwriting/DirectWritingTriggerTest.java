@@ -103,7 +103,7 @@ public class DirectWritingTriggerTest {
         mDwTrigger.setServiceCallbackForTest(mDwServiceCallback);
         doReturn(mStylusWritingImeCallback).when(mWebContents).getStylusWritingImeCallback();
         mDwTrigger.onWebContentsChanged(mContext, mWebContents);
-        verify(mDwTrigger).updateDwSettings(mContext);
+        verify(mDwTrigger).updateDwSettings();
         verify(mWebContents).setStylusWritingHandler(mDwTrigger);
         verify(mWebContents).getStylusWritingImeCallback();
         verify(mDwServiceCallback).setImeCallback(mStylusWritingImeCallback);
@@ -128,7 +128,7 @@ public class DirectWritingTriggerTest {
     public void testServiceCallbackCreation() {
         // Test that callback is created when settings are updated.
         assertNull(mDwTrigger.getServiceCallback());
-        mDwTrigger.updateDwSettings(mContext);
+        mDwTrigger.updateDwSettings();
         assertNotNull(mDwTrigger.getServiceCallback());
     }
 
@@ -142,7 +142,7 @@ public class DirectWritingTriggerTest {
     @Feature({"Stylus Handwriting"})
     public void testOnFocusChanged_lostFocus() {
         DirectWritingSettingsHelper.setIsEnabledForTesting(false);
-        mDwTrigger.updateDwSettings(mContext);
+        mDwTrigger.updateDwSettings();
 
         mDwTrigger.onFocusChanged(false);
         // hide toolbar is not called when feature is disabled.
@@ -151,7 +151,7 @@ public class DirectWritingTriggerTest {
         verify(mDwServiceBinder, never()).onStopRecognition(any(), any(), any());
 
         DirectWritingSettingsHelper.setIsEnabledForTesting(true);
-        mDwTrigger.updateDwSettings(mContext);
+        mDwTrigger.updateDwSettings();
         mDwTrigger.onFocusChanged(false);
         verify(mDwServiceBinder).hideDwToolbar();
         // stop recognition is not called until StylusWritingImeCallback is set.
@@ -168,7 +168,7 @@ public class DirectWritingTriggerTest {
     @Test
     @Feature({"Stylus Handwriting"})
     public void testOnFocusChanged_gainFocus() {
-        mDwTrigger.updateDwSettings(mContext);
+        mDwTrigger.updateDwSettings();
         doReturn(true).when(mDwServiceBinder).isServiceConnected();
         // No action when focus is gained.
         mDwTrigger.onFocusChanged(true);
@@ -179,7 +179,7 @@ public class DirectWritingTriggerTest {
     @Test
     @Feature({"Stylus Handwriting"})
     public void testShouldInitiateStylusWriting() {
-        mDwTrigger.updateDwSettings(mContext);
+        mDwTrigger.updateDwSettings();
         // requestStartStylusWriting returns false until service is connected.
         // Pass view = null as DW doesn't use the view.
         assertFalse(mDwTrigger.shouldInitiateStylusWriting());
@@ -197,7 +197,7 @@ public class DirectWritingTriggerTest {
         mDwTrigger.onDetachedFromWindow(mContext);
         verify(mDwServiceBinder, never()).unbindService(any());
 
-        mDwTrigger.updateDwSettings(mContext);
+        mDwTrigger.updateDwSettings();
         mDwTrigger.onDetachedFromWindow(mContext);
         verify(mDwServiceBinder, never()).unbindService(any());
 
@@ -216,7 +216,7 @@ public class DirectWritingTriggerTest {
         mDwTrigger.handleHoverEvent(hoverEnterEvent, mContainerView);
         verify(mDwServiceBinder, never()).bindService(any(), any());
 
-        mDwTrigger.updateDwSettings(mContext);
+        mDwTrigger.updateDwSettings();
         // Service is bound only for Hover enter and not hover move.
         MotionEvent hoverMoveEvent =
                 getMotionEvent(MotionEvent.TOOL_TYPE_STYLUS, MotionEvent.ACTION_HOVER_MOVE);
@@ -243,7 +243,7 @@ public class DirectWritingTriggerTest {
     @Feature({"Stylus Handwriting"})
     @RequiresApi(api = Build.VERSION_CODES.P)
     public void testHandleHoverEvent_bindServiceWithToolTypeEraser() {
-        mDwTrigger.updateDwSettings(mContext);
+        mDwTrigger.updateDwSettings();
         MotionEvent me =
                 getMotionEvent(MotionEvent.TOOL_TYPE_ERASER, MotionEvent.ACTION_HOVER_ENTER);
         mDwTrigger.handleHoverEvent(me, mContainerView);
@@ -254,7 +254,7 @@ public class DirectWritingTriggerTest {
     @Feature({"Stylus Handwriting"})
     @RequiresApi(api = Build.VERSION_CODES.P)
     public void testHandleHoverEvent_serviceNotConnectedForNonStylusEvent() {
-        mDwTrigger.updateDwSettings(mContext);
+        mDwTrigger.updateDwSettings();
         MotionEvent mouseMoveEvent =
                 getMotionEvent(MotionEvent.TOOL_TYPE_MOUSE, MotionEvent.ACTION_HOVER_ENTER);
         mDwTrigger.handleHoverEvent(mouseMoveEvent, mContainerView);
@@ -267,7 +267,7 @@ public class DirectWritingTriggerTest {
         // Test behaviour when window gains focus with DW setting disabled.
         DirectWritingSettingsHelper.setIsEnabledForTesting(false);
         mDwTrigger.updateHandlerState(mContext, true);
-        verify(mDwTrigger).updateDwSettings(mContext);
+        verify(mDwTrigger).updateDwSettings();
         verify(mDwServiceBinder, never()).hideDwToolbar();
         verify(mDwServiceBinder, never()).handleWindowFocusChanged(any(), anyBoolean());
 
@@ -283,17 +283,17 @@ public class DirectWritingTriggerTest {
         // Test behaviour when window loses focus with DW setting disabled.
         DirectWritingSettingsHelper.setIsEnabledForTesting(false);
         mDwTrigger.updateHandlerState(mContext, false);
-        verify(mDwTrigger, never()).updateDwSettings(any());
+        verify(mDwTrigger, never()).updateDwSettings();
         verify(mDwServiceBinder, never()).hideDwToolbar();
         verify(mDwServiceBinder, never()).handleWindowFocusChanged(any(), anyBoolean());
 
         // Test behaviour when window loses focus with DW setting already enabled.
         DirectWritingSettingsHelper.setIsEnabledForTesting(true);
-        mDwTrigger.updateDwSettings(mContext);
+        mDwTrigger.updateDwSettings();
 
         mDwTrigger.updateHandlerState(mContext, false);
         // Verify that updateDwSettings is not called again.
-        verify(mDwTrigger, times(1)).updateDwSettings(mContext);
+        verify(mDwTrigger, times(1)).updateDwSettings();
         verify(mDwServiceBinder).hideDwToolbar();
         verify(mDwServiceBinder).handleWindowFocusChanged(mContext, false);
     }
@@ -303,7 +303,7 @@ public class DirectWritingTriggerTest {
     public void testFocusNodeChanged_isEditable() {
         doReturn(true).when(mDwServiceBinder).isServiceConnected();
         DirectWritingSettingsHelper.setIsEnabledForTesting(true);
-        mDwTrigger.updateDwSettings(mContext);
+        mDwTrigger.updateDwSettings();
         mDwTrigger.setServiceCallbackForTest(mDwServiceCallback);
         // Simulate an ACTION_UP to check if stop recognition is called when editable is focused.
         MotionEvent me = getMotionEvent(MotionEvent.TOOL_TYPE_STYLUS, MotionEvent.ACTION_UP);
@@ -330,7 +330,7 @@ public class DirectWritingTriggerTest {
     public void testFocusNodeChanged_isNotEditable() {
         doReturn(true).when(mDwServiceBinder).isServiceConnected();
         DirectWritingSettingsHelper.setIsEnabledForTesting(true);
-        mDwTrigger.updateDwSettings(mContext);
+        mDwTrigger.updateDwSettings();
         mDwTrigger.setServiceCallbackForTest(mDwServiceCallback);
         // Simulate an ACTION_UP to verify hide DW toolbar is called when node is not editable.
         MotionEvent me = getMotionEvent(MotionEvent.TOOL_TYPE_STYLUS, MotionEvent.ACTION_UP);

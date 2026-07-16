@@ -35,6 +35,7 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.components.stylus_handwriting.test_support.ShadowGlobalSettings;
 import org.chromium.components.stylus_handwriting.test_support.ShadowSecureSettings;
@@ -79,6 +80,9 @@ public class AndroidStylusWritingHandlerTest {
     public void handlerIsDisabled_withFeatureDisabled() {
         when(mInputMethodInfo.supportsStylusHandwriting()).thenReturn(true);
         ShadowGlobalSettings.setHandwritingEnabled(false);
+        StylusWritingSettingsState.getInstance().updateAndNotify();
+        RobolectricUtil.runAllBackgroundAndUi();
+
         assertFalse(AndroidStylusWritingHandler.isEnabled(mContext));
     }
 
@@ -88,6 +92,9 @@ public class AndroidStylusWritingHandlerTest {
         when(mInputMethodInfo.supportsStylusHandwriting()).thenReturn(true);
         ShadowGlobalSettings.setHandwritingEnabled(false);
         ShadowSecureSettings.setHandwritingEnabled(true);
+        StylusWritingSettingsState.getInstance().updateAndNotify();
+        RobolectricUtil.runAllBackgroundAndUi();
+
         assertTrue(AndroidStylusWritingHandler.isEnabled(mContext));
     }
 
@@ -95,6 +102,9 @@ public class AndroidStylusWritingHandlerTest {
     public void handlerIsDisabled_noKeyboard() {
         ShadowGlobalSettings.setHandwritingEnabled(true);
         when(mInputMethodManager.getInputMethodList()).thenReturn(List.of());
+        StylusWritingSettingsState.getInstance().updateAndNotify();
+        RobolectricUtil.runAllBackgroundAndUi();
+
         assertFalse(AndroidStylusWritingHandler.isEnabled(mContext));
     }
 
@@ -102,6 +112,9 @@ public class AndroidStylusWritingHandlerTest {
     public void handlerIsDisabled_noKeyboardSupport() {
         when(mInputMethodInfo.supportsStylusHandwriting()).thenReturn(false);
         ShadowGlobalSettings.setHandwritingEnabled(true);
+        StylusWritingSettingsState.getInstance().updateAndNotify();
+        RobolectricUtil.runAllBackgroundAndUi();
+
         assertFalse(AndroidStylusWritingHandler.isEnabled(mContext));
     }
 
@@ -109,6 +122,9 @@ public class AndroidStylusWritingHandlerTest {
     public void handlerIsEnabled_withFeatureEnabledAndKeyboardSupport() {
         when(mInputMethodInfo.supportsStylusHandwriting()).thenReturn(true);
         ShadowGlobalSettings.setHandwritingEnabled(true);
+        StylusWritingSettingsState.getInstance().updateAndNotify();
+        RobolectricUtil.runAllBackgroundAndUi();
+
         assertTrue(AndroidStylusWritingHandler.isEnabled(mContext));
     }
 

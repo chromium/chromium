@@ -13,6 +13,7 @@ import android.provider.Settings.SettingNotFoundException;
 
 import androidx.annotation.AnyThread;
 import androidx.annotation.MainThread;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ObserverList;
@@ -38,7 +39,9 @@ public class StylusWritingSettingsState {
     // System setting for direct writing service. This setting is currently found under
     // Settings->Advanced features->S Pen->"S Pen to text".
     private static final String URI_DIRECT_WRITING = "direct_writing";
-    private static final String URI_STYLUS_HANDWRITING = "stylus_handwriting_enabled";
+
+    @VisibleForTesting
+    public static final String URI_STYLUS_HANDWRITING = "stylus_handwriting_enabled";
 
     private final AtomicReference<@Nullable String> mDefaultInputMethod = new AtomicReference<>();
     private final AtomicReference<@Nullable Integer> mDirectWritingSetting =
@@ -67,8 +70,7 @@ public class StylusWritingSettingsState {
 
                     @Override
                     public void onChange(boolean selfChange) {
-                        update();
-                        notifyObservers();
+                        updateAndNotify();
                     }
                 };
         List<Uri> urisToObserve = new ArrayList<>();
@@ -106,7 +108,6 @@ public class StylusWritingSettingsState {
             // throw a security exception. https://crbug.com/1356155.
             mDirectWritingSetting.set(null);
         }
-
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
             mStylusHandWritingSetting.set(
                     Settings.Secure.getInt(contentResolver, URI_STYLUS_HANDWRITING, 1));
@@ -161,5 +162,11 @@ public class StylusWritingSettingsState {
     public boolean unregisterObserver(StylusWritingController controller) {
         ThreadUtils.assertOnUiThread();
         return getObserverList().removeObserver(controller);
+    }
+
+    @VisibleForTesting
+    public void updateAndNotify() {
+        update();
+        notifyObservers();
     }
 }

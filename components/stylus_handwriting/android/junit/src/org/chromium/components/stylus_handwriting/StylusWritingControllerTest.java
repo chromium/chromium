@@ -30,6 +30,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.content_public.browser.WebContents;
@@ -66,6 +67,9 @@ public class StylusWritingControllerTest {
 
         doReturn(mViewAndroidDelegate).when(mWebContents).getViewAndroidDelegate();
         mStylusWritingController.onWebContentsChanged(mWebContents);
+        // onWebContentsChanged causes this to be posted. Use RobolectricUtil to wait until it has
+        // been run.
+        RobolectricUtil.runAllBackgroundAndUi();
         verify(mViewAndroidDelegate).setShouldShowStylusHoverIconCallback(any());
     }
 
@@ -82,6 +86,7 @@ public class StylusWritingControllerTest {
     @Feature({"Stylus Handwriting"})
     public void testWindowFocusChangeUpdatesCallback() {
         mStylusWritingController.onWindowFocusChanged(true);
+        RobolectricUtil.runAllBackgroundAndUi();
         verify(mViewAndroidDelegate, times(2)).setShouldShowStylusHoverIconCallback(any());
     }
 }

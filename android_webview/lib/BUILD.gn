@@ -37,7 +37,6 @@ source_set("lib") {
     "//components/sampling_profiler:profile_params",
     "//components/services/heap_profiling/public/cpp",
     "//components/spellcheck:buildflags",
-    "//components/stylus_handwriting/android",
     "//components/variations",
     "//components/variations:variations_associated_data",
     "//components/version_info",

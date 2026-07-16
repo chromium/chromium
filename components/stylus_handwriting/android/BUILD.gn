@@ -14,34 +14,8 @@ android_aidl("direct_writing_service_aidl") {
   ]
 }
 
-static_library("android") {
-  sources = [
-    "//components/stylus_handwriting/android/stylus_handwriting_feature_map.cc",
-    "//components/stylus_handwriting/android/stylus_handwriting_feature_map.h",
-  ]
-
-  deps = [
-    ":feature_list_jni",
-    "//base",
-  ]
-}
-
-generate_jni("feature_list_jni") {
-  sources = [ "java/src/org/chromium/components/stylus_handwriting/StylusHandwritingFeatureMap.java" ]
-}
-
-android_library("feature_list_java") {
-  srcjar_deps = [ ":feature_list_jni" ]
-  sources = [ "java/src/org/chromium/components/stylus_handwriting/StylusHandwritingFeatureMap.java" ]
-  deps = [
-    "//base:base_java",
-    "//third_party/jni_zero:jni_zero_java",
-  ]
-}
-
 android_library("java") {
   deps = [
-    ":feature_list_java",
     "//base:base_java",
     "//content/public/android:content_full_java",
     "//mojo/public/mojom/base:base_java",
