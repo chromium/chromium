@@ -13,6 +13,12 @@
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if BUILDFLAG(IS_WIN)
+#include "base/win/win_util.h"
+#include "components/policy/core/common/management/platform_management_service.h"
+#include "components/policy/core/common/management/platform_management_status_provider_win.h"
+#endif
+
 namespace policy {
 
 constexpr char kPrefName[] = "pref_name";
@@ -51,6 +57,7 @@ class ManagementServiceTests : public testing::Test {
 
   void SetUp() override {
     prefs_.registry()->RegisterIntegerPref(kPrefName, 0);
+    ManagementService::RegisterLocalStatePrefs(prefs_.registry());
   }
 
   PrefService* prefs() { return &prefs_; }
@@ -240,5 +247,100 @@ TEST_F(ManagementServiceTests, RefreshCacheWeakPtrSafety) {
 
   management_service.reset();
 }
+
+#if BUILDFLAG(IS_WIN)
+class AzureActiveDirectoryManagementServiceTests
+    : public ManagementServiceTests,
+      public testing::WithParamInterface<
+          base::win::ScopedAzureADJoinStateForTesting::AzureADJoinType> {};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    AzureActiveDirectoryManagementServiceTests,
+    testing::Values(
+        base::win::ScopedAzureADJoinStateForTesting::AzureADJoinType::
+            kWorkplace,
+        base::win::ScopedAzureADJoinStateForTesting::AzureADJoinType::kDevice));
+
+TEST_P(AzureActiveDirectoryManagementServiceTests,
+       AzureActiveDirectoryProviders) {
+  base::test::TaskEnvironment task_environment;
+  base::win::ScopedAzureADJoinStateForTesting scoped_azure_ad_join_state(
+      GetParam());
+
+  // AzureActiveDirectoryStatusProvider returns CLOUD_DOMAIN for both workplace
+  // and device join.
+  {
+    std::vector<std::unique_ptr<ManagementStatusProvider>> providers;
+    providers.push_back(std::make_unique<AzureActiveDirectoryStatusProvider>());
+    TestManagementService management_service(std::move(providers));
+    management_service.UsePrefServiceAsCache(prefs());
+
+    base::test::TestFuture<ManagementAuthorityTrustworthiness,
+                           ManagementAuthorityTrustworthiness>
+        test_future;
+    management_service.RefreshCache(test_future.GetCallback());
+    EXPECT_EQ(test_future.Get<1>(),
+              ManagementAuthorityTrustworthiness::FULLY_TRUSTED);
+  }
+
+  // AzureActiveDirectoryDeviceStatusProvider returns CLOUD_DOMAIN for device
+  // join and NONE for workplace join.
+  {
+    std::vector<std::unique_ptr<ManagementStatusProvider>> providers;
+    providers.push_back(
+        std::make_unique<AzureActiveDirectoryDeviceStatusProvider>());
+    TestManagementService management_service(std::move(providers));
+    management_service.UsePrefServiceAsCache(prefs());
+
+    base::test::TestFuture<ManagementAuthorityTrustworthiness,
+                           ManagementAuthorityTrustworthiness>
+        test_future;
+    management_service.RefreshCache(test_future.GetCallback());
+    ManagementAuthorityTrustworthiness expected_trustworthiness =
+        GetParam() == base::win::ScopedAzureADJoinStateForTesting::
+                          AzureADJoinType::kDevice
+            ? ManagementAuthorityTrustworthiness::FULLY_TRUSTED
+            : ManagementAuthorityTrustworthiness::NONE;
+    EXPECT_EQ(test_future.Get<1>(), expected_trustworthiness);
+  }
+}
+
+// TODO(crbug.com/531448879): Revert this change when AzureAD logic migration is
+// complete.
+TEST_P(AzureActiveDirectoryManagementServiceTests,
+       PlatformManagementServicePolicyLoadingTrust) {
+  base::test::TaskEnvironment task_environment;
+  base::win::ScopedAzureADJoinStateForTesting scoped_azure_ad_join_state(
+      GetParam());
+  base::win::ScopedDeviceRegisteredWithManagementForTesting
+      scoped_device_registered(false);
+
+  PlatformManagementService* service = PlatformManagementService::GetInstance();
+  service->UsePrefServiceAsCache(prefs());
+
+  base::test::TestFuture<ManagementAuthorityTrustworthiness,
+                         ManagementAuthorityTrustworthiness>
+      test_future;
+  service->RefreshCache(test_future.GetCallback());
+  ASSERT_TRUE(test_future.Wait());
+
+  // General trustworthiness includes AzureActiveDirectoryStatusProvider
+  // (CLOUD_DOMAIN).
+  EXPECT_EQ(service->GetManagementAuthorityTrustworthiness(),
+            ManagementAuthorityTrustworthiness::FULLY_TRUSTED);
+
+  // Policy loading trustworthiness excludes AzureActiveDirectoryStatusProvider,
+  // checking only AzureActiveDirectoryDeviceStatusProvider (FULLY_TRUSTED for
+  // device join, NONE for workplace join).
+  ManagementAuthorityTrustworthiness expected_trustworthiness =
+      GetParam() == base::win::ScopedAzureADJoinStateForTesting::
+                        AzureADJoinType::kDevice
+          ? ManagementAuthorityTrustworthiness::FULLY_TRUSTED
+          : ManagementAuthorityTrustworthiness::NONE;
+  EXPECT_EQ(service->GetManagementAuthorityTrustworthinessForPolicyLoading(),
+            expected_trustworthiness);
+}
+#endif
 
 }  // namespace policy

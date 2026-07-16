@@ -61,6 +61,23 @@ class POLICY_EXPORT AzureActiveDirectoryStatusProvider final
   EnterpriseManagementAuthority FetchAuthority() override;
 };
 
+// TODO(crbug.com/531448879): Revert this change when AzureAD logic migration is
+// complete.
+class POLICY_EXPORT AzureActiveDirectoryDeviceStatusProvider final
+    : public ManagementStatusProvider {
+ public:
+  AzureActiveDirectoryDeviceStatusProvider();
+
+  AzureActiveDirectoryDeviceStatusProvider(
+      const AzureActiveDirectoryDeviceStatusProvider&) = delete;
+  AzureActiveDirectoryDeviceStatusProvider& operator=(
+      const AzureActiveDirectoryDeviceStatusProvider&) = delete;
+
+ protected:
+  // ManagementStatusProvider impl
+  EnterpriseManagementAuthority FetchAuthority() override;
+};
+
 }  // namespace policy
 
 #endif  // COMPONENTS_POLICY_CORE_COMMON_MANAGEMENT_PLATFORM_MANAGEMENT_STATUS_PROVIDER_WIN_H_

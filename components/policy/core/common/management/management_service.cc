@@ -202,6 +202,39 @@ ManagementService::GetManagementAuthorityTrustworthiness() {
   return ManagementAuthorityTrustworthiness::NONE;
 }
 
+ManagementAuthorityTrustworthiness
+ManagementService::GetManagementAuthorityTrustworthinessForPolicyLoading() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+#if BUILDFLAG(IS_WIN)
+  if (!management_authorities_for_testing_) {
+    int result = 0;
+    for (const auto& provider : management_status_providers_) {
+      if (provider->RequiresCache() &&
+          provider->cache_pref_name() ==
+              policy_prefs::kAzureActiveDirectoryManagement) {
+        continue;
+      }
+      result |= provider->GetAuthority();
+    }
+
+    if (result & EnterpriseManagementAuthority::CLOUD_DOMAIN) {
+      return ManagementAuthorityTrustworthiness::FULLY_TRUSTED;
+    }
+    if (result & EnterpriseManagementAuthority::CLOUD) {
+      return ManagementAuthorityTrustworthiness::TRUSTED;
+    }
+    if (result & EnterpriseManagementAuthority::DOMAIN_LOCAL) {
+      return ManagementAuthorityTrustworthiness::TRUSTED;
+    }
+    if (result & EnterpriseManagementAuthority::COMPUTER_LOCAL) {
+      return ManagementAuthorityTrustworthiness::LOW;
+    }
+    return ManagementAuthorityTrustworthiness::NONE;
+  }
+#endif
+  return GetManagementAuthorityTrustworthiness();
+}
+
 int ManagementService::GetManagementAuthorities() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (management_authorities_for_testing_)
@@ -235,6 +268,8 @@ void ManagementService::RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
 #if BUILDFLAG(IS_WIN)
   registry->RegisterIntegerPref(policy_prefs::kAzureActiveDirectoryManagement,
                                 NONE);
+  registry->RegisterIntegerPref(
+      policy_prefs::kAzureActiveDirectoryDeviceManagement, NONE);
   registry->RegisterIntegerPref(policy_prefs::kEnterpriseMDMManagementWindows,
                                 NONE);
 #elif BUILDFLAG(IS_MAC)

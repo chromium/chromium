@@ -37,4 +37,14 @@ AzureActiveDirectoryStatusProvider::FetchAuthority() {
   return base::win::IsJoinedToAzureAD() ? CLOUD_DOMAIN : NONE;
 }
 
+AzureActiveDirectoryDeviceStatusProvider::
+    AzureActiveDirectoryDeviceStatusProvider()
+    : ManagementStatusProvider(
+          policy_prefs::kAzureActiveDirectoryDeviceManagement) {}
+
+EnterpriseManagementAuthority
+AzureActiveDirectoryDeviceStatusProvider::FetchAuthority() {
+  return base::win::IsDeviceJoinedToAzureAD() ? CLOUD_DOMAIN : NONE;
+}
+
 }  // namespace policy
