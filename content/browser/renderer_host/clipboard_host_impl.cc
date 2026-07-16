@@ -491,8 +491,6 @@ void ClipboardHostImpl::OnReadFiles(ui::ClipboardBuffer clipboard_buffer,
                                     ui::ClipboardSequenceNumberToken seqno,
                                     ReadFilesCallback callback,
                                     std::vector<ui::FileInfo> filenames) {
-  blink::mojom::ClipboardFilesPtr result = blink::mojom::ClipboardFiles::New();
-
   // Convert the vector of ui::FileInfo into a vector of base::FilePath so that
   // it can be passed to PerformPasteIfContentAllowed() for analysis.  When
   // the latter is called with ui::ClipboardFormatType::FilenamesType() the
@@ -505,55 +503,61 @@ void ClipboardHostImpl::OnReadFiles(ui::ClipboardBuffer clipboard_buffer,
   ClipboardPasteData clipboard_paste_data;
   clipboard_paste_data.file_paths = std::move(paths);
 
-  // This code matches the drag-and-drop DataTransfer code in
-  // RenderWidgetHostImpl::DragTargetDrop().
-
-  // Call PrepareDataTransferFilenamesForChildProcess() to register files so
-  // they can be accessed by the renderer.
-  RenderProcessHost* process = render_frame_host().GetProcess();
-  result->file_system_id = PrepareDataTransferFilenamesForChildProcess(
-      filenames, ChildProcessSecurityPolicyImpl::GetInstance(),
-      process->GetID(), process->GetStoragePartition()->GetFileSystemContext());
-
-  // Convert to DataTransferFiles which creates the access token for each file.
-  StoragePartitionImpl* storage_partition = static_cast<StoragePartitionImpl*>(
-      render_frame_host().GetProcess()->GetStoragePartition());
-  std::vector<blink::mojom::DataTransferFilePtr> files =
-      FileInfosToDataTransferFiles(
-          filenames, storage_partition->GetFileSystemAccessManager(),
-          process->GetDeprecatedID());
-  std::move(files.begin(), files.end(), std::back_inserter(result->files));
-
   PasteIfPolicyAllowed(
       clipboard_buffer, ui::ClipboardFormatType::FilenamesType(), seqno,
       std::move(clipboard_paste_data),
-      base::BindOnce(
-          [](blink::mojom::ClipboardFilesPtr result, ReadFilesCallback callback,
-             std::optional<ClipboardPasteData> clipboard_paste_data) {
-            if (!clipboard_paste_data) {
-              result->files.clear();
-              result->file_system_id->clear();
-            } else {
-              // A subset of the files can be copied.  Remove any files that
-              // should be blocked.  First build a list of the files that are
-              // allowed.
-              std::set<base::FilePath> allowed_files(
-                  std::move_iterator(clipboard_paste_data->file_paths.begin()),
-                  std::move_iterator(clipboard_paste_data->file_paths.end()));
+      base::BindOnce(&ClipboardHostImpl::OnReadFilesPolicyResult,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(filenames),
+                     std::move(callback)));
+}
 
-              for (auto it = result->files.begin();
-                   it != result->files.end();) {
-                if (allowed_files.find(it->get()->path) !=
-                    allowed_files.end()) {
-                  it = std::next(it);
-                } else {
-                  it = result->files.erase(it);
-                }
-              }
-            }
-            std::move(callback).Run(std::move(result));
-          },
-          std::move(result), std::move(callback)));
+void ClipboardHostImpl::OnReadFilesPolicyResult(
+    std::vector<ui::FileInfo> filenames,
+    ReadFilesCallback callback,
+    std::optional<ClipboardPasteData> clipboard_paste_data) {
+  blink::mojom::ClipboardFilesPtr result = blink::mojom::ClipboardFiles::New();
+
+  // The policy blocked the paste entirely.
+  if (!clipboard_paste_data) {
+    std::move(callback).Run(std::move(result));
+    return;
+  }
+
+  // The policy may have allowed only a subset of the files. Restrict the files
+  // to be granted to exactly that allowed subset, so blocked files are never
+  // registered with ChildProcessSecurityPolicy or the IsolatedContext.
+  std::set<base::FilePath> allowed_files(
+      std::move_iterator(clipboard_paste_data->file_paths.begin()),
+      std::move_iterator(clipboard_paste_data->file_paths.end()));
+
+  std::vector<ui::FileInfo> allowed_filenames;
+  allowed_filenames.reserve(filenames.size());
+  for (ui::FileInfo& info : filenames) {
+    if (allowed_files.contains(info.path)) {
+      allowed_filenames.push_back(std::move(info));
+    }
+  }
+
+  // This code matches the drag-and-drop DataTransfer code in
+  // RenderWidgetHostImpl::DragTargetDrop().
+
+  // Call PrepareDataTransferFilenamesForChildProcess() to register the allowed
+  // files so they can be accessed by the renderer.
+  RenderProcessHost* process = render_frame_host().GetProcess();
+  result->file_system_id = PrepareDataTransferFilenamesForChildProcess(
+      allowed_filenames, ChildProcessSecurityPolicyImpl::GetInstance(),
+      process->GetID(), process->GetStoragePartition()->GetFileSystemContext());
+
+  // Convert to DataTransferFiles which creates the access token for each file.
+  StoragePartitionImpl* storage_partition =
+      static_cast<StoragePartitionImpl*>(process->GetStoragePartition());
+  std::vector<blink::mojom::DataTransferFilePtr> files =
+      FileInfosToDataTransferFiles(
+          allowed_filenames, storage_partition->GetFileSystemAccessManager(),
+          process->GetDeprecatedID());
+  std::move(files.begin(), files.end(), std::back_inserter(result->files));
+
+  std::move(callback).Run(std::move(result));
 }
 
 void ClipboardHostImpl::ReadDataTransferCustomData(

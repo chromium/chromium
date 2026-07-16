@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/files/file_path.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/pickle.h"
@@ -21,6 +22,8 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "build/build_config.h"
+#include "content/browser/security/cpsp/child_process_security_policy_impl.h"
+#include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/navigation_simulator.h"
@@ -39,6 +42,7 @@
 #include "ui/base/clipboard/clipboard_format_type.h"
 #include "ui/base/clipboard/clipboard_monitor.h"
 #include "ui/base/clipboard/custom_data_helper.h"
+#include "ui/base/clipboard/file_info.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/clipboard/test/clipboard_test_util.h"
 #include "ui/base/clipboard/test/test_clipboard.h"
@@ -1302,6 +1306,144 @@ TEST_F(ClipboardHostImplTest, ReadUnsanitizedCustomFormat_WithUserActivation) {
   // Verify the content matches what was written
   std::string retrieved_data(result.begin(), result.end());
   EXPECT_EQ(retrieved_data, test_data);
+}
+
+// ContentBrowserClient that lets a paste pass the renderer permission gate but
+// blocks it at the data controls / DLP policy layer (full deny).
+class FilesPolicyDenyBrowserClient : public TestContentBrowserClient {
+ public:
+  FilesPolicyDenyBrowserClient() = default;
+  ~FilesPolicyDenyBrowserClient() override = default;
+
+  bool IsClipboardPasteAllowed(
+      content::RenderFrameHost* render_frame_host) override {
+    return true;
+  }
+
+  void IsClipboardPasteAllowedByPolicy(
+      const ClipboardEndpoint& source,
+      const ClipboardEndpoint& destination,
+      const ui::ClipboardMetadata& metadata,
+      ClipboardPasteData data,
+      IsClipboardPasteAllowedCallback callback) override {
+    // Block the paste entirely.
+    std::move(callback).Run(std::nullopt);
+  }
+};
+
+// Regression test for crbug.com/495455546: when the data controls / DLP policy
+// blocks a file paste, ReadFiles() must not leave the renderer with any file
+// read capability. Because granting now happens only for the policy-allowed
+// subset (after the policy decision), a full deny grants nothing.
+TEST_F(ClipboardHostImplTest, ReadFiles_PolicyDeny_GrantsNoFileAccess) {
+  FilesPolicyDenyBrowserClient browser_client;
+  ScopedContentBrowserClientSetting browser_client_setting(&browser_client);
+
+  // Seed the clipboard with a file. A real (absolute) path is used so the
+  // uri-list round-trips cleanly on every platform; the file need not exist.
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  const base::FilePath blocked_file =
+      temp_dir.GetPath().AppendASCII("confidential.docx");
+  {
+    ui::ScopedClipboardWriter writer(ui::ClipboardBuffer::kCopyPaste);
+    writer.WriteFilenames(
+        ui::FileInfosToURIList({ui::FileInfo(blocked_file, base::FilePath())}));
+  }
+
+  RenderProcessHost* process =
+      web_contents()->GetPrimaryMainFrame()->GetProcess();
+  const ChildProcessId child_id = process->GetID();
+  auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
+  ASSERT_FALSE(policy->CanReadFile(child_id, blocked_file));
+
+  base::test::TestFuture<blink::mojom::ClipboardFilesPtr> future;
+  mojo_clipboard()->ReadFiles(ui::ClipboardBuffer::kCopyPaste,
+                              future.GetCallback());
+  blink::mojom::ClipboardFilesPtr result = future.Take();
+
+  // No files and no isolated filesystem id are returned, and -- crucially --
+  // the renderer was granted no read access to the blocked file.
+  EXPECT_TRUE(result->files.empty());
+  EXPECT_FALSE(result->file_system_id);
+  EXPECT_FALSE(policy->CanReadFile(child_id, blocked_file));
+}
+
+// ContentBrowserClient that lets a paste pass the renderer permission gate but
+// allows only a configured subset of files through the data controls / DLP
+// policy layer (partial allow).
+class FilesPolicyAllowSubsetBrowserClient : public TestContentBrowserClient {
+ public:
+  explicit FilesPolicyAllowSubsetBrowserClient(
+      std::set<base::FilePath> allowed_paths)
+      : allowed_paths_(std::move(allowed_paths)) {}
+  ~FilesPolicyAllowSubsetBrowserClient() override = default;
+
+  bool IsClipboardPasteAllowed(
+      content::RenderFrameHost* render_frame_host) override {
+    return true;
+  }
+
+  void IsClipboardPasteAllowedByPolicy(
+      const ClipboardEndpoint& source,
+      const ClipboardEndpoint& destination,
+      const ui::ClipboardMetadata& metadata,
+      ClipboardPasteData data,
+      IsClipboardPasteAllowedCallback callback) override {
+    // Return a ClipboardPasteData containing only the allowed subset of paths.
+    ClipboardPasteData allowed;
+    for (const base::FilePath& path : data.file_paths) {
+      if (allowed_paths_.contains(path)) {
+        allowed.file_paths.push_back(path);
+      }
+    }
+    std::move(callback).Run(std::move(allowed));
+  }
+
+ private:
+  std::set<base::FilePath> allowed_paths_;
+};
+
+// Regression test for crbug.com/495455546: when the data controls / DLP policy
+// allows only a subset of the pasted files, ReadFiles() must grant the renderer
+// read access to exactly that subset -- the blocked files must never be
+// registered with ChildProcessSecurityPolicy or exposed to the renderer.
+TEST_F(ClipboardHostImplTest, ReadFiles_PolicyAllowSubset_GrantsOnlyAllowed) {
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  const base::FilePath allowed_file =
+      temp_dir.GetPath().AppendASCII("public.docx");
+  const base::FilePath blocked_file =
+      temp_dir.GetPath().AppendASCII("confidential.docx");
+
+  FilesPolicyAllowSubsetBrowserClient browser_client({allowed_file});
+  ScopedContentBrowserClientSetting browser_client_setting(&browser_client);
+
+  {
+    ui::ScopedClipboardWriter writer(ui::ClipboardBuffer::kCopyPaste);
+    writer.WriteFilenames(
+        ui::FileInfosToURIList({ui::FileInfo(allowed_file, base::FilePath()),
+                                ui::FileInfo(blocked_file, base::FilePath())}));
+  }
+
+  RenderProcessHost* process =
+      web_contents()->GetPrimaryMainFrame()->GetProcess();
+  const ChildProcessId child_id = process->GetID();
+  auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
+  ASSERT_FALSE(policy->CanReadFile(child_id, allowed_file));
+  ASSERT_FALSE(policy->CanReadFile(child_id, blocked_file));
+
+  base::test::TestFuture<blink::mojom::ClipboardFilesPtr> future;
+  mojo_clipboard()->ReadFiles(ui::ClipboardBuffer::kCopyPaste,
+                              future.GetCallback());
+  blink::mojom::ClipboardFilesPtr result = future.Take();
+
+  // Exactly the allowed file is returned and granted; the blocked file is
+  // neither returned nor readable by the renderer.
+  EXPECT_EQ(1u, result->files.size());
+  EXPECT_TRUE(result->file_system_id);
+  EXPECT_TRUE(policy->CanReadFile(child_id, allowed_file));
+  EXPECT_FALSE(policy->CanReadFile(child_id, blocked_file));
 }
 
 TEST_F(ClipboardHostImplTest,
