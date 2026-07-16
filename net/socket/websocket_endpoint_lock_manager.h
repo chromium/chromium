@@ -16,7 +16,7 @@
 #include "base/time/time.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_export.h"
-#include "net/socket/websocket_transport_client_socket_pool.h"
+#include "net/base/network_anonymization_key.h"
 
 namespace net {
 
@@ -50,7 +50,8 @@ class NET_EXPORT_PRIVATE WebSocketEndpointLockManager {
       : public base::LinkNode<EndpointLock> {
    public:
     EndpointLock(WebSocketEndpointLockManager* websocket_endpoint_lock_manager,
-                 const IPEndPoint& endpoint);
+                 const IPEndPoint& endpoint,
+                 const NetworkAnonymizationKey& network_anonymization_key);
 
     EndpointLock(const EndpointLock&) = delete;
     EndpointLock& operator=(const EndpointLock&) = delete;
@@ -66,6 +67,7 @@ class NET_EXPORT_PRIVATE WebSocketEndpointLockManager {
 
     raw_ptr<WebSocketEndpointLockManager> websocket_endpoint_lock_manager_;
     const IPEndPoint endpoint_;
+    const NetworkAnonymizationKey network_anonymization_key_;
 
     base::OnceClosure lock_callback_;
     // The LockInfo when this class holds the lock. If non-null,
@@ -86,7 +88,8 @@ class NET_EXPORT_PRIVATE WebSocketEndpointLockManager {
   // Asynchronously releases the lock on |endpoint| after a delay. Does nothing
   // if |endpoint| is not locked. If an EndpointLock object has been created for
   // this endpoint, it will be unregistered.
-  void UnlockEndpoint(const IPEndPoint& endpoint);
+  void UnlockEndpoint(const IPEndPoint& endpoint,
+                      const NetworkAnonymizationKey& network_anonymization_key);
 
   // Checks that |lock_info_map_| is empty. For tests.
   bool IsEmpty() const;
@@ -122,16 +125,18 @@ class NET_EXPORT_PRIVATE WebSocketEndpointLockManager {
     raw_ptr<EndpointLock> endpoint_lock;
   };
 
+  using LockKey = std::pair<IPEndPoint, NetworkAnonymizationKey>;
+
   // SocketLockInfoMap requires std::map iterator semantics for LockInfoMap
   // (ie. that the iterator will remain valid as long as the entry is not
   // deleted).
-  typedef std::map<IPEndPoint, LockInfo> LockInfoMap;
+  using LockInfoMap = std::map<LockKey, LockInfo>;
 
   // Returns OK if lock was acquired immediately, ERR_IO_PENDING if not. If the
   // lock was not acquired, then `endpoint_lock->GotEndpointLock()` will be
   // called when it is. An EndpointLock automatically removes itself from the
   // list of waiters when its destructor is called.
-  int LockEndpoint(const IPEndPoint& endpoint, EndpointLock* endpoint_lock);
+  int LockEndpoint(const LockKey& key, EndpointLock* endpoint_lock);
 
   // Asynchronously releases the lock represented by `lock_info` after a delay.
   // If an EndpointLock object has been created for this endpoint, it will be
@@ -139,11 +144,11 @@ class NET_EXPORT_PRIVATE WebSocketEndpointLockManager {
   //
   // Separate function from UnlockEndpoint so ~EndpointLock() can unlock an
   // endpoint without a search.
-  void UnlockEndpointInternal(const IPEndPoint& endpoint, LockInfo& lock_info);
+  void UnlockEndpointInternal(const LockKey& key, LockInfo& lock_info);
 
   // Records the association of an EndpointLock with a particular endpoint.
-  void UnlockEndpointAfterDelay(const IPEndPoint& endpoint);
-  void DelayedUnlockEndpoint(const IPEndPoint& endpoint);
+  void UnlockEndpointAfterDelay(const LockKey& key);
+  void DelayedUnlockEndpoint(const LockKey& key);
 
   // Set/Clear the pointers in `lock_info` and `endpoint_lock` to point at
   // each other, when a lock is held/released. These are bookkeeping helper

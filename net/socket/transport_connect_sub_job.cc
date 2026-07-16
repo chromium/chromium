@@ -121,7 +121,8 @@ int TransportConnectSubJob::DoTransportConnect() {
   if (parent_job_->websocket_endpoint_lock_manager()) {
     transport_socket_ = std::make_unique<WebSocketStreamSocket>(
         *parent_job_->websocket_endpoint_lock_manager(), CurrentAddress(),
-        std::move(transport_socket_));
+        std::move(transport_socket_),
+        parent_job_->params_->network_anonymization_key());
   }
 
   // This use of base::Unretained() is safe because transport_socket_ is

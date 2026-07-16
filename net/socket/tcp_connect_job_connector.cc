@@ -205,7 +205,8 @@ int TcpConnectJob::Connector::DoTcpConnect() {
   if (parent_->websocket_endpoint_lock_manager()) {
     transport_socket_ = std::make_unique<WebSocketStreamSocket>(
         *parent_->websocket_endpoint_lock_manager(), *current_address_,
-        std::move(transport_socket_));
+        std::move(transport_socket_),
+        parent_->params_->network_anonymization_key());
   }
 
   parent_->net_log().AddEvent(

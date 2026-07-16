@@ -22,6 +22,7 @@ namespace net {
 
 class IPEndPoint;
 class IOBuffer;
+class NetworkAnonymizationKey;
 
 // StreamSocket wrapper that wraps a passed in StreamSocket. On Connect(), it
 // waits lock the endpoints with a WebSocketEndpointLockManager before calling
@@ -33,7 +34,8 @@ class NET_EXPORT WebSocketStreamSocket final : public StreamSocket {
   WebSocketStreamSocket(
       WebSocketEndpointLockManager& websocket_endpoint_lock_manager,
       const IPEndPoint& endpoint,
-      std::unique_ptr<StreamSocket> stream_socket);
+      std::unique_ptr<StreamSocket> stream_socket,
+      const NetworkAnonymizationKey& network_anonymization_key);
 
   WebSocketStreamSocket(const WebSocketStreamSocket&) = delete;
   WebSocketStreamSocket& operator=(const WebSocketStreamSocket&) = delete;

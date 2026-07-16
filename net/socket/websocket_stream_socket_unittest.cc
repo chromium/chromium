@@ -13,6 +13,7 @@
 #include "net/base/ip_address.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_errors.h"
+#include "net/base/network_anonymization_key.h"
 #include "net/base/test_completion_callback.h"
 #include "net/socket/socket_test_util.h"
 #include "net/socket/websocket_endpoint_lock_manager.h"
@@ -53,7 +54,8 @@ class WebSocketStreamSocketTest
         AddressList(kLocalhost), /*net_log=*/nullptr, data_provider.get());
     data_providers_.emplace_back(std::move(data_provider));
     return std::make_unique<WebSocketStreamSocket>(lock_manager_, kLocalhost,
-                                                   std::move(tcp_socket));
+                                                   std::move(tcp_socket),
+                                                   NetworkAnonymizationKey());
   }
 
   IoMode io_mode() const { return GetParam().io_mode; }

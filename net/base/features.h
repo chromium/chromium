@@ -957,6 +957,13 @@ NET_EXPORT BASE_DECLARE_FEATURE(kTlsGreaseSigalgs);
 // to prevent conflicts when multiple backends are created for the same path.
 NET_EXPORT BASE_DECLARE_FEATURE(kEnableBackendCleanupTrackerOnHttpCache);
 
+// If enabled, WebSocketEndpointLockManager partitions locks by
+// NetworkAnonymizationKey.
+// TODO(crbug.com/533028862): Remove the base::Feature after August 2026
+// once it has been verified safe.
+NET_EXPORT BASE_DECLARE_FEATURE(
+    kPartitionWebSocketEndpointLocksByNetworkAnonymizationKey);
+
 }  // namespace net::features
 
 #endif  // NET_BASE_FEATURES_H_

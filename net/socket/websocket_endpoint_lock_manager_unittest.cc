@@ -8,10 +8,13 @@
 
 #include "base/check.h"
 #include "base/run_loop.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
+#include "net/base/features.h"
 #include "net/base/ip_address.h"
 #include "net/base/net_errors.h"
+#include "net/base/network_anonymization_key.h"
 #include "net/log/net_log_with_source.h"
 #include "net/socket/next_proto.h"
 #include "net/socket/socket_test_util.h"
@@ -72,7 +75,7 @@ class WebSocketEndpointLockManagerTest : public TestWithTaskEnvironment {
 
   void UnlockDummyEndpoint(int times) {
     for (int i = 0; i < times; ++i) {
-      websocket_endpoint_lock_manager_.UnlockEndpoint(DummyEndpoint());
+      websocket_endpoint_lock_manager_.UnlockEndpoint(DummyEndpoint(), nak_);
       RunUntilIdle();
     }
   }
@@ -80,15 +83,16 @@ class WebSocketEndpointLockManagerTest : public TestWithTaskEnvironment {
   static void RunUntilIdle() { base::RunLoop().RunUntilIdle(); }
 
   WebSocketEndpointLockManager websocket_endpoint_lock_manager_;
+  NetworkAnonymizationKey nak_;
 };
 
 TEST_F(WebSocketEndpointLockManagerTest, LockEndpointReturnsOkOnce) {
   std::array<FakeWaiter, 2> waiters;
   EndpointLock endpoint_lock1(&websocket_endpoint_lock_manager_,
-                              DummyEndpoint());
+                              DummyEndpoint(), nak_);
   EXPECT_THAT(endpoint_lock1.LockEndpoint(waiters[0].GetCallback()), IsOk());
   EndpointLock endpoint_lock2(&websocket_endpoint_lock_manager_,
-                              DummyEndpoint());
+                              DummyEndpoint(), nak_);
   EXPECT_THAT(endpoint_lock2.LockEndpoint(waiters[1].GetCallback()),
               IsError(ERR_IO_PENDING));
 
@@ -97,8 +101,8 @@ TEST_F(WebSocketEndpointLockManagerTest, LockEndpointReturnsOkOnce) {
 
 TEST_F(WebSocketEndpointLockManagerTest, GotEndpointLockNotCalledOnOk) {
   FakeWaiter waiter;
-  EndpointLock endpoint_lock(&websocket_endpoint_lock_manager_,
-                             DummyEndpoint());
+  EndpointLock endpoint_lock(&websocket_endpoint_lock_manager_, DummyEndpoint(),
+                             nak_);
   EXPECT_THAT(endpoint_lock.LockEndpoint(waiter.GetCallback()), IsOk());
   RunUntilIdle();
   EXPECT_FALSE(waiter.called());
@@ -109,10 +113,10 @@ TEST_F(WebSocketEndpointLockManagerTest, GotEndpointLockNotCalledOnOk) {
 TEST_F(WebSocketEndpointLockManagerTest, GotEndpointLockNotCalledImmediately) {
   std::array<FakeWaiter, 2> waiters;
   EndpointLock endpoint_lock1(&websocket_endpoint_lock_manager_,
-                              DummyEndpoint());
+                              DummyEndpoint(), nak_);
   EXPECT_THAT(endpoint_lock1.LockEndpoint(waiters[0].GetCallback()), IsOk());
   EndpointLock endpoint_lock2(&websocket_endpoint_lock_manager_,
-                              DummyEndpoint());
+                              DummyEndpoint(), nak_);
   EXPECT_THAT(endpoint_lock2.LockEndpoint(waiters[1].GetCallback()),
               IsError(ERR_IO_PENDING));
   RunUntilIdle();
@@ -124,13 +128,13 @@ TEST_F(WebSocketEndpointLockManagerTest, GotEndpointLockNotCalledImmediately) {
 TEST_F(WebSocketEndpointLockManagerTest, GotEndpointLockCalledWhenUnlocked) {
   std::array<FakeWaiter, 2> waiters;
   EndpointLock endpoint_lock1(&websocket_endpoint_lock_manager_,
-                              DummyEndpoint());
+                              DummyEndpoint(), nak_);
   EXPECT_THAT(endpoint_lock1.LockEndpoint(waiters[0].GetCallback()), IsOk());
   EndpointLock endpoint_lock2(&websocket_endpoint_lock_manager_,
-                              DummyEndpoint());
+                              DummyEndpoint(), nak_);
   EXPECT_THAT(endpoint_lock2.LockEndpoint(waiters[1].GetCallback()),
               IsError(ERR_IO_PENDING));
-  websocket_endpoint_lock_manager_.UnlockEndpoint(DummyEndpoint());
+  websocket_endpoint_lock_manager_.UnlockEndpoint(DummyEndpoint(), nak_);
   RunUntilIdle();
   EXPECT_TRUE(waiters[1].called());
 
@@ -141,25 +145,25 @@ TEST_F(WebSocketEndpointLockManagerTest,
        EndpointUnlockedIfWaiterAlreadyDeleted) {
   FakeWaiter first_lock_holder;
   EndpointLock first_endpoint_lock(&websocket_endpoint_lock_manager_,
-                                   DummyEndpoint());
+                                   DummyEndpoint(), nak_);
   EXPECT_THAT(first_endpoint_lock.LockEndpoint(first_lock_holder.GetCallback()),
               IsOk());
 
   {
     FakeWaiter short_lived_waiter;
     EndpointLock short_lived_endpoint_lock(&websocket_endpoint_lock_manager_,
-                                           DummyEndpoint());
+                                           DummyEndpoint(), nak_);
     EXPECT_THAT(short_lived_endpoint_lock.LockEndpoint(
                     short_lived_waiter.GetCallback()),
                 IsError(ERR_IO_PENDING));
   }
 
-  websocket_endpoint_lock_manager_.UnlockEndpoint(DummyEndpoint());
+  websocket_endpoint_lock_manager_.UnlockEndpoint(DummyEndpoint(), nak_);
   RunUntilIdle();
 
   FakeWaiter second_lock_holder;
   EndpointLock second_endpoint_lock(&websocket_endpoint_lock_manager_,
-                                    DummyEndpoint());
+                                    DummyEndpoint(), nak_);
   EXPECT_THAT(
       second_endpoint_lock.LockEndpoint(second_lock_holder.GetCallback()),
       IsOk());
@@ -170,10 +174,10 @@ TEST_F(WebSocketEndpointLockManagerTest,
 TEST_F(WebSocketEndpointLockManagerTest, DeletingEndpointLockPassesOwnership) {
   std::array<FakeWaiter, 2> waiters;
   auto endpoint_lock1 = std::make_unique<EndpointLock>(
-      &websocket_endpoint_lock_manager_, DummyEndpoint());
+      &websocket_endpoint_lock_manager_, DummyEndpoint(), nak_);
   EXPECT_THAT(endpoint_lock1->LockEndpoint(waiters[0].GetCallback()), IsOk());
   EndpointLock endpoint_lock2(&websocket_endpoint_lock_manager_,
-                              DummyEndpoint());
+                              DummyEndpoint(), nak_);
   EXPECT_THAT(endpoint_lock2.LockEndpoint(waiters[1].GetCallback()),
               IsError(ERR_IO_PENDING));
 
@@ -190,10 +194,10 @@ TEST_F(WebSocketEndpointLockManagerTest, DeletingEndpointLockPassesOwnership) {
 TEST_F(WebSocketEndpointLockManagerTest, EndpointLockForgottenOnUnlock) {
   FakeWaiter waiter;
 
-  EndpointLock endpoint_lock(&websocket_endpoint_lock_manager_,
-                             DummyEndpoint());
+  EndpointLock endpoint_lock(&websocket_endpoint_lock_manager_, DummyEndpoint(),
+                             nak_);
   EXPECT_THAT(endpoint_lock.LockEndpoint(waiter.GetCallback()), IsOk());
-  websocket_endpoint_lock_manager_.UnlockEndpoint(DummyEndpoint());
+  websocket_endpoint_lock_manager_.UnlockEndpoint(DummyEndpoint(), nak_);
   RunUntilIdle();
   EXPECT_TRUE(websocket_endpoint_lock_manager_.IsEmpty());
 }
@@ -202,19 +206,19 @@ TEST_F(WebSocketEndpointLockManagerTest, EndpointLockForgottenOnUnlock) {
 TEST_F(WebSocketEndpointLockManagerTest, MultipleUnlockEndpoint) {
   std::array<FakeWaiter, 2> waiters;
   auto endpoint_lock1 = std::make_unique<EndpointLock>(
-      &websocket_endpoint_lock_manager_, DummyEndpoint());
+      &websocket_endpoint_lock_manager_, DummyEndpoint(), nak_);
   EXPECT_THAT(endpoint_lock1->LockEndpoint(waiters[0].GetCallback()), IsOk());
 
-  websocket_endpoint_lock_manager_.UnlockEndpoint(DummyEndpoint());
+  websocket_endpoint_lock_manager_.UnlockEndpoint(DummyEndpoint(), nak_);
   // Try to unlock when an unlock task has been posted but not run.
-  websocket_endpoint_lock_manager_.UnlockEndpoint(DummyEndpoint());
-  websocket_endpoint_lock_manager_.UnlockEndpoint(DummyEndpoint());
+  websocket_endpoint_lock_manager_.UnlockEndpoint(DummyEndpoint(), nak_);
+  websocket_endpoint_lock_manager_.UnlockEndpoint(DummyEndpoint(), nak_);
   // Destroying the lock should also be safe.
   endpoint_lock1.reset();
 
   // Lock should be available.
   EndpointLock endpoint_lock2(&websocket_endpoint_lock_manager_,
-                              DummyEndpoint());
+                              DummyEndpoint(), nak_);
   EXPECT_THAT(endpoint_lock2.LockEndpoint(waiters[1].GetCallback()),
               IsError(ERR_IO_PENDING));
   waiters[1].WaitForLock();
@@ -226,18 +230,18 @@ TEST_F(WebSocketEndpointLockManagerTest, MultipleUnlockEndpoint) {
 TEST_F(WebSocketEndpointLockManagerTest, Fifo) {
   std::array<FakeWaiter, 4> waiters;
   auto endpoint_lock1 = std::make_unique<EndpointLock>(
-      &websocket_endpoint_lock_manager_, DummyEndpoint());
+      &websocket_endpoint_lock_manager_, DummyEndpoint(), nak_);
   EXPECT_THAT(endpoint_lock1->LockEndpoint(waiters[0].GetCallback()), IsOk());
   auto endpoint_lock2 = std::make_unique<EndpointLock>(
-      &websocket_endpoint_lock_manager_, DummyEndpoint());
+      &websocket_endpoint_lock_manager_, DummyEndpoint(), nak_);
   EXPECT_THAT(endpoint_lock2->LockEndpoint(waiters[1].GetCallback()),
               IsError(ERR_IO_PENDING));
   auto endpoint_lock3 = std::make_unique<EndpointLock>(
-      &websocket_endpoint_lock_manager_, DummyEndpoint());
+      &websocket_endpoint_lock_manager_, DummyEndpoint(), nak_);
   EXPECT_THAT(endpoint_lock3->LockEndpoint(waiters[2].GetCallback()),
               IsError(ERR_IO_PENDING));
   auto endpoint_lock4 = std::make_unique<EndpointLock>(
-      &websocket_endpoint_lock_manager_, DummyEndpoint());
+      &websocket_endpoint_lock_manager_, DummyEndpoint(), nak_);
   EXPECT_THAT(endpoint_lock4->LockEndpoint(waiters[3].GetCallback()),
               IsError(ERR_IO_PENDING));
 
@@ -262,14 +266,14 @@ TEST_F(WebSocketEndpointLockManagerTest, Fifo) {
 TEST_F(WebSocketEndpointLockManagerTest, UnlockEndpointIsAsynchronous) {
   std::array<FakeWaiter, 2> waiters;
   EndpointLock endpoint_lock1(&websocket_endpoint_lock_manager_,
-                              DummyEndpoint());
+                              DummyEndpoint(), nak_);
   EXPECT_THAT(endpoint_lock1.LockEndpoint(waiters[1].GetCallback()), IsOk());
   EndpointLock endpoint_lock2(&websocket_endpoint_lock_manager_,
-                              DummyEndpoint());
+                              DummyEndpoint(), nak_);
   EXPECT_THAT(endpoint_lock2.LockEndpoint(waiters[1].GetCallback()),
               IsError(ERR_IO_PENDING));
 
-  websocket_endpoint_lock_manager_.UnlockEndpoint(DummyEndpoint());
+  websocket_endpoint_lock_manager_.UnlockEndpoint(DummyEndpoint(), nak_);
   EXPECT_FALSE(waiters[1].called());
   waiters[1].WaitForLock();
 
@@ -291,20 +295,84 @@ TEST_F(WebSocketEndpointLockManagerTest, UnlockEndpointIsDelayed) {
   websocket_endpoint_lock_manager_.SetUnlockDelayForTesting(unlock_delay);
   std::array<FakeWaiter, 2> waiters;
   EndpointLock endpoint_lock1(&websocket_endpoint_lock_manager_,
-                              DummyEndpoint());
+                              DummyEndpoint(), nak_);
   EXPECT_THAT(endpoint_lock1.LockEndpoint(waiters[1].GetCallback()), IsOk());
   EndpointLock endpoint_lock2(&websocket_endpoint_lock_manager_,
-                              DummyEndpoint());
+                              DummyEndpoint(), nak_);
   EXPECT_THAT(endpoint_lock2.LockEndpoint(waiters[1].GetCallback()),
               IsError(ERR_IO_PENDING));
 
   TimeTicks before_unlock = TimeTicks::Now();
-  websocket_endpoint_lock_manager_.UnlockEndpoint(DummyEndpoint());
+  websocket_endpoint_lock_manager_.UnlockEndpoint(DummyEndpoint(), nak_);
   waiters[1].WaitForLock();
   TimeTicks after_unlock = TimeTicks::Now();
   EXPECT_GE(after_unlock - before_unlock, unlock_delay);
   websocket_endpoint_lock_manager_.SetUnlockDelayForTesting(base::TimeDelta());
   UnlockDummyEndpoint(1);
+}
+
+TEST_F(WebSocketEndpointLockManagerTest, Partitioning) {
+  std::array<FakeWaiter, 2> waiters;
+  NetworkAnonymizationKey nak1 = NetworkAnonymizationKey::CreateTransient();
+  NetworkAnonymizationKey nak2 = NetworkAnonymizationKey::CreateTransient();
+
+  // Lock endpoint with nak1.
+  EndpointLock endpoint_lock1(&websocket_endpoint_lock_manager_,
+                              DummyEndpoint(), nak1);
+  EXPECT_THAT(endpoint_lock1.LockEndpoint(waiters[0].GetCallback()), IsOk());
+
+  // Lock same endpoint with nak2. It should succeed immediately because they
+  // are partitioned.
+  EndpointLock endpoint_lock2(&websocket_endpoint_lock_manager_,
+                              DummyEndpoint(), nak2);
+  EXPECT_THAT(endpoint_lock2.LockEndpoint(waiters[1].GetCallback()), IsOk());
+
+  // Lock same endpoint with nak1 again. It should block because nak1 is already
+  // locked.
+  FakeWaiter waiter3;
+  EndpointLock endpoint_lock3(&websocket_endpoint_lock_manager_,
+                              DummyEndpoint(), nak1);
+  EXPECT_THAT(endpoint_lock3.LockEndpoint(waiter3.GetCallback()),
+              IsError(ERR_IO_PENDING));
+
+  // Unlock nak1.
+  websocket_endpoint_lock_manager_.UnlockEndpoint(DummyEndpoint(), nak1);
+  waiter3.WaitForLock();
+  EXPECT_TRUE(waiter3.called());
+
+  // Clean up.
+  websocket_endpoint_lock_manager_.UnlockEndpoint(DummyEndpoint(), nak1);
+  websocket_endpoint_lock_manager_.UnlockEndpoint(DummyEndpoint(), nak2);
+}
+
+TEST_F(WebSocketEndpointLockManagerTest, NoPartitioningWhenDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      features::kPartitionWebSocketEndpointLocksByNetworkAnonymizationKey);
+
+  std::array<FakeWaiter, 2> waiters;
+  NetworkAnonymizationKey nak1 = NetworkAnonymizationKey::CreateTransient();
+  NetworkAnonymizationKey nak2 = NetworkAnonymizationKey::CreateTransient();
+
+  // Lock endpoint with nak1.
+  EndpointLock endpoint_lock1(&websocket_endpoint_lock_manager_,
+                              DummyEndpoint(), nak1);
+  EXPECT_THAT(endpoint_lock1.LockEndpoint(waiters[0].GetCallback()), IsOk());
+
+  // Lock same endpoint with nak2. It should block because partitioning is
+  // disabled, so they both use the empty NAK and thus clash.
+  EndpointLock endpoint_lock2(&websocket_endpoint_lock_manager_,
+                              DummyEndpoint(), nak2);
+  EXPECT_THAT(endpoint_lock2.LockEndpoint(waiters[1].GetCallback()),
+              IsError(ERR_IO_PENDING));
+
+  // Unlock first lock.
+  websocket_endpoint_lock_manager_.UnlockEndpoint(DummyEndpoint(), nak1);
+  waiters[1].WaitForLock();
+  EXPECT_TRUE(waiters[1].called());
+
+  // Clean up.
+  websocket_endpoint_lock_manager_.UnlockEndpoint(DummyEndpoint(), nak2);
 }
 
 }  // namespace

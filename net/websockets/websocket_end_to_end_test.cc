@@ -69,6 +69,7 @@
 #include "net/ssl/ssl_server_config.h"
 #include "net/storage_access_api/status.h"
 #include "net/test/embedded_test_server/create_websocket_handler.h"
+#include "net/test/embedded_test_server/default_handlers.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
@@ -432,6 +433,36 @@ void DelayedOnURLConnectedEventInterface::RunCallback(int net_err) {
     DVLOG(3) << "No callback to run";
   }
 }
+
+class ObserveConnectEventInterface : public ConnectTestingEventInterface {
+ public:
+  ObserveConnectEventInterface() = default;
+  ~ObserveConnectEventInterface() override = default;
+
+  [[nodiscard]] bool WaitForConnectResult() {
+    return connect_result_future_.Get();
+  }
+
+  int OnURLRequestConnected(net::URLRequest* request,
+                            const net::TransportInfo& info,
+                            net::CompletionOnceCallback callback) override {
+    connect_result_future_.SetValue(true);
+    return ConnectTestingEventInterface::OnURLRequestConnected(
+        request, info, std::move(callback));
+  }
+
+  void OnFailChannel(const std::string& message,
+                     int net_error,
+                     std::optional<int> response_code) override {
+    LOG(ERROR) << "Connection failed: " << message << " error: " << net_error;
+    connect_result_future_.SetValue(false);
+    ConnectTestingEventInterface::OnFailChannel(message, net_error,
+                                                response_code);
+  }
+
+ private:
+  base::test::TestFuture<bool> connect_result_future_;
+};
 
 // A subclass of TestNetworkDelegate that additionally implements the
 // OnResolveProxy callback and records the information passed to it.
@@ -1206,6 +1237,79 @@ TEST_F(WebSocketEndToEndTest, WebSocketDelayedConnectionResetChannelTest) {
   Connect(echo_url, std::move(event_interface));
   event_interface_ptr->WaitForConnectedEvent();
   channel_.reset();
+}
+
+TEST_F(WebSocketEndToEndTest, PartitioningByNetworkAnonymizationKey) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kPartitionConnectionsByNetworkIsolationKey);
+
+  // Set up mock host resolver to resolve our test domains to localhost.
+  auto host_resolver = std::make_unique<MockHostResolver>();
+  host_resolver->rules()->AddRule("a.test", "127.0.0.1");
+  host_resolver->rules()->AddRule("b.test", "127.0.0.1");
+  context_builder_->set_host_resolver(std::move(host_resolver));
+
+  test_server::EmbeddedTestServer embedded_test_server(
+      test_server::EmbeddedTestServer::TYPE_HTTP);
+  test_server::RegisterDefaultHandlers(&embedded_test_server);
+  test_server::InstallDefaultWebSocketHandlers(&embedded_test_server);
+  ASSERT_TRUE(embedded_test_server.Start());
+
+  InitialiseContext();
+
+  GURL hung_url =
+      test_server::GetWebSocketURL(embedded_test_server, "a.test", "/hung");
+  GURL echo_url = test_server::GetWebSocketURL(embedded_test_server, "b.test",
+                                               "/echo-with-no-extension");
+
+  // Connection 1: Hung connection with NAK 1
+  url::Origin origin1 = url::Origin::Create(GURL("http://a.test"));
+  IsolationInfo isolation_info1 =
+      IsolationInfo::Create(IsolationInfo::RequestType::kOther, origin1,
+                            origin1, SiteForCookies::FromOrigin(origin1));
+
+  std::unique_ptr<ObserveConnectEventInterface> event_interface1 =
+      std::make_unique<ObserveConnectEventInterface>();
+  ObserveConnectEventInterface* event_interface1_ptr = event_interface1.get();
+
+  auto channel1 = std::make_unique<WebSocketChannel>(
+      std::move(event_interface1), context_.get());
+
+  channel1->SendAddChannelRequest(
+      hung_url, sub_protocols_, origin1, StorageAccessApiStatus::kNone,
+      isolation_info1, HttpRequestHeaders(), WebSocketPriorityHint::kDefault,
+      TRAFFIC_ANNOTATION_FOR_TESTS);
+
+  // Wait for Connection 1 to be connected (lock acquired).
+  ASSERT_TRUE(event_interface1_ptr->WaitForConnectResult());
+
+  // Connection 2: Success connection with NAK 2.
+  // It should succeed immediately because they are partitioned by NAK.
+  url::Origin origin2 = url::Origin::Create(GURL("http://b.test"));
+  IsolationInfo isolation_info2 =
+      IsolationInfo::Create(IsolationInfo::RequestType::kOther, origin2,
+                            origin2, SiteForCookies::FromOrigin(origin2));
+
+  std::unique_ptr<ConnectTestingEventInterface> event_interface2 =
+      std::make_unique<ConnectTestingEventInterface>();
+  ConnectTestingEventInterface* event_interface2_ptr = event_interface2.get();
+
+  auto channel2 = std::make_unique<WebSocketChannel>(
+      std::move(event_interface2), context_.get());
+
+  channel2->SendAddChannelRequest(
+      echo_url, sub_protocols_, origin2, StorageAccessApiStatus::kNone,
+      isolation_info2, HttpRequestHeaders(), WebSocketPriorityHint::kDefault,
+      TRAFFIC_ANNOTATION_FOR_TESTS);
+
+  // Wait for Connection 2 response. It should succeed.
+  event_interface2_ptr->WaitForResponse();
+  EXPECT_FALSE(event_interface2_ptr->failed());
+
+  // Clean up.
+  channel2.reset();
+  channel1.reset();
 }
 
 }  // namespace

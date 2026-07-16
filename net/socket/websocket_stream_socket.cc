@@ -21,9 +21,12 @@ namespace net {
 WebSocketStreamSocket::WebSocketStreamSocket(
     WebSocketEndpointLockManager& websocket_endpoint_lock_manager,
     const IPEndPoint& endpoint,
-    std::unique_ptr<StreamSocket> stream_socket)
+    std::unique_ptr<StreamSocket> stream_socket,
+    const NetworkAnonymizationKey& network_anonymization_key)
     : wrapped_socket_(std::move(stream_socket)),
-      endpoint_lock_(&websocket_endpoint_lock_manager, endpoint) {}
+      endpoint_lock_(&websocket_endpoint_lock_manager,
+                     endpoint,
+                     network_anonymization_key) {}
 
 WebSocketStreamSocket::~WebSocketStreamSocket() = default;
 

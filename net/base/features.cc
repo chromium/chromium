@@ -942,4 +942,7 @@ BASE_FEATURE(kEnableBackendCleanupTrackerOnHttpCache,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(CRONET_BUILD)
 
+BASE_FEATURE(kPartitionWebSocketEndpointLocksByNetworkAnonymizationKey,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 }  // namespace net::features

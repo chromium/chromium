@@ -58,8 +58,13 @@ void WebSocketTransportClientSocketPool::UnlockEndpoint(
   DCHECK(handle->is_initialized());
   DCHECK(handle->socket());
   IPEndPoint address;
-  if (handle->socket()->GetPeerAddress(&address) == OK)
-    websocket_endpoint_lock_manager->UnlockEndpoint(address);
+  if (handle->socket()->GetPeerAddress(&address) == OK) {
+    // WebSocketTransportClientSocketPool only operates on ClientSocketHandle
+    // objects, so `handle` is guaranteed to be a ClientSocketHandle.
+    auto* client_socket_handle = static_cast<ClientSocketHandle*>(handle);
+    websocket_endpoint_lock_manager->UnlockEndpoint(
+        address, client_socket_handle->group_id().network_anonymization_key());
+  }
 }
 
 int WebSocketTransportClientSocketPool::RequestSocket(
