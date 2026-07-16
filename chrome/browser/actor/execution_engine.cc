@@ -117,6 +117,8 @@ constexpr char kLookalikeUrlPredicateName[] = "actor_lookalike_url_check";
 constexpr char kActionAllowlistPredicateName[] = "actor_action_allowlist_check";
 constexpr char kSafeBrowsingPredicateName[] =
     "actor_safe_browsing_enabled_check";
+constexpr char kSafetyChecksDisabledPredicateName[] =
+    "actor_safety_checks_disabled";
 
 struct ActorGatingContext : public origin_gating::GatingDecisionContext {
   ActorGatingContext(ukm::SourceId ukm_id,
@@ -219,6 +221,15 @@ origin_gating::Decision EvaluateSafeBrowsingEnabled(
   // SafeBrowsing.
   return is_safe_browsing_enabled ? origin_gating::Decision::kNoDecision
                                   : origin_gating::Decision::kBlocked;
+}
+
+origin_gating::Decision EvaluateSafetyChecksDisabled(
+    const origin_gating::GatingDecisionContext* context,
+    origin_gating::GateableEvent event,
+    const GURL& source,
+    const GURL& destination) {
+  return IsActorSafetyCheckDisabled() ? origin_gating::Decision::kAllowed
+                                      : origin_gating::Decision::kNoDecision;
 }
 
 // Returns true if `url`'s host is in the `allowlist`. If `include_subdomains`
@@ -464,6 +475,11 @@ ExecutionEngine::ExecutionEngine(
           *this,
           origin_gating::OriginGatingConfiguration(
               {
+                  {origin_gating::CustomPredicate(
+                       base::BindRepeating(&EvaluateSafetyChecksDisabled),
+                       kSafetyChecksDisabledPredicateName),
+                   {origin_gating::GateableEvent::kNavigationRequest,
+                    origin_gating::GateableEvent::kPageAction}},
                   {origin_gating::CustomPredicate(
                        base::BindRepeating(&EvaluateSafeBrowsingEnabled,
                                            task_->GetProfile()),

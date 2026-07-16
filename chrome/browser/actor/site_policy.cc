@@ -115,11 +115,6 @@ void MayActOnUrlInternal(const GURL& url,
     return;
   }
 
-  if (IsActorSafetyCheckDisabled()) {
-    decision_wrapper->Accept();
-    return;
-  }
-
   std::move(resolve_no_verdict)
       .Run(url,
            base::BindOnce(
