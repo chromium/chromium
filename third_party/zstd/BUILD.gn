@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD - style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chrome_build.gni")
+
 config("zstd_internal_config") {
   if (!is_debug) {
     # Build code using -O3.
@@ -22,6 +24,12 @@ config("zstd_hide_symbols") {
   ]
 }
 
+# Strip strings for detailed error messages from the compiled binary to reduce
+# binary size.
+config("zstd_strip_error_strings") {
+  defines = [ "ZSTD_STRIP_ERROR_STRINGS=1" ]
+}
+
 config("zstd_suppress_warnings_compress") {
   if (is_win && is_clang) {
     cflags = [ "-Wno-unused-function" ]
@@ -33,6 +41,25 @@ config("zstd_suppress_warnings_decompress") {
     cflags = [ "-Wno-void-ptr-dereference" ]
   }
 }
+
+# ZSTD compression support has a binary size cost, so only include the
+# compression levels that are used by Blink. Currently, that is only the fastest
+# compression level, which maps to ZSTD_fast. So exclude all other levels.
+config("zstd_fastest_compressor_only") {
+  defines = [
+    "ZSTD_EXCLUDE_DFAST_BLOCK_COMPRESSOR=1",
+    "ZSTD_EXCLUDE_GREEDY_BLOCK_COMPRESSOR=1",
+    "ZSTD_EXCLUDE_LAZY_BLOCK_COMPRESSOR=1",
+    "ZSTD_EXCLUDE_LAZY2_BLOCK_COMPRESSOR=1",
+    "ZSTD_EXCLUDE_BTLAZY2_BLOCK_COMPRESSOR=1",
+    "ZSTD_EXCLUDE_BTOPT_BLOCK_COMPRESSOR=1",
+    "ZSTD_EXCLUDE_BTULTRA_BLOCK_COMPRESSOR=1",
+  ]
+}
+
+# Set to true to only include the fastest compression level (ZSTD_fast) to save
+# binary size. Enabled on non-high-end Android by default.
+zstd_fastest_compressor_only = is_android && !is_high_end_android
 
 source_set("headers") {
   sources = [
@@ -99,6 +126,7 @@ source_set("decompress") {
   configs += [ ":zstd_hide_symbols" ]
   configs += [ ":zstd_internal_config" ]
   configs += [ ":zstd_suppress_warnings_decompress" ]
+  configs += [ ":zstd_strip_error_strings" ]
   public_deps = [
     ":common",
     ":headers",
@@ -144,6 +172,10 @@ source_set("compress") {
   configs += [ ":zstd_hide_symbols" ]
   configs += [ ":zstd_internal_config" ]
   configs += [ ":zstd_suppress_warnings_compress" ]
+  configs += [ ":zstd_strip_error_strings" ]
+  if (zstd_fastest_compressor_only) {
+    configs += [ ":zstd_fastest_compressor_only" ]
+  }
   public_deps = [
     ":common",
     ":headers",

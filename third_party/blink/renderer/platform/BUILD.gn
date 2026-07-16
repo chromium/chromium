@@ -285,14 +285,9 @@ declare_args() {
   enable_blink_bindings_tracing = extended_tracing_enabled
 }
 
-# ZSTD compression support has a binary size cost, don't include it on
-# size-constrained platforms.
-#
-# TODO(lizeb): Android is not as much size-constrained on high-end ARM64
-# devices, enable this later there as well. But since this is an experiment,
-# gather data on other platforms first.
-_is_size_constrained_platform = is_android || is_fuchsia
-has_zstd_compression = !_is_size_constrained_platform
+# ZSTD compression is available on Fuchsia (crbug.com/534838085) but disable in
+# Blink to disable features that depend on it.
+has_zstd_compression = !is_fuchsia
 
 buildflag_header("bindings_buildflags") {
   header = "buildflags.h"
