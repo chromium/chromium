@@ -144,6 +144,7 @@ source_set("glic") {
     deps += [
       "//chrome/browser:primitives",
       "//chrome/browser/actor:types",
+      "//chrome/browser/ui/tabs",
     ]
   } else {  # is_android
     sources += [

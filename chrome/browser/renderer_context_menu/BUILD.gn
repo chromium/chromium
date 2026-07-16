@@ -152,6 +152,7 @@ source_set("impl") {
       "//chrome/browser/ui/profiles",
       "//chrome/browser/ui/qrcode_generator",
       "//chrome/browser/ui/send_tab_to_self",
+      "//chrome/browser/ui/tabs",
       "//chrome/browser/ui/toasts",
       "//chrome/browser/ui/toasts/api:toasts",
       "//chrome/browser/ui/translate",
