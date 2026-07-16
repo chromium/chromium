@@ -20,6 +20,7 @@
 
 namespace disk_cache {
 
+class BackendCleanupTracker;
 class SqlPersistentStore;
 class SqlSharedCacheHandle;
 
@@ -37,7 +38,8 @@ class NET_EXPORT_PRIVATE SqlSharedCache {
       SqlPersistentStore& store,
       const base::FilePath& directory,
       base::RepeatingCallback<void(SqlSharedCache&)> on_unreferenced_callback,
-      scoped_refptr<base::SequencedTaskRunner> db_task_runner);
+      scoped_refptr<base::SequencedTaskRunner> db_task_runner,
+      scoped_refptr<BackendCleanupTracker> cleanup_tracker);
   ~SqlSharedCache();
 
   SqlSharedCache(const SqlSharedCache&) = delete;
@@ -85,6 +87,7 @@ class NET_EXPORT_PRIVATE SqlSharedCache {
   base::RepeatingCallback<void(SqlSharedCache&)> on_unreferenced_callback_;
   int handle_count_ = 0;
   scoped_refptr<base::SequencedTaskRunner> db_task_runner_;
+  scoped_refptr<BackendCleanupTracker> cleanup_tracker_;
 
   std::optional<SqlSharedCacheDbId> shared_cache_db_id_;
 

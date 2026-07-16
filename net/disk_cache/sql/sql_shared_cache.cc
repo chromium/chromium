@@ -8,6 +8,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"
+#include "net/disk_cache/backend_cleanup_tracker.h"
 #include "net/disk_cache/sql/sql_persistent_store.h"
 #include "net/disk_cache/sql/sql_shared_cache_handle.h"
 #include "net/disk_cache/sql/sql_shared_cache_isolated_database.h"
@@ -19,14 +20,24 @@ SqlSharedCache::SqlSharedCache(
     SqlPersistentStore& store,
     const base::FilePath& directory,
     base::RepeatingCallback<void(SqlSharedCache&)> on_unreferenced_callback,
-    scoped_refptr<base::SequencedTaskRunner> db_task_runner)
+    scoped_refptr<base::SequencedTaskRunner> db_task_runner,
+    scoped_refptr<BackendCleanupTracker> cleanup_tracker)
     : nik_string_(std::move(nik_string)),
       store_(store),
       directory_(directory),
       on_unreferenced_callback_(std::move(on_unreferenced_callback)),
-      db_task_runner_(std::move(db_task_runner)) {}
+      db_task_runner_(std::move(db_task_runner)),
+      cleanup_tracker_(std::move(cleanup_tracker)) {}
 
-SqlSharedCache::~SqlSharedCache() = default;
+SqlSharedCache::~SqlSharedCache() {
+  isolated_database_.Reset();
+  if (cleanup_tracker_) {
+    CHECK(db_task_runner_);
+    db_task_runner_->PostTaskAndReply(
+        FROM_HERE, base::DoNothing(),
+        base::DoNothingWithBoundArgs(std::move(cleanup_tracker_)));
+  }
+}
 
 void SqlSharedCache::Cleanup(base::OnceClosure callback) {
   if (!isolated_database_) {

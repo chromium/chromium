@@ -9,11 +9,13 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/run_loop.h"
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "net/base/features.h"
+#include "net/disk_cache/backend_cleanup_tracker.h"
 #include "net/disk_cache/sql/sql_persistent_store.h"
 #include "net/disk_cache/sql/sql_shared_cache_handle.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -29,6 +31,9 @@ class SqlSharedCacheTest : public testing::TestWithParam<bool> {
 
   void SetUp() override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
+    cleanup_tracker_ = BackendCleanupTracker::TryCreate(temp_dir_.GetPath(),
+                                                        base::DoNothing());
+    CHECK(cleanup_tracker_);
     if (GetParam()) {
       feature_list_.InitWithFeaturesAndParameters(
           {{net::features::kRendererAccessibleHttpCache,
@@ -47,21 +52,36 @@ class SqlSharedCacheTest : public testing::TestWithParam<bool> {
          base::TaskShutdownBehavior::BLOCK_SHUTDOWN}));
     store_ = std::make_unique<SqlPersistentStore>(
         temp_dir_.GetPath(), 1024 * 1024, net::DISK_CACHE, task_runners_,
-        async_task_manager_, /*cleanup_tracker=*/nullptr);
+        async_task_manager_, cleanup_tracker_);
   }
 
   void TearDown() override {
     store_.reset();
     async_task_manager_.RunUntilAllTasksCompleteForTest();
+    WaitForCleanup();
   }
 
  protected:
+  void WaitForCleanup() {
+    if (!cleanup_tracker_) {
+      return;
+    }
+    base::RunLoop run_loop;
+    cleanup_tracker_->AddPostCleanupCallback(run_loop.QuitClosure());
+    cleanup_tracker_ = nullptr;
+    run_loop.Run();
+    cleanup_tracker_ = BackendCleanupTracker::TryCreate(temp_dir_.GetPath(),
+                                                        base::DoNothing());
+    CHECK(cleanup_tracker_);
+  }
+
   base::test::TaskEnvironment task_environment_;
   base::ScopedTempDir temp_dir_;
   std::vector<scoped_refptr<base::SequencedTaskRunner>> task_runners_;
   SqlAsyncTaskManager async_task_manager_;
   std::unique_ptr<SqlPersistentStore> store_;
   base::test::ScopedFeatureList feature_list_;
+  scoped_refptr<BackendCleanupTracker> cleanup_tracker_;
 };
 
 INSTANTIATE_TEST_SUITE_P(All,
@@ -81,7 +101,8 @@ TEST_P(SqlSharedCacheTest, BasicLifecycleAndHandleCount) {
       }),
       base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::USER_BLOCKING,
-           base::TaskShutdownBehavior::BLOCK_SHUTDOWN}));
+           base::TaskShutdownBehavior::BLOCK_SHUTDOWN}),
+      cleanup_tracker_);
 
   EXPECT_EQ(cache->nik_string(), "test_nik");
   EXPECT_FALSE(cache->shared_cache_db_id().has_value());
@@ -112,7 +133,8 @@ TEST_P(SqlSharedCacheTest, InitIsolatedDatabaseAndCleanup) {
       "test_nik", *store_, temp_dir_.GetPath(), base::DoNothing(),
       base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::USER_BLOCKING,
-           base::TaskShutdownBehavior::BLOCK_SHUTDOWN}));
+           base::TaskShutdownBehavior::BLOCK_SHUTDOWN}),
+      cleanup_tracker_);
 
   SqlSharedCacheDbId db_id(42);
   bool init_success = false;
@@ -139,7 +161,8 @@ TEST_P(SqlSharedCacheTest, CleanupWithoutIsolatedDatabase) {
       "test_nik", *store_, temp_dir_.GetPath(), base::DoNothing(),
       base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::USER_BLOCKING,
-           base::TaskShutdownBehavior::BLOCK_SHUTDOWN}));
+           base::TaskShutdownBehavior::BLOCK_SHUTDOWN}),
+      cleanup_tracker_);
 
   bool cleanup_done = false;
   cache->Cleanup(base::BindLambdaForTesting([&]() { cleanup_done = true; }));
@@ -154,7 +177,8 @@ TEST_P(SqlSharedCacheTest, DestructionTriggersCleanup) {
         "test_nik", *store_, temp_dir_.GetPath(), base::DoNothing(),
         base::ThreadPool::CreateSequencedTaskRunner(
             {base::MayBlock(), base::TaskPriority::USER_BLOCKING,
-             base::TaskShutdownBehavior::BLOCK_SHUTDOWN}));
+             base::TaskShutdownBehavior::BLOCK_SHUTDOWN}),
+        cleanup_tracker_);
 
     bool init_success = false;
     cache->InitIsolatedDatabase(
@@ -177,7 +201,8 @@ TEST_P(SqlSharedCacheTest, DestructionTriggersCleanup) {
       "test_nik", *store_, temp_dir_.GetPath(), base::DoNothing(),
       base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::USER_BLOCKING,
-           base::TaskShutdownBehavior::BLOCK_SHUTDOWN}));
+           base::TaskShutdownBehavior::BLOCK_SHUTDOWN}),
+      cleanup_tracker_);
 
   bool reinit_success = false;
   new_cache->InitIsolatedDatabase(

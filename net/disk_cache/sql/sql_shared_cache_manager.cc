@@ -151,7 +151,7 @@ SqlSharedCacheManager::RegisterNewSqlSharedCache(
       nik_str, *store_, directory_,
       base::BindRepeating(&SqlSharedCacheManager::OnSqlSharedCacheUnreferenced,
                           weak_factory_.GetWeakPtr()),
-      db_task_runner);
+      db_task_runner, cleanup_tracker_);
   SqlSharedCache* cache_ptr = cache.get();
   shared_caches_.insert(std::move(cache));
   CHECK(shared_caches_by_nik_string_.emplace(nik_str, cache_ptr).second);
