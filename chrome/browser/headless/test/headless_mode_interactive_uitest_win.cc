@@ -261,10 +261,14 @@ IN_PROC_BROWSER_TEST_F(HeadlessModeInteractiveUiTest,
       }
     }
   }
-  if (non_uniform_pixels > 0) {
+  // Some bots display an "Activate Windows" watermark at the bottom right of
+  // the desktop, so allow some number of non-uniform pixels
+  // (crbug.com/524704032).
+  constexpr int kNonUniformPixelsTolerance = 3000;
+  if (non_uniform_pixels > kNonUniformPixelsTolerance) {
     SaveBitmapToFile(screen_before, "screen_before.png");
   }
-  ASSERT_EQ(non_uniform_pixels, 0)
+  EXPECT_LE(non_uniform_pixels, kNonUniformPixelsTolerance)
       << "Detected " << non_uniform_pixels
       << " non-uniform pixels in the baseline screen work area!";
 
