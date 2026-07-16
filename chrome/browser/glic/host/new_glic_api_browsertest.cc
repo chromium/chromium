@@ -553,6 +553,16 @@ IN_PROC_BROWSER_TEST_P(NewGlicApiTestWithDefaultTabContextDisabled,
   ContinueJsTest();
 }
 
+#if defined(NOT_VETTED_ON_ANDROID)
+#define MAYBE_testAttachPanel DISABLED_testAttachPanel
+#else
+#define MAYBE_testAttachPanel testAttachPanel
+#endif
+IN_PROC_BROWSER_TEST_P(NewGlicApiTest, MAYBE_testAttachPanel) {
+  ASSERT_OK(OpenGlicForActiveTab());
+  ExecuteJsTest();
+}
+
 class NewGlicApiTestForNoWebUiLoader : public NewGlicApiTest {
  public:
   NewGlicApiTestForNoWebUiLoader() {

@@ -1066,6 +1066,21 @@ class ApiTests extends ApiTestFixtureBase {
 
     await canAttachSeq.waitForValue(false);
   }
+
+  async testAttachPanel() {
+    assertDefined(this.host.getPanelState);
+    assertDefined(this.host.detachPanel);
+    assertDefined(this.host.attachPanel);
+
+    const panelStates = observeSequence(this.host.getPanelState());
+    await panelStates.waitFor(state => state.kind === PanelStateKind.ATTACHED);
+
+    this.host.detachPanel();
+    await panelStates.waitFor(state => state.kind === PanelStateKind.DETACHED);
+
+    this.host.attachPanel();
+    await panelStates.waitFor(state => state.kind === PanelStateKind.ATTACHED);
+  }
 }
 
 class FaviconTest extends ApiTests {

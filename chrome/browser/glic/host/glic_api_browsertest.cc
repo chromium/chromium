@@ -939,10 +939,6 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithDaisyChain,
   ContinueJsTest();
 }
 
-IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, testAttachPanel) {
-  ExecuteJsTest();
-}
-
 IN_PROC_BROWSER_TEST_P(GlicApiTest, testMultiplePanelsDetachedAndFloating) {
   // Open two tabs, select the first, open glic.
   RunTestSequence(InstrumentTab(kFirstTab),
