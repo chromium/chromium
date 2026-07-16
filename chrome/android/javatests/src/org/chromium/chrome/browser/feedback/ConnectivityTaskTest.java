@@ -17,6 +17,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.feedback.ConnectivityTask.FeedbackData;
@@ -33,6 +34,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 /** Tests for {@link ConnectivityTask}. */
 @RunWith(BaseJUnit4ClassRunner.class)
+@Batch(Batch.PER_CLASS)
 public class ConnectivityTaskTest {
     @Rule
     public ConnectivityCheckerTestRule mConnectivityCheckerTestRule =
