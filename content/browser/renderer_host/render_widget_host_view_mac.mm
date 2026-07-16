@@ -2702,9 +2702,10 @@ void RenderWidgetHostViewMac::CreateUnboundedSurface(
     mojo::PendingAssociatedRemote<blink::mojom::UnboundedSurfaceClient> client,
     const gfx::Rect& bounds_in_dips,
     base::WeakPtr<RenderWidgetHostViewBase> subframe_view) {
+  gfx::Rect bounds_in_screen =
+      ConvertSubframeBoundsToScreen(bounds_in_dips, subframe_view.get());
   unbounded_surface_window_ = std::make_unique<UnboundedSurfaceWindowMac>(
-      this, std::move(host), std::move(client),
-      ConvertSubframeBoundsToScreen(bounds_in_dips, subframe_view.get()),
+      this, std::move(host), std::move(client), bounds_in_screen,
       std::move(subframe_view));
 }
 

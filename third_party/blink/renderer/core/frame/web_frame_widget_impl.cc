@@ -75,6 +75,7 @@
 #include "third_party/blink/public/web/web_plugin.h"
 #include "third_party/blink/public/web/web_settings.h"
 #include "third_party/blink/public/web/web_view_client.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_focus_options.h"
 #include "third_party/blink/renderer/core/accessibility/histogram_macros.h"
 #include "third_party/blink/renderer/core/clipboard/data_transfer_access_policy.h"
@@ -82,6 +83,7 @@
 #include "third_party/blink/renderer/core/core_initializer.h"
 #include "third_party/blink/renderer/core/css/media_value_change.h"
 #include "third_party/blink/renderer/core/css/properties/longhands.h"
+#include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
@@ -2771,6 +2773,21 @@ void WebFrameWidgetImpl::UnboundedContextDestroyed() {
   if (!unbounded_surface_state_) {
     return;
   }
+  if (auto* resolver =
+          unbounded_surface_state_->unbounded_element_resolver_.Get()) {
+    if (auto* context = resolver->GetExecutionContext()) {
+      context->GetTaskRunner(TaskType::kInternalDefault)
+          ->PostTask(FROM_HERE,
+                     BindOnce(
+                         [](ScriptPromiseResolver<IDLUndefined>* resolver) {
+                           resolver->Reject(MakeGarbageCollected<DOMException>(
+                               DOMExceptionCode::kAbortError,
+                               "The unbounded element context was destroyed."));
+                         },
+                         WrapPersistent(resolver)));
+    }
+    unbounded_surface_state_->unbounded_element_resolver_ = nullptr;
+  }
   if (unbounded_surface_state_->active_element_) {
     // The context is being destroyed, so we should suppress event dispatch
     // to avoid executing script during teardown.
@@ -2795,7 +2812,8 @@ void WebFrameWidgetImpl::RegisterActiveUnboundedElement(
     mojo::PendingAssociatedReceiver<mojom::blink::UnboundedSurfaceClient>
         client_receiver,
     mojo::PendingAssociatedRemote<mojom::blink::UnboundedSurfaceHost>
-        host_remote) {
+        host_remote,
+    ScriptPromiseResolver<IDLUndefined>* resolver) {
   CHECK(RuntimeEnabledFeatures::UnboundedElementEnabled());
   // TODO(crbug.com/508672616): Add support for unbounded element when
   // TreesInViz is enabled.
@@ -2810,15 +2828,19 @@ void WebFrameWidgetImpl::RegisterActiveUnboundedElement(
                                 : nullptr;
   if (auto* state = GetOrCreateUnboundedSurfaceState(execution_context)) {
     state->active_element_ = element;
+    state->unbounded_element_resolver_ = resolver;
 
     state->client_receiver_.reset();
     state->client_receiver_.Bind(
         std::move(client_receiver),
         execution_context->GetTaskRunner(TaskType::kInternalDefault));
-
     state->host_.reset();
     state->host_.Bind(std::move(host_remote), execution_context->GetTaskRunner(
                                                   TaskType::kInternalDefault));
+  } else {
+    resolver->Reject(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kInvalidStateError,
+        "Could not create unbounded surface state."));
   }
 }
 
@@ -2850,6 +2872,7 @@ void WebFrameWidgetImpl::OnSurfaceAllocated(
                                            std::move(blink_client_remote));
     }
 
+    bool success = false;
     if (auto* host = LayerTreeHost()) {
       std::unique_ptr<cc::LayerTreeFrameSink> unbounded_frame_sink =
           widget_base_->CreateUnboundedFrameSink(
@@ -2858,7 +2881,19 @@ void WebFrameWidgetImpl::OnSurfaceAllocated(
         host->SetUnboundedFrameSink(std::move(unbounded_frame_sink),
                                     local_surface_id);
         host->SetNeedsCommitWithForcedRedraw();
+        if (state->unbounded_element_resolver_) {
+          state->unbounded_element_resolver_->Resolve();
+          state->unbounded_element_resolver_ = nullptr;
+        }
+        success = true;
       }
+    }
+    if (!success && state->unbounded_element_resolver_) {
+      state->unbounded_element_resolver_->Reject(
+          MakeGarbageCollected<DOMException>(
+              DOMExceptionCode::kInvalidStateError,
+              "Failed to initialize unbounded element frame sink."));
+      state->unbounded_element_resolver_ = nullptr;
     }
   } else if (state->local_surface_id_ != local_surface_id) {
     state->local_surface_id_ = local_surface_id;
@@ -2873,6 +2908,12 @@ void WebFrameWidgetImpl::OnDismissed() {
   CHECK(RuntimeEnabledFeatures::UnboundedElementEnabled());
   if (!unbounded_surface_state_) {
     return;
+  }
+  if (unbounded_surface_state_->unbounded_element_resolver_) {
+    unbounded_surface_state_->unbounded_element_resolver_->Reject(
+        MakeGarbageCollected<DOMException>(
+            DOMExceptionCode::kAbortError,
+            "The unbounded element was dismissed."));
   }
   if (unbounded_surface_state_->active_element_) {
     unbounded_surface_state_->active_element_->SetUnboundedElementActive(false);
@@ -4351,7 +4392,7 @@ void WebFrameWidgetImpl::DidNavigate() {
         ->InitializeInputEventSuppressionStates();
   }
   if (RuntimeEnabledFeatures::UnboundedElementEnabled()) {
-    unbounded_surface_state_ = nullptr;
+    OnDismissed();
   }
 }
 
