@@ -13173,6 +13173,9 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
         <message name="IDS_ANCHORED_MESSAGE_COLLAPSE_BUTTON_TOOLTIP" desc="Tooltip for the anchored message collapse button.">
           Hide details
         </message>
+        <message name="IDS_PAGE_ACTION_ANCHORED_MESSAGE_SHOWING" desc="Tooltip for a page action when its anchored message is showing.">
+          <ph name="ACTION_TOOLTIP">$1<ex>Bookmark this tab</ex></ph> - expanded contents shown
+        </message>
       <!-- /Page Action -->
 
       <!-- User Education -->

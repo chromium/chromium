@@ -23,6 +23,7 @@
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
 #include "chrome/browser/ui/views/location_bar/icon_label_bubble_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_view_params.h"
+#include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "components/vector_icons/vector_icons.h"
@@ -33,6 +34,7 @@
 #include "ui/actions/actions.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/interaction_test_util.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/compositor/layer.h"
 #include "ui/events/base_event_utils.h"
@@ -376,6 +378,39 @@ TEST_F(PageActionViewTest, TooltipText) {
   EXPECT_CALL(*model(), GetVisible()).WillRepeatedly(Return(true));
   EXPECT_CALL(*model(), GetTooltipText()).WillRepeatedly(ReturnRef(kTestText));
   page_action_view()->OnPageActionModelChanged(*model());
+  EXPECT_EQ(page_action_view()->GetTooltipText(), kTestText);
+}
+
+TEST_F(PageActionViewTest, TooltipTextWithAnchoredMessage) {
+  EXPECT_CALL(*model(), GetVisible()).WillRepeatedly(Return(true));
+  EXPECT_CALL(*model(), GetTooltipText()).WillRepeatedly(ReturnRef(kTestText));
+  page_action_view()->OnPageActionModelChanged(*model());
+  EXPECT_EQ(page_action_view()->GetTooltipText(), kTestText);
+
+  std::u16string anchored_text = u"Test Anchored Message";
+  std::optional<ui::ImageModel> icon = std::nullopt;
+  std::optional<AnchoredMessageExpandableContent> content = std::nullopt;
+  EXPECT_CALL(*model(), ShouldShowAnchoredMessage())
+      .WillRepeatedly(Return(true));
+  EXPECT_CALL(*model(), GetAnchoredMessageText())
+      .WillRepeatedly(ReturnRef(anchored_text));
+  EXPECT_CALL(*model(), GetAnchoredMessageIcon())
+      .WillRepeatedly(ReturnRef(icon));
+  EXPECT_CALL(*model(), GetAnchoredMessageExpandableContent())
+      .WillRepeatedly(ReturnRef(content));
+  EXPECT_CALL(*model(), GetAnchoredMessageActionIconType())
+      .WillRepeatedly(Return(AnchoredMessageActionIconType::kNone));
+
+  page_action_view()->OnPageActionModelChanged(*model());
+  EXPECT_TRUE(page_action_view()->IsAnchoredMessageVisible());
+  EXPECT_EQ(page_action_view()->GetTooltipText(),
+            l10n_util::GetStringFUTF16(IDS_PAGE_ACTION_ANCHORED_MESSAGE_SHOWING,
+                                       kTestText));
+
+  EXPECT_CALL(*model(), ShouldShowAnchoredMessage())
+      .WillRepeatedly(Return(false));
+  page_action_view()->OnPageActionModelChanged(*model());
+  EXPECT_FALSE(page_action_view()->IsAnchoredMessageVisible());
   EXPECT_EQ(page_action_view()->GetTooltipText(), kTestText);
 }
 

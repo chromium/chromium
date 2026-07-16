@@ -150,6 +150,7 @@ class PageActionView : public IconLabelBubbleView,
   // size needed for the location bar page action icon. Therefore, we should to
   // update the image size if needed.
   void UpdateIconImage();
+  void UpdateTooltipText();
 
   void AnimateImage(const page_actions::PageActionAnimationParams& params,
                     SkColor icon_color);

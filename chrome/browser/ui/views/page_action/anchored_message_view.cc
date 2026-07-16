@@ -43,11 +43,13 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/controls/separator.h"
+#include "ui/views/focus/focus_manager.h"
 #include "ui/views/layout/animating_layout_manager.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/layout_types.h"
 #include "ui/views/view_class_properties.h"
+#include "ui/views/widget/widget.h"
 
 namespace page_actions {
 
@@ -351,9 +353,10 @@ void AnchoredMessageBubbleView::MenuButtonPressed() {
       menu_model_, views::MenuRunner::NO_FLAGS,
       base::BindRepeating(&AnchoredMessageBubbleView::OnMenuClosed,
                           base::Unretained(this)));
-  menu_runner_->RunMenuAt(
-      GetWidget(), nullptr, menu_button_->GetBoundsInScreen(),
-      views::MenuAnchorPosition::kTopLeft, ui::mojom::MenuSourceType::kNone);
+  menu_runner_->RunMenuAt(GetWidget(), menu_button_->button_controller(),
+                          menu_button_->GetBoundsInScreen(),
+                          views::MenuAnchorPosition::kTopLeft,
+                          ui::mojom::MenuSourceType::kNone);
   if (menu_runner_->IsRunning()) {
     delegate_->AnchoredMessageExpanded();
   } else {
@@ -364,6 +367,28 @@ void AnchoredMessageBubbleView::MenuButtonPressed() {
 void AnchoredMessageBubbleView::OnMenuClosed() {
   pressed_lock_.reset();
   delegate_->AnchoredMessageCollapsed();
+  if (menu_button_ && menu_button_->GetVisible()) {
+    menu_button_->RequestFocus();
+    if (GetWidget() && GetWidget()->GetFocusManager()) {
+      GetWidget()->GetFocusManager()->SetStoredFocusView(menu_button_);
+    }
+  }
+}
+
+void AnchoredMessageBubbleView::OnKeyEvent(ui::KeyEvent* event) {
+  if (event->key_code() == ui::VKEY_ESCAPE) {
+    if (event->type() == ui::EventType::kKeyReleased) {
+      event->SetHandled();
+      return;
+    }
+    if (event->type() == ui::EventType::kKeyPressed && menu_runner_ &&
+        menu_runner_->IsRunning()) {
+      menu_runner_->Cancel();
+      event->SetHandled();
+      return;
+    }
+  }
+  views::View::OnKeyEvent(event);
 }
 
 void AnchoredMessageBubbleView::OnWidgetDestroying(views::Widget* widget) {

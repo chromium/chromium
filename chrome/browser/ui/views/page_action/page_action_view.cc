@@ -23,7 +23,9 @@
 #include "chrome/browser/ui/views/location_bar/icon_label_bubble_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_view_params.h"
 #include "chrome/browser/ui/views/page_action/page_action_view_util.h"
+#include "chrome/grit/generated_resources.h"
 #include "ui/actions/actions.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/events/event.h"
@@ -179,7 +181,6 @@ void PageActionView::OnPageActionModelChanged(
 
   if (visible) {
     SetLabel(model.GetText(), model.GetAccessibleName());
-    SetTooltipText(model.GetTooltipText());
   }
 
   if (model.GetActionActive() && !highlight_) {
@@ -199,6 +200,8 @@ void PageActionView::OnPageActionModelChanged(
     anchored_message_ = nullptr;
     anchored_message_widget_ = nullptr;
   }
+
+  UpdateTooltipText();
 
   // Announce the chip only if announcements are enabled and the chip was
   // newly shown.
@@ -469,6 +472,7 @@ const gfx::Insets PageActionView::GetInsetsForNonVectorIcon() const {
 void PageActionView::SetModel(PageActionModelInterface* model) {
   observation_.Reset();
   observation_.Observe(model);
+  UpdateTooltipText();
 }
 
 gfx::Size PageActionView::GetMinimumSize() const {
@@ -548,6 +552,7 @@ void PageActionView::CreateAndShowAnchoredMessage(
 
   if (anchored_message_) {
     anchored_message_->UpdateContent(model);
+    UpdateTooltipText();
     return;
   }
 
@@ -571,6 +576,7 @@ void PageActionView::CreateAndShowAnchoredMessage(
     anchored_message_ = nullptr;
   }
 
+  UpdateTooltipText();
   anchored_message_visibility_changed_callbacks_.Notify(this);
 }
 void PageActionView::OnAnchoredMessageWidgetClose(
@@ -579,7 +585,23 @@ void PageActionView::OnAnchoredMessageWidgetClose(
   CHECK(anchored_message_widget_);
   anchored_message_ = nullptr;
   anchored_message_widget_.reset();
+  UpdateTooltipText();
   anchored_message_visibility_changed_callbacks_.Notify(this);
+}
+
+void PageActionView::UpdateTooltipText() {
+  if (!observation_.IsObserving() || !observation_.GetSource() ||
+      !GetVisible()) {
+    SetTooltipText(std::u16string());
+    return;
+  }
+
+  std::u16string tooltip_text = observation_.GetSource()->GetTooltipText();
+  if (IsAnchoredMessageVisible() && !tooltip_text.empty()) {
+    tooltip_text = l10n_util::GetStringFUTF16(
+        IDS_PAGE_ACTION_ANCHORED_MESSAGE_SHOWING, tooltip_text);
+  }
+  SetTooltipText(tooltip_text);
 }
 
 void PageActionView::AnchoredMessageChipClick() {
