@@ -448,8 +448,7 @@ class NewGlicApiTestWithWebContentsWarming : public NewGlicApiTest {
 
   void SetUpOnMainThread() override {
     NewGlicApiTest::SetUpOnMainThread();
-    coordinator().GetWebContentsWarmingPoolForTesting().Clear(
-        GlicWebContentsWarmingPool::ClearReason::kShutdown);
+    coordinator().GetWebContentsWarmingPoolForTesting().Shutdown();
   }
 
  private:

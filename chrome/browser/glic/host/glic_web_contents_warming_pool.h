@@ -31,12 +31,6 @@ class WebUIContentsContainer;
 // creating a WebContents in the background before it's actually needed.
 class GlicWebContentsWarmingPool {
  public:
-  enum class ClearReason {
-    kShutdown,
-    kMemoryPressure,
-    kExpired,
-  };
-
   // LINT.IfChange(GlicContainerCreationReason)
   enum class ContainerCreationReason {
     kInitialColdWarming = 0,      // Preloaded after cold start.
@@ -60,8 +54,10 @@ class GlicWebContentsWarmingPool {
   // initial cold-start pre-warming if allowed. Returns true if pre-warming
   // proceeded, or false otherwise.
   bool MaybeStartInitialWarming();
-  // Clears the warming pool and destroys any warmed WebContents.
-  void Clear(ClearReason reason);
+
+  // Shuts down the warming pool, destroying any warmed container instance and
+  // stopping all timers.
+  void Shutdown();
 
   // Handles memory pressure notifications by clearing or statefully disabling
   // pre-warming, depending on feature configuration.
@@ -114,9 +110,18 @@ class GlicWebContentsWarmingPool {
  private:
   class Metrics;
 
+  enum class ClearReason {
+    kShutdown,
+    kMemoryPressure,
+    kExpired,
+  };
+
+  // Clears the current warmed container instance and stops any pending or
+  // expiry timers.
+  void Clear(ClearReason reason);
+
   // Virtual for testing.
   virtual std::unique_ptr<WebUIContentsContainer> CreateContainer();
-  void OnWarmedContentCreated(ContainerCreationReason reason);
 
   void OnContainerExpired();
   // Unconditionally ensures that a WebUIContentsContainer is preloaded. If the

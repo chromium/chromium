@@ -455,8 +455,7 @@ void GlicInstanceCoordinatorImpl::Shutdown() {
   for (auto& [instance_id, instance] : instances_) {
     instance->Shutdown();
   }
-  web_contents_warming_pool_->Clear(
-      GlicWebContentsWarmingPool::ClearReason::kShutdown);
+  web_contents_warming_pool_->Shutdown();
   hotkey_manager_.reset();
 }
 

@@ -290,19 +290,19 @@ TEST_F(GlicWebContentsWarmingPoolTest, TakeContainerBeforeWarmingComplete) {
   EXPECT_TRUE(warming_pool.HasWarmedContainerForTesting());
 }
 
-TEST_F(GlicWebContentsWarmingPoolTest, Clear) {
+TEST_F(GlicWebContentsWarmingPoolTest, Shutdown) {
   base::HistogramTester histogram_tester;
   TestGlicWebContentsWarmingPool warming_pool(&profile_,
                                               &web_contents_factory_);
   ASSERT_TRUE(warming_pool.MaybeStartInitialWarming());
   EXPECT_TRUE(warming_pool.HasWarmedContainerForTesting());
 
-  warming_pool.Clear(GlicWebContentsWarmingPool::ClearReason::kMemoryPressure);
+  warming_pool.Shutdown();
   EXPECT_FALSE(warming_pool.HasWarmedContainerForTesting());
 
   histogram_tester.ExpectUniqueSample(
       "Glic.WarmingPool.WarmedContainerFate",
-      WarmedContainerFate::kDeletedOnMemoryPressure, 1);
+      WarmedContainerFate::kDeletedOnChromeClosed, 1);
 }
 
 TEST_F(GlicWebContentsWarmingPoolTest, WarmedContainerFate_Used) {
@@ -419,7 +419,7 @@ TEST_F(GlicWebContentsWarmingPoolTest,
 }
 
 TEST_F(GlicWebContentsWarmingPoolTest,
-       OnMemoryPressureDoesNotRefillIfClearedPriorToMemoryPressure) {
+       OnMemoryPressureDoesNotRefillIfShutDownPriorToMemoryPressure) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(base::kStatefulMemoryPressure);
   TestGlicWebContentsWarmingPool warming_pool(&profile_,
@@ -427,12 +427,12 @@ TEST_F(GlicWebContentsWarmingPoolTest,
   ASSERT_TRUE(warming_pool.MaybeStartInitialWarming());
   EXPECT_TRUE(warming_pool.HasWarmedContainerForTesting());
 
-  // Explicitly clear the container prior to any memory pressure.
-  warming_pool.Clear(GlicWebContentsWarmingPool::ClearReason::kShutdown);
+  // Explicitly shut down the container prior to any memory pressure.
+  warming_pool.Shutdown();
   EXPECT_FALSE(warming_pool.HasWarmedContainerForTesting());
 
-  // Receiving critical memory pressure when already empty should not schedule
-  // a refill when memory pressure subsides.
+  // Receiving critical memory pressure when already shut down should not
+  // schedule a refill when memory pressure subsides.
   warming_pool.OnMemoryPressure(base::MEMORY_PRESSURE_LEVEL_CRITICAL);
   warming_pool.OnMemoryPressure(base::MEMORY_PRESSURE_LEVEL_NONE);
   EXPECT_FALSE(warming_pool.GetDelayTimerForTesting().IsRunning());
