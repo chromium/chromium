@@ -3188,10 +3188,11 @@
   {
     "name": "enable-android-window-occlusion",
     "owners": [
-      "edcourtney@chromium.org",
+      "lizeb@chromium.org",
+      "kalutes@google.com",
       "lt-web-apps-team@google.com"
     ],
-    "expiry_milestone": 148
+    "expiry_milestone": 160
   },
   {
     "name": "enable-annotated-page-contents-for-virtual-structure",
