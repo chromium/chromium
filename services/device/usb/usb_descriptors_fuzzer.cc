@@ -7,12 +7,11 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include <vector>
+#include "base/containers/span.h"
+#include "testing/libfuzzer/libfuzzer_base_wrappers.h"
 
-#include "base/compiler_specific.h"
-
-extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
+DEFINE_LLVM_FUZZER_TEST_ONE_INPUT_SPAN(base::span<const uint8_t> data) {
   device::UsbDeviceDescriptor desc;
-  desc.Parse(std::vector<uint8_t>(data, UNSAFE_TODO(data + size)));
+  desc.Parse(data);
   return 0;
 }

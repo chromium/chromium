@@ -7,9 +7,11 @@
 #include <algorithm>
 #include <utility>
 
+#include "base/containers/span.h"
 #include "base/functional/callback.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/notimplemented.h"
+#include "base/numerics/byte_conversions.h"
 #include "services/device/usb/usb_device.h"
 
 namespace device {
@@ -19,8 +21,8 @@ using mojom::UsbControlTransferType;
 using mojom::UsbTransferDirection;
 using mojom::UsbTransferStatus;
 
-FakeUsbDeviceHandle::FakeUsbDeviceHandle(const uint8_t* data, size_t size)
-    : data_(data), size_(size), position_(0) {}
+FakeUsbDeviceHandle::FakeUsbDeviceHandle(base::span<const uint8_t> data)
+    : data_(data) {}
 
 scoped_refptr<UsbDevice> FakeUsbDeviceHandle::GetDevice() const {
   NOTIMPLEMENTED();
@@ -73,26 +75,27 @@ void FakeUsbDeviceHandle::ControlTransfer(
     scoped_refptr<base::RefCountedBytes> buffer,
     unsigned int timeout,
     UsbDeviceHandle::TransferCallback callback) {
-  if (position_ == size_) {
+  if (data_.empty()) {
     std::move(callback).Run(UsbTransferStatus::DISCONNECT, buffer, 0);
     return;
   }
 
-  if (UNSAFE_TODO(data_[position_++]) % 2) {
+  uint8_t success = data_[0];
+  data_ = data_.subspan(1u);
+
+  if (success % 2) {
     size_t bytes_transferred = 0;
-    if (position_ + 2 <= size_) {
-      bytes_transferred = UNSAFE_TODO(data_[position_]) |
-                          UNSAFE_TODO(data_[position_ + 1]) << 8;
-      position_ += 2;
+    if (data_.size() >= 2u) {
+      bytes_transferred = base::U16FromLittleEndian(data_.first<2u>());
+      data_ = data_.subspan(2u);
       bytes_transferred = std::min(bytes_transferred, buffer->size());
-      bytes_transferred = std::min(bytes_transferred, size_ - position_);
+      bytes_transferred = std::min(bytes_transferred, data_.size());
     }
 
     if (direction == UsbTransferDirection::INBOUND) {
-      auto source_data = UNSAFE_TODO(base::span(data_.get(), size_));
       base::span(buffer->as_vector())
-          .copy_prefix_from(source_data.subspan(position_, bytes_transferred));
-      position_ += bytes_transferred;
+          .copy_prefix_from(data_.first(bytes_transferred));
+      data_ = data_.subspan(bytes_transferred);
     }
 
     std::move(callback).Run(UsbTransferStatus::COMPLETED, buffer,

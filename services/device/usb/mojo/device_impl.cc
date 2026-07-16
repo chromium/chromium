@@ -106,11 +106,11 @@ bool IsAndroidSecurityKeyRequest(
   // would be considered equivalent by Android but would not be caught by an
   // exact match here. Android is case-sensitive thus a byte-wise match is
   // suitable.
-  const char* magic = mojom::UsbControlTransferParams::kSecurityKeyAOAModel;
+  auto magic = base::byte_span_from_cstring(
+      mojom::UsbControlTransferParams::kSecurityKeyAOAModel);
   return params->type == mojom::UsbControlTransferType::VENDOR &&
          params->request == 52 && params->index == 1 &&
-         data.size() >= strlen(magic) &&
-         UNSAFE_TODO(memcmp(data.data(), magic, strlen(magic))) == 0;
+         data.size() >= magic.size() && data.first(magic.size()) == magic;
 }
 
 // Returns the sum of `packet_lengths`, or nullopt if the sum would overflow.

@@ -133,7 +133,7 @@ void OnReadConfigDescriptorHeader(scoped_refptr<UsbDeviceHandle> device_handle,
   if (status == UsbTransferStatus::COMPLETED &&
       length == kConfigurationDescriptorLength) {
     auto data = base::span<const uint8_t>(*header);
-    uint16_t total_length = data[2] | data[3] << 8;
+    uint16_t total_length = base::U16FromLittleEndian(data.subspan<2, 2>());
     auto buffer = base::MakeRefCounted<base::RefCountedBytes>(total_length);
     device_handle->ControlTransfer(
         UsbTransferDirection::INBOUND, UsbControlTransferType::STANDARD,

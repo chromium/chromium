@@ -78,8 +78,12 @@ void UsbDeviceImpl::ReadAllConfigurations() {
         continue;
       }
 
+      // SAFETY: `buffer` and `rv` are values returned by an external C function
+      // in `//third_party/libusb`, i.e. `libusb_get_raw_config_descriptor`. On
+      // success (`rv > 0`), it guarantees that buffer points to a dynamically
+      // allocated memory block of `rv` bytes.
       if (!usb_descriptor.Parse(
-              UNSAFE_TODO(base::span(buffer, static_cast<size_t>(rv))))) {
+              UNSAFE_BUFFERS(base::span(buffer, static_cast<size_t>(rv))))) {
         USB_LOG(EVENT) << "Config descriptor index " << i << " was corrupt.";
       }
       free(buffer);

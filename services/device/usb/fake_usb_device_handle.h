@@ -7,7 +7,8 @@
 
 #include <vector>
 
-#include "base/memory/raw_ptr.h"
+#include "base/containers/span.h"
+#include "base/memory/raw_span.h"
 #include "services/device/usb/usb_device_handle.h"
 
 namespace device {
@@ -27,7 +28,7 @@ namespace device {
 // is exhausted all following transfers will fail with USB_TRANSFER_DISCONNECT.
 class FakeUsbDeviceHandle : public UsbDeviceHandle {
  public:
-  FakeUsbDeviceHandle(const uint8_t* data, size_t size);
+  explicit FakeUsbDeviceHandle(base::span<const uint8_t> data);
 
   scoped_refptr<UsbDevice> GetDevice() const override;
   void Close() override;
@@ -75,9 +76,7 @@ class FakeUsbDeviceHandle : public UsbDeviceHandle {
  private:
   ~FakeUsbDeviceHandle() override;
 
-  const raw_ptr<const uint8_t, AllowPtrArithmetic> data_;
-  const size_t size_;
-  size_t position_;
+  base::raw_span<const uint8_t> data_;
 };
 
 }  // namespace device

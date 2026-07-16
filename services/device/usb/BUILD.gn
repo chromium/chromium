@@ -182,6 +182,7 @@ fuzzer_test("webusb_descriptors_fuzzer") {
     ":usb",
     "//base",
     "//base:i18n",
+    "//testing/libfuzzer:libfuzzer_base_wrappers",
   ]
   seed_corpus = "fuzz_corpus"
   libfuzzer_options = [ "max_len=2048" ]
@@ -194,6 +195,7 @@ fuzzer_test("usb_descriptors_fuzzer") {
     "//mojo/public/cpp/bindings",
     "//services/device/public/mojom:usb",
     "//services/device/usb/mojo",
+    "//testing/libfuzzer:libfuzzer_base_wrappers",
   ]
   seed_corpus = "fuzz_corpus"
   libfuzzer_options = [ "max_len=2048" ]
@@ -205,6 +207,7 @@ fuzzer_test("usb_string_read_fuzzer") {
     ":test_support",
     ":usb",
     "//base",
+    "//testing/libfuzzer:libfuzzer_base_wrappers",
   ]
   seed_corpus = "fuzz_corpus"
   libfuzzer_options = [ "max_len=2048" ]

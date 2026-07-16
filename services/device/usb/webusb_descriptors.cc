@@ -6,12 +6,13 @@
 
 #include <limits>
 
-#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted_memory.h"
+#include "base/numerics/byte_conversions.h"
+#include "base/strings/string_view_util.h"
 #include "components/device_event_log/device_event_log.h"
 #include "services/device/usb/usb_device_handle.h"
 #include "url/gurl.h"
@@ -64,8 +65,7 @@ void OnReadLandingPage(uint8_t landing_page_id,
   }
 
   GURL url;
-  ParseWebUsbUrlDescriptor(UNSAFE_TODO(base::span(buffer->data(), length)),
-                           &url);
+  ParseWebUsbUrlDescriptor(base::span(*buffer).first(length), &url);
   std::move(callback).Run(url);
 }
 
@@ -81,8 +81,7 @@ void OnReadBosDescriptor(scoped_refptr<UsbDeviceHandle> device_handle,
   }
 
   WebUsbPlatformCapabilityDescriptor descriptor;
-  if (!descriptor.ParseFromBosDescriptor(
-          UNSAFE_TODO(base::span(buffer->data(), length)))) {
+  if (!descriptor.ParseFromBosDescriptor(base::span(*buffer).first(length))) {
     std::move(callback).Run(std::nullopt);
     return;
   }
@@ -102,7 +101,7 @@ void OnReadBosDescriptorHeader(scoped_refptr<UsbDeviceHandle> device_handle,
   }
 
   base::span<const uint8_t> data = *buffer;
-  uint16_t new_length = data[2] | (data[3] << 8);
+  uint16_t new_length = base::U16FromLittleEndian(data.subspan<2, 2>());
   auto new_buffer = base::MakeRefCounted<base::RefCountedBytes>(new_length);
   device_handle->ControlTransfer(
       UsbTransferDirection::INBOUND, UsbControlTransferType::STANDARD,
@@ -141,7 +140,7 @@ bool WebUsbPlatformCapabilityDescriptor::ParseFromBosDescriptor(
 
   // Validate the BOS descriptor, defined in Table 9-12 of the Universal Serial
   // Bus 3.1 Specification, Revision 1.0.
-  uint16_t total_length = bytes[2] + (bytes[3] << 8);
+  uint16_t total_length = base::U16FromLittleEndian(bytes.subspan<2, 2>());
   if (bytes[0] != 5 ||                                    // bLength
       bytes[1] != kBosDescriptorType ||                   // bDescriptorType
       5 > total_length || total_length > bytes.size()) {  // wTotalLength
@@ -149,25 +148,25 @@ bool WebUsbPlatformCapabilityDescriptor::ParseFromBosDescriptor(
   }
 
   uint8_t num_device_caps = bytes[4];
-  auto it = bytes.begin();
-  auto end = it + total_length;
-  std::advance(it, 5);
+  base::span<const uint8_t> caps = bytes.first(total_length).subspan(5u);
 
-  uint8_t length = 0;
-  for (size_t i = 0; i < num_device_caps; ++i, std::advance(it, length)) {
-    if (it == end) {
+  for (size_t i = 0; i < num_device_caps; ++i) {
+    if (caps.empty()) {
       return false;
     }
 
     // Validate the Device Capability descriptor, defined in Table 9-13 of the
     // Universal Serial Bus 3.1 Specification, Revision 1.0.
-    length = it[0];
-    if (length < 3 || std::distance(it, end) < length ||  // bLength
-        it[1] != kDeviceCapabilityDescriptorType) {       // bDescriptorType
+    uint8_t length = caps[0];
+    if (length < 3 || caps.size() < length ||          // bLength
+        caps[1] != kDeviceCapabilityDescriptorType) {  // bDescriptorType
       return false;
     }
 
-    if (it[2] != kPlatformDevCapabilityType) {  // bDevCapabilityType
+    base::span<const uint8_t> cap = caps.first(length);
+    caps = caps.subspan(length);
+
+    if (cap[2] != kPlatformDevCapabilityType) {  // bDevCapabilityType
       continue;
     }
 
@@ -178,9 +177,8 @@ bool WebUsbPlatformCapabilityDescriptor::ParseFromBosDescriptor(
       return false;
     }
 
-    if (UNSAFE_TODO(memcmp(&it[4], kWebUsbCapabilityUUID,
-                           sizeof(kWebUsbCapabilityUUID))) !=
-        0) {  // PlatformCapabilityUUID
+    if (cap.subspan<4, sizeof(kWebUsbCapabilityUUID)>() !=
+        kWebUsbCapabilityUUID) {  // PlatformCapabilityUUID
       continue;
     }
 
@@ -190,7 +188,7 @@ bool WebUsbPlatformCapabilityDescriptor::ParseFromBosDescriptor(
       return false;
     }
 
-    version = it[20] + (it[21] << 8);  // bcdVersion
+    version = base::U16FromLittleEndian(cap.subspan<20, 2>());  // bcdVersion
     if (version < 0x0100) {
       continue;
     }
@@ -200,8 +198,8 @@ bool WebUsbPlatformCapabilityDescriptor::ParseFromBosDescriptor(
       return false;
     }
 
-    vendor_code = it[22];
-    landing_page_id = it[23];
+    vendor_code = cap[22];
+    landing_page_id = cap[23];
     return true;
   }
 
@@ -247,8 +245,8 @@ bool ParseWebUsbUrlDescriptor(base::span<const uint8_t> bytes, GURL* output) {
     default:
       return false;
   }
-  url.append(reinterpret_cast<const char*>(UNSAFE_TODO(bytes.data() + 3)),
-             length - 3);
+  url.append(
+      base::as_string_view(bytes.subspan(3u, static_cast<size_t>(length - 3))));
 
   *output = GURL(url);
   if (!output->is_valid()) {
