@@ -345,6 +345,45 @@ suite('ComposeboxMixinTest', () => {
         assertEquals(10, element.aimThreadRestoredTabs[0]!.tabId);
       });
 
+  test(
+      'refreshTabSuggestions() filters navigated tabs when tabDeselectionEnabled true',
+      async () => {
+        const tab1 = {
+          tabId: 10,
+          title: 'Tab 1',
+          url: 'about:blank?1',
+          showInCurrentTabChip: false,
+          showInPreviousTabChip: false,
+          lastActive: {internalValue: 0n},
+        };
+        const tab1Navigated = {
+          tabId: 10,
+          title: 'Tab 1',
+          url: 'about:blank?1_new',
+          showInCurrentTabChip: false,
+          showInPreviousTabChip: false,
+          lastActive: {internalValue: 0n},
+        };
+
+        // Mock open tabs to return tab1 with new URL
+        searchboxHandler.setResultFor(
+            'getRecentTabs', Promise.resolve({tabs: [tab1Navigated]}));
+
+        element.tabDeselectionEnabled = true;
+        element.aimThreadRestoredTabs = [tab1];
+
+        await element.refreshTabSuggestions();
+
+        // Verify: deleteTabContext is called for the navigated tab.
+        const deleteTabContextCalls =
+            searchboxHandler.getCallCount('deleteTabContext');
+        assertEquals(1, deleteTabContextCalls);
+        assertEquals(10, searchboxHandler.getArgs('deleteTabContext')[0]);
+
+        // Verify: navigated restored tab is filtered out from active list.
+        assertEquals(0, element.aimThreadRestoredTabs.length);
+      });
+
   test('submitCleanup() clears active tab selections', async () => {
     const tokenTab = 'test-token-tab' as unknown as UnguessableToken;
     const selectedTabId = 100;

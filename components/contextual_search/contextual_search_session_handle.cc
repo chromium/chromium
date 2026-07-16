@@ -871,6 +871,17 @@ bool ContextualSearchSessionHandle::IsTabDeselected(
   return true;
 }
 
+bool ContextualSearchSessionHandle::AreUrlsEquivalent(
+    const GURL& url1,
+    const std::string& title1,
+    const GURL& url2,
+    const std::string& title2) const {
+  if (auto* validator = GetTabValidator()) {
+    return validator->AreUrlsEquivalent(url1, title1, url2, title2);
+  }
+  return url1.GetWithoutRef() == url2.GetWithoutRef();
+}
+
 void ContextualSearchSessionHandle::RemoveDeselectedTab(
     SessionID tab_session_id) {
   deselected_tabs_urls_.erase(tab_session_id);

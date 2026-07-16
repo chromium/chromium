@@ -2391,13 +2391,20 @@ export const ComposeboxEmbedderMixin =
             });
 
             if (this.tabDeselectionEnabled) {
-              const closedRestoredTabs = this.aimThreadRestoredTabs.filter(
-                  tab => !openTabIds.has(tab.tabId));
-              closedRestoredTabs.forEach(tab => {
+              const openTabUrls = new Map(tabs.map(t => [t.tabId, t.url]));
+              const closedOrNavigatedRestoredTabs =
+                  this.aimThreadRestoredTabs.filter(tab => {
+                    const currentUrl = openTabUrls.get(tab.tabId);
+                    return !currentUrl || currentUrl !== tab.url;
+                  });
+              closedOrNavigatedRestoredTabs.forEach(tab => {
                 this.getSearchboxHandler().deleteTabContext(tab.tabId);
               });
-              this.aimThreadRestoredTabs = this.aimThreadRestoredTabs.filter(
-                  tab => openTabIds.has(tab.tabId));
+              this.aimThreadRestoredTabs =
+                  this.aimThreadRestoredTabs.filter(tab => {
+                    const currentUrl = openTabUrls.get(tab.tabId);
+                    return currentUrl && currentUrl === tab.url;
+                  });
             }
 
             const restored = this.contextManagementInComposeboxEnabled ?
