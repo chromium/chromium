@@ -18,6 +18,7 @@ import org.chromium.chrome.test.transit.ntp.IncognitoNewTabPageStation;
 import org.chromium.chrome.test.transit.ntp.RegularNewTabPageStation;
 import org.chromium.chrome.test.transit.quick_delete.QuickDeleteDialogFacility;
 import org.chromium.chrome.test.transit.settings.SettingsStation;
+import org.chromium.chrome.test.transit.ui.ModalDialogFacility;
 
 import java.util.Collections;
 
@@ -134,6 +135,18 @@ public class TabSwitcherAppMenuFacility<HostStationT extends TabSwitcherStation>
     /** Select "Settings" from the app menu. */
     public SettingsStation openSettings() {
         return mSettings.scrollToAndSelectTo().arriveAt(createSettingsStation());
+    }
+
+    /** Select "Close all tabs" from the app menu. */
+    public ModalDialogFacility clickCloseAllTabs() {
+        assertNotNull(mCloseAllTabs);
+
+        var modalDialogFacility = new ModalDialogFacility();
+        modalDialogFacility.declarePositiveButton();
+        modalDialogFacility.declareNegativeButton();
+
+        mCloseAllTabs.scrollToAndSelectTo().enterFacility(modalDialogFacility);
+        return modalDialogFacility;
     }
 
     /** Select "Select tabs" from the app menu. */

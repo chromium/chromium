@@ -7,6 +7,7 @@
 #include "base/check.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/ui/side_panel/internal/android/side_panel_coordinator_android.h"
+#include "chrome/browser/ui/side_panel/side_panel_enums.h"
 
 SidePanelTabListObserverAndroid::SidePanelTabListObserverAndroid(
     TabListInterface* tab_list,
@@ -75,6 +76,39 @@ void SidePanelTabListObserverAndroid::OnTabRemoved(
       coordinator_->OnTabReparented(tab);
     }
   }
+}
+
+void SidePanelTabListObserverAndroid::OnAllTabsAreClosing(
+    TabListInterface& tab_list) {
+  // Usually when a tab is closed, OnActiveTabChanged() will be called and it
+  // will update the side panel states, including closing the side panel if the
+  // new active tab doesn't need it.
+  //
+  // However, when the user closes all tabs, such as via the three-dot menu in
+  // the Grid Tab Switcher (GTS), OnActiveTabChanged() won't be called, but we
+  // also need to close the side panel if it's shown. Otherwise, when the user
+  // creates a new tab, the side panel for a destroyed tab will remain.
+  //
+  // A common question might be: When the user creates a new tab after closing
+  // all tabs, shouldn't OnActiveTabChanged() fix the side panel states?
+  //
+  // The answer:
+  //
+  // First of all, Chrome on Android has a _stable_ 0-tab UI state, such as
+  // when the user has closed all tabs in GTS, but hasn't created any new tab.
+  // Side panel code should reflect this state because GTS is laid on top of the
+  // main browser UI (i.e., the main browser UI is still alive).
+  //
+  // Secondly, OnActiveTabChanged() only closes the side panel if
+  // (1) the side panel is currently shown,
+  // (2) the new active tab doesn't have an active SidePanelEntry, and
+  // (3) the old tab hasn't been deleted.
+  //
+  // Relying on OnActiveTabChanged() won't meet the condition in (3), and we
+  // shouldn't change (3) as it prevents holding/dereferencing an _invalid_
+  // pointer to the SidePanelRegistry of the deleted tab.
+  coordinator_->Close(SidePanelEntryHideReason::kSidePanelClosed,
+                      /*suppress_animations=*/true);
 }
 
 void SidePanelTabListObserverAndroid::OnTabListDestroyed(

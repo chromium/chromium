@@ -362,6 +362,34 @@ public class SidePanelContainerCoordinatorIntegrationTest {
         waitForContainerViewOpen(newCoordinatorRef.get());
     }
 
+    @Test
+    @MediumTest
+    public void closeAllTabsInGridTabSwitcher_closesSidePanel() {
+        // Arrange: Open 2 tabs.
+        var tab1 = mResponsivePageStation.getTab();
+        var newTabPageStation = mResponsivePageStation.openNewTabFast();
+        var tab2 = newTabPageStation.getTab();
+
+        // Arrange: Open the side panel for each tab.
+        var coordinator = getSidePanelContainerCoordinator();
+        showPanel(tab2);
+        waitForContainerViewOpen(coordinator);
+        mResponsivePageStation = newTabPageStation.selectTabFast(tab1, WebPageStation::newBuilder);
+        showPanel(tab1);
+        waitForContainerViewOpen(coordinator);
+
+        // Act: Go to the grid tab switcher (GTS), and use the three-dot menu to close all tabs.
+        var tabSwitcherStation = mResponsivePageStation.openRegularTabSwitcher();
+        var dialogFacility = tabSwitcherStation.openAppMenu().clickCloseAllTabs();
+        dialogFacility.positiveButtonElement.clickTo().exitFacility();
+
+        // Act: Stay in GTS, use the "+" button to create a new tab.
+        tabSwitcherStation.openNewTab();
+
+        // Assert: The side panel is not shown.
+        waitForContainerViewClose(coordinator);
+    }
+
     private SidePanelContainerCoordinatorImpl getSidePanelContainerCoordinator() {
         var sidePanelContainerCoordinator =
                 ((TabbedRootUiCoordinator)
