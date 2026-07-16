@@ -110,6 +110,7 @@ suite('PageActionIconTest', function() {
       pageActionId: PageActionId.kActionShowTranslate,
       accessibleName: 'Translate',
       tooltipText: 'Translate this page',
+      icon: {handleId: 0n},
     };
   }
 

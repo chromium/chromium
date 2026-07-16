@@ -423,6 +423,9 @@ struct PageActionState {
   // Mouseover tooltip to display.
   mojo_base.mojom.String16 tooltip_text;
 
+  // The icon to display.
+  IconHandle icon;
+
   // TODO: crbug.com/501449027 - Add remaining fields.
 };
 

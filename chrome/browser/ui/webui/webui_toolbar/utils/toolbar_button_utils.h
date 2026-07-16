@@ -32,6 +32,14 @@ ActionItemToPinnedToolbarAction(actions::ActionItem* item);
 std::optional<actions::ActionId> PinnedToolbarActionToActionId(
     toolbar_ui_api::mojom::PinnedToolbarAction action);
 
+// Convert Page Action Action `action` to a mojo'able enum value.
+toolbar_ui_api::mojom::PageActionId ActionIdToMojomPageActionId(
+    actions::ActionId action_id);
+
+// Convert Page Action Action `action` from a mojo'able enum value.
+actions::ActionId MojomPageActionIdToActionId(
+    toolbar_ui_api::mojom::PageActionId page_action_id);
+
 }  // namespace webui_toolbar
 
 #endif  // CHROME_BROWSER_UI_WEBUI_WEBUI_TOOLBAR_UTILS_TOOLBAR_BUTTON_UTILS_H_

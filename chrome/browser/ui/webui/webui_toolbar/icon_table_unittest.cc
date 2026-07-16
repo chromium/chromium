@@ -12,6 +12,7 @@
 #include "components/omnibox/browser/location_bar_model_util.h"
 #include "components/security_state/core/security_state.h"
 #include "components/vector_icons/vector_icons.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/models/image_model.h"
@@ -41,6 +42,9 @@ class IconTableTest : public testing::Test, public IconTable::Delegate {
   float GetScaleFactor() const override { return scale_factor_; }
 
  protected:
+  // Setup the browser task environment so thread-checkers for particular
+  // browser threads function properly.
+  content::BrowserTaskEnvironment task_environment_;
   ui::ColorProvider color_provider_;
   float scale_factor_ = 1.5f;
 

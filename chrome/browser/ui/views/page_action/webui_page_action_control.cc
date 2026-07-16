@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/views/page_action/page_action_view_util.h"
 #include "chrome/browser/ui/views/toolbar/webui_toolbar_web_view.h"
+#include "chrome/browser/ui/webui/webui_toolbar/utils/toolbar_button_utils.h"
 #include "components/tabs/public/tab_interface.h"
 #include "mojo/public/mojom/base/error.mojom.h"
 #include "ui/actions/actions.h"
@@ -33,159 +34,6 @@ namespace {
 
 using Code = mojo_base::mojom::Code;
 using Error = mojo_base::mojom::Error;
-
-actions::ActionId MojomPageActionIdToActionId(
-    MojomPageActionId page_action_id) {
-  switch (page_action_id) {
-    case MojomPageActionId::kActionAiMode:
-      return kActionAiMode;
-    case MojomPageActionId::kActionIndigo:
-      return kActionIndigo;
-    case MojomPageActionId::kActionMultistepFilter:
-      return kActionMultistepFilter;
-    case MojomPageActionId::kActionSidePanelShowLensOverlayResults:
-      return kActionSidePanelShowLensOverlayResults;
-    case MojomPageActionId::kActionLensOverlayHomework:
-      return kActionLensOverlayHomework;
-    case MojomPageActionId::kActionShowTranslate:
-      return kActionShowTranslate;
-    case MojomPageActionId::kActionShowMemorySaverChip:
-      return kActionShowMemorySaverChip;
-    case MojomPageActionId::kActionShowJsOptimizationsIcon:
-      return kActionShowJsOptimizationsIcon;
-    case MojomPageActionId::kActionRecordReplay:
-      return kActionRecordReplay;
-    case MojomPageActionId::kActionShowIntentPicker:
-      return kActionShowIntentPicker;
-    case MojomPageActionId::kActionZoomNormal:
-      return kActionZoomNormal;
-    case MojomPageActionId::kActionSidePanelShowReadAnything:
-      return kActionSidePanelShowReadAnything;
-    case MojomPageActionId::kActionOffersAndRewardsForPage:
-      return kActionOffersAndRewardsForPage;
-    case MojomPageActionId::kActionShowFileSystemAccess:
-      return kActionShowFileSystemAccess;
-    case MojomPageActionId::kActionInstallPwa:
-      return kActionInstallPwa;
-    case MojomPageActionId::kActionCommercePriceInsights:
-      return kActionCommercePriceInsights;
-    case MojomPageActionId::kActionCommerceDiscounts:
-      return kActionCommerceDiscounts;
-    case MojomPageActionId::kActionShowPasswordsBubbleOrPage:
-      return kActionShowPasswordsBubbleOrPage;
-    case MojomPageActionId::kActionShowCollaborationRecentActivity:
-      return kActionShowCollaborationRecentActivity;
-    case MojomPageActionId::kActionAutofillMandatoryReauth:
-      return kActionAutofillMandatoryReauth;
-    case MojomPageActionId::kActionFind:
-      return kActionFind;
-    case MojomPageActionId::kActionShowCookieControls:
-      return kActionShowCookieControls;
-    case MojomPageActionId::kActionShowAddressesBubbleOrPage:
-      return kActionShowAddressesBubbleOrPage;
-    case MojomPageActionId::kActionVirtualCardEnroll:
-      return kActionVirtualCardEnroll;
-    case MojomPageActionId::kActionFilledCardInformation:
-      return kActionFilledCardInformation;
-    case MojomPageActionId::kActionShowPaymentsBubbleOrPage:
-      return kActionShowPaymentsBubbleOrPage;
-    case MojomPageActionId::kActionSidePanelShowContextualTasks:
-      return kActionSidePanelShowContextualTasks;
-    case MojomPageActionId::kActionBookmarkThisTab:
-      return kActionBookmarkThisTab;
-    case MojomPageActionId::kActionFederation:
-      return kActionFederation;
-    case MojomPageActionId::kActionGlicContextualCueing:
-      return kActionGlicContextualCueing;
-    case MojomPageActionId::kActionAnchoredContextualCue:
-      return kActionAnchoredContextualCue;
-    case MojomPageActionId::kActionWebAuthnAmbientSignin:
-      return kActionWebAuthnAmbientSignin;
-    case MojomPageActionId::kActionAutofillPayment:
-      return kActionAutofillPayment;
-    case MojomPageActionId::kActionShowPaymentsChurnedUsersBubble:
-      return kActionShowPaymentsChurnedUsersBubble;
-    case MojomPageActionId::kActionFakePageActionForDebug:
-      return kActionFakePageActionForDebug;
-  }
-  NOTREACHED();
-}
-
-MojomPageActionId ActionIdToMojomPageActionId(actions::ActionId action_id) {
-  switch (action_id) {
-    case kActionAiMode:
-      return MojomPageActionId::kActionAiMode;
-    case kActionIndigo:
-      return MojomPageActionId::kActionIndigo;
-    case kActionMultistepFilter:
-      return MojomPageActionId::kActionMultistepFilter;
-    case kActionSidePanelShowLensOverlayResults:
-      return MojomPageActionId::kActionSidePanelShowLensOverlayResults;
-    case kActionLensOverlayHomework:
-      return MojomPageActionId::kActionLensOverlayHomework;
-    case kActionShowTranslate:
-      return MojomPageActionId::kActionShowTranslate;
-    case kActionShowMemorySaverChip:
-      return MojomPageActionId::kActionShowMemorySaverChip;
-    case kActionShowJsOptimizationsIcon:
-      return MojomPageActionId::kActionShowJsOptimizationsIcon;
-    case kActionRecordReplay:
-      return MojomPageActionId::kActionRecordReplay;
-    case kActionShowIntentPicker:
-      return MojomPageActionId::kActionShowIntentPicker;
-    case kActionZoomNormal:
-      return MojomPageActionId::kActionZoomNormal;
-    case kActionSidePanelShowReadAnything:
-      return MojomPageActionId::kActionSidePanelShowReadAnything;
-    case kActionOffersAndRewardsForPage:
-      return MojomPageActionId::kActionOffersAndRewardsForPage;
-    case kActionShowFileSystemAccess:
-      return MojomPageActionId::kActionShowFileSystemAccess;
-    case kActionInstallPwa:
-      return MojomPageActionId::kActionInstallPwa;
-    case kActionCommercePriceInsights:
-      return MojomPageActionId::kActionCommercePriceInsights;
-    case kActionCommerceDiscounts:
-      return MojomPageActionId::kActionCommerceDiscounts;
-    case kActionShowPasswordsBubbleOrPage:
-      return MojomPageActionId::kActionShowPasswordsBubbleOrPage;
-    case kActionShowCollaborationRecentActivity:
-      return MojomPageActionId::kActionShowCollaborationRecentActivity;
-    case kActionAutofillMandatoryReauth:
-      return MojomPageActionId::kActionAutofillMandatoryReauth;
-    case kActionFind:
-      return MojomPageActionId::kActionFind;
-    case kActionShowCookieControls:
-      return MojomPageActionId::kActionShowCookieControls;
-    case kActionShowAddressesBubbleOrPage:
-      return MojomPageActionId::kActionShowAddressesBubbleOrPage;
-    case kActionVirtualCardEnroll:
-      return MojomPageActionId::kActionVirtualCardEnroll;
-    case kActionFilledCardInformation:
-      return MojomPageActionId::kActionFilledCardInformation;
-    case kActionShowPaymentsBubbleOrPage:
-      return MojomPageActionId::kActionShowPaymentsBubbleOrPage;
-    case kActionSidePanelShowContextualTasks:
-      return MojomPageActionId::kActionSidePanelShowContextualTasks;
-    case kActionBookmarkThisTab:
-      return MojomPageActionId::kActionBookmarkThisTab;
-    case kActionFederation:
-      return MojomPageActionId::kActionFederation;
-    case kActionGlicContextualCueing:
-      return MojomPageActionId::kActionGlicContextualCueing;
-    case kActionAnchoredContextualCue:
-      return MojomPageActionId::kActionAnchoredContextualCue;
-    case kActionWebAuthnAmbientSignin:
-      return MojomPageActionId::kActionWebAuthnAmbientSignin;
-    case kActionAutofillPayment:
-      return MojomPageActionId::kActionAutofillPayment;
-    case kActionShowPaymentsChurnedUsersBubble:
-      return MojomPageActionId::kActionShowPaymentsChurnedUsersBubble;
-    case kActionFakePageActionForDebug:
-      return MojomPageActionId::kActionFakePageActionForDebug;
-  }
-  NOTREACHED();
-}
 
 }  // namespace
 
@@ -346,9 +194,12 @@ WebUIPageActionControl::WebUIPageActionDelegate::GetState() const {
   }
 
   auto state = toolbar_ui_api::mojom::PageActionState::New();
-  state->page_action_id = ActionIdToMojomPageActionId(action_id_);
+  state->page_action_id =
+      webui_toolbar::ActionIdToMojomPageActionId(action_id_);
   state->accessible_name = model->GetAccessibleName();
   state->tooltip_text = model->GetTooltipText();
+  state->icon = owner_->webui_delegate_->GetIconTable().RegisterImageModel(
+      model->GetImage());
   return state;
 }
 
@@ -458,7 +309,8 @@ void WebUIPageActionControl::OnPageActionClick(
     PageActionTrigger trigger,
     toolbar_ui_api::mojom::ToolbarUIService::OnPageActionClickCallback
         callback) {
-  auto it = delegates_.find(MojomPageActionIdToActionId(action_id));
+  auto it =
+      delegates_.find(webui_toolbar::MojomPageActionIdToActionId(action_id));
   if (it == delegates_.end()) {
     std::move(callback).Run(base::unexpected(
         Error::New(Code::kInvalidArgument, "Invalid PageActionId")));
@@ -473,7 +325,8 @@ void WebUIPageActionControl::OnPageActionChipShowingChanged(
     toolbar_ui_api::mojom::PageActionId action_id,
     toolbar_ui_api::mojom::ToolbarUIService::
         OnPageActionChipShowingChangedCallback callback) {
-  auto it = delegates_.find(MojomPageActionIdToActionId(action_id));
+  auto it =
+      delegates_.find(webui_toolbar::MojomPageActionIdToActionId(action_id));
   if (it == delegates_.end()) {
     std::move(callback).Run(base::unexpected(
         Error::New(Code::kInvalidArgument, "Invalid PageActionId")));
