@@ -50,6 +50,9 @@ function isGpmAaguid(aaguid: Uint8Array): boolean {
  */
 const cachedNavigatorCredentials: CredentialsContainer = navigator.credentials;
 
+// Tracks whether a WebAuthn request is currently pending.
+let hasPendingRequest = false;
+
 // A function will be defined here by the placeholder replacement.
 // It will be called to determine whether to attempt to handle modal
 // passkeys requests directly in the browser.
@@ -897,22 +900,29 @@ const credentialsContainer: CredentialsContainer = {
     }
 
     const isConditional: boolean = isConditionalMediation(options);
+    hasPendingRequest = true;
+
+    let promise: Promise<Credential|null>;
     if (shouldHandlePasskeyRequests(isConditional) &&
         options.publicKey.challenge) {
-      return createAssertionRequest(
-                 options.publicKey, isConditional, options.signal)
-          .then(result => {
-            if (isValidCredential(result)) {
-              // TODO(crbug.com/460485333): Notification message of success
-              // here?
-              return result;
-            }
+      promise = createAssertionRequest(
+                    options.publicKey, isConditional, options.signal)
+                    .then(result => {
+                      if (isValidCredential(result)) {
+                        // TODO(crbug.com/460485333): Notification message of
+                        // success here?
+                        return result;
+                      }
 
-            return createPassthroughAssertionRequest(options);
-          });
+                      return createPassthroughAssertionRequest(options);
+                    });
     } else {
-      return createPassthroughAssertionRequest(options);
+      promise = createPassthroughAssertionRequest(options);
     }
+
+    return promise.finally(() => {
+      hasPendingRequest = false;
+    });
   },
   create: function(
       options?: CredentialCreationOptions|undefined): Promise<Credential|null> {
@@ -922,23 +932,30 @@ const credentialsContainer: CredentialsContainer = {
     }
 
     const isConditional: boolean = isConditionalMediation(options);
+    hasPendingRequest = true;
+
+    let promise: Promise<Credential|null>;
     if (shouldHandlePasskeyRequests(isConditional) &&
         options.publicKey.challenge && options.publicKey.user &&
         options.publicKey.user.id) {
-      return createRegistrationRequest(
-                 options.publicKey, isConditional, options.signal)
-          .then(result => {
-            if (isValidCredential(result)) {
-              // TODO(crbug.com/460485333): Notification message of success
-              // here?
-              return result;
-            }
+      promise = createRegistrationRequest(
+                    options.publicKey, isConditional, options.signal)
+                    .then(result => {
+                      if (isValidCredential(result)) {
+                        // TODO(crbug.com/460485333): Notification message of
+                        // success here?
+                        return result;
+                      }
 
-            return createPassthroughRegistrationRequest(options);
-          });
+                      return createPassthroughRegistrationRequest(options);
+                    });
     } else {
-      return createPassthroughRegistrationRequest(options);
+      promise = createPassthroughRegistrationRequest(options);
     }
+
+    return promise.finally(() => {
+      hasPendingRequest = false;
+    });
   },
   preventSilentAccess: function(): Promise<any> {
     return cachedNavigatorCredentials.preventSilentAccess();
@@ -1062,4 +1079,19 @@ if (window.isSecureContext) {
 
   // Override PublicKeyCredential's behaviour to expose browser capabilities.
   publicKeyCredentialOverrider.override();
+
+  if (shouldHandleConditionalPasskeyRequests() ||
+      shouldHandleModalPasskeyRequests()) {
+    // When navigating back to a page where a WebAuthn request has been made,
+    // the page must be reloaded so that the WebAuthn request happens again,
+    // otherwise the user won't be able to perform the assertion or registration
+    // again.
+    window.addEventListener('pageshow', (event) => {
+      // event.persisted is true if the page was restored from the bfcache.
+      if (event.persisted && hasPendingRequest) {
+        // Force a full page reload to clear stale WebAuthn state.
+        window.location.reload();
+      }
+    });
+  }
 }
