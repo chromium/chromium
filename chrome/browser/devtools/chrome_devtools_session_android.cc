@@ -6,8 +6,11 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/metrics_hashes.h"
+#include "chrome/browser/devtools/protocol/autofill_handler.h"
 #include "chrome/browser/devtools/protocol/browser_handler_android.h"
 #include "chrome/browser/devtools/protocol/target_handler_android.h"
+#include "content/public/browser/devtools_agent_host.h"
+#include "content/public/browser/devtools_agent_host_client.h"
 #include "content/public/browser/devtools_agent_host_client_channel.h"
 
 namespace {
@@ -23,6 +26,15 @@ ChromeDevToolsSessionAndroid::ChromeDevToolsSessionAndroid(
     content::DevToolsAgentHostClientChannel* channel)
     : dispatcher_(this), client_channel_(channel) {
   content::DevToolsAgentHost* agent_host = channel->GetAgentHost();
+  if (agent_host->GetWebContents() &&
+      (agent_host->GetType() == content::DevToolsAgentHost::kTypePage ||
+       agent_host->GetType() == content::DevToolsAgentHost::kTypeFrame)) {
+    if (IsDomainAvailableToUntrustedClient<AutofillHandler>() ||
+        channel->GetClient()->IsTrusted()) {
+      autofill_handler_ =
+          std::make_unique<AutofillHandler>(&dispatcher_, agent_host->GetId());
+    }
+  }
   if (IsDomainAvailableToUntrustedClient<BrowserHandlerAndroid>() ||
       channel->GetClient()->IsTrusted()) {
     browser_handler_ = std::make_unique<BrowserHandlerAndroid>(

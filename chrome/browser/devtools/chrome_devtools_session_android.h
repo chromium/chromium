@@ -16,6 +16,7 @@ namespace content {
 class DevToolsAgentHostClientChannel;
 }  // namespace content
 
+class AutofillHandler;
 class BrowserHandlerAndroid;
 class TargetHandlerAndroid;
 
@@ -46,6 +47,7 @@ class ChromeDevToolsSessionAndroid : public protocol::FrontendChannel {
   void FlushProtocolNotifications() override;
 
   protocol::UberDispatcher dispatcher_;
+  std::unique_ptr<AutofillHandler> autofill_handler_;
   std::unique_ptr<BrowserHandlerAndroid> browser_handler_;
   std::unique_ptr<TargetHandlerAndroid> target_handler_;
   raw_ptr<content::DevToolsAgentHostClientChannel> client_channel_;
