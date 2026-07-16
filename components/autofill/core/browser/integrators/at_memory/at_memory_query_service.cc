@@ -33,6 +33,7 @@
 #include "components/personal_context/proto/features/at_memory.pb.h"
 #include "components/personal_context/proto/features/common_data.pb.h"
 #include "net/base/network_change_notifier.h"
+#include "url/gurl.h"
 
 namespace autofill {
 
@@ -311,9 +312,13 @@ GetSupportedLocalDataTypes() {
 
 personal_context::proto::AtMemoryQueryRequest BuildAtMemoryQueryRequest(
     std::u16string_view query,
+    const GURL& url,
+    std::u16string_view title,
     const std::string& locale) {
   personal_context::proto::AtMemoryQueryRequest request;
   request.set_input_query(base::UTF16ToUTF8(query));
+  request.set_url(url.spec());
+  request.set_title(base::UTF16ToUTF8(title));
   request.set_locale(locale);
   for (auto type : GetSupportedLocalDataTypes()) {
     request.add_supported_local_data_types(type);
@@ -640,6 +645,8 @@ void AtMemoryQueryService::Shutdown() {
 
 void AtMemoryQueryService::Query(
     std::u16string_view query,
+    const GURL& url,
+    std::u16string_view title,
     base::RepeatingCallback<void(MemorySearchResults)> callback) {
   // Invalidate any in-flight queries.
   weak_ptr_factory_.InvalidateWeakPtrs();
@@ -660,7 +667,7 @@ void AtMemoryQueryService::Query(
   }
 
   personal_context::proto::AtMemoryQueryRequest request_metadata =
-      BuildAtMemoryQueryRequest(query, locale_);
+      BuildAtMemoryQueryRequest(query, url, title, locale_);
 
   personal_context::ContextMemoryRequestOptions options;
   options.request_timeout = features::kAutofillAtMemoryRequestTimeout.Get();

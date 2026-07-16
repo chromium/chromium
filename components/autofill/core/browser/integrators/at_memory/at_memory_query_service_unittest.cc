@@ -29,6 +29,7 @@
 #include "net/base/mock_network_change_notifier.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
 
 namespace autofill {
 
@@ -171,7 +172,8 @@ TEST_F(AtMemoryQueryServiceTest, Query_AfterShutdown) {
   service->Shutdown();
 
   base::test::TestFuture<MemorySearchResults> future;
-  service->Query(u"what is my name", future.GetRepeatingCallback());
+  service->Query(u"what is my name", GURL("https://example.com"), u"Page Title",
+                 future.GetRepeatingCallback());
 
   ASSERT_TRUE(future.Wait());
   const auto& result = future.Get();
@@ -190,7 +192,8 @@ TEST_F(AtMemoryQueryServiceTest, Query_Offline) {
       std::make_unique<FakeMemoryDataProvider>(), &mock_service_, "en-US");
 
   base::test::TestFuture<MemorySearchResults> future;
-  service->Query(u"what is my name", future.GetRepeatingCallback());
+  service->Query(u"what is my name", GURL("https://example.com"), u"Page Title",
+                 future.GetRepeatingCallback());
 
   ASSERT_TRUE(future.Wait());
   const auto& result = future.Get();
@@ -217,7 +220,8 @@ TEST_F(AtMemoryQueryServiceTest, Query_NoLocalProviderButHasRemote) {
       /*data_provider=*/nullptr, &mock_service_, "en-US");
 
   base::test::TestFuture<MemorySearchResults> future;
-  service->Query(u"Alice's phone", future.GetRepeatingCallback());
+  service->Query(u"Alice's phone", GURL("https://example.com"), u"Page Title",
+                 future.GetRepeatingCallback());
 
   ASSERT_TRUE(future.Wait());
   const auto& result = future.Get();
@@ -252,7 +256,8 @@ TEST_F(AtMemoryQueryServiceTest, Query_FetchesAutofillFetchPlanTypes) {
   fake_data_provider->SetResults({local_phone, local_name});
 
   base::test::TestFuture<MemorySearchResults> future;
-  service->Query(u"Alice's phone", future.GetRepeatingCallback());
+  service->Query(u"Alice's phone", GURL("https://example.com"), u"Page Title",
+                 future.GetRepeatingCallback());
 
   ASSERT_TRUE(future.Wait());
   const auto& result = future.Get();
@@ -287,7 +292,8 @@ TEST_F(AtMemoryQueryServiceTest,
       std::move(data_provider), &mock_service_, "en-US");
 
   base::test::TestFuture<MemorySearchResults> future;
-  service->Query(u"Alice's address", future.GetRepeatingCallback());
+  service->Query(u"Alice's address", GURL("https://example.com"), u"Page Title",
+                 future.GetRepeatingCallback());
 
   ASSERT_TRUE(future.Wait());
   EXPECT_THAT(fake_data_provider->last_types(),
@@ -314,7 +320,8 @@ TEST_F(AtMemoryQueryServiceTest,
       std::move(data_provider), &mock_service_, "en-US");
 
   base::test::TestFuture<MemorySearchResults> future;
-  service->Query(u"Alice's address", future.GetRepeatingCallback());
+  service->Query(u"Alice's address", GURL("https://example.com"), u"Page Title",
+                 future.GetRepeatingCallback());
 
   ASSERT_TRUE(future.Wait());
   EXPECT_THAT(fake_data_provider->last_types(),
@@ -343,7 +350,8 @@ TEST_F(
       std::move(data_provider), &mock_service_, "en-US");
 
   base::test::TestFuture<MemorySearchResults> future;
-  service->Query(u"Alice's city", future.GetRepeatingCallback());
+  service->Query(u"Alice's city", GURL("https://example.com"), u"Page Title",
+                 future.GetRepeatingCallback());
 
   ASSERT_TRUE(future.Wait());
   EXPECT_THAT(fake_data_provider->last_types(),
@@ -375,7 +383,8 @@ TEST_F(AtMemoryQueryServiceTest,
       std::move(data_provider), &mock_service_, "en-US");
 
   base::test::TestFuture<MemorySearchResults> future;
-  service->Query(u"my info", future.GetRepeatingCallback());
+  service->Query(u"my info", GURL("https://example.com"), u"Page Title",
+                 future.GetRepeatingCallback());
 
   ASSERT_TRUE(future.Wait());
   EXPECT_THAT(fake_data_provider->last_types(),
@@ -404,7 +413,8 @@ TEST_F(AtMemoryQueryServiceTest,
       std::move(data_provider), &mock_service_, "en-US");
 
   base::test::TestFuture<MemorySearchResults> future;
-  service->Query(u"phone number", future.GetRepeatingCallback());
+  service->Query(u"phone number", GURL("https://example.com"), u"Page Title",
+                 future.GetRepeatingCallback());
 
   ASSERT_TRUE(future.Wait());
   EXPECT_THAT(fake_data_provider->last_types(),
@@ -436,7 +446,8 @@ TEST_F(
       std::move(data_provider), &mock_service_, "en-US");
 
   base::test::TestFuture<MemorySearchResults> future;
-  service->Query(u"my card", future.GetRepeatingCallback());
+  service->Query(u"my card", GURL("https://example.com"), u"Page Title",
+                 future.GetRepeatingCallback());
 
   ASSERT_TRUE(future.Wait());
   EXPECT_THAT(fake_data_provider->last_types(),
@@ -464,7 +475,8 @@ TEST_F(
       std::move(data_provider), &mock_service_, "en-US");
 
   base::test::TestFuture<MemorySearchResults> future;
-  service->Query(u"card name", future.GetRepeatingCallback());
+  service->Query(u"card name", GURL("https://example.com"), u"Page Title",
+                 future.GetRepeatingCallback());
 
   ASSERT_TRUE(future.Wait());
   EXPECT_THAT(fake_data_provider->last_types(),
@@ -496,7 +508,8 @@ TEST_F(AtMemoryQueryServiceTest, Query_FiltersLocalDataUsingFetchPlanKeywords) {
   fake_data_provider->SetResults({home_address, work_address});
 
   base::test::TestFuture<MemorySearchResults> future;
-  service->Query(u"What's my home address", future.GetRepeatingCallback());
+  service->Query(u"What's my home address", GURL("https://example.com"),
+                 u"Page Title", future.GetRepeatingCallback());
 
   ASSERT_TRUE(future.Wait());
   const auto& result = future.Get();
@@ -535,7 +548,8 @@ TEST_F(AtMemoryQueryServiceTest, Query_LocalResultsPrecedeRemoteResults) {
   fake_data_provider->SetResults({local_name});
 
   base::test::TestFuture<MemorySearchResults> future;
-  service->Query(u"what is my name", future.GetRepeatingCallback());
+  service->Query(u"what is my name", GURL("https://example.com"), u"Page Title",
+                 future.GetRepeatingCallback());
 
   ASSERT_TRUE(future.Wait());
   const auto& result = future.Get();
@@ -593,7 +607,8 @@ TEST_F(AtMemoryQueryServiceTest,
   auto service = std::make_unique<AtMemoryQueryService>(
       std::move(data_provider), &mock_service_, "de-DE");
   base::test::TestFuture<MemorySearchResults> future;
-  service->Query(u"Karl Adresse in MÜNCHEN", future.GetRepeatingCallback());
+  service->Query(u"Karl Adresse in MÜNCHEN", GURL("https://example.com"),
+                 u"Page Title", future.GetRepeatingCallback());
 
   ASSERT_TRUE(future.Wait());
   const auto& result = future.Get();
@@ -632,6 +647,7 @@ TEST_F(AtMemoryQueryServiceTest, Query_WithFilterWords_NoMatch_ReturnsEmpty) {
 
   base::test::TestFuture<MemorySearchResults> future;
   service->Query(u"What's my home address in Berlin",
+                 GURL("https://example.com"), u"Page Title",
                  future.GetRepeatingCallback());
 
   ASSERT_TRUE(future.Wait());
@@ -652,7 +668,8 @@ TEST_F(AtMemoryQueryServiceTest, Query_PersonalContextResolverError) {
               kPermissionDenied));
 
   base::test::TestFuture<MemorySearchResults> future;
-  service->Query(u"random query", future.GetRepeatingCallback());
+  service->Query(u"random query", GURL("https://example.com"), u"Page Title",
+                 future.GetRepeatingCallback());
 
   ASSERT_TRUE(future.Wait());
   const auto& result = future.Get();
@@ -710,11 +727,13 @@ TEST_F(AtMemoryQueryServiceTest, StaleResultsAreNotSent) {
       std::move(data_provider), &mock_service_, "en-US");
 
   base::test::TestFuture<MemorySearchResults> future1;
-  service->Query(u"what is my name", future1.GetRepeatingCallback());
+  service->Query(u"what is my name", GURL("https://example.com"), u"Page Title",
+                 future1.GetRepeatingCallback());
 
   // Start a second query before the first one completes.
   base::test::TestFuture<MemorySearchResults> future2;
-  service->Query(u"what is my address", future2.GetRepeatingCallback());
+  service->Query(u"what is my address", GURL("https://example.com"),
+                 u"Page Title", future2.GetRepeatingCallback());
 
   // Complete the first query's data retrieval.
   fake_data_provider->CompleteNext({});
@@ -754,7 +773,8 @@ TEST_F(AtMemoryQueryServiceTest, Query_DeduplicatesResults_PreservesOrder) {
   fake_data_provider->SetResults({result1, result2, result3, result4});
 
   base::test::TestFuture<MemorySearchResults> future;
-  service->Query(u"what is my name", future.GetRepeatingCallback());
+  service->Query(u"what is my name", GURL("https://example.com"), u"Page Title",
+                 future.GetRepeatingCallback());
 
   ASSERT_TRUE(future.Wait());
   const MemorySearchResults& result = future.Get();
@@ -802,7 +822,8 @@ TEST_F(AtMemoryQueryServiceTest,
   fake_data_provider->SetResults({result1, result2});
 
   base::test::TestFuture<MemorySearchResults> future;
-  service->Query(u"what is my name", future.GetRepeatingCallback());
+  service->Query(u"what is my name", GURL("https://example.com"), u"Page Title",
+                 future.GetRepeatingCallback());
 
   ASSERT_TRUE(future.Wait());
   const auto& result = future.Get();
@@ -854,7 +875,8 @@ TEST_F(AtMemoryQueryServiceTest,
   fake_data_provider->SetResults({result1, result2, result3, result4});
 
   base::test::TestFuture<MemorySearchResults> future;
-  service->Query(u"what is my name", future.GetRepeatingCallback());
+  service->Query(u"what is my name", GURL("https://example.com"), u"Page Title",
+                 future.GetRepeatingCallback());
 
   ASSERT_TRUE(future.Wait());
   const auto& result = future.Get();
@@ -903,7 +925,8 @@ TEST_F(AtMemoryQueryServiceTest, RecordsProviderResultCountMetric) {
   fake_data_provider->SetResults({result1, result2});
 
   base::test::TestFuture<MemorySearchResults> future;
-  service->Query(u"what is my name", future.GetRepeatingCallback());
+  service->Query(u"what is my name", GURL("https://example.com"), u"Page Title",
+                 future.GetRepeatingCallback());
 
   ASSERT_TRUE(future.Wait());
 
@@ -934,7 +957,8 @@ TEST_F(AtMemoryQueryServiceTest,
   fake_data_provider->SetResults({name_entry});
 
   base::test::TestFuture<MemorySearchResults> future;
-  service->Query(u"random query", future.GetRepeatingCallback());
+  service->Query(u"random query", GURL("https://example.com"), u"Page Title",
+                 future.GetRepeatingCallback());
 
   ASSERT_TRUE(future.Wait());
   const auto& result = future.Get();
@@ -964,7 +988,8 @@ TEST_F(AtMemoryQueryServiceTest,
   base::test::TestFuture<MemorySearchResults> future;
   // Send an unrelated query to verify it still returns local address
   // suggestions.
-  service->Query(u"random query string 12345", future.GetRepeatingCallback());
+  service->Query(u"random query string 12345", GURL("https://example.com"),
+                 u"Page Title", future.GetRepeatingCallback());
 
   ASSERT_TRUE(future.Wait());
   const auto& result = future.Get();
@@ -1004,7 +1029,8 @@ TEST_F(AtMemoryQueryServiceTest, Query_SetsIsObfuscated) {
       std::make_unique<FakeMemoryDataProvider>(), &mock_service_, "en-US");
 
   base::test::TestFuture<MemorySearchResults> future;
-  service->Query(u"some query", future.GetRepeatingCallback());
+  service->Query(u"some query", GURL("https://example.com"), u"Page Title",
+                 future.GetRepeatingCallback());
 
   const MemorySearchResults& search_results = future.Get();
   EXPECT_THAT(
@@ -1043,7 +1069,8 @@ TEST_F(AtMemoryQueryServiceTest,
       std::move(data_provider), &mock_service_, "en-US");
 
   base::test::TestFuture<MemorySearchResults> future;
-  service->Query(u"what is my name", future.GetRepeatingCallback());
+  service->Query(u"what is my name", GURL("https://example.com"), u"Page Title",
+                 future.GetRepeatingCallback());
 
   ASSERT_TRUE(future.Wait());
   const MemorySearchResults& result = future.Get();
@@ -1080,7 +1107,8 @@ TEST_F(AtMemoryQueryServiceTest,
       std::move(data_provider), &mock_service_, "en-US");
 
   base::test::TestFuture<MemorySearchResults> future;
-  service->Query(u"tracking number", future.GetRepeatingCallback());
+  service->Query(u"tracking number", GURL("https://example.com"), u"Page Title",
+                 future.GetRepeatingCallback());
 
   ASSERT_TRUE(future.Wait());
   const MemorySearchResults& result = future.Get();
@@ -1115,7 +1143,8 @@ TEST_F(AtMemoryQueryServiceTest,
       std::move(data_provider), &mock_service_, "en-US");
 
   base::test::TestFuture<MemorySearchResults> future;
-  service->Query(u"where is my package", future.GetRepeatingCallback());
+  service->Query(u"where is my package", GURL("https://example.com"),
+                 u"Page Title", future.GetRepeatingCallback());
 
   ASSERT_TRUE(future.Wait());
   const MemorySearchResults& result = future.Get();
@@ -1147,7 +1176,8 @@ TEST_P(AtMemoryQueryServiceClassificationTest, MapQueryClassificationToStatus) {
   StubFetchContextResponse(std::move(response));
 
   base::test::TestFuture<MemorySearchResults> future;
-  service->Query(u"query", future.GetRepeatingCallback());
+  service->Query(u"query", GURL("https://example.com"), u"Page Title",
+                 future.GetRepeatingCallback());
 
   ASSERT_TRUE(future.Wait());
   const MemorySearchResults& result = future.Get();
@@ -1190,7 +1220,32 @@ TEST_F(AtMemoryQueryServiceTest, Query_UsesTimeoutFeatureParam) {
 
   auto service = std::make_unique<AtMemoryQueryService>(
       std::make_unique<FakeMemoryDataProvider>(), &mock_service_, "en-US");
-  service->Query(u"what is my name", base::DoNothing());
+  service->Query(u"what is my name", GURL("https://example.com"), u"Page Title",
+                 base::DoNothing());
+}
+
+TEST_F(AtMemoryQueryServiceTest, Query_PopulatesUrlAndTitle) {
+  EXPECT_CALL(
+      mock_service_,
+      FetchContext(personal_context::proto::CONTEXT_MEMORY_FEATURE_AT_MEMORY, _,
+                   _, _))
+      .WillOnce([](personal_context::proto::ContextMemoryFeature feature,
+                   const google::protobuf::MessageLite& request_metadata,
+                   const personal_context::ContextMemoryRequestOptions& options,
+                   personal_context::FetchContextCallback callback) {
+        const auto* at_memory_request =
+            static_cast<const personal_context::proto::AtMemoryQueryRequest*>(
+                &request_metadata);
+        EXPECT_EQ(at_memory_request->input_query(), "Alice");
+        EXPECT_EQ(at_memory_request->url(), "https://example.com/");
+        EXPECT_EQ(at_memory_request->title(), "Example Title");
+      });
+
+  auto service = std::make_unique<AtMemoryQueryService>(
+      /*data_provider=*/nullptr, &mock_service_, "en-US");
+
+  service->Query(u"Alice", GURL("https://example.com/"), u"Example Title",
+                 base::DoNothing());
 }
 
 }  // namespace

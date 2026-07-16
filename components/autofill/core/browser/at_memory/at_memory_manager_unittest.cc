@@ -171,9 +171,10 @@ class AtMemoryManagerTest : public Test,
       MemorySearchStatus status,
       std::vector<MemorySearchResult> entries,
       std::vector<Suggestion>& final_suggestions) {
-    EXPECT_CALL(mock_query_service(), Query(query, _))
+    EXPECT_CALL(mock_query_service(), Query(query, _, _, _))
         .WillOnce([status, entries = std::move(entries)](
-                      std::u16string_view query,
+                      std::u16string_view query, const GURL& url,
+                      std::u16string_view title,
                       base::RepeatingCallback<void(MemorySearchResults)>
                           callback) mutable {
           callback.Run(MemorySearchResults(status, std::move(entries)));
@@ -371,8 +372,9 @@ TEST_F(AtMemoryManagerTest,
                          ukm::kInvalidSourceId);
 
   base::RepeatingCallback<void(MemorySearchResults)> search_callback;
-  EXPECT_CALL(mock_query_service(), Query(std::u16string_view(u"query"), _))
-      .WillOnce(SaveArg<1>(&search_callback));
+  EXPECT_CALL(mock_query_service(),
+              Query(std::u16string_view(u"query"), _, _, _))
+      .WillOnce(SaveArg<3>(&search_callback));
 
   // Expect that executing the query immediately clears suggestions.
   EXPECT_CALL(update_callback_,
@@ -749,8 +751,9 @@ TEST_F(AtMemoryManagerTest, FiltersSpiiInInsecureContext) {
                          ukm::kInvalidSourceId);
 
   base::RepeatingCallback<void(MemorySearchResults)> search_callback;
-  EXPECT_CALL(mock_query_service(), Query(std::u16string_view(u"query"), _))
-      .WillOnce(SaveArg<1>(&search_callback));
+  EXPECT_CALL(mock_query_service(),
+              Query(std::u16string_view(u"query"), _, _, _))
+      .WillOnce(SaveArg<3>(&search_callback));
 
   std::vector<Suggestion> resulting_suggestions;
   EXPECT_CALL(update_callback_,
@@ -820,8 +823,9 @@ TEST_F(AtMemoryManagerTest, FiltersSpiiWhenDeviceReauthNotSupported) {
                          /*is_context_secure=*/true, update_callback_.Get(),
                          ukm::kInvalidSourceId);
 
-  EXPECT_CALL(mock_query_service(), Query(std::u16string_view(u"query"), _))
-      .WillOnce(RunOnceCallback<1>(std::move(results)));
+  EXPECT_CALL(mock_query_service(),
+              Query(std::u16string_view(u"query"), _, _, _))
+      .WillOnce(RunOnceCallback<3>(std::move(results)));
 
   InSequence s;
   // Executing the query immediately clears existing suggestions before
@@ -860,8 +864,9 @@ TEST_F(AtMemoryManagerTest,
                          /*is_context_secure=*/true, update_callback_.Get(),
                          ukm::kInvalidSourceId);
 
-  EXPECT_CALL(mock_query_service(), Query(std::u16string_view(u"query"), _))
-      .WillOnce(RunOnceCallback<1>(std::move(results)));
+  EXPECT_CALL(mock_query_service(),
+              Query(std::u16string_view(u"query"), _, _, _))
+      .WillOnce(RunOnceCallback<3>(std::move(results)));
 
   InSequence s;
   // Executing the query immediately clears existing suggestions before
@@ -887,8 +892,9 @@ TEST_F(AtMemoryManagerTest, KeepsSpiiInSecureContext) {
                          ukm::kInvalidSourceId);
 
   base::RepeatingCallback<void(MemorySearchResults)> search_callback;
-  EXPECT_CALL(mock_query_service(), Query(std::u16string_view(u"query"), _))
-      .WillOnce(SaveArg<1>(&search_callback));
+  EXPECT_CALL(mock_query_service(),
+              Query(std::u16string_view(u"query"), _, _, _))
+      .WillOnce(SaveArg<3>(&search_callback));
 
   std::vector<Suggestion> resulting_suggestions;
   EXPECT_CALL(update_callback_,
@@ -1549,6 +1555,22 @@ INSTANTIATE_TEST_SUITE_P(All,
                                 SourceScenario::kAutofillOnly,
                                 SourceScenario::kGmailOnly,
                                 SourceScenario::kMixed));
+
+TEST_F(AtMemoryManagerTest, OnSearchSubmitted_PassesUrlAndTitleToQueryService) {
+  auto [form_id, field_id] = SeeForm();
+  manager().OnPopupShown(form_id, field_id,
+                         AutofillSuggestionTriggerSource::kAtMemory,
+                         std::nullopt,
+                         /*is_context_secure=*/true, update_callback_.Get(),
+                         ukm::kInvalidSourceId);
+
+  EXPECT_CALL(mock_query_service(),
+              Query(std::u16string_view(u"test query"),
+                    autofill_client().GetLastCommittedPrimaryMainFrameURL(),
+                    autofill_client().GetPageTitle(), _));
+
+  manager().OnSearchSubmitted(u"test query");
+}
 
 }  // namespace
 

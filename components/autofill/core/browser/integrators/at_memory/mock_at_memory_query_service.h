@@ -22,6 +22,8 @@ class MockAtMemoryQueryService : public AtMemoryQueryService {
       void,
       Query,
       (std::u16string_view query,
+       const GURL& url,
+       std::u16string_view title,
        base::RepeatingCallback<
            void(accessibility_annotator::MemorySearchResults)> update_callback),
       (override));

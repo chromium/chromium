@@ -18,6 +18,7 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/personal_context/core/context_memory_error.h"
 #include "components/personal_context/core/personal_context_types.h"
+#include "url/gurl.h"
 
 namespace personal_context {
 class PersonalContextService;
@@ -46,6 +47,8 @@ class AtMemoryQueryService : public KeyedService {
   // results via `callback`.
   virtual void Query(
       std::u16string_view query,
+      const GURL& url,
+      std::u16string_view title,
       base::RepeatingCallback<
           void(accessibility_annotator::MemorySearchResults)> callback);
 

@@ -837,7 +837,8 @@ void AtMemoryManager::ExecuteQuery(const std::u16string& filter) {
   // Notify the UI that search has started.
   ClearSuggestions();
   query_service->Query(
-      filter,
+      filter, owner_->client().GetLastCommittedPrimaryMainFrameURL(),
+      owner_->client().GetPageTitle(),
       base::BindRepeating(&AtMemoryManager::OnSearchResultsReceived,
                           query_weak_ptr_factory_.GetWeakPtr(), filter));
 }
