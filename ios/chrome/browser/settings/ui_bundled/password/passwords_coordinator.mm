@@ -457,8 +457,8 @@
     }
   }
 
-  // TODO(crbug.com/513244362): Add localization strings.
-  NSString* text = @"Open Password Checkup";
+  NSString* text = l10n_util::GetNSString(
+      IDS_IOS_LEVEL_UP_WALKTHROUGH_OPEN_PASSWORD_CHECKUP);
   __weak __typeof(self) weakSelf = self;
   CallbackWithIPHDismissalReasonType dismissalCallback =
       ^(IPHDismissalReasonType reason) {

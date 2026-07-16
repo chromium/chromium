@@ -546,10 +546,10 @@ enum class PopupMenuIPHSessionType {
           ? BubbleAlignmentTopOrLeading
           : BubbleAlignmentBottomOrTrailing;
 
-  // TODO(crbug.com/513244362): Add localization strings.
   BubbleViewControllerPresenter* bubblePresenter =
       [[BubbleViewControllerPresenter alloc]
-               initWithText:@"Open Settings"
+               initWithText:l10n_util::GetNSString(
+                                IDS_IOS_LEVEL_UP_WALKTHROUGH_OPEN_SETTINGS)
                       title:nil
              arrowDirection:arrowDirection
                   alignment:alignment
@@ -684,10 +684,9 @@ enum class PopupMenuIPHSessionType {
     newLevelUpWalkthroughBubblePresenterWithAnchorXInParent:
         (CGFloat)anchorXInParent
                                             parentViewWidth:
-
                                                 (CGFloat)parentViewWidth {
-  // TODO(crbug.com/513244362): Add localization strings.
-  NSString* text = @"Open Password Manager";
+  NSString* text = l10n_util::GetNSString(
+      IDS_IOS_LEVEL_UP_WALKTHROUGH_OPEN_PASSWORD_MANAGER);
 
   __weak __typeof(self) weakSelf = self;
   CallbackWithIPHDismissalReasonType dismissalCallback =
