@@ -76,20 +76,67 @@ class OmniboxPopupPresenterBaseTest : public views::ViewsTestBase {
     presenter_->OnVisualStateReadyForMetrics(result_ready_time, success);
   }
 
+  void CallOnWidgetClosed() {
+    presenter_->OnWidgetClosed(views::Widget::ClosedReason::kUnspecified);
+  }
+
   base::WeakPtr<OmniboxPopupPresenterBase> GetMetricsWeakPtr() {
     return presenter_->metrics_weak_factory_.GetWeakPtr();
   }
+
+  base::WeakPtr<OmniboxPopupPresenterBase> GetWeakPtr() {
+    return presenter_->weak_factory_.GetWeakPtr();
+  }
 };
 
-TEST_F(OmniboxPopupPresenterBaseTest, InvalidatesMetricsCallbacksOnHide) {
+TEST_F(OmniboxPopupPresenterBaseTest, InvalidatesCallbacksOnClose) {
   presenter_->Show();
-  // Get a weak pointer using the metrics factory to simulate a pending
-  // callback.
-  auto weak_ptr = GetMetricsWeakPtr();
+  // Get weak pointers to simulate pending callbacks.
+  auto metrics_weak_ptr = GetMetricsWeakPtr();
+  auto weak_ptr = GetWeakPtr();
+
+  EXPECT_TRUE(metrics_weak_ptr);
   EXPECT_TRUE(weak_ptr);
 
-  // Hiding the popup should invalidate the pending metrics callback.
+  // Closing the widget should invalidate the pending callbacks entirely. Clear
+  // the test fixture's handle to the widget before it's destroyed by
+  // `OnWidgetClosed` to avoid dangling ptr trips.
+  widget_ptr_ = nullptr;
+
+  CallOnWidgetClosed();
+
+  EXPECT_FALSE(metrics_weak_ptr);
+  EXPECT_FALSE(weak_ptr);
+}
+
+TEST_F(OmniboxPopupPresenterBaseTest, InvalidatesCallbacksOnHide) {
+  presenter_->Show();
+  // Get weak pointers to simulate pending callbacks.
+  auto metrics_weak_ptr = GetMetricsWeakPtr();
+  auto weak_ptr = GetWeakPtr();
+
+  EXPECT_TRUE(metrics_weak_ptr);
+  EXPECT_TRUE(weak_ptr);
+
+  // Hiding the popup should invalidate the pending callbacks.
   presenter_->Hide();
+
+  EXPECT_FALSE(metrics_weak_ptr);
+  EXPECT_FALSE(weak_ptr);
+}
+
+TEST_F(OmniboxPopupPresenterBaseTest, InvalidatesCallbacksOnShow) {
+  // Grab weak pointers while the widget is currently hidden.
+  auto metrics_weak_ptr = GetMetricsWeakPtr();
+  auto weak_ptr = GetWeakPtr();
+
+  EXPECT_TRUE(metrics_weak_ptr);
+  EXPECT_TRUE(weak_ptr);
+
+  // Showing the popup should invalidate any stale callbacks.
+  presenter_->Show();
+
+  EXPECT_FALSE(metrics_weak_ptr);
   EXPECT_FALSE(weak_ptr);
 }
 

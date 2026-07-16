@@ -60,6 +60,8 @@ void OmniboxPopupPresenterBase::Show() {
   has_logged_content_ready_since_open_ = false;
   // Drop stale metrics callbacks.
   metrics_weak_factory_.InvalidateWeakPtrs();
+  // Drop stale visual state callbacks.
+  weak_factory_.InvalidateWeakPtrs();
 
   EnsureWidgetCreated();
   SynchronizePopupBounds();
@@ -114,9 +116,6 @@ void OmniboxPopupPresenterBase::OnVisualStateReady(
     base::TimeTicks show_request_time,
     bool from_fallback,
     bool success) {
-  // TODO(crbug.com/507159575): Invalidate weak ptrs for this callback
-  // across rapid hide/show cycles to avoid race conditions overriding
-  // `is_deferred_` for a new popup session.
   if (!is_deferred_) {
     return;
   }
@@ -237,6 +236,8 @@ void OmniboxPopupPresenterBase::Hide() {
   is_deferred_ = false;
   // Drop stale metrics callbacks.
   metrics_weak_factory_.InvalidateWeakPtrs();
+  // Drop stale visual state callbacks.
+  weak_factory_.InvalidateWeakPtrs();
 
   // Only close if UI DevTools settings allow.
   if (widget_ && widget_->ShouldHandleNativeWidgetActivationChanged(false)) {
@@ -399,7 +400,11 @@ void OmniboxPopupPresenterBase::OnWidgetClosed(
   is_deferred_ = false;
   // Drop metrics callbacks when the widget is closed.
   metrics_weak_factory_.InvalidateWeakPtrs();
-  owned_omnibox_popup_webui_container_ = GetResultsFrame()->ExtractContents();
+  // Drop stale visual state callbacks when the widget is closed.
+  weak_factory_.InvalidateWeakPtrs();
+  if (auto* frame = GetResultsFrame()) {
+    owned_omnibox_popup_webui_container_ = frame->ExtractContents();
+  }
   // Call WidgetDestroyed() before resetting the widget pointer. This ensures
   // that subclasses can safely access the widget (e.g., to reset observations)
   // before it is destroyed, avoiding dangling pointer issues.
