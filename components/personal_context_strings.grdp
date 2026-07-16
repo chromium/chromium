@@ -58,28 +58,31 @@
     <message name="IDS_PERSONAL_CONTEXT_AUTOFILL_SETTINGS_MANAGE_CONNECTED_APPS_SUMMARY_ANDROID" desc="The description of the preference that opens the Gemini application settings page with controls to manage the connected applications." formatter_data="android_java">
       Choose which apps Gemini connects to
     </message>
-    <message name="IDS_PERSONAL_CONTEXT_AUTOFILL_SETTINGS_HELPING_IMPROVE_NOTICE_ANDROID" desc="" formatter_data="android_java" translateable="false">
-      You’re helping improve enhanced autofill by sharing data with Google
+    <message name="IDS_PERSONAL_CONTEXT_AUTOFILL_SETTINGS_HELPING_IMPROVE_NOTICE_ANDROID" desc="Section header in Chrome settings indicating that the user has opted in to sharing data to improve the feature." formatter_data="android_java">
+      You’re helping improve enhanced autofill
     </message>
-    <message name="IDS_PERSONAL_CONTEXT_AUTOFILL_SETTINGS_WHEN_USED_TITLE_ANDROID" desc="" formatter_data="android_java" translateable="false">
+    <message name="IDS_PERSONAL_CONTEXT_AUTOFILL_SETTINGS_HELPING_IMPROVE_NOTICE_ANDROID_SUMMARY" desc="Description text explaining what data is shared when the user interacts with the enhanced autofill feature." formatter_data="android_java">
+      When you make a request for enhanced autofill, your usage data, requests, and page details are shared with Google to improve the autofill experience
+    </message>
+    <message name="IDS_PERSONAL_CONTEXT_AUTOFILL_SETTINGS_WHEN_USED_TITLE_ANDROID" desc="Subheading in the settings page describing the data logging behavior when the enhanced autofill feature is triggered by the user." formatter_data="android_java">
       When used
     </message>
-    <message name="IDS_PERSONAL_CONTEXT_AUTOFILL_SETTINGS_LOGS_NOTICE_ANDROID" desc="" formatter_data="android_java" translateable="false">
-      When you type a request for enhanced autofill, Chrome logs how you use the feature, such as whether you accept, edit, or ignore autofill suggestions
+    <message name="IDS_PERSONAL_CONTEXT_AUTOFILL_SETTINGS_LOGS_NOTICE_ANDROID" desc="Bullet point text under 'When used' detailing what specific usage metrics are recorded." formatter_data="android_java">
+      Chrome logs how you use the feature, such as your requests and your behavior when you accept or ignore suggestions
     </message>
-    <message name="IDS_PERSONAL_CONTEXT_AUTOFILL_SETTINGS_ANALYZED_NOTICE_ANDROID" desc="" formatter_data="android_java" translateable="false">
-      The requests sent to Personal Intelligence with Gemini are analyzed to improve autofill
+    <message name="IDS_PERSONAL_CONTEXT_AUTOFILL_SETTINGS_ANALYZED_NOTICE_ANDROID" desc="Bullet point text under 'When used' explaining how system data is utilized to enhance the AI model." formatter_data="android_java">
+      System data, including form fields and feature performance, is analyzed to improve future suggestions
     </message>
-    <message name="IDS_PERSONAL_CONTEXT_AUTOFILL_SETTINGS_THINGS_TO_CONSIDER_TITLE_ANDROID" desc="" formatter_data="android_java" translateable="false">
+    <message name="IDS_PERSONAL_CONTEXT_AUTOFILL_SETTINGS_THINGS_TO_CONSIDER_TITLE_ANDROID" desc="Subheading in the settings page listing privacy, operational details, or data review processes the user should know." formatter_data="android_java">
       Things to consider
     </message>
-    <message name="IDS_PERSONAL_CONTEXT_AUTOFILL_SETTINGS_HUMANS_NOTICE_ANDROID" desc="" formatter_data="android_java" translateable="false">
-      Page titles and URLs are sent to Google and may be reviewed by humans
+    <message name="IDS_PERSONAL_CONTEXT_AUTOFILL_SETTINGS_HUMANS_NOTICE_ANDROID" desc="Bullet point text under 'Things to consider' detailing the privacy implications and human review process of the shared data." formatter_data="android_java">
+      Your requests, page titles, and URLs are sent to Google and may be reviewed by humans
     </message>
-    <message name="IDS_PERSONAL_CONTEXT_AUTOFILL_SETTINGS_NEVER_SEEN_NOTICE_ANDROID" desc="" formatter_data="android_java" translateable="false">
+    <message name="IDS_PERSONAL_CONTEXT_AUTOFILL_SETTINGS_NEVER_SEEN_NOTICE_ANDROID" desc="Bullet point text under 'Things to consider' reassuring the user about the privacy of the actual form data they populate." formatter_data="android_java">
       The info you autofill is never seen by anyone
     </message>
-    <message name="IDS_PERSONAL_CONTEXT_AUTOFILL_SETTINGS_FOOTER_NOTICE_ANDROID" desc="" formatter_data="android_java" translateable="false">
+    <message name="IDS_PERSONAL_CONTEXT_AUTOFILL_SETTINGS_FOOTER_NOTICE_ANDROID" desc="Disclaimer text shown only to Enterprise users. Note for translators: The {enterprise} tag is a conditional logic marker for developers and should not be translated or included in the final string output." formatter_data="android_java">
       Your content will not be used to improve AI. Your organization may change these settings at any time.
     </message>
   </if>
