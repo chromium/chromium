@@ -521,49 +521,48 @@ SystemClipboard::Snapshot::~Snapshot() = default;
 
 bool SystemClipboard::Snapshot::HasPlainText(
     mojom::blink::ClipboardBuffer buffer) const {
-  return buffer_.has_value() && plain_text_.has_value();
+  return GetBufferData(buffer)->plain_text_.has_value();
 }
 
 const String& SystemClipboard::Snapshot::PlainText(
     mojom::blink::ClipboardBuffer buffer) const {
   DCHECK(HasPlainText(buffer));
-  return plain_text_.value();
+  return GetBufferData(buffer)->plain_text_.value();
 }
 
 void SystemClipboard::Snapshot::SetPlainText(
     mojom::blink::ClipboardBuffer buffer,
     const String& text) {
-  BindToBuffer(buffer);
-  plain_text_ = text;
+  GetOrCreateBufferData(buffer)->plain_text_ = text;
 }
 
 bool SystemClipboard::Snapshot::HasHtml(
     mojom::blink::ClipboardBuffer buffer) const {
-  return buffer_.has_value() && html_.has_value();
+  return GetBufferData(buffer)->html_.has_value();
 }
 
 const KURL& SystemClipboard::Snapshot::Url(
     mojom::blink::ClipboardBuffer buffer) const {
   DCHECK(HasHtml(buffer));
-  return url_;
+  return GetBufferData(buffer)->url_;
 }
 
 unsigned SystemClipboard::Snapshot::FragmentStart(
     mojom::blink::ClipboardBuffer buffer) const {
   DCHECK(HasHtml(buffer));
-  return fragment_start_;
+  return GetBufferData(buffer)->fragment_start_;
 }
 
 unsigned SystemClipboard::Snapshot::FragmentEnd(
     mojom::blink::ClipboardBuffer buffer) const {
   DCHECK(HasHtml(buffer));
-  return fragment_end_;
+  return GetBufferData(buffer)->fragment_end_;
 }
 
 const String& SystemClipboard::Snapshot::Html(
     mojom::blink::ClipboardBuffer buffer) const {
   DCHECK(HasHtml(buffer));
-  return html_.value();
+  return GetBufferData(buffer)->html_.value();
 }
 
 void SystemClipboard::Snapshot::SetHtml(mojom::blink::ClipboardBuffer buffer,
@@ -571,89 +570,87 @@ void SystemClipboard::Snapshot::SetHtml(mojom::blink::ClipboardBuffer buffer,
                                         const KURL& url,
                                         unsigned fragment_start,
                                         unsigned fragment_end) {
-  BindToBuffer(buffer);
-  html_ = html;
-  url_ = url;
-  fragment_start_ = fragment_start;
-  fragment_end_ = fragment_end;
+  BufferData* data = GetOrCreateBufferData(buffer);
+  data->html_ = html;
+  data->url_ = url;
+  data->fragment_start_ = fragment_start;
+  data->fragment_end_ = fragment_end;
 }
 
 bool SystemClipboard::Snapshot::HasRtf(
     mojom::blink::ClipboardBuffer buffer) const {
-  return buffer_.has_value() && rtf_.has_value();
+  return GetBufferData(buffer)->rtf_.has_value();
 }
 
 const String& SystemClipboard::Snapshot::Rtf(
     mojom::blink::ClipboardBuffer buffer) const {
   DCHECK(HasRtf(buffer));
-  return rtf_.value();
+  return GetBufferData(buffer)->rtf_.value();
 }
 
 void SystemClipboard::Snapshot::SetRtf(mojom::blink::ClipboardBuffer buffer,
                                        const String& rtf) {
-  BindToBuffer(buffer);
-  rtf_ = rtf;
+  GetOrCreateBufferData(buffer)->rtf_ = rtf;
 }
 
 bool SystemClipboard::Snapshot::HasPng(
     mojom::blink::ClipboardBuffer buffer) const {
-  return buffer_.has_value() && png_.has_value();
+  return GetBufferData(buffer)->png_.has_value();
 }
 
 mojo_base::BigBuffer SystemClipboard::Snapshot::Png(
     mojom::blink::ClipboardBuffer buffer) const {
   DCHECK(HasPng(buffer));
   // Make an owning copy of the png to return to user.
-  base::span<const uint8_t> span = base::span(png_.value());
+  base::span<const uint8_t> span =
+      base::span(GetBufferData(buffer)->png_.value());
   return mojo_base::BigBuffer(span);
 }
 
 // TODO(https://crbug.com/1412180): Reduce data copies.
 void SystemClipboard::Snapshot::SetPng(mojom::blink::ClipboardBuffer buffer,
                                        const mojo_base::BigBuffer& png) {
-  BindToBuffer(buffer);
+  BufferData* data = GetOrCreateBufferData(buffer);
   // Make an owning copy of the png to save locally.
   base::span<const uint8_t> span = base::span(png);
-  png_ = mojo_base::BigBuffer(span);
+  data->png_ = mojo_base::BigBuffer(span);
 }
 
 bool SystemClipboard::Snapshot::HasFiles(
     mojom::blink::ClipboardBuffer buffer) const {
-  return buffer_.has_value() && files_.has_value();
+  return GetBufferData(buffer)->files_.has_value();
 }
 
 mojom::blink::ClipboardFilesPtr SystemClipboard::Snapshot::Files(
     mojom::blink::ClipboardBuffer buffer) const {
   DCHECK(HasFiles(buffer));
-  return CloneFiles(files_.value());
+  return CloneFiles(GetBufferData(buffer)->files_.value());
 }
 
 void SystemClipboard::Snapshot::SetFiles(
     mojom::blink::ClipboardBuffer buffer,
     mojom::blink::ClipboardFilesPtr& files) {
-  BindToBuffer(buffer);
-  files_ = CloneFiles(files);
+  GetOrCreateBufferData(buffer)->files_ = CloneFiles(files);
 }
 
 bool SystemClipboard::Snapshot::HasCustomData(
     mojom::blink::ClipboardBuffer buffer,
     const String& type) const {
-  return buffer_.has_value() && custom_data_.Contains(type);
+  return GetBufferData(buffer)->custom_data_.Contains(type);
 }
 
 String SystemClipboard::Snapshot::CustomData(
     mojom::blink::ClipboardBuffer buffer,
     const String& type) const {
   DCHECK(HasCustomData(buffer, type));
-  return custom_data_.at(type);
+  return GetBufferData(buffer)->custom_data_.at(type);
 }
 
 void SystemClipboard::Snapshot::SetCustomData(
     mojom::blink::ClipboardBuffer buffer,
     const String& type,
     const String& data) {
-  BindToBuffer(buffer);
-  custom_data_.Set(type, data);
+  GetOrCreateBufferData(buffer)->custom_data_.Set(type, data);
 }
 
 void SystemClipboard::OnClipboardDataChanged(const Vector<String>& types,
@@ -703,13 +700,22 @@ mojom::blink::ClipboardFilesPtr SystemClipboard::Snapshot::CloneFiles(
                                            files->file_system_id);
 }
 
-void SystemClipboard::Snapshot::BindToBuffer(
-    mojom::blink::ClipboardBuffer buffer) {
-  if (!buffer_) {
-    buffer_ = buffer;
-  } else {
-    DCHECK_EQ(*buffer_, buffer);
+const SystemClipboard::Snapshot::BufferData*
+SystemClipboard::Snapshot::GetBufferData(
+    mojom::blink::ClipboardBuffer buffer) const {
+  if (buffer == mojom::blink::ClipboardBuffer::kSelection) {
+    return &selection_data_;
   }
+  return &standard_data_;
+}
+
+SystemClipboard::Snapshot::BufferData*
+SystemClipboard::Snapshot::GetOrCreateBufferData(
+    mojom::blink::ClipboardBuffer buffer) {
+  if (buffer == mojom::blink::ClipboardBuffer::kSelection) {
+    return &selection_data_;
+  }
+  return &standard_data_;
 }
 
 ScopedSystemClipboardSnapshot::ScopedSystemClipboardSnapshot(

@@ -209,26 +209,28 @@ class CORE_EXPORT SystemClipboard final
         mojom::blink::ClipboardFilesPtr& files);
 
    private:
-    // Called in the set methods to bind this snapshot to the specified buffer.
-    // All calls to set data for all types need to specify the same buffer.
-    void BindToBuffer(mojom::blink::ClipboardBuffer buffer);
+    struct BufferData {
+      std::optional<String> plain_text_;
 
-    std::optional<mojom::blink::ClipboardBuffer> buffer_;
+      std::optional<String> html_;
+      KURL url_;
+      unsigned fragment_start_ = 0;
+      unsigned fragment_end_ = 0;
 
-    std::optional<String> plain_text_;
+      std::optional<String> rtf_;
 
-    std::optional<String> html_;
-    KURL url_;
-    unsigned fragment_start_ = 0;
-    unsigned fragment_end_ = 0;
+      std::optional<mojo_base::BigBuffer> png_;
 
-    std::optional<String> rtf_;
+      mutable std::optional<mojom::blink::ClipboardFilesPtr> files_;
 
-    std::optional<mojo_base::BigBuffer> png_;
+      HashMap<String, String> custom_data_;
+    };
 
-    mutable std::optional<mojom::blink::ClipboardFilesPtr> files_;
+    const BufferData* GetBufferData(mojom::blink::ClipboardBuffer buffer) const;
+    BufferData* GetOrCreateBufferData(mojom::blink::ClipboardBuffer buffer);
 
-    HashMap<String, String> custom_data_;
+    BufferData standard_data_;
+    BufferData selection_data_;
   };
 
   bool IsValidBufferType(mojom::blink::ClipboardBuffer);

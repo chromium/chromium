@@ -95,6 +95,9 @@ class SystemClipboardTest : public testing::Test {
     EXPECT_TRUE(
         system_clipboard().IsValidBufferType(system_clipboard().buffer_));
   }
+  void SetSelectionBufferAvailable(bool available) {
+    system_clipboard().is_selection_buffer_available_ = available;
+  }
 
   void RunUntilIdle() { test::RunPendingTasks(); }
 
@@ -731,6 +734,43 @@ TEST_F(SystemClipboardTest, DataObjectItemGetAsStringSequenceNumberValidation) {
   // It should return an empty string because the sequence number has changed.
   String data = item->GetAsString();
   EXPECT_TRUE(data.empty());
+}
+
+TEST_F(SystemClipboardTest, CrossBufferSnapshotIsolation) {
+  SetSelectionBufferAvailable(true);
+
+  // Populate standard clipboard text.
+  clipboard_host()->WriteText("standard_text");
+  clipboard_host()->CommitWrite();
+
+  // Enter snapshot scope.
+  ScopedSystemClipboardSnapshot snapshot(system_clipboard());
+
+  // 1. Read plain text from kStandard.
+  // This should call MockClipboardHost::ReadText.
+  int initial_calls = mock_clipboard_host()->ReadTextCallCountForTesting();
+  EXPECT_EQ(system_clipboard().ReadPlainText(
+                mojom::blink::ClipboardBuffer::kStandard),
+            "standard_text");
+  EXPECT_EQ(mock_clipboard_host()->ReadTextCallCountForTesting(),
+            initial_calls + 1);
+
+  // 2. Read plain text from kStandard again.
+  // This must hit the cache and not call MockClipboardHost::ReadText.
+  EXPECT_EQ(system_clipboard().ReadPlainText(
+                mojom::blink::ClipboardBuffer::kStandard),
+            "standard_text");
+  EXPECT_EQ(mock_clipboard_host()->ReadTextCallCountForTesting(),
+            initial_calls + 1);
+
+  // 3. Read plain text from kSelection.
+  // Because they are in different buffers, the cache must not hit across
+  // buffers. This should call MockClipboardHost::ReadText.
+  EXPECT_EQ(system_clipboard().ReadPlainText(
+                mojom::blink::ClipboardBuffer::kSelection),
+            "standard_text");
+  EXPECT_EQ(mock_clipboard_host()->ReadTextCallCountForTesting(),
+            initial_calls + 2);
 }
 
 #if BUILDFLAG(IS_OZONE)
