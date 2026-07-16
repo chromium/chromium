@@ -10,8 +10,6 @@
 #include "base/strings/string_util.h"
 #include "chrome/browser/ui/autofill/mock_autofill_popup_controller.h"
 #include "chrome/browser/ui/views/autofill/popup/mock_accessibility_selection_delegate.h"
-#include "chrome/browser/ui/views/autofill/popup/mock_selection_delegate.h"
-#include "chrome/browser/ui/views/autofill/popup/popup_row_content_view.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "components/autofill/core/browser/filling/filling_product.h"
 #include "components/strings/grit/components_strings.h"
@@ -20,6 +18,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/views/controls/button/md_text_button.h"
+#include "ui/views/controls/link.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_utils.h"
@@ -40,12 +39,10 @@ class PopupPersonalContextNoticeViewTest : public ChromeViewsTestBase {
   }
 
   void ShowView() {
-    auto content_view = std::make_unique<PopupRowContentView>();
     view_ = widget_->SetContentsView(
         std::make_unique<PopupPersonalContextNoticeView>(
-            a11y_selection_delegate(), selection_delegate(),
-            controller().GetWeakPtr(), kNoticePosition,
-            std::move(content_view)));
+            mock_a11y_selection_delegate_, controller().GetWeakPtr(),
+            kNoticePosition));
 
     // Assign manual bounds so the widget has a physical size.
     // In test env, this is required to position child views
@@ -62,24 +59,17 @@ class PopupPersonalContextNoticeViewTest : public ChromeViewsTestBase {
   }
 
  protected:
-  MockAccessibilitySelectionDelegate& a11y_selection_delegate() {
-    return mock_a11y_selection_delegate_;
-  }
-  MockSelectionDelegate& selection_delegate() {
-    return mock_selection_delegate_;
-  }
   PopupPersonalContextNoticeView& view() { return *view_; }
   MockAutofillPopupController& controller() { return controller_; }
   views::Widget& widget() { return *widget_; }
   ui::test::EventGenerator& generator() { return *generator_; }
 
  private:
-  testing::NiceMock<MockAccessibilitySelectionDelegate>
-      mock_a11y_selection_delegate_;
-  testing::NiceMock<MockSelectionDelegate> mock_selection_delegate_;
   std::unique_ptr<views::Widget> widget_;
   std::unique_ptr<ui::test::EventGenerator> generator_;
   testing::NiceMock<MockAutofillPopupController> controller_;
+  testing::NiceMock<MockAccessibilitySelectionDelegate>
+      mock_a11y_selection_delegate_;
   raw_ptr<PopupPersonalContextNoticeView> view_ = nullptr;
 };
 

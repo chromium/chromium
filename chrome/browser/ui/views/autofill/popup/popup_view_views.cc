@@ -48,7 +48,6 @@
 #include "chrome/browser/ui/views/autofill/popup/popup_loading_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_no_suggestions_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_personal_context_notice_view.h"
-#include "chrome/browser/ui/views/autofill/popup/popup_row_content_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_row_factory_utils.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_row_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_search_bar_view.h"
@@ -1242,10 +1241,8 @@ void PopupViewViews::CreateSuggestionViews() {
         case SuggestionType::kPersonalContextNotice: {
           rows_.push_back(body_container->AddChildView(
               std::make_unique<PopupPersonalContextNoticeView>(
-                  /*a11y_selection_delegate=*/*this,
-                  /*selection_delegate=*/*this, controller(),
-                  current_line_number,
-                  std::make_unique<PopupRowContentView>())));
+                  /*a11y_selection_delegate=*/*this, controller(),
+                  current_line_number)));
           break;
         }
         // The default section contains all selectable rows and includes

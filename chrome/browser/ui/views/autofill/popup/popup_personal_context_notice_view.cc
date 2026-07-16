@@ -4,16 +4,21 @@
 
 #include "chrome/browser/ui/views/autofill/popup/popup_personal_context_notice_view.h"
 
+#include <memory>
+#include <optional>
+
+#include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/autofill/autofill_popup_controller.h"
 #include "chrome/browser/ui/chrome_pages.h"
-#include "chrome/browser/ui/views/autofill/popup/popup_row_content_view.h"
+#include "chrome/browser/ui/views/autofill/popup/popup_interactive_row_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_row_view.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/autofill/core/browser/filling/filling_product.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
+#include "components/input/native_web_keyboard_event.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -28,7 +33,8 @@
 #include "ui/views/controls/link.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/layout/box_layout.h"
-#include "ui/views/layout/box_layout_view.h"
+#include "ui/views/layout/layout_types.h"
+#include "ui/views/style/typography.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_utils.h"
@@ -48,25 +54,16 @@ constexpr int kMinimumWidth = 320;
 
 PopupPersonalContextNoticeView::PopupPersonalContextNoticeView(
     PopupRowView::AccessibilitySelectionDelegate& a11y_selection_delegate,
-    PopupRowView::SelectionDelegate& selection_delegate,
     base::WeakPtr<AutofillPopupController> controller,
-    int line_number,
-    std::unique_ptr<PopupRowContentView> content_view)
-    : PopupRowView(a11y_selection_delegate,
-                   selection_delegate,
-                   controller,
-                   line_number,
-                   std::move(content_view)),
-      controller_(std::move(controller)),
-      line_number_(line_number) {
-  views::View& text_container = GetContentView();
-  auto* layout_manager =
-      static_cast<views::BoxLayout*>(text_container.GetLayoutManager());
-  layout_manager->set_between_child_spacing(kBetweenChildSpacing);
+    int line_number)
+    : controller_(std::move(controller)),
+      line_number_(line_number),
+      a11y_selection_delegate_(a11y_selection_delegate) {
+  auto* layout_manager = SetLayoutManager(std::make_unique<views::BoxLayout>(
+      views::BoxLayout::Orientation::kHorizontal, gfx::Insets(),
+      kBetweenChildSpacing));
   layout_manager->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kCenter);
-
-  text_container.SetProperty(views::kMarginsKey, gfx::Insets());
 
   SetProperty(views::kMarginsKey,
               gfx::Insets::TLBR(kRowVerticalMargin, kRowHorizontalMargin,
@@ -76,8 +73,7 @@ PopupPersonalContextNoticeView::PopupPersonalContextNoticeView(
       ui::kColorSysSurface3, /*radius=*/kBackgroundCornerRadius));
   SetBorder(views::CreateEmptyBorder(gfx::Insets(kBorderInsets)));
 
-  description_ =
-      text_container.AddChildView(std::make_unique<views::StyledLabel>());
+  description_ = AddChildView(std::make_unique<views::StyledLabel>());
 
   layout_manager->SetFlexForView(description_, 1);
 
@@ -109,9 +105,8 @@ PopupPersonalContextNoticeView::PopupPersonalContextNoticeView(
   std::u16string full_text =
       base::JoinString({title_text, context_text, link_text}, u" ");
   const size_t full_text_length = full_text.length();
+  GetViewAccessibility().SetRole(ax::mojom::Role::kGroup);
   GetViewAccessibility().SetName(full_text, ax::mojom::NameFrom::kAttribute);
-  text_container.GetViewAccessibility().SetName(
-      full_text, ax::mojom::NameFrom::kAttribute);
   description_->SetText(std::move(full_text));
   description_->SetTextContext(views::style::CONTEXT_DIALOG_BODY_TEXT);
 
@@ -137,13 +132,34 @@ PopupPersonalContextNoticeView::PopupPersonalContextNoticeView(
                               link_style);
 
   // TODO(crbug.com/517520354): Check dark theme appearance and accessibility.
-  got_it_button_ =
-      text_container.AddChildView(std::make_unique<views::MdTextButton>(
-          base::BindRepeating(
-              &PopupPersonalContextNoticeView::OnGotItButtonClicked,
-              base::Unretained(this)),
-          button_text));
+  got_it_button_ = AddChildView(std::make_unique<views::MdTextButton>(
+      base::BindRepeating(&PopupPersonalContextNoticeView::OnGotItButtonClicked,
+                          base::Unretained(this)),
+      button_text));
   got_it_button_->SetStyle(ui::ButtonStyle::kTonal);
+}
+
+std::optional<PopupInteractiveRowView::CellType>
+PopupPersonalContextNoticeView::GetSelectedCell() const {
+  return PopupInteractiveRowView::CellType::kContent;
+}
+
+void PopupPersonalContextNoticeView::SetSelectedCell(
+    std::optional<PopupInteractiveRowView::CellType> cell) {
+  // TODO(crbug.com/515651052): Implement the behavior when the focus is
+  // entering the notice view.
+}
+
+bool PopupPersonalContextNoticeView::HandleKeyPressEvent(
+    const input::NativeWebKeyboardEvent& event) {
+  // TODO(crbug.com/515651052): Handle internal navigation between
+  // the "Settings" link and "Got It" button.
+  return false;
+}
+
+bool PopupPersonalContextNoticeView::IsSelectable() const {
+  // TODO(crbug.com/515651052): Return true when navigation is implemented.
+  return false;
 }
 
 void PopupPersonalContextNoticeView::OnGotItButtonClicked() {
@@ -182,7 +198,7 @@ views::Link* PopupPersonalContextNoticeView::GetSettingsLink() const {
 }
 
 void PopupPersonalContextNoticeView::Layout(views::View::PassKey pass_key) {
-  LayoutSuperclass<PopupRowView>(this);
+  LayoutSuperclass<PopupInteractiveRowView>(this);
 
   // Because `description_` (a `StyledLabel`) creates its link child lazily
   // during layout, we must wait until after `LayoutSuperclass` runs to find
@@ -208,15 +224,9 @@ gfx::Size PopupPersonalContextNoticeView::CalculatePreferredSize(
                        available_bounds.width().value_or(max_width));
   width = std::max(0, width);
 
-  int content_width = width - GetInsets().width();
-  content_width = std::max(0, content_width);
-
-  // Ask the content view (a BoxLayoutView) for its preferred size given the
-  // available width. This delegates the math for child spacing, inside border
-  // insets, and button widths to the layout manager, ensuring the label height
-  // is computed accurately.
+  // Ask the parent class for its preferred size given the available width.
   gfx::Size content_preferred_size =
-      GetContentView().GetPreferredSize(views::SizeBounds(content_width, {}));
+      views::View::CalculatePreferredSize(views::SizeBounds(width, {}));
 
   int height = content_preferred_size.height() + GetInsets().height();
 

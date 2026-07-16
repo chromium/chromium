@@ -26,6 +26,7 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_at_memory_ai_disclosure_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_bnpl_footnote_view.h"
+#include "chrome/browser/ui/views/autofill/popup/popup_interactive_row_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_loading_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_personal_context_notice_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_row_content_view.h"
@@ -1922,20 +1923,14 @@ TEST_F(PopupViewViewsTest, PersonalContextNoticeViewCreated) {
       {Suggestion(SuggestionType::kPersonalContextNotice)});
   CreateAndShowView();
 
-  PopupPersonalContextNoticeView* notice_view =
-      std::get<PopupPersonalContextNoticeView*>(test_api(view()).rows()[0]);
+  PopupInteractiveRowView* notice_view =
+      std::get<PopupInteractiveRowView*>(test_api(view()).rows()[0]);
   ASSERT_TRUE(notice_view);
 
   ui::AXNodeData node_data;
   // TODO(crbug.com/515651588): Check accessibility names once they are ready.
   notice_view->GetViewAccessibility().GetAccessibleNodeData(&node_data);
   EXPECT_FALSE(node_data.GetString16Attribute(ax::mojom::StringAttribute::kName)
-                   .empty());
-  ui::AXNodeData node_data_child_view;
-  notice_view->GetContentView().GetViewAccessibility().GetAccessibleNodeData(
-      &node_data_child_view);
-  EXPECT_FALSE(node_data_child_view
-                   .GetString16Attribute(ax::mojom::StringAttribute::kName)
                    .empty());
 }
 
