@@ -5156,7 +5156,10 @@ static_library("ui") {
         "views/compose/compose_dialog_view.h",
       ]
 
-      deps += [ "//components/compose/core/browser" ]
+      deps += [
+        "//chrome/browser/renderer_context_menu",
+        "//components/compose/core/browser",
+      ]
     }
 
     if (enable_dice_support) {
@@ -5183,8 +5186,6 @@ static_library("ui") {
       "views/apps/chrome_native_app_window_views_aura.h",
       "views/apps/shaped_app_window_targeter.cc",
       "views/apps/shaped_app_window_targeter.h",
-      "views/renderer_context_menu/render_view_context_menu_views.cc",
-      "views/renderer_context_menu/render_view_context_menu_views.h",
       "views/tab_contents/chrome_web_contents_view_delegate_views.cc",
       "views/tab_contents/chrome_web_contents_view_delegate_views.h",
       "views/theme_profile_key.cc",
@@ -5198,6 +5199,8 @@ static_library("ui") {
       "//chrome/browser/ui/aura/accessibility:impl",
       "//chrome/browser/ui/aura/tab_contents",
       "//chrome/browser/ui/aura/tab_contents:impl",
+      "//chrome/browser/ui/views/renderer_context_menu",
+      "//chrome/browser/ui/views/renderer_context_menu:impl",
       "//components/eye_dropper",
       "//ui/aura",
       "//ui/wm",
@@ -5217,6 +5220,11 @@ static_library("ui") {
       # TODO(361027501): //c/b/u/v/t/chrome_web_contents_view_delegate_views.cc
       # includes //c/b/u/a/t/web_drag_bookmark_handler_aura.cc
       "//chrome/browser/ui/aura/tab_contents:impl",
+
+      # TODO(crbug.com/353332589): Remove this circular dependency when the
+      # following header gets componentized:
+      # c/b/ui/views/frame/browser_view.h
+      "//chrome/browser/ui/views/renderer_context_menu:impl",
     ]
   }
 

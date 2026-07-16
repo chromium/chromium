@@ -28,12 +28,8 @@ source_set("bubble_models") {
 
 source_set("renderer_context_menu") {
   if (!is_android) {
-    # TODO(crbug.com/353332589): Remove this circular dependency when
-    # chrome/browser/ui gets componentized further.
-    allow_circular_includes_from = [ "//chrome/browser/ui" ]
-
     if (is_mac) {
-      allow_circular_includes_from += [ "//chrome/browser/ui/cocoa" ]
+      allow_circular_includes_from = [ "//chrome/browser/ui/cocoa" ]
     }
 
     public = [ "render_view_context_menu.h" ]
@@ -42,7 +38,6 @@ source_set("renderer_context_menu") {
       ":bubble_models",
       "//base",
       "//chrome/app:command_ids",
-      "//chrome/browser/ui",
       "//chrome/browser/ui/autofill",
       "//chrome/common:mojo_bindings",
       "//components/compose:buildflags",
@@ -85,6 +80,7 @@ source_set("impl") {
     ":renderer_context_menu",
     "//base",
     "//chrome/browser/app_mode",
+    "//chrome/browser/ui",
     "//chrome/common",
     "//components/renderer_context_menu",
     "//content/public/browser",
