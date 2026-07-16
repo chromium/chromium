@@ -294,6 +294,11 @@ void ChromeSavedDeskDelegate::GetAppLaunchDataForSavedDesk(
         app_restore_data->browser_extra_info.app_type_browser;
   }
 
+  if (!app_launch_info->event_flag.has_value()) {
+    // Ensure event_flag is present even if `app_restore_data` is missing.
+    app_launch_info->event_flag = 0;
+  }
+
   if (app_id != app_constants::kChromeAppId &&
       (app_type == apps::AppType::kChromeApp ||
        app_type == apps::AppType::kWeb)) {

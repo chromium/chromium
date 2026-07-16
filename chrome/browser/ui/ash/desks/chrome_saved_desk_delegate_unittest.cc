@@ -8,6 +8,8 @@
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "chrome/browser/apps/app_service/app_service_proxy.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ui/ash/desks/desks_client.h"
@@ -21,10 +23,12 @@
 #include "components/app_restore/full_restore_utils.h"
 #include "components/app_restore/window_info.h"
 #include "components/app_restore/window_properties.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/wm/core/window_properties.h"
 
 using ::testing::_;
 using ::testing::Return;
@@ -89,6 +93,8 @@ class ChromeSavedDeskDelegateTest : public testing::Test {
     return save_handler;
   }
 
+  TestingProfile* profile() { return profile_.get(); }
+
  private:
   // Browser profiles need to be created on UI thread.
   content::BrowserTaskEnvironment task_environment_{
@@ -110,4 +116,58 @@ TEST_F(ChromeSavedDeskDelegateTest, NullWindowReturnsEmptyAppLaunchData) {
       /*window=*/nullptr, future.GetCallback());
   auto app_launch_info = future.Take();
   EXPECT_FALSE(app_launch_info);
+}
+
+TEST_F(ChromeSavedDeskDelegateTest,
+       GetAppLaunchDataForArcAppWithoutRestoreData) {
+  constexpr char kArcAppId[] = "arc_app_id";
+  constexpr int32_t kTaskId = 100;
+  constexpr int32_t kSessionId = 12345;
+
+  // Register ARC app in AppService.
+  auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile());
+  std::vector<apps::AppPtr> deltas;
+  auto app = std::make_unique<apps::App>(apps::AppType::kArc, kArcAppId);
+  app->readiness = apps::Readiness::kReady;
+  deltas.push_back(std::move(app));
+  proxy->OnApps(std::move(deltas), apps::AppType::kArc,
+                /*should_notify_initialized=*/true);
+
+  // Initialize FullRestoreSaveHandler and register the task.
+  auto* save_handler = GetSaveHandler();
+  save_handler->SetPrimaryProfilePath(profile()->GetPath());
+  save_handler->SaveAppLaunchInfo(profile()->GetPath(),
+                                  std::make_unique<app_restore::AppLaunchInfo>(
+                                      kArcAppId, 0, kSessionId, 0));
+  save_handler->OnTaskCreated(kArcAppId, kTaskId, kSessionId);
+
+  // Verify that the save handler now has restore data.
+  ASSERT_TRUE(save_handler->GetRestoreData(profile()->GetPath()));
+
+  // Remove the app restore data to simulate the situation when ARC app is not
+  // fully loaded.
+  save_handler->RemoveAppRestoreData(profile()->GetPath(), kArcAppId, kTaskId);
+
+  // Create a fake ARC window.
+  std::unique_ptr<aura::Window> window(std::make_unique<aura::Window>(nullptr));
+  window->Init(ui::LAYER_NOT_DRAWN);
+
+  // Set properties to make it look like an ARC app.
+  window->SetProperty(chromeos::kAppTypeKey, chromeos::AppType::ARC_APP);
+  window->SetProperty(app_restore::kAppIdKey, std::string(kArcAppId));
+  window->SetProperty(app_restore::kWindowIdKey, kTaskId);
+  window->SetProperty(wm::kPersistableKey, true);
+
+  // Verify that GetAppId works.
+  EXPECT_EQ(save_handler->GetAppId(window.get()), kArcAppId);
+
+  base::test::TestFuture<std::unique_ptr<app_restore::AppLaunchInfo>> future;
+  chrome_saved_desk_delegate()->GetAppLaunchDataForSavedDesk(
+      window.get(), future.GetCallback());
+  auto app_launch_info = future.Take();
+
+  ASSERT_TRUE(app_launch_info);
+  EXPECT_EQ(app_launch_info->app_id, kArcAppId);
+  EXPECT_TRUE(app_launch_info->event_flag.has_value());
+  EXPECT_EQ(app_launch_info->event_flag.value(), 0);
 }
