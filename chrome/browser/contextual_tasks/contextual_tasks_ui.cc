@@ -644,6 +644,9 @@ ContextualTasksUI::ContextualTasksUI(content::WebUI* web_ui)
   source->AddBoolean("hideMenuOnAiPageEnabled",
                      base::FeatureList::IsEnabled(
                          contextual_tasks::kContextualTasksHideMenuOnAiPage));
+  source->AddBoolean("contextualTasksUnboundedMenuEnabled",
+                     base::FeatureList::IsEnabled(
+                         contextual_tasks::kContextualTasksUnboundedMenu));
   source->AddBoolean(
       "contextualTasksEnableSpatialModelToolbarLayout",
       contextual_tasks::GetContextualTasksSpatialModelToolbarLayoutEnabled());

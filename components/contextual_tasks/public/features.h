@@ -85,6 +85,9 @@ BASE_DECLARE_FEATURE(kContextualTasksRoundedClipPath);
 // panel. The menu is still shown for lens flows.
 BASE_DECLARE_FEATURE(kContextualTasksHideMenuOnAiPage);
 
+// Enables painting dropdown menus outside WebUI boundaries.
+BASE_DECLARE_FEATURE(kContextualTasksUnboundedMenu);
+
 // Enables hiding the close button when in vertical tabs or immersive mode.
 BASE_DECLARE_FEATURE(kContextualTasksHideCloseButtonInVerticalTabs);
 

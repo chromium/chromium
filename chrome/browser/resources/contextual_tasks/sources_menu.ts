@@ -11,6 +11,7 @@ import '//resources/cr_elements/cr_url_list_item/cr_url_list_item.js';
 import {AnchorAlignment} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import type {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {getFaviconForPageURL} from 'chrome://resources/js/icon.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import type {ContextInfo} from './contextual_tasks.mojom-webui.js';
@@ -18,12 +19,10 @@ import type {BrowserProxy} from './contextual_tasks_browser_proxy.js';
 import {BrowserProxyImpl} from './contextual_tasks_browser_proxy.js';
 import {getCss} from './sources_menu.css.js';
 import {getHtml} from './sources_menu.html.js';
-import {recordAction} from './utils.js';
+import {hideUnboundedMenu, recordAction, showUnboundedMenu} from './utils.js';
 
 export interface SourcesMenuElement {
-  $: {
-    menu: CrActionMenuElement,
-  };
+  $: {menu: CrActionMenuElement};
 }
 
 export class SourcesMenuElement extends CrLitElement {
@@ -47,15 +46,27 @@ export class SourcesMenuElement extends CrLitElement {
   accessor contextInfos: ContextInfo[] = [];
   private browserProxy_: BrowserProxy = BrowserProxyImpl.getInstance();
 
+  private get isUnboundedMenuEnabled_(): boolean {
+    return loadTimeData.valueExists('contextualTasksUnboundedMenuEnabled') &&
+        loadTimeData.getBoolean('contextualTasksUnboundedMenuEnabled');
+  }
+
   showAt(target: HTMLElement) {
     this.$.menu.showAt(target, {
       noOffset: true,
       anchorAlignmentY: AnchorAlignment.AFTER_END,
     });
+    showUnboundedMenu(this.$.menu, this.isUnboundedMenuEnabled_, 'sources');
   }
 
   close() {
     this.$.menu.close();
+  }
+
+  protected onOpenChanged_(e: CustomEvent<{value: boolean}>) {
+    const menu = e.currentTarget as CrActionMenuElement;
+    hideUnboundedMenu(
+        menu, this.isUnboundedMenuEnabled_, e.detail.value, 'sources');
   }
 
   private getContextInfoFromEvent_(e: Event): ContextInfo {

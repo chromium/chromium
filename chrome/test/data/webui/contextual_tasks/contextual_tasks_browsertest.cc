@@ -116,6 +116,10 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest, MAYBE_Composebox_Submit) {
 IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest, MAYBE_Composebox_ZeroState) {
   RunTest("contextual_tasks/composebox_zero_state_test.js", "mocha.run();");
 }
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest, UnboundedMenu) {
+  RunTest("contextual_tasks/unbounded_menu_test.js", "mocha.run();");
+}
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest, PostMessageHandler) {
