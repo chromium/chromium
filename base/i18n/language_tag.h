@@ -6,10 +6,10 @@
 #define BASE_I18N_LANGUAGE_TAG_H_
 
 #include <compare>
-#include <cstddef>
 #include <iosfwd>
 #include <optional>
 #include <string_view>
+#include <utility>
 
 #include "base/containers/span.h"
 #include "base/i18n/base_i18n_export.h"
@@ -62,6 +62,11 @@ class BASE_I18N_EXPORT LanguageTag {
   constexpr friend std::strong_ordering operator<=>(const LanguageTag& lhs,
                                                     const LanguageTag& rhs) {
     return lhs.tag_string() <=> rhs.tag_string();
+  }
+
+  template <typename H>
+  friend H AbslHashValue(H h, const LanguageTag& tag) {
+    return H::combine(std::move(h), tag.tag_string());
   }
 
   // Returns the BCP47 language tag (e.g., "en-US", "zh-CN").
@@ -199,16 +204,5 @@ consteval LanguageTag GetKnownLanguageTag(std::string_view tag) {
 }
 
 }  // namespace base::i18n
-
-namespace std {
-
-template <>
-struct hash<base::i18n::LanguageTag> {
-  std::size_t operator()(const base::i18n::LanguageTag& tag) const {
-    return std::hash<std::string_view>()(tag.tag_string());
-  }
-};
-
-}  // namespace std
 
 #endif  // BASE_I18N_LANGUAGE_TAG_H_
