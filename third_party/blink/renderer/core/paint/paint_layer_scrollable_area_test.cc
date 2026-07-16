@@ -2444,4 +2444,32 @@ TEST_P(PaintLayerScrollableAreaTest, SingleAxisScrollableAxes) {
   GetDocument().GetFrame()->EndPrinting();
   UpdateAllLifecyclePhasesForTest();
 }
+
+TEST_P(PaintLayerScrollableAreaTest,
+       CanvasLayoutSubtreeOverlayScrollbarShowHide) {
+  ScopedCanvasDrawElementForTest forced_canvas_draw_element_feature(true);
+  SetBodyInnerHTML(R"HTML(
+    <canvas id="canvas" style="width: 200px; height: 200px" layoutsubtree>
+      <div id="scroller" style="width: 100px; height: 100px; overflow: scroll">
+        <div style="width: 200px; height: 200px; background: white"></div>
+      </div>
+    </canvas>
+  )HTML");
+
+  auto* scroller = GetLayoutBoxByElementId("scroller")->GetScrollableArea();
+  ASSERT_TRUE(scroller);
+  ASSERT_TRUE(scroller->GetPageScrollbarTheme().UsesOverlayScrollbars());
+  if (!scroller->GetPageScrollbarTheme().BlinkControlsOverlayVisibility()) {
+    GTEST_SKIP();
+  }
+  scroller->SetScrollbarsHiddenForTesting(true);
+  EXPECT_TRUE(scroller->ScrollbarsHiddenIfOverlay());
+  scroller->SetScrollOffset(ScrollOffset(10, 10),
+                            mojom::blink::ScrollType::kProgrammatic,
+                            cc::ScrollSourceType::kNone);
+  // A programmatic scroll should show the non-composited overlay scrollbars
+  // in the canvas layout subtree.
+  EXPECT_FALSE(scroller->ScrollbarsHiddenIfOverlay());
+}
+
 }  // namespace blink

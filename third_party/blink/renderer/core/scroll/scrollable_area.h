@@ -791,6 +791,10 @@ class CORE_EXPORT ScrollableArea : public GarbageCollectedMixin {
     active_smooth_scroll_type_ = type;
   }
 
+  // TODO(crbug.com/40517276): Rename this to ShouldCompositeScrollbar().
+  virtual bool MayCompositeScrollbar(const Scrollbar&) const { return true; }
+  bool UsesCompositedOverlayScrollbars() const;
+
   // This animator is used to handle painting animations for MacOS scrollbars
   // using AppKit-specific code (Cocoa APIs). It requires input from
   // ScrollableArea about changes on scrollbars. For other platforms, painting

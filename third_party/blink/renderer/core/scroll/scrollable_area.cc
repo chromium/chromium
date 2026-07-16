@@ -931,11 +931,31 @@ void ScrollableArea::SetScrollbarsHiddenIfOverlayInternal(bool hidden) {
   ScrollbarVisibilityChanged();
 }
 
+bool ScrollableArea::UsesCompositedOverlayScrollbars() const {
+  if (!GetPageScrollbarTheme().UsesOverlayScrollbars()) {
+    return false;
+  }
+  if (!RuntimeEnabledFeatures::RasterInducingScrollEnabled() &&
+      !UsesCompositedScrolling()) {
+    return false;
+  }
+  if (const auto* scrollbar = HorizontalScrollbar()) {
+    if (MayCompositeScrollbar(*scrollbar)) {
+      return true;
+    }
+  }
+  if (const auto* scrollbar = VerticalScrollbar()) {
+    if (MayCompositeScrollbar(*scrollbar)) {
+      return true;
+    }
+  }
+  return false;
+}
+
 void ScrollableArea::FadeOverlayScrollbarsTimerFired(TimerBase*) {
   // Scrollbars can become composited in the time it takes the timer set in
   // ShowNonMacOverlayScrollbars to be fired.
-  if (RuntimeEnabledFeatures::RasterInducingScrollEnabled() ||
-      UsesCompositedScrolling()) {
+  if (UsesCompositedOverlayScrollbars()) {
     return;
   }
   SetScrollbarsHiddenIfOverlay(true);
@@ -948,11 +968,7 @@ void ScrollableArea::ShowNonMacOverlayScrollbars() {
 
   // Don't do this for composited scrollbars. These scrollbars are handled
   // by separate code in cc::ScrollbarAnimationController.
-  // TODO(crbug.com/1229864): We may want to always composite overlay
-  // scrollbars to avoid the bug and the duplicated code for composited and
-  // non-composited overlay scrollbars.
-  if (RuntimeEnabledFeatures::RasterInducingScrollEnabled() ||
-      UsesCompositedScrolling()) {
+  if (UsesCompositedOverlayScrollbars()) {
     return;
   }
 
