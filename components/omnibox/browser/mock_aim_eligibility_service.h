@@ -24,6 +24,7 @@ class MockAimEligibilityService : public AimEligibilityService {
   MOCK_METHOD(bool, IsAimLocallyEligible, (), (const, override));
   MOCK_METHOD(bool, IsAimEligible, (), (const, override));
   MOCK_METHOD(bool, IsCanvasEligible, (), (const, override));
+  MOCK_METHOD(bool, IsCobrowseServerEligible, (), (const, override));
   MOCK_METHOD(bool, IsCobrowseEligible, (), (const, override));
   MOCK_METHOD(bool, IsDeepSearchEligible, (), (const, override));
   MOCK_METHOD(bool, IsCreateImagesEligible, (), (const, override));

@@ -752,7 +752,7 @@ bool LensSearchController::ShouldEnableContextualTasksRouting(
   // No need to check the actual eligibility in this case as all Lens queries
   // should open the contextual tasks panel in this case.
   if (lens::features::IsLensSidePanelUnificationEnabled()) {
-    if (!base::FeatureList::IsEnabled(contextual_tasks::kContextualTasks)) {
+    if (!contextual_tasks::IsContextualTasksUIEnabled()) {
       return false;
     }
 

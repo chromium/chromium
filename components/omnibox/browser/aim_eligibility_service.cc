@@ -18,6 +18,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "components/contextual_tasks/public/features.h"
 #include "components/omnibox/browser/omnibox_prefs.h"
 #include "components/omnibox/common/logger.h"
 #include "components/omnibox/common/omnibox_feature_configs.h"
@@ -485,12 +486,19 @@ bool AimEligibilityService::IsCanvasEligible() const {
   return IsEligibleByServer(server_eligible);
 }
 
-bool AimEligibilityService::IsCobrowseEligible() const {
+bool AimEligibilityService::IsCobrowseServerEligible() const {
   if (!base::FeatureList::IsEnabled(
           omnibox::kAimCoBrowseEligibilityCheckEnabled)) {
     return IsEligibleByServer(true);
   }
   return IsEligibleByServer(GetMostRecentResponse().is_cobrowse_eligible());
+}
+
+bool AimEligibilityService::IsCobrowseEligible() const {
+  if (!base::FeatureList::IsEnabled(contextual_tasks::kContextualTasks)) {
+    return false;
+  }
+  return IsCobrowseServerEligible();
 }
 
 bool AimEligibilityService::IsFuseboxEligible() const {

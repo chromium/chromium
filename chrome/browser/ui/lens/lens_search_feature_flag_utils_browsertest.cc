@@ -69,6 +69,9 @@ class TestingAimEligibilityService : public ChromeAimEligibilityService {
     }
     return true;
   }
+  bool IsCobrowseServerEligible() const override {
+    return is_cobrowse_eligible_;
+  }
   bool IsCobrowseEligible() const override { return is_cobrowse_eligible_; }
 
  private:

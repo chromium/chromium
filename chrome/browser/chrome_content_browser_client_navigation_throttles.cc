@@ -466,7 +466,7 @@ void CreateAndAddChromeThrottlesForNavigation(
   // before ContextualTasksNavigationThrottle intercepts them.
   AimEligibilityRefreshNavigationThrottle::MaybeCreateAndAdd(registry);
 
-  if (base::FeatureList::IsEnabled(contextual_tasks::kContextualTasks) ||
+  if (contextual_tasks::IsContextualTasksUIEnabled() ||
       base::FeatureList::IsEnabled(
           contextual_tasks::kContextualTasksUrlRedirectToAimUrl)) {
     contextual_tasks::ContextualTasksNavigationThrottle::MaybeCreateAndAdd(

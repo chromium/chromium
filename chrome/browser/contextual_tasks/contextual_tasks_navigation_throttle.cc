@@ -83,9 +83,8 @@ ThrottleCheckResult ContextualTasksNavigationThrottle::ProcessNavigation() {
     bool has_lens_override =
         ui_service &&
         ui_service->IsSessionAllowedWhileIneligible(web_contents, task_id);
-    bool should_redirect =
-        !base::FeatureList::IsEnabled(contextual_tasks::kContextualTasks) ||
-        (!is_cobrowse_eligible && !has_lens_override);
+    bool should_redirect = !contextual_tasks::IsContextualTasksUIEnabled() ||
+                           (!is_cobrowse_eligible && !has_lens_override);
 
     if (should_redirect &&
         ContextualTasksUiService::IsContextualTasksUrl(url_params.url)) {
@@ -111,7 +110,7 @@ ThrottleCheckResult ContextualTasksNavigationThrottle::ProcessNavigation() {
     }
   }
 
-  if (!base::FeatureList::IsEnabled(contextual_tasks::kContextualTasks)) {
+  if (!contextual_tasks::IsContextualTasksUIEnabled()) {
     return PROCEED;
   }
 

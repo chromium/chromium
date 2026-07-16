@@ -36,6 +36,10 @@ BASE_FEATURE(kContextualTasks, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kContextualTasksPrivateApiNoAnimation,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables the contextual tasks side panel infrastructure without full product
+// capabilities.
+BASE_FEATURE(kContextualTasksSidePanel, base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables the branded entry point for contextual tasks.
 BASE_FEATURE(kContextualTasksEphemeralBrandedEntryPoint,
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -573,7 +577,7 @@ int GetContextualTasksOnboardingTooltipImpressionDelay() {
 }
 
 int ContextualTasksInactiveSidePanelKeepInCacheMinutes() {
-  if (!base::FeatureList::IsEnabled(kContextualTasks)) {
+  if (!IsContextualTasksUIEnabled()) {
     return 0;
   }
   return kContextualTasksInactiveSidePanelKeepInCacheMinutes.Get();
@@ -700,8 +704,7 @@ bool GetIsTabAutoSuggestionChipEnabled() {
 }
 
 bool GetEnableLensInContextualTasks() {
-  return base::FeatureList::IsEnabled(kContextualTasks) &&
-         kEnableLensInContextualTasks.Get();
+  return IsContextualTasksUIEnabled() && kEnableLensInContextualTasks.Get();
 }
 
 std::string GetContextualTasksUserAgentSuffix() {
@@ -786,6 +789,11 @@ bool GetIsWebpageApcComparisonEnabled() {
   return base::FeatureList::IsEnabled(kContextualTasksWebpageApcComparison);
 }
 
+bool IsContextualTasksUIEnabled() {
+  return base::FeatureList::IsEnabled(kContextualTasksSidePanel) ||
+         base::FeatureList::IsEnabled(kContextualTasks);
+}
+
 namespace flag_descriptions {
 
 const char kContextualTasksPrivateApiNoAnimationName[] =
@@ -797,6 +805,11 @@ const char kContextualTasksPrivateApiNoAnimationDescription[] =
 const char kContextualTasksName[] = "Contextual Tasks";
 const char kContextualTasksDescription[] =
     "Enable the contextual tasks feature.";
+
+const char kContextualTasksSidePanelName[] = "Contextual Tasks Side Panel";
+const char kContextualTasksSidePanelDescription[] =
+    "Enable the contextual tasks side panel infrastructure without enabling "
+    "full Contextual Tasks capabilities.";
 
 const char kContextualTasksContextName[] = "Contextual Tasks Context";
 const char kContextualTasksContextDescription[] =

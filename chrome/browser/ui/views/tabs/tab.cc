@@ -245,7 +245,7 @@ Tab::Tab(tabs::TabHandle handle, TabSlotController* controller)
       ((base::FeatureList::IsEnabled(features::kGlicMultitabUnderlines) &&
         glic::GlicEnabling::IsProfileEligible(
             browser_window_interface->GetProfile())) ||
-       base::FeatureList::IsEnabled(contextual_tasks::kContextualTasks))) {
+       contextual_tasks::IsContextualTasksUIEnabled())) {
     glic_tab_underline_view_ = AddChildView(
         views::Builder<glic::TabUnderlineView>(
             glic::TabUnderlineView::Factory::Create(

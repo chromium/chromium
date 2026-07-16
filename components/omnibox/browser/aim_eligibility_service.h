@@ -207,6 +207,10 @@ class AimEligibilityService
   // Checks if user is eligible for Canvas in AIM features.
   virtual bool IsCanvasEligible() const;
 
+  // Checks if the user is eligible for Co-Browse in AIM according to server
+  // and feature flag checks, regardless of Contextual Tasks enablement.
+  virtual bool IsCobrowseServerEligible() const;
+
   // Checks if the user is eligible for Co-Browse in AIM features.
   virtual bool IsCobrowseEligible() const;
 

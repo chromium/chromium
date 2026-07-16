@@ -114,7 +114,7 @@ ContextualTasksServiceFactory::~ContextualTasksServiceFactory() = default;
 std::unique_ptr<KeyedService>
 ContextualTasksServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  if (!base::FeatureList::IsEnabled(kContextualTasks) &&
+  if (!contextual_tasks::IsContextualTasksUIEnabled() &&
       !base::FeatureList::IsEnabled(syncer::kSyncAIThread) &&
       !base::FeatureList::IsEnabled(syncer::kSyncGeminiThread)) {
     return nullptr;

@@ -31,6 +31,7 @@ class TestingAimEligibilityService : public ChromeAimEligibilityService {
   variations::VariationsService* GetVariationsService() const override;
 
   bool IsAimEligible() const override;
+  bool IsCobrowseServerEligible() const override;
   bool IsCobrowseEligible() const override;
 
  private:
