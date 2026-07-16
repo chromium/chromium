@@ -354,6 +354,13 @@ class MockSessionManager : public BocaSessionManager {
               (std::string_view),
               (override));
   MOCK_METHOD(void, EndSpotlightSession, (base::OnceClosure), (override));
+  MOCK_METHOD(void,
+              StartCrdClient,
+              (std::string,
+               base::OnceClosure,
+               SpotlightFrameConsumer::FrameReceivedCallback,
+               SpotlightCrdStateUpdatedCallback),
+              (override));
   MOCK_METHOD(void, CleanupPresenters, (), (override));
   ~MockSessionManager() override = default;
 };
@@ -1351,6 +1358,51 @@ TEST_F(BocaAppPageHandlerProducerTest, StartSpotlightIgnoresRaceCondition) {
   EXPECT_TRUE(bad_message.empty());
 
   mojo::SetDefaultProcessErrorHandler(base::NullCallback());
+}
+
+TEST_F(BocaAppPageHandlerProducerTest,
+       StartSpotlightRejectsUnknownConnectionCode) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      ash::features::kBocaSpotlightRobotRequester);
+
+  auto session = GetCommonActiveSessionProto();
+  EXPECT_CALL(*session_manager(), GetCurrentSession())
+      .WillRepeatedly(Return(&session));
+  EXPECT_CALL(*session_manager(), StartCrdClient(_, _, _, _)).Times(0);
+
+  base::test::TestFuture<void> future;
+  remote().get()->StartSpotlight("unknown_connection_code",
+                                 future.GetCallback());
+
+  EXPECT_TRUE(future.Wait());
+}
+
+TEST_F(BocaAppPageHandlerProducerTest,
+       StartSpotlightAcceptsKnownConnectionCode) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      ash::features::kBocaSpotlightRobotRequester);
+
+  auto session = GetCommonActiveSessionProto();
+  auto* student_statuses = session.mutable_student_statuses();
+  ::boca::StudentStatus status;
+  ::boca::StudentDevice device;
+  device.mutable_view_screen_config()
+      ->mutable_connection_param()
+      ->set_connection_code("valid_code");
+  (*status.mutable_devices())["device1"] = std::move(device);
+  (*student_statuses)["student1"] = std::move(status);
+
+  EXPECT_CALL(*session_manager(), GetCurrentSession())
+      .WillRepeatedly(Return(&session));
+  EXPECT_CALL(*session_manager(), StartCrdClient("valid_code", _, _, _))
+      .Times(1);
+
+  base::test::TestFuture<void> future;
+  remote().get()->StartSpotlight("valid_code", future.GetCallback());
+
+  EXPECT_TRUE(future.Wait());
 }
 
 TEST_F(BocaAppPageHandlerProducerTest, GetSessionWithPartialInputTest) {

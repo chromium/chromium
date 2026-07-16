@@ -244,7 +244,7 @@ class BocaSessionManager
   }
   SodaStatus GetSodaStatus();
 
-  void StartCrdClient(
+  virtual void StartCrdClient(
       std::string crd_connection_code,
       base::OnceClosure done_callback,
       SpotlightFrameConsumer::FrameReceivedCallback frame_received_callback,

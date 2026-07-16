@@ -336,6 +336,22 @@ bool IsValidReceiverId(const std::string& receiver_id) {
   return receiver_id.find_first_of("/\\.?#%") == std::string::npos;
 }
 
+bool IsConnectionCodeInSession(const ::boca::Session* session,
+                               const std::string& connection_code) {
+  if (!session || connection_code.empty()) {
+    return false;
+  }
+  for (const auto& [student_id, student_status] : session->student_statuses()) {
+    for (const auto& [device_id, device] : student_status.devices()) {
+      if (device.view_screen_config().connection_param().connection_code() ==
+          connection_code) {
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
 }  // namespace
 
 BocaAppHandler::BocaAppHandler(
@@ -839,6 +855,10 @@ void BocaAppHandler::StartSpotlight(const std::string& crd_connection_code,
   }
   auto* session = GetSessionManager()->GetCurrentSession();
   if (!session || !IsActiveSession(session->session_id())) {
+    std::move(callback).Run();
+    return;
+  }
+  if (!IsConnectionCodeInSession(session, crd_connection_code)) {
     std::move(callback).Run();
     return;
   }
