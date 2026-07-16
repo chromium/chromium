@@ -2,18 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
-#include <assert.h>
 #include <stddef.h>
 #include <stdint.h>
 
 #include <algorithm>
+#include <cassert>
 #include <vector>
 
+#include "base/compiler_specific.h"
+#include "base/containers/span.h"
+#include "base/containers/span_reader.h"
+#include "testing/libfuzzer/libfuzzer_base_wrappers.h"
 #include "third_party/libsrtp/include/srtp.h"
 #include "third_party/libsrtp/include/srtp_priv.h"
 #include "third_party/libsrtp/test/rtp.h"
@@ -55,135 +54,133 @@ static size_t GetKeyLength(LibSrtpFuzzer::CryptoPolicy crypto_policy) {
 
 struct Environment {
   srtp_policy_t GetCryptoPolicy(LibSrtpFuzzer::CryptoPolicy crypto_policy,
-                                const unsigned char* replacement_key,
-                                size_t key_length) {
+                                base::span<const uint8_t> replacement_key) {
     switch (crypto_policy) {
       case LibSrtpFuzzer::NUMBER_OF_POLICIES:
       case LibSrtpFuzzer::NONE:
-        srtp_crypto_policy_set_null_cipher_hmac_null(&policy.rtp);
-        srtp_crypto_policy_set_null_cipher_hmac_null(&policy.rtcp);
+        srtp_crypto_policy_set_null_cipher_hmac_null(&policy_.rtp);
+        srtp_crypto_policy_set_null_cipher_hmac_null(&policy_.rtcp);
         break;
       case LibSrtpFuzzer::LIKE_WEBRTC:
-        srtp_crypto_policy_set_aes_cm_128_hmac_sha1_80(&policy.rtp);
-        srtp_crypto_policy_set_aes_cm_128_hmac_sha1_80(&policy.rtcp);
+        srtp_crypto_policy_set_aes_cm_128_hmac_sha1_80(&policy_.rtp);
+        srtp_crypto_policy_set_aes_cm_128_hmac_sha1_80(&policy_.rtcp);
         break;
       case LibSrtpFuzzer::LIKE_WEBRTC_SHORT_AUTH:
-        srtp_crypto_policy_set_aes_cm_128_hmac_sha1_32(&policy.rtp);
-        srtp_crypto_policy_set_aes_cm_128_hmac_sha1_32(&policy.rtcp);
+        srtp_crypto_policy_set_aes_cm_128_hmac_sha1_32(&policy_.rtp);
+        srtp_crypto_policy_set_aes_cm_128_hmac_sha1_32(&policy_.rtcp);
         break;
       case LibSrtpFuzzer::LIKE_WEBRTC_WITHOUT_AUTH:
-        srtp_crypto_policy_set_aes_cm_128_null_auth(&policy.rtp);
-        srtp_crypto_policy_set_aes_cm_128_null_auth(&policy.rtcp);
+        srtp_crypto_policy_set_aes_cm_128_null_auth(&policy_.rtp);
+        srtp_crypto_policy_set_aes_cm_128_null_auth(&policy_.rtcp);
         break;
       case LibSrtpFuzzer::AES_128_GCM:
         // There was a security bug in the GCM mode in libsrtp 1.5.2.
-        srtp_crypto_policy_set_aes_gcm_128_16_auth(&policy.rtp);
-        srtp_crypto_policy_set_aes_gcm_128_16_auth(&policy.rtcp);
+        srtp_crypto_policy_set_aes_gcm_128_16_auth(&policy_.rtp);
+        srtp_crypto_policy_set_aes_gcm_128_16_auth(&policy_.rtcp);
         break;
       case LibSrtpFuzzer::AES_256_GCM:
         // WebRTC uses AES-256-GCM by default if GCM ciphers are enabled.
-        srtp_crypto_policy_set_aes_gcm_256_16_auth(&policy.rtp);
-        srtp_crypto_policy_set_aes_gcm_256_16_auth(&policy.rtcp);
+        srtp_crypto_policy_set_aes_gcm_256_16_auth(&policy_.rtp);
+        srtp_crypto_policy_set_aes_gcm_256_16_auth(&policy_.rtcp);
         break;
     }
 
-    assert(static_cast<size_t>(policy.rtp.cipher_key_len) == key_length);
-    assert(static_cast<size_t>(policy.rtcp.cipher_key_len) == key_length);
-    memcpy(key, replacement_key, key_length);
-    return policy;
+    assert(static_cast<size_t>(policy_.rtp.cipher_key_len) ==
+           replacement_key.size());
+    assert(static_cast<size_t>(policy_.rtcp.cipher_key_len) ==
+           replacement_key.size());
+    std::ranges::fill(base::span(key_), 0);
+    base::span(key_).copy_prefix_from(replacement_key);
+    return policy_;
   }
 
   Environment() {
     srtp_init();
 
-    memset(&policy, 0, sizeof(policy));
-    policy.allow_repeat_tx = 1;
-    policy.key = key;
-    policy.next = nullptr;
-    policy.ssrc.type = ssrc_any_inbound;
-    policy.ssrc.value = 0xdeadbeef;
-    policy.window_size = 1024;
+    policy_.allow_repeat_tx = 1;
+    policy_.key = key_;
+    policy_.ssrc.type = ssrc_any_inbound;
+    policy_.ssrc.value = 0xdeadbeef;
+    policy_.window_size = 1024;
   }
 
  private:
-  srtp_policy_t policy;
-  unsigned char key[SRTP_MAX_KEY_LEN] = {};
+  srtp_policy_t policy_ = {};
+  unsigned char key_[SRTP_MAX_KEY_LEN] = {};
 };
 
-size_t ReadLength(const uint8_t* data, size_t size) {
-  // Read one byte of input and interpret it as a length to read from
-  // data. Don't return more bytes than are available.
-  size_t n = static_cast<size_t>(data[0]);
-  return std::min(n, size - 1);
-}
+DEFINE_LLVM_FUZZER_TEST_ONE_INPUT_SPAN(base::span<const uint8_t> data) {
+  static Environment env;
+  base::SpanReader reader(data);
 
-Environment* env = new Environment();
-
-extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   // Read one byte and use it to choose a crypto policy.
-  if (size <= 2 + SRTP_MAX_KEY_LEN)
+  uint8_t policy_byte;
+  if (!reader.ReadU8BigEndian(policy_byte)) {
     return 0;
+  }
   LibSrtpFuzzer::CryptoPolicy policy = static_cast<LibSrtpFuzzer::CryptoPolicy>(
-      data[0] % LibSrtpFuzzer::NUMBER_OF_POLICIES);
-  data += 1;
-  size -= 1;
+      policy_byte % LibSrtpFuzzer::NUMBER_OF_POLICIES);
 
   // Read some more bytes to use as a key.
   size_t key_length = GetKeyLength(policy);
-  srtp_policy_t srtp_policy = env->GetCryptoPolicy(policy, data, key_length);
-  data += SRTP_MAX_KEY_LEN;
-  size -= SRTP_MAX_KEY_LEN;
+  auto key_bytes = reader.Read<SRTP_MAX_KEY_LEN>();
+  if (!key_bytes) {
+    return 0;
+  }
+  srtp_policy_t srtp_policy =
+      env.GetCryptoPolicy(policy, key_bytes->first(key_length));
 
   // Read one byte and use as number of encrypted header extensions.
-  uint8_t num_encrypted_headers = data[0];
-  data += 1;
-  size -= 1;
+  uint8_t num_encrypted_headers;
+  if (!reader.ReadU8BigEndian(num_encrypted_headers)) {
+    return 0;
+  }
+  std::vector<int> enc_xtn_hdrs;
   if (num_encrypted_headers > 0) {
     // Use next bytes as extension ids.
-    if (size <= num_encrypted_headers)
+    auto headers_bytes = reader.Read(num_encrypted_headers);
+    if (!headers_bytes) {
       return 0;
-    srtp_policy.enc_xtn_hdr_count = static_cast<int>(num_encrypted_headers);
-    srtp_policy.enc_xtn_hdr =
-        static_cast<int*>(malloc(srtp_policy.enc_xtn_hdr_count * sizeof(int)));
-    assert(srtp_policy.enc_xtn_hdr);
-    for (int i = 0; i < srtp_policy.enc_xtn_hdr_count; ++i) {
-      srtp_policy.enc_xtn_hdr[i] = static_cast<int>(data[i]);
     }
-    data += srtp_policy.enc_xtn_hdr_count;
-    size -= srtp_policy.enc_xtn_hdr_count;
+    enc_xtn_hdrs.assign(headers_bytes->begin(), headers_bytes->end());
+    srtp_policy.enc_xtn_hdr = enc_xtn_hdrs.data();
+    srtp_policy.enc_xtn_hdr_count = static_cast<int>(num_encrypted_headers);
   }
 
   srtp_t session;
   srtp_err_status_t error = srtp_create(&session, &srtp_policy);
-  free(srtp_policy.enc_xtn_hdr);
   if (error != srtp_err_status_ok) {
-    assert(false);
     return 0;
   }
 
   // Read one byte as a packet length N, then feed the next N bytes
-  // into srtp_unprotect. Keep going until we run out of data.
-  size_t packet_size;
-  while (size > 0 && (packet_size = ReadLength(data, size)) > 0) {
-    // One byte was used by ReadLength.
-    data++;
-    size--;
+  // into srtp_unprotect. Keep doing until we run out of data.
+  while (true) {
+    uint8_t packet_size_byte;
+    if (!reader.ReadU8BigEndian(packet_size_byte)) {
+      break;
+    }
+    size_t packet_size =
+        std::min(static_cast<size_t>(packet_size_byte), reader.remaining());
+    if (packet_size == 0) {
+      break;
+    }
+    auto packet_span = reader.Read(packet_size);
+    if (!packet_span) {
+      break;
+    }
 
     size_t header_size = std::min(sizeof(srtp_hdr_t), packet_size);
-    size_t body_size = packet_size - header_size;
 
     // We deliberately do not initialise this struct. MSAN will catch
     // usage of the uninitialised memory.
     rtp_msg_t message;
-    memcpy(&message.header, data, header_size);
-    memcpy(&message.body, data + header_size, body_size);
+    auto [header_part, body_part] = packet_span->split_at(header_size);
+    base::byte_span_from_ref(message.header).copy_prefix_from(header_part);
+    base::byte_span_from_ref(message.body).copy_prefix_from(body_part);
 
     int out_len = static_cast<int>(packet_size);
     srtp_unprotect(session, &message, &out_len);
-
-    // |packet_size| bytes were used above.
-    data += packet_size;
-    size -= packet_size;
   }
 
   srtp_dealloc(session);

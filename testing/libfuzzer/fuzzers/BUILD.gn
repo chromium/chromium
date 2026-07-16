@@ -128,7 +128,11 @@ fuzzer_test("url_parse_proto_fuzzer") {
 
 fuzzer_test("libsrtp_fuzzer") {
   sources = [ "libsrtp_fuzzer.cc" ]
-  deps = [ "//third_party/libsrtp" ]
+  deps = [
+    "//base",
+    "//testing/libfuzzer:libfuzzer_base_wrappers",
+    "//third_party/libsrtp",
+  ]
   libfuzzer_options = [ "max_len=1500" ]
 }
 
@@ -161,6 +165,7 @@ fuzzer_test("libpng_progressive_read_fuzzer") {
   sources = [ "libpng_read_fuzzer.cc" ]
   deps = [
     "//base",
+    "//testing/libfuzzer:libfuzzer_base_wrappers",
     "//third_party/libpng:libpng_for_testonly",
   ]
   dict = "dicts/png.dict"

@@ -2,20 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <assert.h>
 #include <stddef.h>
 #include <stdint.h>
 
-#include <vector>
-
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 
 #define PNG_INTERNAL
+#include "base/containers/span.h"
+#include "testing/libfuzzer/libfuzzer_base_wrappers.h"
 #include "third_party/libpng/png.h"
 
 void* limited_malloc(png_structp, png_alloc_size_t size) {
@@ -38,13 +33,12 @@ static const int kPngHeaderSize = 8;
 // Entry point for LibFuzzer.
 // Roughly follows the libpng book example:
 // http://www.libpng.org/pub/png/book/chapter13.html
-extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
-  if (size < kPngHeaderSize) {
+DEFINE_LLVM_FUZZER_TEST_ONE_INPUT_SPAN(base::span<const uint8_t> data) {
+  if (data.size() < kPngHeaderSize) {
     return 0;
   }
 
-  std::vector<unsigned char> v(data, data + size);
-  if (png_sig_cmp(v.data(), 0, kPngHeaderSize)) {
+  if (png_sig_cmp(data.data(), 0, kPngHeaderSize)) {
     // not a PNG.
     return 0;
   }
@@ -77,7 +71,8 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   }
 
   png_set_progressive_read_fn(png_ptr, nullptr, nullptr, nullptr, nullptr);
-  png_process_data(png_ptr, info_ptr, const_cast<uint8_t*>(data), size);
+  png_process_data(png_ptr, info_ptr, const_cast<uint8_t*>(data.data()),
+                   data.size());
 
   return 0;
 }
