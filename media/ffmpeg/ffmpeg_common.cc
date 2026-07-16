@@ -443,10 +443,21 @@ bool AVCodecContextToAudioDecoderConfig(const AVCodecContext* codec_context,
         .copy_from_nonoverlapping(AVCodecContextExtraDataToSpan(codec_context));
   }
 
+  // FFmpeg exports AAC edit list padding in
+  // AVCodecParameters::initial_padding, which propagates to
+  // codec_context->delay. AAC does not have a pipeline decoder delay, and
+  // this padding is already discarded using container-level discard padding.
+  // Pass 0 here to prevent AudioDiscardHelper from treating it as decoder
+  // delay and failing.
+  int codec_delay = codec_context->delay;
+  if (codec == AudioCodec::kAAC) {
+    codec_delay = 0;
+  }
+
   config->Initialize(codec, sample_format,
                      {channel_layout, codec_context->ch_layout.nb_channels},
                      codec_context->sample_rate, extra_data, encryption_scheme,
-                     seek_preroll, codec_context->delay);
+                     seek_preroll, codec_delay);
 
 #if BUILDFLAG(ENABLE_PLATFORM_AC3_EAC3_AUDIO)
   // These are bitstream formats unknown to ffmpeg, so they don't have
