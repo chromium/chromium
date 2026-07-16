@@ -104,10 +104,21 @@
 }
 
 - (void)stop {
+  UIViewController* presentingViewController =
+      _viewController.presentingViewController;
+  if (presentingViewController) {
+    [presentingViewController dismissViewControllerAnimated:YES
+                                                 completion:^{
+                                                   [self stopCompleted];
+                                                 }];
+  } else {
+    [self stopCompleted];
+  }
+}
+
+- (void)stopCompleted {
   [_mediator disconnect];
   _mediator = nil;
-  [_viewController.presentingViewController dismissViewControllerAnimated:YES
-                                                               completion:nil];
   _viewController = nil;
   _snackbarCommandsHandler = nil;
 }
